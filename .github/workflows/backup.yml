@@ -47,8 +47,13 @@ jobs:
           BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
         run: |
           if [ -z "$BACKUP_KEY" ]; then
-            echo "::warning::BACKUP_KEY غير مضبوط — لن تُنشر البيانات الخام، سيُنشر الملخّص فقط"
             rm -f backups/bundle.json
+            echo "::error::BACKUP_KEY غير مضبوط — لم تُحفظ أي بيانات، أعداد فقط."
+            echo "اضبطه مرة واحدة: Settings ← Secrets and variables ← Actions ← New repository secret"
+            echo "الاسم BACKUP_KEY وقيمته عبارة طويلة — احفظها عندك، فبدونها لا تُفكّ النسخة."
+            echo "وللاسترجاع لاحقًا: openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \\"
+            echo "  -in backups/latest/backup.enc -out bundle.json -pass env:BACKUP_KEY"
+            exit 1
           else
             openssl enc -aes-256-cbc -pbkdf2 -iter 250000 -salt \
               -in backups/bundle.json -out backups/latest/backup.enc -pass env:BACKUP_KEY
