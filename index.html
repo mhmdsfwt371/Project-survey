@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.6</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.7</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1864,7 +1864,8 @@ function isVisited(r){
 }
 const nameOf = r => (((recs[r[0]]||{}).fix||{}).name) || r[1];
 const ist = id => (inss[id] && inss[id].status) || 'لم يبدأ';
-const colOf = id => SC[st(id)];
+const vst = id => { const s = st(id); return (appMode==='install' || s==='new' || s==='pending') ? s : 'done'; };
+const colOf = id => SC[vst(id)];
 const slbl  = k  => (appMode==='install' && k==='done') ? 'جاهز للتركيب' : SL[k];
 function toast(m,warn,color){
   const t=$('#toast'); t.textContent=m; t.className='toast on'+(warn?' warn':'');
@@ -1989,11 +1990,11 @@ function renderMBar(){
     if(zSel && szOf(r)!==zSel) return false;
     if(cSel && catOf(r).k!==cSel) return false;
     const S0=st(r[0]);
-    return inst ? (S0==='done'||S0==='draft'||S0==='blocked') : (S0!=='draft'&&S0!=='blocked');
+    return inst ? (S0==='done'||S0==='draft'||S0==='blocked') : S0!=='pending';
   });
   const tot=base.length||1;
   const cnt={new:0,draft:0,done:0,blocked:0};
-  base.forEach(r=>{ const k=st(r[0]); if(cnt[k]!=null) cnt[k]++; });
+  base.forEach(r=>{ const k=vst(r[0]); if(cnt[k]!=null) cnt[k]++; });
   const mk=(k,l)=>{
     const n=cnt[k], on=statusFilter===k; let pc=Math.round(n*100/tot); if(n>0&&pc<1)pc=1; if(n<tot&&pc>99)pc=99;
     return '<button type="button" class="ms'+(on?' on':'')+'" style="--sc:'+SC[k]+
@@ -2304,8 +2305,7 @@ function drawMap(){
       if(cSel && catOf(r).k!==cSel) return;
       const S0=st(r[0]);
       if(appMode==='install'){ if(S0!=='done'&&S0!=='draft'&&S0!=='blocked') return; }
-      else if(S0==='draft'||S0==='blocked') return;
-      if(statusFilter && S0!==statusFilter) return;
+      if(statusFilter && vst(r[0])!==statusFilter) return;
     }
     const P0 = posOf(r);
     const _la=(P0&&(P0.lat!=null?P0.lat:P0[0])), _lo=(P0&&(P0.lng!=null?P0.lng:P0[1]));
@@ -2474,22 +2474,22 @@ function drawList(){
        (appMode!=='install' || !mineOnly || ((inss[r[0]]||{}).who||'')===me)
     && (!zSel || szOf(r)===zSel)
     && (!cSel || catOf(r).k===cSel)
-    && (appMode==='install' ? ['done','draft','blocked'].includes(st(r[0])) : !['draft','blocked'].includes(st(r[0])))
-    && (!statusFilter || st(r[0])===statusFilter)
+    && (appMode==='install' ? ['done','draft','blocked'].includes(st(r[0])) : true)
+    && (!statusFilter || vst(r[0])===statusFilter)
     && (!q || r[0].toLowerCase().includes(q) || (r[1]+' '+nameOf(r)).toLowerCase().includes(q)
            || (r[9]||'').toLowerCase().includes(q)
            || (r[10]||'').toLowerCase().includes(q)
            || (r[27]||'').toLowerCase().includes(q)))
     .sort((a,b)=> myPos ? dist(a)-dist(b) : a[0].localeCompare(b[0]));
   window._lastItems = items;
-  const c = {new:0,draft:0,done:0,blocked:0};
+  const c = {new:0,draft:0,done:0,blocked:0,pending:0};
   DB.d.forEach(r=>c[st(r[0])]++);
   const inst = appMode==='install';
   $('#kTot').textContent = (inst ? c.done+c.draft+c.blocked
-                                 : DB.d.length-c.draft-c.blocked).toLocaleString('ar-EG');
+                                 : c.new+c.draft+c.done+c.blocked).toLocaleString('ar-EG');
   $('#kNew').textContent=c.new.toLocaleString('ar-EG');
   $('#kDraft').textContent=c.draft.toLocaleString('ar-EG');
-  $('#kDone').textContent=c.done.toLocaleString('ar-EG');
+  $('#kDone').textContent=(inst ? c.done : c.draft+c.done+c.blocked).toLocaleString('ar-EG');
   $('#kBlock').textContent=c.blocked.toLocaleString('ar-EG');
   const mr=$('#mineRow'); if(mr&&mr.style) mr.style.display = appMode==='install' ? '' : 'none';
   $('#mineN').textContent = DB.d.filter(r=>
@@ -3994,14 +3994,14 @@ function drawOut(){
     try{ bytes+=JSON.stringify(r).length; }catch(e){}
   });
   const mb=bytes/1048576, pctv=Math.min(100, mb/40*100);
-  $('#oMb').textContent=mb.toFixed(1);
+  $('#oMb').textContent=mb.toLocaleString('ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1});
   $('#oBar').style.width=pctv+'%';
   $('#oBar').style.background = mb>30?'#E05252' : mb>18?'#E8C34B' : '#C9A24B';
   drawSync();
   $('#oHint').textContent = mb>30
     ? 'المساحة شارفت على الامتلاء — صدّر ونزّل الصور ثم امسح بيانات التجربة.'
     : mb>18 ? 'يُفضّل التصدير الآن قبل مواصلة المسح.'
-    : 'صدّر بنهاية كل يوم ميداني حتى لا تزيادة الصور على الجهاز.';
+    : 'صدّر بنهاية كل يوم ميداني حتى لا تتراكم الصور على الجهاز.';
 }
 function dl(name,blob){
   const a=document.createElement('a');
@@ -4044,7 +4044,7 @@ function drawSync(){
   let bytes=0; all.forEach(r=>{ if(!r.synced){
     try{ bytes+=JSON.stringify(r.photos||{}).length; }catch(e){} } });
   $('#syPend').textContent = pend ? pend.toLocaleString('ar-EG')+' إرسالية' : 'لا شيء';
-  $('#sySize').textContent = (bytes/1048576).toFixed(1)+' ميجابايت';
+  $('#sySize').textContent = (bytes/1048576).toLocaleString('ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1})+' ميجابايت';
   const on = (typeof navigator!=='undefined' && navigator.onLine!==false);
   $('#syNet').innerHTML = on
     ? '<span style="color:var(--green)">متصل</span>'
@@ -4052,6 +4052,11 @@ function drawSync(){
   $('#syHint').textContent = pend
     ? 'العمل محفوظ على الجهاز. لا يُمسح أي شيء قبل تأكيد الخادم باستلامه.'
     : 'كل ما على الجهاز مرفوع.';
+  let _ls=''; all.forEach(r=>{ if(r && r.syncAt && r.syncAt>_ls) _ls=r.syncAt; });
+  const _le=$('#syLast');
+  if(_le) _le.textContent = _ls
+    ? new Date(_ls).toLocaleString('ar-EG',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})
+    : 'لم تتم بعد';
 }
 function drawQ(){
   const w=$('#qsel'); w.innerHTML='';
