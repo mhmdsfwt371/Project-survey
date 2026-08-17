@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.5</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.6</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5715,7 +5715,7 @@ function updDashFab(){
 function fmtT(d){ d=d||new Date(); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
 function chip(t,bad){ const c=$i('fbSyncChip'); if(!c) return; c.textContent=t||''; c.className=bad?'bad':''; }
 function chipIdle(){ chip(pendUp>0 ? ('جارٍ الرفع… ('+pendUp+')') : (lastSync ? ('مزامنة ✓ '+fmtT(lastSync)) : 'مزامنة جاهزة')); }
-function strip(d){ const c=Object.assign({},d); delete c._up; delete c._by; return c; }
+function strip(d){ const c=Object.assign({},d||{}); delete c._up; delete c._by; delete c.synced; delete c.syncAt; delete c.syncErr; delete c.syncTry; return c; }
 function eq(a,b){ try{ return JSON.stringify(a)===JSON.stringify(b); }catch(e){ return false; } }
 function evTxt(kind,id,rec){
   if(kind==='inss'){ let t='تركيب ['+(rec.status||'تحديث')+'] — '+id; if(rec.sched) t+=' · جدولة: '+rec.sched; return t; }
@@ -5731,6 +5731,7 @@ window.NSKSYNC = {
     pendUp++; chipIdle();
     const body=Object.assign({},rec,{_up:serverTimestamp(),_by:(user.name||user.email||'')});
     const ph=body.photos; if(ph){ delete body.photos; body.phN=Object.keys(ph).length; }
+    delete body.synced; delete body.syncAt; delete body.syncErr; delete body.syncTry;
     /* وسم محلي: هذه النسخة بانتظار تأكيد الخادم */
     try{ rec.synced=false; rec.syncTry=(rec.syncTry||0)+1; rec.syncErr=''; }catch(e){}
     setDoc(doc(db,kind,String(id)), body)
@@ -5809,7 +5810,8 @@ async function applySnap(kind, snap){
     if(inc && !inc.photos){ const _loc=C.get(kind,id); if(_loc && _loc.photos) inc.photos=_loc.photos; }
     const _pb=PHBUF[kind+'|'+id];
     if(_pb){ inc.photos=Object.assign({}, inc.photos||{}, _pb); delete PHBUF[kind+'|'+id]; }
-    if(eq(inc, C.get(kind,id))) continue;
+    if(eq(inc, strip(C.get(kind,id)))) continue;
+    inc.synced=true; inc.syncAt=new Date().toISOString(); inc.syncErr='';
     C.set(kind,id,inc);
     try{ await window.storage.set(KP[kind]+id, JSON.stringify(inc), false); }catch(e){}
     changed++;
