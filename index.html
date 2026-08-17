@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.4</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.5</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1995,7 +1995,7 @@ function renderMBar(){
   const cnt={new:0,draft:0,done:0,blocked:0};
   base.forEach(r=>{ const k=st(r[0]); if(cnt[k]!=null) cnt[k]++; });
   const mk=(k,l)=>{
-    const n=cnt[k], pc=Math.round(n*100/tot), on=statusFilter===k;
+    const n=cnt[k], on=statusFilter===k; let pc=Math.round(n*100/tot); if(n>0&&pc<1)pc=1; if(n<tot&&pc>99)pc=99;
     return '<button type="button" class="ms'+(on?' on':'')+'" style="--sc:'+SC[k]+
       '" onclick="setStat(\''+k+'\')">'+l+
       ' <span class="n">'+n.toLocaleString('ar-EG')+' ('+pc.toLocaleString('ar-EG')+'٪)</span></button>';
@@ -6000,7 +6000,7 @@ setTimeout(function(){ clearInterval(bootPoll); },20000);
 
 /* ---------------- لوحة المتابعة ---------------- */
 const AR=function(n){ try{ return (+n||0).toLocaleString('ar-EG'); }catch(e){ return String(n); } };
-const pct=function(a,b){ return b>0 ? Math.round(a*100/b) : 0; };
+const pct=function(a,b){ if(!(b>0)) return 0; let p=Math.round(a*100/b); if(a>0&&p<1)p=1; if(a<b&&p>99)p=99; return p; };
 function counts(){
   const C=window.NSKCORE;
   const inss=C.all('inss'), recs=C.all('recs'), props=C.all('props');
@@ -9327,7 +9327,7 @@ html[data-theme="light"] #bellOv #blQ{background:#fff}
   border:1px solid rgba(75,201,245,.5);border-radius:999px;padding:1px 7px}
 #bellOv .blRow{border-inline-start-width:3px}
 #bellOv .bl-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-#bellOv #lngOv{position:fixed;inset:0;z-index:9700;background:transparent}
+#bellOv,#lngOv{position:fixed;inset:0;z-index:9700;background:transparent}
 .lngBox{position:fixed;width:168px;background:var(--panel,#141619);
   border:1px solid var(--line,#2A2E35);border-radius:12px;overflow:hidden;
   box-shadow:0 10px 30px rgba(0,0,0,.45)}
