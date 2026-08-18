@@ -3,41 +3,54 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>نُسُك — أداة فحص الأجهزة</title>
+<title>نُسُك — صحة الأجهزة</title>
 <style>
-  body{font-family:Tahoma,Arial,sans-serif;background:#0f1113;color:#F1EDE0;margin:0;padding:22px;max-width:900px;margin-inline:auto}
-  h1{color:#C9A24B;font-size:19px}
-  .card{background:#141619;border:1px solid #2c3a34;border-radius:12px;padding:16px;margin:12px 0}
-  input,button{font:inherit;padding:9px 12px;border-radius:9px;border:1px solid #2c3a34;background:#0f1113;color:#F1EDE0}
-  button{cursor:pointer;font-weight:800}
-  button.gold{background:#C9A24B;color:#0A0B0D;border-color:#C9A24B}
+  body{font-family:Tahoma,Arial,sans-serif;background:#0f1113;color:#F1EDE0;margin:0;padding:18px;max-width:960px;margin-inline:auto}
+  h1{color:#C9A24B;font-size:19px;margin:8px 0}
+  .card{background:#141619;border:1px solid #2c3a34;border-radius:12px;padding:14px;margin:10px 0}
+  input,button,a.btn{font:inherit;padding:9px 12px;border-radius:9px;border:1px solid #2c3a34;background:#0f1113;color:#F1EDE0;text-decoration:none;display:inline-block}
+  button,a.btn{cursor:pointer;font-weight:800}
+  .gold{background:#C9A24B;color:#0A0B0D;border-color:#C9A24B}
   table{width:100%;border-collapse:collapse;font-size:13px}
-  th,td{border-bottom:1px solid #23282c;padding:7px 9px;text-align:right}
-  .up{color:#3AD6A0;font-weight:800}.down{color:#F0655A;font-weight:800}
+  th,td{border-bottom:1px solid #23282c;padding:8px 9px;text-align:right}
+  tr.bad{background:rgba(240,101,90,.08)}
+  .up{color:#3AD6A0;font-weight:800}.down{color:#F0655A;font-weight:800}.na{color:#5a6068}
   .muted{color:#8a9199;font-size:12px}
   #st{font-weight:800;color:#C9A24B}
-  td.ip{direction:ltr;text-align:left;font-family:monospace}
+  .cards{display:flex;gap:8px;flex-wrap:wrap}
+  .kc{flex:1;min-width:110px;background:#0f1113;border:1px solid #2c3a34;border-radius:10px;padding:10px;text-align:center}
+  .kc b{display:block;font-size:24px}
+  .kc span{font-size:11px;color:#8a9199}
+  .warn{border:1px solid #E8873A;color:#E8C36A;border-radius:10px;padding:10px 12px;font-size:13px}
 </style>
 </head>
 <body>
-<h1>🩺 نُسُك — أداة فحص الأجهزة (المكتب)</h1>
-<p class="muted">تعمل من جهازٍ متصلٍ بشبكة الميدان نفسها: تفحص راوتر وقارئ وكاميرا كل نقطة كل <b>٥ دقائق</b>، وتسجّل كل سقوط وعودة للتحليلات، وأي فاصلٍ يتجاوز <b>١٠ دقائق</b> تُرسل إنذاره لجرس التطبيق فورًا (وإشعار عودة عند رجوعه)، وتستجيب لزر «تحديث كل النقاط الآن» في اللوحة. أبقِ الصفحة مفتوحة.</p>
+<h1>🩺 نُسُك — صحة الأجهزة</h1>
+<p class="muted">لوحة حية لكل الأجهزة المسجّلة (راوتر · قارئ · كاميرا لكل نقطة). <b>الفحص الفعلي</b> يعمل فقط من جهازٍ على شبكة الميدان مع فتح الأداة كملف محلي — وإلا فهي شاشة عرضٍ حيّ تتحدّث لحظيًا من آخر نبضات المكتب.</p>
 
 <div class="card" id="loginC">
-  <b>تسجيل الدخول (حساب مهندس/مشرف)</b><br><br>
+  <b>تسجيل الدخول (نفس حساب التطبيق)</b><br><br>
   <input id="em" type="email" placeholder="البريد" style="width:46%">
   <input id="pw" type="password" placeholder="كلمة المرور" style="width:30%">
   <button class="gold" id="go">دخول</button>
   <div id="lerr" class="muted"></div>
 </div>
 
+<div id="modeC" class="card" style="display:none"></div>
+
 <div class="card" id="runC" style="display:none">
-  <div>الحالة: <span id="st">جاهز</span> · أجهزة مسجّلة: <b id="nDev">0</b> · الجولة القادمة خلال <b id="cd">—</b></div><br>
-  <button class="gold" id="now">فحص الكل الآن</button>
-  <span class="muted" id="last"></span>
+  <div class="cards">
+    <div class="kc"><b id="kUp" class="up">0</b><span>متصل</span></div>
+    <div class="kc"><b id="kDn" class="down">0</b><span>غير متصل</span></div>
+    <div class="kc"><b id="kTen" style="color:#f97316">0</b><span>فاصل ≥١٠ دقائق</span></div>
+    <div class="kc"><b id="kPts" style="color:#E8C36A">0</b><span>نقاط متأثرة</span></div>
+    <div class="kc"><b id="kNa" class="na">0</b><span>لم يُفحص</span></div>
+  </div><br>
+  <div>الحالة: <span id="st">عرض حي</span> · نقاط مسجّلة: <b id="nPts">0</b> · <span id="cdWrap">الجولة القادمة خلال <b id="cd">—</b> · </span><span class="muted" id="last"></span></div><br>
+  <button class="gold" id="now" style="display:none">فحص الكل الآن</button>
 </div>
 
-<div class="card"><table id="tb"><tr><th>النقطة</th><th>الجهاز</th><th>العنوان</th><th>الحالة</th><th>آخر فحص</th></tr></table></div>
+<div class="card"><table id="tb"></table></div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
@@ -48,8 +61,12 @@ firebase.initializeApp({
   authDomain:"project-survey-60600.firebaseapp.com",
   projectId:"project-survey-60600"
 });
-var db=firebase.firestore(), DEV=[], TICK=300, left=TICK, busy=false, lastCmd='';
-var PREV={}, ALERTED={};   /* آخر حالة معروفة لكل جهاز + مَن أُنذر لانقطاعه الحالي */
+var db=firebase.firestore();
+var PTS={}, HB={}, PREV={}, ALERTED={};
+var TICK=300, left=TICK, busy=false, lastCmd='';
+var KINDS=[['router','راوتر'],['reader','قارئ'],['camera','كاميرا']];
+/* من صفحة آمنة يستحيل الوصول لعناوين الشبكة الخاصة — فتتحول الأداة لشاشة عرض حي */
+var CAN_PROBE = (location.protocol!=='https:');
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';}); }
@@ -61,96 +78,145 @@ $('go').onclick=function(){
 firebase.auth().onAuthStateChanged(function(u){
   if(!u) return;
   $('loginC').style.display='none'; $('runC').style.display='block';
+  var mc=$('modeC'); mc.style.display='block';
+  if(CAN_PROBE){
+    mc.innerHTML='<b style="color:#3AD6A0">وضع الفحص فعّال</b> — هذه الأداة تفحص وتكتب النبضات. أبقِها مفتوحة على جهاز الشبكة.';
+    $('now').style.display='inline-block';
+  } else {
+    mc.className='card warn';
+    mc.innerHTML='<b>وضع العرض الحي فقط</b> — المتصفح من صفحة آمنة لا يستطيع فحص عناوين الشبكة الخاصة.'
+      +'<br>للفحص الفعلي من جهاز المكتب: <a class="btn" href="prober.html" download="nusuk-prober.html">⬇ تنزيل الأداة</a> ثم افتح الملف المنزَّل بالنقر المزدوج وسجّل دخولك.';
+    $('cdWrap').style.display='none';
+  }
   boot();
 });
 
-async function boot(){
-  /* الأجهزة من سجلات التركيب — حقل net على كل نقطة */
+function boot(){
   db.collection('inss').onSnapshot(function(s){
-    var out=[];
+    PTS={};
     s.forEach(function(d){
       var v=d.data()||{}, net=v.net||{};
-      [['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].forEach(function(k){
-        if(net[k[0]]) out.push({site:d.id, kind:k[0], klabel:k[1], ip:String(net[k[0]]).trim()});
-      });
+      if(net.router||net.reader||net.camera) PTS[d.id]=net;
     });
-    DEV=out; $('nDev').textContent=DEV.length; paint({});
+    $('nPts').textContent=Object.keys(PTS).length;
+    paint();
   });
-  /* أمر الفحص الفوري من زر اللوحة */
-  db.collection('settings').doc('hbcmd').onSnapshot(function(d){
-    var v=(d.data()||{}).t||'';
-    if(v && v!==lastCmd){ if(lastCmd) sweep('أمر فوري من اللوحة'); lastCmd=v; }
+  /* النبضات الحية — مصدر العرض للجميع */
+  db.collection('hb').onSnapshot(function(s){
+    s.docChanges().forEach(function(ch){
+      if(ch.type==='removed') delete HB[ch.doc.id];
+      else HB[ch.doc.id]=ch.doc.data()||{};
+    });
+    $('last').textContent='آخر بيانات: '+new Date().toLocaleTimeString('ar-EG');
+    paint();
   });
-  setInterval(function(){
-    left--; $('cd').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
-    if(left<=0) sweep('جولة دورية');
-  },1000);
-  sweep('جولة البدء');
+  if(CAN_PROBE){
+    db.collection('settings').doc('hbcmd').onSnapshot(function(d){
+      var v=(d.data()||{}).t||'';
+      if(v && v!==lastCmd){ if(lastCmd) sweep('أمر فوري من اللوحة'); lastCmd=v; }
+    });
+    setInterval(function(){
+      left--; $('cd').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+      if(left<=0) sweep('جولة دورية');
+    },1000);
+    sweep('جولة البدء');
+  }
+  setInterval(paint, 30000); /* تحديث أعمار الفواصل */
 }
 
-/* «نبضة» متصفح: نجاح الوصول الشبكي = متصل ولو رُفضت القراءة — والفشل/المهلة = غير متصل */
 function ping(ip){
   return new Promise(function(res){
-    var ac=new AbortController(), t=setTimeout(function(){ ac.abort(); },3500);
+    var t0=Date.now(), ac=new AbortController(), tm=setTimeout(function(){ ac.abort(); },3500);
     fetch('http://'+ip+'/', {mode:'no-cors', cache:'no-store', signal:ac.signal})
-      .then(function(){ clearTimeout(t); res(true); })
-      .catch(function(){ clearTimeout(t); res(false); });
+      .then(function(){ clearTimeout(tm); res({up:true, ms:Date.now()-t0}); })
+      .catch(function(){ clearTimeout(tm); res({up:false, ms:Date.now()-t0}); });
   });
 }
 
 async function sweep(reason){
-  if(busy || !DEV.length){ left=TICK; return; }
+  if(!CAN_PROBE || busy) { left=TICK; return; }
+  var jobs=[]; Object.keys(PTS).forEach(function(site){
+    KINDS.forEach(function(k){ var ip=PTS[site][k[0]]; if(ip) jobs.push({site:site,kind:k[0],klabel:k[1],ip:String(ip).trim()}); });
+  });
+  if(!jobs.length){ left=TICK; return; }
   busy=true; left=TICK; $('st').textContent='يفحص… ('+reason+')';
-  var R={}, i=0, now=new Date().toISOString();
-  async function worker(){
-    while(i<DEV.length){
-      var d=DEV[i++]; var up=await ping(d.ip);
-      R[d.site+'__'+d.kind]={site:d.site,kind:d.kind,klabel:d.klabel,ip:d.ip,st:up?'up':'down',ts:now,by:'prober'};
-    }
-  }
+  var now=new Date().toISOString();
+  /* لا تكرار: كل عنوان يُفحص مرة واحدة وتُعمَّم نتيجته على أجهزته */
+  var uniq={}; jobs.forEach(function(j){ (uniq[j.ip]=uniq[j.ip]||[]).push(j); });
+  var ips=Object.keys(uniq), RES={}, i=0;
+  async function worker(){ while(i<ips.length){ var ip=ips[i++]; RES[ip]=await ping(ip); } }
   await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
+  /* حارس العاصفة: كل العناوين ساقطة والرفض فوري = الشبكة غير مرئية — لا كتابة ولا إنذارات */
+  var vals=Object.values(RES), allDown=vals.every(function(r){return !r.up;}),
+      fast=vals.every(function(r){return r.ms<150;});
+  if(allDown && fast && vals.length>=2){
+    busy=false; $('st').textContent='⚠ الشبكة غير مرئية من هذا الجهاز — لم تُكتب نتائج';
+    return;
+  }
   var b=db.batch();
-  Object.keys(R).forEach(function(k){
-    var r=R[k], pv=PREV[k];
-    /* since: بداية الحالة الراهنة — تُحفظ ما دامت الحالة لم تتغيّر */
-    r.since = (pv && pv.st===r.st && pv.since) ? pv.since : now;
+  jobs.forEach(function(j){
+    var k=j.site+'__'+j.kind, up=RES[j.ip].up;
+    var r={site:j.site,kind:j.kind,klabel:j.klabel,ip:j.ip,st:up?'up':'down',ts:now,by:'prober'};
+    var pv=PREV[k]||HB[k];
+    r.since=(pv && pv.st===r.st && pv.since)?pv.since:now;
     if(pv && pv.st!==r.st){
-      /* انتقال: سجل حدث تحليلات */
       b.set(db.collection('hbev').doc(), {site:r.site,kind:r.kind,ip:r.ip,from:pv.st,to:r.st,ts:now});
       if(r.st==='up' && ALERTED[k]){
-        b.set(db.collection('events').doc(), { t:firebase.firestore.FieldValue.serverTimestamp(),
-          by:'أداة الفحص', role:'system', txt:'✅ عاد للاتصال: '+r.site+' — '+r.klabel });
+        b.set(db.collection('events').doc(), {t:firebase.firestore.FieldValue.serverTimestamp(),
+          by:'أداة الفحص', role:'system', txt:'✅ عاد للاتصال: '+r.site+' — '+r.klabel});
         delete ALERTED[k];
       }
     }
-    /* إنذار مبكر: فاصل تجاوز ١٠ دقائق — مرة واحدة لكل انقطاع */
     if(r.st==='down' && !ALERTED[k]){
       var mn=Math.round((Date.parse(now)-Date.parse(r.since))/60000);
       if(mn>=10){
         ALERTED[k]=1;
-        b.set(db.collection('events').doc(), { t:firebase.firestore.FieldValue.serverTimestamp(),
+        b.set(db.collection('events').doc(), {t:firebase.firestore.FieldValue.serverTimestamp(),
           by:'أداة الفحص', role:'system',
-          txt:'⛔ انقطاع '+mn+' دقيقة: '+r.site+' — '+r.klabel+' ('+r.ip+') — يحتاج زيارة ميدانية' });
+          txt:'⛔ انقطاع '+mn+' دقيقة: '+r.site+' — '+r.klabel+' ('+r.ip+') — يحتاج زيارة ميدانية'});
       }
     }
     PREV[k]=r;
     b.set(db.collection('hb').doc(k), r);
   });
   try{ await b.commit(); }catch(e){ console.warn(e); }
-  $('st').textContent='جاهز'; $('last').textContent='آخر جولة: '+new Date().toLocaleTimeString('ar-EG');
-  busy=false; paint(R);
+  $('st').textContent = CAN_PROBE ? 'جاهز' : 'عرض حي';
+  busy=false;
 }
 
-var LASTR={};
-function paint(R){
-  LASTR=Object.assign(LASTR,R);
-  var t='<tr><th>النقطة</th><th>الجهاز</th><th>العنوان</th><th>الحالة</th><th>آخر فحص</th></tr>';
-  DEV.forEach(function(d){
-    var r=LASTR[d.site+'__'+d.kind];
-    t+='<tr><td>'+esc(d.site)+'</td><td>'+d.klabel+'</td><td class="ip">'+esc(d.ip)+'</td>'
-      +'<td>'+(r?(r.st==='up'?'<span class="up">متصل</span>':'<span class="down">غير متصل</span>'):'<span class="muted">—</span>')+'</td>'
-      +'<td class="muted">'+(r?new Date(r.ts).toLocaleTimeString('ar-EG'):'—')+'</td></tr>';
+/* لا تكرار في العرض: صف واحد لكل نقطة وثلاث خانات أجهزة */
+function cell(site, kind){
+  var ip=PTS[site][kind]; if(!ip) return '<td class="na">—</td>';
+  var h=HB[site+'__'+kind];
+  if(!h) return '<td class="na" title="'+esc(ip)+'">لم يُفحص</td>';
+  var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(h.since||h.ts).getTime())/60000)); }catch(e){}
+  return h.st==='up'
+    ? '<td class="up" title="'+esc(ip)+'">● متصل</td>'
+    : '<td class="down" title="'+esc(ip)+'">● منقطع '+(mn?('('+mn+' د)'):'')+'</td>';
+}
+function paint(){
+  var up=0,dn=0,na=0,ten=0,badPts={};
+  Object.keys(PTS).forEach(function(site){
+    KINDS.forEach(function(k){
+      var ip=PTS[site][k[0]]; if(!ip) return;
+      var h=HB[site+'__'+k[0]];
+      if(!h){ na++; return; }
+      if(h.st==='up'){ up++; return; }
+      dn++; badPts[site]=1;
+      try{ if((Date.now()-new Date(h.since||h.ts).getTime())>=600000) ten++; }catch(e){}
+    });
   });
+  $('kUp').textContent=up; $('kDn').textContent=dn; $('kNa').textContent=na;
+  $('kTen').textContent=ten; $('kPts').textContent=Object.keys(badPts).length;
+  var sites=Object.keys(PTS).sort(function(a,b){
+    return (badPts[b]?1:0)-(badPts[a]?1:0) || (a>b?1:-1);
+  });
+  var t='<tr><th>النقطة</th><th>راوتر</th><th>قارئ</th><th>كاميرا</th></tr>';
+  sites.forEach(function(s){
+    t+='<tr'+(badPts[s]?' class="bad"':'')+'><td><b>'+esc(s)+'</b></td>'
+      +cell(s,'router')+cell(s,'reader')+cell(s,'camera')+'</tr>';
+  });
+  if(!sites.length) t+='<tr><td colspan="4" class="muted">لا نقاط بأجهزة مسجّلة بعد — سجّل عناوين الأجهزة من نافذة النقطة في التطبيق.</td></tr>';
   $('tb').innerHTML=t;
 }
 $('now').onclick=function(){ sweep('زر الأداة'); };
