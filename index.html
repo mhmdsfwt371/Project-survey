@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.28</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.29</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5206,6 +5206,9 @@ window.NSKCORE={
 .nsk-viewer .cp-new,.nsk-viewer .pendCard button{display:none!important}
 /* V13.26: المشرف يرى السجلات والأدوات — فيهما دليله وحالة مزامنته وكشوفه */
 body.nsk-sup #dCopy{display:none!important}
+/* V13.29: النسخ الاحتياطي والدمج والتصدير اليدوي أدوات إدارة — تُحجب عن المشرف */
+body.nsk-sup #bkBtn,body.nsk-sup #mgBtn,body.nsk-sup #expXls,
+body.nsk-sup #expPdf,body.nsk-sup #expCsv,body.nsk-sup #expPh{display:none!important}
 </style>
 <style id="nskViewCss">
 .nsk-viewer #fab,.nsk-viewer #save,.nsk-viewer #isave,.nsk-viewer #nsave,
