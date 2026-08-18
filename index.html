@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.26</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.27</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -3018,10 +3018,10 @@ window.openForm = function(id){
       } else if(STDK.indexOf(k)>=0 && rec.fixReq[k] && isEng){
         const ps='padding:6px 13px;border-radius:999px;font-size:11.5px;font-weight:800;cursor:pointer;';
         box.innerHTML='<span class="pv">'+esc(rec.fixReq[k].v)+'</span>'+
-          '<button type="button" class="apv" style="'+ps+
+          (nskEng()? '<button type="button" class="apv" style="'+ps+
             'background:rgba(58,214,160,.14);border:1px solid #3AD6A0;color:#3AD6A0;margin-inline-start:8px">اعتماد</button>'+
           '<button type="button" class="rjv" style="'+ps+
-            'background:rgba(224,82,82,.12);border:1px solid #E05252;color:#E05252;margin-inline-start:6px">رفض</button>';
+            'background:rgba(224,82,82,.12);border:1px solid #E05252;color:#E05252;margin-inline-start:6px">رفض</button>' : '');
         b.textContent='إلغاء'; b.classList.add('on');
       } else if(k==='company'){
         coPick(stdQ || rec.fix.company || (cur==='غير مسجّل'?'':cur),
@@ -7204,7 +7204,7 @@ window._netHtml = function(id){
   var any=net.router||net.reader||net.camera;
   return '<div class="pnet"><span class="pk">الأجهزة والشبكة:</span> '
     +(any ? (_hbChip(id,'router','راوتر',net.router)+_hbChip(id,'reader','قارئ',net.reader)+_hbChip(id,'camera','كاميرا',net.camera)) : '<span class="hbN">لا عناوين بعد</span>')
-    +' <a href="#" class="go" onclick="editNet(\''+id+'\');return false">عناوين الأجهزة</a></div>';
+    +(( (window.NSK_USER||{}).role==='viewer') ? '' : ' <a href="#" class="go" onclick="editNet(\''+id+'\');return false">عناوين الأجهزة</a>')+'</div>';
 };
 window.editNet = function(id){
   var old=document.getElementById('netOv'); if(old) old.remove();
@@ -7243,6 +7243,7 @@ window.editNet = function(id){
 };
 window._disHtml = function(id){
   var d=((inss[id]||{}).dis)||null;
+  var _cw=false; try{ var _u=window.NSK_USER||{}; _cw=(_u.role==='supervisor'||_u.role==='engineer'||_u.role==='admin'); }catch(e){}
   /* الفك لا يُتاح إلا لنقطة وُسمت «تم التركيب» — وما جُدول من قبل يبقى ظاهرًا */
   var _installed = ((recs[id]||{}).fstat==='blocked') || (((inss[id]||{}).status)==='مُركّب');
   if(!_installed && !d) return '';
@@ -7253,11 +7254,11 @@ window._disHtml = function(id){
   if(d.st==='مجدول'){
     return '<div class="pdis"><span class="pk">الفك:</span> <b style="color:#f97316">فك مجدول</b>'
       +' — فريق '+esc(d.team||'—')+(d.sched?' · '+esc(d.sched):'')
-      +'<div class="pst">'
+      +(_cw?'<div class="pst">'
       +'<a href="#" class="go" style="border-color:#3AD6A0;color:#3AD6A0" onclick="confirmDis(\''+id+'\',\'سليم\');return false">فُكّ — الجهاز سليم</a>'
       +'<a href="#" class="go" style="border-color:#F0655A;color:#F0655A" onclick="confirmDis(\''+id+'\',\'تالف\');return false">فُكّ — الجهاز تالف</a>'
       +(mgrRole?'<a href="#" class="go" onclick="cancelDis(\''+id+'\');return false">إلغاء الجدولة</a>':'')
-      +'</div></div>';
+      +'</div>':'')+'</div>';
   }
   return '<div class="pdis"><span class="pk">الفك:</span> <b style="color:#8b5cf6">تم الفك</b>'
     +' ('+esc(d.cond||'—')+') — '+esc(d.doneBy||'')+(d.doneAt?' · '+esc(String(d.doneAt).slice(0,10)):'')+'</div>';
@@ -7865,7 +7866,7 @@ function tabOf(sec){
 }
 function tabsFor(role){
   if(role==='viewer')     return ['watch'];
-  if(role==='supervisor') return ['watch','ops'];
+  if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
   return ['watch','plan','ops','adm'];
 }
 function curTab(){
