@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.13</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.14</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -4006,10 +4006,11 @@ function drawMgr(){
 }
 
 function drawOut(){
-  const done=Object.values(recs).length, np=Object.keys(props).length;
+  /* بعين «تمت الزيارة» نفسها — لا سجلات شبح ولا مقترحات */
+  const done=Object.values(recs).filter(function(r){ return r && (r.fstat==='done'||r.fstat==='draft'||r.fstat==='blocked'); }).length, np=Object.keys(props).length;
   const ph=Object.values(recs).reduce((a,r)=>a+Object.keys(r.photos||{}).length,0)
           +Object.values(props).reduce((a,r)=>a+Object.keys(r.photos||{}).length,0);
-  $('#oDone').textContent=(done+np).toLocaleString('ar-EG');
+  $('#oDone').textContent=done.toLocaleString('ar-EG');
   $('#oPh').textContent=ph.toLocaleString('ar-EG');
   let bytes=0;
   [...Object.values(recs),...Object.values(props)].forEach(r=>{
