@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.25</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.26</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -4006,7 +4006,12 @@ function drawMgr(){
           rlbl(r)+'</span></td></tr>';
     }).join('')+'</tbody></table></div>';
   var _db=$('#mgDrBtn'); if(_db) _db.onclick=function(){ window.mgDrafts(); };
-  var _dd=$('#mgDrDel'); if(_dd) _dd.onclick=function(){ window.wipeDrafts(); };
+  var _dd=$('#mgDrDel');
+  if(_dd){
+    var _mgr2=!!(window.NSK_USER && (NSK_USER.role==='engineer'||NSK_USER.role==='admin'));
+    _dd.style.display=_mgr2?'':'none';
+    if(_mgr2) _dd.onclick=function(){ window.wipeDrafts(); };
+  }
   var _mx=$('#mgXls');
   if(_mx){
     var _mgr=!!(window.NSK_USER && (NSK_USER.role==='engineer'||NSK_USER.role==='admin'));
@@ -5194,7 +5199,7 @@ window.NSKCORE={
 .pendCard button{border:1px solid var(--green,#3AD6A0);color:var(--green,#3AD6A0);background:none;border-radius:999px;padding:4px 11px;font:inherit;font-size:11px;cursor:pointer;margin-inline-start:5px}
 .pendCard button.no{border-color:#E05252;color:#E05252}
 .nsk-viewer .cp-new,.nsk-viewer .pendCard button{display:none!important}
-body.nsk-sup nav button[data-v="vMgr"],body.nsk-sup nav button[data-v="vOut"]{display:none!important}
+/* V13.26: المشرف يرى السجلات والأدوات — فيهما دليله وحالة مزامنته وكشوفه */
 body.nsk-sup #dCopy{display:none!important}
 </style>
 <style id="nskViewCss">
