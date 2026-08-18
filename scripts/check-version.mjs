@@ -15,7 +15,7 @@ function grab(file, re, what){
 }
 
 /* ١ — رقم النسخة في كل ملف */
-const app    = grab('index.html', /نسخة\s*(V\d+\.\d+)/, 'رقم النسخة من الهيدر');
+const app    = grab('index.html', /نسخة\s*(?:<\/[a-z]+>\s*)?(V\d+\.\d+)/, 'رقم النسخة من الهيدر');
 const cache  = grab('sw.js', /nusuk-survey-v(\d+\.\d+)/, 'سلسلة CACHE');
 const schema = grab('docs/api-schema.json', /"app_version"\s*:\s*"(V\d+\.\d+)"/, 'app_version');
 const sysmd  = grab('docs/system.md', /النسخة\s*`(V\d+\.\d+)`/, 'رقم النسخة');
