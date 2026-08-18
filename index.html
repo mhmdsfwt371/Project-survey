@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.15</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.16</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -2330,6 +2330,7 @@ function drawMap(){
     const light = z<13 || !b.contains(P0);
     if(z>=15 && r[0]!==focusId && !b.contains(P0)) return;
     var c = colOf(r[0]);
+    if(appMode==='install'){ const _dx=(inss[r[0]]||{}).dis; if(_dx){ c = _dx.st==='تم' ? '#8b5cf6' : '#f97316'; } }
     /* طبقة الشركات: اللون يتبع الشركة، وعند اختيار شركات تُخفى ما عداها */
     if(CO_LAYER){
       var _co=window.coOf(r);
@@ -2374,6 +2375,7 @@ function drawMap(){
             ';color:'+(on?'#0A0B0D':SC[o[0]])+(on?';background:'+SC[o[0]]:'')+
             '" onclick="setFstat(\''+r[0]+'\',\''+o[0]+'\');return false">'+o[1]+'</a>';
         }).join('')+'</div>'+
+      (appMode==='install' ? (window._disHtml(r[0])+window._netHtml(r[0])) : '')+
       '<div class="pbtns">'+
         '<a class="go dir" target="_blank" rel="noopener" href="'+dir+'">اتجاهات</a>'+
         '<a class="go" href="#" onclick="startMove(\''+r[0]+'\');return false">تحريك</a>'+
@@ -5086,6 +5088,13 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+.hbC{display:inline-block;border:1px solid;border-radius:8px;padding:2px 7px;margin:2px 3px 2px 0;font-size:10px;font-weight:800}
+.hbN{color:var(--muted,#8a9199);font-size:11px}
+.pnet,.pdis{margin-top:7px;border-top:1px dashed var(--line,#2c3a34);padding-top:6px}
+#netOv{position:fixed;inset:0;z-index:9750;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center}
+#netOv .netL{display:block;margin:8px 0;font-weight:700}
+#netOv .netL input{display:block;width:100%;margin-top:4px;direction:ltr;text-align:left}
+
 #nskWaChip{position:fixed;bottom:76px;inset-inline-start:14px;z-index:9500;background:#1f6f43;color:#fff;
   border:1px solid #2c9c5e;border-radius:22px;padding:10px 16px;font-weight:800;font-size:13px;
   box-shadow:0 4px 18px rgba(0,0,0,.45);cursor:pointer}
@@ -6045,6 +6054,17 @@ function start(){
   });
   live('photos', function(ok, bad){
     onSnapshot(collection(db,'photos'), function(s){ ok(); applyPhotoSnap(s); }, bad);
+  });
+  live('hb', function(ok, bad){
+    onSnapshot(collection(db,'hb'), function(s){
+      ok();
+      s.docChanges().forEach(function(ch){
+        window.NSKHB = window.NSKHB || {};
+        if(ch.type==='removed'){ delete window.NSKHB[ch.doc.id]; }
+        else { window.NSKHB[ch.doc.id] = ch.doc.data() || {}; }
+      });
+      try{ if(window.nskSync) window.nskSync(); }catch(e){}
+    }, bad);
   });
   live('events', function(ok, bad){
     onSnapshot(query(collection(db,'events'), orderBy('t','desc'), limit(500)),
@@ -7094,6 +7114,97 @@ window.nskWaOffer=function(){
     };
   });
 };
+window.NSKHB = window.NSKHB || {};
+function _hbOf(id, kind){ return (window.NSKHB||{})[id+'__'+kind] || null; }
+function _hbChip(id, kind, label, ip){
+  if(!ip) return '';
+  var h=_hbOf(id,kind), col='#8a9199', txt='لم يُفحص', age='';
+  if(h){
+    col = h.st==='up' ? '#3AD6A0' : '#F0655A';
+    txt = h.st==='up' ? 'متصل' : 'غير متصل';
+    try{ var mn=Math.max(0,Math.round((Date.now()-new Date(h.ts).getTime())/60000));
+         age=' · منذ '+arS(mn)+' دقيقة'; }catch(e){}
+  }
+  return '<span class="hbC" style="border-color:'+col+';color:'+col+'">'+label+' '+txt+age+'</span>';
+}
+window._netHtml = function(id){
+  var net=((inss[id]||{}).net)||{};
+  var any=net.router||net.reader||net.camera;
+  return '<div class="pnet"><span class="pk">الأجهزة والشبكة:</span> '
+    +(any ? (_hbChip(id,'router','راوتر',net.router)+_hbChip(id,'reader','قارئ',net.reader)+_hbChip(id,'camera','كاميرا',net.camera)) : '<span class="hbN">لا عناوين بعد</span>')
+    +' <a href="#" class="go" onclick="editNet(\''+id+'\');return false">عناوين الأجهزة</a></div>';
+};
+window.editNet = function(id){
+  var old=document.getElementById('netOv'); if(old) old.remove();
+  var net=((inss[id]||{}).net)||{};
+  var ov=document.createElement('div'); ov.id='netOv';
+  ov.innerHTML='<div class="waB"><div class="waH"><b>🛜 عناوين الأجهزة — '+esc(id)+'</b>'
+    +'<button type="button" class="nskX" id="netX" aria-label="إغلاق">✕</button></div>'
+    +[['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].map(function(d){
+        return '<label class="netL">'+d[1]+'<input id="net_'+d[0]+'" inputmode="decimal" placeholder="192.168.1.10 أو 10.0.0.5:8080" value="'+esc(net[d[0]]||'')+'"></label>';
+      }).join('')
+    +'<button type="button" class="dBtn" id="netSave" style="margin-top:12px">حفظ</button></div>';
+  document.body.appendChild(ov);
+  ov.onclick=function(e){ if(e.target===ov) ov.remove(); };
+  ov.querySelector('#netX').onclick=function(){ ov.remove(); };
+  ov.querySelector('#netSave').onclick=function(){
+    var rec=inss[id]||{id:id};
+    rec.net={ router:String(document.getElementById('net_router').value||'').trim(),
+              reader:String(document.getElementById('net_reader').value||'').trim(),
+              camera:String(document.getElementById('net_camera').value||'').trim() };
+    C.set('inss',id,rec);
+    try{ window.storage.set('ins:'+id, JSON.stringify(rec), false); }catch(e){}
+    try{ if(window.NSKSYNC) NSKSYNC.push('inss',id,rec); }catch(e){}
+    try{ if(window.NSKSYNC) NSKSYNC.log('تحديث عناوين الأجهزة — '+id); }catch(e){}
+    ov.remove(); toast('حُفظت العناوين ✓'); try{ drawMap(); }catch(e){}
+  };
+};
+window._disHtml = function(id){
+  var d=((inss[id]||{}).dis)||null;
+  var mgrRole=false; try{ var u=window.NSK_USER||{}; mgrRole=(u.role==='engineer'||u.role==='admin'); }catch(e){}
+  if(!d){
+    return mgrRole ? '<div class="pdis"><a href="#" class="go" onclick="schedDis(\''+id+'\');return false">🔧 جدولة فك</a></div>' : '';
+  }
+  if(d.st==='مجدول'){
+    return '<div class="pdis"><span class="pk">الفك:</span> <b style="color:#f97316">فك مجدول</b>'
+      +' — فريق '+esc(d.team||'—')+(d.sched?' · '+esc(d.sched):'')
+      +'<div class="pst">'
+      +'<a href="#" class="go" style="border-color:#3AD6A0;color:#3AD6A0" onclick="confirmDis(\''+id+'\',\'سليم\');return false">فُكّ — الجهاز سليم</a>'
+      +'<a href="#" class="go" style="border-color:#F0655A;color:#F0655A" onclick="confirmDis(\''+id+'\',\'تالف\');return false">فُكّ — الجهاز تالف</a>'
+      +(mgrRole?'<a href="#" class="go" onclick="cancelDis(\''+id+'\');return false">إلغاء الجدولة</a>':'')
+      +'</div></div>';
+  }
+  return '<div class="pdis"><span class="pk">الفك:</span> <b style="color:#8b5cf6">تم الفك</b>'
+    +' ('+esc(d.cond||'—')+') — '+esc(d.doneBy||'')+(d.doneAt?' · '+esc(String(d.doneAt).slice(0,10)):'')+'</div>';
+};
+function _disSave(id, rec, msg){
+  C.set('inss',id,rec);
+  try{ window.storage.set('ins:'+id, JSON.stringify(rec), false); }catch(e){}
+  try{ if(window.NSKSYNC) NSKSYNC.push('inss',id,rec); }catch(e){}
+  try{ if(window.NSKSYNC) NSKSYNC.log(msg); }catch(e){}
+  toast('تم ✓'); try{ drawMap(); }catch(e){} try{ window.nskSync(); }catch(e){}
+}
+window.schedDis = function(id){
+  pickTeam(function(t){
+    var def=new Date(Date.now()+3*864e5).toISOString().slice(0,10);
+    var dt=prompt('تاريخ الفك (YYYY-MM-DD)', def); if(dt===null) return;
+    var rec=inss[id]||{id:id};
+    rec.dis={ st:'مجدول', team:String(t||'').trim(), sched:String(dt||'').trim(),
+              by:(me||''), ts:new Date().toISOString() };
+    _disSave(id, rec, 'جدولة فك — '+id+' · فريق '+t);
+  });
+};
+window.confirmDis = function(id, cond){
+  var rec=inss[id]||{id:id};
+  rec.dis=Object.assign({}, rec.dis||{}, { st:'تم', cond:cond,
+    doneBy:(me||''), doneAt:new Date().toISOString() });
+  _disSave(id, rec, 'تم الفك ('+cond+') — '+id);
+};
+window.cancelDis = function(id){
+  var rec=inss[id]; if(!rec||!rec.dis) return;
+  delete rec.dis;
+  _disSave(id, rec, 'إلغاء جدولة فك — '+id);
+};
 /* زر واحد لكل فريق — يفتح واتساب على محادثة القائد والرسالة جاهزة */
 window.sendTeam=function(team, raw){
   var m=teamMsg(team);
@@ -7655,9 +7766,9 @@ function copySummary(){
 }
 /* V4.9: تقسيم اللوحة لتبويبات — القسم يُخفى لا يُعاد بناؤه */
 var DTABS=[
-  ['watch','متابعة',      ['over','pace','inst','daily','reg','co','chalm'],      'الصورة التنفيذية — للوزارة والإدارة'],
+  ['watch','متابعة',      ['over','pace','inst','daily','reg','co','chalm','dis'],      'الصورة التنفيذية — للوزارة والإدارة'],
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
-  ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race'],
+  ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
   ['adm','النظام',        ['sys','ev'],                                   'سجل الأحداث وسلامة البيانات وإعادة الضبط']
 ];
@@ -8433,6 +8544,65 @@ function render(){
      كلما بدّل مفتاحًا. يُحفظ الموضع ويُعاد بعد الرسم في الإطار نفسه. */
   var _sc=$i('nskDash'), _y=0, _wy=0;
   try{ _y=_sc?_sc.scrollTop:0; _wy=window.scrollY||0; }catch(e){}
+
+  /* ═══ الفك بعد الموسم — للوزارة والإدارة ═══ */
+  (function(){
+    var C=window.NSKCORE, dbx=C.db(), _ins=C.all('inss');
+    var installed=0, dSch=0, dOkS=0, dOkT=0, recent=[];
+    dbx.d.forEach(function(r){
+      var iv=_ins[r[0]]; if(!iv) return;
+      if(iv.status==='مُركّب') installed++;
+      var d=iv.dis; if(!d) return;
+      if(d.st==='مجدول') dSch++;
+      else if(d.st==='تم'){ if(d.cond==='تالف') dOkT++; else dOkS++;
+        recent.push({sg:String(r[9]||r[0]), tm:d.team||'—', c:d.cond||'—', t:String(d.doneAt||'').slice(0,10)}); }
+    });
+    var dAll=dOkS+dOkT;
+    h+='<section class="dSec" data-sec="dis"><div class="dT2">🧩 الفك بعد الموسم</div>';
+    h+='<div class="dRow">'+card(installed,'مُركّب قائم','#3AD6A0')+card(dSch,'فك مجدول','#f97316')
+      +card(dOkS,'فُكّ — سليم','#8b5cf6')+card(dOkT,'فُكّ — تالف','#F0655A')+'</div>';
+    h+=barRow('فُكّ من المُركّب', dAll, installed+dAll, '#8b5cf6');
+    if(recent.length){
+      recent.sort(function(a,b){ return a.t<b.t?1:-1; });
+      h+='<table class="dT"><tr><th>الشاخص</th><th>الفريق</th><th>الحالة</th><th>التاريخ</th></tr>'
+        +recent.slice(0,10).map(function(x){ return '<tr><td>'+_dvEsc(x.sg)+'</td><td>'+_dvEsc(x.tm)
+          +'</td><td>'+_dvEsc(x.c)+'</td><td>'+_dvEsc(x.t)+'</td></tr>'; }).join('')+'</table>';
+    } else {
+      h+='<p class="dTs">لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.</p>';
+    }
+    h+='</section>';
+  })();
+  /* ═══ صحة الأجهزة — راوتر وقارئ وكاميرا لكل نقطة ═══ */
+  (function(){
+    var C=window.NSKCORE, dbx=C.db(), _ins=C.all('inss'), HB=window.NSKHB||{};
+    var up=0, down=0, unk=0, downs=[];
+    dbx.d.forEach(function(r){
+      var net=((_ins[r[0]]||{}).net)||{};
+      [['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].forEach(function(dv){
+        var ip=net[dv[0]]; if(!ip) return;
+        var hb=HB[r[0]+'__'+dv[0]];
+        if(!hb){ unk++; return; }
+        if(hb.st==='up'){ up++; return; }
+        down++;
+        var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(hb.ts).getTime())/60000)); }catch(e){}
+        downs.push({sg:String(r[9]||r[0]), d:dv[1], ip:ip, mn:mn});
+      });
+    });
+    h+='<section class="dSec" data-sec="hb"><div class="dT2">🩺 صحة الأجهزة</div>';
+    h+='<div class="dRow">'+card(up,'متصل','#3AD6A0')+card(down,'غير متصل','#F0655A')+card(unk,'لم يُفحص','#8a9199')+'</div>';
+    if(downs.length){
+      downs.sort(function(a,b){ return b.mn-a.mn; });
+      h+='<table class="dT"><tr><th>الشاخص</th><th>الجهاز</th><th>العنوان</th><th>منذ (دقيقة)</th></tr>'
+        +downs.slice(0,15).map(function(x){ return '<tr><td>'+_dvEsc(x.sg)+'</td><td>'+x.d
+          +'</td><td style="direction:ltr">'+_dvEsc(x.ip)+'</td><td>'+AR(x.mn)+'</td></tr>'; }).join('')+'</table>';
+    } else {
+      h+='<p class="dTs">لا أجهزة ساقطة الآن.</p>';
+    }
+    h+='<div class="dRow"><button type="button" class="dBtn" id="hbNow">📡 تحديث كل النقاط الآن</button>'
+      +'<a class="dBtn" href="tools/prober.html" target="_blank" rel="noopener">🛠 أداة الفحص</a></div>';
+    h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.</p>';
+    h+='</section>';
+  })();
   $i('dWrap').innerHTML=h;
   try{
     if(_sc && _y) _sc.scrollTop=_y;
@@ -8519,6 +8689,14 @@ function render(){
     saveCoTel(function(c){ c.m[n]=p; });
     try{ if(window.NSKSYNC) NSKSYNC.log('إضافة رقم شركة: '+n); }catch(e){}
     render();
+  };
+  var _hbN=$i('hbNow'); if(_hbN) _hbN.onclick=function(){
+    try{
+      var C=window.NSKCORE, c={t:new Date().toISOString(), by:(window.NSK_USER||{}).email||''};
+      C.set('settings','hbcmd',c);
+      if(window.NSKSYNC) NSKSYNC.push('settings','hbcmd',c);
+      toast('أُرسل أمر فحص فوري لأداة المكتب ✓');
+    }catch(e){}
   };
   Array.prototype.forEach.call(document.querySelectorAll('.cotDel'), function(b){
     b.onclick=function(){
@@ -9317,7 +9495,7 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
   }
   var btn=null;
   function upd(){
-    var rows=myRows();
+    var rows=myRowsAll();
     if(!rows.length){ if(btn) btn.style.display='none'; return; }
     if(!btn){
       btn=document.createElement('button'); btn.id='nskMine'; btn.type='button';
@@ -9327,8 +9505,24 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
     btn.style.display='block';
     btn.textContent='📋 جدولي ('+arS(rows.length)+')';
   }
+  function myRowsAll(){
+    var out=myRows();
+    try{
+      var C=window.NSKCORE, dbx=C.db(), inss=C.all('inss');
+      var mine=window.myTeams?window.myTeams():[];
+      dbx.d.forEach(function(r){
+        var id=r[0], ins=inss[id]; if(!ins||!ins.dis) return;
+        if(ins.dis.st!=='مجدول') return;
+        var tm=String(ins.dis.team||'').trim();
+        if(mine.indexOf(tm)===-1) return;
+        out.push({ id:id, z:r[21]||'', sq:String(r[8]||'—'), sg:String(r[9]||id),
+                   n:'🔧 فك · '+(nameOf?nameOf(r):id), la:r[5], lo:r[6] });
+      });
+    }catch(e){}
+    return out;
+  }
   function openMine(){
-    var rows=myRows();
+    var rows=myRowsAll();
     var ov=document.getElementById('nskMineOv');
     if(!ov){ ov=document.createElement('div'); ov.id='nskMineOv';
       document.body.appendChild(ov);
@@ -10204,7 +10398,8 @@ window.NSKI18N = (function(){
   'الغرف':'Rooms', 'الطول':'Length', 'العرض':'Width', 'الارتفاع':'Height', 'مدني':'Civil', 'هوائي':'Antenna', 'ساعات':'Hours', 'اكتمال السجل':'Record completeness', 'إظهار':'Show', 'إخفاء':'Hide', 'حذف نهائيًا':'Delete permanently', 'التصنيف يُحدَّد ميدانيًا':'Category set in the field', 'ابحث بالمعرّف أو الشاخص أو الشركة…':'Search by ID, signpost or company…', 'اختر الشركات':'Choose companies', 'ابحث باسم الشركة':'Search by company name', 'مسح التحديد':'Clear selection', 'سجل الأحداث وسلامة البيانات وإعادة الضبط':'Event log, data integrity and reset', 'الصورة التنفيذية — للوزارة والإدارة':'Executive picture — for the ministry and management', 'سلامة البيانات — المشرف العام':'Data integrity — general supervisor', 'تغييرات لم تُزامن بعد':'Changes not yet synced', 'مواقع بلا إحداثيات':'Sites without coordinates', 'سيريالات مكرّرة':'Duplicate serials', 'التطبيق مفتوح':'App is open', 'التطبيق مغلق':'App is closed', 'يمكنك إيقاف الوصول لكل المستخدمين فورًا — وأنت وحدك تظل تعمل.':'You can cut access for all users instantly — you alone keep working.', 'إغلاق التطبيق':'Close the app', 'فتح التطبيق':'Open the app', 'إغلاق التطبيق لكل المستخدمين':'Close the app for all users', 'كل التغييرات مؤكَّدة على الخادم ✓':'All changes confirmed on the server ✓', 'إعادة ضبط البيانات — لا يمكن التراجع':'Data reset — cannot be undone', 'صفِّر كل الأرقام أيضًا: الفرق والمواعيد المستهدفة والعُهدة وسجل الأجهزة':'Also zero everything: teams, target dates, custody and the device log', '— ألغ العلامة للاحتفاظ بها':'— untick to keep them', 'للتأكيد اكتب: مسح نهائي':'To confirm, type: مسح نهائي', 'تنفيذ إعادة الضبط':'Run the reset', 'بحث حر: شاخص / موقع / نص':'Free search: signpost / site / text', 'إلى':'to', 'قائد الفريق':'Team leader', '— اختر حسابًا —':'— choose an account —', 'إضافة':'Add', 'الاسم':'Name', 'أرقام المكتب — تظهر للفني في زر «📣 بلّغ» داخل النقطة':'Office numbers — shown to the technician in the “📣 Report” button inside the point', 'الرقم بصيغة دولية بلا + ولا أصفار — مثال: 9665xxxxxxxx. كل بلاغ يُسجَّل في سجل الأحداث حتى لو لم يُفتح واتساب.':'International format, no + and no leading zeros — e.g. 9665xxxxxxxx. Every report is logged in the event log even if WhatsApp never opens.', 'مُسند نشط':'Actively assigned', 'مُدقّق':'Verified', 'لا توجد نقاط مجدولة بعد — أول ما تبدأ الجدولة سيظهر التوزيع هنا.':'No points scheduled yet — the distribution appears here once scheduling starts.', 'لا توجد نقاط مجدولة لهذه الشركة':'No points scheduled for this company', 'إسناد نقاط مفردة — اختر الفني ثم علّم النقاط':'Assign single points — choose the technician, then mark the points', 'الفني':'Technician', 'بحث: شاخص / مربع / مشعر':'Search: signpost / square / zone', 'بلا فريق فقط':'Unassigned only', 'تحديد كل الظاهر':'Select all shown', 'لا توجد نقاط مطابقة — جرّب توسيع البحث أو ألغِ «بلا فريق فقط».':'No matching points — widen the search or untick “Unassigned only”.', 'عُهدة الأجهزة — القارئات مع الفرق والمخزن':'Device custody — readers with teams and the warehouse', 'حسب شركة الخدمة — الأقل إنجازًا أولًا':'By service company — least progress first', 'التقدم':'Progress', 'لا توجد عمليات تركيب مسجّلة خلال آخر ١٤ يوم — سيظهر الرسم مع أول تركيب.':'No installations recorded in the last 14 days — the chart appears with the first one.', 'حدّد الموعد المستهدف ليُحسب المطلوب يوميًا.':'Set the target date so the daily requirement can be computed.', 'لم يُحدَّد موعد مستهدف — يُضبط من تبويب «تخطيط».':'No target date set — set it from the “Planning” tab.', 'تحدِّ ظهر':'Challenges raised', 'عُولج':'Resolved', 'ما زال قائمًا':'Still open', 'نسبة المعالجة':'Resolution rate', 'باقٍ':'left', 'قائم في منى':'Open in Mina', 'قائم في عرفات':'Open in Arafat', 'قائم في مزدلفة':'Open in Muzdalifah', 'قائم وله وصف تفصيلي':'Open with detailed description', 'لا تحديات مسجّلة بعد.':'No challenges recorded yet.', 'يكتبها المشرف في نموذج المسح — تصنيفًا ووصفًا حرًّا لما يحتاجه الموقع. وتظهر هنا فورًا: موضعها ونوعها ونصّها، وتُعدّ معالجة حين يُركّب الموقع.':'The supervisor writes them in the survey form — a category and free description of what the site needs. They appear here instantly: where, what kind and the text — and count as resolved once the site is installed.',
   'مخفيّ:':'Hidden:', 'سجلًا فُتح ولم تكتمل زيارته — لا يظهر هنا حتى تُسجَّل الزيارة.':'record(s) opened without a completed visit — not shown here until the visit is logged.', 'سجلًا لم تكتمل زيارته.':'record(s) with incomplete visit.', 'تحدٍّ ظهر':'Challenges raised', 'المشعر / النوع':'Zone / type',
   'أرقام شركات الخدمة — للإشعار الفوري عند جدولة مواقعها':'Service-company numbers — instant notice when their sites are scheduled', 'لا أرقام شركات بعد — بالرقم تصل الشركة رسالة واتساب جاهزة فور جدولة مواقعها.':'No company numbers yet — with a number the company gets a ready WhatsApp message the moment its sites are scheduled.', '📲 إشعارات الجدولة عبر واتساب':'📲 Scheduling notices via WhatsApp', 'قادة الفرق':'Team leaders', 'شركات الخدمة':'Service companies', 'لا فرق في هذه الدفعة.':'No teams in this batch.', 'لا شركات لمواقع هذه الدفعة.':'No companies for the sites in this batch.', 'تم — إخفاء الشارة':'Done — hide the badge',
-  'لم يصل أي مسح بعد.':'No surveys have arrived yet.', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'Open any site from the «Sites» tab, fill in the measurements and save — it will appear here instantly.', 'أول عملية مسح تُشعل السباق':'The first survey ignites the race', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'Delivery of the scheduled — installed out of all scheduled', 'نسبة التركيب من إجمالي المشروع':'Installation share of the whole project', 'معدل التركيب اليومي — آخر ١٤ يوم':'Daily installation rate — last 14 days', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'No challenges recorded yet — gathered automatically from survey forms the moment they are saved.', 'المتعذّر والمواقع الراكدة — بالعمر':'Blocked and stagnant sites — by age', 'متعذّر قائم':'Blocked, open', 'أقدم تعذّر (يوم)':'Oldest blockage (days)', 'راكد ٥+ أيام بلا حركة':'Stagnant 5+ days without movement', 'المتعذّر — الأقدم أولًا':'Blocked — oldest first', 'تعارضات تحتاج تدقيقًا':'Conflicts needing review', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'Pipeline healthy: everything scheduled is surveyed, and no surveyed site is left without scheduling', 'ساعات متبقية':'Hours left', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'Pipeline health — survey → scheduling → installation', 'إشعار الشركات بمواعيد التركيب':'Notifying companies of installation dates', 'المسوّدات الناقصة':'Incomplete drafts', 'إعادة تركيب ١٤٤٧':'1447 re-install', 'إطار معدني جديد':'New metal frame', 'نقطة ممر جديدة':'New corridor point', 'تفعيل كاميرا قائمة':'Activate an existing camera', 'ترقية كاميرا':'Camera upgrade', 'خارج النطاق':'Out of scope', 'آخر مزامنة:':'Last sync:', 'الأرقام لحظية من الميدان':'figures live from the field', 'نشاط اليوم:':'Today\'s activity:', 'من أصل':'of', 'عنصرًا ميدانيًا':'field members', 'مسح اليوم':'surveys today', 'من مطلوب':'of the required', 'تركيب اليوم':'installs today', 'آخر عملية':'last action', 'مقترحات بانتظار الاعتماد:':'proposals awaiting approval:', 'وباقي':'…and', 'موقع. استخدم البحث.':'more sites. Use search.', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'more companies with higher rates — the full list is in the Excel export.', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'Remaining installation workload at the entered rates:', 'ساعة عمل تقريبًا.':'work hours, approximately.'
+  'لم يصل أي مسح بعد.':'No surveys have arrived yet.', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'Open any site from the «Sites» tab, fill in the measurements and save — it will appear here instantly.', 'أول عملية مسح تُشعل السباق':'The first survey ignites the race', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'Delivery of the scheduled — installed out of all scheduled', 'نسبة التركيب من إجمالي المشروع':'Installation share of the whole project', 'معدل التركيب اليومي — آخر ١٤ يوم':'Daily installation rate — last 14 days', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'No challenges recorded yet — gathered automatically from survey forms the moment they are saved.', 'المتعذّر والمواقع الراكدة — بالعمر':'Blocked and stagnant sites — by age', 'متعذّر قائم':'Blocked, open', 'أقدم تعذّر (يوم)':'Oldest blockage (days)', 'راكد ٥+ أيام بلا حركة':'Stagnant 5+ days without movement', 'المتعذّر — الأقدم أولًا':'Blocked — oldest first', 'تعارضات تحتاج تدقيقًا':'Conflicts needing review', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'Pipeline healthy: everything scheduled is surveyed, and no surveyed site is left without scheduling', 'ساعات متبقية':'Hours left', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'Pipeline health — survey → scheduling → installation', 'إشعار الشركات بمواعيد التركيب':'Notifying companies of installation dates', 'المسوّدات الناقصة':'Incomplete drafts', 'إعادة تركيب ١٤٤٧':'1447 re-install', 'إطار معدني جديد':'New metal frame', 'نقطة ممر جديدة':'New corridor point', 'تفعيل كاميرا قائمة':'Activate an existing camera', 'ترقية كاميرا':'Camera upgrade', 'خارج النطاق':'Out of scope', 'آخر مزامنة:':'Last sync:', 'الأرقام لحظية من الميدان':'figures live from the field', 'نشاط اليوم:':'Today\'s activity:', 'من أصل':'of', 'عنصرًا ميدانيًا':'field members', 'مسح اليوم':'surveys today', 'من مطلوب':'of the required', 'تركيب اليوم':'installs today', 'آخر عملية':'last action', 'مقترحات بانتظار الاعتماد:':'proposals awaiting approval:', 'وباقي':'…and', 'موقع. استخدم البحث.':'more sites. Use search.', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'more companies with higher rates — the full list is in the Excel export.', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'Remaining installation workload at the entered rates:', 'ساعة عمل تقريبًا.':'work hours, approximately.',
+  'جدولة فك':'Schedule dismantle', 'فك مجدول':'Dismantle scheduled', 'الفك:':'Dismantle:', 'فريق':'team', 'فُكّ — الجهاز سليم':'Dismantled — device intact', 'فُكّ — الجهاز تالف':'Dismantled — device damaged', 'تم الفك':'Dismantled', 'إلغاء الجدولة':'Cancel scheduling', 'الأجهزة والشبكة:':'Devices & network:', 'عناوين الأجهزة':'Device addresses', 'راوتر':'Router', 'لا عناوين بعد':'No addresses yet', 'لم يُفحص':'Not checked', 'غير متصل':'Offline', 'حفظ':'Save', 'الفك بعد الموسم':'Dismantling after the season', 'صحة الأجهزة':'Device health', 'مُركّب قائم':'Installed, standing', 'فُكّ — سليم':'Dismantled — intact', 'فُكّ — تالف':'Dismantled — damaged', 'فُكّ من المُركّب':'Dismantled out of installed', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'No dismantles yet — scheduled from the point popup in install mode.', 'لا أجهزة ساقطة الآن.':'No devices down right now.', 'الجهاز':'Device', 'العنوان':'Address', 'منذ (دقيقة)':'Since (min)', '📡 تحديث كل النقاط الآن':'📡 Refresh all points now', 'أداة الفحص':'Prober tool', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'Checked by the office machine on the field network via the prober tool every 5 minutes — the button orders an immediate sweep.', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'Immediate check ordered to the office tool ✓', 'حُفظت العناوين ✓':'Addresses saved ✓'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10382,7 +10577,8 @@ window.NSKI18N = (function(){
   'الغرف':'کمرے', 'الطول':'لمبائی', 'العرض':'چوڑائی', 'الارتفاع':'اونچائی', 'مدني':'سول', 'هوائي':'اینٹینا', 'ساعات':'گھنٹے', 'اكتمال السجل':'ریکارڈ کی تکمیل', 'إظهار':'دکھائیں', 'إخفاء':'چھپائیں', 'حذف نهائيًا':'مستقل حذف کریں', 'التصنيف يُحدَّد ميدانيًا':'زمرہ فیلڈ میں طے ہوگا', 'ابحث بالمعرّف أو الشاخص أو الشركة…':'شناخت، سائن پوسٹ یا کمپنی سے تلاش کریں…', 'اختر الشركات':'کمپنیاں چنیں', 'ابحث باسم الشركة':'کمپنی کے نام سے تلاش کریں', 'مسح التحديد':'انتخاب صاف کریں', 'سجل الأحداث وسلامة البيانات وإعادة الضبط':'ایونٹ لاگ، ڈیٹا سالمیت اور ری سیٹ', 'الصورة التنفيذية — للوزارة والإدارة':'ایگزیکٹو منظر — وزارت اور انتظامیہ کے لیے', 'سلامة البيانات — المشرف العام':'ڈیٹا سالمیت — جنرل سپروائزر', 'تغييرات لم تُزامن بعد':'ابھی غیر مزامن تبدیلیاں', 'مواقع بلا إحداثيات':'بغیر کوآرڈینیٹس مقامات', 'سيريالات مكرّرة':'دہرائے گئے سیریل', 'التطبيق مفتوح':'ایپ کھلی ہے', 'التطبيق مغلق':'ایپ بند ہے', 'يمكنك إيقاف الوصول لكل المستخدمين فورًا — وأنت وحدك تظل تعمل.':'آپ فوراً سب صارفین کی رسائی روک سکتے ہیں — صرف آپ کام جاری رکھتے ہیں۔', 'إغلاق التطبيق':'ایپ بند کریں', 'فتح التطبيق':'ایپ کھولیں', 'إغلاق التطبيق لكل المستخدمين':'سب صارفین کے لیے ایپ بند کریں', 'كل التغييرات مؤكَّدة على الخادم ✓':'تمام تبدیلیاں سرور پر مصدقہ ✓', 'إعادة ضبط البيانات — لا يمكن التراجع':'ڈیٹا ری سیٹ — واپسی ممکن نہیں', 'صفِّر كل الأرقام أيضًا: الفرق والمواعيد المستهدفة والعُهدة وسجل الأجهزة':'سب اعداد بھی صفر کریں: ٹیمیں، ہدف کی تاریخیں، تحویل اور ڈیوائس لاگ', '— ألغ العلامة للاحتفاظ بها':'— رکھنے کے لیے نشان ہٹائیں', 'للتأكيد اكتب: مسح نهائي':'تصدیق کے لیے لکھیں: مسح نهائي', 'تنفيذ إعادة الضبط':'ری سیٹ چلائیں', 'بحث حر: شاخص / موقع / نص':'آزاد تلاش: سائن پوسٹ / مقام / متن', 'إلى':'تا', 'قائد الفريق':'ٹیم لیڈر', '— اختر حسابًا —':'— اکاؤنٹ چنیں —', 'إضافة':'شامل کریں', 'الاسم':'نام', 'أرقام المكتب — تظهر للفني في زر «📣 بلّغ» داخل النقطة':'دفتر کے نمبر — پوائنٹ کے اندر «📣 اطلاع» بٹن میں فنی کو نظر آتے ہیں', 'الرقم بصيغة دولية بلا + ولا أصفار — مثال: 9665xxxxxxxx. كل بلاغ يُسجَّل في سجل الأحداث حتى لو لم يُفتح واتساب.':'بین الاقوامی فارمیٹ، بغیر + اور بغیر صفر — مثلاً 9665xxxxxxxx۔ ہر اطلاع ایونٹ لاگ میں درج ہوتی ہے چاہے واٹس ایپ نہ کھلے۔', 'مُسند نشط':'فعال تفویض', 'مُدقّق':'تصدیق شدہ', 'لا توجد نقاط مجدولة بعد — أول ما تبدأ الجدولة سيظهر التوزيع هنا.':'ابھی کوئی پوائنٹ شیڈول نہیں — شیڈولنگ شروع ہوتے ہی تقسیم یہاں نظر آئے گی۔', 'لا توجد نقاط مجدولة لهذه الشركة':'اس کمپنی کے لیے کوئی پوائنٹ شیڈول نہیں', 'إسناد نقاط مفردة — اختر الفني ثم علّم النقاط':'انفرادی پوائنٹس کی تفویض — فنی چنیں پھر پوائنٹس نشان زد کریں', 'الفني':'فنی', 'بحث: شاخص / مربع / مشعر':'تلاش: سائن پوسٹ / مربع / مشعر', 'بلا فريق فقط':'صرف بغیر ٹیم', 'تحديد كل الظاهر':'سب دکھائے گئے منتخب کریں', 'لا توجد نقاط مطابقة — جرّب توسيع البحث أو ألغِ «بلا فريق فقط».':'کوئی مماثل پوائنٹ نہیں — تلاش وسیع کریں یا «صرف بغیر ٹیم» ہٹائیں۔', 'عُهدة الأجهزة — القارئات مع الفرق والمخزن':'آلات کی تحویل — ریڈرز ٹیموں اور گودام کے پاس', 'حسب شركة الخدمة — الأقل إنجازًا أولًا':'سروس کمپنی کے لحاظ سے — کم ترین پیش رفت پہلے', 'التقدم':'پیش رفت', 'لا توجد عمليات تركيب مسجّلة خلال آخر ١٤ يوم — سيظهر الرسم مع أول تركيب.':'آخری 14 دنوں میں کوئی تنصیب درج نہیں — پہلی تنصیب کے ساتھ چارٹ نظر آئے گا۔', 'حدّد الموعد المستهدف ليُحسب المطلوب يوميًا.':'ہدف کی تاریخ مقرر کریں تاکہ روزانہ مطلوبہ حساب ہو سکے۔', 'لم يُحدَّد موعد مستهدف — يُضبط من تبويب «تخطيط».':'ہدف کی تاریخ مقرر نہیں — «Planning» ٹیب سے مقرر کریں۔', 'تحدِّ ظهر':'سامنے آئے چیلنج', 'عُولج':'حل ہوئے', 'ما زال قائمًا':'ابھی باقی', 'نسبة المعالجة':'حل کی شرح', 'باقٍ':'باقی', 'قائم في منى':'منیٰ میں باقی', 'قائم في عرفات':'عرفات میں باقی', 'قائم في مزدلفة':'مزدلفہ میں باقی', 'قائم وله وصف تفصيلي':'باقی مع تفصیلی وضاحت', 'لا تحديات مسجّلة بعد.':'ابھی کوئی چیلنج درج نہیں۔', 'يكتبها المشرف في نموذج المسح — تصنيفًا ووصفًا حرًّا لما يحتاجه الموقع. وتظهر هنا فورًا: موضعها ونوعها ونصّها، وتُعدّ معالجة حين يُركّب الموقع.':'سپروائزر انہیں سروے فارم میں لکھتا ہے — زمرہ اور آزاد وضاحت۔ یہ فوراً یہاں نظر آتے ہیں: جگہ، قسم اور متن — اور مقام کی تنصیب پر حل شمار ہوتے ہیں۔',
   'مخفيّ:':'مخفی:', 'سجلًا فُتح ولم تكتمل زيارته — لا يظهر هنا حتى تُسجَّل الزيارة.':'ریکارڈ کھلے مگر دورہ مکمل نہیں — دورہ درج ہونے تک یہاں نہیں دکھتے۔', 'سجلًا لم تكتمل زيارته.':'نامکمل دورے والے ریکارڈ۔', 'تحدٍّ ظهر':'سامنے آئے چیلنج', 'المشعر / النوع':'مشعر / قسم',
   'أرقام شركات الخدمة — للإشعار الفوري عند جدولة مواقعها':'سروس کمپنی نمبرز — مقامات کی شیڈولنگ پر فوری اطلاع', 'لا أرقام شركات بعد — بالرقم تصل الشركة رسالة واتساب جاهزة فور جدولة مواقعها.':'ابھی کمپنی نمبر نہیں — نمبر ہونے پر مقامات کی شیڈولنگ کے ساتھ ہی کمپنی کو تیار واٹس ایپ پیغام ملتا ہے۔', '📲 إشعارات الجدولة عبر واتساب':'📲 واٹس ایپ سے شیڈولنگ اطلاعات', 'قادة الفرق':'ٹیم لیڈرز', 'شركات الخدمة':'سروس کمپنیاں', 'لا فرق في هذه الدفعة.':'اس کھیپ میں کوئی ٹیم نہیں۔', 'لا شركات لمواقع هذه الدفعة.':'اس کھیپ کے مقامات کی کوئی کمپنی نہیں۔', 'تم — إخفاء الشارة':'ہو گیا — بیج چھپائیں',
-  'لم يصل أي مسح بعد.':'ابھی کوئی سروے موصول نہیں ہوا۔', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'«مقامات» ٹیب سے کوئی مقام کھولیں، پیمائشیں بھر کر محفوظ کریں — فوراً یہاں ظاہر ہوگا۔', 'أول عملية مسح تُشعل السباق':'پہلا سروے ریس کا آغاز کرتا ہے', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'شیڈول شدہ کی تکمیل — کل شیڈول میں سے نصب شدہ', 'نسبة التركيب من إجمالي المشروع':'پورے منصوبے میں تنصیب کا تناسب', 'معدل التركيب اليومي — آخر ١٤ يوم':'روزانہ تنصیب کی شرح — آخری 14 دن', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'ابھی کوئی چیلنج درج نہیں — سروے فارم محفوظ ہوتے ہی خودکار جمع ہوتے ہیں۔', 'المتعذّر والمواقع الراكدة — بالعمر':'رکے ہوئے اور جامد مقامات — عمر کے لحاظ سے', 'متعذّر قائم':'رکا ہوا، قائم', 'أقدم تعذّر (يوم)':'قدیم ترین رکاوٹ (دن)', 'راكد ٥+ أيام بلا حركة':'5+ دن بلا حرکت جامد', 'المتعذّر — الأقدم أولًا':'رکے ہوئے — قدیم ترین پہلے', 'تعارضات تحتاج تدقيقًا':'جانچ طلب تضادات', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'لائن درست: شیڈول شدہ سب سروے شدہ ہے، اور کوئی سروے شدہ بغیر شیڈولنگ نہیں چھوٹا', 'ساعات متبقية':'باقی گھنٹے', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'پائپ لائن کی صحت — سروے ← شیڈولنگ ← تنصیب', 'إشعار الشركات بمواعيد التركيب':'کمپنیوں کو تنصیب کی تاریخوں کی اطلاع', 'المسوّدات الناقصة':'نامکمل مسودات', 'إعادة تركيب ١٤٤٧':'1447 دوبارہ تنصیب', 'إطار معدني جديد':'نیا دھاتی فریم', 'نقطة ممر جديدة':'نیا راہداری پوائنٹ', 'تفعيل كاميرا قائمة':'موجودہ کیمرہ فعال کریں', 'ترقية كاميرا':'کیمرہ اپ گریڈ', 'خارج النطاق':'دائرہ کار سے باہر', 'آخر مزامنة:':'آخری مزامنت:', 'الأرقام لحظية من الميدان':'اعداد میدان سے براہِ راست', 'نشاط اليوم:':'آج کی سرگرمی:', 'من أصل':'میں سے', 'عنصرًا ميدانيًا':'میدانی ارکان', 'مسح اليوم':'آج سروے', 'من مطلوب':'مطلوبہ میں سے', 'تركيب اليوم':'آج تنصیب', 'آخر عملية':'آخری عمل', 'مقترحات بانتظار الاعتماد:':'منظوری کے منتظر تجاویز:', 'وباقي':'…اور مزید', 'موقع. استخدم البحث.':'مزید مقامات۔ تلاش استعمال کریں۔', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'کمپنیاں بلند شرحوں کے ساتھ — مکمل فہرست ایکسل ایکسپورٹ میں۔', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'درج شدہ شرحوں پر باقی تنصیبی کام:', 'ساعة عمل تقريبًا.':'گھنٹے کام، تقریباً۔'
+  'لم يصل أي مسح بعد.':'ابھی کوئی سروے موصول نہیں ہوا۔', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'«مقامات» ٹیب سے کوئی مقام کھولیں، پیمائشیں بھر کر محفوظ کریں — فوراً یہاں ظاہر ہوگا۔', 'أول عملية مسح تُشعل السباق':'پہلا سروے ریس کا آغاز کرتا ہے', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'شیڈول شدہ کی تکمیل — کل شیڈول میں سے نصب شدہ', 'نسبة التركيب من إجمالي المشروع':'پورے منصوبے میں تنصیب کا تناسب', 'معدل التركيب اليومي — آخر ١٤ يوم':'روزانہ تنصیب کی شرح — آخری 14 دن', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'ابھی کوئی چیلنج درج نہیں — سروے فارم محفوظ ہوتے ہی خودکار جمع ہوتے ہیں۔', 'المتعذّر والمواقع الراكدة — بالعمر':'رکے ہوئے اور جامد مقامات — عمر کے لحاظ سے', 'متعذّر قائم':'رکا ہوا، قائم', 'أقدم تعذّر (يوم)':'قدیم ترین رکاوٹ (دن)', 'راكد ٥+ أيام بلا حركة':'5+ دن بلا حرکت جامد', 'المتعذّر — الأقدم أولًا':'رکے ہوئے — قدیم ترین پہلے', 'تعارضات تحتاج تدقيقًا':'جانچ طلب تضادات', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'لائن درست: شیڈول شدہ سب سروے شدہ ہے، اور کوئی سروے شدہ بغیر شیڈولنگ نہیں چھوٹا', 'ساعات متبقية':'باقی گھنٹے', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'پائپ لائن کی صحت — سروے ← شیڈولنگ ← تنصیب', 'إشعار الشركات بمواعيد التركيب':'کمپنیوں کو تنصیب کی تاریخوں کی اطلاع', 'المسوّدات الناقصة':'نامکمل مسودات', 'إعادة تركيب ١٤٤٧':'1447 دوبارہ تنصیب', 'إطار معدني جديد':'نیا دھاتی فریم', 'نقطة ممر جديدة':'نیا راہداری پوائنٹ', 'تفعيل كاميرا قائمة':'موجودہ کیمرہ فعال کریں', 'ترقية كاميرا':'کیمرہ اپ گریڈ', 'خارج النطاق':'دائرہ کار سے باہر', 'آخر مزامنة:':'آخری مزامنت:', 'الأرقام لحظية من الميدان':'اعداد میدان سے براہِ راست', 'نشاط اليوم:':'آج کی سرگرمی:', 'من أصل':'میں سے', 'عنصرًا ميدانيًا':'میدانی ارکان', 'مسح اليوم':'آج سروے', 'من مطلوب':'مطلوبہ میں سے', 'تركيب اليوم':'آج تنصیب', 'آخر عملية':'آخری عمل', 'مقترحات بانتظار الاعتماد:':'منظوری کے منتظر تجاویز:', 'وباقي':'…اور مزید', 'موقع. استخدم البحث.':'مزید مقامات۔ تلاش استعمال کریں۔', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'کمپنیاں بلند شرحوں کے ساتھ — مکمل فہرست ایکسل ایکسپورٹ میں۔', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'درج شدہ شرحوں پر باقی تنصیبی کام:', 'ساعة عمل تقريبًا.':'گھنٹے کام، تقریباً۔',
+  'جدولة فك':'فک شیڈول کریں', 'فك مجدول':'فک شیڈول شدہ', 'الفك:':'فک:', 'فريق':'ٹیم', 'فُكّ — الجهاز سليم':'فک ہو گیا — آلہ درست', 'فُكّ — الجهاز تالف':'فک ہو گیا — آلہ خراب', 'تم الفك':'فک مکمل', 'إلغاء الجدولة':'شیڈول منسوخ کریں', 'الأجهزة والشبكة:':'آلات و نیٹ ورک:', 'عناوين الأجهزة':'آلات کے ایڈریس', 'راوتر':'راؤٹر', 'لا عناوين بعد':'ابھی کوئی ایڈریس نہیں', 'لم يُفحص':'چیک نہیں ہوا', 'غير متصل':'آف لائن', 'حفظ':'محفوظ کریں', 'الفك بعد الموسم':'موسم کے بعد فک', 'صحة الأجهزة':'آلات کی صحت', 'مُركّب قائم':'نصب شدہ، قائم', 'فُكّ — سليم':'فک — درست', 'فُكّ — تالف':'فک — خراب', 'فُكّ من المُركّب':'نصب شدہ میں سے فک', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'ابھی کوئی فک نہیں — تنصیب موڈ میں پوائنٹ ونڈو سے شیڈول ہوتا ہے۔', 'لا أجهزة ساقطة الآن.':'فی الحال کوئی آلہ ڈاؤن نہیں۔', 'الجهاز':'آلہ', 'العنوان':'ایڈریس', 'منذ (دقيقة)':'کتنے منٹ سے', '📡 تحديث كل النقاط الآن':'📡 تمام پوائنٹس ابھی تازہ کریں', 'أداة الفحص':'جانچ ٹول', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'فیلڈ نیٹ ورک سے جڑا دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے۔', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'دفتری ٹول کو فوری جانچ کا حکم بھیج دیا گیا ✓', 'حُفظت العناوين ✓':'ایڈریس محفوظ ہو گئے ✓'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();

@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>نُسُك — أداة فحص الأجهزة</title>
+<style>
+  body{font-family:Tahoma,Arial,sans-serif;background:#0f1113;color:#F1EDE0;margin:0;padding:22px;max-width:900px;margin-inline:auto}
+  h1{color:#C9A24B;font-size:19px}
+  .card{background:#141619;border:1px solid #2c3a34;border-radius:12px;padding:16px;margin:12px 0}
+  input,button{font:inherit;padding:9px 12px;border-radius:9px;border:1px solid #2c3a34;background:#0f1113;color:#F1EDE0}
+  button{cursor:pointer;font-weight:800}
+  button.gold{background:#C9A24B;color:#0A0B0D;border-color:#C9A24B}
+  table{width:100%;border-collapse:collapse;font-size:13px}
+  th,td{border-bottom:1px solid #23282c;padding:7px 9px;text-align:right}
+  .up{color:#3AD6A0;font-weight:800}.down{color:#F0655A;font-weight:800}
+  .muted{color:#8a9199;font-size:12px}
+  #st{font-weight:800;color:#C9A24B}
+  td.ip{direction:ltr;text-align:left;font-family:monospace}
+</style>
+</head>
+<body>
+<h1>🩺 نُسُك — أداة فحص الأجهزة (المكتب)</h1>
+<p class="muted">تعمل من جهازٍ متصلٍ بشبكة الميدان نفسها: تفحص راوتر وقارئ وكاميرا كل نقطة كل <b>٥ دقائق</b>، وتستجيب فورًا لزر «تحديث كل النقاط الآن» في لوحة التطبيق، وتكتب النتائج ليراها الجميع لحظيًا. أبقِ الصفحة مفتوحة.</p>
+
+<div class="card" id="loginC">
+  <b>تسجيل الدخول (حساب مهندس/مشرف)</b><br><br>
+  <input id="em" type="email" placeholder="البريد" style="width:46%">
+  <input id="pw" type="password" placeholder="كلمة المرور" style="width:30%">
+  <button class="gold" id="go">دخول</button>
+  <div id="lerr" class="muted"></div>
+</div>
+
+<div class="card" id="runC" style="display:none">
+  <div>الحالة: <span id="st">جاهز</span> · أجهزة مسجّلة: <b id="nDev">0</b> · الجولة القادمة خلال <b id="cd">—</b></div><br>
+  <button class="gold" id="now">فحص الكل الآن</button>
+  <span class="muted" id="last"></span>
+</div>
+
+<div class="card"><table id="tb"><tr><th>النقطة</th><th>الجهاز</th><th>العنوان</th><th>الحالة</th><th>آخر فحص</th></tr></table></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+firebase.initializeApp({
+  apiKey:"AIzaSyAo6s6Btxb7Nl1Eam_UBDNQUfUteNBRhMw",
+  authDomain:"project-survey-60600.firebaseapp.com",
+  projectId:"project-survey-60600"
+});
+var db=firebase.firestore(), DEV=[], TICK=300, left=TICK, busy=false, lastCmd='';
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';}); }
+
+$('go').onclick=function(){
+  firebase.auth().signInWithEmailAndPassword($('em').value.trim(), $('pw').value)
+    .catch(function(e){ $('lerr').textContent='تعذّر الدخول: '+(e.message||''); });
+};
+firebase.auth().onAuthStateChanged(function(u){
+  if(!u) return;
+  $('loginC').style.display='none'; $('runC').style.display='block';
+  boot();
+});
+
+async function boot(){
+  /* الأجهزة من سجلات التركيب — حقل net على كل نقطة */
+  db.collection('inss').onSnapshot(function(s){
+    var out=[];
+    s.forEach(function(d){
+      var v=d.data()||{}, net=v.net||{};
+      [['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].forEach(function(k){
+        if(net[k[0]]) out.push({site:d.id, kind:k[0], klabel:k[1], ip:String(net[k[0]]).trim()});
+      });
+    });
+    DEV=out; $('nDev').textContent=DEV.length; paint({});
+  });
+  /* أمر الفحص الفوري من زر اللوحة */
+  db.collection('settings').doc('hbcmd').onSnapshot(function(d){
+    var v=(d.data()||{}).t||'';
+    if(v && v!==lastCmd){ if(lastCmd) sweep('أمر فوري من اللوحة'); lastCmd=v; }
+  });
+  setInterval(function(){
+    left--; $('cd').textContent=Math.floor(left/60)+':'+String(left%60).padStart(2,'0');
+    if(left<=0) sweep('جولة دورية');
+  },1000);
+  sweep('جولة البدء');
+}
+
+/* «نبضة» متصفح: نجاح الوصول الشبكي = متصل ولو رُفضت القراءة — والفشل/المهلة = غير متصل */
+function ping(ip){
+  return new Promise(function(res){
+    var ac=new AbortController(), t=setTimeout(function(){ ac.abort(); },3500);
+    fetch('http://'+ip+'/', {mode:'no-cors', cache:'no-store', signal:ac.signal})
+      .then(function(){ clearTimeout(t); res(true); })
+      .catch(function(){ clearTimeout(t); res(false); });
+  });
+}
+
+async function sweep(reason){
+  if(busy || !DEV.length){ left=TICK; return; }
+  busy=true; left=TICK; $('st').textContent='يفحص… ('+reason+')';
+  var R={}, i=0;
+  async function worker(){
+    while(i<DEV.length){
+      var d=DEV[i++]; var up=await ping(d.ip);
+      R[d.site+'__'+d.kind]={site:d.site,kind:d.kind,ip:d.ip,st:up?'up':'down',ts:new Date().toISOString(),by:'prober'};
+    }
+  }
+  await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
+  var b=db.batch();
+  Object.keys(R).forEach(function(k){ b.set(db.collection('hb').doc(k), R[k]); });
+  try{ await b.commit(); }catch(e){ console.warn(e); }
+  $('st').textContent='جاهز'; $('last').textContent='آخر جولة: '+new Date().toLocaleTimeString('ar-EG');
+  busy=false; paint(R);
+}
+
+var LASTR={};
+function paint(R){
+  LASTR=Object.assign(LASTR,R);
+  var t='<tr><th>النقطة</th><th>الجهاز</th><th>العنوان</th><th>الحالة</th><th>آخر فحص</th></tr>';
+  DEV.forEach(function(d){
+    var r=LASTR[d.site+'__'+d.kind];
+    t+='<tr><td>'+esc(d.site)+'</td><td>'+d.klabel+'</td><td class="ip">'+esc(d.ip)+'</td>'
+      +'<td>'+(r?(r.st==='up'?'<span class="up">متصل</span>':'<span class="down">غير متصل</span>'):'<span class="muted">—</span>')+'</td>'
+      +'<td class="muted">'+(r?new Date(r.ts).toLocaleTimeString('ar-EG'):'—')+'</td></tr>';
+  });
+  $('tb').innerHTML=t;
+}
+$('now').onclick=function(){ sweep('زر الأداة'); };
+</script>
+</body>
+</html>
