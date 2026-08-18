@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.22</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.23</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8602,6 +8602,19 @@ function render(){
     } else {
       h+='<p class="dTs">لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.</p>';
     }
+    /* سجل الفك الكامل للتصدير — مجدولًا ومنفَّذًا */
+    window._disRows=[];
+    (function(){ var _rx=C.all('recs');
+      dbx.d.forEach(function(r){
+        var d=((_ins[r[0]]||{}).dis); if(!d) return;
+        var fx=((_rx[r[0]]||{}).fix)||{};
+        window._disRows.push([String(fx.sign||r[9]||r[0]), r[21]||'', String(fx.square||r[8]||''),
+          String(fx.company||r[27]||r[10]||''), d.team||'', d.st||'', d.cond||'',
+          d.sched||'', String(d.doneAt||'').slice(0,10), d.doneBy||d.by||'']);
+      });
+    })();
+    if(window._disRows.length)
+      h+='<div class="dRow"><button type="button" class="dBtn" id="disXls">⬇ إكسل — سجل الفك</button></div>';
     h+='</section>';
   })();
   /* ═══ صحة الأجهزة — إنذار مبكر وقوائم تحرك وتحليلات ═══ */
@@ -8766,6 +8779,16 @@ function render(){
     saveCoTel(function(c){ c.m[n]=p; });
     try{ if(window.NSKSYNC) NSKSYNC.log('إضافة رقم شركة: '+n); }catch(e){}
     render();
+  };
+  var _dsX=$i('disXls'); if(_dsX) _dsX.onclick=function(){
+    try{
+      var head=['الشاخص','المشعر','المربع','الشركة','الفريق','حالة الفك','حالة الجهاز','تاريخ الجدولة','تاريخ التنفيذ','بواسطة'];
+      var wb=XLSX.utils.book_new();
+      var ws=XLSX.utils.aoa_to_sheet([head].concat(window._disRows||[]));
+      ws['!cols']=head.map(function(x){ return {wch:Math.max(11,String(x).length+5)}; });
+      XLSX.utils.book_append_sheet(wb,ws,'سجل الفك');
+      XLSX.writeFile(wb,'نُسُك-سجل-الفك.xlsx');
+    }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
   };
   var _hbX=$i('hbXls'); if(_hbX) _hbX.onclick=function(){
     try{
@@ -10489,7 +10512,8 @@ window.NSKI18N = (function(){
   'جدولة فك':'Schedule dismantle', 'فك مجدول':'Dismantle scheduled', 'الفك:':'Dismantle:', 'فريق':'team', 'فُكّ — الجهاز سليم':'Dismantled — device intact', 'فُكّ — الجهاز تالف':'Dismantled — device damaged', 'تم الفك':'Dismantled', 'إلغاء الجدولة':'Cancel scheduling', 'الأجهزة والشبكة:':'Devices & network:', 'عناوين الأجهزة':'Device addresses', 'راوتر':'Router', 'لا عناوين بعد':'No addresses yet', 'لم يُفحص':'Not checked', 'غير متصل':'Offline', 'حفظ':'Save', 'الفك بعد الموسم':'Dismantling after the season', 'صحة الأجهزة':'Device health', 'مُركّب قائم':'Installed, standing', 'فُكّ — سليم':'Dismantled — intact', 'فُكّ — تالف':'Dismantled — damaged', 'فُكّ من المُركّب':'Dismantled out of installed', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'No dismantles yet — scheduled from the point popup in install mode.', 'لا أجهزة ساقطة الآن.':'No devices down right now.', 'الجهاز':'Device', 'العنوان':'Address', 'منذ (دقيقة)':'Since (min)', '📡 تحديث كل النقاط الآن':'📡 Refresh all points now', 'أداة الفحص':'Prober tool', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'Checked by the office machine on the field network via the prober tool every 5 minutes — the button orders an immediate sweep.', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'Immediate check ordered to the office tool ✓', 'حُفظت العناوين ✓':'Addresses saved ✓',
   'صحة الأجهزة — إنذار مبكر':'Device health — early warning', 'فاصل ≥١٠ دقائق':'Down ≥10 min', 'متذبذب اليوم':'Flapping today', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'Field-visit list — down ten minutes or more', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'No outages over ten minutes right now — the list appears here with its export button on the first case.', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'Flapping — three or more drops today', 'فصلات اليوم':'Today\'s drops', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'Peak fault hours — last 24 hours', '⬇ إكسل — قائمة الزيارة':'⬇ Excel — visit list', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'Checked every 5 minutes by the office machine on the field network via the prober tool — the button orders an immediate sweep, and any outage over ten minutes rings the bell automatically.', 'تعذّر التصدير':'Export failed',
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'Dismantling opens after the point is marked «Installed»', '🩺 أداة فحص الأجهزة':'🩺 Device prober tool',
-  'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'Duplicate address within the same point — each device needs its own'
+  'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'Duplicate address within the same point — each device needs its own',
+  '⬇ إكسل — سجل الفك':'⬇ Excel — dismantle log'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10671,7 +10695,8 @@ window.NSKI18N = (function(){
   'جدولة فك':'فک شیڈول کریں', 'فك مجدول':'فک شیڈول شدہ', 'الفك:':'فک:', 'فريق':'ٹیم', 'فُكّ — الجهاز سليم':'فک ہو گیا — آلہ درست', 'فُكّ — الجهاز تالف':'فک ہو گیا — آلہ خراب', 'تم الفك':'فک مکمل', 'إلغاء الجدولة':'شیڈول منسوخ کریں', 'الأجهزة والشبكة:':'آلات و نیٹ ورک:', 'عناوين الأجهزة':'آلات کے ایڈریس', 'راوتر':'راؤٹر', 'لا عناوين بعد':'ابھی کوئی ایڈریس نہیں', 'لم يُفحص':'چیک نہیں ہوا', 'غير متصل':'آف لائن', 'حفظ':'محفوظ کریں', 'الفك بعد الموسم':'موسم کے بعد فک', 'صحة الأجهزة':'آلات کی صحت', 'مُركّب قائم':'نصب شدہ، قائم', 'فُكّ — سليم':'فک — درست', 'فُكّ — تالف':'فک — خراب', 'فُكّ من المُركّب':'نصب شدہ میں سے فک', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'ابھی کوئی فک نہیں — تنصیب موڈ میں پوائنٹ ونڈو سے شیڈول ہوتا ہے۔', 'لا أجهزة ساقطة الآن.':'فی الحال کوئی آلہ ڈاؤن نہیں۔', 'الجهاز':'آلہ', 'العنوان':'ایڈریس', 'منذ (دقيقة)':'کتنے منٹ سے', '📡 تحديث كل النقاط الآن':'📡 تمام پوائنٹس ابھی تازہ کریں', 'أداة الفحص':'جانچ ٹول', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'فیلڈ نیٹ ورک سے جڑا دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے۔', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'دفتری ٹول کو فوری جانچ کا حکم بھیج دیا گیا ✓', 'حُفظت العناوين ✓':'ایڈریس محفوظ ہو گئے ✓',
   'صحة الأجهزة — إنذار مبكر':'آلات کی صحت — قبل از وقت تنبیہ', 'فاصل ≥١٠ دقائق':'10+ منٹ منقطع', 'متذبذب اليوم':'آج متذبذب', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'فیلڈ وزٹ فہرست — دس منٹ یا زیادہ منقطع', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'فی الحال دس منٹ سے زائد کوئی انقطاع نہیں — پہلی صورت پر فہرست اور ایکسپورٹ بٹن یہاں آئے گا۔', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'متذبذب — آج تین یا زیادہ انقطاعات', 'فصلات اليوم':'آج کے انقطاعات', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'خرابی کے اوقات — آخری 24 گھنٹے', '⬇ إكسل — قائمة الزيارة':'⬇ ایکسل — وزٹ فہرست', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'فیلڈ نیٹ ورک پر دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے، اور دس منٹ سے زائد ہر انقطاع کی گھنٹی خودکار بجتی ہے۔', 'تعذّر التصدير':'ایکسپورٹ ناکام',
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'فک «تنصیب مکمل» نشان کے بعد ہی کھلتا ہے', '🩺 أداة فحص الأجهزة':'🩺 آلات کی جانچ کا ٹول',
-  'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'ایک ہی پوائنٹ میں ایڈریس دہرایا گیا — ہر آلے کا اپنا ایڈریس'
+  'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'ایک ہی پوائنٹ میں ایڈریس دہرایا گیا — ہر آلے کا اپنا ایڈریس',
+  '⬇ إكسل — سجل الفك':'⬇ ایکسل — فک ریکارڈ'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();

@@ -54,6 +54,7 @@
   </div><br>
   <div>الحالة: <span id="st">عرض حي</span> · نقاط مسجّلة: <b id="nPts">0</b> · <span id="cdWrap">الجولة القادمة خلال <b id="cd">—</b> · </span><span class="muted" id="last"></span></div><br>
   <button class="gold" id="now" style="display:none">فحص الكل الآن</button>
+  <button id="pXls">⬇ إكسل — الحالة الكاملة</button>
 </div>
 
 <div class="card"><table id="tb"></table></div>
@@ -61,6 +62,7 @@
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 firebase.initializeApp({
   apiKey:"AIzaSyAo6s6Btxb7Nl1Eam_UBDNQUfUteNBRhMw",
@@ -238,6 +240,34 @@ function paint(){
   $('tb').innerHTML=t;
 }
 $('now').onclick=function(){ sweep('زر الأداة'); };
+$('pXls').onclick=function(){
+  try{
+    function cellTxt(site,kind){
+      var ip=PTS[site][kind]; if(!ip) return ['—',''];
+      var h=HB[site+'__'+kind]; if(!h) return ['لم يُفحص',ip];
+      var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(h.since||h.ts).getTime())/60000)); }catch(e){}
+      return [h.st==='up'?'متصل':('منقطع ('+mn+' د)'), ip];
+    }
+    var head=['النقطة','راوتر','عنوان الراوتر','قارئ','عنوان القارئ','كاميرا','عنوان الكاميرا'];
+    var body=[], visit=[['النقطة','الجهاز','العنوان','منقطع منذ (دقيقة)']];
+    Object.keys(PTS).sort().forEach(function(s){
+      var r=cellTxt(s,'router'), q=cellTxt(s,'reader'), c=cellTxt(s,'camera');
+      body.push([s, r[0],r[1], q[0],q[1], c[0],c[1]]);
+      KINDS.forEach(function(k){
+        var ip=PTS[s][k[0]]; if(!ip) return;
+        var h=HB[s+'__'+k[0]]; if(!h||h.st!=='down') return;
+        var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(h.since||h.ts).getTime())/60000)); }catch(e){}
+        if(mn>=10) visit.push([s,k[1],ip,mn]);
+      });
+    });
+    var wb=XLSX.utils.book_new();
+    var w1=XLSX.utils.aoa_to_sheet([head].concat(body));
+    w1['!cols']=head.map(function(x){return {wch:Math.max(12,String(x).length+5)};});
+    XLSX.utils.book_append_sheet(wb,w1,'الحالة الكاملة');
+    XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(visit),'زيارة 10د');
+    XLSX.writeFile(wb,'نُسُك-صحة-الأجهزة.xlsx');
+  }catch(e){ alert('تعذّر التصدير: '+(e.message||'')); }
+};
 </script>
 </body>
 </html>
