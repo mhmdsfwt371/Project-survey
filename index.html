@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.32</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.33</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -2577,7 +2577,7 @@ function drawList(){
         ? slbl(st(r[0]))+((inss[r[0]]||{}).sched?' · موعد '+esc(inss[r[0]].sched):'')
         : DB.w[r[4]]+' · '+SL[st(r[0])]+((r[27]||r[10])?' · '+esc(r[27]||r[10]):''))+'</span></span>'+
     '<span class="gm" title="اعرضه على الخريطة" onclick="goMap(\''+r[0]+'\',event)">📍</span>'+
-    (myPos?'<span class="dist">'+_du(dist(r))+'</span>':'')+
+    (myPos?'<span class="dist" title="اعرضه على الخريطة" onclick="goMap(\''+r[0]+'\',event)">'+_du(dist(r))+'</span>':'')+
     '<span class="ar">‹</span></button>').join('') +
     (items.length>300?'<div class="empty">…<span>وباقي</span> '+
       (items.length-300).toLocaleString('ar-EG')+' <span>موقع. استخدم البحث.</span></div>':'');
@@ -5175,6 +5175,9 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+#list .gm,#list .dist{cursor:pointer}
+#list .dist{text-decoration:underline dotted rgba(201,162,75,.5);text-underline-offset:3px}
+
 .myPerfCard{margin:8px 0;padding:11px 13px;border:1px solid var(--gold,#C9A24B);border-radius:12px;font-size:13px;line-height:1.9}
 .myPerfCard .mpRk{color:var(--gold,#C9A24B);font-weight:800;margin-top:3px}
 
