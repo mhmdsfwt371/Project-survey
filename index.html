@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.23</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.24</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1507,6 +1507,7 @@ window.addEventListener('error', function(e){
       </div>
       <div class="wrap" style="padding:12px 0 24px">
         <div id="pendBox"></div>
+        <div style="margin:8px 0"><button class="btn s" id="mgXls" type="button">⬇ إكسل — السجلات وأداء المشرفين</button></div>
         <div id="mgrTbl"></div>
       </div>
     </section>
@@ -4006,7 +4007,51 @@ function drawMgr(){
     }).join('')+'</tbody></table></div>';
   var _db=$('#mgDrBtn'); if(_db) _db.onclick=function(){ window.mgDrafts(); };
   var _dd=$('#mgDrDel'); if(_dd) _dd.onclick=function(){ window.wipeDrafts(); };
+  var _mx=$('#mgXls'); if(_mx) _mx.onclick=function(){ window.nskPerfXls(); };
 }
+/* السجلات + أداء المشرفين — أساس تنقيط الفنيين على شغلهم الفعلي */
+window.nskPerfXls = function(){
+  try{
+    var FL={done:'مكتمل', draft:'مسوّدة', blocked:'متعذّر / تم التركيب'};
+    var rows=Object.keys(recs).map(function(id){ return [id, recs[id]]; });
+    var recSheet=[['المعرّف','المشعر','الشركة','الشاخص','الحالة','المشرف','تاريخ المسح','آخر تعديل','مراجعات','صور','تحديات']];
+    var P={};
+    rows.forEach(function(pr){
+      var id=pr[0], r=pr[1], fx=r.fix||{};
+      var row=(DB.d.find(function(x){ return x[0]===id; }))||[];
+      var by=String(r.by||'—').trim();
+      recSheet.push([id, row[21]||'', String(fx.company||row[27]||row[10]||''),
+        String(fx.sign||row[9]||''), FL[r.fstat]||r.fstat||'', by,
+        r.survey_date||'', r.date||'', r.rev||1,
+        Object.keys(r.photos||{}).length, (r.chal||[]).length]);
+      var p=P[by]=P[by]||{t:0,done:0,draft:0,blocked:0,ph:0,ch:0,dis:0,days:{},min:'',max:''};
+      p.t++; if(p[r.fstat]!=null) p[r.fstat]++;
+      p.ph+=Object.keys(r.photos||{}).length; p.ch+=(r.chal||[]).length;
+      var day=String(r.date||'').slice(0,10);
+      if(day){ p.days[day]=1; if(!p.min||day<p.min) p.min=day; if(!p.max||day>p.max) p.max=day; }
+    });
+    Object.keys(inss).forEach(function(id){
+      var d=(inss[id]||{}).dis; if(!d||d.st!=='تم') return;
+      var by=String(d.doneBy||'—').trim();
+      var p=P[by]=P[by]||{t:0,done:0,draft:0,blocked:0,ph:0,ch:0,dis:0,days:{},min:'',max:''};
+      p.dis++;
+    });
+    var perf=[['المشرف','إجمالي السجلات','مكتمل','مسوّدة','متعذّر/تم التركيب','صور','تحديات مسجّلة','فك منفّذ','أيام نشطة','أول نشاط','آخر نشاط']];
+    Object.keys(P).sort(function(a,b){ return P[b].t-P[a].t; }).forEach(function(by){
+      var p=P[by];
+      perf.push([by, p.t, p.done, p.draft, p.blocked, p.ph, p.ch, p.dis,
+        Object.keys(p.days).length, p.min||'', p.max||'']);
+    });
+    var wb=XLSX.utils.book_new();
+    var w1=XLSX.utils.aoa_to_sheet(perf);
+    w1['!cols']=perf[0].map(function(x){ return {wch:Math.max(11,String(x).length+4)}; });
+    XLSX.utils.book_append_sheet(wb,w1,'أداء المشرفين');
+    var w2=XLSX.utils.aoa_to_sheet(recSheet);
+    w2['!cols']=recSheet[0].map(function(x){ return {wch:Math.max(11,String(x).length+5)}; });
+    XLSX.utils.book_append_sheet(wb,w2,'السجلات');
+    XLSX.writeFile(wb,'نُسُك-السجلات-وأداء-المشرفين.xlsx');
+  }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
+};
 
 function drawOut(){
   /* بعين «تمت الزيارة» نفسها — لا سجلات شبح ولا مقترحات */
@@ -10513,7 +10558,8 @@ window.NSKI18N = (function(){
   'صحة الأجهزة — إنذار مبكر':'Device health — early warning', 'فاصل ≥١٠ دقائق':'Down ≥10 min', 'متذبذب اليوم':'Flapping today', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'Field-visit list — down ten minutes or more', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'No outages over ten minutes right now — the list appears here with its export button on the first case.', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'Flapping — three or more drops today', 'فصلات اليوم':'Today\'s drops', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'Peak fault hours — last 24 hours', '⬇ إكسل — قائمة الزيارة':'⬇ Excel — visit list', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'Checked every 5 minutes by the office machine on the field network via the prober tool — the button orders an immediate sweep, and any outage over ten minutes rings the bell automatically.', 'تعذّر التصدير':'Export failed',
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'Dismantling opens after the point is marked «Installed»', '🩺 أداة فحص الأجهزة':'🩺 Device prober tool',
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'Duplicate address within the same point — each device needs its own',
-  '⬇ إكسل — سجل الفك':'⬇ Excel — dismantle log'
+  '⬇ إكسل — سجل الفك':'⬇ Excel — dismantle log',
+  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ Excel — records & supervisors performance'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10696,7 +10742,8 @@ window.NSKI18N = (function(){
   'صحة الأجهزة — إنذار مبكر':'آلات کی صحت — قبل از وقت تنبیہ', 'فاصل ≥١٠ دقائق':'10+ منٹ منقطع', 'متذبذب اليوم':'آج متذبذب', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'فیلڈ وزٹ فہرست — دس منٹ یا زیادہ منقطع', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'فی الحال دس منٹ سے زائد کوئی انقطاع نہیں — پہلی صورت پر فہرست اور ایکسپورٹ بٹن یہاں آئے گا۔', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'متذبذب — آج تین یا زیادہ انقطاعات', 'فصلات اليوم':'آج کے انقطاعات', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'خرابی کے اوقات — آخری 24 گھنٹے', '⬇ إكسل — قائمة الزيارة':'⬇ ایکسل — وزٹ فہرست', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'فیلڈ نیٹ ورک پر دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے، اور دس منٹ سے زائد ہر انقطاع کی گھنٹی خودکار بجتی ہے۔', 'تعذّر التصدير':'ایکسپورٹ ناکام',
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'فک «تنصیب مکمل» نشان کے بعد ہی کھلتا ہے', '🩺 أداة فحص الأجهزة':'🩺 آلات کی جانچ کا ٹول',
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'ایک ہی پوائنٹ میں ایڈریس دہرایا گیا — ہر آلے کا اپنا ایڈریس',
-  '⬇ إكسل — سجل الفك':'⬇ ایکسل — فک ریکارڈ'
+  '⬇ إكسل — سجل الفك':'⬇ ایکسل — فک ریکارڈ',
+  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ ایکسل — ریکارڈز اور سپروائزر کارکردگی'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
