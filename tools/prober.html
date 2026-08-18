@@ -21,7 +21,7 @@
 </head>
 <body>
 <h1>🩺 نُسُك — أداة فحص الأجهزة (المكتب)</h1>
-<p class="muted">تعمل من جهازٍ متصلٍ بشبكة الميدان نفسها: تفحص راوتر وقارئ وكاميرا كل نقطة كل <b>٥ دقائق</b>، وتستجيب فورًا لزر «تحديث كل النقاط الآن» في لوحة التطبيق، وتكتب النتائج ليراها الجميع لحظيًا. أبقِ الصفحة مفتوحة.</p>
+<p class="muted">تعمل من جهازٍ متصلٍ بشبكة الميدان نفسها: تفحص راوتر وقارئ وكاميرا كل نقطة كل <b>٥ دقائق</b>، وتسجّل كل سقوط وعودة للتحليلات، وأي فاصلٍ يتجاوز <b>١٠ دقائق</b> تُرسل إنذاره لجرس التطبيق فورًا (وإشعار عودة عند رجوعه)، وتستجيب لزر «تحديث كل النقاط الآن» في اللوحة. أبقِ الصفحة مفتوحة.</p>
 
 <div class="card" id="loginC">
   <b>تسجيل الدخول (حساب مهندس/مشرف)</b><br><br>
@@ -49,6 +49,7 @@ firebase.initializeApp({
   projectId:"project-survey-60600"
 });
 var db=firebase.firestore(), DEV=[], TICK=300, left=TICK, busy=false, lastCmd='';
+var PREV={}, ALERTED={};   /* آخر حالة معروفة لكل جهاز + مَن أُنذر لانقطاعه الحالي */
 
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';}); }
@@ -100,16 +101,41 @@ function ping(ip){
 async function sweep(reason){
   if(busy || !DEV.length){ left=TICK; return; }
   busy=true; left=TICK; $('st').textContent='يفحص… ('+reason+')';
-  var R={}, i=0;
+  var R={}, i=0, now=new Date().toISOString();
   async function worker(){
     while(i<DEV.length){
       var d=DEV[i++]; var up=await ping(d.ip);
-      R[d.site+'__'+d.kind]={site:d.site,kind:d.kind,ip:d.ip,st:up?'up':'down',ts:new Date().toISOString(),by:'prober'};
+      R[d.site+'__'+d.kind]={site:d.site,kind:d.kind,klabel:d.klabel,ip:d.ip,st:up?'up':'down',ts:now,by:'prober'};
     }
   }
   await Promise.all([worker(),worker(),worker(),worker(),worker(),worker()]);
   var b=db.batch();
-  Object.keys(R).forEach(function(k){ b.set(db.collection('hb').doc(k), R[k]); });
+  Object.keys(R).forEach(function(k){
+    var r=R[k], pv=PREV[k];
+    /* since: بداية الحالة الراهنة — تُحفظ ما دامت الحالة لم تتغيّر */
+    r.since = (pv && pv.st===r.st && pv.since) ? pv.since : now;
+    if(pv && pv.st!==r.st){
+      /* انتقال: سجل حدث تحليلات */
+      b.set(db.collection('hbev').doc(), {site:r.site,kind:r.kind,ip:r.ip,from:pv.st,to:r.st,ts:now});
+      if(r.st==='up' && ALERTED[k]){
+        b.set(db.collection('events').doc(), { t:firebase.firestore.FieldValue.serverTimestamp(),
+          by:'أداة الفحص', role:'system', txt:'✅ عاد للاتصال: '+r.site+' — '+r.klabel });
+        delete ALERTED[k];
+      }
+    }
+    /* إنذار مبكر: فاصل تجاوز ١٠ دقائق — مرة واحدة لكل انقطاع */
+    if(r.st==='down' && !ALERTED[k]){
+      var mn=Math.round((Date.parse(now)-Date.parse(r.since))/60000);
+      if(mn>=10){
+        ALERTED[k]=1;
+        b.set(db.collection('events').doc(), { t:firebase.firestore.FieldValue.serverTimestamp(),
+          by:'أداة الفحص', role:'system',
+          txt:'⛔ انقطاع '+mn+' دقيقة: '+r.site+' — '+r.klabel+' ('+r.ip+') — يحتاج زيارة ميدانية' });
+      }
+    }
+    PREV[k]=r;
+    b.set(db.collection('hb').doc(k), r);
+  });
   try{ await b.commit(); }catch(e){ console.warn(e); }
   $('st').textContent='جاهز'; $('last').textContent='آخر جولة: '+new Date().toLocaleTimeString('ar-EG');
   busy=false; paint(R);

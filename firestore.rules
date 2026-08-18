@@ -34,6 +34,9 @@ service cloud.firestore {
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
     match /hb/{id} { allow read: if ok(); allow write: if canW(); }
 
+    // انتقالات الصحة (سقوط/عودة) — سجل إلحاقي للتحليلات لا يُعدَّل
+    match /hbev/{id} { allow read: if ok(); allow create: if canW(); allow update, delete: if false; }
+
     // إعدادات مشتركة (الموعد المستهدف للمسح) — الجميع يقرأ، الإدارة تكتب
     match /settings/{id} { allow read: if ok(); allow write: if mgr(); }
 

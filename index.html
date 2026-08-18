@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.16</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.17</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5088,6 +5088,12 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+.dT3{font-size:12px;letter-spacing:.1em;color:var(--gold,#C9A24B);font-weight:800;margin:14px 0 6px}
+.hbHist{display:flex;align-items:flex-end;gap:2px;height:52px;padding:4px 2px;background:#0f1113;border:1px solid var(--line,#2c3a34);border-radius:8px}
+.hbHist .hbCol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
+.hbHist .hbCol i{display:block;width:100%;min-height:2px;background:#E8C36A;border-radius:2px 2px 0 0}
+.hbHist .hbCol s{text-decoration:none;font-size:8px;color:var(--muted,#8a9199);height:10px}
+
 .hbC{display:inline-block;border:1px solid;border-radius:8px;padding:2px 7px;margin:2px 3px 2px 0;font-size:10px;font-weight:800}
 .hbN{color:var(--muted,#8a9199);font-size:11px}
 .pnet,.pdis{margin-top:7px;border-top:1px dashed var(--line,#2c3a34);padding-top:6px}
@@ -6054,6 +6060,16 @@ function start(){
   });
   live('photos', function(ok, bad){
     onSnapshot(collection(db,'photos'), function(s){ ok(); applyPhotoSnap(s); }, bad);
+  });
+  live('hbev', function(ok, bad){
+    onSnapshot(query(collection(db,'hbev'), orderBy('ts','desc'), limit(600)),
+      function(s){
+        ok();
+        var out=[];
+        s.forEach(function(d){ out.push(d.data()||{}); });
+        window.NSKHBE = out;
+        try{ if(window.nskSync) window.nskSync(); }catch(e){}
+      }, bad);
   });
   live('hb', function(ok, bad){
     onSnapshot(collection(db,'hb'), function(s){
@@ -8572,35 +8588,76 @@ function render(){
     }
     h+='</section>';
   })();
-  /* ═══ صحة الأجهزة — راوتر وقارئ وكاميرا لكل نقطة ═══ */
+  /* ═══ صحة الأجهزة — إنذار مبكر وقوائم تحرك وتحليلات ═══ */
   (function(){
-    var C=window.NSKCORE, dbx=C.db(), _ins=C.all('inss'), HB=window.NSKHB||{};
-    var up=0, down=0, unk=0, downs=[];
+    var C=window.NSKCORE, dbx=C.db(), _ins=C.all('inss'),
+        HB=window.NSKHB||{}, EV=window.NSKHBE||[];
+    var NOW=Date.now(), TEN=10*60000;
+    var up=0, down=0, unk=0, visit=[], flapsMap={}, meta={};
     dbx.d.forEach(function(r){
-      var net=((_ins[r[0]]||{}).net)||{};
+      var net=((_ins[r[0]]||{}).net)||{}; if(net.router||net.reader||net.camera)
+        meta[r[0]]={sg:String(r[9]||r[0]), z:r[21]||'', sq:String(r[8]||'—'), co:String(r[27]||r[10]||'')};
       [['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].forEach(function(dv){
         var ip=net[dv[0]]; if(!ip) return;
         var hb=HB[r[0]+'__'+dv[0]];
         if(!hb){ unk++; return; }
         if(hb.st==='up'){ up++; return; }
         down++;
-        var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(hb.ts).getTime())/60000)); }catch(e){}
-        downs.push({sg:String(r[9]||r[0]), d:dv[1], ip:ip, mn:mn});
+        var mn=0; try{ mn=Math.max(0,Math.round((NOW-new Date(hb.since||hb.ts).getTime())/60000)); }catch(e){}
+        if(mn>=10) visit.push({id:r[0], d:dv[1], ip:ip, mn:mn});
       });
     });
-    h+='<section class="dSec" data-sec="hb"><div class="dT2">🩺 صحة الأجهزة</div>';
-    h+='<div class="dRow">'+card(up,'متصل','#3AD6A0')+card(down,'غير متصل','#F0655A')+card(unk,'لم يُفحص','#8a9199')+'</div>';
-    if(downs.length){
-      downs.sort(function(a,b){ return b.mn-a.mn; });
-      h+='<table class="dT"><tr><th>الشاخص</th><th>الجهاز</th><th>العنوان</th><th>منذ (دقيقة)</th></tr>'
-        +downs.slice(0,15).map(function(x){ return '<tr><td>'+_dvEsc(x.sg)+'</td><td>'+x.d
-          +'</td><td style="direction:ltr">'+_dvEsc(x.ip)+'</td><td>'+AR(x.mn)+'</td></tr>'; }).join('')+'</table>';
+    /* المتذبذب اليوم: انتقالات سقوط لكل جهاز منذ منتصف الليل */
+    var day0=new Date(); day0.setHours(0,0,0,0); day0=day0.getTime();
+    var hrs=new Array(24).fill(0);
+    EV.forEach(function(e){
+      if(e.to!=='down') return;
+      var t=0; try{ t=new Date(e.ts).getTime(); }catch(x){ return; }
+      if(NOW-t<=24*3600000) hrs[new Date(t).getHours()]++;
+      if(t>=day0) flapsMap[e.site+'__'+e.kind]=(flapsMap[e.site+'__'+e.kind]||0)+1;
+    });
+    var flappy=Object.keys(flapsMap).filter(function(k){ return flapsMap[k]>=3; })
+      .map(function(k){ var p=k.split('__');
+        return {id:p[0], d:(p[1]==='router'?'راوتر':p[1]==='reader'?'قارئ':'كاميرا'), n:flapsMap[k]}; })
+      .sort(function(a,b){ return b.n-a.n; });
+    window._hbVisit=visit.map(function(x){ var m=meta[x.id]||{};
+      return [m.sg||x.id, m.z||'', m.sq||'', m.co||'', x.d, x.ip, x.mn]; });
+
+    h+='<section class="dSec" data-sec="hb"><div class="dT2">🩺 صحة الأجهزة — إنذار مبكر</div>';
+    h+='<div class="dRow">'+card(up,'متصل','#3AD6A0')+card(down,'غير متصل','#F0655A')
+      +card(visit.length,'فاصل ≥١٠ دقائق','#f97316')+card(flappy.length,'متذبذب اليوم','#E8C36A')
+      +card(unk,'لم يُفحص','#8a9199')+'</div>';
+    if(visit.length){
+      visit.sort(function(a,b){ return b.mn-a.mn; });
+      h+='<div class="dT3">قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر</div>'
+        +'<table class="dT"><tr><th>الشاخص</th><th>المشعر</th><th>المربع</th><th>الجهاز</th><th>منذ (دقيقة)</th></tr>'
+        +visit.slice(0,15).map(function(x){ var m=meta[x.id]||{};
+          return '<tr><td>'+_dvEsc(m.sg||x.id)+'</td><td>'+_dvEsc(m.z||'')+'</td><td>'+_dvEsc(m.sq||'')
+            +'</td><td>'+x.d+'</td><td><b style="color:#f97316">'+AR(x.mn)+'</b></td></tr>'; }).join('')+'</table>'
+        +'<div class="dRow"><button type="button" class="dBtn" id="hbXls">⬇ إكسل — قائمة الزيارة</button></div>';
     } else {
-      h+='<p class="dTs">لا أجهزة ساقطة الآن.</p>';
+      h+='<p class="dTs">لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.</p>';
+    }
+    if(flappy.length){
+      h+='<div class="dT3">المتذبذب — ثلاث فصلات فأكثر اليوم</div>'
+        +'<table class="dT"><tr><th>الشاخص</th><th>الجهاز</th><th>فصلات اليوم</th></tr>'
+        +flappy.slice(0,10).map(function(x){ var m=meta[x.id]||{};
+          return '<tr><td>'+_dvEsc(m.sg||x.id)+'</td><td>'+x.d+'</td><td><b style="color:#E8C36A">'+AR(x.n)+'</b></td></tr>'; }).join('')+'</table>';
+    }
+    var tot24=hrs.reduce(function(a,b){return a+b;},0);
+    if(tot24){
+      var mx=Math.max.apply(null,hrs), pk=hrs.indexOf(mx);
+      h+='<div class="dT3">أكثر أوقات الأعطال — آخر ٢٤ ساعة</div>'
+        +'<div class="hbHist" dir="ltr">'+hrs.map(function(v,hh){
+            var ht=mx?Math.round(v*34/mx):0;
+            return '<div class="hbCol" title="'+hh+':00 — '+v+'"><i style="height:'+ht+'px'
+              +(hh===pk?';background:#F0655A':'')+'"></i><s>'+(hh%6===0?hh:'')+'</s></div>';
+          }).join('')+'</div>'
+        +'<p class="dTs">ذروة الأعطال: '+AR(pk)+':00 ('+AR(mx)+' انقطاعًا) — إجمالي '+AR(tot24)+' انقطاعًا في ٢٤ ساعة.</p>';
     }
     h+='<div class="dRow"><button type="button" class="dBtn" id="hbNow">📡 تحديث كل النقاط الآن</button>'
       +'<a class="dBtn" href="tools/prober.html" target="_blank" rel="noopener">🛠 أداة الفحص</a></div>';
-    h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.</p>';
+    h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
     h+='</section>';
   })();
   $i('dWrap').innerHTML=h;
@@ -8689,6 +8746,16 @@ function render(){
     saveCoTel(function(c){ c.m[n]=p; });
     try{ if(window.NSKSYNC) NSKSYNC.log('إضافة رقم شركة: '+n); }catch(e){}
     render();
+  };
+  var _hbX=$i('hbXls'); if(_hbX) _hbX.onclick=function(){
+    try{
+      var head=['الشاخص','المشعر','المربع','الشركة','الجهاز','العنوان','منقطع منذ (دقيقة)'];
+      var wb=XLSX.utils.book_new();
+      var ws=XLSX.utils.aoa_to_sheet([head].concat(window._hbVisit||[]));
+      ws['!cols']=head.map(function(x){ return {wch:Math.max(12,String(x).length+6)}; });
+      XLSX.utils.book_append_sheet(wb,ws,'زيارة ميدانية');
+      XLSX.writeFile(wb,'نُسُك-زيارة-صحة-الأجهزة.xlsx');
+    }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
   };
   var _hbN=$i('hbNow'); if(_hbN) _hbN.onclick=function(){
     try{
@@ -10399,7 +10466,8 @@ window.NSKI18N = (function(){
   'مخفيّ:':'Hidden:', 'سجلًا فُتح ولم تكتمل زيارته — لا يظهر هنا حتى تُسجَّل الزيارة.':'record(s) opened without a completed visit — not shown here until the visit is logged.', 'سجلًا لم تكتمل زيارته.':'record(s) with incomplete visit.', 'تحدٍّ ظهر':'Challenges raised', 'المشعر / النوع':'Zone / type',
   'أرقام شركات الخدمة — للإشعار الفوري عند جدولة مواقعها':'Service-company numbers — instant notice when their sites are scheduled', 'لا أرقام شركات بعد — بالرقم تصل الشركة رسالة واتساب جاهزة فور جدولة مواقعها.':'No company numbers yet — with a number the company gets a ready WhatsApp message the moment its sites are scheduled.', '📲 إشعارات الجدولة عبر واتساب':'📲 Scheduling notices via WhatsApp', 'قادة الفرق':'Team leaders', 'شركات الخدمة':'Service companies', 'لا فرق في هذه الدفعة.':'No teams in this batch.', 'لا شركات لمواقع هذه الدفعة.':'No companies for the sites in this batch.', 'تم — إخفاء الشارة':'Done — hide the badge',
   'لم يصل أي مسح بعد.':'No surveys have arrived yet.', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'Open any site from the «Sites» tab, fill in the measurements and save — it will appear here instantly.', 'أول عملية مسح تُشعل السباق':'The first survey ignites the race', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'Delivery of the scheduled — installed out of all scheduled', 'نسبة التركيب من إجمالي المشروع':'Installation share of the whole project', 'معدل التركيب اليومي — آخر ١٤ يوم':'Daily installation rate — last 14 days', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'No challenges recorded yet — gathered automatically from survey forms the moment they are saved.', 'المتعذّر والمواقع الراكدة — بالعمر':'Blocked and stagnant sites — by age', 'متعذّر قائم':'Blocked, open', 'أقدم تعذّر (يوم)':'Oldest blockage (days)', 'راكد ٥+ أيام بلا حركة':'Stagnant 5+ days without movement', 'المتعذّر — الأقدم أولًا':'Blocked — oldest first', 'تعارضات تحتاج تدقيقًا':'Conflicts needing review', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'Pipeline healthy: everything scheduled is surveyed, and no surveyed site is left without scheduling', 'ساعات متبقية':'Hours left', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'Pipeline health — survey → scheduling → installation', 'إشعار الشركات بمواعيد التركيب':'Notifying companies of installation dates', 'المسوّدات الناقصة':'Incomplete drafts', 'إعادة تركيب ١٤٤٧':'1447 re-install', 'إطار معدني جديد':'New metal frame', 'نقطة ممر جديدة':'New corridor point', 'تفعيل كاميرا قائمة':'Activate an existing camera', 'ترقية كاميرا':'Camera upgrade', 'خارج النطاق':'Out of scope', 'آخر مزامنة:':'Last sync:', 'الأرقام لحظية من الميدان':'figures live from the field', 'نشاط اليوم:':'Today\'s activity:', 'من أصل':'of', 'عنصرًا ميدانيًا':'field members', 'مسح اليوم':'surveys today', 'من مطلوب':'of the required', 'تركيب اليوم':'installs today', 'آخر عملية':'last action', 'مقترحات بانتظار الاعتماد:':'proposals awaiting approval:', 'وباقي':'…and', 'موقع. استخدم البحث.':'more sites. Use search.', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'more companies with higher rates — the full list is in the Excel export.', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'Remaining installation workload at the entered rates:', 'ساعة عمل تقريبًا.':'work hours, approximately.',
-  'جدولة فك':'Schedule dismantle', 'فك مجدول':'Dismantle scheduled', 'الفك:':'Dismantle:', 'فريق':'team', 'فُكّ — الجهاز سليم':'Dismantled — device intact', 'فُكّ — الجهاز تالف':'Dismantled — device damaged', 'تم الفك':'Dismantled', 'إلغاء الجدولة':'Cancel scheduling', 'الأجهزة والشبكة:':'Devices & network:', 'عناوين الأجهزة':'Device addresses', 'راوتر':'Router', 'لا عناوين بعد':'No addresses yet', 'لم يُفحص':'Not checked', 'غير متصل':'Offline', 'حفظ':'Save', 'الفك بعد الموسم':'Dismantling after the season', 'صحة الأجهزة':'Device health', 'مُركّب قائم':'Installed, standing', 'فُكّ — سليم':'Dismantled — intact', 'فُكّ — تالف':'Dismantled — damaged', 'فُكّ من المُركّب':'Dismantled out of installed', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'No dismantles yet — scheduled from the point popup in install mode.', 'لا أجهزة ساقطة الآن.':'No devices down right now.', 'الجهاز':'Device', 'العنوان':'Address', 'منذ (دقيقة)':'Since (min)', '📡 تحديث كل النقاط الآن':'📡 Refresh all points now', 'أداة الفحص':'Prober tool', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'Checked by the office machine on the field network via the prober tool every 5 minutes — the button orders an immediate sweep.', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'Immediate check ordered to the office tool ✓', 'حُفظت العناوين ✓':'Addresses saved ✓'
+  'جدولة فك':'Schedule dismantle', 'فك مجدول':'Dismantle scheduled', 'الفك:':'Dismantle:', 'فريق':'team', 'فُكّ — الجهاز سليم':'Dismantled — device intact', 'فُكّ — الجهاز تالف':'Dismantled — device damaged', 'تم الفك':'Dismantled', 'إلغاء الجدولة':'Cancel scheduling', 'الأجهزة والشبكة:':'Devices & network:', 'عناوين الأجهزة':'Device addresses', 'راوتر':'Router', 'لا عناوين بعد':'No addresses yet', 'لم يُفحص':'Not checked', 'غير متصل':'Offline', 'حفظ':'Save', 'الفك بعد الموسم':'Dismantling after the season', 'صحة الأجهزة':'Device health', 'مُركّب قائم':'Installed, standing', 'فُكّ — سليم':'Dismantled — intact', 'فُكّ — تالف':'Dismantled — damaged', 'فُكّ من المُركّب':'Dismantled out of installed', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'No dismantles yet — scheduled from the point popup in install mode.', 'لا أجهزة ساقطة الآن.':'No devices down right now.', 'الجهاز':'Device', 'العنوان':'Address', 'منذ (دقيقة)':'Since (min)', '📡 تحديث كل النقاط الآن':'📡 Refresh all points now', 'أداة الفحص':'Prober tool', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'Checked by the office machine on the field network via the prober tool every 5 minutes — the button orders an immediate sweep.', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'Immediate check ordered to the office tool ✓', 'حُفظت العناوين ✓':'Addresses saved ✓',
+  'صحة الأجهزة — إنذار مبكر':'Device health — early warning', 'فاصل ≥١٠ دقائق':'Down ≥10 min', 'متذبذب اليوم':'Flapping today', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'Field-visit list — down ten minutes or more', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'No outages over ten minutes right now — the list appears here with its export button on the first case.', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'Flapping — three or more drops today', 'فصلات اليوم':'Today\'s drops', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'Peak fault hours — last 24 hours', '⬇ إكسل — قائمة الزيارة':'⬇ Excel — visit list', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'Checked every 5 minutes by the office machine on the field network via the prober tool — the button orders an immediate sweep, and any outage over ten minutes rings the bell automatically.', 'تعذّر التصدير':'Export failed'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10578,7 +10646,8 @@ window.NSKI18N = (function(){
   'مخفيّ:':'مخفی:', 'سجلًا فُتح ولم تكتمل زيارته — لا يظهر هنا حتى تُسجَّل الزيارة.':'ریکارڈ کھلے مگر دورہ مکمل نہیں — دورہ درج ہونے تک یہاں نہیں دکھتے۔', 'سجلًا لم تكتمل زيارته.':'نامکمل دورے والے ریکارڈ۔', 'تحدٍّ ظهر':'سامنے آئے چیلنج', 'المشعر / النوع':'مشعر / قسم',
   'أرقام شركات الخدمة — للإشعار الفوري عند جدولة مواقعها':'سروس کمپنی نمبرز — مقامات کی شیڈولنگ پر فوری اطلاع', 'لا أرقام شركات بعد — بالرقم تصل الشركة رسالة واتساب جاهزة فور جدولة مواقعها.':'ابھی کمپنی نمبر نہیں — نمبر ہونے پر مقامات کی شیڈولنگ کے ساتھ ہی کمپنی کو تیار واٹس ایپ پیغام ملتا ہے۔', '📲 إشعارات الجدولة عبر واتساب':'📲 واٹس ایپ سے شیڈولنگ اطلاعات', 'قادة الفرق':'ٹیم لیڈرز', 'شركات الخدمة':'سروس کمپنیاں', 'لا فرق في هذه الدفعة.':'اس کھیپ میں کوئی ٹیم نہیں۔', 'لا شركات لمواقع هذه الدفعة.':'اس کھیپ کے مقامات کی کوئی کمپنی نہیں۔', 'تم — إخفاء الشارة':'ہو گیا — بیج چھپائیں',
   'لم يصل أي مسح بعد.':'ابھی کوئی سروے موصول نہیں ہوا۔', 'افتح أي موقع من تبويب «المواقع»، املأ القياسات واحفظ — وسيظهر هنا فورًا.':'«مقامات» ٹیب سے کوئی مقام کھولیں، پیمائشیں بھر کر محفوظ کریں — فوراً یہاں ظاہر ہوگا۔', 'أول عملية مسح تُشعل السباق':'پہلا سروے ریس کا آغاز کرتا ہے', 'إنجاز ما تم جدولته — مُركّب من إجمالي المجدول':'شیڈول شدہ کی تکمیل — کل شیڈول میں سے نصب شدہ', 'نسبة التركيب من إجمالي المشروع':'پورے منصوبے میں تنصیب کا تناسب', 'معدل التركيب اليومي — آخر ١٤ يوم':'روزانہ تنصیب کی شرح — آخری 14 دن', 'لا توجد تحديات مسجّلة بعد — تُجمَع تلقائيًا من نماذج المسح فور حفظها.':'ابھی کوئی چیلنج درج نہیں — سروے فارم محفوظ ہوتے ہی خودکار جمع ہوتے ہیں۔', 'المتعذّر والمواقع الراكدة — بالعمر':'رکے ہوئے اور جامد مقامات — عمر کے لحاظ سے', 'متعذّر قائم':'رکا ہوا، قائم', 'أقدم تعذّر (يوم)':'قدیم ترین رکاوٹ (دن)', 'راكد ٥+ أيام بلا حركة':'5+ دن بلا حرکت جامد', 'المتعذّر — الأقدم أولًا':'رکے ہوئے — قدیم ترین پہلے', 'تعارضات تحتاج تدقيقًا':'جانچ طلب تضادات', 'الخط سليم: كل ما دخل الجدولة ممسوح، ولا يوجد ممسوح منسي بلا جدولة':'لائن درست: شیڈول شدہ سب سروے شدہ ہے، اور کوئی سروے شدہ بغیر شیڈولنگ نہیں چھوٹا', 'ساعات متبقية':'باقی گھنٹے', 'سلامة خط الإنتاج — مسح ← جدولة ← تركيب':'پائپ لائن کی صحت — سروے ← شیڈولنگ ← تنصیب', 'إشعار الشركات بمواعيد التركيب':'کمپنیوں کو تنصیب کی تاریخوں کی اطلاع', 'المسوّدات الناقصة':'نامکمل مسودات', 'إعادة تركيب ١٤٤٧':'1447 دوبارہ تنصیب', 'إطار معدني جديد':'نیا دھاتی فریم', 'نقطة ممر جديدة':'نیا راہداری پوائنٹ', 'تفعيل كاميرا قائمة':'موجودہ کیمرہ فعال کریں', 'ترقية كاميرا':'کیمرہ اپ گریڈ', 'خارج النطاق':'دائرہ کار سے باہر', 'آخر مزامنة:':'آخری مزامنت:', 'الأرقام لحظية من الميدان':'اعداد میدان سے براہِ راست', 'نشاط اليوم:':'آج کی سرگرمی:', 'من أصل':'میں سے', 'عنصرًا ميدانيًا':'میدانی ارکان', 'مسح اليوم':'آج سروے', 'من مطلوب':'مطلوبہ میں سے', 'تركيب اليوم':'آج تنصیب', 'آخر عملية':'آخری عمل', 'مقترحات بانتظار الاعتماد:':'منظوری کے منتظر تجاویز:', 'وباقي':'…اور مزید', 'موقع. استخدم البحث.':'مزید مقامات۔ تلاش استعمال کریں۔', 'شركة بنسب أعلى — القائمة كاملة في تصدير الإكسل.':'کمپنیاں بلند شرحوں کے ساتھ — مکمل فہرست ایکسل ایکسپورٹ میں۔', 'إجمالي حمل التركيب المتبقي بالمعدلات المُدخلة:':'درج شدہ شرحوں پر باقی تنصیبی کام:', 'ساعة عمل تقريبًا.':'گھنٹے کام، تقریباً۔',
-  'جدولة فك':'فک شیڈول کریں', 'فك مجدول':'فک شیڈول شدہ', 'الفك:':'فک:', 'فريق':'ٹیم', 'فُكّ — الجهاز سليم':'فک ہو گیا — آلہ درست', 'فُكّ — الجهاز تالف':'فک ہو گیا — آلہ خراب', 'تم الفك':'فک مکمل', 'إلغاء الجدولة':'شیڈول منسوخ کریں', 'الأجهزة والشبكة:':'آلات و نیٹ ورک:', 'عناوين الأجهزة':'آلات کے ایڈریس', 'راوتر':'راؤٹر', 'لا عناوين بعد':'ابھی کوئی ایڈریس نہیں', 'لم يُفحص':'چیک نہیں ہوا', 'غير متصل':'آف لائن', 'حفظ':'محفوظ کریں', 'الفك بعد الموسم':'موسم کے بعد فک', 'صحة الأجهزة':'آلات کی صحت', 'مُركّب قائم':'نصب شدہ، قائم', 'فُكّ — سليم':'فک — درست', 'فُكّ — تالف':'فک — خراب', 'فُكّ من المُركّب':'نصب شدہ میں سے فک', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'ابھی کوئی فک نہیں — تنصیب موڈ میں پوائنٹ ونڈو سے شیڈول ہوتا ہے۔', 'لا أجهزة ساقطة الآن.':'فی الحال کوئی آلہ ڈاؤن نہیں۔', 'الجهاز':'آلہ', 'العنوان':'ایڈریس', 'منذ (دقيقة)':'کتنے منٹ سے', '📡 تحديث كل النقاط الآن':'📡 تمام پوائنٹس ابھی تازہ کریں', 'أداة الفحص':'جانچ ٹول', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'فیلڈ نیٹ ورک سے جڑا دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے۔', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'دفتری ٹول کو فوری جانچ کا حکم بھیج دیا گیا ✓', 'حُفظت العناوين ✓':'ایڈریس محفوظ ہو گئے ✓'
+  'جدولة فك':'فک شیڈول کریں', 'فك مجدول':'فک شیڈول شدہ', 'الفك:':'فک:', 'فريق':'ٹیم', 'فُكّ — الجهاز سليم':'فک ہو گیا — آلہ درست', 'فُكّ — الجهاز تالف':'فک ہو گیا — آلہ خراب', 'تم الفك':'فک مکمل', 'إلغاء الجدولة':'شیڈول منسوخ کریں', 'الأجهزة والشبكة:':'آلات و نیٹ ورک:', 'عناوين الأجهزة':'آلات کے ایڈریس', 'راوتر':'راؤٹر', 'لا عناوين بعد':'ابھی کوئی ایڈریس نہیں', 'لم يُفحص':'چیک نہیں ہوا', 'غير متصل':'آف لائن', 'حفظ':'محفوظ کریں', 'الفك بعد الموسم':'موسم کے بعد فک', 'صحة الأجهزة':'آلات کی صحت', 'مُركّب قائم':'نصب شدہ، قائم', 'فُكّ — سليم':'فک — درست', 'فُكّ — تالف':'فک — خراب', 'فُكّ من المُركّب':'نصب شدہ میں سے فک', 'لا عمليات فك بعد — تُجدول من نافذة النقطة في وضع التركيب.':'ابھی کوئی فک نہیں — تنصیب موڈ میں پوائنٹ ونڈو سے شیڈول ہوتا ہے۔', 'لا أجهزة ساقطة الآن.':'فی الحال کوئی آلہ ڈاؤن نہیں۔', 'الجهاز':'آلہ', 'العنوان':'ایڈریس', 'منذ (دقيقة)':'کتنے منٹ سے', '📡 تحديث كل النقاط الآن':'📡 تمام پوائنٹس ابھی تازہ کریں', 'أداة الفحص':'جانچ ٹول', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية.':'فیلڈ نیٹ ورک سے جڑا دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے۔', 'أُرسل أمر فحص فوري لأداة المكتب ✓':'دفتری ٹول کو فوری جانچ کا حکم بھیج دیا گیا ✓', 'حُفظت العناوين ✓':'ایڈریس محفوظ ہو گئے ✓',
+  'صحة الأجهزة — إنذار مبكر':'آلات کی صحت — قبل از وقت تنبیہ', 'فاصل ≥١٠ دقائق':'10+ منٹ منقطع', 'متذبذب اليوم':'آج متذبذب', 'قائمة الزيارة الميدانية — فاصل عشر دقائق فأكثر':'فیلڈ وزٹ فہرست — دس منٹ یا زیادہ منقطع', 'لا فواصل تتجاوز عشر دقائق الآن — القائمة تظهر هنا مع زر تصديرها فور أول حالة.':'فی الحال دس منٹ سے زائد کوئی انقطاع نہیں — پہلی صورت پر فہرست اور ایکسپورٹ بٹن یہاں آئے گا۔', 'المتذبذب — ثلاث فصلات فأكثر اليوم':'متذبذب — آج تین یا زیادہ انقطاعات', 'فصلات اليوم':'آج کے انقطاعات', 'أكثر أوقات الأعطال — آخر ٢٤ ساعة':'خرابی کے اوقات — آخری 24 گھنٹے', '⬇ إكسل — قائمة الزيارة':'⬇ ایکسل — وزٹ فہرست', 'يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.':'فیلڈ نیٹ ورک پر دفتری کمپیوٹر جانچ ٹول سے ہر 5 منٹ میں چیک کرتا ہے — بٹن فوری راؤنڈ کا حکم دیتا ہے، اور دس منٹ سے زائد ہر انقطاع کی گھنٹی خودکار بجتی ہے۔', 'تعذّر التصدير':'ایکسپورٹ ناکام'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
