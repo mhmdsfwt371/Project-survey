@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.27</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.28</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5010,6 +5010,11 @@ window.mergeBackupText = async function(txt){
 };
 $('#bkBtn').onclick = ()=>window.doBackup();
 $('#updBtn').onclick = ()=>window.nskCheckUpd(false);
+(function(){
+  var ey=document.querySelector('.eyebrow');
+  if(ey){ ey.style.cursor='pointer'; ey.title='اضغط لفحص التحديثات الآن';
+    ey.onclick=function(){ try{ window.nskCheckUpd(false); }catch(e){} }; }
+})();
 $('#schBtn').onclick = ()=>window.doSchema();
 ['Eng','Sup','Min'].forEach(function(k){
   var b=$('#gdW'+k); if(b) b.onclick=function(){
