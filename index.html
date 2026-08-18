@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.7</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.8</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1930,20 +1930,37 @@ window.pickTeam = function(cb){
    كان كل إجراء يحدّث ما يخطر بباله: الخريطة والقائمة فقط، فتبقى الأدوات
    واللوحة والجرس على أرقام قديمة — ويبدو الإلغاء وكأنه لم يحدث.
    الآن: كل إجراء يُغيّر بيانات ينادي nskSync() وهي تنادي الجميع. */
+var _nskStale={};
+var _nskViews={
+  vMap:  function(){ try{ if(typeof drawMap==='function') drawMap(); }catch(e){} },
+  vList: function(){ try{ if(typeof drawList==='function') drawList(); }catch(e){} },
+  vOut:  function(){
+    try{ if(typeof drawOut==='function') drawOut(); }catch(e){}
+    try{ if(typeof drawSync==='function') drawSync(); }catch(e){}
+    try{ if(typeof drawQ==='function') drawQ(); }catch(e){}
+  },
+  vMgr:  function(){
+    try{ if(typeof drawPend==='function') drawPend(); }catch(e){}
+    try{ if(typeof drawMgr==='function') drawMgr(); }catch(e){}
+    try{ if(typeof window.drawUsers==='function') window.drawUsers(); }catch(e){}
+  }
+};
+function _nskFlush(v){
+  if(!_nskStale[v] || !_nskViews[v]) return;
+  _nskStale[v]=0;
+  _nskViews[v]();
+}
+window._nskFlush=_nskFlush;
 window.nskSync = function(){
-  var F=['drawMap','drawList','drawPend','drawMgr','drawOut','drawSync',
-         'drawQ','drawUsers','paintBell','paintMin','paintCoChip'];
-  F.forEach(function(fn){
+  /* الشارات الرخيصة تُرسم دائمًا */
+  ['paintBell','paintMin','paintCoChip'].forEach(function(fn){
     try{ if(typeof window[fn]==='function') window[fn](); }catch(e){}
   });
-  /* الرسّامون المحلّيون غير المصدَّرين */
-  try{ if(typeof drawOut==='function') drawOut(); }catch(e){}
-  try{ if(typeof drawSync==='function') drawSync(); }catch(e){}
-  try{ if(typeof drawPend==='function') drawPend(); }catch(e){}
-  try{ if(typeof drawMgr==='function') drawMgr(); }catch(e){}
-  try{ if(typeof drawList==='function') drawList(); }catch(e){}
-  try{ if(typeof drawQ==='function') drawQ(); }catch(e){}
-  try{ if(window.NSKDASH && NSKDASH.refresh) NSKDASH.refresh(); }catch(e){}
+  /* اللوحة تُحدَّث وهي مفتوحة فقط — وفتحها يرسمها بنفسه */
+  try{ if(window.NSKDASH && NSKDASH.refresh && document.body.classList.contains('nsk-dash-on')) NSKDASH.refresh(); }catch(e){}
+  Object.keys(_nskViews).forEach(function(v){ _nskStale[v]=1; });
+  var v; try{ v=_curV; }catch(e){} 
+  _nskFlush(v||'vMap');
   try{ document.dispatchEvent(new CustomEvent('nsk-data-changed')); }catch(e){}
 };
 window.setFstat = async function(id,k){
@@ -2311,6 +2328,7 @@ function drawMap(){
     const _la=(P0&&(P0.lat!=null?P0.lat:P0[0])), _lo=(P0&&(P0.lng!=null?P0.lng:P0[1]));
     if(typeof _la!=='number'||typeof _lo!=='number'||isNaN(_la)||isNaN(_lo)) return;
     const light = z<13 || !b.contains(P0);
+    if(z>=15 && r[0]!==focusId && !b.contains(P0)) return;
     var c = colOf(r[0]);
     /* طبقة الشركات: اللون يتبع الشركة، وعند اختيار شركات تُخفى ما عداها */
     if(CO_LAYER){
@@ -2334,7 +2352,7 @@ function drawMap(){
            color:c,fillColor:c,fillOpacity:.6});
     const kv=(k,v)=>v?'<span class="pk">'+k+':</span> '+esc(v)+'<br/>':'';
     const dir='https://www.google.com/maps/dir/?api=1&destination='+P0[0]+','+P0[1];
-    m.bindPopup(
+    m.bindPopup(function(){ return (
       '<b style="color:#C9A24B">'+esc(r[0])+'</b><br/>'+
       '<span class="pn">'+esc(nameOf(r))+'</span><br/>'+
       '<span style="color:'+catOf(r).c+';font-weight:800;font-size:11px">'+
@@ -2361,7 +2379,7 @@ function drawMap(){
         '<a class="go" href="#" onclick="startMove(\''+r[0]+'\');return false">تحريك</a>'+
         '<a class="go" href="#" onclick="(window.appMode===\'install\'?openInstall:openForm)'+
           '(\''+r[0]+'\');return false">تعديل البيانات</a>'+
-      '</div>');
+      '</div>'); });
     layer.addLayer(m); marks[r[0]]=m;
   });
   Object.values(props).forEach(p=>{
@@ -4289,6 +4307,7 @@ function show(v){
   if(v==='vMap') setTimeout(()=>map.invalidateSize(),60);
   if(!_nav && v!==_curV){ try{ history.pushState({v:v},''); }catch(e){} }
   _curV=v; updFab();
+  try{ _nskFlush(v); }catch(e){}
 }
 try{ history.replaceState({v:'vMap'},''); }catch(e){}
 window.addEventListener('error', function(e){
@@ -4306,7 +4325,7 @@ window.addEventListener('popstate', e=>{
   _nav=true; show(v); _nav=false;
 });
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>show(b.dataset.v));
-$('#q').oninput=drawList;
+var _qT=null; $('#q').oninput=function(){ clearTimeout(_qT); _qT=setTimeout(drawList,180); };
 $('#q').placeholder='ابحث بالمعرّف أو الشاخص أو الشركة…';
 $('#mineBtn').onclick=()=>{ mineOnly=!mineOnly; drawList(); };
 $('#filt').onclick=e=>{
@@ -5052,7 +5071,7 @@ window.NSKCORE={
   db:function(){ return DB; },
   szOf:szOf,
   total:function(){ return DB.d.length; },
-  redraw:function(){ try{ drawMap(); drawList(); drawOut(); drawMgr(); }catch(e){} try{ drawQ(); }catch(e){} }
+  redraw:function(){ try{ window.nskSync(); }catch(e){} }
 };
 </script>
 
@@ -5720,7 +5739,7 @@ function updDashFab(){
 function fmtT(d){ d=d||new Date(); return ('0'+d.getHours()).slice(-2)+':'+('0'+d.getMinutes()).slice(-2); }
 function chip(t,bad){ const c=$i('fbSyncChip'); if(!c) return; c.textContent=t||''; c.className=bad?'bad':''; }
 function chipIdle(){ chip(pendUp>0 ? ('جارٍ الرفع… ('+pendUp+')') : (lastSync ? ('مزامنة ✓ '+fmtT(lastSync)) : 'مزامنة جاهزة')); }
-function strip(d){ const c=Object.assign({},d||{}); delete c._up; delete c._by; delete c.synced; delete c.syncAt; delete c.syncErr; delete c.syncTry; return c; }
+function strip(d){ const c=Object.assign({},d||{}); delete c._up; delete c._by; delete c.synced; delete c.syncAt; delete c.syncErr; delete c.syncTry; delete c._phOk; return c; }
 function eq(a,b){ try{ return JSON.stringify(a)===JSON.stringify(b); }catch(e){ return false; } }
 function evTxt(kind,id,rec){
   if(kind==='inss'){ let t='تركيب ['+(rec.status||'تحديث')+'] — '+id; if(rec.sched) t+=' · جدولة: '+rec.sched; return t; }
@@ -5736,7 +5755,7 @@ window.NSKSYNC = {
     pendUp++; chipIdle();
     const body=Object.assign({},rec,{_up:serverTimestamp(),_by:(user.name||user.email||'')});
     const ph=body.photos; if(ph){ delete body.photos; body.phN=Object.keys(ph).length; }
-    delete body.synced; delete body.syncAt; delete body.syncErr; delete body.syncTry;
+    delete body.synced; delete body.syncAt; delete body.syncErr; delete body.syncTry; delete body._phOk;
     /* وسم محلي: هذه النسخة بانتظار تأكيد الخادم */
     try{ rec.synced=false; rec.syncTry=(rec.syncTry||0)+1; rec.syncErr=''; }catch(e){}
     setDoc(doc(db,kind,String(id)), body)
@@ -5753,8 +5772,15 @@ window.NSKSYNC = {
     if(ph){ Object.keys(ph).forEach(function(k){
       const d=String(ph[k]||''); if(!d) return;
       if(d.length>980000){ console.warn('photo too large for cloud, kept on device:',k); return; }
+      const fp=d.length+'.'+d.slice(-24);
+      rec._phOk=rec._phOk||{};
+      if(rec._phOk[k]===fp) return;
       setDoc(doc(db,'photos', kind+'__'+String(id)+'__'+encodeURIComponent(k)),
         { kind:kind, site:String(id), k:k, d:d, _up:serverTimestamp(), _by:(user.name||user.email||'') })
+        .then(function(){
+          rec._phOk[k]=fp;
+          try{ if(KP[kind]) window.storage.set(KP[kind]+id, JSON.stringify(rec), false); }catch(e){}
+        })
         .catch(function(e){ console.warn('photo push',e); });
     }); }
     window.NSKSYNC.log(evTxt(kind,id,rec));
@@ -5812,7 +5838,7 @@ async function applySnap(kind, snap){
     }
     if(ch.doc.metadata.hasPendingWrites) continue;
     const inc = strip(ch.doc.data());
-    if(inc && !inc.photos){ const _loc=C.get(kind,id); if(_loc && _loc.photos) inc.photos=_loc.photos; }
+    if(inc){ const _loc=C.get(kind,id); if(_loc){ if(!inc.photos && _loc.photos) inc.photos=_loc.photos; if(_loc._phOk) inc._phOk=_loc._phOk; } }
     const _pb=PHBUF[kind+'|'+id];
     if(_pb){ inc.photos=Object.assign({}, inc.photos||{}, _pb); delete PHBUF[kind+'|'+id]; }
     if(eq(inc, strip(C.get(kind,id)))) continue;
@@ -5976,21 +6002,37 @@ function evXlsx(){
 }
 function start(){
   if(started || !db || !user) return; started=true; chipIdle();
+  /* بثّ لا يموت: خطأ القناة يعيد الاشتراك بتراجع تصاعدي حتى دقيقة */
+  function live(name, make){
+    var tries=0;
+    (function sub(){
+      make(function(){ tries=0; }, function(e){
+        tries++;
+        chip('انقطع البث — إعادة الاتصال…',1);
+        console.warn('snap '+name, e);
+        setTimeout(sub, Math.min(60000, 2000*Math.pow(2, tries-1)));
+      });
+    })();
+  }
   ['recs','inss','props','colist','settings'].forEach(function(k){
-    onSnapshot(collection(db,k),
-      function(s){ applySnap(k,s); },
-      function(e){ chip('انقطعت المزامنة — إعادة المحاولة…',1); console.warn('snap '+k,e); });
+    live(k, function(ok, bad){
+      onSnapshot(collection(db,k), function(s){ ok(); applySnap(k,s); }, bad);
+    });
   });
-  onSnapshot(collection(db,'photos'), function(s){ applyPhotoSnap(s); }, function(e){ console.warn('snap photos',e); });
-  onSnapshot(query(collection(db,'events'), orderBy('t','desc'), limit(500)),
-    function(s){
-      events.length=0;
-      s.forEach(function(d){ const x=d.data();
-        events.push({ t:(x.t&&x.t.toDate)?x.t.toDate():null, by:x.by||'', role:x.role||'', txt:x.txt||'' }); });
-      if(window.NSKDASH) window.NSKDASH.refresh();
-      try{ paintBell(); }catch(e){}
-    },
-    function(e){ console.warn('events',e); });
+  live('photos', function(ok, bad){
+    onSnapshot(collection(db,'photos'), function(s){ ok(); applyPhotoSnap(s); }, bad);
+  });
+  live('events', function(ok, bad){
+    onSnapshot(query(collection(db,'events'), orderBy('t','desc'), limit(500)),
+      function(s){
+        ok();
+        events.length=0;
+        s.forEach(function(d){ const x=d.data();
+          events.push({ t:(x.t&&x.t.toDate)?x.t.toDate():null, by:x.by||'', role:x.role||'', txt:x.txt||'' }); });
+        if(window.NSKDASH && document.body.classList.contains('nsk-dash-on')) window.NSKDASH.refresh();
+        try{ paintBell(); }catch(e){}
+      }, bad);
+  });
   if(user.role==='viewer'){ dashAllowed=true; window.NSKDASH.open(); }
   else if(user.role==='engineer'||user.role==='admin'){ dashAllowed=true; }
   updDashFab();
@@ -9617,7 +9659,7 @@ window.NSKI18N = (function(){
         var p = n.parentNode;
         if(!p || SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;
         /* بلاطات الخريطة وأسماء شوارعها ليست من واجهتنا */
-        if(p.closest && p.closest('#map .leaflet-tile-pane')) return NodeFilter.FILTER_REJECT;
+        if(p.closest && p.closest('#map') && !p.closest('.leaflet-popup-pane')) return NodeFilter.FILTER_REJECT;
         return n.nodeValue && n.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
       }
     });
@@ -9666,10 +9708,19 @@ window.NSKI18N = (function(){
     cancelAnimationFrame(tick);
     tick = requestAnimationFrame(apply);
   }
+  /* المراقب لا يعمل والواجهة عربية — كل تحوير للخريطة كان يوقظه بلا طائل */
+  function moSync(){
+    try{
+      if(!mo) return;
+      if(lang === 'ar'){ mo.disconnect(); }
+      else { mo.observe(document.body, { childList: true, subtree: true, characterData: true }); }
+    }catch(e){}
+  }
   function set(L){
     if(!LANGS[L]) return;
     lang = L;
     try{ localStorage.setItem('nsk.lang', L); }catch(e){}
+    moSync();
     /* العودة للعربية تُعيد الرسم من المصدر — أسلم من عكس القاموس */
     if(L === 'ar'){
       apply();
@@ -9718,7 +9769,7 @@ window.NSKI18N = (function(){
     }
     try{
       mo = new MutationObserver(schedule);
-      mo.observe(document.body, { childList: true, subtree: true, characterData: true });
+      moSync();
     }catch(e){}
     document.addEventListener('nsk-data-changed', schedule);
     if(lang !== 'ar') apply();
