@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.24</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.25</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -4007,7 +4007,12 @@ function drawMgr(){
     }).join('')+'</tbody></table></div>';
   var _db=$('#mgDrBtn'); if(_db) _db.onclick=function(){ window.mgDrafts(); };
   var _dd=$('#mgDrDel'); if(_dd) _dd.onclick=function(){ window.wipeDrafts(); };
-  var _mx=$('#mgXls'); if(_mx) _mx.onclick=function(){ window.nskPerfXls(); };
+  var _mx=$('#mgXls');
+  if(_mx){
+    var _mgr=!!(window.NSK_USER && (NSK_USER.role==='engineer'||NSK_USER.role==='admin'));
+    _mx.style.display=_mgr?'':'none';
+    if(_mgr) _mx.onclick=function(){ window.nskPerfXls(); };
+  }
 }
 /* السجلات + أداء المشرفين — أساس تنقيط الفنيين على شغلهم الفعلي */
 window.nskPerfXls = function(){
@@ -5597,7 +5602,7 @@ function bindAccountPanel(p){
   const nuR=$g('nuRole');
   if(nuR && !nuR.dataset.tuned){
     nuR.dataset.tuned='1';
-    if(p.role==='admin'){
+    if(p.role==='admin'||p.role==='engineer'){
       const o=document.createElement('option');
       o.value='admin'; o.textContent='سوبر أدمن — إدارة كاملة';
       nuR.appendChild(o);
@@ -5692,8 +5697,8 @@ function bindAccountPanel(p){
         : '<div class="uS">'+(s
             ? s.n+' عملية ميدانية · آخر نشاط '+(s.last? s.last.slice(8,10)+'/'+s.last.slice(5,7) : '—')
             : 'لا نشاط ميداني بعد')+'</div>';
-      const lock = p.role!=='admin' && u.role!=='supervisor' && !me;
-      const roleUi = p.role==='admin'
+      const lock = !(p.role==='admin'||p.role==='engineer') && u.role!=='supervisor' && !me;
+      const roleUi = (p.role==='admin'||p.role==='engineer')
         ? '<select class="uRole"'+(me?' disabled':'')+'>'+
             ['supervisor','engineer','viewer','admin'].map(function(r){
               return '<option value="'+r+'"'+(u.role===r?' selected':'')+'>'+ROLE_AR[r]+'</option>'; }).join('')+
@@ -8324,6 +8329,27 @@ function render(){
     if(qf){ var qfl=qf.toLowerCase();
       Q.pend=Q.pend.filter(function(x){
         return (x.sq+' '+x.team+' '+x.sg+' '+x.z+' '+x.n).toLowerCase().indexOf(qfl)>-1; }); }
+    /* تصدير تنفيذي للوزارة والإدارة */
+    window._exeRows=(function(){
+      var C2=window.NSKCORE, d2=C2.db(), in2=C2.all('inss'), rc2=C2.all('recs');
+      var Z={}, CO={};
+      d2.d.forEach(function(r){
+        var z=r[21]||'—', co=_tnorm(r[27]||r[10]||'—');
+        var zz=Z[z]=Z[z]||{t:0,s:0,i:0}; zz.t++;
+        var cc=CO[co]=CO[co]||{t:0,i:0,b:0}; cc.t++;
+        var iv=in2[r[0]]||{};
+        if(iv.status==='مجدول') zz.s++;
+        if(iv.status==='مُركّب'){ zz.i++; cc.i++; }
+        if((rc2[r[0]]||{}).fstat==='blocked') cc.b++;
+      });
+      var s1=[['المشعر','المواقع','مجدول','مُركّب']];
+      Object.keys(Z).forEach(function(z){ s1.push([z,Z[z].t,Z[z].s,Z[z].i]); });
+      var s2=[['الشركة','المواقع','مُركّب','متعذّر']];
+      Object.keys(CO).sort(function(x,y){ return CO[y].t-CO[x].t; })
+        .forEach(function(c){ s2.push([c,CO[c].t,CO[c].i,CO[c].b]); });
+      return {z:s1, co:s2};
+    })();
+    h+='<div class="dRow"><button type="button" class="dBtn" id="exeXls">⬇ إكسل — الملخص التنفيذي</button></div>';
     h+='</section>';
     /* V3.5: عُهدة الأجهزة */
     (function(){
@@ -8386,7 +8412,8 @@ function render(){
       }
     })();
 
-    h+='</section>';                       /* إغلاق عُهدة الأجهزة — كان ناقصًا فتداخلت الأقسام */
+    h+='<div class="dRow"><button type="button" class="dBtn" id="stkXls">⬇ إكسل — حركة العُهدة</button></div>';
+      h+='</section>';                       /* إغلاق عُهدة الأجهزة — كان ناقصًا فتداخلت الأقسام */
     /* V5.0: إشعار الشركات بمواعيد التركيب */
     (function(){
       var canN=!!(user && (user.role==='admin'||user.role==='engineer'));
@@ -8824,6 +8851,28 @@ function render(){
     saveCoTel(function(c){ c.m[n]=p; });
     try{ if(window.NSKSYNC) NSKSYNC.log('إضافة رقم شركة: '+n); }catch(e){}
     render();
+  };
+  var _exX=$i('exeXls'); if(_exX) _exX.onclick=function(){
+    try{
+      var wb=XLSX.utils.book_new(), E=window._exeRows||{z:[],co:[]};
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(E.z), 'حسب المشعر');
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(E.co), 'حسب الشركة');
+      XLSX.writeFile(wb,'نُسُك-الملخص-التنفيذي.xlsx');
+    }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
+  };
+  var _stX=$i('stkXls'); if(_stX) _stX.onclick=function(){
+    try{
+      var K=stockRows();
+      var aoa=[['الجهة','مستلَم','مستهلَك (تركيب مؤكد)','متبقٍ بالعُهدة','مطلوب لمُسنده']];
+      (K.rows||[]).forEach(function(r){ aoa.push([r.n, r.iss, r.used, r.left, r.need]); });
+      aoa.push(['المخزن', '', '', K.store, '']);
+      aoa.push(['الإجمالي', K.tot, K.used, '', '']);
+      var wb=XLSX.utils.book_new();
+      var ws=XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols']=aoa[0].map(function(x){ return {wch:Math.max(12,String(x).length+5)}; });
+      XLSX.utils.book_append_sheet(wb,ws,'حركة العُهدة');
+      XLSX.writeFile(wb,'نُسُك-حركة-العُهدة.xlsx');
+    }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
   };
   var _dsX=$i('disXls'); if(_dsX) _dsX.onclick=function(){
     try{
@@ -9687,7 +9736,8 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
     rows.forEach(function(x){ var k=x.z+' · مربع '+x.sq;
       if(!grp[k]){ grp[k]=[]; ord.push(k); } grp[k].push(x); });
     var h='<div class="iosC"><button type="button" class="nskX" id="nskMineX" aria-label="إغلاق">×</button>'
-      +'<h3>جدولي — '+arS(rows.length)+' نقطة</h3><div class="mnL">';
+      +'<h3>جدولي — '+arS(rows.length)+' نقطة</h3>'
+      +'<button type="button" class="dBtn" id="mnXls" style="margin:0 0 8px">⬇ إكسل — جدولي</button><div class="mnL">';
     ord.forEach(function(k){
       h+='<div class="mnG">'+esc3(k)+' ('+arS(grp[k].length)+')</div>';
       grp[k].forEach(function(x){
@@ -9699,6 +9749,16 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
     });
     h+='</div><p class="mnT">اضغط أي نقطة للانتقال إليها على الخريطة.</p></div>';
     ov.innerHTML=h;
+    var _mx2=ov.querySelector('#mnXls');
+    if(_mx2) _mx2.onclick=function(){
+      try{
+        var aoa=[['الشاخص','المشعر','المربع','الوصف']];
+        rows.forEach(function(x){ aoa.push([x.sg||'', x.z||'', x.sq||'', x.n||'']); });
+        var wb=XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(aoa), 'جدولي');
+        XLSX.writeFile(wb,'نُسُك-جدولي.xlsx');
+      }catch(e){}
+    };
     ov.querySelector('#nskMineX').onclick=function(){ ov.style.display='none'; };
     if(typeof window.goMap==='function'){
       Array.prototype.forEach.call(ov.querySelectorAll('.mnR'),function(el){
@@ -10559,7 +10619,8 @@ window.NSKI18N = (function(){
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'Dismantling opens after the point is marked «Installed»', '🩺 أداة فحص الأجهزة':'🩺 Device prober tool',
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'Duplicate address within the same point — each device needs its own',
   '⬇ إكسل — سجل الفك':'⬇ Excel — dismantle log',
-  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ Excel — records & supervisors performance'
+  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ Excel — records & supervisors performance',
+  '⬇ إكسل — الملخص التنفيذي':'⬇ Excel — executive summary', '⬇ إكسل — حركة العُهدة':'⬇ Excel — custody movement', '⬇ إكسل — جدولي':'⬇ Excel — my schedule'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10743,7 +10804,8 @@ window.NSKI18N = (function(){
   'الفك يتاح بعد وسم النقطة «تم التركيب»':'فک «تنصیب مکمل» نشان کے بعد ہی کھلتا ہے', '🩺 أداة فحص الأجهزة':'🩺 آلات کی جانچ کا ٹول',
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'ایک ہی پوائنٹ میں ایڈریس دہرایا گیا — ہر آلے کا اپنا ایڈریس',
   '⬇ إكسل — سجل الفك':'⬇ ایکسل — فک ریکارڈ',
-  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ ایکسل — ریکارڈز اور سپروائزر کارکردگی'
+  '⬇ إكسل — السجلات وأداء المشرفين':'⬇ ایکسل — ریکارڈز اور سپروائزر کارکردگی',
+  '⬇ إكسل — الملخص التنفيذي':'⬇ ایکسل — ایگزیکٹو خلاصہ', '⬇ إكسل — حركة العُهدة':'⬇ ایکسل — تحویل کی نقل و حرکت', '⬇ إكسل — جدولي':'⬇ ایکسل — میرا شیڈول'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();

@@ -15,11 +15,8 @@ service cloud.firestore {
     // الأدمن يكتب أي حساب — المهندس يكتب وثائق المشرفين فقط (بدون تغيير الدور)
     match /users/{uid} {
       allow read: if request.auth != null && (request.auth.uid == uid || mgr());
-      allow create, update: if ok() && (
-        role() == 'admin'
-        || (role() == 'engineer'
-            && (resource == null || resource.data.role == 'supervisor')
-            && request.resource.data.role == 'supervisor'));
+      // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات
+      allow create, update: if mgr();
       allow delete: if false;
     }
 
@@ -38,7 +35,13 @@ service cloud.firestore {
     match /hbev/{id} { allow read: if ok(); allow create: if canW(); allow update, delete: if false; }
 
     // إعدادات مشتركة (الموعد المستهدف للمسح) — الجميع يقرأ، الإدارة تكتب
-    match /settings/{id} { allow read: if ok(); allow write: if mgr(); }
+    // أرقام الهواتف (المكتب والشركات) للميدان والإدارة — لا تُعرض لحساب الوزارة
+    match /settings/contacts { allow read: if canW(); allow write: if mgr(); }
+    match /settings/cotel    { allow read: if canW(); allow write: if mgr(); }
+    match /settings/{id} {
+      allow read: if ok() && id != 'contacts' && id != 'cotel';
+      allow write: if mgr();
+    }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط
     match /colist/{id} {
