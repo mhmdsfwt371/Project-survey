@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· نسخة V13.8</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.9</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -4012,7 +4012,8 @@ function drawOut(){
     try{ bytes+=JSON.stringify(r).length; }catch(e){}
   });
   const mb=bytes/1048576, pctv=Math.min(100, mb/40*100);
-  $('#oMb').textContent=mb.toLocaleString('ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1});
+  var _ol=(window.NSKI18N&&NSKI18N.get)?NSKI18N.get():'ar';
+  $('#oMb').textContent=mb.toLocaleString(_ol==='en'?'en-GB':'ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1});
   $('#oBar').style.width=pctv+'%';
   $('#oBar').style.background = mb>30?'#E05252' : mb>18?'#E8C34B' : '#C9A24B';
   drawSync();
@@ -4062,7 +4063,10 @@ function drawSync(){
   let bytes=0; all.forEach(r=>{ if(!r.synced){
     try{ bytes+=JSON.stringify(r.photos||{}).length; }catch(e){} } });
   $('#syPend').textContent = pend ? pend.toLocaleString('ar-EG')+' إرسالية' : 'لا شيء';
-  $('#sySize').textContent = (bytes/1048576).toLocaleString('ar-EG',{minimumFractionDigits:1,maximumFractionDigits:1})+' ميجابايت';
+  const _ul=(window.NSKI18N&&NSKI18N.get)?NSKI18N.get():'ar';
+  const _lc=_ul==='en'?'en-GB':'ar-EG';
+  const _mbU=_ul==='en'?' MB':(_ul==='ur'?' میگابائٹ':' ميجابايت');
+  $('#sySize').textContent = (bytes/1048576).toLocaleString(_lc,{minimumFractionDigits:1,maximumFractionDigits:1})+_mbU;
   const on = (typeof navigator!=='undefined' && navigator.onLine!==false);
   $('#syNet').innerHTML = on
     ? '<span style="color:var(--green)">متصل</span>'
@@ -4073,7 +4077,7 @@ function drawSync(){
   let _ls=''; all.forEach(r=>{ if(r && r.syncAt && r.syncAt>_ls) _ls=r.syncAt; });
   const _le=$('#syLast');
   if(_le) _le.textContent = _ls
-    ? new Date(_ls).toLocaleString('ar-EG',{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})
+    ? new Date(_ls).toLocaleString(_lc,{day:'numeric',month:'numeric',hour:'2-digit',minute:'2-digit'})
     : 'لم تتم بعد';
 }
 function drawQ(){
@@ -9640,6 +9644,7 @@ window.NSKI18N = (function(){
     if(lang === 'ar' || !raw) return null;
     var t = String(raw).trim(); if(!t) return null;
     var hit = (D[lang] || {})[t];
+    if(hit == null) hit = (D[lang] || {})[t.replace(/\s+/g,' ')];
     if(hit != null) return hit;
     /* لا ترجمة: أعِد الأرقام وحدها إن كان النص يحوي رقمًا عربيًا */
     var d = digits(t);
@@ -9730,6 +9735,7 @@ window.NSKI18N = (function(){
       return;
     }
     apply();
+    try{ if(window.nskSync) window.nskSync(); }catch(e){}
   }
 
   function menu(anchor){
@@ -9976,7 +9982,8 @@ window.NSKI18N = (function(){
   'أُسندت':'Assigned', 'نقطة إلى':'points to', 'نقطة.':'points.',
   'موقع.':'sites.', '— بفارق':'— by a margin of',
   '— والمنافسة على حامي!':'— and the race is on!',
-  '· موعد':'· date', '· مربع':'· square', 'الحساب —':'Account —'
+  '· موعد':'· date', '· مربع':'· square', 'الحساب —':'Account —',
+  'التصدير اليدوي أدناه بديل مؤقت للمزامنة — في النسخة النهائية يرفع التطبيق تلقائيًا في الخلفية ولا يحتاج ضغط زر.':'The manual export below is a temporary stand-in for sync — in the final release the app uploads automatically in the background, no button needed.', 'النسخة تشمل كل المسوحات والتركيبات والمواقع المقترحة بصورها. الدمج يضيف الجديد، وعند التعارض يكسب الأحدث مع الاحتفاظ بصور وسجلّ الطرفين.':'The backup includes every survey, installation and proposed site with its photos. Merging adds what is new; on conflict the newer wins while keeping both sides\' photos and history.', '⬆ دمج نسخة زميل / استعادة':'⬆ Merge a colleague\'s backup / restore', '⬇ Word — دليل الفني':'⬇ Technician guide — Word', '⬇ Word — دليل المهندس':'⬇ Engineer guide — Word', '⬇ Word — دليل الوزارة':'⬇ Ministry guide — Word', '⬇ إكسل — القائمة الحالية':'⬇ Excel — current list', '⬇ نسخة احتياطية كاملة':'⬇ Full backup', '＋ موقع غير مسجّل':'＋ Unregistered site', '📄 أدلة النظام — PDF:':'📄 System guides — PDF:', '📄 دليل النظام الكامل — PDF':'📄 Full system guide — PDF', '📊 لوحة المتابعة':'📊 Tracking dashboard', '📕 دليل النظام الكامل ونسخ Word — للأدمن والمهندسين فقط':'📕 Full system guide and Word copies — admins and engineers only', '📕 دليل النظام الكامل — Word':'📕 Full system guide — Word', '🔄 فحص التحديثات الآن':'🔄 Check for updates now', '🖨 PDF — القائمة الحالية':'🖨 PDF — current list', '🧩 ملف الواجهات JSON — للمطوّرين والتكامل':'🧩 JSON API file — developers & integration', '⬇ تثبيت التطبيق':'⬇ Install the app', 'نسخة':'version', 'متصل':'Online', 'غير متصل — العمل يُحفظ محليًا':'Offline — work is saved locally', 'لا شيء':'Nothing', 'كل ما على الجهاز مرفوع.':'Everything on this device is uploaded.', 'العمل محفوظ على الجهاز. لا يُمسح أي شيء قبل تأكيد الخادم باستلامه.':'Work is saved on the device. Nothing is deleted before the server confirms receipt.', 'صدّر بنهاية كل يوم ميداني حتى لا تتراكم الصور على الجهاز.':'Export at the end of each field day so photos do not pile up on the device.', 'يُفضّل التصدير الآن قبل مواصلة المسح.':'Best to export now before continuing the survey.', 'المساحة شارفت على الامتلاء — صدّر ونزّل الصور ثم امسح بيانات التجربة.':'Storage is nearly full — export and download the photos, then wipe the test data.', 'تأكيد الموقع هنا':'Confirm location here', '◎ موقعي':'◎ My location', 'تسجيل موقع غير موجود في السجل':'Register a site not in the registry', 'تعديل موقع مقترح':'Edit proposed site', 'هوية الموقع':'Site identity', 'عدد الخيام أو الغرف':'Number of tents or rooms', 'لماذا ليس في السجل؟':'Why is it not in the registry?', 'السبب':'Reason', 'شرح مختصر':'Brief explanation', 'اختياري — اكتبه فقط لو فيه تفصيلة تساعد المكتب':'Optional — write it only if a detail helps the office', 'اختر المنطقة التي يتبعها الموقع':'Choose the region this site belongs to', 'من الشاخص المثبت في الموقع':'From the signpost fixed at the site', 'الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8':'Format: tent name/street no. — e.g. 57/2 or 12A/8', 'الأولى إلزامية — بها يطابق المكتب الموقع. الباقي اختياري وكل صورة تساعد.':'The first is mandatory — the office matches the site with it. The rest are optional, and every photo helps.', 'إرسال للاعتماد':'Submit for approval', 'حفظ التعديل':'Save changes', '(دقة يدوي — من الخريطة م)':'(accuracy: manual — from the map)', 'الإحداثيات:':'Coordinates:', 'مقترح من الميدان · اضغط للتعديل':'Proposed from the field · tap to edit', 'عرض الخريطة':'Show map', '📋 ملخص اليوم':'📋 Today\'s summary', '⬇ تصدير':'⬇ Export', 'سباق المسح':'Survey race', 'سباق التركيب':'Installation race', 'أول تركيبة تُشعل سباق التركيب':'The first installation ignites the race', 'التحديات الميدانية — إفادة المشرفين':'Field challenges — supervisors\' reports', 'تقدم المسح من إجمالي المواقع':'Survey progress out of all sites', 'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق':'Field: assignment, notification, custody, survey and audit', 'غير مناسب للتركيب':'Unfit for installation', 'يوم متبقٍ':'days left', '→ رجوع':'→ Back', 'رجوع':'Back'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10149,7 +10156,8 @@ window.NSKI18N = (function(){
   'أُسندت':'تفویض ہوئے', 'نقطة إلى':'نقاط بنام', 'نقطة.':'نقاط۔',
   'موقع.':'مقامات۔', '— بفارق':'— کے فرق سے',
   '— والمنافسة على حامي!':'— اور مقابلہ زوروں پر ہے!',
-  '· موعد':'· تاریخ', '· مربع':'· مربع', 'الحساب —':'اکاؤنٹ —'
+  '· موعد':'· تاریخ', '· مربع':'· مربع', 'الحساب —':'اکاؤنٹ —',
+  'التصدير اليدوي أدناه بديل مؤقت للمزامنة — في النسخة النهائية يرفع التطبيق تلقائيًا في الخلفية ولا يحتاج ضغط زر.':'نیچے دستی ایکسپورٹ مزامنت کا عارضی متبادل ہے — حتمی نسخے میں ایپ پس منظر میں خودکار اپ لوڈ کرتی ہے، بٹن کی ضرورت نہیں۔', 'النسخة تشمل كل المسوحات والتركيبات والمواقع المقترحة بصورها. الدمج يضيف الجديد، وعند التعارض يكسب الأحدث مع الاحتفاظ بصور وسجلّ الطرفين.':'بیک اپ میں تمام سروے، تنصیبات اور تجویز کردہ مقامات تصاویر سمیت شامل ہیں۔ ضم نیا جوڑتا ہے؛ ٹکراؤ پر تازہ تر جیتتا ہے اور دونوں فریقوں کی تصاویر و ریکارڈ محفوظ رہتے ہیں۔', '⬆ دمج نسخة زميل / استعادة':'⬆ ساتھی کا بیک اپ ضم / بحالی', '⬇ Word — دليل الفني':'⬇ فنی گائیڈ — Word', '⬇ Word — دليل المهندس':'⬇ انجینئر گائیڈ — Word', '⬇ Word — دليل الوزارة':'⬇ وزارتی گائیڈ — Word', '⬇ إكسل — القائمة الحالية':'⬇ ایکسل — موجودہ فہرست', '⬇ نسخة احتياطية كاملة':'⬇ مکمل بیک اپ', '＋ موقع غير مسجّل':'＋ غیر مندرج مقام', '📄 أدلة النظام — PDF:':'📄 نظام کی گائیڈز — PDF:', '📄 دليل النظام الكامل — PDF':'📄 مکمل نظام گائیڈ — PDF', '📊 لوحة المتابعة':'📊 ٹریکنگ ڈیش بورڈ', '📕 دليل النظام الكامل ونسخ Word — للأدمن والمهندسين فقط':'📕 مکمل نظام گائیڈ اور Word نسخے — صرف ایڈمن اور انجینئرز', '📕 دليل النظام الكامل — Word':'📕 مکمل نظام گائیڈ — Word', '🔄 فحص التحديثات الآن':'🔄 اپ ڈیٹس ابھی جانچیں', '🖨 PDF — القائمة الحالية':'🖨 PDF — موجودہ فہرست', '🧩 ملف الواجهات JSON — للمطوّرين والتكامل':'🧩 JSON انٹرفیس فائل — ڈیولپرز و انضمام', '⬇ تثبيت التطبيق':'⬇ ایپ انسٹال کریں', 'نسخة':'نسخہ', 'متصل':'آن لائن', 'غير متصل — العمل يُحفظ محليًا':'آف لائن — کام مقامی طور پر محفوظ ہوتا ہے', 'لا شيء':'کچھ نہیں', 'كل ما على الجهاز مرفوع.':'اس آلے پر موجود سب کچھ اپ لوڈ ہو چکا ہے۔', 'العمل محفوظ على الجهاز. لا يُمسح أي شيء قبل تأكيد الخادم باستلامه.':'کام آلے پر محفوظ ہے۔ سرور کی وصولی کی تصدیق سے پہلے کچھ حذف نہیں ہوتا۔', 'صدّر بنهاية كل يوم ميداني حتى لا تتراكم الصور على الجهاز.':'ہر فیلڈ دن کے آخر میں ایکسپورٹ کریں تاکہ تصاویر آلے پر جمع نہ ہوں۔', 'يُفضّل التصدير الآن قبل مواصلة المسح.':'سروے جاری رکھنے سے پہلے ابھی ایکسپورٹ بہتر ہے۔', 'المساحة شارفت على الامتلاء — صدّر ونزّل الصور ثم امسح بيانات التجربة.':'جگہ تقریباً بھر چکی ہے — ایکسپورٹ کر کے تصاویر ڈاؤن لوڈ کریں، پھر آزمائشی ڈیٹا صاف کریں۔', 'تأكيد الموقع هنا':'یہاں مقام کی تصدیق کریں', '◎ موقعي':'◎ میرا مقام', 'تسجيل موقع غير موجود في السجل':'رجسٹری میں غیر موجود مقام درج کریں', 'تعديل موقع مقترح':'تجویز کردہ مقام میں ترمیم', 'هوية الموقع':'مقام کی شناخت', 'عدد الخيام أو الغرف':'خیموں یا کمروں کی تعداد', 'لماذا ليس في السجل؟':'رجسٹری میں کیوں نہیں؟', 'السبب':'وجہ', 'شرح مختصر':'مختصر وضاحت', 'اختياري — اكتبه فقط لو فيه تفصيلة تساعد المكتب':'اختیاری — صرف تب لکھیں جب کوئی تفصیل دفتر کی مدد کرے', 'اختر المنطقة التي يتبعها الموقع':'وہ علاقہ چنیں جس سے یہ مقام تعلق رکھتا ہے', 'من الشاخص المثبت في الموقع':'مقام پر نصب سائن پوسٹ سے', 'الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8':'فارمیٹ: خیمے کا نام/گلی نمبر — مثلاً 57/2 یا 12A/8', 'الأولى إلزامية — بها يطابق المكتب الموقع. الباقي اختياري وكل صورة تساعد.':'پہلی لازمی ہے — دفتر اسی سے مقام کی مطابقت کرتا ہے۔ باقی اختیاری ہیں اور ہر تصویر مدد دیتی ہے۔', 'إرسال للاعتماد':'منظوری کے لیے بھیجیں', 'حفظ التعديل':'ترمیم محفوظ کریں', '(دقة يدوي — من الخريطة م)':'(درستگی: دستی — نقشے سے)', 'الإحداثيات:':'کوآرڈینیٹس:', 'مقترح من الميدان · اضغط للتعديل':'فیلڈ سے تجویز کردہ · ترمیم کے لیے دبائیں', 'عرض الخريطة':'نقشہ دکھائیں', '📋 ملخص اليوم':'📋 آج کا خلاصہ', '⬇ تصدير':'⬇ ایکسپورٹ', 'سباق المسح':'سروے ریس', 'سباق التركيب':'تنصیب ریس', 'أول تركيبة تُشعل سباق التركيب':'پہلی تنصیب ریس کا آغاز کرتی ہے', 'التحديات الميدانية — إفادة المشرفين':'میدانی چیلنجز — سپروائزر رپورٹس', 'تقدم المسح من إجمالي المواقع':'کل مقامات میں سروے کی پیش رفت', 'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق':'فیلڈ: تقسیم، اطلاع، تحویل، سروے اور جانچ', 'غير مناسب للتركيب':'تنصیب کے لیے نامناسب', 'يوم متبقٍ':'دن باقی', '→ رجوع':'→ واپس', 'رجوع':'واپس'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
