@@ -22,9 +22,15 @@
   .kc b{display:block;font-size:24px}
   .kc span{font-size:11px;color:#8a9199}
   .warn{border:1px solid #E8873A;color:#E8C36A;border-radius:10px;padding:10px 12px;font-size:13px}
+  .topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+  .nx{width:40px;height:40px;border-radius:50%;font-size:16px;font-weight:900;line-height:1}
 </style>
 </head>
 <body>
+<div class="topbar">
+  <button id="pBack" type="button">→ رجوع</button>
+  <button id="pClose" type="button" class="nx" aria-label="إغلاق">✕</button>
+</div>
 <h1>🩺 نُسُك — صحة الأجهزة</h1>
 <p class="muted">لوحة حية لكل الأجهزة المسجّلة (راوتر · قارئ · كاميرا لكل نقطة). <b>الفحص الفعلي</b> يعمل فقط من جهازٍ على شبكة الميدان مع فتح الأداة كملف محلي — وإلا فهي شاشة عرضٍ حيّ تتحدّث لحظيًا من آخر نبضات المكتب.</p>
 
@@ -69,6 +75,18 @@ var KINDS=[['router','راوتر'],['reader','قارئ'],['camera','كاميرا
 var CAN_PROBE = (location.protocol!=='https:');
 
 function $(id){ return document.getElementById(id); }
+/* كل صفحة تُفتح في تبويبٍ لها ✕ ورجوع — قاعدة عامة */
+(function(){
+  var isFile = (location.protocol==='file:');
+  $('pClose').onclick=function(){
+    window.close();
+    if(!isFile) setTimeout(function(){ location.href='../'; },150);
+  };
+  if(isFile){ $('pBack').style.display='none'; }
+  else $('pBack').onclick=function(){
+    if(history.length>1) history.back(); else location.href='../';
+  };
+})();
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,function(c){return '&#'+c.charCodeAt(0)+';';}); }
 
 $('go').onclick=function(){
