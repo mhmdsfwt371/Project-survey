@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.29</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.30</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1507,7 +1507,8 @@ window.addEventListener('error', function(e){
       </div>
       <div class="wrap" style="padding:12px 0 24px">
         <div id="pendBox"></div>
-        <div style="margin:8px 0"><button class="btn s" id="mgXls" type="button">⬇ إكسل — السجلات وأداء المشرفين</button></div>
+        <div style="margin:8px 0"><button class="btn s" id="mgXls" type="button" style="display:none">⬇ إكسل — السجلات وأداء المشرفين</button></div>
+        <div id="myPerf"></div>
         <div id="mgrTbl"></div>
       </div>
     </section>
@@ -4012,13 +4013,38 @@ function drawMgr(){
     _dd.style.display=_mgr2?'':'none';
     if(_mgr2) _dd.onclick=function(){ window.wipeDrafts(); };
   }
-  var _mx=$('#mgXls');
-  if(_mx){
-    var _mgr=!!(window.NSK_USER && (NSK_USER.role==='engineer'||NSK_USER.role==='admin'));
-    _mx.style.display=_mgr?'':'none';
-    if(_mgr) _mx.onclick=function(){ window.nskPerfXls(); };
-  }
+  try{
+    var _u=window.NSK_USER||{}, _isMgr=(_u.role==='engineer'||_u.role==='admin');
+    var _mx=$('#mgXls');
+    if(_mx){ _mx.style.display=_isMgr?'':'none'; _mx.onclick=_isMgr?function(){ window.nskPerfXls(); }:null; }
+    var _mp=$('#myPerf');
+    if(_mp) _mp.innerHTML = (_u.role==='supervisor') ? window.nskMyPerfHtml() : '';
+  }catch(e){}
 }
+/* بطاقة المشرف: شغله هو وترتيبه وسط زملائه — الأرقام التفصيلية للآخرين لا تُعرض */
+window.nskMyPerfHtml = function(){
+  try{
+    var AR9=function(n){ try{ return String(n).replace(/[0-9]/g,function(d){ return '٠١٢٣٤٥٦٧٨٩'[+d]; }); }catch(e){ return String(n); } };
+    var P={}, t0=new Date().toISOString().slice(0,10);
+    Object.values(recs).forEach(function(r){
+      var by=String((r&&r.by)||'').trim(); if(!by) return;
+      var p=P[by]=P[by]||{t:0,done:0,today:0,ph:0};
+      p.t++; if(r.fstat==='done') p.done++;
+      if(String(r.date||'').slice(0,10)===t0) p.today++;
+      p.ph+=Object.keys(r.photos||{}).length;
+    });
+    var meN=String(me||'').trim();
+    var mine=P[meN]||{t:0,done:0,today:0,ph:0};
+    var order=Object.keys(P).sort(function(a,b){ return (P[b].t-P[a].t)||(P[b].done-P[a].done); });
+    var n=order.length, rk=order.indexOf(meN)+1;
+    var rkTxt = !n||!mine.t ? 'ابدأ أول مسح ليظهر ترتيبك 🚀'
+      : (rk===1 ? '🏆 أنت الأول من '+AR9(n)+' — استمر!'
+                : 'ترتيبك: الـ'+AR9(rk)+' من '+AR9(n)+' — قدّامك '+AR9(P[order[rk-2]].t-mine.t)+' نقطة للي فوقك 💪');
+    return '<div class="myPerfCard"><b>شغلي</b> — إجمالي '+AR9(mine.t)
+      +' · مكتمل '+AR9(mine.done)+' · اليوم '+AR9(mine.today)+' · صور '+AR9(mine.ph)
+      +'<div class="mpRk">'+rkTxt+'</div></div>';
+  }catch(e){ return ''; }
+};
 /* السجلات + أداء المشرفين — أساس تنقيط الفنيين على شغلهم الفعلي */
 window.nskPerfXls = function(){
   try{
@@ -5149,6 +5175,9 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+.myPerfCard{margin:8px 0;padding:11px 13px;border:1px solid var(--gold,#C9A24B);border-radius:12px;font-size:13px;line-height:1.9}
+.myPerfCard .mpRk{color:var(--gold,#C9A24B);font-weight:800;margin-top:3px}
+
 .dT3{font-size:12px;letter-spacing:.1em;color:var(--gold,#C9A24B);font-weight:800;margin:14px 0 6px}
 .hbHist{display:flex;align-items:flex-end;gap:2px;height:52px;padding:4px 2px;background:#0f1113;border:1px solid var(--line,#2c3a34);border-radius:8px}
 .hbHist .hbCol{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end}
@@ -10634,7 +10663,8 @@ window.NSKI18N = (function(){
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'Duplicate address within the same point — each device needs its own',
   '⬇ إكسل — سجل الفك':'⬇ Excel — dismantle log',
   '⬇ إكسل — السجلات وأداء المشرفين':'⬇ Excel — records & supervisors performance',
-  '⬇ إكسل — الملخص التنفيذي':'⬇ Excel — executive summary', '⬇ إكسل — حركة العُهدة':'⬇ Excel — custody movement', '⬇ إكسل — جدولي':'⬇ Excel — my schedule'
+  '⬇ إكسل — الملخص التنفيذي':'⬇ Excel — executive summary', '⬇ إكسل — حركة العُهدة':'⬇ Excel — custody movement', '⬇ إكسل — جدولي':'⬇ Excel — my schedule',
+  'شغلي':'My work', 'إجمالي':'Total', 'صور':'Photos', 'ابدأ أول مسح ليظهر ترتيبك 🚀':'Do your first survey to see your rank 🚀'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -10819,7 +10849,8 @@ window.NSKI18N = (function(){
   'العنوان مكرّر داخل النقطة نفسها — كل جهاز عنوانه':'ایک ہی پوائنٹ میں ایڈریس دہرایا گیا — ہر آلے کا اپنا ایڈریس',
   '⬇ إكسل — سجل الفك':'⬇ ایکسل — فک ریکارڈ',
   '⬇ إكسل — السجلات وأداء المشرفين':'⬇ ایکسل — ریکارڈز اور سپروائزر کارکردگی',
-  '⬇ إكسل — الملخص التنفيذي':'⬇ ایکسل — ایگزیکٹو خلاصہ', '⬇ إكسل — حركة العُهدة':'⬇ ایکسل — تحویل کی نقل و حرکت', '⬇ إكسل — جدولي':'⬇ ایکسل — میرا شیڈول'
+  '⬇ إكسل — الملخص التنفيذي':'⬇ ایکسل — ایگزیکٹو خلاصہ', '⬇ إكسل — حركة العُهدة':'⬇ ایکسل — تحویل کی نقل و حرکت', '⬇ إكسل — جدولي':'⬇ ایکسل — میرا شیڈول',
+  'شغلي':'میرا کام', 'إجمالي':'کل', 'صور':'تصاویر', 'ابدأ أول مسح ليظهر ترتيبك 🚀':'اپنی رینک دیکھنے کے لیے پہلا سروے کریں 🚀'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
