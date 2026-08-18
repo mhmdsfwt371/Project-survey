@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.14</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.15</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -3297,7 +3297,7 @@ window.nskTell = function(id){
   ov.querySelectorAll('.tl-p').forEach(function(b){ b.onclick=function(){
     const p=String(b.getAttribute('data-p')||'').replace(/[^\d]/g,'');
     if(!p){ toast('رقم غير صالح',1); return; }
-    try{ window.open('https://wa.me/'+p+'?text='+encodeURIComponent(txt()),'_blank'); }catch(e){}
+    try{ window.open('https://wa.me/'+p+'?text='+encodeURIComponent(txt()),'_blank','noopener'); }catch(e){}
     done(); }; });
   ov.querySelector('#tellShare').onclick=function(){
     const t=txt();
@@ -7037,7 +7037,7 @@ window.sendCompany=function(co){
   if(!m){ toast('لا مواقع مجدولة لهذه الشركة',1); return; }
   var ph=companyPhone(co);
   if(!ph){ toast('أضف رقم الشركة من «أرقام شركات الخدمة» أولًا',1); return; }
-  try{ window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(m.text),'_blank'); }catch(e){}
+  try{ window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(m.text),'_blank','noopener'); }catch(e){}
   try{ if(window.NSKSYNC) NSKSYNC.log('إشعار واتساب لشركة '+co+' — '+m.n+' موقعًا'); }catch(e){}
 };
 /* ===== الجدولة الطازجة: تجميع → شارة عائمة → ورقة إشعارات بضغطة ===== */
@@ -7114,7 +7114,7 @@ window.sendTeam=function(team, raw){
 window.sendTeam._go=function(team, ph, text, n){
   var m={text:text, n:n};
   if(ph){
-    try{ window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(m.text),'_blank'); }catch(e){}
+    try{ window.open('https://wa.me/'+ph+'?text='+encodeURIComponent(m.text),'_blank','noopener'); }catch(e){}
     try{ if(window.NSKSYNC) NSKSYNC.log('إرسال جدول '+m.n+' نقطة إلى '+team); }catch(e){}
     return;
   }
@@ -7212,7 +7212,7 @@ function coNotify(co, mode){
 }
 coNotify._send=function(g, mode, t){
   if(mode==='wa' && g.tel){
-    try{ window.open('https://wa.me/'+g.tel+'?text='+encodeURIComponent(t),'_blank'); }catch(e){}
+    try{ window.open('https://wa.me/'+g.tel+'?text='+encodeURIComponent(t),'_blank','noopener'); }catch(e){}
   } else if(navigator.share){
     navigator.share({text:t}).catch(function(){});
   } else {
@@ -8648,7 +8648,7 @@ function render(){
   }; });
   Array.prototype.forEach.call(document.querySelectorAll('#nskDash .qaNav'),function(b){ b.onclick=function(){
     var la=b.getAttribute('data-la'), lo=b.getAttribute('data-lo');
-    try{ window.open('https://www.google.com/maps/dir/?api=1&destination='+la+','+lo+'&travelmode=walking','_blank'); }catch(e){}
+    try{ window.open('https://www.google.com/maps/dir/?api=1&destination='+la+','+lo+'&travelmode=walking','_blank','noopener'); }catch(e){}
   }; });
   var wg=$i('wpGo'); if(wg) wg.onclick=async function(){
     if(!(user && user.role==='admin')){ try{ toast('هذا الإجراء للمشرف العام فقط',1); }catch(e){} return; }
@@ -9084,7 +9084,7 @@ window.nskBell = function(blAnchor){
         if(a==='wa'){
           var p=staffPhone(e.by);
           var msg='بخصوص: '+String(e.txt||'')+(sid2?('\n'+ (function(){ try{ return siteMsg(sid2,'',''); }catch(x){ return sid2; } })()):'');
-          try{ window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank'); }catch(x){}
+          try{ window.open('https://wa.me/'+p+'?text='+encodeURIComponent(msg),'_blank','noopener'); }catch(x){}
           try{ if(window.NSKSYNC) NSKSYNC.log('مراسلة '+e.by+' بخصوص '+(sid2||'حدث')); }catch(x){}
           return; }
         if(a==='copy'){
@@ -9358,7 +9358,7 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
     }
     Array.prototype.forEach.call(ov.querySelectorAll('.mnNav'),function(b){
       b.onclick=function(ev){ ev.stopPropagation();
-        try{ window.open('https://www.google.com/maps/dir/?api=1&destination='+b.getAttribute('data-la')+','+b.getAttribute('data-lo')+'&travelmode=walking','_blank'); }catch(e){} };
+        try{ window.open('https://www.google.com/maps/dir/?api=1&destination='+b.getAttribute('data-la')+','+b.getAttribute('data-lo')+'&travelmode=walking','_blank','noopener'); }catch(e){} };
     });
     ov.style.display='flex';
   }

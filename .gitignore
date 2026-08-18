@@ -1,3 +1,10 @@
 backups/bundle.json
 backups/latest/*.json
 !backups/latest/_meta.json
+
+# توقيع أندرويد ومخرجات البناء — لا تدخل المستودع العام أبدًا
+*.keystore
+*.jks
+*.apk
+*.aab
+nusuk-app-*.zip
