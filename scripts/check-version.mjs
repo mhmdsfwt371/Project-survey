@@ -1,5 +1,5 @@
 // حارس التوثيق: يفشل إن تخلّف أي ملف عن نسخة التطبيق، أو اختلّ توازن أقسام اللوحة
-import { readFileSync } from 'fs';
+import { readFileSync, writeFileSync as writeFileSync2 } from 'fs';
 import { execSync } from 'child_process';
 
 const fail = [];
@@ -156,4 +156,14 @@ try {
 
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
+/* كتلة أداة الفحص تُفحص صيغتها ككل كتل التطبيق */
+try {
+  const pr = readFileSync('tools/prober.html','utf8');
+  const s0 = pr.lastIndexOf('<script>');
+  const body = pr.slice(pr.indexOf('>', s0)+1, pr.lastIndexOf('</script>'));
+  writeFileSync2('/tmp/_prb.js', body);
+  execSync('node --check /tmp/_prb.js', {stdio:'pipe'});
+  ok.push('tools/prober.html: الصيغة سليمة ✓');
+} catch(e){ fail.push('tools/prober.html: خطأ صيغة — ' + String(e.message||'').slice(0,120)); }
+
 console.log('\nالتوثيق متطابق مع التطبيق ✅');
