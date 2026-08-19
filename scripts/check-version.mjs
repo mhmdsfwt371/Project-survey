@@ -28,12 +28,21 @@ function docxVer(f){
     return m[1];
   } catch { fail.push(`${f}: تعذّرت قراءته`); return null; }
 }
-const docx   = docxVer('docs/nusuk-guide.docx');
+/* وثيقة النظام باسم النسخة: ملف واحد docs/nusuk-system-V*.docx واسمه يطابق نسخة التطبيق */
+import { readdirSync } from 'fs';
+const sysFiles = readdirSync('docs').filter(f => /^nusuk-system-V[\d.]+\.docx$/.test(f));
+let sysDocx = null, sysName = null;
+if (sysFiles.length !== 1) fail.push(`docs/nusuk-system-V*.docx: يجب أن يوجد ملف واحد بالضبط — الموجود ${sysFiles.length}`);
+else { sysName = sysFiles[0]; sysDocx = docxVer('docs/' + sysName);
+  const nameVer = (sysName.match(/V\d+(?:\.\d+)*/) || [])[0];
+  if (nameVer && app && nameVer !== app) fail.push(`${sysName}: اسم الملف ${nameVer} بينما التطبيق ${app} — أعد توليده بالاسم الجديد`);
+}
 const manual = docxVer('docs/nusuk-user-manual.docx');
 
 const want = app;
 const seen = { 'sw.js': cache && 'V' + cache, 'docs/api-schema.json': schema,
-               'docs/system.md': sysmd, 'docs/nusuk-guide.docx': docx,
+               'docs/system.md': sysmd,
+               ...(sysName ? { ['docs/' + sysName]: sysDocx } : {}),
                'docs/nusuk-user-manual.docx': manual };
 if (want) {
   ok.push(`نسخة التطبيق: ${want}`);
