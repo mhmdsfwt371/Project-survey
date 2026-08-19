@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.35</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.36</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8806,6 +8806,16 @@ function render(){
           }).join('')+'</div>'
         +'<p class="dTs">ذروة الأعطال: '+AR(pk)+':00 ('+AR(mx)+' انقطاعًا) — إجمالي '+AR(tot24)+' انقطاعًا في ٢٤ ساعة.</p>';
     }
+    var _cE=!!(user && (user.role==='admin'||user.role==='engineer'));
+    if(_cE){
+      h+='<div class="dT3">تحميل العناوين دفعة واحدة</div>'
+        +'<div class="dRow">'
+        +'<button type="button" class="dBtn" id="hbTpl">⬇ قالب إكسل — كل النقاط</button>'
+        +'<button type="button" class="dBtn" id="hbImp">⬆ استيراد عناوين الأجهزة</button>'
+        +'<input type="file" id="hbImpF" accept=".xlsx,.xls,.csv" style="display:none">'
+        +'</div>'
+        +'<p class="dTs">القالب فيه الـ١٧٨٧ نقطة جاهزة (المعرّف والمشعر والشاخص) — املأ أعمدة راوتر/قارئ/كاميرا لما يلزم وارفعه، وستظهر كلها في أداة الفحص فورًا حتى لو كانت جميعها غير متصلة.</p>';
+    }
     h+='<div class="dRow"><button type="button" class="dBtn" id="hbNow">📡 تحديث كل النقاط الآن</button>'
       +'<a class="dBtn" href="tools/prober.html" target="_blank" rel="noopener">🛠 أداة الفحص</a></div>';
     h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
@@ -8940,6 +8950,67 @@ function render(){
       XLSX.writeFile(wb,'نُسُك-زيارة-صحة-الأجهزة.xlsx');
     }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
   };
+  var _tp=$i('hbTpl'); if(_tp) _tp.onclick=function(){
+    try{
+      var C=window.NSKCORE, dbx=C.db(), _in=C.all('inss');
+      var aoa=[['المعرّف','المشعر','الشاخص','راوتر','قارئ','كاميرا']];
+      dbx.d.forEach(function(r){
+        var n=((_in[r[0]]||{}).net)||{};
+        aoa.push([r[0], r[21]||'', String(r[9]||''), n.router||'', n.reader||'', n.camera||'']);
+      });
+      var wb=XLSX.utils.book_new(), ws=XLSX.utils.aoa_to_sheet(aoa);
+      ws['!cols']=[{wch:20},{wch:10},{wch:12},{wch:18},{wch:18},{wch:18}];
+      XLSX.utils.book_append_sheet(wb,ws,'العناوين');
+      XLSX.writeFile(wb,'نُسُك-قالب-عناوين-الأجهزة.xlsx');
+    }catch(e){ try{ toast('تعذّر إنشاء القالب',1); }catch(x){} }
+  };
+  var _imB=$i('hbImp'), _imF=$i('hbImpF');
+  if(_imB&&_imF){
+    _imB.onclick=function(){ _imF.click(); };
+    _imF.onchange=function(){
+      var f=_imF.files&&_imF.files[0]; if(!f) return;
+      var rd=new FileReader();
+      rd.onload=function(){
+        try{
+          var wb=XLSX.read(rd.result,{type:'array'});
+          var rows=XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{header:1,defval:''});
+          if(!rows.length){ toast('الملف فارغ',1); return; }
+          var h0=rows[0].map(function(x){ return String(x||'').trim(); });
+          var ci={id:0,rt:3,rd2:4,cm:5};
+          h0.forEach(function(x,i2){
+            if(/معر|شاخص|id/i.test(x)&&i2===0) ci.id=0;
+            if(/راوتر|router/i.test(x)) ci.rt=i2;
+            if(/قارئ|reader/i.test(x)) ci.rd2=i2;
+            if(/كامير|camera/i.test(x)) ci.cm=i2;
+          });
+          var body=(/معر|شاخص|راوتر|id/i.test(h0.join(' ')))?rows.slice(1):rows;
+          var C=window.NSKCORE, dbx=C.db(), _in=C.all('inss');
+          var bySign={}; dbx.d.forEach(function(r){ var s=String(r[9]||'').trim(); if(s) bySign[s]=bySign[s]===undefined?r[0]:null; });
+          var ok2=0, miss=0;
+          body.forEach(function(r2){
+            var key=String(r2[ci.id]||'').trim(); if(!key) return;
+            var id = key.indexOf('NSK-')===0 ? key : bySign[key];
+            if(!id || !dbx.d.some(function(x){ return x[0]===id; })){ miss++; return; }
+            var net={ router:String(r2[ci.rt]||'').trim(),
+                      reader:String(r2[ci.rd2]||'').trim(),
+                      camera:String(r2[ci.cm]||'').trim() };
+            if(!net.router&&!net.reader&&!net.camera) return;
+            var rec=_in[id]||{id:id};
+            rec.net=net;
+            C.set('inss',id,rec);
+            try{ window.storage.set('ins:'+id, JSON.stringify(rec), false); }catch(e){}
+            try{ if(window.NSKSYNC) NSKSYNC.push('inss',id,rec); }catch(e){}
+            ok2++;
+          });
+          try{ if(window.NSKSYNC) NSKSYNC.log('استيراد عناوين الأجهزة — '+ok2+' نقطة'); }catch(e){}
+          toast('استُوردت عناوين '+ok2+' نقطة'+(miss?(' — تعذّر التعرف على '+miss):'')+' ✓');
+          try{ window.nskSync(); }catch(e){}
+        }catch(e){ toast('تعذّرت قراءة الملف — احفظه إكسل وأعد المحاولة',1); }
+        _imF.value='';
+      };
+      rd.readAsArrayBuffer(f);
+    };
+  }
   var _hbN=$i('hbNow'); if(_hbN) _hbN.onclick=function(){
     try{
       var C=window.NSKCORE, c={t:new Date().toISOString(), by:(window.NSK_USER||{}).email||''};

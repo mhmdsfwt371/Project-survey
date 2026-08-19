@@ -236,7 +236,7 @@ function paint(){
     t+='<tr'+(badPts[s]?' class="bad"':'')+'><td><b>'+esc(s)+'</b></td>'
       +cell(s,'router')+cell(s,'reader')+cell(s,'camera')+'</tr>';
   });
-  if(!sites.length) t+='<tr><td colspan="4" class="muted">لا نقاط بأجهزة مسجّلة بعد — سجّل عناوين الأجهزة من نافذة النقطة في التطبيق.</td></tr>';
+  if(!sites.length) t+='<tr><td colspan="4" class="muted">لا نقاط بأجهزة مسجّلة بعد — استورد كل العناوين دفعة واحدة من اللوحة (قسم صحة الأجهزة ← قالب إكسل ثم استيراد)، أو سجّل نقطة نقطة من نافذتها. فور الاستيراد تظهر هنا كلها وتُفحص حتى لو كانت جميعها غير متصلة.</td></tr>';
   $('tb').innerHTML=t;
 }
 $('now').onclick=function(){ sweep('زر الأداة'); };
