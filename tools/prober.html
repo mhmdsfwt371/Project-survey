@@ -73,6 +73,11 @@ var db=firebase.firestore();
 var PTS={}, HB={}, PREV={}, ALERTED={};
 var TICK=300, left=TICK, busy=false, lastCmd='';
 var KINDS=[['router','راوتر'],['reader','قارئ'],['camera','كاميرا']];
+/* نقاط اختبار مُدمجة — خارج بيانات المشاعر الرسمية ولا تُحتسب في عدادات المشروع.
+   النسخة نفسها معرّفة في التطبيق (NSK_TESTPTS) — أي تعديل هنا يُطابَق هناك. */
+var TESTPTS={ 'TEST-HRM-FAHD':{ router:'172.16.180.3' } };
+var TESTLBL={ 'TEST-HRM-FAHD':'🧪 اختبار · الحرم المكي — بوابة الملك فهد' };
+function lbl(s){ return TESTLBL[s]||s; }
 /* من صفحة آمنة يستحيل الوصول لعناوين الشبكة الخاصة — فتتحول الأداة لشاشة عرض حي */
 var CAN_PROBE = (location.protocol!=='https:');
 
@@ -118,6 +123,7 @@ function boot(){
       var v=d.data()||{}, net=v.net||{};
       if(net.router||net.reader||net.camera) PTS[d.id]=net;
     });
+    Object.keys(TESTPTS).forEach(function(k){ PTS[k]=TESTPTS[k]; });
     $('nPts').textContent=Object.keys(PTS).length;
     paint();
   });
@@ -233,7 +239,7 @@ function paint(){
   });
   var t='<tr><th>النقطة</th><th>راوتر</th><th>قارئ</th><th>كاميرا</th></tr>';
   sites.forEach(function(s){
-    t+='<tr'+(badPts[s]?' class="bad"':'')+'><td><b>'+esc(s)+'</b></td>'
+    t+='<tr'+(badPts[s]?' class="bad"':'')+'><td><b>'+esc(lbl(s))+'</b></td>'
       +cell(s,'router')+cell(s,'reader')+cell(s,'camera')+'</tr>';
   });
   if(!sites.length) t+='<tr><td colspan="4" class="muted">لا نقاط بأجهزة مسجّلة بعد — استورد كل العناوين دفعة واحدة من اللوحة (قسم صحة الأجهزة ← قالب إكسل ثم استيراد)، أو سجّل نقطة نقطة من نافذتها. فور الاستيراد تظهر هنا كلها وتُفحص حتى لو كانت جميعها غير متصلة.</td></tr>';
@@ -252,12 +258,12 @@ $('pXls').onclick=function(){
     var body=[], visit=[['النقطة','الجهاز','العنوان','منقطع منذ (دقيقة)']];
     Object.keys(PTS).sort().forEach(function(s){
       var r=cellTxt(s,'router'), q=cellTxt(s,'reader'), c=cellTxt(s,'camera');
-      body.push([s, r[0],r[1], q[0],q[1], c[0],c[1]]);
+      body.push([lbl(s), r[0],r[1], q[0],q[1], c[0],c[1]]);
       KINDS.forEach(function(k){
         var ip=PTS[s][k[0]]; if(!ip) return;
         var h=HB[s+'__'+k[0]]; if(!h||h.st!=='down') return;
         var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(h.since||h.ts).getTime())/60000)); }catch(e){}
-        if(mn>=10) visit.push([s,k[1],ip,mn]);
+        if(mn>=10) visit.push([lbl(s),k[1],ip,mn]);
       });
     });
     var wb=XLSX.utils.book_new();

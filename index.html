@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.40</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.41</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8763,6 +8763,12 @@ function render(){
       h+='<div class="dRow"><button type="button" class="dBtn" id="disXls">⬇ إكسل — سجل الفك</button></div>';
     h+='</section>';
   })();
+  /* نقاط اختبار خارج بيانات المشاعر الرسمية — تُراقَب صحيًّا ولا تدخل عدادات المشروع.
+     النسخة نفسها في tools/prober.html (TESTPTS) — أي تعديل هنا يُطابَق هناك. */
+  window.NSK_TESTPTS = window.NSK_TESTPTS || {
+    'TEST-HRM-FAHD': { sg:'🧪 اختبار · بوابة الملك فهد', z:'الحرم المكي', sq:'—', co:'اختبار',
+                       net:{ router:'172.16.180.3' } }
+  };
   /* ═══ صحة الأجهزة — إنذار مبكر وقوائم تحرك وتحليلات ═══ */
   (function(){
     var C=window.NSKCORE, dbx=C.db(), _ins=C.all('inss'),
@@ -8783,6 +8789,23 @@ function render(){
           var _vx=visit.find(function(v){ return v.id===r[0]; });
           if(_vx){ _vx.d+=' + '+dv[1]; _vx.ip+=' · '+ip; _vx.mn=Math.max(_vx.mn,mn); }
           else visit.push({id:r[0], d:dv[1], ip:ip, mn:mn});
+        }
+      });
+    });
+    Object.keys(window.NSK_TESTPTS||{}).forEach(function(tid){
+      var T=window.NSK_TESTPTS[tid]||{}, net=T.net||{};
+      meta[tid]={sg:T.sg||tid, z:T.z||'', sq:T.sq||'—', co:T.co||''};
+      [['router','راوتر'],['reader','قارئ'],['camera','كاميرا']].forEach(function(dv){
+        var ip=net[dv[0]]; if(!ip) return;
+        var hb=HB[tid+'__'+dv[0]];
+        if(!hb){ unk++; return; }
+        if(hb.st==='up'){ up++; return; }
+        down++;
+        var mn=0; try{ mn=Math.max(0,Math.round((NOW-new Date(hb.since||hb.ts).getTime())/60000)); }catch(e){}
+        if(mn>=10){
+          var _vt=visit.find(function(v){ return v.id===tid; });
+          if(_vt){ _vt.d+=' + '+dv[1]; _vt.ip+=' · '+ip; _vt.mn=Math.max(_vt.mn,mn); }
+          else visit.push({id:tid, d:dv[1], ip:ip, mn:mn});
         }
       });
     });
@@ -8985,6 +9008,10 @@ function render(){
       dbx.d.forEach(function(r){
         var n=((_in[r[0]]||{}).net)||{};
         aoa.push([r[0], r[21]||'', String(r[9]||''), n.router||'', n.reader||'', n.camera||'']);
+      });
+      Object.keys(window.NSK_TESTPTS||{}).forEach(function(tid){
+        var T=window.NSK_TESTPTS[tid]||{}, n2=T.net||{};
+        aoa.push([tid, T.z||'', T.sg||'', n2.router||'', n2.reader||'', n2.camera||'']);
       });
       var wb=XLSX.utils.book_new(), ws=XLSX.utils.aoa_to_sheet(aoa);
       ws['!cols']=[{wch:20},{wch:10},{wch:12},{wch:18},{wch:18},{wch:18}];
