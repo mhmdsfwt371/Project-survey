@@ -29,6 +29,7 @@
   .fbar label{display:flex;gap:5px;align-items:center;font-size:12px;color:#9aa2ab}
   td.zn{color:#8a9199;font-size:12px}
   i.ipl{display:block;font-style:normal;font-size:11px;color:#6d757e;direction:ltr}
+  td.wait{opacity:.85}
   .nx{width:40px;height:40px;border-radius:50%;font-size:16px;font-weight:900;line-height:1}
 </style>
 </head>
@@ -56,7 +57,7 @@
     <div class="kc"><b id="kDn" class="down">0</b><span>غير متصل</span></div>
     <div class="kc"><b id="kTen" style="color:#f97316">0</b><span>فاصل ≥١٠ دقائق</span></div>
     <div class="kc"><b id="kPts" style="color:#E8C36A">0</b><span>نقاط متأثرة</span></div>
-    <div class="kc"><b id="kNa" class="na">0</b><span>لم يُفحص</span></div>
+    <div class="kc"><b id="kNa" class="na">0</b><span>منها بانتظار أول نبضة</span></div>
     <div class="kc"><b id="kNo" class="na">0</b><span>بلا عنوان</span></div>
   </div><br>
   <div>الحالة: <span id="st">عرض حي</span> · نقاط مسجّلة: <b id="nPts">0</b> · <span id="cdWrap">الجولة القادمة خلال <b id="cd">—</b> · </span><span class="muted" id="last"></span></div><br>
@@ -240,7 +241,8 @@ async function sweep(reason){
 function cell(site, kind){
   var ip=(PTS[site]||{})[kind]; if(!ip) return '<td class="na">—</td>';
   var h=HB[site+'__'+kind];
-  if(!h) return '<td class="na">لم يُفحص<i class="ipl">'+esc(ip)+((PTS[site]||{}).auto?' · مشتقّ':'')+'</i></td>';
+  if(!h) return '<td class="down wait">● غير متصل<i class="ipl">'+esc(ip)
+    +((PTS[site]||{}).auto?' · مشتقّ':'')+' · بانتظار أول نبضة</i></td>';
   var mn=0; try{ mn=Math.max(0,Math.round((Date.now()-new Date(h.since||h.ts).getTime())/60000)); }catch(e){}
   var ipl='<i class="ipl">'+esc(ip)+((PTS[site]||{}).auto?' · مشتقّ':'')+'</i>';
   return h.st==='up'
@@ -253,7 +255,7 @@ function paint(){
     KINDS.forEach(function(k){
       var ip=(PTS[site]||{})[k[0]]; if(!ip) return;
       var h=HB[site+'__'+k[0]];
-      if(!h){ na++; return; }
+      if(!h){ na++; dn++; return; }  /* بلا نبضة ⇒ غير متصل حتى تصل */
       if(h.st==='up'){ up++; return; }
       dn++; badPts[site]=1;
       try{ if((Date.now()-new Date(h.since||h.ts).getTime())>=600000) ten++; }catch(e){}
