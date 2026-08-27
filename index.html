@@ -1442,7 +1442,9 @@ window.addEventListener('error', function(e){
       d.style.cssText='position:fixed;top:0;left:0;right:0;z-index:99999;background:#E05252;color:#fff;'+
         'font-family:Tahoma,Arial;font-size:13px;font-weight:bold;padding:10px 14px;direction:rtl;text-align:center';
       document.body.appendChild(d); }
-    d.textContent='خطأ في التشغيل: '+(e.message||'غير معروف')+' — صوّر هذه الرسالة وأرسلها';
+    var _src=String(e.filename||'').split('/').pop()||'?';
+    var _loc=_src+':'+(e.lineno||'?')+':'+(e.colno||'?');
+    d.textContent='خطأ في التشغيل: '+(e.message||'غير معروف')+' @ '+_loc+' — صوّر هذه الرسالة وأرسلها';
   }catch(x){}
 });
 </script>
@@ -1450,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.65</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.66</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -9040,7 +9042,7 @@ function render(){
           +pend.slice(0,15).map(function(t){
             return '<tr><td>'+_dvEsc(t.site)+'</td><td>'+_dvEsc(t.tech||'')+'</td><td>'
               +_dvEsc(String(t.doneAt||'').slice(0,10))+'</td><td><b>'+arS(t.w)+'</b></td><td>'
-              +'<a href="#" class="go" onclick="bomOpen(\''+t.site+'\',\''+t.id+'\');return false">اعتمد وحدّد القطع</a> '
+              +'<a href="#" class="go bomB" data-s="'+_dvEsc(t.site)+'" data-t="'+_dvEsc(t.id)+'">اعتمد وحدّد القطع</a> '
               +'<a href="#" class="go" onclick="tkReturn(\''+t.id+'\');return false">إعادة</a></td></tr>'; }).join('')
           +'</table>';
       }
@@ -9065,7 +9067,7 @@ function render(){
               +'<td>'+_dvEsc(x.n)+'</td>'
               +'<td><input type="text" class="tkTelI" data-n="'+_dvEsc(x.n)+'" value="'+_dvEsc(x.tel||'')
               +'" placeholder="05xxxxxxxx" style="width:132px"></td>'
-              +'<td><a href="#" class="go" onclick="tkWa(\''+String(x.n).replace(/'/g,"\\'")+'\');return false">📲 رسالة</a></td>'
+              +'<td><a href="#" class="go tkWaB" data-n="'+_dvEsc(x.n)+'">📲 رسالة</a></td>'
               +'<td><button type="button" class="tkDel" data-n="'+_dvEsc(x.n)+'">×</button></td></tr>';
           }).join('')+'</table>';
       } else h+='<p class="dTs">لا فنيين مسجّلين بعد</p>';
