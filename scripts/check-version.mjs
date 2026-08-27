@@ -165,6 +165,19 @@ try {
 
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
+/* سلسلة نصية مكسورة بسطر جديد: h+='<div> ثم سطر جديد ثم بقية النص — أشهر سبب لـInvalid token */
+try {
+  const html2 = readFileSync('index.html','utf8');
+  const lines = html2.split('\n');
+  lines.forEach((ln, ix) => {
+    const m = ln.match(/h\s*\+?=\s*'[^']*$/);
+    if (!m) return;
+    if (/^\s*(\/\/|\/\*)/.test(ln)) return;
+    if (ln.trim().endsWith('+') || ln.trim().endsWith('\\')) return;
+    fail.push(`index.html:${ix+1}: سلسلة نصية غير مغلقة قبل نهاية السطر — ستكسر الكتلة وقت التشغيل`);
+  });
+} catch(e) {}
+
 /* دوال محبوسة في نطاق مغلق: تعريفها داخل IIFE واستدعاؤها خارجه ⇒ ReferenceError وقت التشغيل */
 try {
   const html = readFileSync('index.html','utf8');
