@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.54</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.55</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -2341,6 +2341,7 @@ window.paintCoLegend = function(){
 function drawMap(){
   layer.clearLayers(); marks={};
   const z=map.getZoom(), b=map.getBounds().pad(.2);
+  const _SCOPE = (window.tkScope ? window.tkScope() : null);
   DB.d.forEach(r=>{
     if(PENDING.has(r[0]) && !(recs[r[0]]||{}).gps) return;
     if(r[0]!==focusId){
@@ -2355,7 +2356,8 @@ function drawMap(){
     if(typeof _la!=='number'||typeof _lo!=='number'||isNaN(_la)||isNaN(_lo)) return;
     const light = z<13 || !b.contains(P0);
     if(z>=15 && r[0]!==focusId && !b.contains(P0)) return;
-    var c = colOf(r[0]);
+    if(_SCOPE && !_SCOPE[r[0]]) return;
+  var c = colOf(r[0]);
   try{ if(window.TKSEL && window.TKSEL.on && window.TKSEL.ids[r[0]]) c='#C9A24B'; }catch(e){}
     if(appMode==='install'){ const _dx=(inss[r[0]]||{}).dis; if(_dx){ c = _dx.st==='تم' ? '#8b5cf6' : '#f97316'; } }
     /* طبقة الشركات: اللون يتبع الشركة، وعند اختيار شركات تُخفى ما عداها */
@@ -2535,8 +2537,10 @@ function _du(x){
 function drawList(){
   const q = ($('#q').value||'').trim().toLowerCase();
   const dist = r => { if(!myPos) return 0; const P0=posOf(r); return metres(P0[0],P0[1],myPos[0],myPos[1]); };
+  const SCOPE = (window.tkScope ? window.tkScope() : null);
   const items = DB.d.filter(r=>
-       ((appMode==='install') ? (!mineOnly || ((inss[r[0]]||{}).who||'')===me)
+       (!SCOPE || SCOPE[r[0]])
+    && ((appMode==='install') ? (!mineOnly || ((inss[r[0]]||{}).who||'')===me)
                              : (!mineOnly || !!(window.tkOf && window.tkOf(r[0]))))
     && (!zSel || szOf(r)===zSel)
     && (!cSel || catOf(r).k===cSel)
@@ -2549,7 +2553,7 @@ function drawList(){
     .sort((a,b)=> myPos ? dist(a)-dist(b) : a[0].localeCompare(b[0]));
   window._lastItems = items;
   const c = {new:0,draft:0,done:0,blocked:0,pending:0};
-  DB.d.forEach(r=>c[st(r[0])]++);
+  DB.d.forEach(r=>{ if(!SCOPE || SCOPE[r[0]]) c[st(r[0])]++; });
   const inst = appMode==='install';
   $('#kTot').textContent = (inst ? c.done+c.draft+c.blocked
                                  : c.new+c.draft+c.done+c.blocked).toLocaleString('ar-EG');
@@ -2561,6 +2565,15 @@ function drawList(){
   $('#mineN').textContent = (appMode==='install'
       ? DB.d.filter(r=> ((inss[r[0]]||{}).who||'')===me).length
       : (window.tkList ? window.tkList(window.tkMe(), true).length : 0)).toLocaleString('ar-EG');
+  try{
+    var _sc=$('#nskScopeNote');
+    if(SCOPE){
+      if(!_sc){ _sc=document.createElement('p'); _sc.id='nskScopeNote';
+        _sc.style.cssText='margin:6px 2px;font-size:12px;color:#8a9199';
+        var _lh=document.getElementById('filt'); if(_lh&&_lh.parentNode) _lh.parentNode.insertBefore(_sc,_lh.nextSibling); }
+      _sc.textContent='تعرض نقاطك المُسندة فقط — '+Object.keys(SCOPE).length+' نقطة';
+    } else if(_sc) _sc.remove();
+  }catch(e){}
   $('#mineBtn').setAttribute('aria-pressed', String(mineOnly));
   $('#lNew').textContent  = 'لم يُزر';
   $('#lDraft').textContent= 'مجدول للتركيب';
@@ -7501,6 +7514,34 @@ window.tkSave = function(t, logTxt){
   }catch(e){}
 };
 /* إنشاء دفعة مهام لفني واحد */
+/* نطاق رؤية الميدان: المشرف/الفني لا يرى إلا ما أُسند له — زيارةً أو تركيبًا أو فكًّا — وما سبق أن عمل عليه.
+   الإدارة (مهندس/أدمن) والوزارة يرون الكل. */
+window.tkScope = function(){
+  var ro=''; try{ ro=nskRole(); }catch(e){}
+  if(ro==='admin'||ro==='engineer'||ro==='viewer') return null;
+  var me2=window.tkMe(), S={};
+  try{
+    var C=window.NSKCORE, inss=C.all('inss'), rc=C.all('recs');
+    var mine=[]; try{ mine=window.myTeams?window.myTeams():[]; }catch(e){}
+    /* مهام المسح */
+    (window.tkList?window.tkList(me2,true):[]).forEach(function(t){ S[t.site]=1; });
+    Object.keys(inss).forEach(function(id){
+      var v=inss[id]||{};
+      if(String(v.who||'').trim()===me2) S[id]=1;
+      var tm=String(v.team||'').trim();
+      if(tm && mine.indexOf(tm)>=0) S[id]=1;
+      var dt=String((v.dis||{}).team||'').trim();
+      if(dt && mine.indexOf(dt)>=0) S[id]=1;
+    });
+    /* ما عمل عليه بنفسه يبقى مرئيًّا لمراجعته */
+    Object.keys(rc).forEach(function(id){ if(String((rc[id]||{}).by||'').trim()===me2) S[id]=1; });
+  }catch(e){}
+  return S;
+};
+window.tkInScope = function(id){
+  var S=window.tkScope();
+  return !S || !!S[id];
+};
 window.TKSEL = { on:false, ids:{} };
 window.tkSelToggle = function(on){
   var S=window.TKSEL;
@@ -11115,7 +11156,7 @@ window.NSKI18N = (function(){
     }
     return o;
   }
-  var PREFIXES = ['استُورد ', 'استُوردت ', 'استُوردت عناوين ', 'اكتمل الدمج ✓ جديد ', 'اكتمل فتح ', 'اكتملت إعادة الضبط: حُذف ', 'تم تصدير تقرير التحديات — ', 'الظاهر: ', 'يفصلك ', 'ناقص: ','تم التحديث — ','جارٍ تنزيل ','تم تصدير ','جارٍ إعادة رفع ','يُنزَّل ','خطأ في التطبيق: ','خطأ: ','تعذّر فتح الدليل عند: ','📋 جدولي (','📲 إشعارات الجدولة ('];
+  var PREFIXES = ['تعرض نقاطك المُسندة فقط — ', 'استُورد ', 'استُوردت ', 'استُوردت عناوين ', 'اكتمل الدمج ✓ جديد ', 'اكتمل فتح ', 'اكتملت إعادة الضبط: حُذف ', 'تم تصدير تقرير التحديات — ', 'الظاهر: ', 'يفصلك ', 'ناقص: ','تم التحديث — ','جارٍ تنزيل ','تم تصدير ','جارٍ إعادة رفع ','يُنزَّل ','خطأ في التطبيق: ','خطأ: ','تعذّر فتح الدليل عند: ','📋 جدولي (','📲 إشعارات الجدولة ('];
   /* أنماط النصوص المركّبة برقمٍ في وسطها — $1 يحفظ الرقم كما هو */
   var PATS = [
     [/^لا يوجد أي موقع مسجّل خلال (\S+) مترًا منك\. الأرجح أن هذا موقع غير مسجّل فعلًا\.$/,
@@ -11581,7 +11622,8 @@ window.NSKI18N = (function(){
   'طلبات الزيارة':'Visit requests', 'الفنيون':'Technicians', '🔍 طلبات الزيارة':'🔍 Visit requests', '👷 الفنيون':'👷 Technicians', 'سجل الفنيين — من هنا تُبنى قائمة الإسناد':'Technician registry — the assignment list is built from it', 'اسم الفني':'Technician name', 'إضافة فني':'Add technician', '⬇ إكسل — أداء الفنيين':'⬇ Excel — technician performance', 'لا فنيين مسجّلين بعد':'No technicians registered yet', 'اكتب اسم الفني أولًا':'Type the technician name first', 'الفني مسجّل بالفعل':'The technician is already registered', 'أُضيف الفني ✓':'Technician added ✓', 'حُذف الفني':'Technician removed', 'اكتب الاسم كما يظهر في حساب الفني بالضبط — عليه يُبنى ظهور مهامه في «جدولي» وعلى خريطته.':'Type the name exactly as it appears in the technician’s account — their tasks in “My schedule” and on their map depend on it.', 'إسناد زيارات المسح للفنيين واعتمادها':'Assigning survey visits to technicians and approving them', 'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت':'The technician registry, balances and target comparison',
   '☑ اختيار من القائمة':'☑ Pick from the list', '🗺 تحديد من الخريطة':'🗺 Select on the map', '⬆ استيراد أسماء الفنيين':'⬆ Import technician names', 'اختيار نقاط للإسناد':'Pick points to assign', 'أسند المحدد لفني':'Assign selection to a technician', 'أسند لفني':'Assign to technician', 'المحدد:':'Selected:', 'لم تُجدول زيارة لهذه النقطة بعد':'No visit scheduled for this point yet', 'حدّد نقاطًا أولًا':'Select points first', 'سجّل فنيًّا أولًا من صفحة «الفنيون»':'Register a technician first on the “Technicians” page', 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'Tap points on the map to select them, then “Assign to technician”', 'لم يُقرأ أي اسم — ضع الأسماء في العمود الأول':'No name was read — put the names in the first column', 'الطلب السريع يلتقط أول النقاط غير الممسوحة بالمشعر والنوع؛ وللاختيار الدقيق استخدم «اختيار من القائمة» أو «تحديد من الخريطة» ثم أسندها لفني واحد.':'The quick request grabs the first unsurveyed points by holy site and type; for precise picking use “Pick from the list” or “Select on the map”, then assign them to one technician.',
   'رقم الجوال':'Mobile number', 'رقم الجوال (اختياري)':'Mobile number (optional)', 'واتساب':'WhatsApp', '📲 رسالة':'📲 Message', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'New visit request — type the count next to each type', 'ممسوح':'Surveyed', 'مُسند':'Assigned', 'متاح':'Available', 'المطلوب':'Requested', 'حُفظ الرقم ✓':'Number saved ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'No number saved for this technician — add it first', 'اكتب العدد أمام نوعٍ واحد على الأقل':'Type a count next to at least one type', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'“Available” is what is neither surveyed nor assigned yet. Type the counts you want, then “Create request” — or pick specific points from the list or the map.',
-  'الطاقم مضاف بالكامل':'The crew is already fully added'
+  'الطاقم مضاف بالكامل':'The crew is already fully added',
+  'تعرض نقاطك المُسندة فقط —':'Showing only your assigned points —'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11781,7 +11823,8 @@ window.NSKI18N = (function(){
   'طلبات الزيارة':'دورے کی درخواستیں', 'الفنيون':'ٹیکنیشنز', '🔍 طلبات الزيارة':'🔍 دورے کی درخواستیں', '👷 الفنيون':'👷 ٹیکنیشنز', 'سجل الفنيين — من هنا تُبنى قائمة الإسناد':'ٹیکنیشن رجسٹر — تفویض فہرست یہیں سے بنتی ہے', 'اسم الفني':'ٹیکنیشن کا نام', 'إضافة فني':'ٹیکنیشن شامل کریں', '⬇ إكسل — أداء الفنيين':'⬇ ایکسل — ٹیکنیشن کارکردگی', 'لا فنيين مسجّلين بعد':'ابھی کوئی ٹیکنیشن رجسٹرڈ نہیں', 'اكتب اسم الفني أولًا':'پہلے ٹیکنیشن کا نام لکھیں', 'الفني مسجّل بالفعل':'ٹیکنیشن پہلے سے رجسٹرڈ ہے', 'أُضيف الفني ✓':'ٹیکنیشن شامل ہو گیا ✓', 'حُذف الفني':'ٹیکنیشن حذف ہو گیا', 'اكتب الاسم كما يظهر في حساب الفني بالضبط — عليه يُبنى ظهور مهامه في «جدولي» وعلى خريطته.':'نام بالکل ویسا لکھیں جیسا ٹیکنیشن کے اکاؤنٹ میں ہے — «میرا شیڈول» اور نقشے پر ٹاسک اسی پر منحصر ہیں۔', 'إسناد زيارات المسح للفنيين واعتمادها':'ٹیکنیشنز کو سروے دورے تفویض اور منظوری', 'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت':'ٹیکنیشن رجسٹر، بیلنس اور ہدف سے موازنہ',
   '☑ اختيار من القائمة':'☑ فہرست سے چنیں', '🗺 تحديد من الخريطة':'🗺 نقشے پر منتخب کریں', '⬆ استيراد أسماء الفنيين':'⬆ ٹیکنیشن نام درآمد کریں', 'اختيار نقاط للإسناد':'تفویض کے لیے پوائنٹس چنیں', 'أسند المحدد لفني':'منتخب کو ٹیکنیشن کے سپرد کریں', 'أسند لفني':'ٹیکنیشن کو تفویض', 'المحدد:':'منتخب:', 'لم تُجدول زيارة لهذه النقطة بعد':'اس پوائنٹ کا کوئی دورہ ابھی شیڈول نہیں', 'حدّد نقاطًا أولًا':'پہلے پوائنٹس منتخب کریں', 'سجّل فنيًّا أولًا من صفحة «الفنيون»':'پہلے «ٹیکنیشنز» صفحے سے ٹیکنیشن رجسٹر کریں', 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'نقشے پر پوائنٹس دبا کر منتخب کریں پھر «ٹیکنیشن کو تفویض»', 'لم يُقرأ أي اسم — ضع الأسماء في العمود الأول':'کوئی نام نہ پڑھا گیا — نام پہلے کالم میں رکھیں', 'الطلب السريع يلتقط أول النقاط غير الممسوحة بالمشعر والنوع؛ وللاختيار الدقيق استخدم «اختيار من القائمة» أو «تحديد من الخريطة» ثم أسندها لفني واحد.':'فوری درخواست مشعر اور قسم کے مطابق پہلے غیر سروے شدہ پوائنٹس لیتی ہے؛ درست انتخاب کے لیے «فہرست سے چنیں» یا «نقشے پر منتخب کریں» استعمال کریں، پھر ایک ٹیکنیشن کو تفویض کریں۔',
   'رقم الجوال':'موبائل نمبر', 'رقم الجوال (اختياري)':'موبائل نمبر (اختیاری)', 'واتساب':'واٹس ایپ', '📲 رسالة':'📲 پیغام', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'نئی دورہ درخواست — ہر قسم کے سامنے تعداد لکھیں', 'ممسوح':'سروے شدہ', 'مُسند':'تفویض شدہ', 'متاح':'دستیاب', 'المطلوب':'درکار', 'حُفظ الرقم ✓':'نمبر محفوظ ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'اس ٹیکنیشن کا نمبر محفوظ نہیں — پہلے شامل کریں', 'اكتب العدد أمام نوعٍ واحد على الأقل':'کم از کم ایک قسم کے سامنے تعداد لکھیں', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'«دستیاب» وہ ہے جو نہ سروے ہوا نہ تفویض۔ مطلوبہ تعداد لکھیں پھر «درخواست بنائیں» — یا فہرست/نقشے سے مخصوص پوائنٹس چنیں۔',
-  'الطاقم مضاف بالكامل':'عملہ پہلے ہی مکمل شامل ہے'
+  'الطاقم مضاف بالكامل':'عملہ پہلے ہی مکمل شامل ہے',
+  'تعرض نقاطك المُسندة فقط —':'صرف آپ کے تفویض کردہ پوائنٹس —'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
