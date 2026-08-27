@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.59</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.60</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7632,11 +7632,15 @@ window.tkWa = function(name){
   try{ if(window.NSKSYNC) NSKSYNC.log('إشعار واتساب للفني '+name); }catch(e){}
 };
 window.tkTechs = function(){
-  var L=window.tkReg().map(function(x){ return x.n; });
-  if(!L.length){ try{ L=((window.NSKCORE.get('settings','teams')||{}).list||[]).slice(); }catch(e){} }
+  var L=[];
+  try{ L=window.tkReg().map(function(x){ return x.n; }).filter(Boolean); }catch(e){}
+  if(!L.length){ try{ L=((window.NSKCORE.get('settings','teams')||{}).list||[]).map(function(x){
+        return (typeof x==='string')?x:String((x&&x.n)||''); }).filter(Boolean); }catch(e){} }
+  if(!L.length && window.TECH_SEED) L=window.TECH_SEED.slice();
   return L;
 };
 window.tkPickOv = function(){
+  var _X=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
   var old=document.getElementById('tkPickOv'); if(old) old.remove();
   var C=window.NSKCORE, dbx=C.db(), rc=C.all('recs');
   var ov=document.createElement('div'); ov.id='tkPickOv'; ov.className='iosOv';
@@ -7658,8 +7662,8 @@ window.tkPickOv = function(){
     document.getElementById('tkPickL').innerHTML = out.map(function(r){
       var on=!!(window.TKSEL.ids||{})[r[0]];
       return '<label class="tkPick"><input type="checkbox" data-id="'+r[0]+'"'+(on?' checked':'')+'>'
-        +'<span>'+(r[9]?('شاخص '+esc3(String(r[9]))):esc3(r[0]))+(r[8]?(' · مربع '+esc3(String(r[8]))):'')
-        +'</span><span style="margin-inline-start:auto;color:#8a9199;font-size:12px">'+esc3(String(r[21]||''))+'</span></label>';
+        +'<span>'+(r[9]?('شاخص '+_X(String(r[9]))):_X(r[0]))+(r[8]?(' · مربع '+_X(String(r[8]))):'')
+        +'</span><span style="margin-inline-start:auto;color:#8a9199;font-size:12px">'+_X(String(r[21]||''))+'</span></label>';
     }).join('') || '<p class="dTs">لا نتائج</p>';
     Array.prototype.forEach.call(ov.querySelectorAll('input[type=checkbox]'), function(c){
       c.onchange=function(){

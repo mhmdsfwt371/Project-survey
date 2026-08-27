@@ -165,6 +165,21 @@ try {
 
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
+/* دوال محبوسة في نطاق مغلق: تعريفها داخل IIFE واستدعاؤها خارجه ⇒ ReferenceError وقت التشغيل */
+try {
+  const html = readFileSync('index.html','utf8');
+  const CLOSED = ['esc3','esc2b','mnRow'];
+  CLOSED.forEach(fn => {
+    const defAt = html.indexOf('function ' + fn + '(');
+    if (defAt < 0) return;
+    const uses = [...html.matchAll(new RegExp('(?<![\\w$.])' + fn + '\\s*\\(', 'g'))].map(m => m.index);
+    /* التعريف داخل IIFE يبدأ عند أقرب "(function(" قبله — أي استخدام قبل ذلك الحد خارجُ النطاق */
+    const scopeStart = html.lastIndexOf('(function(', defAt);
+    const bad = uses.filter(u => u < scopeStart);
+    if (bad.length) fail.push(`${fn}(): مُستدعاة خارج نطاقها المغلق (${bad.length} مرة) — استعمل نسخة محلية`);
+  });
+} catch(e) {}
+
 /* كتلة أداة الفحص تُفحص صيغتها ككل كتل التطبيق */
 try {
   const pr = readFileSync('tools/prober.html','utf8');
