@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.58</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.59</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7591,7 +7591,7 @@ window.tkSeed = function(){
 window.tkReg = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','techs')||{}).list||[]).slice(); }catch(e){}
-  return L.map(function(x){ return (typeof x==='string') ? {n:x, tel:''} : {n:String(x.n||''), tel:String(x.tel||'')}; })
+  return L.map(function(x){ return (typeof x==='string') ? {n:x, tel:'', tgt:''} : {n:String(x.n||''), tel:String(x.tel||''), tgt:(x.tgt==null?'':x.tgt)}; })
           .filter(function(x){ return x.n; });
 };
 window.tkRegSave = function(list, logTxt){
@@ -7601,6 +7601,17 @@ window.tkRegSave = function(list, logTxt){
     if(window.NSKSYNC){ NSKSYNC.push('settings','techs',d); if(logTxt) NSKSYNC.log(logTxt); }
     try{ window.nskSync(); }catch(e){}
   }catch(e){ toast('تعذّر الحفظ',1); }
+};
+window.tkTgt = function(name, v){
+  var L=window.tkReg(), hit=false;
+  L.forEach(function(x){ if(x.n===name){ x.tgt=(String(v||'').trim()==='')?'':(parseFloat(v)||0); hit=true; } });
+  if(hit) window.tkRegSave(L,'تحديث تارجت الفني '+name);
+};
+window.tkTgtOf = function(name){
+  var t=null;
+  window.tkReg().forEach(function(x){ if(x.n===name && x.tgt!=null && x.tgt!=='') t=parseFloat(x.tgt)||0; });
+  if(t==null){ try{ t=window.pwGet().tgtSurvey||90; }catch(e){ t=90; } }
+  return t||90;
 };
 window.tkTel = function(name, tel){
   var L=window.tkReg(), hit=false;
@@ -8844,7 +8855,6 @@ function render(){
       var Wm=P.w||{};
       h+='<div class="dT3">طلب زيارات جديد — حدّد النقاط ثم أسندها</div><div class="pwG">'
         +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
-        +'<label class="pwL">تارجت المسح/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label>'
         +'</div>'
         +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>النقاط</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
         +MX.map(function(row,ix){
@@ -8888,17 +8898,20 @@ function render(){
       var reg=(window.tkReg?window.tkReg():[]);
       h+='<div class="dT3">سجل الفنيين — من هنا تُبنى قائمة الإسناد</div>';
       if(reg.length){
-        h+='<table class="dT"><tr><th>الفني</th><th>رقم الجوال</th><th>واتساب</th><th></th></tr>'
+        h+='<table class="dT"><tr><th>الفني</th><th>رقم الجوال</th><th>تارجت الشهر</th><th>واتساب</th><th></th></tr>'
           +reg.map(function(x){
             return '<tr><td>'+_dvEsc(x.n)+'</td>'
               +'<td><input type="text" class="tkTelI" data-n="'+_dvEsc(x.n)+'" value="'+_dvEsc(x.tel||'')
               +'" placeholder="05xxxxxxxx" style="width:126px"></td>'
+              +'<td><input type="number" class="tkTgtI" data-n="'+_dvEsc(x.n)+'" min="0" value="'+_dvEsc(String(x.tgt==null?'':x.tgt))
+              +'" placeholder="'+arS(P.tgtSurvey)+'" style="width:78px"></td>'
               +'<td><a href="#" class="go" onclick="tkWa(\''+String(x.n).replace(/'/g,"\\'")+'\');return false">📲 رسالة</a></td>'
               +'<td><button type="button" class="tkDel" data-n="'+_dvEsc(x.n)+'">×</button></td></tr>';
           }).join('')+'</table>';
       } else h+='<p class="dTs">لا فنيين مسجّلين بعد</p>';
       h+='<div class="pwG"><label class="pwL">اسم الفني<input type="text" id="tkNm" placeholder="الاسم كما في حسابه"></label>'
         +'<label class="pwL">رقم الجوال (اختياري)<input type="text" id="tkTelN" placeholder="05xxxxxxxx"></label>'
+        +'<label class="pwL">التارجت الافتراضي/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label>'
         +'</div><div class="dRow"><button type="button" class="dBtn" id="tkAdd">إضافة فني</button>'
         +'<button type="button" class="dBtn" id="tkSeedB">👥 إضافة طاقم الموسم ('+(window.TECH_SEED||[]).length+')</button>'
         +'<button type="button" class="dBtn" id="tkImp">⬆ استيراد أسماء الفنيين</button>'
@@ -8919,12 +8932,12 @@ function render(){
     var rowsX=[];
     if(bk.length){
       h+='<div class="dT3">رصيد الفنيين</div>'
-        +'<table class="dT"><tr><th>الفني</th><th>مطلوب</th><th>قيد التنفيذ</th><th>منفّذ</th><th>معتمد</th><th>نقاط</th><th>من التارجت</th></tr>'
-        +bk.map(function(n2){ var s=by[n2], pc=Math.round(s.pts/(P.tgtSurvey||90)*100);
-          rowsX.push([n2,s.req,s.run,s.done,s.ok,Math.round(s.pts),pc+'٪']);
+        +'<table class="dT"><tr><th>الفني</th><th>مطلوب</th><th>قيد التنفيذ</th><th>منفّذ</th><th>معتمد</th><th>نقاط</th><th>التارجت</th><th>من التارجت</th></tr>'
+        +bk.map(function(n2){ var s=by[n2], _tg=(window.tkTgtOf?window.tkTgtOf(n2):(P.tgtSurvey||90)), pc=Math.round(s.pts/(_tg||90)*100);
+          rowsX.push([n2,s.req,s.run,s.done,s.ok,Math.round(s.pts),_tg,pc+'٪']);
           window._techRows=rowsX;
           return '<tr><td>'+_dvEsc(n2)+'</td><td>'+arS(s.req)+'</td><td>'+arS(s.run)+'</td><td>'+arS(s.done)
-            +'</td><td>'+arS(s.ok)+'</td><td><b>'+arS(Math.round(s.pts))+'</b></td><td>'+arS(pc)+'٪</td></tr>'; }).join('')
+            +'</td><td>'+arS(s.ok)+'</td><td><b>'+arS(Math.round(s.pts))+'</b></td><td>'+arS(_tg)+'</td><td>'+arS(pc)+'٪</td></tr>'; }).join('')
         +'</table>';
     } else h+='<p class="dTs">لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.</p>';
 
@@ -9711,6 +9724,16 @@ function render(){
       toast('أُضيف الفني ✓');
     }catch(x){ toast('تعذّر الحفظ',1); }
   };
+  Array.prototype.forEach.call(document.querySelectorAll('.tkTgtI'), function(e){
+    e.onchange=function(){ window.tkTgt(e.getAttribute('data-n'), e.value); toast('حُفظ التارجت ✓'); };
+  });
+  var _dtg=$i('pw_tgtSurvey');
+  if(_dtg) _dtg.onchange=function(){
+    var P0=window.pwGet(), o={w:P0.w||{}};
+    ['camp','cor','stn','jam','ph','tgtInstall'].forEach(function(k){ o[k]=P0[k]; });
+    o.tgtSurvey=parseFloat(_dtg.value)||90;
+    window.pwSave(o);
+  };
   Array.prototype.forEach.call(document.querySelectorAll('.tkTelI'), function(e){
     e.onchange=function(){ window.tkTel(e.getAttribute('data-n'), e.value); toast('حُفظ الرقم ✓'); };
   });
@@ -9726,7 +9749,7 @@ function render(){
   var _tkx=$i('tkXls');
   if(_tkx) _tkx.onclick=function(){
     try{
-      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','من التارجت'];
+      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','التارجت','من التارجت'];
       var wb=XLSX.utils.book_new();
       var ws=XLSX.utils.aoa_to_sheet([h1].concat(window._techRows||[]));
       ws['!cols']=h1.map(function(x){ return {wch:Math.max(11,String(x).length+4)}; });
@@ -9759,7 +9782,7 @@ function render(){
   var _orX=$i('orXls');
   if(_orX) _orX.onclick=function(){
     try{
-      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','من التارجت'];
+      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','التارجت','من التارجت'];
       var h2=['الطلب','المهمة','النقطة','الفني','الحالة','الوزن','المهلة','تاريخ التنفيذ','تاريخ الاعتماد','ملاحظة'];
       var wb=XLSX.utils.book_new();
       var ws=XLSX.utils.aoa_to_sheet([h1].concat(window._srvRows||[]));
@@ -11634,7 +11657,8 @@ window.NSKI18N = (function(){
   'رقم الجوال':'Mobile number', 'رقم الجوال (اختياري)':'Mobile number (optional)', 'واتساب':'WhatsApp', '📲 رسالة':'📲 Message', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'New visit request — type the count next to each type', 'ممسوح':'Surveyed', 'مُسند':'Assigned', 'متاح':'Available', 'المطلوب':'Requested', 'حُفظ الرقم ✓':'Number saved ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'No number saved for this technician — add it first', 'اكتب العدد أمام نوعٍ واحد على الأقل':'Type a count next to at least one type', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'“Available” is what is neither surveyed nor assigned yet. Type the counts you want, then “Create request” — or pick specific points from the list or the map.',
   'الطاقم مضاف بالكامل':'The crew is already fully added',
   'تعرض نقاطك المُسندة فقط —':'Showing only your assigned points —',
-  'النقاط':'Points', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'New visit request — select the points, then assign', 'حفظ النقاط':'Save points', 'حدّد النقاط أولًا من القائمة أو الخريطة':'Select the points first from the list or the map', 'تعرض نقاطك المُسندة فقط':'Showing only the points assigned to you', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'The “Points” column is the visit weight for each type in its holy site — saved and credited automatically to the technician on execution. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.'
+  'النقاط':'Points', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'New visit request — select the points, then assign', 'حفظ النقاط':'Save points', 'حدّد النقاط أولًا من القائمة أو الخريطة':'Select the points first from the list or the map', 'تعرض نقاطك المُسندة فقط':'Showing only the points assigned to you', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'The “Points” column is the visit weight for each type in its holy site — saved and credited automatically to the technician on execution. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.',
+  'تارجت الشهر':'Monthly target', 'التارجت':'Target', 'التارجت الافتراضي/شهر':'Default target / month', 'حُفظ التارجت ✓':'Target saved ✓'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11836,7 +11860,8 @@ window.NSKI18N = (function(){
   'رقم الجوال':'موبائل نمبر', 'رقم الجوال (اختياري)':'موبائل نمبر (اختیاری)', 'واتساب':'واٹس ایپ', '📲 رسالة':'📲 پیغام', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'نئی دورہ درخواست — ہر قسم کے سامنے تعداد لکھیں', 'ممسوح':'سروے شدہ', 'مُسند':'تفویض شدہ', 'متاح':'دستیاب', 'المطلوب':'درکار', 'حُفظ الرقم ✓':'نمبر محفوظ ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'اس ٹیکنیشن کا نمبر محفوظ نہیں — پہلے شامل کریں', 'اكتب العدد أمام نوعٍ واحد على الأقل':'کم از کم ایک قسم کے سامنے تعداد لکھیں', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'«دستیاب» وہ ہے جو نہ سروے ہوا نہ تفویض۔ مطلوبہ تعداد لکھیں پھر «درخواست بنائیں» — یا فہرست/نقشے سے مخصوص پوائنٹس چنیں۔',
   'الطاقم مضاف بالكامل':'عملہ پہلے ہی مکمل شامل ہے',
   'تعرض نقاطك المُسندة فقط —':'صرف آپ کے تفویض کردہ پوائنٹس —',
-  'النقاط':'پوائنٹس', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'نئی دورہ درخواست — پوائنٹس منتخب کر کے تفویض کریں', 'حفظ النقاط':'پوائنٹس محفوظ کریں', 'حدّد النقاط أولًا من القائمة أو الخريطة':'پہلے فہرست یا نقشے سے پوائنٹس منتخب کریں', 'تعرض نقاطك المُسندة فقط':'صرف آپ کو تفویض شدہ پوائنٹس دکھائے جا رہے ہیں', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'«پوائنٹس» کالم ہر قسم کے دورے کا وزن ہے — محفوظ ہوتا ہے اور تکمیل پر ٹیکنیشن کو خودکار ملتا ہے۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔'
+  'النقاط':'پوائنٹس', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'نئی دورہ درخواست — پوائنٹس منتخب کر کے تفویض کریں', 'حفظ النقاط':'پوائنٹس محفوظ کریں', 'حدّد النقاط أولًا من القائمة أو الخريطة':'پہلے فہرست یا نقشے سے پوائنٹس منتخب کریں', 'تعرض نقاطك المُسندة فقط':'صرف آپ کو تفویض شدہ پوائنٹس دکھائے جا رہے ہیں', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'«پوائنٹس» کالم ہر قسم کے دورے کا وزن ہے — محفوظ ہوتا ہے اور تکمیل پر ٹیکنیشن کو خودکار ملتا ہے۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔',
+  'تارجت الشهر':'ماہانہ ہدف', 'التارجت':'ہدف', 'التارجت الافتراضي/شهر':'طے شدہ ہدف / ماہ', 'حُفظ التارجت ✓':'ہدف محفوظ ✓'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
