@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.55</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.56</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7449,8 +7449,10 @@ window.NSKORD = window.NSKORD || {};
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3, tgtSurvey:90, tgtInstall:1000, ph:4.81 };
 window.pwGet = function(){
   var d={}; for(var k in window.PW_DEF) d[k]=window.PW_DEF[k];
+  d.w={};
   try{ var s=window.NSKCORE.get('settings','points')||{};
-    for(var k2 in d){ if(s[k2]!=null && s[k2]!=='') d[k2]=parseFloat(s[k2])||d[k2]; }
+    for(var k2 in d){ if(k2!=='w' && s[k2]!=null && s[k2]!=='') d[k2]=parseFloat(s[k2])||d[k2]; }
+    if(s.w && typeof s.w==='object') d.w=s.w;
   }catch(e){}
   return d;
 };
@@ -7463,8 +7465,15 @@ window.pwSave = function(obj){
   }catch(e){ toast('تعذّر الحفظ',1); }
 };
 /* وزن زيارة النقطة حسب نوعها */
+window.pwKey = function(r){
+  try{ return ((typeof szOf==='function')?szOf(r):'—')+'|'+(((catOf(r)||{}).l)||'أخرى'); }
+  catch(e){ return '—|أخرى'; }
+};
 window.pwOf = function(r){
-  var P=window.pwGet(), t='other';
+  var P=window.pwGet(), key=window.pwKey(r);
+  var W=P.w||{};
+  if(W[key]!=null && W[key]!=='') return { t:key, w:(parseFloat(W[key])||0) };
+  var t='other';
   try{
     var seg=String(r[0]||'').split('-')[2];
     if(seg==='CMP') t='camp';
@@ -7472,7 +7481,7 @@ window.pwOf = function(r){
     else if(seg==='STN') t='stn';
     else if(seg==='PNT'||seg==='GTE') t='jam';
   }catch(e){}
-  return { t:t, w:P[t]||P.other };
+  return { t:key, w:P[t]||P.other };
 };
 /* رصيد نقاط المسح لكل مشرف من الأوامر المقفلة والمفتوحة */
 window.NSKTASK = window.NSKTASK || {};
@@ -8811,11 +8820,6 @@ function render(){
       +card(cnt['منفّذ'],'بانتظار الاعتماد','#3AD6A0')+card(cnt['معتمد'],'معتمد','#8b5cf6')
       +card(cnt['مُعاد'],'مُعاد للتصحيح','#F0655A')+'</div>';
     if(cE){
-      h+='<div class="dT3">أوزان النقاط — تُحرَّر وتُحفظ</div><div class="pwG">'
-        +[['camp','زيارة مخيم'],['cor','زيارة ممر'],['stn','زيارة قطار'],['jam','زيارة الجمرات'],
-          ['tgtSurvey','تارجت المسح/شهر'],['ph','نقاط الساعة']].map(function(x){
-          return '<label class="pwL">'+x[1]+'<input type="number" step="0.01" min="0" id="pw_'+x[0]+'" value="'+(P[x[0]])+'"></label>';
-        }).join('')+'</div><div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ الأوزان</button></div>';
       var techs=[]; try{ techs=((C.get('settings','techs')||{}).list||[]).slice(); }catch(e){}
       try{ var T2=C.get('settings','teams')||{}; (T2.list||[]).forEach(function(n3){ if(techs.indexOf(n3)<0) techs.push(n3); }); }catch(e){}
       Object.keys(rc).forEach(function(k){ var b2=String((rc[k]||{}).by||'').trim(); if(b2 && techs.indexOf(b2)<0) techs.push(b2); });
@@ -8829,7 +8833,7 @@ function render(){
         var z=(typeof szOf==='function')?szOf(r):'—', ty=((catOf(r)||{}).l)||'أخرى';
         var key=z+'|'+ty, row=null;
         for(var i2=0;i2<MX.length;i2++){ if(MX[i2].k===key){ row=MX[i2]; break; } }
-        if(!row){ row={k:key, z:z, ty:ty, tot:0, done:0, open:0, free:[]}; MX.push(row); }
+        if(!row){ row={k:key, z:z, ty:ty, tot:0, done:0, open:0, free:[], dw:(window.pwOf?window.pwOf(r).w:3)}; MX.push(row); }
         row.tot++;
         var f=(rc[r[0]]||{}).fstat;
         if(f==='done'||f==='blocked') row.done++;
@@ -8838,22 +8842,28 @@ function render(){
       });
       MX.sort(function(a,b){ return (a.z===b.z) ? (b.tot-a.tot) : (a.z>b.z?1:-1); });
       window._MX=MX;
-      h+='<div class="dT3">طلب زيارات جديد — اكتب العدد أمام كل نوع</div><div class="pwG">'
+      var Wm=P.w||{};
+      h+='<div class="dT3">طلب زيارات جديد — حدّد النقاط ثم أسندها</div><div class="pwG">'
         +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
-        +'<label class="pwL">المهلة<input type="date" id="orDue"></label></div>'
-        +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th><th>المطلوب</th></tr>'
+        +'<label class="pwL">المهلة<input type="date" id="orDue"></label>'
+        +'<label class="pwL">تارجت المسح/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label>'
+        +'<label class="pwL">نقاط الساعة<input type="number" step="0.01" id="pw_ph" min="0" value="'+(P.ph)+'"></label></div>'
+        +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>النقاط</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
         +MX.map(function(row,ix){
-          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td><td>'+arS(row.tot)
-            +'</td><td>'+arS(row.done)+'</td><td>'+arS(row.open)+'</td><td><b>'+arS(row.free.length)+'</b></td>'
-            +'<td><input type="number" class="mxN" data-i="'+ix+'" min="0" max="'+row.free.length
-            +'" value="" placeholder="0" style="width:74px"></td></tr>';
+          var wv=(Wm[row.k]!=null&&Wm[row.k]!=='')?Wm[row.k]:'';
+          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td>'
+            +'<td><input type="number" class="mxW" data-k="'+_dvEsc(row.k)+'" step="0.5" min="0" value="'+wv
+            +'" placeholder="'+arS(row.dw)+'" style="width:70px"></td>'
+            +'<td>'+arS(row.tot)+'</td><td>'+arS(row.done)+'</td><td>'+arS(row.open)
+            +'</td><td><b>'+arS(row.free.length)+'</b></td></tr>';
         }).join('')
         +'</table>'
+        +'<div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ النقاط</button></div>'
         +'<div class="dRow"><button type="button" class="dBtn" id="orNew">إنشاء الطلب</button>'
         +'<button type="button" class="dBtn" id="orPick">☑ اختيار من القائمة</button>'
         +'<button type="button" class="dBtn" id="orMap">🗺 تحديد من الخريطة</button>'
         +'<button type="button" class="dBtn" id="orXls">⬇ إكسل — المهام</button></div>'
-        +'<p class="dTs">«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.</p>';
+        +'<p class="dTs">عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».</p>';
       var pend=all.filter(function(t){ return t.st==='منفّذ'; })
         .sort(function(x,y){ return String(x.doneAt||'').localeCompare(String(y.doneAt||'')); });
       h+='<div class="dT3">بانتظار اعتمادك — '+arS(pend.length)+'</div>';
@@ -9728,21 +9738,23 @@ function render(){
   };
   var _pws=$i('pwSave');
   if(_pws) _pws.onclick=function(){
-    var o={}; ['camp','cor','stn','jam','tgtSurvey','ph'].forEach(function(k){
-      var e=$i('pw_'+k); if(e) o[k]=parseFloat(e.value)||0; });
-    o.tgtInstall=(window.pwGet().tgtInstall)||1000;
+    var P0=window.pwGet(), o={ w:{} };
+    ['camp','cor','stn','jam'].forEach(function(k){ o[k]=P0[k]; });
+    ['tgtSurvey','ph'].forEach(function(k){
+      var e=$i('pw_'+k); o[k]=e?(parseFloat(e.value)||0):P0[k]; });
+    o.tgtInstall=P0.tgtInstall||1000;
+    Array.prototype.forEach.call(document.querySelectorAll('.mxW'), function(e){
+      var v=String(e.value||'').trim();
+      if(v!=='') o.w[e.getAttribute('data-k')]=parseFloat(v)||0;
+    });
     window.pwSave(o);
   };
   var _orN=$i('orNew');
   if(_orN) _orN.onclick=function(){
     try{
-      var sup=($i('orSup')||{}).value, due=($i('orDue')||{}).value, MX=window._MX||[], out=[];
-      Array.prototype.forEach.call(document.querySelectorAll('.mxN'), function(e){
-        var n=parseInt(e.value,10)||0; if(n<=0) return;
-        var row=MX[+e.dataset.i]; if(!row) return;
-        out=out.concat(row.free.slice(0,n));
-      });
-      if(!out.length){ toast('اكتب العدد أمام نوعٍ واحد على الأقل',1); return; }
+      var sup=($i('orSup')||{}).value, due=($i('orDue')||{}).value;
+      var out=Object.keys((window.TKSEL||{}).ids||{});
+      if(!out.length){ toast('حدّد النقاط أولًا من القائمة أو الخريطة',1); return; }
       window.tkNew(sup, due, out);
     }catch(e){ toast('تعذّر إنشاء الأمر',1); }
   };
@@ -11623,7 +11635,8 @@ window.NSKI18N = (function(){
   '☑ اختيار من القائمة':'☑ Pick from the list', '🗺 تحديد من الخريطة':'🗺 Select on the map', '⬆ استيراد أسماء الفنيين':'⬆ Import technician names', 'اختيار نقاط للإسناد':'Pick points to assign', 'أسند المحدد لفني':'Assign selection to a technician', 'أسند لفني':'Assign to technician', 'المحدد:':'Selected:', 'لم تُجدول زيارة لهذه النقطة بعد':'No visit scheduled for this point yet', 'حدّد نقاطًا أولًا':'Select points first', 'سجّل فنيًّا أولًا من صفحة «الفنيون»':'Register a technician first on the “Technicians” page', 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'Tap points on the map to select them, then “Assign to technician”', 'لم يُقرأ أي اسم — ضع الأسماء في العمود الأول':'No name was read — put the names in the first column', 'الطلب السريع يلتقط أول النقاط غير الممسوحة بالمشعر والنوع؛ وللاختيار الدقيق استخدم «اختيار من القائمة» أو «تحديد من الخريطة» ثم أسندها لفني واحد.':'The quick request grabs the first unsurveyed points by holy site and type; for precise picking use “Pick from the list” or “Select on the map”, then assign them to one technician.',
   'رقم الجوال':'Mobile number', 'رقم الجوال (اختياري)':'Mobile number (optional)', 'واتساب':'WhatsApp', '📲 رسالة':'📲 Message', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'New visit request — type the count next to each type', 'ممسوح':'Surveyed', 'مُسند':'Assigned', 'متاح':'Available', 'المطلوب':'Requested', 'حُفظ الرقم ✓':'Number saved ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'No number saved for this technician — add it first', 'اكتب العدد أمام نوعٍ واحد على الأقل':'Type a count next to at least one type', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'“Available” is what is neither surveyed nor assigned yet. Type the counts you want, then “Create request” — or pick specific points from the list or the map.',
   'الطاقم مضاف بالكامل':'The crew is already fully added',
-  'تعرض نقاطك المُسندة فقط —':'Showing only your assigned points —'
+  'تعرض نقاطك المُسندة فقط —':'Showing only your assigned points —',
+  'النقاط':'Points', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'New visit request — select the points, then assign', 'حفظ النقاط':'Save points', 'حدّد النقاط أولًا من القائمة أو الخريطة':'Select the points first from the list or the map', 'تعرض نقاطك المُسندة فقط':'Showing only the points assigned to you', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'The “Points” column is the visit weight for each type in its holy site — saved and credited automatically to the technician on execution. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11824,7 +11837,8 @@ window.NSKI18N = (function(){
   '☑ اختيار من القائمة':'☑ فہرست سے چنیں', '🗺 تحديد من الخريطة':'🗺 نقشے پر منتخب کریں', '⬆ استيراد أسماء الفنيين':'⬆ ٹیکنیشن نام درآمد کریں', 'اختيار نقاط للإسناد':'تفویض کے لیے پوائنٹس چنیں', 'أسند المحدد لفني':'منتخب کو ٹیکنیشن کے سپرد کریں', 'أسند لفني':'ٹیکنیشن کو تفویض', 'المحدد:':'منتخب:', 'لم تُجدول زيارة لهذه النقطة بعد':'اس پوائنٹ کا کوئی دورہ ابھی شیڈول نہیں', 'حدّد نقاطًا أولًا':'پہلے پوائنٹس منتخب کریں', 'سجّل فنيًّا أولًا من صفحة «الفنيون»':'پہلے «ٹیکنیشنز» صفحے سے ٹیکنیشن رجسٹر کریں', 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'نقشے پر پوائنٹس دبا کر منتخب کریں پھر «ٹیکنیشن کو تفویض»', 'لم يُقرأ أي اسم — ضع الأسماء في العمود الأول':'کوئی نام نہ پڑھا گیا — نام پہلے کالم میں رکھیں', 'الطلب السريع يلتقط أول النقاط غير الممسوحة بالمشعر والنوع؛ وللاختيار الدقيق استخدم «اختيار من القائمة» أو «تحديد من الخريطة» ثم أسندها لفني واحد.':'فوری درخواست مشعر اور قسم کے مطابق پہلے غیر سروے شدہ پوائنٹس لیتی ہے؛ درست انتخاب کے لیے «فہرست سے چنیں» یا «نقشے پر منتخب کریں» استعمال کریں، پھر ایک ٹیکنیشن کو تفویض کریں۔',
   'رقم الجوال':'موبائل نمبر', 'رقم الجوال (اختياري)':'موبائل نمبر (اختیاری)', 'واتساب':'واٹس ایپ', '📲 رسالة':'📲 پیغام', 'طلب زيارات جديد — اكتب العدد أمام كل نوع':'نئی دورہ درخواست — ہر قسم کے سامنے تعداد لکھیں', 'ممسوح':'سروے شدہ', 'مُسند':'تفویض شدہ', 'متاح':'دستیاب', 'المطلوب':'درکار', 'حُفظ الرقم ✓':'نمبر محفوظ ✓', 'لا رقم محفوظ لهذا الفني — أضِفه أولًا':'اس ٹیکنیشن کا نمبر محفوظ نہیں — پہلے شامل کریں', 'اكتب العدد أمام نوعٍ واحد على الأقل':'کم از کم ایک قسم کے سامنے تعداد لکھیں', '«المتاح» هو ما لم يُمسح ولم يُسند بعد. اكتب العدد أمام الأنواع التي تريدها ثم «إنشاء الطلب» — أو حدّد نقاطًا بعينها من القائمة أو الخريطة.':'«دستیاب» وہ ہے جو نہ سروے ہوا نہ تفویض۔ مطلوبہ تعداد لکھیں پھر «درخواست بنائیں» — یا فہرست/نقشے سے مخصوص پوائنٹس چنیں۔',
   'الطاقم مضاف بالكامل':'عملہ پہلے ہی مکمل شامل ہے',
-  'تعرض نقاطك المُسندة فقط —':'صرف آپ کے تفویض کردہ پوائنٹس —'
+  'تعرض نقاطك المُسندة فقط —':'صرف آپ کے تفویض کردہ پوائنٹس —',
+  'النقاط':'پوائنٹس', 'طلب زيارات جديد — حدّد النقاط ثم أسندها':'نئی دورہ درخواست — پوائنٹس منتخب کر کے تفویض کریں', 'حفظ النقاط':'پوائنٹس محفوظ کریں', 'حدّد النقاط أولًا من القائمة أو الخريطة':'پہلے فہرست یا نقشے سے پوائنٹس منتخب کریں', 'تعرض نقاطك المُسندة فقط':'صرف آپ کو تفویض شدہ پوائنٹس دکھائے جا رہے ہیں', 'عمود «النقاط» هو وزن زيارة كل نوع في مشعره — يُحفظ ويُحتسب تلقائيًا لكل فني عند تنفيذ زيارته. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'«پوائنٹس» کالم ہر قسم کے دورے کا وزن ہے — محفوظ ہوتا ہے اور تکمیل پر ٹیکنیشن کو خودکار ملتا ہے۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
