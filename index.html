@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.74</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.75</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7537,7 +7537,7 @@ window.nskWaOffer=function(){
 window.NSKORD = window.NSKORD || {};
 /* أوزان النقاط إعدادات قابلة للتحرير — والافتراضي هو ما اعتمده المالك */
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3,
-  tgtSurvey:90, tgtInstall:1000, tgtDis:600, ph:4.81, days:26, hours:8,
+  tgtSurvey:90, tgtInstall:1000, tgtDis:600, ph:4.81, days:26, hours:8, daysWeek:6,
   insCamp:76.9, insCor:192.3, stgCfg:25, stgVal:25, stgIns:50, disOk:1, disBad:1.25 };
 window.pwGet = function(){
   var d={}; for(var k in window.PW_DEF) d[k]=window.PW_DEF[k];
@@ -7563,6 +7563,14 @@ window.pwSave = function(obj, what){
   }catch(e){ toast('تعذّر الحفظ',1); }
 };
 /* قارئ موحّد للثوابت — كل الحسابات تمرّ عليه */
+window.pwWk = function(monthly){
+  var P=window.pwGet(), d=P.days||26, w=P.daysWeek||6;
+  return Math.round((parseFloat(monthly)||0) * (w/d));
+};
+window.pwMo = function(weekly){
+  var P=window.pwGet(), d=P.days||26, w=P.daysWeek||6;
+  return Math.round((parseFloat(weekly)||0) * (d/w));
+};
 window.pwCalc = function(){
   var P=window.pwGet();
   var hrs=(P.days||26)*(P.hours||8);
@@ -7757,7 +7765,8 @@ window.cfgRender = function(){
         return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
           +'<td><input type="number" class="cfgW" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
       }).join('')+'</table>'
-      +'<div class="cfgF"><label>تارجت المسح الشهري<input type="number" id="cfg_tgtSurvey" min="0" value="'+P.tgtSurvey+'"></label></div>'
+      +'<div class="cfgF"><label>تارجت المسح الشهري<input type="number" class="tgM" data-w="cfg_tgtSurveyW" id="cfg_tgtSurvey" min="0" value="'+P.tgtSurvey+'"></label>'
+      +'<label>تارجت المسح الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtSurvey" id="cfg_tgtSurveyW" min="0" value="'+window.pwWk(P.tgtSurvey)+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveV">حفظ نقاط الزيارات</button></div>';
   }
   else if(pg==='install'){
@@ -7772,7 +7781,8 @@ window.cfgRender = function(){
             +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
         }).join('')+'</table></div>';
     }).join('')+'</div>'
-      +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label></div>'
+      +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" class="tgM" data-w="cfg_tgtInstallW" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label>'
+      +'<label>تارجت التركيب الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtInstall" id="cfg_tgtInstallW" min="0" value="'+window.pwWk(P.tgtInstall)+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
       +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</p>';
   }
@@ -7784,7 +7794,8 @@ window.cfgRender = function(){
         return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
           +'<td><input type="number" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
       }).join('')+'</table>'
-      +'<div class="cfgF"><label>تارجت الفك الشهري<input type="number" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label></div>'
+      +'<div class="cfgF"><label>تارجت الفك الشهري<input type="number" class="tgM" data-w="cfg_tgtDisW" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label>'
+      +'<label>تارجت الفك الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtDis" id="cfg_tgtDisW" min="0" value="'+window.pwWk(P.tgtDis)+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveD">حفظ نقاط الفك</button></div>';
   }
   else if(pg==='items'){
@@ -7810,7 +7821,8 @@ window.cfgRender = function(){
   }
   else if(pg==='sys'){
     h+='<div class="cfgF"><label>أيام العمل في الشهر<input type="number" id="cfg_days" min="1" value="'+P.days+'"></label>'
-      +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label></div>'
+      +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label>'
+      +'<label>أيام العمل في الأسبوع<input type="number" id="cfg_daysWeek" min="1" max="7" value="'+P.daysWeek+'"></label></div>'
       +'<p class="cfgS">ساعات الشهر القياسية: '+((P.days||26)*(P.hours||8))+' ساعة.</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveS">حفظ الثوابت</button></div>';
   }
@@ -7828,12 +7840,18 @@ window.cfgBind = function(){
   });
   function base(){
     var P0=window.pwGet(), o={};
-    ['camp','cor','stn','jam','other','ph','days','hours','tgtSurvey','tgtInstall','tgtDis',
+    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall','tgtDis',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
   }
   function num(id, o, k){ var e=q('#cfg_'+id); if(e && String(e.value||'').trim()!=='') o[k]=parseFloat(e.value)||0; }
+  Array.prototype.forEach.call(qa('.tgM'), function(e){
+    e.oninput=function(){ var t=q('#'+e.getAttribute('data-w')); if(t) t.value=window.pwWk(e.value); };
+  });
+  Array.prototype.forEach.call(qa('.tgW'), function(e){
+    e.oninput=function(){ var t=q('#'+e.getAttribute('data-m')); if(t) t.value=window.pwMo(e.value); };
+  });
   var sv=q('#cfgSaveV');
   if(sv) sv.onclick=function(){
     var o=base(); o.w={};
@@ -7859,7 +7877,7 @@ window.cfgBind = function(){
   };
   var ss=q('#cfgSaveS');
   if(ss) ss.onclick=function(){
-    var o=base(); num('days',o,'days'); num('hours',o,'hours');
+    var o=base(); num('days',o,'days'); num('hours',o,'hours'); num('daysWeek',o,'daysWeek');
     window.pwSave(o,'ثوابت النظام'); window.cfgRender();
   };
   var ia=q('#cfgItAdd');
@@ -10314,7 +10332,7 @@ function render(){
   };
   function _pwBase(){
     var P0=window.pwGet(), o={};
-    ['camp','cor','stn','jam','other','ph','days','hours','tgtSurvey','tgtInstall','tgtDis',
+    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall','tgtDis',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
@@ -12272,7 +12290,8 @@ window.NSKI18N = (function(){
   'الإعدادات':'Settings', '⚙️ الإعدادات':'⚙️ Settings', '👤 الأدوار والصلاحيات':'👤 Roles and permissions', '🔍 نقاط الزيارات':'🔍 Visit points', '🔧 نقاط التركيب':'🔧 Installation points', '🧩 نقاط الفك':'🧩 Dismantle points', '📐 ثوابت النظام':'📐 System constants', '➕ إضافة مستخدم':'➕ Add user', 'القدرة':'Capability', 'وزن الزيارة':'Visit weight', 'وزن الفك':'Dismantle weight', 'نقاط تركيب المخيم':'Camp install points', 'نقاط تركيب الممر':'Corridor install points', '٪ التهيئة':'% Configuration', '٪ التجميع':'% Assembly', '٪ التركيب':'% Installation', 'معامل «سليم»':'“Intact” factor', 'معامل «تالف»':'“Damaged” factor', 'تارجت المسح الافتراضي/شهر':'Default survey target / month', 'تارجت التركيب الافتراضي/شهر':'Default install target / month', 'تارجت الفك الافتراضي/شهر':'Default dismantle target / month', 'أيام العمل/شهر':'Working days / month', 'ساعات العمل/يوم':'Working hours / day', 'نقاط الساعة (تُحسب)':'Points per hour (computed)', 'حفظ نقاط الزيارات':'Save visit points', 'حفظ نقاط التركيب':'Save installation points', 'حفظ نقاط الفك':'Save dismantle points', 'حفظ الثوابت':'Save constants', 'حُفظت الإعدادات ✓':'Settings saved ✓', 'هذه الصفحة للإدارة فقط.':'This page is management-only.', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'Permissions are enforced at the database level, not the interface — what is hidden here is rejected there too.', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'Visit weights are set in the “Settings” tab and shown here for reference. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'Create the account from the “My account” panel → Create account',
   '📦 القطع ونقاط تركيبها':'📦 Items and their install points', 'نقاط التركيب':'Install points', 'القطعة':'Item', 'قطعة جديدة':'New item', 'نقاطها':'Its points', 'إضافة قطعة':'Add item', 'حفظ الكتالوج':'Save catalogue', 'حُفظ الكتالوج ✓':'Catalogue saved ✓', '📲 رسالة للمحددين':'📲 Message the selected', 'تحديد الكل':'Select all', 'حدّد فنيًّا واحدًا على الأقل':'Select at least one technician', 'اكتب اسم القطعة أولًا':'Type the item name first', 'أهداف الفنيين الشهرية':'Monthly technician targets', 'تارجت المسح':'Survey target', 'تارجت التركيب':'Install target', '✔ اعتمد وحدّد القطع':'✔ Approve and pick items', 'اعتمد وحدّد القطع':'Approve and pick items', 'تعديل القطع':'Edit items', 'اختر قطعة واحدة على الأقل':'Pick at least one item', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'Type the quantity next to each item. Points come from the settings catalogue and are fixed at approval.', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'Each item has its install points — summed when a point’s items are approved and credited to the technician.',
   'الأدوار والصلاحيات':'Roles and permissions', 'نقاط الزيارات':'Visit points', 'نقاط الفك':'Dismantle points', 'القطع والأسعار':'Items and prices', 'ثوابت النظام':'System constants', 'من يفعل ماذا':'Who does what', 'السعر (ريال)':'Price (SAR)', 'نقاط تركيبها':'Its install points', 'سعرها':'Its price', 'حفظ الأسعار':'Save prices', 'أيام العمل في الشهر':'Working days per month', 'ساعات العمل في اليوم':'Working hours per day', 'تارجت المسح الشهري':'Monthly survey target', 'تارجت التركيب الشهري':'Monthly install target', 'تارجت الفك الشهري':'Monthly dismantle target', 'الإعدادات للإدارة فقط':'Settings are management-only', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'Items are added and removed on the “Items and prices” page.', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'These are approved fixed prices — any external purchase is recorded with its invoice in the procurement module.', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'Accounts are created and roles changed from the account panel — the single entry point.',
-  'تحديد الظاهر':'Select shown', '✓ أسند المحدد لفني':'✓ Assign selection to a technician', '✓ تم — أسند لفني':'✓ Done — assign to technician'
+  'تحديد الظاهر':'Select shown', '✓ أسند المحدد لفني':'✓ Assign selection to a technician', '✓ تم — أسند لفني':'✓ Done — assign to technician',
+  'تارجت المسح الأسبوعي':'Weekly survey target', 'تارجت التركيب الأسبوعي':'Weekly install target', 'تارجت الفك الأسبوعي':'Weekly dismantle target', 'أيام العمل في الأسبوع':'Working days per week'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -12480,7 +12499,8 @@ window.NSKI18N = (function(){
   'الإعدادات':'ترتیبات', '⚙️ الإعدادات':'⚙️ ترتیبات', '👤 الأدوار والصلاحيات':'👤 کردار اور اجازتیں', '🔍 نقاط الزيارات':'🔍 دورہ پوائنٹس', '🔧 نقاط التركيب':'🔧 تنصیب پوائنٹس', '🧩 نقاط الفك':'🧩 ہٹانے کے پوائنٹس', '📐 ثوابت النظام':'📐 نظام کے ثوابت', '➕ إضافة مستخدم':'➕ صارف شامل کریں', 'القدرة':'صلاحیت', 'وزن الزيارة':'دورے کا وزن', 'وزن الفك':'ہٹانے کا وزن', 'نقاط تركيب المخيم':'خیمہ تنصیب پوائنٹس', 'نقاط تركيب الممر':'راہداری تنصیب پوائنٹس', '٪ التهيئة':'٪ کنفیگریشن', '٪ التجميع':'٪ اسمبلی', '٪ التركيب':'٪ تنصیب', 'معامل «سليم»':'«درست» عامل', 'معامل «تالف»':'«خراب» عامل', 'تارجت المسح الافتراضي/شهر':'طے شدہ سروے ہدف / ماہ', 'تارجت التركيب الافتراضي/شهر':'طے شدہ تنصیب ہدف / ماہ', 'تارجت الفك الافتراضي/شهر':'طے شدہ ہٹانے کا ہدف / ماہ', 'أيام العمل/شهر':'کام کے دن / ماہ', 'ساعات العمل/يوم':'کام کے گھنٹے / دن', 'نقاط الساعة (تُحسب)':'پوائنٹس فی گھنٹہ (شمار شدہ)', 'حفظ نقاط الزيارات':'دورہ پوائنٹس محفوظ کریں', 'حفظ نقاط التركيب':'تنصیب پوائنٹس محفوظ کریں', 'حفظ نقاط الفك':'ہٹانے کے پوائنٹس محفوظ کریں', 'حفظ الثوابت':'ثوابت محفوظ کریں', 'حُفظت الإعدادات ✓':'ترتیبات محفوظ ✓', 'هذه الصفحة للإدارة فقط.':'یہ صفحہ صرف انتظامیہ کے لیے ہے۔', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'اجازتیں ڈیٹابیس کی سطح پر نافذ ہیں، انٹرفیس پر نہیں — جو یہاں چھپا ہے وہاں بھی مسترد ہے۔', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'دورے کے وزن «ترتیبات» ٹیب سے طے ہوتے ہیں اور یہاں صرف دکھائے جاتے ہیں۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'«میرا اکاؤنٹ» پینل سے اکاؤنٹ بنائیں ← اکاؤنٹ بنائیں',
   '📦 القطع ونقاط تركيبها':'📦 آئٹمز اور تنصیب پوائنٹس', 'نقاط التركيب':'تنصیب پوائنٹس', 'القطعة':'آئٹم', 'قطعة جديدة':'نیا آئٹم', 'نقاطها':'اس کے پوائنٹس', 'إضافة قطعة':'آئٹم شامل کریں', 'حفظ الكتالوج':'کیٹلاگ محفوظ کریں', 'حُفظ الكتالوج ✓':'کیٹلاگ محفوظ ✓', '📲 رسالة للمحددين':'📲 منتخب کو پیغام', 'تحديد الكل':'سب منتخب کریں', 'حدّد فنيًّا واحدًا على الأقل':'کم از کم ایک ٹیکنیشن چنیں', 'اكتب اسم القطعة أولًا':'پہلے آئٹم کا نام لکھیں', 'أهداف الفنيين الشهرية':'ٹیکنیشنز کے ماہانہ اہداف', 'تارجت المسح':'سروے ہدف', 'تارجت التركيب':'تنصیب ہدف', '✔ اعتمد وحدّد القطع':'✔ منظور کریں اور آئٹمز چنیں', 'اعتمد وحدّد القطع':'منظور کریں اور آئٹمز چنیں', 'تعديل القطع':'آئٹمز میں ترمیم', 'اختر قطعة واحدة على الأقل':'کم از کم ایک آئٹم چنیں', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'ہر آئٹم کے سامنے مقدار لکھیں۔ پوائنٹس ترتیبات کے کیٹلاگ سے آتے ہیں اور منظوری پر ثابت ہو جاتے ہیں۔', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'ہر آئٹم کے تنصیب پوائنٹس — پوائنٹ کے آئٹمز کی منظوری پر جمع ہو کر ٹیکنیشن کو ملتے ہیں۔',
   'الأدوار والصلاحيات':'کردار اور اجازتیں', 'نقاط الزيارات':'دورہ پوائنٹس', 'نقاط الفك':'ہٹانے کے پوائنٹس', 'القطع والأسعار':'آئٹمز اور قیمتیں', 'ثوابت النظام':'نظام کے ثوابت', 'من يفعل ماذا':'کون کیا کرتا ہے', 'السعر (ريال)':'قیمت (ریال)', 'نقاط تركيبها':'اس کے تنصیب پوائنٹس', 'سعرها':'اس کی قیمت', 'حفظ الأسعار':'قیمتیں محفوظ کریں', 'أيام العمل في الشهر':'ماہانہ کام کے دن', 'ساعات العمل في اليوم':'روزانہ کام کے گھنٹے', 'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت التركيب الشهري':'ماہانہ تنصیب ہدف', 'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'الإعدادات للإدارة فقط':'ترتیبات صرف انتظامیہ کے لیے', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'آئٹمز «آئٹمز اور قیمتیں» صفحے سے شامل/حذف ہوتے ہیں۔', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'یہ منظور شدہ مقررہ قیمتیں ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری ماڈیول میں درج ہوگی۔', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'اکاؤنٹس اور کردار اکاؤنٹ پینل سے بنتے/بدلتے ہیں — واحد داخلہ۔',
-  'تحديد الظاهر':'دکھائے گئے منتخب کریں', '✓ أسند المحدد لفني':'✓ منتخب کو ٹیکنیشن کے سپرد کریں', '✓ تم — أسند لفني':'✓ ہو گیا — ٹیکنیشن کو تفویض'
+  'تحديد الظاهر':'دکھائے گئے منتخب کریں', '✓ أسند المحدد لفني':'✓ منتخب کو ٹیکنیشن کے سپرد کریں', '✓ تم — أسند لفني':'✓ ہو گیا — ٹیکنیشن کو تفویض',
+  'تارجت المسح الأسبوعي':'ہفتہ وار سروے ہدف', 'تارجت التركيب الأسبوعي':'ہفتہ وار تنصیب ہدف', 'تارجت الفك الأسبوعي':'ہفتہ وار ہٹانے کا ہدف', 'أيام العمل في الأسبوع':'ہفتہ وار کام کے دن'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
