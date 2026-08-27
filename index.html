@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.90</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.91</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7915,11 +7915,63 @@ window.buyList = function(){
     return { id:String(x.id||''), d:String(x.d||''), n:String(x.n||''), cat:String(x.cat||'أخرى'),
              q:Number(x.q)||0, u:String(x.u||'قطعة'), p:Number(x.p)||0, t:Number(x.t)||0,
              sup:String(x.sup||''), inv:String(x.inv||''), pay:String(x.pay||'نقدي'),
+             zone:String(x.zone||''), st:String(x.st||'معتمد'),
+             appBy:String(x.appBy||''), appAt:String(x.appAt||''),
              by:String(x.by||''), note:String(x.note||''), ts:String(x.ts||'') }; })
     .filter(function(x){ return x.id; }); }catch(e){ return []; }
 };
 window.BUYCAT_SEED = ['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء',
   'نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'];
+/* V13.91: المورّدون قائمةٌ موحّدة كالشركات — كان الاسم نصًّا حرًّا فصار «مؤسسة الحرم»
+   و«مؤسسه الحرم» مورّدَين في التقرير نفسه. */
+window.supList = function(){
+  var L=[];
+  try{ L=((window.NSKCORE.get('settings','suppliers')||{}).list||[])
+        .map(function(x){ return String((typeof x==='string')?x:(x&&x.n)||'').trim(); })
+        .filter(Boolean); }catch(e){}
+  /* أي مورّدٍ مستعملٍ في عمليةٍ قائمة يبقى ظاهرًا وإن حُذف، وإلا فقد تقريرُه اسمَه */
+  try{
+    var used={}; window.buyList().forEach(function(x){ if(x.sup) used[x.sup]=1; });
+    Object.keys(used).forEach(function(c){ if(L.indexOf(c)<0) L.push(c); });
+  }catch(e){}
+  return L;
+};
+window.supSave = function(list, txt){
+  var clean=[], seen={};
+  (list||[]).forEach(function(x){ var n=String(x||'').trim(); if(n && !seen[n]){ seen[n]=1; clean.push(n); } });
+  var d={ list:clean, n:clean.length, at:new Date().toISOString() };
+  try{
+    window.NSKCORE.set('settings','suppliers',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','suppliers',d); NSKSYNC.log(txt||'تحديث قائمة المورّدين'); }
+    toast('حُفظ المورّدون ✓'); try{ window.nskSync(); }catch(e){}
+  }catch(e){ toast('تعذّر الحفظ',1); }
+};
+window.supUse = function(){
+  var M={};
+  try{ window.buyList().forEach(function(x){
+    var c=x.sup||''; if(!c) return; (M[c]=M[c]||{n:0,t:0}); M[c].n++; M[c].t+=x.t; }); }catch(e){}
+  return M;
+};
+/* الميزانية: سقفٌ عام وسقوفٌ بالفئة، وحدُّ اعتمادٍ فوقه يلزم اعتماد المهندس */
+window.budGet = function(){
+  var d={ cap:0, byCat:{}, appAbove:0, at:'' };
+  try{ var s2=window.NSKCORE.get('settings','budget')||{};
+    d.cap=parseFloat(s2.cap)||0;
+    d.appAbove=parseFloat(s2.appAbove)||0;
+    d.byCat=(s2.byCat && typeof s2.byCat==='object')?s2.byCat:{};
+    d.at=String(s2.at||'');
+  }catch(e){}
+  return d;
+};
+window.budSave = function(o, txt){
+  var d={ cap:parseFloat(o.cap)||0, appAbove:parseFloat(o.appAbove)||0,
+          byCat:o.byCat||{}, at:new Date().toISOString() };
+  try{
+    window.NSKCORE.set('settings','budget',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','budget',d); NSKSYNC.log(txt||'تحديث الميزانية'); }
+    toast('حُفظت الميزانية ✓'); try{ window.nskSync(); }catch(e){}
+  }catch(e){ toast('تعذّر الحفظ',1); }
+};
 /* الفئات تُدار من الإعدادات وتُزامَن، والبذرة تعمل حتى يضبطها المهندس */
 window.buyCatList = function(){
   var L=[];
@@ -7966,22 +8018,32 @@ window.buySave = function(list, txt){
 };
 window.buyStats = function(){
   var L=window.buyList(), now=new Date(), mk=now.toISOString().slice(0,7);
-  var tot=0, mon=0, cat={}, sup={}, last='';
+  var tot=0, mon=0, pend=0, npend=0, cat={}, sup={}, zone={}, last='';
   L.forEach(function(x){
-    tot+=x.t;
-    if(String(x.d||'').slice(0,7)===mk) mon+=x.t;
-    var c=x.cat||'أخرى'; (cat[c]=cat[c]||{n:0,t:0}); cat[c].n++; cat[c].t+=x.t;
-    if(x.sup){ (sup[x.sup]=sup[x.sup]||{n:0,t:0}); sup[x.sup].n++; sup[x.sup].t+=x.t; }
+    var ok=(x.st!=='بانتظار الاعتماد');
+    if(ok) tot+=x.t; else { pend+=x.t; npend++; }
+    if(ok && String(x.d||'').slice(0,7)===mk) mon+=x.t;
+    var c=x.cat||'أخرى'; (cat[c]=cat[c]||{n:0,t:0}); cat[c].n++; if(ok) cat[c].t+=x.t;
+    if(x.sup){ (sup[x.sup]=sup[x.sup]||{n:0,t:0}); sup[x.sup].n++; if(ok) sup[x.sup].t+=x.t; }
+    var z=x.zone||'غير محدَّد'; (zone[z]=zone[z]||{n:0,t:0}); zone[z].n++; if(ok) zone[z].t+=x.t;
     if(x.d>last) last=x.d;
   });
+  var B=window.budGet();
   return { L:L, n:L.length, tot:Math.round(tot*100)/100, mon:Math.round(mon*100)/100,
+           pend:Math.round(pend*100)/100, npend:npend,
            avg:L.length?Math.round(tot/L.length*100)/100:0, last:last,
-           cat:cat, sup:sup, nsup:Object.keys(sup).length };
+           cat:cat, sup:sup, zone:zone, nsup:Object.keys(sup).length,
+           cap:B.cap, appAbove:B.appAbove,
+           left:B.cap?Math.round((B.cap-tot)*100)/100:0,
+           pc:B.cap?Math.round(tot/B.cap*100):0 };
 };
 /* نافذة تسجيل عملية شراء — حقولٌ كاملة بفاتورتها ومورّدها، والإجمالي يُحسب ويُثبَّت */
 window.buyAdd = function(edit){
   var e=edit||null;
   var today=new Date().toISOString().slice(0,10);
+  var _sup=window.supList();
+  if(!_sup.length) _sup=['—'];
+  if(e && e.sup && _sup.indexOf(e.sup)<0) _sup=[e.sup].concat(_sup);
   window.nskAsk({
     t: e?'تعديل عملية شراء':'تسجيل عملية شراء',
     m: e?'':'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.',
@@ -7992,7 +8054,8 @@ window.buyAdd = function(edit){
       {k:'q',   l:'الكمية', type:'number', val:(e?e.q:1), req:true},
       {k:'u',   l:'الوحدة', ph:'قطعة · متر · لفة · كرتونة', val:(e?e.u:'قطعة')},
       {k:'p',   l:'سعر الوحدة (ريال)', type:'number', val:(e?e.p:''), req:true},
-      {k:'sup', l:'المحل أو المورّد', ph:'اسم المحل', val:(e?e.sup:'')},
+      {k:'sup', l:'المحل أو المورّد', type:'select', opts:_sup, val:(e?e.sup:_sup[0])},
+      {k:'zone',l:'المشعر', type:'select', opts:['—','منى','عرفات','مزدلفة','الورشة','عام'], val:(e?(e.zone||'—'):'—')},
       {k:'inv', l:'رقم الفاتورة', ph:'اختياري', val:(e?e.inv:'')},
       {k:'pay', l:'طريقة الدفع', type:'select', opts:['نقدي','تحويل','بطاقة','آجل'], val:(e?e.pay:'نقدي')},
       {k:'note',l:'ملاحظة', ph:'اختياري — لماذا اشتُري ولأي موقع', val:(e?e.note:'')}
@@ -8003,13 +8066,37 @@ window.buyAdd = function(edit){
     var q=parseFloat(a.q)||0, p=parseFloat(a.p)||0;
     if(q<=0 || p<0){ toast('الكمية أكبر من صفر والسعر لا يكون سالبًا',1); return; }
     var L=window.buyList(), me2=''; try{ me2=window.tkMe(); }catch(x){}
+    var t=Math.round(q*p*100)/100, B=window.budGet();
+    /* V13.91: ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف المعتمد */
+    var eng=false; try{ var _u=window.NSK_USER||{}; eng=(_u.role==='admin'||_u.role==='engineer'); }catch(x){}
+    var needApp = (B.appAbove>0 && t>B.appAbove && !eng);
     var row={ id:(e?e.id:('by'+Date.now().toString(36))), d:a.d, n:a.n, cat:a.cat,
-              q:q, u:a.u||'قطعة', p:p, t:Math.round(q*p*100)/100,
+              q:q, u:a.u||'قطعة', p:p, t:t,
               sup:a.sup||'', inv:a.inv||'', pay:a.pay||'نقدي',
+              zone:(a.zone==='—'?'':(a.zone||'')),
+              st:(e?e.st:(needApp?'بانتظار الاعتماد':'معتمد')),
+              appBy:(e?e.appBy:''), appAt:(e?e.appAt:''),
               by:(e?e.by:me2), note:a.note||'', ts:(e?e.ts:new Date().toISOString()) };
     if(e){ L=L.map(function(x){ return x.id===e.id ? row : x; }); }
     else L.push(row);
-    window.buySave(L, (e?'تعديل مشترى: ':'تسجيل مشترى: ')+row.n+' — '+row.t+' ريال');
+    window.buySave(L, (e?'تعديل مشترى: ':'تسجيل مشترى: ')+row.n+' — '+row.t+' ريال'+(needApp?' (بانتظار الاعتماد)':''));
+    if(needApp) toast('سُجّل بانتظار اعتماد المهندس — تجاوز حدّ الاعتماد');
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(x){}
+  });
+};
+/* اعتماد مشترى تجاوز الحد */
+window.buyApprove = function(id){
+  var L=window.buyList(), r=L.filter(function(x){ return x.id===id; })[0];
+  if(!r) return;
+  window.nskAsk({ t:'اعتماد عملية شراء',
+    m:'«'+r.n+'»'+String.fromCharCode(10)+'المبلغ: '+r.t+' ريال · المورّد: '+(r.sup||'—')
+      +String.fromCharCode(10)+'يدخل المنصرف المعتمد ولا يعود قابلًا للرفض.',
+    ok:'اعتمد' }).then(function(ok){
+    if(!ok) return;
+    var me2=''; try{ me2=window.tkMe(); }catch(x){}
+    window.buySave(L.map(function(x){
+      return x.id===id ? Object.assign({}, x, {st:'معتمد', appBy:me2, appAt:new Date().toISOString()}) : x;
+    }), 'اعتماد مشترى: '+r.n+' — '+r.t+' ريال');
     try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(x){}
   });
 };
@@ -8051,6 +8138,8 @@ window.cfgPages = [
   ['dis','نقاط الفك','وزن الفك ومعاملا الحالة','🧩'],
   ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة','📦'],
   ['buycat','فئات المشتريات','تبويب مشتريات السوق المحلي','🏷'],
+  ['sup','المورّدون','قائمة موحّدة لمن نشتري منهم','🏪'],
+  ['budget','الميزانية والاعتماد','سقف الصرف وحدّ اعتماد المهندس','💰'],
   ['sys','ثوابت النظام','أيام العمل وساعات اليوم','📐'],
   ['roles','الأدوار والصلاحيات','من يفعل ماذا','🛡']
 ];
@@ -8272,6 +8361,42 @@ window.cfgRender = function(){
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgBcAdd">إضافة فئة</button>'
       +'<button type="button" class="cfgGo" id="cfgBcSeed">استعادة الفئات الافتراضية</button></div>';
   }
+  else if(pg==='sup'){
+    var SL=window.supList(), SU=window.supUse();
+    h+='<p class="cfgS">قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين '
+      +'من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.</p>';
+    if(!SL.length) h+='<p class="cfgS">لا مورّدين بعد — أضِف أولهم أدناه.</p>';
+    else {
+      h+='<table class="cfgT"><thead><tr><th>المورّد</th><th>عمليات</th><th>المصروف</th><th></th></tr></thead><tbody>'
+        +SL.map(function(c){
+          var u=SU[c]||{n:0,t:0};
+          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(c)+'</code></td>'
+            +'<td data-l="عمليات">'+window.arNum(u.n)+'</td>'
+            +'<td data-l="المصروف">'+window.arNum(u.t)+' <span>ر.س</span></td>'
+            +'<td data-l="حذف">'+(u.n ? '<span class="cfgS" style="margin:0">مستعمل</span>'
+                : '<button type="button" class="cfgDel cfgSpDel" data-n="'+_cfgX(c)+'">حذف</button>')
+            +'</td></tr>';
+        }).join('')+'</tbody></table>';
+    }
+    h+='<div class="cfgF"><label>مورّد جديد<input type="text" id="cfg_spN" placeholder="مثال: مؤسسة الحرم للتجارة"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSpAdd">إضافة مورّد</button></div>';
+  }
+  else if(pg==='budget'){
+    var BG=window.budGet(), BS=window.buyStats();
+    h+='<p class="cfgS">الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس '
+      +'قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.</p>';
+    h+='<div class="cfgF"><label>الميزانية المعتمدة (ريال)<input type="number" inputmode="numeric" id="cfg_bgCap" min="0" value="'
+      +(BG.cap||'')+'" placeholder="0"></label>'
+      +'<label>حدّ الاعتماد للعملية الواحدة (ريال)<input type="number" inputmode="numeric" id="cfg_bgApp" min="0" value="'
+      +(BG.appAbove||'')+'" placeholder="0"></label></div>';
+    h+='<div class="dGrid2"><span>المنصرف المعتمد</span> <b>'+window.arNum(BS.tot)+' <span>ر.س</span></b>'
+      +(BG.cap?(' · <span>المتبقي</span> <b>'+window.arNum(BS.left)+' <span>ر.س</span></b> · <b>'
+        +window.arNum(BS.pc)+'٪</b>'):'')
+      +(BS.npend?(' · <span>بانتظار الاعتماد</span> <b>'+window.arNum(BS.pend)+' <span>ر.س</span></b>'):'')
+      +'</div>';
+    h+='<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveB">حفظ الميزانية</button></div>';
+    h+='<p class="cfgS">تغيير السقف لا يمسّ عمليةً مسجّلة — المبالغ تُثبَّت لحظة التسجيل، والسقف مرجعُ قياسٍ لا أكثر.</p>';
+  }
   else if(pg==='sys'){
     h+='<div class="cfgF"><label>أيام العمل في الشهر<input type="number" id="cfg_days" min="1" value="'+P.days+'"></label>'
       +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label>'
@@ -8418,6 +8543,39 @@ window.cfgBind = function(){
       });
     };
   });
+  var sa=q('#cfgSpAdd');
+  if(sa) sa.onclick=function(){
+    var n2=String((q('#cfg_spN')||{}).value||'').trim();
+    if(!n2){ toast('اكتب اسم المورّد أولًا',1); return; }
+    var L=window.supList();
+    if(L.some(function(x){ return x===n2; })){ toast('المورّد موجود بالفعل',1); return; }
+    L.push(n2);
+    var _m1='إضافة مورّد: '+n2;
+    window.supSave(L, _m1);
+    window.cfgMark(false); window.cfgRender();
+  };
+  Array.prototype.forEach.call(qa('.cfgSpDel'), function(b){
+    b.onclick=function(){
+      var n2=b.getAttribute('data-n')||'';
+      window.nskAsk({ t:'حذف مورّد',
+        m:'«'+n2+'»'+String.fromCharCode(10)+'لم يُستعمل في أي عملية، فحذفه لا يمسّ رقمًا مسجَّلًا.',
+        ok:'احذف المورّد', danger:true }).then(function(r){
+        if(!r) return;
+        var _m2='حذف مورّد: '+n2;
+        window.supSave(window.supList().filter(function(x){ return x!==n2; }), _m2);
+        window.cfgMark(false); window.cfgRender();
+      });
+    };
+  });
+  var sb=q('#cfgSaveB');
+  if(sb) window.NSKCFG.save=function(){ sb.onclick(); };
+  if(sb) sb.onclick=function(){
+    var cap=parseFloat((q('#cfg_bgCap')||{}).value)||0;
+    var app=parseFloat((q('#cfg_bgApp')||{}).value)||0;
+    var _m3='الميزانية: سقف '+cap+' · حدّ اعتماد '+app;
+    window.budSave({cap:cap, appAbove:app}, _m3);
+    window.cfgMark(false); window.cfgRender();
+  };
   var ba=q('#cfgBcAdd');
   if(ba) ba.onclick=function(){
     var n2=String((q('#cfg_bcN')||{}).value||'').trim();
@@ -11606,10 +11764,39 @@ function render(){
     h+='<h2>المشتريات — ما اشتُري من السوق المحلي</h2>';
     h+='<div class="dGrid">';
     h+=card(RY(B.tot),'إجمالي المنصرف','#E9CE83');
-    h+=card(B.n,'عملية شراء','#4BC9F5');
+    h+=card(B.cap?RY(B.cap):'—','الميزانية المعتمدة', B.cap?'#4BC9F5':'#9AA1AB');
+    h+=card(B.cap?RY(B.left):'—','المتبقي', (B.cap&&B.left<0)?'#E05252':(B.cap?'#3AD6A0':'#9AA1AB'));
     h+=card(RY(B.mon),'منصرف هذا الشهر','#C77DFF');
-    h+=card(B.nsup||'—','مورّدًا','#3AD6A0');
     h+='</div>';
+    if(B.cap){
+      h+=barRow('المنصرف من الميزانية', Math.round(B.tot), Math.round(B.cap),
+                B.pc>=100?'#E05252':(B.pc>=80?'#E8873A':'#3AD6A0'));
+      if(B.left<0) h+='<p class="dTs" style="color:#E05252"><span>تجاوزَ المنصرفُ الميزانيةَ بمقدار</span> '
+        +RY(Math.abs(B.left))+' — <span>راجع السقف أو أوقف الصرف.</span></p>';
+      else if(B.pc>=80) h+='<p class="dTs" style="color:#E8873A"><span>بلغ المنصرف</span> '+AR(B.pc)
+        +'٪ <span>من الميزانية — تبقّى</span> '+RY(B.left)+'.</p>';
+    } else if(canB){
+      h+='<p class="dTs" style="color:#E8873A"><span>لا ميزانيةَ معتمدة بعد — المنصرف رقمٌ بلا مرجع. اضبطها من الإعدادات ← الميزانية والاعتماد.</span></p>';
+    }
+    if(B.npend){
+      h+='<div class="dT3">بانتظار الاعتماد — '+AR(B.npend)+'</div>';
+      h+='<table class="dT"><thead><tr><th>التاريخ</th><th>الصنف</th><th>المبلغ</th><th>المورّد</th><th>سجّلها</th>'
+        +(canB?'<th></th>':'')+'</tr></thead><tbody>';
+      B.L.filter(function(r){ return r.st==='بانتظار الاعتماد'; })
+        .sort(function(x,y){ return String(x.d||'').localeCompare(String(y.d||'')); })
+        .forEach(function(r){
+          h+='<tr><td>'+esc2(r.d||'—')+'</td><td><code class="nx">'+esc2(r.n)+'</code></td>'
+            +'<td><b style="color:#E8873A">'+RY(r.t)+'</b></td>'
+            +'<td><code class="nx">'+esc2(r.sup||'—')+'</code></td>'
+            +'<td><code class="nx">'+esc2(r.by||'—')+'</code></td>'
+            +(canB?('<td><button type="button" class="dBtn byOk" data-id="'+escA(r.id)+'">اعتمد</button></td>'):'')
+            +'</tr>';
+        });
+      h+='</tbody></table>';
+      h+='<p class="dTs"><span>لا تدخل المنصرفَ المعتمد حتى يعتمدها المهندس. وحدُّ الاعتماد يُضبط من الإعدادات.</span></p>';
+    }
+    h+='<div class="dGrid2"><b>'+AR(B.n)+'</b> <span>عملية شراء ·</span> <b>'+AR(B.nsup||0)
+      +'</b> <span>مورّدًا · متوسط العملية</span> <b>'+RY(B.avg)+'</b></div>';
     if(canB){
       h+='<div class="dRow"><button type="button" class="dBtn p" id="byAdd">➕ تسجيل عملية شراء</button>'
         +'<button type="button" class="dBtn" id="byXls">⬇ إكسل — دفتر المشتريات</button></div>';
@@ -11618,8 +11805,8 @@ function render(){
       h+='<div class="dEmpty">لا مشتريات مسجّلة بعد'+(canB?' — ابدأ بزر «تسجيل عملية شراء» أعلاه.':'.')+'</div>';
     } else {
       h+='<div class="evCtl"><input type="search" id="byQ" placeholder="ابحث بالصنف أو المورّد أو رقم الفاتورة…"></div>';
-      h+='<table class="dT" id="byTbl"><thead><tr><th>التاريخ</th><th>الصنف</th><th>الفئة</th>'
-        +'<th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورّد</th><th>الفاتورة</th><th>الدفع</th>'
+      h+='<table class="dT" id="byTbl"><thead><tr><th>التاريخ</th><th>الصنف</th><th>الفئة</th><th>المشعر</th>'
+        +'<th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورّد</th><th>الفاتورة</th><th>الحالة</th>'
         +(canB?'<th></th>':'')+'</tr></thead><tbody>';
       B.L.slice().sort(function(x,y){ return String(y.d||'').localeCompare(String(x.d||'')); })
        .forEach(function(r){
@@ -11628,12 +11815,13 @@ function render(){
           +'<td><b><code class="nx">'+esc2(r.n)+'</code></b>'
           +(r.note?('<br><span class="pMut" style="font-size:.85em"><code class="nx">'+esc2(r.note)+'</code></span>'):'')+'</td>'
           +'<td><code class="nx">'+esc2(r.cat)+'</code></td>'
+          +'<td>'+esc2(r.zone||'—')+'</td>'
           +'<td>'+AR(r.q)+' <code class="nx">'+esc2(r.u)+'</code></td>'
           +'<td>'+RY(r.p)+'</td>'
           +'<td><b style="color:#E9CE83">'+RY(r.t)+'</b></td>'
           +'<td><code class="nx">'+esc2(r.sup||'—')+'</code></td>'
           +'<td><code class="nx">'+esc2(r.inv||'—')+'</code></td>'
-          +'<td><code class="nx">'+esc2(r.pay)+'</code></td>'
+          +'<td'+(r.st==='بانتظار الاعتماد'?' style="color:#E8873A;font-weight:800"':'')+'>'+esc2(r.st||'معتمد')+'</td>'
           +(canB?('<td><button type="button" class="dBtn byE" data-id="'+escA(r.id)+'">تعديل</button> '
                  +'<button type="button" class="dBtn byD" data-id="'+escA(r.id)+'">حذف</button></td>'):'')
           +'</tr>';
@@ -11647,6 +11835,17 @@ function render(){
         CK.forEach(function(k){
           var pc=B.tot?Math.round(B.cat[k].t/B.tot*100):0;
           h+='<tr><td><code class="nx">'+esc2(k)+'</code></td><td>'+AR(B.cat[k].n)+'</td><td>'+RY(B.cat[k].t)+'</td>'
+            +'<td>'+AR(pc)+'٪</td></tr>';
+        });
+        h+='</tbody></table>';
+      }
+      var ZK=Object.keys(B.zone).sort(function(a,b){ return B.zone[b].t-B.zone[a].t; });
+      if(ZK.length){
+        h+='<div class="dT3">المصروف حسب المشعر</div>';
+        h+='<table class="dT"><thead><tr><th>المشعر</th><th>عمليات</th><th>الإجمالي</th><th>النسبة</th></tr></thead><tbody>';
+        ZK.forEach(function(k){
+          var pc=B.tot?Math.round(B.zone[k].t/B.tot*100):0;
+          h+='<tr><td>'+esc2(k)+'</td><td>'+AR(B.zone[k].n)+'</td><td>'+RY(B.zone[k].t)+'</td>'
             +'<td>'+AR(pc)+'٪</td></tr>';
         });
         h+='</tbody></table>';
@@ -12333,6 +12532,8 @@ function render(){
       if(r) window.buyAdd(r);
     };
   });
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byOk'),function(b){
+    b.onclick=function(){ window.buyApprove(b.getAttribute('data-id')); }; });
   Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byD'),function(b){
     b.onclick=function(){ window.buyDel(b.getAttribute('data-id')); };
   });
@@ -14270,7 +14471,32 @@ window.NSKI18N = (function(){
   'كاميرا AI موتورايز':'Motorised AI camera',
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
   'الورشة':'Workshop',
-  'المخزون':'Inventory', 'المخزون والعُهدة':'Inventory and custody',
+  'المخزون':'Inventory',
+  'المورّدون':'Suppliers', 'مثال: مؤسسة الحرم للتجارة':'e.g. Al-Haram Trading Est.', '٪':'%',
+  'إضافة مورّد:':'Supplier added:', 'حذف مورّد:':'Supplier deleted:', 'الميزانية: سقف':'Budget: ceiling',
+  '· حدّ اعتماد':'· approval threshold',
+  'لم يُستعمل في أي عملية، فحذفه لا يمسّ رقمًا مسجَّلًا.':'It has not been used in any purchase, so deleting it touches no recorded figure.', 'قائمة موحّدة لمن نشتري منهم':'A unified list of who we buy from',
+  'الميزانية والاعتماد':'Budget and approval', 'سقف الصرف وحدّ اعتماد المهندس':'Spending ceiling and the engineer approval threshold',
+  'قائمة موحّدة لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.':'A unified list of who we buy from — exactly like the companies list. A free-text name turned one supplier into two over a single letter, splitting its report. A supplier used by existing purchases cannot be deleted.',
+  'لا مورّدين بعد — أضِف أولهم أدناه.':'No suppliers yet — add the first one below.',
+  'مورّد جديد':'New supplier', 'إضافة مورّد':'Add supplier', 'حذف مورّد':'Delete a supplier',
+  'احذف المورّد':'Delete the supplier', 'مستعمل':'in use', 'المورّد موجود بالفعل':'That supplier already exists',
+  'اكتب اسم المورّد أولًا':'Write the supplier name first',
+  'الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.':'The budget is the ceiling spending is measured against, and the approval threshold is the amount above which the engineer must approve before a purchase enters approved spending. Zero in either means no ceiling and no approval.',
+  'الميزانية المعتمدة (ريال)':'Approved budget (SAR)', 'حدّ الاعتماد للعملية الواحدة (ريال)':'Approval threshold per purchase (SAR)',
+  'حفظ الميزانية':'Save the budget', 'المنصرف المعتمد':'Approved spending', 'المتبقي':'Remaining',
+  'بانتظار الاعتماد':'Awaiting approval', 'الميزانية المعتمدة':'Approved budget',
+  'تغيير السقف لا يمسّ عمليةً مسجّلة — المبالغ تُثبَّت لحظة التسجيل، والسقف مرجعُ قياسٍ لا أكثر.':'Changing the ceiling never touches a recorded purchase — amounts are fixed at the moment of recording, and the ceiling is only a yardstick.',
+  'المنصرف من الميزانية':'Spending against budget',
+  'تجاوزَ المنصرفُ الميزانيةَ بمقدار':'Spending exceeded the budget by',
+  'راجع السقف أو أوقف الصرف.':'Review the ceiling or halt spending.',
+  'بلغ المنصرف':'Spending reached', 'من الميزانية — تبقّى':'of the budget — remaining',
+  'لا ميزانيةَ معتمدة بعد — المنصرف رقمٌ بلا مرجع. اضبطها من الإعدادات ← الميزانية والاعتماد.':'No approved budget yet — spending is a figure without a reference. Set it in Settings → Budget and approval.',
+  'لا تدخل المنصرفَ المعتمد حتى يعتمدها المهندس. وحدُّ الاعتماد يُضبط من الإعدادات.':'They do not enter approved spending until the engineer approves them. The threshold is set in Settings.',
+  'اعتماد عملية شراء':'Approve a purchase', 'يدخل المنصرف المعتمد ولا يعود قابلًا للرفض.':'It enters approved spending and can no longer be rejected.',
+  'المصروف حسب المشعر':'Spending by holy site', 'المشعر':'Holy site',
+  'عملية شراء ·':'purchases ·', 'مورّدًا · متوسط العملية':'suppliers · average purchase',
+  'الورشة':'Workshop', 'عام':'General', 'المخزون والعُهدة':'Inventory and custody',
   'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة':'Store, custody and damaged balances — derived from the movement ledger',
   'في المخزن':'In store', 'في عُهدة المنفِّذين':'In performers’ custody', 'رُكّب في الميدان':'Installed in the field',
   'تالفٌ معزول':'Damaged, isolated', 'دفتر حركة المخزون':'Inventory movement ledger',
@@ -14655,7 +14881,32 @@ window.NSKI18N = (function(){
   'كاميرا AI موتورايز':'موٹرائزڈ AI کیمرہ',
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
   'الورشة':'ورکشاپ',
-  'المخزون':'انوینٹری', 'المخزون والعُهدة':'انوینٹری اور امانت',
+  'المخزون':'انوینٹری',
+  'المورّدون':'سپلائرز', 'مثال: مؤسسة الحرم للتجارة':'مثال: الحرم ٹریڈنگ', '٪':'٪',
+  'إضافة مورّد:':'سپلائر شامل:', 'حذف مورّد:':'سپلائر حذف:', 'الميزانية: سقف':'بجٹ: حد',
+  '· حدّ اعتماد':'· منظوری کی حد',
+  'لم يُستعمل في أي عملية، فحذفه لا يمسّ رقمًا مسجَّلًا.':'یہ کسی خریداری میں استعمال نہیں ہوا، اس لیے حذف کرنے سے کوئی درج شدہ رقم متاثر نہیں ہوتی۔', 'قائمة موحّدة لمن نشتري منهم':'جن سے خریدتے ہیں ان کی متحدہ فہرست',
+  'الميزانية والاعتماد':'بجٹ اور منظوری', 'سقف الصرف وحدّ اعتماد المهندس':'خرچ کی حد اور انجینئر کی منظوری کی حد',
+  'قائمة موحّدة لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.':'جن سے خریدتے ہیں ان کی متحدہ فہرست — بالکل کمپنیوں کی طرح۔ آزاد نام ایک حرف کے فرق سے ایک سپلائر کو دو بنا دیتا تھا۔ موجودہ خریداریوں میں زیرِ استعمال سپلائر حذف نہیں ہوتا۔',
+  'لا مورّدين بعد — أضِف أولهم أدناه.':'ابھی کوئی سپلائر نہیں — پہلا نیچے شامل کریں۔',
+  'مورّد جديد':'نیا سپلائر', 'إضافة مورّد':'سپلائر شامل کریں', 'حذف مورّد':'سپلائر حذف کریں',
+  'احذف المورّد':'سپلائر حذف کریں', 'مستعمل':'زیرِ استعمال', 'المورّد موجود بالفعل':'یہ سپلائر پہلے سے موجود ہے',
+  'اكتب اسم المورّد أولًا':'پہلے سپلائر کا نام لکھیں',
+  'الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.':'بجٹ وہ حد ہے جس پر خرچ ناپا جاتا ہے، اور منظوری کی حد وہ رقم ہے جس سے اوپر انجینئر کی منظوری لازم ہے۔ کسی میں صفر کا مطلب ہے کوئی حد اور کوئی منظوری نہیں۔',
+  'الميزانية المعتمدة (ريال)':'منظور شدہ بجٹ (ریال)', 'حدّ الاعتماد للعملية الواحدة (ريال)':'فی خریداری منظوری کی حد (ریال)',
+  'حفظ الميزانية':'بجٹ محفوظ کریں', 'المنصرف المعتمد':'منظور شدہ خرچ', 'المتبقي':'باقی',
+  'بانتظار الاعتماد':'منظوری کے منتظر', 'الميزانية المعتمدة':'منظور شدہ بجٹ',
+  'تغيير السقف لا يمسّ عمليةً مسجّلة — المبالغ تُثبَّت لحظة التسجيل، والسقف مرجعُ قياسٍ لا أكثر.':'حد بدلنے سے کوئی درج شدہ خریداری متاثر نہیں ہوتی — رقمیں درج کرتے وقت طے ہو جاتی ہیں، اور حد صرف پیمانہ ہے۔',
+  'المنصرف من الميزانية':'بجٹ کے مقابلے خرچ',
+  'تجاوزَ المنصرفُ الميزانيةَ بمقدار':'خرچ بجٹ سے تجاوز کر گیا بمقدار',
+  'راجع السقف أو أوقف الصرف.':'حد پر نظرثانی کریں یا خرچ روکیں۔',
+  'بلغ المنصرف':'خرچ پہنچا', 'من الميزانية — تبقّى':'بجٹ کا — باقی',
+  'لا ميزانيةَ معتمدة بعد — المنصرف رقمٌ بلا مرجع. اضبطها من الإعدادات ← الميزانية والاعتماد.':'ابھی کوئی منظور شدہ بجٹ نہیں — خرچ بغیر حوالے کا عدد ہے۔ ترتیبات ← بجٹ اور منظوری سے طے کریں۔',
+  'لا تدخل المنصرفَ المعتمد حتى يعتمدها المهندس. وحدُّ الاعتماد يُضبط من الإعدادات.':'یہ منظور شدہ خرچ میں شامل نہیں ہوتیں جب تک انجینئر منظور نہ کرے۔ حد ترتیبات سے طے ہوتی ہے۔',
+  'اعتماد عملية شراء':'خریداری کی منظوری', 'يدخل المنصرف المعتمد ولا يعود قابلًا للرفض.':'یہ منظور شدہ خرچ میں شامل ہو جاتی ہے اور پھر مسترد نہیں ہو سکتی۔',
+  'المصروف حسب المشعر':'مشعر کے مطابق خرچ', 'المشعر':'مشعر',
+  'عملية شراء ·':'خریداریاں ·', 'مورّدًا · متوسط العملية':'سپلائرز · اوسط خریداری',
+  'الورشة':'ورکشاپ', 'عام':'عام', 'المخزون والعُهدة':'انوینٹری اور امانت',
   'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة':'اسٹور، امانت اور خراب کے بیلنس — حرکت رجسٹر سے اخذ شدہ',
   'في المخزن':'اسٹور میں', 'في عُهدة المنفِّذين':'انجام دہندگان کی امانت میں', 'رُكّب في الميدان':'میدان میں نصب',
   'تالفٌ معزول':'خراب، الگ کیا گیا', 'دفتر حركة المخزون':'انوینٹری حرکت رجسٹر',
