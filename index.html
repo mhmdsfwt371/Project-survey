@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.97</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.98</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5523,6 +5523,12 @@ window.NSKCORE={
 #drOv .drQ input{width:74px}
 #mvOv #mvSum,#drOv #drSum{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
 /* V13.96: نمطٌ مستقل — كلاس cfgDel مربوطٌ بحذف القطعة من الكتالوج فلا يُستعمل هنا */
+#nskCfgOv .cfgNM{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.3);border-radius:9px;padding:9px 11px;font:inherit;
+  font-size:16px;min-height:42px;width:100%;box-sizing:border-box;font-weight:700}
+#nskCfgOv .cfgZN{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.3);border-radius:9px;padding:9px 11px;font:inherit;
+  font-size:16px;min-height:42px;color-scheme:dark}
 .cfgOut{background:transparent;border:1px solid rgba(224,82,82,.55);border-radius:9px;
   color:#E05252;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;min-height:38px}
 .cfgOut:active{background:rgba(224,82,82,.12)}
@@ -7821,7 +7827,7 @@ window.pwCalc = function(){
 };
 /* وزن زيارة النقطة حسب نوعها */
 window.ITEM_SEED = [
- ['cor','cam_ai','كاميرا AI موتورايز',26,4850],['cor','cam_pe','كاميرا ممر 8266',16,2400],
+ ['cor','cam_pe','كاميرا ممر 8266',16,2400],
  ['cor','rtr','راوتر صناعي',10,1150],['cor','rdr8','قارئ ٨ منافذ',33,7200],
  ['cor','ant12','هوائي UHF SRRA12',8,520],['cor','sol','لوح سولار ٤٠٠و',26,900],
  ['cor','bat','بطارية ٢٠٠أ',16,1600],['cor','mppt','منظومة طاقة شمسية',13,700],
@@ -7859,12 +7865,12 @@ window.ASM_SEED  = { rtr:3, rdr8:5, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c
 /* V13.95: الأصناف المشطوبة عند تصحيح الكتالوج — القارئ الرباعي في الممر والهوائي
    التساعي فيه والجيت واي فيه — ترحيلٌ صامتٌ يرفعها من قائمةٍ محفوظةٍ سابقًا،
    ويضمّ الجديد إليها، ويصحّح الأسماء، ويُبقي ما عدّله المهندس من سعرٍ ونقاط. */
-window.IT_DROP = ['rdr4','ant9','gw'];
+window.IT_DROP = ['rdr4','ant9','gw','cam_ai'];
 window.IT_RENAME = { cam_pe:'كاميرا ممر 8266', cam:'كاميرا مخيم 8361',
                      ant9c:'هوائي UHF SRRA9', mppt:'منظومة طاقة شمسية' };
 /* تصحيحُ عضوية مرحلةٍ لصنفٍ بعينه — يُطبَّق فقط إن كانت القيمة على ما تركناه،
    فلا يدوس على ما عدّله المهندس بيده */
-window.IT_STAGE_FIX = { cam_ai:{ prep:[6,0] }, mppt:{ prep:[0,4] } };
+window.IT_STAGE_FIX = { mppt:{ prep:[0,4] } };
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
@@ -8430,26 +8436,40 @@ window.cfgRender = function(){
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveD">حفظ نقاط الفك</button></div>';
   }
   else if(pg==='items'){
+    /* V13.98: كانت تسمح بالسعر والحذف وحدهما، فالاسمُ والمنطقةُ ونقاطُ التركيب
+       تُكتب مرةً عند الإنشاء ولا تُصحَّح أبدًا. صارت لوحةَ تحكّمٍ كاملةً بكل حقل. */
     var IT2=window.itList();
+    h+='<p class="cfgS">كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. '
+      +'ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.</p>';
     h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
       var L=IT2.filter(function(x){ return x.z===g[0]; });
-      if(!L.length) return '';
+      if(!L.length) return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+'</h3>'
+        +'<div class="cfgEmpty">لا قطع في هذه المنطقة.</div></div>';
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
-        +'<table class="cfgT"><thead><tr><th>القطعة</th><th>السعر</th><th></th></tr></thead><tbody>'
+        +'<table class="cfgT"><thead><tr><th>القطعة</th><th>المنطقة</th><th>نقاط التركيب</th><th>السعر</th><th></th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
-            +'<td data-l="السعر"><input type="number" inputmode="numeric" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
+          return '<tr><td class="cfgK"><input type="text" class="cfgNM" data-id="'+_cfgX(it.id)
+            +'" value="'+_cfgX(it.n)+'"></td>'
+            +'<td data-l="المنطقة"><select class="cfgZN" data-id="'+_cfgX(it.id)+'">'
+            +'<option value="camp"'+(it.z==='camp'?' selected':'')+'>مخيم</option>'
+            +'<option value="cor"'+(it.z==='cor'?' selected':'')+'>ممر</option></select></td>'
+            +'<td data-l="نقاط التركيب"><input type="number" inputmode="decimal" class="cfgIP2" data-id="'+_cfgX(it.id)
+            +'" step="0.5" min="0" value="'+(it.pts||'')+'" placeholder="0"></td>'
+            +'<td data-l="السعر"><input type="number" inputmode="numeric" class="cfgPR" data-id="'+_cfgX(it.id)
+            +'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
             +'<td data-l="حذف"><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)
             +'" data-n="'+_cfgX(it.n)+'">حذف</button></td></tr>';
         }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
-      +'<div class="cfgF"><label>نوع الموقع<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
-      +'<label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
-      +'<label>نقاط تركيبها<input type="number" id="cfg_itPts" step="0.5" min="0" value="1"></label>'
-      +'<label>سعرها<input type="number" id="cfg_itPr" min="0" value="0"></label></div>'
+      +'<h3 class="cfgH3">إضافة قطعة</h3>'
+      +'<div class="cfgF"><label>المنطقة<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
+      +'<label>اسم القطعة<input type="text" id="cfg_itNm" placeholder="مثال: مفتاح شبكة ٨ منافذ"></label>'
+      +'<label>نقاط تركيبها<input type="number" inputmode="decimal" id="cfg_itPts" step="0.5" min="0" value="1"></label>'
+      +'<label>سعرها<input type="number" inputmode="numeric" id="cfg_itPr" min="0" value="0"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgItAdd">إضافة قطعة</button>'
-      +'<button type="button" class="cfgGo" id="cfgItSave">حفظ الأسعار</button></div>'
-      +'<p class="cfgS">هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.</p>';
+      +'<button type="button" class="cfgGo" id="cfgItSave">حفظ التعديلات</button></div>'
+      +'<p class="cfgS">تغييرُ المنطقة ينقل القطعة بين الممر والمخيم، فينتقل معها احتسابُها في تقسيم النقاط. '
+      +'والأسعار هنا معتمدةٌ ثابتة — وأي شراء خارجي يُسجَّل بفاتورته في دفتر المشتريات.</p>';
   }
   else if(pg==='buycat'){
     var BC=window.buyCatList(), BU=window.buyCatUse();
@@ -8696,10 +8716,33 @@ window.cfgBind = function(){
   var is=q('#cfgItSave');
   if(is) window.NSKCFG.save=function(){ is.onclick(); };
   if(is) is.onclick=function(){
-    var L=window.itList(), M={};
-    Array.prototype.forEach.call(qa('.cfgPR'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
-    L.forEach(function(x){ if(M[x.id]!=null) x.price=M[x.id]; });
-    window.itSave(L,'تحديث أسعار القطع'); window.cfgMark(false); window.cfgRender();
+    /* V13.98: يحفظ الحقول الأربعة معًا — الاسم والمنطقة ونقاط التركيب والسعر */
+    var L=window.itList(), NM={}, ZN={}, PT={}, PR={}, bad=0;
+    Array.prototype.forEach.call(qa('.cfgNM'), function(e){
+      var v=String(e.value||'').trim();
+      if(v) NM[e.getAttribute('data-id')]=v; else bad++;
+    });
+    if(bad){ toast('اسم القطعة لا يكون فارغًا',1); return; }
+    Array.prototype.forEach.call(qa('.cfgZN'), function(e){ ZN[e.getAttribute('data-id')]=String(e.value||'camp'); });
+    Array.prototype.forEach.call(qa('.cfgIP2'), function(e){ PT[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
+    Array.prototype.forEach.call(qa('.cfgPR'), function(e){ PR[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
+    var moved=[];
+    L.forEach(function(x){
+      if(NM[x.id]!=null && NM[x.id]!==x.n) x.n=NM[x.id];
+      if(ZN[x.id]!=null && ZN[x.id]!==x.z){ moved.push(x.n); x.z=ZN[x.id]; }
+      if(PT[x.id]!=null) x.pts=PT[x.id];
+      if(PR[x.id]!=null) x.price=PR[x.id];
+    });
+    var go=function(){
+      var _m='تحديث كتالوج القطع';
+      if(moved.length) _m += ' — ' + moved.length + ' منقولة: ' + moved.join(' · ');
+      window.itSave(L, _m); window.cfgMark(false); window.cfgRender();
+    };
+    if(!moved.length) return go();
+    window.nskAsk({ t:'نقل قطعة بين المنطقتين',
+      m:moved.slice(0,4).join(String.fromCharCode(10))+(moved.length>4?(String.fromCharCode(10)+'…'):'')
+        +String.fromCharCode(10)+'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.',
+      ok:'انقلها' }).then(function(r){ if(r) go(); });
   };
   Array.prototype.forEach.call(qa('.cfgDel:not(.cfgRDel)'), function(b){
     b.onclick=function(){
@@ -14857,6 +14900,14 @@ window.NSKI18N = (function(){
   'كاميرا ممر 8266':'Corridor camera 8266', 'كاميرا مخيم 8361':'Camp camera 8361',
   'حساس حرارة ورطوبة':'Temperature and humidity sensor',
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
+  'كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.':'Every field here is editable: the name, the zone, the installation points and the price. Configuration and assembly points are set on their own pages. Press Save after any change.',
+  'لا قطع في هذه المنطقة.':'No items in this zone.', 'مثال: مفتاح شبكة ٨ منافذ':'e.g. 8-port network switch',
+  'حفظ التعديلات':'Save changes', 'إضافة قطعة':'Add an item', 'المنطقة':'Zone', 'نقاط التركيب':'Installation points',
+  'اسم القطعة لا يكون فارغًا':'An item name cannot be empty',
+  'نقل قطعة بين المنطقتين':'Move an item between zones',
+  'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.':'Its share in the camps-versus-corridors split moves with it.',
+  'انقلها':'Move it', 'تحديث كتالوج القطع':'Item catalogue updated',
+  'تغييرُ المنطقة ينقل القطعة بين الممر والمخيم، فينتقل معها احتسابُها في تقسيم النقاط. والأسعار هنا معتمدةٌ ثابتة — وأي شراء خارجي يُسجَّل بفاتورته في دفتر المشتريات.':'Changing the zone moves the item between corridor and camp, and its share in the points split moves with it. Prices here are fixed and approved — any external purchase is recorded with its invoice in the purchases ledger.',
   'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'Configuration is the workshop work before going out: setting the device, its address, its firmware and testing it. It is only for devices that have settings — cameras, readers, routers, sensors and gateways.',
   'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'Assembly is fitting and wiring whatever goes into the box before going out. It is only for the components assembled inside it.',
   'لا أجهزة في التهيئة بعد.':'No devices in configuration yet.', 'لا مكوّنات في التجميع بعد.':'No components in assembly yet.',
@@ -15310,6 +15361,14 @@ window.NSKI18N = (function(){
   'كاميرا ممر 8266':'راہداری کیمرہ 8266', 'كاميرا مخيم 8361':'خیمہ کیمرہ 8361',
   'حساس حرارة ورطوبة':'درجہ حرارت اور نمی سینسر',
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
+  'كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.':'یہاں ہر خانہ قابلِ تدوین ہے: نام، علاقہ، تنصیب پوائنٹس اور قیمت۔ تیاری اور اسمبلی پوائنٹس اپنے اپنے صفحے پر طے ہوتے ہیں۔ کسی تبدیلی کے بعد محفوظ دبائیں۔',
+  'لا قطع في هذه المنطقة.':'اس علاقے میں کوئی پرزہ نہیں۔', 'مثال: مفتاح شبكة ٨ منافذ':'مثال: ٨ پورٹ نیٹ ورک سوئچ',
+  'حفظ التعديلات':'تبدیلیاں محفوظ کریں', 'إضافة قطعة':'پرزہ شامل کریں', 'المنطقة':'علاقہ', 'نقاط التركيب':'تنصیب پوائنٹس',
+  'اسم القطعة لا يكون فارغًا':'پرزے کا نام خالی نہیں ہو سکتا',
+  'نقل قطعة بين المنطقتين':'پرزہ علاقوں کے درمیان منتقل کریں',
+  'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.':'خیموں اور راہداریوں کی تقسیم میں اس کا حصہ بھی ساتھ منتقل ہوتا ہے۔',
+  'انقلها':'منتقل کریں', 'تحديث كتالوج القطع':'پرزوں کا کیٹلاگ اپ ڈیٹ',
+  'تغييرُ المنطقة ينقل القطعة بين الممر والمخيم، فينتقل معها احتسابُها في تقسيم النقاط. والأسعار هنا معتمدةٌ ثابتة — وأي شراء خارجي يُسجَّل بفاتورته في دفتر المشتريات.':'علاقہ بدلنے سے پرزہ راہداری اور خیمے کے درمیان منتقل ہوتا ہے، اور پوائنٹس کی تقسیم میں اس کا حصہ بھی۔ یہاں قیمتیں طے شدہ اور منظور شدہ ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری رجسٹر میں درج ہوتی ہے۔',
   'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'تیاری میدان میں جانے سے پہلے ورکشاپ کا کام ہے: آلہ، اس کا پتہ، اس کا سسٹم ترتیب دینا اور جانچنا۔ یہ صرف ان آلات کے لیے ہے جن کی سیٹنگ ہوتی ہے — کیمرے، ریڈرز، راؤٹرز، سینسرز اور گیٹ ویز۔',
   'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'اسمبلی وہ ہے جو باکس میں جاتا ہے اسے لگانا اور جوڑنا۔ یہ صرف ان اجزاء کے لیے ہے جو اس کے اندر جمع ہوتے ہیں۔',
   'لا أجهزة في التهيئة بعد.':'ابھی تیاری میں کوئی آلہ نہیں۔', 'لا مكوّنات في التجميع بعد.':'ابھی اسمبلی میں کوئی جزو نہیں۔',
