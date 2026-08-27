@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.84</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.85</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7685,7 +7685,8 @@ window.nskWaOffer=function(){
 window.NSKORD = window.NSKORD || {};
 /* أوزان النقاط إعدادات قابلة للتحرير — والافتراضي هو ما اعتمده المالك */
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3,
-  tgtSurvey:90, tgtInstall:1000, tgtDis:600, ph:4.81, days:26, hours:8, daysWeek:6,
+  tgtSurvey:90, tgtInstall:1000, tgtInsCamp:700, tgtInsCor:300, tgtDis:600,
+  ph:4.81, days:26, hours:8, daysWeek:6,
   insCamp:76.9, insCor:192.3, stgCfg:25, stgVal:25, stgIns:50, disOk:1, disBad:1.25 };
 window.pwGet = function(){
   var d={}; for(var k in window.PW_DEF) d[k]=window.PW_DEF[k];
@@ -7694,16 +7695,27 @@ window.pwGet = function(){
     for(var k2 in d){ if(k2!=='w' && s[k2]!=null && s[k2]!=='') d[k2]=parseFloat(s[k2])||d[k2]; }
     if(s.w && typeof s.w==='object') d.w=s.w;
     d.dw = (s.dw && typeof s.dw==='object') ? s.dw : {};
+    /* ترحيل: من ضبط تارجت تركيبٍ واحدًا قبل الفصل يُقسَّم ٧٠٪ مخيمات / ٣٠٪ ممرات
+       بحيث لا يتغيّر مجموعه ولا يجد رقمًا مبتورًا بعد التحديث */
+    if((s.tgtInsCamp==null||s.tgtInsCamp==='') && (s.tgtInsCor==null||s.tgtInsCor==='')
+       && s.tgtInstall!=null && s.tgtInstall!==''){
+      var T=parseFloat(s.tgtInstall)||0;
+      if(T>0){ d.tgtInsCamp=Math.round(T*0.7); d.tgtInsCor=T-Math.round(T*0.7); }
+    }
   }catch(e){}
+  /* الإجمالي مشتقٌّ دائمًا من الفرعين — مرجعٌ واحد لا رقمان يتعارضان */
+  d.tgtInstall = (parseFloat(d.tgtInsCamp)||0) + (parseFloat(d.tgtInsCor)||0);
   return d;
 };
 window.pwSave = function(obj, what){
   try{
     var old=window.pwGet(), diff=[];
-    ['camp','cor','stn','jam','ph','days','hours','tgtSurvey','tgtInstall','tgtDis',
+    ['camp','cor','stn','jam','ph','days','hours','tgtSurvey','tgtInsCamp','tgtInsCor','tgtDis',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){
       if(obj[k]!=null && String(obj[k])!==String(old[k])) diff.push(k+': '+old[k]+'←'+obj[k]);
     });
+    /* الإجمالي يُشتقّ عند الحفظ كذلك كي لا يبقى في المستند رقمٌ قديمٌ يخالف الفرعين */
+    obj.tgtInstall = (parseFloat(obj.tgtInsCamp)||0) + (parseFloat(obj.tgtInsCor)||0);
     window.NSKCORE.set('settings','points',obj);
     if(window.NSKSYNC) NSKSYNC.push('settings','points',obj);
     if(window.NSKSYNC) NSKSYNC.log('تعديل إعدادات '+(what||'النقاط')+(diff.length?(' — '+diff.join(' · ')):''));
@@ -7711,6 +7723,12 @@ window.pwSave = function(obj, what){
   }catch(e){ toast('تعذّر الحفظ',1); }
 };
 /* قارئ موحّد للثوابت — كل الحسابات تمرّ عليه */
+/* أرقام عربية للعرض داخل نصوص الإعدادات — AR الخاصة باللوحة في كتلةٍ أخرى */
+window.arNum = function(v){
+  var n=Number(v); if(!isFinite(n)) return String(v==null?'':v);
+  n=Math.round(n*10)/10;
+  try{ return n.toLocaleString('ar-EG'); }catch(e){ return String(n); }
+};
 window.pwWk = function(monthly){
   var P=window.pwGet(), d=P.days||26, w=P.daysWeek||6;
   return Math.round((parseFloat(monthly)||0) * (w/d));
@@ -8039,10 +8057,18 @@ window.cfgRender = function(){
             +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
         }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
-      +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" class="tgM" data-w="cfg_tgtInstallW" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label>'
-      +'<label>تارجت التركيب الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtInstall" id="cfg_tgtInstallW" min="0" value="'+window.pwWk(P.tgtInstall)+'"></label></div>'
+      +'<h3 class="cfgH3">تارجت تركيب المخيمات</h3>'
+      +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_tgtInsCampW" id="cfg_tgtInsCamp" min="0" value="'+P.tgtInsCamp+'"></label>'
+      +'<label>الأسبوعي<input type="number" inputmode="numeric" class="tgW" data-m="cfg_tgtInsCamp" id="cfg_tgtInsCampW" min="0" value="'+window.pwWk(P.tgtInsCamp)+'"></label></div>'
+      +'<h3 class="cfgH3">تارجت تركيب الممرات</h3>'
+      +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_tgtInsCorW" id="cfg_tgtInsCor" min="0" value="'+P.tgtInsCor+'"></label>'
+      +'<label>الأسبوعي<input type="number" inputmode="numeric" class="tgW" data-m="cfg_tgtInsCor" id="cfg_tgtInsCorW" min="0" value="'+window.pwWk(P.tgtInsCor)+'"></label></div>'
+      +'<p class="cfgS" id="cfgInsSum">الإجمالي الشهري '+window.arNum(P.tgtInstall)+' نقطة · الأسبوعي '
+      +window.arNum(window.pwWk(P.tgtInstall))+' نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، '
+      +'وهو ما يُقاس به أداء الفني في التركيب.</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
-      +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</p>';
+      +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار». والتارجت بالنقاط لا بعدد المواقع: '
+      +'المخيم '+window.arNum(P.insCamp)+' نقطة والممر '+window.arNum(P.insCor)+' نقطة افتراضيًّا.</p>';
   }
   else if(pg==='dis'){
     var MX2=window.pwRows(), D=P.dw||{};
@@ -8128,17 +8154,24 @@ window.cfgBind = function(){
   if(ub) ub.onclick=function(){ window.cfgMark(false); window.cfgRender(); };
   function base(){
     var P0=window.pwGet(), o={};
-    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall','tgtDis',
+    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall',
+     'tgtInsCamp','tgtInsCor','tgtDis',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
   }
   function num(id, o, k){ var e=q('#cfg_'+id); if(e && String(e.value||'').trim()!=='') o[k]=parseFloat(e.value)||0; }
+  function insSum(){
+    var e=q('#cfgInsSum'); if(!e) return;
+    var a=parseFloat((q('#cfg_tgtInsCamp')||{}).value)||0, b=parseFloat((q('#cfg_tgtInsCor')||{}).value)||0;
+    e.textContent='الإجمالي الشهري '+window.arNum(a+b)+' نقطة · الأسبوعي '+window.arNum(window.pwWk(a+b))
+      +' نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.';
+  }
   Array.prototype.forEach.call(qa('.tgM'), function(e){
-    e.oninput=function(){ var t=q('#'+e.getAttribute('data-w')); if(t) t.value=window.pwWk(e.value); };
+    e.oninput=function(){ var t=q('#'+e.getAttribute('data-w')); if(t) t.value=window.pwWk(e.value); insSum(); };
   });
   Array.prototype.forEach.call(qa('.tgW'), function(e){
-    e.oninput=function(){ var t=q('#'+e.getAttribute('data-m')); if(t) t.value=window.pwMo(e.value); };
+    e.oninput=function(){ var t=q('#'+e.getAttribute('data-m')); if(t) t.value=window.pwMo(e.value); insSum(); };
   });
   var sv=q('#cfgSaveV');
   if(sv) window.NSKCFG.save=function(){ sv.onclick(); };
@@ -8155,7 +8188,8 @@ window.cfgBind = function(){
     Array.prototype.forEach.call(qa('.cfgIP'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
     L.forEach(function(x){ if(M[x.id]!=null) x.pts=M[x.id]; });
     window.itSave(L,'تحديث نقاط تركيب القطع');
-    var o=base(); num('tgtInstall',o,'tgtInstall'); window.pwSave(o,'تارجت التركيب'); window.cfgMark(false); window.cfgRender();
+    var o=base(); num('tgtInsCamp',o,'tgtInsCamp'); num('tgtInsCor',o,'tgtInsCor');
+    window.pwSave(o,'تارجت التركيب'); window.cfgMark(false); window.cfgRender();
   };
   var sd=q('#cfgSaveD');
   if(sd) window.NSKCFG.save=function(){ sd.onclick(); };
@@ -9795,6 +9829,56 @@ function render(){
   h+=barRow('إنجاز ما تم جدولته — مُركّب من إجمالي المجدول', c.ok, c.plan, '#3AD6A0');
   h+=barRow('نسبة التركيب من إجمالي المشروع', c.ok, c.total, '#4BC9F5');
 
+  /* V13.85: التارجت مفصولٌ مخيماتٍ وممرات — والرقم بلا قياسٍ عليه رقمٌ في الفراغ */
+  (function(){
+    var P=window.pwGet();
+    var mk=new Date().toISOString().slice(0,7);
+    var wkAgo=new Date(Date.now()-6*864e5).toISOString().slice(0,10);
+    var G={ camp:{n:0,p:0,wn:0,wp:0}, cor:{n:0,p:0,wn:0,wp:0} };
+    var IN=window.NSKCORE.all('inss');
+    Object.keys(IN).forEach(function(k){
+      var v=IN[k]||{};
+      if(v.status!=='مُركّب') return;
+      var d=String(v.date||'').slice(0,10);
+      if(!/^\d{4}-\d{2}-\d{2}$/.test(d)) return;
+      var r=(DB.d.find(function(x){ return x[0]===k; }))||null;
+      var ty=r?((catOf(r)||{}).l||''):'';
+      var g=(ty==='ممرات')?G.cor:G.camp;
+      /* النقاط المعتمدة عند تحديد القطع أولى من التقدير الافتراضي */
+      var pts=0;
+      try{ pts=(v.bom&&v.bom.pts!=null)?(parseFloat(v.bom.pts)||0):(r?window.insPts(r):0); }catch(e){}
+      if(d.slice(0,7)===mk){ g.n++; g.p+=pts; }
+      if(d>=wkAgo){ g.wn++; g.wp+=pts; }
+    });
+    var TM={ camp:parseFloat(P.tgtInsCamp)||0, cor:parseFloat(P.tgtInsCor)||0 };
+    var TW={ camp:window.pwWk(TM.camp), cor:window.pwWk(TM.cor) };
+    var R1=Math.round(TM.camp+TM.cor), R2=Math.round(TW.camp+TW.cor);
+    var dp=Math.round(G.camp.p+G.cor.p), wp=Math.round(G.camp.wp+G.cor.wp);
+    h+='<div class="dT3">التركيب مقابل التارجت — بالنقاط</div>';
+    h+='<table class="dT"><thead><tr><th>النوع</th><th>مُركّب هذا الشهر</th><th>نقاطه</th>'
+      +'<th>تارجت الشهر</th><th>٪ الشهر</th><th>نقاط ٧ أيام</th><th>تارجت الأسبوع</th><th>٪ الأسبوع</th></tr></thead><tbody>';
+    [['camp','مخيمات','#3AD6A0'],['cor','ممرات','#4BC9F5']].forEach(function(g){
+      var G0=G[g[0]], m=Math.round(TM[g[0]]), w=Math.round(TW[g[0]]);
+      var pm=m?Math.round(G0.p/m*100):0, pw=w?Math.round(G0.wp/w*100):0;
+      var cm=(pm>=100?'#3AD6A0':(pm>=70?'#E8C34B':'#E05252'));
+      var cw=(pw>=100?'#3AD6A0':(pw>=70?'#E8C34B':'#E05252'));
+      h+='<tr><td style="color:'+g[2]+';font-weight:800">'+esc2(g[1])+'</td>'
+        +'<td>'+AR(G0.n)+'</td><td><b>'+AR(Math.round(G0.p))+'</b></td><td>'+AR(m)+'</td>'
+        +'<td style="color:'+cm+';font-weight:800">'+AR(pm)+'٪</td>'
+        +'<td>'+AR(Math.round(G0.wp))+'</td><td>'+AR(w)+'</td>'
+        +'<td style="color:'+cw+';font-weight:800">'+AR(pw)+'٪</td></tr>';
+    });
+    h+='<tr><td><b>الإجمالي</b></td><td><b>'+AR(G.camp.n+G.cor.n)+'</b></td><td><b>'+AR(dp)+'</b></td>'
+      +'<td><b>'+AR(R1)+'</b></td><td><b>'+AR(R1?Math.round(dp/R1*100):0)+'٪</b></td>'
+      +'<td><b>'+AR(wp)+'</b></td><td><b>'+AR(R2)+'</b></td>'
+      +'<td><b>'+AR(R2?Math.round(wp/R2*100):0)+'٪</b></td></tr>';
+    h+='</tbody></table>';
+    h+=barRow('تارجت المخيمات هذا الشهر', Math.round(G.camp.p), Math.round(TM.camp), '#3AD6A0');
+    h+=barRow('تارجت الممرات هذا الشهر', Math.round(G.cor.p), Math.round(TM.cor), '#4BC9F5');
+    h+='<p class="dTs">النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه '
+      +'الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.</p>';
+  })();
+
   var dly=dailyOk(14), hasD=dly.some(function(x){return x.v>0;});
   h+='</section><section class="dSec" data-sec="daily">';
   h+='<h2>معدل التركيب اليومي — آخر ١٤ يوم</h2>';
@@ -10925,7 +11009,7 @@ function render(){
     var el=$i('pw_'+k); if(!el) return;
     el.onchange=function(){
       var P0=window.pwGet(), o={w:P0.w||{}};
-      ['camp','cor','stn','jam','ph','tgtSurvey','tgtInstall'].forEach(function(k2){ o[k2]=P0[k2]; });
+      ['camp','cor','stn','jam','ph','tgtSurvey','tgtInsCamp','tgtInsCor'].forEach(function(k2){ o[k2]=P0[k2]; });
       o[k]=parseFloat(el.value)||o[k];
       window.pwSave(o);
     };
@@ -10955,7 +11039,8 @@ function render(){
   };
   function _pwBase(){
     var P0=window.pwGet(), o={};
-    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall','tgtDis',
+    ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall',
+     'tgtInsCamp','tgtInsCor','tgtDis',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
@@ -10979,7 +11064,7 @@ function render(){
   var _pwi=$i('pwSaveIns');
   if(_pwi) _pwi.onclick=function(){
     var o=_pwBase();
-    _pwRead(o,['insCamp','insCor','stgCfg','stgVal','stgIns','tgtInstall']);
+    _pwRead(o,['insCamp','insCor','stgCfg','stgVal','stgIns','tgtInsCamp','tgtInsCor']);
     var s=(o.stgCfg||0)+(o.stgVal||0)+(o.stgIns||0);
     if(Math.round(s)!==100){ toast('مجموع نسب المراحل يجب أن يساوي ١٠٠٪ — الحالي '+Math.round(s)+'٪',1); return; }
     window.pwSave(o,'نقاط التركيب');
@@ -13143,7 +13228,14 @@ window.NSKI18N = (function(){
   'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.':'What was bought locally with its invoice — separate from the approved price catalogue.',
   'أكمل التاريخ والصنف والكمية والسعر':'Fill in the date, item, quantity and price',
   'الكمية أكبر من صفر والسعر لا يكون سالبًا':'Quantity must be above zero and price cannot be negative',
-  'لا مشتريات لتصديرها':'No purchases to export'
+  'لا مشتريات لتصديرها':'No purchases to export',
+  'تارجت تركيب المخيمات':'Camp installation target', 'تارجت تركيب الممرات':'Corridor installation target',
+  'الشهري':'Monthly', 'الأسبوعي':'Weekly',
+  'التركيب مقابل التارجت — بالنقاط':'Installation against target — in points',
+  'مُركّب هذا الشهر':'Installed this month', 'نقاطه':'Its points', 'تارجت الشهر':'Month target',
+  '٪ الشهر':'% of month', 'نقاط ٧ أيام':'Points, 7 days', 'تارجت الأسبوع':'Week target', '٪ الأسبوع':'% of week',
+  'تارجت المخيمات هذا الشهر':'Camp target this month', 'تارجت الممرات هذا الشهر':'Corridor target this month',
+  'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'Points are read from each site’s approved items; whatever has no approved items is estimated at its type’s default points. Both targets are set separately in Settings → Installation points.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -13404,7 +13496,14 @@ window.NSKI18N = (function(){
   'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.':'مقامی بازار سے رسید کے ساتھ خریدی گئی اشیاء — منظور شدہ قیمت کیٹلاگ سے الگ۔',
   'أكمل التاريخ والصنف والكمية والسعر':'تاریخ، شے، مقدار اور قیمت مکمل کریں',
   'الكمية أكبر من صفر والسعر لا يكون سالبًا':'مقدار صفر سے زیادہ ہو اور قیمت منفی نہ ہو',
-  'لا مشتريات لتصديرها':'برآمد کرنے کے لیے کوئی خریداری نہیں'
+  'لا مشتريات لتصديرها':'برآمد کرنے کے لیے کوئی خریداری نہیں',
+  'تارجت تركيب المخيمات':'خیموں کی تنصیب کا ہدف', 'تارجت تركيب الممرات':'راہداریوں کی تنصیب کا ہدف',
+  'الشهري':'ماہانہ', 'الأسبوعي':'ہفتہ وار',
+  'التركيب مقابل التارجت — بالنقاط':'تنصیب بمقابلہ ہدف — پوائنٹس میں',
+  'مُركّب هذا الشهر':'اس ماہ نصب شدہ', 'نقاطه':'اس کے پوائنٹس', 'تارجت الشهر':'ماہ کا ہدف',
+  '٪ الشهر':'٪ ماہ', 'نقاط ٧ أيام':'٧ دن کے پوائنٹس', 'تارجت الأسبوع':'ہفتے کا ہدف', '٪ الأسبوع':'٪ ہفتہ',
+  'تارجت المخيمات هذا الشهر':'اس ماہ خیموں کا ہدف', 'تارجت الممرات هذا الشهر':'اس ماہ راہداریوں کا ہدف',
+  'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'پوائنٹس ہر مقام کے منظور شدہ پرزوں سے پڑھے جاتے ہیں؛ جن کے پرزے منظور نہ ہوں ان کا اندازہ قسم کے طے شدہ پوائنٹس سے ہوتا ہے۔ دونوں اہداف ترتیبات ← تنصیب پوائنٹس سے الگ الگ طے ہوتے ہیں۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
