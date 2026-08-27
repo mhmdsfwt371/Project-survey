@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.82</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.83</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1790,7 +1790,12 @@ async function loadMe(){
   };
 }
 async function askMe(first){
-  const v = prompt(first?'اكتب اسمك — سيُسجَّل مع كل مسح تحفظه:':'تعديل اسم الفني:', me||'');
+  const a = await window.nskAsk({
+    t: first?'ما اسمك؟':'تعديل اسم الفني',
+    m: first?'يُسجَّل مع كل مسح تحفظه، ويظهر لزملائك في سجل الأحداث.':'',
+    fields:[{k:'n', l:'الاسم', val:me||'', ph:'الاسم الثلاثي', req:true}],
+    ok: first?'ابدأ':'حفظ الاسم' });
+  const v = a ? a.n : null;
   /* الإلغاء لا يمحو ما هو قائم — يُعاد الرسم من المصادر المتاحة */
   if(v==null || !String(v).trim()){ try{ window.paintMe && window.paintMe(me); }catch(e){} return; }
   me = v.trim();
@@ -2069,7 +2074,9 @@ window.startMove = function(id){
   map.once('click', async e=>{
     if(!moveId) return; const id2=moveId; moveId=null;
     const la=+e.latlng.lat.toFixed(6), lo=+e.latlng.lng.toFixed(6);
-    if(!confirm('نقل النقطة إلى:\n'+la+', '+lo+' ؟')){ return; }
+    if(!await window.nskAsk({ t:'نقل النقطة',
+      m:'الموقع الجديد:'+String.fromCharCode(10)+la+', '+lo,
+      ok:'انقل النقطة' })){ return; }
     const rec = recs[id2] || {status:'draft', v:{}, photos:{}, id:id2};
     rec.loc={a:la,o:lo};
     rec.fix=rec.fix||{}; rec.fix.loc=la+', '+lo;
@@ -3041,9 +3048,16 @@ window.openForm = function(id){
           val=normSign(val);
           if(k==='sign' && isCamp && !SIGN_RE.test(val)){
             if(SIGN_LEGACY.test(val)){
-              if(!confirm('الصيغة غير مطابقة (اسم الخيمة/رقم الشارع):\n«'+val+'»\nاحفظها فقط إن كانت مطابقة تمامًا للشاخص الفعلي في الموقع.')){
-                inp.focus(); return;
+              /* المعالج متزامن: النافذة تسأل ثم تُعيد الضغط على الزر نفسه بعلمٍ يمرّ مرةً واحدة */
+              if(!b._sgOk){
+                window.nskAsk({ t:'صيغة الشاخص غير مطابقة',
+                  m:'«'+val+'» تبدو اسم خيمة أو رقم شارع لا شاخصًا بصيغة رقم/رقم.'
+                    +String.fromCharCode(10)+'احفظها فقط إن كانت مطابقة تمامًا للشاخص الفعلي في الموقع.',
+                  ok:'احفظها كما هي', no:'أصحّحها' })
+                .then(function(r){ if(r){ b._sgOk=1; b.click(); } else { try{ inp.focus(); }catch(e){} } });
+                return;
               }
+              b._sgOk=0;
             } else { toast(SIGN_HINT,1); inp.focus(); return; }
           }
           if(k==='sign' && !isCamp && !SIGN_RE.test(val) && !SIGN_LEGACY.test(val)){
@@ -3503,7 +3517,8 @@ window.__coApprove = async function(id){
 window.__coReject = async function(id){
   if(!nskEng()){ toast('الرفض للمهندس فقط',1); return; }
   const c=cos[id]; if(!c) return;
-  if(!confirm('رفض وحذف طلب «'+c.name+'»؟')) return;
+  if(!await window.nskAsk({ t:'رفض طلب شركة', m:'«'+c.name+'» سيُحذف من قائمة الطلبات المعلّقة.',
+    ok:'ارفض واحذف', danger:true })) return;
   delete cos[id];
   try{ await window.storage.delete('co:'+id,false); }catch(e){}
   if(window.NSKSYNC){ NSKSYNC.del('colist', id); NSKSYNC.log('رفض طلب شركة: '+c.name); }
@@ -3726,8 +3741,10 @@ window.draftIds = function(){
 window.wipeDrafts = async function(){
   var ids=window.draftIds();
   if(!ids.length){ toast('لا توجد مسوّدات ناقصة ✓'); return; }
-  if(!confirm('حذف '+ids.length+' مسوّدة ناقصة؟\n\nهذه سجلات فُتحت ولم تُسجَّل زيارتها. '
-    +'المواقع نفسها تبقى كما هي على الخريطة، ويمكن مسحها من جديد في أي وقت.')) return;
+  if(!await window.nskAsk({ t:'حذف المسوّدات الناقصة',
+    m:'عددها '+ids.length+' — سجلات فُتحت ولم تُسجَّل زيارتها.'+String.fromCharCode(10)
+      +'المواقع نفسها تبقى على الخريطة ويمكن مسحها من جديد في أي وقت.',
+    ok:'احذف المسوّدات', danger:true })) return;
   var n=0;
   for(var i=0;i<ids.length;i++){
     var id=ids[i];
@@ -3864,7 +3881,9 @@ function openNewForm(la,lo,ac,near,editId){
   document.getElementById('nsave').onclick=saveNew;
   const del=document.getElementById('ndel');
   if(del) del.onclick=async()=>{
-    if(!confirm('حذف هذا الموقع المقترح نهائيًا؟')) return;
+    if(!await window.nskAsk({ t:'حذف الموقع المقترح',
+      m:'سيُحذف نهائيًّا من الخريطة ومن أجهزة الفريق، بصوره وملاحظاته.',
+      ok:'احذف نهائيًّا', danger:true })) return;
     try{ await window.storage.delete('new:'+editId,false); }catch(e){}
     if(window.NSKSYNC) NSKSYNC.del('props', editId);
     delete props[editId];
@@ -4459,7 +4478,11 @@ $('#expPh').onclick=()=>{
 };
 $('#clr').onclick=async()=>{
   if(window.NSK_USER && NSK_USER.role==='viewer'){ toast('حساب متابعة — العرض فقط',1); return; }
-  if(!confirm('مسح محلي لهذا الجهاز فقط — بيانات السيرفر لن تُمَس وسترجع مع أول مزامنة. متأكد؟')) return;
+  if(!await window.nskAsk({ t:'مسح بيانات هذا الجهاز',
+    m:'يُمسح ما على هذا الجهاز وحده.'+String.fromCharCode(10)
+      +'بيانات السيرفر لا تُمَس وترجع مع أول مزامنة.'+String.fromCharCode(10)
+      +'أي مسحٍ لم يُرفع بعد سيضيع — تأكّد أن شارة المزامنة خضراء أولًا.',
+    ok:'امسح محليًّا', danger:true })) return;
   for(const id of Object.keys(recs)){
     try{ await window.storage.delete('rec:'+id,false); }catch(e){}
   }
@@ -5539,10 +5562,14 @@ window.NSKCORE={
   box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:var(--ar,Tahoma,sans-serif)}
 #nskAskOv h4{margin:0 0 9px;font-size:15px;color:var(--gold,#C9A24B);font-weight:800}
 #nskAskOv .askM p{margin:0 0 6px;font-size:13px;line-height:1.75;color:var(--grey,#9AA1AB)}
-#nskAskOv input{width:100%;box-sizing:border-box;margin:10px 0 2px;background:var(--ink,#0A0B0D);
+#nskAskOv .askF{display:block;margin:11px 0 0}
+#nskAskOv .askF>span{display:block;font-size:11.5px;font-weight:700;color:var(--grey,#9AA1AB);margin:0 0 5px}
+#nskAskOv input,#nskAskOv select,#nskAskOv textarea{width:100%;box-sizing:border-box;background:var(--ink,#0A0B0D);
   color:var(--cream,#F1EDE0);border:1px solid rgba(150,158,172,.3);border-radius:10px;
   padding:12px 13px;font:inherit;font-size:16px;min-height:46px;color-scheme:dark}
-#nskAskOv input:focus{outline:none;border-color:var(--gold,#C9A24B)}
+#nskAskOv textarea{min-height:0;line-height:1.7;font-size:13px;resize:vertical;
+  direction:rtl;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
+#nskAskOv input:focus,#nskAskOv select:focus,#nskAskOv textarea:focus{outline:none;border-color:var(--gold,#C9A24B)}
 #nskAskOv .askB{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 #nskAskOv .askGo{flex:1 1 100%;background:linear-gradient(135deg,#E9CE83,#C9A24B);color:#0A0B0D;
   border:0;border-radius:11px;min-height:46px;padding:12px 16px;font:inherit;font-weight:800;font-size:13.5px;cursor:pointer}
@@ -5552,7 +5579,8 @@ window.NSKCORE={
   font:inherit;font-size:13px;cursor:pointer}
 #nskAskOv .askSec:active{background:rgba(255,255,255,.06)}
 html[data-theme="light"] #nskAskOv .askC{background:#fff;color:#101214}
-html[data-theme="light"] #nskAskOv input{background:#fff;color:#101214;color-scheme:light}
+html[data-theme="light"] #nskAskOv input,html[data-theme="light"] #nskAskOv select,
+html[data-theme="light"] #nskAskOv textarea{background:#fff;color:#101214;color-scheme:light}
 #cfgHdr{font-size:15px}
 
 #tkSelBar{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:9000;display:flex;gap:10px;
@@ -8452,16 +8480,31 @@ window.tkPickOv = function(){
    قد تحمل اسم النطاق في ترويستها. الوعد يرجع: 'ok' أو 'alt' أو نص الإدخال أو false. */
 window.nskAsk = function(o){
   o=o||{};
+  var F = o.fields || (o.input ? [ Object.assign({k:'v'}, o.input) ] : []);
   return new Promise(function(res){
     var X=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
     var prev=document.getElementById('nskAskOv'); if(prev) prev.remove();
     var ov=document.createElement('div'); ov.id='nskAskOv';
-    var body=String(o.m||'').split('\n').map(function(l){ return '<p>'+X(l)+'</p>'; }).join('');
-    var inp = o.input ? ('<input type="'+(o.input.type||'text')+'" id="nskAskI" placeholder="'
-        +X(o.input.ph||'')+'" value="'+X(o.input.val||'')+'">') : '';
+    var body=String(o.m||'').split('\n').filter(function(l){ return l!==''; })
+      .map(function(l){ return '<p>'+X(l)+'</p>'; }).join('');
+    var fh=F.map(function(f,ix){
+      var id='nskAskF'+ix, lab=f.l?('<span>'+X(f.l)+'</span>'):'';
+      var el;
+      if(f.type==='select'){
+        el='<select id="'+id+'">'+(f.opts||[]).map(function(v){
+          return '<option'+(String(v)===String(f.val||'')?' selected':'')+'>'+X(v)+'</option>'; }).join('')+'</select>';
+      } else if(f.type==='area'){
+        el='<textarea id="'+id+'" rows="'+(f.rows||6)+'" readonly>'+X(f.val||'')+'</textarea>';
+      } else {
+        el='<input id="'+id+'" type="'+(f.type||'text')+'"'
+          +(f.type==='number'?' inputmode="decimal"':'')
+          +' placeholder="'+X(f.ph||'')+'" value="'+X(f.val==null?'':f.val)+'">';
+      }
+      return '<label class="askF">'+lab+el+'</label>';
+    }).join('');
     ov.innerHTML='<div class="askC" role="dialog" aria-modal="true">'
       +'<h4>'+X(o.t||'تأكيد')+'</h4>'
-      +'<div class="askM">'+body+'</div>'+inp
+      +(body?('<div class="askM">'+body+'</div>'):'')+fh
       +'<div class="askB">'
       +'<button type="button" class="askGo'+(o.danger?' bad':'')+'" id="nskAskOk">'+X(o.ok||'تأكيد')+'</button>'
       +(o.alt?('<button type="button" class="askSec" id="nskAskAlt">'+X(o.alt)+'</button>'):'')
@@ -8478,20 +8521,29 @@ window.nskAsk = function(o){
     }
     function key(e){
       if(e.key==='Escape'){ e.preventDefault(); end(false); }
-      else if(e.key==='Enter' && o.input){ e.preventDefault(); ok(); }
+      else if(e.key==='Enter' && F.length && (e.target||{}).tagName!=='TEXTAREA'){ e.preventDefault(); ok(); }
     }
     function ok(){
-      if(!o.input) return end('ok');
-      var e=ov.querySelector('#nskAskI'), v=String((e&&e.value)||'').trim();
-      if(o.input.req && !v){ try{ e.focus(); }catch(x){} return; }
-      end(v||'ok');
+      if(!F.length) return end('ok');
+      var out={}, bad=null;
+      F.forEach(function(f,ix){
+        var e=ov.querySelector('#nskAskF'+ix), v=String((e&&e.value)||'').trim();
+        if(f.req && !v && !bad) bad=e;
+        out[f.k||('f'+ix)]=v;
+      });
+      if(bad){ try{ bad.focus(); }catch(x){} try{ toast(o.reqMsg||'أكمل الحقل المطلوب',1); }catch(x){} return; }
+      end(out);
     }
     document.addEventListener('keydown', key, true);
     ov.querySelector('#nskAskOk').onclick=ok;
     ov.querySelector('#nskAskNo').onclick=function(){ end(false); };
     var al=ov.querySelector('#nskAskAlt'); if(al) al.onclick=function(){ end('alt'); };
     ov.addEventListener('mousedown', function(e){ if(e.target===ov) end(false); });
-    try{ (ov.querySelector('#nskAskI')||ov.querySelector('#nskAskOk')).focus(); }catch(e){}
+    try{
+      var f0=ov.querySelector('#nskAskF0');
+      if(f0 && f0.tagName==='TEXTAREA'){ f0.focus(); f0.select(); }
+      else (f0||ov.querySelector('#nskAskOk')).focus();
+    }catch(e){}
   });
 };
 /* V13.81: قائمة منسدلة داكنة موحّدة — قائمة المتصفح البيضاء تُعترض ويُعرض بديلها بثيم التطبيق.
@@ -8585,11 +8637,18 @@ window.tkSelAssign = function(){
   if(!ids.length){ toast('حدّد نقاطًا أولًا',1); return; }
   var L=window.tkTechs();
   if(!L.length){ toast('سجّل فنيًّا أولًا من صفحة «الفنيون»',1); return; }
-  var nm=prompt('اسم الفني من السجل:\n'+L.join(' · '), L[0]);
-  if(nm===null) return;
-  nm=String(nm||'').trim(); if(!nm) return;
-  window.tkNew(nm, '', ids);
-  window.tkSelToggle(false);
+  window.nskAsk({ t:'إسناد النقاط المحدّدة',
+    m:'عدد النقاط: '+ids.length,
+    fields:[{k:'tech', l:'الفني', type:'select', opts:L, val:L[0]},
+            {k:'due',  l:'الموعد المستهدف (اختياري)', type:'date', val:''}],
+    ok:'أسنِد النقاط' })
+  .then(function(a){
+    if(!a) return;
+    var nm=String(a.tech||'').trim(); if(!nm) return;
+    window.tkNew(nm, String(a.due||''), ids);
+    window.tkSelToggle(false);
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+  });
 };
 window.tkNew = function(tech, due, ids){
   if(!tech || !ids || !ids.length){ toast('اختر الفني والنقاط أولًا',1); return; }
@@ -8630,10 +8689,17 @@ window.tkApprove = function(id){
 };
 window.tkReturn = function(id){
   var t=(window.NSKTASK||{})[id]; if(!t) return;
-  var why=prompt('سبب الإعادة للفني:',''); if(why===null) return;
-  t.st='مُعاد'; t.note=String(why||''); t.retAt=new Date().toISOString();
-  window.tkSave(t,'إعادة زيارة مسح للفني — '+t.site+(why?(' — '+why):''));
-  toast('أُعيدت المهمة للفني ↩');
+  window.nskAsk({ t:'إعادة المهمة للفني', m:'السبب يظهر للفني مع المهمة وفي سجل الأحداث.',
+    fields:[{k:'why', l:'سبب الإعادة', ph:'مثال: الصور غير واضحة', req:true}],
+    ok:'أعِد المهمة', reqMsg:'اكتب سبب الإعادة أولًا' })
+  .then(function(a){
+    if(!a) return;
+    var why=a.why;
+    t.st='مُعاد'; t.note=String(why||''); t.retAt=new Date().toISOString();
+    window.tkSave(t,'إعادة زيارة مسح للفني — '+t.site+(why?(' — '+why):''));
+    toast('أُعيدت المهمة للفني ↩');
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+  });
 };
 window.tkDel = function(id){
   var t=(window.NSKTASK||{})[id]; if(!t) return;
@@ -8745,14 +8811,21 @@ window.editNet = function(id){
       var on=(inss[oid]||{}).net||{};
       [on.router,on.reader,on.camera].forEach(function(x){ if(x && _ips.indexOf(String(x).trim())>-1) _dupIn=oid; });
     });
-    if(_dupIn && !confirm('تنبيه: أحد العناوين مستخدم في نقطة أخرى ('+_dupIn+') — متابعة الحفظ؟')) return;
-    var rec=inss[id]||{id:id};
-    rec.net=_v;
-    C.set('inss',id,rec);
-    try{ window.storage.set('ins:'+id, JSON.stringify(rec), false); }catch(e){}
-    try{ if(window.NSKSYNC) NSKSYNC.push('inss',id,rec); }catch(e){}
-    try{ if(window.NSKSYNC) NSKSYNC.log('تحديث عناوين الأجهزة — '+id); }catch(e){}
-    ov.remove(); toast('حُفظت العناوين ✓'); try{ drawMap(); }catch(e){}
+    var _go=function(){
+      var rec=inss[id]||{id:id};
+      rec.net=_v;
+      C.set('inss',id,rec);
+      try{ window.storage.set('ins:'+id, JSON.stringify(rec), false); }catch(e){}
+      try{ if(window.NSKSYNC) NSKSYNC.push('inss',id,rec); }catch(e){}
+      try{ if(window.NSKSYNC) NSKSYNC.log('تحديث عناوين الأجهزة — '+id); }catch(e){}
+      ov.remove(); toast('حُفظت العناوين ✓'); try{ drawMap(); }catch(e){}
+    };
+    if(!_dupIn) return _go();
+    window.nskAsk({ t:'عنوان مستخدم في نقطة أخرى',
+      m:'أحد العناوين مسجّل بالفعل على النقطة '+_dupIn+'.'+String.fromCharCode(10)
+        +'تكرار العنوان يوقع تعارضًا في الشبكة ويُفشل فحص الأجهزة.',
+      ok:'احفظ رغم التعارض', no:'أصحّح العنوان', danger:true })
+    .then(function(r){ if(r) _go(); });
   };
 };
 window._disHtml = function(id){
@@ -8787,13 +8860,14 @@ function _disSave(id, rec, msg){
 window.schedDis = function(id){
   var _installed = ((recs[id]||{}).fstat==='blocked') || (((inss[id]||{}).status)==='مُركّب');
   if(!_installed){ toast('الفك يتاح بعد وسم النقطة «تم التركيب»',1); return; }
-  pickTeam(function(t){
-    var def=new Date(Date.now()+3*864e5).toISOString().slice(0,10);
-    var dt=prompt('تاريخ الفك (YYYY-MM-DD)', def); if(dt===null) return;
+  /* نافذة اختيار الفريق تحمل حقل تاريخ وتُرجعه — كان يُهمل ويُسأل عنه بنافذة متصفح ثانية */
+  pickTeam(function(t, dt){
+    var d=String(dt||'').trim();
+    if(!d) d=new Date(Date.now()+3*864e5).toISOString().slice(0,10);
     var rec=inss[id]||{id:id};
-    rec.dis={ st:'مجدول', team:String(t||'').trim(), sched:String(dt||'').trim(),
+    rec.dis={ st:'مجدول', team:String(t||'').trim(), sched:d,
               by:(me||''), ts:new Date().toISOString() };
-    _disSave(id, rec, 'جدولة فك — '+id+' · فريق '+t);
+    _disSave(id, rec, 'جدولة فك — '+id+' · فريق '+t+' · '+d);
   });
 };
 window.confirmDis = function(id, cond){
@@ -8849,14 +8923,19 @@ window.sendAllTeams=function(){
   Object.keys(AD.teams||{}).forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
   var ready=names.filter(function(n){ var g=teamPts(n); return g.n>0; });
   if(!ready.length){ toast('لا توجد فرق لها نقاط مجدولة',1); return; }
-  if(!confirm('سيُفتح واتساب لكل قائد على حدة — '+ready.length+' فريقًا.\n'
-    +'اضغط «إرسال» في كل محادثة ثم ارجع للتطبيق.')) return;
-  var i=0;
-  (function step(){
-    if(i>=ready.length){ toast('اكتمل فتح '+ready.length+' محادثة ✓'); return; }
-    window.sendTeam(ready[i++], true);   /* خام: المحرّر يوقف التتابع */
-    setTimeout(step, 1400);
-  })();
+  window.nskAsk({ t:'إرسال جداول كل الفرق',
+    m:'سيُفتح واتساب لكل قائد على حدة — '+ready.length+' فريقًا.'+String.fromCharCode(10)
+      +'اضغط «إرسال» في كل محادثة ثم ارجع للتطبيق.',
+    ok:'افتح المحادثات' })
+  .then(function(r){
+    if(!r) return;
+    var i=0;
+    (function step(){
+      if(i>=ready.length){ toast('اكتمل فتح '+ready.length+' محادثة ✓'); return; }
+      window.sendTeam(ready[i++], true);   /* خام: المحرّر يوقف التتابع */
+      setTimeout(step, 1400);
+    })();
+  });
 };
 function coMsg(g){
   var L=['السادة / '+g.co,'تحية طيبة،',''];
@@ -9363,7 +9442,9 @@ function copySummary(){
   function legacy(){ try{ var ta=document.createElement('textarea'); ta.value=txt;
       ta.style.position='fixed'; ta.style.opacity='0'; document.body.appendChild(ta);
       ta.select(); document.execCommand('copy'); document.body.removeChild(ta); ok(); }
-    catch(e){ try{ prompt('\u0627\u0646\u0633\u062e \u0627\u0644\u0645\u0644\u062e\u0635:',txt); }catch(x){} } }
+    catch(e){ try{ window.nskAsk({ t:'انسخ الملخص',
+        m:'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.',
+        fields:[{k:'t', type:'area', rows:9, val:txt}], ok:'تم', no:'إغلاق' }); }catch(x){} } }
   if(navigator.clipboard && navigator.clipboard.writeText){
     navigator.clipboard.writeText(txt).then(ok,function(){ legacy(); });
   } else legacy();
@@ -10904,12 +10985,19 @@ function render(){
     var w=[];
     if(act) w.push('سيُلغى إسناد '+AR(act)+' نقطة نشطة وتعود بلا فريق');
     if(iss) w.push('وستُحذف عُهدته ('+AR(iss)+' قارئ)');
-    if(w.length && !confirm('حذف «'+n+'»؟\n'+w.join('\n')+'.\nالتركيبات المنفَّذة باسمه تبقى في السجل.')) return;
-    if(act){ try{ dropTeam(n); }catch(e){} }
-    saveTeams(function(tt){ var i=tt.list.indexOf(n); if(i>-1) tt.list.splice(i,1); });
-    if(iss) saveStock(function(s){ delete s.iss[n]; });
-    try{ if(window.NSKSYNC) NSKSYNC.log('حذف الفريق '+n+(act?' — أُلغي إسناد '+act+' نقطة':'')+(iss?' — حُذفت عهدته':'')); }catch(e){}
-    render();
+    var _go=function(){
+      if(act){ try{ dropTeam(n); }catch(e){} }
+      saveTeams(function(tt){ var i=tt.list.indexOf(n); if(i>-1) tt.list.splice(i,1); });
+      if(iss) saveStock(function(s){ delete s.iss[n]; });
+      try{ if(window.NSKSYNC) NSKSYNC.log('حذف الفريق '+n+(act?' — أُلغي إسناد '+act+' نقطة':'')+(iss?' — حُذفت عهدته':'')); }catch(e){}
+      render();
+    };
+    if(!w.length) return _go();
+    window.nskAsk({ t:'حذف فريق التركيب',
+      m:'«'+n+'»'+String.fromCharCode(10)+w.join(String.fromCharCode(10))+'.'
+        +String.fromCharCode(10)+'التركيبات المنفَّذة باسمه تبقى في السجل.',
+      ok:'احذف الفريق', danger:true })
+    .then(function(r){ if(r) _go(); });
   }; });
   Array.prototype.forEach.call(document.querySelectorAll('#nskDash .tmShare'),function(b){ b.onclick=function(){
     shareTeam(b.getAttribute('data-t'));
@@ -10983,13 +11071,18 @@ function render(){
   var _lk=$i('lkBtn'); if(_lk) _lk.onclick=function(){
     var L=window.lockRead();
     if(L.on){ window.setLock(false,''); return; }
-    var pin=prompt('اختر رمز المالك (٤ أرقام فأكثر).\n\nمن يعرف هذا الرمز وحده يمرّ — حتى لو كان معه حسابك.\nاحفظه: ستحتاجه على أي جهاز جديد.','');
-    if(pin===null) return;
-    if(String(pin).trim().length<4){ alert('الرمز قصير — ٤ أرقام على الأقل.'); return; }
-    var m=prompt('رسالة تظهر للمستخدمين (اتركها فارغة للرسالة الافتراضية):','');
-    if(m===null) return;
-    if(!confirm('إغلاق التطبيق لكل المستخدمين؟\n\nلن يمرّ إلا من يعرف الرمز. لا تُفقد أي بيانات.')) return;
-    window.setLock(true, m, pin);
+    /* كانت ثلاث نوافذ متصفح متتابعة: رمز ثم رسالة ثم تأكيد — صارت نافذةً واحدة */
+    window.nskAsk({ t:'إغلاق التطبيق لكل المستخدمين',
+      m:'لن يمرّ إلا من يعرف الرمز — ولا تُفقد أي بيانات.'+String.fromCharCode(10)
+        +'احفظ الرمز: ستحتاجه على أي جهاز جديد، حتى بحسابك أنت.',
+      fields:[{k:'pin', l:'رمز المالك — أربعة أرقام فأكثر', type:'text', ph:'••••', req:true},
+              {k:'msg', l:'رسالة تظهر للمستخدمين (اختيارية)', ph:'اتركها فارغة للرسالة الافتراضية'}],
+      ok:'أغلق التطبيق', danger:true, reqMsg:'اكتب رمز المالك أولًا' })
+    .then(function(a){
+      if(!a) return;
+      if(String(a.pin||'').trim().length<4){ try{ toast('الرمز قصير — أربعة أرقام على الأقل',1); }catch(e){} return; }
+      window.setLock(true, a.msg||'', String(a.pin).trim());
+    });
   };
   Array.prototype.forEach.call(document.querySelectorAll('#nskDash .qaGo'),function(el){ el.onclick=function(){
     var id=el.getAttribute('data-id');
@@ -11008,7 +11101,10 @@ function render(){
       if(t) t.focus(); return;
     }
     var withSet=!!($i('wpSet') && $i('wpSet').checked);
-    if(!confirm('حذف نهائي من السحابة ومن كل أجهزة الفريق'+(withSet?' — بما في ذلك الإعدادات':'')+'.\nلا يمكن التراجع. متابعة؟')) return;
+    if(!await window.nskAsk({ t:'إعادة ضبط شاملة',
+      m:'حذف نهائي من السحابة ومن كل أجهزة الفريق'+(withSet?' — بما في ذلك الإعدادات':'')+'.'
+        +String.fromCharCode(10)+'لا يمكن التراجع عن هذا الإجراء.',
+      ok:'نفّذ الحذف النهائي', danger:true })) return;
     wg.disabled=true; wg.textContent='جارٍ المسح…';
     try{
       var n=await wipeCloud(withSet, function(k){ wg.textContent='جارٍ المسح… '+AR(k); });
@@ -12798,7 +12894,25 @@ window.NSKI18N = (function(){
   'إيقاف حساب':'Suspend account', 'تفعيل حساب':'Activate account',
   'أوقف الحساب':'Suspend the account', 'فعّل الحساب':'Activate the account',
   'رابط كلمة مرور جديدة':'New password link', 'أرسِل الرابط':'Send the link',
-  'تغيير الدور':'Change role', 'غيّر الدور':'Change the role'
+  'تغيير الدور':'Change role', 'غيّر الدور':'Change the role',
+  'ما اسمك؟':'What is your name?', 'الاسم':'Name', 'ابدأ':'Start', 'حفظ الاسم':'Save the name',
+  'الاسم الثلاثي':'Full name',
+  'يُسجَّل مع كل مسح تحفظه، ويظهر لزملائك في سجل الأحداث.':'It is recorded with every survey you save and appears to your colleagues in the event log.',
+  'نقل النقطة':'Move the point', 'انقل النقطة':'Move the point', 'الموقع الجديد:':'New location:',
+  'حذف الموقع المقترح':'Delete the proposed site', 'احذف نهائيًّا':'Delete permanently',
+  'سيُحذف نهائيًّا من الخريطة ومن أجهزة الفريق، بصوره وملاحظاته.':'It will be permanently removed from the map and from the team devices, with its photos and notes.',
+  'صيغة الشاخص غير مطابقة':'Sign format does not match', 'احفظها كما هي':'Save it as is', 'أصحّحها':'Let me fix it',
+  'مسح بيانات هذا الجهاز':'Wipe this device', 'امسح محليًّا':'Wipe locally',
+  'عنوان مستخدم في نقطة أخرى':'Address already used at another point',
+  'احفظ رغم التعارض':'Save despite the clash', 'أصحّح العنوان':'Fix the address',
+  'تكرار العنوان يوقع تعارضًا في الشبكة ويُفشل فحص الأجهزة.':'A duplicate address causes a network clash and breaks the device check.',
+  'إسناد النقاط المحدّدة':'Assign the selected points', 'أسنِد النقاط':'Assign the points',
+  'الموعد المستهدف (اختياري)':'Target date (optional)',
+  'إعادة المهمة للفني':'Return the task to the technician', 'أعِد المهمة':'Return the task',
+  'سبب الإعادة':'Reason for returning', 'اكتب سبب الإعادة أولًا':'Write the reason first',
+  'السبب يظهر للفني مع المهمة وفي سجل الأحداث.':'The reason appears to the technician with the task and in the event log.',
+  'انسخ الملخص':'Copy the summary', 'تم':'Done',
+  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'Automatic copying failed — the text is fully selected, copy it manually.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -13024,7 +13138,25 @@ window.NSKI18N = (function(){
   'إيقاف حساب':'اکاؤنٹ معطل کریں', 'تفعيل حساب':'اکاؤنٹ فعال کریں',
   'أوقف الحساب':'اکاؤنٹ معطل کریں', 'فعّل الحساب':'اکاؤنٹ فعال کریں',
   'رابط كلمة مرور جديدة':'نئے پاس ورڈ کا لنک', 'أرسِل الرابط':'لنک بھیجیں',
-  'تغيير الدور':'کردار بدلیں', 'غيّر الدور':'کردار تبدیل کریں'
+  'تغيير الدور':'کردار بدلیں', 'غيّر الدور':'کردار تبدیل کریں',
+  'ما اسمك؟':'آپ کا نام کیا ہے؟', 'الاسم':'نام', 'ابدأ':'شروع کریں', 'حفظ الاسم':'نام محفوظ کریں',
+  'الاسم الثلاثي':'پورا نام',
+  'يُسجَّل مع كل مسح تحفظه، ويظهر لزملائك في سجل الأحداث.':'یہ آپ کے ہر محفوظ سروے کے ساتھ درج ہوتا ہے اور ساتھیوں کو ایونٹ لاگ میں نظر آتا ہے۔',
+  'نقل النقطة':'پوائنٹ منتقل کریں', 'انقل النقطة':'پوائنٹ منتقل کریں', 'الموقع الجديد:':'نیا مقام:',
+  'حذف الموقع المقترح':'تجویز کردہ مقام حذف کریں', 'احذف نهائيًّا':'مستقل طور پر حذف کریں',
+  'سيُحذف نهائيًّا من الخريطة ومن أجهزة الفريق، بصوره وملاحظاته.':'یہ نقشے اور ٹیم کے آلات سے تصاویر اور نوٹس سمیت مستقل طور پر حذف ہو جائے گا۔',
+  'صيغة الشاخص غير مطابقة':'شاخص کی صورت مطابق نہیں', 'احفظها كما هي':'ایسے ہی محفوظ کریں', 'أصحّحها':'میں درست کروں گا',
+  'مسح بيانات هذا الجهاز':'اس آلے کا ڈیٹا مٹائیں', 'امسح محليًّا':'مقامی طور پر مٹائیں',
+  'عنوان مستخدم في نقطة أخرى':'پتہ کسی اور پوائنٹ پر استعمال ہو رہا ہے',
+  'احفظ رغم التعارض':'ٹکراؤ کے باوجود محفوظ کریں', 'أصحّح العنوان':'پتہ درست کریں',
+  'تكرار العنوان يوقع تعارضًا في الشبكة ويُفشل فحص الأجهزة.':'پتے کی تکرار نیٹ ورک میں ٹکراؤ پیدا کرتی ہے اور آلات کی جانچ ناکام بناتی ہے۔',
+  'إسناد النقاط المحدّدة':'منتخب پوائنٹس تفویض کریں', 'أسنِد النقاط':'پوائنٹس تفویض کریں',
+  'الموعد المستهدف (اختياري)':'ہدف کی تاریخ (اختیاری)',
+  'إعادة المهمة للفني':'کام ٹیکنیشن کو واپس کریں', 'أعِد المهمة':'کام واپس کریں',
+  'سبب الإعادة':'واپسی کی وجہ', 'اكتب سبب الإعادة أولًا':'پہلے وجہ لکھیں',
+  'السبب يظهر للفني مع المهمة وفي سجل الأحداث.':'وجہ ٹیکنیشن کو کام کے ساتھ اور ایونٹ لاگ میں نظر آتی ہے۔',
+  'انسخ الملخص':'خلاصہ کاپی کریں', 'تم':'ہو گیا',
+  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'خودکار کاپی ناکام — متن مکمل منتخب ہے، دستی کاپی کریں۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
