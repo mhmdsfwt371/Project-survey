@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.86</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.87</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8063,7 +8063,7 @@ window.cfgRender = function(){
     if(RL.length){
       h+='<table class="cfgT"><thead><tr><th>المسمّى</th><th>يرث صلاحيات</th><th></th></tr></thead><tbody>'
         +RL.map(function(r){
-          return '<tr><td class="cfgK">'+_cfgX(r.n)+'</td><td data-l="يرث صلاحيات">'+_cfgX(window.roleLbl(r.base))+'</td>'
+          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(r.n)+'</code></td><td data-l="يرث صلاحيات">'+_cfgX(window.roleLbl(r.base))+'</td>'
             +'<td data-l="حذف"><button type="button" class="cfgDel cfgRDel" data-id="'+_cfgX(r.id)
             +'" data-n="'+_cfgX(r.n)+'">حذف</button></td></tr>';
         }).join('')+'</tbody></table>';
@@ -8098,7 +8098,7 @@ window.cfgRender = function(){
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
         +'<table class="cfgT"><thead><tr><th>القطعة</th><th>النقاط</th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(it.n)+'</code></td>'
             +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
         }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
@@ -8135,7 +8135,7 @@ window.cfgRender = function(){
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
         +'<table class="cfgT"><thead><tr><th>القطعة</th><th>السعر</th><th></th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(it.n)+'</code></td>'
             +'<td data-l="السعر"><input type="number" inputmode="numeric" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
             +'<td data-l="حذف"><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)
             +'" data-n="'+_cfgX(it.n)+'">حذف</button></td></tr>';
@@ -8158,7 +8158,7 @@ window.cfgRender = function(){
     h+='<table class="cfgT"><thead><tr><th>الفئة</th><th>عمليات</th><th>المصروف</th><th></th></tr></thead><tbody>'
       +BC.map(function(c){
         var u=BU[c]||{n:0,t:0};
-        return '<tr><td class="cfgK">'+_cfgX(c)+'</td>'
+        return '<tr><td class="cfgK"><code class="nx">'+_cfgX(c)+'</code></td>'
           +'<td data-l="عمليات">'+window.arNum(u.n)+'</td>'
           +'<td data-l="المصروف">'+window.arNum(u.t)+' ر.س</td>'
           +'<td data-l="حذف">'+(u.n
@@ -10842,14 +10842,15 @@ function render(){
        .forEach(function(r){
         var key=(r.n+' '+r.sup+' '+r.inv+' '+r.cat+' '+r.note).toLowerCase();
         h+='<tr class="byR" data-k="'+escA(key)+'"><td>'+esc2(r.d||'—')+'</td>'
-          +'<td><b>'+esc2(r.n)+'</b>'+(r.note?('<br><span class="pMut" style="font-size:.85em">'+esc2(r.note)+'</span>'):'')+'</td>'
-          +'<td>'+esc2(r.cat)+'</td>'
-          +'<td>'+AR(r.q)+' '+esc2(r.u)+'</td>'
+          +'<td><b><code class="nx">'+esc2(r.n)+'</code></b>'
+          +(r.note?('<br><span class="pMut" style="font-size:.85em"><code class="nx">'+esc2(r.note)+'</code></span>'):'')+'</td>'
+          +'<td><code class="nx">'+esc2(r.cat)+'</code></td>'
+          +'<td>'+AR(r.q)+' <code class="nx">'+esc2(r.u)+'</code></td>'
           +'<td>'+RY(r.p)+'</td>'
           +'<td><b style="color:#E9CE83">'+RY(r.t)+'</b></td>'
-          +'<td>'+esc2(r.sup||'—')+'</td>'
-          +'<td>'+esc2(r.inv||'—')+'</td>'
-          +'<td>'+esc2(r.pay)+'</td>'
+          +'<td><code class="nx">'+esc2(r.sup||'—')+'</code></td>'
+          +'<td><code class="nx">'+esc2(r.inv||'—')+'</code></td>'
+          +'<td><code class="nx">'+esc2(r.pay)+'</code></td>'
           +(canB?('<td><button type="button" class="dBtn byE" data-id="'+escA(r.id)+'">تعديل</button> '
                  +'<button type="button" class="dBtn byD" data-id="'+escA(r.id)+'">حذف</button></td>'):'')
           +'</tr>';
@@ -10862,7 +10863,7 @@ function render(){
         h+='<table class="dT"><thead><tr><th>الفئة</th><th>عمليات</th><th>الإجمالي</th><th>النسبة</th></tr></thead><tbody>';
         CK.forEach(function(k){
           var pc=B.tot?Math.round(B.cat[k].t/B.tot*100):0;
-          h+='<tr><td>'+esc2(k)+'</td><td>'+AR(B.cat[k].n)+'</td><td>'+RY(B.cat[k].t)+'</td>'
+          h+='<tr><td><code class="nx">'+esc2(k)+'</code></td><td>'+AR(B.cat[k].n)+'</td><td>'+RY(B.cat[k].t)+'</td>'
             +'<td>'+AR(pc)+'٪</td></tr>';
         });
         h+='</tbody></table>';
@@ -10871,7 +10872,7 @@ function render(){
       if(SK.length){
         h+='<div class="dT3">أكثر المورّدين</div>';
         h+='<table class="dT"><thead><tr><th>المورّد</th><th>عمليات</th><th>الإجمالي</th></tr></thead><tbody>';
-        SK.forEach(function(k){ h+='<tr><td>'+esc2(k)+'</td><td>'+AR(B.sup[k].n)+'</td><td>'+RY(B.sup[k].t)+'</td></tr>'; });
+        SK.forEach(function(k){ h+='<tr><td><code class="nx">'+esc2(k)+'</code></td><td>'+AR(B.sup[k].n)+'</td><td>'+RY(B.sup[k].t)+'</td></tr>'; });
         h+='</tbody></table>';
       }
       h+='<p class="dTs">آخر عملية: '+esc2(B.last||'—')+' · متوسط العملية '+RY(B.avg)
@@ -12780,6 +12781,9 @@ html[data-theme="light"] select option{background:#fff;color:#101214}
   font-family:var(--ar,Tahoma,sans-serif);font-size:13px}
 #nskSelP.on{display:block}
 #nskSelP code{font:inherit;background:none;color:inherit;padding:0}
+/* V13.87: غلافُ قيمةٍ مخزَّنة — CODE ضمن SKIP في محرك اللغات فلا تُترجم،
+   فلا يعود بعضُ الفئات مترجمًا وبعضها عربيًّا في الجدول نفسه */
+code.nx{font:inherit;background:none;color:inherit;padding:0;border:0}
 #nskSelP .so{padding:9px 11px;border-radius:9px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #nskSelP .so:hover{background:rgba(201,162,75,.14)}
 #nskSelP .so.on{background:var(--gold,#C9A24B);color:#0A0B0D;font-weight:800}
@@ -12960,7 +12964,9 @@ window.NSKI18N = (function(){
       put(node, raw.slice(0, a) + v + raw.slice(a + t.length));
     });
     /* السمات المرئية */
-    ['title', 'placeholder', 'aria-label'].forEach(function(at){
+    /* V13.87: data-l عنوانُ العمود الذي يظهر عبر content:attr على الجوال — كان خارج
+       قائمة السمات فبقيت رؤوس البطاقات عربيةً وحدها في واجهةٍ إنجليزية بالكامل */
+    ['title', 'placeholder', 'aria-label', 'data-l'].forEach(function(at){
       Array.prototype.forEach.call(root.querySelectorAll('[' + at + ']'), function(el){
         var key = '__i18n_' + at;
         if(el[key] == null) el[key] = el.getAttribute(at);
@@ -13377,6 +13383,18 @@ window.NSKI18N = (function(){
   'البند':'Line', 'المصدر':'Source', 'المبلغ':'Amount',
   'قطع التركيب المعتمدة':'Approved installation items', 'مشتريات السوق المحلي':'Local-market purchases',
   'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings', 'دفتر المشتريات — بفواتيره':'Purchases ledger — with its invoices',
+  'السعر':'Price', 'قراءة':'read', 'ر.س':'SAR', 'قطعة':'piece', '١٠٠٪':'100%',
+  'وسم «تمت الزيارة»':'Marking “visited”', 'طلبات الزيارة والإسناد':'Visit requests and assignment',
+  'اعتماد الزيارات والقطع':'Approving visits and items', 'التركيب والفك':'Installing and dismantling',
+  'رؤية كل النقاط':'Seeing every point', 'إدارة الحسابات':'Managing accounts', 'أرقام الهواتف':'Phone numbers',
+  'مستعملة':'in use',
+  'هذه التبويبات هي ما تُصنَّف به كل عملية شراء خارجية، وعليها يقوم تجميع المصروف في لوحة المتابعة ← المشتريات. أضِف ما يناسب طبيعة صرفك، والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.':'These categories are what every external purchase is filed under, and the spending roll-up in Dashboard → Purchases is built on them. Add whatever suits how you spend; a category used by existing purchases cannot be deleted, so its report never loses its classification.',
+  'تعود القائمة إلى الفئات الثماني الأصلية.':'The list returns to the original eight categories.',
+  'ما أضفتَه ولم يُستعمل في أي عملية سيختفي، والمستعمل يبقى ظاهرًا في التقارير.':'Anything you added and never used will disappear; what is used stays visible in the reports.',
+  'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'Items are added and removed on the “Items and prices” page.',
+  'الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.':'The four permissions above are enforced at the database level, not the interface.',
+  'لا أدوار مخصصة بعد.':'No custom roles yet.', 'أدوار مخصصة':'Custom roles',
+  'أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.':'Add your own job title that inherits one of the four roles — it appears in the user role list and syncs instantly.',
   'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'Points are read from each site’s approved items; whatever has no approved items is estimated at its type’s default points. Both targets are set separately in Settings → Installation points.'
   };
   D.ur = {
@@ -13654,6 +13672,18 @@ window.NSKI18N = (function(){
   'البند':'مد', 'المصدر':'ماخذ', 'المبلغ':'رقم',
   'قطع التركيب المعتمدة':'منظور شدہ تنصیب پرزے', 'مشتريات السوق المحلي':'مقامی بازار کی خریداری',
   'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات', 'دفتر المشتريات — بفواتيره':'خریداری رجسٹر — رسیدوں سمیت',
+  'السعر':'قیمت', 'قراءة':'پڑھنا', 'ر.س':'ریال', 'قطعة':'عدد', '١٠٠٪':'١٠٠٪',
+  'وسم «تمت الزيارة»':'«دورہ ہوا» کا نشان', 'طلبات الزيارة والإسناد':'دورے کی درخواستیں اور تفویض',
+  'اعتماد الزيارات والقطع':'دوروں اور پرزوں کی منظوری', 'التركيب والفك':'تنصیب اور ہٹانا',
+  'رؤية كل النقاط':'تمام پوائنٹس دیکھنا', 'إدارة الحسابات':'اکاؤنٹس کا انتظام', 'أرقام الهواتف':'فون نمبر',
+  'مستعملة':'زیرِ استعمال',
+  'هذه التبويبات هي ما تُصنَّف به كل عملية شراء خارجية، وعليها يقوم تجميع المصروف في لوحة المتابعة ← المشتريات. أضِف ما يناسب طبيعة صرفك، والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.':'ہر بیرونی خریداری انہی اقسام میں درج ہوتی ہے، اور ڈیش بورڈ ← خریداری میں خرچ کا مجموعہ انہی پر بنتا ہے۔ اپنی ضرورت کے مطابق شامل کریں؛ جو قسم موجودہ خریداریوں میں استعمال ہو رہی ہو وہ حذف نہیں ہوتی تاکہ رپورٹ کی درجہ بندی برقرار رہے۔',
+  'تعود القائمة إلى الفئات الثماني الأصلية.':'فہرست اصل آٹھ اقسام پر واپس آ جائے گی۔',
+  'ما أضفتَه ولم يُستعمل في أي عملية سيختفي، والمستعمل يبقى ظاهرًا في التقارير.':'جو آپ نے شامل کیا اور استعمال نہ ہوا وہ غائب ہو جائے گا؛ زیرِ استعمال رپورٹوں میں باقی رہے گا۔',
+  'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'پرزے «پرزے اور قیمتیں» صفحے سے شامل یا حذف ہوتے ہیں۔',
+  'الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.':'اوپر کی چار اجازتیں ڈیٹابیس کی سطح پر نافذ ہیں، انٹرفیس پر نہیں۔',
+  'لا أدوار مخصصة بعد.':'ابھی کوئی مخصوص کردار نہیں۔', 'أدوار مخصصة':'مخصوص کردار',
+  'أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.':'اپنا عہدہ شامل کریں جو چار کرداروں میں سے ایک کی اجازتیں لے — یہ صارفین کے کردار کی فہرست میں ظاہر ہو کر فوراً ہم آہنگ ہو جاتا ہے۔',
   'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'پوائنٹس ہر مقام کے منظور شدہ پرزوں سے پڑھے جاتے ہیں؛ جن کے پرزے منظور نہ ہوں ان کا اندازہ قسم کے طے شدہ پوائنٹس سے ہوتا ہے۔ دونوں اہداف ترتیبات ← تنصیب پوائنٹس سے الگ الگ طے ہوتے ہیں۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
