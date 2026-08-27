@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.85</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.86</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5555,11 +5555,17 @@ window.NSKCORE={
 }
 /* V13.82: نافذة السؤال الموحّدة */
 #nskAskOv{position:fixed;inset:0;z-index:1000002;display:none;align-items:center;justify-content:center;
-  background:rgba(0,0,0,.74);padding:18px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+  background:rgba(0,0,0,.74);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px);
+  padding:calc(14px + env(safe-area-inset-top,0px)) 14px calc(14px + env(safe-area-inset-bottom,0px))}
 #nskAskOv.on{display:flex}
-#nskAskOv .askC{width:100%;max-width:400px;background:var(--panel,#141619);color:var(--cream,#F1EDE0);
-  border:1px solid rgba(233,206,131,.35);border-radius:18px;padding:20px 18px 16px;
+/* نافذةٌ بعشرة حقول أطول من شاشة الجوال: بلا سقفٍ للارتفاع يُقصّ العنوان أعلاها والزر أسفلها معًا */
+#nskAskOv .askC{position:relative;width:100%;max-width:400px;max-height:100%;
+  display:flex;flex-direction:column;overflow:hidden;
+  background:var(--panel,#141619);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(233,206,131,.35);border-radius:18px;
   box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:var(--ar,Tahoma,sans-serif)}
+#nskAskOv .askS{flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:20px 18px 6px}
 #nskAskOv h4{margin:0 0 9px;font-size:15px;color:var(--gold,#C9A24B);font-weight:800}
 #nskAskOv .askM p{margin:0 0 6px;font-size:13px;line-height:1.75;color:var(--grey,#9AA1AB)}
 #nskAskOv .askF{display:block;margin:11px 0 0}
@@ -5570,7 +5576,9 @@ window.NSKCORE={
 #nskAskOv textarea{min-height:0;line-height:1.7;font-size:13px;resize:vertical;
   direction:rtl;white-space:pre-wrap;-webkit-user-select:text;user-select:text}
 #nskAskOv input:focus,#nskAskOv select:focus,#nskAskOv textarea:focus{outline:none;border-color:var(--gold,#C9A24B)}
-#nskAskOv .askB{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#nskAskOv .askB{flex:0 0 auto;display:flex;gap:8px;flex-wrap:wrap;
+  padding:12px 18px 16px;border-top:1px solid rgba(150,158,172,.16);background:var(--ink,#0A0B0D)}
+html[data-theme="light"] #nskAskOv .askB{background:#F4F1E8}
 #nskAskOv .askGo{flex:1 1 100%;background:linear-gradient(135deg,#E9CE83,#C9A24B);color:#0A0B0D;
   border:0;border-radius:11px;min-height:46px;padding:12px 16px;font:inherit;font-weight:800;font-size:13.5px;cursor:pointer}
 #nskAskOv .askGo.bad{background:linear-gradient(135deg,#F0655A,#C6382C);color:#fff}
@@ -7839,7 +7847,43 @@ window.buyList = function(){
              by:String(x.by||''), note:String(x.note||''), ts:String(x.ts||'') }; })
     .filter(function(x){ return x.id; }); }catch(e){ return []; }
 };
-window.buyCats = ['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء','نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'];
+window.BUYCAT_SEED = ['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء',
+  'نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'];
+/* الفئات تُدار من الإعدادات وتُزامَن، والبذرة تعمل حتى يضبطها المهندس */
+window.buyCatList = function(){
+  var L=[];
+  try{ L=((window.NSKCORE.get('settings','buycats')||{}).list||[])
+        .map(function(x){ return String((typeof x==='string')?x:(x&&x.n)||'').trim(); })
+        .filter(Boolean); }catch(e){}
+  if(!L.length) L=window.BUYCAT_SEED.slice();
+  /* أي فئةٍ مستعملةٍ في عملياتٍ قائمة تبقى ظاهرةً وإن حُذفت من القائمة، وإلا اختفت من التقارير */
+  try{
+    var used={}; window.buyList().forEach(function(x){ if(x.cat) used[x.cat]=1; });
+    Object.keys(used).forEach(function(c){ if(L.indexOf(c)<0) L.push(c); });
+  }catch(e){}
+  if(L.indexOf('أخرى')<0) L.push('أخرى');
+  return L;
+};
+window.buyCatSave = function(list, txt){
+  var clean=[], seen={};
+  list.forEach(function(x){
+    var n=String(x||'').trim();
+    if(n && !seen[n]){ seen[n]=1; clean.push(n); }
+  });
+  var d={ list:clean, n:clean.length, at:new Date().toISOString() };
+  try{
+    window.NSKCORE.set('settings','buycats',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','buycats',d); NSKSYNC.log(txt||'تحديث فئات المشتريات'); }
+    toast('حُفظت الفئات ✓'); try{ window.nskSync(); }catch(e){}
+  }catch(e){ toast('تعذّر الحفظ',1); }
+};
+/* كم عمليةً تستعمل كل فئة وبكم — يمنع حذف فئةٍ لها تاريخ */
+window.buyCatUse = function(){
+  var M={};
+  try{ window.buyList().forEach(function(x){
+    var c=x.cat||'أخرى'; (M[c]=M[c]||{n:0,t:0}); M[c].n++; M[c].t+=x.t; }); }catch(e){}
+  return M;
+};
 window.buySave = function(list, txt){
   var tot=0; list.forEach(function(x){ tot += Number(x.t)||0; });
   var d={ list:list, n:list.length, tot:Math.round(tot*100)/100, at:new Date().toISOString() };
@@ -7873,7 +7917,7 @@ window.buyAdd = function(edit){
     fields:[
       {k:'d',   l:'تاريخ الشراء', type:'date', val:(e?e.d:today), req:true},
       {k:'n',   l:'الصنف', ph:'مثال: كابل شبكة CAT6 — ١٠٠ متر', val:(e?e.n:''), req:true},
-      {k:'cat', l:'الفئة', type:'select', opts:window.buyCats, val:(e?e.cat:'أخرى')},
+      {k:'cat', l:'الفئة', type:'select', opts:window.buyCatList(), val:(e?e.cat:'أخرى')},
       {k:'q',   l:'الكمية', type:'number', val:(e?e.q:1), req:true},
       {k:'u',   l:'الوحدة', ph:'قطعة · متر · لفة · كرتونة', val:(e?e.u:'قطعة')},
       {k:'p',   l:'سعر الوحدة (ريال)', type:'number', val:(e?e.p:''), req:true},
@@ -7933,6 +7977,7 @@ window.cfgPages = [
   ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب','🔧'],
   ['dis','نقاط الفك','وزن الفك ومعاملا الحالة','🧩'],
   ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة','📦'],
+  ['buycat','فئات المشتريات','تبويب مشتريات السوق المحلي','🏷'],
   ['sys','ثوابت النظام','أيام العمل وساعات اليوم','📐'],
   ['roles','الأدوار والصلاحيات','من يفعل ماذا','🛡']
 ];
@@ -8104,6 +8149,29 @@ window.cfgRender = function(){
       +'<button type="button" class="cfgGo" id="cfgItSave">حفظ الأسعار</button></div>'
       +'<p class="cfgS">هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.</p>';
   }
+  else if(pg==='buycat'){
+    var BC=window.buyCatList(), BU=window.buyCatUse();
+    var bTot=0; Object.keys(BU).forEach(function(k){ bTot+=BU[k].t; });
+    h+='<p class="cfgS">هذه التبويبات هي ما تُصنَّف به كل عملية شراء خارجية، وعليها يقوم '
+      +'تجميع المصروف في لوحة المتابعة ← المشتريات. أضِف ما يناسب طبيعة صرفك، '
+      +'والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>';
+    h+='<table class="cfgT"><thead><tr><th>الفئة</th><th>عمليات</th><th>المصروف</th><th></th></tr></thead><tbody>'
+      +BC.map(function(c){
+        var u=BU[c]||{n:0,t:0};
+        return '<tr><td class="cfgK">'+_cfgX(c)+'</td>'
+          +'<td data-l="عمليات">'+window.arNum(u.n)+'</td>'
+          +'<td data-l="المصروف">'+window.arNum(u.t)+' ر.س</td>'
+          +'<td data-l="حذف">'+(u.n
+              ? '<span class="cfgS" style="margin:0">مستعملة</span>'
+              : '<button type="button" class="cfgDel cfgBcDel" data-n="'+_cfgX(c)+'">حذف</button>')
+          +'</td></tr>';
+      }).join('')+'</tbody></table>';
+    h+='<p class="cfgS">إجمالي المشتريات المصنّفة: <b>'+window.arNum(bTot)+' ر.س</b> '
+      +'في '+window.arNum(BC.length)+' فئة.</p>';
+    h+='<div class="cfgF"><label>فئة جديدة<input type="text" id="cfg_bcN" placeholder="مثال: إيجار معدات"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgBcAdd">إضافة فئة</button>'
+      +'<button type="button" class="cfgGo" id="cfgBcSeed">استعادة الفئات الافتراضية</button></div>';
+  }
   else if(pg==='sys'){
     h+='<div class="cfgF"><label>أيام العمل في الشهر<input type="number" id="cfg_days" min="1" value="'+P.days+'"></label>'
       +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label>'
@@ -8231,6 +8299,39 @@ window.cfgBind = function(){
         ok:'احذف', danger:true }).then(function(r){
         if(!r) return;
         window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة: '+nm);
+        window.cfgMark(false); window.cfgRender();
+      });
+    };
+  });
+  var ba=q('#cfgBcAdd');
+  if(ba) ba.onclick=function(){
+    var n2=String((q('#cfg_bcN')||{}).value||'').trim();
+    if(!n2){ toast('اكتب اسم الفئة أولًا',1); return; }
+    var L=window.buyCatList();
+    if(L.some(function(x){ return x===n2; })){ toast('الفئة موجودة بالفعل',1); return; }
+    L.push(n2);
+    window.buyCatSave(L,'إضافة فئة مشتريات: '+n2);
+    window.cfgMark(false); window.cfgRender();
+  };
+  var bs=q('#cfgBcSeed');
+  if(bs) bs.onclick=function(){
+    window.nskAsk({ t:'استعادة الفئات الافتراضية',
+      m:'تعود القائمة إلى الفئات الثماني الأصلية.'+String.fromCharCode(10)
+        +'ما أضفتَه ولم يُستعمل في أي عملية سيختفي، والمستعمل يبقى ظاهرًا في التقارير.',
+      ok:'استعِد الافتراضية' }).then(function(r){
+      if(!r) return;
+      window.buyCatSave(window.BUYCAT_SEED.slice(),'استعادة فئات المشتريات الافتراضية');
+      window.cfgMark(false); window.cfgRender();
+    });
+  };
+  Array.prototype.forEach.call(qa('.cfgBcDel'), function(b){
+    b.onclick=function(){
+      var n2=b.getAttribute('data-n')||'';
+      window.nskAsk({ t:'حذف فئة مشتريات',
+        m:'«'+n2+'» لم تُستعمل في أي عملية، فحذفها لا يمسّ رقمًا مسجَّلًا.',
+        ok:'احذف الفئة', danger:true }).then(function(r){
+        if(!r) return;
+        window.buyCatSave(window.buyCatList().filter(function(x){ return x!==n2; }),'حذف فئة مشتريات: '+n2);
         window.cfgMark(false); window.cfgRender();
       });
     };
@@ -8618,8 +8719,8 @@ window.nskAsk = function(o){
       return '<label class="askF">'+lab+el+'</label>';
     }).join('');
     ov.innerHTML='<div class="askC" role="dialog" aria-modal="true">'
-      +'<h4>'+X(o.t||'تأكيد')+'</h4>'
-      +(body?('<div class="askM">'+body+'</div>'):'')+fh
+      +'<div class="askS"><h4>'+X(o.t||'تأكيد')+'</h4>'
+      +(body?('<div class="askM">'+body+'</div>'):'')+fh+'</div>'
       +'<div class="askB">'
       +'<button type="button" class="askGo'+(o.danger?' bad':'')+'" id="nskAskOk">'+X(o.ok||'تأكيد')+'</button>'
       +(o.alt?('<button type="button" class="askSec" id="nskAskAlt">'+X(o.alt)+'</button>'):'')
@@ -10777,6 +10878,37 @@ function render(){
         +'. الأسعار هنا ما دُفع فعلًا بفاتورته — منفصلة عن كتالوج الأسعار المعتمد في الإعدادات، '
         +'والسعر يُثبَّت لحظة التسجيل فلا يتغيّر بتغيّر الكتالوج.</p>';
     }
+    /* منصرف المشروع كاملًا: قطعُ التركيب بأسعار الكتالوج + مشتريات السوق بفواتيرها */
+    (function(){
+      var IT={}; try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+      var IN=window.NSKCORE.all('inss'), cat=0, nb=0, est=0, nOk=0;
+      Object.keys(IN).forEach(function(k){
+        var v=IN[k]||{};
+        if(v.status!=='مُركّب') return;
+        nOk++;
+        var bm=(v.bom&&v.bom.items)?v.bom.items:null;
+        if(bm){
+          nb++;
+          Object.keys(bm).forEach(function(id){
+            var it=IT[id]; if(!it) return;
+            cat += (parseFloat(bm[id])||0) * (parseFloat(it.price)||0);
+          });
+        } else est++;
+      });
+      cat=Math.round(cat*100)/100;
+      var all=Math.round((cat+B.tot)*100)/100;
+      h+='<div class="dT3">منصرف المشروع — الصورة الكاملة</div>';
+      h+='<table class="dT"><thead><tr><th>البند</th><th>المصدر</th><th>المبلغ</th><th>النسبة</th></tr></thead><tbody>'
+        +'<tr><td>قطع التركيب المعتمدة</td><td class="pMut">كتالوج الأسعار — الإعدادات</td>'
+        +'<td>'+RY(cat)+'</td><td>'+AR(all?Math.round(cat/all*100):0)+'٪</td></tr>'
+        +'<tr><td>مشتريات السوق المحلي</td><td class="pMut">دفتر المشتريات — بفواتيره</td>'
+        +'<td>'+RY(B.tot)+'</td><td>'+AR(all?Math.round(B.tot/all*100):0)+'٪</td></tr>'
+        +'<tr><td><b>الإجمالي</b></td><td></td><td><b style="color:#E9CE83">'+RY(all)+'</b></td><td><b>١٠٠٪</b></td></tr>'
+        +'</tbody></table>';
+      if(est) h+='<p class="dTs" style="color:#E8873A">'+AR(est)+' موقعًا مُركّبًا لم تُعتمد قطعُه بعد، '
+        +'فتكلفتها لم تدخل الحساب — اعتمدها من «اعتمد وحدّد القطع» ليكتمل الرقم.</p>';
+      else if(nOk) h+='<p class="dTs">كل المواقع المُركّبة ('+AR(nOk)+') اعتُمدت قطعُها، فرقم الكتالوج مكتمل.</p>';
+    })();
     h+='</section>';
   })();
   $i('dWrap').innerHTML=h;
@@ -12638,9 +12770,10 @@ html[data-theme="light"] select{color-scheme:light}
 #nskSelP:focus{outline:none}
 select option{background:#12161b;color:#E7E3D8}
 html[data-theme="light"] select option{background:#fff;color:#101214}
-#nskSelBd{position:fixed;inset:0;z-index:999999;display:none;background:transparent}
+/* فوق نافذة السؤال 1000002 — كانت 999999/1000000 فتفتح اللوحة خلفها ولا تصلها لمسة */
+#nskSelBd{position:fixed;inset:0;z-index:1000010;display:none;background:transparent}
 #nskSelBd.on{display:block}
-#nskSelP{position:fixed;z-index:1000000;display:none;min-width:180px;max-width:min(92vw,420px);
+#nskSelP{position:fixed;z-index:1000011;display:none;min-width:180px;max-width:min(92vw,420px);
   max-height:min(58vh,340px);overflow:auto;overscroll-behavior:contain;padding:6px;
   background:var(--panel,#141619);color:var(--cream,#F1EDE0);border:1px solid rgba(201,162,75,.45);
   border-radius:12px;box-shadow:0 18px 46px rgba(0,0,0,.6);
@@ -13235,6 +13368,15 @@ window.NSKI18N = (function(){
   'مُركّب هذا الشهر':'Installed this month', 'نقاطه':'Its points', 'تارجت الشهر':'Month target',
   '٪ الشهر':'% of month', 'نقاط ٧ أيام':'Points, 7 days', 'تارجت الأسبوع':'Week target', '٪ الأسبوع':'% of week',
   'تارجت المخيمات هذا الشهر':'Camp target this month', 'تارجت الممرات هذا الشهر':'Corridor target this month',
+  'فئات المشتريات':'Purchase categories', 'تبويب مشتريات السوق المحلي':'Classifying local-market purchases',
+  'فئة جديدة':'New category', 'إضافة فئة':'Add category', 'استعادة الفئات الافتراضية':'Restore default categories',
+  'حذف فئة مشتريات':'Delete a purchase category', 'احذف الفئة':'Delete the category', 'مستعملة':'in use',
+  'المصروف':'Spending', 'استعِد الافتراضية':'Restore the defaults', 'اكتب اسم الفئة أولًا':'Write the category name first',
+  'الفئة موجودة بالفعل':'That category already exists',
+  'منصرف المشروع — الصورة الكاملة':'Project spending — the full picture',
+  'البند':'Line', 'المصدر':'Source', 'المبلغ':'Amount',
+  'قطع التركيب المعتمدة':'Approved installation items', 'مشتريات السوق المحلي':'Local-market purchases',
+  'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings', 'دفتر المشتريات — بفواتيره':'Purchases ledger — with its invoices',
   'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'Points are read from each site’s approved items; whatever has no approved items is estimated at its type’s default points. Both targets are set separately in Settings → Installation points.'
   };
   D.ur = {
@@ -13503,6 +13645,15 @@ window.NSKI18N = (function(){
   'مُركّب هذا الشهر':'اس ماہ نصب شدہ', 'نقاطه':'اس کے پوائنٹس', 'تارجت الشهر':'ماہ کا ہدف',
   '٪ الشهر':'٪ ماہ', 'نقاط ٧ أيام':'٧ دن کے پوائنٹس', 'تارجت الأسبوع':'ہفتے کا ہدف', '٪ الأسبوع':'٪ ہفتہ',
   'تارجت المخيمات هذا الشهر':'اس ماہ خیموں کا ہدف', 'تارجت الممرات هذا الشهر':'اس ماہ راہداریوں کا ہدف',
+  'فئات المشتريات':'خریداری کی اقسام', 'تبويب مشتريات السوق المحلي':'مقامی خریداری کی درجہ بندی',
+  'فئة جديدة':'نئی قسم', 'إضافة فئة':'قسم شامل کریں', 'استعادة الفئات الافتراضية':'طے شدہ اقسام بحال کریں',
+  'حذف فئة مشتريات':'خریداری کی قسم حذف کریں', 'احذف الفئة':'قسم حذف کریں', 'مستعملة':'زیرِ استعمال',
+  'المصروف':'خرچ', 'استعِد الافتراضية':'طے شدہ بحال کریں', 'اكتب اسم الفئة أولًا':'پہلے قسم کا نام لکھیں',
+  'الفئة موجودة بالفعل':'یہ قسم پہلے سے موجود ہے',
+  'منصرف المشروع — الصورة الكاملة':'منصوبے کا خرچ — مکمل تصویر',
+  'البند':'مد', 'المصدر':'ماخذ', 'المبلغ':'رقم',
+  'قطع التركيب المعتمدة':'منظور شدہ تنصیب پرزے', 'مشتريات السوق المحلي':'مقامی بازار کی خریداری',
+  'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات', 'دفتر المشتريات — بفواتيره':'خریداری رجسٹر — رسیدوں سمیت',
   'النقاط تُقرأ من القطع المعتمدة لكل موقع، وما لم تُعتمد قطعُه يُقدَّر بنقاط نوعه الافتراضية. والتارجتان يُضبطان لكلٍّ على حدة من الإعدادات ← نقاط التركيب.':'پوائنٹس ہر مقام کے منظور شدہ پرزوں سے پڑھے جاتے ہیں؛ جن کے پرزے منظور نہ ہوں ان کا اندازہ قسم کے طے شدہ پوائنٹس سے ہوتا ہے۔ دونوں اہداف ترتیبات ← تنصیب پوائنٹس سے الگ الگ طے ہوتے ہیں۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
