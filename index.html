@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.73</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.74</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5448,7 +5448,9 @@ window.NSKCORE={
 #tkSelBar{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:9000;display:flex;gap:10px;
   align-items:center;background:#12161b;border:1px solid #C9A24B;border-radius:12px;
   padding:8px 12px;font-size:13px;color:#E7E3D8;box-shadow:0 6px 20px rgba(0,0,0,.45)}
-#tkSelBar button{background:transparent;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;padding:6px 10px;font-size:12px}
+#tkSelBar{z-index:9999}
+#tkSelBar button{background:transparent;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;padding:8px 12px;font-size:12.5px}
+#tkSelBar button.go{background:#C9A24B;border-color:#C9A24B;color:#0A0B0D;font-weight:700}
 body.tkSelOn #map{outline:2px solid #C9A24B;outline-offset:-2px}
 .tkPick{display:flex;align-items:center;gap:8px;padding:7px 9px;border-bottom:1px solid #20262d;font-size:13px}
 
@@ -8055,7 +8057,7 @@ window.tkSelBar = function(){
   var n=Object.keys(S.ids).length;
   if(!b){ b=document.createElement('div'); b.id='tkSelBar'; document.body.appendChild(b); }
   b.innerHTML='<span>المحدد: <b>'+n+'</b></span>'
-    +'<button type="button" id="tkSelGo">أسند لفني</button>'
+    +'<button type="button" id="tkSelGo" class="go">✓ تم — أسند لفني</button>'
     +'<button type="button" id="tkSelX">إلغاء</button>';
   b.querySelector('#tkSelX').onclick=function(){ window.tkSelToggle(false); };
   b.querySelector('#tkSelGo').onclick=function(){ window.tkSelAssign(); };
@@ -8131,12 +8133,17 @@ window.tkPickOv = function(){
   var C=window.NSKCORE, dbx=C.db(), rc=C.all('recs');
   var ov=document.createElement('div'); ov.id='tkPickOv'; ov.className='iosOv';
   var rows=dbx.d.filter(function(r){ var f=(rc[r[0]]||{}).fstat; return f!=='done' && f!=='blocked'; });
-  ov.innerHTML='<div class="iosC" style="max-height:82vh;overflow:auto">'
+  ov.style.zIndex='9700';
+  ov.innerHTML='<div class="iosC" style="max-height:86vh;overflow:auto">'
     +'<button type="button" class="nskX" id="tkPickX" aria-label="إغلاق">×</button>'
     +'<h3>اختيار نقاط للإسناد</h3>'
-    +'<input type="text" id="tkPickQ" placeholder="ابحث بالشاخص أو المربع أو المشعر…" style="width:100%;margin:0 0 8px">'
+    +'<input type="text" id="tkPickQ" placeholder="ابحث بالشاخص أو المربع أو المشعر…" style="width:100%;margin:0 0 6px">'
+    +'<div class="dRow" style="margin:0 0 8px"><button type="button" class="dBtn" id="tkPickAll">تحديد الظاهر</button>'
+    +'<button type="button" class="dBtn" id="tkPickNone">مسح التحديد</button>'
+    +'<span id="tkPickN" style="align-self:center;font-size:12px;color:#8a9199"></span></div>'
     +'<div id="tkPickL"></div>'
-    +'<div class="dRow" style="margin-top:10px"><button type="button" class="dBtn" id="tkPickGo">أسند المحدد لفني</button></div></div>';
+    +'<div class="dRow" style="position:sticky;bottom:0;background:#0F1216;padding:10px 0 2px;margin-top:8px">'
+    +'<button type="button" class="dBtn p" id="tkPickGo">✓ أسند المحدد لفني</button></div></div>';
   document.body.appendChild(ov);
   ov.style.display='flex';
   function paint(){
@@ -8155,10 +8162,21 @@ window.tkPickOv = function(){
       c.onchange=function(){
         var id=c.getAttribute('data-id');
         if(c.checked) window.TKSEL.ids[id]=1; else delete window.TKSEL.ids[id];
+        cnt();
       };
     });
+    window._tkPickShown=out;
+    cnt();
+  }
+  function cnt(){
+    var e=ov.querySelector('#tkPickN');
+    if(e) e.textContent='المحدد: '+Object.keys(window.TKSEL.ids||{}).length;
   }
   document.getElementById('tkPickQ').oninput=paint;
+  ov.querySelector('#tkPickAll').onclick=function(){
+    (window._tkPickShown||[]).forEach(function(r){ window.TKSEL.ids[r[0]]=1; }); paint();
+  };
+  ov.querySelector('#tkPickNone').onclick=function(){ window.TKSEL.ids={}; paint(); };
   document.getElementById('tkPickX').onclick=function(){ ov.remove(); };
   document.getElementById('tkPickGo').onclick=function(){ ov.remove(); window.tkSelAssign(); };
   paint();
@@ -10173,10 +10191,7 @@ function render(){
     toast('اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»');
   };
   var _opk=$i('orPick');
-  if(_opk) _opk.onclick=function(){
-    try{ var d=$i('nskDash'); if(d) d.style.display='none'; }catch(e){}
-    window.tkPickOv();
-  };
+  if(_opk) _opk.onclick=function(){ window.tkPickOv(); };
   var _tks=$i('tkSeedB'); if(_tks) _tks.onclick=function(){ window.tkSeed(); };
   var _tsa=$i('tkSelAllB');
   if(_tsa) _tsa.onclick=function(){
@@ -12256,7 +12271,8 @@ window.NSKI18N = (function(){
   'تارجت التركيب/شهر':'Install target / month', 'افتراضي المسح/شهر':'Default survey / month', 'افتراضي التركيب/شهر':'Default install / month',
   'الإعدادات':'Settings', '⚙️ الإعدادات':'⚙️ Settings', '👤 الأدوار والصلاحيات':'👤 Roles and permissions', '🔍 نقاط الزيارات':'🔍 Visit points', '🔧 نقاط التركيب':'🔧 Installation points', '🧩 نقاط الفك':'🧩 Dismantle points', '📐 ثوابت النظام':'📐 System constants', '➕ إضافة مستخدم':'➕ Add user', 'القدرة':'Capability', 'وزن الزيارة':'Visit weight', 'وزن الفك':'Dismantle weight', 'نقاط تركيب المخيم':'Camp install points', 'نقاط تركيب الممر':'Corridor install points', '٪ التهيئة':'% Configuration', '٪ التجميع':'% Assembly', '٪ التركيب':'% Installation', 'معامل «سليم»':'“Intact” factor', 'معامل «تالف»':'“Damaged” factor', 'تارجت المسح الافتراضي/شهر':'Default survey target / month', 'تارجت التركيب الافتراضي/شهر':'Default install target / month', 'تارجت الفك الافتراضي/شهر':'Default dismantle target / month', 'أيام العمل/شهر':'Working days / month', 'ساعات العمل/يوم':'Working hours / day', 'نقاط الساعة (تُحسب)':'Points per hour (computed)', 'حفظ نقاط الزيارات':'Save visit points', 'حفظ نقاط التركيب':'Save installation points', 'حفظ نقاط الفك':'Save dismantle points', 'حفظ الثوابت':'Save constants', 'حُفظت الإعدادات ✓':'Settings saved ✓', 'هذه الصفحة للإدارة فقط.':'This page is management-only.', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'Permissions are enforced at the database level, not the interface — what is hidden here is rejected there too.', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'Visit weights are set in the “Settings” tab and shown here for reference. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'Create the account from the “My account” panel → Create account',
   '📦 القطع ونقاط تركيبها':'📦 Items and their install points', 'نقاط التركيب':'Install points', 'القطعة':'Item', 'قطعة جديدة':'New item', 'نقاطها':'Its points', 'إضافة قطعة':'Add item', 'حفظ الكتالوج':'Save catalogue', 'حُفظ الكتالوج ✓':'Catalogue saved ✓', '📲 رسالة للمحددين':'📲 Message the selected', 'تحديد الكل':'Select all', 'حدّد فنيًّا واحدًا على الأقل':'Select at least one technician', 'اكتب اسم القطعة أولًا':'Type the item name first', 'أهداف الفنيين الشهرية':'Monthly technician targets', 'تارجت المسح':'Survey target', 'تارجت التركيب':'Install target', '✔ اعتمد وحدّد القطع':'✔ Approve and pick items', 'اعتمد وحدّد القطع':'Approve and pick items', 'تعديل القطع':'Edit items', 'اختر قطعة واحدة على الأقل':'Pick at least one item', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'Type the quantity next to each item. Points come from the settings catalogue and are fixed at approval.', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'Each item has its install points — summed when a point’s items are approved and credited to the technician.',
-  'الأدوار والصلاحيات':'Roles and permissions', 'نقاط الزيارات':'Visit points', 'نقاط الفك':'Dismantle points', 'القطع والأسعار':'Items and prices', 'ثوابت النظام':'System constants', 'من يفعل ماذا':'Who does what', 'السعر (ريال)':'Price (SAR)', 'نقاط تركيبها':'Its install points', 'سعرها':'Its price', 'حفظ الأسعار':'Save prices', 'أيام العمل في الشهر':'Working days per month', 'ساعات العمل في اليوم':'Working hours per day', 'تارجت المسح الشهري':'Monthly survey target', 'تارجت التركيب الشهري':'Monthly install target', 'تارجت الفك الشهري':'Monthly dismantle target', 'الإعدادات للإدارة فقط':'Settings are management-only', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'Items are added and removed on the “Items and prices” page.', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'These are approved fixed prices — any external purchase is recorded with its invoice in the procurement module.', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'Accounts are created and roles changed from the account panel — the single entry point.'
+  'الأدوار والصلاحيات':'Roles and permissions', 'نقاط الزيارات':'Visit points', 'نقاط الفك':'Dismantle points', 'القطع والأسعار':'Items and prices', 'ثوابت النظام':'System constants', 'من يفعل ماذا':'Who does what', 'السعر (ريال)':'Price (SAR)', 'نقاط تركيبها':'Its install points', 'سعرها':'Its price', 'حفظ الأسعار':'Save prices', 'أيام العمل في الشهر':'Working days per month', 'ساعات العمل في اليوم':'Working hours per day', 'تارجت المسح الشهري':'Monthly survey target', 'تارجت التركيب الشهري':'Monthly install target', 'تارجت الفك الشهري':'Monthly dismantle target', 'الإعدادات للإدارة فقط':'Settings are management-only', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'Items are added and removed on the “Items and prices” page.', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'These are approved fixed prices — any external purchase is recorded with its invoice in the procurement module.', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'Accounts are created and roles changed from the account panel — the single entry point.',
+  'تحديد الظاهر':'Select shown', '✓ أسند المحدد لفني':'✓ Assign selection to a technician', '✓ تم — أسند لفني':'✓ Done — assign to technician'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -12463,7 +12479,8 @@ window.NSKI18N = (function(){
   'تارجت التركيب/شهر':'تنصیب ہدف / ماہ', 'افتراضي المسح/شهر':'طے شدہ سروے / ماہ', 'افتراضي التركيب/شهر':'طے شدہ تنصیب / ماہ',
   'الإعدادات':'ترتیبات', '⚙️ الإعدادات':'⚙️ ترتیبات', '👤 الأدوار والصلاحيات':'👤 کردار اور اجازتیں', '🔍 نقاط الزيارات':'🔍 دورہ پوائنٹس', '🔧 نقاط التركيب':'🔧 تنصیب پوائنٹس', '🧩 نقاط الفك':'🧩 ہٹانے کے پوائنٹس', '📐 ثوابت النظام':'📐 نظام کے ثوابت', '➕ إضافة مستخدم':'➕ صارف شامل کریں', 'القدرة':'صلاحیت', 'وزن الزيارة':'دورے کا وزن', 'وزن الفك':'ہٹانے کا وزن', 'نقاط تركيب المخيم':'خیمہ تنصیب پوائنٹس', 'نقاط تركيب الممر':'راہداری تنصیب پوائنٹس', '٪ التهيئة':'٪ کنفیگریشن', '٪ التجميع':'٪ اسمبلی', '٪ التركيب':'٪ تنصیب', 'معامل «سليم»':'«درست» عامل', 'معامل «تالف»':'«خراب» عامل', 'تارجت المسح الافتراضي/شهر':'طے شدہ سروے ہدف / ماہ', 'تارجت التركيب الافتراضي/شهر':'طے شدہ تنصیب ہدف / ماہ', 'تارجت الفك الافتراضي/شهر':'طے شدہ ہٹانے کا ہدف / ماہ', 'أيام العمل/شهر':'کام کے دن / ماہ', 'ساعات العمل/يوم':'کام کے گھنٹے / دن', 'نقاط الساعة (تُحسب)':'پوائنٹس فی گھنٹہ (شمار شدہ)', 'حفظ نقاط الزيارات':'دورہ پوائنٹس محفوظ کریں', 'حفظ نقاط التركيب':'تنصیب پوائنٹس محفوظ کریں', 'حفظ نقاط الفك':'ہٹانے کے پوائنٹس محفوظ کریں', 'حفظ الثوابت':'ثوابت محفوظ کریں', 'حُفظت الإعدادات ✓':'ترتیبات محفوظ ✓', 'هذه الصفحة للإدارة فقط.':'یہ صفحہ صرف انتظامیہ کے لیے ہے۔', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'اجازتیں ڈیٹابیس کی سطح پر نافذ ہیں، انٹرفیس پر نہیں — جو یہاں چھپا ہے وہاں بھی مسترد ہے۔', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'دورے کے وزن «ترتیبات» ٹیب سے طے ہوتے ہیں اور یہاں صرف دکھائے جاتے ہیں۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'«میرا اکاؤنٹ» پینل سے اکاؤنٹ بنائیں ← اکاؤنٹ بنائیں',
   '📦 القطع ونقاط تركيبها':'📦 آئٹمز اور تنصیب پوائنٹس', 'نقاط التركيب':'تنصیب پوائنٹس', 'القطعة':'آئٹم', 'قطعة جديدة':'نیا آئٹم', 'نقاطها':'اس کے پوائنٹس', 'إضافة قطعة':'آئٹم شامل کریں', 'حفظ الكتالوج':'کیٹلاگ محفوظ کریں', 'حُفظ الكتالوج ✓':'کیٹلاگ محفوظ ✓', '📲 رسالة للمحددين':'📲 منتخب کو پیغام', 'تحديد الكل':'سب منتخب کریں', 'حدّد فنيًّا واحدًا على الأقل':'کم از کم ایک ٹیکنیشن چنیں', 'اكتب اسم القطعة أولًا':'پہلے آئٹم کا نام لکھیں', 'أهداف الفنيين الشهرية':'ٹیکنیشنز کے ماہانہ اہداف', 'تارجت المسح':'سروے ہدف', 'تارجت التركيب':'تنصیب ہدف', '✔ اعتمد وحدّد القطع':'✔ منظور کریں اور آئٹمز چنیں', 'اعتمد وحدّد القطع':'منظور کریں اور آئٹمز چنیں', 'تعديل القطع':'آئٹمز میں ترمیم', 'اختر قطعة واحدة على الأقل':'کم از کم ایک آئٹم چنیں', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'ہر آئٹم کے سامنے مقدار لکھیں۔ پوائنٹس ترتیبات کے کیٹلاگ سے آتے ہیں اور منظوری پر ثابت ہو جاتے ہیں۔', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'ہر آئٹم کے تنصیب پوائنٹس — پوائنٹ کے آئٹمز کی منظوری پر جمع ہو کر ٹیکنیشن کو ملتے ہیں۔',
-  'الأدوار والصلاحيات':'کردار اور اجازتیں', 'نقاط الزيارات':'دورہ پوائنٹس', 'نقاط الفك':'ہٹانے کے پوائنٹس', 'القطع والأسعار':'آئٹمز اور قیمتیں', 'ثوابت النظام':'نظام کے ثوابت', 'من يفعل ماذا':'کون کیا کرتا ہے', 'السعر (ريال)':'قیمت (ریال)', 'نقاط تركيبها':'اس کے تنصیب پوائنٹس', 'سعرها':'اس کی قیمت', 'حفظ الأسعار':'قیمتیں محفوظ کریں', 'أيام العمل في الشهر':'ماہانہ کام کے دن', 'ساعات العمل في اليوم':'روزانہ کام کے گھنٹے', 'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت التركيب الشهري':'ماہانہ تنصیب ہدف', 'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'الإعدادات للإدارة فقط':'ترتیبات صرف انتظامیہ کے لیے', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'آئٹمز «آئٹمز اور قیمتیں» صفحے سے شامل/حذف ہوتے ہیں۔', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'یہ منظور شدہ مقررہ قیمتیں ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری ماڈیول میں درج ہوگی۔', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'اکاؤنٹس اور کردار اکاؤنٹ پینل سے بنتے/بدلتے ہیں — واحد داخلہ۔'
+  'الأدوار والصلاحيات':'کردار اور اجازتیں', 'نقاط الزيارات':'دورہ پوائنٹس', 'نقاط الفك':'ہٹانے کے پوائنٹس', 'القطع والأسعار':'آئٹمز اور قیمتیں', 'ثوابت النظام':'نظام کے ثوابت', 'من يفعل ماذا':'کون کیا کرتا ہے', 'السعر (ريال)':'قیمت (ریال)', 'نقاط تركيبها':'اس کے تنصیب پوائنٹس', 'سعرها':'اس کی قیمت', 'حفظ الأسعار':'قیمتیں محفوظ کریں', 'أيام العمل في الشهر':'ماہانہ کام کے دن', 'ساعات العمل في اليوم':'روزانہ کام کے گھنٹے', 'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت التركيب الشهري':'ماہانہ تنصیب ہدف', 'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'الإعدادات للإدارة فقط':'ترتیبات صرف انتظامیہ کے لیے', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'آئٹمز «آئٹمز اور قیمتیں» صفحے سے شامل/حذف ہوتے ہیں۔', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'یہ منظور شدہ مقررہ قیمتیں ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری ماڈیول میں درج ہوگی۔', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'اکاؤنٹس اور کردار اکاؤنٹ پینل سے بنتے/بدلتے ہیں — واحد داخلہ۔',
+  'تحديد الظاهر':'دکھائے گئے منتخب کریں', '✓ أسند المحدد لفني':'✓ منتخب کو ٹیکنیشن کے سپرد کریں', '✓ تم — أسند لفني':'✓ ہو گیا — ٹیکنیشن کو تفویض'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
