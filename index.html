@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.89</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.90</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5508,6 +5508,18 @@ window.NSKCORE={
 #woOv .woP{color:var(--gold,#C9A24B);font-size:11.5px;font-weight:800;white-space:nowrap;margin-inline-end:8px}
 #woOv #woTot{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
 #woOv #woL{max-height:44vh;overflow:auto;overscroll-behavior:contain}
+/* V13.90: نافذتا حركة المخزون وإرجاع العُهدة */
+#mvOv .woC,#drOv .woC{max-width:600px;max-height:88dvh;display:flex;flex-direction:column;overflow:auto}
+#mvOv #mvL,#drOv #drL{max-height:46vh;overflow:auto;overscroll-behavior:contain}
+#mvOv .mvQ,#drOv .drQ input{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.3);border-radius:8px;padding:8px 10px;font:inherit;
+  font-size:16px;text-align:center;color-scheme:dark}
+#drOv .drR{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:9px 10px;
+  border-bottom:1px solid rgba(150,158,172,.14)}
+#drOv .drN{flex:1 1 100%;font-size:13px;font-weight:700}
+#drOv .drQ{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--grey,#9AA1AB)}
+#drOv .drQ input{width:74px}
+#mvOv #mvSum,#drOv #drSum{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
 .dGrid2{border:1px solid #2A3038;border-radius:11px;padding:10px 13px;margin:0 0 12px;
   font-size:13px;color:#9aa2ab;background:#0F1216}
 .dGrid2 b{color:#E8C36A;font-size:15px}
@@ -9011,6 +9023,155 @@ window.tkNew = function(tech, due, ids){
   if(window.NSKSYNC) NSKSYNC.log('طلب مسح '+ord+' لـ'+tech+' — '+n+' نقطة');
   toast('أُنشئ الطلب — '+n+' مهمة ✓');
 };
+/* ═══ V13.90: دفتر حركة المخزون — سطرٌ لكل حركة، والأرصدة تُشتقّ منه لا تُخزَّن ═══
+   العُهدة كانت رقمًا واحدًا للقارئات وحدها يُكتب بإصبعٍ ويُصدَّق، فلا تُعرف حركةُ كابلٍ
+   ولا مصيرُ جهازٍ فُكَّ. الدفتر يجعل كل صنفٍ محسوبًا من التوريد إلى المصير:
+     in    توريد للمخزن            (من شراءٍ أو تسليم)
+     issue صرفٌ لفنيٍّ أو فريق      (خروجٌ من المخزن إلى العُهدة)
+     use   استُهلك في تركيب نقطة    (خروجٌ من العُهدة إلى الميدان)
+     ret   رجع من فكٍّ أو من عُهدة   (دخولٌ للمخزن بحالته)
+     scrap تالفٌ شُطب               (خروجٌ نهائي)
+   الرصيد = مجموعُ الداخل ناقصَ الخارج، فلا رقم يُكتب بإصبعٍ ويناقض تاريخه. */
+window.MV_KINDS = {
+  'in':    { n:'توريد',  i:'📥', c:'#3AD6A0', st:+1, cu:0  },
+  issue:   { n:'صرف',    i:'📤', c:'#4BC9F5', st:-1, cu:+1 },
+  use:     { n:'استهلاك',i:'🔧', c:'#E8C34B', st:0,  cu:-1 },
+  ret:     { n:'إرجاع',  i:'↩️', c:'#C77DFF', st:+1, cu:-1 },
+  scrap:   { n:'شطب',    i:'🗑', c:'#E05252', st:-1, cu:0  }
+};
+window.mvList = function(){
+  try{ return ((window.NSKCORE.get('settings','stockmv')||{}).list||[]).map(function(x){
+    return { id:String(x.id||''), k:String(x.k||'in'), item:String(x.item||''),
+             q:(parseFloat(x.q)||0), who:String(x.who||''), site:String(x.site||''),
+             cond:String(x.cond||''), ref:String(x.ref||''), note:String(x.note||''),
+             d:String(x.d||'').slice(0,10), by:String(x.by||''), ts:String(x.ts||'') };
+  }).filter(function(x){ return x.id && x.item; }); }catch(e){ return []; }
+};
+window.mvSave = function(list, txt){
+  var d={ list:list, n:list.length, at:new Date().toISOString() };
+  try{
+    window.NSKCORE.set('settings','stockmv',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','stockmv',d); NSKSYNC.log(txt||'تحديث دفتر المخزون'); }
+    try{ window.nskSync(); }catch(e){}
+  }catch(e){}
+};
+/* حركةٌ واحدة أو دفعةٌ — تُلحق ولا تُعدَّل، فالدفتر إلحاقيٌّ كسجل الأحداث */
+window.mvAdd = function(rows, txt){
+  rows=(rows||[]).filter(function(r){ return r && r.item && (parseFloat(r.q)||0)>0; });
+  if(!rows.length) return 0;
+  var L=window.mvList(), now=new Date().toISOString(), by=window.tkMe();
+  rows.forEach(function(r, ix){
+    L.push({ id:'mv'+Date.now().toString(36)+String(ix), k:String(r.k||'in'),
+             item:String(r.item), q:parseFloat(r.q)||0, who:String(r.who||''),
+             site:String(r.site||''), cond:String(r.cond||''), ref:String(r.ref||''),
+             note:String(r.note||''), d:String(r.d||now.slice(0,10)).slice(0,10),
+             by:by, ts:now });
+  });
+  window.mvSave(L, txt||('حركة مخزون — '+rows.length+' سطرًا'));
+  return rows.length;
+};
+/* الأرصدة المشتقّة: المخزن وعُهدة كلِّ منفِّذ والتالف والمركّب */
+window.mvBal = function(){
+  var IT={}; try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+  var store={}, cust={}, scrap={}, used={}, tot={in:0,issue:0,use:0,ret:0,scrap:0};
+  window.mvList().forEach(function(m){
+    var K=window.MV_KINDS[m.k]; if(!K) return;
+    tot[m.k]=(tot[m.k]||0)+m.q;
+    store[m.item]=(store[m.item]||0) + K.st*m.q;
+    if(K.cu && m.who){
+      cust[m.who]=cust[m.who]||{};
+      cust[m.who][m.item]=(cust[m.who][m.item]||0) + K.cu*m.q;
+    }
+    if(m.k==='scrap' || (m.k==='ret' && m.cond==='تالف')) scrap[m.item]=(scrap[m.item]||0)+m.q;
+    if(m.k==='use') used[m.item]=(used[m.item]||0)+m.q;
+  });
+  /* الإرجاع التالف يدخل المخزن ثم يُعزل: لا يُحسب متاحًا */
+  Object.keys(scrap).forEach(function(id){
+    var bad=0;
+    window.mvList().forEach(function(m){ if(m.k==='ret' && m.cond==='تالف' && m.item===id) bad+=m.q; });
+    store[id]=(store[id]||0)-bad;
+  });
+  return { IT:IT, store:store, cust:cust, scrap:scrap, used:used, tot:tot };
+};
+/* رصيد صنفٍ في المخزن — يمنع صرفَ ما ليس موجودًا */
+window.mvStore = function(itemId){
+  var B=window.mvBal();
+  return Math.round((B.store[itemId]||0)*100)/100;
+};
+/* نافذة حركة المخزون: توريدٌ للمخزن أو صرفٌ لمنفِّذٍ أو شطبُ تالف */
+window.mvAsk = function(kind){
+  var K=window.MV_KINDS[kind]; if(!K) return;
+  var IT=[]; try{ IT=window.itList(); }catch(e){}
+  if(!IT.length){ toast('لا أصناف في الكتالوج',1); return; }
+  var B=window.mvBal();
+  var who=[];
+  try{ who=(((window.NSKCORE.get('settings','teams')||{}).list)||[]).map(String).filter(Boolean); }catch(e){}
+  try{ (window.tkTechs()||[]).forEach(function(n){ if(who.indexOf(n)<0) who.push(n); }); }catch(e){}
+  var needWho=(kind==='issue');
+  if(needWho && !who.length){ toast('سجّل فنيًّا أو فريقًا أولًا',1); return; }
+  var X=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var old=document.getElementById('mvOv'); if(old) old.remove();
+  var ov=document.createElement('div'); ov.id='mvOv'; ov.className='iosOv';
+  ov.innerHTML='<div class="iosC woC">'
+    +'<button type="button" class="nskX" id="mvX" aria-label="إغلاق">×</button>'
+    +'<h3>'+K.i+' <span>'+K.n+' مخزون</span></h3>'
+    +'<p class="dTs"><span>'+(kind==='in'?'ما دخل المخزن من شراءٍ أو تسليم.'
+        :(kind==='issue'?'ما خرج من المخزن إلى عُهدة منفِّذ. الرصيد المتاح أمام كل صنف.'
+        :'ما شُطب نهائيًّا لتلفٍ أو فقد.'))+'</span></p>'
+    +'<div class="woF">'
+    +(needWho?('<label class="woL"><span>المنفِّذ</span><select id="mvWho">'
+        +who.map(function(n){ return '<option>'+X(n)+'</option>'; }).join('')+'</select></label>'):'')
+    +'<label class="woL"><span>التاريخ</span><input type="date" id="mvDate" value="'
+      +new Date().toISOString().slice(0,10)+'"></label></div>'
+    +'<div id="mvL">'+IT.map(function(it){
+        var av=Math.round((B.store[it.id]||0)*100)/100;
+        return '<label class="tkPick"><span style="flex:1"><code class="nx">'+X(it.n)+'</code></span>'
+          +(kind!=='in'?('<span class="woP"><span>متاح</span> '+av+'</span>'):'')
+          +'<input type="number" inputmode="numeric" class="mvQ" data-id="'+X(it.id)
+          +'" data-av="'+av+'" min="0" placeholder="0" style="width:80px"></label>';
+      }).join('')+'</div>'
+    +'<label class="woL"><span>ملاحظة</span><input type="text" id="mvNote" placeholder="اختياري — رقم الفاتورة أو السبب"></label>'
+    +'<p class="dTs" id="mvSum"></p>'
+    +'<div class="dRow"><button type="button" class="dBtn p" id="mvGo">'+K.i+' <span>سجّل الحركة</span></button></div></div>';
+  document.body.appendChild(ov); ov.style.display='flex';
+  function sum(){
+    var n=0, over=0;
+    Array.prototype.forEach.call(ov.querySelectorAll('.mvQ'), function(e){
+      var q=parseFloat(e.value)||0; if(q>0) n++;
+      if(kind!=='in' && q>(parseFloat(e.dataset.av)||0)) over++;
+    });
+    var el=ov.querySelector('#mvSum');
+    el.innerHTML='<span>أصناف:</span> <b>'+n+'</b>'
+      +(over?(' · <b style="color:#E05252"><span>يتجاوز المتاح في</span> '+over+' <span>صنفًا</span></b>'):'');
+  }
+  Array.prototype.forEach.call(ov.querySelectorAll('.mvQ'), function(e){ e.oninput=sum; });
+  sum();
+  ov.querySelector('#mvX').onclick=function(){ ov.remove(); };
+  ov.addEventListener('mousedown', function(e){ if(e.target===ov) ov.remove(); });
+  ov.querySelector('#mvGo').onclick=function(){
+    var rows=[], over=[];
+    var w=needWho?String((ov.querySelector('#mvWho')||{}).value||''):'';
+    var d=String((ov.querySelector('#mvDate')||{}).value||'');
+    var nt=String((ov.querySelector('#mvNote')||{}).value||'');
+    Array.prototype.forEach.call(ov.querySelectorAll('.mvQ'), function(e){
+      var q=parseFloat(e.value)||0; if(q<=0) return;
+      if(kind!=='in' && q>(parseFloat(e.dataset.av)||0)) over.push(e.getAttribute('data-id'));
+      rows.push({k:kind, item:e.getAttribute('data-id'), q:q, who:w, d:d, note:nt});
+    });
+    if(!rows.length){ toast('اكتب كمية صنفٍ واحدٍ على الأقل',1); return; }
+    var go=function(){
+      var n=window.mvAdd(rows, K.n+' مخزون — '+rows.length+' سطرًا'+(w?(' · '+w):''));
+      ov.remove(); toast('سُجّلت الحركة — '+n+' سطرًا ✓');
+      try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+    };
+    if(!over.length) return go();
+    window.nskAsk({ t:'كميةٌ تتجاوز المتاح',
+      m:over.length+' صنفًا كميتُه أكبر من رصيد المخزن.'+String.fromCharCode(10)
+        +'التسجيل سيُظهر رصيدًا سالبًا حتى يُسجَّل توريدُه.',
+      ok:'سجّل رغم ذلك', no:'أصحّح', danger:true }).then(function(r){ if(r) go(); });
+  };
+  try{ if(window.NSKI18N) NSKI18N.apply(ov); }catch(e){}
+};
 /* ═══ V13.89: طلبات العمل — التهيئة والتجميع والتركيب فوق محرك المهام نفسه ═══
    المهمة القائمة كانت زيارةً بلا نوع؛ صار لها kind فتستوعب أربع دورات بحالاتها الخمس
    نفسها (مطلوب · قيد التنفيذ · منفّذ · معتمد · مُعاد) ومزامنتها وسجلّها دون بنيةٍ جديدة.
@@ -9095,6 +9256,16 @@ window.woDone = function(id){
   var t=(window.NSKTASK||{})[id]; if(!t) return;
   if(t.st==='منفّذ' || t.st==='معتمد'){ toast('الطلب منفَّذ بالفعل'); return; }
   t.st='منفّذ'; t.doneAt=new Date().toISOString(); t.doneBy=window.tkMe();
+  /* V13.90: تركيبٌ نُفِّذ = استهلاكٌ من عُهدة منفِّذه — وإلا بقيت العُهدة تكذب */
+  if(window.woKind(t)==='install' && t.items && !t.mv){
+    try{
+      var rows=Object.keys(t.items).map(function(iid){
+        return { k:'use', item:iid, q:parseFloat(t.items[iid])||0,
+                 who:t.tech||'', site:t.site||'', ref:t.ord||t.id };
+      });
+      if(window.mvAdd(rows,'استهلاك تركيب — '+(t.site||t.ord))) t.mv=1;
+    }catch(e){}
+  }
   window.tkSave(t,'تنفيذ '+(window.WO_KINDS[window.woKind(t)]||{}).n+' — '+(t.site||t.ord)+' ('+t.w+' نقطة)');
   toast('سُجّل التنفيذ — '+t.w+' نقطة ✓');
   try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
@@ -9398,7 +9569,7 @@ window._disHtml = function(id){
   var d=((inss[id]||{}).dis)||null;
   var _cw=false; try{ var _u=window.NSK_USER||{}; _cw=(_u.role==='supervisor'||_u.role==='engineer'||_u.role==='admin'); }catch(e){}
   /* الفك لا يُتاح إلا لنقطة وُسمت «تم التركيب» — وما جُدول من قبل يبقى ظاهرًا */
-  var _installed = ((recs[id]||{}).fstat==='blocked') || (((inss[id]||{}).status)==='مُركّب');
+  var _installed = window.isInstalled(id);
   if(!_installed && !d) return '';
   var mgrRole=false; try{ var u=window.NSK_USER||{}; mgrRole=(u.role==='engineer'||u.role==='admin'); }catch(e){}
   if(!d){
@@ -9413,8 +9584,13 @@ window._disHtml = function(id){
       +(mgrRole?'<a href="#" class="go" onclick="cancelDis(\''+id+'\');return false">إلغاء الجدولة</a>':'')
       +'</div>':'')+'</div>';
   }
+  var _ret=false;
+  try{ _ret=window.mvList().some(function(m){ return m.k==='ret' && m.site===id; }); }catch(e){}
   return '<div class="pdis"><span class="pk">الفك:</span> <b style="color:#8b5cf6">تم الفك</b>'
-    +' ('+esc(d.cond||'—')+') — '+esc(d.doneBy||'')+(d.doneAt?' · '+esc(String(d.doneAt).slice(0,10)):'')+'</div>';
+    +' ('+esc(d.cond||'—')+') — '+esc(d.doneBy||'')+(d.doneAt?' · '+esc(String(d.doneAt).slice(0,10)):'')
+    +(_ret ? '<div class="pst"><span class="go" style="border-color:#3AD6A0;color:#3AD6A0">✔ أُرجعت العُهدة</span></div>'
+           : (_cw?'<div class="pst"><a href="#" class="go" style="border-color:#C77DFF;color:#C77DFF" onclick="disReturnAsk(\''+id+'\');return false">↩️ إرجاع العُهدة</a></div>':''))
+    +'</div>';
 };
 function _disSave(id, rec, msg){
   C.set('inss',id,rec);
@@ -9423,9 +9599,28 @@ function _disSave(id, rec, msg){
   try{ if(window.NSKSYNC) NSKSYNC.log(msg); }catch(e){}
   toast('تم ✓'); try{ drawMap(); }catch(e){} try{ window.nskSync(); }catch(e){}
 }
+/* V13.90: «مُركّب» كان حقلين مستقلين — recs.fstat وinss.status — يفترقان بصمت
+   فتظهر النقطة مُركّبةً في شاشةٍ وغيرَ مُركّبةٍ في أخرى، ويختلّ التارجت والتكلفة معًا.
+   هذه الدالة مرجعٌ واحد يقرأ الحقلين ويُصلح المتخلّف منهما عند أول قراءة. */
+window.isInstalled = function(id){
+  var rc=null, iv=null;
+  try{ rc=(window.NSKCORE.all('recs')||{})[id]||null; }catch(e){}
+  try{ iv=(window.NSKCORE.all('inss')||{})[id]||null; }catch(e){}
+  var a=!!(rc && rc.fstat==='blocked'), b=!!(iv && iv.status==='مُركّب');
+  if(a===b) return a;
+  /* أحدهما متخلّف: الأحدث زمنًا هو الحقيقة، وتُزامَن الحالة كي لا تتكرر الفرقة */
+  try{
+    if(b && rc && rc.fstat!=='blocked'){ rc.fstat='blocked';
+      window.NSKCORE.set('recs',id,rc);
+      if(window.NSKSYNC){ NSKSYNC.push('recs',id,rc); NSKSYNC.log('مواءمة حالة «مُركّب» — '+id); } }
+    else if(a && iv && iv.status!=='مُركّب'){ iv.status='مُركّب';
+      window.NSKCORE.set('inss',id,iv);
+      if(window.NSKSYNC){ NSKSYNC.push('inss',id,iv); NSKSYNC.log('مواءمة حالة «مُركّب» — '+id); } }
+  }catch(e){}
+  return true;
+};
 window.schedDis = function(id){
-  var _installed = ((recs[id]||{}).fstat==='blocked') || (((inss[id]||{}).status)==='مُركّب');
-  if(!_installed){ toast('الفك يتاح بعد وسم النقطة «تم التركيب»',1); return; }
+  if(!window.isInstalled(id)){ toast('الفك يتاح بعد وسم النقطة «تم التركيب»',1); return; }
   /* نافذة اختيار الفريق تحمل حقل تاريخ وتُرجعه — كان يُهمل ويُسأل عنه بنافذة متصفح ثانية */
   pickTeam(function(t, dt){
     var d=String(dt||'').trim();
@@ -9443,6 +9638,67 @@ window.confirmDis = function(id, cond){
   rec.dis=Object.assign({}, rec.dis||{}, { st:'تم', cond:cond, pts:_p,
     doneBy:(me||''), doneAt:new Date().toISOString() });
   _disSave(id, rec, 'تم الفك ('+cond+') — '+id+' ('+_p+' نقطة)');
+};
+/* V13.90: نافذة إرجاع العُهدة — كل صنفٍ فُكَّ يعود بحالته، فيدخل المخزن سليمًا
+   أو يُعزل تالفًا. كانت الحالة زرًّا واحدًا للنقطة كلها فضاع مصير كل جهاز. */
+window.disReturnAsk = function(id){
+  var iv=null; try{ iv=(window.NSKCORE.all('inss')||{})[id]||null; }catch(e){}
+  var bom=(iv && iv.bom && iv.bom.items) ? iv.bom.items : null;
+  if(!bom){
+    window.nskAsk({ t:'لا قطعَ معتمدةً لهذه النقطة',
+      m:'الإرجاع يُبنى على القطع التي اعتمدها المهندس عند التركيب.'+String.fromCharCode(10)
+        +'اعتمدها أولًا ثم أعد الفك.', ok:'فهمت', no:'إغلاق' });
+    return;
+  }
+  var IT={}; try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+  var X=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var old=document.getElementById('drOv'); if(old) old.remove();
+  var ov=document.createElement('div'); ov.id='drOv'; ov.className='iosOv';
+  ov.innerHTML='<div class="iosC woC">'
+    +'<button type="button" class="nskX" id="drX" aria-label="إغلاق">×</button>'
+    +'<h3>↩️ <span>إرجاع عُهدة الفك</span></h3>'
+    +'<p class="dTs"><span>كل صنفٍ فُكَّ يعود بحالته: السليم يدخل المخزن متاحًا، والتالف يُعزل في سجل الشطب.</span></p>'
+    +'<div id="drL">'+Object.keys(bom).map(function(iid){
+        var it=IT[iid]||{n:iid}, q=parseFloat(bom[iid])||0;
+        return '<div class="drR"><div class="drN"><code class="nx">'+X(it.n)+'</code>'
+          +' <span class="woP">'+q+'</span></div>'
+          +'<label class="drQ"><span>سليم</span><input type="number" inputmode="numeric" class="drOk" '
+          +'data-id="'+X(iid)+'" min="0" max="'+q+'" value="'+q+'"></label>'
+          +'<label class="drQ"><span>تالف</span><input type="number" inputmode="numeric" class="drBad" '
+          +'data-id="'+X(iid)+'" min="0" max="'+q+'" value="0"></label></div>';
+      }).join('')+'</div>'
+    +'<label class="woL"><span>ملاحظة</span><input type="text" id="drNote" placeholder="اختياري — سبب التلف مثلًا"></label>'
+    +'<p class="dTs" id="drSum"></p>'
+    +'<div class="dRow"><button type="button" class="dBtn p" id="drGo">↩️ <span>سجّل الإرجاع</span></button></div></div>';
+  document.body.appendChild(ov); ov.style.display='flex';
+  function sum(){
+    var ok=0, bad=0;
+    Array.prototype.forEach.call(ov.querySelectorAll('.drOk'), function(e){ ok+=parseFloat(e.value)||0; });
+    Array.prototype.forEach.call(ov.querySelectorAll('.drBad'), function(e){ bad+=parseFloat(e.value)||0; });
+    ov.querySelector('#drSum').innerHTML='<span>سليم:</span> <b>'+ok+'</b> · <span>تالف:</span> <b style="color:#E05252">'+bad+'</b>';
+  }
+  Array.prototype.forEach.call(ov.querySelectorAll('.drOk,.drBad'), function(e){ e.oninput=sum; });
+  sum();
+  ov.querySelector('#drX').onclick=function(){ ov.remove(); };
+  ov.addEventListener('mousedown', function(e){ if(e.target===ov) ov.remove(); });
+  ov.querySelector('#drGo').onclick=function(){
+    var rows=[], nt=String((ov.querySelector('#drNote')||{}).value||'');
+    var team=String(((iv.dis||{}).team)||'');
+    Array.prototype.forEach.call(ov.querySelectorAll('.drOk'), function(e){
+      var q=parseFloat(e.value)||0;
+      if(q>0) rows.push({k:'ret', item:e.getAttribute('data-id'), q:q, who:team, site:id, cond:'سليم', ref:'DIS-'+id, note:nt});
+    });
+    Array.prototype.forEach.call(ov.querySelectorAll('.drBad'), function(e){
+      var q=parseFloat(e.value)||0;
+      if(q>0) rows.push({k:'ret', item:e.getAttribute('data-id'), q:q, who:team, site:id, cond:'تالف', ref:'DIS-'+id, note:nt});
+    });
+    if(!rows.length){ toast('اكتب كميةً واحدةً على الأقل',1); return; }
+    var n=window.mvAdd(rows, 'إرجاع عُهدة فك — '+id+' ('+rows.length+' سطرًا)');
+    ov.remove();
+    toast('سُجّل الإرجاع — '+n+' سطرًا ✓');
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+  };
+  try{ if(window.NSKI18N) NSKI18N.apply(ov); }catch(e){}
 };
 window.cancelDis = function(id){
   var rec=inss[id]; if(!rec||!rec.dis) return;
@@ -10022,6 +10278,7 @@ var DTABS=[
   ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
   ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
   ['wo','الورشة',          ['wos','wday'],                              'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية'],
+  ['inv','المخزون',        ['invb','invmv'],                            'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة'],
   ['buy','المشتريات',      ['buys'],                                    'دفتر مصروفات السوق المحلي بفواتيره ومورّديه'],
   ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
@@ -10034,7 +10291,7 @@ function tabOf(sec){
 function tabsFor(role){
   if(role==='viewer')     return ['watch','buy'];   /* V13.84: الوزارة ترى المصروف قراءةً بلا أزرار */
   if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
-  return ['watch','req','tech','wo','buy','plan','ops','adm'];
+  return ['watch','req','tech','wo','inv','buy','plan','ops','adm'];
 }
 function curTab(){
   var D=window.NSKDASH||{}, allow=tabsFor((user&&user.role)||'');
@@ -11152,6 +11409,102 @@ function render(){
     h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
     h+='</section>';
   })();
+  /* V13.90: المخزون والعُهدة — كل رقمٍ مشتقٌّ من دفتر الحركة لا مكتوبٌ بإصبع */
+  (function(){
+    var canI=!!(user && (user.role==='admin'||user.role==='engineer'));
+    var B=window.mvBal(), MV=window.mvList();
+    var ids=Object.keys(B.IT);
+    var nStore=0, nCust=0, nScrap=0, nUsed=0, neg=0;
+    ids.forEach(function(id){
+      var v=B.store[id]||0; nStore+=v; if(v<0) neg++;
+      nScrap+=B.scrap[id]||0; nUsed+=B.used[id]||0;
+    });
+    Object.keys(B.cust).forEach(function(w){
+      Object.keys(B.cust[w]).forEach(function(id){ nCust+=B.cust[w][id]||0; });
+    });
+    h+='<section class="dSec" data-sec="invb">';
+    h+='<h2>المخزون والعُهدة</h2>';
+    h+='<div class="dGrid">';
+    h+=card(AR(Math.round(nStore)),'في المخزن', neg?'#E05252':'#3AD6A0');
+    h+=card(AR(Math.round(nCust)),'في عُهدة المنفِّذين','#4BC9F5');
+    h+=card(AR(Math.round(nUsed)),'رُكّب في الميدان','#E8C34B');
+    h+=card(AR(Math.round(nScrap)),'تالفٌ معزول', nScrap?'#E05252':'#9AA1AB');
+    h+='</div>';
+    if(neg) h+='<p class="dTs" style="color:#E05252"><span>'+AR(neg)
+      +' صنفًا رصيدُه سالب — صُرف أكثر مما ورَد. سجّل توريده ليستقيم الدفتر.</span></p>';
+    if(canI){
+      h+='<div class="dRow">'
+        +'<button type="button" class="dBtn p" id="mvIn">📥 <span>توريد</span></button>'
+        +'<button type="button" class="dBtn p" id="mvIssue">📤 <span>صرف لمنفِّذ</span></button>'
+        +'<button type="button" class="dBtn" id="mvScrap">🗑 <span>شطب تالف</span></button>'
+        +'<button type="button" class="dBtn" id="mvXls">⬇ <span>إكسل — المخزون</span></button></div>';
+    }
+    if(!MV.length) h+='<div class="dEmpty">لا حركة مخزونٍ بعد — ابدأ بتسجيل التوريد.</div>';
+    else {
+      h+='<div class="dT3">الأرصدة حسب الصنف</div>';
+      h+='<table class="dT"><thead><tr><th>الصنف</th><th>المخزن</th><th>العُهدة</th>'
+        +'<th>رُكّب</th><th>تالف</th><th>الإجمالي</th></tr></thead><tbody>';
+      ids.map(function(id){
+        var cu=0; Object.keys(B.cust).forEach(function(w){ cu+=(B.cust[w][id]||0); });
+        return { id:id, n:(B.IT[id]||{}).n||id, st:B.store[id]||0, cu:cu,
+                 us:B.used[id]||0, sc:B.scrap[id]||0 };
+      }).filter(function(r){ return r.st||r.cu||r.us||r.sc; })
+        .sort(function(a,b){ return (b.st+b.cu+b.us+b.sc)-(a.st+a.cu+a.us+a.sc); })
+        .forEach(function(r){
+          h+='<tr><td><code class="nx">'+esc2(r.n)+'</code></td>'
+            +'<td style="color:'+(r.st<0?'#E05252':'#3AD6A0')+';font-weight:800">'+AR(Math.round(r.st*10)/10)+'</td>'
+            +'<td>'+AR(Math.round(r.cu*10)/10)+'</td><td>'+AR(Math.round(r.us*10)/10)+'</td>'
+            +'<td style="color:'+(r.sc?'#E05252':'#9AA1AB')+'">'+AR(Math.round(r.sc*10)/10)+'</td>'
+            +'<td><b>'+AR(Math.round((r.st+r.cu+r.us+r.sc)*10)/10)+'</b></td></tr>';
+        });
+      h+='</tbody></table>';
+      var CW=Object.keys(B.cust).filter(function(w){
+        var t=0; Object.keys(B.cust[w]).forEach(function(i){ t+=B.cust[w][i]||0; }); return t>0; });
+      if(CW.length){
+        h+='<div class="dT3">العُهدة حسب المنفِّذ</div>';
+        h+='<table class="dT"><thead><tr><th>المنفِّذ</th><th>أصناف</th><th>قطع</th><th>التفصيل</th></tr></thead><tbody>';
+        CW.forEach(function(w){
+          var d=B.cust[w], k=Object.keys(d).filter(function(i){ return d[i]>0; });
+          var q=0; k.forEach(function(i){ q+=d[i]; });
+          h+='<tr><td><code class="nx">'+esc2(w)+'</code></td><td>'+AR(k.length)+'</td>'
+            +'<td><b>'+AR(Math.round(q*10)/10)+'</b></td>'
+            +'<td class="pMut">'+esc2(k.slice(0,6).map(function(i){
+                return ((B.IT[i]||{}).n||i)+' ×'+Math.round(d[i]*10)/10; }).join(' · '))
+            +(k.length>6?' …':'')+'</td></tr>';
+        });
+        h+='</tbody></table>';
+      }
+      h+='<p class="dTs"><span>المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم. والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.</span></p>';
+    }
+    h+='</section>';
+
+    h+='<section class="dSec" data-sec="invmv">';
+    h+='<h2>دفتر حركة المخزون</h2>';
+    if(!MV.length) h+='<div class="dEmpty">لا حركة بعد.</div>';
+    else {
+      h+='<div class="evCtl"><input type="search" id="mvQ" placeholder="ابحث بالصنف أو المنفِّذ أو النقطة…"></div>';
+      h+='<table class="dT" id="mvTbl"><thead><tr><th>التاريخ</th><th>الحركة</th><th>الصنف</th>'
+        +'<th>الكمية</th><th>المنفِّذ</th><th>النقطة</th><th>الحالة</th><th>سجّلها</th></tr></thead><tbody>';
+      MV.slice().sort(function(a,b){ return String(b.ts||'').localeCompare(String(a.ts||'')); })
+        .slice(0,200).forEach(function(m){
+          var K=window.MV_KINDS[m.k]||{n:m.k,i:'',c:'#9AA1AB'};
+          var key=((B.IT[m.item]||{}).n||m.item)+' '+m.who+' '+m.site+' '+m.note;
+          h+='<tr class="mvR" data-k="'+escA(key.toLowerCase())+'"><td>'+esc2(m.d||'—')+'</td>'
+            +'<td style="color:'+K.c+';font-weight:800">'+K.i+' '+esc2(K.n)+'</td>'
+            +'<td><code class="nx">'+esc2((B.IT[m.item]||{}).n||m.item)+'</code></td>'
+            +'<td><b>'+AR(m.q)+'</b></td>'
+            +'<td><code class="nx">'+esc2(m.who||'—')+'</code></td>'
+            +'<td><code class="nx">'+esc2(m.site||'—')+'</code></td>'
+            +'<td'+(m.cond==='تالف'?' style="color:#E05252"':'')+'>'+esc2(m.cond||'—')+'</td>'
+            +'<td><code class="nx">'+esc2(m.by||'—')+'</code></td></tr>';
+        });
+      h+='</tbody></table>';
+      h+='<p class="dTs" id="mvNone" style="display:none"><span>لا نتائج مطابقة للبحث.</span></p>';
+      h+='<p class="dTs"><span>الدفتر إلحاقيٌّ لا يُعدَّل — كل تصحيحٍ حركةٌ جديدةٌ تُوازنه، فيبقى التاريخ كاملًا.</span></p>';
+    }
+    h+='</section>';
+  })();
+
   /* V13.89: الورشة — طلبات التهيئة والتجميع والتركيب ونقاطها اليومية */
   (function(){
     var canW=!!(user && (user.role==='admin'||user.role==='engineer'));
@@ -11876,6 +12229,50 @@ function render(){
     b.onclick=function(){ window.sendTeam(b.getAttribute('data-t')); }; });
   var _ta=$i('tmAll'); if(_ta) _ta.onclick=function(){ window.sendAllTeams(); };
 
+  /* V13.90: أزرار المخزون */
+  var _mi=$i('mvIn');    if(_mi) _mi.onclick=function(){ window.mvAsk('in'); };
+  var _ms=$i('mvIssue'); if(_ms) _ms.onclick=function(){ window.mvAsk('issue'); };
+  var _mc=$i('mvScrap'); if(_mc) _mc.onclick=function(){ window.mvAsk('scrap'); };
+  var _mq=$i('mvQ');
+  if(_mq) _mq.oninput=function(){
+    var q=String(_mq.value||'').trim().toLowerCase(), seen=0;
+    Array.prototype.forEach.call(document.querySelectorAll('#nskDash .mvR'),function(r){
+      var on=!q || String(r.getAttribute('data-k')||'').indexOf(q)>=0;
+      r.style.display=on?'':'none'; if(on) seen++;
+    });
+    var e=$i('mvNone'); if(e) e.style.display=seen?'none':'';
+  };
+  var _mx=$i('mvXls');
+  if(_mx) _mx.onclick=function(){
+    try{
+      var B=window.mvBal(), MV=window.mvList();
+      if(!MV.length){ toast('لا حركة مخزونٍ لتصديرها',1); return; }
+      var wb=XLSX.utils.book_new();
+      var r1=[['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي']];
+      Object.keys(B.IT).forEach(function(id){
+        var cu=0; Object.keys(B.cust).forEach(function(w){ cu+=(B.cust[w][id]||0); });
+        var st=B.store[id]||0, us=B.used[id]||0, sc=B.scrap[id]||0;
+        if(st||cu||us||sc) r1.push([(B.IT[id]||{}).n||id, st, cu, us, sc, st+cu+us+sc]);
+      });
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(r1),'الأرصدة');
+      var r2=[['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','الحالة','المرجع','ملاحظة','سجّلها']];
+      MV.slice().sort(function(a,b){ return String(a.ts||'').localeCompare(String(b.ts||'')); })
+        .forEach(function(m){
+          r2.push([m.d, (window.MV_KINDS[m.k]||{}).n||m.k, (B.IT[m.item]||{}).n||m.item,
+                   m.q, m.who, m.site, m.cond, m.ref, m.note, m.by]);
+        });
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(r2),'دفتر الحركة');
+      var r3=[['المنفِّذ','الصنف','في عُهدته']];
+      Object.keys(B.cust).forEach(function(w){
+        Object.keys(B.cust[w]).forEach(function(id){
+          if(B.cust[w][id]>0) r3.push([w, (B.IT[id]||{}).n||id, B.cust[w][id]]);
+        });
+      });
+      if(r3.length>1) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(r3),'العُهدة');
+      XLSX.writeFile(wb,'نُسُك-المخزون-والعُهدة.xlsx');
+      try{ if(window.NSKSYNC) NSKSYNC.log('تصدير المخزون — '+MV.length+' حركة'); }catch(e){}
+    }catch(e){ toast('تعذّر التصدير',1); }
+  };
   /* V13.89: أزرار الورشة — في كود التهيئة لا داخل دالة الرسم */
   var _wp=$i('woAddP'); if(_wp) _wp.onclick=function(){ window.woAsk('prep'); };
   var _wa=$i('woAddA'); if(_wa) _wa.onclick=function(){ window.woAsk('asm'); };
@@ -13872,7 +14269,37 @@ window.NSKI18N = (function(){
   'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings',
   'كاميرا AI موتورايز':'Motorised AI camera',
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
-  'الورشة':'Workshop', 'الورشة — طلبات التهيئة والتجميع والتركيب':'Workshop — configuration, assembly and installation orders',
+  'الورشة':'Workshop',
+  'المخزون':'Inventory', 'المخزون والعُهدة':'Inventory and custody',
+  'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة':'Store, custody and damaged balances — derived from the movement ledger',
+  'في المخزن':'In store', 'في عُهدة المنفِّذين':'In performers’ custody', 'رُكّب في الميدان':'Installed in the field',
+  'تالفٌ معزول':'Damaged, isolated', 'دفتر حركة المخزون':'Inventory movement ledger',
+  'الأرصدة حسب الصنف':'Balances by item', 'العُهدة حسب المنفِّذ':'Custody by performer',
+  'المخزن':'Store', 'العُهدة':'Custody', 'رُكّب':'Installed', 'تالف':'Damaged', 'قطع':'pieces',
+  'التفصيل':'Detail', 'الحركة':'Movement', 'الكمية':'Quantity', 'الحالة':'Condition', 'سجّلها':'Recorded by',
+  'توريد':'Receipt', 'صرف':'Issue', 'استهلاك':'Consumption', 'إرجاع':'Return', 'شطب':'Write-off',
+  '📥 توريد':'📥 Receipt', '📤 صرف لمنفِّذ':'📤 Issue to a performer', '🗑 شطب تالف':'🗑 Write off damaged',
+  '⬇ إكسل — المخزون':'⬇ Excel — inventory', 'سجّل الحركة':'Record the movement',
+  'توريد مخزون':'Inventory receipt', 'صرف مخزون':'Inventory issue', 'شطب مخزون':'Inventory write-off',
+  'ما دخل المخزن من شراءٍ أو تسليم.':'What entered the store from a purchase or a delivery.',
+  'ما خرج من المخزن إلى عُهدة منفِّذ. الرصيد المتاح أمام كل صنف.':'What left the store into a performer’s custody. The available balance is shown next to each item.',
+  'ما شُطب نهائيًّا لتلفٍ أو فقد.':'What was written off for damage or loss.',
+  'متاح':'available', 'أصناف:':'Items:', 'يتجاوز المتاح في':'exceeds what is available in',
+  'كميةٌ تتجاوز المتاح':'Quantity exceeds what is available', 'سجّل رغم ذلك':'Record anyway', 'أصحّح':'Let me fix it',
+  'لا حركة مخزونٍ بعد — ابدأ بتسجيل التوريد.':'No inventory movement yet — start by recording a receipt.',
+  'لا حركة بعد.':'No movement yet.', 'لا حركة مخزونٍ لتصديرها':'No inventory movement to export',
+  'ابحث بالصنف أو المنفِّذ أو النقطة…':'Search by item, performer or point…',
+  'المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم. والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.':'Store = receipts minus issues and write-offs plus intact returns. Custody = what was issued minus what was installed and returned.',
+  'الدفتر إلحاقيٌّ لا يُعدَّل — كل تصحيحٍ حركةٌ جديدةٌ تُوازنه، فيبقى التاريخ كاملًا.':'The ledger is append-only — every correction is a new balancing movement, so the history stays whole.',
+  'إرجاع عُهدة الفك':'Dismantle custody return', 'سجّل الإرجاع':'Record the return', '↩️ إرجاع العُهدة':'↩️ Return custody',
+  '✔ أُرجعت العُهدة':'✔ Custody returned', 'سليم':'Intact',
+  'كل صنفٍ فُكَّ يعود بحالته: السليم يدخل المخزن متاحًا، والتالف يُعزل في سجل الشطب.':'Every dismantled item returns with its condition: intact goes back into available stock, damaged is isolated in the write-off log.',
+  'لا قطعَ معتمدةً لهذه النقطة':'No approved items for this point',
+  'الإرجاع يُبنى على القطع التي اعتمدها المهندس عند التركيب.':'The return is built on the items the engineer approved at installation.',
+  'اعتمدها أولًا ثم أعد الفك.':'Approve them first, then redo the dismantle.',
+  'اكتب كميةً واحدةً على الأقل':'Enter at least one quantity',
+  'اكتب كمية صنفٍ واحدٍ على الأقل':'Enter a quantity for at least one item',
+  'صنفًا رصيدُه سالب — صُرف أكثر مما ورَد. سجّل توريده ليستقيم الدفتر.':'items have a negative balance — more was issued than received. Record their receipt to balance the ledger.', 'الورشة — طلبات التهيئة والتجميع والتركيب':'Workshop — configuration, assembly and installation orders',
   'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية':'Configuration, assembly and installation — their orders and daily points',
   'تهيئة':'Configuration', 'تجميع':'Assembly', 'تركيب':'Installation', 'زيارة':'Visit', 'فك':'Dismantle',
   'طلب':'Order', 'الطلب':'Order', 'المنفِّذ':'Performed by', 'المحتوى':'Contents', 'نقاط':'Points',
@@ -14227,7 +14654,37 @@ window.NSKI18N = (function(){
   'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات',
   'كاميرا AI موتورايز':'موٹرائزڈ AI کیمرہ',
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
-  'الورشة':'ورکشاپ', 'الورشة — طلبات التهيئة والتجميع والتركيب':'ورکشاپ — تیاری، اسمبلی اور تنصیب کے آرڈر',
+  'الورشة':'ورکشاپ',
+  'المخزون':'انوینٹری', 'المخزون والعُهدة':'انوینٹری اور امانت',
+  'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة':'اسٹور، امانت اور خراب کے بیلنس — حرکت رجسٹر سے اخذ شدہ',
+  'في المخزن':'اسٹور میں', 'في عُهدة المنفِّذين':'انجام دہندگان کی امانت میں', 'رُكّب في الميدان':'میدان میں نصب',
+  'تالفٌ معزول':'خراب، الگ کیا گیا', 'دفتر حركة المخزون':'انوینٹری حرکت رجسٹر',
+  'الأرصدة حسب الصنف':'شے کے مطابق بیلنس', 'العُهدة حسب المنفِّذ':'انجام دہندہ کے مطابق امانت',
+  'المخزن':'اسٹور', 'العُهدة':'امانت', 'رُكّب':'نصب', 'تالف':'خراب', 'قطع':'عدد',
+  'التفصيل':'تفصیل', 'الحركة':'حرکت', 'الكمية':'مقدار', 'الحالة':'حالت', 'سجّلها':'درج کنندہ',
+  'توريد':'وصولی', 'صرف':'اجرا', 'استهلاك':'استعمال', 'إرجاع':'واپسی', 'شطب':'منسوخی',
+  '📥 توريد':'📥 وصولی', '📤 صرف لمنفِّذ':'📤 انجام دہندہ کو اجرا', '🗑 شطب تالف':'🗑 خراب منسوخ کریں',
+  '⬇ إكسل — المخزون':'⬇ ایکسل — انوینٹری', 'سجّل الحركة':'حرکت درج کریں',
+  'توريد مخزون':'انوینٹری وصولی', 'صرف مخزون':'انوینٹری اجرا', 'شطب مخزون':'انوینٹری منسوخی',
+  'ما دخل المخزن من شراءٍ أو تسليم.':'جو خریداری یا ترسیل سے اسٹور میں آیا۔',
+  'ما خرج من المخزن إلى عُهدة منفِّذ. الرصيد المتاح أمام كل صنف.':'جو اسٹور سے انجام دہندہ کی امانت میں گیا۔ دستیاب بیلنس ہر شے کے سامنے ہے۔',
+  'ما شُطب نهائيًّا لتلفٍ أو فقد.':'جو خرابی یا گم ہونے پر مستقل منسوخ ہوا۔',
+  'متاح':'دستیاب', 'أصناف:':'اشیاء:', 'يتجاوز المتاح في':'دستیاب سے زیادہ ہے',
+  'كميةٌ تتجاوز المتاح':'مقدار دستیاب سے زیادہ', 'سجّل رغم ذلك':'پھر بھی درج کریں', 'أصحّح':'میں درست کروں گا',
+  'لا حركة مخزونٍ بعد — ابدأ بتسجيل التوريد.':'ابھی کوئی انوینٹری حرکت نہیں — وصولی درج کر کے شروع کریں۔',
+  'لا حركة بعد.':'ابھی کوئی حرکت نہیں۔', 'لا حركة مخزونٍ لتصديرها':'برآمد کے لیے کوئی انوینٹری حرکت نہیں',
+  'ابحث بالصنف أو المنفِّذ أو النقطة…':'شے، انجام دہندہ یا پوائنٹ سے تلاش کریں…',
+  'المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم. والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.':'اسٹور = وصولی منہا اجرا اور منسوخی جمع درست واپسی۔ امانت = جو جاری ہوا منہا جو نصب ہوا اور واپس آیا۔',
+  'الدفتر إلحاقيٌّ لا يُعدَّل — كل تصحيحٍ حركةٌ جديدةٌ تُوازنه، فيبقى التاريخ كاملًا.':'رجسٹر صرف اضافے کا ہے — ہر تصحیح ایک نئی متوازن کرنے والی حرکت ہے، تاکہ تاریخ مکمل رہے۔',
+  'إرجاع عُهدة الفك':'ہٹانے کی امانت واپسی', 'سجّل الإرجاع':'واپسی درج کریں', '↩️ إرجاع العُهدة':'↩️ امانت واپس کریں',
+  '✔ أُرجعت العُهدة':'✔ امانت واپس ہو گئی', 'سليم':'درست',
+  'كل صنفٍ فُكَّ يعود بحالته: السليم يدخل المخزن متاحًا، والتالف يُعزل في سجل الشطب.':'ہر ہٹائی گئی شے اپنی حالت کے ساتھ واپس آتی ہے: درست دستیاب اسٹاک میں، خراب منسوخی رجسٹر میں الگ۔',
+  'لا قطعَ معتمدةً لهذه النقطة':'اس پوائنٹ کے لیے کوئی منظور شدہ پرزے نہیں',
+  'الإرجاع يُبنى على القطع التي اعتمدها المهندس عند التركيب.':'واپسی ان پرزوں پر بنتی ہے جو انجینئر نے تنصیب کے وقت منظور کیے۔',
+  'اعتمدها أولًا ثم أعد الفك.':'پہلے انہیں منظور کریں پھر ہٹانا دہرائیں۔',
+  'اكتب كميةً واحدةً على الأقل':'کم از کم ایک مقدار لکھیں',
+  'اكتب كمية صنفٍ واحدٍ على الأقل':'کم از کم ایک شے کی مقدار لکھیں',
+  'صنفًا رصيدُه سالب — صُرف أكثر مما ورَد. سجّل توريده ليستقيم الدفتر.':'اشیاء کا بیلنس منفی ہے — وصولی سے زیادہ جاری ہوا۔ رجسٹر متوازن کرنے کے لیے ان کی وصولی درج کریں۔', 'الورشة — طلبات التهيئة والتجميع والتركيب':'ورکشاپ — تیاری، اسمبلی اور تنصیب کے آرڈر',
   'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية':'تیاری، اسمبلی اور تنصیب — ان کے آرڈر اور روزانہ پوائنٹس',
   'تهيئة':'تیاری', 'تجميع':'اسمبلی', 'تركيب':'تنصیب', 'زيارة':'دورہ', 'فك':'ہٹانا',
   'طلب':'آرڈر', 'الطلب':'آرڈر', 'المنفِّذ':'انجام دہندہ', 'المحتوى':'مواد', 'نقاط':'پوائنٹس',
