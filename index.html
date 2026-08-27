@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.63</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.64</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5242,7 +5242,25 @@ $('#schBtn').onclick = ()=>window.doSchema();
     window.doGuideWord({Eng:'eng',Sup:'sup',Min:'min'}[k]);
   };
 });
+window.nskOpenCfg = function(){
+  try{
+    var D=window.NSKDASH||{};
+    D._tab='cfg'; try{ localStorage.setItem('nsk.dtab','cfg'); }catch(e){}
+    var d=document.getElementById('nskDash');
+    if(d){ d.style.display='block'; }
+    if(window.NSKDASH && NSKDASH.render) NSKDASH.render();
+    else { var b=document.getElementById('dashBtn'); if(b) b.click(); }
+  }catch(e){}
+};
 window.applyDocRole = function(){
+  try{
+    var g=document.getElementById('cfgHdr');
+    if(g){
+      var ro=nskRole();
+      g.style.display=(ro==='admin'||ro==='engineer')?'':'none';
+      g.onclick=window.nskOpenCfg;
+    }
+  }catch(e){}
   /* صف Word لا يظهر إلا للإداري */
   try{
     var wr=document.getElementById('docWordRow');
@@ -5371,6 +5389,9 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+body:not(.nskCfgOpen) #fbAdmin{display:none!important}
+#cfgHdr{font-size:15px}
+
 #tkSelBar{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:9000;display:flex;gap:10px;
   align-items:center;background:#12161b;border:1px solid #C9A24B;border-radius:12px;
   padding:8px 12px;font-size:13px;color:#E7E3D8;box-shadow:0 6px 20px rgba(0,0,0,.45)}
@@ -8567,7 +8588,8 @@ function render(){
   let h='';
   h+='<div class="dHead"><h1>لوحة متابعة المشروع ١٤٤٨</h1>';
   h+='<button class="dBtn" id="dTheme" type="button" title="فاتح / داكن">🌓</button>';
-  h+='<button class="dBtn" id="bellBtn" type="button" title="ما يخصّك">🔔</button>';
+  h+='<button id="cfgHdr" type="button" title="الإعدادات" aria-label="الإعدادات" style="display:none">⚙️</button>
+<button class="dBtn" id="bellBtn" type="button" title="ما يخصّك">🔔</button>';
   h+='<button class="dBtn" id="dAcct" type="button">الحساب</button>';
   h+='<button class="dBtn" id="dRef" type="button">تحديث</button>';
   h+='<button class="dBtn" id="dExp" type="button">⬇ تصدير</button>';
@@ -9958,9 +9980,13 @@ function render(){
   };
   var _cau=$i('cfgAddU');
   if(_cau) _cau.onclick=function(){
+    try{ document.body.classList.add('nskCfgOpen'); }catch(e){}
     try{ var d=$i('nskDash'); if(d) d.style.display='none'; }catch(e){}
-    try{ var b=document.getElementById('accBtn')||document.querySelector('[data-acc]'); if(b) b.click(); }catch(e){}
-    toast('أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب');
+    try{
+      var ov=document.getElementById('fbAcct');
+      if(ov){ ov.style.display='flex'; var ad=document.getElementById('fbAdmin'); if(ad) ad.style.display='block'; }
+      else { var b=document.getElementById('accBtn'); if(b) b.click(); }
+    }catch(e){}
   };
   var _orN=$i('orNew');
   if(_orN) _orN.onclick=function(){
