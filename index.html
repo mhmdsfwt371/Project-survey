@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.96</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.97</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7742,7 +7742,7 @@ window.NSKORD = window.NSKORD || {};
 /* أوزان النقاط إعدادات قابلة للتحرير — والافتراضي هو ما اعتمده المالك */
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3,
   tgtSurvey:90, tgtInstall:1000, tgtInsCamp:700, tgtInsCor:300, tgtDis:600,
-  tgtPrep:8800, tgtPrepCamp:8000, tgtPrepCor:800,
+  tgtPrep:9000, tgtPrepCamp:8000, tgtPrepCor:1000,
   tgtAsm:7900,  tgtAsmCamp:6600,  tgtAsmCor:1300,
   ph:4.81, days:26, hours:8, daysWeek:6,
   insCamp:76.9, insCor:192.3, stgCfg:25, stgVal:25, stgIns:50, disOk:1, disBad:1.25 };
@@ -7824,7 +7824,7 @@ window.ITEM_SEED = [
  ['cor','cam_ai','كاميرا AI موتورايز',26,4850],['cor','cam_pe','كاميرا ممر 8266',16,2400],
  ['cor','rtr','راوتر صناعي',10,1150],['cor','rdr8','قارئ ٨ منافذ',33,7200],
  ['cor','ant12','هوائي UHF SRRA12',8,520],['cor','sol','لوح سولار ٤٠٠و',26,900],
- ['cor','bat','بطارية ٢٠٠أ',16,1600],['cor','mppt','منظم شمسي MPPT 40A',13,700],
+ ['cor','bat','بطارية ٢٠٠أ',16,1600],['cor','mppt','منظومة طاقة شمسية',13,700],
  ['cor','mcb','بريكر MCB',5,90],['cor','boxb','بوكس بطارية ٨٠×٦٠×٣٠',20,950],
  ['cor','c20','كابل RFID ٢٠م',13,260],['cor','c15c','كابل ١٥م 7D-FB',10,190],
  ['cor','c10c','كابل ١٠م 5D-FB',8,140],['cor','c5c','كابل RFID ٥م',5,80],
@@ -7847,11 +7847,11 @@ window.PREP_SEED = {
   rtr:5, rtr2:5,          /* الراوتر — نفس النوع في المخيم والممر */
   cam_pe:4,               /* كاميرا الممر 8266 */
   cam:4,                  /* كاميرا المخيم 8361 */
-  cam_ai:6,               /* كاميرا AI موتورايز — أعقدها ضبطًا */
   rdr8:8,                 /* قارئ ٨ منافذ — ممرات */
   rdr4c:6,                /* قارئ ٤ منافذ — مخيمات */
   gwc:5,                  /* جيت واي — مخيمات */
-  ths:3                   /* حساس حرارة ورطوبة — غرف المخيم */
+  ths:3,                  /* حساس حرارة ورطوبة — غرف المخيم */
+  mppt:4                  /* منظومة الطاقة الشمسية — ممرات: فولتها وحدود شحنها ونوع بطاريتها */
 };
 window.ASM_SEED  = { rtr:3, rdr8:5, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c:4, box:5,
                      bat:3, sol:3, led:2, korg:1, korr:1, rly:1,
@@ -7861,7 +7861,10 @@ window.ASM_SEED  = { rtr:3, rdr8:5, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c
    ويضمّ الجديد إليها، ويصحّح الأسماء، ويُبقي ما عدّله المهندس من سعرٍ ونقاط. */
 window.IT_DROP = ['rdr4','ant9','gw'];
 window.IT_RENAME = { cam_pe:'كاميرا ممر 8266', cam:'كاميرا مخيم 8361',
-                     ant9c:'هوائي UHF SRRA9' };
+                     ant9c:'هوائي UHF SRRA9', mppt:'منظومة طاقة شمسية' };
+/* تصحيحُ عضوية مرحلةٍ لصنفٍ بعينه — يُطبَّق فقط إن كانت القيمة على ما تركناه،
+   فلا يدوس على ما عدّله المهندس بيده */
+window.IT_STAGE_FIX = { cam_ai:{ prep:[6,0] }, mppt:{ prep:[0,4] } };
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
@@ -7871,8 +7874,13 @@ window.itList = function(){
     var have={}; L.forEach(function(x){ have[String(x.id||'')]=1; });
     window.ITEM_SEED.forEach(function(sd){ if(!have[sd.id]) L.push(sd); });
     L.forEach(function(x){
-      var nn=window.IT_RENAME[String(x.id||'')];
+      var id2=String(x.id||''), nn=window.IT_RENAME[id2];
       if(nn) x.n=nn;
+      var fx=window.IT_STAGE_FIX[id2];
+      if(fx) Object.keys(fx).forEach(function(k){
+        var was=fx[k][0], now=fx[k][1];
+        if((parseFloat(x[k])||0) === was) x[k]=now;
+      });
     });
   }
   if(!L.length) L=window.ITEM_SEED.slice();
@@ -14996,7 +15004,7 @@ window.NSKI18N = (function(){
   'قارئ ٨ منافذ':'8-port reader', 'قارئ ٤ منافذ':'4-port reader',
   'هوائي UHF SRRA9':'UHF SRRA9 antenna', 'هوائي UHF SRRA12':'UHF SRRA12 antenna', 'هوائي UHF':'UHF antenna',
   'لوح سولار ٤٠٠و':'400 W solar panel', 'بطارية ٢٠٠أ':'200 Ah battery',
-  'منظم شمسي MPPT 40A':'MPPT 40 A solar controller', 'بريكر MCB':'MCB breaker',
+  'منظم شمسي MPPT 40A':'MPPT 40 A solar controller', 'منظومة طاقة شمسية':'Solar power system', 'بريكر MCB':'MCB breaker',
   'بوكس بطارية ٨٠×٦٠×٣٠':'Battery box 80×60×30', 'بوكس رئيسي ٦٠×٤٠×٢٠':'Main box 60×40×20',
   'كابل RFID ٢٠م':'RFID cable 20 m', 'كابل RFID ٥م':'RFID cable 5 m',
   'كابل ١٥م 7D-FB':'7D-FB cable 15 m', 'كابل ١٠م 5D-FB':'5D-FB cable 10 m',
@@ -15449,7 +15457,7 @@ window.NSKI18N = (function(){
   'قارئ ٨ منافذ':'٨ پورٹ ریڈر', 'قارئ ٤ منافذ':'٤ پورٹ ریڈر',
   'هوائي UHF SRRA9':'UHF SRRA9 اینٹینا', 'هوائي UHF SRRA12':'UHF SRRA12 اینٹینا', 'هوائي UHF':'UHF اینٹینا',
   'لوح سولار ٤٠٠و':'٤٠٠ واٹ سولر پینل', 'بطارية ٢٠٠أ':'٢٠٠ ایمپیئر بیٹری',
-  'منظم شمسي MPPT 40A':'MPPT 40A سولر کنٹرولر', 'بريكر MCB':'MCB بریکر',
+  'منظم شمسي MPPT 40A':'MPPT 40A سولر کنٹرولر', 'منظومة طاقة شمسية':'شمسی توانائی نظام', 'بريكر MCB':'MCB بریکر',
   'بوكس بطارية ٨٠×٦٠×٣٠':'بیٹری باکس ٨٠×٦٠×٣٠', 'بوكس رئيسي ٦٠×٤٠×٢٠':'مرکزی باکس ٦٠×٤٠×٢٠',
   'كابل RFID ٢٠م':'RFID کیبل ٢٠ میٹر', 'كابل RFID ٥م':'RFID کیبل ٥ میٹر',
   'كابل ١٥م 7D-FB':'7D-FB کیبل ١٥ میٹر', 'كابل ١٠م 5D-FB':'5D-FB کیبل ١٠ میٹر',
