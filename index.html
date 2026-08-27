@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.56</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.57</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7670,8 +7670,7 @@ window.tkSelAssign = function(){
   var nm=prompt('اسم الفني من السجل:\n'+L.join(' · '), L[0]);
   if(nm===null) return;
   nm=String(nm||'').trim(); if(!nm) return;
-  var due=prompt('المهلة (YYYY-MM-DD) — اتركها فارغة إن لم تلزم','')||'';
-  window.tkNew(nm, due, ids);
+  window.tkNew(nm, '', ids);
   window.tkSelToggle(false);
 };
 window.tkNew = function(tech, due, ids){
@@ -8845,7 +8844,6 @@ function render(){
       var Wm=P.w||{};
       h+='<div class="dT3">طلب زيارات جديد — حدّد النقاط ثم أسندها</div><div class="pwG">'
         +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
-        +'<label class="pwL">المهلة<input type="date" id="orDue"></label>'
         +'<label class="pwL">تارجت المسح/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label>'
         +'<label class="pwL">نقاط الساعة<input type="number" step="0.01" id="pw_ph" min="0" value="'+(P.ph)+'"></label></div>'
         +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>النقاط</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
@@ -9752,7 +9750,7 @@ function render(){
   var _orN=$i('orNew');
   if(_orN) _orN.onclick=function(){
     try{
-      var sup=($i('orSup')||{}).value, due=($i('orDue')||{}).value;
+      var sup=($i('orSup')||{}).value, due='';
       var out=Object.keys((window.TKSEL||{}).ids||{});
       if(!out.length){ toast('حدّد النقاط أولًا من القائمة أو الخريطة',1); return; }
       window.tkNew(sup, due, out);
