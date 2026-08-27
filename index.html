@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.81</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.82</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5392,19 +5392,47 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
-#nskCfgOv{display:none;position:fixed;inset:0;z-index:9500;background:#0A0B0D;overflow:auto;
-  font-family:inherit;color:#E7E3D8;padding:0 0 40px}
-.cfgTop{position:sticky;top:0;background:#0F1216;border-bottom:1px solid #20262d;display:flex;
-  align-items:center;justify-content:space-between;padding:12px 14px;font-size:15px}
-.cfgB{background:transparent;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:6px 11px;font-size:13px}
-.cfgNav{display:flex;gap:6px;overflow:auto;padding:10px 12px;border-bottom:1px solid #20262d}
-.cfgN{white-space:nowrap;background:transparent;border:1px solid #2A3038;border-radius:999px;
-  color:#9aa2ab;padding:7px 13px;font-size:12.5px}
+/* V13.82: شاشة الإعدادات أُعيد ضبطها للجوال — الترويسة كانت sticky بلا احترامٍ لحافة
+   الآيفون العليا فركبت شريط الحالة وزر إغلاق التطبيق، وسبعة تبويبات في شريط تمرير بلا
+   مؤشّر أخفت آخر تبويبين تمامًا، وحقول 13px تُجبر سفاري على تقريب الشاشة عند كل لمسة.
+   الهيكل الآن عمود بارتفاع الشاشة: ترويسة وتبويبات ثابتتان ومتنٌ يمرّر وحده. */
+#nskCfgOv{display:none;position:fixed;inset:0;z-index:9996;background:#0A0B0D;
+  font-family:inherit;color:#E7E3D8;overflow:hidden;overscroll-behavior:contain}
+.cfgSh{display:flex;flex-direction:column;height:100%;height:100dvh}
+.cfgTop{flex:0 0 auto;background:#0F1216;border-bottom:1px solid #20262d;display:flex;
+  align-items:center;gap:10px;font-size:15px;
+  padding:10px 12px;padding-top:calc(10px + env(safe-area-inset-top,0px))}
+.cfgTt{flex:1;min-width:0;text-align:center;line-height:1.35}
+.cfgTt b{display:block;font-size:14px;color:#E7E3D8}
+.cfgTt span{display:block;font-size:11px;color:#8a9199}
+.cfgB{flex:0 0 auto;background:transparent;border:1px solid #2A3038;border-radius:10px;color:#E7E3D8;
+  min-height:40px;padding:8px 12px;font:inherit;font-size:13px;cursor:pointer;
+  display:inline-flex;align-items:center;gap:4px}
+.cfgB:active{background:rgba(255,255,255,.06)}
+.cfgXb{width:40px;justify-content:center;padding:8px 0;font-size:17px}
+.cfgNav{flex:0 0 auto;position:relative;display:flex;gap:7px;overflow-x:auto;overflow-y:hidden;
+  padding:10px 12px;border-bottom:1px solid #20262d;scroll-snap-type:x proximity;
+  -webkit-overflow-scrolling:touch;scrollbar-width:none;overscroll-behavior-x:contain}
+.cfgNav::-webkit-scrollbar{display:none}
+.cfgN{flex:0 0 auto;scroll-snap-align:center;white-space:nowrap;background:transparent;
+  border:1px solid #2A3038;border-radius:999px;color:#9aa2ab;min-height:40px;
+  padding:9px 15px;font:inherit;font-size:12.5px;cursor:pointer}
+.cfgN i{font-style:normal;margin-inline-end:2px}
 .cfgN.on{background:#C9A24B;border-color:#C9A24B;color:#0A0B0D;font-weight:700}
-.cfgBody{padding:14px 14px 30px;max-width:760px;margin:0 auto}
+.cfgBody{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding:14px 14px calc(40px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto;width:100%;box-sizing:border-box}
 .cfgBody h2{font-size:17px;margin:4px 0 2px;color:#E8C36A}
  .cfgS{font-size:12.5px;color:#8a9199;margin:0 0 12px;line-height:1.7}
-.cfgH3{font-size:13.5px;color:#C9A24B;margin:14px 0 6px}
+.cfgH3{font-size:13.5px;color:#C9A24B;margin:16px 0 7px}
+/* شريط الحفظ العائم: التعديل كان يضيع بصمت عند تبديل التبويب */
+.cfgSave{flex:0 0 auto;display:flex;align-items:center;gap:8px;background:#12161b;
+  border-top:1px solid #C9A24B;padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px))}
+.cfgSave[hidden]{display:none}
+.cfgSave>span{flex:1;font-size:12px;font-weight:700;color:#E8C36A}
+.cfgSb{background:transparent;border:1px solid #2A3038;border-radius:10px;color:#E7E3D8;
+  min-height:42px;padding:9px 14px;font:inherit;font-size:13px;cursor:pointer}
+.cfgSg{background:#C9A24B;border:0;border-radius:10px;color:#0A0B0D;font-weight:800;
+  min-height:42px;padding:9px 20px;font:inherit;font-size:13px;cursor:pointer}
 .cfg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
 .cfgCol{min-width:0}
 #nskCfgOv #fbAdmin{background:#0F1216;border:1px solid #20262d;border-radius:12px;padding:14px;max-width:760px}
@@ -5434,18 +5462,97 @@ window.NSKCORE={
   padding-inline-start:12px;padding-inline-end:28px}
 #nskCfgOv #fbAdmin .uRow>div:not(.uT){justify-content:flex-start}
 .cfgT{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 12px}
-.cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:7px 6px;border-bottom:1px solid #20262d}
-.cfgT td{padding:7px 6px;border-bottom:1px solid #171c22}
-.cfgT input{background:#12161b;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;padding:7px 9px;font-size:13px;width:96px}
-.cfgF{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0 14px}
-.cfgF label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#9aa2ab}
-.cfgF input,.cfgF select{background:#12161b;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:9px 11px;font-size:13px}
-.cfgRow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
-.cfgGo{background:#C9A24B;border:none;border-radius:10px;color:#0A0B0D;font-weight:700;padding:10px 16px;font-size:13px}
-.cfgDel{background:transparent;border:1px solid #2A3038;border-radius:8px;color:#F0655A;padding:4px 10px}
+.cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:8px 6px;border-bottom:1px solid #20262d}
+.cfgT td{padding:8px 6px;border-bottom:1px solid #171c22;vertical-align:middle}
+.cfgT input{background:#12161b;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;
+  padding:9px 10px;font:inherit;font-size:16px;width:104px;color-scheme:dark}
+.cfgT input:focus{outline:none;border-color:#C9A24B}
+.cfgF{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:11px;margin:10px 0 14px}
+.cfgF label{display:flex;flex-direction:column;gap:6px;font-size:12px;color:#9aa2ab}
+.cfgF input,.cfgF select{background:#12161b;border:1px solid #2A3038;border-radius:10px;color:#E7E3D8;
+  padding:11px 12px;font:inherit;font-size:16px;min-height:44px;box-sizing:border-box;color-scheme:dark}
+.cfgF input:focus,.cfgF select:focus{outline:none;border-color:#C9A24B}
+.cfgRow{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px}
+.cfgGo{background:#C9A24B;border:none;border-radius:11px;color:#0A0B0D;font-weight:800;
+  min-height:46px;padding:12px 20px;font:inherit;font-size:13.5px;cursor:pointer}
+.cfgGo:active{transform:scale(.98)}
+.cfgDel{background:transparent;border:1px solid rgba(240,101,90,.45);border-radius:9px;color:#F0655A;
+  min-height:38px;padding:8px 14px;font:inherit;font-size:12.5px;cursor:pointer}
+/* على الجوال يصير كل صف بطاقةً: أربعة أعمدة على ٣٩٠ بكسل تُقصّ ولا تُقرأ */
+@media(max-width:620px){
+  .cfg2{grid-template-columns:1fr}
+  .cfgT,.cfgT tbody,.cfgT tr,.cfgT td{display:block;width:auto}
+  .cfgT thead{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+  .cfgT tr{border:1px solid #20262d;border-radius:12px;padding:11px 13px;margin:0 0 9px;background:#0F1216}
+  .cfgT td{border:0;padding:5px 0;display:flex;align-items:center;justify-content:space-between;gap:10px}
+  .cfgT td+td{border-top:1px dashed rgba(150,158,172,.14)}
+  .cfgT td::before{content:attr(data-l);color:#8a9199;font-size:11.5px;font-weight:700;flex:0 0 auto}
+  .cfgT td.cfgK{display:block;font-size:14px;font-weight:800;color:#E7E3D8;padding:0 0 7px;
+    border-bottom:1px solid rgba(150,158,172,.16);margin-bottom:4px}
+  .cfgT td.cfgK::before{content:none}
+  .cfgT td.cfgHm{display:none}
+  .cfgT input{width:118px;text-align:center}
+  .cfgT td[data-l="حذف"]{justify-content:space-between}
+  .cfgTc td{font-size:13px}
+  .cfgGo,.cfgSg{flex:1;min-width:150px}
+}
 
 #fbAcct #fbAdmin{display:none!important}
-#nskCfgOv #fbAdmin{display:block!important;margin-top:6px}
+#nskCfgOv #fbAdmin{display:block!important;margin-top:6px;background:transparent;border:0;padding:0}
+/* V13.82: لوحة الحسابات عقدةٌ تُعار لشاشة الإعدادات، وكل أنماطها كانت مقيّدة بـ#fbAcct
+   فتسقط عنها هنا: صفوف بلا حدود، وشرائح التصفية بلا شكل، وأزرار بأحجام لمس قاصرة.
+   هذه نسخة الأنماط نفسها بمرساة شاشة الإعدادات وبمقاسات إصبع. */
+#nskCfgOv #fbAdmin .fbSec{font-size:13.5px;color:#C9A24B;font-weight:800;margin:18px 0 9px;
+  border-top:1px solid #20262d;padding-top:14px}
+#nskCfgOv #fbAdmin input,#nskCfgOv #fbAdmin select{font-size:16px;padding:12px 13px;min-height:46px;
+  border-radius:10px;color-scheme:dark}
+#nskCfgOv #fbAdmin input:focus,#nskCfgOv #fbAdmin select:focus{outline:none;border-color:#C9A24B}
+#nskCfgOv #fbAdmin .fbMk{min-height:48px;border-radius:11px;font-size:14px;font-weight:800}
+#nskCfgOv #fbAdmin button{min-height:40px;padding:9px 13px;font-size:12.5px;border-radius:9px}
+#nskCfgOv #fbAdmin #uSearch{margin-bottom:10px}
+#nskCfgOv #fbAdmin #uChips{display:flex;gap:7px;flex-wrap:wrap;margin:0 0 12px}
+#nskCfgOv #fbAdmin #uChips button{border:1px solid #2A3038;background:transparent;color:#8a9199;
+  border-radius:999px;min-height:36px;padding:7px 13px;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer}
+#nskCfgOv #fbAdmin #uChips button.on{border-color:#C9A24B;color:#C9A24B;background:rgba(201,162,75,.10)}
+#nskCfgOv #fbAdmin .uRow{padding:12px 13px;border-radius:12px}
+#nskCfgOv #fbAdmin .uRow.uOff{opacity:.55}
+#nskCfgOv #fbAdmin .uS{color:#8a9199;font-size:11px;margin:-2px 0 8px}
+#nskCfgOv #fbAdmin .uA{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+#nskCfgOv #fbAdmin .uA.uLock{color:#8a9199;font-size:11px;border:1px dashed #2A3038;
+  border-radius:9px;padding:9px 11px;display:block}
+#nskCfgOv #fbAdmin .uRoleTxt{flex:1;align-self:center;color:#8a9199;font-size:12.5px;font-weight:700}
+#nskCfgOv #fbAdmin .uRow select.uRole{flex:1 1 150px;min-width:0;font-size:13px;min-height:40px;padding:9px 12px}
+#nskCfgOv #fbAdmin .uRow button.uTg:not([disabled]){border-color:#E05252;color:#E05252}
+#nskCfgOv #fbAdmin .uRow.uOff button.uTg{border-color:#3AD6A0;color:#3AD6A0}
+#nskCfgOv #fbAdmin .uRow button[disabled]{opacity:.4;cursor:default}
+#nskCfgOv #fbAdmin .uMe,#nskCfgOv #fbAdmin .uSt{font-size:10px;padding:2px 7px}
+@media(max-width:620px){
+  #nskCfgOv #fbAdmin .uRow .uA button{flex:1 1 auto;min-width:96px}
+  #nskCfgOv #fbAdmin .uRow select.uRole{flex:1 1 100%}
+}
+/* V13.82: نافذة السؤال الموحّدة */
+#nskAskOv{position:fixed;inset:0;z-index:1000002;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.74);padding:18px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+#nskAskOv.on{display:flex}
+#nskAskOv .askC{width:100%;max-width:400px;background:var(--panel,#141619);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(233,206,131,.35);border-radius:18px;padding:20px 18px 16px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:var(--ar,Tahoma,sans-serif)}
+#nskAskOv h4{margin:0 0 9px;font-size:15px;color:var(--gold,#C9A24B);font-weight:800}
+#nskAskOv .askM p{margin:0 0 6px;font-size:13px;line-height:1.75;color:var(--grey,#9AA1AB)}
+#nskAskOv input{width:100%;box-sizing:border-box;margin:10px 0 2px;background:var(--ink,#0A0B0D);
+  color:var(--cream,#F1EDE0);border:1px solid rgba(150,158,172,.3);border-radius:10px;
+  padding:12px 13px;font:inherit;font-size:16px;min-height:46px;color-scheme:dark}
+#nskAskOv input:focus{outline:none;border-color:var(--gold,#C9A24B)}
+#nskAskOv .askB{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+#nskAskOv .askGo{flex:1 1 100%;background:linear-gradient(135deg,#E9CE83,#C9A24B);color:#0A0B0D;
+  border:0;border-radius:11px;min-height:46px;padding:12px 16px;font:inherit;font-weight:800;font-size:13.5px;cursor:pointer}
+#nskAskOv .askGo.bad{background:linear-gradient(135deg,#F0655A,#C6382C);color:#fff}
+#nskAskOv .askSec{flex:1;min-width:120px;background:transparent;color:inherit;
+  border:1px solid rgba(150,158,172,.4);border-radius:11px;min-height:44px;padding:11px 14px;
+  font:inherit;font-size:13px;cursor:pointer}
+#nskAskOv .askSec:active{background:rgba(255,255,255,.06)}
+html[data-theme="light"] #nskAskOv .askC{background:#fff;color:#101214}
+html[data-theme="light"] #nskAskOv input{background:#fff;color:#101214;color-scheme:light}
 #cfgHdr{font-size:15px}
 
 #tkSelBar{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:9000;display:flex;gap:10px;
@@ -6091,8 +6198,10 @@ function bindAccountPanel(p){
         const toOff=u.active!==false;
         if(toOff && (u.role==='engineer'||u.role==='admin') && actEng()<=1){ uMsg('لا يمكن إيقاف آخر مهندس أو أدمن نشط'); return; }
         const nm=u.name||u.email;
-        if(!confirm((toOff?'إيقاف حساب ':'تفعيل حساب ')+nm+'؟'+
-          (toOff?String.fromCharCode(10)+'لن يستطيع الدخول أو المزامنة نهائيًا حتى يُعاد تفعيله.':''))) return;
+        if(!await window.nskAsk({ t:(toOff?'إيقاف حساب':'تفعيل حساب'), m:nm+
+          (toOff?String.fromCharCode(10)+'لن يستطيع الدخول أو المزامنة حتى يُعاد تفعيله.':
+                 String.fromCharCode(10)+'سيعود إلى الدخول والمزامنة فورًا.'),
+          ok:(toOff?'أوقف الحساب':'فعّل الحساب'), danger:toOff })) return;
         try{
           await updateDoc(doc(db,'users',u.uid),
             {active:!toOff, updatedAt:serverTimestamp(), updatedBy:p.uid});
@@ -6104,7 +6213,8 @@ function bindAccountPanel(p){
       else if(e.target.classList.contains('uPw')){
         if(lock){ uMsg('إدارة هذه الحسابات للسوبر أدمن فقط'); return; }
         if(!u.email){ uMsg('لا يوجد إيميل مسجّل لهذا الحساب'); return; }
-        if(!confirm('إرسال رابط تعيين كلمة مرور جديدة إلى:'+String.fromCharCode(10)+u.email+'؟')) return;
+        if(!await window.nskAsk({ t:'رابط كلمة مرور جديدة',
+          m:'سيصل الرابط إلى:'+String.fromCharCode(10)+u.email, ok:'أرسِل الرابط' })) return;
         try{
           await sendPasswordResetEmail(auth, u.email);
           uMsg('✓ أُرسل الرابط إلى '+u.email,1);
@@ -6122,8 +6232,9 @@ function bindAccountPanel(p){
       if((u.role==='engineer'||u.role==='admin') && nr!=='engineer' && nr!=='admin'
          && u.active!==false && actEng()<=1){
         sel.value=u.role; uMsg('لا يمكن تغيير دور آخر مهندس أو أدمن نشط'); return; }
-      if(!confirm('تغيير دور '+(u.name||u.email)+' إلى «'+ROLE_AR[nr]+'»؟'+
-        String.fromCharCode(10)+'يسري فورًا على الصلاحيات — ويكتمل عنده بعد إعادة الدخول.')){
+      if(!await window.nskAsk({ t:'تغيير الدور',
+        m:(u.name||u.email)+' ← «'+ROLE_AR[nr]+'»'+String.fromCharCode(10)+
+          'يسري فورًا على الصلاحيات، ويكتمل عنده بعد إعادة الدخول.', ok:'غيّر الدور' })){
         sel.value=u.role; return; }
       try{
         await updateDoc(doc(db,'users',u.uid),
@@ -7690,14 +7801,31 @@ window.roleSave = function(list, txt){
   }catch(e){ toast('تعذّر الحفظ',1); }
 };
 window.cfgPages = [
-  ['users','المستخدمون','إنشاء الحسابات وأدوارها'],
-  ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح'],
-  ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب'],
-  ['dis','نقاط الفك','وزن الفك ومعاملا الحالة'],
-  ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة'],
-  ['sys','ثوابت النظام','أيام العمل وساعات اليوم'],
-  ['roles','الأدوار والصلاحيات','من يفعل ماذا']
+  ['users','المستخدمون','إنشاء الحسابات وأدوارها','👤'],
+  ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح','🔍'],
+  ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب','🔧'],
+  ['dis','نقاط الفك','وزن الفك ومعاملا الحالة','🧩'],
+  ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة','📦'],
+  ['sys','ثوابت النظام','أيام العمل وساعات اليوم','📐'],
+  ['roles','الأدوار والصلاحيات','من يفعل ماذا','🛡']
 ];
+/* V13.82: علامة «تغييرات غير محفوظة» — تبديل تبويب أو إغلاق يسأل قبل أن يبتلعها الرسم */
+window.cfgMark = function(on){
+  window.NSKCFG.dirty = !!on;
+  var b=document.getElementById('cfgSave');
+  if(b) b.hidden = !on;
+};
+window.cfgLeave = function(go){
+  if(!window.NSKCFG.dirty) return go();
+  window.nskAsk({ t:'تغييرات غير محفوظة',
+    m:'عدّلت قيمًا في هذه الصفحة ولم تحفظها بعد.',
+    ok:'احفظ ثم انتقل', alt:'انتقل بلا حفظ', no:'ابقَ هنا' })
+  .then(function(r){
+    if(!r) return;
+    if(r==='ok'){ try{ if(window.NSKCFG.save) window.NSKCFG.save(); }catch(e){} }
+    window.cfgMark(false); go();
+  });
+};
 window.nskCfgOpen = function(page){
   var ro=''; try{ ro=nskRole(); }catch(e){}
   if(ro!=='admin' && ro!=='engineer'){ toast('الإعدادات للإدارة فقط',1); return; }
@@ -7711,6 +7839,7 @@ window.nskCfgOpen = function(page){
   window.cfgRender();
 };
 window.cfgClose = function(){
+  if(window.NSKCFG.dirty){ window.cfgLeave(function(){ window.cfgClose(); }); return; }
   try{
     var ad=document.getElementById('fbAdmin');
     if(ad && window._fbAdminHome && ad.parentNode!==window._fbAdminHome){
@@ -7730,16 +7859,20 @@ window.cfgRender = function(){
     }
   }catch(e){}
   var P=window.pwGet(), pg=window.NSKCFG.page, h='';
-  h+='<div class="cfgTop"><button type="button" id="cfgBack" class="cfgB">→ رجوع</button>'
-    +'<b>الإعدادات</b><button type="button" id="cfgX" class="cfgB">✕</button></div>';
-  h+='<div class="cfgNav">'+window.cfgPages.map(function(p){
-      return '<button type="button" class="cfgN'+(p[0]===pg?' on':'')+'" data-p="'+p[0]+'">'+_cfgX(p[1])+'</button>';
-    }).join('')+'</div>';
   var cur=window.cfgPages.filter(function(p){ return p[0]===pg; })[0]||window.cfgPages[0];
-  h+='<div class="cfgBody"><h2>'+_cfgX(cur[1])+'</h2><p class="cfgS">'+_cfgX(cur[2])+'</p>';
+  window.NSKCFG.save=null;
+  h+='<div class="cfgSh"><header class="cfgTop">'
+    +'<button type="button" id="cfgBack" class="cfgB">→ <span>رجوع</span></button>'
+    +'<div class="cfgTt"><b>الإعدادات</b><span>'+_cfgX(cur[1])+'</span></div>'
+    +'<button type="button" id="cfgX" class="cfgB cfgXb" aria-label="إغلاق">✕</button></header>';
+  h+='<nav class="cfgNav" id="cfgNav">'+window.cfgPages.map(function(p){
+      return '<button type="button" class="cfgN'+(p[0]===pg?' on':'')+'" data-p="'+p[0]+'">'
+        +'<i>'+p[3]+'</i> '+_cfgX(p[1])+'</button>';
+    }).join('')+'</nav>';
+  h+='<main class="cfgBody" id="cfgMain"><h2>'+_cfgX(cur[1])+'</h2><p class="cfgS">'+_cfgX(cur[2])+'</p>';
 
   if(pg==='roles'){
-    h+='<table class="cfgT"><tr><th>القدرة</th><th>مهندس</th><th>فني</th><th>وزارة</th></tr>'
+    h+='<table class="cfgT cfgTc"><thead><tr><th>القدرة</th><th>مهندس</th><th>فني</th><th>وزارة</th></tr></thead><tbody>'
       +[['المسح والتوثيق','✓','✓ للمُسند له','—'],
         ['وسم «تمت الزيارة»','✓','✓ للمُسند له','—'],
         ['طلبات الزيارة والإسناد','✓','—','—'],
@@ -7749,17 +7882,19 @@ window.cfgRender = function(){
         ['الإعدادات والنقاط والتارجت','✓','—','—'],
         ['إدارة الحسابات','✓','—','—'],
         ['أرقام الهواتف','✓','✓','مخفية']
-       ].map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>'; }).join('')
-      +'</table><p class="cfgS">الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
+       ].map(function(r){ return '<tr><td class="cfgK">'+r[0]+'</td><td data-l="مهندس">'+r[1]
+            +'</td><td data-l="فني">'+r[2]+'</td><td data-l="وزارة">'+r[3]+'</td></tr>'; }).join('')
+      +'</tbody></table><p class="cfgS">الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
     var RL=window.roleList();
     h+='<h3 class="cfgH3">أدوار مخصصة</h3>'
       +'<p class="cfgS">أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.</p>';
     if(RL.length){
-      h+='<table class="cfgT"><tr><th>المسمّى</th><th>يرث صلاحيات</th><th></th></tr>'
+      h+='<table class="cfgT"><thead><tr><th>المسمّى</th><th>يرث صلاحيات</th><th></th></tr></thead><tbody>'
         +RL.map(function(r){
-          return '<tr><td>'+_cfgX(r.n)+'</td><td>'+_cfgX(window.roleLbl(r.base))+'</td>'
-            +'<td><button type="button" class="cfgRDel" data-id="'+_cfgX(r.id)+'">×</button></td></tr>';
-        }).join('')+'</table>';
+          return '<tr><td class="cfgK">'+_cfgX(r.n)+'</td><td data-l="يرث صلاحيات">'+_cfgX(window.roleLbl(r.base))+'</td>'
+            +'<td data-l="حذف"><button type="button" class="cfgDel cfgRDel" data-id="'+_cfgX(r.id)
+            +'" data-n="'+_cfgX(r.n)+'">حذف</button></td></tr>';
+        }).join('')+'</tbody></table>';
     } else h+='<p class="cfgS">لا أدوار مخصصة بعد.</p>';
     h+='<div class="cfgF"><label>المسمّى الجديد<input type="text" id="cfg_rlN" placeholder="مثال: مشرف عام"></label>'
       +'<label>يرث صلاحيات<select id="cfg_rlB">'
@@ -7773,12 +7908,12 @@ window.cfgRender = function(){
   }
   else if(pg==='visits'){
     var MX=window.pwRows(), W=P.w||{};
-    h+='<table class="cfgT"><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th></tr>'
+    h+='<table class="cfgT"><thead><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th></tr></thead><tbody>'
       +MX.map(function(r){
         var v=(W[r.k]!=null&&W[r.k]!=='')?W[r.k]:'';
-        return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
-          +'<td><input type="number" class="cfgW" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
-      }).join('')+'</table>'
+        return '<tr><td class="cfgK">'+_cfgX(r.z)+' · '+_cfgX(r.ty)+'</td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
+          +'<td data-l="وزن الزيارة"><input type="number" inputmode="decimal" class="cfgW" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
+      }).join('')+'</tbody></table>'
       +'<div class="cfgF"><label>تارجت المسح الشهري<input type="number" class="tgM" data-w="cfg_tgtSurveyW" id="cfg_tgtSurvey" min="0" value="'+P.tgtSurvey+'"></label>'
       +'<label>تارجت المسح الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtSurvey" id="cfg_tgtSurveyW" min="0" value="'+window.pwWk(P.tgtSurvey)+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveV">حفظ نقاط الزيارات</button></div>';
@@ -7789,11 +7924,11 @@ window.cfgRender = function(){
       var L=IT.filter(function(x){ return x.z===g[0]; });
       if(!L.length) return '';
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
-        +'<table class="cfgT"><tr><th>القطعة</th><th>النقاط</th></tr>'
+        +'<table class="cfgT"><thead><tr><th>القطعة</th><th>النقاط</th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td>'+_cfgX(it.n)+'</td>'
-            +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
-        }).join('')+'</table></div>';
+          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+            +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
+        }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
       +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" class="tgM" data-w="cfg_tgtInstallW" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label>'
       +'<label>تارجت التركيب الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtInstall" id="cfg_tgtInstallW" min="0" value="'+window.pwWk(P.tgtInstall)+'"></label></div>'
@@ -7802,12 +7937,12 @@ window.cfgRender = function(){
   }
   else if(pg==='dis'){
     var MX2=window.pwRows(), D=P.dw||{};
-    h+='<table class="cfgT"><tr><th>المشعر</th><th>النوع</th><th>وزن الفك</th></tr>'
+    h+='<table class="cfgT"><thead><tr><th>المشعر</th><th>النوع</th><th>وزن الفك</th></tr></thead><tbody>'
       +MX2.map(function(r){
         var v=(D[r.k]!=null&&D[r.k]!=='')?D[r.k]:'';
-        return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
-          +'<td><input type="number" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
-      }).join('')+'</table>'
+        return '<tr><td class="cfgK">'+_cfgX(r.z)+' · '+_cfgX(r.ty)+'</td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
+          +'<td data-l="وزن الفك"><input type="number" inputmode="decimal" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
+      }).join('')+'</tbody></table>'
       +'<div class="cfgF"><label>تارجت الفك الشهري<input type="number" class="tgM" data-w="cfg_tgtDisW" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label>'
       +'<label>تارجت الفك الأسبوعي<input type="number" class="tgW" data-m="cfg_tgtDis" id="cfg_tgtDisW" min="0" value="'+window.pwWk(P.tgtDis)+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveD">حفظ نقاط الفك</button></div>';
@@ -7818,12 +7953,13 @@ window.cfgRender = function(){
       var L=IT2.filter(function(x){ return x.z===g[0]; });
       if(!L.length) return '';
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
-        +'<table class="cfgT"><tr><th>القطعة</th><th>السعر</th><th></th></tr>'
+        +'<table class="cfgT"><thead><tr><th>القطعة</th><th>السعر</th><th></th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td>'+_cfgX(it.n)+'</td>'
-            +'<td><input type="number" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
-            +'<td><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)+'">×</button></td></tr>';
-        }).join('')+'</table></div>';
+          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+            +'<td data-l="السعر"><input type="number" inputmode="numeric" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
+            +'<td data-l="حذف"><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)
+            +'" data-n="'+_cfgX(it.n)+'">حذف</button></td></tr>';
+        }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
       +'<div class="cfgF"><label>نوع الموقع<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
       +'<label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
@@ -7840,7 +7976,10 @@ window.cfgRender = function(){
       +'<p class="cfgS">ساعات الشهر القياسية: '+((P.days||26)*(P.hours||8))+' ساعة.</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveS">حفظ الثوابت</button></div>';
   }
-  h+='</div>';
+  h+='</main>'
+    +'<div class="cfgSave" id="cfgSave" hidden><span>تغييرات لم تُحفظ</span>'
+    +'<button type="button" class="cfgSb" id="cfgUndo">تراجع</button>'
+    +'<button type="button" class="cfgSg" id="cfgKeep">حفظ</button></div></div>';
   ov.innerHTML=h;
   window.cfgBind();
 };
@@ -7849,9 +7988,35 @@ window.cfgBind = function(){
   var q=function(s){ return ov.querySelector(s); }, qa=function(s){ return ov.querySelectorAll(s); };
   q('#cfgX').onclick=window.cfgClose;
   q('#cfgBack').onclick=window.cfgClose;
+  window.cfgMark(false);
   Array.prototype.forEach.call(qa('.cfgN'), function(b){
-    b.onclick=function(){ window.NSKCFG.page=b.getAttribute('data-p'); window.cfgRender(); };
+    b.onclick=function(){
+      var p=b.getAttribute('data-p');
+      window.cfgLeave(function(){ window.NSKCFG.page=p; window.cfgRender(); });
+    };
   });
+  /* التبويب النشط يُجرّ داخل الرؤية — سبعة تبويبات لا تسع شاشة الجوال فتختفي الأخيرة بلا أثر */
+  try{
+    var on=q('.cfgN.on');
+    if(on && on.scrollIntoView) on.scrollIntoView({block:'nearest', inline:'center'});
+  }catch(e){}
+  /* أي تعديل يرفع علم «غير محفوظ» — عدا نماذج الإضافة ولوحة الحسابات فهي تحفظ بنفسها فورًا */
+  var main=q('#cfgMain');
+  if(main){
+    var watch=function(e){
+      var t=e.target;
+      if(!t || !/^(INPUT|SELECT|TEXTAREA)$/.test(t.tagName||'')) return;
+      try{ if(t.closest('#fbAdmin')) return; }catch(x){}
+      if(/^cfg_(itNm|itZ|itPts|itPr|rlN|rlB)$/.test(t.id||'')) return;
+      window.cfgMark(true);
+    };
+    main.addEventListener('input', watch, true);
+    main.addEventListener('change', watch, true);
+  }
+  var kb=q('#cfgKeep');
+  if(kb) kb.onclick=function(){ try{ if(window.NSKCFG.save) window.NSKCFG.save(); }catch(e){} };
+  var ub=q('#cfgUndo');
+  if(ub) ub.onclick=function(){ window.cfgMark(false); window.cfgRender(); };
   function base(){
     var P0=window.pwGet(), o={};
     ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall','tgtDis',
@@ -7867,32 +8032,36 @@ window.cfgBind = function(){
     e.oninput=function(){ var t=q('#'+e.getAttribute('data-m')); if(t) t.value=window.pwMo(e.value); };
   });
   var sv=q('#cfgSaveV');
+  if(sv) window.NSKCFG.save=function(){ sv.onclick(); };
   if(sv) sv.onclick=function(){
     var o=base(); o.w={};
     Array.prototype.forEach.call(qa('.cfgW'), function(e){
       var v=String(e.value||'').trim(); if(v!=='') o.w[e.getAttribute('data-k')]=parseFloat(v)||0; });
-    num('tgtSurvey',o,'tgtSurvey'); window.pwSave(o,'نقاط الزيارات'); window.cfgRender();
+    num('tgtSurvey',o,'tgtSurvey'); window.pwSave(o,'نقاط الزيارات'); window.cfgMark(false); window.cfgRender();
   };
   var si=q('#cfgSaveI');
+  if(si) window.NSKCFG.save=function(){ si.onclick(); };
   if(si) si.onclick=function(){
     var L=window.itList(), M={};
     Array.prototype.forEach.call(qa('.cfgIP'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
     L.forEach(function(x){ if(M[x.id]!=null) x.pts=M[x.id]; });
     window.itSave(L,'تحديث نقاط تركيب القطع');
-    var o=base(); num('tgtInstall',o,'tgtInstall'); window.pwSave(o,'تارجت التركيب'); window.cfgRender();
+    var o=base(); num('tgtInstall',o,'tgtInstall'); window.pwSave(o,'تارجت التركيب'); window.cfgMark(false); window.cfgRender();
   };
   var sd=q('#cfgSaveD');
+  if(sd) window.NSKCFG.save=function(){ sd.onclick(); };
   if(sd) sd.onclick=function(){
     var o=base(); o.dw={};
     Array.prototype.forEach.call(qa('.cfgD'), function(e){
       var v=String(e.value||'').trim(); if(v!=='') o.dw[e.getAttribute('data-k')]=parseFloat(v)||0; });
     num('tgtDis',o,'tgtDis');
-    window.pwSave(o,'نقاط الفك'); window.cfgRender();
+    window.pwSave(o,'نقاط الفك'); window.cfgMark(false); window.cfgRender();
   };
   var ss=q('#cfgSaveS');
+  if(ss) window.NSKCFG.save=function(){ ss.onclick(); };
   if(ss) ss.onclick=function(){
     var o=base(); num('days',o,'days'); num('hours',o,'hours'); num('daysWeek',o,'daysWeek');
-    window.pwSave(o,'ثوابت النظام'); window.cfgRender();
+    window.pwSave(o,'ثوابت النظام'); window.cfgMark(false); window.cfgRender();
   };
   var ia=q('#cfgItAdd');
   if(ia) ia.onclick=function(){
@@ -7902,20 +8071,25 @@ window.cfgBind = function(){
     L.push({ z:((q('#cfg_itZ')||{}).value)||'camp', id:'it'+Date.now().toString(36), n:n2,
              pts:parseFloat((q('#cfg_itPts')||{}).value)||0,
              price:parseFloat((q('#cfg_itPr')||{}).value)||0 });
-    window.itSave(L,'إضافة قطعة: '+n2); window.cfgRender();
+    window.itSave(L,'إضافة قطعة: '+n2); window.cfgMark(false); window.cfgRender();
   };
   var is=q('#cfgItSave');
+  if(is) window.NSKCFG.save=function(){ is.onclick(); };
   if(is) is.onclick=function(){
     var L=window.itList(), M={};
     Array.prototype.forEach.call(qa('.cfgPR'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
     L.forEach(function(x){ if(M[x.id]!=null) x.price=M[x.id]; });
-    window.itSave(L,'تحديث أسعار القطع'); window.cfgRender();
+    window.itSave(L,'تحديث أسعار القطع'); window.cfgMark(false); window.cfgRender();
   };
-  Array.prototype.forEach.call(qa('.cfgDel'), function(b){
+  Array.prototype.forEach.call(qa('.cfgDel:not(.cfgRDel)'), function(b){
     b.onclick=function(){
-      var id=b.getAttribute('data-id');
-      window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة');
-      window.cfgRender();
+      var id=b.getAttribute('data-id'), nm=b.getAttribute('data-n')||'';
+      window.nskAsk({ t:'حذف قطعة من الكتالوج', m:'«'+nm+'» ستُحذف من قوائم التركيب والأسعار.\nالتركيبات المسجّلة سابقًا تبقى في السجل.',
+        ok:'احذف', danger:true }).then(function(r){
+        if(!r) return;
+        window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة: '+nm);
+        window.cfgMark(false); window.cfgRender();
+      });
     };
   });
   var ra=q('#cfgRlAdd');
@@ -7925,13 +8099,17 @@ window.cfgBind = function(){
     var L=window.roleList();
     if(L.some(function(x){ return x.n===n2; })){ toast('المسمّى موجود بالفعل',1); return; }
     L.push({ id:'rl'+Date.now().toString(36), n:n2, base:((q('#cfg_rlB')||{}).value)||'supervisor' });
-    window.roleSave(L,'إضافة دور مخصص: '+n2); window.cfgRender();
+    window.roleSave(L,'إضافة دور مخصص: '+n2); window.cfgMark(false); window.cfgRender();
   };
   Array.prototype.forEach.call(qa('.cfgRDel'), function(b){
     b.onclick=function(){
-      var id=b.getAttribute('data-id');
-      window.roleSave(window.roleList().filter(function(x){ return x.id!==id; }),'حذف دور مخصص');
-      window.cfgRender();
+      var id=b.getAttribute('data-id'), nm=b.getAttribute('data-n')||'';
+      window.nskAsk({ t:'حذف دور مخصص', m:'«'+nm+'» سيختفي من قائمة أدوار المستخدمين.\nمن يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.',
+        ok:'احذف', danger:true }).then(function(r){
+        if(!r) return;
+        window.roleSave(window.roleList().filter(function(x){ return x.id!==id; }),'حذف دور مخصص: '+nm);
+        window.cfgMark(false); window.cfgRender();
+      });
     };
   });
   /* نقل لوحة إدارة المستخدمين كما هي إلى صفحة الإعدادات — بمنطقها وربطها الأصلي */
@@ -8268,6 +8446,53 @@ window.tkPickOv = function(){
   };
   chips(); paint();
   try{ ov.querySelector('#tkPickQ').focus(); }catch(e){}
+};
+/* V13.82: نافذة سؤال موحّدة بثيم التطبيق تحلّ محل confirm/prompt.
+   نوافذ المتصفح على iOS تُجمّد الصفحة وتظهر بيضاء خارج الثيم، وفي التطبيقات المثبّتة
+   قد تحمل اسم النطاق في ترويستها. الوعد يرجع: 'ok' أو 'alt' أو نص الإدخال أو false. */
+window.nskAsk = function(o){
+  o=o||{};
+  return new Promise(function(res){
+    var X=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+    var prev=document.getElementById('nskAskOv'); if(prev) prev.remove();
+    var ov=document.createElement('div'); ov.id='nskAskOv';
+    var body=String(o.m||'').split('\n').map(function(l){ return '<p>'+X(l)+'</p>'; }).join('');
+    var inp = o.input ? ('<input type="'+(o.input.type||'text')+'" id="nskAskI" placeholder="'
+        +X(o.input.ph||'')+'" value="'+X(o.input.val||'')+'">') : '';
+    ov.innerHTML='<div class="askC" role="dialog" aria-modal="true">'
+      +'<h4>'+X(o.t||'تأكيد')+'</h4>'
+      +'<div class="askM">'+body+'</div>'+inp
+      +'<div class="askB">'
+      +'<button type="button" class="askGo'+(o.danger?' bad':'')+'" id="nskAskOk">'+X(o.ok||'تأكيد')+'</button>'
+      +(o.alt?('<button type="button" class="askSec" id="nskAskAlt">'+X(o.alt)+'</button>'):'')
+      +'<button type="button" class="askSec" id="nskAskNo">'+X(o.no||'إلغاء')+'</button>'
+      +'</div></div>';
+    document.body.appendChild(ov);
+    ov.className='on';
+    var done=false;
+    function end(v){
+      if(done) return; done=true;
+      try{ document.removeEventListener('keydown', key, true); }catch(e){}
+      try{ ov.remove(); }catch(e){}
+      res(v);
+    }
+    function key(e){
+      if(e.key==='Escape'){ e.preventDefault(); end(false); }
+      else if(e.key==='Enter' && o.input){ e.preventDefault(); ok(); }
+    }
+    function ok(){
+      if(!o.input) return end('ok');
+      var e=ov.querySelector('#nskAskI'), v=String((e&&e.value)||'').trim();
+      if(o.input.req && !v){ try{ e.focus(); }catch(x){} return; }
+      end(v||'ok');
+    }
+    document.addEventListener('keydown', key, true);
+    ov.querySelector('#nskAskOk').onclick=ok;
+    ov.querySelector('#nskAskNo').onclick=function(){ end(false); };
+    var al=ov.querySelector('#nskAskAlt'); if(al) al.onclick=function(){ end('alt'); };
+    ov.addEventListener('mousedown', function(e){ if(e.target===ov) end(false); });
+    try{ (ov.querySelector('#nskAskI')||ov.querySelector('#nskAskOk')).focus(); }catch(e){}
+  });
 };
 /* V13.81: قائمة منسدلة داكنة موحّدة — قائمة المتصفح البيضاء تُعترض ويُعرض بديلها بثيم التطبيق.
    عنصر <select> يبقى المصدر الوحيد للقيمة: كل الكود القائم يقرأ منه ويستقبل change كما هو،
@@ -12562,7 +12787,18 @@ window.NSKI18N = (function(){
   'كل الفئات':'All categories', 'لا نتائج':'No results',
   'ابحث بالشاخص أو المربع أو المشعر…':'Search by sign, square or holy site…',
   'عُرضت أول النتائج فقط — ضيّق البحث أو اختر فئة':'Only the first results are shown — narrow the search or pick a category',
-  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'Split the list by category, pick the points and assign them to a technician — without leaving the visits page.'
+  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'Split the list by category, pick the points and assign them to a technician — without leaving the visits page.',
+  'تغييرات لم تُحفظ':'Unsaved changes', 'تراجع':'Discard', 'حذف':'Delete', 'احذف':'Delete',
+  'تأكيد':'Confirm', 'تغييرات غير محفوظة':'Unsaved changes',
+  'عدّلت قيمًا في هذه الصفحة ولم تحفظها بعد.':'You changed values on this page and have not saved them yet.',
+  'احفظ ثم انتقل':'Save then move', 'انتقل بلا حفظ':'Move without saving', 'ابقَ هنا':'Stay here',
+  'حذف قطعة من الكتالوج':'Delete an item from the catalogue',
+  'التركيبات المسجّلة سابقًا تبقى في السجل.':'Previously recorded installations stay in the log.',
+  'من يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.':'Whoever holds it returns to the permissions of the base role it inherits from.',
+  'إيقاف حساب':'Suspend account', 'تفعيل حساب':'Activate account',
+  'أوقف الحساب':'Suspend the account', 'فعّل الحساب':'Activate the account',
+  'رابط كلمة مرور جديدة':'New password link', 'أرسِل الرابط':'Send the link',
+  'تغيير الدور':'Change role', 'غيّر الدور':'Change the role'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -12777,7 +13013,18 @@ window.NSKI18N = (function(){
   'كل الفئات':'تمام اقسام', 'لا نتائج':'کوئی نتیجہ نہیں',
   'ابحث بالشاخص أو المربع أو المشعر…':'شاخص، مربع یا مشعر سے تلاش کریں…',
   'عُرضت أول النتائج فقط — ضيّق البحث أو اختر فئة':'صرف پہلے نتائج دکھائے گئے — تلاش محدود کریں یا قسم منتخب کریں',
-  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'فہرست کو قسم کے مطابق تقسیم کریں، پوائنٹس منتخب کر کے ٹیکنیشن کے سپرد کریں — زیارات کے صفحے سے نکلے بغیر۔'
+  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'فہرست کو قسم کے مطابق تقسیم کریں، پوائنٹس منتخب کر کے ٹیکنیشن کے سپرد کریں — زیارات کے صفحے سے نکلے بغیر۔',
+  'تغييرات لم تُحفظ':'غیر محفوظ تبدیلیاں', 'تراجع':'واپس لیں', 'حذف':'حذف', 'احذف':'حذف کریں',
+  'تأكيد':'تصدیق', 'تغييرات غير محفوظة':'غیر محفوظ تبدیلیاں',
+  'عدّلت قيمًا في هذه الصفحة ولم تحفظها بعد.':'آپ نے اس صفحے پر قدریں بدلی ہیں اور ابھی محفوظ نہیں کیں۔',
+  'احفظ ثم انتقل':'محفوظ کر کے جائیں', 'انتقل بلا حفظ':'محفوظ کیے بغیر جائیں', 'ابقَ هنا':'یہیں رہیں',
+  'حذف قطعة من الكتالوج':'کیٹلاگ سے پرزہ حذف کریں',
+  'التركيبات المسجّلة سابقًا تبقى في السجل.':'پہلے درج شدہ تنصیبات ریکارڈ میں رہیں گی۔',
+  'من يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.':'جو اسے رکھتا ہے وہ بنیادی کردار کی اجازتوں پر واپس آ جائے گا۔',
+  'إيقاف حساب':'اکاؤنٹ معطل کریں', 'تفعيل حساب':'اکاؤنٹ فعال کریں',
+  'أوقف الحساب':'اکاؤنٹ معطل کریں', 'فعّل الحساب':'اکاؤنٹ فعال کریں',
+  'رابط كلمة مرور جديدة':'نئے پاس ورڈ کا لنک', 'أرسِل الرابط':'لنک بھیجیں',
+  'تغيير الدور':'کردار بدلیں', 'غيّر الدور':'کردار تبدیل کریں'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
