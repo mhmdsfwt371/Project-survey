@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.88</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.89</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5496,6 +5496,21 @@ window.NSKCORE={
   padding:11px 12px;font:inherit;font-size:16px;min-height:44px;box-sizing:border-box;color-scheme:dark}
 .cfgF input:focus,.cfgF select:focus{outline:none;border-color:#C9A24B}
 .cfgRow{display:flex;gap:9px;flex-wrap:wrap;margin:8px 0 4px}
+/* V13.89: نافذة طلب الورشة */
+#woOv .woC{max-width:560px;max-height:88dvh;display:flex;flex-direction:column;overflow:auto}
+#woOv .woF{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:10px 0}
+#woOv .woL{display:flex;flex-direction:column;gap:5px;font-size:12px;color:var(--grey,#9AA1AB);margin:8px 0 0}
+#woOv .woL select,#woOv .woL input{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.3);border-radius:10px;padding:11px 12px;font:inherit;
+  font-size:16px;min-height:46px;color-scheme:dark}
+#woOv .woQ{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);border:1px solid rgba(150,158,172,.3);
+  border-radius:8px;padding:8px 10px;font:inherit;font-size:16px;text-align:center;color-scheme:dark}
+#woOv .woP{color:var(--gold,#C9A24B);font-size:11.5px;font-weight:800;white-space:nowrap;margin-inline-end:8px}
+#woOv #woTot{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
+#woOv #woL{max-height:44vh;overflow:auto;overscroll-behavior:contain}
+.dGrid2{border:1px solid #2A3038;border-radius:11px;padding:10px 13px;margin:0 0 12px;
+  font-size:13px;color:#9aa2ab;background:#0F1216}
+.dGrid2 b{color:#E8C36A;font-size:15px}
 .cfgGo{background:#C9A24B;border:none;border-radius:11px;color:#0A0B0D;font-weight:800;
   min-height:46px;padding:12px 20px;font:inherit;font-size:13.5px;cursor:pointer}
 .cfgGo:active{transform:scale(.98)}
@@ -7770,18 +7785,32 @@ window.ITEM_SEED = [
  ['cor','c20','كابل RFID ٢٠م',13,260],['cor','c15c','كابل ١٥م 7D-FB',10,190],
  ['cor','c10c','كابل ١٠م 5D-FB',8,140],['cor','c5c','كابل RFID ٥م',5,80],
  ['cor','boxm','بوكس رئيسي ٦٠×٤٠×٢٠',26,680],
+ ['cor','gw','جيت واي',9,1900],['cor','sock','فيش كهرباء',2,45],
  ['camp','cam','كاميرا شبكة',8,2400],['camp','rtr2','راوتر صناعي',5,1150],
  ['camp','rdr4c','قارئ ٤ منافذ',11,5100],['camp','ant9c','هوائي UHF',3,420],
  ['camp','c15','كابل ١٥م 7D-FB',5,190],['camp','c10','كابل ١٠م 5D-FB',4,140],
  ['camp','c5','كابل RFID ٥م',2,80],['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680],
  ['camp','led','شاشة ليد ٣ نقاط',2,150],['camp','korg','ليد أخضر',2,120],
- ['camp','korr','ليد أحمر',2,120],['camp','rly','ريلاي ١٢ف',2,60]
+ ['camp','korr','ليد أحمر',2,120],['camp','rly','ريلاي ١٢ف',2,60],
+ ['camp','gwc','جيت واي',6,1900],['camp','sockc','فيش كهرباء',2,45]
 ].map(function(x){ return {z:x[0], id:x[1], n:x[2], pts:x[3], price:x[4]}; });
+/* V13.89: ثلاث مراحل لكل صنف — تهيئةٌ في الورشة (ضبط ونظام وفحص)، وتجميعٌ في البوكس،
+   وتركيبٌ في الميدان. صفرٌ يعني أن الصنف لا يمرّ بتلك المرحلة أصلًا. */
+window.PREP_SEED = { cam_ai:6, cam_pe:4, rtr:5, rdr8:8, rdr4:6, mppt:3,
+                     cam:4, rtr2:5, rdr4c:6, gw:5, gwc:5 };
+window.ASM_SEED  = { rtr:3, rdr8:5, rdr4:4, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c:4, box:5,
+                     bat:3, sol:3, led:2, korg:1, korr:1, rly:1,
+                     gw:3, gwc:3, sock:1, sockc:1 };
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
   if(!L.length) L=window.ITEM_SEED.slice();
-  return L.map(function(x){ return {z:String(x.z||'camp'), id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0)}; })
+  return L.map(function(x){
+            var id=String(x.id||'');
+            return { z:String(x.z||'camp'), id:id, n:String(x.n||''),
+                     pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0),
+                     prep:(x.prep==null||x.prep==='') ? (window.PREP_SEED[id]||0) : (parseFloat(x.prep)||0),
+                     asm :(x.asm ==null||x.asm ==='') ? (window.ASM_SEED[id] ||0) : (parseFloat(x.asm) ||0) }; })
           .map(function(x){
             var FIX={ korg:'ليد أخضر', korr:'ليد أحمر', led:'شاشة ليد ٣ نقاط' };
             if(FIX[x.id] && /KOR|LED|نقطة|نقاط/i.test(x.n)) x.n=FIX[x.id];
@@ -7789,7 +7818,28 @@ window.itList = function(){
           })
           .filter(function(x){ return x.id && x.n; });
 };
+/* نقاط دفعةٍ من الأصناف في مرحلةٍ بعينها — مصدرٌ واحد تستعمله الطلبات والتقارير معًا */
+window.stagePts = function(items, stage){
+  var IT={}, t=0, k=(stage==='prep'?'prep':(stage==='asm'?'asm':'pts'));
+  try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+  Object.keys(items||{}).forEach(function(id){
+    var it=IT[id]; if(!it) return;
+    t += (parseFloat(items[id])||0) * (parseFloat(it[k])||0);
+  });
+  return Math.round(t*10)/10;
+};
+/* أصناف المرحلة: ما نقاطُه فيها أكبر من صفر */
+window.stageItems = function(stage){
+  var k=(stage==='prep'?'prep':(stage==='asm'?'asm':'pts'));
+  try{ return window.itList().filter(function(x){ return (parseFloat(x[k])||0) > 0; }); }
+  catch(e){ return []; }
+};
 window.itSave = function(list, logTxt){
+  /* الحقول الثلاثة تُحفظ صراحةً وإلا ضاعت مرحلةٌ عند حفظ صفحة أخرى */
+  list=(list||[]).map(function(x){
+    return { z:x.z, id:x.id, n:x.n, pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0),
+             prep:(parseFloat(x.prep)||0), asm:(parseFloat(x.asm)||0) };
+  });
   var d={list:list, n:list.length, at:new Date().toISOString()};
   try{
     window.NSKCORE.set('settings','items',d);
@@ -7983,6 +8033,8 @@ window.roleSave = function(list, txt){
 window.cfgPages = [
   ['users','المستخدمون','إنشاء الحسابات وأدوارها','👤'],
   ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح','🔍'],
+  ['prep','نقاط التهيئة','نقاط تهيئة كل جهاز في الورشة','🛠'],
+  ['asm','نقاط التجميع','نقاط تجميع مكوّنات البوكس','🧰'],
   ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب','🔧'],
   ['dis','نقاط الفك','وزن الفك ومعاملا الحالة','🧩'],
   ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة','📦'],
@@ -8123,6 +8175,32 @@ window.cfgRender = function(){
       +'<p class="cfgS"><span>القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</span> '
       +'<span>والتارجت بالنقاط لا بعدد المواقع:</span> <span>المخيم</span> '+window.arNum(P.insCamp)
       +' <span>نقطة والممر</span> '+window.arNum(P.insCor)+' <span>نقطة افتراضيًّا.</span></p>';
+  }
+  else if(pg==='prep' || pg==='asm'){
+    var _st=(pg==='prep')?'prep':'asm';
+    var _cls=(pg==='prep')?'cfgPP':'cfgAP';
+    var IT3=window.itList(), _on=IT3.filter(function(x){ return (parseFloat(x[_st])||0)>0; });
+    var _sum=0; _on.forEach(function(x){ _sum+=parseFloat(x[_st])||0; });
+    h+='<p class="cfgS">'+(pg==='prep'
+        ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. اكتب نقاط تهيئة كل جهاز، والصفر يعني أنه لا يمرّ بالتهيئة أصلًا.'
+        : 'التجميع تركيب مكوّنات البوكس وتوصيلها قبل النزول. اكتب نقاط تجميع كل مكوّن، والصفر يعني أنه لا يدخل البوكس.')
+      +'</p>';
+    h+='<div class="dGrid2"><b>'+window.arNum(_on.length)+'</b> <span>صنفًا في هذه المرحلة · إجماليها</span> <b>'
+      +window.arNum(_sum)+'</b> <span>نقطة</span></div>';
+    h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
+      var L=IT3.filter(function(x){ return x.z===g[0]; });
+      if(!L.length) return '';
+      return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+'</h3>'
+        +'<table class="cfgT"><thead><tr><th>الصنف</th><th>النقاط</th></tr></thead><tbody>'
+        +L.map(function(it){
+          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+            +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="'+_cls
+            +'" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+(it[_st]||'')+'" placeholder="0"></td></tr>';
+        }).join('')+'</tbody></table></div>';
+    }).join('')+'</div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="'
+      +(pg==='prep'?'cfgSaveP':'cfgSaveA')+'">'+(pg==='prep'?'حفظ نقاط التهيئة':'حفظ نقاط التجميع')+'</button></div>'
+      +'<p class="cfgS">الأصناف تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تُسعّر عملها في هذه المرحلة وحدها.</p>';
   }
   else if(pg==='dis'){
     var MX2=window.pwRows(), D=P.dw||{};
@@ -8270,6 +8348,19 @@ window.cfgBind = function(){
     var o=base(); num('tgtInsCamp',o,'tgtInsCamp'); num('tgtInsCor',o,'tgtInsCor');
     window.pwSave(o,'تارجت التركيب'); window.cfgMark(false); window.cfgRender();
   };
+  ['P','A'].forEach(function(tag){
+    var st=(tag==='P')?'prep':'asm', cls=(tag==='P')?'.cfgPP':'.cfgAP';
+    var bt=q('#cfgSave'+tag); if(!bt) return;
+    window.NSKCFG.save=function(){ bt.onclick(); };
+    bt.onclick=function(){
+      var L=window.itList(), M={};
+      Array.prototype.forEach.call(qa(cls), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
+      L.forEach(function(x){ if(M[x.id]!=null) x[st]=M[x.id]; });
+      var _msg=(st==='prep') ? 'تحديث نقاط التهيئة' : 'تحديث نقاط التجميع';
+      window.itSave(L, _msg);
+      window.cfgMark(false); window.cfgRender();
+    };
+  });
   var sd=q('#cfgSaveD');
   if(sd) window.NSKCFG.save=function(){ sd.onclick(); };
   if(sd) sd.onclick=function(){
@@ -8437,10 +8528,13 @@ window.TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','
 window.tkMe = function(){
   try{ var u=window.NSK_USER||{}; return String(u.name||u.email||'').trim(); }catch(e){ return ''; }
 };
-window.tkList = function(who, live){
-  var T=window.NSKTASK||{}, out=[];
+/* V13.89: kind='visit' افتراضًا كي لا يتغيّر سلوك ما بُني فوق هذه الدالة،
+   و'*' تعني كل الأنواع لتقارير الورشة. */
+window.tkList = function(who, live, kind){
+  var T=window.NSKTASK||{}, out=[], K=(kind===undefined?'visit':kind);
   Object.keys(T).forEach(function(k){
     var t=T[k]||{};
+    if(K!=='*' && String(t.kind||'visit')!==K) return;
     if(who && String(t.tech||'').trim()!==String(who).trim()) return;
     if(live && (t.st==='معتمد')) return;
     out.push(t);
@@ -8452,6 +8546,7 @@ window.tkAny = function(siteId){
   var T=window.NSKTASK||{}, hit=false;
   Object.keys(T).forEach(function(k){
     var t=T[k]||{};
+    if(String(t.kind||'visit')!=='visit') return;
     if(t.site===siteId && t.st!=='معتمد') hit=true;
   });
   return hit;
@@ -8485,8 +8580,14 @@ window.tkScope = function(){
   try{
     var C=window.NSKCORE, inss=C.all('inss'), rc=C.all('recs');
     var mine=[]; try{ mine=window.myTeams?window.myTeams():[]; }catch(e){}
-    /* مهام المسح */
+    /* مهام المسح والتركيب المُسندة إليه أو لفريقه */
     (window.tkList?window.tkList(me2,true):[]).forEach(function(t){ S[t.site]=1; });
+    try{
+      window.tkList(null,true,'install').forEach(function(t){
+        if(!t.site) return;
+        if(String(t.tech||'').trim()===me2 || mine.indexOf(String(t.tech||'').trim())>=0) S[t.site]=1;
+      });
+    }catch(e){}
     Object.keys(inss).forEach(function(id){
       var v=inss[id]||{};
       if(String(v.who||'').trim()===me2) S[id]=1;
@@ -8523,11 +8624,16 @@ window.tkSelBar = function(){
   if(!S.on){ if(b) b.remove(); return; }
   var n=Object.keys(S.ids).length;
   if(!b){ b=document.createElement('div'); b.id='tkSelBar'; document.body.appendChild(b); }
-  b.innerHTML='<span>المحدد: <b>'+n+'</b></span>'
-    +'<button type="button" id="tkSelGo" class="go">✓ تم — أسند لفني</button>'
-    +'<button type="button" id="tkSelX">إلغاء</button>';
+  var _adm=false; try{ var _u=window.NSK_USER||{}; _adm=(_u.role==='admin'||_u.role==='engineer'); }catch(e){}
+  b.innerHTML='<span><span>المحدد:</span> <b>'+n+'</b></span>'
+    +'<button type="button" id="tkSelGo" class="go">✓ <span>تم — أسند لفني</span></button>'
+    +(_adm?'<button type="button" id="tkSelIns">🔧 <span>طلب تركيب</span></button>':'')
+    +'<button type="button" id="tkSelX"><span>إلغاء</span></button>';
   b.querySelector('#tkSelX').onclick=function(){ window.tkSelToggle(false); };
   b.querySelector('#tkSelGo').onclick=function(){ window.tkSelAssign(); };
+  var _si=b.querySelector('#tkSelIns');
+  if(_si) _si.onclick=function(){ window.woInstallAsk(Object.keys(window.TKSEL.ids||{})); };
+  try{ if(window.NSKI18N) NSKI18N.apply(b); }catch(e){}
 };
 /* طاقم موسم ١٤٤٧ المستخرج من أوراق التنفيذ اليومية — دون المهندسين والإداريين */
 window.TECH_SEED = ['محمود السعيد','عزام','أرسلان حفيظ','عدنان','رضوان','ياسر','حسيب','سليمان','عمرو','غريب','فرمان','محمد أرسلان','سليم','فيزان','بلال','محمد عاقب','حكيم','سهيل','خالد','حمود','شهداب','برويز','اكرام','أسامة','زيشان','سيد','عوض','عبد الخالق','شهويز','أحمد آل عبدالله','سعيد بصرور','تامر','بدر','إقبال','مشير','راجابابو','عاقب وحيد','سمير','عرفة','علاء','مصطفى شطا','أنس'];
@@ -8905,6 +9011,211 @@ window.tkNew = function(tech, due, ids){
   if(window.NSKSYNC) NSKSYNC.log('طلب مسح '+ord+' لـ'+tech+' — '+n+' نقطة');
   toast('أُنشئ الطلب — '+n+' مهمة ✓');
 };
+/* ═══ V13.89: طلبات العمل — التهيئة والتجميع والتركيب فوق محرك المهام نفسه ═══
+   المهمة القائمة كانت زيارةً بلا نوع؛ صار لها kind فتستوعب أربع دورات بحالاتها الخمس
+   نفسها (مطلوب · قيد التنفيذ · منفّذ · معتمد · مُعاد) ومزامنتها وسجلّها دون بنيةٍ جديدة.
+     visit   — زيارة مسح لنقطة (القائم)
+     prep    — تهيئة أجهزةٍ في الورشة، كمياتٌ لا نقاط ميدان
+     asm     — تجميع بوكسات في الورشة، كمياتٌ كذلك
+     install — تركيب نقطةٍ اعتُمدت قطعُها، ووزنُه من قطعها المعتمدة */
+window.WO_KINDS = {
+  prep:    { n:'تهيئة',  i:'🛠', c:'#8FD3E8' },
+  asm:     { n:'تجميع',  i:'🧰', c:'#C77DFF' },
+  install: { n:'تركيب',  i:'🔧', c:'#3AD6A0' },
+  visit:   { n:'زيارة',  i:'🔍', c:'#E8C34B' }
+};
+window.woKind = function(t){ return String((t&&t.kind)||'visit'); };
+window.woAll = function(kind){
+  var out=[];
+  try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+    var t=(window.NSKTASK||{})[k]; if(!t) return;
+    if(kind && window.woKind(t)!==kind) return;
+    out.push(t);
+  }); }catch(e){}
+  return out;
+};
+/* طلب ورشة: كمياتُ أصنافٍ لفنيٍّ واحد، ووزنُه نقاطُ المرحلة */
+window.woNew = function(kind, tech, items, due, note){
+  if(!tech){ toast('اختر الفني أولًا',1); return null; }
+  var n=Object.keys(items||{}).filter(function(k){ return (parseFloat(items[k])||0)>0; }).length;
+  if(!n){ toast('اكتب كمية صنفٍ واحدٍ على الأقل',1); return null; }
+  var K=window.WO_KINDS[kind]||window.WO_KINDS.prep;
+  var ord=(kind==='prep'?'PRP-':'ASM-')+Date.now().toString(36).toUpperCase();
+  var t={ id:ord, ord:ord, kind:kind, tech:tech, items:items, due:due||'',
+          st:'مطلوب', w:window.stagePts(items, kind), by:window.tkMe(),
+          note:String(note||''), ts:new Date().toISOString() };
+  window.tkSave(t, 'طلب '+K.n+' '+ord+' لـ'+tech+' — '+n+' صنفًا · '+t.w+' نقطة');
+  toast('أُنشئ طلب '+K.n+' — '+t.w+' نقطة ✓');
+  return t;
+};
+/* طلب تركيب: نقطةٌ أو مجموعةُ نقاطٍ اعتُمدت قطعُها، ووزنُ كلٍّ من قطعها هي */
+window.woInstall = function(ids, tech, due){
+  if(!tech){ toast('اختر الفني أولًا',1); return; }
+  ids=(ids||[]).filter(Boolean);
+  if(!ids.length){ toast('حدّد نقطةً واحدةً على الأقل',1); return; }
+  var ord='INS-'+Date.now().toString(36).toUpperCase(), me2=window.tkMe(), n=0, tot=0, skip=0;
+  ids.forEach(function(sid, ix){
+    var iv=(window.NSKCORE.all('inss')||{})[sid]||{};
+    var bom=(iv.bom&&iv.bom.items)?iv.bom.items:null;
+    if(!bom){ skip++; return; }                       /* بلا قطعٍ معتمدة لا وزن للطلب */
+    if(window.woOf(sid,'install',tech)) return;
+    var w=(iv.bom.pts!=null)?(parseFloat(iv.bom.pts)||0):window.stagePts(bom,'install');
+    var t={ id:ord+'-'+String(ix+1), ord:ord, kind:'install', site:sid, tech:tech,
+            items:bom, due:due||'', st:'مطلوب', w:w, by:me2, ts:new Date().toISOString() };
+    window.tkSave(t); n++; tot+=w;
+  });
+  tot=Math.round(tot*10)/10;
+  if(window.NSKSYNC) NSKSYNC.log('طلب تركيب '+ord+' لـ'+tech+' — '+n+' نقطة · '+tot+' نقطة عمل');
+  if(skip) toast('أُنشئ الطلب — '+n+' نقطة · '+tot+' نقطة عمل ('+skip+' بلا قطعٍ معتمدة)');
+  else toast('أُنشئ طلب التركيب — '+n+' نقطة · '+tot+' نقطة عمل ✓');
+  try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+};
+/* هل لهذه النقطة طلبٌ من هذا النوع (لهذا الفني إن حُدّد)؟ */
+window.woOf = function(siteId, kind, tech){
+  var hit=null;
+  try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+    var t=(window.NSKTASK||{})[k]; if(!t || t.site!==siteId) return;
+    if(window.woKind(t)!==kind) return;
+    if(tech && t.tech!==tech) return;
+    if(t.st==='معتمد') return;
+    hit=t;
+  }); }catch(e){}
+  return hit;
+};
+/* دورة حالات موحّدة لكل الأنواع */
+window.woStart = function(id){
+  var t=(window.NSKTASK||{})[id]; if(!t){ toast('لا طلب بهذا المعرّف',1); return; }
+  if(t.st!=='مطلوب' && t.st!=='مُعاد'){ toast('الطلب قيد التنفيذ بالفعل'); return; }
+  t.st='قيد التنفيذ'; t.startedAt=new Date().toISOString();
+  window.tkSave(t,'بدء '+(window.WO_KINDS[window.woKind(t)]||{}).n+' — '+(t.site||t.ord));
+  toast('بدأ التنفيذ ⏱');
+  try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+};
+window.woDone = function(id){
+  var t=(window.NSKTASK||{})[id]; if(!t) return;
+  if(t.st==='منفّذ' || t.st==='معتمد'){ toast('الطلب منفَّذ بالفعل'); return; }
+  t.st='منفّذ'; t.doneAt=new Date().toISOString(); t.doneBy=window.tkMe();
+  window.tkSave(t,'تنفيذ '+(window.WO_KINDS[window.woKind(t)]||{}).n+' — '+(t.site||t.ord)+' ('+t.w+' نقطة)');
+  toast('سُجّل التنفيذ — '+t.w+' نقطة ✓');
+  try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+};
+/* نقاط يومٍ واحدٍ لفنيٍّ واحد عبر المراحل الأربع — مصدرُ التقرير اليومي */
+window.woDay = function(tech, day){
+  var d=String(day||new Date().toISOString().slice(0,10)).slice(0,10);
+  var out={ prep:0, asm:0, install:0, visit:0, dis:0, n:0, tot:0 };
+  try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+    var t=(window.NSKTASK||{})[k]; if(!t) return;
+    if(tech && t.tech!==tech) return;
+    if(t.st!=='منفّذ' && t.st!=='معتمد') return;
+    if(String(t.doneAt||'').slice(0,10)!==d) return;
+    var kd=window.woKind(t), w=parseFloat(t.w)||0;
+    if(out[kd]==null) out[kd]=0;
+    out[kd]+=w; out.tot+=w; out.n++;
+  }); }catch(e){}
+  /* الفك يُسجَّل على النقطة لا كمهمة، فيُقرأ من دفتره */
+  try{
+    var IN=window.NSKCORE.all('inss')||{};
+    Object.keys(IN).forEach(function(k){
+      var v=(IN[k]||{}).dis||null; if(!v || v.st!=='تم') return;
+      if(String(v.doneAt||'').slice(0,10)!==d) return;
+      if(tech && String(v.team||'')!==tech && String(v.doneBy||'')!==tech) return;
+      out.dis += (parseFloat(v.pts)||0); out.tot += (parseFloat(v.pts)||0); out.n++;
+    });
+  }catch(e){}
+  out.tot=Math.round(out.tot*10)/10;
+  return out;
+};
+/* نافذة طلب التركيب: تُفتح من نقطةٍ واحدة أو من تحديدٍ على الخريطة/القائمة */
+window.woInstallAsk = function(ids){
+  ids=(ids||[]).filter(Boolean);
+  if(!ids.length){ toast('حدّد نقطةً واحدةً على الأقل',1); return; }
+  var IN=window.NSKCORE.all('inss')||{};
+  var ok=[], no=[], tot=0;
+  ids.forEach(function(sid){
+    var b=((IN[sid]||{}).bom)||null;
+    if(b && b.items){ ok.push(sid); tot += (parseFloat(b.pts)||window.stagePts(b.items,'install')); }
+    else no.push(sid);
+  });
+  tot=Math.round(tot*10)/10;
+  if(!ok.length){
+    window.nskAsk({ t:'لا قطعَ معتمدةً بعد',
+      m:'طلب التركيب يُبنى على القطع التي اعتمدها المهندس لكل نقطة.'+String.fromCharCode(10)
+        +'اعتمدها أولًا من «اعتمد وحدّد القطع» في نافذة النقطة.', ok:'فهمت', no:'إغلاق' });
+    return;
+  }
+  var L=[]; try{ L=window.tkTechs()||[]; }catch(e){}
+  var T=[]; try{ T=(((window.NSKCORE.get('settings','teams')||{}).list)||[]).map(String).filter(Boolean); }catch(e){}
+  var who=T.concat(L.filter(function(x){ return T.indexOf(x)<0; }));
+  if(!who.length){ toast('سجّل فنيًّا أو فريقًا أولًا',1); return; }
+  window.nskAsk({
+    t:'طلب تركيب',
+    m:'النقاط الجاهزة: '+ok.length+(no.length?(' · بلا قطعٍ معتمدة: '+no.length):'')
+      +String.fromCharCode(10)+'نقاط العمل من القطع المعتمدة: '+tot,
+    fields:[{k:'w', l:'الفني أو الفريق', type:'select', opts:who, val:who[0]},
+            {k:'due', l:'الموعد المستهدف (اختياري)', type:'date', val:''}],
+    ok:'أنشئ طلب التركيب'
+  }).then(function(a){
+    if(!a) return;
+    window.woInstall(ok, String(a.w||'').trim(), String(a.due||''));
+    try{ window.tkSelToggle(false); }catch(e){}
+    try{ drawMap(); drawList(); }catch(e){}
+  });
+};
+/* نافذة طلب ورشة: تهيئة أو تجميع بكمياتٍ من أصناف المرحلة */
+window.woAsk = function(kind){
+  var K=window.WO_KINDS[kind]; if(!K) return;
+  var IT=window.stageItems(kind);
+  if(!IT.length){ toast('لا أصناف لهذه المرحلة — اضبط نقاطها في الإعدادات أولًا',1); return; }
+  var L=[]; try{ L=window.tkTechs()||[]; }catch(e){}
+  var T=[]; try{ T=(((window.NSKCORE.get('settings','teams')||{}).list)||[]).map(String).filter(Boolean); }catch(e){}
+  var who=T.concat(L.filter(function(x){ return T.indexOf(x)<0; }));
+  if(!who.length){ toast('سجّل فنيًّا أو فريقًا أولًا',1); return; }
+  var X=function(t){ return String(t==null?'':t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var old=document.getElementById('woOv'); if(old) old.remove();
+  var ov=document.createElement('div'); ov.id='woOv'; ov.className='iosOv';
+  ov.innerHTML='<div class="iosC woC">'
+    +'<button type="button" class="nskX" id="woX" aria-label="إغلاق">×</button>'
+    +'<h3>'+K.i+' <span>طلب</span> <span>'+K.n+'</span></h3>'
+    +'<p class="dTs"><span>اكتب الكمية أمام كل صنف. النقاط تُحسب من كتالوج هذه المرحلة وتُثبَّت لحظة الإنشاء.</span></p>'
+    +'<div class="woF"><label class="woL"><span>الفني أو الفريق</span>'
+    +'<select id="woWho">'+who.map(function(n){ return '<option>'+X(n)+'</option>'; }).join('')+'</select></label>'
+    +'<label class="woL"><span>الموعد المستهدف</span><input type="date" id="woDue"></label></div>'
+    +'<div id="woL">'+IT.map(function(it){
+        var p=(kind==='prep')?it.prep:it.asm;
+        return '<label class="tkPick"><span style="flex:1">'+X(it.n)+'</span>'
+          +'<span class="woP">'+p+' <span>ن</span></span>'
+          +'<input type="number" inputmode="numeric" class="woQ" data-id="'+X(it.id)
+          +'" data-p="'+p+'" min="0" placeholder="0" style="width:76px"></label>';
+      }).join('')+'</div>'
+    +'<label class="woL"><span>ملاحظة</span><input type="text" id="woNote" placeholder="اختياري"></label>'
+    +'<p class="dTs" id="woTot"><span>الإجمالي:</span> 0 <span>نقطة</span></p>'
+    +'<div class="dRow"><button type="button" class="dBtn" id="woGo">'+K.i+' <span>أنشئ الطلب</span></button></div></div>';
+  document.body.appendChild(ov); ov.style.display='flex';
+  function tot(){
+    var t=0;
+    Array.prototype.forEach.call(ov.querySelectorAll('.woQ'), function(e){
+      t += (parseFloat(e.dataset.p)||0)*(parseFloat(e.value)||0); });
+    t=Math.round(t*10)/10;
+    ov.querySelector('#woTot').innerHTML='<span>الإجمالي:</span> '+t+' <span>نقطة</span>';
+    return t;
+  }
+  Array.prototype.forEach.call(ov.querySelectorAll('.woQ'), function(e){ e.oninput=tot; });
+  ov.querySelector('#woX').onclick=function(){ ov.remove(); };
+  ov.addEventListener('mousedown', function(e){ if(e.target===ov) ov.remove(); });
+  ov.querySelector('#woGo').onclick=function(){
+    var items={};
+    Array.prototype.forEach.call(ov.querySelectorAll('.woQ'), function(e){
+      var q=parseFloat(e.value)||0; if(q>0) items[e.dataset.id]=q; });
+    var w=String((ov.querySelector('#woWho')||{}).value||'').trim();
+    var d=String((ov.querySelector('#woDue')||{}).value||'');
+    var nt=String((ov.querySelector('#woNote')||{}).value||'');
+    if(window.woNew(kind, w, items, d, nt)){
+      ov.remove();
+      try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+    }
+  };
+  try{ if(window.NSKI18N) NSKI18N.apply(ov); }catch(e){}
+};
 /* بدء الزيارة — من نافذة النقطة */
 window.tkStart = function(siteId){
   var t=window.tkOf(siteId); if(!t){ toast('لا مهمة مسح لك على هذه النقطة',1); return; }
@@ -8952,6 +9263,17 @@ window.tkDel = function(id){
   toast('حُذفت المهمة');
 };
 /* رصيد نقاط الفني من مهامه */
+/* رصيدٌ عبر كل الأنواع — يستعمله تقرير الورشة، وtkScore يبقى للزيارة وحدها */
+window.woScore = function(who, kind){
+  var s={req:0,run:0,done:0,ok:0,pts:0,ptsOk:0};
+  window.tkList(who,false,kind||'*').forEach(function(t){
+    if(t.st==='مطلوب'||t.st==='مُعاد') s.req++;
+    else if(t.st==='قيد التنفيذ') s.run++;
+    else if(t.st==='منفّذ'){ s.done++; s.pts+=(parseFloat(t.w)||0); }
+    else if(t.st==='معتمد'){ s.ok++; s.pts+=(parseFloat(t.w)||0); s.ptsOk+=(parseFloat(t.w)||0); }
+  });
+  return s;
+};
 window.tkScore = function(who){
   var s={req:0,run:0,done:0,ok:0,pts:0,ptsOk:0};
   window.tkList(who,false).forEach(function(t){
@@ -9004,7 +9326,9 @@ window._tkHtml = function(id){
     var _b=((inss[id]||{}).bom)||null;
     if(_b && _b.pts)
       h+='<div class="pst"><span class="hbC" style="border-color:#8b5cf6;color:#8b5cf6">قطع معتمدة · '+esc(String(_b.pts))+' نقطة</span>'
-        +((_ro2==='admin'||_ro2==='engineer')?' <a href="#" class="go" onclick="bomOpen(\''+id+'\',\'\');return false">تعديل القطع</a>':'')+'</div>';
+        +((_ro2==='admin'||_ro2==='engineer')?' <a href="#" class="go" onclick="bomOpen(\''+id+'\',\'\');return false">تعديل القطع</a>':'')
+        +((_ro2==='admin'||_ro2==='engineer')?' <a href="#" class="go" style="border-color:#3AD6A0;color:#3AD6A0" onclick="woInstallAsk([\''+id+'\']);return false">🔧 طلب تركيب</a>':'')
+        +'</div>';
     return h+'</div>';
   }catch(e){ return ''; }
 };
@@ -9697,6 +10021,7 @@ var DTABS=[
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
   ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
   ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
+  ['wo','الورشة',          ['wos','wday'],                              'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية'],
   ['buy','المشتريات',      ['buys'],                                    'دفتر مصروفات السوق المحلي بفواتيره ومورّديه'],
   ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
@@ -9709,7 +10034,7 @@ function tabOf(sec){
 function tabsFor(role){
   if(role==='viewer')     return ['watch','buy'];   /* V13.84: الوزارة ترى المصروف قراءةً بلا أزرار */
   if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
-  return ['watch','req','tech','buy','plan','ops','adm'];
+  return ['watch','req','tech','wo','buy','plan','ops','adm'];
 }
 function curTab(){
   var D=window.NSKDASH||{}, allow=tabsFor((user&&user.role)||'');
@@ -10827,6 +11152,98 @@ function render(){
     h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
     h+='</section>';
   })();
+  /* V13.89: الورشة — طلبات التهيئة والتجميع والتركيب ونقاطها اليومية */
+  (function(){
+    var canW=!!(user && (user.role==='admin'||user.role==='engineer'));
+    var KS=window.WO_KINDS, ALL=[];
+    try{ Object.keys(window.NSKTASK||{}).forEach(function(k){ if((window.NSKTASK||{})[k]) ALL.push((window.NSKTASK||{})[k]); }); }catch(e){}
+    var byKind={prep:[],asm:[],install:[],visit:[]};
+    ALL.forEach(function(t){ var k=window.woKind(t); (byKind[k]=byKind[k]||[]).push(t); });
+    var OPEN=function(L){ return L.filter(function(t){ return t.st!=='معتمد'; }); };
+
+    h+='<section class="dSec" data-sec="wos">';
+    h+='<h2>الورشة — طلبات التهيئة والتجميع والتركيب</h2>';
+    h+='<div class="dGrid">';
+    ['prep','asm','install'].forEach(function(k){
+      var L=byKind[k]||[], o=OPEN(L), w=0;
+      o.forEach(function(t){ w+=parseFloat(t.w)||0; });
+      h+=card(o.length, KS[k].i+' '+KS[k].n+' — قيد التنفيذ', KS[k].c);
+    });
+    var allW=0; ALL.forEach(function(t){ if(t.st==='منفّذ'||t.st==='معتمد') allW+=parseFloat(t.w)||0; });
+    h+=card(AR(Math.round(allW*10)/10),'نقاط منفَّذة تراكميًّا','#E9CE83');
+    h+='</div>';
+    if(canW){
+      h+='<div class="dRow">'
+        +'<button type="button" class="dBtn p" id="woAddP">🛠 <span>طلب تهيئة</span></button>'
+        +'<button type="button" class="dBtn p" id="woAddA">🧰 <span>طلب تجميع</span></button>'
+        +'<button type="button" class="dBtn" id="woXls">⬇ <span>إكسل — طلبات الورشة</span></button></div>';
+      h+='<p class="dTs"><span>طلب التركيب يُنشأ من نافذة النقطة بعد اعتماد قطعها، أو من تحديدٍ على الخريطة — لأن وزنه من قطعها هي.</span></p>';
+    }
+    var SHOW=ALL.filter(function(t){ return window.woKind(t)!=='visit'; })
+      .sort(function(a,b){ return String(b.ts||'').localeCompare(String(a.ts||'')); });
+    if(!SHOW.length) h+='<div class="dEmpty">لا طلبات ورشةٍ بعد.</div>';
+    else {
+      h+='<table class="dT"><thead><tr><th>الطلب</th><th>النوع</th><th>المنفِّذ</th><th>المحتوى</th>'
+        +'<th>نقاط</th><th>الحالة</th><th>الموعد</th>'+(canW?'<th></th>':'')+'</tr></thead><tbody>';
+      SHOW.slice(0,120).forEach(function(t){
+        var K=KS[window.woKind(t)]||KS.visit;
+        var body = t.site ? ('<code class="nx">'+esc2(t.site)+'</code>')
+                          : (AR(Object.keys(t.items||{}).length)+' <span>صنفًا</span>');
+        var stc = t.st==='معتمد'?'#3AD6A0':(t.st==='منفّذ'?'#4BC9F5':(t.st==='مُعاد'?'#E05252':'#E8C34B'));
+        h+='<tr><td><code class="nx">'+esc2(t.ord||t.id)+'</code></td>'
+          +'<td style="color:'+K.c+';font-weight:800">'+K.i+' '+esc2(K.n)+'</td>'
+          +'<td><code class="nx">'+esc2(t.tech||'—')+'</code></td>'
+          +'<td>'+body+'</td><td><b>'+AR(t.w||0)+'</b></td>'
+          +'<td style="color:'+stc+'">'+esc2(t.st||'')+'</td>'
+          +'<td>'+esc2(t.due||'—')+'</td>'
+          +(canW?('<td>'+(t.st==='مطلوب'||t.st==='مُعاد'
+              ? '<button type="button" class="dBtn woS" data-id="'+escA(t.id)+'">بدء</button>'
+              : (t.st==='قيد التنفيذ'
+                 ? '<button type="button" class="dBtn woD" data-id="'+escA(t.id)+'">تم</button>'
+                 : (t.st==='منفّذ'
+                    ? '<button type="button" class="dBtn woA" data-id="'+escA(t.id)+'">اعتمد</button>'
+                    : '<span class="pMut">—</span>')))+'</td>'):'')
+          +'</tr>';
+      });
+      h+='</tbody></table>';
+      h+='<p class="dTs"><span>الحالات الخمس نفسها في كل الأنواع: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد، والإعادة ترجعه للمنفِّذ.</span></p>';
+    }
+    h+='</section>';
+
+    /* نقاط اليوم عبر المراحل */
+    h+='<section class="dSec" data-sec="wday">';
+    h+='<h2>نقاط اليوم — لكل منفِّذ عبر المراحل</h2>';
+    var day=new Date().toISOString().slice(0,10);
+    var WHO={};
+    ALL.forEach(function(t){ if(t.tech) WHO[t.tech]=1; });
+    try{ (((window.NSKCORE.get('settings','teams')||{}).list)||[]).forEach(function(n){ if(n) WHO[String(n)]=1; }); }catch(e){}
+    var names=Object.keys(WHO).sort(function(a,b){ return a.localeCompare(b,'ar'); });
+    if(!names.length) h+='<div class="dEmpty">لا منفِّذين مسجّلين بعد.</div>';
+    else {
+      var G={prep:0,asm:0,install:0,visit:0,dis:0,tot:0};
+      h+='<table class="dT"><thead><tr><th>المنفِّذ</th><th>🛠 تهيئة</th><th>🧰 تجميع</th>'
+        +'<th>🔧 تركيب</th><th>🔍 زيارة</th><th>🧩 فك</th><th>الإجمالي</th></tr></thead><tbody>';
+      names.forEach(function(n){
+        var d=window.woDay(n, day);
+        if(!d.tot) return;
+        ['prep','asm','install','visit','dis'].forEach(function(k){ G[k]+=d[k]||0; });
+        G.tot+=d.tot;
+        h+='<tr><td><code class="nx">'+esc2(n)+'</code></td>'
+          +'<td>'+AR(Math.round((d.prep||0)*10)/10)+'</td><td>'+AR(Math.round((d.asm||0)*10)/10)+'</td>'
+          +'<td>'+AR(Math.round((d.install||0)*10)/10)+'</td><td>'+AR(Math.round((d.visit||0)*10)/10)+'</td>'
+          +'<td>'+AR(Math.round((d.dis||0)*10)/10)+'</td>'
+          +'<td><b style="color:#E9CE83">'+AR(Math.round(d.tot*10)/10)+'</b></td></tr>';
+      });
+      h+='<tr><td><b>الإجمالي</b></td>'
+        +['prep','asm','install','visit','dis'].map(function(k){ return '<td><b>'+AR(Math.round(G[k]*10)/10)+'</b></td>'; }).join('')
+        +'<td><b style="color:#E9CE83">'+AR(Math.round(G.tot*10)/10)+'</b></td></tr>';
+      h+='</tbody></table>';
+      if(!G.tot) h+='<div class="dEmpty">لا نقاط مسجّلة اليوم بعد — تظهر فور وسم أي طلبٍ «تم».</div>';
+      h+='<p class="dTs"><span>يُحتسب ما وُسم «منفّذ» أو «معتمد» اليوم، بوزنه المثبَّت لحظة إنشاء الطلب — تغييرُ الكتالوج لاحقًا لا يمسّ تاريخًا.</span></p>';
+    }
+    h+='</section>';
+  })();
+
   /* V13.84: المشتريات — دفتر مصروفات السوق المحلي */
   (function(){
     var canB=!!(user && (user.role==='admin'||user.role==='engineer'));
@@ -11459,6 +11876,57 @@ function render(){
     b.onclick=function(){ window.sendTeam(b.getAttribute('data-t')); }; });
   var _ta=$i('tmAll'); if(_ta) _ta.onclick=function(){ window.sendAllTeams(); };
 
+  /* V13.89: أزرار الورشة — في كود التهيئة لا داخل دالة الرسم */
+  var _wp=$i('woAddP'); if(_wp) _wp.onclick=function(){ window.woAsk('prep'); };
+  var _wa=$i('woAddA'); if(_wa) _wa.onclick=function(){ window.woAsk('asm'); };
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .woS'),function(b){
+    b.onclick=function(){ window.woStart(b.getAttribute('data-id')); }; });
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .woD'),function(b){
+    b.onclick=function(){ window.woDone(b.getAttribute('data-id')); }; });
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .woA'),function(b){
+    b.onclick=function(){
+      var t=(window.NSKTASK||{})[b.getAttribute('data-id')]; if(!t) return;
+      window.nskAsk({ t:'اعتماد الطلب',
+        m:(t.ord||t.id)+String.fromCharCode(10)+'يُثبَّت وزنه في رصيد المنفِّذ ولا يعود قابلًا للتعديل.',
+        ok:'اعتمد' }).then(function(r){
+        if(!r) return;
+        try{ window.tkApprove(b.getAttribute('data-id')); }catch(e){}
+        try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+      });
+    }; });
+  var _wx=$i('woXls');
+  if(_wx) _wx.onclick=function(){
+    try{
+      var IT={}; try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+      var rows=[['الطلب','النوع','المنفِّذ','النقطة','المحتوى','نقاط','الحالة','الموعد','أُنشئ','نُفّذ','أنشأه','ملاحظة']];
+      var L=[]; try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+        var t=(window.NSKTASK||{})[k];
+        if(t && window.woKind(t)!=='visit') L.push(t); }); }catch(e){}
+      if(!L.length){ toast('لا طلبات ورشةٍ لتصديرها',1); return; }
+      L.sort(function(a,b){ return String(a.ts||'').localeCompare(String(b.ts||'')); });
+      var tot=0;
+      L.forEach(function(t){
+        tot+=parseFloat(t.w)||0;
+        var body=Object.keys(t.items||{}).map(function(id){
+          return ((IT[id]||{}).n||id)+' ×'+t.items[id]; }).join(' · ');
+        rows.push([t.ord||t.id, (window.WO_KINDS[window.woKind(t)]||{}).n||'', t.tech||'', t.site||'',
+                   body, parseFloat(t.w)||0, t.st||'', t.due||'',
+                   String(t.ts||'').slice(0,10), String(t.doneAt||'').slice(0,10), t.by||'', t.note||'']);
+      });
+      rows.push([]); rows.push(['الإجمالي','','','','',Math.round(tot*10)/10]);
+      var wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows),'طلبات الورشة');
+      var day=new Date().toISOString().slice(0,10), dr=[['المنفِّذ','تهيئة','تجميع','تركيب','زيارة','فك','الإجمالي']];
+      var W={}; L.forEach(function(t){ if(t.tech) W[t.tech]=1; });
+      Object.keys(W).forEach(function(n){
+        var d=window.woDay(n, day);
+        if(d.tot) dr.push([n, d.prep, d.asm, d.install, d.visit, d.dis, d.tot]);
+      });
+      if(dr.length>1) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dr),'نقاط اليوم');
+      XLSX.writeFile(wb,'نُسُك-طلبات-الورشة.xlsx');
+      try{ if(window.NSKSYNC) NSKSYNC.log('تصدير طلبات الورشة — '+L.length+' طلبًا'); }catch(e){}
+    }catch(e){ toast('تعذّر التصدير',1); }
+  };
   /* V13.84: أزرار المشتريات — تُربط هنا في كود التهيئة لا داخل دالة الرسم */
   var _ba=$i('byAdd'); if(_ba) _ba.onclick=function(){ window.buyAdd(); };
   Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byE'),function(b){
@@ -13403,6 +13871,45 @@ window.NSKI18N = (function(){
   'قطع التركيب المعتمدة':'Approved installation items', 'مشتريات السوق المحلي':'Local-market purchases',
   'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings',
   'كاميرا AI موتورايز':'Motorised AI camera',
+  'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
+  'الورشة':'Workshop', 'الورشة — طلبات التهيئة والتجميع والتركيب':'Workshop — configuration, assembly and installation orders',
+  'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية':'Configuration, assembly and installation — their orders and daily points',
+  'تهيئة':'Configuration', 'تجميع':'Assembly', 'تركيب':'Installation', 'زيارة':'Visit', 'فك':'Dismantle',
+  'طلب':'Order', 'الطلب':'Order', 'المنفِّذ':'Performed by', 'المحتوى':'Contents', 'نقاط':'Points',
+  'صنفًا':'items', 'نقاط منفَّذة تراكميًّا':'Cumulative points performed',
+  '🛠 طلب تهيئة':'🛠 Configuration order', '🧰 طلب تجميع':'🧰 Assembly order',
+  'طلب تهيئة':'Configuration order', 'طلب تجميع':'Assembly order', 'طلب تركيب':'Installation order',
+  '🔧 طلب تركيب':'🔧 Installation order', '⬇ إكسل — طلبات الورشة':'⬇ Excel — workshop orders',
+  'أنشئ الطلب':'Create the order', 'أنشئ طلب التركيب':'Create the installation order',
+  'الفني أو الفريق':'Technician or team', 'اكتب الكمية أمام كل صنف. النقاط تُحسب من كتالوج هذه المرحلة وتُثبَّت لحظة الإنشاء.':'Enter the quantity next to each item. Points are computed from this stage’s catalogue and fixed at the moment of creation.',
+  'لا طلبات ورشةٍ بعد.':'No workshop orders yet.', 'لا طلبات ورشةٍ لتصديرها':'No workshop orders to export',
+  'طلب التركيب يُنشأ من نافذة النقطة بعد اعتماد قطعها، أو من تحديدٍ على الخريطة — لأن وزنه من قطعها هي.':'An installation order is created from the point window after its items are approved, or from a map selection — because its weight comes from those very items.',
+  'الحالات الخمس نفسها في كل الأنواع: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد، والإعادة ترجعه للمنفِّذ.':'The same five states across all types: required → in progress → performed → approved, and returning sends it back to the performer.',
+  'نقاط اليوم — لكل منفِّذ عبر المراحل':'Today’s points — per performer across the stages',
+  'لا منفِّذين مسجّلين بعد.':'No performers registered yet.',
+  'لا نقاط مسجّلة اليوم بعد — تظهر فور وسم أي طلبٍ «تم».':'No points recorded today yet — they appear as soon as any order is marked done.',
+  'يُحتسب ما وُسم «منفّذ» أو «معتمد» اليوم، بوزنه المثبَّت لحظة إنشاء الطلب — تغييرُ الكتالوج لاحقًا لا يمسّ تاريخًا.':'What was marked performed or approved today is counted, at the weight fixed when the order was created — changing the catalogue later never touches history.',
+  'بدء':'Start', 'تم':'Done', 'اعتمد':'Approve', 'اعتماد الطلب':'Approve the order',
+  'يُثبَّت وزنه في رصيد المنفِّذ ولا يعود قابلًا للتعديل.':'Its weight is fixed in the performer’s balance and can no longer be changed.',
+  'لا قطعَ معتمدةً بعد':'No approved items yet', 'فهمت':'Understood',
+  'طلب التركيب يُبنى على القطع التي اعتمدها المهندس لكل نقطة.':'An installation order is built on the items the engineer approved for each point.',
+  'اعتمدها أولًا من «اعتمد وحدّد القطع» في نافذة النقطة.':'Approve them first from “Approve and set items” in the point window.',
+  'حدّد نقطةً واحدةً على الأقل':'Select at least one point', 'اختر الفني أولًا':'Choose the technician first',
+  'اكتب كمية صنفٍ واحدٍ على الأقل':'Enter a quantity for at least one item',
+  'سجّل فنيًّا أو فريقًا أولًا':'Register a technician or a team first',
+  'لا أصناف لهذه المرحلة — اضبط نقاطها في الإعدادات أولًا':'No items in this stage — set their points in Settings first',
+  'لا طلب بهذا المعرّف':'No order with that id', 'الطلب قيد التنفيذ بالفعل':'The order is already in progress',
+  'الطلب منفَّذ بالفعل':'The order is already performed', 'بدأ التنفيذ ⏱':'Work started ⏱',
+  'ن':'p', 'الإجمالي:':'Total:',
+  'تحديث نقاط التهيئة':'Configuration points updated', 'تحديث نقاط التجميع':'Assembly points updated',
+  'نقاط تهيئة كل جهاز في الورشة':'Configuration points per device in the workshop',
+  'نقاط تجميع مكوّنات البوكس':'Assembly points per box component',
+  'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. اكتب نقاط تهيئة كل جهاز، والصفر يعني أنه لا يمرّ بالتهيئة أصلًا.':'Configuration is the workshop work before going out: setting the device, its address, its firmware and testing it. Enter the configuration points per device; zero means it does not go through configuration at all.',
+  'التجميع تركيب مكوّنات البوكس وتوصيلها قبل النزول. اكتب نقاط تجميع كل مكوّن، والصفر يعني أنه لا يدخل البوكس.':'Assembly is fitting and wiring the box components before going out. Enter the assembly points per component; zero means it does not go into the box.',
+  'حفظ نقاط التهيئة':'Save configuration points', 'حفظ نقاط التجميع':'Save assembly points',
+  'الأصناف تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تُسعّر عملها في هذه المرحلة وحدها.':'Items are added and removed on the “Items and prices” page; this page only prices their work in this stage.',
+  'صنفًا في هذه المرحلة · إجماليها':'items in this stage · totalling', 'الصنف':'Item',
+  'جيت واي':'Gateway', 'فيش كهرباء':'Power socket',
   'تارجت المسح الشهري':'Monthly survey target', 'تارجت المسح الأسبوعي':'Weekly survey target',
   'تارجت الفك الشهري':'Monthly dismantle target', 'تارجت الفك الأسبوعي':'Weekly dismantle target',
   'الإجمالي الشهري':'Monthly total', 'نقطة · الأسبوعي':'points · weekly',
@@ -13719,6 +14226,45 @@ window.NSKI18N = (function(){
   'قطع التركيب المعتمدة':'منظور شدہ تنصیب پرزے', 'مشتريات السوق المحلي':'مقامی بازار کی خریداری',
   'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات',
   'كاميرا AI موتورايز':'موٹرائزڈ AI کیمرہ',
+  'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
+  'الورشة':'ورکشاپ', 'الورشة — طلبات التهيئة والتجميع والتركيب':'ورکشاپ — تیاری، اسمبلی اور تنصیب کے آرڈر',
+  'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية':'تیاری، اسمبلی اور تنصیب — ان کے آرڈر اور روزانہ پوائنٹس',
+  'تهيئة':'تیاری', 'تجميع':'اسمبلی', 'تركيب':'تنصیب', 'زيارة':'دورہ', 'فك':'ہٹانا',
+  'طلب':'آرڈر', 'الطلب':'آرڈر', 'المنفِّذ':'انجام دہندہ', 'المحتوى':'مواد', 'نقاط':'پوائنٹس',
+  'صنفًا':'اشیاء', 'نقاط منفَّذة تراكميًّا':'مجموعی انجام شدہ پوائنٹس',
+  '🛠 طلب تهيئة':'🛠 تیاری آرڈر', '🧰 طلب تجميع':'🧰 اسمبلی آرڈر',
+  'طلب تهيئة':'تیاری آرڈر', 'طلب تجميع':'اسمبلی آرڈر', 'طلب تركيب':'تنصیب آرڈر',
+  '🔧 طلب تركيب':'🔧 تنصیب آرڈر', '⬇ إكسل — طلبات الورشة':'⬇ ایکسل — ورکشاپ آرڈرز',
+  'أنشئ الطلب':'آرڈر بنائیں', 'أنشئ طلب التركيب':'تنصیب آرڈر بنائیں',
+  'الفني أو الفريق':'ٹیکنیشن یا ٹیم', 'اكتب الكمية أمام كل صنف. النقاط تُحسب من كتالوج هذه المرحلة وتُثبَّت لحظة الإنشاء.':'ہر شے کے سامنے مقدار لکھیں۔ پوائنٹس اس مرحلے کے کیٹلاگ سے شمار ہو کر تخلیق کے لمحے طے ہو جاتے ہیں۔',
+  'لا طلبات ورشةٍ بعد.':'ابھی کوئی ورکشاپ آرڈر نہیں۔', 'لا طلبات ورشةٍ لتصديرها':'برآمد کے لیے کوئی ورکشاپ آرڈر نہیں',
+  'طلب التركيب يُنشأ من نافذة النقطة بعد اعتماد قطعها، أو من تحديدٍ على الخريطة — لأن وزنه من قطعها هي.':'تنصیب آرڈر پوائنٹ کی ونڈو سے اس کے پرزے منظور ہونے کے بعد، یا نقشے پر انتخاب سے بنتا ہے — کیونکہ اس کا وزن انہی پرزوں سے آتا ہے۔',
+  'الحالات الخمس نفسها في كل الأنواع: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد، والإعادة ترجعه للمنفِّذ.':'تمام اقسام میں وہی پانچ حالتیں: مطلوب ← جاری ← انجام شدہ ← منظور، اور واپسی اسے انجام دہندہ کو لوٹا دیتی ہے۔',
+  'نقاط اليوم — لكل منفِّذ عبر المراحل':'آج کے پوائنٹس — ہر انجام دہندہ کے لیے مراحل کے پار',
+  'لا منفِّذين مسجّلين بعد.':'ابھی کوئی انجام دہندہ رجسٹرڈ نہیں۔',
+  'لا نقاط مسجّلة اليوم بعد — تظهر فور وسم أي طلبٍ «تم».':'آج ابھی کوئی پوائنٹ درج نہیں — کسی آرڈر کو «ہو گیا» کرتے ہی ظاہر ہوں گے۔',
+  'يُحتسب ما وُسم «منفّذ» أو «معتمد» اليوم، بوزنه المثبَّت لحظة إنشاء الطلب — تغييرُ الكتالوج لاحقًا لا يمسّ تاريخًا.':'آج جو «انجام شدہ» یا «منظور» ہوا وہ شمار ہوتا ہے، اسی وزن پر جو آرڈر بناتے وقت طے ہوا — بعد میں کیٹلاگ بدلنے سے تاریخ نہیں بدلتی۔',
+  'بدء':'شروع', 'تم':'ہو گیا', 'اعتمد':'منظور', 'اعتماد الطلب':'آرڈر کی منظوری',
+  'يُثبَّت وزنه في رصيد المنفِّذ ولا يعود قابلًا للتعديل.':'اس کا وزن انجام دہندہ کے کھاتے میں طے ہو جاتا ہے اور پھر بدلا نہیں جا سکتا۔',
+  'لا قطعَ معتمدةً بعد':'ابھی کوئی منظور شدہ پرزے نہیں', 'فهمت':'سمجھ گیا',
+  'طلب التركيب يُبنى على القطع التي اعتمدها المهندس لكل نقطة.':'تنصیب آرڈر ان پرزوں پر بنتا ہے جو انجینئر نے ہر پوائنٹ کے لیے منظور کیے۔',
+  'اعتمدها أولًا من «اعتمد وحدّد القطع» في نافذة النقطة.':'پہلے پوائنٹ کی ونڈو میں «منظور کریں اور پرزے طے کریں» سے منظور کریں۔',
+  'حدّد نقطةً واحدةً على الأقل':'کم از کم ایک پوائنٹ منتخب کریں', 'اختر الفني أولًا':'پہلے ٹیکنیشن چنیں',
+  'اكتب كمية صنفٍ واحدٍ على الأقل':'کم از کم ایک شے کی مقدار لکھیں',
+  'سجّل فنيًّا أو فريقًا أولًا':'پہلے ٹیکنیشن یا ٹیم رجسٹر کریں',
+  'لا أصناف لهذه المرحلة — اضبط نقاطها في الإعدادات أولًا':'اس مرحلے کی کوئی شے نہیں — پہلے ترتیبات میں ان کے پوائنٹس طے کریں',
+  'لا طلب بهذا المعرّف':'اس شناخت کا کوئی آرڈر نہیں', 'الطلب قيد التنفيذ بالفعل':'آرڈر پہلے ہی جاری ہے',
+  'الطلب منفَّذ بالفعل':'آرڈر پہلے ہی انجام پا چکا', 'بدأ التنفيذ ⏱':'کام شروع ⏱',
+  'ن':'پ', 'الإجمالي:':'مجموعہ:',
+  'تحديث نقاط التهيئة':'تیاری پوائنٹس اپ ڈیٹ', 'تحديث نقاط التجميع':'اسمبلی پوائنٹس اپ ڈیٹ',
+  'نقاط تهيئة كل جهاز في الورشة':'ورکشاپ میں ہر آلے کے تیاری پوائنٹس',
+  'نقاط تجميع مكوّنات البوكس':'باکس اجزاء کے اسمبلی پوائنٹس',
+  'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. اكتب نقاط تهيئة كل جهاز، والصفر يعني أنه لا يمرّ بالتهيئة أصلًا.':'تیاری میدان میں جانے سے پہلے ورکشاپ کا کام ہے: آلہ، اس کا پتہ، اس کا سسٹم ترتیب دینا اور جانچنا۔ ہر آلے کے تیاری پوائنٹس لکھیں؛ صفر کا مطلب ہے وہ تیاری سے نہیں گزرتا۔',
+  'التجميع تركيب مكوّنات البوكس وتوصيلها قبل النزول. اكتب نقاط تجميع كل مكوّن، والصفر يعني أنه لا يدخل البوكس.':'اسمبلی میدان میں جانے سے پہلے باکس کے اجزاء لگانا اور جوڑنا ہے۔ ہر جزو کے اسمبلی پوائنٹس لکھیں؛ صفر کا مطلب ہے وہ باکس میں نہیں جاتا۔',
+  'حفظ نقاط التهيئة':'تیاری پوائنٹس محفوظ کریں', 'حفظ نقاط التجميع':'اسمبلی پوائنٹس محفوظ کریں',
+  'الأصناف تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تُسعّر عملها في هذه المرحلة وحدها.':'اشیاء «پرزے اور قیمتیں» صفحے سے شامل یا حذف ہوتی ہیں؛ یہ صفحہ صرف اس مرحلے میں ان کے کام کی قیمت طے کرتا ہے۔',
+  'صنفًا في هذه المرحلة · إجماليها':'اشیاء اس مرحلے میں · مجموعہ', 'الصنف':'شے',
+  'جيت واي':'گیٹ وے', 'فيش كهرباء':'بجلی ساکٹ',
   'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت المسح الأسبوعي':'ہفتہ وار سروے ہدف',
   'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'تارجت الفك الأسبوعي':'ہفتہ وار ہٹانے کا ہدف',
   'الإجمالي الشهري':'ماہانہ مجموعہ', 'نقطة · الأسبوعي':'پوائنٹس · ہفتہ وار',
