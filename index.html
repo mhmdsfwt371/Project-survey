@@ -8735,7 +8735,10 @@ window.cfgBind = function(){
     });
     var go=function(){
       var _m='تحديث كتالوج القطع';
-      if(moved.length) _m += ' — ' + moved.length + ' منقولة: ' + moved.join(' · ');
+      if(moved.length){
+        var _mv=[String(moved.length), 'منقولة:', moved.join(' · ')].join(' ');
+        _m = _m + ' — ' + _mv;
+      }
       window.itSave(L, _m); window.cfgMark(false); window.cfgRender();
     };
     if(!moved.length) return go();
@@ -14906,7 +14909,7 @@ window.NSKI18N = (function(){
   'اسم القطعة لا يكون فارغًا':'An item name cannot be empty',
   'نقل قطعة بين المنطقتين':'Move an item between zones',
   'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.':'Its share in the camps-versus-corridors split moves with it.',
-  'انقلها':'Move it', 'تحديث كتالوج القطع':'Item catalogue updated',
+  'انقلها':'Move it', 'تحديث كتالوج القطع':'Item catalogue updated', 'منقولة:':'moved:',
   'تغييرُ المنطقة ينقل القطعة بين الممر والمخيم، فينتقل معها احتسابُها في تقسيم النقاط. والأسعار هنا معتمدةٌ ثابتة — وأي شراء خارجي يُسجَّل بفاتورته في دفتر المشتريات.':'Changing the zone moves the item between corridor and camp, and its share in the points split moves with it. Prices here are fixed and approved — any external purchase is recorded with its invoice in the purchases ledger.',
   'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'Configuration is the workshop work before going out: setting the device, its address, its firmware and testing it. It is only for devices that have settings — cameras, readers, routers, sensors and gateways.',
   'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'Assembly is fitting and wiring whatever goes into the box before going out. It is only for the components assembled inside it.',
@@ -15367,7 +15370,7 @@ window.NSKI18N = (function(){
   'اسم القطعة لا يكون فارغًا':'پرزے کا نام خالی نہیں ہو سکتا',
   'نقل قطعة بين المنطقتين':'پرزہ علاقوں کے درمیان منتقل کریں',
   'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.':'خیموں اور راہداریوں کی تقسیم میں اس کا حصہ بھی ساتھ منتقل ہوتا ہے۔',
-  'انقلها':'منتقل کریں', 'تحديث كتالوج القطع':'پرزوں کا کیٹلاگ اپ ڈیٹ',
+  'انقلها':'منتقل کریں', 'تحديث كتالوج القطع':'پرزوں کا کیٹلاگ اپ ڈیٹ', 'منقولة:':'منتقل شدہ:',
   'تغييرُ المنطقة ينقل القطعة بين الممر والمخيم، فينتقل معها احتسابُها في تقسيم النقاط. والأسعار هنا معتمدةٌ ثابتة — وأي شراء خارجي يُسجَّل بفاتورته في دفتر المشتريات.':'علاقہ بدلنے سے پرزہ راہداری اور خیمے کے درمیان منتقل ہوتا ہے، اور پوائنٹس کی تقسیم میں اس کا حصہ بھی۔ یہاں قیمتیں طے شدہ اور منظور شدہ ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری رجسٹر میں درج ہوتی ہے۔',
   'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'تیاری میدان میں جانے سے پہلے ورکشاپ کا کام ہے: آلہ، اس کا پتہ، اس کا سسٹم ترتیب دینا اور جانچنا۔ یہ صرف ان آلات کے لیے ہے جن کی سیٹنگ ہوتی ہے — کیمرے، ریڈرز، راؤٹرز، سینسرز اور گیٹ ویز۔',
   'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'اسمبلی وہ ہے جو باکس میں جاتا ہے اسے لگانا اور جوڑنا۔ یہ صرف ان اجزاء کے لیے ہے جو اس کے اندر جمع ہوتے ہیں۔',
