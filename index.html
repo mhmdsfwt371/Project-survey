@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.67</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.68</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5260,7 +5260,7 @@ window.applyDocRole = function(){
     if(g){
       var ro=nskRole();
       g.style.display=(ro==='admin'||ro==='engineer')?'':'none';
-      g.onclick=window.nskOpenCfg;
+      g.onclick=function(){ window.nskCfgOpen(); };
     }
   }catch(e){}
   /* صف Word لا يظهر إلا للإداري */
@@ -5391,6 +5391,29 @@ window.NSKCORE={
 
 
 <style id="nskStdCss">
+#nskCfgOv{display:none;position:fixed;inset:0;z-index:9500;background:#0A0B0D;overflow:auto;
+  font-family:inherit;color:#E7E3D8;padding:0 0 40px}
+.cfgTop{position:sticky;top:0;background:#0F1216;border-bottom:1px solid #20262d;display:flex;
+  align-items:center;justify-content:space-between;padding:12px 14px;font-size:15px}
+.cfgB{background:transparent;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:6px 11px;font-size:13px}
+.cfgNav{display:flex;gap:6px;overflow:auto;padding:10px 12px;border-bottom:1px solid #20262d}
+.cfgN{white-space:nowrap;background:transparent;border:1px solid #2A3038;border-radius:999px;
+  color:#9aa2ab;padding:7px 13px;font-size:12.5px}
+.cfgN.on{background:#C9A24B;border-color:#C9A24B;color:#0A0B0D;font-weight:700}
+.cfgBody{padding:14px 14px 30px;max-width:760px;margin:0 auto}
+.cfgBody h2{font-size:17px;margin:4px 0 2px;color:#E8C36A}
+.cfgS{font-size:12.5px;color:#8a9199;margin:0 0 12px;line-height:1.7}
+.cfgT{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 12px}
+.cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:7px 6px;border-bottom:1px solid #20262d}
+.cfgT td{padding:7px 6px;border-bottom:1px solid #171c22}
+.cfgT input{background:#12161b;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;padding:7px 9px;font-size:13px;width:96px}
+.cfgF{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0 14px}
+.cfgF label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#9aa2ab}
+.cfgF input{background:#12161b;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:9px 11px;font-size:13px}
+.cfgRow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
+.cfgGo{background:#C9A24B;border:none;border-radius:10px;color:#0A0B0D;font-weight:700;padding:10px 16px;font-size:13px}
+.cfgDel{background:transparent;border:1px solid #2A3038;border-radius:8px;color:#F0655A;padding:4px 10px}
+
 body:not(.nskCfgOpen) #fbAdmin{display:none!important}
 #cfgHdr{font-size:15px}
 
@@ -7521,7 +7544,7 @@ window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
   if(!L.length) L=window.ITEM_SEED.slice();
-  return L.map(function(x){ return {id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0)}; })
+  return L.map(function(x){ return {id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0)}; })
           .filter(function(x){ return x.id && x.n; });
 };
 window.itSave = function(list, logTxt){
@@ -7577,6 +7600,200 @@ window.bomOpen = function(siteId, taskId){
     toast('اعتُمدت القطع — '+rec.bom.pts+' نقطة ✓');
     ov.remove();
     try{ window.nskSync(); }catch(e){}
+  };
+};
+/* ═══ شاشة الإعدادات المستقلة — كل بند صفحة قائمة بذاتها ═══ */
+window.NSKCFG = { page:'roles' };
+window.cfgPages = [
+  ['roles','الأدوار والصلاحيات','من يفعل ماذا'],
+  ['users','المستخدمون','إنشاء الحسابات وأدوارها'],
+  ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح'],
+  ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب'],
+  ['dis','نقاط الفك','وزن الفك ومعاملا الحالة'],
+  ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة'],
+  ['sys','ثوابت النظام','أيام العمل وساعات اليوم']
+];
+window.nskCfgOpen = function(page){
+  var ro=''; try{ ro=nskRole(); }catch(e){}
+  if(ro!=='admin' && ro!=='engineer'){ toast('الإعدادات للإدارة فقط',1); return; }
+  window.NSKCFG.page = page || window.NSKCFG.page || 'roles';
+  var ov=document.getElementById('nskCfgOv');
+  if(!ov){
+    ov=document.createElement('div'); ov.id='nskCfgOv';
+    document.body.appendChild(ov);
+  }
+  ov.style.display='block';
+  window.cfgRender();
+};
+window.cfgClose = function(){
+  var ov=document.getElementById('nskCfgOv'); if(ov) ov.style.display='none';
+};
+function _cfgX(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+window.cfgRender = function(){
+  var ov=document.getElementById('nskCfgOv'); if(!ov) return;
+  var P=window.pwGet(), pg=window.NSKCFG.page, h='';
+  h+='<div class="cfgTop"><button type="button" id="cfgBack" class="cfgB">→ رجوع</button>'
+    +'<b>الإعدادات</b><button type="button" id="cfgX" class="cfgB">✕</button></div>';
+  h+='<div class="cfgNav">'+window.cfgPages.map(function(p){
+      return '<button type="button" class="cfgN'+(p[0]===pg?' on':'')+'" data-p="'+p[0]+'">'+_cfgX(p[1])+'</button>';
+    }).join('')+'</div>';
+  var cur=window.cfgPages.filter(function(p){ return p[0]===pg; })[0]||window.cfgPages[0];
+  h+='<div class="cfgBody"><h2>'+_cfgX(cur[1])+'</h2><p class="cfgS">'+_cfgX(cur[2])+'</p>';
+
+  if(pg==='roles'){
+    h+='<table class="cfgT"><tr><th>القدرة</th><th>مهندس</th><th>فني</th><th>وزارة</th></tr>'
+      +[['المسح والتوثيق','✓','✓ للمُسند له','—'],
+        ['وسم «تمت الزيارة»','✓','✓ للمُسند له','—'],
+        ['طلبات الزيارة والإسناد','✓','—','—'],
+        ['اعتماد الزيارات والقطع','✓','—','—'],
+        ['التركيب والفك','✓','✓ للمُسند له','—'],
+        ['رؤية كل النقاط','✓','نقاطه فقط','✓ قراءة'],
+        ['الإعدادات والنقاط والتارجت','✓','—','—'],
+        ['إدارة الحسابات','✓','—','—'],
+        ['أرقام الهواتف','✓','✓','مخفية']
+       ].map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>'; }).join('')
+      +'</table><p class="cfgS">الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
+  }
+  else if(pg==='users'){
+    h+='<p class="cfgS">إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.</p>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgAddU">➕ إضافة مستخدم</button></div>';
+  }
+  else if(pg==='visits'){
+    var MX=window.pwRows(), W=P.w||{};
+    h+='<table class="cfgT"><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th></tr>'
+      +MX.map(function(r){
+        var v=(W[r.k]!=null&&W[r.k]!=='')?W[r.k]:'';
+        return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
+          +'<td><input type="number" class="cfgW" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
+      }).join('')+'</table>'
+      +'<div class="cfgF"><label>تارجت المسح الشهري<input type="number" id="cfg_tgtSurvey" min="0" value="'+P.tgtSurvey+'"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveV">حفظ نقاط الزيارات</button></div>';
+  }
+  else if(pg==='install'){
+    var IT=window.itList();
+    h+='<table class="cfgT"><tr><th>القطعة</th><th>نقاط التركيب</th></tr>'
+      +IT.map(function(it){
+        return '<tr><td>'+_cfgX(it.n)+'</td>'
+          +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
+      }).join('')+'</table>'
+      +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
+      +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</p>';
+  }
+  else if(pg==='dis'){
+    var MX2=window.pwRows(), D=P.dw||{};
+    h+='<table class="cfgT"><tr><th>المشعر</th><th>النوع</th><th>وزن الفك</th></tr>'
+      +MX2.map(function(r){
+        var v=(D[r.k]!=null&&D[r.k]!=='')?D[r.k]:'';
+        return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
+          +'<td><input type="number" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
+      }).join('')+'</table>'
+      +'<div class="cfgF"><label>معامل «سليم»<input type="number" id="cfg_disOk" step="0.05" value="'+P.disOk+'"></label>'
+      +'<label>معامل «تالف»<input type="number" id="cfg_disBad" step="0.05" value="'+P.disBad+'"></label>'
+      +'<label>تارجت الفك الشهري<input type="number" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveD">حفظ نقاط الفك</button></div>';
+  }
+  else if(pg==='items'){
+    var IT2=window.itList();
+    h+='<table class="cfgT"><tr><th>القطعة</th><th>السعر (ريال)</th><th></th></tr>'
+      +IT2.map(function(it){
+        return '<tr><td>'+_cfgX(it.n)+'</td>'
+          +'<td><input type="number" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
+          +'<td><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)+'">×</button></td></tr>';
+      }).join('')+'</table>'
+      +'<div class="cfgF"><label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
+      +'<label>نقاط تركيبها<input type="number" id="cfg_itPts" step="0.5" min="0" value="1"></label>'
+      +'<label>سعرها<input type="number" id="cfg_itPr" min="0" value="0"></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgItAdd">إضافة قطعة</button>'
+      +'<button type="button" class="cfgGo" id="cfgItSave">حفظ الأسعار</button></div>'
+      +'<p class="cfgS">هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.</p>';
+  }
+  else if(pg==='sys'){
+    h+='<div class="cfgF"><label>أيام العمل في الشهر<input type="number" id="cfg_days" min="1" value="'+P.days+'"></label>'
+      +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label></div>'
+      +'<p class="cfgS">ساعات الشهر القياسية: '+((P.days||26)*(P.hours||8))+' ساعة.</p>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveS">حفظ الثوابت</button></div>';
+  }
+  h+='</div>';
+  ov.innerHTML=h;
+  window.cfgBind();
+};
+window.cfgBind = function(){
+  var ov=document.getElementById('nskCfgOv'); if(!ov) return;
+  var q=function(s){ return ov.querySelector(s); }, qa=function(s){ return ov.querySelectorAll(s); };
+  q('#cfgX').onclick=window.cfgClose;
+  q('#cfgBack').onclick=window.cfgClose;
+  Array.prototype.forEach.call(qa('.cfgN'), function(b){
+    b.onclick=function(){ window.NSKCFG.page=b.getAttribute('data-p'); window.cfgRender(); };
+  });
+  function base(){
+    var P0=window.pwGet(), o={};
+    ['camp','cor','stn','jam','other','ph','days','hours','tgtSurvey','tgtInstall','tgtDis',
+     'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
+    o.w=P0.w||{}; o.dw=P0.dw||{};
+    return o;
+  }
+  function num(id, o, k){ var e=q('#cfg_'+id); if(e && String(e.value||'').trim()!=='') o[k]=parseFloat(e.value)||0; }
+  var sv=q('#cfgSaveV');
+  if(sv) sv.onclick=function(){
+    var o=base(); o.w={};
+    Array.prototype.forEach.call(qa('.cfgW'), function(e){
+      var v=String(e.value||'').trim(); if(v!=='') o.w[e.getAttribute('data-k')]=parseFloat(v)||0; });
+    num('tgtSurvey',o,'tgtSurvey'); window.pwSave(o,'نقاط الزيارات'); window.cfgRender();
+  };
+  var si=q('#cfgSaveI');
+  if(si) si.onclick=function(){
+    var L=window.itList(), M={};
+    Array.prototype.forEach.call(qa('.cfgIP'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
+    L.forEach(function(x){ if(M[x.id]!=null) x.pts=M[x.id]; });
+    window.itSave(L,'تحديث نقاط تركيب القطع');
+    var o=base(); num('tgtInstall',o,'tgtInstall'); window.pwSave(o,'تارجت التركيب'); window.cfgRender();
+  };
+  var sd=q('#cfgSaveD');
+  if(sd) sd.onclick=function(){
+    var o=base(); o.dw={};
+    Array.prototype.forEach.call(qa('.cfgD'), function(e){
+      var v=String(e.value||'').trim(); if(v!=='') o.dw[e.getAttribute('data-k')]=parseFloat(v)||0; });
+    num('disOk',o,'disOk'); num('disBad',o,'disBad'); num('tgtDis',o,'tgtDis');
+    window.pwSave(o,'نقاط الفك'); window.cfgRender();
+  };
+  var ss=q('#cfgSaveS');
+  if(ss) ss.onclick=function(){
+    var o=base(); num('days',o,'days'); num('hours',o,'hours');
+    window.pwSave(o,'ثوابت النظام'); window.cfgRender();
+  };
+  var ia=q('#cfgItAdd');
+  if(ia) ia.onclick=function(){
+    var n2=String((q('#cfg_itNm')||{}).value||'').trim();
+    if(!n2){ toast('اكتب اسم القطعة أولًا',1); return; }
+    var L=window.itList();
+    L.push({ id:'it'+Date.now().toString(36), n:n2,
+             pts:parseFloat((q('#cfg_itPts')||{}).value)||0,
+             price:parseFloat((q('#cfg_itPr')||{}).value)||0 });
+    window.itSave(L,'إضافة قطعة: '+n2); window.cfgRender();
+  };
+  var is=q('#cfgItSave');
+  if(is) is.onclick=function(){
+    var L=window.itList(), M={};
+    Array.prototype.forEach.call(qa('.cfgPR'), function(e){ M[e.getAttribute('data-id')]=parseFloat(e.value)||0; });
+    L.forEach(function(x){ if(M[x.id]!=null) x.price=M[x.id]; });
+    window.itSave(L,'تحديث أسعار القطع'); window.cfgRender();
+  };
+  Array.prototype.forEach.call(qa('.cfgDel'), function(b){
+    b.onclick=function(){
+      var id=b.getAttribute('data-id');
+      window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة');
+      window.cfgRender();
+    };
+  });
+  var au=q('#cfgAddU');
+  if(au) au.onclick=function(){
+    try{ document.body.classList.add('nskCfgOpen'); }catch(e){}
+    window.cfgClose();
+    try{
+      var a2=document.getElementById('fbAcct');
+      if(a2){ a2.style.display='flex'; var ad=document.getElementById('fbAdmin'); if(ad) ad.style.display='block'; }
+    }catch(e){}
   };
 };
 window.pwRows = function(){
@@ -8622,7 +8839,6 @@ var DTABS=[
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
   ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
   ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
-  ['cfg','الإعدادات',      ['cfgUsers','cfgSrv','cfgIns','cfgDis','cfgItems','cfgSys'], 'الأدوار والمستخدمون ونقاط الزيارة والتركيب والفك وثوابت النظام'],
   ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
   ['adm','النظام',        ['sys','ev'],                                   'سجل الأحداث وسلامة البيانات وإعادة الضبط']
@@ -8634,7 +8850,7 @@ function tabOf(sec){
 function tabsFor(role){
   if(role==='viewer')     return ['watch'];
   if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
-  return ['watch','req','tech','plan','ops','cfg','adm'];
+  return ['watch','req','tech','plan','ops','adm'];
 }
 function curTab(){
   var D=window.NSKDASH||{}, allow=tabsFor((user&&user.role)||'');
@@ -9104,111 +9320,6 @@ function render(){
     } else h+='<p class="dTs">لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.</p>';
 
     h+='</section>';
-  })();
-  (function(){
-    var P=window.pwGet(), K=window.pwCalc(), C=window.NSKCORE;
-    var cA=!!(user && (user.role==='admin'||user.role==='engineer'));
-    if(!cA){ h+='<section class="dSec" data-sec="cfgUsers"><h2>⚙️ الإعدادات</h2><p class="dTs">هذه الصفحة للإدارة فقط.</p></section>'
-      +'<section class="dSec" data-sec="cfgSrv"></section><section class="dSec" data-sec="cfgIns"></section>'
-      +'<section class="dSec" data-sec="cfgDis"></section><section class="dSec" data-sec="cfgSys"></section>'; return; }
-    /* ١ · الأدوار والصلاحيات */
-    h+='<section class="dSec" data-sec="cfgUsers"><h2>👤 الأدوار والصلاحيات</h2>'
-      +'<table class="dT"><tr><th>القدرة</th><th>مهندس/أدمن</th><th>فني/مشرف</th><th>وزارة</th></tr>'
-      +[['المسح والتوثيق','✓','✓ للمُسند له','—'],
-        ['وسم «تمت الزيارة»','✓','✓ للمُسند له','—'],
-        ['إنشاء طلبات الزيارة والإسناد','✓','—','—'],
-        ['اعتماد الزيارات والتصويبات','✓','—','—'],
-        ['التركيب والفك','✓','✓ للمُسند له','—'],
-        ['رؤية كل النقاط','✓','نقاطه فقط','✓ قراءة'],
-        ['الإعدادات والنقاط والتارجت','✓','—','—'],
-        ['إدارة الحسابات','✓','—','—'],
-        ['أرقام الهواتف','✓','✓','مخفية']
-       ].map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>'; }).join('')
-      +'</table>'
-      +'<p class="dTs">الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.</p>'
-      +'<div class="dRow"><button type="button" class="dBtn" id="cfgAddU">➕ إضافة مستخدم</button></div></section>';
-    /* ٢ · نقاط الزيارات */
-    var Wm=P.w||{}, MXs=(window.pwRows?window.pwRows():[]);
-    h+='<section class="dSec" data-sec="cfgSrv"><h2>🔍 نقاط الزيارات</h2>'
-      +'<p class="dTs">وزن زيارة كل نوع في مشعره — يُثبَّت في المهمة لحظة تنفيذها فلا يتغيّر بتعديلٍ لاحق.</p>';
-    if(MXs.length){
-      h+='<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th></tr>'
-        +MXs.map(function(row){
-          var wv=(Wm[row.k]!=null&&Wm[row.k]!=='')?Wm[row.k]:'';
-          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td>'
-            +'<td><input type="number" class="mxW" data-k="'+_dvEsc(row.k)+'" step="0.5" min="0" value="'+wv
-            +'" placeholder="'+arS(row.dw)+'" style="width:76px"></td></tr>'; }).join('')
-        +'</table>';
-    }
-    h+='<div class="pwG"><label class="pwL">تارجت المسح الافتراضي/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label></div>'
-      +'<div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ نقاط الزيارات</button></div></section>';
-    /* ٣ · نقاط التركيب */
-    h+='<section class="dSec" data-sec="cfgIns"><h2>🔧 نقاط التركيب</h2>'
-      +'<p class="dTs">نقاط النقطة الكاملة لكل نوع موقع، وتوزيعها على مراحل العمل الثلاث — مجموع النسب ١٠٠٪.</p>'
-      +'<div class="pwG">'
-      +'<label class="pwL">نقاط تركيب المخيم<input type="number" step="0.1" id="pw_insCamp" value="'+(P.insCamp)+'"></label>'
-      +'<label class="pwL">نقاط تركيب الممر<input type="number" step="0.1" id="pw_insCor" value="'+(P.insCor)+'"></label>'
-      +'<label class="pwL">٪ التهيئة<input type="number" id="pw_stgCfg" min="0" max="100" value="'+(P.stgCfg)+'"></label>'
-      +'<label class="pwL">٪ التجميع<input type="number" id="pw_stgVal" min="0" max="100" value="'+(P.stgVal)+'"></label>'
-      +'<label class="pwL">٪ التركيب<input type="number" id="pw_stgIns" min="0" max="100" value="'+(P.stgIns)+'"></label>'
-      +'<label class="pwL">تارجت التركيب الافتراضي/شهر<input type="number" id="pw_tgtInstall" min="0" value="'+(P.tgtInstall)+'"></label>'
-      +'</div><div class="dRow"><button type="button" class="dBtn" id="pwSaveIns">حفظ نقاط التركيب</button></div></section>';
-    /* ٤ · نقاط الفك */
-    var Dw=P.dw||{};
-    h+='<section class="dSec" data-sec="cfgDis"><h2>🧩 نقاط الفك</h2>'
-      +'<p class="dTs">وزن فك كل نوع، ومعاملا حالة الجهاز — يُضربان في الوزن عند تأكيد الفك.</p>';
-    if(MXs.length){
-      h+='<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>وزن الفك</th></tr>'
-        +MXs.map(function(row){
-          var dv=(Dw[row.k]!=null&&Dw[row.k]!=='')?Dw[row.k]:'';
-          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td>'
-            +'<td><input type="number" class="dxW" data-k="'+_dvEsc(row.k)+'" step="0.5" min="0" value="'+dv
-            +'" placeholder="'+arS(row.dw)+'" style="width:76px"></td></tr>'; }).join('')
-        +'</table>';
-    }
-    h+='<div class="pwG">'
-      +'<label class="pwL">معامل «سليم»<input type="number" step="0.05" id="pw_disOk" value="'+(P.disOk)+'"></label>'
-      +'<label class="pwL">معامل «تالف»<input type="number" step="0.05" id="pw_disBad" value="'+(P.disBad)+'"></label>'
-      +'<label class="pwL">تارجت الفك الافتراضي/شهر<input type="number" id="pw_tgtDis" min="0" value="'+(P.tgtDis)+'"></label>'
-      +'</div><div class="dRow"><button type="button" class="dBtn" id="pwSaveDis">حفظ نقاط الفك</button></div></section>';
-    /* أهداف الفنيين */
-    var _rg=(window.tkReg?window.tkReg():[]);
-    if(_rg.length){
-      h+='<div class="dT3">أهداف الفنيين الشهرية</div>'
-        +'<table class="dT"><tr><th>الفني</th><th>تارجت المسح</th><th>تارجت التركيب</th></tr>'
-        +_rg.map(function(x){
-          return '<tr><td>'+_dvEsc(x.n)+'</td>'
-            +'<td><input type="number" class="tkTgtI" data-k="srv" data-n="'+_dvEsc(x.n)+'" min="0" value="'
-            +_dvEsc(String(x.tgt==null?'':x.tgt))+'" placeholder="'+arS(P.tgtSurvey)+'" style="width:82px"></td>'
-            +'<td><input type="number" class="tkTgtI" data-k="inst" data-n="'+_dvEsc(x.n)+'" min="0" value="'
-            +_dvEsc(String(x.tgtI==null?'':x.tgtI))+'" placeholder="'+arS(P.tgtInstall)+'" style="width:88px"></td></tr>';
-        }).join('')+'</table>';
-    }
-    h+='</section>';
-    /* ٥ · كتالوج القطع ونقاط تركيبها */
-    var IT=window.itList();
-    h+='<section class="dSec" data-sec="cfgItems"><h2>📦 القطع ونقاط تركيبها</h2>'
-      +'<p class="dTs">لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.</p>'
-      +'<table class="dT"><tr><th>القطعة</th><th>نقاط التركيب</th><th></th></tr>'
-      +IT.map(function(it){
-        return '<tr><td>'+_dvEsc(it.n)+'</td>'
-          +'<td><input type="number" class="itP" data-id="'+_dvEsc(it.id)+'" step="0.5" min="0" value="'+it.pts+'" style="width:82px"></td>'
-          +'<td><button type="button" class="itDel" data-id="'+_dvEsc(it.id)+'">×</button></td></tr>';
-      }).join('')+'</table>'
-      +'<div class="pwG"><label class="pwL">قطعة جديدة<input type="text" id="itNm" placeholder="اسم القطعة"></label>'
-      +'<label class="pwL">نقاطها<input type="number" id="itPts" step="0.5" min="0" value="1"></label></div>'
-      +'<div class="dRow"><button type="button" class="dBtn" id="itAdd">إضافة قطعة</button>'
-      +'<button type="button" class="dBtn" id="itSave">حفظ الكتالوج</button></div>';
-    /* ٦ · ثوابت النظام */
-    h+='<section class="dSec" data-sec="cfgSys"><h2>📐 ثوابت النظام</h2>'
-      +'<p class="dTs">عليها تُبنى ساعات الشهر ومعامل تحويل النقاط إلى ساعات أوفر تايم.</p>'
-      +'<div class="pwG">'
-      +'<label class="pwL">أيام العمل/شهر<input type="number" id="pw_days" min="1" value="'+(P.days)+'"></label>'
-      +'<label class="pwL">ساعات العمل/يوم<input type="number" id="pw_hours" min="1" value="'+(P.hours)+'"></label>'
-      +'<label class="pwL">نقاط الساعة (تُحسب)<input type="number" id="pw_ph" step="0.01" value="'+(K.ptsPerHour.toFixed(2))+'"></label>'
-      +'</div>'
-      +'<p class="dTs">ساعات الشهر القياسية: '+arS(K.hoursMonth)+' ساعة · وكل نقطةٍ فوق التارجت تُحوَّل بـ'+arS(K.ptsPerHour.toFixed(2))+' نقطة للساعة.</p>'
-      +'<div class="dRow"><button type="button" class="dBtn" id="pwSaveSys">حفظ الثوابت</button></div></section>';
   })();
     h+='<section class="dSec" data-sec="assign">';
     h+='<h2>توزيع فرق التركيب</h2>';
@@ -12016,7 +12127,8 @@ window.NSKI18N = (function(){
   'تارجت الشهر':'Monthly target', 'التارجت':'Target', 'التارجت الافتراضي/شهر':'Default target / month', 'حُفظ التارجت ✓':'Target saved ✓',
   'تارجت التركيب/شهر':'Install target / month', 'افتراضي المسح/شهر':'Default survey / month', 'افتراضي التركيب/شهر':'Default install / month',
   'الإعدادات':'Settings', '⚙️ الإعدادات':'⚙️ Settings', '👤 الأدوار والصلاحيات':'👤 Roles and permissions', '🔍 نقاط الزيارات':'🔍 Visit points', '🔧 نقاط التركيب':'🔧 Installation points', '🧩 نقاط الفك':'🧩 Dismantle points', '📐 ثوابت النظام':'📐 System constants', '➕ إضافة مستخدم':'➕ Add user', 'القدرة':'Capability', 'وزن الزيارة':'Visit weight', 'وزن الفك':'Dismantle weight', 'نقاط تركيب المخيم':'Camp install points', 'نقاط تركيب الممر':'Corridor install points', '٪ التهيئة':'% Configuration', '٪ التجميع':'% Assembly', '٪ التركيب':'% Installation', 'معامل «سليم»':'“Intact” factor', 'معامل «تالف»':'“Damaged” factor', 'تارجت المسح الافتراضي/شهر':'Default survey target / month', 'تارجت التركيب الافتراضي/شهر':'Default install target / month', 'تارجت الفك الافتراضي/شهر':'Default dismantle target / month', 'أيام العمل/شهر':'Working days / month', 'ساعات العمل/يوم':'Working hours / day', 'نقاط الساعة (تُحسب)':'Points per hour (computed)', 'حفظ نقاط الزيارات':'Save visit points', 'حفظ نقاط التركيب':'Save installation points', 'حفظ نقاط الفك':'Save dismantle points', 'حفظ الثوابت':'Save constants', 'حُفظت الإعدادات ✓':'Settings saved ✓', 'هذه الصفحة للإدارة فقط.':'This page is management-only.', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'Permissions are enforced at the database level, not the interface — what is hidden here is rejected there too.', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'Visit weights are set in the “Settings” tab and shown here for reference. “Available” is what is neither surveyed nor assigned. To create a request: select points from the list or the map, then “Create request”.', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'Create the account from the “My account” panel → Create account',
-  '📦 القطع ونقاط تركيبها':'📦 Items and their install points', 'نقاط التركيب':'Install points', 'القطعة':'Item', 'قطعة جديدة':'New item', 'نقاطها':'Its points', 'إضافة قطعة':'Add item', 'حفظ الكتالوج':'Save catalogue', 'حُفظ الكتالوج ✓':'Catalogue saved ✓', '📲 رسالة للمحددين':'📲 Message the selected', 'تحديد الكل':'Select all', 'حدّد فنيًّا واحدًا على الأقل':'Select at least one technician', 'اكتب اسم القطعة أولًا':'Type the item name first', 'أهداف الفنيين الشهرية':'Monthly technician targets', 'تارجت المسح':'Survey target', 'تارجت التركيب':'Install target', '✔ اعتمد وحدّد القطع':'✔ Approve and pick items', 'اعتمد وحدّد القطع':'Approve and pick items', 'تعديل القطع':'Edit items', 'اختر قطعة واحدة على الأقل':'Pick at least one item', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'Type the quantity next to each item. Points come from the settings catalogue and are fixed at approval.', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'Each item has its install points — summed when a point’s items are approved and credited to the technician.'
+  '📦 القطع ونقاط تركيبها':'📦 Items and their install points', 'نقاط التركيب':'Install points', 'القطعة':'Item', 'قطعة جديدة':'New item', 'نقاطها':'Its points', 'إضافة قطعة':'Add item', 'حفظ الكتالوج':'Save catalogue', 'حُفظ الكتالوج ✓':'Catalogue saved ✓', '📲 رسالة للمحددين':'📲 Message the selected', 'تحديد الكل':'Select all', 'حدّد فنيًّا واحدًا على الأقل':'Select at least one technician', 'اكتب اسم القطعة أولًا':'Type the item name first', 'أهداف الفنيين الشهرية':'Monthly technician targets', 'تارجت المسح':'Survey target', 'تارجت التركيب':'Install target', '✔ اعتمد وحدّد القطع':'✔ Approve and pick items', 'اعتمد وحدّد القطع':'Approve and pick items', 'تعديل القطع':'Edit items', 'اختر قطعة واحدة على الأقل':'Pick at least one item', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'Type the quantity next to each item. Points come from the settings catalogue and are fixed at approval.', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'Each item has its install points — summed when a point’s items are approved and credited to the technician.',
+  'الأدوار والصلاحيات':'Roles and permissions', 'نقاط الزيارات':'Visit points', 'نقاط الفك':'Dismantle points', 'القطع والأسعار':'Items and prices', 'ثوابت النظام':'System constants', 'من يفعل ماذا':'Who does what', 'السعر (ريال)':'Price (SAR)', 'نقاط تركيبها':'Its install points', 'سعرها':'Its price', 'حفظ الأسعار':'Save prices', 'أيام العمل في الشهر':'Working days per month', 'ساعات العمل في اليوم':'Working hours per day', 'تارجت المسح الشهري':'Monthly survey target', 'تارجت التركيب الشهري':'Monthly install target', 'تارجت الفك الشهري':'Monthly dismantle target', 'الإعدادات للإدارة فقط':'Settings are management-only', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'Items are added and removed on the “Items and prices” page.', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'These are approved fixed prices — any external purchase is recorded with its invoice in the procurement module.', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'Accounts are created and roles changed from the account panel — the single entry point.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -12222,7 +12334,8 @@ window.NSKI18N = (function(){
   'تارجت الشهر':'ماہانہ ہدف', 'التارجت':'ہدف', 'التارجت الافتراضي/شهر':'طے شدہ ہدف / ماہ', 'حُفظ التارجت ✓':'ہدف محفوظ ✓',
   'تارجت التركيب/شهر':'تنصیب ہدف / ماہ', 'افتراضي المسح/شهر':'طے شدہ سروے / ماہ', 'افتراضي التركيب/شهر':'طے شدہ تنصیب / ماہ',
   'الإعدادات':'ترتیبات', '⚙️ الإعدادات':'⚙️ ترتیبات', '👤 الأدوار والصلاحيات':'👤 کردار اور اجازتیں', '🔍 نقاط الزيارات':'🔍 دورہ پوائنٹس', '🔧 نقاط التركيب':'🔧 تنصیب پوائنٹس', '🧩 نقاط الفك':'🧩 ہٹانے کے پوائنٹس', '📐 ثوابت النظام':'📐 نظام کے ثوابت', '➕ إضافة مستخدم':'➕ صارف شامل کریں', 'القدرة':'صلاحیت', 'وزن الزيارة':'دورے کا وزن', 'وزن الفك':'ہٹانے کا وزن', 'نقاط تركيب المخيم':'خیمہ تنصیب پوائنٹس', 'نقاط تركيب الممر':'راہداری تنصیب پوائنٹس', '٪ التهيئة':'٪ کنفیگریشن', '٪ التجميع':'٪ اسمبلی', '٪ التركيب':'٪ تنصیب', 'معامل «سليم»':'«درست» عامل', 'معامل «تالف»':'«خراب» عامل', 'تارجت المسح الافتراضي/شهر':'طے شدہ سروے ہدف / ماہ', 'تارجت التركيب الافتراضي/شهر':'طے شدہ تنصیب ہدف / ماہ', 'تارجت الفك الافتراضي/شهر':'طے شدہ ہٹانے کا ہدف / ماہ', 'أيام العمل/شهر':'کام کے دن / ماہ', 'ساعات العمل/يوم':'کام کے گھنٹے / دن', 'نقاط الساعة (تُحسب)':'پوائنٹس فی گھنٹہ (شمار شدہ)', 'حفظ نقاط الزيارات':'دورہ پوائنٹس محفوظ کریں', 'حفظ نقاط التركيب':'تنصیب پوائنٹس محفوظ کریں', 'حفظ نقاط الفك':'ہٹانے کے پوائنٹس محفوظ کریں', 'حفظ الثوابت':'ثوابت محفوظ کریں', 'حُفظت الإعدادات ✓':'ترتیبات محفوظ ✓', 'هذه الصفحة للإدارة فقط.':'یہ صفحہ صرف انتظامیہ کے لیے ہے۔', 'الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.':'اجازتیں ڈیٹابیس کی سطح پر نافذ ہیں، انٹرفیس پر نہیں — جو یہاں چھپا ہے وہاں بھی مسترد ہے۔', 'أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».':'دورے کے وزن «ترتیبات» ٹیب سے طے ہوتے ہیں اور یہاں صرف دکھائے جاتے ہیں۔ «دستیاب» وہ جو نہ سروے ہوا نہ تفویض۔ درخواست کے لیے: فہرست یا نقشے سے پوائنٹس چنیں پھر «درخواست بنائیں»۔', 'أنشئ الحساب من لوحة «حسابي» ← إنشاء حساب':'«میرا اکاؤنٹ» پینل سے اکاؤنٹ بنائیں ← اکاؤنٹ بنائیں',
-  '📦 القطع ونقاط تركيبها':'📦 آئٹمز اور تنصیب پوائنٹس', 'نقاط التركيب':'تنصیب پوائنٹس', 'القطعة':'آئٹم', 'قطعة جديدة':'نیا آئٹم', 'نقاطها':'اس کے پوائنٹس', 'إضافة قطعة':'آئٹم شامل کریں', 'حفظ الكتالوج':'کیٹلاگ محفوظ کریں', 'حُفظ الكتالوج ✓':'کیٹلاگ محفوظ ✓', '📲 رسالة للمحددين':'📲 منتخب کو پیغام', 'تحديد الكل':'سب منتخب کریں', 'حدّد فنيًّا واحدًا على الأقل':'کم از کم ایک ٹیکنیشن چنیں', 'اكتب اسم القطعة أولًا':'پہلے آئٹم کا نام لکھیں', 'أهداف الفنيين الشهرية':'ٹیکنیشنز کے ماہانہ اہداف', 'تارجت المسح':'سروے ہدف', 'تارجت التركيب':'تنصیب ہدف', '✔ اعتمد وحدّد القطع':'✔ منظور کریں اور آئٹمز چنیں', 'اعتمد وحدّد القطع':'منظور کریں اور آئٹمز چنیں', 'تعديل القطع':'آئٹمز میں ترمیم', 'اختر قطعة واحدة على الأقل':'کم از کم ایک آئٹم چنیں', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'ہر آئٹم کے سامنے مقدار لکھیں۔ پوائنٹس ترتیبات کے کیٹلاگ سے آتے ہیں اور منظوری پر ثابت ہو جاتے ہیں۔', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'ہر آئٹم کے تنصیب پوائنٹس — پوائنٹ کے آئٹمز کی منظوری پر جمع ہو کر ٹیکنیشن کو ملتے ہیں۔'
+  '📦 القطع ونقاط تركيبها':'📦 آئٹمز اور تنصیب پوائنٹس', 'نقاط التركيب':'تنصیب پوائنٹس', 'القطعة':'آئٹم', 'قطعة جديدة':'نیا آئٹم', 'نقاطها':'اس کے پوائنٹس', 'إضافة قطعة':'آئٹم شامل کریں', 'حفظ الكتالوج':'کیٹلاگ محفوظ کریں', 'حُفظ الكتالوج ✓':'کیٹلاگ محفوظ ✓', '📲 رسالة للمحددين':'📲 منتخب کو پیغام', 'تحديد الكل':'سب منتخب کریں', 'حدّد فنيًّا واحدًا على الأقل':'کم از کم ایک ٹیکنیشن چنیں', 'اكتب اسم القطعة أولًا':'پہلے آئٹم کا نام لکھیں', 'أهداف الفنيين الشهرية':'ٹیکنیشنز کے ماہانہ اہداف', 'تارجت المسح':'سروے ہدف', 'تارجت التركيب':'تنصیب ہدف', '✔ اعتمد وحدّد القطع':'✔ منظور کریں اور آئٹمز چنیں', 'اعتمد وحدّد القطع':'منظور کریں اور آئٹمز چنیں', 'تعديل القطع':'آئٹمز میں ترمیم', 'اختر قطعة واحدة على الأقل':'کم از کم ایک آئٹم چنیں', 'اكتب الكمية أمام كل قطعة. النقاط تُحسب من كتالوج الإعدادات وتُثبَّت لحظة الاعتماد.':'ہر آئٹم کے سامنے مقدار لکھیں۔ پوائنٹس ترتیبات کے کیٹلاگ سے آتے ہیں اور منظوری پر ثابت ہو جاتے ہیں۔', 'لكل قطعة نقاطها عند التركيب — تُجمع في اعتماد قطع كل نقطة وتُقيَّد للفني.':'ہر آئٹم کے تنصیب پوائنٹس — پوائنٹ کے آئٹمز کی منظوری پر جمع ہو کر ٹیکنیشن کو ملتے ہیں۔',
+  'الأدوار والصلاحيات':'کردار اور اجازتیں', 'نقاط الزيارات':'دورہ پوائنٹس', 'نقاط الفك':'ہٹانے کے پوائنٹس', 'القطع والأسعار':'آئٹمز اور قیمتیں', 'ثوابت النظام':'نظام کے ثوابت', 'من يفعل ماذا':'کون کیا کرتا ہے', 'السعر (ريال)':'قیمت (ریال)', 'نقاط تركيبها':'اس کے تنصیب پوائنٹس', 'سعرها':'اس کی قیمت', 'حفظ الأسعار':'قیمتیں محفوظ کریں', 'أيام العمل في الشهر':'ماہانہ کام کے دن', 'ساعات العمل في اليوم':'روزانہ کام کے گھنٹے', 'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت التركيب الشهري':'ماہانہ تنصیب ہدف', 'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'الإعدادات للإدارة فقط':'ترتیبات صرف انتظامیہ کے لیے', 'القطع تُضاف وتُحذف من صفحة «القطع والأسعار».':'آئٹمز «آئٹمز اور قیمتیں» صفحے سے شامل/حذف ہوتے ہیں۔', 'هذه أسعار ثابتة معتمدة — وأي شراء خارجي يُسجَّل بفاتورته في موديول المشتريات لاحقًا.':'یہ منظور شدہ مقررہ قیمتیں ہیں — کوئی بھی بیرونی خریداری اپنی رسید کے ساتھ خریداری ماڈیول میں درج ہوگی۔', 'إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.':'اکاؤنٹس اور کردار اکاؤنٹ پینل سے بنتے/بدلتے ہیں — واحد داخلہ۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
