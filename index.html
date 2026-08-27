@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.75</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.76</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5982,15 +5982,21 @@ function bindAccountPanel(p){
     el.style.color= ok?'var(--green,#3AD6A0)':'var(--grey,#95A39C)'; } };
   const actEng=()=>USERS.filter(u=>(u.role==='engineer'||u.role==='admin')&&u.active!==false).length;
   function uStats(){
+    /* «عملية ميدانية» = عملٌ حقيقي مسجَّل — لا مسوّدة فُتحت ولم تُسجَّل زيارتها */
     const m={};
     try{
       const C=window.NSKCORE; if(!C) return m;
       const add=r=>{ const k=r&&r.by; if(!k) return;
         const d=String(r.survey_date||r.date||'').slice(0,10);
         const s=m[k]=m[k]||{n:0,last:''}; s.n++; if(d>s.last) s.last=d; };
-      Object.values(C.all('recs')||{}).forEach(add);
+      Object.values(C.all('recs')||{}).forEach(function(r){
+        var f=r&&r.fstat;
+        if(f==='done'||f==='draft'||f==='blocked') add(r);
+      });
       Object.values(C.all('props')||{}).forEach(add);
-      Object.values(C.all('inss')||{}).forEach(add);
+      Object.values(C.all('inss')||{}).forEach(function(r){
+        if(r && (r.status || r.team || r.sched || r.dis)) add(r);
+      });
     }catch(e){}
     return m;
   }
