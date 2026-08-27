@@ -29,6 +29,12 @@ service cloud.firestore {
     match /photos/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
 
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
+    // أوامر المسح: المهندس ينشئ ويقفل، والمشرف يسجّل زياراته
+    match /srvorders/{id} {
+      allow read: if ok();
+      allow create, update: if canW();
+      allow delete: if mgr();
+    }
     match /hb/{id} { allow read: if ok(); allow write: if canW(); }
 
     // انتقالات الصحة (سقوط/عودة) — سجل إلحاقي للتحليلات لا يُعدَّل
