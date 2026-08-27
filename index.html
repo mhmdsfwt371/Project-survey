@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.95</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.96</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5522,6 +5522,12 @@ window.NSKCORE={
 #drOv .drQ{display:flex;align-items:center;gap:6px;font-size:11.5px;color:var(--grey,#9AA1AB)}
 #drOv .drQ input{width:74px}
 #mvOv #mvSum,#drOv #drSum{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
+/* V13.96: نمطٌ مستقل — كلاس cfgDel مربوطٌ بحذف القطعة من الكتالوج فلا يُستعمل هنا */
+.cfgOut{background:transparent;border:1px solid rgba(224,82,82,.55);border-radius:9px;
+  color:#E05252;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;min-height:38px}
+.cfgOut:active{background:rgba(224,82,82,.12)}
+.cfgEmpty{border:1px dashed #2A3038;border-radius:11px;padding:18px 14px;margin:0 0 12px;
+  text-align:center;color:#7d848c;font-size:13px}
 .dGrid2{border:1px solid #2A3038;border-radius:11px;padding:10px 13px;margin:0 0 12px;
   font-size:13px;color:#9aa2ab;background:#0F1216}
 .dGrid2 b{color:#E8C36A;font-size:15px}
@@ -8344,28 +8350,45 @@ window.cfgRender = function(){
       +' <span>نقطة والممر</span> '+window.arNum(P.insCor)+' <span>نقطة افتراضيًّا.</span></p>';
   }
   else if(pg==='prep' || pg==='asm'){
+    /* V13.96: الصفحة كانت تعرض الكتالوج كله وصفرُ النقاط يعني «خارج المرحلة»،
+       فيتصفّح المهندس كابلاتٍ وبوكساتٍ في صفحةٍ اسمها «نقاط التهيئة». صارت تعرض
+       أعضاء المرحلة وحدهم، والانضمامُ والخروجُ بزرَّين صريحين لا برقمٍ يُفهم ضمنًا. */
     var _st=(pg==='prep')?'prep':'asm';
     var _cls=(pg==='prep')?'cfgPP':'cfgAP';
-    var IT3=window.itList(), _on=IT3.filter(function(x){ return (parseFloat(x[_st])||0)>0; });
+    var IT3=window.itList();
+    var _on=IT3.filter(function(x){ return (parseFloat(x[_st])||0)>0; });
+    var _off=IT3.filter(function(x){ return !((parseFloat(x[_st])||0)>0); });
     var _sum=0; _on.forEach(function(x){ _sum+=parseFloat(x[_st])||0; });
     h+='<p class="cfgS">'+(pg==='prep'
-        ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. اكتب نقاط تهيئة كل جهاز، والصفر يعني أنه لا يمرّ بالتهيئة أصلًا.'
-        : 'التجميع تركيب مكوّنات البوكس وتوصيلها قبل النزول. اكتب نقاط تجميع كل مكوّن، والصفر يعني أنه لا يدخل البوكس.')
+        ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
+        : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.')
       +'</p>';
-    h+='<div class="dGrid2"><b>'+window.arNum(_on.length)+'</b> <span>صنفًا في هذه المرحلة · إجماليها</span> <b>'
-      +window.arNum(_sum)+'</b> <span>نقطة</span></div>';
-    h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
-      var L=IT3.filter(function(x){ return x.z===g[0]; });
-      if(!L.length) return '';
-      return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+'</h3>'
-        +'<table class="cfgT"><thead><tr><th>الصنف</th><th>النقاط</th></tr></thead><tbody>'
-        +L.map(function(it){
-          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
-            +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="'+_cls
-            +'" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+(it[_st]||'')+'" placeholder="0"></td></tr>';
-        }).join('')+'</tbody></table></div>';
-    }).join('')+'</div>'
-      +'<h3 class="cfgH3">'+(pg==='prep'?'تارجت تهيئة المخيمات':'تارجت تجميع المخيمات')+'</h3>'
+    if(!_on.length){
+      h+='<div class="cfgEmpty">'+(pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.')+'</div>';
+    } else {
+      h+='<div class="dGrid2"><b>'+window.arNum(_on.length)+'</b> <span>'
+        +(pg==='prep'?'جهازًا في التهيئة · إجمالي نقاطها':'مكوّنًا في التجميع · إجمالي نقاطها')
+        +'</span> <b>'+window.arNum(_sum)+'</b> <span>نقطة</span></div>';
+      h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
+        var L=_on.filter(function(x){ return x.z===g[0]; });
+        if(!L.length) return '';
+        return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+'</h3>'
+          +'<table class="cfgT"><thead><tr><th>الصنف</th><th>النقاط</th><th></th></tr></thead><tbody>'
+          +L.map(function(it){
+            return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
+              +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="'+_cls
+              +'" data-id="'+_cfgX(it.id)+'" step="0.5" min="0.5" value="'+(it[_st]||'')+'"></td>'
+              +'<td data-l="إخراج"><button type="button" class="cfgOut cfgStOut" data-id="'+_cfgX(it.id)
+              +'" data-n="'+_cfgX(it.n)+'">أخرِج</button></td></tr>';
+          }).join('')+'</tbody></table></div>';
+      }).join('')+'</div>';
+    }
+    if(_off.length){
+      h+='<div class="cfgRow"><button type="button" class="cfgGo" id="'
+        +(pg==='prep'?'cfgAddP':'cfgAddA')+'">'
+        +(pg==='prep'?'➕ أضِف جهازًا للتهيئة':'➕ أضِف مكوّنًا للتجميع')+'</button></div>';
+    }
+    h+='<h3 class="cfgH3">'+(pg==='prep'?'تارجت تهيئة المخيمات':'تارجت تجميع المخيمات')+'</h3>'
       +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_'
       +(pg==='prep'?'tgtPrepCampW':'tgtAsmCampW')+'" id="cfg_'+(pg==='prep'?'tgtPrepCamp':'tgtAsmCamp')
       +'" min="0" value="'+(pg==='prep'?P.tgtPrepCamp:P.tgtAsmCamp)+'"></label>'
@@ -8383,7 +8406,7 @@ window.cfgRender = function(){
           window.CFG_TAIL[pg==='prep'?'prep':'asm'])+'</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="'
       +(pg==='prep'?'cfgSaveP':'cfgSaveA')+'">'+(pg==='prep'?'حفظ نقاط التهيئة':'حفظ نقاط التجميع')+'</button></div>'
-      +'<p class="cfgS">الأصناف تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تُسعّر عملها في هذه المرحلة وحدها.</p>';
+      +'<p class="cfgS">الأصناف نفسها تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تختار من بينها ما يمرّ بهذه المرحلة وتُسعّر عمله فيها.</p>';
   }
   else if(pg==='dis'){
     var MX2=window.pwRows(), D=P.dw||{};
@@ -8572,6 +8595,54 @@ window.cfgBind = function(){
     var o=base(); num('tgtInsCamp',o,'tgtInsCamp'); num('tgtInsCor',o,'tgtInsCor');
     window.pwSave(o,'تارجت التركيب'); window.cfgMark(false); window.cfgRender();
   };
+  /* V13.96: ضمُّ صنفٍ للمرحلة وإخراجُه — العضوية بزرَّين لا برقمٍ يُفهم ضمنًا */
+  ['P','A'].forEach(function(tag){
+    var st=(tag==='P')?'prep':'asm';
+    var ad=q('#cfgAdd'+tag); if(!ad) return;
+    ad.onclick=function(){
+      var off=window.itList().filter(function(x){ return !((parseFloat(x[st])||0)>0); });
+      if(!off.length){ toast('كل الأصناف داخل هذه المرحلة بالفعل'); return; }
+      var Z={cor:'ممر', camp:'مخيم'};
+      var opts=off.map(function(x){ return x.n+' — '+(Z[x.z]||x.z); });
+      window.nskAsk({
+        t:(st==='prep')?'إضافة جهاز للتهيئة':'إضافة مكوّن للتجميع',
+        m:(st==='prep')
+          ? 'اختر الجهاز ثم اكتب نقاط تهيئته — كم يستحقّ ضبطُه وفحصه.'
+          : 'اختر المكوّن ثم اكتب نقاط تجميعه — كم يستحقّ تركيبه في البوكس وتوصيله.',
+        fields:[{k:'it', l:'الصنف', type:'select', opts:opts, val:opts[0]},
+                {k:'p',  l:'النقاط', type:'number', val:'3', req:true}],
+        ok:'أضِف'
+      }).then(function(a){
+        if(!a) return;
+        var ix=opts.indexOf(String(a.it||''));
+        if(ix<0){ toast('لم يُختَر صنف',1); return; }
+        var id=off[ix].id, pts=parseFloat(a.p)||0;
+        if(pts<=0){ toast('النقاط أكبر من صفر',1); return; }
+        var L=window.itList();
+        L.forEach(function(x){ if(x.id===id) x[st]=pts; });
+        var _m=(st==='prep')?('ضمّ للتهيئة: '+off[ix].n):('ضمّ للتجميع: '+off[ix].n);
+        window.itSave(L, _m);
+        window.cfgMark(false); window.cfgRender();
+      });
+    };
+  });
+  Array.prototype.forEach.call(qa('.cfgStOut'), function(b){
+    b.onclick=function(){
+      var st=(window.NSKCFG.page==='prep')?'prep':'asm';
+      var id=b.getAttribute('data-id')||'', nm=b.getAttribute('data-n')||'';
+      window.nskAsk({ t:(st==='prep')?'إخراج من التهيئة':'إخراج من التجميع',
+        m:'«'+nm+'»'+String.fromCharCode(10)
+          +'يخرج من هذه المرحلة فلا يظهر في طلباتها. والصنف نفسه يبقى في الكتالوج وفي مراحله الأخرى.',
+        ok:'أخرِجه', danger:true }).then(function(r){
+        if(!r) return;
+        var L=window.itList();
+        L.forEach(function(x){ if(x.id===id) x[st]=0; });
+        var _m=(st==='prep')?('إخراج من التهيئة: '+nm):('إخراج من التجميع: '+nm);
+        window.itSave(L, _m);
+        window.cfgMark(false); window.cfgRender();
+      });
+    };
+  });
   ['P','A'].forEach(function(tag){
     var st=(tag==='P')?'prep':'asm', cls=(tag==='P')?'.cfgPP':'.cfgAP';
     var bt=q('#cfgSave'+tag); if(!bt) return;
@@ -14778,6 +14849,23 @@ window.NSKI18N = (function(){
   'كاميرا ممر 8266':'Corridor camera 8266', 'كاميرا مخيم 8361':'Camp camera 8361',
   'حساس حرارة ورطوبة':'Temperature and humidity sensor',
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
+  'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'Configuration is the workshop work before going out: setting the device, its address, its firmware and testing it. It is only for devices that have settings — cameras, readers, routers, sensors and gateways.',
+  'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'Assembly is fitting and wiring whatever goes into the box before going out. It is only for the components assembled inside it.',
+  'لا أجهزة في التهيئة بعد.':'No devices in configuration yet.', 'لا مكوّنات في التجميع بعد.':'No components in assembly yet.',
+  'جهازًا في التهيئة · إجمالي نقاطها':'devices in configuration · totalling',
+  'مكوّنًا في التجميع · إجمالي نقاطها':'components in assembly · totalling',
+  '➕ أضِف جهازًا للتهيئة':'➕ Add a device to configuration', '➕ أضِف مكوّنًا للتجميع':'➕ Add a component to assembly',
+  'إضافة جهاز للتهيئة':'Add a device to configuration', 'إضافة مكوّن للتجميع':'Add a component to assembly',
+  'اختر الجهاز ثم اكتب نقاط تهيئته — كم يستحقّ ضبطُه وفحصه.':'Choose the device, then enter its configuration points — what setting it up and testing it is worth.',
+  'اختر المكوّن ثم اكتب نقاط تجميعه — كم يستحقّ تركيبه في البوكس وتوصيله.':'Choose the component, then enter its assembly points — what fitting and wiring it into the box is worth.',
+  'أخرِج':'Remove', 'أخرِجه':'Remove it', 'إخراج':'Remove', 'أضِف':'Add',
+  'إخراج من التهيئة':'Remove from configuration', 'إخراج من التجميع':'Remove from assembly',
+  'يخرج من هذه المرحلة فلا يظهر في طلباتها. والصنف نفسه يبقى في الكتالوج وفي مراحله الأخرى.':'It leaves this stage so it no longer appears in its orders. The item itself stays in the catalogue and in its other stages.',
+  'كل الأصناف داخل هذه المرحلة بالفعل':'Every item is already in this stage',
+  'لم يُختَر صنف':'No item was chosen', 'النقاط أكبر من صفر':'Points must be greater than zero',
+  'الأصناف نفسها تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تختار من بينها ما يمرّ بهذه المرحلة وتُسعّر عمله فيها.':'The items themselves are added and removed on the “Items and prices” page; this page picks which of them pass through this stage and prices their work in it.',
+  'ضمّ للتهيئة:':'Added to configuration:', 'ضمّ للتجميع:':'Added to assembly:',
+  'إخراج من التهيئة:':'Removed from configuration:', 'إخراج من التجميع:':'Removed from assembly:',
   'الورشة':'Workshop',
   'المخزون':'Inventory', '☑ حدّد':'☑ Select', '✓ محدَّد':'✓ Selected',
   'أُضيفت للتحديد —':'Added to selection —', 'رُفعت من التحديد —':'Removed from selection —',
@@ -15214,6 +15302,23 @@ window.NSKI18N = (function(){
   'كاميرا ممر 8266':'راہداری کیمرہ 8266', 'كاميرا مخيم 8361':'خیمہ کیمرہ 8361',
   'حساس حرارة ورطوبة':'درجہ حرارت اور نمی سینسر',
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
+  'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.':'تیاری میدان میں جانے سے پہلے ورکشاپ کا کام ہے: آلہ، اس کا پتہ، اس کا سسٹم ترتیب دینا اور جانچنا۔ یہ صرف ان آلات کے لیے ہے جن کی سیٹنگ ہوتی ہے — کیمرے، ریڈرز، راؤٹرز، سینسرز اور گیٹ ویز۔',
+  'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.':'اسمبلی وہ ہے جو باکس میں جاتا ہے اسے لگانا اور جوڑنا۔ یہ صرف ان اجزاء کے لیے ہے جو اس کے اندر جمع ہوتے ہیں۔',
+  'لا أجهزة في التهيئة بعد.':'ابھی تیاری میں کوئی آلہ نہیں۔', 'لا مكوّنات في التجميع بعد.':'ابھی اسمبلی میں کوئی جزو نہیں۔',
+  'جهازًا في التهيئة · إجمالي نقاطها':'آلات تیاری میں · مجموعہ',
+  'مكوّنًا في التجميع · إجمالي نقاطها':'اجزاء اسمبلی میں · مجموعہ',
+  '➕ أضِف جهازًا للتهيئة':'➕ تیاری میں آلہ شامل کریں', '➕ أضِف مكوّنًا للتجميع':'➕ اسمبلی میں جزو شامل کریں',
+  'إضافة جهاز للتهيئة':'تیاری میں آلہ شامل کریں', 'إضافة مكوّن للتجميع':'اسمبلی میں جزو شامل کریں',
+  'اختر الجهاز ثم اكتب نقاط تهيئته — كم يستحقّ ضبطُه وفحصه.':'آلہ چنیں پھر اس کے تیاری پوائنٹس لکھیں — اسے ترتیب دینا اور جانچنا کتنا لائق ہے۔',
+  'اختر المكوّن ثم اكتب نقاط تجميعه — كم يستحقّ تركيبه في البوكس وتوصيله.':'جزو چنیں پھر اس کے اسمبلی پوائنٹس لکھیں — باکس میں لگانا اور جوڑنا کتنا لائق ہے۔',
+  'أخرِج':'نکالیں', 'أخرِجه':'اسے نکالیں', 'إخراج':'نکالنا', 'أضِف':'شامل کریں',
+  'إخراج من التهيئة':'تیاری سے نکالیں', 'إخراج من التجميع':'اسمبلی سے نکالیں',
+  'يخرج من هذه المرحلة فلا يظهر في طلباتها. والصنف نفسه يبقى في الكتالوج وفي مراحله الأخرى.':'یہ اس مرحلے سے نکل جاتا ہے تو اس کے آرڈرز میں ظاہر نہیں ہوتا۔ شے خود کیٹلاگ اور اپنے دوسرے مراحل میں باقی رہتی ہے۔',
+  'كل الأصناف داخل هذه المرحلة بالفعل':'تمام اشیاء پہلے ہی اس مرحلے میں ہیں',
+  'لم يُختَر صنف':'کوئی شے منتخب نہیں', 'النقاط أكبر من صفر':'پوائنٹس صفر سے زیادہ ہوں',
+  'الأصناف نفسها تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تختار من بينها ما يمرّ بهذه المرحلة وتُسعّر عمله فيها.':'اشیاء خود «پرزے اور قیمتیں» صفحے سے شامل یا حذف ہوتی ہیں؛ یہ صفحہ ان میں سے چنتا ہے کہ کون اس مرحلے سے گزرے اور اس میں ان کے کام کی قیمت طے کرتا ہے۔',
+  'ضمّ للتهيئة:':'تیاری میں شامل:', 'ضمّ للتجميع:':'اسمبلی میں شامل:',
+  'إخراج من التهيئة:':'تیاری سے نکالا:', 'إخراج من التجميع:':'اسمبلی سے نکالا:',
   'الورشة':'ورکشاپ',
   'المخزون':'انوینٹری', '☑ حدّد':'☑ منتخب کریں', '✓ محدَّد':'✓ منتخب',
   'أُضيفت للتحديد —':'انتخاب میں شامل —', 'رُفعت من التحديد —':'انتخاب سے خارج —',
