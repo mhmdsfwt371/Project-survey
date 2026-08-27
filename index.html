@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.72</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.73</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7698,6 +7698,13 @@ window.cfgClose = function(){
 function _cfgX(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
 window.cfgRender = function(){
   var ov=document.getElementById('nskCfgOv'); if(!ov) return;
+  /* لوحة الحسابات عقدةٌ حيّة مُعارة — تُعاد لبيتها قبل مسح محتوى الشاشة وإلا أُتلفت */
+  try{
+    var _ad=document.getElementById('fbAdmin');
+    if(_ad && window._fbAdminHome && ov.contains(_ad)){
+      window._fbAdminHome.appendChild(_ad); _ad.style.display='none';
+    }
+  }catch(e){}
   var P=window.pwGet(), pg=window.NSKCFG.page, h='';
   h+='<div class="cfgTop"><button type="button" id="cfgBack" class="cfgB">→ رجوع</button>'
     +'<b>الإعدادات</b><button type="button" id="cfgX" class="cfgB">✕</button></div>';
@@ -7902,7 +7909,9 @@ window.cfgBind = function(){
       slot.appendChild(ad);
       ad.style.display='block';
       try{ var rf=document.getElementById('uRef'); if(rf) rf.click(); }catch(e){}
-    } else slot.innerHTML='<p class="cfgS">افتح «حسابي» مرة واحدة ثم عُد — تُحمَّل لوحة الحسابات.</p>';
+    } else slot.innerHTML='<p class="cfgS">لوحة الحسابات غير محمّلة في هذه الجلسة — أعد تحميل الصفحة لتعود.</p>'
+        +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgReload">إعادة تحميل الصفحة</button></div>';
+    var rl=q('#cfgReload'); if(rl) rl.onclick=function(){ location.reload(); };
   }
 };
 window.pwRows = function(){
