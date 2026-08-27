@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.50</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.51</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8252,7 +8252,9 @@ function copySummary(){
 var DTABS=[
   ['watch','متابعة',      ['over','pace','inst','daily','reg','co','chalm','dis'],      'الصورة التنفيذية — للوزارة والإدارة'],
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
-  ['ops','تشغيل',         ['srv','assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
+  ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
+  ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
+  ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
   ['adm','النظام',        ['sys','ev'],                                   'سجل الأحداث وسلامة البيانات وإعادة الضبط']
 ];
@@ -8263,7 +8265,7 @@ function tabOf(sec){
 function tabsFor(role){
   if(role==='viewer')     return ['watch'];
   if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
-  return ['watch','plan','ops','adm'];
+  return ['watch','req','tech','plan','ops','adm'];
 }
 function curTab(){
   var D=window.NSKDASH||{}, allow=tabsFor((user&&user.role)||'');
@@ -8616,7 +8618,7 @@ function render(){
   (function(){
     var P=window.pwGet(), T=window.NSKTASK||{}, C=window.NSKCORE, rc=C.all('recs');
     var cE=!!(user && (user.role==='admin'||user.role==='engineer'));
-    h+='<section class="dSec" data-sec="srv"><h2>🔍 طلبات المسح ومهام الفنيين</h2>';
+    h+='<section class="dSec" data-sec="req"><h2>🔍 طلبات الزيارة</h2>';
     var ks=Object.keys(T), all=ks.map(function(k){ return T[k]||{}; });
     var cnt={'مطلوب':0,'قيد التنفيذ':0,'منفّذ':0,'معتمد':0,'مُعاد':0};
     all.forEach(function(t){ if(cnt[t.st]!=null) cnt[t.st]++; });
@@ -8629,7 +8631,8 @@ function render(){
           ['tgtSurvey','تارجت المسح/شهر'],['ph','نقاط الساعة']].map(function(x){
           return '<label class="pwL">'+x[1]+'<input type="number" step="0.01" min="0" id="pw_'+x[0]+'" value="'+(P[x[0]])+'"></label>';
         }).join('')+'</div><div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ الأوزان</button></div>';
-      var techs=[]; try{ var T2=C.get('settings','teams')||{}; techs=(T2.list||[]).slice(); }catch(e){}
+      var techs=[]; try{ techs=((C.get('settings','techs')||{}).list||[]).slice(); }catch(e){}
+      try{ var T2=C.get('settings','teams')||{}; (T2.list||[]).forEach(function(n3){ if(techs.indexOf(n3)<0) techs.push(n3); }); }catch(e){}
       Object.keys(rc).forEach(function(k){ var b2=String((rc[k]||{}).by||'').trim(); if(b2 && techs.indexOf(b2)<0) techs.push(b2); });
       all.forEach(function(t){ var n2=String(t.tech||'').trim(); if(n2 && techs.indexOf(n2)<0) techs.push(n2); });
       if(!techs.length) techs=['—'];
@@ -8655,6 +8658,25 @@ function render(){
           +'</table>';
       }
     }
+    window._srvRows=[];
+    window._tkRows=all.map(function(t){
+      return [t.ord||'', t.id||'', t.site||'', t.tech||'', t.st||'', t.w||0, t.due||'',
+              String(t.doneAt||'').slice(0,16).replace('T',' '), String(t.appAt||'').slice(0,10), t.note||''];
+    });
+    h+='</section>';
+    /* ═══ صفحة الفنيين ═══ */
+    h+='<section class="dSec" data-sec="tech"><h2>👷 الفنيون</h2>';
+    if(cE){
+      var reg=[]; try{ reg=((C.get('settings','techs')||{}).list||[]).slice(); }catch(e){}
+      h+='<div class="dT3">سجل الفنيين — من هنا تُبنى قائمة الإسناد</div><div class="pTyStrip">'
+        +(reg.length?reg.map(function(n2){
+            return '<label>'+_dvEsc(n2)+' <button type="button" class="tkDel" data-n="'+_dvEsc(n2)+'">×</button></label>';
+          }).join(''):'<span class="dTs">لا فنيين مسجّلين بعد</span>')
+        +'</div><div class="pwG"><label class="pwL">اسم الفني<input type="text" id="tkNm" placeholder="الاسم كما في حسابه"></label>'
+        +'</div><div class="dRow"><button type="button" class="dBtn" id="tkAdd">إضافة فني</button>'
+        +'<button type="button" class="dBtn" id="tkXls">⬇ إكسل — أداء الفنيين</button></div>'
+        +'<p class="dTs">اكتب الاسم كما يظهر في حساب الفني بالضبط — عليه يُبنى ظهور مهامه في «جدولي» وعلى خريطته.</p>';
+    }
     /* رصيد الفنيين */
     var by={};
     all.forEach(function(t){ var n2=String(t.tech||'').trim(); if(!n2) return;
@@ -8671,15 +8693,12 @@ function render(){
         +'<table class="dT"><tr><th>الفني</th><th>مطلوب</th><th>قيد التنفيذ</th><th>منفّذ</th><th>معتمد</th><th>نقاط</th><th>من التارجت</th></tr>'
         +bk.map(function(n2){ var s=by[n2], pc=Math.round(s.pts/(P.tgtSurvey||90)*100);
           rowsX.push([n2,s.req,s.run,s.done,s.ok,Math.round(s.pts),pc+'٪']);
+          window._techRows=rowsX;
           return '<tr><td>'+_dvEsc(n2)+'</td><td>'+arS(s.req)+'</td><td>'+arS(s.run)+'</td><td>'+arS(s.done)
             +'</td><td>'+arS(s.ok)+'</td><td><b>'+arS(Math.round(s.pts))+'</b></td><td>'+arS(pc)+'٪</td></tr>'; }).join('')
         +'</table>';
     } else h+='<p class="dTs">لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.</p>';
-    window._srvRows=rowsX;
-    window._tkRows=all.map(function(t){
-      return [t.ord||'', t.id||'', t.site||'', t.tech||'', t.st||'', t.w||0, t.due||'',
-              String(t.doneAt||'').slice(0,16).replace('T',' '), String(t.appAt||'').slice(0,10), t.note||''];
-    });
+
     h+='</section>';
   })();
     h+='<section class="dSec" data-sec="assign">';
@@ -9407,6 +9426,43 @@ function render(){
       XLSX.utils.book_append_sheet(wb,ws,'زيارة ميدانية');
       XLSX.writeFile(wb,'نُسُك-زيارة-صحة-الأجهزة.xlsx');
     }catch(e){ try{ toast('تعذّر التصدير',1); }catch(x){} }
+  };
+  var _tka=$i('tkAdd');
+  if(_tka) _tka.onclick=function(){
+    var e=$i('tkNm'), n=String((e&&e.value)||'').trim();
+    if(!n){ toast('اكتب اسم الفني أولًا',1); return; }
+    try{
+      var C=window.NSKCORE, cur=((C.get('settings','techs')||{}).list||[]).slice();
+      if(cur.indexOf(n)>=0){ toast('الفني مسجّل بالفعل',1); return; }
+      cur.push(n);
+      var d={list:cur, n:cur.length, at:new Date().toISOString()};
+      C.set('settings','techs',d);
+      if(window.NSKSYNC){ NSKSYNC.push('settings','techs',d); NSKSYNC.log('إضافة فني: '+n); }
+      toast('أُضيف الفني ✓'); try{ window.nskSync(); }catch(x){}
+    }catch(x){ toast('تعذّر الحفظ',1); }
+  };
+  Array.prototype.forEach.call(document.querySelectorAll('.tkDel'), function(b){
+    b.onclick=function(){
+      var n=b.getAttribute('data-n')||'';
+      try{
+        var C=window.NSKCORE, cur=((C.get('settings','techs')||{}).list||[]).filter(function(x){ return x!==n; });
+        var d={list:cur, n:cur.length, at:new Date().toISOString()};
+        C.set('settings','techs',d);
+        if(window.NSKSYNC){ NSKSYNC.push('settings','techs',d); NSKSYNC.log('حذف فني: '+n); }
+        toast('حُذف الفني'); try{ window.nskSync(); }catch(x){}
+      }catch(x){}
+    };
+  });
+  var _tkx=$i('tkXls');
+  if(_tkx) _tkx.onclick=function(){
+    try{
+      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','من التارجت'];
+      var wb=XLSX.utils.book_new();
+      var ws=XLSX.utils.aoa_to_sheet([h1].concat(window._techRows||[]));
+      ws['!cols']=h1.map(function(x){ return {wch:Math.max(11,String(x).length+4)}; });
+      XLSX.utils.book_append_sheet(wb,ws,'أداء الفنيين');
+      XLSX.writeFile(wb,'نُسُك-أداء-الفنيين.xlsx');
+    }catch(e){ toast('تعذّر التصدير',1); }
   };
   var _pws=$i('pwSave');
   if(_pws) _pws.onclick=function(){
@@ -11305,7 +11361,8 @@ window.NSKI18N = (function(){
   'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'Map tiles failed to load — switched to a backup provider',
   '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — Mina & Arafat for Google Earth', 'تعذّر تصدير KMZ':'Could not export KMZ',
   '🔍 أوامر المسح والنقاط':'🔍 Survey orders and points', 'أوزان النقاط — تُحرَّر وتُحفظ':'Point weights — editable and saved', 'أمر مسح جديد':'New survey order', 'زيارة مخيم':'Camp visit', 'زيارة ممر':'Corridor visit', 'زيارة قطار':'Train station visit', 'زيارة الجمرات':'Jamarat visit', 'تارجت المسح/شهر':'Survey target / month', 'نقاط الساعة':'Points per hour', 'حفظ الأوزان':'Save weights', 'إنشاء الأمر':'Create order', '⬇ إكسل — أوامر المسح':'⬇ Excel — survey orders', 'عدد الزيارات':'Number of visits', 'المهلة':'Due date', 'الأمر':'Order', 'إقفال':'Close', 'مقفل':'Closed', 'مفتوح':'Open', 'رصيد نقاط المسح':'Survey points balance', 'زيارات':'Visits', 'من التارجت':'of target', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'No survey orders yet — create the first one and it reaches the supervisor in “My schedule” instantly.', 'حُفظت الأوزان ✓':'Weights saved ✓', 'أُقفل الأمر ✓':'Order closed ✓', 'اختر المشرف والنقاط أولًا':'Pick the supervisor and the points first', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'No matching points — change the holy site or the type', 'تعذّر إنشاء الأمر':'Could not create the order',
-  '🔍 طلبات المسح ومهام الفنيين':'🔍 Survey requests and technician tasks', 'طلب مسح جديد — يُسند لفني واحد':'New survey request — assigned to one technician', 'مطلوب':'Requested', 'قيد التنفيذ':'In progress', 'منفّذ':'Executed', 'معتمد':'Approved', 'مُعاد للتصحيح':'Returned', 'مُعاد':'Returned', 'بانتظار الاعتماد':'Awaiting approval', 'اعتماد':'Approve', 'إعادة':'Return', 'مهمة المسح:':'Survey task:', '⏱ ابدأ الزيارة':'⏱ Start the visit', 'رصيد الفنيين':'Technician balances', 'عدد النقاط':'Number of points', 'إنشاء الطلب':'Create request', '⬇ إكسل — المهام':'⬇ Excel — tasks', 'نُفّذت':'Executed on', 'بدأت الزيارة ⏱':'Visit started ⏱', 'اعتُمدت الزيارة ✓':'Visit approved ✓', 'أُعيدت المهمة للفني ↩':'Task returned to the technician ↩', 'لا مهمة مسح لك على هذه النقطة':'You have no survey task on this point', 'المهمة قيد التنفيذ بالفعل':'The task is already in progress', 'اختر الفني والنقاط أولًا':'Pick the technician and the points first', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'No survey request for this point — ask the engineer to assign it', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'No executed visits awaiting approval ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'No tasks yet — create the first survey request and it appears for the technician in “My schedule” and on their map instantly.'
+  '🔍 طلبات المسح ومهام الفنيين':'🔍 Survey requests and technician tasks', 'طلب مسح جديد — يُسند لفني واحد':'New survey request — assigned to one technician', 'مطلوب':'Requested', 'قيد التنفيذ':'In progress', 'منفّذ':'Executed', 'معتمد':'Approved', 'مُعاد للتصحيح':'Returned', 'مُعاد':'Returned', 'بانتظار الاعتماد':'Awaiting approval', 'اعتماد':'Approve', 'إعادة':'Return', 'مهمة المسح:':'Survey task:', '⏱ ابدأ الزيارة':'⏱ Start the visit', 'رصيد الفنيين':'Technician balances', 'عدد النقاط':'Number of points', 'إنشاء الطلب':'Create request', '⬇ إكسل — المهام':'⬇ Excel — tasks', 'نُفّذت':'Executed on', 'بدأت الزيارة ⏱':'Visit started ⏱', 'اعتُمدت الزيارة ✓':'Visit approved ✓', 'أُعيدت المهمة للفني ↩':'Task returned to the technician ↩', 'لا مهمة مسح لك على هذه النقطة':'You have no survey task on this point', 'المهمة قيد التنفيذ بالفعل':'The task is already in progress', 'اختر الفني والنقاط أولًا':'Pick the technician and the points first', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'No survey request for this point — ask the engineer to assign it', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'No executed visits awaiting approval ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'No tasks yet — create the first survey request and it appears for the technician in “My schedule” and on their map instantly.',
+  'طلبات الزيارة':'Visit requests', 'الفنيون':'Technicians', '🔍 طلبات الزيارة':'🔍 Visit requests', '👷 الفنيون':'👷 Technicians', 'سجل الفنيين — من هنا تُبنى قائمة الإسناد':'Technician registry — the assignment list is built from it', 'اسم الفني':'Technician name', 'إضافة فني':'Add technician', '⬇ إكسل — أداء الفنيين':'⬇ Excel — technician performance', 'لا فنيين مسجّلين بعد':'No technicians registered yet', 'اكتب اسم الفني أولًا':'Type the technician name first', 'الفني مسجّل بالفعل':'The technician is already registered', 'أُضيف الفني ✓':'Technician added ✓', 'حُذف الفني':'Technician removed', 'اكتب الاسم كما يظهر في حساب الفني بالضبط — عليه يُبنى ظهور مهامه في «جدولي» وعلى خريطته.':'Type the name exactly as it appears in the technician’s account — their tasks in “My schedule” and on their map depend on it.', 'إسناد زيارات المسح للفنيين واعتمادها':'Assigning survey visits to technicians and approving them', 'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت':'The technician registry, balances and target comparison'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11501,7 +11558,8 @@ window.NSKI18N = (function(){
   'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'نقشہ لوڈ نہ ہو سکا — متبادل فراہم کنندہ پر منتقل',
   '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — منیٰ و عرفات گوگل ارتھ کے لیے', 'تعذّر تصدير KMZ':'KMZ ایکسپورٹ نہ ہو سکا',
   '🔍 أوامر المسح والنقاط':'🔍 سروے آرڈرز اور پوائنٹس', 'أوزان النقاط — تُحرَّر وتُحفظ':'پوائنٹ وزن — قابلِ ترمیم اور محفوظ', 'أمر مسح جديد':'نیا سروے آرڈر', 'زيارة مخيم':'خیمے کا دورہ', 'زيارة ممر':'راہداری کا دورہ', 'زيارة قطار':'ٹرین اسٹیشن کا دورہ', 'زيارة الجمرات':'جمرات کا دورہ', 'تارجت المسح/شهر':'سروے ہدف / ماہ', 'نقاط الساعة':'پوائنٹس فی گھنٹہ', 'حفظ الأوزان':'وزن محفوظ کریں', 'إنشاء الأمر':'آرڈر بنائیں', '⬇ إكسل — أوامر المسح':'⬇ ایکسل — سروے آرڈرز', 'عدد الزيارات':'دوروں کی تعداد', 'المهلة':'آخری تاریخ', 'الأمر':'آرڈر', 'إقفال':'بند کریں', 'مقفل':'بند', 'مفتوح':'کھلا', 'رصيد نقاط المسح':'سروے پوائنٹس بیلنس', 'زيارات':'دورے', 'من التارجت':'ہدف کا', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'ابھی کوئی سروے آرڈر نہیں — پہلا بنائیں، سپروائزر کو «میرا شیڈول» میں فوراً پہنچ جائے گا۔', 'حُفظت الأوزان ✓':'وزن محفوظ ✓', 'أُقفل الأمر ✓':'آرڈر بند ✓', 'اختر المشرف والنقاط أولًا':'پہلے سپروائزر اور پوائنٹس چنیں', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'کوئی مماثل پوائنٹ نہیں — مشعر یا قسم بدلیں', 'تعذّر إنشاء الأمر':'آرڈر نہ بن سکا',
-  '🔍 طلبات المسح ومهام الفنيين':'🔍 سروے درخواستیں اور ٹیکنیشن ٹاسک', 'طلب مسح جديد — يُسند لفني واحد':'نئی سروے درخواست — ایک ٹیکنیشن کو', 'مطلوب':'درکار', 'قيد التنفيذ':'جاری', 'منفّذ':'مکمل', 'معتمد':'منظور', 'مُعاد للتصحيح':'واپس', 'مُعاد':'واپس', 'بانتظار الاعتماد':'منظوری کا انتظار', 'اعتماد':'منظور', 'إعادة':'واپس', 'مهمة المسح:':'سروے ٹاسک:', '⏱ ابدأ الزيارة':'⏱ دورہ شروع کریں', 'رصيد الفنيين':'ٹیکنیشن بیلنس', 'عدد النقاط':'پوائنٹس کی تعداد', 'إنشاء الطلب':'درخواست بنائیں', '⬇ إكسل — المهام':'⬇ ایکسل — ٹاسک', 'نُفّذت':'مکمل بتاریخ', 'بدأت الزيارة ⏱':'دورہ شروع ⏱', 'اعتُمدت الزيارة ✓':'دورہ منظور ✓', 'أُعيدت المهمة للفني ↩':'ٹاسک ٹیکنیشن کو واپس ↩', 'لا مهمة مسح لك على هذه النقطة':'اس پوائنٹ پر آپ کا کوئی سروے ٹاسک نہیں', 'المهمة قيد التنفيذ بالفعل':'ٹاسک پہلے ہی جاری ہے', 'اختر الفني والنقاط أولًا':'پہلے ٹیکنیشن اور پوائنٹس چنیں', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'اس پوائنٹ کی کوئی سروے درخواست نہیں — انجینئر سے تفویض کی درخواست کریں', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'منظوری کے منتظر کوئی مکمل دورے نہیں ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'ابھی کوئی ٹاسک نہیں — پہلی سروے درخواست بنائیں، ٹیکنیشن کو «میرا شیڈول» اور نقشے پر فوراً نظر آئے گی۔'
+  '🔍 طلبات المسح ومهام الفنيين':'🔍 سروے درخواستیں اور ٹیکنیشن ٹاسک', 'طلب مسح جديد — يُسند لفني واحد':'نئی سروے درخواست — ایک ٹیکنیشن کو', 'مطلوب':'درکار', 'قيد التنفيذ':'جاری', 'منفّذ':'مکمل', 'معتمد':'منظور', 'مُعاد للتصحيح':'واپس', 'مُعاد':'واپس', 'بانتظار الاعتماد':'منظوری کا انتظار', 'اعتماد':'منظور', 'إعادة':'واپس', 'مهمة المسح:':'سروے ٹاسک:', '⏱ ابدأ الزيارة':'⏱ دورہ شروع کریں', 'رصيد الفنيين':'ٹیکنیشن بیلنس', 'عدد النقاط':'پوائنٹس کی تعداد', 'إنشاء الطلب':'درخواست بنائیں', '⬇ إكسل — المهام':'⬇ ایکسل — ٹاسک', 'نُفّذت':'مکمل بتاریخ', 'بدأت الزيارة ⏱':'دورہ شروع ⏱', 'اعتُمدت الزيارة ✓':'دورہ منظور ✓', 'أُعيدت المهمة للفني ↩':'ٹاسک ٹیکنیشن کو واپس ↩', 'لا مهمة مسح لك على هذه النقطة':'اس پوائنٹ پر آپ کا کوئی سروے ٹاسک نہیں', 'المهمة قيد التنفيذ بالفعل':'ٹاسک پہلے ہی جاری ہے', 'اختر الفني والنقاط أولًا':'پہلے ٹیکنیشن اور پوائنٹس چنیں', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'اس پوائنٹ کی کوئی سروے درخواست نہیں — انجینئر سے تفویض کی درخواست کریں', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'منظوری کے منتظر کوئی مکمل دورے نہیں ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'ابھی کوئی ٹاسک نہیں — پہلی سروے درخواست بنائیں، ٹیکنیشن کو «میرا شیڈول» اور نقشے پر فوراً نظر آئے گی۔',
+  'طلبات الزيارة':'دورے کی درخواستیں', 'الفنيون':'ٹیکنیشنز', '🔍 طلبات الزيارة':'🔍 دورے کی درخواستیں', '👷 الفنيون':'👷 ٹیکنیشنز', 'سجل الفنيين — من هنا تُبنى قائمة الإسناد':'ٹیکنیشن رجسٹر — تفویض فہرست یہیں سے بنتی ہے', 'اسم الفني':'ٹیکنیشن کا نام', 'إضافة فني':'ٹیکنیشن شامل کریں', '⬇ إكسل — أداء الفنيين':'⬇ ایکسل — ٹیکنیشن کارکردگی', 'لا فنيين مسجّلين بعد':'ابھی کوئی ٹیکنیشن رجسٹرڈ نہیں', 'اكتب اسم الفني أولًا':'پہلے ٹیکنیشن کا نام لکھیں', 'الفني مسجّل بالفعل':'ٹیکنیشن پہلے سے رجسٹرڈ ہے', 'أُضيف الفني ✓':'ٹیکنیشن شامل ہو گیا ✓', 'حُذف الفني':'ٹیکنیشن حذف ہو گیا', 'اكتب الاسم كما يظهر في حساب الفني بالضبط — عليه يُبنى ظهور مهامه في «جدولي» وعلى خريطته.':'نام بالکل ویسا لکھیں جیسا ٹیکنیشن کے اکاؤنٹ میں ہے — «میرا شیڈول» اور نقشے پر ٹاسک اسی پر منحصر ہیں۔', 'إسناد زيارات المسح للفنيين واعتمادها':'ٹیکنیشنز کو سروے دورے تفویض اور منظوری', 'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت':'ٹیکنیشن رجسٹر، بیلنس اور ہدف سے موازنہ'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
