@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.57</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.58</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8819,7 +8819,7 @@ function render(){
       +card(cnt['منفّذ'],'بانتظار الاعتماد','#3AD6A0')+card(cnt['معتمد'],'معتمد','#8b5cf6')
       +card(cnt['مُعاد'],'مُعاد للتصحيح','#F0655A')+'</div>';
     if(cE){
-      var techs=[]; try{ techs=((C.get('settings','techs')||{}).list||[]).slice(); }catch(e){}
+      var techs=(window.tkTechs?window.tkTechs():[]);
       try{ var T2=C.get('settings','teams')||{}; (T2.list||[]).forEach(function(n3){ if(techs.indexOf(n3)<0) techs.push(n3); }); }catch(e){}
       Object.keys(rc).forEach(function(k){ var b2=String((rc[k]||{}).by||'').trim(); if(b2 && techs.indexOf(b2)<0) techs.push(b2); });
       all.forEach(function(t){ var n2=String(t.tech||'').trim(); if(n2 && techs.indexOf(n2)<0) techs.push(n2); });
@@ -8845,7 +8845,7 @@ function render(){
       h+='<div class="dT3">طلب زيارات جديد — حدّد النقاط ثم أسندها</div><div class="pwG">'
         +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
         +'<label class="pwL">تارجت المسح/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label>'
-        +'<label class="pwL">نقاط الساعة<input type="number" step="0.01" id="pw_ph" min="0" value="'+(P.ph)+'"></label></div>'
+        +'</div>'
         +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>النقاط</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
         +MX.map(function(row,ix){
           var wv=(Wm[row.k]!=null&&Wm[row.k]!=='')?Wm[row.k]:'';
@@ -9739,7 +9739,7 @@ function render(){
     var P0=window.pwGet(), o={ w:{} };
     ['camp','cor','stn','jam'].forEach(function(k){ o[k]=P0[k]; });
     ['tgtSurvey','ph'].forEach(function(k){
-      var e=$i('pw_'+k); o[k]=e?(parseFloat(e.value)||0):P0[k]; });
+      var e=$i('pw_'+k); o[k]=(e && String(e.value||'').trim()!=='') ? (parseFloat(e.value)||0) : P0[k]; });
     o.tgtInstall=P0.tgtInstall||1000;
     Array.prototype.forEach.call(document.querySelectorAll('.mxW'), function(e){
       var v=String(e.value||'').trim();
