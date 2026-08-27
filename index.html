@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.92</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.93</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7722,6 +7722,8 @@ window.NSKORD = window.NSKORD || {};
 /* أوزان النقاط إعدادات قابلة للتحرير — والافتراضي هو ما اعتمده المالك */
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3,
   tgtSurvey:90, tgtInstall:1000, tgtInsCamp:700, tgtInsCor:300, tgtDis:600,
+  tgtPrep:600, tgtPrepCamp:400, tgtPrepCor:200,
+  tgtAsm:600,  tgtAsmCamp:350,  tgtAsmCor:250,
   ph:4.81, days:26, hours:8, daysWeek:6,
   insCamp:76.9, insCor:192.3, stgCfg:25, stgVal:25, stgIns:50, disOk:1, disBad:1.25 };
 window.pwGet = function(){
@@ -7741,17 +7743,22 @@ window.pwGet = function(){
   }catch(e){}
   /* الإجمالي مشتقٌّ دائمًا من الفرعين — مرجعٌ واحد لا رقمان يتعارضان */
   d.tgtInstall = (parseFloat(d.tgtInsCamp)||0) + (parseFloat(d.tgtInsCor)||0);
+  d.tgtPrep    = (parseFloat(d.tgtPrepCamp)||0) + (parseFloat(d.tgtPrepCor)||0);
+  d.tgtAsm     = (parseFloat(d.tgtAsmCamp)||0)  + (parseFloat(d.tgtAsmCor)||0);
   return d;
 };
 window.pwSave = function(obj, what){
   try{
     var old=window.pwGet(), diff=[];
     ['camp','cor','stn','jam','ph','days','hours','tgtSurvey','tgtInsCamp','tgtInsCor','tgtDis',
+     'tgtPrepCamp','tgtPrepCor','tgtAsmCamp','tgtAsmCor',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){
       if(obj[k]!=null && String(obj[k])!==String(old[k])) diff.push(k+': '+old[k]+'←'+obj[k]);
     });
-    /* الإجمالي يُشتقّ عند الحفظ كذلك كي لا يبقى في المستند رقمٌ قديمٌ يخالف الفرعين */
+    /* الإجماليات تُشتقّ عند الحفظ كذلك كي لا يبقى في المستند رقمٌ قديمٌ يخالف فروعه */
     obj.tgtInstall = (parseFloat(obj.tgtInsCamp)||0) + (parseFloat(obj.tgtInsCor)||0);
+    obj.tgtPrep    = (parseFloat(obj.tgtPrepCamp)||0) + (parseFloat(obj.tgtPrepCor)||0);
+    obj.tgtAsm     = (parseFloat(obj.tgtAsmCamp)||0)  + (parseFloat(obj.tgtAsmCor)||0);
     window.NSKCORE.set('settings','points',obj);
     if(window.NSKSYNC) NSKSYNC.push('settings','points',obj);
     if(window.NSKSYNC) NSKSYNC.log('تعديل إعدادات '+(what||'النقاط')+(diff.length?(' — '+diff.join(' · ')):''));
@@ -7769,10 +7776,15 @@ window.arNum = function(v){
 };
 /* V13.88: الجملة المركّبة بالأرقام تفشل مطابقةُ محرك اللغات لها لأنه يطابق العقدة كاملةً —
    فتُبنى أجزاؤها الثابتة عقدًا مستقلة يترجم كلًّا منها وحده */
-window.cfgInsLine = function(tot){
+window.cfgInsLine = function(tot, tail){
   return '<span>الإجمالي الشهري</span> '+window.arNum(tot)+' <span>نقطة · الأسبوعي</span> '
     +window.arNum(window.pwWk(tot))
-    +' <span>نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.</span>';
+    +' <span>'+(tail||'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.')+'</span>';
+};
+window.CFG_TAIL = {
+  ins:'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.',
+  prep:'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التهيئة.',
+  asm:'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التجميع.'
 };
 window.pwWk = function(monthly){
   var P=window.pwGet(), d=P.days||26, w=P.daysWeek||6;
@@ -7840,6 +7852,19 @@ window.stagePts = function(items, stage){
     t += (parseFloat(items[id])||0) * (parseFloat(it[k])||0);
   });
   return Math.round(t*10)/10;
+};
+/* نقاط المرحلة مقسّمةً مخيماتٍ وممرات — من منطقة الصنف نفسه في الكتالوج */
+window.stagePtsBy = function(items, stage){
+  var IT={}, k=(stage==='prep'?'prep':(stage==='asm'?'asm':'pts')), o={camp:0, cor:0, tot:0};
+  try{ window.itList().forEach(function(x){ IT[x.id]=x; }); }catch(e){}
+  Object.keys(items||{}).forEach(function(id){
+    var it=IT[id]; if(!it) return;
+    var v=(parseFloat(items[id])||0) * (parseFloat(it[k])||0);
+    if(it.z==='cor') o.cor+=v; else o.camp+=v;
+    o.tot+=v;
+  });
+  o.camp=Math.round(o.camp*10)/10; o.cor=Math.round(o.cor*10)/10; o.tot=Math.round(o.tot*10)/10;
+  return o;
 };
 /* أصناف المرحلة: ما نقاطُه فيها أكبر من صفر */
 window.stageItems = function(stage){
@@ -8300,6 +8325,22 @@ window.cfgRender = function(){
             +'" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+(it[_st]||'')+'" placeholder="0"></td></tr>';
         }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
+      +'<h3 class="cfgH3">'+(pg==='prep'?'تارجت تهيئة المخيمات':'تارجت تجميع المخيمات')+'</h3>'
+      +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_'
+      +(pg==='prep'?'tgtPrepCampW':'tgtAsmCampW')+'" id="cfg_'+(pg==='prep'?'tgtPrepCamp':'tgtAsmCamp')
+      +'" min="0" value="'+(pg==='prep'?P.tgtPrepCamp:P.tgtAsmCamp)+'"></label>'
+      +'<label>الأسبوعي<input type="number" inputmode="numeric" class="tgW" data-m="cfg_'
+      +(pg==='prep'?'tgtPrepCamp':'tgtAsmCamp')+'" id="cfg_'+(pg==='prep'?'tgtPrepCampW':'tgtAsmCampW')
+      +'" min="0" value="'+window.pwWk(pg==='prep'?P.tgtPrepCamp:P.tgtAsmCamp)+'"></label></div>'
+      +'<h3 class="cfgH3">'+(pg==='prep'?'تارجت تهيئة الممرات':'تارجت تجميع الممرات')+'</h3>'
+      +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_'
+      +(pg==='prep'?'tgtPrepCorW':'tgtAsmCorW')+'" id="cfg_'+(pg==='prep'?'tgtPrepCor':'tgtAsmCor')
+      +'" min="0" value="'+(pg==='prep'?P.tgtPrepCor:P.tgtAsmCor)+'"></label>'
+      +'<label>الأسبوعي<input type="number" inputmode="numeric" class="tgW" data-m="cfg_'
+      +(pg==='prep'?'tgtPrepCor':'tgtAsmCor')+'" id="cfg_'+(pg==='prep'?'tgtPrepCorW':'tgtAsmCorW')
+      +'" min="0" value="'+window.pwWk(pg==='prep'?P.tgtPrepCor:P.tgtAsmCor)+'"></label></div>'
+      +'<p class="cfgS" id="cfgInsSum">'+window.cfgInsLine((pg==='prep'?P.tgtPrep:P.tgtAsm),
+          window.CFG_TAIL[pg==='prep'?'prep':'asm'])+'</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="'
       +(pg==='prep'?'cfgSaveP':'cfgSaveA')+'">'+(pg==='prep'?'حفظ نقاط التهيئة':'حفظ نقاط التجميع')+'</button></div>'
       +'<p class="cfgS">الأصناف تُضاف وتُحذف من صفحة «القطع والأسعار»، وهذه الصفحة تُسعّر عملها في هذه المرحلة وحدها.</p>';
@@ -8450,7 +8491,8 @@ window.cfgBind = function(){
   function base(){
     var P0=window.pwGet(), o={};
     ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall',
-     'tgtInsCamp','tgtInsCor','tgtDis',
+     'tgtInsCamp','tgtInsCor','tgtDis','tgtPrep','tgtAsm',
+     'tgtPrepCamp','tgtPrepCor','tgtAsmCamp','tgtAsmCor',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
@@ -8458,8 +8500,12 @@ window.cfgBind = function(){
   function num(id, o, k){ var e=q('#cfg_'+id); if(e && String(e.value||'').trim()!=='') o[k]=parseFloat(e.value)||0; }
   function insSum(){
     var e=q('#cfgInsSum'); if(!e) return;
-    var a=parseFloat((q('#cfg_tgtInsCamp')||{}).value)||0, b=parseFloat((q('#cfg_tgtInsCor')||{}).value)||0;
-    e.innerHTML=window.cfgInsLine(a+b);
+    var pg=window.NSKCFG.page;
+    var pre=(pg==='prep')?'tgtPrep':((pg==='asm')?'tgtAsm':'tgtIns');
+    var tail=(pg==='prep')?'prep':((pg==='asm')?'asm':'ins');
+    var a=parseFloat((q('#cfg_'+pre+'Camp')||{}).value)||0;
+    var b=parseFloat((q('#cfg_'+pre+'Cor')||{}).value)||0;
+    e.innerHTML=window.cfgInsLine(a+b, window.CFG_TAIL[tail]);
     try{ if(window.NSKI18N) NSKI18N.apply(e); }catch(x){}
   }
   Array.prototype.forEach.call(qa('.tgM'), function(e){
@@ -8496,6 +8542,10 @@ window.cfgBind = function(){
       L.forEach(function(x){ if(M[x.id]!=null) x[st]=M[x.id]; });
       var _msg=(st==='prep') ? 'تحديث نقاط التهيئة' : 'تحديث نقاط التجميع';
       window.itSave(L, _msg);
+      var pre=(st==='prep')?'tgtPrep':'tgtAsm', o=base();
+      num(pre+'Camp', o, pre+'Camp'); num(pre+'Cor', o, pre+'Cor');
+      var _m2=(st==='prep') ? 'تارجت التهيئة' : 'تارجت التجميع';
+      window.pwSave(o, _m2);
       window.cfgMark(false); window.cfgRender();
     };
   });
@@ -11861,6 +11911,49 @@ function render(){
       h+='</tbody></table>';
       h+='<p class="dTs"><span>الحالات الخمس نفسها في كل الأنواع: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد، والإعادة ترجعه للمنفِّذ.</span></p>';
     }
+    /* V13.93: الورشة مقابل تارجتها — مخيماتٍ وممرات، شهرًا وأسبوعًا */
+    (function(){
+      var P=window.pwGet(), mk=new Date().toISOString().slice(0,7);
+      var wkAgo=new Date(Date.now()-6*864e5).toISOString().slice(0,10);
+      var G={ prep:{mc:0,mr:0,wc:0,wr:0}, asm:{mc:0,mr:0,wc:0,wr:0} };
+      ALL.forEach(function(t){
+        var k=window.woKind(t);
+        if(k!=='prep' && k!=='asm') return;
+        if(t.st!=='منفّذ' && t.st!=='معتمد') return;
+        var d=String(t.doneAt||'').slice(0,10); if(!d) return;
+        var b=window.stagePtsBy(t.items||{}, k);
+        if(d.slice(0,7)===mk){ G[k].mc+=b.camp; G[k].mr+=b.cor; }
+        if(d>=wkAgo){ G[k].wc+=b.camp; G[k].wr+=b.cor; }
+      });
+      var TM={ prep:{c:parseFloat(P.tgtPrepCamp)||0, r:parseFloat(P.tgtPrepCor)||0},
+               asm: {c:parseFloat(P.tgtAsmCamp)||0,  r:parseFloat(P.tgtAsmCor)||0} };
+      var pcC=function(p){ return p>=100?'#3AD6A0':(p>=70?'#E8C34B':'#E05252'); };
+      h+='<div class="dT3">الورشة مقابل التارجت — بالنقاط</div>';
+      h+='<table class="dT"><thead><tr><th>المرحلة</th><th>النوع</th><th>نقاط الشهر</th>'
+        +'<th>تارجت الشهر</th><th>٪ الشهر</th><th>نقاط ٧ أيام</th><th>تارجت الأسبوع</th><th>٪ الأسبوع</th></tr></thead><tbody>';
+      [['prep','🛠 تهيئة'],['asm','🧰 تجميع']].forEach(function(g){
+        [['c','مخيمات','mc','wc'],['r','ممرات','mr','wr']].forEach(function(t2){
+          var m=Math.round(TM[g[0]][t2[0]]), wq=window.pwWk(m);
+          var mv=Math.round(G[g[0]][t2[2]]*10)/10, wv=Math.round(G[g[0]][t2[3]]*10)/10;
+          var pm=m?Math.round(mv/m*100):0, pw=wq?Math.round(wv/wq*100):0;
+          h+='<tr><td>'+esc2(g[1])+'</td><td>'+esc2(t2[1])+'</td>'
+            +'<td><b>'+AR(mv)+'</b></td><td>'+AR(m)+'</td>'
+            +'<td style="color:'+pcC(pm)+';font-weight:800">'+AR(pm)+'٪</td>'
+            +'<td>'+AR(wv)+'</td><td>'+AR(wq)+'</td>'
+            +'<td style="color:'+pcC(pw)+';font-weight:800">'+AR(pw)+'٪</td></tr>';
+        });
+      });
+      var TMt=Math.round(TM.prep.c+TM.prep.r+TM.asm.c+TM.asm.r);
+      var MVt=Math.round((G.prep.mc+G.prep.mr+G.asm.mc+G.asm.mr)*10)/10;
+      var WVt=Math.round((G.prep.wc+G.prep.wr+G.asm.wc+G.asm.wr)*10)/10;
+      var TWt=window.pwWk(TMt);
+      h+='<tr><td><b>الإجمالي</b></td><td></td><td><b>'+AR(MVt)+'</b></td><td><b>'+AR(TMt)+'</b></td>'
+        +'<td><b>'+AR(TMt?Math.round(MVt/TMt*100):0)+'٪</b></td>'
+        +'<td><b>'+AR(WVt)+'</b></td><td><b>'+AR(TWt)+'</b></td>'
+        +'<td><b>'+AR(TWt?Math.round(WVt/TWt*100):0)+'٪</b></td></tr>';
+      h+='</tbody></table>';
+      h+='<p class="dTs"><span>النقاط تُقسَّم مخيماتٍ وممراتٍ من منطقة الصنف نفسه في الكتالوج، والتارجتات الأربعة تُضبط في الإعدادات ← نقاط التهيئة ونقاط التجميع.</span></p>';
+    })();
     h+='</section>';
 
     /* نقاط اليوم عبر المراحل */
@@ -12297,7 +12390,8 @@ function render(){
   function _pwBase(){
     var P0=window.pwGet(), o={};
     ['camp','cor','stn','jam','other','ph','days','hours','daysWeek','tgtSurvey','tgtInstall',
-     'tgtInsCamp','tgtInsCor','tgtDis',
+     'tgtInsCamp','tgtInsCor','tgtDis','tgtPrep','tgtAsm',
+     'tgtPrepCamp','tgtPrepCor','tgtAsmCamp','tgtAsmCor',
      'insCamp','insCor','stgCfg','stgVal','stgIns','disOk','disBad'].forEach(function(k){ o[k]=P0[k]; });
     o.w=P0.w||{}; o.dw=P0.dw||{};
     return o;
@@ -14595,7 +14689,15 @@ window.NSKI18N = (function(){
   'أكمل التاريخ والصنف والكمية والسعر':'Fill in the date, item, quantity and price',
   'الكمية أكبر من صفر والسعر لا يكون سالبًا':'Quantity must be above zero and price cannot be negative',
   'لا مشتريات لتصديرها':'No purchases to export',
-  'تارجت تركيب المخيمات':'Camp installation target', 'تارجت تركيب الممرات':'Corridor installation target',
+  'تارجت تركيب المخيمات':'Camp installation target',
+  'تارجت تهيئة المخيمات':'Camp configuration target', 'تارجت تهيئة الممرات':'Corridor configuration target',
+  'تارجت تجميع المخيمات':'Camp assembly target', 'تارجت تجميع الممرات':'Corridor assembly target',
+  'تارجت التهيئة':'Configuration target', 'تارجت التجميع':'Assembly target',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التهيئة.':'points — derived from the two branches and never typed by hand; it is what the workshop’s configuration output is measured against.',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التجميع.':'points — derived from the two branches and never typed by hand; it is what the workshop’s assembly output is measured against.',
+  'الورشة مقابل التارجت — بالنقاط':'Workshop against target — in points', 'المرحلة':'Stage',
+  'نقاط الشهر':'Month points',
+  'النقاط تُقسَّم مخيماتٍ وممراتٍ من منطقة الصنف نفسه في الكتالوج، والتارجتات الأربعة تُضبط في الإعدادات ← نقاط التهيئة ونقاط التجميع.':'Points are split into camps and corridors from each item’s own zone in the catalogue; the four targets are set in Settings → Configuration points and Assembly points.', 'تارجت تركيب الممرات':'Corridor installation target',
   'الشهري':'Monthly', 'الأسبوعي':'Weekly',
   'التركيب مقابل التارجت — بالنقاط':'Installation against target — in points',
   'مُركّب هذا الشهر':'Installed this month', 'نقاطه':'Its points', 'تارجت الشهر':'Month target',
@@ -15019,7 +15121,15 @@ window.NSKI18N = (function(){
   'أكمل التاريخ والصنف والكمية والسعر':'تاریخ، شے، مقدار اور قیمت مکمل کریں',
   'الكمية أكبر من صفر والسعر لا يكون سالبًا':'مقدار صفر سے زیادہ ہو اور قیمت منفی نہ ہو',
   'لا مشتريات لتصديرها':'برآمد کرنے کے لیے کوئی خریداری نہیں',
-  'تارجت تركيب المخيمات':'خیموں کی تنصیب کا ہدف', 'تارجت تركيب الممرات':'راہداریوں کی تنصیب کا ہدف',
+  'تارجت تركيب المخيمات':'خیموں کی تنصیب کا ہدف',
+  'تارجت تهيئة المخيمات':'خیموں کی تیاری کا ہدف', 'تارجت تهيئة الممرات':'راہداریوں کی تیاری کا ہدف',
+  'تارجت تجميع المخيمات':'خیموں کی اسمبلی کا ہدف', 'تارجت تجميع الممرات':'راہداریوں کی اسمبلی کا ہدف',
+  'تارجت التهيئة':'تیاری کا ہدف', 'تارجت التجميع':'اسمبلی کا ہدف',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التهيئة.':'پوائنٹس — دونوں شاخوں سے اخذ، دستی نہیں، اور اسی سے ورکشاپ کی تیاری کی پیداوار ناپی جاتی ہے۔',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به إنتاج الورشة في التجميع.':'پوائنٹس — دونوں شاخوں سے اخذ، دستی نہیں، اور اسی سے ورکشاپ کی اسمبلی کی پیداوار ناپی جاتی ہے۔',
+  'الورشة مقابل التارجت — بالنقاط':'ورکشاپ بمقابلہ ہدف — پوائنٹس میں', 'المرحلة':'مرحلہ',
+  'نقاط الشهر':'ماہ کے پوائنٹس',
+  'النقاط تُقسَّم مخيماتٍ وممراتٍ من منطقة الصنف نفسه في الكتالوج، والتارجتات الأربعة تُضبط في الإعدادات ← نقاط التهيئة ونقاط التجميع.':'پوائنٹس کیٹلاگ میں ہر شے کے اپنے علاقے سے خیموں اور راہداریوں میں تقسیم ہوتے ہیں؛ چاروں اہداف ترتیبات ← تیاری پوائنٹس اور اسمبلی پوائنٹس سے طے ہوتے ہیں۔', 'تارجت تركيب الممرات':'راہداریوں کی تنصیب کا ہدف',
   'الشهري':'ماہانہ', 'الأسبوعي':'ہفتہ وار',
   'التركيب مقابل التارجت — بالنقاط':'تنصیب بمقابلہ ہدف — پوائنٹس میں',
   'مُركّب هذا الشهر':'اس ماہ نصب شدہ', 'نقاطه':'اس کے پوائنٹس', 'تارجت الشهر':'ماہ کا ہدف',
