@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.69</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.70</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1464,7 +1464,6 @@ window.addEventListener('error', function(e){
     <button class="pill" id="goBtn" type="button">مواقع</button>
       <button class="pill" id="mcCo" type="button" title="تلوين حسب الشركة">شركات</button>
       <button class="pill ic" id="thBtn" type="button" title="فاتح / داكن">🌓</button>
-      <button class="pill ic" id="cfgPill" type="button" title="الإعدادات" aria-label="الإعدادات" style="display:none">⚙️</button>
       </div>
     </header>
 
@@ -5404,19 +5403,21 @@ window.NSKCORE={
 .cfgN.on{background:#C9A24B;border-color:#C9A24B;color:#0A0B0D;font-weight:700}
 .cfgBody{padding:14px 14px 30px;max-width:760px;margin:0 auto}
 .cfgBody h2{font-size:17px;margin:4px 0 2px;color:#E8C36A}
-.cfgS{font-size:12.5px;color:#8a9199;margin:0 0 12px;line-height:1.7}
+ .cfgS{font-size:12.5px;color:#8a9199;margin:0 0 12px;line-height:1.7}
+.cfgH3{font-size:13.5px;color:#C9A24B;margin:14px 0 6px}
 .cfgT{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 12px}
 .cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:7px 6px;border-bottom:1px solid #20262d}
 .cfgT td{padding:7px 6px;border-bottom:1px solid #171c22}
 .cfgT input{background:#12161b;border:1px solid #2A3038;border-radius:8px;color:#E7E3D8;padding:7px 9px;font-size:13px;width:96px}
 .cfgF{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:8px 0 14px}
 .cfgF label{display:flex;flex-direction:column;gap:5px;font-size:12px;color:#9aa2ab}
-.cfgF input{background:#12161b;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:9px 11px;font-size:13px}
+.cfgF input,.cfgF select{background:#12161b;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;padding:9px 11px;font-size:13px}
 .cfgRow{display:flex;gap:8px;flex-wrap:wrap;margin:6px 0 4px}
 .cfgGo{background:#C9A24B;border:none;border-radius:10px;color:#0A0B0D;font-weight:700;padding:10px 16px;font-size:13px}
 .cfgDel{background:transparent;border:1px solid #2A3038;border-radius:8px;color:#F0655A;padding:4px 10px}
 
-body:not(.nskCfgOpen) #fbAdmin{display:none!important}
+#fbAcct #fbAdmin{display:none!important}
+#nskCfgOv #fbAdmin{display:block!important;margin-top:6px}
 #cfgHdr{font-size:15px}
 
 #tkSelBar{position:fixed;left:50%;transform:translateX(-50%);bottom:74px;z-index:9000;display:flex;gap:10px;
@@ -7541,12 +7542,28 @@ window.pwCalc = function(){
   return { P:P, hoursMonth:hrs, ptsPerHour: hrs? ((P.tgtInstall||1000)/hrs) : (P.ph||4.81) };
 };
 /* وزن زيارة النقطة حسب نوعها */
-window.ITEM_SEED = [['cam_ai','كاميرا AI موتورايز',26],['cam','كاميرا شبكة ثابتة',8],['rtr','راوتر صناعي',5],['rdr8','قارئ ٨ منافذ',33],['rdr4','قارئ ٤ منافذ',11],['ant9','هوائي UHF SRRA9',3],['ant12','هوائي UHF SRRA12',8],['sol','لوح سولار ٤٠٠و',26],['bat','بطارية ٢٠٠أ',16],['mppt','منظم شمسي MPPT 40A',13],['mcb','بريكر MCB',5],['boxb','بوكس بطارية ٨٠×٦٠×٣٠',20],['box','بوكس رئيسي ٦٠×٤٠×٢٠',13],['c20','كابل RFID ٢٠م',13],['c15','كابل ١٥م 7D-FB',5],['c10','كابل ١٠م 5D-FB',4],['c5','كابل RFID ٥م',2],['led','شاشة LED',2],['kor','وحدة KOR',2],['rly','ريلاي ١٢ف',2]].map(function(x){ return {id:x[0], n:x[1], pts:x[2]}; });
+window.ITEM_SEED = [
+ ['cor','cam_ai','كاميرا AI موتورايز',26,4850],['cor','cam_pe','كاميرا شبكة ثابتة',16,2400],
+ ['cor','rtr','راوتر صناعي',10,1150],['cor','rdr8','قارئ ٨ منافذ',33,7200],
+ ['cor','rdr4','قارئ ٤ منافذ',23,5100],['cor','ant9','هوائي UHF SRRA9',7,420],
+ ['cor','ant12','هوائي UHF SRRA12',8,520],['cor','sol','لوح سولار ٤٠٠و',26,900],
+ ['cor','bat','بطارية ٢٠٠أ',16,1600],['cor','mppt','منظم شمسي MPPT 40A',13,700],
+ ['cor','mcb','بريكر MCB',5,90],['cor','boxb','بوكس بطارية ٨٠×٦٠×٣٠',20,950],
+ ['cor','c20','كابل RFID ٢٠م',13,260],['cor','c15c','كابل ١٥م 7D-FB',10,190],
+ ['cor','c10c','كابل ١٠م 5D-FB',8,140],['cor','c5c','كابل RFID ٥م',5,80],
+ ['cor','boxm','بوكس رئيسي ٦٠×٤٠×٢٠',26,680],
+ ['camp','cam','كاميرا شبكة',8,2400],['camp','rtr2','راوتر صناعي',5,1150],
+ ['camp','rdr4c','قارئ ٤ منافذ',11,5100],['camp','ant9c','هوائي UHF',3,420],
+ ['camp','c15','كابل ١٥م 7D-FB',5,190],['camp','c10','كابل ١٠م 5D-FB',4,140],
+ ['camp','c5','كابل RFID ٥م',2,80],['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680],
+ ['camp','led','شاشة LED',2,150],['camp','korg','وحدة KOR خضراء',2,120],
+ ['camp','korr','وحدة KOR حمراء',2,120],['camp','rly','ريلاي ١٢ف',2,60]
+].map(function(x){ return {z:x[0], id:x[1], n:x[2], pts:x[3], price:x[4]}; });
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
   if(!L.length) L=window.ITEM_SEED.slice();
-  return L.map(function(x){ return {id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0)}; })
+  return L.map(function(x){ return {z:String(x.z||'camp'), id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0)}; })
           .filter(function(x){ return x.id && x.n; });
 };
 window.itSave = function(list, logTxt){
@@ -7605,20 +7622,20 @@ window.bomOpen = function(siteId, taskId){
   };
 };
 /* ═══ شاشة الإعدادات المستقلة — كل بند صفحة قائمة بذاتها ═══ */
-window.NSKCFG = { page:'roles' };
+window.NSKCFG = { page:'users' };
 window.cfgPages = [
-  ['roles','الأدوار والصلاحيات','من يفعل ماذا'],
   ['users','المستخدمون','إنشاء الحسابات وأدوارها'],
   ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح'],
   ['install','نقاط التركيب','نقاط كل قطعة وتارجت التركيب'],
   ['dis','نقاط الفك','وزن الفك ومعاملا الحالة'],
   ['items','القطع والأسعار','كتالوج القطع وسعر كل قطعة'],
-  ['sys','ثوابت النظام','أيام العمل وساعات اليوم']
+  ['sys','ثوابت النظام','أيام العمل وساعات اليوم'],
+  ['roles','الأدوار والصلاحيات','من يفعل ماذا']
 ];
 window.nskCfgOpen = function(page){
   var ro=''; try{ ro=nskRole(); }catch(e){}
   if(ro!=='admin' && ro!=='engineer'){ toast('الإعدادات للإدارة فقط',1); return; }
-  window.NSKCFG.page = page || window.NSKCFG.page || 'roles';
+  window.NSKCFG.page = page || window.NSKCFG.page || 'users';
   var ov=document.getElementById('nskCfgOv');
   if(!ov){
     ov=document.createElement('div'); ov.id='nskCfgOv';
@@ -7628,6 +7645,12 @@ window.nskCfgOpen = function(page){
   window.cfgRender();
 };
 window.cfgClose = function(){
+  try{
+    var ad=document.getElementById('fbAdmin');
+    if(ad && window._fbAdminHome && ad.parentNode!==window._fbAdminHome){
+      window._fbAdminHome.appendChild(ad); ad.style.display='none';
+    }
+  }catch(e){}
   var ov=document.getElementById('nskCfgOv'); if(ov) ov.style.display='none';
 };
 function _cfgX(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
@@ -7657,8 +7680,8 @@ window.cfgRender = function(){
       +'</table><p class="cfgS">الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
   }
   else if(pg==='users'){
-    h+='<p class="cfgS">إنشاء الحسابات وتغيير الأدوار يتم من لوحة الحساب — وهي المدخل الوحيد.</p>'
-      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgAddU">➕ إضافة مستخدم</button></div>';
+    h+='<p class="cfgS">أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.</p>'
+      +'<div id="cfgUserSlot"></div>';
   }
   else if(pg==='visits'){
     var MX=window.pwRows(), W=P.w||{};
@@ -7673,11 +7696,17 @@ window.cfgRender = function(){
   }
   else if(pg==='install'){
     var IT=window.itList();
-    h+='<table class="cfgT"><tr><th>القطعة</th><th>نقاط التركيب</th></tr>'
-      +IT.map(function(it){
-        return '<tr><td>'+_cfgX(it.n)+'</td>'
-          +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
-      }).join('')+'</table>'
+    [['cor','ممر'],['camp','مخيم']].forEach(function(g){
+      var L=IT.filter(function(x){ return x.z===g[0]; });
+      if(!L.length) return;
+      h+='<h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
+        +'<table class="cfgT"><tr><th>القطعة</th><th>نقاط التركيب</th></tr>'
+        +L.map(function(it){
+          return '<tr><td>'+_cfgX(it.n)+'</td>'
+            +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
+        }).join('')+'</table>';
+    });
+    h+=''
       +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
       +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</p>';
@@ -7697,13 +7726,19 @@ window.cfgRender = function(){
   }
   else if(pg==='items'){
     var IT2=window.itList();
-    h+='<table class="cfgT"><tr><th>القطعة</th><th>السعر (ريال)</th><th></th></tr>'
-      +IT2.map(function(it){
-        return '<tr><td>'+_cfgX(it.n)+'</td>'
-          +'<td><input type="number" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
-          +'<td><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)+'">×</button></td></tr>';
-      }).join('')+'</table>'
-      +'<div class="cfgF"><label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
+    [['cor','ممر'],['camp','مخيم']].forEach(function(g){
+      var L=IT2.filter(function(x){ return x.z===g[0]; });
+      if(!L.length) return;
+      h+='<h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
+        +'<table class="cfgT"><tr><th>القطعة</th><th>السعر (ريال)</th><th></th></tr>'
+        +L.map(function(it){
+          return '<tr><td>'+_cfgX(it.n)+'</td>'
+            +'<td><input type="number" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
+            +'<td><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)+'">×</button></td></tr>';
+        }).join('')+'</table>';
+    });
+    h+='<div class="cfgF"><label>نوع الموقع<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
+      +'<label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
       +'<label>نقاط تركيبها<input type="number" id="cfg_itPts" step="0.5" min="0" value="1"></label>'
       +'<label>سعرها<input type="number" id="cfg_itPr" min="0" value="0"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgItAdd">إضافة قطعة</button>'
@@ -7769,7 +7804,7 @@ window.cfgBind = function(){
     var n2=String((q('#cfg_itNm')||{}).value||'').trim();
     if(!n2){ toast('اكتب اسم القطعة أولًا',1); return; }
     var L=window.itList();
-    L.push({ id:'it'+Date.now().toString(36), n:n2,
+    L.push({ z:((q('#cfg_itZ')||{}).value)||'camp', id:'it'+Date.now().toString(36), n:n2,
              pts:parseFloat((q('#cfg_itPts')||{}).value)||0,
              price:parseFloat((q('#cfg_itPr')||{}).value)||0 });
     window.itSave(L,'إضافة قطعة: '+n2); window.cfgRender();
@@ -7788,15 +7823,17 @@ window.cfgBind = function(){
       window.cfgRender();
     };
   });
-  var au=q('#cfgAddU');
-  if(au) au.onclick=function(){
-    try{ document.body.classList.add('nskCfgOpen'); }catch(e){}
-    window.cfgClose();
-    try{
-      var a2=document.getElementById('fbAcct');
-      if(a2){ a2.style.display='flex'; var ad=document.getElementById('fbAdmin'); if(ad) ad.style.display='block'; }
-    }catch(e){}
-  };
+  /* نقل لوحة إدارة المستخدمين كما هي إلى صفحة الإعدادات — بمنطقها وربطها الأصلي */
+  var slot=q('#cfgUserSlot');
+  if(slot){
+    var ad=document.getElementById('fbAdmin');
+    if(ad){
+      if(!window._fbAdminHome) window._fbAdminHome=ad.parentNode;
+      slot.appendChild(ad);
+      ad.style.display='block';
+      try{ var rf=document.getElementById('uRef'); if(rf) rf.click(); }catch(e){}
+    } else slot.innerHTML='<p class="cfgS">افتح «حسابي» مرة واحدة ثم عُد — تُحمَّل لوحة الحسابات.</p>';
+  }
 };
 window.pwRows = function(){
   var out=[], seen={};
@@ -11886,6 +11923,16 @@ window.NSKI18N = (function(){
       b.textContent = LANGS[lang].b;
       b.onclick = function(){ menu(b); };
       bel.parentNode.insertBefore(b, bel);
+      /* الترس بجوار زر اللغة مباشرةً — مدخل الإعدادات للإدارة */
+      if(!document.getElementById('cfgPill')){
+        var g = document.createElement('button');
+        g.id='cfgPill'; g.type='button'; g.className='pill ic';
+        g.setAttribute('title','الإعدادات'); g.setAttribute('aria-label','الإعدادات');
+        g.textContent='⚙️'; g.style.display='none';
+        g.onclick=function(){ try{ window.nskCfgOpen(); }catch(e){} };
+        bel.parentNode.insertBefore(g, b);
+        try{ if(window.applyDocRole) window.applyDocRole(); }catch(e){}
+      }
     }
     try{
       mo = new MutationObserver(schedule);
