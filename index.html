@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.79</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.80</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5429,7 +5429,10 @@ window.NSKCORE={
 #nskCfgOv #fbAdmin .uMe{display:inline-block;font-size:10.5px;background:#C9A24B;color:#0A0B0D;border-radius:6px;padding:1px 6px;margin-inline-start:6px;vertical-align:middle}
 #nskCfgOv #fbAdmin .uSt{display:inline-block;font-size:10.5px;background:#F0655A;color:#0A0B0D;border-radius:6px;padding:1px 6px;margin-inline-start:6px;vertical-align:middle}
 #nskCfgOv #fbAdmin .uRow>div:not(.uT){display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:6px}
-#nskCfgOv #fbAdmin .uRow select{min-width:132px}
+#nskCfgOv #fbAdmin .uRow select{min-width:150px;appearance:none;-webkit-appearance:none;
+  background:#12161b url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6'><path d='M0 0l5 6 5-6z' fill='%238a9199'/></svg>") no-repeat left 10px center;
+  padding-inline-start:12px;padding-inline-end:28px}
+#nskCfgOv #fbAdmin .uRow>div:not(.uT){justify-content:flex-start}
 .cfgT{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 12px}
 .cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:7px 6px;border-bottom:1px solid #20262d}
 .cfgT td{padding:7px 6px;border-bottom:1px solid #171c22}
@@ -11837,7 +11840,13 @@ window.NSKI18N = (function(){
      'مقام کی درستگی $1 میٹر — بہتر درستگی کے لیے کھلی جگہ جائیں'],
     [/^\(دقة (\S+) م\)$/, '(accuracy $1 m)', '(درستگی $1 میٹر)'],
     [/^ممر — (\S+) قطعة$/, 'Corridor — $1 items', 'راہداری — $1 آئٹمز'],
-    [/^مخيم — (\S+) قطعة$/, 'Camp — $1 items', 'خیمہ — $1 آئٹمز']
+    [/^مخيم — (\S+) قطعة$/, 'Camp — $1 items', 'خیمہ — $1 آئٹمز'],
+    [/^الكل (\S+)$/, 'All $1', 'سب $1'],
+    [/^أدمن (\S+)$/, 'Admin $1', 'ایڈمن $1'],
+    [/^مشرف (\S+)$/, 'Supervisor $1', 'سپروائزر $1'],
+    [/^مهندس (\S+)$/, 'Engineer $1', 'انجینئر $1'],
+    [/^وزارة (\S+)$/, 'Ministry $1', 'وزارت $1'],
+    [/^موقوف (\S+)$/, 'Suspended $1', 'معطل $1']
   ];
   function tr(raw){
     if(lang === 'ar' || !raw) return null;
@@ -11934,7 +11943,11 @@ window.NSKI18N = (function(){
         var p = n.parentNode;
         if(!p) return NodeFilter.FILTER_REJECT;
         /* خيار نائب بلا قيمة مخزّنة (— اختر —) يُترجم؛ وما يحمل قيمةً يبقى محميًّا */
-        if(p.nodeName==='OPTION'){ if(p.value!=='') return NodeFilter.FILTER_REJECT; }
+        if(p.nodeName==='OPTION'){
+          /* نصُّ الخيار قيمةٌ مخزَّنة ⇒ يُحمى. أما ما قيمتُه رمزٌ مختلف (supervisor/engineer…) فعنوانٌ يُترجم */
+          var _v=String(p.value||'').trim(), _t=String(p.textContent||'').trim();
+          if(_v!=='' && _v===_t) return NodeFilter.FILTER_REJECT;
+        }
         else if(SKIP[p.nodeName]) return NodeFilter.FILTER_REJECT;
         /* بلاطات الخريطة وأسماء شوارعها ليست من واجهتنا */
         if(p.closest && p.closest('.leaflet-pane') && !p.closest('.leaflet-popup-pane')) return NodeFilter.FILTER_REJECT;
