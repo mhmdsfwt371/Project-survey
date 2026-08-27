@@ -1424,6 +1424,36 @@ html[data-theme="light"]{
 html[data-theme="light"] .leaflet-container{background:#E8E4D8}
 html[data-theme="light"] .leaflet-bar a{background:#fff;color:#333}
 </style>
+<script>
+(function(){
+  try{
+    window.__NSK_PREVIEW__ = 1;
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(function(rs){
+        var hit=false;
+        rs.forEach(function(r){
+          var sc=String((r&&r.scope)||'');
+          if(sc.indexOf('/preview')>-1){ hit=true; r.unregister(); }
+        });
+        if(hit && !/[?&]fresh=/.test(location.search)){
+          location.replace(location.pathname + '?fresh=' + Date.now());
+        }
+      }).catch(function(){});
+    }
+    if('caches' in window){
+      caches.keys().then(function(ks){
+        ks.forEach(function(k){
+          caches.open(k).then(function(c){
+            c.keys().then(function(reqs){
+              reqs.forEach(function(q){ if(String(q.url).indexOf('/preview')>-1) c.delete(q); });
+            });
+          });
+        });
+      }).catch(function(){});
+    }
+  }catch(e){}
+})();
+</script>
 </head>
 <body>
 <script>
