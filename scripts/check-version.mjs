@@ -280,6 +280,25 @@ try {
   else ok.push(`ترجمة شاشة الإعدادات كاملة · القاموسان ${EN.size} مفتاحًا ✓`);
 } catch (e) { fail.push('حارس الترجمة تعثّر: ' + String(e && e.message).slice(0, 120)); }
 
+/* ── حارس تعارض الكلاسات ──────────────────────────────────────────────
+   عنصرٌ يحمل كلاسين لكلٍّ منهما معالجٌ مربوط: أحدهما يستبدل الآخر، والغالبُ
+   ترتيبُ الأسطر لا القصد. سلامةٌ بالصدفة يكسرها أيُّ إعادة ترتيب — وقد وقعت
+   فعلًا مرتين: زرُّ الإخراج من المرحلة فتح حذفَ القطعة، وزرُّ حذف الفريق
+   دهس حذفَ جهة الاتصال. */
+try {
+  const src = readFileSync('index.html', 'utf8');
+  const handlers = new Set();
+  for (const m of src.matchAll(/qa\('\.([\w-]+)'\)/g)) handlers.add(m[1]);
+  for (const m of src.matchAll(/querySelectorAll\('[^']*\.([\w-]+)'\)/g)) handlers.add(m[1]);
+  const clash = new Set();
+  for (const m of src.matchAll(/class=\\?["']([^"'\\]{3,90})["'\\]/g)) {
+    const cs = m[1].split(/\s+/).filter(c => handlers.has(c));
+    if (cs.length > 1) clash.add(cs.join(' + '));
+  }
+  if (clash.size) fail.push('عناصر بكلاسَين مربوطَين بمعالجَين (' + clash.size + '): ' + [...clash].join(' | '));
+  else ok.push('لا عنصر يحمل كلاسَين مربوطَين بمعالجَين ✓');
+} catch (e) { fail.push('حارس الكلاسات تعثّر: ' + String(e && e.message).slice(0, 100)); }
+
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
 console.log('\nالتوثيق متطابق مع التطبيق ✅');

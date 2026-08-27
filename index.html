@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.98</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.99</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5523,6 +5523,15 @@ window.NSKCORE={
 #drOv .drQ input{width:74px}
 #mvOv #mvSum,#drOv #drSum{color:var(--gold,#C9A24B);font-weight:800;font-size:13px;margin:10px 0 0}
 /* V13.96: نمطٌ مستقل — كلاس cfgDel مربوطٌ بحذف القطعة من الكتالوج فلا يُستعمل هنا */
+/* V13.99: كلاساتُ مظهرٍ خالصةٍ بلا معالج — أُفرزت عن كلاساتٍ لها معالجات */
+#nskDash .btnDel{background:transparent;border:1px solid rgba(224,82,82,.5);border-radius:8px;
+  color:#E05252;padding:6px 11px;font:inherit;font-size:12px;cursor:pointer}
+#nskDash .inpDate{background:#0F1216;color:#E7E3D8;border:1px solid #2A3038;
+  border-radius:8px;padding:7px 9px;font:inherit;font-size:13px;color-scheme:dark}
+/* V13.99: نمطُ الأزرار الحمراء — بلا معالجٍ مربوطٍ به، فلا يلتقط غيرَه */
+#nskCfgOv .cfgDanger{background:transparent;border:1px solid rgba(224,82,82,.55);border-radius:9px;
+  color:#E05252;padding:8px 13px;font:inherit;font-size:12.5px;font-weight:700;cursor:pointer;min-height:38px}
+#nskCfgOv .cfgDanger:active{background:rgba(224,82,82,.12)}
 #nskCfgOv .cfgNM{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
   border:1px solid rgba(150,158,172,.3);border-radius:9px;padding:9px 11px;font:inherit;
   font-size:16px;min-height:42px;width:100%;box-sizing:border-box;font-weight:700}
@@ -8312,7 +8321,7 @@ window.cfgRender = function(){
       h+='<table class="cfgT"><thead><tr><th>المسمّى</th><th>يرث صلاحيات</th><th></th></tr></thead><tbody>'
         +RL.map(function(r){
           return '<tr><td class="cfgK"><code class="nx">'+_cfgX(r.n)+'</code></td><td data-l="يرث صلاحيات">'+_cfgX(window.roleLbl(r.base))+'</td>'
-            +'<td data-l="حذف"><button type="button" class="cfgDel cfgRDel" data-id="'+_cfgX(r.id)
+            +'<td data-l="حذف"><button type="button" class="cfgDanger cfgRDel" data-id="'+_cfgX(r.id)
             +'" data-n="'+_cfgX(r.n)+'">حذف</button></td></tr>';
         }).join('')+'</tbody></table>';
     } else h+='<p class="cfgS">لا أدوار مخصصة بعد.</p>';
@@ -8485,7 +8494,7 @@ window.cfgRender = function(){
           +'<td data-l="المصروف">'+window.arNum(u.t)+' <span>ر.س</span></td>'
           +'<td data-l="حذف">'+(u.n
               ? '<span class="cfgS" style="margin:0">مستعملة</span>'
-              : '<button type="button" class="cfgDel cfgBcDel" data-n="'+_cfgX(c)+'">حذف</button>')
+              : '<button type="button" class="cfgDanger cfgBcDel" data-n="'+_cfgX(c)+'">حذف</button>')
           +'</td></tr>';
       }).join('')+'</tbody></table>';
     h+='<p class="cfgS"><span>إجمالي المشتريات المصنّفة:</span> <b>'+window.arNum(bTot)
@@ -8507,7 +8516,7 @@ window.cfgRender = function(){
             +'<td data-l="عمليات">'+window.arNum(u.n)+'</td>'
             +'<td data-l="المصروف">'+window.arNum(u.t)+' <span>ر.س</span></td>'
             +'<td data-l="حذف">'+(u.n ? '<span class="cfgS" style="margin:0">مستعمل</span>'
-                : '<button type="button" class="cfgDel cfgSpDel" data-n="'+_cfgX(c)+'">حذف</button>')
+                : '<button type="button" class="cfgDanger cfgSpDel" data-n="'+_cfgX(c)+'">حذف</button>')
             +'</td></tr>';
         }).join('')+'</tbody></table>';
     }
@@ -8747,7 +8756,8 @@ window.cfgBind = function(){
         +String.fromCharCode(10)+'ينتقل معها احتسابُها في تقسيم النقاط بين المخيمات والممرات.',
       ok:'انقلها' }).then(function(r){ if(r) go(); });
   };
-  Array.prototype.forEach.call(qa('.cfgDel:not(.cfgRDel)'), function(b){
+  /* V13.99: cfgDel حصريٌّ لحذف القطعة — لا استثناءات ولا اعتمادَ على ترتيب الربط */
+  Array.prototype.forEach.call(qa('.cfgDel'), function(b){
     b.onclick=function(){
       var id=b.getAttribute('data-id'), nm=b.getAttribute('data-n')||'';
       window.nskAsk({ t:'حذف قطعة من الكتالوج',
@@ -11267,7 +11277,7 @@ function render(){
       h+='<h2 style="font-size:.95em;margin-top:14px">أرقام المكتب — تظهر للفني في زر «📣 بلّغ» داخل النقطة</h2>';
       h+='<div class="pTyStrip">';
       CT.forEach(function(c,i){ h+='<label>'+esc2(c.n||'—')+' <span class="pMut">'+esc2(c.p||'')+'</span> '
-        +'<button type="button" class="tmDel ctcDel" data-i="'+i+'">×</button></label>'; });
+        +'<button type="button" class="btnDel ctcDel" data-i="'+i+'">×</button></label>'; });
       h+='<label><input id="ctcN" placeholder="الاسم" style="width:96px;text-align:start"> '
         +'<input id="ctcP" placeholder="9665xxxxxxxx" inputmode="tel" style="width:130px;text-align:start"> '
         +'<button type="button" id="ctcAdd" class="dBtn">إضافة</button></label>';
@@ -11306,7 +11316,7 @@ function render(){
         AD.sq.forEach(function(g){
           var ks=Object.keys(g.tset), cur=(ks.length===1)?ks[0]:'*';
           h+='<tr><td>'+esc2(g.z)+'</td><td>'+esc2(g.sq)+'</td><td>'+AR(g.n)+'</td><td>'
-            +'<select class="tmSel pRgDl" data-z="'+escA(g.z)+'" data-sq="'+escA(g.sq)+'">'
+            +'<select class="tmSel inpDate" data-z="'+escA(g.z)+'" data-sq="'+escA(g.sq)+'">'
             +'<option value=""'+(cur===''?' selected':'')+'>— بدون —</option>'
             +(cur==='*'?'<option value="*" selected>متعدد</option>':'')
             +names.map(function(n){ return '<option value="'+escA(n)+'"'+(cur===n?' selected':'')+'>'+esc2(n)+'</option>'; }).join('')
@@ -11412,7 +11422,7 @@ function render(){
           else if(r.left<=3){ st='على وشك النفاد'; cl='#E8873A'; }
           else { st='كافٍ'; cl='#3AD6A0'; }
           h+='<tr><td>'+esc2(r.n)+'</td>'
-            +'<td>'+(canS?'<input class="stIss pRgDl" style="width:78px" type="number" min="0" data-t="'+escA(r.n)+'" value="'+(r.iss||'')+'">':AR(r.iss))+'</td>'
+            +'<td>'+(canS?'<input class="stIss inpDate" style="width:78px" type="number" min="0" data-t="'+escA(r.n)+'" value="'+(r.iss||'')+'">':AR(r.iss))+'</td>'
             +'<td style="color:#3AD6A0">'+AR(r.used)+'</td>'
             +'<td><b>'+AR(r.left)+'</b></td><td>'+AR(r.need)+'</td>'
             +'<td style="color:'+cl+'">'+esc2(st)+'</td></tr>';
