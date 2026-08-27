@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.70</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.71</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5405,6 +5405,24 @@ window.NSKCORE={
 .cfgBody h2{font-size:17px;margin:4px 0 2px;color:#E8C36A}
  .cfgS{font-size:12.5px;color:#8a9199;margin:0 0 12px;line-height:1.7}
 .cfgH3{font-size:13.5px;color:#C9A24B;margin:14px 0 6px}
+.cfg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px;align-items:start}
+.cfgCol{min-width:0}
+#nskCfgOv #fbAdmin{background:#0F1216;border:1px solid #20262d;border-radius:12px;padding:14px;max-width:760px}
+#nskCfgOv #fbAdmin .fbSec{font-size:13px;color:#C9A24B;font-weight:700;margin:14px 0 8px;
+  border-top:1px solid #20262d;padding-top:12px}
+#nskCfgOv #fbAdmin .fbSec:first-child{border-top:none;padding-top:0;margin-top:0}
+#nskCfgOv #fbAdmin input,#nskCfgOv #fbAdmin select{display:block;width:100%;box-sizing:border-box;
+  background:#12161b;border:1px solid #2A3038;border-radius:9px;color:#E7E3D8;
+  padding:10px 12px;font:inherit;font-size:13px;margin:0 0 8px}
+#nskCfgOv #fbAdmin button{background:transparent;border:1px solid #2A3038;border-radius:9px;
+  color:#E7E3D8;padding:7px 12px;font:inherit;font-size:12.5px;cursor:pointer}
+#nskCfgOv #fbAdmin .fbMk{background:#C9A24B;border-color:#C9A24B;color:#0A0B0D;font-weight:700;
+  width:100%;padding:11px;margin:2px 0 6px}
+#nskCfgOv #fbAdmin .uRow,#nskCfgOv #fbAdmin .uItem{background:#12161b;border:1px solid #20262d;
+  border-radius:10px;padding:10px 12px;margin:0 0 8px}
+#nskCfgOv #fbAdmin .uRow input,#nskCfgOv #fbAdmin .uRow select,
+#nskCfgOv #fbAdmin .uItem input,#nskCfgOv #fbAdmin .uItem select{display:inline-block;width:auto;margin:0}
+#nskCfgOv #fbAdmin .fbM2{font-size:12px;color:#8a9199;margin:0 0 8px}
 .cfgT{width:100%;border-collapse:collapse;font-size:13px;margin:0 0 12px}
 .cfgT th{text-align:right;color:#8a9199;font-weight:600;font-size:12px;padding:7px 6px;border-bottom:1px solid #20262d}
 .cfgT td{padding:7px 6px;border-bottom:1px solid #171c22}
@@ -7623,6 +7641,23 @@ window.bomOpen = function(siteId, taskId){
 };
 /* ═══ شاشة الإعدادات المستقلة — كل بند صفحة قائمة بذاتها ═══ */
 window.NSKCFG = { page:'users' };
+/* أدوار مخصصة: مسمّى يرث صلاحيات أحد الأدوار الأربعة — تُحفظ في الإعدادات وتُزامَن */
+window.roleList = function(){
+  try{ return ((window.NSKCORE.get('settings','roles')||{}).list||[]).map(function(x){
+    return { id:String(x.id||''), n:String(x.n||''), base:String(x.base||'supervisor') }; })
+    .filter(function(x){ return x.id && x.n; }); }catch(e){ return []; }
+};
+window.roleLbl = function(b){
+  return b==='engineer'?'مهندس':(b==='admin'?'أدمن':(b==='viewer'?'وزارة — قراءة':'فني/مشرف ميداني'));
+};
+window.roleSave = function(list, txt){
+  var d={list:list, n:list.length, at:new Date().toISOString()};
+  try{
+    window.NSKCORE.set('settings','roles',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','roles',d); NSKSYNC.log(txt||'تحديث الأدوار المخصصة'); }
+    toast('حُفظت الأدوار ✓'); try{ window.nskSync(); }catch(e){}
+  }catch(e){ toast('تعذّر الحفظ',1); }
+};
 window.cfgPages = [
   ['users','المستخدمون','إنشاء الحسابات وأدوارها'],
   ['visits','نقاط الزيارات','وزن زيارة كل نوع وتارجت المسح'],
@@ -7677,7 +7712,22 @@ window.cfgRender = function(){
         ['إدارة الحسابات','✓','—','—'],
         ['أرقام الهواتف','✓','✓','مخفية']
        ].map(function(r){ return '<tr><td>'+r[0]+'</td><td>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td></tr>'; }).join('')
-      +'</table><p class="cfgS">الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
+      +'</table><p class="cfgS">الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>';
+    var RL=window.roleList();
+    h+='<h3 class="cfgH3">أدوار مخصصة</h3>'
+      +'<p class="cfgS">أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.</p>';
+    if(RL.length){
+      h+='<table class="cfgT"><tr><th>المسمّى</th><th>يرث صلاحيات</th><th></th></tr>'
+        +RL.map(function(r){
+          return '<tr><td>'+_cfgX(r.n)+'</td><td>'+_cfgX(window.roleLbl(r.base))+'</td>'
+            +'<td><button type="button" class="cfgRDel" data-id="'+_cfgX(r.id)+'">×</button></td></tr>';
+        }).join('')+'</table>';
+    } else h+='<p class="cfgS">لا أدوار مخصصة بعد.</p>';
+    h+='<div class="cfgF"><label>المسمّى الجديد<input type="text" id="cfg_rlN" placeholder="مثال: مشرف عام"></label>'
+      +'<label>يرث صلاحيات<select id="cfg_rlB">'
+      +'<option value="supervisor">فني/مشرف ميداني</option><option value="engineer">مهندس</option>'
+      +'<option value="admin">أدمن</option><option value="viewer">وزارة — قراءة</option></select></label></div>'
+      +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgRlAdd">إضافة دور</button></div>';
   }
   else if(pg==='users'){
     h+='<p class="cfgS">أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.</p>'
@@ -7696,17 +7746,16 @@ window.cfgRender = function(){
   }
   else if(pg==='install'){
     var IT=window.itList();
-    [['cor','ممر'],['camp','مخيم']].forEach(function(g){
+    h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
       var L=IT.filter(function(x){ return x.z===g[0]; });
-      if(!L.length) return;
-      h+='<h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
-        +'<table class="cfgT"><tr><th>القطعة</th><th>نقاط التركيب</th></tr>'
+      if(!L.length) return '';
+      return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
+        +'<table class="cfgT"><tr><th>القطعة</th><th>النقاط</th></tr>'
         +L.map(function(it){
           return '<tr><td>'+_cfgX(it.n)+'</td>'
             +'<td><input type="number" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
-        }).join('')+'</table>';
-    });
-    h+=''
+        }).join('')+'</table></div>';
+    }).join('')+'</div>'
       +'<div class="cfgF"><label>تارجت التركيب الشهري<input type="number" id="cfg_tgtInstall" min="0" value="'+P.tgtInstall+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
       +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</p>';
@@ -7719,25 +7768,23 @@ window.cfgRender = function(){
         return '<tr><td>'+_cfgX(r.z)+'</td><td>'+_cfgX(r.ty)+'</td>'
           +'<td><input type="number" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
       }).join('')+'</table>'
-      +'<div class="cfgF"><label>معامل «سليم»<input type="number" id="cfg_disOk" step="0.05" value="'+P.disOk+'"></label>'
-      +'<label>معامل «تالف»<input type="number" id="cfg_disBad" step="0.05" value="'+P.disBad+'"></label>'
-      +'<label>تارجت الفك الشهري<input type="number" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label></div>'
+      +'<div class="cfgF"><label>تارجت الفك الشهري<input type="number" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveD">حفظ نقاط الفك</button></div>';
   }
   else if(pg==='items'){
     var IT2=window.itList();
-    [['cor','ممر'],['camp','مخيم']].forEach(function(g){
+    h+='<div class="cfg2">'+[['cor','ممر'],['camp','مخيم']].map(function(g){
       var L=IT2.filter(function(x){ return x.z===g[0]; });
-      if(!L.length) return;
-      h+='<h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
-        +'<table class="cfgT"><tr><th>القطعة</th><th>السعر (ريال)</th><th></th></tr>'
+      if(!L.length) return '';
+      return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
+        +'<table class="cfgT"><tr><th>القطعة</th><th>السعر</th><th></th></tr>'
         +L.map(function(it){
           return '<tr><td>'+_cfgX(it.n)+'</td>'
             +'<td><input type="number" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
             +'<td><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)+'">×</button></td></tr>';
-        }).join('')+'</table>';
-    });
-    h+='<div class="cfgF"><label>نوع الموقع<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
+        }).join('')+'</table></div>';
+    }).join('')+'</div>'
+      +'<div class="cfgF"><label>نوع الموقع<select id="cfg_itZ"><option value="camp">مخيم</option><option value="cor">ممر</option></select></label>'
       +'<label>قطعة جديدة<input type="text" id="cfg_itNm" placeholder="اسم القطعة"></label>'
       +'<label>نقاط تركيبها<input type="number" id="cfg_itPts" step="0.5" min="0" value="1"></label>'
       +'<label>سعرها<input type="number" id="cfg_itPr" min="0" value="0"></label></div>'
@@ -7791,7 +7838,7 @@ window.cfgBind = function(){
     var o=base(); o.dw={};
     Array.prototype.forEach.call(qa('.cfgD'), function(e){
       var v=String(e.value||'').trim(); if(v!=='') o.dw[e.getAttribute('data-k')]=parseFloat(v)||0; });
-    num('disOk',o,'disOk'); num('disBad',o,'disBad'); num('tgtDis',o,'tgtDis');
+    num('tgtDis',o,'tgtDis');
     window.pwSave(o,'نقاط الفك'); window.cfgRender();
   };
   var ss=q('#cfgSaveS');
@@ -7820,6 +7867,22 @@ window.cfgBind = function(){
     b.onclick=function(){
       var id=b.getAttribute('data-id');
       window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة');
+      window.cfgRender();
+    };
+  });
+  var ra=q('#cfgRlAdd');
+  if(ra) ra.onclick=function(){
+    var n2=String((q('#cfg_rlN')||{}).value||'').trim();
+    if(!n2){ toast('اكتب المسمّى أولًا',1); return; }
+    var L=window.roleList();
+    if(L.some(function(x){ return x.n===n2; })){ toast('المسمّى موجود بالفعل',1); return; }
+    L.push({ id:'rl'+Date.now().toString(36), n:n2, base:((q('#cfg_rlB')||{}).value)||'supervisor' });
+    window.roleSave(L,'إضافة دور مخصص: '+n2); window.cfgRender();
+  };
+  Array.prototype.forEach.call(qa('.cfgRDel'), function(b){
+    b.onclick=function(){
+      var id=b.getAttribute('data-id');
+      window.roleSave(window.roleList().filter(function(x){ return x.id!==id; }),'حذف دور مخصص');
       window.cfgRender();
     };
   });
