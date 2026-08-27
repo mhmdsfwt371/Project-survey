@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.68</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.69</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1464,6 +1464,7 @@ window.addEventListener('error', function(e){
     <button class="pill" id="goBtn" type="button">مواقع</button>
       <button class="pill" id="mcCo" type="button" title="تلوين حسب الشركة">شركات</button>
       <button class="pill ic" id="thBtn" type="button" title="فاتح / داكن">🌓</button>
+      <button class="pill ic" id="cfgPill" type="button" title="الإعدادات" aria-label="الإعدادات" style="display:none">⚙️</button>
       </div>
     </header>
 
@@ -5256,12 +5257,13 @@ window.nskOpenCfg = function(){
 };
 window.applyDocRole = function(){
   try{
-    var g=document.getElementById('cfgHdr');
-    if(g){
-      var ro=nskRole();
-      g.style.display=(ro==='admin'||ro==='engineer')?'':'none';
+    var ro=nskRole(), on=(ro==='admin'||ro==='engineer');
+    ['cfgPill','cfgHdr'].forEach(function(id){
+      var g=document.getElementById(id);
+      if(!g) return;
+      g.style.display = on ? '' : 'none';
       g.onclick=function(){ window.nskCfgOpen(); };
-    }
+    });
   }catch(e){}
   /* صف Word لا يظهر إلا للإداري */
   try{
@@ -9237,9 +9239,9 @@ function render(){
       h+='<div class="dT3">طلب زيارات جديد — حدّد النقاط ثم أسندها</div><div class="pwG">'
         +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
         +'</div>'
-        +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
+        +'<table class="dT"><tr><th>المشعر</th><th>النوع</th><th>الإجمالي</th><th>ممسوح</th><th>مُسند</th><th>متاح</th></tr>'
         +MX.map(function(row){
-          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td><td>'+arS(row.dw)+'</td>'
+          return '<tr><td>'+_dvEsc(row.z)+'</td><td>'+_dvEsc(row.ty)+'</td>'
             +'<td>'+arS(row.tot)+'</td><td>'+arS(row.done)+'</td><td>'+arS(row.open)
             +'</td><td><b>'+arS(row.free.length)+'</b></td></tr>';
         }).join('')
@@ -9248,7 +9250,7 @@ function render(){
         +'<button type="button" class="dBtn" id="orPick">☑ اختيار من القائمة</button>'
         +'<button type="button" class="dBtn" id="orMap">🗺 تحديد من الخريطة</button>'
         +'<button type="button" class="dBtn" id="orXls">⬇ إكسل — المهام</button></div>'
-        +'<p class="dTs">أوزان الزيارات تُضبط من تبويب «الإعدادات» وتُعرض هنا للاطلاع. و«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب».</p>';
+        +'<p class="dTs">«المتاح» ما لم يُمسح ولم يُسند بعد. لإنشاء طلب: حدّد النقاط من القائمة أو الخريطة ثم «إنشاء الطلب». والأوزان والتارجت في شاشة الإعدادات.</p>';
       var pend=all.filter(function(t){ return t.st==='منفّذ'; })
         .sort(function(x,y){ return String(x.doneAt||'').localeCompare(String(y.doneAt||'')); });
       h+='<div class="dT3">بانتظار اعتمادك — '+arS(pend.length)+'</div>';
