@@ -30,6 +30,12 @@ service cloud.firestore {
 
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
     // أوامر المسح: المهندس ينشئ ويقفل، والمشرف يسجّل زياراته
+    // مهام المسح: المهندس ينشئ ويعتمد، والفني يبدأ وينفّذ مهمته
+    match /tasks/{id} {
+      allow read: if ok();
+      allow create, update: if canW();
+      allow delete: if mgr();
+    }
     match /srvorders/{id} {
       allow read: if ok();
       allow create, update: if canW();

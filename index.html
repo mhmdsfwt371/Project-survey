@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.49</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.50</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -2401,7 +2401,7 @@ function drawMap(){
             ';color:'+(on?'#0A0B0D':SC[o[0]])+(on?';background:'+SC[o[0]]:'')+
             '" onclick="setFstat(\''+r[0]+'\',\''+o[0]+'\');return false">'+o[1]+'</a>';
         }).join('')+'</div>'+
-      (appMode==='install' ? (window._disHtml(r[0])+window._netHtml(r[0])) : '')+
+      (appMode==='install' ? (window._disHtml(r[0])+window._netHtml(r[0])) : (window._tkHtml?window._tkHtml(r[0]):''))+
       '<div class="pbtns">'+
         '<a class="go dir" target="_blank" rel="noopener" href="'+dir+'">اتجاهات</a>'+
         '<a class="go" href="#" onclick="startMove(\''+r[0]+'\');return false">تحريك</a>'+
@@ -2522,7 +2522,8 @@ function drawList(){
   const q = ($('#q').value||'').trim().toLowerCase();
   const dist = r => { if(!myPos) return 0; const P0=posOf(r); return metres(P0[0],P0[1],myPos[0],myPos[1]); };
   const items = DB.d.filter(r=>
-       (appMode!=='install' || !mineOnly || ((inss[r[0]]||{}).who||'')===me)
+       ((appMode==='install') ? (!mineOnly || ((inss[r[0]]||{}).who||'')===me)
+                             : (!mineOnly || !!(window.tkOf && window.tkOf(r[0]))))
     && (!zSel || szOf(r)===zSel)
     && (!cSel || catOf(r).k===cSel)
     && (appMode==='install' ? ['done','draft','blocked'].includes(st(r[0])) : true)
@@ -2543,8 +2544,9 @@ function drawList(){
   $('#kDone').textContent=(inst ? c.done : c.draft+c.done+c.blocked).toLocaleString('ar-EG');
   $('#kBlock').textContent=c.blocked.toLocaleString('ar-EG');
   const mr=$('#mineRow'); if(mr&&mr.style) mr.style.display = appMode==='install' ? '' : 'none';
-  $('#mineN').textContent = DB.d.filter(r=>
-      ((inss[r[0]]||{}).who||'')===me).length.toLocaleString('ar-EG');
+  $('#mineN').textContent = (appMode==='install'
+      ? DB.d.filter(r=> ((inss[r[0]]||{}).who||'')===me).length
+      : (window.tkList ? window.tkList(window.tkMe(), true).length : 0)).toLocaleString('ar-EG');
   $('#mineBtn').setAttribute('aria-pressed', String(mineOnly));
   $('#lNew').textContent  = 'لم يُزر';
   $('#lDraft').textContent= 'مجدول للتركيب';
@@ -3247,6 +3249,16 @@ window.openInstall = function(id){
     if(_tm){ const _tv=String(_tm.value||'').trim();
       if(_tv) rec.team=_tv; else delete rec.team; }
     if(rec.status==='لم يبدأ'){ toast('حدّد الحالة أولًا',1); return; }
+    /* بوابة المسح: لا يُسجَّل مسحٌ لنقطة بلا مهمة مُسندة — الإدارة معفاة */
+    try{
+      var _ro=nskRole();
+      if(appMode!=='install' && _ro!=='admin' && _ro!=='engineer'){
+        var _t=window.tkOf(id);
+        if(!_t && !(recs[id] && recs[id].rev)){
+          toast('لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس',1); return;
+        }
+      }
+    }catch(e){}
     if(rec.status==='تم التركيب' && !rec.photos[1]){
       toast('صورة ما بعد التركيب إلزامية',1); return; }
     const now=new Date().toISOString().slice(0,16).replace('T',' ');
@@ -6317,6 +6329,17 @@ function start(){
         try{ if(window.nskSync) window.nskSync(); }catch(e){}
       }, bad);
   });
+  live('tasks', function(ok, bad){
+    onSnapshot(collection(db,'tasks'), function(s){
+      ok();
+      window.NSKTASK = window.NSKTASK || {};
+      s.docChanges().forEach(function(ch){
+        if(ch.type==='removed') delete window.NSKTASK[ch.doc.id];
+        else window.NSKTASK[ch.doc.id] = ch.doc.data() || {};
+      });
+      try{ if(window.nskSync) window.nskSync(); }catch(e){}
+    }, bad);
+  });
   live('srvorders', function(ok, bad){
     onSnapshot(collection(db,'srvorders'), function(s){
       ok();
@@ -7418,53 +7441,110 @@ window.pwOf = function(r){
   return { t:t, w:P[t]||P.other };
 };
 /* رصيد نقاط المسح لكل مشرف من الأوامر المقفلة والمفتوحة */
-/* تسجيل زيارة أمر المسح لحظة حفظ النقطة — الوزن يُثبَّت وقتها فلا يتغيّر التاريخ بتعديل الأوزان لاحقًا */
-window.srvTick = function(siteId){
-  var me=String((window.NSK_USER||{}).name||(window.NSK_USER||{}).email||'').trim();
-  var O=window.NSKORD||{};
-  Object.keys(O).forEach(function(k){
-    var o=O[k]||{};
-    if(o.st==='closed') return;
-    if(String(o.sup||'').trim()!==me) return;
-    if((o.ids||[]).indexOf(siteId)<0) return;
-    if((o.done||{})[siteId]) return;
-    var r=(window.NSKCORE.db().d.find(function(x){ return x[0]===siteId; }))||[siteId];
-    var w=window.pwOf(r).w;
-    o.done=o.done||{};
-    o.done[siteId]={ ts:new Date().toISOString(), by:me, w:w };
-    try{
-      window.NSKCORE.set('srvorders',k,o);
-      if(window.NSKSYNC) NSKSYNC.push('srvorders',k,o);
-      if(window.NSKSYNC) NSKSYNC.log('زيارة مسح ضمن أمر — '+siteId+' ('+w+' نقطة)');
-      toast('سُجّلت زيارة الأمر — '+w+' نقطة ✓');
-    }catch(e){}
+window.NSKTASK = window.NSKTASK || {};
+/* ═══ موديول مهام المسح ═══
+   دورة المهمة: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد (أو مُعاد للتصحيح).
+   لا زيارة تُحتسب بلا مهمة مُسندة — والفني يرى مهامه وحدها. */
+window.TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
+window.tkMe = function(){
+  try{ var u=window.NSK_USER||{}; return String(u.name||u.email||'').trim(); }catch(e){ return ''; }
+};
+window.tkList = function(who, live){
+  var T=window.NSKTASK||{}, out=[];
+  Object.keys(T).forEach(function(k){
+    var t=T[k]||{};
+    if(who && String(t.tech||'').trim()!==String(who).trim()) return;
+    if(live && (t.st==='معتمد')) return;
+    out.push(t);
   });
+  return out;
 };
-window.srvNew = function(sup, due, ids){
-  if(!sup || !ids || !ids.length){ toast('اختر المشرف والنقاط أولًا',1); return; }
-  var k='ORD-'+Date.now().toString(36).toUpperCase();
-  var me=String((window.NSK_USER||{}).name||(window.NSK_USER||{}).email||'').trim();
-  var o={ id:k, sup:sup, due:due||'', ids:ids, done:{}, st:'open', by:me, ts:new Date().toISOString() };
-  try{
-    window.NSKCORE.set('srvorders',k,o);
-    if(window.NSKSYNC) NSKSYNC.push('srvorders',k,o);
-    if(window.NSKSYNC) NSKSYNC.log('أمر مسح جديد لـ'+sup+' — '+ids.length+' نقطة');
-    toast('أُنشئ الأمر — '+ids.length+' نقطة ✓');
-    try{ window.nskSync(); }catch(e){}
-  }catch(e){ toast('تعذّر إنشاء الأمر',1); }
+/* مهمة نشطة لي على هذه النقطة */
+window.tkOf = function(siteId, who){
+  var me2=who||window.tkMe(), T=window.NSKTASK||{}, hit=null;
+  Object.keys(T).forEach(function(k){
+    var t=T[k]||{};
+    if(t.site!==siteId) return;
+    if(String(t.tech||'').trim()!==me2) return;
+    if(t.st==='معتمد') return;
+    hit=t;
+  });
+  return hit;
 };
-window.srvClose = function(k){
-  var o=(window.NSKORD||{})[k]; if(!o) return;
-  o.st='closed'; o.closedAt=new Date().toISOString();
+window.tkSave = function(t, logTxt){
   try{
-    window.NSKCORE.set('srvorders',k,o);
-    if(window.NSKSYNC) NSKSYNC.push('srvorders',k,o);
-    var p=0; Object.keys(o.done||{}).forEach(function(s){ p+=(parseFloat(o.done[s].w)||0); });
-    if(window.NSKSYNC) NSKSYNC.log('إقفال أمر مسح '+k+' — '+p+' نقطة');
-    toast('أُقفل الأمر ✓');
+    window.NSKCORE.set('tasks',t.id,t);
+    if(window.NSKSYNC) NSKSYNC.push('tasks',t.id,t);
+    if(logTxt && window.NSKSYNC) NSKSYNC.log(logTxt);
     try{ window.nskSync(); }catch(e){}
   }catch(e){}
 };
+/* إنشاء دفعة مهام لفني واحد */
+window.tkNew = function(tech, due, ids){
+  if(!tech || !ids || !ids.length){ toast('اختر الفني والنقاط أولًا',1); return; }
+  var ord='REQ-'+Date.now().toString(36).toUpperCase(), me2=window.tkMe(), n=0;
+  ids.forEach(function(sid, ix){
+    if(window.tkOf(sid, tech)) return;
+    var r=(window.NSKCORE.db().d.find(function(x){ return x[0]===sid; }))||[sid];
+    var t={ id:ord+'-'+String(ix+1), ord:ord, site:sid, tech:tech, due:due||'',
+            st:'مطلوب', w:window.pwOf(r).w, by:me2, ts:new Date().toISOString() };
+    window.tkSave(t); n++;
+  });
+  if(window.NSKSYNC) NSKSYNC.log('طلب مسح '+ord+' لـ'+tech+' — '+n+' نقطة');
+  toast('أُنشئ الطلب — '+n+' مهمة ✓');
+};
+/* بدء الزيارة — من نافذة النقطة */
+window.tkStart = function(siteId){
+  var t=window.tkOf(siteId); if(!t){ toast('لا مهمة مسح لك على هذه النقطة',1); return; }
+  if(t.st!=='مطلوب' && t.st!=='مُعاد'){ toast('المهمة قيد التنفيذ بالفعل'); return; }
+  t.st='قيد التنفيذ'; t.startedAt=new Date().toISOString();
+  window.tkSave(t,'بدء زيارة مسح — '+siteId);
+  toast('بدأت الزيارة ⏱');
+  try{ drawMap(); drawList(); }catch(e){}
+};
+/* إنهاء الزيارة — يُستدعى تلقائيًا عند حفظ المسح */
+window.tkDone = function(siteId){
+  var t=window.tkOf(siteId); if(!t) return false;
+  if(t.st==='منفّذ') return true;
+  t.st='منفّذ'; t.doneAt=new Date().toISOString(); t.doneBy=window.tkMe();
+  window.tkSave(t,'تنفيذ زيارة مسح — '+siteId+' ('+t.w+' نقطة)');
+  toast('سُجّلت زيارة المهمة — '+t.w+' نقطة ✓');
+  return true;
+};
+window.tkApprove = function(id){
+  var t=(window.NSKTASK||{})[id]; if(!t) return;
+  t.st='معتمد'; t.appBy=window.tkMe(); t.appAt=new Date().toISOString();
+  window.tkSave(t,'اعتماد زيارة مسح — '+t.site);
+  toast('اعتُمدت الزيارة ✓');
+};
+window.tkReturn = function(id){
+  var t=(window.NSKTASK||{})[id]; if(!t) return;
+  var why=prompt('سبب الإعادة للفني:',''); if(why===null) return;
+  t.st='مُعاد'; t.note=String(why||''); t.retAt=new Date().toISOString();
+  window.tkSave(t,'إعادة زيارة مسح للفني — '+t.site+(why?(' — '+why):''));
+  toast('أُعيدت المهمة للفني ↩');
+};
+window.tkDel = function(id){
+  var t=(window.NSKTASK||{})[id]; if(!t) return;
+  try{
+    window.NSKCORE.del ? window.NSKCORE.del('tasks',id) : window.NSKCORE.set('tasks',id,null);
+    if(window.NSKSYNC) NSKSYNC.push('tasks',id,null);
+  }catch(e){}
+  toast('حُذفت المهمة');
+};
+/* رصيد نقاط الفني من مهامه */
+window.tkScore = function(who){
+  var s={req:0,run:0,done:0,ok:0,pts:0,ptsOk:0};
+  window.tkList(who,false).forEach(function(t){
+    if(t.st==='مطلوب') s.req++;
+    else if(t.st==='قيد التنفيذ') s.run++;
+    else if(t.st==='منفّذ'){ s.done++; s.pts+=(parseFloat(t.w)||0); }
+    else if(t.st==='معتمد'){ s.ok++; s.pts+=(parseFloat(t.w)||0); s.ptsOk+=(parseFloat(t.w)||0); }
+    else if(t.st==='مُعاد') s.req++;
+  });
+  return s;
+};
+window.srvTick = function(siteId){ try{ window.tkDone(siteId); }catch(e){} };
 window.pwScore = function(name){
   var tot=0, done=0;
   var O=window.NSKORD||{};
@@ -7488,6 +7568,20 @@ function _hbChip(id, kind, label, ip){
   }
   return '<span class="hbC" style="border-color:'+col+';color:'+col+'">'+label+' '+txt+age+'</span>';
 }
+window._tkHtml = function(id){
+  try{
+    var t=window.tkOf(id); if(!t) return '';
+    var col = t.st==='معتمد' ? '#8b5cf6' : (t.st==='منفّذ' ? '#3AD6A0'
+            : (t.st==='قيد التنفيذ' ? '#E8C36A' : (t.st==='مُعاد' ? '#F0655A' : '#5AC3E8')));
+    var h='<div class="pnet"><span class="pk">مهمة المسح:</span> '
+      +'<span class="hbC" style="border-color:'+col+';color:'+col+'">'+esc(t.st)+' · '+esc(String(t.w))+' نقطة</span>';
+    if(t.due) h+='<span class="hbC">المهلة '+esc(t.due)+'</span>';
+    if(t.note) h+='<span class="hbC" style="border-color:#F0655A;color:#F0655A">'+esc(t.note)+'</span>';
+    if(t.st==='مطلوب'||t.st==='مُعاد')
+      h+='<div class="pst"><a href="#" class="go" onclick="tkStart(\''+id+'\');return false">⏱ ابدأ الزيارة</a></div>';
+    return h+'</div>';
+  }catch(e){ return ''; }
+};
 window._netHtml = function(id){
   var net=((inss[id]||{}).net)||{};
   var any=net.router||net.reader||net.camera;
@@ -8520,64 +8614,74 @@ function render(){
     Object.keys(AD.teams).forEach(function(n){ if(names.indexOf(n)<0) names.push(n); });
     h+='</section>';
   (function(){
-    var P=window.pwGet(), O=window.NSKORD||{}, C=window.NSKCORE, dbx=C.db(), rc=C.all('recs');
+    var P=window.pwGet(), T=window.NSKTASK||{}, C=window.NSKCORE, rc=C.all('recs');
     var cE=!!(user && (user.role==='admin'||user.role==='engineer'));
-    h+='<section class="dSec" data-sec="srv"><h2>🔍 أوامر المسح والنقاط</h2>';
+    h+='<section class="dSec" data-sec="srv"><h2>🔍 طلبات المسح ومهام الفنيين</h2>';
+    var ks=Object.keys(T), all=ks.map(function(k){ return T[k]||{}; });
+    var cnt={'مطلوب':0,'قيد التنفيذ':0,'منفّذ':0,'معتمد':0,'مُعاد':0};
+    all.forEach(function(t){ if(cnt[t.st]!=null) cnt[t.st]++; });
+    h+='<div class="dRow">'+card(cnt['مطلوب'],'مطلوب','#5AC3E8')+card(cnt['قيد التنفيذ'],'قيد التنفيذ','#E8C36A')
+      +card(cnt['منفّذ'],'بانتظار الاعتماد','#3AD6A0')+card(cnt['معتمد'],'معتمد','#8b5cf6')
+      +card(cnt['مُعاد'],'مُعاد للتصحيح','#F0655A')+'</div>';
     if(cE){
       h+='<div class="dT3">أوزان النقاط — تُحرَّر وتُحفظ</div><div class="pwG">'
         +[['camp','زيارة مخيم'],['cor','زيارة ممر'],['stn','زيارة قطار'],['jam','زيارة الجمرات'],
           ['tgtSurvey','تارجت المسح/شهر'],['ph','نقاط الساعة']].map(function(x){
           return '<label class="pwL">'+x[1]+'<input type="number" step="0.01" min="0" id="pw_'+x[0]+'" value="'+(P[x[0]])+'"></label>';
-        }).join('')
-        +'</div><div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ الأوزان</button></div>';
-      var sups=[]; try{ var T2=C.get('settings','teams')||{}; sups=(T2.list||[]).slice(); }catch(e){}
-      Object.keys(rc).forEach(function(k){ var b=String((rc[k]||{}).by||'').trim(); if(b && sups.indexOf(b)<0) sups.push(b); });
-      if(!sups.length) sups=['—'];
-      h+='<div class="dT3">أمر مسح جديد</div><div class="pwG">'
-        +'<label class="pwL">المشرف<select id="orSup">'+sups.map(function(n){ return '<option>'+_dvEsc(n)+'</option>'; }).join('')+'</select></label>'
+        }).join('')+'</div><div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ الأوزان</button></div>';
+      var techs=[]; try{ var T2=C.get('settings','teams')||{}; techs=(T2.list||[]).slice(); }catch(e){}
+      Object.keys(rc).forEach(function(k){ var b2=String((rc[k]||{}).by||'').trim(); if(b2 && techs.indexOf(b2)<0) techs.push(b2); });
+      all.forEach(function(t){ var n2=String(t.tech||'').trim(); if(n2 && techs.indexOf(n2)<0) techs.push(n2); });
+      if(!techs.length) techs=['—'];
+      h+='<div class="dT3">طلب مسح جديد — يُسند لفني واحد</div><div class="pwG">'
+        +'<label class="pwL">الفني<select id="orSup">'+techs.map(function(n2){ return '<option>'+_dvEsc(n2)+'</option>'; }).join('')+'</select></label>'
         +'<label class="pwL">المشعر<select id="orZ"><option>منى</option><option>عرفات</option><option>مزدلفة</option></select></label>'
         +'<label class="pwL">النوع<select id="orT"><option value="">الكل</option><option value="CMP">مخيمات</option><option value="COR">ممرات</option><option value="STN">محطات القطار</option><option value="PNT">الجمرات</option></select></label>'
-        +'<label class="pwL">عدد الزيارات<input type="number" id="orN" min="1" value="10"></label>'
+        +'<label class="pwL">عدد النقاط<input type="number" id="orN" min="1" value="10"></label>'
         +'<label class="pwL">المهلة<input type="date" id="orDue"></label>'
-        +'</div><div class="dRow"><button type="button" class="dBtn" id="orNew">إنشاء الأمر</button>'
-        +'<button type="button" class="dBtn" id="orXls">⬇ إكسل — أوامر المسح</button></div>';
+        +'</div><div class="dRow"><button type="button" class="dBtn" id="orNew">إنشاء الطلب</button>'
+        +'<button type="button" class="dBtn" id="orXls">⬇ إكسل — المهام</button></div>';
+      var pend=all.filter(function(t){ return t.st==='منفّذ'; })
+        .sort(function(x,y){ return String(x.doneAt||'').localeCompare(String(y.doneAt||'')); });
+      h+='<div class="dT3">بانتظار اعتمادك — '+arS(pend.length)+'</div>';
+      if(!pend.length) h+='<p class="dTs">لا زيارات منفّذة تنتظر الاعتماد ✅</p>';
+      else {
+        h+='<table class="dT"><tr><th>النقطة</th><th>الفني</th><th>نُفّذت</th><th>نقاط</th><th></th></tr>'
+          +pend.slice(0,15).map(function(t){
+            return '<tr><td>'+_dvEsc(t.site)+'</td><td>'+_dvEsc(t.tech||'')+'</td><td>'
+              +_dvEsc(String(t.doneAt||'').slice(0,10))+'</td><td><b>'+arS(t.w)+'</b></td><td>'
+              +'<a href="#" class="go" onclick="tkApprove(\''+t.id+'\');return false">اعتماد</a> '
+              +'<a href="#" class="go" onclick="tkReturn(\''+t.id+'\');return false">إعادة</a></td></tr>'; }).join('')
+          +'</table>';
+      }
     }
-    var ks=Object.keys(O).sort(function(a,b){ return String((O[b]||{}).ts||'').localeCompare(String((O[a]||{}).ts||'')); });
-    var rowsX=[];
-    if(!ks.length) h+='<p class="dTs">لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.</p>';
-    else {
-      h+='<table class="dT"><tr><th>الأمر</th><th>المشرف</th><th>المهلة</th><th>التقدم</th><th>النقاط</th><th></th></tr>';
-      ks.slice(0,20).forEach(function(k){
-        var o=O[k]||{}, n=(o.ids||[]).length, d=Object.keys(o.done||{}).length, p=0;
-        Object.keys(o.done||{}).forEach(function(s){ p+=(parseFloat(o.done[s].w)||0); });
-        rowsX.push([k, o.sup||'', o.due||'', n, d, Math.round(p), o.st==='closed'?'مقفل':'مفتوح', String(o.ts||'').slice(0,10)]);
-        h+='<tr><td>'+_dvEsc(k)+'</td><td>'+_dvEsc(o.sup||'')+'</td><td>'+_dvEsc(o.due||'—')
-          +'</td><td>'+arS(d)+'/'+arS(n)+'</td><td><b>'+arS(Math.round(p))+'</b></td><td>'
-          +(o.st==='closed' ? 'مقفل'
-            : (cE ? '<a href="#" class="go" onclick="srvClose(\''+k+'\');return false">إقفال</a>' : 'مفتوح'))
-          +'</td></tr>';
-      });
-      h+='</table>';
-    }
-    window._srvRows=rowsX;
-    var sc={};
-    Object.keys(O).forEach(function(k){ var o=O[k]||{}, s=String(o.sup||'').trim(); if(!s) return;
-      sc[s]=sc[s]||{p:0,v:0};
-      Object.keys(o.done||{}).forEach(function(x){ sc[s].p+=(parseFloat(o.done[x].w)||0); sc[s].v++; });
+    /* رصيد الفنيين */
+    var by={};
+    all.forEach(function(t){ var n2=String(t.tech||'').trim(); if(!n2) return;
+      by[n2]=by[n2]||{req:0,run:0,done:0,ok:0,pts:0};
+      if(t.st==='مطلوب'||t.st==='مُعاد') by[n2].req++;
+      else if(t.st==='قيد التنفيذ') by[n2].run++;
+      else if(t.st==='منفّذ'){ by[n2].done++; by[n2].pts+=(parseFloat(t.w)||0); }
+      else if(t.st==='معتمد'){ by[n2].ok++; by[n2].pts+=(parseFloat(t.w)||0); }
     });
-    var sk=Object.keys(sc).sort(function(a,b){ return sc[b].p-sc[a].p; });
-    if(sk.length){
-      h+='<div class="dT3">رصيد نقاط المسح</div>'
-        +'<table class="dT"><tr><th>المشرف</th><th>زيارات</th><th>نقاط</th><th>من التارجت</th></tr>'
-        +sk.map(function(s){
-          var pc=Math.round(sc[s].p/(P.tgtSurvey||90)*100);
-          return '<tr><td>'+_dvEsc(s)+'</td><td>'+arS(sc[s].v)+'</td><td><b>'+arS(Math.round(sc[s].p))
-            +'</b></td><td>'+arS(pc)+'٪</td></tr>'; }).join('')
+    var bk=Object.keys(by).sort(function(x,y){ return by[y].pts-by[x].pts; });
+    var rowsX=[];
+    if(bk.length){
+      h+='<div class="dT3">رصيد الفنيين</div>'
+        +'<table class="dT"><tr><th>الفني</th><th>مطلوب</th><th>قيد التنفيذ</th><th>منفّذ</th><th>معتمد</th><th>نقاط</th><th>من التارجت</th></tr>'
+        +bk.map(function(n2){ var s=by[n2], pc=Math.round(s.pts/(P.tgtSurvey||90)*100);
+          rowsX.push([n2,s.req,s.run,s.done,s.ok,Math.round(s.pts),pc+'٪']);
+          return '<tr><td>'+_dvEsc(n2)+'</td><td>'+arS(s.req)+'</td><td>'+arS(s.run)+'</td><td>'+arS(s.done)
+            +'</td><td>'+arS(s.ok)+'</td><td><b>'+arS(Math.round(s.pts))+'</b></td><td>'+arS(pc)+'٪</td></tr>'; }).join('')
         +'</table>';
-    }
+    } else h+='<p class="dTs">لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.</p>';
+    window._srvRows=rowsX;
+    window._tkRows=all.map(function(t){
+      return [t.ord||'', t.id||'', t.site||'', t.tech||'', t.st||'', t.w||0, t.due||'',
+              String(t.doneAt||'').slice(0,16).replace('T',' '), String(t.appAt||'').slice(0,10), t.note||''];
+    });
     h+='</section>';
   })();
-  
     h+='<section class="dSec" data-sec="assign">';
     h+='<h2>توزيع فرق التركيب</h2>';
     if(canE){
@@ -9326,26 +9430,22 @@ function render(){
         out.push(r[0]);
       });
       if(!out.length){ toast('لا نقاط مطابقة — غيّر المشعر أو النوع',1); return; }
-      window.srvNew(sup, due, out);
+      window.tkNew(sup, due, out);
     }catch(e){ toast('تعذّر إنشاء الأمر',1); }
   };
   var _orX=$i('orXls');
   if(_orX) _orX.onclick=function(){
     try{
-      var head=['الأمر','المشرف','المهلة','عدد النقاط','منفَّذ','النقاط','الحالة','تاريخ الإنشاء'];
+      var h1=['الفني','مطلوب','قيد التنفيذ','منفّذ','معتمد','نقاط','من التارجت'];
+      var h2=['الطلب','المهمة','النقطة','الفني','الحالة','الوزن','المهلة','تاريخ التنفيذ','تاريخ الاعتماد','ملاحظة'];
       var wb=XLSX.utils.book_new();
-      var ws=XLSX.utils.aoa_to_sheet([head].concat(window._srvRows||[]));
-      ws['!cols']=head.map(function(x){ return {wch:Math.max(12,String(x).length+5)}; });
-      XLSX.utils.book_append_sheet(wb,ws,'أوامر المسح');
-      var det=[['الأمر','المشرف','النقطة','الوزن','التاريخ']];
-      var O=window.NSKORD||{};
-      Object.keys(O).forEach(function(k){ var o=O[k]||{};
-        Object.keys(o.done||{}).forEach(function(s){
-          det.push([k, o.sup||'', s, o.done[s].w||0, String(o.done[s].ts||'').slice(0,16).replace('T',' ')]);
-        });
-      });
-      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(det), 'الزيارات');
-      XLSX.writeFile(wb,'نُسُك-أوامر-المسح.xlsx');
+      var ws=XLSX.utils.aoa_to_sheet([h1].concat(window._srvRows||[]));
+      ws['!cols']=h1.map(function(x){ return {wch:Math.max(11,String(x).length+4)}; });
+      XLSX.utils.book_append_sheet(wb,ws,'رصيد الفنيين');
+      var w2=XLSX.utils.aoa_to_sheet([h2].concat(window._tkRows||[]));
+      w2['!cols']=h2.map(function(x){ return {wch:Math.max(12,String(x).length+4)}; });
+      XLSX.utils.book_append_sheet(wb,w2,'المهام');
+      XLSX.writeFile(wb,'نُسُك-مهام-المسح.xlsx');
     }catch(e){ toast('تعذّر التصدير',1); }
   };
   var _tp=$i('hbTpl'); if(_tp) _tp.onclick=function(){
@@ -10246,21 +10346,13 @@ $i('dashFab').onclick=function(){ window.NSKDASH.open(); };
         out.push({ id:id, z:r[21]||'', sq:String(r[8]||'—'), sg:String(r[9]||id),
                    n:'🔧 فك · '+(nameOf?nameOf(r):id), la:r[5], lo:r[6] });
       });
-      /* زيارات أوامر المسح المفتوحة الموجّهة لي */
-      var me2=String((window.NSK_USER||{}).name||(window.NSK_USER||{}).email||'').trim();
-      var O=window.NSKORD||{}, seen={};
-      Object.keys(O).forEach(function(k){
-        var o=O[k]||{};
-        if(o.st==='closed') return;
-        if(String(o.sup||'').trim()!==me2) return;
-        (o.ids||[]).forEach(function(sid){
-          if((o.done||{})[sid] || seen[sid]) return;
-          var rr=dbx.d.find(function(x){ return x[0]===sid; }); if(!rr) return;
-          seen[sid]=1;
-          var w=(window.pwOf?window.pwOf(rr).w:3);
-          out.push({ id:sid, z:rr[21]||'', sq:String(rr[8]||'—'), sg:String(rr[9]||sid),
-                     n:'🔍 مسح ('+w+' ن) · '+(nameOf?nameOf(rr):sid), la:rr[5], lo:rr[6] });
-        });
+      /* مهام المسح المسندة لي — بحالتها ووزنها */
+      var me2=(window.tkMe?window.tkMe():'');
+      (window.tkList?window.tkList(me2,true):[]).forEach(function(t){
+        var rr=dbx.d.find(function(x){ return x[0]===t.site; }); if(!rr) return;
+        var ic = t.st==='قيد التنفيذ' ? '⏱' : (t.st==='منفّذ' ? '✅' : (t.st==='مُعاد' ? '↩' : '🔍'));
+        out.push({ id:t.site, z:rr[21]||'', sq:String(rr[8]||'—'), sg:String(rr[9]||t.site),
+                   n:ic+' '+t.st+' ('+t.w+' ن) · '+(nameOf?nameOf(rr):t.site), la:rr[5], lo:rr[6] });
       });
     }catch(e){}
     return out;
@@ -11212,7 +11304,8 @@ window.NSKI18N = (function(){
   'منها بانتظار أول نبضة':'of which awaiting first heartbeat', 'غير متصل · بانتظار أول نبضة':'Offline · awaiting first heartbeat',
   'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'Map tiles failed to load — switched to a backup provider',
   '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — Mina & Arafat for Google Earth', 'تعذّر تصدير KMZ':'Could not export KMZ',
-  '🔍 أوامر المسح والنقاط':'🔍 Survey orders and points', 'أوزان النقاط — تُحرَّر وتُحفظ':'Point weights — editable and saved', 'أمر مسح جديد':'New survey order', 'زيارة مخيم':'Camp visit', 'زيارة ممر':'Corridor visit', 'زيارة قطار':'Train station visit', 'زيارة الجمرات':'Jamarat visit', 'تارجت المسح/شهر':'Survey target / month', 'نقاط الساعة':'Points per hour', 'حفظ الأوزان':'Save weights', 'إنشاء الأمر':'Create order', '⬇ إكسل — أوامر المسح':'⬇ Excel — survey orders', 'عدد الزيارات':'Number of visits', 'المهلة':'Due date', 'الأمر':'Order', 'إقفال':'Close', 'مقفل':'Closed', 'مفتوح':'Open', 'رصيد نقاط المسح':'Survey points balance', 'زيارات':'Visits', 'من التارجت':'of target', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'No survey orders yet — create the first one and it reaches the supervisor in “My schedule” instantly.', 'حُفظت الأوزان ✓':'Weights saved ✓', 'أُقفل الأمر ✓':'Order closed ✓', 'اختر المشرف والنقاط أولًا':'Pick the supervisor and the points first', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'No matching points — change the holy site or the type', 'تعذّر إنشاء الأمر':'Could not create the order'
+  '🔍 أوامر المسح والنقاط':'🔍 Survey orders and points', 'أوزان النقاط — تُحرَّر وتُحفظ':'Point weights — editable and saved', 'أمر مسح جديد':'New survey order', 'زيارة مخيم':'Camp visit', 'زيارة ممر':'Corridor visit', 'زيارة قطار':'Train station visit', 'زيارة الجمرات':'Jamarat visit', 'تارجت المسح/شهر':'Survey target / month', 'نقاط الساعة':'Points per hour', 'حفظ الأوزان':'Save weights', 'إنشاء الأمر':'Create order', '⬇ إكسل — أوامر المسح':'⬇ Excel — survey orders', 'عدد الزيارات':'Number of visits', 'المهلة':'Due date', 'الأمر':'Order', 'إقفال':'Close', 'مقفل':'Closed', 'مفتوح':'Open', 'رصيد نقاط المسح':'Survey points balance', 'زيارات':'Visits', 'من التارجت':'of target', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'No survey orders yet — create the first one and it reaches the supervisor in “My schedule” instantly.', 'حُفظت الأوزان ✓':'Weights saved ✓', 'أُقفل الأمر ✓':'Order closed ✓', 'اختر المشرف والنقاط أولًا':'Pick the supervisor and the points first', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'No matching points — change the holy site or the type', 'تعذّر إنشاء الأمر':'Could not create the order',
+  '🔍 طلبات المسح ومهام الفنيين':'🔍 Survey requests and technician tasks', 'طلب مسح جديد — يُسند لفني واحد':'New survey request — assigned to one technician', 'مطلوب':'Requested', 'قيد التنفيذ':'In progress', 'منفّذ':'Executed', 'معتمد':'Approved', 'مُعاد للتصحيح':'Returned', 'مُعاد':'Returned', 'بانتظار الاعتماد':'Awaiting approval', 'اعتماد':'Approve', 'إعادة':'Return', 'مهمة المسح:':'Survey task:', '⏱ ابدأ الزيارة':'⏱ Start the visit', 'رصيد الفنيين':'Technician balances', 'عدد النقاط':'Number of points', 'إنشاء الطلب':'Create request', '⬇ إكسل — المهام':'⬇ Excel — tasks', 'نُفّذت':'Executed on', 'بدأت الزيارة ⏱':'Visit started ⏱', 'اعتُمدت الزيارة ✓':'Visit approved ✓', 'أُعيدت المهمة للفني ↩':'Task returned to the technician ↩', 'لا مهمة مسح لك على هذه النقطة':'You have no survey task on this point', 'المهمة قيد التنفيذ بالفعل':'The task is already in progress', 'اختر الفني والنقاط أولًا':'Pick the technician and the points first', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'No survey request for this point — ask the engineer to assign it', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'No executed visits awaiting approval ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'No tasks yet — create the first survey request and it appears for the technician in “My schedule” and on their map instantly.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11407,7 +11500,8 @@ window.NSKI18N = (function(){
   'منها بانتظار أول نبضة':'جن میں سے پہلی دھڑکن کے منتظر', 'غير متصل · بانتظار أول نبضة':'آف لائن · پہلی دھڑکن کا انتظار',
   'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'نقشہ لوڈ نہ ہو سکا — متبادل فراہم کنندہ پر منتقل',
   '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — منیٰ و عرفات گوگل ارتھ کے لیے', 'تعذّر تصدير KMZ':'KMZ ایکسپورٹ نہ ہو سکا',
-  '🔍 أوامر المسح والنقاط':'🔍 سروے آرڈرز اور پوائنٹس', 'أوزان النقاط — تُحرَّر وتُحفظ':'پوائنٹ وزن — قابلِ ترمیم اور محفوظ', 'أمر مسح جديد':'نیا سروے آرڈر', 'زيارة مخيم':'خیمے کا دورہ', 'زيارة ممر':'راہداری کا دورہ', 'زيارة قطار':'ٹرین اسٹیشن کا دورہ', 'زيارة الجمرات':'جمرات کا دورہ', 'تارجت المسح/شهر':'سروے ہدف / ماہ', 'نقاط الساعة':'پوائنٹس فی گھنٹہ', 'حفظ الأوزان':'وزن محفوظ کریں', 'إنشاء الأمر':'آرڈر بنائیں', '⬇ إكسل — أوامر المسح':'⬇ ایکسل — سروے آرڈرز', 'عدد الزيارات':'دوروں کی تعداد', 'المهلة':'آخری تاریخ', 'الأمر':'آرڈر', 'إقفال':'بند کریں', 'مقفل':'بند', 'مفتوح':'کھلا', 'رصيد نقاط المسح':'سروے پوائنٹس بیلنس', 'زيارات':'دورے', 'من التارجت':'ہدف کا', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'ابھی کوئی سروے آرڈر نہیں — پہلا بنائیں، سپروائزر کو «میرا شیڈول» میں فوراً پہنچ جائے گا۔', 'حُفظت الأوزان ✓':'وزن محفوظ ✓', 'أُقفل الأمر ✓':'آرڈر بند ✓', 'اختر المشرف والنقاط أولًا':'پہلے سپروائزر اور پوائنٹس چنیں', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'کوئی مماثل پوائنٹ نہیں — مشعر یا قسم بدلیں', 'تعذّر إنشاء الأمر':'آرڈر نہ بن سکا'
+  '🔍 أوامر المسح والنقاط':'🔍 سروے آرڈرز اور پوائنٹس', 'أوزان النقاط — تُحرَّر وتُحفظ':'پوائنٹ وزن — قابلِ ترمیم اور محفوظ', 'أمر مسح جديد':'نیا سروے آرڈر', 'زيارة مخيم':'خیمے کا دورہ', 'زيارة ممر':'راہداری کا دورہ', 'زيارة قطار':'ٹرین اسٹیشن کا دورہ', 'زيارة الجمرات':'جمرات کا دورہ', 'تارجت المسح/شهر':'سروے ہدف / ماہ', 'نقاط الساعة':'پوائنٹس فی گھنٹہ', 'حفظ الأوزان':'وزن محفوظ کریں', 'إنشاء الأمر':'آرڈر بنائیں', '⬇ إكسل — أوامر المسح':'⬇ ایکسل — سروے آرڈرز', 'عدد الزيارات':'دوروں کی تعداد', 'المهلة':'آخری تاریخ', 'الأمر':'آرڈر', 'إقفال':'بند کریں', 'مقفل':'بند', 'مفتوح':'کھلا', 'رصيد نقاط المسح':'سروے پوائنٹس بیلنس', 'زيارات':'دورے', 'من التارجت':'ہدف کا', 'لا أوامر مسح بعد — أنشئ أول أمر وسيصل المشرف في «جدولي» فورًا.':'ابھی کوئی سروے آرڈر نہیں — پہلا بنائیں، سپروائزر کو «میرا شیڈول» میں فوراً پہنچ جائے گا۔', 'حُفظت الأوزان ✓':'وزن محفوظ ✓', 'أُقفل الأمر ✓':'آرڈر بند ✓', 'اختر المشرف والنقاط أولًا':'پہلے سپروائزر اور پوائنٹس چنیں', 'لا نقاط مطابقة — غيّر المشعر أو النوع':'کوئی مماثل پوائنٹ نہیں — مشعر یا قسم بدلیں', 'تعذّر إنشاء الأمر':'آرڈر نہ بن سکا',
+  '🔍 طلبات المسح ومهام الفنيين':'🔍 سروے درخواستیں اور ٹیکنیشن ٹاسک', 'طلب مسح جديد — يُسند لفني واحد':'نئی سروے درخواست — ایک ٹیکنیشن کو', 'مطلوب':'درکار', 'قيد التنفيذ':'جاری', 'منفّذ':'مکمل', 'معتمد':'منظور', 'مُعاد للتصحيح':'واپس', 'مُعاد':'واپس', 'بانتظار الاعتماد':'منظوری کا انتظار', 'اعتماد':'منظور', 'إعادة':'واپس', 'مهمة المسح:':'سروے ٹاسک:', '⏱ ابدأ الزيارة':'⏱ دورہ شروع کریں', 'رصيد الفنيين':'ٹیکنیشن بیلنس', 'عدد النقاط':'پوائنٹس کی تعداد', 'إنشاء الطلب':'درخواست بنائیں', '⬇ إكسل — المهام':'⬇ ایکسل — ٹاسک', 'نُفّذت':'مکمل بتاریخ', 'بدأت الزيارة ⏱':'دورہ شروع ⏱', 'اعتُمدت الزيارة ✓':'دورہ منظور ✓', 'أُعيدت المهمة للفني ↩':'ٹاسک ٹیکنیشن کو واپس ↩', 'لا مهمة مسح لك على هذه النقطة':'اس پوائنٹ پر آپ کا کوئی سروے ٹاسک نہیں', 'المهمة قيد التنفيذ بالفعل':'ٹاسک پہلے ہی جاری ہے', 'اختر الفني والنقاط أولًا':'پہلے ٹیکنیشن اور پوائنٹس چنیں', 'لا يوجد طلب مسح لهذه النقطة — اطلب إسنادها من المهندس':'اس پوائنٹ کی کوئی سروے درخواست نہیں — انجینئر سے تفویض کی درخواست کریں', 'لا زيارات منفّذة تنتظر الاعتماد ✅':'منظوری کے منتظر کوئی مکمل دورے نہیں ✅', 'لا مهام بعد — أنشئ أول طلب مسح وستظهر عند الفني في «جدولي» وعلى خريطته فورًا.':'ابھی کوئی ٹاسک نہیں — پہلی سروے درخواست بنائیں، ٹیکنیشن کو «میرا شیڈول» اور نقشے پر فوراً نظر آئے گی۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
