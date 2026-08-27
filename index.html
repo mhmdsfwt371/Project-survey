@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.62</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.63</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -3306,6 +3306,19 @@ window.openInstall = function(id){
       }
     }
     try{ window.srvTick(id); }catch(e){}
+    /* تثبيت نقاط التركيب بالوزن الساري لحظتها */
+    try{
+      if(rec.status==='مُركّب' || rec.status==='تم التركيب'){
+        var _ins=inss[id]||{id:id};
+        if(!_ins.pts){
+          _ins.pts=window.insPts(current.r);
+          _ins.ptsAt=new Date().toISOString();
+          _ins.ptsBy=(me||'');
+          window.NSKCORE.set('inss',id,_ins);
+          if(window.NSKSYNC) NSKSYNC.push('inss',id,_ins);
+        }
+      }
+    }catch(e){}
     drawMap(); drawList(); try{ window.nskSync(); }catch(e){} try{ window.nskSync(); }catch(e){} drawMgr();
     toast('تم التحديث — '+rec.status);
     setTimeout(()=>show('vList'),700);
@@ -7480,6 +7493,33 @@ window.pwCalc = function(){
   return { P:P, hoursMonth:hrs, ptsPerHour: hrs? ((P.tgtInstall||1000)/hrs) : (P.ph||4.81) };
 };
 /* وزن زيارة النقطة حسب نوعها */
+window.pwRows = function(){
+  var out=[], seen={};
+  try{
+    var dbx=window.NSKCORE.db();
+    dbx.d.forEach(function(r){
+      var z=(typeof szOf==='function')?szOf(r):'—', ty=((catOf(r)||{}).l)||'أخرى', k=z+'|'+ty;
+      if(seen[k]){ seen[k].tot++; return; }
+      seen[k]={k:k, z:z, ty:ty, tot:1, dw:window.pwOf(r).w};
+      out.push(seen[k]);
+    });
+  }catch(e){}
+  out.sort(function(a,b){ return (a.z===b.z) ? (b.tot-a.tot) : (a.z>b.z?1:-1); });
+  return out;
+};
+/* نقاط الفك: وزن النوع × معامل حالة الجهاز */
+window.disPts = function(r, cond){
+  var P=window.pwGet(), k=window.pwKey(r), W=P.dw||{}, w=null;
+  if(W[k]!=null && W[k]!=='') w=parseFloat(W[k])||0;
+  if(w==null) w=window.pwOf(r).w;
+  var f=(cond==='تالف') ? (P.disBad||1) : (P.disOk||1);
+  return Math.round(w*f*100)/100;
+};
+/* نقاط التركيب الكاملة لنوع الموقع */
+window.insPts = function(r){
+  var P=window.pwGet(), ty=((catOf(r)||{}).l)||'';
+  return (ty==='ممرات') ? (P.insCor||192.3) : (P.insCamp||76.9);
+};
 window.pwKey = function(r){
   try{ return ((typeof szOf==='function')?szOf(r):'—')+'|'+(((catOf(r)||{}).l)||'أخرى'); }
   catch(e){ return '—|أخرى'; }
@@ -7913,9 +7953,11 @@ window.schedDis = function(id){
 };
 window.confirmDis = function(id, cond){
   var rec=inss[id]||{id:id};
-  rec.dis=Object.assign({}, rec.dis||{}, { st:'تم', cond:cond,
+  var _r=(DB.d.find(function(x){ return x[0]===id; }))||[id];
+  var _p=0; try{ _p=window.disPts(_r, cond); }catch(e){}
+  rec.dis=Object.assign({}, rec.dis||{}, { st:'تم', cond:cond, pts:_p,
     doneBy:(me||''), doneAt:new Date().toISOString() });
-  _disSave(id, rec, 'تم الفك ('+cond+') — '+id);
+  _disSave(id, rec, 'تم الفك ('+cond+') — '+id+' ('+_p+' نقطة)');
 };
 window.cancelDis = function(id){
   var rec=inss[id]; if(!rec||!rec.dis) return;
@@ -8994,7 +9036,7 @@ function render(){
       +'<p class="dTs">الصلاحيات مفروضة على مستوى قاعدة البيانات لا الواجهة — فما يُخفى هنا مرفوض هناك أيضًا.</p>'
       +'<div class="dRow"><button type="button" class="dBtn" id="cfgAddU">➕ إضافة مستخدم</button></div></section>';
     /* ٢ · نقاط الزيارات */
-    var Wm=P.w||{}, MXs=window._MX||[];
+    var Wm=P.w||{}, MXs=(window.pwRows?window.pwRows():[]);
     h+='<section class="dSec" data-sec="cfgSrv"><h2>🔍 نقاط الزيارات</h2>'
       +'<p class="dTs">وزن زيارة كل نوع في مشعره — يُثبَّت في المهمة لحظة تنفيذها فلا يتغيّر بتعديلٍ لاحق.</p>';
     if(MXs.length){
@@ -9005,7 +9047,7 @@ function render(){
             +'<td><input type="number" class="mxW" data-k="'+_dvEsc(row.k)+'" step="0.5" min="0" value="'+wv
             +'" placeholder="'+arS(row.dw)+'" style="width:76px"></td></tr>'; }).join('')
         +'</table>';
-    } else h+='<p class="dTs">افتح «طلبات الزيارة» مرة ليُبنى جدول الأنواع.</p>';
+    }
     h+='<div class="pwG"><label class="pwL">تارجت المسح الافتراضي/شهر<input type="number" id="pw_tgtSurvey" min="0" value="'+(P.tgtSurvey)+'"></label></div>'
       +'<div class="dRow"><button type="button" class="dBtn" id="pwSave">حفظ نقاط الزيارات</button></div></section>';
     /* ٣ · نقاط التركيب */
