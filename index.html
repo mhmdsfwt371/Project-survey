@@ -1450,7 +1450,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.47</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.48</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -1591,6 +1591,9 @@ window.addEventListener('error', function(e){
         </button>
         <button class="btn s" id="expPdf" type="button" style="margin-bottom:10px">
           ملفات المواقع بالصور — طباعة أو حفظ PDF
+        </button>
+        <button class="btn s" id="expKmz" type="button" style="margin-bottom:10px">
+          🌍 KMZ — منى وعرفات لجوجل إيرث
         </button>
         <button class="btn s" id="expCsv" type="button" style="margin-bottom:10px">
           تصدير CSV
@@ -4983,6 +4986,91 @@ window.doGuidePdf = function(role){
   }
 };
 
+/* KMZ لجوجل إيرث: نقاط ومضلعات المخيمات — كاتب zip مخزَّن بلا مكتبات خارجية */
+function _crc32(u8){
+  var t=_crc32.t, c;
+  if(!t){ t=_crc32.t=new Uint32Array(256);
+    for(var n=0;n<256;n++){ c=n; for(var k=0;k<8;k++) c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1); t[n]=c>>>0; } }
+  var crc=0xFFFFFFFF;
+  for(var i=0;i<u8.length;i++) crc=(crc>>>8)^t[(crc^u8[i])&0xFF];
+  return (crc^0xFFFFFFFF)>>>0;
+}
+function _zipStore(name, text){
+  var enc=new TextEncoder(), data=enc.encode(text), nm=enc.encode(name);
+  var crc=_crc32(data), n=data.length;
+  function w(len, vals){ var b=new Uint8Array(len), o=0;
+    vals.forEach(function(v){ for(var i=0;i<v[1];i++) b[o++]=(v[0]>>>(8*i))&0xFF; }); return b; }
+  var lf=w(30,[[0x04034b50,4],[20,2],[0,2],[0,2],[0,2],[0,2],[crc,4],[n,4],[n,4],[nm.length,2],[0,2]]);
+  var cd=w(46,[[0x02014b50,4],[20,2],[20,2],[0,2],[0,2],[0,2],[0,2],[crc,4],[n,4],[n,4],
+               [nm.length,2],[0,2],[0,2],[0,2],[0,2],[0,4],[0,4]]);
+  var eo=w(22,[[0x06054b50,4],[0,2],[0,2],[1,2],[1,2],[46+nm.length,4],[30+nm.length+n,4],[0,2]]);
+  var parts=[lf,nm,data,cd,nm,eo], total=0;
+  parts.forEach(function(p){ total+=p.length; });
+  var out=new Uint8Array(total), off=0;
+  parts.forEach(function(p){ out.set(p,off); off+=p.length; });
+  return new Blob([out], {type:'application/vnd.google-earth.kmz'});
+}
+window.nskKmz = function(zones){
+  try{
+    var X=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+    var want = zones || ['منى','عرفات'];
+    var STY={'مخيمات':'#camp','ممرات':'#cor','كاميرات الوزارة':'#cam','محطات القطار':'#stn'};
+    var K=['<?xml version="1.0" encoding="UTF-8"?>',
+      '<kml xmlns="http://www.opengis.net/kml/2.2"><Document>',
+      '<name>'+X('نُسُك — '+want.join(' و')+' · نقاط قارئات RFID ١٤٤٨هـ')+'</name>',
+      '<Style id="camp"><IconStyle><scale>0.85</scale><color>ff4ac9f9</color></IconStyle><LineStyle><color>ff4ac9f9</color><width>2</width></LineStyle><PolyStyle><color>334ac9f9</color></PolyStyle></Style>',
+      '<Style id="cor"><IconStyle><scale>0.8</scale><color>ffa0d63a</color></IconStyle></Style>',
+      '<Style id="cam"><IconStyle><scale>0.8</scale><color>ffe27ba4</color></IconStyle></Style>',
+      '<Style id="stn"><IconStyle><scale>0.8</scale><color>ff5ac3e8</color></IconStyle></Style>',
+      '<Style id="oth"><IconStyle><scale>0.8</scale><color>ff6ba8f9</color></IconStyle></Style>'];
+    var SUBRE=/^\d{1,3}\.\d{1,3}\.\d{1,3}$/, n=0;
+    want.forEach(function(zone){
+      var zr=DB.d.filter(function(r){ return szOf(r)===zone; });
+      if(!zr.length) return;
+      K.push('<Folder><name>'+X(zone)+' — '+zr.length+'</name>');
+      var cats={};
+      zr.forEach(function(r){ var c=((catOf(r)||{}).l)||'أخرى'; (cats[c]=cats[c]||[]).push(r); });
+      Object.keys(cats).forEach(function(ty){
+        K.push('<Folder><name>'+X(ty)+' — '+cats[ty].length+'</name>');
+        cats[ty].forEach(function(r){
+          var sq=String(r[8]||''), sg=String(r[9]||''), co=String(r[27]||r[10]||''),
+              sub=String(r[20]||'');
+          if(!SUBRE.test(sub)) sub='';
+          var poly=(r[7] && r[7].length>2) ? r[7] : null;
+          var nm=(sg?('شاخص '+sg):(r[1]||r[0]))+(sq?(' · مربع '+sq):'');
+          var d='<![CDATA[<b>المعرّف:</b> '+X(r[0])+'<br/>'
+            +(sq?('<b>المربع:</b> '+X(sq)+'<br/>'):'')
+            +(sg?('<b>الشاخص:</b> '+X(sg)+'<br/>'):'')
+            +(co?('<b>الشركة:</b> '+X(co)+'<br/>'):'')
+            +(sub?('<b>الشبكة الفرعية:</b> '+X(sub)+'<br/><b>راوتر:</b> '+X(sub)+'.1 &nbsp;<b>قارئ:</b> '+X(sub)+'.2 &nbsp;<b>كاميرا:</b> '+X(sub)+'.3<br/>'):'')
+            +'<b>الوصف:</b> '+X(r[1])+']]>';
+          var g='<Point><coordinates>'+r[6]+','+r[5]+',0</coordinates></Point>';
+          if(poly){
+            var ring=poly.map(function(c){ return c[0]+','+c[1]+',0'; }).join(' ');
+            if(poly[0][0]!==poly[poly.length-1][0] || poly[0][1]!==poly[poly.length-1][1])
+              ring+=' '+poly[0][0]+','+poly[0][1]+',0';
+            g='<MultiGeometry>'+g+'<Polygon><outerBoundaryIs><LinearRing><coordinates>'
+              +ring+'</coordinates></LinearRing></outerBoundaryIs></Polygon></MultiGeometry>';
+          }
+          K.push('<Placemark><name>'+X(nm)+'</name><styleUrl>'+(STY[ty]||'#oth')
+            +'</styleUrl><description>'+d+'</description>'+g+'</Placemark>');
+          n++;
+        });
+        K.push('</Folder>');
+      });
+      K.push('</Folder>');
+    });
+    K.push('</Document></kml>');
+    var blob=_zipStore('doc.kml', K.join('\n'));
+    var a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    a.download='نُسُك-'+want.join('-و')+'.kmz';
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 4000);
+    try{ toast('نزل ملف KMZ — '+n+' نقطة ✓'); }catch(e){}
+    try{ if(window.NSKSYNC) NSKSYNC.log('تصدير KMZ — '+n+' نقطة'); }catch(e){}
+  }catch(e){ try{ toast('تعذّر تصدير KMZ',1); }catch(x){} }
+};
 window.doGuide = function(role){ return window.doGuidePdf(role); };
 window._doGuideDocLegacy = function(role){
   try{
@@ -5111,6 +5199,7 @@ window.applyDocRole = function(){
   try{ var s=document.getElementById('schBtn');
     if(s) s.style.display = (ro==='admin'||ro==='engineer')?'':'none'; }catch(e){}
 };
+(function(){ var k=$('#expKmz'); if(k) k.onclick=function(){ window.nskKmz(['منى','عرفات']); }; })();
 $('#docEng').onclick = ()=>window.doGuide('eng');
 $('#docSup').onclick = ()=>window.doGuide('sup');
 $('#docMin').onclick = ()=>window.doGuide('min');
@@ -10892,7 +10981,8 @@ window.NSKI18N = (function(){
   'الملف فارغ':'The file is empty', 'تعذّرت قراءة الملف — احفظه إكسل وأعد المحاولة':'Could not read the file — save it as Excel and try again',
   'إلزامية للمخيمات — الاختيار من القائمة الموحّدة فقط، وغير الموجودة تُطلب من المهندس من داخل القائمة. اتركها فارغة إن اخترت السبب «عدم وجود تخصيص»':'Required for camps — pick from the unified list only; anything missing is requested from the engineer inside the list. Leave it empty if you chose the reason “no allocation”.',
   'منها بانتظار أول نبضة':'of which awaiting first heartbeat', 'غير متصل · بانتظار أول نبضة':'Offline · awaiting first heartbeat',
-  'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'Map tiles failed to load — switched to a backup provider'
+  'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'Map tiles failed to load — switched to a backup provider',
+  '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — Mina & Arafat for Google Earth', 'تعذّر تصدير KMZ':'Could not export KMZ'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -11085,7 +11175,8 @@ window.NSKI18N = (function(){
   'الملف فارغ':'فائل خالی ہے', 'تعذّرت قراءة الملف — احفظه إكسل وأعد المحاولة':'فائل پڑھی نہ جا سکی — ایکسل کے طور پر محفوظ کر کے دوبارہ کوشش کریں',
   'إلزامية للمخيمات — الاختيار من القائمة الموحّدة فقط، وغير الموجودة تُطلب من المهندس من داخل القائمة. اتركها فارغة إن اخترت السبب «عدم وجود تخصيص»':'خیموں کے لیے لازمی — صرف متحدہ فہرست سے چنیں؛ غیر موجود کے لیے فہرست کے اندر سے انجینئر کو درخواست دیں۔ اگر وجہ «کوئی تخصیص نہیں» چنی ہے تو خالی چھوڑ دیں۔',
   'منها بانتظار أول نبضة':'جن میں سے پہلی دھڑکن کے منتظر', 'غير متصل · بانتظار أول نبضة':'آف لائن · پہلی دھڑکن کا انتظار',
-  'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'نقشہ لوڈ نہ ہو سکا — متبادل فراہم کنندہ پر منتقل'
+  'تعذّر تحميل الخريطة من المزوّد — تحوّلنا لمزوّد بديل':'نقشہ لوڈ نہ ہو سکا — متبادل فراہم کنندہ پر منتقل',
+  '🌍 KMZ — منى وعرفات لجوجل إيرث':'🌍 KMZ — منیٰ و عرفات گوگل ارتھ کے لیے', 'تعذّر تصدير KMZ':'KMZ ایکسپورٹ نہ ہو سکا'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
