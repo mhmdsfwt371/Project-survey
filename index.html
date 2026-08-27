@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.76</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.77</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7597,14 +7597,19 @@ window.ITEM_SEED = [
  ['camp','rdr4c','قارئ ٤ منافذ',11,5100],['camp','ant9c','هوائي UHF',3,420],
  ['camp','c15','كابل ١٥م 7D-FB',5,190],['camp','c10','كابل ١٠م 5D-FB',4,140],
  ['camp','c5','كابل RFID ٥م',2,80],['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680],
- ['camp','led','شاشة LED',2,150],['camp','korg','وحدة KOR خضراء',2,120],
- ['camp','korr','وحدة KOR حمراء',2,120],['camp','rly','ريلاي ١٢ف',2,60]
+ ['camp','led','شاشة ليد ٣ نقاط',2,150],['camp','korg','ليد أخضر ٥٠ نقطة',2,120],
+ ['camp','korr','ليد أحمر ٥٠ نقطة',2,120],['camp','rly','ريلاي ١٢ف',2,60]
 ].map(function(x){ return {z:x[0], id:x[1], n:x[2], pts:x[3], price:x[4]}; });
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
   if(!L.length) L=window.ITEM_SEED.slice();
   return L.map(function(x){ return {z:String(x.z||'camp'), id:String(x.id||''), n:String(x.n||''), pts:(parseFloat(x.pts)||0), price:(parseFloat(x.price)||0)}; })
+          .map(function(x){
+            var FIX={ korg:'ليد أخضر ٥٠ نقطة', korr:'ليد أحمر ٥٠ نقطة', led:'شاشة ليد ٣ نقاط' };
+            if(FIX[x.id] && /KOR|LED/i.test(x.n)) x.n=FIX[x.id];
+            return x;
+          })
           .filter(function(x){ return x.id && x.n; });
 };
 window.itSave = function(list, logTxt){
