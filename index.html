@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.83</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.84</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7810,6 +7810,87 @@ window.bomOpen = function(siteId, taskId){
   };
 };
 /* ═══ شاشة الإعدادات المستقلة — كل بند صفحة قائمة بذاتها ═══ */
+/* V13.84: مشتريات السوق المحلي — دفتر مصروفات مستقل تمامًا عن كتالوج الأسعار المعتمد.
+   الكتالوج سعرٌ ثابتٌ مرجعي، وهذا ما دُفع فعلًا بفاتورته ومورّده. سعر الشراء يُثبَّت
+   لحظة التسجيل ولا يتغيّر بتغيّر الكتالوج — القاعدة المحاسبية الأولى. */
+window.buyList = function(){
+  try{ return ((window.NSKCORE.get('settings','buys')||{}).list||[]).map(function(x){
+    return { id:String(x.id||''), d:String(x.d||''), n:String(x.n||''), cat:String(x.cat||'أخرى'),
+             q:Number(x.q)||0, u:String(x.u||'قطعة'), p:Number(x.p)||0, t:Number(x.t)||0,
+             sup:String(x.sup||''), inv:String(x.inv||''), pay:String(x.pay||'نقدي'),
+             by:String(x.by||''), note:String(x.note||''), ts:String(x.ts||'') }; })
+    .filter(function(x){ return x.id; }); }catch(e){ return []; }
+};
+window.buyCats = ['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء','نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'];
+window.buySave = function(list, txt){
+  var tot=0; list.forEach(function(x){ tot += Number(x.t)||0; });
+  var d={ list:list, n:list.length, tot:Math.round(tot*100)/100, at:new Date().toISOString() };
+  try{
+    window.NSKCORE.set('settings','buys',d);
+    if(window.NSKSYNC){ NSKSYNC.push('settings','buys',d); NSKSYNC.log(txt||'تحديث دفتر المشتريات'); }
+    toast('حُفظت المشتريات ✓'); try{ window.nskSync(); }catch(e){}
+  }catch(e){ toast('تعذّر الحفظ',1); }
+};
+window.buyStats = function(){
+  var L=window.buyList(), now=new Date(), mk=now.toISOString().slice(0,7);
+  var tot=0, mon=0, cat={}, sup={}, last='';
+  L.forEach(function(x){
+    tot+=x.t;
+    if(String(x.d||'').slice(0,7)===mk) mon+=x.t;
+    var c=x.cat||'أخرى'; (cat[c]=cat[c]||{n:0,t:0}); cat[c].n++; cat[c].t+=x.t;
+    if(x.sup){ (sup[x.sup]=sup[x.sup]||{n:0,t:0}); sup[x.sup].n++; sup[x.sup].t+=x.t; }
+    if(x.d>last) last=x.d;
+  });
+  return { L:L, n:L.length, tot:Math.round(tot*100)/100, mon:Math.round(mon*100)/100,
+           avg:L.length?Math.round(tot/L.length*100)/100:0, last:last,
+           cat:cat, sup:sup, nsup:Object.keys(sup).length };
+};
+/* نافذة تسجيل عملية شراء — حقولٌ كاملة بفاتورتها ومورّدها، والإجمالي يُحسب ويُثبَّت */
+window.buyAdd = function(edit){
+  var e=edit||null;
+  var today=new Date().toISOString().slice(0,10);
+  window.nskAsk({
+    t: e?'تعديل عملية شراء':'تسجيل عملية شراء',
+    m: e?'':'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.',
+    fields:[
+      {k:'d',   l:'تاريخ الشراء', type:'date', val:(e?e.d:today), req:true},
+      {k:'n',   l:'الصنف', ph:'مثال: كابل شبكة CAT6 — ١٠٠ متر', val:(e?e.n:''), req:true},
+      {k:'cat', l:'الفئة', type:'select', opts:window.buyCats, val:(e?e.cat:'أخرى')},
+      {k:'q',   l:'الكمية', type:'number', val:(e?e.q:1), req:true},
+      {k:'u',   l:'الوحدة', ph:'قطعة · متر · لفة · كرتونة', val:(e?e.u:'قطعة')},
+      {k:'p',   l:'سعر الوحدة (ريال)', type:'number', val:(e?e.p:''), req:true},
+      {k:'sup', l:'المحل أو المورّد', ph:'اسم المحل', val:(e?e.sup:'')},
+      {k:'inv', l:'رقم الفاتورة', ph:'اختياري', val:(e?e.inv:'')},
+      {k:'pay', l:'طريقة الدفع', type:'select', opts:['نقدي','تحويل','بطاقة','آجل'], val:(e?e.pay:'نقدي')},
+      {k:'note',l:'ملاحظة', ph:'اختياري — لماذا اشتُري ولأي موقع', val:(e?e.note:'')}
+    ],
+    ok: e?'حفظ التعديل':'سجّل العملية', reqMsg:'أكمل التاريخ والصنف والكمية والسعر'
+  }).then(function(a){
+    if(!a) return;
+    var q=parseFloat(a.q)||0, p=parseFloat(a.p)||0;
+    if(q<=0 || p<0){ toast('الكمية أكبر من صفر والسعر لا يكون سالبًا',1); return; }
+    var L=window.buyList(), me2=''; try{ me2=window.tkMe(); }catch(x){}
+    var row={ id:(e?e.id:('by'+Date.now().toString(36))), d:a.d, n:a.n, cat:a.cat,
+              q:q, u:a.u||'قطعة', p:p, t:Math.round(q*p*100)/100,
+              sup:a.sup||'', inv:a.inv||'', pay:a.pay||'نقدي',
+              by:(e?e.by:me2), note:a.note||'', ts:(e?e.ts:new Date().toISOString()) };
+    if(e){ L=L.map(function(x){ return x.id===e.id ? row : x; }); }
+    else L.push(row);
+    window.buySave(L, (e?'تعديل مشترى: ':'تسجيل مشترى: ')+row.n+' — '+row.t+' ريال');
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(x){}
+  });
+};
+window.buyDel = function(id){
+  var L=window.buyList(), r=L.filter(function(x){ return x.id===id; })[0];
+  if(!r) return;
+  window.nskAsk({ t:'حذف عملية شراء',
+    m:'«'+r.n+'» بمبلغ '+r.t+' ريال'+String.fromCharCode(10)+'يُحذف من دفتر المصروفات ولا يمكن التراجع.',
+    ok:'احذف العملية', danger:true }).then(function(ok){
+    if(!ok) return;
+    window.buySave(L.filter(function(x){ return x.id!==id; }), 'حذف مشترى: '+r.n);
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(x){}
+  });
+};
 window.NSKCFG = { page:'users' };
 /* أدوار مخصصة: مسمّى يرث صلاحيات أحد الأدوار الأربعة — تُحفظ في الإعدادات وتُزامَن */
 window.roleList = function(){
@@ -8609,7 +8690,10 @@ window.NSKSEL = (function(){
     P.innerHTML=H.join('');
     P.className='on'; BD.className='on';
     place(s);
-    try{ s.focus({preventScroll:true}); }catch(e){ try{ s.focus(); }catch(e3){} }
+    /* التركيز البرمجي على <select> داخل لمسة المستخدم يفتح قائمة iOS بنفسه — فظهرت قائمتان.
+       التركيز ينتقل للوحة، والعنصر يُفقده صراحةً كي تنغلق أي قائمةٍ نظامية سبقتنا. */
+    try{ s.blur(); }catch(e){}
+    try{ P.setAttribute('tabindex','-1'); P.focus({preventScroll:true}); }catch(e){}
     try{ var hit=P.querySelector('.so.on'); if(hit && hit.scrollIntoView) hit.scrollIntoView({block:'nearest'}); }catch(e){}
   }
   /* شبكة أمان: لو تعذّر فتح البديل لأي سبب يرجع العنصر لقائمة المتصفح بدل أن يصير معطّلًا */
@@ -8619,15 +8703,25 @@ window.NSKSEL = (function(){
     catch(e){ cur=null; try{ s.setAttribute('data-native','1'); }catch(e4){} }
   }
   document.addEventListener('mousedown', function(e){ if(fit(e.target)) e.preventDefault(); }, true);
-  document.addEventListener('touchend', function(e){
+  /* iOS يفتح قائمته من بداية اللمسة لا من نهايتها — المنع عند touchend يأتي بعد فوات الأوان */
+  document.addEventListener('touchstart', function(e){
     if(!fit(e.target)) return;
     e.preventDefault(); e.stopPropagation(); tT=Date.now(); hit(e.target);
+  }, {passive:false, capture:true});
+  document.addEventListener('touchend', function(e){
+    if(fit(e.target)){ e.preventDefault(); e.stopPropagation(); }
   }, {passive:false, capture:true});
   document.addEventListener('click', function(e){
     if(!fit(e.target)) return;
     e.preventDefault(); e.stopPropagation();
-    if(Date.now()-tT<700) return;
+    if(Date.now()-tT<900) return;
     hit(e.target);
+  }, true);
+  /* حزام أمان: أي تركيزٍ يصل العنصر من خارج مسارنا يُفقد فورًا كيلا تنبثق القائمة النظامية */
+  document.addEventListener('focusin', function(e){
+    if(!fit(e.target)) return;
+    if(cur===e.target) return;
+    if(Date.now()-tT<900){ try{ e.target.blur(); }catch(x){} }
   }, true);
   document.addEventListener('keydown', function(e){ if(cur && e.key==='Escape'){ e.preventDefault(); close(); } }, true);
   return { close:close };
@@ -9455,6 +9549,7 @@ var DTABS=[
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
   ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
   ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
+  ['buy','المشتريات',      ['buys'],                                    'دفتر مصروفات السوق المحلي بفواتيره ومورّديه'],
   ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
   ['adm','النظام',        ['sys','ev'],                                   'سجل الأحداث وسلامة البيانات وإعادة الضبط']
@@ -9464,9 +9559,9 @@ function tabOf(sec){
   return 'watch';
 }
 function tabsFor(role){
-  if(role==='viewer')     return ['watch'];
+  if(role==='viewer')     return ['watch','buy'];   /* V13.84: الوزارة ترى المصروف قراءةً بلا أزرار */
   if(role==='supervisor') return ['watch'];   /* V13.27: التشغيل محرراتُ إدارة — المشرف يتابع الصورة ويعمل من الميدان */
-  return ['watch','req','tech','plan','ops','adm'];
+  return ['watch','req','tech','buy','plan','ops','adm'];
 }
 function curTab(){
   var D=window.NSKDASH||{}, allow=tabsFor((user&&user.role)||'');
@@ -10534,6 +10629,72 @@ function render(){
     h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
     h+='</section>';
   })();
+  /* V13.84: المشتريات — دفتر مصروفات السوق المحلي */
+  (function(){
+    var canB=!!(user && (user.role==='admin'||user.role==='engineer'));
+    var B=window.buyStats();
+    var RY=function(v){ return AR(Math.round((Number(v)||0)*100)/100)+' ر.س'; };
+    h+='<section class="dSec" data-sec="buys">';
+    h+='<h2>المشتريات — ما اشتُري من السوق المحلي</h2>';
+    h+='<div class="dGrid">';
+    h+=card(RY(B.tot),'إجمالي المنصرف','#E9CE83');
+    h+=card(B.n,'عملية شراء','#4BC9F5');
+    h+=card(RY(B.mon),'منصرف هذا الشهر','#C77DFF');
+    h+=card(B.nsup||'—','مورّدًا','#3AD6A0');
+    h+='</div>';
+    if(canB){
+      h+='<div class="dRow"><button type="button" class="dBtn p" id="byAdd">➕ تسجيل عملية شراء</button>'
+        +'<button type="button" class="dBtn" id="byXls">⬇ إكسل — دفتر المشتريات</button></div>';
+    }
+    if(!B.n){
+      h+='<div class="dEmpty">لا مشتريات مسجّلة بعد'+(canB?' — ابدأ بزر «تسجيل عملية شراء» أعلاه.':'.')+'</div>';
+    } else {
+      h+='<div class="evCtl"><input type="search" id="byQ" placeholder="ابحث بالصنف أو المورّد أو رقم الفاتورة…"></div>';
+      h+='<table class="dT" id="byTbl"><thead><tr><th>التاريخ</th><th>الصنف</th><th>الفئة</th>'
+        +'<th>الكمية</th><th>سعر الوحدة</th><th>الإجمالي</th><th>المورّد</th><th>الفاتورة</th><th>الدفع</th>'
+        +(canB?'<th></th>':'')+'</tr></thead><tbody>';
+      B.L.slice().sort(function(x,y){ return String(y.d||'').localeCompare(String(x.d||'')); })
+       .forEach(function(r){
+        var key=(r.n+' '+r.sup+' '+r.inv+' '+r.cat+' '+r.note).toLowerCase();
+        h+='<tr class="byR" data-k="'+escA(key)+'"><td>'+esc2(r.d||'—')+'</td>'
+          +'<td><b>'+esc2(r.n)+'</b>'+(r.note?('<br><span class="pMut" style="font-size:.85em">'+esc2(r.note)+'</span>'):'')+'</td>'
+          +'<td>'+esc2(r.cat)+'</td>'
+          +'<td>'+AR(r.q)+' '+esc2(r.u)+'</td>'
+          +'<td>'+RY(r.p)+'</td>'
+          +'<td><b style="color:#E9CE83">'+RY(r.t)+'</b></td>'
+          +'<td>'+esc2(r.sup||'—')+'</td>'
+          +'<td>'+esc2(r.inv||'—')+'</td>'
+          +'<td>'+esc2(r.pay)+'</td>'
+          +(canB?('<td><button type="button" class="dBtn byE" data-id="'+escA(r.id)+'">تعديل</button> '
+                 +'<button type="button" class="dBtn byD" data-id="'+escA(r.id)+'">حذف</button></td>'):'')
+          +'</tr>';
+      });
+      h+='</tbody></table>';
+      h+='<p class="dTs" id="byNone" style="display:none">لا نتائج مطابقة للبحث.</p>';
+      var CK=Object.keys(B.cat).sort(function(a,b){ return B.cat[b].t-B.cat[a].t; });
+      if(CK.length){
+        h+='<div class="dT3">المصروف حسب الفئة</div>';
+        h+='<table class="dT"><thead><tr><th>الفئة</th><th>عمليات</th><th>الإجمالي</th><th>النسبة</th></tr></thead><tbody>';
+        CK.forEach(function(k){
+          var pc=B.tot?Math.round(B.cat[k].t/B.tot*100):0;
+          h+='<tr><td>'+esc2(k)+'</td><td>'+AR(B.cat[k].n)+'</td><td>'+RY(B.cat[k].t)+'</td>'
+            +'<td>'+AR(pc)+'٪</td></tr>';
+        });
+        h+='</tbody></table>';
+      }
+      var SK=Object.keys(B.sup).sort(function(a,b){ return B.sup[b].t-B.sup[a].t; }).slice(0,12);
+      if(SK.length){
+        h+='<div class="dT3">أكثر المورّدين</div>';
+        h+='<table class="dT"><thead><tr><th>المورّد</th><th>عمليات</th><th>الإجمالي</th></tr></thead><tbody>';
+        SK.forEach(function(k){ h+='<tr><td>'+esc2(k)+'</td><td>'+AR(B.sup[k].n)+'</td><td>'+RY(B.sup[k].t)+'</td></tr>'; });
+        h+='</tbody></table>';
+      }
+      h+='<p class="dTs">آخر عملية: '+esc2(B.last||'—')+' · متوسط العملية '+RY(B.avg)
+        +'. الأسعار هنا ما دُفع فعلًا بفاتورته — منفصلة عن كتالوج الأسعار المعتمد في الإعدادات، '
+        +'والسعر يُثبَّت لحظة التسجيل فلا يتغيّر بتغيّر الكتالوج.</p>';
+    }
+    h+='</section>';
+  })();
   $i('dWrap').innerHTML=h;
   try{
     if(_sc && _y) _sc.scrollTop=_y;
@@ -11067,6 +11228,56 @@ function render(){
     b.onclick=function(){ window.sendTeam(b.getAttribute('data-t')); }; });
   var _ta=$i('tmAll'); if(_ta) _ta.onclick=function(){ window.sendAllTeams(); };
 
+  /* V13.84: أزرار المشتريات — تُربط هنا في كود التهيئة لا داخل دالة الرسم */
+  var _ba=$i('byAdd'); if(_ba) _ba.onclick=function(){ window.buyAdd(); };
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byE'),function(b){
+    b.onclick=function(){
+      var id=b.getAttribute('data-id');
+      var r=window.buyList().filter(function(x){ return x.id===id; })[0];
+      if(r) window.buyAdd(r);
+    };
+  });
+  Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byD'),function(b){
+    b.onclick=function(){ window.buyDel(b.getAttribute('data-id')); };
+  });
+  var _bq=$i('byQ');
+  if(_bq) _bq.oninput=function(){
+    var q=String(_bq.value||'').trim().toLowerCase(), seen=0;
+    Array.prototype.forEach.call(document.querySelectorAll('#nskDash .byR'),function(r){
+      var on = !q || String(r.getAttribute('data-k')||'').indexOf(q)>=0;
+      r.style.display = on ? '' : 'none';
+      if(on) seen++;
+    });
+    var e=$i('byNone'); if(e) e.style.display = seen ? 'none' : '';
+  };
+  var _bx=$i('byXls');
+  if(_bx) _bx.onclick=function(){
+    try{
+      var L=window.buyList().slice().sort(function(x,y){ return String(x.d||'').localeCompare(String(y.d||'')); });
+      if(!L.length){ toast('لا مشتريات لتصديرها',1); return; }
+      var rows=[['التاريخ','الصنف','الفئة','الكمية','الوحدة','سعر الوحدة','الإجمالي',
+                 'المورّد','رقم الفاتورة','طريقة الدفع','سجّلها','ملاحظة']];
+      var tot=0;
+      L.forEach(function(r){
+        tot+=r.t;
+        rows.push([r.d, r.n, r.cat, r.q, r.u, r.p, r.t, r.sup, r.inv, r.pay, r.by, r.note]);
+      });
+      rows.push([]);
+      rows.push(['الإجمالي','','','','','', Math.round(tot*100)/100]);
+      var wb=XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'المشتريات');
+      var B=window.buyStats(), cr=[['الفئة','عمليات','الإجمالي']];
+      Object.keys(B.cat).sort(function(a,b){ return B.cat[b].t-B.cat[a].t; })
+        .forEach(function(k){ cr.push([k, B.cat[k].n, Math.round(B.cat[k].t*100)/100]); });
+      XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(cr), 'حسب الفئة');
+      var sr=[['المورّد','عمليات','الإجمالي']];
+      Object.keys(B.sup).sort(function(a,b){ return B.sup[b].t-B.sup[a].t; })
+        .forEach(function(k){ sr.push([k, B.sup[k].n, Math.round(B.sup[k].t*100)/100]); });
+      if(sr.length>1) XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(sr), 'حسب المورّد');
+      XLSX.writeFile(wb,'نُسُك-دفتر-المشتريات.xlsx');
+      try{ if(window.NSKSYNC) NSKSYNC.log('تصدير دفتر المشتريات — '+L.length+' عملية'); }catch(e){}
+    }catch(e){ toast('تعذّر التصدير',1); }
+  };
   var _sy=$i('syRetry'); if(_sy) _sy.onclick=function(){ window.retrySync(); };
   var _lk=$i('lkBtn'); if(_lk) _lk.onclick=function(){
     var L=window.lockRead();
@@ -12335,8 +12546,11 @@ html[data-theme="light"] .iosC input[type=number],html[data-theme="light"] .iosC
   .iosC{max-width:none;border-radius:18px 18px 0 0;border-bottom:0;
     padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}}
 /* V13.81: القائمة المنسدلة الموحّدة — بديل قائمة المتصفح البيضاء بثيم التطبيق */
-select{color-scheme:dark}
+select{color-scheme:dark;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  -webkit-user-select:none;user-select:none}
+select[data-native]{touch-action:auto;-webkit-user-select:auto;user-select:auto}
 html[data-theme="light"] select{color-scheme:light}
+#nskSelP:focus{outline:none}
 select option{background:#12161b;color:#E7E3D8}
 html[data-theme="light"] select option{background:#fff;color:#101214}
 #nskSelBd{position:fixed;inset:0;z-index:999999;display:none;background:transparent}
@@ -12912,7 +13126,24 @@ window.NSKI18N = (function(){
   'سبب الإعادة':'Reason for returning', 'اكتب سبب الإعادة أولًا':'Write the reason first',
   'السبب يظهر للفني مع المهمة وفي سجل الأحداث.':'The reason appears to the technician with the task and in the event log.',
   'انسخ الملخص':'Copy the summary', 'تم':'Done',
-  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'Automatic copying failed — the text is fully selected, copy it manually.'
+  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'Automatic copying failed — the text is fully selected, copy it manually.',
+  'المشتريات':'Purchases', 'المشتريات — ما اشتُري من السوق المحلي':'Purchases — what was bought locally',
+  'دفتر مصروفات السوق المحلي بفواتيره ومورّديه':'Local-market spending ledger with its invoices and suppliers',
+  'إجمالي المنصرف':'Total spent', 'عملية شراء':'purchases', 'منصرف هذا الشهر':'Spent this month', 'مورّدًا':'suppliers',
+  '➕ تسجيل عملية شراء':'➕ Record a purchase', '⬇ إكسل — دفتر المشتريات':'⬇ Excel — purchases ledger',
+  'تسجيل عملية شراء':'Record a purchase', 'تعديل عملية شراء':'Edit a purchase', 'حذف عملية شراء':'Delete a purchase',
+  'سجّل العملية':'Record it', 'حفظ التعديل':'Save the change', 'احذف العملية':'Delete the purchase',
+  'تاريخ الشراء':'Purchase date', 'الصنف':'Item', 'الفئة':'Category', 'الكمية':'Quantity', 'الوحدة':'Unit',
+  'سعر الوحدة (ريال)':'Unit price (SAR)', 'المحل أو المورّد':'Shop or supplier', 'رقم الفاتورة':'Invoice number',
+  'طريقة الدفع':'Payment method', 'ملاحظة':'Note',
+  'سعر الوحدة':'Unit price', 'المورّد':'Supplier', 'الفاتورة':'Invoice', 'الدفع':'Payment',
+  'المصروف حسب الفئة':'Spending by category', 'أكثر المورّدين':'Top suppliers', 'النسبة':'Share', 'عمليات':'purchases',
+  'ابحث بالصنف أو المورّد أو رقم الفاتورة…':'Search by item, supplier or invoice number…',
+  'لا نتائج مطابقة للبحث.':'No results match the search.',
+  'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.':'What was bought locally with its invoice — separate from the approved price catalogue.',
+  'أكمل التاريخ والصنف والكمية والسعر':'Fill in the date, item, quantity and price',
+  'الكمية أكبر من صفر والسعر لا يكون سالبًا':'Quantity must be above zero and price cannot be negative',
+  'لا مشتريات لتصديرها':'No purchases to export'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -13156,7 +13387,24 @@ window.NSKI18N = (function(){
   'سبب الإعادة':'واپسی کی وجہ', 'اكتب سبب الإعادة أولًا':'پہلے وجہ لکھیں',
   'السبب يظهر للفني مع المهمة وفي سجل الأحداث.':'وجہ ٹیکنیشن کو کام کے ساتھ اور ایونٹ لاگ میں نظر آتی ہے۔',
   'انسخ الملخص':'خلاصہ کاپی کریں', 'تم':'ہو گیا',
-  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'خودکار کاپی ناکام — متن مکمل منتخب ہے، دستی کاپی کریں۔'
+  'تعذّر النسخ التلقائي — النص محدّد بالكامل، انسخه يدويًّا.':'خودکار کاپی ناکام — متن مکمل منتخب ہے، دستی کاپی کریں۔',
+  'المشتريات':'خریداری', 'المشتريات — ما اشتُري من السوق المحلي':'خریداری — مقامی بازار سے خریدی گئی اشیاء',
+  'دفتر مصروفات السوق المحلي بفواتيره ومورّديه':'مقامی بازار کے اخراجات کا رجسٹر بمع رسیدیں اور سپلائرز',
+  'إجمالي المنصرف':'کل خرچ', 'عملية شراء':'خریداریاں', 'منصرف هذا الشهر':'اس ماہ کا خرچ', 'مورّدًا':'سپلائرز',
+  '➕ تسجيل عملية شراء':'➕ خریداری درج کریں', '⬇ إكسل — دفتر المشتريات':'⬇ ایکسل — خریداری رجسٹر',
+  'تسجيل عملية شراء':'خریداری درج کریں', 'تعديل عملية شراء':'خریداری میں ترمیم', 'حذف عملية شراء':'خریداری حذف کریں',
+  'سجّل العملية':'درج کریں', 'حفظ التعديل':'ترمیم محفوظ کریں', 'احذف العملية':'خریداری حذف کریں',
+  'تاريخ الشراء':'خریداری کی تاریخ', 'الصنف':'شے', 'الفئة':'قسم', 'الكمية':'مقدار', 'الوحدة':'اکائی',
+  'سعر الوحدة (ريال)':'فی اکائی قیمت (ریال)', 'المحل أو المورّد':'دکان یا سپلائر', 'رقم الفاتورة':'رسید نمبر',
+  'طريقة الدفع':'ادائیگی کا طریقہ', 'ملاحظة':'نوٹ',
+  'سعر الوحدة':'فی اکائی قیمت', 'المورّد':'سپلائر', 'الفاتورة':'رسید', 'الدفع':'ادائیگی',
+  'المصروف حسب الفئة':'قسم کے مطابق خرچ', 'أكثر المورّدين':'سرفہرست سپلائرز', 'النسبة':'تناسب', 'عمليات':'خریداریاں',
+  'ابحث بالصنف أو المورّد أو رقم الفاتورة…':'شے، سپلائر یا رسید نمبر سے تلاش کریں…',
+  'لا نتائج مطابقة للبحث.':'تلاش سے کوئی نتیجہ نہیں ملا۔',
+  'ما اشتُري من السوق المحلي بفاتورته — منفصل عن كتالوج الأسعار المعتمد.':'مقامی بازار سے رسید کے ساتھ خریدی گئی اشیاء — منظور شدہ قیمت کیٹلاگ سے الگ۔',
+  'أكمل التاريخ والصنف والكمية والسعر':'تاریخ، شے، مقدار اور قیمت مکمل کریں',
+  'الكمية أكبر من صفر والسعر لا يكون سالبًا':'مقدار صفر سے زیادہ ہو اور قیمت منفی نہ ہو',
+  'لا مشتريات لتصديرها':'برآمد کرنے کے لیے کوئی خریداری نہیں'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
