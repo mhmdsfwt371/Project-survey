@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.94</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.95</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7736,8 +7736,8 @@ window.NSKORD = window.NSKORD || {};
 /* أوزان النقاط إعدادات قابلة للتحرير — والافتراضي هو ما اعتمده المالك */
 window.PW_DEF = { camp:3, cor:5, stn:2, jam:4, other:3,
   tgtSurvey:90, tgtInstall:1000, tgtInsCamp:700, tgtInsCor:300, tgtDis:600,
-  tgtPrep:600, tgtPrepCamp:400, tgtPrepCor:200,
-  tgtAsm:600,  tgtAsmCamp:350,  tgtAsmCor:250,
+  tgtPrep:8800, tgtPrepCamp:8000, tgtPrepCor:800,
+  tgtAsm:7900,  tgtAsmCamp:6600,  tgtAsmCor:1300,
   ph:4.81, days:26, hours:8, daysWeek:6,
   insCamp:76.9, insCor:192.3, stgCfg:25, stgVal:25, stgIns:50, disOk:1, disBad:1.25 };
 window.pwGet = function(){
@@ -7815,18 +7815,18 @@ window.pwCalc = function(){
 };
 /* وزن زيارة النقطة حسب نوعها */
 window.ITEM_SEED = [
- ['cor','cam_ai','كاميرا AI موتورايز',26,4850],['cor','cam_pe','كاميرا شبكة ثابتة',16,2400],
+ ['cor','cam_ai','كاميرا AI موتورايز',26,4850],['cor','cam_pe','كاميرا ممر 8266',16,2400],
  ['cor','rtr','راوتر صناعي',10,1150],['cor','rdr8','قارئ ٨ منافذ',33,7200],
- ['cor','rdr4','قارئ ٤ منافذ',23,5100],['cor','ant9','هوائي UHF SRRA9',7,420],
  ['cor','ant12','هوائي UHF SRRA12',8,520],['cor','sol','لوح سولار ٤٠٠و',26,900],
  ['cor','bat','بطارية ٢٠٠أ',16,1600],['cor','mppt','منظم شمسي MPPT 40A',13,700],
  ['cor','mcb','بريكر MCB',5,90],['cor','boxb','بوكس بطارية ٨٠×٦٠×٣٠',20,950],
  ['cor','c20','كابل RFID ٢٠م',13,260],['cor','c15c','كابل ١٥م 7D-FB',10,190],
  ['cor','c10c','كابل ١٠م 5D-FB',8,140],['cor','c5c','كابل RFID ٥م',5,80],
  ['cor','boxm','بوكس رئيسي ٦٠×٤٠×٢٠',26,680],
- ['cor','gw','جيت واي',9,1900],['cor','sock','فيش كهرباء',2,45],
- ['camp','cam','كاميرا شبكة',8,2400],['camp','rtr2','راوتر صناعي',5,1150],
- ['camp','rdr4c','قارئ ٤ منافذ',11,5100],['camp','ant9c','هوائي UHF',3,420],
+ ['cor','sock','فيش كهرباء',2,45],
+ ['camp','cam','كاميرا مخيم 8361',8,2400],['camp','rtr2','راوتر صناعي',5,1150],
+ ['camp','rdr4c','قارئ ٤ منافذ',11,5100],['camp','ant9c','هوائي UHF SRRA9',3,420],
+ ['camp','ths','حساس حرارة ورطوبة',4,180],
  ['camp','c15','كابل ١٥م 7D-FB',5,190],['camp','c10','كابل ١٠م 5D-FB',4,140],
  ['camp','c5','كابل RFID ٥م',2,80],['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680],
  ['camp','led','شاشة ليد ٣ نقاط',2,150],['camp','korg','ليد أخضر',2,120],
@@ -7835,14 +7835,40 @@ window.ITEM_SEED = [
 ].map(function(x){ return {z:x[0], id:x[1], n:x[2], pts:x[3], price:x[4]}; });
 /* V13.89: ثلاث مراحل لكل صنف — تهيئةٌ في الورشة (ضبط ونظام وفحص)، وتجميعٌ في البوكس،
    وتركيبٌ في الميدان. صفرٌ يعني أن الصنف لا يمرّ بتلك المرحلة أصلًا. */
-window.PREP_SEED = { cam_ai:6, cam_pe:4, rtr:5, rdr8:8, rdr4:6, mppt:3,
-                     cam:4, rtr2:5, rdr4c:6, gw:5, gwc:5 };
-window.ASM_SEED  = { rtr:3, rdr8:5, rdr4:4, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c:4, box:5,
+/* التهيئة لما له إعدادٌ يُضبط: عنوانٌ ونظامٌ وفحص. الهوائي والمنظّم والبطارية
+   والكابل قطعٌ سلبيةٌ لا تُهيَّأ، فنقاطها صفرٌ ولا تظهر في طلبات التهيئة أصلًا. */
+window.PREP_SEED = {
+  rtr:5, rtr2:5,          /* الراوتر — نفس النوع في المخيم والممر */
+  cam_pe:4,               /* كاميرا الممر 8266 */
+  cam:4,                  /* كاميرا المخيم 8361 */
+  cam_ai:6,               /* كاميرا AI موتورايز — أعقدها ضبطًا */
+  rdr8:8,                 /* قارئ ٨ منافذ — ممرات */
+  rdr4c:6,                /* قارئ ٤ منافذ — مخيمات */
+  gwc:5,                  /* جيت واي — مخيمات */
+  ths:3                   /* حساس حرارة ورطوبة — غرف المخيم */
+};
+window.ASM_SEED  = { rtr:3, rdr8:5, mppt:2, mcb:1, boxb:4, boxm:5, rtr2:3, rdr4c:4, box:5,
                      bat:3, sol:3, led:2, korg:1, korr:1, rly:1,
-                     gw:3, gwc:3, sock:1, sockc:1 };
+                     gwc:3, sock:1, sockc:1 };
+/* V13.95: الأصناف المشطوبة عند تصحيح الكتالوج — القارئ الرباعي في الممر والهوائي
+   التساعي فيه والجيت واي فيه — ترحيلٌ صامتٌ يرفعها من قائمةٍ محفوظةٍ سابقًا،
+   ويضمّ الجديد إليها، ويصحّح الأسماء، ويُبقي ما عدّله المهندس من سعرٍ ونقاط. */
+window.IT_DROP = ['rdr4','ant9','gw'];
+window.IT_RENAME = { cam_pe:'كاميرا ممر 8266', cam:'كاميرا مخيم 8361',
+                     ant9c:'هوائي UHF SRRA9' };
 window.itList = function(){
   var L=[];
   try{ L=((window.NSKCORE.get('settings','items')||{}).list||[]).slice(); }catch(e){}
+  if(L.length){
+    var D={}; window.IT_DROP.forEach(function(k){ D[k]=1; });
+    L=L.filter(function(x){ return !D[String(x.id||'')]; });
+    var have={}; L.forEach(function(x){ have[String(x.id||'')]=1; });
+    window.ITEM_SEED.forEach(function(sd){ if(!have[sd.id]) L.push(sd); });
+    L.forEach(function(x){
+      var nn=window.IT_RENAME[String(x.id||'')];
+      if(nn) x.n=nn;
+    });
+  }
   if(!L.length) L=window.ITEM_SEED.slice();
   return L.map(function(x){
             var id=String(x.id||'');
@@ -14749,6 +14775,8 @@ window.NSKI18N = (function(){
   'قطع التركيب المعتمدة':'Approved installation items', 'مشتريات السوق المحلي':'Local-market purchases',
   'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings',
   'كاميرا AI موتورايز':'Motorised AI camera',
+  'كاميرا ممر 8266':'Corridor camera 8266', 'كاميرا مخيم 8361':'Camp camera 8361',
+  'حساس حرارة ورطوبة':'Temperature and humidity sensor',
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
   'الورشة':'Workshop',
   'المخزون':'Inventory', '☑ حدّد':'☑ Select', '✓ محدَّد':'✓ Selected',
@@ -15183,6 +15211,8 @@ window.NSKI18N = (function(){
   'قطع التركيب المعتمدة':'منظور شدہ تنصیب پرزے', 'مشتريات السوق المحلي':'مقامی بازار کی خریداری',
   'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات',
   'كاميرا AI موتورايز':'موٹرائزڈ AI کیمرہ',
+  'كاميرا ممر 8266':'راہداری کیمرہ 8266', 'كاميرا مخيم 8361':'خیمہ کیمرہ 8361',
+  'حساس حرارة ورطوبة':'درجہ حرارت اور نمی سینسر',
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
   'الورشة':'ورکشاپ',
   'المخزون':'انوینٹری', '☑ حدّد':'☑ منتخب کریں', '✓ محدَّد':'✓ منتخب',
