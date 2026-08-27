@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.87</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.88</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -7735,7 +7735,16 @@ window.pwSave = function(obj, what){
 window.arNum = function(v){
   var n=Number(v); if(!isFinite(n)) return String(v==null?'':v);
   n=Math.round(n*10)/10;
-  try{ return n.toLocaleString('ar-EG'); }catch(e){ return String(n); }
+  /* الأرقام تُكتب لاتينيةً ويحوّلها محرك اللغات إلى العربية أو الأردية عند العرض،
+     لأن فاصلَي العربية ٬ و٫ ليسا رقمين فلا يمسّهما محوّلُه فيبقيان في الإنجليزية */
+  try{ return n.toLocaleString('en-US'); }catch(e){ return String(n); }
+};
+/* V13.88: الجملة المركّبة بالأرقام تفشل مطابقةُ محرك اللغات لها لأنه يطابق العقدة كاملةً —
+   فتُبنى أجزاؤها الثابتة عقدًا مستقلة يترجم كلًّا منها وحده */
+window.cfgInsLine = function(tot){
+  return '<span>الإجمالي الشهري</span> '+window.arNum(tot)+' <span>نقطة · الأسبوعي</span> '
+    +window.arNum(window.pwWk(tot))
+    +' <span>نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.</span>';
 };
 window.pwWk = function(monthly){
   var P=window.pwGet(), d=P.days||26, w=P.daysWeek||6;
@@ -8083,7 +8092,8 @@ window.cfgRender = function(){
     h+='<table class="cfgT"><thead><tr><th>المشعر</th><th>النوع</th><th>وزن الزيارة</th></tr></thead><tbody>'
       +MX.map(function(r){
         var v=(W[r.k]!=null&&W[r.k]!=='')?W[r.k]:'';
-        return '<tr><td class="cfgK">'+_cfgX(r.z)+' · '+_cfgX(r.ty)+'</td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
+        return '<tr><td class="cfgK"><span>'+_cfgX(r.z)+'</span> · <span>'+_cfgX(r.ty)
+          +'</span></td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
           +'<td data-l="وزن الزيارة"><input type="number" inputmode="decimal" class="cfgW" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
       }).join('')+'</tbody></table>'
       +'<div class="cfgF"><label>تارجت المسح الشهري<input type="number" class="tgM" data-w="cfg_tgtSurveyW" id="cfg_tgtSurvey" min="0" value="'+P.tgtSurvey+'"></label>'
@@ -8098,7 +8108,7 @@ window.cfgRender = function(){
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
         +'<table class="cfgT"><thead><tr><th>القطعة</th><th>النقاط</th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(it.n)+'</code></td>'
+          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
             +'<td data-l="النقاط"><input type="number" inputmode="decimal" class="cfgIP" data-id="'+_cfgX(it.id)+'" step="0.5" min="0" value="'+it.pts+'"></td></tr>';
         }).join('')+'</tbody></table></div>';
     }).join('')+'</div>'
@@ -8108,19 +8118,19 @@ window.cfgRender = function(){
       +'<h3 class="cfgH3">تارجت تركيب الممرات</h3>'
       +'<div class="cfgF"><label>الشهري<input type="number" inputmode="numeric" class="tgM" data-w="cfg_tgtInsCorW" id="cfg_tgtInsCor" min="0" value="'+P.tgtInsCor+'"></label>'
       +'<label>الأسبوعي<input type="number" inputmode="numeric" class="tgW" data-m="cfg_tgtInsCor" id="cfg_tgtInsCorW" min="0" value="'+window.pwWk(P.tgtInsCor)+'"></label></div>'
-      +'<p class="cfgS" id="cfgInsSum">الإجمالي الشهري '+window.arNum(P.tgtInstall)+' نقطة · الأسبوعي '
-      +window.arNum(window.pwWk(P.tgtInstall))+' نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، '
-      +'وهو ما يُقاس به أداء الفني في التركيب.</p>'
+      +'<p class="cfgS" id="cfgInsSum">'+window.cfgInsLine(P.tgtInstall)+'</p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveI">حفظ نقاط التركيب</button></div>'
-      +'<p class="cfgS">القطع تُضاف وتُحذف من صفحة «القطع والأسعار». والتارجت بالنقاط لا بعدد المواقع: '
-      +'المخيم '+window.arNum(P.insCamp)+' نقطة والممر '+window.arNum(P.insCor)+' نقطة افتراضيًّا.</p>';
+      +'<p class="cfgS"><span>القطع تُضاف وتُحذف من صفحة «القطع والأسعار».</span> '
+      +'<span>والتارجت بالنقاط لا بعدد المواقع:</span> <span>المخيم</span> '+window.arNum(P.insCamp)
+      +' <span>نقطة والممر</span> '+window.arNum(P.insCor)+' <span>نقطة افتراضيًّا.</span></p>';
   }
   else if(pg==='dis'){
     var MX2=window.pwRows(), D=P.dw||{};
     h+='<table class="cfgT"><thead><tr><th>المشعر</th><th>النوع</th><th>وزن الفك</th></tr></thead><tbody>'
       +MX2.map(function(r){
         var v=(D[r.k]!=null&&D[r.k]!=='')?D[r.k]:'';
-        return '<tr><td class="cfgK">'+_cfgX(r.z)+' · '+_cfgX(r.ty)+'</td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
+        return '<tr><td class="cfgK"><span>'+_cfgX(r.z)+'</span> · <span>'+_cfgX(r.ty)
+          +'</span></td><td class="cfgHm" data-l="النوع">'+_cfgX(r.ty)+'</td>'
           +'<td data-l="وزن الفك"><input type="number" inputmode="decimal" class="cfgD" data-k="'+_cfgX(r.k)+'" step="0.5" min="0" value="'+v+'" placeholder="'+r.dw+'"></td></tr>';
       }).join('')+'</tbody></table>'
       +'<div class="cfgF"><label>تارجت الفك الشهري<input type="number" class="tgM" data-w="cfg_tgtDisW" id="cfg_tgtDis" min="0" value="'+P.tgtDis+'"></label>'
@@ -8135,7 +8145,7 @@ window.cfgRender = function(){
       return '<div class="cfgCol"><h3 class="cfgH3">'+g[1]+' — '+L.length+' قطعة</h3>'
         +'<table class="cfgT"><thead><tr><th>القطعة</th><th>السعر</th><th></th></tr></thead><tbody>'
         +L.map(function(it){
-          return '<tr><td class="cfgK"><code class="nx">'+_cfgX(it.n)+'</code></td>'
+          return '<tr><td class="cfgK">'+_cfgX(it.n)+'</td>'
             +'<td data-l="السعر"><input type="number" inputmode="numeric" class="cfgPR" data-id="'+_cfgX(it.id)+'" step="1" min="0" value="'+(it.price||'')+'" placeholder="0"></td>'
             +'<td data-l="حذف"><button type="button" class="cfgDel" data-id="'+_cfgX(it.id)
             +'" data-n="'+_cfgX(it.n)+'">حذف</button></td></tr>';
@@ -8160,14 +8170,14 @@ window.cfgRender = function(){
         var u=BU[c]||{n:0,t:0};
         return '<tr><td class="cfgK"><code class="nx">'+_cfgX(c)+'</code></td>'
           +'<td data-l="عمليات">'+window.arNum(u.n)+'</td>'
-          +'<td data-l="المصروف">'+window.arNum(u.t)+' ر.س</td>'
+          +'<td data-l="المصروف">'+window.arNum(u.t)+' <span>ر.س</span></td>'
           +'<td data-l="حذف">'+(u.n
               ? '<span class="cfgS" style="margin:0">مستعملة</span>'
               : '<button type="button" class="cfgDel cfgBcDel" data-n="'+_cfgX(c)+'">حذف</button>')
           +'</td></tr>';
       }).join('')+'</tbody></table>';
-    h+='<p class="cfgS">إجمالي المشتريات المصنّفة: <b>'+window.arNum(bTot)+' ر.س</b> '
-      +'في '+window.arNum(BC.length)+' فئة.</p>';
+    h+='<p class="cfgS"><span>إجمالي المشتريات المصنّفة:</span> <b>'+window.arNum(bTot)
+      +' <span>ر.س</span></b> <span>في</span> '+window.arNum(BC.length)+' <span>فئة.</span></p>';
     h+='<div class="cfgF"><label>فئة جديدة<input type="text" id="cfg_bcN" placeholder="مثال: إيجار معدات"></label></div>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgBcAdd">إضافة فئة</button>'
       +'<button type="button" class="cfgGo" id="cfgBcSeed">استعادة الفئات الافتراضية</button></div>';
@@ -8176,7 +8186,8 @@ window.cfgRender = function(){
     h+='<div class="cfgF"><label>أيام العمل في الشهر<input type="number" id="cfg_days" min="1" value="'+P.days+'"></label>'
       +'<label>ساعات العمل في اليوم<input type="number" id="cfg_hours" min="1" value="'+P.hours+'"></label>'
       +'<label>أيام العمل في الأسبوع<input type="number" id="cfg_daysWeek" min="1" max="7" value="'+P.daysWeek+'"></label></div>'
-      +'<p class="cfgS">ساعات الشهر القياسية: '+((P.days||26)*(P.hours||8))+' ساعة.</p>'
+      +'<p class="cfgS"><span>ساعات الشهر القياسية:</span> '+window.arNum((P.days||26)*(P.hours||8))
+      +' <span>ساعة.</span></p>'
       +'<div class="cfgRow"><button type="button" class="cfgGo" id="cfgSaveS">حفظ الثوابت</button></div>';
   }
   h+='</main>'
@@ -8232,8 +8243,8 @@ window.cfgBind = function(){
   function insSum(){
     var e=q('#cfgInsSum'); if(!e) return;
     var a=parseFloat((q('#cfg_tgtInsCamp')||{}).value)||0, b=parseFloat((q('#cfg_tgtInsCor')||{}).value)||0;
-    e.textContent='الإجمالي الشهري '+window.arNum(a+b)+' نقطة · الأسبوعي '+window.arNum(window.pwWk(a+b))
-      +' نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.';
+    e.innerHTML=window.cfgInsLine(a+b);
+    try{ if(window.NSKI18N) NSKI18N.apply(e); }catch(x){}
   }
   Array.prototype.forEach.call(qa('.tgM'), function(e){
     e.oninput=function(){ var t=q('#'+e.getAttribute('data-w')); if(t) t.value=window.pwWk(e.value); insSum(); };
@@ -8295,7 +8306,8 @@ window.cfgBind = function(){
   Array.prototype.forEach.call(qa('.cfgDel:not(.cfgRDel)'), function(b){
     b.onclick=function(){
       var id=b.getAttribute('data-id'), nm=b.getAttribute('data-n')||'';
-      window.nskAsk({ t:'حذف قطعة من الكتالوج', m:'«'+nm+'» ستُحذف من قوائم التركيب والأسعار.\nالتركيبات المسجّلة سابقًا تبقى في السجل.',
+      window.nskAsk({ t:'حذف قطعة من الكتالوج',
+        m:'«'+nm+'»\nستُحذف من قوائم التركيب والأسعار.\nالتركيبات المسجّلة سابقًا تبقى في السجل.',
         ok:'احذف', danger:true }).then(function(r){
         if(!r) return;
         window.itSave(window.itList().filter(function(x){ return x.id!==id; }),'حذف قطعة: '+nm);
@@ -8328,7 +8340,7 @@ window.cfgBind = function(){
     b.onclick=function(){
       var n2=b.getAttribute('data-n')||'';
       window.nskAsk({ t:'حذف فئة مشتريات',
-        m:'«'+n2+'» لم تُستعمل في أي عملية، فحذفها لا يمسّ رقمًا مسجَّلًا.',
+        m:'«'+n2+'»\nلم تُستعمل في أي عملية، فحذفها لا يمسّ رقمًا مسجَّلًا.',
         ok:'احذف الفئة', danger:true }).then(function(r){
         if(!r) return;
         window.buyCatSave(window.buyCatList().filter(function(x){ return x!==n2; }),'حذف فئة مشتريات: '+n2);
@@ -8348,7 +8360,8 @@ window.cfgBind = function(){
   Array.prototype.forEach.call(qa('.cfgRDel'), function(b){
     b.onclick=function(){
       var id=b.getAttribute('data-id'), nm=b.getAttribute('data-n')||'';
-      window.nskAsk({ t:'حذف دور مخصص', m:'«'+nm+'» سيختفي من قائمة أدوار المستخدمين.\nمن يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.',
+      window.nskAsk({ t:'حذف دور مخصص',
+        m:'«'+nm+'»\nسيختفي من قائمة أدوار المستخدمين.\nمن يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.',
         ok:'احذف', danger:true }).then(function(r){
         if(!r) return;
         window.roleSave(window.roleList().filter(function(x){ return x.id!==id; }),'حذف دور مخصص: '+nm);
@@ -12807,12 +12820,18 @@ window.NSKI18N = (function(){
   var D = {};   /* يُملأ أسفل الملف */
 
   /* الأرقام: العربية ٠-٩ لاتينية في الإنجليزية، وأردية ۰-۹ في الأردية */
+  /* V13.88: الفاصلتان ٬ و٫ ليستا رقمين، فبقاؤهما كان يترك «١٬٠٠٠» نصفَ مترجَم */
+  var GRP = { ar:'٬', ur:'٬', en:',' }, DEC = { ar:'٫', ur:'٫', en:'.' };
   function digits(t){
-    if(lang === 'ar') return t;
-    var to = (lang === 'ur') ? UD : LD, o = '';
+    var to = (lang === 'ur') ? UD : (lang === 'en' ? LD : AD), o = '';
     for(var i = 0; i < t.length; i++){
-      var k = AD.indexOf(t[i]);
-      o += (k >= 0) ? to[k] : t[i];
+      var c = t[i], k = AD.indexOf(c), k2 = LD.indexOf(c), k3 = UD.indexOf(c);
+      if(k >= 0) o += to[k];
+      else if(k2 >= 0) o += to[k2];
+      else if(k3 >= 0) o += to[k3];
+      else if(c === '٬' || c === ',') o += GRP[lang] || c;
+      else if(c === '٫') o += DEC[lang] || c;
+      else o += c;
     }
     return o;
   }
@@ -13326,7 +13345,7 @@ window.NSKI18N = (function(){
   'تأكيد':'Confirm', 'تغييرات غير محفوظة':'Unsaved changes',
   'عدّلت قيمًا في هذه الصفحة ولم تحفظها بعد.':'You changed values on this page and have not saved them yet.',
   'احفظ ثم انتقل':'Save then move', 'انتقل بلا حفظ':'Move without saving', 'ابقَ هنا':'Stay here',
-  'حذف قطعة من الكتالوج':'Delete an item from the catalogue',
+  'حذف قطعة من الكتالوج':'Delete an item from the catalogue', 'حذف دور مخصص':'Delete a custom role',
   'التركيبات المسجّلة سابقًا تبقى في السجل.':'Previously recorded installations stay in the log.',
   'من يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.':'Whoever holds it returns to the permissions of the base role it inherits from.',
   'إيقاف حساب':'Suspend account', 'تفعيل حساب':'Activate account',
@@ -13382,7 +13401,34 @@ window.NSKI18N = (function(){
   'منصرف المشروع — الصورة الكاملة':'Project spending — the full picture',
   'البند':'Line', 'المصدر':'Source', 'المبلغ':'Amount',
   'قطع التركيب المعتمدة':'Approved installation items', 'مشتريات السوق المحلي':'Local-market purchases',
-  'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings', 'دفتر المشتريات — بفواتيره':'Purchases ledger — with its invoices',
+  'كتالوج الأسعار — الإعدادات':'Price catalogue — Settings',
+  'كاميرا AI موتورايز':'Motorised AI camera',
+  'تارجت المسح الشهري':'Monthly survey target', 'تارجت المسح الأسبوعي':'Weekly survey target',
+  'تارجت الفك الشهري':'Monthly dismantle target', 'تارجت الفك الأسبوعي':'Weekly dismantle target',
+  'الإجمالي الشهري':'Monthly total', 'نقطة · الأسبوعي':'points · weekly',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.':'points — derived from the two branches and never typed by hand; it is what a technician’s installation performance is measured against.',
+  'والتارجت بالنقاط لا بعدد المواقع:':'And the target is in points, not in number of sites:',
+  'المخيم':'A camp', 'نقطة والممر':'points, and a corridor', 'نقطة افتراضيًّا.':'points by default.',
+  'أيام العمل في الشهر':'Working days per month', 'ساعات العمل في اليوم':'Working hours per day',
+  'أيام العمل في الأسبوع':'Working days per week',
+  'ساعات الشهر القياسية:':'Standard hours per month:', 'ساعة.':'hours.',
+  'إجمالي المشتريات المصنّفة:':'Total classified purchases:', 'في':'across', 'فئة.':'categories.',
+  'مثال: مشرف عام':'e.g. General supervisor', 'مثال: إيجار معدات':'e.g. Equipment rental', 'اسم القطعة':'Item name',
+  'اكتب المسمّى أولًا':'Write the title first', 'المسمّى موجود بالفعل':'That title already exists',
+  'ستُحذف من قوائم التركيب والأسعار.':'It will be removed from the installation and price lists.',
+  'سيختفي من قائمة أدوار المستخدمين.':'It will disappear from the user role list.',
+  'لم تُستعمل في أي عملية، فحذفها لا يمسّ رقمًا مسجَّلًا.':'It has not been used in any purchase, so deleting it touches no recorded figure.',
+  'لوحة الحسابات غير محمّلة في هذه الجلسة — أعد تحميل الصفحة لتعود.':'The accounts panel is not loaded in this session — reload the page to bring it back.',
+  'إعادة تحميل الصفحة':'Reload the page', 'كاميرا شبكة ثابتة':'Fixed network camera',
+  'كاميرا شبكة':'Network camera', 'راوتر صناعي':'Industrial router',
+  'قارئ ٨ منافذ':'8-port reader', 'قارئ ٤ منافذ':'4-port reader',
+  'هوائي UHF SRRA9':'UHF SRRA9 antenna', 'هوائي UHF SRRA12':'UHF SRRA12 antenna', 'هوائي UHF':'UHF antenna',
+  'لوح سولار ٤٠٠و':'400 W solar panel', 'بطارية ٢٠٠أ':'200 Ah battery',
+  'منظم شمسي MPPT 40A':'MPPT 40 A solar controller', 'بريكر MCB':'MCB breaker',
+  'بوكس بطارية ٨٠×٦٠×٣٠':'Battery box 80×60×30', 'بوكس رئيسي ٦٠×٤٠×٢٠':'Main box 60×40×20',
+  'كابل RFID ٢٠م':'RFID cable 20 m', 'كابل RFID ٥م':'RFID cable 5 m',
+  'كابل ١٥م 7D-FB':'7D-FB cable 15 m', 'كابل ١٠م 5D-FB':'5D-FB cable 10 m',
+  'شاشة ليد ٣ نقاط':'3-dot LED display', 'ليد أخضر':'Green LED', 'ليد أحمر':'Red LED', 'ريلاي ١٢ف':'12 V relay', 'دفتر المشتريات — بفواتيره':'Purchases ledger — with its invoices',
   'السعر':'Price', 'قراءة':'read', 'ر.س':'SAR', 'قطعة':'piece', '١٠٠٪':'100%',
   'وسم «تمت الزيارة»':'Marking “visited”', 'طلبات الزيارة والإسناد':'Visit requests and assignment',
   'اعتماد الزيارات والقطع':'Approving visits and items', 'التركيب والفك':'Installing and dismantling',
@@ -13615,7 +13661,7 @@ window.NSKI18N = (function(){
   'تأكيد':'تصدیق', 'تغييرات غير محفوظة':'غیر محفوظ تبدیلیاں',
   'عدّلت قيمًا في هذه الصفحة ولم تحفظها بعد.':'آپ نے اس صفحے پر قدریں بدلی ہیں اور ابھی محفوظ نہیں کیں۔',
   'احفظ ثم انتقل':'محفوظ کر کے جائیں', 'انتقل بلا حفظ':'محفوظ کیے بغیر جائیں', 'ابقَ هنا':'یہیں رہیں',
-  'حذف قطعة من الكتالوج':'کیٹلاگ سے پرزہ حذف کریں',
+  'حذف قطعة من الكتالوج':'کیٹلاگ سے پرزہ حذف کریں', 'حذف دور مخصص':'مخصوص کردار حذف کریں',
   'التركيبات المسجّلة سابقًا تبقى في السجل.':'پہلے درج شدہ تنصیبات ریکارڈ میں رہیں گی۔',
   'من يحمله الآن يعود لصلاحيات الدور الأصلي الذي يرث منه.':'جو اسے رکھتا ہے وہ بنیادی کردار کی اجازتوں پر واپس آ جائے گا۔',
   'إيقاف حساب':'اکاؤنٹ معطل کریں', 'تفعيل حساب':'اکاؤنٹ فعال کریں',
@@ -13671,7 +13717,34 @@ window.NSKI18N = (function(){
   'منصرف المشروع — الصورة الكاملة':'منصوبے کا خرچ — مکمل تصویر',
   'البند':'مد', 'المصدر':'ماخذ', 'المبلغ':'رقم',
   'قطع التركيب المعتمدة':'منظور شدہ تنصیب پرزے', 'مشتريات السوق المحلي':'مقامی بازار کی خریداری',
-  'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات', 'دفتر المشتريات — بفواتيره':'خریداری رجسٹر — رسیدوں سمیت',
+  'كتالوج الأسعار — الإعدادات':'قیمت کیٹلاگ — ترتیبات',
+  'كاميرا AI موتورايز':'موٹرائزڈ AI کیمرہ',
+  'تارجت المسح الشهري':'ماہانہ سروے ہدف', 'تارجت المسح الأسبوعي':'ہفتہ وار سروے ہدف',
+  'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف', 'تارجت الفك الأسبوعي':'ہفتہ وار ہٹانے کا ہدف',
+  'الإجمالي الشهري':'ماہانہ مجموعہ', 'نقطة · الأسبوعي':'پوائنٹس · ہفتہ وار',
+  'نقطة — يُشتقّ من الفرعين ولا يُكتب يدويًّا، وهو ما يُقاس به أداء الفني في التركيب.':'پوائنٹس — دونوں شاخوں سے اخذ ہوتا ہے، دستی نہیں لکھا جاتا، اور اسی سے ٹیکنیشن کی تنصیب کارکردگی ناپی جاتی ہے۔',
+  'والتارجت بالنقاط لا بعدد المواقع:':'ہدف پوائنٹس میں ہے، مقامات کی تعداد میں نہیں:',
+  'المخيم':'ایک خیمہ', 'نقطة والممر':'پوائنٹس، اور ایک راہداری', 'نقطة افتراضيًّا.':'پوائنٹس طے شدہ۔',
+  'أيام العمل في الشهر':'ماہانہ کام کے دن', 'ساعات العمل في اليوم':'روزانہ کام کے گھنٹے',
+  'أيام العمل في الأسبوع':'ہفتہ وار کام کے دن',
+  'ساعات الشهر القياسية:':'ماہ کے معیاری گھنٹے:', 'ساعة.':'گھنٹے۔',
+  'إجمالي المشتريات المصنّفة:':'درجہ بند خریداری کا مجموعہ:', 'في':'میں', 'فئة.':'اقسام۔',
+  'مثال: مشرف عام':'مثال: جنرل سپروائزر', 'مثال: إيجار معدات':'مثال: آلات کا کرایہ', 'اسم القطعة':'پرزے کا نام',
+  'اكتب المسمّى أولًا':'پہلے عہدہ لکھیں', 'المسمّى موجود بالفعل':'یہ عہدہ پہلے سے موجود ہے',
+  'ستُحذف من قوائم التركيب والأسعار.':'یہ تنصیب اور قیمت کی فہرستوں سے ہٹ جائے گا۔',
+  'سيختفي من قائمة أدوار المستخدمين.':'یہ صارفین کے کردار کی فہرست سے غائب ہو جائے گا۔',
+  'لم تُستعمل في أي عملية، فحذفها لا يمسّ رقمًا مسجَّلًا.':'یہ کسی خریداری میں استعمال نہیں ہوئی، اس لیے حذف کرنے سے کوئی درج شدہ رقم متاثر نہیں ہوتی۔',
+  'لوحة الحسابات غير محمّلة في هذه الجلسة — أعد تحميل الصفحة لتعود.':'اکاؤنٹس پینل اس سیشن میں لوڈ نہیں ہوا — واپس لانے کے لیے صفحہ ری لوڈ کریں۔',
+  'إعادة تحميل الصفحة':'صفحہ دوبارہ لوڈ کریں', 'كاميرا شبكة ثابتة':'فکسڈ نیٹ ورک کیمرہ',
+  'كاميرا شبكة':'نیٹ ورک کیمرہ', 'راوتر صناعي':'صنعتی راؤٹر',
+  'قارئ ٨ منافذ':'٨ پورٹ ریڈر', 'قارئ ٤ منافذ':'٤ پورٹ ریڈر',
+  'هوائي UHF SRRA9':'UHF SRRA9 اینٹینا', 'هوائي UHF SRRA12':'UHF SRRA12 اینٹینا', 'هوائي UHF':'UHF اینٹینا',
+  'لوح سولار ٤٠٠و':'٤٠٠ واٹ سولر پینل', 'بطارية ٢٠٠أ':'٢٠٠ ایمپیئر بیٹری',
+  'منظم شمسي MPPT 40A':'MPPT 40A سولر کنٹرولر', 'بريكر MCB':'MCB بریکر',
+  'بوكس بطارية ٨٠×٦٠×٣٠':'بیٹری باکس ٨٠×٦٠×٣٠', 'بوكس رئيسي ٦٠×٤٠×٢٠':'مرکزی باکس ٦٠×٤٠×٢٠',
+  'كابل RFID ٢٠م':'RFID کیبل ٢٠ میٹر', 'كابل RFID ٥م':'RFID کیبل ٥ میٹر',
+  'كابل ١٥م 7D-FB':'7D-FB کیبل ١٥ میٹر', 'كابل ١٠م 5D-FB':'5D-FB کیبل ١٠ میٹر',
+  'شاشة ليد ٣ نقاط':'٣ نقطہ LED ڈسپلے', 'ليد أخضر':'سبز LED', 'ليد أحمر':'سرخ LED', 'ريلاي ١٢ف':'١٢ وولٹ ریلے', 'دفتر المشتريات — بفواتيره':'خریداری رجسٹر — رسیدوں سمیت',
   'السعر':'قیمت', 'قراءة':'پڑھنا', 'ر.س':'ریال', 'قطعة':'عدد', '١٠٠٪':'١٠٠٪',
   'وسم «تمت الزيارة»':'«دورہ ہوا» کا نشان', 'طلبات الزيارة والإسناد':'دورے کی درخواستیں اور تفویض',
   'اعتماد الزيارات والقطع':'دوروں اور پرزوں کی منظوری', 'التركيب والفك':'تنصیب اور ہٹانا',

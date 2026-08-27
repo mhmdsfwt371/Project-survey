@@ -163,8 +163,7 @@ try {
   } else ok.push('لا مراجع عابرة بين كتل السكربت ✓');
 }
 
-ok.forEach(x => console.log('✓', x));
-if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
+/* الطباعة والخروج في آخر الملف — كانا هنا فبقيت الفحوص الثلاثة التالية بلا أثر */
 /* سلسلة نصية مكسورة بسطر جديد: h+='<div> ثم سطر جديد ثم بقية النص — أشهر سبب لـInvalid token */
 try {
   const html2 = readFileSync('index.html','utf8');
@@ -186,8 +185,14 @@ try {
     const defAt = html.indexOf('function ' + fn + '(');
     if (defAt < 0) return;
     const uses = [...html.matchAll(new RegExp('(?<![\\w$.])' + fn + '\\s*\\(', 'g'))].map(m => m.index);
-    /* التعريف داخل IIFE يبدأ عند أقرب "(function(" قبله — أي استخدام قبل ذلك الحد خارجُ النطاق */
-    const scopeStart = html.lastIndexOf('(function(', defAt);
+    /* حدُّ النطاق الحاوي بموازنة الأقواس رجوعًا من التعريف — أقربُ «(function(» قد يكون
+       وسيطَ forEach لا نطاقًا، وكان يُنتج إنذارًا كاذبًا على دالةٍ مرفوعةٍ في نطاقها. */
+    let depth = 0, scopeStart = 0;
+    for (let i = defAt; i >= 0; i--) {
+      const c = html[i];
+      if (c === '}') depth++;
+      else if (c === '{') { if (depth === 0) { scopeStart = i; break; } depth--; }
+    }
     const bad = uses.filter(u => u < scopeStart);
     if (bad.length) fail.push(`${fn}(): مُستدعاة خارج نطاقها المغلق (${bad.length} مرة) — استعمل نسخة محلية`);
   });
@@ -203,4 +208,77 @@ try {
   ok.push('tools/prober.html: الصيغة سليمة ✓');
 } catch(e){ fail.push('tools/prober.html: خطأ صيغة — ' + String(e.message||'').slice(0,120)); }
 
+/* ── حارس الترجمة: أي نصٍّ عربيٍّ يصل واجهة شاشة الإعدادات ولا مفتاح له يفشل الدفعة ──
+   المطابقة بتطبيع محرك اللغات نفسه: NFC + تجريد التشكيل والتطويل + طي الفراغات.
+   النطاق شاشة الإعدادات وحدها الآن — تُوسَّع شاشةً شاشةً كلما اكتملت ترجمتها. */
+try {
+  const src = readFileSync('index.html', 'utf8');
+  const AR = /[\u0600-\u06FF]/;
+  const nrm = t => String(t).normalize('NFC')
+    .replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/\s+/g, ' ').trim();
+  const grabKeys = tag => {
+    const i = src.indexOf(tag), j = src.indexOf('\n  };', i);
+    return new Set([...src.slice(i, j).matchAll(/'([^']*[\u0600-\u06FF][^']*)'\s*:/g)]
+      .map(m => nrm(m[1])));
+  };
+  const EN = grabKeys('D.en ='), UR = grabKeys('D.ur =');
+  const onlyEn = [...EN].filter(k => !UR.has(k));
+  const onlyUr = [...UR].filter(k => !EN.has(k));
+  if (onlyEn.length || onlyUr.length)
+    fail.push(`القاموسان غير متطابقين: ${onlyEn.length} في الإنجليزي وحده · ${onlyUr.length} في الأردي وحده`);
+
+  const a = src.indexOf('window.cfgPages = ['), b = src.indexOf('window.pwRows = function');
+  const seg = src.slice(a, b);
+  const cuts = [];
+  for (const m of seg.matchAll(/\/\*[\s\S]*?\*\//g)) cuts.push([m.index, m.index + m[0].length]);
+  const inCut = p => cuts.some(([x, y]) => p >= x && p < y);
+  const miss = new Set();
+  const add = t => {
+    t = String(t).trim();
+    if (!t || !AR.test(t) || t.length > 400) return;
+    /* نصُّ نافذة السؤال يُعرض فقرةً لكل سطر، فتُطابَق كلٌّ على حدة */
+    for (const part of t.split(/\\n|\n/)) {
+      let p = part.trim();
+      if (/^«[^«»]*»$/.test(p)) continue;              /* اسمٌ محاطٌ بالكامل = قيمةُ بيانات */
+      p = p.replace(/^»\s*/, '').trim();               /* بقيةُ قوسٍ من مقطعٍ سابق */
+      if (!p || !AR.test(p)) continue;
+      const n = nrm(p);
+      if (n && !EN.has(n)) miss.add(n);
+    }
+  };
+  /* السلاسل المتجاورة المفصولة بـ+ تُدمَج: الناتج في الصفحة نصٌّ واحد لا ثلاثة */
+  const JOIN = /((?:'(?:[^'\\\n]|\\.)*'\s*\+\s*)*'(?:[^'\\\n]|\\.)*')/g;
+  const LOGFN = /(NSKSYNC\.log|\.log\(|itSave\(|buySave\(|buyCatSave\(|roleSave\(|pwSave\(|tkRegSave\(|tkSave\(|_disSave\()/;
+  for (const g of seg.matchAll(JOIN)) {
+    const pre0 = seg.slice(Math.max(0, g.index - 240), g.index);
+    /* وسيطٌ أخيرٌ لدالة حفظ = نصُّ سجل الأحداث، وهو يبقى عربيًّا بقرار */
+    const isLogArg = /,\s*$/.test(pre0) && LOGFN.test(pre0);
+    if (inCut(g.index) || isLogArg) continue;
+    const raw = [...g[1].matchAll(/'((?:[^'\\\n]|\\.)*)'/g)].map(x => x[1]).join('');
+    if (!raw || !AR.test(raw)) continue;
+    const pre = pre0;
+    if (!/[<>]/.test(raw)) { add(raw); continue; }
+    /* السلسلة قد تبدأ ببقية وسمٍ من مقطعٍ سابق وتنتهي بوسمٍ مفتوحٍ للمقطع التالي */
+    let cut = raw;
+    const gt = cut.indexOf('>'), lt = cut.indexOf('<');
+    if (gt >= 0 && (lt < 0 || gt < lt)) cut = cut.slice(gt + 1);
+    const lastLt = cut.lastIndexOf('<');
+    if (lastLt >= 0 && cut.indexOf('>', lastLt) < 0) cut = cut.slice(0, lastLt);
+    for (const at of ['title', 'placeholder', 'aria-label', 'data-l'])
+      for (const mm of raw.matchAll(new RegExp(at + '=\\\\?["\']([^"\'\\\\]*)', 'g'))) add(mm[1]);
+    let tag = '';
+    for (const p of cut.split(/(<[^>]*>)/)) {
+      if (p.startsWith('<')) {
+        const mm = p.match(/<\/?\s*([a-zA-Z][\w-]*)/);
+        if (mm) tag = p.startsWith('</') ? '' : mm[1].toLowerCase();
+      } else if (tag !== 'option' && tag !== 'optgroup') add(p);
+    }
+  }
+  if (miss.size)
+    fail.push(`نصوص شاشة الإعدادات بلا ترجمة (${miss.size}): ` + [...miss].slice(0, 6).join(' · '));
+  else ok.push(`ترجمة شاشة الإعدادات كاملة · القاموسان ${EN.size} مفتاحًا ✓`);
+} catch (e) { fail.push('حارس الترجمة تعثّر: ' + String(e && e.message).slice(0, 120)); }
+
+ok.forEach(x => console.log('✓', x));
+if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
 console.log('\nالتوثيق متطابق مع التطبيق ✅');
