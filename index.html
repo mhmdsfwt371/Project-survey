@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.91</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.92</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -5278,6 +5278,7 @@ window.nskOpenCfg = function(){
   }catch(e){}
 };
 window.applyDocRole = function(){
+  try{ setTimeout(function(){ try{ window.appPing(); }catch(e){} }, 4000); }catch(e){}
   try{
     var ro=nskRole(), on=(ro==='admin'||ro==='engineer');
     ['cfgPill','cfgHdr'].forEach(function(id){
@@ -9197,6 +9198,37 @@ window.MV_KINDS = {
   ret:     { n:'إرجاع',  i:'↩️', c:'#C77DFF', st:+1, cu:-1 },
   scrap:   { n:'شطب',    i:'🗑', c:'#E05252', st:-1, cu:0  }
 };
+/* V13.92: نبضةُ الجهاز — نسخةُ التطبيق وآخر ظهورٍ لكل مستخدم.
+   كان يستحيل معرفةُ من علِق على إصدارٍ قديم، فيظلّ يعمل بمنطقٍ صُحّح للجميع إلا هو. */
+window.appPing = function(){
+  try{
+    var u=window.NSK_USER||{}; var who=String(u.name||u.email||'').trim();
+    if(!who) return;
+    var ver=''; try{ ver=(document.body.innerHTML.match(/V\d+\.\d+/)||[''])[0]; }catch(e){}
+    if(!ver){ try{ ver=(document.querySelector('.hdVer')||{}).textContent||''; }catch(e){} }
+    var d=window.NSKCORE.get('settings','appver')||{};
+    var M=(d.by && typeof d.by==='object') ? d.by : {};
+    var now=new Date().toISOString(), cur=M[who]||{};
+    /* لا تُكتب إلا عند تغيّر النسخة أو مرور يوم — فلا تُثقل المزامنة */
+    if(cur.ver===ver && String(cur.at||'').slice(0,10)===now.slice(0,10)) return;
+    var ua=''; try{ ua=(navigator.userAgent||'').slice(0,90); }catch(e){}
+    M[who]={ ver:ver, at:now, ua:ua, role:String(u.role||'') };
+    var nd={ by:M, n:Object.keys(M).length, at:now };
+    window.NSKCORE.set('settings','appver',nd);
+    if(window.NSKSYNC) NSKSYNC.push('settings','appver',nd);
+  }catch(e){}
+};
+window.appVers = function(){
+  var out=[];
+  try{
+    var d=window.NSKCORE.get('settings','appver')||{}, M=d.by||{};
+    Object.keys(M).forEach(function(k){
+      var v=M[k]||{};
+      out.push({ who:k, ver:String(v.ver||'—'), at:String(v.at||''), role:String(v.role||''), ua:String(v.ua||'') });
+    });
+  }catch(e){}
+  return out.sort(function(a,b){ return String(b.at||'').localeCompare(String(a.at||'')); });
+};
 window.mvList = function(){
   try{ return ((window.NSKCORE.get('settings','stockmv')||{}).list||[]).map(function(x){
     return { id:String(x.id||''), k:String(x.k||'in'), item:String(x.item||''),
@@ -10434,13 +10466,13 @@ var DTABS=[
   ['watch','متابعة',      ['over','pace','inst','daily','reg','co','chalm','dis'],      'الصورة التنفيذية — للوزارة والإدارة'],
   ['plan','تخطيط',        ['setup','pipe'],                                 'ما قبل التنفيذ: المواعيد والأزمنة وسلامة خط الإنتاج'],
   ['req','طلبات الزيارة', ['req'],                                    'إسناد زيارات المسح للفنيين واعتمادها'],
-  ['tech','الفنيون',       ['tech'],                                    'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
+  ['tech','الفنيون',       ['tech','techx'],                            'سجل الفنيين وأرصدتهم ومقارنتهم بالتارجت'],
   ['wo','الورشة',          ['wos','wday'],                              'التهيئة والتجميع والتركيب — طلباتها ونقاطها اليومية'],
   ['inv','المخزون',        ['invb','invmv'],                            'أرصدة المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة'],
   ['buy','المشتريات',      ['buys'],                                    'دفتر مصروفات السوق المحلي بفواتيره ومورّديه'],
   ['ops','تشغيل',         ['assign','conote','stock','me','survey','chal','stuck','qa','team','race','hb'],
                                                                             'الميدان: التوزيع والإشعار والعُهدة والمسح والتدقيق'],
-  ['adm','النظام',        ['sys','ev'],                                   'سجل الأحداث وسلامة البيانات وإعادة الضبط']
+  ['adm','النظام',        ['sys','ev','vers'],                            'سجل الأحداث وسلامة البيانات وإعادة الضبط']
 ];
 function tabOf(sec){
   for(var i=0;i<DTABS.length;i++) if(DTABS[i][2].indexOf(sec)>-1) return DTABS[i][0];
@@ -11521,6 +11553,26 @@ function render(){
       return [m.sg||x.id, m.z||'', m.sq||'', m.co||'', x.d, x.ip, x.mn]; });
 
     h+='<section class="dSec" data-sec="hb"><div class="dT2">🩺 صحة الأجهزة — إنذار مبكر</div>';
+    /* V13.92: الفحص يعمل من جهاز مكتبٍ على شبكة الميدان — إن توقّف بقيت الشاشة
+       تعرض آخرَ ما رأته وكأنه الحاضر، فتكذب بصمت. هذا يقيس عمرَ آخر نبضةٍ ويصرّح. */
+    (function(){
+      var last=0, HB=window.NSKHB||{};
+      Object.keys(HB).forEach(function(k){
+        var t=Date.parse((HB[k]||{}).at||''); if(t && t>last) last=t;
+      });
+      if(!last){
+        h+='<p class="dTs" style="color:#E8873A"><span>لم تصل أي نبضةٍ بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.</span></p>';
+        return;
+      }
+      var mn=Math.round((Date.now()-last)/60000);
+      if(mn>=15){
+        h+='<p class="dTs" style="color:#E05252"><span>⚠ الفحص متوقّف منذ</span> <b>'+AR(mn)
+          +'</b> <span>دقيقة — الأرقام أدناه آخرُ ما رآه لا حالةَ الآن. شغّل الأداة.</span></p>';
+      } else {
+        h+='<p class="dTs" style="color:#3AD6A0"><span>الفحص يعمل — آخر نبضة منذ</span> <b>'+AR(mn)
+          +'</b> <span>دقيقة.</span></p>';
+      }
+    })();
     h+='<div class="dRow">'+card(up,'متصل','#3AD6A0')+card(down,'غير متصل','#F0655A')
       +card(visit.reduce(function(a,v){return a+v.d.split(' + ').length;},0),'فاصل ≥١٠ دقائق','#f97316')+card(flappy.length,'متذبذب اليوم','#E8C36A')
       +card(unk,'منها بانتظار أول نبضة','#8a9199')+'</div>';
@@ -11567,6 +11619,96 @@ function render(){
     h+='<p class="dTs">يفحصها جهاز المكتب المتصل بشبكة الميدان عبر أداة الفحص كل ٥ دقائق — والزر يأمرها بجولة فورية، وأي فاصلٍ يتجاوز عشر دقائق يصلكم إنذاره في الجرس تلقائيًا.</p>';
     h+='</section>';
   })();
+  /* V13.92: تقرير الفني الموحّد — الثلاثة مقابل تارجتاتها الثلاثة */
+  (function(){
+    var P=window.pwGet();
+    var WHO={};
+    try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+      var t=(window.NSKTASK||{})[k]; if(t && t.tech) WHO[t.tech]=1; }); }catch(e){}
+    try{ (window.tkTechs()||[]).forEach(function(n){ WHO[n]=1; }); }catch(e){}
+    var names=Object.keys(WHO).sort(function(a,b){ return a.localeCompare(b,'ar'); });
+    h+='<section class="dSec" data-sec="techx">';
+    h+='<h2>الفني مقابل تارجتاته الثلاثة</h2>';
+    if(!names.length) h+='<div class="dEmpty">لا فنيين مسجّلين بعد.</div>';
+    else {
+      var mk=new Date().toISOString().slice(0,7);
+      var TS=parseFloat(P.tgtSurvey)||0, TI=parseFloat(P.tgtInstall)||0, TD=parseFloat(P.tgtDis)||0;
+      var pcC=function(p){ return p>=100?'#3AD6A0':(p>=70?'#E8C34B':'#E05252'); };
+      h+='<table class="dT"><thead><tr><th>الفني</th>'
+        +'<th>🔍 زيارة</th><th>تارجتها</th><th>٪</th>'
+        +'<th>🔧 تركيب</th><th>تارجته</th><th>٪</th>'
+        +'<th>🧩 فك</th><th>تارجته</th><th>٪</th><th>الإجمالي</th></tr></thead><tbody>';
+      var G={v:0,i:0,d:0};
+      names.forEach(function(n){
+        var v=0,i2=0,d2=0;
+        try{ Object.keys(window.NSKTASK||{}).forEach(function(k){
+          var t=(window.NSKTASK||{})[k]; if(!t || t.tech!==n) return;
+          if(t.st!=='منفّذ' && t.st!=='معتمد') return;
+          if(String(t.doneAt||'').slice(0,7)!==mk) return;
+          var kd=window.woKind(t), w=parseFloat(t.w)||0;
+          if(kd==='visit') v+=w; else if(kd==='install') i2+=w;
+        }); }catch(e){}
+        try{
+          var IN=window.NSKCORE.all('inss')||{};
+          Object.keys(IN).forEach(function(k){
+            var x=(IN[k]||{}).dis||null; if(!x || x.st!=='تم') return;
+            if(String(x.doneAt||'').slice(0,7)!==mk) return;
+            if(String(x.team||'')!==n && String(x.doneBy||'')!==n) return;
+            d2+=parseFloat(x.pts)||0;
+          });
+        }catch(e){}
+        if(!v && !i2 && !d2) return;
+        G.v+=v; G.i+=i2; G.d+=d2;
+        var pv=TS?Math.round(v/TS*100):0, pi=TI?Math.round(i2/TI*100):0, pd=TD?Math.round(d2/TD*100):0;
+        h+='<tr><td><code class="nx">'+esc2(n)+'</code></td>'
+          +'<td><b>'+AR(Math.round(v*10)/10)+'</b></td><td>'+AR(TS)+'</td>'
+          +'<td style="color:'+pcC(pv)+';font-weight:800">'+AR(pv)+'٪</td>'
+          +'<td><b>'+AR(Math.round(i2*10)/10)+'</b></td><td>'+AR(TI)+'</td>'
+          +'<td style="color:'+pcC(pi)+';font-weight:800">'+AR(pi)+'٪</td>'
+          +'<td><b>'+AR(Math.round(d2*10)/10)+'</b></td><td>'+AR(TD)+'</td>'
+          +'<td style="color:'+pcC(pd)+';font-weight:800">'+AR(pd)+'٪</td>'
+          +'<td><b style="color:#E9CE83">'+AR(Math.round((v+i2+d2)*10)/10)+'</b></td></tr>';
+      });
+      h+='<tr><td><b>الإجمالي</b></td><td><b>'+AR(Math.round(G.v*10)/10)+'</b></td><td></td><td></td>'
+        +'<td><b>'+AR(Math.round(G.i*10)/10)+'</b></td><td></td><td></td>'
+        +'<td><b>'+AR(Math.round(G.d*10)/10)+'</b></td><td></td><td></td>'
+        +'<td><b style="color:#E9CE83">'+AR(Math.round((G.v+G.i+G.d)*10)/10)+'</b></td></tr>';
+      h+='</tbody></table>';
+      if(!G.v && !G.i && !G.d) h+='<div class="dEmpty">لا نقاط هذا الشهر بعد.</div>';
+      h+='<p class="dTs"><span>نقاط الشهر الجاري لكل مرحلةٍ مقابل تارجتها المستقل، والتارجتات تُضبط في الإعدادات.</span></p>';
+    }
+    h+='</section>';
+  })();
+
+  /* V13.92: نسخة التطبيق على كل جهاز */
+  (function(){
+    var V=window.appVers();
+    h+='<section class="dSec" data-sec="vers">';
+    h+='<h2>نسخة التطبيق على الأجهزة</h2>';
+    if(!V.length) h+='<div class="dEmpty">لم تصل نبضةُ أي جهازٍ بعد — تُسجَّل عند أول دخولٍ بعد هذا التحديث.</div>';
+    else {
+      var cur=''; try{ cur=(document.body.innerHTML.match(/V\d+\.\d+/)||[''])[0]; }catch(e){}
+      var old=V.filter(function(x){ return cur && x.ver && x.ver!==cur; });
+      h+='<div class="dGrid">';
+      h+=card(V.length,'جهازًا ظهر','#4BC9F5');
+      h+=card(V.length-old.length,'على الأحدث','#3AD6A0');
+      h+=card(old.length,'على إصدارٍ قديم', old.length?'#E05252':'#9AA1AB');
+      h+='</div>';
+      if(old.length) h+='<p class="dTs" style="color:#E05252"><span>أجهزةٌ على إصدارٍ قديم تعمل بمنطقٍ صُحّح للجميع — اطلب منها إغلاق التطبيق وفتحه.</span></p>';
+      h+='<table class="dT"><thead><tr><th>المستخدم</th><th>النسخة</th><th>الدور</th><th>آخر ظهور</th></tr></thead><tbody>';
+      V.forEach(function(x){
+        var isOld=cur && x.ver && x.ver!==cur;
+        h+='<tr><td><code class="nx">'+esc2(x.who)+'</code></td>'
+          +'<td style="color:'+(isOld?'#E05252':'#3AD6A0')+';font-weight:800">'+esc2(x.ver)+'</td>'
+          +'<td>'+esc2(x.role||'—')+'</td>'
+          +'<td>'+esc2(String(x.at||'').slice(0,16).replace('T',' '))+'</td></tr>';
+      });
+      h+='</tbody></table>';
+      h+='<p class="dTs"><span>تُكتب النبضة مرةً عند تغيّر النسخة أو مرور يوم، فلا تُثقل المزامنة.</span></p>';
+    }
+    h+='</section>';
+  })();
+
   /* V13.90: المخزون والعُهدة — كل رقمٍ مشتقٌّ من دفتر الحركة لا مكتوبٌ بإصبع */
   (function(){
     var canI=!!(user && (user.role==='admin'||user.role==='engineer'));
@@ -14472,7 +14614,21 @@ window.NSKI18N = (function(){
   'نقاط التهيئة':'Configuration points', 'نقاط التجميع':'Assembly points',
   'الورشة':'Workshop',
   'المخزون':'Inventory',
-  'المورّدون':'Suppliers', 'مثال: مؤسسة الحرم للتجارة':'e.g. Al-Haram Trading Est.', '٪':'%',
+  'المورّدون':'Suppliers',
+  'الفني مقابل تارجتاته الثلاثة':'The technician against their three targets',
+  'تارجتها':'its target', 'تارجته':'its target', 'لا فنيين مسجّلين بعد.':'No technicians registered yet.',
+  'لا نقاط هذا الشهر بعد.':'No points this month yet.',
+  'نقاط الشهر الجاري لكل مرحلةٍ مقابل تارجتها المستقل، والتارجتات تُضبط في الإعدادات.':'This month’s points for each stage against its own target; the targets are set in Settings.',
+  'نسخة التطبيق على الأجهزة':'App version across devices', 'المستخدم':'User', 'النسخة':'Version',
+  'الدور':'Role', 'آخر ظهور':'Last seen', 'جهازًا ظهر':'devices seen', 'على الأحدث':'on the latest',
+  'على إصدارٍ قديم':'on an old build',
+  'لم تصل نبضةُ أي جهازٍ بعد — تُسجَّل عند أول دخولٍ بعد هذا التحديث.':'No device has pinged yet — it is recorded on the first sign-in after this update.',
+  'أجهزةٌ على إصدارٍ قديم تعمل بمنطقٍ صُحّح للجميع — اطلب منها إغلاق التطبيق وفتحه.':'Devices on an old build run logic that was fixed for everyone else — ask them to close and reopen the app.',
+  'تُكتب النبضة مرةً عند تغيّر النسخة أو مرور يوم، فلا تُثقل المزامنة.':'The ping is written once when the version changes or a day passes, so it never burdens the sync.',
+  'لم تصل أي نبضةٍ بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.':'No heartbeat has arrived yet — run the prober on the office machine connected to the field network.',
+  '⚠ الفحص متوقّف منذ':'⚠ The probe has been down for',
+  'دقيقة — الأرقام أدناه آخرُ ما رآه لا حالةَ الآن. شغّل الأداة.':'minutes — the figures below are the last thing it saw, not the state now. Run the tool.',
+  'الفحص يعمل — آخر نبضة منذ':'The probe is running — last heartbeat', 'دقيقة.':'minutes ago.', 'مثال: مؤسسة الحرم للتجارة':'e.g. Al-Haram Trading Est.', '٪':'%',
   'إضافة مورّد:':'Supplier added:', 'حذف مورّد:':'Supplier deleted:', 'الميزانية: سقف':'Budget: ceiling',
   '· حدّ اعتماد':'· approval threshold',
   'لم يُستعمل في أي عملية، فحذفه لا يمسّ رقمًا مسجَّلًا.':'It has not been used in any purchase, so deleting it touches no recorded figure.', 'قائمة موحّدة لمن نشتري منهم':'A unified list of who we buy from',
@@ -14882,7 +15038,21 @@ window.NSKI18N = (function(){
   'نقاط التهيئة':'تیاری پوائنٹس', 'نقاط التجميع':'اسمبلی پوائنٹس',
   'الورشة':'ورکشاپ',
   'المخزون':'انوینٹری',
-  'المورّدون':'سپلائرز', 'مثال: مؤسسة الحرم للتجارة':'مثال: الحرم ٹریڈنگ', '٪':'٪',
+  'المورّدون':'سپلائرز',
+  'الفني مقابل تارجتاته الثلاثة':'ٹیکنیشن اپنے تین اہداف کے مقابلے',
+  'تارجتها':'اس کا ہدف', 'تارجته':'اس کا ہدف', 'لا فنيين مسجّلين بعد.':'ابھی کوئی ٹیکنیشن رجسٹرڈ نہیں۔',
+  'لا نقاط هذا الشهر بعد.':'اس ماہ ابھی کوئی پوائنٹ نہیں۔',
+  'نقاط الشهر الجاري لكل مرحلةٍ مقابل تارجتها المستقل، والتارجتات تُضبط في الإعدادات.':'رواں ماہ کے پوائنٹس ہر مرحلے کے اپنے ہدف کے مقابلے؛ اہداف ترتیبات میں طے ہوتے ہیں۔',
+  'نسخة التطبيق على الأجهزة':'آلات پر ایپ کا ورژن', 'المستخدم':'صارف', 'النسخة':'ورژن',
+  'الدور':'کردار', 'آخر ظهور':'آخری بار دیکھا گیا', 'جهازًا ظهر':'آلات نظر آئے', 'على الأحدث':'تازہ ترین پر',
+  'على إصدارٍ قديم':'پرانے ورژن پر',
+  'لم تصل نبضةُ أي جهازٍ بعد — تُسجَّل عند أول دخولٍ بعد هذا التحديث.':'ابھی کسی آلے کی نبض نہیں آئی — یہ اس اپ ڈیٹ کے بعد پہلی لاگ اِن پر درج ہوتی ہے۔',
+  'أجهزةٌ على إصدارٍ قديم تعمل بمنطقٍ صُحّح للجميع — اطلب منها إغلاق التطبيق وفتحه.':'پرانے ورژن والے آلات وہ منطق چلا رہے ہیں جو باقی سب کے لیے درست ہو چکا — ان سے ایپ بند کر کے کھولنے کو کہیں۔',
+  'تُكتب النبضة مرةً عند تغيّر النسخة أو مرور يوم، فلا تُثقل المزامنة.':'نبض ورژن بدلنے یا ایک دن گزرنے پر ایک بار لکھی جاتی ہے، تاکہ ہم آہنگی پر بوجھ نہ پڑے۔',
+  'لم تصل أي نبضةٍ بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.':'ابھی کوئی نبض نہیں آئی — میدان کے نیٹ ورک سے جڑے دفتری آلے پر جانچ ٹول چلائیں۔',
+  '⚠ الفحص متوقّف منذ':'⚠ جانچ بند ہے',
+  'دقيقة — الأرقام أدناه آخرُ ما رآه لا حالةَ الآن. شغّل الأداة.':'منٹ سے — نیچے کے اعداد آخری دیکھی گئی حالت ہیں، ابھی کی نہیں۔ ٹول چلائیں۔',
+  'الفحص يعمل — آخر نبضة منذ':'جانچ چل رہی ہے — آخری نبض', 'دقيقة.':'منٹ پہلے۔', 'مثال: مؤسسة الحرم للتجارة':'مثال: الحرم ٹریڈنگ', '٪':'٪',
   'إضافة مورّد:':'سپلائر شامل:', 'حذف مورّد:':'سپلائر حذف:', 'الميزانية: سقف':'بجٹ: حد',
   '· حدّ اعتماد':'· منظوری کی حد',
   'لم يُستعمل في أي عملية، فحذفه لا يمسّ رقمًا مسجَّلًا.':'یہ کسی خریداری میں استعمال نہیں ہوا، اس لیے حذف کرنے سے کوئی درج شدہ رقم متاثر نہیں ہوتی۔', 'قائمة موحّدة لمن نشتري منهم':'جن سے خریدتے ہیں ان کی متحدہ فہرست',

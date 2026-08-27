@@ -71,9 +71,10 @@ try {
 /* ٣ — كل قسم له تبويب */
 try {
   const s = readFileSync('index.html', 'utf8');
-  const secs = [...new Set([...s.matchAll(/data-sec="([a-z]+)"/g)].map(m => m[1]))];
+  /* V13.92: المعرّف قد يحمل رقمًا — «[a-z]+» وحدها كانت تُفلت القسم من الفحص كله */
+  const secs = [...new Set([...s.matchAll(/data-sec="([a-z][a-z0-9]*)"/g)].map(m => m[1]))];
   const tabsBlock = s.slice(s.indexOf('var DTABS=['), s.indexOf('function tabOf'));
-  const mapped = new Set([...tabsBlock.matchAll(/'([a-z]+)'/g)].map(m => m[1]));
+  const mapped = new Set([...tabsBlock.matchAll(/'([a-z][a-z0-9]*)'/g)].map(m => m[1]));
   const orphan = secs.filter(x => !mapped.has(x));
   if (orphan.length) fail.push(`أقسام بلا تبويب فلن تظهر لأحد: ${orphan.join(' · ')}`);
   else ok.push(`كل الأقسام (${secs.length}) لها تبويب ✓`);
