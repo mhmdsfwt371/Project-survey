@@ -1452,7 +1452,7 @@ window.addEventListener('error', function(e){
   <header>
     <div class="hTop">
     <div class="t">
-      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.80</span></div>
+      <div class="eyebrow">متابعة المشروع ١٤٤٨هـ <span style="color:var(--muted);letter-spacing:0;font-weight:600">· <i style="font-style:normal">نسخة</i> V13.81</span></div>
       <h1 id="ttl">المسح الميداني</h1>
     </div>
     <button class="pill ic" id="belPill" type="button" title="ما يخصّك" hidden>🔔</button>
@@ -8161,58 +8161,200 @@ window.tkTechs = function(){
 };
 window.tkPickOv = function(){
   var _X=function(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); };
+  var _AR=function(n){ try{ return Number(n||0).toLocaleString('ar-EG'); }catch(e){ return String(n||0); } };
   var old=document.getElementById('tkPickOv'); if(old) old.remove();
   var C=window.NSKCORE, dbx=C.db(), rc=C.all('recs');
-  var ov=document.createElement('div'); ov.id='tkPickOv'; ov.className='iosOv';
   var rows=dbx.d.filter(function(r){ var f=(rc[r[0]]||{}).fstat; return f!=='done' && f!=='blocked'; });
-  ov.style.zIndex='9700';
-  ov.innerHTML='<div class="iosC" style="max-height:86vh;overflow:auto">'
-    +'<button type="button" class="nskX" id="tkPickX" aria-label="إغلاق">×</button>'
-    +'<h3>اختيار نقاط للإسناد</h3>'
-    +'<input type="text" id="tkPickQ" placeholder="ابحث بالشاخص أو المربع أو المشعر…" style="width:100%;margin:0 0 6px">'
-    +'<div class="dRow" style="margin:0 0 8px"><button type="button" class="dBtn" id="tkPickAll">تحديد الظاهر</button>'
-    +'<button type="button" class="dBtn" id="tkPickNone">مسح التحديد</button>'
-    +'<span id="tkPickN" style="align-self:center;font-size:12px;color:#8a9199"></span></div>'
-    +'<div id="tkPickL"></div>'
-    +'<div class="dRow" style="position:sticky;bottom:0;background:#0F1216;padding:10px 0 2px;margin-top:8px">'
-    +'<button type="button" class="dBtn p" id="tkPickGo">✓ أسند المحدد لفني</button></div></div>';
+  /* التقسيم بالفئة كما في تبويب المواقع — NSKCATX تجمع النوع والمشعر في وسم واحد */
+  var _cat=function(r){
+    try{ var c=window.NSKCATX.of(r); if(c && c.l) return c; }catch(e){}
+    return { l:'أخرى', o:99, i:'📍', c:'#9AA1AB' };
+  };
+  var CIX={}, CMAP={};
+  rows.forEach(function(r){
+    var c=_cat(r); CMAP[r[0]]=c;
+    if(!CIX[c.l]) CIX[c.l]={ l:c.l, i:c.i, c:c.c, o:c.o, n:0 };
+    CIX[c.l].n++;
+  });
+  var CL=Object.keys(CIX).map(function(k){ return CIX[k]; }).sort(function(x,y){ return x.o-y.o; });
+  var pick='';
+  var techs=[]; try{ techs=window.tkTechs()||[]; }catch(e){}
+  var pre=''; try{ var os=document.getElementById('orSup'); if(os) pre=String(os.value||''); }catch(e){}
+  var opts=techs.map(function(n2){ return '<option'+((n2===pre)?' selected':'')+'>'+_X(n2)+'</option>'; }).join('');
+  var ov=document.createElement('div'); ov.id='tkPickOv';
+  ov.innerHTML='<div class="tkpC">'
+    +'<div class="tkpH"><h3>اختيار نقاط للإسناد</h3>'
+    +'<p>قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.</p>'
+    +'<button type="button" class="nskX" id="tkPickX" aria-label="إغلاق">×</button></div>'
+    +'<div class="tkpB">'
+    +'<input type="text" class="tkpQ" id="tkPickQ" placeholder="ابحث بالشاخص أو المربع أو المشعر…">'
+    +'<div class="tkpCats" id="tkPickC"></div></div>'
+    +'<div class="tkpL" id="tkPickL"></div>'
+    +'<div class="tkpF">'
+    +'<div class="tkpFr"><span class="tkpN" id="tkPickN"></span>'
+    +'<button type="button" class="tkpBt" id="tkPickAll">تحديد الظاهر</button>'
+    +'<button type="button" class="tkpBt" id="tkPickNone">مسح التحديد</button></div>'
+    +'<div class="tkpFr"><select class="tkpT" id="tkPickT">'+opts+'</select>'
+    +'<button type="button" class="tkpGo" id="tkPickGo">✓ أسند المحدد لفني</button></div>'
+    +'</div></div>';
   document.body.appendChild(ov);
-  ov.style.display='flex';
+  ov.className='on';
+  function shut(){
+    try{ document.removeEventListener('keydown', esc, true); }catch(e){}
+    try{ ov.remove(); }catch(e){}
+  }
+  function esc(e){ if(e.key==='Escape'){ e.preventDefault(); shut(); } }
+  document.addEventListener('keydown', esc, true);
+  function cnt(){
+    var e=ov.querySelector('#tkPickN');
+    if(e) e.innerHTML='<span>المحدد:</span> <b>'+_AR(Object.keys(window.TKSEL.ids||{}).length)+'</b>';
+  }
+  function chips(){
+    var e=ov.querySelector('#tkPickC'); if(!e) return;
+    var H='<button type="button" class="tkpCat'+(pick===''?' on':'')+'" data-c="" style="--cc:#C9A24B">'
+      +'كل الفئات <span class="n">'+_AR(rows.length)+'</span></button>';
+    H+=CL.map(function(c){
+      return '<button type="button" class="tkpCat'+(pick===c.l?' on':'')+'" data-c="'+_X(c.l)+'" style="--cc:'+c.c+'">'
+        +c.i+' '+_X(c.l)+' <span class="n">'+_AR(c.n)+'</span></button>';
+    }).join('');
+    e.innerHTML=H;
+    Array.prototype.forEach.call(e.querySelectorAll('.tkpCat'), function(bt){
+      bt.onclick=function(){ var v=bt.getAttribute('data-c')||''; pick=(pick===v)?'':v; chips(); paint(); };
+    });
+  }
   function paint(){
-    var q=String((document.getElementById('tkPickQ')||{}).value||'').trim();
-    var out=rows.filter(function(r){
+    var q=String((ov.querySelector('#tkPickQ')||{}).value||'').trim();
+    var all=rows.filter(function(r){
+      if(pick && (CMAP[r[0]]||{}).l!==pick) return false;
       if(!q) return true;
-      return (String(r[9]||'')+' '+String(r[8]||'')+' '+String(r[21]||'')+' '+r[0]).indexOf(q)>=0;
-    }).slice(0,300);
-    document.getElementById('tkPickL').innerHTML = out.map(function(r){
-      var on=!!(window.TKSEL.ids||{})[r[0]];
-      return '<label class="tkPick"><input type="checkbox" data-id="'+r[0]+'"'+(on?' checked':'')+'>'
-        +'<span>'+(r[9]?('شاخص '+_X(String(r[9]))):_X(r[0]))+(r[8]?(' · مربع '+_X(String(r[8]))):'')
-        +'</span><span style="margin-inline-start:auto;color:#8a9199;font-size:12px">'+_X(String(r[21]||''))+'</span></label>';
-    }).join('') || '<p class="dTs">لا نتائج</p>';
-    Array.prototype.forEach.call(ov.querySelectorAll('input[type=checkbox]'), function(c){
-      c.onchange=function(){
-        var id=c.getAttribute('data-id');
-        if(c.checked) window.TKSEL.ids[id]=1; else delete window.TKSEL.ids[id];
+      return (String(r[9]||'')+' '+String(r[8]||'')+' '+String(r[21]||'')+' '+String(r[1]||'')+' '+r[0]).indexOf(q)>=0;
+    });
+    var out=all.slice(0,300), box=ov.querySelector('#tkPickL');
+    if(!out.length) box.innerHTML='<p class="tkpE">لا نتائج</p>';
+    else box.innerHTML=out.map(function(r){
+      var on=!!(window.TKSEL.ids||{})[r[0]], c=CMAP[r[0]]||{};
+      return '<label class="tkpR'+(on?' on':'')+'"><input type="checkbox" data-id="'+_X(r[0])+'"'+(on?' checked':'')+'>'
+        +'<span><b>'+(r[9]?('شاخص '+_X(String(r[9]))):_X(r[0]))+'</b>'
+        +(r[8]?(' · مربع '+_X(String(r[8]))):'')+'</span>'
+        +'<span class="tkpM" style="color:'+(c.c||'#9AA1AB')+'">'+(c.i||'')+' '+_X(c.l||'')+'</span></label>';
+    }).join('') + ((all.length>out.length)?'<p class="tkpE">عُرضت أول النتائج فقط — ضيّق البحث أو اختر فئة</p>':'');
+    Array.prototype.forEach.call(box.querySelectorAll('input[type=checkbox]'), function(cb){
+      cb.onchange=function(){
+        var id=cb.getAttribute('data-id');
+        if(cb.checked) window.TKSEL.ids[id]=1; else delete window.TKSEL.ids[id];
+        try{ cb.parentNode.classList.toggle('on', cb.checked); }catch(e){}
         cnt();
       };
     });
     window._tkPickShown=out;
     cnt();
   }
-  function cnt(){
-    var e=ov.querySelector('#tkPickN');
-    if(e) e.textContent='المحدد: '+Object.keys(window.TKSEL.ids||{}).length;
-  }
-  document.getElementById('tkPickQ').oninput=paint;
+  ov.querySelector('#tkPickQ').oninput=paint;
   ov.querySelector('#tkPickAll').onclick=function(){
     (window._tkPickShown||[]).forEach(function(r){ window.TKSEL.ids[r[0]]=1; }); paint();
   };
   ov.querySelector('#tkPickNone').onclick=function(){ window.TKSEL.ids={}; paint(); };
-  document.getElementById('tkPickX').onclick=function(){ ov.remove(); };
-  document.getElementById('tkPickGo').onclick=function(){ ov.remove(); window.tkSelAssign(); };
-  paint();
+  ov.querySelector('#tkPickX').onclick=shut;
+  ov.addEventListener('mousedown', function(e){ if(e.target===ov) shut(); });
+  ov.querySelector('#tkPickGo').onclick=function(){
+    var ids=Object.keys(window.TKSEL.ids||{});
+    if(!ids.length){ toast('حدّد نقاطًا أولًا',1); return; }
+    var sl=ov.querySelector('#tkPickT'), nm=String((sl&&sl.value)||'').trim();
+    if(!nm){ toast('سجّل فنيًّا أولًا من صفحة «الفنيون»',1); return; }
+    shut();
+    window.tkNew(nm, '', ids);
+    window.tkSelToggle(false);
+    try{ if(window.NSKDASH && window.NSKDASH.refresh) window.NSKDASH.refresh(); }catch(e){}
+  };
+  chips(); paint();
+  try{ ov.querySelector('#tkPickQ').focus(); }catch(e){}
 };
+/* V13.81: قائمة منسدلة داكنة موحّدة — قائمة المتصفح البيضاء تُعترض ويُعرض بديلها بثيم التطبيق.
+   عنصر <select> يبقى المصدر الوحيد للقيمة: كل الكود القائم يقرأ منه ويستقبل change كما هو،
+   ونص الخيار يُغلَّف بـ<code> لأن OPTION ضمن SKIP في محرك اللغات فلا يُترجم في المكانين. */
+window.NSKSEL = (function(){
+  var P=null, BD=null, cur=null, tT=0;
+  function EE(s){ return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+  function fit(s){
+    if(!s || s.tagName!=='SELECT' || s.disabled || s.multiple) return false;
+    if(s.size && s.size>1) return false;
+    if(s.hasAttribute('data-native')) return false;
+    return !!(s.options && s.options.length);
+  }
+  function close(){ if(P){ P.className=''; BD.className=''; } cur=null; }
+  function rowOf(o, s){
+    return '<div class="so'+((o.index===s.selectedIndex)?' on':'')+(o.disabled?' dis':'')+'" data-i="'+o.index+'">'
+      +'<code>'+EE(o.label||o.textContent||'')+'</code></div>';
+  }
+  function place(s){
+    var r=s.getBoundingClientRect(), vw=window.innerWidth||360, vh=window.innerHeight||600;
+    P.style.width=Math.max(r.width,180)+'px';
+    P.style.left='0px'; P.style.top='0px';
+    var w=P.offsetWidth, h=P.offsetHeight;
+    var L=Math.min(Math.max(6,r.left), Math.max(6, vw-w-6));
+    var T=(r.bottom+h+8<=vh) ? (r.bottom+4) : ((r.top-h-4>=6) ? (r.top-h-4) : Math.max(6,(vh-h)/2));
+    P.style.left=L+'px'; P.style.top=T+'px';
+  }
+  function build(){
+    if(P) return;
+    BD=document.createElement('div'); BD.id='nskSelBd';
+    P=document.createElement('div'); P.id='nskSelP';
+    document.body.appendChild(BD); document.body.appendChild(P);
+    BD.addEventListener('mousedown', function(e){ e.preventDefault(); close(); }, true);
+    BD.addEventListener('click', function(e){ e.preventDefault(); e.stopPropagation(); close(); }, true);
+    BD.addEventListener('touchend', function(e){ e.preventDefault(); close(); }, {passive:false, capture:true});
+    P.addEventListener('click', function(e){
+      var t=(e.target && e.target.closest) ? e.target.closest('.so') : null;
+      if(!t || !cur) return;
+      if(String(t.className||'').indexOf('dis')>=0) return;
+      if(cur.isConnected===false){ close(); return; }
+      var i=parseInt(t.getAttribute('data-i'),10);
+      var o=cur.options[i]; if(!o){ close(); return; }
+      if(cur.selectedIndex!==i){
+        cur.selectedIndex=i;
+        try{ cur.dispatchEvent(new Event('input',{bubbles:true})); }catch(e1){}
+        try{ cur.dispatchEvent(new Event('change',{bubbles:true})); }catch(e2){}
+      }
+      close();
+    }, true);
+    window.addEventListener('resize', close);
+    window.addEventListener('scroll', close, true);
+  }
+  function open(s){
+    build(); cur=s;
+    var H=[];
+    Array.prototype.forEach.call(s.children, function(n){
+      if(n.tagName==='OPTGROUP'){
+        H.push('<div class="sg"><code>'+EE(n.label||'')+'</code></div>');
+        Array.prototype.forEach.call(n.children, function(o){ if(o.tagName==='OPTION') H.push(rowOf(o,s)); });
+      } else if(n.tagName==='OPTION') H.push(rowOf(n,s));
+    });
+    P.innerHTML=H.join('');
+    P.className='on'; BD.className='on';
+    place(s);
+    try{ s.focus({preventScroll:true}); }catch(e){ try{ s.focus(); }catch(e3){} }
+    try{ var hit=P.querySelector('.so.on'); if(hit && hit.scrollIntoView) hit.scrollIntoView({block:'nearest'}); }catch(e){}
+  }
+  /* شبكة أمان: لو تعذّر فتح البديل لأي سبب يرجع العنصر لقائمة المتصفح بدل أن يصير معطّلًا */
+  function hit(s){
+    if(cur===s){ close(); return; }
+    try{ open(s); }
+    catch(e){ cur=null; try{ s.setAttribute('data-native','1'); }catch(e4){} }
+  }
+  document.addEventListener('mousedown', function(e){ if(fit(e.target)) e.preventDefault(); }, true);
+  document.addEventListener('touchend', function(e){
+    if(!fit(e.target)) return;
+    e.preventDefault(); e.stopPropagation(); tT=Date.now(); hit(e.target);
+  }, {passive:false, capture:true});
+  document.addEventListener('click', function(e){
+    if(!fit(e.target)) return;
+    e.preventDefault(); e.stopPropagation();
+    if(Date.now()-tT<700) return;
+    hit(e.target);
+  }, true);
+  document.addEventListener('keydown', function(e){ if(cur && e.key==='Escape'){ e.preventDefault(); close(); } }, true);
+  return { close:close };
+})();
 window.tkSelAssign = function(){
   var ids=Object.keys(window.TKSEL.ids||{});
   if(!ids.length){ toast('حدّد نقاطًا أولًا',1); return; }
@@ -11795,6 +11937,103 @@ body.nsk-dash-on #fab{inset-block-end:calc(128px + env(safe-area-inset-bottom,0p
   body.dxPrint #nskDash .dSec{break-inside:avoid-page}
   body.dxPrint #nskDash *{print-color-adjust:exact;-webkit-print-color-adjust:exact}
 }
+/* V13.81: نافذة اختيار النقاط — مودال حقيقي فوق صفحة الزيارات مقسّم بالفئات.
+   كانت مكتوبة بكلاسي iosOv/iosC ولا أنماط لهما (الأنماط على المعرّفين nskIosOv/nskMineOv)
+   فنزلت كتلةً عاريةً في مجرى الصفحة، وz-index بلا position لا أثر له وكان تحت اللوحة أصلًا. */
+#tkPickOv{position:fixed;inset:0;z-index:9995;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);padding:16px;-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
+#tkPickOv.on{display:flex}
+#tkPickOv .tkpC{position:relative;display:flex;flex-direction:column;width:100%;max-width:640px;
+  max-height:86vh;max-height:88dvh;background:var(--panel,#141619);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(233,206,131,.35);border-radius:18px;overflow:hidden;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:var(--ar,Tahoma,sans-serif)}
+#tkPickOv .tkpH{padding:15px 18px 11px;border-bottom:1px solid rgba(150,158,172,.18)}
+#tkPickOv .tkpH h3{margin:0;color:var(--gold,#C9A24B);font-size:15px;padding-inline-end:44px}
+#tkPickOv .tkpH p{margin:4px 0 0;font-size:11.5px;line-height:1.6;color:var(--grey,#9AA1AB);padding-inline-end:44px}
+#tkPickOv .tkpB{padding:11px 14px 6px}
+#tkPickOv .tkpQ{width:100%;box-sizing:border-box;background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.28);border-radius:10px;padding:9px 11px;font:inherit;font-size:13px;color-scheme:dark}
+#tkPickOv .tkpQ:focus{outline:none;border-color:var(--gold,#C9A24B)}
+#tkPickOv .tkpCats{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px;max-height:104px;overflow:auto;
+  overscroll-behavior:contain;scrollbar-width:thin}
+#tkPickOv .tkpCat{padding:6px 10px;border-radius:999px;background:transparent;border:1.4px solid var(--cc,#9AA1AB);
+  color:var(--cc,#9AA1AB);font:inherit;font-weight:800;font-size:11px;cursor:pointer;white-space:nowrap;line-height:1.5}
+#tkPickOv .tkpCat.on{background:var(--cc,#9AA1AB);color:#0A0B0D}
+#tkPickOv .tkpCat .n{opacity:.85;font-size:10px;font-weight:700}
+#tkPickOv .tkpL{flex:1;overflow:auto;overscroll-behavior:contain;padding:4px 14px 10px;-webkit-overflow-scrolling:touch}
+#tkPickOv .tkpR{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;margin-bottom:5px;
+  border:1px solid rgba(150,158,172,.16);font-size:12.5px;cursor:pointer}
+#tkPickOv .tkpR:hover{border-color:rgba(201,162,75,.45)}
+#tkPickOv .tkpR.on{border-color:var(--gold,#C9A24B);background:rgba(201,162,75,.10)}
+#tkPickOv .tkpR input{flex:0 0 auto;width:17px;height:17px;accent-color:var(--gold,#C9A24B);color-scheme:dark}
+#tkPickOv .tkpR b{font-weight:800;color:var(--cream,#F1EDE0)}
+#tkPickOv .tkpM{margin-inline-start:auto;font-size:11px;font-weight:800;white-space:nowrap}
+#tkPickOv .tkpE{color:var(--grey,#9AA1AB);font-size:12px;text-align:center;padding:22px 8px;margin:0}
+#tkPickOv .tkpF{border-top:1px solid rgba(150,158,172,.18);background:var(--ink,#0A0B0D);
+  padding:10px 14px calc(12px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:8px}
+#tkPickOv .tkpFr{display:flex;gap:7px;align-items:center;flex-wrap:wrap}
+#tkPickOv .tkpN{margin-inline-end:auto;color:var(--gold,#C9A24B);font-weight:800;font-size:12px}
+#tkPickOv .tkpBt{border:1px solid rgba(150,158,172,.35);background:transparent;color:var(--cream,#F1EDE0);
+  border-radius:9px;padding:7px 11px;font:inherit;font-size:12px;cursor:pointer}
+#tkPickOv .tkpBt:hover{border-color:var(--gold,#C9A24B)}
+#tkPickOv select.tkpT{flex:1;min-width:130px;background:var(--panel,#141619);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.28);border-radius:9px;padding:9px 10px;font:inherit;font-size:12.5px;color-scheme:dark}
+#tkPickOv .tkpGo{flex:1;min-width:160px;background:linear-gradient(135deg,#E9CE83,#C9A24B);color:#0A0B0D;
+  border:0;border-radius:10px;padding:10px 14px;font:inherit;font-weight:800;font-size:13px;cursor:pointer}
+html[data-theme="light"] #tkPickOv .tkpC{background:#fff;color:#101214}
+html[data-theme="light"] #tkPickOv .tkpQ,html[data-theme="light"] #tkPickOv select.tkpT{background:#fff;color:#101214;color-scheme:light}
+html[data-theme="light"] #tkPickOv .tkpF{background:#F4F1E8}
+html[data-theme="light"] #tkPickOv .tkpR b{color:#101214}
+@media(max-width:560px){
+  #tkPickOv{padding:0;align-items:flex-end}
+  #tkPickOv .tkpC{max-width:none;max-height:92dvh;border-radius:18px 18px 0 0;border-bottom:0}
+}
+/* V13.81: الجذر — الكلاسان iosOv/iosC كانا بلا أي أنماط (الأنماط معرّفة على المعرّفين
+   nskIosOv/nskMineOv وحدهما)، فكل نافذة كُتبت بهما نزلت عاريةً في مجرى الصفحة: منتقي النقاط
+   ونافذة «قطع التركيب» معًا. تعريفهما هنا يصلح القائم ويمنع تكرار العلة في أي نافذة قادمة.
+   محددات المعرّفات أقوى تخصيصًا فنوافذ nskIosOv/nskMineOv تبقى على أنماطها كما هي. */
+.iosOv{position:fixed;inset:0;z-index:9995;display:none;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.72);padding:16px}
+.iosC{position:relative;width:100%;max-width:480px;background:var(--panel,#141619);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(233,206,131,.35);border-radius:18px;padding:20px 18px 16px;
+  box-shadow:0 24px 60px rgba(0,0,0,.6);font-family:var(--ar,Tahoma,sans-serif);overscroll-behavior:contain}
+.iosC h3{margin:0 0 8px;color:var(--gold,#C9A24B);font-size:15px;padding-inline-end:46px}
+.iosC .dTs{color:var(--grey,#9AA1AB);font-size:.82em;line-height:1.7}
+.iosC .dRow{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.iosC .dBtn{border:1px solid rgba(150,158,172,.35);background:transparent;color:inherit;border-radius:9px;
+  padding:9px 13px;font:inherit;font-size:12.5px;cursor:pointer}
+.iosC .dBtn:hover{border-color:var(--gold,#C9A24B)}
+.iosC .tkPick{border-radius:9px;border:1px solid rgba(150,158,172,.16);border-bottom:1px solid rgba(150,158,172,.16);
+  margin-bottom:5px;padding:8px 10px}
+.iosC input[type=number],.iosC input[type=text]{background:var(--ink,#0A0B0D);color:var(--cream,#F1EDE0);
+  border:1px solid rgba(150,158,172,.28);border-radius:8px;padding:7px 9px;font:inherit;font-size:12.5px;color-scheme:dark}
+html[data-theme="light"] .iosC{background:#fff;color:#101214}
+html[data-theme="light"] .iosC input[type=number],html[data-theme="light"] .iosC input[type=text]{
+  background:#fff;color:#101214;color-scheme:light}
+@media(max-width:560px){.iosOv{padding:0;align-items:flex-end}
+  .iosC{max-width:none;border-radius:18px 18px 0 0;border-bottom:0;
+    padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}}
+/* V13.81: القائمة المنسدلة الموحّدة — بديل قائمة المتصفح البيضاء بثيم التطبيق */
+select{color-scheme:dark}
+html[data-theme="light"] select{color-scheme:light}
+select option{background:#12161b;color:#E7E3D8}
+html[data-theme="light"] select option{background:#fff;color:#101214}
+#nskSelBd{position:fixed;inset:0;z-index:999999;display:none;background:transparent}
+#nskSelBd.on{display:block}
+#nskSelP{position:fixed;z-index:1000000;display:none;min-width:180px;max-width:min(92vw,420px);
+  max-height:min(58vh,340px);overflow:auto;overscroll-behavior:contain;padding:6px;
+  background:var(--panel,#141619);color:var(--cream,#F1EDE0);border:1px solid rgba(201,162,75,.45);
+  border-radius:12px;box-shadow:0 18px 46px rgba(0,0,0,.6);
+  font-family:var(--ar,Tahoma,sans-serif);font-size:13px}
+#nskSelP.on{display:block}
+#nskSelP code{font:inherit;background:none;color:inherit;padding:0}
+#nskSelP .so{padding:9px 11px;border-radius:9px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#nskSelP .so:hover{background:rgba(201,162,75,.14)}
+#nskSelP .so.on{background:var(--gold,#C9A24B);color:#0A0B0D;font-weight:800}
+#nskSelP .so.dis{opacity:.45;cursor:default}
+#nskSelP .sg{padding:8px 11px 3px;font-size:10.5px;font-weight:800;color:var(--gold,#C9A24B);opacity:.85}
+html[data-theme="light"] #nskSelP{background:#fff;color:#101214;border-color:rgba(120,95,35,.4);
+  box-shadow:0 18px 46px rgba(0,0,0,.22)}
 </style>
 <script>
 /* ===== V13.3: طبقة اللغات — عربي · English · اردو =====
@@ -12319,7 +12558,11 @@ window.NSKI18N = (function(){
   'تحديد الظاهر':'Select shown', '✓ أسند المحدد لفني':'✓ Assign selection to a technician', '✓ تم — أسند لفني':'✓ Done — assign to technician',
   'تارجت المسح الأسبوعي':'Weekly survey target', 'تارجت التركيب الأسبوعي':'Weekly install target', 'تارجت الفك الأسبوعي':'Weekly dismantle target', 'أيام العمل في الأسبوع':'Working days per week',
   'إنشاء الحسابات وأدوارها':'Creating accounts and their roles', 'وزن زيارة كل نوع وتارجت المسح':'Visit weight per type and the survey target', 'نقاط كل قطعة وتارجت التركيب':'Points per item and the install target', 'وزن الفك ومعاملا الحالة':'Dismantle weight per type', 'كتالوج القطع وسعر كل قطعة':'The item catalogue and each item price', 'أيام العمل وساعات اليوم':'Working days and daily hours', 'المسح والتوثيق':'Surveying and documentation', '✓ للمُسند له':'✓ if assigned', 'نقاطه فقط':'Own points only', '✓ قراءة':'✓ read only', 'الإعدادات والنقاط والتارجت':'Settings, points and targets', 'مخفية':'Hidden', 'موقوف':'Suspended', 'إيقاف':'Suspend', 'تفعيل':'Activate', 'لا يوجد مستخدمون بعد':'No users yet', 'لا نتائج مطابقة للبحث أو الفلتر':'No results for the search or filter', 'لا نشاط ميداني بعد':'No field activity yet', 'أنت':'You', 'أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.':'Create the account and set its role; the list below shows every user and their role — changes sync instantly.', 'إرسال رابط تعيين كلمة مرور جديدة':'Send a password reset link', 'أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.':'Add your own job title that inherits one of the four roles — it appears in the user role list and syncs instantly.', 'أدوار مخصصة':'Custom roles', 'المسمّى':'Title', 'يرث صلاحيات':'Inherits', 'المسمّى الجديد':'New title', 'إضافة دور':'Add role', 'لا أدوار مخصصة بعد.':'No custom roles yet.', 'فني/مشرف ميداني':'Technician / field supervisor', 'وزارة — قراءة':'Ministry — read only', 'الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.':'The four roles above are enforced at the database level, not the interface.',
-  'فني':'Technician', 'للمُسند له':'if assigned'
+  'فني':'Technician', 'للمُسند له':'if assigned',
+  'كل الفئات':'All categories', 'لا نتائج':'No results',
+  'ابحث بالشاخص أو المربع أو المشعر…':'Search by sign, square or holy site…',
+  'عُرضت أول النتائج فقط — ضيّق البحث أو اختر فئة':'Only the first results are shown — narrow the search or pick a category',
+  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'Split the list by category, pick the points and assign them to a technician — without leaving the visits page.'
   };
   D.ur = {
     'متابعة المشروع ١٤٤٨هـ':'پروجیکٹ ٹریکنگ ۱۴۴۸ھ',
@@ -12530,7 +12773,11 @@ window.NSKI18N = (function(){
   'تحديد الظاهر':'دکھائے گئے منتخب کریں', '✓ أسند المحدد لفني':'✓ منتخب کو ٹیکنیشن کے سپرد کریں', '✓ تم — أسند لفني':'✓ ہو گیا — ٹیکنیشن کو تفویض',
   'تارجت المسح الأسبوعي':'ہفتہ وار سروے ہدف', 'تارجت التركيب الأسبوعي':'ہفتہ وار تنصیب ہدف', 'تارجت الفك الأسبوعي':'ہفتہ وار ہٹانے کا ہدف', 'أيام العمل في الأسبوع':'ہفتہ وار کام کے دن',
   'إنشاء الحسابات وأدوارها':'اکاؤنٹس اور ان کے کردار بنانا', 'وزن زيارة كل نوع وتارجت المسح':'فی قسم دورے کا وزن اور سروے ہدف', 'نقاط كل قطعة وتارجت التركيب':'فی آئٹم پوائنٹس اور تنصیب ہدف', 'وزن الفك ومعاملا الحالة':'فی قسم ہٹانے کا وزن', 'كتالوج القطع وسعر كل قطعة':'آئٹم کیٹلاگ اور ہر آئٹم کی قیمت', 'أيام العمل وساعات اليوم':'کام کے دن اور روزانہ گھنٹے', 'المسح والتوثيق':'سروے اور دستاویز', '✓ للمُسند له':'✓ اگر تفویض ہو', 'نقاطه فقط':'صرف اپنے پوائنٹس', '✓ قراءة':'✓ صرف پڑھنا', 'الإعدادات والنقاط والتارجت':'ترتیبات، پوائنٹس اور اہداف', 'مخفية':'چھپے ہوئے', 'موقوف':'معطل', 'إيقاف':'معطل کریں', 'تفعيل':'فعال کریں', 'لا يوجد مستخدمون بعد':'ابھی کوئی صارف نہیں', 'لا نتائج مطابقة للبحث أو الفلتر':'تلاش یا فلٹر کے کوئی نتائج نہیں', 'لا نشاط ميداني بعد':'ابھی کوئی فیلڈ سرگرمی نہیں', 'أنت':'آپ', 'أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.':'اکاؤنٹ بنائیں اور کردار مقرر کریں؛ نیچے کی فہرست ہر صارف اور اس کا کردار دکھاتی ہے — تبدیلی فوراً ہم آہنگ ہوتی ہے۔', 'إرسال رابط تعيين كلمة مرور جديدة':'پاس ورڈ ری سیٹ لنک بھیجیں', 'أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.':'اپنا عہدہ شامل کریں جو چار کرداروں میں سے ایک کے اختیارات لے — صارف کردار فہرست میں آتا ہے اور فوراً ہم آہنگ ہوتا ہے۔', 'أدوار مخصصة':'مخصوص کردار', 'المسمّى':'عہدہ', 'يرث صلاحيات':'اختیارات لیتا ہے', 'المسمّى الجديد':'نیا عہدہ', 'إضافة دور':'کردار شامل کریں', 'لا أدوار مخصصة بعد.':'ابھی کوئی مخصوص کردار نہیں۔', 'فني/مشرف ميداني':'ٹیکنیشن / فیلڈ سپروائزر', 'وزارة — قراءة':'وزارت — صرف پڑھنا', 'الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.':'اوپر کے چار کردار ڈیٹابیس کی سطح پر نافذ ہیں، انٹرفیس پر نہیں۔',
-  'فني':'ٹیکنیشن', 'للمُسند له':'اگر تفویض ہو'
+  'فني':'ٹیکنیشن', 'للمُسند له':'اگر تفویض ہو',
+  'كل الفئات':'تمام اقسام', 'لا نتائج':'کوئی نتیجہ نہیں',
+  'ابحث بالشاخص أو المربع أو المشعر…':'شاخص، مربع یا مشعر سے تلاش کریں…',
+  'عُرضت أول النتائج فقط — ضيّق البحث أو اختر فئة':'صرف پہلے نتائج دکھائے گئے — تلاش محدود کریں یا قسم منتخب کریں',
+  'قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفني — دون مغادرة صفحة الزيارات.':'فہرست کو قسم کے مطابق تقسیم کریں، پوائنٹس منتخب کر کے ٹیکنیشن کے سپرد کریں — زیارات کے صفحے سے نکلے بغیر۔'
   };
   return { set:set, apply:apply, get:function(){ return lang; }, dict:D, langs:LANGS };
 })();
