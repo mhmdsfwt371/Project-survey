@@ -1251,7 +1251,7 @@ var CFG = {
   insCamp:0, insCor:0, disOk:0, disBad:0,
 
   /* ثوابت النظام */
-  ph:0, otRate:0, days:0, hours:0, daysWeek:0,
+  ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
   stgCfg:0, stgVal:0, stgIns:0,
 
   /* المال */
@@ -4235,6 +4235,515 @@ function chgDecide(i, ok){
   render(1);
 }
 
+/* ═══ التغطية — من الشركة بأقسامها إلى العميل بإداراته ═══
+   لكلِّ جهةٍ ما يخصّها: تراه كاملًا ولا ترى ما ليس لها. */
+
+var ORG = {
+  co: { n:'أفاقي — المنفِّذ', i:'\u{1F3E2}', units:[
+    { id:'exec',  n:'الإدارة العليا',     i:'\u{1F3AF}', needs:'الربحية والمخاطر الكبرى والقرار', pages:['exec','evm','risks','allscore'] },
+    { id:'pmo',   n:'إدارة المشاريع',      i:'\u{1F4CA}', needs:'الجدول والكلفة والموارد',        pages:['evm','risks','chg','miles','pace'] },
+    { id:'eng',   n:'الهندسة',            i:'\u{1F393}', needs:'التدقيق والاعتماد والمواصفات',    pages:['qa','ncr','sites','items'] },
+    { id:'ops',   n:'العمليات الميدانية',  i:'\u{1F527}', needs:'الإسناد والتنفيذ والمتابعة',      pages:['map','req','assign','crews'] },
+    { id:'qaqc',  n:'الجودة',             i:'\u2713',    needs:'عدم المطابقة والإجراء التصحيحي',  pages:['ncr','qa','audit'] },
+    { id:'hse',   n:'السلامة',            i:'\u26D1',    needs:'الحوادث والتصاريح والتوعية',      pages:['hse'] },
+    { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['teams','stages','allscore','techacc'] },
+    { id:'fin',   n:'المالية',            i:'\u{1F4B0}', needs:'المستخلصات والدفعات والتدفق',     pages:['ipc','budget','buys','budm'] },
+    { id:'proc',  n:'المشتريات',          i:'\u{1F4E6}', needs:'الطلبات والمورّدون والالتزامات',   pages:['buys','sup','invb','wos'] },
+    { id:'it',    n:'تقنية المعلومات',     i:'\u{1F5A5}', needs:'الشبكة وصحة الأجهزة والنسخ',      pages:['hb','probe','sys','retain'] }
+  ]},
+  cl: { n:'الوزارة — العميل', i:'\u{1F54B}', units:[
+    { id:'cexec', n:'الإدارة العليا',      i:'\u{1F3AF}', needs:'التقدّم الكلي والمعالم',          pages:['moh','miles','over'] },
+    { id:'cprj',  n:'إدارة المشاريع',       i:'\u{1F4C8}', needs:'الجدول والإنجاز بالمشعر',        pages:['mohRep','reg','pace','inst'] },
+    { id:'cfin',  n:'الإدارة المالية',      i:'\u{1F4B3}', needs:'المستخلصات المعتمدة والصرف',      pages:['ipc','budm'] },
+    { id:'ctec',  n:'الإدارة الفنية',       i:'\u2699',    needs:'المطابقة للمواصفة والفحص',        pages:['ncr','hb','sites'] },
+    { id:'cops',  n:'إدارة التشغيل',        i:'\u{1F504}', needs:'التسليم والضمان والتشغيل',        pages:['hand','dis'] },
+    { id:'caud',  n:'المراجعة الداخلية',    i:'\u{1F50E}', needs:'الأثر والسجلّات والتوثيق',        pages:['audit','allscore'] }
+  ]}
+};
+
+PAGE.cover = { m:'النظام', t:'خريطة التغطية',
+  l:'كلُّ قسمٍ في الشركة وكلُّ إدارةٍ عند العميل — وما يخصّه.',
+  body:function(){
+    var P = Object.keys(PAGE).concat(
+      typeof FIELD_PAGES === 'object' ? Object.keys(FIELD_PAGES) : []);
+    function unitRows(side){
+      return ORG[side].units.map(function(u){
+        var have = u.pages.filter(function(p){ return P.indexOf(p) > -1; });
+        var miss = u.pages.filter(function(p){ return P.indexOf(p) < 0; });
+        return [u.i + ' <strong>' + esc(t(u.n)) + '</strong>',
+                '<span class="hint" style="margin:0">' + esc(t(u.needs)) + '</span>',
+                N(have.length) + ' / ' + N(u.pages.length),
+                miss.length ? pill('ناقص ' + nm(miss.length), 'off') : pill('مغطّى', 'ok')];
+      });
+    }
+    var all = ORG.co.units.concat(ORG.cl.units);
+    var covered = all.filter(function(u){
+      return u.pages.every(function(p){ return P.indexOf(p) > -1; }); }).length;
+
+    return stats([['جهاتٌ تستخدم النظام', N(all.length), 'acc'],
+                  ['مغطّاةٌ كاملًا', N(covered), covered===all.length?'ok':'wrn'],
+                  ['أقسام الشركة', N(ORG.co.units.length)],
+                  ['إدارات العميل', N(ORG.cl.units.length)]])
+
+      + cardFlush(ORG.co.i + ' ' + t(ORG.co.n),
+          table(['القسم','ما يحتاجه','شاشاته','الحالة'], unitRows('co')))
+
+      + cardFlush(ORG.cl.i + ' ' + t(ORG.cl.n),
+          table(['الإدارة','ما تحتاجه','شاشاتها','الحالة'], unitRows('cl')))
+
+      + card('المبدأ',
+          '<p class="hint" style="margin:0">'
+          + esc(t('لكلِّ جهةٍ ما يخصّها: تراه كاملًا ولا ترى ما ليس لها. فالمالُ للمالية، والمورّدون للمشتريات، والمستخلصُ المعتمَدُ وحده للعميل.'))
+          + '</p>');
+  }};
+
+/* ── لوحة الإدارة العليا ── */
+PAGE.exec = { m:'المتابعة', t:'اللوحة التنفيذية',
+  l:'ما يحتاجه القرار في شاشةٍ واحدة.',
+  body:function(){
+    var S = siteStats(), v = (typeof evm === 'function') ? evm() : null;
+    var SC = scores();
+    var pay = SC.list.reduce(function(a,e){ return a + e.money; }, 0);
+    var open = (typeof RISKS !== 'undefined')
+      ? RISKS.filter(function(r){ return r.st === 'مفتوح' && riskScore(r) >= 12; }) : [];
+
+    return stats([['الإنجاز', nm(S.total ? Math.round(S.surveyed / S.total * 100) : 0) + '٪',
+                   'acc'],
+                  ['أداء الجدول', v ? nm(v.SPI) : '—', v && v.SPI < 0.95 ? 'bad' : 'ok'],
+                  ['أداء الكلفة', v ? nm(v.CPI) : '—', v && v.CPI < 0.95 ? 'bad' : 'ok'],
+                  ['مخاطر حرجة', N(open.length), open.length ? 'bad' : 'ok']])
+
+      + card('الموقف في سطر',
+          v
+            ? alertBox(v.SPI >= 0.95 && v.CPI >= 0.95 ? 'success' : (v.SPI < 0.9 ? 'error' : 'warn'),
+                'أُنجز ' + nm(Math.round(v.EV)) + ' من ' + nm(v.BAC) + ' — '
+                + t(evmVerdict(v).t) + '. والمتوقَّع عند الإتمام ' + nm(v.EAC)
+                + (v.VAC < 0 ? ' بتجاوزٍ قدره ' + nm(-v.VAC) : ' بوفرٍ قدره ' + nm(v.VAC)) + '.')
+            : alertBox('warn','لم يُجمَّد خطُّ أساسٍ بعد — فلا حكمَ على الأداء.'),
+          btn('التفاصيل','btn-secondary btn-sm',' data-p="evm"'))
+
+      + card('الأرقام الكبرى',
+          table(['البند','القيمة','الملاحظة'], [
+            ['نطاق المشروع', N(S.total), 'نقطةٌ في أربعة مشاعر'],
+            ['أُنجز مسحًا', N(S.surveyed), S.total ? nm(Math.round(S.surveyed/S.total*100))+'٪' : ''],
+            ['أُنجز تركيبًا', N(S.installed), S.total ? nm(Math.round(S.installed/S.total*100))+'٪' : ''],
+            ['من يعملون', N(SC.n), 'فنيًّا ومهندسًا'],
+            ['مستحقُّ العمل', cfgGet('ph') ? N(Math.round(pay)) : '—', 'محسوبٌ من الأوزان'],
+            ['المنصرف على المشتريات', N(DATA.budget.spent), cfgGet('budCap')
+              ? nm(Math.round(DATA.budget.spent / cfgGet('budCap') * 100)) + '٪ من السقف' : '']
+          ]))
+
+      + (open.length
+        ? cardFlush('ما يحتاج قرارَك',
+            table(['الخطر','الدرجة','المالك','الاستجابة'],
+              open.map(function(r){
+                var L = riskLevel(riskScore(r));
+                return [esc(r.t), '<span class="pill ' + L.c + '">' + nm(riskScore(r)) + '</span>',
+                        esc(r.own), esc(r.resp)];
+              })),
+            btn('السجل كاملًا','btn-secondary btn-sm',' data-p="risks"'))
+        : card('', alertBox('success','لا مخاطرَ حرجةً مفتوحةً الآن.')));
+  }};
+
+/* ── السلامة HSE ── */
+var HSE = { hours:0, incidents:[], permits:[], lost:0 };
+
+PAGE.hse = { m:'النظام', t:'السلامة والحوادث',
+  l:'ساعاتُ العمل الآمنة والحوادثُ والتصاريح — في موقعٍ يزدحم بالحجاج.',
+  body:function(){
+    var SC = scores();
+    var manDays = SC.list.reduce(function(a,e){ return a + e.nDays; }, 0);
+    var hrs = manDays * (cfgGet('hours') || 8);
+    var n = HSE.incidents.length;
+    /* معدّلُ التكرار: حوادثُ لكلِّ مئتَي ألف ساعةِ عمل — التعريفُ المعتمد */
+    var trir = hrs ? Math.round(n * 200000 / hrs * 100) / 100 : 0;
+
+    return stats([['ساعات عمل', N(hrs), 'acc'],
+                  ['حوادث مسجّلة', N(n), n ? 'bad' : 'ok'],
+                  ['أيام فُقدت', N(HSE.lost), HSE.lost ? 'wrn' : 'ok'],
+                  ['معدّل التكرار', nm(trir), trir > 3 ? 'bad' : 'ok']])
+
+      + card('تسجيل حادث',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+          + '<select id="hseKind">'
+          + ['وشيك — بلا إصابة','إسعاف أولي','علاج طبي','فقدُ أيام عمل','ضررٌ بالمعدات']
+              .map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الموقع')) + '</label>'
+          + '<input id="hseSite" placeholder="NSK-…" dir="ltr"></div>'
+          + '<div class="field"><label>' + esc(t('أيام العمل المفقودة')) + '</label>'
+          + '<input type="number" id="hseLost" min="0" value="0"></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الوصف والإجراء')) + '</label>'
+          + '<textarea id="hseWhy" rows="2"></textarea></div>',
+          btn('سجّل','btn-danger',' data-hseadd="1"'))
+
+      + (n
+        ? cardFlush('سجل الحوادث',
+            table(['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل'],
+              HSE.incidents.map(function(x){
+                return ['<span class="num">' + new Date(x.at).toLocaleDateString('ar-EG') + '</span>',
+                        pill(x.kind, x.lost ? 'off' : 'warn'), '<span class="num">' + esc(x.site || '—') + '</span>',
+                        N(x.lost), '<span class="hint" style="margin:0">' + esc(x.why.slice(0,44)) + '</span>',
+                        esc(x.by)];
+              })),
+            btn('⬇ إكسل — السلامة','btn-secondary btn-sm',' data-xls="hse"'))
+        : card('', alertBox('success','لا حوادثَ مسجّلة — والصفرُ هو الهدف.')))
+
+      + card('اشتراطات الموقع',
+          table(['الاشتراط','الإلزام','ملاحظة'], [
+            ['خوذة وحذاء أمان', 'إلزامي', 'في كلِّ نقاط الممرات والجسور'],
+            ['حزام ارتفاع', 'إلزامي', 'فوق مترين — أعمدةُ الكاميرات'],
+            ['عزل الكهرباء قبل العمل', 'إلزامي', 'إقفالٌ ووسمٌ قبل فتح البوكس'],
+            ['تصريح عملٍ ساخن', 'عند اللزوم', 'اللحامُ والقطع'],
+            ['ماءٌ وظلٌّ للفريق', 'إلزامي', 'حرارةُ المشاعر تتجاوز الأربعين']
+          ])
+          + '<p class="hint">معدّلُ التكرار = الحوادثُ × مئتَي ألفٍ ÷ ساعات العمل — وثلاثةٌ فأقلُّ مقبولٌ دوليًّا.</p>');
+  }};
+
+function hseAdd(){
+  var kind = (document.getElementById('hseKind') || {}).value || '';
+  var site = (document.getElementById('hseSite') || {}).value || '';
+  var lost = cfgN((document.getElementById('hseLost') || {}).value);
+  var why  = (document.getElementById('hseWhy') || {}).value || '';
+  if (!why.trim()){ toast(t('اكتب الوصف والإجراء')); return; }
+  HSE.incidents.unshift({ kind:kind, site:site, lost:lost, why:why,
+                          by:STATE.meta.name || 'محمد صفوت', at:Date.now() });
+  HSE.lost += lost;
+  CORE.dirty('hse', 'INC-' + HSE.incidents.length, HSE.incidents[0]);
+  logEvent('حادث سلامة — ' + kind + (site ? ' · ' + site : ''));
+  toast(t('سُجّل'));
+  render(1);
+}
+
+/* ── عدم المطابقة NCR ── */
+var NCRS = [];
+
+PAGE.ncr = { m:'الطلبات والمسح', t:'عدم المطابقة',
+  l:'ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.',
+  body:function(){
+    var open = NCRS.filter(function(x){ return x.st !== 'مغلق'; });
+    return stats([['بلاغات', N(NCRS.length)],
+                  ['مفتوحة', N(open.length), open.length ? 'wrn' : 'ok'],
+                  ['مغلقة', N(NCRS.length - open.length), 'ok'],
+                  ['متوسط الإغلاق', NCRS.length ? N(3) + ' ' + t('يوم') : '—']])
+
+      + card('بلاغ جديد',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
+          + '<input id="ncrSite" placeholder="NSK-…" dir="ltr"></div>'
+          + '<div class="field"><label>' + esc(t('الفئة')) + '</label>'
+          + '<select id="ncrCat">'
+          + ['تركيبٌ مخالفٌ للمواصفة','قطعةٌ غيرُ معتمدة','توصيلٌ كهربائيٌّ خاطئ',
+             'ارتفاعٌ غيرُ مطابق','توثيقٌ ناقص','سيريالٌ غيرُ مطابق']
+              .map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الخطورة')) + '</label>'
+          + '<select id="ncrSev">'
+          + ['جوهري','متوسط','طفيف'].map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+          + '</select></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
+          + '<textarea id="ncrWhy" rows="2"></textarea></div>',
+          btn('افتح بلاغًا','btn-primary',' data-ncradd="1"'))
+
+      + (NCRS.length
+        ? cardFlush('البلاغات',
+            table(['#','النقطة','الفئة','الخطورة','الوصف','الحالة',''],
+              NCRS.map(function(x, i){
+                return ['<span class="num">NCR-' + nm(i+1) + '</span>',
+                        '<span class="num">' + esc(x.site || '—') + '</span>',
+                        esc(x.cat),
+                        pill(x.sev, x.sev==='جوهري'?'off':(x.sev==='متوسط'?'warn':'')),
+                        '<span class="hint" style="margin:0">' + esc(x.why.slice(0,40)) + '</span>',
+                        pill(x.st, x.st==='مغلق'?'ok':'warn'),
+                        x.st !== 'مغلق'
+                          ? btn('أغلِق','btn-quiet btn-sm',' data-ncrok="' + i + '"') : ''];
+              })),
+            btn('⬇ إكسل — عدم المطابقة','btn-secondary btn-sm',' data-xls="ncr"'))
+        : card('', alertBox('success','لا بلاغاتِ عدمِ مطابقةٍ مفتوحة.')))
+
+      + card('دورة البلاغ',
+          flow(['رُصد','أُبلغ','إجراءٌ تصحيحي','تُحقّق','أُغلق'], 0)
+          + '<p class="hint">لا تُقفَل نقطةٌ عليها بلاغٌ جوهريٌّ مفتوح — والتحقّقُ بمن لم يرتكب.</p>');
+  }};
+
+function ncrAdd(){
+  var site = (document.getElementById('ncrSite') || {}).value || '';
+  var cat  = (document.getElementById('ncrCat') || {}).value || '';
+  var sev  = (document.getElementById('ncrSev') || {}).value || '';
+  var why  = (document.getElementById('ncrWhy') || {}).value || '';
+  if (!why.trim()){ toast(t('اكتب الوصف')); return; }
+  NCRS.push({ site:site, cat:cat, sev:sev, why:why, st:'مفتوح',
+              by:STATE.meta.name || 'محمد صفوت', at:Date.now() });
+  CORE.dirty('ncr', 'NCR-' + NCRS.length, NCRS[NCRS.length-1]);
+  logEvent('بلاغ عدم مطابقة — ' + cat + (site ? ' · ' + site : ''));
+  toast(t('فُتح البلاغ'));
+  render(1);
+}
+
+function ncrClose(i){
+  var x = NCRS[i];
+  if (!x) return;
+  x.st = 'مغلق'; x.closeBy = STATE.meta.name || 'محمد صفوت'; x.closeAt = Date.now();
+  CORE.dirty('ncr', 'NCR-' + (i+1), x);
+  logEvent('إغلاق بلاغ — ' + x.cat);
+  toast(t('أُغلق'));
+  render(1);
+}
+
+/* ── المستخلصات IPC ── */
+var IPCS = [];
+
+PAGE.ipc = { m:'المال', t:'المستخلصات',
+  l:'ما أُنجز واعتُمد — يُقدَّم للعميل ويُتابَع صرفُه.',
+  body:function(){
+    var v = (typeof evm === 'function') ? evm() : null;
+    var paid = IPCS.filter(function(x){ return x.st === 'مصروف'; })
+                   .reduce(function(a,x){ return a + x.amt; }, 0);
+    var pend = IPCS.filter(function(x){ return x.st !== 'مصروف'; })
+                   .reduce(function(a,x){ return a + x.amt; }, 0);
+    var earned = v ? v.EV : 0;
+
+    return stats([['المكتسَب حتى اليوم', N(earned), 'acc'],
+                  ['قُدّم في مستخلصات', N(paid + pend)],
+                  ['صُرف', N(paid), 'ok'],
+                  ['لم يُصرف بعد', N(pend), pend ? 'wrn' : '']])
+
+      + card('مستخلص جديد',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('الفترة')) + '</label>'
+          + '<input id="ipcPer" placeholder="' + esc(t('مثال: الشهر الأول')) + '"></div>'
+          + '<div class="field"><label>' + esc(t('المبلغ')) + '</label>'
+          + '<input type="number" id="ipcAmt" min="0" value="'
+          + Math.max(0, Math.round(earned - paid - pend)) + '"></div>'
+          + '<div class="field"><label>' + esc(t('الاستقطاع ٪')) + '</label>'
+          + '<input type="number" id="ipcRet" min="0" max="20" value="5"></div>'
+          + '</div>'
+          + '<p class="hint" style="margin:0">المبلغُ المقترحُ هو المكتسَبُ ناقصَ ما قُدّم — فلا يُطالَب بما طُولب به.</p>',
+          btn('📄 أنشئ المستخلص','btn-primary',' data-ipcadd="1"'))
+
+      + (IPCS.length
+        ? cardFlush('المستخلصات',
+            table(['#','الفترة','المبلغ','استقطاع','الصافي','الحالة',''],
+              IPCS.map(function(x, i){
+                var ret = Math.round(x.amt * x.retPct / 100);
+                return ['<span class="num">IPC-' + nm(i+1) + '</span>', esc(x.period),
+                        N(x.amt), N(ret), '<b>' + nm(x.amt - ret) + '</b>',
+                        pill(x.st, x.st==='مصروف'?'ok':(x.st==='معتمد'?'acc':'warn')),
+                        '<div class="actions">'
+                        + (x.st === 'مقدَّم' ? btn('اعتمد','btn-quiet btn-sm',' data-ipcok="' + i + '"') : '')
+                        + (x.st === 'معتمد' ? btn('صُرف','btn-quiet btn-sm',' data-ipcpay="' + i + '"') : '')
+                        + '</div>'];
+              }),
+              ['','<b>' + t('الإجمالي') + '</b>',
+               N(IPCS.reduce(function(a,x){ return a + x.amt; }, 0)),
+               N(IPCS.reduce(function(a,x){ return a + Math.round(x.amt*x.retPct/100); }, 0)),
+               '<b>' + nm(IPCS.reduce(function(a,x){ return a + x.amt - Math.round(x.amt*x.retPct/100); }, 0)) + '</b>',
+               '','']),
+            btn('⬇ إكسل — المستخلصات','btn-secondary btn-sm',' data-xls="ipc"'))
+        : card('', alertBox('info','لا مستخلصاتٍ بعد — يُبنى المستخلصُ على المكتسَب المعتمَد.')))
+
+      + card('دورة المستخلص',
+          flow(['يُبنى من المكتسَب','يُقدَّم','يُعتمَد','يُصرَف'], 0)
+          + '<p class="hint">الاستقطاعُ يُحتجَز حتى انتهاء الضمان ثم يُفرَج عنه.</p>');
+  }};
+
+function ipcAdd(){
+  var per = (document.getElementById('ipcPer') || {}).value || ('الفترة ' + (IPCS.length + 1));
+  var amt = cfgN((document.getElementById('ipcAmt') || {}).value);
+  var ret = cfgN((document.getElementById('ipcRet') || {}).value);
+  if (amt <= 0){ toast(t('المبلغ صفرٌ أو سالب')); return; }
+  IPCS.push({ period:per, amt:amt, retPct:ret, st:'مقدَّم',
+              by:STATE.meta.name || 'محمد صفوت', at:Date.now() });
+  CORE.dirty('ipc', 'IPC-' + IPCS.length, IPCS[IPCS.length-1]);
+  logEvent('مستخلص — ' + per + ' · ' + nm(amt));
+  toast(t('قُدّم المستخلص'));
+  render(1);
+}
+
+function ipcStep(i, st){
+  var x = IPCS[i];
+  if (!x) return;
+  x.st = st; x.stBy = STATE.meta.name || 'محمد صفوت'; x.stAt = Date.now();
+  CORE.dirty('ipc', 'IPC-' + (i+1), x);
+  logEvent('مستخلص ' + st + ' — ' + x.period);
+  toast(t(st));
+  render(1);
+}
+
+/* ── المعالم والتسليم ── */
+var MILES = [
+  { id:'M1', n:'اعتماد النطاق وخط الأساس', d:'', w:5,  dep:'' },
+  { id:'M2', n:'إتمام مسح عرفات',          d:'', w:20, dep:'M1' },
+  { id:'M3', n:'إتمام مسح منى',            d:'', w:25, dep:'M1' },
+  { id:'M4', n:'إتمام التهيئة والتجميع',    d:'', w:10, dep:'M2' },
+  { id:'M5', n:'إتمام تركيب عرفات',        d:'', w:15, dep:'M4' },
+  { id:'M6', n:'إتمام تركيب منى',          d:'', w:20, dep:'M4' },
+  { id:'M7', n:'التشغيل التجريبي',         d:'', w:3,  dep:'M6' },
+  { id:'M8', n:'التسليم الابتدائي',        d:'', w:2,  dep:'M7' }
+];
+
+function mileDone(m){
+  var S = siteStats();
+  var byZone = function(z, type){
+    var tot = 0, done = 0;
+    STATE.sites.forEach(function(x){
+      if (x.zone !== z) return;
+      tot++;
+      if (type === 'survey' ? STATE.recs[x.id] : insDone(x.id)) done++;
+    });
+    return tot ? done / tot : 0;
+  };
+  switch (m.id){
+    case 'M1': return BASE ? 1 : 0;
+    case 'M2': return byZone('عرفات','survey');
+    case 'M3': return byZone('منى','survey');
+    case 'M4': return 0;
+    case 'M5': return byZone('عرفات','install');
+    case 'M6': return byZone('منى','install');
+    case 'M7': case 'M8': return 0;
+  }
+  return 0;
+}
+
+PAGE.miles = { m:'التخطيط', t:'المعالم والتسليم',
+  l:'محطّاتُ المشروع وأوزانُها وما اعتمد عليه كلٌّ منها.',
+  body:function(){
+    var tot = MILES.reduce(function(a,m){ return a + m.w; }, 0);
+    var earned = MILES.reduce(function(a,m){ return a + m.w * mileDone(m); }, 0);
+    var doneN = MILES.filter(function(m){ return mileDone(m) >= 0.999; }).length;
+
+    return stats([['المعالم', N(MILES.length)],
+                  ['بلغت', N(doneN), doneN ? 'ok' : ''],
+                  ['الإنجاز الموزون', nm(Math.round(earned)) + '٪', 'acc'],
+                  ['المتبقّي', nm(Math.round(tot - earned)) + '٪']])
+
+      + card('', meter('الإنجاز الموزون بالمعالم', earned, tot))
+
+      + cardFlush('المعالم',
+          table(['#','المعلَم','الوزن ٪','يعتمد على','الإنجاز','الحالة'],
+            MILES.map(function(m){
+              var p = mileDone(m);
+              return ['<span class="num">' + esc(m.id) + '</span>',
+                      '<strong>' + esc(t(m.n)) + '</strong>', N(m.w),
+                      m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—',
+                      nm(Math.round(p * 100)) + '٪',
+                      pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
+                           p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''))];
+            }),
+            ['','<b>' + t('الإجمالي') + '</b>', N(tot), '',
+             '<b>' + nm(Math.round(earned)) + '٪</b>', '']),
+          btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"'))
+
+      + card('المسار المتتابع',
+          flow(MILES.map(function(m){ return m.id; }),
+               Math.max(0, doneN - 1))
+          + '<p class="hint">كلُّ معلَمٍ يعتمد على سابقه — فتأخّرُ واحدٍ يزيح ما بعده. والأوزانُ مجموعُها مئة.</p>');
+  }};
+
+PAGE.hand = { m:'الميدان', t:'التسليم والضمان',
+  l:'ما سُلِّم للعميل وما هو في الضمان.',
+  body:function(){
+    var S = siteStats();
+    var ready = STATE.sites.filter(function(x){
+      var r = STATE.inss[x.id];
+      return r && r.status === 'مُركّب' && r.approved;
+    });
+    var ncrOpen = (typeof NCRS !== 'undefined')
+      ? NCRS.filter(function(x){ return x.st !== 'مغلق' && x.sev === 'جوهري'; }) : [];
+
+    return stats([['جاهزٌ للتسليم', N(ready.length), 'acc'],
+                  ['سُلّم', N(0), 'ok'],
+                  ['بلاغاتٌ تمنع', N(ncrOpen.length), ncrOpen.length ? 'bad' : 'ok'],
+                  ['شهور الضمان', N(cfgGet('warranty') || 12)]])
+
+      + (ncrOpen.length
+        ? alertBox('error','لا تُسلَّم نقطةٌ عليها بلاغُ عدمِ مطابقةٍ جوهريٌّ مفتوح — '
+            + nm(ncrOpen.length) + ' بلاغًا يمنع.')
+        : '')
+
+      + card('شروط التسليم',
+          table(['الشرط','الحالة'], [
+            ['التركيبُ معتمدٌ من المهندس', ready.length ? pill('مستوفٍ','ok') : pill('لم يبدأ','')],
+            ['الصورُ موثَّقةٌ قبل وبعد', pill('مستوفٍ','ok')],
+            ['السيرياتُ مسجّلةٌ ومطابقة', pill('مستوفٍ','ok')],
+            ['لا بلاغَ جوهريًّا مفتوحًا', ncrOpen.length ? pill('غيرُ مستوفٍ','off') : pill('مستوفٍ','ok')],
+            ['العناوينُ مشتقّةٌ ومختبرة', pill('يُفحَص بأداة الفحص','warn')]
+          ]))
+
+      + card('الضمان',
+          '<div class="field" style="max-width:280px;margin:0"><label>'
+          + esc(t('مدّة الضمان')) + ' (' + esc(t('شهر')) + ')</label>'
+          + cfgInput('warranty', undefined, { dec:0 }) + '</div>'
+          + '<p class="hint">تبدأ من تاريخ التسليم الابتدائي — وفيها يُستبدل التالفُ بلا كلفةٍ على العميل.</p>');
+  }};
+
+/* ── RACI ── */
+var RACI_ACTS = [
+  ['اعتماد النطاق',            'مدير المشروع','الوزارة','المهندس','الجميع'],
+  ['المسح الميداني',           'الفني','المشرف','—','المهندس'],
+  ['اعتماد المسح',             'المهندس','مدير المشروع','—','المشرف'],
+  ['شراء القطع',               'المشتريات','مدير المشروع','المالية','المخازن'],
+  ['التهيئة والتجميع',         'فني الورشة','المهندس','—','العمليات'],
+  ['التركيب',                  'فني التركيب','المشرف','المهندس','العمليات'],
+  ['التدقيق والاعتماد',        'المهندس','مدير المشروع','الجودة','الفني'],
+  ['بلاغ عدم المطابقة',        'الجودة','المهندس','—','المنفِّذ'],
+  ['المستخلص',                 'المالية','مدير المشروع','الوزارة','الإدارة العليا'],
+  ['التسليم الابتدائي',        'مدير المشروع','الوزارة','الهندسة والجودة','الجميع'],
+  ['الفك وإرجاع العُهدة',      'فني الفك','المشرف','المخازن','المهندس']
+];
+
+PAGE.raci = { m:'النظام', t:'مصفوفة المسؤوليات',
+  l:'من ينفّذ ومن يُساءل ومن يُستشار ومن يُبلَّغ.',
+  body:function(){
+    return card('المفتاح',
+        table(['الرمز','المعنى','الشرط'], [
+          ['<b>R</b>','المنفِّذ — يعمل','واحدٌ فأكثر'],
+          ['<b>A</b>','المساءَل — يوقّع','واحدٌ لا غير'],
+          ['<b>C</b>','المستشار — يُسأل قبل','اختياري'],
+          ['<b>I</b>','المبلَّغ — يُخبَر بعد','اختياري']
+        ]))
+      + cardFlush('المصفوفة',
+          table(['النشاط','R — ينفّذ','A — يُساءل','C — يُستشار','I — يُبلَّغ'],
+            RACI_ACTS.map(function(r){
+              return ['<strong>' + esc(t(r[0])) + '</strong>',
+                      '<span class="pill acc">' + esc(t(r[1])) + '</span>',
+                      '<span class="pill ok">' + esc(t(r[2])) + '</span>',
+                      esc(t(r[3])), esc(t(r[4]))];
+            })),
+          btn('⬇ إكسل — المسؤوليات','btn-secondary btn-sm',' data-xls="raci"'))
+      + '<p class="hint">لكلِّ نشاطٍ مساءَلٌ واحدٌ لا غير — فإن تعدّد ضاعت المسؤولية.</p>';
+  }};
+
+/* ── سجل الدروس ── */
+var LESSONS = [
+  { p:'التخطيط', w:'قسمةُ التارجت على الأيام تُظهر الحاجةَ للفرق مبكرًا',
+    a:'حُسبت الطواقمُ قبل بدء الموسم لا بعده' },
+  { p:'التنفيذ', w:'الصورُ الخامُ تخنق الشبكةَ في المشاعر',
+    a:'ضُغطت على الجهاز قبل الرفع' },
+  { p:'التنفيذ', w:'الشبكةُ تنقطع فيضيع عملُ الفني',
+    a:'حفظٌ محليٌّ أولًا وطابورُ رفعٍ يُستأنف' },
+  { p:'الجودة', w:'احتسابُ النقاط قبل التدقيق يُغري بالتسرّع',
+    a:'لا نقاطَ إلا بعد اعتماد المهندس' },
+  { p:'التواصل', w:'الوصولُ للمخيمات يتعطّل بلا إشعارٍ مسبق',
+    a:'رسالةٌ جاهزةٌ للشركة قبل الموعد' }
+];
+
+PAGE.less = { m:'النظام', t:'سجل الدروس',
+  l:'ما تعلّمناه — ليُنقل للموسم القادم لا ليُعاد.',
+  body:function(){
+    return cardFlush('الدروس — ' + nm(LESSONS.length),
+        table(['المرحلة','ما وقع','ما فُعل'],
+          LESSONS.map(function(l){
+            return [pill(l.p,'acc'), esc(t(l.w)),
+                    '<span class="hint" style="margin:0">' + esc(t(l.a)) + '</span>'];
+          })),
+        btn('⬇ إكسل — الدروس','btn-secondary btn-sm',' data-xls="less"'))
+      + '<p class="hint">يُراجَع عند إغلاق المشروع ويُسلَّم مع وثائقه — فما كلّف مرةً لا يُكلِّف ثانية.</p>';
+  }};
+
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -4563,7 +5072,8 @@ function renderKey(){
        + '|' + (MAP_SAT?1:0) + '|' + (MAP_FILT_OPEN?1:0) + '|' + (MYPOS?1:0) + '|' + MOVE_ID
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
        + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + TEAM_CUR + '|' + ASN_TO
-       + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + NCRS.length
+       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -4902,6 +5412,44 @@ var SHEETS = {
     });
     return out;
   },
+  hse: function(){
+    var out = [['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل']];
+    HSE.incidents.forEach(function(x){
+      out.push([new Date(x.at).toISOString().slice(0,10), x.kind, x.site || '',
+                x.lost, x.why, x.by]);
+    });
+    return out;
+  },
+  ncr: function(){
+    var out = [['المعرّف','النقطة','الفئة','الخطورة','الوصف','الحالة','المُبلِّغ']];
+    NCRS.forEach(function(x, i){
+      out.push(['NCR-' + (i+1), x.site || '', x.cat, x.sev, x.why, x.st, x.by]);
+    });
+    return out;
+  },
+  ipc: function(){
+    var out = [['المعرّف','الفترة','المبلغ','استقطاع ٪','الصافي','الحالة']];
+    IPCS.forEach(function(x, i){
+      var r = Math.round(x.amt * x.retPct / 100);
+      out.push(['IPC-' + (i+1), x.period, x.amt, x.retPct, x.amt - r, x.st]);
+    });
+    return out;
+  },
+  miles: function(){
+    var out = [['المعرّف','المعلَم','الوزن ٪','يعتمد على','الإنجاز ٪','الحالة']];
+    MILES.forEach(function(m){
+      var p = Math.round(mileDone(m) * 100);
+      out.push([m.id, m.n, m.w, m.dep || '', p, p>=100?'بلغ':(p>0?'جارٍ':'لم يبدأ')]);
+    });
+    return out;
+  },
+  raci: function(){
+    return [['النشاط','R','A','C','I']].concat(RACI_ACTS.map(function(r){ return r.slice(); }));
+  },
+  less: function(){
+    return [['المرحلة','ما وقع','ما فُعل']].concat(
+      LESSONS.map(function(l){ return [l.p, l.w, l.a]; }));
+  },
   evm: function(){
     var v = evm();
     if (!v) return [['المؤشّر','القيمة']];
@@ -5051,7 +5599,8 @@ var SHEETS = {
 var SHEET_NAMES = {
   over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات',
   score:'أداء الفنيين', stages:'أداء المراحل', tasks:'المهام', budm:'الملخّص المالي',
-  evm:'القيمة المكتسبة', risks:'سجل المخاطر', items:'القطع والأسعار',
+  evm:'القيمة المكتسبة', risks:'سجل المخاطر', hse:'السلامة', ncr:'عدم المطابقة',
+  ipc:'المستخلصات', miles:'المعالم', raci:'المسؤوليات', less:'الدروس', items:'القطع والأسعار',
   invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
   techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
   ev:'سجل الأحداث', perms:'الصلاحيات'
@@ -7027,21 +7576,22 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
-      ['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
+      ['exec','اللوحة التنفيذية'],['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
       ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
-  { g:'التخطيط', icon:'\u25F7', items:[['evm','خط الأساس والقيمة المكتسبة'],['risks','سجل المخاطر'],
-      ['chg','ضبط التغيير'],['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
+  { g:'التخطيط', icon:'\u25F7', items:[['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],
+      ['risks','سجل المخاطر'],['chg','ضبط التغيير'],['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
       ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
-      ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي']] },
+      ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي'],
+      ['ncr','عدم المطابقة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
       ['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
-  { g:'المال', icon:'\u25B0', items:[['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
+  { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
       ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
       ['creps','التقارير الدورية'],['teams','الفرق والأنصبة'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
@@ -7054,7 +7604,8 @@ var NAV = [
       ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],
       ['budget','الميزانية والاعتماد'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
-      ['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
+      ['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
+      ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
       ['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
   { g:'المساعدة', icon:'\u003F', items:[['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
@@ -7256,7 +7807,8 @@ document.addEventListener('click', function(e){
                 'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
                 'data-lasn','data-dsch','data-ddone','data-stab','data-asnload','data-asnto',
                 'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
-                'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno'];
+                'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
+                'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -7397,6 +7949,16 @@ document.addEventListener('click', function(e){
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
 
   /* ── الإسناد ── */
+  if (e.target.closest('[data-hseadd]')){ hseAdd(); return; }
+  if (e.target.closest('[data-ncradd]')){ ncrAdd(); return; }
+  var nok = e.target.closest('[data-ncrok]');
+  if (nok){ ncrClose(+nok.getAttribute('data-ncrok')); return; }
+  if (e.target.closest('[data-ipcadd]')){ ipcAdd(); return; }
+  var iok = e.target.closest('[data-ipcok]');
+  if (iok){ ipcStep(+iok.getAttribute('data-ipcok'), 'معتمد'); return; }
+  var ipy = e.target.closest('[data-ipcpay]');
+  if (ipy){ ipcStep(+ipy.getAttribute('data-ipcpay'), 'مصروف'); return; }
+
   if (e.target.closest('[data-baseset]')){
     baseSet(); toast(t('جُمّد خط الأساس')); render(1); return;
   }
