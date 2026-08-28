@@ -356,6 +356,14 @@ body.nav-open .mapwrap{pointer-events:none}
 .map-layerbar .lb-n b{color:#fff}
 @media(max-width:560px){.map-layerbar{font-size:11px;padding:6px 11px;gap:8px}}
 
+/* مبدّلا اللغة والمظهر في الشريط العلوي — في متناول اليد من كل صفحة */
+.topbar-tools{display:flex;gap:6px;align-items:center;flex:0 0 auto;margin-inline-start:6px}
+.tb-btn{width:38px;height:38px;min-height:38px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.tb-btn:active{background:var(--line)}
+@media(max-width:560px){ .topbar-meta{display:none} .tb-btn{width:36px;height:36px} }
+
 </style>
 </head>
 <body>
@@ -390,6 +398,10 @@ body.nav-open .mapwrap{pointer-events:none}
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <span class="topbar-meta" id="syncMeta"></span>
+      <div class="topbar-tools">
+        <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
+        <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
+      </div>
     </header>
     <div class="content" id="content"></div>
   </main>
@@ -550,6 +562,9 @@ function setLang(l){
   document.body.setAttribute('data-lang', l);
   try{ localStorage.setItem('nsk14.lang', l); }catch(e){}
   render();
+  var lt = document.getElementById('langTop');
+  if (lt) lt.textContent = { ar:'ع', en:'EN', ur:'اُر' }[l] || 'ع';
+
 }
 
 function setTheme(m){
@@ -557,6 +572,8 @@ function setTheme(m){
   try{ localStorage.setItem('nsk14.theme', m); }catch(e){}
   var b = document.getElementById('themeBtn');
   if (b) b.textContent = (m === 'dark') ? '\u2600' : '\u263D';
+  var b2 = document.getElementById('themeTop');
+  if (b2) b2.textContent = (m === 'dark') ? '\u2600' : '\u263D';
   try{ if (typeof mapTheme === 'function') mapTheme(); }catch(e){}
 }
 
@@ -691,6 +708,17 @@ en:{
  'جُدوِل للفك':'Scheduled for dismantling','سليم':'Sound','تالف':'Damaged',
  'طبقة الفك':'Dismantling layer','معاملا الحالة':'Condition factors',
  'يعود للمخزن قابلًا للاستعمال':'Returns to store, usable','يُعزَل ويُوثَّق — وفكُّه أثقل':'Isolated and documented — heavier to remove',
+ 'أدائي':'My performance','أداء المراحل':'Stage performance','تقرير الأداء':'Performance report',
+ 'نقاطي':'My points','ترتيبي':'My rank','أعمالي':'My work','أيام عملي':'Days worked',
+ 'مهندسو المناطق':'Zone engineers','فنيو التهيئة':'Configuration techs','فنيو التجميع':'Assembly techs',
+ 'فنيو التركيب':'Installation techs','فنيو المسح':'Survey techs','فنيو الفك':'Dismantling techs',
+ 'المستحَق':'Earned','سعر النقطة':'Point price','ريال':'SAR','متوسط اليوم':'Daily average',
+ 'زيارة ميدانية':'Field visit','تركيب معتمد':'Approved installation','العمل':'Work',
+ 'كيف تُحسب نقاطي':'How my points are counted','من عملوا':'Who worked',
+ 'إجمالي الأعمال':'Total work','إجمالي النقاط':'Total points','الترتيب العام':'Overall ranking',
+ 'أفراد المرحلة':'Stage members','أعمالهم':'Their work','نقاطهم':'Their points',
+ 'تارجت المرحلة':'Stage target','أعمال':'actions','أيام':'days','المرحلة':'Stage',
+ 'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'Your peers in your stage only',
  'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
@@ -849,6 +877,17 @@ ur:{
  'جُدوِل للفك':'ہٹانے کے لیے شیڈول','سليم':'درست','تالف':'خراب',
  'طبقة الفك':'ہٹانے کی تہ','معاملا الحالة':'حالت کے عوامل',
  'يعود للمخزن قابلًا للاستعمال':'اسٹور واپس، قابلِ استعمال','يُعزَل ويُوثَّق — وفكُّه أثقل':'الگ اور درج — ہٹانا بھاری',
+ 'أدائي':'میری کارکردگی','أداء المراحل':'مراحل کی کارکردگی','تقرير الأداء':'کارکردگی رپورٹ',
+ 'نقاطي':'میرے پوائنٹس','ترتيبي':'میرا درجہ','أعمالي':'میرے کام','أيام عملي':'کام کے دن',
+ 'مهندسو المناطق':'علاقائی انجینئرز','فنيو التهيئة':'تیاری ٹیکنیشنز','فنيو التجميع':'اسمبلی ٹیکنیشنز',
+ 'فنيو التركيب':'تنصیب ٹیکنیشنز','فنيو المسح':'سروے ٹیکنیشنز','فنيو الفك':'ہٹانے کے ٹیکنیشنز',
+ 'المستحَق':'مستحق','سعر النقطة':'پوائنٹ کی قیمت','ريال':'ریال','متوسط اليوم':'روزانہ اوسط',
+ 'زيارة ميدانية':'میدانی دورہ','تركيب معتمد':'منظور شدہ تنصیب','العمل':'کام',
+ 'كيف تُحسب نقاطي':'میرے پوائنٹس کیسے شمار ہوتے ہیں','من عملوا':'جنہوں نے کام کیا',
+ 'إجمالي الأعمال':'کل کام','إجمالي النقاط':'کل پوائنٹس','الترتيب العام':'مجموعی درجہ بندی',
+ 'أفراد المرحلة':'مرحلے کے ارکان','أعمالهم':'ان کے کام','نقاطهم':'ان کے پوائنٹس',
+ 'تارجت المرحلة':'مرحلے کا ہدف','أعمال':'کام','أيام':'دن','المرحلة':'مرحلہ',
+ 'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'صرف آپ کے مرحلے کے ساتھی',
  'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
@@ -3211,6 +3250,295 @@ function disComplete(id, cond){
   statBump(); toast(t('تم الفك') + ' · ' + t(cond)); render(1);
 }
 
+/* ═══ نقاطُ الفنيين — تُحسب من العمل لا تُكتب ═══
+   الأوزانُ في الإعدادات لا تتغيّر، وكلُّ ما يعمله الفنيُّ يُوزَن بها:
+   زيارةٌ بوزنها، وتركيبٌ بنقاط قطعه، وفكٌّ بوزنه في معامل حالته.
+   فيرى كلٌّ ما عمله ورقمَه بين فريقه، ويرى المهندسُ الجميع. */
+
+var STAGE_ROLES = {
+  eng:   { n:'مهندسو المناطق', i:'\u{1F393}', kinds:['visit','install'],
+           d:'يديرون مناطقهم ويعتمدون ما يُرفَع فيها.' },
+  cfg:   { n:'فنيو التهيئة',   i:'\u{1F6E0}', kinds:['prep'],
+           d:'ضبطُ الجهاز وعنوانه ونظامه قبل النزول.' },
+  asm:   { n:'فنيو التجميع',   i:'\u{1F9F0}', kinds:['asm'],
+           d:'تركيبُ ما يدخل البوكس وتوصيلُه.' },
+  ins:   { n:'فنيو التركيب',   i:'\u{1F527}', kinds:['install'],
+           d:'تركيبُ النقطة في موقعها وتوثيقُها.' },
+  srv:   { n:'فنيو المسح',     i:'\u{1F50D}', kinds:['visit'],
+           d:'الزيارةُ الميدانيةُ وجمعُ ما لا يُعرف.' },
+  dis:   { n:'فنيو الفك',      i:'\u{1F9E9}', kinds:['dis'],
+           d:'الفكُّ وإرجاعُ العُهدة بحالتها.' }
+};
+
+/* لكلِّ فنيٍّ مرحلتُه — تُضبط في إسناد الأدوار */
+var TECH_STAGE = {
+  'أحمد':'ins', 'سالم':'ins', 'ماجد':'ins',
+  'ياسر':'cfg', 'عبدالله':'ins', 'طارق':'ins',
+  'خالد':'eng', 'فهد':'eng', 'محمد صفوت':'eng'
+};
+
+function stageOf(name){ return TECH_STAGE[name] || 'srv'; }
+
+/* ── حصادُ العمل: يُمشَّط السجلُّ مرةً ويُخزَّن ── */
+var SCORE_CACHE = null, SCORE_VER = -1;
+
+function scores(){
+  if (SCORE_CACHE && SCORE_VER === STAT_VER) return SCORE_CACHE;
+  var by = Object.create(null);
+
+  function ent(who){
+    if (!who) who = '—';
+    if (!by[who]) by[who] = {
+      name:who, stage:stageOf(who),
+      survey:0, install:0, dis:0, prep:0, asm:0,
+      pSurvey:0, pInstall:0, pDis:0, pPrep:0, pAsm:0, total:0,
+      days:Object.create(null), last:0
+    };
+    return by[who];
+  }
+
+  /* المسح: كلُّ سجلٍّ بوزن نقطته */
+  Object.keys(STATE.recs).forEach(function(id){
+    var r = STATE.recs[id], x = siteFind(id);
+    if (!x) return;
+    var e = ent(r.by);
+    e.survey++;
+    e.pSurvey += ptsSurvey(x);
+    var day = new Date(r.at || Date.now()).toISOString().slice(0,10);
+    e.days[day] = (e.days[day] || 0) + 1;
+    if ((r.at||0) > e.last) e.last = r.at || 0;
+  });
+
+  /* التركيب: المعتمدُ وحده يُحتسب — كما هو الأصل */
+  Object.keys(STATE.inss).forEach(function(id){
+    var r = STATE.inss[id], x = siteFind(id);
+    if (!x || r.status !== 'مُركّب') return;
+    var e = ent(r.by);
+    e.install++;
+    e.pInstall += (r.approved ? ptsInstall(x) : 0);
+    var day = new Date(r.at || Date.now()).toISOString().slice(0,10);
+    e.days[day] = (e.days[day] || 0) + 1;
+    if ((r.at||0) > e.last) e.last = r.at || 0;
+  });
+
+  /* الفك: بحالته ومعاملها */
+  if (STATE.diss) Object.keys(STATE.diss).forEach(function(id){
+    var r = STATE.diss[id], x = siteFind(id);
+    if (!x || r.status !== 'تم الفك') return;
+    var e = ent(r.by);
+    e.dis++;
+    e.pDis += (r.pts || ptsDis(x));
+    if ((r.at||0) > e.last) e.last = r.at || 0;
+  });
+
+  /* الورشة: التهيئةُ والتجميعُ من دفتر الحركة */
+  STATE.moves.forEach(function(m){
+    if (!m || !m.by) return;
+    if (m.kind === 'تهيئة'){ var e1 = ent(m.by); e1.prep++; e1.pPrep += itPrep(m.item) * (m.qty||1); }
+    if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(m.item)  * (m.qty||1); }
+  });
+
+  Object.keys(by).forEach(function(k){
+    var e = by[k];
+    e.total = Math.round((e.pSurvey + e.pInstall + e.pDis + e.pPrep + e.pAsm) * 100) / 100;
+    e.acts  = e.survey + e.install + e.dis + e.prep + e.asm;
+    e.nDays = Object.keys(e.days).length;
+    e.perDay = e.nDays ? Math.round(e.total / e.nDays * 10) / 10 : 0;
+    e.money = Math.round(e.total * cfgGet('ph') * 100) / 100;
+  });
+
+  var list = Object.keys(by).map(function(k){ return by[k]; });
+  list.sort(function(a,b){ return b.total - a.total; });
+  list.forEach(function(e, i){ e.rank = i + 1; });
+
+  SCORE_CACHE = { list:list, byName:by, n:list.length };
+  SCORE_VER = STAT_VER;
+  return SCORE_CACHE;
+}
+
+function scoreOf(name){
+  var S = scores();
+  return S.byName[name] || { name:name, stage:stageOf(name), survey:0, install:0, dis:0,
+    prep:0, asm:0, pSurvey:0, pInstall:0, pDis:0, pPrep:0, pAsm:0,
+    total:0, acts:0, nDays:0, perDay:0, money:0, rank:S.n + 1, last:0, days:{} };
+}
+
+function stageList(stage){
+  return scores().list.filter(function(e){ return e.stage === stage; });
+}
+
+/* تارجتُ المرحلة — من الإعدادات */
+function stageTarget(stage){
+  var T = (typeof T === 'function') ? T() : null;
+  var Tg = window.T ? window.T() : {};
+  return { eng:0, cfg:Tg.prep || 0, asm:Tg.asm || 0,
+           ins:Tg.ins || 0, srv:Tg.survey || 0, dis:Tg.dis || 0 }[stage] || 0;
+}
+
+/* ── صفحة الفني: ما عمله ورقمُه ── */
+PAGE.myscore = { m:'الميدان', t:'أدائي',
+  l:'ما عملتَه ونقاطُه ورقمُك بين فريقك.',
+  body:function(){
+    var me = STATE.meta.name || 'محمد صفوت';
+    var e = scoreOf(me);
+    var peers = stageList(e.stage);
+    var myRank = peers.findIndex(function(p){ return p.name === me; }) + 1;
+    var tgt = stageTarget(e.stage);
+    var R = STAGE_ROLES[e.stage] || { n:'—', i:'' };
+
+    return stats([['نقاطي', N(e.total), 'acc'],
+                  ['ترتيبي', myRank ? (nm(myRank) + ' / ' + nm(peers.length)) : '—',
+                   myRank === 1 ? 'ok' : ''],
+                  ['أعمالي', N(e.acts)],
+                  ['أيام عملي', N(e.nDays)]])
+
+      + card(R.i + ' ' + t(R.n),
+          (tgt ? meter('من تارجت المرحلة', e.total, tgt) : '')
+          + table(['العمل','العدد','النقاط'], [
+              ['زيارة ميدانية', N(e.survey), N(Math.round(e.pSurvey*10)/10)],
+              ['تركيب معتمد',   N(e.install), N(Math.round(e.pInstall*10)/10)],
+              ['فك',            N(e.dis),    N(Math.round(e.pDis*10)/10)],
+              ['تهيئة',         N(e.prep),   N(Math.round(e.pPrep*10)/10)],
+              ['تجميع',         N(e.asm),    N(Math.round(e.pAsm*10)/10)]
+            ].filter(function(r){ return r[1] !== '٠' || r[2] !== '٠'; })
+             .concat([['<b>' + t('الإجمالي') + '</b>','', '<b>' + nm(e.total) + '</b>']])))
+
+      + (cfgGet('ph')
+        ? card('المستحَق',
+            '<div class="stats" style="margin:0">'
+            + stat('نقاطي', N(e.total))
+            + stat('سعر النقطة', N(cfgGet('ph')) + ' ' + esc(t('ريال')))
+            + stat('المستحَق', N(e.money) + ' ' + esc(t('ريال')), 'ok')
+            + stat('متوسط اليوم', N(e.perDay))
+            + '</div>'
+            + '<p class="hint">النقاطُ تُحتسب من أوزان الإعدادات — والتركيبُ لا يُحتسب حتى يعتمده المهندس.</p>')
+        : alertBox('warn','سعرُ النقطة لم يُضبط بعد — يُكتب في الإعدادات ← ثوابت النظام.'))
+
+      + (peers.length > 1
+        ? cardFlush('ترتيبي في ' + t(R.n),
+            table(['#','الفني','أعمال','النقاط'],
+              peers.slice(0, 20).map(function(p, i){
+                var me2 = p.name === me;
+                return [(me2 ? '<b>' + nm(i+1) + '</b>' : nm(i+1)),
+                        me2 ? '<b>' + esc(p.name) + '</b>' : esc(p.name),
+                        N(p.acts),
+                        me2 ? '<b>' + nm(p.total) + '</b>' : N(p.total)];
+              })),
+            '<span class="hint" style="margin:0">' + esc(t('أرقامُ زملائك في مرحلتك وحدها — لا في غيرها')) + '</span>')
+        : '')
+
+      + card('كيف تُحسب نقاطي',
+          flow(['أعمل','يُوزَن بالإعدادات','يُعتمد','يدخل نقاطي'], 0)
+          + '<p class="hint">وزنُ كل عملٍ ثابتٌ في الإعدادات ولا يتغيّر — وما تعمله يُوزَن به.</p>');
+  }};
+
+/* ── تبويبُ كل مرحلة: فريقُها وأعمالُهم ── */
+var STAGE_TAB = 'ins';
+
+PAGE.stages = { m:'الفرق والفنيون', t:'أداء المراحل',
+  l:'لكلِّ مرحلةٍ فريقُها وأعمالُهم ونقاطُهم.',
+  body:function(){
+    var R = STAGE_ROLES[STAGE_TAB] || STAGE_ROLES.ins;
+    var L = stageList(STAGE_TAB);
+    var tgt = stageTarget(STAGE_TAB);
+    var sum = L.reduce(function(a,e){ return a + e.total; }, 0);
+    var acts = L.reduce(function(a,e){ return a + e.acts; }, 0);
+
+    return '<div class="chips">' + Object.keys(STAGE_ROLES).map(function(k){
+        var S = STAGE_ROLES[k], n = stageList(k).length;
+        return '<button type="button" class="chip' + (STAGE_TAB===k?' on':'') + '" data-stab="' + k + '">'
+          + S.i + ' ' + esc(t(S.n)) + (n ? ' <span class="num">' + nm(n) + '</span>' : '') + '</button>';
+      }).join('') + '</div>'
+
+      + stats([['أفراد المرحلة', N(L.length), 'acc'],
+               ['أعمالهم', N(acts)],
+               ['نقاطهم', N(Math.round(sum))],
+               ['تارجت المرحلة', tgt ? N(tgt) : '—', tgt ? '' : 'wrn']])
+
+      + card(R.i + ' ' + t(R.n),
+          '<p class="hint" style="margin:0 0 11px">' + esc(t(R.d)) + '</p>'
+          + (tgt ? meter('إنجاز المرحلة من تارجتها', sum, tgt) : '')
+          + (L.length ? '' : '<p class="hint" style="margin:0">'
+              + esc(t('لا أحد في هذه المرحلة بعد — تُضبط مرحلةُ كلِّ فنيٍّ في إسناد الأدوار.')) + '</p>'))
+
+      + (L.length
+        ? cardFlush('الفريق — ' + nm(L.length),
+            table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','النقاط','المستحَق'],
+              L.map(function(e, i){
+                return [nm(i+1), '<strong>' + esc(e.name) + '</strong>',
+                        N(e.survey), N(e.install), N(e.dis), N(e.prep), N(e.asm),
+                        N(e.acts), '<b>' + nm(e.total) + '</b>',
+                        cfgGet('ph') ? N(e.money) : '—'];
+              }),
+              ['','<b>' + t('الإجمالي') + '</b>',
+               N(L.reduce(function(a,e){return a+e.survey;},0)),
+               N(L.reduce(function(a,e){return a+e.install;},0)),
+               N(L.reduce(function(a,e){return a+e.dis;},0)),
+               N(L.reduce(function(a,e){return a+e.prep;},0)),
+               N(L.reduce(function(a,e){return a+e.asm;},0)),
+               N(acts), '<b>' + nm(Math.round(sum)) + '</b>',
+               cfgGet('ph') ? N(Math.round(sum * cfgGet('ph'))) : '—']),
+            '<div class="actions">'
+            + btn('⬇ إكسل — هذه المرحلة','btn-secondary btn-sm',' data-xls="stage"')
+            + btn('⬇ إكسل — كل المراحل','btn-secondary btn-sm',' data-xls="stages"')
+            + '</div>')
+        : '')
+
+      + '<p class="hint">النقاطُ محسوبةٌ من أوزان الإعدادات — والتركيبُ المعتمدُ وحده يُحتسب.</p>';
+  }};
+
+/* ── تقرير الجميع للإدارة ── */
+PAGE.allscore = { m:'الفرق والفنيون', t:'تقرير الأداء',
+  l:'كلُّ من عمل — بما عمله ونقاطه ومستحقّه.',
+  body:function(){
+    var S = scores();
+    var sum = S.list.reduce(function(a,e){ return a + e.total; }, 0);
+    var money = S.list.reduce(function(a,e){ return a + e.money; }, 0);
+
+    return stats([['من عملوا', N(S.n), 'acc'],
+                  ['إجمالي الأعمال', N(S.list.reduce(function(a,e){return a+e.acts;},0))],
+                  ['إجمالي النقاط', N(Math.round(sum))],
+                  ['المستحَق', cfgGet('ph') ? N(Math.round(money)) + ' ' + t('ريال') : '—']])
+
+      + (S.n
+        ? cardFlush('الترتيب العام — ' + nm(S.n),
+            table(['#','الاسم','المرحلة','زيارة','تركيب','فك','أعمال','أيام','النقاط','متوسط اليوم','المستحَق'],
+              S.list.map(function(e){
+                var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
+                return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
+                        '<strong>' + esc(e.name) + '</strong>',
+                        R.i + ' ' + esc(t(R.n)),
+                        N(e.survey), N(e.install), N(e.dis),
+                        N(e.acts), N(e.nDays), '<b>' + nm(e.total) + '</b>',
+                        N(e.perDay), cfgGet('ph') ? N(e.money) : '—'];
+              }),
+              ['','<b>' + t('الإجمالي') + '</b>','',
+               N(S.list.reduce(function(a,e){return a+e.survey;},0)),
+               N(S.list.reduce(function(a,e){return a+e.install;},0)),
+               N(S.list.reduce(function(a,e){return a+e.dis;},0)),
+               N(S.list.reduce(function(a,e){return a+e.acts;},0)),
+               '', '<b>' + nm(Math.round(sum)) + '</b>', '',
+               cfgGet('ph') ? N(Math.round(money)) : '—']),
+            '<div class="actions">'
+            + btn('⬇ إكسل — التقرير','btn-secondary btn-sm',' data-xls="score"')
+            + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
+            + '</div>')
+        : card('', alertBox('info','لا أعمال مسجّلةً بعد — تظهر هنا فورَ أول مسحٍ أو تركيب.')))
+
+      + card('توزيع النقاط على المراحل',
+          table(['المرحلة','أفراد','أعمال','النقاط','٪'],
+            Object.keys(STAGE_ROLES).map(function(k){
+              var R = STAGE_ROLES[k], L = stageList(k);
+              var p = L.reduce(function(a,e){ return a + e.total; }, 0);
+              return [R.i + ' ' + esc(t(R.n)), N(L.length),
+                      N(L.reduce(function(a,e){ return a + e.acts; }, 0)),
+                      N(Math.round(p)),
+                      sum ? nm(Math.round(p / sum * 100)) + '٪' : '٠٪'];
+            })))
+
+      + '<p class="hint">لا رقمَ هنا مكتوبٌ بيد: كلُّه محسوبٌ من أوزان الإعدادات وما سجّله كلُّ فنيٍّ فعلًا.</p>';
+  }};
+
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -3538,7 +3866,7 @@ function renderKey(){
        + '|' + FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + DETAIL_ID
        + '|' + (MAP_SAT?1:0) + '|' + (MAP_FILT_OPEN?1:0) + '|' + (MYPOS?1:0) + '|' + MOVE_ID
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
-       + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -3871,6 +4199,36 @@ var SHEETS = {
     });
     return out;
   },
+  score: function(){
+    var S = scores(), out = [['#','الاسم','المرحلة','زيارة','تركيب','فك','تهيئة','تجميع',
+                              'أعمال','أيام','النقاط','متوسط اليوم','المستحَق']];
+    S.list.forEach(function(e){
+      var R = STAGE_ROLES[e.stage] || { n:e.stage };
+      out.push([e.rank, e.name, R.n, e.survey, e.install, e.dis, e.prep, e.asm,
+                e.acts, e.nDays, e.total, e.perDay, e.money]);
+    });
+    return out;
+  },
+  stages: function(){
+    var out = [['المرحلة','أفراد','أعمال','النقاط','المستحَق']];
+    Object.keys(STAGE_ROLES).forEach(function(k){
+      var L = stageList(k);
+      var p = L.reduce(function(a,e){ return a + e.total; }, 0);
+      out.push([STAGE_ROLES[k].n, L.length,
+                L.reduce(function(a,e){ return a + e.acts; }, 0),
+                Math.round(p), Math.round(p * cfgGet('ph'))]);
+    });
+    return out;
+  },
+  tasks: function(){
+    var out = [['المعرّف','النقطة','النوع','الفني','الموعد','الحالة','أُسند في']];
+    Object.keys(STATE.tasks).forEach(function(k){
+      var x = STATE.tasks[k], K = WO_KINDS[x.kind] || { n:x.kind };
+      out.push([x.id, x.site, K.n, x.to, x.when || '', x.status,
+                new Date(x.at).toISOString().slice(0,10)]);
+    });
+    return out;
+  },
   work: function(){
     var S = siteStats(), out = [['وجه العمل','النقاط','النسبة']];
     Object.keys(S.byWork).sort(function(a,b){ return S.byWork[b]-S.byWork[a]; }).forEach(function(k){
@@ -3959,7 +4317,8 @@ var SHEETS = {
 };
 
 var SHEET_NAMES = {
-  over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات', items:'القطع والأسعار',
+  over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات',
+  score:'أداء الفنيين', stages:'أداء المراحل', tasks:'المهام', items:'القطع والأسعار',
   invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
   techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
   ev:'سجل الأحداث', perms:'الصلاحيات'
@@ -5861,7 +6220,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -5876,7 +6235,8 @@ var NAV = [
   { g:'المال', icon:'\u25B0', items:[['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
       ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
-      ['creps','التقارير الدورية'],['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
+      ['creps','التقارير الدورية'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
+      ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
   { id:'hb', icon:'\u25C9', label:'صحة الأجهزة', solo:true },
   { g:'الإعدادات', icon:'\u2699', items:[
@@ -6071,7 +6431,7 @@ document.addEventListener('click', function(e){
                 'data-asn','data-asngo','data-asnmap','data-selmap','data-selmode','data-selall',
                 'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
                 'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
-                'data-lasn','data-dsch','data-ddone'];
+                'data-lasn','data-dsch','data-ddone','data-stab'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -6212,6 +6572,9 @@ document.addEventListener('click', function(e){
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
 
   /* ── الإسناد ── */
+  var stb = e.target.closest('[data-stab]');
+  if (stb){ STAGE_TAB = stb.getAttribute('data-stab'); render(1); return; }
+
   var la = e.target.closest('[data-lasn]');
   if (la){ FIELD_MODE = la.getAttribute('data-lasn'); selClear(); ASN_OPEN = true;
            CUR = 'req'; render(1); return; }
@@ -6415,6 +6778,21 @@ window.addEventListener('resize', function(){ if (CUR === 'map') mapDraw(); }, {
 
   document.getElementById('langSel').value  = LANG;
   document.getElementById('langSel').onchange = function(){ setLang(this.value); };
+  /* الشريطُ العلوي: لغةٌ تدور على الثلاث، ومظهرٌ يقلب — من أي صفحةٍ بلا فتح القائمة */
+  var lt = document.getElementById('langTop');
+  if (lt) lt.onclick = function(){
+    var order = ['ar','en','ur'], i = order.indexOf(LANG);
+    setLang(order[(i + 1) % 3]);
+    var sel = document.getElementById('langSel');
+    if (sel) sel.value = LANG;
+    render(1);
+  };
+  var tt = document.getElementById('themeTop');
+  if (tt) tt.onclick = function(){
+    setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    render(1);
+  };
+
   document.getElementById('themeBtn').onclick = function(){
     setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
   };
