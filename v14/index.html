@@ -340,7 +340,8 @@ body.nav-open .mapwrap{pointer-events:none}
 .map-sheet .cat.zone.on{background:var(--brand);border-color:var(--brand);color:#fff}
 #mapBox.sat .nskBase{filter:none}
 
-.map-selbar{position:absolute;inset-block-end:96px;inset-inline:11px;z-index:var(--z-map-ui);
+.map-selbar{position:absolute;inset-inline:11px;z-index:calc(var(--z-map-ui) + 2);
+  inset-block-end:calc(190px + env(safe-area-inset-bottom,0px));
   display:flex;align-items:center;gap:10px;background:rgba(58,214,160,.95);color:#04120c;
   border-radius:var(--radius);padding:10px 14px;font-size:12.5px;font-weight:600;
   box-shadow:0 8px 26px rgba(0,0,0,.4);flex-wrap:wrap}
@@ -359,10 +360,13 @@ body.nav-open .mapwrap{pointer-events:none}
 .pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
 .pop-btns .btn,.pop-btns a.btn{min-height:36px}
 
-.map-layerbar{position:absolute;inset-block-start:54px;inset-inline-start:11px;z-index:var(--z-map-ui);
-  display:flex;gap:12px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
-  border-radius:99px;padding:7px 15px;font-size:12px;backdrop-filter:blur(8px);
-  min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.map-layerbar{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
+  inset-block-end:calc(140px + env(safe-area-inset-bottom,0px));
+  display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
+  border-radius:99px;padding:7px 14px;font-size:12px;backdrop-filter:blur(8px);
+  min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:calc(100% - 28px);
+  overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+.map-layerbar::-webkit-scrollbar{display:none}
 .map-layerbar .lb-t{font-weight:800}
 .map-layerbar .lb-n{color:#C6CFD7;font-variant-numeric:tabular-nums}
 .map-layerbar .lb-n b{color:#fff}
@@ -433,6 +437,14 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 /* في الوضع المثبَّت لا شريطَ متصفّحٍ يحمي الحواف */
 @media(display-mode:standalone){
   .topbar{padding-top:calc(env(safe-area-inset-top,0px) + 4px)}
+}
+
+/* وقتَ التحديد أو النقل تُخفى الأسطورةُ والعدّاد — الشاشةُ للعمل لا للشرح */
+.map-busy .map-legend,.map-busy .map-badge{display:none}
+.map-busy .map-layerbar{inset-block-end:calc(96px + env(safe-area-inset-bottom,0px))}
+@media(max-width:560px){
+  .map-selbar{inset-block-end:calc(160px + env(safe-area-inset-bottom,0px));font-size:11.5px}
+  .map-layerbar{font-size:11px;padding:6px 12px;gap:8px}
 }
 
 </style>
@@ -6870,7 +6882,10 @@ function legendRows(){
 /* واجهةُ الخريطة تُرسَم في #mapUI فوق الحاوية الثابتة —
    والحاويةُ نفسها لا يمسّها إعادةُ الرسم فلا تُدمَّر Leaflet. */
 function mapUIHtml(){
-  return '<div class="map-top">'
+  var busy = (typeof MAP_SELECT !== 'undefined' && MAP_SELECT)
+          || (typeof MOVE_ID !== 'undefined' && MOVE_ID);
+  return '<div class="' + (busy ? 'map-busy-on' : '') + '"></div>'
+    + '<div class="map-top">'
     +   Object.keys(LAYERS).map(function(k){
           return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
             + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
@@ -8377,7 +8392,12 @@ function render(force){
     if (mw) mw.hidden = false;
     c.hidden = true;
     c.innerHTML = '';
-    if (mu) mu.innerHTML = mapUIHtml();
+    if (mu){
+      mu.innerHTML = mapUIHtml();
+      /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
+      var busy = MAP_SELECT || MOVE_ID;
+      mu.classList.toggle('map-busy', !!busy);
+    }
     mapDraw();
     if (MAP) mapPaint();
     if (mu) labelCells(mu);
