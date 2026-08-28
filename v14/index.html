@@ -347,6 +347,15 @@ body.nav-open .mapwrap{pointer-events:none}
 .pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
 .pop-btns .btn,.pop-btns a.btn{min-height:36px}
 
+.map-layerbar{position:absolute;inset-block-start:54px;inset-inline-start:11px;z-index:var(--z-map-ui);
+  display:flex;gap:12px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
+  border-radius:99px;padding:7px 15px;font-size:12px;backdrop-filter:blur(8px);
+  min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4)}
+.map-layerbar .lb-t{font-weight:800}
+.map-layerbar .lb-n{color:#C6CFD7;font-variant-numeric:tabular-nums}
+.map-layerbar .lb-n b{color:#fff}
+@media(max-width:560px){.map-layerbar{font-size:11px;padding:6px 11px;gap:8px}}
+
 </style>
 </head>
 <body>
@@ -673,6 +682,15 @@ en:{
  'القطع':'Parts','النقاط':'Points','تحريك':'Move','تعديل البيانات':'Edit data',
  'التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.':'Full categories live in Sites — this is a quick map filter.',
  'التصنيف الكامل':'Full categories','مُسند إلى':'Assigned to',
+ 'الطبقات الثلاث':'The three layers','الفك وإرجاع العُهدة':'Dismantling and custody return',
+ 'جاهز':'ready','تمّ':'done','نقطة وزن':'weight pts','نقاط الوزن':'Weight points',
+ 'في الطبقة':'In layer','جاهزٌ للجدولة':'Ready to schedule','منجَز':'completed',
+ 'افتح الطبقة':'Open layer','إسناد':'Assign','إسناد فك':'Assign dismantling',
+ 'ترتيب الدورة':'Cycle order','قابل للفك':'Dismantlable','مجدول':'Scheduled',
+ 'تم الفك':'Dismantled','نقاط الفك':'Dismantling points','جدوِل':'Schedule',
+ 'جُدوِل للفك':'Scheduled for dismantling','سليم':'Sound','تالف':'Damaged',
+ 'طبقة الفك':'Dismantling layer','معاملا الحالة':'Condition factors',
+ 'يعود للمخزن قابلًا للاستعمال':'Returns to store, usable','يُعزَل ويُوثَّق — وفكُّه أثقل':'Isolated and documented — heavier to remove',
  'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
@@ -822,6 +840,15 @@ ur:{
  'القطع':'پرزے','النقاط':'پوائنٹس','تحريك':'منتقل','تعديل البيانات':'ڈیٹا ترمیم',
  'التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.':'مکمل درجہ بندی مقامات میں ہے',
  'التصنيف الكامل':'مکمل درجہ بندی','مُسند إلى':'تفویض شدہ',
+ 'الطبقات الثلاث':'تین تہیں','الفك وإرجاع العُهدة':'ہٹانا اور امانت واپسی',
+ 'جاهز':'تیار','تمّ':'ہوا','نقطة وزن':'وزن پوائنٹ','نقاط الوزن':'وزن پوائنٹس',
+ 'في الطبقة':'تہ میں','جاهزٌ للجدولة':'شیڈول کے لیے تیار','منجَز':'مکمل',
+ 'افتح الطبقة':'تہ کھولیں','إسناد':'تفویض','إسناد فك':'ہٹانے کی تفویض',
+ 'ترتيب الدورة':'چکر کی ترتیب','قابل للفك':'ہٹانے کے قابل','مجدول':'شیڈول شدہ',
+ 'تم الفك':'ہٹا دیا','نقاط الفك':'ہٹانے کے پوائنٹس','جدوِل':'شیڈول',
+ 'جُدوِل للفك':'ہٹانے کے لیے شیڈول','سليم':'درست','تالف':'خراب',
+ 'طبقة الفك':'ہٹانے کی تہ','معاملا الحالة':'حالت کے عوامل',
+ 'يعود للمخزن قابلًا للاستعمال':'اسٹور واپس، قابلِ استعمال','يُعزَل ويُوثَّق — وفكُّه أثقل':'الگ اور درج — ہٹانا بھاری',
  'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
@@ -2383,15 +2410,16 @@ function techList(){
 
 /* ── لوح الإسناد: قائمةٌ بتحديدٍ متعدد ── */
 function asnSheet(){
-  var base = filtered();
-  var view = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass) : base.slice(0, 200);
+  var L = (typeof LAYER === 'function') ? LAYER() : { n:'المسح', pts:function(){ return 0; }, pass:function(){ return true; } };
+  var base = (typeof layerFiltered === 'function') ? layerFiltered() : filtered();
+  var view = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass).filter(L.pass) : base.slice(0, 200);
   var techs = techList();
+  ASN_KIND = L.kind || ASN_KIND;
 
   return '<div class="pop" id="asnPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
-    +   '<div><h3 style="color:var(--ink)">' + esc(t('اختيار نقاط للإسناد')) + '</h3>'
-    +   '<p class="hint" style="margin:2px 0 0">'
-    +     esc(t('قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفنيّ — دون مغادرة الصفحة.')) + '</p></div>'
+    +   '<div><h3 style="color:var(--ink)">' + (L.i||'') + ' ' + esc(t('إسناد')) + ' — ' + esc(t(L.n)) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">' + esc(t(L.d || '')) + '</p></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-asn="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
@@ -2409,6 +2437,8 @@ function asnSheet(){
     +   btn('امسح التحديد','btn-secondary btn-sm',' data-selnone="1"')
     +   '<span class="pill ' + (SEL_N ? 'acc' : '') + '">' + esc(t('محدَّد'))
     +     ' <b>' + nm(SEL_N) + '</b></span>'
+    +   (SEL_N && selPts() ? '<span class="pill acc">' + esc(t('نقاط الوزن'))
+    +     ' <b>' + nm(selPts()) + '</b></span>' : '')
     + '</div>'
 
     + '<div class="list" style="max-height:38vh;overflow:auto;border:1px solid var(--line);'
@@ -2425,6 +2455,7 @@ function asnSheet(){
             +   (x.sq ? ' · ' + esc(t('مربع')) + ' ' + esc(x.sq) : '')
             + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
             + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
+            + (L.pts(x) ? '<div class="num" style="margin:2px 0 0">' + nm(L.pts(x)) + ' ' + esc(t('نقطة')) + '</div>' : '')
             +   (a ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مُسند')) + ' · ' + esc(a.to) + '</div>' : '')
             + '</div></label>';
         }).join('')
@@ -2940,6 +2971,246 @@ function apprIns(id, ok){
   render();
 }
 
+/* ═══ الطبقات الثلاث — لكلٍّ ما تُظهر وما تُسند ═══
+   المسحُ يرى الكلَّ ويُسند زيارة، والتركيبُ لا يرى إلا ما مُسح ويُسند تركيبًا،
+   والفكُّ لا يرى إلا ما رُكِّب ويُسند فكًّا. فلا يُجدوَل عملٌ قبل ما يسبقه. */
+
+var LAYERS = {
+  survey: {
+    n:'المسح', i:'\u{1F50D}', kind:'visit', c:'#E8C34B',
+    d:'كلُّ النقاط — تُحدَّد وتُسند زيارةً ميدانية.',
+    pass:function(){ return true; },
+    ready:function(x){ return !STATE.recs[x.id]; },
+    done:function(x){ return !!STATE.recs[x.id]; },
+    pts:function(x){ return ptsSurvey(x); },
+    empty:'لا نقاط في هذا الترشيح.'
+  },
+  install: {
+    n:'التركيب', i:'\u{1F527}', kind:'install', c:'#3AD6A0',
+    d:'ما تمّت زيارتُه الميدانية وحده — يُجدوَل ويُسند تركيبًا.',
+    pass:function(x){ return !!STATE.recs[x.id]; },
+    ready:function(x){ return !insDone(x.id); },
+    done:function(x){ return insDone(x.id); },
+    pts:function(x){ return ptsInstall(x); },
+    empty:'لا نقاط مسوحة بعد — التركيبُ لا يُجدوَل قبل المسح.'
+  },
+  dis: {
+    n:'الفك', i:'\u{1F9E9}', kind:'dis', c:'#C77DFF',
+    d:'ما رُكِّب واعتُمد وحده — يُجدوَل للفك وإرجاع العُهدة.',
+    pass:function(x){ return insDone(x.id); },
+    ready:function(x){ return !disDone(x.id); },
+    done:function(x){ return disDone(x.id); },
+    pts:function(x){ return ptsDis(x); },
+    empty:'لا نقاط مركَّبة بعد — الفكُّ آخرُ الدورة.'
+  }
+};
+
+function insDone(id){
+  var r = STATE.inss[id];
+  return !!(r && r.status === 'مُركّب');
+}
+function disDone(id){
+  var r = STATE.diss ? STATE.diss[id] : null;
+  return !!(r && r.status === 'تم الفك');
+}
+
+function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
+
+/* ── النقاط: كلُّ عملٍ وزنُه من الإعدادات ── */
+function catLabel(x){
+  var d = CAT_DEF[x.type];
+  return d ? d.l : x.type;
+}
+
+function ptsSurvey(x){
+  var v = cfgGet('w', x.zone + '|' + catLabel(x));
+  if (v) return v;
+  /* لا وزنَ مضبوطٌ لهذا الصنف — يُقدَّر بوزن نوعه العام إن وُجد */
+  return cfgGet('w', catLabel(x));
+}
+
+function ptsInstall(x){
+  var ins = STATE.inss[x.id];
+  /* إن عُرفت قطعُه حُسبت نقاطُها، وإلا فنقاطُ النقطة الكاملة تقديرًا */
+  if (ins && ins.pts) return ins.pts;
+  var byParts = 0;
+  if (ins && ins.parts) Object.keys(ins.parts).forEach(function(k){
+    byParts += cfgN(ins.parts[k]) * itPts(k);
+  });
+  if (byParts) return byParts;
+  return x.type === 'ممر' ? cfgGet('insCor') : cfgGet('insCamp');
+}
+
+function ptsDis(x){
+  var base = cfgGet('dw', x.zone + '|' + catLabel(x)) || cfgGet('dw', catLabel(x));
+  var r = STATE.diss ? STATE.diss[x.id] : null;
+  var f = (r && r.cond === 'تالف') ? cfgGet('disBad') : cfgGet('disOk');
+  return base * (f || 1);
+}
+
+function ptsOf(x, mode){
+  var L = LAYERS[mode || FIELD_MODE] || LAYERS.survey;
+  return L.pts(x);
+}
+
+/* مجموعُ نقاطِ ما حُدِّد — يُعرَف قبل الإسناد */
+function selPts(){
+  var n = 0, L = LAYER();
+  selIds().forEach(function(id){
+    var x = siteFind(id);
+    if (x) n += L.pts(x);
+  });
+  return Math.round(n * 100) / 100;
+}
+
+/* ── إحصاءُ الطبقة ── */
+function layerStats(mode){
+  var L = LAYERS[mode || FIELD_MODE] || LAYERS.survey;
+  var pool = 0, ready = 0, done = 0, asn = 0, ptsReady = 0, ptsDone = 0;
+  for (var i = 0; i < STATE.sites.length; i++){
+    var x = STATE.sites[i];
+    if (!L.pass(x)) continue;
+    pool++;
+    var p = L.pts(x);
+    if (L.done(x)){ done++; ptsDone += p; }
+    else { ready++; ptsReady += p; }
+    if (asnOf(x.id)) asn++;
+  }
+  return { pool:pool, ready:ready, done:done, asn:asn,
+           ptsReady:Math.round(ptsReady), ptsDone:Math.round(ptsDone),
+           ptsAll:Math.round(ptsReady + ptsDone) };
+}
+
+/* الخريطةُ تُرشِّح بالطبقة ثم بالتصنيف */
+function layerFiltered(){
+  var L = LAYER();
+  var base = (MY_ONLY || ROLE === 'tech') ? mineFiltered() : filtered();
+  return base.filter(function(x){ return L.pass(x); });
+}
+
+/* ── شريطُ الطبقة على الخريطة ── */
+function layerBar(){
+  var L = LAYER(), S = layerStats();
+  return '<div class="map-layerbar">'
+    + '<span class="lb-t" style="color:' + L.c + '">' + L.i + ' ' + esc(t(L.n)) + '</span>'
+    + '<span class="lb-n"><b>' + nm(S.ready) + '</b> ' + esc(t('جاهز')) + '</span>'
+    + '<span class="lb-n">' + nm(S.done) + ' ' + esc(t('تمّ')) + '</span>'
+    + (S.ptsAll ? '<span class="lb-n">' + nm(S.ptsReady) + ' ' + esc(t('نقطة وزن')) + '</span>' : '')
+    + '</div>';
+}
+
+/* ── لوحُ الطبقة: يُظهر ما ينقص قبل أن يُجدوَل ── */
+PAGE.layers = { m:'الميدان', t:'الطبقات الثلاث',
+  l:'ما تُظهره كلُّ طبقةٍ وما تُسنده — ونقاطُها المحسوبة.',
+  body:function(){
+    return '<div class="chips">' + Object.keys(LAYERS).map(function(k){
+        var L = LAYERS[k];
+        return '<button type="button" class="chip' + (FIELD_MODE===k?' on':'') + '" data-mode="' + k + '">'
+          + L.i + ' ' + esc(t(L.n)) + '</button>';
+      }).join('') + '</div>'
+
+      + Object.keys(LAYERS).map(function(k){
+          var L = LAYERS[k], S = layerStats(k);
+          return card(L.i + ' ' + t(L.n),
+            '<p class="hint" style="margin:0 0 12px">' + esc(t(L.d)) + '</p>'
+            + '<div class="stats" style="margin:0">'
+            +   stat('في الطبقة', N(S.pool))
+            +   stat('جاهزٌ للجدولة', N(S.ready), S.ready?'acc':'')
+            +   stat('تمّ', N(S.done), 'ok')
+            +   stat('مُسند', N(S.asn), S.asn?'wrn':'')
+            + '</div>'
+            + (S.ptsAll
+              ? '<div class="alert info" style="margin:12px 0 0"><span>'
+                + esc(t('نقاط الوزن')) + ': ' + esc(t('جاهز')) + ' <b>' + nm(S.ptsReady) + '</b> · '
+                + esc(t('منجَز')) + ' <b>' + nm(S.ptsDone) + '</b> · '
+                + esc(t('الإجمالي')) + ' <b>' + nm(S.ptsAll) + '</b></span></div>'
+              : alertBox('warn','لم تُضبط أوزانُ هذه الطبقة بعد — اكتبها في الإعدادات لتُحسب النقاط.'))
+            + (S.pool ? '' : '<p class="hint">' + esc(t(L.empty)) + '</p>'),
+            '<div class="actions">'
+            + btn('◈ ' + t('افتح الطبقة'),'btn-secondary btn-sm',' data-mode="' + k + '"')
+            + (S.ready ? btn('➕ ' + t('إسناد'),'btn-primary btn-sm',' data-lasn="' + k + '"') : '')
+            + '</div>');
+        }).join('')
+
+      + card('ترتيب الدورة',
+          flow(['مسح','تركيب','فك'], FIELD_MODE==='dis'?2:(FIELD_MODE==='install'?1:0))
+          + '<p class="hint">لا تُجدوَل مرحلةٌ قبل ما يسبقها: التركيبُ لا يظهر إلا لما مُسح، '
+          + 'والفكُّ لا يظهر إلا لما رُكِّب واعتُمد.</p>');
+  }};
+
+/* ── صفحة الفك ── */
+PAGE.disp2 = { m:'الميدان', t:'الفك وإرجاع العُهدة',
+  l:'ما رُكِّب — يُجدوَل للفك وتُرجَع عُهدتُه بحالتها.',
+  body:function(){
+    if (!STATE.diss) STATE.diss = {};
+    var S = layerStats('dis');
+    var pool = STATE.sites.filter(LAYERS.dis.pass);
+    var sched = pool.filter(function(x){ var r = STATE.diss[x.id]; return r && r.status === 'مجدول'; });
+    var done = pool.filter(function(x){ return disDone(x.id); });
+
+    return stats([['قابل للفك', N(S.pool), S.pool?'acc':''],
+                  ['مجدول', N(sched.length), sched.length?'wrn':''],
+                  ['تم الفك', N(done.length), 'ok'],
+                  ['نقاط الفك', N(S.ptsAll)]])
+      + (pool.length
+        ? cardFlush('القابل للفك — ' + nm(pool.length),
+            table(['النقطة','المشعر','النوع','نقاط الفك','الحالة',''],
+              pool.slice(0, 40).map(function(x){
+                var r = STATE.diss[x.id] || {};
+                var d = CAT_DEF[x.type] || { l:x.type, i:'' };
+                return ['<strong>' + esc(x.id) + '</strong>',
+                        esc(x.zone), d.i + ' ' + esc(t(d.l)),
+                        N(ptsDis(x)),
+                        pill(r.status || 'قابل للفك', r.status==='تم الفك'?'ok':(r.status?'warn':'')),
+                        '<div class="actions">'
+                        + (!r.status ? btn('جدوِل','btn-quiet btn-sm',' data-dsch="' + esc(x.id) + '"') : '')
+                        + (r.status === 'مجدول'
+                          ? btn('سليم','btn-quiet btn-sm',' data-ddone="' + esc(x.id) + '|سليم"')
+                            + btn('تالف','btn-quiet btn-sm',' data-ddone="' + esc(x.id) + '|تالف"')
+                          : '')
+                        + '</div>'];
+              })),
+            '<div class="actions">'
+            + btn('◈ ' + t('طبقة الفك'),'btn-secondary btn-sm',' data-mode="dis"')
+            + btn('➕ ' + t('إسناد فك'),'btn-primary btn-sm',' data-lasn="dis"')
+            + '</div>')
+        : card('', alertBox('info','لا نقاط مركَّبةً بعد — الفكُّ آخرُ الدورة ولا يبدأ قبلها.')))
+      + card('معاملا الحالة',
+          table(['الحالة','المعامل','الأثر'], [
+            ['سليم', N(cfgGet('disOk') || 1),
+             '<span class="hint" style="margin:0">' + esc(t('يعود للمخزن قابلًا للاستعمال')) + '</span>'],
+            ['تالف', N(cfgGet('disBad') || 1),
+             '<span class="hint" style="margin:0">' + esc(t('يُعزَل ويُوثَّق — وفكُّه أثقل')) + '</span>']
+          ])
+          + '<p class="hint">المعاملان يُضبطان في الإعدادات ← نقاط الفك، ويضربان وزنَ الفك بحسب حالة الجهاز.</p>');
+  }};
+
+function disSchedule(id){
+  if (!STATE.diss) STATE.diss = {};
+  STATE.diss[id] = { id:id, status:'مجدول', at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
+  CORE.set('diss', id, STATE.diss[id]);
+  logEvent('جدولة فك — ' + id);
+  statBump(); toast(t('جُدوِل للفك')); render(1);
+}
+
+function disComplete(id, cond){
+  if (!STATE.diss) STATE.diss = {};
+  var x = siteFind(id);
+  STATE.diss[id] = { id:id, status:'تم الفك', cond:cond, at:Date.now(),
+                     by:STATE.meta.name || 'محمد صفوت', pts:x ? ptsDis(x) : 0 };
+  CORE.set('diss', id, STATE.diss[id]);
+  /* العُهدةُ ترجع: السليمُ للمخزن والتالفُ يُعزَل */
+  var ins = STATE.inss[id];
+  if (ins && ins.parts) Object.keys(ins.parts).forEach(function(k){
+    STATE.moves.push({ at:new Date().toISOString().slice(0,10),
+                       kind: cond === 'تالف' ? 'إرجاع تالف' : 'إرجاع سليم',
+                       item:k, qty:ins.parts[k], by:STATE.meta.name || '—', site:id, cond:cond });
+  });
+  CORE.dirty('moves', id, cond);
+  logEvent('فك ' + cond + ' — ' + id);
+  statBump(); toast(t('تم الفك') + ' · ' + t(cond)); render(1);
+}
+
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -3375,8 +3646,14 @@ var MAP_COL = {
 
 function mapColorOf(x){
   if (CO_SEL.length) return CO_SEL.indexOf(x.co) > -1 ? coColor(x.co) : '#4A5560';
-  /* حين يُرشَّح بالتصنيف يُلوَّن به — فالخريطةُ تحكي ما اختير */
   if (FILT.type && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
+  /* لونُ الطبقة: المنجَزُ بلونها والجاهزُ أصفرُ انتظار والمُسنَدُ برتقالي */
+  if (typeof LAYERS === 'object' && LAYERS[FIELD_MODE]){
+    var L = LAYERS[FIELD_MODE];
+    if (L.done(x)) return L.c;
+    if (asnOf(x.id)) return '#FF8C42';
+    return '#E8C34B';
+  }
   if (FIELD_MODE === 'survey')
     return MAP_COL.survey[STATE.recs[x.id] ? 'تمت الزيارة' : 'لم يُزر'];
   var st = (STATE.inss[x.id] || {}).status || x.fstat || 'لم يبدأ';
@@ -3459,9 +3736,7 @@ function mapPaint(){
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
   var shown = 0, cap = 4000;
 
-  var LIST = (typeof MY_ONLY !== 'undefined' && (MY_ONLY || ROLE === 'tech'))
-    ? mineFiltered()
-    : ((typeof mapFiltered === 'function') ? mapFiltered() : STATE.sites);
+  var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
   for (var i = 0; i < LIST.length && shown < cap; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
@@ -4267,8 +4542,10 @@ function fieldMap(){
   return '<div class="mapwrap">'
     + '<div id="mapBox" style="position:absolute;inset:0" aria-label="'+esc(t('الخريطة'))+'"></div>'
     + '<div class="map-top">'
-    +   '<button type="button" class="map-chip '+(FIELD_MODE==='survey'?'on':'')+'" data-mode="survey">'+esc(t('المسح'))+'</button>'
-    +   '<button type="button" class="map-chip '+(FIELD_MODE==='install'?'on':'')+'" data-mode="install">'+esc(t('التركيب'))+'</button>'
+    +   Object.keys(LAYERS).map(function(k){
+          return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
+            + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
+        }).join('')
     +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'+esc(t('قمر صناعي'))+'</button>'
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="1">'
     +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' · '+nm(filtered().length):'')+'</button>'
@@ -4279,7 +4556,7 @@ function fieldMap(){
     +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
     +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' · '+nm(CO_SEL.length):'')+'</button>'
     + '</div>'
-    + mapSelBar() + moveBar()
+    + layerBar() + mapSelBar() + moveBar()
     + (ASN_OPEN ? asnSheet() : '')
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<p class="hint" style="margin:0 0 9px">' + esc(t('التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.')) + '</p>'
@@ -5584,7 +5861,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -5767,7 +6044,14 @@ document.addEventListener('click', function(e){
   }
   if (e.target.closest('[data-nav]')) { document.body.classList.toggle('nav-open'); return; }
   var m = e.target.closest('[data-mode]');
-  if (m){ FIELD_MODE = m.getAttribute('data-mode'); render(); return; }
+  if (m){
+    FIELD_MODE = m.getAttribute('data-mode');
+    selClear();
+    if (CUR !== 'map' && CUR !== 'layers') CUR = 'map';
+    render(1);
+    if (MAP) mapPaint();
+    return;
+  }
 
   var pk = e.target.closest('[data-pop]');
   if (pk){ POP_OPEN = pk.getAttribute('data-pop') === '1'; render(); return; }
@@ -5786,7 +6070,8 @@ document.addEventListener('click', function(e){
                 'data-probe','data-wa','data-wacopy','data-wapick','data-sat','data-mfilt','data-mclear',
                 'data-asn','data-asngo','data-asnmap','data-selmap','data-selmode','data-selall',
                 'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
-                'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform'];
+                'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
+                'data-lasn','data-dsch','data-ddone'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -5927,6 +6212,14 @@ document.addEventListener('click', function(e){
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
 
   /* ── الإسناد ── */
+  var la = e.target.closest('[data-lasn]');
+  if (la){ FIELD_MODE = la.getAttribute('data-lasn'); selClear(); ASN_OPEN = true;
+           CUR = 'req'; render(1); return; }
+  var ds = e.target.closest('[data-dsch]');
+  if (ds){ disSchedule(ds.getAttribute('data-dsch')); return; }
+  var dd = e.target.closest('[data-ddone]');
+  if (dd){ var dp = dd.getAttribute('data-ddone').split('|'); disComplete(dp[0], dp[1]); return; }
+
   var mv = e.target.closest('[data-move]');
   if (mv){ moveStart(mv.getAttribute('data-move')); return; }
   if (e.target.closest('[data-movex]')){ MOVE_ID=''; render(1); return; }
