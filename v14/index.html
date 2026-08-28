@@ -318,13 +318,34 @@ body.nav-open .mapwrap{pointer-events:none}
 .cat.zone.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
 .cat.zone.on .n{opacity:.9}
 
-.map-cats{position:absolute;inset-block-start:56px;inset-inline:11px;z-index:var(--z-map-ui);
-  max-height:38vh;overflow:auto;pointer-events:auto}
-.map-cats .catbar{margin:0}
-.map-cats .cat{background:rgba(18,23,28,.92);color:#E8EBEE;border-color:#2A333C;
-  backdrop-filter:blur(6px);font-size:12px;padding:6px 11px;min-height:32px}
-.map-cats .cat.zone.on{background:var(--brand);border-color:var(--brand);color:#fff}
-@media(max-width:560px){ .map-cats{max-height:30vh} }
+.map-sheet{position:absolute;inset-block-start:54px;inset-inline:11px;z-index:var(--z-map-ui);
+  max-height:58vh;overflow:auto;background:rgba(14,18,22,.97);border:1px solid #2A333C;
+  border-radius:var(--radius);padding:13px;backdrop-filter:blur(10px);
+  box-shadow:0 14px 40px rgba(0,0,0,.55)}
+.map-sheet .catbar{margin:0}
+.map-sheet .cat{background:#161C22;color:#E8EBEE;border-color:#2A333C;
+  font-size:12.5px;padding:7px 12px;min-height:36px}
+.map-sheet .cat.zone.on{background:var(--brand);border-color:var(--brand);color:#fff}
+#mapBox.sat .nskBase{filter:none}
+
+.map-selbar{position:absolute;inset-block-end:96px;inset-inline:11px;z-index:var(--z-map-ui);
+  display:flex;align-items:center;gap:10px;background:rgba(58,214,160,.95);color:#04120c;
+  border-radius:var(--radius);padding:10px 14px;font-size:12.5px;font-weight:600;
+  box-shadow:0 8px 26px rgba(0,0,0,.4);flex-wrap:wrap}
+.map-selbar .btn{min-height:36px;padding:6px 13px;font-size:12.5px}
+.list-item.sel{background:var(--brand-soft)}
+
+/* علامةُ الممر والكاميرا: معيّنٌ مائلٌ يُميّزها عن دوائر الباقي */
+.mkC{background:none!important;border:0!important}
+.mkC i{display:block;width:100%;height:100%;transform:rotate(45deg);
+  border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+.pst{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0 0}
+.go{display:inline-flex;align-items:center;min-height:36px;padding:7px 14px;
+  border-radius:99px;border:1.5px solid;background:transparent;font:inherit;
+  font-size:12.5px;font-weight:600;cursor:pointer}
+.pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
+.pop-btns .btn,.pop-btns a.btn{min-height:36px}
 
 </style>
 </head>
@@ -638,7 +659,21 @@ en:{
  'رقم الشاخص':'Sign no.','التصنيف':'Category','المنطقة':'Region','شركة الخدمة / المشغّل':'Service company',
  'تصنيف الحجاج':'Pilgrim class','الإحداثيات':'Coordinates','المسح':'Survey','التركيب':'Installation',
  'دورة هذه النقطة':'This point’s cycle','التعديل يمرّ باعتماد المهندس':'Edits pass through engineer approval',
- 'أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'اختيار نقاط للإسناد':'Pick points to assign','محدَّد':'Selected','حدّد المعروض':'Select shown',
+ 'امسح التحديد':'Clear selection','نوع المهمة':'Task kind','أسند لفني':'Assign to technician',
+ 'حدّد من الخريطة':'Pick on map','حدّد نقاطًا أولًا':'Select points first','نقطةً أُسندت إلى':'points assigned to',
+ 'مهامي':'My tasks','مُسند إليّ':'Assigned to me','بانتظارك':'Awaiting you','تمّ':'Done',
+ 'هذه النقطة مُسندة بالفعل':'Already assigned','مُسند':'Assigned','متاح':'Available','ممسوح':'Surveyed',
+ 'تحديد':'Select','إنهاء التحديد':'End selection','أُلغيت':'Cancelled','شاخص':'Sign','مربع':'Square',
+ 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'Tap points on the map, then Assign',
+ 'موقع معدَّل ميدانيًّا':'Field-adjusted location','حُرِّك الموقع':'Location moved',
+ 'اضغط على الموقع الجديد لـ':'Tap the new location for','اضغط على الموقع الجديد على الخريطة':'Tap the new spot on the map',
+ 'وُسمت زيارةً':'Marked as visited','أُلغي الوسم':'Mark removed','م':'m',
+ 'لم تُجدول زيارة لهذه النقطة بعد':'No visit scheduled for this point yet',
+ 'القطع':'Parts','النقاط':'Points','تحريك':'Move','تعديل البيانات':'Edit data',
+ 'التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.':'Full categories live in Sites — this is a quick map filter.',
+ 'التصنيف الكامل':'Full categories','مُسند إلى':'Assigned to',
+ 'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -773,7 +808,21 @@ ur:{
  'رقم الشاخص':'نشان نمبر','التصنيف':'درجہ بندی','المنطقة':'علاقہ','شركة الخدمة / المشغّل':'خدمت کمپنی',
  'تصنيف الحجاج':'حجاج کی درجہ بندی','الإحداثيات':'کوآرڈینیٹس','المسح':'سروے','التركيب':'تنصیب',
  'دورة هذه النقطة':'اس پوائنٹ کا چکر','التعديل يمرّ باعتماد المهندس':'ترمیم انجینئر کی منظوری سے',
- 'أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
+ 'اختيار نقاط للإسناد':'تفویض کے لیے پوائنٹس','محدَّد':'منتخب','حدّد المعروض':'دکھائے گئے منتخب',
+ 'امسح التحديد':'انتخاب صاف','نوع المهمة':'کام کی قسم','أسند لفني':'ٹیکنیشن کو تفویض',
+ 'حدّد من الخريطة':'نقشے سے منتخب','حدّد نقاطًا أولًا':'پہلے پوائنٹس منتخب کریں','نقطةً أُسندت إلى':'پوائنٹس تفویض ہوئے',
+ 'مهامي':'میرے کام','مُسند إليّ':'مجھے تفویض','بانتظارك':'آپ کے منتظر','تمّ':'ہو گیا',
+ 'هذه النقطة مُسندة بالفعل':'پہلے سے تفویض شدہ','مُسند':'تفویض شدہ','متاح':'دستیاب','ممسوح':'سروے شدہ',
+ 'تحديد':'منتخب','إنهاء التحديد':'انتخاب ختم','أُلغيت':'منسوخ','شاخص':'نشان','مربع':'مربع',
+ 'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'نقشے پر پوائنٹس دبائیں پھر تفویض کریں',
+ 'موقع معدَّل ميدانيًّا':'میدانی طور پر ترمیم شدہ','حُرِّك الموقع':'مقام منتقل ہوا',
+ 'اضغط على الموقع الجديد لـ':'نیا مقام دبائیں','اضغط على الموقع الجديد على الخريطة':'نقشے پر نیا مقام دبائیں',
+ 'وُسمت زيارةً':'دورہ درج ہوا','أُلغي الوسم':'نشان ہٹا','م':'م',
+ 'لم تُجدول زيارة لهذه النقطة بعد':'ابھی دورہ شیڈول نہیں',
+ 'القطع':'پرزے','النقاط':'پوائنٹس','تحريك':'منتقل','تعديل البيانات':'ڈیٹا ترمیم',
+ 'التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.':'مکمل درجہ بندی مقامات میں ہے',
+ 'التصنيف الكامل':'مکمل درجہ بندی','مُسند إلى':'تفویض شدہ',
+ 'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
  'أدخل جوال المنسّق':'رابط کار موبائل درج کریں','تعذّر الفتح':'کھولا نہ جا سکا','إشعار':'اطلاع',
@@ -1777,6 +1826,1289 @@ function waSend(kind, copy){
   logEvent('إشعار واتساب — ' + co);
 }
 
+/* ═══ فرق العمل — أربعةٌ لكلٍّ نوعُ مهمته وتقاريره ═══
+   WO_KINDS في العامل أربعة: زيارة · تهيئة · تجميع · تركيب.
+   الفريق دورٌ مخصَّصٌ يرث «مشرف» ويُقيَّد بنوعٍ واحد — فلا يرى إلا شغله. */
+
+var WO_KINDS = {
+  visit:   { n:'زيارة',  i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
+  prep:    { n:'تهيئة',  i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
+  asm:     { n:'تجميع',  i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
+  install: { n:'تركيب',  i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' }
+};
+
+var CREWS = [
+  { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',
+    d:'يديرون المشروع ويعتمدون ما يرفعه الفرق.',
+    members:['محمد صفوت'] },
+  { id:'cprep', n:'فريق التهيئة',  base:'supervisor', kind:'prep',
+    d:'ضبط الجهاز وعنوانه ونظامه وفحصه قبل النزول.',
+    members:['فريق ١','أحمد'] },
+  { id:'casm',  n:'فريق التجميع',  base:'supervisor', kind:'asm',
+    d:'تركيب ما يدخل البوكس وتوصيله قبل النزول.',
+    members:['فريق ٢'] },
+  { id:'cins',  n:'فريق التركيب',  base:'supervisor', kind:'install',
+    d:'تركيب النقطة في موقعها وتوثيقها.',
+    members:['فريق ٣','سالم'] }
+];
+
+/* أرقام تمثيلية لكل فريق عبر الدورات الثلاث */
+var CREW_STATS = {
+  eng:   { day:0, week:0, month:0, tgtM:0,     open:0, done:0 },
+  cprep: { day:0, week:0, month:0, get tgtM(){ return T().prep; }, open:0, done:0 },
+  casm:  { day:0, week:0, month:0, get tgtM(){ return T().asm; },  open:0, done:0 },
+  cins:  { day:0, week:0, month:0, get tgtM(){ return T().ins; },  open:0, done:0 }
+};
+
+function crewOf(id){ return CREWS.filter(function(c){ return c.id === id; })[0] || CREWS[0]; }
+
+/* ── متابعة الفرق — لوحة المهندس ─────────────────── */
+PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة فرق — كلٌّ بنوع مهمته وتارجته ودوريته.',
+  body:function(){
+    var C = K();
+    return stats([['فرق عاملة', N(CREWS.length - 1), 'acc'],
+                  ['أعضاء', N(CREWS.reduce(function(a,c){ return a + c.members.length; }, 0))],
+                  ['مهام مفتوحة','٠','wrn'],
+                  ['نقاط اليوم','٠','ok']])
+      + CREWS.map(function(c){
+          var S = CREW_STATS[c.id];
+          var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+          return card((K ? K.i + ' ' : '\u{1F393} ') + t(c.n),
+            '<p class="hint" style="margin:0 0 12px">' + esc(t(c.d)) + '</p>'
+            + '<div class="stats" style="margin:0 0 12px">'
+            +   stat('اليوم','<span class="num">'+nm(S.day)+'</span>')
+            +   stat('هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>')
+            +   stat('هذا الشهر','<span class="num">'+nm(S.month)+'</span>')
+            +   stat('تارجت الشهر', S.tgtM ? '<span class="num">'+nm(S.tgtM)+'</span>' : '—')
+            + '</div>'
+            + (S.tgtM ? meter('الإنجاز من تارجت الشهر', S.month, S.tgtM) : '')
+            + '<div class="hint" style="margin:12px 0 0">'
+            +   '<strong>' + esc(t('الأعضاء')) + ':</strong> ' + c.members.map(esc).join(' · ')
+            +   ' · <strong>' + esc(t('يرث')) + ':</strong> ' + esc(t(c.base === 'engineer' ? 'مهندس' : 'مشرف'))
+            + '</div>',
+            '<div class="actions">'
+            + (K ? pill(K.n,'acc') : pill('كل الأنواع','ok'))
+            + btn('تقرير الفريق','btn-secondary btn-sm')
+            + '</div>');
+        }).join('')
+      + card('كيف تُحسب النقطة',
+          flow(['تهيئة ' + nm(C.stgCfg) + '٪','تجميع ' + nm(C.stgVal) + '٪','تركيب ' + nm(C.stgIns) + '٪'], -1)
+          + '<p class="hint">النقطة الواحدة تُقسَّم على مراحلها الثلاث — فلكل فريقٍ نصيبُه منها، ومجموعها مئةٌ دائمًا.</p>');
+  }};
+
+/* ── التقارير الدورية ───────────────────────────── */
+var PERIODS = [
+  ['day',   'يومي',    'نهاية كل يوم عمل',      '١٧:٠٠'],
+  ['week',  'أسبوعي',  'صباح أول يوم في الأسبوع','٠٧:٠٠'],
+  ['month', 'شهري',    'أول يوم في الشهر',       '٠٧:٠٠']
+];
+
+var CREW_REPORTS = [
+  ['نقاط اليوم لكل منفِّذ',      'day',   'كل الفرق', 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته'],
+  ['المفتوح والمتأخر',           'day',   'كل الفرق', 'المهام التي لم تُقفل ومَن عندها'],
+  ['الفريق مقابل تارجته',        'week',  'كل الفرق', 'الأسبوعي مقابل ما أُنجز فعلًا'],
+  ['الورشة — تهيئةً وتجميعًا',   'week',  'التهيئة والتجميع', 'ما خرج من الورشة جاهزًا للنزول'],
+  ['التركيب في الميدان',         'week',  'التركيب',  'ما رُكّب وما تعذّر وما ينتظر التدقيق'],
+  ['المسح الميداني',             'week',  'الزيارة',  'ما مُسح وما بقي وتحدياته'],
+  ['أداء الفرق الشهري',          'month', 'كل الفرق', 'الشهر كاملًا مقابل التارجت مع الاتجاه'],
+  ['العُهدة والمستهلك',          'month', 'كل الفرق', 'ما في يد كل فريق وما استهلكه'],
+  ['الملخص التنفيذي',            'month', 'المهندسون','المشروع كله في صفحة'],
+];
+
+PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما يُرفع تلقائيًّا — يوميًّا وأسبوعيًّا وشهريًّا.',
+  body:function(){
+    return card('الدوريات',
+        table(['الدورية','متى تُرسَل','الوقت','تقارير'],
+          PERIODS.map(function(p){
+            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
+            return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
+                    '<input type="time" value="' + (p[0]==='day'?'17:00':'07:00') + '" style="max-width:130px">',
+                    N(n)];
+          })),
+        btn('حفظ المواعيد','btn-primary btn-sm'))
+      + PERIODS.map(function(p){
+          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
+          return cardFlush(t(p[1]) + ' — ' + nm(L.length),
+            table(['التقرير','لمن','ما يحويه',''],
+              L.map(function(r){
+                return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
+                        '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
+                        '<div class="actions">' + btn('إكسل','btn-quiet btn-sm')
+                        + btn('PDF','btn-quiet btn-sm') + '</div>'];
+              })));
+        }).join('')
+      + card('قناة الإرسال',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
+          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
+          + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
+          + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
+          + '</div>')
+      + '<p class="hint">التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.</p>';
+  }};
+
+/* ── شغل الفريق — ما يراه عضوه ──────────────────── */
+PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
+  body:function(){
+    var c = crewOf(CREW_VIEW);
+    var S = CREW_STATS[c.id];
+    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
+        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
+          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
+      }).join('') + '</div>'
+      + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
+               ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
+               ['هذا الشهر','<span class="num">'+nm(S.month)+'</span>','acc'],
+               ['مفتوح','<span class="num">'+nm(S.open)+'</span>','wrn']])
+      + (S.tgtM ? card('مقابل التارجت',
+          meter('الشهري', S.month, S.tgtM)
+          + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
+      + cardFlush('مهام الفريق',
+          '<p class="hint" style="padding:16px;text-align:center;margin:0">لا مهام مفتوحة من نوع '
+          + esc(K ? t(K.n) : t('كل الأنواع')) + '.</p>',
+          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+      + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
+        + '<p class="hint">المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.</p>');
+  }};
+
+var CREW_VIEW = 'cprep';
+
+/* ═══ حسابات الفنيين — إنشاءٌ جماعيٌّ وفرديّ ═══
+   الفني يعمل تحت مشرفه: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا.
+   ويُولَّد له اسم مستخدمٍ من اسمه وكلمةُ مرورٍ يبدّلها أول دخول. */
+
+var TECHS = [
+  { n:'أحمد',   ph:'0501234567', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'سالم',   ph:'0502345678', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'ماجد',   ph:'0503456789', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'ياسر',   ph:'0504567890', crew:'ورشة التهيئة',  sup:'خالد',  u:'', has:0 },
+  { n:'عبدالله',ph:'0505678901', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 },
+  { n:'طارق',   ph:'0506789012', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 }
+];
+
+/* اسم المستخدم من الاسم العربي — أولُ حرفٍ لاتينيٍّ ونقطةٌ ثم بقيته */
+var TR_MAP = { 'ا':'a','أ':'a','إ':'i','آ':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
+  'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
+  'ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w','ي':'y','ى':'a','ة':'a' };
+
+function userOf(name){
+  var s = String(name || '').trim().split(/\s+/)[0];
+  var out = '';
+  for (var i = 0; i < s.length; i++) out += (TR_MAP[s[i]] || '');
+  return out ? (out[0] + '.' + out.slice(1)) : 'tech';
+}
+
+function pwGen(){
+  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ', b = 'abcdefghijkmnpqrstuvwxyz', c = '23456789';
+  var p = '';
+  for (var i = 0; i < 3; i++) p += a[Math.floor(Math.random()*a.length)];
+  for (var j = 0; j < 3; j++) p += b[Math.floor(Math.random()*b.length)];
+  for (var k = 0; k < 4; k++) p += c[Math.floor(Math.random()*c.length)];
+  return p;
+}
+
+var TECH_MADE = [];
+
+PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين',
+  l:'أنشئ لكل فنيٍّ حسابًا بصلاحية «فني» — فردًا أو دفعةً واحدة.',
+  body:function(){
+    var no = TECHS.filter(function(x){ return !x.has; });
+    return stats([['فنيون', N(TECHS.length)],
+                  ['لهم حسابات', N(TECHS.length - no.length), 'ok'],
+                  ['بلا حساب', N(no.length), no.length ? 'wrn' : ''],
+                  ['الصلاحية','فني','acc']])
+
+      + (no.length
+        ? card('إنشاء دفعةً واحدة',
+            '<p class="hint" style="margin:0 0 12px">'
+            + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه «فني» ومشرفُه كما هو مسجَّل. ويبدّل كلمته أولَ دخول.'))
+            + '</p>'
+            + table(['الفني','اسم المستخدم','الفريق','مشرفه','الصلاحية'],
+                no.map(function(x){
+                  return [esc(x.n), '<code class="hint" dir="ltr" style="margin:0">' + esc(userOf(x.n)) + '</code>',
+                          esc(x.crew), esc(x.sup), pill('فني','acc')];
+                })),
+            btn('➕ ' + t('أنشئ') + ' ' + nm(no.length) + ' ' + t('حسابًا'),'btn-primary btn-sm',' data-mkall="1"'))
+        : alertBox('success','كل الفنيين لهم حسابات.'))
+
+      + cardFlush('الفنيون — ' + nm(TECHS.length),
+          table(['الفني','الجوال','الفريق','مشرفه','الحساب',''],
+            TECHS.map(function(x, i){
+              return ['<strong>' + esc(x.n) + '</strong>',
+                      may('phones') ? '<span class="num">' + esc(x.ph) + '</span>'
+                                    : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
+                      esc(x.crew), esc(x.sup),
+                      x.has ? '<code class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</code>'
+                            : pill('بلا حساب','off'),
+                      x.has ? btn('تصفير كلمة المرور','btn-quiet btn-sm')
+                            : btn('أنشئ حسابًا','btn-primary btn-sm',' data-mkone="' + i + '"')];
+            })),
+          btn('➕ إضافة فني','btn-secondary btn-sm'))
+
+      + (TECH_MADE.length
+        ? card('حسابات أُنشئت الآن',
+            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
+            + table(['الفني','اسم المستخدم','كلمة المرور'],
+                TECH_MADE.map(function(m){
+                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
+                          '<code dir="ltr">' + esc(m.p) + '</code>'];
+                })),
+            btn('نسخ الكل','btn-secondary btn-sm'))
+        : '')
+
+      + card('ما يملكه الفني',
+          table(['القدرة','له'],
+            [['رؤية المُسند إليه','نعم'], ['المسح والتوثيق','نعم'],
+             ['التركيب والفك','نعم'], ['رؤية فريقه وأرقامه','نعم'],
+             ['رؤية نقاط غيره','لا'], ['الاعتماد','لا'],
+             ['الإعدادات والمال','لا'], ['إدارة الحسابات','لا']
+            ].map(function(r){
+              return [esc(t(r[0])), r[1] === 'نعم' ? pill('نعم','ok') : pill('لا','off')];
+            })))
+      + '<p class="hint">الفني يرث «مشرف» ويعمل تحته — فقواعدُ Firebase تسمح له بما أُسند إليه وحده، وترفض ما عداه ولو التفّ على الواجهة.</p>';
+  }};
+
+function mkAccount(i){
+  var x = TECHS[i];
+  if (!x || x.has) return;
+  x.u = userOf(x.n);
+  x.has = 1;
+  TECH_MADE.push({ n:x.n, u:x.u, p:pwGen() });
+}
+
+/* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
+   التركيب: المخيم أربعةٌ (مشرف + ثلاثة) بمعدل مخيمين يوميًّا،
+            والممر خمسةٌ (مشرف + أربعة) ومعدّتان بمعدل نقطةٍ واحدةٍ يوميًّا.
+   الزيارة: عشرون مخيمًا أو عشر نقاط ممرٍّ يوميًّا.
+   وتارجت التركيب يُحسب على قطع النقطة لا على عددها. */
+
+var CREW_SPEC = [
+  { k:'ins_camp', n:'فريق تركيب — مخيمات', kind:'install', zone:'camp',
+    sup:1, tech:3, gear:0, rate:2,
+    d:'مشرفٌ وثلاثة فنيين — مخيمان في اليوم.' },
+  { k:'ins_cor',  n:'فريق تركيب — ممرات',  kind:'install', zone:'cor',
+    sup:1, tech:4, gear:2, rate:1,
+    d:'مشرفٌ وأربعة فنيين ومعدّتان — نقطةُ ممرٍّ واحدةٌ في اليوم.' },
+  { k:'srv_camp', n:'فريق مسح — مخيمات',   kind:'visit',   zone:'camp',
+    sup:1, tech:1, gear:0, rate:20,
+    d:'عشرون مخيمًا في اليوم.' },
+  { k:'srv_cor',  n:'فريق مسح — ممرات',    kind:'visit',   zone:'cor',
+    sup:1, tech:1, gear:0, rate:10,
+    d:'عشر نقاط ممرٍّ في اليوم.' }
+];
+
+var UNITS = { camp:1392, cor:190 };
+
+function crewNeed(spec, months){
+  var days = cfgGet('days') * months;
+  var units = UNITS[spec.zone] || 0;
+  var rate = crewVal(spec.k,'Rate') || spec.rate;
+  var crewDays = rate ? (units / rate) : 0;
+  var crews = days ? Math.ceil(crewDays / days) : 0;
+  var sup = crewVal(spec.k,'Sup'), tec = crewVal(spec.k,'Tech'), ger = crewVal(spec.k,'Gear');
+  if (!sup && !tec) { sup = spec.sup; tec = spec.tech; ger = spec.gear; }
+  return { units:units, crewDays:Math.round(crewDays), crews:crews,
+           people:crews * (sup + tec), gear:crews * ger, sup:sup, tech:tec, rate:rate };
+}
+
+var PLAN_MONTHS = 4;
+
+PAGE.crewplan = { m:'الفرق والفنيون', t:'الطواقم والمعدلات',
+  l:'كم فريقًا يلزم لبلوغ الموعد — محسوبًا من معدل كل نوع.',
+  body:function(){
+    var C = K();
+    var rows = CREW_SPEC.map(function(s){ return { s:s, r:crewNeed(s, PLAN_MONTHS) }; });
+    var ins = rows.filter(function(x){ return x.s.kind === 'install'; });
+    var srv = rows.filter(function(x){ return x.s.kind === 'visit'; });
+    var sum = function(L, f){ return L.reduce(function(a,x){ return a + f(x); }, 0); };
+
+    return '<div class="chips">' + [3,4,5,6].map(function(m){
+        return '<button type="button" class="chip' + (PLAN_MONTHS===m?' on':'') + '" data-months="' + m + '">'
+          + nm(m) + ' ' + esc(t('أشهر')) + '</button>';
+      }).join('') + '</div>'
+
+      + stats([['فرق التركيب', N(sum(ins,function(x){return x.r.crews;})), 'acc'],
+               ['أفرادها', N(sum(ins,function(x){return x.r.people;}))],
+               ['معدّات', N(sum(ins,function(x){return x.r.gear;})), 'wrn'],
+               ['أيام العمل', N((C.days||26) * PLAN_MONTHS)]])
+
+      + cardFlush('طواقم التركيب',
+          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد','معدّات'],
+            ins.map(function(x){
+              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
+                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
+                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
+                      '<span class="pill acc">' + nm(x.r.crews) + '</span>',
+                      N(x.r.people), x.r.gear ? N(x.r.gear) : '—'];
+            }),
+            ['الإجمالي','','', N(sum(ins,function(x){return x.r.units;})),
+             N(sum(ins,function(x){return x.r.crewDays;})),
+             N(sum(ins,function(x){return x.r.crews;})),
+             N(sum(ins,function(x){return x.r.people;})),
+             N(sum(ins,function(x){return x.r.gear;}))]))
+
+      + cardFlush('طواقم المسح',
+          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد'],
+            srv.map(function(x){
+              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
+                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
+                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
+                      '<span class="pill acc">' + nm(x.r.crews) + '</span>', N(x.r.people)];
+            }),
+            ['الإجمالي','','', N(sum(srv,function(x){return x.r.units;})),
+             N(sum(srv,function(x){return x.r.crewDays;})),
+             N(sum(srv,function(x){return x.r.crews;})),
+             N(sum(srv,function(x){return x.r.people;}))]))
+
+      + card('ضبط المعدلات',
+          table(['النوع','مشرف','فنيون','معدّات','المعدل/يوم'],
+            CREW_SPEC.map(function(s){
+              return [esc(t(s.n)),
+                      cfgInput('crewSup', s.k), cfgInput('crewTech', s.k),
+                      cfgInput('crewGear', s.k), cfgInput('crewRate', s.k, { dec:1 })];
+            })),
+          btn('حفظ المعدلات','btn-primary btn-sm'))
+
+      + card('تارجت التركيب يُحسب على القطع',
+          '<p class="hint" style="margin:0 0 12px">عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. '
+          + 'فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.</p>'
+          + flow(['مسح الموقع','اعتماد المسح','تُحدَّد قطع النقطة','تدخل الجدولة','تُركَّب وتُحتسب قطعًا'], 0)
+          + '<div class="alert warn" style="margin:12px 0 0"><span>'
+          + esc(t('القطع لكل نقطة تُحدَّد بعد اعتماد المسح — فالتارجت بالقطع يبقى تقديريًّا حتى يكتمل المسح.'))
+          + '</span></div>');
+  }};
+
+/* ═══ موديول الصلاحيات — واجهةً وقواعدَ Firebase ═══ */
+
+var PERMS = [
+  ['read_all',     'قراءة كل النقاط',        ['engineer','viewer']],
+  ['read_own',     'قراءة المُسند إليه',      ['engineer','supervisor','tech','cprep','casm','cins']],
+  ['write_survey', 'تسجيل المسح',            ['engineer','supervisor','tech','cins']],
+  ['write_prep',   'تنفيذ التهيئة',          ['engineer','cprep']],
+  ['write_asm',    'تنفيذ التجميع',          ['engineer','casm']],
+  ['write_install','تنفيذ التركيب',          ['engineer','tech','cins']],
+  ['approve',      'اعتماد ما رُفع',          ['engineer']],
+  ['assign',       'إسناد المهام',            ['engineer','supervisor']],
+  ['inventory',    'المخزون والعُهدة',        ['engineer']],
+  ['money',        'المال والمشتريات',        ['engineer']],
+  ['settings',     'الإعدادات والتارجت',      ['engineer']],
+  ['users',        'إدارة الحسابات والأدوار', ['engineer']],
+  ['phones',       'أرقام هواتف فريقه',       ['engineer','supervisor','tech','cprep','casm','cins']],
+  ['export_all',   'التصدير الكامل',          ['engineer']],
+  ['export_rep',   'تصدير التقارير',          ['engineer','viewer']]
+];
+
+var ROLE_ORDER = ['engineer','supervisor','tech','cprep','casm','cins','viewer'];
+
+function roleName(k){
+  return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
+           casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || k;
+}
+
+PAGE.perms = { m:'الإعدادات', t:'الصلاحيات', l:'ما يملكه كل دور — واجهةً وقاعدةَ بيانات.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">الصلاحية تُفرَض في موضعين: الواجهة لا تبني ما لا يملكه الدور، وقواعد Firebase ترفض ما لا يملكه ولو التفّ على الواجهة. والمصدر واحد — هذا الجدول.</p>'
+      + cardFlush('المصفوفة',
+          table(['الصلاحية'].concat(ROLE_ORDER.map(roleName)),
+            PERMS.map(function(p){
+              return ['<strong>' + esc(t(p[1])) + '</strong><br>'
+                      + '<span class="hint" dir="ltr" style="margin:0">' + p[0] + '</span>']
+                .concat(ROLE_ORDER.map(function(r){
+                  return p[2].indexOf(r) > -1
+                    ? '<span class="pill ok">✓</span>' : '<span class="pill off">—</span>';
+                }));
+            })),
+          btn('حفظ المصفوفة','btn-primary btn-sm'))
+      + card('قواعد Firebase المولَّدة',
+          '<p class="hint" style="margin:0 0 11px">تُولَّد من المصفوفة أعلاه وتُنشر على Firestore — فلا تفترق الواجهةُ عن القاعدة.</p>'
+          + '<pre style="background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);'
+          + 'padding:13px;overflow:auto;font-size:11.5px;line-height:1.75;direction:ltr;text-align:left;margin:0">'
+          + esc(fbRules()) + '</pre>',
+          '<div class="actions">' + btn('نسخ','btn-secondary btn-sm')
+          + btn('نشر على Firestore','btn-primary btn-sm') + '</div>')
+      + '<div class="alert warn"><span>أرقام الهواتف محجوبةٌ عن الوزارة في القاعدة نفسها — لا إخفاءً في الواجهة وحدها.</span></div>';
+  }};
+
+function fbRules(){
+  return 'rules_version = \'2\';\n'
+    + 'service cloud.firestore {\n'
+    + '  match /databases/{db}/documents {\n\n'
+    + '    function role() {\n'
+    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.role;\n'
+    + '    }\n'
+    + '    function crewKind() {\n'
+    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.kind;\n'
+    + '    }\n'
+    + '    function isEng()  { return role() == \'engineer\'; }\n'
+    + '    function isSup()  { return role() in [\'engineer\',\'supervisor\']; }\n'
+    + '    function isCrew() { return role() in [\'tech\',\'cprep\',\'casm\',\'cins\']; }\n'
+    + '    function mine(d)  { return d.assignedTo == request.auth.uid; }\n\n'
+    + '    match /sites/{id} {\n'
+    + '      allow read:  if request.auth != null;\n'
+    + '      allow write: if isSup() || (isCrew() && mine(resource.data));\n'
+    + '    }\n\n'
+    + '    match /tasks/{id} {\n'
+    + '      allow read:   if isSup() || (isCrew() && mine(resource.data));\n'
+    + '      allow create: if isSup();\n'
+    + '      allow update: if isEng()\n'
+    + '                    || (isCrew() && mine(resource.data)\n'
+    + '                        && resource.data.kind == crewKind()\n'
+    + '                        && request.resource.data.status != \'معتمد\');\n'
+    + '    }\n\n'
+    + '    match /inventory/{id} { allow read, write: if isEng(); }\n'
+    + '    match /purchases/{id} { allow read: if isEng() || role() == \'viewer\';\n'
+    + '                            allow write: if isEng(); }\n'
+    + '    match /settings/{id}  { allow read: if request.auth != null;\n'
+    + '                            allow write: if isEng(); }\n'
+    + '    match /users/{uid} {\n'
+    + '      allow read:  if isEng() || request.auth.uid == uid;\n'
+    + '      allow write: if isEng();\n'
+    + '    }\n\n'
+    + '    // الهاتف حقلٌ محجوبٌ عن الوزارة في القاعدة\n'
+    + '    match /techs/{id} {\n'
+    + '      allow read: if isSup() || isCrew();\n'
+    + '      allow read: if role() == \'viewer\'\n'
+    + '                  && !(\'phone\' in resource.data.keys());\n'
+    + '      allow write: if isEng();\n'
+    + '    }\n'
+    + '  }\n'
+    + '}';
+}
+
+/* ═══ إسناد الدور والفريق للمستخدم ═══ */
+
+var ASSIGN = [
+  ['محمد صفوت','m.safwat','engineer','—','—'],
+  ['خالد',      'k.mina','supervisor','ins_camp','فريق مخيمات ١'],
+  ['أحمد',      'a.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['سالم',      's.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['ماجد',      'm.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['ياسر',      'y.prep','cprep','—','ورشة التهيئة'],
+  ['وزارة الحج','moh.view','viewer','—','—']
+];
+
+PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'من في أي دور وأي فريق.',
+  body:function(){
+    return card('إسناد',
+        '<div class="grid cols-2">'
+        + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
+        + '<select>' + ASSIGN.map(function(u){
+            return '<option>' + esc(u[0]) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+        + '<select>' + ROLE_ORDER.map(function(r){
+            return '<option value="' + r + '">' + esc(t(roleName(r))) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('نوع الفريق')) + '</label>'
+        + '<select><option>—</option>' + CREW_SPEC.map(function(s){
+            return '<option value="' + s.k + '">' + esc(t(s.n)) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('اسم الفريق')) + '</label>'
+        + '<input placeholder="فريق مخيمات ٢"></div>'
+        + '</div>', btn('إسناد','btn-primary btn-sm'))
+      + cardFlush('المسنَدون — ' + nm(ASSIGN.length),
+          table(['المستخدم','الدور','نوع الفريق','الفريق',''],
+            ASSIGN.map(function(u){
+              var sp = CREW_SPEC.filter(function(s){ return s.k === u[3]; })[0];
+              return ['<strong>' + esc(u[0]) + '</strong><br>'
+                      + '<span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
+                      pill(roleName(u[2]), u[2]==='engineer'?'ok':(u[2]==='viewer'?'info':'acc')),
+                      sp ? esc(t(sp.n)) : '<span class="hint" style="margin:0">—</span>',
+                      esc(u[4]), btn('تغيير','btn-quiet btn-sm')];
+            })))
+      + '<p class="hint">الدور يُكتب في وثيقة المستخدم في Firebase، فتقرؤه القواعد مباشرةً — لا نسخةَ ثانيةً تفترق عنها.</p>';
+  }};
+
+/* ═══ فريق المشرف — من معه ═══ */
+
+PAGE.myteam = { m:'الفرق والفنيون', t:'فريقي', l:'من معك ومَن أنجز ماذا اليوم.',
+  body:function(){
+    var team = ASSIGN.filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
+    var sp = CREW_SPEC[0];
+    return stats([['أفراد الفريق', N(team.length), 'acc'],
+                  ['المعدل اليومي', N(sp.rate) + ' ' + esc(t('مخيم'))],
+                  ['أنجزنا اليوم','٠','ok'],
+                  ['المتبقي عليّ','٠','wrn']])
+      + cardFlush('أفراد فريقي',
+          table(['العضو','الدور','اليوم','هذا الأسبوع','الحالة'],
+            team.map(function(u){
+              return ['<strong>' + esc(u[0]) + '</strong>',
+                      pill(u[2]==='supervisor' ? 'مشرف' : 'فني', u[2]==='supervisor'?'ok':'acc'),
+                      '٠','٠', pill('متاح','ok')];
+            })),
+          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+      + card('طاقم الفريق ومعدله',
+          '<div class="hint" style="margin:0">'
+          + '<strong>' + esc(t(sp.n)) + '</strong> — ' + esc(t(sp.d))
+          + '</div>'
+          + '<div class="stats" style="margin:13px 0 0">'
+          + stat('مشرف', N(sp.sup)) + stat('فنيون', N(sp.tech))
+          + stat('معدّات', sp.gear ? N(sp.gear) : '—')
+          + stat('المعدل/يوم', N(sp.rate))
+          + '</div>')
+      + '<p class="hint">أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.</p>';
+  }};
+
+/* ═══ الإسناد — من القائمة أو الخريطة ═══
+   يُحدَّد ما يُراد ثم يُسند لفنيٍّ، فيراه في خريطته وحده.
+   والمُسنَدُ لا يُسنَد مرةً ثانيةً — فلا يُشتّت فنيّان على نقطةٍ واحدة. */
+
+var ASN_OPEN = false, ASN_TO = '', ASN_KIND = 'visit', ASN_WHEN = '';
+var SEL = Object.create(null), SEL_N = 0;
+
+function selHas(id){ return !!SEL[id]; }
+function selToggle(id){
+  if (SEL[id]){ delete SEL[id]; SEL_N--; }
+  else { SEL[id] = 1; SEL_N++; }
+}
+function selClear(){ SEL = Object.create(null); SEL_N = 0; }
+function selIds(){ return Object.keys(SEL); }
+function selAll(list){
+  list.forEach(function(x){ if (!SEL[x.id] && !asnOf(x.id)){ SEL[x.id] = 1; SEL_N++; } });
+}
+
+/* من أُسند إليه هذا الموقع — إن أُسند */
+function asnOf(id){
+  var T = STATE.tasks;
+  for (var k in T) if (T[k] && T[k].site === id && T[k].status !== 'معتمد') return T[k];
+  return null;
+}
+
+function techList(){
+  var out = TECHS.map(function(x){ return x.n; });
+  ASSIGN.forEach(function(u){
+    if (['tech','cins','cprep','casm','supervisor'].indexOf(u[2]) > -1 && out.indexOf(u[0]) < 0)
+      out.push(u[0]);
+  });
+  return out;
+}
+
+/* ── لوح الإسناد: قائمةٌ بتحديدٍ متعدد ── */
+function asnSheet(){
+  var base = filtered();
+  var view = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass) : base.slice(0, 200);
+  var techs = techList();
+
+  return '<div class="pop" id="asnPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    +   '<div><h3 style="color:var(--ink)">' + esc(t('اختيار نقاط للإسناد')) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">'
+    +     esc(t('قسّم القائمة بالفئة ثم حدّد النقاط وأسندها لفنيّ — دون مغادرة الصفحة.')) + '</p></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-asn="0" aria-label="'
+    +     esc(t('إغلاق')) + '">✕</button>'
+    + '</div>'
+
+    + '<div class="inline-form" style="margin:12px 0 10px">'
+    +   '<input type="search" id="asnQ" value="' + esc(SITE_Q) + '" placeholder="'
+    +     esc(t('ابحث بالشاخص أو المربع أو المشعر')) + '" dir="auto" style="flex:1">'
+    +   btn('بحث','btn-secondary btn-sm',' data-asnq="1"')
+    + '</div>'
+
+    + catBar(0)
+
+    + '<div class="actions" style="margin:0 0 10px">'
+    +   btn('حدّد المعروض','btn-secondary btn-sm',' data-selall="1"')
+    +   btn('امسح التحديد','btn-secondary btn-sm',' data-selnone="1"')
+    +   '<span class="pill ' + (SEL_N ? 'acc' : '') + '">' + esc(t('محدَّد'))
+    +     ' <b>' + nm(SEL_N) + '</b></span>'
+    + '</div>'
+
+    + '<div class="list" style="max-height:38vh;overflow:auto;border:1px solid var(--line);'
+    +   'border-radius:var(--radius-sm)">'
+    + (view.length
+      ? view.slice(0, 120).map(function(x){
+          var d = CAT_DEF[x.type] || { l:x.type, i:'\u25CF', c:'#8A939D' };
+          var a = asnOf(x.id);
+          return '<label class="list-item" style="cursor:pointer">'
+            + '<input type="checkbox" data-sel="' + esc(x.id) + '"' + (selHas(x.id)?' checked':'')
+            +   (a ? ' disabled' : '') + ' style="width:20px;min-height:20px;flex:0 0 auto">'
+            + '<div class="li-main"><div class="li-t">'
+            +   (x.sign ? esc(t('شاخص')) + ' <b>' + esc(x.sign) + '</b>' : esc(x.name.slice(0, 40)))
+            +   (x.sq ? ' · ' + esc(t('مربع')) + ' ' + esc(x.sq) : '')
+            + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
+            + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
+            +   (a ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مُسند')) + ' · ' + esc(a.to) + '</div>' : '')
+            + '</div></label>';
+        }).join('')
+      : '<p class="hint" style="padding:18px;text-align:center;margin:0">' + esc(t('لا نتائج')) + '</p>')
+    + '</div>'
+    + (view.length > 120
+      ? '<p class="hint">' + esc(t('يُعرض مئةٌ وعشرون — ضيّق بالفئة أو البحث')) + '</p>' : '')
+
+    + '<div class="grid cols-3" style="margin:12px 0 0">'
+    +   '<div class="field" style="margin:0"><label>' + esc(t('الفني')) + '</label>'
+    +   '<select id="asnTo">' + techs.map(function(n){
+          return '<option' + (ASN_TO===n?' selected':'') + '>' + esc(n) + '</option>'; }).join('')
+    +   '</select></div>'
+    +   '<div class="field" style="margin:0"><label>' + esc(t('نوع المهمة')) + '</label>'
+    +   '<select id="asnKind">' + Object.keys(WO_KINDS).map(function(k){
+          return '<option value="' + k + '"' + (ASN_KIND===k?' selected':'') + '>'
+            + WO_KINDS[k].i + ' ' + esc(t(WO_KINDS[k].n)) + '</option>'; }).join('')
+    +   '</select></div>'
+    +   '<div class="field" style="margin:0"><label>' + esc(t('الموعد')) + '</label>'
+    +   '<input type="date" id="asnWhen" value="' + esc(ASN_WHEN) + '"></div>'
+    + '</div>'
+
+    + '<div class="actions" style="margin-top:12px">'
+    +   btn('أسند ' + nm(SEL_N) + ' نقطة','btn-primary',' data-asngo="1"')
+    +   btn('حدّد من الخريطة','btn-secondary',' data-asnmap="1"')
+    +   btn('إلغاء','btn-secondary',' data-asn="0"')
+    + '</div>'
+    + '<p class="hint">المُسنَدُ لا يُحدَّد ثانيةً — فلا يُشتّت فنيّان على نقطةٍ واحدة.</p>'
+    + '</div>';
+}
+
+function asnCommit(){
+  if (!SEL_N){ toast(t('حدّد نقاطًا أولًا')); return; }
+  var to = (document.getElementById('asnTo') || {}).value || ASN_TO || techList()[0];
+  var kind = (document.getElementById('asnKind') || {}).value || ASN_KIND;
+  var when = (document.getElementById('asnWhen') || {}).value || '';
+  var ids = selIds(), n = 0;
+
+  ids.forEach(function(id){
+    if (asnOf(id)) return;
+    var tid = 'TK-' + kind + '-' + id;
+    CORE.set('tasks', tid, {
+      id:tid, site:id, kind:kind, to:to, assignedTo:to,
+      status:'مطلوب', when:when, by:STATE.meta.name || 'محمد صفوت', at:Date.now()
+    });
+    n++;
+  });
+
+  logEvent('إسناد ' + nm(n) + ' نقطة إلى ' + to + ' · ' + t(WO_KINDS[kind].n));
+  selClear();
+  ASN_OPEN = false;
+  statBump();
+  toast(nm(n) + ' ' + t('نقطةً أُسندت إلى') + ' ' + to);
+  render(1);
+}
+
+/* ── صفحة الطلبات: الأرقام الحقيقية والإجراءات ── */
+PAGE.req = { m:'الطلبات والمسح', t:'طلبات الزيارة',
+  l:'إسناد زيارات المسح للفنيين واعتمادها.',
+  body:function(){
+    var T = STATE.tasks, by = {};
+    TK_ST.forEach(function(s){ by[s] = 0; });
+    var rows = [];
+    Object.keys(T).forEach(function(k){
+      var x = T[k];
+      by[x.status] = (by[x.status] || 0) + 1;
+      rows.push(x);
+    });
+    rows.sort(function(a,b){ return b.at - a.at; });
+
+    return stats([['مطلوب', N(by['مطلوب']||0)],
+                  ['قيد التنفيذ', N(by['قيد التنفيذ']||0), 'wrn'],
+                  ['منفّذ', N(by['منفّذ']||0), 'acc'],
+                  ['معتمد', N(by['معتمد']||0), 'ok']])
+      + card('دورة الطلب',
+          flow(TK_ST.slice(0,4), 0)
+          + '<p class="hint">والإعادة ترجعه للمنفِّذ بحالة «مُعاد» مع سبب.</p>',
+          '<div class="actions">'
+          + btn('➕ إنشاء طلب','btn-primary btn-sm',' data-asn="1"')
+          + btn('🗺 حدّد من الخريطة','btn-secondary btn-sm',' data-asnmap="1"')
+          + '</div>')
+      + (rows.length
+        ? cardFlush('الطلبات — ' + nm(rows.length),
+            table(['النقطة','النوع','الفني','الموعد','الحالة',''],
+              rows.slice(0, 60).map(function(x){
+                var s = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+                return ['<strong>' + esc(x.site) + '</strong><br>'
+                        + '<span class="hint" style="margin:0">' + esc((s && s.name || '').slice(0,32)) + '</span>',
+                        k.i + ' ' + esc(t(k.n)), esc(x.to),
+                        x.when ? '<span class="num">' + esc(x.when) + '</span>' : '—',
+                        pill(x.status, x.status==='معتمد'?'ok':(x.status==='مُعاد'?'off':'warn')),
+                        '<div class="actions">'
+                        + (x.status !== 'معتمد'
+                          ? btn('اعتمد','btn-quiet btn-sm',' data-tkok="' + esc(x.id) + '"') : '')
+                        + btn('ألغِ','btn-quiet btn-sm',' data-tkrm="' + esc(x.id) + '"')
+                        + '</div>'];
+              })),
+            btn('⬇ إكسل — المهام','btn-secondary btn-sm',' data-xls="tasks"'))
+        : card('الطلبات',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('لا طلبات بعد — أنشئ أول طلب بتحديد نقاط من القائمة أو الخريطة.')) + '</p>'))
+      + (ASN_OPEN ? asnSheet() : '');
+  }};
+
+/* ── المتاح والمُسند: جدولٌ يُظهر ما بقي ── */
+PAGE.assign = { m:'الطلبات والمسح', t:'توزيع الفرق',
+  l:'ما أُسند وما بقي — لكل مشعرٍ ونوع.',
+  body:function(){
+    var C = catCounts(), S = siteStats();
+    var rows = [], keys = Object.keys(S.byKey);
+    keys.sort();
+    keys.forEach(function(k){
+      var p = k.split('|'), tot = S.byKey[k], sv = 0, asn = 0;
+      STATE.sites.forEach(function(x){
+        if (x.zone !== p[0] || x.type !== p[1]) return;
+        if (STATE.recs[x.id]) sv++;
+        if (asnOf(x.id)) asn++;
+      });
+      var d = CAT_DEF[p[1]] || { l:p[1], i:'\u25CF' };
+      rows.push([esc(p[0]), d.i + ' ' + esc(t(d.l)), N(tot), N(sv), N(asn),
+                 '<b>' + nm(tot - sv - asn) + '</b>']);
+    });
+    var totAll = S.total, svAll = S.surveyed;
+    var asnAll = 0;
+    STATE.sites.forEach(function(x){ if (asnOf(x.id)) asnAll++; });
+
+    return stats([['الإجمالي', N(totAll)], ['ممسوح', N(svAll), 'acc'],
+                  ['مُسند', N(asnAll), 'wrn'], ['متاح', N(totAll - svAll - asnAll), 'ok']])
+      + cardFlush('المتاح لكل مشعرٍ ونوع',
+          table(['المشعر','النوع','الإجمالي','ممسوح','مُسند','متاح'], rows,
+                ['الإجمالي','', N(totAll), N(svAll), N(asnAll), N(totAll - svAll - asnAll)]),
+          '<div class="actions">'
+          + btn('➕ إنشاء طلب','btn-primary btn-sm',' data-asn="1"')
+          + btn('🗺 تحديد من الخريطة','btn-secondary btn-sm',' data-asnmap="1"')
+          + '</div>')
+      + '<p class="hint">«المتاح» ما لم يُمسح ولم يُسند بعد. والأوزانُ والتارجت في شاشة الإعدادات.</p>';
+  }};
+
+/* ── وضع التحديد على الخريطة ── */
+var MAP_SELECT = false;
+
+function mapSelBar(){
+  if (!MAP_SELECT) return '';
+  return '<div class="map-selbar">'
+    + '<span>' + esc(t('اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»')) + '</span>'
+    + '<b class="num">' + nm(SEL_N) + '</b>'
+    + '<div class="actions" style="margin-inline-start:auto">'
+    + btn('أسند لفني','btn-primary btn-sm',' data-asn="1"')
+    + btn('إلغاء','btn-secondary btn-sm',' data-selmap="0"')
+    + '</div></div>';
+}
+
+/* ── خريطة الفني: ما أُسند إليه وحده ── */
+PAGE.mytasks = { m:'الميدان', t:'مهامي',
+  l:'ما أُسند إليك وحدك — على الخريطة وفي القائمة.',
+  body:function(){
+    var me = STATE.meta.name || 'محمد صفوت';
+    var mine = [];
+    Object.keys(STATE.tasks).forEach(function(k){
+      var x = STATE.tasks[k];
+      if (x.to === me && x.status !== 'معتمد') mine.push(x);
+    });
+    var done = mine.filter(function(x){ return STATE.recs[x.site]; }).length;
+
+    return stats([['مُسند إليّ', N(mine.length), 'acc'],
+                  ['أنجزتُ', N(done), 'ok'],
+                  ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
+                  ['نقاطي', N(0)]])
+      + (mine.length
+        ? cardFlush('مهامي — ' + nm(mine.length),
+            '<div class="list">' + mine.slice(0, 60).map(function(x){
+              var s = siteFind(x.site);
+              if (!s) return '';
+              var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+              var ok = !!STATE.recs[x.site];
+              return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
+                + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
+                + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
+                +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>'
+                + '</div><div class="li-end">'
+                + (typeof distTxt === 'function' && distTxt(s)
+                    ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(s) + '</div>' : '')
+                + pill(ok ? 'تمّ' : 'بانتظارك', ok ? 'ok' : 'warn') + '</div></div>';
+            }).join('') + '</div>',
+            btn('🗺 على الخريطة','btn-secondary btn-sm',' data-mymap="1"'))
+        : card('مهامي',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>'))
+      + card('دورة مهمتك', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
+        + '<p class="hint">لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت.</p>');
+  }};
+
+/* الفنيُّ يرى ما أُسند إليه وحده على الخريطة */
+var MY_ONLY = false;
+
+function mineFiltered(){
+  var me = STATE.meta.name || 'محمد صفوت';
+  var ids = Object.create(null);
+  Object.keys(STATE.tasks).forEach(function(k){
+    var x = STATE.tasks[k];
+    if (x.to === me && x.status !== 'معتمد') ids[x.site] = 1;
+  });
+  return STATE.sites.filter(function(x){ return ids[x.id]; });
+}
+
+/* ═══ النماذج الميدانية — تكتب فعلًا في المحرك ═══
+   دورةُ المهمة: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد (أو مُعاد بسبب).
+   ولا نقاطَ تُحتسب قبل الاعتماد. */
+
+var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
+
+var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
+             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب' };
+
+var CHALS = ['لا يوجد كهرباء','الموقع مشغول','يحتاج تصريح',
+             'ارتفاع صعب','لا يوجد تغطية','يحتاج معدات'];
+
+function formSite(){
+  return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
+}
+
+/* ── نموذج المسح ── */
+PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
+  l:'المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.',
+  body:function(){
+    var s = formSite();
+    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    var done = !!STATE.recs[s.id];
+    return (done ? alertBox('success','هذا الموقع مُسِح — ما تكتبه الآن تصويبٌ يُسجَّل باسمك.') : '')
+      + card('الموقع',
+          '<div class="inline-form" style="margin:0 0 12px">'
+          + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
+          + btn('بحث','btn-secondary btn-sm',' data-fsq="1"') + '</div>'
+          + '<div class="pop-rows" style="margin:0">'
+          + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
+          + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
+          + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(s.zone) + ' · ' + esc(s.type) + '</span></div>'
+          + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
+          + (s.work ? '<div><span class="k">' + esc(t('وجه العمل')) + '</span><span>' + esc(s.work) + '</span></div>' : '')
+          + (s.co   ? '<div><span class="k">' + esc(t('الشركة')) + '</span><span>' + esc(s.co) + '</span></div>' : '')
+          + '</div>'
+          + '<p class="hint">خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.</p>',
+          btn('طلب تصويب','btn-quiet btn-sm',' data-fix="1"'))
+
+      + card('ما يُجمَع في الموقع',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('نوع التركيب')) + '</label>'
+          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].map(function(o){
+              return '<option' + (FORM.mount===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + '</label>'
+          + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
+              return '<option' + (FORM.power===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('ارتفاع التركيب')) + ' (م)</label>'
+          + '<input type="number" step="0.5" min="0" data-form="height" value="' + esc(FORM.height) + '"></div>'
+          + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (م)</label>'
+          + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + '</label>'
+          + '<div class="chips" style="margin:6px 0 0">'
+          + CHALS.map(function(c){
+              return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
+                + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
+            }).join('') + '</div></div>'
+          + '<div class="field"><label>' + esc(t('ملاحظات')) + '</label>'
+          + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
+
+      + photoCard(['site','صورة الموقع',1], ['mount','صورة نقطة التركيب',1])
+
+      + card('', '<div class="actions">'
+          + btn('حفظ المسح','btn-primary',' data-svsave="1"')
+          + btn('حفظ ومتابعة للتالي','btn-secondary',' data-svnext="1"')
+          + '</div>'
+          + '<p class="hint">يُحفظ على جهازك فورًا ويُرفع حين تعود الشبكة — لا تنتظرها.</p>');
+  }};
+
+/* ── نموذج التركيب ── */
+PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
+  l:'ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.',
+  body:function(){
+    var s = formSite();
+    if (!s) return alertBox('warn','لا مواقع محمّلة.');
+    var zone = s.type === 'ممر' ? 'cor' : 'camp';
+    var parts = DATA.items.filter(function(i){ return i[0] === zone && itPts(i[1]) > 0; });
+    if (!parts.length) parts = DATA.items.filter(function(i){ return i[0] === zone; }).slice(0, 8);
+    var rec = STATE.recs[s.id];
+
+    return (!rec ? alertBox('warn','هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.') : '')
+      + card('حالة التركيب',
+          '<div class="chips" style="margin:0">'
+          + ['قيد التركيب','مُركّب','متعذّر'].map(function(c){
+              return '<button type="button" class="chip' + (FORM.status===c?' on':'')
+                + '" data-fst="' + esc(c) + '">' + esc(t(c)) + '</button>';
+            }).join('') + '</div>'
+          + '<p class="hint">' + esc(s.id) + ' — ' + esc(s.name) + '</p>')
+
+      + cardFlush('القطع المستهلكة — ' + nm(parts.length),
+          table(['القطعة','النقاط','المستهلك','السيريال'],
+            parts.map(function(i){
+              return [esc(i[2]), N(itPts(i[1])),
+                      '<input type="number" min="0" data-part="' + esc(i[1]) + '" value="'
+                        + (FORM.parts[i[1]] || 0) + '">',
+                      '<input dir="ltr" placeholder="SN-…" data-serial="' + esc(i[1]) + '" value="'
+                        + esc(FORM.serials[i[1]] || '') + '">'];
+            })),
+          '<span class="hint" style="margin:0">' + esc(t('مجموع النقاط'))
+          + ' <b>' + nm(formPts()) + '</b></span>')
+
+      + photoCard(['before','قبل التركيب',1], ['after','بعد التركيب',1],
+                  ['panel','لوحة الأجهزة',0], ['serial','السيريال',0])
+
+      + card('الشبكة',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('بادئة الشبكة')) + '</label>'
+          + '<input dir="ltr" data-form="prefix" placeholder="10.20.30" value="' + esc(FORM.prefix) + '"></div>'
+          + '<div class="field"><label>' + esc(t('العناوين المشتقّة')) + '</label>'
+          + '<input dir="ltr" readonly value="' + esc(ipsOf(FORM.prefix)) + '"'
+          + ' style="background:var(--surface-2);color:var(--ink-soft)"></div>'
+          + '</div>'
+          + '<p class="hint">‎.1 راوتر · ‎.2 قارئ · ‎.3 كاميرا — تُشتقّ من البادئة ولا تُكتب.</p>')
+
+      + card('', '<div class="actions">'
+          + btn('إتمام التركيب','btn-primary',' data-inssave="1"')
+          + btn('حفظ مسودّة','btn-secondary',' data-insdraft="1"')
+          + '</div>'
+          + '<p class="hint">لا تُوسم النقطة مُركّبةً حتى يعتمد المهندس قطعها وسيرياتها في التدقيق الهندسي.</p>');
+  }};
+
+function ipsOf(p){
+  p = String(p || '').trim().replace(/\.+$/, '');
+  if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(p)) return '—';
+  return p + '.1 · ' + p + '.2 · ' + p + '.3';
+}
+
+function formPts(){
+  var n = 0;
+  Object.keys(FORM.parts).forEach(function(k){ n += cfgN(FORM.parts[k]) * itPts(k); });
+  return Math.round(n * 100) / 100;
+}
+
+function photoCard(){
+  var L = Array.prototype.slice.call(arguments);
+  return card('الصور',
+    '<div class="grid cols-2">'
+    + L.map(function(p){
+        var has = !!FORM.photos[p[0]];
+        return '<div class="field"><label>' + esc(t(p[1]))
+          + (p[2] ? ' <span class="req">*</span>' : '') + '</label>'
+          + '<label class="btn ' + (has ? 'btn-secondary' : 'btn-primary')
+          + '" style="cursor:pointer;width:100%">'
+          + (has ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('التقط')))
+          + '<input type="file" accept="image/*" capture="environment" data-photo="' + p[0] + '" style="display:none"></label>'
+          + (has ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(FORM.photos[p[0]].size/1024))
+                 + ' ' + esc(t('كيلو')) + '</div>' : '')
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<p class="hint">الصور تُضغط على الجهاز قبل الرفع وتُخزَّن منفصلةً عن الوثيقة.</p>');
+}
+
+/* ضغطُ الصورة على الجهاز — الرفع الخام يخنق شبكةَ المشاعر */
+function shrink(file, max, q){
+  return new Promise(function(res){
+    if (!file || typeof FileReader === 'undefined' || typeof Image === 'undefined'){ res(null); return; }
+    var fr;
+    try{ fr = new FileReader(); }catch(e){ res(null); return; }
+    fr.onload = function(){
+      var img = new Image();
+      img.onload = function(){
+        try{
+          var r = Math.min(1, (max || 1280) / Math.max(img.width, img.height));
+          var cv = document.createElement('canvas');
+          cv.width = Math.round(img.width * r); cv.height = Math.round(img.height * r);
+          var cx = cv.getContext('2d');
+          if (!cx){ res(null); return; }
+          cx.drawImage(img, 0, 0, cv.width, cv.height);
+          res({ data:cv.toDataURL('image/jpeg', q || 0.72), w:cv.width, h:cv.height,
+                size:Math.round(cv.width * cv.height * 0.12) });
+        }catch(e){ res(null); }
+      };
+      img.onerror = function(){ res(null); };
+      img.src = fr.result;
+    };
+    fr.onerror = function(){ res(null); };
+    try{ fr.readAsDataURL(file); }catch(e){ res(null); }
+  });
+}
+
+/* ── الحفظ — يكتب في المحرك ويدخل الطابور ── */
+function svSave(next){
+  var s = formSite();
+  if (!s) return;
+  if (!FORM.photos.site || !FORM.photos.mount){
+    toast(t('الصورتان مطلوبتان قبل الحفظ'));
+    return;
+  }
+  var rec = {
+    id:s.id, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
+    mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
+    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos)
+  };
+  CORE.set('recs', s.id, rec);
+  Object.keys(FORM.photos).forEach(function(k){
+    CORE.set('photos', s.id + '_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
+  });
+  logEvent('مسح موقع — ' + s.id);
+  toast(nm(1) + ' ' + t('مسحٌ حُفظ') + ' · ' + t('في الطابور') + ' ' + nm(CORE.pending()));
+  formReset();
+  if (next){
+    var un = STATE.sites.filter(function(x){ return !STATE.recs[x.id]; })[0];
+    if (un) FORM.site = un.id;
+  }
+  render();
+}
+
+function insSave(draft){
+  var s = formSite();
+  if (!s) return;
+  if (!draft && (!FORM.photos.before || !FORM.photos.after)){
+    toast(t('صورتا قبل وبعد مطلوبتان'));
+    return;
+  }
+  var used = {}, n = 0;
+  Object.keys(FORM.parts).forEach(function(k){
+    var q = cfgN(FORM.parts[k]);
+    if (q > 0){ used[k] = q; n += q; }
+  });
+  if (!draft && !n){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
+
+  CORE.set('inss', s.id, {
+    id:s.id, status: draft ? 'مسودّة' : FORM.status,
+    by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
+    parts:used, serials:FORM.serials, prefix:FORM.prefix, pts:formPts(),
+    approved:false, photos:Object.keys(FORM.photos)
+  });
+  Object.keys(FORM.photos).forEach(function(k){
+    CORE.set('photos', s.id + '_ins_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
+  });
+  /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
+  if (!draft){
+    Object.keys(used).forEach(function(k){
+      STATE.moves.push({ at:new Date().toISOString().slice(0,10), kind:'استهلاك',
+                         item:k, qty:used[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
+    });
+    CORE.dirty('moves', s.id, used);
+  }
+  logEvent((draft ? 'مسودّة تركيب' : 'تركيب') + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
+  toast(draft ? t('حُفظت مسودّة') : (t('تركيبٌ حُفظ — بانتظار التدقيق')));
+  formReset();
+  render();
+}
+
+function formReset(){
+  FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
+  FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
+  FORM.status = 'مُركّب';
+}
+
+function logEvent(what){
+  STATE.events.unshift({ at:new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }),
+                         what:what, by:STATE.meta.name || 'محمد صفوت' });
+  if (STATE.events.length > 500) STATE.events.length = 500;
+}
+
+/* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
+PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي',
+  l:'اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.',
+  body:function(){
+    var wait = Object.keys(STATE.inss).filter(function(k){
+      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
+    });
+    var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
+    return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],
+                  ['معتمد', N(done.length), 'ok'],
+                  ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
+                      return STATE.inss[k].status === 'مسودّة'; }).length)],
+                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
+      + (wait.length
+        ? cardFlush('بانتظار قرارك — ' + nm(wait.length),
+            table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
+              wait.slice(0, 30).map(function(k){
+                var r = STATE.inss[k], s = siteFind(k);
+                return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
+                          + esc((s && s.name) || '') + '</span>',
+                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
+                        '<span class="num">' + new Date(r.at).toLocaleTimeString('ar-EG',
+                          { hour:'2-digit', minute:'2-digit' }) + '</span>',
+                        '<div class="actions">'
+                        + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
+                        + btn('ردّ','btn-danger btn-sm',' data-rej="' + esc(k) + '"') + '</div>'];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">لا تركيبات بانتظار التدقيق.</p>'))
+      + card('قاعدة الاعتماد',
+          flow(['تركيب مُبلَّغ','مراجعة الصور','مطابقة السيريال','معتمد'], 0)
+          + '<p class="hint">الردُّ يُعيد النقطة لمنفّذها بحالة «مُعاد» مع سبب — ولا تُحتسب نقاطُها حتى تُعتمد.</p>');
+  }};
+
+function apprIns(id, ok){
+  var r = STATE.inss[id];
+  if (!r) return;
+  if (ok){
+    r.approved = true; r.apprBy = STATE.meta.name || 'محمد صفوت'; r.apprAt = Date.now();
+    var s = siteFind(id);
+    if (s) s.fstat = 'مُركّب';
+    logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة');
+  } else {
+    r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
+    logEvent('ردّ تركيب — ' + id);
+  }
+  CORE.set('inss', id, r);
+  toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));
+  render();
+}
+
+/* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
+   وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
+   والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
+
+var MOVE_ID = '', MOVE_AT = null;
+
+function popHtml(){
+  var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
+  if (!s) return '';
+  var d = CAT_DEF[s.type] || { l:s.type, i:'\u25CF', c:'#8A939D' };
+  var rec = STATE.recs[s.id] || null;
+  var ins = STATE.inss[s.id] || null;
+  var task = asnOf(s.id);
+  var moved = !!(rec && rec.loc);
+  var sv = !!rec;
+  var st = (ins && ins.status) || s.fstat || 'لم يبدأ';
+
+  function kv(k, v){
+    if (v === '' || v == null) return '';
+    return '<div><span class="k">' + esc(t(k)) + '</span><span>' + v + '</span></div>';
+  }
+
+  /* أزرارُ الوسم: في وضع التركيب مجدولٌ وتم، وفي المسح «تمت الزيارة» —
+     ولا تظهر إلا لنقطةٍ أُسندت، فلا يُوسَم ما لم يُطلَب. */
+  var marks = '';
+  if (FIELD_MODE === 'install'){
+    marks = [['مجدول','#FF8C42'], ['مُركّب','#3AD6A0'], ['متعذّر','#E05252']].map(function(o){
+      var on = st === o[0];
+      return '<button type="button" class="go' + (on?' on':'') + '"'
+        + ' style="border-color:' + o[1] + ';color:' + (on ? '#0A0B0D' : o[1])
+        + (on ? ';background:' + o[1] : '') + '"'
+        + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
+    }).join('');
+  } else if (task || may('approve')){
+    var onSv = sv;
+    marks = '<button type="button" class="go' + (onSv?' on':'') + '"'
+      + ' style="border-color:#4BC9F5;color:' + (onSv ? '#0A0B0D' : '#4BC9F5')
+      + (onSv ? ';background:#4BC9F5' : '') + '"'
+      + ' data-smark="' + esc(s.id) + '">' + esc(t('تمت الزيارة')) + '</button>';
+  } else {
+    marks = '<span class="hint" style="margin:0;font-size:11.5px">'
+      + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
+  }
+
+  return '<div class="pop" id="pkPop">'
+    + '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">'
+    +     esc(s.id) + '</div>'
+    +   '<h3 style="margin-top:3px">' + esc(s.name) + '</h3></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'
+    +     esc(t('إغلاق')) + '">✕</button>'
+    + '</div>'
+
+    + '<div style="color:' + d.c + ';font-weight:800;font-size:12px;margin:6px 0 2px">'
+    +   d.i + ' ' + esc(t(d.l)) + ' — ' + esc(s.zone) + '</div>'
+
+    + '<div class="pop-rows">'
+    +   kv('الشاخص', s.sign ? '<span class="num">' + esc(s.sign) + '</span>' : '')
+    +   kv('المربع', s.sq ? '<span class="num">' + esc(s.sq) + '</span>' : '')
+    +   kv('الشركة', esc(s.co))
+    +   kv('التصنيف', esc(s.inout === 'خارج' ? 'حجاج خارج' : (s.inout === 'داخل' ? 'حجاج داخل' : s.inout)))
+    +   kv('وجه العمل', esc(s.work))
+    +   kv('المنطقة', esc(s.region))
+    +   kv('حالة المسح', pill(sv ? 'تمت الزيارة' : 'لم يُزر', sv ? 'ok' : 'warn'))
+    +   kv('حالة التركيب', pill(st, st==='مُركّب' ? 'ok' : (st==='متعذّر' ? 'off' : '')))
+    +   (task ? kv('مُسند إلى', esc(task.to) + (task.when ? ' · ' + esc(task.when) : '')) : '')
+    +   kv('الإحداثيات', '<span class="num">' + s.lat.toFixed(5) + ', ' + s.lng.toFixed(5) + '</span>')
+    + '</div>'
+
+    + (moved ? '<div class="hint" style="color:#7FB3FF;margin:6px 0 0">\u{1F4CD} '
+        + esc(t('موقع معدَّل ميدانيًّا')) + '</div>' : '')
+
+    + '<div class="pst">' + marks + '</div>'
+
+    + (ins && Object.keys(ins.parts || {}).length
+      ? '<div class="hint" style="margin:8px 0 0">' + esc(t('القطع'))
+        + ': <b>' + nm(Object.keys(ins.parts).length) + '</b> · ' + esc(t('النقاط'))
+        + ': <b>' + nm(ins.pts || 0) + '</b>'
+        + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
+        + '</div>' : '')
+
+    + '<div class="pop-btns">'
+    +   btn(selHas(s.id) ? '☑ ' + t('محدَّد') : '☐ ' + t('حدّد'),
+            selHas(s.id) ? 'btn-primary btn-sm' : 'btn-secondary btn-sm',
+            ' data-psel="' + esc(s.id) + '"')
+    +   '<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" '
+    +   'href="https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '">'
+    +   '↗ ' + esc(t('اتجاهات')) + '</a>'
+    +   btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"')
+    +   btn('✎ ' + t('تعديل البيانات'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
+    +   btn((FIELD_MODE === 'install' ? '🔧 ' + t('نموذج التركيب') : '🔍 ' + t('نموذج المسح')),
+            'btn-secondary btn-sm',
+            (FIELD_MODE === 'install' ? ' data-insform="' : ' data-form="') + esc(s.id) + '"')
+    + '</div></div>';
+}
+
+/* ── التحريك: نقرةٌ على الخريطة تنقل النقطة ── */
+function moveStart(id){
+  MOVE_ID = id;
+  POP_OPEN = false;
+  toast(t('اضغط على الموقع الجديد على الخريطة'));
+  render(1);
+}
+
+function moveApply(lat, lng){
+  var s = siteFind(MOVE_ID);
+  if (!s) { MOVE_ID = ''; return; }
+  var old = { lat:s.lat, lng:s.lng };
+  s.lat = lat; s.lng = lng;
+  var rec = STATE.recs[s.id] || { id:s.id, at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
+  rec.loc = { lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
+  CORE.set('recs', s.id, rec);
+  logEvent('تحريك موقع — ' + s.id);
+  toast(t('حُرِّك الموقع') + ' · ' + nm(Math.round(distKm(old, { lat:lat, lng:lng }) * 1000)) + ' ' + t('م'));
+  MOVE_ID = '';
+  POP_SITE = s.id; POP_OPEN = true;
+  statBump();
+  render(1);
+  if (MAP) mapPaint();
+}
+
+function moveBar(){
+  if (!MOVE_ID) return '';
+  var s = siteFind(MOVE_ID);
+  return '<div class="map-selbar" style="background:rgba(127,179,255,.96);color:#04121f">'
+    + '<span>' + esc(t('اضغط على الموقع الجديد لـ')) + ' <b>' + esc(MOVE_ID) + '</b></span>'
+    + '<div class="actions" style="margin-inline-start:auto">'
+    + btn('إلغاء','btn-secondary btn-sm',' data-movex="1"') + '</div></div>';
+}
+
+/* ── وسمُ الحالة: يكتب فعلًا ── */
+function markSurvey(id){
+  var rec = STATE.recs[id];
+  if (rec){
+    CORE.rm('recs', id);
+    logEvent('إلغاء وسم زيارة — ' + id);
+    toast(t('أُلغي الوسم'));
+  } else {
+    CORE.set('recs', id, {
+      id:id, by:STATE.meta.name || 'محمد صفوت', at:Date.now(), quick:1
+    });
+    logEvent('وسم زيارة — ' + id);
+    toast(t('وُسمت زيارةً'));
+  }
+  statBump(); render(1);
+  if (MAP) mapPaint();
+}
+
+function markInstall(id, status){
+  var s = siteFind(id);
+  var cur = STATE.inss[id] || { id:id, parts:{}, serials:{}, pts:0, approved:false };
+  if (cur.status === status){
+    CORE.rm('inss', id);
+    if (s) s.fstat = 'لم يبدأ';
+    logEvent('إلغاء وسم تركيب — ' + id);
+    toast(t('أُلغي الوسم'));
+  } else {
+    cur.status = status;
+    cur.by = STATE.meta.name || 'محمد صفوت';
+    cur.at = Date.now();
+    CORE.set('inss', id, cur);
+    if (s && status === 'مُركّب' && cur.approved) s.fstat = 'مُركّب';
+    logEvent('وسم تركيب «' + status + '» — ' + id);
+    toast(t(status));
+  }
+  statBump(); render(1);
+  if (MAP) mapPaint();
+}
+
 /* ═══ الأداء — مئةٌ وخمسون مستخدمًا في آنٍ واحد ═══
    ثلاثةُ أعناقٍ قاستها الأرقام: بحثٌ خطيٌّ في ألفٍ وسبعمئة صف،
    وإحصاءٌ يُعاد حسابُه في كل رسمة، وسحبٌ كاملٌ من القاعدة
@@ -1855,7 +3187,7 @@ function siteStats(){
 }
 
 /* ── قائمةٌ افتراضية: تُرسَم دفعةٌ ويُزاد عند الطلب ── */
-var LIST_PAGE = 40, LIST_SHOWN = 40;
+var LIST_PAGE = 40, LIST_SHOWN = 40, SEL_MODE = false;
 
 /* عدٌّ بلا بناءِ مصفوفة — يُعرَف الإجمالي دون نسخِ الصفوف */
 function siteCount(q){
@@ -1895,7 +3227,12 @@ function fieldList(){
     (view.length
       ? '<div class="list">' + view.map(function(x){
           var sv = !!STATE.recs[x.id];
-          return '<div class="list-item" data-site="' + esc(x.id) + '"><div class="li-main">'
+          var a = (typeof asnOf === 'function') ? asnOf(x.id) : null;
+          return '<div class="list-item' + (selHas(x.id)?' sel':'') + '" data-site="' + esc(x.id) + '">'
+            + (SEL_MODE ? '<input type="checkbox" data-sel="' + esc(x.id) + '"'
+                + (selHas(x.id)?' checked':'') + (a?' disabled':'')
+                + ' style="width:20px;min-height:20px;flex:0 0 auto">' : '')
+            + '<div class="li-main">'
             + '<div class="li-t">' + esc(x.name) + '</div>'
             + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
             +   esc(x.zone) + ' · ' + esc(x.type) + (x.co ? ' · ' + esc(x.co.slice(0, 26)) : '')
@@ -1916,6 +3253,9 @@ function fieldList(){
     +   esc(t('ابحث بالمعرّف أو الشاخص أو المربع')) + '" dir="auto">'
     + btn('بحث','btn-secondary btn-sm',' data-sq="1"')
     + '<span class="hint" style="margin:0">' + nm(view.length) + ' / ' + nm(L.length) + '</span>'
+    + btn(SEL_MODE ? 'إنهاء التحديد' : '☑ تحديد', SEL_MODE?'btn-primary btn-sm':'btn-secondary btn-sm',
+          ' data-selmode="' + (SEL_MODE?0:1) + '"')
+    + (SEL_MODE && SEL_N ? btn('أسند ' + nm(SEL_N),'btn-primary btn-sm',' data-asn="1"') : '')
     + '</form>');
 }
 
@@ -1925,6 +3265,10 @@ var RENDER_KEY = '', RENDER_N = 0;
 function renderKey(){
   return CUR + '|' + ROLE + '|' + LANG + '|' + STAT_VER + '|' + SITE_Q + '|' + LIST_SHOWN
        + '|' + FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + DETAIL_ID
+       + '|' + (MAP_SAT?1:0) + '|' + (MAP_FILT_OPEN?1:0) + '|' + (MYPOS?1:0) + '|' + MOVE_ID
+       + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
+       + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
        + '|' + PLAN_MONTHS + '|' + CFG_VER;
@@ -1994,7 +3338,7 @@ function quotaEstimate(){
    البلاطات بلا مفتاح: OpenStreetMap أساسًا وEsri بديلًا عند التعثّر.
    والوضع الليلي مرشّحٌ على طبقة الأساس وحدها فلا يُقلَب ما فوقها. */
 
-var MAP = null, MAP_LAYER = null, MAP_BASE = null, MAP_POLY = null;
+var MAP = null, MAP_LAYER = null, MAP_BASE = null, MAP_POLY = null, MAP_CV = null;
 var MAP_READY = false, MAP_LOADING = false;
 var POLY = null, POLY_LOADING = null;
 
@@ -2072,9 +3416,9 @@ function mapInit(){
          .setView([21.38, 39.92], 12);
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
-  MAP_BASE = L.tileLayer(TILES.osm, {
+  MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
     maxZoom:19, className:'nskBase', crossOrigin:true,
-    attribution:'&copy; OpenStreetMap'
+    attribution: MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap'
   }).addTo(MAP);
 
   /* بديلٌ تلقائيٌّ مرةً واحدةً عند تعثّرٍ متكرّر */
@@ -2087,10 +3431,14 @@ function mapInit(){
     toast('تعذّر المزوّد — تحوّلنا لبديل');
   });
 
+  MAP_CV    = L.canvas({ padding:0.3 });
   MAP_POLY  = L.layerGroup().addTo(MAP);
   MAP_LAYER = L.layerGroup().addTo(MAP);
 
   MAP.on('zoomend moveend', mapPaintDebounced);
+  MAP.on('click', function(e){
+    if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
+  });
   mapPaint();
   return true;
 }
@@ -2111,33 +3459,55 @@ function mapPaint(){
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
   var shown = 0, cap = 4000;
 
-  var LIST = (typeof mapFiltered === 'function') ? mapFiltered() : STATE.sites;
+  var LIST = (typeof MY_ONLY !== 'undefined' && (MY_ONLY || ROLE === 'tech'))
+    ? mineFiltered()
+    : ((typeof mapFiltered === 'function') ? mapFiltered() : STATE.sites);
   for (var i = 0; i < LIST.length && shown < cap; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
     if (!b.contains([x.lat, x.lng])) continue;
     shown++;
-    L.circleMarker([x.lat, x.lng], {
-      radius:r, color:'#0A0D10', weight: z >= 14 ? 1 : 0,
-      fillColor:mapColorOf(x), fillOpacity:0.92
-    }).on('click', (function(id){
-      return function(){ POP_SITE = id; POP_OPEN = true; render(); };
-    })(x.id)).addTo(MAP_LAYER);
+    var picked = (typeof selHas === 'function') && selHas(x.id);
+    var col = mapColorOf(x);
+    var mk;
+
+    /* الممرُّ معيّنٌ مائل، والمخيمُ مضلّعٌ إن تقرّبت وإلا دائرة، وما عداهما دائرة —
+       فيُعرَف النوعُ بالشكل قبل أن يُقرَأ اللون. */
+    if (x.type === 'ممر' || x.type === 'كاميرا'){
+      var ds = z >= 16 ? 22 : (z >= 14 ? 17 : 12);
+      mk = L.marker([x.lat, x.lng], { keyboard:false, icon:L.divIcon({
+        className:'mkC', iconSize:[ds, ds], iconAnchor:[ds/2, ds/2], popupAnchor:[0, -ds/2],
+        html:'<i style="background:' + col + (picked ? ';outline:2px solid #fff' : '') + '"></i>'
+      })});
+    } else if (x.type === 'مخيم' && z >= 16 && POLY && POLY[x.id]){
+      mk = L.polygon(POLY[x.id].map(function(p){ return [p[1], p[0]]; }), {
+        renderer:MAP_CV, color:col, weight: picked ? 2.4 : 1.3,
+        fillColor:col, fillOpacity: picked ? 0.5 : 0.32
+      });
+    } else {
+      mk = L.circleMarker([x.lat, x.lng], {
+        renderer:MAP_CV,
+        radius: picked ? r + 2.5 : r,
+        color: picked ? '#fff' : col,
+        weight: picked ? 2 : (z >= 14 ? 1.3 : 1),
+        fillColor:col, fillOpacity: picked ? 1 : 0.6
+      });
+    }
+    mk.on('click', (function(id){
+      return function(){
+        if (typeof MAP_SELECT !== 'undefined' && MAP_SELECT){
+          if (!asnOf(id)){ selToggle(id); mapPaint(); render(1); }
+          else toast(t('هذه النقطة مُسندة بالفعل'));
+          return;
+        }
+        POP_SITE = id; POP_OPEN = true; render();
+      };
+    })(x.id));
+    mk.addTo(MAP_LAYER);
   }
 
   /* المضلّعات ثقيلة — لا تُرسم إلا قريبًا وللمخيمات وحدها */
   if (z >= 16 && !POLY) polyLoad();
-  if (z >= 16 && POLY){
-    for (var j = 0; j < LIST.length; j++){
-      var s = LIST[j];
-      if (s.type !== 'مخيم' || !b.contains([s.lat, s.lng])) continue;
-      var pg = POLY_OF(s.id);
-      if (!pg || !pg.length) continue;
-      L.polygon(pg.map(function(p){ return [p[1], p[0]]; }), {
-        color:mapColorOf(s), weight:1.4, fillOpacity:0.14
-      }).addTo(MAP_POLY);
-    }
-  }
 
   var lb = document.getElementById('mapCount');
   if (lb) lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length);
@@ -2161,6 +3531,18 @@ function mapTheme(){
   var el = document.getElementById('mapBox');
   if (el) el.classList.toggle('tdark',
     document.documentElement.getAttribute('data-theme') !== 'light');
+}
+
+
+/* تبديلُ طبقة الأساس — خريطةٌ أو قمرٌ صناعي */
+function mapSat(on){
+  MAP_SAT = !!on;
+  if (!MAP || !MAP_BASE) return;
+  MAP_BASE.setUrl(MAP_SAT ? TILES.esri : TILES.osm);
+  MAP_BASE.options.attribution = MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap';
+  var el = document.getElementById('mapBox');
+  /* القمرُ صورةٌ حقيقية — لا يُقلَب في الوضع الداكن */
+  if (el) el.classList.toggle('sat', MAP_SAT);
 }
 
 /* ═══ التصدير والاستيراد — بالبيانات الحقيقية ═══
@@ -2839,6 +4221,8 @@ var FIELD_MODE = 'survey';
 var EXP_OPEN = false;
 var POP_SITE = '';
 var CO_OPEN = false;
+var MAP_SAT = false;
+var MAP_FILT_OPEN = false;
 var CO_SEL = [];
 var CO_LIST = ['شركة الراجحي','ضيوف البيت','حجاج الداخل','مطوّفي جنوب آسيا',
                'مطوّفي جنوب شرق آسيا','مطوّفي الدول العربية','مطوّفي أفريقيا غير العربية',
@@ -2885,16 +4269,32 @@ function fieldMap(){
     + '<div class="map-top">'
     +   '<button type="button" class="map-chip '+(FIELD_MODE==='survey'?'on':'')+'" data-mode="survey">'+esc(t('المسح'))+'</button>'
     +   '<button type="button" class="map-chip '+(FIELD_MODE==='install'?'on':'')+'" data-mode="install">'+esc(t('التركيب'))+'</button>'
-    +   '<button type="button" class="map-chip" data-sat>'+esc(t('قمر صناعي'))+'</button>'
+    +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'+esc(t('قمر صناعي'))+'</button>'
+    +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="1">'
+    +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' · '+nm(filtered().length):'')+'</button>'
+    +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="1">'
+    +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' · '+nm(SEL_N):'')+'</button>'
+    +   (MY_ONLY || ROLE==='tech' ? '<button type="button" class="map-chip on" data-myonly="0">'
+    +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
     +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' · '+nm(CO_SEL.length):'')+'</button>'
     + '</div>'
-    + '<div class="map-cats">' + catBar(0) + '</div>'
+    + mapSelBar() + moveBar()
+    + (ASN_OPEN ? asnSheet() : '')
+    + (MAP_FILT_OPEN ? '<div class="map-sheet">'
+        + '<p class="hint" style="margin:0 0 9px">' + esc(t('التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.')) + '</p>'
+        + catBar(0)
+        + '<div class="actions" style="margin-top:10px">'
+        + btn('عرض','btn-primary btn-sm',' data-mfilt="0"')
+        + btn('مسح التصفية','btn-secondary btn-sm',' data-mclear="1"')
+        + btn('التصنيف الكامل','btn-secondary btn-sm',' data-p="sites"')
+        + '</div></div>' : '')
     + '<div class="map-legend">'
     +   (CO_SEL.length
-        ? CO_SEL.map(function(c,i){
-            return '<div class="lg-row"><i class="lg-dot" style="background:'+coColor(c)+'"></i>'+esc(c)+'</div>';
-          }).join('')
+        ? CO_SEL.slice(0,6).map(function(c){
+            return '<div class="lg-row"><i class="lg-dot" style="background:'+coColor(c)+'"></i>'
+              + esc(c.length>22 ? c.slice(0,22)+'…' : c) + '</div>';
+          }).join('') + (CO_SEL.length>6 ? '<div class="lg-row">+ '+nm(CO_SEL.length-6)+'</div>' : '')
         : FIELD_MODE === 'survey'
         ? '<div class="lg-row"><i class="lg-dot" style="background:#E8C34B"></i>'+esc(t('لم يُزر'))+'</div>'
         + '<div class="lg-row"><i class="lg-dot" style="background:#4BC9F5"></i>'+esc(t('تمت الزيارة'))+'</div>'
@@ -3095,23 +4495,6 @@ PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح 
   }};
 
 /* ── الطلبات والمسح ──────────────────────────────── */
-PAGE.req = { m:'الطلبات والمسح', t:'طلبات الزيارة', l:'إسناد زيارات المسح للفنيين واعتمادها.',
-  body:function(){
-    return stats([['مطلوب','٠'], ['قيد التنفيذ','٠','wrn'], ['منفّذ','٠','acc'], ['معتمد','٠','ok']])
-      + card('دورة الطلب', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'],0)
-        + '<p class="hint">والإعادة ترجعه للمنفِّذ بحالة «مُعاد» مع سبب.</p>',
-        btn('إنشاء طلب','btn-primary btn-sm'))
-      + card('الطلبات', '<p class="hint">لا طلبات بعد — أنشئ أول طلب بتحديد نقاط من الخريطة.</p>');
-  }};
-
-PAGE.assign = { m:'الطلبات والمسح', t:'توزيع الفرق', l:'مربع لكل فريق — والتغطية تُحسب تلقائيًّا.',
-  body:function(){
-    return card('التوزيع', table(['المربع','المشعر','النقاط','الفريق'], [
-      ['<span class="num">٧-١٥</span>','عرفات','<span class="num">٤٢</span>','<select><option>—</option><option>فريق ١</option><option>فريق ٢</option></select>'],
-      ['<span class="num">٢٢</span>','منى','<span class="num">٣٨</span>','<select><option>—</option><option>فريق ١</option><option>فريق ٢</option></select>']
-    ]));
-  }};
-
 PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني', l:'ما مُسح ومن مسحه ومتى.',
   body:function(){
     return stats([['مُسح','٠','acc'], ['لم يُزر', N(DATA.total)], ['اليوم','٠'], ['هذا الأسبوع','٠']])
@@ -3292,359 +4675,12 @@ PAGE.vers = { m:'النظام', t:'نسخ الأجهزة', l:'نسخة التط�
     + alertBox('error','جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.');
   }};
 
-/* ═══ النماذج الميدانية — تكتب فعلًا في المحرك ═══
-   دورةُ المهمة: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد (أو مُعاد بسبب).
-   ولا نقاطَ تُحتسب قبل الاعتماد. */
-
-var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
-
-var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
-             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب' };
-
-var CHALS = ['لا يوجد كهرباء','الموقع مشغول','يحتاج تصريح',
-             'ارتفاع صعب','لا يوجد تغطية','يحتاج معدات'];
-
-function formSite(){
-  return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
-}
-
-/* ── نموذج المسح ── */
-PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
-  l:'المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.',
-  body:function(){
-    var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
-    var done = !!STATE.recs[s.id];
-    return (done ? alertBox('success','هذا الموقع مُسِح — ما تكتبه الآن تصويبٌ يُسجَّل باسمك.') : '')
-      + card('الموقع',
-          '<div class="inline-form" style="margin:0 0 12px">'
-          + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
-          + btn('بحث','btn-secondary btn-sm',' data-fsq="1"') + '</div>'
-          + '<div class="pop-rows" style="margin:0">'
-          + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
-          + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
-          + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(s.zone) + ' · ' + esc(s.type) + '</span></div>'
-          + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
-          + (s.work ? '<div><span class="k">' + esc(t('وجه العمل')) + '</span><span>' + esc(s.work) + '</span></div>' : '')
-          + (s.co   ? '<div><span class="k">' + esc(t('الشركة')) + '</span><span>' + esc(s.co) + '</span></div>' : '')
-          + '</div>'
-          + '<p class="hint">خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.</p>',
-          btn('طلب تصويب','btn-quiet btn-sm',' data-fix="1"'))
-
-      + card('ما يُجمَع في الموقع',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('نوع التركيب')) + '</label>'
-          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].map(function(o){
-              return '<option' + (FORM.mount===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + '</label>'
-          + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
-              return '<option' + (FORM.power===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('ارتفاع التركيب')) + ' (م)</label>'
-          + '<input type="number" step="0.5" min="0" data-form="height" value="' + esc(FORM.height) + '"></div>'
-          + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (م)</label>'
-          + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
-          + '</div>'
-          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + '</label>'
-          + '<div class="chips" style="margin:6px 0 0">'
-          + CHALS.map(function(c){
-              return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
-                + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
-            }).join('') + '</div></div>'
-          + '<div class="field"><label>' + esc(t('ملاحظات')) + '</label>'
-          + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
-
-      + photoCard(['site','صورة الموقع',1], ['mount','صورة نقطة التركيب',1])
-
-      + card('', '<div class="actions">'
-          + btn('حفظ المسح','btn-primary',' data-svsave="1"')
-          + btn('حفظ ومتابعة للتالي','btn-secondary',' data-svnext="1"')
-          + '</div>'
-          + '<p class="hint">يُحفظ على جهازك فورًا ويُرفع حين تعود الشبكة — لا تنتظرها.</p>');
-  }};
-
-/* ── نموذج التركيب ── */
-PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
-  l:'ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.',
-  body:function(){
-    var s = formSite();
-    if (!s) return alertBox('warn','لا مواقع محمّلة.');
-    var zone = s.type === 'ممر' ? 'cor' : 'camp';
-    var parts = DATA.items.filter(function(i){ return i[0] === zone && itPts(i[1]) > 0; });
-    if (!parts.length) parts = DATA.items.filter(function(i){ return i[0] === zone; }).slice(0, 8);
-    var rec = STATE.recs[s.id];
-
-    return (!rec ? alertBox('warn','هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.') : '')
-      + card('حالة التركيب',
-          '<div class="chips" style="margin:0">'
-          + ['قيد التركيب','مُركّب','متعذّر'].map(function(c){
-              return '<button type="button" class="chip' + (FORM.status===c?' on':'')
-                + '" data-fst="' + esc(c) + '">' + esc(t(c)) + '</button>';
-            }).join('') + '</div>'
-          + '<p class="hint">' + esc(s.id) + ' — ' + esc(s.name) + '</p>')
-
-      + cardFlush('القطع المستهلكة — ' + nm(parts.length),
-          table(['القطعة','النقاط','المستهلك','السيريال'],
-            parts.map(function(i){
-              return [esc(i[2]), N(itPts(i[1])),
-                      '<input type="number" min="0" data-part="' + esc(i[1]) + '" value="'
-                        + (FORM.parts[i[1]] || 0) + '">',
-                      '<input dir="ltr" placeholder="SN-…" data-serial="' + esc(i[1]) + '" value="'
-                        + esc(FORM.serials[i[1]] || '') + '">'];
-            })),
-          '<span class="hint" style="margin:0">' + esc(t('مجموع النقاط'))
-          + ' <b>' + nm(formPts()) + '</b></span>')
-
-      + photoCard(['before','قبل التركيب',1], ['after','بعد التركيب',1],
-                  ['panel','لوحة الأجهزة',0], ['serial','السيريال',0])
-
-      + card('الشبكة',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('بادئة الشبكة')) + '</label>'
-          + '<input dir="ltr" data-form="prefix" placeholder="10.20.30" value="' + esc(FORM.prefix) + '"></div>'
-          + '<div class="field"><label>' + esc(t('العناوين المشتقّة')) + '</label>'
-          + '<input dir="ltr" readonly value="' + esc(ipsOf(FORM.prefix)) + '"'
-          + ' style="background:var(--surface-2);color:var(--ink-soft)"></div>'
-          + '</div>'
-          + '<p class="hint">‎.1 راوتر · ‎.2 قارئ · ‎.3 كاميرا — تُشتقّ من البادئة ولا تُكتب.</p>')
-
-      + card('', '<div class="actions">'
-          + btn('إتمام التركيب','btn-primary',' data-inssave="1"')
-          + btn('حفظ مسودّة','btn-secondary',' data-insdraft="1"')
-          + '</div>'
-          + '<p class="hint">لا تُوسم النقطة مُركّبةً حتى يعتمد المهندس قطعها وسيرياتها في التدقيق الهندسي.</p>');
-  }};
-
-function ipsOf(p){
-  p = String(p || '').trim().replace(/\.+$/, '');
-  if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(p)) return '—';
-  return p + '.1 · ' + p + '.2 · ' + p + '.3';
-}
-
-function formPts(){
-  var n = 0;
-  Object.keys(FORM.parts).forEach(function(k){ n += cfgN(FORM.parts[k]) * itPts(k); });
-  return Math.round(n * 100) / 100;
-}
-
-function photoCard(){
-  var L = Array.prototype.slice.call(arguments);
-  return card('الصور',
-    '<div class="grid cols-2">'
-    + L.map(function(p){
-        var has = !!FORM.photos[p[0]];
-        return '<div class="field"><label>' + esc(t(p[1]))
-          + (p[2] ? ' <span class="req">*</span>' : '') + '</label>'
-          + '<label class="btn ' + (has ? 'btn-secondary' : 'btn-primary')
-          + '" style="cursor:pointer;width:100%">'
-          + (has ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('التقط')))
-          + '<input type="file" accept="image/*" capture="environment" data-photo="' + p[0] + '" style="display:none"></label>'
-          + (has ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(FORM.photos[p[0]].size/1024))
-                 + ' ' + esc(t('كيلو')) + '</div>' : '')
-          + '</div>';
-      }).join('')
-    + '</div>'
-    + '<p class="hint">الصور تُضغط على الجهاز قبل الرفع وتُخزَّن منفصلةً عن الوثيقة.</p>');
-}
-
-/* ضغطُ الصورة على الجهاز — الرفع الخام يخنق شبكةَ المشاعر */
-function shrink(file, max, q){
-  return new Promise(function(res){
-    if (!file || typeof FileReader === 'undefined' || typeof Image === 'undefined'){ res(null); return; }
-    var fr;
-    try{ fr = new FileReader(); }catch(e){ res(null); return; }
-    fr.onload = function(){
-      var img = new Image();
-      img.onload = function(){
-        try{
-          var r = Math.min(1, (max || 1280) / Math.max(img.width, img.height));
-          var cv = document.createElement('canvas');
-          cv.width = Math.round(img.width * r); cv.height = Math.round(img.height * r);
-          var cx = cv.getContext('2d');
-          if (!cx){ res(null); return; }
-          cx.drawImage(img, 0, 0, cv.width, cv.height);
-          res({ data:cv.toDataURL('image/jpeg', q || 0.72), w:cv.width, h:cv.height,
-                size:Math.round(cv.width * cv.height * 0.12) });
-        }catch(e){ res(null); }
-      };
-      img.onerror = function(){ res(null); };
-      img.src = fr.result;
-    };
-    fr.onerror = function(){ res(null); };
-    try{ fr.readAsDataURL(file); }catch(e){ res(null); }
-  });
-}
-
-/* ── الحفظ — يكتب في المحرك ويدخل الطابور ── */
-function svSave(next){
-  var s = formSite();
-  if (!s) return;
-  if (!FORM.photos.site || !FORM.photos.mount){
-    toast(t('الصورتان مطلوبتان قبل الحفظ'));
-    return;
-  }
-  var rec = {
-    id:s.id, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
-    mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
-    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos)
-  };
-  CORE.set('recs', s.id, rec);
-  Object.keys(FORM.photos).forEach(function(k){
-    CORE.set('photos', s.id + '_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
-  });
-  logEvent('مسح موقع — ' + s.id);
-  toast(nm(1) + ' ' + t('مسحٌ حُفظ') + ' · ' + t('في الطابور') + ' ' + nm(CORE.pending()));
-  formReset();
-  if (next){
-    var un = STATE.sites.filter(function(x){ return !STATE.recs[x.id]; })[0];
-    if (un) FORM.site = un.id;
-  }
-  render();
-}
-
-function insSave(draft){
-  var s = formSite();
-  if (!s) return;
-  if (!draft && (!FORM.photos.before || !FORM.photos.after)){
-    toast(t('صورتا قبل وبعد مطلوبتان'));
-    return;
-  }
-  var used = {}, n = 0;
-  Object.keys(FORM.parts).forEach(function(k){
-    var q = cfgN(FORM.parts[k]);
-    if (q > 0){ used[k] = q; n += q; }
-  });
-  if (!draft && !n){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
-
-  CORE.set('inss', s.id, {
-    id:s.id, status: draft ? 'مسودّة' : FORM.status,
-    by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
-    parts:used, serials:FORM.serials, prefix:FORM.prefix, pts:formPts(),
-    approved:false, photos:Object.keys(FORM.photos)
-  });
-  Object.keys(FORM.photos).forEach(function(k){
-    CORE.set('photos', s.id + '_ins_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
-  });
-  /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
-  if (!draft){
-    Object.keys(used).forEach(function(k){
-      STATE.moves.push({ at:new Date().toISOString().slice(0,10), kind:'استهلاك',
-                         item:k, qty:used[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
-    });
-    CORE.dirty('moves', s.id, used);
-  }
-  logEvent((draft ? 'مسودّة تركيب' : 'تركيب') + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
-  toast(draft ? t('حُفظت مسودّة') : (t('تركيبٌ حُفظ — بانتظار التدقيق')));
-  formReset();
-  render();
-}
-
-function formReset(){
-  FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
-  FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
-  FORM.status = 'مُركّب';
-}
-
-function logEvent(what){
-  STATE.events.unshift({ at:new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }),
-                         what:what, by:STATE.meta.name || 'محمد صفوت' });
-  if (STATE.events.length > 500) STATE.events.length = 500;
-}
-
-/* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
-PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي',
-  l:'اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.',
-  body:function(){
-    var wait = Object.keys(STATE.inss).filter(function(k){
-      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
-    });
-    var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
-    return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],
-                  ['معتمد', N(done.length), 'ok'],
-                  ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
-                      return STATE.inss[k].status === 'مسودّة'; }).length)],
-                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
-      + (wait.length
-        ? cardFlush('بانتظار قرارك — ' + nm(wait.length),
-            table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
-              wait.slice(0, 30).map(function(k){
-                var r = STATE.inss[k], s = siteFind(k);
-                return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc((s && s.name) || '') + '</span>',
-                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
-                        '<span class="num">' + new Date(r.at).toLocaleTimeString('ar-EG',
-                          { hour:'2-digit', minute:'2-digit' }) + '</span>',
-                        '<div class="actions">'
-                        + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
-                        + btn('ردّ','btn-danger btn-sm',' data-rej="' + esc(k) + '"') + '</div>'];
-              })))
-        : card('', '<p class="hint" style="text-align:center;margin:0">لا تركيبات بانتظار التدقيق.</p>'))
-      + card('قاعدة الاعتماد',
-          flow(['تركيب مُبلَّغ','مراجعة الصور','مطابقة السيريال','معتمد'], 0)
-          + '<p class="hint">الردُّ يُعيد النقطة لمنفّذها بحالة «مُعاد» مع سبب — ولا تُحتسب نقاطُها حتى تُعتمد.</p>');
-  }};
-
-function apprIns(id, ok){
-  var r = STATE.inss[id];
-  if (!r) return;
-  if (ok){
-    r.approved = true; r.apprBy = STATE.meta.name || 'محمد صفوت'; r.apprAt = Date.now();
-    var s = siteFind(id);
-    if (s) s.fstat = 'مُركّب';
-    logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة');
-  } else {
-    r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
-    logEvent('ردّ تركيب — ' + id);
-  }
-  CORE.set('inss', id, r);
-  toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));
-  render();
-}
-
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
 
 var POP_OPEN = false;
 
-function popHtml(){
-  var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
-  if (!s) return '';
-  var sv = !!STATE.recs[s.id];
-  var ins = (STATE.inss[s.id] || {}).status || s.fstat || 'لم يبدأ';
-  return '<div class="pop" id="pkPop">'
-    + '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
-    +   '<div style="min-width:0"><h3>'+esc(s.name)+'</h3>'
-    +   '<div class="pid">'+esc(s.id)+'</div></div>'
-    +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
-    + '</div>'
-    + '<div class="pop-rows">'
-    +   '<div><span class="k">'+esc(t('المشعر'))+'</span><span>'+esc(s.zone)+'</span></div>'
-    +   '<div><span class="k">'+esc(t('النوع'))+'</span><span>'+esc(s.type)+'</span></div>'
-    +   (s.sign ? '<div><span class="k">'+esc(t('الشاخص'))+'</span><span class="num">'+esc(s.sign)+'</span></div>' : '')
-    +   (s.sq   ? '<div><span class="k">'+esc(t('المربع'))+'</span><span class="num">'+esc(s.sq)+'</span></div>' : '')
-    +   (s.co   ? '<div><span class="k">'+esc(t('الشركة'))+'</span><span>'+esc(s.co)+'</span></div>' : '')
-    +   (s.work ? '<div><span class="k">'+esc(t('وجه العمل'))+'</span><span>'+esc(s.work)+'</span></div>' : '')
-    +   '<div><span class="k">'+esc(t('حالة المسح'))+'</span>'
-    +     pill(sv ? 'تمت الزيارة' : 'لم يُزر', sv ? 'ok' : 'warn')+'</div>'
-    +   '<div><span class="k">'+esc(t('حالة التركيب'))+'</span>'
-    +     pill(ins, ins==='مُركّب' ? 'ok' : (ins==='متعذّر' ? 'off' : ''))+'</div>'
-    +   '<div><span class="k">'+esc(t('الإحداثيات'))+'</span>'
-    +     '<span class="num">'+s.lat.toFixed(5)+', '+s.lng.toFixed(5)+'</span></div>'
-    + '</div>'
-    + '<div class="pop-btns">'
-    +   '<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" '
-    +   'href="https://www.google.com/maps/dir/?api=1&destination='+s.lat+','+s.lng+'">'
-    +   '↗ '+esc(t('اتجاهات'))+'</a>'
-    +   btn('✎ '+t('تفاصيل الموقع'),'btn-secondary btn-sm',' data-site="'+esc(s.id)+'"')
-    +   btn('⇱ '+t('تحريك النقطة'),'btn-secondary btn-sm')
-    +   btn('🗓 '+t('جدولة تركيب'),'btn-secondary btn-sm')
-    +   btn('✔ '+t('تم التركيب'),'btn-secondary btn-sm')
-    +   btn('⚑ '+t('رفع تحدٍّ'),'btn-secondary btn-sm')
-    +   btn('☑ '+t('حدّد'),'btn-secondary btn-sm',' data-p="sel"')
-    + '</div>'
-    + '</div>';
-}
+/* نافذةُ النقطة في p27 — بأفعالها الحقيقية */
 
 /* ═══ مركز التصدير — قسمًا قسمًا كالقديم ═══ */
 
@@ -3814,7 +4850,7 @@ var ROLES = {
   supervisor:{
     n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
     guide:'دليل الفني والمشرف — العمل الميداني',
-    nav:['map','sites','sel','svForm','insForm','recs','tools','mine','mywork','myteam',
+    nav:['map','mytasks','sites','sel','svForm','insForm','recs','tools','mine','mywork','myteam',
          'moh','over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
@@ -3830,7 +4866,7 @@ var ROLES = {
   tech:{
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
-    nav:['map','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    nav:['map','mytasks','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -3853,7 +4889,7 @@ var ROLES = {
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
-    nav:['map','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    nav:['map','mytasks','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   }
@@ -4118,7 +5154,7 @@ PAGE.audit = { m:'النظام', t:'سجل التدقيق', l:'من غيّر م�
                       '<span class="num">'+esc(r[5])+'</span>', esc(r[6])];
             })),
           '<form class="inline-form" onsubmit="return false">'
-          + '<select><option>'+esc(t('كل الكيانات'))+'</option><option>'+esc(t('مشترى'))+'</option>'
+          + '<select aria-label="' + esc(t('تصفية بالكيان')) + '"><option>'+esc(t('كل الكيانات'))+'</option><option>'+esc(t('مشترى'))+'</option>'
           + '<option>'+esc(t('قطعة'))+'</option><option>'+esc(t('مخزون'))+'</option></select>'
           + btn('تصفية','btn-secondary btn-sm') + '</form>')
       + card('ما يُسجَّل إلزامًا',
@@ -4544,532 +5580,11 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
           + '</div>', btn('➕ إضافة دور','btn-primary btn-sm'));
   }};
 
-/* ═══ فرق العمل — أربعةٌ لكلٍّ نوعُ مهمته وتقاريره ═══
-   WO_KINDS في العامل أربعة: زيارة · تهيئة · تجميع · تركيب.
-   الفريق دورٌ مخصَّصٌ يرث «مشرف» ويُقيَّد بنوعٍ واحد — فلا يرى إلا شغله. */
-
-var WO_KINDS = {
-  visit:   { n:'زيارة',  i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
-  prep:    { n:'تهيئة',  i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
-  asm:     { n:'تجميع',  i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
-  install: { n:'تركيب',  i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' }
-};
-
-var CREWS = [
-  { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',
-    d:'يديرون المشروع ويعتمدون ما يرفعه الفرق.',
-    members:['محمد صفوت'] },
-  { id:'cprep', n:'فريق التهيئة',  base:'supervisor', kind:'prep',
-    d:'ضبط الجهاز وعنوانه ونظامه وفحصه قبل النزول.',
-    members:['فريق ١','أحمد'] },
-  { id:'casm',  n:'فريق التجميع',  base:'supervisor', kind:'asm',
-    d:'تركيب ما يدخل البوكس وتوصيله قبل النزول.',
-    members:['فريق ٢'] },
-  { id:'cins',  n:'فريق التركيب',  base:'supervisor', kind:'install',
-    d:'تركيب النقطة في موقعها وتوثيقها.',
-    members:['فريق ٣','سالم'] }
-];
-
-/* أرقام تمثيلية لكل فريق عبر الدورات الثلاث */
-var CREW_STATS = {
-  eng:   { day:0, week:0, month:0, tgtM:0,     open:0, done:0 },
-  cprep: { day:0, week:0, month:0, get tgtM(){ return T().prep; }, open:0, done:0 },
-  casm:  { day:0, week:0, month:0, get tgtM(){ return T().asm; },  open:0, done:0 },
-  cins:  { day:0, week:0, month:0, get tgtM(){ return T().ins; },  open:0, done:0 }
-};
-
-function crewOf(id){ return CREWS.filter(function(c){ return c.id === id; })[0] || CREWS[0]; }
-
-/* ── متابعة الفرق — لوحة المهندس ─────────────────── */
-PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة فرق — كلٌّ بنوع مهمته وتارجته ودوريته.',
-  body:function(){
-    var C = K();
-    return stats([['فرق عاملة', N(CREWS.length - 1), 'acc'],
-                  ['أعضاء', N(CREWS.reduce(function(a,c){ return a + c.members.length; }, 0))],
-                  ['مهام مفتوحة','٠','wrn'],
-                  ['نقاط اليوم','٠','ok']])
-      + CREWS.map(function(c){
-          var S = CREW_STATS[c.id];
-          var K = c.kind === '*' ? null : WO_KINDS[c.kind];
-          return card((K ? K.i + ' ' : '\u{1F393} ') + t(c.n),
-            '<p class="hint" style="margin:0 0 12px">' + esc(t(c.d)) + '</p>'
-            + '<div class="stats" style="margin:0 0 12px">'
-            +   stat('اليوم','<span class="num">'+nm(S.day)+'</span>')
-            +   stat('هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>')
-            +   stat('هذا الشهر','<span class="num">'+nm(S.month)+'</span>')
-            +   stat('تارجت الشهر', S.tgtM ? '<span class="num">'+nm(S.tgtM)+'</span>' : '—')
-            + '</div>'
-            + (S.tgtM ? meter('الإنجاز من تارجت الشهر', S.month, S.tgtM) : '')
-            + '<div class="hint" style="margin:12px 0 0">'
-            +   '<strong>' + esc(t('الأعضاء')) + ':</strong> ' + c.members.map(esc).join(' · ')
-            +   ' · <strong>' + esc(t('يرث')) + ':</strong> ' + esc(t(c.base === 'engineer' ? 'مهندس' : 'مشرف'))
-            + '</div>',
-            '<div class="actions">'
-            + (K ? pill(K.n,'acc') : pill('كل الأنواع','ok'))
-            + btn('تقرير الفريق','btn-secondary btn-sm')
-            + '</div>');
-        }).join('')
-      + card('كيف تُحسب النقطة',
-          flow(['تهيئة ' + nm(C.stgCfg) + '٪','تجميع ' + nm(C.stgVal) + '٪','تركيب ' + nm(C.stgIns) + '٪'], -1)
-          + '<p class="hint">النقطة الواحدة تُقسَّم على مراحلها الثلاث — فلكل فريقٍ نصيبُه منها، ومجموعها مئةٌ دائمًا.</p>');
-  }};
-
-/* ── التقارير الدورية ───────────────────────────── */
-var PERIODS = [
-  ['day',   'يومي',    'نهاية كل يوم عمل',      '١٧:٠٠'],
-  ['week',  'أسبوعي',  'صباح أول يوم في الأسبوع','٠٧:٠٠'],
-  ['month', 'شهري',    'أول يوم في الشهر',       '٠٧:٠٠']
-];
-
-var CREW_REPORTS = [
-  ['نقاط اليوم لكل منفِّذ',      'day',   'كل الفرق', 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته'],
-  ['المفتوح والمتأخر',           'day',   'كل الفرق', 'المهام التي لم تُقفل ومَن عندها'],
-  ['الفريق مقابل تارجته',        'week',  'كل الفرق', 'الأسبوعي مقابل ما أُنجز فعلًا'],
-  ['الورشة — تهيئةً وتجميعًا',   'week',  'التهيئة والتجميع', 'ما خرج من الورشة جاهزًا للنزول'],
-  ['التركيب في الميدان',         'week',  'التركيب',  'ما رُكّب وما تعذّر وما ينتظر التدقيق'],
-  ['المسح الميداني',             'week',  'الزيارة',  'ما مُسح وما بقي وتحدياته'],
-  ['أداء الفرق الشهري',          'month', 'كل الفرق', 'الشهر كاملًا مقابل التارجت مع الاتجاه'],
-  ['العُهدة والمستهلك',          'month', 'كل الفرق', 'ما في يد كل فريق وما استهلكه'],
-  ['الملخص التنفيذي',            'month', 'المهندسون','المشروع كله في صفحة'],
-];
-
-PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما يُرفع تلقائيًّا — يوميًّا وأسبوعيًّا وشهريًّا.',
-  body:function(){
-    return card('الدوريات',
-        table(['الدورية','متى تُرسَل','الوقت','تقارير'],
-          PERIODS.map(function(p){
-            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
-            return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
-                    '<input type="time" value="' + (p[0]==='day'?'17:00':'07:00') + '" style="max-width:130px">',
-                    N(n)];
-          })),
-        btn('حفظ المواعيد','btn-primary btn-sm'))
-      + PERIODS.map(function(p){
-          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
-          return cardFlush(t(p[1]) + ' — ' + nm(L.length),
-            table(['التقرير','لمن','ما يحويه',''],
-              L.map(function(r){
-                return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
-                        '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
-                        '<div class="actions">' + btn('إكسل','btn-quiet btn-sm')
-                        + btn('PDF','btn-quiet btn-sm') + '</div>'];
-              })));
-        }).join('')
-      + card('قناة الإرسال',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
-          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
-          + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
-          + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
-          + '</div>')
-      + '<p class="hint">التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.</p>';
-  }};
-
-/* ── شغل الفريق — ما يراه عضوه ──────────────────── */
-PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
-  body:function(){
-    var c = crewOf(CREW_VIEW);
-    var S = CREW_STATS[c.id];
-    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
-    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
-        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
-          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
-      }).join('') + '</div>'
-      + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
-               ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
-               ['هذا الشهر','<span class="num">'+nm(S.month)+'</span>','acc'],
-               ['مفتوح','<span class="num">'+nm(S.open)+'</span>','wrn']])
-      + (S.tgtM ? card('مقابل التارجت',
-          meter('الشهري', S.month, S.tgtM)
-          + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
-      + cardFlush('مهام الفريق',
-          '<p class="hint" style="padding:16px;text-align:center;margin:0">لا مهام مفتوحة من نوع '
-          + esc(K ? t(K.n) : t('كل الأنواع')) + '.</p>',
-          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
-      + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
-        + '<p class="hint">المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.</p>');
-  }};
-
-var CREW_VIEW = 'cprep';
-
-/* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
-   التركيب: المخيم أربعةٌ (مشرف + ثلاثة) بمعدل مخيمين يوميًّا،
-            والممر خمسةٌ (مشرف + أربعة) ومعدّتان بمعدل نقطةٍ واحدةٍ يوميًّا.
-   الزيارة: عشرون مخيمًا أو عشر نقاط ممرٍّ يوميًّا.
-   وتارجت التركيب يُحسب على قطع النقطة لا على عددها. */
-
-var CREW_SPEC = [
-  { k:'ins_camp', n:'فريق تركيب — مخيمات', kind:'install', zone:'camp',
-    sup:1, tech:3, gear:0, rate:2,
-    d:'مشرفٌ وثلاثة فنيين — مخيمان في اليوم.' },
-  { k:'ins_cor',  n:'فريق تركيب — ممرات',  kind:'install', zone:'cor',
-    sup:1, tech:4, gear:2, rate:1,
-    d:'مشرفٌ وأربعة فنيين ومعدّتان — نقطةُ ممرٍّ واحدةٌ في اليوم.' },
-  { k:'srv_camp', n:'فريق مسح — مخيمات',   kind:'visit',   zone:'camp',
-    sup:1, tech:1, gear:0, rate:20,
-    d:'عشرون مخيمًا في اليوم.' },
-  { k:'srv_cor',  n:'فريق مسح — ممرات',    kind:'visit',   zone:'cor',
-    sup:1, tech:1, gear:0, rate:10,
-    d:'عشر نقاط ممرٍّ في اليوم.' }
-];
-
-var UNITS = { camp:1392, cor:190 };
-
-function crewNeed(spec, months){
-  var days = cfgGet('days') * months;
-  var units = UNITS[spec.zone] || 0;
-  var rate = crewVal(spec.k,'Rate') || spec.rate;
-  var crewDays = rate ? (units / rate) : 0;
-  var crews = days ? Math.ceil(crewDays / days) : 0;
-  var sup = crewVal(spec.k,'Sup'), tec = crewVal(spec.k,'Tech'), ger = crewVal(spec.k,'Gear');
-  if (!sup && !tec) { sup = spec.sup; tec = spec.tech; ger = spec.gear; }
-  return { units:units, crewDays:Math.round(crewDays), crews:crews,
-           people:crews * (sup + tec), gear:crews * ger, sup:sup, tech:tec, rate:rate };
-}
-
-var PLAN_MONTHS = 4;
-
-PAGE.crewplan = { m:'الفرق والفنيون', t:'الطواقم والمعدلات',
-  l:'كم فريقًا يلزم لبلوغ الموعد — محسوبًا من معدل كل نوع.',
-  body:function(){
-    var C = K();
-    var rows = CREW_SPEC.map(function(s){ return { s:s, r:crewNeed(s, PLAN_MONTHS) }; });
-    var ins = rows.filter(function(x){ return x.s.kind === 'install'; });
-    var srv = rows.filter(function(x){ return x.s.kind === 'visit'; });
-    var sum = function(L, f){ return L.reduce(function(a,x){ return a + f(x); }, 0); };
-
-    return '<div class="chips">' + [3,4,5,6].map(function(m){
-        return '<button type="button" class="chip' + (PLAN_MONTHS===m?' on':'') + '" data-months="' + m + '">'
-          + nm(m) + ' ' + esc(t('أشهر')) + '</button>';
-      }).join('') + '</div>'
-
-      + stats([['فرق التركيب', N(sum(ins,function(x){return x.r.crews;})), 'acc'],
-               ['أفرادها', N(sum(ins,function(x){return x.r.people;}))],
-               ['معدّات', N(sum(ins,function(x){return x.r.gear;})), 'wrn'],
-               ['أيام العمل', N((C.days||26) * PLAN_MONTHS)]])
-
-      + cardFlush('طواقم التركيب',
-          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد','معدّات'],
-            ins.map(function(x){
-              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
-                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
-                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
-                      '<span class="pill acc">' + nm(x.r.crews) + '</span>',
-                      N(x.r.people), x.r.gear ? N(x.r.gear) : '—'];
-            }),
-            ['الإجمالي','','', N(sum(ins,function(x){return x.r.units;})),
-             N(sum(ins,function(x){return x.r.crewDays;})),
-             N(sum(ins,function(x){return x.r.crews;})),
-             N(sum(ins,function(x){return x.r.people;})),
-             N(sum(ins,function(x){return x.r.gear;}))]))
-
-      + cardFlush('طواقم المسح',
-          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد'],
-            srv.map(function(x){
-              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
-                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
-                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
-                      '<span class="pill acc">' + nm(x.r.crews) + '</span>', N(x.r.people)];
-            }),
-            ['الإجمالي','','', N(sum(srv,function(x){return x.r.units;})),
-             N(sum(srv,function(x){return x.r.crewDays;})),
-             N(sum(srv,function(x){return x.r.crews;})),
-             N(sum(srv,function(x){return x.r.people;}))]))
-
-      + card('ضبط المعدلات',
-          table(['النوع','مشرف','فنيون','معدّات','المعدل/يوم'],
-            CREW_SPEC.map(function(s){
-              return [esc(t(s.n)),
-                      cfgInput('crewSup', s.k), cfgInput('crewTech', s.k),
-                      cfgInput('crewGear', s.k), cfgInput('crewRate', s.k, { dec:1 })];
-            })),
-          btn('حفظ المعدلات','btn-primary btn-sm'))
-
-      + card('تارجت التركيب يُحسب على القطع',
-          '<p class="hint" style="margin:0 0 12px">عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. '
-          + 'فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.</p>'
-          + flow(['مسح الموقع','اعتماد المسح','تُحدَّد قطع النقطة','تدخل الجدولة','تُركَّب وتُحتسب قطعًا'], 0)
-          + '<div class="alert warn" style="margin:12px 0 0"><span>'
-          + esc(t('القطع لكل نقطة تُحدَّد بعد اعتماد المسح — فالتارجت بالقطع يبقى تقديريًّا حتى يكتمل المسح.'))
-          + '</span></div>');
-  }};
-
-/* ═══ موديول الصلاحيات — واجهةً وقواعدَ Firebase ═══ */
-
-var PERMS = [
-  ['read_all',     'قراءة كل النقاط',        ['engineer','viewer']],
-  ['read_own',     'قراءة المُسند إليه',      ['engineer','supervisor','tech','cprep','casm','cins']],
-  ['write_survey', 'تسجيل المسح',            ['engineer','supervisor','tech','cins']],
-  ['write_prep',   'تنفيذ التهيئة',          ['engineer','cprep']],
-  ['write_asm',    'تنفيذ التجميع',          ['engineer','casm']],
-  ['write_install','تنفيذ التركيب',          ['engineer','tech','cins']],
-  ['approve',      'اعتماد ما رُفع',          ['engineer']],
-  ['assign',       'إسناد المهام',            ['engineer','supervisor']],
-  ['inventory',    'المخزون والعُهدة',        ['engineer']],
-  ['money',        'المال والمشتريات',        ['engineer']],
-  ['settings',     'الإعدادات والتارجت',      ['engineer']],
-  ['users',        'إدارة الحسابات والأدوار', ['engineer']],
-  ['phones',       'أرقام هواتف فريقه',       ['engineer','supervisor','tech','cprep','casm','cins']],
-  ['export_all',   'التصدير الكامل',          ['engineer']],
-  ['export_rep',   'تصدير التقارير',          ['engineer','viewer']]
-];
-
-var ROLE_ORDER = ['engineer','supervisor','tech','cprep','casm','cins','viewer'];
-
-function roleName(k){
-  return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
-           casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || k;
-}
-
-PAGE.perms = { m:'الإعدادات', t:'الصلاحيات', l:'ما يملكه كل دور — واجهةً وقاعدةَ بيانات.',
-  body:function(){
-    return '<p class="lede" style="margin:0 0 16px">الصلاحية تُفرَض في موضعين: الواجهة لا تبني ما لا يملكه الدور، وقواعد Firebase ترفض ما لا يملكه ولو التفّ على الواجهة. والمصدر واحد — هذا الجدول.</p>'
-      + cardFlush('المصفوفة',
-          table(['الصلاحية'].concat(ROLE_ORDER.map(roleName)),
-            PERMS.map(function(p){
-              return ['<strong>' + esc(t(p[1])) + '</strong><br>'
-                      + '<span class="hint" dir="ltr" style="margin:0">' + p[0] + '</span>']
-                .concat(ROLE_ORDER.map(function(r){
-                  return p[2].indexOf(r) > -1
-                    ? '<span class="pill ok">✓</span>' : '<span class="pill off">—</span>';
-                }));
-            })),
-          btn('حفظ المصفوفة','btn-primary btn-sm'))
-      + card('قواعد Firebase المولَّدة',
-          '<p class="hint" style="margin:0 0 11px">تُولَّد من المصفوفة أعلاه وتُنشر على Firestore — فلا تفترق الواجهةُ عن القاعدة.</p>'
-          + '<pre style="background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);'
-          + 'padding:13px;overflow:auto;font-size:11.5px;line-height:1.75;direction:ltr;text-align:left;margin:0">'
-          + esc(fbRules()) + '</pre>',
-          '<div class="actions">' + btn('نسخ','btn-secondary btn-sm')
-          + btn('نشر على Firestore','btn-primary btn-sm') + '</div>')
-      + '<div class="alert warn"><span>أرقام الهواتف محجوبةٌ عن الوزارة في القاعدة نفسها — لا إخفاءً في الواجهة وحدها.</span></div>';
-  }};
-
-function fbRules(){
-  return 'rules_version = \'2\';\n'
-    + 'service cloud.firestore {\n'
-    + '  match /databases/{db}/documents {\n\n'
-    + '    function role() {\n'
-    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.role;\n'
-    + '    }\n'
-    + '    function crewKind() {\n'
-    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.kind;\n'
-    + '    }\n'
-    + '    function isEng()  { return role() == \'engineer\'; }\n'
-    + '    function isSup()  { return role() in [\'engineer\',\'supervisor\']; }\n'
-    + '    function isCrew() { return role() in [\'tech\',\'cprep\',\'casm\',\'cins\']; }\n'
-    + '    function mine(d)  { return d.assignedTo == request.auth.uid; }\n\n'
-    + '    match /sites/{id} {\n'
-    + '      allow read:  if request.auth != null;\n'
-    + '      allow write: if isSup() || (isCrew() && mine(resource.data));\n'
-    + '    }\n\n'
-    + '    match /tasks/{id} {\n'
-    + '      allow read:   if isSup() || (isCrew() && mine(resource.data));\n'
-    + '      allow create: if isSup();\n'
-    + '      allow update: if isEng()\n'
-    + '                    || (isCrew() && mine(resource.data)\n'
-    + '                        && resource.data.kind == crewKind()\n'
-    + '                        && request.resource.data.status != \'معتمد\');\n'
-    + '    }\n\n'
-    + '    match /inventory/{id} { allow read, write: if isEng(); }\n'
-    + '    match /purchases/{id} { allow read: if isEng() || role() == \'viewer\';\n'
-    + '                            allow write: if isEng(); }\n'
-    + '    match /settings/{id}  { allow read: if request.auth != null;\n'
-    + '                            allow write: if isEng(); }\n'
-    + '    match /users/{uid} {\n'
-    + '      allow read:  if isEng() || request.auth.uid == uid;\n'
-    + '      allow write: if isEng();\n'
-    + '    }\n\n'
-    + '    // الهاتف حقلٌ محجوبٌ عن الوزارة في القاعدة\n'
-    + '    match /techs/{id} {\n'
-    + '      allow read: if isSup() || isCrew();\n'
-    + '      allow read: if role() == \'viewer\'\n'
-    + '                  && !(\'phone\' in resource.data.keys());\n'
-    + '      allow write: if isEng();\n'
-    + '    }\n'
-    + '  }\n'
-    + '}';
-}
-
-/* ═══ إسناد الدور والفريق للمستخدم ═══ */
-
-var ASSIGN = [
-  ['محمد صفوت','m.safwat','engineer','—','—'],
-  ['خالد',      'k.mina','supervisor','ins_camp','فريق مخيمات ١'],
-  ['أحمد',      'a.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['سالم',      's.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['ماجد',      'm.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['ياسر',      'y.prep','cprep','—','ورشة التهيئة'],
-  ['وزارة الحج','moh.view','viewer','—','—']
-];
-
-PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'من في أي دور وأي فريق.',
-  body:function(){
-    return card('إسناد',
-        '<div class="grid cols-2">'
-        + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
-        + '<select>' + ASSIGN.map(function(u){
-            return '<option>' + esc(u[0]) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-        + '<select>' + ROLE_ORDER.map(function(r){
-            return '<option value="' + r + '">' + esc(t(roleName(r))) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('نوع الفريق')) + '</label>'
-        + '<select><option>—</option>' + CREW_SPEC.map(function(s){
-            return '<option value="' + s.k + '">' + esc(t(s.n)) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('اسم الفريق')) + '</label>'
-        + '<input placeholder="فريق مخيمات ٢"></div>'
-        + '</div>', btn('إسناد','btn-primary btn-sm'))
-      + cardFlush('المسنَدون — ' + nm(ASSIGN.length),
-          table(['المستخدم','الدور','نوع الفريق','الفريق',''],
-            ASSIGN.map(function(u){
-              var sp = CREW_SPEC.filter(function(s){ return s.k === u[3]; })[0];
-              return ['<strong>' + esc(u[0]) + '</strong><br>'
-                      + '<span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
-                      pill(roleName(u[2]), u[2]==='engineer'?'ok':(u[2]==='viewer'?'info':'acc')),
-                      sp ? esc(t(sp.n)) : '<span class="hint" style="margin:0">—</span>',
-                      esc(u[4]), btn('تغيير','btn-quiet btn-sm')];
-            })))
-      + '<p class="hint">الدور يُكتب في وثيقة المستخدم في Firebase، فتقرؤه القواعد مباشرةً — لا نسخةَ ثانيةً تفترق عنها.</p>';
-  }};
-
-/* ═══ فريق المشرف — من معه ═══ */
-
-PAGE.myteam = { m:'الفرق والفنيون', t:'فريقي', l:'من معك ومَن أنجز ماذا اليوم.',
-  body:function(){
-    var team = ASSIGN.filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
-    var sp = CREW_SPEC[0];
-    return stats([['أفراد الفريق', N(team.length), 'acc'],
-                  ['المعدل اليومي', N(sp.rate) + ' ' + esc(t('مخيم'))],
-                  ['أنجزنا اليوم','٠','ok'],
-                  ['المتبقي عليّ','٠','wrn']])
-      + cardFlush('أفراد فريقي',
-          table(['العضو','الدور','اليوم','هذا الأسبوع','الحالة'],
-            team.map(function(u){
-              return ['<strong>' + esc(u[0]) + '</strong>',
-                      pill(u[2]==='supervisor' ? 'مشرف' : 'فني', u[2]==='supervisor'?'ok':'acc'),
-                      '٠','٠', pill('متاح','ok')];
-            })),
-          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
-      + card('طاقم الفريق ومعدله',
-          '<div class="hint" style="margin:0">'
-          + '<strong>' + esc(t(sp.n)) + '</strong> — ' + esc(t(sp.d))
-          + '</div>'
-          + '<div class="stats" style="margin:13px 0 0">'
-          + stat('مشرف', N(sp.sup)) + stat('فنيون', N(sp.tech))
-          + stat('معدّات', sp.gear ? N(sp.gear) : '—')
-          + stat('المعدل/يوم', N(sp.rate))
-          + '</div>')
-      + '<p class="hint">أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.</p>';
-  }};
-
-/* ═══ حسابات الفنيين — إنشاءٌ جماعيٌّ وفرديّ ═══
-   الفني يعمل تحت مشرفه: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا.
-   ويُولَّد له اسم مستخدمٍ من اسمه وكلمةُ مرورٍ يبدّلها أول دخول. */
-
-var TECHS = [
-  { n:'أحمد',   ph:'0501234567', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'سالم',   ph:'0502345678', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'ماجد',   ph:'0503456789', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'ياسر',   ph:'0504567890', crew:'ورشة التهيئة',  sup:'خالد',  u:'', has:0 },
-  { n:'عبدالله',ph:'0505678901', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 },
-  { n:'طارق',   ph:'0506789012', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 }
-];
-
-/* اسم المستخدم من الاسم العربي — أولُ حرفٍ لاتينيٍّ ونقطةٌ ثم بقيته */
-var TR_MAP = { 'ا':'a','أ':'a','إ':'i','آ':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
-  'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
-  'ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w','ي':'y','ى':'a','ة':'a' };
-
-function userOf(name){
-  var s = String(name || '').trim().split(/\s+/)[0];
-  var out = '';
-  for (var i = 0; i < s.length; i++) out += (TR_MAP[s[i]] || '');
-  return out ? (out[0] + '.' + out.slice(1)) : 'tech';
-}
-
-function pwGen(){
-  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ', b = 'abcdefghijkmnpqrstuvwxyz', c = '23456789';
-  var p = '';
-  for (var i = 0; i < 3; i++) p += a[Math.floor(Math.random()*a.length)];
-  for (var j = 0; j < 3; j++) p += b[Math.floor(Math.random()*b.length)];
-  for (var k = 0; k < 4; k++) p += c[Math.floor(Math.random()*c.length)];
-  return p;
-}
-
-var TECH_MADE = [];
-
-PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين',
-  l:'أنشئ لكل فنيٍّ حسابًا بصلاحية «فني» — فردًا أو دفعةً واحدة.',
-  body:function(){
-    var no = TECHS.filter(function(x){ return !x.has; });
-    return stats([['فنيون', N(TECHS.length)],
-                  ['لهم حسابات', N(TECHS.length - no.length), 'ok'],
-                  ['بلا حساب', N(no.length), no.length ? 'wrn' : ''],
-                  ['الصلاحية','فني','acc']])
-
-      + (no.length
-        ? card('إنشاء دفعةً واحدة',
-            '<p class="hint" style="margin:0 0 12px">'
-            + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه «فني» ومشرفُه كما هو مسجَّل. ويبدّل كلمته أولَ دخول.'))
-            + '</p>'
-            + table(['الفني','اسم المستخدم','الفريق','مشرفه','الصلاحية'],
-                no.map(function(x){
-                  return [esc(x.n), '<code class="hint" dir="ltr" style="margin:0">' + esc(userOf(x.n)) + '</code>',
-                          esc(x.crew), esc(x.sup), pill('فني','acc')];
-                })),
-            btn('➕ ' + t('أنشئ') + ' ' + nm(no.length) + ' ' + t('حسابًا'),'btn-primary btn-sm',' data-mkall="1"'))
-        : alertBox('success','كل الفنيين لهم حسابات.'))
-
-      + cardFlush('الفنيون — ' + nm(TECHS.length),
-          table(['الفني','الجوال','الفريق','مشرفه','الحساب',''],
-            TECHS.map(function(x, i){
-              return ['<strong>' + esc(x.n) + '</strong>',
-                      may('phones') ? '<span class="num">' + esc(x.ph) + '</span>'
-                                    : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
-                      esc(x.crew), esc(x.sup),
-                      x.has ? '<code class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</code>'
-                            : pill('بلا حساب','off'),
-                      x.has ? btn('تصفير كلمة المرور','btn-quiet btn-sm')
-                            : btn('أنشئ حسابًا','btn-primary btn-sm',' data-mkone="' + i + '"')];
-            })),
-          btn('➕ إضافة فني','btn-secondary btn-sm'))
-
-      + (TECH_MADE.length
-        ? card('حسابات أُنشئت الآن',
-            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
-            + table(['الفني','اسم المستخدم','كلمة المرور'],
-                TECH_MADE.map(function(m){
-                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
-                          '<code dir="ltr">' + esc(m.p) + '</code>'];
-                })),
-            btn('نسخ الكل','btn-secondary btn-sm'))
-        : '')
-
-      + card('ما يملكه الفني',
-          table(['القدرة','له'],
-            [['رؤية المُسند إليه','نعم'], ['المسح والتوثيق','نعم'],
-             ['التركيب والفك','نعم'], ['رؤية فريقه وأرقامه','نعم'],
-             ['رؤية نقاط غيره','لا'], ['الاعتماد','لا'],
-             ['الإعدادات والمال','لا'], ['إدارة الحسابات','لا']
-            ].map(function(r){
-              return [esc(t(r[0])), r[1] === 'نعم' ? pill('نعم','ok') : pill('لا','off')];
-            })))
-      + '<p class="hint">الفني يرث «مشرف» ويعمل تحته — فقواعدُ Firebase تسمح له بما أُسند إليه وحده، وترفض ما عداه ولو التفّ على الواجهة.</p>';
-  }};
-
-function mkAccount(i){
-  var x = TECHS[i];
-  if (!x || x.has) return;
-  x.u = userOf(x.n);
-  x.has = 1;
-  TECH_MADE.push({ n:x.n, u:x.u, p:pwGen() });
-}
-
 /* ═══ القائمة والشل ═══ */
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -5268,7 +5783,10 @@ document.addEventListener('click', function(e){
                 'data-xls','data-kmz','data-tpl','data-expgo','data-impgo','data-impx',
                 'data-more','data-sq','data-fsq','data-chal','data-fst','data-appr','data-rej',
                 'data-svsave','data-svnext','data-inssave','data-insdraft','data-pwa','data-swclear',
-                'data-probe','data-wa','data-wacopy','data-wapick'];
+                'data-probe','data-wa','data-wacopy','data-wapick','data-sat','data-mfilt','data-mclear',
+                'data-asn','data-asngo','data-asnmap','data-selmap','data-selmode','data-selall',
+                'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
+                'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -5280,8 +5798,17 @@ document.addEventListener('click', function(e){
     }
   }
 
+  var sc = e.target.closest('[data-sel]');
+  if (sc){
+    var sid = sc.getAttribute('data-sel');
+    if (!asnOf(sid)) selToggle(sid);
+    render(1);
+    return;
+  }
   var li = e.target.closest('[data-site]');
-  if (li){ DETAIL_ID = li.getAttribute('data-site'); CUR = 'site'; render(); return; }
+  if (li && !SEL_MODE){ DETAIL_ID = li.getAttribute('data-site'); CUR = 'site'; render(); return; }
+  if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
+                       if (!asnOf(lid)) selToggle(lid); render(1); return; }
 
   var fz = e.target.closest('[data-fz]');
   if (fz){ FILT.zone = fz.getAttribute('data-fz'); LIST_SHOWN = LIST_PAGE; render(1);
@@ -5398,6 +5925,67 @@ document.addEventListener('click', function(e){
 
   var rl = e.target.closest('[data-role]');
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
+
+  /* ── الإسناد ── */
+  var mv = e.target.closest('[data-move]');
+  if (mv){ moveStart(mv.getAttribute('data-move')); return; }
+  if (e.target.closest('[data-movex]')){ MOVE_ID=''; render(1); return; }
+  var sm2 = e.target.closest('[data-smark]');
+  if (sm2){ markSurvey(sm2.getAttribute('data-smark')); return; }
+  var fm2 = e.target.closest('[data-fmark]');
+  if (fm2){ var pp=fm2.getAttribute('data-fmark').split('|'); markInstall(pp[0],pp[1]); return; }
+  var ps = e.target.closest('[data-psel]');
+  if (ps){ var pid=ps.getAttribute('data-psel');
+           if (!asnOf(pid)) selToggle(pid); else toast(t('هذه النقطة مُسندة بالفعل'));
+           render(1); if (MAP) mapPaint(); return; }
+  var inf = e.target.closest('[data-insform]');
+  if (inf){ FORM.site = inf.getAttribute('data-insform'); CUR='insForm'; POP_OPEN=false; render(1); return; }
+
+  var an = e.target.closest('[data-asn]');
+  if (an){ ASN_OPEN = an.getAttribute('data-asn') === '1'; render(1); return; }
+  if (e.target.closest('[data-asngo]')){ asnCommit(); return; }
+  if (e.target.closest('[data-asnmap]')){
+    MAP_SELECT = true; ASN_OPEN = false; CUR = 'map'; render(1); return;
+  }
+  var sm = e.target.closest('[data-selmap]');
+  if (sm){ MAP_SELECT = sm.getAttribute('data-selmap') === '1';
+           if (!MAP_SELECT) selClear();
+           render(1); if (MAP) mapPaint(); return; }
+  var smo = e.target.closest('[data-selmode]');
+  if (smo){ SEL_MODE = smo.getAttribute('data-selmode') === '1';
+            if (!SEL_MODE) selClear(); render(1); return; }
+  if (e.target.closest('[data-selall]')){
+    var L = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass) : filtered().slice(0, 200);
+    selAll(L); render(1); return;
+  }
+  if (e.target.closest('[data-selnone]')){ selClear(); render(1); if (MAP) mapPaint(); return; }
+  if (e.target.closest('[data-asnq]')){
+    var aq = document.getElementById('asnQ');
+    SITE_Q = aq ? aq.value : ''; render(1);
+    var nq = document.getElementById('asnQ');
+    if (nq){ nq.focus(); nq.setSelectionRange(nq.value.length, nq.value.length); }
+    return;
+  }
+  var my = e.target.closest('[data-myonly]');
+  if (my){ MY_ONLY = my.getAttribute('data-myonly') === '1'; render(1); if (MAP) mapPaint(); return; }
+  if (e.target.closest('[data-mymap]')){ MY_ONLY = true; CUR = 'map'; render(1); return; }
+  var tko = e.target.closest('[data-tkok]');
+  if (tko){ var tk = STATE.tasks[tko.getAttribute('data-tkok')];
+            if (tk){ tk.status = 'معتمد'; CORE.set('tasks', tk.id, tk);
+                     logEvent('اعتماد مهمة — ' + tk.site); statBump(); toast(t('اعتُمد')); }
+            render(1); return; }
+  var tkr = e.target.closest('[data-tkrm]');
+  if (tkr){ CORE.rm('tasks', tkr.getAttribute('data-tkrm')); statBump();
+            toast(t('أُلغيت')); render(1); return; }
+
+  var sa = e.target.closest('[data-sat]');
+  if (sa){ mapSat(!MAP_SAT); render(1); if (MAP) mapPaint(); return; }
+  var mf = e.target.closest('[data-mfilt]');
+  if (mf){ MAP_FILT_OPEN = mf.getAttribute('data-mfilt') === '1'; render(1); return; }
+  if (e.target.closest('[data-mclear]')){
+    FILT = { zone:'', type:'', work:'' }; MAP_FILT_OPEN = false;
+    render(1); if (MAP) mapPaint(); return;
+  }
 
   var co = e.target.closest('[data-co]');
   if (co){ CO_OPEN = co.getAttribute('data-co') === '1'; render(); return; }
