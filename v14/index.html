@@ -4744,6 +4744,285 @@ PAGE.less = { m:'النظام', t:'سجل الدروس',
       + '<p class="hint">يُراجَع عند إغلاق المشروع ويُسلَّم مع وثائقه — فما كلّف مرةً لا يُكلِّف ثانية.</p>';
   }};
 
+/* ═══ مركزُ التقارير ودليلُ العمليات ═══
+   كلُّ ما يحتاجه مديرُ المشروع: تقريرٌ لكلِّ جهةٍ بدوريّته ومحتواه،
+   وعمليةٌ موثّقةٌ لكلِّ ما يجري — خطوةً خطوة. */
+
+var REPORTS = [
+  /* ── للإدارة العليا في الشركة ── */
+  { id:'r-exec-w', n:'الموقف التنفيذي', to:'الإدارة العليا', side:'co', per:'أسبوعي',
+    i:'\u{1F3AF}', sheets:['evm','risks','over'],
+    what:'أين المشروع من خطّه، وما يحتاج قرارًا',
+    when:'الأحد ٠٧:٠٠', how:'PDF من اللوحة التنفيذية + إكسل بثلاث أوراق' },
+  { id:'r-fin-m', n:'الموقف المالي', to:'المالية', side:'co', per:'شهري',
+    i:'\u{1F4B0}', sheets:['ipc','budm','buys','score'],
+    what:'المستخلصاتُ والمنصرفُ ومستحقُّ الفنيين',
+    when:'الأوّل من الشهر', how:'إكسل بأربع أوراق' },
+  { id:'r-hr-m', n:'أداء الفرق والمستحقّات', to:'الموارد البشرية', side:'co', per:'شهري',
+    i:'\u{1F465}', sheets:['score','stages'],
+    what:'ما أنجزه كلُّ فنيٍّ ونقاطُه ومستحقُّه وإضافيُّه',
+    when:'الأوّل من الشهر', how:'إكسل بورقتين' },
+  { id:'r-proc-w', n:'المخزون والمشتريات', to:'المشتريات', side:'co', per:'أسبوعي',
+    i:'\u{1F4E6}', sheets:['invb','invmv','buys','wos'],
+    what:'الأرصدةُ والحركةُ والطلباتُ المفتوحة',
+    when:'الخميس ١٦:٠٠', how:'إكسل بأربع أوراق' },
+  { id:'r-hse-m', n:'تقرير السلامة', to:'السلامة', side:'co', per:'شهري',
+    i:'\u26D1', sheets:['hse'],
+    what:'الحوادثُ ومعدّلُ التكرار وأيامُ العمل الآمنة',
+    when:'الأوّل من الشهر', how:'إكسل + ملخّصٌ مكتوب' },
+  { id:'r-qa-w', n:'الجودة وعدم المطابقة', to:'الجودة', side:'co', per:'أسبوعي',
+    i:'\u2713', sheets:['ncr','qa'],
+    what:'البلاغاتُ المفتوحةُ وأعمارُها والإجراءُ التصحيحي',
+    when:'الاثنين ٠٩:٠٠', how:'إكسل بورقتين' },
+  { id:'r-ops-d', n:'إنجاز اليوم', to:'العمليات', side:'co', per:'يومي',
+    i:'\u{1F527}', sheets:['tasks','sites'],
+    what:'ما أُنجز اليومَ وما تعذّر ولماذا',
+    when:'يوميًّا ١٧:٠٠', how:'إكسل بورقتين + إشعارٌ للمشرفين' },
+
+  /* ── للوزارة ── */
+  { id:'r-moh-w', n:'تقرير التقدّم', to:'إدارة المشاريع', side:'cl', per:'أسبوعي',
+    i:'\u{1F4C8}', sheets:['over','work','miles'],
+    what:'الإنجازُ بالمشعر والنوع، والمعالمُ وأوزانُها',
+    when:'الأحد ٠٩:٠٠', how:'PDF + إكسل بثلاث أوراق' },
+  { id:'r-moh-ipc', n:'المستخلص المعتمَد', to:'الإدارة المالية', side:'cl', per:'شهري',
+    i:'\u{1F4B3}', sheets:['ipc','budm'],
+    what:'ما أُنجز واعتُمد، ومبلغُه واستقطاعُه',
+    when:'مع نهاية الشهر', how:'إكسل بورقتين + مرفقات الاعتماد' },
+  { id:'r-moh-tec', n:'المطابقة الفنية', to:'الإدارة الفنية', side:'cl', per:'أسبوعي',
+    i:'\u2699', sheets:['ncr','sites'],
+    what:'المطابقةُ للمواصفة، والبلاغاتُ وحالتُها',
+    when:'الاثنين ١٠:٠٠', how:'إكسل بورقتين' },
+  { id:'r-moh-hand', n:'جاهزية التسليم', to:'إدارة التشغيل', side:'cl', per:'عند الطلب',
+    i:'\u{1F504}', sheets:['sites','ncr'],
+    what:'ما استوفى شروطَ التسليم وما يمنعه',
+    when:'عند بلوغ المعلَم', how:'إكسل + محضرُ تسليم' },
+  { id:'r-moh-aud', n:'حزمة المراجعة', to:'المراجعة الداخلية', side:'cl', per:'ربع سنوي',
+    i:'\u{1F50E}', sheets:['ev','score','raci','less','risks'],
+    what:'الأثرُ والسجلّاتُ والمسؤولياتُ والدروس',
+    when:'نهاية الربع', how:'حزمةٌ كاملةٌ بخمس أوراق' },
+  { id:'r-moh-exec', n:'الملخّص للإدارة العليا', to:'الإدارة العليا', side:'cl', per:'شهري',
+    i:'\u{1F3AF}', sheets:['over','miles','budm'],
+    what:'التقدّمُ والمعالمُ والصرفُ في صفحةٍ واحدة',
+    when:'الأوّل من الشهر', how:'PDF صفحةٌ واحدة' }
+];
+
+var REP_SIDE = 'co';
+
+PAGE.repcenter = { m:'المتابعة', t:'مركز التقارير',
+  l:'كلُّ تقريرٍ بمن يستقبله ودوريّته ومحتواه — يُولَّد بضغطة.',
+  body:function(){
+    var list = REPORTS.filter(function(r){ return r.side === REP_SIDE; });
+    var pers = {};
+    REPORTS.forEach(function(r){ pers[r.per] = (pers[r.per] || 0) + 1; });
+
+    return '<div class="chips">'
+      + '<button type="button" class="chip' + (REP_SIDE==='co'?' on':'') + '" data-repside="co">'
+      +   '\u{1F3E2} ' + esc(t('تقارير الشركة')) + ' <span class="num">'
+      +   nm(REPORTS.filter(function(r){ return r.side==='co'; }).length) + '</span></button>'
+      + '<button type="button" class="chip' + (REP_SIDE==='cl'?' on':'') + '" data-repside="cl">'
+      +   '\u{1F54B} ' + esc(t('تقارير الوزارة')) + ' <span class="num">'
+      +   nm(REPORTS.filter(function(r){ return r.side==='cl'; }).length) + '</span></button>'
+      + '</div>'
+
+      + stats([['تقارير معرَّفة', N(REPORTS.length), 'acc'],
+               ['يومية', N(pers['يومي'] || 0)],
+               ['أسبوعية', N(pers['أسبوعي'] || 0)],
+               ['شهرية', N(pers['شهري'] || 0)]])
+
+      + list.map(function(r){
+          var ready = r.sheets.filter(function(s){ return SHEETS[s]; });
+          return card(r.i + ' ' + t(r.n),
+            '<div class="pop-rows" style="margin:0">'
+            + '<div><span class="k">' + esc(t('إلى')) + '</span><span>' + esc(t(r.to)) + '</span></div>'
+            + '<div><span class="k">' + esc(t('الدورية')) + '</span><span>'
+            +   pill(r.per, r.per==='يومي'?'acc':'') + '</span></div>'
+            + '<div><span class="k">' + esc(t('موعده')) + '</span><span>' + esc(t(r.when)) + '</span></div>'
+            + '<div><span class="k">' + esc(t('محتواه')) + '</span><span>' + esc(t(r.what)) + '</span></div>'
+            + '<div><span class="k">' + esc(t('صيغته')) + '</span><span>' + esc(t(r.how)) + '</span></div>'
+            + '<div><span class="k">' + esc(t('أوراقه')) + '</span><span>'
+            +   ready.map(function(s){ return '<span class="pill">' + esc(t(SHEET_NAMES[s] || s)) + '</span>'; }).join(' ')
+            +   '</span></div>'
+            + '</div>',
+            '<div class="actions">'
+            + btn('⬇ ولّد التقرير','btn-primary btn-sm',' data-repgo="' + esc(r.id) + '"')
+            + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
+            + '</div>');
+        }).join('')
+
+      + card('حزمةُ الجهة كاملةً',
+          '<p class="hint" style="margin:0 0 12px">'
+          + esc(t('كلُّ تقارير هذه الجهة في ملفٍّ واحدٍ بأوراقه — للأرشيف أو للمراجعة.'))
+          + '</p>',
+          btn('📦 حزمة ' + (REP_SIDE==='co' ? t('الشركة') : t('الوزارة')),
+              'btn-primary',' data-reppack="' + REP_SIDE + '"'));
+  }};
+
+function repGen(id){
+  var r = REPORTS.filter(function(x){ return x.id === id; })[0];
+  if (!r){ toast(t('تقريرٌ غير معرَّف')); return; }
+  var keys = r.sheets.filter(function(s){ return SHEETS[s]; });
+  if (!keys.length){ toast(t('لا أوراقَ لهذا التقرير')); return; }
+  toast(t('يُجهَّز') + ' ' + t(r.n) + '…');
+  logEvent('توليد تقرير — ' + r.n + ' → ' + r.to);
+  xlsExport(keys, 'نسك-' + r.id + '-' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+
+function repPack(side){
+  var keys = {};
+  REPORTS.filter(function(r){ return r.side === side; })
+         .forEach(function(r){ r.sheets.forEach(function(s){ if (SHEETS[s]) keys[s] = 1; }); });
+  var list = Object.keys(keys);
+  if (!list.length){ toast(t('لا أوراق')); return; }
+  toast(nm(list.length) + ' ' + t('ورقةً تُجهَّز') + '…');
+  logEvent('حزمة تقارير — ' + (side === 'co' ? 'الشركة' : 'الوزارة') + ' · ' + nm(list.length) + ' ورقة');
+  xlsExport(list, 'نسك-حزمة-' + (side === 'co' ? 'الشركة' : 'الوزارة') + '-'
+    + new Date().toISOString().slice(0,10) + '.xlsx');
+}
+
+/* ═══ دليل العمليات — كلُّ دورةٍ خطوةً خطوة ═══ */
+var SOPS = [
+  { id:'sop-survey', n:'دورة المسح الميداني', i:'\u{1F50D}', own:'المشرف والفني',
+    trig:'إسنادُ زيارةٍ لفنيٍّ من طلبات الزيارة',
+    steps:[
+      ['المشرف','يُحدِّد النقاطَ من الخريطة أو القائمة ويُسندها لفنيٍّ بموعد','طلبات الزيارة'],
+      ['الفني','يرى المهمّةَ في «مهامي» ويتوجّه بالأقرب أولًا','مهامي'],
+      ['الفني','يفتح نموذج المسح فيرى المعلومَ ويجمع المجهول','نموذج المسح'],
+      ['الفني','يلتقط صورةَ الموقع وصورةَ نقطة التركيب — إلزامٌ لا يُتجاوَز','نموذج المسح'],
+      ['النظام','يضغط الصورَ على الجهاز ويحفظ محليًّا ثم يرفع','—'],
+      ['المهندس','يراجع ما جُمع فيعتمده أو يردّه بسبب','التدقيق الهندسي'],
+      ['النظام','يحتسب نقاطَ الزيارة للفني بوزنها من الإعدادات','أدائي']
+    ],
+    rules:['لا حفظَ بلا صورتين','الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته',
+           'لا تُحتسب النقاطُ قبل الاعتماد'] },
+
+  { id:'sop-install', n:'دورة التركيب', i:'\u{1F527}', own:'فني التركيب والمهندس',
+    trig:'اكتمالُ مسح النقطة وظهورُها في طبقة التركيب',
+    steps:[
+      ['المشرف','يُسند تركيبًا من طبقة التركيب — ولا تظهر فيها إلا الممسوحة','الطبقات الثلاث'],
+      ['فني الورشة','يُهيّئ الجهازَ ويجمّعه ويسجّل الحركةَ في الدفتر','الورشة'],
+      ['فني التركيب','يركّب في الموقع ويصوّر قبلَ وبعدَ ولوحةَ الأجهزة','نموذج التركيب'],
+      ['فني التركيب','يسجّل القطعَ المستهلكةَ وسيرياتِها وبادئةَ الشبكة','نموذج التركيب'],
+      ['النظام','يشتقّ العناوين ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا','—'],
+      ['النظام','يُدخل المستهلكَ دفترَ الحركة فورًا','دفتر الحركة'],
+      ['المهندس','يدقّق الصورَ والسيرياتِ فيعتمد أو يردّ','التدقيق الهندسي'],
+      ['النظام','يحوّل حالةَ الموقع ويحتسب النقاطَ ويفتح طبقةَ الفك','—']
+    ],
+    rules:['لا تركيبَ قبل مسح','لا حفظَ بلا صورتَي قبلَ وبعد','لا نقاطَ قبل الاعتماد',
+           'المخزونُ يُخصَم مرةً واحدةً لا مرتين'] },
+
+  { id:'sop-dis', n:'دورة الفك وإرجاع العُهدة', i:'\u{1F9E9}', own:'فني الفك والمخازن',
+    trig:'انتهاءُ الموسم وظهورُ المركَّب في طبقة الفك',
+    steps:[
+      ['المشرف','يجدول الفكَّ للنقاط المركَّبة المعتمدة','الفك وإرجاع العُهدة'],
+      ['الفني','يفكّ ويصنّف الحالة: سليمٌ أو تالف','الفك'],
+      ['النظام','يُرجع القطعَ لدفتر الحركة بحالتها','دفتر الحركة'],
+      ['النظام','يحتسب نقاطَ الفك بوزنها في معامل الحالة','أدائي'],
+      ['المخازن','يستلم السليمَ للمخزن ويعزل التالفَ ويوثّقه','أرصدة المخزون']
+    ],
+    rules:['لا فكَّ لما لم يُركَّب ويُعتمَد','التالفُ أثقلُ فكًّا فمعاملُه أعلى',
+           'العُهدةُ لا تُغلَق حتى تُستلَم'] },
+
+  { id:'sop-assign', n:'دورة الإسناد', i:'\u{1F4CB}', own:'المشرف',
+    trig:'وجودُ نقاطٍ جاهزةٍ في طبقةٍ وفنيٍّ متاح',
+    steps:[
+      ['المشرف','يختار الطبقةَ — فلا يُسند تركيبًا لما لم يُمسح','الطبقات الثلاث'],
+      ['المشرف','يحدّد من القائمة بالفئة أو من الخريطة بالضغط','طلبات الزيارة / الخريطة'],
+      ['النظام','يعرض وزنَ ما حُدِّد بالنقاط قبل الإسناد','لوح الإسناد'],
+      ['المشرف','يختار الفنيَّ فيرى ما لديه، فيزيد أو ينقص','لوح الإسناد'],
+      ['النظام','يوفّق: ما زِيد يُنشأ وما نُقص يُلغى','—'],
+      ['الفني','يرى الجديدَ في «مهامي» وخريطتِه','مهامي']
+    ],
+    rules:['المُسنَدُ لغيره لا يُحدَّد','تبديلُ الطبقة يُفرغ التحديد',
+           'الإسنادُ تراكميٌّ لا يُعاد من الصفر'] },
+
+  { id:'sop-ncr', n:'دورة عدم المطابقة', i:'\u2713', own:'الجودة والمهندس',
+    trig:'رصدُ مخالفةٍ للمواصفة في تدقيقٍ أو زيارة',
+    steps:[
+      ['الجودة','تفتح بلاغًا بفئته وخطورته ووصفه','عدم المطابقة'],
+      ['المهندس','يُقيّم ويحدّد الإجراءَ التصحيحي','عدم المطابقة'],
+      ['المنفِّذ','ينفّذ التصحيحَ ويوثّقه','نموذج التركيب'],
+      ['الجودة','تتحقّق — بمن لم يرتكب','عدم المطابقة'],
+      ['الجودة','تُغلق البلاغَ باسمها وتاريخها','عدم المطابقة']
+    ],
+    rules:['لا تُسلَّم نقطةٌ عليها بلاغٌ جوهريٌّ مفتوح','التحقّقُ بغير المنفِّذ',
+           'الإغلاقُ يُوثَّق بمن أغلق'] },
+
+  { id:'sop-ipc', n:'دورة المستخلص', i:'\u{1F4B0}', own:'المالية ومدير المشروع',
+    trig:'انقضاءُ فترةِ المستخلص أو بلوغُ معلَم',
+    steps:[
+      ['النظام','يحسب المكتسَبَ من المعتمَد وحده','القيمة المكتسبة'],
+      ['المالية','تُنشئ المستخلصَ بالمقترح — المكتسَبُ ناقصَ ما قُدّم','المستخلصات'],
+      ['مدير المشروع','يراجع ويقدّم للعميل','المستخلصات'],
+      ['الوزارة','تعتمد أو تُعيد بملاحظات','المستخلصات'],
+      ['المالية','تسجّل الصرفَ وتحتجز الاستقطاع','المستخلصات']
+    ],
+    rules:['لا مستخلصَ إلا من مكتسَبٍ معتمَد','لا يُطالَب بما طُولب به',
+           'الاستقطاعُ يُفرَج عنه بانتهاء الضمان'] },
+
+  { id:'sop-chg', n:'دورة التغيير', i:'\u{1F504}', own:'مدير المشروع',
+    trig:'طلبُ تغييرٍ في نطاقٍ أو جدولٍ أو ميزانية',
+    steps:[
+      ['طالبُه','يقدّم الطلبَ بنوعه وأثره ومبرّره','ضبط التغيير'],
+      ['مدير المشروع','يُقيّم الأثرَ على خط الأساس','ضبط التغيير'],
+      ['الوزارة','تعتمد أو ترفض إن مسّ نطاقًا أو مبلغًا','ضبط التغيير'],
+      ['مدير المشروع','يُجمّد نسخةً جديدةً من خط الأساس','القيمة المكتسبة'],
+      ['النظام','يقيس الأداءَ على المرجع الجديد','القيمة المكتسبة']
+    ],
+    rules:['لا يُمسّ خطُّ الأساس إلا باعتماد','كلُّ اعتمادٍ يُلزم بتجميدٍ جديد',
+           'القياسُ على مرجعٍ قديمٍ باطل'] },
+
+  { id:'sop-hse', n:'دورة الحادث', i:'\u26D1', own:'السلامة',
+    trig:'وقوعُ حادثٍ أو وشيكٍ في الموقع',
+    steps:[
+      ['من رآه','يبلّغ فورًا ويؤمّن الموقع','السلامة'],
+      ['السلامة','تسجّل النوعَ والموقعَ وأيامَ العمل المفقودة','السلامة'],
+      ['السلامة','تحقّق في السبب الجذري','—'],
+      ['السلامة','تضع إجراءً وقائيًّا ويُعمَّم','سجل الدروس'],
+      ['النظام','يحدّث معدّلَ التكرار','السلامة']
+    ],
+    rules:['الوشيكُ يُسجَّل كالحادث','التبليغُ قبل الإصلاح','السببُ الجذريُّ لا العَرَض'] }
+];
+
+var SOP_CUR = 'sop-survey';
+
+PAGE.sop = { m:'المساعدة', t:'دليل العمليات',
+  l:'كلُّ دورةٍ في المشروع — من يبدأها ومن ينفّذها وأين وبأي قاعدة.',
+  body:function(){
+    var s = SOPS.filter(function(x){ return x.id === SOP_CUR; })[0] || SOPS[0];
+    return '<div class="chips">' + SOPS.map(function(x){
+        return '<button type="button" class="chip' + (SOP_CUR===x.id?' on':'') + '" data-sop="' + esc(x.id) + '">'
+          + x.i + ' ' + esc(t(x.n)) + '</button>';
+      }).join('') + '</div>'
+
+      + card(s.i + ' ' + t(s.n),
+          '<div class="pop-rows" style="margin:0">'
+          + '<div><span class="k">' + esc(t('من يملكها')) + '</span><span>' + esc(t(s.own)) + '</span></div>'
+          + '<div><span class="k">' + esc(t('ما يبدؤها')) + '</span><span>' + esc(t(s.trig)) + '</span></div>'
+          + '<div><span class="k">' + esc(t('خطواتها')) + '</span><span>' + N(s.steps.length) + '</span></div>'
+          + '</div>')
+
+      + cardFlush('الخطوات',
+          table(['#','من','ما يفعل','أين'],
+            s.steps.map(function(st, i){
+              return ['<span class="num">' + nm(i+1) + '</span>',
+                      '<span class="pill acc">' + esc(t(st[0])) + '</span>',
+                      esc(t(st[1])),
+                      st[2] === '—' ? '<span class="hint" style="margin:0">تلقائي</span>'
+                                    : '<span class="hint" style="margin:0">' + esc(t(st[2])) + '</span>'];
+            })))
+
+      + card('القواعد التي لا تُخرَق',
+          '<div class="list">' + s.rules.map(function(r){
+            return '<div class="list-item"><div class="li-main">'
+              + '<div class="li-t">\u26A0 ' + esc(t(r)) + '</div></div></div>';
+          }).join('') + '</div>')
+
+      + card('التدفّق',
+          flow(s.steps.map(function(st){ return st[0]; }), 0)
+          + '<p class="hint">هذا الدليلُ مرجعُ التدريب والمراجعة — ويُصدَّر مع وثائق المشروع.</p>',
+          btn('⬇ إكسل — دليل العمليات','btn-secondary btn-sm',' data-xls="sop"'));
+  }};
+
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -5073,7 +5352,7 @@ function renderKey(){
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
        + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + TEAM_CUR + '|' + ASN_TO
        + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + NCRS.length
-       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -5412,6 +5691,34 @@ var SHEETS = {
     });
     return out;
   },
+  qa: function(){
+    var out = [['النقطة','المنفِّذ','القطع','النقاط','الحالة','الاعتماد','التاريخ']];
+    Object.keys(STATE.inss).forEach(function(k){
+      var r = STATE.inss[k];
+      out.push([k, r.by || '', Object.keys(r.parts || {}).length, r.pts || 0,
+                r.status || '', r.approved ? 'معتمد' : 'بانتظار التدقيق',
+                new Date(r.at || Date.now()).toISOString().slice(0,10)]);
+    });
+    return out;
+  },
+  sop: function(){
+    var out = [['الدورة','من يملكها','#','من','ما يفعل','أين']];
+    SOPS.forEach(function(s){
+      s.steps.forEach(function(st, i){
+        out.push([s.n, s.own, i + 1, st[0], st[1], st[2]]);
+      });
+      s.rules.forEach(function(r){ out.push([s.n, s.own, '', 'قاعدة', r, '']); });
+    });
+    return out;
+  },
+  reps: function(){
+    var out = [['التقرير','الجهة','إلى','الدورية','موعده','محتواه','أوراقه']];
+    REPORTS.forEach(function(r){
+      out.push([r.n, r.side === 'co' ? 'الشركة' : 'الوزارة', r.to, r.per, r.when, r.what,
+                r.sheets.join(' · ')]);
+    });
+    return out;
+  },
   hse: function(){
     var out = [['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل']];
     HSE.incidents.forEach(function(x){
@@ -5600,7 +5907,8 @@ var SHEET_NAMES = {
   over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات',
   score:'أداء الفنيين', stages:'أداء المراحل', tasks:'المهام', budm:'الملخّص المالي',
   evm:'القيمة المكتسبة', risks:'سجل المخاطر', hse:'السلامة', ncr:'عدم المطابقة',
-  ipc:'المستخلصات', miles:'المعالم', raci:'المسؤوليات', less:'الدروس', items:'القطع والأسعار',
+  ipc:'المستخلصات', miles:'المعالم', raci:'المسؤوليات', less:'الدروس',
+  sop:'دليل العمليات', reps:'كتالوج التقارير', qa:'التدقيق الهندسي', items:'القطع والأسعار',
   invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
   techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
   ev:'سجل الأحداث', perms:'الصلاحيات'
@@ -7580,7 +7888,7 @@ var NAV = [
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
-      ['exec','اللوحة التنفيذية'],['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
+      ['exec','اللوحة التنفيذية'],['repcenter','مركز التقارير'],['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
       ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
   { g:'التخطيط', icon:'\u25F7', items:[['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],
       ['risks','سجل المخاطر'],['chg','ضبط التغيير'],['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
@@ -7607,7 +7915,7 @@ var NAV = [
       ['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
       ['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
-  { g:'المساعدة', icon:'\u003F', items:[['guide','دليل الاستخدام'],['acct','حسابي']] }
+  { g:'المساعدة', icon:'\u003F', items:[['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
 
 var CUR = 'map';
@@ -7808,7 +8116,8 @@ document.addEventListener('click', function(e){
                 'data-lasn','data-dsch','data-ddone','data-stab','data-asnload','data-asnto',
                 'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
                 'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
-                'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay'];
+                'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
+                'data-repside','data-repgo','data-reppack','data-sop'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -7949,6 +8258,15 @@ document.addEventListener('click', function(e){
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
 
   /* ── الإسناد ── */
+  var rs = e.target.closest('[data-repside]');
+  if (rs){ REP_SIDE = rs.getAttribute('data-repside'); render(1); return; }
+  var rg = e.target.closest('[data-repgo]');
+  if (rg){ repGen(rg.getAttribute('data-repgo')); return; }
+  var rp = e.target.closest('[data-reppack]');
+  if (rp){ repPack(rp.getAttribute('data-reppack')); return; }
+  var sp = e.target.closest('[data-sop]');
+  if (sp){ SOP_CUR = sp.getAttribute('data-sop'); render(1); return; }
+
   if (e.target.closest('[data-hseadd]')){ hseAdd(); return; }
   if (e.target.closest('[data-ncradd]')){ ncrAdd(); return; }
   var nok = e.target.closest('[data-ncrok]');
