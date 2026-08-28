@@ -403,6 +403,15 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     background:rgba(255,255,255,.22);margin:-8px auto 10px}
 }
 
+/* حاويةُ الخريطة ثابتةٌ تحت الشل — وواجهتُها طبقةٌ فوقها */
+#mapWrap[hidden]{display:none}
+#mapWrap{position:relative;flex:1 1 auto;min-height:0}
+#mapBox{position:absolute;inset:0}
+#mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
+#mapUI > *{pointer-events:auto}
+#mapUI .pop{pointer-events:auto}
+.content[hidden]{display:none}
+
 </style>
 </head>
 <body>
@@ -444,6 +453,10 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
         <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
       </div>
     </header>
+    <div class="mapwrap" id="mapWrap" hidden>
+      <div id="mapBox"></div>
+      <div id="mapUI"></div>
+    </div>
     <div class="content" id="content"></div>
   </main>
 </div>
@@ -4112,7 +4125,12 @@ function mapLoad(){
 function mapInit(){
   var el = document.getElementById('mapBox');
   if (!el || !window.L) return false;
-  if (MAP){ try{ MAP.invalidateSize(); }catch(e){} mapPaint(); return true; }
+  if (MAP){
+    try{ MAP.invalidateSize(); }catch(e){}
+    setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(); }catch(e){} }, 60);
+    mapPaint();
+    return true;
+  }
 
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
          .setView([21.38, 39.92], 12);
@@ -4142,6 +4160,7 @@ function mapInit(){
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
   });
   mapPaint();
+  setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(); }catch(e){} }, 120);
   return true;
 }
 
@@ -5017,27 +5036,30 @@ function legendRows(){
   return out;
 }
 
-function fieldMap(){
-  return '<div class="mapwrap">'
-    + '<div id="mapBox" style="position:absolute;inset:0" aria-label="'+esc(t('الخريطة'))+'"></div>'
-    + '<div class="map-top">'
+/* واجهةُ الخريطة تُرسَم في #mapUI فوق الحاوية الثابتة —
+   والحاويةُ نفسها لا يمسّها إعادةُ الرسم فلا تُدمَّر Leaflet. */
+function mapUIHtml(){
+  return '<div class="map-top">'
     +   Object.keys(LAYERS).map(function(k){
           return '<button type="button" class="map-chip '+(FIELD_MODE===k?'on':'')+'" data-mode="'+k+'">'
             + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
         }).join('')
-    +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'+esc(t('قمر صناعي'))+'</button>'
+    +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'
+    +     esc(t('قمر صناعي'))+'</button>'
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
     +     (MAP_FILT_OPEN?'0':'1')+'">'
-    +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' · '+nm(layerFiltered().length):'')+'</button>'
-    +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="1">'
-    +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' · '+nm(SEL_N):'')+'</button>'
+    +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' \u00b7 '+nm(layerFiltered().length):'')+'</button>'
+    +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="'
+    +     (MAP_SELECT?'0':'1')+'">'
+    +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>'
     +   (MY_ONLY || ROLE==='tech' ? '<button type="button" class="map-chip on" data-myonly="0">'
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
-    +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' · '+nm(CO_SEL.length):'')+'</button>'
+    +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
     + '</div>'
+
     + layerBar() + mapSelBar() + moveBar()
-    + (ASN_OPEN ? asnSheet() : '')
+
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<p class="hint" style="margin:0 0 9px">' + esc(t('التصنيفُ الكاملُ في «المواقع» — وهذه تصفيةٌ سريعةٌ للخريطة.')) + '</p>'
         + catBar(0)
@@ -5046,21 +5068,19 @@ function fieldMap(){
         + btn('مسح التصفية','btn-secondary btn-sm',' data-mclear="1"')
         + btn('التصنيف الكامل','btn-secondary btn-sm',' data-p="sites"')
         + '</div></div>' : '')
-    + '<div class="map-legend">'
-    +   (CO_SEL.length
-        ? CO_SEL.slice(0,6).map(function(c){
-            return '<div class="lg-row"><i class="lg-dot" style="background:'+coColor(c)+'"></i>'
-              + esc(c.length>22 ? c.slice(0,22)+'…' : c) + '</div>';
-          }).join('') + (CO_SEL.length>6 ? '<div class="lg-row">+ '+nm(CO_SEL.length-6)+'</div>' : '')
-        : legendRows())
-    + '</div>'
-    + (CO_OPEN ? coFiltHtml() : '')
+
     + '<div class="map-fab">'
-    +   '<span class="map-badge" style="pointer-events:none">'
-    +   '<span class="num" id="mapCount">—</span> '+esc(t('نقطة'))+'</span>'
-    +   btn('＋ '+t('موقع غير مسجّل'),'btn-primary btn-sm')
-    +   btn('◎ '+t('موقعي'),'btn-secondary btn-sm')
-    + '</div></div>';
+    +   btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm')
+    +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"')
+    + '</div>'
+
+    + '<div class="map-badge" style="pointer-events:none">'
+    +   '<span class="num" id="mapCount">\u2014</span> '+esc(t('نقطة'))+'</div>'
+
+    + '<div class="map-legend">' + legendRows() + '</div>'
+    + (CO_OPEN ? coFiltHtml() : '')
+    + (ASN_OPEN ? asnSheet() : '')
+    + (POP_OPEN ? popHtml() : '');
 }
 
 function mapDraw(){
@@ -6434,7 +6454,8 @@ function navHtml(){
 }
 
 var FIELD_PAGES = {
-  map:   { m:'الميدان', t:'الخريطة', full:true, body:fieldMap },
+  /* الخريطةُ حاويةٌ ثابتةٌ تُظهَر وتُخفى — واجهتُها في #mapUI لا في المحتوى */
+  map:   { m:'الميدان', t:'الخريطة', full:true, body:function(){ return ''; } },
   sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:fieldList },
   recs:  { m:'الميدان', t:'السجلات', l:'ما جرى في الميدان بالترتيب.', body:fieldRecords },
   tools: { m:'الميدان', t:'الأدوات', l:'التصديرات والمزامنة.', body:fieldTools }
@@ -6462,7 +6483,24 @@ function render(force){
   document.getElementById('syncMeta').innerHTML  =
       '<span class="dot"></span>' + esc(t('آخر مزامنة')) + ' <span class="num">٠٢:٥١</span>';
 
-  var c = document.getElementById('content');
+  var c  = document.getElementById('content');
+  var mw = document.getElementById('mapWrap');
+  var mu = document.getElementById('mapUI');
+
+  if (CUR === 'map'){
+    /* لا يُمَسُّ #mapBox — تُرسَم واجهتُه في طبقةٍ فوقه وحدها */
+    if (mw) mw.hidden = false;
+    c.hidden = true;
+    c.innerHTML = '';
+    if (mu) mu.innerHTML = mapUIHtml();
+    mapDraw();
+    if (MAP) mapPaint();
+    if (mu) labelCells(mu);
+    return;
+  }
+
+  if (mw) mw.hidden = true;
+  c.hidden = false;
   c.className = 'content' + (p.full ? ' flush' : '');
   /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
   var head = p.full ? '' : pageHead(p.m, p.t, p.l,
@@ -6470,8 +6508,6 @@ function render(force){
       ? btn('تصدير','btn-secondary',' data-exp="1"') : '');
   c.innerHTML = p.full ? p.body() : (head + p.body());
 
-  if (CUR === 'map'){ mapDraw(); if (POP_OPEN) c.insertAdjacentHTML('beforeend', popHtml()); }
-  if (CUR === 'map' && MAP) mapPaint();
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
   window.scrollTo(0, 0);
