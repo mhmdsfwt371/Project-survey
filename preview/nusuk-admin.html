@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>قارئات نُسُك — معاينة التصميم</title>
+  <style>
+:root {
+  --bg:#f4f6f8; --surface:#fff; --ink:#14181d; --ink-soft:#5b6673; --line:#e2e6ea;
+  --brand:#185FA5; --brand-ink:#fff; --danger:#b3261e; --danger-bg:#fdecea;
+  --ok:#1d7a3d; --ok-bg:#e8f5ec; --warn:#8a5300; --warn-bg:#fdf1de;
+  --sidebar:#101a1f; --sidebar-ink:#d7dde2; --radius:10px;
+}
+* { box-sizing:border-box; }
+html, body { margin:0; padding:0; }
+body { background:var(--bg); color:var(--ink); font-size:15px; line-height:1.55;
+  font-family:system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic",sans-serif; }
+a { color:var(--brand); }
+
+.shell { margin-inline-start:260px; min-height:100vh; }
+.content { padding:24px; max-width:1180px; }
+.sidebar { position:fixed; inset-block:0; inset-inline-start:0; width:260px;
+  background:var(--sidebar); color:var(--sidebar-ink); display:flex; flex-direction:column;
+  padding:18px 14px; overflow-y:auto; z-index:20; }
+.brand { display:flex; align-items:center; gap:10px; margin-bottom:22px; }
+.brand-mark { width:38px; height:38px; border-radius:9px; background:var(--brand);
+  color:var(--brand-ink); display:grid; place-items:center; font-weight:700; font-size:10px;
+  letter-spacing:.5px; }
+.brand-name { font-weight:600; line-height:1.3; }
+.brand-sub { font-size:11px; opacity:.6; font-weight:400; }
+
+.nav { flex:1; display:flex; flex-direction:column; gap:2px; }
+.nav a, .group-toggle { display:flex; align-items:center; gap:9px; padding:9px 11px;
+  border-radius:8px; color:var(--sidebar-ink); text-decoration:none; font-size:14px;
+  background:transparent; border:0; width:100%; cursor:pointer; text-align:start; font-family:inherit; }
+.nav a:hover, .group-toggle:hover { background:rgba(255,255,255,.07); }
+.nav a.active { background:var(--brand); color:var(--brand-ink); font-weight:500; }
+.item-icon { opacity:.75; }
+.group-toggle { justify-content:space-between; text-transform:uppercase; font-size:11px;
+  letter-spacing:.06em; opacity:.8; margin-top:12px; }
+.group-label { display:flex; align-items:center; gap:9px; }
+.chevron { width:7px; height:7px; border-inline-end:2px solid currentColor;
+  border-block-end:2px solid currentColor; transform:rotate(45deg); transition:transform .15s; }
+.nav-section[data-open="false"] .chevron { transform:rotate(-45deg); }
+.nav-section[data-open="false"] .group-panel { display:none; }
+.group-panel { display:flex; flex-direction:column; gap:2px; }
+.nav a.sub { padding-inline-start:30px; font-size:13.5px; }
+.sidebar-foot { border-top:1px solid rgba(255,255,255,.1); padding-top:14px; margin-top:14px; font-size:13px; }
+.who { font-weight:600; }
+.who-role { opacity:.65; font-size:12px; margin-bottom:10px; }
+.language-switcher label { display:block; font-size:11px; opacity:.7; margin-bottom:4px; }
+.lang-row { display:flex; gap:6px; margin-bottom:10px; }
+.lang-row select { flex:1; min-width:0; }
+
+.topbar { position:sticky; top:0; z-index:10; background:var(--surface);
+  border-bottom:1px solid var(--line); padding:12px 24px; display:flex; align-items:center; gap:12px; }
+.burger { display:none; background:none; border:0; cursor:pointer; padding:6px; }
+.burger span, .burger::before, .burger::after { content:""; display:block; width:20px;
+  height:2px; background:var(--ink); margin:4px 0; }
+.topbar-meta { margin-inline-start:auto; font-size:12.5px; color:var(--ink-soft); }
+
+.page-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+  flex-wrap:wrap; margin-bottom:18px; }
+.page-head h1 { margin:2px 0 4px; font-size:26px; }
+.eyebrow { text-transform:uppercase; font-size:11px; letter-spacing:.08em; color:var(--ink-soft); }
+.lede { margin:0; color:var(--ink-soft); }
+.card { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); margin-bottom:18px; }
+.card-head { display:flex; justify-content:space-between; align-items:center; gap:12px;
+  flex-wrap:wrap; padding:14px 18px; border-bottom:1px solid var(--line); }
+.card-head h2 { margin:0; font-size:16px; }
+.card-body { padding:18px; }
+.hint { color:var(--ink-soft); font-size:13px; }
+
+.field { margin-bottom:14px; }
+.field label { display:block; font-size:13px; font-weight:500; margin-bottom:5px; }
+.req { color:var(--danger); }
+input, select, textarea { width:100%; padding:9px 11px; border:1px solid var(--line);
+  border-radius:8px; font:inherit; color:inherit; background:var(--surface); }
+input:focus, select:focus, textarea:focus { outline:2px solid var(--brand); outline-offset:1px; border-color:var(--brand); }
+.grid { display:grid; gap:14px; }
+.cols-2 { grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); }
+.actions { display:flex; gap:10px; flex-wrap:wrap; }
+.inline-form { display:flex; gap:8px; align-items:center; }
+.inline-form input, .inline-form select { min-width:180px; }
+
+.btn { display:inline-block; padding:9px 16px; border-radius:8px; border:1px solid transparent;
+  font:inherit; font-size:14px; cursor:pointer; text-decoration:none; text-align:center; }
+.btn-primary { background:var(--brand); color:var(--brand-ink); }
+.btn-secondary { background:var(--surface); border-color:var(--line); color:var(--ink); }
+.btn-quiet { background:transparent; color:var(--brand); padding:6px 10px; }
+.btn-sm { padding:5px 11px; font-size:13px; }
+.btn-block { width:100%; }
+
+.table-wrap { overflow-x:auto; }
+.data-table { width:100%; border-collapse:collapse; font-size:14px; }
+.data-table th, .data-table td { padding:10px 12px; text-align:start;
+  border-bottom:1px solid var(--line); vertical-align:top; }
+.data-table th { font-size:12px; text-transform:uppercase; letter-spacing:.05em;
+  color:var(--ink-soft); font-weight:500; }
+.data-table tfoot td { font-weight:600; border-bottom:0; }
+.num { font-variant-numeric:tabular-nums; }
+.pill { display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px; background:var(--line); }
+.pill.ok { background:var(--ok-bg); color:var(--ok); }
+.pill.off { background:var(--danger-bg); color:var(--danger); }
+.pill.warn { background:var(--warn-bg); color:var(--warn); }
+
+.alert { padding:11px 15px; border-radius:8px; margin-bottom:16px; font-size:14px; }
+.alert.success { background:var(--ok-bg); color:var(--ok); }
+.alert.error { background:var(--danger-bg); color:var(--danger); }
+.alert.warn { background:var(--warn-bg); color:var(--warn); }
+
+.stats { display:grid; gap:14px; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); margin-bottom:18px; }
+.stat { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:15px 17px; }
+.stat .k { font-size:12.5px; color:var(--ink-soft); }
+.stat .v { font-size:27px; font-weight:600; line-height:1.25; margin-top:3px; font-variant-numeric:tabular-nums; }
+
+.meter { margin-bottom:14px; }
+.meter:last-child { margin-bottom:0; }
+.meter-l { display:flex; justify-content:space-between; gap:12px; font-size:13px; margin-bottom:6px; }
+.meter-l span:last-child { color:var(--ink-soft); font-variant-numeric:tabular-nums; }
+.track { height:8px; background:var(--line); border-radius:999px; overflow:hidden; }
+.track i { display:block; height:100%; border-radius:999px; background:var(--brand); }
+
+@media print { .sidebar, .topbar, .btn { display:none !important; } .shell { margin:0; } }
+@media (max-width:860px) {
+  .shell { margin-inline-start:0; }
+  .sidebar { transform:translateX(-100%); transition:transform .2s; }
+  [dir="rtl"] .sidebar { transform:translateX(100%); }
+  body.nav-open .sidebar { transform:translateX(0); }
+  .burger { display:block; }
+  .content { padding:16px; }
+}
+  </style>
+</head>
+<body>
+
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-mark">AFAQY</div>
+    <div class="brand-name">قارئات نُسُك<div class="brand-sub">حج ١٤٤٨هـ</div></div>
+  </div>
+
+  <nav class="nav" id="nav"></nav>
+
+  <div class="sidebar-foot">
+    <div class="who">محمد صفوت</div>
+    <div class="who-role">مهندس — صلاحية كاملة</div>
+    <form class="language-switcher" onsubmit="return false">
+      <label for="lang-select">اللغة</label>
+      <div class="lang-row">
+        <select id="lang-select" name="language">
+          <option value="ar" selected>العربية</option>
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+        </select>
+        <button type="submit" class="btn btn-quiet btn-sm">تغيير</button>
+      </div>
+    </form>
+    <form onsubmit="return false">
+      <button type="submit" class="btn btn-secondary btn-block">تسجيل الخروج</button>
+    </form>
+  </div>
+</aside>
+
+<main class="shell">
+  <header class="topbar">
+    <button class="burger" type="button" data-nav-toggle aria-label="القائمة"><span></span></button>
+    <strong id="crumb">نظرة عامة</strong>
+    <span class="topbar-meta">آخر مزامنة ٠٢:٥١ · معاينة تصميم</span>
+  </header>
+  <div class="content" id="content"></div>
+</main>
+
+<script>
+var NAV = [
+  { id:'over', icon:'\u25C8', label:'نظرة عامة', solo:true },
+  { g:'المتابعة', icon:'\u25A6', items:[
+      ['pace','الوتيرة والهدف'], ['inst','التركيب والجدولة'], ['daily','المعدل اليومي'],
+      ['reg','حسب المشعر والنوع'], ['co','حسب شركة الخدمة'], ['chalm','التحديات'], ['dis','الفك بعد الموسم'] ] },
+  { g:'التخطيط', icon:'\u25F7', items:[ ['setup','المواعيد والأزمنة'], ['pipe','سلامة خط الإنتاج'] ] },
+  { g:'الطلبات والمسح', icon:'\u25CE', items:[
+      ['req','طلبات الزيارة'], ['assign','توزيع الفرق'], ['survey','المسح الميداني'],
+      ['chal','التحديات الميدانية'], ['stuck','المتعذّر والراكد'], ['qa','التدقيق الهندسي'] ] },
+  { g:'الورشة والمخزون', icon:'\u25A3', items:[
+      ['wos','طلبات الورشة'], ['wday','نقاط اليوم'], ['invb','أرصدة المخزون'],
+      ['invmv','دفتر الحركة'], ['stock','عُهدة الأجهزة'] ] },
+  { g:'المال', icon:'\u25B0', items:[ ['buys','دفتر المشتريات'], ['budget','الميزانية والاعتماد'] ] },
+  { g:'الفنيون', icon:'\u25D4', items:[
+      ['tech','سجل الفنيين'], ['techx','مقابل التارجت'], ['team','إنتاجية الفريق'], ['conote','إشعار الشركات'] ] },
+  { id:'hb', icon:'\u25C9', label:'صحة الأجهزة', solo:true },
+  { g:'الإعدادات', icon:'\u2699', items:[
+      ['users','المستخدمون'], ['ptv','نقاط الزيارات'], ['ptp','نقاط التهيئة'], ['pta','نقاط التجميع'],
+      ['pti','نقاط التركيب'], ['ptd','نقاط الفك'], ['items','القطع والأسعار'],
+      ['bcat','فئات المشتريات'], ['sup','المورّدون'], ['roles','الأدوار والصلاحيات'] ] },
+  { g:'النظام', icon:'\u25A1', items:[ ['ev','سجل الأحداث'], ['sys','سلامة البيانات'], ['vers','نسخ الأجهزة'] ] }
+];
+
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function n(x){ return Number(x).toLocaleString('ar-EG'); }
+function stat(k,v){ return '<div class="stat"><div class="k">'+k+'</div><div class="v">'+v+'</div></div>'; }
+function meter(l,v,m){
+  var p = m ? Math.min(100, Math.round(v/m*100)) : 0;
+  return '<div class="meter"><div class="meter-l"><span>'+l+'</span><span>'+n(v)+' / '+n(m)+' · '+p+'٪</span></div>'
+       + '<div class="track"><i style="width:'+p+'%"></i></div></div>';
+}
+function card(title, body, right){
+  return '<div class="card"><div class="card-head"><h2>'+title+'</h2>'+(right||'')+'</div>'
+       + '<div class="card-body">'+body+'</div></div>';
+}
+function table(head, rows, foot){
+  return '<div class="table-wrap"><table class="data-table"><thead><tr>'
+    + head.map(function(h){ return '<th>'+h+'</th>'; }).join('')
+    + '</tr></thead><tbody>'
+    + rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td>'+c+'</td>'; }).join('')+'</tr>'; }).join('')
+    + '</tbody>' + (foot ? '<tfoot><tr>'+foot.map(function(c){ return '<td>'+c+'</td>'; }).join('')+'</tr></tfoot>' : '')
+    + '</table></div>';
+}
+
+var PAGES = {
+
+over: { eyebrow:'المتابعة', title:'نظرة عامة', lede:'الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.',
+  body: function(){
+    return '<div class="stats">'
+      + stat('إجمالي المواقع', n(1787)) + stat('تم المسح','٠') + stat('مُركّب','٠') + stat('لم يُزر', n(1787))
+      + '</div>'
+      + card('تقدّم المشروع',
+          meter('تقدّم المسح من إجمالي المواقع', 0, 1787)
+        + meter('نسبة التركيب من إجمالي المشروع', 0, 1787))
+      + card('التوزيع حسب المشعر والنوع',
+          table(['المشعر','النوع','العدد','مُسح','مُركّب'], [
+            ['عرفات','مخيم','<span class="num">٧١٣</span>','٠','٠'],
+            ['منى','مخيم','<span class="num">٦٧٩</span>','٠','٠'],
+            ['منى','ممر','<span class="num">١٤٤</span>','٠','٠'],
+            ['قطار المشاعر','محطة','<span class="num">١٠٨</span>','٠','٠'],
+            ['منى','كاميرا','<span class="num">٥٩</span>','٠','٠'],
+            ['عرفات','ممر','<span class="num">٤٦</span>','٠','٠']
+          ], ['الإجمالي','','<span class="num">'+n(1787)+'</span>','٠','٠']));
+  }},
+
+pace: { eyebrow:'المتابعة', title:'الوتيرة والهدف', lede:'المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.',
+  body: function(){
+    return '<div class="alert warn">لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.</div>'
+      + '<div class="stats">' + stat('المتبقي', n(1787)) + stat('المطلوب يوميًّا','—')
+      + stat('المنجز أمس','٠') + stat('الانتهاء المتوقع','—') + '</div>';
+  }},
+
+wos: { eyebrow:'الورشة والمخزون', title:'طلبات الورشة', lede:'التهيئة والتجميع والتركيب — طلباتها وحالاتها.',
+  body: function(){
+    return '<div class="stats">'
+      + stat('تهيئة قيد التنفيذ','٠') + stat('تجميع قيد التنفيذ','٠')
+      + stat('تركيب قيد التنفيذ','٠') + stat('نقاط منفَّذة','٠') + '</div>'
+      + card('الورشة مقابل التارجت',
+          table(['المرحلة','النوع','نقاط الشهر','تارجت الشهر','٪','تارجت الأسبوع'], [
+            ['تهيئة','مخيمات','٠','<span class="num">٨٬٠٠٠</span>','<span class="pill off">٠٪</span>','<span class="num">١٬٨٤٦</span>'],
+            ['تهيئة','ممرات','٠','<span class="num">١٬٠٠٠</span>','<span class="pill off">٠٪</span>','<span class="num">٢٣١</span>'],
+            ['تجميع','مخيمات','٠','<span class="num">٦٬٦٠٠</span>','<span class="pill off">٠٪</span>','<span class="num">١٬٥٢٣</span>'],
+            ['تجميع','ممرات','٠','<span class="num">١٬٣٠٠</span>','<span class="pill off">٠٪</span>','<span class="num">٣٠٠</span>']
+          ], ['الإجمالي','','٠','<span class="num">١٦٬٩٠٠</span>','٠٪','<span class="num">٣٬٩٠٠</span>']),
+          '<button class="btn btn-primary btn-sm">طلب تهيئة</button>')
+      + '<p class="hint">التارجتات محسوبة على أربعة أشهر من العدد الحقيقي: ١٬٣٩٢ مخيمًا و١٩٠ ممرًّا · تهيئة المخيم ٢٣ نقطة والممر ٢١.</p>';
+  }},
+
+invb: { eyebrow:'الورشة والمخزون', title:'أرصدة المخزون', lede:'المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.',
+  body: function(){
+    return '<div class="stats">'
+      + stat('في المخزن','١٠٨') + stat('في العُهدة','٢٢') + stat('رُكّب في الميدان','٤') + stat('تالف معزول','٢') + '</div>'
+      + card('الأرصدة حسب الصنف',
+          table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'], [
+            ['راوتر صناعي','<span class="num">١٦</span>','<span class="num">٣</span>','<span class="num">١</span>','<span class="num">٠</span>','<span class="num">٢٠</span>'],
+            ['قارئ ٤ منافذ','<span class="num">١٠</span>','<span class="num">٣</span>','<span class="num">١</span>','<span class="pill off">١</span>','<span class="num">١٥</span>'],
+            ['كابل ١٥م 7D-FB','<span class="num">٨٢</span>','<span class="num">١٦</span>','<span class="num">٢</span>','<span class="num">٠</span>','<span class="num">١٠٠</span>']
+          ]),
+          '<div class="actions"><button class="btn btn-secondary btn-sm">توريد</button>'
+          + '<button class="btn btn-secondary btn-sm">صرف لمنفِّذ</button></div>')
+      + '<p class="hint">المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم · والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.</p>';
+  }},
+
+buys: { eyebrow:'المال', title:'دفتر المشتريات', lede:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
+  body: function(){
+    return '<div class="stats">'
+      + stat('إجمالي المنصرف','<span class="num">٩٬٣٠٠</span>') + stat('الميزانية','<span class="num">١٠٠٬٠٠٠</span>')
+      + stat('المتبقي','<span class="num">٩٠٬٧٠٠</span>') + stat('بانتظار الاعتماد','٠') + '</div>'
+      + card('المنصرف من الميزانية', meter('المستهلك من السقف المعتمد', 9300, 100000))
+      + card('العمليات',
+          table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'], [
+            ['<span class="num">٢٠٢٦-٠٨-٠١</span>','كابل شبكة CAT6','كابلات وتوصيلات','منى','<span class="num">٨٠٠</span>','محل النور','<span class="pill ok">معتمد</span>'],
+            ['<span class="num">٢٠٢٦-٠٨-٠٢</span>','مولد كهرباء','كهرباء','عرفات','<span class="num">٨٬٥٠٠</span>','مؤسسة الحرم','<span class="pill ok">معتمد</span>']
+          ], ['','','','الإجمالي','<span class="num">٩٬٣٠٠</span>','','']),
+          '<button class="btn btn-primary btn-sm">تسجيل عملية</button>')
+      + card('المصروف حسب المشعر',
+          table(['المشعر','عمليات','الإجمالي','النسبة'], [
+            ['عرفات','١','<span class="num">٨٬٥٠٠</span>','٩١٪'],
+            ['منى','١','<span class="num">٨٠٠</span>','٩٪']
+          ]));
+  }},
+
+items: { eyebrow:'الإعدادات', title:'القطع والأسعار', lede:'كل حقل قابل للتعديل: الاسم والمنطقة ونقاط التركيب والسعر.',
+  body: function(){
+    return '<div class="alert success">حُفظ الكتالوج.</div>'
+      + card('الممر — ١٦ قطعة',
+          table(['القطعة','المنطقة','نقاط التركيب','السعر','إجراءات'], [
+            ['<input value="كاميرا ممر 8266">','<select><option>ممر</option><option>مخيم</option></select>','<input type="number" value="16" style="max-width:110px">','<input type="number" value="2400" style="max-width:120px">','<button class="btn btn-quiet btn-sm">حذف</button>'],
+            ['<input value="راوتر صناعي">','<select><option>ممر</option><option>مخيم</option></select>','<input type="number" value="10" style="max-width:110px">','<input type="number" value="1150" style="max-width:120px">','<button class="btn btn-quiet btn-sm">حذف</button>'],
+            ['<input value="قارئ ٨ منافذ">','<select><option>ممر</option><option>مخيم</option></select>','<input type="number" value="33" style="max-width:110px">','<input type="number" value="7200" style="max-width:120px">','<button class="btn btn-quiet btn-sm">حذف</button>']
+          ]),
+          '<button class="btn btn-primary btn-sm">حفظ التعديلات</button>')
+      + card('إضافة قطعة',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label for="iz">المنطقة</label><select id="iz"><option>مخيم</option><option>ممر</option></select></div>'
+          + '<div class="field"><label for="inm">اسم القطعة <span class="req">*</span></label><input id="inm" placeholder="مفتاح شبكة ٨ منافذ"></div>'
+          + '<div class="field"><label for="ipt">نقاط تركيبها</label><input id="ipt" type="number" value="1"></div>'
+          + '<div class="field"><label for="ipr">سعرها</label><input id="ipr" type="number" value="0"></div>'
+          + '</div><div class="actions"><button class="btn btn-primary">إضافة قطعة</button></div>')
+      + '<p class="hint">تغيير المنطقة ينقل القطعة بين الممر والمخيم فينتقل معها احتسابُها في تقسيم النقاط.</p>';
+  }},
+
+users: { eyebrow:'الإعدادات', title:'المستخدمون', lede:'من يدخل النظام وبأي دور.',
+  body: function(){
+    return card('٤ مستخدمين',
+      table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'], [
+        ['<strong>محمد صفوت</strong><br><small class="hint" dir="ltr">m.safwat</small>','مهندس','<span class="pill ok">نشط</span>','<span class="num">٢٠٢٦-٠٧-٣٠</span>',''],
+        ['<strong>مشرف منى</strong><br><small class="hint" dir="ltr">sup.mina</small>','مشرف','<span class="pill ok">نشط</span>','<span class="num">٢٠٢٦-٠٨-٠٥</span>','<button class="btn btn-quiet btn-sm">تعطيل</button>'],
+        ['<strong>وزارة الحج</strong><br><small class="hint" dir="ltr">moh.view</small>','وزارة — قراءة','<span class="pill ok">نشط</span>','<span class="num">٢٠٢٦-٠٨-١٠</span>','<button class="btn btn-quiet btn-sm">تعطيل</button>'],
+        ['<strong>فني سابق</strong><br><small class="hint" dir="ltr">t.old</small>','فني','<span class="pill off">معطل</span>','<span class="num">٢٠٢٦-٠٨-١٢</span>','<button class="btn btn-quiet btn-sm">تفعيل</button>']
+      ]),
+      '<form class="inline-form" onsubmit="return false"><input type="search" placeholder="بحث" dir="auto">'
+      + '<button class="btn btn-secondary btn-sm">بحث</button></form>');
+  }},
+
+techx: { eyebrow:'الفنيون', title:'الفني مقابل تارجتاته', lede:'نقاط الشهر في كل مرحلة مقابل تارجتها المستقل.',
+  body: function(){
+    return card('الشهر الجاري',
+      table(['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي'], [
+        ['أحمد','<span class="num">٩٦</span>','<span class="pill ok">١٠٧٪</span>','<span class="num">٨٤٠</span>','<span class="pill warn">٨٤٪</span>','٠','<span class="pill off">٠٪</span>','<span class="num">٩٣٦</span>'],
+        ['فريق ٣','<span class="num">٤٠</span>','<span class="pill off">٤٤٪</span>','<span class="num">١٬١٥١</span>','<span class="pill ok">١١٥٪</span>','٠','<span class="pill off">٠٪</span>','<span class="num">١٬١٩١</span>']
+      ], ['الإجمالي','<span class="num">١٣٦</span>','','<span class="num">١٬٩٩١</span>','','٠','','<span class="num">٢٬١٢٧</span>']))
+    + '<p class="hint">أخضر من ١٠٠٪ · أصفر من ٧٠٪ · أحمر دونها. والتارجتات تُضبط في الإعدادات.</p>';
+  }},
+
+hb: { eyebrow:'التشغيل', title:'صحة الأجهزة', lede:'الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.',
+  body: function(){
+    return '<div class="alert error">لم تصل أي نبضة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.</div>'
+      + '<div class="stats">' + stat('متصل','٠') + stat('غير متصل','٠')
+      + stat('فاصل ≥١٠ دقائق','٠') + stat('متذبذب اليوم','٠') + '</div>';
+  }},
+
+vers: { eyebrow:'النظام', title:'نسخ الأجهزة', lede:'نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.',
+  body: function(){
+    return card('الأجهزة الظاهرة',
+      table(['المستخدم','النسخة','الدور','آخر ظهور'], [
+        ['محمد صفوت','<span class="pill ok">V13.99</span>','مهندس','<span class="num">٢٣:١٥</span>'],
+        ['مشرف منى','<span class="pill off">V13.84</span>','مشرف','أمس']
+      ]))
+    + '<div class="alert error">جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.</div>';
+  }}
+};
+
+var GENERIC = {
+  inst:['المتابعة','التركيب والجدولة'], daily:['المتابعة','المعدل اليومي'],
+  reg:['المتابعة','حسب المشعر والنوع'], co:['المتابعة','حسب شركة الخدمة'],
+  chalm:['المتابعة','التحديات'], dis:['المتابعة','الفك بعد الموسم'],
+  setup:['التخطيط','المواعيد والأزمنة'], pipe:['التخطيط','سلامة خط الإنتاج'],
+  req:['الطلبات والمسح','طلبات الزيارة'], assign:['الطلبات والمسح','توزيع الفرق'],
+  survey:['الطلبات والمسح','المسح الميداني'], chal:['الطلبات والمسح','التحديات الميدانية'],
+  stuck:['الطلبات والمسح','المتعذّر والراكد'], qa:['الطلبات والمسح','التدقيق الهندسي'],
+  wday:['الورشة والمخزون','نقاط اليوم'], invmv:['الورشة والمخزون','دفتر الحركة'],
+  stock:['الورشة والمخزون','عُهدة الأجهزة'], budget:['المال','الميزانية والاعتماد'],
+  tech:['الفنيون','سجل الفنيين'], team:['الفنيون','إنتاجية الفريق'], conote:['الفنيون','إشعار الشركات'],
+  ptv:['الإعدادات','نقاط الزيارات'], ptp:['الإعدادات','نقاط التهيئة'], pta:['الإعدادات','نقاط التجميع'],
+  pti:['الإعدادات','نقاط التركيب'], ptd:['الإعدادات','نقاط الفك'], bcat:['الإعدادات','فئات المشتريات'],
+  sup:['الإعدادات','المورّدون'], roles:['الإعدادات','الأدوار والصلاحيات'],
+  ev:['النظام','سجل الأحداث'], sys:['النظام','سلامة البيانات']
+};
+
+var cur = 'over';
+
+function paintNav(){
+  document.getElementById('nav').innerHTML = NAV.map(function(s){
+    if (s.solo) {
+      return '<a href="#" class="item'+(cur===s.id?' active':'')+'" data-p="'+s.id+'">'
+        + '<span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(s.label)+'</a>';
+    }
+    var open = s.items.some(function(it){ return it[0]===cur; }) || s.__open;
+    return '<div class="nav-section" data-open="'+(open?'true':'false')+'">'
+      + '<button type="button" class="group-toggle" data-group-toggle aria-expanded="'+(open?'true':'false')+'">'
+      + '<span class="group-label"><span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(s.g)+'</span>'
+      + '<span class="chevron" aria-hidden="true"></span></button>'
+      + '<div class="group-panel">'
+      + s.items.map(function(it){
+          return '<a href="#" class="sub'+(cur===it[0]?' active':'')+'" data-p="'+it[0]+'">'+esc(it[1])+'</a>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
+}
+
+function paintPage(){
+  var p = PAGES[cur];
+  if (!p) {
+    var g = GENERIC[cur] || ['نُسُك','صفحة'];
+    p = { eyebrow:g[0], title:g[1], lede:'هذه الشاشة موجودة في النظام العامل — المعاينة تعرض شكلها ومكانها في القائمة.',
+          body:function(){ return card('محتوى الشاشة',
+            '<p class="hint">القسم <strong>'+esc(g[1])+'</strong> يظهر هنا بنفس بنية البطاقات والجداول أعلاه. '
+            + 'المعاينة تركّز على الهيكل والتنقّل؛ الشاشات المعبّأة بالكامل موجودة في الموديولات الأخرى.</p>'); } };
+  }
+  document.getElementById('crumb').textContent = p.title;
+  document.getElementById('content').innerHTML =
+      '<div class="page-head"><div><span class="eyebrow">'+esc(p.eyebrow)+'</span>'
+    + '<h1>'+esc(p.title)+'</h1><p class="lede">'+esc(p.lede)+'</p></div>'
+    + '<button class="btn btn-secondary">تصدير</button></div>'
+    + p.body();
+  window.scrollTo(0,0);
+}
+
+document.addEventListener('click', function(e){
+  var link = e.target.closest('[data-p]');
+  if (link) {
+    e.preventDefault();
+    cur = link.getAttribute('data-p');
+    document.body.classList.remove('nav-open');
+    paintNav(); paintPage();
+    return;
+  }
+  var group = e.target.closest('[data-group-toggle]');
+  if (group) {
+    var section = group.closest('.nav-section');
+    if (section) {
+      var open = section.getAttribute('data-open') !== 'false';
+      section.setAttribute('data-open', open ? 'false' : 'true');
+      group.setAttribute('aria-expanded', open ? 'false' : 'true');
+    }
+    return;
+  }
+  if (e.target.closest('[data-nav-toggle]')) document.body.classList.toggle('nav-open');
+});
+
+paintNav(); paintPage();
+</script>
+</body>
+</html>

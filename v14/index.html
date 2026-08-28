@@ -1,0 +1,3353 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#185FA5">
+<title>قارئات نُسُك — معاينة V14</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   نُسُك V14 — نظام التصميم
+   وضعان: فاتح للإدارة على المكتب · داكن للميدان تحت الشمس
+   والاتجاه ينقلب مع dir بالخصائص المنطقية وحدها
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root{
+  --bg:#f4f6f8; --surface:#fff; --surface-2:#f8fafb; --raise:#fff;
+  --ink:#14181d; --ink-soft:#5b6673; --ink-mute:#8a939d;
+  --line:#e2e6ea; --line-2:#eef1f4;
+  --brand:#185FA5; --brand-ink:#fff; --brand-soft:#E6F1FB; --brand-deep:#0C447C;
+  --danger:#b3261e; --danger-bg:#fdecea;
+  --ok:#1d7a3d; --ok-bg:#e8f5ec;
+  --warn:#8a5300; --warn-bg:#fdf1de;
+  --info:#0b5f7a; --info-bg:#e3f4f8;
+  --sidebar:#101a1f; --sidebar-ink:#d7dde2; --sidebar-line:rgba(255,255,255,.1);
+  --radius:10px; --radius-sm:8px;
+  --shadow:0 1px 2px rgba(20,24,29,.06);
+  --sw:264px;
+}
+[data-theme="dark"]{
+  --bg:#0A0D10; --surface:#12171c; --surface-2:#0F1418; --raise:#171D23;
+  --ink:#E8EBEE; --ink-soft:#9BA5AF; --ink-mute:#6C757E;
+  --line:#232B33; --line-2:#1B222A;
+  --brand:#378ADD; --brand-ink:#04121f; --brand-soft:#12263A; --brand-deep:#9CC8F5;
+  --danger:#F0837B; --danger-bg:#2A1512;
+  --ok:#5FD08A; --ok-bg:#0F2418;
+  --warn:#E7B45C; --warn-bg:#2A1F0D;
+  --info:#6FC9E0; --info-bg:#0D2229;
+  --sidebar:#0C1216; --sidebar-ink:#C6CFD7; --sidebar-line:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic","Noto Nastaliq Urdu",sans-serif;
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+}
+body[data-lang="ur"]{font-family:"Noto Nastaliq Urdu",system-ui,sans-serif;line-height:1.9}
+a{color:var(--brand)}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
+.num{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ── الهيكل ───────────────────────────────────────── */
+.shell{margin-inline-start:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.content{padding:22px;max-width:1200px;width:100%;flex:1}
+.content.flush{padding:0;max-width:none}
+
+.sidebar{position:fixed;inset-block:0;inset-inline-start:0;width:var(--sw);
+  background:var(--sidebar);color:var(--sidebar-ink);display:flex;flex-direction:column;
+  padding:16px 12px;overflow-y:auto;z-index:40;overscroll-behavior:contain}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 2px}
+.brand-mark{width:38px;height:38px;border-radius:9px;background:var(--brand);
+  color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:9.5px;
+  letter-spacing:.5px;flex:0 0 auto}
+.brand-name{font-weight:600;line-height:1.25;min-width:0}
+.brand-sub{font-size:11px;opacity:.6;font-weight:400}
+
+.nav{flex:1;display:flex;flex-direction:column;gap:2px}
+.nav a,.group-toggle{display:flex;align-items:center;gap:9px;padding:9px 11px;
+  border-radius:var(--radius-sm);color:var(--sidebar-ink);text-decoration:none;font-size:14px;
+  background:transparent;border:0;width:100%;cursor:pointer;text-align:start;font-family:inherit;
+  min-height:40px}
+.nav a:hover,.group-toggle:hover{background:rgba(255,255,255,.07)}
+.nav a:focus-visible,.group-toggle:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.nav a.active{background:var(--brand);color:var(--brand-ink);font-weight:500}
+.item-icon{opacity:.72;font-size:15px;flex:0 0 auto;width:18px;text-align:center}
+.nav a.active .item-icon{opacity:1}
+.group-toggle{justify-content:space-between;text-transform:uppercase;font-size:11px;
+  letter-spacing:.06em;opacity:.82;margin-top:10px}
+.group-label{display:flex;align-items:center;gap:9px;min-width:0}
+.chevron{width:7px;height:7px;border-inline-end:2px solid currentColor;
+  border-block-end:2px solid currentColor;transform:rotate(45deg);transition:transform .15s;flex:0 0 auto}
+.nav-section[data-open="false"] .chevron{transform:rotate(-45deg)}
+.nav-section[data-open="false"] .group-panel{display:none}
+.group-panel{display:flex;flex-direction:column;gap:2px}
+.nav a.sub{padding-inline-start:32px;font-size:13.5px}
+.badge{margin-inline-start:auto;background:rgba(255,255,255,.13);border-radius:99px;
+  padding:1px 7px;font-size:10.5px;font-weight:700;flex:0 0 auto}
+.nav a.active .badge{background:rgba(0,0,0,.18)}
+
+.sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:13px;margin-top:13px;font-size:13px}
+.who{font-weight:600}
+.who-role{opacity:.65;font-size:12px;margin-bottom:10px}
+.foot-row{display:flex;gap:6px;margin-bottom:8px}
+.foot-row select{flex:1;min-width:0;background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.14);color:var(--sidebar-ink)}
+.foot-row select option{background:var(--sidebar);color:var(--sidebar-ink)}
+
+/* ── الشريط العلوي ─────────────────────────────────── */
+.topbar{position:sticky;top:0;z-index:30;background:var(--surface);
+  border-bottom:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;gap:12px}
+.burger{display:none;background:none;border:0;cursor:pointer;padding:7px;color:inherit}
+.burger span,.burger::before,.burger::after{content:"";display:block;width:20px;height:2px;
+  background:currentColor;margin:4px 0;border-radius:2px}
+.crumb{font-weight:600;font-size:15px}
+.topbar-meta{margin-inline-start:auto;font-size:12.5px;color:var(--ink-soft);
+  display:flex;align-items:center;gap:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+
+/* ── رأس الصفحة ────────────────────────────────────── */
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  flex-wrap:wrap;margin-bottom:18px}
+.page-head h1{font-size:25px;margin:2px 0 4px}
+.eyebrow{text-transform:uppercase;font-size:11px;letter-spacing:.08em;color:var(--ink-soft)}
+.lede{margin:0;color:var(--ink-soft);max-width:62ch}
+
+/* ── البطاقات ──────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  margin-bottom:16px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;padding:13px 17px;border-bottom:1px solid var(--line)}
+.card-head h2{font-size:15.5px}
+.card-body{padding:17px}
+.card-body.tight{padding:0}
+.hint{color:var(--ink-soft);font-size:13px;margin:10px 0 0}
+.hint:first-child{margin-top:0}
+
+/* ── الإحصاءات ─────────────────────────────────────── */
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:16px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow)}
+.stat .k{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.stat .v{font-size:26px;font-weight:600;line-height:1.25;margin-top:3px;font-variant-numeric:tabular-nums}
+.stat.acc .v{color:var(--brand)} .stat.ok .v{color:var(--ok)}
+.stat.bad .v{color:var(--danger)} .stat.wrn .v{color:var(--warn)}
+
+/* ── المقاييس ──────────────────────────────────────── */
+.meter{margin-bottom:13px}
+.meter:last-child{margin-bottom:0}
+.meter-l{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:6px}
+.meter-l span:last-child{color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--brand);transition:width .3s}
+
+/* ── الجداول ───────────────────────────────────────── */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.data-table{width:100%;border-collapse:collapse;font-size:14px}
+.data-table th,.data-table td{padding:10px 12px;text-align:start;
+  border-bottom:1px solid var(--line);vertical-align:middle}
+.data-table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink-soft);font-weight:500;white-space:nowrap;background:var(--surface-2)}
+.data-table tbody tr:last-child td{border-bottom:0}
+.data-table tfoot td{font-weight:600;border-bottom:0;border-top:2px solid var(--line);background:var(--surface-2)}
+.data-table.rows tbody tr:hover{background:var(--surface-2)}
+
+/* ── العلامات ──────────────────────────────────────── */
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;
+  background:var(--line);color:var(--ink-soft);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.off{background:var(--danger-bg);color:var(--danger)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+.pill.acc{background:var(--brand-soft);color:var(--brand-deep)}
+
+.alert{padding:11px 15px;border-radius:var(--radius-sm);margin-bottom:15px;font-size:14px;
+  display:flex;gap:9px;align-items:flex-start}
+.alert.success{background:var(--ok-bg);color:var(--ok)}
+.alert.error{background:var(--danger-bg);color:var(--danger)}
+.alert.warn{background:var(--warn-bg);color:var(--warn)}
+.alert.info{background:var(--info-bg);color:var(--info)}
+
+/* ── النماذج ───────────────────────────────────────── */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:5px}
+.req{color:var(--danger)}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);
+  border-radius:var(--radius-sm);background:var(--surface);min-height:40px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+input[type="number"]{max-width:140px}
+.grid{display:grid;gap:13px}
+.cols-2{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.cols-3{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.inline-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inline-form input,.inline-form select{min-width:150px;width:auto}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 16px;border-radius:var(--radius-sm);border:1px solid transparent;
+  font-size:14px;cursor:pointer;text-decoration:none;min-height:40px;white-space:nowrap}
+.btn-primary{background:var(--brand);color:var(--brand-ink)}
+.btn-secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-secondary:hover{background:var(--surface-2)}
+.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn-quiet{background:transparent;color:var(--brand);padding:6px 10px;min-height:32px}
+.btn-sm{padding:5px 11px;font-size:13px;min-height:32px}
+.btn-block{width:100%}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.btn:active{transform:scale(.985)}
+
+/* ── الشرائح ───────────────────────────────────────── */
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:7px 13px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface);font-size:13px;cursor:pointer;min-height:36px}
+.chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:500}
+
+/* ── الخريطة ───────────────────────────────────────── */
+.mapwrap{position:relative;height:calc(100vh - 46px);background:#0A0D10;overflow:hidden}
+.mapcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map-top{position:absolute;inset-block-start:11px;inset-inline:11px;display:flex;gap:7px;
+  flex-wrap:wrap;z-index:5;pointer-events:auto}
+.map-chip{background:rgba(18,23,28,.92);border:1px solid #2A333C;color:#E8EBEE;
+  border-radius:99px;padding:7px 13px;font-size:12.5px;cursor:pointer;
+  backdrop-filter:blur(6px);min-height:36px;display:inline-flex;align-items:center;gap:6px}
+.map-chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.map-fab{position:absolute;inset-block-end:16px;inset-inline-end:14px;display:flex;
+  flex-direction:column;gap:8px;z-index:5;align-items:flex-end}
+.map-fab .btn{box-shadow:0 6px 20px rgba(0,0,0,.45)}
+.map-legend{position:absolute;inset-block-end:16px;inset-inline-start:14px;z-index:5;
+  background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
+  padding:10px 12px;font-size:12px;color:#C6CFD7;backdrop-filter:blur(6px)}
+.lg-row{display:flex;align-items:center;gap:7px;margin:4px 0}
+.lg-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+/* ── نافذة النقطة ──────────────────────────────────── */
+.pop{position:absolute;inset-block-start:50%;inset-inline-start:50%;transform:translate(50%,-50%);
+  width:min(340px,88vw);background:var(--raise);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,0,0,.5);z-index:8;padding:15px}
+[dir="ltr"] .pop{transform:translate(-50%,-50%)}
+.pop h3{font-size:15px;color:var(--brand);margin-bottom:3px}
+.pop .pid{font-size:12px;color:var(--ink-soft);font-family:ui-monospace,monospace;direction:ltr}
+.pop-rows{margin:11px 0;font-size:13.5px}
+.pop-rows div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+  border-bottom:1px solid var(--line-2)}
+.pop-rows div:last-child{border-bottom:0}
+.pop-rows .k{color:var(--ink-soft)}
+.pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+
+/* ── القوائم والسجلات ──────────────────────────────── */
+.list{display:flex;flex-direction:column}
+.list-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid var(--line);cursor:pointer;min-height:60px}
+.list-item:last-child{border-bottom:0}
+.list-item:hover{background:var(--surface-2)}
+.li-main{flex:1;min-width:0}
+.li-t{font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li-s{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.li-end{flex:0 0 auto;text-align:end;font-size:12px;color:var(--ink-soft)}
+
+.timeline{position:relative;padding-inline-start:22px}
+.timeline::before{content:"";position:absolute;inset-block:6px;inset-inline-start:5px;
+  width:2px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item::before{content:"";position:absolute;inset-inline-start:-21px;inset-block-start:5px;
+  width:10px;height:10px;border-radius:50%;background:var(--brand);
+  box-shadow:0 0 0 3px var(--surface)}
+.tl-t{font-size:13.5px;font-weight:500}
+.tl-s{font-size:12px;color:var(--ink-soft)}
+
+/* ── دورة الحالات ──────────────────────────────────── */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
+.flow-step{padding:6px 12px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface-2);white-space:nowrap}
+.flow-step.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-deep);font-weight:600}
+.flow-step.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.flow-arr{color:var(--ink-mute);flex:0 0 auto}
+
+/* ── الاستجابة ─────────────────────────────────────── */
+@media(max-width:900px){
+  .shell{margin-inline-start:0}
+  .sidebar{transform:translateX(-100%);transition:transform .22s ease}
+  [dir="rtl"] .sidebar{transform:translateX(100%)}
+  body.nav-open .sidebar{transform:translateX(0)}
+  body.nav-open::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:35}
+  .burger{display:block}
+  .content{padding:15px}
+  .page-head h1{font-size:22px}
+  .mapwrap{height:calc(100vh - 46px)}
+}
+@media print{
+  .sidebar,.topbar,.btn,.chips,.map-top,.map-fab{display:none!important}
+  .shell{margin:0}
+  .card{break-inside:avoid;box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+</style>
+</head>
+<body>
+
+<div id="login"></div>
+
+<div id="app" style="display:none">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">AFAQY</div>
+      <div class="brand-name" id="brandName"></div>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-foot">
+      <div class="who">محمد صفوت</div>
+      <div class="who-role" id="whoRole"></div>
+      <div class="foot-row">
+        <select id="langSel" aria-label="اللغة">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+        </select>
+        <button type="button" class="btn btn-secondary btn-sm" id="themeBtn"
+                aria-label="المظهر" style="min-width:44px">☾</button>
+      </div>
+      <button type="button" class="btn btn-secondary btn-block" id="outBtn"></button>
+    </div>
+  </aside>
+
+  <main class="shell">
+    <header class="topbar">
+      <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
+      <strong class="crumb" id="crumb"></strong>
+      <span class="topbar-meta" id="syncMeta"></span>
+    </header>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<script>/* ═══ محرك اللغات — عربي · إنجليزي · أردو ═══
+   كل نص واجهة يمر بـ t(). البيانات الميدانية تبقى كما كُتبت في كل اللغات. */
+
+var I18N = {
+  ar:{ name:'العربية', dir:'rtl', dig:'٠١٢٣٤٥٦٧٨٩' },
+  en:{ name:'English', dir:'ltr', dig:'0123456789' },
+  ur:{ name:'اردو',    dir:'rtl', dig:'۰۱۲۳۴۵۶۷۸۹' }
+};
+
+var D = {
+en:{
+ /* الهوية والشل */
+ 'قارئات نُسُك':'Nusuk Readers','حج ١٤٤٨هـ':'Hajj 1448 AH',
+ 'مهندس — صلاحية كاملة':'Engineer — full access','اللغة':'Language','المظهر':'Theme',
+ 'فاتح':'Light','داكن':'Dark','تسجيل الخروج':'Sign out','القائمة':'Menu',
+ 'آخر مزامنة':'Last sync','متصل':'Online','تصدير':'Export','بحث':'Search','حفظ':'Save',
+ 'إلغاء':'Cancel','إغلاق':'Close','تم':'Done','رجوع':'Back','الكل':'All',
+
+ /* الدخول */
+ 'تسجيل الدخول':'Sign in','اسم المستخدم':'Username','كلمة المرور':'Password',
+ 'دخول':'Sign in','نظام متابعة تركيب قارئات الحجاج':'Pilgrim reader installation tracking',
+ 'المشاعر المقدسة':'The holy sites','نقطة':'points','لا تسجيل ذاتي — الحسابات تُنشأ من المكتب':'No self-registration — accounts are created by the office',
+
+ /* الميدان */
+ 'الميدان':'Field','الخريطة':'Map','المواقع':'Sites','السجلات':'Records','الأدوات':'Tools',
+ 'المسح':'Survey','التركيب':'Installation','لم يُزر':'Not visited','تمت الزيارة':'Visited',
+ 'مُركّب':'Installed','مجدول':'Scheduled','متعذّر':'Blocked','لم يبدأ':'Not started',
+ 'موقع غير مسجّل':'Unregistered site','لوحة المتابعة':'Dashboard','اتجاهات':'Directions',
+ 'تحريك':'Move','تعديل البيانات':'Edit data','حدّد':'Select','محدَّد':'Selected',
+ 'المحدد':'Selected','أسند لفني':'Assign to technician','طلب تركيب':'Installation order',
+ 'الحالة':'Status','التصنيف':'Category','الشاخص':'Sign','المربع':'Square','المشعر':'Holy site',
+ 'الشركة':'Company','مخيم':'Camp','ممر':'Corridor','كاميرا':'Camera','محطة':'Station',
+ 'منى':'Mina','عرفات':'Arafat','مزدلفة':'Muzdalifah','الجمرات':'Jamarat',
+
+ /* اللوحة */
+ 'نظرة عامة':'Overview','الوتيرة والهدف':'Pace and target','التركيب والجدولة':'Installation and scheduling',
+ 'المعدل اليومي':'Daily rate','حسب المشعر والنوع':'By site and type','حسب شركة الخدمة':'By service company',
+ 'التحديات':'Challenges','الفك بعد الموسم':'Post-season dismantling',
+ 'المتابعة':'Monitoring','التخطيط':'Planning','المواعيد والأزمنة':'Deadlines and durations',
+ 'سلامة خط الإنتاج':'Pipeline integrity','الطلبات والمسح':'Requests and survey',
+ 'طلبات الزيارة':'Visit requests','توزيع الفرق':'Team allocation','المسح الميداني':'Field survey',
+ 'التحديات الميدانية':'Field challenges','المتعذّر والراكد':'Blocked and stale',
+ 'التدقيق الهندسي':'Engineering audit','الورشة والمخزون':'Workshop and inventory',
+ 'طلبات المستودع':'Warehouse orders','نقاط اليوم':'Today’s points','أرصدة المخزون':'Inventory balances',
+ 'دفتر الحركة':'Movement ledger','عُهدة الأجهزة':'Device custody','المال':'Finance',
+ 'دفتر المشتريات':'Purchases ledger','الميزانية والاعتماد':'Budget and approval',
+ 'الفنيون':'Technicians','سجل الفنيين':'Technician register','مقابل التارجت':'Against target',
+ 'إنتاجية الفريق':'Team output','إشعار الشركات':'Company notification',
+ 'صحة الأجهزة':'Device health','النظام':'System','سجل الأحداث':'Event log',
+ 'سلامة البيانات':'Data integrity','نسخ الأجهزة':'Device versions',
+
+ /* الإعدادات */
+ 'الإعدادات':'Settings','المستخدمون':'Users','نقاط الزيارات':'Visit points',
+ 'نقاط التهيئة':'Configuration points','نقاط التجميع':'Assembly points',
+ 'نقاط التركيب':'Installation points','نقاط الفك':'Dismantling points',
+ 'القطع والأسعار':'Items and prices','فئات المشتريات':'Purchase categories',
+ 'المورّدون':'Suppliers','ثوابت النظام':'System constants','الأدوار والصلاحيات':'Roles and permissions',
+
+ /* أعمدة */
+ 'الصنف':'Item','المنطقة':'Zone','النقاط':'Points','السعر':'Price','الكمية':'Quantity',
+ 'المخزن':'Store','العُهدة':'Custody','رُكّب':'Installed','تالف':'Damaged','الإجمالي':'Total',
+ 'التاريخ':'Date','المبلغ':'Amount','المورّد':'Supplier','الفئة':'Category','المنفِّذ':'Performed by',
+ 'الفني':'Technician','الدور':'Role','النسخة':'Version','آخر ظهور':'Last seen','إجراءات':'Actions',
+ 'النوع':'Type','العدد':'Count','النسبة':'Share','الاسم':'Name','الطلب':'Order','المرحلة':'Stage',
+ 'زيارة':'Visit','تهيئة':'Configuration','تجميع':'Assembly','فك':'Dismantle',
+ 'تارجت الشهر':'Month target','تارجت الأسبوع':'Week target','نقاط الشهر':'Month points',
+
+ /* حالات */
+ 'مطلوب':'Required','قيد التنفيذ':'In progress','منفّذ':'Performed','معتمد':'Approved','مُعاد':'Returned',
+ 'بانتظار الاعتماد':'Awaiting approval','نشط':'Active','معطل':'Disabled','سليم':'Intact',
+ 'توريد':'Receipt','صرف':'Issue','استهلاك':'Consumption','إرجاع':'Return','شطب':'Write-off'
+},
+ur:{
+ 'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
+ 'مهندس — صلاحية كاملة':'انجینئر — مکمل رسائی','اللغة':'زبان','المظهر':'تھیم',
+ 'فاتح':'روشن','داكن':'گہرا','تسجيل الخروج':'سائن آؤٹ','القائمة':'مینو',
+ 'آخر مزامنة':'آخری ہم آہنگی','متصل':'آن لائن','تصدير':'برآمد','بحث':'تلاش','حفظ':'محفوظ',
+ 'إلغاء':'منسوخ','إغلاق':'بند','تم':'ہو گیا','رجوع':'واپس','الكل':'سب',
+
+ 'تسجيل الدخول':'سائن اِن','اسم المستخدم':'صارف نام','كلمة المرور':'پاس ورڈ',
+ 'دخول':'داخل','نظام متابعة تركيب قارئات الحجاج':'حجاج ریڈر تنصیب کا نگرانی نظام',
+ 'المشاعر المقدسة':'مشاعرِ مقدسہ','نقطة':'پوائنٹس','لا تسجيل ذاتي — الحسابات تُنشأ من المكتب':'خود رجسٹریشن نہیں — اکاؤنٹ دفتر سے بنتے ہیں',
+
+ 'الميدان':'میدان','الخريطة':'نقشہ','المواقع':'مقامات','السجلات':'ریکارڈز','الأدوات':'اوزار',
+ 'المسح':'سروے','التركيب':'تنصیب','لم يُزر':'دورہ نہیں ہوا','تمت الزيارة':'دورہ ہوا',
+ 'مُركّب':'نصب شدہ','مجدول':'شیڈول شدہ','متعذّر':'رکا ہوا','لم يبدأ':'شروع نہیں ہوا',
+ 'موقع غير مسجّل':'غیر رجسٹرڈ مقام','لوحة المتابعة':'ڈیش بورڈ','اتجاهات':'ہدایات',
+ 'تحريك':'منتقل','تعديل البيانات':'ڈیٹا میں ترمیم','حدّد':'منتخب','محدَّد':'منتخب شدہ',
+ 'المحدد':'منتخب','أسند لفني':'ٹیکنیشن کو تفویض','طلب تركيب':'تنصیب آرڈر',
+ 'الحالة':'حالت','التصنيف':'درجہ بندی','الشاخص':'نشان','المربع':'مربع','المشعر':'مشعر',
+ 'الشركة':'کمپنی','مخيم':'خیمہ','ممر':'راہداری','كاميرا':'کیمرہ','محطة':'اسٹیشن',
+ 'منى':'منیٰ','عرفات':'عرفات','مزدلفة':'مزدلفہ','الجمرات':'جمرات',
+
+ 'نظرة عامة':'مجموعی جائزہ','الوتيرة والهدف':'رفتار اور ہدف','التركيب والجدولة':'تنصیب اور شیڈول',
+ 'المعدل اليومي':'روزانہ شرح','حسب المشعر والنوع':'مشعر اور قسم کے مطابق','حسب شركة الخدمة':'خدمت کمپنی کے مطابق',
+ 'التحديات':'چیلنجز','الفك بعد الموسم':'موسم کے بعد ہٹانا',
+ 'المتابعة':'نگرانی','التخطيط':'منصوبہ بندی','المواعيد والأزمنة':'مواعید اور دورانیے',
+ 'سلامة خط الإنتاج':'پیداواری لائن کی سلامتی','الطلبات والمسح':'درخواستیں اور سروے',
+ 'طلبات الزيارة':'دورے کی درخواستیں','توزيع الفرق':'ٹیموں کی تقسیم','المسح الميداني':'میدانی سروے',
+ 'التحديات الميدانية':'میدانی چیلنجز','المتعذّر والراكد':'رکا ہوا اور جامد',
+ 'التدقيق الهندسي':'انجینئرنگ آڈٹ','الورشة والمخزون':'ورکشاپ اور انوینٹری',
+ 'طلبات المستودع':'گودام آرڈرز','نقاط اليوم':'آج کے پوائنٹس','أرصدة المخزون':'انوینٹری بیلنس',
+ 'دفتر الحركة':'حرکت رجسٹر','عُهدة الأجهزة':'آلات کی امانت','المال':'مالیات',
+ 'دفتر المشتريات':'خریداری رجسٹر','الميزانية والاعتماد':'بجٹ اور منظوری',
+ 'الفنيون':'ٹیکنیشنز','سجل الفنيين':'ٹیکنیشن رجسٹر','مقابل التارجت':'ہدف کے مقابلے',
+ 'إنتاجية الفريق':'ٹیم کی پیداوار','إشعار الشركات':'کمپنیوں کو اطلاع',
+ 'صحة الأجهزة':'آلات کی صحت','النظام':'نظام','سجل الأحداث':'ایونٹ لاگ',
+ 'سلامة البيانات':'ڈیٹا کی سلامتی','نسخ الأجهزة':'آلات کے ورژن',
+
+ 'الإعدادات':'ترتیبات','المستخدمون':'صارفین','نقاط الزيارات':'دورے کے پوائنٹس',
+ 'نقاط التهيئة':'تیاری پوائنٹس','نقاط التجميع':'اسمبلی پوائنٹس',
+ 'نقاط التركيب':'تنصیب پوائنٹس','نقاط الفك':'ہٹانے کے پوائنٹس',
+ 'القطع والأسعار':'پرزے اور قیمتیں','فئات المشتريات':'خریداری کی اقسام',
+ 'المورّدون':'سپلائرز','ثوابت النظام':'نظام کے مستقلات','الأدوار والصلاحيات':'کردار اور اجازتیں',
+
+ 'الصنف':'شے','المنطقة':'علاقہ','النقاط':'پوائنٹس','السعر':'قیمت','الكمية':'مقدار',
+ 'المخزن':'اسٹور','العُهدة':'امانت','رُكّب':'نصب','تالف':'خراب','الإجمالي':'مجموعہ',
+ 'التاريخ':'تاریخ','المبلغ':'رقم','المورّد':'سپلائر','الفئة':'قسم','المنفِّذ':'انجام دہندہ',
+ 'الفني':'ٹیکنیشن','الدور':'کردار','النسخة':'ورژن','آخر ظهور':'آخری بار دیکھا','إجراءات':'اقدامات',
+ 'النوع':'قسم','العدد':'تعداد','النسبة':'حصہ','الاسم':'نام','الطلب':'آرڈر','المرحلة':'مرحلہ',
+ 'زيارة':'دورہ','تهيئة':'تیاری','تجميع':'اسمبلی','فك':'ہٹانا',
+ 'تارجت الشهر':'ماہ کا ہدف','تارجت الأسبوع':'ہفتے کا ہدف','نقاط الشهر':'ماہ کے پوائنٹس',
+
+ 'مطلوب':'مطلوب','قيد التنفيذ':'جاری','منفّذ':'انجام شدہ','معتمد':'منظور','مُعاد':'واپس',
+ 'بانتظار الاعتماد':'منظوری کے منتظر','نشط':'فعال','معطل':'غیر فعال','سليم':'درست',
+ 'توريد':'وصولی','صرف':'اجرا','استهلاك':'استعمال','إرجاع':'واپسی','شطب':'منسوخی'
+}
+};
+
+var LANG = 'ar';
+
+function t(s){
+  if (LANG === 'ar') return s;
+  var d = D[LANG] || {};
+  return (d[s] != null) ? d[s] : s;
+}
+
+function nm(v){
+  var s = String(v), dg = (I18N[LANG] || I18N.ar).dig;
+  if (LANG === 'ar' || LANG === 'ur'){
+    s = Number(v).toLocaleString('ar-EG');
+    if (LANG === 'ur') s = s.replace(/[٠-٩]/g, function(c){ return dg['٠١٢٣٤٥٦٧٨٩'.indexOf(c)]; });
+    return s;
+  }
+  return Number(v).toLocaleString('en-US');
+}
+
+function setLang(l){
+  if (!I18N[l]) return;
+  LANG = l;
+  document.documentElement.lang = l;
+  document.documentElement.dir  = I18N[l].dir;
+  document.body.setAttribute('data-lang', l);
+  try{ localStorage.setItem('nsk14.lang', l); }catch(e){}
+  render();
+}
+
+function setTheme(m){
+  document.documentElement.setAttribute('data-theme', m);
+  try{ localStorage.setItem('nsk14.theme', m); }catch(e){}
+  var b = document.getElementById('themeBtn');
+  if (b) b.textContent = (m === 'dark') ? '\u2600' : '\u263D';
+}
+
+/* ═══ تكملة القاموس — الميدان والمشترك ═══
+   الدستور §٧: ترجمة كاملة لواجهات الميدان والمشترك؛ محررات الإدارة عربية بقرار.
+   والأسماء الميدانية (مربع/شاخص/معرّف الموقع) بياناتٌ تبقى عربيةً في كل اللغات. */
+
+var D2 = {
+en:{
+ /* التصديرات */
+ 'KMZ للمحدَّد':'KMZ for selection','KMZ — إعادة تركيب ١٤٤٧':'KMZ — 1447 re-installation',
+ 'KMZ — بلون الشركة':'KMZ — by company colour','KMZ — منى وعرفات لجوجل إيرث':'KMZ — Mina & Arafat for Google Earth',
+ 'KMZ — ١٧٨٧ نقطة':'KMZ — 1,787 points','PDF — تقرير اليوم':'PDF — today’s report',
+ 'PDF — الكل':'PDF — all','PDF — الملخص التنفيذي':'PDF — executive summary',
+ 'إكسل':'Excel','إكسل — المواقع':'Excel — sites','إكسل — الكل':'Excel — all',
+ 'إكسل — حركة المخزون':'Excel — inventory movement','إكسل — أداء الفنيين':'Excel — technician performance',
+ 'الملخص التنفيذي — إكسل':'Executive summary — Excel','تقرير المراحل — PDF':'Stage report — PDF',
+ 'التصديرات':'Exports','التصديرات والمزامنة.':'Exports and syncing.','تصدير جدولي':'Export my schedule',
+ 'المخرجات الورقية':'Paper outputs','طباعة':'Print','توليد':'Generate',
+
+ /* الميدان */
+ 'الأقرب أولًا — وبحث بالشاخص.':'Nearest first — searchable by sign.',
+ 'ما جرى في الميدان بالترتيب.':'What happened in the field, in order.',
+ 'المزامنة':'Syncing','مزامنة الآن':'Sync now','غير مزامن':'Unsynced','موقعي':'My location',
+ 'المحدَّد':'Selected','نقاط محدَّدة':'Points selected','منها مُسح':'of them surveyed',
+ 'منها مُركّب':'of them installed','مشاعر':'holy sites','أزل':'Remove',
+ 'عملٌ على المحدَّد':'Act on selection','ما حدّدته من الخريطة — لعملٍ جماعي عليه.':'What you selected on the map — for bulk action.',
+ 'طلب زيارة':'Request visit','جدولة تركيب':'Schedule installation','مسح التحديد':'Clear selection',
+ 'المعرّف':'ID','الموقع':'Site','مسح':'Survey',
+
+ /* نموذجا المسح والتركيب */
+ 'نموذج المسح':'Survey form','نموذج التركيب':'Installation form',
+ 'المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.':'Known data is reviewed, not re-entered — only the unknown is collected.',
+ 'بيانات معلومة — للمراجعة':'Known data — for review','طلب تصويب':'Request correction',
+ 'ما يُجمَع في الموقع':'Collected on site','نوع التركيب':'Mount type','مصدر الكهرباء':'Power source',
+ 'ارتفاع التركيب':'Mount height','طول الكابل المطلوب':'Cable length needed',
+ 'تحديات التركيب':'Installation challenges','ملاحظات':'Notes','الصور':'Photos',
+ 'صورة الموقع':'Site photo','صورة نقطة التركيب':'Mount point photo',
+ 'حفظ المسح':'Save survey','حفظ ومتابعة للتالي':'Save and go to next','حفظ مسودّة':'Save draft',
+ 'لا يوجد كهرباء':'No power','الموقع مشغول':'Site occupied','يحتاج تصريح':'Permit needed',
+ 'ارتفاع صعب':'Difficult height','لا يوجد تغطية':'No coverage','يحتاج معدات':'Equipment needed',
+ 'ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.':'What is recorded on completion — photos and serials.',
+ 'حالة التركيب':'Installation status','قيد التركيب':'Installing','القطع المستهلكة':'Parts consumed',
+ 'القطعة':'Part','السيريال':'Serial','من كتالوج المخيم':'From camp catalogue',
+ 'قبل التركيب':'Before','بعد التركيب':'After','لوحة الأجهزة':'Device panel',
+ 'الشبكة':'Network','بادئة الشبكة':'Network prefix','العناوين المشتقّة':'Derived addresses',
+ 'إتمام التركيب':'Complete installation','المطلوب':'Required','المستهلك':'Consumed',
+
+ /* جدولي */
+ 'جدولي':'My schedule','ما أُسند إليك اليوم — وترتيبك بلا أرقام زملائك.':'What is assigned to you today — and your rank without colleagues’ figures.',
+ 'مُسند إليّ':'Assigned to me','أنجزتُ اليوم':'Done today','نقاطي هذا الشهر':'My points this month',
+ 'ترتيبي':'My rank','مهامي اليوم':'My tasks today','شغلي وترتيبي':'My work and rank',
+ 'البند':'Item','قيمتي':'Mine',
+
+ /* الوزارة */
+ 'متابعة المشروع':'Project monitoring','التقارير':'Reports','التقارير الجاهزة':'Ready reports',
+ 'التقرير':'Report','ما يحويه':'Contents','الدورية':'Frequency','نطاق التقرير':'Report scope',
+ 'من تاريخ':'From date','إلى تاريخ':'To date',
+ 'ما يُسلَّم للوزارة — جاهزًا بلا تجميع يدوي.':'What is delivered to the ministry — ready, without manual assembly.',
+ 'الزيارة الميدانية':'Field visit','مواقع مُسحت':'Sites surveyed','لم تُزر':'Not visited',
+ 'تحديات مفتوحة':'Open challenges','متوسط الزيارة اليومي':'Daily visit average',
+ 'أصناف موردة':'Items received','في المخزن':'In store','في العُهدة':'In custody',
+ 'تالف معزول':'Damaged, isolated','نقاط تهيئة':'Configuration points','نقاط تجميع':'Assembly points',
+ 'نسبة الإنجاز':'Completion','بانتظار التدقيق':'Awaiting audit','قابل للفك':'Dismantlable',
+ 'فك مجدول':'Dismantle scheduled','تم الفك':'Dismantled','عُهدة مرتجعة':'Custody returned',
+ 'إجمالي النقاط':'Total points','مُسح':'Surveyed','مُفكّك':'Dismantled',
+ 'التقدم':'Progress','مواقعها':'its sites',
+
+ /* اللوحة المشتركة */
+ 'إجمالي المواقع':'Total sites','تم المسح':'Surveyed','تقدّم المشروع':'Project progress',
+ 'التوزيع حسب المشعر والنوع':'Distribution by site and type','التوزيع':'Distribution',
+ 'التوزيع الكامل بالنسب.':'Full distribution with shares.','المتبقي':'Remaining',
+ 'المطلوب يوميًّا':'Required daily','المنجز أمس':'Done yesterday','الانتهاء المتوقع':'Expected finish',
+ 'ما جُدول وما نُفّذ وما تعذّر — بحالته وفريقه.':'What is scheduled, done and blocked — by status and team.',
+ 'دورة التركيب':'Installation cycle','آخر أربعة عشر يومًا — مسحًا وتركيبًا.':'Last fourteen days — survey and installation.',
+ 'الأقل إنجازًا أولًا — لتوجيه التنسيق.':'Least complete first — to direct coordination.',
+ 'الشركات':'Companies','التحديات المفتوحة':'Open challenges',
+ 'جدولة الفك وإرجاع العُهدة بحالة كل صنف.':'Scheduling dismantling and returning custody by item condition.',
+ 'دورة الفك':'Dismantling cycle','مُركّب قابل للفك':'Installed, dismantlable',
+
+ /* المساعدة */
+ 'المساعدة':'Help','دليل الاستخدام':'User guide','دليلك':'Your guide',
+ 'دليلك أنت — بما تملكه من شاشات لا بما لا تملك.':'Your own guide — for the screens you have, not those you don’t.',
+ 'دليلي — Word':'My guide — Word','دليلي — PDF':'My guide — PDF','نزّل دليلي':'Download my guide',
+ 'أدلة الأدوار':'Role guides','الدليل':'Guide','مراجع النظام':'System references',
+ 'دليل النظام الكامل — Word':'Full system guide — Word','دليل النظام الكامل — PDF':'Full system guide — PDF',
+ 'المواصفة التقنية':'Technical specification','لدور آخر':'For another role',
+ 'حسابي':'My account','دوري':'My role','دورك وصلاحياتك ونسختك.':'Your role, permissions and version.',
+ 'ما أملكه':'What I have','الصلاحية':'Permission','لي':'Mine','الوصف':'Description',
+ 'تجربة الأدوار':'Try the roles',
+ 'بدّل الدور لترى النظام بعين صاحبه — القائمة والشاشات تتغيّر فورًا.':'Switch role to see the system through its owner’s eyes — menu and screens change at once.',
+ 'مهندس':'Engineer','مشرف':'Supervisor','وزارة':'Ministry','فني':'Technician',
+ 'تحرير البيانات':'Edit data','الاعتمادات':'Approvals','المال والمشتريات':'Finance and purchases',
+ 'المخزون والعُهدة':'Inventory and custody','الورشة':'Workshop','التصدير الكامل':'Full export',
+ 'الاستيراد':'Import','إدارة المستخدمين':'User management','أرقام الهواتف':'Phone numbers',
+ 'نعم':'Yes','لا':'No','٪':'%',
+ 'أُرجعت العُهدة':'Custody returned','تركيب':'Installation','دورة الورشة':'Workshop cycle','في المعاينة: لا فعل حقيقي':'preview only — no real action',
+ 'حسابات الفنيين':'Technician accounts','بلا حساب':'No account','لهم حسابات':'Have accounts',
+ 'أنشئ حسابًا':'Create account','أنشئ':'Create','حسابًا':'accounts','الحساب':'Account',
+ 'تصفير كلمة المرور':'Reset password','إضافة فني':'Add technician','الجوال':'Mobile',
+ 'مشرفه':'Supervisor','محجوب':'Hidden','ما يملكه الفني':'What a technician has',
+ 'القدرة':'Capability','له':'Has','نسخ الكل':'Copy all','طلبات المستودع':'Warehouse orders',
+ 'الصلاحيات':'Permissions','إسناد الأدوار':'Role assignment','الطواقم والمعدلات':'Crews and rates',
+ 'فريقي':'My team','المصفوفة':'Matrix','الفريق':'Crew','الطاقم':'Team','المعدل/يوم':'Rate/day',
+ 'أيام-فريق':'Crew-days','فرق لازمة':'Crews needed','أفراد':'People','معدّات':'Equipment',
+ 'أشهر':'months','مشرف':'supervisor','فني':'tech','ضبط المعدلات':'Adjust rates',
+ 'طواقم التركيب':'Installation crews','طواقم المسح':'Survey crews',
+ 'أفراد الفريق':'Team members','المعدل اليومي':'Daily rate','أنجزنا اليوم':'Done today',
+ 'المتبقي عليّ':'My remaining','العضو':'Member','متاح':'Available','نوع الفريق':'Crew type',
+ 'اسم الفريق':'Crew name','المستخدم':'User','إسناد':'Assign','تغيير':'Change',
+ 'المهندسون':'Engineers','فريق التهيئة':'Configuration crew','فريق التجميع':'Assembly crew',
+ 'فريق التركيب':'Installation crew','متابعة الفرق':'Crew monitoring','التقارير الدورية':'Scheduled reports',
+ 'شغل فريقي':'My crew’s work','الفرق والفنيون':'Crews and technicians','الأعضاء':'Members',
+ 'يرث':'Inherits','فرق عاملة':'Working crews','أعضاء':'members','مهام مفتوحة':'Open tasks',
+ 'نقاط اليوم':'Today’s points','هذا الأسبوع':'This week','هذا الشهر':'This month',
+ 'تارجت الشهر':'Month target','مفتوح':'Open','الدورية':'Frequency','متى تُرسَل':'When sent',
+ 'تقارير':'reports','يومي':'Daily','أسبوعي':'Weekly','شهري':'Monthly','لمن':'For whom',
+ 'قناة الإرسال':'Delivery channel','لغة التقرير':'Report language','كل الفرق':'All crews',
+ 'كل الأنواع':'All kinds','مهام الفريق':'Crew tasks','دورة المهمة':'Task cycle',
+ 'مقابل التارجت':'Against target','كيف تُحسب النقطة':'How a point is counted',
+ 'مخيمات':'Camps','ممرات':'Corridors','محطات القطار':'Train stations',
+ 'كاميرات الوزارة':'Ministry cameras','منطقة الجمرات':'Jamarat area',
+ 'مسجد نمرة':'Namirah Mosque','منشآت التسكين':'Housing facilities','مزدلفة':'Muzdalifah',
+ 'التصعيد':'Escalation','سجل التدقيق':'Audit trail','المزامنة والتعارض':'Sync and conflicts',
+ 'عمر البيانات':'Data retention','بانتظار الرفع':'Awaiting upload','تعارضات معلّقة':'Pending conflicts',
+ 'حُلّت اليوم':'Resolved today','فشل رفع':'Upload failures','دورة المزامنة':'Sync cycle',
+ 'رفع الآن':'Upload now','الأحدث يفوز':'Newest wins','يُعرَض للمهندس':'Shown to the engineer',
+ 'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
+},
+ur:{
+ 'KMZ للمحدَّد':'منتخب کے لیے KMZ','KMZ — إعادة تركيب ١٤٤٧':'KMZ — ١٤٤٧ دوبارہ تنصیب',
+ 'KMZ — بلون الشركة':'KMZ — کمپنی کے رنگ سے','KMZ — منى وعرفات لجوجل إيرث':'KMZ — منیٰ و عرفات گوگل ارتھ کے لیے',
+ 'KMZ — ١٧٨٧ نقطة':'KMZ — ١٧٨٧ پوائنٹس','PDF — تقرير اليوم':'PDF — آج کی رپورٹ',
+ 'PDF — الكل':'PDF — سب','PDF — الملخص التنفيذي':'PDF — ایگزیکٹو خلاصہ',
+ 'إكسل':'ایکسل','إكسل — المواقع':'ایکسل — مقامات','إكسل — الكل':'ایکسل — سب',
+ 'إكسل — حركة المخزون':'ایکسل — انوینٹری حرکت','إكسل — أداء الفنيين':'ایکسل — ٹیکنیشن کارکردگی',
+ 'الملخص التنفيذي — إكسل':'ایگزیکٹو خلاصہ — ایکسل','تقرير المراحل — PDF':'مراحل رپورٹ — PDF',
+ 'التصديرات':'برآمدات','التصديرات والمزامنة.':'برآمدات اور ہم آہنگی۔','تصدير جدولي':'میرا شیڈول برآمد',
+ 'المخرجات الورقية':'کاغذی نتائج','طباعة':'پرنٹ','توليد':'تیار کریں',
+
+ 'الأقرب أولًا — وبحث بالشاخص.':'قریب ترین پہلے — نشان سے تلاش۔',
+ 'ما جرى في الميدان بالترتيب.':'میدان میں جو ہوا، ترتیب سے۔',
+ 'المزامنة':'ہم آہنگی','مزامنة الآن':'ابھی ہم آہنگ کریں','غير مزامن':'غیر ہم آہنگ','موقعي':'میرا مقام',
+ 'المحدَّد':'منتخب','نقاط محدَّدة':'منتخب پوائنٹس','منها مُسح':'ان میں سروے شدہ',
+ 'منها مُركّب':'ان میں نصب شدہ','مشاعر':'مشاعر','أزل':'ہٹائیں',
+ 'عملٌ على المحدَّد':'منتخب پر کارروائی','ما حدّدته من الخريطة — لعملٍ جماعي عليه.':'جو نقشے سے منتخب کیا — اجتماعی کارروائی کے لیے۔',
+ 'طلب زيارة':'دورے کی درخواست','جدولة تركيب':'تنصیب شیڈول','مسح التحديد':'انتخاب صاف کریں',
+ 'المعرّف':'شناخت','الموقع':'مقام','مسح':'سروے',
+
+ 'نموذج المسح':'سروے فارم','نموذج التركيب':'تنصیب فارم',
+ 'المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.':'معلوم ڈیٹا کا جائزہ لیا جاتا ہے، دوبارہ درج نہیں — صرف نامعلوم جمع ہوتا ہے۔',
+ 'بيانات معلومة — للمراجعة':'معلوم ڈیٹا — جائزے کے لیے','طلب تصويب':'تصحیح کی درخواست',
+ 'ما يُجمَع في الموقع':'مقام پر جمع','نوع التركيب':'تنصیب کی قسم','مصدر الكهرباء':'بجلی کا ذریعہ',
+ 'ارتفاع التركيب':'تنصیب کی بلندی','طول الكابل المطلوب':'مطلوبہ کیبل لمبائی',
+ 'تحديات التركيب':'تنصیب کے چیلنجز','ملاحظات':'نوٹس','الصور':'تصاویر',
+ 'صورة الموقع':'مقام کی تصویر','صورة نقطة التركيب':'تنصیب پوائنٹ کی تصویر',
+ 'حفظ المسح':'سروے محفوظ','حفظ ومتابعة للتالي':'محفوظ کر کے اگلا','حفظ مسودّة':'مسودہ محفوظ',
+ 'لا يوجد كهرباء':'بجلی نہیں','الموقع مشغول':'مقام مصروف','يحتاج تصريح':'اجازت درکار',
+ 'ارتفاع صعب':'مشکل بلندی','لا يوجد تغطية':'کوریج نہیں','يحتاج معدات':'آلات درکار',
+ 'ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.':'تکمیل پر جو درج ہوتا ہے — تصاویر اور سیریلز۔',
+ 'حالة التركيب':'تنصیب کی حالت','قيد التركيب':'زیرِ تنصیب','القطع المستهلكة':'استعمال شدہ پرزے',
+ 'القطعة':'پرزہ','السيريال':'سیریل','من كتالوج المخيم':'خیمہ کیٹلاگ سے',
+ 'قبل التركيب':'پہلے','بعد التركيب':'بعد','لوحة الأجهزة':'آلات کا پینل',
+ 'الشبكة':'نیٹ ورک','بادئة الشبكة':'نیٹ ورک سابقہ','العناوين المشتقّة':'اخذ شدہ پتے',
+ 'إتمام التركيب':'تنصیب مکمل','المطلوب':'مطلوب','المستهلك':'استعمال شدہ',
+
+ 'جدولي':'میرا شیڈول','ما أُسند إليك اليوم — وترتيبك بلا أرقام زملائك.':'آج آپ کو کیا تفویض ہوا — اور آپ کا درجہ ساتھیوں کے اعداد کے بغیر۔',
+ 'مُسند إليّ':'مجھے تفویض','أنجزتُ اليوم':'آج مکمل','نقاطي هذا الشهر':'اس ماہ میرے پوائنٹس',
+ 'ترتيبي':'میرا درجہ','مهامي اليوم':'آج کے کام','شغلي وترتيبي':'میرا کام اور درجہ',
+ 'البند':'شے','قيمتي':'میری قیمت',
+
+ 'متابعة المشروع':'منصوبے کی نگرانی','التقارير':'رپورٹس','التقارير الجاهزة':'تیار رپورٹس',
+ 'التقرير':'رپورٹ','ما يحويه':'مشتملات','الدورية':'تواتر','نطاق التقرير':'رپورٹ کا دائرہ',
+ 'من تاريخ':'تاریخ سے','إلى تاريخ':'تاریخ تک',
+ 'ما يُسلَّم للوزارة — جاهزًا بلا تجميع يدوي.':'وزارت کو جو دیا جاتا ہے — تیار، دستی جمع کے بغیر۔',
+ 'الزيارة الميدانية':'میدانی دورہ','مواقع مُسحت':'سروے شدہ مقامات','لم تُزر':'دورہ نہیں ہوا',
+ 'تحديات مفتوحة':'کھلے چیلنجز','متوسط الزيارة اليومي':'روزانہ اوسط دورہ',
+ 'أصناف موردة':'موصولہ اشیا','في المخزن':'اسٹور میں','في العُهدة':'امانت میں',
+ 'تالف معزول':'خراب، الگ','نقاط تهيئة':'تیاری پوائنٹس','نقاط تجميع':'اسمبلی پوائنٹس',
+ 'نسبة الإنجاز':'تکمیل','بانتظار التدقيق':'آڈٹ کے منتظر','قابل للفك':'ہٹانے کے قابل',
+ 'فك مجدول':'ہٹانا شیڈول','تم الفك':'ہٹا دیا','عُهدة مرتجعة':'امانت واپس',
+ 'إجمالي النقاط':'کل پوائنٹس','مُسح':'سروے شدہ','مُفكّك':'ہٹایا گیا',
+ 'التقدم':'پیش رفت','مواقعها':'اس کے مقامات',
+
+ 'إجمالي المواقع':'کل مقامات','تم المسح':'سروے ہوا','تقدّم المشروع':'منصوبے کی پیش رفت',
+ 'التوزيع حسب المشعر والنوع':'مشعر اور قسم کے مطابق تقسیم','التوزيع':'تقسیم',
+ 'التوزيع الكامل بالنسب.':'حصوں سمیت مکمل تقسیم۔','المتبقي':'باقی',
+ 'المطلوب يوميًّا':'روزانہ مطلوب','المنجز أمس':'کل مکمل','الانتهاء المتوقع':'متوقع اختتام',
+ 'ما جُدول وما نُفّذ وما تعذّر — بحالته وفريقه.':'جو شیڈول، مکمل اور رکا — حالت اور ٹیم کے ساتھ۔',
+ 'دورة التركيب':'تنصیب کا چکر','آخر أربعة عشر يومًا — مسحًا وتركيبًا.':'گزشتہ چودہ دن — سروے اور تنصیب۔',
+ 'الأقل إنجازًا أولًا — لتوجيه التنسيق.':'کم مکمل پہلے — رابطہ کاری کے لیے۔',
+ 'الشركات':'کمپنیاں','التحديات المفتوحة':'کھلے چیلنجز',
+ 'جدولة الفك وإرجاع العُهدة بحالة كل صنف.':'ہٹانے کا شیڈول اور ہر شے کی حالت سے امانت واپسی۔',
+ 'دورة الفك':'ہٹانے کا چکر','مُركّب قابل للفك':'نصب، ہٹانے کے قابل',
+
+ 'المساعدة':'مدد','دليل الاستخدام':'استعمال کی رہنمائی','دليلك':'آپ کی رہنمائی',
+ 'دليلك أنت — بما تملكه من شاشات لا بما لا تملك.':'آپ کی اپنی رہنمائی — انہی اسکرینوں کی جو آپ کے پاس ہیں۔',
+ 'دليلي — Word':'میری رہنمائی — Word','دليلي — PDF':'میری رہنمائی — PDF','نزّل دليلي':'میری رہنمائی ڈاؤن لوڈ',
+ 'أدلة الأدوار':'کرداروں کی رہنمائیاں','الدليل':'رہنمائی','مراجع النظام':'نظام کے حوالے',
+ 'دليل النظام الكامل — Word':'مکمل نظام رہنمائی — Word','دليل النظام الكامل — PDF':'مکمل نظام رہنمائی — PDF',
+ 'المواصفة التقنية':'تکنیکی تفصیل','لدور آخر':'دوسرے کردار کے لیے',
+ 'حسابي':'میرا اکاؤنٹ','دوري':'میرا کردار','دورك وصلاحياتك ونسختك.':'آپ کا کردار، اجازتیں اور ورژن۔',
+ 'ما أملكه':'میرے پاس کیا ہے','الصلاحية':'اجازت','لي':'میرا','الوصف':'تفصیل',
+ 'تجربة الأدوار':'کردار آزمائیں',
+ 'بدّل الدور لترى النظام بعين صاحبه — القائمة والشاشات تتغيّر فورًا.':'کردار بدلیں تاکہ نظام اس کے مالک کی نظر سے دیکھیں — مینو اور اسکرینیں فوراً بدل جاتی ہیں۔',
+ 'مهندس':'انجینئر','مشرف':'سپروائزر','وزارة':'وزارت','فني':'ٹیکنیشن',
+ 'تحرير البيانات':'ڈیٹا میں ترمیم','الاعتمادات':'منظوریاں','المال والمشتريات':'مالیات اور خریداری',
+ 'المخزون والعُهدة':'انوینٹری اور امانت','الورشة':'ورکشاپ','التصدير الكامل':'مکمل برآمد',
+ 'الاستيراد':'درآمد','إدارة المستخدمين':'صارف انتظام','أرقام الهواتف':'فون نمبر',
+ 'نعم':'ہاں','لا':'نہیں','٪':'٪',
+ 'أُرجعت العُهدة':'امانت واپس','تركيب':'تنصیب','دورة الورشة':'ورکشاپ کا چکر','في المعاينة: لا فعل حقيقي':'صرف معاینہ — کوئی حقیقی عمل نہیں',
+ 'حسابات الفنيين':'ٹیکنیشن اکاؤنٹس','بلا حساب':'اکاؤنٹ نہیں','لهم حسابات':'اکاؤنٹ رکھتے ہیں',
+ 'أنشئ حسابًا':'اکاؤنٹ بنائیں','أنشئ':'بنائیں','حسابًا':'اکاؤنٹس','الحساب':'اکاؤنٹ',
+ 'تصفير كلمة المرور':'پاس ورڈ ری سیٹ','إضافة فني':'ٹیکنیشن شامل کریں','الجوال':'موبائل',
+ 'مشرفه':'سپروائزر','محجوب':'مخفی','ما يملكه الفني':'ٹیکنیشن کے پاس کیا ہے',
+ 'القدرة':'صلاحیت','له':'رکھتا ہے','نسخ الكل':'سب کاپی کریں','طلبات المستودع':'گودام آرڈرز',
+ 'الصلاحيات':'اجازتیں','إسناد الأدوار':'کردار کی تفویض','الطواقم والمعدلات':'ٹیمیں اور شرحیں',
+ 'فريقي':'میری ٹیم','المصفوفة':'میٹرکس','الفريق':'ٹیم','الطاقم':'عملہ','المعدل/يوم':'شرح/دن',
+ 'أيام-فريق':'ٹیم-دن','فرق لازمة':'مطلوبہ ٹیمیں','أفراد':'افراد','معدّات':'آلات',
+ 'أشهر':'ماہ','مشرف':'سپروائزر','فني':'ٹیکنیشن','ضبط المعدلات':'شرحیں مقرر کریں',
+ 'طواقم التركيب':'تنصیب ٹیمیں','طواقم المسح':'سروے ٹیمیں',
+ 'أفراد الفريق':'ٹیم کے ارکان','المعدل اليومي':'روزانہ شرح','أنجزنا اليوم':'آج مکمل',
+ 'المتبقي عليّ':'میرا باقی','العضو':'رکن','متاح':'دستیاب','نوع الفريق':'ٹیم کی قسم',
+ 'اسم الفريق':'ٹیم کا نام','المستخدم':'صارف','إسناد':'تفویض','تغيير':'تبدیلی',
+ 'المهندسون':'انجینئرز','فريق التهيئة':'تیاری ٹیم','فريق التجميع':'اسمبلی ٹیم',
+ 'فريق التركيب':'تنصیب ٹیم','متابعة الفرق':'ٹیموں کی نگرانی','التقارير الدورية':'باقاعدہ رپورٹس',
+ 'شغل فريقي':'میری ٹیم کا کام','الفرق والفنيون':'ٹیمیں اور ٹیکنیشنز','الأعضاء':'اراکین',
+ 'يرث':'وراثت','فرق عاملة':'کام کرنے والی ٹیمیں','أعضاء':'اراکین','مهام مفتوحة':'کھلے کام',
+ 'نقاط اليوم':'آج کے پوائنٹس','هذا الأسبوع':'اس ہفتے','هذا الشهر':'اس ماہ',
+ 'تارجت الشهر':'ماہ کا ہدف','مفتوح':'کھلا','الدورية':'تواتر','متى تُرسَل':'کب بھیجی جائے',
+ 'تقارير':'رپورٹس','يومي':'روزانہ','أسبوعي':'ہفتہ وار','شهري':'ماہانہ','لمن':'کس کے لیے',
+ 'قناة الإرسال':'ترسیل کا ذریعہ','لغة التقرير':'رپورٹ کی زبان','كل الفرق':'تمام ٹیمیں',
+ 'كل الأنواع':'تمام اقسام','مهام الفريق':'ٹیم کے کام','دورة المهمة':'کام کا چکر',
+ 'مقابل التارجت':'ہدف کے مقابلے','كيف تُحسب النقطة':'پوائنٹ کیسے شمار ہوتا ہے',
+ 'مخيمات':'خیمے','ممرات':'راہداریاں','محطات القطار':'ٹرین اسٹیشن',
+ 'كاميرات الوزارة':'وزارتی کیمرے','منطقة الجمرات':'جمرات کا علاقہ',
+ 'مسجد نمرة':'مسجدِ نمرہ','منشآت التسكين':'رہائشی سہولیات','مزدلفة':'مزدلفہ',
+ 'التصعيد':'ایسکلیشن','سجل التدقيق':'آڈٹ ٹریل','المزامنة والتعارض':'ہم آہنگی اور تصادم',
+ 'عمر البيانات':'ڈیٹا کی مدت','بانتظار الرفع':'اپ لوڈ کے منتظر','تعارضات معلّقة':'زیر التوا تصادم',
+ 'حُلّت اليوم':'آج حل ہوئے','فشل رفع':'اپ لوڈ ناکام','دورة المزامنة':'ہم آہنگی کا چکر',
+ 'رفع الآن':'ابھی اپ لوڈ','الأحدث يفوز':'تازہ ترین جیتتا ہے','يُعرَض للمهندس':'انجینئر کو دکھایا جائے',
+ 'تُضاف كلها':'سب شامل','يُرفض الثاني':'دوسرا مسترد','تُدمَج بسطر فاصل':'جدا کرنے والی سطر سے ضم'
+}
+};
+
+/* الدمج — والقاموس الأصلي هو المرجع عند التعارض */
+(function(){
+  ['en','ur'].forEach(function(L){
+    Object.keys(D2[L]).forEach(function(k){
+      if (D[L][k] === undefined) D[L][k] = D2[L][k];
+    });
+  });
+})();
+
+/* ═══ البيانات — أرقام المشروع الحقيقية ═══ */
+
+var DATA = {
+  total:1787,
+  byZone:[
+    ['عرفات','مخيمات',713],['منى','مخيمات',679],['منى','ممرات',144],
+    ['منى','كاميرات الوزارة',59],['عرفات','ممرات',46],['منى','منطقة الجمرات',28],
+    ['عرفات','محطات القطار',36],['منى','محطات القطار',36],['مزدلفة','محطات القطار',36],
+    ['عرفات','مسجد نمرة',10]
+  ],
+  camps:1392, corridors:190,
+
+  /* الكتالوج — ثلاثون صنفًا من ITEM_SEED بأسمائها وأسعارها،
+     ونقاط المراحل الثلاث من PREP_SEED وASM_SEED. صفرٌ = لا يمرّ بالمرحلة. */
+  items:[
+    ['cor','cam_pe','كاميرا ممر 8266',16,2400, 4,0],
+    ['cor','rtr','راوتر صناعي',10,1150, 5,3],
+    ['cor','rdr8','قارئ ٨ منافذ',33,7200, 8,5],
+    ['cor','ant12','هوائي UHF SRRA12',8,520, 0,0],
+    ['cor','sol','لوح سولار ٤٠٠و',26,900, 0,3],
+    ['cor','bat','بطارية ٢٠٠أ',16,1600, 0,3],
+    ['cor','mppt','منظومة طاقة شمسية',13,700, 4,2],
+    ['cor','mcb','بريكر MCB',5,90, 0,1],
+    ['cor','boxb','بوكس بطارية ٨٠×٦٠×٣٠',20,950, 0,4],
+    ['cor','c20','كابل RFID ٢٠م',13,260, 0,0],
+    ['cor','c15c','كابل ١٥م 7D-FB',10,190, 0,0],
+    ['cor','c10c','كابل ١٠م 5D-FB',8,140, 0,0],
+    ['cor','c5c','كابل RFID ٥م',5,80, 0,0],
+    ['cor','boxm','بوكس رئيسي ٦٠×٤٠×٢٠',26,680, 0,5],
+    ['cor','sock','فيش كهرباء',2,45, 0,1],
+    ['camp','cam','كاميرا مخيم 8361',8,2400, 4,0],
+    ['camp','rtr2','راوتر صناعي',5,1150, 5,3],
+    ['camp','rdr4c','قارئ ٤ منافذ',11,5100, 6,4],
+    ['camp','ant9c','هوائي UHF SRRA9',3,420, 0,0],
+    ['camp','ths','حساس حرارة ورطوبة',4,180, 3,0],
+    ['camp','c15','كابل ١٥م 7D-FB',5,190, 0,0],
+    ['camp','c10','كابل ١٠م 5D-FB',4,140, 0,0],
+    ['camp','c5','كابل RFID ٥م',2,80, 0,0],
+    ['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680, 0,5],
+    ['camp','led','شاشة ليد ٣ نقاط',2,150, 0,2],
+    ['camp','korg','ليد أخضر',2,120, 0,1],
+    ['camp','korr','ليد أحمر',2,120, 0,1],
+    ['camp','rly','ريلاي ١٢ف',2,60, 0,1],
+    ['camp','gwc','جيت واي',6,1900, 5,3],
+    ['camp','sockc','فيش كهرباء',2,45, 0,1]
+  ],
+
+  targets:{ survey:90, insCamp:700, insCor:300, prepCamp:8000, prepCor:1000,
+            asmCamp:6600, asmCor:1300, dis:600 },
+
+  /* PW_DEF — أوزان الزيارة الافتراضية وثوابت النظام كما في العامل */
+  wDef:{ camp:3, cor:5, stn:2, jam:4, other:3 },
+  consts:{ ph:4.81, days:26, hours:8, daysWeek:6,
+           insCamp:76.9, insCor:192.3,
+           stgCfg:25, stgVal:25, stgIns:50,
+           disOk:1, disBad:1.25 },
+
+  users:[
+    ['محمد صفوت','m.safwat','مهندس','نشط','٢٠٢٦-٠٧-٣٠'],
+    ['مشرف منى','sup.mina','مشرف','نشط','٢٠٢٦-٠٨-٠٥'],
+    ['وزارة الحج','moh.view','وزارة — قراءة','نشط','٢٠٢٦-٠٨-١٠'],
+    ['فني سابق','t.old','فني','معطل','٢٠٢٦-٠٨-١٢']
+  ],
+
+  stock:[
+    ['راوتر صناعي',16,3,1,0],
+    ['قارئ ٤ منافذ',10,3,1,1],
+    ['كابل ١٥م 7D-FB',82,16,2,0],
+    ['بوكس رئيسي ٦٠×٤٠×٢٠',18,4,1,0]
+  ],
+  moves:[
+    ['٢٠٢٦-٠٨-٢٧','توريد','راوتر صناعي',20,'—','—','—'],
+    ['٢٠٢٦-٠٨-٢٧','صرف','راوتر صناعي',5,'فريق ١','—','—'],
+    ['٢٠٢٦-٠٨-٢٧','استهلاك','راوتر صناعي',1,'فريق ١','NSK-CMP-001','—'],
+    ['٢٠٢٦-٠٨-٢٧','إرجاع','قارئ ٤ منافذ',1,'فريق ١','NSK-CMP-001','تالف']
+  ],
+
+  buys:[
+    ['٢٠٢٦-٠٨-٠١','كابل شبكة CAT6','كابلات وتوصيلات','منى',800,'محل النور','معتمد'],
+    ['٢٠٢٦-٠٨-٠٢','مولد كهرباء','كهرباء','عرفات',8500,'مؤسسة الحرم','معتمد']
+  ],
+  budget:{ cap:100000, spent:9300, pending:0, appAbove:5000 },
+  suppliers:['محل النور','مؤسسة الحرم','شركة الأمانة'],
+  buyCats:['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء','نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'],
+
+  techs:[
+    ['أحمد', 96, 840, 0],
+    ['فريق ٣', 40, 1151, 0],
+    ['سالم', 72, 410, 0]
+  ],
+
+  events:[
+    ['٠٢:٥١','تحديث كتالوج القطع','محمد صفوت'],
+    ['٠٢:٤٤','تسجيل مشترى: مولد كهرباء — ٨٥٠٠ ريال','محمد صفوت'],
+    ['٠٢:٣٠','إرجاع عُهدة فك — NSK-CMP-001','فريق ١'],
+    ['٠٢:١٥','اعتماد قطع التركيب — NSK-COR-014','محمد صفوت'],
+    ['٠١:٥٠','طلب تهيئة PRP-M4X — أحمد · ٤٥ نقطة','محمد صفوت']
+  ],
+
+  sites:[
+    ['NSK-ARF-COR-0007','عرفات — ممر AR-06','عرفات','ممر','—','لم يُزر'],
+    ['NSK-ARF-CMP-0001','عرفات — مربع ٧-١٥ — شاخص ١-٣-٥/٥٠٦','عرفات','مخيم','شركة الراجحي','لم يُزر'],
+    ['NSK-MNA-CMP-0184','منى — مربع ٢٢ — شاخص ٤/٧١','منى','مخيم','ضيوف البيت','لم يُزر'],
+    ['NSK-MNA-COR-0031','منى — ممر MN-12','منى','ممر','—','لم يُزر'],
+    ['NSK-TRN-STN-0004','قطار المشاعر — محطة ٣','قطار المشاعر','محطة','—','لم يُزر']
+  ]
+};
+
+/* ═══ مساعدات العرض ═══ */
+function esc(s){ return String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
+
+function stat(k,v,cls){
+  return '<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(t(k))+'</div>'
+       + '<div class="v">'+v+'</div></div>';
+}
+function stats(list){
+  return '<div class="stats">'+list.map(function(s){ return stat(s[0],s[1],s[2]); }).join('')+'</div>';
+}
+function meter(label,v,max){
+  var p = max ? Math.min(100, Math.round(v/max*100)) : 0;
+  return '<div class="meter"><div class="meter-l"><span>'+esc(t(label))+'</span>'
+       + '<span>'+nm(v)+' / '+nm(max)+' · '+nm(p)+'٪</span></div>'
+       + '<div class="track"><i style="width:'+p+'%"></i></div></div>';
+}
+function card(title, body, right){
+  return '<div class="card">'
+    + (title ? '<div class="card-head"><h2>'+esc(t(title))+'</h2>'+(right||'')+'</div>' : '')
+    + '<div class="card-body">'+body+'</div></div>';
+}
+function cardFlush(title, body, right){
+  return '<div class="card">'
+    + (title ? '<div class="card-head"><h2>'+esc(t(title))+'</h2>'+(right||'')+'</div>' : '')
+    + '<div class="card-body tight">'+body+'</div></div>';
+}
+function table(head, rows, foot){
+  return '<div class="table-wrap"><table class="data-table rows"><thead><tr>'
+    + head.map(function(h){ return '<th>'+esc(t(h))+'</th>'; }).join('')
+    + '</tr></thead><tbody>'
+    + rows.map(function(r){ return '<tr>'+r.map(function(c){ return '<td>'+c+'</td>'; }).join('')+'</tr>'; }).join('')
+    + '</tbody>'
+    + (foot ? '<tfoot><tr>'+foot.map(function(c){ return '<td>'+c+'</td>'; }).join('')+'</tr></tfoot>' : '')
+    + '</table></div>';
+}
+function pill(txt, kind){ return '<span class="pill'+(kind?' '+kind:'')+'">'+esc(t(txt))+'</span>'; }
+function alertBox(kind, txt){ return '<div class="alert '+kind+'"><span>'+esc(t(txt))+'</span></div>'; }
+function pct(v,max){
+  var p = max ? Math.round(v/max*100) : 0;
+  var k = p>=100 ? 'ok' : (p>=70 ? 'warn' : 'off');
+  return '<span class="pill '+k+'">'+nm(p)+'٪</span>';
+}
+function flow(steps, activeIdx){
+  return '<div class="flow">' + steps.map(function(s,i){
+    var cls = i < activeIdx ? ' done' : (i === activeIdx ? ' on' : '');
+    return '<span class="flow-step'+cls+'">'+esc(t(s))+'</span>'
+         + (i < steps.length-1 ? '<span class="flow-arr">\u2190</span>' : '');
+  }).join('') + '</div>';
+}
+function btn(label, kind, extra){
+  return '<button type="button" class="btn '+(kind||'btn-secondary')+'"'+(extra||'')+'>'+esc(t(label))+'</button>';
+}
+function pageHead(eyebrow, title, lede, right){
+  return '<div class="page-head"><div><span class="eyebrow">'+esc(t(eyebrow))+'</span>'
+    + '<h1>'+esc(t(title))+'</h1>'
+    + (lede ? '<p class="lede">'+esc(t(lede))+'</p>' : '') + '</div>'
+    + (right || btn('تصدير','btn-secondary')) + '</div>';
+}
+
+/* ═══ مصدر القيم الواحد ═══
+   لا قيمةَ افتراضيةً ولا رماديةً: كلُّ وزنٍ ونقطةٍ وتارجتٍ يبدأ صفرًا
+   ويُضبط بيد المهندس. وما يُكتب هنا يقرؤه كلُّ ما بُني فوقه في اللحظة نفسها. */
+
+var CFG = {
+  /* أوزان الزيارة والفك — مفتاحها «المشعر|النوع» */
+  w:  {},
+  dw: {},
+
+  /* التارجتات */
+  tgtSurvey:0, tgtInsCamp:0, tgtInsCor:0,
+  tgtPrepCamp:0, tgtPrepCor:0, tgtAsmCamp:0, tgtAsmCor:0, tgtDis:0,
+
+  /* نقاط النقطة الكاملة ومعاملا الفك */
+  insCamp:0, insCor:0, disOk:0, disBad:0,
+
+  /* ثوابت النظام */
+  ph:0, days:0, hours:0, daysWeek:0,
+  stgCfg:0, stgVal:0, stgIns:0,
+
+  /* المال */
+  budCap:0, budApp:0,
+
+  /* الكتالوج — مفتاحها معرّف الصنف */
+  itPts:{}, itPrice:{}, itPrep:{}, itAsm:{},
+
+  /* الطواقم — مفتاحها معرّف الطاقم */
+  crewSup:{}, crewTech:{}, crewGear:{}, crewRate:{}
+};
+
+/* قراءةٌ آمنة: الصفر قيمةٌ صحيحةٌ لا غيابٌ يُستبدل */
+function cfgN(v){ var n = parseFloat(v); return isFinite(n) ? n : 0; }
+function cfgKey(k){ return (k === undefined || k === null || k === '') ? null : String(k); }
+function cfgGet(path, key){
+  var k = cfgKey(key), o = CFG[path];
+  if (k === null) return cfgN(o);
+  return cfgN(o && o[k]);
+}
+function cfgSet(path, key, val){
+  var k = cfgKey(key);
+  if (k === null) CFG[path] = cfgN(val);
+  else { if (!CFG[path] || typeof CFG[path] !== 'object') CFG[path] = {}; CFG[path][k] = cfgN(val); }
+}
+
+/* الأسبوعي يُشتقّ من الشهري بأيام العمل — وصفرٌ في الأيام يعني صفرًا لا قسمةً على صفر */
+function cfgWk(monthly){
+  var d = cfgGet('days'), w = cfgGet('daysWeek');
+  return d ? Math.round(cfgN(monthly) * (w / d)) : 0;
+}
+
+/* حقلٌ موصولٌ بالمصدر: يكتب فيه عند التحرير فينتشر أثرُه */
+function cfgInput(path, key, opt){
+  opt = opt || {};
+  var v = cfgGet(path, key);
+  return '<input type="number" inputmode="' + (opt.dec ? 'decimal' : 'numeric') + '"'
+    + ' step="' + (opt.step || (opt.dec ? '0.5' : '1')) + '" min="0"'
+    + (opt.max ? ' max="' + opt.max + '"' : '')
+    + ' value="' + v + '"'
+    + ' data-cfg="' + path + '"'
+    + (cfgKey(key) !== null ? ' data-cfgk="' + esc(key) + '"' : '')
+    + (opt.style ? ' style="' + opt.style + '"' : '')
+    + '>';
+}
+
+/* حقلٌ مشتقٌّ لا يُكتب — الأسبوعي من الشهري */
+function cfgDerived(v){
+  return '<input type="number" value="' + v + '" readonly tabindex="-1"'
+    + ' style="background:var(--surface-2);color:var(--ink-soft)">';
+}
+
+/* ما يُشتقّ من المصدر — تقرؤه كل الشاشات فلا رقمان يفترقان */
+function T(){
+  return {
+    survey:   cfgGet('tgtSurvey'),
+    insCamp:  cfgGet('tgtInsCamp'),  insCor:  cfgGet('tgtInsCor'),
+    prepCamp: cfgGet('tgtPrepCamp'), prepCor: cfgGet('tgtPrepCor'),
+    asmCamp:  cfgGet('tgtAsmCamp'),  asmCor:  cfgGet('tgtAsmCor'),
+    dis:      cfgGet('tgtDis'),
+    ins:      cfgGet('tgtInsCamp')  + cfgGet('tgtInsCor'),
+    prep:     cfgGet('tgtPrepCamp') + cfgGet('tgtPrepCor'),
+    asm:      cfgGet('tgtAsmCamp')  + cfgGet('tgtAsmCor')
+  };
+}
+function K(){
+  return {
+    ph:cfgGet('ph'), days:cfgGet('days'), hours:cfgGet('hours'), daysWeek:cfgGet('daysWeek'),
+    insCamp:cfgGet('insCamp'), insCor:cfgGet('insCor'),
+    disOk:cfgGet('disOk'), disBad:cfgGet('disBad'),
+    stgCfg:cfgGet('stgCfg'), stgVal:cfgGet('stgVal'), stgIns:cfgGet('stgIns')
+  };
+}
+
+/* أرقام الكتالوج من المصدر */
+function itPts(id){ return cfgGet('itPts', id); }
+function itPrice(id){ return cfgGet('itPrice', id); }
+function itPrep(id){ return cfgGet('itPrep', id); }
+function itAsm(id){ return cfgGet('itAsm', id); }
+
+/* الطواقم من المصدر */
+function crewVal(k, f){ return cfgGet('crew' + f, k); }
+
+/* ما لم يُضبط بعدُ — تنبيهٌ يظهر حيث يهمّ */
+function cfgWarn(list){
+  var miss = list.filter(function(x){ return !x[1]; });
+  if (!miss.length) return '';
+  return '<div class="alert warn"><span>لم يُضبط بعد: '
+    + miss.map(function(x){ return esc(t(x[0])); }).join(' · ')
+    + ' — القيمة صفرٌ حتى تكتبها في الإعدادات.</span></div>';
+}
+
+/* ═══ صفحة الدخول — خلفية حية مبنية بالكود ═══
+   ١٧٨٧ نقطة تُرسم على شبكة وتنوّر بالتدريج: المشروع يحكي نفسه
+   بدل صورة مستعارة. خفيفة، وتحترم prefers-reduced-motion. */
+
+var LOGIN_CSS = `
+#login{position:fixed;inset:0;z-index:100;display:grid;place-items:center;
+  background:#070A0D;overflow:hidden}
+#loginCv{position:absolute;inset:0;width:100%;height:100%}
+#login .veil{position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 40%,rgba(7,10,13,.15),rgba(7,10,13,.92) 72%)}
+#login .box{position:relative;z-index:2;width:min(390px,92vw);
+  background:rgba(15,20,25,.93);border:1px solid #232B33;border-radius:16px;
+  padding:26px 24px;backdrop-filter:blur(10px);box-shadow:0 24px 70px rgba(0,0,0,.6)}
+#login .lg{display:flex;align-items:center;gap:11px;margin-bottom:18px}
+#login .lgm{width:46px;height:46px;border-radius:11px;background:#185FA5;color:#fff;
+  display:grid;place-items:center;font-weight:800;font-size:11px;letter-spacing:.6px;flex:0 0 auto}
+#login h1{font-size:19px;color:#E8EBEE;line-height:1.3}
+#login .sub{font-size:12.5px;color:#8A939D;margin-top:2px}
+#login .cnt{font-size:12px;color:#5FA8E8;margin:0 0 16px;font-variant-numeric:tabular-nums}
+#login label{display:block;font-size:12.5px;color:#9BA5AF;margin:0 0 5px}
+#login input,#login select{width:100%;background:#0B1014;border:1px solid #2A333C;
+  border-radius:9px;padding:11px 12px;color:#E8EBEE;font:inherit;min-height:44px;margin-bottom:13px}
+#login input:focus,#login select:focus{outline:2px solid #185FA5;border-color:#185FA5}
+#login .go{width:100%;background:#185FA5;color:#fff;border:0;border-radius:9px;
+  padding:13px;font:inherit;font-weight:600;cursor:pointer;min-height:48px}
+#login .go:active{transform:scale(.99)}
+#login .note{font-size:11.5px;color:#6C757E;text-align:center;margin:14px 0 0;line-height:1.6}
+#login .langs{display:flex;gap:6px;justify-content:center;margin:16px 0 0}
+#login .langs button{background:transparent;border:1px solid #2A333C;color:#9BA5AF;
+  border-radius:99px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer;min-height:34px}
+#login .langs button.on{background:#185FA5;border-color:#185FA5;color:#fff}
+`;
+
+function loginPaint(){
+  var el = document.getElementById('login');
+  if (!el) return;
+  el.innerHTML =
+      '<canvas id="loginCv" aria-hidden="true"></canvas><div class="veil"></div>'
+    + '<div class="box">'
+    +   '<div class="lg"><div class="lgm">AFAQY</div><div>'
+    +     '<h1>'+esc(t('قارئات نُسُك'))+'</h1>'
+    +     '<div class="sub">'+esc(t('نظام متابعة تركيب قارئات الحجاج'))+'</div></div></div>'
+    +   '<p class="cnt" id="lgCount">'+nm(0)+' / '+nm(DATA.total)+' '+esc(t('نقطة'))+' · '+esc(t('المشاعر المقدسة'))+'</p>'
+    +   '<label for="lgU">'+esc(t('اسم المستخدم'))+'</label>'
+    +   '<input id="lgU" dir="ltr" autocomplete="username" placeholder="m.safwat">'
+    +   '<label for="lgP">'+esc(t('كلمة المرور'))+'</label>'
+    +   '<input id="lgP" type="password" dir="ltr" autocomplete="current-password" placeholder="••••••••">'
+    +   '<button type="button" class="go" id="lgGo">'+esc(t('دخول'))+'</button>'
+    +   '<div class="langs" id="lgLangs">'
+    +     ['ar','en','ur'].map(function(l){
+            return '<button type="button" data-l="'+l+'" class="'+(LANG===l?'on':'')+'">'+I18N[l].name+'</button>';
+          }).join('')
+    +   '</div>'
+    +   '<p class="note">'+esc(t('لا تسجيل ذاتي — الحسابات تُنشأ من المكتب'))+'</p>'
+    + '</div>';
+
+  document.getElementById('lgGo').onclick = function(){ enterApp(); };
+  document.getElementById('lgP').onkeydown = function(e){ if (e.key === 'Enter') enterApp(); };
+  document.getElementById('lgLangs').onclick = function(e){
+    var b = e.target.closest('[data-l]');
+    if (b){ setLang(b.getAttribute('data-l')); }
+  };
+  loginBg();
+}
+
+function loginBg(){
+  var cv = document.getElementById('loginCv');
+  if (!cv) return;
+  var ctx = null;
+  try{ ctx = cv.getContext('2d'); }catch(e){}
+  if (!ctx) { cv.style.display = 'none'; return; }   /* زينة تُهمَل لا تُسقط الصفحة */
+  var raf = 0, pts = [], lit = 0;
+  var slow = false;
+  try{ slow = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+
+  function build(){
+    var w = cv.width = cv.offsetWidth * (window.devicePixelRatio || 1);
+    var h = cv.height = cv.offsetHeight * (window.devicePixelRatio || 1);
+    pts = [];
+    var cols = Math.max(24, Math.round(w / 26));
+    var rows = Math.ceil(DATA.total / cols);
+    var gx = w / (cols + 1), gy = Math.min(gx, h / (rows + 1));
+    var oy = (h - gy * (rows - 1)) / 2;
+    for (var i = 0; i < DATA.total; i++){
+      var c = i % cols, r = Math.floor(i / cols);
+      pts.push({
+        x: gx * (c + 1) + (Math.sin(i * 12.9898) * gx * 0.18),
+        y: oy + gy * r + (Math.cos(i * 78.233) * gy * 0.18),
+        d: (i / DATA.total) + Math.abs(Math.sin(i * 4.1)) * 0.12
+      });
+    }
+  }
+
+  function draw(prog){
+    var w = cv.width, h = cv.height, dpr = window.devicePixelRatio || 1;
+    ctx.clearRect(0, 0, w, h);
+    var n = 0;
+    for (var i = 0; i < pts.length; i++){
+      var p = pts[i], on = p.d <= prog;
+      if (on) n++;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, (on ? 1.9 : 1.05) * dpr, 0, 6.2832);
+      ctx.fillStyle = on ? 'rgba(55,138,221,.9)' : 'rgba(90,102,115,.24)';
+      ctx.fill();
+      if (on && i % 17 === 0){
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5.5 * dpr, 0, 6.2832);
+        ctx.fillStyle = 'rgba(55,138,221,.10)';
+        ctx.fill();
+      }
+    }
+    var c = document.getElementById('lgCount');
+    if (c) c.innerHTML = nm(n) + ' / ' + nm(DATA.total) + ' ' + esc(t('نقطة')) + ' · ' + esc(t('المشاعر المقدسة'));
+  }
+
+  build();
+  if (slow){ draw(1); return; }
+
+  function tick(){
+    lit += 0.0055;
+    if (lit > 1.12) lit = 0;
+    draw(Math.min(1, lit));
+    raf = requestAnimationFrame(tick);
+  }
+  tick();
+
+  window.addEventListener('resize', function(){ build(); }, { passive:true });
+  cv.__stop = function(){ cancelAnimationFrame(raf); };
+}
+
+/* ═══ الميدان — الخريطة أولًا ═══ */
+
+var FIELD_MODE = 'survey';
+var EXP_OPEN = false;
+var CO_OPEN = false;
+var CO_SEL = [];
+var CO_LIST = ['شركة الراجحي','ضيوف البيت','حجاج الداخل','مطوّفي جنوب آسيا',
+               'مطوّفي جنوب شرق آسيا','مطوّفي الدول العربية','مطوّفي أفريقيا غير العربية',
+               'مطوّفي أوروبا وأمريكا وأستراليا','مطوّفي تركيا ومسلمي أوروبا','الأدلاء الموحّدة'];
+
+/* الزاوية الذهبية توزّع الأطياف فلا يتجاور لونان متشابهان مهما كثرت الشركات */
+function coColor(name){
+  var h = 0;
+  for (var i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) % 997;
+  var idx = CO_LIST.indexOf(name);
+  var seed = idx > -1 ? idx : h;
+  return 'hsl(' + Math.round((seed * 137.508) % 360) + ',62%,58%)';
+}
+
+function coFiltHtml(){
+  return '<div class="pop" id="coFilt" style="width:min(340px,88vw);max-height:76vh;overflow:auto">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+    +   '<h3 style="color:var(--ink)">'+esc(t('اختر الشركات'))+'</h3>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-co="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
+    + '</div>'
+    + '<input type="search" id="coQ" placeholder="'+esc(t('ابحث باسم الشركة'))+'" '
+    +   'spellcheck="false" style="margin:11px 0">'
+    + '<div id="coL">' + CO_LIST.map(function(c){
+        var on = CO_SEL.indexOf(c) > -1;
+        return '<label class="coRow" data-c="'+esc(c)+'" style="display:flex;gap:9px;align-items:center;'
+          + 'padding:8px 2px;border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer">'
+          + '<input type="checkbox" class="coCk"'+(on?' checked':'')+' style="width:18px;min-height:18px;flex:0 0 auto">'
+          + '<i style="width:11px;height:11px;border-radius:50%;background:'+coColor(c)+';flex:0 0 auto"></i>'
+          + '<span style="min-width:0">'+esc(c)+'</span></label>';
+      }).join('') + '</div>'
+    + '<div class="actions" style="margin-top:12px">'
+    +   btn('عرض','btn-primary btn-sm',' data-cogo="1"')
+    +   btn('مسح التحديد','btn-secondary btn-sm',' data-cogo="0"')
+    + '</div>'
+    + '<p class="hint" style="font-size:11.5px">'
+    +   esc(t('١٦٢ شركة — لكل واحدة لونٌ ثابت بالزاوية الذهبية فلا يتجاور لونان متشابهان.'))
+    + '</p></div>';
+}
+var MAP_SEL = {};
+
+function fieldMap(){
+  return '<div class="mapwrap">'
+    + '<canvas class="mapcanvas" id="mapCv" aria-label="'+esc(t('الخريطة'))+'"></canvas>'
+    + '<div class="map-top">'
+    +   '<button type="button" class="map-chip '+(FIELD_MODE==='survey'?'on':'')+'" data-mode="survey">'+esc(t('المسح'))+'</button>'
+    +   '<button type="button" class="map-chip '+(FIELD_MODE==='install'?'on':'')+'" data-mode="install">'+esc(t('التركيب'))+'</button>'
+    +   '<button type="button" class="map-chip" data-sat>'+esc(t('قمر صناعي'))+'</button>'
+    +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
+    +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' · '+nm(CO_SEL.length):'')+'</button>'
+    + '</div>'
+    + '<div class="map-legend">'
+    +   (CO_SEL.length
+        ? CO_SEL.map(function(c,i){
+            return '<div class="lg-row"><i class="lg-dot" style="background:'+coColor(c)+'"></i>'+esc(c)+'</div>';
+          }).join('')
+        : FIELD_MODE === 'survey'
+        ? '<div class="lg-row"><i class="lg-dot" style="background:#E8C34B"></i>'+esc(t('لم يُزر'))+'</div>'
+        + '<div class="lg-row"><i class="lg-dot" style="background:#4BC9F5"></i>'+esc(t('تمت الزيارة'))+'</div>'
+        : '<div class="lg-row"><i class="lg-dot" style="background:#9FB0AA"></i>'+esc(t('لم يبدأ'))+'</div>'
+        + '<div class="lg-row"><i class="lg-dot" style="background:#FF8C42"></i>'+esc(t('مجدول'))+'</div>'
+        + '<div class="lg-row"><i class="lg-dot" style="background:#3AD6A0"></i>'+esc(t('مُركّب'))+'</div>'
+        + '<div class="lg-row"><i class="lg-dot" style="background:#E05252"></i>'+esc(t('متعذّر'))+'</div>')
+    + '</div>'
+    + (CO_OPEN ? coFiltHtml() : '')
+    + '<div class="map-fab">'
+    +   '<span style="background:rgba(232,195,75,.14);border:1px solid rgba(232,195,75,.4);'
+    +   'color:#E8C34B;border-radius:8px;padding:6px 11px;font-size:11.5px;max-width:190px;'
+    +   'line-height:1.5;text-align:center">'+esc(t('رسم تمثيلي — الخريطة العاملة Leaflet تُنقل كما هي'))+'</span>'
+    +   btn('＋ '+t('موقع غير مسجّل'),'btn-primary btn-sm')
+    +   btn('◎ '+t('موقعي'),'btn-secondary btn-sm')
+    + '</div></div>';
+}
+
+function mapDraw(){
+  var cv = document.getElementById('mapCv');
+  if (!cv) return;
+  var ctx = null;
+  try{ ctx = cv.getContext('2d'); }catch(e){}
+  if (!ctx) return;                                  /* الخريطة تبقى بشرائحها وأسطورتها */
+  var dpr = window.devicePixelRatio || 1;
+  var w = cv.width = cv.offsetWidth * dpr, h = cv.height = cv.offsetHeight * dpr;
+  ctx.fillStyle = '#0A0D10'; ctx.fillRect(0,0,w,h);
+
+  ctx.strokeStyle = 'rgba(120,132,146,.07)'; ctx.lineWidth = 1;
+  for (var g = 0; g < w; g += 46 * dpr){ ctx.beginPath(); ctx.moveTo(g,0); ctx.lineTo(g,h); ctx.stroke(); }
+  for (var g2 = 0; g2 < h; g2 += 46 * dpr){ ctx.beginPath(); ctx.moveTo(0,g2); ctx.lineTo(w,g2); ctx.stroke(); }
+
+  var col = FIELD_MODE === 'survey' ? '#E8C34B' : '#9FB0AA';
+  var clusters = [
+    {cx:.30, cy:.34, n:713, r:.15},
+    {cx:.66, cy:.44, n:679, r:.14},
+    {cx:.72, cy:.70, n:190, r:.09},
+    {cx:.44, cy:.78, n:108, r:.07},
+    {cx:.22, cy:.62, n:97,  r:.06}
+  ];
+  var seed = 1;
+  function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+
+  clusters.forEach(function(c){
+    var shown = Math.min(c.n, 260);
+    for (var i = 0; i < shown; i++){
+      var a = rnd() * 6.2832, d = Math.sqrt(rnd()) * c.r;
+      var x = (c.cx + Math.cos(a) * d) * w;
+      var y = (c.cy + Math.sin(a) * d * 1.25) * h;
+      ctx.beginPath();
+      ctx.arc(x, y, 2.4 * dpr, 0, 6.2832);
+      ctx.fillStyle = col;
+      ctx.globalAlpha = .82;
+      ctx.fill();
+    }
+  });
+  ctx.globalAlpha = 1;
+
+  ctx.font = (13 * dpr) + 'px system-ui';
+  ctx.fillStyle = 'rgba(232,235,238,.6)';
+  ctx.textAlign = 'center';
+  [['عرفات',.30,.16],['منى',.66,.26],['قطار المشاعر',.44,.88]].forEach(function(L){
+    ctx.fillText(t(L[0]), L[1] * w, L[2] * h);
+  });
+}
+
+function fieldList(){
+  return cardFlush('المواقع',
+    '<div class="list">' + DATA.sites.map(function(s){
+      return '<div class="list-item"><div class="li-main">'
+        + '<div class="li-t">'+esc(s[1])+'</div>'
+        + '<div class="li-s"><span class="num">'+esc(s[0])+'</span> · '+esc(t(s[2]))+' · '+esc(t(s[3]))+'</div>'
+        + '</div><div class="li-end">'+pill(s[5],'warn')+'</div></div>';
+    }).join('') + '</div>',
+    '<form class="inline-form" onsubmit="return false">'
+    + '<input type="search" placeholder="'+esc(t('بحث'))+'" dir="auto">'
+    + btn('بحث','btn-secondary btn-sm') + '</form>');
+}
+
+function fieldRecords(){
+  return card('السجلات',
+    '<div class="timeline">' + DATA.events.map(function(e){
+      return '<div class="tl-item"><div class="tl-t">'+esc(e[1])+'</div>'
+        + '<div class="tl-s"><span class="num">'+esc(e[0])+'</span> · '+esc(e[2])+'</div></div>';
+    }).join('') + '</div>');
+}
+
+function fieldTools(){
+  return stats([['المواقع', N(DATA.total)], ['المسح','٠','acc'], ['التركيب','٠','ok'], ['غير مزامن','٠']])
+    + card('التصديرات',
+        '<div class="actions">'
+        + btn('⬇ إكسل — المواقع','btn-secondary')
+        + btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary')
+        + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary')
+        + btn('🌍 KMZ — بلون الشركة','btn-secondary')
+        + btn('⬇ PDF — تقرير اليوم','btn-secondary')
+        + '</div>')
+    + card('المزامنة',
+        '<div class="actions">' + btn('مزامنة الآن','btn-primary')
+        + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">٠٢:٥١</span></span></div>');
+}
+
+/* ═══ موديولات اللوحة — كل قسم بمحتواه ═══ */
+
+var PAGE = {};
+
+/* ── لوحة القيادة ───────────────────────────────── */
+PAGE.over = { m:'المتابعة', t:'نظرة عامة', l:'الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.',
+  body:function(){
+    return stats([['إجمالي المواقع', N(DATA.total)], ['تم المسح','٠','acc'],
+                  ['مُركّب','٠','ok'], ['لم يُزر', N(DATA.total)]])
+      + card('تقدّم المشروع', meter('تقدّم المسح من إجمالي المواقع',0,DATA.total)
+                            + meter('نسبة التركيب من إجمالي المشروع',0,DATA.total))
+      + card('التوزيع حسب المشعر والنوع',
+          table(['المشعر','النوع','العدد','مُسح','مُركّب'],
+            DATA.byZone.map(function(r){ return [esc(t(r[0])), esc(t(r[1])), N(r[2]), '٠', '٠']; }),
+            ['الإجمالي','', N(DATA.total), '٠', '٠']));
+  }};
+
+PAGE.pace = { m:'المتابعة', t:'الوتيرة والهدف', l:'المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.',
+  body:function(){
+    return alertBox('warn','لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.')
+      + stats([['المتبقي', N(DATA.total)], ['المطلوب يوميًّا','—'], ['المنجز أمس','٠'], ['الانتهاء المتوقع','—']]);
+  }};
+
+PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما جُدول وما نُفّذ وما تعذّر — بحالته وفريقه.',
+  body:function(){
+    return stats([['لم يبدأ', N(DATA.total)], ['مجدول','٠','wrn'], ['مُركّب','٠','ok'], ['متعذّر','٠','bad']])
+      + card('دورة التركيب', flow(['لم يبدأ','مجدول','قيد التركيب','مُركّب'],0)
+        + '<p class="hint">النقطة لا تدخل الجدولة إلا بعد مسحها، ولا تُوسم مُركّبةً إلا باعتماد قطعها.</p>');
+  }};
+
+PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'آخر أربعة عشر يومًا — مسحًا وتركيبًا.',
+  body:function(){
+    var rows = ['٢٧','٢٦','٢٥','٢٤','٢٣'].map(function(d){
+      return ['<span class="num">٢٠٢٦-٠٨-'+d+'</span>','٠','٠','٠'];
+    });
+    return card('المعدل اليومي', table(['التاريخ','مسح','تركيب','الإجمالي'], rows));
+  }};
+
+PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'التوزيع الكامل بالنسب.',
+  body:function(){
+    return card('التوزيع', table(['المشعر','النوع','العدد','النسبة'],
+      DATA.byZone.map(function(r){
+        return [esc(t(r[0])), esc(t(r[1])), N(r[2]), nm(Math.round(r[2]/DATA.total*100))+'٪'];
+      }), ['الإجمالي','', N(DATA.total), '١٠٠٪']));
+  }};
+
+PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأقل إنجازًا أولًا — لتوجيه التنسيق.',
+  body:function(){
+    return card('الشركات', table(['الشركة','مواقعها','مُسح','مُركّب','٪'], [
+      ['شركة الراجحي','<span class="num">١٤٢</span>','٠','٠', pct(0,142)],
+      ['ضيوف البيت','<span class="num">١١٨</span>','٠','٠', pct(0,118)],
+      ['حجاج الداخل','<span class="num">٩٧</span>','٠','٠', pct(0,97)]
+    ])) + '<p class="hint">القائمة الكاملة ١٦٢ شركة — تُصدَّر إكسل من زر التصدير.</p>';
+  }};
+
+PAGE.chalm = { m:'المتابعة', t:'التحديات', l:'أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.',
+  body:function(){ return card('التحديات المفتوحة',
+    '<p class="hint">لا تحديات مفتوحة — تظهر هنا فور رفع المشرف إفادةً من الميدان.</p>'); }};
+
+PAGE.dis = { m:'المتابعة', t:'الفك بعد الموسم', l:'جدولة الفك وإرجاع العُهدة بحالة كل صنف.',
+  body:function(){
+    return stats([['مُركّب قابل للفك','٠'], ['فك مجدول','٠','wrn'], ['تم الفك','٠','ok'], ['عُهدة مرتجعة','٠']])
+      + card('دورة الفك', flow(['مُركّب','فك مجدول','تم الفك','أُرجعت العُهدة'],0)
+        + '<p class="hint">عند «تم الفك» تُفتح نافذة إرجاع العُهدة مبنيةً على قطع النقطة المعتمدة: السليم يعود متاحًا والتالف يُعزل.</p>');
+  }};
+
+/* ── التخطيط ────────────────────────────────────── */
+PAGE.setup = { m:'التخطيط', t:'المواعيد والأزمنة', l:'الموعد المستهدف وزمن التركيب لكل نوع.',
+  body:function(){
+    return card('المواعيد المستهدفة',
+      '<div class="grid cols-2">'
+      + '<div class="field"><label>'+esc(t('موعد انتهاء المسح'))+'</label><input type="date" value="2026-10-15"></div>'
+      + '<div class="field"><label>'+esc(t('موعد انتهاء التركيب'))+'</label><input type="date" value="2026-12-20"></div>'
+      + '</div>', btn('حفظ','btn-primary btn-sm'))
+    + card('أزمنة التركيب', table(['النوع','الزمن التقديري','عدد النقاط','الإجمالي'], [
+        ['مخيم','<span class="num">٤٥</span> د','<span class="num">١٬٣٩٢</span>','<span class="num">١٬٠٤٤</span> س'],
+        ['ممر','<span class="num">٩٠</span> د','<span class="num">١٩٠</span>','<span class="num">٢٨٥</span> س']
+      ]));
+  }};
+
+PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح ← جدولة ← تركيب — وأي تعارض بينها.',
+  body:function(){
+    return stats([['جاهز للجدولة', N(DATA.total), 'ok'], ['جُدول بلا مسح','٠','wrn'],
+                  ['رُكّب بلا اعتماد','٠','bad'], ['تعارضات','٠']])
+      + card('التسلسل السليم', flow(['مسح','اعتماد','جدولة','تركيب','تدقيق'],0));
+  }};
+
+/* ── الطلبات والمسح ──────────────────────────────── */
+PAGE.req = { m:'الطلبات والمسح', t:'طلبات الزيارة', l:'إسناد زيارات المسح للفنيين واعتمادها.',
+  body:function(){
+    return stats([['مطلوب','٠'], ['قيد التنفيذ','٠','wrn'], ['منفّذ','٠','acc'], ['معتمد','٠','ok']])
+      + card('دورة الطلب', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'],0)
+        + '<p class="hint">والإعادة ترجعه للمنفِّذ بحالة «مُعاد» مع سبب.</p>',
+        btn('إنشاء طلب','btn-primary btn-sm'))
+      + card('الطلبات', '<p class="hint">لا طلبات بعد — أنشئ أول طلب بتحديد نقاط من الخريطة.</p>');
+  }};
+
+PAGE.assign = { m:'الطلبات والمسح', t:'توزيع الفرق', l:'مربع لكل فريق — والتغطية تُحسب تلقائيًّا.',
+  body:function(){
+    return card('التوزيع', table(['المربع','المشعر','النقاط','الفريق'], [
+      ['<span class="num">٧-١٥</span>','عرفات','<span class="num">٤٢</span>','<select><option>—</option><option>فريق ١</option><option>فريق ٢</option></select>'],
+      ['<span class="num">٢٢</span>','منى','<span class="num">٣٨</span>','<select><option>—</option><option>فريق ١</option><option>فريق ٢</option></select>']
+    ]));
+  }};
+
+PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني', l:'ما مُسح ومن مسحه ومتى.',
+  body:function(){
+    return stats([['مُسح','٠','acc'], ['لم يُزر', N(DATA.total)], ['اليوم','٠'], ['هذا الأسبوع','٠']])
+      + card('آخر عمليات المسح','<p class="hint">لا عمليات بعد.</p>');
+  }};
+
+PAGE.chal = { m:'الطلبات والمسح', t:'التحديات الميدانية', l:'إفادة المشرفين من الموقع.',
+  body:function(){ return card('الإفادات','<p class="hint">لا إفادات بعد.</p>'); }};
+
+PAGE.stuck = { m:'الطلبات والمسح', t:'المتعذّر والراكد', l:'بالعمر — أقدمها أولًا.',
+  body:function(){
+    return stats([['متعذّر','٠','bad'], ['راكد > ٧ أيام','٠','wrn'], ['راكد > ١٤ يوم','٠','bad'], ['أقدم عنصر','—']])
+      + card('القائمة','<p class="hint">لا عناصر راكدة.</p>');
+  }};
+
+PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي', l:'اعتماد التركيبات والسيريالات قبل الإقفال.',
+  body:function(){
+    return card('بانتظار التدقيق','<p class="hint">لا تركيبات بانتظار التدقيق.</p>')
+      + card('قاعدة الاعتماد', flow(['تركيب مُبلَّغ','مراجعة الصور','مطابقة السيريال','معتمد'],0));
+  }};
+
+/* ── الورشة والمخزون ─────────────────────────────── */
+PAGE.wos = { m:'الورشة والمخزون', t:'طلبات المستودع', l:'التهيئة والتجميع والتركيب — طلباتها وحالاتها.',
+  body:function(){
+    var Tg = T();
+    return stats([['تهيئة قيد التنفيذ','٠'], ['تجميع قيد التنفيذ','٠'],
+                  ['تركيب قيد التنفيذ','٠'], ['نقاط منفَّذة','٠','ok']])
+      + card('الورشة مقابل التارجت',
+          table(['المرحلة','النوع','نقاط الشهر','تارجت الشهر','٪','تارجت الأسبوع'], [
+            ['تهيئة','مخيمات','٠', N(Tg.prepCamp), pct(0,Tg.prepCamp), N(cfgWk(Tg.prepCamp))],
+            ['تهيئة','ممرات','٠', N(Tg.prepCor),  pct(0,Tg.prepCor),  N(cfgWk(Tg.prepCor))],
+            ['تجميع','مخيمات','٠', N(Tg.asmCamp), pct(0,Tg.asmCamp), N(cfgWk(Tg.asmCamp))],
+            ['تجميع','ممرات','٠', N(Tg.asmCor),  pct(0,Tg.asmCor),  N(cfgWk(Tg.asmCor))]
+          ], ['الإجمالي','','٠', N(Tg.prep+Tg.asm), '٠٪',
+              N(cfgWk(Tg.prep+Tg.asm))]),
+          btn('طلب تهيئة','btn-primary btn-sm'))
+      + card('دورة الورشة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'],0)
+        + '<p class="hint">تهيئة المخيم ٢٣ نقطة والممر ٢١ — والتارجتات محسوبة على أربعة أشهر من ١٬٣٩٢ مخيمًا و١٩٠ ممرًّا.</p>');
+  }};
+
+PAGE.wday = { m:'الورشة والمخزون', t:'نقاط اليوم', l:'لكل منفِّذ عبر المراحل الأربع.',
+  body:function(){
+    return card('اليوم', table(['المنفِّذ','تهيئة','تجميع','تركيب','الإجمالي'], [
+      ['أحمد','٠','٠','٠','٠'], ['فريق ٣','٠','٠','٠','٠']
+    ], ['الإجمالي','٠','٠','٠','٠']));
+  }};
+
+PAGE.invb = { m:'الورشة والمخزون', t:'أرصدة المخزون', l:'المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.',
+  body:function(){
+    var st=0,cu=0,us=0,sc=0;
+    DATA.stock.forEach(function(r){ st+=r[1]; cu+=r[2]; us+=r[3]; sc+=r[4]; });
+    return stats([['في المخزن', N(st), 'ok'], ['في العُهدة', N(cu), 'acc'],
+                  ['رُكّب في الميدان', N(us)], ['تالف معزول', N(sc), 'bad']])
+      + card('الأرصدة حسب الصنف',
+          table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'],
+            DATA.stock.map(function(r){
+              return [esc(r[0]), N(r[1]), N(r[2]), N(r[3]),
+                      r[4] ? '<span class="pill off">'+nm(r[4])+'</span>' : N(0),
+                      N(r[1]+r[2]+r[3]+r[4])];
+            })),
+          '<div class="actions">' + btn('توريد','btn-secondary btn-sm')
+          + btn('صرف لمنفِّذ','btn-secondary btn-sm') + btn('شطب تالف','btn-danger btn-sm') + '</div>')
+      + '<p class="hint">المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم · والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.</p>';
+  }};
+
+PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'إلحاقيٌّ لا يُعدَّل — كل تصحيح حركةٌ جديدة تُوازنه.',
+  body:function(){
+    return cardFlush('الحركات',
+      table(['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','الحالة'],
+        DATA.moves.map(function(m){
+          var k = {'توريد':'ok','صرف':'acc','استهلاك':'warn','إرجاع':'info','شطب':'off'}[m[1]] || '';
+          return ['<span class="num">'+esc(m[0])+'</span>', pill(m[1],k), esc(m[2]), N(m[3]),
+                  esc(m[4]), '<span class="num">'+esc(m[5])+'</span>',
+                  m[6]==='تالف' ? pill('تالف','off') : esc(m[6])];
+        })),
+      '<form class="inline-form" onsubmit="return false"><input type="search" placeholder="'+esc(t('بحث'))+'" dir="auto">'+btn('بحث','btn-secondary btn-sm')+'</form>');
+  }};
+
+PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة', l:'ما في يد كل منفِّذ الآن.',
+  body:function(){
+    return card('العُهدة حسب المنفِّذ', table(['المنفِّذ','أصناف','قطع','التفصيل'], [
+      ['فريق ١','<span class="num">٤</span>','<span class="num">٢٦</span>',
+       '<span class="hint" style="margin:0">راوتر ×٣ · قارئ ×٣ · كابل ×١٦ · بوكس ×٤</span>']
+    ]));
+  }};
+
+/* ── المال ──────────────────────────────────────── */
+PAGE.buys = { m:'المال', t:'دفتر المشتريات', l:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
+  body:function(){
+    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
+    return stats([['إجمالي المنصرف', N(B.spent)], ['الميزانية', N(B.cap), 'acc'],
+                  ['المتبقي', N(B.cap-B.spent), 'ok'], ['بانتظار الاعتماد', N(B.pending)]])
+      + card('المنصرف من الميزانية', meter('المستهلك من السقف المعتمد', B.spent, B.cap))
+      + cardFlush('العمليات',
+          table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
+            DATA.buys.map(function(b){
+              return ['<span class="num">'+esc(b[0])+'</span>', esc(b[1]), esc(b[2]), esc(t(b[3])),
+                      N(b[4]), esc(b[5]), pill(b[6],'ok')];
+            }), ['','','','الإجمالي', N(B.spent), '','']),
+          btn('تسجيل عملية','btn-primary btn-sm'))
+      + card('المصروف حسب المشعر', table(['المشعر','عمليات','الإجمالي','النسبة'], [
+          ['عرفات','١', N(8500), '٩١٪'], ['منى','١', N(800), '٩٪']
+        ]));
+  }};
+
+PAGE.budget = { m:'المال', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
+  body:function(){
+    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
+    return card('الضبط',
+      '<div class="grid cols-2">'
+      + '<div class="field"><label>'+esc(t('الميزانية المعتمدة'))+'</label><input type="number" value="'+B.cap+'"></div>'
+      + '<div class="field"><label>'+esc(t('حدّ الاعتماد للعملية'))+'</label><input type="number" value="'+B.appAbove+'"></div>'
+      + '</div>', btn('حفظ','btn-primary btn-sm'))
+    + '<p class="hint">ما تجاوز حدَّ الاعتماد من غير المهندس يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف حتى يعتمده. وتغييرُ السقف لا يمسّ عمليةً مسجّلة.</p>';
+  }};
+
+/* ── الفنيون ────────────────────────────────────── */
+PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل وأين وبأي رصيد.',
+  body:function(){
+    return card('الفنيون', table(['الفني','المشعر','نقاط الشهر','الحالة'],
+      DATA.techs.map(function(x){
+        return [esc(x[0]), 'منى / عرفات', N(x[1]+x[2]+x[3]), pill('نشط','ok')];
+      })), btn('إضافة فني','btn-primary btn-sm'));
+  }};
+
+PAGE.techx = { m:'الفنيون', t:'مقابل التارجت', l:'نقاط الشهر في كل مرحلة مقابل تارجتها المستقل.',
+  body:function(){
+    var Tg = T(), ti = Tg.ins;
+    return card('الشهر الجاري',
+      table(['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي'],
+        DATA.techs.map(function(x){
+          return [esc(x[0]), N(x[1]), pct(x[1],Tg.survey), N(x[2]), pct(x[2],ti),
+                  N(x[3]), pct(x[3],Tg.dis), N(x[1]+x[2]+x[3])];
+        })))
+    + '<p class="hint">أخضر من ١٠٠٪ · أصفر من ٧٠٪ · أحمر دونها. والتارجتات الثلاثة تُضبط كلٌّ في صفحته.</p>';
+  }};
+
+PAGE.team = { m:'الفنيون', t:'إنتاجية الفريق', l:'الترتيب بالنقاط — مسحًا وتركيبًا.',
+  body:function(){
+    return card('الترتيب', table(['#','الفريق','مسح','تركيب','الإجمالي'],
+      DATA.techs.slice().sort(function(a,b){ return (b[1]+b[2]) - (a[1]+a[2]); })
+        .map(function(x,i){ return [nm(i+1), esc(x[0]), N(x[1]), N(x[2]), N(x[1]+x[2]) ]; })));
+  }};
+
+PAGE.conote = { m:'الفنيون', t:'إشعار الشركات', l:'رسالة جاهزة لكل شركة بموعد تركيبها.',
+  body:function(){
+    return card('الإشعار',
+      '<div class="field"><label>'+esc(t('الشركة'))+'</label><select><option>شركة الراجحي</option><option>ضيوف البيت</option></select></div>'
+      + '<div class="field"><label>'+esc(t('الموعد'))+'</label><input type="date"></div>'
+      + '<div class="actions">' + btn('إرسال واتساب','btn-primary') + btn('نسخ النص','btn-secondary') + '</div>');
+  }};
+
+/* ── صحة الأجهزة ────────────────────────────────── */
+PAGE.hb = { m:'صحة الأجهزة', t:'صحة الأجهزة', l:'الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.',
+  body:function(){
+    return alertBox('error','لم تصل أي نبضة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.')
+      + stats([['متصل','٠','ok'], ['غير متصل','٠','bad'],
+               ['فاصل ≥١٠ دقائق','٠','wrn'], ['متذبذب اليوم','٠']])
+      + card('اصطلاح العناوين', table(['الجهاز','آخر خانة','مثال'], [
+          ['راوتر','<span class="num">.1</span>','<span class="num">10.20.30.1</span>'],
+          ['قارئ','<span class="num">.2</span>','<span class="num">10.20.30.2</span>'],
+          ['كاميرا','<span class="num">.3</span>','<span class="num">10.20.30.3</span>']
+        ]));
+  }};
+
+/* ── النظام ─────────────────────────────────────── */
+PAGE.ev = { m:'النظام', t:'سجل الأحداث', l:'كل تغيير بمن أجراه ومتى.',
+  body:function(){
+    return cardFlush('الأحداث',
+      table(['الوقت','الحدث','المستخدم'],
+        DATA.events.map(function(e){
+          return ['<span class="num">'+esc(e[0])+'</span>', esc(e[1]), esc(e[2])];
+        })));
+  }};
+
+PAGE.sys = { m:'النظام', t:'سلامة البيانات', l:'فحوص تكشف التناقض قبل أن يصير رقمًا في تقرير.',
+  body:function(){
+    return card('الفحوص', table(['الفحص','النتيجة'], [
+      ['نقاط مُركّبة بلا قطع معتمدة', pill('٠','ok')],
+      ['نقاط مجدولة بلا مسح', pill('٠','ok')],
+      ['أصناف برصيد سالب', pill('٠','ok')],
+      ['مشتريات بلا مورّد', pill('٠','ok')]
+    ]));
+  }};
+
+PAGE.vers = { m:'النظام', t:'نسخ الأجهزة', l:'نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.',
+  body:function(){
+    return card('الأجهزة الظاهرة', table(['المستخدم','النسخة','الدور','آخر ظهور'], [
+      ['محمد صفوت', pill('V14.0','ok'), 'مهندس','<span class="num">٠٢:٥١</span>'],
+      ['مشرف منى', pill('V13.84','off'), 'مشرف','أمس']
+    ]))
+    + alertBox('error','جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.');
+  }};
+
+/* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
+   الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
+
+var POP_OPEN = false;
+
+function popHtml(){
+  var s = DATA.sites[1];
+  return '<div class="pop" id="pkPop">'
+    + '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    +   '<div style="min-width:0"><h3>'+esc(s[1])+'</h3>'
+    +   '<div class="pid">'+esc(s[0])+'</div></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
+    + '</div>'
+    + '<div class="pop-rows">'
+    +   '<div><span class="k">'+esc(t('المشعر'))+'</span><span>'+esc(t(s[2]))+'</span></div>'
+    +   '<div><span class="k">'+esc(t('النوع'))+'</span><span>'+esc(t(s[3]))+'</span></div>'
+    +   '<div><span class="k">'+esc(t('الشاخص'))+'</span><span class="num">١-٣-٥/٥٠٦</span></div>'
+    +   '<div><span class="k">'+esc(t('المربع'))+'</span><span class="num">٧-١٥</span></div>'
+    +   '<div><span class="k">'+esc(t('الشركة'))+'</span><span>'+esc(s[4])+'</span></div>'
+    +   '<div><span class="k">'+esc(t('حالة المسح'))+'</span>'+pill('لم يُزر','warn')+'</div>'
+    +   '<div><span class="k">'+esc(t('حالة التركيب'))+'</span>'+pill('لم يبدأ','')+'</div>'
+    +   '<div><span class="k">'+esc(t('الفريق المسند'))+'</span><span>—</span></div>'
+    +   '<div><span class="k">'+esc(t('الإحداثيات'))+'</span><span class="num">21.3891, 39.8579</span></div>'
+    + '</div>'
+    + '<div class="pop-btns">'
+    +   '<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" '
+    +   'href="https://www.google.com/maps/dir/?api=1&destination=21.3891,39.8579">'
+    +   '↗ '+esc(t('اتجاهات'))+'</a>'
+    +   btn('✎ '+t('تعديل البيانات'),'btn-secondary btn-sm')
+    +   btn('⇱ '+t('تحريك النقطة'),'btn-secondary btn-sm')
+    +   btn('🗓 '+t('جدولة تركيب'),'btn-secondary btn-sm')
+    +   btn('✔ '+t('تم التركيب'),'btn-secondary btn-sm')
+    +   btn('⚑ '+t('رفع تحدٍّ'),'btn-secondary btn-sm')
+    +   btn('☑ '+t('حدّد'),'btn-secondary btn-sm',' data-p="sel"')
+    + '</div>'
+    + '<p class="hint" style="font-size:11.5px">'
+    +   esc(t('الخريطة الحقيقية Leaflet بطبقتين: خريطة فاتحة وقمر صناعي — وهذه النافذة تفتح بالنقر على أي نقطة.'))
+    + '</p></div>';
+}
+
+/* ═══ مركز التصدير — قسمًا قسمًا كالقديم ═══ */
+
+var EXP_SECS = [
+  ['over','نظرة عامة',1], ['pace','الوتيرة والهدف',1],
+  ['chalm','التحديات — أين وما هي وما المطلوب',1], ['inst','التركيب والجدولة',1],
+  ['daily','معدل التركيب اليومي — آخر ١٤ يوم',1], ['reg','حسب المشعر ونوع النقطة',1],
+  ['co','حسب شركة الخدمة — الأقل إنجازًا أولًا',1],
+  ['setup','المواعيد المستهدفة وأزمنة التركيب',1],
+  ['pipe','سلامة خط الإنتاج — مسح ← جدولة ← تركيب',1],
+  ['assign','توزيع فرق التركيب',1], ['conote','إشعار الشركات بمواعيد التركيب',1],
+  ['stock','عُهدة الأجهزة — القارئات مع الفرق والمخزن',1],
+  ['survey','المسح الميداني',1], ['chal','التحديات الميدانية — إفادة المشرفين',1],
+  ['stuck','المتعذّر والمواقع الراكدة — بالعمر',1],
+  ['qa','التدقيق الهندسي — اعتماد التركيبات والسيريالات',1],
+  ['team','إنتاجية الفريق',1], ['race','سباق المشرفين',1],
+  ['sys','سلامة البيانات — المشرف العام',1], ['ev','سجل الأحداث',1],
+  ['invb','المخزون والعُهدة',1], ['invmv','دفتر حركة المخزون',1],
+  ['wos','الورشة — طلبات التهيئة والتجميع والتركيب',1],
+  ['wday','نقاط اليوم — لكل منفِّذ عبر المراحل',1],
+  ['buys','المشتريات — ما اشتُري من السوق المحلي',1],
+  ['techx','الفني مقابل تارجتاته الثلاثة',1],
+  ['hb','صحة الأجهزة — إنذار مبكر',1], ['dis','الفك بعد الموسم',1],
+  ['vers','نسخة التطبيق على الأجهزة',1]
+];
+
+function expHtml(){
+  return '<div class="pop" id="expPop" style="width:min(430px,92vw);max-height:82vh;overflow:auto">'
+    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    +   '<div><h3 style="color:var(--ink)">'+esc(t('تصدير تقرير اللوحة'))+'</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">'+esc(t('اختر الأقسام التي تريدها في التقرير'))+'</p></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-exp="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
+    + '</div>'
+    + '<div class="actions" style="margin:12px 0">'
+    +   btn('تحديد الكل','btn-secondary btn-sm',' data-expall="1"')
+    +   btn('إلغاء الكل','btn-secondary btn-sm',' data-expall="0"')
+    + '</div>'
+    + '<div id="expList" style="margin:0 0 14px">'
+    +   EXP_SECS.map(function(s){
+          return '<label style="display:flex;gap:9px;align-items:flex-start;padding:7px 2px;'
+            + 'border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer">'
+            + '<input type="checkbox" class="expCk" checked style="width:18px;min-height:18px;margin-top:2px;flex:0 0 auto">'
+            + '<span>'+esc(t(s[1]))+'</span></label>';
+        }).join('')
+    + '</div>'
+    + '<div class="grid cols-2" style="margin-bottom:12px">'
+    +   '<div class="field" style="margin:0"><label>'+esc(t('الصيغة'))+'</label>'
+    +   '<select id="expFmt"><option value="xlsx">'+esc(t('إكسل — ورقة لكل قسم'))+'</option>'
+    +   '<option value="pdf">'+esc(t('PDF — بالرسوم البيانية'))+'</option>'
+    +   '<option value="both">'+esc(t('الاثنان معًا'))+'</option></select></div>'
+    +   '<div class="field" style="margin:0"><label>'+esc(t('الرسوم البيانية'))+'</label>'
+    +   '<select><option>'+esc(t('مضمّنة'))+'</option><option>'+esc(t('بدونها'))+'</option></select></div>'
+    + '</div>'
+    + '<div class="actions">' + btn('تصدير','btn-primary') + btn('إلغاء','btn-secondary',' data-exp="0"') + '</div>'
+    + '<p class="hint" style="font-size:11.5px">'
+    +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.'))
+    + '</p></div>';
+}
+
+/* ═══ الاستيراد — قالب يُنزَّل ثم يُملأ ثم يُرفع ═══ */
+
+var IMPORTS = [
+  ['sites','المواقع', ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
+   'يحدّث بيانات موقع موجود بمعرّفه — ولا ينشئ مواقع جديدة.'],
+  ['ips','عناوين الأجهزة', ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
+   'البادئة تكفي: العناوين تُشتقّ منها باصطلاح ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا.'],
+  ['co','الشركات', ['اسم الشركة','مواقعها','المنسّق','الجوال'],
+   'الاسم الحر كان يصنع شركتين من واحدة باختلاف حرف.'],
+  ['items','القطع والأسعار', ['المنطقة','اسم القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر'],
+   'المنطقة إما «مخيم» أو «ممر» — وما عداهما يُرفض الصف.'],
+  ['stock','توريد المخزون', ['الصنف','الكمية','المورّد','التاريخ','رقم الفاتورة'],
+   'كل صف حركةُ توريدٍ تدخل الدفتر — ولا تُعدَّل بعدها بل تُوازَن بحركة.'],
+  ['buys','المشتريات', ['التاريخ','الصنف','الفئة','المشعر','الكمية','سعر الوحدة','المورّد'],
+   'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.']
+];
+
+function importCard(){
+  return card('استيراد من إكسل',
+    '<p class="hint" style="margin:0 0 14px">'
+    + esc(t('نزّل القالب، املأه، ثم ارفعه. القالب يحمل الأعمدة بأسمائها وصفًّا نموذجيًّا يُحتذى.'))
+    + '</p>'
+    + IMPORTS.map(function(im){
+        return '<div style="border:1px solid var(--line);border-radius:var(--radius-sm);'
+          + 'padding:12px 14px;margin-bottom:10px">'
+          + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'
+          +   '<strong style="font-size:14px">'+esc(t(im[1]))+'</strong>'
+          +   '<div class="actions">'
+          +     btn('⬇ '+t('نزّل القالب'),'btn-secondary btn-sm')
+          +     btn('⬆ '+t('ارفع الملف'),'btn-primary btn-sm')
+          +   '</div></div>'
+          + '<div class="hint" style="margin:8px 0 0;font-size:12px">'
+          +   '<span style="opacity:.75">'+esc(t('الأعمدة'))+':</span> '
+          +   im[2].map(function(c){ return esc(t(c)); }).join(' · ')
+          + '</div>'
+          + '<div class="hint" style="margin:5px 0 0;font-size:11.5px">'+esc(t(im[3]))+'</div>'
+          + '</div>';
+      }).join('')
+    + '<div class="alert info" style="margin:14px 0 0"><span>'
+    + esc(t('الرفع يعرض معاينةً قبل الحفظ: كم صفًّا سيُقبل وكم سيُرفض ولماذا — ولا يُكتب شيء قبل موافقتك.'))
+    + '</span></div>');
+}
+
+PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'ما يخرج من النظام وما يدخل إليه.',
+  body:function(){
+    return card('تصدير تقرير اللوحة',
+        '<p class="hint" style="margin:0 0 12px">'
+        + esc(t('تسعةٌ وعشرون قسمًا قابلة للاختيار — إكسل ورقةً لكل قسم، أو PDF صفحةً لكل قسم برسمها.'))
+        + '</p>'
+        + '<div class="actions">'
+        + btn('اختر الأقسام','btn-primary',' data-exp="1"')
+        + btn('⬇ إكسل — الكل','btn-secondary')
+        + btn('⬇ PDF — الكل','btn-secondary')
+        + '</div>')
+      + card('تصديرات جاهزة',
+          '<div class="actions">'
+          + btn('⬇ KMZ — ١٧٨٧ نقطة','btn-secondary')
+          + btn('⬇ إكسل — المواقع','btn-secondary')
+          + btn('⬇ إكسل — حركة المخزون','btn-secondary')
+          + btn('⬇ إكسل — أداء الفنيين','btn-secondary')
+          + btn('⬇ PDF — الملخص التنفيذي','btn-secondary')
+          + '</div>')
+      + importCard();
+  }};
+
+/* ═══ الأدوار — من يرى ماذا ويفعل ماذا ═══
+   الحجب بالبنية لا بالجافاسكربت وحده: بندٌ لا يُبنى أصلًا لمن لا يملكه. */
+
+var ROLES = {
+  engineer:{
+    n:'مهندس', d:'صلاحية كاملة — يدير الحسابات والاعتمادات',
+    guide:'دليل المهندس — إدارة المشروع',
+    nav:'*',   /* بما فيه بند «الإعدادات» الذي يفتح الشاشة الكاملة */
+    can:{ edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+          exportAll:1, importAll:1, delete:1, users:1, phones:1 }
+  },
+  supervisor:{
+    n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
+    guide:'دليل الفني والمشرف — العمل الميداني',
+    nav:['map','sites','sel','svForm','insForm','recs','tools','mine','mywork','myteam',
+         'moh','over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:1 }
+  },
+  viewer:{
+    n:'وزارة', d:'عرض نصي بلا فعل — والهواتف محجوبة حتى في القواعد',
+    guide:'دليل الوزارة — المتابعة',
+    nav:['moh','mohRep','over','pace','inst','daily','reg','co','chalm','dis','buys','guide','acct'],
+    can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:0 }
+  },
+  /* الفني يرث «مشرف» ويعمل تحته: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا */
+  tech:{
+    n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
+    guide:'دليل الفني — العمل الميداني',
+    nav:['map','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:1 }
+  },
+
+  /* الفرق أدوارٌ مخصَّصةٌ ترث «مشرف» ويقيّدها نوعُ مهمتها — لا دورٌ أساسيٌّ جديد */
+  cprep:{
+    n:'فريق التهيئة', d:'الورشة — تهيئةً وحدها', base:'supervisor', kind:'prep',
+    guide:'دليل الورشة — التهيئة',
+    nav:['mywork','myteam','sites','recs','mine','wos','wday','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+          exportAll:0, importAll:0, delete:0, users:0, phones:1 }
+  },
+  casm:{
+    n:'فريق التجميع', d:'الورشة — تجميعًا وحده', base:'supervisor', kind:'asm',
+    guide:'دليل الورشة — التجميع',
+    nav:['mywork','myteam','sites','recs','mine','wos','wday','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+          exportAll:0, importAll:0, delete:0, users:0, phones:1 }
+  },
+  cins:{
+    n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
+    guide:'دليل الميدان — التركيب',
+    nav:['map','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:1 }
+  }
+};
+
+var ROLE = 'engineer';
+function R(){ return ROLES[ROLE] || ROLES.engineer; }
+function may(k){ return !!R().can[k]; }
+function seesPage(id){ var n = R().nav; return n === '*' || n.indexOf(id) > -1; }
+
+/* «جدولي» — ما أُسند لي وحدي، بلا أرقام زملائي */
+PAGE.mine = { m:'الميدان', t:'جدولي', l:'ما أُسند إليك اليوم — وترتيبك بلا أرقام زملائك.',
+  body:function(){
+    return stats([['مُسند إليّ','٠'], ['أنجزتُ اليوم','٠','ok'],
+                  ['نقاطي هذا الشهر','٠','acc'], ['ترتيبي','—']])
+      + card('مهامي اليوم', '<p class="hint">لا مهام مسندة اليوم.</p>',
+          btn('⬇ '+t('تصدير جدولي'),'btn-secondary btn-sm'))
+      + card('شغلي وترتيبي',
+          table(['البند','قيمتي'], [
+            ['نقاط المسح','٠'], ['نقاط التركيب','٠'],
+            ['ترتيبي بين الفرق','—'], ['نسبتي من تارجتي', pct(0,90)]
+          ]))
+      + '<p class="hint">ترتيبك يظهر بلا كشف أرقام زملائك — المقارنة تحفيزٌ لا مساءلةٌ علنية.</p>';
+  }};
+
+/* دليل الدور — لكل دور دليله وحده */
+PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دليلك أنت — بما تملكه من شاشات لا بما لا تملك.',
+  body:function(){
+    var r = R();
+    var rows = Object.keys(ROLES).map(function(k){
+      var x = ROLES[k];
+      return [esc(t(x.n)), esc(x.guide),
+              k === ROLE ? btn('⬇ '+t('نزّل دليلي'),'btn-primary btn-sm')
+                         : '<span class="hint" style="margin:0">'+esc(t('لدور آخر'))+'</span>'];
+    });
+    return card('دليلك',
+        '<div class="alert info"><span><strong>'+esc(r.guide)+'</strong> — '
+        + esc(t('يشرح شاشاتك أنت خطوةً خطوة.'))+'</span></div>'
+        + '<div class="actions">'
+        + btn('⬇ '+t('دليلي — Word'),'btn-primary')
+        + btn('⬇ '+t('دليلي — PDF'),'btn-secondary')
+        + '</div>')
+      + card('أدلة الأدوار', table(['الدور','الدليل',''], rows))
+      + (may('settings')
+          ? card('مراجع النظام',
+              '<div class="actions">'
+              + btn('⬇ '+t('دليل النظام الكامل — Word'),'btn-secondary')
+              + btn('⬇ '+t('دليل النظام الكامل — PDF'),'btn-secondary')
+              + btn('⬇ '+t('المواصفة التقنية'),'btn-secondary')
+              + '</div>')
+          : '')
+      + '<p class="hint">'+esc(t('كل دليل يُولَّد برقم النسخة نفسه — فلا يقرأ أحدٌ دليلًا لنسخةٍ غير التي بين يديه.'))+'</p>';
+  }};
+
+/* الاعتمادات — للمهندس وحده */
+PAGE.appr = { m:'النظام', t:'الاعتمادات', l:'ما اقترحه المشرفون بانتظار قرارك.',
+  body:function(){
+    return stats([['شركات مقترحة','٠','wrn'], ['تصويبات بيانات','٠','wrn'],
+                  ['مشتريات فوق الحد','٠','wrn'], ['أقدم مقترح','—']])
+      + card('بانتظار الاعتماد',
+          '<p class="hint">لا مقترحات — تظهر هنا فور اقتراح مشرفٍ شركةً جديدة أو تصويبَ بيانٍ.</p>')
+      + card('القاعدة', flow(['يقترح المشرف','يراجع المهندس','يُعتمد أو يُردّ'],0)
+        + '<p class="hint">الشركات قائمةٌ معتمدة: المشرف يطلب والمهندس يعتمد — والاسم الحر كان يصنع شركتين من واحدة باختلاف حرف.</p>');
+  }};
+
+/* حساب المستخدم */
+PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحياتك ونسختك.',
+  body:function(){
+    var r = R();
+    var keys = [['edit','تحرير البيانات'],['approve','الاعتمادات'],['settings','الإعدادات'],
+                ['money','المال والمشتريات'],['inventory','المخزون والعُهدة'],['workshop','الورشة'],
+                ['exportAll','التصدير الكامل'],['importAll','الاستيراد'],
+                ['users','إدارة المستخدمين'],['phones','أرقام الهواتف']];
+    return card('دوري',
+        '<div class="pop-rows" style="margin:0">'
+        + '<div><span class="k">'+esc(t('الاسم'))+'</span><span>محمد صفوت</span></div>'
+        + '<div><span class="k">'+esc(t('الدور'))+'</span>'+pill(r.n,'acc')+'</div>'
+        + '<div><span class="k">'+esc(t('الوصف'))+'</span><span>'+esc(t(r.d))+'</span></div>'
+        + '<div><span class="k">'+esc(t('النسخة'))+'</span><span class="num">V14.0</span></div>'
+        + '</div>')
+      + card('ما أملكه',
+          table(['الصلاحية','لي'],
+            keys.map(function(k){
+              return [esc(t(k[1])), may(k[0]) ? pill('نعم','ok') : pill('لا','off')];
+            })))
+      + card('تجربة الأدوار',
+          '<p class="hint" style="margin:0 0 11px">'
+          + esc(t('بدّل الدور لترى النظام بعين صاحبه — القائمة والشاشات تتغيّر فورًا.'))+'</p>'
+          + '<div class="chips" style="margin:0">'
+          + Object.keys(ROLES).map(function(k){
+              return '<button type="button" class="chip'+(ROLE===k?' on':'')+'" data-role="'+k+'">'
+                + esc(t(ROLES[k].n))+'</button>';
+            }).join('') + '</div>');
+  }};
+
+/* ═══ موديول الوزارة — دورة الحياة مرحلةً مرحلة ═══
+   من الزيارة الميدانية إلى التوريد إلى الورشة إلى التركيب إلى الفك.
+   كل مرحلة برقمها وتقدمها ومخرَجها الورقي. */
+
+var STAGES = [
+  { k:'sv',  n:'الزيارة الميدانية', ic:'\u25CE', done:0,    tot:1787,
+    d:'مسح الموقع وتوثيق حالته وتحدياته قبل أي عمل.',
+    kpi:[['مواقع مُسحت','٠'],['لم تُزر','١٬٧٨٧'],['تحديات مفتوحة','٠'],['متوسط الزيارة اليومي','٠']] },
+  { k:'sup', n:'التوريد', ic:'\u25A3', done:137, tot:1787,
+    d:'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.',
+    kpi:[['أصناف موردة','١٣٧'],['في المخزن','١٢٦'],['في العُهدة','٢٦'],['تالف معزول','٢']] },
+  { k:'wo',  n:'الورشة', ic:'\u25A6', done:0, tot:16900,
+    d:'التهيئة ثم التجميع قبل النزول للميدان.',
+    kpi:[['نقاط تهيئة','٠'],['نقاط تجميع','٠'],['تارجت الشهر','١٦٬٩٠٠'],['نسبة الإنجاز','٠٪']] },
+  { k:'ins', n:'التركيب', ic:'\u25C9', done:0, tot:1787,
+    d:'تركيب النقطة في موقعها واعتماد قطعها وسيرياتها.',
+    kpi:[['مُركّب','٠'],['مجدول','٠'],['متعذّر','٠'],['بانتظار التدقيق','٠']] },
+  { k:'dis', n:'الفك', ic:'\u25F7', done:0, tot:1787,
+    d:'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.',
+    kpi:[['قابل للفك','٠'],['فك مجدول','٠'],['تم الفك','٠'],['عُهدة مرتجعة','٠']] }
+];
+
+function stageBar(){
+  return '<div class="card"><div class="card-body">'
+    + '<div class="flow" style="justify-content:space-between">'
+    + STAGES.map(function(s,i){
+        var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
+        var cls = p >= 100 ? ' done' : (p > 0 ? ' on' : '');
+        return '<span class="flow-step'+cls+'" style="flex:1;text-align:center;min-width:0">'
+          + s.ic + ' ' + esc(t(s.n)) + '<br><span class="num" style="font-size:11px;opacity:.8">'
+          + nm(p) + '٪</span></span>'
+          + (i < STAGES.length-1 ? '<span class="flow-arr">\u2190</span>' : '');
+      }).join('')
+    + '</div></div></div>';
+}
+
+PAGE.moh = { m:'المتابعة', t:'متابعة المشروع', l:'دورة الحياة كاملةً — من الزيارة الميدانية إلى الفك.',
+  body:function(){
+    return stageBar()
+      + stats([['إجمالي النقاط', N(1787)], ['مُسح','٠','acc'], ['مُركّب','٠','ok'], ['مُفكّك','٠']])
+      + STAGES.map(function(s){
+          var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
+          return card(s.ic + ' ' + t(s.n),
+            '<p class="hint" style="margin:0 0 12px">'+esc(t(s.d))+'</p>'
+            + meter('التقدم', s.done, s.tot)
+            + '<div class="stats" style="margin:14px 0 0">'
+            + s.kpi.map(function(k){ return stat(k[0], '<span class="num">'+k[1]+'</span>'); }).join('')
+            + '</div>',
+            '<span class="pill '+(p>=100?'ok':(p>0?'warn':''))+'">'+nm(p)+'٪</span>');
+        }).join('')
+      + card('المخرجات الورقية',
+          '<div class="actions">'
+          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary')
+          + btn('⬇ '+t('تقرير المراحل — PDF'),'btn-secondary')
+          + btn('🖨 '+t('طباعة'),'btn-secondary',' data-print="1"')
+          + '</div>'
+          + '<p class="hint">'+esc(t('كل مرحلة صفحةٌ مستقلةٌ برسمها البياني وجدولها — كما تظهر على الشاشة.'))+'</p>');
+  }};
+
+PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّم للوزارة — جاهزًا بلا تجميع يدوي.',
+  body:function(){
+    var REPS = [
+      ['الملخص التنفيذي','صفحة واحدة: النقاط والمراحل الخمس ونسبها','يومي'],
+      ['تقرير المراحل','صفحة لكل مرحلة برسمها وجدولها','أسبوعي'],
+      ['تقرير المشاعر','عرفات ومنى ومزدلفة — كلٌّ بأنواع نقاطه','أسبوعي'],
+      ['تقرير الشركات','١٦٢ شركة بترتيب الأقل إنجازًا','أسبوعي'],
+      ['تقرير التحديات','ما يعطّل الميدان وما المطلوب لحلّه','عند الطلب'],
+      ['تقرير الفك','بعد الموسم — ما فُكّ وما أُرجع بحالته','موسمي']
+    ];
+    return card('التقارير الجاهزة',
+        table(['التقرير','ما يحويه','الدورية',''],
+          REPS.map(function(r){
+            return [ '<strong>'+esc(t(r[0]))+'</strong>', '<span class="hint" style="margin:0">'+esc(t(r[1]))+'</span>',
+                     pill(r[2],'info'),
+                     '<div class="actions">'+btn('إكسل','btn-quiet btn-sm')+btn('PDF','btn-quiet btn-sm')+'</div>' ];
+          })))
+      + card('نطاق التقرير',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>'+esc(t('من تاريخ'))+'</label><input type="date"></div>'
+          + '<div class="field"><label>'+esc(t('إلى تاريخ'))+'</label><input type="date"></div>'
+          + '<div class="field"><label>'+esc(t('المشعر'))+'</label>'
+          + '<select><option>'+esc(t('الكل'))+'</option><option>'+esc(t('منى'))+'</option>'
+          + '<option>'+esc(t('عرفات'))+'</option></select></div>'
+          + '</div>', btn('توليد','btn-primary btn-sm'))
+      + '<p class="hint">'+esc(t('أرقام الهواتف لا تظهر في أي تقرير وزاري — لا إخفاءً في الواجهة بل منعًا في القواعد.'))+'</p>';
+  }};
+
+/* ═══ النماذج الميدانية — ما يملؤه الفني في الموقع ═══ */
+
+PAGE.svForm = { m:'الميدان', t:'نموذج المسح', l:'المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.',
+  body:function(){
+    return card('بيانات معلومة — للمراجعة',
+        '<div class="pop-rows" style="margin:0">'
+        + '<div><span class="k">'+esc(t('المعرّف'))+'</span><span class="num">NSK-ARF-CMP-0001</span></div>'
+        + '<div><span class="k">'+esc(t('الشاخص'))+'</span><span class="num">١-٣-٥/٥٠٦</span></div>'
+        + '<div><span class="k">'+esc(t('المربع'))+'</span><span class="num">٧-١٥</span></div>'
+        + '<div><span class="k">'+esc(t('الشركة'))+'</span><span>شركة الراجحي</span></div>'
+        + '</div>'
+        + '<p class="hint">'+esc(t('خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.'))+'</p>',
+        btn('طلب تصويب','btn-quiet btn-sm'))
+      + card('ما يُجمَع في الموقع',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>'+esc(t('نوع التركيب'))+'</label>'
+          + '<select><option>عمود</option><option>جدار</option><option>سور</option><option>هيكل قائم</option></select></div>'
+          + '<div class="field"><label>'+esc(t('مصدر الكهرباء'))+'</label>'
+          + '<select><option>شبكة</option><option>مولد</option><option>طاقة شمسية</option><option>لا يوجد</option></select></div>'
+          + '<div class="field"><label>'+esc(t('ارتفاع التركيب'))+'</label><input type="number" placeholder="٣"></div>'
+          + '<div class="field"><label>'+esc(t('طول الكابل المطلوب'))+'</label><input type="number" placeholder="١٥"></div>'
+          + '</div>'
+          + '<div class="field"><label>'+esc(t('تحديات التركيب'))+'</label>'
+          + '<div class="chips" style="margin:6px 0 0">'
+          + ['لا يوجد كهرباء','الموقع مشغول','يحتاج تصريح','ارتفاع صعب','لا يوجد تغطية','يحتاج معدات']
+              .map(function(c){ return '<button type="button" class="chip">'+esc(t(c))+'</button>'; }).join('')
+          + '</div></div>'
+          + '<div class="field"><label>'+esc(t('ملاحظات'))+'</label><textarea rows="3"></textarea></div>')
+      + card('الصور',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>'+esc(t('صورة الموقع'))+' <span class="req">*</span></label>'
+          + '<input type="file" accept="image/*"></div>'
+          + '<div class="field"><label>'+esc(t('صورة نقطة التركيب'))+' <span class="req">*</span></label>'
+          + '<input type="file" accept="image/*"></div>'
+          + '</div>'
+          + '<p class="hint">'+esc(t('الصور تُضغط على الجهاز قبل الرفع، وتُخزَّن منفصلةً عن الوثيقة.'))+'</p>')
+      + '<div class="actions">' + btn('حفظ المسح','btn-primary') + btn('حفظ ومتابعة للتالي','btn-secondary') + '</div>';
+  }};
+
+PAGE.insForm = { m:'الميدان', t:'نموذج التركيب', l:'ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.',
+  body:function(){
+    return card('حالة التركيب',
+        '<div class="chips" style="margin:0">'
+        + ['قيد التركيب','مُركّب','متعذّر'].map(function(c,i){
+            return '<button type="button" class="chip'+(i===1?' on':'')+'">'+esc(t(c))+'</button>';
+          }).join('')
+        + '</div>')
+      + card('القطع المستهلكة',
+          table(['القطعة','المطلوب','المستهلك','السيريال'], [
+            ['راوتر صناعي','١','<input type="number" value="1">','<input dir="ltr" placeholder="SN-…">'],
+            ['قارئ ٤ منافذ','١','<input type="number" value="1">','<input dir="ltr" placeholder="SN-…">'],
+            ['كابل ١٥م 7D-FB','٢','<input type="number" value="2">','—']
+          ]),
+          btn('من كتالوج المخيم','btn-quiet btn-sm'))
+      + card('الصور',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>'+esc(t('قبل التركيب'))+' <span class="req">*</span></label>'
+          + '<input type="file" accept="image/*"></div>'
+          + '<div class="field"><label>'+esc(t('بعد التركيب'))+' <span class="req">*</span></label>'
+          + '<input type="file" accept="image/*"></div>'
+          + '<div class="field"><label>'+esc(t('لوحة الأجهزة'))+'</label><input type="file" accept="image/*"></div>'
+          + '<div class="field"><label>'+esc(t('السيريال'))+'</label><input type="file" accept="image/*"></div>'
+          + '</div>')
+      + card('الشبكة',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>'+esc(t('بادئة الشبكة'))+'</label><input dir="ltr" value="10.20.30"></div>'
+          + '<div class="field"><label>'+esc(t('العناوين المشتقّة'))+'</label>'
+          + '<input dir="ltr" value=".1 راوتر · .2 قارئ · .3 كاميرا" readonly></div>'
+          + '</div>')
+      + '<div class="actions">' + btn('إتمام التركيب','btn-primary') + btn('حفظ مسودّة','btn-secondary') + '</div>'
+      + '<p class="hint">'+esc(t('لا تُوسم النقطة مُركّبةً حتى يعتمد المهندس قطعها وسيرياتها في التدقيق الهندسي.'))+'</p>';
+  }};
+
+/* المحدَّد — بعد التحديد المتعدد من الخريطة */
+PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من الخريطة — لعملٍ جماعي عليه.',
+  body:function(){
+    return stats([['نقاط محدَّدة','٣','acc'], ['منها مُسح','٠'], ['منها مُركّب','٠'], ['مشاعر','٢']])
+      + cardFlush('النقاط',
+          table(['المعرّف','الموقع','المشعر','الحالة',''],
+            DATA.sites.slice(0,3).map(function(s){
+              return ['<span class="num">'+esc(s[0])+'</span>', esc(s[1]), esc(t(s[2])),
+                      pill(s[5],'warn'), btn('أزل','btn-quiet btn-sm')];
+            })))
+      + card('عملٌ على المحدَّد',
+          '<div class="actions">'
+          + btn('أسند لفني','btn-primary')
+          + btn('جدولة تركيب','btn-secondary')
+          + btn('طلب زيارة','btn-secondary')
+          + btn('⬇ KMZ للمحدَّد','btn-secondary')
+          + btn('مسح التحديد','btn-danger')
+          + '</div>');
+  }};
+
+/* ═══ الحوكمة — أربع فجوات تُسدّ ═══ */
+
+/* ── ٢ · مسار التصعيد ─────────────────────────────
+   الحالة العالقة تظهر في «الراكد» ولا يُخطَر أحد. القاعدة تُصعّد بالعمر. */
+
+var ESC_RULES = [
+  ['متعذّر بلا معالجة',      7,  'المشرف',  'المهندس',   'يُعاد فتحه ويُسند لفريق آخر'],
+  ['مقترح شركة بانتظار',      3,  'المهندس', 'المهندس',   'يُذكَّر يوميًّا حتى يُبتّ'],
+  ['طلب زيارة بلا تنفيذ',    5,  'الفني',   'المشرف',    'يُعاد إسناده'],
+  ['نقطة مجدولة لم تُركّب',   10, 'الفريق',  'المهندس',   'تخرج من الجدولة وتعود للطابور'],
+  ['تركيب بانتظار التدقيق',  3,  'المهندس', 'المهندس',   'يُعتمد أو يُردّ بسبب'],
+  ['مشترى فوق الحد',          2,  'المهندس', 'المهندس',   'يُعتمد أو يُلغى'],
+  ['جهاز صامت',              1,  'المهندس', 'المهندس',   'يدخل قائمة الزيارة الميدانية'],
+  ['عُهدة لم تُرجَع بعد الفك', 14, 'الفريق',  'المهندس',   'تُحتسب عجزًا على المنفِّذ']
+];
+
+PAGE.esc = { m:'النظام', t:'التصعيد', l:'ما تجاوز عمرَه المسموح — ولمن يُصعَّد.',
+  body:function(){
+    return stats([['بانتظار التصعيد','٠'], ['صُعّد اليوم','٠','wrn'],
+                  ['متأخر عن التصعيد','٠','bad'], ['أقدم عنصر','—']])
+      + card('قواعد التصعيد',
+          table(['الحالة','بعد (يوم)','المسؤول','يُصعَّد إلى','الإجراء'],
+            ESC_RULES.map(function(r){
+              return [esc(t(r[0])), '<input type="number" value="'+r[1]+'" style="max-width:78px">',
+                      esc(t(r[2])), pill(r[3],'acc'),
+                      '<span class="hint" style="margin:0">'+esc(t(r[4]))+'</span>'];
+            })),
+          btn('حفظ القواعد','btn-primary btn-sm'))
+      + card('قائمة التصعيد اليوم',
+          '<p class="hint">لا عناصر تجاوزت عمرها — تظهر هنا تلقائيًّا وتُرسَل تنبيهًا للمسؤول.</p>')
+      + card('قناة التنبيه',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>'+esc(t('الوسيلة'))+'</label>'
+          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
+          + '<div class="field"><label>'+esc(t('وقت الإرسال'))+'</label><input type="time" value="07:00"></div>'
+          + '</div>')
+      + '<p class="hint">التصعيد لا يعاقب أحدًا — ينقل القرار لمن يملكه قبل أن يصير التأخير رقمًا في تقرير.</p>';
+  }};
+
+/* ── ٣ · سجل التدقيق ──────────────────────────────
+   العملية تُسجَّل ولا يُعرف من غيّرها ولا لماذا رُفضت. */
+
+PAGE.audit = { m:'النظام', t:'سجل التدقيق', l:'من غيّر ماذا ومتى ولماذا — لما لا يُقبل فيه الشك.',
+  body:function(){
+    var ROWS = [
+      ['٠٢:٤٤','مشترى','مولد كهرباء','أُنشئ','—','٨٬٥٠٠','محمد صفوت'],
+      ['٠٢:٤٦','مشترى','مولد كهرباء','عُدّل المبلغ','٨٬٠٠٠','٨٬٥٠٠','محمد صفوت'],
+      ['٠٢:٥٠','مشترى','مولد كهرباء','اعتُمد','بانتظار','معتمد','محمد صفوت'],
+      ['٠٢:١٥','قطعة','قارئ ٨ منافذ','عُدّل السعر','٦٬٩٠٠','٧٬٢٠٠','محمد صفوت'],
+      ['٠١:٥٠','مخزون','راوتر صناعي','شُطب تالف','٢٠','١٩','فريق ١']
+    ];
+    return stats([['عمليات مالية اليوم','٣'], ['تعديلات','٢','wrn'],
+                  ['اعتمادات','١','ok'], ['مرفوضات','٠']])
+      + cardFlush('الأثر الكامل',
+          table(['الوقت','الكيان','العنصر','ما جرى','قبل','بعد','بيد'],
+            ROWS.map(function(r){
+              var k = r[3].indexOf('اعتُمد')>-1 ? 'ok' : (r[3].indexOf('شُطب')>-1 ? 'off' : 'warn');
+              return ['<span class="num">'+esc(r[0])+'</span>', pill(r[1],'acc'), esc(r[2]),
+                      pill(r[3],k), '<span class="num">'+esc(r[4])+'</span>',
+                      '<span class="num">'+esc(r[5])+'</span>', esc(r[6])];
+            })),
+          '<form class="inline-form" onsubmit="return false">'
+          + '<select><option>'+esc(t('كل الكيانات'))+'</option><option>'+esc(t('مشترى'))+'</option>'
+          + '<option>'+esc(t('قطعة'))+'</option><option>'+esc(t('مخزون'))+'</option></select>'
+          + btn('تصفية','btn-secondary btn-sm') + '</form>')
+      + card('ما يُسجَّل إلزامًا',
+          table(['الحقل','إلزامي','لماذا'], [
+            ['من أجرى', pill('نعم','ok'), '<span class="hint" style="margin:0">لا فعل بلا فاعل</span>'],
+            ['القيمة قبل وبعد', pill('نعم','ok'), '<span class="hint" style="margin:0">الفرق هو الدليل</span>'],
+            ['سبب الرفض', pill('نعم','ok'), '<span class="hint" style="margin:0">الرفض بلا سبب يتكرر</span>'],
+            ['سبب التعديل فوق الحد', pill('نعم','ok'), '<span class="hint" style="margin:0">المال يحتاج تعليلًا</span>'],
+            ['الجهاز والنسخة', pill('لا',''), '<span class="hint" style="margin:0">يُلتقط تلقائيًّا</span>']
+          ]))
+      + '<p class="hint">السجل إلحاقيٌّ لا يُعدَّل ولا يُحذف — والتصحيح قيدٌ جديد يوازنه، فيبقى الأثر كاملًا.</p>';
+  }};
+
+/* ── ٤ · عمر البيانات ─────────────────────────────
+   سجل إلحاقي بلا سقف ينمو حتى يخنق الموسم. */
+
+PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى وما يُؤرشَف وما يُحذف — وحجم كلٍّ.',
+  body:function(){
+    var SETS = [
+      ['المواقع',        1787,  '2.4',  'دائم',      'أصل المشروع لا يُؤرشَف'],
+      ['سجل الأحداث',    4820,  '1.8',  '٩٠ يومًا',  'يُؤرشَف شهريًّا في ملف مضغوط'],
+      ['نبضات الأجهزة',  0,     '0.0',  '٣٠ يومًا',  'الأكثر نموًّا — نبضة كل خمس دقائق'],
+      ['الصور',          12,    '18.6', 'دائم',      'مضغوطة على الجهاز قبل الرفع'],
+      ['دفتر المخزون',   4,     '0.1',  'دائم',      'الأرصدة مشتقّة منه فلا يُمسّ'],
+      ['المشتريات',      2,     '0.1',  'دائم',      'مستند مالي'],
+      ['سجل التدقيق',    5,     '0.1',  '٣ سنوات',  'مدة المساءلة'],
+      ['مسودّات محلية',  0,     '0.0',  '٧ أيام',    'تُمسح بعد المزامنة الناجحة']
+    ];
+    var tot = SETS.reduce(function(a,s){ return a + parseFloat(s[2]); }, 0);
+    return stats([['الحجم الكلي', '<span class="num">'+tot.toFixed(1)+'</span> م.ب'],
+                  ['سجلات', '<span class="num">'+nm(SETS.reduce(function(a,s){return a+s[1];},0))+'</span>'],
+                  ['الأسرع نموًّا','نبضات','wrn'],
+                  ['حدّ الخطة المجانية','١ ج.ب','acc']])
+      + card('مجموعات البيانات',
+          table(['المجموعة','سجلات','م.ب','مدة الاحتفاظ','السياسة'],
+            SETS.map(function(s){
+              return [esc(t(s[0])), '<span class="num">'+nm(s[1])+'</span>',
+                      '<span class="num">'+s[2]+'</span>',
+                      s[3]==='دائم' ? pill('دائم','acc') : pill(s[3],'warn'),
+                      '<span class="hint" style="margin:0">'+esc(t(s[4]))+'</span>'];
+            })),
+          btn('تشغيل الأرشفة الآن','btn-primary btn-sm'))
+      + card('النسخ الاحتياطي',
+          alertBox('error','مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.')
+          + table(['البند','الحالة'], [
+              ['آخر نسخة فعلية', pill('لا توجد','off')],
+              ['الدورية', '<span class="num">٠٥:٣٠</span> ' + esc(t('يوميًّا'))],
+              ['التشفير', pill('مطلوب مفتاح','warn')],
+              ['المكان', '<span class="hint" style="margin:0">مستودع خاص — لا العام</span>']
+            ]))
+      + '<p class="hint">نبضات الأجهزة أسرع ما ينمو: ١٧٨٧ جهازًا × نبضة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.</p>';
+  }};
+
+/* ── ٦ · تعارض المزامنة ───────────────────────────
+   الميدان بلا شبكة، وتحريران على نقطة واحدة يتصادمان. */
+
+PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
+  body:function(){
+    return stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
+                  ['حُلّت اليوم','٠','ok'], ['فشل رفع','٠','bad']])
+      + card('دورة المزامنة', flow(['يُكتب محليًّا','في الطابور','رُفع','أُكِّد'],0)
+        + '<p class="hint">الكتابة تنجح دائمًا على الجهاز — والشبكة تفصيلٌ لاحق لا شرطٌ مسبق.</p>')
+      + card('سياسة التعارض',
+          table(['الحقل','السياسة','لماذا'], [
+            ['حالة المسح','<span class="pill acc">الأحدث يفوز</span>',
+             '<span class="hint" style="margin:0">تقدُّمٌ لا يرجع</span>'],
+            ['حالة التركيب','<span class="pill warn">يُعرَض للمهندس</span>',
+             '<span class="hint" style="margin:0">«مُركّب» و«متعذّر» لا يجتمعان</span>'],
+            ['الإحداثيات','<span class="pill warn">يُعرَض للمهندس</span>',
+             '<span class="hint" style="margin:0">تحريكان مختلفان يعنيان خلافًا على الموقع</span>'],
+            ['الصور','<span class="pill ok">تُضاف كلها</span>',
+             '<span class="hint" style="margin:0">لا صورة تُلغي أخرى</span>'],
+            ['القطع المستهلكة','<span class="pill off">يُرفض الثاني</span>',
+             '<span class="hint" style="margin:0">وإلا استُهلك المخزون مرتين</span>'],
+            ['الملاحظات','<span class="pill ok">تُدمَج بسطر فاصل</span>',
+             '<span class="hint" style="margin:0">كلاهما شهادة</span>']
+          ]),
+          btn('حفظ السياسة','btn-primary btn-sm'))
+      + card('تعارضات بانتظار القرار',
+          '<p class="hint">لا تعارضات — تظهر هنا بالنسختين جنبًا إلى جنب ليختار المهندس.</p>')
+      + card('طابور الرفع',
+          '<div class="actions">' + btn('رفع الآن','btn-primary')
+          + btn('إعادة المحاولة للفاشل','btn-secondary')
+          + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">٠٢:٥١</span></span></div>')
+      + '<p class="hint">«آخر كتابة تفوز» صامتةً هي أخطر سياسة: تمحو عمل زميلٍ بلا أن يعلم أحد. ما لا يُحسم آليًّا يُعرَض.</p>';
+  }};
+
+/* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
+   نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
+
+var MX = [
+  ['عرفات','مخيمات',      713, '3'],
+  ['عرفات','ممرات',        46, '5'],
+  ['عرفات','محطات القطار', 36, '2'],
+  ['عرفات','مسجد نمرة',    10, '4'],
+  ['مزدلفة','محطات القطار', 36, '2'],
+  ['منى','مخيمات',         679, '3'],
+  ['منى','ممرات',          144, '5'],
+  ['منى','كاميرات الوزارة', 59, '5'],
+  ['منى','محطات القطار',    36, '2'],
+  ['منى','منطقة الجمرات',   28, '4']
+];
+
+/* ما نقاطُه صفرٌ ليس في المرحلة — فإضافتُه أن تكتب له نقاطًا */
+function cfgAddStage(path, pg){
+  var get = path === 'itPrep' ? itPrep : itAsm;
+  var off = DATA.items.filter(function(i){ return !get(i[1]); });
+  if (!off.length) return '';
+  return card((pg === 'prep' ? 'أضِف جهازًا للتهيئة' : 'أضِف مكوّنًا للتجميع') + ' — ' + nm(off.length),
+    '<p class="hint" style="margin:0 0 11px">اكتب نقاطًا لأيِّ صنفٍ أدناه فيدخل المرحلة، واتركه صفرًا فيبقى خارجها.</p>'
+    + table(['الصنف','المنطقة','النقاط'],
+        off.map(function(i){
+          return [esc(i[2]), esc(t(i[0]==='cor'?'ممر':'مخيم')), cfgInput(path, i[1], { dec:1 })];
+        })));
+}
+
+function tgtBlock(kCamp, kCor){
+  var camp = cfgGet(kCamp), cor = cfgGet(kCor);
+  return card('التارجت',
+    '<div class="grid cols-2">'
+    + '<div class="field"><label>' + esc(t('تارجت المخيمات — الشهري')) + '</label>'
+    +   cfgInput(kCamp) + '</div>'
+    + '<div class="field"><label>' + esc(t('الأسبوعي')) + '</label>'
+    +   cfgDerived(cfgWk(camp)) + '</div>'
+    + '<div class="field"><label>' + esc(t('تارجت الممرات — الشهري')) + '</label>'
+    +   cfgInput(kCor) + '</div>'
+    + '<div class="field"><label>' + esc(t('الأسبوعي')) + '</label>'
+    +   cfgDerived(cfgWk(cor)) + '</div>'
+    + '</div>'
+    + '<div class="alert info" style="margin:4px 0 0"><span>'
+    +   esc(t('الإجمالي الشهري')) + ' <b>' + nm(camp+cor) + '</b> · '
+    +   esc(t('الأسبوعي')) + ' <b>' + nm(cfgWk(camp+cor)) + '</b></span></div>'
+    + '<p class="hint">الإجمالي والأسبوعي يُشتقّان ولا يُكتبان — والشهري وحده ما تكتبه.</p>');
+}
+
+PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء الحسابات وأدوارها.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.</p>'
+      + card('إنشاء حساب',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
+          +   '<input dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
+          + '<div class="field"><label>' + esc(t('الاسم الكامل')) + ' <span class="req">*</span></label>'
+          +   '<input dir="auto" maxlength="160"></div>'
+          + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
+          +   '<input type="password" dir="ltr" minlength="10"></div>'
+          + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+          +   '<select><option>مهندس</option><option>مشرف</option><option selected>فني</option>'
+          +   '<option>فريق التهيئة</option><option>فريق التجميع</option><option>فريق التركيب</option>'
+          +   '<option>وزارة</option></select></div>'
+          + '</div>', btn('إنشاء الحساب','btn-primary btn-sm'))
+      + card('حسابات الفنيين دفعةً واحدة',
+          '<p class="hint" style="margin:0 0 11px">'
+          + esc(t('بدل إنشاء حسابٍ لكل فنيٍّ يدويًّا — أنشئها كلها من صفحة الفنيين بصلاحية «فني» ومشرفٍ لكلٍّ.'))
+          + '</p>'
+          + '<div class="actions">' + btn('اذهب إلى حسابات الفنيين','btn-primary btn-sm',' data-p="techacc"') + '</div>')
+      + cardFlush('المستخدمون — ' + nm(DATA.users.length),
+          table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'],
+            DATA.users.map(function(u){
+              return ['<strong>' + esc(u[0]) + '</strong><br><span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
+                      esc(t(u[2])), pill(u[3], u[3]==='نشط' ? 'ok' : 'off'),
+                      '<span class="num">' + esc(u[4]) + '</span>',
+                      btn(u[3]==='نشط' ? 'تعطيل' : 'تفعيل','btn-quiet btn-sm')];
+            })),
+          '<form class="inline-form" onsubmit="return false">'
+          + '<input type="search" placeholder="' + esc(t('بحث')) + '" dir="auto">'
+          + btn('بحث','btn-secondary btn-sm') + '</form>');
+  }};
+
+PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
+  body:function(){
+    return cardFlush('وزن الزيارة — ' + nm(MX.length) + ' صنفًا',
+        table(['المشعر','النوع','النقاط','وزن الزيارة'],
+          MX.map(function(r){
+            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])), N(r[2]),
+                    cfgInput('w', r[0] + '|' + r[1], { dec:1 })];
+          })))
+      + card('التارجت',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('تارجت المسح الشهري')) + '</label>'
+          +   cfgInput('tgtSurvey') + '</div>'
+          + '<div class="field"><label>' + esc(t('تارجت المسح الأسبوعي')) + '</label>'
+          +   cfgDerived(cfgWk(cfgGet('tgtSurvey'))) + '</div>'
+          + '</div>')
+      + '<p class="hint">لا قيمةَ افتراضية: كل وزنٍ يبدأ صفرًا وتضبطه أنت — وما تكتبه هنا يسري فورًا على المسح والفنيين والتقارير.</p>';
+  }};
+
+function prepAsm(pg){
+  var get = pg === 'prep' ? itPrep : itAsm;
+  var path = pg === 'prep' ? 'itPrep' : 'itAsm';
+  var on = DATA.items.filter(function(i){ return get(i[1]) > 0; });
+  var tot = on.reduce(function(a,i){ return a + get(i[1]); }, 0);
+  var h = '<p class="lede" style="margin:0 0 16px">' + (pg === 'prep'
+      ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
+      : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.')
+    + '</p>';
+  if (!on.length){
+    h += card('', '<p class="hint" style="text-align:center;margin:0">'
+      + (pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.') + '</p>');
+  } else {
+    h += stats([[pg==='prep'?'أجهزة في التهيئة':'مكوّنات في التجميع', N(on.length), 'acc'],
+                ['إجمالي النقاط', N(tot)]])
+      + cardFlush((pg==='prep'?'أجهزة التهيئة':'مكوّنات التجميع') + ' — ' + nm(on.length),
+          table(['الجهاز','المنطقة','النقاط',''],
+            on.map(function(i){
+              return [esc(i[2]), esc(t(i[0]==='cor'?'ممر':'مخيم')),
+                      cfgInput(path, i[1], { dec:1 }),
+                      btn('أخرِج','btn-quiet btn-sm')];
+            })),
+          btn('➕ ' + (pg==='prep'?'أضِف جهازًا':'أضِف مكوّنًا'),'btn-primary btn-sm'));
+  }
+  h += cfgAddStage(path, pg)
+     + tgtBlock(pg === 'prep' ? 'tgtPrepCamp' : 'tgtAsmCamp',
+                pg === 'prep' ? 'tgtPrepCor'  : 'tgtAsmCor');
+  if (pg === 'prep')
+    h += '<p class="hint">الهوائي والبطارية والكابل قطعٌ سلبيةٌ لا تُهيَّأ، فلا تظهر هنا أصلًا.</p>';
+  return h;
+}
+
+PAGE.prep = { m:'الإعدادات', t:'نقاط التهيئة', l:'نقاط تهيئة كل جهاز في الورشة.',
+  body:function(){ return prepAsm('prep'); }};
+PAGE.asm = { m:'الإعدادات', t:'نقاط التجميع', l:'نقاط تجميع مكوّنات البوكس.',
+  body:function(){ return prepAsm('asm'); }};
+
+PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقاط كل قطعة وتارجت التركيب.',
+  body:function(){
+    return [['cor','الممر'],['camp','المخيم']].map(function(g){
+        var L = DATA.items.filter(function(x){ return x[0] === g[0]; });
+        return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
+          table(['القطعة','النقاط'],
+            L.map(function(it){
+              return [esc(it[2]),
+                cfgInput('itPts', it[1], { dec:1 })];
+            })));
+      }).join('')
+      + card('نقاط النقطة الكاملة',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('نقاط تركيب المخيم')) + '</label>'
+          +   cfgInput('insCamp', undefined, { dec:1, step:'0.1' }) + '</div>'
+          + '<div class="field"><label>' + esc(t('نقاط تركيب الممر')) + '</label>'
+          +   cfgInput('insCor', undefined, { dec:1, step:'0.1' }) + '</div>'
+          + '</div>'
+          + '<p class="hint">نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها.</p>',
+          btn('حفظ','btn-primary btn-sm'))
+      + tgtBlock('tgtInsCamp', 'tgtInsCor');
+  }};
+
+PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك ومعاملا الحالة.',
+  body:function(){
+    return cardFlush('وزن الفك — ' + nm(MX.length) + ' صنفًا',
+        table(['المشعر','النوع','النقاط','وزن الفك'],
+          MX.map(function(r){
+            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])), N(r[2]),
+                    cfgInput('dw', r[0] + '|' + r[1], { dec:1 })];
+          })))
+      + card('التارجت والمعاملان',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('تارجت الفك الشهري')) + '</label>'
+          +   cfgInput('tgtDis') + '</div>'
+          + '<div class="field"><label>' + esc(t('معامل السليم')) + '</label>'
+          +   cfgInput('disOk', undefined, { dec:1, step:'0.05' }) + '</div>'
+          + '<div class="field"><label>' + esc(t('معامل التالف')) + '</label>'
+          +   cfgInput('disBad', undefined, { dec:1, step:'0.05' }) + '</div>'
+          + '</div>', btn('حفظ','btn-primary btn-sm'))
+      + '<p class="hint">المعاملان يضربان وزن الفك بحسب حالة الجهاز المفكوك — فيتساوى الجهدُ ويختلف الناتج.</p>';
+  }};
+
+PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كتالوج القطع وسعر كل قطعة.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.</p>'
+      + [['cor','الممر'],['camp','المخيم']].map(function(g){
+          var L = DATA.items.filter(function(x){ return x[0] === g[0]; });
+          if (!L.length) return card(g[1], '<p class="hint" style="text-align:center;margin:0">لا قطع في هذه المنطقة.</p>');
+          return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
+            table(['القطعة','المنطقة','نقاط التركيب','السعر',''],
+              L.map(function(it){
+                return ['<input value="' + esc(it[2]) + '">',
+                        '<select><option' + (g[0]==='camp'?' selected':'') + '>' + esc(t('مخيم')) + '</option>'
+                        + '<option' + (g[0]==='cor'?' selected':'') + '>' + esc(t('ممر')) + '</option></select>',
+                        cfgInput('itPts', it[1], { dec:1 }),
+                        cfgInput('itPrice', it[1]),
+                        btn('حذف','btn-quiet btn-sm')];
+              })),
+            btn('حفظ التعديلات','btn-primary btn-sm'));
+        }).join('')
+      + card('إضافة قطعة',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
+          +   '<select><option>' + esc(t('مخيم')) + '</option><option>' + esc(t('ممر')) + '</option></select></div>'
+          + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
+          +   '<input placeholder="مفتاح شبكة ٨ منافذ"></div>'
+          + '<div class="field"><label>' + esc(t('نقاط تركيبها')) + '</label>'
+          +   '<input type="number" step="0.5" min="0" value="1"></div>'
+          + '<div class="field"><label>' + esc(t('سعرها')) + '</label>'
+          +   '<input type="number" min="0" value="0"></div>'
+          + '</div>', btn('➕ إضافة قطعة','btn-primary btn-sm'))
+      + '<p class="hint">تغيير المنطقة ينقل القطعة بين الممر والمخيم فينتقل معها احتسابُها في تقسيم النقاط.</p>';
+  }};
+
+PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تبويب مشتريات السوق المحلي.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">هذه التبويبات هي ما تُصنَّف به كل عملية شراء خارجية، وعليها يقوم تجميع المصروف في لوحة المتابعة ← المشتريات. أضِف ما يناسب طبيعة صرفك، والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>'
+      + cardFlush('الفئات — ' + nm(DATA.buyCats.length),
+          table(['الفئة','عمليات','المصروف',''],
+            DATA.buyCats.map(function(c){
+              var used = DATA.buys.filter(function(b){ return b[2] === c; });
+              var tot = used.reduce(function(a,b){ return a + b[4]; }, 0);
+              return [esc(c), N(used.length), N(tot) + ' <span class="hint" style="margin:0">ريال</span>',
+                      used.length ? '<span class="hint" style="margin:0">مستعملة</span>'
+                                  : btn('حذف','btn-quiet btn-sm')];
+            })))
+      + card('إضافة فئة',
+          '<div class="inline-form"><input placeholder="مثال: تأمينات" style="min-width:220px">'
+          + btn('➕ إضافة','btn-primary btn-sm') + '</div>');
+  }};
+
+PAGE.sup = { m:'الإعدادات', t:'المورّدون', l:'قائمة موحّدة لمن نشتري منهم.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.</p>'
+      + cardFlush('المورّدون — ' + nm(DATA.suppliers.length),
+          table(['المورّد','عمليات','المصروف',''],
+            DATA.suppliers.map(function(c){
+              var used = DATA.buys.filter(function(b){ return b[5] === c; });
+              var tot = used.reduce(function(a,b){ return a + b[4]; }, 0);
+              return [esc(c), N(used.length), N(tot) + ' <span class="hint" style="margin:0">ريال</span>',
+                      used.length ? '<span class="hint" style="margin:0">مستعمل</span>'
+                                  : btn('حذف','btn-quiet btn-sm')];
+            })))
+      + card('إضافة مورّد',
+          '<div class="inline-form"><input placeholder="مثال: مؤسسة الفتح" style="min-width:220px">'
+          + btn('➕ إضافة','btn-primary btn-sm') + '</div>');
+  }};
+
+PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
+  body:function(){
+    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
+    return '<p class="lede" style="margin:0 0 16px">الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.</p>'
+      + card('الضبط',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('الميزانية المعتمدة')) + ' (ريال)</label>'
+          +   cfgInput('budCap') + '</div>'
+          + '<div class="field"><label>' + esc(t('حدّ الاعتماد للعملية الواحدة')) + ' (ريال)</label>'
+          +   cfgInput('budApp') + '</div>'
+          + '</div>', btn('حفظ','btn-primary btn-sm'))
+      + stats([['المنصرف المعتمد', N(B.spent)], ['من', N(B.cap), 'acc'],
+               ['المتبقي', N(B.cap - B.spent), 'ok'], ['بانتظار الاعتماد', N(B.pending)]])
+      + card('', meter('المستهلك من السقف المعتمد', B.spent, B.cap))
+      + '<p class="hint">تغييرُ السقف لا يمسّ عمليةً مسجّلة — الوزن يُثبَّت لحظةَ الحدث.</p>';
+  }};
+
+PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام العمل وساعات اليوم.',
+  body:function(){
+    return card('الثوابت',
+        '<div class="grid cols-3">'
+        + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
+        +   cfgInput('days') + '</div>'
+        + '<div class="field"><label>' + esc(t('ساعات العمل في اليوم')) + '</label>'
+        +   cfgInput('hours') + '</div>'
+        + '<div class="field"><label>' + esc(t('أيام العمل في الأسبوع')) + '</label>'
+        +   cfgInput('daysWeek', undefined, { max:7 }) + '</div>'
+        + '</div>'
+        + '<div class="alert info" style="margin:4px 0 0"><span>'
+        +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
+        btn('حفظ','btn-primary btn-sm'))
+      + card('سعر النقطة',
+          '<div class="field" style="max-width:260px;margin:0"><label>' + esc(t('سعر النقطة')) + ' (ريال)</label>'
+          + cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>')
+      + card('وزن المراحل في النقطة',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('التهيئة')) + ' ٪</label>'
+          +   cfgInput('stgCfg', undefined, { max:100 }) + '</div>'
+          + '<div class="field"><label>' + esc(t('التجميع')) + ' ٪</label>'
+          +   cfgInput('stgVal', undefined, { max:100 }) + '</div>'
+          + '<div class="field"><label>' + esc(t('التركيب')) + ' ٪</label>'
+          +   cfgInput('stgIns', undefined, { max:100 }) + '</div>'
+          + '</div>'
+          + '<div class="alert '
+          + ((cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) === 100 ? 'success' : 'warn')
+          + '" style="margin:4px 0 0"><span>' + esc(t('المجموع')) + ': <b>'
+          + nm(cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) + '٪</b></span></div>'
+          + '<p class="hint">النقطة الواحدة تُقسَّم على مراحلها الثلاث — فمن هيّأ يأخذ نصيبه ومن جمّع نصيبه ومن ركّب نصيبه. والمجموع مئةٌ دائمًا.</p>',
+          btn('حفظ','btn-primary btn-sm'))
+      + '<p class="hint">هذه الثوابت يُشتقّ منها التارجت الأسبوعي من الشهري، وتقديرُ الأزمنة في التخطيط.</p>';
+  }};
+
+PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', l:'من يفعل ماذا.',
+  body:function(){
+    return cardFlush('القدرات',
+        table(['القدرة','مهندس','مشرف','فني','وزارة'],
+          [['المسح والتوثيق','✓','✓','✓ للمُسند له','—'],
+           ['وسم «تمت الزيارة»','✓','✓','✓ للمُسند له','—'],
+           ['طلبات الزيارة والإسناد','✓','✓','—','—'],
+           ['اعتماد الزيارات والقطع','✓','—','—','—'],
+           ['التركيب والفك','✓','✓','✓ للمُسند له','—'],
+           ['رؤية كل النقاط','✓','✓','نقاطه فقط','✓ قراءة'],
+           ['الإعدادات والنقاط والتارجت','✓','—','—','—'],
+           ['إدارة الحسابات','✓','—','—','—'],
+           ['أرقام الهواتف','✓','فريقه','فريقه','مخفية']
+          ].map(function(r){
+            var f = function(v){
+              if (v === '✓') return '<span class="pill ok">✓</span>';
+              if (v === '—') return '<span class="pill off">—</span>';
+              return '<span class="pill warn">' + esc(v) + '</span>';
+            };
+            return ['<strong>' + esc(r[0]) + '</strong>', f(r[1]), f(r[2]), f(r[3]), f(r[4])];
+          })))
+      + '<p class="hint">الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>'
+      + card('أدوار مخصصة',
+          '<p class="hint" style="margin:0 0 13px">أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.</p>'
+          + '<div class="alert info"><span>لا أدوار مخصصة بعد.</span></div>'
+          + '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('المسمّى')) + '</label>'
+          +   '<input placeholder="مثال: منسّق ميداني"></div>'
+          + '<div class="field"><label>' + esc(t('يرث صلاحيات')) + '</label>'
+          +   '<select><option>مهندس</option><option selected>مشرف</option><option>وزارة</option></select></div>'
+          + '</div>', btn('➕ إضافة دور','btn-primary btn-sm'));
+  }};
+
+/* ═══ فرق العمل — أربعةٌ لكلٍّ نوعُ مهمته وتقاريره ═══
+   WO_KINDS في العامل أربعة: زيارة · تهيئة · تجميع · تركيب.
+   الفريق دورٌ مخصَّصٌ يرث «مشرف» ويُقيَّد بنوعٍ واحد — فلا يرى إلا شغله. */
+
+var WO_KINDS = {
+  visit:   { n:'زيارة',  i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
+  prep:    { n:'تهيئة',  i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
+  asm:     { n:'تجميع',  i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
+  install: { n:'تركيب',  i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' }
+};
+
+var CREWS = [
+  { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',
+    d:'يديرون المشروع ويعتمدون ما يرفعه الفرق.',
+    members:['محمد صفوت'] },
+  { id:'cprep', n:'فريق التهيئة',  base:'supervisor', kind:'prep',
+    d:'ضبط الجهاز وعنوانه ونظامه وفحصه قبل النزول.',
+    members:['فريق ١','أحمد'] },
+  { id:'casm',  n:'فريق التجميع',  base:'supervisor', kind:'asm',
+    d:'تركيب ما يدخل البوكس وتوصيله قبل النزول.',
+    members:['فريق ٢'] },
+  { id:'cins',  n:'فريق التركيب',  base:'supervisor', kind:'install',
+    d:'تركيب النقطة في موقعها وتوثيقها.',
+    members:['فريق ٣','سالم'] }
+];
+
+/* أرقام تمثيلية لكل فريق عبر الدورات الثلاث */
+var CREW_STATS = {
+  eng:   { day:0, week:0, month:0, tgtM:0,     open:0, done:0 },
+  cprep: { day:0, week:0, month:0, get tgtM(){ return T().prep; }, open:0, done:0 },
+  casm:  { day:0, week:0, month:0, get tgtM(){ return T().asm; },  open:0, done:0 },
+  cins:  { day:0, week:0, month:0, get tgtM(){ return T().ins; },  open:0, done:0 }
+};
+
+function crewOf(id){ return CREWS.filter(function(c){ return c.id === id; })[0] || CREWS[0]; }
+
+/* ── متابعة الفرق — لوحة المهندس ─────────────────── */
+PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة فرق — كلٌّ بنوع مهمته وتارجته ودوريته.',
+  body:function(){
+    var C = K();
+    return stats([['فرق عاملة', N(CREWS.length - 1), 'acc'],
+                  ['أعضاء', N(CREWS.reduce(function(a,c){ return a + c.members.length; }, 0))],
+                  ['مهام مفتوحة','٠','wrn'],
+                  ['نقاط اليوم','٠','ok']])
+      + CREWS.map(function(c){
+          var S = CREW_STATS[c.id];
+          var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+          return card((K ? K.i + ' ' : '\u{1F393} ') + t(c.n),
+            '<p class="hint" style="margin:0 0 12px">' + esc(t(c.d)) + '</p>'
+            + '<div class="stats" style="margin:0 0 12px">'
+            +   stat('اليوم','<span class="num">'+nm(S.day)+'</span>')
+            +   stat('هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>')
+            +   stat('هذا الشهر','<span class="num">'+nm(S.month)+'</span>')
+            +   stat('تارجت الشهر', S.tgtM ? '<span class="num">'+nm(S.tgtM)+'</span>' : '—')
+            + '</div>'
+            + (S.tgtM ? meter('الإنجاز من تارجت الشهر', S.month, S.tgtM) : '')
+            + '<div class="hint" style="margin:12px 0 0">'
+            +   '<strong>' + esc(t('الأعضاء')) + ':</strong> ' + c.members.map(esc).join(' · ')
+            +   ' · <strong>' + esc(t('يرث')) + ':</strong> ' + esc(t(c.base === 'engineer' ? 'مهندس' : 'مشرف'))
+            + '</div>',
+            '<div class="actions">'
+            + (K ? pill(K.n,'acc') : pill('كل الأنواع','ok'))
+            + btn('تقرير الفريق','btn-secondary btn-sm')
+            + '</div>');
+        }).join('')
+      + card('كيف تُحسب النقطة',
+          flow(['تهيئة ' + nm(C.stgCfg) + '٪','تجميع ' + nm(C.stgVal) + '٪','تركيب ' + nm(C.stgIns) + '٪'], -1)
+          + '<p class="hint">النقطة الواحدة تُقسَّم على مراحلها الثلاث — فلكل فريقٍ نصيبُه منها، ومجموعها مئةٌ دائمًا.</p>');
+  }};
+
+/* ── التقارير الدورية ───────────────────────────── */
+var PERIODS = [
+  ['day',   'يومي',    'نهاية كل يوم عمل',      '١٧:٠٠'],
+  ['week',  'أسبوعي',  'صباح أول يوم في الأسبوع','٠٧:٠٠'],
+  ['month', 'شهري',    'أول يوم في الشهر',       '٠٧:٠٠']
+];
+
+var CREW_REPORTS = [
+  ['نقاط اليوم لكل منفِّذ',      'day',   'كل الفرق', 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته'],
+  ['المفتوح والمتأخر',           'day',   'كل الفرق', 'المهام التي لم تُقفل ومَن عندها'],
+  ['الفريق مقابل تارجته',        'week',  'كل الفرق', 'الأسبوعي مقابل ما أُنجز فعلًا'],
+  ['الورشة — تهيئةً وتجميعًا',   'week',  'التهيئة والتجميع', 'ما خرج من الورشة جاهزًا للنزول'],
+  ['التركيب في الميدان',         'week',  'التركيب',  'ما رُكّب وما تعذّر وما ينتظر التدقيق'],
+  ['المسح الميداني',             'week',  'الزيارة',  'ما مُسح وما بقي وتحدياته'],
+  ['أداء الفرق الشهري',          'month', 'كل الفرق', 'الشهر كاملًا مقابل التارجت مع الاتجاه'],
+  ['العُهدة والمستهلك',          'month', 'كل الفرق', 'ما في يد كل فريق وما استهلكه'],
+  ['الملخص التنفيذي',            'month', 'المهندسون','المشروع كله في صفحة'],
+];
+
+PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما يُرفع تلقائيًّا — يوميًّا وأسبوعيًّا وشهريًّا.',
+  body:function(){
+    return card('الدوريات',
+        table(['الدورية','متى تُرسَل','الوقت','تقارير'],
+          PERIODS.map(function(p){
+            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
+            return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
+                    '<input type="time" value="' + (p[0]==='day'?'17:00':'07:00') + '" style="max-width:130px">',
+                    N(n)];
+          })),
+        btn('حفظ المواعيد','btn-primary btn-sm'))
+      + PERIODS.map(function(p){
+          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
+          return cardFlush(t(p[1]) + ' — ' + nm(L.length),
+            table(['التقرير','لمن','ما يحويه',''],
+              L.map(function(r){
+                return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
+                        '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
+                        '<div class="actions">' + btn('إكسل','btn-quiet btn-sm')
+                        + btn('PDF','btn-quiet btn-sm') + '</div>'];
+              })));
+        }).join('')
+      + card('قناة الإرسال',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
+          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
+          + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
+          + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
+          + '</div>')
+      + '<p class="hint">التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.</p>';
+  }};
+
+/* ── شغل الفريق — ما يراه عضوه ──────────────────── */
+PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
+  body:function(){
+    var c = crewOf(CREW_VIEW);
+    var S = CREW_STATS[c.id];
+    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
+        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
+          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
+      }).join('') + '</div>'
+      + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
+               ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
+               ['هذا الشهر','<span class="num">'+nm(S.month)+'</span>','acc'],
+               ['مفتوح','<span class="num">'+nm(S.open)+'</span>','wrn']])
+      + (S.tgtM ? card('مقابل التارجت',
+          meter('الشهري', S.month, S.tgtM)
+          + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
+      + cardFlush('مهام الفريق',
+          '<p class="hint" style="padding:16px;text-align:center;margin:0">لا مهام مفتوحة من نوع '
+          + esc(K ? t(K.n) : t('كل الأنواع')) + '.</p>',
+          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+      + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
+        + '<p class="hint">المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.</p>');
+  }};
+
+var CREW_VIEW = 'cprep';
+
+/* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
+   التركيب: المخيم أربعةٌ (مشرف + ثلاثة) بمعدل مخيمين يوميًّا،
+            والممر خمسةٌ (مشرف + أربعة) ومعدّتان بمعدل نقطةٍ واحدةٍ يوميًّا.
+   الزيارة: عشرون مخيمًا أو عشر نقاط ممرٍّ يوميًّا.
+   وتارجت التركيب يُحسب على قطع النقطة لا على عددها. */
+
+var CREW_SPEC = [
+  { k:'ins_camp', n:'فريق تركيب — مخيمات', kind:'install', zone:'camp',
+    sup:1, tech:3, gear:0, rate:2,
+    d:'مشرفٌ وثلاثة فنيين — مخيمان في اليوم.' },
+  { k:'ins_cor',  n:'فريق تركيب — ممرات',  kind:'install', zone:'cor',
+    sup:1, tech:4, gear:2, rate:1,
+    d:'مشرفٌ وأربعة فنيين ومعدّتان — نقطةُ ممرٍّ واحدةٌ في اليوم.' },
+  { k:'srv_camp', n:'فريق مسح — مخيمات',   kind:'visit',   zone:'camp',
+    sup:1, tech:1, gear:0, rate:20,
+    d:'عشرون مخيمًا في اليوم.' },
+  { k:'srv_cor',  n:'فريق مسح — ممرات',    kind:'visit',   zone:'cor',
+    sup:1, tech:1, gear:0, rate:10,
+    d:'عشر نقاط ممرٍّ في اليوم.' }
+];
+
+var UNITS = { camp:1392, cor:190 };
+
+function crewNeed(spec, months){
+  var days = cfgGet('days') * months;
+  var units = UNITS[spec.zone] || 0;
+  var rate = crewVal(spec.k,'Rate') || spec.rate;
+  var crewDays = rate ? (units / rate) : 0;
+  var crews = days ? Math.ceil(crewDays / days) : 0;
+  var sup = crewVal(spec.k,'Sup'), tec = crewVal(spec.k,'Tech'), ger = crewVal(spec.k,'Gear');
+  if (!sup && !tec) { sup = spec.sup; tec = spec.tech; ger = spec.gear; }
+  return { units:units, crewDays:Math.round(crewDays), crews:crews,
+           people:crews * (sup + tec), gear:crews * ger, sup:sup, tech:tec, rate:rate };
+}
+
+var PLAN_MONTHS = 4;
+
+PAGE.crewplan = { m:'الفرق والفنيون', t:'الطواقم والمعدلات',
+  l:'كم فريقًا يلزم لبلوغ الموعد — محسوبًا من معدل كل نوع.',
+  body:function(){
+    var C = K();
+    var rows = CREW_SPEC.map(function(s){ return { s:s, r:crewNeed(s, PLAN_MONTHS) }; });
+    var ins = rows.filter(function(x){ return x.s.kind === 'install'; });
+    var srv = rows.filter(function(x){ return x.s.kind === 'visit'; });
+    var sum = function(L, f){ return L.reduce(function(a,x){ return a + f(x); }, 0); };
+
+    return '<div class="chips">' + [3,4,5,6].map(function(m){
+        return '<button type="button" class="chip' + (PLAN_MONTHS===m?' on':'') + '" data-months="' + m + '">'
+          + nm(m) + ' ' + esc(t('أشهر')) + '</button>';
+      }).join('') + '</div>'
+
+      + stats([['فرق التركيب', N(sum(ins,function(x){return x.r.crews;})), 'acc'],
+               ['أفرادها', N(sum(ins,function(x){return x.r.people;}))],
+               ['معدّات', N(sum(ins,function(x){return x.r.gear;})), 'wrn'],
+               ['أيام العمل', N((C.days||26) * PLAN_MONTHS)]])
+
+      + cardFlush('طواقم التركيب',
+          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد','معدّات'],
+            ins.map(function(x){
+              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
+                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
+                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
+                      '<span class="pill acc">' + nm(x.r.crews) + '</span>',
+                      N(x.r.people), x.r.gear ? N(x.r.gear) : '—'];
+            }),
+            ['الإجمالي','','', N(sum(ins,function(x){return x.r.units;})),
+             N(sum(ins,function(x){return x.r.crewDays;})),
+             N(sum(ins,function(x){return x.r.crews;})),
+             N(sum(ins,function(x){return x.r.people;})),
+             N(sum(ins,function(x){return x.r.gear;}))]))
+
+      + cardFlush('طواقم المسح',
+          table(['الفريق','الطاقم','المعدل/يوم','النقاط','أيام-فريق','فرق لازمة','أفراد'],
+            srv.map(function(x){
+              return ['<strong>' + esc(t(x.s.n)) + '</strong>',
+                      nm(x.r.sup) + ' ' + esc(t('مشرف')) + ' + ' + nm(x.r.tech) + ' ' + esc(t('فني')),
+                      N(x.r.rate), N(x.r.units), N(x.r.crewDays),
+                      '<span class="pill acc">' + nm(x.r.crews) + '</span>', N(x.r.people)];
+            }),
+            ['الإجمالي','','', N(sum(srv,function(x){return x.r.units;})),
+             N(sum(srv,function(x){return x.r.crewDays;})),
+             N(sum(srv,function(x){return x.r.crews;})),
+             N(sum(srv,function(x){return x.r.people;}))]))
+
+      + card('ضبط المعدلات',
+          table(['النوع','مشرف','فنيون','معدّات','المعدل/يوم'],
+            CREW_SPEC.map(function(s){
+              return [esc(t(s.n)),
+                      cfgInput('crewSup', s.k), cfgInput('crewTech', s.k),
+                      cfgInput('crewGear', s.k), cfgInput('crewRate', s.k, { dec:1 })];
+            })),
+          btn('حفظ المعدلات','btn-primary btn-sm'))
+
+      + card('تارجت التركيب يُحسب على القطع',
+          '<p class="hint" style="margin:0 0 12px">عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. '
+          + 'فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.</p>'
+          + flow(['مسح الموقع','اعتماد المسح','تُحدَّد قطع النقطة','تدخل الجدولة','تُركَّب وتُحتسب قطعًا'], 0)
+          + '<div class="alert warn" style="margin:12px 0 0"><span>'
+          + esc(t('القطع لكل نقطة تُحدَّد بعد اعتماد المسح — فالتارجت بالقطع يبقى تقديريًّا حتى يكتمل المسح.'))
+          + '</span></div>');
+  }};
+
+/* ═══ موديول الصلاحيات — واجهةً وقواعدَ Firebase ═══ */
+
+var PERMS = [
+  ['read_all',     'قراءة كل النقاط',        ['engineer','viewer']],
+  ['read_own',     'قراءة المُسند إليه',      ['engineer','supervisor','tech','cprep','casm','cins']],
+  ['write_survey', 'تسجيل المسح',            ['engineer','supervisor','tech','cins']],
+  ['write_prep',   'تنفيذ التهيئة',          ['engineer','cprep']],
+  ['write_asm',    'تنفيذ التجميع',          ['engineer','casm']],
+  ['write_install','تنفيذ التركيب',          ['engineer','tech','cins']],
+  ['approve',      'اعتماد ما رُفع',          ['engineer']],
+  ['assign',       'إسناد المهام',            ['engineer','supervisor']],
+  ['inventory',    'المخزون والعُهدة',        ['engineer']],
+  ['money',        'المال والمشتريات',        ['engineer']],
+  ['settings',     'الإعدادات والتارجت',      ['engineer']],
+  ['users',        'إدارة الحسابات والأدوار', ['engineer']],
+  ['phones',       'أرقام هواتف فريقه',       ['engineer','supervisor','tech','cprep','casm','cins']],
+  ['export_all',   'التصدير الكامل',          ['engineer']],
+  ['export_rep',   'تصدير التقارير',          ['engineer','viewer']]
+];
+
+var ROLE_ORDER = ['engineer','supervisor','tech','cprep','casm','cins','viewer'];
+
+function roleName(k){
+  return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
+           casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || k;
+}
+
+PAGE.perms = { m:'الإعدادات', t:'الصلاحيات', l:'ما يملكه كل دور — واجهةً وقاعدةَ بيانات.',
+  body:function(){
+    return '<p class="lede" style="margin:0 0 16px">الصلاحية تُفرَض في موضعين: الواجهة لا تبني ما لا يملكه الدور، وقواعد Firebase ترفض ما لا يملكه ولو التفّ على الواجهة. والمصدر واحد — هذا الجدول.</p>'
+      + cardFlush('المصفوفة',
+          table(['الصلاحية'].concat(ROLE_ORDER.map(roleName)),
+            PERMS.map(function(p){
+              return ['<strong>' + esc(t(p[1])) + '</strong><br>'
+                      + '<span class="hint" dir="ltr" style="margin:0">' + p[0] + '</span>']
+                .concat(ROLE_ORDER.map(function(r){
+                  return p[2].indexOf(r) > -1
+                    ? '<span class="pill ok">✓</span>' : '<span class="pill off">—</span>';
+                }));
+            })),
+          btn('حفظ المصفوفة','btn-primary btn-sm'))
+      + card('قواعد Firebase المولَّدة',
+          '<p class="hint" style="margin:0 0 11px">تُولَّد من المصفوفة أعلاه وتُنشر على Firestore — فلا تفترق الواجهةُ عن القاعدة.</p>'
+          + '<pre style="background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);'
+          + 'padding:13px;overflow:auto;font-size:11.5px;line-height:1.75;direction:ltr;text-align:left;margin:0">'
+          + esc(fbRules()) + '</pre>',
+          '<div class="actions">' + btn('نسخ','btn-secondary btn-sm')
+          + btn('نشر على Firestore','btn-primary btn-sm') + '</div>')
+      + '<div class="alert warn"><span>أرقام الهواتف محجوبةٌ عن الوزارة في القاعدة نفسها — لا إخفاءً في الواجهة وحدها.</span></div>';
+  }};
+
+function fbRules(){
+  return 'rules_version = \'2\';\n'
+    + 'service cloud.firestore {\n'
+    + '  match /databases/{db}/documents {\n\n'
+    + '    function role() {\n'
+    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.role;\n'
+    + '    }\n'
+    + '    function crewKind() {\n'
+    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.kind;\n'
+    + '    }\n'
+    + '    function isEng()  { return role() == \'engineer\'; }\n'
+    + '    function isSup()  { return role() in [\'engineer\',\'supervisor\']; }\n'
+    + '    function isCrew() { return role() in [\'tech\',\'cprep\',\'casm\',\'cins\']; }\n'
+    + '    function mine(d)  { return d.assignedTo == request.auth.uid; }\n\n'
+    + '    match /sites/{id} {\n'
+    + '      allow read:  if request.auth != null;\n'
+    + '      allow write: if isSup() || (isCrew() && mine(resource.data));\n'
+    + '    }\n\n'
+    + '    match /tasks/{id} {\n'
+    + '      allow read:   if isSup() || (isCrew() && mine(resource.data));\n'
+    + '      allow create: if isSup();\n'
+    + '      allow update: if isEng()\n'
+    + '                    || (isCrew() && mine(resource.data)\n'
+    + '                        && resource.data.kind == crewKind()\n'
+    + '                        && request.resource.data.status != \'معتمد\');\n'
+    + '    }\n\n'
+    + '    match /inventory/{id} { allow read, write: if isEng(); }\n'
+    + '    match /purchases/{id} { allow read: if isEng() || role() == \'viewer\';\n'
+    + '                            allow write: if isEng(); }\n'
+    + '    match /settings/{id}  { allow read: if request.auth != null;\n'
+    + '                            allow write: if isEng(); }\n'
+    + '    match /users/{uid} {\n'
+    + '      allow read:  if isEng() || request.auth.uid == uid;\n'
+    + '      allow write: if isEng();\n'
+    + '    }\n\n'
+    + '    // الهاتف حقلٌ محجوبٌ عن الوزارة في القاعدة\n'
+    + '    match /techs/{id} {\n'
+    + '      allow read: if isSup() || isCrew();\n'
+    + '      allow read: if role() == \'viewer\'\n'
+    + '                  && !(\'phone\' in resource.data.keys());\n'
+    + '      allow write: if isEng();\n'
+    + '    }\n'
+    + '  }\n'
+    + '}';
+}
+
+/* ═══ إسناد الدور والفريق للمستخدم ═══ */
+
+var ASSIGN = [
+  ['محمد صفوت','m.safwat','engineer','—','—'],
+  ['خالد',      'k.mina','supervisor','ins_camp','فريق مخيمات ١'],
+  ['أحمد',      'a.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['سالم',      's.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['ماجد',      'm.tech','cins','ins_camp','فريق مخيمات ١'],
+  ['ياسر',      'y.prep','cprep','—','ورشة التهيئة'],
+  ['وزارة الحج','moh.view','viewer','—','—']
+];
+
+PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'من في أي دور وأي فريق.',
+  body:function(){
+    return card('إسناد',
+        '<div class="grid cols-2">'
+        + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
+        + '<select>' + ASSIGN.map(function(u){
+            return '<option>' + esc(u[0]) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+        + '<select>' + ROLE_ORDER.map(function(r){
+            return '<option value="' + r + '">' + esc(t(roleName(r))) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('نوع الفريق')) + '</label>'
+        + '<select><option>—</option>' + CREW_SPEC.map(function(s){
+            return '<option value="' + s.k + '">' + esc(t(s.n)) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('اسم الفريق')) + '</label>'
+        + '<input placeholder="فريق مخيمات ٢"></div>'
+        + '</div>', btn('إسناد','btn-primary btn-sm'))
+      + cardFlush('المسنَدون — ' + nm(ASSIGN.length),
+          table(['المستخدم','الدور','نوع الفريق','الفريق',''],
+            ASSIGN.map(function(u){
+              var sp = CREW_SPEC.filter(function(s){ return s.k === u[3]; })[0];
+              return ['<strong>' + esc(u[0]) + '</strong><br>'
+                      + '<span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
+                      pill(roleName(u[2]), u[2]==='engineer'?'ok':(u[2]==='viewer'?'info':'acc')),
+                      sp ? esc(t(sp.n)) : '<span class="hint" style="margin:0">—</span>',
+                      esc(u[4]), btn('تغيير','btn-quiet btn-sm')];
+            })))
+      + '<p class="hint">الدور يُكتب في وثيقة المستخدم في Firebase، فتقرؤه القواعد مباشرةً — لا نسخةَ ثانيةً تفترق عنها.</p>';
+  }};
+
+/* ═══ فريق المشرف — من معه ═══ */
+
+PAGE.myteam = { m:'الفرق والفنيون', t:'فريقي', l:'من معك ومَن أنجز ماذا اليوم.',
+  body:function(){
+    var team = ASSIGN.filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
+    var sp = CREW_SPEC[0];
+    return stats([['أفراد الفريق', N(team.length), 'acc'],
+                  ['المعدل اليومي', N(sp.rate) + ' ' + esc(t('مخيم'))],
+                  ['أنجزنا اليوم','٠','ok'],
+                  ['المتبقي عليّ','٠','wrn']])
+      + cardFlush('أفراد فريقي',
+          table(['العضو','الدور','اليوم','هذا الأسبوع','الحالة'],
+            team.map(function(u){
+              return ['<strong>' + esc(u[0]) + '</strong>',
+                      pill(u[2]==='supervisor' ? 'مشرف' : 'فني', u[2]==='supervisor'?'ok':'acc'),
+                      '٠','٠', pill('متاح','ok')];
+            })),
+          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+      + card('طاقم الفريق ومعدله',
+          '<div class="hint" style="margin:0">'
+          + '<strong>' + esc(t(sp.n)) + '</strong> — ' + esc(t(sp.d))
+          + '</div>'
+          + '<div class="stats" style="margin:13px 0 0">'
+          + stat('مشرف', N(sp.sup)) + stat('فنيون', N(sp.tech))
+          + stat('معدّات', sp.gear ? N(sp.gear) : '—')
+          + stat('المعدل/يوم', N(sp.rate))
+          + '</div>')
+      + '<p class="hint">أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.</p>';
+  }};
+
+/* ═══ حسابات الفنيين — إنشاءٌ جماعيٌّ وفرديّ ═══
+   الفني يعمل تحت مشرفه: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا.
+   ويُولَّد له اسم مستخدمٍ من اسمه وكلمةُ مرورٍ يبدّلها أول دخول. */
+
+var TECHS = [
+  { n:'أحمد',   ph:'0501234567', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'سالم',   ph:'0502345678', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'ماجد',   ph:'0503456789', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
+  { n:'ياسر',   ph:'0504567890', crew:'ورشة التهيئة',  sup:'خالد',  u:'', has:0 },
+  { n:'عبدالله',ph:'0505678901', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 },
+  { n:'طارق',   ph:'0506789012', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 }
+];
+
+/* اسم المستخدم من الاسم العربي — أولُ حرفٍ لاتينيٍّ ونقطةٌ ثم بقيته */
+var TR_MAP = { 'ا':'a','أ':'a','إ':'i','آ':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
+  'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
+  'ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w','ي':'y','ى':'a','ة':'a' };
+
+function userOf(name){
+  var s = String(name || '').trim().split(/\s+/)[0];
+  var out = '';
+  for (var i = 0; i < s.length; i++) out += (TR_MAP[s[i]] || '');
+  return out ? (out[0] + '.' + out.slice(1)) : 'tech';
+}
+
+function pwGen(){
+  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ', b = 'abcdefghijkmnpqrstuvwxyz', c = '23456789';
+  var p = '';
+  for (var i = 0; i < 3; i++) p += a[Math.floor(Math.random()*a.length)];
+  for (var j = 0; j < 3; j++) p += b[Math.floor(Math.random()*b.length)];
+  for (var k = 0; k < 4; k++) p += c[Math.floor(Math.random()*c.length)];
+  return p;
+}
+
+var TECH_MADE = [];
+
+PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين',
+  l:'أنشئ لكل فنيٍّ حسابًا بصلاحية «فني» — فردًا أو دفعةً واحدة.',
+  body:function(){
+    var no = TECHS.filter(function(x){ return !x.has; });
+    return stats([['فنيون', N(TECHS.length)],
+                  ['لهم حسابات', N(TECHS.length - no.length), 'ok'],
+                  ['بلا حساب', N(no.length), no.length ? 'wrn' : ''],
+                  ['الصلاحية','فني','acc']])
+
+      + (no.length
+        ? card('إنشاء دفعةً واحدة',
+            '<p class="hint" style="margin:0 0 12px">'
+            + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه «فني» ومشرفُه كما هو مسجَّل. ويبدّل كلمته أولَ دخول.'))
+            + '</p>'
+            + table(['الفني','اسم المستخدم','الفريق','مشرفه','الصلاحية'],
+                no.map(function(x){
+                  return [esc(x.n), '<code class="hint" dir="ltr" style="margin:0">' + esc(userOf(x.n)) + '</code>',
+                          esc(x.crew), esc(x.sup), pill('فني','acc')];
+                })),
+            btn('➕ ' + t('أنشئ') + ' ' + nm(no.length) + ' ' + t('حسابًا'),'btn-primary btn-sm',' data-mkall="1"'))
+        : alertBox('success','كل الفنيين لهم حسابات.'))
+
+      + cardFlush('الفنيون — ' + nm(TECHS.length),
+          table(['الفني','الجوال','الفريق','مشرفه','الحساب',''],
+            TECHS.map(function(x, i){
+              return ['<strong>' + esc(x.n) + '</strong>',
+                      may('phones') ? '<span class="num">' + esc(x.ph) + '</span>'
+                                    : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
+                      esc(x.crew), esc(x.sup),
+                      x.has ? '<code class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</code>'
+                            : pill('بلا حساب','off'),
+                      x.has ? btn('تصفير كلمة المرور','btn-quiet btn-sm')
+                            : btn('أنشئ حسابًا','btn-primary btn-sm',' data-mkone="' + i + '"')];
+            })),
+          btn('➕ إضافة فني','btn-secondary btn-sm'))
+
+      + (TECH_MADE.length
+        ? card('حسابات أُنشئت الآن',
+            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
+            + table(['الفني','اسم المستخدم','كلمة المرور'],
+                TECH_MADE.map(function(m){
+                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
+                          '<code dir="ltr">' + esc(m.p) + '</code>'];
+                })),
+            btn('نسخ الكل','btn-secondary btn-sm'))
+        : '')
+
+      + card('ما يملكه الفني',
+          table(['القدرة','له'],
+            [['رؤية المُسند إليه','نعم'], ['المسح والتوثيق','نعم'],
+             ['التركيب والفك','نعم'], ['رؤية فريقه وأرقامه','نعم'],
+             ['رؤية نقاط غيره','لا'], ['الاعتماد','لا'],
+             ['الإعدادات والمال','لا'], ['إدارة الحسابات','لا']
+            ].map(function(r){
+              return [esc(t(r[0])), r[1] === 'نعم' ? pill('نعم','ok') : pill('لا','off')];
+            })))
+      + '<p class="hint">الفني يرث «مشرف» ويعمل تحته — فقواعدُ Firebase تسمح له بما أُسند إليه وحده، وترفض ما عداه ولو التفّ على الواجهة.</p>';
+  }};
+
+function mkAccount(i){
+  var x = TECHS[i];
+  if (!x || x.has) return;
+  x.u = userOf(x.n);
+  x.has = 1;
+  TECH_MADE.push({ n:x.n, u:x.u, p:pwGen() });
+}
+
+/* ═══ القائمة والشل ═══ */
+
+var NAV = [
+  { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+      ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
+  { g:'المتابعة', icon:'\u25A6', items:[
+      ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
+      ['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],['dis','الفك بعد الموسم']] },
+  { g:'التخطيط', icon:'\u25F7', items:[['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
+  { g:'الطلبات والمسح', icon:'\u25CE', items:[
+      ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
+      ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي']] },
+  { g:'الورشة والمخزون', icon:'\u25A3', items:[
+      ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
+      ['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
+  { g:'المال', icon:'\u25B0', items:[['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
+  { g:'الفرق والفنيون', icon:'\u25D4', items:[
+      ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
+      ['creps','التقارير الدورية'],['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
+      ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
+  { id:'hb', icon:'\u25C9', label:'صحة الأجهزة', solo:true },
+  { g:'الإعدادات', icon:'\u2699', items:[
+      ['users','المستخدمون'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
+      ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
+      ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
+      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],
+      ['budget','الميزانية والاعتماد'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
+  { id:'exp', icon:'\u2913', label:'التصدير والاستيراد', solo:true },
+  { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
+      ['audit','سجل التدقيق'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
+      ['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
+  { g:'المساعدة', icon:'\u003F', items:[['guide','دليل الاستخدام'],['acct','حسابي']] }
+];
+
+var CUR = 'map';
+var OPEN = {};
+
+function isField(id){ return ['map','sites','recs','tools'].indexOf(id) > -1; }
+
+function navHtml(){
+  return NAV.map(function(s){
+    if (s.solo){
+      if (!seesPage(s.id)) return '';
+      return '<a href="#" class="'+(CUR===s.id?'active':'')+'" data-p="'+s.id+'">'
+        + '<span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.label))+'</a>';
+    }
+    var items = s.items.filter(function(i){ return seesPage(i[0]); });
+    if (!items.length) return '';
+    var open = items.some(function(i){ return i[0] === CUR; }) || OPEN[s.g];
+    return '<div class="nav-section" data-open="'+(open?'true':'false')+'" data-g="'+esc(s.g)+'">'
+      + '<button type="button" class="group-toggle" data-gt aria-expanded="'+(open?'true':'false')+'">'
+      + '<span class="group-label"><span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.g))+'</span>'
+      + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel">'
+      + items.map(function(i){
+          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1]))+'</a>';
+        }).join('')
+      + '</div></div>';
+  }).join('');
+}
+
+var FIELD_PAGES = {
+  map:   { m:'الميدان', t:'الخريطة', full:true, body:fieldMap },
+  sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:fieldList },
+  recs:  { m:'الميدان', t:'السجلات', l:'ما جرى في الميدان بالترتيب.', body:fieldRecords },
+  tools: { m:'الميدان', t:'الأدوات', l:'التصديرات والمزامنة.', body:fieldTools }
+};
+
+function render(){
+  if (!seesPage(CUR)){
+    var n = R().nav;
+    CUR = (n === '*') ? 'map' : n[0];
+  }
+  var p = FIELD_PAGES[CUR] || PAGE[CUR];
+  if (!p) p = PAGE.over;
+
+  document.getElementById('nav').innerHTML = navHtml();
+  document.getElementById('crumb').textContent = t(p.t);
+  document.getElementById('brandName').innerHTML =
+      esc(t('قارئات نُسُك')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
+  document.getElementById('whoRole').textContent = t(R().n) + ' — ' + t(R().d);
+  document.getElementById('outBtn').textContent  = t('تسجيل الخروج');
+  document.getElementById('syncMeta').innerHTML  =
+      '<span class="dot"></span>' + esc(t('آخر مزامنة')) + ' <span class="num">٠٢:٥١</span>';
+
+  var c = document.getElementById('content');
+  c.className = 'content' + (p.full ? ' flush' : '');
+  /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
+  var head = p.full ? '' : pageHead(p.m, p.t, p.l,
+    (p.m === 'المتابعة' || may('exportAll'))
+      ? btn('تصدير','btn-secondary',' data-exp="1"') : '');
+  c.innerHTML = p.full ? p.body() : (head + p.body());
+
+  if (CUR === 'map'){ mapDraw(); if (POP_OPEN) c.insertAdjacentHTML('beforeend', popHtml()); }
+  if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
+  window.scrollTo(0, 0);
+}
+
+function enterApp(){
+  var lg = document.getElementById('login');
+  if (lg){
+    var cv = document.getElementById('loginCv');
+    if (cv && cv.__stop) cv.__stop();
+    lg.remove();
+  }
+  document.getElementById('app').style.display = '';
+  render();
+}
+
+document.addEventListener('click', function(e){
+  var a = e.target.closest('[data-p]');
+  if (a){
+    e.preventDefault();
+    CUR = a.getAttribute('data-p');
+    document.body.classList.remove('nav-open');
+    render();
+    return;
+  }
+  var g = e.target.closest('[data-gt]');
+  if (g){
+    var sec = g.closest('.nav-section');
+    var key = sec.getAttribute('data-g');
+    var open = sec.getAttribute('data-open') !== 'false';
+    OPEN[key] = !open;
+    sec.setAttribute('data-open', open ? 'false' : 'true');
+    g.setAttribute('aria-expanded', open ? 'false' : 'true');
+    return;
+  }
+  if (e.target.closest('[data-nav]')) { document.body.classList.toggle('nav-open'); return; }
+  var m = e.target.closest('[data-mode]');
+  if (m){ FIELD_MODE = m.getAttribute('data-mode'); render(); return; }
+
+  var pk = e.target.closest('[data-pop]');
+  if (pk){ POP_OPEN = pk.getAttribute('data-pop') === '1'; render(); return; }
+  if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return; }
+
+  if (e.target.closest('[data-print]')){ try{ window.print(); }catch(err){} return; }
+
+  var b = e.target.closest('.btn, .chip');
+  if (b && !b.closest('#nav') && !b.hasAttribute('href')){
+    var acts = ['data-p','data-exp','data-co','data-cogo','data-role','data-print',
+                'data-pop','data-mode','data-expall','data-nav','data-gt','data-crew','data-cfgp','data-months','data-mkone','data-mkall'];
+    var wired = acts.some(function(a){ return b.hasAttribute(a); });
+    if (!wired){
+      if (b.classList.contains('chip') && !b.closest('.map-top')){
+        b.classList.toggle('on');   /* الشرائح اختيارٌ فعلي لا رسالة */
+        return;
+      }
+      toast(b.textContent.trim());
+      return;
+    }
+  }
+
+  var mk = e.target.closest('[data-mkone]');
+  if (mk){ mkAccount(+mk.getAttribute('data-mkone')); render(); return; }
+  if (e.target.closest('[data-mkall]')){
+    TECHS.forEach(function(x, i){ if (!x.has) mkAccount(i); });
+    render(); return;
+  }
+
+  var mo = e.target.closest('[data-months]');
+  if (mo){ PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }
+
+  var cw = e.target.closest('[data-crew]');
+  if (cw){ CREW_VIEW = cw.getAttribute('data-crew'); render(); return; }
+
+  var rl = e.target.closest('[data-role]');
+  if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
+
+  var co = e.target.closest('[data-co]');
+  if (co){ CO_OPEN = co.getAttribute('data-co') === '1'; render(); return; }
+  var cg = e.target.closest('[data-cogo]');
+  if (cg){
+    if (cg.getAttribute('data-cogo') === '1'){
+      CO_SEL = Array.prototype.filter.call(document.querySelectorAll('.coRow'), function(r){
+        return r.querySelector('.coCk').checked;
+      }).map(function(r){ return r.getAttribute('data-c'); });
+    } else { CO_SEL = []; }
+    CO_OPEN = false; render(); return;
+  }
+  var ex = e.target.closest('[data-exp]');
+  if (ex){ EXP_OPEN = ex.getAttribute('data-exp') === '1'; render(); return; }
+  var ea = e.target.closest('[data-expall]');
+  if (ea){
+    var on = ea.getAttribute('data-expall') === '1';
+    Array.prototype.forEach.call(document.querySelectorAll('.expCk'), function(c){ c.checked = on; });
+    return;
+  }
+});
+
+function toast(label){
+  var old = document.getElementById('nskToast');
+  if (old) old.remove();
+  var el = document.createElement('div');
+  el.id = 'nskToast';
+  el.setAttribute('role','status');
+  el.textContent = label + ' — ' + t('في المعاينة: لا فعل حقيقي');
+  el.style.cssText = 'position:fixed;inset-block-end:20px;inset-inline:0;margin-inline:auto;'
+    + 'width:max-content;max-width:88vw;background:var(--sidebar);color:var(--sidebar-ink);'
+    + 'padding:11px 18px;border-radius:99px;font-size:13px;z-index:200;'
+    + 'box-shadow:0 8px 28px rgba(0,0,0,.45);text-align:center';
+  document.body.appendChild(el);
+  setTimeout(function(){ if (el.parentNode) el.remove(); }, 2200);
+}
+
+document.addEventListener('input', function(e){
+  var el = e.target;
+  if (!el || !el.hasAttribute || !el.hasAttribute('data-cfg')) return;
+  cfgSet(el.getAttribute('data-cfg'), el.getAttribute('data-cfgk'), el.value);
+});
+
+document.addEventListener('change', function(e){
+  var el = e.target;
+  if (!el || !el.hasAttribute || !el.hasAttribute('data-cfg')) return;
+  cfgSet(el.getAttribute('data-cfg'), el.getAttribute('data-cfgk'), el.value);
+  var path = el.getAttribute('data-cfg'), key = el.getAttribute('data-cfgk');
+  render();                                   /* ينتشر الأثر في كل ما بُني فوقه */
+  var back = document.querySelector('[data-cfg="' + path + '"]'
+    + (key ? '[data-cfgk="' + CSS.escape(key) + '"]' : ':not([data-cfgk])'));
+  if (back){ back.focus(); try{ back.select(); }catch(err){} }
+});
+
+window.addEventListener('resize', function(){ if (CUR === 'map') mapDraw(); }, { passive:true });
+
+(function boot(){
+  var th = 'light', lg = 'ar';
+  try{ th = localStorage.getItem('nsk14.theme') || 'light'; lg = localStorage.getItem('nsk14.lang') || 'ar'; }catch(e){}
+  setTheme(th);
+  LANG = I18N[lg] ? lg : 'ar';
+  document.documentElement.lang = LANG;
+  document.documentElement.dir  = I18N[LANG].dir;
+  document.body.setAttribute('data-lang', LANG);
+
+  document.getElementById('langSel').value  = LANG;
+  document.getElementById('langSel').onchange = function(){ setLang(this.value); };
+  document.getElementById('themeBtn').onclick = function(){
+    setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  };
+  loginPaint();
+})();
+
+(function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
+
+</script>
+</body>
+</html>
