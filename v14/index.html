@@ -57,13 +57,16 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ── الهيكل ───────────────────────────────────────── */
-.shell{margin-inline-start:var(--sw);min-height:100vh;display:flex;flex-direction:column}
+.shell{margin-inline-start:var(--sw);min-height:100dvh;display:flex;flex-direction:column}
 .content{padding:22px;max-width:1200px;width:100%;flex:1}
 .content.flush{padding:0;max-width:none}
 
-.sidebar{position:fixed;inset-block:0;inset-inline-start:0;width:var(--sw);
+.sidebar{position:fixed;inset-block:0;inset-inline-start:0;
+  width:min(var(--sw), 86vw); max-width:340px;
   background:var(--sidebar);color:var(--sidebar-ink);display:flex;flex-direction:column;
-  padding:16px 12px;overflow-y:auto;z-index:var(--z-side);overscroll-behavior:contain}
+  padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px));
+  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  z-index:var(--z-side);overscroll-behavior:contain}
 .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 2px}
 .brand-mark{width:38px;height:38px;border-radius:9px;background:var(--brand);
   color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:9.5px;
@@ -211,7 +214,7 @@ input[type="number"]{max-width:140px}
 .chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:500}
 
 /* ── الخريطة ───────────────────────────────────────── */
-.mapwrap{position:relative;height:calc(100vh - 46px);background:#0A0D10;overflow:hidden}
+.mapwrap{position:relative;height:calc(100dvh - 46px);background:#0A0D10;overflow:hidden}
 .mapcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .map-top{position:absolute;inset-block-start:11px;inset-inline:11px;display:flex;gap:7px;
   flex-wrap:wrap;z-index:var(--z-map-ui);pointer-events:auto}
@@ -277,11 +280,15 @@ input[type="number"]{max-width:140px}
   .sidebar{transform:translateX(-100%);transition:transform .22s ease}
   [dir="rtl"] .sidebar{transform:translateX(100%)}
   body.nav-open .sidebar{transform:translateX(0)}
-  body.nav-open::after{content:"";position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:var(--z-veil)}
+  #navVeil{display:none}
+  body.nav-open #navVeil{display:block;position:fixed;inset:0;
+    background:rgba(0,0,0,.55);z-index:var(--z-veil);
+    -webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
   .burger{display:block}
   .content{padding:15px}
   .page-head h1{font-size:22px}
-  .mapwrap{height:calc(100vh - 46px)}
+  .mapwrap{height:calc(100dvh - 46px)}
+  .content{padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}
 }
 @media print{
   .sidebar,.topbar,.btn,.chips,.map-top,.map-fab{display:none!important}
@@ -379,6 +386,23 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .list-item,.cat,.chip,.map-chip{user-select:none;-webkit-user-select:none}
 .map-top,.map-sheet,.map-legend,.map-layerbar,.map-selbar{-webkit-overflow-scrolling:touch}
 
+/* رأسُ القائمة: العلامةُ وزرُّ الإغلاق — ملتصقٌ فلا يضيع بالتمرير */
+.sidebar .brand{position:sticky;inset-block-start:-16px;z-index:2;
+  background:var(--sidebar);padding-block:6px;margin-inline:-2px;padding-inline:2px}
+.nav-x{display:none;width:38px;height:38px;min-height:38px;flex:0 0 auto;
+  margin-inline-start:auto;border-radius:10px;border:1px solid var(--sidebar-line);
+  background:transparent;color:var(--sidebar-ink);font-size:17px;cursor:pointer;
+  align-items:center;justify-content:center}
+.nav-x:active{background:rgba(255,255,255,.08)}
+@media(max-width:900px){ .nav-x{display:inline-flex} }
+
+/* شريطُ سحبٍ في أعلى القائمة يوحي بأنها تُغلق */
+@media(max-width:900px){
+  .sidebar::before{content:"";position:sticky;inset-block-start:0;
+    display:block;width:38px;height:4px;border-radius:99px;
+    background:rgba(255,255,255,.22);margin:-8px auto 10px}
+}
+
 </style>
 </head>
 <body>
@@ -386,10 +410,12 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 <div id="login"></div>
 
 <div id="app" style="display:none">
+  <div id="navVeil" data-navx aria-hidden="true"></div>
   <aside class="sidebar">
     <div class="brand">
       <div class="brand-mark">AFAQY</div>
       <div class="brand-name" id="brandName"></div>
+      <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة">✕</button>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
@@ -736,7 +762,7 @@ en:{
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'Your peers in your stage only',
  'بانتظار التركيب':'Awaiting installation','مجدول للفك':'Scheduled to dismantle',
  'ممر · كاميرا':'Corridor · camera','محطة · جسر · بوابة':'Station · bridge · gate',
- 'معامل الإضافي':'Overtime factor','عادي':'Regular','إضافي':'Overtime','سعر':'Rate','مستحَق':'Earned','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'معامل الإضافي':'Overtime factor','عادي':'Regular','إضافي':'Overtime','سعر':'Rate','مستحَق':'Earned','إغلاق القائمة':'Close menu','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -907,7 +933,7 @@ ur:{
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'صرف آپ کے مرحلے کے ساتھی',
  'بانتظار التركيب':'تنصیب کے منتظر','مجدول للفك':'ہٹانے کے لیے شیڈول',
  'ممر · كاميرا':'راہداری · کیمرہ','محطة · جسر · بوابة':'اسٹیشن · پل · دروازہ',
- 'معامل الإضافي':'اوور ٹائم عنصر','عادي':'عام','إضافي':'اضافی','سعر':'نرخ','مستحَق':'مستحق','تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
+ 'معامل الإضافي':'اوور ٹائم عنصر','عادي':'عام','إضافي':'اضافی','سعر':'نرخ','مستحَق':'مستحق','إغلاق القائمة':'مینو بند کریں','تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
  'أدخل جوال المنسّق':'رابط کار موبائل درج کریں','تعذّر الفتح':'کھولا نہ جا سکا','إشعار':'اطلاع',
@@ -6678,6 +6704,8 @@ document.addEventListener('click', function(e){
   var dd = e.target.closest('[data-ddone]');
   if (dd){ var dp = dd.getAttribute('data-ddone').split('|'); disComplete(dp[0], dp[1]); return; }
 
+  if (e.target.closest('[data-navx]')){ document.body.classList.remove('nav-open'); return; }
+
   var mv = e.target.closest('[data-move]');
   if (mv){ moveStart(mv.getAttribute('data-move')); return; }
   if (e.target.closest('[data-movex]')){ MOVE_ID=''; render(1); return; }
@@ -6859,6 +6887,39 @@ setInterval(function(){
   CORE.flush();
   pullDelta().then(function(n){ if (n) render(1); });
 }, 120000);
+
+/* الهروبُ يغلق ما هو مفتوح، الأحدثَ فالأقدم */
+document.addEventListener('keydown', function(e){
+  if (e.key !== 'Escape') return;
+  if (POP_OPEN){ POP_OPEN = false; render(1); return; }
+  if (ASN_OPEN){ ASN_OPEN = false; render(1); return; }
+  if (MAP_FILT_OPEN){ MAP_FILT_OPEN = false; render(1); return; }
+  if (CO_OPEN){ CO_OPEN = false; render(1); return; }
+  if (EXP_OPEN){ EXP_OPEN = false; render(1); return; }
+  if (document.body.classList.contains('nav-open')){ document.body.classList.remove('nav-open'); return; }
+});
+
+/* سحبةٌ أفقيةٌ على القائمة تغلقها — كما تُغلَق الأدراج */
+(function(){
+  var x0 = 0, y0 = 0, on = false;
+  var sb = document.querySelector('.sidebar');
+  if (!sb) return;
+  sb.addEventListener('touchstart', function(e){
+    if (!document.body.classList.contains('nav-open')) return;
+    var t = e.touches[0];
+    x0 = t.clientX; y0 = t.clientY; on = true;
+  }, { passive:true });
+  sb.addEventListener('touchend', function(e){
+    if (!on) return;
+    on = false;
+    var t = e.changedTouches[0];
+    var dx = t.clientX - x0, dy = t.clientY - y0;
+    if (Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
+    var rtl = document.documentElement.dir === 'rtl';
+    /* في العربية القائمةُ يمينًا فتُغلَق بسحبٍ يمينًا، وفي الإنجليزية العكس */
+    if ((rtl && dx > 0) || (!rtl && dx < 0)) document.body.classList.remove('nav-open');
+  }, { passive:true });
+})();
 
 window.addEventListener('resize', function(){ if (CUR === 'map') mapDraw(); }, { passive:true });
 
