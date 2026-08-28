@@ -364,6 +364,21 @@ body.nav-open .mapwrap{pointer-events:none}
 .tb-btn:active{background:var(--line)}
 @media(max-width:560px){ .topbar-meta{display:none} .tb-btn{width:36px;height:36px} }
 
+/* أشكالُ الأسطورة — تُطابق ما على الخريطة */
+.lg-sep{height:1px;background:#2A333C;margin:7px 0}
+.lg-sh{width:11px;height:11px;flex:0 0 auto;background:#C6CFD7;display:inline-block}
+.lg-sh.sh-c{border-radius:2px}
+.lg-sh.sh-d{transform:rotate(45deg);border-radius:2px}
+.lg-sh.sh-o{border-radius:50%}
+
+/* لمسُ الآيفون: لا تكبيرَ عند التركيز ولا تأخيرَ في الضغط */
+input,select,textarea{font-size:16px}
+@media(min-width:561px){ input,select,textarea{font-size:14px} }
+button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.list-item,.cat,.chip,.map-chip{user-select:none;-webkit-user-select:none}
+.map-top,.map-sheet,.map-legend,.map-layerbar,.map-selbar{-webkit-overflow-scrolling:touch}
+
 </style>
 </head>
 <body>
@@ -719,7 +734,9 @@ en:{
  'أفراد المرحلة':'Stage members','أعمالهم':'Their work','نقاطهم':'Their points',
  'تارجت المرحلة':'Stage target','أعمال':'actions','أيام':'days','المرحلة':'Stage',
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'Your peers in your stage only',
- 'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'بانتظار التركيب':'Awaiting installation','مجدول للفك':'Scheduled to dismantle',
+ 'ممر · كاميرا':'Corridor · camera','محطة · جسر · بوابة':'Station · bridge · gate',
+ 'معامل الإضافي':'Overtime factor','عادي':'Regular','إضافي':'Overtime','سعر':'Rate','مستحَق':'Earned','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -888,7 +905,9 @@ ur:{
  'أفراد المرحلة':'مرحلے کے ارکان','أعمالهم':'ان کے کام','نقاطهم':'ان کے پوائنٹس',
  'تارجت المرحلة':'مرحلے کا ہدف','أعمال':'کام','أيام':'دن','المرحلة':'مرحلہ',
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'صرف آپ کے مرحلے کے ساتھی',
- 'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
+ 'بانتظار التركيب':'تنصیب کے منتظر','مجدول للفك':'ہٹانے کے لیے شیڈول',
+ 'ممر · كاميرا':'راہداری · کیمرہ','محطة · جسر · بوابة':'اسٹیشن · پل · دروازہ',
+ 'معامل الإضافي':'اوور ٹائم عنصر','عادي':'عام','إضافي':'اضافی','سعر':'نرخ','مستحَق':'مستحق','تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
  'أدخل جوال المنسّق':'رابط کار موبائل درج کریں','تعذّر الفتح':'کھولا نہ جا سکا','إشعار':'اطلاع',
@@ -1128,7 +1147,7 @@ var CFG = {
   insCamp:0, insCor:0, disOk:0, disBad:0,
 
   /* ثوابت النظام */
-  ph:0, days:0, hours:0, daysWeek:0,
+  ph:0, otRate:0, days:0, hours:0, daysWeek:0,
   stgCfg:0, stgVal:0, stgIns:0,
 
   /* المال */
@@ -3344,7 +3363,28 @@ function scores(){
     e.acts  = e.survey + e.install + e.dis + e.prep + e.asm;
     e.nDays = Object.keys(e.days).length;
     e.perDay = e.nDays ? Math.round(e.total / e.nDays * 10) / 10 : 0;
-    e.money = Math.round(e.total * cfgGet('ph') * 100) / 100;
+
+    /* الأوفر تايم: تارجتُ المرحلة يُقسَّم على أيام الشهر فيكون سقفَ اليوم،
+       وما زاد عنه في يومٍ يُعدّ إضافيًّا. فلا يُقدَّر بل يُحسب من العمل نفسه. */
+    var cap = dayCapOf(e);
+    e.dayCap = Math.round(cap * 10) / 10;
+    e.over = 0; e.regular = 0;
+    if (cap){
+      /* توزيعُ النقاط على الأيام بنسبة أعمال كلِّ يوم */
+      var totalActs = e.acts || 1;
+      Object.keys(e.days).forEach(function(dy){
+        var share = e.total * (e.days[dy] / totalActs);
+        if (share > cap){ e.regular += cap; e.over += (share - cap); }
+        else e.regular += share;
+      });
+      e.over = Math.round(e.over * 10) / 10;
+      e.regular = Math.round(e.regular * 10) / 10;
+    } else { e.regular = e.total; }
+
+    var ph = cfgGet('ph'), ov = cfgGet('otRate') || 1.5;
+    e.money    = Math.round((e.regular * ph + e.over * ph * ov) * 100) / 100;
+    e.moneyReg = Math.round(e.regular * ph * 100) / 100;
+    e.moneyOT  = Math.round(e.over * ph * ov * 100) / 100;
   });
 
   var list = Object.keys(by).map(function(k){ return by[k]; });
@@ -3369,10 +3409,24 @@ function stageList(stage){
 
 /* تارجتُ المرحلة — من الإعدادات */
 function stageTarget(stage){
-  var T = (typeof T === 'function') ? T() : null;
-  var Tg = window.T ? window.T() : {};
+  var Tg = T();
   return { eng:0, cfg:Tg.prep || 0, asm:Tg.asm || 0,
            ins:Tg.ins || 0, srv:Tg.survey || 0, dis:Tg.dis || 0 }[stage] || 0;
+}
+
+/* سقفُ اليوم: تارجتُ ما عمله موزونًا بأعماله ÷ أيام الشهر.
+   فمن مرحلتُه تركيبٌ وعمل مسحًا يُقاس بتارجت المسح لا بتارجتٍ لا يخصّ عمله. */
+function dayCapOf(e){
+  var days = cfgGet('days');
+  if (!days) return 0;
+  var Tg = T();
+  var mix = [[e.survey, Tg.survey], [e.install, Tg.ins], [e.dis, Tg.dis],
+             [e.prep, Tg.prep], [e.asm, Tg.asm]];
+  var acts = 0, weighted = 0;
+  mix.forEach(function(m){ if (m[0] > 0){ acts += m[0]; weighted += m[0] * (m[1] || 0); } });
+  var tgt = acts ? (weighted / acts) : stageTarget(e.stage);
+  if (!tgt) tgt = stageTarget(e.stage);
+  return tgt ? (tgt / days) : 0;
 }
 
 /* ── صفحة الفني: ما عمله ورقمُه ── */
@@ -3411,6 +3465,15 @@ PAGE.myscore = { m:'الميدان', t:'أدائي',
             + stat('المستحَق', N(e.money) + ' ' + esc(t('ريال')), 'ok')
             + stat('متوسط اليوم', N(e.perDay))
             + '</div>'
+            + (e.dayCap
+              ? table(['البند','نقاط','سعر','مستحَق'], [
+                  ['عادي', N(e.regular), N(cfgGet('ph')), N(e.moneyReg)],
+                  ['إضافي', N(e.over), N(Math.round(cfgGet('ph') * (cfgGet('otRate')||1.5) * 100)/100),
+                   N(e.moneyOT)]
+                ], ['<b>' + t('الإجمالي') + '</b>', N(e.total), '', '<b>' + nm(e.money) + '</b>'])
+                + '<p class="hint">سقفُ يومك <b>' + nm(e.dayCap) + '</b> نقطة — وما زاد عنه في يومٍ '
+                + 'يُحتسب إضافيًّا بمعامل <b>' + nm(cfgGet('otRate') || 1.5) + '</b>.</p>'
+              : '<p class="hint">لم يُضبط تارجتُ مرحلتك — فلا يُفصَل الإضافيُّ عن العادي.</p>')
             + '<p class="hint">النقاطُ تُحتسب من أوزان الإعدادات — والتركيبُ لا يُحتسب حتى يعتمده المهندس.</p>')
         : alertBox('warn','سعرُ النقطة لم يُضبط بعد — يُكتب في الإعدادات ← ثوابت النظام.'))
 
@@ -3463,11 +3526,13 @@ PAGE.stages = { m:'الفرق والفنيون', t:'أداء المراحل',
 
       + (L.length
         ? cardFlush('الفريق — ' + nm(L.length),
-            table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','النقاط','المستحَق'],
+            table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','عادي','إضافي','النقاط','المستحَق'],
               L.map(function(e, i){
                 return [nm(i+1), '<strong>' + esc(e.name) + '</strong>',
                         N(e.survey), N(e.install), N(e.dis), N(e.prep), N(e.asm),
-                        N(e.acts), '<b>' + nm(e.total) + '</b>',
+                        N(e.acts), N(e.regular),
+                        e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
+                        '<b>' + nm(e.total) + '</b>',
                         cfgGet('ph') ? N(e.money) : '—'];
               }),
               ['','<b>' + t('الإجمالي') + '</b>',
@@ -3476,8 +3541,11 @@ PAGE.stages = { m:'الفرق والفنيون', t:'أداء المراحل',
                N(L.reduce(function(a,e){return a+e.dis;},0)),
                N(L.reduce(function(a,e){return a+e.prep;},0)),
                N(L.reduce(function(a,e){return a+e.asm;},0)),
-               N(acts), '<b>' + nm(Math.round(sum)) + '</b>',
-               cfgGet('ph') ? N(Math.round(sum * cfgGet('ph'))) : '—']),
+               N(acts),
+               N(Math.round(L.reduce(function(a,e){return a+e.regular;},0))),
+               N(Math.round(L.reduce(function(a,e){return a+e.over;},0)*10)/10),
+               '<b>' + nm(Math.round(sum)) + '</b>',
+               cfgGet('ph') ? N(Math.round(L.reduce(function(a,e){return a+e.money;},0))) : '—']),
             '<div class="actions">'
             + btn('⬇ إكسل — هذه المرحلة','btn-secondary btn-sm',' data-xls="stage"')
             + btn('⬇ إكسل — كل المراحل','btn-secondary btn-sm',' data-xls="stages"')
@@ -3502,14 +3570,16 @@ PAGE.allscore = { m:'الفرق والفنيون', t:'تقرير الأداء',
 
       + (S.n
         ? cardFlush('الترتيب العام — ' + nm(S.n),
-            table(['#','الاسم','المرحلة','زيارة','تركيب','فك','أعمال','أيام','النقاط','متوسط اليوم','المستحَق'],
+            table(['#','الاسم','المرحلة','زيارة','تركيب','فك','أعمال','أيام','إضافي','النقاط','متوسط اليوم','المستحَق'],
               S.list.map(function(e){
                 var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
                 return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
                         '<strong>' + esc(e.name) + '</strong>',
                         R.i + ' ' + esc(t(R.n)),
                         N(e.survey), N(e.install), N(e.dis),
-                        N(e.acts), N(e.nDays), '<b>' + nm(e.total) + '</b>',
+                        N(e.acts), N(e.nDays),
+                        e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
+                        '<b>' + nm(e.total) + '</b>',
                         N(e.perDay), cfgGet('ph') ? N(e.money) : '—'];
               }),
               ['','<b>' + t('الإجمالي') + '</b>','',
@@ -3517,7 +3587,8 @@ PAGE.allscore = { m:'الفرق والفنيون', t:'تقرير الأداء',
                N(S.list.reduce(function(a,e){return a+e.install;},0)),
                N(S.list.reduce(function(a,e){return a+e.dis;},0)),
                N(S.list.reduce(function(a,e){return a+e.acts;},0)),
-               '', '<b>' + nm(Math.round(sum)) + '</b>', '',
+               '', N(Math.round(S.list.reduce(function(a,e){return a+e.over;},0)*10)/10),
+               '<b>' + nm(Math.round(sum)) + '</b>', '',
                cfgGet('ph') ? N(Math.round(money)) : '—']),
             '<div class="actions">'
             + btn('⬇ إكسل — التقرير','btn-secondary btn-sm',' data-xls="score"')
@@ -4897,6 +4968,29 @@ function coFiltHtml(){
 }
 var MAP_SEL = {};
 
+/* الأسطورةُ تتبع الطبقة: لكلٍّ حالاتُها، ولكلِّ نوعٍ شكلُه ولونُه */
+function legendRows(){
+  var L = (typeof LAYER === 'function') ? LAYER() : LAYERS.survey;
+  var rows = [];
+  if (FIELD_MODE === 'survey'){
+    rows = [['#E8C34B','لم يُزر'], ['#FF8C42','مُسند'], [L.c,'تمت الزيارة']];
+  } else if (FIELD_MODE === 'install'){
+    rows = [['#E8C34B','بانتظار التركيب'], ['#FF8C42','مُسند'], [L.c,'مُركّب']];
+  } else {
+    rows = [['#E8C34B','قابل للفك'], ['#FF8C42','مجدول للفك'], [L.c,'تم الفك']];
+  }
+  var out = rows.map(function(r){
+    return '<div class="lg-row"><i class="lg-dot" style="background:' + r[0] + '"></i>'
+      + esc(t(r[1])) + '</div>';
+  }).join('');
+  /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة */
+  out += '<div class="lg-sep"></div>'
+    + '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'
+    + '<div class="lg-row"><i class="lg-sh sh-d"></i>' + esc(t('ممر · كاميرا')) + '</div>'
+    + '<div class="lg-row"><i class="lg-sh sh-o"></i>' + esc(t('محطة · جسر · بوابة')) + '</div>';
+  return out;
+}
+
 function fieldMap(){
   return '<div class="mapwrap">'
     + '<div id="mapBox" style="position:absolute;inset:0" aria-label="'+esc(t('الخريطة'))+'"></div>'
@@ -4906,8 +5000,9 @@ function fieldMap(){
             + LAYERS[k].i + ' ' + esc(t(LAYERS[k].n)) + '</button>';
         }).join('')
     +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'+esc(t('قمر صناعي'))+'</button>'
-    +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="1">'
-    +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' · '+nm(filtered().length):'')+'</button>'
+    +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
+    +     (MAP_FILT_OPEN?'0':'1')+'">'
+    +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' · '+nm(layerFiltered().length):'')+'</button>'
     +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="1">'
     +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' · '+nm(SEL_N):'')+'</button>'
     +   (MY_ONLY || ROLE==='tech' ? '<button type="button" class="map-chip on" data-myonly="0">'
@@ -4931,13 +5026,7 @@ function fieldMap(){
             return '<div class="lg-row"><i class="lg-dot" style="background:'+coColor(c)+'"></i>'
               + esc(c.length>22 ? c.slice(0,22)+'…' : c) + '</div>';
           }).join('') + (CO_SEL.length>6 ? '<div class="lg-row">+ '+nm(CO_SEL.length-6)+'</div>' : '')
-        : FIELD_MODE === 'survey'
-        ? '<div class="lg-row"><i class="lg-dot" style="background:#E8C34B"></i>'+esc(t('لم يُزر'))+'</div>'
-        + '<div class="lg-row"><i class="lg-dot" style="background:#4BC9F5"></i>'+esc(t('تمت الزيارة'))+'</div>'
-        : '<div class="lg-row"><i class="lg-dot" style="background:#9FB0AA"></i>'+esc(t('لم يبدأ'))+'</div>'
-        + '<div class="lg-row"><i class="lg-dot" style="background:#FF8C42"></i>'+esc(t('مجدول'))+'</div>'
-        + '<div class="lg-row"><i class="lg-dot" style="background:#3AD6A0"></i>'+esc(t('مُركّب'))+'</div>'
-        + '<div class="lg-row"><i class="lg-dot" style="background:#E05252"></i>'+esc(t('متعذّر'))+'</div>')
+        : legendRows())
     + '</div>'
     + (CO_OPEN ? coFiltHtml() : '')
     + '<div class="map-fab">'
@@ -5970,9 +6059,9 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء �
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
   body:function(){
     return cardFlush('وزن الزيارة — ' + nm(MX.length) + ' صنفًا',
-        table(['المشعر','النوع','النقاط','وزن الزيارة'],
+        table(['المشعر','النوع','وزن الزيارة'],
           MX.map(function(r){
-            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])), N(r[2]),
+            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
                     cfgInput('w', r[0] + '|' + r[1], { dec:1 })];
           })))
       + card('التارجت',
@@ -6162,9 +6251,15 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm'))
-      + card('سعر النقطة',
-          '<div class="field" style="max-width:260px;margin:0"><label>' + esc(t('سعر النقطة')) + ' (ريال)</label>'
-          + cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>')
+      + card('سعر النقطة والإضافي',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (ريال)</label>'
+          +   cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>'
+          + '<div class="field"><label>' + esc(t('معامل الإضافي')) + '</label>'
+          +   cfgInput('otRate', undefined, { dec:1, step:'0.05' }) + '</div>'
+          + '</div>'
+          + '<p class="hint">تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه '
+          + 'يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.</p>')
       + card('وزن المراحل في النقطة',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('التهيئة')) + ' ٪</label>'
