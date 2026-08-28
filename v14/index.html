@@ -809,7 +809,7 @@ en:{
  'كيف تُقسَّم النقاط':'How points are split','النسبة المقترحة':'Suggested share',
  'مثال من ٢٠٠ نقطة':'Example of 200 points',
  'المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'The team delivers together; points pool, then each takes his share.',
- 'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'الملخّص المالي':'Financial summary','المنصرف بأبوابه':'Spending by category','الباب':'Category','نسبة الصرف':'Spend ratio','كلفة العمل الميداني':'Field work cost','نقاطٌ أُنجزت':'Points delivered','مستحقّ الفنيين':'Technicians due','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -991,7 +991,7 @@ ur:{
  'كيف تُقسَّم النقاط':'پوائنٹس کیسے تقسیم ہوتے ہیں','النسبة المقترحة':'تجویز کردہ حصہ',
  'مثال من ٢٠٠ نقطة':'٢٠٠ پوائنٹس کی مثال',
  'المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'ٹیم مل کر کام کرتی ہے، پھر ہر ایک اپنا حصہ لیتا ہے۔',
- 'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
+ 'الملخّص المالي':'مالی خلاصہ','المنصرف بأبوابه':'ابواب کے مطابق خرچ','الباب':'باب','نسبة الصرف':'خرچ کا تناسب','كلفة العمل الميداني':'میدانی کام کی لاگت','نقاطٌ أُنجزت':'مکمل پوائنٹس','مستحقّ الفنيين':'ٹیکنیشنز کا مستحق','تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
  'أدخل جوال المنسّق':'رابط کار موبائل درج کریں','تعذّر الفتح':'کھولا نہ جا سکا','إشعار':'اطلاع',
@@ -2057,7 +2057,7 @@ PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة ف
             + '</div>',
             '<div class="actions">'
             + (K ? pill(K.n,'acc') : pill('كل الأنواع','ok'))
-            + btn('تقرير الفريق','btn-secondary btn-sm')
+            + btn('تقرير الفريق','btn-secondary btn-sm',' data-xls="score"')
             + '</div>');
         }).join('')
       + card('كيف تُحسب النقطة',
@@ -4571,6 +4571,16 @@ var SHEETS = {
     });
     return out;
   },
+  budm: function(){
+    var byCat = {}, out = [['الباب','المبلغ','النسبة']];
+    DATA.buys.forEach(function(b){ byCat[b[2]] = (byCat[b[2]] || 0) + b[4]; });
+    var spent = DATA.budget.spent;
+    Object.keys(byCat).forEach(function(c){
+      out.push([c, byCat[c], spent ? Math.round(byCat[c]/spent*100) + '%' : '0%']);
+    });
+    out.push(['الإجمالي', spent, '100%']);
+    return out;
+  },
   score: function(){
     var S = scores(), out = [['#','الاسم','المرحلة','زيارة','تركيب','فك','تهيئة','تجميع',
                               'أعمال','أيام','النقاط','متوسط اليوم','المستحَق']];
@@ -4690,7 +4700,7 @@ var SHEETS = {
 
 var SHEET_NAMES = {
   over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات',
-  score:'أداء الفنيين', stages:'أداء المراحل', tasks:'المهام', items:'القطع والأسعار',
+  score:'أداء الفنيين', stages:'أداء المراحل', tasks:'المهام', budm:'الملخّص المالي', items:'القطع والأسعار',
   invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
   techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
   ev:'سجل الأحداث', perms:'الصلاحيات'
@@ -5885,7 +5895,7 @@ var ROLES = {
   viewer:{
     n:'وزارة', d:'عرض نصي بلا فعل — والهواتف محجوبة حتى في القواعد',
     guide:'دليل الوزارة — المتابعة',
-    nav:['moh','mohRep','over','pace','inst','daily','reg','co','chalm','dis','buys','guide','acct'],
+    nav:['moh','mohRep','over','pace','inst','daily','reg','co','chalm','dis','budm','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -6117,6 +6127,55 @@ PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من
           + btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"')
           + btn('مسح التحديد','btn-danger')
           + '</div>');
+  }};
+
+
+/* ═══ الملخّصُ المالي للوزارة — إجمالٌ بلا مورّدٍ ولا فاتورة ═══
+   المتابعةُ تحتاج الرقمَ لا التفصيل: كم أُنفق ومن أيّ باب، لا من مَن اشتُري. */
+PAGE.budm = { m:'المتابعة', t:'الملخّص المالي',
+  l:'المنصرفُ من الميزانية بأبوابه — بلا مورّدين ولا فواتير.',
+  body:function(){
+    var cap = cfgGet('budCap'), spent = DATA.budget.spent;
+    var byCat = {};
+    DATA.buys.forEach(function(b){ byCat[b[2]] = (byCat[b[2]] || 0) + b[4]; });
+    STATE.buys.forEach(function(b){
+      if (b && b.cat) byCat[b.cat] = (byCat[b.cat] || 0) + (b.amount || 0);
+    });
+    var cats = Object.keys(byCat).sort(function(a,b){ return byCat[b] - byCat[a]; });
+
+    return stats([['الميزانية المعتمدة', cap ? N(cap) : '—', 'acc'],
+                  ['المنصرف', N(spent)],
+                  ['المتبقي', cap ? N(cap - spent) : '—', cap ? 'ok' : ''],
+                  ['نسبة الصرف', cap ? (nm(Math.round(spent / cap * 100)) + '٪') : '—']])
+
+      + (cap ? card('', meter('المستهلك من السقف المعتمد', spent, cap)) : '')
+
+      + (cats.length
+        ? cardFlush('المنصرف بأبوابه',
+            table(['الباب','المبلغ','النسبة'],
+              cats.map(function(c){
+                return [esc(c), N(byCat[c]),
+                        spent ? (nm(Math.round(byCat[c] / spent * 100)) + '٪') : '٠٪'];
+              }),
+              ['<b>' + t('الإجمالي') + '</b>', '<b>' + nm(spent) + '</b>', '١٠٠٪']),
+            btn('⬇ إكسل — الملخّص','btn-secondary btn-sm',' data-xls="budm"'))
+        : card('', alertBox('info','لا مصروفاتٍ مسجّلةً بعد.')))
+
+      + card('كلفة العمل الميداني',
+          (function(){
+            var S = scores();
+            var pts = S.list.reduce(function(a,e){ return a + e.total; }, 0);
+            var pay = S.list.reduce(function(a,e){ return a + e.money; }, 0);
+            return '<div class="stats" style="margin:0">'
+              + stat('نقاطٌ أُنجزت', N(Math.round(pts)))
+              + stat('سعر النقطة', cfgGet('ph') ? N(cfgGet('ph')) + ' ' + t('ريال') : '—')
+              + stat('مستحقّ الفنيين', cfgGet('ph') ? N(Math.round(pay)) : '—', 'acc')
+              + stat('من عملوا', N(S.n))
+              + '</div>';
+          })()
+          + '<p class="hint">محسوبٌ من أوزان الإعدادات وما سجّله كلُّ فنيٍّ — لا رقمَ مكتوبٌ بيد.</p>')
+
+      + '<p class="hint">تفاصيلُ المورّدين والفواتير في دفتر المشتريات — وهو للمهندس.</p>';
   }};
 
 /* ═══ الحوكمة — أربع فجوات تُسدّ ═══ */
@@ -6622,7 +6681,7 @@ var NAV = [
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
       ['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
-      ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة']] },
+      ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
   { g:'التخطيط', icon:'\u25F7', items:[['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
       ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
