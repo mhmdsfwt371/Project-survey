@@ -453,6 +453,22 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .help-rows .hk{display:block;font-size:11.5px;font-weight:700;color:var(--brand);margin-bottom:3px}
 .help-rows p{margin:0;font-size:13.5px;line-height:1.75;color:var(--ink-soft)}
 
+/* أزرارُ التقريب أسفلَ اليمين — كانت تحت الشرائح فلا تُضغَط */
+#mapBox .leaflet-top.leaflet-left{inset-block-start:auto;inset-inline-start:auto;
+  inset-block-end:calc(150px + env(safe-area-inset-bottom,0px));inset-inline-end:14px}
+#mapBox .leaflet-control-zoom{margin:0}
+[dir="rtl"] #mapBox .leaflet-top.leaflet-left{right:auto;left:14px}
+[dir="ltr"] #mapBox .leaflet-top.leaflet-left{left:auto;right:14px}
+
+/* العدّادُ يندمج في شريط الطبقة فلا يزاحم الأسطورة */
+.map-badge{display:none}
+.map-layerbar .lb-c{color:#C6CFD7;font-variant-numeric:tabular-nums;
+  border-inline-start:1px solid #2A333C;padding-inline-start:10px}
+
+.ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-dim);font-weight:400;
+  margin-inline-start:7px;opacity:.7;white-space:nowrap}
+@media(max-width:560px){ .ver-tag{display:none} }
+
 </style>
 </head>
 <body>
@@ -488,6 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
+      <i class="ver-tag">نسخة</i>V14.01
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -3016,7 +3033,9 @@ function layerBar(){
     + '<span class="lb-t" style="color:' + L.c + '">' + L.i + ' ' + esc(t(L.n)) + '</span>'
     + '<span class="lb-n"><b>' + nm(S.ready) + '</b> ' + esc(t('جاهز')) + '</span>'
     + '<span class="lb-n">' + nm(S.done) + ' ' + esc(t('تمّ')) + '</span>'
-    + (S.ptsAll ? '<span class="lb-n">' + nm(S.ptsReady) + ' ' + esc(t('نقطة وزن')) + '</span>' : '')
+    + (S.ptsAll ? '<span class="lb-n">' + nm(S.ptsReady) + ' ' + esc(t('وزن')) + '</span>' : '')
+    + '<span class="lb-c"><span class="num" id="mapCount">\u2014</span> '
+    +   esc(t('معروض')) + '</span>'
     + '</div>';
 }
 
@@ -3614,483 +3633,6 @@ function mineFiltered(){
   return STATE.sites.filter(function(x){ return ids[x.id]; });
 }
 
-/* ═══ ثلاثةٌ نقصت عن العامل ═══
-   المسافةُ من موقعك، وأداةُ فحص الأجهزة، وإشعارُ واتساب. */
-
-/* ── المسافة: الأقربُ أولًا في قائمة المواقع ── */
-var MYPOS = null, POS_WATCH = 0;
-
-function posWatch(){
-  if (typeof navigator === 'undefined' || !navigator.geolocation) return;
-  try{
-    POS_WATCH = navigator.geolocation.watchPosition(function(p){
-      MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
-      if (CUR === 'sites') render(1);
-    }, function(){}, { enableHighAccuracy:false, maximumAge:60000, timeout:15000 });
-  }catch(e){}
-}
-
-/* هافرساين مبسّط — نصفُ قطر الأرض بالكيلومترات */
-function distKm(a, b){
-  if (!a || !b) return null;
-  var R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLng = (b.lng - a.lng) * Math.PI / 180;
-  var s = Math.sin(dLat/2) * Math.sin(dLat/2)
-        + Math.cos(a.lat * Math.PI/180) * Math.cos(b.lat * Math.PI/180)
-        * Math.sin(dLng/2) * Math.sin(dLng/2);
-  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
-}
-
-function distTxt(x){
-  var k = distKm(MYPOS, x);
-  if (k == null) return '';
-  return k < 1 ? (nm(Math.round(k * 1000)) + ' م') : (nm(Math.round(k * 10) / 10) + ' كم');
-}
-
-/* ── أداة الفحص: تُشغَّل من جهاز المكتب على شبكة الميدان ── */
-var PROBE = { on:false, done:0, up:0, down:0, log:[], t:0 };
-
-function probeIp(site){
-  var ins = STATE.inss[site.id] || {};
-  var p = String(ins.prefix || '').trim();
-  return p ? (p + '.1') : '';
-}
-
-function probeOne(ip){
-  /* لا ping في المتصفح — تُطلَب صورةٌ وهميةٌ ويُقاس أيُّهما أسرع: الردُّ أم المهلة */
-  return new Promise(function(res){
-    if (typeof Image === 'undefined'){ res(false); return; }
-    var done = false, img = new Image();
-    var t = setTimeout(function(){ if (!done){ done = true; img.src = ''; res(false); } }, 2500);
-    img.onload = img.onerror = function(){
-      if (done) return;
-      done = true; clearTimeout(t);
-      /* حتى الخطأ دليلُ حياة: المنفذُ ردّ. الصمتُ وحده موت. */
-      res(true);
-    };
-    try{ img.src = 'http://' + ip + '/favicon.ico?t=' + Date.now(); }
-    catch(e){ clearTimeout(t); res(false); }
-  });
-}
-
-function probeRun(){
-  if (PROBE.on) { PROBE.on = false; render(1); return; }
-  var targets = STATE.sites
-    .map(function(s){ return { s:s, ip:probeIp(s) }; })
-    .filter(function(x){ return x.ip; });
-  if (!targets.length){ toast(t('لا عناوين مسجّلة — أدخل بادئة الشبكة عند التركيب')); return; }
-
-  PROBE.on = true; PROBE.done = 0; PROBE.up = 0; PROBE.down = 0; PROBE.log = [];
-  PROBE.t = Date.now();
-  render(1);
-
-  var i = 0;
-  function step(){
-    if (!PROBE.on || i >= targets.length){
-      PROBE.on = false;
-      logEvent('فحص الأجهزة — ' + nm(PROBE.up) + ' حيّ · ' + nm(PROBE.down) + ' صامت');
-      render(1);
-      return;
-    }
-    var batch = targets.slice(i, i + 6);
-    i += 6;
-    Promise.all(batch.map(function(x){
-      return probeOne(x.ip).then(function(alive){
-        PROBE.done++;
-        if (alive) PROBE.up++; else PROBE.down++;
-        STATE.hb = STATE.hb || {};
-        STATE.hb[x.s.id] = { ip:x.ip, alive:alive, at:Date.now() };
-        if (PROBE.log.length < 60)
-          PROBE.log.unshift({ id:x.s.id, ip:x.ip, alive:alive });
-      });
-    })).then(function(){
-      if (PROBE.done % 24 === 0) render(1);
-      setTimeout(step, 60);
-    });
-  }
-  step();
-}
-
-PAGE.probe = { m:'النظام', t:'أداة الفحص',
-  l:'تُشغَّل من جهاز المكتب المتصل بشبكة الميدان — لا من جوال الفني.',
-  body:function(){
-    var withIp = STATE.sites.filter(function(s){ return probeIp(s); }).length;
-    var el = PROBE.t ? Math.round((Date.now() - PROBE.t) / 1000) : 0;
-    return alertBox('info','المتصفّح لا يملك ping — تُطلَب صفحةُ الجهاز ويُقاس ردُّه. والردُّ بخطأٍ دليلُ حياةٍ أيضًا: المنفذُ موجود. الصمتُ وحده موت.')
-      + stats([['عناوين مسجّلة', N(withIp), withIp?'':'wrn'],
-               ['فُحص', N(PROBE.done)],
-               ['حيّ', N(PROBE.up), 'ok'],
-               ['صامت', N(PROBE.down), PROBE.down?'bad':'']])
-      + card('التشغيل',
-          (withIp
-            ? '<div class="actions">'
-              + btn(PROBE.on ? '⏸ ' + t('أوقف') : '▶ ' + t('ابدأ الفحص'),
-                    PROBE.on ? 'btn-danger' : 'btn-primary', ' data-probe="1"')
-              + (PROBE.on ? '<span class="hint" style="margin:0">'
-                  + nm(PROBE.done) + ' / ' + nm(withIp) + ' · ' + nm(el) + ' ث</span>' : '')
-              + '</div>'
-              + (PROBE.on ? meter('التقدم', PROBE.done, withIp) : '')
-            : '<p class="hint" style="margin:0">لا عناوين بعد — تُشتقّ من بادئة الشبكة التي تُدخَل عند التركيب.</p>'))
-      + (PROBE.log.length
-        ? cardFlush('آخر ما فُحص',
-            table(['النقطة','العنوان','الحالة'],
-              PROBE.log.slice(0, 24).map(function(r){
-                return ['<span class="num">' + esc(r.id) + '</span>',
-                        '<span class="num" dir="ltr">' + esc(r.ip) + '</span>',
-                        pill(r.alive ? 'حيّ' : 'صامت', r.alive ? 'ok' : 'off')];
-              })))
-        : '')
-      + card('اصطلاح العناوين',
-          table(['الجهاز','آخر خانة','مثال'], [
-            ['راوتر','<span class="num">.1</span>','<span class="num" dir="ltr">10.20.30.1</span>'],
-            ['قارئ','<span class="num">.2</span>','<span class="num" dir="ltr">10.20.30.2</span>'],
-            ['كاميرا','<span class="num">.3</span>','<span class="num" dir="ltr">10.20.30.3</span>']
-          ])
-          + '<p class="hint">تُشتقّ كلها من بادئةٍ واحدةٍ تُكتب مرةً عند التركيب.</p>');
-  }};
-
-/* ── إشعار واتساب ── */
-function waLink(phone, text){
-  var p = String(phone || '').replace(/[^\d]/g, '');
-  if (p.indexOf('0') === 0) p = '966' + p.slice(1);
-  if (p && p.indexOf('966') !== 0 && p.length === 9) p = '966' + p;
-  return 'https://wa.me/' + p + '?text=' + encodeURIComponent(text || '');
-}
-
-function waCoText(co, when){
-  return 'السلام عليكم\n'
-    + 'بخصوص تركيب قارئات نُسُك — حج ١٤٤٨هـ\n\n'
-    + 'الشركة: ' + co + '\n'
-    + 'موعد التركيب المتوقع: ' + (when || '—') + '\n\n'
-    + 'نرجو تسهيل دخول الفريق وتوفير مصدر كهرباء في الموقع.\n'
-    + 'وشكرًا لتعاونكم.';
-}
-
-function waTechText(name, n, when){
-  return 'السلام عليكم ' + name + '\n'
-    + 'مهامك ليوم ' + (when || 'اليوم') + ': ' + nm(n) + ' نقطة\n'
-    + 'افتح التطبيق لترى تفاصيلها على الخريطة.';
-}
-
-PAGE.conote = { m:'الفرق والفنيون', t:'إشعار الشركات',
-  l:'رسالةٌ جاهزةٌ لكل شركةٍ بموعد تركيبها — تُفتح في واتساب.',
-  body:function(){
-    var S = siteStats();
-    var cos = Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b] - S.byCo[a]; });
-    return card('إشعار شركة',
-        '<div class="grid cols-2">'
-        + '<div class="field"><label>' + esc(t('الشركة')) + '</label>'
-        + '<select id="waCo">' + cos.slice(0, 60).map(function(c){
-            return '<option>' + esc(c) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('جوال المنسّق')) + '</label>'
-        + '<input id="waPh" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx"></div>'
-        + '<div class="field"><label>' + esc(t('الموعد')) + '</label>'
-        + '<input id="waWhen" type="date"></div>'
-        + '</div>'
-        + '<div class="actions">'
-        + btn('واتساب','btn-primary',' data-wa="co"')
-        + btn('نسخ النص','btn-secondary',' data-wacopy="co"')
-        + '</div>')
-      + cardFlush('الشركات — ' + nm(cos.length),
-          table(['الشركة','مواقعها','مُسح','مُركّب',''],
-            cos.slice(0, 40).map(function(c){
-              return [esc(c), N(S.byCo[c]), '٠', '٠',
-                      btn('إشعار','btn-quiet btn-sm',' data-wapick="' + esc(c) + '"')];
-            })))
-      + '<p class="hint">الرقمُ يُصحَّح تلقائيًّا: صفرُ البداية يصير ٩٦٦ — فلا يُرسَل إلى رقمٍ خاطئ.</p>';
-  }};
-
-function waSend(kind, copy){
-  var co = (document.getElementById('waCo') || {}).value || '';
-  var ph = (document.getElementById('waPh') || {}).value || '';
-  var wn = (document.getElementById('waWhen') || {}).value || '';
-  var txt = waCoText(co, wn);
-  if (copy){
-    try{
-      if (navigator.clipboard) navigator.clipboard.writeText(txt);
-      toast(t('نُسخ النص'));
-    }catch(e){ toast(t('تعذّر النسخ')); }
-    return;
-  }
-  if (!ph){ toast(t('أدخل جوال المنسّق')); return; }
-  try{ window.open(waLink(ph, txt), '_blank'); }catch(e){ toast(t('تعذّر الفتح')); }
-  logEvent('إشعار واتساب — ' + co);
-}
-
-/* ═══ موقعٌ غير مسجّل — يُضاف من الميدان ═══
-   ما لم يكن في القاعدة يُسجَّل بموضعه الحقيقي، ويُوسَم جديدًا حتى يعتمده المهندس. */
-var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', name:'', sq:'', sign:'', co:'', note:'' };
-
-PAGE.newsite = { m:'الميدان', t:'تسجيل موقع جديد',
-  l:'ما لم يكن في القاعدة — يُسجَّل بموضعك ويُعتمَد لاحقًا.',
-  body:function(){
-    var has = NEWSITE.lat && NEWSITE.lng;
-    return (MYPOS
-      ? alertBox('success','موضعُك مُلتقَط — يُسجَّل الموقعُ عنده ما لم تُحرّكه لاحقًا.')
-      : alertBox('warn','لم يُلتقَط موضعُك بعد — اضغط «التقط موضعي» أو سجّل ثم حرّكه من الخريطة.'))
-
-      + card('الموضع',
-          '<div class="pop-rows" style="margin:0">'
-          + '<div><span class="k">' + esc(t('الإحداثيات')) + '</span><span class="num">'
-          +   (has ? (NEWSITE.lat.toFixed(5) + ', ' + NEWSITE.lng.toFixed(5))
-                   : (MYPOS ? (MYPOS.lat.toFixed(5) + ', ' + MYPOS.lng.toFixed(5)) : '—'))
-          + '</span></div>'
-          + '</div>',
-          btn('◎ ' + t('التقط موضعي'),'btn-secondary btn-sm',' data-nsloc="1"'))
-
-      + card('بيانات الموقع',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('المشعر')) + '</label>'
-          + '<select data-ns="zone">' + ['منى','عرفات','مزدلفة'].map(function(z){
-              return '<option' + (NEWSITE.zone===z?' selected':'') + '>' + esc(z) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
-          + '<select data-ns="type">' + Object.keys(CAT_DEF).map(function(k){
-              return '<option value="' + esc(k) + '"' + (NEWSITE.type===k?' selected':'') + '>'
-                + CAT_DEF[k].i + ' ' + esc(t(CAT_DEF[k].l)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('رقم المربع')) + '</label>'
-          + '<input data-ns="sq" value="' + esc(NEWSITE.sq) + '" dir="auto"></div>'
-          + '<div class="field"><label>' + esc(t('رقم الشاخص')) + '</label>'
-          + '<input data-ns="sign" value="' + esc(NEWSITE.sign) + '" dir="auto"></div>'
-          + '</div>'
-          + '<div class="field"><label>' + esc(t('الشركة')) + ' — ' + esc(t('اختياري')) + '</label>'
-          + '<input data-ns="co" value="' + esc(NEWSITE.co) + '" dir="auto" list="nsCo">'
-          + '<datalist id="nsCo">' + Object.keys(siteStats().byCo).slice(0,60).map(function(c){
-              return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div>'
-          + '<div class="field"><label>' + esc(t('لماذا لم يكن مسجّلًا؟')) + '</label>'
-          + '<textarea data-ns="note" rows="2">' + esc(NEWSITE.note) + '</textarea></div>')
-
-      + card('', '<div class="actions">'
-          + btn('سجّل الموقع','btn-primary',' data-nssave="1"')
-          + btn('إلغاء','btn-secondary',' data-p="map"')
-          + '</div>'
-          + '<p class="hint">يُوسَم «جديدٌ بانتظار الاعتماد» ولا يدخل الإحصاءَ حتى يعتمده المهندس.</p>');
-  }};
-
-function nsCapture(){
-  if (!navigator.geolocation){ toast(t('تعذّر تحديد الموقع')); return; }
-  toast(t('يُلتقَط موضعك…'));
-  navigator.geolocation.getCurrentPosition(function(p){
-    NEWSITE.lat = p.coords.latitude; NEWSITE.lng = p.coords.longitude;
-    MYPOS = { lat:NEWSITE.lat, lng:NEWSITE.lng, at:Date.now() };
-    toast(t('التُقط'));
-    render(1);
-  }, function(){ toast(t('تعذّر تحديد الموقع')); }, { enableHighAccuracy:true, timeout:10000 });
-}
-
-function nsSave(){
-  var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
-  if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
-  if (!NEWSITE.sq && !NEWSITE.sign){ toast(t('أدخل المربعَ أو الشاخص')); return; }
-
-  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[NEWSITE.zone] || 'NEW';
-  var tp  = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN',
-              'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD' }[NEWSITE.type] || 'NEW';
-  var n = STATE.sites.filter(function(x){ return x.id.indexOf('NSK-' + pre + '-' + tp + '-N') === 0; }).length + 1;
-  var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
-
-  var site = {
-    id:id, name:NEWSITE.zone + ' - ' + (NEWSITE.sq ? 'مربع ' + NEWSITE.sq + ' - ' : '')
-        + (NEWSITE.sign ? 'شاخص ' + NEWSITE.sign : t(CAT_DEF[NEWSITE.type].l)),
-    zone:NEWSITE.zone, type:NEWSITE.type, work:'موقع جديد',
-    lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign, co:NEWSITE.co,
-    region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
-    isNew:true, approved:false, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
-    note:NEWSITE.note
-  };
-  STATE.sites.push(site);
-  SITE_IX = null; SITE_TOK = null;
-  CORE.set('newsites', id, site);
-  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone);
-  statBump();
-  toast(id + ' \u00b7 ' + t('سُجّل — بانتظار الاعتماد'));
-  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type,
-              name:'', sq:'', sign:'', co:'', note:'' };
-  DETAIL_ID = id; CUR = 'site';
-  render(1);
-}
-
-/* ═══ جسرُ Google Drive — الصورُ في مساحتك لا في Firestore ═══
-   خمسةُ تيرا في درايفك تكفي المشروعَ كلَّه، ووثيقةُ Firestore لا تتجاوز
-   ميغابايتًا — فتُرفَع الصورُ هناك ويُحفَظ معرّفُها هنا. */
-
-var DRV = {
-  /* يُملأ من الإعدادات — يُنشَأ في Google Cloud Console */
-  clientId: '',
-  folderId: '',                 /* مجلّدُ المشروع في درايفك */
-  scope: 'https://www.googleapis.com/auth/drive.file',
-  token: '', exp: 0, ready: false, lib: false
-};
-
-function drvCfg(){
-  try{
-    DRV.clientId = localStorage.getItem('nsk14.drv.client') || '';
-    DRV.folderId = localStorage.getItem('nsk14.drv.folder') || '';
-  }catch(e){}
-  return !!DRV.clientId;
-}
-
-/* تُحمَّل مكتبةُ جوجل كسولًا — لا تُطلَب قبل أول رفع */
-function drvLoad(){
-  if (DRV.lib) return Promise.resolve(true);
-  if (typeof window === 'undefined') return Promise.resolve(false);
-  return new Promise(function(res){
-    var s = document.createElement('script');
-    s.src = 'https://accounts.google.com/gsi/client';
-    s.onload  = function(){ DRV.lib = true; res(true); };
-    s.onerror = function(){ res(false); };
-    document.head.appendChild(s);
-    setTimeout(function(){ if (!DRV.lib) res(false); }, 9000);
-  });
-}
-
-/* الإذنُ يُطلَب مرةً ويُجدَّد قبل انتهائه بدقيقة */
-function drvAuth(){
-  if (DRV.token && Date.now() < DRV.exp - 60000) return Promise.resolve(DRV.token);
-  if (!drvCfg()) return Promise.reject(new Error('no-client'));
-  return drvLoad().then(function(ok){
-    if (!ok || !window.google || !google.accounts) throw new Error('no-lib');
-    return new Promise(function(res, rej){
-      var tc = google.accounts.oauth2.initTokenClient({
-        client_id: DRV.clientId,
-        scope: DRV.scope,
-        callback: function(r){
-          if (r && r.access_token){
-            DRV.token = r.access_token;
-            DRV.exp = Date.now() + (r.expires_in || 3600) * 1000;
-            DRV.ready = true;
-            res(DRV.token);
-          } else rej(new Error('denied'));
-        }
-      });
-      tc.requestAccessToken({ prompt: DRV.token ? '' : 'consent' });
-    });
-  });
-}
-
-/* dataURL إلى Blob — الصورُ مضغوطةٌ أصلًا على الجهاز */
-function dataToBlob(d){
-  var i = d.indexOf(','), meta = d.slice(0, i);
-  var mime = (meta.match(/data:([^;]+)/) || [,'image/jpeg'])[1];
-  var bin = atob(d.slice(i + 1));
-  var arr = new Uint8Array(bin.length);
-  for (var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
-  return new Blob([arr], { type: mime });
-}
-
-/* الرفع: وصفٌ ثم محتوى، في طلبٍ واحدٍ متعدّد الأجزاء */
-function drvUpload(name, dataUrl){
-  return drvAuth().then(function(tok){
-    var blob = dataToBlob(dataUrl);
-    var meta = { name: name, mimeType: blob.type };
-    if (DRV.folderId) meta.parents = [DRV.folderId];
-    var fd = new FormData();
-    fd.append('metadata', new Blob([JSON.stringify(meta)], { type:'application/json' }));
-    fd.append('file', blob);
-    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',
-      { method:'POST', headers:{ Authorization:'Bearer ' + tok }, body: fd })
-      .then(function(r){ return r.ok ? r.json() : r.json().then(function(e){ throw new Error(e.error && e.error.message || 'upload'); }); });
-  });
-}
-
-/* طابورُ الصور: تُحفَظ محليًّا ثم تُرفَع حين تتاح الشبكةُ والإذن */
-var PHOTO_Q = [];
-
-function photoQueue(siteId, kind, dataUrl){
-  PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0 });
-  CORE.saveSoon();
-  photoFlush();
-}
-
-function photoFlush(){
-  if (!PHOTO_Q.length || !STATE.meta.online || !drvCfg()) return Promise.resolve(0);
-  var it = PHOTO_Q[0];
-  var nm2 = it.site + '__' + it.kind + '__' + new Date(it.at).toISOString().slice(0,19).replace(/[:T]/g,'-') + '.jpg';
-  return drvUpload(nm2, it.data).then(function(r){
-    PHOTO_Q.shift();
-    /* في الوثيقة معرّفُ الملف ورابطُه لا الصورةُ نفسها */
-    CORE.set('photos', it.site + '_' + it.kind, {
-      site:it.site, kind:it.kind, driveId:r.id, link:r.webViewLink, at:it.at
-    });
-    logEvent('رفع صورة — ' + it.site + ' · ' + it.kind);
-    if (PHOTO_Q.length) setTimeout(photoFlush, 400);
-    return 1;
-  }).catch(function(e){
-    it.tries++;
-    if (it.tries > 5){ PHOTO_Q.shift(); logEvent('تعذّر رفع صورة — ' + it.site); }
-    return 0;
-  });
-}
-
-PAGE.drive = { m:'النظام', t:'تخزين الصور',
-  l:'الصورُ في درايفك لا في قاعدة البيانات — خمسةُ تيرا تكفي الموسمَ كلَّه.',
-  body:function(){
-    drvCfg();
-    var n = STATE.sites.length;
-    var est = Math.round(n * 4 * 180 / 1024);   /* أربعُ صورٍ للنقطة بمئةٍ وثمانين كيلو */
-    return stats([['في الطابور', N(PHOTO_Q.length), PHOTO_Q.length?'wrn':'ok'],
-                  ['رُفعت', N(Object.keys(STATE.photos || {}).length), 'ok'],
-                  ['المتوقَّع للمشروع', N(est) + ' ' + t('ميجا')],
-                  ['الإذن', DRV.ready ? t('ممنوح') : t('لم يُطلَب'), DRV.ready?'ok':'wrn']])
-
-      + (drvCfg()
-        ? alertBox('success','درايفك موصولٌ — الصورُ تُرفَع إليه ويُحفَظ رابطُها في السجل.')
-        : alertBox('warn','لم يُوصَل درايفك بعد — الصورُ تُحفَظ على الجهاز وتنتظر.'))
-
-      + card('الوصل',
-          '<div class="field"><label>Client ID</label>'
-          + '<input id="drvClient" dir="ltr" placeholder="xxxxx.apps.googleusercontent.com" value="'
-          +   esc(DRV.clientId) + '"></div>'
-          + '<div class="field"><label>' + esc(t('معرّف مجلّد المشروع')) + ' — ' + esc(t('اختياري')) + '</label>'
-          + '<input id="drvFolder" dir="ltr" placeholder="1AbC…" value="' + esc(DRV.folderId) + '"></div>'
-          + '<p class="hint">المعرّفُ من رابط المجلّد في درايفك — ما بعد ‎/folders/‎. وإن تُرك فارغًا رُفعت في الجذر.</p>',
-          '<div class="actions">'
-          + btn('احفظ','btn-primary btn-sm',' data-drvsave="1"')
-          + btn('اختبر الإذن','btn-secondary btn-sm',' data-drvtest="1"')
-          + '</div>')
-
-      + card('كيف يُنشَأ Client ID',
-          table(['#','الخطوة'], [
-            ['١','افتح console.cloud.google.com وأنشئ مشروعًا أو اختر قائمًا'],
-            ['٢','فعّل Google Drive API من مكتبة الواجهات'],
-            ['٣','في «بيانات الاعتماد» أنشئ OAuth client ID من نوع تطبيق ويب'],
-            ['٤','أضف mhmdsfwt371.github.io إلى Authorized JavaScript origins'],
-            ['٥','انسخ المعرّفَ والصقه أعلاه'],
-            ['٦','أنشئ مجلّدًا في درايفك للمشروع وانسخ معرّفه من رابطه']
-          ])
-          + '<p class="hint">النطاقُ المطلوبُ drive.file — لا يرى إلا ما يرفعه التطبيق، لا بقيةَ درايفك.</p>')
-
-      + card('لماذا لا تُحفَظ في قاعدة البيانات',
-          '<p class="hint" style="margin:0">'
-          + esc(t('وثيقةُ Firestore لا تتجاوز ميغابايتًا، وصورةٌ واحدةٌ تقاربه. ولو حُفظت هناك لامتلأت الحصّةُ في أيام. أما درايفك فخمسةُ تيرا — تكفي المشروعَ مرارًا. ويبقى في السجل معرّفُ الملف ورابطُه فيُفتَح بضغطة.'))
-          + '</p>');
-  }};
-
-function drvSave(){
-  var c = (document.getElementById('drvClient') || {}).value || '';
-  var f = (document.getElementById('drvFolder') || {}).value || '';
-  try{
-    localStorage.setItem('nsk14.drv.client', c.trim());
-    localStorage.setItem('nsk14.drv.folder', f.trim());
-  }catch(e){}
-  DRV.clientId = c.trim(); DRV.folderId = f.trim();
-  logEvent('وصل درايف — ' + (c ? 'مُعرَّف' : 'أُفرغ'));
-  toast(c ? t('حُفظ — جرّب الإذن') : t('أُفرغ الوصل'));
-  render(1);
-}
-
-function drvTest(){
-  if (!drvCfg()){ toast(t('أدخل Client ID أولًا')); return; }
-  toast(t('يُطلَب الإذن…'));
-  drvAuth().then(function(){
-    toast(t('الإذن ممنوح — الصورُ سترفَع'));
-    photoFlush();
-    render(1);
-  }).catch(function(e){
-    toast(t('تعذّر الإذن') + ' · ' + String(e.message || e));
-  });
-}
-
 /* ═══ النماذج الميدانية — تكتب فعلًا في المحرك ═══
    دورةُ المهمة: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد (أو مُعاد بسبب).
    ولا نقاطَ تُحتسب قبل الاعتماد. */
@@ -4401,6 +3943,489 @@ function apprIns(id, ok){
   CORE.set('inss', id, r);
   toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));
   render();
+}
+
+/* ═══ ثلاثةٌ نقصت عن العامل ═══
+   المسافةُ من موقعك، وأداةُ فحص الأجهزة، وإشعارُ واتساب. */
+
+/* ── المسافة: الأقربُ أولًا في قائمة المواقع ── */
+var MYPOS = null, POS_WATCH = 0;
+
+function posWatch(){
+  if (typeof navigator === 'undefined' || !navigator.geolocation) return;
+  try{
+    POS_WATCH = navigator.geolocation.watchPosition(function(p){
+      MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
+      if (CUR === 'sites') render(1);
+    }, function(){}, { enableHighAccuracy:false, maximumAge:60000, timeout:15000 });
+  }catch(e){}
+}
+
+/* هافرساين مبسّط — نصفُ قطر الأرض بالكيلومترات */
+function distKm(a, b){
+  if (!a || !b) return null;
+  var R = 6371, dLat = (b.lat - a.lat) * Math.PI / 180, dLng = (b.lng - a.lng) * Math.PI / 180;
+  var s = Math.sin(dLat/2) * Math.sin(dLat/2)
+        + Math.cos(a.lat * Math.PI/180) * Math.cos(b.lat * Math.PI/180)
+        * Math.sin(dLng/2) * Math.sin(dLng/2);
+  return R * 2 * Math.atan2(Math.sqrt(s), Math.sqrt(1-s));
+}
+
+function distTxt(x){
+  var k = distKm(MYPOS, x);
+  if (k == null) return '';
+  return k < 1 ? (nm(Math.round(k * 1000)) + ' م') : (nm(Math.round(k * 10) / 10) + ' كم');
+}
+
+/* ── أداة الفحص: تُشغَّل من جهاز المكتب على شبكة الميدان ── */
+var PROBE = { on:false, done:0, up:0, down:0, log:[], t:0 };
+
+function probeIp(site){
+  var ins = STATE.inss[site.id] || {};
+  var p = String(ins.prefix || '').trim();
+  return p ? (p + '.1') : '';
+}
+
+function probeOne(ip){
+  /* لا ping في المتصفح — تُطلَب صورةٌ وهميةٌ ويُقاس أيُّهما أسرع: الردُّ أم المهلة */
+  return new Promise(function(res){
+    if (typeof Image === 'undefined'){ res(false); return; }
+    var done = false, img = new Image();
+    var t = setTimeout(function(){ if (!done){ done = true; img.src = ''; res(false); } }, 2500);
+    img.onload = img.onerror = function(){
+      if (done) return;
+      done = true; clearTimeout(t);
+      /* حتى الخطأ دليلُ حياة: المنفذُ ردّ. الصمتُ وحده موت. */
+      res(true);
+    };
+    try{ img.src = 'http://' + ip + '/favicon.ico?t=' + Date.now(); }
+    catch(e){ clearTimeout(t); res(false); }
+  });
+}
+
+function probeRun(){
+  if (PROBE.on) { PROBE.on = false; render(1); return; }
+  var targets = STATE.sites
+    .map(function(s){ return { s:s, ip:probeIp(s) }; })
+    .filter(function(x){ return x.ip; });
+  if (!targets.length){ toast(t('لا عناوين مسجّلة — أدخل بادئة الشبكة عند التركيب')); return; }
+
+  PROBE.on = true; PROBE.done = 0; PROBE.up = 0; PROBE.down = 0; PROBE.log = [];
+  PROBE.t = Date.now();
+  render(1);
+
+  var i = 0;
+  function step(){
+    if (!PROBE.on || i >= targets.length){
+      PROBE.on = false;
+      logEvent('فحص الأجهزة — ' + nm(PROBE.up) + ' حيّ · ' + nm(PROBE.down) + ' صامت');
+      render(1);
+      return;
+    }
+    var batch = targets.slice(i, i + 6);
+    i += 6;
+    Promise.all(batch.map(function(x){
+      return probeOne(x.ip).then(function(alive){
+        PROBE.done++;
+        if (alive) PROBE.up++; else PROBE.down++;
+        STATE.hb = STATE.hb || {};
+        STATE.hb[x.s.id] = { ip:x.ip, alive:alive, at:Date.now() };
+        if (PROBE.log.length < 60)
+          PROBE.log.unshift({ id:x.s.id, ip:x.ip, alive:alive });
+      });
+    })).then(function(){
+      if (PROBE.done % 24 === 0) render(1);
+      setTimeout(step, 60);
+    });
+  }
+  step();
+}
+
+PAGE.probe = { m:'النظام', t:'أداة الفحص',
+  l:'تُشغَّل من جهاز المكتب المتصل بشبكة الميدان — لا من جوال الفني.',
+  body:function(){
+    var withIp = STATE.sites.filter(function(s){ return probeIp(s); }).length;
+    var el = PROBE.t ? Math.round((Date.now() - PROBE.t) / 1000) : 0;
+    return alertBox('info','المتصفّح لا يملك ping — تُطلَب صفحةُ الجهاز ويُقاس ردُّه. والردُّ بخطأٍ دليلُ حياةٍ أيضًا: المنفذُ موجود. الصمتُ وحده موت.')
+      + stats([['عناوين مسجّلة', N(withIp), withIp?'':'wrn'],
+               ['فُحص', N(PROBE.done)],
+               ['حيّ', N(PROBE.up), 'ok'],
+               ['صامت', N(PROBE.down), PROBE.down?'bad':'']])
+      + card('التشغيل',
+          (withIp
+            ? '<div class="actions">'
+              + btn(PROBE.on ? '⏸ ' + t('أوقف') : '▶ ' + t('ابدأ الفحص'),
+                    PROBE.on ? 'btn-danger' : 'btn-primary', ' data-probe="1"')
+              + (PROBE.on ? '<span class="hint" style="margin:0">'
+                  + nm(PROBE.done) + ' / ' + nm(withIp) + ' · ' + nm(el) + ' ث</span>' : '')
+              + '</div>'
+              + (PROBE.on ? meter('التقدم', PROBE.done, withIp) : '')
+            : '<p class="hint" style="margin:0">لا عناوين بعد — تُشتقّ من بادئة الشبكة التي تُدخَل عند التركيب.</p>'))
+      + (PROBE.log.length
+        ? cardFlush('آخر ما فُحص',
+            table(['النقطة','العنوان','الحالة'],
+              PROBE.log.slice(0, 24).map(function(r){
+                return ['<span class="num">' + esc(r.id) + '</span>',
+                        '<span class="num" dir="ltr">' + esc(r.ip) + '</span>',
+                        pill(r.alive ? 'حيّ' : 'صامت', r.alive ? 'ok' : 'off')];
+              })))
+        : '')
+      + card('اصطلاح العناوين',
+          table(['الجهاز','آخر خانة','مثال'], [
+            ['راوتر','<span class="num">.1</span>','<span class="num" dir="ltr">10.20.30.1</span>'],
+            ['قارئ','<span class="num">.2</span>','<span class="num" dir="ltr">10.20.30.2</span>'],
+            ['كاميرا','<span class="num">.3</span>','<span class="num" dir="ltr">10.20.30.3</span>']
+          ])
+          + '<p class="hint">تُشتقّ كلها من بادئةٍ واحدةٍ تُكتب مرةً عند التركيب.</p>');
+  }};
+
+/* ── إشعار واتساب ── */
+function waLink(phone, text){
+  var p = String(phone || '').replace(/[^\d]/g, '');
+  if (p.indexOf('0') === 0) p = '966' + p.slice(1);
+  if (p && p.indexOf('966') !== 0 && p.length === 9) p = '966' + p;
+  return 'https://wa.me/' + p + '?text=' + encodeURIComponent(text || '');
+}
+
+function waCoText(co, when){
+  return 'السلام عليكم\n'
+    + 'بخصوص تركيب قارئات نُسُك — حج ١٤٤٨هـ\n\n'
+    + 'الشركة: ' + co + '\n'
+    + 'موعد التركيب المتوقع: ' + (when || '—') + '\n\n'
+    + 'نرجو تسهيل دخول الفريق وتوفير مصدر كهرباء في الموقع.\n'
+    + 'وشكرًا لتعاونكم.';
+}
+
+function waTechText(name, n, when){
+  return 'السلام عليكم ' + name + '\n'
+    + 'مهامك ليوم ' + (when || 'اليوم') + ': ' + nm(n) + ' نقطة\n'
+    + 'افتح التطبيق لترى تفاصيلها على الخريطة.';
+}
+
+PAGE.conote = { m:'الفرق والفنيون', t:'إشعار الشركات',
+  l:'رسالةٌ جاهزةٌ لكل شركةٍ بموعد تركيبها — تُفتح في واتساب.',
+  body:function(){
+    var S = siteStats();
+    var cos = Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b] - S.byCo[a]; });
+    return card('إشعار شركة',
+        '<div class="grid cols-2">'
+        + '<div class="field"><label>' + esc(t('الشركة')) + '</label>'
+        + '<select id="waCo">' + cos.slice(0, 60).map(function(c){
+            return '<option>' + esc(c) + '</option>'; }).join('') + '</select></div>'
+        + '<div class="field"><label>' + esc(t('جوال المنسّق')) + '</label>'
+        + '<input id="waPh" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx"></div>'
+        + '<div class="field"><label>' + esc(t('الموعد')) + '</label>'
+        + '<input id="waWhen" type="date"></div>'
+        + '</div>'
+        + '<div class="actions">'
+        + btn('واتساب','btn-primary',' data-wa="co"')
+        + btn('نسخ النص','btn-secondary',' data-wacopy="co"')
+        + '</div>')
+      + cardFlush('الشركات — ' + nm(cos.length),
+          table(['الشركة','مواقعها','مُسح','مُركّب',''],
+            cos.slice(0, 40).map(function(c){
+              return [esc(c), N(S.byCo[c]), '٠', '٠',
+                      btn('إشعار','btn-quiet btn-sm',' data-wapick="' + esc(c) + '"')];
+            })))
+      + '<p class="hint">الرقمُ يُصحَّح تلقائيًّا: صفرُ البداية يصير ٩٦٦ — فلا يُرسَل إلى رقمٍ خاطئ.</p>';
+  }};
+
+function waSend(kind, copy){
+  var co = (document.getElementById('waCo') || {}).value || '';
+  var ph = (document.getElementById('waPh') || {}).value || '';
+  var wn = (document.getElementById('waWhen') || {}).value || '';
+  var txt = waCoText(co, wn);
+  if (copy){
+    try{
+      if (navigator.clipboard) navigator.clipboard.writeText(txt);
+      toast(t('نُسخ النص'));
+    }catch(e){ toast(t('تعذّر النسخ')); }
+    return;
+  }
+  if (!ph){ toast(t('أدخل جوال المنسّق')); return; }
+  try{ window.open(waLink(ph, txt), '_blank'); }catch(e){ toast(t('تعذّر الفتح')); }
+  logEvent('إشعار واتساب — ' + co);
+}
+
+/* ═══ موقعٌ غير مسجّل — يُضاف من الميدان ═══
+   ما لم يكن في القاعدة يُسجَّل بموضعه الحقيقي، ويُوسَم جديدًا حتى يعتمده المهندس. */
+var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', name:'', sq:'', sign:'', co:'', note:'' };
+
+PAGE.newsite = { m:'الميدان', t:'تسجيل موقع جديد',
+  l:'ما لم يكن في القاعدة — يُسجَّل بموضعك ويُعتمَد لاحقًا.',
+  body:function(){
+    var has = NEWSITE.lat && NEWSITE.lng;
+    return (MYPOS
+      ? alertBox('success','موضعُك مُلتقَط — يُسجَّل الموقعُ عنده ما لم تُحرّكه لاحقًا.')
+      : alertBox('warn','لم يُلتقَط موضعُك بعد — اضغط «التقط موضعي» أو سجّل ثم حرّكه من الخريطة.'))
+
+      + card('الموضع',
+          '<div class="pop-rows" style="margin:0">'
+          + '<div><span class="k">' + esc(t('الإحداثيات')) + '</span><span class="num">'
+          +   (has ? (NEWSITE.lat.toFixed(5) + ', ' + NEWSITE.lng.toFixed(5))
+                   : (MYPOS ? (MYPOS.lat.toFixed(5) + ', ' + MYPOS.lng.toFixed(5)) : '—'))
+          + '</span></div>'
+          + '</div>',
+          btn('◎ ' + t('التقط موضعي'),'btn-secondary btn-sm',' data-nsloc="1"'))
+
+      + card('بيانات الموقع',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('المشعر')) + '</label>'
+          + '<select data-ns="zone">' + ['منى','عرفات','مزدلفة'].map(function(z){
+              return '<option' + (NEWSITE.zone===z?' selected':'') + '>' + esc(z) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+          + '<select data-ns="type">' + Object.keys(CAT_DEF).map(function(k){
+              return '<option value="' + esc(k) + '"' + (NEWSITE.type===k?' selected':'') + '>'
+                + CAT_DEF[k].i + ' ' + esc(t(CAT_DEF[k].l)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('رقم المربع')) + '</label>'
+          + '<input data-ns="sq" value="' + esc(NEWSITE.sq) + '" dir="auto"></div>'
+          + '<div class="field"><label>' + esc(t('رقم الشاخص')) + '</label>'
+          + '<input data-ns="sign" value="' + esc(NEWSITE.sign) + '" dir="auto"></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الشركة')) + ' — ' + esc(t('اختياري')) + '</label>'
+          + '<input data-ns="co" value="' + esc(NEWSITE.co) + '" dir="auto" list="nsCo">'
+          + '<datalist id="nsCo">' + Object.keys(siteStats().byCo).slice(0,60).map(function(c){
+              return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div>'
+          + '<div class="field"><label>' + esc(t('لماذا لم يكن مسجّلًا؟')) + '</label>'
+          + '<textarea data-ns="note" rows="2">' + esc(NEWSITE.note) + '</textarea></div>')
+
+      + card('', '<div class="actions">'
+          + btn('سجّل الموقع','btn-primary',' data-nssave="1"')
+          + btn('إلغاء','btn-secondary',' data-p="map"')
+          + '</div>'
+          + '<p class="hint">يُوسَم «جديدٌ بانتظار الاعتماد» ولا يدخل الإحصاءَ حتى يعتمده المهندس. '
+          + 'وبعد التسجيل يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه كلُّها — فالجديدُ كغيره: '
+          + 'يُمسَح ثم يُدقَّق ثم يُعتمَد.</p>');
+  }};
+
+function nsCapture(){
+  if (!navigator.geolocation){ toast(t('تعذّر تحديد الموقع')); return; }
+  toast(t('يُلتقَط موضعك…'));
+  navigator.geolocation.getCurrentPosition(function(p){
+    NEWSITE.lat = p.coords.latitude; NEWSITE.lng = p.coords.longitude;
+    MYPOS = { lat:NEWSITE.lat, lng:NEWSITE.lng, at:Date.now() };
+    toast(t('التُقط'));
+    render(1);
+  }, function(){ toast(t('تعذّر تحديد الموقع')); }, { enableHighAccuracy:true, timeout:10000 });
+}
+
+function nsSave(){
+  var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
+  if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
+  if (!NEWSITE.sq && !NEWSITE.sign){ toast(t('أدخل المربعَ أو الشاخص')); return; }
+
+  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[NEWSITE.zone] || 'NEW';
+  var tp  = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN',
+              'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD' }[NEWSITE.type] || 'NEW';
+  var n = STATE.sites.filter(function(x){ return x.id.indexOf('NSK-' + pre + '-' + tp + '-N') === 0; }).length + 1;
+  var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
+
+  var site = {
+    id:id, name:NEWSITE.zone + ' - ' + (NEWSITE.sq ? 'مربع ' + NEWSITE.sq + ' - ' : '')
+        + (NEWSITE.sign ? 'شاخص ' + NEWSITE.sign : t(CAT_DEF[NEWSITE.type].l)),
+    zone:NEWSITE.zone, type:NEWSITE.type, work:'موقع جديد',
+    lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign, co:NEWSITE.co,
+    region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
+    isNew:true, approved:false, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
+    note:NEWSITE.note
+  };
+  STATE.sites.push(site);
+  SITE_IX = null; SITE_TOK = null;
+  CORE.set('newsites', id, site);
+  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone);
+  statBump();
+  toast(id + ' \u00b7 ' + t('سُجّل — بانتظار الاعتماد'));
+  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type,
+              name:'', sq:'', sign:'', co:'', note:'' };
+  /* يُفتَح نموذجُ المسح عليه فورًا — الشاشةُ السابقةُ تُنشئه، والنموذجُ يُكمله */
+  DETAIL_ID = id;
+  FORM.site = id;
+  formReset();
+  CUR = 'svForm';
+  render(1);
+}
+
+/* ═══ جسرُ Google Drive — الصورُ في مساحتك لا في Firestore ═══
+   خمسةُ تيرا في درايفك تكفي المشروعَ كلَّه، ووثيقةُ Firestore لا تتجاوز
+   ميغابايتًا — فتُرفَع الصورُ هناك ويُحفَظ معرّفُها هنا. */
+
+var DRV = {
+  /* يُملأ من الإعدادات — يُنشَأ في Google Cloud Console */
+  clientId: '',
+  folderId: '',                 /* مجلّدُ المشروع في درايفك */
+  scope: 'https://www.googleapis.com/auth/drive.file',
+  token: '', exp: 0, ready: false, lib: false
+};
+
+function drvCfg(){
+  try{
+    DRV.clientId = localStorage.getItem('nsk14.drv.client') || '';
+    DRV.folderId = localStorage.getItem('nsk14.drv.folder') || '';
+  }catch(e){}
+  return !!DRV.clientId;
+}
+
+/* تُحمَّل مكتبةُ جوجل كسولًا — لا تُطلَب قبل أول رفع */
+function drvLoad(){
+  if (DRV.lib) return Promise.resolve(true);
+  if (typeof window === 'undefined') return Promise.resolve(false);
+  return new Promise(function(res){
+    var s = document.createElement('script');
+    s.src = 'https://accounts.google.com/gsi/client';
+    s.onload  = function(){ DRV.lib = true; res(true); };
+    s.onerror = function(){ res(false); };
+    document.head.appendChild(s);
+    setTimeout(function(){ if (!DRV.lib) res(false); }, 9000);
+  });
+}
+
+/* الإذنُ يُطلَب مرةً ويُجدَّد قبل انتهائه بدقيقة */
+function drvAuth(){
+  if (DRV.token && Date.now() < DRV.exp - 60000) return Promise.resolve(DRV.token);
+  if (!drvCfg()) return Promise.reject(new Error('no-client'));
+  return drvLoad().then(function(ok){
+    if (!ok || !window.google || !google.accounts) throw new Error('no-lib');
+    return new Promise(function(res, rej){
+      var tc = google.accounts.oauth2.initTokenClient({
+        client_id: DRV.clientId,
+        scope: DRV.scope,
+        callback: function(r){
+          if (r && r.access_token){
+            DRV.token = r.access_token;
+            DRV.exp = Date.now() + (r.expires_in || 3600) * 1000;
+            DRV.ready = true;
+            res(DRV.token);
+          } else rej(new Error('denied'));
+        }
+      });
+      tc.requestAccessToken({ prompt: DRV.token ? '' : 'consent' });
+    });
+  });
+}
+
+/* dataURL إلى Blob — الصورُ مضغوطةٌ أصلًا على الجهاز */
+function dataToBlob(d){
+  var i = d.indexOf(','), meta = d.slice(0, i);
+  var mime = (meta.match(/data:([^;]+)/) || [,'image/jpeg'])[1];
+  var bin = atob(d.slice(i + 1));
+  var arr = new Uint8Array(bin.length);
+  for (var k = 0; k < bin.length; k++) arr[k] = bin.charCodeAt(k);
+  return new Blob([arr], { type: mime });
+}
+
+/* الرفع: وصفٌ ثم محتوى، في طلبٍ واحدٍ متعدّد الأجزاء */
+function drvUpload(name, dataUrl){
+  return drvAuth().then(function(tok){
+    var blob = dataToBlob(dataUrl);
+    var meta = { name: name, mimeType: blob.type };
+    if (DRV.folderId) meta.parents = [DRV.folderId];
+    var fd = new FormData();
+    fd.append('metadata', new Blob([JSON.stringify(meta)], { type:'application/json' }));
+    fd.append('file', blob);
+    return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',
+      { method:'POST', headers:{ Authorization:'Bearer ' + tok }, body: fd })
+      .then(function(r){ return r.ok ? r.json() : r.json().then(function(e){ throw new Error(e.error && e.error.message || 'upload'); }); });
+  });
+}
+
+/* طابورُ الصور: تُحفَظ محليًّا ثم تُرفَع حين تتاح الشبكةُ والإذن */
+var PHOTO_Q = [];
+
+function photoQueue(siteId, kind, dataUrl){
+  PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0 });
+  CORE.saveSoon();
+  photoFlush();
+}
+
+function photoFlush(){
+  if (!PHOTO_Q.length || !STATE.meta.online || !drvCfg()) return Promise.resolve(0);
+  var it = PHOTO_Q[0];
+  var nm2 = it.site + '__' + it.kind + '__' + new Date(it.at).toISOString().slice(0,19).replace(/[:T]/g,'-') + '.jpg';
+  return drvUpload(nm2, it.data).then(function(r){
+    PHOTO_Q.shift();
+    /* في الوثيقة معرّفُ الملف ورابطُه لا الصورةُ نفسها */
+    CORE.set('photos', it.site + '_' + it.kind, {
+      site:it.site, kind:it.kind, driveId:r.id, link:r.webViewLink, at:it.at
+    });
+    logEvent('رفع صورة — ' + it.site + ' · ' + it.kind);
+    if (PHOTO_Q.length) setTimeout(photoFlush, 400);
+    return 1;
+  }).catch(function(e){
+    it.tries++;
+    if (it.tries > 5){ PHOTO_Q.shift(); logEvent('تعذّر رفع صورة — ' + it.site); }
+    return 0;
+  });
+}
+
+PAGE.drive = { m:'النظام', t:'تخزين الصور',
+  l:'الصورُ في درايفك لا في قاعدة البيانات — خمسةُ تيرا تكفي الموسمَ كلَّه.',
+  body:function(){
+    drvCfg();
+    var n = STATE.sites.length;
+    var est = Math.round(n * 4 * 180 / 1024);   /* أربعُ صورٍ للنقطة بمئةٍ وثمانين كيلو */
+    return stats([['في الطابور', N(PHOTO_Q.length), PHOTO_Q.length?'wrn':'ok'],
+                  ['رُفعت', N(Object.keys(STATE.photos || {}).length), 'ok'],
+                  ['المتوقَّع للمشروع', N(est) + ' ' + t('ميجا')],
+                  ['الإذن', DRV.ready ? t('ممنوح') : t('لم يُطلَب'), DRV.ready?'ok':'wrn']])
+
+      + (drvCfg()
+        ? alertBox('success','درايفك موصولٌ — الصورُ تُرفَع إليه ويُحفَظ رابطُها في السجل.')
+        : alertBox('warn','لم يُوصَل درايفك بعد — الصورُ تُحفَظ على الجهاز وتنتظر.'))
+
+      + card('الوصل',
+          '<div class="field"><label>Client ID</label>'
+          + '<input id="drvClient" dir="ltr" placeholder="xxxxx.apps.googleusercontent.com" value="'
+          +   esc(DRV.clientId) + '"></div>'
+          + '<div class="field"><label>' + esc(t('معرّف مجلّد المشروع')) + ' — ' + esc(t('اختياري')) + '</label>'
+          + '<input id="drvFolder" dir="ltr" placeholder="1AbC…" value="' + esc(DRV.folderId) + '"></div>'
+          + '<p class="hint">المعرّفُ من رابط المجلّد في درايفك — ما بعد ‎/folders/‎. وإن تُرك فارغًا رُفعت في الجذر.</p>',
+          '<div class="actions">'
+          + btn('احفظ','btn-primary btn-sm',' data-drvsave="1"')
+          + btn('اختبر الإذن','btn-secondary btn-sm',' data-drvtest="1"')
+          + '</div>')
+
+      + card('كيف يُنشَأ Client ID',
+          table(['#','الخطوة'], [
+            ['١','افتح console.cloud.google.com وأنشئ مشروعًا أو اختر قائمًا'],
+            ['٢','فعّل Google Drive API من مكتبة الواجهات'],
+            ['٣','في «بيانات الاعتماد» أنشئ OAuth client ID من نوع تطبيق ويب'],
+            ['٤','أضف mhmdsfwt371.github.io إلى Authorized JavaScript origins'],
+            ['٥','انسخ المعرّفَ والصقه أعلاه'],
+            ['٦','أنشئ مجلّدًا في درايفك للمشروع وانسخ معرّفه من رابطه']
+          ])
+          + '<p class="hint">النطاقُ المطلوبُ drive.file — لا يرى إلا ما يرفعه التطبيق، لا بقيةَ درايفك.</p>')
+
+      + card('لماذا لا تُحفَظ في قاعدة البيانات',
+          '<p class="hint" style="margin:0">'
+          + esc(t('وثيقةُ Firestore لا تتجاوز ميغابايتًا، وصورةٌ واحدةٌ تقاربه. ولو حُفظت هناك لامتلأت الحصّةُ في أيام. أما درايفك فخمسةُ تيرا — تكفي المشروعَ مرارًا. ويبقى في السجل معرّفُ الملف ورابطُه فيُفتَح بضغطة.'))
+          + '</p>');
+  }};
+
+function drvSave(){
+  var c = (document.getElementById('drvClient') || {}).value || '';
+  var f = (document.getElementById('drvFolder') || {}).value || '';
+  try{
+    localStorage.setItem('nsk14.drv.client', c.trim());
+    localStorage.setItem('nsk14.drv.folder', f.trim());
+  }catch(e){}
+  DRV.clientId = c.trim(); DRV.folderId = f.trim();
+  logEvent('وصل درايف — ' + (c ? 'مُعرَّف' : 'أُفرغ'));
+  toast(c ? t('حُفظ — جرّب الإذن') : t('أُفرغ الوصل'));
+  render(1);
+}
+
+function drvTest(){
+  if (!drvCfg()){ toast(t('أدخل Client ID أولًا')); return; }
+  toast(t('يُطلَب الإذن…'));
+  drvAuth().then(function(){
+    toast(t('الإذن ممنوح — الصورُ سترفَع'));
+    photoFlush();
+    render(1);
+  }).catch(function(e){
+    toast(t('تعذّر الإذن') + ' · ' + String(e.message || e));
+  });
 }
 
 /* ═══ حوكمةُ المشروع بمعايير PMI ═══
@@ -7234,8 +7259,6 @@ function mapUIHtml(){
     +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"')
     + '</div>'
 
-    + '<div class="map-badge" style="pointer-events:none">'
-    +   '<span class="num" id="mapCount">\u2014</span> '+esc(t('نقطة'))+'</div>'
 
     + '<div class="map-legend">' + legendRows() + '</div>'
     + (CO_OPEN ? coFiltHtml() : '')
