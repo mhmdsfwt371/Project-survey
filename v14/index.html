@@ -1533,6 +1533,41 @@ var FB = {
     return w.commit();
   },
 
+  /* ── جسرُ النسخة العاملة: يُقرأ ما كُتب بأسمائها القديمة ── */
+  pullLegacy: function(){
+    if (!FB.ready || !FB.db) return Promise.resolve(0);
+    var got = 0;
+    var MAP = {
+      srvorders: function(id, v){
+        /* أمرُ الخدمة القديم: مسحٌ أو تركيبٌ بحسب نوعه */
+        if (v.kind === 'install' || v.type === 'تركيب'){
+          if (!STATE.inss[v.site || id]) STATE.inss[v.site || id] = v;
+        } else if (!STATE.recs[v.site || id]) STATE.recs[v.site || id] = v;
+        got++;
+      },
+      events: function(id, v){ STATE.events.push(v); got++; },
+      hb:     function(id, v){ STATE.hb = STATE.hb || {}; STATE.hb[id] = v; got++; },
+      hbev:   function(id, v){ STATE.hb = STATE.hb || {}; STATE.hb[id] = v; got++; }
+    };
+    return Promise.all(Object.keys(MAP).map(function(c){
+      return FB.db.collection(c).limit(2000).get().then(function(snap){
+        snap.forEach(function(doc){ try{ MAP[c](doc.id, doc.data()); }catch(e){} });
+      }).catch(function(){});
+    })).then(function(){
+      if (got){
+        statBump();
+        CORE.saveSoon();
+        try{ localStorage.setItem('nsk14.legacy', '1'); }catch(e){}
+        logEvent('استيراد من النسخة العاملة — ' + nm(got) + ' سجلًّا');
+      }
+      return got;
+    });
+  },
+
+  legacyDone: function(){
+    try{ return localStorage.getItem('nsk14.legacy') === '1'; }catch(e){ return false; }
+  },
+
   pull: function(){
     if (!FB.ready) return Promise.resolve(false);
     return Promise.all(['recs','inss','tasks'].map(function(c){
@@ -8043,7 +8078,11 @@ function enterApp(user, pass){
     FB.signIn(user, pass).then(function(r){
       if (r.ok){
         ROLE = ROLES[r.role] ? r.role : 'tech';
-        pullDelta().then(function(){ statBump(); render(1); liveWatch(); });
+        var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
+        first.then(function(n){
+          if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
+          return pullDelta();
+        }).then(function(){ statBump(); render(1); liveWatch(); });
       }
       enterShell();
     });
