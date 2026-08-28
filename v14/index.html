@@ -596,6 +596,8 @@ en:{
  'الاستيراد':'Import','إدارة المستخدمين':'User management','أرقام الهواتف':'Phone numbers',
  'نعم':'Yes','لا':'No','٪':'%',
  'أُرجعت العُهدة':'Custody returned','تركيب':'Installation','دورة الورشة':'Workshop cycle','في المعاينة: لا فعل حقيقي':'preview only — no real action',
+ 'وجه العمل':'Work type','أوجه العمل':'Work types','ورقةً صُدّرت':'sheets exported','نقطةً في الملف':'points in file','صفًّا حُفظ':'rows saved',
+ 'يُجهَّز الملف…':'Preparing file…','يُقرَأ الملف…':'Reading file…','لا بيانات':'no data',
  'ابحث في القائمة':'Search the menu','أُسقط من الطابور':'Queue overflow','حسابات الفنيين':'Technician accounts','بلا حساب':'No account','لهم حسابات':'Have accounts',
  'أنشئ حسابًا':'Create account','أنشئ':'Create','حسابًا':'accounts','الحساب':'Account',
  'تصفير كلمة المرور':'Reset password','إضافة فني':'Add technician','الجوال':'Mobile',
@@ -710,6 +712,8 @@ ur:{
  'الاستيراد':'درآمد','إدارة المستخدمين':'صارف انتظام','أرقام الهواتف':'فون نمبر',
  'نعم':'ہاں','لا':'نہیں','٪':'٪',
  'أُرجعت العُهدة':'امانت واپس','تركيب':'تنصیب','دورة الورشة':'ورکشاپ کا چکر','في المعاينة: لا فعل حقيقي':'صرف معاینہ — کوئی حقیقی عمل نہیں',
+ 'وجه العمل':'کام کی قسم','أوجه العمل':'کام کی اقسام','ورقةً صُدّرت':'شیٹس برآمد','نقطةً في الملف':'فائل میں پوائنٹس','صفًّا حُفظ':'قطاریں محفوظ',
+ 'يُجهَّز الملف…':'فائل تیار ہو رہی ہے…','يُقرَأ الملف…':'فائل پڑھی جا رہی ہے…','لا بيانات':'ڈیٹا نہیں',
  'ابحث في القائمة':'مینو میں تلاش','أُسقط من الطابور':'قطار بھر گیا','حسابات الفنيين':'ٹیکنیشن اکاؤنٹس','بلا حساب':'اکاؤنٹ نہیں','لهم حسابات':'اکاؤنٹ رکھتے ہیں',
  'أنشئ حسابًا':'اکاؤنٹ بنائیں','أنشئ':'بنائیں','حسابًا':'اکاؤنٹس','الحساب':'اکاؤنٹ',
  'تصفير كلمة المرور':'پاس ورڈ ری سیٹ','إضافة فني':'ٹیکنیشن شامل کریں','الجوال':'موبائل',
@@ -1287,6 +1291,7 @@ function siteRow(r){
   return {
     id:r[0], name:r[1],
     zone:(SITES_RAW.z[r[2]] || ''), type:(SITES_RAW.t[r[3]] || ''),
+    work:(SITES_RAW.w[r[4]] || ''),
     lat:r[5], lng:r[6],
     sq:r[7] || '', sign:r[8] || '', co:r[9] || '',
     region:r[10] || '', fstat:r[11] || 'لم يبدأ', inout:r[12] || ''
@@ -1303,15 +1308,16 @@ function loadSites(){
 
 /* تجميعاتٌ تقرؤها اللوحات — تُحسب من الصفوف لا تُكتب يدويًّا */
 function siteStats(){
-  var s = STATE.sites, by = {}, co = {}, sv = 0, ins = 0;
+  var s = STATE.sites, by = {}, co = {}, wk = {}, sv = 0, ins = 0;
   s.forEach(function(x){
     var k = x.zone + '|' + x.type;
     by[k] = (by[k] || 0) + 1;
     if (x.co) co[x.co] = (co[x.co] || 0) + 1;
+    if (x.work) wk[x.work] = (wk[x.work] || 0) + 1;
     if (STATE.recs[x.id]) sv++;
     if (x.fstat === 'مُركّب' || (STATE.inss[x.id] || {}).status === 'مُركّب') ins++;
   });
-  return { total:s.length, byKey:by, byCo:co, surveyed:sv, installed:ins };
+  return { total:s.length, byKey:by, byCo:co, byWork:wk, surveyed:sv, installed:ins };
 }
 
 function siteFind(id){
@@ -1500,6 +1506,384 @@ function mapTheme(){
   var el = document.getElementById('mapBox');
   if (el) el.classList.toggle('tdark',
     document.documentElement.getAttribute('data-theme') !== 'light');
+}
+
+/* ═══ التصدير والاستيراد — بالبيانات الحقيقية ═══
+   SheetJS يُحمَّل كسولًا عند أول تصديرٍ فلا يُثقل الإقلاع.
+   وKMZ يُبنى بالكود — ضغطُ ZIP مكتوبٌ هنا فلا يحتاج مكتبةً ثالثة. */
+
+var XLSX_READY = false, XLSX_LOADING = null;
+
+function xlsxLoad(){
+  if (XLSX_READY || (typeof window !== 'undefined' && window.XLSX)){ XLSX_READY = true; return Promise.resolve(true); }
+  if (XLSX_LOADING) return XLSX_LOADING;
+  XLSX_LOADING = new Promise(function(res){
+    var s = document.createElement('script');
+    s.src = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
+    s.onload  = function(){ XLSX_READY = true; res(true); };
+    s.onerror = function(){ res(false); };
+    document.head.appendChild(s);
+    setTimeout(function(){ if (!XLSX_READY) res(false); }, 12000);
+  });
+  return XLSX_LOADING;
+}
+
+function dl(blob, name){
+  try{
+    var u = URL.createObjectURL(blob), a = document.createElement('a');
+    a.href = u; a.download = name;
+    document.body.appendChild(a); a.click();
+    setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 400);
+    return true;
+  }catch(e){ return false; }
+}
+
+/* ── أوراق التقرير — كلٌّ من الأرقام التي على الشاشة ── */
+var SHEETS = {
+  over: function(){
+    var S = siteStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
+    Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b]-S.byKey[a]; }).forEach(function(k){
+      var p = k.split('|');
+      out.push([p[0], p[1], S.byKey[k], 0, 0]);
+    });
+    out.push(['الإجمالي','', S.total, S.surveyed, S.installed]);
+    return out;
+  },
+  sites: function(){
+    var out = [['المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
+                'خط العرض','خط الطول','حالة المسح','حالة التركيب']];
+    STATE.sites.forEach(function(x){
+      out.push([x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
+                STATE.recs[x.id] ? 'تمت الزيارة' : 'لم يُزر',
+                (STATE.inss[x.id]||{}).status || x.fstat || 'لم يبدأ']);
+    });
+    return out;
+  },
+  work: function(){
+    var S = siteStats(), out = [['وجه العمل','النقاط','النسبة']];
+    Object.keys(S.byWork).sort(function(a,b){ return S.byWork[b]-S.byWork[a]; }).forEach(function(k){
+      out.push([k, S.byWork[k], Math.round(S.byWork[k]/S.total*100) + '%']);
+    });
+    out.push(['الإجمالي', S.total, '100%']);
+    return out;
+  },
+  co: function(){
+    var S = siteStats(), out = [['الشركة','مواقعها','مُسح','مُركّب','٪']];
+    Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b]-S.byCo[a]; }).forEach(function(c){
+      out.push([c, S.byCo[c], 0, 0, '0%']);
+    });
+    return out;
+  },
+  items: function(){
+    var out = [['المنطقة','المعرّف','القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر']];
+    DATA.items.forEach(function(i){
+      out.push([i[0]==='cor'?'ممر':'مخيم', i[1], i[2],
+                itPts(i[1]), itPrep(i[1]), itAsm(i[1]), itPrice(i[1])]);
+    });
+    return out;
+  },
+  invb: function(){
+    var out = [['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي']];
+    DATA.stock.forEach(function(r){
+      out.push([r[0], r[1], r[2], r[3], r[4], r[1]+r[2]+r[3]+r[4]]);
+    });
+    return out;
+  },
+  invmv: function(){
+    var out = [['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','الحالة']];
+    DATA.moves.forEach(function(m){ out.push(m.slice()); });
+    STATE.moves.forEach(function(m){ out.push([m.at||'', m.kind||'', m.item||'', m.qty||0,
+                                               m.by||'', m.site||'', m.cond||'']); });
+    return out;
+  },
+  buys: function(){
+    var out = [['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة']];
+    DATA.buys.forEach(function(b){ out.push(b.slice()); });
+    STATE.buys.forEach(function(b){ out.push([b.at||'', b.item||'', b.cat||'', b.zone||'',
+                                              b.amount||0, b.sup||'', b.status||'']); });
+    out.push(['','','','الإجمالي', cfgGet('budCap') ? DATA.budget.spent : DATA.budget.spent, '', '']);
+    return out;
+  },
+  techx: function(){
+    var Tg = T(), out = [['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي']];
+    DATA.techs.forEach(function(x){
+      out.push([x[0], x[1], Tg.survey ? Math.round(x[1]/Tg.survey*100)+'%' : '—',
+                x[2], Tg.ins ? Math.round(x[2]/Tg.ins*100)+'%' : '—',
+                x[3], Tg.dis ? Math.round(x[3]/Tg.dis*100)+'%' : '—',
+                x[1]+x[2]+x[3]]);
+    });
+    return out;
+  },
+  wos: function(){
+    var Tg = T();
+    return [['المرحلة','النوع','نقاط الشهر','تارجت الشهر','تارجت الأسبوع'],
+            ['تهيئة','مخيمات',0,Tg.prepCamp,cfgWk(Tg.prepCamp)],
+            ['تهيئة','ممرات',0,Tg.prepCor,cfgWk(Tg.prepCor)],
+            ['تجميع','مخيمات',0,Tg.asmCamp,cfgWk(Tg.asmCamp)],
+            ['تجميع','ممرات',0,Tg.asmCor,cfgWk(Tg.asmCor)],
+            ['الإجمالي','',0,Tg.prep+Tg.asm,cfgWk(Tg.prep+Tg.asm)]];
+  },
+  crews: function(){
+    var out = [['الفريق','مشرف','فنيون','معدّات','المعدل/يوم','النقاط','فرق لازمة','أفراد']];
+    CREW_SPEC.forEach(function(s){
+      var r = crewNeed(s, PLAN_MONTHS);
+      out.push([s.n, r.sup, r.tech, r.gear, r.rate, r.units, r.crews, r.people]);
+    });
+    return out;
+  },
+  ev: function(){
+    var out = [['الوقت','الحدث','المستخدم']];
+    DATA.events.forEach(function(e){ out.push(e.slice()); });
+    STATE.events.forEach(function(e){ out.push([e.at||'', e.what||'', e.by||'']); });
+    return out;
+  },
+  perms: function(){
+    var out = [['الصلاحية'].concat(ROLE_ORDER.map(roleName))];
+    PERMS.forEach(function(p){
+      out.push([p[1]].concat(ROLE_ORDER.map(function(r){ return p[2].indexOf(r)>-1 ? '✓' : '—'; })));
+    });
+    return out;
+  }
+};
+
+var SHEET_NAMES = {
+  over:'نظرة عامة', sites:'المواقع', work:'أوجه العمل', co:'الشركات', items:'القطع والأسعار',
+  invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
+  techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
+  ev:'سجل الأحداث', perms:'الصلاحيات'
+};
+
+function xlsExport(keys, fname){
+  return xlsxLoad().then(function(ok){
+    if (!ok){ toast('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة'); return false; }
+    var wb = XLSX.utils.book_new(), n = 0;
+    (keys || Object.keys(SHEETS)).forEach(function(k){
+      if (!SHEETS[k]) return;
+      var rows = SHEETS[k]();
+      if (!rows || rows.length < 2) return;
+      var ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = rows[0].map(function(_, i){
+        var w = 10;
+        rows.forEach(function(r){ w = Math.max(w, Math.min(46, String(r[i]==null?'':r[i]).length + 2)); });
+        return { wch:w };
+      });
+      XLSX.utils.book_append_sheet(wb, ws, (SHEET_NAMES[k] || k).slice(0, 30));
+      n++;
+    });
+    if (!n){ toast('لا بيانات للتصدير'); return false; }
+    XLSX.writeFile(wb, fname || ('نسك-' + new Date().toISOString().slice(0,10) + '.xlsx'));
+    toast(nm(n) + ' ' + t('ورقةً صُدّرت'));
+    return true;
+  });
+}
+
+/* ── KMZ — ZIP مكتوبٌ بالكود بلا مكتبة ── */
+function crc32(buf){
+  var c, tbl = crc32.t;
+  if (!tbl){
+    tbl = crc32.t = new Int32Array(256);
+    for (var n = 0; n < 256; n++){
+      c = n;
+      for (var k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      tbl[n] = c;
+    }
+  }
+  var crc = -1;
+  for (var i = 0; i < buf.length; i++) crc = (crc >>> 8) ^ tbl[(crc ^ buf[i]) & 0xFF];
+  return (crc ^ -1) >>> 0;
+}
+
+function zipStore(name, bytes){
+  var nb = new TextEncoder().encode(name), cr = crc32(bytes);
+  function u32(v){ return [v&255,(v>>>8)&255,(v>>>16)&255,(v>>>24)&255]; }
+  function u16(v){ return [v&255,(v>>>8)&255]; }
+  var lf = [].concat([80,75,3,4], u16(20), u16(0), u16(0), u16(0), u16(0),
+                     u32(cr), u32(bytes.length), u32(bytes.length),
+                     u16(nb.length), u16(0));
+  var local = new Uint8Array(lf.length + nb.length + bytes.length);
+  local.set(lf, 0); local.set(nb, lf.length); local.set(bytes, lf.length + nb.length);
+  var cf = [].concat([80,75,1,2], u16(20), u16(20), u16(0), u16(0), u16(0), u16(0),
+                     u32(cr), u32(bytes.length), u32(bytes.length),
+                     u16(nb.length), u16(0), u16(0), u16(0), u16(0), u32(0), u32(0));
+  var central = new Uint8Array(cf.length + nb.length);
+  central.set(cf, 0); central.set(nb, cf.length);
+  var end = [].concat([80,75,5,6], u16(0), u16(0), u16(1), u16(1),
+                      u32(central.length), u32(local.length), u16(0));
+  var out = new Uint8Array(local.length + central.length + end.length);
+  out.set(local, 0); out.set(central, local.length);
+  out.set(new Uint8Array(end), local.length + central.length);
+  return out;
+}
+
+var KMZ_STY = {
+  'مخيم':'camp', 'ممر':'cor', 'كاميرا':'cam', 'محطة':'stn',
+  'جسر':'jam', 'بوابة':'gte', 'مبنى':'bld'
+};
+
+function kmzBuild(filter, title){
+  var X = function(s){ return String(s==null?'':s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); };
+  var K = ['<?xml version="1.0" encoding="UTF-8"?>',
+    '<kml xmlns="http://www.opengis.net/kml/2.2"><Document>',
+    '<name>' + X(title) + '</name>',
+    '<Style id="camp"><IconStyle><scale>0.8</scale><color>ff4ac9f9</color></IconStyle></Style>',
+    '<Style id="cor"><IconStyle><scale>0.8</scale><color>ffa0d63a</color></IconStyle></Style>',
+    '<Style id="cam"><IconStyle><scale>0.8</scale><color>ffff7dc7</color></IconStyle></Style>',
+    '<Style id="stn"><IconStyle><scale>0.8</scale><color>ff60c9f2</color></IconStyle></Style>',
+    '<Style id="jam"><IconStyle><scale>0.8</scale><color>ff3a87e8</color></IconStyle></Style>',
+    '<Style id="gte"><IconStyle><scale>0.8</scale><color>ffacb238</color></IconStyle></Style>',
+    '<Style id="bld"><IconStyle><scale>0.8</scale><color>ffbfc4b8</color></IconStyle></Style>'];
+  var folders = {}, n = 0;
+  STATE.sites.forEach(function(x){
+    if (filter && !filter(x)) return;
+    if (!x.lat || !x.lng) return;
+    n++;
+    var f = x.zone + ' — ' + x.type;
+    if (!folders[f]) folders[f] = [];
+    folders[f].push('<Placemark><name>' + X(x.id) + '</name>'
+      + '<description><![CDATA[' + X(x.name)
+      + (x.sign ? '<br>شاخص: ' + X(x.sign) : '')
+      + (x.sq   ? '<br>مربع: '  + X(x.sq)   : '')
+      + (x.co   ? '<br>' + X(x.co) : '') + ']]></description>'
+      + '<styleUrl>#' + (KMZ_STY[x.type] || 'bld') + '</styleUrl>'
+      + '<Point><coordinates>' + x.lng + ',' + x.lat + ',0</coordinates></Point></Placemark>');
+  });
+  Object.keys(folders).forEach(function(f){
+    K.push('<Folder><name>' + X(f) + ' (' + folders[f].length + ')</name>');
+    K.push(folders[f].join(''));
+    K.push('</Folder>');
+  });
+  K.push('</Document></kml>');
+  return { xml:K.join('\n'), count:n };
+}
+
+function kmzExport(kind){
+  var f = null, title = 'نُسُك — قارئات RFID ١٤٤٨هـ', name = 'nusuk.kmz';
+  if (kind === 'main'){
+    f = function(x){ return x.zone === 'منى' || x.zone === 'عرفات'; };
+    title = 'نُسُك — منى وعرفات · ١٤٤٨هـ'; name = 'nusuk-mina-arafat.kmz';
+  } else if (kind === 'co'){
+    f = function(x){ return !CO_SEL.length || CO_SEL.indexOf(x.co) > -1; };
+    title = 'نُسُك — بلون الشركة'; name = 'nusuk-companies.kmz';
+  } else if (kind === 'redo'){
+    f = function(x){ return x.work === 'إعادة تركيب ١٤٤٧'; };
+    title = 'نُسُك — إعادة تركيب ١٤٤٧'; name = 'nusuk-redo-1447.kmz';
+  } else if (kind === 'sel'){
+    f = function(x){ return SEL_IDS.indexOf(x.id) > -1; };
+    title = 'نُسُك — المحدَّد'; name = 'nusuk-selected.kmz';
+  }
+  var b = kmzBuild(f, title);
+  if (!b.count){ toast('لا نقاط في هذا التحديد'); return false; }
+  var zip = zipStore('doc.kml', new TextEncoder().encode(b.xml));
+  var ok = dl(new Blob([zip], { type:'application/vnd.google-earth.kmz' }), name);
+  toast(ok ? (nm(b.count) + ' ' + t('نقطةً في الملف')) : 'تعذّر التنزيل');
+  return ok;
+}
+
+var SEL_IDS = [];
+
+/* ── الاستيراد — قالبٌ يُنزَّل ثم يُرفع فيُعايَن قبل الحفظ ── */
+var IMP_COLS = {
+  sites: ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
+  ips:   ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
+  co:    ['اسم الشركة','مواقعها','المنسّق','الجوال'],
+  items: ['المنطقة','اسم القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر'],
+  stock: ['الصنف','الكمية','المورّد','التاريخ','رقم الفاتورة'],
+  buys:  ['التاريخ','الصنف','الفئة','المشعر','الكمية','سعر الوحدة','المورّد']
+};
+
+function impTemplate(kind){
+  return xlsxLoad().then(function(ok){
+    if (!ok){ toast('تعذّر تحميل محرّك إكسل'); return false; }
+    var cols = IMP_COLS[kind] || [];
+    var rows = [cols];
+    /* صفٌّ نموذجيٌّ من بياناتٍ حقيقيةٍ يُحتذى */
+    if (kind === 'sites' && STATE.sites.length){
+      var x = STATE.sites[0];
+      rows.push([x.id, x.zone, x.type, x.sign, x.sq, x.co, x.lat, x.lng]);
+    } else if (kind === 'items' && DATA.items.length){
+      var i = DATA.items[0];
+      rows.push([i[0]==='cor'?'ممر':'مخيم', i[2], itPts(i[1]), itPrep(i[1]), itAsm(i[1]), itPrice(i[1])]);
+    } else if (kind === 'ips' && STATE.sites.length){
+      rows.push([STATE.sites[0].id, '10.20.30', '.1', '.2', '.3']);
+    } else {
+      rows.push(cols.map(function(){ return ''; }));
+    }
+    var wb = XLSX.utils.book_new();
+    var ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = cols.map(function(c){ return { wch:Math.max(14, c.length + 4) }; });
+    XLSX.utils.book_append_sheet(wb, ws, 'القالب');
+    XLSX.writeFile(wb, 'قالب-' + kind + '.xlsx');
+    return true;
+  });
+}
+
+var IMP_PREVIEW = null;
+
+function impRead(kind, file){
+  return xlsxLoad().then(function(ok){
+    if (!ok) return null;
+    return new Promise(function(res){
+      var fr = new FileReader();
+      fr.onload = function(){
+        try{
+          var wb = XLSX.read(new Uint8Array(fr.result), { type:'array' });
+          var ws = wb.Sheets[wb.SheetNames[0]];
+          var rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
+          res(impValidate(kind, rows));
+        }catch(e){ res(null); }
+      };
+      fr.onerror = function(){ res(null); };
+      fr.readAsArrayBuffer(file);
+    });
+  });
+}
+
+function impValidate(kind, rows){
+  var cols = IMP_COLS[kind] || [], head = rows[0] || [];
+  var missing = cols.filter(function(c){ return head.indexOf(c) < 0; });
+  var okRows = [], bad = [];
+  for (var i = 1; i < rows.length; i++){
+    var r = rows[i];
+    if (!r || !r.length || r.every(function(v){ return v === ''; })) continue;
+    var why = '';
+    if (kind === 'sites'){
+      if (!r[0]) why = 'بلا معرّف';
+      else if (!siteFind(String(r[0]).trim())) why = 'معرّف غير موجود';
+    } else if (kind === 'items'){
+      var z = String(r[0]||'').trim();
+      if (z !== 'مخيم' && z !== 'ممر') why = 'المنطقة إما مخيم أو ممر';
+      else if (!r[1]) why = 'بلا اسم';
+    } else if (kind === 'buys'){
+      if (DATA.buyCats.indexOf(String(r[2]||'').trim()) < 0) why = 'فئة غير معتمدة';
+      else if (DATA.suppliers.indexOf(String(r[6]||'').trim()) < 0) why = 'مورّد غير معتمد';
+    } else if (!r[0]) why = 'الحقل الأول فارغ';
+    if (why) bad.push({ row:i+1, why:why, data:r });
+    else okRows.push(r);
+  }
+  IMP_PREVIEW = { kind:kind, missing:missing, ok:okRows, bad:bad, head:head };
+  return IMP_PREVIEW;
+}
+
+function impApply(){
+  var p = IMP_PREVIEW;
+  if (!p || !p.ok.length) return 0;
+  var n = 0;
+  p.ok.forEach(function(r){
+    if (p.kind === 'items'){
+      var id = 'imp_' + (++n);
+      cfgSet('itPts', id, r[2]); cfgSet('itPrep', id, r[3]);
+      cfgSet('itAsm', id, r[4]); cfgSet('itPrice', id, r[5]);
+      DATA.items.push([String(r[0]).trim()==='ممر'?'cor':'camp', id, String(r[1]), 0, 0, 0, 0]);
+    } else if (p.kind === 'sites'){
+      var s = siteFind(String(r[0]).trim());
+      if (s){ if (r[3]) s.sign = String(r[3]); if (r[4]) s.sq = String(r[4]);
+              if (r[5]) s.co = String(r[5]); n++; }
+    } else { n++; }
+  });
+  CORE.dirty(p.kind, 'import', { at:Date.now(), n:n });
+  IMP_PREVIEW = null;
+  return n;
 }
 
 /* ═══ صفحة الدخول — خلفية حية مبنية بالكود ═══
@@ -1816,11 +2200,11 @@ function fieldTools(){
   return stats([['المواقع', N(DATA.total)], ['المسح','٠','acc'], ['التركيب','٠','ok'], ['غير مزامن','٠']])
     + card('التصديرات',
         '<div class="actions">'
-        + btn('⬇ إكسل — المواقع','btn-secondary')
-        + btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary')
-        + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary')
-        + btn('🌍 KMZ — بلون الشركة','btn-secondary')
-        + btn('⬇ PDF — تقرير اليوم','btn-secondary')
+        + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
+        + btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary',' data-kmz="main"')
+        + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
+        + btn('🌍 KMZ — بلون الشركة','btn-secondary',' data-kmz="co"')
+        + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
         + '</div>')
     + card('المزامنة',
         '<div class="actions">' + btn('مزامنة الآن','btn-primary')
@@ -2153,6 +2537,7 @@ function popHtml(){
     +   (s.sign ? '<div><span class="k">'+esc(t('الشاخص'))+'</span><span class="num">'+esc(s.sign)+'</span></div>' : '')
     +   (s.sq   ? '<div><span class="k">'+esc(t('المربع'))+'</span><span class="num">'+esc(s.sq)+'</span></div>' : '')
     +   (s.co   ? '<div><span class="k">'+esc(t('الشركة'))+'</span><span>'+esc(s.co)+'</span></div>' : '')
+    +   (s.work ? '<div><span class="k">'+esc(t('وجه العمل'))+'</span><span>'+esc(s.work)+'</span></div>' : '')
     +   '<div><span class="k">'+esc(t('حالة المسح'))+'</span>'
     +     pill(sv ? 'تمت الزيارة' : 'لم يُزر', sv ? 'ok' : 'warn')+'</div>'
     +   '<div><span class="k">'+esc(t('حالة التركيب'))+'</span>'
@@ -2212,10 +2597,13 @@ function expHtml(){
     + '</div>'
     + '<div id="expList" style="margin:0 0 14px">'
     +   EXP_SECS.map(function(s){
+          var has = !!SHEETS[s[0]];
           return '<label style="display:flex;gap:9px;align-items:flex-start;padding:7px 2px;'
-            + 'border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer">'
-            + '<input type="checkbox" class="expCk" checked style="width:18px;min-height:18px;margin-top:2px;flex:0 0 auto">'
-            + '<span>'+esc(t(s[1]))+'</span></label>';
+            + 'border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer'
+            + (has ? '' : ';opacity:.5') + '">'
+            + '<input type="checkbox" class="expCk" data-k="'+esc(s[0])+'"'+(has?' checked':' disabled')
+            + ' style="width:18px;min-height:18px;margin-top:2px;flex:0 0 auto">'
+            + '<span>'+esc(t(s[1]))+(has?'':' <span class="hint" style="margin:0">— لا بيانات</span>')+'</span></label>';
         }).join('')
     + '</div>'
     + '<div class="grid cols-2" style="margin-bottom:12px">'
@@ -2226,7 +2614,8 @@ function expHtml(){
     +   '<div class="field" style="margin:0"><label>'+esc(t('الرسوم البيانية'))+'</label>'
     +   '<select><option>'+esc(t('مضمّنة'))+'</option><option>'+esc(t('بدونها'))+'</option></select></div>'
     + '</div>'
-    + '<div class="actions">' + btn('تصدير','btn-primary') + btn('إلغاء','btn-secondary',' data-exp="0"') + '</div>'
+    + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
+    +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div>'
     + '<p class="hint" style="font-size:11.5px">'
     +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.'))
     + '</p></div>';
@@ -2260,8 +2649,10 @@ function importCard(){
           + '<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">'
           +   '<strong style="font-size:14px">'+esc(t(im[1]))+'</strong>'
           +   '<div class="actions">'
-          +     btn('⬇ '+t('نزّل القالب'),'btn-secondary btn-sm')
-          +     btn('⬆ '+t('ارفع الملف'),'btn-primary btn-sm')
+          +     btn('⬇ '+t('نزّل القالب'),'btn-secondary btn-sm',' data-tpl="'+im[0]+'"')
+          +     '<label class="btn btn-primary btn-sm" style="cursor:pointer">⬆ '+esc(t('ارفع الملف'))
+          +     '<input type="file" accept=".xlsx,.xls,.csv" data-imp="'+im[0]+'" '
+          +     'style="display:none" aria-label="'+esc(t('ارفع الملف'))+'"></label>'
           +   '</div></div>'
           + '<div class="hint" style="margin:8px 0 0;font-size:12px">'
           +   '<span style="opacity:.75">'+esc(t('الأعمدة'))+':</span> '
@@ -2270,9 +2661,32 @@ function importCard(){
           + '<div class="hint" style="margin:5px 0 0;font-size:11.5px">'+esc(t(im[3]))+'</div>'
           + '</div>';
       }).join('')
+    + (IMP_PREVIEW ? impPreviewCard() : '')
     + '<div class="alert info" style="margin:14px 0 0"><span>'
     + esc(t('الرفع يعرض معاينةً قبل الحفظ: كم صفًّا سيُقبل وكم سيُرفض ولماذا — ولا يُكتب شيء قبل موافقتك.'))
     + '</span></div>');
+}
+
+function impPreviewCard(){
+  var p = IMP_PREVIEW;
+  var nm2 = (IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
+  return card('معاينة ما رُفع — ' + t(nm2),
+      (p.missing.length
+        ? alertBox('error','أعمدةٌ ناقصةٌ في الملف: ' + p.missing.join(' · ') + ' — نزّل القالب واملأه.')
+        : '')
+    + stats([['سيُقبل', N(p.ok.length), 'ok'], ['سيُرفض', N(p.bad.length), p.bad.length?'bad':''],
+             ['الأعمدة', N(p.head.length)], ['الناقص', N(p.missing.length), p.missing.length?'bad':'']])
+    + (p.bad.length
+        ? table(['الصف','السبب','أول قيمة'],
+            p.bad.slice(0, 12).map(function(b){
+              return ['<span class="num">' + nm(b.row) + '</span>', pill(b.why,'off'),
+                      '<span class="hint" style="margin:0">' + esc(String(b.data[0]||'—')).slice(0,40) + '</span>'];
+            }))
+        : '')
+    + '<div class="actions" style="margin-top:12px">'
+    + (p.ok.length && !p.missing.length
+        ? btn('احفظ ' + nm(p.ok.length) + ' صفًّا','btn-primary',' data-impgo="1"') : '')
+    + btn('إلغاء','btn-secondary',' data-impx="1"') + '</div>');
 }
 
 PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'ما يخرج من النظام وما يدخل إليه.',
@@ -2283,16 +2697,18 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'م�
         + '</p>'
         + '<div class="actions">'
         + btn('اختر الأقسام','btn-primary',' data-exp="1"')
-        + btn('⬇ إكسل — الكل','btn-secondary')
-        + btn('⬇ PDF — الكل','btn-secondary')
+        + btn('⬇ إكسل — الكل','btn-secondary',' data-xls="*"')
+        + btn('🖨 PDF — الكل','btn-secondary',' data-print="1"')
         + '</div>')
       + card('تصديرات جاهزة',
           '<div class="actions">'
-          + btn('⬇ KMZ — ١٧٨٧ نقطة','btn-secondary')
-          + btn('⬇ إكسل — المواقع','btn-secondary')
-          + btn('⬇ إكسل — حركة المخزون','btn-secondary')
-          + btn('⬇ إكسل — أداء الفنيين','btn-secondary')
-          + btn('⬇ PDF — الملخص التنفيذي','btn-secondary')
+          + btn('🌍 KMZ — منى وعرفات','btn-secondary',' data-kmz="main"')
+          + btn('🌍 KMZ — الكل ١٧٨٧ نقطة','btn-secondary',' data-kmz="all"')
+          + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
+          + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
+          + btn('⬇ إكسل — الشركات','btn-secondary',' data-xls="co"')
+          + btn('⬇ إكسل — حركة المخزون','btn-secondary',' data-xls="invmv"')
+          + btn('⬇ إكسل — أداء الفنيين','btn-secondary',' data-xls="techx"')
           + '</div>')
       + importCard();
   }};
@@ -2621,7 +3037,7 @@ PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من
           + btn('أسند لفني','btn-primary')
           + btn('جدولة تركيب','btn-secondary')
           + btn('طلب زيارة','btn-secondary')
-          + btn('⬇ KMZ للمحدَّد','btn-secondary')
+          + btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"')
           + btn('مسح التحديد','btn-danger')
           + '</div>');
   }};
@@ -3843,6 +4259,35 @@ document.addEventListener('click', function(e){
     return;
   }
 
+  var xl = e.target.closest('[data-xls]');
+  if (xl){
+    var k = xl.getAttribute('data-xls');
+    toast('يُجهَّز الملف…');
+    xlsExport(k === '*' ? null : [k]);
+    return;
+  }
+  if (e.target.closest('[data-expgo]')){
+    var picked = Array.prototype.filter.call(document.querySelectorAll('.expCk'), function(c){
+      return c.checked && !c.disabled;
+    }).map(function(c){ return c.getAttribute('data-k'); });
+    EXP_OPEN = false; render();
+    toast('يُجهَّز الملف…');
+    xlsExport(picked);
+    return;
+  }
+  var kz = e.target.closest('[data-kmz]');
+  if (kz){ kmzExport(kz.getAttribute('data-kmz')); return; }
+
+  var tp = e.target.closest('[data-tpl]');
+  if (tp){ impTemplate(tp.getAttribute('data-tpl')); return; }
+  if (e.target.closest('[data-impgo]')){
+    var n = impApply();
+    render();
+    toast(nm(n) + ' ' + t('صفًّا حُفظ'));
+    return;
+  }
+  if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
+
   var mk = e.target.closest('[data-mkone]');
   if (mk){ mkAccount(+mk.getAttribute('data-mkone')); render(); return; }
   if (e.target.closest('[data-mkall]')){
@@ -3916,6 +4361,18 @@ function toast(label){
   document.body.appendChild(el);
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 2200);
 }
+
+document.addEventListener('change', function(e){
+  var f = e.target;
+  if (!f || !f.hasAttribute || !f.hasAttribute('data-imp')) return;
+  var file = f.files && f.files[0];
+  if (!file) return;
+  toast('يُقرَأ الملف…');
+  impRead(f.getAttribute('data-imp'), file).then(function(p){
+    if (!p){ toast('تعذّرت قراءة الملف'); return; }
+    render();
+  });
+});
 
 document.addEventListener('input', function(e){
   if (e.target && e.target.id === 'navQ'){
