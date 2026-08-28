@@ -405,7 +405,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 /* حاويةُ الخريطة ثابتةٌ تحت الشل — وواجهتُها طبقةٌ فوقها */
 #mapWrap[hidden]{display:none}
-#mapWrap{position:relative;flex:1 1 auto;min-height:0}
+#mapWrap{position:relative;flex:1 0 auto;height:calc(100dvh - 46px);min-height:320px}
+@media(min-width:901px){ #mapWrap{height:calc(100dvh - 62px)} }
 #mapBox{position:absolute;inset:0}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
 #mapUI > *{pointer-events:auto}
@@ -775,7 +776,18 @@ en:{
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'Your peers in your stage only',
  'بانتظار التركيب':'Awaiting installation','مجدول للفك':'Scheduled to dismantle',
  'ممر · كاميرا':'Corridor · camera','محطة · جسر · بوابة':'Station · bridge · gate',
- 'معامل الإضافي':'Overtime factor','عادي':'Regular','إضافي':'Overtime','سعر':'Rate','مستحَق':'Earned','إغلاق القائمة':'Close menu','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'معامل الإضافي':'Overtime factor','عادي':'Regular','إضافي':'Overtime','سعر':'Rate','مستحَق':'Earned','إغلاق القائمة':'Close menu','الفرق والأنصبة':'Teams and shares','قائد الفريق':'Team lead','مساعد':'Helper',
+ 'النسبة':'Share','نصيبه':'His share','مستحقّه':'His pay','مجموع النسب':'Total shares',
+ 'قيمة الفريق':'Team value','وزّع بالتساوي':'Split evenly','وزّع بالأدوار':'Split by role',
+ 'وُزّعت بالتساوي':'Split evenly','وُزّعت بالأدوار':'Split by role','فريق جديد':'New team',
+ 'إضافة عضو':'Add member','أُضيف':'added','أُخرج':'removed','أخرِج':'Remove',
+ 'هو في الفريق بالفعل':'Already in the team','لا فنيَّ متاح':'No technician available',
+ 'لديه':'has','حدّث':'Update','افتح على ما لديه':'Open on his current',
+ 'لا تغيير':'No change','اختر فنيًّا':'Pick a technician','مُسندةٌ لغيره':'assigned to others',
+ 'كيف تُقسَّم النقاط':'How points are split','النسبة المقترحة':'Suggested share',
+ 'مثال من ٢٠٠ نقطة':'Example of 200 points',
+ 'المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'The team delivers together; points pool, then each takes his share.',
+ 'تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -946,7 +958,18 @@ ur:{
  'أرقامُ زملائك في مرحلتك وحدها — لا في غيرها':'صرف آپ کے مرحلے کے ساتھی',
  'بانتظار التركيب':'تنصیب کے منتظر','مجدول للفك':'ہٹانے کے لیے شیڈول',
  'ممر · كاميرا':'راہداری · کیمرہ','محطة · جسر · بوابة':'اسٹیشن · پل · دروازہ',
- 'معامل الإضافي':'اوور ٹائم عنصر','عادي':'عام','إضافي':'اضافی','سعر':'نرخ','مستحَق':'مستحق','إغلاق القائمة':'مینو بند کریں','تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
+ 'معامل الإضافي':'اوور ٹائم عنصر','عادي':'عام','إضافي':'اضافی','سعر':'نرخ','مستحَق':'مستحق','إغلاق القائمة':'مینو بند کریں','الفرق والأنصبة':'ٹیمیں اور حصے','قائد الفريق':'ٹیم لیڈ','مساعد':'مددگار',
+ 'النسبة':'حصہ','نصيبه':'اس کا حصہ','مستحقّه':'اس کا مستحق','مجموع النسب':'کل حصے',
+ 'قيمة الفريق':'ٹیم کی قیمت','وزّع بالتساوي':'برابر تقسیم','وزّع بالأدوار':'کردار سے تقسیم',
+ 'وُزّعت بالتساوي':'برابر تقسیم ہوا','وُزّعت بالأدوار':'کردار سے تقسیم','فريق جديد':'نئی ٹیم',
+ 'إضافة عضو':'رکن شامل کریں','أُضيف':'شامل ہوا','أُخرج':'نکالا گیا','أخرِج':'نکالیں',
+ 'هو في الفريق بالفعل':'پہلے سے ٹیم میں','لا فنيَّ متاح':'کوئی ٹیکنیشن دستیاب نہیں',
+ 'لديه':'اس کے پاس','حدّث':'اپ ڈیٹ','افتح على ما لديه':'اس کے موجودہ پر کھولیں',
+ 'لا تغيير':'کوئی تبدیلی نہیں','اختر فنيًّا':'ٹیکنیشن منتخب کریں','مُسندةٌ لغيره':'دوسروں کو تفویض',
+ 'كيف تُقسَّم النقاط':'پوائنٹس کیسے تقسیم ہوتے ہیں','النسبة المقترحة':'تجویز کردہ حصہ',
+ 'مثال من ٢٠٠ نقطة':'٢٠٠ پوائنٹس کی مثال',
+ 'المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'ٹیم مل کر کام کرتی ہے، پھر ہر ایک اپنا حصہ لیتا ہے۔',
+ 'تصفية':'فلٹر','مسح التصفية':'فلٹر صاف','قمر صناعي':'سیٹلائٹ','أداة الفحص':'پروب ٹول','ابدأ الفحص':'پروب شروع','أوقف':'روکیں','حيّ':'زندہ','صامت':'خاموش',
  'عناوين مسجّلة':'درج شدہ پتے','فُحص':'جانچا','التشغيل':'چلائیں','آخر ما فُحص':'حالیہ جانچ',
  'جوال المنسّق':'رابط کار موبائل','نُسخ النص':'متن کاپی','تعذّر النسخ':'کاپی ناکام',
  'أدخل جوال المنسّق':'رابط کار موبائل درج کریں','تعذّر الفتح':'کھولا نہ جا سکا','إشعار':'اطلاع',
@@ -2496,6 +2519,27 @@ function asnOf(id){
   return null;
 }
 
+/* ما لدى فنيٍّ في هذه الطبقة — يُفتح عليه اللوحُ فيُزاد أو يُنقَص */
+function asnOfTech(who, kind){
+  var out = [];
+  Object.keys(STATE.tasks).forEach(function(k){
+    var x = STATE.tasks[k];
+    if (x.to === who && x.kind === kind && x.status !== 'معتمد') out.push(x.site);
+  });
+  return out;
+}
+
+/* تحميلُ ما لديه في التحديد — فالإضافةُ والحذفُ على ما هو قائم */
+function asnLoad(who){
+  var kind = LAYER().kind;
+  selClear();
+  asnOfTech(who, kind).forEach(function(id){ SEL[id] = 1; SEL_N++; });
+  ASN_BASE = asnOfTech(who, kind);
+  render(1);
+}
+
+var ASN_BASE = [];
+
 function techList(){
   var out = TECHS.map(function(x){ return x.n; });
   ASSIGN.forEach(function(u){
@@ -2512,6 +2556,8 @@ function asnSheet(){
   var view = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass).filter(L.pass) : base.slice(0, 200);
   var techs = techList();
   ASN_KIND = L.kind || ASN_KIND;
+  if (!ASN_TO) ASN_TO = techs[0] || '';
+  var have = asnOfTech(ASN_TO, L.kind).length;
 
   return '<div class="pop" id="asnPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
     + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
@@ -2546,14 +2592,18 @@ function asnSheet(){
           var a = asnOf(x.id);
           return '<label class="list-item" style="cursor:pointer">'
             + '<input type="checkbox" data-sel="' + esc(x.id) + '"' + (selHas(x.id)?' checked':'')
-            +   (a ? ' disabled' : '') + ' style="width:20px;min-height:20px;flex:0 0 auto">'
+            +   ((a && a.to !== curTech()) ? ' disabled' : '')
+            +   ' style="width:20px;min-height:20px;flex:0 0 auto">'
             + '<div class="li-main"><div class="li-t">'
             +   (x.sign ? esc(t('شاخص')) + ' <b>' + esc(x.sign) + '</b>' : esc(x.name.slice(0, 40)))
             +   (x.sq ? ' · ' + esc(t('مربع')) + ' ' + esc(x.sq) : '')
             + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
             + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
             + (L.pts(x) ? '<div class="num" style="margin:2px 0 0">' + nm(L.pts(x)) + ' ' + esc(t('نقطة')) + '</div>' : '')
-            +   (a ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مُسند')) + ' · ' + esc(a.to) + '</div>' : '')
+            +   (a ? '<div class="hint" style="margin:2px 0 0">'
+                  + (a.to === curTech() ? '<span class="pill acc">' + esc(t('لديه')) + '</span>'
+                                        : esc(t('مُسند')) + ' \u00b7 ' + esc(a.to))
+                  + '</div>' : '')
             + '</div></label>';
         }).join('')
       : '<p class="hint" style="padding:18px;text-align:center;margin:0">' + esc(t('لا نتائج')) + '</p>')
@@ -2562,8 +2612,10 @@ function asnSheet(){
       ? '<p class="hint">' + esc(t('يُعرض مئةٌ وعشرون — ضيّق بالفئة أو البحث')) + '</p>' : '')
 
     + '<div class="grid cols-3" style="margin:12px 0 0">'
-    +   '<div class="field" style="margin:0"><label>' + esc(t('الفني')) + '</label>'
-    +   '<select id="asnTo">' + techs.map(function(n){
+    +   '<div class="field" style="margin:0"><label>' + esc(t('الفني'))
+    +     (have ? ' <span class="pill acc">' + esc(t('لديه')) + ' ' + nm(have) + '</span>' : '')
+    +     '</label>'
+    +   '<select id="asnTo" data-asnto="1">' + techs.map(function(n){
           return '<option' + (ASN_TO===n?' selected':'') + '>' + esc(n) + '</option>'; }).join('')
     +   '</select></div>'
     +   '<div class="field" style="margin:0"><label>' + esc(t('نوع المهمة')) + '</label>'
@@ -2576,7 +2628,10 @@ function asnSheet(){
     + '</div>'
 
     + '<div class="actions" style="margin-top:12px">'
-    +   btn('أسند ' + nm(SEL_N) + ' نقطة','btn-primary',' data-asngo="1"')
+    +   btn(have ? (t('حدّث') + ' \u2190 ' + nm(SEL_N) + ' ' + t('نقطة'))
+                   : (t('أسند') + ' ' + nm(SEL_N) + ' ' + t('نقطة')),
+            'btn-primary',' data-asngo="1"')
+    +   (have ? btn('افتح على ما لديه','btn-secondary',' data-asnload="1"') : '')
     +   btn('حدّد من الخريطة','btn-secondary',' data-asnmap="1"')
     +   btn('إلغاء','btn-secondary',' data-asn="0"')
     + '</div>'
@@ -2584,28 +2639,52 @@ function asnSheet(){
     + '</div>';
 }
 
+function curTech(){
+  return (document.getElementById('asnTo') || {}).value || ASN_TO || techList()[0] || '';
+}
+
+/* الحفظُ توفيقٌ لا إنشاءٌ فقط: ما زِيد يُنشَأ وما نُقص يُلغى —
+   فيُفتَح اللوحُ على خمسٍ فتُجعَل سبعًا أو ثلاثًا بالتحديد نفسه. */
 function asnCommit(){
-  if (!SEL_N){ toast(t('حدّد نقاطًا أولًا')); return; }
-  var to = (document.getElementById('asnTo') || {}).value || ASN_TO || techList()[0];
+  var to   = curTech();
   var kind = (document.getElementById('asnKind') || {}).value || ASN_KIND;
   var when = (document.getElementById('asnWhen') || {}).value || '';
-  var ids = selIds(), n = 0;
+  if (!to){ toast(t('اختر فنيًّا')); return; }
 
-  ids.forEach(function(id){
-    if (asnOf(id)) return;
+  var want = selIds();
+  var had  = asnOfTech(to, kind);
+  var add = 0, rm = 0, busy = 0;
+
+  /* المُضاف */
+  want.forEach(function(id){
+    if (had.indexOf(id) > -1) return;
+    var other = asnOf(id);
+    if (other && other.to !== to){ busy++; return; }
     var tid = 'TK-' + kind + '-' + id;
     CORE.set('tasks', tid, {
       id:tid, site:id, kind:kind, to:to, assignedTo:to,
       status:'مطلوب', when:when, by:STATE.meta.name || 'محمد صفوت', at:Date.now()
     });
-    n++;
+    add++;
   });
 
-  logEvent('إسناد ' + nm(n) + ' نقطة إلى ' + to + ' · ' + t(WO_KINDS[kind].n));
+  /* المسحوب — ما كان لديه وخرج من التحديد */
+  had.forEach(function(id){
+    if (want.indexOf(id) > -1) return;
+    var tk = asnOf(id);
+    if (tk && tk.to === to && tk.status === 'مطلوب'){ CORE.rm('tasks', tk.id); rm++; }
+  });
+
+  if (!add && !rm){ toast(t('لا تغيير')); return; }
+  logEvent('إسناد ' + to + ' · +' + nm(add) + (rm ? ' \u2212' + nm(rm) : '')
+           + ' \u00b7 ' + t(WO_KINDS[kind].n));
   selClear();
+  ASN_BASE = [];
   ASN_OPEN = false;
   statBump();
-  toast(nm(n) + ' ' + t('نقطةً أُسندت إلى') + ' ' + to);
+  toast(to + ' \u00b7 ' + (add ? '+' + nm(add) + ' ' : '') + (rm ? '\u2212' + nm(rm) + ' ' : '')
+        + '= ' + nm(asnOfTech(to, kind).length) + ' ' + t('نقطة')
+        + (busy ? ' \u00b7 ' + nm(busy) + ' ' + t('مُسندةٌ لغيره') : ''));
   render(1);
 }
 
@@ -3649,6 +3728,161 @@ PAGE.allscore = { m:'الفرق والفنيون', t:'تقرير الأداء',
       + '<p class="hint">لا رقمَ هنا مكتوبٌ بيد: كلُّه محسوبٌ من أوزان الإعدادات وما سجّله كلُّ فنيٍّ فعلًا.</p>';
   }};
 
+
+/* ═══ الفرق ونسبُ الأنصبة ═══
+   المجموعةُ تنجز معًا، والنقاطُ تُقسَّم بنسبٍ تُكتب لكلِّ عضو:
+   قائدُ الفريق أكبرُ نصيبًا من الفني، والفنيُّ من المساعد. */
+
+var TEAM_ROLE = {
+  lead:   { n:'قائد الفريق', i:'\u2605', def:35 },
+  tech:   { n:'فني',         i:'\u25CF', def:25 },
+  helper: { n:'مساعد',       i:'\u25CB', def:15 }
+};
+
+var TEAMS = [
+  { id:'T1', n:'فريق مخيمات ١', kind:'install',
+    members:[ { name:'خالد', role:'lead', share:40 },
+              { name:'أحمد', role:'tech', share:25 },
+              { name:'سالم', role:'tech', share:25 },
+              { name:'ماجد', role:'helper', share:10 } ] }
+];
+
+var TEAM_CUR = 'T1';
+
+function teamOf(id){ return TEAMS.filter(function(x){ return x.id === id; })[0] || TEAMS[0]; }
+function teamShare(tm){ return tm.members.reduce(function(a,m){ return a + cfgN(m.share); }, 0); }
+
+/* نقاطُ الفريق: مجموعُ ما أنجزه أعضاؤه — ثم تُقسَّم بالنسب */
+function teamPoints(tm){
+  var n = 0;
+  tm.members.forEach(function(m){ n += scoreOf(m.name).total; });
+  return Math.round(n * 100) / 100;
+}
+
+PAGE.teams = { m:'الفرق والفنيون', t:'الفرق والأنصبة',
+  l:'من في كل فريق، وبأي نسبةٍ يُقسَّم إنجازُه.',
+  body:function(){
+    var tm = teamOf(TEAM_CUR);
+    var tot = teamShare(tm), pts = teamPoints(tm);
+    var ph = cfgGet('ph');
+    var ok100 = tot === 100;
+
+    return '<div class="chips">' + TEAMS.map(function(x){
+        return '<button type="button" class="chip' + (TEAM_CUR===x.id?' on':'') + '" data-team="' + x.id + '">'
+          + esc(x.n) + ' <span class="num">' + nm(x.members.length) + '</span></button>';
+      }).join('')
+      + btn('➕ فريق جديد','btn-secondary btn-sm',' data-newteam="1"') + '</div>'
+
+      + stats([['أعضاء الفريق', N(tm.members.length), 'acc'],
+               ['نقاط الفريق', N(pts)],
+               ['مجموع النسب', nm(tot) + '٪', ok100 ? 'ok' : 'bad'],
+               ['قيمة الفريق', ph ? N(Math.round(pts * ph)) + ' ' + t('ريال') : '—']])
+
+      + (ok100 ? '' : alertBox('error','مجموعُ النسب ' + nm(tot) + '٪ — لا بدّ أن يكون مئةً بالضبط، وإلا ضاع نصيبٌ أو تكرّر.'))
+
+      + cardFlush('أعضاء ' + esc(tm.n),
+          table(['العضو','الدور','النسبة ٪','نصيبه','مستحقّه',''],
+            tm.members.map(function(m, i){
+              var R = TEAM_ROLE[m.role] || TEAM_ROLE.tech;
+              var sh = cfgN(m.share);
+              var mine = tot ? (pts * sh / tot) : 0;
+              return ['<strong>' + esc(m.name) + '</strong>',
+                      '<select data-mrole="' + i + '">' + Object.keys(TEAM_ROLE).map(function(k){
+                        return '<option value="' + k + '"' + (m.role===k?' selected':'') + '>'
+                          + TEAM_ROLE[k].i + ' ' + esc(t(TEAM_ROLE[k].n)) + '</option>';
+                      }).join('') + '</select>',
+                      '<input type="number" min="0" max="100" step="1" value="' + sh
+                        + '" data-share="' + i + '" style="max-width:88px">',
+                      N(Math.round(mine * 10) / 10),
+                      ph ? N(Math.round(mine * ph)) : '—',
+                      btn('أخرِج','btn-quiet btn-sm',' data-rmmem="' + i + '"')];
+            }),
+            ['<b>' + t('الإجمالي') + '</b>','',
+             '<b class="' + (ok100 ? '' : 'req') + '">' + nm(tot) + '٪</b>',
+             '<b>' + nm(pts) + '</b>',
+             ph ? '<b>' + nm(Math.round(pts * ph)) + '</b>' : '—', '']),
+          '<div class="actions">'
+          + btn('وزّع بالتساوي','btn-secondary btn-sm',' data-even="1"')
+          + btn('وزّع بالأدوار','btn-secondary btn-sm',' data-bydef="1"')
+          + '</div>')
+
+      + card('إضافة عضو',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('الفني')) + '</label>'
+          + '<select id="memName">' + techList().filter(function(n){
+              return !tm.members.some(function(m){ return m.name === n; });
+            }).map(function(n){ return '<option>' + esc(n) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+          + '<select id="memRole">' + Object.keys(TEAM_ROLE).map(function(k){
+              return '<option value="' + k + '">' + TEAM_ROLE[k].i + ' ' + esc(t(TEAM_ROLE[k].n)) + '</option>';
+            }).join('') + '</select></div>'
+          + '<div class="field"><label>' + esc(t('النسبة')) + ' ٪</label>'
+          + '<input type="number" id="memShare" min="0" max="100" value="20"></div>'
+          + '</div>', btn('➕ إضافة','btn-primary btn-sm',' data-addmem="1"'))
+
+      + card('كيف تُقسَّم النقاط',
+          '<p class="hint" style="margin:0 0 11px">'
+          + esc(t('المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.'))
+          + '</p>'
+          + table(['الدور','النسبة المقترحة','مثال من ٢٠٠ نقطة'],
+              Object.keys(TEAM_ROLE).map(function(k){
+                var R = TEAM_ROLE[k];
+                return [R.i + ' ' + esc(t(R.n)), nm(R.def) + '٪', N(Math.round(200 * R.def / 100))];
+              }))
+          + '<p class="hint">النسبُ تُكتب بيدك — والمقترحةُ دليلٌ لا قيد. ومجموعُها مئةٌ دائمًا.</p>');
+  }};
+
+function teamAdd(){
+  var tm = teamOf(TEAM_CUR);
+  var n = (document.getElementById('memName') || {}).value;
+  var r = (document.getElementById('memRole') || {}).value || 'tech';
+  var sh = cfgN((document.getElementById('memShare') || {}).value);
+  if (!n){ toast(t('لا فنيَّ متاح')); return; }
+  if (tm.members.some(function(m){ return m.name === n; })){ toast(t('هو في الفريق بالفعل')); return; }
+  tm.members.push({ name:n, role:r, share:sh });
+  CORE.dirty('teams', tm.id, tm);
+  logEvent('إضافة ' + n + ' إلى ' + tm.n);
+  toast(n + ' \u00b7 ' + t('أُضيف'));
+  render(1);
+}
+
+function teamRm(i){
+  var tm = teamOf(TEAM_CUR);
+  var m = tm.members[i];
+  if (!m) return;
+  tm.members.splice(i, 1);
+  CORE.dirty('teams', tm.id, tm);
+  logEvent('إخراج ' + m.name + ' من ' + tm.n);
+  toast(m.name + ' \u00b7 ' + t('أُخرج'));
+  render(1);
+}
+
+function teamEven(){
+  var tm = teamOf(TEAM_CUR), n = tm.members.length;
+  if (!n) return;
+  var base = Math.floor(100 / n), rest = 100 - base * n;
+  tm.members.forEach(function(m, i){ m.share = base + (i < rest ? 1 : 0); });
+  CORE.dirty('teams', tm.id, tm);
+  toast(t('وُزّعت بالتساوي'));
+  render(1);
+}
+
+function teamByRole(){
+  var tm = teamOf(TEAM_CUR);
+  var raw = tm.members.map(function(m){ return (TEAM_ROLE[m.role] || TEAM_ROLE.tech).def; });
+  var sum = raw.reduce(function(a,b){ return a + b; }, 0);
+  if (!sum) return;
+  var acc = 0;
+  tm.members.forEach(function(m, i){
+    var v = (i === tm.members.length - 1) ? (100 - acc) : Math.round(raw[i] / sum * 100);
+    m.share = v; acc += v;
+  });
+  CORE.dirty('teams', tm.id, tm);
+  toast(t('وُزّعت بالأدوار'));
+  render(1);
+}
+
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -3976,7 +4210,7 @@ function renderKey(){
        + '|' + FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + DETAIL_ID
        + '|' + (MAP_SAT?1:0) + '|' + (MAP_FILT_OPEN?1:0) + '|' + (MYPOS?1:0) + '|' + MOVE_ID
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
-       + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + TEAM_CUR + '|' + ASN_TO + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -6365,7 +6599,8 @@ var NAV = [
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
-      ['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],['dis','الفك بعد الموسم']] },
+      ['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
+      ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة']] },
   { g:'التخطيط', icon:'\u25F7', items:[['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
       ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
@@ -6376,19 +6611,17 @@ var NAV = [
   { g:'المال', icon:'\u25B0', items:[['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
       ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
-      ['creps','التقارير الدورية'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
+      ['creps','التقارير الدورية'],['teams','الفرق والأنصبة'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
       ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
-  { id:'hb', icon:'\u25C9', label:'صحة الأجهزة', solo:true },
   { g:'الإعدادات', icon:'\u2699', items:[
       ['users','المستخدمون'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
       ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],
       ['budget','الميزانية والاعتماد'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
-  { id:'exp', icon:'\u2913', label:'التصدير والاستيراد', solo:true },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
-      ['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
+      ['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
       ['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
   { g:'المساعدة', icon:'\u003F', items:[['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
@@ -6588,7 +6821,9 @@ document.addEventListener('click', function(e){
                 'data-asn','data-asngo','data-asnmap','data-selmap','data-selmode','data-selall',
                 'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
                 'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
-                'data-lasn','data-dsch','data-ddone','data-stab'];
+                'data-lasn','data-dsch','data-ddone','data-stab','data-asnload','data-asnto',
+                'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
+                'data-share','data-mrole'];
     var wired = acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
@@ -6759,6 +6994,20 @@ document.addEventListener('click', function(e){
   var an = e.target.closest('[data-asn]');
   if (an){ ASN_OPEN = an.getAttribute('data-asn') === '1'; render(1); return; }
   if (e.target.closest('[data-asngo]')){ asnCommit(); return; }
+  if (e.target.closest('[data-asnload]')){ asnLoad(curTech()); return; }
+  var tmb = e.target.closest('[data-team]');
+  if (tmb){ TEAM_CUR = tmb.getAttribute('data-team'); render(1); return; }
+  if (e.target.closest('[data-addmem]')){ teamAdd(); return; }
+  var rmm = e.target.closest('[data-rmmem]');
+  if (rmm){ teamRm(+rmm.getAttribute('data-rmmem')); return; }
+  if (e.target.closest('[data-even]')){ teamEven(); return; }
+  if (e.target.closest('[data-bydef]')){ teamByRole(); return; }
+  if (e.target.closest('[data-newteam]')){
+    var id = 'T' + (TEAMS.length + 1);
+    TEAMS.push({ id:id, n:'فريق ' + nm(TEAMS.length + 1), kind:LAYER().kind, members:[] });
+    TEAM_CUR = id; CORE.dirty('teams', id, TEAMS[TEAMS.length-1]);
+    render(1); return;
+  }
   if (e.target.closest('[data-asnmap]')){
     MAP_SELECT = true; ASN_OPEN = false; CUR = 'map'; render(1); return;
   }
@@ -6861,6 +7110,18 @@ function toast(label){
 }
 
 document.addEventListener('change', function(e){
+  var t0 = e.target;
+  if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-share')){
+    var tm = teamOf(TEAM_CUR), m = tm.members[+t0.getAttribute('data-share')];
+    if (m){ m.share = cfgN(t0.value); CORE.dirty('teams', tm.id, tm); render(1); }
+    return;
+  }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-mrole')){
+    var tm2 = teamOf(TEAM_CUR), m2 = tm2.members[+t0.getAttribute('data-mrole')];
+    if (m2){ m2.role = t0.value; CORE.dirty('teams', tm2.id, tm2); render(1); }
+    return;
+  }
   var el = e.target;
   if (el && el.hasAttribute){
     if (el.hasAttribute('data-photo')){
