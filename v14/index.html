@@ -5,7 +5,11 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#185FA5">
-<title>قارئات نُسُك — معاينة V14</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="قارئات نُسُك">
+<title>قارئات نُسُك — حج ١٤٤٨هـ</title>
 <style>
 /* ═══════════════════════════════════════════════════════════════════
    نُسُك V14 — نظام التصميم
@@ -476,9 +480,15 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .map-layerbar .lb-c{color:#C6CFD7;font-variant-numeric:tabular-nums;
   border-inline-start:1px solid #2A333C;padding-inline-start:10px}
 
+/* رقمُ النسخة زرُّ فحص تحديثات — لكلِّ الأدوار، وعلى الجوّال أيضًا:
+   كان يختفي تحت خمسمئةٍ وستين بكسل، أي على كلِّ جهازٍ في الميدان. */
 .ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-dim);font-weight:400;
-  margin-inline-start:7px;opacity:.7;white-space:nowrap}
-@media(max-width:560px){ .ver-tag{display:none} }
+  margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
+  border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
+  min-height:26px;font-family:inherit}
+.ver-tag:hover{opacity:1;border-color:var(--brand);color:var(--brand)}
+.ver-tag.upd{border-color:var(--warn,#E8873A);color:var(--warn,#E8873A);opacity:1}
+@media(max-width:560px){ .ver-tag{font-size:10px;padding:3px 7px} }
 
 </style>
 </head>
@@ -515,7 +525,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.28
+      <button type="button" class="ver-tag" data-verchk="1"
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.29</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -706,6 +717,17 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الخامسة عشرة: التثبيت والتحديث ══ */
+ 'يُفحَص التحديث…':'Checking for an update…',
+ 'جاهزةٌ — أغلق التطبيق وافتحه':'is ready — close the app and open it again',
+ 'أنت على أحدث نسخة':'You are on the latest version',
+ 'تعذّر الفحص — لا شبكة':'Check failed — no network',
+ 'التطبيقُ مثبَّتٌ سلفًا — أنت تعمل عليه الآن':'The app is already installed — you are using it now',
+ 'افتح قائمة المتصفّح واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»':'Open the browser menu and choose Install app or Add to Home Screen',
+ 'افتح الصفحة في متصفّح Safari — لا يعمل التثبيت من متصفّحٍ آخر على آيفون.':'Open the page in Safari — installing does not work from another browser on iPhone.',
+ 'اضغط زرَّ المشاركة (المربّع بسهمٍ لأعلى) أسفل الشاشة.':'Tap the Share button (the square with an upward arrow) at the bottom of the screen.',
+ 'اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة».':'Choose Add to Home Screen, then Add.',
+ 'بعدها يفتح التطبيقُ ملءَ الشاشة ويعمل بلا شبكة، وتصله الإشعارات.':'It then opens full screen, works offline, and receives notifications.',
  /* ══ الدفعة الرابعة عشرة: المخزون والمشتريات ══ */
  'المخزونُ للمهندس وحده':'Inventory is for the engineer only',
  'اختر نوع الحركة':'Choose the movement type',
@@ -1086,6 +1108,17 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الخامسة عشرة ══ */
+ 'يُفحَص التحديث…':'تازہ کاری کی جانچ ہو رہی ہے…',
+ 'جاهزةٌ — أغلق التطبيق وافتحه':'تیار ہے — ایپ بند کر کے دوبارہ کھولیں',
+ 'أنت على أحدث نسخة':'آپ تازہ ترین نسخے پر ہیں',
+ 'تعذّر الفحص — لا شبكة':'جانچ ناکام — نیٹ ورک نہیں',
+ 'التطبيقُ مثبَّتٌ سلفًا — أنت تعمل عليه الآن':'ایپ پہلے سے نصب ہے — آپ ابھی اسی پر کام کر رہے ہیں',
+ 'افتح قائمة المتصفّح واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»':'براؤزر کا مینو کھولیں اور ایپ نصب کریں یا ہوم اسکرین میں شامل کریں منتخب کریں',
+ 'افتح الصفحة في متصفّح Safari — لا يعمل التثبيت من متصفّحٍ آخر على آيفون.':'صفحہ Safari میں کھولیں — آئی فون پر کسی دوسرے براؤزر سے تنصیب نہیں ہوتی۔',
+ 'اضغط زرَّ المشاركة (المربّع بسهمٍ لأعلى) أسفل الشاشة.':'اسکرین کے نیچے شیئر کا بٹن دبائیں (اوپر تیر والا مربع)۔',
+ 'اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة».':'ہوم اسکرین میں شامل کریں منتخب کریں، پھر شامل کریں۔',
+ 'بعدها يفتح التطبيقُ ملءَ الشاشة ويعمل بلا شبكة، وتصله الإشعارات.':'پھر یہ پوری اسکرین پر کھلتی ہے، بغیر نیٹ ورک چلتی ہے، اور اطلاعات وصول کرتی ہے۔',
  /* ══ الدفعة الرابعة عشرة ══ */
  'المخزونُ للمهندس وحده':'انوینٹری صرف انجینئر کے لیے ہے',
  'اختر نوع الحركة':'حرکت کی قسم منتخب کریں',
@@ -8140,11 +8173,11 @@ var SW_STATE = { reg:null, ok:false, waiting:false };
 
 function swInstall(){
   if (typeof navigator === 'undefined' || !('serviceWorker' in navigator)) return Promise.resolve(false);
-  /* يُولَّد من الشيفرة نفسها فلا يحتاج ملفًا ثانيًا يُنسى تحديثُه */
+  /* يُسجَّل من `./sw.js` — والمتصفّحاتُ ترفض `blob:` لتسجيل العامل، فكان
+     لا يُسجَّل عاملٌ أصلًا: لا عملَ بلا شبكة، ولا دورةَ تحديث، ولا إشعارَ
+     نظام. والملفُّ في المستودع يُرقَّم كلَّ دفعةٍ ولا يُستعمَل. */
   try{
-    var blob = new Blob([SW_SRC], { type:'text/javascript' });
-    var url  = URL.createObjectURL(blob);
-    return navigator.serviceWorker.register(url, { scope:'./' })
+    return navigator.serviceWorker.register('./sw.js', { scope:'./' })
       .then(function(r){
         SW_STATE.reg = r; SW_STATE.ok = true;
         r.addEventListener('updatefound', function(){
@@ -8161,6 +8194,32 @@ function swInstall(){
       })
       .catch(function(){ return false; });
   }catch(e){ return Promise.resolve(false); }
+}
+
+/* فحصُ التحديثات: يسأل عاملَ الخدمة أن يعيد جلبَ نفسِه، ويقارن رقمَ الكاش
+   في `sw.js` بالمحمَّل. فالمستخدمُ لا يُترَك يخمّن أعنده أحدثُ نسخةٍ أم لا،
+   ولا يُنصَح بمسح بيانات الموقع — فذلك يمحو ما لم يُرفَع بعد. */
+function verCheck(){
+  toast(t('يُفحَص التحديث…'));
+  var here = (String(document.title).match(/V\d+\.\d+/) || [''])[0];
+  fetch('sw.js?ts=' + Date.now(), { cache:'reload' })
+    .then(function(r){ return r.ok ? r.text() : ''; })
+    .then(function(txt){
+      var m = /nusuk-survey-v(\d+\.\d+)/.exec(txt || '');
+      var there = m ? ('V' + m[1]) : '';
+      var mine = (typeof APP_VER === 'string' && APP_VER) || here || '';
+      if (SW_STATE.reg && SW_STATE.reg.update) { try { SW_STATE.reg.update(); } catch (e){} }
+      if (there && mine && there !== mine){
+        var b = document.querySelector('.ver-tag');
+        if (b) b.classList.add('upd');
+        toast(there + ' ' + t('جاهزةٌ — أغلق التطبيق وافتحه'));
+      } else if (SW_STATE.waiting){
+        toast(t('نسخةٌ جديدةٌ جاهزة — أغلق التطبيق وافتحه'));
+      } else {
+        toast(t('أنت على أحدث نسخة'));
+      }
+    })
+    .catch(function(){ toast(t('تعذّر الفحص — لا شبكة')); });
 }
 
 function swClear(){
@@ -8187,15 +8246,52 @@ function pwaWatch(){
     e.preventDefault();
     INSTALL_EVT = e;
     var b = document.getElementById('pwaBtn');
-    if (b) b.style.display = '';
+    if (b) b.style.display = '';   /* الزرُّ ظاهرٌ أصلًا — وهذا يؤكّده */
   });
   window.addEventListener('appinstalled', function(){ INSTALL_EVT = null; });
 }
 
+function pwaStandalone(){
+  try{
+    return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches)
+        || window.navigator.standalone === true;
+  }catch(e){ return false; }
+}
+function pwaIOS(){
+  try{
+    var ua = navigator.userAgent || '';
+    return /iPad|iPhone|iPod/.test(ua)
+        || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);   /* آيباد يقول Mac */
+  }catch(e){ return false; }
+}
+
 function pwaInstall(){
-  if (!INSTALL_EVT){ toast(t('التثبيت غير متاح في هذا المتصفح')); return; }
-  INSTALL_EVT.prompt();
-  INSTALL_EVT = null;
+  if (pwaStandalone()){ toast(t('التطبيقُ مثبَّتٌ سلفًا — أنت تعمل عليه الآن')); return; }
+  if (INSTALL_EVT){ INSTALL_EVT.prompt(); INSTALL_EVT = null; return; }
+  /* آيفونُ لا يُرسِل حدثَ التثبيت أبدًا — والتثبيتُ فيه متاحٌ بخطوتين.
+     فقولُ «غير متاح» كذبٌ يمنع نصفَ الميدان من تثبيت التطبيق. */
+  if (pwaIOS()){ POP_HELP = 'ios'; render(1); return; }
+  toast(t('افتح قائمة المتصفّح واختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»'));
+}
+
+/* شرحُ التثبيت على آيفون — خطوتان لا أكثر */
+var POP_HELP = '';
+function iosHelpCard(){
+  if (POP_HELP !== 'ios') return '';
+  return card('تثبيت التطبيق على آيفون',
+    '<div class="pop-rows" style="margin:0">'
+    + '<div><span class="k">١</span><span>'
+    +   esc(t('افتح الصفحة في متصفّح Safari — لا يعمل التثبيت من متصفّحٍ آخر على آيفون.'))
+    + '</span></div>'
+    + '<div><span class="k">٢</span><span>'
+    +   esc(t('اضغط زرَّ المشاركة (المربّع بسهمٍ لأعلى) أسفل الشاشة.'))
+    + '</span></div>'
+    + '<div><span class="k">٣</span><span>'
+    +   esc(t('اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة».'))
+    + '</span></div>'
+    + '</div>'
+    + '<p class="hint">' + esc(t('بعدها يفتح التطبيقُ ملءَ الشاشة ويعمل بلا شبكة، وتصله الإشعارات.')) + '</p>',
+    btn('فهمت','btn-quiet btn-sm',' data-poph="0"'));
 }
 
 var MANIFEST = {
@@ -8210,25 +8306,17 @@ var MANIFEST = {
     sizes:'512x512', type:'image/svg+xml', purpose:'any maskable' }]
 };
 
+/* البيانُ ملفٌّ موصولٌ في الرأس — كان يُولَّد هنا `blob:` أيضًا فيزاحمه،
+   وأيقونتُه SVG في بيانٍ مؤقّتٍ لا تصلح لآيفون. أُبقيت الدالةُ حارسةً:
+   إن غاب الوسمُ من الرأس يومًا وصلته، ولا تُضيف ثانيًا إن وُجد. */
 function manifestInject(){
   try{
-    var href = '';
-    try{
-      href = URL.createObjectURL(new Blob([JSON.stringify(MANIFEST)],
-        { type:'application/manifest+json' }));
-    }catch(e){
-      href = 'data:application/manifest+json;charset=utf-8,'
-           + encodeURIComponent(JSON.stringify(MANIFEST));
-    }
+    if (document.querySelector('link[rel="manifest"]')) return;
     var l = document.createElement('link');
-    l.rel = 'manifest'; l.href = href;
+    l.rel = 'manifest'; l.href = 'manifest.webmanifest';
     document.head.appendChild(l);
-    var m = document.createElement('meta');
-    m.name = 'apple-mobile-web-app-capable'; m.content = 'yes';
-    document.head.appendChild(m);
   }catch(e){}
 }
-
 /* ═══ صفحة الدخول — خلفية حية مبنية بالكود ═══
    ١٧٨٧ نقطة تُرسم على شبكة وتنوّر بالتدريج: المشروع يحكي نفسه
    بدل صورة مستعارة. خفيفة، وتحترم prefers-reduced-motion. */
@@ -9689,7 +9777,32 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
               return '<button type="button" class="chip'+(ROLE===k?' on':'')+'" data-role="'+k+'">'
                 + esc(t(ROLES[k].n))+'</button>';
             }).join('') + '</div>')
-        : '');
+        : '')
+      + iosHelpCard()
+      + card('التطبيق على الجهاز',
+          '<p class="hint" style="margin:0 0 11px">'
+          + esc(t(pwaStandalone()
+              ? 'مثبَّتٌ ويعمل ملءَ الشاشة — يفتح بلا شبكةٍ وتصله الإشعارات.'
+              : 'ثبّته على الشاشة الرئيسية: يفتح ملءَ الشاشة، ويعمل بلا شبكة، وتصله الإشعارات.'))
+          + '</p>'
+          + '<div class="actions">'
+          /* كان مخفيًّا حتى يقع حدثُ التثبيت — وآيفونُ لا يقع فيه حدثٌ أبدًا،
+             فيبقى مخفيًّا على نصف أجهزة الميدان. */
+          + '<button type="button" class="btn btn-primary" id="pwaBtn" data-pwa="1">'
+          +   '⬇ ' + esc(t('ثبّت التطبيق')) + '</button>'
+          + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
+          + '</div>'
+          + '<p class="hint">التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.</p>')
+      + '<p class="hint">نبضات الأجهزة أسرع ما ينمو: ١٧٨٧ جهازًا × نبضة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.</p>';
+  }};
+
+/* ── ٦ · تعارض المزامنة ───────────────────────────
+   الميدان بلا شبكة، وتحريران على نقطة واحدة يتصادمان. */
+
+PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
+  body:function(){
+    return stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
+                  ['حُلّت اليوم','٠','ok'], ['فشل رفع','٠','bad']]);
   }};
 
 /* ═══ موديول الوزارة — دورة الحياة مرحلةً مرحلة ═══
@@ -9987,23 +10100,7 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
               ['التشفير', pill('مطلوب مفتاح','warn')],
               ['المكان', '<span class="hint" style="margin:0">مستودع خاص — لا العام</span>']
             ]))
-      + card('التطبيق على الجهاز',
-          '<div class="actions">'
-          + '<button type="button" class="btn btn-primary" id="pwaBtn" data-pwa="1" style="display:none">'
-          +   '⬇ ' + esc(t('ثبّت التطبيق')) + '</button>'
-          + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
-          + '</div>'
-          + '<p class="hint">التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.</p>')
-      + '<p class="hint">نبضات الأجهزة أسرع ما ينمو: ١٧٨٧ جهازًا × نبضة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.</p>';
-  }};
 
-/* ── ٦ · تعارض المزامنة ───────────────────────────
-   الميدان بلا شبكة، وتحريران على نقطة واحدة يتصادمان. */
-
-PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
-  body:function(){
-    return stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
-                  ['حُلّت اليوم','٠','ok'], ['فشل رفع','٠','bad']])
       + card('دورة المزامنة', flow(['يُكتب محليًّا','في الطابور','رُفع','أُكِّد'],0)
         + '<p class="hint">الكتابة تنجح دائمًا على الجهاز — والشبكة تفصيلٌ لاحق لا شرطٌ مسبق.</p>')
       + card('سياسة التعارض',
@@ -10785,6 +10882,7 @@ function onDocClick(e){
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
     USR_EDIT = ''; usrSet(id2, patch); return;
   }
+  if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   if (e.target.closest('[data-mvadd]')){ moveAdd(); return; }
   if (e.target.closest('[data-byadd]')){ buyAdd(); return; }
   if (e.target.closest('[data-supadd]')){ listAdd('sup'); return; }

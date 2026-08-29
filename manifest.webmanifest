@@ -1,14 +1,14 @@
 {
- "name": "متابعة المشروع",
- "short_name": "متابعة المشروع",
- "description": "مسح وتركيب مواقع المشروع في المشاعر المقدسة",
+ "name": "قارئات نُسُك — حج ١٤٤٨هـ",
+ "short_name": "قارئات نُسُك",
+ "description": "مسحُ قارئات نُسُك وتركيبُها في المشاعر المقدسة",
  "lang": "ar",
  "dir": "rtl",
  "start_url": "./",
  "scope": "./",
  "display": "standalone",
- "background_color": "#0A0B0D",
- "theme_color": "#0A0B0D",
+ "background_color": "#f4f6f8",
+ "theme_color": "#185FA5",
  "icons": [
   {
    "src": "icon-192.png",
