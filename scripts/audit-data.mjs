@@ -22,6 +22,41 @@ const eq = (a, b, name) => check(a === b, `${name} — المتوقَّع ${b} �
 
 const html = readFileSync('index.html', 'utf8');
 
+/* ── شاشةٌ تقرأ بيانةً مزروعةً ولها مصدرٌ حيّ ──────────────────────────────
+   `DATA` بذرةٌ ثابتة: أرقامٌ ونصوصٌ كُتبت يومَ بُني الشكلُ ليُرى. وشاشةٌ تقرؤها
+   تبدو صحيحةً — بل تكون صحيحةً يومَ كُتبت — ثم تتجمّد: يُسجَّل موقعٌ فلا يزيد
+   عددُها، ويُنشَأ فنيٌّ فلا يظهر، وتُسجَّل حركةُ مخزونٍ فلا تُحسَب. ولا شيءَ
+   يشكو، لأن الرقمَ معروضٌ وواثقٌ وخاطئ.
+
+   فالمفاتيحُ التي لها مصدرٌ حيٌّ ممنوعةٌ من أجسام الشاشات. وما بقي بذرةً
+   خالصةً — كتالوجٌ يُزرَع منه ثم يُحرَّر — يُعلَن هنا صراحةً. */
+{
+  const SEED_ONLY = new Set(['items','buys','budget','stock','moves','buyCats','suppliers','sites']);
+  /* التعبيرُ الواحدُ لا يمسك أجسامًا متداخلةَ الأقواس — تُقتطع بموازنةٍ */
+  const names = [...new Set([...html.matchAll(/^\s*PAGE\.(\w+)\s*=/gm)].map(m => m[1]))];
+  const bodyOf = n => {
+    const i = html.search(new RegExp('PAGE\\.' + n + '\\s*=\\s*\\{'));
+    if (i < 0) return '';
+    const st = html.indexOf('body:', i);
+    if (st < 0) return '';
+    let d = 0;
+    for (let x = html.indexOf('{', st); x < html.length; x++){
+      if (html[x] === '{') d++;
+      else if (html[x] === '}'){ d--; if (!d) return html.slice(st, x + 1); }
+    }
+    return '';
+  };
+  check(names.length > 40, `أجسامُ الشاشات مقروءة (${names.length})`);
+  const bad = [];
+  names.forEach(n => {
+    [...bodyOf(n).matchAll(/DATA\.(\w+)/g)].forEach(k => {
+      if (!SEED_ONLY.has(k[1])) bad.push(n + ' · DATA.' + k[1]);
+    });
+  });
+  check(bad.length === 0, 'لا شاشةَ تقرأ بيانةً مزروعةً لها مصدرٌ حيّ'
+    + (bad.length ? ` (${bad.length}): ` + [...new Set(bad)].join(' · ') : ''));
+}
+
 /* ── الملفاتُ الخارجيةُ التي يطلبها التطبيقُ موجودةٌ حيث يطلبها ─────────────
    `poly.json` كان في مجلَّد `v14/` والتطبيقُ يطلبه من الجذر بمسارٍ نسبيّ،
    فيفشل الطلبُ ويُبتلَع في `catch` — فلا تُرسَم حدودُ ألفٍ وثلاثمئةٍ واثنين

@@ -509,7 +509,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.24
+      <i class="ver-tag">نسخة</i>V14.25
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -700,6 +700,7 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'لا فنيين مسجَّلين بعد.':'No technicians registered yet.',
  'لا تصفيةَ لتُمسَح':'No filter to clear',
  /* ══ الدفعة الثانية عشرة: السجل والمستخدمون ══ */
  'نوع الحدث':'Event type',
@@ -1042,6 +1043,7 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'لا فنيين مسجَّلين بعد.':'ابھی کوئی ٹیکنیشن درج نہیں۔',
  'لا تصفيةَ لتُمسَح':'مٹانے کے لیے کوئی چھانٹ نہیں',
  /* ══ الدفعة الثانية عشرة ══ */
  'نوع الحدث':'واقعے کی قسم',
@@ -8160,7 +8162,7 @@ function loginPaint(){
     +   '<div class="lg"><div class="lgm">AFAQY</div><div>'
     +     '<h1>'+esc(t('قارئات نُسُك'))+'</h1>'
     +     '<div class="sub">'+esc(t('نظام متابعة تركيب قارئات الحجاج'))+'</div></div></div>'
-    +   '<p class="cnt" id="lgCount">'+nm(0)+' / '+nm(DATA.total)+' '+esc(t('نقطة'))+' · '+esc(t('المشاعر المقدسة'))+'</p>'
+    +   '<p class="cnt" id="lgCount">'+nm(0)+' / '+nm(siteStats().total)+' '+esc(t('نقطة'))+' · '+esc(t('المشاعر المقدسة'))+'</p>'
     +   '<label for="lgU">'+esc(t('اسم المستخدم'))+'</label>'
     +   '<input id="lgU" dir="ltr" autocomplete="username" placeholder="m.safwat">'
     +   '<label for="lgP">'+esc(t('كلمة المرور'))+'</label>'
@@ -8203,15 +8205,15 @@ function loginBg(){
     var h = cv.height = cv.offsetHeight * (window.devicePixelRatio || 1);
     pts = [];
     var cols = Math.max(24, Math.round(w / 26));
-    var rows = Math.ceil(DATA.total / cols);
+    var rows = Math.ceil(siteStats().total / cols);
     var gx = w / (cols + 1), gy = Math.min(gx, h / (rows + 1));
     var oy = (h - gy * (rows - 1)) / 2;
-    for (var i = 0; i < DATA.total; i++){
+    for (var i = 0; i < siteStats().total; i++){
       var c = i % cols, r = Math.floor(i / cols);
       pts.push({
         x: gx * (c + 1) + (Math.sin(i * 12.9898) * gx * 0.18),
         y: oy + gy * r + (Math.cos(i * 78.233) * gy * 0.18),
-        d: (i / DATA.total) + Math.abs(Math.sin(i * 4.1)) * 0.12
+        d: (i / siteStats().total) + Math.abs(Math.sin(i * 4.1)) * 0.12
       });
     }
   }
@@ -8235,7 +8237,7 @@ function loginBg(){
       }
     }
     var c = document.getElementById('lgCount');
-    if (c) c.innerHTML = nm(n) + ' / ' + nm(DATA.total) + ' ' + esc(t('نقطة')) + ' · ' + esc(t('المشاعر المقدسة'));
+    if (c) c.innerHTML = nm(n) + ' / ' + nm(siteStats().total) + ' ' + esc(t('نقطة')) + ' · ' + esc(t('المشاعر المقدسة'));
   }
 
   build();
@@ -8474,7 +8476,7 @@ function fieldRecords(){
 }
 
 function fieldTools(){
-  return stats([['المواقع', N(DATA.total)], ['المسح','٠','acc'], ['التركيب','٠','ok'], ['غير مزامن','٠']])
+  return stats([['المواقع', N(siteStats().total)], ['المسح','٠','acc'], ['التركيب','٠','ok'], ['غير مزامن','٠']])
     + card('التصديرات',
         '<div class="actions">'
         + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
@@ -8513,12 +8515,12 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة', l:'الصورة ال�
 PAGE.pace = { m:'المتابعة', t:'الوتيرة والهدف', l:'المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.',
   body:function(){
     return alertBox('warn','لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.')
-      + stats([['المتبقي', N(DATA.total)], ['المطلوب يوميًّا','—'], ['المنجز أمس','٠'], ['الانتهاء المتوقع','—']]);
+      + stats([['المتبقي', N(siteStats().total)], ['المطلوب يوميًّا','—'], ['المنجز أمس','٠'], ['الانتهاء المتوقع','—']]);
   }};
 
 PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما جُدول وما نُفّذ وما تعذّر — بحالته وفريقه.',
   body:function(){
-    return stats([['لم يبدأ', N(DATA.total)], ['مجدول','٠','wrn'], ['مُركّب','٠','ok'], ['متعذّر','٠','bad']])
+    return stats([['لم يبدأ', N(siteStats().total)], ['مجدول','٠','wrn'], ['مُركّب','٠','ok'], ['متعذّر','٠','bad']])
       + card('دورة التركيب', flow(['لم يبدأ','مجدول','قيد التركيب','مُركّب'],0)
         + '<p class="hint">النقطة لا تدخل الجدولة إلا بعد مسحها، ولا تُوسم مُركّبةً إلا باعتماد قطعها.</p>');
   }};
@@ -8556,10 +8558,19 @@ PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'اللق�
 
 PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'التوزيع الكامل بالنسب.',
   body:function(){
+    /* كان جدولًا محفورًا صحيحًا يومَ كُتب. ويبقى صحيحًا حتى يُسجَّل موقعٌ
+       جديدٌ واحد — ثم يكذب ولا يقول. يُحسَب من السجلات. */
+    var S = siteStats(), rows = [];
+    Object.keys(S.byKey).forEach(function(k){
+      var p = k.split('|');
+      rows.push([p[0], (CAT_DEF[p[1]] || {}).l || p[1], S.byKey[k]]);
+    });
+    rows.sort(function(a, b){ return b[2] - a[2]; });
     return card('التوزيع', table(['المشعر','النوع','العدد','النسبة'],
-      DATA.byZone.map(function(r){
-        return [esc(t(r[0])), esc(t(r[1])), N(r[2]), nm(Math.round(r[2]/DATA.total*100))+'٪'];
-      }), ['الإجمالي','', N(DATA.total), '١٠٠٪']));
+      rows.map(function(r){
+        return [esc(t(r[0])), esc(t(r[1])), N(r[2]),
+                nm(Math.round(r[2] / (S.total || 1) * 100)) + '٪'];
+      }), ['الإجمالي','', N(S.total), '١٠٠٪']));
   }};
 
 PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأقل إنجازًا أولًا — لتوجيه التنسيق.',
@@ -8617,7 +8628,7 @@ PAGE.setup = { m:'التخطيط', t:'المواعيد والأزمنة', l:'ا�
 
 PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح ← جدولة ← تركيب — وأي تعارض بينها.',
   body:function(){
-    return stats([['جاهز للجدولة', N(DATA.total), 'ok'], ['جُدول بلا مسح','٠','wrn'],
+    return stats([['جاهز للجدولة', N(siteStats().total), 'ok'], ['جُدول بلا مسح','٠','wrn'],
                   ['رُكّب بلا اعتماد','٠','bad'], ['تعارضات','٠']])
       + card('التسلسل السليم', flow(['مسح','اعتماد','جدولة','تركيب','تدقيق'],0));
   }};
@@ -8625,7 +8636,7 @@ PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح 
 /* ── الطلبات والمسح ──────────────────────────────── */
 PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني', l:'ما مُسح ومن مسحه ومتى.',
   body:function(){
-    return stats([['مُسح','٠','acc'], ['لم يُزر', N(DATA.total)], ['اليوم','٠'], ['هذا الأسبوع','٠']])
+    return stats([['مُسح','٠','acc'], ['لم يُزر', N(siteStats().total)], ['اليوم','٠'], ['هذا الأسبوع','٠']])
       + card('آخر عمليات المسح','<p class="hint">لا عمليات بعد.</p>');
   }};
 
@@ -8736,10 +8747,21 @@ PAGE.budget = { m:'المال', t:'الميزانية والاعتماد', l:'س
 /* ── الفنيون ────────────────────────────────────── */
 PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل وأين وبأي رصيد.',
   body:function(){
-    return card('الفنيون', table(['الفني','المشعر','نقاط الشهر','الحالة'],
-      DATA.techs.map(function(x){
-        return [esc(x[0]), 'منى / عرفات', N(x[1]+x[2]+x[3]), pill('نشط','ok')];
-      })), btn('إضافة فني','btn-primary btn-sm'));
+    /* كانت ثلاثةَ أسماءٍ مزروعةٍ ونقاطًا مكتوبةً بيدٍ، والقائمةُ الحقيقيةُ ستة.
+       ومن قرأ «ثلاثة فنيين» ووزّع عليهم عملَ ستةٍ أخطأ في الجدول كلِّه. */
+    var byName = {};
+    scores().list.forEach(function(e){ byName[e.name] = e; });
+    return card('الفنيون — ' + nm(TECHS.length),
+      TECHS.length
+        ? table(['الفني','الفريق','المشرف','نقاط الشهر','الحساب'],
+            TECHS.map(function(x){
+              var e = byName[x.n];
+              return [esc(x.n), esc(x.crew || '—'), esc(x.sup || '—'),
+                      N(e ? Math.round(e.total) : 0),
+                      pill(x.has ? 'له حساب' : 'بلا حساب', x.has ? 'ok' : 'off')];
+            }))
+        : '<p class="hint" style="padding:16px">' + esc(t('لا فنيين مسجَّلين بعد.')) + '</p>',
+      btn('حسابات الفنيين','btn-secondary btn-sm',' data-p="techacc"'));
   }};
 
 PAGE.techx = { m:'الفنيون', t:'مقابل التارجت', l:'نقاط الشهر في كل مرحلة مقابل تارجتها المستقل.',
@@ -8747,7 +8769,8 @@ PAGE.techx = { m:'الفنيون', t:'مقابل التارجت', l:'نقاط ا
     var Tg = T(), ti = Tg.ins;
     return card('الشهر الجاري',
       table(['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي'],
-        DATA.techs.map(function(x){
+        scores().list.map(function(e){
+          var x = [e.name, e.survey, e.install, e.dis];
           return [esc(x[0]), N(x[1]), pct(x[1],Tg.survey), N(x[2]), pct(x[2],ti),
                   N(x[3]), pct(x[3],Tg.dis), N(x[1]+x[2]+x[3])];
         })))
@@ -8757,7 +8780,8 @@ PAGE.techx = { m:'الفنيون', t:'مقابل التارجت', l:'نقاط ا
 PAGE.team = { m:'الفنيون', t:'إنتاجية الفريق', l:'الترتيب بالنقاط — مسحًا وتركيبًا.',
   body:function(){
     return card('الترتيب', table(['#','الفريق','مسح','تركيب','الإجمالي'],
-      DATA.techs.slice().sort(function(a,b){ return (b[1]+b[2]) - (a[1]+a[2]); })
+      scores().list.map(function(e){ return [e.name, e.survey, e.install]; })
+        .sort(function(a,b){ return (b[1]+b[2]) - (a[1]+a[2]); })
         .map(function(x,i){ return [nm(i+1), esc(x[0]), N(x[1]), N(x[2]), N(x[1]+x[2]) ]; })));
   }};
 

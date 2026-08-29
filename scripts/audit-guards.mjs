@@ -95,6 +95,9 @@ const MUT = [
   { n:'القاعدةُ تنسى الأدوارَ الميدانية', g:'scripts/audit-db-rules.mjs', f:'firestore.rules',
     a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins']; }",
     b:"function field()  { return false; }" },
+  { n:'شاشةٌ تعود إلى بيانةٍ مزروعةٍ لها مصدرٌ حيّ', g:'scripts/audit-data.mjs',
+    a:"    return card('الفنيون — ' + nm(TECHS.length),",
+    b:"    return card('الفنيون — ' + nm(DATA.techs.length)," },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
