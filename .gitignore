@@ -8,3 +8,6 @@ backups/latest/*.json
 *.apk
 *.aab
 nusuk-app-*.zip
+
+# وحدات التطوير — لجنة الفحص تُثبّتها عند الحاجة
+node_modules/

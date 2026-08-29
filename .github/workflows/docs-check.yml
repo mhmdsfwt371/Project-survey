@@ -6,7 +6,7 @@ on:
       - 'index.html'
       - 'sw.js'
       - 'docs/**'
-      - 'scripts/check-version.mjs'
+      - 'scripts/**'
   pull_request:
   workflow_dispatch: {}
 permissions:
@@ -19,5 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: تطابق نسخ التوثيق وسلامة أقسام اللوحة
+      - name: الحارس — تطابق النسخ وسجل الصفحات والترجمة
         run: node scripts/check-version.mjs
+      - name: لجنة الفحص — كل شاشة تُفتح وترسم
+        run: npm i --no-save --silent jsdom && node scripts/qa.mjs

@@ -5,6 +5,19 @@ import { execSync } from 'child_process';
 const fail = [];
 const ok   = [];
 
+/* ── قاعدةُ العُقم ─────────────────────────────────────────────────────────
+   الحارسُ كان أخضرَ وهو أعمى: فحوصُ V13 ظلّت قائمةً بعد V14 فصارت تعدُّ صفرًا
+   وتمرُّ صامتة — «كلُّ الأقسام (0) لها تبويب» و«القاموسان 0 مفتاحًا». وفحصٌ
+   لا يجد ما يفحصه أخطرُ من فحصٍ يفشل، لأنه يمنح ثقةً بلا أساس.
+   فمن اليوم: كلُّ فحصٍ يُعلن عدد ما فحصه، والصفرُ يُفشِل الدفعة. */
+function counted(n, label, note){
+  if (!Number.isFinite(n) || n <= 0){
+    fail.push(`فحصٌ عقيم — ${label}: لم يجد شيئًا ليفحصه (${note || 'تغيّرت البنية والفحص لم يُحدَّث'})`);
+    return false;
+  }
+  return true;
+}
+
 function grab(file, re, what){
   let s = '';
   try { s = readFileSync(file, 'utf8'); }
@@ -53,32 +66,51 @@ if (want) {
   }
 }
 
-/* ٢ — توازن أقسام لوحة المتابعة (قسم غير مغلق يبتلع ما بعده ويُخفيه مع التبويب) */
+/* ٢ — سجلُّ الصفحات: كلُّ بندٍ في القائمة له صفحة، وكلُّ صفحةٍ لها بند
+   render يقول: `var p = FIELD_PAGES[CUR] || PAGE[CUR]; if (!p) p = PAGE.over;`
+   فبندٌ يشير إلى صفحةٍ غيرِ موجودةٍ لا ينفجر — يفتح «نظرة عامة» بهدوء، ولا
+   يشكو أحد. وصفحةٌ لا يصلها بندٌ عملٌ مكتوبٌ لا يراه أحد. */
 try {
   const s = readFileSync('index.html', 'utf8');
-  const i = s.indexOf('function render(){');
-  const j = s.indexOf("$i('dWrap').innerHTML=h;");
-  if (i > -1 && j > i) {
-    const seg = s.slice(i, j);
-    const opens  = (seg.match(/<section class=\\?"dSec/g) || []).length;
-    const closes = (seg.match(/<\/section>/g) || []).length;
-    if (opens !== closes)
-      fail.push(`أقسام اللوحة غير متوازنة: ${opens} فتح مقابل ${closes} إغلاق — قسم غير مغلق سيبتلع ما بعده ويختفي مع إخفاء التبويب`);
-    else ok.push(`أقسام اللوحة متوازنة: ${opens} ✓`);
-  }
-} catch {}
+  const a = s.indexOf('var NAV = ['), b = s.indexOf('\n];', a);
+  const nav = s.slice(a, b);
+  const solo = [...nav.matchAll(/id:'([A-Za-z0-9_]+)'/g)].map(m => m[1]);
+  const inGrp = [...nav.matchAll(/\['([A-Za-z0-9_]+)','/g)].map(m => m[1]);
+  const navIds = solo.concat(inGrp);
+  const pages = new Set(
+    [...s.matchAll(/^\s*PAGE\.([A-Za-z0-9_]+)\s*=/gm)].map(m => m[1])
+    .concat([...s.matchAll(/^\s{2}([A-Za-z0-9_]+):\s*\{[^\n]*body:/gm)].map(m => m[1])));
 
-/* ٣ — كل قسم له تبويب */
+  if (counted(navIds.length, 'سجل الصفحات', 'تعذّر قراءة NAV')) {
+    /* معرّفٌ مكرّر: navHtml يوسم النشط بـ CUR===id، فيُضيء بندان معًا */
+    const dup = [...new Set(navIds.filter((x, i) => navIds.indexOf(x) !== i))];
+    if (dup.length) fail.push(`معرّفٌ مكرّرٌ في القائمة (${dup.join(' · ')}) — بندان يُضيئان معًا`);
+
+    const dead = [...new Set(navIds)].filter(x => !pages.has(x));
+    if (dead.length) fail.push(`بندُ قائمةٍ بلا صفحة فيفتح «نظرة عامة» صامتًا: ${dead.join(' · ')}`);
+
+    /* صفحاتٌ يُدخَل إليها من داخل الشاشات لا من القائمة — معلنةٌ لا مُكتشَفة */
+    const REACHED = new Set(['site', 'over']);
+    const orphan = [...pages].filter(x => !navIds.includes(x) && !REACHED.has(x));
+    if (orphan.length) fail.push(`صفحةٌ لا يصلها بندٌ ولا استثناءٌ معلن: ${orphan.join(' · ')}`);
+
+    if (!dup.length && !dead.length && !orphan.length)
+      ok.push(`سجل الصفحات متّسق: ${new Set(navIds).size} بندًا · ${pages.size} صفحة ✓`);
+  }
+} catch (e) { fail.push('فحص سجل الصفحات تعثّر: ' + String(e && e.message).slice(0, 110)); }
+
+/* ٣ — «ما هذه الصفحة؟»: لكلِّ صفحةٍ جوابٌ مكتوبٌ أو مولَّد */
 try {
   const s = readFileSync('index.html', 'utf8');
-  /* V13.92: المعرّف قد يحمل رقمًا — «[a-z]+» وحدها كانت تُفلت القسم من الفحص كله */
-  const secs = [...new Set([...s.matchAll(/data-sec="([a-z][a-z0-9]*)"/g)].map(m => m[1]))];
-  const tabsBlock = s.slice(s.indexOf('var DTABS=['), s.indexOf('function tabOf'));
-  const mapped = new Set([...tabsBlock.matchAll(/'([a-z][a-z0-9]*)'/g)].map(m => m[1]));
-  const orphan = secs.filter(x => !mapped.has(x));
-  if (orphan.length) fail.push(`أقسام بلا تبويب فلن تظهر لأحد: ${orphan.join(' · ')}`);
-  else ok.push(`كل الأقسام (${secs.length}) لها تبويب ✓`);
-} catch {}
+  const h = s.indexOf('var HELP = {');
+  const hend = s.indexOf('\nfunction ', h);
+  const hk = [...s.slice(h, hend).matchAll(/^\s{2}([A-Za-z0-9_]+):\s*\{/gm)].map(m => m[1]);
+  const gen = /function\s+helpOf\s*\(/.test(s);
+  if (counted(hk.length, 'تغطية الشرح', 'كائن HELP غير موجود')) {
+    if (!gen) fail.push('لا مولّدَ شرحٍ (helpOf) — والصفحاتُ خارج HELP ستفتح لوحًا فارغًا');
+    else ok.push(`الشرح: ${hk.length} صفحةً بيدٍ والباقي يُولَّد ✓`);
+  }
+} catch (e) { fail.push('فحص الشرح تعثّر: ' + String(e && e.message).slice(0, 110)); }
 
 /* ── حارس النطاقات: يمنع تكرار خطأ isOwner (V7.0) ────────────────
    كل <script> نطاق مستقل. دالة معرّفة في كتلة ومُستدعاة في أخرى
@@ -161,6 +193,8 @@ try {
   }
   if (leaks.length) {
     for (const l of leaks) fail.push(`مرجع عابر للنطاق — ${l} — صدّرها بـ window.`);
+  } else if (blocks.filter(x => x.mod).length === 0) {
+    ok.push(`المراجع العابرة: لا كتلةَ module (${blocks.length} كتلة classic تتشارك النطاق) — لا مجالَ للتسرّب`);
   } else ok.push('لا مراجع عابرة بين كتل السكربت ✓');
 }
 
@@ -209,75 +243,54 @@ try {
   ok.push('tools/prober.html: الصيغة سليمة ✓');
 } catch(e){ fail.push('tools/prober.html: خطأ صيغة — ' + String(e.message||'').slice(0,120)); }
 
-/* ── حارس الترجمة: أي نصٍّ عربيٍّ يصل واجهة شاشة الإعدادات ولا مفتاح له يفشل الدفعة ──
-   المطابقة بتطبيع محرك اللغات نفسه: NFC + تجريد التشكيل والتطويل + طي الفراغات.
-   النطاق شاشة الإعدادات وحدها الآن — تُوسَّع شاشةً شاشةً كلما اكتملت ترجمتها. */
+/* ── حارس الترجمة ─────────────────────────────────────────────────────────
+   V14 يترجم بدالةٍ واحدة: `t('نص')`. فكلُّ نصٍّ عربيٍّ حرفيٍّ يمرّ بها يجب أن
+   يكون له مفتاحٌ في القاموسين — وإلا رجعت الدالةُ النصَّ العربيَّ كما هو،
+   فيقرأ مراقبُ الوزارة عربيًّا وهو على الإنجليزية ولا يشكو أحد.
+   والحارسُ سقّاطةٌ لا سدّ: يسجّل الفجوةَ القائمة في docs/i18n-baseline.json
+   ويفشل إن كبرت — فلا يُمنع العملُ اليومَ ولا يُضاف نصٌّ بلا ترجمةٍ غدًا. */
 try {
   const src = readFileSync('index.html', 'utf8');
-  const AR = /[\u0600-\u06FF]/;
+  const AR  = /[\u0600-\u06FF]/;
   const nrm = t => String(t).normalize('NFC')
     .replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/\s+/g, ' ').trim();
-  const grabKeys = tag => {
-    const i = src.indexOf(tag), j = src.indexOf('\n  };', i);
-    return new Set([...src.slice(i, j).matchAll(/'([^']*[\u0600-\u06FF][^']*)'\s*:/g)]
-      .map(m => nrm(m[1])));
-  };
-  const EN = grabKeys('D.en ='), UR = grabKeys('D.ur =');
-  const onlyEn = [...EN].filter(k => !UR.has(k));
-  const onlyUr = [...UR].filter(k => !EN.has(k));
-  if (onlyEn.length || onlyUr.length)
-    fail.push(`القاموسان غير متطابقين: ${onlyEn.length} في الإنجليزي وحده · ${onlyUr.length} في الأردي وحده`);
 
-  const a = src.indexOf('window.cfgPages = ['), b = src.indexOf('window.pwRows = function');
-  const seg = src.slice(a, b);
-  const cuts = [];
-  for (const m of seg.matchAll(/\/\*[\s\S]*?\*\//g)) cuts.push([m.index, m.index + m[0].length]);
-  const inCut = p => cuts.some(([x, y]) => p >= x && p < y);
-  const miss = new Set();
-  const add = t => {
-    t = String(t).trim();
-    if (!t || !AR.test(t) || t.length > 400) return;
-    /* نصُّ نافذة السؤال يُعرض فقرةً لكل سطر، فتُطابَق كلٌّ على حدة */
-    for (const part of t.split(/\\n|\n/)) {
-      let p = part.trim();
-      if (/^«[^«»]*»$/.test(p)) continue;              /* اسمٌ محاطٌ بالكامل = قيمةُ بيانات */
-      p = p.replace(/^»\s*/, '').trim();               /* بقيةُ قوسٍ من مقطعٍ سابق */
-      if (!p || !AR.test(p)) continue;
-      const n = nrm(p);
-      if (n && !EN.has(n)) miss.add(n);
-    }
-  };
-  /* السلاسل المتجاورة المفصولة بـ+ تُدمَج: الناتج في الصفحة نصٌّ واحد لا ثلاثة */
-  const JOIN = /((?:'(?:[^'\\\n]|\\.)*'\s*\+\s*)*'(?:[^'\\\n]|\\.)*')/g;
-  const LOGFN = /(NSKSYNC\.log|\.log\(|itSave\(|buySave\(|buyCatSave\(|roleSave\(|pwSave\(|tkRegSave\(|tkSave\(|_disSave\()/;
-  for (const g of seg.matchAll(JOIN)) {
-    const pre0 = seg.slice(Math.max(0, g.index - 240), g.index);
-    /* وسيطٌ أخيرٌ لدالة حفظ = نصُّ سجل الأحداث، وهو يبقى عربيًّا بقرار */
-    const isLogArg = /,\s*$/.test(pre0) && LOGFN.test(pre0);
-    if (inCut(g.index) || isLogArg) continue;
-    const raw = [...g[1].matchAll(/'((?:[^'\\\n]|\\.)*)'/g)].map(x => x[1]).join('');
-    if (!raw || !AR.test(raw)) continue;
-    const pre = pre0;
-    if (!/[<>]/.test(raw)) { add(raw); continue; }
-    /* السلسلة قد تبدأ ببقية وسمٍ من مقطعٍ سابق وتنتهي بوسمٍ مفتوحٍ للمقطع التالي */
-    let cut = raw;
-    const gt = cut.indexOf('>'), lt = cut.indexOf('<');
-    if (gt >= 0 && (lt < 0 || gt < lt)) cut = cut.slice(gt + 1);
-    const lastLt = cut.lastIndexOf('<');
-    if (lastLt >= 0 && cut.indexOf('>', lastLt) < 0) cut = cut.slice(0, lastLt);
-    for (const at of ['title', 'placeholder', 'aria-label', 'data-l'])
-      for (const mm of raw.matchAll(new RegExp(at + '=\\\\?["\']([^"\'\\\\]*)', 'g'))) add(mm[1]);
-    let tag = '';
-    for (const p of cut.split(/(<[^>]*>)/)) {
-      if (p.startsWith('<')) {
-        const mm = p.match(/<\/?\s*([a-zA-Z][\w-]*)/);
-        if (mm) tag = p.startsWith('</') ? '' : mm[1].toLowerCase();
-      } else if (tag !== 'option' && tag !== 'optgroup') add(p);
+  const di = src.indexOf('var D = {');
+  const du = src.indexOf('\n ur:', di) > 0 ? src.indexOf('\n ur:', di) : src.indexOf('\nur:', di);
+  const de = src.indexOf('\n};', du);
+  const keys = seg => new Set([...seg.matchAll(/'((?:[^'\\]|\\.)*)'\s*:\s*'/g)].map(m => nrm(m[1])));
+  const EN = keys(src.slice(di, du)), UR = keys(src.slice(du, de));
+
+  if (counted(EN.size, 'القاموس الإنجليزي', 'تعذّر العثور على var D')) {
+    const onlyEn = [...EN].filter(k => !UR.has(k));
+    const onlyUr = [...UR].filter(k => !EN.has(k));
+    if (onlyEn.length || onlyUr.length)
+      fail.push(`القاموسان غير متطابقين: ${onlyEn.length} في الإنجليزي وحده · ${onlyUr.length} في الأردي وحده`);
+
+    const lits = [...new Set([...src.matchAll(/\bt\(\s*'((?:[^'\\]|\\.)*)'\s*\)/g)]
+      .map(m => nrm(m[1])).filter(x => AR.test(x)))];
+    counted(lits.length, 'نداءات t()', 'لم يُعثر على نصٍّ عربيٍّ داخل t()');
+    const miss = lits.filter(k => !EN.has(k));
+
+    const BL = 'docs/i18n-baseline.json';
+    let base = null;
+    try { base = JSON.parse(readFileSync(BL, 'utf8')).missing; } catch {}
+    if (base === null || base === undefined) {
+      writeFileSync2(BL, JSON.stringify({ missing: miss.length, note:
+        'سقف الفجوة. يهبط ولا يصعد — كل دفعةٍ تترجم تُنقصه، وأي نصٍّ جديدٍ بلا ترجمة يفشّل الدفعة.' }, null, 2) + '\n');
+      ok.push(`سقف الترجمة سُجّل لأول مرة: ${miss.length} نصًّا بلا مفتاح`);
+    } else if (miss.length > base) {
+      fail.push(`الفجوةُ كبرت: ${miss.length} نصًّا بلا ترجمةٍ والسقفُ ${base} — ` +
+        'ترجم الجديدَ أو أنقص السقف: ' + miss.slice(0, 4).join(' · '));
+    } else {
+      if (miss.length < base)
+        writeFileSync2(BL, JSON.stringify({ missing: miss.length, note:
+          'سقف الفجوة. يهبط ولا يصعد — كل دفعةٍ تترجم تُنقصه، وأي نصٍّ جديدٍ بلا ترجمة يفشّل الدفعة.' }, null, 2) + '\n');
+      ok.push(miss.length === 0
+        ? `الترجمة كاملة: ${lits.length} نصًّا في القاموسين (${EN.size} مفتاحًا) ✓`
+        : `الترجمة: ${lits.length - miss.length}/${lits.length} مترجَمًا · الفجوة ${miss.length} والسقف ${base} ✓`);
     }
   }
-  if (miss.size)
-    fail.push(`نصوص شاشة الإعدادات بلا ترجمة (${miss.size}): ` + [...miss].slice(0, 6).join(' · '));
-  else ok.push(`ترجمة شاشة الإعدادات كاملة · القاموسان ${EN.size} مفتاحًا ✓`);
 } catch (e) { fail.push('حارس الترجمة تعثّر: ' + String(e && e.message).slice(0, 120)); }
 
 /* ── حارس تعارض الكلاسات ──────────────────────────────────────────────
