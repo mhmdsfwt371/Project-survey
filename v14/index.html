@@ -243,7 +243,14 @@ input[type="number"]{max-width:140px}
 .map-stack{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
   inset-block-end:calc(16px + env(safe-area-inset-bottom,0px));
   display:flex;flex-direction:column;gap:8px;align-items:flex-start;
-  max-width:calc(100% - 150px);max-height:calc(100% - 150px);pointer-events:none}
+  max-width:calc(100% - 160px);max-height:calc(100% - 170px);pointer-events:none}
+/* الأسطورةُ تُطوى حين تضيق الشاشة: كانت تطول فتزاحم أزرارَ الفعل */
+@media(max-width:760px){
+  .map-legend{max-height:96px;overflow:auto}
+  .map-stack{max-width:calc(100% - 130px)}
+}
+/* إسنادُ ليفلت لا يظهر في شاشةٍ تُعرَض على الوزارة */
+#mapBox .leaflet-control-attribution{display:none}
 .map-stack > *{pointer-events:auto}
 .map-legend{background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
   padding:10px 12px;font-size:12px;color:#C6CFD7;backdrop-filter:blur(6px)}
@@ -345,7 +352,9 @@ body.nav-open .mapwrap{pointer-events:none}
 .cat.zone.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
 .cat.zone.on .n{opacity:.9}
 
-.map-sheet{position:absolute;inset-block-start:54px;inset-inline:11px;z-index:var(--z-map-ui);
+.map-sheet{position:absolute;inset-block-start:calc(96px + env(safe-area-inset-top,0px));
+  inset-inline:11px;inset-block-end:auto;max-height:60vh;overflow:auto;
+  width:auto;max-width:none;transform:none;inset-block-start:54px;inset-inline:11px;z-index:var(--z-map-ui);
   max-height:58vh;overflow:auto;background:rgba(14,18,22,.97);border:1px solid #2A333C;
   border-radius:var(--radius);padding:13px;backdrop-filter:blur(10px);
   box-shadow:0 14px 40px rgba(0,0,0,.55)}
@@ -526,7 +535,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.30</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.31</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -717,6 +726,16 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة السابعة عشرة: الكتالوج المرن ══ */
+ 'الكتالوجُ للمهندس وحده':'The catalogue is for the engineer only',
+ 'نُقل إلى':'Moved to',
+ 'تركيبًا — لا يُحذَف':'installation(s) — cannot be deleted',
+ 'اكتب اسم القطعة':'Write the item name',
+ 'أُضيف الصنف':'Item added',
+ 'لا قطع في هذه المنطقة.':'No items in this zone.',
+ 'مستعملة في':'Used in',
+ 'الممر':'The corridor',
+ 'المخيم':'The camp',
  /* ══ الدخول والخروج ══ */
  'لم يُرفَع بعد':'Not uploaded yet',
  'سجلًّا':'record(s)',
@@ -1136,6 +1155,16 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة السابعة عشرة ══ */
+ 'الكتالوجُ للمهندس وحده':'کیٹلاگ صرف انجینئر کے لیے ہے',
+ 'نُقل إلى':'منتقل ہوا',
+ 'تركيبًا — لا يُحذَف':'تنصیبات میں — حذف نہیں ہو سکتا',
+ 'اكتب اسم القطعة':'قطعے کا نام لکھیں',
+ 'أُضيف الصنف':'شے شامل ہو گئی',
+ 'لا قطع في هذه المنطقة.':'اس علاقے میں کوئی قطعہ نہیں۔',
+ 'مستعملة في':'استعمال میں',
+ 'الممر':'گزرگاہ',
+ 'المخيم':'کیمپ',
  /* ══ الدخول والخروج ══ */
  'لم يُرفَع بعد':'ابھی اپ لوڈ نہیں ہوا',
  'سجلًّا':'ریکارڈ',
@@ -9031,6 +9060,64 @@ function itemName(code){
   return (x && x.name) || code;
 }
 
+/* ── الكتالوج: يُحرَّر ويُزاد ويُنقَص ─────────────────────────────────────
+   كان مرسومًا بلا خاصيةٍ على أزراره، فيُكتَب ويُضغَط ولا يقع شيء. */
+function itemSave(){
+  STATE.items = itemsList().slice();
+  CORE.set('cfg', 'items', STATE.items);
+}
+function itemRename(code, name){
+  var x = itemsList().filter(function(i){ return i.code === code; })[0];
+  if (!x) return;
+  x.name = String(name || '').trim() || x.name;
+  itemSave();
+}
+function itemZone(code){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var x = itemsList().filter(function(i){ return i.code === code; })[0];
+  if (!x) return;
+  x.z = x.z === 'cor' ? 'camp' : 'cor';
+  itemSave();
+  logEvent('نقل صنف — ' + x.name + ' → ' + (x.z === 'cor' ? 'ممر' : 'مخيم'));
+  toast(t('نُقل إلى') + ' ' + t(x.z === 'cor' ? 'الممر' : 'المخيم'));
+  render(1);
+}
+function itemDel(code){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var L = itemsList(), i = -1;
+  L.forEach(function(x, k){ if (x.code === code) i = k; });
+  if (i < 0) return;
+  /* المستعملُ في تركيبٍ قائمٍ لا يُحذَف — وإلا فقدت السجلاتُ أسماءَ قطعها */
+  var u = 0;
+  Object.keys(STATE.inss || {}).forEach(function(id){
+    var r = STATE.inss[id];
+    if (r && r.parts && r.parts[code]) u++;
+  });
+  if (u){ toast(t('مستعملٌ في') + ' ' + nm(u) + ' ' + t('تركيبًا — لا يُحذَف')); return; }
+  var nm2 = L[i].name;
+  L.splice(i, 1);
+  itemSave();
+  logEvent('حذف صنف — ' + nm2);
+  toast(t('حُذف'));
+  render(1);
+}
+function itemAdd(){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var name = g('itN');
+  if (!name){ toast(t('اكتب اسم القطعة')); return; }
+  if (itemsList().some(function(i){ return i.name === name; })){ toast(t('موجودٌ بالفعل')); return; }
+  var code = 'it' + Date.now().toString(36);
+  itemsList().push({ z:g('itZ') || 'camp', code:code, name:name,
+                     pts:+g('itP') || 0, price:+g('itR') || 0, prep:0, asm:0 });
+  itemSave();
+  cfgSet('itPts', code, +g('itP') || 0);
+  cfgSet('itPrice', code, +g('itR') || 0);
+  logEvent('صنف جديد — ' + name);
+  toast(t('أُضيف الصنف'));
+  render(1);
+}
+
 /* ── المخزن: الميزانُ من الحركات ──
    توريدٌ يزيد المخزن. وصرفٌ ينقله إلى عهدة المنفِّذ. واستهلاكٌ يُخرجه من
    العهدة إلى الميدان. وإرجاعٌ يعيده. وشطبٌ يعزله تالفًا. */
@@ -10465,7 +10552,7 @@ function cfgAddStage(path, pg){
     '<p class="hint" style="margin:0 0 11px">اكتب نقاطًا لأيِّ صنفٍ أدناه فيدخل المرحلة، واتركه صفرًا فيبقى خارجها.</p>'
     + table(['الصنف','المنطقة','النقاط'],
         off.map(function(i){
-          return [esc(i[2]), esc(t(i[0]==='cor'?'ممر':'مخيم')), cfgInput(path, i[1], { dec:1 })];
+          return [esc(i.name), esc(t(i.z==='cor'?'ممر':'مخيم')), cfgInput(path, i.code, { dec:1 })];
         })));
 }
 
@@ -10599,7 +10686,7 @@ function prepAsm(pg){
   var get = pg === 'prep' ? itPrep : itAsm;
   var path = pg === 'prep' ? 'itPrep' : 'itAsm';
   var on = itemsList().filter(function(i){ return get(i.code) > 0; });
-  var tot = on.reduce(function(a,i){ return a + get(i[1]); }, 0);
+  var tot = on.reduce(function(a,i){ return a + get(i.code); }, 0);
   var h = '<p class="lede" style="margin:0 0 16px">' + (pg === 'prep'
       ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
       : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.')
@@ -10613,8 +10700,8 @@ function prepAsm(pg){
       + cardFlush((pg==='prep'?'أجهزة التهيئة':'مكوّنات التجميع') + ' — ' + nm(on.length),
           table(['الجهاز','المنطقة','النقاط',''],
             on.map(function(i){
-              return [esc(i[2]), esc(t(i[0]==='cor'?'ممر':'مخيم')),
-                      cfgInput(path, i[1], { dec:1 }),
+              return [esc(i.name), esc(t(i.z==='cor'?'ممر':'مخيم')),
+                      cfgInput(path, i.code, { dec:1 }),
                       btn('أخرِج','btn-quiet btn-sm')];
             })),
           btn('➕ ' + (pg==='prep'?'أضِف جهازًا':'أضِف مكوّنًا'),'btn-primary btn-sm'));
@@ -10634,15 +10721,18 @@ PAGE.asm = { m:'الإعدادات', t:'نقاط التجميع', l:'نقاط ت
 
 PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقاط كل قطعة وتارجت التركيب.',
   body:function(){
-    return [['cor','الممر'],['camp','المخيم']].map(function(g){
-        var L = itemsList().filter(function(x){ return x.z === g[0]; });
-        return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
-          table(['القطعة','النقاط'],
-            L.map(function(it){
-              return [esc(it[2]),
-                cfgInput('itPts', it[1], { dec:1 })];
-            })));
-      }).join('')
+    /* الممرُّ قصادَ المخيم: عمودان تُقارَن بهما القائمتان بنظرةٍ واحدة */
+    return '<div class="grid cols-2" style="align-items:start">'
+      + [['cor','الممر'],['camp','المخيم']].map(function(g){
+          var L = itemsList().filter(function(x){ return x.z === g[0]; });
+          return '<div>' + cardFlush(g[1] + ' — ' + nm(L.length) + ' ' + t('قطعة'),
+            L.length
+              ? table(['القطعة','النقاط'],
+                  L.map(function(it){ return [esc(it.name), cfgInput('itPts', it.code, { dec:1 })]; }))
+              : '<p class="hint" style="text-align:center;margin:0;padding:16px">'
+                + esc(t('لا قطع في هذه المنطقة.')) + '</p>') + '</div>';
+        }).join('')
+      + '</div>'
       + card('نقاط النقطة الكاملة',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نقاط تركيب المخيم')) + '</label>'
@@ -10698,34 +10788,56 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
 
 PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كتالوج القطع وسعر كل قطعة.',
   body:function(){
-    return '<p class="lede" style="margin:0 0 16px">كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.</p>'
-      + [['cor','الممر'],['camp','المخيم']].map(function(g){
-          var L = itemsList().filter(function(x){ return x.z === g[0]; });
-          if (!L.length) return card(g[1], '<p class="hint" style="text-align:center;margin:0">لا قطع في هذه المنطقة.</p>');
-          return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
-            table(['القطعة','المنطقة','نقاط التركيب','السعر',''],
+    /* الكتالوجُ يُحرَّر هنا: الاسمُ والمنطقةُ والنقاطُ والسعر، ويُضاف صنفٌ
+       ويُحذَف. وكان النموذجُ مرسومًا وأزرارُه بلا خاصيةٍ فيبتلعها حارسُ
+       الأزرار الميتة — يُكتَب الاسمُ ويُضغَط «حفظ» ولا يقع شيء.
+       والممرُّ قصادَ المخيم لا تحته: عمودان تُقارَن بهما القائمتان. */
+    var used = function(code){
+      var n = 0;
+      Object.keys(STATE.inss || {}).forEach(function(id){
+        var r = STATE.inss[id];
+        if (r && r.parts && r.parts[code]) n++;
+      });
+      return n;
+    };
+    var col = function(z, label){
+      var L = itemsList().filter(function(x){ return x.z === z; });
+      return cardFlush(label + ' — ' + nm(L.length) + ' ' + t('قطعة'),
+        L.length
+          ? table(['القطعة','نقاط التركيب','السعر',''],
               L.map(function(it){
-                return ['<input value="' + esc(it[2]) + '">',
-                        '<select><option' + (g[0]==='camp'?' selected':'') + '>' + esc(t('مخيم')) + '</option>'
-                        + '<option' + (g[0]==='cor'?' selected':'') + '>' + esc(t('ممر')) + '</option></select>',
-                        cfgInput('itPts', it[1], { dec:1 }),
-                        cfgInput('itPrice', it[1]),
-                        btn('حذف','btn-quiet btn-sm')];
-              })),
-            btn('حفظ التعديلات','btn-primary btn-sm'));
-        }).join('')
-      + card('إضافة قطعة',
+                var u = used(it.code);
+                return ['<input value="' + esc(it.name) + '" data-itname="' + esc(it.code) + '" dir="auto">',
+                        cfgInput('itPts', it.code, { dec:1 }),
+                        cfgInput('itPrice', it.code),
+                        (u ? '<span class="hint" style="margin:0">' + esc(t('مستعملة في')) + ' ' + nm(u) + '</span>'
+                           : btn('حذف','btn-quiet btn-sm',' data-itdel="' + esc(it.code) + '"'))
+                        + btn(z === 'cor' ? '→ مخيم' : '→ ممر', 'btn-quiet btn-sm',
+                              ' data-itzone="' + esc(it.code) + '"')];
+              }))
+          : '<p class="hint" style="text-align:center;margin:0;padding:16px">'
+            + esc(t('لا قطع في هذه المنطقة.')) + '</p>');
+    };
+
+    return '<p class="lede" style="margin:0 0 16px">كلُّ حقلٍ هنا قابلٌ للتعديل: الاسمُ والمنطقةُ ونقاطُ التركيب والسعر — ويُحفَظ فورَ كتابته. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. والصنفُ المستعملُ في تركيبٍ قائمٍ لا يُحذَف.</p>'
+      + '<div class="grid cols-2" style="align-items:start">'
+      +   '<div>' + col('cor', t('الممر')) + '</div>'
+      +   '<div>' + col('camp', t('المخيم')) + '</div>'
+      + '</div>'
+      + card('إضافة صنف',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
-          +   '<select><option>' + esc(t('مخيم')) + '</option><option>' + esc(t('ممر')) + '</option></select></div>'
+          +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
+          +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
           + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
-          +   '<input placeholder="مفتاح شبكة ٨ منافذ"></div>'
+          +   '<input id="itN" dir="auto" placeholder="مفتاح شبكة ٨ منافذ"></div>'
           + '<div class="field"><label>' + esc(t('نقاط تركيبها')) + '</label>'
-          +   '<input type="number" step="0.5" min="0" value="1"></div>'
+          +   '<input id="itP" type="number" step="0.5" min="0" value="1"></div>'
           + '<div class="field"><label>' + esc(t('سعرها')) + '</label>'
-          +   '<input type="number" min="0" value="0"></div>'
-          + '</div>', btn('➕ إضافة قطعة','btn-primary btn-sm'))
-      + '<p class="hint">تغيير المنطقة ينقل القطعة بين الممر والمخيم فينتقل معها احتسابُها في تقسيم النقاط.</p>';
+          +   '<input id="itR" type="number" min="0" value="0"></div>'
+          + '</div>',
+          btn('➕ إضافة صنف','btn-primary btn-sm',' data-itadd="1"'))
+      + '<p class="hint">نقلُ الصنف بين الممر والمخيم ينقل معه احتسابَه في تقسيم النقاط. والحذفُ ممنوعٌ على ما رُكِّب — وإلا فقدت سجلاتُ التركيب أسماءَ قطعها.</p>';
   }};
 
 PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تبويب مشتريات السوق المحلي.',
@@ -11198,6 +11310,11 @@ function onDocClick(e){
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
+  if (e.target.closest('[data-itadd]')){ itemAdd(); return; }
+  var idl = e.target.closest('[data-itdel]');
+  if (idl){ itemDel(idl.getAttribute('data-itdel')); return; }
+  var izn = e.target.closest('[data-itzone]');
+  if (izn){ itemZone(izn.getAttribute('data-itzone')); return; }
   if (e.target.closest('[data-mvadd]')){ moveAdd(); return; }
   if (e.target.closest('[data-byadd]')){ buyAdd(); return; }
   if (e.target.closest('[data-supadd]')){ listAdd('sup'); return; }
@@ -11620,6 +11737,10 @@ document.addEventListener('input', function(e){
       var q = document.getElementById('navQ');
       if (q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
     }
+    return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
+    itemRename(e.target.getAttribute('data-itname'), e.target.value);
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-evf')){
