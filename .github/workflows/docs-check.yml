@@ -41,5 +41,7 @@ jobs:
         run: node scripts/audit-roles.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
+      - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
+        run: node scripts/audit-guards.mjs
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
         run: node scripts/qa.mjs
