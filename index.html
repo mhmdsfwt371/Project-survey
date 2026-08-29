@@ -516,6 +516,16 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 /* رقمُ النسخة زرُّ فحص تحديثات — لكلِّ الأدوار، وعلى الجوّال أيضًا:
    كان يختفي تحت خمسمئةٍ وستين بكسل، أي على كلِّ جهازٍ في الميدان. */
+/* زرُّ الرجوع: يظهر حين يكون في السجل مكانٌ يُعاد إليه، ويختفي في الجذر —
+   فزرٌّ ظاهرٌ لا يفعل شيئًا أسوأُ من غيابه. */
+.tb-back{background:transparent;border:1px solid var(--line);border-radius:10px;
+  width:34px;height:34px;min-height:34px;display:inline-flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:17px;color:var(--ink);
+  margin-inline-end:9px;flex:0 0 auto;line-height:1}
+.tb-back[hidden]{display:none}
+.tb-back:hover{border-color:var(--brand);color:var(--brand)}
+[dir="rtl"] .tb-back{transform:scaleX(-1)}
+
 .tb-sync{background:transparent;border:1px solid var(--line);border-radius:99px;
   padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
@@ -524,6 +534,14 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 /* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
    أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
 /* لوحُ الشركات: رأسٌ وذيلٌ ثابتان، والقائمةُ وحدَها تُمرَّر. */
+/* شريحةٌ بسهم: الضغطُ على الاسم يُشعل طبقةَ الألوان، والسهمُ يفتح الاختيار.
+   وكانت الضغطةُ تفتح اللوحَ مباشرةً — ومن أراد أن يرى الشركاتِ ملوَّنةً وحدَها
+   اضطُرَّ أن يفتح لوحًا يغطّي الخريطةَ ثم يغلقه ليرى ما تحته. */
+.chip-pair{display:inline-flex;align-items:stretch}
+.chip-pair .map-chip:first-child{border-start-end-radius:0;border-end-end-radius:0}
+.chip-pair .chip-caret{border-start-start-radius:0;border-end-start-radius:0;
+  padding-inline:10px;min-width:36px;font-size:12px}
+
 .copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78));
   display:flex;flex-direction:column;overflow:hidden;padding:0}
 .copop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);flex:0 0 auto}
@@ -540,7 +558,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 .lang-pick{position:relative;display:inline-flex}
 .lang-menu{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;
-  z-index:60;min-width:148px;background:var(--card);border:1px solid var(--line);
+  z-index:calc(var(--z-map-ui) + 40);  /* فوق واجهة الخريطة: كانت ستين وطبقتُها ستمئة فتُرسَم الشرائحُ فوقها */min-width:148px;background:var(--card);border:1px solid var(--line);
   border-radius:var(--radius);box-shadow:0 12px 32px rgba(0,0,0,.28);padding:5px;
   display:flex;flex-direction:column;gap:2px}
 .lang-menu[hidden]{display:none}
@@ -602,9 +620,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   <main class="shell">
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
+      <button type="button" class="tb-back" id="backBtn" data-back="1"
+              aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.47</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.48</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9294,10 +9314,12 @@ function mapUIHtml(){
     +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>'
     +   (MY_ONLY || ROLE==='tech' ? '<button type="button" class="map-chip on" data-myonly="0">'
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
-    +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
-    +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
-    + '<button type="button" class="map-chip'+(CO_MODE?' on':'')+'" data-comode="'+(CO_MODE?'0':'1')+'">'
-    + '\u{1F3A8} '+esc(t('لون الشركات'))+'</button>'
+    +   '<span class="chip-pair">'
+    +     '<button type="button" class="map-chip'+(CO_MODE?' on':'')+'" data-comode="'+(CO_MODE?'0':'1')+'">'
+    +       '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
+    +     '<button type="button" class="map-chip chip-caret'+(CO_OPEN?' on':'')+'" data-co="1"'
+    +       ' aria-label="'+esc(t('اختر الشركات'))+'">\u25BE</button>'
+    +   '</span>'
     + '</div>'
 
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
@@ -12406,6 +12428,22 @@ var FIELD_PAGES = {
   tools: { m:'الميدان', t:'الأدوات', l:'التصديرات والمزامنة.', body:fieldTools }
 };
 
+/* سجلُّ التنقّل: يُدفَع إليه ما غادرناه لا ما دخلناه — فالرجوعُ عودةٌ إلى
+   السابق. ويُقتصَر على عشرين خطوةً فلا ينمو بلا حدٍّ في يومِ عملٍ طويل.
+   ولم يكن في التطبيق سجلٌّ أصلًا: من دخل تفاصيلَ نقطةٍ من الخريطة لم يجد
+   طريقًا يعود به إلا القائمةَ الجانبية، فيفتحها ويبحث عن اسم ما جاء منه. */
+var NAV_HIST = [];
+function navPush(from){
+  if (!from) return;
+  if (NAV_HIST[NAV_HIST.length - 1] === from) return;
+  NAV_HIST.push(from);
+  if (NAV_HIST.length > 20) NAV_HIST.shift();
+}
+function navBack(){
+  CUR = NAV_HIST.length ? NAV_HIST.pop() : 'over';
+  render();
+}
+
 function render(force){
   var key = (typeof renderKey === 'function') ? renderKey() : String(Math.random());
   if (!force && key === RENDER_KEY && document.getElementById('content')
@@ -12420,6 +12458,8 @@ function render(force){
   if (!p) p = PAGE.over;
 
   document.getElementById('nav').innerHTML = navHtml();
+  var bk = document.getElementById('backBtn');
+  if (bk) bk.hidden = !NAV_HIST.length;
   document.getElementById('crumb').textContent = t(p.t);
   document.getElementById('brandName').innerHTML =
       esc(t('قارئات نُسُك')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
@@ -12513,9 +12553,11 @@ function actList(){
 /* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
    فلا تُكتَب بيدٍ ولا تُنسى. */
 function onDocClick(e){
+  if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
   var a = e.target.closest('[data-p]');
   if (a){
     e.preventDefault();
+    navPush(CUR);
     CUR = a.getAttribute('data-p');
     NAV_Q = '';
     document.body.classList.remove('nav-open');
@@ -13009,7 +13051,12 @@ function onDocClick(e){
   }
 
   var co = e.target.closest('[data-co]');
-  if (co){ CO_OPEN = co.getAttribute('data-co') === '1'; render(); return; }
+  if (co){
+    CO_OPEN = co.getAttribute('data-co') === '1';
+    /* من فتح الاختيارَ أراد أن يرى الألوانَ — فتُشعَل الطبقةُ معه */
+    if (CO_OPEN) CO_MODE = true;
+    statBump(); render(); return;
+  }
   var cg = e.target.closest('[data-cogo]');
   if (cg){
     if (cg.getAttribute('data-cogo') === '1'){
