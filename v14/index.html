@@ -48,7 +48,12 @@
 }
 
 *{box-sizing:border-box}
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;
+  /* ما فاض يُمرَّر داخلَ حاويته لا يمدُّ الصفحة: عنصرٌ واحدٌ أعرضُ من الشاشة
+     كان يسحب الترويسةَ والخريطةَ معه فيظهر شريطُ تمريرٍ أفقيٌّ للصفحة. */
+  overflow-x:hidden;
+  max-width:100%;
+  width:100%}
 body{
   background:var(--bg); color:var(--ink);
   font:15px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic","Noto Nastaliq Urdu",sans-serif;
@@ -61,13 +66,16 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ── الهيكل ───────────────────────────────────────── */
-.shell{margin-inline-start:var(--sw);
+.shell{max-width:100%;overflow-x:hidden;
+  margin-inline-start:var(--sw);
   min-height:100vh;              /* احتياطٌ لمن لا يعرف dvh — والسطرُ ذو الوحدة
                                     المجهولة يُلغى كلُّه فيضيع الارتفاع */
   min-height:calc(var(--vh, 1vh) * 100);
   min-height:100dvh;
   display:flex;flex-direction:column}
-.content{padding:22px;max-width:1200px;width:100%;flex:1}
+.content{padding:22px;max-width:1200px;width:100%;flex:1;
+  min-width:0;                     /* وإلا رفض عنصرُ الفلكس أن يضيق */
+  overflow-x:hidden}
 .content.flush{padding:0;max-width:none}
 
 .sidebar{position:fixed;inset-block:0;inset-inline-start:0;
@@ -140,6 +148,8 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;
   flex-wrap:wrap;padding:13px 17px;border-bottom:1px solid var(--line)}
 .card-head h2{font-size:15.5px}
+/* الجدولُ يُمرَّر داخلَ بطاقته: كان الطويلُ منه يمدُّ الصفحةَ كلَّها */
+.card-body table{display:block;max-width:100%;overflow-x:auto}
 .card-body{padding:17px}
 .card-body.tight{padding:0}
 .hint{color:var(--ink-soft);font-size:13px;margin:10px 0 0}
@@ -229,7 +239,7 @@ input[type="number"]{max-width:140px}
 .chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:500}
 
 /* ── الخريطة ───────────────────────────────────────── */
-.mapwrap{position:relative;
+.mapwrap{max-width:100%;overflow-x:hidden;position:relative;
   height:calc(100vh - 46px);
   height:calc(var(--vh, 1vh) * 100 - 46px);
   height:calc(100dvh - 46px);
@@ -555,7 +565,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.43</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.44</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
