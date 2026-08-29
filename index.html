@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex">
 <meta name="theme-color" content="#185FA5">
-<link rel="manifest" href="manifest.webmanifest">
+<link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
 <meta name="apple-mobile-web-app-title" content="قارئات نُسُك">
@@ -521,6 +521,9 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tb-sync:hover{border-color:var(--brand);color:var(--brand)}
 
+.v2030{display:block;width:112px;max-width:70%;height:auto;margin:0 0 12px;opacity:.92}
+[data-theme="dark"] .v2030{filter:brightness(1.7) saturate(.9)}
+
 .ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-dim);font-weight:400;
   margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
   border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
@@ -545,6 +548,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
+      <!-- شعارُ الرؤية: ذيلُ القائمة الجانبية — لا يعلو شيئًا ولا يعلوه شيء،
+           ولا يزاحم خريطةً ولا نموذجًا. ضع `vision2030.svg` في الجذر ليظهر،
+           وإن لم يوجد أُخفي العنصرُ فلا تظهر صورةٌ مكسورة. -->
+      <img src="vision2030.svg" alt="رؤية السعودية ٢٠٣٠" class="v2030"
+           onerror="this.style.display='none'">
       <div class="who">محمد صفوت</div>
       <div class="who-role" id="whoRole"></div>
       <div class="foot-row">
@@ -565,7 +573,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.44</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.45</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -756,6 +764,11 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك':'A new version is ready — it will apply as soon as you finish',
+ 'تُحدَّث النسخة…':'Updating…',
+ 'لون الشركات':'Company colours',
+ 'و':'and',
+ 'شركةً أخرى':'other companies',
  /* ══ أنواع النقاط ══ */
  'الأنواعُ للمهندس وحده':'Types are for the engineer only',
  'اكتب اسم النوع':'Write the type name',
@@ -1279,6 +1292,11 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك':'نیا نسخہ تیار ہے — آپ کے فارغ ہوتے ہی لاگو ہوگا',
+ 'تُحدَّث النسخة…':'تازہ کاری ہو رہی ہے…',
+ 'لون الشركات':'کمپنیوں کے رنگ',
+ 'و':'اور',
+ 'شركةً أخرى':'دیگر کمپنیاں',
  /* ══ أنواع النقاط ══ */
  'الأنواعُ للمهندس وحده':'اقسام صرف انجینئر کے لیے ہیں',
  'اكتب اسم النوع':'قسم کا نام لکھیں',
@@ -7783,6 +7801,10 @@ var MAP_COL = {
 };
 
 function mapColorOf(x){
+  /* وضعُ الشركات: كلُّ نقطةٍ بلون شركتها — يُفتَح باللوح ويبقى ما دام مفتوحًا
+     أو ما دامت شركاتٌ مختارة. وكان اللونُ لا يظهر إلا للمختار، فمن أراد أن
+     يرى توزيعَ الشركات كلَّه لم يرَه. */
+  if (CO_OPEN || CO_MODE) return x.co ? coColor(x.co) : '#4A5560';
   if (CO_SEL.length) return CO_SEL.indexOf(x.co) > -1 ? coColor(x.co) : '#4A5560';
   if (FILT.type && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
   /* لونُ الطبقة: المنجَزُ بلونها والجاهزُ أصفرُ انتظار والمُسنَدُ برتقالي */
@@ -8680,7 +8702,7 @@ function swInstall(){
           nw.addEventListener('statechange', function(){
             if (nw.state === 'installed' && navigator.serviceWorker.controller){
               SW_STATE.waiting = true;
-              toast(t('نسخةٌ جديدةٌ جاهزة — أغلق التطبيق وافتحه'));
+              swApply();
             }
           });
         });
@@ -8691,6 +8713,52 @@ function swInstall(){
         return false;
       });
   }catch(e){ return Promise.resolve(false); }
+}
+
+/* ═══ التحديثُ التلقائيّ ═══
+   العاملُ يأخذ السيطرةَ فورًا، لكنّ الصفحةَ تبقى على شيفرتها القديمة حتى
+   تُعاد. وكان يُقال «أغلق التطبيقَ وافتحه» — ومن لا يقرأ الرسالةَ يبقى على
+   نسخةٍ قديمةٍ أسبوعًا، ويشكو من عطلٍ أُصلح.
+
+   فتُعاد الصفحةُ بنفسها — إلا أن يكون المستخدمُ في نموذجٍ فيه ما لم يُحفَظ،
+   فإعادةُ التحميل حينئذٍ تُضيع عملَه. فيُنتظَر حتى يخرج منه. */
+var SW_RELOADED = false;
+function swBusy(){
+  /* نموذجٌ مفتوحٌ فيه إدخال، أو طابورٌ لم يُرفَع بعد */
+  if (['svForm','insForm','newsite'].indexOf(CUR) > -1) return true;
+  try { if (document.querySelector('input:focus, textarea:focus, select:focus')) return true; } catch (e){}
+  return false;
+}
+function swApply(){
+  if (SW_RELOADED) return;
+  if (swBusy()){
+    /* يُقال مرةً، ويُعاد المحاولةُ حين يفرغ */
+    toast(t('نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك'));
+    setTimeout(swApply, 20000);
+    return;
+  }
+  SW_RELOADED = true;
+  toast(t('تُحدَّث النسخة…'));
+  setTimeout(function(){ try { location.reload(); } catch (e){} }, 700);
+}
+
+/* المتصفّحُ لا يسأل عن عاملٍ جديدٍ إلا نادرًا — فيُسأل كلَّ ربع ساعةٍ وعند
+   العودة إلى التطبيق، فالميدانُ يفتحه ويغلقه طولَ اليوم ولا يُعيد تحميله. */
+function swPoll(){
+  if (!SW_STATE.reg || !SW_STATE.reg.update) return;
+  try { SW_STATE.reg.update(); } catch (e){}
+}
+setInterval(swPoll, 900000);
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden) swPoll();
+}, { passive:true });
+window.addEventListener('focus', swPoll, { passive:true });
+if (navigator.serviceWorker){
+  navigator.serviceWorker.addEventListener('controllerchange', function(){
+    /* عاملٌ جديدٌ تولّى — الشيفرةُ المعروضةُ صارت قديمة */
+    SW_STATE.waiting = true;
+    swApply();
+  });
 }
 
 /* فحصُ التحديثات: يسأل عاملَ الخدمة أن يعيد جلبَ نفسِه، ويقارن رقمَ الكاش
@@ -9012,6 +9080,8 @@ var FIELD_MODE = 'survey';
 var EXP_OPEN = false;
 var POP_SITE = '';
 var CO_OPEN = false;
+/* يبقى التلوينُ بعد إغلاق اللوح حتى يُطفأ صراحةً */
+var CO_MODE = false;
 var MAP_SAT = false;
 var MAP_FILT_OPEN = false;
 var CO_SEL = [];
@@ -9070,6 +9140,24 @@ var MAP_SEL = {};
 
 /* الأسطورةُ تتبع الطبقة: لكلٍّ حالاتُها، ولكلِّ نوعٍ شكلُه ولونُه */
 function legendRows(){
+  if (CO_OPEN || CO_MODE){
+    /* لا معنى لأسطورة الحالات ولونُ النقطة لشركتها */
+    var seen = {}, out = [];
+    (typeof filtered === 'function' ? filtered() : STATE.sites).forEach(function(x){
+      if (!x.co || seen[x.co]) return;
+      seen[x.co] = 1;
+      if (out.length < 12) out.push(x.co);
+    });
+    return '<div style="font-weight:700;margin:0 0 6px">' + esc(t('لون الشركات')) + '</div>'
+      + out.map(function(c){
+          return '<div><span class="dot" style="background:' + coColor(c) + '"></span>'
+            + esc(c.length > 22 ? c.slice(0, 21) + '…' : c) + '</div>';
+        }).join('')
+      + (Object.keys(seen).length > out.length
+          ? '<div class="hint" style="margin:6px 0 0">' + esc(t('و')) + ' '
+            + nm(Object.keys(seen).length - out.length) + ' ' + esc(t('شركةً أخرى')) + '</div>'
+          : '');
+  }
   var L = (typeof LAYER === 'function') ? LAYER() : LAYERS.survey;
   var rows = [];
   if (FIELD_MODE === 'survey'){
@@ -9116,9 +9204,9 @@ function mapUIHtml(){
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<button type="button" class="map-chip'+(CO_SEL.length?' on':'')+'" data-co="1">'
     +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
+    + '<button type="button" class="map-chip'+(CO_MODE?' on':'')+'" data-comode="'+(CO_MODE?'0':'1')+'">'
+    + '\u{1F3A8} '+esc(t('لون الشركات'))+'</button>'
     + '</div>'
-
-    + '<div class="map-stack">' + layerBar()
 
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
@@ -9140,7 +9228,8 @@ function mapUIHtml(){
     + '</div>'
 
 
-    + '<div class="map-legend">' + legendRows() + '</div>'
+    + '<div class="map-stack">' + layerBar()
+      + '<div class="map-legend">' + legendRows() + '</div>'
     + '</div>'
     + mapSelBar() + moveBar()
     + (CO_OPEN ? coFiltHtml() : '')
@@ -12465,6 +12554,13 @@ function onDocClick(e){
   var nwa = e.target.closest('[data-nwa]'), nml = e.target.closest('[data-nmail]');
   if (nwa || nml){ logEvent('إرسال إشعار — ' + ((nwa||nml).getAttribute(nwa?'data-nwa':'data-nmail'))
       + ' · ' + (nwa ? 'واتساب' : 'بريد')); return; }
+  var cmo = e.target.closest('[data-comode]');
+  if (cmo){
+    CO_MODE = cmo.getAttribute('data-comode') === '1';
+    statBump(); render(1);
+    toast(t(CO_MODE ? 'الخريطةُ بألوان الشركات' : 'عاد لونُ الطبقة'));
+    return;
+  }
   var srm = e.target.closest('[data-selrm]');
   if (srm){ selToggle(srm.getAttribute('data-selrm')); render(1); return; }
   var pv = e.target.closest('[data-pview]');
