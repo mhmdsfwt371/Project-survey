@@ -19,6 +19,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
+      - name: المتصفّح الصوريّ — تحتاجه الجرودُ كلُّها
+        run: npm i --no-save --no-audit --no-fund jsdom@^24
       - name: الحارس — تطابق النسخ وسجل الصفحات والترجمة
         run: node scripts/check-version.mjs
       - name: جرد البيانات — كل حقلٍ مقروءٍ على مصدره
@@ -34,4 +36,4 @@ jobs:
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
-        run: npm i --no-save --silent jsdom && node scripts/qa.mjs
+        run: node scripts/qa.mjs

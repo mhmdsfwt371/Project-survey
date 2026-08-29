@@ -2,7 +2,7 @@
 
 > ملف مرجعي لمشروع «قارئات نُسُك ١٤٤٨هـ». يُحدَّث كلما اكتُشفت واجهة جديدة.
 > الموقع الثابت (يمكن فتحه من أي جهاز أو محادثة):
-> `https://raw.githubusercontent.com/mhmdsfwt371/-Project-survey/main/docs/afaqy-api.md`
+> `https://raw.githubusercontent.com/mhmdsfwt371/Project-survey/main/docs/afaqy-api.md`
 
 ---
 

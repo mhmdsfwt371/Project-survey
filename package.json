@@ -1,0 +1,13 @@
+{
+  "name": "nusuk-survey",
+  "private": true,
+  "description": "نُسُك Survey — أدواتُ الفحص والحراسة. التطبيقُ نفسه ملفٌّ واحدٌ بلا حزم.",
+  "devDependencies": {
+    "jsdom": "^24.1.0"
+  },
+  "scripts": {
+    "check": "node scripts/check-version.mjs",
+    "audit": "node scripts/audit-data.mjs && node scripts/audit-writes.mjs && node scripts/audit-exports.mjs && node scripts/audit-calc.mjs && node scripts/audit-roles.mjs && node scripts/parity.mjs",
+    "qa": "node scripts/qa.mjs"
+  }
+}

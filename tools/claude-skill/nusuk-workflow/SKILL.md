@@ -1,12 +1,12 @@
 ---
 name: nusuk-workflow
-description: دستور العمل الكامل لمشروع نُسُك Survey (تطبيق المسح الميداني لقارئات RFID — حج ١٤٤٨هـ). استخدم هذه المهارة فور أي ذكر لنُسُك، المسح الميداني، المشاعر، repo -Project-survey أو mhmdsfwt371، ملف index.html الضخم، الحارس check-version، أو أي طلب تعديل/إصلاح/نشر على هذا النظام — حتى لو لم يُسمَّ المشروع صراحةً وكان السياق لقطة شاشة من التطبيق أو رسالة خطأ منه. تحوي دورة الإصدار الإلزامية والأفخاخ الموثقة وقواعد الحوكمة وخريطة الكود.
+description: دستور العمل الكامل لمشروع نُسُك Survey (تطبيق المسح الميداني لقارئات RFID — حج ١٤٤٨هـ). استخدم هذه المهارة فور أي ذكر لنُسُك، المسح الميداني، المشاعر، repo Project-survey أو mhmdsfwt371، ملف index.html الضخم، الحارس check-version، أو أي طلب تعديل/إصلاح/نشر على هذا النظام — حتى لو لم يُسمَّ المشروع صراحةً وكان السياق لقطة شاشة من التطبيق أو رسالة خطأ منه. تحوي دورة الإصدار الإلزامية والأفخاخ الموثقة وقواعد الحوكمة وخريطة الكود.
 ---
 
 # نُسُك Survey — دستور العمل
 
 ## ١) هوية المشروع
-- **المستودع:** `github.com/mhmdsfwt371/-Project-survey` (عام) → GitHub Pages: `mhmdsfwt371.github.io/-Project-survey/`
+- **المستودع:** `github.com/mhmdsfwt371/Project-survey` (عام) → GitHub Pages: `mhmdsfwt371.github.io/Project-survey/`
 - **Firebase:** مشروع `project-survey-60600` (Auth بريد/كلمة + Firestore خطة Spark). القواعد تُنشر تلقائيًا مع الدفع.
 - **البنية:** `index.html` واحد ضخم (~2.5MB) + `sw.js` + `tools/prober.html` + `docs/` + `scripts/check-version.mjs`.
 - **بيئة العمل:** انسخ/اسحب إلى `/home/claude/app` واعمل منه.

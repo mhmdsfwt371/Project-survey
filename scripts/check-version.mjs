@@ -326,6 +326,12 @@ try {
  ['scripts/audit-exports.mjs','جردُ التصديرات']].forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
+    /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ
+       بينهما يوفّر ساعةً من البحث في سجلِّ سير العمل. */
+    if (e.status === 2){
+      fail.push(name + ' لم يُشغَّل — المتصفّحُ الصوريُّ غير مثبَّت. شغّل: npm i jsdom');
+      return;
+    }
     const out = String((e.stdout || '') + (e.stderr || '')).split('\n')
       .filter(l => l.includes('✗')).slice(0, 3).join(' | ');
     fail.push(name + ' فشل — ' + (out || ('شغّل: node ' + f)));

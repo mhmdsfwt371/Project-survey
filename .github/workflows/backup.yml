@@ -22,7 +22,13 @@ jobs:
       - name: Run backup
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/backup.mjs
+        run: |
+          if [ -z "$FIREBASE_SERVICE_ACCOUNT" ]; then
+            echo "::warning title=لا نسخة احتياطية::سرُّ FIREBASE_SERVICE_ACCOUNT غير مضبوط — لم تُؤخَذ نسخةٌ اليوم. اضبطه من Settings ← Secrets ← Actions."
+            echo "لا نسخة احتياطية — السرُّ غير مضبوط" >> $GITHUB_STEP_SUMMARY
+            exit 0
+          fi
+          node scripts/backup.mjs
 
       # رفع النسخة الكاملة إلى درايف المالك — قبل التشفير لأنها تُرفع خامًا
       # إلى مساحته الخاصة. يتجاوز نفسه بهدوء إن لم تُضبط الأسرار.
