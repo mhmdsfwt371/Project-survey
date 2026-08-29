@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.15
+      <i class="ver-tag">نسخة</i>V14.16
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,9 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الثانية عشرة: اللوحات ══ */
+ 'اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.':'The snapshot is written from the office device every fifteen minutes — anything not yet synced does not appear here.',
+ 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.':'Lowest percentage first — sixty companies per page.',
  /* ══ الدفعة الحادية عشرة: السعة والمزامنة ══ */
  'الطابور متضخّم':'Queue is growing',
  'اتصل بالشبكة ليُرفَع':'connect to the network so it uploads',
@@ -1011,6 +1014,9 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الثانية عشرة ══ */
+ 'اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.':'اسنیپ شاٹ دفتر کے آلے سے ہر پندرہ منٹ میں لکھا جاتا ہے — جو ابھی ہم آہنگ نہیں ہوا وہ یہاں نہیں دکھتا۔',
+ 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.':'کم ترین تناسب پہلے — فی صفحہ ساٹھ کمپنیاں۔',
  /* ══ الدفعة الحادية عشرة ══ */
  'الطابور متضخّم':'قطار بڑھ رہی ہے',
  'اتصل بالشبكة ليُرفَع':'نیٹ ورک سے جڑیں تاکہ اپ لوڈ ہو',
@@ -1982,8 +1988,11 @@ function rollupToday(force){
   return doc;
 }
 
-/* التاريخُ: آخرُ ثلاثين يومًا مرتَّبةً — للوحة التاريخية والتقارير */
-function history(days){
+/* التاريخُ: آخرُ ثلاثين يومًا مرتَّبةً — للوحة التاريخية والتقارير.
+   الاسمُ `history` كان يصطدم بـ`window.history` في المتصفّح: هي في المواصفة
+   قابلةٌ للاستبدال، وفي بعض المحرّكات غيرُ قابلة — فتبقى دالةُ المتصفّح مكانها
+   ويسقط التاريخُ صامتًا، فتُعرَض لوحةُ التاريخ فارغةً ولا يُعرَف السبب. */
+function statsHistory(days){
   var out = [], st = STATE.stats || {};
   Object.keys(st).sort().slice(-(days || 30)).forEach(function(k){ out.push(st[k]); });
   return out;
@@ -7323,6 +7332,25 @@ var SHEETS = {
     });
     return out;
   },
+  /* الاتجاهُ عبر الأيام — تقاريرُ الوزارةِ تُقرأ بالمقارنة لا باللقطة:
+     رقمُ اليوم وحده لا يقول أمتقدّمون نحن أم متأخرون. */
+  daily: function(){
+    var H = statsHistory(90);
+    var out = [['اليوم','مسحُ اليوم','تركيبُ اليوم','فكُّ اليوم','تعذُّرُ وصول',
+                'تراكمُ المسح','تراكمُ التركيب','بانتظار الرفع']];
+    H.forEach(function(r){
+      out.push([r.day, r.daySurvey || 0, r.dayInstall || 0, r.dayDismantle || 0,
+                r.dayBlocked || 0, r.surveyed || 0, r.installed || 0, r.pending || 0]);
+    });
+    if (H.length > 1){
+      var f = H[0], l = H[H.length - 1];
+      out.push(['الفرق بين أول يومٍ وآخره', '', '', '', '',
+                (l.surveyed || 0) - (f.surveyed || 0),
+                (l.installed || 0) - (f.installed || 0), '']);
+    }
+    return out;
+  },
+
   /* المرحلةُ المفتوحةُ وحدها — كان الزرُّ يطلب «stage» ولا ورقةَ بهذا الاسم */
   stage: function(){
     var k = (typeof STAGE_TAB !== 'undefined' && STAGE_TAB) || Object.keys(STAGE_ROLES)[0];
@@ -8251,12 +8279,35 @@ PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما
         + '<p class="hint">النقطة لا تدخل الجدولة إلا بعد مسحها، ولا تُوسم مُركّبةً إلا باعتماد قطعها.</p>');
   }};
 
-PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'آخر أربعة عشر يومًا — مسحًا وتركيبًا.',
+PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.',
   body:function(){
-    var rows = ['٢٧','٢٦','٢٥','٢٤','٢٣'].map(function(d){
-      return ['<span class="num">٢٠٢٦-٠٨-'+d+'</span>','٠','٠','٠'];
+    /* كانت خمسةَ تواريخَ مكتوبةً بيدٍ وأصفارًا: تُعرَض على الوزارة فتبدو
+       لوحةَ متابعةٍ وهي لا تقرأ شيئًا. الآن تُقرأ اللقطاتُ المحفوظة، فإن لم
+       تُحفَظ بعدُ حُسب اليومُ من السجلات وقيل ذلك صراحةً. */
+    var H = (typeof statsHistory === 'function') ? statsHistory(14) : [];
+    if (!H.length){
+      var S = siteStats(), day = dayKey(Date.now());
+      var sv = 0, ins = 0;
+      Object.keys(STATE.recs).forEach(function(k){
+        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svDone(STATE.recs[k])) sv++; });
+      Object.keys(STATE.inss).forEach(function(k){
+        var r = STATE.inss[k];
+        if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
+      return alertBox('info','لا لقطاتٍ محفوظةً بعد — هذا يومُك أنت محسوبًا من سجلاتك.')
+        + card('اليوم', table(['التاريخ','مسح','تركيب','الإجمالي'],
+            [['<span class="num">' + esc(day) + '</span>', N(sv), N(ins), N(sv + ins)]]));
+    }
+    var tot = [0,0,0];
+    var rows = H.slice().reverse().map(function(r){
+      var sv = r.daySurvey || 0, ins = r.dayInstall || 0, dis = r.dayDismantle || 0;
+      tot[0] += sv; tot[1] += ins; tot[2] += dis;
+      return ['<span class="num">' + esc(r.day) + '</span>', N(sv), N(ins), N(dis),
+              N(sv + ins + dis), N(r.dayBlocked || 0)];
     });
-    return card('المعدل اليومي', table(['التاريخ','مسح','تركيب','الإجمالي'], rows));
+    return card('آخر ' + nm(rows.length) + ' يومًا',
+        table(['التاريخ','مسح','تركيب','فك','الإجمالي','تعذّر'], rows,
+              ['الإجمالي', N(tot[0]), N(tot[1]), N(tot[2]), N(tot[0]+tot[1]+tot[2]), '']))
+      + '<p class="hint">' + esc(t('اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.')) + '</p>';
   }};
 
 PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'التوزيع الكامل بالنسب.',
@@ -8269,12 +8320,31 @@ PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'ال
 
 PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأقل إنجازًا أولًا — لتوجيه التنسيق.',
   body:function(){
-    return card('الشركات', table(['الشركة','مواقعها','مُسح','مُركّب','٪'], [
-      ['شركة الراجحي','<span class="num">١٤٢</span>','٠','٠', pct(0,142)],
-      ['ضيوف البيت','<span class="num">١١٨</span>','٠','٠', pct(0,118)],
-      ['حجاج الداخل','<span class="num">٩٧</span>','٠','٠', pct(0,97)]
-    ])) + '<p class="hint">القائمة الكاملة ١٦٢ شركة — تُصدَّر إكسل من زر التصدير.</p>';
+    /* كانت أسماءُ شركاتٍ مكتوبةً بيدٍ بأعدادٍ مخترعة — «شركة الراجحي ١٤٢ موقعًا»
+       — تُعرَض في تقريرٍ للوزارة. تُحسب الآن من السجل نفسه. */
+    var S = siteStats(), sv = {}, ins = {};
+    STATE.sites.forEach(function(x){
+      if (!x.co) return;
+      if (svDone(STATE.recs[x.id])) sv[x.co] = (sv[x.co] || 0) + 1;
+      var r = STATE.inss[x.id];
+      if (r && r.status === 'مُركّب' && r.approved) ins[x.co] = (ins[x.co] || 0) + 1;
+    });
+    var rows = Object.keys(S.byCo || {})
+      .sort(function(a, b){
+        var pa = (sv[a] || 0) / S.byCo[a], pb = (sv[b] || 0) / S.byCo[b];
+        return pa - pb || S.byCo[b] - S.byCo[a];
+      })
+      .slice(0, 60)
+      .map(function(c){
+        return ['<i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'
+                + coColor(c) + ';margin-inline-end:7px"></i>' + esc(c),
+                N(S.byCo[c]), N(sv[c] || 0), N(ins[c] || 0), pct(sv[c] || 0, S.byCo[c])];
+      });
+    return card('الشركات — ' + nm(Object.keys(S.byCo || {}).length),
+        table(['الشركة','مواقعها','مُسح','مُركّب','٪'], rows))
+      + '<p class="hint">' + esc(t('الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.')) + '</p>';
   }};
+
 
 PAGE.chalm = { m:'المتابعة', t:'التحديات', l:'أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.',
   body:function(){ return card('التحديات المفتوحة',
@@ -8525,7 +8595,8 @@ var EXP_SECS = [
   ['items','القطع والأسعار — الكتالوج كاملًا',1],
   ['crews','الطواقم ومعدلاتها اليومية',1],
   ['reps','مركز التقارير — ما يُرسَل ولمن ومتى',1],
-  ['perms','الصلاحيات — ماذا يملك كلُّ دور',1]
+  ['perms','الصلاحيات — ماذا يملك كلُّ دور',1],
+  ['daily','الاتجاه اليومي — تسعون يومًا',1]
 ];
 
 function expHtml(){

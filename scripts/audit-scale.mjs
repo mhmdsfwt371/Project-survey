@@ -116,7 +116,7 @@ check(typeof w.DEV_ID === 'string' && w.DEV_ID.length > 6, 'للجهاز معر�
   check(doc && typeof doc.total === 'number' && typeof doc.daySurvey === 'number',
     'اللقطةُ تحمل الإجماليَّ وأعمالَ اليوم');
   check(!!(w.STATE.stats || {})[doc.day], 'اللقطةُ محفوظةٌ في الحالة');
-  check(typeof w.history === 'function' && Array.isArray(w.history(30)),
+  check(typeof w.statsHistory === "function" && Array.isArray(w.statsHistory(30)),
     'التاريخُ يُقرأ من اللقطات');
 }
 
