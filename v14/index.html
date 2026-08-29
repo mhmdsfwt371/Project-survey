@@ -523,6 +523,21 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 /* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
    أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
+/* لوحُ الشركات: رأسٌ وذيلٌ ثابتان، والقائمةُ وحدَها تُمرَّر. */
+.copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78));
+  display:flex;flex-direction:column;overflow:hidden;padding:0}
+.copop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);flex:0 0 auto}
+.copop-list{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:4px 15px;min-height:80px}
+.copop-foot{padding:12px 15px 14px;border-top:1px solid var(--line);flex:0 0 auto;
+  background:var(--card)}
+.coRow{display:flex;gap:9px;align-items:center;padding:9px 2px;
+  border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer;min-height:42px}
+.coRow:last-child{border-bottom:0}
+.coRow .coCk{width:19px;min-height:19px;flex:0 0 auto;margin:0}
+.coRow i{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.coRow span{min-width:0;overflow-wrap:anywhere}
+
 .lang-pick{position:relative;display:inline-flex}
 .lang-menu{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;
   z-index:60;min-width:148px;background:var(--card);border:1px solid var(--line);
@@ -589,7 +604,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.46</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.47</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -784,6 +799,16 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'لا شركةَ بهذا الاسم.':'No company by that name.',
+ 'شركة':'company',
+ 'محدَّدة':'selected',
+ 'لكل واحدة لونٌ ثابت فلا يتجاور لونان متشابهان.':'Each has a fixed colour so no two neighbours look alike.',
+ 'التحريرُ ليس من صلاحيتك':'Editing is not within your permissions',
+ 'ابحث بالمعرّف أو الاسم أو البادئة':'Search by ID, name or prefix',
+ 'لا عناوينَ بعد — استوردها من «التصدير والاستيراد» بنوع «عناوين الشبكة».':'No addresses yet — import them from Export and import, type Network addresses.',
+ 'ابحث باسم الشخص':'Search by person name',
+ 'ابحث باسم الفني أو فريقه أو مشرفه':'Search by technician, team or supervisor',
+ 'ابحث باسم القطعة':'Search by item name',
  'نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك':'A new version is ready — it will apply as soon as you finish',
  'تُحدَّث النسخة…':'Updating…',
  'لون الشركات':'Company colours',
@@ -1312,6 +1337,16 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'لا شركةَ بهذا الاسم.':'اس نام کی کوئی کمپنی نہیں۔',
+ 'شركة':'کمپنی',
+ 'محدَّدة':'منتخب',
+ 'لكل واحدة لونٌ ثابت فلا يتجاور لونان متشابهان.':'ہر ایک کا مقررہ رنگ ہے تاکہ دو پڑوسی ایک جیسے نہ لگیں۔',
+ 'التحريرُ ليس من صلاحيتك':'ترمیم آپ کے اختیارات میں نہیں',
+ 'ابحث بالمعرّف أو الاسم أو البادئة':'شناخت، نام یا سابقے سے تلاش کریں',
+ 'لا عناوينَ بعد — استوردها من «التصدير والاستيراد» بنوع «عناوين الشبكة».':'ابھی کوئی پتہ نہیں — برآمد و درآمد سے نیٹ ورک پتے درآمد کریں۔',
+ 'ابحث باسم الشخص':'شخص کے نام سے تلاش',
+ 'ابحث باسم الفني أو فريقه أو مشرفه':'ٹیکنیشن، ٹیم یا سپروائزر سے تلاش',
+ 'ابحث باسم القطعة':'قطعے کے نام سے تلاش',
  'نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك':'نیا نسخہ تیار ہے — آپ کے فارغ ہوتے ہی لاگو ہوگا',
  'تُحدَّث النسخة…':'تازہ کاری ہو رہی ہے…',
  'لون الشركات':'کمپنیوں کے رنگ',
@@ -2353,7 +2388,7 @@ var FB = {
       var col = { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
                   buys:'purchases', cfg:'settings', users:'users',
                   evlog:'events', diss:'dismantles', newsites:'newsites',
-                  coreqs:'coreqs', fixreqs:'fixreqs', accounts:'accounts', photos:'photos',
+                  coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
@@ -8227,6 +8262,14 @@ var SHEETS = {
     });
     return out;
   },
+  ips: function(){
+    var out = [['معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
+    (STATE.sites || []).forEach(function(x){
+      if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return;
+      out.push([x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
+    });
+    return out;
+  },
   notif: function(){
     var out = [['الوقت','النوع','الأهمية','الرسالة','الموقع','إلى','أنشأه','مقروء']];
     (STATE.notifs || []).forEach(function(n){
@@ -8632,8 +8675,16 @@ function impApply(){
       }
     } else if (p.kind === 'ips'){
       /* كان يقول «صفًّا حُفظ» ولا يكتب حرفًا — العرضُ بلا كتابةٍ كذب */
+      /* الأعمدةُ الأربعةُ كلُّها تُحفَظ: كان يُقرأ العمودُ الثاني وحدَه
+         وتُهمَل ثلاثةٌ في الملف، فيُظنُّ أنها حُفظت. */
       var t2 = siteFind(String(r[0]).trim());
-      if (t2 && r[1]){ t2.net = String(r[1]).trim().replace(/\.+$/, ''); n++; }
+      if (t2 && r[1]){
+        t2.net = String(r[1]).trim().replace(/\.+$/, '');
+        if (r[2]) t2.ipRtr = String(r[2]).trim();
+        if (r[3]) t2.ipRdr = String(r[3]).trim();
+        if (r[4]) t2.ipCam = String(r[4]).trim();
+        n++;
+      }
     } else { n++; }
   });
   CORE.dirty(p.kind, 'import', { at:Date.now(), n:n });
@@ -9102,6 +9153,7 @@ var POP_SITE = '';
 var CO_OPEN = false;
 /* يبقى التلوينُ بعد إغلاق اللوح حتى يُطفأ صراحةً */
 var CO_MODE = false;
+var CO_Q = '', TK_Q = '', IT_Q = '', JB_Q = '';
 var MAP_SAT = false;
 var MAP_FILT_OPEN = false;
 var CO_SEL = [];
@@ -9133,28 +9185,48 @@ function coColor(name){
 }
 
 function coFiltHtml(){
-  return '<div class="pop" id="coFilt" style="width:min(340px,88vw);max-height:76vh;overflow:auto">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
-    +   '<h3 style="color:var(--ink)">'+esc(t('اختر الشركات'))+'</h3>'
-    +   '<button type="button" class="btn btn-quiet btn-sm" data-co="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
+  /* الرأسُ والذيلُ ثابتان والقائمةُ وحدَها تُمرَّر: كان اللوحُ كلُّه يُمرَّر،
+     فيغيب زرُّ الإغلاق ويغيب «عرض» عمن نزل في مئةٍ واثنتين وستين شركةً — فيبحث
+     عنهما بالتمرير صعودًا ونزولًا في كلِّ مرة. */
+  var shown = CO_LIST.filter(function(c){ return !CO_Q || c.indexOf(CO_Q) > -1; });
+  var allOn = shown.length > 0 && shown.every(function(c){ return CO_SEL.indexOf(c) > -1; });
+  return '<div class="pop copop" id="coFilt">'
+    + '<div class="copop-head">'
+    +   '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
+    +     '<h3 style="color:var(--ink);margin:0">' + esc(t('اختر الشركات')) + '</h3>'
+    +     '<button type="button" class="btn btn-quiet btn-sm" data-co="0" aria-label="'
+    +       esc(t('إغلاق')) + '">✕</button>'
+    +   '</div>'
+    +   '<input type="search" id="coQ" data-coq="1" value="' + esc(CO_Q) + '" placeholder="'
+    +     esc(t('ابحث باسم الشركة')) + '" spellcheck="false" style="margin:11px 0 0">'
     + '</div>'
-    + '<input type="search" id="coQ" placeholder="'+esc(t('ابحث باسم الشركة'))+'" '
-    +   'spellcheck="false" style="margin:11px 0">'
-    + '<div id="coL">' + CO_LIST.map(function(c){
-        var on = CO_SEL.indexOf(c) > -1;
-        return '<label class="coRow" data-c="'+esc(c)+'" style="display:flex;gap:9px;align-items:center;'
-          + 'padding:8px 2px;border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer">'
-          + '<input type="checkbox" class="coCk"'+(on?' checked':'')+' style="width:18px;min-height:18px;flex:0 0 auto">'
-          + '<i style="width:11px;height:11px;border-radius:50%;background:'+coColor(c)+';flex:0 0 auto"></i>'
-          + '<span style="min-width:0">'+esc(c)+'</span></label>';
-      }).join('') + '</div>'
-    + '<div class="actions" style="margin-top:12px">'
-    +   btn('عرض','btn-primary btn-sm',' data-cogo="1"')
-    +   btn('مسح التحديد','btn-secondary btn-sm',' data-cogo="0"')
+
+    + '<div class="copop-list" id="coL">'
+    +   (shown.length
+        ? shown.map(function(c){
+            var on = CO_SEL.indexOf(c) > -1;
+            return '<label class="coRow" data-c="' + esc(c) + '">'
+              + '<input type="checkbox" class="coCk"' + (on ? ' checked' : '') + '>'
+              + '<i style="background:' + coColor(c) + '"></i>'
+              + '<span>' + esc(c) + '</span></label>';
+          }).join('')
+        : '<p class="hint" style="text-align:center;padding:20px 0;margin:0">'
+          + esc(t('لا شركةَ بهذا الاسم.')) + '</p>')
     + '</div>'
-    + '<p class="hint" style="font-size:11.5px">'
-    +   esc(t('١٦٢ شركة — لكل واحدة لونٌ ثابت بالزاوية الذهبية فلا يتجاور لونان متشابهان.'))
-    + '</p></div>';
+
+    + '<div class="copop-foot">'
+    +   '<div class="actions" style="margin:0">'
+    +     btn(allOn ? 'أزِل تحديد الكل' : 'حدّد الكل', 'btn-secondary btn-sm',
+              ' data-coall="' + (allOn ? '0' : '1') + '"')
+    +     btn('عرض', 'btn-primary btn-sm', ' data-cogo="1"')
+    +     btn('مسح التحديد', 'btn-quiet btn-sm', ' data-cogo="0"')
+    +   '</div>'
+    +   '<p class="hint" style="font-size:11.5px;margin:9px 0 0">'
+    +     nm(shown.length) + ' ' + esc(t('من')) + ' ' + nm(CO_LIST.length) + ' '
+    +     esc(t('شركة')) + (CO_SEL.length ? ' · ' + nm(CO_SEL.length) + ' ' + esc(t('محدَّدة')) : '')
+    +     ' — ' + esc(t('لكل واحدة لونٌ ثابت فلا يتجاور لونان متشابهان.'))
+    +   '</p>'
+    + '</div></div>';
 }
 var MAP_SEL = {};
 
@@ -10171,6 +10243,57 @@ function lessDel(i){
   toast(t('حُذف')); render(1);
 }
 
+/* ═══ عناوينُ الشبكة ═══
+   لكلِّ نقطةٍ مركَّبةٍ بادئةُ شبكةٍ وثلاثةُ عناوين: الراوترُ والقارئُ
+   والكاميرا. تُستورَد من ملفٍ وتُصدَّر إليه — وكانت تُكتَب ولا تُعرَض،
+   فمن أراد عنوانَ قارئٍ ليتصل به لم يجده إلا في ملفٍ خارج النظام. */
+var IP_Q = '';
+function ipRows(){
+  return (STATE.sites || []).filter(function(x){
+    if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return false;
+    if (!IP_Q) return true;
+    return (x.id + ' ' + (x.name || '') + ' ' + (x.net || '')).indexOf(IP_Q) > -1;
+  });
+}
+function ipSet(id, key, val){
+  if (!may('edit')){ toast(t('التحريرُ ليس من صلاحيتك')); return; }
+  var x = siteFind(id); if (!x) return;
+  x[key] = String(val || '').trim();
+  CORE.set('sites', id, { net:x.net || '', ipRtr:x.ipRtr || '', ipRdr:x.ipRdr || '', ipCam:x.ipCam || '' });
+  statBump();
+}
+
+PAGE.ips = { m:'الميدان', t:'عناوين الشبكة',
+  l:'بادئةُ كلِّ نقطةٍ وعناوينُ أجهزتها — تُستورَد وتُصدَّر.',
+  body:function(){
+    var L = ipRows(), all = (STATE.sites || []).filter(function(x){ return x.net; }).length;
+    return stats([['نقاطٌ لها شبكة', N(all), all ? 'ok' : 'wrn'],
+                  ['بلا عنوان', N((STATE.sites || []).length - all)],
+                  ['معروض', N(L.length)]])
+
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="ipQ" data-ipq="1" value="' + esc(IP_Q) + '" placeholder="'
+      +     esc(t('ابحث بالمعرّف أو الاسم أو البادئة')) + '" dir="auto">'
+      + '</form>'
+
+      + cardFlush('العناوين — ' + nm(L.length),
+          L.length
+            ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا'],
+                L.slice(0, 200).map(function(x){
+                  return ['<span class="num">' + esc(x.id) + '</span>',
+                          esc(x.name),
+                          '<input value="' + esc(x.net || '') + '" data-ipn="' + esc(x.id) + '" dir="ltr" placeholder="10.20.30">',
+                          '<input value="' + esc(x.ipRtr || '') + '" data-ipr="' + esc(x.id) + '" dir="ltr" placeholder=".1">',
+                          '<input value="' + esc(x.ipRdr || '') + '" data-ipd="' + esc(x.id) + '" dir="ltr" placeholder=".2">',
+                          '<input value="' + esc(x.ipCam || '') + '" data-ipc="' + esc(x.id) + '" dir="ltr" placeholder=".3">'];
+                }))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا عناوينَ بعد — استوردها من «التصدير والاستيراد» بنوع «عناوين الشبكة».')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ips"') : '')
+
+      + '<p class="hint">البادئةُ تُكتَب بلا نقطةٍ أخيرة، والعناوينُ الثلاثةُ تُكتَب بنقطةٍ أولى — فيُقرأ العنوانُ كاملًا بضمّهما.</p>';
+  }};
+
 PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
   l:'ما يعمله الشخصُ — ومنه يُشتقُّ دورُه وصلاحيتُه.',
   body:function(){
@@ -10208,9 +10331,14 @@ PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
             btn('➕ إضافة وظيفة','btn-primary btn-sm',' data-jbadd="1"'))
         : '')
 
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="jbQ" data-jbq="1" value="' + esc(JB_Q) + '" placeholder="'
+      +     esc(t('ابحث باسم الشخص')) + '" dir="auto">'
+      + '</form>'
       + cardFlush('من على كل وظيفة',
           table(['الشخص','الوظيفة','الدور المشتقّ','آخر نقلة'],
-            techsList().map(function(x){
+            techsList().filter(function(x){ return !JB_Q || x.n.indexOf(JB_Q) > -1; })
+              .map(function(x){
               var j = x.job ? jobOf(x.job) : null;
               var last = (x.jobLog || []).slice(-1)[0];
               return [esc(x.n),
@@ -10235,11 +10363,19 @@ PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل و
     var sups = L.filter(function(x){ return x.sup; }).map(function(x){ return x.sup; });
     sups = [''].concat([...new Set(sups)]);
 
+    L = L.filter(function(x){
+      if (!TK_Q) return true;
+      return (x.n + ' ' + (x.crew || '') + ' ' + (x.sup || '')).indexOf(TK_Q) > -1;
+    });
     return stats([['فنيون', N(L.length)],
                   ['لهم حسابات', N(L.filter(function(x){ return x.has; }).length)],
                   ['موزَّعون على فرق', N(L.filter(function(x){ return x.crew; }).length)],
                   ['فرق', N(crews.length)]])
 
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="tkQ" data-tkq="1" value="' + esc(TK_Q) + '" placeholder="'
+      +     esc(t('ابحث باسم الفني أو فريقه أو مشرفه')) + '" dir="auto">'
+      + '</form>'
       + cardFlush('الفنيون — ' + nm(L.length),
           L.length
             ? table(['الفني','الوظيفة','الجوال','الفريق','المشرف','نقاط الشهر',''],
@@ -10606,7 +10742,8 @@ var EXP_SECS = [
   ['ev','سجل الأحداث — كما هو مصفّى',1],
   ['users','المستخدمون وأدوارهم',1],
   ['notif','الإشعارات وقنواتها',1],
-  ['appr','الاعتمادات — المقترح والقرار',1]
+  ['appr','الاعتمادات — المقترح والقرار',1],
+  ['ips','عناوين الشبكة',1]
 ];
 
 function expHtml(){
@@ -11980,7 +12117,9 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
       return n;
     };
     var col = function(z, label){
-      var L = itemsList().filter(function(x){ return x.z === z; });
+      var L = itemsList().filter(function(x){
+        return x.z === z && (!IT_Q || x.name.indexOf(IT_Q) > -1);
+      });
       return cardFlush(label + ' — ' + nm(L.length) + ' ' + t('قطعة'),
         L.length
           ? table(['القطعة','نقاط التركيب','السعر',''],
@@ -11999,6 +12138,10 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
     };
 
     return '<p class="lede" style="margin:0 0 16px">كلُّ حقلٍ هنا قابلٌ للتعديل: الاسمُ والمنطقةُ ونقاطُ التركيب والسعر — ويُحفَظ فورَ كتابته. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. والصنفُ المستعملُ في تركيبٍ قائمٍ لا يُحذَف.</p>'
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="itQ" data-itq="1" value="' + esc(IT_Q) + '" placeholder="'
+      +     esc(t('ابحث باسم القطعة')) + '" dir="auto">'
+      + '</form>'
       + '<div class="grid cols-2" style="align-items:start">'
       +   '<div>' + col('cor', t('الممر')) + '</div>'
       +   '<div>' + col('camp', t('المخيم')) + '</div>'
@@ -12162,7 +12305,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -12574,6 +12717,19 @@ function onDocClick(e){
   var nwa = e.target.closest('[data-nwa]'), nml = e.target.closest('[data-nmail]');
   if (nwa || nml){ logEvent('إرسال إشعار — ' + ((nwa||nml).getAttribute(nwa?'data-nwa':'data-nmail'))
       + ' · ' + (nwa ? 'واتساب' : 'بريد')); return; }
+  var cal = e.target.closest('[data-coall]');
+  if (cal){
+    var on2 = cal.getAttribute('data-coall') === '1';
+    CO_LIST.filter(function(c){ return !CO_Q || c.indexOf(CO_Q) > -1; })
+      .forEach(function(c){
+        var k = CO_SEL.indexOf(c);
+        if (on2 && k < 0) CO_SEL.push(c);
+        if (!on2 && k > -1) CO_SEL.splice(k, 1);
+      });
+    statBump(); render(1);
+    toast(t(on2 ? 'حُدِّد الكل' : 'أُزيل التحديد'));
+    return;
+  }
   var cmo = e.target.closest('[data-comode]');
   if (cmo){
     CO_MODE = cmo.getAttribute('data-comode') === '1';
@@ -13005,6 +13161,16 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-rci')){   raciSet(+el2.getAttribute('data-rci'),  { I:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsw')){ lessSet(+el2.getAttribute('data-lsw'), { w:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsa')){ lessSet(+el2.getAttribute('data-lsa'), { a:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-ipn')){ ipSet(el2.getAttribute('data-ipn'), 'net',   el2.value); return; }
+    if (el2.hasAttribute('data-ipr')){ ipSet(el2.getAttribute('data-ipr'), 'ipRtr', el2.value); return; }
+    if (el2.hasAttribute('data-ipd')){ ipSet(el2.getAttribute('data-ipd'), 'ipRdr', el2.value); return; }
+    if (el2.hasAttribute('data-ipc')){ ipSet(el2.getAttribute('data-ipc'), 'ipCam', el2.value); return; }
+    if (el2.hasAttribute('data-ipq')){
+      IP_Q = el2.value.trim(); render(1);
+      var iq = document.getElementById('ipQ');
+      if (iq){ iq.focus(); iq.setSelectionRange(iq.value.length, iq.value.length); }
+      return;
+    }
     if (el2.hasAttribute('data-tyl')){ typeSet(el2.getAttribute('data-tyl'), { l:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-tyi')){ typeSet(el2.getAttribute('data-tyi'), { i:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbn')){ jobSet(el2.getAttribute('data-jbn'), { n:el2.value.trim() }); return; }
@@ -13018,6 +13184,28 @@ document.addEventListener('input', function(e){
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
     itemRename(e.target.getAttribute('data-itname'), e.target.value);
+    return;
+  }
+  /* بحثُ القوائم الطويلة: كلٌّ يحفظ نصَّه ويُعيد التركيزَ إلى مكانه بعد
+     الرسم — وإلا خرج المؤشّرُ من الحقل عند كلِّ حرف. */
+  var Q_MAP = { 'data-tkq':'TK_Q', 'data-itq':'IT_Q', 'data-jbq':'JB_Q' };
+  var qk = Object.keys(Q_MAP).filter(function(a){
+    return e.target.hasAttribute && e.target.hasAttribute(a); })[0];
+  if (qk){
+    var id3 = e.target.id, v3 = e.target.value.trim();
+    if (Q_MAP[qk] === 'TK_Q') TK_Q = v3;
+    else if (Q_MAP[qk] === 'IT_Q') IT_Q = v3;
+    else JB_Q = v3;
+    render(1);
+    var el3 = document.getElementById(id3);
+    if (el3){ el3.focus(); el3.setSelectionRange(el3.value.length, el3.value.length); }
+    return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-coq')){
+    CO_Q = e.target.value.trim();
+    render(1);
+    var cq = document.getElementById('coQ');
+    if (cq){ cq.focus(); cq.setSelectionRange(cq.value.length, cq.value.length); }
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-evf')){
