@@ -126,7 +126,7 @@ check(w.siteStats().surveyed === seeded.recs, 'الإحصاءُ رأى المس�
     mine.byKey[k] = (mine.byKey[k] || 0) + 1;
     if (x.co)   mine.byCo[x.co]     = (mine.byCo[x.co] || 0) + 1;
     if (x.work) mine.byWork[x.work] = (mine.byWork[x.work] || 0) + 1;
-    if (S.recs[x.id]) mine.surveyed++;
+    if (w.svDone(S.recs[x.id])) mine.surveyed++;
     const r = S.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) mine.installed++;
   });
@@ -229,7 +229,7 @@ check(w.siteStats().surveyed === seeded.recs, 'الإحصاءُ رأى المس�
     /* المكتسَبُ يُعاد حسابُه مستقلًّا */
     let earned = 0;
     S.sites.forEach(x => {
-      if (S.recs[x.id]) earned += w.ptsSurvey(x);
+      if (w.svDone(S.recs[x.id])) earned += w.ptsSurvey(x);
       const r = S.inss[x.id];
       if (r && r.status === 'مُركّب' && r.approved) earned += w.ptsInstall(x);
     });

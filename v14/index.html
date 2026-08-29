@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.11
+      <i class="ver-tag">نسخة</i>V14.12
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,10 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة التاسعة: حالةُ الوصول ══ */
+ 'لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.':'The site was not reached — the reason in the notes is enough; no measurements or photos are required. It does not count as a completed visit.',
+ 'اكتب سببَ تعذُّر الوصول في الملاحظات':'Write the reason access failed in the notes',
+ 'سُجّل تعذُّرُ الوصول':'Failed access recorded',
  /* ══ الدفعة الثامنة: المعادلات ══ */
  'المؤشراتُ معروضةٌ بمنزلتين، والتقديراتُ (EAC وETC وVAC) محسوبةٌ بالدقة الكاملة — فقد يختلف حسابُك اليدويُّ عنها بريالات.':'Indices are shown to two decimals; the forecasts (EAC, ETC, VAC) are computed at full precision — so your manual figure may differ by a few riyals.',
  /* ══ الدفعة السابعة: حراسُ الأدوار ══ */
@@ -995,6 +999,10 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة التاسعة ══ */
+ 'لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.':'مقام تک نہیں پہنچا جا سکا — نوٹس میں وجہ کافی ہے؛ نہ پیمائش درکار ہے نہ تصویریں۔ یہ مکمل دورہ شمار نہیں ہوتا۔',
+ 'اكتب سببَ تعذُّر الوصول في الملاحظات':'نوٹس میں رسائی ناکام ہونے کی وجہ لکھیں',
+ 'سُجّل تعذُّرُ الوصول':'رسائی کی ناکامی درج ہو گئی',
  /* ══ الدفعة الثامنة ══ */
  'المؤشراتُ معروضةٌ بمنزلتين، والتقديراتُ (EAC وETC وVAC) محسوبةٌ بالدقة الكاملة — فقد يختلف حسابُك اليدويُّ عنها بريالات.':'اشاریے دو اعشاریہ تک دکھائے جاتے ہیں، اور تخمینے (EAC، ETC، VAC) مکمل درستی سے شمار ہوتے ہیں — اس لیے آپ کا دستی حساب چند ریال مختلف ہو سکتا ہے۔',
  /* ══ الدفعة السابعة ══ */
@@ -3759,7 +3767,7 @@ PAGE.assign = { m:'الطلبات والمسح', t:'توزيع الفرق',
       var p = k.split('|'), tot = S.byKey[k], sv = 0, asn = 0;
       STATE.sites.forEach(function(x){
         if (x.zone !== p[0] || x.type !== p[1]) return;
-        if (STATE.recs[x.id]) sv++;
+        if (svDone(STATE.recs[x.id])) sv++;
         if (asnOf(x.id)) asn++;
       });
       var d = CAT_DEF[p[1]] || { l:p[1], i:'\u25CF' };
@@ -3856,7 +3864,7 @@ function mineFiltered(){
 var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
 
 var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
-             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب',
+             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب', access:'تم الوصول',
              /* ما نقص عن القديم: القياساتُ والكمياتُ والتقدير */
              len_m:'', wid_m:'', hgt_m:'', fit:'', tents:'', gates:'',
              corr_w:'', kits:'', jam_pos:'', old_base:'', old_cable:'',
@@ -3868,8 +3876,54 @@ var SV_EXTRA_KEYS = ['len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kit
                      'power_note','n_ant','n_rdr','n_cam','n_sens','metal','chal_note',
                      'civil','equip','hours','crew_n'];
 
-var CHALS = ['لا يوجد كهرباء','الموقع مشغول','يحتاج تصريح',
-             'ارتفاع صعب','لا يوجد تغطية','يحتاج معدات'];
+/* التحدياتُ من الميدان لا من الخيال، ولكلِّ نوعِ موقعٍ تحدياتُه: العارضةُ
+   الحديديةُ شأنُ المخيم، والنفقُ والكوبري شأنُ الممر. وستُّ مفرداتٍ عامةٍ
+   تصلح لكلِّ شيءٍ ولا تصف شيئًا — والمكتبُ لا يقرّر بها. */
+var CH_CAMP = ['العارضة الحديدية ناقصة أو غير مكتملة',
+               'يوجد ديكور أو لافتات على العارضة',
+               'تصميم المدخل لا يسمح بالتركيب',
+               'المدخل مشترك مع مخيم آخر',
+               'المدخل غير واضح — لم يُستدل عليه',
+               'مبنى متعدد الأدوار (أبراج)',
+               'لا يوجد سطح تثبيت — يحتاج هيكلًا جديدًا',
+               'ارتفاع صعب الوصول',
+               'لا يوجد مسار كابل',
+               'عائق إنشائي',
+               'أخرى — اذكرها في وصف التحدي'];
+var CH_PATH = ['المسار داخل نفق',
+               'المسار تحت كوبري',
+               'المسار أعرض من طقم واحد',
+               'ازدحام دائم يمنع العمل نهارًا',
+               'لا يوجد سطح تثبيت — يحتاج عمودًا أو هيكلًا جديدًا',
+               'ارتفاع صعب الوصول',
+               'لا يوجد مسار كابل',
+               'عائق إنشائي',
+               'أخرى — اذكرها في وصف التحدي'];
+function chalsOf(x){
+  return ['لا توجد تحديات'].concat((x && x.type === 'مخيم') ? CH_CAMP : CH_PATH);
+}
+var CHALS = ['لا توجد تحديات'].concat(CH_CAMP);   /* للتوافق مع ما يقرؤها عامًّا */
+
+/* حالةُ الوصول أوّلُ سؤالٍ في الميدان: من مُنع من الدخول لا يُسأل عن المقاسات،
+   والموقعُ الذي لم يُوصَل إليه يبقى «لم يبدأ» بلا سببٍ إن لم يُسجَّل المنع. */
+var SV_ACCESS = ['تم الوصول','منع دخول','غير موجود','يحتاج تصريح'];
+
+/* تسعُ صورٍ كما في العامل: أولاها تُطابِق الموقعَ، وبقيتُها يُخطَّط بها. */
+var SV_PHOTOS = [
+  ['site','لقطة عامة تُظهر رقم الموقع',1],
+  ['mount','نقطة التركيب عن قرب',1],
+  ['power','مصدر الكهرباء',0],
+  ['cable','مسار الكابل',0],
+  ['north','الاتجاه شمال',0],
+  ['south','الاتجاه جنوب',0],
+  ['roof','الارتفاع / السقف',0],
+  ['block','العائق إن وُجد',0],
+  ['net','لقطة اختبار الشبكة',0]
+];
+
+/* الزيارةُ التي مُنع فيها الدخولُ ليست مسحًا: تُسجَّل ليُعرَف السببُ ويُتصرَّف،
+   ولا تُحتسب إنجازًا. وإلا صار المنعُ يرفع نسبةَ الإنجاز. */
+function svDone(r){ return !!r && (!r.access || r.access === 'تم الوصول'); }
 
 function formSite(){
   return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
@@ -4030,6 +4084,17 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
           + '<p class="hint">خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.</p>',
           btn('طلب تصويب','btn-quiet btn-sm',' data-fix="1"'))
 
+      + card('الوصول',
+          '<div class="chips" style="margin:0">'
+          + SV_ACCESS.map(function(a){
+              return '<button type="button" class="chip' + (FORM.access===a?' on':'')
+                + '" data-acc="' + esc(a) + '">' + esc(t(a)) + '</button>';
+            }).join('') + '</div>'
+          + (FORM.access === 'تم الوصول' ? ''
+             : '<p class="hint" style="margin:10px 0 0">'
+               + esc(t('لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.'))
+               + '</p>'))
+
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + '</label>'
@@ -4047,7 +4112,7 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
           + '</div>'
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + '</label>'
           + '<div class="chips" style="margin:6px 0 0">'
-          + CHALS.map(function(c){
+          + chalsOf(s).map(function(c){
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
                 + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div></div>'
@@ -4056,7 +4121,7 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
 
       + svExtra(s)
 
-      + photoCard(['site','صورة الموقع',1], ['mount','صورة نقطة التركيب',1])
+      + photoCard.apply(null, SV_PHOTOS)
 
       + card('', '<div class="actions">'
           + btn('حفظ المسح','btn-primary',' data-svsave="1"')
@@ -4183,14 +4248,20 @@ function shrink(file, max, q){
 function svSave(next){
   var s = formSite();
   if (!s) return;
-  if (!FORM.photos.site || !FORM.photos.mount){
+  var reached = FORM.access === 'تم الوصول';
+  if (!reached && !String(FORM.note || '').trim()){
+    toast(t('اكتب سببَ تعذُّر الوصول في الملاحظات'));
+    return;
+  }
+  if (reached && (!FORM.photos.site || !FORM.photos.mount)){
     toast(t('الصورتان مطلوبتان قبل الحفظ'));
     return;
   }
   var rec = {
     id:s.id, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
     mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
-    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos)
+    chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
+    access:FORM.access
   };
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   CORE.set('recs', s.id, rec);
@@ -4198,8 +4269,10 @@ function svSave(next){
     if (typeof photoQueue === 'function') photoQueue(s.id, k, FORM.photos[k].data);
     else CORE.set('photos', s.id + '_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
   });
-  logEvent('مسح موقع — ' + s.id);
-  toast(nm(1) + ' ' + t('مسحٌ حُفظ') + ' · ' + t('في الطابور') + ' ' + nm(CORE.pending()));
+  logEvent((reached ? 'مسح موقع — ' : 'تعذّر الوصول — ' + FORM.access + ' · ') + s.id);
+  toast(reached
+    ? (nm(1) + ' ' + t('مسحٌ حُفظ') + ' · ' + t('في الطابور') + ' ' + nm(CORE.pending()))
+    : t('سُجّل تعذُّرُ الوصول'));
   formReset();
   if (next){
     var un = STATE.sites.filter(function(x){ return !STATE.recs[x.id]; })[0];
@@ -4249,7 +4322,7 @@ function insSave(draft){
 function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
   FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
-  FORM.status = 'مُركّب';
+  FORM.status = 'مُركّب'; FORM.access = 'تم الوصول';
   SV_EXTRA_KEYS.forEach(function(k){ FORM[k] = ''; });
 }
 
@@ -4997,7 +5070,7 @@ function evm(){
 
   var earned = 0, done = 0;
   STATE.sites.forEach(function(x){
-    if (STATE.recs[x.id]){ earned += ptsSurvey(x); done++; }
+    if (svDone(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }
     var r = STATE.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) earned += ptsInstall(x);
   });
@@ -6477,7 +6550,7 @@ function siteStats(){
     by[k] = (by[k] || 0) + 1;
     if (x.co) co[x.co] = (co[x.co] || 0) + 1;
     if (x.work) wk[x.work] = (wk[x.work] || 0) + 1;
-    if (STATE.recs[x.id]) sv++;
+    if (svDone(STATE.recs[x.id])) sv++;
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب') ins++;
   }
@@ -9437,7 +9510,8 @@ document.addEventListener('click', function(e){
                 'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
                 'data-lasn','data-dsch','data-ddone','data-stab','data-asnmode','data-asnteam','data-asnsplit','data-apick','data-akind','data-drvsave','data-drvtest',
                 'data-locate','data-newsite','data-nsloc','data-nssave','data-ns','data-help',
-                'data-nsco','data-nscopick','data-nscoreq','data-nsphoto','data-nsq','data-tname','data-asnload','data-asnto',
+                'data-nsco','data-nscopick','data-nscoreq','data-nsphoto','data-nsq',
+                'data-acc','data-tname','data-asnload','data-asnto',
                 'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
                 'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
                 'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
@@ -9502,6 +9576,8 @@ document.addEventListener('click', function(e){
     else toast(t('لا نتائج'));
     return;
   }
+  var ac = e.target.closest('[data-acc]');
+  if (ac){ FORM.access = ac.getAttribute('data-acc'); render(1); return; }
   var ch = e.target.closest('[data-chal]');
   if (ch){
     var v = ch.getAttribute('data-chal'), i = FORM.chals.indexOf(v);
