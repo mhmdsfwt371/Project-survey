@@ -535,7 +535,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.33</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.34</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -3376,15 +3376,21 @@ PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين
   }};
 
 function mkAccount(i, quiet){
-  var x = TECHS[i];
+  /* القائمةُ الحيّة لا الثابتة: من أُضيف اليومَ يُنشَأ له حساب */
+  var x = techsList()[i];
   if (!x){ if (!quiet) toast(t('لا فنيَّ في هذا الموضع')); return 0; }
   if (x.has){ if (!quiet) toast(t('له حسابٌ بالفعل')); return 0; }
   x.u = userOf(x.n);
   x.has = 1;
-  var made = { n:x.n, u:x.u, p:pwGen(), by:STATE.meta.name || '', at:Date.now(), role:'فني' };
+  /* الدورُ يُكتَب بمفتاحه لا باسمه العربيّ: قواعدُ القاعدة تقارن
+     `role in ['tech','cprep','casm','cins']` — فحسابٌ دورُه «فني» تَرفض
+     القاعدةُ كلَّ ما يكتبه، ويقف الفنيُّ في الشمس ولا يعرف لماذا. */
+  var made = { n:x.n, u:x.u, p:pwGen(), by:STATE.meta.name || '', at:Date.now(),
+               role:'tech', roleAr:'فني', crew:x.crew || '', sup:x.sup || '' };
   TECH_MADE.push(made);
   /* كان يُعرَض ولا يُحفَظ — فيضيع الحسابُ مع أول إغلاق */
   CORE.set('accounts', x.u, made);
+  techSave();                      /* العلامةُ تبقى بعد الإغلاق */
   logEvent('حساب فنيّ — ' + x.n + ' · ' + x.u);
   if (!quiet) toast(x.u + ' \u00b7 ' + t('أُنشئ الحساب'));
   return 1;
@@ -11867,7 +11873,7 @@ function onDocClick(e){
   if (mk){ mkAccount(+mk.getAttribute('data-mkone')); render(1); return; }
   if (e.target.closest('[data-mkall]')){
     var made = 0;
-    TECHS.forEach(function(x, i){ if (!x.has) made += mkAccount(i, 1); });
+    techsList().forEach(function(x, i){ if (!x.has) made += mkAccount(i, 1); });
     toast(made ? (nm(made) + ' ' + t('حسابًا أُنشئ')) : t('كلُّ الفنيين لهم حسابات'));
     render(1); return;
   }
