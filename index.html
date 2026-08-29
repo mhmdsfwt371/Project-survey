@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.07
+      <i class="ver-tag">نسخة</i>V14.08
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,8 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الثامنة: المعادلات ══ */
+ 'المؤشراتُ معروضةٌ بمنزلتين، والتقديراتُ (EAC وETC وVAC) محسوبةٌ بالدقة الكاملة — فقد يختلف حسابُك اليدويُّ عنها بريالات.':'Indices are shown to two decimals; the forecasts (EAC, ETC, VAC) are computed at full precision — so your manual figure may differ by a few riyals.',
  /* ══ الدفعة السابعة: حراسُ الأدوار ══ */
  'تبديلُ الأدوار للمهندس وحده':'Switching roles is for the engineer only',
  'التصديرُ الشامل للمهندس وحده':'Full export is for the engineer only',
@@ -993,6 +995,8 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الثامنة ══ */
+ 'المؤشراتُ معروضةٌ بمنزلتين، والتقديراتُ (EAC وETC وVAC) محسوبةٌ بالدقة الكاملة — فقد يختلف حسابُك اليدويُّ عنها بريالات.':'اشاریے دو اعشاریہ تک دکھائے جاتے ہیں، اور تخمینے (EAC، ETC، VAC) مکمل درستی سے شمار ہوتے ہیں — اس لیے آپ کا دستی حساب چند ریال مختلف ہو سکتا ہے۔',
  /* ══ الدفعة السابعة ══ */
  'تبديلُ الأدوار للمهندس وحده':'کردار بدلنا صرف انجینئر کے لیے ہے',
  'التصديرُ الشامل للمهندس وحده':'مکمل برآمد صرف انجینئر کے لیے ہے',
@@ -5012,8 +5016,12 @@ function evm(){
   var VAC = BASE.bac - EAC;
   var TCPI = (BASE.bac - AC) ? ((BASE.bac - EV) / (BASE.bac - AC)) : 0;
 
+  /* المؤشراتُ تُعرَض بمنزلتين والتقديراتُ تُحسَب بالدقة الكاملة — فمن أعاد
+     الحسابَ من الرقم المعروض خالفَ التقدير. تُصدَّر الدقةُ الكاملةُ معها
+     باسمٍ صريحٍ فيُعاد الحسابُ عليها ويتطابق التقرير. */
   return { PV:PV, EV:EV, AC:AC, SV:SV, CV:CV,
            SPI:Math.round(SPI * 100) / 100, CPI:Math.round(CPI * 100) / 100,
+           SPIx:SPI, CPIx:CPI, TCPIx:TCPI,
            EAC:EAC, ETC:ETC, VAC:VAC, TCPI:Math.round(TCPI * 100) / 100,
            BAC:BASE.bac, days:D, doneSites:done };
 }
@@ -5054,6 +5062,10 @@ PAGE.evm = { m:'التخطيط', t:'خط الأساس والقيمة المكت�
                   ['نسبة الإنجاز', nm(v.BAC ? Math.round(v.EV/v.BAC*100) : 0) + '٪', 'acc'],
                   ['الحكم', t(V.t), V.c]])
 
+      /* من قرأ CPI مقرَّبًا ثم قسم عليه الميزانيةَ خالف EAC المعروض — فيُقال صراحةً */
+      + '<p class="hint" style="margin:-6px 0 14px">'
+      + esc(t('المؤشراتُ معروضةٌ بمنزلتين، والتقديراتُ (EAC وETC وVAC) محسوبةٌ بالدقة الكاملة — فقد يختلف حسابُك اليدويُّ عنها بريالات.'))
+      + '</p>'
       + card('خط الأساس — النسخة ' + nm(BASE.ver),
           table(['البند','خط الأساس','الآن','الفرق'], [
             ['النطاق', N(BASE.scope), N(siteStats().total),

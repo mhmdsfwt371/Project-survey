@@ -25,6 +25,8 @@ jobs:
         run: node scripts/audit-data.mjs
       - name: جرد الكتابة — كل وعدٍ يكتب أو يقول لماذا
         run: node scripts/audit-writes.mjs
+      - name: جرد المعادلات — كل رقم يُحسب مرتين
+        run: node scripts/audit-calc.mjs
       - name: جرد الأدوار — كلٌّ يرى ما له ولا يرى ما ليس له
         run: node scripts/audit-roles.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
