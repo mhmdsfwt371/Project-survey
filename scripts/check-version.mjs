@@ -318,6 +318,17 @@ try {
   else ok.push('لا عنصر يحمل كلاسَين مربوطَين بمعالجَين ✓');
 } catch (e) { fail.push('حارس الكلاسات تعثّر: ' + String(e && e.message).slice(0, 100)); }
 
+/* ── جردا البيانات والكتابة: الرقمُ الخاطئ أسوأ من زرٍّ مفقود ── */
+[['scripts/audit-data.mjs',  'جردُ البيانات'],
+ ['scripts/audit-writes.mjs','جردُ الكتابة']].forEach(([f, name]) => {
+  try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
+  catch (e) {
+    const out = String((e.stdout || '') + (e.stderr || '')).split('\n')
+      .filter(l => l.includes('✗')).slice(0, 3).join(' | ');
+    fail.push(name + ' فشل — ' + (out || ('شغّل: node ' + f)));
+  }
+});
+
 /* ── دفترُ المطابقة: لا قدرةَ في القديم بلا مقابلٍ أو حكم ── */
 try {
   execSync('node scripts/parity.mjs', { stdio:'pipe' });

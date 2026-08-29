@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.05
+      <i class="ver-tag">نسخة</i>V14.06
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,12 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة السادسة: الوعودُ الصامتة ══ */
+ 'لا فنيَّ في هذا الموضع':'No technician at this position',
+ 'له حسابٌ بالفعل':'Already has an account',
+ 'أُنشئ الحساب':'Account created',
+ 'حسابًا أُنشئ':'account(s) created',
+ 'كلُّ الفنيين لهم حسابات':'Every technician already has an account',
  /* ══ الدفعة الخامسة: نموذج المسح كاملًا ══ */
  'من ملفات المشروع — اقرأها فقط، واطلب تصويبًا إن وجدت غيرها في الموقع.':'From the project files — read them only, and request a correction if you find otherwise on site.',
  'وصف التحدي بالتفصيل':'Detailed description of the obstacle',
@@ -984,6 +990,12 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة السادسة ══ */
+ 'لا فنيَّ في هذا الموضع':'اس جگہ کوئی ٹیکنیشن نہیں',
+ 'له حسابٌ بالفعل':'اس کا اکاؤنٹ پہلے سے موجود ہے',
+ 'أُنشئ الحساب':'اکاؤنٹ بن گیا',
+ 'حسابًا أُنشئ':'اکاؤنٹ بنے',
+ 'كلُّ الفنيين لهم حسابات':'ہر ٹیکنیشن کا اکاؤنٹ پہلے سے موجود ہے',
  /* ══ الدفعة الخامسة ══ */
  'من ملفات المشروع — اقرأها فقط، واطلب تصويبًا إن وجدت غيرها في الموقع.':'منصوبے کی فائلوں سے — صرف پڑھیں، اور اگر موقع پر مختلف پائیں تو درستی کی درخواست دیں۔',
  'وصف التحدي بالتفصيل':'رکاوٹ کی تفصیلی وضاحت',
@@ -2552,7 +2564,7 @@ function teamRm(i){
 
 function teamEven(){
   var tm = teamOf(TEAM_CUR), n = tm.members.length;
-  if (!n) return;
+  if (!n){ toast(t('لا أعضاءَ في هذا الفريق')); return; }
   var base = Math.floor(100 / n), rest = 100 - base * n;
   tm.members.forEach(function(m, i){ m.share = base + (i < rest ? 1 : 0); });
   CORE.dirty('teams', tm.id, tm);
@@ -2564,7 +2576,7 @@ function teamByRole(){
   var tm = teamOf(TEAM_CUR);
   var raw = tm.members.map(function(m){ return (TEAM_ROLE[m.role] || TEAM_ROLE.tech).def; });
   var sum = raw.reduce(function(a,b){ return a + b; }, 0);
-  if (!sum) return;
+  if (!sum){ toast(t('لا أعضاءَ في هذا الفريق')); return; }
   var acc = 0;
   tm.members.forEach(function(m, i){
     var v = (i === tm.members.length - 1) ? (100 - acc) : Math.round(raw[i] / sum * 100);
@@ -2818,12 +2830,19 @@ PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين
       + '<p class="hint">الفني يرث «مشرف» ويعمل تحته — فقواعدُ Firebase تسمح له بما أُسند إليه وحده، وترفض ما عداه ولو التفّ على الواجهة.</p>';
   }};
 
-function mkAccount(i){
+function mkAccount(i, quiet){
   var x = TECHS[i];
-  if (!x || x.has) return;
+  if (!x){ if (!quiet) toast(t('لا فنيَّ في هذا الموضع')); return 0; }
+  if (x.has){ if (!quiet) toast(t('له حسابٌ بالفعل')); return 0; }
   x.u = userOf(x.n);
   x.has = 1;
-  TECH_MADE.push({ n:x.n, u:x.u, p:pwGen() });
+  var made = { n:x.n, u:x.u, p:pwGen(), by:STATE.meta.name || '', at:Date.now(), role:'فني' };
+  TECH_MADE.push(made);
+  /* كان يُعرَض ولا يُحفَظ — فيضيع الحسابُ مع أول إغلاق */
+  CORE.set('accounts', x.u, made);
+  logEvent('حساب فنيّ — ' + x.n + ' · ' + x.u);
+  if (!quiet) toast(x.u + ' \u00b7 ' + t('أُنشئ الحساب'));
+  return 1;
 }
 
 /* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
@@ -7651,7 +7670,10 @@ var CO_SEL = [];
 var CO_LIST = [];
 function coFill(){
   var seen = {}; CO_LIST.length = 0;
-  [].concat(SITES_RAW.co || [], SITES_RAW.dm || []).forEach(function(c){
+  /* والأسماءُ التي تحملها السجلاتُ نفسها: أحدَ عشرَ اسمًا في المواقع لم تكن
+     في القائمتين، فكان الميدانُ يُمنَع من إعادة اختيار شركةٍ قائمةٍ في سجلّه. */
+  var onRows = (SITES_RAW.g || []).concat(SITES_RAW.p || []).map(function(r){ return r[9]; });
+  [].concat(SITES_RAW.co || [], SITES_RAW.dm || [], onRows).forEach(function(c){
     c = String(c || '').trim();
     if (c && !seen[c]){ seen[c] = 1; CO_LIST.push(c); }
   });
@@ -9472,7 +9494,9 @@ document.addEventListener('click', function(e){
   var mk = e.target.closest('[data-mkone]');
   if (mk){ mkAccount(+mk.getAttribute('data-mkone')); render(1); return; }
   if (e.target.closest('[data-mkall]')){
-    TECHS.forEach(function(x, i){ if (!x.has) mkAccount(i); });
+    var made = 0;
+    TECHS.forEach(function(x, i){ if (!x.has) made += mkAccount(i, 1); });
+    toast(made ? (nm(made) + ' ' + t('حسابًا أُنشئ')) : t('كلُّ الفنيين لهم حسابات'));
     render(1); return;
   }
 
