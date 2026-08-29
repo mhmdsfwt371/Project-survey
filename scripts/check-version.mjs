@@ -244,22 +244,31 @@ try {
 } catch(e){ fail.push('tools/prober.html: خطأ صيغة — ' + String(e.message||'').slice(0,120)); }
 
 /* ── حارس الترجمة ─────────────────────────────────────────────────────────
-   V14 يترجم بدالةٍ واحدة: `t('نص')`. فكلُّ نصٍّ عربيٍّ حرفيٍّ يمرّ بها يجب أن
-   يكون له مفتاحٌ في القاموسين — وإلا رجعت الدالةُ النصَّ العربيَّ كما هو،
-   فيقرأ مراقبُ الوزارة عربيًّا وهو على الإنجليزية ولا يشكو أحد.
-   والحارسُ سقّاطةٌ لا سدّ: يسجّل الفجوةَ القائمة في docs/i18n-baseline.json
-   ويفشل إن كبرت — فلا يُمنع العملُ اليومَ ولا يُضاف نصٌّ بلا ترجمةٍ غدًا. */
+   V14 يترجم بدالةٍ واحدة: `t('نص')`، ومطابقتُها حرفيةٌ تمامًا — `d[s]` لا غير.
+   فالحارسُ يطابق حرفيًّا مثلَها: التطبيعُ هنا كذبٌ رحيم، يقول «مترجَم» عن نصٍّ
+   يفشل بحثُه وقتَ التشغيل لفارق حركةٍ واحدة.
+   والقاموسُ قاموسان: D وD2 يُدمَجان وقتَ التشغيل — وقراءةُ الأولِ وحده
+   أنتجت في أول قياسٍ رقمًا مضخَّمًا: ثلاثمئةٍ وثمانية، والحقيقةُ مئةٌ واثنتان
+   وعشرون. فمن قرأ نصفَ المصدر قاسَ نصفَ الحقيقة.
+   والحارسُ سقّاطةٌ لا سدّ: يسجّل الفجوةَ في docs/i18n-baseline.json ويفشل إن كبرت. */
 try {
   const src = readFileSync('index.html', 'utf8');
   const AR  = /[\u0600-\u06FF]/;
-  const nrm = t => String(t).normalize('NFC')
-    .replace(/[\u064B-\u065F\u0670\u0640]/g, '').replace(/\s+/g, ' ').trim();
+  const KEYS = /'((?:[^'\\]|\\.)*)'\s*:\s*'/g;
 
-  const di = src.indexOf('var D = {');
-  const du = src.indexOf('\n ur:', di) > 0 ? src.indexOf('\n ur:', di) : src.indexOf('\nur:', di);
-  const de = src.indexOf('\n};', du);
-  const keys = seg => new Set([...seg.matchAll(/'((?:[^'\\]|\\.)*)'\s*:\s*'/g)].map(m => nrm(m[1])));
-  const EN = keys(src.slice(di, du)), UR = keys(src.slice(du, de));
+  const dict = name => {
+    const i = src.indexOf('var ' + name + ' = {');
+    if (i < 0) return [new Set(), new Set()];
+    const seg = src.slice(i);
+    const mu = /\n\s*ur\s*:\s*\{/.exec(seg);
+    if (!mu) return [new Set(), new Set()];
+    const end = /\n\}\n\};/.exec(seg.slice(mu.index));
+    const grab = x => new Set([...x.matchAll(KEYS)].map(m => m[1]));
+    return [grab(seg.slice(0, mu.index)),
+            grab(seg.slice(mu.index, mu.index + (end ? end.index : seg.length)))];
+  };
+  const [e1, u1] = dict('D'), [e2, u2] = dict('D2');
+  const EN = new Set([...e1, ...e2]), UR = new Set([...u1, ...u2]);
 
   if (counted(EN.size, 'القاموس الإنجليزي', 'تعذّر العثور على var D')) {
     const onlyEn = [...EN].filter(k => !UR.has(k));
@@ -268,27 +277,24 @@ try {
       fail.push(`القاموسان غير متطابقين: ${onlyEn.length} في الإنجليزي وحده · ${onlyUr.length} في الأردي وحده`);
 
     const lits = [...new Set([...src.matchAll(/\bt\(\s*'((?:[^'\\]|\\.)*)'\s*\)/g)]
-      .map(m => nrm(m[1])).filter(x => AR.test(x)))];
+      .map(m => m[1]).filter(x => AR.test(x)))];
     counted(lits.length, 'نداءات t()', 'لم يُعثر على نصٍّ عربيٍّ داخل t()');
     const miss = lits.filter(k => !EN.has(k));
 
     const BL = 'docs/i18n-baseline.json';
+    const write = n => writeFileSync2(BL, JSON.stringify({ missing: n, note:
+      'سقف الفجوة. يهبط ولا يصعد — كل دفعةٍ تترجم تُنقصه، وأي نصٍّ جديدٍ بلا ترجمة يفشّل الدفعة.' }, null, 2) + '\n');
     let base = null;
     try { base = JSON.parse(readFileSync(BL, 'utf8')).missing; } catch {}
-    if (base === null || base === undefined) {
-      writeFileSync2(BL, JSON.stringify({ missing: miss.length, note:
-        'سقف الفجوة. يهبط ولا يصعد — كل دفعةٍ تترجم تُنقصه، وأي نصٍّ جديدٍ بلا ترجمة يفشّل الدفعة.' }, null, 2) + '\n');
-      ok.push(`سقف الترجمة سُجّل لأول مرة: ${miss.length} نصًّا بلا مفتاح`);
-    } else if (miss.length > base) {
+    if (base === null || base === undefined) { write(miss.length); ok.push(`سقف الترجمة سُجّل: ${miss.length}`); }
+    else if (miss.length > base)
       fail.push(`الفجوةُ كبرت: ${miss.length} نصًّا بلا ترجمةٍ والسقفُ ${base} — ` +
-        'ترجم الجديدَ أو أنقص السقف: ' + miss.slice(0, 4).join(' · '));
-    } else {
-      if (miss.length < base)
-        writeFileSync2(BL, JSON.stringify({ missing: miss.length, note:
-          'سقف الفجوة. يهبط ولا يصعد — كل دفعةٍ تترجم تُنقصه، وأي نصٍّ جديدٍ بلا ترجمة يفشّل الدفعة.' }, null, 2) + '\n');
+        'ترجم الجديدَ: ' + miss.slice(0, 4).join(' · '));
+    else {
+      if (miss.length < base) write(miss.length);
       ok.push(miss.length === 0
-        ? `الترجمة كاملة: ${lits.length} نصًّا في القاموسين (${EN.size} مفتاحًا) ✓`
-        : `الترجمة: ${lits.length - miss.length}/${lits.length} مترجَمًا · الفجوة ${miss.length} والسقف ${base} ✓`);
+        ? `الترجمة كاملة: ${lits.length} نصًّا كلُّها في القاموسين (${EN.size} مفتاحًا لكلِّ لغة) ✓`
+        : `الترجمة: ${lits.length - miss.length}/${lits.length} · الفجوة ${miss.length} والسقف ${base} ✓`);
     }
   }
 } catch (e) { fail.push('حارس الترجمة تعثّر: ' + String(e && e.message).slice(0, 120)); }
