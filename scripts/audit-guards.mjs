@@ -110,6 +110,9 @@ const MUT = [
     b:'  jobSave();' },
   { n:'دالةٌ عامةٌ تُعرَّف مرتين', g:'scripts/audit-data.mjs',
     a:'function techNames(){', b:'function techNames(){}\nfunction techNames(){' },
+  { n:'لوحٌ يفقد رأسَه الثابتَ فيُمرَّر كلُّه', g:'scripts/audit-data.mjs',
+    a:'\'<div class="pop-head">\'\n    +   \'<div style="min-width:0"><div class="pid"',
+    b:'\'<div>\'\n    +   \'<div style="min-width:0"><div class="pid"' },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];

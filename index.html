@@ -542,13 +542,25 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .chip-pair .chip-caret{border-start-start-radius:0;border-end-start-radius:0;
   padding-inline:10px;min-width:36px;font-size:12px}
 
-.copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78));
-  display:flex;flex-direction:column;overflow:hidden;padding:0}
-.copop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);flex:0 0 auto}
-.copop-list{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;padding:4px 15px;min-height:80px}
-.copop-foot{padding:12px 15px 14px;border-top:1px solid var(--line);flex:0 0 auto;
-  background:var(--card)}
+/* ═══ بنيةُ اللوحات كلِّها ═══
+   رأسٌ ثابتٌ فيه العنوانُ والإغلاق، وجسمٌ يُمرَّر وحدَه، وذيلٌ ثابتٌ فيه الفعل.
+   وكان كلُّ لوحٍ يُمرَّر كلُّه — فمن نزل في قائمةٍ طويلةٍ غاب عنه زرُّ الإغلاق
+   في الأعلى وزرُّ الحفظ في الأسفل. والقاعدةُ تُعمَّم بالصنف لا تُكتَب في كلِّ
+   لوحٍ يدًا: ما يُكتَب مرةً في كلِّ مكانٍ يُنسى في مكان. */
+.pop{display:flex;flex-direction:column;overflow:hidden;padding:0;
+  max-height:min(84vh, calc(var(--vh,1vh) * 84))}
+.pop > .pop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);
+  flex:0 0 auto;background:var(--card);display:flex;
+  justify-content:space-between;align-items:flex-start;gap:10px}
+.pop > .pop-head h3{margin:0;color:var(--ink)}
+.pop > .pop-body{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:13px 15px;min-height:60px}
+.pop > .pop-foot{padding:12px 15px 14px;border-top:1px solid var(--line);
+  flex:0 0 auto;background:var(--card)}
+
+.copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78))}
+/* اللوحُ يرث البنيةَ العامة — وله عرضٌ وارتفاعٌ خاصّان فقط */
+.copop > .pop-body{padding:4px 15px;min-height:80px}
 .coRow{display:flex;gap:9px;align-items:center;padding:9px 2px;
   border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer;min-height:42px}
 .coRow:last-child{border-bottom:0}
@@ -624,7 +636,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.48</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.49</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -4287,12 +4299,13 @@ var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team' };
 
 function asnPickHtml(){
   return '<div class="pop" id="asnPick" style="width:min(420px,92vw)">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">' + esc(t('ما الذي تُسنده؟')) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">' + esc(t('اختر النوعَ فتُفتَح طبقتُه ويُضبَط من يستلمه.')) + '</p></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-apick="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
+    + '<div class="pop-body">'
     + '<div class="list" style="margin:14px 0 0;border:1px solid var(--line);border-radius:var(--radius-sm)">'
     + Object.keys(LAYERS).map(function(k){
         var L = LAYERS[k], S = layerStats(k);
@@ -4310,7 +4323,7 @@ function asnPickHtml(){
       }).join('')
     + '</div>'
     + '<p class="hint">لا تظهر في كلِّ طبقةٍ إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما رُكِّب.</p>'
-    + '</div>';
+    + '</div></div>';
 }
 
 /* اختيارُ النوع: تُفتَح طبقتُه، ويُضبَط من يستلمه، ويُبدأ التحديد */
@@ -4349,12 +4362,13 @@ function asnSheet(){
   var have = asnOfTech(ASN_TO, L.kind).length;
 
   return '<div class="pop" id="asnPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">' + (L.i||'') + ' ' + esc(t('إسناد')) + ' — ' + esc(t(L.n)) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">' + esc(t(L.d || '')) + '</p></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-asn="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
+    + '<div class="pop-body">'
 
     + '<div class="inline-form" style="margin:12px 0 10px">'
     +   '<input type="search" id="asnQ" value="' + esc(SITE_Q) + '" placeholder="'
@@ -4468,7 +4482,7 @@ function asnSheet(){
     +   btn('إلغاء','btn-secondary',' data-asn="0"')
     + '</div>'
     + '<p class="hint">المُسنَدُ لا يُحدَّد ثانيةً — فلا يُشتّت فنيّان على نقطةٍ واحدة.</p>'
-    + '</div>';
+    + '</div></div>';
 }
 
 function curTech(){
@@ -7358,18 +7372,19 @@ function helpHtml(){
   var h = helpOf(CUR);
   if (!h || !p) return '';
   return '<div class="pop" id="helpPop" style="width:min(520px,92vw)">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">' + esc(t(p.t)) + '</h3>'
     +   '<div class="pid" style="margin-top:3px">' + esc(t(p.m)) + '</div></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-help="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
+    + '<div class="pop-body">'
     + '<div class="help-rows">'
     +   '<div><span class="hk">' + esc(t('ماذا تفعل')) + '</span><p>' + esc(t(h.w)) + '</p></div>'
     +   '<div><span class="hk">' + esc(t('من أين تقرأ')) + '</span><p>' + esc(t(h.f)) + '</p></div>'
     +   '<div><span class="hk">' + esc(t('علامَ تُبنى')) + '</span><p>' + esc(t(h.o)) + '</p></div>'
     +   '<div><span class="hk">' + esc(t('متى تكتمل')) + '</span><p>' + esc(t(h.d)) + '</p></div>'
-    + '</div>'
+    + '</div></div>'
     + '<div class="actions" style="margin-top:13px">'
     +   btn('📘 ' + t('دليل العمليات'),'btn-secondary btn-sm',' data-p="sop"')
     +   btn('🗺 ' + t('خريطة التغطية'),'btn-secondary btn-sm',' data-p="cover"')
@@ -7421,13 +7436,14 @@ function popHtml(){
   }
 
   return '<div class="pop" id="pkPop">'
-    + '<div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">'
+    + '<div class="pop-head">'
     +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">'
     +     esc(s.id) + '</div>'
     +   '<h3 style="margin-top:3px">' + esc(s.name) + '</h3></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
+    + '<div class="pop-body">'
 
     + '<div style="color:' + d.c + ';font-weight:800;font-size:12px;margin:6px 0 2px">'
     +   d.i + ' ' + esc(t(d.l)) + ' — ' + esc(s.zone) + '</div>'
@@ -9211,7 +9227,7 @@ function coFiltHtml(){
   var shown = CO_LIST.filter(function(c){ return !CO_Q || c.indexOf(CO_Q) > -1; });
   var allOn = shown.length > 0 && shown.every(function(c){ return CO_SEL.indexOf(c) > -1; });
   return '<div class="pop copop" id="coFilt">'
-    + '<div class="copop-head">'
+    + '<div class="pop-head">'
     +   '<div style="display:flex;justify-content:space-between;align-items:center;gap:10px">'
     +     '<h3 style="color:var(--ink);margin:0">' + esc(t('اختر الشركات')) + '</h3>'
     +     '<button type="button" class="btn btn-quiet btn-sm" data-co="0" aria-label="'
@@ -9221,7 +9237,7 @@ function coFiltHtml(){
     +     esc(t('ابحث باسم الشركة')) + '" spellcheck="false" style="margin:11px 0 0">'
     + '</div>'
 
-    + '<div class="copop-list" id="coL">'
+    + '<div class="pop-body" id="coL">'
     +   (shown.length
         ? shown.map(function(c){
             var on = CO_SEL.indexOf(c) > -1;
@@ -9234,7 +9250,7 @@ function coFiltHtml(){
           + esc(t('لا شركةَ بهذا الاسم.')) + '</p>')
     + '</div>'
 
-    + '<div class="copop-foot">'
+    + '<div class="pop-foot">'
     +   '<div class="actions" style="margin:0">'
     +     btn(allOn ? 'أزِل تحديد الكل' : 'حدّد الكل', 'btn-secondary btn-sm',
               ' data-coall="' + (allOn ? '0' : '1') + '"')
@@ -10770,11 +10786,12 @@ var EXP_SECS = [
 
 function expHtml(){
   return '<div class="pop" id="expPop" style="width:min(430px,92vw);max-height:82vh;overflow:auto">'
-    + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
+    + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">'+esc(t('تصدير تقرير اللوحة'))+'</h3>'
     +   '<p class="hint" style="margin:2px 0 0">'+esc(t('اختر الأقسام التي تريدها في التقرير'))+'</p></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-exp="0" aria-label="'+esc(t('إغلاق'))+'">✕</button>'
     + '</div>'
+    + '<div class="pop-body">'
     + '<div class="actions" style="margin:12px 0">'
     +   btn('تحديد الكل','btn-secondary btn-sm',' data-expall="1"')
     +   btn('إلغاء الكل','btn-secondary btn-sm',' data-expall="0"')
@@ -10799,7 +10816,7 @@ function expHtml(){
     +   '<select><option>'+esc(t('مضمّنة'))+'</option><option>'+esc(t('بدونها'))+'</option></select></div>'
     + '</div>'
     + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
-    +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div>'
+    +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div></div>'
     + '<p class="hint" style="font-size:11.5px">'
     +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.'))
     + '</p></div>';
