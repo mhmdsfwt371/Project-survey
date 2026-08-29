@@ -540,7 +540,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.41</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.42</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -731,6 +731,7 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'مُسح سجلُّ الأعطال':'Fault log cleared',
  'أُخرِج من المرحلة':'Removed from the stage',
  'نقاط هذه المرحلة':'Points for this stage',
  'عملًا مسجَّلًا — لا يُحذَف':'He has',
@@ -1230,6 +1231,7 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'مُسح سجلُّ الأعطال':'خرابیوں کا ریکارڈ صاف ہو گیا',
  'أُخرِج من المرحلة':'مرحلے سے نکال دیا گیا',
  'نقاط هذه المرحلة':'اس مرحلے کے پوائنٹس',
  'عملًا مسجَّلًا — لا يُحذَف':'اس کے پاس',
@@ -2261,8 +2263,11 @@ var FB = {
     };
     return Promise.all(Object.keys(MAP).map(function(c){
       return FB.db.collection(c).limit(2000).get().then(function(snap){
-        snap.forEach(function(doc){ try{ MAP[c](doc.id, doc.data()); }catch(e){} });
-      }).catch(function(){});
+        snap.forEach(function(doc){
+          try { MAP[c](doc.id, doc.data()); }
+          catch (e){ softErr('تحويل سجل قديم — ' + c, e); }
+        });
+      }).catch(function(e){ softErr('قراءة المجموعة القديمة — ' + c, e); });
     })).then(function(){
       if (got){
         statBump();
@@ -2311,7 +2316,7 @@ var FB = {
           if (!STATE.users) STATE.users = {};
           sn.forEach(function(d){ STATE.users[d.id] = d.data(); });
           FB.readCount = (FB.readCount || 0) + sn.size;
-        }).catch(function(){});
+        }).catch(function(e){ softErr('سحب المستخدمين', e, 'تعذّر سحبُ الحسابات — الشاشةُ قد تظهر ناقصة'); });
       }
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
       return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
@@ -2319,7 +2324,7 @@ var FB = {
           if (!STATE.stats) STATE.stats = {};
           sn.forEach(function(d){ STATE.stats[d.id] = d.data(); });
           FB.readCount = (FB.readCount || 0) + sn.size;
-        }).catch(function(){});
+        }).catch(function(e){ softErr('سحب اللقطات اليومية', e, 'تعذّر سحبُ اللقطات — اللوحةُ التاريخيةُ قد تظهر خاليةً'); });
     }).then(function(){
       return FB.db.collection('settings').doc('points').get();
     }).then(function(doc){
@@ -2407,6 +2412,47 @@ function statsHistory(days){
 }
 
 /* ── مؤشّر المزامنة في الشريط العلوي ── */
+/* ═══ الأعطالُ الصامتة ═══
+   سبعةٌ وثلاثون `catch` فارغةً في الملف. أكثرُها فحصُ توفُّرٍ مشروع: تخزينٌ
+   محليٌّ يُمنَع في وضعٍ خاص، أو رسمٌ على لوحةٍ لا يدعمها المتصفّح — ولا حيلةَ
+   للمستخدم فيها.
+
+   لكن سبعةً منها كانت تبتلع أعطالًا تُغيّر ما يراه: سحبُ المستخدمين يفشل
+   فتظهر الشاشةُ فارغةً بلا سبب، واللقطاتُ لا تصل فتُعرَض اللوحةُ التاريخيةُ
+   خاليةً، والاستماعُ الحيُّ يموت فلا تصل المهامُّ الجديدة.
+
+   وما لا يُقال لا يُصلَح. فصار يُسجَّل هنا محليًّا — لا يُرفَع ولا يُزعِج —
+   ويُقرأ في شاشة المزامنة عند السؤال «لماذا لا تصل البيانات؟». وما يستطيع
+   المستخدمُ فعلَ شيءٍ حياله يُقال له مرةً واحدةً لا كلَّ مرة. */
+var SOFT_ERRS = [], SOFT_SAID = {};
+function softErr(where, e, tell){
+  var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
+  SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
+  if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
+  try { console.warn('[نُسُك] ' + where + ': ' + msg); } catch (e2){}
+  if (tell && !SOFT_SAID[where]){
+    SOFT_SAID[where] = 1;
+    toast(t(tell));
+  }
+}
+
+/* السجلُّ يُعرَض حيث يُسأَل عنه: من فتح «المزامنة والتعارض» يسأل لماذا لا
+   تصل البيانات — فيجد الجواب مكتوبًا لا يخمّنه. */
+function softErrCard(){
+  if (!SOFT_ERRS.length) return '';
+  return alertBox('warn', 'أعطالٌ صامتةٌ وقعت — لم تُزعج العملَ لكنها قد تفسّر نقصًا فيما تراه.')
+    + cardFlush('ما سقط بلا صوت — ' + nm(SOFT_ERRS.length),
+        table(['الوقت','الموضع','السبب'],
+          SOFT_ERRS.slice(0, 30).map(function(x){
+            return ['<span class="num">'
+                    + esc(new Date(x.at).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }))
+                    + '</span>',
+                    esc(t(x.where)),
+                    '<span class="hint" style="margin:0">' + esc(x.msg || '—') + '</span>'];
+          })),
+        btn('امسح السجل','btn-quiet btn-sm',' data-serrclr="1"'));
+}
+
 function syncBadge(){
   var el = document.getElementById('syncMeta');
   if (!el) return;
@@ -5071,7 +5117,12 @@ function posWatch(){
     POS_WATCH = navigator.geolocation.watchPosition(function(p){
       MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
       if (CUR === 'sites') render(1);
-    }, function(){}, { enableHighAccuracy:false, maximumAge:60000, timeout:15000 });
+    }, function(e){
+      /* الرفضُ أو التعذُّرُ صامتًا يجعل الزرَّ يبدو معطوبًا وهو يعمل */
+      softErr('تحديد الموقع', e,
+        (e && e.code === 1) ? 'مُنع تحديدُ الموقع — اسمح به من إعدادات المتصفّح'
+                            : 'تعذّر تحديدُ الموقع — جرّب في مكانٍ مكشوف');
+    }, { enableHighAccuracy:false, maximumAge:60000, timeout:15000 });
   }catch(e){}
 }
 
@@ -7522,7 +7573,11 @@ function pullDelta(){
         STATE[c][doc.id] = doc.data();
         got++;
       });
-    }).catch(function(){});
+    }).catch(function(e){
+      /* بلا هذا يقف السحبُ صامتًا: المكتبُ يفتح فلا يجد ما رفعه الميدانُ
+         ولا يعرف أن السحبَ سقط أصلًا. */
+      softErr('سحب ' + c, e, 'تعذّر سحبُ بعض البيانات — جرّب المزامنةَ يدويًّا');
+    });
   })).then(function(){
     STATE.meta.lastSync = Date.now();
     if (got){ statBump(); CORE.saveSoon(); }
@@ -7544,7 +7599,10 @@ function liveWatch(){
         });
         statBump();
         if (['map','sites','mine','mywork'].indexOf(CUR) > -1) render();
-      }, function(){}));
+      }, function(e){
+        /* الاستماعُ إن مات لم تصل المهامُّ الجديدةُ ولا شيءَ يقول */
+        softErr('الاستماع الحيّ', e, 'انقطع الاستماعُ الحيّ — المهامُّ الجديدةُ قد تتأخّر');
+      }));
   }catch(e){}
 }
 
@@ -10852,7 +10910,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
 
 PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
   body:function(){
-    return stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
+    return softErrCard() + stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
                   ['حُلّت اليوم','٠','ok'], ['فشل رفع','٠','bad']]);
   }};
 
@@ -12140,6 +12198,9 @@ function onDocClick(e){
     USR_EDIT = ''; usrSet(id2, patch); return;
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
+  if (e.target.closest('[data-serrclr]')){
+    SOFT_ERRS = []; SOFT_SAID = {}; toast(t('مُسح سجلُّ الأعطال')); render(1); return;
+  }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   if (e.target.closest('[data-tkadd]')){ techAdd(); return; }
   if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
@@ -12804,7 +12865,10 @@ if (window.visualViewport){
   CORE.loadLocal().then(function(){
     if (!document.getElementById('login')) render();   /* إن كان دخل بالفعل */
     syncBadge();
-  }).catch(function(){});
+  }).catch(function(e){
+    /* تعذُّرُ قراءة المحليِّ يعني بدءًا من فراغٍ ومعه ما لم يُرفَع بعد */
+    softErr('قراءة البيانات المحلية', e, 'تعذّرت قراءةُ البيانات المحفوظة على الجهاز');
+  });
 })();
 
 (function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
