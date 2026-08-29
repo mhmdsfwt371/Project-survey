@@ -202,6 +202,10 @@ input[type="number"]{max-width:140px}
 .btn-primary{background:var(--brand);color:var(--brand-ink)}
 .btn-secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}
 .btn-secondary:hover{background:var(--surface-2)}
+.btn-light{background:#F4F6F8;border-color:#D6DDE4;color:#14181D;font-weight:600}
+.btn-light:hover{background:#E8EDF2}
+[data-theme="dark"] .btn-light{background:#EDF1F5;border-color:#C7D0D8;color:#101418}
+[data-theme="dark"] .btn-light:hover{background:#DDE4EA}
 .btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
 .btn-quiet{background:transparent;color:var(--brand);padding:7px 11px;min-height:36px}
 .btn-sm{padding:6px 12px;font-size:13px;min-height:36px}
@@ -370,7 +374,9 @@ body.nav-open .mapwrap{pointer-events:none}
 .map-layerbar{display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
   border-radius:99px;padding:7px 14px;font-size:12px;backdrop-filter:blur(8px);
   min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:calc(100% - 28px);
-  overflow-x:auto;scrollbar-width:none;white-space:nowrap}
+  /* كان يُمرَّر أفقيًّا فيُقرأ سطرٌ واحدٌ بجرِّ الشريط يمينًا وشمالًا، وينقطع
+     نصُّه عند حافته فلا يُعرَف أن ثمَّ بقية. والالتفافُ يُري السطرَ كلَّه. */
+  flex-wrap:wrap;row-gap:4px;white-space:normal}
 .map-layerbar::-webkit-scrollbar{display:none}
 .map-layerbar .lb-t{font-weight:800}
 .map-layerbar .lb-n{color:#C6CFD7;font-variant-numeric:tabular-nums}
@@ -509,7 +515,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.27
+      <i class="ver-tag">نسخة</i>V14.28
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>

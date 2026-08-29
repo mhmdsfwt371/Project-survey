@@ -98,6 +98,9 @@ const MUT = [
   { n:'شاشةٌ تعود إلى بيانةٍ مزروعةٍ لها مصدرٌ حيّ', g:'scripts/audit-data.mjs',
     a:"    return card('الفنيون — ' + nm(TECHS.length),",
     b:"    return card('الفنيون — ' + nm(DATA.techs.length)," },
+  { n:'صنفٌ يُستعمَل ولا قاعدةَ له في التنسيق', g:'scripts/audit-data.mjs',
+    a:".btn-light{background:#F4F6F8;border-color:#D6DDE4;color:#14181D;font-weight:600}",
+    b:".btn-lite-x{background:#F4F6F8}" },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
