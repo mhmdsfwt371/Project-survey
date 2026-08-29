@@ -540,7 +540,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.36</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.37</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -731,6 +731,26 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة العشرون: التصعيد والمسؤوليات والصلاحيات ══ */
+ 'النشاط':'Activity',
+ 'ينفّذ':'performs',
+ 'يُساءل':'is accountable',
+ 'يُستشار':'is consulted',
+ 'يُبلَّغ':'is informed',
+ 'قواعدُ التصعيد للمهندس وحده':'Escalation rules are for the engineer only',
+ 'اكتب الحالة':'Write the state',
+ 'أُضيفت القاعدة':'Rule added',
+ 'يُحفَظ فورَ كتابته — ولا زرَّ حفظٍ يَعِد بما وقع سلفًا.':'Saved as you type — no save button promising what already happened.',
+ 'بعد (يوم)':'After (days)',
+ 'المسؤول':'Responsible',
+ 'يُصعَّد إلى':'Escalates to',
+ 'الإجراء':'Action',
+ 'لا شيءَ تجاوز مهلتَه — كلُّ ما ينتظر داخلَ مدّته.':'Nothing has passed its deadline — everything waiting is within its time.',
+ 'المصفوفةُ للمهندس وحده':'The matrix is for the engineer only',
+ 'اكتب النشاط':'Write the activity',
+ 'أُضيف النشاط':'Activity added',
+ 'أدوار':'roles',
+ 'الصلاحياتُ للمهندس وحده':'Permissions are for the engineer only',
  /* ══ الدفعة التاسعة عشرة: الوظائف والدروس ══ */
  'لا دروسَ مسجَّلةٌ بعد.':'No lessons recorded yet.',
  'ما وقع':'What happened',
@@ -1207,6 +1227,26 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة العشرون ══ */
+ 'النشاط':'سرگرمی',
+ 'ينفّذ':'انجام دیتا ہے',
+ 'يُساءل':'جوابدہ ہے',
+ 'يُستشار':'مشورہ لیا جاتا ہے',
+ 'يُبلَّغ':'مطلع کیا جاتا ہے',
+ 'قواعدُ التصعيد للمهندس وحده':'ایسکلیشن کے قواعد صرف انجینئر کے لیے ہیں',
+ 'اكتب الحالة':'حالت لکھیں',
+ 'أُضيفت القاعدة':'قاعدہ شامل ہو گیا',
+ 'يُحفَظ فورَ كتابته — ولا زرَّ حفظٍ يَعِد بما وقع سلفًا.':'لکھتے ہی محفوظ — کوئی محفوظ کا بٹن نہیں جو ہو چکے کا وعدہ کرے۔',
+ 'بعد (يوم)':'کے بعد (دن)',
+ 'المسؤول':'ذمہ دار',
+ 'يُصعَّد إلى':'کس کو بھیجا جائے',
+ 'الإجراء':'کارروائی',
+ 'لا شيءَ تجاوز مهلتَه — كلُّ ما ينتظر داخلَ مدّته.':'کسی چیز کی مدت نہیں گزری — سب کچھ اپنے وقت کے اندر ہے۔',
+ 'المصفوفةُ للمهندس وحده':'میٹرکس صرف انجینئر کے لیے ہے',
+ 'اكتب النشاط':'سرگرمی لکھیں',
+ 'أُضيف النشاط':'سرگرمی شامل ہو گئی',
+ 'أدوار':'کردار',
+ 'الصلاحياتُ للمهندس وحده':'اختیارات صرف انجینئر کے لیے ہیں',
  /* ══ الدفعة التاسعة عشرة ══ */
  'لا دروسَ مسجَّلةٌ بعد.':'ابھی کوئی سبق درج نہیں۔',
  'ما وقع':'کیا ہوا',
@@ -6565,15 +6605,28 @@ PAGE.raci = { m:'النظام', t:'مصفوفة المسؤوليات',
           ['<b>C</b>','المستشار — يُسأل قبل','اختياري'],
           ['<b>I</b>','المبلَّغ — يُخبَر بعد','اختياري']
         ]))
-      + cardFlush('المصفوفة',
-          table(['النشاط','R — ينفّذ','A — يُساءل','C — يُستشار','I — يُبلَّغ'],
-            RACI_ACTS.map(function(r){
-              return ['<strong>' + esc(t(r[0])) + '</strong>',
-                      '<span class="pill acc">' + esc(t(r[1])) + '</span>',
-                      '<span class="pill ok">' + esc(t(r[2])) + '</span>',
-                      esc(t(r[3])), esc(t(r[4]))];
+      + cardFlush('المصفوفة — ' + nm(raciList().length),
+          table(['النشاط','R — ينفّذ','A — يُساءل','C — يُستشار','I — يُبلَّغ',''],
+            raciList().map(function(r, ri){
+              return ['<input value="' + esc(r.a) + '" data-rca="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.R || '') + '" data-rcr="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.A || '') + '" data-rcac="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.C || '') + '" data-rcc="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.I || '') + '" data-rci="' + ri + '" dir="auto">',
+                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-rcdel="' + ri + '"') : ''];
             })),
           btn('⬇ إكسل — المسؤوليات','btn-secondary btn-sm',' data-xls="raci"'))
+      + (may('settings')
+        ? card('إضافة نشاط',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('النشاط')) + ' <span class="req">*</span></label><input id="rcA" dir="auto"></div>'
+            + '<div class="field"><label>R — ' + esc(t('ينفّذ')) + '</label><input id="rcR" dir="auto"></div>'
+            + '<div class="field"><label>A — ' + esc(t('يُساءل')) + '</label><input id="rcAc" dir="auto"></div>'
+            + '<div class="field"><label>C — ' + esc(t('يُستشار')) + '</label><input id="rcC" dir="auto"></div>'
+            + '<div class="field"><label>I — ' + esc(t('يُبلَّغ')) + '</label><input id="rcI" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة نشاط','btn-primary btn-sm',' data-rcadd="1"'))
+        : '')
       + '<p class="hint">لكلِّ نشاطٍ مساءَلٌ واحدٌ لا غير — فإن تعدّد ضاعت المسؤولية.</p>';
   }};
 
@@ -11051,28 +11104,150 @@ var ESC_RULES = [
   ['عُهدة لم تُرجَع بعد الفك', 14, 'الفريق',  'المهندس',   'تُحتسب عجزًا على المنفِّذ']
 ];
 
-PAGE.esc = { m:'النظام', t:'التصعيد', l:'ما تجاوز عمرَه المسموح — ولمن يُصعَّد.',
+/* ═══ التصعيد والمسؤوليات: قوائمُ تُدار لا جداولُ تُقرأ ═══════════════════
+   كانت قواعدُ التصعيد جدولًا ثابتًا وزرَّ «حفظ القواعد» بلا خاصية: يُغيَّر
+   العددُ ويُضغَط الزرُّ فيُقال «حفظ القواعد» ولا يُحفَظ شيء. والقاعدةُ التي
+   لا تُضبَط لا يُصعَّد بها، فيبقى المتعذّرُ متعذّرًا إلى نهاية الموسم. */
+
+function escList(){
+  if (!Array.isArray(STATE.escRules) || !STATE.escRules.length){
+    STATE.escRules = ESC_RULES.map(function(r){
+      return { w:r[0], days:r[1], who:r[2], to:r[3], act:r[4] };
+    });
+  }
+  return STATE.escRules;
+}
+function escSave(){ CORE.set('cfg', 'escRules', escList().slice()); }
+function escSet(i, patch){
+  if (!may('settings')) return;
+  var r = escList()[i]; if (!r) return;
+  Object.keys(patch).forEach(function(k){ r[k] = patch[k]; });
+  escSave();
+}
+function escAdd(){
+  if (!may('settings')){ toast(t('قواعدُ التصعيد للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var w2 = g('esW');
+  if (!w2){ toast(t('اكتب الحالة')); return; }
+  escList().push({ w:w2, days:+g('esD') || 3, who:g('esWho'), to:g('esTo'), act:g('esAct') });
+  escSave(); logEvent('قاعدة تصعيد — ' + w2);
+  toast(t('أُضيفت القاعدة')); render(1);
+}
+function escDel(i){
+  if (!may('settings')){ toast(t('قواعدُ التصعيد للمهندس وحده')); return; }
+  var L = escList(); if (!L[i]) return;
+  var w2 = L[i].w; L.splice(i, 1); escSave();
+  logEvent('حذف قاعدة تصعيد — ' + w2);
+  toast(t('حُذفت')); render(1);
+}
+
+/* ما تجاوز مهلتَه فعلًا — من الاعتمادات والمسوح المتعذّرة */
+function escDue(){
+  var out = [], now = Date.now(), DAY = 86400000;
+  var byW = {};
+  escList().forEach(function(r){ byW[r.w] = r; });
+
+  (typeof coReqList === 'function' ? coReqList() : []).forEach(function(c){
+    var r = byW['مقترح شركة بانتظار']; if (!r) return;
+    var d = Math.floor((now - (c.at || now)) / DAY);
+    if (d >= r.days) out.push({ w:r.w, what:c.name, days:d, to:r.to, act:r.act });
+  });
+  Object.keys(STATE.recs || {}).forEach(function(id){
+    var rec = STATE.recs[id];
+    if (!rec || (typeof svDone === 'function' && svDone(rec))) return;
+    var r = byW['متعذّر بلا معالجة']; if (!r) return;
+    var d = Math.floor((now - (rec.at || now)) / DAY);
+    if (d >= r.days) out.push({ w:r.w, what:id, days:d, to:r.to, act:r.act });
+  });
+  (typeof buyPend === 'function' ? buyPend() : []).forEach(function(b){
+    var r = byW['مشترًى فوق الحد'] || byW['مقترح شركة بانتظار']; if (!r) return;
+    var d = Math.floor((now - (b.at || now)) / DAY);
+    if (d >= r.days) out.push({ w:'مشترًى بانتظار الاعتماد', what:b.item, days:d, to:r.to, act:r.act });
+  });
+  return out.sort(function(a, b){ return b.days - a.days; });
+}
+
+PAGE.esc = { m:'النظام', t:'التصعيد', l:'ما تجاوز مهلتَه — ومن يُرفَع إليه.',
   body:function(){
-    return stats([['بانتظار التصعيد','٠'], ['صُعّد اليوم','٠','wrn'],
-                  ['متأخر عن التصعيد','٠','bad'], ['أقدم عنصر','—']])
-      + card('قواعد التصعيد',
-          table(['الحالة','بعد (يوم)','المسؤول','يُصعَّد إلى','الإجراء'],
-            ESC_RULES.map(function(r){
-              return [esc(t(r[0])), '<input type="number" value="'+r[1]+'" style="max-width:78px">',
-                      esc(t(r[2])), pill(r[3],'acc'),
-                      '<span class="hint" style="margin:0">'+esc(t(r[4]))+'</span>'];
+    var L = escList(), due = escDue();
+    var today = due.filter(function(x){ return x.days === (byDays(x)); });
+    function byDays(x){ return x.days; }
+    var late = due.filter(function(x){ return x.days > 7; });
+    var oldest = due.length ? due[0].days : null;
+
+    return stats([['بانتظار التصعيد', N(due.length), due.length ? 'wrn' : 'ok'],
+                  ['متأخر أكثر من أسبوع', N(late.length), late.length ? 'bad' : 'ok'],
+                  ['قواعد مضبوطة', N(L.length)],
+                  ['أقدم عنصر', oldest === null ? '—' : (nm(oldest) + ' ' + t('يوم')),
+                    oldest > 7 ? 'bad' : '']])
+
+      + cardFlush('قواعد التصعيد — ' + nm(L.length),
+          table(['الحالة','بعد (يوم)','المسؤول','يُصعَّد إلى','الإجراء',''],
+            L.map(function(r, i){
+              return ['<input value="' + esc(r.w) + '" data-esw="' + i + '" dir="auto">',
+                      '<input type="number" min="1" value="' + esc(String(r.days)) + '" data-esd="' + i + '" style="max-width:78px">',
+                      '<input value="' + esc(r.who || '') + '" data-eswho="' + i + '" dir="auto">',
+                      '<input value="' + esc(r.to || '') + '" data-esto="' + i + '" dir="auto">',
+                      '<input value="' + esc(r.act || '') + '" data-esact="' + i + '" dir="auto">',
+                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-esdel="' + i + '"') : ''];
             })),
-          btn('حفظ القواعد','btn-primary btn-sm'))
-      + card('قائمة التصعيد اليوم',
-          '<p class="hint">لا عناصر تجاوزت عمرها — تظهر هنا تلقائيًّا وتُرسَل تنبيهًا للمسؤول.</p>')
-      + card('قناة التنبيه',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>'+esc(t('الوسيلة'))+'</label>'
-          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
-          + '<div class="field"><label>'+esc(t('وقت الإرسال'))+'</label><input type="time" value="07:00"></div>'
-          + '</div>')
-      + '<p class="hint">التصعيد لا يعاقب أحدًا — ينقل القرار لمن يملكه قبل أن يصير التأخير رقمًا في تقرير.</p>';
+          '<p class="hint" style="margin:0">' + esc(t('يُحفَظ فورَ كتابته — ولا زرَّ حفظٍ يَعِد بما وقع سلفًا.')) + '</p>')
+
+      + (may('settings')
+        ? card('إضافة قاعدة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('الحالة')) + ' <span class="req">*</span></label><input id="esW" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('بعد (يوم)')) + '</label><input id="esD" type="number" min="1" value="3"></div>'
+            + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="esWho" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('يُصعَّد إلى')) + '</label><input id="esTo" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('الإجراء')) + '</label><input id="esAct" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة قاعدة','btn-primary btn-sm',' data-esadd="1"'))
+        : '')
+
+      + cardFlush('قائمة التصعيد اليوم — ' + nm(due.length),
+          due.length
+            ? table(['الحالة','العنصر','منذ','يُرفَع إلى','الإجراء'],
+                due.slice(0, 100).map(function(x){
+                  return [pill(t(x.w), x.days > 7 ? 'bad' : 'wrn'),
+                          '<span class="num">' + esc(x.what) + '</span>',
+                          '<span class="num">' + nm(x.days) + ' ' + esc(t('يوم')) + '</span>',
+                          esc(t(x.to || '—')),
+                          '<span class="hint" style="margin:0">' + esc(t(x.act || '')) + '</span>'];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا شيءَ تجاوز مهلتَه — كلُّ ما ينتظر داخلَ مدّته.')) + '</p>');
   }};
+
+/* ═══ مصفوفة المسؤوليات ═══ */
+function raciList(){
+  if (!Array.isArray(STATE.raci) || !STATE.raci.length){
+    STATE.raci = RACI_ACTS.map(function(r){ return { a:r[0], R:r[1], A:r[2], C:r[3], I:r[4] }; });
+  }
+  return STATE.raci;
+}
+function raciSave(){ CORE.set('cfg', 'raci', raciList().slice()); }
+function raciSet(i, patch){
+  if (!may('settings')) return;
+  var r = raciList()[i]; if (!r) return;
+  Object.keys(patch).forEach(function(k){ r[k] = patch[k]; });
+  raciSave();
+}
+function raciAdd(){
+  if (!may('settings')){ toast(t('المصفوفةُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var a = g('rcA');
+  if (!a){ toast(t('اكتب النشاط')); return; }
+  raciList().push({ a:a, R:g('rcR'), A:g('rcAc'), C:g('rcC'), I:g('rcI') });
+  raciSave(); logEvent('نشاط في المصفوفة — ' + a);
+  toast(t('أُضيف النشاط')); render(1);
+}
+function raciDel(i){
+  if (!may('settings')){ toast(t('المصفوفةُ للمهندس وحده')); return; }
+  var L = raciList(); if (!L[i]) return;
+  var a = L[i].a; L.splice(i, 1); raciSave();
+  logEvent('حذف نشاط من المصفوفة — ' + a);
+  toast(t('حُذف')); render(1);
+}
 
 /* ── ٣ · سجل التدقيق ──────────────────────────────
    العملية تُسجَّل ولا يُعرف من غيّرها ولا لماذا رُفضت. */
@@ -11602,35 +11777,43 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
 
 PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', l:'من يفعل ماذا.',
   body:function(){
-    return cardFlush('القدرات',
-        table(['القدرة','مهندس','مشرف','فني','وزارة'],
-          [['المسح والتوثيق','✓','✓','✓ للمُسند له','—'],
-           ['وسم «تمت الزيارة»','✓','✓','✓ للمُسند له','—'],
-           ['طلبات الزيارة والإسناد','✓','✓','—','—'],
-           ['اعتماد الزيارات والقطع','✓','—','—','—'],
-           ['التركيب والفك','✓','✓','✓ للمُسند له','—'],
-           ['رؤية كل النقاط','✓','✓','نقاطه فقط','✓ قراءة'],
-           ['الإعدادات والنقاط والتارجت','✓','—','—','—'],
-           ['إدارة الحسابات','✓','—','—','—'],
-           ['أرقام الهواتف','✓','فريقه','فريقه','مخفية']
-          ].map(function(r){
-            var f = function(v){
-              if (v === '✓') return '<span class="pill ok">✓</span>';
-              if (v === '—') return '<span class="pill off">—</span>';
-              return '<span class="pill warn">' + esc(v) + '</span>';
-            };
-            return ['<strong>' + esc(r[0]) + '</strong>', f(r[1]), f(r[2]), f(r[3]), f(r[4])];
-          })))
-      + '<p class="hint">الصلاحيات الأربعة أعلاه مفروضة على مستوى قاعدة البيانات لا الواجهة.</p>'
-      + card('أدوار مخصصة',
-          '<p class="hint" style="margin:0 0 13px">أضف مسمًّى وظيفيًّا خاصًّا بك يرث صلاحيات أحد الأدوار الأربعة — يظهر في قائمة أدوار المستخدمين ويُزامَن فورًا.</p>'
-          + '<div class="alert info"><span>لا أدوار مخصصة بعد.</span></div>'
-          + '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('المسمّى')) + '</label>'
-          +   '<input placeholder="مثال: منسّق ميداني"></div>'
-          + '<div class="field"><label>' + esc(t('يرث صلاحيات')) + '</label>'
-          +   '<select><option>مهندس</option><option selected>مشرف</option><option>وزارة</option></select></div>'
-          + '</div>', btn('➕ إضافة دور','btn-primary btn-sm'));
+    /* كان جدولًا محفورًا بأربعة أدوارٍ و«✓» مكتوبةٍ بيد — والأدوارُ سبعةٌ
+       والقدراتُ تُقرأ من `ROLES`. فمن قرأ الجدولَ ظنَّ أن المشرفَ لا يرى
+       الهواتفَ وهو يراها، وأن الفنيَّ لا يركّب وهو يركّب.
+       صار يُبنى من مصدر الحقيقة نفسِه، ويُبدَّل فيه فيُكتَب. */
+    var CAPS = [['edit','تحرير البيانات'], ['approve','الاعتمادات'], ['settings','الإعدادات'],
+                ['money','المال والمشتريات'], ['inventory','المخزون والعُهدة'], ['workshop','الورشة'],
+                ['exportAll','التصدير الكامل'], ['importAll','الاستيراد'],
+                ['users','إدارة المستخدمين'], ['phones','أرقام الهواتف'], ['delete','الحذف والتصفير']];
+    var RS = Object.keys(ROLES);
+    return cardFlush('القدرات — ' + nm(RS.length) + ' ' + t('أدوار'),
+        table([''].concat(RS.map(function(k){ return t(ROLES[k].n); })),
+          CAPS.map(function(c){
+            return ['<strong>' + esc(t(c[1])) + '</strong>'].concat(
+              RS.map(function(k){
+                var on = !!((ROLES[k].can || {})[c[0]]);
+                return may('users')
+                  ? '<button type="button" class="pill ' + (on ? 'ok' : 'off')
+                    + '" style="border:0;cursor:pointer" data-capt="' + esc(k + '|' + c[0]) + '">'
+                    + (on ? '✓' : '—') + '</button>'
+                  : pill(on ? '✓' : '—', on ? 'ok' : 'off');
+              }));
+          })),
+        '<p class="hint" style="margin:0">'
+        + esc(t(may('users')
+            ? 'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.'
+            : 'العرضُ فقط — التبديلُ للمهندس.'))
+        + '</p>')
+
+      + card('الأدوار السبعة',
+          table(['الدور','من هو','ماذا يرى ويفعل'],
+            RS.map(function(k){
+              return [pill(t(ROLES[k].n), 'acc'), esc(t(ROLES[k].d || '—')),
+                      '<span class="hint" style="margin:0">'
+                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' قدرة')) + '</span>'];
+            })))
+
+      + '<p class="hint">الأدوارُ ثابتةٌ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة، وحذفُ دورٍ منها يجعل حساباتِه ترفضها القاعدةُ صامتةً. وما يُغيَّر هو قدراتُها.</p>';
   }};
 
 /* ═══ القائمة والشل ═══ */
@@ -11974,6 +12157,27 @@ function onDocClick(e){
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   if (e.target.closest('[data-tkadd]')){ techAdd(); return; }
   if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
+  var cpt = e.target.closest('[data-capt]');
+  if (cpt){
+    if (!may('users')){ toast(t('الصلاحياتُ للمهندس وحده')); return; }
+    var p2 = cpt.getAttribute('data-capt').split('|');
+    var R2 = ROLES[p2[0]]; if (!R2) return;
+    R2.can = R2.can || {};
+    if (R2.can[p2[1]]) delete R2.can[p2[1]]; else R2.can[p2[1]] = 1;
+    CORE.set('cfg', 'roleCaps', (function(){
+      var o2 = {}; Object.keys(ROLES).forEach(function(k){ o2[k] = ROLES[k].can || {}; }); return o2;
+    })());
+    logEvent('صلاحية — ' + R2.n + ' · ' + p2[1] + ': ' + (R2.can[p2[1]] ? 'مُنحت' : 'سُحبت'));
+    PERM_CACHE = null;
+    toast(t(R2.can[p2[1]] ? 'مُنحت' : 'سُحبت'));
+    render(1); return;
+  }
+  if (e.target.closest('[data-esadd]')){ escAdd(); return; }
+  var esd = e.target.closest('[data-esdel]');
+  if (esd){ escDel(+esd.getAttribute('data-esdel')); return; }
+  if (e.target.closest('[data-rcadd]')){ raciAdd(); return; }
+  var rcd = e.target.closest('[data-rcdel]');
+  if (rcd){ raciDel(+rcd.getAttribute('data-rcdel')); return; }
   if (e.target.closest('[data-lsadd]')){ lessAdd(); return; }
   var lsd = e.target.closest('[data-lsdel]');
   if (lsd){ lessDel(+lsd.getAttribute('data-lsdel')); return; }
@@ -12430,6 +12634,16 @@ document.addEventListener('input', function(e){
     techSet(e.target.getAttribute('data-tksup'), 'sup', e.target.value); render(1); return; }
   if (e.target && e.target.hasAttribute){
     var el2 = e.target;
+    if (el2.hasAttribute('data-esw')){   escSet(+el2.getAttribute('data-esw'),   { w:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-esd')){   escSet(+el2.getAttribute('data-esd'),   { days:+el2.value || 1 }); return; }
+    if (el2.hasAttribute('data-eswho')){ escSet(+el2.getAttribute('data-eswho'), { who:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-esto')){  escSet(+el2.getAttribute('data-esto'),  { to:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-esact')){ escSet(+el2.getAttribute('data-esact'), { act:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-rca')){   raciSet(+el2.getAttribute('data-rca'),  { a:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-rcr')){   raciSet(+el2.getAttribute('data-rcr'),  { R:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-rcac')){  raciSet(+el2.getAttribute('data-rcac'), { A:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-rcc')){   raciSet(+el2.getAttribute('data-rcc'),  { C:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-rci')){   raciSet(+el2.getAttribute('data-rci'),  { I:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsw')){ lessSet(+el2.getAttribute('data-lsw'), { w:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsa')){ lessSet(+el2.getAttribute('data-lsa'), { a:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbn')){ jobSet(el2.getAttribute('data-jbn'), { n:el2.value.trim() }); return; }
