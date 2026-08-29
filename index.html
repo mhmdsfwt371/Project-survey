@@ -540,7 +540,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.39</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.40</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -731,6 +731,8 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'أُخرِج من المرحلة':'Removed from the stage',
+ 'نقاط هذه المرحلة':'Points for this stage',
  'عملًا مسجَّلًا — لا يُحذَف':'He has',
  /* ══ الدفعة العشرون: التصعيد والمسؤوليات والصلاحيات ══ */
  'النشاط':'Activity',
@@ -1228,6 +1230,8 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'أُخرِج من المرحلة':'مرحلے سے نکال دیا گیا',
+ 'نقاط هذه المرحلة':'اس مرحلے کے پوائنٹس',
  'عملًا مسجَّلًا — لا يُحذَف':'اس کے پاس',
  /* ══ الدفعة العشرون ══ */
  'النشاط':'سرگرمی',
@@ -9336,6 +9340,31 @@ function itemDel(code){
   toast(t('حُذف'));
   render(1);
 }
+/* إخراجُ صنفٍ من مرحلة: نقاطُه صفرٌ فيخرج — والصنفُ يبقى في الكتالوج،
+   فالخروجُ من التهيئة ليس حذفًا من الوجود. */
+function stageOut(path, code){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  cfgSet(path, code, 0);
+  logEvent('إخراج من المرحلة — ' + itemName(code) + ' · ' + path);
+  toast(t('أُخرِج من المرحلة'));
+  render(1);
+}
+/* إضافةُ صنفٍ من شاشة المرحلة: يُنشَأ في الكتالوج ويُعطى نقاطَ مرحلته دفعةً */
+function stageAdd(path){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var name = g('itN');
+  if (!name){ toast(t('اكتب اسم القطعة')); return; }
+  if (itemsList().some(function(i){ return i.name === name; })){ toast(t('موجودٌ بالفعل')); return; }
+  var code = 'it' + Date.now().toString(36);
+  itemsList().push({ z:g('itZ') || 'camp', code:code, name:name, pts:0, price:0, prep:0, asm:0 });
+  itemSave();
+  cfgSet(path, code, +g('itS') || 0);
+  logEvent('صنف جديد — ' + name + ' · ' + path);
+  toast(t('أُضيف الصنف'));
+  render(1);
+}
+
 function itemAdd(){
   if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
@@ -11540,13 +11569,30 @@ function prepAsm(pg){
       + cardFlush((pg==='prep'?'أجهزة التهيئة':'مكوّنات التجميع') + ' — ' + nm(on.length),
           table(['الجهاز','المنطقة','النقاط',''],
             on.map(function(i){
-              return [esc(i.name), esc(t(i.z==='cor'?'ممر':'مخيم')),
+              return ['<input value="' + esc(i.name) + '" data-itname="' + esc(i.code) + '" dir="auto">',
+                      esc(t(i.z==='cor'?'ممر':'مخيم')),
                       cfgInput(path, i.code, { dec:1 }),
-                      btn('أخرِج','btn-quiet btn-sm')];
-            })),
-          btn('➕ ' + (pg==='prep'?'أضِف جهازًا':'أضِف مكوّنًا'),'btn-primary btn-sm'));
+                      (may('settings')
+                        ? btn('أخرِج من المرحلة','btn-quiet btn-sm',
+                              ' data-stgout="' + esc(path + '|' + i.code) + '"')
+                          + btn('احذف الصنف','btn-quiet btn-sm',' data-itdel="' + esc(i.code) + '"')
+                        : '')];
+            })));
   }
-  h += cfgAddStage(path, pg)
+  h += (may('settings')
+      ? card((pg === 'prep' ? 'أضِف صنفًا جديدًا للتهيئة' : 'أضِف صنفًا جديدًا للتجميع'),
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
+          +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
+          +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
+          + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
+          +   '<input id="itN" dir="auto"></div>'
+          + '<div class="field"><label>' + esc(t('نقاط هذه المرحلة')) + '</label>'
+          +   '<input id="itS" type="number" step="0.5" min="0" value="1"></div>'
+          + '</div>',
+          btn('➕ إضافة صنف','btn-primary btn-sm',' data-stgadd="' + path + '"'))
+      : '')
+     + cfgAddStage(path, pg)
      + tgtBlock(pg === 'prep' ? 'tgtPrepCamp' : 'tgtAsmCamp',
                 pg === 'prep' ? 'tgtPrepCor'  : 'tgtAsmCor');
   if (pg === 'prep')
@@ -11567,12 +11613,31 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
           var L = itemsList().filter(function(x){ return x.z === g[0]; });
           return '<div>' + cardFlush(g[1] + ' — ' + nm(L.length) + ' ' + t('قطعة'),
             L.length
-              ? table(['القطعة','النقاط'],
-                  L.map(function(it){ return [esc(it.name), cfgInput('itPts', it.code, { dec:1 })]; }))
+              ? table(may('settings') ? ['القطعة','النقاط',''] : ['القطعة','النقاط'],
+                  L.map(function(it){
+                    var row = ['<input value="' + esc(it.name) + '" data-itname="' + esc(it.code) + '" dir="auto">',
+                               cfgInput('itPts', it.code, { dec:1 })];
+                    if (may('settings'))
+                      row.push(btn('حذف','btn-quiet btn-sm',' data-itdel="' + esc(it.code) + '"'));
+                    return row;
+                  }))
               : '<p class="hint" style="text-align:center;margin:0;padding:16px">'
                 + esc(t('لا قطع في هذه المنطقة.')) + '</p>') + '</div>';
         }).join('')
       + '</div>'
+      + (may('settings')
+        ? card('أضِف صنفًا جديدًا',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
+            +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
+            +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
+            + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
+            +   '<input id="itN" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('نقاط تركيبها')) + '</label>'
+            +   '<input id="itS" type="number" step="0.5" min="0" value="1"></div>'
+            + '</div>',
+            btn('➕ إضافة صنف','btn-primary btn-sm',' data-stgadd="itPts"'))
+        : '')
       + card('نقاط النقطة الكاملة',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نقاط تركيب المخيم')) + '</label>'
@@ -12198,6 +12263,10 @@ function onDocClick(e){
   if (tkd){ techDel(tkd.getAttribute('data-tkdel')); return; }
   var crd = e.target.closest('[data-crdel]');
   if (crd){ crewDel(crd.getAttribute('data-crdel')); return; }
+  var sgo = e.target.closest('[data-stgout]');
+  if (sgo){ var p3 = sgo.getAttribute('data-stgout').split('|'); stageOut(p3[0], p3[1]); return; }
+  var sga = e.target.closest('[data-stgadd]');
+  if (sga){ stageAdd(sga.getAttribute('data-stgadd')); return; }
   if (e.target.closest('[data-itadd]')){ itemAdd(); return; }
   var idl = e.target.closest('[data-itdel]');
   if (idl){ itemDel(idl.getAttribute('data-itdel')); return; }
@@ -12745,7 +12814,38 @@ document.addEventListener('keydown', function(e){
   }, { passive:true });
 })();
 
-window.addEventListener('resize', function(){ if (CUR === 'map') mapDraw(); }, { passive:true });
+/* ═══ استقرارُ القياس على iOS ═══
+   سفاري يرسم الصفحةَ ثم يتقلّص شريطُه فيتغيّر ارتفاعُ النافذة بعد أول رسمة.
+   فتُحسَب الخريطةُ بارتفاعٍ ليس ارتفاعَها، وتظهر الشرائحُ مقصوصةً — ثم يخرج
+   المستخدمُ ويعود فتُعاد الرسمةُ صحيحةً. والخروجُ والعودةُ ليسا حلًّا.
+
+   `visualViewport` هو ما يتغيّر فعلًا في iOS لا `window` — فيُستمَع إليه.
+   ويُعاد القياسُ عند العودة من الخلفية (`pageshow`) وعند دوران الجهاز،
+   وبعد أول رسمةٍ بلحظاتٍ ليستقرَّ الشريط. */
+function reflow(){
+  try {
+    document.documentElement.style.setProperty('--vh',
+      ((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01) + 'px');
+  } catch (e){}
+  if (CUR === 'map'){
+    if (typeof mapDraw === 'function') mapDraw();
+    if (typeof MAP !== 'undefined' && MAP){
+      try { MAP.invalidateSize(); } catch (e){}
+    }
+  }
+}
+var REFLOW_T = null;
+function reflowSoon(){ clearTimeout(REFLOW_T); REFLOW_T = setTimeout(reflow, 80); }
+
+window.addEventListener('resize', reflowSoon, { passive:true });
+window.addEventListener('orientationchange', function(){ setTimeout(reflow, 250); }, { passive:true });
+window.addEventListener('pageshow', reflowSoon, { passive:true });
+if (window.visualViewport){
+  window.visualViewport.addEventListener('resize', reflowSoon, { passive:true });
+  window.visualViewport.addEventListener('scroll', reflowSoon, { passive:true });
+}
+/* الرسمةُ الأولى: يستقرُّ شريطُ المتصفّح بعد جزءٍ من الثانية */
+[120, 400, 900].forEach(function(ms){ setTimeout(reflow, ms); });
 
 (function boot(){
   var th = 'light', lg = 'ar';
