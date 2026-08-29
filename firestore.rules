@@ -69,5 +69,41 @@ service cloud.firestore {
       allow create: if canW();
       allow update, delete: if false;
     }
+
+    // ── مجموعاتٌ كانت تسقط كلُّها في «misc» بلا قاعدةٍ خاصةٍ بها ──
+    // سجلُّ الأحداث: أثرٌ تدقيقيٌّ يُكتَب ولا يُعدَّل ولا يُحذَف. الوزارةُ
+    // تسأل من فعل ومتى، وأثرٌ يُعدَّل لا يصلح جوابًا.
+    match /events/{id} {
+      allow read:   if ok();
+      allow create: if ok();
+      allow update, delete: if false;
+    }
+
+    // اللقطاتُ اليومية: تُكتب من الميدان وتُقرأ من الجميع — وبها تُبنى
+    // اللوحةُ بقراءةٍ واحدةٍ بدل ثلاثة آلاف.
+    match /stats/{day} { allow read: if ok(); allow create, update: if canW(); allow delete: if false; }
+
+    // الفكُّ والمواقعُ المقترحةُ وطلباتُ الشركات وحساباتُ الفنيين
+    match /dismantles/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /newsites/{id}   { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /coreqs/{id}     { allow read: if ok(); allow create: if canW(); allow update, delete: if mgr(); }
+    match /accounts/{id}   { allow read: if mgr(); allow create, update: if mgr(); allow delete: if false; }
+
+    // المخزونُ والمشتريات — كانتا تُكتبان بلا قاعدةٍ فتُرفضان
+    match /inventory/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /purchases/{id} { allow read: if canW(); allow create, update: if canW(); allow delete: if mgr(); }
+
+    // الفرقُ وخطُّ الأساس وطلباتُ التغيير والسلامةُ وعدمُ المطابقة والمستخلصات
+    match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
+    match /baseline/{id} { allow read: if ok();   allow create, update: if mgr();  allow delete: if false; }
+    match /changes/{id}  { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if false; }
+    match /hse/{id}      { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
+    match /ncr/{id}      { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if mgr(); }
+    // المستخلصُ مالٌ: يُقرأ لمن يملك المال، ولا يعتمده إلا المهندس
+    match /ipc/{id}      { allow read: if canW(); allow create: if canW(); allow update: if mgr(); allow delete: if false; }
+
+    // لا شيءَ يسقط في «misc» بعد اليوم
+    match /misc/{id} { allow read, write: if false; }
+
   }
 }

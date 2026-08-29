@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.13
+      <i class="ver-tag">نسخة</i>V14.14
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -1679,6 +1679,23 @@ var STATE = {
 
 var QUEUE_CAP = 2000, _saveT = 0;
 
+/* ═══ الاتساعُ إلى مئةٍ وخمسين جهازًا ═══
+   معرّفٌ ثابتٌ لكلِّ جهاز: بلا معرّفٍ يشترك جهازان في معرّفٍ متسلسلٍ واحدٍ
+   فيمحو أحدُهما الآخر، ولا يُعرَف أيُّهما كتب. */
+var DEV_ID = (function(){
+  try {
+    var k = 'nsk14.dev';
+    var v = localStorage.getItem(k);
+    if (!v){
+      v = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem(k, v);
+    }
+    return v;
+  } catch(e){ return 'd' + Math.random().toString(36).slice(2, 10); }
+})();
+var _uidSeq = 0;
+function uid36(){ return DEV_ID + '-' + Date.now().toString(36) + '-' + (++_uidSeq).toString(36); }
+
 var CORE = {
   get:  function(kind, id){ var b = STATE[kind]; return b ? b[id] : undefined; },
   all:  function(kind){ return STATE[kind]; },
@@ -1737,6 +1754,7 @@ var CORE = {
     return FB.push(batch).then(function(){
       STATE.queue = STATE.queue.slice(batch.length);
       STATE.meta.lastSync = Date.now();
+      if (typeof rollupToday === 'function') rollupToday();
       CORE.saveLocal();
       syncBadge();
       return batch.length;
@@ -1787,8 +1805,15 @@ var FB = {
     if (!FB.ready) return Promise.reject(new Error('not-ready'));
     var w = FB.db.batch();
     batch.forEach(function(it){
+      /* لكلِّ نوعٍ مجموعتُه: كانت سبعةُ أنواعٍ تسقط في «misc» واحدةٍ فتختلط،
+         ولا تُستعلَم بمفردها، ولا تُحكَم بقاعدةِ وصولٍ خاصةٍ بها. */
       var col = { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
-                  buys:'purchases', cfg:'settings', users:'users' }[it.kind] || 'misc';
+                  buys:'purchases', cfg:'settings', users:'users',
+                  evlog:'events', diss:'dismantles', newsites:'newsites',
+                  coreqs:'coreqs', accounts:'accounts', photos:'photos',
+                  stats:'stats', teams:'teams', baseline:'baseline',
+                  changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
+      if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
       else w.set(ref, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }), { merge:true });
@@ -1831,15 +1856,37 @@ var FB = {
     try{ return localStorage.getItem('nsk14.legacy') === '1'; }catch(e){ return false; }
   },
 
-  pull: function(){
+  /* سحبٌ فارقيّ: لا يُقرَأ إلا ما تغيّر بعد آخر مزامنة. والحقلُ `_at` يُكتَب
+     مع كلِّ وثيقةٍ في الدفع، فالفرزُ عليه لا يحتاج فهرسًا مركّبًا.
+     والميدانُ لا يقرأ إلا ما يخصّه: الفنيُّ لا يحتاج سجلَّ ألفٍ وسبعمئةِ موقع. */
+  pull: function(full){
     if (!FB.ready) return Promise.resolve(false);
+    var since = (!full && STATE.meta.lastSync) ? STATE.meta.lastSync - 60000 : 0;
+    var mine  = (typeof may === 'function' && !may('exportAll')) ? (STATE.meta.uid || '') : '';
     return Promise.all(['recs','inss','tasks'].map(function(c){
-      return FB.db.collection(c).get().then(function(snap){
-        var o = {};
-        snap.forEach(function(d){ o[d.id] = d.data(); });
-        STATE[c] = o;
+      var q = FB.db.collection(c);
+      if (mine){
+        /* الفارقُ الزمنيُّ لا يُقصَر على صاحبه إلا بفهرسٍ مركّب، والقصرُ على
+           الصاحب وحده أرخص: سجلاتُ الفنيِّ عشراتٌ لا آلاف. فمئةٌ وخمسون
+           جهازًا لا يقرأ أحدُها ما كتبه الآخرون — واللوحةُ تُقرأ من اللقطة. */
+        q = (c === 'tasks') ? q.where('to', '==', STATE.meta.name || '\u0000')
+                            : q.where('_by', '==', mine);
+      } else if (since) q = q.where('_at', '>', since);
+      return q.get().then(function(snap){
+        if (!since && !mine) STATE[c] = {};      /* سحبٌ كاملٌ يستبدل */
+        if (!STATE[c]) STATE[c] = {};
+        snap.forEach(function(d){ STATE[c][d.id] = d.data(); });
+        FB.readCount = (FB.readCount || 0) + snap.size;
       });
     })).then(function(){
+      /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
+      return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
+        .then(function(sn){
+          if (!STATE.stats) STATE.stats = {};
+          sn.forEach(function(d){ STATE.stats[d.id] = d.data(); });
+          FB.readCount = (FB.readCount || 0) + sn.size;
+        }).catch(function(){});
+    }).then(function(){
       return FB.db.collection('settings').doc('points').get();
     }).then(function(doc){
       if (doc && doc.exists){
@@ -1851,6 +1898,59 @@ var FB = {
     }).catch(function(){ return false; });
   }
 };
+
+/* ── اللقطةُ اليومية ─────────────────────────────────────────────────────
+   لوحةُ الوزارة كانت تُبنى بقراءة كلِّ سجلٍّ في القاعدة. ومئةٌ وخمسون جهازًا
+   يفعلون ذلك ثماني مراتٍ يوميًّا = مليونُ قراءةٍ والحدُّ خمسون ألفًا.
+   فتُكتَب أعدادُ اليوم في وثيقةٍ واحدةٍ يقرؤها الجميع بقراءةٍ واحدة.
+   وهي في الوقت نفسه سجلُّ التاريخ: يومٌ يومًا، لا يُعاد حسابُه ولا يُعدَّل. */
+var ROLL_LAST = 0;
+
+function dayKey(ts){ return new Date(ts || Date.now()).toISOString().slice(0, 10); }
+
+function rollupToday(force){
+  var now = Date.now();
+  if (!force && now - ROLL_LAST < 120000) return null;   /* مرةً كلَّ دقيقتين */
+  ROLL_LAST = now;
+
+  var day = dayKey(now), S = siteStats();
+  var sv = 0, ins = 0, dis = 0, blocked = 0;
+  Object.keys(STATE.recs).forEach(function(k){
+    var r = STATE.recs[k];
+    if (dayKey(r.at || r._at) !== day) return;
+    if (svDone(r)) sv++; else blocked++;
+  });
+  Object.keys(STATE.inss).forEach(function(k){
+    var r = STATE.inss[k];
+    if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++;
+  });
+  Object.keys(STATE.diss || {}).forEach(function(k){
+    var r = STATE.diss[k];
+    if (dayKey(r.at) === day && r.status === 'تم الفك') dis++;
+  });
+
+  var doc = {
+    day:day, at:now,
+    total:S.total, surveyed:S.surveyed, installed:S.installed,
+    daySurvey:sv, dayInstall:ins, dayDismantle:dis, dayBlocked:blocked,
+    byZone:{}, pending:CORE.pending()
+  };
+  Object.keys(S.byKey).forEach(function(k){
+    var z = k.split('|')[0];
+    doc.byZone[z] = (doc.byZone[z] || 0) + S.byKey[k];
+  });
+  if (!STATE.stats) STATE.stats = {};
+  STATE.stats[day] = doc;
+  CORE.dirty('stats', day, doc);
+  return doc;
+}
+
+/* التاريخُ: آخرُ ثلاثين يومًا مرتَّبةً — للوحة التاريخية والتقارير */
+function history(days){
+  var out = [], st = STATE.stats || {};
+  Object.keys(st).sort().slice(-(days || 30)).forEach(function(k){ out.push(st[k]); });
+  return out;
+}
 
 /* ── مؤشّر المزامنة في الشريط العلوي ── */
 function syncBadge(){
@@ -4356,9 +4456,17 @@ function formReset(){
 }
 
 function logEvent(what){
-  STATE.events.unshift({ at:new Date().toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }),
-                         what:what, by:STATE.meta.name || 'محمد صفوت' });
+  var now = Date.now();
+  var e = { id:uid36(), ts:now,
+            at:new Date(now).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }),
+            day:new Date(now).toISOString().slice(0,10),
+            what:what, by:STATE.meta.name || '', dev:DEV_ID };
+  STATE.events.unshift(e);
   if (STATE.events.length > 500) STATE.events.length = 500;
+  /* الأثرُ التدقيقيُّ يُرفَع: الوزارةُ تسأل من فعل ومتى، والذاكرةُ لا تجيب. */
+  if (!STATE.evlog) STATE.evlog = {};
+  STATE.evlog[e.id] = e;
+  CORE.dirty('evlog', e.id, e);
 }
 
 /* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
@@ -6732,9 +6840,15 @@ function liveStop(){
 /* ── حدودُ الاستهلاك — تُعرَض للمهندس ── */
 function quotaEstimate(){
   var users = cfgGet('users') || 150;
-  var perDay = { survey:20, install:8 };
-  var writes = users * (perDay.survey * 3 + perDay.install * 5);
-  var reads  = users * 12;              /* سحبٌ فارقيٌّ لا كامل */
+  var perDay = { survey:20, install:8, syncs:8 };
+  var writes = users * (perDay.survey * 3 + perDay.install * 5 + 6 /* أحداثٌ وطوابع */);
+  /* القراءةُ تُحسب من مسار الشيفرة لا من التمنّي: سحبٌ كاملٌ أوّلَ اليوم
+     مقصورٌ على ما يخصُّ المستخدم، ثم فوارقُ ما تغيّر في بقية المزامنات. */
+  var docs   = Object.keys(STATE.recs).length + Object.keys(STATE.inss).length
+             + Object.keys(STATE.tasks).length;
+  var firstPull = Math.max(60, Math.round(docs / Math.max(1, users)));  /* حصةُ الفرد */
+  var delta     = Math.round(users * 0.6);        /* ما يكتبه الآخرون في الفترة */
+  var reads  = users * (firstPull + (perDay.syncs - 1) * delta);
   var photos = users * (perDay.survey * 2 + perDay.install * 2);
   return {
     users:users, writes:writes, reads:reads, photos:photos,
