@@ -130,7 +130,10 @@ try {
     writeFileSync(join(dir, 'index.html'), src);
     writeFileSync(join(dir, file), body.replace(m.a, m.b));
     let caught = false;
-    try { execSync('node ' + m.g, { cwd:dir, stdio:'pipe', timeout:600000 }); }
+    /* الحارسُ يشغّل الجرودَ داخله؛ وطفراتُه تخصُّ ما يفحصه بنفسه — فتُتخطّى */
+    const env = Object.assign({}, process.env,
+      m.g.indexOf('check-version') > -1 ? { NUSUK_SKIP_AUDITS:'1' } : {});
+    try { execSync('node ' + m.g, { cwd:dir, stdio:'pipe', timeout:600000, env:env }); }
     catch { caught = true; }
     if (!caught) survived.push(m.n + '  ←  ' + m.g.replace('scripts/',''));
   }

@@ -319,6 +319,9 @@ try {
 } catch (e) { fail.push('حارس الكلاسات تعثّر: ' + String(e && e.message).slice(0, 100)); }
 
 /* ── جردا البيانات والكتابة: الرقمُ الخاطئ أسوأ من زرٍّ مفقود ── */
+/* عند زرع طفرةٍ تخصُّ ما يفحصه الحارسُ بنفسه — سجلَّ الصفحات أو الترجمة —
+   لا معنى لإعادة الجرود التسعة معها: تُعاد دقائقَ بلا فائدة. */
+(process.env.NUSUK_SKIP_AUDITS ? [] :
 [['scripts/audit-data.mjs',  'جردُ البيانات'],
  ['scripts/audit-writes.mjs','جردُ الكتابة'],
  ['scripts/audit-roles.mjs', 'جردُ الأدوار'],
@@ -327,7 +330,7 @@ try {
  ['scripts/audit-rules.mjs',  'جردُ القواعد'],
  ['scripts/audit-scale.mjs',  'جردُ الاتساع'],
  ['scripts/audit-db-rules.mjs','جردُ قواعد القاعدة'],
- ['scripts/audit-crud.mjs',   'جردُ الدورة الكاملة']].forEach(([f, name]) => {
+ ['scripts/audit-crud.mjs',   'جردُ الدورة الكاملة']]).forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ
