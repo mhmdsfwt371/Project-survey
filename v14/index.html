@@ -79,11 +79,16 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .content.flush{padding:0;max-width:none}
 
 .sidebar{position:fixed;inset-block:0;inset-inline-start:0;
-  padding-top:calc(16px + env(safe-area-inset-top,0px));
   width:min(var(--sw), 86vw); max-width:340px;
-  background:var(--sidebar);color:var(--sidebar-ink);display:flex;flex-direction:column;
-  padding:16px 12px calc(16px + env(safe-area-inset-bottom,0px));
-  overflow-y:auto;-webkit-overflow-scrolling:touch;
+  background:var(--sidebar);color:var(--sidebar-ink);
+  display:flex;flex-direction:column;
+  /* كان `padding-top` يُكتَب مرتين — والمختصرُ بعده يمحو الأول، فتضيع
+     حمايةُ النوتش ويصطدم الاسمُ بشريط الحالة. */
+  padding:calc(14px + env(safe-area-inset-top,0px)) 12px
+          calc(12px + env(safe-area-inset-bottom,0px));
+  /* الرأسُ والذيلُ ثابتان والقائمةُ وحدَها تُمرَّر: كانت تُمرَّر كلُّها،
+     فيهرب الذيلُ — اللغةُ والمظهرُ والخروج — إلى أسفلَ لا يُبلَغ إلا بالتمرير. */
+  overflow:hidden;
   z-index:var(--z-side);overscroll-behavior:contain}
 .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 2px}
 .brand-mark{width:38px;height:38px;border-radius:9px;background:var(--brand);
@@ -92,7 +97,9 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .brand-name{font-weight:600;line-height:1.25;min-width:0}
 .brand-sub{font-size:11px;opacity:.6;font-weight:400}
 
-.nav{flex:1;display:flex;flex-direction:column;gap:2px}
+.nav{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:2px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding-inline-end:2px}
 .nav a,.group-toggle{display:flex;align-items:center;gap:9px;padding:9px 11px;
   border-radius:var(--radius-sm);color:var(--sidebar-ink);text-decoration:none;font-size:14px;
   background:transparent;border:0;width:100%;cursor:pointer;text-align:start;font-family:inherit;
@@ -115,7 +122,8 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
   padding:1px 7px;font-size:10.5px;font-weight:700;flex:0 0 auto}
 .nav a.active .badge{background:rgba(0,0,0,.18)}
 
-.sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:13px;margin-top:13px;font-size:13px}
+.sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:11px;margin-top:11px;
+  font-size:13px;flex:0 0 auto}
 .who{font-weight:600}
 .who-role{opacity:.65;font-size:12px;margin-bottom:10px}
 .foot-row{display:flex;gap:6px;margin-bottom:8px}
@@ -582,6 +590,13 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .lang-menu .lg-code{font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
 .lang-menu button[aria-selected="true"] .lg-code{opacity:.9}
 
+/* رأسُ القائمة: الشعارُ والاسمُ والإغلاق في سطرٍ واحدٍ لا يتزاحمون،
+   وثابتٌ لا يُمرَّر مع البنود. */
+.sidebar-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding-bottom:11px;margin-bottom:9px;border-bottom:1px solid var(--sidebar-line)}
+.sidebar-head .brand-name{flex:1 1 auto;min-width:0;line-height:1.25}
+.sidebar-head .nav-x{flex:0 0 auto;margin-inline-start:auto}
+
 .v2030{display:block;width:112px;max-width:70%;height:auto;margin:0 0 12px;opacity:.92}
 [data-theme="dark"] .v2030{filter:brightness(1.7) saturate(.9)}
 
@@ -602,7 +617,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 <div id="app" style="display:none">
   <div id="navVeil" data-navx aria-hidden="true"></div>
   <aside class="sidebar">
-    <div class="brand">
+    <div class="brand sidebar-head">
       <div class="brand-mark">AFAQY</div>
       <div class="brand-name" id="brandName"></div>
       <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة">✕</button>
@@ -636,7 +651,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.50</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.51</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
