@@ -509,7 +509,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.25
+      <i class="ver-tag">نسخة</i>V14.26
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -700,6 +700,14 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الثالثة عشرة: الإشعارات ══ */
+ 'هذا المتصفّح لا يدعم إشعارات النظام':'This browser does not support system notifications',
+ 'الإذنُ ممنوحٌ سلفًا':'Permission is already granted',
+ 'الإذنُ مرفوضٌ من إعدادات المتصفّح — يُفتَح من هناك':'Permission was denied in the browser settings — it is granted from there',
+ 'الرسالةُ تُولَّد مرةً وتُرسَل بما يتاح: داخل التطبيق دائمًا، وإشعارُ النظام على اللاب والجوّال والويب بإذنٍ يُطلَب مرة، وواتساب أو بريدٌ لمن يُقصَد بعينه.':'The message is composed once and sent through whatever is available: always in the app, a system notification on laptop, phone and web with a permission asked once, and WhatsApp or email for a named recipient.',
+ 'لا إشعاراتٍ بعد.':'No notifications yet.',
+ 'لا نقاطَ محدَّدة — حدّدها من الخريطة أو من قائمة المواقع.':'No points selected — select them from the map or the sites list.',
+ 'أُرسل إشعارُ تجربة':'A test notification was sent',
  'لا فنيين مسجَّلين بعد.':'No technicians registered yet.',
  'لا تصفيةَ لتُمسَح':'No filter to clear',
  /* ══ الدفعة الثانية عشرة: السجل والمستخدمون ══ */
@@ -1043,6 +1051,14 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الثالثة عشرة ══ */
+ 'هذا المتصفّح لا يدعم إشعارات النظام':'یہ براؤزر سسٹم اطلاعات کی حمایت نہیں کرتا',
+ 'الإذنُ ممنوحٌ سلفًا':'اجازت پہلے سے دی جا چکی ہے',
+ 'الإذنُ مرفوضٌ من إعدادات المتصفّح — يُفتَح من هناك':'اجازت براؤزر کی ترتیبات میں مسترد ہوئی — وہیں سے دی جاتی ہے',
+ 'الرسالةُ تُولَّد مرةً وتُرسَل بما يتاح: داخل التطبيق دائمًا، وإشعارُ النظام على اللاب والجوّال والويب بإذنٍ يُطلَب مرة، وواتساب أو بريدٌ لمن يُقصَد بعينه.':'پیغام ایک بار بنتا ہے اور جو دستیاب ہو اس سے بھیجا جاتا ہے: ایپ میں ہمیشہ، لیپ ٹاپ فون اور ویب پر سسٹم اطلاع ایک بار اجازت لے کر، اور مخصوص شخص کے لیے واٹس ایپ یا ای میل۔',
+ 'لا إشعاراتٍ بعد.':'ابھی کوئی اطلاع نہیں۔',
+ 'لا نقاطَ محدَّدة — حدّدها من الخريطة أو من قائمة المواقع.':'کوئی مقام منتخب نہیں — نقشے یا مقامات کی فہرست سے منتخب کریں۔',
+ 'أُرسل إشعارُ تجربة':'آزمائشی اطلاع بھیج دی گئی',
  'لا فنيين مسجَّلين بعد.':'ابھی کوئی ٹیکنیشن درج نہیں۔',
  'لا تصفيةَ لتُمسَح':'مٹانے کے لیے کوئی چھانٹ نہیں',
  /* ══ الدفعة الثانية عشرة ══ */
@@ -2073,7 +2089,11 @@ function syncBadge(){
     ? new Date(STATE.meta.lastSync).toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'ar-EG',
         { hour:'2-digit', minute:'2-digit' })
     : '—';
-  el.innerHTML = '<span class="dot" style="background:'
+  var un = (typeof notifUnread === 'function') ? notifUnread() : 0;
+  el.innerHTML = (un ? '<button type="button" class="pill warn" data-p="notif" '
+                     + 'style="border:0;cursor:pointer" aria-label="الإشعارات">\u1F514 '
+                     + nm(un) + '</button> ' : '')
+    + '<span class="dot" style="background:'
     + (on ? 'var(--ok)' : 'var(--danger)') + '"></span>'
     + (n ? '<span class="pill warn">' + nm(n) + ' ' + esc(t('بانتظار الرفع')) + '</span> '
          : '')
@@ -4514,6 +4534,9 @@ function svSave(next){
     if (typeof photoQueue === 'function') photoQueue(s.id, k, FORM.photos[k].data);
   });
   logEvent((reached ? 'مسح موقع — ' : 'تعذّر الوصول — ' + FORM.access + ' · ') + s.id);
+  /* تعذُّرُ الوصولِ يحتاج قرارًا من المكتب — تصريحٌ أو مخاطبةُ جهةٍ أو شطب */
+  if (!reached) notifPush('تعذّر وصول', FORM.access + ' — ' + (FORM.note || ''),
+                          { site:s.id, lv:'مهم' });
   toast(reached
     ? (nm(1) + ' ' + t('مسحٌ حُفظ') + ' · ' + t('في الطابور') + ' ' + nm(CORE.pending()))
     : t('سُجّل تعذُّرُ الوصول'));
@@ -4634,9 +4657,13 @@ function apprIns(id, ok){
     var s = siteFind(id);
     if (s) s.fstat = 'مُركّب';
     logEvent('اعتماد تركيب — ' + id + ' · ' + nm(r.pts || 0) + ' نقطة');
+    notifPush('اعتماد', 'اعتُمد تركيبُك — ' + nm(r.pts || 0) + ' نقطة',
+              { to:r.by || '', site:id, lv:'مهم' });
   } else {
     r.status = 'مُعاد'; r.approved = false; r.why = 'أُعيد للتصحيح';
     logEvent('ردّ تركيب — ' + id);
+    /* الردُّ يوقف العملَ حتى يُصحَّح — فهو عاجلٌ لا يُترَك للسجل */
+    notifPush('ردّ', 'رُدَّ تركيبُك للتصحيح — راجع النقطة', { to:r.by || '', site:id, lv:'عاجل' });
   }
   CORE.set('inss', id, r);
   toast(ok ? t('اعتُمد') : t('رُدّ للمنفِّذ'));
@@ -5040,6 +5067,7 @@ function nsCoRequest(){
   STATE.coreqs[nm0] = { name:nm0, by:STATE.meta.name || '', at:Date.now(), status:'مطلوب' };
   CORE.set('coreqs', nm0, STATE.coreqs[nm0]);
   logEvent('طلب إضافة شركة — ' + nm0);
+  notifPush('طلب شركة', 'طلبُ إضافة شركةٍ بانتظار اعتمادك — ' + nm0, { lv:'مهم' });
   NS_CO_OPEN = false;
   toast(t('أُرسل الطلب — يعتمده المهندس'));
   render(1);
@@ -5095,6 +5123,8 @@ function nsSave(){
     if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
+  notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
+            { site:id, lv:'مهم' });
   logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
     + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''));
   statBump();
@@ -7539,6 +7569,16 @@ var SHEETS = {
     });
     return out;
   },
+  notif: function(){
+    var out = [['الوقت','النوع','الأهمية','الرسالة','الموقع','إلى','أنشأه','مقروء']];
+    (STATE.notifs || []).forEach(function(n){
+      out.push([new Date(n.at).toISOString().slice(0,16).replace('T',' '),
+                n.kind, n.lv, n.text, n.site || '', n.to || '', n.by || '',
+                n.read ? 'نعم' : 'لا']);
+    });
+    return out;
+  },
+
   /* سجلُّ الأحداث كما هو معروضٌ بعد التصفية — لا كلُّه: من صفّى ثم صدّر
      يريد ما صفّاه، ومن أراد الكلَّ مسح التصفية. */
   ev: function(){
@@ -8799,6 +8839,129 @@ PAGE.hb = { m:'صحة الأجهزة', t:'صحة الأجهزة', l:'الإنذ�
   }};
 
 /* ── النظام ─────────────────────────────────────── */
+/* ═══ الإشعارات: أربعُ قنواتٍ ورسالةٌ واحدة ═══════════════════════════════
+   القديمُ كان يُشعِر بواتساب وحده، وبفتحِ نافذةٍ يدويًّا لكلِّ مرسَلٍ إليه.
+   وهذا يعمل ما دام المرسِلُ جالسًا أمام الشاشة — ولا يعمل ليلًا ولا حين
+   يكون المشرفُ في الميدان.
+
+   فصارت الرسالةُ واحدةً تُولَّد مرةً، ثم تُرسَل بما يتاح:
+     · داخل التطبيق — دائمًا، وتبقى حتى تُقرأ
+     · إشعارُ النظام — يظهر على اللاب والجوّال والويب ولو كان التطبيق مغلقًا
+       ما دام مثبَّتًا، بإذنٍ يُطلَب مرةً
+     · واتساب — للمرسَل إليه بعينه، برقمه المسجَّل
+     · بريد — يفتح المرسِلَ بنصٍّ جاهز
+
+   والإشعارُ الذي لا يُقرأ لا يُحذَف: يبقى في المركز بمن أنشأه ومتى ولمن. */
+
+var NOTIF_MAX = 200;
+
+function notifStore(){ if (!STATE.notifs) STATE.notifs = []; return STATE.notifs; }
+function notifUnread(){ return notifStore().filter(function(n){ return !n.read; }).length; }
+
+/* الأهميةُ تحدّد ما يُدفَع إلى نظام التشغيل وما يُترَك للمركز */
+var NOTIF_LV = { عاجل:3, مهم:2, عادي:1 };
+
+function notifPush(kind, text, opt){
+  opt = opt || {};
+  var n = { id:uid36(), kind:kind, text:String(text || ''),
+            lv:opt.lv || 'عادي', to:opt.to || '', site:opt.site || '',
+            by:STATE.meta.name || '', at:Date.now(), read:false };
+  notifStore().unshift(n);
+  if (notifStore().length > NOTIF_MAX) notifStore().length = NOTIF_MAX;
+  CORE.saveSoon();
+  logEvent('إشعار — ' + kind + ' · ' + n.text.slice(0, 60));
+  if (NOTIF_LV[n.lv] >= 2) notifSystem(n);
+  syncBadge();
+  if (CUR === 'notif') render(1);
+  return n;
+}
+
+/* إشعارُ النظام: يظهر خارج التطبيق. الإذنُ يُطلَب مرةً ولا يُلحَّ فيه. */
+function notifCan(){
+  return (typeof Notification !== 'undefined') && Notification.permission === 'granted';
+}
+function notifAsk(){
+  if (typeof Notification === 'undefined'){ toast(t('هذا المتصفّح لا يدعم إشعارات النظام')); return; }
+  if (Notification.permission === 'granted'){ toast(t('الإذنُ ممنوحٌ سلفًا')); return; }
+  if (Notification.permission === 'denied'){
+    toast(t('الإذنُ مرفوضٌ من إعدادات المتصفّح — يُفتَح من هناك')); return;
+  }
+  Notification.requestPermission().then(function(p){
+    toast(t(p === 'granted' ? 'مُنح الإذن — ستصلك الإشعارات' : 'لم يُمنَح الإذن'));
+    render(1);
+  });
+}
+function notifSystem(n){
+  if (!notifCan()) return;
+  var body = n.text + (n.site ? ' · ' + n.site : '');
+  try {
+    /* عبر عامل الخدمة إن وُجد — فيظهر ولو كان التطبيقُ مغلقًا */
+    if (SW_STATE && SW_STATE.reg && SW_STATE.reg.showNotification){
+      SW_STATE.reg.showNotification('نُسُك — ' + n.kind, { body:body, tag:n.id, dir:'rtl', lang:'ar' });
+      return;
+    }
+    new Notification('نُسُك — ' + n.kind, { body:body, dir:'rtl', lang:'ar' });
+  } catch (e){}
+}
+
+/* رقمُ المرسَل إليه من سجل الفنيين — ولا يُعرَض لمن مُنع من الهواتف */
+function notifPhone(name){
+  var x = TECHS.filter(function(y){ return y.n === name; })[0];
+  return (x && x.ph) || '';
+}
+function notifMail(n){
+  var sub = 'نُسُك — ' + n.kind;
+  var body = n.text + (n.site ? '\nالموقع: ' + n.site : '')
+           + '\nالوقت: ' + new Date(n.at).toLocaleString('ar-EG')
+           + '\nمن: ' + (n.by || '—');
+  return 'mailto:?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(body);
+}
+
+PAGE.notif = { m:'النظام', t:'الإشعارات',
+  l:'ما يجب أن يعرفه أحدٌ الآن — وبأيِّ قناةٍ يصله.',
+  body:function(){
+    var L = notifStore(), un = notifUnread();
+    var perm = (typeof Notification === 'undefined') ? 'غير مدعوم' : Notification.permission;
+
+    return stats([['غير مقروء', N(un), un ? 'wrn' : 'ok'],
+                  ['الكل', N(L.length)],
+                  ['إشعارُ النظام', t(perm === 'granted' ? 'ممنوح'
+                                    : perm === 'denied' ? 'مرفوض' : 'لم يُطلَب'),
+                    perm === 'granted' ? 'ok' : 'wrn']])
+
+      + card('قنوات الوصول',
+          '<p class="hint" style="margin:0 0 11px">'
+          + esc(t('الرسالةُ تُولَّد مرةً وتُرسَل بما يتاح: داخل التطبيق دائمًا، وإشعارُ النظام على اللاب والجوّال والويب بإذنٍ يُطلَب مرة، وواتساب أو بريدٌ لمن يُقصَد بعينه.'))
+          + '</p>'
+          + '<div class="actions">'
+          + (perm === 'granted'
+              ? btn('جرّب إشعار النظام','btn-secondary btn-sm',' data-ntest="1"')
+              : btn('اسمح بإشعار النظام','btn-primary btn-sm',' data-nask="1"'))
+          + (un ? btn('علّم الكل مقروءًا','btn-quiet btn-sm',' data-nread="*"') : '')
+          + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="notif"')
+          + '</div>')
+
+      + cardFlush('السجل',
+          L.length
+            ? table(['الوقت','النوع','الرسالة','إلى','قنوات'],
+                L.slice(0, 200).map(function(n){
+                  var ph = notifPhone(n.to);
+                  return ['<span class="num">' + esc(new Date(n.at).toLocaleString('ar-EG',
+                            { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })) + '</span>',
+                          pill(t(n.kind), n.lv === 'عاجل' ? 'bad' : n.lv === 'مهم' ? 'wrn' : 'off'),
+                          (n.read ? '' : '<b>') + esc(n.text) + (n.read ? '' : '</b>')
+                            + (n.site ? '<br><span class="hint" style="margin:0">' + esc(n.site) + '</span>' : ''),
+                          esc(n.to || '—'),
+                          (ph && may('phones')
+                            ? '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="'
+                              + esc(waLink(ph, n.text)) + '" data-nwa="' + esc(n.id) + '">واتساب</a>' : '')
+                          + '<a class="btn btn-quiet btn-sm" href="' + esc(notifMail(n)) + '" data-nmail="'
+                            + esc(n.id) + '">بريد</a>'
+                          + (n.read ? '' : btn('قرأت','btn-quiet btn-sm',' data-nread="' + esc(n.id) + '"'))];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا إشعاراتٍ بعد.')) + '</p>');
+  }};
+
 /* ═══ سجلُّ الأحداث ═══
    كان يعرض خمسةَ أسطرٍ ثابتةً من بيانات العرض لا السجلَّ الحقيقي — فالأثرُ
    التدقيقيُّ يُكتَب ولا يُقرأ، ومن سأل «من حذف هذه الصورة؟» لم يجد جوابًا.
@@ -8939,7 +9102,8 @@ var EXP_SECS = [
   ['perms','الصلاحيات — ماذا يملك كلُّ دور',1],
   ['daily','الاتجاه اليومي — تسعون يومًا',1],
   ['ev','سجل الأحداث — كما هو مصفّى',1],
-  ['users','المستخدمون وأدوارهم',1]
+  ['users','المستخدمون وأدوارهم',1],
+  ['notif','الإشعارات وقنواتها',1]
 ];
 
 function expHtml(){
@@ -9337,21 +9501,46 @@ PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّ
 /* المحدَّد — بعد التحديد المتعدد من الخريطة */
 PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من الخريطة — لعملٍ جماعي عليه.',
   body:function(){
-    return stats([['نقاط محدَّدة','٣','acc'], ['منها مُسح','٠'], ['منها مُركّب','٠'], ['مشاعر','٢']])
+    /* كانت ثلاثةَ صفوفٍ مزروعةٍ لا تُزال مهما ضُغط «أزل»، وأزرارٌ بلا خاصيةٍ
+       يبتلعها حارسُ الأزرار الميتة فيقول نصَّها. والتحديدُ الحقيقيُّ في `SEL`. */
+    var ids = selIds();
+    var L = ids.map(siteFind).filter(Boolean);
+    var sv = 0, ins = 0, zones = {};
+    L.forEach(function(x){
+      if (svDone(STATE.recs[x.id])) sv++;
+      var r = STATE.inss[x.id];
+      if (r && r.status === 'مُركّب' && r.approved) ins++;
+      zones[x.zone] = 1;
+    });
+    return stats([['نقاط محدَّدة', N(L.length), L.length ? 'acc' : ''],
+                  ['منها مُسح', N(sv)],
+                  ['منها مُركّب', N(ins)],
+                  ['مشاعر', N(Object.keys(zones).length)]])
+
       + cardFlush('النقاط',
-          table(['المعرّف','الموقع','المشعر','الحالة',''],
-            DATA.sites.slice(0,3).map(function(s){
-              return ['<span class="num">'+esc(s[0])+'</span>', esc(s[1]), esc(t(s[2])),
-                      pill(s[5],'warn'), btn('أزل','btn-quiet btn-sm')];
-            })))
-      + card('عملٌ على المحدَّد',
-          '<div class="actions">'
-          + btn('أسند لفني','btn-primary')
-          + btn('جدولة تركيب','btn-secondary')
-          + btn('طلب زيارة','btn-secondary')
-          + (may('exportAll') ? btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"') : '')
-          + btn('مسح التحديد','btn-danger')
-          + '</div>');
+          L.length
+            ? table(['المعرّف','الموقع','المشعر','الحالة',''],
+                L.slice(0, 200).map(function(x){
+                  var r = STATE.inss[x.id];
+                  var st2 = (r && r.status) || (svDone(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
+                  return ['<span class="num">' + esc(x.id) + '</span>',
+                          esc(x.name), esc(t(x.zone)),
+                          pill(t(st2), st2 === 'مُركّب' ? 'ok' : 'warn'),
+                          btn('أزل','btn-quiet btn-sm',' data-selrm="' + esc(x.id) + '"')];
+                }))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا نقاطَ محدَّدة — حدّدها من الخريطة أو من قائمة المواقع.')) + '</p>')
+
+      + (L.length
+        ? card('عملٌ على المحدَّد',
+            '<div class="actions">'
+            + btn('أسند لفني','btn-primary',' data-asn="1"')
+            + btn('جدولة تركيب','btn-secondary',' data-lasn="ins"')
+            + btn('طلب زيارة','btn-secondary',' data-lasn="srv"')
+            + (may('exportAll') ? btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"') : '')
+            + btn('امسح التحديد','btn-danger',' data-selnone="1"')
+            + '</div>')
+        : '');
   }};
 
 
@@ -9777,12 +9966,33 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
 
 PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك ومعاملا الحالة.',
   body:function(){
+    /* عمودُ «النقاط» كان يعرض وزنَ الزيارة المكتوبَ في الإعدادات — وليس هو
+       ما يُفَكّ. الفكُّ يقع على ما رُكِّب فعلًا في الأرض، فيُجمَع تراكميًّا على
+       مدار الموسم: كلُّ تركيبٍ معتمَدٍ يضيف قطعَه إلى مشعره ونوعه. فيقرأ
+       المخطِّطُ ما ينتظره في كلِّ مكانٍ لا ما قدّره قبل أن يبدأ الموسم. */
+    var built = {};
+    Object.keys(STATE.inss || {}).forEach(function(id){
+      var r = STATE.inss[id];
+      if (!r || r.status !== 'مُركّب' || !r.approved) return;
+      var x = siteFind(id); if (!x) return;
+      var k = x.zone + '|' + catLabel(x), n = 0;
+      Object.keys(r.parts || {}).forEach(function(p){ n += (+r.parts[p] || 0); });
+      built[k] = (built[k] || 0) + n;
+    });
+    var anyBuilt = Object.keys(built).length > 0;
     return cardFlush('وزن الفك — ' + nm(MX.length) + ' صنفًا',
-        table(['المشعر','النوع','النقاط','وزن الفك'],
+        table(['المشعر','النوع','قِطَعٌ رُكّبت','وزن الفك'],
           MX.map(function(r){
-            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])), N(r[2]),
-                    cfgInput('dw', r[0] + '|' + r[1], { dec:1 })];
-          })))
+            var k = r[0] + '|' + r[1];
+            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
+                    built[k] ? '<span class="num">' + N(built[k]) + '</span>' : '—',
+                    cfgInput('dw', k, { dec:1 })];
+          })),
+        '<p class="hint" style="margin:0">'
+        + esc(t(anyBuilt
+            ? 'عمودُ القطع يتراكم من التركيب المعتمَد على مدار الموسم — ولا يُكتَب بيد.'
+            : 'عمودُ القطع يبقى فارغًا حتى يُعتمَد أولُ تركيب — ثم يتراكم من الأرض.'))
+        + '</p>')
       + card('التارجت والمعاملان',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('تارجت الفك الشهري')) + '</label>'
@@ -9985,7 +10195,7 @@ var NAV = [
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
-      ['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
+      ['notif','الإشعارات'],['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
   { g:'المساعدة', icon:'\u003F', items:[['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
 
@@ -10287,6 +10497,22 @@ function onDocClick(e){
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
     USR_EDIT = ''; usrSet(id2, patch); return;
   }
+  if (e.target.closest('[data-nask]')){ notifAsk(); return; }
+  if (e.target.closest('[data-ntest]')){
+    notifSystem({ kind:'تجربة', text:'وصل إشعارُ النظام — القناةُ تعمل.', id:'test', site:'' });
+    toast(t('أُرسل إشعارُ تجربة')); return;
+  }
+  var nrd = e.target.closest('[data-nread]');
+  if (nrd){
+    var k = nrd.getAttribute('data-nread');
+    notifStore().forEach(function(n){ if (k === '*' || n.id === k) n.read = true; });
+    CORE.saveSoon(); syncBadge(); render(1); return;
+  }
+  var nwa = e.target.closest('[data-nwa]'), nml = e.target.closest('[data-nmail]');
+  if (nwa || nml){ logEvent('إرسال إشعار — ' + ((nwa||nml).getAttribute(nwa?'data-nwa':'data-nmail'))
+      + ' · ' + (nwa ? 'واتساب' : 'بريد')); return; }
+  var srm = e.target.closest('[data-selrm]');
+  if (srm){ selToggle(srm.getAttribute('data-selrm')); render(1); return; }
   var pv = e.target.closest('[data-pview]');
   if (pv){ photoSeen(pv.getAttribute('data-pview')); return; }   /* الرابطُ يفتح، ونحن نسجّل */
   var pd = e.target.closest('[data-pdel]');
