@@ -104,6 +104,9 @@ const MUT = [
   { n:'الرسالةُ تعود تُذيَّل بأنها معاينة', g:'scripts/audit-data.mjs',
     a:'  el.textContent = label;',
     b:"  el.textContent = label + ' — ' + t('في المعاينة: لا فعل حقيقي');" },
+  { n:'زرُّ حذفٍ يُقال إنه حذف ولا يحذف', g:'scripts/audit-crud.mjs',
+    a:'  L.splice(i, 1);\n  jobSave();',
+    b:'  jobSave();' },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
