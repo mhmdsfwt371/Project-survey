@@ -229,8 +229,15 @@ input[type="number"]{max-width:140px}
 .map-fab{position:absolute;inset-block-end:16px;inset-inline-end:14px;display:flex;
   flex-direction:column;gap:8px;z-index:var(--z-map-ui);align-items:flex-end}
 .map-fab .btn{box-shadow:0 6px 20px rgba(0,0,0,.45)}
-.map-legend{position:absolute;inset-block-end:16px;inset-inline-start:14px;z-index:var(--z-map-ui);
-  background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
+/* الشريطُ والأسطورةُ عمودٌ واحدٌ من الأسفل: كانا موضعين ثابتين بمسافتين
+   مقدَّرتين، والأسطورةُ تطول بعدد صفوفها فتصعد فوق الشريط. والعمودُ لا
+   يحتاج تقديرَ ارتفاعٍ أصلًا — يرتّب نفسَه مهما طال ما فيه. */
+.map-stack{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
+  inset-block-end:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+  max-width:calc(100% - 150px);max-height:calc(100% - 150px);pointer-events:none}
+.map-stack > *{pointer-events:auto}
+.map-legend{background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
   padding:10px 12px;font-size:12px;color:#C6CFD7;backdrop-filter:blur(6px)}
 .lg-row{display:flex;align-items:center;gap:7px;margin:4px 0}
 .lg-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
@@ -360,9 +367,7 @@ body.nav-open .mapwrap{pointer-events:none}
 .pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
 .pop-btns .btn,.pop-btns a.btn{min-height:36px}
 
-.map-layerbar{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
-  inset-block-end:calc(140px + env(safe-area-inset-bottom,0px));
-  display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
+.map-layerbar{display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
   border-radius:99px;padding:7px 14px;font-size:12px;backdrop-filter:blur(8px);
   min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:calc(100% - 28px);
   overflow-x:auto;scrollbar-width:none;white-space:nowrap}
@@ -431,7 +436,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 /* الرسالةُ فوق أزرارِ الزاوية لا تحتها — ولا تحجب موقعي */
 #nskToast{inset-block-end:calc(120px + env(safe-area-inset-bottom,0px))!important}
 .map-fab{inset-block-end:calc(16px + env(safe-area-inset-bottom,0px))}
-.map-legend{inset-block-end:calc(16px + env(safe-area-inset-bottom,0px))}
+.map-stack{inset-block-end:calc(16px + env(safe-area-inset-bottom,0px))}
 .map-badge{inset-block-end:calc(78px + env(safe-area-inset-bottom,0px))}
 
 /* في الوضع المثبَّت لا شريطَ متصفّحٍ يحمي الحواف */
@@ -441,7 +446,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 /* وقتَ التحديد أو النقل تُخفى الأسطورةُ والعدّاد — الشاشةُ للعمل لا للشرح */
 .map-busy .map-legend,.map-busy .map-badge{display:none}
-.map-busy .map-layerbar{inset-block-end:calc(96px + env(safe-area-inset-bottom,0px))}
+.map-busy .x-was-layerbar{inset-block-end:calc(96px + env(safe-area-inset-bottom,0px))}
 @media(max-width:560px){
   .map-selbar{inset-block-end:calc(160px + env(safe-area-inset-bottom,0px));font-size:11.5px}
   .map-layerbar{font-size:11px;padding:6px 12px;gap:8px}
@@ -504,7 +509,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.23
+      <i class="ver-tag">نسخة</i>V14.24
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +700,16 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'لا تصفيةَ لتُمسَح':'No filter to clear',
+ /* ══ الدفعة الثانية عشرة: السجل والمستخدمون ══ */
+ 'نوع الحدث':'Event type',
+ 'من':'From',
+ 'بحث في نص الحدث':'Search within the event text',
+ 'لا أحداثَ تطابق التصفية.':'No events match the filter.',
+ 'يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.':'Showing three hundred — narrow the filter or export the file to see the rest.',
+ 'إدارةُ المستخدمين للمهندس وحده':'Managing users is for the engineer only',
+ 'حُفظ':'Saved',
+ 'الاسم مطلوب':'The name is required',
  /* ══ الدفعة الحادية عشرة: الصور ══ */
  'الحذفُ للمهندس وحده':'Deleting is for the engineer only',
  'لا صورةَ بهذا المعرّف':'No photo with this ID',
@@ -1027,6 +1042,16 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'لا تصفيةَ لتُمسَح':'مٹانے کے لیے کوئی چھانٹ نہیں',
+ /* ══ الدفعة الثانية عشرة ══ */
+ 'نوع الحدث':'واقعے کی قسم',
+ 'من':'سے',
+ 'بحث في نص الحدث':'واقعے کے متن میں تلاش',
+ 'لا أحداثَ تطابق التصفية.':'کوئی واقعہ چھانٹ سے میل نہیں کھاتا۔',
+ 'يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.':'تین سو دکھائے جا رہے ہیں — چھانٹ محدود کریں یا باقی دیکھنے کے لیے فائل برآمد کریں۔',
+ 'إدارةُ المستخدمين للمهندس وحده':'صارفین کا انتظام صرف انجینئر کے لیے ہے',
+ 'حُفظ':'محفوظ ہو گیا',
+ 'الاسم مطلوب':'نام لازمی ہے',
  /* ══ الدفعة الحادية عشرة ══ */
  'الحذفُ للمهندس وحده':'حذف صرف انجینئر کے لیے ہے',
  'لا صورةَ بهذا المعرّف':'اس شناخت کے ساتھ کوئی تصویر نہیں',
@@ -1935,6 +1960,14 @@ var FB = {
         FB.readCount = (FB.readCount || 0) + snap.size;
       });
     })).then(function(){
+      /* المستخدمون: للمهندس وحده — وهم عشراتٌ لا آلاف */
+      if (typeof may === 'function' && may('users')){
+        FB.db.collection('users').limit(300).get().then(function(sn){
+          if (!STATE.users) STATE.users = {};
+          sn.forEach(function(d){ STATE.users[d.id] = d.data(); });
+          FB.readCount = (FB.readCount || 0) + sn.size;
+        }).catch(function(){});
+      }
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
       return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
         .then(function(sn){
@@ -7504,6 +7537,27 @@ var SHEETS = {
     });
     return out;
   },
+  /* سجلُّ الأحداث كما هو معروضٌ بعد التصفية — لا كلُّه: من صفّى ثم صدّر
+     يريد ما صفّاه، ومن أراد الكلَّ مسح التصفية. */
+  ev: function(){
+    var out = [['اليوم','الوقت','النوع','الحدث','المستخدم','الجهاز']];
+    (typeof evRows === 'function' ? evRows() : (STATE.events || [])).forEach(function(e){
+      out.push([e.day || '', e.at || '', evKind(e.what), e.what || '', e.by || '', e.dev || '']);
+    });
+    return out;
+  },
+
+  users: function(){
+    var out = [['اسم المستخدم','الاسم','الدور','الحالة','أُنشئ في','المعرّف']];
+    var U = STATE.users || {};
+    Object.keys(U).forEach(function(uid){
+      var u = U[uid] || {};
+      out.push([u.user || '', u.name || '', (ROLES[u.role] || {}).n || u.role || '',
+                u.active === false ? 'معطل' : 'نشط', String(u.at || '').slice(0,10), uid]);
+    });
+    return out;
+  },
+
   /* الاتجاهُ عبر الأيام — تقاريرُ الوزارةِ تُقرأ بالمقارنة لا باللقطة:
      رقمُ اليوم وحده لا يقول أمتقدّمون نحن أم متأخرون. */
   daily: function(){
@@ -7628,12 +7682,7 @@ var SHEETS = {
     });
     return out;
   },
-  ev: function(){
-    var out = [['الوقت','الحدث','المستخدم']];
-    DATA.events.forEach(function(e){ out.push(e.slice()); });
-    STATE.events.forEach(function(e){ out.push([e.at||'', e.what||'', e.by||'']); });
-    return out;
-  },
+
   perms: function(){
     var out = [['الصلاحية'].concat(ROLE_ORDER.map(roleName))];
     PERMS.forEach(function(p){
@@ -7787,6 +7836,7 @@ var SEL_IDS = [];
 var IMP_COLS = {
   sites: ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
   ips:   ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
+  users: ['المعرّف','الاسم','الدور','الحالة'],
   co:    ['اسم الشركة','مواقعها','المنسّق','الجوال'],
   items: ['المنطقة','اسم القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر'],
   stock: ['الصنف','الكمية','المورّد','التاريخ','رقم الفاتورة'],
@@ -7880,6 +7930,26 @@ function impApply(){
       var s = siteFind(String(r[0]).trim());
       if (s){ if (r[3]) s.sign = String(r[3]); if (r[4]) s.sq = String(r[4]);
               if (r[5]) s.co = String(r[5]); n++; }
+    } else if (p.kind === 'users'){
+      /* الاستيرادُ يعدّل الموجودَ ولا يُنشئ حسابًا: إنشاءُ الحساب في المصادقة
+         لا في القاعدة، والدورُ والحالةُ هما ما تقرؤه القواعد. */
+      var uid0 = String(r[0] || '').trim();
+      var cur  = (STATE.users || {})[uid0];
+      if (uid0 && cur){
+        var pt = {};
+        if (r[1]) pt.name = String(r[1]).trim();
+        if (r[2]){
+          var rk = Object.keys(ROLES).filter(function(k){
+            return k === String(r[2]).trim() || ROLES[k].n === String(r[2]).trim(); })[0];
+          if (rk) pt.role = rk;
+        }
+        if (r[3]) pt.active = String(r[3]).trim() !== 'معطل';
+        if (Object.keys(pt).length){
+          STATE.users[uid0] = Object.assign({}, cur, pt);
+          CORE.set('users', uid0, STATE.users[uid0]);
+          n++;
+        }
+      }
     } else if (p.kind === 'ips'){
       /* كان يقول «صفًّا حُفظ» ولا يكتب حرفًا — العرضُ بلا كتابةٍ كذب */
       var t2 = siteFind(String(r[0]).trim());
@@ -8295,7 +8365,7 @@ function mapUIHtml(){
     +     '\u25C9 '+esc(t('الشركات'))+(CO_SEL.length?' \u00b7 '+nm(CO_SEL.length):'')+'</button>'
     + '</div>'
 
-    + layerBar() + mapSelBar() + moveBar()
+    + '<div class="map-stack">' + layerBar()
 
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
         + '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:10px">'
@@ -8318,6 +8388,8 @@ function mapUIHtml(){
 
 
     + '<div class="map-legend">' + legendRows() + '</div>'
+    + '</div>'
+    + mapSelBar() + moveBar()
     + (CO_OPEN ? coFiltHtml() : '')
     + (ASN_PICK ? asnPickHtml() : '')
     + (ASN_OPEN ? asnSheet() : '')
@@ -8703,13 +8775,86 @@ PAGE.hb = { m:'صحة الأجهزة', t:'صحة الأجهزة', l:'الإنذ�
   }};
 
 /* ── النظام ─────────────────────────────────────── */
-PAGE.ev = { m:'النظام', t:'سجل الأحداث', l:'كل تغيير بمن أجراه ومتى.',
+/* ═══ سجلُّ الأحداث ═══
+   كان يعرض خمسةَ أسطرٍ ثابتةً من بيانات العرض لا السجلَّ الحقيقي — فالأثرُ
+   التدقيقيُّ يُكتَب ولا يُقرأ، ومن سأل «من حذف هذه الصورة؟» لم يجد جوابًا.
+   والحدثُ نصٌّ حر، فنوعُه يُشتقُّ من مفتتحه لا يُخزَّن معه. */
+var EV_KINDS = [
+  ['مسح',    /^مسح موقع|^تعذّر الوصول/],
+  ['تركيب',  /^تركيب|^إتمام تركيب|^مسودّة تركيب/],
+  ['اعتماد', /^اعتماد|^ردّ |^رُدّ/],
+  ['فك',     /فك —|^جدولة فك/],
+  ['صور',    /صورة/],
+  ['حسابات', /^حساب|^طلب إضافة شركة/],
+  ['مواقع',  /^موقع جديد/],
+  ['مخزون',  /^عهدة|^صرف|^توريد|^شراء|^مشترى/],
+  ['مال',    /^مستخلص|^ميزانية|^خط أساس/],
+  ['نظام',   /^استيراد|^تصدير|^إعداد|^مزامنة/]
+];
+function evKind(what){
+  var w = String(what || '');
+  for (var i = 0; i < EV_KINDS.length; i++) if (EV_KINDS[i][1].test(w)) return EV_KINDS[i][0];
+  return 'أخرى';
+}
+var EVF = { kind:'', by:'', from:'', to:'', q:'' };
+
+function evRows(){
+  var L = (STATE.events || []).slice();
+  return L.filter(function(e){
+    if (EVF.kind && evKind(e.what) !== EVF.kind) return false;
+    if (EVF.by && String(e.by || '') !== EVF.by) return false;
+    if (EVF.q && String(e.what || '').indexOf(EVF.q) < 0) return false;
+    /* التاريخُ والوقتُ معًا: `from` و`to` بصيغة datetime-local */
+    if (EVF.from && e.ts < Date.parse(EVF.from)) return false;
+    if (EVF.to   && e.ts > Date.parse(EVF.to))   return false;
+    return true;
+  });
+}
+
+PAGE.ev = { m:'النظام', t:'سجل الأحداث', l:'كل تغيير بمن أجراه ومتى — ولا يُعدَّل ولا يُحذَف.',
   body:function(){
-    return cardFlush('الأحداث',
-      table(['الوقت','الحدث','المستخدم'],
-        DATA.events.map(function(e){
-          return ['<span class="num">'+esc(e[0])+'</span>', esc(e[1]), esc(e[2])];
-        })));
+    var all = STATE.events || [], L = evRows();
+    var users = [], seen = {};
+    all.forEach(function(e){ var b = e.by || ''; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
+    var kinds = {}; all.forEach(function(e){ var k = evKind(e.what); kinds[k] = (kinds[k]||0)+1; });
+
+    return card('تصفية',
+        '<div class="grid cols-2">'
+        + '<div class="field"><label>' + esc(t('نوع الحدث')) + '</label>'
+        + '<select data-evf="kind"><option value="">— ' + esc(t('الكل')) + ' —</option>'
+        + Object.keys(kinds).sort().map(function(k){
+            return '<option' + (EVF.kind===k?' selected':'') + '>' + esc(t(k)) + '</option>'; }).join('')
+        + '</select></div>'
+        + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
+        + '<select data-evf="by"><option value="">— ' + esc(t('الكل')) + ' —</option>'
+        + users.sort().map(function(u){
+            return '<option' + (EVF.by===u?' selected':'') + '>' + esc(u) + '</option>'; }).join('')
+        + '</select></div>'
+        + '<div class="field"><label>' + esc(t('من')) + '</label>'
+        + '<input type="datetime-local" data-evf="from" value="' + esc(EVF.from) + '"></div>'
+        + '<div class="field"><label>' + esc(t('إلى')) + '</label>'
+        + '<input type="datetime-local" data-evf="to" value="' + esc(EVF.to) + '"></div>'
+        + '</div>'
+        + '<div class="field"><label>' + esc(t('بحث في نص الحدث')) + '</label>'
+        + '<input type="search" data-evf="q" value="' + esc(EVF.q) + '" dir="auto"></div>'
+        + '<div class="actions">'
+        + btn('امسح التصفية','btn-quiet btn-sm',' data-evclr="1"')
+        + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ev"')
+        + '</div>')
+
+      + cardFlush('الأحداث — ' + nm(L.length) + ' ' + t('من') + ' ' + nm(all.length),
+          L.length
+            ? table(['الوقت','النوع','الحدث','المستخدم'],
+                L.slice(0, 300).map(function(e){
+                  return ['<span class="num">' + esc(e.day || '') + ' ' + esc(e.at || '') + '</span>',
+                          pill(t(evKind(e.what)), 'off'),
+                          esc(e.what || ''), esc(e.by || '—')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا أحداثَ تطابق التصفية.')) + '</p>')
+
+      + (L.length > 300
+          ? '<p class="hint">' + esc(t('يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.')) + '</p>'
+          : '');
   }};
 
 PAGE.sys = { m:'النظام', t:'سلامة البيانات', l:'فحوص تكشف التناقض قبل أن يصير رقمًا في تقرير.',
@@ -8768,7 +8913,9 @@ var EXP_SECS = [
   ['crews','الطواقم ومعدلاتها اليومية',1],
   ['reps','مركز التقارير — ما يُرسَل ولمن ومتى',1],
   ['perms','الصلاحيات — ماذا يملك كلُّ دور',1],
-  ['daily','الاتجاه اليومي — تسعون يومًا',1]
+  ['daily','الاتجاه اليومي — تسعون يومًا',1],
+  ['ev','سجل الأحداث — كما هو مصفّى',1],
+  ['users','المستخدمون وأدوارهم',1]
 ];
 
 function expHtml(){
@@ -8822,7 +8969,9 @@ var IMPORTS = [
   ['stock','توريد المخزون', ['الصنف','الكمية','المورّد','التاريخ','رقم الفاتورة'],
    'كل صف حركةُ توريدٍ تدخل الدفتر — ولا تُعدَّل بعدها بل تُوازَن بحركة.'],
   ['buys','المشتريات', ['التاريخ','الصنف','الفئة','المشعر','الكمية','سعر الوحدة','المورّد'],
-   'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.']
+   'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.'],
+  ['users','المستخدمون', ['المعرّف','الاسم','الدور','الحالة'],
+   'يعدّل الاسمَ والدورَ والحالةَ لحسابٍ قائمٍ بمعرّفه — ولا يُنشئ حسابًا، فالإنشاءُ في المصادقة لا في القاعدة.']
 ];
 
 function importCard(){
@@ -9435,6 +9584,71 @@ function tgtBlock(kCamp, kCor){
     + '<p class="hint">الإجمالي والأسبوعي يُشتقّان ولا يُكتبان — والشهري وحده ما تكتبه.</p>');
 }
 
+/* ═══ المستخدمون: من القاعدة لا من بيانات العرض ═══
+   كانت القائمةُ أربعةَ صفوفٍ ثابتةً وأزرارُها بلا خاصية، فيبتلعها حارسُ
+   الأزرار الميتة ويقول نصَّها. فصارت تقرأ `STATE.users` وتكتب فيها. */
+var USR_Q = '', USR_EDIT = '';
+
+function usersList(){
+  var U = STATE.users || {}, out = [];
+  Object.keys(U).forEach(function(uid){
+    var u = U[uid] || {};
+    var hay = (u.name || '') + ' ' + (u.user || '') + ' ' + (u.role || '');
+    if (USR_Q && hay.indexOf(USR_Q) < 0) return;
+    out.push([uid, u]);
+  });
+  return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
+}
+
+function usrSet(uid, patch){
+  if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
+  var U = STATE.users || (STATE.users = {});
+  var u = Object.assign({}, U[uid] || {}, patch);
+  U[uid] = u;
+  CORE.set('users', uid, u);
+  logEvent('تعديل مستخدم — ' + (u.name || uid) + ' · ' + Object.keys(patch).join('،'));
+  toast(t('حُفظ'));
+  render(1);
+}
+
+function usersCard(){
+  var L = usersList(), U = STATE.users || {};
+  var roleOpts = function(cur){
+    return Object.keys(ROLES).map(function(k){
+      return '<option value="' + esc(k) + '"' + (cur===k?' selected':'') + '>'
+        + esc(t(ROLES[k].n)) + '</option>'; }).join('');
+  };
+  return cardFlush('المستخدمون — ' + nm(L.length) + (USR_Q ? ' / ' + nm(Object.keys(U).length) : ''),
+      L.length
+        ? table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'],
+            L.map(function(x){
+              var uid = x[0], u = x[1], on = u.active !== false;
+              if (USR_EDIT === uid){
+                return ['<input data-usrn="' + esc(uid) + '" value="' + esc(u.name || '') + '" dir="auto">',
+                        '<select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>',
+                        pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
+                        '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
+                        btn('احفظ','btn-primary btn-sm',' data-usrsave="' + esc(uid) + '"')
+                        + btn('إلغاء','btn-quiet btn-sm',' data-usredit=""')];
+              }
+              return ['<strong>' + esc(u.name || uid) + '</strong><br><span class="hint" dir="ltr" style="margin:0">'
+                        + esc(u.user || '') + '</span>',
+                      esc(t((ROLES[u.role] || {}).n || u.role || '—')),
+                      pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
+                      '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
+                      btn('تعديل','btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
+                      + btn(on ? 'تعطيل' : 'تفعيل','btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
+            }))
+        : '<p class="hint" style="padding:16px">'
+          + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'
+                                        : 'لم تُسحَب حساباتٌ بعد — زامِن أولًا.')) + '</p>',
+      '<form class="inline-form" onsubmit="return false">'
+      + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR_Q) + '" placeholder="'
+      +   esc(t('بحث')) + '" dir="auto">'
+      + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="users"')
+      + '</form>');
+}
+
 PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء الحسابات وأدوارها.',
   body:function(){
     return '<p class="lede" style="margin:0 0 16px">أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.</p>'
@@ -9456,17 +9670,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء �
           + esc(t('بدل إنشاء حسابٍ لكل فنيٍّ يدويًّا — أنشئها كلها من صفحة الفنيين بصلاحية «فني» ومشرفٍ لكلٍّ.'))
           + '</p>'
           + '<div class="actions">' + btn('اذهب إلى حسابات الفنيين','btn-primary btn-sm',' data-p="techacc"') + '</div>')
-      + cardFlush('المستخدمون — ' + nm(DATA.users.length),
-          table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'],
-            DATA.users.map(function(u){
-              return ['<strong>' + esc(u[0]) + '</strong><br><span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
-                      esc(t(u[2])), pill(u[3], u[3]==='نشط' ? 'ok' : 'off'),
-                      '<span class="num">' + esc(u[4]) + '</span>',
-                      btn(u[3]==='نشط' ? 'تعطيل' : 'تفعيل','btn-quiet btn-sm')];
-            })),
-          '<form class="inline-form" onsubmit="return false">'
-          + '<input type="search" placeholder="' + esc(t('بحث')) + '" dir="auto">'
-          + btn('بحث','btn-secondary btn-sm') + '</form>');
+      + usersCard();
   }};
 
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
@@ -10037,6 +10241,28 @@ function onDocClick(e){
     else toast(t('لا نتائج'));
     return;
   }
+  if (e.target.closest('[data-evclr]')){
+    /* الضغطُ على مسحٍ بلا تصفيةٍ لا يغيّر شيئًا — فيُقال ذلك بدل الصمت */
+    if (!EVF.kind && !EVF.by && !EVF.from && !EVF.to && !EVF.q){
+      toast(t('لا تصفيةَ لتُمسَح')); return;
+    }
+    EVF = { kind:'', by:'', from:'', to:'', q:'' }; render(1); return; }
+  var ue = e.target.closest('[data-usredit]');
+  if (ue){ USR_EDIT = ue.getAttribute('data-usredit'); render(1); return; }
+  var ua = e.target.closest('[data-usract]');
+  if (ua){ var id1 = ua.getAttribute('data-usract');
+    usrSet(id1, { active: ((STATE.users||{})[id1]||{}).active === false }); return; }
+  var us = e.target.closest('[data-usrsave]');
+  if (us){
+    var id2 = us.getAttribute('data-usrsave');
+    var nEl = document.querySelector('[data-usrn="' + id2 + '"]');
+    var rEl = document.querySelector('[data-usrr="' + id2 + '"]');
+    var patch = {};
+    if (nEl) patch.name = String(nEl.value || '').trim();
+    if (rEl) patch.role = rEl.value;
+    if (!patch.name){ toast(t('الاسم مطلوب')); return; }
+    USR_EDIT = ''; usrSet(id2, patch); return;
+  }
   var pv = e.target.closest('[data-pview]');
   if (pv){ photoSeen(pv.getAttribute('data-pview')); return; }   /* الرابطُ يفتح، ونحن نسجّل */
   var pd = e.target.closest('[data-pdel]');
@@ -10424,6 +10650,15 @@ document.addEventListener('input', function(e){
       var q = document.getElementById('navQ');
       if (q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
     }
+    return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-evf')){
+    EVF[e.target.getAttribute('data-evf')] = e.target.value; render(1); return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-usrq')){
+    USR_Q = e.target.value; render(1);
+    var uq = document.getElementById('usrQ');
+    if (uq){ uq.focus(); uq.setSelectionRange(uq.value.length, uq.value.length); }
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nsq')){

@@ -28,8 +28,18 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
 
 /* ══ ١ · مسارُ القراءة مقصور ═════════════════════════════════════════════ */
 {
+  /* كانت نافذةً ثابتةً بألفٍ وثمانمئة حرف، فلمّا كبرت الدالةُ خرج ما يُفحَص
+     منها وفشل الفحصُ والشيفرةُ سليمة. تُقرأ الدالةُ كلُّها بموازنة الأقواس. */
   const i = html.indexOf('pull: function');
-  const seg = html.slice(i, i + 1800);
+  const seg = (function(){
+    const st = html.indexOf('{', i);
+    let d = 0;
+    for (let k = st; k < html.length; k++){
+      if (html[k] === '{') d++;
+      else if (html[k] === '}'){ d--; if (!d) return html.slice(i, k + 1); }
+    }
+    return html.slice(i, i + 4000);
+  })();
   check(i > 0, 'دالةُ السحب موجودة');
   check(/where\('_at',\s*'>'/.test(seg), 'السحبُ فارقيٌّ بـ_at — لا يُعاد قراءةُ ما لم يتغيّر');
   check(/where\('_by',\s*'=='/.test(seg), 'الميدانُ مقصورٌ على سجلاته — لا يقرأ كتاباتِ غيره');
