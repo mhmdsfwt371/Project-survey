@@ -636,7 +636,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.49</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.50</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7892,11 +7892,13 @@ var MAP_COL = {
 };
 
 function mapColorOf(x){
-  /* وضعُ الشركات: كلُّ نقطةٍ بلون شركتها — يُفتَح باللوح ويبقى ما دام مفتوحًا
-     أو ما دامت شركاتٌ مختارة. وكان اللونُ لا يظهر إلا للمختار، فمن أراد أن
-     يرى توزيعَ الشركات كلَّه لم يرَه. */
-  if (CO_OPEN || CO_MODE) return x.co ? coColor(x.co) : '#4A5560';
-  if (CO_SEL.length) return CO_SEL.indexOf(x.co) > -1 ? coColor(x.co) : '#4A5560';
+  /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
+     طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
+     والكاميراتُ تحت لونٍ واحدٍ باهت، ويظنُّ الناظرُ أنها خرجت من الطبقة.
+     وليست خارجَها: هي بلا شركةٍ فقط. والترشيحُ فعلٌ آخر يقع عند اختيار
+     شركاتٍ بعينها — لا عند التلوين. */
+  if ((CO_OPEN || CO_MODE) && x.co) return coColor(x.co);
+  if (CO_SEL.length && x.co) return coColor(x.co);
   if (FILT.type && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
   /* لونُ الطبقة: المنجَزُ بلونها والجاهزُ أصفرُ انتظار والمُسنَدُ برتقالي */
   if (typeof LAYERS === 'object' && LAYERS[FIELD_MODE]){
