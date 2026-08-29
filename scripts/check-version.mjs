@@ -318,6 +318,16 @@ try {
   else ok.push('لا عنصر يحمل كلاسَين مربوطَين بمعالجَين ✓');
 } catch (e) { fail.push('حارس الكلاسات تعثّر: ' + String(e && e.message).slice(0, 100)); }
 
+/* ── دفترُ المطابقة: لا قدرةَ في القديم بلا مقابلٍ أو حكم ── */
+try {
+  execSync('node scripts/parity.mjs', { stdio:'pipe' });
+  const bk = JSON.parse(readFileSync('docs/parity.json','utf8'));
+  const n = Object.keys(bk.items || {}).length;
+  ok.push(`دفتر المطابقة مغلق: ${n} قدرةً من القديم لها مقابلٌ أو حكم ✓`);
+} catch (e) {
+  fail.push('دفترُ المطابقة غيرُ مغلق — شغّل: node scripts/parity.mjs');
+}
+
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
 console.log('\nالتوثيق متطابق مع التطبيق ✅');

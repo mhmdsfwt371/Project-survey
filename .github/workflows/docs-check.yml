@@ -21,5 +21,7 @@ jobs:
           node-version: 20
       - name: الحارس — تطابق النسخ وسجل الصفحات والترجمة
         run: node scripts/check-version.mjs
+      - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
+        run: node scripts/parity.mjs
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
         run: npm i --no-save --silent jsdom && node scripts/qa.mjs

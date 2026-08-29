@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.04
+      <i class="ver-tag">نسخة</i>V14.05
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,11 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الخامسة: نموذج المسح كاملًا ══ */
+ 'من ملفات المشروع — اقرأها فقط، واطلب تصويبًا إن وجدت غيرها في الموقع.':'From the project files — read them only, and request a correction if you find otherwise on site.',
+ 'وصف التحدي بالتفصيل':'Detailed description of the obstacle',
+ 'ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح':'What the office needs to decide — a missing measurement, a party to contact, a proposed alternative',
+ 'عدد الأطقم المركّبة':'Installed kits',
  /* ══ الدفعة الرابعة: شاشة الموقع المقترح ══ */
  'اسم شركة غير موجودة بالقائمة':'A company not on the list',
  'يعتمده المهندس قبل أن يُستعمل':'The engineer approves it before it is used',
@@ -979,6 +984,11 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الخامسة ══ */
+ 'من ملفات المشروع — اقرأها فقط، واطلب تصويبًا إن وجدت غيرها في الموقع.':'منصوبے کی فائلوں سے — صرف پڑھیں، اور اگر موقع پر مختلف پائیں تو درستی کی درخواست دیں۔',
+ 'وصف التحدي بالتفصيل':'رکاوٹ کی تفصیلی وضاحت',
+ 'ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح':'دفتر کو فیصلے کے لیے جو درکار ہے — کوئی کمی، کوئی فریق جس سے رابطہ ہو، کوئی متبادل تجویز',
+ 'عدد الأطقم المركّبة':'نصب شدہ سیٹ',
  /* ══ الدفعة الرابعة ══ */
  'اسم شركة غير موجودة بالقائمة':'فہرست میں موجود نہ ہونے والی کمپنی',
  'يعتمده المهندس قبل أن يُستعمل':'استعمال سے پہلے انجینئر اسے منظور کرتا ہے',
@@ -1852,21 +1862,28 @@ function zoneOf(z, name){
 }
 
 /* فكُّ الصفوف إلى كائناتٍ يقرؤها العرض */
-function siteRow(r){
+function siteRow(r, camp){
   return {
     id:r[0], name:r[1],
     zone:zoneOf(SITES_RAW.z[r[2]] || '', r[1] || ''), type:(SITES_RAW.t[r[3]] || ''),
     work:(SITES_RAW.w[r[4]] || ''),
     lat:r[5], lng:r[6],
     sq:r[7] || '', sign:r[8] || '', co:r[9] || '',
-    region:r[10] || '', fstat:r[11] || 'لم يبدأ', inout:r[12] || ''
+    /* المصفوفتان تفترقان بعد العمود التاسع: المخيمُ يحمل بادئةَ شبكته
+       في العاشر ثم المنطقةَ والتصنيف، والنقطةُ تحمل المنطقةَ ثم الحالة.
+       وقراءتُهما بمسطرةٍ واحدةٍ جعلت حالةَ ألفٍ وثلاثمئةٍ واثنين وتسعين
+       مخيمًا «منطقة عرفات»، وضيّعت بادئةَ الشبكة التي تُشتقّ منها العناوين. */
+    net:    camp ? (r[10] || '') : '',
+    region: camp ? (r[11] || '') : (r[10] || ''),
+    fstat:  camp ? 'لم يبدأ'     : (r[11] || 'لم يبدأ'),
+    inout:  r[12] || ''
   };
 }
 
 function loadSites(){
   var out = [];
-  SITES_RAW.g.forEach(function(r){ out.push(siteRow(r)); });
-  SITES_RAW.p.forEach(function(r){ out.push(siteRow(r)); });
+  SITES_RAW.g.forEach(function(r){ out.push(siteRow(r, true)); });
+  SITES_RAW.p.forEach(function(r){ out.push(siteRow(r, false)); });
   STATE.sites = out;
   return out;
 }
@@ -3810,13 +3827,155 @@ function mineFiltered(){
 var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
 
 var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
-             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب' };
+             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب',
+             /* ما نقص عن القديم: القياساتُ والكمياتُ والتقدير */
+             len_m:'', wid_m:'', hgt_m:'', fit:'', tents:'', gates:'',
+             corr_w:'', kits:'', jam_pos:'', old_base:'', old_cable:'',
+             cam_ok:'', router_sp:'', power_src:'', pdist:'', p24:'', power_note:'',
+             n_ant:'', n_rdr:'', n_cam:'', n_sens:'', metal:'',
+             chal_note:'', civil:'', equip:'', hours:'', crew_n:'', power_yn:'', kits_done:'' };
+var SV_EXTRA_KEYS = ['len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kits','jam_pos','power_yn','kits_done',
+                     'old_base','old_cable','cam_ok','router_sp','power_src','pdist','p24',
+                     'power_note','n_ant','n_rdr','n_cam','n_sens','metal','chal_note',
+                     'civil','equip','hours','crew_n'];
 
 var CHALS = ['لا يوجد كهرباء','الموقع مشغول','يحتاج تصريح',
              'ارتفاع صعب','لا يوجد تغطية','يحتاج معدات'];
 
 function formSite(){
   return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
+}
+
+/* ═══ ما نقص عن نموذج المسح: القياساتُ والكمياتُ والتقدير ═══
+   النموذجُ الجديدُ كان يجمع ستةَ حقول، والقديمُ يجمع سبعةً وعشرين. والمكتبُ لا
+   يقرّر بالستة: لا يعرف مقاسَ المساحة ولا كمَّ الأطقم ولا ساعاتِ التركيب.
+   والحقولُ تتبع نوعَ الموقع ووجهَ العمل — فلا يُسأل المخيمُ عن عرض المسار. */
+
+var SV_FIT   = ['','مناسب','مناسب بتعديل','غير مناسب'];
+var SV_CIVIL = ['','لا','نعم — حفر وقواعد','نعم — تثبيت حديدي فقط'];
+var SV_EQUIP = ['','لا يحتاج','سلّم','سقالة','رافعة'];
+var SV_PWR   = ['','لوحة قائمة','مقبس قائم','مولّد','طاقة شمسية','لا يوجد'];
+var SV_P24   = ['','نعم','لا','غير معروف'];
+var SV_METAL = ['','لا يوجد','يوجد قريب','يوجد ملاصق'];
+var SV_BASE  = ['','موجود وصالح','موجود ويحتاج إصلاح','غير موجود'];
+var SV_CABLE = ['','سليم','جزئي','مفقود'];
+var SV_CAM   = ['','تعمل','لا تعمل','غير موجودة'];
+var SV_ROUT  = ['','يوجد','ضيق','لا يوجد'];
+var SV_KITS  = ['','١','٢','٣'];
+
+function svNum(key, label, hint){
+  return '<div class="field"><label>' + esc(t(label)) + '</label>'
+    + '<input type="number" min="0" step="0.5" data-form="' + key + '" value="'
+    + esc(FORM[key] == null ? '' : FORM[key]) + '">'
+    + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
+}
+function svSel(key, label, opts, hint){
+  return '<div class="field"><label>' + esc(t(label)) + '</label>'
+    + '<select data-form="' + key + '">' + opts.map(function(o){
+        return '<option value="' + esc(o) + '"' + (FORM[key] === o ? ' selected' : '') + '>'
+          + (o ? esc(t(o)) : '— ' + esc(t('اختر')) + ' —') + '</option>'; }).join('')
+    + '</select>' + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
+}
+function svTxt(key, label, hint){
+  return '<div class="field"><label>' + esc(t(label)) + '</label>'
+    + '<input data-form="' + key + '" dir="auto" value="' + esc(FORM[key] || '') + '">'
+    + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
+}
+
+function svExtra(s){
+  var isCamp = s.type === 'مخيم';
+  var isWide = s.type === 'ممر' || s.type === 'جسر';
+  var isJam  = s.type === 'جسر';
+  var isCam  = s.type === 'كاميرا';
+  var reuse  = /إعادة تركيب/.test(s.work || '');
+  var ip     = ipsOf(s.net || FORM.prefix || '');
+
+  var h = '';
+
+  /* ما في السجل يُقرأ ولا يُعاد إدخاله — والتصويبُ بطلبٍ يعتمده المهندس */
+  h += card('بيانات مسجّلة — راجعها',
+      '<div class="pop-rows" style="margin:0">'
+      + '<div><span class="k">' + esc(t('المربع')) + '</span><span class="num">' + esc(s.sq || '—') + '</span></div>'
+      + '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign || '—') + '</span></div>'
+      + '<div><span class="k">' + esc(t('شركة تقديم الخدمة')) + '</span><span>' + esc(s.co || '—') + '</span></div>'
+      + '<div><span class="k">' + esc(t('تصنيف الحجاج')) + '</span><span>' + esc(s.inout || '—') + '</span></div>'
+      + (ip !== '—' ? '<div><span class="k">' + esc(t('العناوين المشتقّة')) + '</span><span class="num">' + esc(ip) + '</span></div>' : '')
+      + '</div>'
+      + '<p class="hint">' + esc(t('من ملفات المشروع — اقرأها فقط، واطلب تصويبًا إن وجدت غيرها في الموقع.')) + '</p>');
+
+  h += card('القياسات والصلاحية',
+      '<div class="grid cols-2">'
+      + svNum('len_m','الطول المتاح (متر)','طول المساحة الصالحة للتركيب')
+      + svNum('wid_m','العرض المتاح (متر)','الإطار القياسي يحتاج أربعة أمتار')
+      + svNum('hgt_m','الارتفاع المتاح (متر)','الإطار القياسي بارتفاع أربعة أمتار')
+      + svSel('fit','هل الموقع مناسب للتركيب؟', SV_FIT)
+      + '</div>');
+
+  if (isCamp) h += card('بيانات المخيم',
+      '<div class="grid cols-2">'
+      + svNum('tents','عدد الغرف أو الخيام','منه تُحسب كميات الحساسات')
+      + svNum('gates','عدد بوابات المخيم')
+      + '</div>');
+
+  if (isWide) h += card(isJam ? 'مسار الجمرات' : 'المسار',
+      '<div class="grid cols-2">'
+      + svNum('corr_w','عرض المسار للاتجاه الواحد (متر)','الطقم الكامل يغطي نحو خمسةَ عشرَ مترًا')
+      + svSel('kits','عدد الأطقم الكاملة المطلوبة', SV_KITS)
+      + (isJam ? svTxt('jam_pos','الدور والجهة','مثال: الدور الثاني — يمين') : '')
+      + '</div>');
+
+  if (reuse) h += card('أصول موسم ١٤٤٧',
+      '<div class="grid cols-2">'
+      + svSel('old_base','هل القاعدة أو التثبيت القديم موجود؟', SV_BASE)
+      + svSel('old_cable','هل مسار الكابل القديم سليم؟', SV_CABLE)
+      + '</div>');
+
+  if (isCam) h += card('الكاميرا القائمة',
+      '<div class="grid cols-2">'
+      + svSel('cam_ok','هل الكاميرا تعمل؟', SV_CAM)
+      + svSel('router_sp','هل يوجد مكان لتركيب راوتر؟', SV_ROUT)
+      + '</div>');
+
+  h += card('الكهرباء',
+      '<div class="grid cols-2">'
+      + svSel('power_src','أقرب مصدر كهرباء', SV_PWR)
+      + svNum('pdist','المسافة إلى المصدر (متر)')
+      + svSel('p24','التغذية متاحة ٢٤ ساعة؟', SV_P24)
+      + (reuse ? svSel('power_yn','هل يوجد مصدر كهرباء؟', ['','يوجد','لا يوجد'],
+                       'تفاصيلُ الكهرباء محفوظةٌ من ١٤٤٧ — أكّد وجودَ المصدر فقط') : '')
+      + (reuse ? svTxt('power_note','ماذا تغيّر؟','اتركه فارغًا إن كان الوضع كما هو') : '')
+      + '</div>');
+
+  h += card('الكميات المطلوبة',
+      '<div class="grid cols-2">'
+      + svNum('n_ant','عدد الهوائيات')
+      + svNum('n_rdr','عدد القارئات')
+      + svNum('n_cam','عدد الكاميرات')
+      + (isCamp ? svNum('n_sens','عدد الحساسات البيئية','حساسٌ لكل غرفةٍ عادةً') : '')
+      + '</div>');
+
+  h += card('نقطة التركيب',
+      svSel('metal','هياكل معدنية مؤثرة قرب النقطة؟', SV_METAL,
+            'الحديدُ المجاور يشوّش قراءة القارئ ويغيّر مكان التثبيت'));
+
+  h += card('تحديات التركيب — التفصيل',
+      '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label>'
+      + '<textarea data-form="chal_note" rows="2" placeholder="'
+      + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">'
+      + esc(FORM.chal_note || '') + '</textarea></div>'
+      + '<div class="grid cols-2">'
+      + svSel('civil','هل يحتاج أعمال مدنية؟', SV_CIVIL,
+              'الأعمالُ المدنية لها موعدُ إغلاقٍ مبكر — هذا الحقلُ يحدّد المسار الحرج')
+      + svSel('equip','المعدات اللازمة للوصول', SV_EQUIP)
+      + '</div>');
+
+  h += card('التقدير',
+      '<div class="grid cols-2">'
+      + svNum('hours','تقدير ساعات التركيب','منه يُبنى الجدول الزمني')
+      + svNum('crew_n','عدد أفراد الطاقم')
+      + '</div>');
+
+  return h;
 }
 
 /* ── نموذج المسح ── */
@@ -3865,6 +4024,8 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
             }).join('') + '</div></div>'
           + '<div class="field"><label>' + esc(t('ملاحظات')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
+
+      + svExtra(s)
 
       + photoCard(['site','صورة الموقع',1], ['mount','صورة نقطة التركيب',1])
 
@@ -3921,6 +4082,8 @@ PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
           + '<p class="hint">‎.1 راوتر · ‎.2 قارئ · ‎.3 كاميرا — تُشتقّ من البادئة ولا تُكتب.</p>')
 
       + card('', '<div class="actions">'
+          + '<div class="field" style="max-width:220px"><label>' + esc(t('عدد الأطقم المركّبة')) + '</label>'
+          + '<input type="number" min="0" data-form="kits_done" value="' + esc(FORM.kits_done || '') + '"></div>'
           + btn('إتمام التركيب','btn-primary',' data-inssave="1"')
           + btn('حفظ مسودّة','btn-secondary',' data-insdraft="1"')
           + '</div>'
@@ -4000,6 +4163,7 @@ function svSave(next){
     mount:FORM.mount, power:FORM.power, height:cfgN(FORM.height), cable:cfgN(FORM.cable),
     chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos)
   };
+  SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   CORE.set('recs', s.id, rec);
   Object.keys(FORM.photos).forEach(function(k){
     if (typeof photoQueue === 'function') photoQueue(s.id, k, FORM.photos[k].data);
@@ -4057,6 +4221,7 @@ function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
   FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
   FORM.status = 'مُركّب';
+  SV_EXTRA_KEYS.forEach(function(k){ FORM[k] = ''; });
 }
 
 function logEvent(what){
@@ -7168,6 +7333,10 @@ function impApply(){
       var s = siteFind(String(r[0]).trim());
       if (s){ if (r[3]) s.sign = String(r[3]); if (r[4]) s.sq = String(r[4]);
               if (r[5]) s.co = String(r[5]); n++; }
+    } else if (p.kind === 'ips'){
+      /* كان يقول «صفًّا حُفظ» ولا يكتب حرفًا — العرضُ بلا كتابةٍ كذب */
+      var t2 = siteFind(String(r[0]).trim());
+      if (t2 && r[1]){ t2.net = String(r[1]).trim().replace(/\.+$/, ''); n++; }
     } else { n++; }
   });
   CORE.dirty(p.kind, 'import', { at:Date.now(), n:n });
