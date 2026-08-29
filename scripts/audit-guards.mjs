@@ -19,7 +19,8 @@
    السحابة، وأن كلَّ خاصيةٍ يستمع لها معالجٌ مسجَّلةٌ عند حارس الأزرار الميتة —
    فالخاصيةُ غيرُ المسجَّلة زرٌّ يُنقَر فلا يقع شيء، وقد وقع ذلك مرتين.
    ═════════════════════════════════════════════════════════════════════════ */
-import { execSync } from 'child_process';
+import { execSync, execFile } from 'child_process';
+import os from 'os';
 import { readFileSync, writeFileSync, copyFileSync, mkdtempSync, rmSync, readdirSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
@@ -111,34 +112,64 @@ const MUT = [
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
 
-const dir = mkdtempSync(join(tmpdir(), 'guards-'));
+/* ══ الزرعُ متوازيًا ══════════════════════════════════════════════════════
+   كلُّ طفرةٍ عمليةٌ مستقلّةٌ لا تعلم بغيرها. وتشغيلُها واحدةً بعد واحدةٍ كان
+   انتظارًا لا عملًا: ثلاثُ دقائقَ في الفحص القبليِّ قبل كلِّ دفعة. فتُوزَّع
+   على عمّالٍ يعملون معًا — والعددُ محدودٌ بالمعالجات لا مفتوحًا، فإغراقُ الجهاز
+   يبطّئ أكثرَ مما يسرّع. */
+const WORKERS = Math.max(2, Math.min(6, (os.cpus() || []).length || 4));
+const dirs = [];
 const survived = [], broken = [];
-try {
-  execSync(`cp -r scripts ${dir}/ && cp -r docs ${dir}/ && cp -r tools ${dir}/ 2>/dev/null || true`,
-           { shell:'/bin/bash' });
-  copyFileSync('sw.js', join(dir, 'sw.js'));
-  copyFileSync('legacy/v13.99.html', join(dir, 'legacy_tmp')); /* موضعُه أدناه */
-  execSync(`mkdir -p ${dir}/legacy && mv ${dir}/legacy_tmp ${dir}/legacy/v13.99.html`, { shell:'/bin/bash' });
-  execSync(`ln -sfn ${process.cwd()}/node_modules ${dir}/node_modules 2>/dev/null || true`, { shell:'/bin/bash' });
 
-  for (const m of MUT){
-    /* الزرعُ قد يقع في غير `index.html` — كقواعد القاعدة */
-    const file = m.f || 'index.html';
-    const body = file === 'index.html' ? src : readFileSync(file, 'utf8');
-    if (!body.includes(m.a)){ broken.push(m.n + ' — المرساةُ لم تعد موجودة'); continue; }
-    if (body.split(m.a).length - 1 !== 1){ broken.push(m.n + ' — المرساةُ غيرُ فريدة'); continue; }
-    writeFileSync(join(dir, 'index.html'), src);
-    writeFileSync(join(dir, file), body.replace(m.a, m.b));
-    let caught = false;
-    /* الحارسُ يشغّل الجرودَ داخله؛ وطفراتُه تخصُّ ما يفحصه بنفسه — فتُتخطّى */
-    const env = Object.assign({}, process.env,
-      m.g.indexOf('check-version') > -1 ? { NUSUK_SKIP_AUDITS:'1' } : {});
-    try { execSync('node ' + m.g, { cwd:dir, stdio:'pipe', timeout:600000, env:env }); }
-    catch { caught = true; }
-    if (!caught) survived.push(m.n + '  ←  ' + m.g.replace('scripts/',''));
-  }
+function makeWorker(){
+  const w2 = mkdtempSync(join(tmpdir(), 'guards-'));
+  execSync(`cp -r scripts ${w2}/ && cp -r docs ${w2}/ && cp -r tools ${w2}/ 2>/dev/null || true`,
+           { shell:'/bin/bash' });
+  copyFileSync('sw.js', join(w2, 'sw.js'));
+  execSync(`mkdir -p ${w2}/legacy`, { shell:'/bin/bash' });
+  copyFileSync('legacy/v13.99.html', join(w2, 'legacy/v13.99.html'));
+  execSync(`ln -sfn ${process.cwd()}/node_modules ${w2}/node_modules 2>/dev/null || true`,
+           { shell:'/bin/bash' });
+  dirs.push(w2);
+  return w2;
+}
+
+/* تُفحَص المراسي أولًا في العملية نفسِها — لا تحتاج عاملًا */
+const ready = [];
+for (const m of MUT){
+  const file = m.f || 'index.html';
+  const body = file === 'index.html' ? src : readFileSync(file, 'utf8');
+  if (!body.includes(m.a)){ broken.push(m.n + ' — المرساةُ لم تعد موجودة'); continue; }
+  if (body.split(m.a).length - 1 !== 1){ broken.push(m.n + ' — المرساةُ غيرُ فريدة'); continue; }
+  ready.push({ m, file, body });
+}
+
+function runOne(job, wdir){
+  const { m, file, body } = job;
+  writeFileSync(join(wdir, 'index.html'), src);
+  writeFileSync(join(wdir, file), body.replace(m.a, m.b));
+  const env = Object.assign({}, process.env,
+    m.g.indexOf('check-version') > -1 ? { NUSUK_SKIP_AUDITS:'1' } : {});
+  return new Promise(resolve => {
+    execFile('node', [m.g], { cwd:wdir, timeout:600000, env:env, maxBuffer:1 << 26 },
+      err => resolve(!!err));   /* الفشلُ هو المطلوب: العطلُ أُمسك */
+  });
+}
+
+try {
+  const pool = [];
+  for (let i = 0; i < Math.min(WORKERS, ready.length); i++) pool.push(makeWorker());
+  let next = 0;
+  await Promise.all(pool.map(async wdir => {
+    while (true){
+      const i = next++;
+      if (i >= ready.length) return;
+      const caught = await runOne(ready[i], wdir);
+      if (!caught) survived.push(ready[i].m.n + '  ←  ' + ready[i].m.g.replace('scripts/', ''));
+    }
+  }));
 } finally {
-  try { rmSync(dir, { recursive:true, force:true }); } catch {}
+  dirs.forEach(x => { try { rmSync(x, { recursive:true, force:true }); } catch {} });
 }
 
 check(broken.length === 0, 'مراسي الزرع كلُّها قائمةٌ وفريدة'

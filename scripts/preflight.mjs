@@ -19,16 +19,31 @@ import { join } from 'path';
 
 const WF = '.github/workflows/docs-check.yml';
 
-/* خطواتُ سير العمل من ملفه: الاسمُ والأمر، بالترتيب */
+/* خطواتُ سير العمل من ملفه: الاسمُ والبيئةُ والأمر، بالترتيب.
+   والبيئةُ تُقرأ كما يُقرأ الأمر: خطوةٌ تُشغَّل بمتغيّرٍ في السحابة وبلا متغيّرٍ
+   هنا ليست الخطوةَ نفسَها — وهذا هو الانحرافُ الذي بُني الفحصُ لمنعه. */
 function steps(){
   const y = readFileSync(WF, 'utf8').split('\n');
   const out = [];
-  let name = null;
+  let name = null, env = null;
   for (let i = 0; i < y.length; i++){
     const nm = /^\s*-\s*name:\s*(.+?)\s*$/.exec(y[i]);
-    if (nm){ name = nm[1]; continue; }
+    if (nm){ name = nm[1]; env = null; continue; }
+    if (/^\s*env:\s*$/.test(y[i]) && name){
+      env = {};
+      const ind = (y[i].match(/^\s*/) || [''])[0].length;
+      for (let j = i + 1; j < y.length; j++){
+        if (!y[j].trim()) continue;
+        const k = (y[j].match(/^\s*/) || [''])[0].length;
+        if (k <= ind) break;
+        const kv = /^\s*([A-Za-z_][\w]*)\s*:\s*'?"?([^'"\n]*)'?"?\s*$/.exec(y[j]);
+        if (kv) env[kv[1]] = kv[2];
+        i = j;
+      }
+      continue;
+    }
     const rn = /^\s*run:\s*(.+?)\s*$/.exec(y[i]);
-    if (rn && name){ out.push({ name, cmd: rn[1] }); name = null; }
+    if (rn && name){ out.push({ name, cmd: rn[1], env }); name = null; env = null; }
     else if (/^\s*run:\s*\|/.test(y[i]) && name){
       /* أمرٌ متعدّدُ الأسطر — يُجمَع حتى أول سطرٍ أقلَّ إزاحة */
       const ind = (y[i].match(/^\s*/) || [''])[0].length;
@@ -39,8 +54,8 @@ function steps(){
         if (k <= ind) break;
         buf.push(y[j].slice(ind + 2));
       }
-      out.push({ name, cmd: buf.join('\n') });
-      name = null;
+      out.push({ name, cmd: buf.join('\n'), env });
+      name = null; env = null;
     }
   }
   return out;
@@ -73,7 +88,8 @@ try {
     process.stdout.write('  ' + s.name.padEnd(46).slice(0, 46) + ' … ');
     const t0 = Date.now();
     try {
-      execSync(s.cmd, { cwd: dir, stdio: 'pipe', shell: '/bin/bash', timeout: 900000 });
+      execSync(s.cmd, { cwd: dir, stdio: 'pipe', shell: '/bin/bash', timeout: 900000,
+                        env: Object.assign({}, process.env, s.env || {}) });
       console.log('✓  ' + Math.round((Date.now() - t0) / 1000) + 'ث');
     } catch (e){
       console.log('✗');
