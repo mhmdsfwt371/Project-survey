@@ -9,7 +9,7 @@
    فهذا الجردُ يعيد بناءَ ما يجب أن يكون من `SITES_RAW` مباشرةً، ويقيس عليه
    ما بناه التطبيقُ فعلًا. الرقمُ الخاطئ في لوحة الوزارة أسوأ من زرٍّ مفقود.
    ═════════════════════════════════════════════════════════════════════════ */
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync, statSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 let JSDOM;
@@ -21,6 +21,23 @@ const check = (cond, name) => { if (cond) pass++; else fails.push(name); };
 const eq = (a, b, name) => check(a === b, `${name} — المتوقَّع ${b} والموجود ${a}`);
 
 const html = readFileSync('index.html', 'utf8');
+
+/* ── الملفاتُ الخارجيةُ التي يطلبها التطبيقُ موجودةٌ حيث يطلبها ─────────────
+   `poly.json` كان في مجلَّد `v14/` والتطبيقُ يطلبه من الجذر بمسارٍ نسبيّ،
+   فيفشل الطلبُ ويُبتلَع في `catch` — فلا تُرسَم حدودُ ألفٍ وثلاثمئةٍ واثنين
+   وتسعين مخيمًا على الخريطة ولا يقول أحدٌ شيئًا. والطلبُ الصامتُ الفاشلُ لا
+   يُكتشَف إلا بالعين، وقد لا يُكتشَف. */
+{
+  const asked = [...new Set([...html.matchAll(/fetch\('([^':/][^']*\.(?:json|csv|txt))'/g)].map(m => m[1]))];
+  check(asked.length > 0, `ملفاتٌ خارجيةٌ يطلبها التطبيق (${asked.length})`);
+  const gone = asked.filter(f => !existsSync(f));
+  check(gone.length === 0, 'كلُّ ملفٍّ يطلبه التطبيقُ موجودٌ في الجذر'
+    + (gone.length ? ' — مفقود: ' + gone.join(' · ') : ''));
+  /* وحجمُه معقول: ملفٌّ فارغٌ يمرُّ الفحصَ ولا يحمل شيئًا */
+  const empty = asked.filter(f => existsSync(f) && statSync(f).size < 200);
+  check(empty.length === 0, 'لا ملفَّ خارجيٍّ فارغ'
+    + (empty.length ? ' — فارغ: ' + empty.join(' · ') : ''));
+}
 const { VirtualConsole } = require('jsdom');
 const vc = new VirtualConsole();
 const boot = [];
