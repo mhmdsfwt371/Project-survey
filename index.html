@@ -540,7 +540,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.35</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.36</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -731,6 +731,22 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة التاسعة عشرة: الوظائف والدروس ══ */
+ 'لا دروسَ مسجَّلةٌ بعد.':'No lessons recorded yet.',
+ 'ما وقع':'What happened',
+ 'ما فُعل':'What was done',
+ 'الوظائفُ للمهندس وحده':'Jobs are for the engineer only',
+ 'اكتب اسم الوظيفة':'Write the job name',
+ 'موجودةٌ بالفعل':'Already exists',
+ 'أُضيفت الوظيفة':'Job added',
+ 'عليها':'It has',
+ 'شخصًا — انقلهم أولًا':'person(s) — move them first',
+ 'سجلُّ الدروس للمهندس وحده':'The lessons log is for the engineer only',
+ 'اكتب ما وقع':'Write what happened',
+ 'سُجّل الدرس':'Lesson recorded',
+ 'اسم الوظيفة':'Job name',
+ 'ماذا تعمل':'What it does',
+ 'بلا وظيفة':'No job',
  'زامِن الآن':'Sync now',
  /* ══ الدفعة الثامنة عشرة: الفنيون والفرق ══ */
  'أُلغي التصفير':'Reset cancelled',
@@ -1191,6 +1207,22 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة التاسعة عشرة ══ */
+ 'لا دروسَ مسجَّلةٌ بعد.':'ابھی کوئی سبق درج نہیں۔',
+ 'ما وقع':'کیا ہوا',
+ 'ما فُعل':'کیا کیا گیا',
+ 'الوظائفُ للمهندس وحده':'ملازمتیں صرف انجینئر کے لیے ہیں',
+ 'اكتب اسم الوظيفة':'ملازمت کا نام لکھیں',
+ 'موجودةٌ بالفعل':'پہلے سے موجود',
+ 'أُضيفت الوظيفة':'ملازمت شامل ہو گئی',
+ 'عليها':'اس پر',
+ 'شخصًا — انقلهم أولًا':'افراد — پہلے انہیں منتقل کریں',
+ 'سجلُّ الدروس للمهندس وحده':'اسباق کا ریکارڈ صرف انجینئر کے لیے ہے',
+ 'اكتب ما وقع':'لکھیں کیا ہوا',
+ 'سُجّل الدرس':'سبق درج ہو گیا',
+ 'اسم الوظيفة':'ملازمت کا نام',
+ 'ماذا تعمل':'یہ کیا کرتی ہے',
+ 'بلا وظيفة':'بغیر ملازمت',
  'زامِن الآن':'ابھی ہم آہنگ کریں',
  /* ══ الدفعة الثامنة عشرة ══ */
  'أُلغي التصفير':'ری سیٹ منسوخ',
@@ -6562,13 +6594,33 @@ var LESSONS = [
 PAGE.less = { m:'النظام', t:'سجل الدروس',
   l:'ما تعلّمناه — ليُنقل للموسم القادم لا ليُعاد.',
   body:function(){
-    return cardFlush('الدروس — ' + nm(LESSONS.length),
-        table(['المرحلة','ما وقع','ما فُعل'],
-          LESSONS.map(function(l){
-            return [pill(l.p,'acc'), esc(t(l.w)),
-                    '<span class="hint" style="margin:0">' + esc(t(l.a)) + '</span>'];
-          })),
+    var L = lessList();
+    return cardFlush('الدروس — ' + nm(L.length),
+        L.length
+          ? table(['المرحلة','ما وقع','ما فُعل',''],
+              L.map(function(l, i){
+                return [pill(l.p,'acc'),
+                        '<input value="' + esc(l.w) + '" data-lsw="' + i + '" dir="auto">',
+                        '<input value="' + esc(l.a || '') + '" data-lsa="' + i + '" dir="auto">',
+                        may('settings')
+                          ? btn('حذف','btn-quiet btn-sm',' data-lsdel="' + i + '"') : ''];
+              }))
+          : '<p class="hint" style="padding:16px">' + esc(t('لا دروسَ مسجَّلةٌ بعد.')) + '</p>',
         btn('⬇ إكسل — الدروس','btn-secondary btn-sm',' data-xls="less"'))
+      + (may('settings')
+        ? card('سجّل درسًا',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('المرحلة')) + '</label><select id="lsP">'
+            +   ['التخطيط','المسح','التهيئة','التجميع','التركيب','الفك','الإغلاق']
+                 .map(function(p){ return '<option>' + esc(t(p)) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '<div class="field"><label>' + esc(t('ما وقع')) + ' <span class="req">*</span></label>'
+            +   '<input id="lsW" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('ما فُعل')) + '</label>'
+            +   '<input id="lsA" dir="auto"></div>'
+            + '</div>',
+            btn('➕ سجّل الدرس','btn-primary btn-sm',' data-lsadd="1"'))
+        : '')
       + '<p class="hint">يُراجَع عند إغلاق المشروع ويُسلَّم مع وثائقه — فما كلّف مرةً لا يُكلِّف ثانية.</p>';
   }};
 
@@ -9744,6 +9796,171 @@ function crewDel(id){
   render(1);
 }
 
+/* ═══ الوظائف: ما يعمله الشخصُ، ومنه يُشتقُّ دورُه ═══════════════════════════
+   كان الشخصُ يُعطى دورًا مباشرةً — «فني» أو «مشرف» — والدورُ صلاحيةٌ لا وظيفة.
+   فمسؤولُ المستودع ومشرفُ الميدان كلاهما «مشرف»، ولا يُعرَف من الاثنين من
+   يستلم العهدةَ ومن ينزل المشاعر.
+
+   والوظيفةُ تتغيّر في أثناء الموسم: من كان في التهيئة ينتقل إلى التركيب.
+   فتُسجَّل النقلةُ بتاريخها ولا تُمحى الأولى — وإلا ضاع من عمل ماذا ومتى. */
+
+var JOBS_SEED = [
+  { id:'j_eng',   n:'مهندس مشروع',    role:'engineer',   d:'يدير المشروعَ ويعتمد ما يرفعه الميدان.' },
+  { id:'j_sup',   n:'مشرف ميدان',     role:'supervisor', d:'يوزّع العملَ على فرقه ويتابع تنفيذَه في المشاعر.' },
+  { id:'j_store', n:'مسؤول مستودع',   role:'supervisor', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع.' },
+  { id:'j_prep',  n:'مسؤول تهيئة',    role:'cprep',      d:'يضبط الجهازَ وعنوانَه ونظامَه ويفحصه قبل النزول.' },
+  { id:'j_asm',   n:'مسؤول تجميع',    role:'casm',       d:'يجمّع مكوّناتِ البوكس ويوصّلها قبل النزول.' },
+  { id:'j_ins',   n:'مسؤول تركيب',    role:'cins',       d:'يركّب في الموقع ويوثّق بالصور.' },
+  { id:'j_tech',  n:'فني ميداني',     role:'tech',       d:'يمسح النقاطَ ويحدّث حالتَها ويصوّر.' },
+  { id:'j_view',  n:'مراقب وزاري',    role:'viewer',     d:'يقرأ التقدّمَ ولا يكتب شيئًا.' }
+];
+
+function jobsList(){
+  if (!Array.isArray(STATE.jobs) || !STATE.jobs.length) STATE.jobs = JOBS_SEED.slice();
+  return STATE.jobs;
+}
+function jobSave(){ CORE.set('cfg', 'jobs', jobsList().slice()); }
+function jobOf(id){ return jobsList().filter(function(j){ return j.id === id; })[0] || null; }
+function roleOfJob(id){ var j = jobOf(id); return j ? j.role : ''; }
+function jobUsed(id){
+  var n = 0;
+  techsList().forEach(function(x){ if (x.job === id) n++; });
+  Object.keys(STATE.users || {}).forEach(function(k){ if ((STATE.users[k] || {}).job === id) n++; });
+  return n;
+}
+
+function jobAdd(){
+  if (!may('users')){ toast(t('الوظائفُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var n = g('jbN');
+  if (!n){ toast(t('اكتب اسم الوظيفة')); return; }
+  if (jobsList().some(function(j){ return j.n === n; })){ toast(t('موجودةٌ بالفعل')); return; }
+  jobsList().push({ id:'j' + Date.now().toString(36), n:n, role:g('jbR') || 'tech', d:g('jbD') });
+  jobSave();
+  logEvent('وظيفة جديدة — ' + n);
+  toast(t('أُضيفت الوظيفة'));
+  render(1);
+}
+function jobSet(id, patch){
+  if (!may('users')){ toast(t('الوظائفُ للمهندس وحده')); return; }
+  var j = jobOf(id); if (!j) return;
+  Object.keys(patch).forEach(function(k){ j[k] = patch[k]; });
+  jobSave();
+}
+function jobDel(id){
+  if (!may('users')){ toast(t('الوظائفُ للمهندس وحده')); return; }
+  var u = jobUsed(id);
+  if (u){ toast(t('عليها') + ' ' + nm(u) + ' ' + t('شخصًا — انقلهم أولًا')); return; }
+  var L = jobsList(), i = -1, nm2 = '';
+  L.forEach(function(j, k){ if (j.id === id){ i = k; nm2 = j.n; } });
+  if (i < 0) return;
+  L.splice(i, 1);
+  jobSave();
+  logEvent('حذف وظيفة — ' + nm2);
+  toast(t('حُذفت'));
+  render(1);
+}
+
+/* إسنادُ وظيفةٍ لشخص: تُسجَّل النقلةُ ولا تُمحى السابقة */
+function jobAssign(who, jobId){
+  var x = techsList().filter(function(y){ return y.n === who; })[0];
+  if (!x) return;
+  var was = x.job ? (jobOf(x.job) || {}).n : '';
+  if (x.job === jobId) return;
+  x.job = jobId;
+  x.jobLog = (x.jobLog || []).concat([{ job:jobId, at:Date.now(), by:STATE.meta.name || '' }]);
+  techSave();
+  var now = (jobOf(jobId) || {}).n || '—';
+  logEvent('وظيفة — ' + who + ': ' + (was || 'بلا وظيفة') + ' → ' + now);
+  notifPush('وظيفة', who + ': ' + (was || 'بلا وظيفة') + ' → ' + now, { to:who, lv:'عادي' });
+}
+
+/* سجلُّ الدروس: كان قائمةَ عرضٍ ثابتةً تُقرأ ولا يُكتَب فيها — والدرسُ الذي
+   لا يُكتَب يومَ وقع لا يُكتَب أبدًا، فيُكرَّر في الموسم القادم. */
+function lessList(){
+  if (!Array.isArray(STATE.lessons) || !STATE.lessons.length) STATE.lessons = LESSONS.slice();
+  return STATE.lessons;
+}
+function lessSave(){ CORE.set('cfg', 'lessons', lessList().slice()); }
+function lessAdd(){
+  if (!may('settings')){ toast(t('سجلُّ الدروس للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var w2 = g('lsW');
+  if (!w2){ toast(t('اكتب ما وقع')); return; }
+  lessList().push({ p:g('lsP') || 'المسح', w:w2, a:g('lsA') });
+  lessSave(); logEvent('درس مستفاد — ' + w2.slice(0, 50));
+  toast(t('سُجّل الدرس')); render(1);
+}
+function lessSet(i, patch){
+  if (!may('settings')) return;
+  var l = lessList()[i]; if (!l) return;
+  Object.keys(patch).forEach(function(k){ l[k] = patch[k]; });
+  lessSave();
+}
+function lessDel(i){
+  if (!may('settings')){ toast(t('سجلُّ الدروس للمهندس وحده')); return; }
+  var L = lessList(); if (!L[i]) return;
+  var w2 = L[i].w; L.splice(i, 1); lessSave();
+  logEvent('حذف درس — ' + String(w2).slice(0, 40));
+  toast(t('حُذف')); render(1);
+}
+
+PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
+  l:'ما يعمله الشخصُ — ومنه يُشتقُّ دورُه وصلاحيتُه.',
+  body:function(){
+    var L = jobsList();
+    var roleOpts = function(cur){
+      return Object.keys(ROLES).map(function(k){
+        return '<option value="' + esc(k) + '"' + (cur === k ? ' selected' : '') + '>'
+          + esc(t(ROLES[k].n)) + '</option>';
+      }).join('');
+    };
+    return '<p class="lede" style="margin:0 0 16px">الوظيفةُ ما يعمله الشخصُ، والدورُ ما يستطيعه في النظام. ومسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبها يُعرَف من يستلم العهدةَ ومن ينزل المشاعر. والوظيفةُ تتغيّر في أثناء الموسم، والنقلةُ تُسجَّل ولا تُمحى.</p>'
+
+      + cardFlush('الوظائف — ' + nm(L.length),
+          table(['الوظيفة','الدور','ماذا تعمل','عليها',''],
+            L.map(function(j){
+              var u = jobUsed(j.id);
+              return ['<input value="' + esc(j.n) + '" data-jbn="' + esc(j.id) + '" dir="auto">',
+                      '<select data-jbr="' + esc(j.id) + '">' + roleOpts(j.role) + '</select>',
+                      '<input value="' + esc(j.d || '') + '" data-jbd="' + esc(j.id) + '" dir="auto">',
+                      u ? pill(nm(u), 'acc') : N(0),
+                      u ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
+                        : btn('حذف','btn-quiet btn-sm',' data-jbdel="' + esc(j.id) + '"')];
+            })))
+
+      + (may('users')
+        ? card('إضافة وظيفة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('اسم الوظيفة')) + ' <span class="req">*</span></label>'
+            +   '<input id="jbN" dir="auto" placeholder="مسؤول سلامة"></div>'
+            + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+            +   '<select id="jbR">' + roleOpts('tech') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('ماذا تعمل')) + '</label>'
+            +   '<input id="jbD" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة وظيفة','btn-primary btn-sm',' data-jbadd="1"'))
+        : '')
+
+      + cardFlush('من على كل وظيفة',
+          table(['الشخص','الوظيفة','الدور المشتقّ','آخر نقلة'],
+            techsList().map(function(x){
+              var j = x.job ? jobOf(x.job) : null;
+              var last = (x.jobLog || []).slice(-1)[0];
+              return [esc(x.n),
+                      '<select data-tkjob="' + esc(x.n) + '">'
+                      + '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
+                      + L.map(function(y){
+                          return '<option value="' + esc(y.id) + '"' + (x.job === y.id ? ' selected' : '')
+                            + '>' + esc(y.n) + '</option>';
+                        }).join('') + '</select>',
+                      j ? pill(t((ROLES[j.role] || {}).n || j.role), 'off') : '—',
+                      last ? '<span class="num">' + esc(new Date(last.at).toISOString().slice(0,10)) + '</span>' : '—'];
+            })))
+
+      + '<p class="hint">الوظيفةُ التي عليها أشخاصٌ لا تُحذَف — انقلهم أولًا. وكلُّ نقلةٍ تدخل سجلَّ الأحداث وتصل صاحبَها إشعارًا.</p>';
+  }};
+
 PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل وأين وبأي رصيد — يُضاف ويُعدَّل ويُحذَف.',
   body:function(){
     var L = techsList(), byName = {};
@@ -9759,10 +9976,16 @@ PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل و
 
       + cardFlush('الفنيون — ' + nm(L.length),
           L.length
-            ? table(['الفني','الجوال','الفريق','المشرف','نقاط الشهر',''],
+            ? table(['الفني','الوظيفة','الجوال','الفريق','المشرف','نقاط الشهر',''],
                 L.map(function(x){
                   var e = byName[x.n];
                   return ['<input value="' + esc(x.n) + '" data-tkn="' + esc(x.n) + '" dir="auto">',
+                          '<select data-tkjob="' + esc(x.n) + '">'
+                            + '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
+                            + jobsList().map(function(j){
+                                return '<option value="' + esc(j.id) + '"' + (x.job === j.id ? ' selected' : '')
+                                  + '>' + esc(j.n) + '</option>';
+                              }).join('') + '</select>',
                           may('phones')
                             ? '<input value="' + esc(x.ph || '') + '" data-tkph="' + esc(x.n) + '" dir="ltr" placeholder="05…">'
                             : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
@@ -11436,7 +11659,7 @@ var NAV = [
       ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
-      ['users','المستخدمون'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
+      ['users','المستخدمون'],['jobs','الوظائف'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
       ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
@@ -11751,6 +11974,12 @@ function onDocClick(e){
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   if (e.target.closest('[data-tkadd]')){ techAdd(); return; }
   if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
+  if (e.target.closest('[data-lsadd]')){ lessAdd(); return; }
+  var lsd = e.target.closest('[data-lsdel]');
+  if (lsd){ lessDel(+lsd.getAttribute('data-lsdel')); return; }
+  if (e.target.closest('[data-jbadd]')){ jobAdd(); return; }
+  var jbd = e.target.closest('[data-jbdel]');
+  if (jbd){ jobDel(jbd.getAttribute('data-jbdel')); return; }
   if (e.target.closest('[data-craddgo]')){ crewAdd(); return; }
   if (e.target.closest('[data-wipego]')){ wipeGo(); return; }
   var tkd = e.target.closest('[data-tkdel]');
@@ -12201,6 +12430,12 @@ document.addEventListener('input', function(e){
     techSet(e.target.getAttribute('data-tksup'), 'sup', e.target.value); render(1); return; }
   if (e.target && e.target.hasAttribute){
     var el2 = e.target;
+    if (el2.hasAttribute('data-lsw')){ lessSet(+el2.getAttribute('data-lsw'), { w:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-lsa')){ lessSet(+el2.getAttribute('data-lsa'), { a:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-jbn')){ jobSet(el2.getAttribute('data-jbn'), { n:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-jbd')){ jobSet(el2.getAttribute('data-jbd'), { d:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-jbr')){ jobSet(el2.getAttribute('data-jbr'), { role:el2.value }); render(1); return; }
+    if (el2.hasAttribute('data-tkjob')){ jobAssign(el2.getAttribute('data-tkjob'), el2.value); render(1); return; }
     if (el2.hasAttribute('data-tkn')){  techSet(el2.getAttribute('data-tkn'),  { n:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-tkph')){ techSet(el2.getAttribute('data-tkph'), { ph:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
