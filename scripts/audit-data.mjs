@@ -87,6 +87,51 @@ const html = readFileSync('index.html', 'utf8');
     + (bad.length ? ` (${bad.length}): ` + [...new Set(bad)].join(' · ') : ''));
 }
 
+/* ── لا تعريفَ يُكتَب مرتين ───────────────────────────────────────────────
+   في جافاسكربت التعريفُ الثاني يغلب الأولَ صامتًا: لا خطأ، ولا تحذير. فتبقى
+   الأولى شيفرةً ميتةً — وهذا أهونُ ما فيه. وأخطرُه أن يحمل الاسمُ معنيين:
+   `techList` كانت تُعيد أسماءَ الفنيين في موضع، وكائناتِهم في موضعٍ آخر —
+   والثانيةُ غلبت، فثلاثةُ نداءاتٍ تنتظر أسماءً أخذت كائناتٍ ورسمت
+   «[object Object]» في قائمةٍ يختار منها المشرف.
+
+   وكذلك مفتاحُ القاموس: يُترجَم مرتين بترجمتين، فالمعروضُ تابعٌ للترتيب لا
+   للقصد. ومن راجع الملفَّ قرأ الأولى ورأى الثانية. */
+{
+  const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['',''])[1];
+
+  const fns = {};
+  [...js.matchAll(/^\s*function\s+([A-Za-z_$][\w$]*)\s*\(/gm)]
+    .forEach(m => { fns[m[1]] = (fns[m[1]] || 0) + 1; });
+  /* `row` وأمثالُها مساعداتٌ محليةٌ داخل دوالَّ أخرى — تُستثنى بالإزاحة */
+  const dupFn = Object.keys(fns).filter(k => fns[k] > 1 &&
+    (js.match(new RegExp('^function\\s+' + k + '\\s*\\(', 'gm')) || []).length > 1);
+  check(dupFn.length === 0, 'لا دالةَ عامةً معرَّفةٌ مرتين'
+    + (dupFn.length ? ' — ' + dupFn.join(' · ') : ''));
+
+  const pgs = {};
+  [...js.matchAll(/PAGE\.(\w+)\s*=\s*\{/g)].forEach(m => { pgs[m[1]] = (pgs[m[1]] || 0) + 1; });
+  const dupPg = Object.keys(pgs).filter(k => pgs[k] > 1);
+  check(dupPg.length === 0, 'لا شاشةَ معرَّفةٌ مرتين'
+    + (dupPg.length ? ' — ' + dupPg.join(' · ') : ''));
+
+  ['D','D2'].forEach(v => {
+    const i = js.indexOf('var ' + v + ' = {');
+    if (i < 0) return;
+    const seg = js.slice(i, js.indexOf('\n};', i));
+    ['en','ur'].forEach(L => {
+      const st = seg.search(new RegExp('\\n' + L + ':\\s*\\{'));
+      if (st < 0) return;
+      const e = L === 'en' ? (seg.search(/\nur:\s*\{/) + 1 || seg.length) : seg.length;
+      const keys = {};
+      [...seg.slice(st, e).matchAll(/'((?:[^'\\]|\\.)*)'\s*:\s*'/g)]
+        .forEach(m => { keys[m[1]] = (keys[m[1]] || 0) + 1; });
+      const dup = Object.keys(keys).filter(k => keys[k] > 1);
+      check(dup.length === 0, `لا مفتاحَ مكرَّرٌ في ${v}.${L}`
+        + (dup.length ? ` (${dup.length}) — ` + dup.slice(0,3).join(' · ') : ''));
+    });
+  });
+}
+
 /* ── لا رسالةَ تُكذّب فعلَها ────────────────────────────────────────────────
    «في المعاينة: لا فعل حقيقي» كانت تُذيَّل بها كلُّ رسالةٍ في التطبيق من زمن
    العرض. أُزيلت في V14.26 ثم عادت — ومن كُذب عليه مرةً لم يصدّق ما بعدها. */

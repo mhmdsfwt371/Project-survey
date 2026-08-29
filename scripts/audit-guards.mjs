@@ -108,6 +108,8 @@ const MUT = [
   { n:'زرُّ حذفٍ يُقال إنه حذف ولا يحذف', g:'scripts/audit-crud.mjs',
     a:'  L.splice(i, 1);\n  jobSave();',
     b:'  jobSave();' },
+  { n:'دالةٌ عامةٌ تُعرَّف مرتين', g:'scripts/audit-data.mjs',
+    a:'function techNames(){', b:'function techNames(){}\nfunction techNames(){' },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
