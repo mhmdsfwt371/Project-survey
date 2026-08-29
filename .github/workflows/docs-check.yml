@@ -27,6 +27,8 @@ jobs:
         run: node scripts/audit-data.mjs
       - name: جرد الكتابة — كل وعدٍ يكتب أو يقول لماذا
         run: node scripts/audit-writes.mjs
+      - name: جرد السعة — ميزانيةُ اليوم والحصص
+        run: node scripts/audit-capacity.mjs
       - name: جرد الاتساع — مئة وخمسون جهازًا ستة أشهر
         run: node scripts/audit-scale.mjs
       - name: جرد القواعد — كل قاعدة تمنع فعلًا

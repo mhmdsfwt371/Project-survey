@@ -8,6 +8,7 @@
   "scripts": {
     "check": "node scripts/check-version.mjs",
     "audit": "node scripts/audit-data.mjs && node scripts/audit-writes.mjs && node scripts/audit-exports.mjs && node scripts/audit-calc.mjs && node scripts/audit-roles.mjs && node scripts/parity.mjs",
-    "qa": "node scripts/qa.mjs"
+    "qa": "node scripts/qa.mjs",
+    "preflight": "node scripts/preflight.mjs"
   }
 }
