@@ -92,6 +92,9 @@ const MUT = [
     b:'  var onRows = [];' },
   { n:'اشتقاقُ الخصائص يعود فارغًا فيبتلع كلَّ زر', g:'scripts/audit-writes.mjs',
     a:'  ACTS_CACHE = found.length >= 20', b:'  ACTS_CACHE = found.length >= 99999' },
+  { n:'القاعدةُ تنسى الأدوارَ الميدانية', g:'scripts/audit-db-rules.mjs', f:'firestore.rules',
+    a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins']; }",
+    b:"function field()  { return false; }" },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
@@ -107,9 +110,13 @@ try {
   execSync(`ln -sfn ${process.cwd()}/node_modules ${dir}/node_modules 2>/dev/null || true`, { shell:'/bin/bash' });
 
   for (const m of MUT){
-    if (!src.includes(m.a)){ broken.push(m.n + ' — المرساةُ لم تعد موجودة'); continue; }
-    if (src.split(m.a).length - 1 !== 1){ broken.push(m.n + ' — المرساةُ غيرُ فريدة'); continue; }
-    writeFileSync(join(dir, 'index.html'), src.replace(m.a, m.b));
+    /* الزرعُ قد يقع في غير `index.html` — كقواعد القاعدة */
+    const file = m.f || 'index.html';
+    const body = file === 'index.html' ? src : readFileSync(file, 'utf8');
+    if (!body.includes(m.a)){ broken.push(m.n + ' — المرساةُ لم تعد موجودة'); continue; }
+    if (body.split(m.a).length - 1 !== 1){ broken.push(m.n + ' — المرساةُ غيرُ فريدة'); continue; }
+    writeFileSync(join(dir, 'index.html'), src);
+    writeFileSync(join(dir, file), body.replace(m.a, m.b));
     let caught = false;
     try { execSync('node ' + m.g, { cwd:dir, stdio:'pipe', timeout:600000 }); }
     catch { caught = true; }

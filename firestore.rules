@@ -8,8 +8,15 @@ service cloud.firestore {
     function uDoc()  { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
     function ok()    { return isBoss() || (request.auth != null && uDoc().active == true); }
     function role()  { return isBoss() ? 'admin' : uDoc().role; }
-    function mgr()   { return ok() && (role() == 'engineer' || role() == 'admin'); }
-    function canW()  { return ok() && (role() == 'engineer' || role() == 'admin' || role() == 'supervisor'); }
+    function mgr()   { return ok() && role() in ['engineer', 'admin']; }
+
+    // الأدوارُ الميدانية: الفنيُّ والتهيئةُ والتجميعُ والتركيب. وهي التي تنتج
+    // العملَ كلَّه — ولم تكن في هذه القائمة، فكانت القاعدةُ ترفض كلَّ مسحٍ
+    // وكلَّ تركيبٍ يكتبه فنيّ. والتطبيقُ يقول «حُفظ» لأن الحفظَ محليٌّ أولًا،
+    // ثم يقف الطابورُ عند الرفع ولا يصل المكتبَ شيء.
+    function field()  { return role() in ['tech', 'cprep', 'casm', 'cins']; }
+    function canW()   { return ok() && (role() in ['engineer', 'admin', 'supervisor'] || field()); }
+    function viewer() { return ok() && role() == 'viewer'; }
 
     // المستخدمون: كل واحد يقرأ حسابه — المدير يقرأ الكل
     // الأدمن يكتب أي حساب — المهندس يكتب وثائق المشرفين فقط (بدون تغيير الدور)
@@ -48,6 +55,8 @@ service cloud.firestore {
 
     // إعدادات مشتركة (الموعد المستهدف للمسح) — الجميع يقرأ، الإدارة تكتب
     // أرقام الهواتف (المكتب والشركات) للميدان والإدارة — لا تُعرض لحساب الوزارة
+    // الهواتف: الميدانُ والإدارةُ يقرآن — والوزارةُ لا. والحجبُ هنا لا في
+    // الواجهة وحدها، فالواجهةُ تُفتَح والقاعدةُ لا تُفتَح.
     match /settings/contacts { allow read: if canW(); allow write: if mgr(); }
     match /settings/cotel    { allow read: if canW(); allow write: if mgr(); }
     match /settings/{id} {
@@ -91,7 +100,8 @@ service cloud.firestore {
 
     // المخزونُ والمشتريات — كانتا تُكتبان بلا قاعدةٍ فتُرفضان
     match /inventory/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
-    match /purchases/{id} { allow read: if canW(); allow create, update: if canW(); allow delete: if mgr(); }
+    // المشترياتُ مالٌ داخليّ: لا يقرؤها الميدانُ ولا الوزارة
+    match /purchases/{id} { allow read: if mgr(); allow create, update: if mgr(); allow delete: if mgr(); }
 
     // الفرقُ وخطُّ الأساس وطلباتُ التغيير والسلامةُ وعدمُ المطابقة والمستخلصات
     match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
@@ -100,7 +110,8 @@ service cloud.firestore {
     match /hse/{id}      { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
     match /ncr/{id}      { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if mgr(); }
     // المستخلصُ مالٌ: يُقرأ لمن يملك المال، ولا يعتمده إلا المهندس
-    match /ipc/{id}      { allow read: if canW(); allow create: if canW(); allow update: if mgr(); allow delete: if false; }
+    // المستخلصُ: يقرؤه المهندسُ والوزارةُ (فهو مستخلصُها المعتمَد) لا الميدان
+    match /ipc/{id}      { allow read: if mgr() || viewer(); allow create: if mgr(); allow update: if mgr(); allow delete: if false; }
 
     // لا شيءَ يسقط في «misc» بعد اليوم
     match /misc/{id} { allow read, write: if false; }

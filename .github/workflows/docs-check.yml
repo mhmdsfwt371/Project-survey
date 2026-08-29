@@ -31,6 +31,8 @@ jobs:
         run: node scripts/audit-capacity.mjs
       - name: جرد الاتساع — مئة وخمسون جهازًا ستة أشهر
         run: node scripts/audit-scale.mjs
+      - name: جرد قواعد القاعدة — تُقاس على التطبيق
+        run: node scripts/audit-db-rules.mjs
       - name: جرد القواعد — كل قاعدة تمنع فعلًا
         run: node scripts/audit-rules.mjs
       - name: جرد التصديرات — كل ورقة تُولَّد وتُقاس
