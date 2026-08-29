@@ -509,7 +509,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.26
+      <i class="ver-tag">نسخة</i>V14.27
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -700,6 +700,35 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الرابعة عشرة: المخزون والمشتريات ══ */
+ 'المخزونُ للمهندس وحده':'Inventory is for the engineer only',
+ 'اختر نوع الحركة':'Choose the movement type',
+ 'اختر الصنف':'Choose the item',
+ 'الكميةُ أكبرُ من صفر':'The quantity must be above zero',
+ 'المتاحُ في المخزن':'Available in the store',
+ 'المتاحُ في العُهدة':'Available in custody',
+ 'سُجّلت الحركة':'Movement recorded',
+ 'المشترياتُ للمهندس وحده':'Purchasing is for the engineer only',
+ 'اكتب الصنف':'Write the item',
+ 'الفئةُ من القائمة المعتمدة':'The category must come from the approved list',
+ 'المورّدُ من القائمة المعتمدة':'The supplier must come from the approved list',
+ 'المبلغُ أكبرُ من صفر':'The amount must be above zero',
+ 'اكتب الاسم أولًا':'Write the name first',
+ 'موجودٌ بالفعل':'Already on the list',
+ 'مستعملٌ في':'Used in',
+ 'عملية — لا يُحذَف':'transaction(s) — cannot be deleted',
+ 'حُذف':'Deleted',
+ 'لا حركاتٍ بعد — الرصيدُ يُشتقُّ من الحركات ولا يُكتَب بيد.':'No movements yet — the balance is derived from movements and is never typed in.',
+ 'الحركة':'Movement',
+ 'ملاحظة':'Note',
+ 'الرصيدُ يُشتقُّ من الحركات — والتصحيحُ حركةٌ تصحيحيةٌ لا تعديلُ رقم.':'The balance is derived from movements — a correction is a corrective movement, not an edited number.',
+ 'لا حركاتٍ بعد.':'No movements yet.',
+ 'ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.':'Anything above the approval limit is recorded as awaiting approval and does not count as spend.',
+ 'لا مشترياتٍ بعد.':'No purchases yet.',
+ 'مستعملة':'In use',
+ 'فئة جديدة':'New category',
+ 'مستعمل':'In use',
+ 'مورّد جديد':'New supplier',
  /* ══ الدفعة الثالثة عشرة: الإشعارات ══ */
  'هذا المتصفّح لا يدعم إشعارات النظام':'This browser does not support system notifications',
  'الإذنُ ممنوحٌ سلفًا':'Permission is already granted',
@@ -1051,6 +1080,35 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الرابعة عشرة ══ */
+ 'المخزونُ للمهندس وحده':'انوینٹری صرف انجینئر کے لیے ہے',
+ 'اختر نوع الحركة':'حرکت کی قسم منتخب کریں',
+ 'اختر الصنف':'شے منتخب کریں',
+ 'الكميةُ أكبرُ من صفر':'مقدار صفر سے زیادہ ہونی چاہیے',
+ 'المتاحُ في المخزن':'گودام میں دستیاب',
+ 'المتاحُ في العُهدة':'امانت میں دستیاب',
+ 'سُجّلت الحركة':'حرکت درج ہو گئی',
+ 'المشترياتُ للمهندس وحده':'خریداری صرف انجینئر کے لیے ہے',
+ 'اكتب الصنف':'شے لکھیں',
+ 'الفئةُ من القائمة المعتمدة':'زمرہ منظور شدہ فہرست سے ہونا چاہیے',
+ 'المورّدُ من القائمة المعتمدة':'فراہم کنندہ منظور شدہ فہرست سے ہونا چاہیے',
+ 'المبلغُ أكبرُ من صفر':'رقم صفر سے زیادہ ہونی چاہیے',
+ 'اكتب الاسم أولًا':'پہلے نام لکھیں',
+ 'موجودٌ بالفعل':'فہرست میں پہلے سے موجود',
+ 'مستعملٌ في':'استعمال میں',
+ 'عملية — لا يُحذَف':'کارروائیوں میں — حذف نہیں ہو سکتا',
+ 'حُذف':'حذف ہو گیا',
+ 'لا حركاتٍ بعد — الرصيدُ يُشتقُّ من الحركات ولا يُكتَب بيد.':'ابھی کوئی حرکت نہیں — بیلنس حرکات سے اخذ ہوتا ہے، ہاتھ سے نہیں لکھا جاتا۔',
+ 'الحركة':'حرکت',
+ 'ملاحظة':'نوٹ',
+ 'الرصيدُ يُشتقُّ من الحركات — والتصحيحُ حركةٌ تصحيحيةٌ لا تعديلُ رقم.':'بیلنس حرکات سے اخذ ہوتا ہے — درستی ایک اصلاحی حرکت ہے، نمبر کی ترمیم نہیں۔',
+ 'لا حركاتٍ بعد.':'ابھی کوئی حرکت نہیں۔',
+ 'ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.':'منظوری کی حد سے زیادہ جو ہو وہ منظوری کے منتظر درج ہوتا ہے اور خرچ میں شمار نہیں ہوتا۔',
+ 'لا مشترياتٍ بعد.':'ابھی کوئی خریداری نہیں۔',
+ 'مستعملة':'زیرِ استعمال',
+ 'فئة جديدة':'نیا زمرہ',
+ 'مستعمل':'زیرِ استعمال',
+ 'مورّد جديد':'نیا فراہم کنندہ',
  /* ══ الدفعة الثالثة عشرة ══ */
  'هذا المتصفّح لا يدعم إشعارات النظام':'یہ براؤزر سسٹم اطلاعات کی حمایت نہیں کرتا',
  'الإذنُ ممنوحٌ سلفًا':'اجازت پہلے سے دی جا چکی ہے',
@@ -2335,7 +2393,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
             + (Object.keys(ins.parts || {}).length
               ? table(['القطعة','الكمية','السيريال'],
                   Object.keys(ins.parts).map(function(k){
-                    var it = DATA.items.filter(function(i){ return i[1] === k; })[0];
+                    var it = itemsList().filter(function(i){ return i.code === k; })[0];
                     return [esc(it ? it[2] : k), N(ins.parts[k]),
                             '<span class="num">' + esc((ins.serials || {})[k] || '—') + '</span>'];
                   }))
@@ -4401,8 +4459,8 @@ PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
     var s = formSite();
     if (!s) return alertBox('warn','لا مواقع محمّلة.');
     var zone = s.type === 'ممر' ? 'cor' : 'camp';
-    var parts = DATA.items.filter(function(i){ return i[0] === zone && itPts(i[1]) > 0; });
-    if (!parts.length) parts = DATA.items.filter(function(i){ return i[0] === zone; }).slice(0, 8);
+    var parts = itemsList().filter(function(i){ return i.z === zone && itPts(i.code) > 0; });
+    if (!parts.length) parts = itemsList().filter(function(i){ return i.z === zone; }).slice(0, 8);
     var rec = STATE.recs[s.id];
 
     return (!rec ? alertBox('warn','هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.') : '')
@@ -5490,7 +5548,7 @@ function evm(){
 
   var AC = 0;
   scores().list.forEach(function(e){ AC += e.money; });
-  DATA.buys.forEach(function(b){ AC += b[4]; });
+  buysList().forEach(function(b){ if (b.st === 'معتمد') AC += (+b.amt || 0); });
   AC = Math.round(AC);                            /* المنصرف الفعلي */
 
   var SV = EV - PV, CV = EV - AC;
@@ -5846,8 +5904,8 @@ PAGE.exec = { m:'المتابعة', t:'اللوحة التنفيذية',
             ['أُنجز تركيبًا', N(S.installed), S.total ? nm(Math.round(S.installed/S.total*100))+'٪' : ''],
             ['من يعملون', N(SC.n), 'فنيًّا ومهندسًا'],
             ['مستحقُّ العمل', cfgGet('ph') ? N(Math.round(pay)) : '—', 'محسوبٌ من الأوزان'],
-            ['المنصرف على المشتريات', N(DATA.budget.spent), cfgGet('budCap')
-              ? nm(Math.round(DATA.budget.spent / cfgGet('budCap') * 100)) + '٪ من السقف' : '']
+            ['المنصرف على المشتريات', N(buysSpent()), cfgGet('budCap')
+              ? nm(Math.round(buysSpent() / cfgGet('budCap') * 100)) + '٪ من السقف' : '']
           ]))
 
       + (open.length
@@ -7551,8 +7609,9 @@ var SHEETS = {
   },
   budm: function(){
     var byCat = {}, out = [['الباب','المبلغ','النسبة']];
-    DATA.buys.forEach(function(b){ byCat[b[2]] = (byCat[b[2]] || 0) + b[4]; });
-    var spent = DATA.budget.spent;
+    buysList().forEach(function(b){ if (b.st !== 'معتمد') return;
+      byCat[b.cat] = (byCat[b.cat] || 0) + (+b.amt || 0); });
+    var spent = buysSpent();
     Object.keys(byCat).forEach(function(c){
       out.push([c, byCat[c], spent ? Math.round(byCat[c]/spent*100) + '%' : '0%']);
     });
@@ -7566,6 +7625,30 @@ var SHEETS = {
       var R = STAGE_ROLES[e.stage] || { n:e.stage };
       out.push([e.rank, e.name, R.n, e.survey, e.install, e.dis, e.prep, e.asm,
                 e.acts, e.nDays, e.total, e.perDay, e.money]);
+    });
+    return out;
+  },
+  invb: function(){
+    var out = [['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي']];
+    stockBalance().forEach(function(r){
+      out.push([r.item, r.store, r.custody, r.used, r.scrap,
+                r.store + r.custody + r.used + r.scrap]);
+    });
+    return out;
+  },
+  invmv: function(){
+    var out = [['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','سجّلها','ملاحظة']];
+    movesList().forEach(function(m){
+      out.push([new Date(m.at).toISOString().slice(0,10), m.kind, m.item, m.qty,
+                m.by || '', m.site || '', m.user || '', m.note || '']);
+    });
+    return out;
+  },
+  buys: function(){
+    var out = [['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة','سجّلها']];
+    buysList().forEach(function(b){
+      out.push([new Date(b.at).toISOString().slice(0,10), b.item, b.cat, b.zone || '',
+                b.amt, b.sup, b.st, b.by || '']);
     });
     return out;
   },
@@ -7669,37 +7752,16 @@ var SHEETS = {
   },
   items: function(){
     var out = [['المنطقة','المعرّف','القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر']];
-    DATA.items.forEach(function(i){
-      out.push([i[0]==='cor'?'ممر':'مخيم', i[1], i[2],
-                itPts(i[1]), itPrep(i[1]), itAsm(i[1]), itPrice(i[1])]);
+    itemsList().forEach(function(i){
+      out.push([i.z==='cor'?'ممر':'مخيم', i.code, i.name,
+                itPts(i.code), itPrep(i.code), itAsm(i.code), itPrice(i.code)]);
     });
     return out;
   },
-  invb: function(){
-    var out = [['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي']];
-    DATA.stock.forEach(function(r){
-      out.push([r[0], r[1], r[2], r[3], r[4], r[1]+r[2]+r[3]+r[4]]);
-    });
-    return out;
-  },
-  invmv: function(){
-    var out = [['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','الحالة']];
-    DATA.moves.forEach(function(m){ out.push(m.slice()); });
-    STATE.moves.forEach(function(m){ out.push([m.at||'', m.kind||'', m.item||'', m.qty||0,
-                                               m.by||'', m.site||'', m.cond||'']); });
-    return out;
-  },
-  buys: function(){
-    var out = [['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة']];
-    DATA.buys.forEach(function(b){ out.push(b.slice()); });
-    STATE.buys.forEach(function(b){ out.push([b.at||'', b.item||'', b.cat||'', b.zone||'',
-                                              b.amount||0, b.sup||'', b.status||'']); });
-    out.push(['','','','الإجمالي', cfgGet('budCap') ? DATA.budget.spent : DATA.budget.spent, '', '']);
-    return out;
-  },
-  techx: function(){
+techx: function(){
     var Tg = T(), out = [['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي']];
-    DATA.techs.forEach(function(x){
+    scores().list.forEach(function(e){
+      var x = [e.name, e.survey, e.install, e.dis];
       out.push([x[0], x[1], Tg.survey ? Math.round(x[1]/Tg.survey*100)+'%' : '—',
                 x[2], Tg.ins ? Math.round(x[2]/Tg.ins*100)+'%' : '—',
                 x[3], Tg.dis ? Math.round(x[3]/Tg.dis*100)+'%' : '—',
@@ -7967,7 +8029,8 @@ function impApply(){
       var id = 'imp_' + (++n);
       cfgSet('itPts', id, r[2]); cfgSet('itPrep', id, r[3]);
       cfgSet('itAsm', id, r[4]); cfgSet('itPrice', id, r[5]);
-      DATA.items.push([String(r[0]).trim()==='ممر'?'cor':'camp', id, String(r[1]), 0, 0, 0, 0]);
+      itemsList().push({ z:String(r[0]).trim()==='ممر'?'cor':'camp', code:id,
+                         name:String(r[1]), pts:0, price:0, prep:0, asm:0 });
     } else if (p.kind === 'sites'){
       var s = siteFind(String(r[0]).trim());
       if (s){ if (r[3]) s.sign = String(r[3]); if (r[4]) s.sq = String(r[4]);
@@ -8715,35 +8778,221 @@ PAGE.wday = { m:'الورشة والمخزون', t:'نقاط اليوم', l:'ل�
     ], ['الإجمالي','٠','٠','٠','٠']));
   }};
 
+/* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════
+   كانت الأربعُ شاشاتٍ تعرض بذرةً مكتوبةً يومَ بُني الشكل: أربعةَ أصنافٍ
+   وأربعَ حركاتٍ وعمليتَي شراء. تبدو عاملةً ولا تقبل إدخالًا — فلا يُسجَّل
+   توريدٌ ولا صرفٌ ولا شراء، ويظلُّ الرصيدُ عددًا مكتوبًا لا ميزانًا.
+
+   والرصيدُ لا يُكتَب: يُشتقُّ من الحركات. فمن أراد تصحيحَه سجّل حركةً
+   تصحيحية — ولا يُعدَّل رقمٌ في مكانه فيضيع سببُه. */
+
+function seedOnce(key, seed){
+  if (!Array.isArray(STATE[key]) || !STATE[key].length) STATE[key] = (seed || []).slice();
+  return STATE[key];
+}
+
+/* ── الكتالوج: قائمةُ القطع الأمّ، والقيمُ في الإعدادات ── */
+function itemsList(){
+  if (!Array.isArray(STATE.items) || !STATE.items.length){
+    STATE.items = (DATA.items || []).map(function(r){
+      return { z:r[0], code:r[1], name:r[2], pts:r[3], price:r[4], prep:r[5], asm:r[6] };
+    });
+  }
+  return STATE.items;
+}
+function itemName(code){
+  var x = itemsList().filter(function(i){ return i.code === code; })[0];
+  return (x && x.name) || code;
+}
+
+/* ── المخزن: الميزانُ من الحركات ──
+   توريدٌ يزيد المخزن. وصرفٌ ينقله إلى عهدة المنفِّذ. واستهلاكٌ يُخرجه من
+   العهدة إلى الميدان. وإرجاعٌ يعيده. وشطبٌ يعزله تالفًا. */
+var MOVE_KINDS = ['توريد','صرف','استهلاك','إرجاع','شطب'];
+
+function movesList(){
+  var M = STATE.moves || {};
+  return Object.keys(M).map(function(k){ return M[k]; })
+    .filter(Boolean).sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+}
+
+function stockBalance(){
+  var bal = {};
+  function row(item){
+    if (!bal[item]) bal[item] = { item:item, store:0, custody:0, used:0, scrap:0 };
+    return bal[item];
+  }
+  movesList().forEach(function(m){
+    var r = row(m.item || '—'), q = +m.qty || 0;
+    if (m.kind === 'توريد')      r.store   += q;
+    else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
+    else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
+    else if (m.kind === 'إرجاع'){   r.custody -= q; r.store += q; }
+    else if (m.kind === 'شطب'){     r.custody -= q; r.scrap += q; }
+  });
+  return Object.keys(bal).map(function(k){ return bal[k]; })
+    .sort(function(a,b){ return (b.store + b.custody) - (a.store + a.custody); });
+}
+
+function moveAdd(){
+  if (!may('inventory')){ toast(t('المخزونُ للمهندس وحده')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var kind = g('mvKind'), item = g('mvItem'), qty = +g('mvQty') || 0;
+  if (!kind || MOVE_KINDS.indexOf(kind) < 0){ toast(t('اختر نوع الحركة')); return; }
+  if (!item){ toast(t('اختر الصنف')); return; }
+  if (qty <= 0){ toast(t('الكميةُ أكبرُ من صفر')); return; }
+  /* الصرفُ وما بعده لا يتجاوز المتاح — والرصيدُ السالب عطلٌ لا حالة */
+  var b = stockBalance().filter(function(x){ return x.item === item; })[0]
+       || { store:0, custody:0 };
+  if (kind === 'صرف' && qty > b.store){
+    toast(t('المتاحُ في المخزن') + ': ' + nm(b.store)); return; }
+  if (['استهلاك','إرجاع','شطب'].indexOf(kind) > -1 && qty > b.custody){
+    toast(t('المتاحُ في العُهدة') + ': ' + nm(b.custody)); return; }
+
+  var id = uid36();
+  var mv = { id:id, kind:kind, item:item, qty:qty,
+             by:g('mvBy'), site:g('mvSite'), note:g('mvNote'),
+             at:Date.now(), user:STATE.meta.name || '' };
+  if (!STATE.moves) STATE.moves = {};
+  STATE.moves[id] = mv;
+  CORE.set('moves', id, mv);
+  logEvent('حركة مخزون — ' + kind + ' · ' + item + ' × ' + nm(qty));
+  toast(t('سُجّلت الحركة'));
+  render(1);
+}
+
+/* المنصرفُ يُحسَب مرةً في مكانٍ واحد: خمسةُ مواضعَ كانت تجمعه، ولو اختلف
+   شرطُ واحدٍ منها عن الآخر تفرّقت الأرقامُ في تقريرٍ واحد. */
+function buysSpent(){
+  return buysList().reduce(function(a,b){
+    return a + (b.st === 'معتمد' ? (+b.amt || 0) : 0); }, 0);
+}
+
+/* ── المشتريات ── */
+function buysList(){
+  var B = STATE.buys || {};
+  return Object.keys(B).map(function(k){ return B[k]; })
+    .filter(Boolean).sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+}
+function supList(){ return seedOnce('sups', DATA.suppliers); }
+function catList(){ return seedOnce('cats', DATA.buyCats); }
+
+function buyAdd(){
+  if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var item = g('byItem'), cat = g('byCat'), sup = g('bySup');
+  var amt = +g('byAmt') || 0, zone = g('byZone');
+  if (!item){ toast(t('اكتب الصنف')); return; }
+  if (catList().indexOf(cat) < 0){ toast(t('الفئةُ من القائمة المعتمدة')); return; }
+  if (supList().indexOf(sup) < 0){ toast(t('المورّدُ من القائمة المعتمدة')); return; }
+  if (amt <= 0){ toast(t('المبلغُ أكبرُ من صفر')); return; }
+
+  var cap = cfgGet('budApp') || 0;
+  var id = uid36();
+  var b = { id:id, item:item, cat:cat, sup:sup, amt:amt, zone:zone,
+            at:Date.now(), by:STATE.meta.name || '',
+            st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
+  if (!STATE.buys) STATE.buys = {};
+  STATE.buys[id] = b;
+  CORE.set('buys', id, b);
+  logEvent('مشترى — ' + item + ' · ' + nm(amt) + ' ريال · ' + b.st);
+  if (b.st !== 'معتمد')
+    notifPush('اعتماد شراء', 'مشترًى يتجاوز حدَّ الاعتماد — ' + item + ' · ' + nm(amt), { lv:'مهم' });
+  toast(t(b.st === 'معتمد' ? 'سُجّل المشترى' : 'سُجّل بانتظار اعتماد المهندس — تجاوز حدَّ الاعتماد'));
+  render(1);
+}
+
+/* إضافةُ مورّدٍ أو فئةٍ إلى القائمة المعتمدة — والمستعملُ لا يُحذَف */
+function listAdd(kind){
+  if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
+  var el = document.getElementById(kind === 'sup' ? 'supNew' : 'catNew');
+  var v = el ? String(el.value || '').trim() : '';
+  if (!v){ toast(t('اكتب الاسم أولًا')); return; }
+  var L = kind === 'sup' ? supList() : catList();
+  if (L.indexOf(v) > -1){ toast(t('موجودٌ بالفعل')); return; }
+  L.push(v);
+  CORE.set('cfg', kind === 'sup' ? 'sups' : 'cats', L.slice());
+  logEvent((kind === 'sup' ? 'مورّد جديد — ' : 'فئة مشتريات جديدة — ') + v);
+  toast(t('أُضيف'));
+  render(1);
+}
+function listRm(kind, v){
+  if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
+  var used = buysList().filter(function(b){ return (kind === 'sup' ? b.sup : b.cat) === v; }).length;
+  if (used){ toast(t('مستعملٌ في') + ' ' + nm(used) + ' ' + t('عملية — لا يُحذَف')); return; }
+  var L = kind === 'sup' ? supList() : catList();
+  var i = L.indexOf(v);
+  if (i < 0) return;
+  L.splice(i, 1);
+  CORE.set('cfg', kind === 'sup' ? 'sups' : 'cats', L.slice());
+  logEvent((kind === 'sup' ? 'حذف مورّد — ' : 'حذف فئة — ') + v);
+  toast(t('حُذف'));
+  render(1);
+}
+
 PAGE.invb = { m:'الورشة والمخزون', t:'أرصدة المخزون', l:'المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.',
   body:function(){
-    var st=0,cu=0,us=0,sc=0;
-    DATA.stock.forEach(function(r){ st+=r[1]; cu+=r[2]; us+=r[3]; sc+=r[4]; });
-    return stats([['في المخزن', N(st), 'ok'], ['في العُهدة', N(cu), 'acc'],
-                  ['رُكّب في الميدان', N(us)], ['تالف معزول', N(sc), 'bad']])
-      + card('الأرصدة حسب الصنف',
-          table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'],
-            DATA.stock.map(function(r){
-              return [esc(r[0]), N(r[1]), N(r[2]), N(r[3]),
-                      r[4] ? '<span class="pill off">'+nm(r[4])+'</span>' : N(0),
-                      N(r[1]+r[2]+r[3]+r[4])];
-            })),
-          '<div class="actions">' + btn('توريد','btn-secondary btn-sm')
-          + btn('صرف لمنفِّذ','btn-secondary btn-sm') + btn('شطب تالف','btn-danger btn-sm') + '</div>')
-      + '<p class="hint">المخزن = التوريد ناقصَ الصرف والشطب زائدَ الإرجاع السليم · والعُهدة = ما صُرف ناقصَ ما رُكّب وما أُرجع.</p>';
+    var B = stockBalance();
+    var tot = B.reduce(function(a,r){ return { store:a.store+r.store, custody:a.custody+r.custody,
+                                               used:a.used+r.used, scrap:a.scrap+r.scrap }; },
+                       { store:0, custody:0, used:0, scrap:0 });
+    return stats([['في المخزن', N(tot.store), 'ok'],
+                  ['في العُهدة', N(tot.custody), 'acc'],
+                  ['رُكّب في الميدان', N(tot.used)],
+                  ['تالف معزول', N(tot.scrap), tot.scrap ? 'bad' : '']])
+      + cardFlush('الأرصدة حسب الصنف',
+          B.length
+            ? table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'],
+                B.map(function(r){
+                  return [esc(r.item), N(r.store), N(r.custody), N(r.used),
+                          r.scrap ? pill(nm(r.scrap),'off') : N(0),
+                          '<b>' + N(r.store + r.custody + r.used + r.scrap) + '</b>'];
+                }))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا حركاتٍ بعد — الرصيدُ يُشتقُّ من الحركات ولا يُكتَب بيد.')) + '</p>')
+      + (B.some(function(r){ return r.store < 0 || r.custody < 0; })
+          ? alertBox('warn','رصيدٌ سالبٌ في صنف — حركةٌ سُجّلت بلا ما يقابلها.') : '');
   }};
 
 PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'إلحاقيٌّ لا يُعدَّل — كل تصحيح حركةٌ جديدة تُوازنه.',
   body:function(){
-    return cardFlush('الحركات',
-      table(['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','الحالة'],
-        DATA.moves.map(function(m){
-          var k = {'توريد':'ok','صرف':'acc','استهلاك':'warn','إرجاع':'info','شطب':'off'}[m[1]] || '';
-          return ['<span class="num">'+esc(m[0])+'</span>', pill(m[1],k), esc(m[2]), N(m[3]),
-                  esc(m[4]), '<span class="num">'+esc(m[5])+'</span>',
-                  m[6]==='تالف' ? pill('تالف','off') : esc(m[6])];
-        })),
-      '<form class="inline-form" onsubmit="return false"><input type="search" placeholder="'+esc(t('بحث'))+'" dir="auto">'+btn('بحث','btn-secondary btn-sm')+'</form>');
+    var L = movesList(), items = itemsList();
+    return (may('inventory')
+      ? card('تسجيل حركة',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('الحركة')) + '</label><select id="mvKind">'
+          +   MOVE_KINDS.map(function(k){ return '<option>' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الصنف')) + '</label><select id="mvItem">'
+          +   '<option value="">— ' + esc(t('اختر')) + ' —</option>'
+          +   items.map(function(x){ return '<option>' + esc(x.name) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الكمية')) + '</label>'
+          +   '<input id="mvQty" type="number" min="1" step="1"></div>'
+          + '<div class="field"><label>' + esc(t('المنفِّذ')) + '</label><select id="mvBy">'
+          +   '<option value="">—</option>'
+          +   TECHS.map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
+          +   '<input id="mvSite" dir="ltr" placeholder="NSK-…"></div>'
+          + '<div class="field"><label>' + esc(t('ملاحظة')) + '</label><input id="mvNote" dir="auto"></div>'
+          + '</div>'
+          + '<div class="actions">' + btn('سجّل الحركة','btn-primary',' data-mvadd="1"') + '</div>'
+          + '<p class="hint">' + esc(t('الرصيدُ يُشتقُّ من الحركات — والتصحيحُ حركةٌ تصحيحيةٌ لا تعديلُ رقم.')) + '</p>')
+      : '')
+      + cardFlush('الحركات — ' + nm(L.length),
+          L.length
+            ? table(['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','سجّلها'],
+                L.slice(0, 200).map(function(m){
+                  var k = {'توريد':'ok','صرف':'acc','استهلاك':'warn','إرجاع':'info','شطب':'off'}[m.kind] || '';
+                  return ['<span class="num">' + esc(new Date(m.at).toISOString().slice(0,10)) + '</span>',
+                          pill(t(m.kind), k), esc(m.item), N(m.qty),
+                          esc(m.by || '—'),
+                          '<span class="num">' + esc(m.site || '—') + '</span>',
+                          esc(m.user || '—')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا حركاتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="invmv"') : '');
   }};
 
 PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة', l:'ما في يد كل منفِّذ الآن.',
@@ -8757,25 +9006,51 @@ PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة',
 /* ── المال ──────────────────────────────────────── */
 PAGE.buys = { m:'المال', t:'دفتر المشتريات', l:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
   body:function(){
-    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
-    return stats([['إجمالي المنصرف', N(B.spent)], ['الميزانية', N(B.cap), 'acc'],
-                  ['المتبقي', N(B.cap-B.spent), 'ok'], ['بانتظار الاعتماد', N(B.pending)]])
-      + card('المنصرف من الميزانية', meter('المستهلك من السقف المعتمد', B.spent, B.cap))
-      + cardFlush('العمليات',
-          table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
-            DATA.buys.map(function(b){
-              return ['<span class="num">'+esc(b[0])+'</span>', esc(b[1]), esc(b[2]), esc(t(b[3])),
-                      N(b[4]), esc(b[5]), pill(b[6],'ok')];
-            }), ['','','','الإجمالي', N(B.spent), '','']),
-          btn('تسجيل عملية','btn-primary btn-sm'))
-      + card('المصروف حسب المشعر', table(['المشعر','عمليات','الإجمالي','النسبة'], [
-          ['عرفات','١', N(8500), '٩١٪'], ['منى','١', N(800), '٩٪']
-        ]));
+    var L = buysList();
+    var spent = L.filter(function(b){ return b.st === 'معتمد'; })
+                 .reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+    var pend  = L.filter(function(b){ return b.st !== 'معتمد'; })
+                 .reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+    var cap = cfgGet('budCap') || 0;
+    return stats([['إجمالي المنصرف', N(spent)],
+                  ['الميزانية', N(cap), 'acc'],
+                  ['المتبقي', N(cap - spent), (cap - spent) < 0 ? 'bad' : 'ok'],
+                  ['بانتظار الاعتماد', N(pend), pend ? 'wrn' : '']])
+      + card('المنصرف من الميزانية', meter('المستهلك من السقف المعتمد', spent, cap))
+      + (may('money')
+        ? card('تسجيل عملية شراء',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('الصنف')) + '</label><input id="byItem" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('الفئة')) + '</label><select id="byCat">'
+            +   catList().map(function(c){ return '<option>' + esc(c) + '</option>'; }).join('')
+            + '</select></div>'
+            + '<div class="field"><label>' + esc(t('المورّد')) + '</label><select id="bySup">'
+            +   supList().map(function(c){ return '<option>' + esc(c) + '</option>'; }).join('')
+            + '</select></div>'
+            + '<div class="field"><label>' + esc(t('المبلغ')) + '</label>'
+            +   '<input id="byAmt" type="number" min="1" step="1"></div>'
+            + '<div class="field"><label>' + esc(t('المشعر')) + '</label><select id="byZone">'
+            +   ['منى','عرفات','مزدلفة','—'].map(function(z){ return '<option>' + esc(z) + '</option>'; }).join('')
+            + '</select></div>'
+            + '</div>'
+            + '<div class="actions">' + btn('سجّل الشراء','btn-primary',' data-byadd="1"') + '</div>'
+            + '<p class="hint">' + esc(t('ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.')) + '</p>')
+        : '')
+      + cardFlush('العمليات — ' + nm(L.length),
+          L.length
+            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
+                L.slice(0, 200).map(function(b){
+                  return ['<span class="num">' + esc(new Date(b.at).toISOString().slice(0,10)) + '</span>',
+                          esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
+                          pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا مشترياتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="buys"') : '');
   }};
 
 PAGE.budget = { m:'المال', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
   body:function(){
-    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
+    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:buysSpent(), pending:0 };
     return card('الضبط',
       '<div class="grid cols-2">'
       + '<div class="field"><label>'+esc(t('الميزانية المعتمدة'))+'</label><input type="number" value="'+B.cap+'"></div>'
@@ -9549,9 +9824,10 @@ PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من
 PAGE.budm = { m:'المتابعة', t:'الملخّص المالي',
   l:'المنصرفُ من الميزانية بأبوابه — بلا مورّدين ولا فواتير.',
   body:function(){
-    var cap = cfgGet('budCap'), spent = DATA.budget.spent;
+    var cap = cfgGet('budCap'), spent = buysSpent();
     var byCat = {};
-    DATA.buys.forEach(function(b){ byCat[b[2]] = (byCat[b[2]] || 0) + b[4]; });
+    buysList().forEach(function(b){ if (b.st !== 'معتمد') return;
+      byCat[b.cat] = (byCat[b.cat] || 0) + (+b.amt || 0); });
     STATE.buys.forEach(function(b){
       if (b && b.cat) byCat[b.cat] = (byCat[b.cat] || 0) + (b.amount || 0);
     });
@@ -9768,7 +10044,7 @@ var MX = [
 /* ما نقاطُه صفرٌ ليس في المرحلة — فإضافتُه أن تكتب له نقاطًا */
 function cfgAddStage(path, pg){
   var get = path === 'itPrep' ? itPrep : itAsm;
-  var off = DATA.items.filter(function(i){ return !get(i[1]); });
+  var off = itemsList().filter(function(i){ return !get(i.code); });
   if (!off.length) return '';
   return card((pg === 'prep' ? 'أضِف جهازًا للتهيئة' : 'أضِف مكوّنًا للتجميع') + ' — ' + nm(off.length),
     '<p class="hint" style="margin:0 0 11px">اكتب نقاطًا لأيِّ صنفٍ أدناه فيدخل المرحلة، واتركه صفرًا فيبقى خارجها.</p>'
@@ -9907,7 +10183,7 @@ PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن
 function prepAsm(pg){
   var get = pg === 'prep' ? itPrep : itAsm;
   var path = pg === 'prep' ? 'itPrep' : 'itAsm';
-  var on = DATA.items.filter(function(i){ return get(i[1]) > 0; });
+  var on = itemsList().filter(function(i){ return get(i.code) > 0; });
   var tot = on.reduce(function(a,i){ return a + get(i[1]); }, 0);
   var h = '<p class="lede" style="margin:0 0 16px">' + (pg === 'prep'
       ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
@@ -9944,7 +10220,7 @@ PAGE.asm = { m:'الإعدادات', t:'نقاط التجميع', l:'نقاط ت
 PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقاط كل قطعة وتارجت التركيب.',
   body:function(){
     return [['cor','الممر'],['camp','المخيم']].map(function(g){
-        var L = DATA.items.filter(function(x){ return x[0] === g[0]; });
+        var L = itemsList().filter(function(x){ return x.z === g[0]; });
         return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
           table(['القطعة','النقاط'],
             L.map(function(it){
@@ -10009,7 +10285,7 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
   body:function(){
     return '<p class="lede" style="margin:0 0 16px">كل حقلٍ هنا قابلٌ للتعديل: الاسم والمنطقة ونقاط التركيب والسعر. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. اضغط «حفظ» بعد أي تغيير.</p>'
       + [['cor','الممر'],['camp','المخيم']].map(function(g){
-          var L = DATA.items.filter(function(x){ return x[0] === g[0]; });
+          var L = itemsList().filter(function(x){ return x.z === g[0]; });
           if (!L.length) return card(g[1], '<p class="hint" style="text-align:center;margin:0">لا قطع في هذه المنطقة.</p>');
           return cardFlush(g[1] + ' — ' + nm(L.length) + ' قطعة',
             table(['القطعة','المنطقة','نقاط التركيب','السعر',''],
@@ -10039,41 +10315,47 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
 
 PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تبويب مشتريات السوق المحلي.',
   body:function(){
-    return '<p class="lede" style="margin:0 0 16px">هذه التبويبات هي ما تُصنَّف به كل عملية شراء خارجية، وعليها يقوم تجميع المصروف في لوحة المتابعة ← المشتريات. أضِف ما يناسب طبيعة صرفك، والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>'
-      + cardFlush('الفئات — ' + nm(DATA.buyCats.length),
+    var L = catList(), B = buysList();
+    return '<p class="lede" style="margin:0 0 16px">هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>'
+      + cardFlush('الفئات — ' + nm(L.length),
           table(['الفئة','عمليات','المصروف',''],
-            DATA.buyCats.map(function(c){
-              var used = DATA.buys.filter(function(b){ return b[2] === c; });
-              var tot = used.reduce(function(a,b){ return a + b[4]; }, 0);
-              return [esc(c), N(used.length), N(tot) + ' <span class="hint" style="margin:0">ريال</span>',
-                      used.length ? '<span class="hint" style="margin:0">مستعملة</span>'
-                                  : btn('حذف','btn-quiet btn-sm')];
-            })))
-      + card('إضافة فئة',
-          '<div class="inline-form"><input placeholder="مثال: تأمينات" style="min-width:220px">'
-          + btn('➕ إضافة','btn-primary btn-sm') + '</div>');
+            L.map(function(c){
+              var used = B.filter(function(b){ return b.cat === c; });
+              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+              return [esc(c), N(used.length), N(sum),
+                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
+                                  : btn('احذف','btn-quiet btn-sm',' data-catrm="' + esc(c) + '"')];
+            })),
+          may('money')
+            ? '<form class="inline-form" onsubmit="return false">'
+              + '<input id="catNew" dir="auto" placeholder="' + esc(t('فئة جديدة')) + '">'
+              + btn('إضافة فئة','btn-primary btn-sm',' data-catadd="1"') + '</form>'
+            : '');
   }};
 
 PAGE.sup = { m:'الإعدادات', t:'المورّدون', l:'قائمة موحّدة لمن نشتري منهم.',
   body:function(){
+    var L = supList(), B = buysList();
     return '<p class="lede" style="margin:0 0 16px">قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.</p>'
-      + cardFlush('المورّدون — ' + nm(DATA.suppliers.length),
+      + cardFlush('المورّدون — ' + nm(L.length),
           table(['المورّد','عمليات','المصروف',''],
-            DATA.suppliers.map(function(c){
-              var used = DATA.buys.filter(function(b){ return b[5] === c; });
-              var tot = used.reduce(function(a,b){ return a + b[4]; }, 0);
-              return [esc(c), N(used.length), N(tot) + ' <span class="hint" style="margin:0">ريال</span>',
-                      used.length ? '<span class="hint" style="margin:0">مستعمل</span>'
-                                  : btn('حذف','btn-quiet btn-sm')];
-            })))
-      + card('إضافة مورّد',
-          '<div class="inline-form"><input placeholder="مثال: مؤسسة الفتح" style="min-width:220px">'
-          + btn('➕ إضافة','btn-primary btn-sm') + '</div>');
+            L.map(function(c){
+              var used = B.filter(function(b){ return b.sup === c; });
+              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+              return [esc(c), N(used.length), N(sum),
+                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                                  : btn('احذف','btn-quiet btn-sm',' data-suprm="' + esc(c) + '"')];
+            })),
+          may('money')
+            ? '<form class="inline-form" onsubmit="return false">'
+              + '<input id="supNew" dir="auto" placeholder="' + esc(t('مورّد جديد')) + '">'
+              + btn('إضافة مورّد','btn-primary btn-sm',' data-supadd="1"') + '</form>'
+            : '');
   }};
 
 PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
   body:function(){
-    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:DATA.budget.spent, pending:0 };
+    var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:buysSpent(), pending:0 };
     return '<p class="lede" style="margin:0 0 16px">الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.</p>'
       + card('الضبط',
           '<div class="grid cols-2">'
@@ -10497,6 +10779,14 @@ function onDocClick(e){
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
     USR_EDIT = ''; usrSet(id2, patch); return;
   }
+  if (e.target.closest('[data-mvadd]')){ moveAdd(); return; }
+  if (e.target.closest('[data-byadd]')){ buyAdd(); return; }
+  if (e.target.closest('[data-supadd]')){ listAdd('sup'); return; }
+  if (e.target.closest('[data-catadd]')){ listAdd('cat'); return; }
+  var srm2 = e.target.closest('[data-suprm]');
+  if (srm2){ listRm('sup', srm2.getAttribute('data-suprm')); return; }
+  var crm = e.target.closest('[data-catrm]');
+  if (crm){ listRm('cat', crm.getAttribute('data-catrm')); return; }
   if (e.target.closest('[data-nask]')){ notifAsk(); return; }
   if (e.target.closest('[data-ntest]')){
     notifSystem({ kind:'تجربة', text:'وصل إشعارُ النظام — القناةُ تعمل.', id:'test', site:'' });
