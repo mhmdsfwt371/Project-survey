@@ -61,7 +61,12 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
 
 /* ── الهيكل ───────────────────────────────────────── */
-.shell{margin-inline-start:var(--sw);min-height:100dvh;display:flex;flex-direction:column}
+.shell{margin-inline-start:var(--sw);
+  min-height:100vh;              /* احتياطٌ لمن لا يعرف dvh — والسطرُ ذو الوحدة
+                                    المجهولة يُلغى كلُّه فيضيع الارتفاع */
+  min-height:calc(var(--vh, 1vh) * 100);
+  min-height:100dvh;
+  display:flex;flex-direction:column}
 .content{padding:22px;max-width:1200px;width:100%;flex:1}
 .content.flush{padding:0;max-width:none}
 
@@ -224,7 +229,11 @@ input[type="number"]{max-width:140px}
 .chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:500}
 
 /* ── الخريطة ───────────────────────────────────────── */
-.mapwrap{position:relative;height:calc(100dvh - 46px);background:#0A0D10;overflow:hidden}
+.mapwrap{position:relative;
+  height:calc(100vh - 46px);
+  height:calc(var(--vh, 1vh) * 100 - 46px);
+  height:calc(100dvh - 46px);
+  background:#0A0D10;overflow:hidden}
 .mapcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
 .map-top{position:absolute;inset-inline:11px;display:flex;gap:7px;
   inset-block-start:calc(11px + env(safe-area-inset-top,0px));
@@ -313,7 +322,9 @@ input[type="number"]{max-width:140px}
   .burger{display:block}
   .content{padding:15px}
   .page-head h1{font-size:22px}
-  .mapwrap{height:calc(100dvh - 46px)}
+  .mapwrap{height:calc(100vh - 46px);
+    height:calc(var(--vh, 1vh) * 100 - 46px);
+    height:calc(100dvh - 46px)}
   .content{padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}
 }
 @media print{
@@ -439,9 +450,13 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 /* حاويةُ الخريطة ثابتةٌ تحت الشل — وواجهتُها طبقةٌ فوقها */
 #mapWrap[hidden]{display:none}
 #mapWrap{position:relative;flex:1 0 auto;min-height:320px;
+  height:calc(100vh - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  height:calc(var(--vh, 1vh) * 100 - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
   height:calc(100dvh - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
 @media(min-width:901px){
-  #mapWrap{height:calc(100dvh - 62px - env(safe-area-inset-top,0px))}
+  #mapWrap{height:calc(100vh - 62px - env(safe-area-inset-top,0px));
+  height:calc(var(--vh, 1vh) * 100 - 62px - env(safe-area-inset-top,0px));
+  height:calc(100dvh - 62px - env(safe-area-inset-top,0px))}
 }
 #mapBox{position:absolute;inset:0}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
@@ -540,7 +555,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.42</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.43</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -731,6 +746,16 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ أنواع النقاط ══ */
+ 'الأنواعُ للمهندس وحده':'Types are for the engineer only',
+ 'اكتب اسم النوع':'Write the type name',
+ 'النوعُ موجودٌ بالفعل':'The type already exists',
+ 'أُضيف النوع':'Type added',
+ 'عليه':'It has',
+ 'موقعًا — لا يُحذَف':'site(s) — cannot be deleted',
+ 'حُذف النوع':'Type deleted',
+ 'الاسم المعروض':'Display name',
+ 'الرمز':'Symbol',
  /* ══ رسائلُ الإبلاغ عن الفشل الصامت ══ */
  'تعذّرت قراءةُ ما حُفظ على هذا الجهاز — زامِن قبل أن تسجّل فوقه':'Could not read what is saved on this device — sync before recording over it',
  'تعذّر الرفعُ — ما سُجّل محفوظٌ على الجهاز ويُعاد تلقائيًّا':'Upload failed — what you recorded is safe on the device and will retry automatically',
@@ -1244,6 +1269,16 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ أنواع النقاط ══ */
+ 'الأنواعُ للمهندس وحده':'اقسام صرف انجینئر کے لیے ہیں',
+ 'اكتب اسم النوع':'قسم کا نام لکھیں',
+ 'النوعُ موجودٌ بالفعل':'قسم پہلے سے موجود ہے',
+ 'أُضيف النوع':'قسم شامل ہو گئی',
+ 'عليه':'اس پر',
+ 'موقعًا — لا يُحذَف':'مقامات — حذف نہیں ہو سکتا',
+ 'حُذف النوع':'قسم حذف ہو گئی',
+ 'الاسم المعروض':'ظاہری نام',
+ 'الرمز':'علامت',
  /* ══ رسائلُ الإبلاغ ══ */
  'تعذّرت قراءةُ ما حُفظ على هذا الجهاز — زامِن قبل أن تسجّل فوقه':'اس ڈیوائس پر محفوظ ڈیٹا نہیں پڑھا جا سکا — اوپر لکھنے سے پہلے ہم آہنگ کریں',
  'تعذّر الرفعُ — ما سُجّل محفوظٌ على الجهاز ويُعاد تلقائيًّا':'اپ لوڈ ناکام — جو درج ہوا وہ ڈیوائس پر محفوظ ہے اور خود دوبارہ کوشش ہوگی',
@@ -11413,6 +11448,97 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
 /* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
    نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
 
+/* ═══ أنواعُ النقاط: تُضاف وتُعدَّل وتُحذَف ═══════════════════════════════
+   صفوفُ «نقاط الزيارات» و«نقاط الفك» تركيباتٌ من مشعرٍ ونوع، تُشتقُّ من
+   `CAT_DEF`. فالإضافةُ هنا إضافةُ نوعٍ لا صفّ: يُضاف «مبنى خدمات» فيظهر في
+   المشاعر الثلاثة، ويُضبَط وزنُه قبل أن تأتي أولُ نقطةٍ منه.
+
+   والنوعُ الذي عليه مواقعُ لا يُحذَف: مواقعُه تحمل اسمَه، وحذفُه يجعلها
+   بلا تصنيفٍ فتسقط من كلِّ تجميعٍ ولا يُعرَف أين ذهبت. */
+
+function typesList(){
+  if (!STATE.types || typeof STATE.types !== 'object') STATE.types = {};
+  /* البذرةُ تُنقَل مرةً ثم لا يُعاد إليها */
+  if (!Object.keys(STATE.types).length){
+    Object.keys(CAT_DEF).forEach(function(k){
+      STATE.types[k] = { l:CAT_DEF[k].l, i:CAT_DEF[k].i, c:CAT_DEF[k].c };
+    });
+  }
+  return STATE.types;
+}
+function typesSave(){
+  var T = typesList();
+  Object.keys(T).forEach(function(k){ CAT_DEF[k] = { l:T[k].l, i:T[k].i, c:T[k].c }; });
+  Object.keys(CAT_DEF).forEach(function(k){ if (!T[k]) delete CAT_DEF[k]; });
+  CORE.set('cfg', 'types', T);
+  SITE_IX = null; SITE_TOK = null;
+  statBump();
+}
+function typeUsed(k){
+  return (STATE.sites || []).filter(function(x){ return x.type === k; }).length;
+}
+function typeSet(k, patch){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var T = typesList();
+  if (!T[k]) return;
+  Object.keys(patch).forEach(function(p){ T[k][p] = patch[p]; });
+  typesSave();
+}
+function typeAdd(){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var k = g('tyK'), l = g('tyL');
+  if (!k){ toast(t('اكتب اسم النوع')); return; }
+  if (typesList()[k]){ toast(t('النوعُ موجودٌ بالفعل')); return; }
+  typesList()[k] = { l:l || k, i:g('tyI') || '\u25CF', c:g('tyC') || '#8A939D' };
+  typesSave();
+  logEvent('نوع نقطة جديد — ' + k);
+  toast(t('أُضيف النوع'));
+  render(1);
+}
+function typeDel(k){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var u = typeUsed(k);
+  if (u){ toast(t('عليه') + ' ' + nm(u) + ' ' + t('موقعًا — لا يُحذَف')); return; }
+  var T = typesList();
+  if (!T[k]) return;
+  delete T[k];
+  typesSave();
+  logEvent('حذف نوع نقطة — ' + k);
+  toast(t('حُذف النوع'));
+  render(1);
+}
+
+/* بطاقةُ إدارة الأنواع — تُعرَض في شاشتَي الزيارات والفك */
+function typesCard(){
+  var T = typesList(), keys = Object.keys(T);
+  return cardFlush('أنواع النقاط — ' + nm(keys.length),
+      table(['النوع','الاسم المعروض','الرمز','مواقع',''],
+        keys.map(function(k){
+          var u = typeUsed(k);
+          return ['<strong>' + esc(k) + '</strong>',
+                  '<input value="' + esc(T[k].l) + '" data-tyl="' + esc(k) + '" dir="auto">',
+                  '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr">',
+                  u ? pill(nm(u), 'acc') : N(0),
+                  (may('settings')
+                    ? (u ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                         : btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(k) + '"'))
+                    : '')];
+        })),
+      may('settings')
+        ? '<div class="grid cols-3" style="margin:0 0 11px">'
+          + '<div class="field"><label>' + esc(t('النوع')) + ' <span class="req">*</span></label>'
+          +   '<input id="tyK" dir="auto" placeholder="مبنى خدمات"></div>'
+          + '<div class="field"><label>' + esc(t('الاسم المعروض')) + '</label>'
+          +   '<input id="tyL" dir="auto" placeholder="مباني الخدمات"></div>'
+          + '<div class="field"><label>' + esc(t('الرمز')) + '</label>'
+          +   '<input id="tyI" dir="ltr" placeholder="\u25CF"></div>'
+          + '</div>'
+          + '<div class="actions">' + btn('➕ إضافة نوع','btn-primary btn-sm',' data-tyadd="1"') + '</div>'
+        : '')
+    + '<p class="hint">إضافةُ نوعٍ تُنشئ صفوفَه في المشاعر الثلاثة، فيُضبَط وزنُه قبل أن تأتي أولُ نقطةٍ منه. والنوعُ الذي عليه مواقعُ لا يُحذَف — مواقعُه تحمل اسمَه.</p>';
+}
+
 /* مصفوفةُ الأوزان: كانت عشرَ تركيباتٍ مكتوبةً بيدٍ بأعدادٍ محفورة. وهي
    مطابقةٌ اليومَ — ثم يُسجَّل موقعٌ في تركيبةٍ ليست فيها فلا يجد وزنًا فيُحتسب
    صفرًا، ولا يقول أحدٌ شيئًا. فصارت تُشتقّ من البيانات، وتُدرَج معها كلُّ
@@ -11429,8 +11555,8 @@ function mxRows(){
     out.push([p[0], lbl, S.byKey[k]]);
   });
   MX_ZONES.forEach(function(z){
-    Object.keys(CAT_DEF).forEach(function(tk){
-      var lbl = CAT_DEF[tk].l, key = z + '|' + lbl;
+    Object.keys(typesList()).forEach(function(tk){
+      var lbl = typesList()[tk].l, key = z + '|' + lbl;
       if (seen[key]) return;
       seen[key] = 1;
       out.push([z, lbl, 0]);
@@ -11562,7 +11688,8 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء �
 
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
   body:function(){
-    return cardFlush('وزن الزيارة — ' + nm(mxRows().length) + ' صنفًا',
+    return typesCard()
+      + cardFlush('وزن الزيارة — ' + nm(mxRows().length) + ' صنفًا',
         table(['المشعر','النوع','وزن الزيارة'],
           mxRows().map(function(r){
             return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
@@ -11693,7 +11820,8 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
       built[k] = (built[k] || 0) + n;
     });
     var anyBuilt = Object.keys(built).length > 0;
-    return cardFlush('وزن الفك — ' + nm(mxRows().length) + ' صنفًا',
+    return typesCard()
+      + cardFlush('وزن الفك — ' + nm(mxRows().length) + ' صنفًا',
         table(['المشعر','النوع','قِطَعٌ رُكّبت','وزن الفك'],
           mxRows().map(function(r){
             var k = r[0] + '|' + r[1];
@@ -12279,6 +12407,9 @@ function onDocClick(e){
   if (e.target.closest('[data-lsadd]')){ lessAdd(); return; }
   var lsd = e.target.closest('[data-lsdel]');
   if (lsd){ lessDel(+lsd.getAttribute('data-lsdel')); return; }
+  if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
+  var tyd = e.target.closest('[data-tydel]');
+  if (tyd){ typeDel(tyd.getAttribute('data-tydel')); return; }
   if (e.target.closest('[data-jbadd]')){ jobAdd(); return; }
   var jbd = e.target.closest('[data-jbdel]');
   if (jbd){ jobDel(jbd.getAttribute('data-jbdel')); return; }
@@ -12748,6 +12879,8 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-rci')){   raciSet(+el2.getAttribute('data-rci'),  { I:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsw')){ lessSet(+el2.getAttribute('data-lsw'), { w:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsa')){ lessSet(+el2.getAttribute('data-lsa'), { a:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-tyl')){ typeSet(el2.getAttribute('data-tyl'), { l:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-tyi')){ typeSet(el2.getAttribute('data-tyi'), { i:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbn')){ jobSet(el2.getAttribute('data-jbn'), { n:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbd')){ jobSet(el2.getAttribute('data-jbd'), { d:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbr')){ jobSet(el2.getAttribute('data-jbr'), { role:el2.value }); render(1); return; }
@@ -12876,6 +13009,15 @@ if (window.visualViewport){
 }
 /* الرسمةُ الأولى: يستقرُّ شريطُ المتصفّح بعد جزءٍ من الثانية */
 [120, 400, 900].forEach(function(ms){ setTimeout(reflow, ms); });
+
+/* `--vh` يُضبَط قبل أول رسمة: القياسُ في `reflow` يقع بعد الرسم، فالاحتياطُ
+   يحتاج قيمةً موجودةً من اللحظة الأولى. */
+(function(){
+  try {
+    document.documentElement.style.setProperty('--vh',
+      ((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01) + 'px');
+  } catch (e){}
+})();
 
 (function boot(){
   var th = 'light', lg = 'ar';
