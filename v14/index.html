@@ -651,7 +651,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.51</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.52</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2887,6 +2887,31 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
           + row('المنطقة', esc(x.region))
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout)), 'inout')
+      /* بيانةُ الموسم الماضي في التفاصيل كما هي في النموذج: من فتح النقطةَ
+         ليقرأها لم يجد ما يقرؤه، فيرجع إلى ملفٍ خارج النظام. */
+      + (function(){
+          if (!S47){ s47Load(); return ''; }
+          var v = s47Of(x.id);
+          if (!v) return '';
+          return [['nat','الجنسية'], ['dom','الجهة المصرِّحة'],
+                  ['cap','السعة المسجّلة ١٤٤٧'], ['pct','نسبة إنجاز ١٤٤٧'],
+                  ['dj','عدد أجهزة ١٤٤٧'], ['tst','حالة الاختبار'],
+                  ['obst','عائقٌ مسجَّل'], ['iss','ملاحظةٌ مسجَّلة'],
+                  ['team','الفريق المسجَّل']]
+            .filter(function(r2){ return v[r2[0]]; })
+            .map(function(r2){ return row(r2[1], esc(v[r2[0]])); }).join('');
+        })()
+      /* نقطةُ الاتصال والعناوينُ الثلاثةُ المشتقّةُ منها */
+      + (function(){
+          var v = S47 ? s47Of(x.id) : null;
+          var base = x.net || (v && v.sub) || '';
+          if (!base) return '';
+          base = String(base).replace(/\.+$/, '');
+          return row('نقطة الاتصال', '<span class="num">' + esc(base) + '.0/24</span>')
+            + row('راوتر',  '<span class="num">' + esc(x.ipRtr || (base + '.1')) + '</span>')
+            + row('قارئ',   '<span class="num">' + esc(x.ipRdr || (base + '.2')) + '</span>')
+            + row('كاميرا', '<span class="num">' + esc(x.ipCam || (base + '.3')) + '</span>');
+        })()
           + row('الإحداثيات', '<span class="num">' + x.lat.toFixed(6) + ', ' + x.lng.toFixed(6) + '</span>')
           + '</div>')
 
@@ -4880,10 +4905,13 @@ function svExtra(s){
           /* ما سجّله الموسمُ الماضي — يُقرأ ولا يُعاد إدخاله */
           if (!S47) { s47Load(); return ''; }
           var v = s47Of(s.id); if (!v) return '';
-          var rows = [['nat','الجنسية'], ['host','الجهة المستضيفة'], ['dom','المتعهّد'],
-                      ['cap','السعة المسجّلة ١٤٤٧'], ['pct','نسبة إنجاز ١٤٤٧'],
-                      ['obst','عائقٌ مسجَّل'], ['tst','حالة الاختبار'],
-                      ['iss','ملاحظةٌ مسجَّلة'], ['todo','بقي مفتوحًا من الموسم']];
+          var rows = [['nat','الجنسية'], ['host','الجهة المستضيفة'],
+                      ['dom','الجهة المصرِّحة'], ['cap','السعة المسجّلة ١٤٤٧'],
+                      ['pct','نسبة إنجاز ١٤٤٧'], ['dj','عدد أجهزة ١٤٤٧'],
+                      ['sub','نقطة الاتصال'], ['tst','حالة الاختبار'],
+                      ['obst','عائقٌ مسجَّل'], ['iss','ملاحظةٌ مسجَّلة'],
+                      ['team','الفريق المسجَّل'], ['pri','حالة ١٤٤٧'],
+                      ['todo','بقي مفتوحًا من الموسم']];
           return rows.filter(function(x){ return v[x[0]]; }).map(function(x){
             return '<div><span class="k">' + esc(t(x[1])) + '</span><span>' + esc(v[x[0]]) + '</span></div>';
           }).join('');
