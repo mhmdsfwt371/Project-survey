@@ -526,7 +526,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.29</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.30</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -717,6 +717,27 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة السادسة عشرة: الاعتمادات ══ */
+ 'الحقل':'Field',
+ 'القيمة الصحيحة':'Correct value',
+ 'لماذا؟':'Why?',
+ 'ما رأيتَه في الموقع — والمهندسُ يقرّر على ما تكتب':'What you saw on site — the engineer decides on what you write',
+ 'اكتب القيمة الصحيحة':'Write the correct value',
+ 'اكتب سببَ التصويب — عليه يقرّر المهندس':'Write the reason for the correction — the engineer decides on it',
+ 'الاعتمادُ للمهندس وحده':'Approving is for the engineer only',
+ 'شركة مقترحة':'Proposed company',
+ 'تصويب بيان':'Data correction',
+ 'مشترًى فوق الحد':'Purchase above the limit',
+ 'للمهندس':'For the engineer',
+ 'لا مقترحات — تظهر هنا فور اقتراح شركةٍ جديدة أو تصويبِ بيانٍ أو تجاوزِ مشترًى حدَّ الاعتماد.':'No proposals — they appear here as soon as a company is proposed, a data correction requested, or a purchase exceeds the approval limit.',
+ 'شركة جديدة':'New company',
+ 'يقترحها الميدانُ عند تسجيل موقعٍ مقترح — والاعتمادُ يُدخلها القائمةَ الموحّدة.':'Proposed by the field when registering a new site — approval adds it to the unified list.',
+ 'يطلبه الفنيُّ من نموذج المسح حين يجد خلافَ المسجَّل — والاعتمادُ يُطبِّقه على السجل.':'Requested by the technician from the survey form when the record differs from the ground — approval applies it to the record.',
+ 'يُنشئه النظامُ تلقائيًّا حين يتجاوز المبلغُ حدَّ الاعتماد':'Created automatically when the amount exceeds the approval limit',
+ 'غير مضبوط':'not set',
+ 'ويُضبَط في «الميزانية والاعتماد».':'and it is set in Budget and approval.',
+ 'الطلبُ لا يُحذَف باعتمادٍ ولا بردّ — يبقى بمن قرّر ومتى ولماذا.':'The request is never deleted, whether approved or returned — it stays with who decided, when and why.',
+ 'سببُ الردّ':'Reason for return',
  /* ══ الدفعة الخامسة عشرة: التثبيت والتحديث ══ */
  'يُفحَص التحديث…':'Checking for an update…',
  'جاهزةٌ — أغلق التطبيق وافتحه':'is ready — close the app and open it again',
@@ -1108,6 +1129,27 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة السادسة عشرة ══ */
+ 'الحقل':'فیلڈ',
+ 'القيمة الصحيحة':'درست قیمت',
+ 'لماذا؟':'کیوں؟',
+ 'ما رأيتَه في الموقع — والمهندسُ يقرّر على ما تكتب':'آپ نے موقع پر کیا دیکھا — انجینئر اسی پر فیصلہ کرتا ہے',
+ 'اكتب القيمة الصحيحة':'درست قیمت لکھیں',
+ 'اكتب سببَ التصويب — عليه يقرّر المهندس':'درستی کی وجہ لکھیں — انجینئر اسی پر فیصلہ کرتا ہے',
+ 'الاعتمادُ للمهندس وحده':'منظوری صرف انجینئر کے لیے ہے',
+ 'شركة مقترحة':'تجویز کردہ کمپنی',
+ 'تصويب بيان':'ڈیٹا کی درستی',
+ 'مشترًى فوق الحد':'حد سے زیادہ خریداری',
+ 'للمهندس':'انجینئر کے لیے',
+ 'لا مقترحات — تظهر هنا فور اقتراح شركةٍ جديدة أو تصويبِ بيانٍ أو تجاوزِ مشترًى حدَّ الاعتماد.':'کوئی تجویز نہیں — نئی کمپنی تجویز ہوتے ہی، ڈیٹا کی درستی کی درخواست پر، یا خریداری کے حد سے بڑھتے ہی یہاں ظاہر ہوں گی۔',
+ 'شركة جديدة':'نئی کمپنی',
+ 'يقترحها الميدانُ عند تسجيل موقعٍ مقترح — والاعتمادُ يُدخلها القائمةَ الموحّدة.':'نیا مقام درج کرتے وقت میدان تجویز کرتا ہے — منظوری اسے متحدہ فہرست میں شامل کرتی ہے۔',
+ 'يطلبه الفنيُّ من نموذج المسح حين يجد خلافَ المسجَّل — والاعتمادُ يُطبِّقه على السجل.':'ٹیکنیشن سروے فارم سے درخواست دیتا ہے جب ریکارڈ زمینی حقیقت سے مختلف ہو — منظوری اسے ریکارڈ پر لاگو کرتی ہے۔',
+ 'يُنشئه النظامُ تلقائيًّا حين يتجاوز المبلغُ حدَّ الاعتماد':'رقم منظوری کی حد سے بڑھنے پر نظام خود بناتا ہے',
+ 'غير مضبوط':'مقرر نہیں',
+ 'ويُضبَط في «الميزانية والاعتماد».':'اور یہ بجٹ اور منظوری میں مقرر ہوتی ہے۔',
+ 'الطلبُ لا يُحذَف باعتمادٍ ولا بردّ — يبقى بمن قرّر ومتى ولماذا.':'درخواست منظوری یا واپسی کسی صورت حذف نہیں ہوتی — فیصلہ کرنے والے، وقت اور وجہ کے ساتھ رہتی ہے۔',
+ 'سببُ الردّ':'واپسی کی وجہ',
  /* ══ الدفعة الخامسة عشرة ══ */
  'يُفحَص التحديث…':'تازہ کاری کی جانچ ہو رہی ہے…',
  'جاهزةٌ — أغلق التطبيق وافتحه':'تیار ہے — ایپ بند کر کے دوبارہ کھولیں',
@@ -2002,7 +2044,7 @@ var FB = {
       var col = { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
                   buys:'purchases', cfg:'settings', users:'users',
                   evlog:'events', diss:'dismantles', newsites:'newsites',
-                  coreqs:'coreqs', accounts:'accounts', photos:'photos',
+                  coreqs:'coreqs', fixreqs:'fixreqs', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
@@ -4443,7 +4485,8 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
           + (s.co   ? '<div><span class="k">' + esc(t('الشركة')) + '</span><span>' + esc(s.co) + '</span></div>' : '')
           + '</div>'
           + '<p class="hint">خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.</p>',
-          btn('طلب تصويب','btn-quiet btn-sm',' data-fix="1"'))
+          btn('طلب تصويب','btn-quiet btn-sm',' data-fix="' + esc(s.id) + '"'))
+      + fixCard(s.id)
 
       + card('الوصول',
           '<div class="chips" style="margin:0">'
@@ -7691,6 +7734,24 @@ var SHEETS = {
     });
     return out;
   },
+  appr: function(){
+    var out = [['النوع','التفصيل','مَن اقترح','التاريخ','الحالة','مَن قرّر','السبب']];
+    coReqList().forEach(function(x){
+      out.push(['شركة مقترحة', x.name, x.by || '',
+                new Date(x.at).toISOString().slice(0,10), x.status || '', x.by2 || '', x.why2 || '']);
+    });
+    fixList().forEach(function(x){
+      out.push(['تصويب بيان', x.site + ' · ' + x.field + ': ' + (x.was || '—') + ' → ' + x.val,
+                x.by || '', new Date(x.at).toISOString().slice(0,10),
+                x.status || '', x.by2 || '', x.why2 || x.why || '']);
+    });
+    buysList().forEach(function(b){
+      if (b.st === 'معتمد' && !b.by2) return;
+      out.push(['مشترًى فوق الحد', b.item + ' · ' + b.amt, b.by || '',
+                new Date(b.at).toISOString().slice(0,10), b.st || '', b.by2 || '', b.why2 || '']);
+    });
+    return out;
+  },
   notif: function(){
     var out = [['الوقت','النوع','الأهمية','الرسالة','الموقع','إلى','أنشأه','مقروء']];
     (STATE.notifs || []).forEach(function(n){
@@ -9472,7 +9533,8 @@ var EXP_SECS = [
   ['daily','الاتجاه اليومي — تسعون يومًا',1],
   ['ev','سجل الأحداث — كما هو مصفّى',1],
   ['users','المستخدمون وأدوارهم',1],
-  ['notif','الإشعارات وقنواتها',1]
+  ['notif','الإشعارات وقنواتها',1],
+  ['appr','الاعتمادات — المقترح والقرار',1]
 ];
 
 function expHtml(){
@@ -9736,14 +9798,193 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
   }};
 
 /* الاعتمادات — للمهندس وحده */
+/* ═══ الاعتمادات: من الاقتراح إلى القرار ═══════════════════════════════════
+   كانت الشاشةُ أربعةَ أصفارٍ ثابتةٍ ورسمًا للدورة — «يقترح المشرف ← يراجع
+   المهندس ← يُعتمد أو يُردّ» — ودورةٌ مرسومةٌ لا تُنفَّذ أسوأُ من غيابها:
+   يقرؤها المشرفُ فيقترح، ولا يجد المهندسُ ما يعتمده.
+
+   والمقترحاتُ ثلاثةُ أنواعٍ لكلٍّ مصدرُه:
+     · شركةٌ جديدة   — من الميدان عند تسجيل موقعٍ مقترح
+     · تصويبُ بيان   — من نموذج المسح حين يجد الفنيُّ خلافَ المسجَّل
+     · مشترًى فوق الحدّ — يُنشئه النظامُ حين يتجاوز المبلغُ حدَّ الاعتماد
+       المضبوطَ في «الميزانية والاعتماد» */
+
+function fixList(){
+  var F = STATE.fixreqs || {};
+  return Object.keys(F).map(function(k){ return F[k]; }).filter(Boolean);
+}
+function coReqList(){
+  var C = STATE.coreqs || {};
+  return Object.keys(C).map(function(k){ return C[k]; })
+    .filter(function(x){ return x && x.status === 'مطلوب'; });
+}
+function buyPend(){
+  return buysList().filter(function(b){ return b.st !== 'معتمد'; });
+}
+
+/* طلبُ تصويبٍ من الميدان — كان زرًّا يقول «طُلب» ولا يكتب شيئًا،
+   فيمضي الفنيُّ مطمئنًّا والخطأُ باقٍ في السجل. */
+var FIX_OPEN = '';
+function fixOpen(id){ FIX_OPEN = FIX_OPEN === id ? '' : id; render(1); }
+
+function fixCard(siteId){
+  if (FIX_OPEN !== siteId) return '';
+  var FIELDS = [['sq','رقم المربع'], ['sign','رقم الشاخص'], ['co','شركة تقديم الخدمة'],
+                ['inout','تصنيف الحجاج'], ['work','وجه العمل'], ['zone','المشعر'],
+                ['type','نوع الموقع'], ['name','اسم الموقع']];
+  return card('طلب تصويب بيان',
+    '<div class="grid cols-2">'
+    + '<div class="field"><label>' + esc(t('الحقل')) + '</label><select id="fxField">'
+    +   FIELDS.map(function(f){ return '<option value="' + f[0] + '">' + esc(t(f[1])) + '</option>'; }).join('')
+    + '</select></div>'
+    + '<div class="field"><label>' + esc(t('القيمة الصحيحة')) + '</label>'
+    +   '<input id="fxVal" dir="auto"></div>'
+    + '</div>'
+    + '<div class="field"><label>' + esc(t('لماذا؟')) + '</label>'
+    + '<textarea id="fxWhy" rows="2" placeholder="'
+    +   esc(t('ما رأيتَه في الموقع — والمهندسُ يقرّر على ما تكتب')) + '"></textarea></div>'
+    + '<div class="actions">'
+    + btn('أرسل الطلب','btn-primary',' data-fixsend="' + esc(siteId) + '"')
+    + btn('إلغاء','btn-quiet',' data-fix="0"')
+    + '</div>');
+}
+
+function fixSend(siteId){
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var field = g('fxField'), val = g('fxVal'), why = g('fxWhy');
+  if (!val){ toast(t('اكتب القيمة الصحيحة')); return; }
+  if (!why){ toast(t('اكتب سببَ التصويب — عليه يقرّر المهندس')); return; }
+  var x = siteFind(siteId) || {};
+  var id = uid36();
+  var r = { id:id, site:siteId, field:field, was:String(x[field] || ''), val:val, why:why,
+            by:STATE.meta.name || '', at:Date.now(), status:'مطلوب' };
+  if (!STATE.fixreqs) STATE.fixreqs = {};
+  STATE.fixreqs[id] = r;
+  CORE.set('fixreqs', id, r);
+  logEvent('طلب تصويب — ' + siteId + ' · ' + field + ' → ' + val);
+  notifPush('تصويب بيان', 'طلبُ تصويبٍ بانتظار اعتمادك — ' + siteId, { site:siteId, lv:'مهم' });
+  FIX_OPEN = '';
+  toast(t('أُرسل الطلب — يعتمده المهندس'));
+  render(1);
+}
+
+/* القرار: اعتمادٌ يُنفِّذ الأثر، وردٌّ يُبقيه مكتوبًا بسببه.
+   ولا يُحذَف الطلبُ في الحالين — الأثرُ التدقيقيُّ يبقى. */
+function apprDecide(kind, id, ok, why){
+  if (!may('approve')){ toast(t('الاعتمادُ للمهندس وحده')); return; }
+  var now = Date.now(), who = STATE.meta.name || '';
+
+  if (kind === 'co'){
+    var c = (STATE.coreqs || {})[id];
+    if (!c) return;
+    c.status = ok ? 'معتمد' : 'مرفوض'; c.by2 = who; c.at2 = now; c.why2 = why || '';
+    CORE.set('coreqs', id, c);
+    if (ok && CO_LIST.indexOf(c.name) < 0){ CO_LIST.push(c.name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); }); }
+    logEvent((ok ? 'اعتماد شركة — ' : 'رفض شركة — ') + c.name + (why ? ' · ' + why : ''));
+    notifPush(ok ? 'اعتماد' : 'رفض', (ok ? 'اعتُمدت الشركة: ' : 'رُفضت الشركة: ') + c.name,
+              { to:c.by || '', lv:'مهم' });
+  }
+
+  else if (kind === 'fix'){
+    var f = (STATE.fixreqs || {})[id];
+    if (!f) return;
+    f.status = ok ? 'معتمد' : 'مرفوض'; f.by2 = who; f.at2 = now; f.why2 = why || '';
+    CORE.set('fixreqs', id, f);
+    if (ok){
+      var x = siteFind(f.site);
+      /* التصويبُ يُطبَّق على السجل — وإلا فما معنى اعتماده */
+      if (x){ x[f.field] = f.val; SITE_IX = null; SITE_TOK = null; statBump(); }
+    }
+    logEvent((ok ? 'اعتماد تصويب — ' : 'رفض تصويب — ') + f.site + ' · ' + f.field
+             + (why ? ' · ' + why : ''));
+    notifPush(ok ? 'اعتماد' : 'رفض',
+              (ok ? 'اعتُمد تصويبُك — ' : 'رُفض تصويبُك — ') + f.site, { to:f.by || '', lv:'مهم' });
+  }
+
+  else if (kind === 'buy'){
+    var b = (STATE.buys || {})[id];
+    if (!b) return;
+    b.st = ok ? 'معتمد' : 'مرفوض'; b.by2 = who; b.at2 = now; b.why2 = why || '';
+    CORE.set('buys', id, b);
+    logEvent((ok ? 'اعتماد مشترى — ' : 'رفض مشترى — ') + b.item + ' · ' + nm(b.amt)
+             + (why ? ' · ' + why : ''));
+    notifPush(ok ? 'اعتماد' : 'رفض',
+              (ok ? 'اعتُمد المشترى: ' : 'رُفض المشترى: ') + b.item + ' · ' + nm(b.amt),
+              { to:b.by || '', lv:'مهم' });
+  }
+
+  toast(t(ok ? 'اعتُمد' : 'رُدّ'));
+  render(1);
+}
+
 PAGE.appr = { m:'النظام', t:'الاعتمادات', l:'ما اقترحه المشرفون بانتظار قرارك.',
   body:function(){
-    return stats([['شركات مقترحة','٠','wrn'], ['تصويبات بيانات','٠','wrn'],
-                  ['مشتريات فوق الحد','٠','wrn'], ['أقدم مقترح','—']])
-      + card('بانتظار الاعتماد',
-          '<p class="hint">لا مقترحات — تظهر هنا فور اقتراح مشرفٍ شركةً جديدة أو تصويبَ بيانٍ.</p>')
-      + card('القاعدة', flow(['يقترح المشرف','يراجع المهندس','يُعتمد أو يُردّ'],0)
-        + '<p class="hint">الشركات قائمةٌ معتمدة: المشرف يطلب والمهندس يعتمد — والاسم الحر كان يصنع شركتين من واحدة باختلاف حرف.</p>');
+    var co = coReqList(), fx = fixList().filter(function(f){ return f.status === 'مطلوب'; });
+    var by = buyPend();
+    var all = [].concat(
+      co.map(function(x){ return { k:'co',  id:x.name, at:x.at, x:x }; }),
+      fx.map(function(x){ return { k:'fix', id:x.id,   at:x.at, x:x }; }),
+      by.map(function(x){ return { k:'buy', id:x.id,   at:x.at, x:x }; })
+    ).sort(function(a,b){ return (a.at || 0) - (b.at || 0); });
+
+    var oldest = all.length
+      ? Math.max(0, Math.round((Date.now() - (all[0].at || Date.now())) / 86400000))
+      : null;
+    var cap = cfgGet('budApp') || 0;
+
+    function row(it){
+      var x = it.x, ttl, det;
+      if (it.k === 'co'){ ttl = t('شركة مقترحة'); det = x.name; }
+      else if (it.k === 'fix'){
+        ttl = t('تصويب بيان');
+        det = x.site + ' · ' + esc(t(x.field)) + ': «' + esc(x.was || '—') + '» → «' + esc(x.val) + '»';
+      } else {
+        ttl = t('مشترًى فوق الحد');
+        det = x.item + ' · ' + nm(x.amt) + ' ' + t('ريال') + ' · ' + esc(x.sup || '');
+      }
+      var days = Math.max(0, Math.round((Date.now() - (x.at || Date.now())) / 86400000));
+      return [pill(ttl, it.k === 'buy' ? 'wrn' : 'off'),
+              det + (x.why ? '<br><span class="hint" style="margin:0">' + esc(x.why) + '</span>' : ''),
+              esc(x.by || '—'),
+              '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
+              may('approve')
+                ? btn('اعتمد','btn-primary btn-sm',' data-apok="' + it.k + '|' + esc(it.id) + '"')
+                  + btn('ردّ','btn-quiet btn-sm',' data-apno="' + it.k + '|' + esc(it.id) + '"')
+                : '<span class="hint" style="margin:0">' + esc(t('للمهندس')) + '</span>'];
+    }
+
+    return stats([['شركات مقترحة', N(co.length), co.length ? 'wrn' : 'ok'],
+                  ['تصويبات بيانات', N(fx.length), fx.length ? 'wrn' : 'ok'],
+                  ['مشتريات فوق الحد', N(by.length), by.length ? 'wrn' : 'ok'],
+                  ['أقدم مقترح', oldest === null ? '—' : (nm(oldest) + ' ' + t('يوم')),
+                    oldest > 3 ? 'bad' : '']])
+
+      + cardFlush('بانتظار الاعتماد — ' + nm(all.length),
+          all.length
+            ? table(['النوع','التفصيل','مَن اقترح','منذ','القرار'], all.map(row))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا مقترحات — تظهر هنا فور اقتراح شركةٍ جديدة أو تصويبِ بيانٍ أو تجاوزِ مشترًى حدَّ الاعتماد.'))
+              + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="appr"') : '')
+
+      + card('القاعدة', flow(['يقترح المشرف','يراجع المهندس','يُعتمد أو يُردّ'], 0)
+        + '<div class="pop-rows" style="margin:12px 0 0">'
+        + '<div><span class="k">' + esc(t('شركة جديدة')) + '</span><span>'
+        +   esc(t('يقترحها الميدانُ عند تسجيل موقعٍ مقترح — والاعتمادُ يُدخلها القائمةَ الموحّدة.'))
+        + '</span></div>'
+        + '<div><span class="k">' + esc(t('تصويب بيان')) + '</span><span>'
+        +   esc(t('يطلبه الفنيُّ من نموذج المسح حين يجد خلافَ المسجَّل — والاعتمادُ يُطبِّقه على السجل.'))
+        + '</span></div>'
+        + '<div><span class="k">' + esc(t('مشترًى فوق الحد')) + '</span><span>'
+        +   esc(t('يُنشئه النظامُ تلقائيًّا حين يتجاوز المبلغُ حدَّ الاعتماد')) + ' — '
+        +   (cap ? nm(cap) + ' ' + esc(t('ريال')) : esc(t('غير مضبوط')))
+        +   ' — ' + esc(t('ويُضبَط في «الميزانية والاعتماد».'))
+        + '</span></div>'
+        + '</div>'
+        + '<div class="actions" style="margin-top:12px">'
+        + btn('اضبط حدَّ الاعتماد','btn-secondary btn-sm',' data-p="budget"')
+        + '</div>'
+        + '<p class="hint">' + esc(t('الطلبُ لا يُحذَف باعتمادٍ ولا بردّ — يبقى بمن قرّر ومتى ولماذا.')) + '</p>');
   }};
 
 /* حساب المستخدم */
@@ -10937,7 +11178,18 @@ function onDocClick(e){
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }
   if (e.target.closest('[data-insdraft]')){ insSave(1); return; }
-  if (e.target.closest('[data-fix]')){ toast(t('طُلب تصويب — يعتمده المهندس')); return; }
+  var fxb = e.target.closest('[data-fix]');
+  if (fxb){ fixOpen(fxb.getAttribute('data-fix') === '0' ? '' : fxb.getAttribute('data-fix')); return; }
+  var fxs = e.target.closest('[data-fixsend]');
+  if (fxs){ fixSend(fxs.getAttribute('data-fixsend')); return; }
+  var apk = e.target.closest('[data-apok]'), apn = e.target.closest('[data-apno]');
+  if (apk || apn){
+    var p = (apk || apn).getAttribute(apk ? 'data-apok' : 'data-apno').split('|');
+    var why = apn && typeof prompt === 'function' ? prompt(t('سببُ الردّ')) : '';
+    if (apn && why === null) return;
+    apprDecide(p[0], p.slice(1).join('|'), !!apk, why);
+    return;
+  }
   var ap = e.target.closest('[data-appr]');
   if (ap){ apprIns(ap.getAttribute('data-appr'), 1); return; }
   var rj = e.target.closest('[data-rej]');

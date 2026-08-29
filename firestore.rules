@@ -96,6 +96,8 @@ service cloud.firestore {
     match /dismantles/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
     match /newsites/{id}   { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
     match /coreqs/{id}     { allow read: if ok(); allow create: if canW(); allow update, delete: if mgr(); }
+    // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
+    match /fixreqs/{id}    { allow read: if ok(); allow create: if canW(); allow update: if mgr(); allow delete: if false; }
     match /accounts/{id}   { allow read: if mgr(); allow create, update: if mgr(); allow delete: if false; }
 
     // المخزونُ والمشتريات — كانتا تُكتبان بلا قاعدةٍ فتُرفضان

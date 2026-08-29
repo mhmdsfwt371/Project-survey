@@ -30,7 +30,7 @@ const PROMISES = [
   'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
   'data-baseset','data-drvsave','data-tkok','data-tkrm','data-newteam','data-addmem',
   'data-rmmem','data-asngo','data-nscoreq','data-dsch','data-ddone','data-smark',
-  'data-fmark','data-mkone','data-mkall','data-even','data-bydef','data-fix'
+  'data-fmark','data-mkone','data-mkall','data-even','data-bydef'
 ];
 
 let pass = 0; const fails = [];
