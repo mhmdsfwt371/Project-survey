@@ -535,7 +535,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.31</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.32</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -4342,6 +4342,12 @@ var CHALS = ['لا توجد تحديات'].concat(CH_CAMP);   /* للتوافق 
    والموقعُ الذي لم يُوصَل إليه يبقى «لم يبدأ» بلا سببٍ إن لم يُسجَّل المنع. */
 var SV_ACCESS = ['تم الوصول','منع دخول','غير موجود','يحتاج تصريح'];
 
+/* أسبابُ التبليغ من الميدان — كانت في القديم ستًّا وسقطت. والاختيارُ من
+   قائمةٍ يُفرَز به البلاغُ ويُوجَّه: نقصُ العهدة للمخزن، وسؤالُ السيريال
+   للورشة، والقرارُ للمكتب. والنصُّ الحرُّ يصل الجميعَ فلا يحلّه أحد. */
+var TELL_WHY = ['تحدٍ يمنع التركيب','أحتاج قرار من المكتب','نقص عهدة أو قطع',
+                'سؤال عن السيريال','الموقع مختلف عن السجل','أخرى'];
+
 /* تسعُ صورٍ كما في العامل: أولاها تُطابِق الموقعَ، وبقيتُها يُخطَّط بها. */
 var SV_PHOTOS = [
   ['site','لقطة عامة تُظهر رقم الموقع',1],
@@ -4610,6 +4616,7 @@ PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
           + ' <b>' + nm(formPts()) + '</b></span>')
 
       + photoCard(['before','قبل التركيب',1], ['after','بعد التركيب',1],
+                  ['plate','لوحة رقم الموقع',0],
                   ['panel','لوحة الأجهزة',0], ['serial','السيريال',0])
 
       + card('الشبكة',
@@ -10530,18 +10537,31 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
 /* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
    نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
 
-var MX = [
-  ['عرفات','مخيمات',      713, '3'],
-  ['عرفات','ممرات',        46, '5'],
-  ['عرفات','محطات القطار', 36, '2'],
-  ['عرفات','مسجد نمرة',    10, '4'],
-  ['مزدلفة','محطات القطار', 36, '2'],
-  ['منى','مخيمات',         679, '3'],
-  ['منى','ممرات',          144, '5'],
-  ['منى','كاميرات الوزارة', 59, '5'],
-  ['منى','محطات القطار',    36, '2'],
-  ['منى','منطقة الجمرات',   28, '4']
-];
+/* مصفوفةُ الأوزان: كانت عشرَ تركيباتٍ مكتوبةً بيدٍ بأعدادٍ محفورة. وهي
+   مطابقةٌ اليومَ — ثم يُسجَّل موقعٌ في تركيبةٍ ليست فيها فلا يجد وزنًا فيُحتسب
+   صفرًا، ولا يقول أحدٌ شيئًا. فصارت تُشتقّ من البيانات، وتُدرَج معها كلُّ
+   تركيبةٍ ممكنةٍ ولو خلت اليومَ — ليُضبَط وزنُها قبل أن يأتي أولُ موقعٍ فيها
+   لا بعده. */
+var MX_ZONES = ['منى','عرفات','مزدلفة'];
+function mxRows(){
+  var S = siteStats(), out = [], seen = {};
+  Object.keys(S.byKey).forEach(function(k){
+    var p = k.split('|'), lbl = (CAT_DEF[p[1]] || {}).l || p[1];
+    var key = p[0] + '|' + lbl;
+    if (seen[key]) return;
+    seen[key] = 1;
+    out.push([p[0], lbl, S.byKey[k]]);
+  });
+  MX_ZONES.forEach(function(z){
+    Object.keys(CAT_DEF).forEach(function(tk){
+      var lbl = CAT_DEF[tk].l, key = z + '|' + lbl;
+      if (seen[key]) return;
+      seen[key] = 1;
+      out.push([z, lbl, 0]);
+    });
+  });
+  return out.sort(function(a, b){ return b[2] - a[2] || String(a[0]).localeCompare(b[0], 'ar'); });
+}
 
 /* ما نقاطُه صفرٌ ليس في المرحلة — فإضافتُه أن تكتب له نقاطًا */
 function cfgAddStage(path, pg){
@@ -10666,9 +10686,9 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء �
 
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
   body:function(){
-    return cardFlush('وزن الزيارة — ' + nm(MX.length) + ' صنفًا',
+    return cardFlush('وزن الزيارة — ' + nm(mxRows().length) + ' صنفًا',
         table(['المشعر','النوع','وزن الزيارة'],
-          MX.map(function(r){
+          mxRows().map(function(r){
             return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
                     cfgInput('w', r[0] + '|' + r[1], { dec:1 })];
           })))
@@ -10761,9 +10781,9 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
       built[k] = (built[k] || 0) + n;
     });
     var anyBuilt = Object.keys(built).length > 0;
-    return cardFlush('وزن الفك — ' + nm(MX.length) + ' صنفًا',
+    return cardFlush('وزن الفك — ' + nm(mxRows().length) + ' صنفًا',
         table(['المشعر','النوع','قِطَعٌ رُكّبت','وزن الفك'],
-          MX.map(function(r){
+          mxRows().map(function(r){
             var k = r[0] + '|' + r[1];
             return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
                     built[k] ? '<span class="num">' + N(built[k]) + '</span>' : '—',
