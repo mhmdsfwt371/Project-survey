@@ -491,6 +491,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 /* رقمُ النسخة زرُّ فحص تحديثات — لكلِّ الأدوار، وعلى الجوّال أيضًا:
    كان يختفي تحت خمسمئةٍ وستين بكسل، أي على كلِّ جهازٍ في الميدان. */
+.tb-sync{background:transparent;border:1px solid var(--line);border-radius:99px;
+  padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
+  color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb-sync:hover{border-color:var(--brand);color:var(--brand)}
+
 .ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-dim);font-weight:400;
   margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
   border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
@@ -535,7 +540,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.34</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.35</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -726,6 +731,7 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'زامِن الآن':'Sync now',
  /* ══ الدفعة الثامنة عشرة: الفنيون والفرق ══ */
  'أُلغي التصفير':'Reset cancelled',
  'صُفّرت البيانات — المواقعُ والكتالوجُ كما هما':'Data cleared — sites and catalogue are unchanged',
@@ -1185,6 +1191,7 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'زامِن الآن':'ابھی ہم آہنگ کریں',
  /* ══ الدفعة الثامنة عشرة ══ */
  'أُلغي التصفير':'ری سیٹ منسوخ',
  'صُفّرت البيانات — المواقعُ والكتالوجُ كما هما':'ڈیٹا صاف ہو گیا — مقامات اور کیٹلاگ جوں کے توں',
@@ -2335,6 +2342,11 @@ function syncBadge(){
   el.innerHTML = (un ? '<button type="button" class="pill warn" data-p="notif" '
                      + 'style="border:0;cursor:pointer" aria-label="الإشعارات">\u1F514 '
                      + nm(un) + '</button> ' : '')
+    /* زرُّ المزامنة: كانت المزامنةُ اليدويةُ موجودةً بلا زرٍّ يبلغها، فيرى
+       المستخدمُ «ثلاثةٌ بانتظار الرفع» ولا يجد كيف يرفعها فينتظر. */
+    + '<button type="button" class="tb-sync" data-pull="1" title="'
+    + esc(t('زامِن الآن')) + '" aria-label="' + esc(t('زامِن الآن')) + '">'
+    + (n ? '\u21BB ' + nm(n) : '\u21BB') + '</button> '
     + '<span class="dot" style="background:'
     + (on ? 'var(--ok)' : 'var(--danger)') + '"></span>'
     + (n ? '<span class="pill warn">' + nm(n) + ' ' + esc(t('بانتظار الرفع')) + '</span> '
@@ -2421,12 +2433,14 @@ var CAT_DEF = {
 
 var FILT = { zone:'', type:'', work:'' };
 
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || CO_SEL.length); }
 
 function filtPass(x){
   if (FILT.zone && x.zone !== FILT.zone) return false;
   if (FILT.type && x.type !== FILT.type) return false;
   if (FILT.work && x.work !== FILT.work) return false;
+  /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
+  if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
   return true;
 }
 
@@ -2488,7 +2502,8 @@ function catBar(withWork){
 var FILT_CACHE = null, FILT_KEY = '';
 
 function filtered(){
-  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + STAT_VER;
+  var k = FILT.zone + '|' + FILT.type + '|' + FILT.work + '|' + STAT_VER
+        + '|' + CO_SEL.join(',');
   if (FILT_CACHE && FILT_KEY === k) return FILT_CACHE;
   FILT_KEY = k;
   FILT_CACHE = filtOn() ? STATE.sites.filter(filtPass) : STATE.sites;
