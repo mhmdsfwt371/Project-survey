@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.12
+      <i class="ver-tag">نسخة</i>V14.13
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,12 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة العاشرة: القواعد ══ */
+ 'الفكُّ يتاح بعد اعتماد تركيب النقطة':'Dismantling becomes available once the installation is approved',
+ 'حدّد حالة التركيب أولًا':'Choose the installation status first',
+ 'رقم تسلسليٌّ مكرّر داخل النقطة':'A serial number is repeated within this point',
+ 'سبق إرسالُ طلبٍ لهذه الشركة — بانتظار اعتماد المهندس':'A request for this company was already sent — awaiting the engineer\'s approval',
+ 'اختر قسمًا واحدًا على الأقل':'Select at least one section',
  /* ══ الدفعة التاسعة: حالةُ الوصول ══ */
  'لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.':'The site was not reached — the reason in the notes is enough; no measurements or photos are required. It does not count as a completed visit.',
  'اكتب سببَ تعذُّر الوصول في الملاحظات':'Write the reason access failed in the notes',
@@ -999,6 +1005,12 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة العاشرة ══ */
+ 'الفكُّ يتاح بعد اعتماد تركيب النقطة':'جدا کرنا تنصیب کی منظوری کے بعد دستیاب ہوتا ہے',
+ 'حدّد حالة التركيب أولًا':'پہلے تنصیب کی حالت منتخب کریں',
+ 'رقم تسلسليٌّ مكرّر داخل النقطة':'اس مقام کے اندر ایک سیریل نمبر دہرایا گیا ہے',
+ 'سبق إرسالُ طلبٍ لهذه الشركة — بانتظار اعتماد المهندس':'اس کمپنی کے لیے درخواست پہلے بھیجی جا چکی ہے — انجینئر کی منظوری کی منتظر',
+ 'اختر قسمًا واحدًا على الأقل':'کم از کم ایک حصہ منتخب کریں',
  /* ══ الدفعة التاسعة ══ */
  'لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.':'مقام تک نہیں پہنچا جا سکا — نوٹس میں وجہ کافی ہے؛ نہ پیمائش درکار ہے نہ تصویریں۔ یہ مکمل دورہ شمار نہیں ہوتا۔',
  'اكتب سببَ تعذُّر الوصول في الملاحظات':'نوٹس میں رسائی ناکام ہونے کی وجہ لکھیں',
@@ -3350,6 +3362,13 @@ PAGE.disp2 = { m:'الميدان', t:'الفك وإرجاع العُهدة',
   }};
 
 function disSchedule(id){
+  /* لا يُفَكُّ ما لم يُركَّب: كان يُجدوَل أيُّ معرّفٍ يُمرَّر، فتظهر في جدول
+     الفكِّ نقاطٌ لم يُوضَع فيها جهازٌ قط، ويُرسَل إليها طاقم. */
+  var r0 = STATE.inss[id];
+  if (!r0 || r0.status !== 'مُركّب' || !r0.approved){
+    toast(t('الفكُّ يتاح بعد اعتماد تركيب النقطة'));
+    return;
+  }
   if (!STATE.diss) STATE.diss = {};
   STATE.diss[id] = { id:id, status:'مجدول', at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
   CORE.set('diss', id, STATE.diss[id]);
@@ -3864,7 +3883,7 @@ function mineFiltered(){
 var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','مُعاد'];
 
 var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
-             photos:{}, parts:{}, serials:{}, prefix:'', status:'مُركّب', access:'تم الوصول',
+             photos:{}, parts:{}, serials:{}, prefix:'', status:'', access:'تم الوصول',
              /* ما نقص عن القديم: القياساتُ والكمياتُ والتقدير */
              len_m:'', wid_m:'', hgt_m:'', fit:'', tents:'', gates:'',
              corr_w:'', kits:'', jam_pos:'', old_base:'', old_cable:'',
@@ -4284,10 +4303,20 @@ function svSave(next){
 function insSave(draft){
   var s = formSite();
   if (!s) return;
+  if (!draft && !FORM.status){ toast(t('حدّد حالة التركيب أولًا')); return; }
   if (!draft && (!FORM.photos.before || !FORM.photos.after)){
     toast(t('صورتا قبل وبعد مطلوبتان'));
     return;
   }
+  /* الرقمُ التسلسليُّ يعرّف الجهازَ بعينه: تكرارُه داخل النقطة الواحدة يعني
+     أن جهازًا سُجّل مرتين أو أن رقمًا نُسخ خطأً — وكلاهما يُفسد العُهدة. */
+  var sn = {}, dup = '';
+  Object.keys(FORM.serials || {}).forEach(function(k){
+    var v = String(FORM.serials[k] || '').trim();
+    if (!v) return;
+    if (sn[v]) dup = v; else sn[v] = 1;
+  });
+  if (dup){ toast(t('رقم تسلسليٌّ مكرّر داخل النقطة') + ': ' + dup); return; }
   var used = {}, n = 0;
   Object.keys(FORM.parts).forEach(function(k){
     var q = cfgN(FORM.parts[k]);
@@ -4322,7 +4351,7 @@ function insSave(draft){
 function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
   FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
-  FORM.status = 'مُركّب'; FORM.access = 'تم الوصول';
+  FORM.status = ''; FORM.access = 'تم الوصول';
   SV_EXTRA_KEYS.forEach(function(k){ FORM[k] = ''; });
 }
 
@@ -4769,8 +4798,15 @@ function nsCoRequest(){
     toast(t('موجودة في القائمة — اختِيرت'));
     render(1); return;
   }
+  if (!STATE.coreqs) STATE.coreqs = {};
+  if (STATE.coreqs[nm0]){
+    NEWSITE.coReq = nm0; NEWSITE.co = ''; NS_CO_OPEN = false;
+    toast(t('سبق إرسالُ طلبٍ لهذه الشركة — بانتظار اعتماد المهندس'));
+    render(1); return;
+  }
   NEWSITE.coReq = nm0; NEWSITE.co = '';
-  CORE.set('coreqs', nm0, { name:nm0, by:STATE.meta.name || '', at:Date.now(), status:'مطلوب' });
+  STATE.coreqs[nm0] = { name:nm0, by:STATE.meta.name || '', at:Date.now(), status:'مطلوب' };
+  CORE.set('coreqs', nm0, STATE.coreqs[nm0]);
   logEvent('طلب إضافة شركة — ' + nm0);
   NS_CO_OPEN = false;
   toast(t('أُرسل الطلب — يعتمده المهندس'));
@@ -9624,8 +9660,9 @@ document.addEventListener('click', function(e){
     var picked = Array.prototype.filter.call(document.querySelectorAll('.expCk'), function(c){
       return c.checked && !c.disabled;
     }).map(function(c){ return c.getAttribute('data-k'); });
+    if (!picked.length){ toast(t('اختر قسمًا واحدًا على الأقل')); return; }
     EXP_OPEN = false; render();
-    toast('يُجهَّز الملف…');
+    toast(t('يُجهَّز الملف…'));
     xlsExport(picked);
     return;
   }
