@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.03
+      <i class="ver-tag">نسخة</i>V14.04
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,27 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الرابعة: شاشة الموقع المقترح ══ */
+ 'اسم شركة غير موجودة بالقائمة':'A company not on the list',
+ 'يعتمده المهندس قبل أن يُستعمل':'The engineer approves it before it is used',
+ 'غير الموجودة تُطلب من المهندس ولا تدخل القائمة قبل اعتماده.':'Anything not listed is requested from the engineer and does not enter the list before approval.',
+ 'اختر المنطقة التي يتبعها الموقع':'Pick the zone this site belongs to','نوع الموقع':'Site type',
+ 'من الشاخص المثبت في الموقع':'From the signpost fixed at the site',
+ 'الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8':'Format: tent name / street number — e.g. 57/2 or 12A/8',
+ 'شركة تقديم الخدمة':'Service provider','بانتظار اعتماد المهندس':'Awaiting the engineer\'s approval',
+ 'اختر الشركة من القائمة':'Choose the company from the list',
+ 'إلزامية للمخيمات — من القائمة الموحّدة فقط. اتركها فارغة إن كان السبب «عدم وجود تخصيص».':'Required for camps — from the unified list only. Leave it empty if the reason is \'no allocation\'.',
+ 'عدد الخيام أو الغرف':'Number of tents or rooms','السبب':'Reason','اختر':'Choose','شرح مختصر':'Short explanation',
+ 'اختياري — اكتبه فقط لو فيه تفصيلةٌ تساعد المكتب':'Optional — write it only if a detail would help the office',
+ 'الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.':'The first is required — the office matches the site by it. The rest are optional and every photo helps.',
+ 'اكتب اسم الشركة أولًا':'Type the company name first','موجودة في القائمة — اختِيرت':'Already on the list — selected',
+ 'أُرسل الطلب — يعتمده المهندس':'Request sent — the engineer approves it',
+ 'اختر المشعر ونوع الموقع':'Choose the zone and the site type','رقم المربع مطلوب':'Block number is required',
+ 'رقم الشاخص مطلوب':'Signpost number is required',
+ 'رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14':'Block number: digits or digits-digits — e.g. 7 or 7-14',
+ 'اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»':'Choose the service company from the list — or request it, or pick the reason \'no allocation\'',
+ 'اسم الشركة يجب أن يكون من القائمة الموحّدة فقط':'The company name must come from the unified list only',
+ 'صورة الشاخص إلزامية للاعتماد':'The signpost photo is required for approval',
  /* ══ الدفعة الثالثة: ما بقي من نصوص t() بلا مفتاح ══ */
  
  'لا أحد في هذه المرحلة بعد — تُضبط مرحلةُ كلِّ فنيٍّ في إسناد الأدوار.':'No one is in this stage yet — each technician\'s stage is set in role assignment.',
@@ -958,6 +979,27 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الرابعة ══ */
+ 'اسم شركة غير موجودة بالقائمة':'فہرست میں موجود نہ ہونے والی کمپنی',
+ 'يعتمده المهندس قبل أن يُستعمل':'استعمال سے پہلے انجینئر اسے منظور کرتا ہے',
+ 'غير الموجودة تُطلب من المهندس ولا تدخل القائمة قبل اعتماده.':'جو فہرست میں نہیں وہ انجینئر سے طلب کی جاتی ہے اور منظوری سے پہلے فہرست میں شامل نہیں ہوتی۔',
+ 'اختر المنطقة التي يتبعها الموقع':'وہ علاقہ منتخب کریں جس سے یہ مقام متعلق ہے','نوع الموقع':'مقام کی قسم',
+ 'من الشاخص المثبت في الموقع':'مقام پر نصب نشان سے',
+ 'الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8':'صورت: خیمے کا نام / گلی کا نمبر — مثلاً 57/2 یا 12A/8',
+ 'شركة تقديم الخدمة':'خدمت فراہم کرنے والی کمپنی','بانتظار اعتماد المهندس':'انجینئر کی منظوری کے منتظر',
+ 'اختر الشركة من القائمة':'فہرست سے کمپنی منتخب کریں',
+ 'إلزامية للمخيمات — من القائمة الموحّدة فقط. اتركها فارغة إن كان السبب «عدم وجود تخصيص».':'خیموں کے لیے لازمی — صرف متحدہ فہرست سے۔ اگر وجہ \'کوئی تخصیص نہیں\' ہو تو خالی چھوڑ دیں۔',
+ 'عدد الخيام أو الغرف':'خیموں یا کمروں کی تعداد','السبب':'وجہ','اختر':'منتخب کریں','شرح مختصر':'مختصر وضاحت',
+ 'اختياري — اكتبه فقط لو فيه تفصيلةٌ تساعد المكتب':'اختیاری — صرف اس صورت میں لکھیں جب کوئی تفصیل دفتر کے کام آئے',
+ 'الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.':'پہلی لازمی ہے — دفتر اسی سے مقام کی تصدیق کرتا ہے۔ باقی اختیاری ہیں اور ہر تصویر مدد دیتی ہے۔',
+ 'اكتب اسم الشركة أولًا':'پہلے کمپنی کا نام لکھیں','موجودة في القائمة — اختِيرت':'فہرست میں موجود ہے — منتخب ہو گئی',
+ 'أُرسل الطلب — يعتمده المهندس':'درخواست بھیج دی گئی — انجینئر اسے منظور کرے گا',
+ 'اختر المشعر ونوع الموقع':'علاقہ اور مقام کی قسم منتخب کریں','رقم المربع مطلوب':'بلاک نمبر لازمی ہے',
+ 'رقم الشاخص مطلوب':'نشان نمبر لازمی ہے',
+ 'رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14':'بلاک نمبر: ہندسے یا ہندسے-ہندسے — مثلاً 7 یا 7-14',
+ 'اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»':'فہرست سے خدمت کمپنی منتخب کریں — یا اس کی درخواست دیں، یا وجہ \'کوئی تخصیص نہیں\' منتخب کریں',
+ 'اسم الشركة يجب أن يكون من القائمة الموحّدة فقط':'کمپنی کا نام صرف متحدہ فہرست سے ہونا چاہیے',
+ 'صورة الشاخص إلزامية للاعتماد':'منظوری کے لیے نشان کی تصویر لازمی ہے',
  /* ══ الدفعة الثالثة ══ */
  
  'لا أحد في هذه المرحلة بعد — تُضبط مرحلةُ كلِّ فنيٍّ في إسناد الأدوار.':'اس مرحلے میں ابھی کوئی نہیں — ہر ٹیکنیشن کا مرحلہ کردار کی تفویض میں طے ہوتا ہے۔',
@@ -4277,54 +4319,165 @@ function waSend(kind, copy){
 
 /* ═══ موقعٌ غير مسجّل — يُضاف من الميدان ═══
    ما لم يكن في القاعدة يُسجَّل بموضعه الحقيقي، ويُوسَم جديدًا حتى يعتمده المهندس. */
-var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', name:'', sq:'', sign:'', co:'', note:'' };
+var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', sq:'', sign:'',
+                co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{} };
+var NS_CO_OPEN = false, NS_CO_Q = '';
+
+/* أسبابُ عدم وجوده في السجل — من الميدان لا من الخيال */
+var NS_REASONS = ['مخيم جديد لم يكن موجودًا','مخيم انقسم إلى أكثر من واحد',
+                  'عدم وجود تخصيص','تغيّر ترقيم الشاخص',
+                  'الشاخص مفقود أو غير واضح','سبب آخر'];
+
+/* الصورُ الخمس — الأولى وحدها إلزامية، بها يطابق المكتبُ الموقع */
+var NS_PHOTOS = ['صورة الشاخص بأرقامه واضحة','لقطة عامة للموقع','المدخل',
+                 'نقطة التركيب المقترحة','أي عائق أو ملاحظة'];
+
+/* صيغةُ الشاخص: اسم الخيمة/رقم الشارع — 57/2 و12أ/8 كلاهما صحيح */
+var NS_SIGN_RE = /^[0-9A-Za-z\u0621-\u064A]+(?:[-\/][0-9A-Za-z\u0621-\u064A]+)+$/;
+var NS_SQ_RE   = /^[0-9A-Za-z\u0621-\u064A]+(?:-[0-9A-Za-z\u0621-\u064A]+)*$/;
+
+/* المسجَّلُ داخل مئةٍ وأربعين مترًا — أغلبُ «المخيم غير موجود» وقوفٌ بجانب مسجَّل */
+function nsNear(){
+  var la = NEWSITE.lat || (MYPOS && MYPOS.lat), lo = NEWSITE.lng || (MYPOS && MYPOS.lng);
+  if (!la || !lo) return null;
+  var me = { lat:la, lng:lo };
+  return STATE.sites.filter(function(x){ return x.lat && x.lng; })
+    .map(function(x){ return { s:x, d:(distKm(me, x) || 0) * 1000 }; })
+    .filter(function(x){ return x.d < 140; })
+    .sort(function(a,b){ return a.d - b.d; }).slice(0, 5);
+}
+
+/* القائمةُ الموحّدة مرشَّحةً بالبحث — والمرجعُ بياناتُ المشروع لا قائمةٌ مكتوبةٌ بيد */
+function nsCoRows(){
+  var q = String(NS_CO_Q || '').trim();
+  return CO_LIST.filter(function(c){ return !q || c.indexOf(q) > -1; });
+}
+
+function nsCoCard(){
+  var rows = nsCoRows();
+  return card('شركة تقديم الخدمة — القائمة الموحّدة',
+    '<div class="field"><input type="search" id="nsCoQ" data-nsq="1" value="' + esc(NS_CO_Q) + '" '
+    + 'placeholder="' + esc(t('ابحث باسم الشركة')) + '" spellcheck="false"></div>'
+    + '<div style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm)">'
+    + (rows.length
+        ? rows.map(function(c){
+            return '<button type="button" class="btn btn-quiet" data-nscopick="' + esc(c) + '" '
+              + 'style="width:100%;justify-content:flex-start;text-align:start;border:0;'
+              + 'border-bottom:1px solid var(--line-2);border-radius:0;min-height:44px">'
+              + '<i style="width:10px;height:10px;border-radius:50%;background:' + coColor(c)
+              + ';flex:0 0 auto;margin-inline-end:8px"></i>' + esc(c) + '</button>';
+          }).join('')
+        : '<p class="hint" style="padding:14px">' + esc(t('لا نتائج')) + '</p>')
+    + '</div>'
+    + '<div class="grid cols-2" style="margin-top:12px">'
+    + '<div class="field"><label>' + esc(t('اسم شركة غير موجودة بالقائمة')) + '</label>'
+    + '<input id="nsCoNew" dir="auto" placeholder="' + esc(t('يعتمده المهندس قبل أن يُستعمل')) + '"></div>'
+    + '<div class="field"><label>&nbsp;</label>'
+    + btn('+ إضافة للقائمة','btn-secondary',' data-nscoreq="1" style="width:100%"') + '</div>'
+    + '</div>'
+    + '<p class="hint">' + esc(t('غير الموجودة تُطلب من المهندس ولا تدخل القائمة قبل اعتماده.')) + '</p>',
+    btn('إغلاق','btn-quiet btn-sm',' data-nsco="0"'));
+}
 
 PAGE.newsite = { m:'الميدان', t:'تسجيل موقع جديد',
   l:'ما لم يكن في القاعدة — يُسجَّل بموضعك ويُعتمَد لاحقًا.',
   body:function(){
-    var has = NEWSITE.lat && NEWSITE.lng;
-    return (MYPOS
-      ? alertBox('success','موضعُك مُلتقَط — يُسجَّل الموقعُ عنده ما لم تُحرّكه لاحقًا.')
-      : alertBox('warn','لم يُلتقَط موضعُك بعد — اضغط «التقط موضعي» أو سجّل ثم حرّكه من الخريطة.'))
+    if (NS_CO_OPEN) return nsCoCard();
+
+    var has  = NEWSITE.lat && NEWSITE.lng;
+    var near = nsNear();
+    var camp = NEWSITE.type === 'مخيم';
+
+    var head = !MYPOS && !has
+      ? alertBox('warn','لم يُلتقَط موضعُك بعد — اضغط «التقط موضعي» قبل تعبئة النموذج.')
+      : (near && near.length
+          ? alertBox('warn','انتبه — يوجد مواقعُ مسجّلةٌ قريبةٌ منك. أغلبُ حالات «غير موجود» وقوفٌ بجانب مسجَّل، فراجعها قبل الإنشاء.')
+            + card('الأقربُ إليك الآن',
+                near.map(function(x){
+                  return '<button type="button" class="btn btn-quiet" data-site="' + esc(x.s.id) + '" '
+                    + 'style="width:100%;justify-content:space-between;margin-bottom:6px">'
+                    + '<span>' + esc(x.s.id) + '</span><span class="num">' + nm(Math.round(x.d))
+                    + ' ' + esc(t('م')) + '</span></button>';
+                }).join(''))
+          : alertBox('success','لا موقعَ مسجَّلًا خلال مئةٍ وأربعين مترًا منك — الأرجحُ أنه غيرُ مسجَّلٍ فعلًا.'));
+
+    return head
 
       + card('الموضع',
           '<div class="pop-rows" style="margin:0">'
           + '<div><span class="k">' + esc(t('الإحداثيات')) + '</span><span class="num">'
-          +   (has ? (NEWSITE.lat.toFixed(5) + ', ' + NEWSITE.lng.toFixed(5))
-                   : (MYPOS ? (MYPOS.lat.toFixed(5) + ', ' + MYPOS.lng.toFixed(5)) : '—'))
-          + '</span></div>'
-          + '</div>',
+          +   (has ? (NEWSITE.lat.toFixed(6) + ', ' + NEWSITE.lng.toFixed(6))
+                   : (MYPOS ? (MYPOS.lat.toFixed(6) + ', ' + MYPOS.lng.toFixed(6)) : '—'))
+          + '</span></div></div>',
           btn('◎ ' + t('التقط موضعي'),'btn-secondary btn-sm',' data-nsloc="1"'))
 
-      + card('بيانات الموقع',
+      + card('هوية الموقع',
           '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('المشعر')) + '</label>'
+          + '<div class="field"><label>' + esc(t('المشعر')) + ' <span class="req">*</span></label>'
           + '<select data-ns="zone">' + ['منى','عرفات','مزدلفة'].map(function(z){
               return '<option' + (NEWSITE.zone===z?' selected':'') + '>' + esc(z) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+          + '</select><p class="hint">' + esc(t('اختر المنطقة التي يتبعها الموقع')) + '</p></div>'
+
+          + '<div class="field"><label>' + esc(t('نوع الموقع')) + ' <span class="req">*</span></label>'
           + '<select data-ns="type">' + Object.keys(CAT_DEF).map(function(k){
               return '<option value="' + esc(k) + '"' + (NEWSITE.type===k?' selected':'') + '>'
                 + CAT_DEF[k].i + ' ' + esc(t(CAT_DEF[k].l)) + '</option>'; }).join('')
           + '</select></div>'
-          + '<div class="field"><label>' + esc(t('رقم المربع')) + '</label>'
-          + '<input data-ns="sq" value="' + esc(NEWSITE.sq) + '" dir="auto"></div>'
-          + '<div class="field"><label>' + esc(t('رقم الشاخص')) + '</label>'
-          + '<input data-ns="sign" value="' + esc(NEWSITE.sign) + '" dir="auto"></div>'
+
+          + '<div class="field"><label>' + esc(t('رقم المربع')) + ' <span class="req">*</span></label>'
+          + '<input data-ns="sq" value="' + esc(NEWSITE.sq) + '" dir="auto">'
+          + '<p class="hint">' + esc(t('من الشاخص المثبت في الموقع')) + '</p></div>'
+
+          + '<div class="field"><label>' + esc(t('رقم الشاخص')) + ' <span class="req">*</span></label>'
+          + '<input data-ns="sign" value="' + esc(NEWSITE.sign) + '" dir="auto">'
+          + '<p class="hint">' + esc(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')) + '</p></div>'
           + '</div>'
-          + '<div class="field"><label>' + esc(t('الشركة')) + ' — ' + esc(t('اختياري')) + '</label>'
-          + '<input data-ns="co" value="' + esc(NEWSITE.co) + '" dir="auto" list="nsCo">'
-          + '<datalist id="nsCo">' + Object.keys(siteStats().byCo).slice(0,60).map(function(c){
-              return '<option value="' + esc(c) + '">'; }).join('') + '</datalist></div>'
-          + '<div class="field"><label>' + esc(t('لماذا لم يكن مسجّلًا؟')) + '</label>'
-          + '<textarea data-ns="note" rows="2">' + esc(NEWSITE.note) + '</textarea></div>')
+
+          + '<div class="field"><label>' + esc(t('شركة تقديم الخدمة'))
+          +   (camp ? ' <span class="req">*</span>' : '') + '</label>'
+          + btn(NEWSITE.co ? NEWSITE.co
+                : (NEWSITE.coReq ? t('بانتظار اعتماد المهندس') + ': ' + NEWSITE.coReq
+                                 : '— ' + t('اختر الشركة من القائمة') + ' —'),
+                NEWSITE.co ? 'btn-secondary' : 'btn-quiet', ' data-nsco="1" style="width:100%"')
+          + '<p class="hint">' + esc(t('إلزامية للمخيمات — من القائمة الموحّدة فقط. اتركها فارغة إن كان السبب «عدم وجود تخصيص».')) + '</p></div>'
+
+          + '<div class="field"><label>' + esc(t('عدد الخيام أو الغرف')) + '</label>'
+          + '<input data-ns="tents" type="number" min="0" value="' + esc(NEWSITE.tents) + '"></div>')
+
+      + card('لماذا ليس في السجل؟',
+          '<div class="field"><label>' + esc(t('السبب')) + '</label>'
+          + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+          + NS_REASONS.map(function(r){
+              return '<option' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('شرح مختصر')) + '</label>'
+          + '<textarea data-ns="why" rows="2" placeholder="'
+          + esc(t('اختياري — اكتبه فقط لو فيه تفصيلةٌ تساعد المكتب')) + '">' + esc(NEWSITE.why) + '</textarea></div>')
+
+      + card('الصور',
+          '<p class="hint" style="margin-top:0">' + esc(t('الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
+          + '<div class="grid cols-2">'
+          + NS_PHOTOS.map(function(lbl, i){
+              var p = NEWSITE.photos[i];
+              return '<div class="field"><label>' + nm(i+1) + ' · ' + esc(t(lbl))
+                + (i === 0 ? ' <span class="req">*</span>' : '') + '</label>'
+                + '<label class="btn ' + (p ? 'btn-secondary' : 'btn-primary')
+                + '" style="cursor:pointer;width:100%">'
+                + (p ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
+                + '<input type="file" accept="image/*" capture="environment" data-nsphoto="' + i
+                + '" style="display:none"></label>'
+                + (p ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(p.size/1024))
+                     + ' ' + esc(t('كيلو')) + '</div>' : '')
+                + '</div>';
+            }).join('')
+          + '</div>')
 
       + card('', '<div class="actions">'
-          + btn('سجّل الموقع','btn-primary',' data-nssave="1"')
+          + btn('إرسال للاعتماد','btn-primary',' data-nssave="1"')
           + btn('إلغاء','btn-secondary',' data-p="map"')
           + '</div>'
           + '<p class="hint">يُوسَم «جديدٌ بانتظار الاعتماد» ولا يدخل الإحصاءَ حتى يعتمده المهندس. '
-          + 'وبعد التسجيل يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه كلُّها — فالجديدُ كغيره: '
+          + 'وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — فالجديدُ كغيره: '
           + 'يُمسَح ثم يُدقَّق ثم يُعتمَد.</p>');
   }};
 
@@ -4339,10 +4492,45 @@ function nsCapture(){
   }, function(){ toast(t('تعذّر تحديد الموقع')); }, { enableHighAccuracy:true, timeout:10000 });
 }
 
+/* طلبُ إضافة شركةٍ إلى القائمة الموحّدة — يُسجَّل ولا يدخل القائمة قبل اعتماد المهندس */
+function nsCoRequest(){
+  var el = document.getElementById('nsCoNew');
+  var nm0 = el ? String(el.value || '').trim() : '';
+  if (!nm0){ toast(t('اكتب اسم الشركة أولًا')); return; }
+  if (CO_LIST.indexOf(nm0) > -1){
+    NEWSITE.co = nm0; NEWSITE.coReq = ''; NS_CO_OPEN = false;
+    toast(t('موجودة في القائمة — اختِيرت'));
+    render(1); return;
+  }
+  NEWSITE.coReq = nm0; NEWSITE.co = '';
+  CORE.set('coreqs', nm0, { name:nm0, by:STATE.meta.name || '', at:Date.now(), status:'مطلوب' });
+  logEvent('طلب إضافة شركة — ' + nm0);
+  NS_CO_OPEN = false;
+  toast(t('أُرسل الطلب — يعتمده المهندس'));
+  render(1);
+}
+
 function nsSave(){
   var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
-  if (!NEWSITE.sq && !NEWSITE.sign){ toast(t('أدخل المربعَ أو الشاخص')); return; }
+
+  NEWSITE.sq   = String(NEWSITE.sq   || '').trim();
+  NEWSITE.sign = String(NEWSITE.sign || '').trim();
+
+  if (!NEWSITE.zone || !NEWSITE.type){ toast(t('اختر المشعر ونوع الموقع')); return; }
+  if (!NEWSITE.sq){   toast(t('رقم المربع مطلوب')); return; }
+  if (!NEWSITE.sign){ toast(t('رقم الشاخص مطلوب')); return; }
+  if (!NS_SQ_RE.test(NEWSITE.sq)){
+    toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return; }
+  if (!NS_SIGN_RE.test(NEWSITE.sign)){
+    toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
+
+  var camp = NEWSITE.type === 'مخيم';
+  if (camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
+    toast(t('اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»')); return; }
+  if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0){
+    toast(t('اسم الشركة يجب أن يكون من القائمة الموحّدة فقط')); return; }
+  if (!NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
 
   var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[NEWSITE.zone] || 'NEW';
   var tp  = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN',
@@ -4351,23 +4539,34 @@ function nsSave(){
   var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
 
   var site = {
-    id:id, name:NEWSITE.zone + ' - ' + (NEWSITE.sq ? 'مربع ' + NEWSITE.sq + ' - ' : '')
-        + (NEWSITE.sign ? 'شاخص ' + NEWSITE.sign : t(CAT_DEF[NEWSITE.type].l)),
+    id:id, name:NEWSITE.zone + ' - مربع ' + NEWSITE.sq + ' - شاخص ' + NEWSITE.sign,
     zone:NEWSITE.zone, type:NEWSITE.type, work:'موقع جديد',
-    lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign, co:NEWSITE.co,
+    lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign,
+    co:NEWSITE.co, coReq:NEWSITE.coReq, tents:cfgN(NEWSITE.tents),
+    reason:NEWSITE.reason, why:NEWSITE.why,
     region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
-    isNew:true, approved:false, by:STATE.meta.name || 'محمد صفوت', at:Date.now(),
+    isNew:true, approved:false, by:STATE.meta.name || '', at:Date.now(),
     note:NEWSITE.note
   };
   STATE.sites.push(site);
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
-  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone);
+
+  /* الصورُ منفصلةٌ عن الوثيقة — وثيقةُ Firestore لا تتجاوز ميغابايتًا وصورةٌ واحدةٌ تقاربه */
+  Object.keys(NEWSITE.photos).forEach(function(i){
+    CORE.set('photos', 'newsite__' + id + '__' + i, NEWSITE.photos[i]);
+  });
+
+  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
+    + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''));
   statBump();
   toast(id + ' \u00b7 ' + t('سُجّل — بانتظار الاعتماد'));
-  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type,
-              name:'', sq:'', sign:'', co:'', note:'' };
-  /* يُفتَح نموذجُ المسح عليه فورًا — الشاشةُ السابقةُ تُنشئه، والنموذجُ يُكمله */
+
+  NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
+              co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{} };
+  NS_CO_OPEN = false; NS_CO_Q = '';
+
+  /* يُفتَح نموذجُ المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
   DETAIL_ID = id;
   FORM.site = id;
   formReset();
@@ -7277,9 +7476,20 @@ var CO_OPEN = false;
 var MAP_SAT = false;
 var MAP_FILT_OPEN = false;
 var CO_SEL = [];
-var CO_LIST = ['شركة الراجحي','ضيوف البيت','حجاج الداخل','مطوّفي جنوب آسيا',
-               'مطوّفي جنوب شرق آسيا','مطوّفي الدول العربية','مطوّفي أفريقيا غير العربية',
-               'مطوّفي أوروبا وأمريكا وأستراليا','مطوّفي تركيا ومسلمي أوروبا','الأدلاء الموحّدة'];
+/* القائمةُ الموحّدة — تُبنى من بيانات المشروع نفسها لا تُكتَب بيد.
+   كانت عشرةَ أسماءٍ مخترعةٍ بينما الشاشةُ تقول «مئةٌ واثنتان وستون شركة»،
+   والميدانُ يختار من قائمةٍ لا تشبه ما في السجل. */
+var CO_LIST = [];
+function coFill(){
+  var seen = {}; CO_LIST.length = 0;
+  [].concat(SITES_RAW.co || [], SITES_RAW.dm || []).forEach(function(c){
+    c = String(c || '').trim();
+    if (c && !seen[c]){ seen[c] = 1; CO_LIST.push(c); }
+  });
+  CO_LIST.sort(function(x, y){ return x.localeCompare(y, 'ar'); });
+  return CO_LIST.length;
+}
+coFill();   /* بعد التعريف لا قبله — البياناتُ أعلى في الملف والقائمةُ هنا */
 
 /* الزاوية الذهبية توزّع الأطياف فلا يتجاور لونان متشابهان مهما كثرت الشركات */
 function coColor(name){
@@ -8961,7 +9171,8 @@ document.addEventListener('click', function(e){
                 'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
                 'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
                 'data-lasn','data-dsch','data-ddone','data-stab','data-asnmode','data-asnteam','data-asnsplit','data-apick','data-akind','data-drvsave','data-drvtest',
-                'data-locate','data-newsite','data-nsloc','data-nssave','data-ns','data-help','data-tname','data-asnload','data-asnto',
+                'data-locate','data-newsite','data-nsloc','data-nssave','data-ns','data-help',
+                'data-nsco','data-nscopick','data-nscoreq','data-nsphoto','data-nsq','data-tname','data-asnload','data-asnto',
                 'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
                 'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
                 'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
@@ -9171,6 +9382,12 @@ document.addEventListener('click', function(e){
   if (e.target.closest('[data-locate]')){ mapLocate(); return; }
   if (e.target.closest('[data-newsite]')){ CUR = 'newsite'; render(1); return; }
   if (e.target.closest('[data-nsloc]')){ nsCapture(); return; }
+  var nco = e.target.closest('[data-nsco]');
+  if (nco){ NS_CO_OPEN = nco.getAttribute('data-nsco') === '1'; NS_CO_Q = ''; render(1); return; }
+  var ncp = e.target.closest('[data-nscopick]');
+  if (ncp){ NEWSITE.co = ncp.getAttribute('data-nscopick'); NEWSITE.coReq = '';
+            NS_CO_OPEN = false; render(1); return; }
+  if (e.target.closest('[data-nscoreq]')){ nsCoRequest(); return; }
   if (e.target.closest('[data-nssave]')){ nsSave(); return; }
 
   var apk = e.target.closest('[data-apick]');
@@ -9320,6 +9537,17 @@ document.addEventListener('change', function(e){
   }
   var el = e.target;
   if (el && el.hasAttribute){
+    if (el.hasAttribute('data-nsphoto')){
+      var nf = el.files && el.files[0];
+      if (!nf) return;
+      toast(t('تُضغط الصورة…'));
+      shrink(nf, 1280, 0.72).then(function(p){
+        if (!p){ toast(t('تعذّرت قراءة الصورة')); return; }
+        NEWSITE.photos[el.getAttribute('data-nsphoto')] = p;
+        render(1);
+      });
+      return;
+    }
     if (el.hasAttribute('data-photo')){
       var file = el.files && el.files[0];
       if (!file) return;
@@ -9355,6 +9583,13 @@ document.addEventListener('input', function(e){
       var q = document.getElementById('navQ');
       if (q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
     }
+    return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nsq')){
+    NS_CO_Q = e.target.value;
+    render(1);
+    var q2 = document.getElementById('nsCoQ');
+    if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
     return;
   }
   var el = e.target;

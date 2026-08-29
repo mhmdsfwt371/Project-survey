@@ -106,6 +106,57 @@ if (typeof w.helpOf === 'function') {
   check(noHelp.length === 0, 'لكلِّ صفحةٍ جوابُ «ما هذه الصفحة؟»' + (noHelp.length ? ` — ${noHelp.join(' ')}` : ''));
 } else fails.push('مولّدُ الشرح helpOf غير متاح');
 
+/* ── دورةُ «تسجيل موقع جديد» كاملةً ─────────────────────────────────────────
+   شاشةٌ تُنشئ سجلًّا في القاعدة، فلا يكفي أن ترسم: يجب أن يمنع ناقصُها الحفظ،
+   وأن تكون قائمةُ الشركات هي قائمةُ المشروع لا أسماءً مكتوبةً بيد. */
+{
+  const T = [];
+  const realToast = w.toast;
+  w.toast = m => T.push(String(m));
+  const clk = sel => { const el = d.querySelector(sel); if (el) el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return !!el; };
+  const last = () => T[T.length - 1] || '';
+
+  check(Array.isArray(w.CO_LIST) && w.CO_LIST.length > 100,
+    `القائمةُ الموحّدة من بيانات المشروع (${(w.CO_LIST||[]).length} شركة)`);
+
+  w.CUR = 'newsite'; w.render(1);
+  const C = d.getElementById('content');
+  check(C.querySelectorAll('[data-nsphoto]').length === 5, 'خمسُ خاناتِ صورٍ في نموذج الموقع الجديد');
+  check(C.querySelectorAll('.req').length >= 5, 'الحقولُ الإلزاميةُ موسومةٌ بنجمة');
+
+  T.length = 0; clk('[data-nssave]');
+  check(/موضعك/.test(last()), 'الحفظُ بلا موضعٍ ممنوع');
+  w.NEWSITE.lat = 21.53; w.NEWSITE.lng = 39.18;
+  T.length = 0; clk('[data-nssave]');
+  check(/المربع/.test(last()), 'الحفظُ بلا مربعٍ ممنوع');
+  w.NEWSITE.sq = '7-14'; w.NEWSITE.sign = 'abc';
+  T.length = 0; clk('[data-nssave]');
+  check(/الصيغة/.test(last()), 'صيغةُ الشاخص مفحوصة');
+  w.NEWSITE.sign = '57/2'; w.NEWSITE.co = 'شركةٌ لا وجودَ لها';
+  T.length = 0; clk('[data-nssave]');
+  check(/الموحّدة/.test(last()), 'شركةٌ خارج القائمة مرفوضة');
+
+  w.NEWSITE.co = w.CO_LIST[0];
+  T.length = 0; clk('[data-nssave]');
+  check(/صورة/.test(last()), 'صورةُ الشاخص إلزامية');
+
+  w.render(1);
+  check(clk('[data-nsco]') && w.NS_CO_OPEN === true, 'منتقي الشركات يفتح');
+  check(d.querySelectorAll('[data-nscopick]').length === w.CO_LIST.length, 'المنتقي يعرض القائمة كاملة');
+  clk('[data-nscopick]');
+  check(w.NS_CO_OPEN === false && w.CO_LIST.indexOf(w.NEWSITE.co) > -1, 'الاختيارُ يغلق اللوحَ ويثبّت الشركة');
+
+  w.NEWSITE.photos[0] = { size: 40000, d:'x' };
+  const before = w.STATE.sites.length;
+  T.length = 0; clk('[data-nssave]');
+  const rec = w.STATE.sites[w.STATE.sites.length - 1];
+  check(w.STATE.sites.length === before + 1, 'الحفظُ الكاملُ يُنشئ السجل');
+  check(rec && rec.approved === false && rec.isNew === true, 'السجلُّ يُوسَم جديدًا بانتظار الاعتماد');
+  check(w.CUR === 'svForm', 'يُفتَح نموذجُ المسح على الموقع الجديد');
+
+  w.toast = realToast;
+}
+
 check(errs.length === 0 && errsBoot.length === 0, 'لا خطأَ تشغيلٍ أثناء فتح الشاشات' + (errs.length ? ` — ${errs[0].slice(0, 70)}` : ''));
 
 /* ── الحصاد ────────────────────────────────────────────────────────────── */
