@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.22
+      <i class="ver-tag">نسخة</i>V14.23
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,19 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الحادية عشرة: الصور ══ */
+ 'الحذفُ للمهندس وحده':'Deleting is for the engineer only',
+ 'لا صورةَ بهذا المعرّف':'No photo with this ID',
+ 'محذوفةٌ سلفًا':'Already deleted',
+ 'حُذفت الصورة':'Photo deleted',
+ 'وُسمت محذوفةً — وتعذّر حذفُ الملف من درايف':'Marked as deleted — but the Drive file could not be removed',
+ 'حُذفت':'Deleted',
+ 'افتح الصورة':'Open the photo',
+ 'رفعها':'Uploaded by',
+ 'كلُّ رفعٍ واطّلاعٍ وحذفٍ مسجَّلٌ في سجل الأحداث باسم فاعله.':'Every upload, view and deletion is recorded in the event log under its author\'s name',
+ 'سببٌ غير معروف':'Reason unknown',
+ 'سببُ الحذف':'Reason for deletion',
+ 'أُعيدت إلى الطابور':'Returned to the queue',
  /* ══ الدفعة الثانية عشرة: اللوحات ══ */
  'اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.':'The snapshot is written from the office device every fifteen minutes — anything not yet synced does not appear here.',
  'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.':'Lowest percentage first — sixty companies per page.',
@@ -1014,6 +1027,19 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الحادية عشرة ══ */
+ 'الحذفُ للمهندس وحده':'حذف صرف انجینئر کے لیے ہے',
+ 'لا صورةَ بهذا المعرّف':'اس شناخت کے ساتھ کوئی تصویر نہیں',
+ 'محذوفةٌ سلفًا':'پہلے ہی حذف شدہ',
+ 'حُذفت الصورة':'تصویر حذف ہو گئی',
+ 'وُسمت محذوفةً — وتعذّر حذفُ الملف من درايف':'حذف شدہ نشان زد — لیکن ڈرائیو کی فائل نہ ہٹ سکی',
+ 'حُذفت':'حذف شدہ',
+ 'افتح الصورة':'تصویر کھولیں',
+ 'رفعها':'اپ لوڈ کرنے والا',
+ 'كلُّ رفعٍ واطّلاعٍ وحذفٍ مسجَّلٌ في سجل الأحداث باسم فاعله.':'ہر اپ لوڈ، مشاہدہ اور حذف واقعات کے ریکارڈ میں اس کے کرنے والے کے نام سے درج ہوتا ہے',
+ 'سببٌ غير معروف':'وجہ نامعلوم',
+ 'سببُ الحذف':'حذف کی وجہ',
+ 'أُعيدت إلى الطابور':'قطار میں واپس',
  /* ══ الدفعة الثانية عشرة ══ */
  'اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.':'اسنیپ شاٹ دفتر کے آلے سے ہر پندرہ منٹ میں لکھا جاتا ہے — جو ابھی ہم آہنگ نہیں ہوا وہ یہاں نہیں دکھتا۔',
  'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.':'کم ترین تناسب پہلے — فی صفحہ ساٹھ کمپنیاں۔',
@@ -1889,14 +1915,18 @@ var FB = {
     if (!FB.ready) return Promise.resolve(false);
     var since = (!full && STATE.meta.lastSync) ? STATE.meta.lastSync - 60000 : 0;
     var mine  = (typeof may === 'function' && !may('exportAll')) ? (STATE.meta.uid || '') : '';
-    return Promise.all(['recs','inss','tasks'].map(function(c){
+    return Promise.all(['recs','inss','tasks','photos'].map(function(c){
       var q = FB.db.collection(c);
       if (mine){
         /* الفارقُ الزمنيُّ لا يُقصَر على صاحبه إلا بفهرسٍ مركّب، والقصرُ على
            الصاحب وحده أرخص: سجلاتُ الفنيِّ عشراتٌ لا آلاف. فمئةٌ وخمسون
            جهازًا لا يقرأ أحدُها ما كتبه الآخرون — واللوحةُ تُقرأ من اللقطة. */
-        q = (c === 'tasks') ? q.where('to', '==', STATE.meta.name || '\u0000')
-                            : q.where('_by', '==', mine);
+        /* الصورُ تُقرأ للجميع لا لصاحبها وحده: صورةٌ لا يراها إلا من رفعها
+           لا تُغني عن الزيارة، والمكتبُ يعتمد التركيبَ بها. وهي وثيقةٌ صغيرة
+           فيها رابطٌ لا صورة، فقراءتُها كلِّها رخيصة. */
+        q = (c === 'photos') ? q
+          : (c === 'tasks')  ? q.where('to', '==', STATE.meta.name || '\u0000')
+                             : q.where('_by', '==', mine);
       } else if (since) q = q.where('_at', '>', since);
       return q.get().then(function(snap){
         if (!since && !mine) STATE[c] = {};      /* سحبٌ كاملٌ يستبدل */
@@ -2171,6 +2201,7 @@ function filtered(){
 /* ═══ تفاصيل النقطة الكاملة ═══ */
 var DETAIL_ID = '';
 
+/* يُوسَم شريطُ الصور في شاشة الموقع أدناه */
 PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
   body:function(){
     var x = siteFind(DETAIL_ID) || STATE.sites[0];
@@ -2256,6 +2287,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
               : ''))
         : '')
 
+      + photoStrip(x.id)
       + card('دورة هذه النقطة',
           flow(['مسح','اعتماد المسح','جدولة','تركيب','تدقيق','مُركّب'],
                ins && ins.approved ? 5 : (ins ? 4 : (sv ? 1 : 0))));
@@ -5124,12 +5156,26 @@ function drvUpload(name, dataUrl){
     fd.append('file', blob);
     return fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,webViewLink',
       { method:'POST', headers:{ Authorization:'Bearer ' + tok }, body: fd })
-      .then(function(r){ return r.ok ? r.json() : r.json().then(function(e){ throw new Error(e.error && e.error.message || 'upload'); }); });
+      .then(function(r){ return r.ok ? r.json() : r.json().then(function(e){ throw new Error(e.error && e.error.message || 'upload'); }); })
+      .then(function(j){
+        /* الملفُ يُولَد خاصًّا بمن رفعه: يراه هو ولا يراه المكتبُ ولا الفنيُّ
+           الذي يزور بعده. والفنيُّ لا حسابَ جوجل له أصلًا — فالمشاركةُ
+           بالرابط هي السبيلُ الوحيدُ ليُفتَح من داخل التطبيق. */
+        return fetch('https://www.googleapis.com/drive/v3/files/' + j.id + '/permissions',
+          { method:'POST',
+            headers:{ Authorization:'Bearer ' + tok, 'Content-Type':'application/json' },
+            body: JSON.stringify({ role:'reader', type:'anyone' }) })
+          .then(function(){ return j; })
+          .catch(function(){ return j; });   /* رُفعت وإن تعذّرت المشاركة */
+      });
   });
 }
 
-/* طابورُ الصور: تُحفَظ محليًّا ثم تُرفَع حين تتاح الشبكةُ والإذن */
-var PHOTO_Q = [];
+/* طابورُ الصور: تُحفَظ محليًّا ثم تُرفَع حين تتاح الشبكةُ والإذن.
+   وما تعذّر رفعُه لا يُسقَط: كان يُشطَب بعد خمس محاولاتٍ فيبقى السجلُّ بلا
+   صورةٍ والصورةُ على جهازٍ واحدٍ لا يعلم بها أحد. صار يُنقَل إلى قائمةٍ
+   تُعرَض في شاشة التخزين بزرِّ إعادة، فالفقدُ المعلَنُ يُعالَج والصامتُ لا. */
+var PHOTO_Q = [], PHOTO_FAIL = [];
 
 function photoQueue(siteId, kind, dataUrl){
   PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0 });
@@ -5152,9 +5198,95 @@ function photoFlush(){
     return 1;
   }).catch(function(e){
     it.tries++;
-    if (it.tries > 5){ PHOTO_Q.shift(); logEvent('تعذّر رفع صورة — ' + it.site); }
+    it.why = String(e && e.message || '').slice(0, 80);
+    if (it.tries > 5){
+      PHOTO_Q.shift();
+      PHOTO_FAIL.push(it);
+      CORE.saveSoon();
+      logEvent('تعذّر رفع صورة — ' + it.site + ' · ' + it.kind + (it.why ? ' · ' + it.why : ''));
+    }
     return 0;
   });
+}
+
+/* ═══ الصورُ: من رفع، ومن شاهد، ومن حذف ═══
+   الصورةُ حجّةٌ يُعتمَد بها تركيبٌ ويُصرَف بها مال. فمن يحذفها يجب أن يُعرَف،
+   ومن يراها يجب أن يُسجَّل — لا مراقبةً للناس بل لأن الوزارةَ تسأل «من اطّلع
+   على هذا؟» ولا يصلح جوابًا «لا نعلم». */
+
+/* المشاهدةُ تُسجَّل مرةً لكلِّ صورةٍ لكلِّ مستخدمٍ في اليوم: لو سُجّلت كلَّ
+   فتحةٍ لأغرقت الحصةَ في يوم، ولو لم تُسجَّل لضاع الأثر. */
+var SEEN_TODAY = {};
+function photoSeen(id){
+  var day = new Date().toISOString().slice(0, 10);
+  var k = day + '|' + (STATE.meta.uid || STATE.meta.name || '?') + '|' + id;
+  if (SEEN_TODAY[k]) return;
+  SEEN_TODAY[k] = 1;
+  logEvent('اطّلاع على صورة — ' + id);
+}
+
+/* الحذفُ للمهندس وحده، وأثرُه يبقى: الوثيقةُ تُوسَم محذوفةً ولا تُمحى،
+   فيبقى مكتوبًا أن صورةً كانت هنا ومن أزالها ولماذا. وملفُّ درايف يُحذَف
+   فعلًا — فالصورةُ الخاطئةُ لا تُترَك تُرى. */
+function photoDelete(id, why){
+  if (!may('delete')){ toast(t('الحذفُ للمهندس وحده')); return; }
+  var p = (STATE.photos || {})[id];
+  if (!p){ toast(t('لا صورةَ بهذا المعرّف')); return; }
+  if (p.del){ toast(t('محذوفةٌ سلفًا')); return; }
+  var done = function(){
+    var rec = { site:p.site, kind:p.kind, at:p.at, by:p._by || '',
+                del:{ by:STATE.meta.name || '', at:Date.now(), why:String(why || '').trim() } };
+    STATE.photos[id] = rec;
+    CORE.set('photos', id, rec);
+    logEvent('حذف صورة — ' + id + (why ? ' · ' + why : ''));
+    toast(t('حُذفت الصورة'));
+    render(1);
+  };
+  if (!p.driveId){ done(); return; }
+  drvAuth()
+    .then(function(tok){
+      return fetch('https://www.googleapis.com/drive/v3/files/' + p.driveId,
+        { method:'DELETE', headers:{ Authorization:'Bearer ' + tok } });
+    })
+    .then(done)
+    .catch(function(){
+      /* تعذّر حذفُ الملف — يُوسَم السجلُّ ويُقال، ولا يُدَّعى ما لم يقع */
+      logEvent('تعذّر حذفُ ملفِّ الصورة من درايف — ' + id);
+      toast(t('وُسمت محذوفةً — وتعذّر حذفُ الملف من درايف'));
+      done();
+    });
+}
+
+/* صورُ موقعٍ بعينه — تُعرَض حيث يُقرَّر: في تفصيل النقطة وفي التدقيق */
+function photosOf(siteId){
+  var P = STATE.photos || {}, out = [];
+  Object.keys(P).forEach(function(k){ if (P[k] && P[k].site === siteId) out.push([k, P[k]]); });
+  return out.sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); });
+}
+
+function photoStrip(siteId){
+  var L = photosOf(siteId);
+  if (!L.length) return '';
+  return card('صورُ الموقع',
+    '<div class="grid cols-2">'
+    + L.map(function(x){
+        var id = x[0], p = x[1];
+        if (p.del){
+          return '<div class="field"><label>' + esc(t(p.kind || '')) + '</label>'
+            + '<p class="hint">' + esc(t('حُذفت')) + ' — ' + esc(p.del.by || '')
+            + (p.del.why ? ' · ' + esc(p.del.why) : '') + '</p></div>';
+        }
+        return '<div class="field"><label>' + esc(t(p.kind || '')) + '</label>'
+          + '<a class="btn btn-secondary" style="width:100%" target="_blank" rel="noopener"'
+          + ' href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">'
+          + esc(t('افتح الصورة')) + '</a>'
+          + '<p class="hint">' + esc(t('رفعها')) + ': ' + esc(p._by || p.by || '—') + '</p>'
+          + (may('delete')
+              ? btn('احذف','btn-quiet btn-sm',' data-pdel="' + esc(id) + '"') : '')
+          + '</div>';
+      }).join('')
+    + '</div>'
+    + '<p class="hint">' + esc(t('كلُّ رفعٍ واطّلاعٍ وحذفٍ مسجَّلٌ في سجل الأحداث باسم فاعله.')) + '</p>');
 }
 
 PAGE.drive = { m:'النظام', t:'تخزين الصور',
@@ -5163,7 +5295,18 @@ PAGE.drive = { m:'النظام', t:'تخزين الصور',
     drvCfg();
     var n = STATE.sites.length;
     var est = Math.round(n * 4 * 180 / 1024);   /* أربعُ صورٍ للنقطة بمئةٍ وثمانين كيلو */
-    return stats([['في الطابور', N(PHOTO_Q.length), PHOTO_Q.length?'wrn':'ok'],
+    return (PHOTO_FAIL.length
+        ? alertBox('warn','صورٌ تعذّر رفعُها بعد خمس محاولات — لم تُفقَد، وهي على هذا الجهاز.')
+          + card('بانتظار إعادة المحاولة',
+              '<div class="pop-rows" style="margin:0">'
+              + PHOTO_FAIL.slice(0, 12).map(function(x){
+                  return '<div><span class="k">' + esc(x.site) + ' · ' + esc(t(x.kind)) + '</span>'
+                    + '<span>' + esc(x.why || t('سببٌ غير معروف')) + '</span></div>';
+                }).join('') + '</div>',
+              btn('أعد المحاولة','btn-primary btn-sm',' data-pretry="1"'))
+        : '')
+      + stats([['في الطابور', N(PHOTO_Q.length), PHOTO_Q.length?'wrn':'ok'],
+                  ['تعذّر رفعُها', N(PHOTO_FAIL.length), PHOTO_FAIL.length?'wrn':'ok'],
                   ['رُفعت', N(Object.keys(STATE.photos || {}).length), 'ok'],
                   ['المتوقَّع للمشروع', N(est) + ' ' + t('ميجا')],
                   ['الإذن', DRV.ready ? t('ممنوح') : t('لم يُطلَب'), DRV.ready?'ok':'wrn']])
@@ -9893,6 +10036,21 @@ function onDocClick(e){
     if (hit){ FORM.site = hit.id; render(); toast(hit.id); }
     else toast(t('لا نتائج'));
     return;
+  }
+  var pv = e.target.closest('[data-pview]');
+  if (pv){ photoSeen(pv.getAttribute('data-pview')); return; }   /* الرابطُ يفتح، ونحن نسجّل */
+  var pd = e.target.closest('[data-pdel]');
+  if (pd){
+    var pid = pd.getAttribute('data-pdel');
+    var why = (typeof prompt === 'function') ? prompt(t('سببُ الحذف')) : '';
+    if (why === null) return;                    /* أُلغي */
+    photoDelete(pid, why);
+    return;
+  }
+  if (e.target.closest('[data-pretry]')){
+    while (PHOTO_FAIL.length) PHOTO_Q.push(PHOTO_FAIL.shift());
+    toast(t('أُعيدت إلى الطابور'));
+    photoFlush(); render(1); return;
   }
   var ac = e.target.closest('[data-acc]');
   if (ac){ FORM.access = ac.getAttribute('data-acc'); render(1); return; }
