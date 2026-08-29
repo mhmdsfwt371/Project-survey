@@ -320,7 +320,8 @@ try {
 
 /* ── جردا البيانات والكتابة: الرقمُ الخاطئ أسوأ من زرٍّ مفقود ── */
 [['scripts/audit-data.mjs',  'جردُ البيانات'],
- ['scripts/audit-writes.mjs','جردُ الكتابة']].forEach(([f, name]) => {
+ ['scripts/audit-writes.mjs','جردُ الكتابة'],
+ ['scripts/audit-roles.mjs', 'جردُ الأدوار']].forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     const out = String((e.stdout || '') + (e.stderr || '')).split('\n')

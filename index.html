@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.06
+      <i class="ver-tag">نسخة</i>V14.07
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,9 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة السابعة: حراسُ الأدوار ══ */
+ 'تبديلُ الأدوار للمهندس وحده':'Switching roles is for the engineer only',
+ 'التصديرُ الشامل للمهندس وحده':'Full export is for the engineer only',
  /* ══ الدفعة السادسة: الوعودُ الصامتة ══ */
  'لا فنيَّ في هذا الموضع':'No technician at this position',
  'له حسابٌ بالفعل':'Already has an account',
@@ -990,6 +993,9 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة السابعة ══ */
+ 'تبديلُ الأدوار للمهندس وحده':'کردار بدلنا صرف انجینئر کے لیے ہے',
+ 'التصديرُ الشامل للمهندس وحده':'مکمل برآمد صرف انجینئر کے لیے ہے',
  /* ══ الدفعة السادسة ══ */
  'لا فنيَّ في هذا الموضع':'اس جگہ کوئی ٹیکنیشن نہیں',
  'له حسابٌ بالفعل':'اس کا اکاؤنٹ پہلے سے موجود ہے',
@@ -7878,9 +7884,11 @@ function fieldTools(){
     + card('التصديرات',
         '<div class="actions">'
         + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
-        + btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary',' data-kmz="main"')
-        + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
-        + btn('🌍 KMZ — بلون الشركة','btn-secondary',' data-kmz="co"')
+        + (may('exportAll')
+            ? btn('🌍 KMZ — منى وعرفات لجوجل إيرث','btn-secondary',' data-kmz="main"')
+            + btn('🌍 KMZ — إعادة تركيب ١٤٤٧','btn-secondary',' data-kmz="redo"')
+            + btn('🌍 KMZ — بلون الشركة','btn-secondary',' data-kmz="co"')
+            : '')
         + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
         + '</div>')
     + card('المزامنة',
@@ -8246,6 +8254,7 @@ var IMPORTS = [
 ];
 
 function importCard(){
+  if (!may('importAll')) return '';
   return card('استيراد من إكسل',
     '<p class="hint" style="margin:0 0 14px">'
     + esc(t('نزّل القالب، املأه، ثم ارفعه. القالب يحمل الأعمدة بأسمائها وصفًّا نموذجيًّا يُحتذى.'))
@@ -8382,7 +8391,27 @@ var ROLES = {
 var ROLE = 'engineer';
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
 function may(k){ return !!R().can[k]; }
-function seesPage(id){ var n = R().nav; return n === '*' || n.indexOf(id) > -1; }
+/* القدرةُ المعلنةُ تُسأل هنا: كانت `can` تعلن إحدى عشرةَ قدرةً ولا يُسأل منها
+   إلا أربع، فسبعٌ إعلانٌ بلا حارس. وكلُّ شاشةٍ ترتبط بقدرتها فيُسأل عنها. */
+var PAGE_CAP = {
+  /* «الملخّص المالي» شاشةُ العميل لا شاشةُ الشركة: المستخلصُ المعتمَدُ وحده
+     يراه، وهو مصرَّحٌ له في nav — فلا يُقيَّد بقدرة المال الداخلية. */
+  ipc:'money', buys:'money', budget:'money', exec:'money',
+  invb:'inventory', invmv:'inventory', stock:'inventory',
+  wos:'workshop', wday:'workshop',
+  techacc:'users', perms:'users', assignRole:'users', users:'users', roles:'users',
+  svForm:'edit', insForm:'edit', newsite:'edit',
+  qa:'approve', appr:'approve', esc:'approve',
+  visits:'settings', prep:'settings', asm:'settings', install:'settings',
+  disp:'settings', items:'settings', buycat:'settings', sup:'settings', consts:'settings',
+  exp:'exportAll', retain:'delete', sync:'settings'
+};
+function seesPage(id){
+  var n = R().nav;
+  var cap = PAGE_CAP[id];
+  if (cap && !may(cap)) return false;
+  return n === '*' || n.indexOf(id) > -1;
+}
 
 /* «جدولي» — ما أُسند لي وحدي، بلا أرقام زملائي */
 PAGE.mine = { m:'الميدان', t:'جدولي', l:'ما أُسند إليك اليوم — وترتيبك بلا أرقام زملائك.',
@@ -8459,14 +8488,18 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
             keys.map(function(k){
               return [esc(t(k[1])), may(k[0]) ? pill('نعم','ok') : pill('لا','off')];
             })))
-      + card('تجربة الأدوار',
+      /* تبديلُ الدور إدارةُ صلاحياتٍ لا معاينة: من ملكه ملك كلَّ شيء.
+         كان ظاهرًا لكلِّ دورٍ فيجعل المشرفُ نفسَه مهندسًا بضغطة. */
+      + (may('users')
+        ? card('تجربة الأدوار',
           '<p class="hint" style="margin:0 0 11px">'
           + esc(t('بدّل الدور لترى النظام بعين صاحبه — القائمة والشاشات تتغيّر فورًا.'))+'</p>'
           + '<div class="chips" style="margin:0">'
           + Object.keys(ROLES).map(function(k){
               return '<button type="button" class="chip'+(ROLE===k?' on':'')+'" data-role="'+k+'">'
                 + esc(t(ROLES[k].n))+'</button>';
-            }).join('') + '</div>');
+            }).join('') + '</div>')
+        : '');
   }};
 
 /* ═══ موديول الوزارة — دورة الحياة مرحلةً مرحلة ═══
@@ -8571,7 +8604,7 @@ PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من
           + btn('أسند لفني','btn-primary')
           + btn('جدولة تركيب','btn-secondary')
           + btn('طلب زيارة','btn-secondary')
-          + btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"')
+          + (may('exportAll') ? btn('⬇ KMZ للمحدَّد','btn-secondary',' data-kmz="sel"') : '')
           + btn('مسح التحديد','btn-danger')
           + '</div>');
   }};
@@ -9506,6 +9539,11 @@ document.addEventListener('click', function(e){
   var cw = e.target.closest('[data-crew]');
   if (cw){ CREW_VIEW = cw.getAttribute('data-crew'); render(); return; }
 
+  /* الحجبُ في العرض وحده يسقط بأداة المطوّر — فالمعالجُ يسأل أيضًا */
+  var rl0 = e.target.closest('[data-role]');
+  if (rl0 && !may('users')){ toast(t('تبديلُ الأدوار للمهندس وحده')); return; }
+  if (e.target.closest('[data-kmz]') && !may('exportAll')){
+    toast(t('التصديرُ الشامل للمهندس وحده')); return; }
   var rl = e.target.closest('[data-role]');
   if (rl){ ROLE = rl.getAttribute('data-role'); OPEN = {}; render(); return; }
 
