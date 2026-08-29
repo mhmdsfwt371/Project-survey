@@ -53,13 +53,29 @@ jobs:
           BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
         run: |
           if [ -z "$BACKUP_KEY" ]; then
+            # الحمايةُ تبقى: بلا مفتاحٍ لا تُكتب بيانةٌ خامٌ في مستودعٍ عام.
+            # لكنّ الفشلَ اليوميَّ يُعلّم صاحبَه تجاهلَ البريد، فيضيع الإنذارُ
+            # الحقيقيُّ يومَ يأتي. فيُسجَّل النقصُ حيث يُرى — في المستودع نفسه
+            # وفي ملخّص التشغيل — ولا يُفشَل.
             rm -f backups/bundle.json
-            echo "::error::BACKUP_KEY غير مضبوط — لم تُحفظ أي بيانات، أعداد فقط."
-            echo "اضبطه مرة واحدة: Settings ← Secrets and variables ← Actions ← New repository secret"
-            echo "الاسم BACKUP_KEY وقيمته عبارة طويلة — احفظها عندك، فبدونها لا تُفكّ النسخة."
-            echo "وللاسترجاع لاحقًا: openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \\"
-            echo "  -in backups/latest/backup.enc -out bundle.json -pass env:BACKUP_KEY"
-            exit 1
+            mkdir -p backups/latest
+            printf '{\n  "ok": false,\n  "at": "%s",\n  "why": "BACKUP_KEY غير مضبوط — لم تُؤخَذ نسخة",\n  "fix": "Settings ← Secrets and variables ← Actions ← New repository secret · الاسم BACKUP_KEY"\n}\n' "$(date -u +%FT%TZ)" > backups/latest/_meta.json
+            {
+              echo "## ⚠ لا نسخة احتياطية اليوم"
+              echo ""
+              echo "\`BACKUP_KEY\` غير مضبوط، فلم تُحفظ أيُّ بيانات — أعدادٌ فقط."
+              echo "المستودعُ عام، ولا تُكتب فيه بيانةٌ خامٌ بلا تشفير."
+              echo ""
+              echo "**الضبط مرةً واحدة:** Settings ← Secrets and variables ← Actions ← New repository secret"
+              echo "الاسم \`BACKUP_KEY\` وقيمته عبارةٌ طويلة — احفظها عندك، فبدونها لا تُفكّ النسخة."
+              echo ""
+              echo "**وللاسترجاع لاحقًا:**"
+              echo '```'
+              echo "openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \\"
+              echo "  -in backups/latest/backup.enc -out bundle.json -pass env:BACKUP_KEY"
+              echo '```'
+            } >> $GITHUB_STEP_SUMMARY
+            echo "::warning title=لا نسخة احتياطية::BACKUP_KEY غير مضبوط — لم تُحفظ أي بيانات. الضبط من Settings ← Secrets ← Actions."
           else
             openssl enc -aes-256-cbc -pbkdf2 -iter 250000 -salt \
               -in backups/bundle.json -out backups/latest/backup.enc -pass env:BACKUP_KEY
