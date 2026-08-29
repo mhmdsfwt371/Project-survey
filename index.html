@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.14
+      <i class="ver-tag">نسخة</i>V14.15
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -695,6 +695,12 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الحادية عشرة: السعة والمزامنة ══ */
+ 'الطابور متضخّم':'Queue is growing',
+ 'اتصل بالشبكة ليُرفَع':'connect to the network so it uploads',
+ 'تُزامَن الآن…':'Syncing now…',
+ 'سجلًّا وصل':'record(s) arrived',
+ 'كلُّ شيءٍ مُزامَن':'Everything is synced',
  /* ══ الدفعة العاشرة: القواعد ══ */
  'الفكُّ يتاح بعد اعتماد تركيب النقطة':'Dismantling becomes available once the installation is approved',
  'حدّد حالة التركيب أولًا':'Choose the installation status first',
@@ -1005,6 +1011,12 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الحادية عشرة ══ */
+ 'الطابور متضخّم':'قطار بڑھ رہی ہے',
+ 'اتصل بالشبكة ليُرفَع':'نیٹ ورک سے جڑیں تاکہ اپ لوڈ ہو',
+ 'تُزامَن الآن…':'ابھی ہم آہنگ ہو رہا ہے…',
+ 'سجلًّا وصل':'ریکارڈ پہنچے',
+ 'كلُّ شيءٍ مُزامَن':'سب کچھ ہم آہنگ ہے',
  /* ══ الدفعة العاشرة ══ */
  'الفكُّ يتاح بعد اعتماد تركيب النقطة':'جدا کرنا تنصیب کی منظوری کے بعد دستیاب ہوتا ہے',
  'حدّد حالة التركيب أولًا':'پہلے تنصیب کی حالت منتخب کریں',
@@ -1715,9 +1727,17 @@ var CORE = {
   dirty: function(kind, id, v){
     if (typeof statBump === 'function') statBump();
     STATE.queue.push({ kind:kind, id:id, v:v, at:Date.now() });
+    /* لا يُسقَط شيء: أقدمُ ما في الطابور أوّلُ ما لم يُرفَع — أي أقدمُ عملٍ
+       ميدانيٍّ لم يصل. كان يُقتطَع صامتًا فيضيع يومُ فنيٍّ ولا يعلم.
+       فيُبقى كلُّه، ويُصاح إن طال، ويُمنَع النموُّ بلا حدٍّ بإيقاف قبولِ
+       الجديد لا بمحو القديم. */
     if (STATE.queue.length > QUEUE_CAP){
-      STATE.queue = STATE.queue.slice(-QUEUE_CAP);
-      STATE.meta.dropped = (STATE.meta.dropped || 0) + 1;
+      STATE.meta.backlog = STATE.queue.length;
+      if (!STATE.meta.warned || Date.now() - STATE.meta.warned > 60000){
+        STATE.meta.warned = Date.now();
+        if (typeof toast === 'function')
+          toast(t('الطابور متضخّم') + ': ' + nm(STATE.queue.length) + ' — ' + t('اتصل بالشبكة ليُرفَع'));
+      }
     }
     CORE.saveSoon();
     CORE.flush();
@@ -1904,7 +1924,7 @@ var FB = {
    يفعلون ذلك ثماني مراتٍ يوميًّا = مليونُ قراءةٍ والحدُّ خمسون ألفًا.
    فتُكتَب أعدادُ اليوم في وثيقةٍ واحدةٍ يقرؤها الجميع بقراءةٍ واحدة.
    وهي في الوقت نفسه سجلُّ التاريخ: يومٌ يومًا، لا يُعاد حسابُه ولا يُعدَّل. */
-var ROLL_LAST = 0;
+var ROLL_LAST = 0, ROLL_PUSH = 0;
 
 function dayKey(ts){ return new Date(ts || Date.now()).toISOString().slice(0, 10); }
 
@@ -1941,7 +1961,24 @@ function rollupToday(force){
   });
   if (!STATE.stats) STATE.stats = {};
   STATE.stats[day] = doc;
-  CORE.dirty('stats', day, doc);
+
+  /* ═══ الحسابُ محليٌّ والكتابةُ من واحدٍ ═══
+     كانت هذه السطورُ تكتب `stats/{اليوم}` من كلِّ جهازٍ كلَّ دقيقتين. وبمئةٍ
+     وخمسين جهازًا: مئةٌ وثمانيةُ آلافِ كتابةٍ في اليوم على حصةٍ سقفُها عشرون
+     ألفًا — يموت المشروعُ قبل الظهر.
+
+     والأخطرُ أن الوثيقةَ واحدةٌ والكتابةُ آخرُها يفوز: كلُّ جهازٍ يكتب ما يراه
+     هو. ففنيٌّ عنده سجلّاه يكتب «مسحُ اليوم = ٢» فوقَ ما كتبه المكتبُ «٣٤٠».
+     فتعرض لوحةُ الوزارة آخرَ من زامن، لا حقيقةَ اليوم.
+
+     والصوابُ أن الأرقامَ مشتقّةٌ لا مخزَّنة: كلُّ جهازٍ يحسبها من السجلات
+     التي عنده. فلا يكتبها إلا جهازُ المكتب — الذي يملك الصورةَ كاملةً —
+     ومرةً كلَّ ربع ساعةٍ لا كلَّ دقيقتين. */
+  var mayWrite = (typeof may === 'function') && may('settings');
+  if (mayWrite && (force || now - ROLL_PUSH > 900000)){
+    ROLL_PUSH = now;
+    CORE.dirty('stats', day, doc);
+  }
   return doc;
 }
 
@@ -4385,8 +4422,8 @@ function svSave(next){
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   CORE.set('recs', s.id, rec);
   Object.keys(FORM.photos).forEach(function(k){
+    /* لا صورةَ خامٌ في القاعدة ولو تعذّر الطابور: تبقى محليًّا حتى يُضبَط درايف */
     if (typeof photoQueue === 'function') photoQueue(s.id, k, FORM.photos[k].data);
-    else CORE.set('photos', s.id + '_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
   });
   logEvent((reached ? 'مسح موقع — ' : 'تعذّر الوصول — ' + FORM.access + ' · ') + s.id);
   toast(reached
@@ -4432,7 +4469,6 @@ function insSave(draft){
   });
   Object.keys(FORM.photos).forEach(function(k){
     if (typeof photoQueue === 'function') photoQueue(s.id, 'ins_' + k, FORM.photos[k].data);
-    else CORE.set('photos', s.id + '_ins_' + k, { site:s.id, kind:k, data:FORM.photos[k].data, at:Date.now() });
   });
   /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
   if (!draft){
@@ -4963,9 +4999,12 @@ function nsSave(){
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
 
-  /* الصورُ منفصلةٌ عن الوثيقة — وثيقةُ Firestore لا تتجاوز ميغابايتًا وصورةٌ واحدةٌ تقاربه */
+  /* الصورُ إلى درايف كسائر صور النظام — لا إلى القاعدة.
+     كانت تُكتَب خامًّا هنا وحدها: خمسُ صورٍ بمئتي كيلو تقارب حدَّ الوثيقة
+     الواحدة، وتلتهم الجيجابايتَ المتاحَ في أيام. */
   Object.keys(NEWSITE.photos).forEach(function(i){
-    CORE.set('photos', 'newsite__' + id + '__' + i, NEWSITE.photos[i]);
+    var p = NEWSITE.photos[i];
+    if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
   logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
@@ -6798,10 +6837,36 @@ var CFG_VER = 0;
 function pullDelta(){
   if (!FB.ready || !FB.db) return Promise.resolve(0);
   var since = STATE.meta.lastSync || 0, got = 0;
-  return Promise.all(['recs','inss','tasks'].map(function(c){
+
+  /* ═══ الفنيُّ لا يحتاج سجلاتِ زملائه ═══
+     كان كلُّ جهازٍ يسحب `recs` و`inss` و`tasks` كاملةً كلَّ دقيقتين. وبمئةٍ
+     وخمسين جهازًا وسبعمئةٍ وعشرين سحبةً في اليوم: ملايينُ القراءات على حصةٍ
+     سقفُها خمسون ألفًا. والفنيُّ لا ينتفع بشيءٍ منها: مواقعُه في التطبيق
+     نفسِه، ومهامُّه تصله بالاستماع الحيِّ لا بالسحب، وسجلاتُه عنده أصلًا.
+     فالسحبُ الكاملُ للمكتب — الذي يحتاج الصورةَ كلَّها — والميدانُ يسحب
+     ما كتبه هو وحده، ليستعيده إن بدّل جهازَه. */
+  /* ثلاثُ طبقاتٍ لا طبقتان — والفرقُ بينها هو الفرقُ بين ثلاثين ألفَ قراءةٍ
+     ومئةٍ وثمانية عشر ألفًا:
+       المهندسُ وحده يحتاج التيّارَ الخام — هو الذي يدقّق سجلًّا سجلًّا.
+       والمكتبُ والوزارةُ يحتاجان الأرقامَ لا السجلات: يقرآن التجميعَ اليوميَّ،
+         ثلاثين وثيقةً للشهر بدل عشرة آلافٍ في اليوم.
+       والميدانُ لا يحتاج شيئًا: مواقعُه في التطبيق، ومهامُّه تصله بالاستماع
+         الحيّ، وسجلاتُه عنده — ولا يسحب إلا عند جهازٍ جديدٍ أو بطلبه. */
+  var deep  = (typeof may === 'function') && may('approve');
+  var stat  = (typeof may === 'function') && may('settings');
+  var me    = STATE.meta.uid;
+  var cold  = !since;
+  var cols  = deep ? ['recs','inss','tasks']
+            : stat ? ['stats']
+            : (cold || PULL_ASK) ? ['recs','inss'] : [];
+  PULL_ASK = false;
+  if (!cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
+
+  return Promise.all(cols.map(function(c){
     var q = FB.db.collection(c);
+    if (!deep && c !== 'stats' && me) q = q.where('_by', '==', me);
     if (since) q = q.where('_at', '>', since);
-    return q.limit(500).get().then(function(snap){
+    return q.limit(deep ? 500 : 100).get().then(function(snap){
       snap.forEach(function(doc){
         STATE[c][doc.id] = doc.data();
         got++;
@@ -8149,7 +8214,7 @@ function fieldTools(){
         + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
         + '</div>')
     + card('المزامنة',
-        '<div class="actions">' + btn('مزامنة الآن','btn-primary')
+        '<div class="actions">' + btn('مزامنة الآن','btn-primary',' data-pull="1"')
         + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">٠٢:٥١</span></span></div>');
 }
 
@@ -9661,7 +9726,7 @@ document.addEventListener('click', function(e){
                 'data-lasn','data-dsch','data-ddone','data-stab','data-asnmode','data-asnteam','data-asnsplit','data-apick','data-akind','data-drvsave','data-drvtest',
                 'data-locate','data-newsite','data-nsloc','data-nssave','data-ns','data-help',
                 'data-nsco','data-nscopick','data-nscoreq','data-nsphoto','data-nsq',
-                'data-acc','data-tname','data-asnload','data-asnto',
+                'data-acc','data-pull','data-tname','data-asnload','data-asnto',
                 'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
                 'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
                 'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
@@ -9892,6 +9957,16 @@ document.addEventListener('click', function(e){
   if (ncp){ NEWSITE.co = ncp.getAttribute('data-nscopick'); NEWSITE.coReq = '';
             NS_CO_OPEN = false; render(1); return; }
   if (e.target.closest('[data-nscoreq]')){ nsCoRequest(); return; }
+  if (e.target.closest('[data-pull]')){
+    PULL_ASK = true; PULL_LAST = 0;
+    toast(t('تُزامَن الآن…'));
+    CORE.flush();
+    pullDelta().then(function(n){
+      toast(n ? (nm(n) + ' ' + t('سجلًّا وصل')) : t('كلُّ شيءٍ مُزامَن'));
+      render(1);
+    });
+    return;
+  }
   if (e.target.closest('[data-nssave]')){ nsSave(); return; }
 
   var apk = e.target.closest('[data-apick]');
@@ -10113,10 +10188,19 @@ document.addEventListener('change', function(e){
 });
 
 /* مزامنةٌ دوريةٌ فارقية — كلُّ دقيقتين، ولا تعمل والتطبيق مخفيّ */
+/* الرفعُ كلَّ دقيقتين — رخيصٌ ولا يُقرأ فيه شيء. والسحبُ أندرُ لأنه هو الذي
+   يُحاسَب: المكتبُ كلَّ خمسِ دقائق، والميدانُ كلَّ ربعِ ساعةٍ ولا يسحب إلا
+   ما كتبه هو. */
+var PULL_LAST = 0;
+var PULL_ASK = false;   /* يرفعه زرُّ «مزامنة الآن» فيسحب الميدانُ مرةً */
 setInterval(function(){
   if (typeof document !== 'undefined' && document.hidden) return;
   if (!STATE.meta.online) return;
   CORE.flush();
+  var office = (typeof may === 'function') && may('settings');
+  var every  = office ? 300000 : 900000;
+  if (Date.now() - PULL_LAST < every) return;
+  PULL_LAST = Date.now();
   pullDelta().then(function(n){ if (n) render(1); });
 }, 120000);
 
