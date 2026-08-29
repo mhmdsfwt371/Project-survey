@@ -517,7 +517,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
         <button type="button" class="btn btn-secondary btn-sm" id="themeBtn"
                 aria-label="المظهر" style="min-width:44px">☾</button>
       </div>
-      <button type="button" class="btn btn-secondary btn-block" id="outBtn"></button>
+      <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
   </aside>
 
@@ -717,6 +717,13 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدخول والخروج ══ */
+ 'لم يُرفَع بعد':'Not uploaded yet',
+ 'سجلًّا':'record(s)',
+ 'صورة':'photo(s)',
+ 'اخرج على أي حال؟':'Sign out anyway?',
+ 'خرجت — بياناتُك المحليةُ محفوظة':'Signed out — your local data is kept',
+ 'تذكّرني على هذا الجهاز':'Remember me on this device',
  /* ══ الدفعة السادسة عشرة: الاعتمادات ══ */
  'الحقل':'Field',
  'القيمة الصحيحة':'Correct value',
@@ -1129,6 +1136,13 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدخول والخروج ══ */
+ 'لم يُرفَع بعد':'ابھی اپ لوڈ نہیں ہوا',
+ 'سجلًّا':'ریکارڈ',
+ 'صورة':'تصویر',
+ 'اخرج على أي حال؟':'پھر بھی سائن آؤٹ کریں؟',
+ 'خرجت — بياناتُك المحليةُ محفوظة':'سائن آؤٹ ہو گیا — آپ کا مقامی ڈیٹا محفوظ ہے',
+ 'تذكّرني على هذا الجهاز':'اس آلے پر مجھے یاد رکھیں',
  /* ══ الدفعة السادسة عشرة ══ */
  'الحقل':'فیلڈ',
  'القيمة الصحيحة':'درست قیمت',
@@ -8298,6 +8312,38 @@ function cacheSize(){
   }).catch(function(){ return null; });
 }
 
+/* ═══ الخروج ═══
+   كان الزرُّ بلا معالجٍ أصلًا: يضغطه المستخدمُ فيبتلعه حارسُ الأزرار الميتة
+   ويقول له نصَّه «تسجيل الخروج» — ويبقى داخلًا.
+
+   والخروجُ لا يمسُّ ما لم يُرفَع: طابورُ المزامنة والصورُ المعلَّقةُ تبقى على
+   الجهاز، ويُحذَّر منها قبل الخروج — فمن خرج وفي طابوره عملُ يومٍ ثم دخل
+   بحسابٍ آخر لم يعد يجده. */
+function signOut(){
+  var pend = (CORE && CORE.pending) ? CORE.pending() : 0;
+  var pics = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q.length : 0)
+           + (typeof PHOTO_FAIL !== 'undefined' ? PHOTO_FAIL.length : 0);
+  if (pend || pics){
+    var msg = t('لم يُرفَع بعد') + ': '
+      + (pend ? nm(pend) + ' ' + t('سجلًّا') : '')
+      + (pend && pics ? ' \u00b7 ' : '')
+      + (pics ? nm(pics) + ' ' + t('صورة') : '')
+      + ' — ' + t('اخرج على أي حال؟');
+    if (typeof confirm === 'function' && !confirm(msg)) return;
+  }
+  logEvent('تسجيل خروج — ' + (STATE.meta.name || ''));
+  try { if (typeof liveStop === 'function') liveStop(); } catch (e){}
+  try { if (FB && FB.auth && FB.auth.signOut) FB.auth.signOut(); } catch (e){}
+  /* الجلسةُ وحدها تُمسَح — والبياناتُ المحليةُ تبقى لصاحبها حين يعود،
+     ولا يُنصَح بمسح بيانات الموقع أبدًا. */
+  try { localStorage.removeItem('nsk14.session'); } catch (e){}
+  STATE.meta.uid = ''; STATE.meta.online = false;
+  toast(t('خرجت — بياناتُك المحليةُ محفوظة'));
+  /* عنصرُ الدخول يُحذَف من الهيكل عند الدخول، فلا يُعاد ببنائه بل بإعادة
+     التحميل: أنظفُ وأضمن. */
+  setTimeout(function(){ try { location.reload(); } catch (e){} }, 700);
+}
+
 /* ═══ التثبيت على الشاشة الرئيسية ═══ */
 var INSTALL_EVT = null;
 
@@ -8401,6 +8447,9 @@ var LOGIN_CSS = `
 #login input,#login select{width:100%;background:#0B1014;border:1px solid #2A333C;
   border-radius:9px;padding:11px 12px;color:#E8EBEE;font:inherit;min-height:44px;margin-bottom:13px}
 #login input:focus,#login select:focus{outline:2px solid #185FA5;border-color:#185FA5}
+#login .rem{display:flex;align-items:center;gap:9px;margin:2px 0 14px;
+  font-size:13px;color:#C6CFD7;cursor:pointer;user-select:none}
+#login .rem input{width:18px;height:18px;accent-color:#185FA5;cursor:pointer;margin:0}
 #login .go{width:100%;background:#185FA5;color:#fff;border:0;border-radius:9px;
   padding:13px;font:inherit;font-weight:600;cursor:pointer;min-height:48px}
 #login .go:active{transform:scale(.99)}
@@ -8410,6 +8459,11 @@ var LOGIN_CSS = `
   border-radius:99px;padding:6px 14px;font:inherit;font-size:12px;cursor:pointer;min-height:34px}
 #login .langs button.on{background:#185FA5;border-color:#185FA5;color:#fff}
 `;
+
+/* الاسمُ المحفوظُ من آخر دخولٍ — إن أذن صاحبُه */
+function lgRemembered(){
+  try { return localStorage.getItem('nsk14.user') || ''; } catch (e){ return ''; }
+}
 
 function loginPaint(){
   var el = document.getElementById('login');
@@ -8425,6 +8479,9 @@ function loginPaint(){
     +   '<input id="lgU" dir="ltr" autocomplete="username" placeholder="m.safwat">'
     +   '<label for="lgP">'+esc(t('كلمة المرور'))+'</label>'
     +   '<input id="lgP" type="password" dir="ltr" autocomplete="current-password" placeholder="••••••••">'
+    +   '<label class="rem" for="lgRem">'
+    +     '<input type="checkbox" id="lgRem"' + (lgRemembered() ? ' checked' : '') + '>'
+    +     '<span>' + esc(t('تذكّرني على هذا الجهاز')) + '</span></label>'
     +   '<button type="button" class="go" id="lgGo">'+esc(t('دخول'))+'</button>'
     +   '<div class="langs" id="lgLangs">'
     +     ['ar','en','ur'].map(function(l){
@@ -8437,7 +8494,21 @@ function loginPaint(){
   function go(){
     var u = (document.getElementById('lgU') || {}).value || '';
     var p = (document.getElementById('lgP') || {}).value || '';
+    var rm = document.getElementById('lgRem');
+    /* يُحفَظ الاسمُ لا الكلمة. وكلمةُ المرور لا تُخزَّن على الجهاز أبدًا:
+       جهازُ الميدان يُفقَد ويُعار، والاسمُ وحده لا يفتح شيئًا. */
+    try {
+      if (rm && rm.checked) localStorage.setItem('nsk14.user', u);
+      else localStorage.removeItem('nsk14.user');
+    } catch (e){}
     enterApp(u, p);
+  }
+  var lastU = lgRemembered();
+  if (lastU){
+    var uEl = document.getElementById('lgU');
+    if (uEl) uEl.value = lastU;
+    var pEl = document.getElementById('lgP');
+    if (pEl) try { pEl.focus(); } catch (e){}
   }
   document.getElementById('lgGo').onclick = go;
   document.getElementById('lgP').onkeydown = function(e){ if (e.key === 'Enter') go(); };
@@ -10911,7 +10982,9 @@ function render(force){
   document.getElementById('brandName').innerHTML =
       esc(t('قارئات نُسُك')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
   document.getElementById('whoRole').textContent = t(R().n) + ' — ' + t(R().d);
-  document.getElementById('outBtn').textContent  = t('تسجيل الخروج');
+  var outEl = document.getElementById('outBtn');
+  outEl.textContent = t('تسجيل الخروج');
+
   document.getElementById('syncMeta').innerHTML  =
       '<span class="dot"></span>' + esc(t('آخر مزامنة')) + ' <span class="num">٠٢:٥١</span>';
 
@@ -11123,6 +11196,7 @@ function onDocClick(e){
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
     USR_EDIT = ''; usrSet(id2, patch); return;
   }
+  if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   if (e.target.closest('[data-mvadd]')){ moveAdd(); return; }
   if (e.target.closest('[data-byadd]')){ buyAdd(); return; }
