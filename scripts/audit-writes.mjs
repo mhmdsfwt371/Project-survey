@@ -17,6 +17,12 @@ let JSDOM, VirtualConsole;
 try { ({ JSDOM, VirtualConsole } = require('jsdom')); }
 catch { console.error('✗ jsdom غير مثبَّت:  npm i jsdom'); process.exit(2); }
 
+/* الجولةُ الأولى كانت على أربعٍ وثلاثين خاصيةً مختارةً بيد، والتطبيقُ يفوّض
+   مئةً وثماني. فما لم يُختَر لم يُفحَص — والاختيارُ باليد يكشف ما تذكّرتَه.
+   فصارت الجولةُ الثانيةُ على كلِّ خاصيةٍ مفوَّضةٍ بلا استثناء، وشرطُها أخفُّ
+   وأعمُّ: أن يقع أثرٌ يُرى — كتابةٌ، أو قولٌ، أو انتقالُ شاشة، أو تغيُّرُ ما
+   يُعرَض. والسكوتُ التامُّ عطل. */
+
 /* الأزرارُ التي تَعِد بأثر — لا أزرارَ التنقّل والعرض */
 const PROMISES = [
   'data-svsave','data-svnext','data-inssave','data-insdraft','data-nssave',
@@ -83,6 +89,86 @@ for (const id of ids){
 }
 
 check(promises > 15, `وُجدت وعودُ حفظٍ لتُفحَص (${promises})`);
+
+/* ══ الجولةُ الشاملة: كلُّ خاصيةٍ مفوَّضةٍ في كلِّ شاشةٍ تظهر فيها ══════════ */
+{
+  const ALL = [...new Set([...html.matchAll(/closest\('\[(data-[\w-]+)\]'\)/g)].map(m => m[1]))];
+  check(ALL.length > 90, `الخصائصُ المفوَّضة (${ALL.length})`);
+
+  /* ما لا يُضغَط في جولةٍ آلية: يبدّل الدورَ فيُفسد ما بعده، أو يمسح كاشًا،
+     أو يفتح نافذةَ طباعةٍ لا تُغلق. تُستثنى بأسمائها لا صمتًا. */
+  const SKIP = new Set(['data-role','data-swclear','data-print','data-pwa','data-imp',
+    /* يبدأ بتنزيل محرّك إكسل من الشبكة — لا شبكةَ في المتصفّح الصوريّ */
+    'data-tpl']);
+
+  const silent2 = [], threw2 = [];
+  let clicked = 0;
+  const roleWas = w.ROLE;
+
+  for (const id of ids){
+    try { w.CUR = id; w.render(1); } catch { continue; }
+    const C = d.getElementById('content');
+    if (!C) continue;
+    const seen = new Set();
+    for (const attr of ALL){
+      if (SKIP.has(attr)) continue;
+      /* الشريحةُ المختارةُ سلفًا لا تتغيّر بالضغط عليها — وهذا صوابٌ لا عطل.
+         فتُجرَّب ثلاثةٌ من كلِّ خاصية، ويكفي أن يقع الأثرُ في واحدة. */
+      /* الحقلُ ليس زرًّا: بعضُ الخصائص تُقرأ عند الإدخال لا عند الضغط،
+         فالضغطُ على قائمةٍ منسدلةٍ لا يجب أن يفعل شيئًا — وذلك صواب. */
+      const cands = [...C.querySelectorAll('[' + attr + ']')]
+        .filter(x => !/^(INPUT|SELECT|TEXTAREA|OPTION)$/.test(x.tagName)).slice(0, 3);
+      if (!cands.length || seen.has(attr)) continue;
+      seen.add(attr);
+      clicked++;
+      /* الأثرُ قد يقع خارج #content: لوحٌ يُفتَح، أو مربّعُ اختيارٍ يُؤشَّر —
+         والتأشيرُ خاصيةٌ لا سمةٌ فلا يظهر في innerHTML. فيُلتقَط الجسمُ كلُّه
+         وحالةُ الحقول معًا، وإلا عُدَّ العاملُ صامتًا وهو يعمل. */
+      const snap = () => {
+        let f = '';
+        d.querySelectorAll('input,select,textarea').forEach(x => {
+          f += (x.type === 'checkbox' || x.type === 'radio') ? (x.checked ? '1' : '0') : String(x.value);
+          f += '\u0001';
+        });
+        return d.body.innerHTML + '\u0002' + f;
+      };
+      /* الرايةُ المفتوحةُ من ضغطةٍ سابقةٍ تجعل الضغطةَ التاليةَ بلا أثر —
+         فيُعاد ضبطُ ألواح العرض قبل كلِّ محاولة، وإلا اتُّهم العاملُ بالصمت. */
+      const reset = () => {
+        ['HELP_OPEN','EXP_OPEN','POP_OPEN','NS_CO_OPEN','ASN_OPEN','CO_OPEN','SEL_MODE']
+          .forEach(k => { if (k in w) w[k] = false; });
+        w.ROLE = roleWas;
+      };
+      let hit = false, blew = null;
+      for (const el of cands){
+        reset();
+        try { w.CUR = id; w.render(1); } catch {}
+        const live = d.querySelector('[' + attr + '="' + (el.getAttribute(attr) || '') + '"]') || el;
+        writes = 0; said = [];
+        const beforeHtml = snap(), beforeCur = w.CUR;
+        try { live.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); }
+        catch (e){ blew = String(e.message).slice(0,45); break; }
+        /* بعضُ الأزرار يبدأ عملًا غيرَ متزامنٍ — تنزيلُ محرّك إكسل مثلًا —
+           فالأثرُ يقع بعد الضغطة لا معها. تُمهَل دورةُ حدثٍ واحدة. */
+        await new Promise(r => setTimeout(r, 0));
+        let afterHtml = '';
+        try { afterHtml = snap(); } catch {}
+        if (writes || said.length || w.CUR !== beforeCur || afterHtml !== beforeHtml){ hit = true; break; }
+      }
+      if (blew) threw2.push(id + ' · ' + attr + ' → ' + blew);
+      else if (!hit) silent2.push(id + ' · ' + attr);
+      reset();
+      try { w.CUR = id; w.render(1); } catch {}
+    }
+  }
+  w.ROLE = roleWas;
+
+  check(clicked > 60, `ضُغطت خصائصُ الشاشات كلِّها (${clicked} ضغطة)`);
+  check(threw2.length === 0, 'لا خاصيةَ تنفجر عند الضغط'
+    + (threw2.length ? ` (${threw2.length}): ` + threw2.slice(0,4).join(' | ') : ''));
+  check(silent2.length === 0, 'لا خاصيةَ تُضغَط بلا أثرٍ يُرى'
+    + (silent2.length ? ` (${silent2.length}): ` + silent2.slice(0,8).join(' | ') : ''));
+}
 check(threw.length === 0, 'لا وعدَ ينفجر عند الضغط'
   + (threw.length ? ' — ' + threw.slice(0,3).join(' | ') : ''));
 check(silent.length === 0, 'كلُّ وعدٍ إمّا يكتب أو يقول لماذا لم يكتب'

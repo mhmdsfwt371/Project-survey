@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.08
+      <i class="ver-tag">نسخة</i>V14.09
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -6904,9 +6904,18 @@ function dl(blob, name){
 var SHEETS = {
   over: function(){
     var S = siteStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
+    /* كان كلُّ صفٍّ يقول صفرًا والإجماليُّ يقول العددَ الحقيقيَّ — فالورقةُ
+       تخرج إلى الوزارة وهي تناقض نفسَها سطرًا بسطر. تُحسب كلُّ خليةٍ الآن. */
+    var svK = {}, insK = {};
+    STATE.sites.forEach(function(x){
+      var k = x.zone + '|' + x.type;
+      if (STATE.recs[x.id]) svK[k] = (svK[k] || 0) + 1;
+      var r = STATE.inss[x.id];
+      if (r && r.status === 'مُركّب' && r.approved) insK[k] = (insK[k] || 0) + 1;
+    });
     Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b]-S.byKey[a]; }).forEach(function(k){
       var p = k.split('|');
-      out.push([p[0], p[1], S.byKey[k], 0, 0]);
+      out.push([p[0], p[1], S.byKey[k], svK[k] || 0, insK[k] || 0]);
     });
     out.push(['الإجمالي','', S.total, S.surveyed, S.installed]);
     return out;
@@ -7026,6 +7035,16 @@ var SHEETS = {
     });
     return out;
   },
+  /* المرحلةُ المفتوحةُ وحدها — كان الزرُّ يطلب «stage» ولا ورقةَ بهذا الاسم */
+  stage: function(){
+    var k = (typeof STAGE_TAB !== 'undefined' && STAGE_TAB) || Object.keys(STAGE_ROLES)[0];
+    var out = [['المرحلة','المنفِّذ','أعمال','النقاط','المستحَق']];
+    stageList(k).forEach(function(e){
+      out.push([STAGE_ROLES[k].n, e.name, e.acts,
+                Math.round(e.total), Math.round(e.total * cfgGet('ph'))]);
+    });
+    return out;
+  },
   stages: function(){
     var out = [['المرحلة','أفراد','أعمال','النقاط','المستحَق']];
     Object.keys(STAGE_ROLES).forEach(function(k){
@@ -7041,8 +7060,11 @@ var SHEETS = {
     var out = [['المعرّف','النقطة','النوع','الفني','الموعد','الحالة','أُسند في']];
     Object.keys(STATE.tasks).forEach(function(k){
       var x = STATE.tasks[k], K = WO_KINDS[x.kind] || { n:x.kind };
-      out.push([x.id, x.site, K.n, x.to, x.when || '', x.status,
-                new Date(x.at).toISOString().slice(0,10)]);
+      /* تاريخٌ غائبٌ أو تالفٌ كان يُسقط التصديرَ كلَّه بـInvalid time value */
+      var at = x.at ? new Date(x.at) : null;
+      out.push([x.id, x.site, K.n, x.to || '', x.when || x.due || '',
+                x.status || x.st || '',
+                (at && isFinite(at.getTime())) ? at.toISOString().slice(0,10) : '']);
     });
     return out;
   },
@@ -8208,7 +8230,14 @@ var EXP_SECS = [
   ['buys','المشتريات — ما اشتُري من السوق المحلي',1],
   ['techx','الفني مقابل تارجتاته الثلاثة',1],
   ['hb','صحة الأجهزة — إنذار مبكر',1], ['dis','الفك بعد الموسم',1],
-  ['vers','نسخة التطبيق على الأجهزة',1]
+  ['vers','نسخة التطبيق على الأجهزة',1],
+  /* خمسُ أوراقٍ كانت تُبنى ولا يصلها منفذ: تُولَّد في كل تصديرٍ ثم تُرمى.
+     ورقةٌ لا تُطلَب شيفرةٌ ميتة، والأصلُ أن تُوصَل لا أن تُحذَف. */
+  ['work','وجه العمل — التوزيع والنسب',1],
+  ['items','القطع والأسعار — الكتالوج كاملًا',1],
+  ['crews','الطواقم ومعدلاتها اليومية',1],
+  ['reps','مركز التقارير — ما يُرسَل ولمن ومتى',1],
+  ['perms','الصلاحيات — ماذا يملك كلُّ دور',1]
 ];
 
 function expHtml(){
@@ -9450,7 +9479,8 @@ document.addEventListener('click', function(e){
   if (fl){ POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; CUR = 'map'; render();
            setTimeout(function(){ mapFly(POP_SITE); }, 500); return; }
   var fm = e.target.closest('[data-form]');
-  if (fm){ FORM.site = fm.getAttribute('data-form'); CUR = 'svForm'; render(); return; }
+  if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
+    FORM.site = fm.getAttribute('data-form'); CUR = 'svForm'; render(1); return; }
   if (e.target.closest('[data-edit]')){ toast(t('التعديل يمرّ باعتماد المهندس')); return; }
 
   if (e.target.closest('[data-more]')){ LIST_SHOWN += LIST_PAGE; render(); return; }
@@ -9480,7 +9510,7 @@ document.addEventListener('click', function(e){
     return;
   }
   var fs = e.target.closest('[data-fst]');
-  if (fs){ FORM.status = fs.getAttribute('data-fst'); render(); return; }
+  if (fs){ FORM.status = fs.getAttribute('data-fst'); render(1); return; }
   if (e.target.closest('[data-svsave]')){ svSave(0); return; }
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }
@@ -9616,7 +9646,11 @@ document.addEventListener('click', function(e){
   if (inf){ FORM.site = inf.getAttribute('data-insform'); CUR='insForm'; POP_OPEN=false; render(1); return; }
 
   var an = e.target.closest('[data-asn]');
-  if (an){ ASN_OPEN = an.getAttribute('data-asn') === '1'; render(1); return; }
+  if (an){
+    ASN_OPEN = an.getAttribute('data-asn') === '1';
+    if (ASN_OPEN && CUR !== 'req' && CUR !== 'map') CUR = 'req';
+    render(1); return;
+  }
   if (e.target.closest('[data-drvsave]')){ drvSave(); return; }
   if (e.target.closest('[data-drvtest]')){ drvTest(); return; }
 

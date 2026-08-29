@@ -322,7 +322,8 @@ try {
 [['scripts/audit-data.mjs',  'جردُ البيانات'],
  ['scripts/audit-writes.mjs','جردُ الكتابة'],
  ['scripts/audit-roles.mjs', 'جردُ الأدوار'],
- ['scripts/audit-calc.mjs',  'جردُ المعادلات']].forEach(([f, name]) => {
+ ['scripts/audit-calc.mjs',  'جردُ المعادلات'],
+ ['scripts/audit-exports.mjs','جردُ التصديرات']].forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     const out = String((e.stdout || '') + (e.stderr || '')).split('\n')
