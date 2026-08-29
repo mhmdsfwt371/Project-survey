@@ -504,7 +504,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <header class="topbar">
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
-      <i class="ver-tag">نسخة</i>V14.18
+      <i class="ver-tag">نسخة</i>V14.19
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -9745,7 +9745,23 @@ function enterShell(){
   syncBadge();
 }
 
-document.addEventListener('click', function(e){
+/* قائمةُ الخصائص المربوطة، مشتقّةً من نصِّ المعالجات لا مكتوبةً بيد.
+   وإن تعذّر الاشتقاق — بتصغيرٍ أو محرّكٍ لا يُرجع النص — لم يُتَّهم زرٌّ
+   بريءٌ بالموت: تُعَدُّ كلُّها مربوطةً، ويمسك حارسُ الحُرّاس العطلَ عند الفحص. */
+var ACTS_CACHE = null;
+function actList(){
+  if (ACTS_CACHE) return ACTS_CACHE;
+  var src = '';
+  try { src = String(onDocClick); } catch (e){}
+  var found = src.match(/data-[\w-]+/g) || [];
+  ACTS_CACHE = found.length >= 20 ? found.filter(function(v, i){ return found.indexOf(v) === i; })
+                                  : null;
+  return ACTS_CACHE;
+}
+
+/* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
+   فلا تُكتَب بيدٍ ولا تُنسى. */
+function onDocClick(e){
   var a = e.target.closest('[data-p]');
   if (a){
     e.preventDefault();
@@ -9784,25 +9800,12 @@ document.addEventListener('click', function(e){
 
   var b = e.target.closest('.btn, .chip');
   if (b && !b.closest('#nav') && !b.hasAttribute('href')){
-    var acts = ['data-p','data-exp','data-co','data-cogo','data-role','data-print',
-                'data-pop','data-mode','data-expall','data-nav','data-gt','data-crew','data-cfgp','data-months','data-mkone','data-mkall',
-                'data-fz','data-ft','data-fw','data-fly','data-form','data-edit','data-site',
-                'data-xls','data-kmz','data-tpl','data-expgo','data-impgo','data-impx',
-                'data-more','data-sq','data-fsq','data-chal','data-fst','data-appr','data-rej',
-                'data-svsave','data-svnext','data-inssave','data-insdraft','data-pwa','data-swclear',
-                'data-probe','data-wa','data-wacopy','data-wapick','data-sat','data-mfilt','data-mclear',
-                'data-asn','data-asngo','data-asnmap','data-selmap','data-selmode','data-selall',
-                'data-selnone','data-asnq','data-myonly','data-mymap','data-tkok','data-tkrm','data-sel',
-                'data-move','data-movex','data-smark','data-fmark','data-psel','data-insform',
-                'data-lasn','data-dsch','data-ddone','data-stab','data-asnmode','data-asnteam','data-asnsplit','data-apick','data-akind','data-drvsave','data-drvtest',
-                'data-locate','data-newsite','data-nsloc','data-nssave','data-ns','data-help',
-                'data-nsco','data-nscopick','data-nscoreq','data-nsphoto','data-nsq',
-                'data-acc','data-fix','data-pull','data-tname','data-asnload','data-asnto',
-                'data-team','data-addmem','data-rmmem','data-even','data-bydef','data-newteam',
-                'data-share','data-mrole','data-baseset','data-chgadd','data-chgok','data-chgno',
-                'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
-                'data-repside','data-repgo','data-reppack','data-sop'];
-    var wired = acts.some(function(a){ return b.hasAttribute(a); });
+    /* كانت هذه قائمةً مكتوبةً بيدٍ من مئةٍ وعشر خصائص، وكلُّ زرٍّ جديدٍ يحتاج
+       إضافةً إليها. ومن نسي — ونُسيت مرتين: منتقي الشركات وحالةُ الوصول —
+       صار زرُّه يُنقَر فيبتلعه هذا الحارسُ نفسُه ولا يقع شيء.
+       فصارت تُشتقُّ من نصِّ المستمع: من ربط معالجًا فقد سجّل خاصيتَه. */
+    var acts = actList();
+    var wired = !acts || acts.some(function(a){ return b.hasAttribute(a); });
     if (!wired){
       if (b.classList.contains('chip') && !b.closest('.map-top')){
         b.classList.toggle('on');   /* الشرائح اختيارٌ فعلي لا رسالة */
@@ -10124,7 +10127,8 @@ document.addEventListener('click', function(e){
     Array.prototype.forEach.call(document.querySelectorAll('.expCk'), function(c){ c.checked = on; });
     return;
   }
-});
+}
+document.addEventListener('click', onDocClick);
 
 /* الحقلُ في خليةٍ وسمُه عنوانُ عموده وصفُّه — يُنسَب إليهما فيقرؤه القارئُ الصوتي */
 function labelCells(root){
