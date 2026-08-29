@@ -31,6 +31,20 @@ const w = dom.window;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {};
 if (!w.CSS.escape) w.CSS.escape = s => String(s);
+/* المتصفّحُ الصوريُّ ينقصه ما في المتصفّحات الحقيقية: مرمِّزُ النصوص الذي
+   يُبنى به ملفُّ KMZ، وروابطُ الكائنات التي يُنزَّل بها الملف. وغيابُها يُظهر
+   عطلًا في التطبيق وليس فيه عطل — فتُسدّ قبل أن يُتَّهم بريء. */
+{
+  const nodeUtil = require('util');
+  if (!w.TextEncoder) w.TextEncoder = nodeUtil.TextEncoder;
+  if (!w.TextDecoder) w.TextDecoder = nodeUtil.TextDecoder;
+  if (w.URL && !w.URL.createObjectURL) w.URL.createObjectURL = () => 'blob:audit';
+  if (w.URL && !w.URL.revokeObjectURL) w.URL.revokeObjectURL = () => {};
+  if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){},
+                                             addEventListener(){}, removeEventListener(){} });
+  if (!w.scrollTo) w.scrollTo = () => {};
+}
+
 
 await new Promise(r => setTimeout(r, 900));
 check(boot.length === 0, 'لا خطأَ عند الإقلاع' + (boot.length ? ' — ' + boot[0].slice(0,70) : ''));
