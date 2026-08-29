@@ -106,6 +106,44 @@ const html = readFileSync('index.html', 'utf8');
   check(calls >= 8, `مواضعُ التسجيل (${calls})`);
 }
 
+/* ── مصطلحٌ واحدٌ لمعنًى واحد ─────────────────────────────────────────────
+   الترجمةُ ليست نقلَ كلمةٍ بكلمة، بل عقدٌ مع القارئ: إن قرأ `signpost` مرةً
+   و`sign` أخرى ظنَّهما شيئين، وبحث عن الثاني فلم يجده. والمصطلحُ المتذبذبُ
+   في وثيقةٍ تُعرَض على جهةٍ رسميةٍ يُقرأ إهمالًا لا اختصارًا.
+
+   وهذه المصطلحاتُ الجوهريةُ لا تحتمل مرادفًا: ما بُني عليه العملُ يُسمّى
+   باسمٍ واحدٍ في اللغات الثلاث. */
+{
+  const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['',''])[1];
+  const pairs = (v, L) => {
+    const i = js.indexOf('var ' + v + ' = {');
+    if (i < 0) return [];
+    const seg = js.slice(i, js.indexOf('\n};', i));
+    const st = seg.search(new RegExp('\\n' + L + ':\\s*\\{'));
+    if (st < 0) return [];
+    const e = L === 'en' ? (seg.search(/\nur:\s*\{/) + 1 || seg.length) : seg.length;
+    return [...seg.slice(st, e).matchAll(/'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'/g)]
+      .map(m => [m[1], m[2]]);
+  };
+  const en = [...pairs('D','en'), ...pairs('D2','en')];
+  const ur = [...pairs('D','ur'), ...pairs('D2','ur')];
+
+  /* [عربي, ممنوعٌ في الإنجليزية, لماذا] */
+  const ONE = [
+    ['شاخص', /\bsign\b(?!post)/i,  'signpost'],
+    ['مربع', /\bsquare/i,           'block']
+  ];
+  ONE.forEach(([ar, bad, want]) => {
+    const off = en.filter(([k, v]) => k.includes(ar) && bad.test(v));
+    check(off.length === 0, `«${ar}» يُترجَم «${want}» وحدَها`
+      + (off.length ? ` — خالف ${off.length}: ` + off[0][1].slice(0,40) : ''));
+  });
+
+  const urBad = ur.filter(([k, v]) => /جدا کرنا/.test(v));
+  check(urBad.length === 0, '«الفك» في الأردو «ہٹانا» وحدَها'
+    + (urBad.length ? ` — خالف ${urBad.length}` : ''));
+}
+
 /* ── لا تعريفَ يُكتَب مرتين ───────────────────────────────────────────────
    في جافاسكربت التعريفُ الثاني يغلب الأولَ صامتًا: لا خطأ، ولا تحذير. فتبقى
    الأولى شيفرةً ميتةً — وهذا أهونُ ما فيه. وأخطرُه أن يحمل الاسمُ معنيين:

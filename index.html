@@ -521,6 +521,22 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tb-sync:hover{border-color:var(--brand);color:var(--brand)}
 
+/* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
+   أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
+.lang-pick{position:relative;display:inline-flex}
+.lang-menu{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;
+  z-index:60;min-width:148px;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:0 12px 32px rgba(0,0,0,.28);padding:5px;
+  display:flex;flex-direction:column;gap:2px}
+.lang-menu[hidden]{display:none}
+.lang-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;background:transparent;border:0;border-radius:9px;padding:9px 11px;
+  font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:start;min-height:40px}
+.lang-menu button:hover{background:var(--bg-soft, rgba(127,127,127,.12))}
+.lang-menu button[aria-selected="true"]{background:var(--brand);color:#fff;font-weight:700}
+.lang-menu .lg-code{font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
+.lang-menu button[aria-selected="true"] .lg-code{opacity:.9}
+
 .v2030{display:block;width:112px;max-width:70%;height:auto;margin:0 0 12px;opacity:.92}
 [data-theme="dark"] .v2030{filter:brightness(1.7) saturate(.9)}
 
@@ -573,10 +589,14 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.45</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.46</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
-        <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
+        <div class="lang-pick">
+          <button type="button" class="tb-btn" id="langTop" data-langmenu="1"
+                  aria-label="اللغة" aria-haspopup="listbox" aria-expanded="false" title="اللغة">ع</button>
+          <div class="lang-menu" id="langMenu" role="listbox" hidden></div>
+        </div>
         <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
       </div>
     </header>
@@ -618,7 +638,7 @@ en:{
  'موقع غير مسجّل':'Unregistered site','لوحة المتابعة':'Dashboard','اتجاهات':'Directions',
  'تحريك':'Move','تعديل البيانات':'Edit data','حدّد':'Select','محدَّد':'Selected',
  'المحدد':'Selected','أسند لفني':'Assign to technician','طلب تركيب':'Installation order',
- 'الحالة':'Status','التصنيف':'Category','الشاخص':'Sign','المربع':'Square','المشعر':'Holy site',
+ 'الحالة':'Status','التصنيف':'Category','الشاخص':'Signpost','المربع':'Block','المشعر':'Holy site',
  'الشركة':'Company','مخيم':'Camp','ممر':'Corridor','كاميرا':'Camera','محطة':'Station',
  'منى':'Mina','عرفات':'Arafat','مزدلفة':'Muzdalifah','الجمرات':'Jamarat',
 
@@ -683,7 +703,7 @@ ur:{
 
  'نظرة عامة':'مجموعی جائزہ','الوتيرة والهدف':'رفتار اور ہدف','التركيب والجدولة':'تنصیب اور شیڈول',
  'المعدل اليومي':'روزانہ شرح','حسب المشعر والنوع':'مشعر اور قسم کے مطابق','حسب شركة الخدمة':'خدمت کمپنی کے مطابق',
- 'التحديات':'چیلنجز','الفك بعد الموسم':'موسم کے بعد ہٹانا',
+ 'التحديات':'چیلنجز','الفك بعد الموسم':'ہٹانا (موسم کے بعد)',
  'المتابعة':'نگرانی','التخطيط':'منصوبہ بندی','المواعيد والأزمنة':'مواعید اور دورانیے',
  'سلامة خط الإنتاج':'پیداواری لائن کی سلامتی','الطلبات والمسح':'درخواستیں اور سروے',
  'طلبات الزيارة':'دورے کی درخواستیں','توزيع الفرق':'ٹیموں کی تقسیم','المسح الميداني':'میدانی سروے',
@@ -1105,7 +1125,7 @@ en:{
  'المخرجات الورقية':'Paper outputs','طباعة':'Print','توليد':'Generate',
 
  /* الميدان */
- 'الأقرب أولًا — وبحث بالشاخص.':'Nearest first — searchable by sign.',
+ 'الأقرب أولًا — وبحث بالشاخص.':'Nearest first — searchable by signpost.',
  'ما جرى في الميدان بالترتيب.':'What happened in the field, in order.',
  'المزامنة':'Syncing','مزامنة الآن':'Sync now','غير مزامن':'Unsynced','موقعي':'My location',
  'المحدَّد':'Selected','نقاط محدَّدة':'Points selected','منها مُسح':'of them surveyed',
@@ -1189,10 +1209,10 @@ en:{
  'مجموع النقاط':'Total points','ثبّت التطبيق':'Install app','أفرغ الكاش':'Clear cache','أُفرغ الكاش':'Cache cleared',
  'نسخةٌ جديدةٌ جاهزة — أغلق التطبيق وافتحه':'New version ready — close and reopen',
  'التثبيت غير متاح في هذا المتصفح':'Install not available in this browser',
- 'ابحث بالمعرّف أو الشاخص':'Search by ID or sign','لا نتائج':'No results',
+ 'ابحث بالمعرّف أو الشاخص':'Search by ID or signpost','لا نتائج':'No results',
  'تعذّرت قراءة الصورة':'Could not read image','كل الأوجه':'All types','تفاصيل الموقع':'Site details','على الخريطة':'On map',
- 'امسح هذا الموقع':'Survey this site','اسم الموقع':'Site name','رقم المربع':'Square no.',
- 'رقم الشاخص':'Sign no.','التصنيف':'Category','المنطقة':'Region','شركة الخدمة / المشغّل':'Service company',
+ 'امسح هذا الموقع':'Survey this site','اسم الموقع':'Site name','رقم المربع':'Block no.',
+ 'رقم الشاخص':'Signpost no.','التصنيف':'Category','المنطقة':'Region','شركة الخدمة / المشغّل':'Service company',
  'تصنيف الحجاج':'Pilgrim class','الإحداثيات':'Coordinates','المسح':'Survey','التركيب':'Installation',
  'دورة هذه النقطة':'This point’s cycle','التعديل يمرّ باعتماد المهندس':'Edits pass through engineer approval',
  'اختيار نقاط للإسناد':'Pick points to assign','محدَّد':'Selected','حدّد المعروض':'Select shown',
@@ -1200,7 +1220,7 @@ en:{
  'حدّد من الخريطة':'Pick on map','حدّد نقاطًا أولًا':'Select points first','نقطةً أُسندت إلى':'points assigned to',
  'مهامي':'My tasks','بانتظارك':'Awaiting you','تمّ':'Done',
  'هذه النقطة مُسندة بالفعل':'Already assigned','مُسند':'Assigned','متاح':'Available','ممسوح':'Surveyed',
- 'تحديد':'Select','إنهاء التحديد':'End selection','أُلغيت':'Cancelled','شاخص':'Sign','مربع':'Square',
+ 'تحديد':'Select','إنهاء التحديد':'End selection','أُلغيت':'Cancelled','شاخص':'Signpost','مربع':'Block',
  'اضغط النقاط على الخريطة لتحديدها ثم «أسند لفني»':'Tap points on the map, then Assign',
  'موقع معدَّل ميدانيًّا':'Field-adjusted location','حُرِّك الموقع':'Location moved',
  'اضغط على الموقع الجديد لـ':'Tap the new location for','اضغط على الموقع الجديد على الخريطة':'Tap the new spot on the map',
@@ -1252,7 +1272,7 @@ en:{
  'قدّم الطلب':'Submit request','قُدّم الطلب':'Request submitted','اكتب المبرّر أولًا':'Write the rationale first',
  'احتمال':'Probability','أثر':'Impact','الدرجة':'Score','الاستجابة':'Response','المالك':'Owner',
  'مصفوفة الاحتمال والأثر':'Probability-impact matrix','توزيع الاستجابات':'Response distribution',
- 'لفنيّ':'To technician','لفريق':'To team','بالنسب المعرَّفة':'By defined shares','بالتساوي':'Evenly','سيُوزَّع':'Will split','نقطة على':'points across','وزّع':'Split','نقطة على الفريق':'points across the team','أعضاء':'members','اذهب لطبقة المسح':'Go to survey layer','اذهب لطبقة التركيب':'Go to install layer','لا أعضاءَ في هذا الفريق':'No members in this team','ما الذي تُسنده؟':'What are you assigning?','اختر النوعَ فتُفتَح طبقتُه ويُضبَط من يستلمه.':'Pick the type — its layer opens and the recipient is set.','يُسنَد لفريقٍ يُوزَّع عليه':'Assigned to a team and split','يُسنَد لفنيٍّ واحد':'Assigned to one technician','لا نقاط':'No points','اضغط النقاط ثم «أسند»':'Tap points then Assign','تخزين الصور':'Photo storage','صوّر أو اختر':'Shoot or pick','رُفعت':'Uploaded','المتوقَّع للمشروع':'Project estimate','الإذن':'Permission','ممنوح':'Granted','لم يُطلَب':'Not requested','معرّف مجلّد المشروع':'Project folder ID','اختياري':'optional','احفظ':'Save','اختبر الإذن':'Test permission','ميجا':'MB','حُفظ — جرّب الإذن':'Saved — test the permission','أُفرغ الوصل':'Link cleared','أدخل Client ID أولًا':'Enter Client ID first','يُطلَب الإذن…':'Requesting permission…','الإذن ممنوح — الصورُ سترفَع':'Permission granted — photos will upload','تعذّر الإذن':'Permission failed','تسجيل موقع جديد':'Register new site','التقط موضعي':'Capture my position','يُلتقَط موضعك…':'Capturing your position…','التُقط':'Captured','موضعُك':'Your position','التقط موضعك أولًا':'Capture your position first','أدخل المربعَ أو الشاخص':'Enter the square or sign','سُجّل — بانتظار الاعتماد':'Registered — awaiting approval','لماذا لم يكن مسجّلًا؟':'Why was it not registered?','الموضع':'Position','ما هذه الصفحة؟':'What is this page?','ماذا تفعل':'What it does','من أين تقرأ':'Where it reads from','علامَ تُبنى':'What it builds on','متى تكتمل':'When it is complete','اسم الفريق':'Team name','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
+ 'لفنيّ':'To technician','لفريق':'To team','بالنسب المعرَّفة':'By defined shares','بالتساوي':'Evenly','سيُوزَّع':'Will split','نقطة على':'points across','وزّع':'Split','نقطة على الفريق':'points across the team','أعضاء':'members','اذهب لطبقة المسح':'Go to survey layer','اذهب لطبقة التركيب':'Go to install layer','لا أعضاءَ في هذا الفريق':'No members in this team','ما الذي تُسنده؟':'What are you assigning?','اختر النوعَ فتُفتَح طبقتُه ويُضبَط من يستلمه.':'Pick the type — its layer opens and the recipient is set.','يُسنَد لفريقٍ يُوزَّع عليه':'Assigned to a team and split','يُسنَد لفنيٍّ واحد':'Assigned to one technician','لا نقاط':'No points','اضغط النقاط ثم «أسند»':'Tap points then Assign','تخزين الصور':'Photo storage','صوّر أو اختر':'Shoot or pick','رُفعت':'Uploaded','المتوقَّع للمشروع':'Project estimate','الإذن':'Permission','ممنوح':'Granted','لم يُطلَب':'Not requested','معرّف مجلّد المشروع':'Project folder ID','اختياري':'optional','احفظ':'Save','اختبر الإذن':'Test permission','ميجا':'MB','حُفظ — جرّب الإذن':'Saved — test the permission','أُفرغ الوصل':'Link cleared','أدخل Client ID أولًا':'Enter Client ID first','يُطلَب الإذن…':'Requesting permission…','الإذن ممنوح — الصورُ سترفَع':'Permission granted — photos will upload','تعذّر الإذن':'Permission failed','تسجيل موقع جديد':'Register new site','التقط موضعي':'Capture my position','يُلتقَط موضعك…':'Capturing your position…','التُقط':'Captured','موضعُك':'Your position','التقط موضعك أولًا':'Capture your position first','أدخل المربعَ أو الشاخص':'Enter the block or signpost','سُجّل — بانتظار الاعتماد':'Registered — awaiting approval','لماذا لم يكن مسجّلًا؟':'Why was it not registered?','الموضع':'Position','ما هذه الصفحة؟':'What is this page?','ماذا تفعل':'What it does','من أين تقرأ':'Where it reads from','علامَ تُبنى':'What it builds on','متى تكتمل':'When it is complete','اسم الفريق':'Team name','تصفية':'Filter','مسح التصفية':'Clear filter','قمر صناعي':'Satellite','أداة الفحص':'Prober','ابدأ الفحص':'Start probe','أوقف':'Stop','حيّ':'Alive','صامت':'Silent',
  'عناوين مسجّلة':'Addresses on record','فُحص':'Probed','التشغيل':'Run','آخر ما فُحص':'Recently probed',
  'جوال المنسّق':'Coordinator mobile','نُسخ النص':'Text copied','تعذّر النسخ':'Copy failed',
  'أدخل جوال المنسّق':'Enter coordinator mobile','تعذّر الفتح':'Could not open','إشعار':'Notify',
@@ -1511,7 +1531,7 @@ ur:{
  'سجلًّا وصل':'ریکارڈ پہنچے',
  'كلُّ شيءٍ مُزامَن':'سب کچھ ہم آہنگ ہے',
  /* ══ الدفعة العاشرة ══ */
- 'الفكُّ يتاح بعد اعتماد تركيب النقطة':'جدا کرنا تنصیب کی منظوری کے بعد دستیاب ہوتا ہے',
+ 'الفكُّ يتاح بعد اعتماد تركيب النقطة':'ہٹانا تنصیب کی منظوری کے بعد دستیاب ہوتا ہے',
  'حدّد حالة التركيب أولًا':'پہلے تنصیب کی حالت منتخب کریں',
  'رقم تسلسليٌّ مكرّر داخل النقطة':'اس مقام کے اندر ایک سیریل نمبر دہرایا گیا ہے',
  'سبق إرسالُ طلبٍ لهذه الشركة — بانتظار اعتماد المهندس':'اس کمپنی کے لیے درخواست پہلے بھیجی جا چکی ہے — انجینئر کی منظوری کی منتظر',
@@ -1615,7 +1635,7 @@ ur:{
  'بدل إنشاء حسابٍ لكل فنيٍّ يدويًّا — أنشئها كلها من صفحة الفنيين بصلاحية «فني» ومشرفٍ لكلٍّ.':'ہر ٹیکنیشن کا اکاؤنٹ ہاتھ سے بنانے کے بجائے — سب ٹیکنیشن کے صفحے سے \'ٹیکنیشن\' کردار اور ہر ایک کے نگران کے ساتھ بنائیں۔',
  'تارجت المسح الشهري':'ماہانہ سروے ہدف','تارجت المسح الأسبوعي':'ہفتہ وار سروے ہدف',
  'نقاط تركيب المخيم':'خیمے کی تنصیب کے نمبر','نقاط تركيب الممر':'راہداری کی تنصیب کے نمبر',
- 'تارجت الفك الشهري':'ماہانہ جدا کرنے کا ہدف','معامل السليم':'درست کا عامل','معامل التالف':'خراب کا عامل',
+ 'تارجت الفك الشهري':'ماہانہ ہٹانے کا ہدف','معامل السليم':'درست کا عامل','معامل التالف':'خراب کا عامل',
  'اسم القطعة':'پرزے کا نام','نقاط تركيبها':'اس کی تنصیب کے نمبر','سعرها':'اس کی قیمت',
  'حدّ الاعتماد للعملية الواحدة':'فی واحد عمل منظوری کی حد','أيام العمل في الشهر':'مہینے میں کام کے دن',
  'ساعات العمل في اليوم':'دن میں کام کے گھنٹے','أيام العمل في الأسبوع':'ہفتے میں کام کے دن',
@@ -13136,15 +13156,32 @@ if (window.visualViewport){
 
   document.getElementById('langSel').value  = LANG;
   document.getElementById('langSel').onchange = function(){ setLang(this.value); };
-  /* الشريطُ العلوي: لغةٌ تدور على الثلاث، ومظهرٌ يقلب — من أي صفحةٍ بلا فتح القائمة */
-  var lt = document.getElementById('langTop');
-  if (lt) lt.onclick = function(){
-    var order = ['ar','en','ur'], i = order.indexOf(LANG);
-    setLang(order[(i + 1) % 3]);
-    var sel = document.getElementById('langSel');
-    if (sel) sel.value = LANG;
-    render(1);
-  };
+  /* الشريطُ العلويّ: قائمةُ لغاتٍ تُبنى من `I18N` فلا تُكتَب اللغاتُ مرتين
+     ولا تُنسى واحدةٌ إن أُضيفت رابعة. */
+  function langPaint(){
+    var mn = document.getElementById('langMenu');
+    if (!mn) return;
+    mn.innerHTML = Object.keys(I18N).map(function(k){
+      return '<button type="button" data-setlang="' + k + '" role="option"'
+        + ' aria-selected="' + (LANG === k ? 'true' : 'false') + '">'
+        + '<span>' + esc(I18N[k].name) + '</span>'
+        + '<span class="lg-code">' + esc(k.toUpperCase()) + '</span></button>';
+    }).join('');
+  }
+  function langMenu(open){
+    var mn = document.getElementById('langMenu'), bt = document.getElementById('langTop');
+    if (!mn || !bt) return;
+    if (open) langPaint();
+    mn.hidden = !open;
+    bt.setAttribute('aria-expanded', open ? 'true' : 'false');
+  }
+  document.addEventListener('click', function(e){
+    var op = e.target.closest('[data-langmenu]');
+    if (op){ langMenu(document.getElementById('langMenu').hidden); return; }
+    var pick = e.target.closest('[data-setlang]');
+    if (pick){ setLang(pick.getAttribute('data-setlang')); langMenu(false); return; }
+    if (!e.target.closest('.lang-pick')) langMenu(false);
+  });
   var tt = document.getElementById('themeTop');
   if (tt) tt.onclick = function(){
     setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
