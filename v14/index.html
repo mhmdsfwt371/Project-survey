@@ -535,7 +535,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
       <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.32</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.33</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <button type="button" class="tb-btn" id="langTop" aria-label="اللغة" title="اللغة">ع</button>
@@ -726,6 +726,36 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ /* ══ الدفعة الثامنة عشرة: الفنيون والفرق ══ */
+ 'أُلغي التصفير':'Reset cancelled',
+ 'صُفّرت البيانات — المواقعُ والكتالوجُ كما هما':'Data cleared — sites and catalogue are unchanged',
+ 'له عملٌ مسجَّلٌ بـ':'Has recorded work worth',
+ 'نقطة — لا يُحذَف':'point(s) — cannot be deleted',
+ 'أُنشئ الفريق':'Team created',
+ 'ثابت':'Fixed',
+ 'اسم فريق جديد':'New team name',
+ /* ══ الدفعة الثامنة عشرة: الطاقم والتصفير ══ */
+ 'إدارةُ الفنيين للمهندس وحده':'Managing technicians is for the engineer only',
+ 'الطاقمُ مضافٌ بالكامل':'The crew is already fully added',
+ 'فنيًّا أُضيفوا من طاقم الموسم الماضي':'technician(s) added from last season\'s crew',
+ 'اكتب اسم الفني':'Write the technician name',
+ 'الاسمُ موجودٌ بالفعل':'The name already exists',
+ 'أُضيف الفني':'Technician added',
+ 'سجلًّا — لا يُحذَف، انقله خارج الفريق بدلًا من ذلك':'record(s) — cannot be deleted; move them out of the crew instead',
+ 'إدارةُ الفرق للمهندس وحده':'Managing crews is for the engineer only',
+ 'اكتب اسم الفريق':'Write the crew name',
+ 'أُضيف الفريق':'Crew added',
+ 'فيه':'It has',
+ 'فنيًّا — انقلهم أولًا':'technician(s) — move them first',
+ 'حُذف الفريق':'Crew deleted',
+ 'التصفيرُ للمهندس وحده':'Resetting is for the engineer only',
+ 'اكتب «مسح نهائي» حرفًا بحرف للتأكيد':'Type «مسح نهائي» exactly to confirm',
+ 'صُفِّر النظام':'The system was reset',
+ 'اكتب «مسح نهائي» للتأكيد':'Type «مسح نهائي» to confirm',
+ 'لا رجعةَ بعدها — والسحابةُ تُصفَّر مع أول مزامنةٍ بعد التصفير.':'There is no going back — and the cloud is reset on the first sync after.',
+ 'بلا فريق':'No crew',
+ 'المشرف':'Supervisor',
+ 'لا فنيين بعد — أضِف واحدًا أو استورد طاقم الموسم الماضي.':'No technicians yet — add one or import last season\'s crew.',
  /* ══ الدفعة السابعة عشرة: الكتالوج المرن ══ */
  'الكتالوجُ للمهندس وحده':'The catalogue is for the engineer only',
  'نُقل إلى':'Moved to',
@@ -1155,6 +1185,36 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ /* ══ الدفعة الثامنة عشرة ══ */
+ 'أُلغي التصفير':'ری سیٹ منسوخ',
+ 'صُفّرت البيانات — المواقعُ والكتالوجُ كما هما':'ڈیٹا صاف ہو گیا — مقامات اور کیٹلاگ جوں کے توں',
+ 'له عملٌ مسجَّلٌ بـ':'ریکارڈ شدہ کام موجود ہے',
+ 'نقطة — لا يُحذَف':'پوائنٹ — حذف نہیں ہو سکتا',
+ 'أُنشئ الفريق':'ٹیم بن گئی',
+ 'ثابت':'مستقل',
+ 'اسم فريق جديد':'نئی ٹیم کا نام',
+ /* ══ الدفعة الثامنة عشرة ══ */
+ 'إدارةُ الفنيين للمهندس وحده':'ٹیکنیشن کا انتظام صرف انجینئر کے لیے ہے',
+ 'الطاقمُ مضافٌ بالكامل':'عملہ مکمل طور پر شامل ہو چکا ہے',
+ 'فنيًّا أُضيفوا من طاقم الموسم الماضي':'ٹیکنیشن پچھلے سیزن کے عملے سے شامل ہوئے',
+ 'اكتب اسم الفني':'ٹیکنیشن کا نام لکھیں',
+ 'الاسمُ موجودٌ بالفعل':'نام پہلے سے موجود ہے',
+ 'أُضيف الفني':'ٹیکنیشن شامل ہو گیا',
+ 'سجلًّا — لا يُحذَف، انقله خارج الفريق بدلًا من ذلك':'ریکارڈ — حذف نہیں ہو سکتا؛ اس کے بجائے اسے ٹیم سے باہر منتقل کریں',
+ 'إدارةُ الفرق للمهندس وحده':'ٹیموں کا انتظام صرف انجینئر کے لیے ہے',
+ 'اكتب اسم الفريق':'ٹیم کا نام لکھیں',
+ 'أُضيف الفريق':'ٹیم شامل ہو گئی',
+ 'فيه':'اس میں ہیں',
+ 'فنيًّا — انقلهم أولًا':'ٹیکنیشن — پہلے انہیں منتقل کریں',
+ 'حُذف الفريق':'ٹیم حذف ہو گئی',
+ 'التصفيرُ للمهندس وحده':'ری سیٹ صرف انجینئر کے لیے ہے',
+ 'اكتب «مسح نهائي» حرفًا بحرف للتأكيد':'تصدیق کے لیے «مسح نهائي» بالکل ویسے ہی لکھیں',
+ 'صُفِّر النظام':'نظام ری سیٹ ہو گیا',
+ 'اكتب «مسح نهائي» للتأكيد':'تصدیق کے لیے «مسح نهائي» لکھیں',
+ 'لا رجعةَ بعدها — والسحابةُ تُصفَّر مع أول مزامنةٍ بعد التصفير.':'اس کے بعد واپسی نہیں — اور اگلی مطابقت پر کلاؤڈ بھی صفر ہو جائے گا۔',
+ 'بلا فريق':'بغیر ٹیم',
+ 'المشرف':'سپروائزر',
+ 'لا فنيين بعد — أضِف واحدًا أو استورد طاقم الموسم الماضي.':'ابھی کوئی ٹیکنیشن نہیں — ایک شامل کریں یا پچھلے سیزن کا عملہ درآمد کریں۔',
  /* ══ الدفعة السابعة عشرة ══ */
  'الكتالوجُ للمهندس وحده':'کیٹلاگ صرف انجینئر کے لیے ہے',
  'نُقل إلى':'منتقل ہوا',
@@ -3184,13 +3244,53 @@ var CREW_VIEW = 'cprep';
    الفني يعمل تحت مشرفه: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا.
    ويُولَّد له اسم مستخدمٍ من اسمه وكلمةُ مرورٍ يبدّلها أول دخول. */
 
+/* طاقمُ موسم ١٤٤٧ كما استُخرج من أوراق التنفيذ اليومية في النظام القديم —
+   اثنان وأربعون فنيًّا. وكانت هنا ستةُ أسماءٍ مخترعةٍ للعرض بأرقامٍ وهمية،
+   فمن وزّع العملَ عليها وزّعه على من لا وجودَ له. الهاتفُ والفريقُ والمشرفُ
+   تُملأ من شاشة الفنيين — ولا تُخترَع هنا. */
 var TECHS = [
-  { n:'أحمد',   ph:'0501234567', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'سالم',   ph:'0502345678', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'ماجد',   ph:'0503456789', crew:'فريق مخيمات ١', sup:'خالد',  u:'', has:0 },
-  { n:'ياسر',   ph:'0504567890', crew:'ورشة التهيئة',  sup:'خالد',  u:'', has:0 },
-  { n:'عبدالله',ph:'0505678901', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 },
-  { n:'طارق',   ph:'0506789012', crew:'فريق ممرات ١',  sup:'فهد',   u:'', has:0 }
+  { n:'محمود السعيد', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عزام', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'أرسلان حفيظ', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عدنان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'رضوان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'ياسر', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'حسيب', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سليمان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عمرو', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'غريب', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'فرمان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'محمد أرسلان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سليم', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'فيزان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'بلال', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'محمد عاقب', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'حكيم', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سهيل', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'خالد', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'حمود', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'شهداب', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'برويز', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'اكرام', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'أسامة', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'زيشان', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سيد', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عوض', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عبد الخالق', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'شهويز', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'أحمد آل عبدالله', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سعيد بصرور', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'تامر', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'بدر', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'إقبال', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'مشير', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'راجابابو', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عاقب وحيد', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'سمير', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'عرفة', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'علاء', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'مصطفى شطا', ph:'', crew:'', sup:'', u:'', has:0 },
+  { n:'أنس', ph:'', crew:'', sup:'', u:'', has:0 }
 ];
 
 /* اسم المستخدم من الاسم العربي — أولُ حرفٍ لاتينيٍّ ونقطةٌ ثم بقيته */
@@ -9380,23 +9480,320 @@ PAGE.budget = { m:'المال', t:'الميزانية والاعتماد', l:'س
   }};
 
 /* ── الفنيون ────────────────────────────────────── */
-PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل وأين وبأي رصيد.',
+/* ═══ الطاقمُ والفرقُ: قائمةٌ حيةٌ تُحرَّر لا بذرةٌ تُعرَض ═════════════════
+   كان `TECHS` ستةَ أسماءٍ مكتوبةً في الشيفرة، وطاقمُ الموسم الماضي اثنان
+   وأربعون فنيًّا مستخرجين من أوراق التنفيذ اليومية. ومن أراد إضافةَ فنيٍّ
+   أو حذفَه أو نقلَه بين الفرق لم يجد أين. */
+
+var TECH_SEED_1447 = ['محمود السعيد','عزام','أرسلان حفيظ','عدنان','رضوان','ياسر','حسيب',
+  'سليمان','عمرو','غريب','فرمان','محمد أرسلان','سليم','فيزان','بلال','محمد عاقب','حكيم',
+  'سهيل','خالد','حمود','شهداب','برويز','اكرام','أسامة','زيشان','سيد','عوض','عبد الخالق',
+  'شهويز','أحمد آل عبدالله','سعيد بصرور','تامر','بدر','إقبال','مشير','راجابابو','عاقب وحيد',
+  'سمير','عرفة','علاء','مصطفى شطا','أنس'];
+
+function techList(){
+  if (!Array.isArray(STATE.techs)) STATE.techs = TECHS.slice();
+  return STATE.techs;
+}
+function techSave(){ CORE.set('cfg', 'techs', techList().slice()); statBump(); }
+
+function techSeed(){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  var L = techList(), add = 0;
+  TECH_SEED_1447.forEach(function(n){
+    if (!L.some(function(x){ return x.n === n; })){
+      L.push({ n:n, ph:'', crew:'', sup:'', u:'', has:0 });
+      add++;
+    }
+  });
+  if (!add){ toast(t('الطاقمُ مضافٌ بالكامل')); return; }
+  techSave();
+  logEvent('إضافة طاقم الموسم — ' + nm(add) + ' فنيًّا');
+  toast(nm(add) + ' ' + t('فنيًّا أُضيفوا من طاقم الموسم الماضي'));
+  render(1);
+}
+
+function techAdd(){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var n = g('tkN');
+  if (!n){ toast(t('اكتب اسم الفني')); return; }
+  if (techList().some(function(x){ return x.n === n; })){ toast(t('الاسمُ موجودٌ بالفعل')); return; }
+  techList().push({ n:n, ph:g('tkPh'), crew:g('tkC'), sup:g('tkS'), u:'', has:0 });
+  techSave();
+  logEvent('فنيٌّ جديد — ' + n);
+  toast(t('أُضيف الفني'));
+  render(1);
+}
+
+function techSet(name, key, val){
+  var x = techList().filter(function(y){ return y.n === name; })[0];
+  if (!x) return;
+  x[key] = val;
+  techSave();
+}
+
+function techDel(name){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  /* من له عملٌ مسجَّلٌ لا يُحذَف — وإلا صار السجلُّ باسمٍ لا يعرفه أحد */
+  var work = 0;
+  Object.keys(STATE.recs || {}).forEach(function(k){ if ((STATE.recs[k] || {}).by === name) work++; });
+  Object.keys(STATE.inss || {}).forEach(function(k){ if ((STATE.inss[k] || {}).by === name) work++; });
+  if (work){ toast(t('له') + ' ' + nm(work) + ' ' + t('سجلًّا — لا يُحذَف، انقله خارج الفريق بدلًا من ذلك')); return; }
+  var L = techList(), i = -1;
+  L.forEach(function(x, k){ if (x.n === name) i = k; });
+  if (i < 0) return;
+  L.splice(i, 1);
+  techSave();
+  logEvent('حذف فني — ' + name);
+  toast(t('حُذف'));
+  render(1);
+}
+
+/* الفرقُ: تُضاف وتُحذَف كالفنيين */
+function crewList(){
+  if (!Array.isArray(STATE.crews)) STATE.crews = CREWS.slice();
+  return STATE.crews;
+}
+function crewSave(){ CORE.set('cfg', 'crews', crewList().slice()); statBump(); }
+function crewAdd(){
+  if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var n = g('crN');
+  if (!n){ toast(t('اكتب اسم الفريق')); return; }
+  if (crewList().some(function(x){ return x.n === n; })){ toast(t('الاسمُ موجودٌ بالفعل')); return; }
+  crewList().push({ id:'cr' + Date.now().toString(36), n:n, base:g('crR') || 'supervisor',
+                    kind:g('crK') || '*', d:g('crD'), members:[] });
+  crewSave();
+  logEvent('فريق جديد — ' + n);
+  toast(t('أُضيف الفريق'));
+  render(1);
+}
+function crewDel(id){
+  if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  var L = crewList(), i = -1, nmv = '';
+  L.forEach(function(x, k){ if (x.id === id){ i = k; nmv = x.n; } });
+  if (i < 0) return;
+  var inCrew = techList().filter(function(x){ return x.crew === nmv; }).length;
+  if (inCrew){ toast(t('فيه') + ' ' + nm(inCrew) + ' ' + t('فنيًّا — انقلهم أولًا')); return; }
+  L.splice(i, 1);
+  crewSave();
+  logEvent('حذف فريق — ' + nmv);
+  toast(t('حُذف الفريق'));
+  render(1);
+}
+
+/* ═══ التصفير: بدايةُ الموسم من صفر ═══
+   البياناتُ تتراكم من التجارب قبل أن يبدأ العمل — سجلاتٌ وحركاتٌ وأحداثٌ
+   ومقترحات. والبدءُ بها يفسد كلَّ رقمٍ بعدها. والتصفيرُ لا يمسّ المواقعَ
+   ولا الطاقمَ ولا الإعدادات: يمسح ما سُجِّل لا ما عُرِّف. */
+var WIPE_KEYS = [['recs','سجلات المسح'], ['inss','سجلات التركيب'], ['diss','الفك'],
+                 ['tasks','المهام'], ['photos','الصور'], ['moves','حركات المخزون'],
+                 ['buys','المشتريات'], ['events','سجل الأحداث'], ['notifs','الإشعارات'],
+                 ['coreqs','طلبات الشركات'], ['fixreqs','طلبات التصويب'],
+                 ['newsites','المواقع المقترحة'], ['stats','اللقطات اليومية']];
+
+function wipeCounts(){
+  return WIPE_KEYS.map(function(k){
+    var v = STATE[k[0]];
+    return [k[1], Array.isArray(v) ? v.length : (v ? Object.keys(v).length : 0)];
+  });
+}
+
+function wipeGo(){
+  if (!may('delete')){ toast(t('التصفيرُ للمهندس وحده')); return; }
+  var el = document.getElementById('wipeOk');
+  if (!el || String(el.value || '').trim() !== 'مسح نهائي'){
+    toast(t('اكتب «مسح نهائي» حرفًا بحرف للتأكيد')); return;
+  }
+  var n = 0;
+  WIPE_KEYS.forEach(function(k){
+    var v = STATE[k[0]];
+    n += Array.isArray(v) ? v.length : (v ? Object.keys(v).length : 0);
+    STATE[k[0]] = Array.isArray(v) ? [] : {};
+  });
+  /* الطابورُ يُفرَغ أيضًا: ما لم يُرفَع من بياناتٍ مُصفَّرةٍ لا معنى لرفعه */
+  if (STATE.queue) STATE.queue.length = 0;
+  /* والحالةُ الميدانيةُ على المواقع تعود كما وُلدت */
+  STATE.sites.forEach(function(x){ x.fstat = 'لم يبدأ'; });
+  SITE_IX = null; SITE_TOK = null;
+  CORE.saveSoon(); statBump();
+  logEvent('تصفير النظام — ' + nm(n) + ' سجلًّا');
+  toast(t('صُفِّر النظام') + ' — ' + nm(n) + ' ' + t('سجلًّا'));
+  render(1);
+}
+
+PAGE.wipe = { m:'النظام', t:'تصفير البيانات',
+  l:'بدايةُ الموسم من صفر — تُمسَح السجلاتُ ويبقى التعريف.',
   body:function(){
-    /* كانت ثلاثةَ أسماءٍ مزروعةٍ ونقاطًا مكتوبةً بيدٍ، والقائمةُ الحقيقيةُ ستة.
-       ومن قرأ «ثلاثة فنيين» ووزّع عليهم عملَ ستةٍ أخطأ في الجدول كلِّه. */
-    var byName = {};
+    var C = wipeCounts(), tot = C.reduce(function(a, r){ return a + r[1]; }, 0);
+    return alertBox('warn','يمسحُ ما سُجِّل: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والأحداثُ والمقترحات. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.')
+      + cardFlush('ما سيُمسَح — ' + nm(tot) + ' ' + t('سجلًّا'),
+          table(['البند','العدد'], C.map(function(r){
+            return [esc(t(r[0])), r[1] ? pill(nm(r[1]), 'wrn') : N(0)];
+          })))
+      + (may('delete')
+        ? card('التأكيد',
+            '<div class="field"><label>' + esc(t('اكتب «مسح نهائي» للتأكيد')) + '</label>'
+            + '<input id="wipeOk" dir="auto" placeholder="مسح نهائي"></div>'
+            + '<div class="actions">' + btn('صفّر الآن','btn-danger',' data-wipego="1"') + '</div>'
+            + '<p class="hint">' + esc(t('لا رجعةَ بعدها — والسحابةُ تُصفَّر مع أول مزامنةٍ بعد التصفير.')) + '</p>')
+        : alertBox('info','التصفيرُ للمهندس وحده.'));
+  }};
+
+/* ═══ الفنيون والفرق: يُضافون ويُعدَّلون ويُحذَفون ═══════════════════════
+   كان سجلُّ الفنيين قائمةَ عرضٍ: ستةُ أسماءٍ مخترعةٍ لا تُزاد ولا تُنقَص.
+   ومن أراد فنيًّا جديدًا لم يجد أين يكتبه، ومن انصرف فنيٌّ لم يجد كيف
+   يرفعه — فيبقى في التوزيع ويُسنَد إليه عملٌ لا يؤدّيه أحد. */
+
+function techsList(){
+  if (!Array.isArray(STATE.techs) || !STATE.techs.length) STATE.techs = TECHS.slice();
+  return STATE.techs;
+}
+function techSave(){ CORE.set('cfg', 'techs', techsList().slice()); }
+
+function techAdd(){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var n = g('tkN');
+  if (!n){ toast(t('اكتب اسم الفني')); return; }
+  if (techsList().some(function(x){ return x.n === n; })){ toast(t('الاسمُ موجودٌ بالفعل')); return; }
+  techsList().push({ n:n, ph:g('tkPh'), crew:g('tkCr'), sup:g('tkSup'), u:'', has:0 });
+  techSave();
+  logEvent('فني جديد — ' + n);
+  toast(t('أُضيف الفني'));
+  render(1);
+}
+function techSet(name, patch){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  var x = techsList().filter(function(y){ return y.n === name; })[0];
+  if (!x) return;
+  Object.keys(patch).forEach(function(k){ x[k] = patch[k]; });
+  techSave();
+}
+function techDel(name){
+  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
+  /* من له عملٌ مسجَّلٌ لا يُحذَف: سجلاتُه تحمل اسمَه، وحذفُه يُيتِّمها */
+  var work = scores().list.filter(function(e){ return e.name === name; })[0];
+  if (work && work.total){
+    toast(t('له عملٌ مسجَّلٌ بـ') + ' ' + nm(Math.round(work.total)) + ' ' + t('نقطة — لا يُحذَف'));
+    return;
+  }
+  var L = techsList(), i = -1;
+  L.forEach(function(x, k){ if (x.n === name) i = k; });
+  if (i < 0) return;
+  L.splice(i, 1);
+  techSave();
+  logEvent('حذف فني — ' + name);
+  toast(t('حُذف'));
+  render(1);
+}
+
+/* الفرق: تُنشأ وتُحذَف، وأعضاؤها من سجل الفنيين لا من نصٍّ حرّ */
+function crewsList(){
+  if (!Array.isArray(STATE.crews) || !STATE.crews.length) STATE.crews = CREWS.slice();
+  return STATE.crews;
+}
+function crewSave(){ CORE.set('cfg', 'crews', crewsList().slice()); }
+function crewAdd(){
+  if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var n = g('crN');
+  if (!n){ toast(t('اكتب اسم الفريق')); return; }
+  if (crewsList().some(function(c){ return c.n === n; })){ toast(t('الاسمُ موجودٌ بالفعل')); return; }
+  crewsList().push({ id:'cr' + Date.now().toString(36), n:n,
+                     base:g('crRole') || 'supervisor', kind:g('crKind') || 'ins',
+                     d:g('crD'), members:[] });
+  crewSave();
+  logEvent('فريق جديد — ' + n);
+  toast(t('أُنشئ الفريق'));
+  render(1);
+}
+function crewDel(id){
+  if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  var L = crewsList(), i = -1, nm2 = '';
+  L.forEach(function(c, k){ if (c.id === id){ i = k; nm2 = c.n; } });
+  if (i < 0) return;
+  var inIt = techsList().filter(function(x){ return x.crew === nm2; }).length;
+  if (inIt){ toast(t('فيه') + ' ' + nm(inIt) + ' ' + t('فنيًّا — انقلهم أولًا')); return; }
+  L.splice(i, 1);
+  crewSave();
+  logEvent('حذف فريق — ' + nm2);
+  toast(t('حُذف الفريق'));
+  render(1);
+}
+
+PAGE.tech = { m:'الفنيون', t:'سجل الفنيين', l:'من يعمل وأين وبأي رصيد — يُضاف ويُعدَّل ويُحذَف.',
+  body:function(){
+    var L = techsList(), byName = {};
     scores().list.forEach(function(e){ byName[e.name] = e; });
-    return card('الفنيون — ' + nm(TECHS.length),
-      TECHS.length
-        ? table(['الفني','الفريق','المشرف','نقاط الشهر','الحساب'],
-            TECHS.map(function(x){
-              var e = byName[x.n];
-              return [esc(x.n), esc(x.crew || '—'), esc(x.sup || '—'),
-                      N(e ? Math.round(e.total) : 0),
-                      pill(x.has ? 'له حساب' : 'بلا حساب', x.has ? 'ok' : 'off')];
-            }))
-        : '<p class="hint" style="padding:16px">' + esc(t('لا فنيين مسجَّلين بعد.')) + '</p>',
-      btn('حسابات الفنيين','btn-secondary btn-sm',' data-p="techacc"'));
+    var crews = crewsList();
+    var sups = L.filter(function(x){ return x.sup; }).map(function(x){ return x.sup; });
+    sups = [''].concat([...new Set(sups)]);
+
+    return stats([['فنيون', N(L.length)],
+                  ['لهم حسابات', N(L.filter(function(x){ return x.has; }).length)],
+                  ['موزَّعون على فرق', N(L.filter(function(x){ return x.crew; }).length)],
+                  ['فرق', N(crews.length)]])
+
+      + cardFlush('الفنيون — ' + nm(L.length),
+          L.length
+            ? table(['الفني','الجوال','الفريق','المشرف','نقاط الشهر',''],
+                L.map(function(x){
+                  var e = byName[x.n];
+                  return ['<input value="' + esc(x.n) + '" data-tkn="' + esc(x.n) + '" dir="auto">',
+                          may('phones')
+                            ? '<input value="' + esc(x.ph || '') + '" data-tkph="' + esc(x.n) + '" dir="ltr" placeholder="05…">'
+                            : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
+                          '<select data-tkcr="' + esc(x.n) + '"><option value="">— ' + esc(t('بلا فريق')) + ' —</option>'
+                            + crews.map(function(c){
+                                return '<option' + (x.crew === c.n ? ' selected' : '') + '>' + esc(c.n) + '</option>';
+                              }).join('') + '</select>',
+                          '<input value="' + esc(x.sup || '') + '" data-tksup="' + esc(x.n) + '" dir="auto">',
+                          N(e ? Math.round(e.total) : 0),
+                          btn('حذف','btn-quiet btn-sm',' data-tkdel="' + esc(x.n) + '"')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا فنيين مسجَّلين بعد.')) + '</p>',
+          btn('حسابات الفنيين','btn-secondary btn-sm',' data-p="techacc"')
+          + (may('users')
+              ? btn('استورد طاقم ١٤٤٧','btn-quiet btn-sm',' data-tkseed="1"') : ''))
+
+      + (may('users')
+        ? card('إضافة فني',
+            '<div class="grid cols-2">'
+            + '<div class="field"><label>' + esc(t('الاسم')) + ' <span class="req">*</span></label>'
+            +   '<input id="tkN" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('الجوال')) + '</label>'
+            +   '<input id="tkPh" dir="ltr" placeholder="05…"></div>'
+            + '<div class="field"><label>' + esc(t('الفريق')) + '</label>'
+            +   '<select id="tkCr"><option value="">— ' + esc(t('بلا فريق')) + ' —</option>'
+            +   crews.map(function(c){ return '<option>' + esc(c.n) + '</option>'; }).join('') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('المشرف')) + '</label>'
+            +   '<input id="tkSup" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة فني','btn-primary btn-sm',' data-tkadd="1"'))
+        : '')
+
+      + (may('users')
+        ? cardFlush('الفرق — ' + nm(crews.length),
+            table(['الفريق','النوع','أعضاء',''],
+              crews.map(function(c){
+                var n2 = L.filter(function(x){ return x.crew === c.n; }).length;
+                return [esc(c.n), esc(t(c.d || c.kind || '')), N(n2),
+                        c.id === 'eng' ? '<span class="hint" style="margin:0">' + esc(t('ثابت')) + '</span>'
+                                       : btn('حذف','btn-quiet btn-sm',' data-crdel="' + esc(c.id) + '"')];
+              })),
+            '<form class="inline-form" onsubmit="return false">'
+            + '<input id="crN" dir="auto" placeholder="' + esc(t('اسم فريق جديد')) + '">'
+            + '<select id="crKind"><option value="ins">' + esc(t('تركيب')) + '</option>'
+            +   '<option value="prep">' + esc(t('تهيئة')) + '</option>'
+            +   '<option value="asm">' + esc(t('تجميع')) + '</option>'
+            +   '<option value="srv">' + esc(t('مسح')) + '</option>'
+            +   '<option value="dis">' + esc(t('فك')) + '</option></select>'
+            + btn('إنشاء فريق','btn-primary btn-sm',' data-craddgo="1"') + '</form>')
+        : '')
+
+      + '<p class="hint">من له عملٌ مسجَّلٌ لا يُحذَف — سجلاتُه تحمل اسمَه. والفريقُ الذي فيه فنيون يُنقَلون أولًا.</p>';
   }};
 
 PAGE.techx = { m:'الفنيون', t:'مقابل التارجت', l:'نقاط الشهر في كل مرحلة مقابل تارجتها المستقل.',
@@ -10197,6 +10594,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
           + '<button type="button" class="btn btn-primary" id="pwaBtn" data-pwa="1">'
           +   '⬇ ' + esc(t('ثبّت التطبيق')) + '</button>'
           + btn('أفرغ الكاش','btn-danger',' data-swclear="1"')
+
           + '</div>'
           + '<p class="hint">التثبيت يُبقي التطبيق عاملًا بلا شبكة، والإفراغُ يُجبره على تحميلٍ نظيفٍ عند أول اتصال.</p>')
       + '<p class="hint">نبضات الأجهزة أسرع ما ينمو: ١٧٨٧ جهازًا × نبضة كل خمس دقائق = نصف مليون سجل يوميًّا لو تُركت بلا سقف.</p>';
@@ -11024,7 +11422,7 @@ var NAV = [
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
-      ['notif','الإشعارات'],['ev','سجل الأحداث'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
+      ['notif','الإشعارات'],['ev','سجل الأحداث'],['wipe','تصفير البيانات'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
   { g:'المساعدة', icon:'\u003F', items:[['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
 
@@ -11330,6 +11728,19 @@ function onDocClick(e){
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
+  if (e.target.closest('[data-tkadd]')){ techAdd(); return; }
+  if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
+  if (e.target.closest('[data-craddgo]')){ crewAdd(); return; }
+  if (e.target.closest('[data-wipego]')){ wipeGo(); return; }
+  var tkd = e.target.closest('[data-tkdel]');
+  if (tkd){ techDel(tkd.getAttribute('data-tkdel')); return; }
+  var crd = e.target.closest('[data-crdel]');
+  if (crd){ crewDel(crd.getAttribute('data-crdel')); return; }
+  if (e.target.closest('[data-tkadd]')){ techAdd(); return; }
+  var tkd = e.target.closest('[data-tkdel]');
+  if (tkd){ techDel(tkd.getAttribute('data-tkdel')); return; }
+  var crd = e.target.closest('[data-crdel]');
+  if (crd){ crewDel(crd.getAttribute('data-crdel')); return; }
   if (e.target.closest('[data-itadd]')){ itemAdd(); return; }
   var idl = e.target.closest('[data-itdel]');
   if (idl){ itemDel(idl.getAttribute('data-itdel')); return; }
@@ -11678,7 +12089,9 @@ function toast(label){
   var el = document.createElement('div');
   el.id = 'nskToast';
   el.setAttribute('role','status');
-  el.textContent = label + ' — ' + t('في المعاينة: لا فعل حقيقي');
+  /* لا ذيلَ بعد اليوم: «في المعاينة: لا فعل حقيقي» كانت تُذيَّل بها كلُّ
+     رسالةٍ — أُزيلت في V14.26 وعادت، فحُرست بفحصٍ يمنع رجوعَها. */
+  el.textContent = label;
   el.style.cssText = 'position:fixed;inset-block-end:20px;inset-inline:0;margin-inline:auto;'
     + 'width:max-content;max-width:88vw;background:var(--sidebar);color:var(--sidebar-ink);'
     + 'padding:11px 18px;border-radius:99px;font-size:13px;z-index:200;'
@@ -11758,6 +12171,19 @@ document.addEventListener('input', function(e){
       if (q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
     }
     return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-tkph')){
+    techSet(e.target.getAttribute('data-tkph'), 'ph', e.target.value); return; }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-tkcrew')){
+    techSet(e.target.getAttribute('data-tkcrew'), 'crew', e.target.value); render(1); return; }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-tksup')){
+    techSet(e.target.getAttribute('data-tksup'), 'sup', e.target.value); render(1); return; }
+  if (e.target && e.target.hasAttribute){
+    var el2 = e.target;
+    if (el2.hasAttribute('data-tkn')){  techSet(el2.getAttribute('data-tkn'),  { n:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-tkph')){ techSet(el2.getAttribute('data-tkph'), { ph:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
+    if (el2.hasAttribute('data-tksup')){ techSet(el2.getAttribute('data-tksup'), { sup:el2.value.trim() }); return; }
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
     itemRename(e.target.getAttribute('data-itname'), e.target.value);

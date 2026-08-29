@@ -96,11 +96,14 @@ const MUT = [
     a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins']; }",
     b:"function field()  { return false; }" },
   { n:'شاشةٌ تعود إلى بيانةٍ مزروعةٍ لها مصدرٌ حيّ', g:'scripts/audit-data.mjs',
-    a:"    return card('الفنيون — ' + nm(TECHS.length),",
-    b:"    return card('الفنيون — ' + nm(DATA.techs.length)," },
+    a:"      + cardFlush('الفنيون — ' + nm(L.length),",
+    b:"      + cardFlush('الفنيون — ' + nm(DATA.techs.length)," },
   { n:'صنفٌ يُستعمَل ولا قاعدةَ له في التنسيق', g:'scripts/audit-data.mjs',
     a:".btn-light{background:#F4F6F8;border-color:#D6DDE4;color:#14181D;font-weight:600}",
     b:".btn-lite-x{background:#F4F6F8}" },
+  { n:'الرسالةُ تعود تُذيَّل بأنها معاينة', g:'scripts/audit-data.mjs',
+    a:'  el.textContent = label;',
+    b:"  el.textContent = label + ' — ' + t('في المعاينة: لا فعل حقيقي');" },
   { n:'صفحةٌ تُفتَح فلا ترسم شيئًا', g:'scripts/qa.mjs',
     a:"PAGE.over = {", b:"PAGE.over = { body:function(){ return ''; }, _old:" }
 ];
