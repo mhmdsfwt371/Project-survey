@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.63</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.64</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +852,14 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'المشاعرُ للمهندس وحده':'Zones are for the engineer only',
+ 'المشعرُ موجودٌ بالفعل':'That zone already exists',
+ 'موقعًا نُقل إلى':'site(s) moved to',
+ 'صنفًا':'item(s)',
+ 'عليه مواقع':'has sites',
+ 'الصفُّ مشتقٌّ من المواقع: تعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. ولا يُحذَف صفٌّ عليه مواقع — تُنقَل أولًا.':'The row is derived from sites: renaming the zone renames it across all its sites, and switching the type moves them to it. A row with sites is not deleted — move them first.',
+ 'وزن الزيارة':'Visit weight',
+ 'وزن الفك':'Dismantle weight',
  'لا أثرَ بعد — يظهر هنا كلُّ فعلٍ بصاحبه ووقته أولًا بأول.':'No trail yet — every action appears here with its author and time as it happens.',
  'لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.':'No records yet — your actions appear here as they happen.',
  'نقاطُ التهيئة والتجميع تُضبَط في «نقاط التهيئة» و«نقاط التجميع»، والتارجتاتُ تُحسَب على مدّة المشروع من أعداد المواقع الحقيقية.':'Preparation and assembly points are set in their own screens, and targets are computed over the project span from real site counts.',
@@ -1454,6 +1462,14 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'المشاعرُ للمهندس وحده':'مشاعر صرف انجینئر کے لیے ہیں',
+ 'المشعرُ موجودٌ بالفعل':'یہ مشعر پہلے سے موجود ہے',
+ 'موقعًا نُقل إلى':'مقامات منتقل ہوئے',
+ 'صنفًا':'اقسام',
+ 'عليه مواقع':'اس پر مقامات ہیں',
+ 'الصفُّ مشتقٌّ من المواقع: تعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. ولا يُحذَف صفٌّ عليه مواقع — تُنقَل أولًا.':'قطار مقامات سے اخذ ہے: مشعر کا نام بدلنا اس کے تمام مقامات میں بدلتا ہے، اور قسم بدلنا انہیں منتقل کرتا ہے۔ جس قطار پر مقامات ہوں وہ حذف نہیں ہوتی۔',
+ 'وزن الزيارة':'دورے کا وزن',
+ 'وزن الفك':'ہٹانے کا وزن',
  'لا أثرَ بعد — يظهر هنا كلُّ فعلٍ بصاحبه ووقته أولًا بأول.':'ابھی کوئی ریکارڈ نہیں — ہر عمل یہاں اپنے کرنے والے اور وقت کے ساتھ ظاہر ہوگا۔',
  'لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.':'ابھی کوئی ریکارڈ نہیں — آپ کے اعمال یہاں ظاہر ہوں گے۔',
  'نقاطُ التهيئة والتجميع تُضبَط في «نقاط التهيئة» و«نقاط التجميع»، والتارجتاتُ تُحسَب على مدّة المشروع من أعداد المواقع الحقيقية.':'تیاری اور اسمبلی کے پوائنٹس اپنی اسکرینوں میں مقرر ہوتے ہیں، اہداف حقیقی تعداد سے شمار ہوتے ہیں۔',
@@ -13031,7 +13047,11 @@ function mxRows(){
   /* لا تُدرَج تركيبةٌ لا وجودَ لها: كان يُدرَج جداءُ كلِّ مشعرٍ في كلِّ نوعٍ
      فتظهر جمراتٌ في عرفات ومسجدُ نمرة في منى — والنوعُ الذي لا يقع في مشعرٍ
      لا يقع فيه أبدًا. والصفُّ الفارغُ يُقرأ بيانةً ناقصةً لا استحالةً. */
-  return out.sort(function(a, b){ return b[2] - a[2] || String(a[0]).localeCompare(b[0], 'ar'); });
+  /* المشعرُ أولًا ثم العدد: كان الترتيبُ بالعدد وحدَه فتفرّقت صفوفُ المشعر
+     الواحد بين غيره، وقارئُ الجدول يقرأ مشعرًا لا صفًّا. */
+  return out.sort(function(a, b){
+    return String(a[0]).localeCompare(b[0], 'ar') || b[2] - a[2];
+  });
 }
 
 /* ما نقاطُه صفرٌ ليس في المرحلة — فإضافتُه أن تكتب له نقاطًا */
@@ -13155,15 +13175,106 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء �
       + usersCard();
   }};
 
+/* ═══ صفُّ الوزن يُدار كاملًا: المشعرُ والنوعُ والوزنُ والحذف ══════════════
+   كان الصفُّ يعرض المشعرَ والنوعَ نصًّا ويُعدَّل وزنُه وحدَه. فمن أراد أن
+   يصحّح اسمَ مشعرٍ أو ينقل نوعًا لم يجد أين — والإضافةُ موجودةٌ والتصحيحُ لا.
+
+   وإعادةُ تسمية المشعر ليست تسميةَ صفٍّ: هي تسميةُ كلِّ موقعٍ فيه. فتُكتَب
+   المواقعُ كلُّها ويُقال كم كُتب — ولا تقع بلا علم. */
+
+function zoneList(){
+  var out = [];
+  (STATE.sites || []).forEach(function(x){ if (x.zone && out.indexOf(x.zone) < 0) out.push(x.zone); });
+  return out.sort(function(a, b){ return String(a).localeCompare(b, 'ar'); });
+}
+function zoneRename(oldName, newName){
+  if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
+  newName = String(newName || '').trim();
+  if (!newName || newName === oldName) return;
+  if (zoneList().indexOf(newName) > -1){ toast(t('المشعرُ موجودٌ بالفعل')); return; }
+  var n = 0;
+  (STATE.sites || []).forEach(function(x){
+    if (x.zone !== oldName) return;
+    x.zone = newName; n++;
+    CORE.set('sites', x.id, { zone:newName });
+  });
+  /* الأوزانُ المخزَّنةُ بمفتاحٍ فيه اسمُ المشعر تُنقَل معه */
+  ['w','dw'].forEach(function(p){
+    var o = CFG[p] || {};
+    Object.keys(o).forEach(function(k){
+      if (k.indexOf(oldName + '|') !== 0) return;
+      var nk = newName + k.slice(oldName.length);
+      o[nk] = o[k]; delete o[k];
+      CORE.set('cfg', p, o);
+    });
+  });
+  SITE_IX = null; SITE_TOK = null;
+  statBump();
+  logEvent('إعادة تسمية مشعر — ' + oldName + ' → ' + newName + ' · ' + n + ' موقعًا');
+  toast(nm(n) + ' ' + t('موقعًا نُقل إلى') + ' ' + newName);
+  render(1);
+}
+/* نقلُ نوعِ صفٍّ: كلُّ مواقع هذا المشعر من هذا النوع تصير نوعًا آخر */
+function mxTypeMove(zone, label, newType){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var T = typesList(), oldType = '';
+  Object.keys(T).forEach(function(k){ if (T[k].l === label) oldType = k; });
+  if (!oldType || oldType === newType) return;
+  var n = 0;
+  (STATE.sites || []).forEach(function(x){
+    if (x.zone !== zone || x.type !== oldType) return;
+    x.type = newType; n++;
+    CORE.set('sites', x.id, { type:newType });
+  });
+  SITE_IX = null; SITE_TOK = null;
+  statBump();
+  logEvent('نقل نوع — ' + zone + '/' + label + ' → ' + (T[newType] || {}).l + ' · ' + n);
+  toast(nm(n) + ' ' + t('موقعًا نُقل إلى') + ' ' + ((T[newType] || {}).l || newType));
+  render(1);
+}
+/* حذفُ صفٍّ = حذفُ مواقعه. لا يقع إلا بلا مواقع — والصفُّ لا يكون بلا مواقع
+   أصلًا لأنه مشتقٌّ منها. فيُقال ذلك بدل زرٍّ لا يعمل. */
+function mxRowInfo(zone, label){
+  var T = typesList(), tk = '';
+  Object.keys(T).forEach(function(k){ if (T[k].l === label) tk = k; });
+  return (STATE.sites || []).filter(function(x){
+    return x.zone === zone && x.type === tk;
+  }).length;
+}
+
+/* الصفُّ الكامل — يُستعمَل في «نقاط الزيارات» و«نقاط الفك» */
+function mxTable(path, label){
+  var T = typesList(), Z = zoneList();
+  var typeOpts = function(cur){
+    return Object.keys(T).map(function(k){
+      return '<option value="' + esc(k) + '"' + (T[k].l === cur ? ' selected' : '') + '>'
+        + esc(T[k].l) + '</option>';
+    }).join('');
+  };
+  return cardFlush(label + ' — ' + nm(mxRows().length) + ' ' + t('صنفًا'),
+    table(['المشعر','النوع','مواقع', label, ''],
+      mxRows().map(function(r){
+        var n = mxRowInfo(r[0], r[1]);
+        return [may('settings')
+                  ? '<input value="' + esc(r[0]) + '" data-mxz="' + esc(r[0]) + '" dir="auto">'
+                  : '<strong>' + esc(t(r[0])) + '</strong>',
+                may('settings')
+                  ? '<select data-mxt="' + esc(r[0] + '|' + r[1]) + '">' + typeOpts(r[1]) + '</select>'
+                  : esc(t(r[1])),
+                N(n),
+                cfgInput(path, r[0] + '|' + r[1], { dec:1 }),
+                n ? '<span class="hint" style="margin:0">' + esc(t('عليه مواقع')) + '</span>'
+                  : (may('settings')
+                      ? btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(r[1]) + '"') : '')];
+      })),
+    '<p class="hint" style="margin:0">'
+    + esc(t('الصفُّ مشتقٌّ من المواقع: تعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. ولا يُحذَف صفٌّ عليه مواقع — تُنقَل أولًا.'))
+    + '</p>');
+}
+
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
   body:function(){
-    return typesCard()
-      + cardFlush('وزن الزيارة — ' + nm(mxRows().length) + ' صنفًا',
-        table(['المشعر','النوع','وزن الزيارة'],
-          mxRows().map(function(r){
-            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
-                    cfgInput('w', r[0] + '|' + r[1], { dec:1 })];
-          })))
+    return typesCard() + mxTable('w', t('وزن الزيارة'))
       + card('التارجت',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('تارجت المسح الشهري')) + '</label>'
@@ -13289,14 +13400,13 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
       built[k] = (built[k] || 0) + n;
     });
     var anyBuilt = Object.keys(built).length > 0;
-    return typesCard()
-      + cardFlush('وزن الفك — ' + nm(mxRows().length) + ' صنفًا',
-        table(['المشعر','النوع','قِطَعٌ رُكّبت','وزن الفك'],
+    return typesCard() + mxTable('dw', t('وزن الفك'))
+      + cardFlush('قِطَعٌ رُكّبت',
+        table(['المشعر','النوع','قِطَعٌ رُكّبت'],
           mxRows().map(function(r){
             var k = r[0] + '|' + r[1];
-            return ['<strong>' + esc(t(r[0])) + '</strong>', esc(t(r[1])),
-                    built[k] ? '<span class="num">' + N(built[k]) + '</span>' : '—',
-                    cfgInput('dw', k, { dec:1 })];
+            return [esc(t(r[0])), esc(t(r[1])),
+                    built[k] ? '<span class="num">' + N(built[k]) + '</span>' : '—'];
           })),
         '<p class="hint" style="margin:0">'
         + esc(t(anyBuilt
@@ -14478,6 +14588,13 @@ document.addEventListener('input', function(e){
       var iq = document.getElementById('ipQ');
       if (iq){ iq.focus(); iq.setSelectionRange(iq.value.length, iq.value.length); }
       return;
+    }
+    if (el2.hasAttribute('data-mxz')){
+      zoneRename(el2.getAttribute('data-mxz'), el2.value); return;
+    }
+    if (el2.hasAttribute('data-mxt')){
+      var p4 = el2.getAttribute('data-mxt').split('|');
+      mxTypeMove(p4[0], p4[1], el2.value); return;
     }
     if (el2.hasAttribute('data-vkn')){ vehKindSet(el2.getAttribute('data-vkn'), { n:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-vkd')){ vehKindSet(el2.getAttribute('data-vkd'), { d:el2.value.trim() }); return; }
