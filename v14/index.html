@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.72</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.73</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -875,6 +875,7 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'يدخل بكلمته الآن':'can sign in with that password now',
  'اكتب اسم المستخدم':'Write the username',
  'اكتب الاسم الكامل':'Write the full name',
  'كلمةُ المرور عشرةُ أحرفٍ فأكثر':'Password must be ten characters or more',
@@ -1514,6 +1515,7 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'يدخل بكلمته الآن':'اب اسی پاس ورڈ سے داخل ہو سکتا ہے',
  'اكتب اسم المستخدم':'صارف نام لکھیں',
  'اكتب الاسم الكامل':'پورا نام لکھیں',
  'كلمةُ المرور عشرةُ أحرفٍ فأكثر':'پاس ورڈ دس حروف یا زیادہ',
@@ -2524,6 +2526,21 @@ var CORE = {
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
+      /* يُطوى المكرَّرُ فيما حُمِّل: الطابورُ المحفوظُ قبل الطيِّ فيه مفاتيحُ
+         مكرَّرة، فتُطوى مرةً هنا ولا تُرفَع مرارًا. */
+      if (Array.isArray(STATE.queue) && STATE.queue.length > 1){
+        var seen = {}, keep = [];
+        for (var qi = STATE.queue.length - 1; qi >= 0; qi--){
+          var it = STATE.queue[qi], k2 = it.kind + '/' + it.id;
+          if (seen[k2]) continue;
+          seen[k2] = 1; keep.unshift(it);
+        }
+        STATE.queue = keep;
+      }
+      /* وتُعاد الشارةُ فورَ التحميل: كانت تُرسَم بما في الذاكرة ثم يُحمَّل
+         المحفوظُ فلا تُعاد — فتقول سبعةً والطابورُ أربعةٌ وثلاثون، ويُقرأ
+         الرقمان متناقضين وهما لحظتان مختلفتان. */
+      if (typeof syncBadge === 'function') syncBadge();
       return true;
     }).catch(function(e){
       /* إن فشلت القراءةُ المحليةُ ظهر التطبيقُ فارغًا — فيظنُّ صاحبُه أن عملَه
@@ -2607,6 +2624,37 @@ var FB = {
       FB.ready = true;
       return true;
     } catch(e){ return false; }
+  },
+
+  /* إنشاءُ حسابٍ بتطبيقٍ ثانٍ: التطبيقُ الثاني له جلستُه المستقلّة، فالتسجيلُ
+     فيه لا يمسُّ جلسةَ الأول — فلا يخرج المهندسُ من حسابه وهو يُنشئ حسابًا
+     لغيره. ثم يُخرَج من الثاني فلا تبقى جلسةٌ معلَّقة.
+     ولا يحتاج خطةً مدفوعةً ولا دالةً سحابيةً ولا مفتاحَ حسابِ خدمةٍ في
+     المتصفّح — وكلُّها طرقٌ أثقلُ لنتيجةٍ واحدة. */
+  createUser: function(user, pass, meta){
+    return FB.init().then(function(ok){
+      if (!ok) return { ok:false, err:'offline' };
+      var email = user.indexOf('@') > -1 ? user : (user + '@nusuk.local');
+      var second;
+      try {
+        second = (window.firebase.apps || []).filter(function(a){ return a.name === 'mk'; })[0]
+              || window.firebase.initializeApp(FB_CFG, 'mk');
+      } catch (e){ return { ok:false, err:'app' }; }
+      var bye = function(r){
+        return second.auth().signOut().then(function(){ return r; })
+               .catch(function(){ return r; });
+      };
+      return second.auth().createUserWithEmailAndPassword(email, pass)
+        .then(function(c){
+          return FB.db.collection('users').doc(c.user.uid).set({
+            name:(meta && meta.name) || user, user:user,
+            role:(meta && meta.role) || 'tech',
+            at:Date.now(), by:STATE.meta.name || ''
+          }).then(function(){ return { ok:true, uid:c.user.uid }; });
+        })
+        .then(bye)
+        .catch(function(e){ return bye({ ok:false, err:String(e && e.code || e) }); });
+    });
   },
 
   signIn: function(user, pass){
@@ -13576,6 +13624,14 @@ function usrAdd(){
   STATE.users = STATE.users || {};
   STATE.users[u] = { name:n, user:u, role:r, at:Date.now() };
   CORE.set('users', u, STATE.users[u]);
+  /* ويُنشَأ في Auth بتطبيقٍ ثانٍ إن كانت شبكة — فيدخل صاحبُه بكلمته.
+     وإن تعذّر بقي مسجَّلًا هنا ويُنشَأ من المكتب: التسجيلُ لا يُفقَد. */
+  FB.createUser(u, p, { name:n, role:r }).then(function(res){
+    if (res && res.ok){ toast(u + ' \u00b7 ' + t('يدخل بكلمته الآن')); return; }
+    if (res && res.err === 'offline') return;
+    softErr('إنشاء حساب', new Error(res && res.err || 'unknown'),
+      'سُجّل الحسابُ ولم يُفعَّل — فعّله من المكتب');
+  });
   USR_Q = '';                       /* يُمسَح البحثُ ليُرى ما أُنشئ للتوّ */
   logEvent('حساب جديد — ' + n + ' (' + u + ') · ' + t(made.roleAr));
   toast(u + ' \u00b7 ' + t('أُنشئ الحساب'));
