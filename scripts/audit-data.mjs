@@ -9,7 +9,7 @@
    فهذا الجردُ يعيد بناءَ ما يجب أن يكون من `SITES_RAW` مباشرةً، ويقيس عليه
    ما بناه التطبيقُ فعلًا. الرقمُ الخاطئ في لوحة الوزارة أسوأ من زرٍّ مفقود.
    ═════════════════════════════════════════════════════════════════════════ */
-import { readFileSync, existsSync, statSync } from 'fs';
+import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 let JSDOM;
@@ -104,6 +104,29 @@ const html = readFileSync('index.html', 'utf8');
     + (missing.length ? ' — بلا تسجيل: ' + missing.join(' · ') : ''));
   const calls = (html.match(/softErr\(/g) || []).length;
   check(calls >= 8, `مواضعُ التسجيل (${calls})`);
+}
+
+/* ── ما تستعمله الجرودُ ليس ميتًا ولو لم يُنادَ في الملف ─────────────────
+   حُذفت عشرُ دوالٍّ «ميتة» بمقياسٍ قرأ `index.html` وحدَه — وواحدةٌ منها
+   `quotaEstimate` تستدعيها الجرودُ من ملفٍ آخر، فسقط جردُ الاتساع.
+
+   والدرسُ أن حدودَ المقياس ليست حدودَ النظام: من قاس ملفًّا وحكم على مشروعٍ
+   حكم بما لم يره. فيُقاس الاستعمالُ في الملفِّ وفي الجرود معًا. */
+{
+  const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['',''])[1];
+  let aud = '';
+  try {
+    aud = readdirSync('scripts').filter(f => f.endsWith('.mjs'))
+      .map(f => readFileSync('scripts/' + f, 'utf8')).join('\n');
+  } catch (e){}
+  const names = [...js.matchAll(/^function\s+([A-Za-z_$][\w$]*)\s*\(/gm)].map(m => m[1]);
+  const dead = names.filter(n => {
+    const inApp = (js.match(new RegExp('\\b' + n + '\\b', 'g')) || []).length;
+    const inAud = aud.indexOf('w.' + n) > -1 || aud.indexOf("'" + n + "'") > -1;
+    return inApp < 2 && !inAud;
+  });
+  check(dead.length === 0, 'لا دالةَ معرَّفةٌ ولا تُستدعى في التطبيق ولا في الجرود'
+    + (dead.length ? ' — ' + dead.join(' · ') : ''));
 }
 
 /* ── لا متغيّرَ يُستعمَل بلا تعريفٍ ولا احتياطيّ ─────────────────────────

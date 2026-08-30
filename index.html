@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.58</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.59</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2337,14 +2337,6 @@ function itAsm(id){ return cfgGet('itAsm', id); }
 function crewVal(k, f){ return cfgGet('crew' + f, k); }
 
 /* ما لم يُضبط بعدُ — تنبيهٌ يظهر حيث يهمّ */
-function cfgWarn(list){
-  var miss = list.filter(function(x){ return !x[1]; });
-  if (!miss.length) return '';
-  return '<div class="alert warn"><span>لم يُضبط بعد: '
-    + miss.map(function(x){ return esc(t(x[0])); }).join(' · ')
-    + ' — القيمة صفرٌ حتى تكتبها في الإعدادات.</span></div>';
-}
-
 /* ═══ المحرك — تخزينٌ محليٌّ أولًا ثم مزامنةٌ سحابية ═══
    الكتابة تنجح على الجهاز دائمًا، والشبكة تفصيلٌ لاحقٌ لا شرطٌ مسبق.
    وما لم يُرفع يبقى في طابورٍ يُعاد إرساله حين تعود الشبكة. */
@@ -3092,8 +3084,6 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
   }};
 
 /* ── الخريطة والقائمة تتبعان الترشيح ── */
-function mapFiltered(){ return filtered(); }
-
 /* ═══ نقاطُ الفنيين — تُحسب من العمل لا تُكتب ═══
    الأوزانُ في الإعدادات لا تتغيّر، وكلُّ ما يعمله الفنيُّ يُوزَن بها:
    زيارةٌ بوزنها، وتركيبٌ بنقاط قطعه، وفكٌّ بوزنه في معامل حالته.
@@ -4244,11 +4234,6 @@ function ptsDis(x){
   var r = STATE.diss ? STATE.diss[x.id] : null;
   var f = (r && r.cond === 'تالف') ? cfgGet('disBad') : cfgGet('disOk');
   return base * (f || 1);
-}
-
-function ptsOf(x, mode){
-  var L = LAYERS[mode || FIELD_MODE] || LAYERS.survey;
-  return L.pts(x);
 }
 
 /* مجموعُ نقاطِ ما حُدِّد — يُعرَف قبل الإسناد */
@@ -5628,12 +5613,6 @@ function waCoText(co, when){
     + 'موعد التركيب المتوقع: ' + (when || '—') + '\n\n'
     + 'نرجو تسهيل دخول الفريق وتوفير مصدر كهرباء في الموقع.\n'
     + 'وشكرًا لتعاونكم.';
-}
-
-function waTechText(name, n, when){
-  return 'السلام عليكم ' + name + '\n'
-    + 'مهامك ليوم ' + (when || 'اليوم') + ': ' + nm(n) + ' نقطة\n'
-    + 'افتح التطبيق لترى تفاصيلها على الخريطة.';
 }
 
 PAGE.conote = { m:'الفرق والفنيون', t:'إشعار الشركات',
@@ -7818,20 +7797,6 @@ function siteStats(){
 var LIST_PAGE = 40, LIST_SHOWN = 40, SEL_MODE = false;
 
 /* عدٌّ بلا بناءِ مصفوفة — يُعرَف الإجمالي دون نسخِ الصفوف */
-function siteCount(q){
-  q = String(q || '').trim();
-  if (!q) return STATE.sites.length;
-  siteIndex();
-  var seen = Object.create(null), n = 0;
-  var ks = Object.keys(SITE_TOK);
-  for (var j = 0; j < ks.length; j++){
-    if (ks[j].indexOf(q) < 0) continue;
-    var arr = SITE_TOK[ks[j]];
-    for (var i = 0; i < arr.length; i++) if (!seen[arr[i]]){ seen[arr[i]] = 1; n++; }
-  }
-  return n;
-}
-
 function fieldList(){
   var S = siteStats();
   var base = filtered();
@@ -7986,26 +7951,6 @@ function liveStop(){
 }
 
 /* ── حدودُ الاستهلاك — تُعرَض للمهندس ── */
-function quotaEstimate(){
-  var users = cfgGet('users') || 150;
-  var perDay = { survey:20, install:8, syncs:8 };
-  var writes = users * (perDay.survey * 3 + perDay.install * 5 + 6 /* أحداثٌ وطوابع */);
-  /* القراءةُ تُحسب من مسار الشيفرة لا من التمنّي: سحبٌ كاملٌ أوّلَ اليوم
-     مقصورٌ على ما يخصُّ المستخدم، ثم فوارقُ ما تغيّر في بقية المزامنات. */
-  var docs   = Object.keys(STATE.recs).length + Object.keys(STATE.inss).length
-             + Object.keys(STATE.tasks).length;
-  var firstPull = Math.max(60, Math.round(docs / Math.max(1, users)));  /* حصةُ الفرد */
-  var delta     = Math.round(users * 0.6);        /* ما يكتبه الآخرون في الفترة */
-  var reads  = users * (firstPull + (perDay.syncs - 1) * delta);
-  var photos = users * (perDay.survey * 2 + perDay.install * 2);
-  return {
-    users:users, writes:writes, reads:reads, photos:photos,
-    writeCap:20000, readCap:50000,
-    writeOver: writes > 20000, readOver: reads > 50000,
-    storeDay: Math.round(photos * 180 / 1024)   /* ميجا يوميًّا */
-  };
-}
-
 /* ═══ الخريطة — Leaflet بطبقتين ومضلّعات المخيمات ═══
    البلاطات بلا مفتاح: OpenStreetMap أساسًا وEsri بديلًا عند التعثّر.
    والوضع الليلي مرشّحٌ على طبقة الأساس وحدها فلا يُقلَب ما فوقها. */
@@ -8014,8 +7959,6 @@ var MAP_ME = null;
 var MAP = null, MAP_LAYER = null, MAP_BASE = null, MAP_POLY = null, MAP_CV = null;
 var MAP_READY = false, MAP_LOADING = false;
 var POLY = null, POLY_LOADING = null;
-
-function POLY_OF(id){ return POLY ? (POLY[id] || null) : null; }
 
 /* بيانةُ الموسم الماضي التي كان الفنيُّ يقرؤها في القديم: الجنسيةُ والسعةُ
    المسجَّلةُ والجهةُ والمتعهّد وما بقي مفتوحًا. سقطت عند إعادة البناء لأن
@@ -9133,6 +9076,26 @@ function verCheck(){
     .catch(function(){ toast(t('تعذّر الفحص — لا شبكة')); });
 }
 
+function quotaEstimate(){
+  var users = cfgGet('users') || 150;
+  var perDay = { survey:20, install:8, syncs:8 };
+  var writes = users * (perDay.survey * 3 + perDay.install * 5 + 6 /* أحداثٌ وطوابع */);
+  /* القراءةُ تُحسب من مسار الشيفرة لا من التمنّي: سحبٌ كاملٌ أوّلَ اليوم
+     مقصورٌ على ما يخصُّ المستخدم، ثم فوارقُ ما تغيّر في بقية المزامنات. */
+  var docs   = Object.keys(STATE.recs).length + Object.keys(STATE.inss).length
+             + Object.keys(STATE.tasks).length;
+  var firstPull = Math.max(60, Math.round(docs / Math.max(1, users)));  /* حصةُ الفرد */
+  var delta     = Math.round(users * 0.6);        /* ما يكتبه الآخرون في الفترة */
+  var reads  = users * (firstPull + (perDay.syncs - 1) * delta);
+  var photos = users * (perDay.survey * 2 + perDay.install * 2);
+  return {
+    users:users, writes:writes, reads:reads, photos:photos,
+    writeCap:20000, readCap:50000,
+    writeOver: writes > 20000, readOver: reads > 50000,
+    storeDay: Math.round(photos * 180 / 1024)   /* ميجا يوميًّا */
+  };
+}
+
 function swClear(){
   if (SW_STATE.reg && SW_STATE.reg.active) SW_STATE.reg.active.postMessage('clear');
   if (typeof caches !== 'undefined') caches.keys().then(function(ks){ ks.forEach(function(k){ caches.delete(k); }); });
@@ -9140,14 +9103,6 @@ function swClear(){
 }
 
 /* حجمُ ما خُزّن — يُعرَض في عمر البيانات */
-function cacheSize(){
-  if (typeof navigator === 'undefined' || !navigator.storage || !navigator.storage.estimate)
-    return Promise.resolve(null);
-  return navigator.storage.estimate().then(function(e){
-    return { used:e.usage || 0, quota:e.quota || 0 };
-  }).catch(function(){ return null; });
-}
-
 /* ═══ الخروج ═══
    كان الزرُّ بلا معالجٍ أصلًا: يضغطه المستخدمُ فيبتلعه حارسُ الأزرار الميتة
    ويقول له نصَّه «تسجيل الخروج» — ويبقى داخلًا.
@@ -9623,54 +9578,6 @@ function mapFallback(){
   el.innerHTML = '<div style="padding:22px;color:#9BA5AF;font-size:13.5px;line-height:1.9">'
     + esc(t('تعذّر تحميل الخريطة — تعمل بلا شبكة أو تعذّر المزوّد.')) + '<br>'
     + esc(t('المواقع متاحةٌ من تبويب «المواقع» وبحثها يعمل محليًّا.')) + '</div>';
-}
-
-function _mapDrawOld(){
-  var cv = document.getElementById('mapCv');
-  if (!cv) return;
-  var ctx = null;
-  try{ ctx = cv.getContext('2d'); }catch(e){}
-  if (!ctx) return;
-  var dpr = window.devicePixelRatio || 1;
-  var w = cv.width = cv.offsetWidth * dpr, h = cv.height = cv.offsetHeight * dpr;
-  ctx.fillStyle = '#0A0D10'; ctx.fillRect(0,0,w,h);
-
-  ctx.strokeStyle = 'rgba(120,132,146,.07)'; ctx.lineWidth = 1;
-  for (var g = 0; g < w; g += 46 * dpr){ ctx.beginPath(); ctx.moveTo(g,0); ctx.lineTo(g,h); ctx.stroke(); }
-  for (var g2 = 0; g2 < h; g2 += 46 * dpr){ ctx.beginPath(); ctx.moveTo(0,g2); ctx.lineTo(w,g2); ctx.stroke(); }
-
-  var col = FIELD_MODE === 'survey' ? '#E8C34B' : '#9FB0AA';
-  var clusters = [
-    {cx:.30, cy:.34, n:713, r:.15},
-    {cx:.66, cy:.44, n:679, r:.14},
-    {cx:.72, cy:.70, n:190, r:.09},
-    {cx:.44, cy:.78, n:108, r:.07},
-    {cx:.22, cy:.62, n:97,  r:.06}
-  ];
-  var seed = 1;
-  function rnd(){ seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
-
-  clusters.forEach(function(c){
-    var shown = Math.min(c.n, 260);
-    for (var i = 0; i < shown; i++){
-      var a = rnd() * 6.2832, d = Math.sqrt(rnd()) * c.r;
-      var x = (c.cx + Math.cos(a) * d) * w;
-      var y = (c.cy + Math.sin(a) * d * 1.25) * h;
-      ctx.beginPath();
-      ctx.arc(x, y, 2.4 * dpr, 0, 6.2832);
-      ctx.fillStyle = col;
-      ctx.globalAlpha = .82;
-      ctx.fill();
-    }
-  });
-  ctx.globalAlpha = 1;
-
-  ctx.font = (13 * dpr) + 'px system-ui';
-  ctx.fillStyle = 'rgba(232,235,238,.6)';
-  ctx.textAlign = 'center';
-  [['عرفات',.30,.16],['منى',.66,.26],['قطار المشاعر',.44,.88]].forEach(function(L){
-    ctx.fillText(t(L[0]), L[1] * w, L[2] * h);
-  });
 }
 
 var SITE_Q = '';
@@ -10266,10 +10173,6 @@ function techSeed(){
 }
 
 /* الفرقُ: تُضاف وتُحذَف كالفنيين */
-function crewList(){
-  if (!Array.isArray(STATE.crews)) STATE.crews = CREWS.slice();
-  return STATE.crews;
-}
 /* ═══ التصفير: بدايةُ الموسم من صفر ═══
    البياناتُ تتراكم من التجارب قبل أن يبدأ العمل — سجلاتٌ وحركاتٌ وأحداثٌ
    ومقترحات. والبدءُ بها يفسد كلَّ رقمٍ بعدها. والتصفيرُ لا يمسّ المواقعَ
@@ -10926,15 +10829,6 @@ function notifMail(n){
    والفريقُ مجموعةُ أشخاص: ما يُسنَد إليه يصل كلَّ عضوٍ فيه. ومن أُسند إليه
    بالاسم يصل إليه وحدَه. */
 
-function crewMembers(crewName){
-  var out = [];
-  techsList().forEach(function(x){ if (x.crew === crewName) out.push(x.n); });
-  crewsList().forEach(function(c){
-    if (c.n !== crewName) return;
-    (c.members || []).forEach(function(m){ if (out.indexOf(m) < 0) out.push(m); });
-  });
-  return out;
-}
 /* فرقُ الشخص: ما هو عضوٌ فيه */
 function myCrews(who){
   var out = [];
@@ -13656,8 +13550,6 @@ var NAV = [
 
 var CUR = 'map';
 var OPEN = {};
-
-function isField(id){ return ['map','sites','recs','tools'].indexOf(id) > -1; }
 
 var NAV_Q = '';
 
