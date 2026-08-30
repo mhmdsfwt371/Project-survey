@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.71</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.72</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -875,6 +875,13 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'اكتب اسم المستخدم':'Write the username',
+ 'اكتب الاسم الكامل':'Write the full name',
+ 'كلمةُ المرور عشرةُ أحرفٍ فأكثر':'Password must be ten characters or more',
+ 'اسمُ المستخدم موجودٌ بالفعل':'That username already exists',
+ 'أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كلَّ المستخدمين ودورَ كلٍّ منهم — والتغييرُ يُزامَن فورًا.':'Create the account and set its role; the list below shows every user and their role — changes sync immediately.',
+ 'اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.':'The username has no spaces and the project domain is appended automatically. The password is ten characters or more, and its owner changes it on first sign-in.',
+ 'يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه من وظيفته المسنَدة، ويبدّل كلمتَه أولَ دخول.':'Each technician gets a username from their name and a random password; their permission comes from their assigned job, and they change the password on first sign-in.',
  'إدارة':'Management',
  'فيه أعضاء':'has members',
  'نوع العمل':'Work kind',
@@ -1507,6 +1514,13 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'اكتب اسم المستخدم':'صارف نام لکھیں',
+ 'اكتب الاسم الكامل':'پورا نام لکھیں',
+ 'كلمةُ المرور عشرةُ أحرفٍ فأكثر':'پاس ورڈ دس حروف یا زیادہ',
+ 'اسمُ المستخدم موجودٌ بالفعل':'یہ صارف نام پہلے سے موجود ہے',
+ 'أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كلَّ المستخدمين ودورَ كلٍّ منهم — والتغييرُ يُزامَن فورًا.':'اکاؤنٹ بنائیں اور اس کا کردار طے کریں؛ نیچے کی فہرست تمام صارفین اور ان کے کردار دکھاتی ہے۔',
+ 'اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.':'صارف نام میں خالی جگہ نہیں۔ پاس ورڈ دس حروف یا زیادہ، پہلی بار داخل ہوتے وقت بدلا جاتا ہے۔',
+ 'يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه من وظيفته المسنَدة، ويبدّل كلمتَه أولَ دخول.':'ہر ٹیکنیشن کو اس کے نام سے صارف نام اور بے ترتیب پاس ورڈ ملتا ہے؛ اختیار اس کی مقررہ ملازمت سے آتا ہے۔',
  'إدارة':'انتظامیہ',
  'فيه أعضاء':'اس میں ارکان ہیں',
  'نوع العمل':'کام کی قسم',
@@ -13541,27 +13555,79 @@ function usersCard(){
       + '</form>');
 }
 
-PAGE.users = { m:'الإعدادات', t:'المستخدمون', l:'إنشاء الحسابات وأدوارها.',
+/* إنشاءُ حسابٍ: كانت الشاشةُ واجهةً بلا وظيفة — حقولٌ بلا معرّفاتٍ وزرٌّ
+   بلا خاصية. فمن ملأها وضغط لم يقع شيءٌ ولا قيل لماذا. */
+function usrAdd(){
+  if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var u = g('uU'), n = g('uN'), p = g('uP'), r = g('uR') || 'tech';
+  if (!u){ toast(t('اكتب اسم المستخدم')); return; }
+  if (!n){ toast(t('اكتب الاسم الكامل')); return; }
+  if (p.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }
+  if ((STATE.users || {})[u] || usersList().some(function(p){ return p[1] && p[1].user === u; })){
+    toast(t('اسمُ المستخدم موجودٌ بالفعل')); return;
+  }
+  /* يُسجَّل الحسابُ في مجموعته ويُرفَع — ولا يُنشَأ في Auth من المتصفّح:
+     إنشاءُ حسابٍ هناك يُبدّل الجلسةَ الحاليةَ إلى الجديد، فيخرج المهندسُ من
+     حسابه وهو يُنشئ حسابًا لغيره. */
+  var made = { n:n, u:u, p:p, role:r, roleAr:(ROLES[r] ? ROLES[r].n : r),
+               by:STATE.meta.name || '', at:Date.now() };
+  CORE.set('accounts', u, made);
+  STATE.users = STATE.users || {};
+  STATE.users[u] = { name:n, user:u, role:r, at:Date.now() };
+  CORE.set('users', u, STATE.users[u]);
+  USR_Q = '';                       /* يُمسَح البحثُ ليُرى ما أُنشئ للتوّ */
+  logEvent('حساب جديد — ' + n + ' (' + u + ') · ' + t(made.roleAr));
+  toast(u + ' \u00b7 ' + t('أُنشئ الحساب'));
+  ['uU','uN','uP'].forEach(function(id){
+    var e = document.getElementById(id); if (e) e.value = '';
+  });
+  statBump();
+  render(1);
+}
+
+PAGE.users = { m:'الإعدادات', t:'المستخدمون',
+  l:'إنشاء الحسابات وأدوارها — فردًا أو دفعةً واحدة.',
   body:function(){
-    return '<p class="lede" style="margin:0 0 16px">أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كل المستخدمين ودورَ كلٍّ منهم — والتغيير يُزامَن فورًا.</p>'
+    var noAcc = techsList().filter(function(x){ return !x.has; });
+    return '<p class="lede" style="margin:0 0 16px">'
+      + esc(t('أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كلَّ المستخدمين ودورَ كلٍّ منهم — والتغييرُ يُزامَن فورًا.'))
+      + '</p>'
+
       + card('إنشاء حساب',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
-          +   '<input dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
+          +   '<input id="uU" dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
           + '<div class="field"><label>' + esc(t('الاسم الكامل')) + ' <span class="req">*</span></label>'
-          +   '<input dir="auto" maxlength="160"></div>'
+          +   '<input id="uN" dir="auto" maxlength="160"></div>'
           + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
-          +   '<input type="password" dir="ltr" minlength="10"></div>'
+          +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
           + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-          +   '<select><option>مهندس</option><option>مشرف</option><option selected>فني</option>'
-          +   '<option>فريق التهيئة</option><option>فريق التجميع</option><option>فريق التركيب</option>'
-          +   '<option>وزارة</option></select></div>'
-          + '</div>', btn('إنشاء الحساب','btn-primary btn-sm'))
+          +   '<select id="uR">'
+          +   Object.keys(ROLES).map(function(k){
+                return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>'
+                  + esc(t(ROLES[k].n)) + '</option>';
+              }).join('') + '</select></div>'
+          + '</div>'
+          + '<p class="hint" style="margin:11px 0 0">'
+          + esc(t('اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.'))
+          + '</p>',
+          btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"'))
+
+      /* حساباتُ الفنيين هنا لا في شاشةٍ أخرى: المستخدمون كلُّهم في مكانٍ
+         واحد، ومن أراد حسابًا لم يبحث عن شاشتين. */
       + card('حسابات الفنيين دفعةً واحدة',
           '<p class="hint" style="margin:0 0 11px">'
-          + esc(t('بدل إنشاء حسابٍ لكل فنيٍّ يدويًّا — أنشئها كلها من صفحة الفنيين بصلاحية «فني» ومشرفٍ لكلٍّ.'))
+          + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه من وظيفته المسنَدة، ويبدّل كلمتَه أولَ دخول.'))
           + '</p>'
-          + '<div class="actions">' + btn('اذهب إلى حسابات الفنيين','btn-primary btn-sm',' data-p="techacc"') + '</div>')
+          + stats([['فنيون', N(techsList().length)],
+                   ['لهم حسابات', N(techsList().length - noAcc.length), 'ok'],
+                   ['بلا حساب', N(noAcc.length), noAcc.length ? 'wrn' : 'ok']]),
+          noAcc.length && may('users')
+            ? btn('➕ ' + t('أنشئ') + ' ' + nm(noAcc.length) + ' ' + t('حسابًا'),
+                  'btn-primary btn-sm', ' data-mkall="1"')
+            : '')
+
       + usersCard();
   }};
 
@@ -14294,6 +14360,7 @@ function onDocClick(e){
     }
     return;
   }
+  if (e.target.closest('[data-usradd]')){ usrAdd(); return; }
   if (e.target.closest('[data-swnow]')){ swNow(); return; }
   if (e.target.closest('[data-swlater]')){ swLater(); return; }
   if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
