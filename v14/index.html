@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.55</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.56</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +852,12 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'التصديرُ ليس من صلاحيتك':'Exporting is not within your permissions',
+ 'يُجهَّز ملف المتابعة…':'Preparing the follow-up file…',
+ 'صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح':'row(s) updated — Excel recomputes the rest on open',
+ 'يُنزَّل الملفُ بقالبه كما هو — بتنسيقه الشرطيِّ وتعليقاتِه ومعادلاتِه — ولا يُكتَب فيه إلا نسبةُ الإنجاز في الصفوف الميدانية. والحالةُ والموقفُ الزمنيُّ والمتبقي يحسبها إكسلُ بنفسه عند الفتح.':'The file downloads with its template intact — conditional formatting, comments and formulas — and only the completion percentage in field rows is written. Status, schedule position and remaining days are computed by Excel on open.',
+ 'صفوفٌ يقرؤها النظام':'Rows the system reads',
+ 'فيها تقدّم':'With progress',
  'تنبيه: ':'Note: ',
  'لا تناسب':'does not suit',
  'بحث بلوحةٍ أو اسم':'Search by plate or name',
@@ -1435,6 +1441,12 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'التصديرُ ليس من صلاحيتك':'برآمد آپ کے اختیارات میں نہیں',
+ 'يُجهَّز ملف المتابعة…':'فالو اپ فائل تیار ہو رہی ہے…',
+ 'صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح':'قطاریں اپ ڈیٹ ہوئیں — باقی ایکسل کھلتے ہی خود شمار کرے گا',
+ 'يُنزَّل الملفُ بقالبه كما هو — بتنسيقه الشرطيِّ وتعليقاتِه ومعادلاتِه — ولا يُكتَب فيه إلا نسبةُ الإنجاز في الصفوف الميدانية. والحالةُ والموقفُ الزمنيُّ والمتبقي يحسبها إكسلُ بنفسه عند الفتح.':'فائل اپنے سانچے کے ساتھ اترتی ہے — مشروط فارمیٹنگ، تبصرے اور فارمولے — اور صرف میدانی قطاروں میں تکمیل کی شرح لکھی جاتی ہے۔',
+ 'صفوفٌ يقرؤها النظام':'قطاریں جو نظام پڑھتا ہے',
+ 'فيها تقدّم':'جن میں پیش رفت ہے',
  'تنبيه: ':'نوٹ: ',
  'لا تناسب':'موزوں نہیں',
  'بحث بلوحةٍ أو اسم':'نمبر پلیٹ یا نام سے تلاش',
@@ -11218,6 +11230,147 @@ function vehMismatch(){
 
 var VLOG_D = '', VLOG_Q = '';
 
+/* ═══ تصديرُ ملف المتابعة بقالبه ═══════════════════════════════════════════
+   الملفُّ يحسب نفسَه بنفسه: الحالةُ والموقفُ الزمنيُّ والمتبقي والزمنُ المنقضي
+   كلُّها معادلاتٌ في القالب. والوحيدُ المكتوبُ بيدٍ هو **نسبةُ الإنجاز** في
+   الصفوف الطرفية — فلا يُكتَب غيرُها، ويعيد إكسل حسابَ الباقي عند الفتح.
+
+   ولا يُعاد بناءُ الملف: يُفكُّ القالبُ ويُستبدَل رقمٌ داخلَ خليةٍ قائمة،
+   ثم يُعاد كما هو. فالتنسيقُ الشرطيُّ والتعليقاتُ والألوانُ والمعادلاتُ تبقى
+   بايتًا ببايت — وإعادةُ البناء تُضيّعها ولو بدت الأرقامُ صحيحة. */
+
+/* الصفُّ الطرفيُّ: نطاقٌ × مرحلة. الأرقامُ من قراءة القالب نفسِه. */
+var FUP_ROWS = [
+  /* [صفّ, مشعر, نوع, مرحلة] */
+  [73,'منى','مخيم','sv'],   [74,'منى','مخيم','asn'], [75,'منى','مخيم','ins'],
+  [76,'منى','مخيم','ip'],   [77,'منى','مخيم','ok'],
+  [79,'عرفات','مخيم','sv'], [80,'عرفات','مخيم','asn'],[81,'عرفات','مخيم','ins'],
+  [82,'عرفات','مخيم','ip'], [83,'عرفات','مخيم','ok'],
+  [85,'منى','ممر','sv'],    [86,'منى','ممر','asn'],   [87,'منى','ممر','ins'],
+  [88,'منى','ممر','ip'],    [89,'منى','ممر','ok'],
+  [91,'عرفات','ممر','sv'],  [92,'عرفات','ممر','asn'], [93,'عرفات','ممر','ins'],
+  [94,'عرفات','ممر','ip'],  [95,'عرفات','ممر','ok'],
+  [97,'منى','جسر','sv'],    [98,'منى','جسر','asn'],   [99,'منى','جسر','ins'],
+  [100,'منى','جسر','ip'],   [101,'منى','جسر','ok'],
+  [103,'منى','محطة','sv'],  [104,'منى','محطة','asn'], [105,'منى','محطة','ins'],
+  [106,'منى','محطة','ip'],  [107,'منى','محطة','ok'],
+  [109,'عرفات','محطة','sv'],[110,'عرفات','محطة','asn'],[111,'عرفات','محطة','ins'],
+  [112,'عرفات','محطة','ip'],[113,'عرفات','محطة','ok'],
+  [115,'عرفات','بوابة','sv'],[116,'عرفات','بوابة','asn'],[117,'عرفات','بوابة','ins'],
+  [118,'عرفات','بوابة','ip'],[119,'عرفات','بوابة','ok'],
+  [127,'منى','كاميرا','sv'],[128,'منى','كاميرا','asn'],[129,'منى','كاميرا','ins'],
+  [130,'منى','كاميرا','ip'],[131,'منى','كاميرا','ok'],
+  /* الفكُّ: مشعرٌ كامل */
+  [158,'منى','*','dis'], [159,'عرفات','*','dis']
+];
+
+function fupPct(zone, type, stage){
+  var L = (STATE.sites || []).filter(function(x){
+    return x.zone === zone && (type === '*' || x.type === type);
+  });
+  if (!L.length) return null;              /* لا نقاطَ: لا يُكتَب شيء */
+  var n = 0;
+  L.forEach(function(x){
+    var rec = STATE.recs[x.id], ins = STATE.inss[x.id];
+    if (stage === 'sv'  && rec && svDone(rec)) n++;
+    else if (stage === 'asn' && asnOf(x.id)) n++;
+    else if (stage === 'ins' && ins && ins.status === 'مُركّب') n++;
+    else if (stage === 'ip'  && x.net && x.ipRtr && x.ipRdr) n++;
+    else if (stage === 'ok'  && ins && ins.approved) n++;
+    else if (stage === 'dis' && (STATE.diss || {})[x.id]
+             && STATE.diss[x.id].status === 'تم الفك') n++;
+  });
+  return Math.round(n * 100 / L.length);
+}
+
+/* قارئُ ZIP بلا ضغط: القالبُ مخزَّنٌ بـSTORE فلا يحتاج فكَّ ضغطٍ ولا مكتبة */
+function zipRead(buf){
+  var u = new Uint8Array(buf), dv = new DataView(buf), out = [], i = 0;
+  while (i < u.length - 4){
+    if (dv.getUint32(i, true) !== 0x04034b50) break;
+    var nLen = dv.getUint16(i + 26, true), xLen = dv.getUint16(i + 28, true);
+    var cSize = dv.getUint32(i + 18, true), method = dv.getUint16(i + 8, true);
+    var nameB = u.subarray(i + 30, i + 30 + nLen);
+    var name = new TextDecoder().decode(nameB);
+    var dStart = i + 30 + nLen + xLen;
+    out.push({ name:name, method:method, data:u.subarray(dStart, dStart + cSize) });
+    i = dStart + cSize;
+  }
+  return out;
+}
+function zipWrite(files){
+  var enc = new TextEncoder(), parts = [], central = [], off = 0;
+  function crc32(b){
+    var c, t = zipWrite._t;
+    if (!t){ t = zipWrite._t = []; for (var n = 0; n < 256; n++){ c = n;
+      for (var k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c; } }
+    c = 0 ^ (-1);
+    for (var j = 0; j < b.length; j++) c = (c >>> 8) ^ t[(c ^ b[j]) & 0xFF];
+    return (c ^ (-1)) >>> 0;
+  }
+  files.forEach(function(f){
+    var nb = enc.encode(f.name), crc = crc32(f.data);
+    var h = new Uint8Array(30 + nb.length), hv = new DataView(h.buffer);
+    hv.setUint32(0, 0x04034b50, true); hv.setUint16(4, 20, true);
+    hv.setUint16(8, 0, true); hv.setUint32(14, crc, true);
+    hv.setUint32(18, f.data.length, true); hv.setUint32(22, f.data.length, true);
+    hv.setUint16(26, nb.length, true);
+    h.set(nb, 30);
+    parts.push(h, f.data);
+    var c = new Uint8Array(46 + nb.length), cv = new DataView(c.buffer);
+    cv.setUint32(0, 0x02014b50, true); cv.setUint16(4, 20, true); cv.setUint16(6, 20, true);
+    cv.setUint16(10, 0, true); cv.setUint32(16, crc, true);
+    cv.setUint32(20, f.data.length, true); cv.setUint32(24, f.data.length, true);
+    cv.setUint16(28, nb.length, true); cv.setUint32(42, off, true);
+    c.set(nb, 46);
+    central.push(c);
+    off += h.length + f.data.length;
+  });
+  var cLen = central.reduce(function(a, c){ return a + c.length; }, 0);
+  var e = new Uint8Array(22), ev = new DataView(e.buffer);
+  ev.setUint32(0, 0x06054b50, true);
+  ev.setUint16(8, files.length, true); ev.setUint16(10, files.length, true);
+  ev.setUint32(12, cLen, true); ev.setUint32(16, off, true);
+  return new Blob(parts.concat(central, [e]), { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+}
+
+function fupExport(){
+  if (!may('exportAll')){ toast(t('التصديرُ ليس من صلاحيتك')); return; }
+  toast(t('يُجهَّز ملف المتابعة…'));
+  fetch('docs/followup-template.xlsx').then(function(r){
+    if (!r.ok) throw new Error('template ' + r.status);
+    return r.arrayBuffer();
+  }).then(function(buf){
+    var files = zipRead(buf);
+    if (!files.length) throw new Error('zip');
+    var sheet = files.filter(function(f){ return f.name === 'xl/worksheets/sheet1.xml'; })[0];
+    if (!sheet) throw new Error('sheet');
+    var xml = new TextDecoder().decode(sheet.data), wrote = 0;
+
+    FUP_ROWS.forEach(function(r){
+      var pct = fupPct(r[1], r[2], r[3]);
+      if (pct === null) return;
+      var ref = 'F' + r[0];
+      /* يُستبدَل الرقمُ داخلَ الخلية القائمة — لا تُنشَأ خليةٌ ولا يُمسُّ نمط */
+      var re = new RegExp('(<c r="' + ref + '"[^>]*>)(?:<v>[^<]*</v>)?(</c>)');
+      if (!re.test(xml)) return;
+      xml = xml.replace(re, '$1<v>' + pct + '</v>$2');
+      wrote++;
+    });
+
+    sheet.data = new TextEncoder().encode(xml);
+    var blob = zipWrite(files);
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'متابعة-نُسُك-' + todayISO() + '.xlsx';
+    document.body.appendChild(a); a.click(); a.remove();
+    logEvent('تصدير ملف المتابعة — ' + wrote + ' صفًّا');
+    toast(nm(wrote) + ' ' + t('صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح'));
+  }).catch(function(e){
+    softErr('ملف المتابعة', e, 'تعذّر تجهيزُ ملف المتابعة — جرّب مع اتصال');
+  });
+}
+
 PAGE.fleetLog = { m:'الميدان', t:'سجل عهدة السيارات',
   l:'من كانت معه أيُّ سيارةٍ وفي أيِّ يوم — للمخالفات والمساءلة.',
   body:function(){
@@ -11696,7 +11849,25 @@ function impPreviewCard(){
 
 PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'ما يخرج من النظام وما يدخل إليه.',
   body:function(){
-    return card('تصدير تقرير اللوحة',
+    return card('ملف متابعة المشروع — بقالبه',
+        '<p class="hint" style="margin:0 0 12px">'
+        + esc(t('يُنزَّل الملفُ بقالبه كما هو — بتنسيقه الشرطيِّ وتعليقاتِه ومعادلاتِه — ولا يُكتَب فيه إلا نسبةُ الإنجاز في الصفوف الميدانية. والحالةُ والموقفُ الزمنيُّ والمتبقي يحسبها إكسلُ بنفسه عند الفتح.'))
+        + '</p>'
+        + '<div class="pop-rows" style="margin:0">'
+        +   (function(){
+              var done = 0, all = 0;
+              FUP_ROWS.forEach(function(r){
+                var p = fupPct(r[1], r[2], r[3]);
+                if (p === null) return;
+                all++; if (p > 0) done++;
+              });
+              return '<div><span class="k">' + esc(t('صفوفٌ يقرؤها النظام')) + '</span><span>'
+                + nm(all) + ' ' + esc(t('من')) + ' ' + nm(FUP_ROWS.length) + '</span></div>'
+                + '<div><span class="k">' + esc(t('فيها تقدّم')) + '</span><span>' + nm(done) + '</span></div>';
+            })()
+        + '</div>',
+        btn('⬇ ملف المتابعة — محدَّثًا','btn-primary btn-sm',' data-fup="1"'))
+      + card('تصدير تقرير اللوحة',
         '<p class="hint" style="margin:0 0 12px">'
         + esc(t('تسعةٌ وعشرون قسمًا قابلة للاختيار — إكسل ورقةً لكل قسم، أو PDF صفحةً لكل قسم برسمها.'))
         + '</p>'
@@ -13604,6 +13775,7 @@ function onDocClick(e){
       logEvent('حذف نوع سيارة — ' + kn); toast(t('حُذف النوع')); render(1); }
     return;
   }
+  if (e.target.closest('[data-fup]')){ fupExport(); return; }
   if (e.target.closest('[data-vkadd]')){ vehKindAdd(); return; }
   var vkd = e.target.closest('[data-vkdel]');
   if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }

@@ -53,6 +53,7 @@ if (!w.CSS.escape) w.CSS.escape = s => String(s);
   if (!w.TextEncoder) w.TextEncoder = nodeUtil.TextEncoder;
   if (!w.TextDecoder) w.TextDecoder = nodeUtil.TextDecoder;
   if (w.URL && !w.URL.createObjectURL) w.URL.createObjectURL = () => 'blob:audit';
+  if (!w.fetch) w.fetch = () => Promise.reject(new Error('no network in audit'));
   if (w.URL && !w.URL.revokeObjectURL) w.URL.revokeObjectURL = () => {};
   if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){},
                                              addEventListener(){}, removeEventListener(){} });
