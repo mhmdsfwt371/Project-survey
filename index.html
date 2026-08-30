@@ -673,7 +673,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.69</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.70</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2451,6 +2451,15 @@ var CORE = {
      فلا يملأ الذاكرةَ انقطاعٌ طويل — وأقدمُه يُسقَط أولًا مع تحذير. */
   dirty: function(kind, id, v){
     if (typeof statBump === 'function') statBump();
+    /* المفتاحُ الواحدُ لا يدخل الطابورَ مرتين: الإعدادُ يُكتَب مرارًا وهو
+       يُقرَأ — فيتضخّم الطابورُ بكتاباتٍ لقيمةٍ واحدة، ويُرفَع القديمُ ثم
+       الجديدُ بلا فائدة. تُطوى: آخرُ كتابةٍ هي الصحيحة. */
+    for (var qi = STATE.queue.length - 1; qi >= 0; qi--){
+      if (STATE.queue[qi].kind === kind && STATE.queue[qi].id === id){
+        STATE.queue.splice(qi, 1);
+        break;
+      }
+    }
     STATE.queue.push({ kind:kind, id:id, v:v, at:Date.now() });
     /* لا يُسقَط شيء: أقدمُ ما في الطابور أوّلُ ما لم يُرفَع — أي أقدمُ عملٍ
        ميدانيٍّ لم يصل. كان يُقتطَع صامتًا فيضيع يومُ فنيٍّ ولا يعلم.
@@ -2501,7 +2510,13 @@ var CORE = {
   flush: function(){
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);
     var batch = STATE.queue.slice(0, 50);
-    return FB.push(batch).then(function(){
+    /* يُهيَّأ Firebase قبل الدفع: كان يُنادى `push` مباشرةً وهي ترفض
+       بـ«not-ready» إن لم يُحمَّل بعد — وهو يُحمَّل كسولًا. فيبقى الطابورُ
+       واقفًا ويُعاد الرفضُ في كلِّ دورةٍ فلا يصل شيءٌ أبدًا. */
+    return FB.init().then(function(ok){
+      if (!ok) return Promise.reject(new Error('offline'));
+      return FB.push(batch);
+    }).then(function(){
       STATE.queue = STATE.queue.slice(batch.length);
       STATE.meta.lastSync = Date.now();
       if (typeof rollupToday === 'function') rollupToday();
