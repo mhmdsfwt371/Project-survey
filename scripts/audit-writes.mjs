@@ -28,9 +28,9 @@ const PROMISES = [
   'data-svsave','data-svnext','data-inssave','data-insdraft','data-nssave',
   'data-impgo','data-appr','data-rej','data-chgadd','data-chgok','data-chgno',
   'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
-  'data-baseset','data-drvsave','data-tkok','data-tkrm','data-newteam','data-addmem',
-  'data-rmmem','data-asngo','data-nscoreq','data-dsch','data-ddone','data-smark',
-  'data-fmark','data-mkone','data-mkall','data-even','data-bydef'
+  'data-baseset','data-drvsave','data-tkok','data-tkrm','data-depteamnew','data-depmemadd',
+  'data-depmemrm','data-asngo','data-nscoreq','data-dsch','data-ddone','data-smark',
+  'data-fmark','data-mkone','data-mkall','data-depeven','data-depbydef'
 ];
 
 let pass = 0; const fails = [];

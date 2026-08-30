@@ -80,13 +80,13 @@ const asRole = r => { w.ROLE = r; };
 /* ══ ١ · المهندسُ يُنشئ الطاقمَ ويوزّع الوظائف ═════════════════════════════ */
 console.log('\n══ ١ · الحسابات والوظائف ══');
 asRole('engineer');
-go('tech');
+go('crewman');
 
 const T0 = w.techsList().length;
-set('tkN', 'فنيُّ السيناريو أ'); set('tkPh', '0551000001');
-click('[data-tkadd]');
-set('tkN', 'فنيُّ السيناريو ب'); set('tkPh', '0551000002');
-click('[data-tkadd]');
+set('depN', 'فنيُّ السيناريو أ'); set('depPh', '0551000001');
+click('[data-depadd]');
+set('depN', 'فنيُّ السيناريو ب'); set('depPh', '0551000002');
+click('[data-depadd]');
 step(w.techsList().length === T0 + 2, 'أُضيف فنيّان');
 
 const A = 'فنيُّ السيناريو أ', B = 'فنيُّ السيناريو ب';
