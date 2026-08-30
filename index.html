@@ -157,7 +157,12 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
   flex-wrap:wrap;padding:13px 17px;border-bottom:1px solid var(--line)}
 .card-head h2{font-size:15.5px}
 /* الجدولُ يُمرَّر داخلَ بطاقته: كان الطويلُ منه يمدُّ الصفحةَ كلَّها */
-.card-body table{display:block;max-width:100%;overflow-x:auto}
+/* الجدولُ يفرد نفسَه على الشاشة العريضة، ويُمرَّر أفقيًّا على الضيّقة:
+   كان `display:block` يقلّصه إلى عرض محتواه فيبقى نصفُ الشاشة فارغًا. */
+.card-body table{width:100%;max-width:100%}
+@media (max-width:760px){
+  .card-body table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
 
 /* ═══ البطاقةُ الطويلةُ الضيّقة: نصفان متجاوران على الشاشة العريضة ═══
    الجدولُ الضيّقُ يترك نصفَ الشاشة فارغًا ويطول نزولًا، فيُمرَّر كثيرًا
@@ -673,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.70</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.71</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -870,6 +875,10 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'إدارة':'Management',
+ 'فيه أعضاء':'has members',
+ 'نوع العمل':'Work kind',
+ 'خارج الإطار':'outside the view',
  'هذا الفريقُ معروضٌ الآن':'This team is already shown',
  'أنشئ فريقًا ثم أضِف أعضاءَه ونسبةَ كلٍّ منهم — المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'Create a team, then add its members and each one’s share — the team delivers together, points pool, and each takes his share.',
  'يُبحَث عن جلسةٍ مفتوحة…':'Looking for an open session…',
@@ -1498,6 +1507,10 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'إدارة':'انتظامیہ',
+ 'فيه أعضاء':'اس میں ارکان ہیں',
+ 'نوع العمل':'کام کی قسم',
+ 'خارج الإطار':'منظر سے باہر',
  'هذا الفريقُ معروضٌ الآن':'یہ ٹیم ابھی دکھائی جا رہی ہے',
  'أنشئ فريقًا ثم أضِف أعضاءَه ونسبةَ كلٍّ منهم — المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'ٹیم بنائیں پھر اس کے ارکان اور ہر ایک کا حصہ شامل کریں — ٹیم مل کر کام کرتی ہے، پوائنٹس جمع ہوتے ہیں، پھر ہر ایک اپنا حصہ لیتا ہے۔',
  'يُبحَث عن جلسةٍ مفتوحة…':'کھلے سیشن کی تلاش…',
@@ -2538,16 +2551,48 @@ var CORE = {
 var FB = {
   app:null, auth:null, db:null, ready:false,
 
+  /* يُحمَّل عند أول حاجةٍ إليه لا مع الصفحة: الإقلاعُ لا ينتظر شبكةً.
+     وكان يُفترَض موجودًا ولا سكربتَ يُحمّله أصلًا — فتعود `init` بـ`false`
+     دائمًا: لا دخولَ ولا رفعَ ولا جلسةٌ محفوظة. */
+  _load: null,
+  load: function(){
+    if (typeof window === 'undefined') return Promise.resolve(false);
+    if (window.firebase && window.firebase.auth) return Promise.resolve(true);
+    if (FB._load) return FB._load;
+    var B = 'https://www.gstatic.com/firebasejs/9.23.0/';
+    var one = function(f){
+      return new Promise(function(res){
+        var sc = document.createElement('script');
+        sc.src = B + f;
+        sc.onload = function(){ res(true); };
+        sc.onerror = function(){ res(false); };
+        document.head.appendChild(sc);
+      });
+    };
+    FB._load = one('firebase-app-compat.js')
+      .then(function(ok){ return ok ? one('firebase-auth-compat.js') : false; })
+      .then(function(ok){ return ok ? one('firebase-firestore-compat.js') : false; })
+      .then(function(ok){ return !!(ok && window.firebase && window.firebase.auth); })
+      .catch(function(){ return false; });
+    return FB._load;
+  },
   init: function(){
     if (FB.ready) return Promise.resolve(true);
-    if (typeof window === 'undefined' || !window.firebase) return Promise.resolve(false);
+    return FB.load().then(function(ok){
+      if (!ok) return false;
+      return FB._start();
+    });
+  },
+  _start: function(){
+    if (FB.ready) return true;
+    if (typeof window === 'undefined' || !window.firebase) return false;
     try {
       FB.app  = window.firebase.initializeApp(FB_CFG);
       FB.auth = window.firebase.auth();
       FB.db   = window.firebase.firestore();
       FB.ready = true;
-      return Promise.resolve(true);
-    } catch(e){ return Promise.resolve(false); }
+      return true;
+    } catch(e){ return false; }
   },
 
   signIn: function(user, pass){
@@ -3620,11 +3665,17 @@ function teamByRole(){
    WO_KINDS في العامل أربعة: زيارة · تهيئة · تجميع · تركيب.
    الفريق دورٌ مخصَّصٌ يرث «مشرف» ويُقيَّد بنوعٍ واحد — فلا يرى إلا شغله. */
 
+/* أنواعُ الفرق: كانت أربعةً ميدانيةً فقط — والمشروعُ فيه مستودعٌ ومشترياتٌ
+   وفكٌّ ونقل، ولا فريقَ لهم فلا يُتابَعون ولا تُسنَد إليهم سيارة. */
 var WO_KINDS = {
-  visit:   { n:'زيارة',  i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
-  prep:    { n:'تهيئة',  i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
-  asm:     { n:'تجميع',  i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
-  install: { n:'تركيب',  i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' }
+  visit:   { n:'زيارة',   i:'\u{1F50D}', c:'#E8C34B', tgt:'survey' },
+  prep:    { n:'تهيئة',   i:'\u{1F6E0}', c:'#8FD3E8', tgt:'prep' },
+  asm:     { n:'تجميع',   i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
+  install: { n:'تركيب',   i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' },
+  dis:     { n:'فك',      i:'\u{1F9E9}', c:'#F2994A', tgt:'dis' },
+  store:   { n:'مستودع',  i:'\u{1F4E6}', c:'#7DA9E8', tgt:'' },
+  buy:     { n:'مشتريات', i:'\u{1F4B3}', c:'#E88FBF', tgt:'' },
+  drive:   { n:'نقل',     i:'\u{1F69A}', c:'#9AA7B2', tgt:'' }
 };
 
 var CREWS = [
@@ -3667,6 +3718,77 @@ function crewOf(id){
 }
 
 /* ── متابعة الفرق — لوحة المهندس ─────────────────── */
+function crewSet(name, patch){
+  if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  var c = crewsList().filter(function(x){ return x.n === name; })[0];
+  if (!c) return;
+  var oldName = c.n;
+  Object.keys(patch).forEach(function(k){ c[k] = patch[k]; });
+  /* تغييرُ الاسم ينقل من كان فيه: الفنيُّ يحمل اسمَ فريقه لا معرّفَه،
+     فلو بقي الاسمُ القديمُ في سجله صار في فريقٍ لا وجودَ له. */
+  if (patch.n && patch.n !== oldName){
+    techsList().forEach(function(x){ if (x.crew === oldName) techSet(x.n, { crew:patch.n }); });
+  }
+  CORE.set('cfg', 'crews', crewsList());
+  statBump();
+}
+
+PAGE.crewman = { m:'الفرق والفنيون', t:'إدارة الفرق',
+  l:'الفرقُ كلُّها — ميدانيةً ومستودعًا ومشترياتٍ ونقلًا.',
+  body:function(){
+    var L = crewsList();
+    return stats([['فرق', N(L.length)],
+                  ['فيها أعضاء', N(L.filter(function(c){
+                    return techsList().some(function(x){ return x.crew === c.n; }); }).length), 'ok'],
+                  ['فارغة', N(L.filter(function(c){
+                    return !techsList().some(function(x){ return x.crew === c.n; }); }).length)]])
+
+      + cardFlush('الفرق — ' + nm(L.length),
+          table(['الاسم','النوع','الوصف','أعضاء',''],
+            L.map(function(c){
+              var mem = techsList().filter(function(x){ return x.crew === c.n; }).length;
+              return [may('users')
+                        ? '<input value="' + esc(c.n) + '" data-crn="' + esc(c.n) + '" dir="auto">'
+                        : '<strong>' + esc(c.n) + '</strong>',
+                      may('users')
+                        ? '<select data-crk="' + esc(c.n) + '">'
+                          + Object.keys(WO_KINDS).map(function(k){
+                              return '<option value="' + esc(k) + '"' + (c.kind === k ? ' selected' : '')
+                                + '>' + esc(t(WO_KINDS[k].n)) + '</option>';
+                            }).join('')
+                          + '<option value="*"' + (c.kind === '*' ? ' selected' : '') + '>'
+                          + esc(t('إدارة')) + '</option></select>'
+                        : esc(t((WO_KINDS[c.kind] || {}).n || c.kind)),
+                      may('users')
+                        ? '<input value="' + esc(c.d || '') + '" data-crd="' + esc(c.n) + '" dir="auto">'
+                        : esc(c.d || ''),
+                      mem ? pill(nm(mem), 'acc') : N(0),
+                      (may('users')
+                        ? (mem ? '<span class="hint" style="margin:0">' + esc(t('فيه أعضاء')) + '</span>'
+                               : btn('حذف','btn-quiet btn-sm',' data-crdel="' + esc(c.n) + '"'))
+                        : '')];
+            })))
+
+      + (may('users')
+        ? card('إضافة فريق',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('اسم الفريق')) + ' <span class="req">*</span></label>'
+            +   '<input id="crN" dir="auto" placeholder="فريق المستودع"></div>'
+            + '<div class="field"><label>' + esc(t('نوع العمل')) + '</label>'
+            +   '<select id="crKind">'
+            +   Object.keys(WO_KINDS).map(function(k){
+                  return '<option value="' + esc(k) + '">' + esc(t(WO_KINDS[k].n)) + '</option>';
+                }).join('') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
+            +   '<input id="crD" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة فريق','btn-primary btn-sm',' data-craddgo="1"'))
+        : '')
+
+      + '<p class="hint">الفريقُ الذي فيه أعضاءُ لا يُحذَف — انقلهم أولًا. وتغييرُ الاسم ينقل من كان فيه معه: الفنيُّ يحمل اسمَ فريقه لا معرّفَه.</p>'
+      + '<p class="hint">وضمُّ الفنيين إلى فرقهم في «سجل الفنيين» — لكلِّ فنيٍّ حقلُ فريقه.</p>';
+  }};
+
 PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة فرق — كلٌّ بنوع مهمته وتارجته ودوريته.',
   body:function(){
     var C = K();
@@ -8162,13 +8284,14 @@ function mapPaint(){
 
   var b = MAP.getBounds(), z = MAP.getZoom();
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
-  var shown = 0, cap = 4000;
+  var shown = 0, cap = 4000, inView = 0;
 
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
   for (var i = 0; i < LIST.length && shown < cap; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
     if (!b.contains([x.lat, x.lng])) continue;
+    inView++;
     shown++;
     var picked = (typeof selHas === 'function') && selHas(x.id);
     var col = mapColorOf(x);
@@ -8212,8 +8335,15 @@ function mapPaint(){
   /* المضلّعات ثقيلة — لا تُرسم إلا قريبًا وللمخيمات وحدها */
   if (z >= 16 && !POLY) polyLoad();
 
+  /* «معروض» يقول لماذا يقلُّ: العلاماتُ تُرشَّح بمدى الشاشة — فما خرج عن
+     الإطار لا يُرسَم، وهو صوابٌ للأداء. لكنّ من رأى «٣٢ من ١٧٨٧» ظنَّ أن
+     ألفًا وسبعمئةٍ ضاعت. فيُقال إن ما نقص «خارجَ الإطار» لا مفقود. */
   var lb = document.getElementById('mapCount');
-  if (lb) lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length);
+  if (lb){
+    var out = LIST.length - inView;
+    lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length)
+      + (out > 0 ? ' · ' + nm(out) + ' ' + t('خارج الإطار') : '');
+  }
 }
 
 function mapFly(id){
@@ -10459,8 +10589,10 @@ function crewAdd(){
 }
 function crewDel(id){
   if (!may('users')){ toast(t('إدارةُ الفرق للمهندس وحده')); return; }
+  /* يُقبَل المعرّفُ والاسمُ معًا: الشاشةُ تُرسل الاسمَ لأنه ما يراه
+     المستخدمُ، والنداءُ القديمُ يُرسل المعرّف. */
   var L = crewsList(), i = -1, nm2 = '';
-  L.forEach(function(c, k){ if (c.id === id){ i = k; nm2 = c.n; } });
+  L.forEach(function(c, k){ if (c.id === id || c.n === id){ i = k; nm2 = c.n; } });
   if (i < 0) return;
   var inIt = techsList().filter(function(x){ return x.crew === nm2; }).length;
   if (inIt){ toast(t('فيه') + ' ' + nm(inIt) + ' ' + t('فنيًّا — انقلهم أولًا')); return; }
@@ -13923,7 +14055,7 @@ var NAV = [
       ['ships','الشحنات والتوريد'],['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
   { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
-      ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
+      ['crewman','إدارة الفرق'],['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
       ['creps','التقارير الدورية'],['teams','الفرق والأنصبة'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
       ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
@@ -14912,6 +15044,9 @@ document.addEventListener('input', function(e){
       if (iq){ iq.focus(); iq.setSelectionRange(iq.value.length, iq.value.length); }
       return;
     }
+    if (el2.hasAttribute('data-crn')){ crewSet(el2.getAttribute('data-crn'), { n:el2.value.trim() }); render(1); return; }
+    if (el2.hasAttribute('data-crk')){ crewSet(el2.getAttribute('data-crk'), { kind:el2.value }); return; }
+    if (el2.hasAttribute('data-crd')){ crewSet(el2.getAttribute('data-crd'), { d:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-mxz')){
       zoneRename(el2.getAttribute('data-mxz'), el2.value); return;
     }
