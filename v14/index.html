@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.75</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.76</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -13449,6 +13449,10 @@ function typeDel(k){
 
 /* بطاقةُ إدارة الأنواع — تُعرَض في شاشتَي الزيارات والفك */
 function typesCard(){
+  /* نموذجُ الإضافة بطاقةٌ مستقلّةٌ لا وسيطٌ في رأس الجدول: كان يُمرَّر في
+     خانة `right` من `cardFlush` — وهي مكانُ زرٍّ واحدٍ لا مكانُ ثلاثةِ
+     حقول، فتتراصُّ رأسيًّا ويتبعثر الرأسُ ويطول. والقالبُ الصحيحُ نفسُه في
+     «نقاط التهيئة»: حقولٌ في صفٍّ والزرُّ في رأس بطاقتها. */
   var T = typesList(), keys = Object.keys(T);
   return cardFlush('أنواع النقاط — ' + nm(keys.length),
       table(['النوع','الاسم المعروض','الرمز','مواقع',''],
@@ -13462,18 +13466,19 @@ function typesCard(){
                     ? (u ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
                          : btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(k) + '"'))
                     : '')];
-        })),
-      may('settings')
-        ? '<div class="grid cols-3" style="margin:0 0 11px">'
+        })))
+    + (may('settings')
+      ? card('إضافة نوع',
+          '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('النوع')) + ' <span class="req">*</span></label>'
           +   '<input id="tyK" dir="auto" placeholder="مبنى خدمات"></div>'
           + '<div class="field"><label>' + esc(t('الاسم المعروض')) + '</label>'
           +   '<input id="tyL" dir="auto" placeholder="مباني الخدمات"></div>'
           + '<div class="field"><label>' + esc(t('الرمز')) + '</label>'
           +   '<input id="tyI" dir="ltr" placeholder="\u25CF"></div>'
-          + '</div>'
-          + '<div class="actions">' + btn('➕ إضافة نوع','btn-primary btn-sm',' data-tyadd="1"') + '</div>'
-        : '')
+          + '</div>',
+          btn('➕ إضافة نوع','btn-primary btn-sm',' data-tyadd="1"'))
+      : '')
     + '<p class="hint">إضافةُ نوعٍ تُنشئ صفوفَه في المشاعر الثلاثة، فيُضبَط وزنُه قبل أن تأتي أولُ نقطةٍ منه. والنوعُ الذي عليه مواقعُ لا يُحذَف — مواقعُه تحمل اسمَه.</p>';
 }
 
