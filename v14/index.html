@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.73</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.74</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14340,16 +14340,34 @@ function render(force){
 
 function enterApp(user, pass){
   if (user && pass){
-    FB.signIn(user, pass).then(function(r){
-      if (r.ok){
+    /* الهيكلُ يظهر أولًا ثم يُحاوَل الدخول: كان يُنتظَر وعدُ `signIn` ثم
+       يُظهَر — فإن رفض الوعدُ بقيت الشاشةُ بيضاءَ بلا رسالة. والتطبيقُ يعمل
+       بلا شبكةٍ بحكم تصميمه، فلا يصحُّ أن تحجبه شبكةٌ غائبة. */
+    enterShell();
+    FB.signIn(user, pass).catch(function(e){
+      return { ok:false, err:String(e && e.code || e) };
+    }).then(function(r){
+      r = r || { ok:false, err:'unknown' };
+      if (!r.ok){
+        toast(t(r.err === 'offline'
+          ? 'بلا شبكة — تعمل محليًّا ويُرفَع ما سجّلتَه حين تعود'
+          : 'تعذّر الدخول — تأكّد من الاسم وكلمة المرور'));
+        STATE.meta.name = STATE.meta.name || user;
+        render(1);
+        return;
+      }
+      {
         ROLE = ROLES[r.role] ? r.role : 'tech';
         var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
         first.then(function(n){
           if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
           return pullDelta();
-        }).then(function(){ statBump(); render(1); liveWatch(); });
+        }).then(function(){ statBump(); render(1); liveWatch(); })
+          .catch(function(e){
+            softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
+            render(1);
+          });
       }
-      enterShell();
     });
     return;
   }
