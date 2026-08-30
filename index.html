@@ -612,9 +612,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .sidebar-head .brand-name{flex:1 1 auto;min-width:0;line-height:1.25}
 .sidebar-head .nav-x{flex:0 0 auto;margin-inline-start:auto}
 
-.v2030{display:block;width:112px;max-width:70%;height:auto;margin:0 0 12px;opacity:.92}
-[data-theme="dark"] .v2030{filter:brightness(1.7) saturate(.9)}
-
+[data-theme="dark"] 
 .ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-mute);font-weight:400;
   margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
   border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
@@ -639,11 +637,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
-      <!-- شعارُ الرؤية: ذيلُ القائمة الجانبية — لا يعلو شيئًا ولا يعلوه شيء،
-           ولا يزاحم خريطةً ولا نموذجًا. ضع `vision2030.svg` في الجذر ليظهر،
-           وإن لم يوجد أُخفي العنصرُ فلا تظهر صورةٌ مكسورة. -->
-      <img src="vision2030.svg" alt="رؤية السعودية ٢٠٣٠" class="v2030"
-           onerror="this.style.display='none'">
+      
       <div class="who">محمد صفوت</div>
       <div class="who-role" id="whoRole"></div>
       <div class="foot-row">
@@ -666,7 +660,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.65</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.66</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -861,6 +855,9 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'الأعدادُ ليست نهائيةً بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفَكُّ يزيد، وحاجةُ التهيئة لا تُعرَف إلا بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فأساسُ كلِّ مرحلةٍ هنا هو منجَزُ ما قبلها — يكبر بكبره ويقف بوقوفه.':'The numbers are not final by nature: sites have not been surveyed yet so what gets dismantled grows, preparation needs are only known after the survey, installation follows the survey, and dismantling follows installation. So each stage here is based on what the stage before it delivered — it grows as that grows and stops when it stops.',
+ 'بانتظار ما قبله':'Awaiting the stage before it',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'The weight is per point of this combination — not for its count. And the count changes: what gets surveyed grows, preparation follows the survey, installation follows the survey, and dismantling follows installation. So no count is shown here that would read as a commitment when it is an estimate. Renaming the zone renames it across all its sites, and switching the type moves them to it.',
  'حدّث الآن':'Update now',
  'لاحقًا':'Later',
  'نسخةٌ جديدةٌ نزلت — تُطبَّق بعد':'A new version downloaded — applies in',
@@ -1476,6 +1473,9 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'الأعدادُ ليست نهائيةً بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفَكُّ يزيد، وحاجةُ التهيئة لا تُعرَف إلا بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فأساسُ كلِّ مرحلةٍ هنا هو منجَزُ ما قبلها — يكبر بكبره ويقف بوقوفه.':'تعداد فطری طور پر حتمی نہیں: مقامات کا سروے ابھی نہیں ہوا اس لیے ہٹانے کی تعداد بڑھے گی، تیاری کی ضرورت سروے کے بعد ہی معلوم ہوگی، تنصیب سروے کے تابع ہے، اور ہٹانا تنصیب کے تابع۔ ہر مرحلہ اپنے سے پہلے مرحلے کی تکمیل پر مبنی ہے۔',
+ 'بانتظار ما قبله':'اپنے سے پہلے مرحلے کا منتظر',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'وزن اس ترکیب کے ہر پوائنٹ کا ہے — اس کی تعداد کا نہیں۔ اور تعداد بدلتی ہے۔ اس لیے یہاں کوئی ایسی تعداد نہیں دکھائی جاتی جو وعدہ سمجھی جائے حالانکہ وہ تخمینہ ہے۔',
  'حدّث الآن':'ابھی اپ ڈیٹ کریں',
  'لاحقًا':'بعد میں',
  'نسخةٌ جديدةٌ نزلت — تُطبَّق بعد':'نیا نسخہ آ گیا — لاگو ہوگا',
@@ -12926,6 +12926,71 @@ function raciDel(i){
 /* ── ٣ · سجل التدقيق ──────────────────────────────
    العملية تُسجَّل ولا يُعرف من غيّرها ولا لماذا رُفضت. */
 
+/* ═══ سلسلةُ المراحل: كلُّ عددٍ من الذي قبله ═════════════════════════════════
+   العددُ الثابت التزامٌ، والعددُ المشتقُّ تقدير. وهذه الأعدادُ ليست نهائيةً
+   بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفكُّ يزيد، وما يُهيَّأ لا يُعرَف إلا
+   بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب.
+
+   فتُعرَض السلسلةُ كما هي: أساسُ كلِّ مرحلةٍ هو منجَزُ ما قبلها، وما لم يقع
+   بعدُ يُقال «بانتظار ما قبله» لا يُقدَّر برقم. */
+
+function chainRows(){
+  var S = siteStats();
+  var ins = Object.keys(STATE.inss || {}).map(function(k){ return STATE.inss[k]; }).filter(Boolean);
+  var dis = Object.keys(STATE.diss || {}).map(function(k){ return STATE.diss[k]; }).filter(Boolean);
+  var prep = Object.keys(STATE.wos || {}).map(function(k){ return STATE.wos[k]; }).filter(Boolean);
+  var okIns = ins.filter(function(x){ return x.approved; }).length;
+
+  return [
+    { k:'sites', n:'المواقع المسجَّلة', base:'—', baseN:0,
+      done:S.total, d:'الأصلُ الذي تُبنى عليه المراحلُ كلُّها.' },
+    { k:'sv', n:'المسح', base:'المواقع المسجَّلة', baseN:S.total,
+      done:S.surveyed, d:'كلُّ موقعٍ مسجَّلٍ يُمسَح — والعددُ يزيد بتسجيل مواقعَ جديدة.' },
+    { k:'prep', n:'التهيئة', base:'ما مُسح', baseN:S.surveyed,
+      done:prep.filter(function(x){ return x.kind === 'prep' && x.done; }).length,
+      d:'لا تُعرَف حاجةُ التهيئة إلا بعد المسح — فهو الذي يقول ما في الموقع.' },
+    { k:'asm', n:'التجميع', base:'ما هُيِّئ', baseN:prep.filter(function(x){ return x.kind === 'prep' && x.done; }).length,
+      done:prep.filter(function(x){ return x.kind === 'asm' && x.done; }).length,
+      d:'ما هُيِّئ يُجمَّع قبل النزول.' },
+    { k:'ins', n:'التركيب', base:'ما مُسح', baseN:S.surveyed,
+      done:S.installed, d:'يُركَّب ما مُسح — لا ما سُجّل.' },
+    { k:'ok', n:'الاعتماد', base:'ما رُكّب', baseN:S.installed,
+      done:okIns, d:'يُعتمَد ما رُكّب بعد التدقيق.' },
+    { k:'dis', n:'الفك', base:'ما اعتُمد', baseN:okIns,
+      done:dis.filter(function(x){ return x.status === 'تم الفك'; }).length,
+      d:'يُفَكُّ ما رُكّب واعتُمد — والعددُ لا يُعرَف قبل التركيب.' }
+  ];
+}
+
+PAGE.chain = { m:'المتابعة', t:'سلسلة المراحل',
+  l:'كلُّ عددٍ من الذي قبله — لا رقمَ ثابتًا قبل أوانه.',
+  body:function(){
+    var R = chainRows();
+    return '<p class="lede" style="margin:0 0 16px">'
+      + esc(t('الأعدادُ ليست نهائيةً بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفَكُّ يزيد، وحاجةُ التهيئة لا تُعرَف إلا بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فأساسُ كلِّ مرحلةٍ هنا هو منجَزُ ما قبلها — يكبر بكبره ويقف بوقوفه.'))
+      + '</p>'
+
+      + cardFlush('السلسلة',
+          table(['المرحلة','أساسُها','عددُ الأساس','منجَز','المتبقّي','النسبة'],
+            R.map(function(x){
+              var left = Math.max(0, (x.baseN || 0) - x.done);
+              var pc = x.baseN ? Math.round(x.done * 100 / x.baseN) : 0;
+              return ['<strong>' + esc(t(x.n)) + '</strong>',
+                      esc(t(x.base)),
+                      x.baseN ? N(x.baseN) : '<span class="hint" style="margin:0">'
+                        + esc(t('بانتظار ما قبله')) + '</span>',
+                      N(x.done),
+                      x.baseN ? N(left) : '—',
+                      x.baseN ? pct(x.done, x.baseN) : '—'];
+            })))
+
+      + R.map(function(x){
+          return card(x.n, '<p class="hint" style="margin:0">' + esc(t(x.d)) + '</p>');
+        }).join('')
+
+      + '<p class="hint">لا يُقدَّر عددُ مرحلةٍ قبل أن يقع أساسُها. ومن أراد تقديرًا مبكّرًا فليقرأه من المواقع المسجَّلة — ويعلم أنه سقفٌ لا التزام.</p>';
+  }};
+
 PAGE.audit = { m:'النظام', t:'سجل التدقيق',
   l:'من غيّر ماذا ومتى — لما لا يُقبل فيه الشك.',
   body:function(){
@@ -13372,7 +13437,7 @@ function mxTable(path, label){
     }).join('');
   };
   return cardFlush(label + ' — ' + nm(mxRows().length) + ' ' + t('صنفًا'),
-    table(['المشعر','النوع','مواقع', label, ''],
+    table(['المشعر','النوع', label, ''],
       mxRows().map(function(r){
         var n = mxRowInfo(r[0], r[1]);
         return [may('settings')
@@ -13381,14 +13446,13 @@ function mxTable(path, label){
                 may('settings')
                   ? '<select data-mxt="' + esc(r[0] + '|' + r[1]) + '">' + typeOpts(r[1]) + '</select>'
                   : esc(t(r[1])),
-                N(n),
                 cfgInput(path, r[0] + '|' + r[1], { dec:1 }),
                 n ? '<span class="hint" style="margin:0">' + esc(t('عليه مواقع')) + '</span>'
                   : (may('settings')
                       ? btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(r[1]) + '"') : '')];
       })),
     '<p class="hint" style="margin:0">'
-    + esc(t('الصفُّ مشتقٌّ من المواقع: تعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. ولا يُحذَف صفٌّ عليه مواقع — تُنقَل أولًا.'))
+    + esc(t('الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.'))
     + '</p>');
 }
 
@@ -13748,7 +13812,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
