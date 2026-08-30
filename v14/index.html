@@ -158,6 +158,15 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .card-head h2{font-size:15.5px}
 /* الجدولُ يُمرَّر داخلَ بطاقته: كان الطويلُ منه يمدُّ الصفحةَ كلَّها */
 .card-body table{display:block;max-width:100%;overflow-x:auto}
+
+/* ═══ البطاقةُ الطويلةُ الضيّقة: نصفان متجاوران على الشاشة العريضة ═══
+   الجدولُ الضيّقُ يترك نصفَ الشاشة فارغًا ويطول نزولًا، فيُمرَّر كثيرًا
+   ليُقرأ قليل. والقسمةُ في الشيفرة لا في النمط: يُشطَر الصفُّ نصفين
+   ويُعرَضان متجاورين، فيبقى الجدولُ جدولًا في كلِّ متصفّح. ولا `subgrid`:
+   لا يعرفها كلُّ متصفّح، والقاعدةُ التي لا تُفهَم تُلغى بصمتٍ كما ألغى iOS
+   وحدةَ `dvh` من قبل. */
+.halves{display:grid;gap:13px;grid-template-columns:1fr}
+@media (min-width:1000px){ .halves{grid-template-columns:1fr 1fr;align-items:start} }
 .card-body{padding:17px}
 .card-body.tight{padding:0}
 .hint{color:var(--ink-soft);font-size:13px;margin:10px 0 0}
@@ -665,7 +674,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.67</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.68</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -862,6 +871,8 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'اسم المشعر':'Zone name',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'The weight is per point of this combination — not for its count. And the count changes: surveys grow, preparation follows the survey, installation follows the survey, and dismantling follows installation. Editing the zone name in its column header renames it across all its sites, and switching the type moves them to it.',
 
  'اضغط لترى ما لم يُرفَع':'App installed',
  'ثُبِّت التطبيق':'From the browser menu: Install app, or Add to Home Screen',
@@ -1485,6 +1496,8 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'اسم المشعر':'مشعر کا نام',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'وزن اس ترکیب کے ہر پوائنٹ کا ہے — تعداد کا نہیں۔ اور تعداد بدلتی ہے۔ کالم کے سر میں مشعر کا نام بدلنا اس کے تمام مقامات میں بدلتا ہے۔',
 
  'اضغط لترى ما لم يُرفَع':'ایپ انسٹال ہو گئی',
  'ثُبِّت التطبيق':'براؤزر مینو سے: ایپ انسٹال کریں یا ہوم اسکرین پر شامل کریں',
@@ -10326,10 +10339,11 @@ PAGE.wipe = { m:'النظام', t:'تصفير البيانات',
   body:function(){
     var C = wipeCounts(), tot = C.reduce(function(a, r){ return a + r[1]; }, 0);
     return alertBox('warn','يمسحُ ما سُجِّل: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والأحداثُ والمقترحات. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.')
-      + cardFlush('ما سيُمسَح — ' + nm(tot) + ' ' + t('سجلًّا'),
-          table(['البند','العدد'], C.map(function(r){
+      + halves('ما سيُمسَح — ' + nm(tot) + ' ' + t('سجلًّا'),
+          ['البند','العدد'],
+          C.map(function(r){
             return [esc(t(r[0])), r[1] ? pill(nm(r[1]), 'wrn') : N(0)];
-          })))
+          }))
       + (may('delete')
         ? card('التأكيد',
             '<div class="field"><label>' + esc(t('اكتب «مسح نهائي» للتأكيد')) + '</label>'
@@ -13452,32 +13466,53 @@ function mxRowInfo(zone, label){
 }
 
 /* الصفُّ الكامل — يُستعمَل في «نقاط الزيارات» و«نقاط الفك» */
+/* يشطر صفوفَ جدولٍ نصفين متجاورين حين يطول: أقلُّ من عشرةٍ يبقى واحدًا،
+   فالقسمةُ لما لا يستحقُّ تُشتّت لا تُريح. */
+function halves(title, head, rows, right){
+  if (rows.length < 10) return cardFlush(title, table(head, rows), right);
+  var m = Math.ceil(rows.length / 2);
+  return cardFlush(title,
+    '<div class="halves">'
+    + '<div>' + table(head, rows.slice(0, m)) + '</div>'
+    + '<div>' + table(head, rows.slice(m)) + '</div>'
+    + '</div>', right);
+}
+
 function mxTable(path, label){
-  var T = typesList(), Z = zoneList();
+  /* عمودٌ لكلِّ مشعر: كان جدولًا واحدًا ضيّقًا يترك نصفَ الشاشة فارغًا ويطول
+     نزولًا — فيُمرَّر كثيرًا ليُقرأ قليل. والمشاعرُ تُقارَن بنظرةٍ واحدة كما
+     يُقارَن الممرُّ بالمخيم في شاشة التركيب. */
+  var T = typesList(), byZone = {};
+  mxRows().forEach(function(r){ (byZone[r[0]] = byZone[r[0]] || []).push(r); });
   var typeOpts = function(cur){
     return Object.keys(T).map(function(k){
       return '<option value="' + esc(k) + '"' + (T[k].l === cur ? ' selected' : '') + '>'
         + esc(T[k].l) + '</option>';
     }).join('');
   };
-  return cardFlush(label + ' — ' + nm(mxRows().length) + ' ' + t('صنفًا'),
-    table(['المشعر','النوع', label, ''],
-      mxRows().map(function(r){
-        var n = mxRowInfo(r[0], r[1]);
-        return [may('settings')
-                  ? '<input value="' + esc(r[0]) + '" data-mxz="' + esc(r[0]) + '" dir="auto">'
-                  : '<strong>' + esc(t(r[0])) + '</strong>',
-                may('settings')
-                  ? '<select data-mxt="' + esc(r[0] + '|' + r[1]) + '">' + typeOpts(r[1]) + '</select>'
-                  : esc(t(r[1])),
-                cfgInput(path, r[0] + '|' + r[1], { dec:1 }),
-                n ? '<span class="hint" style="margin:0">' + esc(t('عليه مواقع')) + '</span>'
-                  : (may('settings')
-                      ? btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(r[1]) + '"') : '')];
-      })),
-    '<p class="hint" style="margin:0">'
-    + esc(t('الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.'))
-    + '</p>');
+  return '<div class="grid cols-2" style="align-items:start">'
+    + Object.keys(byZone).map(function(z){
+        var L = byZone[z];
+        return cardFlush(z + ' — ' + nm(L.length) + ' ' + t('صنفًا'),
+          table(['النوع', label, ''],
+            L.map(function(r){
+              var n = mxRowInfo(r[0], r[1]);
+              return [may('settings')
+                        ? '<select data-mxt="' + esc(r[0] + '|' + r[1]) + '">' + typeOpts(r[1]) + '</select>'
+                        : esc(t(r[1])),
+                      cfgInput(path, r[0] + '|' + r[1], { dec:1 }),
+                      n ? '' : (may('settings')
+                            ? btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(r[1]) + '"') : '')];
+            })),
+          may('settings')
+            ? '<input value="' + esc(z) + '" data-mxz="' + esc(z) + '" dir="auto" '
+              + 'style="max-width:150px" aria-label="' + esc(t('اسم المشعر')) + '">'
+            : '');
+      }).join('')
+    + '</div>'
+    + '<p class="hint">'
+    + esc(t('الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.'))
+    + '</p>';
 }
 
 PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
@@ -13697,15 +13732,15 @@ PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تب
   body:function(){
     var L = catList(), B = buysList();
     return '<p class="lede" style="margin:0 0 16px">هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>'
-      + cardFlush('الفئات — ' + nm(L.length),
-          table(['الفئة','عمليات','المصروف',''],
-            L.map(function(c){
+      + halves('الفئات — ' + nm(L.length),
+          ['الفئة','عمليات','المصروف',''],
+          L.map(function(c){
               var used = B.filter(function(b){ return b.cat === c; });
               var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
               return [esc(c), N(used.length), N(sum),
                       used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
                                   : btn('احذف','btn-quiet btn-sm',' data-catrm="' + esc(c) + '"')];
-            })),
+            }),
           may('money')
             ? '<form class="inline-form" onsubmit="return false">'
               + '<input id="catNew" dir="auto" placeholder="' + esc(t('فئة جديدة')) + '">'
