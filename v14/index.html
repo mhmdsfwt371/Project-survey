@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.54</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.55</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +852,13 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'تنبيه: ':'Note: ',
+ 'لا تناسب':'does not suit',
+ 'بحث بلوحةٍ أو اسم':'Search by plate or name',
+ 'جارٍ':'ongoing',
+ 'لا سيارةَ كانت مُسنَدةً في هذا اليوم.':'No vehicle was assigned on that day.',
+ 'اختر يومًا — تظهر كلُّ سيارةٍ كانت مُسنَدةً فيه ومن كانت معه.':'Pick a day — every vehicle assigned then and who had it will appear.',
+ 'لا إسناداتٍ بعد.':'No assignments yet.',
  'سيارةً — لا يُحذَف':'vehicle(s) — cannot be deleted',
  'اسم النوع':'Type name',
  'ما يُستعمَل له':'What it is used for',
@@ -1428,6 +1435,13 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'تنبيه: ':'نوٹ: ',
+ 'لا تناسب':'موزوں نہیں',
+ 'بحث بلوحةٍ أو اسم':'نمبر پلیٹ یا نام سے تلاش',
+ 'جارٍ':'جاری',
+ 'لا سيارةَ كانت مُسنَدةً في هذا اليوم.':'اس دن کوئی گاڑی تفویض نہیں تھی۔',
+ 'اختر يومًا — تظهر كلُّ سيارةٍ كانت مُسنَدةً فيه ومن كانت معه.':'ایک دن منتخب کریں — اس دن کی تمام تفویض شدہ گاڑیاں اور ان کے حامل نظر آئیں گے۔',
+ 'لا إسناداتٍ بعد.':'ابھی کوئی تفویض نہیں۔',
  'سيارةً — لا يُحذَف':'گاڑیاں — حذف نہیں ہو سکتا',
  'اسم النوع':'قسم کا نام',
  'ما يُستعمَل له':'کس کام کے لیے',
@@ -8428,6 +8442,19 @@ var SHEETS = {
     });
     return out;
   },
+  fleetLog: function(){
+    var out = [['اللوحة','النوع','أُسندت إلى','العمل','من','إلى','المدة (يوم)','ملاءمة']];
+    vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); })
+      .forEach(function(a){
+        var v = vehOf(a.veh);
+        var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
+        out.push([v ? v.plate : a.veh, v ? vehKindName(v.kind) : '', a.to,
+                  ASN_LABEL[a.kind] || a.kind || '', msDay(a.at),
+                  a.end ? msDay(a.end) : 'جارٍ', days,
+                  (v && a.kind && !vehFits(v.kind, a.kind)) ? 'لا تناسب' : 'مناسبة']);
+      });
+    return out;
+  },
   ips: function(){
     var out = [['معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
     (STATE.sites || []).forEach(function(x){
@@ -10897,6 +10924,7 @@ PAGE.notif = { m:'النظام', t:'الإشعارات',
 /* أسماءُ الأعمال التي تُسنَد — تُقرأ في السيارات والمهامّ معًا */
 var ASN_LABEL = { srv:'زيارة', ins:'تركيب', dis:'فك', buy:'مشتريات', prep:'تهيئة', asm:'تجميع' };
 function todayISO(){ return new Date().toISOString().slice(0, 10); }
+function msDay(ms){ return ms ? new Date(+ms).toISOString().slice(0, 10) : '—'; }
 
 /* ═══ السياراتُ: عهدةٌ متحرّكةٌ لها سجلٌّ كسجلّ الأجهزة ═══════════════════
    الفريقُ الميدانيُّ لا يعمل بلا سيارتين: واحدةٌ تحمل العدّةَ وأخرى ينتقل
@@ -10990,6 +11018,11 @@ function vehAsnAdd(){
   var vid = g('vaVeh'), who = g('vaTo'), kind = g('vaKind');
   if (!vid){ toast(t('اختر السيارة')); return; }
   if (!who){ toast(t('اختر من تُسنَد إليه')); return; }
+  var vv = vehOf(vid);
+  if (vv && kind && !vehFits(vv.kind, kind)){
+    /* لا يُمنَع — قد لا يجد غيرَها — لكن يُقال ويبقى في السجل */
+    toast(t('تنبيه: ') + vehKindName(vv.kind) + ' ' + t('لا تناسب') + ' ' + t(ASN_LABEL[kind] || kind));
+  }
   var cur = vehAsnOf(vid);
   if (cur){ toast(t('مُسنَدةٌ إلى') + ' ' + cur.to + ' — ' + t('أنهِ الإسنادَ أولًا')); return; }
   var id = 'va' + Date.now().toString(36);
@@ -11129,6 +11162,134 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
         : '')
 
       + '<p class="hint">اللوحةُ لا تتكرّر. والسيارةُ المسنَدةُ لا تُحذَف — يُنهى إسنادُها أولًا، فيبقى في السجل من كانت معه ومتى.</p>';
+  }};
+
+/* ═══ سجلُّ عهدة السيارات ═══════════════════════════════════════════════════
+   الإسنادُ الجاري يُعرَف: من معه أيُّ سيارةٍ الآن. لكنَّ المخالفةَ تأتي بعد
+   شهرٍ بتاريخِ يومٍ مضى — «هذه اللوحةُ في الثاني عشر من الشهر». ومن أنهى
+   إسنادَه يومَها لم يعد في القائمة، فيُسأل من معه السيارةُ اليومَ عن يومٍ لم
+   يكن فيها.
+
+   فيُقرأ السجلُّ كلُّه — الجاري والمنتهي — ويُسأل بتاريخ: من كانت معه هذه
+   السيارةُ في ذلك اليوم؟ */
+
+function vehAsnAll(){
+  var A = STATE.vehAsn || {};
+  return Object.keys(A).map(function(k){ return A[k]; }).filter(Boolean);
+}
+/* من كانت معه سيارةٌ بعينها في يومٍ بعينه */
+function vehHolderOn(vid, ms){
+  var hit = null;
+  vehAsnAll().forEach(function(a){
+    if (a.veh !== vid) return;
+    var from = +a.at || 0, to = +a.end || Infinity;
+    if (ms >= from && ms <= to) hit = a;
+  });
+  return hit;
+}
+/* كلُّ ما كان مُسنَدًا في يومٍ بعينه — لكلِّ سيارات الأسطول */
+function vehOnDay(ms){
+  return vehList().map(function(v){
+    var a = vehHolderOn(v.id, ms);
+    return { veh:v, asn:a };
+  }).filter(function(x){ return x.asn; });
+}
+
+/* ملاءمةُ النوع للعمل: العدّةُ تحتاج بيك أب، والتنقّلُ سيدان، والتوريدُ شاحنة.
+   والفريقُ الذي معه سيدانٌ وحدَه لا يحمل عدّتَه — فيقف في الموقع بلا قطع. */
+var VEH_FIT = {
+  ins:  ['pickup','van','truck'],
+  dis:  ['pickup','van','truck'],
+  prep: ['pickup','van'],
+  asm:  ['pickup','van'],
+  srv:  ['sedan','van','pickup'],
+  buy:  ['pickup','truck','sedan','van']
+};
+function vehFits(kindVeh, kindWork){
+  var ok = VEH_FIT[kindWork];
+  return !ok || ok.indexOf(kindVeh) > -1;
+}
+function vehMismatch(){
+  return vehAsnList().filter(function(a){
+    var v = vehOf(a.veh);
+    return v && a.kind && !vehFits(v.kind, a.kind);
+  });
+}
+
+var VLOG_D = '', VLOG_Q = '';
+
+PAGE.fleetLog = { m:'الميدان', t:'سجل عهدة السيارات',
+  l:'من كانت معه أيُّ سيارةٍ وفي أيِّ يوم — للمخالفات والمساءلة.',
+  body:function(){
+    var all = vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+    var mis = vehMismatch();
+    var dayMs = VLOG_D ? new Date(VLOG_D + 'T12:00:00').getTime() : 0;
+    var onDay = dayMs ? vehOnDay(dayMs) : [];
+    var shown = all.filter(function(a){
+      if (!VLOG_Q) return true;
+      var v = vehOf(a.veh);
+      return ((v ? v.plate : '') + ' ' + a.to).indexOf(VLOG_Q) > -1;
+    });
+
+    return stats([['إسناداتٌ في السجل', N(all.length)],
+                  ['جاريةٌ الآن', N(all.filter(function(a){ return !a.end; }).length), 'acc'],
+                  ['منتهية', N(all.filter(function(a){ return a.end; }).length)],
+                  ['سيارةٌ لا تناسب عملَها', N(mis.length), mis.length ? 'bad' : 'ok']])
+
+      + (mis.length
+        ? alertBox('warn', 'سيارةٌ لا تناسب عملَها: '
+            + mis.map(function(a){
+                var v = vehOf(a.veh);
+                return (v ? v.plate : a.veh) + ' — ' + vehKindName(v ? v.kind : '')
+                  + ' مع ' + a.to + ' في ' + t(ASN_LABEL[a.kind] || a.kind);
+              }).join(' · ')
+            + '. العدّةُ تحتاج بيك أب أو فان، والتنقّلُ سيدان — ومن معه سيدانٌ وحدَه لا يحمل عدّتَه فيقف في الموقع بلا قطع.')
+        : '')
+
+      + card('من كانت معه سيارةٌ في يومٍ بعينه',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('التاريخ')) + '</label>'
+          +   '<input type="date" id="vlD" data-vlgd="1" value="' + esc(VLOG_D) + '"></div>'
+          + '<div class="field"><label>' + esc(t('بحث بلوحةٍ أو اسم')) + '</label>'
+          +   '<input type="search" id="vlQ" data-vlgq="1" value="' + esc(VLOG_Q) + '" dir="auto"></div>'
+          + '</div>'
+          + (VLOG_D
+            ? (onDay.length
+              ? table(['اللوحة','النوع','كانت مع','العمل','من','إلى'],
+                  onDay.map(function(x){
+                    return ['<span class="num">' + esc(x.veh.plate) + '</span>',
+                            esc(vehKindName(x.veh.kind)),
+                            '<strong>' + esc(x.asn.to) + '</strong>',
+                            esc(t(ASN_LABEL[x.asn.kind] || x.asn.kind || '—')),
+                            '<span class="num">' + esc(msDay(x.asn.at)) + '</span>',
+                            x.asn.end ? '<span class="num">' + esc(msDay(x.asn.end)) + '</span>'
+                                      : pill(t('جارٍ'), 'ok')];
+                  }))
+              : '<p class="hint" style="padding:14px 0;margin:0">'
+                + esc(t('لا سيارةَ كانت مُسنَدةً في هذا اليوم.')) + '</p>')
+            : '<p class="hint" style="margin:11px 0 0">'
+              + esc(t('اختر يومًا — تظهر كلُّ سيارةٍ كانت مُسنَدةً فيه ومن كانت معه.')) + '</p>'))
+
+      + cardFlush('السجل كلُّه — ' + nm(shown.length),
+          shown.length
+            ? table(['اللوحة','النوع','إلى','العمل','من','إلى','المدة',''],
+                shown.slice(0, 200).map(function(a){
+                  var v = vehOf(a.veh);
+                  var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
+                  var fit = v && a.kind ? vehFits(v.kind, a.kind) : true;
+                  return ['<span class="num">' + esc(v ? v.plate : a.veh) + '</span>',
+                          esc(v ? vehKindName(v.kind) : '—'),
+                          esc(a.to),
+                          esc(t(ASN_LABEL[a.kind] || a.kind || '—')),
+                          '<span class="num">' + esc(msDay(a.at)) + '</span>',
+                          a.end ? '<span class="num">' + esc(msDay(a.end)) + '</span>' : pill(t('جارٍ'), 'ok'),
+                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
+                          fit ? '' : pill(t('لا تناسب'), 'bad')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetLog"') : '')
+
+      + '<p class="hint">السجلُّ لا يُمحى: من أُنهي إسنادُه يبقى فيه بتاريخيه — فالمخالفةُ تأتي بعد شهرٍ بتاريخِ يومٍ مضى، ومن معه السيارةُ اليومَ لم يكن فيها يومَها.</p>';
   }};
 
 PAGE.fleetAsn = { m:'الميدان', t:'إسناد السيارات',
@@ -11418,7 +11579,8 @@ var EXP_SECS = [
   ['appr','الاعتمادات — المقترح والقرار',1],
   ['ips','عناوين الشبكة',1],
   ['fleet','السيارات — الأسطول والإسناد',1],
-  ['fleetCost','تكلفة الأسطول',1]
+  ['fleetCost','تكلفة الأسطول',1],
+  ['fleetLog','سجل عهدة السيارات',1]
 ];
 
 function expHtml(){
@@ -13029,7 +13191,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
