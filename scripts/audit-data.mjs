@@ -106,6 +106,41 @@ const html = readFileSync('index.html', 'utf8');
   check(calls >= 8, `مواضعُ التسجيل (${calls})`);
 }
 
+/* ── كلُّ مسارٍ يُدخِل التطبيقَ يُظهر هيكلَه ────────────────────────────────
+   `#app` يبدأ `display:none`. فمن أخفى شاشةَ الدخول ولم يُظهر الهيكلَ ترك
+   صفحةً فارغةً تمامًا: لا شاشةَ دخولٍ ولا تطبيق. ووقع هذا في `bootAuto`.
+
+   والجرودُ كلُّها تتخطّى شاشةَ الدخول وتفحص ما بعدها — فلا واحدَ منها يرى
+   هذا. فيُفحَص نصًّا: كلُّ دالةٍ تُخفي `login` يجب أن تُظهر `app`. */
+{
+  const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['',''])[1];
+  const bodyOf = n => {
+    const i = js.indexOf('function ' + n + '(');
+    if (i < 0) return '';
+    let d = 0;
+    for (let x = js.indexOf('{', i); x < js.length; x++){
+      if (js[x] === '{') d++;
+      else if (js[x] === '}'){ d--; if (!d) return js.slice(i, x + 1); }
+    }
+    return '';
+  };
+  const names = [...js.matchAll(/^function\s+(\w+)\s*\(/gm)].map(m => m[1]);
+  const bad = names.filter(n => {
+    const b = bodyOf(n);
+    /* يُخفي شاشةَ الدخول */
+    if (!/login['"]\)[\s\S]{0,120}(display\s*=\s*['"]none|\.remove\(\))/.test(b)) return false;
+    /* ويجب أن يُظهر الهيكلَ — مباشرةً أو بنداء `enterShell` */
+    return !/enterShell\(\)|app['"]\)\.style\.display\s*=\s*['"]{2}/.test(b);
+  });
+  check(bad.length === 0, 'كلُّ مسارٍ يُخفي شاشةَ الدخول يُظهر الهيكل'
+    + (bad.length ? ' — ' + bad.join(' · ') : ''));
+
+  /* ولا `.then` بلا `.catch` في مسار الدخول: رفضٌ واحدٌ يعني شاشةً بيضاء */
+  const ent = bodyOf('enterApp');
+  check(!ent || /\.catch\(/.test(ent),
+    'مسارُ الدخول محميٌّ برفضٍ يُلتقَط');
+}
+
 /* ── لا رقمَ محفورٌ في نصٍّ يُعرَض ──────────────────────────────────────
    «تهيئة المخيم ٢٣ نقطة والممر ٢١» و«١٦٢ شركة» و«١٧٨٧ نقطة»: أرقامٌ كُتبت في
    نصوصِ شرحٍ يومَ كانت صحيحة. ثم تتغيّر المواقعُ وتتغيّر الشركاتُ ويبقى النصُّ

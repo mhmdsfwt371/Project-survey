@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.74</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.75</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9581,12 +9581,17 @@ function bootAuto(){
   autoSignIn().then(function(ok){
     try { note.remove(); } catch (e){}
     if (!ok) return;
-    lg.style.display = 'none';
-    document.body.classList.add('in');
+    /* يُظهَر الهيكلُ كما يفعل الدخولُ اليدويّ: `#app` يبدأ `display:none`،
+       وكان يُخفى الدخولُ ولا يُظهَر الهيكل — فتبقى الصفحةُ فارغةً تمامًا،
+       لا شاشةَ دخولٍ ولا تطبيق. */
+    enterShell();
     var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
     first.then(function(){ return pullDelta(); })
          .then(function(){ statBump(); render(1); syncBadge(); })
-         .catch(function(){ render(1); });
+         .catch(function(e){
+           softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
+           render(1);
+         });
     logEvent('دخولٌ بجلسةٍ محفوظة');
   });
 }
