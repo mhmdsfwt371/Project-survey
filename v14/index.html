@@ -651,7 +651,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.52</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.53</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -846,6 +846,44 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'سيارةً — لا يُحذَف':'vehicle(s) — cannot be deleted',
+ 'اسم النوع':'Type name',
+ 'ما يُستعمَل له':'What it is used for',
+ 'السعة':'Capacity',
+ 'تبديلُ الصلاحيات لمدير المشروع وحده':'Changing permissions is for the project manager only',
+ /* ══ الأسطول والأدوار ══ */
+ 'السياراتُ للمهندس والمشتريات':'Vehicles are for the engineer and purchasing',
+ 'اكتب رقم اللوحة':'Write the plate number',
+ 'اللوحةُ مسجَّلةٌ بالفعل':'That plate is already registered',
+ 'أُضيفت السيارة':'Vehicle added',
+ 'مُسنَدةٌ الآن — أنهِ الإسنادَ أولًا':'Assigned right now — end the assignment first',
+ 'الإسنادُ للمهندس والمشتريات':'Assignment is for the engineer and purchasing',
+ 'اختر السيارة':'Choose the vehicle',
+ 'اختر من تُسنَد إليه':'Choose who it goes to',
+ 'مُسنَدةٌ إلى':'Assigned to',
+ 'أنهِ الإسنادَ أولًا':'End the assignment first',
+ 'أُسندت السيارة':'Vehicle assigned',
+ 'أُنهي الإسناد':'Assignment ended',
+ 'ابحث باللوحة أو الموديل أو النوع':'Search by plate, model or type',
+ 'لا سياراتٍ بعد — أضِفها أدناه أو استوردها من «التصدير والاستيراد».':'No vehicles yet — add one below or import from Export and import.',
+ 'رقم اللوحة':'Plate number',
+ 'الموديل':'Model',
+ 'سنة الصنع':'Year',
+ 'رقم الرخصة':'Licence number',
+ 'انتهاء الرخصة':'Licence expiry',
+ 'انتهاء التأمين':'Insurance expiry',
+ 'الملكية':'Ownership',
+ 'التكلفة الشهرية':'Monthly cost',
+ 'السيارة':'Vehicle',
+ 'فرق':'Teams',
+ 'أشخاص':'People',
+ 'لأيِّ عمل':'For which work',
+ 'لا إسناداتٍ قائمة.':'No live assignments.',
+ 'لا سياراتٍ بعد.':'No vehicles yet.',
+ 'ماذا يعمل':'What it does',
+ 'يتّسع':'Seats',
+ 'لا سيارةَ مُسنَدةً إليك الآن.':'No vehicle is assigned to you now.',
+ 'مستعملٌ — لا يُحذَف':'In use — cannot be deleted',
  'لا شركةَ بهذا الاسم.':'No company by that name.',
  'شركة':'company',
  'محدَّدة':'selected',
@@ -1384,6 +1422,44 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'سيارةً — لا يُحذَف':'گاڑیاں — حذف نہیں ہو سکتا',
+ 'اسم النوع':'قسم کا نام',
+ 'ما يُستعمَل له':'کس کام کے لیے',
+ 'السعة':'گنجائش',
+ 'تبديلُ الصلاحيات لمدير المشروع وحده':'اختیارات کی تبدیلی صرف پراجیکٹ مینیجر کے لیے',
+ /* ══ الأسطول ══ */
+ 'السياراتُ للمهندس والمشتريات':'گاڑیاں انجینئر اور خریداری کے لیے ہیں',
+ 'اكتب رقم اللوحة':'پلیٹ نمبر لکھیں',
+ 'اللوحةُ مسجَّلةٌ بالفعل':'یہ پلیٹ پہلے سے درج ہے',
+ 'أُضيفت السيارة':'گاڑی شامل ہو گئی',
+ 'مُسنَدةٌ الآن — أنهِ الإسنادَ أولًا':'ابھی تفویض شدہ ہے — پہلے تفویض ختم کریں',
+ 'الإسنادُ للمهندس والمشتريات':'تفویض انجینئر اور خریداری کے لیے ہے',
+ 'اختر السيارة':'گاڑی منتخب کریں',
+ 'اختر من تُسنَد إليه':'منتخب کریں کس کو دی جائے',
+ 'مُسنَدةٌ إلى':'تفویض شدہ بنام',
+ 'أنهِ الإسنادَ أولًا':'پہلے تفویض ختم کریں',
+ 'أُسندت السيارة':'گاڑی تفویض ہو گئی',
+ 'أُنهي الإسناد':'تفویض ختم ہو گیا',
+ 'ابحث باللوحة أو الموديل أو النوع':'پلیٹ، ماڈل یا قسم سے تلاش',
+ 'لا سياراتٍ بعد — أضِفها أدناه أو استوردها من «التصدير والاستيراد».':'ابھی کوئی گاڑی نہیں — نیچے شامل کریں یا برآمد و درآمد سے درآمد کریں۔',
+ 'رقم اللوحة':'پلیٹ نمبر',
+ 'الموديل':'ماڈل',
+ 'سنة الصنع':'سالِ ساخت',
+ 'رقم الرخصة':'لائسنس نمبر',
+ 'انتهاء الرخصة':'لائسنس کی میعاد',
+ 'انتهاء التأمين':'انشورنس کی میعاد',
+ 'الملكية':'ملکیت',
+ 'التكلفة الشهرية':'ماہانہ لاگت',
+ 'السيارة':'گاڑی',
+ 'فرق':'ٹیمیں',
+ 'أشخاص':'افراد',
+ 'لأيِّ عمل':'کس کام کے لیے',
+ 'لا إسناداتٍ قائمة.':'کوئی جاری تفویض نہیں۔',
+ 'لا سياراتٍ بعد.':'ابھی کوئی گاڑی نہیں۔',
+ 'ماذا يعمل':'یہ کیا کرتی ہے',
+ 'يتّسع':'گنجائش',
+ 'لا سيارةَ مُسنَدةً إليك الآن.':'ابھی کوئی گاڑی آپ کو تفویض نہیں۔',
+ 'مستعملٌ — لا يُحذَف':'زیرِ استعمال — حذف نہیں ہو سکتا',
  'لا شركةَ بهذا الاسم.':'اس نام کی کوئی کمپنی نہیں۔',
  'شركة':'کمپنی',
  'محدَّدة':'منتخب',
@@ -2435,7 +2511,8 @@ var FB = {
       var col = { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
                   buys:'purchases', cfg:'settings', users:'users',
                   evlog:'events', diss:'dismantles', newsites:'newsites',
-                  coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites', accounts:'accounts', photos:'photos',
+                  coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites',
+                  vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
@@ -3888,7 +3965,9 @@ var PERMS = [
   ['export_rep',   'تصدير التقارير',          ['engineer','viewer']]
 ];
 
-var ROLE_ORDER = ['engineer','supervisor','tech','cprep','casm','cins','viewer'];
+var /* بترتيب السلطة: من يملك كلَّ شيءٍ إلى من ينقل ولا يكتب */
+ROLE_ORDER = ['admin','engineer','buyer','store','acct','cprep','casm',
+              'supervisor','cins','tech','helper','driver','viewer'];
 
 function roleName(k){
   return { engineer:'مهندس', supervisor:'مشرف', tech:'فني', cprep:'تهيئة',
@@ -8351,6 +8430,26 @@ var SHEETS = {
     });
     return out;
   },
+  fleet: function(){
+    var out = [['اللوحة','النوع','الموديل','سنة الصنع','رقم الرخصة','انتهاء الرخصة',
+                'انتهاء التأمين','الملكية','التكلفة الشهرية','من تاريخ','الحالة','مع مَن','العمل']];
+    vehList().forEach(function(v){
+      var a = vehAsnOf(v.id);
+      out.push([v.plate, vehKindName(v.kind), v.model || '', v.year || '', v.lic || '',
+                v.licExp || '', v.insExp || '', v.own || '', v.cost || 0, v.start || '',
+                v.st || '', a ? a.to : '', a ? (ASN_LABEL[a.kind] || a.kind) : '']);
+    });
+    return out;
+  },
+  fleetCost: function(){
+    var out = [['اللوحة','النوع','الملكية','من تاريخ','أشهر','الشهرية','التراكمي']];
+    vehList().forEach(function(v){
+      var mo = v.start ? Math.max(1, Math.round((Date.now() - Date.parse(v.start)) / 2592000000)) : 1;
+      out.push([v.plate, vehKindName(v.kind), v.own || '', v.start || '', mo,
+                +v.cost || 0, (+v.cost || 0) * mo]);
+    });
+    return out;
+  },
   notif: function(){
     var out = [['الوقت','النوع','الأهمية','الرسالة','الموقع','إلى','أنشأه','مقروء']];
     (STATE.notifs || []).forEach(function(n){
@@ -8640,6 +8739,7 @@ var IMP_COLS = {
   sites: ['المعرّف','المشعر','النوع','الشاخص','المربع','الشركة','خط العرض','خط الطول'],
   ips:   ['معرّف الموقع','بادئة الشبكة','الراوتر','القارئ','الكاميرا'],
   users: ['المعرّف','الاسم','الدور','الحالة'],
+  fleet: ['رقم اللوحة','النوع','الموديل','انتهاء الرخصة','الملكية','التكلفة الشهرية'],
   co:    ['اسم الشركة','مواقعها','المنسّق','الجوال'],
   items: ['المنطقة','اسم القطعة','نقاط التركيب','نقاط التهيئة','نقاط التجميع','السعر'],
   stock: ['الصنف','الكمية','المورّد','التاريخ','رقم الفاتورة'],
@@ -8734,6 +8834,23 @@ function impApply(){
       var s = siteFind(String(r[0]).trim());
       if (s){ if (r[3]) s.sign = String(r[3]); if (r[4]) s.sq = String(r[4]);
               if (r[5]) s.co = String(r[5]); n++; }
+    } else if (p.kind === 'fleet'){
+      /* اللوحةُ مفتاحٌ: ما وُجد يُعدَّل وما لم يوجد يُنشَأ */
+      var pl = String(r[0] || '').trim();
+      if (pl){
+        var ex = vehList().filter(function(v){ return v.plate === pl; })[0];
+        var kd = vehKinds().filter(function(k){ return k.n === String(r[1] || '').trim(); })[0];
+        var vv = ex || { id:'vh' + Date.now().toString(36) + n, plate:pl, st:'متاحة',
+                         at:Date.now(), by:STATE.meta.name || '' };
+        if (kd) vv.kind = kd.id; else if (!vv.kind) vv.kind = 'sedan';
+        if (r[2]) vv.model  = String(r[2]).trim();
+        if (r[3]) vv.licExp = String(r[3]).trim();
+        if (r[4]) vv.own    = String(r[4]).trim();
+        if (r[5]) vv.cost   = +r[5] || 0;
+        if (!vv.start) vv.start = todayISO();
+        vehSave(vv);
+        n++;
+      }
     } else if (p.kind === 'users'){
       /* الاستيرادُ يعدّل الموجودَ ولا يُنشئ حسابًا: إنشاءُ الحساب في المصادقة
          لا في القاعدة، والدورُ والحالةُ هما ما تقرؤه القواعد. */
@@ -10226,14 +10343,21 @@ function crewDel(id){
    فتُسجَّل النقلةُ بتاريخها ولا تُمحى الأولى — وإلا ضاع من عمل ماذا ومتى. */
 
 var JOBS_SEED = [
-  { id:'j_eng',   n:'مهندس مشروع',    role:'engineer',   d:'يدير المشروعَ ويعتمد ما يرفعه الميدان.' },
-  { id:'j_sup',   n:'مشرف ميدان',     role:'supervisor', d:'يوزّع العملَ على فرقه ويتابع تنفيذَه في المشاعر.' },
-  { id:'j_store', n:'مسؤول مستودع',   role:'supervisor', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع.' },
-  { id:'j_prep',  n:'مسؤول تهيئة',    role:'cprep',      d:'يضبط الجهازَ وعنوانَه ونظامَه ويفحصه قبل النزول.' },
-  { id:'j_asm',   n:'مسؤول تجميع',    role:'casm',       d:'يجمّع مكوّناتِ البوكس ويوصّلها قبل النزول.' },
-  { id:'j_ins',   n:'مسؤول تركيب',    role:'cins',       d:'يركّب في الموقع ويوثّق بالصور.' },
-  { id:'j_tech',  n:'فني ميداني',     role:'tech',       d:'يمسح النقاطَ ويحدّث حالتَها ويصوّر.' },
-  { id:'j_view',  n:'مراقب وزاري',    role:'viewer',     d:'يقرأ التقدّمَ ولا يكتب شيئًا.' }
+  /* الوظيفةُ ما يعمله الشخص، والدورُ ما تسمح به القاعدة. وهذه الوظائفُ
+     الإحدى عشرةُ هي هيكلُ الفريق كما هو في الأرض — ولكلٍّ دورٌ من السبعة
+     التي تعرفها قواعدُ القاعدة، فلا يُنشَأ دورٌ لا تعرفه فتُرفَض كتابتُه. */
+  { id:'j_admin', n:'مدير المشروع',  role:'admin',      d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات.' },
+  { id:'j_eng',   n:'مهندس المشروع', role:'engineer',   d:'يدير التنفيذَ ويعتمد ما يرفعه الميدان — يرث من المدير دون إدارة الأدوار.' },
+  { id:'j_buy',   n:'مشتريات',       role:'supervisor', d:'يسجّل المشترياتِ ويتابع المورّدين والفئات.' },
+  { id:'j_store', n:'مستودع',        role:'supervisor', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع.' },
+  { id:'j_acc',   n:'محاسب',         role:'supervisor', d:'يتابع المستخلصاتِ والميزانيةَ وتكلفةَ التشغيل.' },
+  { id:'j_prep',  n:'مسؤول تهيئة',   role:'cprep',      d:'يضبط الجهازَ وعنوانَه ونظامَه ويفحصه قبل النزول.' },
+  { id:'j_asm',   n:'مسؤول تجميع',   role:'casm',       d:'يجمّع مكوّناتِ البوكس ويوصّلها قبل النزول.' },
+  { id:'j_sup',   n:'مشرف',          role:'supervisor', d:'يوزّع العملَ على فرقه ويتابع تنفيذَه في المشاعر.' },
+  { id:'j_ins',   n:'فني تركيب',     role:'cins',       d:'يركّب في الموقع ويوثّق بالصور.' },
+  { id:'j_tech',  n:'مساعد فني',     role:'tech',       d:'يمسح النقاطَ ويحدّث حالتَها ويصوّر.' },
+  { id:'j_drv',   n:'سائق',          role:'tech',       d:'ينقل الفريقَ والعدّةَ — وتُسنَد إليه سيارة.' },
+  { id:'j_view',  n:'مراقب وزاري',   role:'viewer',     d:'يقرأ التقدّمَ ولا يكتب شيئًا.' }
 ];
 
 function jobsList(){
@@ -10375,6 +10499,87 @@ PAGE.ips = { m:'الميدان', t:'عناوين الشبكة',
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ips"') : '')
 
       + '<p class="hint">البادئةُ تُكتَب بلا نقطةٍ أخيرة، والعناوينُ الثلاثةُ تُكتَب بنقطةٍ أولى — فيُقرأ العنوانُ كاملًا بضمّهما.</p>';
+  }};
+
+function vehKindSave(){ CORE.set('cfg', 'vehKinds', vehKinds().slice()); }
+function vehKindSet(id, patch){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var k = vehKinds().filter(function(x){ return x.id === id; })[0];
+  if (!k) return;
+  Object.keys(patch).forEach(function(p){ k[p] = patch[p]; });
+  vehKindSave();
+}
+function vehKindAdd(){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var n = g('vkN');
+  if (!n){ toast(t('اكتب اسم النوع')); return; }
+  if (vehKinds().some(function(x){ return x.n === n; })){ toast(t('النوعُ موجودٌ بالفعل')); return; }
+  vehKinds().push({ id:'vk' + Date.now().toString(36), n:n, d:g('vkD'), cap:+g('vkC') || 2 });
+  vehKindSave();
+  logEvent('نوع سيارة جديد — ' + n);
+  toast(t('أُضيف النوع'));
+  render(1);
+}
+function vehKindDel(id){
+  if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+  var used = vehList().filter(function(v){ return v.kind === id; }).length;
+  if (used){ toast(t('عليه') + ' ' + nm(used) + ' ' + t('سيارةً — لا يُحذَف')); return; }
+  var L = vehKinds(), i = -1, nm2 = '';
+  L.forEach(function(x, k){ if (x.id === id){ i = k; nm2 = x.n; } });
+  if (i < 0) return;
+  L.splice(i, 1);
+  vehKindSave();
+  logEvent('حذف نوع سيارة — ' + nm2);
+  toast(t('حُذف النوع'));
+  render(1);
+}
+
+PAGE.vehkind = { m:'الإعدادات', t:'أنواع السيارات',
+  l:'أنواعُ الأسطول وسعةُ كلٍّ — والعددُ يُشتقُّ مما أُضيف.',
+  body:function(){
+    var K = vehKinds(), V = vehList();
+    var byKind = {}, costKind = {};
+    V.forEach(function(v){
+      byKind[v.kind] = (byKind[v.kind] || 0) + 1;
+      costKind[v.kind] = (costKind[v.kind] || 0) + (+v.cost || 0);
+    });
+    return '<p class="lede" style="margin:0 0 16px">النوعُ يُضاف هنا، والعددُ يُشتقُّ مما أُضيف من كلِّ نوعٍ في «السيارات» — لا يُكتَب بيدٍ فيتجمّد. والسعةُ عددُ من تحملهم، وبها تُحسَب حاجةُ الفرق.</p>'
+
+      + stats([['أنواع', N(K.length)],
+               ['في الأسطول', N(V.length)],
+               ['تكلفةٌ شهرية', N(V.reduce(function(a, v){ return a + (+v.cost || 0); }, 0))]])
+
+      + cardFlush('الأنواع — ' + nm(K.length),
+          table(['النوع','ما يُستعمَل له','السعة','العدد','تكلفةٌ شهرية',''],
+            K.map(function(k){
+              var n2 = byKind[k.id] || 0;
+              return ['<input value="' + esc(k.n) + '" data-vkn="' + esc(k.id) + '" dir="auto">',
+                      '<input value="' + esc(k.d || '') + '" data-vkd="' + esc(k.id) + '" dir="auto">',
+                      '<input type="number" min="1" value="' + esc(String(k.cap || 2))
+                        + '" data-vkc="' + esc(k.id) + '" style="max-width:78px">',
+                      n2 ? pill(nm(n2), 'acc') : N(0),
+                      N(costKind[k.id] || 0),
+                      (may('settings')
+                        ? (n2 ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                              : btn('حذف','btn-quiet btn-sm',' data-vkdel="' + esc(k.id) + '"'))
+                        : '')];
+            })))
+
+      + (may('settings')
+        ? card('إضافة نوع',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('اسم النوع')) + ' <span class="req">*</span></label>'
+            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
+            + '<div class="field"><label>' + esc(t('ما يُستعمَل له')) + '</label>'
+            +   '<input id="vkD" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('السعة')) + '</label>'
+            +   '<input id="vkC" type="number" min="1" value="2"></div>'
+            + '</div>',
+            btn('➕ إضافة نوع','btn-primary btn-sm',' data-vkadd="1"'))
+        : '')
+
+      + '<p class="hint">النوعُ الذي عليه سياراتٌ لا يُحذَف — انقلها إلى نوعٍ آخر أولًا. والتكلفةُ الشهريةُ تُجمَع من سيارات النوع فتُعرَف كلفةُ كلِّ صنفٍ على المشروع.</p>';
   }};
 
 PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
@@ -10683,6 +10888,385 @@ PAGE.notif = { m:'النظام', t:'الإشعارات',
             : '<p class="hint" style="padding:16px">' + esc(t('لا إشعاراتٍ بعد.')) + '</p>');
   }};
 
+/* أسماءُ الأعمال التي تُسنَد — تُقرأ في السيارات والمهامّ معًا */
+var ASN_LABEL = { srv:'زيارة', ins:'تركيب', dis:'فك', buy:'مشتريات', prep:'تهيئة', asm:'تجميع' };
+function todayISO(){ return new Date().toISOString().slice(0, 10); }
+
+/* ═══ السياراتُ: عهدةٌ متحرّكةٌ لها سجلٌّ كسجلّ الأجهزة ═══════════════════
+   الفريقُ الميدانيُّ لا يعمل بلا سيارتين: واحدةٌ تحمل العدّةَ وأخرى ينتقل
+   بها الناس. وكان التوزيعُ يُحسَب بعدد الفنيين وحدَهم — فيُسنَد إلى فريقٍ
+   عملُ يومٍ كاملٍ وسيارتُه في الورشة، فلا يصل ولا يُعرَف لماذا تأخّر.
+
+   فالسيارةُ مسنَدةٌ كالفنيّ: لها نوعٌ ولوحةٌ ورخصةٌ تنتهي، وتُسنَد إلى شخصٍ
+   أو فريقٍ لنشاطٍ بعينه، وتُحسَب تكلفتُها في مصروف المشروع من يوم تشغيلها. */
+
+var VEH_KINDS_SEED = [
+  { id:'pickup', n:'بيك أب — للعدّة', d:'تحمل العدّةَ والقطعَ إلى الموقع', cap:2 },
+  { id:'sedan',  n:'سيدان — للتنقّل', d:'ينتقل بها الفريقُ بين النقاط',   cap:4 },
+  { id:'van',    n:'فان',             d:'فريقٌ كاملٌ وعدّتُه معًا',        cap:7 },
+  { id:'truck',  n:'شاحنة',           d:'نقلُ توريدٍ ثقيلٍ إلى المستودع',  cap:2 }
+];
+var VEH_STATUS = ['متاحة','مُسندة','في الورشة','خارج الخدمة'];
+var VEH_OWN    = ['ملك','مستأجرة'];
+var VEH_Q = '', VEH_EDIT = '';
+
+function vehKinds(){
+  if (!Array.isArray(STATE.vehKinds) || !STATE.vehKinds.length)
+    STATE.vehKinds = VEH_KINDS_SEED.map(function(k){ return Object.assign({}, k); });
+  return STATE.vehKinds;
+}
+function vehKindName(id){
+  var k = vehKinds().filter(function(x){ return x.id === id; })[0];
+  return (k && k.n) || id || '—';
+}
+function vehList(){
+  var V = STATE.vehicles || {};
+  return Object.keys(V).map(function(k){ return V[k]; }).filter(Boolean)
+    .sort(function(a, b){ return String(a.plate || '').localeCompare(String(b.plate || ''), 'ar'); });
+}
+function vehOf(id){ return (STATE.vehicles || {})[id] || null; }
+
+/* الإسناد: سيارةٌ لشخصٍ أو فريقٍ لنشاطٍ بعينه. والسيارةُ المسنَدةُ لا تُسنَد
+   ثانيةً في الوقت نفسِه — وإلا وقف فريقٌ ينتظر ما أُخذ منه. */
+function vehAsnList(){
+  var A = STATE.vehAsn || {};
+  return Object.keys(A).map(function(k){ return A[k]; })
+    .filter(function(x){ return x && !x.end; });
+}
+function vehAsnOf(vid){
+  return vehAsnList().filter(function(a){ return a.veh === vid; })[0] || null;
+}
+function vehOfWho(who){
+  return vehAsnList().filter(function(a){ return a.to === who; });
+}
+
+function vehSave(v){
+  if (!STATE.vehicles) STATE.vehicles = {};
+  STATE.vehicles[v.id] = v;
+  CORE.set('vehicles', v.id, v);
+  statBump();
+}
+function vehSet(id, patch){
+  if (!may('fleet') && !may('settings')){ toast(t('السياراتُ للمهندس والمشتريات')); return; }
+  var v = vehOf(id); if (!v) return;
+  Object.keys(patch).forEach(function(k){ v[k] = patch[k]; });
+  vehSave(v);
+}
+function vehAdd(){
+  if (!may('fleet') && !may('settings')){ toast(t('السياراتُ للمهندس والمشتريات')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var plate = g('vhPlate');
+  if (!plate){ toast(t('اكتب رقم اللوحة')); return; }
+  if (vehList().some(function(x){ return x.plate === plate; })){ toast(t('اللوحةُ مسجَّلةٌ بالفعل')); return; }
+  var id = 'vh' + Date.now().toString(36);
+  vehSave({ id:id, plate:plate, kind:g('vhKind') || 'sedan', model:g('vhModel'),
+            year:g('vhYear'), lic:g('vhLic'), licExp:g('vhLicExp'), insExp:g('vhInsExp'),
+            own:g('vhOwn') || 'ملك', cost:+g('vhCost') || 0, start:g('vhStart') || todayISO(),
+            st:'متاحة', note:'', at:Date.now(), by:STATE.meta.name || '' });
+  logEvent('سيارة جديدة — ' + plate + ' · ' + vehKindName(g('vhKind')));
+  toast(t('أُضيفت السيارة'));
+  render(1);
+}
+function vehDel(id){
+  if (!may('fleet') && !may('settings')){ toast(t('السياراتُ للمهندس والمشتريات')); return; }
+  var v = vehOf(id); if (!v) return;
+  if (vehAsnOf(id)){ toast(t('مُسنَدةٌ الآن — أنهِ الإسنادَ أولًا')); return; }
+  delete STATE.vehicles[id];
+  CORE.set('vehicles', id, null);
+  logEvent('حذف سيارة — ' + v.plate);
+  toast(t('حُذفت'));
+  statBump(); render(1);
+}
+
+function vehAsnAdd(){
+  if (!may('fleet') && !may('settings')){ toast(t('الإسنادُ للمهندس والمشتريات')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var vid = g('vaVeh'), who = g('vaTo'), kind = g('vaKind');
+  if (!vid){ toast(t('اختر السيارة')); return; }
+  if (!who){ toast(t('اختر من تُسنَد إليه')); return; }
+  var cur = vehAsnOf(vid);
+  if (cur){ toast(t('مُسنَدةٌ إلى') + ' ' + cur.to + ' — ' + t('أنهِ الإسنادَ أولًا')); return; }
+  var id = 'va' + Date.now().toString(36);
+  if (!STATE.vehAsn) STATE.vehAsn = {};
+  STATE.vehAsn[id] = { id:id, veh:vid, to:who, kind:kind || 'srv',
+                       at:Date.now(), by:STATE.meta.name || '', end:0 };
+  CORE.set('vehAsn', id, STATE.vehAsn[id]);
+  vehSet(vid, { st:'مُسندة' });
+  var v = vehOf(vid);
+  logEvent('إسناد سيارة — ' + v.plate + ' → ' + who + ' · ' + kind);
+  notifPush('سيارة', 'أُسندت إليك سيارة ' + v.plate + ' — ' + vehKindName(v.kind),
+            { to:who, lv:'عادي' });
+  toast(t('أُسندت السيارة'));
+  render(1);
+}
+function vehAsnEnd(id){
+  if (!may('fleet') && !may('settings')){ toast(t('الإسنادُ للمهندس والمشتريات')); return; }
+  var a = (STATE.vehAsn || {})[id]; if (!a) return;
+  a.end = Date.now();
+  CORE.set('vehAsn', id, a);
+  vehSet(a.veh, { st:'متاحة' });
+  var v = vehOf(a.veh);
+  logEvent('إنهاء إسناد سيارة — ' + (v ? v.plate : a.veh) + ' · كان مع ' + a.to);
+  toast(t('أُنهي الإسناد'));
+  render(1);
+}
+
+/* التقرير: كم متاحةٌ وكم مسنَدةٌ وكم ينقص — وينقص كم بالضبط */
+function vehNeed(){
+  var crews = (typeof crewsList === 'function') ? crewsList() : [];
+  /* كلُّ فريقٍ ميدانيٍّ يحتاج اثنتين: واحدةٌ للعدّة وأخرى للتنقّل */
+  var field = crews.filter(function(c){ return c.id !== 'eng'; });
+  var want = field.length * 2;
+  var have = vehList().filter(function(v){ return v.st !== 'خارج الخدمة'; }).length;
+  return { crews:field.length, want:want, have:have, gap:Math.max(0, want - have) };
+}
+function vehExpiring(days){
+  days = days || 30;
+  var lim = Date.now() + days * 86400000;
+  return vehList().filter(function(v){
+    var a = v.licExp ? Date.parse(v.licExp) : 0;
+    var b = v.insExp ? Date.parse(v.insExp) : 0;
+    return (a && a < lim) || (b && b < lim);
+  });
+}
+function vehCost(){
+  return vehList().reduce(function(a, v){ return a + (+v.cost || 0); }, 0);
+}
+
+
+PAGE.fleet = { m:'الميدان', t:'السيارات',
+  l:'أسطولُ المشروع — لوحاتُه ورخصُه وتكلفتُه.',
+  body:function(){
+    var L = vehList().filter(function(v){
+      if (!VEH_Q) return true;
+      return (v.plate + ' ' + (v.model || '') + ' ' + vehKindName(v.kind)).indexOf(VEH_Q) > -1;
+    });
+    var need = vehNeed(), exp = vehExpiring(30);
+    var byKind = {};
+    vehList().forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + 1; });
+
+    return stats([['في الأسطول', N(vehList().length)],
+                  ['متاحة', N(vehList().filter(function(v){ return v.st === 'متاحة'; }).length), 'ok'],
+                  ['مُسندة', N(vehList().filter(function(v){ return v.st === 'مُسندة'; }).length), 'acc'],
+                  ['نقصٌ عن الحاجة', N(need.gap), need.gap ? 'bad' : 'ok']])
+
+      + (need.gap
+        ? alertBox('warn', 'الفرقُ الميدانيةُ ' + nm(need.crews) + ' وتحتاج ' + nm(need.want)
+            + ' سيارةً — المتاحُ ' + nm(need.have) + '، فالنقصُ ' + nm(need.gap)
+            + '. سجّل طلبَ شراءٍ أو استئجار.')
+        : '')
+      + (exp.length
+        ? alertBox('warn', nm(exp.length) + ' سيارةً رخصتُها أو تأمينُها ينتهي خلال شهر: '
+            + exp.slice(0, 4).map(function(v){ return v.plate; }).join('، '))
+        : '')
+
+      + card('الأسطول حسب النوع',
+          '<div class="chips" style="margin:0">'
+          + vehKinds().map(function(k){
+              return '<span class="cat">' + esc(k.n) + ' <span class="n">'
+                + nm(byKind[k.id] || 0) + '</span></span>';
+            }).join('')
+          + '</div>')
+
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="vhQ" data-vhq="1" value="' + esc(VEH_Q) + '" placeholder="'
+      +     esc(t('ابحث باللوحة أو الموديل أو النوع')) + '" dir="auto">'
+      + '</form>'
+
+      + cardFlush('السيارات — ' + nm(L.length),
+          L.length
+            ? table(['اللوحة','النوع','الموديل','الملكية','انتهاء الرخصة','الحالة','مع مَن',''],
+                L.map(function(v){
+                  var a = vehAsnOf(v.id);
+                  var late = v.licExp && Date.parse(v.licExp) < Date.now() + 2592000000;
+                  return ['<input value="' + esc(v.plate) + '" data-vhp="' + esc(v.id) + '" dir="ltr">',
+                          '<select data-vhk="' + esc(v.id) + '">'
+                            + vehKinds().map(function(k){
+                                return '<option value="' + esc(k.id) + '"' + (v.kind === k.id ? ' selected' : '')
+                                  + '>' + esc(k.n) + '</option>'; }).join('') + '</select>',
+                          '<input value="' + esc(v.model || '') + '" data-vhm="' + esc(v.id) + '" dir="auto">',
+                          esc(t(v.own || 'ملك')),
+                          '<input type="date" value="' + esc(v.licExp || '') + '" data-vhe="' + esc(v.id) + '"'
+                            + (late ? ' style="border-color:var(--bad)"' : '') + '>',
+                          pill(t(v.st || 'متاحة'), v.st === 'متاحة' ? 'ok'
+                                : v.st === 'مُسندة' ? 'acc' : 'warn'),
+                          a ? esc(a.to) + '<br><span class="hint" style="margin:0">'
+                              + esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span>' : '—',
+                          (may('fleet') || may('settings'))
+                            ? (a ? btn('أنهِ الإسناد','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"')
+                                 : btn('حذف','btn-quiet btn-sm',' data-vhdel="' + esc(v.id) + '"'))
+                            : ''];
+                }))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا سياراتٍ بعد — أضِفها أدناه أو استوردها من «التصدير والاستيراد».')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleet"') : '')
+
+      + ((may('fleet') || may('settings'))
+        ? card('إضافة سيارة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('رقم اللوحة')) + ' <span class="req">*</span></label>'
+            +   '<input id="vhPlate" dir="ltr" placeholder="ABC 1234"></div>'
+            + '<div class="field"><label>' + esc(t('النوع')) + '</label><select id="vhKind">'
+            +   vehKinds().map(function(k){ return '<option value="' + esc(k.id) + '">' + esc(k.n) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '<div class="field"><label>' + esc(t('الموديل')) + '</label><input id="vhModel" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('سنة الصنع')) + '</label><input id="vhYear" type="number" min="1990"></div>'
+            + '<div class="field"><label>' + esc(t('رقم الرخصة')) + '</label><input id="vhLic" dir="ltr"></div>'
+            + '<div class="field"><label>' + esc(t('انتهاء الرخصة')) + '</label><input id="vhLicExp" type="date"></div>'
+            + '<div class="field"><label>' + esc(t('انتهاء التأمين')) + '</label><input id="vhInsExp" type="date"></div>'
+            + '<div class="field"><label>' + esc(t('الملكية')) + '</label><select id="vhOwn">'
+            +   VEH_OWN.map(function(o){ return '<option>' + esc(t(o)) + '</option>'; }).join('') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('التكلفة الشهرية')) + '</label><input id="vhCost" type="number" min="0"></div>'
+            + '<div class="field"><label>' + esc(t('من تاريخ')) + '</label><input id="vhStart" type="date" value="' + esc(todayISO()) + '"></div>'
+            + '</div>',
+            btn('➕ إضافة سيارة','btn-primary btn-sm',' data-vhadd="1"'))
+        : '')
+
+      + '<p class="hint">اللوحةُ لا تتكرّر. والسيارةُ المسنَدةُ لا تُحذَف — يُنهى إسنادُها أولًا، فيبقى في السجل من كانت معه ومتى.</p>';
+  }};
+
+PAGE.fleetAsn = { m:'الميدان', t:'إسناد السيارات',
+  l:'مَن يقود ماذا ولأيِّ عمل.',
+  body:function(){
+    var A = vehAsnList(), free = vehList().filter(function(v){ return v.st === 'متاحة'; });
+    var people = techsList().map(function(x){ return x.n; });
+    var crews = crewsList().map(function(c){ return c.n; });
+
+    return stats([['إسناداتٌ قائمة', N(A.length)],
+                  ['سياراتٌ متاحة', N(free.length), free.length ? 'ok' : 'wrn'],
+                  ['فرقٌ بلا سيارة',
+                    N(crews.filter(function(c){ return !vehOfWho(c).length; }).length), 'wrn']])
+
+      + ((may('fleet') || may('settings'))
+        ? card('إسنادٌ جديد',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('السيارة')) + ' <span class="req">*</span></label>'
+            +   '<select id="vaVeh"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+            +   free.map(function(v){
+                  return '<option value="' + esc(v.id) + '">' + esc(v.plate) + ' — '
+                    + esc(vehKindName(v.kind)) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '<div class="field"><label>' + esc(t('إلى')) + ' <span class="req">*</span></label>'
+            +   '<select id="vaTo"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+            +   '<optgroup label="' + esc(t('فرق')) + '">'
+            +     crews.map(function(c){ return '<option>' + esc(c) + '</option>'; }).join('')
+            +   '</optgroup>'
+            +   '<optgroup label="' + esc(t('أشخاص')) + '">'
+            +     people.map(function(p){ return '<option>' + esc(p) + '</option>'; }).join('')
+            +   '</optgroup></select></div>'
+            + '<div class="field"><label>' + esc(t('لأيِّ عمل')) + '</label><select id="vaKind">'
+            +   Object.keys(ASN_LABEL).map(function(k){
+                  return '<option value="' + esc(k) + '">' + esc(t(ASN_LABEL[k])) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '</div>',
+            btn('➕ أسنِد','btn-primary btn-sm',' data-vaadd="1"'))
+        : '')
+
+      + cardFlush('الإسنادات القائمة — ' + nm(A.length),
+          A.length
+            ? table(['السيارة','النوع','إلى','العمل','منذ',''],
+                A.map(function(a){
+                  var v = vehOf(a.veh) || { plate:a.veh, kind:'' };
+                  var days = Math.max(0, Math.round((Date.now() - (a.at || Date.now())) / 86400000));
+                  return ['<span class="num">' + esc(v.plate) + '</span>',
+                          esc(vehKindName(v.kind)), esc(a.to),
+                          pill(t(ASN_LABEL[a.kind] || a.kind), 'off'),
+                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
+                          (may('fleet') || may('settings'))
+                            ? btn('أنهِ','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"') : ''];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ قائمة.')) + '</p>')
+
+      + '<p class="hint">السيارةُ الواحدةُ لا تُسنَد مرتين في وقتٍ واحد — وإلا وقف فريقٌ ينتظر ما أُخذ منه.</p>';
+  }};
+
+PAGE.fleetCost = { m:'المال', t:'تكلفة الأسطول',
+  l:'ما تكلّفه السياراتُ شهريًّا ومنذ متى تعمل.',
+  body:function(){
+    var L = vehList(), tot = vehCost();
+    var byKind = {};
+    L.forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + (+v.cost || 0); });
+    return stats([['سيارات', N(L.length)],
+                  ['التكلفة الشهرية', N(tot)],
+                  ['ملك', N(L.filter(function(v){ return v.own === 'ملك'; }).length)],
+                  ['مستأجرة', N(L.filter(function(v){ return v.own === 'مستأجرة'; }).length), 'acc']])
+      + cardFlush('حسب النوع',
+          table(['النوع','عدد','التكلفة الشهرية'],
+            vehKinds().map(function(k){
+              return [esc(k.n), N(L.filter(function(v){ return v.kind === k.id; }).length),
+                      N(byKind[k.id] || 0)];
+            }), ['الإجمالي', N(L.length), N(tot)]))
+      + cardFlush('التفصيل',
+          L.length
+            ? table(['اللوحة','النوع','الملكية','من تاريخ','أشهر','الشهرية','التراكمي'],
+                L.map(function(v){
+                  var mo = v.start
+                    ? Math.max(1, Math.round((Date.now() - Date.parse(v.start)) / 2592000000)) : 1;
+                  return ['<span class="num">' + esc(v.plate) + '</span>',
+                          esc(vehKindName(v.kind)), esc(t(v.own || 'ملك')),
+                          '<span class="num">' + esc(v.start || '—') + '</span>',
+                          N(mo), N(+v.cost || 0), '<b>' + N((+v.cost || 0) * mo) + '</b>'];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا سياراتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetCost"') : '')
+      + '<p class="hint">التراكميُّ يُحسَب من تاريخ التشغيل إلى اليوم — فما استُؤجر شهرًا لا يُحمَّل كما يُحمَّل ما عمل موسمًا.</p>';
+  }};
+
+PAGE.vehKinds = { m:'الإعدادات', t:'أنواع السيارات',
+  l:'ما نستعمله من مركبات — وكم من كلِّ نوع.',
+  body:function(){
+    var L = vehKinds(), byKind = {};
+    vehList().forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + 1; });
+    return cardFlush('الأنواع — ' + nm(L.length),
+        table(['النوع','ماذا يعمل','يتّسع','في الأسطول',''],
+          L.map(function(k){
+            var n = byKind[k.id] || 0;
+            return ['<input value="' + esc(k.n) + '" data-vkn="' + esc(k.id) + '" dir="auto">',
+                    '<input value="' + esc(k.d || '') + '" data-vkd="' + esc(k.id) + '" dir="auto">',
+                    '<input type="number" min="1" value="' + esc(String(k.cap || 1))
+                      + '" data-vkc="' + esc(k.id) + '" style="max-width:78px">',
+                    n ? pill(nm(n), 'acc') : N(0),
+                    may('settings')
+                      ? (n ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                           : btn('حذف','btn-quiet btn-sm',' data-vkdel="' + esc(k.id) + '"'))
+                      : ''];
+          })),
+        may('settings')
+          ? '<div class="grid cols-3" style="margin:0 0 11px">'
+            + '<div class="field"><label>' + esc(t('النوع')) + ' <span class="req">*</span></label>'
+            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
+            + '<div class="field"><label>' + esc(t('ماذا يعمل')) + '</label><input id="vkD" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('يتّسع')) + '</label>'
+            +   '<input id="vkC" type="number" min="1" value="2"></div>'
+            + '</div>'
+            + '<div class="actions">' + btn('➕ إضافة نوع','btn-primary btn-sm',' data-vkadd="1"') + '</div>'
+          : '')
+      + '<p class="hint">النوعُ الذي عليه سياراتٌ لا يُحذَف. والعددُ يُحسَب مما أُضيف لا يُكتَب بيد.</p>';
+  }};
+
+PAGE.myveh = { m:'الميدان', t:'سيارتي', l:'ما أُسنِد إليك من مركبات.',
+  body:function(){
+    var me = STATE.meta.name || '';
+    var mine = vehOfWho(me);
+    var crew = (techsList().filter(function(x){ return x.n === me; })[0] || {}).crew || '';
+    if (crew) mine = mine.concat(vehOfWho(crew));
+    if (!mine.length)
+      return card('', '<p class="hint" style="text-align:center;margin:0">'
+        + esc(t('لا سيارةَ مُسنَدةً إليك الآن.')) + '</p>');
+    return mine.map(function(a){
+      var v = vehOf(a.veh) || {};
+      return card(v.plate || '—',
+        '<div class="pop-rows" style="margin:0">'
+        + '<div><span class="k">' + esc(t('النوع')) + '</span><span>' + esc(vehKindName(v.kind)) + '</span></div>'
+        + '<div><span class="k">' + esc(t('الموديل')) + '</span><span>' + esc(v.model || '—') + '</span></div>'
+        + '<div><span class="k">' + esc(t('لأيِّ عمل')) + '</span><span>'
+        +   esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span></div>'
+        + '<div><span class="k">' + esc(t('انتهاء الرخصة')) + '</span><span class="num">'
+        +   esc(v.licExp || '—') + '</span></div>'
+        + '</div>');
+    }).join('');
+  }};
+
 /* ═══ سجلُّ الأحداث ═══
    كان يعرض خمسةَ أسطرٍ ثابتةً من بيانات العرض لا السجلَّ الحقيقي — فالأثرُ
    التدقيقيُّ يُكتَب ولا يُقرأ، ومن سأل «من حذف هذه الصورة؟» لم يجد جوابًا.
@@ -10826,7 +11410,9 @@ var EXP_SECS = [
   ['users','المستخدمون وأدوارهم',1],
   ['notif','الإشعارات وقنواتها',1],
   ['appr','الاعتمادات — المقترح والقرار',1],
-  ['ips','عناوين الشبكة',1]
+  ['ips','عناوين الشبكة',1],
+  ['fleet','السيارات — الأسطول والإسناد',1],
+  ['fleetCost','تكلفة الأسطول',1]
 ];
 
 function expHtml(){
@@ -10882,6 +11468,8 @@ var IMPORTS = [
    'كل صف حركةُ توريدٍ تدخل الدفتر — ولا تُعدَّل بعدها بل تُوازَن بحركة.'],
   ['buys','المشتريات', ['التاريخ','الصنف','الفئة','المشعر','الكمية','سعر الوحدة','المورّد'],
    'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.'],
+  ['fleet','السيارات', ['رقم اللوحة','النوع','الموديل','انتهاء الرخصة','الملكية','التكلفة الشهرية'],
+   'اللوحةُ مفتاح: ما وُجد يُعدَّل وما لم يوجد يُنشَأ. والنوعُ من «أنواع السيارات».'],
   ['users','المستخدمون', ['المعرّف','الاسم','الدور','الحالة'],
    'يعدّل الاسمَ والدورَ والحالةَ لحسابٍ قائمٍ بمعرّفه — ولا يُنشئ حسابًا، فالإنشاءُ في المصادقة لا في القاعدة.']
 ];
@@ -10966,6 +11554,15 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'م�
    الحجب بالبنية لا بالجافاسكربت وحده: بندٌ لا يُبنى أصلًا لمن لا يملكه. */
 
 var ROLES = {
+  /* الأدمنُ فوق المهندس: يملك كلَّ شيءٍ ويُدير الأدوارَ نفسَها.
+     والمهندسُ يرث منه ولا يملك تبديلَ الأدوار — فمن يضبط الصلاحياتِ لا
+     يُصلح لأن يوسّع صلاحيةَ نفسِه بلا رقيب. */
+  admin:{
+    n:'مدير المشروع', d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات',
+    guide:'دليل المهندس — إدارة المشروع', nav:'*',
+    can:{ edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+          exportAll:1, importAll:1, delete:1, users:1, phones:1, roles:1, fleet:1 } },
+
   engineer:{
     n:'مهندس', d:'صلاحية كاملة — يدير الحسابات والاعتمادات',
     guide:'دليل المهندس — إدارة المشروع',
@@ -11018,7 +11615,44 @@ var ROLES = {
     nav:['map','mytasks','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
-  }
+  },
+
+  /* ثلاثةٌ مكتبية: كلٌّ يفتح بابَه ولا يفتح غيرَه */
+  buyer:{
+    n:'مشتريات', d:'يسجّل المشترياتِ ويتابع المورّدين — ولا يعتمد ولا يصرف عهدة',
+    guide:'دليل المهندس — إدارة المشروع',
+    nav:['buys','fleet','fleetAsn','fleetCost','over','guide','acct','notif'],
+    can:{ edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
+          exportAll:1, importAll:1, delete:0, users:0, phones:1, fleet:1 } },
+
+  store:{
+    n:'مستودع', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع',
+    guide:'دليل الميدان — التركيب',
+    nav:['invb','invmv','fleet','over','guide','acct','notif'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:1, workshop:1,
+          exportAll:1, importAll:1, delete:0, users:0, phones:1 } },
+
+  acct:{
+    n:'محاسب', d:'يقرأ المالَ ويصدّره — ولا يسجّل شراءً ولا يعتمده',
+    guide:'دليل المهندس — إدارة المشروع',
+    nav:['buys','budm','exec','fleetCost','over','guide','acct','notif'],
+    can:{ edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
+          exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
+
+  /* اثنان ميدانيان تحت المشرف */
+  helper:{
+    n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
+    base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
+    nav:['map','mytasks','sites','svForm','insForm','mine','mywork','myteam','guide','acct'],
+    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
+
+  driver:{
+    n:'سائق', d:'ينقل الفريقَ والعُهدةَ — يرى مهامَّه وسيارتَه ولا يكتب سجلًّا',
+    base:'supervisor', guide:'دليل الفني — العمل الميداني',
+    nav:['map','mytasks','myveh','mine','guide','acct'],
+    can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
+          exportAll:0, importAll:0, delete:0, users:0, phones:0 } }
 };
 
 var ROLE = 'engineer';
@@ -12389,7 +13023,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -12404,17 +13038,17 @@ var NAV = [
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
       ['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
-  { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
+  { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
       ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
       ['creps','التقارير الدورية'],['teams','الفرق والأنصبة'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
       ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
-      ['users','المستخدمون'],['jobs','الوظائف'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
+      ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
-      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
+      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['vehKinds','أنواع السيارات'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
@@ -12751,7 +13385,9 @@ function onDocClick(e){
   if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
   var cpt = e.target.closest('[data-capt]');
   if (cpt){
-    if (!may('users')){ toast(t('الصلاحياتُ للمهندس وحده')); return; }
+    /* تبديلُ الصلاحيات لمن يملك `roles` وحدَه — والمهندسُ لا يملكها،
+       فمن يضبط الصلاحياتِ لا يوسّع صلاحيةَ نفسِه. */
+    if (!may('roles')){ toast(t('تبديلُ الصلاحيات لمدير المشروع وحده')); return; }
     var p2 = cpt.getAttribute('data-capt').split('|');
     var R2 = ROLES[p2[0]]; if (!R2) return;
     R2.can = R2.can || {};
@@ -12773,6 +13409,36 @@ function onDocClick(e){
   if (e.target.closest('[data-lsadd]')){ lessAdd(); return; }
   var lsd = e.target.closest('[data-lsdel]');
   if (lsd){ lessDel(+lsd.getAttribute('data-lsdel')); return; }
+  if (e.target.closest('[data-vhadd]')){ vehAdd(); return; }
+  if (e.target.closest('[data-vaadd]')){ vehAsnAdd(); return; }
+  if (e.target.closest('[data-vkadd]')){
+    if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+    var g2 = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+    var vn = g2('vkN');
+    if (!vn){ toast(t('اكتب اسم النوع')); return; }
+    if (vehKinds().some(function(k){ return k.n === vn; })){ toast(t('النوعُ موجودٌ بالفعل')); return; }
+    vehKinds().push({ id:'vk' + Date.now().toString(36), n:vn, d:g2('vkD'), cap:+g2('vkC') || 2 });
+    vehKindSave(); logEvent('نوع سيارة جديد — ' + vn);
+    toast(t('أُضيف النوع')); render(1); return;
+  }
+  var vhd = e.target.closest('[data-vhdel]');
+  if (vhd){ vehDel(vhd.getAttribute('data-vhdel')); return; }
+  var vae = e.target.closest('[data-vaend]');
+  if (vae){ vehAsnEnd(vae.getAttribute('data-vaend')); return; }
+  var vkd = e.target.closest('[data-vkdel]');
+  if (vkd){
+    if (!may('settings')){ toast(t('الأنواعُ للمهندس وحده')); return; }
+    var kid = vkd.getAttribute('data-vkdel');
+    if (vehList().some(function(v){ return v.kind === kid; })){ toast(t('مستعملٌ — لا يُحذَف')); return; }
+    var KL = vehKinds(), ki = -1;
+    KL.forEach(function(k, n2){ if (k.id === kid) ki = n2; });
+    if (ki > -1){ var kn = KL[ki].n; KL.splice(ki, 1); vehKindSave();
+      logEvent('حذف نوع سيارة — ' + kn); toast(t('حُذف النوع')); render(1); }
+    return;
+  }
+  if (e.target.closest('[data-vkadd]')){ vehKindAdd(); return; }
+  var vkd = e.target.closest('[data-vkdel]');
+  if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
   var tyd = e.target.closest('[data-tydel]');
   if (tyd){ typeDel(tyd.getAttribute('data-tydel')); return; }
@@ -13270,6 +13936,27 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-rci')){   raciSet(+el2.getAttribute('data-rci'),  { I:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsw')){ lessSet(+el2.getAttribute('data-lsw'), { w:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-lsa')){ lessSet(+el2.getAttribute('data-lsa'), { a:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-vhp')){ vehSet(el2.getAttribute('data-vhp'), { plate:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-vhm')){ vehSet(el2.getAttribute('data-vhm'), { model:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-vhe')){ vehSet(el2.getAttribute('data-vhe'), { licExp:el2.value }); return; }
+    if (el2.hasAttribute('data-vhk')){ vehSet(el2.getAttribute('data-vhk'), { kind:el2.value }); render(1); return; }
+    if (el2.hasAttribute('data-vkn') || el2.hasAttribute('data-vkd') || el2.hasAttribute('data-vkc')){
+      var vk = el2.getAttribute('data-vkn') || el2.getAttribute('data-vkd') || el2.getAttribute('data-vkc');
+      var kk = vehKinds().filter(function(k){ return k.id === vk; })[0];
+      if (kk){
+        if (el2.hasAttribute('data-vkn')) kk.n = el2.value.trim();
+        else if (el2.hasAttribute('data-vkd')) kk.d = el2.value.trim();
+        else kk.cap = +el2.value || 1;
+        vehKindSave();
+      }
+      return;
+    }
+    if (el2.hasAttribute('data-vhq')){
+      VEH_Q = el2.value.trim(); render(1);
+      var vq = document.getElementById('vhQ');
+      if (vq){ vq.focus(); vq.setSelectionRange(vq.value.length, vq.value.length); }
+      return;
+    }
     if (el2.hasAttribute('data-ipn')){ ipSet(el2.getAttribute('data-ipn'), 'net',   el2.value); return; }
     if (el2.hasAttribute('data-ipr')){ ipSet(el2.getAttribute('data-ipr'), 'ipRtr', el2.value); return; }
     if (el2.hasAttribute('data-ipd')){ ipSet(el2.getAttribute('data-ipd'), 'ipRdr', el2.value); return; }
@@ -13280,6 +13967,9 @@ document.addEventListener('input', function(e){
       if (iq){ iq.focus(); iq.setSelectionRange(iq.value.length, iq.value.length); }
       return;
     }
+    if (el2.hasAttribute('data-vkn')){ vehKindSet(el2.getAttribute('data-vkn'), { n:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-vkd')){ vehKindSet(el2.getAttribute('data-vkd'), { d:el2.value.trim() }); return; }
+    if (el2.hasAttribute('data-vkc')){ vehKindSet(el2.getAttribute('data-vkc'), { cap:+el2.value || 1 }); return; }
     if (el2.hasAttribute('data-tyl')){ typeSet(el2.getAttribute('data-tyl'), { l:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-tyi')){ typeSet(el2.getAttribute('data-tyi'), { i:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-jbn')){ jobSet(el2.getAttribute('data-jbn'), { n:el2.value.trim() }); return; }

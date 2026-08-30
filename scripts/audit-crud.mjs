@@ -245,6 +245,20 @@ function blocked(name, hint, act){
 
 /* ══ ١٢ · الصلاحيةُ تُبدَّل وتُكتَب ══════════════════════════════════════ */
 {
+  /* تبديلُ الصلاحيات لمدير المشروع وحده منذ V14.53 — والمهندسُ يرث كلَّ شيءٍ
+     إلا هذا: من يضبط الصلاحياتِ لا يُصلح لأن يوسّع صلاحيةَ نفسِه بلا رقيب.
+     فيُجرَّب بالدور الذي يملكه، ويُشترَط منعُ من لا يملكه. */
+  const roleWas = w.ROLE;
+  w.ROLE = 'supervisor';
+  go('roles');
+  said = [];
+  const anyCell = d.querySelector('[data-capt]');
+  if (anyCell){
+    anyCell.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+    check(said.some(m => /مدير المشروع|المهندس/.test(m)),
+      'من لا يملك «الأدوار» لا يبدّل صلاحية');
+  }
+  w.ROLE = 'admin';
   go('roles');
   const cells = [...d.querySelectorAll('[data-capt]')];
   check(cells.length > 50, `خاناتُ الصلاحيات (${cells.length})`);
@@ -257,6 +271,7 @@ function blocked(name, hint, act){
     w.ROLES.supervisor.can.money = was ? 1 : undefined;
     if (!was) delete w.ROLES.supervisor.can.money;
   }
+  w.ROLE = roleWas;
 }
 
 /* ══ ١٣ · كلُّ ما وقع دخل السجل ══════════════════════════════════════════ */

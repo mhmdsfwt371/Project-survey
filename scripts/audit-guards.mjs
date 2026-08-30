@@ -94,7 +94,7 @@ const MUT = [
   { n:'اشتقاقُ الخصائص يعود فارغًا فيبتلع كلَّ زر', g:'scripts/audit-writes.mjs',
     a:'  ACTS_CACHE = found.length >= 20', b:'  ACTS_CACHE = found.length >= 99999' },
   { n:'القاعدةُ تنسى الأدوارَ الميدانية', g:'scripts/audit-db-rules.mjs', f:'firestore.rules',
-    a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins']; }",
+    a:"function field()  { return role() in ['tech', 'cprep', 'casm', 'cins', 'helper', 'driver']; }",
     b:"function field()  { return false; }" },
   { n:'شاشةٌ تعود إلى بيانةٍ مزروعةٍ لها مصدرٌ حيّ', g:'scripts/audit-data.mjs',
     a:"      + cardFlush('الفنيون — ' + nm(L.length),",
