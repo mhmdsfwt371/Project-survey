@@ -100,6 +100,8 @@ service cloud.firestore {
     match /fixreqs/{id}    { allow read: if ok(); allow create: if canW(); allow update: if mgr(); allow delete: if false; }
     // عناوينُ الشبكة على السجل الأمّ: يقرؤها الجميعُ ويكتبها من له التحرير
     match /sites/{id}      { allow read: if ok(); allow write: if canW(); allow delete: if false; }
+    // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
+    match /ships/{id}      { allow read: if ok(); allow write: if canW(); allow delete: if mgr(); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير
     match /vehicles/{id}   { allow read: if ok(); allow write: if canW(); }
     match /vehAsn/{id}     { allow read: if ok(); allow write: if canW(); allow delete: if false; }

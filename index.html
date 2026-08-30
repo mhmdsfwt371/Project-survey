@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.57</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.58</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +852,17 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'الشحناتُ للمشتريات والمستودع':'Shipments are for procurement and the store',
+ 'اكتب رقم الشحنة':'Write the shipment number',
+ 'رقمُ الشحنة موجودٌ بالفعل':'That shipment number already exists',
+ 'سُجّلت الشحنة':'Shipment recorded',
+ 'شحنةٌ وصلت — لا تُحذَف، سجلُّها أثر':'A shipment that arrived is not deleted — its record is evidence',
+ 'ابحث برقم الشحنة أو الصنف أو المورّد':'Search by shipment number, item or supplier',
+ 'وصلت':'Arrived',
+ 'لا شحناتٍ بعد.':'No shipments yet.',
+ 'رقم الشحنة':'Shipment no.',
+ 'تاريخ الشحن':'Shipped on',
+ 'الوصول المتوقَّع':'Expected arrival',
  'التصديرُ ليس من صلاحيتك':'Exporting is not within your permissions',
  'يُجهَّز ملف المتابعة…':'Preparing the follow-up file…',
  'صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح':'row(s) updated — Excel recomputes the rest on open',
@@ -1441,6 +1452,17 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'الشحناتُ للمشتريات والمستودع':'شپمنٹ خریداری اور اسٹور کے لیے ہیں',
+ 'اكتب رقم الشحنة':'شپمنٹ نمبر لکھیں',
+ 'رقمُ الشحنة موجودٌ بالفعل':'یہ شپمنٹ نمبر پہلے سے موجود ہے',
+ 'سُجّلت الشحنة':'شپمنٹ درج ہو گئی',
+ 'شحنةٌ وصلت — لا تُحذَف، سجلُّها أثر':'پہنچی ہوئی شپمنٹ حذف نہیں ہوتی — اس کا ریکارڈ ثبوت ہے',
+ 'ابحث برقم الشحنة أو الصنف أو المورّد':'شپمنٹ نمبر، آئٹم یا سپلائر سے تلاش',
+ 'وصلت':'پہنچ گئی',
+ 'لا شحناتٍ بعد.':'ابھی کوئی شپمنٹ نہیں۔',
+ 'رقم الشحنة':'شپمنٹ نمبر',
+ 'تاريخ الشحن':'روانگی کی تاریخ',
+ 'الوصول المتوقَّع':'متوقع آمد',
  'التصديرُ ليس من صلاحيتك':'برآمد آپ کے اختیارات میں نہیں',
  'يُجهَّز ملف المتابعة…':'فالو اپ فائل تیار ہو رہی ہے…',
  'صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح':'قطاریں اپ ڈیٹ ہوئیں — باقی ایکسل کھلتے ہی خود شمار کرے گا',
@@ -2543,7 +2565,7 @@ var FB = {
       var col = { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
                   buys:'purchases', cfg:'settings', users:'users',
                   evlog:'events', diss:'dismantles', newsites:'newsites',
-                  coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites',
+                  coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites', ships:'ships',
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
@@ -8454,6 +8476,14 @@ var SHEETS = {
     });
     return out;
   },
+  ships: function(){
+    var out = [['رقم الشحنة','الصنف','العدد','المورّد','الحالة','تاريخ الشحن','الوصول المتوقَّع','وصلت','التأخّر (يوم)']];
+    shipList().forEach(function(x){
+      out.push([x.ref, x.item || '', x.qty || 0, x.sup || '', x.st || '',
+                x.sent || '', x.eta || '', x.got || '', shipLate(x)]);
+    });
+    return out;
+  },
   fleetLog: function(){
     var out = [['اللوحة','النوع','أُسندت إلى','العمل','من','إلى','المدة (يوم)','ملاءمة']];
     vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); })
@@ -9063,6 +9093,8 @@ function swPoll(){
   try { SW_STATE.reg.update(); } catch (e){}
 }
 setInterval(swPoll, 900000);
+/* الشحناتُ تُراجَع كلَّ ساعة: ما تأخّر يُنبَّه عليه مرةً في اليوم */
+setInterval(function(){ try { shipWatch(); } catch (e){} }, 3600000);
 document.addEventListener('visibilitychange', function(){
   if (!document.hidden) swPoll();
 }, { passive:true });
@@ -10827,8 +10859,6 @@ PAGE.hb = { m:'صحة الأجهزة', t:'صحة الأجهزة', l:'الإنذ�
 var NOTIF_MAX = 200;
 
 function notifStore(){ if (!STATE.notifs) STATE.notifs = []; return STATE.notifs; }
-function notifUnread(){ return notifStore().filter(function(n){ return !n.read; }).length; }
-
 /* الأهميةُ تحدّد ما يُدفَع إلى نظام التشغيل وما يُترَك للمركز */
 var NOTIF_LV = { عاجل:3, مهم:2, عادي:1 };
 
@@ -10888,10 +10918,191 @@ function notifMail(n){
   return 'mailto:?subject=' + encodeURIComponent(sub) + '&body=' + encodeURIComponent(body);
 }
 
+/* ═══ الإشعارُ يصل صاحبَه ═══════════════════════════════════════════════════
+   كان يُخزَّن بحقل `to` ولا يُرشَّح عليه: فيرى الفنيُّ إشعاراتِ المشروع
+   كلَّها — اعتماداتٍ لا تخصّه، ومشترياتٍ لا يراها أصلًا، وتصعيداتٍ لغيره.
+   والصندوقُ الذي يمتلئ بما لا يعنيني أتوقّف عن قراءته، فيضيع فيه ما يعنيني.
+
+   والفريقُ مجموعةُ أشخاص: ما يُسنَد إليه يصل كلَّ عضوٍ فيه. ومن أُسند إليه
+   بالاسم يصل إليه وحدَه. */
+
+function crewMembers(crewName){
+  var out = [];
+  techsList().forEach(function(x){ if (x.crew === crewName) out.push(x.n); });
+  crewsList().forEach(function(c){
+    if (c.n !== crewName) return;
+    (c.members || []).forEach(function(m){ if (out.indexOf(m) < 0) out.push(m); });
+  });
+  return out;
+}
+/* فرقُ الشخص: ما هو عضوٌ فيه */
+function myCrews(who){
+  var out = [];
+  var me = techsList().filter(function(x){ return x.n === who; })[0];
+  if (me && me.crew) out.push(me.crew);
+  crewsList().forEach(function(c){
+    if ((c.members || []).indexOf(who) > -1 && out.indexOf(c.n) < 0) out.push(c.n);
+  });
+  return out;
+}
+/* هل يخصُّني هذا الإشعار؟ */
+function notifForMe(n){
+  var me = STATE.meta.name || '';
+  if (!n.to) return true;                       /* بلا وجهة: للجميع */
+  if (n.to === me) return true;                 /* باسمي */
+  if (myCrews(me).indexOf(n.to) > -1) return true;  /* لفريقي */
+  if (may('users')) return true;                /* من يدير الناسَ يرى الكلّ */
+  return false;
+}
+function notifMine(){
+  return notifStore().filter(notifForMe);
+}
+function notifUnread(){
+  return notifMine().filter(function(n){ return !n.read; }).length;
+}
+
+/* ═══ الشحنات: التوريدُ يُتابَع لا يُنتظَر ═══════════════════════════════════
+   التصنيعُ والشحنُ والتخليصُ تقع خارجَ النظام — لكنَّ حالتَها تُدخَل فيه.
+   وبلا موعدٍ متوقَّعٍ لا يُعرَف المتأخّرُ إلا حين يُسأل عنه، وحينئذٍ يكون قد
+   تأخّر أسبوعين. فيُكتَب المتوقَّعُ يومَ الشحن، ويُحسَب التأخّرُ بنفسه. */
+
+var SHIP_ST = ['قيد التصنيع','شُحنت','في التخليص','وصلت المستودع','متأخرة'];
+var SHIP_Q = '';
+
+function shipList(){
+  var S = STATE.ships || {};
+  return Object.keys(S).map(function(k){ return S[k]; }).filter(Boolean)
+    .sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+}
+function shipSave(x){ STATE.ships = STATE.ships || {}; STATE.ships[x.id] = x; CORE.set('ships', x.id, x); statBump(); }
+function shipLate(x){
+  if (x.got || !x.eta) return 0;
+  var d = Math.floor((Date.now() - new Date(x.eta + 'T12:00:00').getTime()) / 86400000);
+  return d > 0 ? d : 0;
+}
+function shipAdd(){
+  if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var ref = g('shRef');
+  if (!ref){ toast(t('اكتب رقم الشحنة')); return; }
+  if (shipList().some(function(x){ return x.ref === ref; })){ toast(t('رقمُ الشحنة موجودٌ بالفعل')); return; }
+  shipSave({ id:'sh' + Date.now().toString(36), ref:ref, item:g('shItem'), qty:+g('shQty') || 0,
+             sup:g('shSup'), st:g('shSt') || SHIP_ST[0], sent:g('shSent'), eta:g('shEta'),
+             got:'', at:Date.now(), by:STATE.meta.name || '' });
+  logEvent('شحنة جديدة — ' + ref);
+  notifPush('توريد', 'شحنةٌ جديدة: ' + ref + ' — ' + (g('shItem') || '') + ' · ' + nm(+g('shQty') || 0),
+            { lv:'عادي' });
+  toast(t('سُجّلت الشحنة'));
+  render(1);
+}
+function shipSet(id, patch){
+  if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
+  var x = (STATE.ships || {})[id]; if (!x) return;
+  Object.keys(patch).forEach(function(k){ x[k] = patch[k]; });
+  /* وصلت: يُقفَل التأخّرُ ويُسجَّل اليومُ إن لم يُكتَب */
+  if (patch.st === 'وصلت المستودع' && !x.got) x.got = todayISO();
+  shipSave(x);
+}
+function shipDel(id){
+  if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
+  var x = (STATE.ships || {})[id]; if (!x) return;
+  if (x.got){ toast(t('شحنةٌ وصلت — لا تُحذَف، سجلُّها أثر')); return; }
+  delete STATE.ships[id];
+  CORE.set('ships', id, null);
+  logEvent('حذف شحنة — ' + x.ref);
+  toast(t('حُذفت')); statBump(); render(1);
+}
+/* ما تأخّر يُنبَّه عليه مرةً في اليوم */
+function shipWatch(){
+  shipList().forEach(function(x){
+    var late = shipLate(x);
+    if (!late) return;
+    if (x.warned === todayISO()) return;
+    x.warned = todayISO();
+    shipSave(x);
+    notifPush('توريد', 'شحنةٌ متأخرة: ' + x.ref + ' — ' + nm(late) + ' يومًا بعد الموعد المتوقَّع',
+              { lv:'عاجل' });
+  });
+}
+
+PAGE.ships = { m:'الورشة والمخزون', t:'الشحنات والتوريد',
+  l:'ما شُحن ومتى يصل — وما تأخّر عن موعده.',
+  body:function(){
+    var L = shipList().filter(function(x){
+      return !SHIP_Q || (x.ref + ' ' + (x.item || '') + ' ' + (x.sup || '')).indexOf(SHIP_Q) > -1;
+    });
+    var late = shipList().filter(function(x){ return shipLate(x) > 0; });
+    var open = shipList().filter(function(x){ return !x.got; });
+
+    return stats([['شحنات', N(shipList().length)],
+                  ['في الطريق', N(open.length), open.length ? 'acc' : ''],
+                  ['وصلت', N(shipList().length - open.length), 'ok'],
+                  ['متأخرة', N(late.length), late.length ? 'bad' : 'ok']])
+
+      + (late.length
+        ? alertBox('warn', 'متأخرةٌ عن موعدها: '
+            + late.map(function(x){ return x.ref + ' — ' + nm(shipLate(x)) + ' يومًا'; }).join(' · ')
+            + '. الموعدُ المتوقَّعُ يُكتَب يومَ الشحن، فيُعرَف التأخّرُ يومَه لا بعد أسبوعين.')
+        : '')
+
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="shQ" data-shq="1" value="' + esc(SHIP_Q) + '" placeholder="'
+      +     esc(t('ابحث برقم الشحنة أو الصنف أو المورّد')) + '" dir="auto">'
+      + '</form>'
+
+      + cardFlush('الشحنات — ' + nm(L.length),
+          L.length
+            ? table(['رقم الشحنة','الصنف','العدد','المورّد','الحالة','شُحنت','متوقَّع','وصلت','التأخّر',''],
+                L.map(function(x){
+                  var lt = shipLate(x);
+                  return ['<strong>' + esc(x.ref) + '</strong>',
+                          '<input value="' + esc(x.item || '') + '" data-shi="' + esc(x.id) + '" dir="auto">',
+                          '<input type="number" min="0" value="' + esc(String(x.qty || 0))
+                            + '" data-shqy="' + esc(x.id) + '" style="max-width:86px">',
+                          '<input value="' + esc(x.sup || '') + '" data-shs="' + esc(x.id) + '" dir="auto">',
+                          '<select data-shst="' + esc(x.id) + '">'
+                            + SHIP_ST.map(function(v){
+                                return '<option' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>';
+                              }).join('') + '</select>',
+                          '<input type="date" value="' + esc(x.sent || '') + '" data-shsn="' + esc(x.id) + '">',
+                          '<input type="date" value="' + esc(x.eta || '') + '" data-sheta="' + esc(x.id) + '">',
+                          '<input type="date" value="' + esc(x.got || '') + '" data-shgot="' + esc(x.id) + '">',
+                          lt ? pill(nm(lt) + ' ' + t('يوم'), 'bad')
+                             : (x.got ? pill(t('وصلت'), 'ok') : '—'),
+                          (may('inventory') || may('money'))
+                            ? (x.got ? '<span class="hint" style="margin:0">' + esc(t('وصلت')) + '</span>'
+                                     : btn('حذف','btn-quiet btn-sm',' data-shdel="' + esc(x.id) + '"'))
+                            : ''];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا شحناتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ships"') : '')
+
+      + ((may('inventory') || may('money'))
+        ? card('تسجيل شحنة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('رقم الشحنة')) + ' <span class="req">*</span></label>'
+            +   '<input id="shRef" dir="auto" placeholder="SH-1448-001"></div>'
+            + '<div class="field"><label>' + esc(t('الصنف')) + '</label><input id="shItem" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('العدد')) + '</label>'
+            +   '<input id="shQty" type="number" min="0" value="0"></div>'
+            + '<div class="field"><label>' + esc(t('المورّد')) + '</label>'
+            +   '<select id="shSup"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+            +   supList().map(function(v){ return '<option>' + esc(v) + '</option>'; }).join('') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('تاريخ الشحن')) + '</label>'
+            +   '<input id="shSent" type="date" value="' + esc(todayISO()) + '"></div>'
+            + '<div class="field"><label>' + esc(t('الوصول المتوقَّع')) + ' <span class="req">*</span></label>'
+            +   '<input id="shEta" type="date"></div>'
+            + '</div>',
+            btn('➕ تسجيل شحنة','btn-primary btn-sm',' data-shadd="1"'))
+        : '')
+
+      + '<p class="hint">الوصولُ المتوقَّعُ يُكتَب يومَ الشحن — وبه يُحسَب التأخّرُ بنفسه ويصل إشعارٌ عاجلٌ مرةً في اليوم. والشحنةُ التي وصلت لا تُحذَف: سجلُّها أثرٌ يُسأل عنه.</p>';
+  }};
+
 PAGE.notif = { m:'النظام', t:'الإشعارات',
   l:'ما يجب أن يعرفه أحدٌ الآن — وبأيِّ قناةٍ يصله.',
   body:function(){
-    var L = notifStore(), un = notifUnread();
+    var L = notifMine(), un = notifUnread();
     var perm = (typeof Notification === 'undefined') ? 'غير مدعوم' : Notification.permission;
 
     return stats([['غير مقروء', N(un), un ? 'wrn' : 'ok'],
@@ -11780,7 +11991,8 @@ var EXP_SECS = [
   ['ips','عناوين الشبكة',1],
   ['fleet','السيارات — الأسطول والإسناد',1],
   ['fleetCost','تكلفة الأسطول',1],
-  ['fleetLog','سجل عهدة السيارات',1]
+  ['fleetLog','سجل عهدة السيارات',1],
+  ['ships','الشحنات والتوريد',1]
 ];
 
 function expHtml(){
@@ -13423,7 +13635,7 @@ var NAV = [
       ['ncr','عدم المطابقة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
-      ['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
+      ['ships','الشحنات والتوريد'],['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
   { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق والفنيون', icon:'\u25D4', items:[
       ['crews','متابعة الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
@@ -13822,6 +14034,9 @@ function onDocClick(e){
       logEvent('حذف نوع سيارة — ' + kn); toast(t('حُذف النوع')); render(1); }
     return;
   }
+  if (e.target.closest('[data-shadd]')){ shipAdd(); return; }
+  var shd = e.target.closest('[data-shdel]');
+  if (shd){ shipDel(shd.getAttribute('data-shdel')); return; }
   if (e.target.closest('[data-fup]')){ fupExport(); return; }
   if (e.target.closest('[data-vkadd]')){ vehKindAdd(); return; }
   var vkd = e.target.closest('[data-vkdel]');
@@ -14342,6 +14557,21 @@ document.addEventListener('input', function(e){
       VEH_Q = el2.value.trim(); render(1);
       var vq = document.getElementById('vhQ');
       if (vq){ vq.focus(); vq.setSelectionRange(vq.value.length, vq.value.length); }
+      return;
+    }
+    var SH = { 'data-shi':'item', 'data-shqy':'qty', 'data-shs':'sup',
+               'data-shst':'st', 'data-shsn':'sent', 'data-sheta':'eta', 'data-shgot':'got' };
+    var shk = Object.keys(SH).filter(function(a){ return el2.hasAttribute(a); })[0];
+    if (shk){
+      var p3 = {}; p3[SH[shk]] = SH[shk] === 'qty' ? (+el2.value || 0) : el2.value;
+      shipSet(el2.getAttribute(shk), p3);
+      if (shk === 'data-shst' || shk === 'data-shgot') render(1);
+      return;
+    }
+    if (el2.hasAttribute('data-shq')){
+      SHIP_Q = el2.value.trim(); render(1);
+      var sq = document.getElementById('shQ');
+      if (sq){ sq.focus(); sq.setSelectionRange(sq.value.length, sq.value.length); }
       return;
     }
     if (el2.hasAttribute('data-ipn')){ ipSet(el2.getAttribute('data-ipn'), 'net',   el2.value); return; }
