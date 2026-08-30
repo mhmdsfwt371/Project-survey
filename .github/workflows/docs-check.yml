@@ -36,6 +36,8 @@ jobs:
         run: node scripts/audit-capacity.mjs
       - name: جرد الاتساع — مئة وخمسون جهازًا ستة أشهر
         run: node scripts/audit-scale.mjs
+      - name: الحالة الصفرية — كل رقم معروض له مصدر
+        run: node scripts/audit-zero.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

@@ -7,11 +7,12 @@
   },
   "scripts": {
     "check": "node scripts/check-version.mjs",
-    "audit": "node scripts/audit-data.mjs && node scripts/audit-writes.mjs && node scripts/audit-exports.mjs && node scripts/audit-calc.mjs && node scripts/audit-roles.mjs && node scripts/parity.mjs && node scripts/audit-db-rules.mjs && node scripts/audit-crud.mjs && node scripts/audit-flow.mjs && node scripts/audit-review.mjs",
+    "audit": "node scripts/audit-data.mjs && node scripts/audit-writes.mjs && node scripts/audit-exports.mjs && node scripts/audit-calc.mjs && node scripts/audit-roles.mjs && node scripts/parity.mjs && node scripts/audit-db-rules.mjs && node scripts/audit-crud.mjs && node scripts/audit-flow.mjs && node scripts/audit-review.mjs && node scripts/audit-zero.mjs",
     "qa": "node scripts/qa.mjs",
     "preflight": "node scripts/preflight.mjs",
     "guards": "node scripts/audit-guards.mjs",
     "flow": "node scripts/audit-flow.mjs",
-    "review": "node scripts/audit-review.mjs"
+    "review": "node scripts/audit-review.mjs",
+    "zero": "node scripts/audit-zero.mjs"
   }
 }
