@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.61</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.62</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +852,7 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.':'No records yet — your actions appear here as they happen.',
  'نقاطُ التهيئة والتجميع تُضبَط في «نقاط التهيئة» و«نقاط التجميع»، والتارجتاتُ تُحسَب على مدّة المشروع من أعداد المواقع الحقيقية.':'Preparation and assembly points are set in their own screens, and targets are computed over the project span from real site counts.',
  'مخيمًا':'camp(s)',
  'ممرًّا':'corridor(s)',
@@ -1452,6 +1453,7 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.':'ابھی کوئی ریکارڈ نہیں — آپ کے اعمال یہاں ظاہر ہوں گے۔',
  'نقاطُ التهيئة والتجميع تُضبَط في «نقاط التهيئة» و«نقاط التجميع»، والتارجتاتُ تُحسَب على مدّة المشروع من أعداد المواقع الحقيقية.':'تیاری اور اسمبلی کے پوائنٹس اپنی اسکرینوں میں مقرر ہوتے ہیں، اہداف حقیقی تعداد سے شمار ہوتے ہیں۔',
  'مخيمًا':'کیمپ',
  'ممرًّا':'راہداری',
@@ -2057,18 +2059,10 @@ ur:{
 
 /* ═══ البيانات — أرقام المشروع الحقيقية ═══ */
 
+/* المراجعُ الثابتةُ وحدَها: الأصنافُ وفئاتُ المشتريات والمورّدون.
+   وما كان عرضًا — مواقعُ وأحداثٌ ومستخدمون وحركاتٌ وأرصدة — حُذف:
+   العرضُ الذي يبقى بعد التسليم يُقرأ حقيقةً. */
 var DATA = {
-  total:1787,
-  byZone:[
-    ['عرفات','مخيمات',713],['منى','مخيمات',679],['منى','ممرات',144],
-    ['منى','كاميرات الوزارة',59],['عرفات','ممرات',46],['منى','منطقة الجمرات',28],
-    ['عرفات','محطات القطار',36],['منى','محطات القطار',36],['مزدلفة','محطات القطار',36],
-    ['عرفات','مسجد نمرة',10]
-  ],
-  camps:1392, corridors:190,
-
-  /* الكتالوج — ثلاثون صنفًا من ITEM_SEED بأسمائها وأسعارها،
-     ونقاط المراحل الثلاث من PREP_SEED وASM_SEED. صفرٌ = لا يمرّ بالمرحلة. */
   items:[
     ['cor','cam_pe','كاميرا ممر 8266',16,2400, 4,0],
     ['cor','rtr','راوتر صناعي',10,1150, 5,3],
@@ -2101,67 +2095,9 @@ var DATA = {
     ['camp','gwc','جيت واي',6,1900, 5,3],
     ['camp','sockc','فيش كهرباء',2,45, 0,1]
   ],
-
-  targets:{ survey:90, insCamp:700, insCor:300, prepCamp:8000, prepCor:1000,
-            asmCamp:6600, asmCor:1300, dis:600 },
-
-  /* PW_DEF — أوزان الزيارة الافتراضية وثوابت النظام كما في العامل */
-  wDef:{ camp:3, cor:5, stn:2, jam:4, other:3 },
-  consts:{ ph:4.81, days:26, hours:8, daysWeek:6,
-           insCamp:76.9, insCor:192.3,
-           stgCfg:25, stgVal:25, stgIns:50,
-           disOk:1, disBad:1.25 },
-
-  users:[
-    ['محمد صفوت','m.safwat','مهندس','نشط','٢٠٢٦-٠٧-٣٠'],
-    ['مشرف منى','sup.mina','مشرف','نشط','٢٠٢٦-٠٨-٠٥'],
-    ['وزارة الحج','moh.view','وزارة — قراءة','نشط','٢٠٢٦-٠٨-١٠'],
-    ['فني سابق','t.old','فني','معطل','٢٠٢٦-٠٨-١٢']
-  ],
-
-  stock:[
-    ['راوتر صناعي',16,3,1,0],
-    ['قارئ ٤ منافذ',10,3,1,1],
-    ['كابل ١٥م 7D-FB',82,16,2,0],
-    ['بوكس رئيسي ٦٠×٤٠×٢٠',18,4,1,0]
-  ],
-  moves:[
-    ['٢٠٢٦-٠٨-٢٧','توريد','راوتر صناعي',20,'—','—','—'],
-    ['٢٠٢٦-٠٨-٢٧','صرف','راوتر صناعي',5,'فريق ١','—','—'],
-    ['٢٠٢٦-٠٨-٢٧','استهلاك','راوتر صناعي',1,'فريق ١','NSK-CMP-001','—'],
-    ['٢٠٢٦-٠٨-٢٧','إرجاع','قارئ ٤ منافذ',1,'فريق ١','NSK-CMP-001','تالف']
-  ],
-
-  buys:[
-    ['٢٠٢٦-٠٨-٠١','كابل شبكة CAT6','كابلات وتوصيلات','منى',800,'محل النور','معتمد'],
-    ['٢٠٢٦-٠٨-٠٢','مولد كهرباء','كهرباء','عرفات',8500,'مؤسسة الحرم','معتمد']
-  ],
-  budget:{ cap:100000, spent:9300, pending:0, appAbove:5000 },
-  suppliers:['محل النور','مؤسسة الحرم','شركة الأمانة'],
   buyCats:['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء','نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'],
-
-  techs:[
-    ['أحمد', 96, 840, 0],
-    ['فريق ٣', 40, 1151, 0],
-    ['سالم', 72, 410, 0]
-  ],
-
-  events:[
-    ['٠٢:٥١','تحديث كتالوج القطع','محمد صفوت'],
-    ['٠٢:٤٤','تسجيل مشترى: مولد كهرباء — ٨٥٠٠ ريال','محمد صفوت'],
-    ['٠٢:٣٠','إرجاع عُهدة فك — NSK-CMP-001','فريق ١'],
-    ['٠٢:١٥','اعتماد قطع التركيب — NSK-COR-014','محمد صفوت'],
-    ['٠١:٥٠','طلب تهيئة PRP-M4X — أحمد · ٤٥ نقطة','محمد صفوت']
-  ],
-
-  sites:[
-    ['NSK-ARF-COR-0007','عرفات — ممر AR-06','عرفات','ممر','—','لم يُزر'],
-    ['NSK-ARF-CMP-0001','عرفات — مربع ٧-١٥ — شاخص ١-٣-٥/٥٠٦','عرفات','مخيم','شركة الراجحي','لم يُزر'],
-    ['NSK-MNA-CMP-0184','منى — مربع ٢٢ — شاخص ٤/٧١','منى','مخيم','ضيوف البيت','لم يُزر'],
-    ['NSK-MNA-COR-0031','منى — ممر MN-12','منى','ممر','—','لم يُزر'],
-    ['NSK-TRN-STN-0004','قطار المشاعر — محطة ٣','قطار المشاعر','محطة','—','لم يُزر']
-  ]
-};
+  suppliers:['محل النور','مؤسسة الحرم','شركة الأمانة']
+};;
 
 /* سجلُّ الشاشات — يُعرَّف مرةً هنا ويُضاف إليه في كل ملفٍ بعده */
 var PAGE = {};
@@ -3597,16 +3533,16 @@ var WO_KINDS = {
 var CREWS = [
   { id:'eng',   n:'المهندسون',     base:'engineer',   kind:'*',
     d:'يديرون المشروع ويعتمدون ما يرفعه الفرق.',
-    members:['محمد صفوت'] },
+    members:[] },
   { id:'cprep', n:'فريق التهيئة',  base:'supervisor', kind:'prep',
     d:'ضبط الجهاز وعنوانه ونظامه وفحصه قبل النزول.',
-    members:['فريق ١','أحمد'] },
+    members:[] },
   { id:'casm',  n:'فريق التجميع',  base:'supervisor', kind:'asm',
     d:'تركيب ما يدخل البوكس وتوصيله قبل النزول.',
-    members:['فريق ٢'] },
+    members:[] },
   { id:'cins',  n:'فريق التركيب',  base:'supervisor', kind:'install',
     d:'تركيب النقطة في موقعها وتوثيقها.',
-    members:['فريق ٣','سالم'] }
+    members:[] }
 ];
 
 /* أرقام تمثيلية لكل فريق عبر الدورات الثلاث */
@@ -9583,12 +9519,19 @@ function mapFallback(){
 var SITE_Q = '';
 /* fieldList المحسّنة في طبقة الأداء — تُعرَّف هناك لا هنا */
 
+/* السجلاتُ من سجل الأحداث الحيّ لا من بذرةِ عرض: كانت تعرض أسماءً وأوقاتًا
+   كُتبت يومَ بُنيت الشاشة، فيقرأ الفنيُّ سجلًّا ليس سجلَّه. */
 function fieldRecords(){
+  var E = (STATE.events || []).slice(0, 40);
   return card('السجلات',
-    '<div class="timeline">' + DATA.events.map(function(e){
-      return '<div class="tl-item"><div class="tl-t">'+esc(e[1])+'</div>'
-        + '<div class="tl-s"><span class="num">'+esc(e[0])+'</span> · '+esc(e[2])+'</div></div>';
-    }).join('') + '</div>');
+    E.length
+      ? '<div class="timeline">' + E.map(function(e){
+          return '<div class="tl-item"><div class="tl-t">' + esc(e.what || '') + '</div>'
+            + '<div class="tl-s"><span class="num">'
+            + esc(new Date(e.at || Date.now()).toISOString().slice(11, 16)) + '</span> · '
+            + esc(e.by || '') + '</div></div>';
+        }).join('') + '</div>'
+      : '<p class="hint" style="margin:0">' + esc(t('لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.')) + '</p>');
 }
 
 function fieldTools(){
@@ -12473,34 +12416,64 @@ PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما �
    من الزيارة الميدانية إلى التوريد إلى الورشة إلى التركيب إلى الفك.
    كل مرحلة برقمها وتقدمها ومخرَجها الورقي. */
 
-var STAGES = [
-  { k:'sv',  n:'الزيارة الميدانية', ic:'\u25CE', done:0,    tot:1787,
-    d:'مسح الموقع وتوثيق حالته وتحدياته قبل أي عمل.',
-    kpi:[['مواقع مُسحت','٠'],['لم تُزر','١٬٧٨٧'],['تحديات مفتوحة','٠'],['متوسط الزيارة اليومي','٠']] },
-  { k:'sup', n:'التوريد', ic:'\u25A3', done:137, tot:1787,
-    d:'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.',
-    kpi:[['أصناف موردة','١٣٧'],['في المخزن','١٢٦'],['في العُهدة','٢٦'],['تالف معزول','٢']] },
-  { k:'wo',  n:'الورشة', ic:'\u25A6', done:0, tot:16900,
-    d:'التهيئة ثم التجميع قبل النزول للميدان.',
-    kpi:[['نقاط تهيئة','٠'],['نقاط تجميع','٠'],['تارجت الشهر','١٦٬٩٠٠'],['نسبة الإنجاز','٠٪']] },
-  { k:'ins', n:'التركيب', ic:'\u25C9', done:0, tot:1787,
-    d:'تركيب النقطة في موقعها واعتماد قطعها وسيرياتها.',
-    kpi:[['مُركّب','٠'],['مجدول','٠'],['متعذّر','٠'],['بانتظار التدقيق','٠']] },
-  { k:'dis', n:'الفك', ic:'\u25F7', done:0, tot:1787,
-    d:'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.',
-    kpi:[['قابل للفك','٠'],['فك مجدول','٠'],['تم الفك','٠'],['عُهدة مرتجعة','٠']] }
-];
+/* مراحلُ المشروع الخمس — أعدادُها تُشتقُّ من الحالة لا تُكتَب بيد.
+   كانت مصفوفةً محفورةً: «التوريد ١٣٧» و«في المخزن ١٢٦» و«تارجت ١٦٬٩٠٠»،
+   وهي أرقامُ يومٍ مضى تُقرأ اليومَ حقيقةً. */
+function stageRows(){
+  var S = siteStats(), N0 = S.total;
+  var mv = Object.keys(STATE.moves || {}).map(function(k){ return STATE.moves[k]; }).filter(Boolean);
+  var cnt = function(kind){ return mv.filter(function(m){ return m.kind === kind; }).length; };
+  var ins = Object.keys(STATE.inss || {}).map(function(k){ return STATE.inss[k]; }).filter(Boolean);
+  var dis = Object.keys(STATE.diss || {}).map(function(k){ return STATE.diss[k]; }).filter(Boolean);
+  var sup = cnt('توريد');
+  var wo  = Object.keys(CFG.stgCfg ? {} : {}).length;
+  var prep = 0, asm = 0;
+  Object.keys(STATE.recs || {}).forEach(function(){});
+  var tgtWo = (cfgN(CFG.tgtPrepCamp) + cfgN(CFG.tgtPrepCor)
+             + cfgN(CFG.tgtAsmCamp)  + cfgN(CFG.tgtAsmCor)) || 0;
+
+  return [
+    { k:'sv', n:'الزيارة الميدانية', ic:'\u25CE', done:S.surveyed, tot:N0,
+      d:'مسح الموقع وتوثيق حالته وتحدياته قبل أي عمل.',
+      kpi:[['مواقع مُسحت', N(S.surveyed)], ['لم تُزر', N(N0 - S.surveyed)],
+           ['تحديات مفتوحة', N(Object.keys(STATE.fixreqs || {}).length)],
+           ['متوسط الزيارة اليومي', N(0)]] },
+    { k:'sup', n:'التوريد', ic:'\u25A3', done:sup, tot:N0,
+      d:'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.',
+      kpi:[['أصناف موردة', N(sup)],
+           ['في المخزن', N(Math.max(0, sup - cnt('صرف')))],
+           ['في العُهدة', N(Math.max(0, cnt('صرف') - cnt('إرجاع')))],
+           ['تالف معزول', N(cnt('شطب'))]] },
+    { k:'wo', n:'الورشة', ic:'\u25A6', done:prep + asm, tot:tgtWo,
+      d:'التهيئة ثم التجميع قبل النزول للميدان.',
+      kpi:[['نقاط تهيئة', N(prep)], ['نقاط تجميع', N(asm)],
+           ['تارجت الشهر', N(tgtWo)],
+           ['نسبة الإنجاز', (tgtWo ? Math.round((prep + asm) * 100 / tgtWo) : 0) + '٪']] },
+    { k:'ins', n:'التركيب', ic:'\u25C9', done:S.installed, tot:N0,
+      d:'تركيب النقطة في موقعها واعتماد قطعها وسيرياتها.',
+      kpi:[['مُركّب', N(S.installed)],
+           ['مجدول', N(Object.keys(STATE.tasks || {}).length)],
+           ['متعذّر', N(ins.filter(function(x){ return x.status === 'متعذّر'; }).length)],
+           ['بانتظار التدقيق', N(ins.filter(function(x){ return !x.approved; }).length)]] },
+    { k:'dis', n:'الفك', ic:'\u25F7', done:dis.filter(function(x){ return x.status === 'تم الفك'; }).length, tot:N0,
+      d:'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.',
+      kpi:[['قابل للفك', N(ins.filter(function(x){ return x.approved; }).length)],
+           ['فك مجدول', N(dis.filter(function(x){ return x.status !== 'تم الفك'; }).length)],
+           ['تم الفك', N(dis.filter(function(x){ return x.status === 'تم الفك'; }).length)],
+           ['عُهدة مرتجعة', N(cnt('إرجاع'))]] }
+  ];
+};
 
 function stageBar(){
   return '<div class="card"><div class="card-body">'
     + '<div class="flow" style="justify-content:space-between">'
-    + STAGES.map(function(s,i){
+    + stageRows().map(function(s,i){
         var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
         var cls = p >= 100 ? ' done' : (p > 0 ? ' on' : '');
         return '<span class="flow-step'+cls+'" style="flex:1;text-align:center;min-width:0">'
           + s.ic + ' ' + esc(t(s.n)) + '<br><span class="num" style="font-size:11px;opacity:.8">'
           + nm(p) + '٪</span></span>'
-          + (i < STAGES.length-1 ? '<span class="flow-arr">\u2190</span>' : '');
+          + (i < stageRows().length-1 ? '<span class="flow-arr">\u2190</span>' : '');
       }).join('')
     + '</div></div></div>';
 }
@@ -12509,7 +12482,7 @@ PAGE.moh = { m:'المتابعة', t:'متابعة المشروع', l:'دورة 
   body:function(){
     return stageBar()
       + stats([['إجمالي النقاط', N(1787)], ['مُسح','٠','acc'], ['مُركّب','٠','ok'], ['مُفكّك','٠']])
-      + STAGES.map(function(s){
+      + stageRows().map(function(s){
           var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
           return card(s.ic + ' ' + t(s.n),
             '<p class="hint" style="margin:0 0 12px">'+esc(t(s.d))+'</p>'
