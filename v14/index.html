@@ -535,6 +535,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   max-width:520px;margin-inline:auto}
 .sw-bar > span{flex:1 1 auto;min-width:0}
 
+/* زرُّ التثبيت: يظهر حين يقول المتصفّحُ إن التثبيتَ متاح، ويختفي بعده.
+   وكان المراقبُ يبحث عن زرٍّ لا وجودَ له فيلتقط الحدثَ ولا يعرضه لأحد. */
+.tb-install{border-color:var(--brand);color:var(--brand);font-weight:700}
+.tb-install[hidden]{display:none}
+
 .tb-back{background:transparent;border:1px solid var(--line);border-radius:10px;
   width:34px;height:34px;min-height:34px;display:inline-flex;align-items:center;
   justify-content:center;cursor:pointer;font-size:17px;color:var(--ink);
@@ -660,7 +665,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.66</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.67</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -668,7 +673,9 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
                   aria-label="اللغة" aria-haspopup="listbox" aria-expanded="false" title="اللغة">ع</button>
           <div class="lang-menu" id="langMenu" role="listbox" hidden></div>
         </div>
-        <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
+        <button type="button" class="tb-btn tb-install" id="pwaBtn" data-pwa="1"
+              aria-label="تثبيت التطبيق" title="تثبيت التطبيق" hidden>⬇</button>
+      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
       </div>
     </header>
     <div class="mapwrap" id="mapWrap" hidden>
@@ -855,6 +862,11 @@ function setTheme(m){
 
 var D2 = {
 en:{
+
+ 'اضغط لترى ما لم يُرفَع':'App installed',
+ 'ثُبِّت التطبيق':'From the browser menu: Install app, or Add to Home Screen',
+ 'لا شيءَ بانتظار الرفع':'Nothing waiting to upload',
+ 'من قائمة المتصفّح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»':'Uploads automatically',
  'الأعدادُ ليست نهائيةً بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفَكُّ يزيد، وحاجةُ التهيئة لا تُعرَف إلا بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فأساسُ كلِّ مرحلةٍ هنا هو منجَزُ ما قبلها — يكبر بكبره ويقف بوقوفه.':'The numbers are not final by nature: sites have not been surveyed yet so what gets dismantled grows, preparation needs are only known after the survey, installation follows the survey, and dismantling follows installation. So each stage here is based on what the stage before it delivered — it grows as that grows and stops when it stops.',
  'بانتظار ما قبله':'Awaiting the stage before it',
  'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'The weight is per point of this combination — not for its count. And the count changes: what gets surveyed grows, preparation follows the survey, installation follows the survey, and dismantling follows installation. So no count is shown here that would read as a commitment when it is an estimate. Renaming the zone renames it across all its sites, and switching the type moves them to it.',
@@ -1473,6 +1485,11 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+
+ 'اضغط لترى ما لم يُرفَع':'ایپ انسٹال ہو گئی',
+ 'ثُبِّت التطبيق':'براؤزر مینو سے: ایپ انسٹال کریں یا ہوم اسکرین پر شامل کریں',
+ 'لا شيءَ بانتظار الرفع':'اپ لوڈ کے لیے کچھ باقی نہیں',
+ 'من قائمة المتصفّح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»':'خودکار اپ لوڈ ہوگا',
  'الأعدادُ ليست نهائيةً بطبعها: المواقعُ لم تُمسَح بعدُ فما يُفَكُّ يزيد، وحاجةُ التهيئة لا تُعرَف إلا بعد المسح، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فأساسُ كلِّ مرحلةٍ هنا هو منجَزُ ما قبلها — يكبر بكبره ويقف بوقوفه.':'تعداد فطری طور پر حتمی نہیں: مقامات کا سروے ابھی نہیں ہوا اس لیے ہٹانے کی تعداد بڑھے گی، تیاری کی ضرورت سروے کے بعد ہی معلوم ہوگی، تنصیب سروے کے تابع ہے، اور ہٹانا تنصیب کے تابع۔ ہر مرحلہ اپنے سے پہلے مرحلے کی تکمیل پر مبنی ہے۔',
  'بانتظار ما قبله':'اپنے سے پہلے مرحلے کا منتظر',
  'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. فلا يُعرَض هنا عددٌ يُقرأ التزامًا وهو تقدير. وتعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'وزن اس ترکیب کے ہر پوائنٹ کا ہے — اس کی تعداد کا نہیں۔ اور تعداد بدلتی ہے۔ اس لیے یہاں کوئی ایسی تعداد نہیں دکھائی جاتی جو وعدہ سمجھی جائے حالانکہ وہ تخمینہ ہے۔',
@@ -2775,7 +2792,9 @@ function syncBadge(){
     + (n ? '\u21BB ' + nm(n) : '\u21BB') + '</button> '
     + '<span class="dot" style="background:'
     + (on ? 'var(--ok)' : 'var(--danger)') + '"></span>'
-    + (n ? '<span class="pill warn">' + nm(n) + ' ' + esc(t('بانتظار الرفع')) + '</span> '
+    + (n ? '<button type="button" class="pill warn" data-pq="1" '
+         + 'style="border:0;cursor:pointer" title="' + esc(t('اضغط لترى ما لم يُرفَع')) + '">'
+         + nm(n) + ' ' + esc(t(on ? 'بانتظار الرفع' : 'محفوظٌ على الجهاز')) + '</button> '
          : '')
     + (STATE.meta.dropped
         ? '<span class="pill off">' + esc(t('أُسقط من الطابور')) + '</span> ' : '')
@@ -9165,9 +9184,14 @@ function pwaWatch(){
     e.preventDefault();
     INSTALL_EVT = e;
     var b = document.getElementById('pwaBtn');
-    if (b) b.style.display = '';   /* الزرُّ ظاهرٌ أصلًا — وهذا يؤكّده */
+    if (b) b.hidden = false;
   });
-  window.addEventListener('appinstalled', function(){ INSTALL_EVT = null; });
+  window.addEventListener('appinstalled', function(){
+    INSTALL_EVT = null;
+    var b = document.getElementById('pwaBtn');
+    if (b) b.hidden = true;
+    toast(t('ثُبِّت التطبيق'));
+  });
 }
 
 function pwaStandalone(){
@@ -14036,6 +14060,37 @@ function actList(){
 /* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
    فلا تُكتَب بيدٍ ولا تُنسى. */
 function onDocClick(e){
+  if (e.target.closest('[data-pq]')){
+    /* ما في الطابور: نوعُه وعددُه — فالرقمُ وحدَه لا يقول شيئًا، ومن رآه ولم
+       يعرف ما هو ظنَّ أن عملَه ضاع أو أنه سيُرفَع مكرَّرًا. */
+    var Q = STATE.queue || [];
+    if (!Q.length){ toast(t('لا شيءَ بانتظار الرفع')); return; }
+    var by = {};
+    Q.forEach(function(x){ by[x.kind] = (by[x.kind] || 0) + 1; });
+    var lbl = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
+                buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
+                teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب' };
+    toast(Object.keys(by).map(function(k){
+      return nm(by[k]) + ' ' + t(lbl[k] || k);
+    }).join(' · ') + ' — ' + t(STATE.meta.online ? 'تُرفَع تلقائيًّا' : 'تُرفَع حين تعود الشبكة'));
+    return;
+  }
+  if (e.target.closest('[data-pwa]')){
+    if (INSTALL_EVT){
+      INSTALL_EVT.prompt();
+      INSTALL_EVT.userChoice.then(function(r){
+        if (r && r.outcome === 'accepted') logEvent('تثبيت التطبيق');
+        INSTALL_EVT = null;
+        var b = document.getElementById('pwaBtn');
+        if (b) b.hidden = true;
+      }).catch(function(){});
+    } else {
+      /* لا يعرض المتصفّحُ النافذةَ إلا مرةً — ومن رفضها أو فتح على iOS
+         يحتاج الطريقَ اليدويّ، فيُقال بدل زرٍّ لا يفعل شيئًا. */
+      toast(t('من قائمة المتصفّح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»'));
+    }
+    return;
+  }
   if (e.target.closest('[data-swnow]')){ swNow(); return; }
   if (e.target.closest('[data-swlater]')){ swLater(); return; }
   if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
