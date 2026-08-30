@@ -653,7 +653,6 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <div class="sidebar-foot">
       
       <div class="who">محمد صفوت</div>
-      <div class="who-role" id="whoRole"></div>
       <div class="foot-row">
         <select id="langSel" aria-label="اللغة">
           <option value="ar">العربية</option>
@@ -674,7 +673,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.68</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.69</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -871,6 +870,9 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'هذا الفريقُ معروضٌ الآن':'This team is already shown',
+ 'أنشئ فريقًا ثم أضِف أعضاءَه ونسبةَ كلٍّ منهم — المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'Create a team, then add its members and each one’s share — the team delivers together, points pool, and each takes his share.',
+ 'يُبحَث عن جلسةٍ مفتوحة…':'Looking for an open session…',
  'اسم المشعر':'Zone name',
  'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'The weight is per point of this combination — not for its count. And the count changes: surveys grow, preparation follows the survey, installation follows the survey, and dismantling follows installation. Editing the zone name in its column header renames it across all its sites, and switching the type moves them to it.',
 
@@ -1496,6 +1498,9 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'هذا الفريقُ معروضٌ الآن':'یہ ٹیم ابھی دکھائی جا رہی ہے',
+ 'أنشئ فريقًا ثم أضِف أعضاءَه ونسبةَ كلٍّ منهم — المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.':'ٹیم بنائیں پھر اس کے ارکان اور ہر ایک کا حصہ شامل کریں — ٹیم مل کر کام کرتی ہے، پوائنٹس جمع ہوتے ہیں، پھر ہر ایک اپنا حصہ لیتا ہے۔',
+ 'يُبحَث عن جلسةٍ مفتوحة…':'کھلے سیشن کی تلاش…',
  'اسم المشعر':'مشعر کا نام',
  'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.':'وزن اس ترکیب کے ہر پوائنٹ کا ہے — تعداد کا نہیں۔ اور تعداد بدلتی ہے۔ کالم کے سر میں مشعر کا نام بدلنا اس کے تمام مقامات میں بدلتا ہے۔',
 
@@ -3441,17 +3446,16 @@ var TEAM_ROLE = {
   helper: { n:'مساعد',       i:'\u25CB', def:15 }
 };
 
-var TEAMS = [
-  { id:'T1', n:'فريق مخيمات ١', kind:'install',
-    members:[ { name:'خالد', role:'lead', share:40 },
-              { name:'أحمد', role:'tech', share:25 },
-              { name:'سالم', role:'tech', share:25 },
-              { name:'ماجد', role:'helper', share:10 } ] }
-];
+/* فرقُ الأنصبة تُنشأ من الشاشة — ولا بذرةَ فيها: كانت أسماءً مخترعةً
+   «خالد» و«أحمد» و«سالم» و«ماجد» في «فريق مخيمات ١»، وهي عرضٌ يبقى بعد
+   التسليم فيُقرأ حقيقة. */
+var TEAMS = [];
 
 var TEAM_CUR = 'T1';
 
-function teamOf(id){ return TEAMS.filter(function(x){ return x.id === id; })[0] || TEAMS[0]; }
+function teamOf(id){
+  return TEAMS.filter(function(x){ return x.id === id; })[0] || TEAMS[0] || null;
+}
 function teamShare(tm){ return tm.members.reduce(function(a,m){ return a + cfgN(m.share); }, 0); }
 
 /* نقاطُ الفريق: مجموعُ ما أنجزه أعضاؤه — ثم تُقسَّم بالنسب */
@@ -3465,6 +3469,15 @@ PAGE.teams = { m:'الفرق والفنيون', t:'الفرق والأنصبة',
   l:'من في كل فريق، وبأي نسبةٍ يُقسَّم إنجازُه.',
   body:function(){
     var tm = teamOf(TEAM_CUR);
+    if (!tm){
+      /* لا فريقَ بعد — والشاشةُ التي تُنشئ الفرقَ لا يصحُّ أن تسقط قبل
+         أن يُنشَأ أولُها. */
+      return card('لا فرقَ بعد',
+        '<p class="hint" style="margin:0">'
+        + esc(t('أنشئ فريقًا ثم أضِف أعضاءَه ونسبةَ كلٍّ منهم — المجموعةُ تنجز معًا فتُجمَع نقاطُها، ثم يأخذ كلٌّ نصيبَه بنسبته.'))
+        + '</p>',
+        may('edit') ? btn('➕ فريق جديد','btn-primary btn-sm',' data-newteam="1"') : '');
+    }
     var tot = teamShare(tm), pts = teamPoints(tm);
     var ph = cfgGet('ph');
     var ok100 = tot === 100;
@@ -4109,22 +4122,25 @@ function fbRules(){
 
 /* ═══ إسناد الدور والفريق للمستخدم ═══ */
 
-var ASSIGN = [
-  ['محمد صفوت','m.safwat','engineer','—','—'],
-  ['خالد',      'k.mina','supervisor','ins_camp','فريق مخيمات ١'],
-  ['أحمد',      'a.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['سالم',      's.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['ماجد',      'm.tech','cins','ins_camp','فريق مخيمات ١'],
-  ['ياسر',      'y.prep','cprep','—','ورشة التهيئة'],
-  ['وزارة الحج','moh.view','viewer','—','—']
-];
+/* إسنادُ الأدوار يُشتقُّ من سجل الفنيين الحقيقيّ لا من بذرةٍ: كانت خمسةَ
+   أسماءٍ مخترعةٍ «خالد» و«أحمد» و«سالم» و«ماجد» و«ياسر» في «فريق مخيمات ١»
+   — تُعرَض فيُظنُّ أن هؤلاء في المشروع. */
+function assignRows(){
+  var out = [['محمد صفوت', 'm.safwat', 'admin', '—', '—']];
+  techsList().forEach(function(x){
+    var job = jobsList().filter(function(j){ return j.id === x.job; })[0];
+    out.push([x.n, x.u || '—', (job ? job.role : 'tech'),
+              x.sup || '—', x.crew || '—']);
+  });
+  return out;
+}
 
 PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'من في أي دور وأي فريق.',
   body:function(){
     return card('إسناد',
         '<div class="grid cols-2">'
         + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
-        + '<select>' + ASSIGN.map(function(u){
+        + '<select>' + assignRows().map(function(u){
             return '<option>' + esc(u[0]) + '</option>'; }).join('') + '</select></div>'
         + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
         + '<select>' + ROLE_ORDER.map(function(r){
@@ -4135,9 +4151,9 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'م
         + '<div class="field"><label>' + esc(t('اسم الفريق')) + '</label>'
         + '<input placeholder="فريق مخيمات ٢"></div>'
         + '</div>', btn('إسناد','btn-primary btn-sm'))
-      + cardFlush('المسنَدون — ' + nm(ASSIGN.length),
+      + cardFlush('المسنَدون — ' + nm(assignRows().length),
           table(['المستخدم','الدور','نوع الفريق','الفريق',''],
-            ASSIGN.map(function(u){
+            assignRows().map(function(u){
               var sp = CREW_SPEC.filter(function(s){ return s.k === u[3]; })[0];
               return ['<strong>' + esc(u[0]) + '</strong><br>'
                       + '<span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
@@ -4152,7 +4168,7 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'م
 
 PAGE.myteam = { m:'الفرق والفنيون', t:'فريقي', l:'من معك ومَن أنجز ماذا اليوم.',
   body:function(){
-    var team = ASSIGN.filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
+    var team = assignRows().filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
     var sp = CREW_SPEC[0];
     return stats([['أفراد الفريق', N(team.length), 'acc'],
                   ['المعدل اليومي', N(sp.rate) + ' ' + esc(t('مخيم'))],
@@ -4521,7 +4537,7 @@ function asnPickKind(k){
 
 function techNames(){
   var out = TECHS.map(function(x){ return x.n; });
-  ASSIGN.forEach(function(u){
+  assignRows().forEach(function(u){
     if (['tech','cins','cprep','casm','supervisor'].indexOf(u[2]) > -1 && out.indexOf(u[0]) < 0)
       out.push(u[0]);
   });
@@ -9320,7 +9336,9 @@ function lgRemembered(){
    والكلمةُ لا تُخزَّن على الجهاز أبدًا: جهازُ الميدان يُفقَد ويُعار،
    والجلسةُ تُبطَل من لوحة Firebase أمّا الكلمةُ المخزَّنةُ فلا تُبطَل. */
 function autoSignIn(){
-  if (!lgRemembered()) return Promise.resolve(false);
+  /* لا يُشتَرَط «تذكّرني»: جلسةُ Firebase قائمةٌ بعد إعادة التحميل سواءٌ حُفظ
+     الاسمُ أم لا — وحفظُ الاسم زينةٌ لملء الحقل لا شرطٌ لبقاء الجلسة.
+     وكان الشرطُ يُطلَب معه الدخولُ من جديدٍ بعد كلِّ تحديثٍ للصفحة. */
   return FB.init().then(function(ok){
     if (!ok || !FB.auth) return false;
     return new Promise(function(res){
@@ -9347,11 +9365,11 @@ function autoSignIn(){
 
 function bootAuto(){
   var lg = document.getElementById('login');
-  if (!lg || !lgRemembered()) return;
+  if (!lg) return;
   var note = document.createElement('div');
   note.className = 'hint';
   note.style.cssText = 'text-align:center;margin:12px 0 0';
-  note.textContent = t('جلسةٌ محفوظة — يُفتَح…');
+  note.textContent = t('يُبحَث عن جلسةٍ مفتوحة…');
   try { lg.appendChild(note); } catch (e){}
   autoSignIn().then(function(ok){
     try { note.remove(); } catch (e){}
@@ -9400,6 +9418,8 @@ function loginPaint(){
     /* يُحفَظ الاسمُ لا الكلمة. وكلمةُ المرور لا تُخزَّن على الجهاز أبدًا:
        جهازُ الميدان يُفقَد ويُعار، والاسمُ وحده لا يفتح شيئًا. */
     try {
+      /* الاسمُ يُحفَظ ليُملأ الحقلُ في المرة القادمة. والكلمةُ لا تُحفَظ
+         أبدًا — جهازُ الميدان يُفقَد ويُعار. */
       if (rm && rm.checked) localStorage.setItem('nsk14.user', u);
       else localStorage.removeItem('nsk14.user');
     } catch (e){}
@@ -14005,7 +14025,8 @@ function render(force){
   document.getElementById('crumb').textContent = t(p.t);
   document.getElementById('brandName').innerHTML =
       esc(t('قارئات نُسُك')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
-  document.getElementById('whoRole').textContent = t(R().n) + ' — ' + t(R().d);
+  var wr = document.getElementById('whoRole');
+  if (wr) wr.textContent = t(R().n) + ' — ' + t(R().d);
   var outEl = document.getElementById('outBtn');
   outEl.textContent = t('تسجيل الخروج');
 
@@ -14612,7 +14633,12 @@ function onDocClick(e){
   if (e.target.closest('[data-asngo]')){ asnCommit(); return; }
   if (e.target.closest('[data-asnload]')){ asnLoad(curTech()); return; }
   var tmb = e.target.closest('[data-team]');
-  if (tmb){ TEAM_CUR = tmb.getAttribute('data-team'); render(1); return; }
+  if (tmb){
+    var id2 = tmb.getAttribute('data-team');
+    /* ضغطُ الفريق المعروض لا يغيّر شيئًا — فيُقال ذلك بدل صمتٍ يُقرأ عطلًا */
+    if (id2 === TEAM_CUR){ toast(t('هذا الفريقُ معروضٌ الآن')); return; }
+    TEAM_CUR = id2; render(1); return;
+  }
   if (e.target.closest('[data-addmem]')){ teamAdd(); return; }
   var rmm = e.target.closest('[data-rmmem]');
   if (rmm){ teamRm(+rmm.getAttribute('data-rmmem')); return; }
