@@ -558,13 +558,13 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .pop{display:flex;flex-direction:column;overflow:hidden;padding:0;
   max-height:min(84vh, calc(var(--vh,1vh) * 84))}
 .pop > .pop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);
-  flex:0 0 auto;background:var(--card);display:flex;
+  flex:0 0 auto;background:var(--surface);display:flex;
   justify-content:space-between;align-items:flex-start;gap:10px}
 .pop > .pop-head h3{margin:0;color:var(--ink)}
 .pop > .pop-body{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;padding:13px 15px;min-height:60px}
 .pop > .pop-foot{padding:12px 15px 14px;border-top:1px solid var(--line);
-  flex:0 0 auto;background:var(--card)}
+  flex:0 0 auto;background:var(--surface)}
 
 .copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78))}
 /* اللوحُ يرث البنيةَ العامة — وله عرضٌ وارتفاعٌ خاصّان فقط */
@@ -578,9 +578,15 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
 .lang-pick{position:relative;display:inline-flex}
 .lang-menu{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;
-  z-index:calc(var(--z-map-ui) + 40);  /* فوق واجهة الخريطة: كانت ستين وطبقتُها ستمئة فتُرسَم الشرائحُ فوقها */min-width:148px;background:var(--card);border:1px solid var(--line);
-  border-radius:var(--radius);box-shadow:0 12px 32px rgba(0,0,0,.28);padding:5px;
-  display:flex;flex-direction:column;gap:2px}
+  z-index:calc(var(--z-map-ui) + 40);  /* فوق واجهة الخريطة: كانت ستين وطبقتُها ستمئة فتُرسَم الشرائحُ فوقها */min-width:172px;
+  /* خلفيةٌ صلبةٌ لا شفافة: كان الاسمُ `--card` وهو متغيّرٌ لا وجودَ له في
+     هذا الملف، والقيمةُ الغائبةُ في CSS تُترَك كأنها لم تُكتَب — فالخلفيةُ
+     شفافةٌ ويُقرأ ما تحتها من شرائح الخريطة. */
+  background:var(--surface);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 16px 44px rgba(0,0,0,.45);padding:6px;
+  display:flex;flex-direction:column;gap:3px}
 .lang-menu[hidden]{display:none}
 .lang-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;
   width:100%;background:transparent;border:0;border-radius:9px;padding:9px 11px;
@@ -600,7 +606,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .v2030{display:block;width:112px;max-width:70%;height:auto;margin:0 0 12px;opacity:.92}
 [data-theme="dark"] .v2030{filter:brightness(1.7) saturate(.9)}
 
-.ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-dim);font-weight:400;
+.ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-mute);font-weight:400;
   margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
   border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
   min-height:26px;font-family:inherit}
@@ -651,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.53</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.54</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11087,7 +11093,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                           '<input value="' + esc(v.model || '') + '" data-vhm="' + esc(v.id) + '" dir="auto">',
                           esc(t(v.own || 'ملك')),
                           '<input type="date" value="' + esc(v.licExp || '') + '" data-vhe="' + esc(v.id) + '"'
-                            + (late ? ' style="border-color:var(--bad)"' : '') + '>',
+                            + (late ? ' style="border-color:var(--danger)"' : '') + '>',
                           pill(t(v.st || 'متاحة'), v.st === 'متاحة' ? 'ok'
                                 : v.st === 'مُسندة' ? 'acc' : 'warn'),
                           a ? esc(a.to) + '<br><span class="hint" style="margin:0">'
