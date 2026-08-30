@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.77</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -875,6 +875,26 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'إدارةُ التقارير للمهندس وحده':'Report management is for the engineer only',
+ 'حُفظت المواعيد':'Schedule saved',
+ 'الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».':'Automatic delivery on schedule needs a scheduled server — not built yet. Times are saved now, and the report itself is exported manually from "Report Center".',
+ 'في مركز التقارير':'In Report Center',
+ 'يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.':'Needs a per-task list — not built yet. The totals above are real and read live.',
+ 'إسنادُ الأدوار للمهندس وحده':'Role assignment is for the engineer only',
+ 'اختر مستخدمًا':'Choose a user',
+ 'اختر وظيفة':'Choose a job',
+ 'أُسند الدور':'Role assigned',
+ 'الوظيفة':'Job',
+ 'نظامُ طلبات الورشة لم يُبنَ بعد — الجدولُ أعلاه تارجتاتٌ محسوبةٌ لا طلباتٌ فعلية.':'The workshop request system is not built yet — the table above shows computed targets, not actual requests.',
+ 'يحتاج نظامَ إسنادِ مهامَ فرديةً — غيرُ مبنيٍّ بعد.':'Needs a per-task assignment system — not built yet.',
+ 'يشمله الدليل الكامل':'Covered by the full guide',
+ 'الدليل الكامل — Word':'Full guide — Word',
+ 'دليلٌ واحدٌ يشمل الأدوارَ كلَّها — لم يُبنَ بعد دليلٌ منفصلٌ لكلِّ دور.':'One guide covers every role — a separate guide per role is not built yet.',
+ 'دليل النظام — Word':'System guide — Word',
+ 'تصديرُ PDF لهذه الشاشة لم يُبنَ بعد — استعمل الإكسلَ أو الطباعة.':'PDF export for this screen is not built yet — use Excel or printing.',
+ 'الأرشفةُ التلقائيةُ تحتاج دالةً على الخادم — لم تُبنَ بعد. الحذفُ اليدويُّ من Firestore متاحٌ لمن يملك القاعدة.':'Automatic archiving needs a server function — not built yet. Manual deletion from Firestore is available to those with database access.',
+ 'مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.':'The retention periods above are stated, not enforced — changing them needs archiving implemented first.',
+ 'محفوظٌ بالفعل — كلُّ حقلٍ هنا يُسجَّل فورَ تغييرِه':'Already saved — every field here is recorded the moment it changes',
  'يدخل بكلمته الآن':'can sign in with that password now',
  'اكتب اسم المستخدم':'Write the username',
  'اكتب الاسم الكامل':'Write the full name',
@@ -1515,6 +1535,26 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'إدارةُ التقارير للمهندس وحده':'رپورٹس کا انتظام صرف انجینئر کے لیے ہے',
+ 'حُفظت المواعيد':'اوقات محفوظ ہو گئے',
+ 'الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».':'وقت پر خودکار ارسال کے لیے شیڈول شدہ سرور درکار ہے — ابھی تعمیر نہیں ہوا۔ اوقات اب محفوظ ہو رہے ہیں، اور رپورٹ خود "رپورٹ سینٹر" سے دستی طور پر برآمد ہوتی ہے۔',
+ 'في مركز التقارير':'رپورٹ سینٹر میں',
+ 'يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.':'انفرادی کاموں کی فہرست درکار ہے — ابھی تعمیر نہیں ہوئی۔ اوپر کے مجموعے حقیقی ہیں اور اب پڑھے جا رہے ہیں۔',
+ 'إسنادُ الأدوار للمهندس وحده':'کرداروں کی تفویض صرف انجینئر کے لیے ہے',
+ 'اختر مستخدمًا':'صارف منتخب کریں',
+ 'اختر وظيفة':'ملازمت منتخب کریں',
+ 'أُسند الدور':'کردار تفویض ہو گیا',
+ 'الوظيفة':'ملازمت',
+ 'نظامُ طلبات الورشة لم يُبنَ بعد — الجدولُ أعلاه تارجتاتٌ محسوبةٌ لا طلباتٌ فعلية.':'ورکشاپ کی درخواستوں کا نظام ابھی تعمیر نہیں ہوا — اوپر کا جدول شمار شدہ اہداف ہیں، حقیقی درخواستیں نہیں۔',
+ 'يحتاج نظامَ إسنادِ مهامَ فرديةً — غيرُ مبنيٍّ بعد.':'انفرادی کاموں کی تفویض کا نظام درکار ہے — ابھی تعمیر نہیں ہوا۔',
+ 'يشمله الدليل الكامل':'مکمل گائیڈ میں شامل',
+ 'الدليل الكامل — Word':'مکمل گائیڈ — ورڈ',
+ 'دليلٌ واحدٌ يشمل الأدوارَ كلَّها — لم يُبنَ بعد دليلٌ منفصلٌ لكلِّ دور.':'ایک گائیڈ تمام کرداروں کا احاطہ کرتا ہے — ہر کردار کے لیے الگ گائیڈ ابھی تعمیر نہیں ہوا۔',
+ 'دليل النظام — Word':'سسٹم گائیڈ — ورڈ',
+ 'تصديرُ PDF لهذه الشاشة لم يُبنَ بعد — استعمل الإكسلَ أو الطباعة.':'اس اسکرین کے لیے PDF برآمد ابھی تعمیر نہیں ہوئی — ایکسل یا پرنٹ استعمال کریں۔',
+ 'الأرشفةُ التلقائيةُ تحتاج دالةً على الخادم — لم تُبنَ بعد. الحذفُ اليدويُّ من Firestore متاحٌ لمن يملك القاعدة.':'خودکار آرکائیونگ کے لیے سرور فنکشن درکار ہے — ابھی تعمیر نہیں ہوا۔ Firestore سے دستی حذف ڈیٹا بیس رکھنے والوں کے لیے دستیاب ہے۔',
+ 'مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.':'اوپر کی برقراری کی مدتیں بیان کردہ ہیں، نافذ نہیں — انہیں تبدیل کرنے کے لیے پہلے آرکائیونگ لاگو کرنا ہوگا۔',
+ 'محفوظٌ بالفعل — كلُّ حقلٍ هنا يُسجَّل فورَ تغييرِه':'پہلے سے محفوظ ہے — یہاں ہر فیلڈ تبدیلی کے فوراً بعد ریکارڈ ہوتا ہے',
  'يدخل بكلمته الآن':'اب اسی پاس ورڈ سے داخل ہو سکتا ہے',
  'اكتب اسم المستخدم':'صارف نام لکھیں',
  'اكتب الاسم الكامل':'پورا نام لکھیں',
@@ -3903,6 +3943,18 @@ var CREW_REPORTS = [
   ['الملخص التنفيذي',            'month', 'المهندسون','المشروع كله في صفحة'],
 ];
 
+function crSaveTimes(){
+  if (!may('settings')){ toast(t('إدارةُ التقارير للمهندس وحده')); return; }
+  var vals = {};
+  document.querySelectorAll('[data-crtime]').forEach(function(el){
+    vals[el.getAttribute('data-crtime')] = el.value;
+  });
+  CFG.crTime = vals;
+  CORE.set('cfg', 'crTime', vals);
+  logEvent('حفظ مواعيد التقارير الدورية');
+  toast(t('حُفظت المواعيد'));
+}
+
 PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما يُرفع تلقائيًّا — يوميًّا وأسبوعيًّا وشهريًّا.',
   body:function(){
     return card('الدوريات',
@@ -3910,10 +3962,14 @@ PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما 
           PERIODS.map(function(p){
             var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
             return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
-                    '<input type="time" value="' + (p[0]==='day'?'17:00':'07:00') + '" style="max-width:130px">',
+                    '<input type="time" data-crtime="' + p[0] + '" value="'
+                      + ((CFG.crTime && CFG.crTime[p[0]]) || (p[0]==='day'?'17:00':'07:00'))
+                      + '" style="max-width:130px">',
                     N(n)];
           })),
-        btn('حفظ المواعيد','btn-primary btn-sm'))
+        btn('حفظ المواعيد','btn-primary btn-sm',' data-crsave="1"'))
+      + alertBox('warn',
+          t('الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».'))
       + PERIODS.map(function(p){
           var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
           return cardFlush(t(p[1]) + ' — ' + nm(L.length),
@@ -3921,8 +3977,9 @@ PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما 
               L.map(function(r){
                 return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
                         '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
-                        '<div class="actions">' + btn('إكسل','btn-quiet btn-sm')
-                        + btn('PDF','btn-quiet btn-sm') + '</div>'];
+                        '<div class="actions">'
+                        + '<button type="button" class="btn btn-quiet btn-sm" data-p="reps">'
+                        + esc(t('في مركز التقارير')) + '</button></div>'];
               })));
         }).join('')
       + card('قناة الإرسال',
@@ -3955,7 +4012,7 @@ PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند ل
       + cardFlush('مهام الفريق',
           '<p class="hint" style="padding:16px;text-align:center;margin:0">لا مهام مفتوحة من نوع '
           + esc(K ? t(K.n) : t('كل الأنواع')) + '.</p>',
-          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+          btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.</p>');
   }};
@@ -4072,7 +4129,7 @@ PAGE.techacc = { m:'الفرق والفنيون', t:'حسابات الفنيين
                       x.has ? btn('تصفير كلمة المرور','btn-quiet btn-sm')
                             : btn('أنشئ حسابًا','btn-primary btn-sm',' data-mkone="' + i + '"')];
             })),
-          btn('➕ إضافة فني','btn-secondary btn-sm'))
+          btn('➕ إضافة فني','btn-secondary btn-sm',' data-p="tech"'))
 
       + (TECH_MADE.length
         ? card('حسابات أُنشئت الآن',
@@ -4209,7 +4266,7 @@ PAGE.crewplan = { m:'الفرق والفنيون', t:'الطواقم والمع�
                       cfgInput('crewSup', s.k), cfgInput('crewTech', s.k),
                       cfgInput('crewGear', s.k), cfgInput('crewRate', s.k, { dec:1 })];
             })),
-          btn('حفظ المعدلات','btn-primary btn-sm'))
+          btn('حفظ المعدلات','btn-primary btn-sm',' data-cfgok="1"'))
 
       + card('تارجت التركيب يُحسب على القطع',
           '<p class="hint" style="margin:0 0 12px">عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. '
@@ -4249,76 +4306,6 @@ function roleName(k){
            casm:'تجميع', cins:'تركيب', viewer:'وزارة' }[k] || k;
 }
 
-PAGE.perms = { m:'الإعدادات', t:'الصلاحيات', l:'ما يملكه كل دور — واجهةً وقاعدةَ بيانات.',
-  body:function(){
-    return '<p class="lede" style="margin:0 0 16px">الصلاحية تُفرَض في موضعين: الواجهة لا تبني ما لا يملكه الدور، وقواعد Firebase ترفض ما لا يملكه ولو التفّ على الواجهة. والمصدر واحد — هذا الجدول.</p>'
-      + cardFlush('المصفوفة',
-          table(['الصلاحية'].concat(ROLE_ORDER.map(roleName)),
-            PERMS.map(function(p){
-              return ['<strong>' + esc(t(p[1])) + '</strong><br>'
-                      + '<span class="hint" dir="ltr" style="margin:0">' + p[0] + '</span>']
-                .concat(ROLE_ORDER.map(function(r){
-                  return p[2].indexOf(r) > -1
-                    ? '<span class="pill ok">✓</span>' : '<span class="pill off">—</span>';
-                }));
-            })),
-          btn('حفظ المصفوفة','btn-primary btn-sm'))
-      + card('قواعد Firebase المولَّدة',
-          '<p class="hint" style="margin:0 0 11px">تُولَّد من المصفوفة أعلاه وتُنشر على Firestore — فلا تفترق الواجهةُ عن القاعدة.</p>'
-          + '<pre style="background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius-sm);'
-          + 'padding:13px;overflow:auto;font-size:11.5px;line-height:1.75;direction:ltr;text-align:left;margin:0">'
-          + esc(fbRules()) + '</pre>',
-          '<div class="actions">' + btn('نسخ','btn-secondary btn-sm')
-          + btn('نشر على Firestore','btn-primary btn-sm') + '</div>')
-      + '<div class="alert warn"><span>أرقام الهواتف محجوبةٌ عن الوزارة في القاعدة نفسها — لا إخفاءً في الواجهة وحدها.</span></div>';
-  }};
-
-function fbRules(){
-  return 'rules_version = \'2\';\n'
-    + 'service cloud.firestore {\n'
-    + '  match /databases/{db}/documents {\n\n'
-    + '    function role() {\n'
-    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.role;\n'
-    + '    }\n'
-    + '    function crewKind() {\n'
-    + '      return get(/databases/$(db)/documents/users/$(request.auth.uid)).data.kind;\n'
-    + '    }\n'
-    + '    function isEng()  { return role() == \'engineer\'; }\n'
-    + '    function isSup()  { return role() in [\'engineer\',\'supervisor\']; }\n'
-    + '    function isCrew() { return role() in [\'tech\',\'cprep\',\'casm\',\'cins\']; }\n'
-    + '    function mine(d)  { return d.assignedTo == request.auth.uid; }\n\n'
-    + '    match /sites/{id} {\n'
-    + '      allow read:  if request.auth != null;\n'
-    + '      allow write: if isSup() || (isCrew() && mine(resource.data));\n'
-    + '    }\n\n'
-    + '    match /tasks/{id} {\n'
-    + '      allow read:   if isSup() || (isCrew() && mine(resource.data));\n'
-    + '      allow create: if isSup();\n'
-    + '      allow update: if isEng()\n'
-    + '                    || (isCrew() && mine(resource.data)\n'
-    + '                        && resource.data.kind == crewKind()\n'
-    + '                        && request.resource.data.status != \'معتمد\');\n'
-    + '    }\n\n'
-    + '    match /inventory/{id} { allow read, write: if isEng(); }\n'
-    + '    match /purchases/{id} { allow read: if isEng() || role() == \'viewer\';\n'
-    + '                            allow write: if isEng(); }\n'
-    + '    match /settings/{id}  { allow read: if request.auth != null;\n'
-    + '                            allow write: if isEng(); }\n'
-    + '    match /users/{uid} {\n'
-    + '      allow read:  if isEng() || request.auth.uid == uid;\n'
-    + '      allow write: if isEng();\n'
-    + '    }\n\n'
-    + '    // الهاتف حقلٌ محجوبٌ عن الوزارة في القاعدة\n'
-    + '    match /techs/{id} {\n'
-    + '      allow read: if isSup() || isCrew();\n'
-    + '      allow read: if role() == \'viewer\'\n'
-    + '                  && !(\'phone\' in resource.data.keys());\n'
-    + '      allow write: if isEng();\n'
-    + '    }\n'
-    + '  }\n'
-    + '}';
-}
-
 /* ═══ إسناد الدور والفريق للمستخدم ═══ */
 
 /* إسنادُ الأدوار يُشتقُّ من سجل الفنيين الحقيقيّ لا من بذرةٍ: كانت خمسةَ
@@ -4334,33 +4321,57 @@ function assignRows(){
   return out;
 }
 
-PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار', l:'من في أي دور وأي فريق.',
+/* الإسنادُ يعدّل سجلَّ الفنيِّ الحقيقيّ لا سطرًا في بذرة: كانت الحقولُ بلا
+   معرّفاتٍ والزرَّان بلا خاصية، وتستعمل `ROLE_ORDER` وهو متغيّرٌ لا وجودَ
+   له فتنفجر الشاشةُ لو نودي. */
+function asnRoleSet(){
+  if (!may('users')){ toast(t('إسنادُ الأدوار للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? e.value : ''; };
+  var name = g('asnU'), jobId = g('asnJob');
+  if (!name){ toast(t('اختر مستخدمًا')); return; }
+  var job = jobsList().filter(function(j){ return j.id === jobId; })[0];
+  if (!job){ toast(t('اختر وظيفة')); return; }
+  var crew = g('asnCrew');
+  techSet(name, { job:jobId, crew:crew || '' });
+  logEvent('إسناد دور — ' + name + ' ← ' + job.n + (crew ? ' · ' + crew : ''));
+  toast(t('أُسند الدور'));
+  render(1);
+}
+
+PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
+  l:'من في أيِّ وظيفةٍ وأيِّ فريق.',
   body:function(){
+    var T = techsList(), C = crewsList();
     return card('إسناد',
         '<div class="grid cols-2">'
         + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
-        + '<select>' + assignRows().map(function(u){
-            return '<option>' + esc(u[0]) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-        + '<select>' + ROLE_ORDER.map(function(r){
-            return '<option value="' + r + '">' + esc(t(roleName(r))) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('نوع الفريق')) + '</label>'
-        + '<select><option>—</option>' + CREW_SPEC.map(function(s){
-            return '<option value="' + s.k + '">' + esc(t(s.n)) + '</option>'; }).join('') + '</select></div>'
-        + '<div class="field"><label>' + esc(t('اسم الفريق')) + '</label>'
-        + '<input placeholder="فريق مخيمات ٢"></div>'
-        + '</div>', btn('إسناد','btn-primary btn-sm'))
-      + cardFlush('المسنَدون — ' + nm(assignRows().length),
-          table(['المستخدم','الدور','نوع الفريق','الفريق',''],
-            assignRows().map(function(u){
-              var sp = CREW_SPEC.filter(function(s){ return s.k === u[3]; })[0];
-              return ['<strong>' + esc(u[0]) + '</strong><br>'
-                      + '<span class="hint" dir="ltr" style="margin:0">' + esc(u[1]) + '</span>',
-                      pill(roleName(u[2]), u[2]==='engineer'?'ok':(u[2]==='viewer'?'info':'acc')),
-                      sp ? esc(t(sp.n)) : '<span class="hint" style="margin:0">—</span>',
-                      esc(u[4]), btn('تغيير','btn-quiet btn-sm')];
+        +   '<select id="asnU">'
+        +   T.map(function(x){ return '<option value="' + esc(x.n) + '">' + esc(x.n) + '</option>'; }).join('')
+        +   '</select></div>'
+        + '<div class="field"><label>' + esc(t('الوظيفة')) + '</label>'
+        +   '<select id="asnJob">'
+        +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(j.n) + '</option>'; }).join('')
+        +   '</select></div>'
+        + '<div class="field"><label>' + esc(t('الفريق')) + '</label>'
+        +   '<select id="asnCrew"><option value="">—</option>'
+        +   C.map(function(c){ return '<option value="' + esc(c.n) + '">' + esc(c.n) + '</option>'; }).join('')
+        +   '</select></div>'
+        + '</div>',
+        btn('إسناد','btn-primary btn-sm',' data-asnrole="1"'))
+
+      + cardFlush('المسنَدون — ' + nm(T.length),
+          table(['المستخدم','الوظيفة','الدور','الفريق'],
+            T.map(function(x){
+              var job = jobsList().filter(function(j){ return j.id === x.job; })[0];
+              var role = job ? job.role : 'tech';
+              return ['<strong>' + esc(x.n) + '</strong>'
+                        + (x.u ? '<br><span class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</span>' : ''),
+                      job ? esc(job.n) : '<span class="hint" style="margin:0">—</span>',
+                      pill(esc(t(roleName(role))), role === 'engineer' ? 'ok' : (role === 'viewer' ? 'info' : 'acc')),
+                      x.crew ? esc(x.crew) : '<span class="hint" style="margin:0">—</span>'];
             })))
-      + '<p class="hint">الدور يُكتب في وثيقة المستخدم في Firebase، فتقرؤه القواعد مباشرةً — لا نسخةَ ثانيةً تفترق عنها.</p>';
+
+      + '<p class="hint">الدورُ يُشتَقُّ من الوظيفة المسنَدة — لا يُكتَب مباشرةً. وتغييرُ الوظيفة يبدّل الصلاحياتِ فورًا؛ إسنادُ فريقٍ لا ينشئه، ينشأ من «إدارة الفرق».</p>';
   }};
 
 /* ═══ فريق المشرف — من معه ═══ */
@@ -4380,7 +4391,7 @@ PAGE.myteam = { m:'الفرق والفنيون', t:'فريقي', l:'من معك 
                       pill(u[2]==='supervisor' ? 'مشرف' : 'فني', u[2]==='supervisor'?'ok':'acc'),
                       '٠','٠', pill('متاح','ok')];
             })),
-          btn('⬇ تقرير فريقي','btn-secondary btn-sm'))
+          btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('طاقم الفريق ومعدله',
           '<div class="hint" style="margin:0">'
           + '<strong>' + esc(t(sp.n)) + '</strong> — ' + esc(t(sp.d))
@@ -8845,10 +8856,19 @@ techx: function(){
     return out;
   },
 
-  perms: function(){
-    var out = [['الصلاحية'].concat(ROLE_ORDER.map(roleName))];
-    PERMS.forEach(function(p){
-      out.push([p[1]].concat(ROLE_ORDER.map(function(r){ return p[2].indexOf(r)>-1 ? '✓' : '—'; })));
+  roles: function(){
+    /* تُبنى من `ROLES` الحيّة لا من `ROLE_ORDER`/`PERMS` غيرِ الموجودتين —
+       بقيةُ شاشة «الصلاحيات» القديمة المكرَّرة قبل حذفها. */
+    var keys = Object.keys(ROLES);
+    var caps = [];
+    keys.forEach(function(k){
+      Object.keys(ROLES[k].can || {}).forEach(function(c){ if (caps.indexOf(c) < 0) caps.push(c); });
+    });
+    var out = [['الدور'].concat(caps)];
+    keys.forEach(function(k){
+      out.push([ROLES[k].n].concat(caps.map(function(c){
+        return (ROLES[k].can || {})[c] ? '✓' : '—';
+      })));
     });
     return out;
   }
@@ -10085,7 +10105,7 @@ PAGE.setup = { m:'التخطيط', t:'المواعيد والأزمنة', l:'ا�
       '<div class="grid cols-2">'
       + '<div class="field"><label>'+esc(t('موعد انتهاء المسح'))+'</label><input type="date" value="2026-10-15"></div>'
       + '<div class="field"><label>'+esc(t('موعد انتهاء التركيب'))+'</label><input type="date" value="2026-12-20"></div>'
-      + '</div>', btn('حفظ','btn-primary btn-sm'))
+      + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
     + card('أزمنة التركيب', table(['النوع','الزمن التقديري','عدد النقاط','الإجمالي'], [
         ['مخيم','<span class="num">٤٥</span> د','<span class="num">١٬٣٩٢</span>','<span class="num">١٬٠٤٤</span> س'],
         ['ممر','<span class="num">٩٠</span> د','<span class="num">١٩٠</span>','<span class="num">٢٨٥</span> س']
@@ -10129,7 +10149,7 @@ PAGE.wos = { m:'الورشة والمخزون', t:'طلبات المستودع',
             ['تجميع','ممرات','٠', N(Tg.asmCor),  pct(0,Tg.asmCor),  N(cfgWk(Tg.asmCor))]
           ], ['الإجمالي','','٠', N(Tg.prep+Tg.asm), '٠٪',
               N(cfgWk(Tg.prep+Tg.asm))]),
-          btn('طلب تهيئة','btn-primary btn-sm'))
+          btn('طلب تهيئة','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('نظامُ طلبات الورشة لم يُبنَ بعد — الجدولُ أعلاه تارجتاتٌ محسوبةٌ لا طلباتٌ فعلية.')) + '"'))
       + card('دورة الورشة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'],0)
         + '<p class="hint">'
           + esc(t('نقاطُ التهيئة والتجميع تُضبَط في «نقاط التهيئة» و«نقاط التجميع»، والتارجتاتُ تُحسَب على مدّة المشروع من أعداد المواقع الحقيقية.'))
@@ -12232,7 +12252,6 @@ var EXP_SECS = [
   ['items','القطع والأسعار — الكتالوج كاملًا',1],
   ['crews','الطواقم ومعدلاتها اليومية',1],
   ['reps','مركز التقارير — ما يُرسَل ولمن ومتى',1],
-  ['perms','الصلاحيات — ماذا يملك كلُّ دور',1],
   ['daily','الاتجاه اليومي — تسعون يومًا',1],
   ['ev','سجل الأحداث — كما هو مصفّى',1],
   ['users','المستخدمون وأدوارهم',1],
@@ -12242,7 +12261,8 @@ var EXP_SECS = [
   ['fleet','السيارات — الأسطول والإسناد',1],
   ['fleetCost','تكلفة الأسطول',1],
   ['fleetLog','سجل عهدة السيارات',1],
-  ['ships','الشحنات والتوريد',1]
+  ['ships','الشحنات والتوريد',1],
+  ['roles','الأدوار والصلاحيات',1]
 ];
 
 function expHtml(){
@@ -12534,7 +12554,7 @@ PAGE.mine = { m:'الميدان', t:'جدولي', l:'ما أُسند إليك ا
     return stats([['مُسند إليّ','٠'], ['أنجزتُ اليوم','٠','ok'],
                   ['نقاطي هذا الشهر','٠','acc'], ['ترتيبي','—']])
       + card('مهامي اليوم', '<p class="hint">لا مهام مسندة اليوم.</p>',
-          btn('⬇ '+t('تصدير جدولي'),'btn-secondary btn-sm'))
+          btn('⬇ '+t('تصدير جدولي'),'btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج نظامَ إسنادِ مهامَ فرديةً — غيرُ مبنيٍّ بعد.')) + '"'))
       + card('شغلي وترتيبي',
           table(['البند','قيمتي'], [
             ['نقاط المسح','٠'], ['نقاط التركيب','٠'],
@@ -12550,23 +12570,30 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
     var rows = Object.keys(ROLES).map(function(k){
       var x = ROLES[k];
       return [esc(t(x.n)), esc(x.guide),
-              k === ROLE ? btn('⬇ '+t('نزّل دليلي'),'btn-primary btn-sm')
-                         : '<span class="hint" style="margin:0">'+esc(t('لدور آخر'))+'</span>'];
+              '<span class="hint" style="margin:0">' + esc(t('يشمله الدليل الكامل')) + '</span>'];
     });
     return card('دليلك',
         '<div class="alert info"><span><strong>'+esc(r.guide)+'</strong> — '
         + esc(t('يشرح شاشاتك أنت خطوةً خطوة.'))+'</span></div>'
         + '<div class="actions">'
-        + btn('⬇ '+t('دليلي — Word'),'btn-primary')
-        + btn('⬇ '+t('دليلي — PDF'),'btn-secondary')
-        + '</div>')
+        + '<a class="btn btn-primary btn-sm" href="docs/nusuk-user-manual.docx" download>'
+        +   '⬇ ' + esc(t('الدليل الكامل — Word')) + '</a>'
+        + '</div>'
+        + '<p class="hint" style="margin:9px 0 0">'
+        + esc(t('دليلٌ واحدٌ يشمل الأدوارَ كلَّها — لم يُبنَ بعد دليلٌ منفصلٌ لكلِّ دور.'))
+        + '</p>')
       + card('أدلة الأدوار', table(['الدور','الدليل',''], rows))
       + (may('settings')
           ? card('مراجع النظام',
+              /* روابطُ فعليةٌ لملفاتٍ موجودة — لا أزرارُ توليدٍ وهمية.
+                 ودليلُ النظام يحمل رقمَ نسخته في اسمه: من فتحه يعرف أيَّ
+                 نسخةٍ يقرأ. */
               '<div class="actions">'
-              + btn('⬇ '+t('دليل النظام الكامل — Word'),'btn-secondary')
-              + btn('⬇ '+t('دليل النظام الكامل — PDF'),'btn-secondary')
-              + btn('⬇ '+t('المواصفة التقنية'),'btn-secondary')
+              + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
+              +   'V14.77' + '.docx" download>⬇ '
+              +   esc(t('دليل النظام — Word')) + '</a>'
+              + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
+              +   esc(t('المواصفة التقنية')) + '</a>'
               + '</div>')
           : '')
       + '<p class="hint">'+esc(t('كل دليل يُولَّد برقم النسخة نفسه — فلا يقرأ أحدٌ دليلًا لنسخةٍ غير التي بين يديه.'))+'</p>';
@@ -12904,9 +12931,10 @@ PAGE.moh = { m:'المتابعة', t:'متابعة المشروع', l:'دورة 
         }).join('')
       + card('المخرجات الورقية',
           '<div class="actions">'
-          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary')
-          + btn('⬇ '+t('تقرير المراحل — PDF'),'btn-secondary')
-          + btn('🖨 '+t('طباعة'),'btn-secondary',' data-print="1"')
+          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary btn-sm',' data-xls="over"')
+          + btn('⬇ '+t('تقرير المراحل — PDF'),'btn-quiet btn-sm disabled', ' disabled title="'
+              + esc(t('تصديرُ PDF لهذه الشاشة لم يُبنَ بعد — استعمل الإكسلَ أو الطباعة.')) + '"')
+          + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
           + '</div>'
           + '<p class="hint">'+esc(t('كل مرحلة صفحةٌ مستقلةٌ برسمها البياني وجدولها — كما تظهر على الشاشة.'))+'</p>');
   }};
@@ -12926,7 +12954,9 @@ PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّ
           REPS.map(function(r){
             return [ '<strong>'+esc(t(r[0]))+'</strong>', '<span class="hint" style="margin:0">'+esc(t(r[1]))+'</span>',
                      pill(r[2],'info'),
-                     '<div class="actions">'+btn('إكسل','btn-quiet btn-sm')+btn('PDF','btn-quiet btn-sm')+'</div>' ];
+                     '<div class="actions">'
+                     + '<button type="button" class="btn btn-quiet btn-sm" data-p="reps">'
+                     + esc(t('في مركز التقارير')) + '</button></div>' ];
           })))
       + card('نطاق التقرير',
           '<div class="grid cols-3">'
@@ -12935,7 +12965,7 @@ PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّ
           + '<div class="field"><label>'+esc(t('المشعر'))+'</label>'
           + '<select><option>'+esc(t('الكل'))+'</option><option>'+esc(t('منى'))+'</option>'
           + '<option>'+esc(t('عرفات'))+'</option></select></div>'
-          + '</div>', btn('توليد','btn-primary btn-sm'))
+          + '</div>', btn('⬇ إكسل — الملخص','btn-primary btn-sm',' data-xls="over"'))
       + '<p class="hint">'+esc(t('أرقام الهواتف لا تظهر في أي تقرير وزاري — لا إخفاءً في الواجهة بل منعًا في القواعد.'))+'</p>';
   }};
 
@@ -13346,7 +13376,8 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
                       s[3]==='دائم' ? pill('دائم','acc') : pill(s[3],'warn'),
                       '<span class="hint" style="margin:0">'+esc(t(s[4]))+'</span>'];
             })),
-          btn('تشغيل الأرشفة الآن','btn-primary btn-sm'))
+          btn('تشغيل الأرشفة الآن','btn-quiet btn-sm disabled', ' disabled title="'
+      + esc(t('الأرشفةُ التلقائيةُ تحتاج دالةً على الخادم — لم تُبنَ بعد. الحذفُ اليدويُّ من Firestore متاحٌ لمن يملك القاعدة.')) + '"'))
       + card('النسخ الاحتياطي',
           alertBox('error','مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.')
           + table(['البند','الحالة'], [
@@ -13373,13 +13404,17 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
             ['الملاحظات','<span class="pill ok">تُدمَج بسطر فاصل</span>',
              '<span class="hint" style="margin:0">كلاهما شهادة</span>']
           ]),
-          btn('حفظ السياسة','btn-primary btn-sm'))
+          btn('حفظ السياسة','btn-quiet btn-sm disabled', ' disabled title="'
+      + esc(t('مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.')) + '"'))
       + card('تعارضات بانتظار القرار',
           '<p class="hint">لا تعارضات — تظهر هنا بالنسختين جنبًا إلى جنب ليختار المهندس.</p>')
       + card('طابور الرفع',
-          '<div class="actions">' + btn('رفع الآن','btn-primary')
-          + btn('إعادة المحاولة للفاشل','btn-secondary')
-          + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">٠٢:٥١</span></span></div>')
+          '<div class="actions">'
+          + btn('رفع الآن','btn-primary btn-sm',' data-pull="1"')
+          + btn('عرض الطابور','btn-secondary btn-sm',' data-pq="1"')
+          + '<span class="hint" style="margin:0">' + esc(t('آخر مزامنة')) + ' <span class="num">'
+          + esc(STATE.meta.lastSync ? new Date(STATE.meta.lastSync).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) : '—')
+          + '</span></span></div>')
       + '<p class="hint">«آخر كتابة تفوز» صامتةً هي أخطر سياسة: تمحو عمل زميلٍ بلا أن يعلم أحد. ما لا يُحسم آليًّا يُعرَض.</p>';
   }};
 
@@ -13922,7 +13957,7 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
           +   cfgInput('insCor', undefined, { dec:1, step:'0.1' }) + '</div>'
           + '</div>'
           + '<p class="hint">نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها.</p>',
-          btn('حفظ','btn-primary btn-sm'))
+          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + tgtBlock('tgtInsCamp', 'tgtInsCor');
   }};
 
@@ -13963,7 +13998,7 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
           +   cfgInput('disOk', undefined, { dec:1, step:'0.05' }) + '</div>'
           + '<div class="field"><label>' + esc(t('معامل التالف')) + '</label>'
           +   cfgInput('disBad', undefined, { dec:1, step:'0.05' }) + '</div>'
-          + '</div>', btn('حفظ','btn-primary btn-sm'))
+          + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + '<p class="hint">المعاملان يضربان وزن الفك بحسب حالة الجهاز المفكوك — فيتساوى الجهدُ ويختلف الناتج.</p>';
   }};
 
@@ -14077,7 +14112,7 @@ PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد
           +   cfgInput('budCap') + '</div>'
           + '<div class="field"><label>' + esc(t('حدّ الاعتماد للعملية الواحدة')) + ' (ريال)</label>'
           +   cfgInput('budApp') + '</div>'
-          + '</div>', btn('حفظ','btn-primary btn-sm'))
+          + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + stats([['المنصرف المعتمد', N(B.spent)], ['من', N(B.cap), 'acc'],
                ['المتبقي', N(B.cap - B.spent), 'ok'], ['بانتظار الاعتماد', N(B.pending)]])
       + card('', meter('المستهلك من السقف المعتمد', B.spent, B.cap))
@@ -14097,7 +14132,7 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
         + '</div>'
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
-        btn('حفظ','btn-primary btn-sm'))
+        btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + card('سعر النقطة والإضافي',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (ريال)</label>'
@@ -14121,7 +14156,7 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
           + '" style="margin:4px 0 0"><span>' + esc(t('المجموع')) + ': <b>'
           + nm(cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) + '٪</b></span></div>'
           + '<p class="hint">النقطة الواحدة تُقسَّم على مراحلها الثلاث — فمن هيّأ يأخذ نصيبه ومن جمّع نصيبه ومن ركّب نصيبه. والمجموع مئةٌ دائمًا.</p>',
-          btn('حفظ','btn-primary btn-sm'))
+          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + '<p class="hint">هذه الثوابت يُشتقّ منها التارجت الأسبوعي من الشهري، وتقديرُ الأزمنة في التخطيط.</p>';
   }};
 
@@ -14149,7 +14184,8 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
                   : pill(on ? '✓' : '—', on ? 'ok' : 'off');
               }));
           })),
-        '<p class="hint" style="margin:0">'
+        (may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="roles"') : '')
+        + '<p class="hint" style="margin:9px 0 0">'
         + esc(t(may('users')
             ? 'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.'
             : 'العرضُ فقط — التبديلُ للمهندس.'))
@@ -14192,7 +14228,7 @@ var NAV = [
       ['techacc','حسابات الفنيين'],['tech','سجل الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
-      ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['perms','الصلاحيات'],['assignRole','إسناد الأدوار'],
+      ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
       ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['vehKinds','أنواع السيارات'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
@@ -14444,6 +14480,14 @@ function onDocClick(e){
     }
     return;
   }
+  if (e.target.closest('[data-cfgok]')){
+    /* حقولُ الإعداد هنا تحفظ حيةً عند التغيير — الزرُّ لا يحفظ شيئًا لم
+       يُحفَظ. وكان بلا خاصيةٍ فيُخشى ألّا يكون التغييرُ وقع؛ فيؤكِّد. */
+    toast(t('محفوظٌ بالفعل — كلُّ حقلٍ هنا يُسجَّل فورَ تغييرِه'));
+    return;
+  }
+  if (e.target.closest('[data-crsave]')){ crSaveTimes(); return; }
+  if (e.target.closest('[data-asnrole]')){ asnRoleSet(); return; }
   if (e.target.closest('[data-usradd]')){ usrAdd(); return; }
   if (e.target.closest('[data-swnow]')){ swNow(); return; }
   if (e.target.closest('[data-swlater]')){ swLater(); return; }
