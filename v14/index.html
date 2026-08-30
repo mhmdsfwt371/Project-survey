@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.57</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11258,15 +11258,62 @@ var FUP_ROWS = [
   [112,'عرفات','محطة','ip'],[113,'عرفات','محطة','ok'],
   [115,'عرفات','بوابة','sv'],[116,'عرفات','بوابة','asn'],[117,'عرفات','بوابة','ins'],
   [118,'عرفات','بوابة','ip'],[119,'عرفات','بوابة','ok'],
-  [127,'منى','كاميرا','sv'],[128,'منى','كاميرا','asn'],[129,'منى','كاميرا','ins'],
-  [130,'منى','كاميرا','ip'],[131,'منى','كاميرا','ok'],
+  [127,'منى','كاميرا','sv','تفعيل كاميرا قائمة'],[128,'منى','كاميرا','asn','تفعيل كاميرا قائمة'],[129,'منى','كاميرا','ins','تفعيل كاميرا قائمة'],
+  [130,'منى','كاميرا','ip','تفعيل كاميرا قائمة'],[131,'منى','كاميرا','ok','تفعيل كاميرا قائمة'],
+  /* كاميراتٌ جديدةٌ: تُفرَّق بوجه العمل لا بالنوع — «ترقية كاميرا» */
+  [133,'منى','كاميرا','sv','ترقية كاميرا'],  [134,'منى','كاميرا','asn','ترقية كاميرا'],
+  [135,'منى','كاميرا','ins','ترقية كاميرا'], [136,'منى','كاميرا','ip','ترقية كاميرا'],
+  [137,'منى','كاميرا','ok','ترقية كاميرا'],
   /* الفكُّ: مشعرٌ كامل */
-  [158,'منى','*','dis'], [159,'عرفات','*','dis']
+  [158,'منى','*','dis'], [159,'عرفات','*','dis'],
+  /* ما يقيسه النظامُ خارجَ نطاقات الميدان */
+  [44,'*','*','ipAll'],    /* الترقيمُ وتسجيلُ عناوين الأجهزة الثلاثة */
+  [45,'*','*','custody'],  /* التخزينُ وتجهيزُ العُهدة لفرق التركيب */
+  [160,'*','*','disJudge'],/* الجردُ وحكمُ سليمٍ أو تالفٍ لكل جهاز */
+  [161,'*','*','custBack'],/* إرجاعُ العُهدة والتخزينُ وتقريرُ النسب */
+  [151,'*','*','health'],  /* مراقبةُ صحة الأجهزة على مدار الساعة */
+  [154,'*','*','esc']      /* التصعيدُ عند التذبذب المتكرر */
 ];
 
-function fupPct(zone, type, stage){
+function fupPct(zone, type, stage, work){
+  /* مقاييسُ لا تخصُّ نطاقًا بعينه — تُقاس على المشروع كلِّه */
+  if (stage === 'ipAll'){
+    var ins = Object.keys(STATE.inss || {}).filter(function(k){
+      return STATE.inss[k] && STATE.inss[k].status === 'مُركّب'; });
+    if (!ins.length) return null;
+    var withIp = ins.filter(function(k){
+      var x = siteFind(k); return x && x.net && x.ipRtr && x.ipRdr; }).length;
+    return Math.round(withIp * 100 / ins.length);
+  }
+  if (stage === 'custody' || stage === 'custBack'){
+    var mv = Object.keys(STATE.moves || {}).map(function(k){ return STATE.moves[k]; });
+    if (!mv.length) return null;
+    var out = mv.filter(function(m){ return m && m.kind === 'صرف'; }).length;
+    if (stage === 'custody') return out ? 100 : 0;
+    var back = mv.filter(function(m){ return m && m.kind === 'إرجاع'; }).length;
+    return out ? Math.min(100, Math.round(back * 100 / out)) : null;
+  }
+  if (stage === 'disJudge'){
+    var D = Object.keys(STATE.diss || {}).map(function(k){ return STATE.diss[k]; })
+      .filter(function(x){ return x && x.status === 'تم الفك'; });
+    if (!D.length) return null;
+    return Math.round(D.filter(function(x){ return x.cond; }).length * 100 / D.length);
+  }
+  if (stage === 'health'){
+    var ins2 = Object.keys(STATE.inss || {}).filter(function(k){
+      return STATE.inss[k] && STATE.inss[k].approved; });
+    if (!ins2.length) return null;
+    return Math.round(ins2.length * 100 / Math.max(1, (STATE.sites || []).length));
+  }
+  if (stage === 'esc'){
+    var due = (typeof escDue === 'function') ? escDue() : [];
+    var open = Object.keys(STATE.fixreqs || {}).length;
+    if (!open && !due.length) return null;
+    return open ? Math.round((open - due.length) * 100 / open) : 100;
+  }
   var L = (STATE.sites || []).filter(function(x){
-    return x.zone === zone && (type === '*' || x.type === type);
+    return x.zone === zone && (type === '*' || x.type === type)
+      && (!work || x.work === work);
   });
   if (!L.length) return null;              /* لا نقاطَ: لا يُكتَب شيء */
   var n = 0;
@@ -11348,7 +11395,7 @@ function fupExport(){
     var xml = new TextDecoder().decode(sheet.data), wrote = 0;
 
     FUP_ROWS.forEach(function(r){
-      var pct = fupPct(r[1], r[2], r[3]);
+      var pct = fupPct(r[1], r[2], r[3], r[4]);
       if (pct === null) return;
       var ref = 'F' + r[0];
       /* يُستبدَل الرقمُ داخلَ الخلية القائمة — لا تُنشَأ خليةٌ ولا يُمسُّ نمط */
@@ -11857,7 +11904,7 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'م�
         +   (function(){
               var done = 0, all = 0;
               FUP_ROWS.forEach(function(r){
-                var p = fupPct(r[1], r[2], r[3]);
+                var p = fupPct(r[1], r[2], r[3], r[4]);
                 if (p === null) return;
                 all++; if (p > 0) done++;
               });
