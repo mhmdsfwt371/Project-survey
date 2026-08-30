@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.77</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.78</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -875,6 +875,18 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'اختر مشعرًا ونوعًا':'Choose a zone and a type',
+ 'هذه التركيبةُ معلَنةٌ بالفعل':'This combination is already declared',
+ 'هذه التركيبةُ موجودةٌ بمواقعَ فعلًا':'This combination already has real sites',
+ 'أُعلنت التركيبة — اضبط وزنَها أدناه':'Combination declared — set its weight below',
+ 'عليها مواقعُ بالفعل — لا تُحذَف':'It already has sites — cannot be deleted',
+ 'أُلغيت التركيبة':'Combination removed',
+ 'اكتب اسم المشعر':'Write the zone name',
+ 'اختر نوعًا':'Choose a type',
+ 'مشعرٌ جديد…':'New zone…',
+ 'اسم المشعر الجديد':'New zone name',
+ 'إضافة':'Add',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. والتركيبةُ التي لا مواقعَ عليها تُضاف وتُحذَف بحرّية — فهي إعلانٌ لا سجلّ.':'The weight is per point of this combination, not for its count. The count changes: surveys grow, preparation follows the survey, installation follows the survey, and dismantling follows installation. Editing the zone name in its column header renames it across all its sites, and switching the type moves them to it. A combination with no sites can be freely added and removed — it is a declaration, not a record.',
  'إدارةُ التقارير للمهندس وحده':'Report management is for the engineer only',
  'حُفظت المواعيد':'Schedule saved',
  'الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».':'Automatic delivery on schedule needs a scheduled server — not built yet. Times are saved now, and the report itself is exported manually from "Report Center".',
@@ -1535,6 +1547,18 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'اختر مشعرًا ونوعًا':'مشعر اور قسم منتخب کریں',
+ 'هذه التركيبةُ معلَنةٌ بالفعل':'یہ ترکیب پہلے سے اعلان شدہ ہے',
+ 'هذه التركيبةُ موجودةٌ بمواقعَ فعلًا':'یہ ترکیب پہلے سے حقیقی مقامات رکھتی ہے',
+ 'أُعلنت التركيبة — اضبط وزنَها أدناه':'ترکیب کا اعلان ہو گیا — نیچے اس کا وزن مقرر کریں',
+ 'عليها مواقعُ بالفعل — لا تُحذَف':'اس پر پہلے سے مقامات ہیں — حذف نہیں ہو سکتی',
+ 'أُلغيت التركيبة':'ترکیب منسوخ ہو گئی',
+ 'اكتب اسم المشعر':'مشعر کا نام لکھیں',
+ 'اختر نوعًا':'قسم منتخب کریں',
+ 'مشعرٌ جديد…':'نیا مشعر…',
+ 'اسم المشعر الجديد':'نئے مشعر کا نام',
+ 'إضافة':'شامل کریں',
+ 'الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. والتركيبةُ التي لا مواقعَ عليها تُضاف وتُحذَف بحرّية — فهي إعلانٌ لا سجلّ.':'وزن اس ترکیب کے ہر پوائنٹ کا ہے، اس کی تعداد کا نہیں۔ اور تعداد بدلتی ہے: سروے بڑھتے ہیں، تیاری سروے کے تابع ہے، تنصیب سروے کے تابع ہے، اور ہٹانا تنصیب کے تابع ہے۔ کالم کے سر میں مشعر کا نام بدلنا اس کے تمام مقامات میں بدلتا ہے، اور قسم بدلنا انہیں منتقل کرتا ہے۔ جس ترکیب پر کوئی مقام نہ ہو وہ آزادانہ طور پر شامل اور حذف ہو سکتی ہے — یہ ایک اعلان ہے، ریکارڈ نہیں۔',
  'إدارةُ التقارير للمهندس وحده':'رپورٹس کا انتظام صرف انجینئر کے لیے ہے',
  'حُفظت المواعيد':'اوقات محفوظ ہو گئے',
  'الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».':'وقت پر خودکار ارسال کے لیے شیڈول شدہ سرور درکار ہے — ابھی تعمیر نہیں ہوا۔ اوقات اب محفوظ ہو رہے ہیں، اور رپورٹ خود "رپورٹ سینٹر" سے دستی طور پر برآمد ہوتی ہے۔',
@@ -12590,7 +12614,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.77' + '.docx" download>⬇ '
+              +   'V14.78' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -13532,6 +13556,44 @@ function typeCount(type){
   return n;
 }
 
+function mxExtra(){
+  if (!Array.isArray(CFG.mxExtra)) CFG.mxExtra = [];
+  return CFG.mxExtra;
+}
+/* تُعلَن تركيبةُ مشعرٍ ونوعٍ قبل أن يقع فيها موقع: من أراد أن يهيّئ وزنَ
+   «كاميرات الوزارة» في عرفات قبل تسجيل أوّل موقعٍ منها لم يجد صفًّا يكتب
+   فيه — فالصفُّ كان يُشتَقُّ من المواقع وحدَها. وتُحذَف الإعلانُ إن جاء
+   موقعٌ حقيقيٌّ فحلَّ محلَّه، أو بيدٍ ما دام لا موقعَ عليه. */
+function mxDeclare(zone, label){
+  if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
+  zone = String(zone || '').trim();
+  if (!zone || !label){ toast(t('اختر مشعرًا ونوعًا')); return; }
+  var key = zone + '|' + label;
+  var E = mxExtra();
+  if (E.indexOf(key) > -1){ toast(t('هذه التركيبةُ معلَنةٌ بالفعل')); return; }
+  var real = mxRows().some(function(r){ return r[0] === zone && r[1] === label; });
+  if (real){ toast(t('هذه التركيبةُ موجودةٌ بمواقعَ فعلًا')); return; }
+  E.push(key);
+  CORE.set('cfg', 'mxExtra', E);
+  statBump();
+  logEvent('إعلان تركيبة وزن — ' + zone + ' / ' + label);
+  toast(t('أُعلنت التركيبة — اضبط وزنَها أدناه'));
+  render(1);
+}
+function mxUndeclare(zone, label){
+  if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
+  var n = mxRowInfo(zone, label);
+  if (n){ toast(t('عليها مواقعُ بالفعل — لا تُحذَف')); return; }
+  var E = mxExtra(), key = zone + '|' + label, i = E.indexOf(key);
+  if (i < 0) return;
+  E.splice(i, 1);
+  CORE.set('cfg', 'mxExtra', E);
+  statBump();
+  logEvent('إلغاء تركيبة وزن — ' + zone + ' / ' + label);
+  toast(t('أُلغيت التركيبة'));
+  render(1);
+}
+
 function mxRows(){
   var S = siteStats(), out = [], seen = {};
   Object.keys(S.byKey).forEach(function(k){
@@ -13540,6 +13602,14 @@ function mxRows(){
     if (seen[key]) return;
     seen[key] = 1;
     out.push([p[0], lbl, S.byKey[k]]);
+  });
+  /* التركيباتُ المعلَنةُ تُدرَج بعددٍ صفرٍ إن لم تكن قد ظهرت بمواقعَ فعلًا —
+     فلا تُكرَّر التركيبةُ إن جاء موقعُها الأول. */
+  mxExtra().forEach(function(key){
+    if (seen[key]) return;
+    var p = key.split('|');
+    seen[key] = 1;
+    out.push([p[0], p.slice(1).join('|'), 0]);
   });
   /* لا تُدرَج تركيبةٌ لا وجودَ لها: كان يُدرَج جداءُ كلِّ مشعرٍ في كلِّ نوعٍ
      فتظهر جمراتٌ في عرفات ومسجدُ نمرة في منى — والنوعُ الذي لا يقع في مشعرٍ
@@ -13791,6 +13861,16 @@ function mxTypeMove(zone, label, newType){
 }
 /* حذفُ صفٍّ = حذفُ مواقعه. لا يقع إلا بلا مواقع — والصفُّ لا يكون بلا مواقع
    أصلًا لأنه مشتقٌّ منها. فيُقال ذلك بدل زرٍّ لا يعمل. */
+function mxDeclareGo(){
+  if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var zSel = g('mxdZ'), zone = zSel === '__new' ? g('mxdZn') : zSel;
+  var tk = g('mxdT'), T = typesList();
+  if (!zone){ toast(t('اكتب اسم المشعر')); return; }
+  if (!T[tk]){ toast(t('اختر نوعًا')); return; }
+  mxDeclare(zone, T[tk].l);
+}
+
 function mxRowInfo(zone, label){
   var T = typesList(), tk = '';
   Object.keys(T).forEach(function(k){ if (T[k].l === label) tk = k; });
@@ -13824,6 +13904,7 @@ function mxTable(path, label){
         + esc(T[k].l) + '</option>';
     }).join('');
   };
+  var Z = zoneList();
   return '<div class="grid cols-2" style="align-items:start">'
     + Object.keys(byZone).map(function(z){
         var L = byZone[z];
@@ -13831,12 +13912,15 @@ function mxTable(path, label){
           table(['النوع', label, ''],
             L.map(function(r){
               var n = mxRowInfo(r[0], r[1]);
+              /* الحذفُ يُلغي التركيبةَ من هذه البطاقة — لا النوعَ من
+                 النظام كلِّه. كان يستدعي `typeDel` بالاسم المعروض، وهو خطأٌ
+                 نجا بالمصادفة لأن المفتاح لا يطابق، لا لأنه صحيح. */
               return [may('settings')
                         ? '<select data-mxt="' + esc(r[0] + '|' + r[1]) + '">' + typeOpts(r[1]) + '</select>'
                         : esc(t(r[1])),
                       cfgInput(path, r[0] + '|' + r[1], { dec:1 }),
                       n ? '' : (may('settings')
-                            ? btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(r[1]) + '"') : '')];
+                            ? btn('حذف','btn-quiet btn-sm',' data-mxdel="' + esc(r[0] + '|' + r[1]) + '"') : '')];
             })),
           may('settings')
             ? '<input value="' + esc(z) + '" data-mxz="' + esc(z) + '" dir="auto" '
@@ -13844,8 +13928,26 @@ function mxTable(path, label){
             : '');
       }).join('')
     + '</div>'
+    /* إعلانُ تركيبةٍ جديدة: مشعرٌ فنوعٌ لم يقع فيه موقعٌ بعد — ليُضبَط
+       وزنُه قبل وصول أول نقطةٍ منه، كإضافة كاميرات الوزارة في مشعرٍ لم
+       تُسجَّل فيه بعد. */
+    + (may('settings')
+      ? card('إضافة تركيبة إلى مشعر',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('المشعر')) + '</label>'
+          +   '<select id="mxdZ">'
+          +   Z.map(function(z){ return '<option value="' + esc(z) + '">' + esc(z) + '</option>'; }).join('')
+          +   '<option value="__new">' + esc(t('مشعرٌ جديد…')) + '</option>'
+          +   '</select></div>'
+          + '<div class="field" id="mxdZnWrap" style="display:none">'
+          +   '<label>' + esc(t('اسم المشعر الجديد')) + '</label><input id="mxdZn" dir="auto"></div>'
+          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+          +   '<select id="mxdT">' + typeOpts('') + '</select></div>'
+          + '</div>',
+          btn('➕ ' + t('إضافة'),'btn-primary btn-sm',' data-mxdadd="1"'))
+      : '')
     + '<p class="hint">'
-    + esc(t('الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه.'))
+    + esc(t('الوزنُ لكلِّ نقطةٍ من هذه التركيبة — لا لعددها. والعددُ يتغيّر: ما يُمسَح يزيد، وما يُهيَّأ يتبع المسحَ، وما يُركَّب يتبع المسحَ، وما يُفَكُّ يتبع التركيب. وتعديلُ اسم المشعر في رأس عموده يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. والتركيبةُ التي لا مواقعَ عليها تُضاف وتُحذَف بحرّية — فهي إعلانٌ لا سجلّ.'))
     + '</p>';
 }
 
@@ -14688,6 +14790,13 @@ function onDocClick(e){
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
   var tyd = e.target.closest('[data-tydel]');
   if (tyd){ typeDel(tyd.getAttribute('data-tydel')); return; }
+  var mxd = e.target.closest('[data-mxdel]');
+  if (mxd){
+    var mxp = mxd.getAttribute('data-mxdel').split('|');
+    mxUndeclare(mxp[0], mxp.slice(1).join('|'));
+    return;
+  }
+  if (e.target.closest('[data-mxdadd]')){ mxDeclareGo(); return; }
   if (e.target.closest('[data-jbadd]')){ jobAdd(); return; }
   var jbd = e.target.closest('[data-jbdel]');
   if (jbd){ jobDel(jbd.getAttribute('data-jbdel')); return; }
@@ -15242,6 +15351,11 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-crn')){ crewSet(el2.getAttribute('data-crn'), { n:el2.value.trim() }); render(1); return; }
     if (el2.hasAttribute('data-crk')){ crewSet(el2.getAttribute('data-crk'), { kind:el2.value }); return; }
     if (el2.hasAttribute('data-crd')){ crewSet(el2.getAttribute('data-crd'), { d:el2.value.trim() }); return; }
+    if (el2.id === 'mxdZ'){
+      var zw = document.getElementById('mxdZnWrap');
+      if (zw) zw.style.display = el2.value === '__new' ? '' : 'none';
+      return;
+    }
     if (el2.hasAttribute('data-mxz')){
       zoneRename(el2.getAttribute('data-mxz'), el2.value); return;
     }
