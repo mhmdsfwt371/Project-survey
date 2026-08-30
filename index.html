@@ -526,6 +526,15 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
    كان يختفي تحت خمسمئةٍ وستين بكسل، أي على كلِّ جهازٍ في الميدان. */
 /* زرُّ الرجوع: يظهر حين يكون في السجل مكانٌ يُعاد إليه، ويختفي في الجذر —
    فزرٌّ ظاهرٌ لا يفعل شيئًا أسوأُ من غيابه. */
+/* شريطُ التحديث: أسفلَ الشاشة فوق كلِّ شيء، ولا يحجب ما يُقرأ */
+.sw-bar{position:fixed;inset-block-end:calc(14px + env(safe-area-inset-bottom,0px));
+  inset-inline:14px;z-index:calc(var(--z-map-ui) + 60);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 16px 44px rgba(0,0,0,.45);padding:11px 13px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;
+  max-width:520px;margin-inline:auto}
+.sw-bar > span{flex:1 1 auto;min-width:0}
+
 .tb-back{background:transparent;border:1px solid var(--line);border-radius:10px;
   width:34px;height:34px;min-height:34px;display:inline-flex;align-items:center;
   justify-content:center;cursor:pointer;font-size:17px;color:var(--ink);
@@ -657,7 +666,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.64</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.65</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -852,6 +861,11 @@ function setTheme(m){
 
 var D2 = {
 en:{
+ 'حدّث الآن':'Update now',
+ 'لاحقًا':'Later',
+ 'نسخةٌ جديدةٌ نزلت — تُطبَّق بعد':'A new version downloaded — applies in',
+ 'أُجّل — يُطبَّق عند الفتح القادم':'Postponed — applies on next open',
+ 'جلسةٌ محفوظة — يُفتَح…':'Saved session — opening…',
  'المشاعرُ للمهندس وحده':'Zones are for the engineer only',
  'المشعرُ موجودٌ بالفعل':'That zone already exists',
  'موقعًا نُقل إلى':'site(s) moved to',
@@ -1462,6 +1476,11 @@ en:{
  'تُضاف كلها':'All added','يُرفض الثاني':'Second rejected','تُدمَج بسطر فاصل':'Merged with a separator'
 },
 ur:{
+ 'حدّث الآن':'ابھی اپ ڈیٹ کریں',
+ 'لاحقًا':'بعد میں',
+ 'نسخةٌ جديدةٌ نزلت — تُطبَّق بعد':'نیا نسخہ آ گیا — لاگو ہوگا',
+ 'أُجّل — يُطبَّق عند الفتح القادم':'ملتوی — اگلی بار کھلنے پر لاگو',
+ 'جلسةٌ محفوظة — يُفتَح…':'محفوظ سیشن — کھل رہا ہے…',
  'المشاعرُ للمهندس وحده':'مشاعر صرف انجینئر کے لیے ہیں',
  'المشعرُ موجودٌ بالفعل':'یہ مشعر پہلے سے موجود ہے',
  'موقعًا نُقل إلى':'مقامات منتقل ہوئے',
@@ -3564,14 +3583,28 @@ var CREWS = [
 ];
 
 /* أرقام تمثيلية لكل فريق عبر الدورات الثلاث */
-var CREW_STATS = {
-  eng:   { day:0, week:0, month:0, tgtM:0,     open:0, done:0 },
-  cprep: { day:0, week:0, month:0, get tgtM(){ return T().prep; }, open:0, done:0 },
-  casm:  { day:0, week:0, month:0, get tgtM(){ return T().asm; },  open:0, done:0 },
-  cins:  { day:0, week:0, month:0, get tgtM(){ return T().ins; },  open:0, done:0 }
-};
+/* إحصاءُ أيِّ فريقٍ يُشتَقُّ من نوع مهمّته ومن أرصدة أعضائه: كان جدولًا
+   بأربعة مفاتيحَ ثابتة، فأيُّ فريقٍ يُنشَأ لا يجد مفتاحَه فتسقط شاشةُ
+   المتابعة كلُّها — ومن أنشأ فريقًا وجد شاشةً بيضاء. */
+function crewStat(c){
+  var K2 = T(), tgt = 0;
+  if (c && c.kind === 'prep') tgt = K2.prep;
+  else if (c && c.kind === 'asm') tgt = K2.asm;
+  else if (c && c.kind === 'ins') tgt = K2.ins;
+  else if (c && c.kind === 'dis') tgt = K2.dis || 0;
+  var name = c ? c.n : '';
+  var mine = scores().list.filter(function(e){
+    return techsList().some(function(x){ return x.n === e.name && x.crew === name; });
+  });
+  var sum = function(f){ return mine.reduce(function(a, e){ return a + (e[f] || 0); }, 0); };
+  return { day:0, week:0, month:Math.round(sum('total')), tgtM:tgt,
+           open:0, done:sum('survey') + sum('install') + sum('dis') };
+}
 
-function crewOf(id){ return CREWS.filter(function(c){ return c.id === id; })[0] || CREWS[0]; }
+function crewOf(id){
+  var L = crewsList();
+  return L.filter(function(c){ return c.id === id; })[0] || L[0];
+}
 
 /* ── متابعة الفرق — لوحة المهندس ─────────────────── */
 PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة فرق — كلٌّ بنوع مهمته وتارجته ودوريته.',
@@ -3581,8 +3614,8 @@ PAGE.crews = { m:'الفنيون', t:'متابعة الفرق', l:'أربعة ف
                   ['أعضاء', N(CREWS.reduce(function(a,c){ return a + c.members.length; }, 0))],
                   ['مهام مفتوحة','٠','wrn'],
                   ['نقاط اليوم','٠','ok']])
-      + CREWS.map(function(c){
-          var S = CREW_STATS[c.id];
+      + crewsList().map(function(c){
+          var S = crewStat(c);
           var K = c.kind === '*' ? null : WO_KINDS[c.kind];
           return card((K ? K.i + ' ' : '\u{1F393} ') + t(c.n),
             '<p class="hint" style="margin:0 0 12px">' + esc(t(c.d)) + '</p>'
@@ -3662,7 +3695,7 @@ PAGE.creps = { m:'الفنيون', t:'التقارير الدورية', l:'ما 
 PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
   body:function(){
     var c = crewOf(CREW_VIEW);
-    var S = CREW_STATS[c.id];
+    var S = crewStat(c);
     var K = c.kind === '*' ? null : WO_KINDS[c.kind];
     return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
         return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
@@ -8970,17 +9003,51 @@ function swBusy(){
   try { if (document.querySelector('input:focus, textarea:focus, select:focus')) return true; } catch (e){}
   return false;
 }
+var SW_TICK = null, SW_LEFT = 0;
+function swCancel(){
+  clearInterval(SW_TICK); SW_TICK = null;
+  var b = document.getElementById('swBar');
+  if (b) b.remove();
+}
+/* شريطٌ يعدُّ من خمسٍ ويقول ما سيقع، وفيه «حدّث الآن» و«لاحقًا».
+   وكان التحديثُ يقع بعد سبعِ أعشارِ ثانيةٍ بلا مهلة — فمن كان يقرأ شيئًا
+   فقده بلا إنذار. والتأجيلُ حقٌّ لمن يعمل. */
 function swApply(){
-  if (SW_RELOADED) return;
+  if (SW_RELOADED || SW_TICK) return;
   if (swBusy()){
-    /* يُقال مرةً، ويُعاد المحاولةُ حين يفرغ */
     toast(t('نسخةٌ جديدةٌ جاهزة — تُطبَّق فور انتهائك'));
     setTimeout(swApply, 20000);
     return;
   }
-  SW_RELOADED = true;
+  SW_LEFT = 5;
+  var bar = document.createElement('div');
+  bar.id = 'swBar'; bar.className = 'sw-bar';
+  bar.innerHTML = '<span id="swTxt"></span>'
+    + '<button type="button" class="btn btn-primary btn-sm" data-swnow="1">'
+    + esc(t('حدّث الآن')) + '</button>'
+    + '<button type="button" class="btn btn-quiet btn-sm" data-swlater="1">'
+    + esc(t('لاحقًا')) + '</button>';
+  document.body.appendChild(bar);
+  var paint = function(){
+    var el = document.getElementById('swTxt');
+    if (el) el.textContent = t('نسخةٌ جديدةٌ نزلت — تُطبَّق بعد') + ' ' + nm(SW_LEFT);
+  };
+  paint();
+  SW_TICK = setInterval(function(){
+    SW_LEFT--;
+    if (SW_LEFT > 0){ paint(); return; }
+    swCancel(); swNow();
+  }, 1000);
+}
+function swNow(){
+  if (SW_RELOADED) return;
+  SW_RELOADED = true; swCancel();
   toast(t('تُحدَّث النسخة…'));
-  setTimeout(function(){ try { location.reload(); } catch (e){} }, 700);
+  setTimeout(function(){ try { location.reload(); } catch (e){} }, 400);
+}
+function swLater(){
+  swCancel();
+  toast(t('أُجّل — يُطبَّق عند الفتح القادم'));
 }
 
 /* المتصفّحُ لا يسأل عن عاملٍ جديدٍ إلا نادرًا — فيُسأل كلَّ ربع ساعةٍ وعند
@@ -9209,6 +9276,59 @@ var LOGIN_CSS = `
 function lgRemembered(){
   try { return localStorage.getItem('nsk14.user') || ''; } catch (e){ return ''; }
 }
+
+/* جلسةٌ محفوظةٌ تُفتَح بلا كلمة: Firebase يحفظ الجلسةَ في المتصفّح بطبعه،
+   ونحن كنّا لا نسأل عنها فنطلب الكلمةَ في كلِّ فتحة — والفنيُّ في المشاعر
+   يفتح التطبيقَ عشرين مرةً في اليوم.
+   والكلمةُ لا تُخزَّن على الجهاز أبدًا: جهازُ الميدان يُفقَد ويُعار،
+   والجلسةُ تُبطَل من لوحة Firebase أمّا الكلمةُ المخزَّنةُ فلا تُبطَل. */
+function autoSignIn(){
+  if (!lgRemembered()) return Promise.resolve(false);
+  return FB.init().then(function(ok){
+    if (!ok || !FB.auth) return false;
+    return new Promise(function(res){
+      var done = false;
+      var stop = setTimeout(function(){ if (!done){ done = true; res(false); } }, 6000);
+      try {
+        FB.auth.onAuthStateChanged(function(u){
+          if (done) return;
+          done = true; clearTimeout(stop);
+          if (!u){ res(false); return; }
+          STATE.meta.uid = u.uid;
+          STATE.meta.online = true;
+          FB.db.collection('users').doc(u.uid).get().then(function(doc){
+            var v = doc.exists ? (doc.data() || {}) : {};
+            STATE.meta.name = v.name || lgRemembered();
+            ROLE = ROLES[v.role] ? v.role : 'tech';
+            res(true);
+          }).catch(function(){ res(true); });
+        });
+      } catch (e){ done = true; clearTimeout(stop); res(false); }
+    });
+  }).catch(function(){ return false; });
+}
+
+function bootAuto(){
+  var lg = document.getElementById('login');
+  if (!lg || !lgRemembered()) return;
+  var note = document.createElement('div');
+  note.className = 'hint';
+  note.style.cssText = 'text-align:center;margin:12px 0 0';
+  note.textContent = t('جلسةٌ محفوظة — يُفتَح…');
+  try { lg.appendChild(note); } catch (e){}
+  autoSignIn().then(function(ok){
+    try { note.remove(); } catch (e){}
+    if (!ok) return;
+    lg.style.display = 'none';
+    document.body.classList.add('in');
+    var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
+    first.then(function(){ return pullDelta(); })
+         .then(function(){ statBump(); render(1); syncBadge(); })
+         .catch(function(){ render(1); });
+    logEvent('دخولٌ بجلسةٍ محفوظة');
+  });
+}
+
 
 function loginPaint(){
   var el = document.getElementById('login');
@@ -13852,6 +13972,8 @@ function actList(){
 /* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
    فلا تُكتَب بيدٍ ولا تُنسى. */
 function onDocClick(e){
+  if (e.target.closest('[data-swnow]')){ swNow(); return; }
+  if (e.target.closest('[data-swlater]')){ swLater(); return; }
   if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
   var a = e.target.closest('[data-p]');
   if (a){
@@ -14309,12 +14431,18 @@ function onDocClick(e){
             NS_CO_OPEN = false; render(1); return; }
   if (e.target.closest('[data-nscoreq]')){ nsCoRequest(); return; }
   if (e.target.closest('[data-pull]')){
+    /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
+       أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
     PULL_ASK = true; PULL_LAST = 0;
     toast(t('تُزامَن الآن…'));
     CORE.flush();
     pullDelta().then(function(n){
       toast(n ? (nm(n) + ' ' + t('سجلًّا وصل')) : t('كلُّ شيءٍ مُزامَن'));
-      render(1);
+      statBump();
+      if (CUR === 'map'){
+        syncBadge();
+        if (typeof mapPaint === 'function') mapPaint();
+      } else render(1);
     });
     return;
   }
@@ -14810,6 +14938,7 @@ if (window.visualViewport){
   loadSites();
   manifestInject();
   loginPaint();
+  bootAuto();
   watchNet();
   pwaWatch();
   swInstall();
