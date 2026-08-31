@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V14.91",
+  "app_version": "V14.92",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1360,7 +1360,8 @@
     "V14.88": "حُذفت أربعُ صفحات (allscore, stages, team, techx) وحلّت محلَّها PAGE.perf: شرائح تبديل بين 5 مستويات (rank/stage/job/crew/project) فوق نفس scores(). team كانت مسودة غير مكتملة (عمود 'الفريق' يعرض أفرادًا، بلا فك ولا نسبة تارجت) — حُذفت بلا نقل محتوى. الترتيب العام دمج أعمدة allscore (رتبة/مستحق/متوسط يوم) مع نسبة التارجت من techx في صف واحد. نُظّف EXP_SECS: أُزيلت مدخلات ميتة (team, techx, race — لا SHEETS مقابل) وأُضيفت مدخلات حقيقية (score, stages) لم تكن مُدرَجة.",
     "V14.89": "PAGE.chal وPAGE.chalm كانتا شاشتين فارغتين تمامًا (نص ثابت 'لا إفادات'/'لا تحديات مفتوحة'). البيانات الحقيقية موجودة منذ البداية: STATE.recs[site].chals يُحفَظ وقت المسح ولم يُقرَأ. أُضيفت chalSites() تشتق قائمة النقاط ذات التحدي الحقيقي وتُغلقها تلقائيًّا حين STATE.inss[id].status==='مُركّب' && approved. chal = كل الإفادات (مفتوحة+مغلقة)، chalm = العالقة وحدها + الأكثر تكرارًا من الأنواع.",
     "V14.90": "أربع صفحات كانت بيانات وهمية ثابتة رغم بيانات حقيقية موجودة: survey (سجل مسح فعلي)، stuck (متعذر/راكد)، pipe (سلامة خط الإنتاج)، dis (الفك بعد الموسم — disSchedule/disComplete موجودتان أصلًا). بُنيت الأربعة من STATE.recs/STATE.diss/STATE.tasks/STATE.inss الحقيقية. أُضيفت ميزة svReopen(id,reason,note): تعيد زيارةً ناجحةً لقائمة المتعذر بسببٍ مكتوب دون حذف سجلها الأصلي — تغيير .access فقط.",
-    "V14.91": "LAYERS.survey.ready/done كانت تفحص وجود STATE.recs[id] لا نجاحه (svDone) — نقطة أُعيدت 'متعذّرة' (svReopen، V14.90) كانت تبقى 'منجَزة' في شاشة توزيع الفرق فلا تُسنَد لزيارة ثانية أبدًا. LAYERS.install.pass بنفس العطل. صُححا كلاهما بـ svDone(). PAGE.solution: قسم 'الإجمالي المعتمد — موسم ١٤٤٨' (نقاط معتمدة بالنوع + كمية كل صنفٍ إجمالًا من الحلول المعتمدة فقط). PAGE.inst: توزيع حقيقي حسب نوع النقطة بدل أصفار ثابتة."
+    "V14.91": "LAYERS.survey.ready/done كانت تفحص وجود STATE.recs[id] لا نجاحه (svDone) — نقطة أُعيدت 'متعذّرة' (svReopen، V14.90) كانت تبقى 'منجَزة' في شاشة توزيع الفرق فلا تُسنَد لزيارة ثانية أبدًا. LAYERS.install.pass بنفس العطل. صُححا كلاهما بـ svDone(). PAGE.solution: قسم 'الإجمالي المعتمد — موسم ١٤٤٨' (نقاط معتمدة بالنوع + كمية كل صنفٍ إجمالًا من الحلول المعتمدة فقط). PAGE.inst: توزيع حقيقي حسب نوع النقطة بدل أصفار ثابتة.",
+    "V14.92": "نظام طلبات الورشة (workshop_system_gap من V14.85) بُني: CR (تهيئة) وAR (تجميع)، بنفس reqNext(). STATE.workReqs مجموعة جديدة 'workreqs' بقاعدة Firestore. workReqComplete() يكتب STATE.moves بـkind='تهيئة'/'تجميع' الصحيح — scores() تحسب نقاط الورشة فعليًّا أول مرة. أُصلح باغ array/object ثالث في STATE.moves (moveAdd كانت تحوّلها كائنًا) وباغ رابع في disComplete (تكتب cond بدل كائن الحركة، وبمعرّف الموقع لا معرّفٍ فريد لكل صنف)."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2060,7 +2061,7 @@
     }
   },
   "workshop_system_gap": {
-    "status": "غير مبني — PAGE.wos نفسها تصرّح: 'نظام طلبات الورشة لم يُبنَ بعد'",
+    "status": "مبنيٌّ الآن (V14.92) — راجع workshop_requests أدناه",
     "dead_code": "scores(): STATE.moves.forEach يبحث عن m.kind==='تهيئة'/'تجميع' — MOVE_KINDS الفعلية = ['توريد','صرف','استهلاك','إرجاع','شطب'] فلا يتطابق أبدًا، فـ pPrep وpAsm صفرٌ دائمًا لكل فني",
     "affected_pages": "myscore, allscore, stages, techx — عمودا التهيئة والتجميع فيها كلها تعرض صفرًا حقيقيًّا لا خطأ عرضٍ، لكنه يخفي عملًا فعليًّا",
     "wday_v14_85": "أُصلحت لتعرض التركيب الحقيقي فقط، مع تحذيرٍ صريح أن التهيئة والتجميع غير محتسبين",
@@ -2090,5 +2091,13 @@
     "bug": "LAYERS.survey.ready = '!STATE.recs[x.id]' يفحص الوجود لا svDone() — كذلك install.pass",
     "impact": "نقطة أُعيدت لحالة متعذّر (V14.90 svReopen) لا تظهر في شاشة توزيع الفرق كـ'محتاجة زيارة' أبدًا",
     "fix": "survey.ready/done و install.pass تستخدم svDone(STATE.recs[x.id]) الآن"
+  },
+  "workshop_requests": {
+    "model": "STATE.workReqs[id] = {id,no,kind:'prep'|'asm',item,qty,qtyDone,status,by,at,doneBy,doneAt}",
+    "numbering": "REQ_PREFIX.prep='CR', REQ_PREFIX.asm='AR' — نفس reqNext() المستخدمة لـSR/DR/PR",
+    "completion_feeds_scores": "workReqComplete() يدفع STATE.moves.push({kind:'تهيئة'|'تجميع',item,qty,...}) — يطابق شرط scores() الذي كان ميتًا منذ البداية (m.kind==='تهيئة'/'تجميع')",
+    "page": "PAGE.wos ('طلبات المستودع') — إنشاء، قائمة، تسجيل تنفيذ جزئي أو كامل، إلغاء (قبل أول تنفيذ فقط)",
+    "moves_array_object_bug_v14_92": "moveAdd() كانت تحوّل STATE.moves من مصفوفة (المستخدَمة في scores/pull/PAGE.dis) إلى كائن — وُحِّدت جميع المواضع الستة+ على شكل المصفوفة",
+    "disComplete_bug_v14_92": "كانت تكتب CORE.dirty('moves', siteId, cond) — قيمة نصية خاطئة بمعرّف الموقع — صُححت لتكتب كائن الحركة الصحيح بمعرّفٍ فريد لكل صنف"
   }
 }

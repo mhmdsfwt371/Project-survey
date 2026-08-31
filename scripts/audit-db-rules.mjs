@@ -79,7 +79,7 @@ check(!canW.includes("'viewer'"), 'الوزارةُ خارج صلاحية الك
   /* أسماءُ المجموعات في التطبيق قد تختلف عن مسارات القواعد — تُعلَن الترجمةُ
      صراحةً، فالمسكوتُ عنه يسقط في مجموعةٍ عامةٍ لا قاعدةَ لها. */
   const MAP = { props:'props', diss:'dismantles', inv:'inventory', buys:'purchases',
-                moves:'inventory', cfg:'settings' };
+                moves:'inventory', cfg:'settings', workReqs:'workreqs' };
   const missing = used.filter(c => {
     const path = MAP[c] || c;
     return !new RegExp('match /' + path + '/').test(R);
