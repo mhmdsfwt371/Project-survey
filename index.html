@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.80</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.81</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -688,6 +688,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
         </div>
         <button type="button" class="tb-btn tb-install" id="pwaBtn" data-pwa="1"
               aria-label="تثبيت التطبيق" title="تثبيت التطبيق" hidden>⬇</button>
+        <button type="button" class="tb-btn" id="assistBtn" data-assist="1"
+              aria-label="المساعد" title="المساعد">🧭</button>
       <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
       </div>
     </header>
@@ -802,7 +804,32 @@ en:{
  'كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا':'All points lack an approved solution — approve them from "Install Solution" first',
  'بلا حلٍّ معتمد لم تُرسَل':'without an approved solution were not sent',
  'بلا حلٍّ معتمد':'without an approved solution',
- 'لا نقطةَ مختارة':'No point selected'
+ 'لا نقطةَ مختارة':'No point selected',
+
+ /* المساعد */
+ 'المساعد':'Assistant',
+ 'اسأل عن أي حاجة عايز تعملها، ونوريك مكانها وخطواتها.':'Ask about anything you want to do, and we will show you where it is and how.',
+ 'مثلاً: عايز أضيف فني جديد':'e.g. I want to add a new technician',
+ 'اكتب اللي محتاج تعمله بكلماتك، وهنوريك الصفحة الصح.':'Type what you need to do in your own words, and we will point you to the right page.',
+ 'معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.':'No close results — try another word, or browse the sidebar.',
+ 'افتح «الفرق» من القائمة الجانبية':'Open "Teams" from the sidebar',
+ 'اختر الفريقَ من الشرائح فوق، أو اضغط «إضافة فريق» لو مفيش فريق مناسب':'Pick the team from the chips above, or press "Add team" if none fits',
+ 'انزل لكارت «إضافة موظف» واكتب الاسم والجوال والمشرف':'Scroll to the "Add staff member" card and enter the name, phone, and supervisor',
+ 'اضغط «➕ إضافة موظف» — بينضم لفريقه على طول بلا اختيار من قائمة':'Press "+ Add staff member" — they join their team right away, no picking from a list',
+ 'امسح النقطة الأول من «المسح الميداني» — لازم تبقى «تمت الزيارة»':'Survey the point first from "Field Survey" — its status must be "Visited"',
+ 'افتح «حل التركيب»، اختر النقطة من القائمة':'Open "Install Solution", pick the point from the list',
+ 'حدّد كمية كل جهاز من الكتالوج هيتركب في النقطة دي':'Set the quantity of each catalog device to be installed at this point',
+ 'اضغط «➕ اقترح الحل» — هيبقى بانتظار المهندس':'Press "+ Propose solution" — it will await the engineer',
+ 'المهندس يفتح نفس الصفحة ويضغط «اعتمد» أو «ردّ»':'The engineer opens the same page and presses "Approve" or "Return"',
+ 'من «حل التركيب»، لازم يبقى فيه حل معتمد للنقطة لو النوع تركيب':'From "Install Solution", the point needs an approved solution if the type is install',
+ 'افتح «توزيع الفرق» واضغط «حدّد من الخريطة» أو اختر من القائمة':'Open "Team Distribution" and press "Pick from map" or choose from the list',
+ 'اختر النقاط، ثم اختر «لفني» أو «لفريق»':'Select the points, then choose "To a technician" or "To a team"',
+ 'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)':'If a team: pick the team and the split method (by shares or evenly)',
+ 'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا':'Press "Distribute" — the request number (SR/DR/PR) is generated automatically',
+ 'لازم الفني يبقى مضاف في «الفرق» الأول':'The technician must already be added in "Teams" first',
+ 'افتح «حسابات الفنيين»':'Open "Technician Accounts"',
+ 'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب':'Pick the technician, or press "Create accounts in bulk" for everyone without one',
+ 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'Copy the username and password and hand them to the technician'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -890,7 +917,32 @@ ur:{
  'كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا':'تمام پوائنٹس کا کوئی منظور شدہ حل نہیں — پہلے "تنصیب کا حل" سے منظور کریں',
  'بلا حلٍّ معتمد لم تُرسَل':'بغیر منظور شدہ حل کے نہیں بھیجے گئے',
  'بلا حلٍّ معتمد':'بغیر منظور شدہ حل کے',
- 'لا نقطةَ مختارة':'کوئی پوائنٹ منتخب نہیں'
+ 'لا نقطةَ مختارة':'کوئی پوائنٹ منتخب نہیں',
+
+ /* المساعد */
+ 'المساعد':'اسسٹنٹ',
+ 'اسأل عن أي حاجة عايز تعملها، ونوريك مكانها وخطواتها.':'جو کچھ آپ کرنا چاہتے ہیں اس کے بارے میں پوچھیں، ہم آپ کو جگہ اور طریقہ بتائیں گے۔',
+ 'مثلاً: عايز أضيف فني جديد':'مثال کے طور پر: میں ایک نیا ٹیکنیشن شامل کرنا چاہتا ہوں',
+ 'اكتب اللي محتاج تعمله بكلماتك، وهنوريك الصفحة الصح.':'اپنے الفاظ میں لکھیں کہ آپ کیا کرنا چاہتے ہیں، ہم صحیح صفحہ دکھائیں گے۔',
+ 'معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.':'کوئی قریبی نتیجہ نہیں — دوسرا لفظ آزمائیں، یا سائیڈبار براؤز کریں۔',
+ 'افتح «الفرق» من القائمة الجانبية':'سائیڈبار سے "ٹیمیں" کھولیں',
+ 'اختر الفريقَ من الشرائح فوق، أو اضغط «إضافة فريق» لو مفيش فريق مناسب':'اوپر چپس سے ٹیم منتخب کریں، یا اگر کوئی مناسب نہ ہو تو "ٹیم شامل کریں" دبائیں',
+ 'انزل لكارت «إضافة موظف» واكتب الاسم والجوال والمشرف':'"ملازم شامل کریں" کارڈ پر جائیں اور نام، فون اور نگران درج کریں',
+ 'اضغط «➕ إضافة موظف» — بينضم لفريقه على طول بلا اختيار من قائمة':'"+ ملازم شامل کریں" دبائیں — وہ فورًا اپنی ٹیم میں شامل ہو جاتا ہے، فہرست سے چننے کی ضرورت نہیں',
+ 'امسح النقطة الأول من «المسح الميداني» — لازم تبقى «تمت الزيارة»':'پہلے "فیلڈ سروے" سے پوائنٹ کا سروے کریں — اس کی حالت "دورہ ہو گیا" ہونی چاہیے',
+ 'افتح «حل التركيب»، اختر النقطة من القائمة':'"تنصیب کا حل" کھولیں، فہرست سے پوائنٹ منتخب کریں',
+ 'حدّد كمية كل جهاز من الكتالوج هيتركب في النقطة دي':'اس پوائنٹ پر نصب ہونے والے ہر کیٹلاگ آلے کی مقدار مقرر کریں',
+ 'اضغط «➕ اقترح الحل» — هيبقى بانتظار المهندس':'"+ حل تجویز کریں" دبائیں — یہ انجینئر کا منتظر رہے گا',
+ 'المهندس يفتح نفس الصفحة ويضغط «اعتمد» أو «ردّ»':'انجینئر وہی صفحہ کھولتا ہے اور "منظور کریں" یا "واپس کریں" دباتا ہے',
+ 'من «حل التركيب»، لازم يبقى فيه حل معتمد للنقطة لو النوع تركيب':'"تنصیب کا حل" سے، اگر قسم تنصیب ہے تو پوائنٹ کا منظور شدہ حل ہونا ضروری ہے',
+ 'افتح «توزيع الفرق» واضغط «حدّد من الخريطة» أو اختر من القائمة':'"ٹیم کی تقسیم" کھولیں اور "نقشے سے منتخب کریں" دبائیں یا فہرست سے چنیں',
+ 'اختر النقاط، ثم اختر «لفني» أو «لفريق»':'پوائنٹس منتخب کریں، پھر "ٹیکنیشن کے لیے" یا "ٹیم کے لیے" منتخب کریں',
+ 'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)':'اگر ٹیم: ٹیم اور تقسیم کا طریقہ منتخب کریں (نسبت سے یا برابر)',
+ 'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا':'"تقسیم کریں" دبائیں — درخواست نمبر (SR/DR/PR) خودکار طور پر بن جائے گا',
+ 'لازم الفني يبقى مضاف في «الفرق» الأول':'ٹیکنیشن کا پہلے سے "ٹیمیں" میں شامل ہونا ضروری ہے',
+ 'افتح «حسابات الفنيين»':'"ٹیکنیشن اکاؤنٹس" کھولیں',
+ 'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب':'ٹیکنیشن منتخب کریں، یا بغیر اکاؤنٹ والوں کے لیے "اجتماعی اکاؤنٹس بنائیں" دبائیں',
+ 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'یوزر نیم اور پاس ورڈ کاپی کریں اور ٹیکنیشن کے حوالے کریں'
 }
 };
 
@@ -8013,6 +8065,149 @@ function helpOf(id){
   };
 }
 
+/* ═══ المساعدُ: بحثٌ محليٌّ صرف — بلا API ولا اتصالٍ خارجي ═══
+   مئةٌ وصفحةٌ لا يحفظها أحدٌ عن ظهر قلب. يكتب المستخدمُ سؤالَه بكلماته،
+   فيُطابَق ضدَّ فهرسٍ مبنيٍّ من عنوان كل صفحةٍ ووصفها (المكتوبَين أصلًا)
+   زائدًا كلماتٍ مرادفةً مكتوبةً يدًا للصفحات الأكثر سؤالًا — وتُقاس
+   بنفس أدوات بحث الموقع والقائمة (arNorm/subseq) لا بمنطقٍ جديد. ولا
+   تُقترَح صفحةٌ لا يراها دورُ صاحب السؤال، فلا يُرسَل مشرفٌ لصفحة مهندس. */
+
+var ASSIST_OPEN = false;
+var ASSIST_Q = '';
+
+/* كلماتٌ يكتبها الناسُ ولا تظهر في عنوان الصفحة أو وصفها حرفيًّا */
+var HELP_KEYWORDS = {
+  crewman:   ['اضافة فني','فني جديد','موظف جديد','اضافة موظف','عمل فريق','فريق جديد','حذف فني','تعديل فريق','نسب الفريق','الانصبة'],
+  techacc:   ['انشاء حساب فني','حساب دخول','يوزر وباسورد','كلمة مرور فني'],
+  assign:    ['اسناد نقاط','توزيع نقاط','ارسال فريق','اسناد فني','اسناد تركيب','اسناد فك','اسناد زيارة'],
+  req:       ['طلب زيارة','SR','رقم الطلب','اعتماد زيارة'],
+  solution:  ['اعتماد الحل','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
+  qa:        ['اعتماد تركيب','تدقيق','رفض تركيب','مراجعة السيريال'],
+  survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة'],
+  svForm:    ['فورم المسح','املأ نموذج المسح'],
+  insForm:   ['فورم التركيب','تسجيل تركيب','ابلغ عن تركيب'],
+  disp2:     ['فك جهاز','ارجاع عهدة','فك تركيب'],
+  users:     ['انشاء مستخدم','حساب جديد','صلاحيات المستخدم','تعطيل حساب'],
+  assignRole:['اسناد دور','تغيير صلاحية','ترقية مشرف'],
+  roles:     ['الادوار','مين يشوف ايه','صلاحيات كل دور'],
+  vehkind:   ['نوع سيارة جديد','انواع العربيات'],
+  vehKinds:  ['نوع سيارة جديد','انواع العربيات'],
+  fleet:     ['العربيات','السيارات','الاسطول'],
+  fleetAsn:  ['اسناد سيارة','تسليم عربية','عهدة سيارة'],
+  fleetLog:  ['سجل السيارة','مين اخد العربية'],
+  fleetCost: ['تكلفة السيارات','مصاريف الاسطول'],
+  buys:      ['مشتريات','فاتورة','طلب شراء','تسجيل مشترى'],
+  sup:       ['الموردين','اضافة مورد'],
+  items:     ['الكتالوج','اسعار القطع','اضافة صنف','تعديل سعر'],
+  wos:       ['طلب مستودع','صرف قطع','استلام من المخزن'],
+  invb:      ['رصيد المخزون','كام قطعة فاضلة'],
+  invmv:     ['حركة المخزون','دخول وخروج المخزن'],
+  stock:     ['عهدة الاجهزة','مين معاه ايه'],
+  ships:     ['شحنة','توريد','تأخير شحنة'],
+  drive:     ['رفع صورة','تخزين الصور','مساحة درايف'],
+  notif:     ['الاشعارات','تنبيهات'],
+  exp:       ['تصدير اكسيل','استيراد ملف','رفع ملف'],
+  guide:     ['طريقة الاستخدام','شرح التطبيق'],
+  ncr:       ['عدم مطابقة','مشكلة جودة'],
+  hse:       ['حادث','سلامة','بلاغ حادثة'],
+  budget:    ['الميزانية','حد الاعتماد المالي'],
+  consts:    ['ثوابت النظام','ساعات العمل','ايام الاسبوع'],
+  retain:    ['حذف بيانات قديمة','مدة الاحتفاظ'],
+  wipe:      ['تصفير كل البيانات','مسح شامل'],
+  sync:      ['تعارض بيانات','مزامنة يدوية'],
+  audit:     ['سجل التدقيق','مين عدل ايه'],
+  ev:        ['سجل الاحداث','لوج'],
+  budm:      ['المستخلص','الملخص المالي'],
+  chal:      ['تحدي ميداني','عائق في الموقع'],
+  stuck:     ['نقاط متعثرة','راكد']
+};
+
+/* خطواتٌ مكتوبةٌ يدًا لأكثر المسارات تشابكًا — لا لكل صفحة، فالوصفُ
+   المختصر يكفي غالبَها */
+var HELP_STEPS = {
+  crewman: ['افتح «الفرق» من القائمة الجانبية',
+            'اختر الفريقَ من الشرائح فوق، أو اضغط «إضافة فريق» لو مفيش فريق مناسب',
+            'انزل لكارت «إضافة موظف» واكتب الاسم والجوال والمشرف',
+            'اضغط «➕ إضافة موظف» — بينضم لفريقه على طول بلا اختيار من قائمة'],
+  solution: ['امسح النقطة الأول من «المسح الميداني» — لازم تبقى «تمت الزيارة»',
+             'افتح «حل التركيب»، اختر النقطة من القائمة',
+             'حدّد كمية كل جهاز من الكتالوج هيتركب في النقطة دي',
+             'اضغط «➕ اقترح الحل» — هيبقى بانتظار المهندس',
+             'المهندس يفتح نفس الصفحة ويضغط «اعتمد» أو «ردّ»'],
+  assign: ['من «حل التركيب»، لازم يبقى فيه حل معتمد للنقطة لو النوع تركيب',
+           'افتح «توزيع الفرق» واضغط «حدّد من الخريطة» أو اختر من القائمة',
+           'اختر النقاط، ثم اختر «لفني» أو «لفريق»',
+           'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)',
+           'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا'],
+  techacc: ['لازم الفني يبقى مضاف في «الفرق» الأول',
+            'افتح «حسابات الفنيين»',
+            'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب',
+            'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني']
+};
+
+function helpIndexAll(){
+  return Object.keys(PAGE).map(function(id){
+    var p = PAGE[id];
+    if (!p || !p.t) return null;
+    return { id:id, m:p.m || '', t:p.t || '', l:p.l || '' };
+  }).filter(Boolean);
+}
+
+function helpSearch(q){
+  q = arNorm(q);
+  if (!q) return [];
+  var toks = q.split(' ').filter(Boolean);
+  var out = [];
+  helpIndexAll().forEach(function(e){
+    if (!seesPage(e.id)) return;
+    var kw = (HELP_KEYWORDS[e.id] || []).join(' ');
+    var hay = arNorm(e.t + ' ' + e.m + ' ' + e.l + ' ' + kw);
+    var score = 0;
+    if (hay.indexOf(q) > -1) score += 10;
+    toks.forEach(function(tok){ if (hay.indexOf(tok) > -1) score += 3; });
+    if (!score && subseq(hay, q)) score = 1;
+    if (score) out.push({ e:e, score:score });
+  });
+  out.sort(function(a,b){ return b.score - a.score; });
+  return out.slice(0, 6).map(function(x){ return x.e; });
+}
+
+function assistHtml(){
+  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [];
+  return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
+    + '<div class="pop-head">'
+    +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">'
+    +     esc(t('اسأل عن أي حاجة عايز تعملها، ونوريك مكانها وخطواتها.')) + '</p></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-assist="0" aria-label="'
+    +     esc(t('إغلاق')) + '">\u2715</button>'
+    + '</div>'
+    + '<div class="pop-body">'
+    + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
+    +   esc(t('مثلاً: عايز أضيف فني جديد')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
+    + (!ASSIST_Q
+        ? '<p class="hint" style="text-align:center;padding:20px">'
+          + esc(t('اكتب اللي محتاج تعمله بكلماتك، وهنوريك الصفحة الصح.')) + '</p>'
+        : (results.length
+            ? results.map(function(e){
+                var steps = HELP_STEPS[e.id];
+                return '<div class="card" style="margin:0 0 10px">'
+                  + '<div class="pid">' + esc(t(e.m)) + '</div>'
+                  + '<h4 style="margin:2px 0 6px">' + esc(t(e.t)) + '</h4>'
+                  + (e.l ? '<p class="hint" style="margin:0 0 8px">' + esc(t(e.l)) + '</p>' : '')
+                  + (steps
+                      ? '<ol style="margin:0 0 10px;padding-inline-start:20px">'
+                        + steps.map(function(s){ return '<li>' + esc(t(s)) + '</li>'; }).join('')
+                        + '</ol>'
+                      : '')
+                  + btn(t(e.t) + ' \u2190','btn-primary btn-sm',' data-p="' + e.id + '" data-assist="0"')
+                  + '</div>';
+              }).join('')
+            : '<p class="hint" style="text-align:center;padding:20px">'
+              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))
+    + '</div></div>';
+}
+
 function helpHtml(){
   var p = (typeof FIELD_PAGES === 'object' && FIELD_PAGES[CUR]) || PAGE[CUR];
   var h = helpOf(CUR);
@@ -8353,7 +8548,7 @@ function renderKey(){
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
        + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + CTEAM_CUR + '|' + ASN_TO
        + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + NCRS.length
-       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + (ASSIST_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -12860,7 +13055,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.80' + '.docx" download>⬇ '
+              +   'V14.81' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14726,7 +14921,8 @@ function render(force){
     (p.m === 'المتابعة' || may('exportAll'))
       ? btn('تصدير','btn-secondary',' data-exp="1"') : '');
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
-    + (HELP_OPEN ? helpHtml() : '');
+    + (HELP_OPEN ? helpHtml() : '')
+    + (ASSIST_OPEN ? assistHtml() : '');
 
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
@@ -14841,6 +15037,11 @@ function onDocClick(e){
   if (e.target.closest('[data-swnow]')){ swNow(); return; }
   if (e.target.closest('[data-swlater]')){ swLater(); return; }
   if (e.target.closest('[data-back]')){ e.preventDefault(); navBack(); return; }
+  var asb = e.target.closest('[data-assist]');
+  if (asb){
+    if (asb.hasAttribute('data-p')){ ASSIST_OPEN = false; }
+    else { ASSIST_OPEN = asb.getAttribute('data-assist') === '1'; render(1); return; }
+  }
   var a = e.target.closest('[data-p]');
   if (a){
     e.preventDefault();
@@ -15523,6 +15724,16 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  if (e.target && e.target.id === 'assistQ'){
+    ASSIST_Q = e.target.value;
+    var ap = document.getElementById('assistPop');
+    if (ap){
+      ap.outerHTML = assistHtml();
+      var q2 = document.getElementById('assistQ');
+      if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
+    }
+    return;
+  }
   if (e.target && e.target.id === 'navQ'){
     NAV_Q = e.target.value;
     var nv = document.getElementById('nav');
@@ -15706,6 +15917,7 @@ setInterval(function(){
 /* الهروبُ يغلق ما هو مفتوح، الأحدثَ فالأقدم */
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
+  if (ASSIST_OPEN){ ASSIST_OPEN = false; render(1); return; }
   if (HELP_OPEN){ HELP_OPEN = false; render(1); return; }
   if (POP_OPEN){ POP_OPEN = false; render(1); return; }
   if (ASN_OPEN){ ASN_OPEN = false; render(1); return; }
