@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.92</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.93</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -878,7 +878,16 @@ en:{
  'تحديثٌ مُسجَّل':'Update recorded',
  'إلغاءُ طلب الورشة يحتاج صلاحية تعديل':'Cancelling a workshop request requires edit permission',
  'طلبٌ نُفِّذ جزءٌ منه لا يُلغى — أكمله أو اتركه':'A partially completed request cannot be cancelled — finish it or leave it',
- 'أُلغي الطلب':'Request cancelled'
+ 'أُلغي الطلب':'Request cancelled',
+
+ /* تحقّقاتُ دورة العمل */
+ 'جدولةُ الفك تحتاج صلاحية تعديل':'Scheduling a dismantle requires edit permission',
+ 'إتمامُ الفك يحتاج صلاحية تعديل':'Completing a dismantle requires edit permission',
+ 'جدوِل الفكَّ أولًا قبل إتمامه':'Schedule the dismantle first before completing it',
+ 'حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله':'The solution for this point is already approved — ask the engineer to revise it',
+ 'اعتمادُ التركيب للمهندس وحده':'Only the engineer approves an installation',
+ 'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'This point is already installed and approved — it cannot be sent back to survey',
+ 'المتبقّي من الطلب':'Remaining on the request'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -1040,7 +1049,16 @@ ur:{
  'تحديثٌ مُسجَّل':'اپ ڈیٹ ریکارڈ ہو گئی',
  'إلغاءُ طلب الورشة يحتاج صلاحية تعديل':'ورکشاپ کی درخواست منسوخ کرنے کے لیے ترمیم کی اجازت درکار ہے',
  'طلبٌ نُفِّذ جزءٌ منه لا يُلغى — أكمله أو اتركه':'جزوی طور پر مکمل درخواست منسوخ نہیں ہو سکتی — اسے مکمل کریں یا چھوڑ دیں',
- 'أُلغي الطلب':'درخواست منسوخ کر دی گئی'
+ 'أُلغي الطلب':'درخواست منسوخ کر دی گئی',
+
+ /* تحقّقاتُ دورة العمل */
+ 'جدولةُ الفك تحتاج صلاحية تعديل':'ڈسمینٹل شیڈول کرنے کے لیے ترمیم کی اجازت درکار ہے',
+ 'إتمامُ الفك يحتاج صلاحية تعديل':'ڈسمینٹل مکمل کرنے کے لیے ترمیم کی اجازت درکار ہے',
+ 'جدوِل الفكَّ أولًا قبل إتمامه':'مکمل کرنے سے پہلے پہلے ڈسمینٹل شیڈول کریں',
+ 'حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله':'اس پوائنٹ کا حل پہلے ہی منظور ہے — اسے تبدیل کرنے کے لیے انجینئر سے رجوع کریں',
+ 'اعتمادُ التركيب للمهندس وحده':'تنصیب کی منظوری صرف انجینئر دیتا ہے',
+ 'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'یہ پوائنٹ پہلے ہی نصب اور منظور شدہ ہے — اسے سروے میں واپس نہیں بھیجا جا سکتا',
+ 'المتبقّي من الطلب':'درخواست میں باقی'
 }
 };
 
@@ -5000,6 +5018,7 @@ PAGE.disp2 = { m:'الميدان', t:'الفك وإرجاع العُهدة',
   }};
 
 function disSchedule(id){
+  if (!may('edit')){ toast(t('جدولةُ الفك تحتاج صلاحية تعديل')); return; }
   /* لا يُفَكُّ ما لم يُركَّب: كان يُجدوَل أيُّ معرّفٍ يُمرَّر، فتظهر في جدول
      الفكِّ نقاطٌ لم يُوضَع فيها جهازٌ قط، ويُرسَل إليها طاقم. */
   var r0 = STATE.inss[id];
@@ -5015,7 +5034,11 @@ function disSchedule(id){
 }
 
 function disComplete(id, cond){
-  if (!STATE.diss) STATE.diss = {};
+  if (!may('edit')){ toast(t('إتمامُ الفك يحتاج صلاحية تعديل')); return; }
+  var sched = STATE.diss && STATE.diss[id];
+  if (!sched || sched.status !== 'مجدول'){
+    toast(t('جدوِل الفكَّ أولًا قبل إتمامه')); return;
+  }
   var x = siteFind(id);
   STATE.diss[id] = { id:id, status:'تم الفك', cond:cond, at:Date.now(),
                      by:STATE.meta.name || 'محمد صفوت', pts:x ? ptsDis(x) : 0 };
@@ -5116,6 +5139,10 @@ function solutionSave(site, itemsMap){
   var s = siteFind(site);
   if (!s){ toast(t('الموقعُ غيرُ موجود')); return; }
   if (!svDone(STATE.recs[site])){ toast(t('امسح النقطةَ أولًا قبل اقتراح حلّها')); return; }
+  var old = solutionOf(site);
+  if (old && old.status === 'معتمد'){
+    toast(t('حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله')); return;
+  }
   var used = {}, n = 0;
   Object.keys(itemsMap || {}).forEach(function(k){
     var q = cfgN(itemsMap[k]);
@@ -6255,6 +6282,7 @@ PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي',
   }};
 
 function apprIns(id, ok){
+  if (!may('approve')){ toast(t('اعتمادُ التركيب للمهندس وحده')); return; }
   var r = STATE.inss[id];
   if (!r) return;
   if (ok){
@@ -10958,6 +10986,10 @@ function svReopen(id, reason, note){
   var r = STATE.recs[id];
   if (!r){ toast(t('لا سجلَّ مسحٍ لهذه النقطة')); return; }
   if (!reason){ toast(t('اختر سبب التعذّر')); return; }
+  var ins = STATE.inss && STATE.inss[id];
+  if (ins && ins.status === 'مُركّب' && ins.approved){
+    toast(t('النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح')); return;
+  }
   r.access = reason;
   r.reopenNote = String(note || '').trim();
   r.reopenBy = STATE.meta.name || 'محمد صفوت';
@@ -11304,6 +11336,8 @@ function workReqComplete(id, qtyDone){
   if (!r){ toast(t('لا طلبَ بهذا المعرّف')); return; }
   var q = cfgN(qtyDone);
   if (!q){ toast(t('اكتب الكمية المُنفَّذة')); return; }
+  var remain = r.qty - cfgN(r.qtyDone);
+  if (q > remain){ toast(t('المتبقّي من الطلب') + ': ' + nm(remain)); return; }
   r.qtyDone = cfgN(r.qtyDone) + q;
   r.status = r.qtyDone >= r.qty ? 'تم' : 'قيد التنفيذ';
   r.doneBy = STATE.meta.name || 'محمد صفوت';
@@ -13844,7 +13878,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.92' + '.docx" download>⬇ '
+              +   'V14.93' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

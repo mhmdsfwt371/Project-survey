@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V14.92",
+  "app_version": "V14.93",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1361,7 +1361,8 @@
     "V14.89": "PAGE.chal وPAGE.chalm كانتا شاشتين فارغتين تمامًا (نص ثابت 'لا إفادات'/'لا تحديات مفتوحة'). البيانات الحقيقية موجودة منذ البداية: STATE.recs[site].chals يُحفَظ وقت المسح ولم يُقرَأ. أُضيفت chalSites() تشتق قائمة النقاط ذات التحدي الحقيقي وتُغلقها تلقائيًّا حين STATE.inss[id].status==='مُركّب' && approved. chal = كل الإفادات (مفتوحة+مغلقة)، chalm = العالقة وحدها + الأكثر تكرارًا من الأنواع.",
     "V14.90": "أربع صفحات كانت بيانات وهمية ثابتة رغم بيانات حقيقية موجودة: survey (سجل مسح فعلي)، stuck (متعذر/راكد)، pipe (سلامة خط الإنتاج)، dis (الفك بعد الموسم — disSchedule/disComplete موجودتان أصلًا). بُنيت الأربعة من STATE.recs/STATE.diss/STATE.tasks/STATE.inss الحقيقية. أُضيفت ميزة svReopen(id,reason,note): تعيد زيارةً ناجحةً لقائمة المتعذر بسببٍ مكتوب دون حذف سجلها الأصلي — تغيير .access فقط.",
     "V14.91": "LAYERS.survey.ready/done كانت تفحص وجود STATE.recs[id] لا نجاحه (svDone) — نقطة أُعيدت 'متعذّرة' (svReopen، V14.90) كانت تبقى 'منجَزة' في شاشة توزيع الفرق فلا تُسنَد لزيارة ثانية أبدًا. LAYERS.install.pass بنفس العطل. صُححا كلاهما بـ svDone(). PAGE.solution: قسم 'الإجمالي المعتمد — موسم ١٤٤٨' (نقاط معتمدة بالنوع + كمية كل صنفٍ إجمالًا من الحلول المعتمدة فقط). PAGE.inst: توزيع حقيقي حسب نوع النقطة بدل أصفار ثابتة.",
-    "V14.92": "نظام طلبات الورشة (workshop_system_gap من V14.85) بُني: CR (تهيئة) وAR (تجميع)، بنفس reqNext(). STATE.workReqs مجموعة جديدة 'workreqs' بقاعدة Firestore. workReqComplete() يكتب STATE.moves بـkind='تهيئة'/'تجميع' الصحيح — scores() تحسب نقاط الورشة فعليًّا أول مرة. أُصلح باغ array/object ثالث في STATE.moves (moveAdd كانت تحوّلها كائنًا) وباغ رابع في disComplete (تكتب cond بدل كائن الحركة، وبمعرّف الموقع لا معرّفٍ فريد لكل صنف)."
+    "V14.92": "نظام طلبات الورشة (workshop_system_gap من V14.85) بُني: CR (تهيئة) وAR (تجميع)، بنفس reqNext(). STATE.workReqs مجموعة جديدة 'workreqs' بقاعدة Firestore. workReqComplete() يكتب STATE.moves بـkind='تهيئة'/'تجميع' الصحيح — scores() تحسب نقاط الورشة فعليًّا أول مرة. أُصلح باغ array/object ثالث في STATE.moves (moveAdd كانت تحوّلها كائنًا) وباغ رابع في disComplete (تكتب cond بدل كائن الحركة، وبمعرّف الموقع لا معرّفٍ فريد لكل صنف).",
+    "V14.93": "مراجعة تحقّق شاملة لدورة العمل (SR->solution->CR/AR->DR->done->PR) كشفت: (1) ثغرة أمنية حقيقية — inss.approved وinss.solution.status بلا حماية في firestore.rules، كلاهما حقل داخل وثيقة يملك canW() كتابتها بما فيهم الفني نفسه، فيمكن self-approval. أُصلحت القاعدة لتقصر تغيير هذين الحقلين على mgr(). (2) apprIns/disSchedule/disComplete بلا فحص صلاحية من العميل — أُضيف may('approve')/may('edit'). (3) workReqComplete بلا حد أعلى لكمية التنفيذ. (4) disComplete يقبل أي معرّف ولو لم يُجدوَل. (5) svReopen يقبل إعادة تصنيف نقطة مُركّبة معتمدة. (6) solutionSave يكتب فوق حل معتمد بصمت. الستة صُححت."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2099,5 +2100,22 @@
     "page": "PAGE.wos ('طلبات المستودع') — إنشاء، قائمة، تسجيل تنفيذ جزئي أو كامل، إلغاء (قبل أول تنفيذ فقط)",
     "moves_array_object_bug_v14_92": "moveAdd() كانت تحوّل STATE.moves من مصفوفة (المستخدَمة في scores/pull/PAGE.dis) إلى كائن — وُحِّدت جميع المواضع الستة+ على شكل المصفوفة",
     "disComplete_bug_v14_92": "كانت تكتب CORE.dirty('moves', siteId, cond) — قيمة نصية خاطئة بمعرّف الموقع — صُححت لتكتب كائن الحركة الصحيح بمعرّفٍ فريد لكل صنف"
+  },
+  "cycle_validation_review_v14_93": {
+    "critical_security_fix": {
+      "issue": "firestore.rules: match /inss/{id} كانت allow update: if canW() بلا استثناء — approved وsolution.status حقلان حسّاسان داخل نفس الوثيقة يكتبها الفني بنفسه",
+      "fix": "allow update: if mgr() || (canW() && request.resource.data.approved != true && (لا 'solution' أو solution.status != 'معتمد'))",
+      "impact": "self-approval كان ممكنًا تقنيًّا (تجاوز الواجهة) — أُغلق تمامًا الآن"
+    },
+    "client_side_guards_added": [
+      "apprIns: may('approve')",
+      "disSchedule: may('edit')",
+      "disComplete: may('edit') + يتطلب STATE.diss[id].status==='مجدول'"
+    ],
+    "logic_guards_added": {
+      "workReqComplete": "qtyDone الجديدة لا تتجاوز (qty - qtyDone الحالية)",
+      "svReopen": "يرفض إن كان STATE.inss[id].status==='مُركّب' && approved",
+      "solutionSave": "يرفض الكتابة فوق حلٍّ status==='معتمد' — يوجّه لمراجعة المهندس"
+    }
   }
 }

@@ -29,7 +29,23 @@ service cloud.firestore {
 
     // سجلات المسح والتركيب والمواقع المقترحة
     match /recs/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
-    match /inss/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    /* اعتمادُ التركيب واعتمادُ حل التركيب فعلا مديرٍ لا فعلَ منفِّذ — كلاهما
+       حقلٌ داخل هذه الوثيقة نفسها لا وثيقةٌ مستقلّة، فمن يملك canW() ليكتب
+       تقريرَه يملك تقنيًّا الكتابةَ على approved أيضًا ما لم تُستثنَ صراحةً.
+       التقنيُّ يقترح، والمهندسُ وحده يعتمد — لا فرقَ بين الاثنين في القاعدة
+       العامة، ففُرِّق هنا. */
+    match /inss/{id} {
+      allow read: if ok();
+      allow create: if canW();
+      allow update: if mgr() || (
+        canW() &&
+        request.resource.data.approved != true &&
+        (!('solution' in request.resource.data) ||
+         !('status' in request.resource.data.solution) ||
+         request.resource.data.solution.status != 'معتمد')
+      );
+      allow delete: if mgr();
+    }
     match /props/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
 
     // صور المسح والتركيب — مستند لكل لقطة (فُصلت عن السجل لتجاوز حد 1MB)
