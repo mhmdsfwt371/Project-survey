@@ -106,11 +106,12 @@ w.techSet(B, { crew:'فريقُ السيناريو' });
 step(w.techsList().filter(x => x.crew === 'فريقُ السيناريو').length === 2, 'ضُمَّ الفنيّان إليه');
 
 go('users');
-const before = w.techsList().filter(x => x.has).length;
-click('[data-mkall]');
-const made = w.techsList().filter(x => x.has).length;
-step(made > before, `أُنشئت الحسابات (${made})`);
-const acc = (w.TECH_MADE || []).filter(x => x.n === A)[0];
+const beforeU = Object.keys(w.STATE.users || {}).length;
+set('uU', 'a.scenario'); set('uN', A); set('uP', 'Passw0rd123'); set('uR', 'tech');
+click('[data-usradd]');
+const afterU = Object.keys(w.STATE.users || {}).length;
+step(afterU > beforeU, `أُنشئ الحساب (${afterU})`);
+const acc = w.STATE.users && w.STATE.users['a.scenario'];
 step(!!acc && acc.role === 'tech', 'الحسابُ بدورٍ تعرفه قواعدُ القاعدة (`tech`)');
 
 /* ══ ٢ · طلبُ زيارةٍ يُسنَد ═══════════════════════════════════════════════ */

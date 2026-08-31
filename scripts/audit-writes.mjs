@@ -30,7 +30,7 @@ const PROMISES = [
   'data-hseadd','data-ncradd','data-ncrok','data-ipcadd','data-ipcok','data-ipcpay',
   'data-baseset','data-drvsave','data-tkok','data-tkrm','data-depteamnew','data-depmemadd',
   'data-depmemrm','data-asngo','data-nscoreq','data-dsch','data-ddone','data-smark',
-  'data-fmark','data-mkone','data-mkall','data-depeven','data-depbydef'
+  'data-fmark','data-usradd','data-depeven','data-depbydef'
 ];
 
 let pass = 0; const fails = [];
@@ -66,6 +66,13 @@ const go = d.getElementById('lgGo');
 check(!!go, 'شاشةُ الدخول موجودة');
 if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 400));
+
+/* لا شبكةَ هنا فـ STATE.users فارغة — وبعضُ شرائح التصفية (كتصفية
+   المستخدمين بالدور) لا تُظهر أثرًا إلا حين يوجد أكثرُ من قيمةٍ لتُصفَّى
+   بينها. سطرا اختبارٍ لا بيانات حقيقية. */
+w.STATE.users = w.STATE.users || {};
+w.STATE.users['audit-eng'] = { name:'مهندسُ الجرد', user:'audit-eng', role:'engineer', at:Date.now() };
+w.STATE.users['audit-sup'] = { name:'مشرفُ الجرد', user:'audit-sup', role:'supervisor', at:Date.now() };
 
 /* ── المراقبة ──────────────────────────────────────────────────────────── */
 let writes = 0, said = [];

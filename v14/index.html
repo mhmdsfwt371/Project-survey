@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.85</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.86</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -847,7 +847,8 @@ en:{
  '٤ — المشروع كله':'4 — The whole project',
  'بلا وظيفة':'No job',
  'بلا تصنيف':'Uncategorized',
- 'المشروع':'The project'
+ 'المشروع':'The project',
+ 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'Create the account and set its role, filter by type from the chips, and search by name in the list below — changes sync instantly.'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -978,7 +979,8 @@ ur:{
  '٤ — المشروع كله':'٤ — پورا پروجیکٹ',
  'بلا وظيفة':'بغیر ملازمت',
  'بلا تصنيف':'غیر درجہ بند',
- 'المشروع':'پروجیکٹ'
+ 'المشروع':'پروجیکٹ',
+ 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'اکاؤنٹ بنائیں اور اس کا کردار مقرر کریں، چپس سے قسم کے حساب سے فلٹر کریں، اور نیچے فہرست میں نام سے تلاش کریں — تبدیلیاں فوری طور پر مطابقت پذیر ہوتی ہیں۔'
 }
 };
 
@@ -4456,50 +4458,6 @@ var TECHS = [
   { n:'مصطفى شطا', ph:'', crew:'', sup:'', u:'', has:0 },
   { n:'أنس', ph:'', crew:'', sup:'', u:'', has:0 }
 ];
-
-/* اسم المستخدم من الاسم العربي — أولُ حرفٍ لاتينيٍّ ونقطةٌ ثم بقيته */
-var TR_MAP = { 'ا':'a','أ':'a','إ':'i','آ':'a','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h','خ':'kh',
-  'د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d','ط':'t','ظ':'z',
-  'ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m','ن':'n','ه':'h','و':'w','ي':'y','ى':'a','ة':'a' };
-
-function userOf(name){
-  var s = String(name || '').trim().split(/\s+/)[0];
-  var out = '';
-  for (var i = 0; i < s.length; i++) out += (TR_MAP[s[i]] || '');
-  return out ? (out[0] + '.' + out.slice(1)) : 'tech';
-}
-
-function pwGen(){
-  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ', b = 'abcdefghijkmnpqrstuvwxyz', c = '23456789';
-  var p = '';
-  for (var i = 0; i < 3; i++) p += a[Math.floor(Math.random()*a.length)];
-  for (var j = 0; j < 3; j++) p += b[Math.floor(Math.random()*b.length)];
-  for (var k = 0; k < 4; k++) p += c[Math.floor(Math.random()*c.length)];
-  return p;
-}
-
-var TECH_MADE = [];
-
-function mkAccount(i, quiet){
-  /* القائمةُ الحيّة لا الثابتة: من أُضيف اليومَ يُنشَأ له حساب */
-  var x = techsList()[i];
-  if (!x){ if (!quiet) toast(t('لا فنيَّ في هذا الموضع')); return 0; }
-  if (x.has){ if (!quiet) toast(t('له حسابٌ بالفعل')); return 0; }
-  x.u = userOf(x.n);
-  x.has = 1;
-  /* الدورُ يُكتَب بمفتاحه لا باسمه العربيّ: قواعدُ القاعدة تقارن
-     `role in ['tech','cprep','casm','cins']` — فحسابٌ دورُه «فني» تَرفض
-     القاعدةُ كلَّ ما يكتبه، ويقف الفنيُّ في الشمس ولا يعرف لماذا. */
-  var made = { n:x.n, u:x.u, p:pwGen(), by:STATE.meta.name || '', at:Date.now(),
-               role:'tech', roleAr:'فني', crew:x.crew || '', sup:x.sup || '' };
-  TECH_MADE.push(made);
-  /* كان يُعرَض ولا يُحفَظ — فيضيع الحسابُ مع أول إغلاق */
-  CORE.set('accounts', x.u, made);
-  techSave();                      /* العلامةُ تبقى بعد الإغلاق */
-  logEvent('حساب فنيّ — ' + x.n + ' · ' + x.u);
-  if (!quiet) toast(x.u + ' \u00b7 ' + t('أُنشئ الحساب'));
-  return 1;
-}
 
 /* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
    التركيب: المخيم أربعةٌ (مشرف + ثلاثة) بمعدل مخيمين يوميًّا،
@@ -8322,10 +8280,10 @@ var HELP_STEPS = {
            'اختر النقاط، ثم اختر «لفني» أو «لفريق»',
            'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)',
            'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا'],
-  users: ['لازم الفني يبقى مضاف في «الفرق» الأول',
-            'افتح «المستخدمون»',
-            'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب',
-            'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني']
+  users: ['افتح «المستخدمون»',
+            'اكتب اسم المستخدم والاسم الكامل وكلمة المرور واختر الدور',
+            'اضغط «إنشاء الحساب»',
+            'سلّم اسم المستخدم وكلمة المرور لصاحبه — يبدّلها هو أول دخول']
 };
 
 function helpIndexAll(){
@@ -13347,7 +13305,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.85' + '.docx" download>⬇ '
+              +   'V14.86' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14386,12 +14344,13 @@ function tgtBlock(kCamp, kCor){
 /* ═══ المستخدمون: من القاعدة لا من بيانات العرض ═══
    كانت القائمةُ أربعةَ صفوفٍ ثابتةً وأزرارُها بلا خاصية، فيبتلعها حارسُ
    الأزرار الميتة ويقول نصَّها. فصارت تقرأ `STATE.users` وتكتب فيها. */
-var USR_Q = '', USR_EDIT = '';
+var USR_Q = '', USR_EDIT = '', USR_ROLE = '';
 
 function usersList(){
   var U = STATE.users || {}, out = [];
   Object.keys(U).forEach(function(uid){
     var u = U[uid] || {};
+    if (USR_ROLE && u.role !== USR_ROLE) return;
     var hay = (u.name || '') + ' ' + (u.user || '') + ' ' + (u.role || '');
     if (USR_Q && hay.indexOf(USR_Q) < 0) return;
     out.push([uid, u]);
@@ -14488,12 +14447,33 @@ function usrAdd(){
 }
 
 PAGE.users = { m:'الإعدادات', t:'المستخدمون',
-  l:'إنشاء الحسابات وأدوارها — فردًا أو دفعةً واحدة.',
+  l:'كل حساب ودوره في مكانٍ واحد — إنشاءً وبحثًا وتصفيةً بالنوع.',
   body:function(){
-    var noAcc = techsList().filter(function(x){ return !x.has; });
+    var L = usersList();
+    var byRole = {};
+    Object.keys(STATE.users || {}).forEach(function(uid){
+      var r = (STATE.users[uid] || {}).role || '';
+      if (r) byRole[r] = (byRole[r] || 0) + 1;
+    });
+    var total = Object.keys(STATE.users || {}).length;
+
     return '<p class="lede" style="margin:0 0 16px">'
-      + esc(t('أنشئ الحساب وحدّد دوره، والقائمة أسفله تعرض كلَّ المستخدمين ودورَ كلٍّ منهم — والتغييرُ يُزامَن فورًا.'))
+      + esc(t('أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.'))
       + '</p>'
+
+      + stats([['كل الحسابات', N(total), 'acc']]
+              .concat(Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
+                return [t(ROLES[k].n), N(byRole[k])];
+              })))
+
+      + '<div class="chips">'
+      + '<button type="button" class="chip' + (!USR_ROLE ? ' on' : '') + '" data-usrrolef="">'
+      +   esc(t('الكل')) + ' <span class="num">' + nm(total) + '</span></button>'
+      + Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
+          return '<button type="button" class="chip' + (USR_ROLE===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
+            + esc(t(ROLES[k].n)) + ' <span class="num">' + nm(byRole[k]) + '</span></button>';
+        }).join('')
+      + '</div>'
 
       + card('إنشاء حساب',
           '<div class="grid cols-2">'
@@ -14514,30 +14494,6 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون',
           + esc(t('اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.'))
           + '</p>',
           btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"'))
-
-      /* حساباتُ الفنيين هنا لا في شاشةٍ أخرى: المستخدمون كلُّهم في مكانٍ
-         واحد، ومن أراد حسابًا لم يبحث عن شاشتين. */
-      + card('حسابات الفنيين دفعةً واحدة',
-          '<p class="hint" style="margin:0 0 11px">'
-          + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه من وظيفته المسنَدة، ويبدّل كلمتَه أولَ دخول.'))
-          + '</p>'
-          + stats([['فنيون', N(techsList().length)],
-                   ['لهم حسابات', N(techsList().length - noAcc.length), 'ok'],
-                   ['بلا حساب', N(noAcc.length), noAcc.length ? 'wrn' : 'ok']]),
-          noAcc.length && may('users')
-            ? btn('➕ ' + t('أنشئ') + ' ' + nm(noAcc.length) + ' ' + t('حسابًا'),
-                  'btn-primary btn-sm', ' data-mkall="1"')
-            : '')
-
-      + (TECH_MADE.length
-        ? card('حسابات أُنشئت الآن',
-            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
-            + table(['الفني','اسم المستخدم','كلمة المرور'],
-                TECH_MADE.map(function(m){
-                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
-                          '<code dir="ltr">' + esc(m.p) + '</code>'];
-                })))
-        : '')
 
       + usersCard();
   }};
@@ -15735,12 +15691,8 @@ function onDocClick(e){
   }
   if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
 
-  if (e.target.closest('[data-mkall]')){
-    var made = 0;
-    techsList().forEach(function(x, i){ if (!x.has) made += mkAccount(i, 1); });
-    toast(made ? (nm(made) + ' ' + t('حسابًا أُنشئ')) : t('كلُّ الفنيين لهم حسابات'));
-    render(1); return;
-  }
+  var urf = e.target.closest('[data-usrrolef]');
+  if (urf){ USR_ROLE = urf.getAttribute('data-usrrolef'); render(1); return; }
 
   var mo = e.target.closest('[data-months]');
   if (mo){ PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }

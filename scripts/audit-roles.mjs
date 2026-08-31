@@ -26,10 +26,10 @@ const check = (c, n) => { if (c) pass++; else fails.push(n); };
 /* أفعالٌ لا يملكها إلا صاحبُ القدرة */
 const GATED = {
   approve:   ['data-appr','data-rej','data-ncrok','data-ipcok','data-chgok','data-chgno'],
-  settings:  ['data-cfg','data-baseset','data-role','data-depteamnew','data-mkone','data-mkall'],
+  settings:  ['data-cfg','data-baseset','data-role','data-depteamnew'],
   exportAll: ['data-expall','data-kmz','data-repgo','data-reppack'],
   importAll: ['data-tpl','data-imp','data-impgo'],
-  users:     ['data-mkone','data-mkall','data-role','data-assignRole'],
+  users:     ['data-usradd','data-role','data-assignRole'],
   edit:      ['data-svsave','data-inssave','data-nssave','data-smark','data-fmark','data-asngo']
 };
 /* رقمُ جوّالٍ سعوديٍّ في أيِّ صورة */
