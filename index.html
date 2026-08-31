@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.84</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.85</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -10781,11 +10781,37 @@ PAGE.wos = { m:'الورشة والمخزون', t:'طلبات المستودع',
           + nm(typeCount('ممر')) + ' ' + esc(t('ممرًّا')) + '.</p>');
   }};
 
-PAGE.wday = { m:'الورشة والمخزون', t:'نقاط اليوم', l:'لكل منفِّذ عبر المراحل الأربع.',
+PAGE.wday = { m:'الورشة والمخزون', t:'نقاط اليوم',
+  l:'ما نُفِّذ اليوم — تركيبًا حقيقيًّا؛ والتهيئةُ والتجميعُ حين يُبنى نظامُ طلباتهما.',
   body:function(){
-    return card('اليوم', table(['المنفِّذ','تهيئة','تجميع','تركيب','الإجمالي'], [
-      ['أحمد','٠','٠','٠','٠'], ['فريق ٣','٠','٠','٠','٠']
-    ], ['الإجمالي','٠','٠','٠','٠']));
+    var today = new Date().toISOString().slice(0, 10);
+    var byName = Object.create(null);
+    Object.keys(STATE.inss).forEach(function(id){
+      var r = STATE.inss[id], x = siteFind(id);
+      if (!x || r.status !== 'مُركّب' || !r.by) return;
+      var day = new Date(r.at || 0).toISOString().slice(0, 10);
+      if (day !== today) return;
+      if (!byName[r.by]) byName[r.by] = { n:0, pts:0 };
+      byName[r.by].n++;
+      byName[r.by].pts += r.approved ? ptsInstall(x) : 0;
+    });
+    var names = Object.keys(byName).sort(function(a,b){ return byName[b].pts - byName[a].pts; });
+    var totN = names.reduce(function(a,n){ return a + byName[n].n; }, 0);
+    var totP = names.reduce(function(a,n){ return a + byName[n].pts; }, 0);
+
+    return stats([['نفّذوا اليوم', N(names.length), 'acc'],
+                  ['تركيباتٌ اليوم', N(totN)],
+                  ['نقاطُ اليوم', N(Math.round(totP))]])
+
+      + (names.length
+        ? cardFlush('تركيبُ اليوم — ' + nm(names.length),
+            table(['المنفِّذ','تركيب','نقاط'],
+              names.map(function(n){ return [esc(n), N(byName[n].n), N(Math.round(byName[n].pts))]; }),
+              ['<b>' + t('الإجمالي') + '</b>', N(totN), N(Math.round(totP))]))
+        : card('تركيبُ اليوم',
+            '<p class="hint" style="text-align:center;margin:0">لا تركيبَ اليوم بعد.</p>'))
+
+      + alertBox('warn','التهيئةُ والتجميعُ لا يُحتسَبان هنا بعد — نظامُ طلبات الورشة (من نفَّذ ماذا) لم يُبنَ، كما في «طلبات المستودع».');
   }};
 
 /* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════
@@ -13321,7 +13347,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.84' + '.docx" download>⬇ '
+              +   'V14.85' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
