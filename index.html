@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.83</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.84</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3052,6 +3052,36 @@ var FB = {
       FB.db.collection('settings').doc('jobs').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.jobs = arr; }
       }).catch(function(e){ softErr('سحب الوظائف', e, 'تعذّر سحبُ الوظائف — قد تظهر بذورها الأصلية فقط'); });
+      FB.db.collection('settings').doc('vehKinds').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.vehKinds = arr; }
+      }).catch(function(e){ softErr('سحب أنواع السيارات', e, 'تعذّر سحبُ أنواع السيارات'); });
+      FB.db.collection('settings').doc('lessons').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.lessons = arr; }
+      }).catch(function(e){ softErr('سحب سجل الدروس', e, 'تعذّر سحبُ سجل الدروس'); });
+      FB.db.collection('settings').doc('escRules').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.escRules = arr; }
+      }).catch(function(e){ softErr('سحب قواعد التصعيد', e, 'تعذّر سحبُ قواعد التصعيد'); });
+      FB.db.collection('settings').doc('raci').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.raci = arr; }
+      }).catch(function(e){ softErr('سحب مصفوفة المسؤوليات', e, 'تعذّر سحبُ مصفوفة RACI'); });
+      FB.db.collection('settings').doc('types').get().then(function(doc){
+        if (doc && doc.exists && Object.keys(doc.data()).length) STATE.types = doc.data();
+      }).catch(function(e){ softErr('سحب أنواع المواقع', e, 'تعذّر سحبُ أنواع المواقع'); });
+      FB.db.collection('settings').doc('mxExtra').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) CFG.mxExtra = arr; }
+      }).catch(function(e){ softErr('سحب التركيبات المُعلَنة', e, 'تعذّر سحبُ التركيبات المُعلَنة قبل وصول الموقع'); });
+      /* الصلاحياتُ المخصَّصة: تُطبَّق فوق ROLES الافتراضية لا تستبدلها —
+         فدورٌ لم يُخصَّص له شيءٌ يبقى على قيمه الأصلية. */
+      FB.db.collection('settings').doc('roleCaps').get().then(function(doc){
+        if (!doc || !doc.exists) return;
+        var v = doc.data();
+        Object.keys(v).forEach(function(k){
+          if (ROLES[k] && v[k] && typeof v[k] === 'object'){
+            ROLES[k].can = Object.assign({}, ROLES[k].can || {}, v[k]);
+          }
+        });
+        PERM_CACHE = null;
+      }).catch(function(e){ softErr('سحب الصلاحيات المخصَّصة', e, 'تعذّر سحبُ تعديلات الصلاحيات — قد تظهر افتراضيةً'); });
 
       /* بقيةُ المجموعات المكتوبة ولا تُقرأ قط — نفس الباغ في أحد عشر
          موضعًا آخر، اكتُشفت في مراجعةٍ شاملة بعد V14.79/V14.82.
@@ -8245,7 +8275,6 @@ var HELP_KEYWORDS = {
   assignRole:['اسناد دور','تغيير صلاحية','ترقية مشرف'],
   roles:     ['الادوار','مين يشوف ايه','صلاحيات كل دور'],
   vehkind:   ['نوع سيارة جديد','انواع العربيات'],
-  vehKinds:  ['نوع سيارة جديد','انواع العربيات'],
   fleet:     ['العربيات','السيارات','الاسطول'],
   fleetAsn:  ['اسناد سيارة','تسليم عربية','عهدة سيارة'],
   fleetLog:  ['سجل السيارة','مين اخد العربية'],
@@ -12787,38 +12816,6 @@ PAGE.fleetCost = { m:'المال', t:'تكلفة الأسطول',
       + '<p class="hint">التراكميُّ يُحسَب من تاريخ التشغيل إلى اليوم — فما استُؤجر شهرًا لا يُحمَّل كما يُحمَّل ما عمل موسمًا.</p>';
   }};
 
-PAGE.vehKinds = { m:'الإعدادات', t:'أنواع السيارات',
-  l:'ما نستعمله من مركبات — وكم من كلِّ نوع.',
-  body:function(){
-    var L = vehKinds(), byKind = {};
-    vehList().forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + 1; });
-    return cardFlush('الأنواع — ' + nm(L.length),
-        table(['النوع','ماذا يعمل','يتّسع','في الأسطول',''],
-          L.map(function(k){
-            var n = byKind[k.id] || 0;
-            return ['<input value="' + esc(k.n) + '" data-vkn="' + esc(k.id) + '" dir="auto">',
-                    '<input value="' + esc(k.d || '') + '" data-vkd="' + esc(k.id) + '" dir="auto">',
-                    '<input type="number" min="1" value="' + esc(String(k.cap || 1))
-                      + '" data-vkc="' + esc(k.id) + '" style="max-width:78px">',
-                    n ? pill(nm(n), 'acc') : N(0),
-                    may('settings')
-                      ? (n ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
-                           : btn('حذف','btn-quiet btn-sm',' data-vkdel="' + esc(k.id) + '"'))
-                      : ''];
-          })),
-        may('settings')
-          ? '<div class="grid cols-3" style="margin:0 0 11px">'
-            + '<div class="field"><label>' + esc(t('النوع')) + ' <span class="req">*</span></label>'
-            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
-            + '<div class="field"><label>' + esc(t('ماذا يعمل')) + '</label><input id="vkD" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('يتّسع')) + '</label>'
-            +   '<input id="vkC" type="number" min="1" value="2"></div>'
-            + '</div>'
-            + '<div class="actions">' + btn('➕ إضافة نوع','btn-primary btn-sm',' data-vkadd="1"') + '</div>'
-          : '')
-      + '<p class="hint">النوعُ الذي عليه سياراتٌ لا يُحذَف. والعددُ يُحسَب مما أُضيف لا يُكتَب بيد.</p>';
-  }};
-
 PAGE.myveh = { m:'الميدان', t:'سيارتي', l:'ما أُسنِد إليك من مركبات.',
   body:function(){
     var me = STATE.meta.name || '';
@@ -13324,7 +13321,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.83' + '.docx" download>⬇ '
+              +   'V14.84' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15050,7 +15047,7 @@ var NAV = [
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
-      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['vehKinds','أنواع السيارات'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
+      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
