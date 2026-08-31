@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.88</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.89</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -848,7 +848,9 @@ en:{
  'بلا وظيفة':'No job',
  'بلا تصنيف':'Uncategorized',
  'المشروع':'The project',
- 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'Create the account and set its role, filter by type from the chips, and search by name in the list below — changes sync instantly.'
+ 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'Create the account and set its role, filter by type from the chips, and search by name in the list below — changes sync instantly.',
+ 'اليوم':'Today',
+ 'تظهر هنا فور تسجيل تحدٍّ أثناء المسح الميداني — «حالة الموقع» في نموذج المسح.':'Appears here as soon as a challenge is logged during the field survey — "site condition" in the survey form.'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -980,7 +982,9 @@ ur:{
  'بلا وظيفة':'بغیر ملازمت',
  'بلا تصنيف':'غیر درجہ بند',
  'المشروع':'پروجیکٹ',
- 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'اکاؤنٹ بنائیں اور اس کا کردار مقرر کریں، چپس سے قسم کے حساب سے فلٹر کریں، اور نیچے فہرست میں نام سے تلاش کریں — تبدیلیاں فوری طور پر مطابقت پذیر ہوتی ہیں۔'
+ 'أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.':'اکاؤنٹ بنائیں اور اس کا کردار مقرر کریں، چپس سے قسم کے حساب سے فلٹر کریں، اور نیچے فہرست میں نام سے تلاش کریں — تبدیلیاں فوری طور پر مطابقت پذیر ہوتی ہیں۔',
+ 'اليوم':'آج',
+ 'تظهر هنا فور تسجيل تحدٍّ أثناء المسح الميداني — «حالة الموقع» في نموذج المسح.':'فیلڈ سروے کے دوران چیلنج درج ہوتے ہی یہاں ظاہر ہوتا ہے — سروے فارم میں "مقام کی حالت"۔'
 }
 };
 
@@ -10701,8 +10705,37 @@ PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأق�
 
 
 PAGE.chalm = { m:'المتابعة', t:'التحديات', l:'أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.',
-  body:function(){ return card('التحديات المفتوحة',
-    '<p class="hint">لا تحديات مفتوحة — تظهر هنا فور رفع المشرف إفادةً من الميدان.</p>'); }};
+  body:function(){
+    var L = chalSites().filter(function(x){ return !x.closed; });
+    var byType = {};
+    L.forEach(function(x){ x.chals.forEach(function(c){ byType[c] = (byType[c] || 0) + 1; }); });
+    var types = Object.keys(byType).sort(function(a,b){ return byType[b] - byType[a]; });
+
+    return stats([['نقاطٌ عالقة', N(L.length), L.length ? 'wrn' : 'ok'],
+                  ['أنواع تحدٍّ مختلفة', N(types.length)]])
+
+      + (types.length
+        ? card('الأكثر تكرارًا',
+            table(['التحدي','كم نقطة'],
+              types.slice(0, 8).map(function(c){ return [esc(c), N(byType[c])]; })))
+        : '')
+
+      + (L.length
+        ? cardFlush('النقاط العالقة — ' + nm(L.length),
+            table(['النقطة','النوع','التحديات','منذ','المُفيد'],
+              L.map(function(x){
+                var days = Math.floor((Date.now() - x.at) / 86400000);
+                return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                          + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
+                        esc((x.site && x.site.type) || '—'),
+                        x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
+                        days > 0 ? (nm(days) + ' ' + t('يوم')) : t('اليوم'),
+                        esc(x.by || '—')];
+              })))
+        : alertBox('success','لا نقاطَ عالقةً الآن — كلُّ ما أُفيد بتحدٍّ فيه إمّا رُكِّب أو لم يبلغ بعد.'))
+
+      + '<p class="hint">القائمةُ تُشتقّ من تحديات المسح الحقيقية — تختفي النقطةُ منها تلقائيًّا حين تُعتمَد تركيبتُها، لا يدويًّا.</p>';
+  }};
 
 PAGE.dis = { m:'المتابعة', t:'الفك بعد الموسم', l:'جدولة الفك وإرجاع العُهدة بحالة كل صنف.',
   body:function(){
@@ -10739,8 +10772,48 @@ PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني'
       + card('آخر عمليات المسح','<p class="hint">لا عمليات بعد.</p>');
   }};
 
-PAGE.chal = { m:'الطلبات والمسح', t:'التحديات الميدانية', l:'إفادة المشرفين من الموقع.',
-  body:function(){ return card('الإفادات','<p class="hint">لا إفادات بعد.</p>'); }};
+/* ── التحديات الميدانية: من بيانات المسح الحقيقية لا من الخيال ──
+   كل تحدٍّ يُختار وقت المسح (data-chal) يُحفَظ في STATE.recs[id].chals —
+   موجودٌ منذ البداية ولم تقرأه أيُّ شاشة. النقطةُ «مفتوحة» ما دام لم
+   يُعتمَد تركيبُها بعد؛ تُغلَق تلقائيًّا حين يُعتمَد — لا زرَّ إغلاقٍ
+   يدويًّا يُنسى. */
+function chalSites(){
+  return Object.keys(STATE.recs).map(function(id){
+    var r = STATE.recs[id];
+    var reals = (r.chals || []).filter(function(c){ return c !== 'لا توجد تحديات'; });
+    if (!reals.length) return null;
+    var ins = STATE.inss && STATE.inss[id];
+    return { id:id, site:siteFind(id), chals:reals, note:r.note || '', by:r.by || '',
+             at:r.at || 0, closed:!!(ins && ins.status === 'مُركّب' && ins.approved) };
+  }).filter(Boolean).sort(function(a,b){ return b.at - a.at; });
+}
+
+PAGE.chal = { m:'الطلبات والمسح', t:'التحديات الميدانية',
+  l:'ما أفاد به الميدان أثناء المسح — بنوعه وحالته.',
+  body:function(){
+    var L = chalSites(), open = L.filter(function(x){ return !x.closed; });
+
+    return stats([['إفاداتٌ مسجَّلة', N(L.length), 'acc'],
+                  ['بانتظار حل', N(open.length), open.length ? 'wrn' : 'ok'],
+                  ['أُغلقت بالتركيب', N(L.length - open.length), 'ok']])
+
+      + (L.length
+        ? cardFlush('الإفادات — ' + nm(L.length),
+            table(['النقطة','التحديات','الملاحظة','المُفيد','الحالة'],
+              L.slice(0, 200).map(function(x){
+                return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                          + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
+                        x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
+                        esc(x.note || '—'), esc(x.by || '—'),
+                        x.closed ? pill('أُغلقت بالتركيب', 'ok') : pill('بانتظار حل', 'wrn')];
+              })))
+        : card('لا إفاداتٍ بعد',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('تظهر هنا فور تسجيل تحدٍّ أثناء المسح الميداني — «حالة الموقع» في نموذج المسح.'))
+            + '</p>'))
+
+      + '<p class="hint">التحديات تُسجَّل أثناء المسح («المسح الميداني»)، وتُغلَق تلقائيًّا حين تُعتمَد تركيبتُها — لا يدويًّا.</p>';
+  }};
 
 PAGE.stuck = { m:'الطلبات والمسح', t:'المتعذّر والراكد', l:'بالعمر — أقدمها أولًا.',
   body:function(){
@@ -13342,7 +13415,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.88' + '.docx" download>⬇ '
+              +   'V14.89' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
