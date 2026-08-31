@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.86</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.87</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7235,7 +7235,7 @@ var ORG = {
     { id:'pmo',   n:'إدارة المشاريع',      i:'\u{1F4CA}', needs:'الجدول والكلفة والموارد',        pages:['evm','risks','chg','miles','pace'] },
     { id:'eng',   n:'الهندسة',            i:'\u{1F393}', needs:'التدقيق والاعتماد والمواصفات',    pages:['qa','ncr','sites','items'] },
     { id:'ops',   n:'العمليات الميدانية',  i:'\u{1F527}', needs:'الإسناد والتنفيذ والمتابعة',      pages:['map','req','assign','crewman'] },
-    { id:'qaqc',  n:'الجودة',             i:'\u2713',    needs:'عدم المطابقة والإجراء التصحيحي',  pages:['ncr','qa','audit'] },
+    { id:'qaqc',  n:'الجودة',             i:'\u2713',    needs:'عدم المطابقة والإجراء التصحيحي',  pages:['ncr','qa','ev'] },
     { id:'hse',   n:'السلامة',            i:'\u26D1',    needs:'الحوادث والتصاريح والتوعية',      pages:['hse'] },
     { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['crewman','stages','allscore','users'] },
     { id:'fin',   n:'المالية',            i:'\u{1F4B0}', needs:'المستخلصات والدفعات والتدفق',     pages:['ipc','budget','buys','budm'] },
@@ -7248,7 +7248,7 @@ var ORG = {
     { id:'cfin',  n:'الإدارة المالية',      i:'\u{1F4B3}', needs:'المستخلصات المعتمدة والصرف',      pages:['ipc','budm'] },
     { id:'ctec',  n:'الإدارة الفنية',       i:'\u2699',    needs:'المطابقة للمواصفة والفحص',        pages:['ncr','hb','sites'] },
     { id:'cops',  n:'إدارة التشغيل',        i:'\u{1F504}', needs:'التسليم والضمان والتشغيل',        pages:['hand','dis'] },
-    { id:'caud',  n:'المراجعة الداخلية',    i:'\u{1F50E}', needs:'الأثر والسجلّات والتوثيق',        pages:['audit','allscore'] }
+    { id:'caud',  n:'المراجعة الداخلية',    i:'\u{1F50E}', needs:'الأثر والسجلّات والتوثيق',        pages:['ev','allscore'] }
   ]}
 };
 
@@ -8256,8 +8256,7 @@ var HELP_KEYWORDS = {
   retain:    ['حذف بيانات قديمة','مدة الاحتفاظ'],
   wipe:      ['تصفير كل البيانات','مسح شامل'],
   sync:      ['تعارض بيانات','مزامنة يدوية'],
-  audit:     ['سجل التدقيق','مين عدل ايه'],
-  ev:        ['سجل الاحداث','لوج'],
+  ev:        ['سجل الاحداث','لوج','سجل التدقيق','مين عدل ايه'],
   budm:      ['المستخلص','الملخص المالي'],
   chal:      ['تحدي ميداني','عائق في الموقع'],
   stuck:     ['نقاط متعثرة','راكد']
@@ -12844,12 +12843,34 @@ function evKind(what){
   for (var i = 0; i < EV_KINDS.length; i++) if (EV_KINDS[i][1].test(w)) return EV_KINDS[i][0];
   return 'أخرى';
 }
-var EVF = { kind:'', by:'', from:'', to:'', q:'' };
+/* تصنيفُ الحوكمة: عدسةٌ أخرى فوق نفس الأحداث — لا «أيّ قسم» بل «أيّ فعل».
+   كانت شاشةً منفصلةً (سجل التدقيق) تكرّر سجل الأحداث بمصفوفتها الخاصة —
+   صارت فلاتر جاهزةً هنا فلا يُفتَح سجلٌّ ثانٍ لنفس البيانات. */
+var EV_CATS = [
+  ['مالي',      /مشتر|مبلغ|سعر|ميزانية|اعتماد|مستخلص/],
+  ['تعديل',     /عُدّل|تعديل|تغيير|حُدِّث/],
+  ['اعتماد',    /اعتُمد|اعتماد|مُنحت/],
+  ['رفض وحذف',  /رُفض|رفض|أُلغي|حُذف/]
+];
+function evCat(what){
+  var w = String(what || '');
+  for (var i = 0; i < EV_CATS.length; i++) if (EV_CATS[i][1].test(w)) return EV_CATS[i][0];
+  return '';
+}
+function evPillKind(what){
+  var w = String(what || '');
+  if (/اعتُمد|مُنحت/.test(w)) return 'ok';
+  if (/حُذف|رُفض|شُطب|سُحبت/.test(w)) return 'off';
+  if (/عُدّل|تعديل|تغيير|حُدِّث/.test(w)) return 'warn';
+  return 'off';
+}
+var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
 
 function evRows(){
   var L = (STATE.events || []).slice();
   return L.filter(function(e){
     if (EVF.kind && evKind(e.what) !== EVF.kind) return false;
+    if (EVF.cat && evCat(e.what) !== EVF.cat) return false;
     if (EVF.by && String(e.by || '') !== EVF.by) return false;
     if (EVF.q && String(e.what || '').indexOf(EVF.q) < 0) return false;
     /* التاريخُ والوقتُ معًا: `from` و`to` بصيغة datetime-local */
@@ -12859,14 +12880,28 @@ function evRows(){
   });
 }
 
-PAGE.ev = { m:'النظام', t:'سجل الأحداث', l:'كل تغيير بمن أجراه ومتى — ولا يُعدَّل ولا يُحذَف.',
+PAGE.ev = { m:'النظام', t:'سجل الأحداث',
+  l:'كل تغيير بمن أجراه ومتى — خامًا أو مصنَّفًا بالحوكمة، من نفس السجل.',
   body:function(){
     var all = STATE.events || [], L = evRows();
     var users = [], seen = {};
     all.forEach(function(e){ var b = e.by || ''; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
     var kinds = {}; all.forEach(function(e){ var k = evKind(e.what); kinds[k] = (kinds[k]||0)+1; });
+    var cats = {};  all.forEach(function(e){ var c = evCat(e.what); if (c) cats[c] = (cats[c]||0)+1; });
 
-    return card('تصفية',
+    return stats([['كل الأحداث', N(all.length), 'acc']]
+                 .concat(EV_CATS.map(function(c){ return [c[0], N(cats[c[0]] || 0)]; })))
+
+      + '<div class="chips">'
+      + '<button type="button" class="chip' + (!EVF.cat ? ' on' : '') + '" data-evcat="">'
+      +   esc(t('الكل')) + ' <span class="num">' + nm(all.length) + '</span></button>'
+      + EV_CATS.map(function(c){
+          return '<button type="button" class="chip' + (EVF.cat===c[0]?' on':'') + '" data-evcat="' + esc(c[0]) + '">'
+            + esc(t(c[0])) + ' <span class="num">' + nm(cats[c[0]] || 0) + '</span></button>';
+        }).join('')
+      + '</div>'
+
+      + card('تصفية',
         '<div class="grid cols-2">'
         + '<div class="field"><label>' + esc(t('نوع الحدث')) + '</label>'
         + '<select data-evf="kind"><option value="">— ' + esc(t('الكل')) + ' —</option>'
@@ -12895,14 +12930,15 @@ PAGE.ev = { m:'النظام', t:'سجل الأحداث', l:'كل تغيير بم
             ? table(['الوقت','النوع','الحدث','المستخدم'],
                 L.slice(0, 300).map(function(e){
                   return ['<span class="num">' + esc(e.day || '') + ' ' + esc(e.at || '') + '</span>',
-                          pill(t(evKind(e.what)), 'off'),
+                          pill(t(evKind(e.what)), evPillKind(e.what)),
                           esc(e.what || ''), esc(e.by || '—')];
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا أحداثَ تطابق التصفية.')) + '</p>')
 
       + (L.length > 300
           ? '<p class="hint">' + esc(t('يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.')) + '</p>'
-          : '');
+          : '')
+      + '<p class="hint">الأثرُ لا يُمحى: قواعدُ القاعدة تمنع حذفَ سجل الأحداث على الجميع. والشرائحُ أعلاه عدسةُ الحوكمة — نفس السجل، لا سجلٌّ ثانٍ.</p>';
   }};
 
 PAGE.sys = { m:'النظام', t:'سلامة البيانات', l:'فحوص تكشف التناقض قبل أن يصير رقمًا في تقرير.',
@@ -13305,7 +13341,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.86' + '.docx" download>⬇ '
+              +   'V14.87' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14003,44 +14039,6 @@ PAGE.chain = { m:'المتابعة', t:'سلسلة المراحل',
         }).join('')
 
       + '<p class="hint">لا يُقدَّر عددُ مرحلةٍ قبل أن يقع أساسُها. ومن أراد تقديرًا مبكّرًا فليقرأه من المواقع المسجَّلة — ويعلم أنه سقفٌ لا التزام.</p>';
-  }};
-
-PAGE.audit = { m:'النظام', t:'سجل التدقيق',
-  l:'من غيّر ماذا ومتى — لما لا يُقبل فيه الشك.',
-  body:function(){
-    /* كانت خمسةَ صفوفٍ مزروعةً بأسماءَ ومبالغَ وأوقاتٍ كُتبت يومَ بُنيت
-       الشاشة — وهي شاشةُ الحوكمة التي تُعرَض حين يُشَكُّ في شيء. فمن قرأها
-       قرأ تدقيقًا لم يقع. صارت من سجل الأحداث الحيّ: ما لم يقع لا يظهر. */
-    var E = (STATE.events || []).slice(0, 200);
-    var MONEY = /مشتر|مبلغ|سعر|ميزانية|اعتماد|مستخلص/;
-    var money = E.filter(function(e){ return MONEY.test(String(e.what || '')); });
-    var edits = E.filter(function(e){ return /عُدّل|تعديل|تغيير|حُدِّث/.test(String(e.what || '')); });
-    var appr  = E.filter(function(e){ return /اعتُمد|اعتماد|مُنحت/.test(String(e.what || '')); });
-    var rej   = E.filter(function(e){ return /رُفض|رفض|أُلغي|حُذف/.test(String(e.what || '')); });
-
-    return stats([['عمليات مالية', N(money.length)],
-                  ['تعديلات', N(edits.length), edits.length ? 'wrn' : ''],
-                  ['اعتمادات', N(appr.length), appr.length ? 'ok' : ''],
-                  ['حذفٌ ورفض', N(rej.length)]])
-
-      + cardFlush('الأثر الكامل — ' + nm(E.length),
-          E.length
-            ? table(['الوقت','ما جرى','بيد'],
-                E.slice(0, 120).map(function(e){
-                  var what = String(e.what || '');
-                  var k = /اعتُمد|مُنحت/.test(what) ? 'ok'
-                        : (/حُذف|رُفض|شُطب|سُحبت/.test(what) ? 'off' : 'warn');
-                  return ['<span class="num">'
-                            + esc(new Date(e.at || Date.now()).toISOString().slice(0, 16).replace('T', ' '))
-                            + '</span>',
-                          pill(what.length > 70 ? what.slice(0, 69) + '…' : what, k),
-                          esc(e.by || '—')];
-                }))
-            : '<p class="hint" style="padding:16px">'
-              + esc(t('لا أثرَ بعد — يظهر هنا كلُّ فعلٍ بصاحبه ووقته أولًا بأول.')) + '</p>',
-          may('exportAll') ? btn('⬇ إكسل — التدقيق','btn-secondary btn-sm',' data-xls="ev"') : '')
-
-      + '<p class="hint">الأثرُ لا يُمحى: قواعدُ القاعدة تمنع حذفَ سجل الأحداث على الجميع. وما لم يقع لا يظهر هنا — فالتدقيقُ الذي يعرض ما لم يقع أسوأُ من ألّا يكون.</p>';
   }};
 
 /* ── ٤ · عمر البيانات ─────────────────────────────
@@ -15032,7 +15030,7 @@ var NAV = [
       ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
-      ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['audit','سجل التدقيق'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
+      ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
       ['notif','الإشعارات'],['ev','سجل الأحداث'],['wipe','تصفير البيانات'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
   { g:'المساعدة', icon:'\u003F', items:[['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
@@ -15402,10 +15400,12 @@ function onDocClick(e){
   }
   if (e.target.closest('[data-evclr]')){
     /* الضغطُ على مسحٍ بلا تصفيةٍ لا يغيّر شيئًا — فيُقال ذلك بدل الصمت */
-    if (!EVF.kind && !EVF.by && !EVF.from && !EVF.to && !EVF.q){
+    if (!EVF.kind && !EVF.by && !EVF.from && !EVF.to && !EVF.q && !EVF.cat){
       toast(t('لا تصفيةَ لتُمسَح')); return;
     }
-    EVF = { kind:'', by:'', from:'', to:'', q:'' }; render(1); return; }
+    EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' }; render(1); return; }
+  var evc = e.target.closest('[data-evcat]');
+  if (evc){ EVF.cat = evc.getAttribute('data-evcat'); render(1); return; }
   var ue = e.target.closest('[data-usredit]');
   if (ue){ USR_EDIT = ue.getAttribute('data-usredit'); render(1); return; }
   var ua = e.target.closest('[data-usract]');
