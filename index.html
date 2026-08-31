@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.82</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.83</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -838,7 +838,16 @@ en:{
  'حذفُ نقاط الزيادة للمشرف أو المهندس وحدهما':'Only the supervisor or engineer can delete bonus points',
  'حُذف السطر':'Row deleted',
  'حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».':'The "Supervisor" field on each staff record is what links them to you — make sure it is written exactly as your name on the "Teams" page.',
- 'مثلاً 20 أو -10':'e.g. 20 or -10'
+ 'مثلاً 20 أو -10':'e.g. 20 or -10',
+
+ /* تجميع الأداء الهرمي */
+ '١ — حسب الوظيفة':'1 — By job',
+ '٢ — حسب الفني':'2 — By technician',
+ '٣ — حسب الفريق':'3 — By team',
+ '٤ — المشروع كله':'4 — The whole project',
+ 'بلا وظيفة':'No job',
+ 'بلا تصنيف':'Uncategorized',
+ 'المشروع':'The project'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -960,7 +969,16 @@ ur:{
  'حذفُ نقاط الزيادة للمشرف أو المهندس وحدهما':'صرف سپروائزر یا انجینئر بونس پوائنٹس حذف کر سکتے ہیں',
  'حُذف السطر':'قطار حذف کر دی گئی',
  'حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».':'ہر ملازم کے ریکارڈ میں "سپروائزر" فیلڈ ہی اسے آپ سے جوڑتا ہے — یقینی بنائیں کہ یہ "ٹیمیں" کے صفحے پر بالکل آپ کے نام سے لکھا ہے۔',
- 'مثلاً 20 أو -10':'مثال کے طور پر 20 یا -10'
+ 'مثلاً 20 أو -10':'مثال کے طور پر 20 یا -10',
+
+ /* تجميع الأداء الهرمي */
+ '١ — حسب الوظيفة':'١ — ملازمت کے حساب سے',
+ '٢ — حسب الفني':'٢ — ٹیکنیشن کے حساب سے',
+ '٣ — حسب الفريق':'٣ — ٹیم کے حساب سے',
+ '٤ — المشروع كله':'٤ — پورا پروجیکٹ',
+ 'بلا وظيفة':'بغیر ملازمت',
+ 'بلا تصنيف':'غیر درجہ بند',
+ 'المشروع':'پروجیکٹ'
 }
 };
 
@@ -2635,7 +2653,7 @@ var STATE = {
   inss:    {},   /* سجلات التركيب */
   tasks:   {},   /* المهام بأنواعها الأربعة */
   moves:   [],   /* دفتر حركة المخزون */
-  buys:    [],   /* المشتريات */
+  buys:    {},   /* المشتريات — بمعرّفٍ لكلٍّ، لا مصفوفة (كان تضاربٌ هنا) */
   bonus:   {},   /* نقاط الزيادة اليدوية للفنيين */
   events:  [],   /* سجل الأحداث */
   users:   {},   /* المستخدمون وأدوارهم */
@@ -3008,6 +3026,117 @@ var FB = {
         STATE.bonus = {};
         sn.forEach(function(d){ STATE.bonus[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب نقاط الزيادة', e, 'تعذّر سحبُ نقاط الزيادة — قد تظهر ناقصة'); });
+      /* الفرقُ والفنيون والكتالوج: نفس الباغ بالضبط، ولم يُصلَح رغم اكتشافه —
+         تُكتَب في مجموعة 'settings' وتُقرأ منها 'points' و'reqSeq' فقط.
+         فكلُّ فريقٍ أو موظفٍ يُضاف من صفحة «الفرق»، وكلُّ صنفٍ يُعدَّل سعرُه
+         من «القطع والأسعار»، يبقى صحيحًا على من كتبه وحده. وبما أن STATE.X
+         مصفوفةٌ تتحول كائنًا بمفاتيح رقمية عند الكتابة (Object.assign على
+         مصفوفة)، يُعاد بناؤها بترتيب المفاتيح لا تُقرأ ككائن. */
+      var arrFromDoc = function(v){
+        var ks = Object.keys(v || {}).filter(function(k){ return /^\d+$/.test(k); });
+        ks.sort(function(a,b){ return (+a) - (+b); });
+        return ks.map(function(k){ return v[k]; });
+      };
+      FB.db.collection('settings').doc('crews').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.crews = arr; }
+      }).catch(function(e){ softErr('سحب الفرق', e, 'تعذّر سحبُ الفرق — قد تظهر بذورها الأصلية فقط'); });
+      FB.db.collection('settings').doc('techs').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.techs = arr; }
+      }).catch(function(e){ softErr('سحب الفنيين', e, 'تعذّر سحبُ الفنيين — قد يظهر طاقمٌ ناقص'); });
+      FB.db.collection('settings').doc('items').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.items = arr; }
+      }).catch(function(e){ softErr('سحب الكتالوج', e, 'تعذّر سحبُ الكتالوج — قد تظهر أصنافه الأصلية فقط'); });
+      FB.db.collection('settings').doc('crTime').get().then(function(doc){
+        if (doc && doc.exists) CFG.crTime = doc.data();
+      }).catch(function(e){ softErr('سحب مواعيد التقارير', e, 'تعذّر سحبُ مواعيد التقارير الدورية'); });
+      FB.db.collection('settings').doc('jobs').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.jobs = arr; }
+      }).catch(function(e){ softErr('سحب الوظائف', e, 'تعذّر سحبُ الوظائف — قد تظهر بذورها الأصلية فقط'); });
+
+      /* بقيةُ المجموعات المكتوبة ولا تُقرأ قط — نفس الباغ في أحد عشر
+         موضعًا آخر، اكتُشفت في مراجعةٍ شاملة بعد V14.79/V14.82.
+         كلٌّ منها وثيقةٌ واحدةٌ لكلِّ سجلٍّ (لا مصفوفةٌ مجمَّعة) فتُقرأ
+         مباشرةً بمعرِّفها. */
+      FB.db.collection('sites').limit(3000).get().then(function(sn){
+        sn.forEach(function(d){ var x = siteFind(d.id); if (x) Object.assign(x, d.data()); });
+      }).catch(function(e){ softErr('سحب تعديلات المواقع', e, 'تعذّر سحبُ تعديلات المواقع (العناوين والتصحيحات)'); });
+
+      FB.db.collection('purchases').limit(3000).get().then(function(sn){
+        if (!STATE.buys) STATE.buys = {};
+        sn.forEach(function(d){ STATE.buys[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب المشتريات', e, 'تعذّر سحبُ دفتر المشتريات'); });
+
+      FB.db.collection('vehicles').limit(1000).get().then(function(sn){
+        if (!STATE.vehicles) STATE.vehicles = {};
+        sn.forEach(function(d){ STATE.vehicles[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب السيارات', e, 'تعذّر سحبُ سجل السيارات'); });
+
+      FB.db.collection('vehAsn').limit(2000).get().then(function(sn){
+        if (!STATE.vehAsn) STATE.vehAsn = {};
+        sn.forEach(function(d){ STATE.vehAsn[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب إسناد السيارات', e, 'تعذّر سحبُ عهدة السيارات'); });
+
+      FB.db.collection('ships').limit(1000).get().then(function(sn){
+        if (!STATE.ships) STATE.ships = {};
+        sn.forEach(function(d){ STATE.ships[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب الشحنات', e, 'تعذّر سحبُ سجل الشحنات'); });
+
+      FB.db.collection('coreqs').limit(1000).get().then(function(sn){
+        if (!STATE.coreqs) STATE.coreqs = {};
+        sn.forEach(function(d){ STATE.coreqs[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب طلبات الشركات', e, 'تعذّر سحبُ طلبات إضافة الشركات'); });
+
+      FB.db.collection('fixreqs').limit(1000).get().then(function(sn){
+        if (!STATE.fixreqs) STATE.fixreqs = {};
+        sn.forEach(function(d){ STATE.fixreqs[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب طلبات التصويب', e, 'تعذّر سحبُ طلبات تصويب البيانات'); });
+
+      FB.db.collection('newsites').limit(1000).get().then(function(sn){
+        if (!STATE.newsites) STATE.newsites = {};
+        sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب المواقع الجديدة', e, 'تعذّر سحبُ طلبات تسجيل مواقع جديدة'); });
+
+      FB.db.collection('changes').limit(1000).get().then(function(sn){
+        var arr = [];
+        sn.forEach(function(d){ arr.push(d.data()); });
+        arr.sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+        CHANGES.length = 0;
+        arr.forEach(function(x){ CHANGES.push(x); });
+      }).catch(function(e){ softErr('سحب ضبط التغيير', e, 'تعذّر سحبُ سجل طلبات التغيير'); });
+
+      FB.db.collection('ncr').limit(1000).get().then(function(sn){
+        var arr = [];
+        sn.forEach(function(d){ arr.push(d.data()); });
+        arr.sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+        NCRS.length = 0;
+        arr.forEach(function(x){ NCRS.push(x); });
+      }).catch(function(e){ softErr('سحب عدم المطابقة', e, 'تعذّر سحبُ سجل عدم المطابقة'); });
+
+      FB.db.collection('ipc').limit(1000).get().then(function(sn){
+        var arr = [];
+        sn.forEach(function(d){ arr.push(d.data()); });
+        arr.sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+        IPCS.length = 0;
+        arr.forEach(function(x){ IPCS.push(x); });
+      }).catch(function(e){ softErr('سحب المستخلصات', e, 'تعذّر سحبُ سجل المستخلصات'); });
+
+      FB.db.collection('hse').limit(1000).get().then(function(sn){
+        var arr = [];
+        sn.forEach(function(d){ arr.push(d.data()); });
+        arr.sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+        HSE.incidents.length = 0;
+        HSE.lost = 0;
+        arr.forEach(function(x){ HSE.incidents.push(x); HSE.lost += cfgN(x.lost); });
+      }).catch(function(e){ softErr('سحب حوادث السلامة', e, 'تعذّر سحبُ سجل حوادث السلامة'); });
+
+      FB.db.collection('baseline').limit(200).get().then(function(sn){
+        var latest = null;
+        sn.forEach(function(d){
+          var v = d.data();
+          if (!latest || (v.ver || 0) > (latest.ver || 0)) latest = v;
+        });
+        if (latest) BASE = latest;
+      }).catch(function(e){ softErr('سحب خط الأساس', e, 'تعذّر سحبُ خط الأساس المجمَّد'); });
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
       return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
         .then(function(sn){
@@ -4034,7 +4163,7 @@ PAGE.crewman = { m:'الفرق', t:'الفرق',
                           btn('حذف','btn-quiet btn-sm',' data-tkdel="' + esc(x.n) + '"')];
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا موظفين في هذا الفريق بعد.')) + '</p>',
-          btn('حسابات الفنيين','btn-secondary btn-sm',' data-p="techacc"'))
+          btn('حسابات الفنيين','btn-secondary btn-sm',' data-p="users"'))
 
       + (may('users')
         ? card('إضافة موظف',
@@ -4320,65 +4449,6 @@ function pwGen(){
 }
 
 var TECH_MADE = [];
-
-PAGE.techacc = { m:'الفرق', t:'حسابات الفنيين',
-  l:'أنشئ لكل فنيٍّ حسابًا بصلاحية «فني» — فردًا أو دفعةً واحدة.',
-  body:function(){
-    var no = TECHS.filter(function(x){ return !x.has; });
-    return stats([['فنيون', N(TECHS.length)],
-                  ['لهم حسابات', N(TECHS.length - no.length), 'ok'],
-                  ['بلا حساب', N(no.length), no.length ? 'wrn' : ''],
-                  ['الصلاحية','فني','acc']])
-
-      + (no.length
-        ? card('إنشاء دفعةً واحدة',
-            '<p class="hint" style="margin:0 0 12px">'
-            + esc(t('يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه «فني» ومشرفُه كما هو مسجَّل. ويبدّل كلمته أولَ دخول.'))
-            + '</p>'
-            + table(['الفني','اسم المستخدم','الفريق','مشرفه','الصلاحية'],
-                no.map(function(x){
-                  return [esc(x.n), '<code class="hint" dir="ltr" style="margin:0">' + esc(userOf(x.n)) + '</code>',
-                          esc(x.crew), esc(x.sup), pill('فني','acc')];
-                })),
-            btn('➕ ' + t('أنشئ') + ' ' + nm(no.length) + ' ' + t('حسابًا'),'btn-primary btn-sm',' data-mkall="1"'))
-        : alertBox('success','كل الفنيين لهم حسابات.'))
-
-      + cardFlush('الفنيون — ' + nm(TECHS.length),
-          table(['الفني','الجوال','الفريق','مشرفه','الحساب',''],
-            TECHS.map(function(x, i){
-              return ['<strong>' + esc(x.n) + '</strong>',
-                      may('phones') ? '<span class="num">' + esc(x.ph) + '</span>'
-                                    : '<span class="hint" style="margin:0">' + esc(t('محجوب')) + '</span>',
-                      esc(x.crew), esc(x.sup),
-                      x.has ? '<code class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</code>'
-                            : pill('بلا حساب','off'),
-                      x.has ? btn('تصفير كلمة المرور','btn-quiet btn-sm')
-                            : btn('أنشئ حسابًا','btn-primary btn-sm',' data-mkone="' + i + '"')];
-            })),
-          btn('➕ إضافة موظف','btn-secondary btn-sm',' data-p="crewman"'))
-
-      + (TECH_MADE.length
-        ? card('حسابات أُنشئت الآن',
-            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
-            + table(['الفني','اسم المستخدم','كلمة المرور'],
-                TECH_MADE.map(function(m){
-                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
-                          '<code dir="ltr">' + esc(m.p) + '</code>'];
-                })),
-            btn('نسخ الكل','btn-secondary btn-sm'))
-        : '')
-
-      + card('ما يملكه الفني',
-          table(['القدرة','له'],
-            [['رؤية المُسند إليه','نعم'], ['المسح والتوثيق','نعم'],
-             ['التركيب والفك','نعم'], ['رؤية فريقه وأرقامه','نعم'],
-             ['رؤية نقاط غيره','لا'], ['الاعتماد','لا'],
-             ['الإعدادات والمال','لا'], ['إدارة الحسابات','لا']
-            ].map(function(r){
-              return [esc(t(r[0])), r[1] === 'نعم' ? pill('نعم','ok') : pill('لا','off')];
-            })))
-      + '<p class="hint">الفني يرث «مشرف» ويعمل تحته — فقواعدُ Firebase تسمح له بما أُسند إليه وحده، وترفض ما عداه ولو التفّ على الواجهة.</p>';
-  }};
 
 function mkAccount(i, quiet){
   /* القائمةُ الحيّة لا الثابتة: من أُضيف اليومَ يُنشَأ له حساب */
@@ -7179,7 +7249,7 @@ var ORG = {
     { id:'ops',   n:'العمليات الميدانية',  i:'\u{1F527}', needs:'الإسناد والتنفيذ والمتابعة',      pages:['map','req','assign','crewman'] },
     { id:'qaqc',  n:'الجودة',             i:'\u2713',    needs:'عدم المطابقة والإجراء التصحيحي',  pages:['ncr','qa','audit'] },
     { id:'hse',   n:'السلامة',            i:'\u26D1',    needs:'الحوادث والتصاريح والتوعية',      pages:['hse'] },
-    { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['crewman','stages','allscore','techacc'] },
+    { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['crewman','stages','allscore','users'] },
     { id:'fin',   n:'المالية',            i:'\u{1F4B0}', needs:'المستخلصات والدفعات والتدفق',     pages:['ipc','budget','buys','budm'] },
     { id:'proc',  n:'المشتريات',          i:'\u{1F4E6}', needs:'الطلبات والمورّدون والالتزامات',   pages:['buys','sup','invb','wos'] },
     { id:'it',    n:'تقنية المعلومات',     i:'\u{1F5A5}', needs:'الشبكة وصحة الأجهزة والنسخ',      pages:['hb','probe','sys','retain'] }
@@ -8163,7 +8233,7 @@ var ASSIST_Q = '';
 /* كلماتٌ يكتبها الناسُ ولا تظهر في عنوان الصفحة أو وصفها حرفيًّا */
 var HELP_KEYWORDS = {
   crewman:   ['اضافة فني','فني جديد','موظف جديد','اضافة موظف','عمل فريق','فريق جديد','حذف فني','تعديل فريق','نسب الفريق','الانصبة'],
-  techacc:   ['انشاء حساب فني','حساب دخول','يوزر وباسورد','كلمة مرور فني'],
+  users:     ['انشاء حساب فني','حساب دخول','يوزر وباسورد','كلمة مرور فني','انشاء مستخدم','حساب جديد','صلاحيات المستخدم','تعطيل حساب'],
   assign:    ['اسناد نقاط','توزيع نقاط','ارسال فريق','اسناد فني','اسناد تركيب','اسناد فك','اسناد زيارة'],
   req:       ['طلب زيارة','SR','رقم الطلب','اعتماد زيارة'],
   solution:  ['اعتماد الحل','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
@@ -8172,7 +8242,6 @@ var HELP_KEYWORDS = {
   svForm:    ['فورم المسح','املأ نموذج المسح'],
   insForm:   ['فورم التركيب','تسجيل تركيب','ابلغ عن تركيب'],
   disp2:     ['فك جهاز','ارجاع عهدة','فك تركيب'],
-  users:     ['انشاء مستخدم','حساب جديد','صلاحيات المستخدم','تعطيل حساب'],
   assignRole:['اسناد دور','تغيير صلاحية','ترقية مشرف'],
   roles:     ['الادوار','مين يشوف ايه','صلاحيات كل دور'],
   vehkind:   ['نوع سيارة جديد','انواع العربيات'],
@@ -8224,8 +8293,8 @@ var HELP_STEPS = {
            'اختر النقاط، ثم اختر «لفني» أو «لفريق»',
            'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)',
            'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا'],
-  techacc: ['لازم الفني يبقى مضاف في «الفرق» الأول',
-            'افتح «حسابات الفنيين»',
+  users: ['لازم الفني يبقى مضاف في «الفرق» الأول',
+            'افتح «المستخدمون»',
             'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب',
             'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني']
 };
@@ -11647,6 +11716,43 @@ function breakCell(count, pts, byType){
     + (lines ? '<div class="hint" style="margin:2px 0 0">' + lines + '</div>' : '') + '</div>';
 }
 
+/* ── تجميعُ الأداء: بالوظيفة أو بالفريق أو للمشروع كله ──
+   نفسُ الحقول المشتقّة من scores() تُجمَع لا تُعاد حسابها — رقمٌ واحدٌ
+   مصدرُه، يُعرَض على مستوياتٍ مختلفة. */
+function rollupBy(keyFn, labelFn){
+  var groups = Object.create(null), order = [];
+  scores().list.forEach(function(e){
+    var tx = techsList().filter(function(x){ return x.n === e.name; })[0];
+    var k = keyFn(e, tx);
+    if (k === null || k === undefined || k === '') k = 'بلا تصنيف';
+    if (!groups[k]){
+      groups[k] = { key:k, name:labelFn ? labelFn(k) : k, n:0,
+        survey:0, pSurvey:0, install:0, pInstall:0, dis:0, pDis:0, pBonus:0, total:0 };
+      order.push(k);
+    }
+    var g = groups[k];
+    g.n++;
+    g.survey += e.survey;   g.pSurvey += e.pSurvey;
+    g.install += e.install; g.pInstall += e.pInstall;
+    g.dis += e.dis;         g.pDis += e.pDis;
+    g.pBonus += e.pBonus;   g.total += e.total;
+  });
+  return order.map(function(k){ return groups[k]; }).sort(function(a,b){ return b.total - a.total; });
+}
+function rollupTable(groups, labelHeader){
+  var Tg = T(), perPerson = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
+  return table([labelHeader,'أفراد','زيارة','تركيب','فك','زيادة','الإجمالي','من التارجت'],
+    groups.map(function(g){
+      var target = perPerson * g.n;
+      return [esc(t(g.name)), N(g.n),
+              breakCell(g.survey, g.pSurvey), breakCell(g.install, g.pInstall), breakCell(g.dis, g.pDis),
+              g.pBonus ? ('<span class="' + (g.pBonus > 0 ? 'num' : 'req') + '">'
+                           + (g.pBonus > 0 ? '+' : '') + nm(Math.round(g.pBonus * 10) / 10) + '</span>') : '—',
+              '<b>' + nm(Math.round(g.total * 10) / 10) + '</b>',
+              target ? pct(g.total, target) : '—'];
+    }));
+}
+
 function techPerfTable(list, showRank){
   var Tg = T(), target = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
   return table((showRank ? ['#'] : []).concat(
@@ -11697,12 +11803,25 @@ function bonusLogHtml(techs){
       })));
 }
 
-PAGE.techx = { m:'الفرق', t:'مقابل التارجت', l:'نقاطُ الشهر لكل فنيٍّ — عددًا ووزنًا — مقابل تارجته.',
+PAGE.techx = { m:'الفرق', t:'مقابل التارجت',
+  l:'الأداءُ على أربعة مستويات: بالوظيفة، بالفني، بالفريق، وللمشروع كله.',
   body:function(){
     var list = scores().list;
     var names = techNames();
-    return card('الشهر الجاري', techPerfTable(list, false))
-      + '<p class="hint">أخضر ١٠٠٪ فأكثر · أصفر من ٧٠٪ · أحمر دونها. والتارجتُ إجماليُّ زيارةٍ وتركيبٍ وفكٍّ معًا.</p>'
+
+    var byJob = rollupBy(
+      function(e, tx){ return tx ? tx.job : ''; },
+      function(id){ var j = jobOf(id); return j ? j.n : 'بلا وظيفة'; });
+
+    var byCrew = rollupBy(function(e, tx){ return tx ? tx.crew : ''; });
+
+    var project = rollupBy(function(){ return 'المشروع'; });
+
+    return card('١ — حسب الوظيفة', rollupTable(byJob, 'الوظيفة'))
+      + card('٢ — حسب الفني', techPerfTable(list, false))
+      + card('٣ — حسب الفريق', rollupTable(byCrew, 'الفريق'))
+      + card('٤ — المشروع كله', rollupTable(project, 'المشروع'))
+      + '<p class="hint">أخضر ١٠٠٪ فأكثر · أصفر من ٧٠٪ · أحمر دونها. والتارجتُ إجماليُّ زيارةٍ وتركيبٍ وفكٍّ معًا مضروبًا في عدد الأفراد.</p>'
       + (maySupEng() ? bonusFormHtml(names, 'x') : '')
       + bonusLogHtml(names);
   }};
@@ -13149,7 +13268,7 @@ var PAGE_CAP = {
   ipc:'money', buys:'money', budget:'money', exec:'money',
   invb:'inventory', invmv:'inventory', stock:'inventory',
   wos:'workshop', wday:'workshop',
-  techacc:'users', perms:'users', assignRole:'users', users:'users', roles:'users',
+  perms:'users', assignRole:'users', users:'users', roles:'users',
   svForm:'edit', insForm:'edit', newsite:'edit',
   qa:'approve', appr:'approve', esc:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
@@ -13205,7 +13324,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.82' + '.docx" download>⬇ '
+              +   'V14.83' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -13639,9 +13758,6 @@ PAGE.budm = { m:'المتابعة', t:'الملخّص المالي',
     var byCat = {};
     buysList().forEach(function(b){ if (b.st !== 'معتمد') return;
       byCat[b.cat] = (byCat[b.cat] || 0) + (+b.amt || 0); });
-    STATE.buys.forEach(function(b){
-      if (b && b.cat) byCat[b.cat] = (byCat[b.cat] || 0) + (b.amount || 0);
-    });
     var cats = Object.keys(byCat).sort(function(a,b){ return byCat[b] - byCat[a]; });
 
     return stats([['الميزانية المعتمدة', cap ? N(cap) : '—', 'acc'],
@@ -14390,6 +14506,16 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون',
                   'btn-primary btn-sm', ' data-mkall="1"')
             : '')
 
+      + (TECH_MADE.length
+        ? card('حسابات أُنشئت الآن',
+            alertBox('warn','انسخ كلمات المرور الآن — لا تُعرض ثانيةً بعد مغادرة الصفحة.')
+            + table(['الفني','اسم المستخدم','كلمة المرور'],
+                TECH_MADE.map(function(m){
+                  return [esc(m.n), '<code dir="ltr">' + esc(m.u) + '</code>',
+                          '<code dir="ltr">' + esc(m.p) + '</code>'];
+                })))
+        : '')
+
       + usersCard();
   }};
 
@@ -14919,7 +15045,6 @@ var NAV = [
   { g:'الفرق', icon:'\u25D4', items:[
       ['crewman','الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
       ['creps','التقارير الدورية'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
-      ['techacc','حسابات الفنيين'],
       ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
@@ -15587,8 +15712,6 @@ function onDocClick(e){
   }
   if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
 
-  var mk = e.target.closest('[data-mkone]');
-  if (mk){ mkAccount(+mk.getAttribute('data-mkone')); render(1); return; }
   if (e.target.closest('[data-mkall]')){
     var made = 0;
     techsList().forEach(function(x, i){ if (!x.has) made += mkAccount(i, 1); });

@@ -105,7 +105,7 @@ w.techSet(A, { crew:'فريقُ السيناريو' });
 w.techSet(B, { crew:'فريقُ السيناريو' });
 step(w.techsList().filter(x => x.crew === 'فريقُ السيناريو').length === 2, 'ضُمَّ الفنيّان إليه');
 
-go('techacc');
+go('users');
 const before = w.techsList().filter(x => x.has).length;
 click('[data-mkall]');
 const made = w.techsList().filter(x => x.has).length;
