@@ -114,6 +114,10 @@ service cloud.firestore {
 
     // الفرقُ وخطُّ الأساس وطلباتُ التغيير والسلامةُ وعدمُ المطابقة والمستخلصات
     match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
+    /* نقاطُ الزيادة: قرارُ من يشرف لا من يُنفَّذ له — مشرفٌ أو مهندسٌ وحدهما،
+       لا كلُّ من يملك canW() (فالفنيَّ وقائدَ الفريق الميدانيّ يرثانها أيضًا). */
+    match /bonus/{id}    { allow read: if ok();
+                            allow create, update, delete: if ok() && role() in ['engineer', 'supervisor']; }
     match /baseline/{id} { allow read: if ok();   allow create, update: if mgr();  allow delete: if false; }
     match /changes/{id}  { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if false; }
     match /hse/{id}      { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }

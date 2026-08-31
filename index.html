@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.81</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.82</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -829,7 +829,16 @@ en:{
  'لازم الفني يبقى مضاف في «الفرق» الأول':'The technician must already be added in "Teams" first',
  'افتح «حسابات الفنيين»':'Open "Technician Accounts"',
  'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب':'Pick the technician, or press "Create accounts in bulk" for everyone without one',
- 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'Copy the username and password and hand them to the technician'
+ 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'Copy the username and password and hand them to the technician',
+
+ /* نقاط الزيادة اليدوية */
+ 'إضافةُ نقاط الزيادة للمشرف أو المهندس وحدهما':'Only the supervisor or engineer can add bonus points',
+ 'اختر الفنيَّ أولًا':'Choose the technician first',
+ 'اكتب عدد نقاطٍ غيرَ صفر':'Enter a non-zero number of points',
+ 'حذفُ نقاط الزيادة للمشرف أو المهندس وحدهما':'Only the supervisor or engineer can delete bonus points',
+ 'حُذف السطر':'Row deleted',
+ 'حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».':'The "Supervisor" field on each staff record is what links them to you — make sure it is written exactly as your name on the "Teams" page.',
+ 'مثلاً 20 أو -10':'e.g. 20 or -10'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -942,7 +951,16 @@ ur:{
  'لازم الفني يبقى مضاف في «الفرق» الأول':'ٹیکنیشن کا پہلے سے "ٹیمیں" میں شامل ہونا ضروری ہے',
  'افتح «حسابات الفنيين»':'"ٹیکنیشن اکاؤنٹس" کھولیں',
  'اختر الفني أو اضغط «إنشاء حسابات جماعية» لكل من بلا حساب':'ٹیکنیشن منتخب کریں، یا بغیر اکاؤنٹ والوں کے لیے "اجتماعی اکاؤنٹس بنائیں" دبائیں',
- 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'یوزر نیم اور پاس ورڈ کاپی کریں اور ٹیکنیشن کے حوالے کریں'
+ 'انسخ اسم المستخدم وكلمة المرور وسلّمهم للفني':'یوزر نیم اور پاس ورڈ کاپی کریں اور ٹیکنیشن کے حوالے کریں',
+
+ /* نقاط الزيادة اليدوية */
+ 'إضافةُ نقاط الزيادة للمشرف أو المهندس وحدهما':'صرف سپروائزر یا انجینئر بونس پوائنٹس شامل کر سکتے ہیں',
+ 'اختر الفنيَّ أولًا':'پہلے ٹیکنیشن منتخب کریں',
+ 'اكتب عدد نقاطٍ غيرَ صفر':'صفر کے علاوہ پوائنٹس کی تعداد درج کریں',
+ 'حذفُ نقاط الزيادة للمشرف أو المهندس وحدهما':'صرف سپروائزر یا انجینئر بونس پوائنٹس حذف کر سکتے ہیں',
+ 'حُذف السطر':'قطار حذف کر دی گئی',
+ 'حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».':'ہر ملازم کے ریکارڈ میں "سپروائزر" فیلڈ ہی اسے آپ سے جوڑتا ہے — یقینی بنائیں کہ یہ "ٹیمیں" کے صفحے پر بالکل آپ کے نام سے لکھا ہے۔',
+ 'مثلاً 20 أو -10':'مثال کے طور پر 20 یا -10'
 }
 };
 
@@ -2618,6 +2636,7 @@ var STATE = {
   tasks:   {},   /* المهام بأنواعها الأربعة */
   moves:   [],   /* دفتر حركة المخزون */
   buys:    [],   /* المشتريات */
+  bonus:   {},   /* نقاط الزيادة اليدوية للفنيين */
   events:  [],   /* سجل الأحداث */
   users:   {},   /* المستخدمون وأدوارهم */
   cfg:     {},   /* الإعدادات — مرآةُ CFG */
@@ -2872,7 +2891,7 @@ var FB = {
                   coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites', ships:'ships',
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
-                  changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc' }[it.kind];
+                  changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
@@ -2973,6 +2992,22 @@ var FB = {
           ['SR','DR','PR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
         }
       }).catch(function(e){ softErr('سحب ترقيم الطلبات', e, 'تعذّر سحبُ آخر رقم طلب — قد يتكرّر الترقيم'); });
+      /* الفكُّ والورشةُ (تهيئة وتجميع) كانا يُكتَبان في 'dismantles' و'inventory'
+         ولا يُقرآن هنا قطّ — فنقاطُ الفني في هاتين المرحلتين كانت صحيحةً على
+         جهاز من سجّلها فقط، وصفرًا على أي جهازٍ آخر يفتح تقرير الأداء. */
+      FB.db.collection('dismantles').limit(3000).get().then(function(sn){
+        if (!STATE.diss) STATE.diss = {};
+        sn.forEach(function(d){ STATE.diss[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب سجلات الفك', e, 'تعذّر سحبُ سجلات الفك — أداءُ الفك قد يظهر ناقصًا'); });
+      FB.db.collection('inventory').limit(3000).get().then(function(sn){
+        STATE.moves = [];
+        sn.forEach(function(d){ STATE.moves.push(d.data()); });
+      }).catch(function(e){ softErr('سحب دفتر الحركة', e, 'تعذّر سحبُ دفتر الحركة — أداءُ التهيئة والتجميع قد يظهر ناقصًا'); });
+      /* نقاطُ الزيادة اليدوية: سجلٌّ صغيرٌ لا مصفوفةٌ عملاقة — يُقرأ كاملًا كلَّ مرة */
+      FB.db.collection('bonus').limit(2000).get().then(function(sn){
+        STATE.bonus = {};
+        sn.forEach(function(d){ STATE.bonus[d.id] = d.data(); });
+      }).catch(function(e){ softErr('سحب نقاط الزيادة', e, 'تعذّر سحبُ نقاط الزيادة — قد تظهر ناقصة'); });
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
       return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
         .then(function(sn){
@@ -3449,6 +3484,44 @@ function stageOf(name){ return TECH_STAGE[name] || 'srv'; }
 /* ── حصادُ العمل: يُمشَّط السجلُّ مرةً ويُخزَّن ── */
 var SCORE_CACHE = null, SCORE_VER = -1;
 
+/* ── نقاطُ الزيادة اليدوية: يضيفها مشرفٌ أو مهندسٌ بسببٍ مكتوب ──
+   ليست تصحيحًا صامتًا لرقمٍ، بل سطرٌ جديدٌ له صاحبٌ ووقتٌ وسببٌ — يُحذَف
+   لا يُعدَّل، فمن أراد تصويبَه أضاف سطرًا يُلغيه بسببٍ آخر. */
+function bonusList(){ return Object.keys(STATE.bonus || {}).map(function(k){ return STATE.bonus[k]; }); }
+function bonusFor(name){
+  return bonusList().filter(function(b){ return b.tech === name; })
+    .reduce(function(a,b){ return a + cfgN(b.pts); }, 0);
+}
+function bonusAdd(tech, pts, note){
+  if (!maySupEng()){ toast(t('إضافةُ نقاط الزيادة للمشرف أو المهندس وحدهما')); return; }
+  tech = String(tech || '').trim();
+  var p = cfgN(pts);
+  if (!tech){ toast(t('اختر الفنيَّ أولًا')); return; }
+  if (!p){ toast(t('اكتب عدد نقاطٍ غيرَ صفر')); return; }
+  var id = 'bn' + Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+  var b = { id:id, tech:tech, pts:p, note:String(note || '').trim(),
+            by:STATE.meta.name || 'محمد صفوت', at:Date.now() };
+  if (!STATE.bonus) STATE.bonus = {};
+  STATE.bonus[id] = b;
+  CORE.set('bonus', id, b);
+  logEvent((p > 0 ? 'إضافة' : 'خصم') + ' نقاط زيادة — ' + tech + ' \u00b7 ' + nm(Math.abs(p))
+           + (note ? ' \u00b7 ' + note : ''));
+  toast(tech + ' \u00b7 ' + (p > 0 ? '+' : '') + nm(p) + ' ' + t('نقطة'));
+  statBump();
+  render(1);
+}
+function bonusDel(id){
+  if (!maySupEng()){ toast(t('حذفُ نقاط الزيادة للمشرف أو المهندس وحدهما')); return; }
+  var b = STATE.bonus && STATE.bonus[id];
+  if (!b) return;
+  delete STATE.bonus[id];
+  CORE.dirty('bonus', id, null);
+  logEvent('حذف سطر نقاط زيادة — ' + b.tech + ' \u00b7 ' + nm(b.pts));
+  toast(t('حُذف السطر'));
+  statBump();
+  render(1);
+}
+
 function scores(){
   if (SCORE_CACHE && SCORE_VER === STAT_VER) return SCORE_CACHE;
   var by = Object.create(null);
@@ -3458,7 +3531,8 @@ function scores(){
     if (!by[who]) by[who] = {
       name:who, stage:stageOf(who),
       survey:0, install:0, dis:0, prep:0, asm:0,
-      pSurvey:0, pInstall:0, pDis:0, pPrep:0, pAsm:0, total:0,
+      pSurvey:0, pInstall:0, pDis:0, pPrep:0, pAsm:0, pBonus:0, total:0,
+      installT:Object.create(null), disT:Object.create(null),
       days:Object.create(null), last:0
     };
     return by[who];
@@ -3476,25 +3550,32 @@ function scores(){
     if ((r.at||0) > e.last) e.last = r.at || 0;
   });
 
-  /* التركيب: المعتمدُ وحده يُحتسب — كما هو الأصل */
+  /* التركيب: المعتمدُ وحده يُحتسب — كما هو الأصل، ومصنَّفٌ بنوع الموقع
+     (مخيمٌ أو ممرٌّ أو غيرهما) لأن لكلٍّ وزنَه المستقل */
   Object.keys(STATE.inss).forEach(function(id){
     var r = STATE.inss[id], x = siteFind(id);
     if (!x || r.status !== 'مُركّب') return;
-    var e = ent(r.by);
+    var e = ent(r.by), p = r.approved ? ptsInstall(x) : 0;
     e.install++;
-    e.pInstall += (r.approved ? ptsInstall(x) : 0);
+    e.pInstall += p;
+    if (!e.installT[x.type]) e.installT[x.type] = { n:0, pts:0 };
+    e.installT[x.type].n++;
+    e.installT[x.type].pts += p;
     var day = new Date(r.at || Date.now()).toISOString().slice(0,10);
     e.days[day] = (e.days[day] || 0) + 1;
     if ((r.at||0) > e.last) e.last = r.at || 0;
   });
 
-  /* الفك: بحالته ومعاملها */
+  /* الفك: بحالته ومعاملها، ومصنَّفٌ بنوع الموقع كالتركيب تمامًا */
   if (STATE.diss) Object.keys(STATE.diss).forEach(function(id){
     var r = STATE.diss[id], x = siteFind(id);
     if (!x || r.status !== 'تم الفك') return;
-    var e = ent(r.by);
+    var e = ent(r.by), p = r.pts || ptsDis(x);
     e.dis++;
-    e.pDis += (r.pts || ptsDis(x));
+    e.pDis += p;
+    if (!e.disT[x.type]) e.disT[x.type] = { n:0, pts:0 };
+    e.disT[x.type].n++;
+    e.disT[x.type].pts += p;
     if ((r.at||0) > e.last) e.last = r.at || 0;
   });
 
@@ -3505,9 +3586,16 @@ function scores(){
     if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(m.item)  * (m.qty||1); }
   });
 
+  /* نقاطُ الزيادة اليدوية: يضيفها مشرفٌ أو مهندسٌ بسببٍ مكتوب — لا تصنعُ
+     عملًا وهميًّا، وتدخل الإجماليَّ كأيِّ نقطةٍ حقيقيةٍ أخرى */
+  bonusList().forEach(function(b){
+    var e = ent(b.tech);
+    e.pBonus += cfgN(b.pts);
+  });
+
   Object.keys(by).forEach(function(k){
     var e = by[k];
-    e.total = Math.round((e.pSurvey + e.pInstall + e.pDis + e.pPrep + e.pAsm) * 100) / 100;
+    e.total = Math.round((e.pSurvey + e.pInstall + e.pDis + e.pPrep + e.pAsm + e.pBonus) * 100) / 100;
     e.acts  = e.survey + e.install + e.dis + e.prep + e.asm;
     e.nDays = Object.keys(e.days).length;
     e.perDay = e.nDays ? Math.round(e.total / e.nDays * 10) / 10 : 0;
@@ -4514,32 +4602,29 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
 
 /* ═══ فريق المشرف — من معه ═══ */
 
-PAGE.myteam = { m:'الفرق', t:'فريقي', l:'من معك ومَن أنجز ماذا اليوم.',
+PAGE.myteam = { m:'الفرق', t:'فريقي', l:'من معك ومَن أنجز ماذا — نقاطًا حقيقيةً مقابل تارجتها.',
   body:function(){
-    var team = assignRows().filter(function(u){ return u[4] === 'فريق مخيمات ١'; });
-    var sp = CREW_SPEC[0];
-    return stats([['أفراد الفريق', N(team.length), 'acc'],
-                  ['المعدل اليومي', N(sp.rate) + ' ' + esc(t('مخيم'))],
-                  ['أنجزنا اليوم','٠','ok'],
-                  ['المتبقي عليّ','٠','wrn']])
-      + cardFlush('أفراد فريقي',
-          table(['العضو','الدور','اليوم','هذا الأسبوع','الحالة'],
-            team.map(function(u){
-              return ['<strong>' + esc(u[0]) + '</strong>',
-                      pill(u[2]==='supervisor' ? 'مشرف' : 'فني', u[2]==='supervisor'?'ok':'acc'),
-                      '٠','٠', pill('متاح','ok')];
-            })),
-          btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
-      + card('طاقم الفريق ومعدله',
-          '<div class="hint" style="margin:0">'
-          + '<strong>' + esc(t(sp.n)) + '</strong> — ' + esc(t(sp.d))
-          + '</div>'
-          + '<div class="stats" style="margin:13px 0 0">'
-          + stat('مشرف', N(sp.sup)) + stat('فنيون', N(sp.tech))
-          + stat('معدّات', sp.gear ? N(sp.gear) : '—')
-          + stat('المعدل/يوم', N(sp.rate))
-          + '</div>')
-      + '<p class="hint">أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.</p>';
+    var mine = techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); });
+    var names = mine.map(function(x){ return x.n; });
+    if (!names.length){
+      return card('لا أحدَ تحت إشرافك بعد',
+        '<p class="hint" style="margin:0">'
+        + esc(t('حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».'))
+        + '</p>');
+    }
+    var byName = scores().byName;
+    var list = names.map(function(n){ return byName[n] || {
+      name:n, survey:0, install:0, dis:0, pSurvey:0, pInstall:0, pDis:0,
+      pBonus:bonusFor(n), total:bonusFor(n), installT:{}, disT:{}
+    }; });
+    list.sort(function(a,b){ return b.total - a.total; });
+
+    return stats([['أفراد الفريق', N(names.length), 'acc'],
+                  ['نقاط الفريق هذا الشهر', N(Math.round(list.reduce(function(a,e){ return a + e.total; }, 0)))]])
+      + card('أداء فريقي هذا الشهر', techPerfTable(list, false))
+      + '<p class="hint">أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.</p>'
+      + (maySupEng() ? bonusFormHtml(names, 'mt') : '')
+      + bonusLogHtml(names);
   }};
 
 /* ═══ الطبقات الثلاث — لكلٍّ ما تُظهر وما تُسند ═══
@@ -11551,17 +11636,75 @@ PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
       + '<p class="hint">الوظيفةُ التي عليها أشخاصٌ لا تُحذَف — انقلهم أولًا. وكلُّ نقلةٍ تدخل سجلَّ الأحداث وتصل صاحبَها إشعارًا.</p>';
   }};
 
-PAGE.techx = { m:'الفرق', t:'مقابل التارجت', l:'نقاط الشهر في كل مرحلة مقابل تارجتها المستقل.',
+/* ── تفصيلُ أداء الفني: عددٌ ووزنٌ لكلِّ نوعٍ، لا رقمٌ واحدٌ مجهولُ المصدر ── */
+function breakCell(count, pts, byType){
+  var lines = Object.keys(byType || {}).map(function(ty){
+    var v = byType[ty];
+    return esc(ty || '\u2014') + ': ' + nm(v.n) + ' (' + nm(Math.round(v.pts * 10) / 10) + ')';
+  }).join('<br>');
+  return '<div>' + N(count) + ' \u00b7 <span class="num">' + nm(Math.round(pts * 10) / 10)
+    + '</span> ' + esc(t('نقطة'))
+    + (lines ? '<div class="hint" style="margin:2px 0 0">' + lines + '</div>' : '') + '</div>';
+}
+
+function techPerfTable(list, showRank){
+  var Tg = T(), target = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
+  return table((showRank ? ['#'] : []).concat(
+      ['الفني','زيارة','تركيب','فك','زيادة','الإجمالي','من التارجت']),
+    list.map(function(e, i){
+      var row = [
+        '<strong>' + esc(e.name) + '</strong>',
+        breakCell(e.survey, e.pSurvey),
+        breakCell(e.install, e.pInstall, e.installT),
+        breakCell(e.dis, e.pDis, e.disT),
+        e.pBonus ? ('<span class="' + (e.pBonus > 0 ? 'num' : 'req') + '">'
+                     + (e.pBonus > 0 ? '+' : '') + nm(Math.round(e.pBonus * 10) / 10) + '</span>') : '—',
+        '<b>' + nm(Math.round(e.total * 10) / 10) + '</b>',
+        target ? pct(e.total, target) : '—'
+      ];
+      return showRank ? [nm(i + 1)].concat(row) : row;
+    }));
+}
+
+/* نموذجُ إضافة نقاط الزيادة: مشتركٌ بين تقرير المهندس (كل الفنيين) وفريقي
+   (فنيّو المشرف وحدهم) — الفرقُ في قائمة من يظهر لا في المنطق */
+function bonusFormHtml(techs, idPrefix){
+  return card('إضافة نقاط زيادة',
+      '<div class="grid cols-3">'
+      + '<div class="field" style="margin:0"><label>' + esc(t('الفني')) + '</label>'
+      + '<select id="' + idPrefix + 'BnTech">' + techs.map(function(n){
+          return '<option>' + esc(n) + '</option>'; }).join('') + '</select></div>'
+      + '<div class="field" style="margin:0"><label>' + esc(t('النقاط')) + '</label>'
+      + '<input type="number" id="' + idPrefix + 'BnPts" placeholder="' + esc(t('مثلاً 20 أو -10')) + '"></div>'
+      + '<div class="field" style="margin:0"><label>' + esc(t('السبب')) + '</label>'
+      + '<input id="' + idPrefix + 'BnNote" dir="auto"></div>'
+      + '</div>',
+      btn('➕ إضافة','btn-primary btn-sm',' data-bnadd="' + idPrefix + '"'));
+}
+
+function bonusLogHtml(techs){
+  var rows = bonusList().filter(function(b){ return techs.indexOf(b.tech) > -1; })
+    .sort(function(a,b){ return b.at - a.at; });
+  if (!rows.length) return '';
+  return cardFlush('سجلُّ نقاط الزيادة — ' + nm(rows.length),
+    table(['الفني','النقاط','السبب','بواسطة','الوقت',''],
+      rows.slice(0, 40).map(function(b){
+        return [esc(b.tech),
+                '<span class="' + (b.pts > 0 ? 'num' : 'req') + '">' + (b.pts > 0 ? '+' : '') + nm(b.pts) + '</span>',
+                esc(b.note || '—'), esc(b.by),
+                '<span class="num">' + new Date(b.at).toLocaleDateString('ar-EG') + '</span>',
+                btn('حذف','btn-quiet btn-sm',' data-bndel="' + esc(b.id) + '"')];
+      })));
+}
+
+PAGE.techx = { m:'الفرق', t:'مقابل التارجت', l:'نقاطُ الشهر لكل فنيٍّ — عددًا ووزنًا — مقابل تارجته.',
   body:function(){
-    var Tg = T(), ti = Tg.ins;
-    return card('الشهر الجاري',
-      table(['الفني','زيارة','٪','تركيب','٪','فك','٪','الإجمالي'],
-        scores().list.map(function(e){
-          var x = [e.name, e.survey, e.install, e.dis];
-          return [esc(x[0]), N(x[1]), pct(x[1],Tg.survey), N(x[2]), pct(x[2],ti),
-                  N(x[3]), pct(x[3],Tg.dis), N(x[1]+x[2]+x[3])];
-        })))
-    + '<p class="hint">أخضر من ١٠٠٪ · أصفر من ٧٠٪ · أحمر دونها. والتارجتات الثلاثة تُضبط كلٌّ في صفحته.</p>';
+    var list = scores().list;
+    var names = techNames();
+    return card('الشهر الجاري', techPerfTable(list, false))
+      + '<p class="hint">أخضر ١٠٠٪ فأكثر · أصفر من ٧٠٪ · أحمر دونها. والتارجتُ إجماليُّ زيارةٍ وتركيبٍ وفكٍّ معًا.</p>'
+      + (maySupEng() ? bonusFormHtml(names, 'x') : '')
+      + bonusLogHtml(names);
   }};
 
 PAGE.team = { m:'الفرق', t:'إنتاجية الفريق', l:'الترتيب بالنقاط — مسحًا وتركيبًا.',
@@ -12991,6 +13134,13 @@ var ROLES = {
 var ROLE = 'engineer';
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
 function may(k){ return !!R().can[k]; }
+/* المشرفُ والمهندسُ فقط — لا الفنيُّ ولا قائدُ فريقٍ ميدانيٍّ، رغم أن
+   الثلاثةَ يرثون can.edit من «مشرف» فيجتازون may('edit') سواءً بسواء.
+   نقاطُ الزيادة قرارُ من يشرف لا من يُنفَّذ له. */
+function maySupEng(){
+  var r = STATE.meta.role;
+  return r === 'supervisor' || r === 'engineer';
+}
 /* القدرةُ المعلنةُ تُسأل هنا: كانت `can` تعلن إحدى عشرةَ قدرةً ولا يُسأل منها
    إلا أربع، فسبعٌ إعلانٌ بلا حارس. وكلُّ شاشةٍ ترتبط بقدرتها فيُسأل عنها. */
 var PAGE_CAP = {
@@ -13055,7 +13205,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.81' + '.docx" download>⬇ '
+              +   'V14.82' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15175,6 +15325,16 @@ function onDocClick(e){
   if (e.target.closest('[data-verchk]')){ verCheck(); return; }
   var depa = e.target.closest('[data-depadd]');
   if (depa){ depTechAdd(depa.getAttribute('data-depadd')); return; }
+  var bna = e.target.closest('[data-bnadd]');
+  if (bna){
+    var pfx = bna.getAttribute('data-bnadd');
+    bonusAdd((document.getElementById(pfx + 'BnTech') || {}).value,
+             (document.getElementById(pfx + 'BnPts') || {}).value,
+             (document.getElementById(pfx + 'BnNote') || {}).value);
+    return;
+  }
+  var bnd = e.target.closest('[data-bndel]');
+  if (bnd){ bonusDel(bnd.getAttribute('data-bndel')); return; }
   if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
   var crc = e.target.closest('[data-crewcur]');
   if (crc){
