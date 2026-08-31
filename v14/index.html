@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.79</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.80</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -787,7 +787,22 @@ en:{
  'أنشئ فريقًا فرعيًّا أولًا':'Create a sub-team first',
  'لا موظفَ متاح':'No staff member available',
  'فيه أعضاء — أخرجهم أولًا':'Has members — remove them first',
- 'حُذف الفريق الفرعي':'Sub-team deleted'
+ 'حُذف الفريق الفرعي':'Sub-team deleted',
+ 'لا أعضاءَ في هذا الفريق — أضفهم من «الفرق».':'No members in this team — add them from "Teams".',
+
+ /* حل التركيب وترقيم الطلبات */
+ 'اقتراحُ الحل يحتاج صلاحية تعديل':'Proposing a solution requires edit permission',
+ 'الموقعُ غيرُ موجود':'Site not found',
+ 'امسح النقطةَ أولًا قبل اقتراح حلّها':'Survey the point first before proposing its solution',
+ 'اختر جهازًا واحدًا على الأقل':'Choose at least one device',
+ 'اقتُرح الحل — بانتظار اعتماد المهندس':'Solution proposed — awaiting engineer approval',
+ 'اعتمادُ الحل للمهندس وحده':'Only the engineer approves the solution',
+ 'اعتُمد الحل':'Solution approved',
+ 'رُدّ للمقترِح':'Returned to the proposer',
+ 'كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا':'All points lack an approved solution — approve them from "Install Solution" first',
+ 'بلا حلٍّ معتمد لم تُرسَل':'without an approved solution were not sent',
+ 'بلا حلٍّ معتمد':'without an approved solution',
+ 'لا نقطةَ مختارة':'No point selected'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -860,7 +875,22 @@ ur:{
  'أنشئ فريقًا فرعيًّا أولًا':'پہلے ایک ذیلی ٹیم بنائیں',
  'لا موظفَ متاح':'کوئی ملازم دستیاب نہیں',
  'فيه أعضاء — أخرجهم أولًا':'اس میں ارکان ہیں — پہلے انہیں نکالیں',
- 'حُذف الفريق الفرعي':'ذیلی ٹیم حذف کر دی گئی'
+ 'حُذف الفريق الفرعي':'ذیلی ٹیم حذف کر دی گئی',
+ 'لا أعضاءَ في هذا الفريق — أضفهم من «الفرق».':'اس ٹیم میں کوئی رکن نہیں — انہیں "ٹیمیں" سے شامل کریں۔',
+
+ /* حل التركيب وترقيم الطلبات */
+ 'اقتراحُ الحل يحتاج صلاحية تعديل':'حل تجویز کرنے کے لیے ترمیم کی اجازت درکار ہے',
+ 'الموقعُ غيرُ موجود':'مقام نہیں ملا',
+ 'امسح النقطةَ أولًا قبل اقتراح حلّها':'حل تجویز کرنے سے پہلے پہلے پوائنٹ کا سروے کریں',
+ 'اختر جهازًا واحدًا على الأقل':'کم از کم ایک آلہ منتخب کریں',
+ 'اقتُرح الحل — بانتظار اعتماد المهندس':'حل تجویز کر دیا گیا — انجینئر کی منظوری کا انتظار',
+ 'اعتمادُ الحل للمهندس وحده':'حل کی منظوری صرف انجینئر دیتا ہے',
+ 'اعتُمد الحل':'حل منظور کر دیا گیا',
+ 'رُدّ للمقترِح':'تجویز کنندہ کو واپس کر دیا گیا',
+ 'كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا':'تمام پوائنٹس کا کوئی منظور شدہ حل نہیں — پہلے "تنصیب کا حل" سے منظور کریں',
+ 'بلا حلٍّ معتمد لم تُرسَل':'بغیر منظور شدہ حل کے نہیں بھیجے گئے',
+ 'بلا حلٍّ معتمد':'بغیر منظور شدہ حل کے',
+ 'لا نقطةَ مختارة':'کوئی پوائنٹ منتخب نہیں'
 }
 };
 
@@ -2882,6 +2912,15 @@ var FB = {
         arr.forEach(function(x){ TEAMS.push(x); });
         FB.readCount = (FB.readCount || 0) + sn.size;
       }).catch(function(e){ softErr('سحب الفرق الفرعية', e, 'تعذّر سحبُ الفرق الفرعية — قد تظهر فارغة'); });
+      /* عدّاد ترقيم الطلبات (SR/DR/PR): وثيقةٌ مفردةٌ بحقولٍ رقمية —
+         تُقرأ بنفس الأسلوب الآمن الذي أصلح فرق الأنصبة، لا بمصفوفةٍ تفسدها
+         Firestore حين تتحول كائنًا بمفاتيح رقمية. */
+      FB.db.collection('settings').doc('reqSeq').get().then(function(doc){
+        if (doc && doc.exists){
+          var v = doc.data();
+          ['SR','DR','PR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
+        }
+      }).catch(function(e){ softErr('سحب ترقيم الطلبات', e, 'تعذّر سحبُ آخر رقم طلب — قد يتكرّر الترقيم'); });
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
       return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
         .then(function(sn){
@@ -4747,6 +4786,71 @@ var ASN_PICK = false;    /* لوحُ اختيار نوع الإسناد على �
    والتركيبُ والفكُّ لفريقٍ لأنهما عملُ أيدٍ لا يدٍ واحدة. */
 var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team' };
 
+/* ترقيمُ الطلبات: SR للزيارة، DR للتركيب، PR للفك — رقمٌ بشريٌّ يُذكر في
+   التقارير والمكالمات، منفصلٌ عن معرّف المهمة الداخلي (TK-kind-site) الذي
+   لا يتغيّر ولا يتكرّر. الأنواعُ الأخرى (تهيئة، تجميع، مستودع…) بلا ترقيم —
+   لم يُطلب لها. */
+var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR' };
+var REQSEQ = { SR:0, DR:0, PR:0 };
+function reqNext(kind){
+  var p = REQ_PREFIX[kind];
+  if (!p) return '';
+  REQSEQ[p] = (REQSEQ[p] || 0) + 1;
+  CORE.set('cfg', 'reqSeq', REQSEQ);
+  var n = String(REQSEQ[p]);
+  while (n.length < 4) n = '0' + n;
+  return p + '-' + n;
+}
+
+/* ═══ حلُّ التركيب: الأجهزةُ المقترحة لنقطةٍ قبل طلب تركيبها ═══
+   يُقترَح بعد اعتماد زيارتها (SR)، ويعتمده المهندسُ وحده — ولا يُتاح طلبُ
+   تركيبٍ (DR) لنقطةٍ إلا بعد اعتماد حلِّها. الفكُّ لا يحتاج هذه البوابةَ:
+   ما رُكِّب معروفٌ من STATE.inss[site].parts نفسها فور اختيار النقطة. */
+function solutionOf(site){
+  var r = STATE.inss[site];
+  return (r && r.solution) || null;
+}
+function solutionSave(site, itemsMap){
+  if (!may('edit')){ toast(t('اقتراحُ الحل يحتاج صلاحية تعديل')); return; }
+  var s = siteFind(site);
+  if (!s){ toast(t('الموقعُ غيرُ موجود')); return; }
+  if (!svDone(STATE.recs[site])){ toast(t('امسح النقطةَ أولًا قبل اقتراح حلّها')); return; }
+  var used = {}, n = 0;
+  Object.keys(itemsMap || {}).forEach(function(k){
+    var q = cfgN(itemsMap[k]);
+    if (q > 0){ used[k] = q; n += q; }
+  });
+  if (!n){ toast(t('اختر جهازًا واحدًا على الأقل')); return; }
+  var r = STATE.inss[site] || { id:site };
+  r.solution = { items:used, status:'مقترح', by:STATE.meta.name || 'محمد صفوت', at:Date.now() };
+  CORE.set('inss', site, r);
+  logEvent('اقتراح حل تركيب — ' + site + ' \u00b7 ' + nm(n) + ' جهاز');
+  toast(t('اقتُرح الحل — بانتظار اعتماد المهندس'));
+  render(1);
+}
+function solutionAppr(site, ok){
+  if (!may('users')){ toast(t('اعتمادُ الحل للمهندس وحده')); return; }
+  var r = STATE.inss[site];
+  if (!r || !r.solution) return;
+  if (ok){
+    r.solution.status = 'معتمد';
+    r.solution.apprBy = STATE.meta.name || 'محمد صفوت';
+    r.solution.apprAt = Date.now();
+    logEvent('اعتماد حل تركيب — ' + site);
+    notifPush('اعتماد', 'اعتُمد حلُّ التركيب لنقطة ' + site,
+              { to:r.solution.by || '', site:site, lv:'مهم' });
+  } else {
+    r.solution.status = 'مُعاد';
+    r.solution.why = 'أُعيد للتصحيح';
+    logEvent('ردّ حل تركيب — ' + site);
+    notifPush('ردّ', 'رُدَّ حلُّ تركيب ' + site + ' — راجعه',
+              { to:r.solution.by || '', site:site, lv:'عاجل' });
+  }
+  CORE.set('inss', site, r);
+  toast(ok ? t('اعتُمد الحل') : t('رُدّ للمقترِح'));
+  render(1);
+}
+
 function asnPickHtml(){
   return '<div class="pop" id="asnPick" style="width:min(420px,92vw)">'
     + '<div class="pop-head">'
@@ -4862,6 +4966,12 @@ function asnSheet(){
             + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
             + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
             + (L.pts(x) ? '<div class="num" style="margin:2px 0 0">' + nm(L.pts(x)) + ' ' + esc(t('نقطة')) + '</div>' : '')
+            +   (L.kind === 'dis' && STATE.inss[x.id] && STATE.inss[x.id].parts
+                  ? '<div class="hint" style="margin:2px 0 0;max-width:150px">'
+                    + Object.keys(STATE.inss[x.id].parts).map(function(c){
+                        return esc(itemName(c)) + ' \u00d7' + nm(STATE.inss[x.id].parts[c]);
+                      }).join('، ')
+                    + '</div>' : '')
             +   (a ? '<div class="hint" style="margin:2px 0 0">'
                   + (a.to === curTech() ? '<span class="pill acc">' + esc(t('لديه')) + '</span>'
                                         : esc(t('مُسند')) + ' \u00b7 ' + esc(a.to))
@@ -4900,7 +5010,7 @@ function asnSheet(){
                 + ' ' + tm.members.map(function(m){
                     return esc(m.name) + ' <span class="num">' + nm(m.share) + '٪</span>'; }).join(' · ')
                 + '</p>'
-              : alertBox('warn','لا أعضاءَ في هذا الفريق — أضفهم من «الفرق والأنصبة».');
+              : alertBox('warn','لا أعضاءَ في هذا الفريق — أضفهم من «الفرق».');
           })()
       : '')
     + (ASN_MODE === 'tech'
@@ -4952,7 +5062,19 @@ function asnTeamCommit(){
   var kind  = (document.getElementById('asnKind') || {}).value || LAYER().kind;
   var when  = (document.getElementById('asnWhen') || {}).value || '';
   var ids   = selIds().filter(function(id){ var a = asnOf(id); return !a; });
-  if (!ids.length){ toast(t('حدّد نقاطًا أولًا')); return; }
+  /* طلبُ التركيب (DR) لا يُتاح لنقطةٍ إلا بعد اعتماد حلِّها — فلا يُرسَل
+     فريقٌ بعدَّةٍ لم تُعتمد بعد. */
+  var blockedSol = 0;
+  if (kind === 'install'){
+    var okIds = ids.filter(function(id){ var so = solutionOf(id); return so && so.status === 'معتمد'; });
+    blockedSol = ids.length - okIds.length;
+    ids = okIds;
+  }
+  if (!ids.length){
+    toast(blockedSol ? t('كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا')
+                      : t('حدّد نقاطًا أولًا'));
+    return;
+  }
 
   var tot = teamShare(tm);
   var quota = tm.members.map(function(m){
@@ -4972,7 +5094,7 @@ function asnTeamCommit(){
     mine.forEach(function(id){
       var tid = 'TK-' + kind + '-' + id;
       CORE.set('tasks', tid, {
-        id:tid, site:id, kind:kind, to:m.name, assignedTo:m.name, team:tm.id,
+        id:tid, no:reqNext(kind), site:id, kind:kind, to:m.name, assignedTo:m.name, team:tm.id,
         status:'مطلوب', when:when, by:STATE.meta.name || 'محمد صفوت', at:Date.now()
       });
       made++;
@@ -4982,7 +5104,8 @@ function asnTeamCommit(){
 
   logEvent('إسناد لفريق ' + tm.n + ' — ' + nm(made) + ' نقطة · ' + log.join(' · '));
   selClear(); ASN_OPEN = false; statBump();
-  toast(tm.n + ' \u00b7 ' + nm(made) + ' ' + t('نقطة') + ' \u00b7 ' + log.join(' \u00b7 '));
+  toast(tm.n + ' \u00b7 ' + nm(made) + ' ' + t('نقطة') + ' \u00b7 ' + log.join(' \u00b7 ')
+        + (blockedSol ? ' \u00b7 ' + nm(blockedSol) + ' ' + t('بلا حلٍّ معتمد لم تُرسَل') : ''));
   render(1);
 }
 
@@ -4995,16 +5118,20 @@ function asnCommit(){
 
   var want = selIds();
   var had  = asnOfTech(to, kind);
-  var add = 0, rm = 0, busy = 0;
+  var add = 0, rm = 0, busy = 0, blockedSol = 0;
 
   /* المُضاف */
   want.forEach(function(id){
     if (had.indexOf(id) > -1) return;
     var other = asnOf(id);
     if (other && other.to !== to){ busy++; return; }
+    if (kind === 'install'){
+      var so = solutionOf(id);
+      if (!so || so.status !== 'معتمد'){ blockedSol++; return; }
+    }
     var tid = 'TK-' + kind + '-' + id;
     CORE.set('tasks', tid, {
-      id:tid, site:id, kind:kind, to:to, assignedTo:to,
+      id:tid, no:reqNext(kind), site:id, kind:kind, to:to, assignedTo:to,
       status:'مطلوب', when:when, by:STATE.meta.name || 'محمد صفوت', at:Date.now()
     });
     add++;
@@ -5017,7 +5144,10 @@ function asnCommit(){
     if (tk && tk.to === to && tk.status === 'مطلوب'){ CORE.rm('tasks', tk.id); rm++; }
   });
 
-  if (!add && !rm){ toast(t('لا تغيير')); return; }
+  if (!add && !rm){
+    toast(blockedSol ? t('كلُّ النقاط بلا حلٍّ معتمد — اعتمدها من «حل التركيب» أولًا') : t('لا تغيير'));
+    return;
+  }
   logEvent('إسناد ' + to + ' · +' + nm(add) + (rm ? ' \u2212' + nm(rm) : '')
            + ' \u00b7 ' + t(WO_KINDS[kind].n));
   selClear();
@@ -5026,7 +5156,8 @@ function asnCommit(){
   statBump();
   toast(to + ' \u00b7 ' + (add ? '+' + nm(add) + ' ' : '') + (rm ? '\u2212' + nm(rm) + ' ' : '')
         + '= ' + nm(asnOfTech(to, kind).length) + ' ' + t('نقطة')
-        + (busy ? ' \u00b7 ' + nm(busy) + ' ' + t('مُسندةٌ لغيره') : ''));
+        + (busy ? ' \u00b7 ' + nm(busy) + ' ' + t('مُسندةٌ لغيره') : '')
+        + (blockedSol ? ' \u00b7 ' + nm(blockedSol) + ' ' + t('بلا حلٍّ معتمد') : ''));
   render(1);
 }
 
@@ -5057,10 +5188,11 @@ PAGE.req = { m:'الطلبات والمسح', t:'طلبات الزيارة',
           + '</div>')
       + (rows.length
         ? cardFlush('الطلبات — ' + nm(rows.length),
-            table(['النقطة','النوع','الفني','الموعد','الحالة',''],
+            table(['الرقم','النقطة','النوع','الفني','الموعد','الحالة',''],
               rows.slice(0, 60).map(function(x){
                 var s = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
-                return ['<strong>' + esc(x.site) + '</strong><br>'
+                return ['<span class="num">' + esc(x.no || '—') + '</span>',
+                        '<strong>' + esc(x.site) + '</strong><br>'
                         + '<span class="hint" style="margin:0">' + esc((s && s.name || '').slice(0,32)) + '</span>',
                         k.i + ' ' + esc(t(k.n)), esc(x.to),
                         x.when ? '<span class="num">' + esc(x.when) + '</span>' : '—',
@@ -5698,6 +5830,73 @@ function logEvent(what){
 }
 
 /* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
+/* ── حلُّ التركيب: الأجهزةُ المقترحة قبل طلب التركيب ── */
+PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
+  l:'الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.',
+  body:function(){
+    var all = Object.keys(STATE.inss).map(function(k){ return STATE.inss[k]; })
+      .filter(function(r){ return r && r.solution; });
+    var wait = all.filter(function(r){ return r.solution.status === 'مقترح'; });
+    var done = all.filter(function(r){ return r.solution.status === 'معتمد'; });
+    var surveyed = STATE.sites.filter(function(s){
+      return svDone(STATE.recs[s.id]) && !solutionOf(s.id);
+    });
+
+    return stats([['بانتظار الاعتماد', N(wait.length), wait.length ? 'wrn' : ''],
+                  ['معتمد', N(done.length), 'ok'],
+                  ['ممسوحةٌ بلا حلٍّ بعد', N(surveyed.length)]])
+
+      + (wait.length
+        ? cardFlush('بانتظار قرارك — ' + nm(wait.length),
+            table(['النقطة','الأجهزة المقترحة','المقترِح','الوقت',''],
+              wait.slice(0, 30).map(function(r){
+                var s = siteFind(r.id);
+                return ['<strong>' + esc(r.id) + '</strong><br><span class="hint" style="margin:0">'
+                          + esc(((s && s.name) || '').slice(0,28)) + '</span>',
+                        Object.keys(r.solution.items).map(function(c){
+                          return esc(itemName(c)) + ' \u00d7' + nm(r.solution.items[c]);
+                        }).join('، '),
+                        esc(r.solution.by),
+                        '<span class="num">' + new Date(r.solution.at).toLocaleTimeString('ar-EG',
+                          { hour:'2-digit', minute:'2-digit' }) + '</span>',
+                        '<div class="actions">'
+                        + btn('اعتمد','btn-primary btn-sm',' data-solappr="' + esc(r.id) + '"')
+                        + btn('ردّ','btn-danger btn-sm',' data-solrej="' + esc(r.id) + '"') + '</div>'];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">لا حلولَ بانتظار الاعتماد.</p>'))
+
+      + (may('edit')
+        ? card('اقتراح حلٍّ لنقطة',
+            surveyed.length
+              ? '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
+                + '<select id="solSite">' + surveyed.map(function(s){
+                    return '<option value="' + esc(s.id) + '">' + esc(s.id)
+                      + ' — ' + esc((s.name || '').slice(0,30)) + '</option>';
+                  }).join('') + '</select></div>'
+                + '<div class="grid cols-3" style="margin-top:10px">'
+                + itemsList().map(function(i){
+                    return '<div class="field" style="margin:0"><label>' + esc(i.name) + '</label>'
+                      + '<input type="number" min="0" id="solQ_' + esc(i.code) + '" placeholder="0"></div>';
+                  }).join('')
+                + '</div>'
+              : '<p class="hint" style="margin:0">لا نقاطَ ممسوحةً بلا حلٍّ الآن — امسح نقطةً أولًا من «المسح الميداني».</p>',
+            surveyed.length ? btn('➕ اقترح الحل','btn-primary btn-sm',' data-solgo="1"') : '')
+        : '')
+
+      + '<p class="hint">لا يُتاح طلبُ تركيبٍ (DR) لنقطةٍ إلا بعد اعتماد حلِّها هنا — والفكُّ (PR) لا يحتاج هذه البوابة، فما رُكِّب معروفٌ من سجله فور اختيار النقطة.</p>';
+  }};
+
+function solGo(){
+  var site = (document.getElementById('solSite') || {}).value;
+  if (!site){ toast(t('لا نقطةَ مختارة')); return; }
+  var itemsMap = {};
+  itemsList().forEach(function(i){
+    var e = document.getElementById('solQ_' + i.code);
+    if (e && cfgN(e.value) > 0) itemsMap[i.code] = e.value;
+  });
+  solutionSave(site, itemsMap);
+}
+
 PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي',
   l:'اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.',
   body:function(){
@@ -12661,7 +12860,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.79' + '.docx" download>⬇ '
+              +   'V14.80' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14365,6 +14564,7 @@ var NAV = [
       ['risks','سجل المخاطر'],['chg','ضبط التغيير'],['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
       ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
+      ['solution','حل التركيب'],
       ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي'],
       ['ncr','عدم المطابقة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
@@ -14974,6 +15174,11 @@ function onDocClick(e){
   if (ap){ apprIns(ap.getAttribute('data-appr'), 1); return; }
   var rj = e.target.closest('[data-rej]');
   if (rj){ apprIns(rj.getAttribute('data-rej'), 0); return; }
+  var sap = e.target.closest('[data-solappr]');
+  if (sap){ solutionAppr(sap.getAttribute('data-solappr'), 1); return; }
+  var srj = e.target.closest('[data-solrej]');
+  if (srj){ solutionAppr(srj.getAttribute('data-solrej'), 0); return; }
+  if (e.target.closest('[data-solgo]')){ solGo(); return; }
   if (e.target.closest('[data-pwa]')){ pwaInstall(); return; }
   if (e.target.closest('[data-swclear]')){ swClear(); return; }
 
