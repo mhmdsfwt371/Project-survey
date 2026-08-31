@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.87</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.88</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3895,116 +3895,153 @@ PAGE.myscore = { m:'الميدان', t:'أدائي',
 /* ── تبويبُ كل مرحلة: فريقُها وأعمالُهم ── */
 var STAGE_TAB = 'ins';
 
-PAGE.stages = { m:'الفرق', t:'أداء المراحل',
-  l:'لكلِّ مرحلةٍ فريقُها وأعمالُهم ونقاطُهم.',
+var PERF_VIEW = 'rank';
+
+/* ── الترتيب العام: كلُّ من عمل، برقمه ومرتبته ومستحقّه ── */
+function perfRankTable(){
+  var S = scores();
+  var Tg = T(), target = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
+  var sum = S.list.reduce(function(a,e){ return a + e.total; }, 0);
+  var money = S.list.reduce(function(a,e){ return a + e.money; }, 0);
+
+  return stats([['من عملوا', N(S.n), 'acc'],
+                ['إجمالي الأعمال', N(S.list.reduce(function(a,e){return a+e.acts;},0))],
+                ['إجمالي النقاط', N(Math.round(sum))],
+                ['المستحَق', cfgGet('ph') ? N(Math.round(money)) + ' ' + t('ريال') : '—']])
+
+    + (S.n
+      ? cardFlush('الترتيب العام — ' + nm(S.n),
+          table(['#','الاسم','المرحلة','زيارة','تركيب','فك','زيادة','الإجمالي','من التارجت','متوسط اليوم','المستحَق'],
+            S.list.map(function(e){
+              var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
+              return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
+                      '<strong>' + esc(e.name) + '</strong>',
+                      R.i + ' ' + esc(t(R.n)),
+                      N(e.survey), N(e.install), N(e.dis),
+                      e.pBonus ? ('<span class="' + (e.pBonus > 0 ? 'num' : 'req') + '">'
+                                   + (e.pBonus > 0 ? '+' : '') + nm(Math.round(e.pBonus * 10) / 10) + '</span>') : '—',
+                      '<b>' + nm(Math.round(e.total * 10) / 10) + '</b>',
+                      target ? pct(e.total, target) : '—',
+                      N(e.perDay), cfgGet('ph') ? N(e.money) : '—'];
+            }),
+            ['','<b>' + t('الإجمالي') + '</b>','',
+             N(S.list.reduce(function(a,e){return a+e.survey;},0)),
+             N(S.list.reduce(function(a,e){return a+e.install;},0)),
+             N(S.list.reduce(function(a,e){return a+e.dis;},0)),
+             N(Math.round(S.list.reduce(function(a,e){return a+e.pBonus;},0) * 10) / 10),
+             '<b>' + nm(Math.round(sum)) + '</b>', '', '',
+             cfgGet('ph') ? N(Math.round(money)) : '—']),
+          '<div class="actions">'
+          + btn('⬇ إكسل — التقرير','btn-secondary btn-sm',' data-xls="score"')
+          + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
+          + '</div>')
+      : card('', alertBox('info','لا أعمال مسجّلةً بعد — تظهر هنا فورَ أول مسحٍ أو تركيب.')))
+
+    + card('توزيع النقاط على المراحل',
+        table(['المرحلة','أفراد','أعمال','النقاط','٪'],
+          Object.keys(STAGE_ROLES).map(function(k){
+            var R = STAGE_ROLES[k], L = stageList(k);
+            var p = L.reduce(function(a,e){ return a + e.total; }, 0);
+            return [R.i + ' ' + esc(t(R.n)), N(L.length),
+                    N(L.reduce(function(a,e){ return a + e.acts; }, 0)),
+                    N(Math.round(p)),
+                    sum ? nm(Math.round(p / sum * 100)) + '٪' : '٠٪'];
+          })));
+}
+
+/* ── حسب المرحلة: فريق كل مرحلةٍ على حدة، بتارجتها المستقل ── */
+function perfStageTable(){
+  var R = STAGE_ROLES[STAGE_TAB] || STAGE_ROLES.ins;
+  var L = stageList(STAGE_TAB);
+  var tgt = stageTarget(STAGE_TAB);
+  var sum = L.reduce(function(a,e){ return a + e.total; }, 0);
+  var acts = L.reduce(function(a,e){ return a + e.acts; }, 0);
+
+  return '<div class="chips">' + Object.keys(STAGE_ROLES).map(function(k){
+      var S = STAGE_ROLES[k], n = stageList(k).length;
+      return '<button type="button" class="chip' + (STAGE_TAB===k?' on':'') + '" data-stab="' + k + '">'
+        + S.i + ' ' + esc(t(S.n)) + (n ? ' <span class="num">' + nm(n) + '</span>' : '') + '</button>';
+    }).join('') + '</div>'
+
+    + stats([['أفراد المرحلة', N(L.length), 'acc'],
+             ['أعمالهم', N(acts)],
+             ['نقاطهم', N(Math.round(sum))],
+             ['تارجت المرحلة', tgt ? N(tgt) : '—', tgt ? '' : 'wrn']])
+
+    + card(R.i + ' ' + t(R.n),
+        '<p class="hint" style="margin:0 0 11px">' + esc(t(R.d)) + '</p>'
+        + (tgt ? meter('إنجاز المرحلة من تارجتها', sum, tgt) : '')
+        + (L.length ? '' : '<p class="hint" style="margin:0">'
+            + esc(t('لا أحد في هذه المرحلة بعد — تُضبط مرحلةُ كلِّ فنيٍّ في إسناد الأدوار.')) + '</p>'))
+
+    + (L.length
+      ? cardFlush('الفريق — ' + nm(L.length),
+          table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','عادي','إضافي','النقاط','المستحَق'],
+            L.map(function(e, i){
+              return [nm(i+1), '<strong>' + esc(e.name) + '</strong>',
+                      N(e.survey), N(e.install), N(e.dis), N(e.prep), N(e.asm),
+                      N(e.acts), N(e.regular),
+                      e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
+                      '<b>' + nm(e.total) + '</b>',
+                      cfgGet('ph') ? N(e.money) : '—'];
+            }),
+            ['','<b>' + t('الإجمالي') + '</b>',
+             N(L.reduce(function(a,e){return a+e.survey;},0)),
+             N(L.reduce(function(a,e){return a+e.install;},0)),
+             N(L.reduce(function(a,e){return a+e.dis;},0)),
+             N(L.reduce(function(a,e){return a+e.prep;},0)),
+             N(L.reduce(function(a,e){return a+e.asm;},0)),
+             N(acts),
+             N(Math.round(L.reduce(function(a,e){return a+e.regular;},0))),
+             N(Math.round(L.reduce(function(a,e){return a+e.over;},0)*10)/10),
+             '<b>' + nm(Math.round(sum)) + '</b>',
+             cfgGet('ph') ? N(Math.round(L.reduce(function(a,e){return a+e.money;},0))) : '—']),
+          '<div class="actions">'
+          + btn('⬇ إكسل — هذه المرحلة','btn-secondary btn-sm',' data-xls="stage"')
+          + btn('⬇ إكسل — كل المراحل','btn-secondary btn-sm',' data-xls="stages"')
+          + '</div>')
+      : '');
+}
+
+/* ═══ الأداء: صفحةٌ واحدة بخمسة مستويات — لا أربع شاشاتٍ متفرقة ═══
+   كانت «تقرير الأداء» و«أداء المراحل» و«إنتاجية الفريق» و«مقابل التارجت»
+   أربع شاشاتٍ تقرأ scores() نفسَها بصيغٍ متفاوتة الاكتمال — وإنتاجية
+   الفريق تحديدًا مسودةٌ لم تكتمل: عمودُها «الفريق» يعرض أفرادًا، ولا فكَّ
+   فيها ولا نسبة تارجت. صارت خمس عدساتٍ على نفس الرقم في صفحةٍ واحدة. */
+PAGE.perf = { m:'الفرق', t:'الأداء',
+  l:'أداءُ المشروع على خمسة مستويات: الترتيب العام، بالمرحلة، بالوظيفة، بالفريق، وللمشروع كله.',
   body:function(){
-    var R = STAGE_ROLES[STAGE_TAB] || STAGE_ROLES.ins;
-    var L = stageList(STAGE_TAB);
-    var tgt = stageTarget(STAGE_TAB);
-    var sum = L.reduce(function(a,e){ return a + e.total; }, 0);
-    var acts = L.reduce(function(a,e){ return a + e.acts; }, 0);
+    var views = [['rank','الترتيب العام'], ['stage','حسب المرحلة'],
+                 ['job','حسب الوظيفة'], ['crew','حسب الفريق'], ['project','المشروع كله']];
+    var names = techNames();
 
-    return '<div class="chips">' + Object.keys(STAGE_ROLES).map(function(k){
-        var S = STAGE_ROLES[k], n = stageList(k).length;
-        return '<button type="button" class="chip' + (STAGE_TAB===k?' on':'') + '" data-stab="' + k + '">'
-          + S.i + ' ' + esc(t(S.n)) + (n ? ' <span class="num">' + nm(n) + '</span>' : '') + '</button>';
-      }).join('') + '</div>'
+    var html = '<div class="chips">' + views.map(function(v){
+        return '<button type="button" class="chip' + (PERF_VIEW===v[0]?' on':'') + '" data-perfview="' + v[0] + '">'
+          + esc(t(v[1])) + '</button>';
+      }).join('') + '</div>';
 
-      + stats([['أفراد المرحلة', N(L.length), 'acc'],
-               ['أعمالهم', N(acts)],
-               ['نقاطهم', N(Math.round(sum))],
-               ['تارجت المرحلة', tgt ? N(tgt) : '—', tgt ? '' : 'wrn']])
+    if (PERF_VIEW === 'stage'){
+      html += perfStageTable();
+    } else if (PERF_VIEW === 'job'){
+      var byJob = rollupBy(function(e, tx){ return tx ? tx.job : ''; },
+                            function(id){ var j = jobOf(id); return j ? j.n : 'بلا وظيفة'; });
+      html += card('حسب الوظيفة', rollupTable(byJob, 'الوظيفة'));
+    } else if (PERF_VIEW === 'crew'){
+      var byCrew = rollupBy(function(e, tx){ return tx ? tx.crew : ''; });
+      html += card('حسب الفريق', rollupTable(byCrew, 'الفريق'));
+    } else if (PERF_VIEW === 'project'){
+      var project = rollupBy(function(){ return 'المشروع'; });
+      html += card('المشروع كله', rollupTable(project, 'المشروع'));
+    } else {
+      html += perfRankTable();
+    }
 
-      + card(R.i + ' ' + t(R.n),
-          '<p class="hint" style="margin:0 0 11px">' + esc(t(R.d)) + '</p>'
-          + (tgt ? meter('إنجاز المرحلة من تارجتها', sum, tgt) : '')
-          + (L.length ? '' : '<p class="hint" style="margin:0">'
-              + esc(t('لا أحد في هذه المرحلة بعد — تُضبط مرحلةُ كلِّ فنيٍّ في إسناد الأدوار.')) + '</p>'))
+    html += '<p class="hint">لا رقمَ هنا مكتوبٌ بيد: كلُّه محسوبٌ من أوزان الإعدادات وما سجّله كلُّ فنيٍّ فعلًا، ونقاطُ الزيادة تُضاف بقرار مشرفٍ أو مهندسٍ فقط.</p>';
 
-      + (L.length
-        ? cardFlush('الفريق — ' + nm(L.length),
-            table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','عادي','إضافي','النقاط','المستحَق'],
-              L.map(function(e, i){
-                return [nm(i+1), '<strong>' + esc(e.name) + '</strong>',
-                        N(e.survey), N(e.install), N(e.dis), N(e.prep), N(e.asm),
-                        N(e.acts), N(e.regular),
-                        e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
-                        '<b>' + nm(e.total) + '</b>',
-                        cfgGet('ph') ? N(e.money) : '—'];
-              }),
-              ['','<b>' + t('الإجمالي') + '</b>',
-               N(L.reduce(function(a,e){return a+e.survey;},0)),
-               N(L.reduce(function(a,e){return a+e.install;},0)),
-               N(L.reduce(function(a,e){return a+e.dis;},0)),
-               N(L.reduce(function(a,e){return a+e.prep;},0)),
-               N(L.reduce(function(a,e){return a+e.asm;},0)),
-               N(acts),
-               N(Math.round(L.reduce(function(a,e){return a+e.regular;},0))),
-               N(Math.round(L.reduce(function(a,e){return a+e.over;},0)*10)/10),
-               '<b>' + nm(Math.round(sum)) + '</b>',
-               cfgGet('ph') ? N(Math.round(L.reduce(function(a,e){return a+e.money;},0))) : '—']),
-            '<div class="actions">'
-            + btn('⬇ إكسل — هذه المرحلة','btn-secondary btn-sm',' data-xls="stage"')
-            + btn('⬇ إكسل — كل المراحل','btn-secondary btn-sm',' data-xls="stages"')
-            + '</div>')
-        : '')
+    if (maySupEng()) html += bonusFormHtml(names, 'perf');
+    html += bonusLogHtml(names);
 
-      + '<p class="hint">النقاطُ محسوبةٌ من أوزان الإعدادات — والتركيبُ المعتمدُ وحده يُحتسب.</p>';
-  }};
-
-/* ── تقرير الجميع للإدارة ── */
-PAGE.allscore = { m:'الفرق', t:'تقرير الأداء',
-  l:'كلُّ من عمل — بما عمله ونقاطه ومستحقّه.',
-  body:function(){
-    var S = scores();
-    var sum = S.list.reduce(function(a,e){ return a + e.total; }, 0);
-    var money = S.list.reduce(function(a,e){ return a + e.money; }, 0);
-
-    return stats([['من عملوا', N(S.n), 'acc'],
-                  ['إجمالي الأعمال', N(S.list.reduce(function(a,e){return a+e.acts;},0))],
-                  ['إجمالي النقاط', N(Math.round(sum))],
-                  ['المستحَق', cfgGet('ph') ? N(Math.round(money)) + ' ' + t('ريال') : '—']])
-
-      + (S.n
-        ? cardFlush('الترتيب العام — ' + nm(S.n),
-            table(['#','الاسم','المرحلة','زيارة','تركيب','فك','أعمال','أيام','إضافي','النقاط','متوسط اليوم','المستحَق'],
-              S.list.map(function(e){
-                var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
-                return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
-                        '<strong>' + esc(e.name) + '</strong>',
-                        R.i + ' ' + esc(t(R.n)),
-                        N(e.survey), N(e.install), N(e.dis),
-                        N(e.acts), N(e.nDays),
-                        e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
-                        '<b>' + nm(e.total) + '</b>',
-                        N(e.perDay), cfgGet('ph') ? N(e.money) : '—'];
-              }),
-              ['','<b>' + t('الإجمالي') + '</b>','',
-               N(S.list.reduce(function(a,e){return a+e.survey;},0)),
-               N(S.list.reduce(function(a,e){return a+e.install;},0)),
-               N(S.list.reduce(function(a,e){return a+e.dis;},0)),
-               N(S.list.reduce(function(a,e){return a+e.acts;},0)),
-               '', N(Math.round(S.list.reduce(function(a,e){return a+e.over;},0)*10)/10),
-               '<b>' + nm(Math.round(sum)) + '</b>', '',
-               cfgGet('ph') ? N(Math.round(money)) : '—']),
-            '<div class="actions">'
-            + btn('⬇ إكسل — التقرير','btn-secondary btn-sm',' data-xls="score"')
-            + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
-            + '</div>')
-        : card('', alertBox('info','لا أعمال مسجّلةً بعد — تظهر هنا فورَ أول مسحٍ أو تركيب.')))
-
-      + card('توزيع النقاط على المراحل',
-          table(['المرحلة','أفراد','أعمال','النقاط','٪'],
-            Object.keys(STAGE_ROLES).map(function(k){
-              var R = STAGE_ROLES[k], L = stageList(k);
-              var p = L.reduce(function(a,e){ return a + e.total; }, 0);
-              return [R.i + ' ' + esc(t(R.n)), N(L.length),
-                      N(L.reduce(function(a,e){ return a + e.acts; }, 0)),
-                      N(Math.round(p)),
-                      sum ? nm(Math.round(p / sum * 100)) + '٪' : '٠٪'];
-            })))
-
-      + '<p class="hint">لا رقمَ هنا مكتوبٌ بيد: كلُّه محسوبٌ من أوزان الإعدادات وما سجّله كلُّ فنيٍّ فعلًا.</p>';
+    return html;
   }};
 
 
@@ -7231,13 +7268,13 @@ function chgDecide(i, ok){
 
 var ORG = {
   co: { n:'أفاقي — المنفِّذ', i:'\u{1F3E2}', units:[
-    { id:'exec',  n:'الإدارة العليا',     i:'\u{1F3AF}', needs:'الربحية والمخاطر الكبرى والقرار', pages:['exec','evm','risks','allscore'] },
+    { id:'exec',  n:'الإدارة العليا',     i:'\u{1F3AF}', needs:'الربحية والمخاطر الكبرى والقرار', pages:['exec','evm','risks','perf'] },
     { id:'pmo',   n:'إدارة المشاريع',      i:'\u{1F4CA}', needs:'الجدول والكلفة والموارد',        pages:['evm','risks','chg','miles','pace'] },
     { id:'eng',   n:'الهندسة',            i:'\u{1F393}', needs:'التدقيق والاعتماد والمواصفات',    pages:['qa','ncr','sites','items'] },
     { id:'ops',   n:'العمليات الميدانية',  i:'\u{1F527}', needs:'الإسناد والتنفيذ والمتابعة',      pages:['map','req','assign','crewman'] },
     { id:'qaqc',  n:'الجودة',             i:'\u2713',    needs:'عدم المطابقة والإجراء التصحيحي',  pages:['ncr','qa','ev'] },
     { id:'hse',   n:'السلامة',            i:'\u26D1',    needs:'الحوادث والتصاريح والتوعية',      pages:['hse'] },
-    { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['crewman','stages','allscore','users'] },
+    { id:'hr',    n:'الموارد البشرية',     i:'\u{1F465}', needs:'الفرق والحضور والمستحقات',        pages:['crewman','perf','users'] },
     { id:'fin',   n:'المالية',            i:'\u{1F4B0}', needs:'المستخلصات والدفعات والتدفق',     pages:['ipc','budget','buys','budm'] },
     { id:'proc',  n:'المشتريات',          i:'\u{1F4E6}', needs:'الطلبات والمورّدون والالتزامات',   pages:['buys','sup','invb','wos'] },
     { id:'it',    n:'تقنية المعلومات',     i:'\u{1F5A5}', needs:'الشبكة وصحة الأجهزة والنسخ',      pages:['hb','probe','sys','retain'] }
@@ -7248,7 +7285,7 @@ var ORG = {
     { id:'cfin',  n:'الإدارة المالية',      i:'\u{1F4B3}', needs:'المستخلصات المعتمدة والصرف',      pages:['ipc','budm'] },
     { id:'ctec',  n:'الإدارة الفنية',       i:'\u2699',    needs:'المطابقة للمواصفة والفحص',        pages:['ncr','hb','sites'] },
     { id:'cops',  n:'إدارة التشغيل',        i:'\u{1F504}', needs:'التسليم والضمان والتشغيل',        pages:['hand','dis'] },
-    { id:'caud',  n:'المراجعة الداخلية',    i:'\u{1F50E}', needs:'الأثر والسجلّات والتوثيق',        pages:['ev','allscore'] }
+    { id:'caud',  n:'المراجعة الداخلية',    i:'\u{1F50E}', needs:'الأثر والسجلّات والتوثيق',        pages:['ev','perf'] }
   ]}
 };
 
@@ -8109,15 +8146,10 @@ var HELP = {
     o:'على أوزان الإعدادات — والتركيبُ لا يُحتسب قبل اعتماده.',
     d:'ليست شاشةَ إنجاز — تتغيّر مع كلِّ عملٍ تعمله.' },
 
-  stages: { w:'أداءُ المراحل الست: لكلِّ مرحلةٍ فريقُها وأعمالُهم ونقاطُهم.',
-    f:'من نقاط الفنيين مجموعةً بمراحلهم.',
-    o:'على تارجت كلِّ مرحلةٍ في الإعدادات.',
-    d:'حين تبلغ كلُّ مرحلةٍ تارجتَها.' },
-
-  allscore: { w:'تقريرُ الأداء للإدارة: كلُّ من عمل مرتَّبين بالنقاط بمستحقّهم وإضافيّهم.',
-    f:'من أعمال الجميع مضروبةً في أوزانها.',
-    o:'على سعر النقطة ومعامل الإضافي في الإعدادات.',
-    d:'يُصدَّر شهريًّا للموارد البشرية والمالية.' },
+  perf: { w:'الأداءُ على خمسة مستويات: الترتيبُ العام، وبالمرحلة (لكلِّ مرحلةٍ فريقُها وتارجتها)، وبالوظيفة، وبالفريق، وللمشروع كله.',
+    f:'من نقاط الفنيين — مسحًا وتركيبًا وفكًّا وتهيئةً وتجميعًا — مجموعةً بأربع عدساتٍ فوق نفس الرقم.',
+    o:'على أوزان الإعدادات، وتارجت كلِّ مرحلة، وسعر النقطة ومعامل الإضافي.',
+    d:'حين تبلغ كلُّ مرحلةٍ تارجتَها؛ ويُصدَّر شهريًّا للموارد البشرية والمالية.' },
 
   evm: { w:'خطُّ الأساس والقيمةُ المكتسبة: أين المشروعُ من خطّه المُجمَّد.',
     f:'من خط الأساس المُجمَّد، ومن المنجَز المعتمَد، ومن المنصرف الفعلي.',
@@ -9462,7 +9494,7 @@ var SHEET_NAMES = {
   ipc:'المستخلصات', miles:'المعالم', raci:'المسؤوليات', less:'الدروس',
   sop:'دليل العمليات', reps:'كتالوج التقارير', qa:'التدقيق الهندسي', items:'القطع والأسعار',
   invb:'أرصدة المخزون', invmv:'دفتر الحركة', buys:'المشتريات',
-  techx:'الفنيون مقابل التارجت', wos:'المستودع', crews:'الطواقم',
+  wos:'المستودع', crews:'الطواقم',
   ev:'سجل الأحداث', perms:'الصلاحيات'
 };
 
@@ -11815,37 +11847,6 @@ function bonusLogHtml(techs){
       })));
 }
 
-PAGE.techx = { m:'الفرق', t:'مقابل التارجت',
-  l:'الأداءُ على أربعة مستويات: بالوظيفة، بالفني، بالفريق، وللمشروع كله.',
-  body:function(){
-    var list = scores().list;
-    var names = techNames();
-
-    var byJob = rollupBy(
-      function(e, tx){ return tx ? tx.job : ''; },
-      function(id){ var j = jobOf(id); return j ? j.n : 'بلا وظيفة'; });
-
-    var byCrew = rollupBy(function(e, tx){ return tx ? tx.crew : ''; });
-
-    var project = rollupBy(function(){ return 'المشروع'; });
-
-    return card('١ — حسب الوظيفة', rollupTable(byJob, 'الوظيفة'))
-      + card('٢ — حسب الفني', techPerfTable(list, false))
-      + card('٣ — حسب الفريق', rollupTable(byCrew, 'الفريق'))
-      + card('٤ — المشروع كله', rollupTable(project, 'المشروع'))
-      + '<p class="hint">أخضر ١٠٠٪ فأكثر · أصفر من ٧٠٪ · أحمر دونها. والتارجتُ إجماليُّ زيارةٍ وتركيبٍ وفكٍّ معًا مضروبًا في عدد الأفراد.</p>'
-      + (maySupEng() ? bonusFormHtml(names, 'x') : '')
-      + bonusLogHtml(names);
-  }};
-
-PAGE.team = { m:'الفرق', t:'إنتاجية الفريق', l:'الترتيب بالنقاط — مسحًا وتركيبًا.',
-  body:function(){
-    return card('الترتيب', table(['#','الفريق','مسح','تركيب','الإجمالي'],
-      scores().list.map(function(e){ return [e.name, e.survey, e.install]; })
-        .sort(function(a,b){ return (b[1]+b[2]) - (a[1]+a[2]); })
-        .map(function(x,i){ return [nm(i+1), esc(x[0]), N(x[1]), N(x[2]), N(x[1]+x[2]) ]; })));
-  }};
-
 /* ── صحة الأجهزة ────────────────────────────────── */
 PAGE.hb = { m:'صحة الأجهزة', t:'صحة الأجهزة', l:'الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.',
   body:function(){
@@ -12981,13 +12982,13 @@ var EXP_SECS = [
   ['survey','المسح الميداني',1], ['chal','التحديات الميدانية — إفادة المشرفين',1],
   ['stuck','المتعذّر والمواقع الراكدة — بالعمر',1],
   ['qa','التدقيق الهندسي — اعتماد التركيبات والسيريالات',1],
-  ['team','إنتاجية الفريق',1], ['race','سباق المشرفين',1],
   ['sys','سلامة البيانات — المشرف العام',1], ['ev','سجل الأحداث',1],
   ['invb','المخزون والعُهدة',1], ['invmv','دفتر حركة المخزون',1],
   ['wos','الورشة — طلبات التهيئة والتجميع والتركيب',1],
   ['wday','نقاط اليوم — لكل منفِّذ عبر المراحل',1],
   ['buys','المشتريات — ما اشتُري من السوق المحلي',1],
-  ['techx','الفني مقابل تارجتاته الثلاثة',1],
+  ['score','أداء الفنيين — نقاطهم ومستحقّهم',1],
+  ['stages','أداء المراحل — فريق كل مرحلة',1],
   ['hb','صحة الأجهزة — إنذار مبكر',1], ['dis','الفك بعد الموسم',1],
   ['vers','نسخة التطبيق على الأجهزة',1],
   /* خمسُ أوراقٍ كانت تُبنى ولا يصلها منفذ: تُولَّد في كل تصديرٍ ثم تُرمى.
@@ -13341,7 +13342,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.87' + '.docx" download>⬇ '
+              +   'V14.88' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15021,8 +15022,7 @@ var NAV = [
   { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق', icon:'\u25D4', items:[
       ['crewman','الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
-      ['creps','التقارير الدورية'],['stages','أداء المراحل'],['allscore','تقرير الأداء'],
-      ['techx','مقابل التارجت'],['team','إنتاجية الفريق'],['conote','إشعار الشركات']] },
+      ['creps','التقارير الدورية'],['perf','الأداء'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
@@ -15739,6 +15739,8 @@ function onDocClick(e){
 
   var stb = e.target.closest('[data-stab]');
   if (stb){ STAGE_TAB = stb.getAttribute('data-stab'); render(1); return; }
+  var pfv = e.target.closest('[data-perfview]');
+  if (pfv){ PERF_VIEW = pfv.getAttribute('data-perfview'); render(1); return; }
 
   var la = e.target.closest('[data-lasn]');
   if (la){ FIELD_MODE = la.getAttribute('data-lasn'); selClear(); ASN_OPEN = true;
