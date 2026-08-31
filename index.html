@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.90</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.91</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -4757,15 +4757,15 @@ var LAYERS = {
     n:'المسح', i:'\u{1F50D}', kind:'visit', c:'#E8C34B',
     d:'كلُّ النقاط — تُحدَّد وتُسند زيارةً ميدانية.',
     pass:function(){ return true; },
-    ready:function(x){ return !STATE.recs[x.id]; },
-    done:function(x){ return !!STATE.recs[x.id]; },
+    ready:function(x){ return !svDone(STATE.recs[x.id]); },
+    done:function(x){ return svDone(STATE.recs[x.id]); },
     pts:function(x){ return ptsSurvey(x); },
     empty:'لا نقاط في هذا الترشيح.'
   },
   install: {
     n:'التركيب', i:'\u{1F527}', kind:'install', c:'#3AD6A0',
     d:'ما تمّت زيارتُه الميدانية وحده — يُجدوَل ويُسند تركيبًا.',
-    pass:function(x){ return !!STATE.recs[x.id]; },
+    pass:function(x){ return svDone(STATE.recs[x.id]); },
     ready:function(x){ return !insDone(x.id); },
     done:function(x){ return insDone(x.id); },
     pts:function(x){ return ptsInstall(x); },
@@ -6103,6 +6103,30 @@ PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
     return stats([['بانتظار الاعتماد', N(wait.length), wait.length ? 'wrn' : ''],
                   ['معتمد', N(done.length), 'ok'],
                   ['ممسوحةٌ بلا حلٍّ بعد', N(surveyed.length)]])
+
+      + (function(){
+          /* الإجمالي المعتمد لموسم ١٤٤٨: كم نقطةً من كل نوعٍ خلصت حلَّها،
+             وكم قطعةً من كلِّ صنفٍ ستُركَّب فعليًّا — لا تقديرَ ولا بذرة،
+             مجموعُ ما اعتمده المهندس فعلًا على كل نقطة. */
+          var byType = {}, itemTotals = {};
+          done.forEach(function(r){
+            var s = siteFind(r.id), ty = (s && s.type) || 'أخرى';
+            byType[ty] = (byType[ty] || 0) + 1;
+            Object.keys(r.solution.items).forEach(function(code){
+              itemTotals[code] = (itemTotals[code] || 0) + cfgN(r.solution.items[code]);
+            });
+          });
+          var types = Object.keys(byType), codes = Object.keys(itemTotals);
+          if (!done.length) return '';
+          return card('الإجمالي المعتمد — موسم ١٤٤٨',
+              stats(types.map(function(ty){ return [ty, N(byType[ty]), 'acc']; }))
+              + (codes.length
+                ? table(['الصنف','الكمية الإجمالية المعتمدة'],
+                    codes.sort(function(a,b){ return itemTotals[b] - itemTotals[a]; }).map(function(code){
+                      return [esc(itemName(code)), N(Math.round(itemTotals[code]))];
+                    }))
+                : ''));
+        })()
 
       + (wait.length
         ? cardFlush('بانتظار قرارك — ' + nm(wait.length),
@@ -10652,11 +10676,47 @@ PAGE.pace = { m:'المتابعة', t:'الوتيرة والهدف', l:'المط
       + stats([['المتبقي', N(siteStats().total)], ['المطلوب يوميًّا','—'], ['المنجز أمس','٠'], ['الانتهاء المتوقع','—']]);
   }};
 
-PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما جُدول وما نُفّذ وما تعذّر — بحالته وفريقه.',
+PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما جُدول وما نُفّذ وما تعذّر — بحالته ونوعه.',
   body:function(){
-    return stats([['لم يبدأ', N(siteStats().total)], ['مجدول','٠','wrn'], ['مُركّب','٠','ok'], ['متعذّر','٠','bad']])
-      + card('دورة التركيب', flow(['لم يبدأ','مجدول','قيد التركيب','مُركّب'],0)
-        + '<p class="hint">النقطة لا تدخل الجدولة إلا بعد مسحها، ولا تُوسم مُركّبةً إلا باعتماد قطعها.</p>');
+    var tot = { notStarted:0, blocked:0, scheduled:0, installed:0 };
+    var byType = Object.create(null);
+
+    STATE.sites.forEach(function(x){
+      var ty = x.type || 'أخرى';
+      if (!byType[ty]) byType[ty] = { notStarted:0, blocked:0, scheduled:0, installed:0, total:0 };
+      byType[ty].total++;
+      var r = STATE.recs[x.id];
+      var ins = STATE.inss[x.id];
+      if (ins && ins.status === 'مُركّب' && ins.approved){
+        tot.installed++; byType[ty].installed++; return;
+      }
+      if (!svDone(r)){
+        if (r){ tot.blocked++; byType[ty].blocked++; }
+        else { tot.notStarted++; byType[ty].notStarted++; }
+        return;
+      }
+      /* مُسحت بنجاح ولم تُركَّب بعد — سواءٌ جُدولت لفريقٍ أو لم تُجدوَل بعد،
+         فكلتاهما «جاهزةٌ أو مجدولة» من منظور المتابعة الإدارية. */
+      tot.scheduled++; byType[ty].scheduled++;
+    });
+
+    return stats([['لم يُزَر', N(tot.notStarted)],
+                  ['متعذّر', N(tot.blocked), tot.blocked ? 'bad' : 'ok'],
+                  ['مُسح — جاهزٌ أو مجدول', N(tot.scheduled), 'wrn'],
+                  ['مُركّب معتمد', N(tot.installed), 'ok']])
+
+      + card('حسب نوع النقطة — كم خلص فعليًّا',
+          table(['النوع','لم يُزَر','متعذّر','جاهز/مجدول','مُركّب','الإجمالي'],
+            Object.keys(byType).map(function(ty){
+              var b = byType[ty];
+              return [esc(ty), N(b.notStarted), N(b.blocked), N(b.scheduled),
+                      '<b>' + nm(b.installed) + '</b>', N(b.total)];
+            }),
+            ['<b>' + t('الإجمالي') + '</b>', N(tot.notStarted), N(tot.blocked), N(tot.scheduled),
+             '<b>' + nm(tot.installed) + '</b>', N(STATE.sites.length)]))
+
+      + card('دورة التركيب', flow(['لم يبدأ','مسح','جدولة','مُركّب'], 0)
+        + '<p class="hint">النقطة لا تدخل الجدولة إلا بعد مسحها بنجاح، ولا تُوسم مُركّبةً إلا باعتماد قطعها في «التدقيق الهندسي».</p>');
   }};
 
 PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.',
@@ -13622,7 +13682,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.90' + '.docx" download>⬇ '
+              +   'V14.91' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
