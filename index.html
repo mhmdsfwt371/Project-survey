@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.93</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.94</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3454,7 +3454,16 @@ function zoneOf(z, name){
   return 'منى';
 }
 
-/* فكُّ الصفوف إلى كائناتٍ يقرؤها العرض */
+/* ═══ منطقةُ الصنف من نوع الموقع — مسطرةٌ واحدةٌ لا ثلاث ═══
+   الكتالوجُ منطقتان فقط: `camp` و`cor`. وكان كلُّ موضعٍ يقرّر بنفسه
+   بشرطٍ مكرَّر: «إن كان ممرًّا فcor وإلا camp» — فوقعت مئتان وخمسُ نقاطٍ
+   (كاميرا ومحطةُ قطارٍ وبوابةُ مسجدٍ ودورُ جمرات) في خانة «مخيم» بلا
+   قصد: تُسعَّر بوزن المخيم، ويُعرَض عليها قطعُ المخيمات في نموذج التركيب.
+   والحقيقةُ الميدانية أن جميعها نقاطُ عبورٍ مكشوفةٌ على إطارٍ معدني —
+   أقربُ إلى الممر منها إلى المخيم بكلِّ مقياس. */
+function siteZone(x){ return (x && x.type === 'مخيم') ? 'camp' : 'cor'; }
+
+
 function siteRow(r, camp){
   return {
     id:r[0], name:r[1],
@@ -4856,6 +4865,13 @@ function catLabel(x){
   var d = CAT_DEF[x.type];
   return d ? d.l : x.type;
 }
+/* الاسمُ الوصفيُّ بأيقونته لنوعٍ خام: «محطة» تُقرأ «\u{1F686} محطات القطار».
+   التقاريرُ كانت تعرض النوعَ الخام فيقرأ الناظرُ «بوابة» ولا يعرف أنها
+   مسجد نمرة، و«جسر» ولا يعرف أنها الجمرات. */
+function typeLabel(ty){
+  var d = CAT_DEF[ty];
+  return d ? (d.i + ' ' + t(d.l)) : (ty || '\u2014');
+}
 
 function ptsSurvey(x){
   var v = cfgGet('w', x.zone + '|' + catLabel(x));
@@ -4873,7 +4889,7 @@ function ptsInstall(x){
     byParts += cfgN(ins.parts[k]) * itPts(k);
   });
   if (byParts) return byParts;
-  return x.type === 'ممر' ? cfgGet('insCor') : cfgGet('insCamp');
+  return siteZone(x) === 'cor' ? cfgGet('insCor') : cfgGet('insCamp');
 }
 
 function ptsDis(x){
@@ -5755,7 +5771,9 @@ function svTxt(key, label, hint){
 
 function svExtra(s){
   var isCamp = s.type === 'مخيم';
-  var isWide = s.type === 'ممر' || s.type === 'جسر';
+  /* كلُّ ما يعبره الحاجُّ مشيًا تحت إطارٍ مكشوف: ممرٌّ وجسرٌ ومحطةُ قطارٍ
+     وبوابةُ مسجد — تُسأل عن العرض والارتفاع، لا عن عدد الخيام. */
+  var isWide = s.type === 'ممر' || s.type === 'جسر' || s.type === 'محطة' || s.type === 'بوابة';
   var isJam  = s.type === 'جسر';
   var isCam  = s.type === 'كاميرا';
   var reuse  = /إعادة تركيب/.test(s.work || '');
@@ -5940,7 +5958,7 @@ PAGE.insForm = { m:'الميدان', t:'نموذج التركيب',
   body:function(){
     var s = formSite();
     if (!s) return alertBox('warn','لا مواقع محمّلة.');
-    var zone = s.type === 'ممر' ? 'cor' : 'camp';
+    var zone = siteZone(s);
     var parts = itemsList().filter(function(i){ return i.z === zone && itPts(i.code) > 0; });
     if (!parts.length) parts = itemsList().filter(function(i){ return i.z === zone; }).slice(0, 8);
     var rec = STATE.recs[s.id];
@@ -6189,7 +6207,7 @@ PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
           var types = Object.keys(byType), codes = Object.keys(itemTotals);
           if (!done.length) return '';
           return card('الإجمالي المعتمد — موسم ١٤٤٨',
-              stats(types.map(function(ty){ return [ty, N(byType[ty]), 'acc']; }))
+              stats(types.map(function(ty){ return [typeLabel(ty), N(byType[ty]), 'acc']; }))
               + (codes.length
                 ? table(['الصنف','الكمية الإجمالية المعتمدة'],
                     codes.sort(function(a,b){ return itemTotals[b] - itemTotals[a]; }).map(function(code){
@@ -9829,7 +9847,7 @@ function impValidate(kind, rows){
       else if (!siteFind(String(r[0]).trim())) why = 'معرّف غير موجود';
     } else if (kind === 'items'){
       var z = String(r[0]||'').trim();
-      if (z !== 'مخيم' && z !== 'ممر') why = 'المنطقة إما مخيم أو ممر';
+      if (z !== 'مخيم' && z !== 'ممر') why = 'المنطقة إما مخيم أو ممر';   /* منطقتا الكتالوج لا أنواعُ المواقع */
       else if (!r[1]) why = 'بلا اسم';
     } else if (kind === 'buys'){
       if (DATA.buyCats.indexOf(String(r[2]||'').trim()) < 0) why = 'فئة غير معتمدة';
@@ -10780,7 +10798,7 @@ PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما
           table(['النوع','لم يُزَر','متعذّر','جاهز/مجدول','مُركّب','الإجمالي'],
             Object.keys(byType).map(function(ty){
               var b = byType[ty];
-              return [esc(ty), N(b.notStarted), N(b.blocked), N(b.scheduled),
+              return [typeLabel(ty), N(b.notStarted), N(b.blocked), N(b.scheduled),
                       '<b>' + nm(b.installed) + '</b>', N(b.total)];
             }),
             ['<b>' + t('الإجمالي') + '</b>', N(tot.notStarted), N(tot.blocked), N(tot.scheduled),
@@ -10889,7 +10907,7 @@ PAGE.chalm = { m:'المتابعة', t:'التحديات', l:'أين هي وما
                 var days = Math.floor((Date.now() - x.at) / 86400000);
                 return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
-                        esc((x.site && x.site.type) || '—'),
+                        typeLabel(x.site && x.site.type),
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
                         days > 0 ? (nm(days) + ' ' + t('يوم')) : t('اليوم'),
                         esc(x.by || '—')];
@@ -13878,7 +13896,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.93' + '.docx" download>⬇ '
+              +   'V14.94' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
