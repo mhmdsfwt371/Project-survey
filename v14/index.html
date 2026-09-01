@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.94</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.95</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -887,7 +887,9 @@ en:{
  'حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله':'The solution for this point is already approved — ask the engineer to revise it',
  'اعتمادُ التركيب للمهندس وحده':'Only the engineer approves an installation',
  'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'This point is already installed and approved — it cannot be sent back to survey',
- 'المتبقّي من الطلب':'Remaining on the request'
+ 'المتبقّي من الطلب':'Remaining on the request',
+ 'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'Appears here after the first issue from the "Inventory Ledger".',
+ 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'Appears here as soon as your supervisor assigns you points from "Team Distribution".'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -1058,7 +1060,9 @@ ur:{
  'حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله':'اس پوائنٹ کا حل پہلے ہی منظور ہے — اسے تبدیل کرنے کے لیے انجینئر سے رجوع کریں',
  'اعتمادُ التركيب للمهندس وحده':'تنصیب کی منظوری صرف انجینئر دیتا ہے',
  'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'یہ پوائنٹ پہلے ہی نصب اور منظور شدہ ہے — اسے سروے میں واپس نہیں بھیجا جا سکتا',
- 'المتبقّي من الطلب':'درخواست میں باقی'
+ 'المتبقّي من الطلب':'درخواست میں باقی',
+ 'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'"انوینٹری لیجر" سے پہلے اجرا کے بعد یہاں ظاہر ہوتا ہے۔',
+ 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'جیسے ہی آپ کا سپروائزر "ٹیم کی تقسیم" سے آپ کو پوائنٹس تفویض کرے گا، یہاں ظاہر ہوگا۔'
 }
 };
 
@@ -5125,6 +5129,11 @@ var ASN_PICK = false;    /* لوحُ اختيار نوع الإسناد على �
 /* لكلِّ نوعٍ وجهتُه الطبيعية: الزيارةُ لفنيٍّ يمشي وحده،
    والتركيبُ والفكُّ لفريقٍ لأنهما عملُ أيدٍ لا يدٍ واحدة. */
 var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team' };
+/* اسمُ نوع المهمة بالعربية وأيقونته — يُشتقّ من LAYERS فلا يُكتب مرتين */
+function kindLabel(kind){
+  var k = Object.keys(LAYERS).filter(function(n){ return LAYERS[n].kind === kind; })[0];
+  return k ? (LAYERS[k].i + ' ' + t(LAYERS[k].n)) : (kind || '\u2014');
+}
 
 /* ترقيمُ الطلبات: SR للزيارة، DR للتركيب، PR للفك — رقمٌ بشريٌّ يُذكر في
    التقارير والمكالمات، منفصلٌ عن معرّف المهمة الداخلي (TK-kind-site) الذي
@@ -11656,12 +11665,55 @@ PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="invmv"') : '');
   }};
 
-PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة', l:'ما في يد كل منفِّذ الآن.',
+/* عُهدةُ كلِّ منفِّذ: صرفٌ إليه ناقصَ ما استُهلك أو أُرجع أو شُطب — بنفس
+   معادلة stockBalance لكن مقسومةً بالاسم لا مجموعةً بالصنف. كان الجدولُ
+   صفًّا واحدًا مكتوبًا بيد («فريق ١ · راوتر ×٣») يُعرَض ولو خلت الخزائن. */
+function custodyByWho(){
+  var by = {};
+  function row(who){
+    if (!by[who]) by[who] = { who:who, items:{}, total:0 };
+    return by[who];
+  }
+  movesList().forEach(function(m){
+    var who = m.by || '—', q = cfgN(m.qty), it = m.item || '—';
+    if (!q) return;
+    var d = 0;
+    if (m.kind === 'صرف') d = q;
+    else if (m.kind === 'استهلاك' || m.kind === 'إرجاع' || m.kind === 'شطب'
+             || m.kind === 'إرجاع سليم' || m.kind === 'إرجاع تالف') d = -q;
+    else return;
+    var r = row(who);
+    r.items[it] = (r.items[it] || 0) + d;
+    r.total += d;
+  });
+  return Object.keys(by).map(function(k){ return by[k]; })
+    .filter(function(r){ return r.total > 0; })
+    .sort(function(a,b){ return b.total - a.total; });
+}
+
+PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة', l:'ما في يد كل منفِّذ الآن — من دفتر الحركة.',
   body:function(){
-    return card('العُهدة حسب المنفِّذ', table(['المنفِّذ','أصناف','قطع','التفصيل'], [
-      ['فريق ١','<span class="num">٤</span>','<span class="num">٢٦</span>',
-       '<span class="hint" style="margin:0">راوتر ×٣ · قارئ ×٣ · كابل ×١٦ · بوكس ×٤</span>']
-    ]));
+    var L = custodyByWho();
+    var tot = L.reduce(function(a,r){ return a + r.total; }, 0);
+
+    return stats([['من بيدهم عُهدة', N(L.length), L.length ? 'acc' : ''],
+                  ['قطعٌ في العُهدة', N(tot)]])
+
+      + (L.length
+        ? cardFlush('العُهدة حسب المنفِّذ — ' + nm(L.length),
+            table(['المنفِّذ','أصناف','قطع','التفصيل'],
+              L.map(function(r){
+                var ks = Object.keys(r.items).filter(function(k){ return r.items[k] > 0; });
+                return ['<strong>' + esc(r.who) + '</strong>', N(ks.length), N(r.total),
+                        '<span class="hint" style="margin:0">'
+                          + ks.map(function(k){ return esc(itemName(k)) + ' \u00d7' + nm(r.items[k]); }).join(' \u00b7 ')
+                          + '</span>'];
+              })))
+        : card('لا عُهدةَ مصروفةً الآن',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».')) + '</p>'))
+
+      + '<p class="hint">العُهدةُ صرفٌ ناقصَ ما استُهلك أو أُرجع أو شُطب — لا رقمَ يُكتب بيد.</p>';
   }};
 
 /* ── المال ──────────────────────────────────────── */
@@ -13855,16 +13907,51 @@ function seesPage(id){
 }
 
 /* «جدولي» — ما أُسند لي وحدي، بلا أرقام زملائي */
-PAGE.mine = { m:'الميدان', t:'جدولي', l:'ما أُسند إليك اليوم — وترتيبك بلا أرقام زملائك.',
+PAGE.mine = { m:'الميدان', t:'جدولي', l:'ما أُسند إليك — وترتيبك بلا أرقام زملائك.',
   body:function(){
-    return stats([['مُسند إليّ','٠'], ['أنجزتُ اليوم','٠','ok'],
-                  ['نقاطي هذا الشهر','٠','acc'], ['ترتيبي','—']])
-      + card('مهامي اليوم', '<p class="hint">لا مهام مسندة اليوم.</p>',
-          btn('⬇ '+t('تصدير جدولي'),'btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج نظامَ إسنادِ مهامَ فرديةً — غيرُ مبنيٍّ بعد.')) + '"'))
+    /* كانت أصفارًا مكتوبةً وزرَّ تصديرٍ معطَّلًا بحجّة «نظامُ الإسناد غيرُ
+       مبنيٍّ بعد» — وقد بُني (STATE.tasks وasnOfTech). فصارت تقرأ. */
+    var me = STATE.meta.name || '';
+    var mine = [];
+    Object.keys(STATE.tasks).forEach(function(k){
+      var x = STATE.tasks[k];
+      if (x.to === me && x.status !== 'معتمد') mine.push(x);
+    });
+    mine.sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
+
+    var e = scoreOf(me);
+    var Tg = T(), target = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
+    var day = new Date().toISOString().slice(0, 10);
+    var doneToday = (e.days && e.days[day]) || 0;
+
+    return stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
+                  ['أنجزتُ اليوم', N(doneToday), 'ok'],
+                  ['نقاطي هذا الشهر', N(Math.round(e.total)), 'acc'],
+                  ['ترتيبي', e.rank ? nm(e.rank) : '—']])
+
+      + (mine.length
+        ? cardFlush('المُسند إليّ — ' + nm(mine.length),
+            table(['الرقم','النوع','النقطة','الحالة'],
+              mine.slice(0, 100).map(function(x){
+                var st = siteFind(x.site);
+                return ['<span class="num">' + esc(x.no || '—') + '</span>',
+                        pill(kindLabel(x.kind), 'acc'),
+                        '<strong>' + esc(x.site) + '</strong>'
+                          + (st ? '<br><span class="hint" style="margin:0">'
+                              + esc((st.name || '').slice(0, 28)) + '</span>' : ''),
+                        pill(x.status || 'مُسند', 'wrn')];
+              })))
+        : card('لا مهامَ مسنَدةً إليك الآن',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».')) + '</p>'))
+
       + card('شغلي وترتيبي',
           table(['البند','قيمتي'], [
-            ['نقاط المسح','٠'], ['نقاط التركيب','٠'],
-            ['ترتيبي بين الفرق','—'], ['نسبتي من تارجتي', pct(0,90)]
+            ['نقاط المسح', N(Math.round(e.pSurvey))],
+            ['نقاط التركيب', N(Math.round(e.pInstall))],
+            ['نقاط الفك', N(Math.round(e.pDis))],
+            ['ترتيبي', e.rank ? nm(e.rank) : '—'],
+            ['نسبتي من تارجتي', target ? pct(e.total, target) : '—']
           ]))
       + '<p class="hint">ترتيبك يظهر بلا كشف أرقام زملائك — المقارنة تحفيزٌ لا مساءلةٌ علنية.</p>';
   }};
@@ -13896,7 +13983,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.94' + '.docx" download>⬇ '
+              +   'V14.95' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
