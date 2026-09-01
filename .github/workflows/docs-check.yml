@@ -40,6 +40,8 @@ jobs:
         run: node scripts/audit-zero.mjs
       - name: جرد الصفحات — لا شاشة ميتة ولا معزولة
         run: node scripts/audit-pages.mjs
+      - name: جرد اللغة — لا حرف عربي يبقى بلا قرار
+        run: node scripts/audit-lang.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

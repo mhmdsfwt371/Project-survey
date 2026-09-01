@@ -652,20 +652,20 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <div class="brand sidebar-head">
       <div class="brand-mark">AFAQY</div>
       <div class="brand-name" id="brandName"></div>
-      <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة">✕</button>
+      <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة" data-i18n-aria="إغلاق القائمة">✕</button>
     </div>
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
       
       <div class="who">محمد صفوت</div>
       <div class="foot-row">
-        <select id="langSel" aria-label="اللغة">
+        <select id="langSel" aria-label="اللغة" data-i18n-aria="اللغة">
           <option value="ar">العربية</option>
           <option value="en">English</option>
           <option value="ur">اردو</option>
         </select>
         <button type="button" class="btn btn-secondary btn-sm" id="themeBtn"
-                aria-label="المظهر" style="min-width:44px">☾</button>
+                aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
       </div>
       <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
@@ -673,24 +673,24 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 
   <main class="shell">
     <header class="topbar">
-      <button class="burger" type="button" data-nav aria-label="القائمة"><span></span></button>
+      <button class="burger" type="button" data-nav aria-label="القائمة" data-i18n-aria="القائمة"><span></span></button>
       <button type="button" class="tb-back" id="backBtn" data-back="1"
-              aria-label="رجوع" title="رجوع" hidden>←</button>
+              aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.96</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.97</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
           <button type="button" class="tb-btn" id="langTop" data-langmenu="1"
-                  aria-label="اللغة" aria-haspopup="listbox" aria-expanded="false" title="اللغة">ع</button>
+                  aria-label="اللغة" aria-haspopup="listbox" aria-expanded="false" title="اللغة" data-i18n-aria="اللغة" data-i18n-title="اللغة">ع</button>
           <div class="lang-menu" id="langMenu" role="listbox" hidden></div>
         </div>
         <button type="button" class="tb-btn tb-install" id="pwaBtn" data-pwa="1"
-              aria-label="تثبيت التطبيق" title="تثبيت التطبيق" hidden>⬇</button>
+              aria-label="تثبيت التطبيق" title="تثبيت التطبيق" data-i18n-aria="تثبيت التطبيق" data-i18n-title="تثبيت التطبيق" hidden>⬇</button>
         <button type="button" class="tb-btn" id="assistBtn" data-assist="1"
-              aria-label="المساعد" title="المساعد">🧭</button>
-      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر">☾</button>
+              aria-label="المساعد" title="المساعد" data-i18n-aria="المساعد" data-i18n-title="المساعد">🧭</button>
+      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر" data-i18n-aria="المظهر" data-i18n-title="المظهر">☾</button>
       </div>
     </header>
     <div class="mapwrap" id="mapWrap" hidden>
@@ -890,7 +890,11 @@ en:{
  'المتبقّي من الطلب':'Remaining on the request',
  'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'Appears here after the first issue from the "Inventory Ledger".',
  'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'Appears here as soon as your supervisor assigns you points from "Team Distribution".',
- 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'Two hundred shown — the rest stay queued in full; nothing is dropped.'
+ 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'Two hundred shown — the rest stay queued in full; nothing is dropped.',
+ 'إغلاق القائمة':'Close menu',
+ 'اضغط لفحص التحديثات':'Tap to check for updates',
+ 'فحص التحديثات':'Check for updates',
+ 'تثبيت التطبيق':'Install app'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -1064,7 +1068,11 @@ ur:{
  'المتبقّي من الطلب':'درخواست میں باقی',
  'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'"انوینٹری لیجر" سے پہلے اجرا کے بعد یہاں ظاہر ہوتا ہے۔',
  'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'جیسے ہی آپ کا سپروائزر "ٹیم کی تقسیم" سے آپ کو پوائنٹس تفویض کرے گا، یہاں ظاہر ہوگا۔',
- 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'دو سو دکھائے گئے — باقی مکمل قطار میں ہیں، کچھ ضائع نہیں ہوتا۔'
+ 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'دو سو دکھائے گئے — باقی مکمل قطار میں ہیں، کچھ ضائع نہیں ہوتا۔',
+ 'إغلاق القائمة':'مینو بند کریں',
+ 'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
+ 'فحص التحديثات':'اپ ڈیٹس چیک کریں',
+ 'تثبيت التطبيق':'ایپ انسٹال کریں'
 }
 };
 
@@ -1086,6 +1094,23 @@ function nm(v){
   return Number(v).toLocaleString('en-US');
 }
 
+/* الهيكلُ الثابت — الشريطُ العلويُّ والقائمة — يُرسَم مرةً في HTML ولا
+   يمرُّ بـrender()، فبقي عربيًّا عند تبديل اللغة: زرُّ «رجوع» وaria «القائمة»
+   و«اضغط لفحص التحديثات». يُترجَم الآن بوسمٍ تعريفيٍّ يُقرأ لا بقائمةٍ
+   تُحفَظ — فكلُّ عنصرٍ جديدٍ يُوسَم يُترجَم بلا تعديل هنا، وحارسُ اللغة
+   يمسك ما نُسي وسمُه. */
+function shellLang(){
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+  document.querySelectorAll('[data-i18n-title]').forEach(function(el){
+    el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function(el){
+    el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+  });
+}
+
 function setLang(l){
   if (!I18N[l]) return;
   LANG = l;
@@ -1094,6 +1119,7 @@ function setLang(l){
   document.body.setAttribute('data-lang', l);
   try{ localStorage.setItem('nsk14.lang', l); }catch(e){}
   render();
+  shellLang();
   var lt = document.getElementById('langTop');
   if (lt) lt.textContent = { ar:'ع', en:'EN', ur:'اُر' }[l] || 'ع';
 
@@ -6664,7 +6690,7 @@ PAGE.newsite = { m:'الميدان', t:'تسجيل موقع جديد',
           '<div class="field"><label>' + esc(t('السبب')) + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
           + NS_REASONS.map(function(r){
-              return '<option' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
+              return '<option value="' + esc(r) + '"' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('شرح مختصر')) + '</label>'
           + '<textarea data-ns="why" rows="2" placeholder="'
@@ -7943,7 +7969,7 @@ PAGE.less = { m:'النظام', t:'سجل الدروس',
             '<div class="grid cols-3">'
             + '<div class="field"><label>' + esc(t('المرحلة')) + '</label><select id="lsP">'
             +   ['التخطيط','المسح','التهيئة','التجميع','التركيب','الفك','الإغلاق']
-                 .map(function(p){ return '<option>' + esc(t(p)) + '</option>'; }).join('')
+                 .map(function(p){ return '<option value="' + esc(p) + '">' + esc(t(p)) + '</option>'; }).join('')
             +   '</select></div>'
             + '<div class="field"><label>' + esc(t('ما وقع')) + ' <span class="req">*</span></label>'
             +   '<input id="lsW" dir="auto"></div>'
@@ -11690,7 +11716,7 @@ PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'
       ? card('تسجيل حركة',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('الحركة')) + '</label><select id="mvKind">'
-          +   MOVE_KINDS.map(function(k){ return '<option>' + esc(t(k)) + '</option>'; }).join('')
+          +   MOVE_KINDS.map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('الصنف')) + '</label><select id="mvItem">'
           +   '<option value="">— ' + esc(t('اختر')) + ' —</option>'
@@ -12736,7 +12762,7 @@ PAGE.ships = { m:'الورشة والمخزون', t:'الشحنات والتور
                           '<input value="' + esc(x.sup || '') + '" data-shs="' + esc(x.id) + '" dir="auto">',
                           '<select data-shst="' + esc(x.id) + '">'
                             + SHIP_ST.map(function(v){
-                                return '<option' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>';
+                                return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>';
                               }).join('') + '</select>',
                           '<input type="date" value="' + esc(x.sent || '') + '" data-shsn="' + esc(x.id) + '">',
                           '<input type="date" value="' + esc(x.eta || '') + '" data-sheta="' + esc(x.id) + '">',
@@ -13051,7 +13077,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
             + '<div class="field"><label>' + esc(t('انتهاء الرخصة')) + '</label><input id="vhLicExp" type="date"></div>'
             + '<div class="field"><label>' + esc(t('انتهاء التأمين')) + '</label><input id="vhInsExp" type="date"></div>'
             + '<div class="field"><label>' + esc(t('الملكية')) + '</label><select id="vhOwn">'
-            +   VEH_OWN.map(function(o){ return '<option>' + esc(t(o)) + '</option>'; }).join('') + '</select></div>'
+            +   VEH_OWN.map(function(o){ return '<option value="' + esc(o) + '">' + esc(t(o)) + '</option>'; }).join('') + '</select></div>'
             + '<div class="field"><label>' + esc(t('التكلفة الشهرية')) + '</label><input id="vhCost" type="number" min="0"></div>'
             + '<div class="field"><label>' + esc(t('من تاريخ')) + '</label><input id="vhStart" type="date" value="' + esc(todayISO()) + '"></div>'
             + '</div>',
@@ -13571,7 +13597,7 @@ PAGE.ev = { m:'النظام', t:'سجل الأحداث',
         + '<div class="field"><label>' + esc(t('نوع الحدث')) + '</label>'
         + '<select data-evf="kind"><option value="">— ' + esc(t('الكل')) + ' —</option>'
         + Object.keys(kinds).sort().map(function(k){
-            return '<option' + (EVF.kind===k?' selected':'') + '>' + esc(t(k)) + '</option>'; }).join('')
+            return '<option value="' + esc(k) + '"' + (EVF.kind===k?' selected':'') + '>' + esc(t(k)) + '</option>'; }).join('')
         + '</select></div>'
         + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
         + '<select data-evf="by"><option value="">— ' + esc(t('الكل')) + ' —</option>'
@@ -13704,7 +13730,7 @@ function expHtml(){
     +   '<option value="pdf">'+esc(t('PDF — بالرسوم البيانية'))+'</option>'
     +   '<option value="both">'+esc(t('الاثنان معًا'))+'</option></select></div>'
     +   '<div class="field" style="margin:0"><label>'+esc(t('الرسوم البيانية'))+'</label>'
-    +   '<select><option>'+esc(t('مضمّنة'))+'</option><option>'+esc(t('بدونها'))+'</option></select></div>'
+    +   '<select><option value="مضمّنة">'+esc(t('مضمّنة'))+'</option><option value="بدونها">'+esc(t('بدونها'))+'</option></select></div>'
     + '</div>'
     + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
     +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div></div>'
@@ -14042,7 +14068,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.96' + '.docx" download>⬇ '
+              +   'V14.97' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14415,8 +14441,8 @@ PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّ
           + '<div class="field"><label>'+esc(t('من تاريخ'))+'</label><input type="date"></div>'
           + '<div class="field"><label>'+esc(t('إلى تاريخ'))+'</label><input type="date"></div>'
           + '<div class="field"><label>'+esc(t('المشعر'))+'</label>'
-          + '<select><option>'+esc(t('الكل'))+'</option><option>'+esc(t('منى'))+'</option>'
-          + '<option>'+esc(t('عرفات'))+'</option></select></div>'
+          + '<select><option value="">'+esc(t('الكل'))+'</option><option value="منى">'+esc(t('منى'))+'</option>'
+          + '<option value="عرفات">'+esc(t('عرفات'))+'</option></select></div>'
           + '</div>', btn('⬇ إكسل — الملخص','btn-primary btn-sm',' data-xls="over"'))
       + '<p class="hint">'+esc(t('أرقام الهواتف لا تظهر في أي تقرير وزاري — لا إخفاءً في الواجهة بل منعًا في القواعد.'))+'</p>';
   }};
@@ -16980,6 +17006,7 @@ if (window.visualViewport){
   setTheme(th);
   LANG = I18N[lg] ? lg : 'ar';
   document.documentElement.lang = LANG;
+  try { shellLang(); } catch(e){}
   document.documentElement.dir  = I18N[LANG].dir;
   document.body.setAttribute('data-lang', LANG);
 
