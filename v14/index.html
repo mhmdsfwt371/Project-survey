@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.95</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات">نسخة V14.96</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -889,7 +889,8 @@ en:{
  'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'This point is already installed and approved — it cannot be sent back to survey',
  'المتبقّي من الطلب':'Remaining on the request',
  'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'Appears here after the first issue from the "Inventory Ledger".',
- 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'Appears here as soon as your supervisor assigns you points from "Team Distribution".'
+ 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'Appears here as soon as your supervisor assigns you points from "Team Distribution".',
+ 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'Two hundred shown — the rest stay queued in full; nothing is dropped.'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -1062,7 +1063,8 @@ ur:{
  'النقطةُ مُركّبةٌ ومعتمدةٌ بالفعل — لا تُعاد إلى المسح':'یہ پوائنٹ پہلے ہی نصب اور منظور شدہ ہے — اسے سروے میں واپس نہیں بھیجا جا سکتا',
  'المتبقّي من الطلب':'درخواست میں باقی',
  'تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».':'"انوینٹری لیجر" سے پہلے اجرا کے بعد یہاں ظاہر ہوتا ہے۔',
- 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'جیسے ہی آپ کا سپروائزر "ٹیم کی تقسیم" سے آپ کو پوائنٹس تفویض کرے گا، یہاں ظاہر ہوگا۔'
+ 'تظهر هنا فور أن يُسنِد إليك المشرفُ نقاطًا من «توزيع الفرق».':'جیسے ہی آپ کا سپروائزر "ٹیم کی تقسیم" سے آپ کو پوائنٹس تفویض کرے گا، یہاں ظاہر ہوگا۔',
+ 'يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.':'دو سو دکھائے گئے — باقی مکمل قطار میں ہیں، کچھ ضائع نہیں ہوتا۔'
 }
 };
 
@@ -8406,7 +8408,7 @@ var HELP_KEYWORDS = {
   req:       ['طلب زيارة','SR','رقم الطلب','اعتماد زيارة'],
   solution:  ['اعتماد الحل','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
   qa:        ['اعتماد تركيب','تدقيق','رفض تركيب','مراجعة السيريال'],
-  survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة'],
+  survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة','الزيارات اللى تمت','الزيارات المكتملة','اكسبورت الزيارات','تصدير الزيارات','النقاط اللى اتزارت','اعادة زيارة','ارجاع نقطة متعذرة'],
   svForm:    ['فورم المسح','املأ نموذج المسح'],
   insForm:   ['فورم التركيب','تسجيل تركيب','ابلغ عن تركيب'],
   disp2:     ['فك جهاز','ارجاع عهدة','فك تركيب'],
@@ -8459,6 +8461,10 @@ var HELP_STEPS = {
            'اختر النقاط، ثم اختر «لفني» أو «لفريق»',
            'لو فريق: اختر الفريق وطريقة التوزيع (بالنسب أو بالتساوي)',
            'اضغط «وزّع» — هيتولّد رقم الطلب (SR/DR/PR) تلقائيًا'],
+  survey: ['افتح «المسح الميداني» من «الطلبات والمسح»',
+            'اضغط شريحة «تمت الزيارة» فوق — تتفرّز الزيارات المكتملة وحدها',
+            'للتصدير: زر «⬇ إكسل — المسح» جنب مربّع البحث',
+            'لإرجاع نقطة: زر «أعِد تصنيفها كمتعذّرة» في صفّها، واختر السبب'],
   users: ['افتح «المستخدمون»',
             'اكتب اسم المستخدم والاسم الكامل وكلمة المرور واختر الدور',
             'اضغط «إنشاء الحساب»',
@@ -8525,6 +8531,47 @@ function assistHtml(){
               }).join('')
             : '<p class="hint" style="text-align:center;padding:20px">'
               + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))
+    + '</div></div>';
+}
+
+/* ═══ نافذةُ ما ينتظر الرفع ═══ */
+var QUEUE_OPEN = false;
+var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
+              buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
+              teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
+              bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
+
+function queueHtml(){
+  var Q = (STATE.queue || []).slice().sort(function(a,b){ return (b.at||0) - (a.at||0); });
+  var by = {};
+  Q.forEach(function(x){ by[x.kind] = (by[x.kind] || 0) + 1; });
+
+  return '<div class="pop" id="queuePop" style="width:min(620px,94vw);max-height:88vh;overflow:auto">'
+    + '<div class="pop-head">'
+    +   '<div><h3 style="color:var(--ink)">\u{1F4E4} ' + esc(t('بانتظار الرفع')) + ' — ' + nm(Q.length) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">'
+    +     esc(t(STATE.meta.online ? 'الشبكةُ متاحة — تُرفَع تلقائيًّا الآن.'
+                                 : 'لا شبكة — تُرفَع كاملةً حين تعود، ولا يسقط منها شيء.')) + '</p></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm" data-pq="0" aria-label="'
+    +     esc(t('إغلاق')) + '">\u2715</button>'
+    + '</div>'
+    + '<div class="pop-body">'
+    + stats(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; }))
+    + table(['النوع','السجل','بواسطة','سُجّل'],
+        Q.slice(0, 200).map(function(x){
+          var v = x.v || {};
+          /* «بواسطة» صاحبُ العمل المسجَّل في السجل نفسه لا حاملُ الجهاز:
+             الجهازُ الواحد قد يحمل عملَ أكثرَ من فنيٍّ في يومٍ واحد. */
+          var who = v.by || v.user || v.doneBy || v.reopenBy || STATE.meta.name || '\u2014';
+          return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'),
+                  '<strong>' + esc(String(x.id || '\u2014')) + '</strong>',
+                  esc(who),
+                  '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
+        }))
+    + (Q.length > 200
+        ? '<p class="hint">' + esc(t('يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.')) + '</p>'
+        : '')
+    + '<p class="hint">لا شيءَ يُحذَف من الطابور إلا بعد أن يصل فعلًا — والأقدمُ يُرفَع أولًا.</p>'
     + '</div></div>';
 }
 
@@ -8868,7 +8915,7 @@ function renderKey(){
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
        + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + CTEAM_CUR + '|' + ASN_TO
        + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + NCRS.length
-       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + (ASSIST_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + (ASSIST_OPEN?1:0) + '|' + (QUEUE_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW
@@ -11003,7 +11050,7 @@ PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح 
   }};
 
 /* ── الطلبات والمسح ──────────────────────────────── */
-var SURV_Q = '', SURV_REOPEN = '';
+var SURV_Q = '', SURV_REOPEN = '', SURV_ST = '';
 
 /* إعادةُ تصنيف زيارةٍ تمّت كمتعذّرة: لا حذفَ للسجل ولا لصورِه — يبقى
    أثرًا، ويخرج من عِداد المُنجَز بتغيير access وحده حتى يُزار ثانيةً.
@@ -11050,12 +11097,24 @@ PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني'
     var blocked = all.filter(function(x){ return !x.done; });
 
     var rows = all;
+    /* شريحةُ الحالة: من أراد «الزياراتِ التي تمّت» وحدها ليصدّرها أو
+       يراجعها كان يقرأ الجدولَ كلَّه بعينه — فصارت تُفرَز بضغطة. */
+    if (SURV_ST === 'done')  rows = rows.filter(function(x){ return x.done; });
+    if (SURV_ST === 'block') rows = rows.filter(function(x){ return !x.done; });
     if (SURV_Q) rows = rows.filter(function(x){
       var hay = x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '');
       return hay.indexOf(SURV_Q) > -1;
     });
 
-    var html = stats([['مُسح', N(S.surveyed), 'acc'],
+    var views = [['','الكل', all.length],
+                 ['done','تمت الزيارة', all.length - blocked.length],
+                 ['block','متعذّر — يحتاج زيارة', blocked.length]];
+    var html = '<div class="chips">' + views.map(function(v){
+        return '<button type="button" class="chip' + (SURV_ST===v[0]?' on':'')
+          + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
+          + ' <span class="num">' + nm(v[2]) + '</span></button>';
+      }).join('') + '</div>'
+      + stats([['مُسح', N(S.surveyed), 'acc'],
                        ['لم يُزر', N(S.total - all.length)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
                        ['متعذّر — يحتاج زيارة', N(blocked.length), blocked.length ? 'wrn' : 'ok']])
@@ -13983,7 +14042,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.95' + '.docx" download>⬇ '
+              +   'V14.96' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15807,7 +15866,8 @@ function render(force){
       ? btn('تصدير','btn-secondary',' data-exp="1"') : '');
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
     + (HELP_OPEN ? helpHtml() : '')
-    + (ASSIST_OPEN ? assistHtml() : '');
+    + (ASSIST_OPEN ? assistHtml() : '')
+    + (QUEUE_OPEN ? queueHtml() : '');
 
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
@@ -15879,21 +15939,16 @@ function actList(){
 /* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
    فلا تُكتَب بيدٍ ولا تُنسى. */
 function onDocClick(e){
-  if (e.target.closest('[data-pq]')){
-    /* ما في الطابور: نوعُه وعددُه — فالرقمُ وحدَه لا يقول شيئًا، ومن رآه ولم
-       يعرف ما هو ظنَّ أن عملَه ضاع أو أنه سيُرفَع مكرَّرًا. */
-    var Q = STATE.queue || [];
-    if (!Q.length){ toast(t('لا شيءَ بانتظار الرفع')); return; }
-    var by = {};
-    Q.forEach(function(x){ by[x.kind] = (by[x.kind] || 0) + 1; });
-    var lbl = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
-                buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
-                teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب' };
-    toast(Object.keys(by).map(function(k){
-      return nm(by[k]) + ' ' + t(lbl[k] || k);
-    }).join(' · ') + ' — ' + t(STATE.meta.online ? 'تُرفَع تلقائيًّا' : 'تُرفَع حين تعود الشبكة'));
-    return;
+  var pqb = e.target.closest('[data-pq]');
+  if (pqb && pqb.getAttribute('data-pq') === '0'){ QUEUE_OPEN = false; render(1); return; }
+  if (pqb){
+    /* كان يُلخَّص في رسالةٍ عابرة: «٣ مسح · ٢ تركيب» ثم تختفي. ومن أراد أن
+       يعرف أيَّ نقطةٍ بالضبط لم تُرفَع، ومن سجّلها، ومتى — لم يجد. فصار
+       نافذةً تُقرأ وتُغلَق بإرادة صاحبها. */
+    if (!(STATE.queue || []).length){ toast(t('لا شيءَ بانتظار الرفع')); return; }
+    QUEUE_OPEN = true; render(1); return;
   }
+
   if (e.target.closest('[data-pwa]')){
     if (INSTALL_EVT){
       INSTALL_EVT.prompt();
@@ -16053,6 +16108,8 @@ function onDocClick(e){
   }
   var wrc = e.target.closest('[data-wrcancel]');
   if (wrc){ workReqCancel(wrc.getAttribute('data-wrcancel')); return; }
+  var sst = e.target.closest('[data-survst]');
+  if (sst){ SURV_ST = sst.getAttribute('data-survst'); render(1); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
@@ -16842,6 +16899,7 @@ setInterval(function(){
 /* الهروبُ يغلق ما هو مفتوح، الأحدثَ فالأقدم */
 document.addEventListener('keydown', function(e){
   if (e.key !== 'Escape') return;
+  if (QUEUE_OPEN){ QUEUE_OPEN = false; render(1); return; }
   if (ASSIST_OPEN){ ASSIST_OPEN = false; render(1); return; }
   if (HELP_OPEN){ HELP_OPEN = false; render(1); return; }
   if (POP_OPEN){ POP_OPEN = false; render(1); return; }
