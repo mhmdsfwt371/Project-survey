@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.97</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.98</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -894,7 +894,12 @@ en:{
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
- 'تثبيت التطبيق':'Install app'
+ 'تثبيت التطبيق':'Install app',
+ 'اضغط لترى ما لم يُرفَع وما وصل':'Tap to see what is pending and what has arrived',
+ 'الكلُّ وصل':'All synced',
+ 'وصل حديثًا':'Recently arrived',
+ 'من سجل الأحداث المُزامَن — للتفصيل الكامل والتصفية: «سجل الأحداث».':'From the synced event log — for full detail and filtering see "Event Log".',
+ 'لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.':'Nothing pending on this device — everything recorded here has arrived.'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -1072,7 +1077,12 @@ ur:{
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
- 'تثبيت التطبيق':'ایپ انسٹال کریں'
+ 'تثبيت التطبيق':'ایپ انسٹال کریں',
+ 'اضغط لترى ما لم يُرفَع وما وصل':'زیر التوا اور موصولہ دیکھنے کے لیے دبائیں',
+ 'الكلُّ وصل':'سب مطابقت پذیر',
+ 'وصل حديثًا':'حال ہی میں موصول',
+ 'من سجل الأحداث المُزامَن — للتفصيل الكامل والتصفية: «سجل الأحداث».':'مطابقت شدہ ایونٹ لاگ سے — مکمل تفصیل اور فلٹر کے لیے "ایونٹ لاگ" دیکھیں۔',
+ 'لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.':'اس ڈیوائس پر کچھ زیر التوا نہیں — یہاں ریکارڈ کیا گیا سب کچھ پہنچ گیا۔'
 }
 };
 
@@ -3445,10 +3455,13 @@ function syncBadge(){
     + (n ? '\u21BB ' + nm(n) : '\u21BB') + '</button> '
     + '<span class="dot" style="background:'
     + (on ? 'var(--ok)' : 'var(--danger)') + '"></span>'
-    + (n ? '<button type="button" class="pill warn" data-pq="1" '
-         + 'style="border:0;cursor:pointer" title="' + esc(t('اضغط لترى ما لم يُرفَع')) + '">'
-         + nm(n) + ' ' + esc(t(on ? 'بانتظار الرفع' : 'محفوظٌ على الجهاز')) + '</button> '
-         : '')
+    /* كانت لا تظهر إلا والطابورُ ممتلئ — فمن أراد أن يطمئنَّ أن كلَّ شيءٍ
+       وصل لم يجد ما يضغطه. صارت دائمةً: رقمٌ إن بقي شيء، وعلامةُ تمامٍ
+       إن وصل الكلُّ — وكلتاهما تفتح نافذةَ المتابعة. */
+    + ('<button type="button" class="pill ' + (n ? 'warn' : 'ok') + '" data-pq="1" '
+         + 'style="border:0;cursor:pointer" title="' + esc(t('اضغط لترى ما لم يُرفَع وما وصل')) + '">'
+         + (n ? (nm(n) + ' ' + esc(t(on ? 'بانتظار الرفع' : 'محفوظٌ على الجهاز')))
+              : ('\u2713 ' + esc(t('الكلُّ وصل')))) + '</button> ')
     + (STATE.meta.dropped
         ? '<span class="pill off">' + esc(t('أُسقط من الطابور')) + '</span> ' : '')
     + esc(t('آخر مزامنة')) + ' <span class="num">' + esc(ts) + '</span>';
@@ -8582,8 +8595,10 @@ function queueHtml(){
     +     esc(t('إغلاق')) + '">\u2715</button>'
     + '</div>'
     + '<div class="pop-body">'
-    + stats(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; }))
-    + table(['النوع','السجل','بواسطة','سُجّل'],
+    + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok']]
+            .concat(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; })))
+    + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
+    + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل'],
         Q.slice(0, 200).map(function(x){
           var v = x.v || {};
           /* «بواسطة» صاحبُ العمل المسجَّل في السجل نفسه لا حاملُ الجهاز:
@@ -8593,11 +8608,28 @@ function queueHtml(){
                   '<strong>' + esc(String(x.id || '\u2014')) + '</strong>',
                   esc(who),
                   '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
-        }))
+        })) : '')
     + (Q.length > 200
         ? '<p class="hint">' + esc(t('يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.')) + '</p>'
         : '')
-    + '<p class="hint">لا شيءَ يُحذَف من الطابور إلا بعد أن يصل فعلًا — والأقدمُ يُرفَع أولًا.</p>'
+
+    /* ── ما وصل حديثًا: متابعةُ عمل الميدان أوّلًا بأول ──
+       طابورُ جهازٍ آخر لا يُرى من هنا — ما لم يُرسَل لم يغادر ذلك الجهاز.
+       فالمتابعةُ الممكنةُ هي ما وصل فعلًا: مَن سجّل ماذا ومتى، مرتَّبًا
+       بالأحدث، من سجل الأحداث المُزامَن. */
+    + (function(){
+        var E = (STATE.events || []).slice(0, 40);
+        if (!E.length) return '';
+        return '<h4 style="margin:18px 0 8px">' + esc(t('وصل حديثًا')) + '</h4>'
+          + table(['الحدث','بواسطة','الوقت'],
+              E.map(function(x){
+                return [esc(x.what || ''), esc(x.by || '\u2014'),
+                        '<span class="num">' + esc((x.day||'') + ' ' + (x.at||'')) + '</span>'];
+              }))
+          + '<p class="hint">' + esc(t('من سجل الأحداث المُزامَن — للتفصيل الكامل والتصفية: «سجل الأحداث».')) + '</p>';
+      })()
+
+    + '<p class="hint">لا شيءَ يُحذَف من الطابور إلا بعد أن يصل فعلًا — والأقدمُ يُرفَع أولًا. وما لم يُرسَل من جهازٍ آخر لا يُرى من هنا: لم يغادره بعد.</p>'
     + '</div></div>';
 }
 
@@ -14068,7 +14100,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.97' + '.docx" download>⬇ '
+              +   'V14.98' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15872,7 +15904,13 @@ function render(force){
     c.hidden = true;
     c.innerHTML = '';
     if (mu){
-      mu.innerHTML = mapUIHtml();
+      /* الطبقاتُ العلويةُ تُلحَق هنا أيضًا: مسارُ الخريطة يرجع قبل السطر
+         الذي يُلحقها في المحتوى، فكان زرُّ المساعد يُضغَط على الخريطة
+         فتُفتَح حالتُه ولا يظهر شيء — تُبنى الطبقةُ ولا تجد أين تُلصَق. */
+      mu.innerHTML = mapUIHtml()
+        + (HELP_OPEN ? helpHtml() : '')
+        + (ASSIST_OPEN ? assistHtml() : '')
+        + (QUEUE_OPEN ? queueHtml() : '');
       /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
       var busy = MAP_SELECT || MOVE_ID;
       mu.classList.toggle('map-busy', !!busy);
@@ -15971,7 +16009,6 @@ function onDocClick(e){
     /* كان يُلخَّص في رسالةٍ عابرة: «٣ مسح · ٢ تركيب» ثم تختفي. ومن أراد أن
        يعرف أيَّ نقطةٍ بالضبط لم تُرفَع، ومن سجّلها، ومتى — لم يجد. فصار
        نافذةً تُقرأ وتُغلَق بإرادة صاحبها. */
-    if (!(STATE.queue || []).length){ toast(t('لا شيءَ بانتظار الرفع')); return; }
     QUEUE_OPEN = true; render(1); return;
   }
 
