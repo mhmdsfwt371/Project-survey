@@ -91,6 +91,30 @@ check(badOpt.length === 0,
   badOpt.length ? `خياراتٌ تُترجَم فتفسد القيمةَ المخزَّنة (${badOpt.length})`
                 : 'لا خيارَ يُترجَم — القيمُ المخزَّنة سالمة');
 
+console.log('\n══ ٤ · النصوصُ غير المباشرة — ما لا يراه فاحصُ t() ══');
+/* الحارسُ القديم يفحص t('…') المباشرة وحدَها. وأكثرُ ما يُعرَض لا يُكتَب
+   هكذا: card('عنوان',…) وtable(['رأس',…]) وstats([['بند',N(x)]])
+   وPAGE.x = { t:'اسم', l:'وصف' } — كلُّها تمرُّ بـt() داخليًّا. فبقيت
+   مئاتٌ بلا ترجمةٍ والحارسُ يقول «كاملة». يُقاس هنا العددُ ويُمنَع نموُّه. */
+const LIT = String.raw`'((?:[^'\\]|\\.)*)'`;
+const seen = new Set();
+const push = a => a.forEach(x => { if (AR.test(x) && x.length > 1) seen.add(x); });
+push([...src.matchAll(new RegExp(String.raw`\b(?:card|cardFlush|alertBox|btn|pill)\(\s*` + LIT, 'g'))].map(m => m[1]));
+push([...src.matchAll(new RegExp(String.raw`\b(?:table|stats)\(\s*\[([^\]]*)\]`, 'g'))]
+      .flatMap(m => [...m[1].matchAll(new RegExp(LIT, 'g'))].map(x => x[1])));
+push([...src.matchAll(new RegExp(String.raw`\[\s*` + LIT + String.raw`\s*,\s*N\(`, 'g'))].map(m => m[1]));
+push([...src.matchAll(new RegExp(String.raw`PAGE\.\w+ = \{ m:` + LIT + `, t:` + LIT, 'g'))].flatMap(m => [m[1], m[2]]));
+push([...src.matchAll(new RegExp(String.raw`\bl:\s*` + LIT, 'g'))].map(m => m[1]));
+push([...src.matchAll(new RegExp(String.raw`\['\w+',\s*` + LIT + String.raw`\]`, 'g'))].map(m => m[1]));
+const gap = [...seen].filter(k => !EN.has(k));
+/* سقفٌ يهبط ولا يرتفع: كلُّ إصدارٍ يُترجم دفعةً فيُخفَّض الرقمُ هنا */
+const CAP = 559;
+console.log(`  \u00b7 نصوصٌ غيرُ مباشرة: ${seen.size} · بلا ترجمة: ${gap.length} · السقف: ${CAP}`);
+check(gap.length <= CAP,
+  gap.length <= CAP ? `الفجوةُ غيرُ المباشرة تحت السقف (${gap.length}/${CAP}) — تُخفَّض دفعةً كلَّ إصدار`
+                    : `الفجوةُ كبرت: ${gap.length} والسقفُ ${CAP} — ترجم قبل الدفع`);
+
+
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ اللغة فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
 console.log('جردُ اللغة نظيف — لا حرفَ عربيٍّ يبقى بلا قرار ✅');
