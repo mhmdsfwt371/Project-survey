@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.99</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.00</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1027,6 +1027,7 @@ en:{
  'جاهزة':'ready',
  'لا نقطةَ حلُّها معتمد — التركيبُ لا يُجدوَل قبل اعتماد حلِّه في «حل التركيب».':'No point has an approved solution — installation is not scheduled before its solution is approved in "Install Solution".',
  'ما مُسح واعتُمد حلُّه وحده — يُجدوَل ويُسند تركيبًا.':'Only what was surveyed and had its solution approved — scheduled and assigned for installation.',
+ '؟':'?',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -1345,6 +1346,7 @@ ur:{
  'جاهزة':'تیار',
  'لا نقطةَ حلُّها معتمد — التركيبُ لا يُجدوَل قبل اعتماد حلِّه في «حل التركيب».':'کسی پوائنٹ کا منظور شدہ حل نہیں — "تنصیب کا حل" میں منظوری سے پہلے تنصیب شیڈول نہیں ہوتی۔',
  'ما مُسح واعتُمد حلُّه وحده — يُجدوَل ويُسند تركيبًا.':'صرف وہ جس کا سروے ہوا اور حل منظور ہوا — تنصیب کے لیے شیڈول اور تفویض۔',
+ '؟':'؟',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -2876,7 +2878,7 @@ function pageHead(eyebrow, title, lede, right){
     + (lede ? '<p class="lede">'+esc(t(lede))+'</p>' : '') + '</div>'
     + '<div class="head-acts">'
     +   '<button type="button" class="btn btn-secondary btn-sm" data-help="1" '
-    +     'aria-label="'+esc(t('ما هذه الصفحة؟'))+'" title="'+esc(t('ما هذه الصفحة؟'))+'">؟</button>'
+    +     'aria-label="'+esc(t('ما هذه الصفحة؟'))+'" title="'+esc(t('ما هذه الصفحة؟'))+'">'+esc(t('؟'))+'</button>'
     +   (right !== undefined ? right
         : (canExp ? btn('تصدير','btn-secondary',' data-xls="'+CUR+'"') : ''))
     + '</div></div>';
@@ -14391,7 +14393,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.99' + '.docx" download>⬇ '
+              +   'V15.00' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

@@ -42,6 +42,8 @@ jobs:
         run: node scripts/audit-pages.mjs
       - name: جرد اللغة — لا حرف عربي يبقى بلا قرار
         run: node scripts/audit-lang.mjs
+      - name: جرد الترجمة بالرندر — كل صفحة تُفتح بالإنجليزية
+        run: node scripts/audit-i18n.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
