@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.98</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V14.99</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1020,6 +1020,13 @@ en:{
  'إضافة مورّد':'Add supplier',
  'إضافة موظف':'Add staff member',
  'إضافة نشاط':'Add activity',
+ 'لا تظهر في كلّ طبقة إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما رُكِّب.':'Each layer shows only its own points: installation shows what was surveyed, dismantle shows what was installed.',
+ 'اختر النوعَ — تُفتَح طبقتُه ويُضبَط المستقبِل.':'Pick the type — its layer opens and the recipient is set.',
+ 'تُسنَد لفنيٍّ واحد':'Assigned to one technician',
+ 'تُسنَد لفريقٍ وتُقسَّم':'Assigned to a team and split',
+ 'جاهزة':'ready',
+ 'لا نقطةَ حلُّها معتمد — التركيبُ لا يُجدوَل قبل اعتماد حلِّه في «حل التركيب».':'No point has an approved solution — installation is not scheduled before its solution is approved in "Install Solution".',
+ 'ما مُسح واعتُمد حلُّه وحده — يُجدوَل ويُسند تركيبًا.':'Only what was surveyed and had its solution approved — scheduled and assigned for installation.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -1331,6 +1338,13 @@ ur:{
  'إضافة مورّد':'سپلائر شامل کریں',
  'إضافة موظف':'ملازم شامل کریں',
  'إضافة نشاط':'سرگرمی شامل کریں',
+ 'لا تظهر في كلّ طبقة إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما رُكِّب.':'ہر پرت صرف اپنے پوائنٹس دکھاتی ہے: تنصیب وہ جس کا سروے ہوا، ڈسمینٹل وہ جو نصب ہوا۔',
+ 'اختر النوعَ — تُفتَح طبقتُه ويُضبَط المستقبِل.':'قسم منتخب کریں — اس کی پرت کھلتی ہے اور وصول کنندہ طے ہو جاتا ہے۔',
+ 'تُسنَد لفنيٍّ واحد':'ایک ٹیکنیشن کو تفویض',
+ 'تُسنَد لفريقٍ وتُقسَّم':'ٹیم کو تفویض اور تقسیم',
+ 'جاهزة':'تیار',
+ 'لا نقطةَ حلُّها معتمد — التركيبُ لا يُجدوَل قبل اعتماد حلِّه في «حل التركيب».':'کسی پوائنٹ کا منظور شدہ حل نہیں — "تنصیب کا حل" میں منظوری سے پہلے تنصیب شیڈول نہیں ہوتی۔',
+ 'ما مُسح واعتُمد حلُّه وحده — يُجدوَل ويُسند تركيبًا.':'صرف وہ جس کا سروے ہوا اور حل منظور ہوا — تنصیب کے لیے شیڈول اور تفویض۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -5133,12 +5147,20 @@ var LAYERS = {
   },
   install: {
     n:'التركيب', i:'\u{1F527}', kind:'install', c:'#3AD6A0',
-    d:'ما تمّت زيارتُه الميدانية وحده — يُجدوَل ويُسند تركيبًا.',
-    pass:function(x){ return svDone(STATE.recs[x.id]); },
+    d:'ما مُسح واعتُمد حلُّه وحده — يُجدوَل ويُسند تركيبًا.',
+    /* كانت الطبقةُ تشترط المسحَ وحدَه بينما بوابةُ الإسناد (asnCommit)
+       تشترط معه حلًّا معتمدًا — فتقول اللوحةُ «نقطتان جاهزتان» ثم يُسنِدهما
+       المشرفُ فتُفلتَران كلتاهما ولا يفهم لماذا. صار الشرطُ واحدًا في
+       الموضعين: لا تُعرَض جاهزةً إلا ما يُقبَل فعلًا. */
+    pass:function(x){
+      if (!svDone(STATE.recs[x.id])) return false;
+      var so = solutionOf(x.id);
+      return !!so && so.status === 'معتمد';
+    },
     ready:function(x){ return !insDone(x.id); },
     done:function(x){ return insDone(x.id); },
     pts:function(x){ return ptsInstall(x); },
-    empty:'لا نقاط مسوحة بعد — التركيبُ لا يُجدوَل قبل المسح.'
+    empty:'لا نقطةَ حلُّها معتمد — التركيبُ لا يُجدوَل قبل اعتماد حلِّه في «حل التركيب».'
   },
   dis: {
     n:'الفك', i:'\u{1F9E9}', kind:'dis', c:'#C77DFF',
@@ -14369,7 +14391,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V14.98' + '.docx" download>⬇ '
+              +   'V14.99' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
