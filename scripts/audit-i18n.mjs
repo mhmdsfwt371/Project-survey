@@ -65,6 +65,10 @@ const LIVE_NAMES = new Set();
 try {
   (w.techsList ? w.techsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); if (x && x.sup) LIVE_NAMES.add(x.sup); });
   (w.crewsList ? w.crewsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
+  (w.itemsList ? w.itemsList() : []).forEach(x => { if (x && x.name) LIVE_NAMES.add(x.name); });
+  (w.jobsList ? w.jobsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
+  ((w.DATA && w.DATA.buyCats) || []).forEach(x => LIVE_NAMES.add(x));
+  ((w.DATA && w.DATA.suppliers) || []).forEach(x => LIVE_NAMES.add(x));
   (w.STATE && w.STATE.sites || []).forEach(x => { if (x && x.co) LIVE_NAMES.add(x.co); if (x && x.name) LIVE_NAMES.add(x.name); });
 } catch (e) {}
 const isData = s => LIVE_NAMES.has(s) || DATA_AR.some(r => r.test(s));
@@ -119,7 +123,7 @@ report.sort((a, b) => b[1].length - a[1].length)
 shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 
 /* سقفٌ يهبط ولا يرتفع — يُخفَّض دفعةً كلَّ إصدار */
-const CAP_PAGES = 94, CAP_TEXTS = 1962, CAP_SHELL = 2;
+const CAP_PAGES = 94, CAP_TEXTS = 1208, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');

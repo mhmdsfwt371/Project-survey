@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.02</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.03</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1197,6 +1197,28 @@ en:{
  '➕ إنشاء طلب':'+ Create request',
  '⬇ إكسل — المواقع':'⬇ Excel — Sites',
  '☑ تحديد':'☑ Select',
+ 'الراوتر':'Router',
+ 'القارئ':'Reader',
+ 'الكاميرا':'Camera',
+ 'معرّف الموقع':'Site ID',
+ 'حقل':'Field',
+ 'الراوتر — ':'Router — ',
+ 'العناوين':'Addresses',
+ 'أنواع النقاط':'Point types',
+ 'الوقت':'Time',
+ 'بواسطة':'By',
+ 'الملاحظة':'Note',
+ 'الرقم':'Number',
+ 'القيمة':'Value',
+ 'المصدر':'Source',
+ 'الوجهة':'Destination',
+ 'المدة':'Duration',
+ 'الأثر':'Impact',
+ 'الاحتمال':'Likelihood',
+ 'الرد':'Response',
+ 'المعدّة':'Equipment',
+ 'اللوحة':'Plate',
+ 'الرخصة':'Licence',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -1685,6 +1707,28 @@ ur:{
  '➕ إنشاء طلب':'+ درخواست بنائیں',
  '⬇ إكسل — المواقع':'⬇ ایکسل — مقامات',
  '☑ تحديد':'☑ منتخب کریں',
+ 'الراوتر':'راؤٹر',
+ 'القارئ':'ریڈر',
+ 'الكاميرا':'کیمرہ',
+ 'معرّف الموقع':'سائٹ شناخت',
+ 'حقل':'فیلڈ',
+ 'الراوتر — ':'راؤٹر — ',
+ 'العناوين':'پتے',
+ 'أنواع النقاط':'پوائنٹ کی اقسام',
+ 'الوقت':'وقت',
+ 'بواسطة':'بذریعہ',
+ 'الملاحظة':'نوٹ',
+ 'الرقم':'نمبر',
+ 'القيمة':'قدر',
+ 'المصدر':'ماخذ',
+ 'الوجهة':'منزل',
+ 'المدة':'مدت',
+ 'الأثر':'اثر',
+ 'الاحتمال':'امکان',
+ 'الرد':'ردعمل',
+ 'المعدّة':'سامان',
+ 'اللوحة':'نمبر پلیٹ',
+ 'الرخصة':'لائسنس',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -2194,7 +2238,7 @@ en:{
  'اعتُمد — جمّد خط أساسٍ جديد':'Approved — freeze a new baseline','رُفض':'Refused',
  'لكلِّ جهةٍ ما يخصّها: تراه كاملًا ولا ترى ما ليس لها. فالمالُ للمالية، والمورّدون للمشتريات، والمستخلصُ المعتمَدُ وحده للعميل.':'Each party sees what concerns it in full, and nothing that does not. Finance sees the money, procurement sees the suppliers, and the client sees only the approved payment certificate.',
  'أيام العمل المفقودة':'Lost work days','الوصف والإجراء':'Description and action taken',
- 'اكتب الوصف والإجراء':'Write the description and the action','سُجّل':'Recorded','يوم':'day','النقطة':'Site',
+ 'اكتب الوصف والإجراء':'Write the description and the action','سُجّل':'Recorded','يوم':'day','النقطة':'Point',
  'الخطورة':'Severity','اكتب الوصف':'Write the description','فُتح البلاغ':'Report opened','أُغلق':'Closed',
  'الفترة':'Period','مثال: الشهر الأول':'e.g. first month','الاستقطاع ٪':'Retention %',
  'المبلغ صفرٌ أو سالب':'The amount is zero or negative','قُدّم المستخلص':'Payment certificate submitted',
@@ -2355,7 +2399,7 @@ en:{
  'الطبقات الثلاث':'The three layers','الفك وإرجاع العُهدة':'Dismantling and custody return',
  'جاهز':'ready','نقطة وزن':'weight pts','نقاط الوزن':'Weight points',
  'في الطبقة':'In layer','جاهزٌ للجدولة':'Ready to schedule','منجَز':'completed',
- 'افتح الطبقة':'Open layer','إسناد':'Assign','إسناد فك':'Assign dismantling',
+ 'افتح الطبقة':'Open layer','إسناد':'Assignment','إسناد فك':'Dismantle assignment',
  'ترتيب الدورة':'Cycle order','مجدول':'Scheduled',
  'نقاط الفك':'Dismantling points','جدوِل':'Schedule',
  'جُدوِل للفك':'Scheduled for dismantling','سليم':'Sound','تالف':'Damaged',
@@ -14731,7 +14775,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.02' + '.docx" download>⬇ '
+              +   'V15.03' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17308,7 +17352,7 @@ function labelCells(root){
         for (var f = 0; f < fs.length; f++){
           if (fs[f].getAttribute('aria-label')) continue;
           fs[f].setAttribute('aria-label',
-            (col ? col + (first ? ' — ' + first.slice(0, 40) : '') : first) || 'حقل');
+            (col ? col + (first ? ' — ' + first.slice(0, 40) : '') : first) || t('حقل'));
         }
       }
     }
