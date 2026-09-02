@@ -59,7 +59,15 @@ const DATA_AR = [
   /^(منى|عرفات|مزدلفة|الجمرات|مسجد نمرة|قطار المشاعر|مكة)$/,
   /^[\u0660-\u0669\d٪،.\/\-\s]+$/  /* أرقامٌ وعلاماتٌ لا كلمات */
 ];
-const isData = s => DATA_AR.some(r => r.test(s));
+/* أسماءُ الأشخاصِ والفرقِ والشركاتِ تُقرأ من بياناتِ التطبيق الحيّة لا من
+   قائمةٍ مكتوبةٍ تُنسى: كلُّ فنيٍّ يُضاف غدًا يُستثنى تلقائيًّا. */
+const LIVE_NAMES = new Set();
+try {
+  (w.techsList ? w.techsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); if (x && x.sup) LIVE_NAMES.add(x.sup); });
+  (w.crewsList ? w.crewsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
+  (w.STATE && w.STATE.sites || []).forEach(x => { if (x && x.co) LIVE_NAMES.add(x.co); if (x && x.name) LIVE_NAMES.add(x.name); });
+} catch (e) {}
+const isData = s => LIVE_NAMES.has(s) || DATA_AR.some(r => r.test(s));
 
 /* نصوصُ الواجهة الظاهرة: ما بين الوسوم وقيمُ الخصائص المقروءة */
 function arabicIn(root){
@@ -111,7 +119,7 @@ report.sort((a, b) => b[1].length - a[1].length)
 shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 
 /* سقفٌ يهبط ولا يرتفع — يُخفَّض دفعةً كلَّ إصدار */
-const CAP_PAGES = 94, CAP_TEXTS = 2570, CAP_SHELL = 2;
+const CAP_PAGES = 94, CAP_TEXTS = 2245, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');
