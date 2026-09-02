@@ -115,6 +115,41 @@ check(gap.length <= CAP,
                     : `الفجوةُ كبرت: ${gap.length} والسقفُ ${CAP} — ترجم قبل الدفع`);
 
 
+console.log('\n══ ٥ · الأرديةُ تكافئ الإنجليزية ══');
+/* الأرديةُ تُكتَب بالحرف العربيِّ نفسِه، فلا يميّزها فاحصُ الرندر: «برآمد»
+   أرديةٌ صحيحةٌ يعُدُّها عربيًّا باقيًا. فالفحصُ الصحيحُ لها ليس الرندرَ بل
+   التكافؤ: كلُّ مفتاحٍ له إنجليزيةٌ له أرديةٌ ولا استثناء — فمن بدّل إلى
+   الأردية لا يرى شاشةً نصفُها لغةٌ ونصفُها أخرى. */
+function side(name, L){
+  const i = src.indexOf('var ' + name + ' = {');
+  if (i < 0) return {};
+  const g = src.slice(i, src.indexOf('\n};', i));
+  const mu = /\nur:\s*\{/.exec(g);
+  if (!mu) return {};
+  const seg = L === 'en' ? g.slice(0, mu.index) : g.slice(mu.index);
+  const o = {};
+  [...seg.matchAll(/'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'/g)].forEach(m => { o[m[1]] = m[2]; });
+  return o;
+}
+const enD = Object.assign({}, side('D2','en'), side('D','en'));
+const urD = Object.assign({}, side('D2','ur'), side('D','ur'));
+const gapUr = Object.keys(enD).filter(k => !(k in urD));
+const gapEn = Object.keys(urD).filter(k => !(k in enD));
+console.log(`  \u00b7 en: ${Object.keys(enD).length} · ur: ${Object.keys(urD).length}`);
+check(gapUr.length === 0 && gapEn.length === 0,
+  (gapUr.length || gapEn.length)
+    ? `القاموسان غيرُ متكافئين — بلا أردية: ${gapUr.length} · بلا إنجليزية: ${gapEn.length}`
+    : `القاموسان متكافئان تمامًا (${Object.keys(enD).length} مفتاحًا لكلٍّ)`);
+
+/* أرديةٌ هي العربيةُ حرفيًّا: بعضُها حقٌّ (٪ · م · مربع) وبعضُها سهوٌ */
+const copied = Object.keys(urD).filter(k => urD[k] === k);
+const CAP_COPIED = 11;
+console.log(`  \u00b7 أرديةٌ تطابق العربيةَ حرفيًّا: ${copied.length} (السقف ${CAP_COPIED})`);
+check(copied.length <= CAP_COPIED,
+  copied.length <= CAP_COPIED
+    ? 'المطابقُ حرفيًّا محصورٌ — وحداتٌ ورموزٌ لا تُترجَم'
+    : `مطابقٌ حرفيًّا كبر: ${copied.join(' · ')}`);
+
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ اللغة فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
 console.log('جردُ اللغة نظيف — لا حرفَ عربيٍّ يبقى بلا قرار ✅');
