@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.11</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.12</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1827,6 +1827,7 @@ en:{
  'عرفات · مخيم':'Arafat · Camp',
  'د':'D',
  'س':'S',
+ 'السجل':'The register',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -2945,6 +2946,7 @@ ur:{
  'عرفات · مخيم':'عرفات · کیمپ',
  'د':'ڈ',
  'س':'سیکنڈ',
+ 'السجل':'رجسٹر',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -9230,7 +9232,7 @@ PAGE.risks = { m:'التخطيط', t:'سجل المخاطر',
                   ['عالية', N(high.length), high.length?'wrn':''],
                   ['مغلقة', N(RISKS.length - open.length), 'ok']])
 
-      + cardFlush('السجل — ' + nm(RISKS.length),
+      + cardFlush(t('السجل') + ' — ' + nm(RISKS.length),
           table(['#','الخطر','الفئة','احتمال','أثر','الدرجة','الاستجابة','المالك','الحالة'],
             sorted.map(function(r){
               var sc = riskScore(r), L = riskLevel(sc);
@@ -9287,12 +9289,12 @@ PAGE.chg = { m:'التخطيط', t:'ضبط التغيير',
           + '<div class="field"><label>' + esc(t('نوع التغيير')) + '</label>'
           + '<select id="chgKind">'
           + ['نطاق','جدول','ميزانية','جودة','موارد'].map(function(k){
-              return '<option>' + esc(k) + '</option>'; }).join('')
+              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('الأثر على خط الأساس')) + '</label>'
           + '<select id="chgImp">'
           + ['لا أثر','أثرٌ محدود','أثرٌ جوهري'].map(function(k){
-              return '<option>' + esc(k) + '</option>'; }).join('')
+              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '</div>'
           + '<div class="field"><label>' + esc(t('الوصف والمبرّر')) + '</label>'
@@ -9480,7 +9482,7 @@ PAGE.hse = { m:'النظام', t:'السلامة والحوادث',
           + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
           + '<select id="hseKind">'
           + ['وشيك — بلا إصابة','إسعاف أولي','علاج طبي','فقدُ أيام عمل','ضررٌ بالمعدات']
-              .map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('الموقع')) + '</label>'
           + '<input id="hseSite" placeholder="NSK-…" dir="ltr"></div>'
@@ -9549,11 +9551,11 @@ PAGE.ncr = { m:'الطلبات والمسح', t:'عدم المطابقة',
           + '<select id="ncrCat">'
           + ['تركيبٌ مخالفٌ للمواصفة','قطعةٌ غيرُ معتمدة','توصيلٌ كهربائيٌّ خاطئ',
              'ارتفاعٌ غيرُ مطابق','توثيقٌ ناقص','سيريالٌ غيرُ مطابق']
-              .map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('الخطورة')) + '</label>'
           + '<select id="ncrSev">'
-          + ['جوهري','متوسط','طفيف'].map(function(k){ return '<option>' + esc(k) + '</option>'; }).join('')
+          + ['جوهري','متوسط','طفيف'].map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '</div>'
           + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
@@ -13083,7 +13085,7 @@ PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني'
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('السبب')) + '</label>'
           + '<select id="reopenReason">' + SV_ACCESS.filter(function(a){ return a !== 'تم الوصول'; }).map(function(a){
-              return '<option>' + esc(a) + '</option>'; }).join('') + '</select></div>'
+              return '<option value="' + esc(a) + '">' + esc(t(a)) + '</option>'; }).join('') + '</select></div>'
           + '<div class="field"><label>' + esc(t('تفصيلٌ إضافي')) + '</label>'
           + '<input id="reopenNote" dir="auto"></div>'
           + '</div>',
@@ -13755,7 +13757,7 @@ PAGE.buys = { m:'المال', t:'دفتر المشتريات', l:'مصروفات
             + '<div class="field"><label>' + esc(t('المبلغ')) + '</label>'
             +   '<input id="byAmt" type="number" min="1" step="1"></div>'
             + '<div class="field"><label>' + esc(t('المشعر')) + '</label><select id="byZone">'
-            +   ['منى','عرفات','مزدلفة','—'].map(function(z){ return '<option>' + esc(z) + '</option>'; }).join('')
+            +   ['منى','عرفات','مزدلفة','—'].map(function(z){ return '<option value="' + esc(z) + '">' + esc(t(z)) + '</option>'; }).join('')
             + '</select></div>'
             + '</div>'
             + '<div class="actions">' + btn('سجّل الشراء','btn-primary',' data-byadd="1"') + '</div>'
@@ -16007,7 +16009,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.11' + '.docx" download>⬇ '
+              +   'V15.12' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
