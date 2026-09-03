@@ -738,7 +738,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.39</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.40</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2684,6 +2684,9 @@ en:{
  'النقطة الأولى':'First point',
  'النقطة الثانية':'Second point',
  'في هذا الترشيح':'In this filter',
+ 'ما له عنوان — بالمشعر والنوع':'What has an address — by holy site and type',
+ 'له عنوان':'Has an address',
+ 'العددُ يُقارَن بالمتوقَّع هنا لا بالذاكرة. وما ورثه النظامُ من النسخة السابقة خمسُمئةٍ وستةٌ وأربعون بادئةً كلُّها مخيماتُ منى — لا بادئةَ فيها لممرٍّ ولا قارئٍ ولا كاميرا؛ وما زاد عنها أُدخل بعدها.':'Compare the count with what you expect here, not from memory. What the system inherited from the previous version is 546 prefixes, all Mina camps — none for a corridor, reader, or camera; anything beyond that was entered later.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4579,6 +4582,9 @@ ur:{
  'النقطة الأولى':'پہلا پوائنٹ',
  'النقطة الثانية':'دوسرا پوائنٹ',
  'في هذا الترشيح':'اس فلٹر میں',
+ 'ما له عنوان — بالمشعر والنوع':'جس کا پتہ ہے — مشعر اور قسم کے حساب سے',
+ 'له عنوان':'پتہ موجود',
+ 'العددُ يُقارَن بالمتوقَّع هنا لا بالذاكرة. وما ورثه النظامُ من النسخة السابقة خمسُمئةٍ وستةٌ وأربعون بادئةً كلُّها مخيماتُ منى — لا بادئةَ فيها لممرٍّ ولا قارئٍ ولا كاميرا؛ وما زاد عنها أُدخل بعدها.':'یہاں گنتی کا موازنہ اپنی توقع سے کریں، یادداشت سے نہیں۔ نظام کو پچھلے ورژن سے 546 پریفکس ملے، سب منیٰ کے کیمپ — کسی راہداری، ریڈر یا کیمرے کے لیے نہیں؛ اس سے زائد بعد میں درج ہوا۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -9052,12 +9058,35 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       missBy[k] = (missBy[k] || 0) + 1;
     });
     var heldKeys = Object.keys(heldBy).sort(function(a, b){ return heldBy[b] - heldBy[a]; });
+    /* ═══ ما له عنوانٌ — بالمشعر والنوع ═══
+       سُئل: «المفروض ٧٤٤ نقطةً لها عنوان». والعددُ لا يُناقَش بالذاكرة:
+       يُعرَض ما هو كائنٌ مفصَّلًا، فيُقارَن بالمتوقَّع ويُعرَف أين الفرق.
+       (نسخةُ ١٣٫٩٩ فُحصت: العمودُ العشرون فيها يحمل ٥٤٦ بادئةً كلُّها
+       مخيماتُ منى، ولا بادئةَ فيها لممرٍّ ولا قارئٍ ولا كاميرا.) */
+    var haveBy = {};
+    (STATE.sites || []).forEach(function(x){
+      if (!x.net) return;
+      var k = x.zone + '\u0000' + x.type;
+      haveBy[k] = (haveBy[k] || 0) + 1;
+    });
+    var haveKeys = Object.keys(haveBy).sort(function(a, b){ return haveBy[b] - haveBy[a]; });
     var missKeys = Object.keys(missBy).sort(function(a, b){ return missBy[b] - missBy[a]; });
     return stats([['نقاطٌ لها شبكة', N(all), all ? 'ok' : 'wrn'],
                   ['بلا عنوان', N((STATE.sites || []).length - all),
                    (STATE.sites || []).length - all ? 'wrn' : 'ok'],
                   ['عنوانُها في الميدان', N(heldN), heldN ? 'acc' : ''],
                   ['معروض', N(L.length)]])
+
+      + (haveKeys.length
+        ? card('\u2705 ' + t('ما له عنوان — بالمشعر والنوع'),
+            table(['المشعر والنوع','له عنوان'],
+              haveKeys.slice(0, 20).map(function(k){
+                var pr = k.split('\u0000');
+                return [esc(t(pr[0])) + ' \u00b7 ' + esc(t(pr[1])), N(haveBy[k])];
+              }))
+            + '<p class="hint" style="margin:8px 0 0">'
+            + esc(t('العددُ يُقارَن بالمتوقَّع هنا لا بالذاكرة. وما ورثه النظامُ من النسخة السابقة خمسُمئةٍ وستةٌ وأربعون بادئةً كلُّها مخيماتُ منى — لا بادئةَ فيها لممرٍّ ولا قارئٍ ولا كاميرا؛ وما زاد عنها أُدخل بعدها.')) + '</p>')
+        : '')
 
       /* ما رُكِّب سابقًا عنوانُه قائمٌ في جهازه — لا يُخترَع له بديل */
       /* بادئةٌ واحدةٌ على نقطتين: خطأٌ يمنع الجهازين من العمل معًا ولا يظهر
@@ -12614,7 +12643,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.39' + '.docx" download>⬇ '
+              +   'V15.40' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
