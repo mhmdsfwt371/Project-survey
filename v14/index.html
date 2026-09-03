@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.35</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.36</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2534,6 +2534,54 @@ en:{
  'قرارُ «هنلحق؟» وتوزيعُ الفرق':'The “will we make it?” decision and team allocation',
  'إسناداتُ السيارات — الجاري والمنتهي بتواريخه':'Vehicle assignments — current and ended, with their dates',
  'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم':'Violations and accountability: who had the plate on that day',
+
+ /* V15.36 — دورةُ حياة النقطة ورسمُها والصيانةُ والبادئات */
+ 'لم تُسجَّل زيارتُها بعد.':'No visit recorded yet.',
+ 'زيارةٌ مُسندة':'Visit assigned',
+ 'أُسندت لمشرفٍ ولم تُزر بعد.':'Assigned to a supervisor and not yet visited.',
+ 'مجدولةٌ غدًا':'Scheduled tomorrow',
+ 'موعدُ زيارتها غدًا.':'Its visit is due tomorrow.',
+ 'زيارةٌ تمّت — تنتظر الاعتماد':'Visited — awaiting approval',
+ 'المشرفُ زارها وحفظ، والمهندسُ لم يراجعها بعد.':'The supervisor visited and saved; the engineer has not reviewed it yet.',
+ 'تحتاج زيارةً أخرى':'Needs another visit',
+ 'ردَّها المهندسُ بسببٍ مكتوب، وعادت إلى مهام المشرف.':'The engineer returned it with a written reason; it is back in the supervisor’s tasks.',
+ 'معتمدةٌ — بانتظار الجدولة':'Approved — awaiting scheduling',
+ 'اعتُمدت زيارتُها وحلُّها، وتنتظر إسنادَ تركيب.':'Its visit and solution are approved; it awaits an installation assignment.',
+ 'مُسندةٌ للتركيب':'Installation assigned',
+ 'أُسند تركيبُها لفريقٍ بموعد.':'Its installation is assigned to a team with a date.',
+ 'مُركّبة':'Installed',
+ 'اكتمل تركيبُها واعتُمد.':'Its installation is complete and approved.',
+ 'صيانة':'Maintenance',
+ 'صيانةٌ مُسندة':'Maintenance assigned',
+ 'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.':'A maintenance visit is assigned during the season.',
+ 'فكٌّ مُسند أو تمّ':'Dismantle assigned or done',
+ 'أُسند فكُّها بعد الموسم أو تمّ فعلًا.':'Its dismantle is assigned after the season, or already done.',
+ 'دورة الزيارة':'Visit cycle',
+ 'الرَّدُّ يعيدها إلى «تحتاج زيارةً أخرى» ثم تعود مسارَها.':'A return sends it to “needs another visit”, then it resumes its path.',
+ 'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.':'No scheduling before solution approval, and no points before audit approval.',
+ 'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.':'Maintenance during the season, dismantling after it — both assigned the same way as installation.',
+ 'رسمُ الدورة — بألوان الخريطة نفسِها':'Cycle diagram — in the map’s own colours',
+ 'رسم دورة حياة النقطة':'Point lifecycle diagram',
+ 'اللونُ نفسُه على الخريطة: تفتح الخريطةَ فتعرف موضعَ كلِّ نقطةٍ من الدورة بنظرة.':'The same colour on the map: open it and you know where every point stands in the cycle at a glance.',
+ 'بعد التركيب — الصيانة ثم الفك':'After installation — maintenance then dismantling',
+ 'ما رُكِّب يُخدَم في أثناء الموسم: يُسنَد نوعُ «صيانة» (MR) لفريقٍ بموعد — فتصير النقطةُ صفراء':'What is installed is serviced during the season: a “maintenance” (MR) assignment goes to a team with a date — the point turns yellow',
+ 'ينفّذ الصيانةَ ويوثّقها، وتُغلَق مهمتُها باعتماد المهندس فتعود النقطةُ خضراء':'Carries out and documents the maintenance; the task closes on the engineer’s approval and the point turns green again',
+ 'بعد الموسم يُسنَد نوعُ «فك» (PR) — فتصير النقطةُ حمراءَ حتى تُرجَع عُهدتُها':'After the season a “dismantle” (PR) assignment is made — the point turns red until its custody is returned',
+ 'يفكّ ويُرجع القطعَ بحالتها في «الفك والعُهدة» — فتُغلَق دورةُ النقطة':'Dismantles and returns the parts in their condition in “Dismantle and custody” — closing the point’s cycle',
+ 'الصيانةُ والفكُّ يُسنَدان بالمحرّك نفسِه: تُحدَّد النقاطُ من الخريطة، ويُختار النوع، ويُوضَع الموعد.':'Maintenance and dismantling are assigned by the same engine: select points on the map, choose the kind, set the date.',
+ 'ما ينقصه عنوان — بالمشعر والنوع':'Missing an address — by holy site and type',
+ 'المشعر والنوع':'Holy site and type',
+ 'التوليدُ يملأ الناقصَ وحدَه: لكلِّ مشعرٍ نطاقُه ولكلِّ نوعٍ شريحتُه، وما له بادئةٌ لا يُمَسّ.':'Generation fills only what is missing: each holy site has its range and each type its slice, and anything with a prefix is untouched.',
+ 'ولّد البادئات الناقصة':'Generate missing prefixes',
+ 'الممرات فقط':'Corridors only',
+ 'كلُّ نقطةٍ لها بادئةُ شبكة.':'Every point has a network prefix.',
+ 'نقطةً نالت بادئتَها':'points received their prefix',
+ 'تُخُطِّيت':'skipped',
+ 'لا نقطةَ بلا بادئةٍ في هذا الترشيح':'No point without a prefix in this filter',
+ 'شبكةُ النقطة':'point subnet',
+ 'تفاصيل إضافية — الكميات والتقدير':'More details — quantities and estimate',
+ 'أخفِ التفاصيل':'Hide details',
+ 'يكفي ما فوق لاعتماد الزيارة — التفاصيلُ اختياريةٌ وتُحفَظ إن مُلئت.':'What is above suffices to approve the visit — the details are optional and saved if filled.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4345,6 +4393,52 @@ ur:{
  'قرارُ «هنلحق؟» وتوزيعُ الفرق':'“کیا ہم پہنچ پائیں گے؟” کا فیصلہ اور ٹیموں کی تقسیم',
  'إسناداتُ السيارات — الجاري والمنتهي بتواريخه':'گاڑیوں کی تفویضات — جاری اور ختم شدہ، تاریخوں کے ساتھ',
  'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم':'خلاف ورزیاں اور جوابدہی: اس دن پلیٹ کس کے پاس تھی',
+ 'لم تُسجَّل زيارتُها بعد.':'ابھی کوئی دورہ درج نہیں۔',
+ 'زيارةٌ مُسندة':'دورہ تفویض شدہ',
+ 'أُسندت لمشرفٍ ولم تُزر بعد.':'سپروائزر کو تفویض، ابھی دورہ نہیں ہوا۔',
+ 'مجدولةٌ غدًا':'کل کے لیے طے',
+ 'موعدُ زيارتها غدًا.':'اس کا دورہ کل ہے۔',
+ 'زيارةٌ تمّت — تنتظر الاعتماد':'دورہ ہو گیا — منظوری کا انتظار',
+ 'المشرفُ زارها وحفظ، والمهندسُ لم يراجعها بعد.':'سپروائزر نے دورہ کر کے محفوظ کیا؛ انجینئر نے ابھی جائزہ نہیں لیا۔',
+ 'تحتاج زيارةً أخرى':'دوبارہ دورہ درکار',
+ 'ردَّها المهندسُ بسببٍ مكتوب، وعادت إلى مهام المشرف.':'انجینئر نے وجہ کے ساتھ واپس کیا؛ سپروائزر کے ٹاسکس میں لوٹ گیا۔',
+ 'معتمدةٌ — بانتظار الجدولة':'منظور — شیڈولنگ کا انتظار',
+ 'اعتُمدت زيارتُها وحلُّها، وتنتظر إسنادَ تركيب.':'دورہ اور حل منظور؛ تنصیب کی تفویض کا منتظر۔',
+ 'مُسندةٌ للتركيب':'تنصیب تفویض شدہ',
+ 'أُسند تركيبُها لفريقٍ بموعد.':'تنصیب ٹیم کو تاریخ کے ساتھ تفویض ہے۔',
+ 'مُركّبة':'نصب شدہ',
+ 'اكتمل تركيبُها واعتُمد.':'تنصیب مکمل اور منظور۔',
+ 'صيانة':'دیکھ بھال',
+ 'صيانةٌ مُسندة':'دیکھ بھال تفویض شدہ',
+ 'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.':'سیزن کے دوران دیکھ بھال کا دورہ تفویض ہے۔',
+ 'فكٌّ مُسند أو تمّ':'ڈسمینٹل تفویض یا مکمل',
+ 'أُسند فكُّها بعد الموسم أو تمّ فعلًا.':'سیزن کے بعد ڈسمینٹل تفویض ہے، یا ہو چکا ہے۔',
+ 'دورة الزيارة':'دورے کا چکر',
+ 'الرَّدُّ يعيدها إلى «تحتاج زيارةً أخرى» ثم تعود مسارَها.':'واپسی اسے “دوبارہ دورہ درکار” میں بھیجتی ہے، پھر یہ اپنا راستہ جاری رکھتا ہے۔',
+ 'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.':'حل کی منظوری سے پہلے شیڈولنگ نہیں، اور آڈٹ کی منظوری سے پہلے پوائنٹس نہیں۔',
+ 'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.':'سیزن کے دوران دیکھ بھال، اس کے بعد ڈسمینٹل — دونوں تنصیب کی طرح تفویض ہوتے ہیں۔',
+ 'رسمُ الدورة — بألوان الخريطة نفسِها':'چکر کا خاکہ — نقشے کے اپنے رنگوں میں',
+ 'رسم دورة حياة النقطة':'پوائنٹ کے دورانِ حیات کا خاکہ',
+ 'اللونُ نفسُه على الخريطة: تفتح الخريطةَ فتعرف موضعَ كلِّ نقطةٍ من الدورة بنظرة.':'نقشے پر وہی رنگ: کھولیں اور ایک نظر میں جانیں ہر پوائنٹ چکر میں کہاں ہے۔',
+ 'بعد التركيب — الصيانة ثم الفك':'تنصیب کے بعد — دیکھ بھال پھر ڈسمینٹل',
+ 'ما رُكِّب يُخدَم في أثناء الموسم: يُسنَد نوعُ «صيانة» (MR) لفريقٍ بموعد — فتصير النقطةُ صفراء':'جو نصب ہے اس کی سیزن کے دوران خدمت ہوتی ہے: “دیکھ بھال” (MR) ٹیم کو تاریخ کے ساتھ — پوائنٹ پیلا ہو جاتا ہے',
+ 'ينفّذ الصيانةَ ويوثّقها، وتُغلَق مهمتُها باعتماد المهندس فتعود النقطةُ خضراء':'دیکھ بھال کر کے دستاویز کرتی ہے؛ انجینئر کی منظوری پر ٹاسک بند اور پوائنٹ دوبارہ سبز',
+ 'بعد الموسم يُسنَد نوعُ «فك» (PR) — فتصير النقطةُ حمراءَ حتى تُرجَع عُهدتُها':'سیزن کے بعد “ڈسمینٹل” (PR) تفویض ہوتا ہے — پوائنٹ سرخ رہتا ہے جب تک تحویل واپس نہ ہو',
+ 'يفكّ ويُرجع القطعَ بحالتها في «الفك والعُهدة» — فتُغلَق دورةُ النقطة':'“ڈسمینٹل اور تحویل” میں پرزے ان کی حالت کے ساتھ واپس کرتی ہے — پوائنٹ کا چکر بند',
+ 'الصيانةُ والفكُّ يُسنَدان بالمحرّك نفسِه: تُحدَّد النقاطُ من الخريطة، ويُختار النوع، ويُوضَع الموعد.':'دیکھ بھال اور ڈسمینٹل اسی انجن سے تفویض ہوتے ہیں: نقشے سے پوائنٹس منتخب کریں، قسم چنیں، تاریخ رکھیں۔',
+ 'ما ينقصه عنوان — بالمشعر والنوع':'پتہ درکار — مشعر اور قسم کے حساب سے',
+ 'المشعر والنوع':'مشعر اور قسم',
+ 'التوليدُ يملأ الناقصَ وحدَه: لكلِّ مشعرٍ نطاقُه ولكلِّ نوعٍ شريحتُه، وما له بادئةٌ لا يُمَسّ.':'جنریشن صرف کمی پوری کرتا ہے: ہر مشعر کا اپنا رینج اور ہر قسم کا اپنا حصہ، اور جس کا پریفکس ہے وہ نہیں چھیڑا جاتا۔',
+ 'ولّد البادئات الناقصة':'کمی والے پریفکس بنائیں',
+ 'الممرات فقط':'صرف راہداریاں',
+ 'كلُّ نقطةٍ لها بادئةُ شبكة.':'ہر پوائنٹ کا نیٹ ورک پریفکس ہے۔',
+ 'نقطةً نالت بادئتَها':'پوائنٹس کو پریفکس ملا',
+ 'تُخُطِّيت':'چھوڑے گئے',
+ 'لا نقطةَ بلا بادئةٍ في هذا الترشيح':'اس فلٹر میں کوئی پوائنٹ بغیر پریفکس نہیں',
+ 'شبكةُ النقطة':'پوائنٹ کا سب نیٹ',
+ 'تفاصيل إضافية — الكميات والتقدير':'مزید تفصیلات — مقداریں اور تخمینہ',
+ 'أخفِ التفاصيل':'تفصیلات چھپائیں',
+ 'يكفي ما فوق لاعتماد الزيارة — التفاصيلُ اختياريةٌ وتُحفَظ إن مُلئت.':'اوپر کی معلومات دورے کی منظوری کے لیے کافی ہیں — تفصیلات اختیاری ہیں اور بھرنے پر محفوظ ہوتی ہیں۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6454,7 +6548,7 @@ var FB = {
       FB.db.collection('settings').doc('reqSeq').get().then(function(doc){
         if (doc && doc.exists){
           var v = doc.data();
-          ['SR','DR','PR','CR','AR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
+          ['SR','DR','PR','CR','AR','MR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
         }
       }).catch(function(e){ softErr('سحب ترقيم الطلبات', e, 'تعذّر سحبُ آخر رقم طلب — قد يتكرّر الترقيم'); });
       /* الفكُّ والورشةُ (تهيئة وتجميع) كانا يُكتَبان في 'dismantles' و'inventory'
@@ -7985,6 +8079,9 @@ var WO_KINDS = {
   asm:     { n:'تجميع',   i:'\u{1F9F0}', c:'#C77DFF', tgt:'asm' },
   install: { n:'تركيب',   i:'\u{1F527}', c:'#3AD6A0', tgt:'ins' },
   dis:     { n:'فك',      i:'\u{1F9E9}', c:'#F2994A', tgt:'dis' },
+  /* الصيانةُ حلقةٌ كانت ناقصةً بين التركيب والفكّ: ما رُكِّب يُخدَم في أثناء
+     الموسم — يُسنَد كما يُسنَد التركيب، وله ترقيمُه (MR) ولونُه في الدورة. */
+  maint:   { n:'صيانة',   i:'\u{1F6E1}', c:'#F5D547', tgt:'ins' },
   store:   { n:'مستودع',  i:'\u{1F4E6}', c:'#7DA9E8', tgt:'' },
   buy:     { n:'مشتريات', i:'\u{1F4B3}', c:'#E88FBF', tgt:'' },
   drive:   { n:'نقل',     i:'\u{1F69A}', c:'#9AA7B2', tgt:'' }
@@ -8780,9 +8877,37 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'ips') return head + (function(){
     var L = ipRows(), all = (STATE.sites || []).filter(function(x){ return x.net; }).length;
+    var missBy = {};
+    (STATE.sites || []).forEach(function(x){
+      if (x.net) return;
+      /* المفتاحُ مركَّبٌ بالجمع فلا يبلغه القاموس — يُخزَّن جزآه ويُترجَم كلٌّ
+         على حدة عند العرض */
+      var k = x.zone + '\u0000' + x.type;
+      missBy[k] = (missBy[k] || 0) + 1;
+    });
+    var missKeys = Object.keys(missBy).sort(function(a, b){ return missBy[b] - missBy[a]; });
     return stats([['نقاطٌ لها شبكة', N(all), all ? 'ok' : 'wrn'],
-                  ['بلا عنوان', N((STATE.sites || []).length - all)],
+                  ['بلا عنوان', N((STATE.sites || []).length - all),
+                   (STATE.sites || []).length - all ? 'wrn' : 'ok'],
                   ['معروض', N(L.length)]])
+
+      /* الناقصُ بالمشعر والنوع: كان يُقال «بلا عنوان ٩٠٠» ولا يُعرف أينها —
+         فتُعنوَن المخيماتُ وتُنسى الممرات. */
+      + (missKeys.length
+        ? card('ما ينقصه عنوان — بالمشعر والنوع',
+            table(['المشعر والنوع','بلا عنوان'],
+              missKeys.slice(0, 20).map(function(k){
+                var pr = k.split('\u0000');
+                return [esc(t(pr[0])) + ' \u00b7 ' + esc(t(pr[1])), N(missBy[k])];
+              }))
+            + '<p class="hint" style="margin:8px 0 0">'
+            + esc(t('التوليدُ يملأ الناقصَ وحدَه: لكلِّ مشعرٍ نطاقُه ولكلِّ نوعٍ شريحتُه، وما له بادئةٌ لا يُمَسّ.')) + '</p>',
+            may('edit')
+              ? btn('\u26A1 ' + t('ولّد البادئات الناقصة'),'btn-primary btn-sm',' data-ipfill="1"')
+                + btn('\u26A1 ' + t('الممرات فقط'),'btn-secondary btn-sm',' data-ipfill="ممر"')
+              : '')
+        : card('', '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('كلُّ نقطةٍ لها بادئةُ شبكة.')) + '</p>'))
 
       + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
       +   '<input type="search" id="ipQ" data-ipq="1" value="' + esc(IP_Q) + '" placeholder="'
@@ -9173,7 +9298,7 @@ var ASN_PICK = false;    /* لوحُ اختيار نوع الإسناد على �
 
 /* لكلِّ نوعٍ وجهتُه الطبيعية: الزيارةُ لفنيٍّ يمشي وحده،
    والتركيبُ والفكُّ لفريقٍ لأنهما عملُ أيدٍ لا يدٍ واحدة. */
-var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team' };
+var ASN_KIND_DEST = { visit:'tech', install:'team', dis:'team', maint:'team' };
 /* اسمُ نوع المهمة بالعربية وأيقونته — يُشتقّ من LAYERS فلا يُكتب مرتين */
 function kindLabel(kind){
   var k = Object.keys(LAYERS).filter(function(n){ return LAYERS[n].kind === kind; })[0];
@@ -9184,8 +9309,8 @@ function kindLabel(kind){
    التقارير والمكالمات، منفصلٌ عن معرّف المهمة الداخلي (TK-kind-site) الذي
    لا يتغيّر ولا يتكرّر. الأنواعُ الأخرى (تهيئة، تجميع، مستودع…) بلا ترقيم —
    لم يُطلب لها. */
-var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR', prep:'CR', asm:'AR' };
-var REQSEQ = { SR:0, DR:0, PR:0, CR:0, AR:0 };
+var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR', prep:'CR', asm:'AR', maint:'MR' };
+var REQSEQ = { SR:0, DR:0, PR:0, CR:0, AR:0, MR:0 };
 function reqNext(kind){
   var p = REQ_PREFIX[kind];
   if (!p) return '';
@@ -9845,6 +9970,16 @@ function svTxt(key, label, hint){
     + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
 }
 
+/* ═══ نموذجُ المسح: الأساسيُّ أوّلًا والتفصيليُّ عند الطلب ═══
+   كان النموذجُ يعرض سبعةً وعشرين حقلًا دفعةً واحدةً على شاشة هاتفٍ في
+   الشمس — فيتوه المشرفُ ويملأ ما لا يلزم ويترك ما يلزم. والحقولُ كلُّها
+   تنفع، لكن ليست كلُّها لازمةً لكلِّ نقطة: المكتبُ يحتاج القياساتِ
+   والصلاحيةَ والكهرباءَ ونقطةَ التركيب ليقرّر؛ وما بقي — الكمياتُ
+   والتقديرُ وتفاصيلُ الوصول — يُقدَّره المهندسُ من الحل ولا يُطلَب من
+   الميدان إلا حين يعرفه.
+     فصار الأساسيُّ ظاهرًا دائمًا، والتفصيليُّ خلف زرٍّ واحد، ولا حقلَ
+   حُذف ولا قيمةٌ ضاعت: ما مُلئ يُحفَظ كما كان. */
+var SV_MORE = false;
 function svExtra(s){
   var isCamp = s.type === 'مخيم';
   /* كلُّ ما يعبره الحاجُّ مشيًا تحت إطارٍ مكشوف: ممرٌّ وجسرٌ ومحطةُ قطارٍ
@@ -9926,6 +10061,17 @@ function svExtra(s){
       + (reuse ? svTxt('power_note','ماذا تغيّر؟','اتركه فارغًا إن كان الوضع كما هو') : '')
       + '</div>');
 
+  /* ── ما دون هذا تفصيلٌ يُفتَح عند الحاجة ── */
+  h += '<div class="actions" style="margin:2px 0 12px">'
+     + btn((SV_MORE ? '\u25B2 ' : '\u25BC ') + t(SV_MORE ? 'أخفِ التفاصيل' : 'تفاصيل إضافية — الكميات والتقدير'),
+           'btn-quiet btn-sm', ' data-svmore="' + (SV_MORE ? '0' : '1') + '"')
+     + '</div>';
+  if (!SV_MORE){
+    h += '<p class="hint" style="margin:0 0 12px">'
+       + esc(t('يكفي ما فوق لاعتماد الزيارة — التفاصيلُ اختياريةٌ وتُحفَظ إن مُلئت.')) + '</p>';
+    return h;
+  }
+
   h += card('الكميات المطلوبة',
       '<div class="grid cols-2">'
       + svNum('n_ant','عدد الهوائيات')
@@ -9962,8 +10108,54 @@ function svExtra(s){
 
 /* ── نموذج التركيب ── */
 
+/* ═══ توليدُ البادئات الناقصة ═══
+   كانت البادئةُ تُكتَب نقطةً نقطةً أو تُستورَد من ملف — فبقيت المخيماتُ
+   معنونةً والممراتُ بلا عنوان، ولا أحدَ يعرف كم بقي. صار زرٌّ واحدٌ يملأ
+   الناقصَ بمخطَّطٍ ثابت: لكلِّ مشعرٍ ثمانيةٌ، ولكلِّ نوعٍ داخله شريحةٌ من
+   الثالثة، والرقمُ الأخيرُ تسلسلٌ داخل النوع. وما له بادئةٌ لا يُمَسّ. */
+var IP_OCT2 = { 'منى':10, 'عرفات':20, 'مزدلفة':30, 'الجمرات':40, 'مكة':50 };
+var IP_OCT3 = { 'مخيم':0, 'ممر':40, 'جسر':80, 'كاميرا':120, 'محطة':160, 'بوابة':200, 'مبنى':230 };
+function ipFillMissing(zoneOnly, typeOnly){
+  if (!may('edit')){ toast(t('التحريرُ ليس من صلاحيتك')); return; }
+  var used = {};
+  (STATE.sites || []).forEach(function(x){ if (x.net) used[x.net] = 1; });
+  var seq = {}, made = 0, skipped = 0;
+  (STATE.sites || []).forEach(function(x){
+    if (x.net) return;
+    if (zoneOnly && x.zone !== zoneOnly) return;
+    if (typeOnly && x.type !== typeOnly) return;
+    var o2 = IP_OCT2[x.zone], o3b = IP_OCT3[x.type];
+    if (o2 == null || o3b == null){ skipped++; return; }
+    var key = x.zone + '|' + x.type;
+    var i = seq[key] || 0, net = '';
+    /* لكلِّ نوعٍ في المشعر أربعون شبكةً (o3b … o3b+39)، وكلُّ شبكةٍ تحمل
+       مئتين وخمسين نقطة — يكفي المشروعَ أضعافًا ويبقى المخطَّطُ مقروءًا. */
+    while (i < 40 * 250){
+      var o3 = o3b + Math.floor(i / 250), o4 = 1 + (i % 250);
+      var cand = '10.' + o2 + '.' + o3 + '.' + o4;
+      i++;
+      if (!used[cand]){ net = cand; break; }
+    }
+    if (!net){ skipped++; return; }
+    seq[key] = i;
+    used[net] = 1;
+    x.net = net;
+    CORE.set('sites', x.id, { net:net, ipRtr:'', ipRdr:'', ipCam:'' });
+    made++;
+  });
+  statBump();
+  logEvent('توليد بادئات الشبكة — ' + nm(made) + ' نقطة'
+           + (zoneOnly ? ' \u00b7 ' + zoneOnly : '') + (typeOnly ? ' \u00b7 ' + typeOnly : ''));
+  toast(made ? (nm(made) + ' ' + t('نقطةً نالت بادئتَها')
+                 + (skipped ? ' \u00b7 ' + nm(skipped) + ' ' + t('تُخُطِّيت') : ''))
+             : t('لا نقطةَ بلا بادئةٍ في هذا الترشيح'));
+  render(1);
+}
 function ipsOf(p){
   p = String(p || '').trim().replace(/\.+$/, '');
+  /* البادئةُ ثلاثةُ أعدادٍ (10.20.30) — والمولَّدةُ أربعةٌ لأن لكلِّ نقطةٍ
+     شبكتَها الفرعية، فتُقرأ أعدادُها الثلاثةُ الأولى بادئةً وتُعرَض كاملة. */
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(p)) return p + ' \u2014 ' + t('شبكةُ النقطة');
   if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(p)) return '—';
   return p + '.1 · ' + p + '.2 · ' + p + '.3';
 }
@@ -12197,7 +12389,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.35' + '.docx" download>⬇ '
+              +   'V15.36' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -13156,9 +13348,57 @@ var MAP_COL = {
   install: { 'لم يبدأ':'#9FB0AA', 'مجدول':'#FF8C42', 'مُركّب':'#3AD6A0', 'متعذّر':'#E05252' }
 };
 
-/* ألوانُ دورة الزيارة — تُقرأ في التلوين والأسطورة معًا فلا يفترقان */
+
+/* ═══ دورةُ حياة النقطة — حالةٌ واحدةٌ يقرؤها الجميع ═══
+   كانت الألوانُ تُقرَّر في ثلاثة مواضع: طبقةُ المسح لها ألوانُها، وطبقةُ
+   التركيب حالاتُها، والأسطورةُ تكتب ما تظنّه. فيختلف اللونُ عن معناه ولا
+   يُلاحَظ. صارت الحالةُ تُشتقُّ مرةً واحدةً من السجلات نفسِها، ومنها يُؤخَذ
+   اللونُ في الخريطة وفي الأسطورة وفي رسم الدورة — فما تراه على الخريطة هو
+   ما يشرحه الرسم بالحرف.
+
+   الترتيبُ من آخر ما جرى إلى أوّله: الفكُّ يغلب الصيانة، والصيانةُ تغلب
+   التركيب، والتركيبُ يغلب الجدولة، وهكذا — فالنقطةُ تلبس لونَ آخر مرحلةٍ
+   بلغتها لا أوّلِها. */
+var LIFE = {
+  todo:      { c:'#9FB0AA', n:'لم تُزر',                 d:'لم تُسجَّل زيارتُها بعد.' },
+  assigned:  { c:'#C9A27E', n:'زيارةٌ مُسندة',            d:'أُسندت لمشرفٍ ولم تُزر بعد.' },
+  tomorrow:  { c:'#B388FF', n:'مجدولةٌ غدًا',             d:'موعدُ زيارتها غدًا.' },
+  visited:   { c:'#4FA3FF', n:'زيارةٌ تمّت — تنتظر الاعتماد', d:'المشرفُ زارها وحفظ، والمهندسُ لم يراجعها بعد.' },
+  revisit:   { c:'#FF8FA3', n:'تحتاج زيارةً أخرى',        d:'ردَّها المهندسُ بسببٍ مكتوب، وعادت إلى مهام المشرف.' },
+  ready:     { c:'#FF8C42', n:'معتمدةٌ — بانتظار الجدولة', d:'اعتُمدت زيارتُها وحلُّها، وتنتظر إسنادَ تركيب.' },
+  sched:     { c:'#7C5CFF', n:'مُسندةٌ للتركيب',           d:'أُسند تركيبُها لفريقٍ بموعد.' },
+  installed: { c:'#3AD6A0', n:'مُركّبة',                  d:'اكتمل تركيبُها واعتُمد.' },
+  maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
+  dis:       { c:'#E01B1B', n:'فكٌّ مُسند أو تمّ',         d:'أُسند فكُّها بعد الموسم أو تمّ فعلًا.' }
+};
+var LIFE_ORDER = ['todo','assigned','tomorrow','visited','revisit','ready','sched','installed','maint','dis'];
+/* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
+function taskKindOf(id, kind){
+  var T = STATE.tasks;
+  for (var k in T) if (T[k] && T[k].site === id && T[k].kind === kind && T[k].status !== 'معتمد') return T[k];
+  return null;
+}
+function lifeOf(x){
+  var id = x.id;
+  if (disDone(id) || taskKindOf(id, 'dis')) return 'dis';
+  if (taskKindOf(id, 'maint')) return 'maint';
+  if (insDone(id)) return 'installed';
+  if (taskKindOf(id, 'install')) return 'sched';
+  var r = STATE.recs[id], rv = (typeof svReview === 'function') ? svReview(r) : '';
+  if (rv === 'approved'){
+    var so = solutionOf(id);
+    return (so && so.status === 'معتمد') ? 'ready' : 'ready';
+  }
+  if (rv === 'revisit') return 'revisit';
+  if (rv === 'pending') return 'visited';
+  var tk = taskKindOf(id, 'visit');
+  if (tk) return (tk.when && tk.when > dayKey(Date.now())) ? 'tomorrow' : 'assigned';
+  return 'todo';
+}
+function lifeColor(x){ return (LIFE[lifeOf(x)] || LIFE.todo).c; }
+/* ألوانُ دورة الزيارة — تبقى لتلوينِ «نقاطي» في طبقة المسح */
 var SV_COL = { todo:'#E8C34B', mine:'#FF8C42', others:'#C9A27E', tomorrow:'#B388FF',
-               revisit:'#FF6B6B', pending:'#4FA3FF', approved:'#3AD6A0' };
+               revisit:'#FF8FA3', pending:'#4FA3FF', approved:'#3AD6A0' };
 function mapColorOf(x){
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
@@ -13172,18 +13412,9 @@ function mapColorOf(x){
      مُسندٌ لغيرك · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد ·
      معتمدة. فالمشرفُ يرى نقاطَه بلونٍ لا يشبه نقاطَ غيره، والوزارةُ ترى ما
      انتهى وما يجري وما سيجري غدًا على الخريطة نفسِها. */
-  if (FIELD_MODE === 'survey' && typeof svReview === 'function'){
-    var rv = svReview(STATE.recs[x.id]);
-    if (rv === 'approved') return SV_COL.approved;
-    if (rv === 'pending')  return SV_COL.pending;
-    if (rv === 'revisit')  return SV_COL.revisit;
-    var tk = asnOf(x.id);
-    if (tk){
-      if (tk.when && tk.when > dayKey(Date.now())) return SV_COL.tomorrow;
-      return (tk.to === (STATE.meta.name || '')) || may('approve') ? SV_COL.mine : SV_COL.others;
-    }
-    return SV_COL.todo;
-  }
+  /* طبقةُ المسح: لونُ دورة الحياة كاملةً — من «لم تُزر» إلى «الفك».
+     ومن أراد أن يرى نقاطَه هو وحدَه ضغط «نقاطي» فتُرشَّح القائمةُ نفسُها. */
+  if (FIELD_MODE === 'survey' && typeof lifeOf === 'function') return lifeColor(x);
   /* لونُ الطبقة: المنجَزُ بلونها والجاهزُ أصفرُ انتظار والمُسنَدُ برتقالي */
   if (typeof LAYERS === 'object' && LAYERS[FIELD_MODE]){
     var L = LAYERS[FIELD_MODE];
@@ -14784,13 +15015,8 @@ function legendRows(){
   var L = (typeof LAYER === 'function') ? LAYER() : LAYERS.survey;
   var rows = [];
   if (FIELD_MODE === 'survey'){
-    rows = [[SV_COL.todo,'لم يُزر'],
-            [SV_COL.mine, may('approve') ? 'مُسند' : 'مُسند إليك'],
-            [SV_COL.tomorrow,'مجدول غدًا'],
-            [SV_COL.revisit,'تحتاج زيارة أخرى'],
-            [SV_COL.pending,'تمت — بانتظار الاعتماد'],
-            [SV_COL.approved,'معتمدة']];
-    if (!may('approve')) rows.splice(2, 0, [SV_COL.others,'مُسند لغيرك']);
+    /* الأسطورةُ تُشتقُّ من دورة الحياة نفسِها — فلا تفترق عن الخريطة */
+    rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n]; });
   } else if (FIELD_MODE === 'install'){
     rows = [['#E8C34B','بانتظار التركيب'], ['#FF8C42','مُسند'], [L.c,'مُركّب']];
   } else {
@@ -15684,6 +15910,58 @@ function wfStep(n, who, what, page){
     + '<div class="li-s">' + esc(t(who)) + '</div>' + jump
     + '</div></div>';
 }
+
+/* رسمُ الدورة: صناديقُ الحالات بألوانها من LIFE نفسِها — فما يراه على
+   الخريطة يجده هنا بالحرف. SVG لا صورة: يكبر ويصغر ويُترجَم ويُطبَع. */
+function wfDiagram(){
+  var rows = [
+    { t:'دورة الزيارة', k:['todo','assigned','visited','ready'], why:'الرَّدُّ يعيدها إلى «تحتاج زيارةً أخرى» ثم تعود مسارَها.' },
+    { t:'دورة التركيب', k:['ready','sched','installed'], why:'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.' },
+    { t:'بعد التركيب',  k:['installed','maint','dis'], why:'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.' }
+  ];
+  var W = 660, bw = 132, bh = 46, gap = 26, out = '';
+  var y = 8;
+  rows.forEach(function(r){
+    out += '<text x="' + (W - 6) + '" y="' + (y + 14) + '" text-anchor="end" '
+        +  'font-size="15" font-weight="700" fill="var(--ink)">' + esc(t(r.t)) + '</text>';
+    y += 26;
+    var n = r.k.length;
+    var total = n * bw + (n - 1) * gap;
+    var x0 = W - Math.round((W - total) / 2) - bw;   /* من اليمين لليسار */
+    r.k.forEach(function(key, i){
+      var L = LIFE[key] || LIFE.todo;
+      var x = x0 - i * (bw + gap);
+      out += '<rect x="' + x + '" y="' + y + '" rx="10" width="' + bw + '" height="' + bh + '" '
+          +  'fill="' + L.c + '" fill-opacity="0.18" stroke="' + L.c + '" stroke-width="2"/>'
+          +  '<circle cx="' + (x + bw - 14) + '" cy="' + (y + 14) + '" r="6" fill="' + L.c + '"/>'
+          +  '<text x="' + (x + bw - 26) + '" y="' + (y + 19) + '" text-anchor="end" font-size="12.5" '
+          +  'font-weight="700" fill="var(--ink)">' + esc(t(L.n).slice(0, 22)) + '</text>'
+          +  '<text x="' + (x + bw - 10) + '" y="' + (y + 36) + '" text-anchor="end" font-size="10.5" '
+          +  'fill="var(--ink-soft)">' + esc(t(L.d).slice(0, 34)) + '</text>';
+      if (i < n - 1){
+        var ax = x - gap + 4, ay = y + bh / 2;
+        out += '<line x1="' + (ax + gap - 8) + '" y1="' + ay + '" x2="' + (ax + 4) + '" y2="' + ay + '" '
+            +  'stroke="var(--ink-soft)" stroke-width="2"/>'
+            +  '<polygon points="' + ax + ',' + ay + ' ' + (ax + 8) + ',' + (ay - 5) + ' ' + (ax + 8) + ',' + (ay + 5) + '" '
+            +  'fill="var(--ink-soft)"/>';
+      }
+    });
+    y += bh + 8;
+    out += '<text x="' + (W - 6) + '" y="' + (y + 10) + '" text-anchor="end" font-size="11" '
+        +  'fill="var(--ink-soft)">' + esc(t(r.why)) + '</text>';
+    y += 30;
+  });
+  return card('\u{1F5FA} ' + t('رسمُ الدورة — بألوان الخريطة نفسِها'),
+      '<div style="overflow-x:auto"><svg viewBox="0 0 ' + W + ' ' + y + '" width="100%" '
+      + 'style="min-width:600px;height:auto" role="img" aria-label="' + esc(t('رسم دورة حياة النقطة')) + '">'
+      + out + '</svg></div>'
+      + '<div class="chips" style="margin:10px 0 0">' + LIFE_ORDER.map(function(k){
+          return '<span class="chip"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;'
+            + 'background:' + LIFE[k].c + ';margin-inline-end:6px"></i>' + esc(t(LIFE[k].n)) + '</span>';
+        }).join('') + '</div>'
+      + '<p class="hint" style="margin:10px 0 0">'
+      + esc(t('اللونُ نفسُه على الخريطة: تفتح الخريطةَ فتعرف موضعَ كلِّ نقطةٍ من الدورة بنظرة.')) + '</p>');
+}
 function wfBody(){
   var visit = [
     ['المهندس','يُنشئ طلبَ زيارةٍ (SR) أو يُسنِد نقاطًا من الخريطة لمشرفٍ بموعد','req'],
@@ -15702,6 +15980,12 @@ function wfBody(){
     ['المهندس','يدقّق التركيبَ في «التدقيق الهندسي» فيعتمده — أو يفتح عدمَ مطابقةٍ إن وجد خللًا','qa'],
     ['النظام','بالاعتماد تصير النقطةُ «مُركّب» وتُحتسب نقاطُ الفريق — وتظهر خضراءَ على الخريطة','map']
   ];
+  var after = [
+    ['المهندس','ما رُكِّب يُخدَم في أثناء الموسم: يُسنَد نوعُ «صيانة» (MR) لفريقٍ بموعد — فتصير النقطةُ صفراء','req'],
+    ['الفريق','ينفّذ الصيانةَ ويوثّقها، وتُغلَق مهمتُها باعتماد المهندس فتعود النقطةُ خضراء','mywork'],
+    ['المهندس','بعد الموسم يُسنَد نوعُ «فك» (PR) — فتصير النقطةُ حمراءَ حتى تُرجَع عُهدتُها','req'],
+    ['الفريق','يفكّ ويُرجع القطعَ بحالتها في «الفك والعُهدة» — فتُغلَق دورةُ النقطة','disp2']
+  ];
   var follow = [
     ['الجميع','«أمس · الآن · غدًا»: ما انتهى، وما يجري الآن ومن يفعله وأين، وما جُدول لغد','now'],
     ['الجميع','الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد','map'],
@@ -15714,10 +15998,13 @@ function wfBody(){
         '<div class="list">' + steps.map(function(st){ i++; return wfStep(i, st[0], st[1], st[2]); }).join('') + '</div>'
         + (note ? '<p class="hint" style="margin:10px 0 0">' + esc(t(note)) + '</p>' : ''));
   }
-  return cyc('دورة الزيارة — حتى تُعتمَد', '\u{1F50D}', visit,
+  return wfDiagram()
+    + cyc('دورة الزيارة — حتى تُعتمَد', '\u{1F50D}', visit,
         'لا تُحتسب زيارةٌ في المنجَز وهي مردودة — والاعتمادُ وحدَه يفتح بابَ الحل.')
     + cyc('دورة التركيب — حتى يكتمل', '\u{1F527}', install,
         'البواباتُ بالترتيب: لا حلَّ قبل اعتماد الزيارة، ولا طلبَ تركيبٍ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.')
+    + cyc('بعد التركيب — الصيانة ثم الفك', '\u{1F6E1}', after,
+        'الصيانةُ والفكُّ يُسنَدان بالمحرّك نفسِه: تُحدَّد النقاطُ من الخريطة، ويُختار النوع، ويُوضَع الموعد.')
     + cyc('المتابعة — من أين تُراقب', '\u{1F4CA}', follow, '');
 }
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
@@ -20649,6 +20936,14 @@ function onDocClick(e){
   if (svsg){ var idS = svsg.getAttribute('data-svsolgo');
     if (solGo(idS)){ if (may('users')) solutionAppr(idS, 1); SVA_SOL = ''; }
     render(1); return; }
+  var ipf = e.target.closest('[data-ipfill]');
+  if (ipf){
+    var ty = ipf.getAttribute('data-ipfill');
+    ipFillMissing('', ty === '1' ? '' : ty);
+    return;
+  }
+  var svm = e.target.closest('[data-svmore]');
+  if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   if (e.target.closest('[data-pkadd]')){ pkAdd(); return; }
   var pkrm = e.target.closest('[data-pkrm]');
   if (pkrm){ delete SOL_LINES[pkrm.getAttribute('data-pkrm')]; render(1); return; }

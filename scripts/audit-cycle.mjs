@@ -44,16 +44,18 @@ w.CUR = 'mywork'; w.MYW_TAB = 'tasks'; w.render(1);
 h = d.getElementById('content').textContent;
 T(h.indexOf(site.id) > -1 && h.indexOf('إسناداتٌ مفتوحة') < 0, 'المشرف يرى مهمته وحدها');
 w.FIELD_MODE = 'survey';
-T(w.mapColorOf(site) === w.SV_COL.mine, 'نقطة المشرف بلون «مُسند إليك» على الخريطة');
-w.STATE.meta.name = 'مشرف آخر';
-T(w.mapColorOf(site) === w.SV_COL.others, 'نقطة غيره بلون «مُسند لغيرك»');
-w.STATE.meta.name = 'مشرف الاختبار';
+/* V15.36: الخريطةُ تلوّن دورةَ الحياة كاملةً — المُسنَدُ غيرُ المزور «assigned» */
+T(w.lifeOf(site) === 'assigned' && w.mapColorOf(site) === w.LIFE.assigned.c,
+  'نقطةٌ مُسندةٌ لم تُزر — لونُ «زيارةٌ مُسندة»');
+w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now() + 86400000);
+T(w.lifeOf(site) === 'tomorrow', 'موعدُ الغد يجعلها «مجدولةٌ غدًا»');
+w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now());
 /* ٣ · المشرف يزور ويحفظ */
 w.FORM.site = site.id; w.FORM.access = 'تم الوصول'; w.FORM.photos = { site:{data:'data:,a'}, mount:{data:'data:,b'} }; w.FORM.note = 'مسح تجريبي';
 w.svSave(0);
 let rec = w.STATE.recs[site.id];
 T(rec && w.svReview(rec) === 'pending', 'الزيارة حُفظت وتنتظر الاعتماد');
-T(w.mapColorOf(site) === w.SV_COL.pending, 'لونها «تمت — بانتظار الاعتماد»');
+T(w.lifeOf(site) === 'visited', 'حالتُها «زيارةٌ تمّت — تنتظر الاعتماد»');
 /* ٤ · المشرف لا يستطيع اقتراح حل قبل الاعتماد */
 w.solutionSave(site.id, { [w.itemsList()[0].code]: 1 });
 T(!w.solutionOf(site.id), 'لا حلَّ قبل اعتماد الزيارة');
@@ -68,7 +70,7 @@ click('[data-svrevisitgo="' + site.id + '"]');
 rec = w.STATE.recs[site.id];
 T(w.svReview(rec) === 'revisit' && !w.svDone(rec), 'رُدَّت — ولم تعد تُحتسب منجزة');
 T(w.STATE.tasks['TK-visit-' + site.id].status === 'مطلوب', 'مهمة الزيارة ما زالت مفتوحة على المشرف');
-T(w.mapColorOf(site) === w.SV_COL.revisit, 'لونها «تحتاج زيارة أخرى»');
+T(w.lifeOf(site) === 'revisit', 'حالتُها «تحتاج زيارةً أخرى»');
 /* ٦ · المشرف يرى السبب في مهامه ويعود */
 w.ROLE = 'supervisor'; w.STATE.meta.name = 'مشرف الاختبار';
 w.CUR = 'mywork'; w.MYW_TAB = 'tasks'; w.render(1);
@@ -102,7 +104,25 @@ click('[data-svsolgo="' + site.id + '"]');
 const so = w.solutionOf(site.id);
 T(so && so.status === 'معتمد' && so.items[it0.code] === 2, 'الحل حُفظ واعتُمد من شاشة واحدة');
 T(w.LAYERS.install.pass(site), 'النقطة دخلت طبقة التركيب');
-T(w.mapColorOf(site) === w.SV_COL.approved, 'لونها «معتمدة»');
+T(w.lifeOf(site) === 'ready' && w.mapColorOf(site) === w.LIFE.ready.c,
+  'معتمدةٌ بحلٍّ — لونُ «بانتظار الجدولة» البرتقالي');
+/* بقيةُ الدورة: جدولةٌ ← تركيبٌ ← صيانةٌ ← فكّ */
+w.STATE.tasks['TK-install-' + site.id] = { id:'TK-install-'+site.id, site:site.id, kind:'install',
+  to:'فريق الاختبار', status:'مطلوب', when:w.dayKey(Date.now()), at:Date.now() };
+T(w.lifeOf(site) === 'sched', 'إسنادُ التركيب يجعلها «مُسندةً للتركيب»');
+w.STATE.inss[site.id] = Object.assign({}, w.STATE.inss[site.id], { status:'مُركّب', approved:true });
+T(w.lifeOf(site) === 'installed' && w.mapColorOf(site) === w.LIFE.installed.c, 'بعد التركيب: خضراء');
+w.STATE.tasks['TK-maint-' + site.id] = { id:'TK-maint-'+site.id, site:site.id, kind:'maint',
+  to:'فريق الاختبار', status:'مطلوب', at:Date.now() };
+T(w.lifeOf(site) === 'maint' && w.mapColorOf(site) === w.LIFE.maint.c, 'إسنادُ الصيانة: صفراء');
+w.STATE.tasks['TK-dis-' + site.id] = { id:'TK-dis-'+site.id, site:site.id, kind:'dis',
+  to:'فريق الاختبار', status:'مطلوب', at:Date.now() };
+T(w.lifeOf(site) === 'dis' && w.mapColorOf(site) === w.LIFE.dis.c, 'إسنادُ الفك: حمراء');
+delete w.STATE.tasks['TK-dis-' + site.id]; delete w.STATE.tasks['TK-maint-' + site.id];
+/* الرسمُ يُبنى من الحالات نفسِها */
+w.ROLE = 'engineer'; w.goPage('wf'); w.render(1);
+const wfx = d.getElementById('content').textContent;
+T(d.querySelector('#content svg') && wfx.indexOf('رسمُ الدورة') > -1, 'رسمُ الدورة يُرسَم في «دورة العمل»');
 /* ٨ · النمط يُطبَّق على نقطة أخرى */
 w.SOL_LINES = {}; w.CUR = 'solution'; w.render(1);
 w.patApply('مخيم قياسي');

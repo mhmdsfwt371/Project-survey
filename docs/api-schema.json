@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.35",
+  "app_version": "V15.36",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1404,7 +1404,8 @@
     "V15.32": "الدمج الثالث: 42 → 34 صفحة، القائمة 32 بندًا (الأصل 94). survey+=solution (t=الزيارات والحلول)، forms يحلّ فيه hand (hand+ips)، ipc+=budget (t=الشؤون المالية)، inv+=ships، sys+=hb، وأمهات جديدة: dis(dis,chain)، co(co,conote)، guide(guide,sop). أداة الدمج تعلّمت DISSOLVE، وسجل TABS يُعاد بناؤه كاملًا. qa وaudit-writes صارا يشتقّان عدد البنود ويفتحان كل شريحة.",
     "V15.33": "توحيد آليتي التبويب: MYW_TAB وdata-mywtab حُذفا، mywork صارت أمًّا في TABS بخمس شرائح (mywork/mine/myscore/myteam/mycrew)، وmine صارت شريحة لا بندًا. 34 → 33 صفحة، القائمة 31 بندًا. عنصر خامس في صف الشريحة: TAB_SEE ('self'/'team').",
     "V15.34": "«دورة العمل»: شريحة wf في guide (self) — ثلاث دورات بخطوات وأزرار قفز data-p لا تظهر إلا لمن يرى الشاشة (wfBody/wfStep)؛ زر «كيف تسير الدورة؟» في now وmywork. بحث المساعد يفهرس D.en أيًّا كانت اللغة. الدفعة الرابعة: qa→survey (دورة النقطة، 8 شرائح)، wos→inv، risks→plan (التخطيط والمخاطر)، consts→items (الكتالوج والقوائم)، hse→org (التنظيم والسلامة). 33 → 28 صفحة، 26 بندًا. أيقونات TABS طُبّعت إلى حروف فعلية بعد مضاعفة تهريب.",
-    "V15.35": "المصدر الواحد للأشخاص = الحسابات: حذف بذرة TECHS وطاقم 1447، techsList() تُشتق من STATE.users، techSet/jobAssign/techDel تكتب على وثيقة الحساب، depTechAdd ينسب فقط (يشترط techUid)، usrAdd بوظيفة uJ ومشرف uS والوظيفة تجرّ الدور، صف التعديل + data-usrdel بحمايتين، زر data-tkpurge يحذف settings/techs ويفرغ الفرق من أسماء بلا حساب. PROV + provHtml في tabHead: سطر «تأتي من · تُقرأ في» لـ14 شاشة. stageOf من دور الوظيفة."
+    "V15.35": "المصدر الواحد للأشخاص = الحسابات: حذف بذرة TECHS وطاقم 1447، techsList() تُشتق من STATE.users، techSet/jobAssign/techDel تكتب على وثيقة الحساب، depTechAdd ينسب فقط (يشترط techUid)، usrAdd بوظيفة uJ ومشرف uS والوظيفة تجرّ الدور، صف التعديل + data-usrdel بحمايتين، زر data-tkpurge يحذف settings/techs ويفرغ الفرق من أسماء بلا حساب. PROV + provHtml في tabHead: سطر «تأتي من · تُقرأ في» لـ14 شاشة. stageOf من دور الوظيفة.",
+    "V15.36": "دورة حياة النقطة LIFE/lifeOf/lifeColor بعشر حالات — مصدر واحد للون في mapColorOf وlegendRows وwfDiagram. نوع عمل جديد maint (MR) يُسنَد بالمحرك نفسه. رسم SVG wfDiagram في شريحة wf. توليد بادئات الشبكة الناقصة ipFillMissing + جدول الناقص بالمشعر والنوع. نموذج المسح: SV_MORE يطوي الكميات والتقدير خلف زر (لا حقل حُذف)."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -3169,5 +3170,60 @@
       "fleetLog"
     ],
     "names_answer": "أسماء العرض تُولَّد آليًا ولا تُخزَّن — يُخزَّن اليدوي وحده في settings/nameEn"
+  },
+  "lifecycle_v15_36": {
+    "fn": "lifeOf(site) → مفتاح في LIFE؛ lifeColor(site) للخريطة",
+    "order": "dis > maint > installed > sched > (review: ready/revisit/visited) > tomorrow/assigned > todo",
+    "states": {
+      "todo": "#9FB0AA",
+      "assigned": "#C9A27E",
+      "tomorrow": "#B388FF",
+      "visited": "#4FA3FF",
+      "revisit": "#FF8FA3",
+      "ready": "#FF8C42 معتمدة بانتظار الجدولة",
+      "sched": "#7C5CFF مُسندة للتركيب",
+      "installed": "#3AD6A0",
+      "maint": "#F5D547",
+      "dis": "#E01B1B"
+    },
+    "readers": [
+      "mapColorOf (FIELD_MODE=survey)",
+      "legendRows",
+      "wfDiagram"
+    ],
+    "helper": "taskKindOf(id, kind) — مهمة مفتوحة من نوع بعينه"
+  },
+  "maintenance_v15_36": {
+    "kind": "maint في WO_KINDS",
+    "prefix": "MR في REQ_PREFIX/REQSEQ",
+    "dest": "team في ASN_KIND_DEST",
+    "why": "حلقة ناقصة بين التركيب والفك — ما رُكِّب يُخدَم في أثناء الموسم"
+  },
+  "ip_fill_v15_36": {
+    "fn": "ipFillMissing(zoneOnly, typeOnly)",
+    "scheme": "10.{IP_OCT2[zone]}.{IP_OCT3[type]+n}.{seq}",
+    "zones": {
+      "منى": 10,
+      "عرفات": 20,
+      "مزدلفة": 30,
+      "الجمرات": 40,
+      "مكة": 50
+    },
+    "types": {
+      "مخيم": 0,
+      "ممر": 40,
+      "جسر": 80,
+      "كاميرا": 120,
+      "محطة": 160,
+      "بوابة": 200,
+      "مبنى": 230
+    },
+    "safety": "ما له net لا يُمَسّ؛ المستعملة تُجمع أولًا فلا تتكرر بادئة",
+    "ui": "جدول «ما ينقصه عنوان بالمشعر والنوع» + زرّا التوليد (الكل / الممرات فقط)"
+  },
+  "survey_form_v15_36": {
+    "SV_MORE": "يطوي «الكميات المطلوبة» و«نقطة التركيب» و«التحديات — التفصيل» و«التقدير»",
+    "always": "بيانات مسجّلة · القياسات والصلاحية · بيانات المخيم/المسار · أصول 1447 · الكاميرا · الكهرباء",
+    "note": "لا حقل حُذف — SV_EXTRA_KEYS كما هي وما مُلئ يُحفَظ"
   }
 }
