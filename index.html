@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.08</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.09</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1749,6 +1749,10 @@ en:{
  'المدخل':'The entrance',
  'نقطة التركيب المقترحة':'Proposed installation point',
  'أي عائق أو ملاحظة':'Any obstacle or note',
+ 'نقاط النقطة الكاملة — لكلِّ نوع':'Full-point installation points — per type',
+ 'الوزن العام — لما لم يُضبط نوعُه':'General weight — for what has no type weight set',
+ 'نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها. وما تُرك صفرًا يرجع للوزن العام أدناه.':'Points for installing the full point — the technician’s output is measured by it and summed from its parts’ points. What is left at zero falls back to the general weight below.',
+ 'يُستعمَل حين لا يُضبَط وزنُ النوع أعلاه — فلا ينكسر ما ضُبط قبل هذا الإصدار.':'Used when no type weight is set above — so what was set before this release does not break.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -2789,6 +2793,10 @@ ur:{
  'المدخل':'داخلہ',
  'نقطة التركيب المقترحة':'مجوزہ تنصیب کا نقطہ',
  'أي عائق أو ملاحظة':'کوئی رکاوٹ یا نوٹ',
+ 'نقاط النقطة الكاملة — لكلِّ نوع':'مکمل پوائنٹ کی تنصیب کے پوائنٹس — فی قسم',
+ 'الوزن العام — لما لم يُضبط نوعُه':'عمومی وزن — جس کی قسم کا وزن طے نہیں',
+ 'نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها. وما تُرك صفرًا يرجع للوزن العام أدناه.':'پورے پوائنٹ کی تنصیب کے پوائنٹس — ٹیکنیشن کی کارکردگی اسی سے ناپی جاتی ہے اور اس کے پرزوں کے پوائنٹس کا مجموعہ ہے۔ صفر چھوڑی گئی قدر نیچے کے عمومی وزن پر لوٹتی ہے۔',
+ 'يُستعمَل حين لا يُضبَط وزنُ النوع أعلاه — فلا ينكسر ما ضُبط قبل هذا الإصدار.':'اوپر قسم کا وزن طے نہ ہونے پر استعمال — تاکہ اس ورژن سے پہلے طے شدہ نہ ٹوٹے۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -2931,7 +2939,7 @@ en:{
  'المشاعرُ للمهندس وحده':'Zones are for the engineer only',
  'المشعرُ موجودٌ بالفعل':'That zone already exists',
  'موقعًا نُقل إلى':'site(s) moved to',
- 'صنفًا':'item(s)',
+ 'صنفًا':'items',
  'عليه مواقع':'has sites',
  'الصفُّ مشتقٌّ من المواقع: تعديلُ المشعر يُعيد تسميتَه في كلِّ مواقعه، وتبديلُ النوع ينقلها إليه. ولا يُحذَف صفٌّ عليه مواقع — تُنقَل أولًا.':'The row is derived from sites: renaming the zone renames it across all its sites, and switching the type moves them to it. A row with sites is not deleted — move them first.',
  'وزن الزيارة':'Visit weight',
@@ -4351,8 +4359,9 @@ var CFG = {
   tgtSurvey:0, tgtInsCamp:0, tgtInsCor:0,
   tgtPrepCamp:0, tgtPrepCor:0, tgtAsmCamp:0, tgtAsmCor:0, tgtDis:0,
 
-  /* نقاط النقطة الكاملة ومعاملا الفك */
+  /* نقاط النقطة الكاملة ومعاملا الفك — والوزنُ لكلِّ نوعٍ على حدة */
   insCamp:0, insCor:0, disOk:0, disBad:0,
+  insType:{},
 
   /* ثوابت النظام */
   ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
@@ -6669,6 +6678,11 @@ function ptsInstall(x){
     byParts += cfgN(ins.parts[k]) * itPts(k);
   });
   if (byParts) return byParts;
+  /* وزنُ النوع نفسِه إن ضُبط — فمحطةُ القطارِ ليست مخيمًا ولا ممرًّا، وكان
+     كلُّ ما ليس مخيمًا يأخذ وزنَ الممر. وإن لم يُضبط رجع للوزن القديم
+     (insCamp/insCor) فلا ينكسر ما ضُبط قبل هذا الإصدار. */
+  var byType = cfgGet('insType', x.type);
+  if (byType) return byType;
   return siteZone(x) === 'cor' ? cfgGet('insCor') : cfgGet('insCamp');
 }
 
@@ -15845,7 +15859,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.08' + '.docx" download>⬇ '
+              +   'V15.09' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16703,7 +16717,7 @@ function typesCard(){
      حقول، فتتراصُّ رأسيًّا ويتبعثر الرأسُ ويطول. والقالبُ الصحيحُ نفسُه في
      «نقاط التهيئة»: حقولٌ في صفٍّ والزرُّ في رأس بطاقتها. */
   var T = typesList(), keys = Object.keys(T);
-  return cardFlush('أنواع النقاط — ' + nm(keys.length),
+  return cardFlush(t('أنواع النقاط') + ' — ' + nm(keys.length),
       table(['النوع','الاسم المعروض','الرمز','مواقع',''],
         keys.map(function(k){
           var u = typeUsed(k);
@@ -17091,14 +17105,14 @@ function mxTable(path, label){
   var typeOpts = function(cur){
     return Object.keys(T).map(function(k){
       return '<option value="' + esc(k) + '"' + (T[k].l === cur ? ' selected' : '') + '>'
-        + esc(T[k].l) + '</option>';
+        + esc(t(T[k].l)) + '</option>';
     }).join('');
   };
   var Z = zoneList();
   return '<div class="grid cols-2" style="align-items:start">'
     + Object.keys(byZone).map(function(z){
         var L = byZone[z];
-        return cardFlush(z + ' — ' + nm(L.length) + ' ' + t('صنفًا'),
+        return cardFlush(t(z) + ' — ' + nm(L.length) + ' ' + t('صنفًا'),
           table(['النوع', label, ''],
             L.map(function(r){
               var n = mxRowInfo(r[0], r[1]);
@@ -17241,14 +17255,25 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
             + '</div>',
             btn('➕ إضافة صنف','btn-primary btn-sm',' data-stgadd="itPts"'))
         : '')
-      + card('نقاط النقطة الكاملة',
+      /* كان الوزنُ لنوعين: مخيمٌ وممر. والأنواعُ سبعةٌ — فمحطةُ القطارِ
+         وبوابةُ المسجدِ ودورُ الجمرات تأخذ وزنَ الممر بلا أن يختارَه أحد.
+         صار لكلِّ نوعٍ وزنُه كما في نقاط الزيارة. */
+      + cardFlush('نقاط النقطة الكاملة — لكلِّ نوع',
+          table(['النوع','نقاط التركيب'],
+            Object.keys(CAT_DEF).map(function(ty){
+              return [typeLabel(ty), cfgInput('insType', ty, { dec:1, step:'0.1' })];
+            }))
+          + '<p class="hint" style="padding:0 16px 14px">'
+          + esc(t('نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها. وما تُرك صفرًا يرجع للوزن العام أدناه.')) + '</p>',
+          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + card('الوزن العام — لما لم يُضبط نوعُه',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نقاط تركيب المخيم')) + '</label>'
           +   cfgInput('insCamp', undefined, { dec:1, step:'0.1' }) + '</div>'
           + '<div class="field"><label>' + esc(t('نقاط تركيب الممر')) + '</label>'
           +   cfgInput('insCor', undefined, { dec:1, step:'0.1' }) + '</div>'
           + '</div>'
-          + '<p class="hint">' + esc(t('نقاطُ تركيب النقطة الكاملة — يُقاس بها إنجاز الفني، وتُجمَع من نقاط قطعها.')) + '</p>',
+          + '<p class="hint">' + esc(t('يُستعمَل حين لا يُضبَط وزنُ النوع أعلاه — فلا ينكسر ما ضُبط قبل هذا الإصدار.')) + '</p>',
           btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + tgtBlock('tgtInsCamp', 'tgtInsCor');
   }};
