@@ -31,7 +31,12 @@ const html = readFileSync('index.html', 'utf8');
   const nav = html.slice(a, b);
   const ids = [...nav.matchAll(/id:'([A-Za-z0-9_]+)'/g)].map(m => m[1])
     .concat([...nav.matchAll(/\['([A-Za-z0-9_]+)','/g)].map(m => m[1]));
-  check(ids.length > 80, 'القائمة تحمل بنودها');
+  /* V15.29: ثلاثٌ وثلاثون شاشةً صارت شرائحَ في ثماني صفحات — فالبنودُ ٦٨ لا
+     ٩٤. الحدُّ يُشتقّ من التعريفات لا يُكتَب رقمًا: كلُّ صفحةٍ معرَّفةٍ إمّا
+     بندٌ وإمّا مستثناةٌ بتصريح (site تُفتَح من نقطة) */
+  const defined = (html.match(/^PAGE\.\w+ = \{/gm) || []).length
+                + ((html.match(/^  (\w+):\s*\{ m:'/gm) || []).length);
+  check(ids.length >= 60 && ids.length === defined - 1, 'القائمة تحمل بنودها (' + ids.length + ' من ' + defined + ' صفحة)');
   check(new Set(ids).size === ids.length, 'لا معرّفَ مكرّرًا في القائمة');
 
   /* V14 يربط بالتفويض لا بـonclick السطريّ. فمعالجٌ يترصّد خاصيةً لا يصدرها

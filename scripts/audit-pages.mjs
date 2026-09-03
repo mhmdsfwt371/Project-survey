@@ -24,16 +24,11 @@ function check(cond, msg){ if (cond){ ok++; console.log('  ✓ ' + msg); }
 const STATIC_OK = {
   roles:     'مصفوفةُ الصلاحيات — تُقرأ من ROLES وهي ثابتُ النظام',
   layers:    'شرحُ طبقات الإسناد — يُقرأ من LAYERS الثابتة',
-  vers:      'سجلُّ الإصدارات — نصٌّ مرجعيٌّ لا بيانات تشغيل',
-  cover:     'خريطةُ التغطية التنظيمية — تُقرأ من ORG الثابتة',
   miles:     'المعالمُ التعاقدية — جدولٌ مرجعيٌّ من العقد',
-  repcenter: 'مركزُ التقارير — فهرسُ التقارير لا بياناتُها',
-  sys:       'سلامةُ البيانات — يقرأ عبر دوالِّ فحصٍ لا STATE مباشرةً',
-  chain:     'سلسلةُ التصعيد — تُقرأ من escRules في الإعدادات',
-  setup:     'المواعيدُ والأزمنة — تُقرأ من CFG عبر cfgGet بأسماءٍ مركّبة',
-  prep:      'نقاطُ التهيئة — تُولَّد عبر prepAsm() من الكتالوج',
-  asm:       'نقاطُ التجميع — تُولَّد عبر prepAsm() من الكتالوج',
-  fleetLog:  'سجلُّ السيارات — يُقرأ عبر دوالِّ الأسطول'
+  repcenter: 'مركزُ التقارير — فهرسُ التقارير لا بياناتُها'
+  /* V15.29: sys وvers وcover وprep وasm وfleetLog صارت شرائحَ في صفحاتٍ
+     مدموجةٍ تقرأ حيًّا؛ وchain تقرأ chainRows() فأُضيفت إلى LIVE؛ وsetup
+     صارت تقرأ CFG فعلًا بعد أن كانت تواريخَ مكتوبةً بيد */
 };
 /* ── صفحاتٌ خارج القائمة بقصد: تُفتَح من زرٍّ أو رابطٍ لا من بندٍ ── */
 const OFF_NAV_OK = {
@@ -47,7 +42,7 @@ const LIVE = new RegExp([
   '\\bT\\(\\)', '[A-Za-z]List\\(\\)', 'itemsList', 'techsList', 'crewsList', 'jobsList',
   'usersList', 'movesList', 'buysList', 'chalSites', 'stuckList', 'surveyList',
   'workReqList', 'bonusList', 'rollupBy', 'evRows', 'asnOf', 'solutionOf',
-  'stockBalance', 'custodyByWho', 'scoreOf', 'stageList', 'vehList', 'vehOfWho',
+  'stockBalance', 'custodyByWho', 'scoreOf', 'stageList', 'vehList', 'vehOfWho', 'chainRows\\(',
   'CHANGES', 'NCRS', 'IPCS', 'HSE\\.', 'BASE', 'REQSEQ', 'POLY', 'S47'
 ].join('|'));
 
@@ -104,7 +99,40 @@ check(ghostNav.length === 0,
   ghostNav.length ? `بنودٌ في القائمة بلا صفحة (${ghostNav.length}): ${ghostNav.join('، ')}`
                   : 'لا بندَ في القائمة بلا صفحةٍ خلفه');
 
-console.log('\n══ ٣ · لا وعدَ معطَّلٍ بحجّةٍ صارت باطلة ══');
+console.log('\n══ ٣ · الصفحاتُ المدموجة — كلُّ شريحةٍ بمعرِّفها القديم ══');
+/* V15.29: شاشاتٌ جُمعت في صفحةٍ بشرائح. كلُّ شريحةٍ تحتفظ بمعرِّفها القديم في
+   قوائم الأدوار والروابط، فلا يجوز أن يبقى لها تعريفُ صفحةٍ مستقلٌّ (فتُرسَم
+   مرتين)، ولا أن تُبلَغ من القائمة الجانبية (فتظهر مرتين)، ولا أن يبقى في
+   قوائم الأدوار معرِّفٌ لا يصل إلى شيء. */
+const tabsBlock = (/var TABS = \{[\s\S]*?\n\};/.exec(src) || [''])[0];
+let TABS = {};
+try { TABS = new Function(tabsBlock + ' return TABS;')(); } catch (e){ TABS = null; }
+check(!!TABS && Object.keys(TABS).length > 0, 'سجلُّ الشرائح TABS يُقرأ' + (TABS ? ` (${Object.keys(TABS).length} صفحاتٍ مدموجة)` : ''));
+if (TABS){
+  const kids = [], dupKid = [], noParent = [], kidPage = [], kidNav = [];
+  Object.keys(TABS).forEach(pid => {
+    if (!marks.find(p => p.id === pid)) noParent.push(pid);
+    TABS[pid].forEach(tb => {
+      const id = tb[0];
+      if (kids.indexOf(id) > -1) dupKid.push(id); else kids.push(id);
+      if (id !== pid && marks.find(p => p.id === id)) kidPage.push(id);
+      if (id !== pid && navIds.has(id)) kidNav.push(id);
+    });
+  });
+  check(noParent.length === 0, noParent.length ? `أمٌّ بلا صفحة: ${noParent.join('، ')}` : 'كلُّ أمٍّ لها صفحةٌ ترسم شرائحَها');
+  check(dupKid.length === 0, dupKid.length ? `شريحةٌ في أمَّين: ${dupKid.join('، ')}` : 'لا شريحةَ في أمَّين');
+  check(kidPage.length === 0, kidPage.length ? `شريحةٌ ما زالت صفحةً مستقلّة: ${kidPage.join('، ')}` : `لا شريحةَ تُرسَم مرتين (${kids.length} شريحة)`);
+  check(kidNav.length === 0, kidNav.length ? `شريحةٌ ما زالت بندًا في القائمة: ${kidNav.join('، ')}` : 'لا شريحةَ تظهر في القائمة بجوار أمِّها');
+  /* قوائمُ الأدوار: كلُّ معرِّفٍ فيها يصل — صفحةً أو شريحةً أو شاشةَ ميدان */
+  const rolesBlock = (/var ROLES = \{[\s\S]*?\n\};/.exec(src) || [''])[0];
+  const roleIds = new Set([...rolesBlock.matchAll(/nav:\[([^\]]*)\]/g)]
+    .flatMap(m => [...m[1].matchAll(/'(\w+)'/g)].map(x => x[1])));
+  const reach = new Set(marks.map(p => p.id).concat(kids));
+  const lost = [...roleIds].filter(id => !reach.has(id));
+  check(lost.length === 0, lost.length ? `معرِّفٌ في قوائم الأدوار لا يصل إلى شيء: ${lost.join('، ')}` : `كلُّ معرِّفٍ في قوائم الأدوار يصل (${roleIds.size})`);
+}
+
+console.log('\n══ ٤ · لا وعدَ معطَّلٍ بحجّةٍ صارت باطلة ══');
 /* زرٌّ معطَّلٌ بعبارة «غيرُ مبنيٍّ بعد» بينما بناؤه تمّ — كان في mine وwos */
 const excuses = [...src.matchAll(/title="([^"]*غيرُ مبنيٍّ بعد[^"]*)"/g)].map(x => x[1]);
 console.log(`  \u00b7 أزرارٌ معطَّلةٌ بحجّة «غير مبني بعد»: ${excuses.length}`);

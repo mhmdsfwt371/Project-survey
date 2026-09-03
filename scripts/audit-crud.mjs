@@ -52,7 +52,8 @@ w.toast = m => said.push(String(m));
 w.prompt = () => 'سببُ الاختبار';
 
 const C  = () => d.getElementById('content');
-const go = p => { w.CUR = p; w.render(1); };
+/* الانتقالُ كما يفعله المستخدمُ من القائمة: الأمُّ تُفتَح على شريحتها الأولى */
+const go = p => { if (w.goPage) w.goPage(p); else w.CUR = p; w.render(1); };
 const set = (id, v) => { const e = d.getElementById(id); if (e) e.value = v; };
 const hit = target => {
   const b = (typeof target === 'string') ? d.querySelector(target)

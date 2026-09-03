@@ -100,7 +100,11 @@ check(dead.length === 0, 'كلُّ قدرةٍ معلنةٍ تُسأل في ال�
 
 /* ── الجولةُ: كلُّ دورٍ في كلِّ شاشةٍ يراها ────────────────────────────────── */
 const leakPhone = [], leakAct = [], stuck = [];
-const allPages = [...new Set(Object.keys(w.PAGE).concat(Object.keys(w.FIELD_PAGES || {})))];
+/* V15.29: الصفحاتُ المدموجةُ تُفحَص شريحةً شريحة — كلُّ شريحةٍ بمعرِّفها القديم،
+   والرسمُ يوصل المعرِّفَ إلى أمِّه على شريحته */
+const allPages = w.pageIds ? w.pageIds()
+  : [...new Set(Object.keys(w.PAGE).concat(Object.keys(w.FIELD_PAGES || {})))];
+const pageOf = id => (w.PARENT && w.PARENT[id]) || id;
 
 for (const rn of names){
   w.ROLE = rn;
@@ -119,7 +123,7 @@ for (const rn of names){
   }
 
   for (const id of nav){
-    if (!w.PAGE[id] && !(w.FIELD_PAGES || {})[id]) continue;
+    if (!w.PAGE[pageOf(id)] && !(w.FIELD_PAGES || {})[id]) continue;
     w.CUR = id;
     let h = '';
     try { w.render(1); h = (d.getElementById('content') || {}).innerHTML || ''; } catch { continue; }

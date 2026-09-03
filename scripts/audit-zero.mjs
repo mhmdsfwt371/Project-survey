@@ -111,6 +111,13 @@ allow.add(966);
     add(Math.round(v / 2)); add(v + cors); add(camps + cors);
   });
   add(Math.round((camps + cors) * 0.72));        /* تقديرُ حجم الصور */
+  /* V15.29: «المواعيد والأزمنة» تعدّ النقاطَ بـsiteZone — كلُّ ما ليس مخيمًا
+     ممرٌّ (كاميرات ومحطات وجمرات وبوابات معًا) — وتحسب ساعاتِ التركيب من
+     دقائقَ في CFG لا من ٤٥ و٩٠ مكتوبتَين */
+  add(sites.length - camps);
+  const mC = w.cfgGet ? w.cfgGet('minCamp') : 0, mR = w.cfgGet ? w.cfgGet('minCor') : 0;
+  add(Math.round(camps * mC / 60)); add(Math.round((sites.length - camps) * mR / 60));
+  add(Math.round((camps * mC + (sites.length - camps) * mR) / 60));
   sites.forEach(x => { if (x.net) { const p = String(x.net).split('.')[0]; add(+p); } });
   Object.keys(w.CFG || {}).forEach(k => { const v = w.CFG[k]; if (typeof v === 'number') add(v); });
   /* تقديراتٌ تُحسَب بضربٍ في متوسّطٍ معلن: حجمُ الصور، وطاقةُ الفريق،

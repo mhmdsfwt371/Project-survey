@@ -92,8 +92,12 @@ function arabicIn(root){
 }
 
 const BY_DESIGN = { names:'شاشةُ أسماء العرض تعرض الاسمَ العربيَّ بقصدٍ إلى جانب نقحرته' };
+/* V15.29: الصفحاتُ المدموجةُ تُفحَص شريحةً شريحة — كلُّ شريحةٍ بمعرِّفها القديم،
+   فلا تختبئ ترجمةٌ ناقصةٌ خلف شريحةٍ لا تُفتَح افتراضيًّا */
 const ids = [...new Set([...d.querySelectorAll('#nav [data-p]')]
-  .map(a => a.getAttribute('data-p')))].filter(id => !BY_DESIGN[id]);
+  .map(a => a.getAttribute('data-p'))
+  .flatMap(id => (w.TABS && w.TABS[id]) ? w.TABS[id].map(tb => tb[0]) : [id]))]
+  .filter(id => !BY_DESIGN[id]);
 
 const report = [];
 let total = 0;
@@ -124,7 +128,7 @@ report.sort((a, b) => b[1].length - a[1].length)
 shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 
 /* سقفٌ يهبط ولا يرتفع — يُخفَّض دفعةً كلَّ إصدار */
-const CAP_PAGES = 19, CAP_TEXTS = 103, CAP_SHELL = 3;
+const CAP_PAGES = 17, CAP_TEXTS = 102, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');

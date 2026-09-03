@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.28</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.29</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2255,6 +2255,42 @@ en:{
  'من يستلم العهدةَ ومن ينزل المشاعر':'Who receives custody and who goes to the holy sites',
  'ما يراه من شاشاتٍ وما يكتبه':'Which screens they see and what they write',
  'متابعةٌ وتصدير — لا تكتب حرفًا، والهواتف محجوبة حتى في القواعد':'Monitoring and export — writes nothing, and phone numbers are hidden even in the rules',
+
+ /* V15.29 — شرائحُ الصفحات المدموجة والوتيرةُ والمواعيد */
+ 'الأسطول':'Fleet',
+ 'الإسناد':'Assignment',
+ 'التكلفة':'Cost',
+ 'سجل العُهدة':'Custody log',
+ 'الصورة العامة':'Big picture',
+ 'الزيارات':'Visits',
+ 'الأرصدة':'Balances',
+ 'الحسابات':'Accounts',
+ 'نقاط المراحل':'Stage points',
+ 'المخزون':'Inventory',
+ 'المستخدمون والأدوار':'Users and roles',
+ 'صحة النظام':'System health',
+ 'الكتالوج والمورّدون':'Catalog and suppliers',
+ 'التنظيم':'Organisation',
+ 'أسطولُ المشروع كلُّه في شاشةٍ واحدة — الأسطولُ وإسنادُه وعُهدتُه وتكلفتُه وسيارتُك.':'The whole project fleet on one screen — the fleet, its assignment, custody, cost, and your vehicle.',
+ 'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.':'Project progress from every angle — the picture, the distribution, the pace, the daily rate, and installation.',
+ 'وزنُ كلِّ مرحلةٍ ونقاطُها — زيارةٌ وتهيئةٌ وتجميعٌ وتركيبٌ وفك.':'The weight and points of every stage — visit, preparation, assembly, installation, and dismantling.',
+ 'الأرصدةُ وحركتُها وعُهدةُ كلِّ منفِّذ — في شاشةٍ واحدة.':'Balances, their movement, and each executor’s custody — on one screen.',
+ 'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.':'Accounts, their jobs, and their roles — who they are, what they do, and what they can do.',
+ 'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.':'Data integrity, sync, device versions, data age, and reset — all system maintenance.',
+ 'ما نشتريه وبكم وممّن — القطعُ وفئاتُ المشتريات والمورّدون.':'What we buy, for how much, and from whom — parts, purchase categories, and suppliers.',
+ 'من يغطّي ماذا ومن يُساءل ومن يُرفَع إليه — التغطيةُ والمسؤولياتُ والتصعيد.':'Who covers what, who is accountable, and who it is escalated to — coverage, responsibilities, and escalation.',
+ 'أيامٌ للموعد':'Days to deadline',
+ 'لا موعدَ مضبوطًا':'No deadline set',
+ 'معدل آخر ٧ أيام':'Last 7 days average',
+ 'اكتملت':'Completed',
+ 'لا إنجازَ في آخر سبعة أيام — لا يُحسَب موعدٌ متوقّع':'No progress in the last seven days — no expected date can be computed',
+ 'على هذا المعدل تتأخّر عن موعدها':'At this rate it will miss its deadline',
+ 'على هذا المعدل تلحق موعدَها':'At this rate it will meet its deadline',
+ 'موعدٌ أو أكثرُ لم يُضبط بعد — يُكتب في «التخطيط ← المواعيد والأزمنة» فتُحسَب الوتيرةُ عليه.':'One or more deadlines are not set yet — set them in “Planning → Deadlines and durations” and the pace is computed against them.',
+ 'المعدلُ من اللقطات اليومية المحفوظة، وما لم تُحفَظ لقطتُه يُحسَب من السجلات التي على هذا الجهاز.':'The rate comes from the saved daily snapshots; days without a snapshot are computed from the records on this device.',
+ 'يُحفَظ فورَ التغيير — وتقرؤه «نظرة عامة ← الوتيرة والهدف» لتقول كم يلزم يوميًّا.':'Saved the moment it changes — and read by “Overview → Pace and target” to say how much is needed per day.',
+ 'الزمن التقديري (دقيقة)':'Estimated time (minutes)',
+ 'الإجمالي (ساعة)':'Total (hours)',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3801,6 +3837,40 @@ ur:{
  'من يستلم العهدةَ ومن ينزل المشاعر':'تحویل کون لیتا ہے اور مشاعر کون جاتا ہے',
  'ما يراه من شاشاتٍ وما يكتبه':'وہ کون سی اسکرینیں دیکھتا ہے اور کیا لکھتا ہے',
  'متابعةٌ وتصدير — لا تكتب حرفًا، والهواتف محجوبة حتى في القواعد':'نگرانی اور برآمد — کچھ نہیں لکھتی، اور فون نمبر قواعد میں بھی چھپے ہیں',
+ 'الأسطول':'فلیٹ',
+ 'الإسناد':'تفویض',
+ 'التكلفة':'لاگت',
+ 'سجل العُهدة':'تحویل کا ریکارڈ',
+ 'الصورة العامة':'مجموعی تصویر',
+ 'الزيارات':'دورے',
+ 'الأرصدة':'بیلنس',
+ 'الحسابات':'اکاؤنٹس',
+ 'نقاط المراحل':'مراحل کے پوائنٹس',
+ 'المخزون':'انوینٹری',
+ 'المستخدمون والأدوار':'صارفین اور کردار',
+ 'صحة النظام':'سسٹم کی صحت',
+ 'الكتالوج والمورّدون':'کیٹلاگ اور سپلائرز',
+ 'التنظيم':'تنظیم',
+ 'أسطولُ المشروع كلُّه في شاشةٍ واحدة — الأسطولُ وإسنادُه وعُهدتُه وتكلفتُه وسيارتُك.':'پورے پروجیکٹ کا فلیٹ ایک اسکرین پر — فلیٹ، اس کی تفویض، تحویل، لاگت اور آپ کی گاڑی۔',
+ 'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.':'پروجیکٹ کی پیش رفت ہر زاویے سے — تصویر، تقسیم، رفتار، یومیہ شرح اور تنصیب۔',
+ 'وزنُ كلِّ مرحلةٍ ونقاطُها — زيارةٌ وتهيئةٌ وتجميعٌ وتركيبٌ وفك.':'ہر مرحلے کا وزن اور پوائنٹس — دورہ، تیاری، اسمبلی، تنصیب اور ڈسمینٹل۔',
+ 'الأرصدةُ وحركتُها وعُهدةُ كلِّ منفِّذ — في شاشةٍ واحدة.':'بیلنس، ان کی نقل و حرکت اور ہر عامل کی تحویل — ایک اسکرین پر۔',
+ 'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.':'اکاؤنٹس، ان کی ملازمتیں اور کردار — کون ہے، کیا کرتا ہے اور کیا کر سکتا ہے۔',
+ 'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.':'ڈیٹا کی سلامتی، مطابقت، آلات کے ورژن، ڈیٹا کی عمر اور ری سیٹ — سسٹم کی پوری دیکھ بھال۔',
+ 'ما نشتريه وبكم وممّن — القطعُ وفئاتُ المشتريات والمورّدون.':'ہم کیا خریدتے ہیں، کتنے میں اور کس سے — پرزے، خریداری کے زمرے اور سپلائرز۔',
+ 'من يغطّي ماذا ومن يُساءل ومن يُرفَع إليه — التغطيةُ والمسؤولياتُ والتصعيد.':'کون کیا کور کرتا ہے، کون جوابدہ ہے اور کس تک بڑھایا جاتا ہے — کوریج، ذمہ داریاں اور تصعید۔',
+ 'أيامٌ للموعد':'آخری تاریخ تک دن',
+ 'لا موعدَ مضبوطًا':'کوئی آخری تاریخ طے نہیں',
+ 'معدل آخر ٧ أيام':'آخری ۷ دن کی اوسط',
+ 'اكتملت':'مکمل',
+ 'لا إنجازَ في آخر سبعة أيام — لا يُحسَب موعدٌ متوقّع':'آخری سات دنوں میں کوئی پیش رفت نہیں — متوقع تاریخ کا حساب نہیں ہو سکتا',
+ 'على هذا المعدل تتأخّر عن موعدها':'اس رفتار سے یہ اپنی آخری تاریخ سے پیچھے رہ جائے گا',
+ 'على هذا المعدل تلحق موعدَها':'اس رفتار سے یہ اپنی آخری تاریخ پر پورا اترے گا',
+ 'موعدٌ أو أكثرُ لم يُضبط بعد — يُكتب في «التخطيط ← المواعيد والأزمنة» فتُحسَب الوتيرةُ عليه.':'ایک یا زیادہ آخری تاریخیں ابھی طے نہیں — انہیں “منصوبہ بندی ← آخری تاریخیں اور دورانیے” میں لکھیں تو رفتار ان پر حساب ہوگی۔',
+ 'المعدلُ من اللقطات اليومية المحفوظة، وما لم تُحفَظ لقطتُه يُحسَب من السجلات التي على هذا الجهاز.':'شرح محفوظ روزانہ سنیپ شاٹس سے آتی ہے؛ جن دنوں کا سنیپ شاٹ نہیں وہ اس آلے پر موجود ریکارڈ سے حساب ہوتے ہیں۔',
+ 'يُحفَظ فورَ التغيير — وتقرؤه «نظرة عامة ← الوتيرة والهدف» لتقول كم يلزم يوميًّا.':'تبدیلی کے ساتھ ہی محفوظ ہو جاتا ہے — اور “جائزہ ← رفتار اور ہدف” اسے پڑھ کر بتاتا ہے کہ روزانہ کتنا درکار ہے۔',
+ 'الزمن التقديري (دقيقة)':'تخمینی وقت (منٹ)',
+ 'الإجمالي (ساعة)':'کل (گھنٹے)',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -5375,6 +5445,9 @@ var CFG = {
   ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
   stgCfg:0, stgVal:0, stgIns:0,
 
+  /* المواعيدُ المستهدفة (مللي ثانية) وزمنُ تركيب النقطة بالدقائق */
+  dueSurvey:0, dueInstall:0, minCamp:0, minCor:0,
+
   /* المال */
   budCap:0, budApp:0,
 
@@ -5398,6 +5471,38 @@ function cfgSet(path, key, val){
   var k = cfgKey(key);
   if (k === null) CFG[path] = cfgN(val);
   else { if (!CFG[path] || typeof CFG[path] !== 'object') CFG[path] = {}; CFG[path][k] = cfgN(val); }
+  cfgPushSoon(path);
+}
+
+/* ═══ الإعداداتُ الرقميةُ تُرفَع — كانت تبقى على جهاز من كتبها ═══
+   الأوزانُ والتارجتاتُ ونقاطُ القطع وثوابتُ النظام كلُّها تُقرأ عند الإقلاع من
+   settings/points — ولم يكن شيءٌ يكتبها: cfgSet تُعدِّل الذاكرةَ والمخزنَ
+   المحليَّ وتقف. فالمهندسُ يضبط وزنَ الزيارة على جهازه، وكلُّ جهازٍ آخرَ —
+   وهاتفُه هو — يحسب النقاطَ بأوزانٍ صفر ولا يشكو. (النسخةُ القديمة V14.01
+   كانت تكتبها، وسقط ذلك في إعادة البناء.)
+
+   يُرفَع ما تغيّر لا الوثيقةُ كلُّها: كلُّ مسارٍ لُمس في هذه الجلسة يُكتَب
+   بقيمته الحالية بدمجٍ (merge)، فلا يمحو جهازٌ قديمُ الذاكرة ما ضبطه غيرُه في
+   مسارٍ لم يلمسه. ويُجمَّع بعد سكونٍ قصيرٍ فلا ترتفع كلُّ نقرةٍ وحدَها.
+   ولا يُقيَّد إلا لمن يملك الإعدادات — فالقاعدةُ تردُّ غيرَه. */
+var _cfgT = 0, _cfgTouched = {};
+function cfgPushSoon(path){
+  _cfgTouched[path] = 1;
+  if (typeof may !== 'function' || !may('settings')) return;
+  if (_cfgT) return;
+  _cfgT = setTimeout(function(){ _cfgT = 0; cfgPush(); }, 1200);
+}
+function cfgPush(){
+  var doc = {};
+  Object.keys(_cfgTouched).forEach(function(k){ if (k in CFG) doc[k] = CFG[k]; });
+  if (!Object.keys(doc).length) return;
+  CORE.dirty('cfg', 'points', doc);
+}
+
+/* حقلُ تاريخٍ موصولٌ بالمصدر — يُخزَّن رقمًا (مللي ثانية) لأن CFG رقميّة */
+function cfgDate(path){
+  var v = cfgGet(path);
+  return '<input type="date" value="' + (v ? dayKey(v) : '') + '" data-cfgdate="' + path + '">';
 }
 
 /* الأسبوعي يُشتقّ من الشهري بأيام العمل — وصفرٌ في الأيام يعني صفرًا لا قسمةً على صفر */
@@ -7590,9 +7695,169 @@ function asnRoleSet(){
   render(1);
 }
 
-PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
-  l:'من في أيِّ وظيفةٍ وأيِّ فريق.',
+PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار',
+  l:'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.',
   body:function(){
+    var head = tabHead('users'), cur = tabCur('users');
+    if (cur === 'users') return head + (function(){
+    var L = usersList();
+    var byRole = {};
+    Object.keys(STATE.users || {}).forEach(function(uid){
+      var r = (STATE.users[uid] || {}).role || '';
+      if (r) byRole[r] = (byRole[r] || 0) + 1;
+    });
+    var total = Object.keys(STATE.users || {}).length;
+
+    return '<p class="lede" style="margin:0 0 16px">'
+      + esc(t('أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.'))
+      + '</p>'
+
+      + stats([['كل الحسابات', N(total), 'acc']]
+              .concat(Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
+                return [t(ROLES[k].n), N(byRole[k])];
+              })))
+
+      + '<div class="chips">'
+      + '<button type="button" class="chip' + (!USR_ROLE ? ' on' : '') + '" data-usrrolef="">'
+      +   esc(t('الكل')) + ' <span class="num">' + nm(total) + '</span></button>'
+      + Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
+          return '<button type="button" class="chip' + (USR_ROLE===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
+            + esc(t(ROLES[k].n)) + ' <span class="num">' + nm(byRole[k]) + '</span></button>';
+        }).join('')
+      + '</div>'
+
+      + card('إنشاء حساب',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
+          +   '<input id="uU" dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
+          + '<div class="field"><label>' + esc(t('الاسم الكامل')) + ' <span class="req">*</span></label>'
+          +   '<input id="uN" dir="auto" maxlength="160"></div>'
+          + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
+          +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
+          + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+          +   '<select id="uR">'
+          +   Object.keys(ROLES).map(function(k){
+                return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>'
+                  + esc(t(ROLES[k].n)) + '</option>';
+              }).join('') + '</select></div>'
+          + '</div>'
+          + '<p class="hint" style="margin:11px 0 0">'
+          + esc(t('اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.'))
+          + '</p>',
+          btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"'))
+
+      + usersCard();
+  })();
+    if (cur === 'roles') return head + (function(){
+    /* السؤالُ يتكرّر: ما الفرقُ بين الوظيفة والدور؟ فصار مكتوبًا في أول
+       الشاشة لا في ذاكرة من شرحه مرة. */
+    var _INTRO = card('الوظيفة والدور — فرقٌ لا يُخلَط',
+        table(['','الوظيفة','الدور'], [
+          ['ما هي','ما يعمله الشخصُ في الميدان','ما يستطيعه في النظام'],
+          ['مثال','مسؤول مستودع · مشرف ميدان','كلاهما دورُه «مشرف»'],
+          ['أين تُضبَط','الإعدادات ← الوظائف','هذه الشاشة'],
+          ['من أين تأتي','تُكتَب في سجل الموظف','يُشتقُّ من وظيفته'],
+          ['ماذا تُغيّر','من يستلم العهدةَ ومن ينزل المشاعر','ما يراه من شاشاتٍ وما يكتبه']
+        ])
+        + '<p class="hint">' + esc(t('الوظيفةُ تتغيّر في أثناء الموسم فيتغيّر الدورُ معها — والنقلةُ تُسجَّل ولا تُمحى. ودليلُ كلِّ دورٍ في «المساعدة ← دليل الاستخدام» يقول ما يراه صاحبُه بالضبط.')) + '</p>');
+    /* كان جدولًا محفورًا بأربعة أدوارٍ و«✓» مكتوبةٍ بيد — والأدوارُ سبعةٌ
+       والقدراتُ تُقرأ من `ROLES`. فمن قرأ الجدولَ ظنَّ أن المشرفَ لا يرى
+       الهواتفَ وهو يراها، وأن الفنيَّ لا يركّب وهو يركّب.
+       صار يُبنى من مصدر الحقيقة نفسِه، ويُبدَّل فيه فيُكتَب. */
+    var CAPS = [['edit','تحرير البيانات'], ['approve','الاعتمادات'], ['settings','الإعدادات'],
+                ['money','المال والمشتريات'], ['inventory','المخزون والعُهدة'], ['workshop','الورشة'],
+                ['exportAll','التصدير الكامل'], ['importAll','الاستيراد'],
+                ['users','إدارة المستخدمين'], ['phones','أرقام الهواتف'], ['delete','الحذف والتصفير']];
+    var RS = Object.keys(ROLES);
+    return _INTRO + cardFlush(t('القدرات') + ' — ' + nm(RS.length) + ' ' + t('أدوار'),
+        table([''].concat(RS.map(function(k){ return t(ROLES[k].n); })),
+          CAPS.map(function(c){
+            return ['<strong>' + esc(t(c[1])) + '</strong>'].concat(
+              RS.map(function(k){
+                var on = !!((ROLES[k].can || {})[c[0]]);
+                return may('users')
+                  ? '<button type="button" class="pill ' + (on ? 'ok' : 'off')
+                    + '" style="border:0;cursor:pointer" data-capt="' + esc(k + '|' + c[0]) + '">'
+                    + (on ? '✓' : '—') + '</button>'
+                  : pill(on ? '✓' : '—', on ? 'ok' : 'off');
+              }));
+          })),
+        (may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="roles"') : '')
+        + '<p class="hint" style="margin:9px 0 0">'
+        + esc(t(may('users')
+            ? 'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.'
+            : 'العرضُ فقط — التبديلُ للمهندس.'))
+        + '</p>')
+
+      + card('الأدوار السبعة',
+          table(['الدور','من هو','ماذا يرى ويفعل'],
+            RS.map(function(k){
+              return [pill(t(ROLES[k].n), 'acc'), esc(t(ROLES[k].d || '—')),
+                      '<span class="hint" style="margin:0">'
+                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' ' + t('قدرة'))) + '</span>'];
+            })))
+
+      + '<p class="hint">' + esc(t('الأدوارُ ثابتةٌ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة، وحذفُ دورٍ منها يجعل حساباتِه ترفضها القاعدةُ صامتةً. وما يُغيَّر هو قدراتُها.')) + '</p>';
+  })();
+    if (cur === 'jobs') return head + (function(){
+    var L = jobsList();
+    var roleOpts = function(cur){
+      return Object.keys(ROLES).map(function(k){
+        return '<option value="' + esc(k) + '"' + (cur === k ? ' selected' : '') + '>'
+          + esc(t(ROLES[k].n)) + '</option>';
+      }).join('');
+    };
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('الوظيفةُ ما يعمله الشخصُ، والدورُ ما يستطيعه في النظام. ومسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبها يُعرَف من يستلم العهدةَ ومن ينزل المشاعر. والوظيفةُ تتغيّر في أثناء الموسم، والنقلةُ تُسجَّل ولا تُمحى.')) + '</p>'
+
+      + cardFlush(t('الوظائف') + ' — ' + nm(L.length),
+          table(['الوظيفة','الدور','ماذا تعمل','عليها',''],
+            L.map(function(j){
+              var u = jobUsed(j.id);
+              return ['<input value="' + esc(j.n) + '" data-jbn="' + esc(j.id) + '" dir="auto">',
+                      '<select data-jbr="' + esc(j.id) + '">' + roleOpts(j.role) + '</select>',
+                      '<input value="' + esc(j.d || '') + '" data-jbd="' + esc(j.id) + '" dir="auto">',
+                      u ? pill(nm(u), 'acc') : N(0),
+                      u ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
+                        : btn('حذف','btn-quiet btn-sm',' data-jbdel="' + esc(j.id) + '"')];
+            })))
+
+      + (may('users')
+        ? card('إضافة وظيفة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('اسم الوظيفة')) + ' <span class="req">*</span></label>'
+            +   '<input id="jbN" dir="auto" placeholder="' + esc(t('مسؤول سلامة')) + '"></div>'
+            + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
+            +   '<select id="jbR">' + roleOpts('tech') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('ماذا تعمل')) + '</label>'
+            +   '<input id="jbD" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة وظيفة','btn-primary btn-sm',' data-jbadd="1"'))
+        : '')
+
+      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
+      +   '<input type="search" id="jbQ" data-jbq="1" value="' + esc(JB_Q) + '" placeholder="'
+      +     esc(t('ابحث باسم الشخص')) + '" dir="auto">'
+      + '</form>'
+      + cardFlush('من على كل وظيفة',
+          table(['الشخص','الوظيفة','الدور المشتقّ','آخر نقلة'],
+            techsList().filter(function(x){ return !JB_Q || x.n.indexOf(JB_Q) > -1; })
+              .map(function(x){
+              var j = x.job ? jobOf(x.job) : null;
+              var last = (x.jobLog || []).slice(-1)[0];
+              return [esc(x.n),
+                      '<select data-tkjob="' + esc(x.n) + '">'
+                      + '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
+                      + L.map(function(y){
+                          return '<option value="' + esc(y.id) + '"' + (x.job === y.id ? ' selected' : '')
+                            + '>' + esc(y.n) + '</option>';
+                        }).join('') + '</select>',
+                      j ? pill(t((ROLES[j.role] || {}).n || j.role), 'off') : '—',
+                      last ? '<span class="num">' + esc(new Date(last.at).toISOString().slice(0,10)) + '</span>' : '—'];
+            })))
+
+      + '<p class="hint">' + esc(t('الوظيفةُ التي عليها أشخاصٌ لا تُحذَف — انقلهم أولًا. وكلُّ نقلةٍ تدخل سجلَّ الأحداث وتصل صاحبَها إشعارًا.')) + '</p>';
+  })();
+    return head + (function(){
     var T = techsList(), C = crewsList();
     return card('إسناد',
         '<div class="grid cols-2">'
@@ -7624,6 +7889,7 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
             })))
 
       + '<p class="hint">' + esc(t('الدورُ يُشتَقُّ من الوظيفة المسنَدة — لا يُكتَب مباشرةً. وتغييرُ الوظيفة يبدّل الصلاحياتِ فورًا؛ إسنادُ فريقٍ لا ينشئه، ينشأ من «إدارة الفرق».')) + '</p>';
+  })();
   }};
 
 /* ═══ فريق المشرف — من معه ═══ */
@@ -10304,9 +10570,92 @@ var ORG = {
   ]}
 };
 
-PAGE.cover = { m:'النظام', t:'خريطة التغطية',
-  l:'كلُّ قسمٍ في الشركة وكلُّ إدارةٍ عند العميل — وما يخصّه.',
+PAGE.org = { m:'النظام', t:'التنظيم',
+  l:'من يغطّي ماذا ومن يُساءل ومن يُرفَع إليه — التغطيةُ والمسؤولياتُ والتصعيد.',
   body:function(){
+    var head = tabHead('org'), cur = tabCur('org');
+    if (cur === 'raci') return head + (function(){
+    return card('المفتاح',
+        table(['الرمز','المعنى','الشرط'], [
+          ['<b>R</b>','المنفِّذ — يعمل','واحدٌ فأكثر'],
+          ['<b>A</b>','المساءَل — يوقّع','واحدٌ لا غير'],
+          ['<b>C</b>','المستشار — يُسأل قبل','اختياري'],
+          ['<b>I</b>','المبلَّغ — يُخبَر بعد','اختياري']
+        ]))
+      + cardFlush(t('المصفوفة') + ' — ' + nm(raciList().length),
+          table(['النشاط','R — ينفّذ','A — يُساءل','C — يُستشار','I — يُبلَّغ',''],
+            raciList().map(function(r, ri){
+              return ['<input value="' + esc(r.a) + '" data-rca="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.R || '') + '" data-rcr="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.A || '') + '" data-rcac="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.C || '') + '" data-rcc="' + ri + '" dir="auto">',
+                      '<input value="' + esc(r.I || '') + '" data-rci="' + ri + '" dir="auto">',
+                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-rcdel="' + ri + '"') : ''];
+            })),
+          btn('⬇ إكسل — المسؤوليات','btn-secondary btn-sm',' data-xls="raci"'))
+      + (may('settings')
+        ? card('إضافة نشاط',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('النشاط')) + ' <span class="req">*</span></label><input id="rcA" dir="auto"></div>'
+            + '<div class="field"><label>R — ' + esc(t('ينفّذ')) + '</label><input id="rcR" dir="auto"></div>'
+            + '<div class="field"><label>A — ' + esc(t('يُساءل')) + '</label><input id="rcAc" dir="auto"></div>'
+            + '<div class="field"><label>C — ' + esc(t('يُستشار')) + '</label><input id="rcC" dir="auto"></div>'
+            + '<div class="field"><label>I — ' + esc(t('يُبلَّغ')) + '</label><input id="rcI" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة نشاط','btn-primary btn-sm',' data-rcadd="1"'))
+        : '')
+      + '<p class="hint">' + esc(t('لكلِّ نشاطٍ مساءَلٌ واحدٌ لا غير — فإن تعدّد ضاعت المسؤولية.')) + '</p>';
+  })();
+    if (cur === 'esc') return head + (function(){
+    var L = escList(), due = escDue();
+    var today = due.filter(function(x){ return x.days === (byDays(x)); });
+    function byDays(x){ return x.days; }
+    var late = due.filter(function(x){ return x.days > 7; });
+    var oldest = due.length ? due[0].days : null;
+
+    return stats([['بانتظار التصعيد', N(due.length), due.length ? 'wrn' : 'ok'],
+                  ['متأخر أكثر من أسبوع', N(late.length), late.length ? 'bad' : 'ok'],
+                  ['قواعد مضبوطة', N(L.length)],
+                  ['أقدم عنصر', oldest === null ? '—' : (nm(oldest) + ' ' + t('يوم')),
+                    oldest > 7 ? 'bad' : '']])
+
+      + cardFlush(t('قواعد التصعيد') + ' — ' + nm(L.length),
+          table(['الحالة','بعد (يوم)','المسؤول','يُصعَّد إلى','الإجراء',''],
+            L.map(function(r, i){
+              return ['<input value="' + esc(r.w) + '" data-esw="' + i + '" dir="auto">',
+                      '<input type="number" min="1" value="' + esc(String(r.days)) + '" data-esd="' + i + '" style="max-width:78px">',
+                      '<input value="' + esc(r.who || '') + '" data-eswho="' + i + '" dir="auto">',
+                      '<input value="' + esc(r.to || '') + '" data-esto="' + i + '" dir="auto">',
+                      '<input value="' + esc(r.act || '') + '" data-esact="' + i + '" dir="auto">',
+                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-esdel="' + i + '"') : ''];
+            })),
+          '<p class="hint" style="margin:0">' + esc(t('يُحفَظ فورَ كتابته — ولا زرَّ حفظٍ يَعِد بما وقع سلفًا.')) + '</p>')
+
+      + (may('settings')
+        ? card('إضافة قاعدة',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('الحالة')) + ' <span class="req">*</span></label><input id="esW" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('بعد (يوم)')) + '</label><input id="esD" type="number" min="1" value="3"></div>'
+            + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="esWho" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('يُصعَّد إلى')) + '</label><input id="esTo" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('الإجراء')) + '</label><input id="esAct" dir="auto"></div>'
+            + '</div>',
+            btn('➕ إضافة قاعدة','btn-primary btn-sm',' data-esadd="1"'))
+        : '')
+
+      + cardFlush(t('قائمة التصعيد اليوم') + ' — ' + nm(due.length),
+          due.length
+            ? table(['الحالة','العنصر','منذ','يُرفَع إلى','الإجراء'],
+                due.slice(0, 100).map(function(x){
+                  return [pill(t(x.w), x.days > 7 ? 'bad' : 'wrn'),
+                          '<span class="num">' + esc(x.what) + '</span>',
+                          '<span class="num">' + nm(x.days) + ' ' + esc(t('يوم')) + '</span>',
+                          esc(t(x.to || '—')),
+                          '<span class="hint" style="margin:0">' + esc(t(x.act || '')) + '</span>'];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا شيءَ تجاوز مهلتَه — كلُّ ما ينتظر داخلَ مدّته.')) + '</p>');
+  })();
+    return head + (function(){
     var P = Object.keys(PAGE).concat(
       typeof FIELD_PAGES === 'object' ? Object.keys(FIELD_PAGES) : []);
     function unitRows(side){
@@ -10338,6 +10687,7 @@ PAGE.cover = { m:'النظام', t:'خريطة التغطية',
           '<p class="hint" style="margin:0">'
           + esc(t('لكلِّ جهةٍ ما يخصّها: تراه كاملًا ولا ترى ما ليس لها. فالمالُ للمالية، والمورّدون للمشتريات، والمستخلصُ المعتمَدُ وحده للعميل.'))
           + '</p>');
+  })();
   }};
 
 /* ── لوحة الإدارة العليا ── */
@@ -10738,40 +11088,6 @@ var RACI_ACTS = [
   ['الفك وإرجاع العُهدة',      'فني الفك','المشرف','المخازن','المهندس']
 ];
 
-PAGE.raci = { m:'النظام', t:'مصفوفة المسؤوليات',
-  l:'من ينفّذ ومن يُساءل ومن يُستشار ومن يُبلَّغ.',
-  body:function(){
-    return card('المفتاح',
-        table(['الرمز','المعنى','الشرط'], [
-          ['<b>R</b>','المنفِّذ — يعمل','واحدٌ فأكثر'],
-          ['<b>A</b>','المساءَل — يوقّع','واحدٌ لا غير'],
-          ['<b>C</b>','المستشار — يُسأل قبل','اختياري'],
-          ['<b>I</b>','المبلَّغ — يُخبَر بعد','اختياري']
-        ]))
-      + cardFlush(t('المصفوفة') + ' — ' + nm(raciList().length),
-          table(['النشاط','R — ينفّذ','A — يُساءل','C — يُستشار','I — يُبلَّغ',''],
-            raciList().map(function(r, ri){
-              return ['<input value="' + esc(r.a) + '" data-rca="' + ri + '" dir="auto">',
-                      '<input value="' + esc(r.R || '') + '" data-rcr="' + ri + '" dir="auto">',
-                      '<input value="' + esc(r.A || '') + '" data-rcac="' + ri + '" dir="auto">',
-                      '<input value="' + esc(r.C || '') + '" data-rcc="' + ri + '" dir="auto">',
-                      '<input value="' + esc(r.I || '') + '" data-rci="' + ri + '" dir="auto">',
-                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-rcdel="' + ri + '"') : ''];
-            })),
-          btn('⬇ إكسل — المسؤوليات','btn-secondary btn-sm',' data-xls="raci"'))
-      + (may('settings')
-        ? card('إضافة نشاط',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('النشاط')) + ' <span class="req">*</span></label><input id="rcA" dir="auto"></div>'
-            + '<div class="field"><label>R — ' + esc(t('ينفّذ')) + '</label><input id="rcR" dir="auto"></div>'
-            + '<div class="field"><label>A — ' + esc(t('يُساءل')) + '</label><input id="rcAc" dir="auto"></div>'
-            + '<div class="field"><label>C — ' + esc(t('يُستشار')) + '</label><input id="rcC" dir="auto"></div>'
-            + '<div class="field"><label>I — ' + esc(t('يُبلَّغ')) + '</label><input id="rcI" dir="auto"></div>'
-            + '</div>',
-            btn('➕ إضافة نشاط','btn-primary btn-sm',' data-rcadd="1"'))
-        : '')
-      + '<p class="hint">' + esc(t('لكلِّ نشاطٍ مساءَلٌ واحدٌ لا غير — فإن تعدّد ضاعت المسؤولية.')) + '</p>';
-  }};
 
 /* ── سجل الدروس ── */
 var LESSONS = [
@@ -11289,7 +11605,7 @@ var HELP = {
 /* ما لم يُكتَب له شرحٌ يُوصَف بموضعه في القائمة */
 function helpOf(id){
   if (HELP[id]) return HELP[id];
-  var p = (typeof FIELD_PAGES === 'object' && FIELD_PAGES[id]) || PAGE[id];
+  var p = pageMeta(id);
   if (!p) return null;
   return {
     w: p.l || ('شاشةُ ' + t(p.t) + ' ضمن ' + t(p.m) + '.'),
@@ -11383,14 +11699,9 @@ var HELP_STEPS = {
 function helpIndexAll(){
   /* شاشاتُ الميدان مصدرٌ ثانٍ للصفحات — كانت خارجَ الفهرس فلا يجدها
      المساعدُ وإن ملكها السائل. */
-  var all = Object.keys(PAGE).map(function(id){ return [id, PAGE[id]]; });
-  if (typeof FIELD_PAGES === 'object')
-    Object.keys(FIELD_PAGES).forEach(function(id){ all.push([id, FIELD_PAGES[id]]); });
-  return all.map(function(pr){
-    var id = pr[0], p = pr[1];
-    if (!p || !p.t) return null;
-    return { id:id, m:p.m || '', t:p.t || '', l:p.l || '' };
-  }).filter(Boolean);
+  /* شرائحُ الصفحات المدموجة تُفهرَس كلُّ واحدةٍ باسمها — من بحث عن
+     «سجل عهدة السيارات» يجدها وإن صارت شريحةً داخل «السيارات» */
+  return pageIds().map(pageMeta).filter(function(p){ return p && p.t; });
 }
 
 function helpSearch(q){
@@ -11446,7 +11757,7 @@ function assistHtml(){
             ? results.map(function(e){
                 var steps = HELP_STEPS[e.id];
                 return '<div class="card" style="margin:0 0 10px">'
-                  + '<div class="pid">' + esc(t(e.m)) + '</div>'
+                  + '<div class="pid">' + esc(t(e.m)) + (e.sub ? ' \u00b7 ' + esc(t(e.sub)) : '') + '</div>'
                   + '<h4 style="margin:2px 0 6px">' + esc(t(e.t)) + '</h4>'
                   + (e.l ? '<p class="hint" style="margin:0 0 8px">' + esc(t(e.l)) + '</p>' : '')
                   + (steps
@@ -11523,13 +11834,15 @@ function queueHtml(){
 }
 
 function helpHtml(){
-  var p = (typeof FIELD_PAGES === 'object' && FIELD_PAGES[CUR]) || PAGE[CUR];
-  var h = helpOf(CUR);
+  /* في صفحةٍ مدموجةٍ تُشرَح الشريحةُ المفتوحةُ لا الأمُّ وحدها */
+  var hid = TABS[CUR] ? tabCur(CUR) : CUR;
+  var p = pageMeta(hid);
+  var h = helpOf(hid);
   if (!h || !p) return '';
   return '<div class="pop" id="helpPop" style="width:min(520px,92vw)">'
     + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">' + esc(t(p.t)) + '</h3>'
-    +   '<div class="pid" style="margin-top:3px">' + esc(t(p.m)) + '</div></div>'
+    +   '<div class="pid" style="margin-top:3px">' + esc(t(p.m)) + (p.sub ? ' \u00b7 ' + esc(t(p.sub)) : '') + '</div></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-help="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
@@ -11894,6 +12207,7 @@ function fieldList(){
 }
 
 /* ── الرسم: لا يُعاد إن لم يتغيّر شيء ── */
+var RENDER_CUR = '';   /* آخرُ صفحةٍ رُسمت — لتمييز الانتقال من إعادة الرسم */
 var RENDER_KEY = '', RENDER_N = 0;
 
 function renderKey(){
@@ -13795,36 +14109,102 @@ function fieldTools(){
 /* ═══ موديولات اللوحة — كل قسم بمحتواه ═══ */
 
 /* ── لوحة القيادة ───────────────────────────────── */
-PAGE.over = { m:'المتابعة', t:'نظرة عامة', l:'الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.',
+PAGE.over = { m:'المتابعة', t:'نظرة عامة',
+  l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
   body:function(){
-    var S = siteStats();
-    var keys = Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b] - S.byKey[a]; });
-    return stats([['إجمالي المواقع', N(S.total)], ['تم المسح', N(S.surveyed), 'acc'],
-                  ['مُركّب', N(S.installed), 'ok'], ['لم يُزر', N(S.total - S.surveyed)]])
-      + card('تقدّم المشروع', meter('تقدّم المسح من إجمالي المواقع', S.surveyed, S.total)
-                            + meter('نسبة التركيب من إجمالي المشروع', S.installed, S.total))
-      + cardFlush('التوزيع حسب المشعر والنوع',
-          table(['المشعر','النوع','العدد','مُسح','مُركّب'],
-            keys.map(function(k){
-              var p = k.split('|');
-              return [esc(t(p[0])), esc(t(p[1])), N(S.byKey[k]), '٠', '٠'];
-            }),
-            ['الإجمالي','', N(S.total), N(S.surveyed), N(S.installed)]));
-      + card('المخرجات الورقية',
-          '<div class="actions">'
-          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary btn-sm',' data-xls="over"')
-          + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
-          + '</div>')
-  }};
-
-PAGE.pace = { m:'المتابعة', t:'الوتيرة والهدف', l:'المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.',
-  body:function(){
-    return alertBox('warn','لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.')
-      + stats([['المتبقي', N(siteStats().total)], ['المطلوب يوميًّا','—'], ['المنجز أمس','٠'], ['الانتهاء المتوقع','—']]);
-  }};
-
-PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما جُدول وما نُفّذ وما تعذّر — بحالته ونوعه.',
-  body:function(){
+    var head = tabHead('over'), cur = tabCur('over');
+    if (cur === 'reg') return head + (function(){
+    /* كان جدولًا محفورًا صحيحًا يومَ كُتب. ويبقى صحيحًا حتى يُسجَّل موقعٌ
+       جديدٌ واحد — ثم يكذب ولا يقول. يُحسَب من السجلات. */
+    var S = siteStats(), rows = [];
+    Object.keys(S.byKey).forEach(function(k){
+      var p = k.split('|');
+      rows.push([p[0], (CAT_DEF[p[1]] || {}).l || p[1], S.byKey[k]]);
+    });
+    rows.sort(function(a, b){ return b[2] - a[2]; });
+    return card('التوزيع', table(['المشعر','النوع','العدد','النسبة'],
+      rows.map(function(r){
+        return [esc(t(r[0])), esc(t(r[1])), N(r[2]),
+                nm(Math.round(r[2] / (S.total || 1) * 100)) + '٪'];
+      }), ['الإجمالي','', N(S.total), '١٠٠٪']));
+  })();
+    if (cur === 'pace') return head + (function(){
+    /* كانت تنبيهًا دائمًا «لم تُضبط المواعيد» وأصفارًا مكتوبةً بيد، لأن صفحةَ
+       المواعيد لم تكن تحفظ شيئًا. صارت تقرأ الموعدين من CFG وتجيب سؤالَ
+       «هنلحق؟» بالأرقام: المتبقّي، والمطلوبُ يوميًّا لبلوغ الموعد، ومعدّلُ
+       آخر سبعة أيامٍ كما سُجّل، والانتهاءُ المتوقّعُ على هذا المعدل. */
+    var S = siteStats(), DAY = 86400000, now = Date.now();
+    var dueS = cfgGet('dueSurvey'), dueI = cfgGet('dueInstall');
+    /* ما أُنجز في يومٍ بعينه: من اللقطة المحفوظة إن وُجدت، وإلا من السجلات */
+    function doneOn(day){
+      var snap = (STATE.stats || {})[day];
+      if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0 };
+      var sv = 0, ins = 0;
+      Object.keys(STATE.recs).forEach(function(k){
+        var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svDone(r)) sv++; });
+      Object.keys(STATE.inss).forEach(function(k){
+        var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
+      return { sv:sv, ins:ins };
+    }
+    var y = doneOn(dayKey(now - DAY)), w = { sv:0, ins:0 };
+    for (var d = 1; d <= 7; d++){ var o = doneOn(dayKey(now - d * DAY)); w.sv += o.sv; w.ins += o.ins; }
+    function daysTo(due){ return due ? Math.ceil((due - now) / DAY) : 0; }
+    function stage(name, left, due, avg7, yday){
+      var days = daysTo(due), avg = avg7 / 7;
+      var need = !due ? 0 : (days > 0 ? Math.ceil(left / days) : left);
+      var finish = avg > 0 && left > 0 ? now + Math.ceil(left / avg) * DAY : (left > 0 ? 0 : now);
+      var late = due && finish && finish > due;
+      var verdict = !left ? ['اكتملت', 'ok']
+        : !due ? ['لا موعدَ مضبوطًا', 'wrn']
+        : !avg ? ['لا إنجازَ في آخر سبعة أيام — لا يُحسَب موعدٌ متوقّع', 'bad']
+        : late ? ['على هذا المعدل تتأخّر عن موعدها', 'bad'] : ['على هذا المعدل تلحق موعدَها', 'ok'];
+      return card(name,
+          stats([['المتبقّي', N(left), left ? '' : 'ok'],
+                 ['الموعد', due ? '<span class="num">' + esc(dayKey(due)) + '</span>' : '—', due ? '' : 'wrn'],
+                 ['أيامٌ للموعد', due ? N(Math.max(0, days)) : '—', due && days <= 0 && left ? 'bad' : ''],
+                 ['المطلوب يوميًّا', due ? N(need) : '—'],
+                 ['معدل آخر ٧ أيام', nm(Math.round(avg * 10) / 10)],
+                 ['المنجز أمس', N(yday)],
+                 ['الانتهاء المتوقع', finish ? '<span class="num">' + esc(dayKey(finish)) + '</span>' : '—', late ? 'bad' : (finish ? 'ok' : '')]])
+        + alertBox(verdict[1] === 'ok' ? 'success' : (verdict[1] === 'bad' ? 'error' : 'warn'), verdict[0]));
+    }
+    return (!dueS || !dueI
+      ? alertBox('warn', 'موعدٌ أو أكثرُ لم يُضبط بعد — يُكتب في «التخطيط ← المواعيد والأزمنة» فتُحسَب الوتيرةُ عليه.')
+      : '')
+      + stage('المسح', S.total - S.surveyed, dueS, w.sv, y.sv)
+      + stage('التركيب', S.total - S.installed, dueI, w.ins, y.ins)
+      + '<p class="hint">' + esc(t('المعدلُ من اللقطات اليومية المحفوظة، وما لم تُحفَظ لقطتُه يُحسَب من السجلات التي على هذا الجهاز.')) + '</p>';
+  })();
+    if (cur === 'daily') return head + (function(){
+    /* كانت خمسةَ تواريخَ مكتوبةً بيدٍ وأصفارًا: تُعرَض على الوزارة فتبدو
+       لوحةَ متابعةٍ وهي لا تقرأ شيئًا. الآن تُقرأ اللقطاتُ المحفوظة، فإن لم
+       تُحفَظ بعدُ حُسب اليومُ من السجلات وقيل ذلك صراحةً. */
+    var H = (typeof statsHistory === 'function') ? statsHistory(14) : [];
+    if (!H.length){
+      var S = siteStats(), day = dayKey(Date.now());
+      var sv = 0, ins = 0;
+      Object.keys(STATE.recs).forEach(function(k){
+        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svDone(STATE.recs[k])) sv++; });
+      Object.keys(STATE.inss).forEach(function(k){
+        var r = STATE.inss[k];
+        if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
+      return alertBox('info','لا لقطاتٍ محفوظةً بعد — هذا يومُك أنت محسوبًا من سجلاتك.')
+        + card('اليوم', table(['التاريخ','مسح','تركيب','الإجمالي'],
+            [['<span class="num">' + esc(day) + '</span>', N(sv), N(ins), N(sv + ins)]]));
+    }
+    var tot = [0,0,0];
+    var rows = H.slice().reverse().map(function(r){
+      var sv = r.daySurvey || 0, ins = r.dayInstall || 0, dis = r.dayDismantle || 0;
+      tot[0] += sv; tot[1] += ins; tot[2] += dis;
+      return ['<span class="num">' + esc(r.day) + '</span>', N(sv), N(ins), N(dis),
+              N(sv + ins + dis), N(r.dayBlocked || 0)];
+    });
+    return card('آخر ' + nm(rows.length) + ' يومًا',
+        table(['التاريخ','مسح','تركيب','فك','الإجمالي','تعذّر'], rows,
+              ['الإجمالي', N(tot[0]), N(tot[1]), N(tot[2]), N(tot[0]+tot[1]+tot[2]), '']))
+      + '<p class="hint">' + esc(t('اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.')) + '</p>';
+  })();
+    if (cur === 'inst') return head + (function(){
     var tot = { notStarted:0, blocked:0, scheduled:0, installed:0 };
     var byType = Object.create(null);
 
@@ -13864,55 +14244,43 @@ PAGE.inst = { m:'المتابعة', t:'التركيب والجدولة', l:'ما
 
       + card('دورة التركيب', flow(['لم يبدأ','مسح','جدولة','مُركّب'], 0)
         + '<p class="hint">' + esc(t('النقطة لا تدخل الجدولة إلا بعد مسحها بنجاح، ولا تُوسم مُركّبةً إلا باعتماد قطعها في «التدقيق الهندسي».')) + '</p>');
+  })();
+    return head + (function(){
+    var S = siteStats();
+    var keys = Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b] - S.byKey[a]; });
+    /* «مُسح» و«مُركّب» لكلِّ مشعرٍ ونوع كانا صفرين مكتوبَين بيد — فالجدولُ
+       يقول إن عرفات لم يُمسَح منها شيءٌ والمجموعُ أسفله يقول غيرَ ذلك.
+       يُحسَبان من السجلات بالمعيار نفسِه الذي تعدُّ به siteStats مجموعَها. */
+    var sv = {}, ins = {};
+    STATE.sites.forEach(function(x){
+      var k = x.zone + '|' + x.type;
+      if (svDone(STATE.recs[x.id])) sv[k] = (sv[k] || 0) + 1;
+      var st = (STATE.inss[x.id] || {}).status;
+      if (st === 'مُركّب' || x.fstat === 'مُركّب') ins[k] = (ins[k] || 0) + 1;
+    });
+    return stats([['إجمالي المواقع', N(S.total)], ['تم المسح', N(S.surveyed), 'acc'],
+                  ['مُركّب', N(S.installed), 'ok'], ['لم يُزر', N(S.total - S.surveyed)]])
+      + card('تقدّم المشروع', meter('تقدّم المسح من إجمالي المواقع', S.surveyed, S.total)
+                            + meter('نسبة التركيب من إجمالي المشروع', S.installed, S.total))
+      + cardFlush('التوزيع حسب المشعر والنوع',
+          table(['المشعر','النوع','العدد','مُسح','مُركّب'],
+            keys.map(function(k){
+              var p = k.split('|');
+              return [esc(t(p[0])), esc(t(p[1])), N(S.byKey[k]), N(sv[k] || 0), N(ins[k] || 0)];
+            }),
+            ['الإجمالي','', N(S.total), N(S.surveyed), N(S.installed)]))
+      /* كانت بعد فاصلةٍ منقوطةٍ في غير موضعها — تُحسَب ولا تُعاد، فلم تظهر قطّ */
+      + card('المخرجات الورقية',
+          '<div class="actions">'
+          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary btn-sm',' data-xls="over"')
+          + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
+          + '</div>');
+  })();
   }};
 
-PAGE.daily = { m:'المتابعة', t:'المعدل اليومي', l:'اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.',
-  body:function(){
-    /* كانت خمسةَ تواريخَ مكتوبةً بيدٍ وأصفارًا: تُعرَض على الوزارة فتبدو
-       لوحةَ متابعةٍ وهي لا تقرأ شيئًا. الآن تُقرأ اللقطاتُ المحفوظة، فإن لم
-       تُحفَظ بعدُ حُسب اليومُ من السجلات وقيل ذلك صراحةً. */
-    var H = (typeof statsHistory === 'function') ? statsHistory(14) : [];
-    if (!H.length){
-      var S = siteStats(), day = dayKey(Date.now());
-      var sv = 0, ins = 0;
-      Object.keys(STATE.recs).forEach(function(k){
-        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svDone(STATE.recs[k])) sv++; });
-      Object.keys(STATE.inss).forEach(function(k){
-        var r = STATE.inss[k];
-        if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
-      return alertBox('info','لا لقطاتٍ محفوظةً بعد — هذا يومُك أنت محسوبًا من سجلاتك.')
-        + card('اليوم', table(['التاريخ','مسح','تركيب','الإجمالي'],
-            [['<span class="num">' + esc(day) + '</span>', N(sv), N(ins), N(sv + ins)]]));
-    }
-    var tot = [0,0,0];
-    var rows = H.slice().reverse().map(function(r){
-      var sv = r.daySurvey || 0, ins = r.dayInstall || 0, dis = r.dayDismantle || 0;
-      tot[0] += sv; tot[1] += ins; tot[2] += dis;
-      return ['<span class="num">' + esc(r.day) + '</span>', N(sv), N(ins), N(dis),
-              N(sv + ins + dis), N(r.dayBlocked || 0)];
-    });
-    return card('آخر ' + nm(rows.length) + ' يومًا',
-        table(['التاريخ','مسح','تركيب','فك','الإجمالي','تعذّر'], rows,
-              ['الإجمالي', N(tot[0]), N(tot[1]), N(tot[2]), N(tot[0]+tot[1]+tot[2]), '']))
-      + '<p class="hint">' + esc(t('اللقطةُ تُكتَب من جهاز المكتب مرةً كلَّ ربع ساعة — فما لم يُزامَن بعدُ لا يظهر هنا.')) + '</p>';
-  }};
 
-PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'التوزيع الكامل بالنسب.',
-  body:function(){
-    /* كان جدولًا محفورًا صحيحًا يومَ كُتب. ويبقى صحيحًا حتى يُسجَّل موقعٌ
-       جديدٌ واحد — ثم يكذب ولا يقول. يُحسَب من السجلات. */
-    var S = siteStats(), rows = [];
-    Object.keys(S.byKey).forEach(function(k){
-      var p = k.split('|');
-      rows.push([p[0], (CAT_DEF[p[1]] || {}).l || p[1], S.byKey[k]]);
-    });
-    rows.sort(function(a, b){ return b[2] - a[2]; });
-    return card('التوزيع', table(['المشعر','النوع','العدد','النسبة'],
-      rows.map(function(r){
-        return [esc(t(r[0])), esc(t(r[1])), N(r[2]),
-                nm(Math.round(r[2] / (S.total || 1) * 100)) + '٪'];
-      }), ['الإجمالي','', N(S.total), '١٠٠٪']));
-  }};
+
+
 
 PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأقل إنجازًا أولًا — لتوجيه التنسيق.',
   body:function(){
@@ -14031,15 +14399,25 @@ PAGE.dis = { m:'المتابعة', t:'الفك بعد الموسم', l:'جدول
 /* ── التخطيط ────────────────────────────────────── */
 PAGE.setup = { m:'التخطيط', t:'المواعيد والأزمنة', l:'الموعد المستهدف وزمن التركيب لكل نوع.',
   body:function(){
+    /* كانت تاريخين مكتوبَين بيدٍ لا يُحفَظان، وزرُّ «حفظ» يقول «محفوظٌ
+       بالفعل» وهو لم يحفظ شيئًا — فبقيت «الوتيرة والهدف» تقول «لم تُضبط
+       المواعيد» للأبد. صار الموعدان يُقرآن ويُكتبان في CFG كسائر الإعدادات،
+       وأزمنةُ التركيب تُضبط بالدقائق ويُحسَب الإجماليُّ من عدد النقاط الفعلي. */
+    var S = siteStats(), nCamp = 0, nCor = 0;
+    STATE.sites.forEach(function(x){ if (siteZone(x) === 'camp') nCamp++; else nCor++; });
+    var mC = cfgGet('minCamp'), mR = cfgGet('minCor');
+    var hrs = function(n, m){ return nm(Math.round(n * m / 60)); };
     return card('المواعيد المستهدفة',
       '<div class="grid cols-2">'
-      + '<div class="field"><label>'+esc(t('موعد انتهاء المسح'))+'</label><input type="date" value="2026-10-15"></div>'
-      + '<div class="field"><label>'+esc(t('موعد انتهاء التركيب'))+'</label><input type="date" value="2026-12-20"></div>'
-      + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
-    + card('أزمنة التركيب', table(['النوع','الزمن التقديري','عدد النقاط','الإجمالي'], [
-        ['مخيم','<span class="num">٤٥</span> د','<span class="num">١٬٣٩٢</span>','<span class="num">١٬٠٤٤</span> س'],
-        ['ممر','<span class="num">٩٠</span> د','<span class="num">١٩٠</span>','<span class="num">٢٨٥</span> س']
-      ]));
+      + '<div class="field"><label>'+esc(t('موعد انتهاء المسح'))+'</label>' + cfgDate('dueSurvey') + '</div>'
+      + '<div class="field"><label>'+esc(t('موعد انتهاء التركيب'))+'</label>' + cfgDate('dueInstall') + '</div>'
+      + '</div>'
+      + '<p class="hint">' + esc(t('يُحفَظ فورَ التغيير — وتقرؤه «نظرة عامة ← الوتيرة والهدف» لتقول كم يلزم يوميًّا.')) + '</p>',
+      btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+    + card('أزمنة التركيب', table(['النوع','الزمن التقديري (دقيقة)','عدد النقاط','الإجمالي (ساعة)'], [
+        ['مخيم', cfgInput('minCamp'), N(nCamp), '<span class="num">' + hrs(nCamp, mC) + '</span>'],
+        ['ممر',  cfgInput('minCor'),  N(nCor),  '<span class="num">' + hrs(nCor, mR) + '</span>']
+      ], ['الإجمالي', '', N(S.total), '<span class="num">' + nm(Math.round((nCamp * mC + nCor * mR) / 60)) + '</span>']));
   }};
 
 PAGE.pipe = { m:'التخطيط', t:'سلامة خط الإنتاج', l:'مسح ← جدولة ← تركيب — وأي تعارض بينها.',
@@ -14682,32 +15060,11 @@ function listRm(kind, v){
   render(1);
 }
 
-PAGE.invb = { m:'الورشة والمخزون', t:'أرصدة المخزون', l:'المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.',
+PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
+  l:'الأرصدةُ وحركتُها وعُهدةُ كلِّ منفِّذ — في شاشةٍ واحدة.',
   body:function(){
-    var B = stockBalance();
-    var tot = B.reduce(function(a,r){ return { store:a.store+r.store, custody:a.custody+r.custody,
-                                               used:a.used+r.used, scrap:a.scrap+r.scrap }; },
-                       { store:0, custody:0, used:0, scrap:0 });
-    return stats([['في المخزن', N(tot.store), 'ok'],
-                  ['في العُهدة', N(tot.custody), 'acc'],
-                  ['رُكّب في الميدان', N(tot.used)],
-                  ['تالف معزول', N(tot.scrap), tot.scrap ? 'bad' : '']])
-      + cardFlush('الأرصدة حسب الصنف',
-          B.length
-            ? table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'],
-                B.map(function(r){
-                  return [esc(r.item), N(r.store), N(r.custody), N(r.used),
-                          r.scrap ? pill(nm(r.scrap),'off') : N(0),
-                          '<b>' + N(r.store + r.custody + r.used + r.scrap) + '</b>'];
-                }))
-            : '<p class="hint" style="padding:16px">'
-              + esc(t('لا حركاتٍ بعد — الرصيدُ يُشتقُّ من الحركات ولا يُكتَب بيد.')) + '</p>')
-      + (B.some(function(r){ return r.store < 0 || r.custody < 0; })
-          ? alertBox('warn','رصيدٌ سالبٌ في صنف — حركةٌ سُجّلت بلا ما يقابلها.') : '');
-  }};
-
-PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'إلحاقيٌّ لا يُعدَّل — كل تصحيح حركةٌ جديدة تُوازنه.',
-  body:function(){
+    var head = tabHead('inv'), cur = tabCur('inv');
+    if (cur === 'invmv') return head + (function(){
     var L = movesList(), items = itemsList();
     return (may('inventory')
       ? card('تسجيل حركة',
@@ -14745,7 +15102,54 @@ PAGE.invmv = { m:'الورشة والمخزون', t:'دفتر الحركة', l:'
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا حركاتٍ بعد.')) + '</p>',
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="invmv"') : '');
+  })();
+    if (cur === 'stock') return head + (function(){
+    var L = custodyByWho();
+    var tot = L.reduce(function(a,r){ return a + r.total; }, 0);
+
+    return stats([['من بيدهم عُهدة', N(L.length), L.length ? 'acc' : ''],
+                  ['قطعٌ في العُهدة', N(tot)]])
+
+      + (L.length
+        ? cardFlush(t('العُهدة حسب المنفِّذ') + ' — ' + nm(L.length),
+            table(['المنفِّذ','أصناف','قطع','التفصيل'],
+              L.map(function(r){
+                var ks = Object.keys(r.items).filter(function(k){ return r.items[k] > 0; });
+                return ['<strong>' + esc(dispName(r.who)) + '</strong>', N(ks.length), N(r.total),
+                        '<span class="hint" style="margin:0">'
+                          + ks.map(function(k){ return esc(itemName(k)) + ' \u00d7' + nm(r.items[k]); }).join(' \u00b7 ')
+                          + '</span>'];
+              })))
+        : card('لا عُهدةَ مصروفةً الآن',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».')) + '</p>'))
+
+      + '<p class="hint">' + esc(t('العُهدةُ صرفٌ ناقصَ ما استُهلك أو أُرجع أو شُطب — لا رقمَ يُكتب بيد.')) + '</p>';
+  })();
+    return head + (function(){
+    var B = stockBalance();
+    var tot = B.reduce(function(a,r){ return { store:a.store+r.store, custody:a.custody+r.custody,
+                                               used:a.used+r.used, scrap:a.scrap+r.scrap }; },
+                       { store:0, custody:0, used:0, scrap:0 });
+    return stats([['في المخزن', N(tot.store), 'ok'],
+                  ['في العُهدة', N(tot.custody), 'acc'],
+                  ['رُكّب في الميدان', N(tot.used)],
+                  ['تالف معزول', N(tot.scrap), tot.scrap ? 'bad' : '']])
+      + cardFlush('الأرصدة حسب الصنف',
+          B.length
+            ? table(['الصنف','المخزن','العُهدة','رُكّب','تالف','الإجمالي'],
+                B.map(function(r){
+                  return [esc(r.item), N(r.store), N(r.custody), N(r.used),
+                          r.scrap ? pill(nm(r.scrap),'off') : N(0),
+                          '<b>' + N(r.store + r.custody + r.used + r.scrap) + '</b>'];
+                }))
+            : '<p class="hint" style="padding:16px">'
+              + esc(t('لا حركاتٍ بعد — الرصيدُ يُشتقُّ من الحركات ولا يُكتَب بيد.')) + '</p>')
+      + (B.some(function(r){ return r.store < 0 || r.custody < 0; })
+          ? alertBox('warn','رصيدٌ سالبٌ في صنف — حركةٌ سُجّلت بلا ما يقابلها.') : '');
+  })();
   }};
+
 
 /* عُهدةُ كلِّ منفِّذ: صرفٌ إليه ناقصَ ما استُهلك أو أُرجع أو شُطب — بنفس
    معادلة stockBalance لكن مقسومةً بالاسم لا مجموعةً بالصنف. كان الجدولُ
@@ -14773,30 +15177,6 @@ function custodyByWho(){
     .sort(function(a,b){ return b.total - a.total; });
 }
 
-PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة', l:'ما في يد كل منفِّذ الآن — من دفتر الحركة.',
-  body:function(){
-    var L = custodyByWho();
-    var tot = L.reduce(function(a,r){ return a + r.total; }, 0);
-
-    return stats([['من بيدهم عُهدة', N(L.length), L.length ? 'acc' : ''],
-                  ['قطعٌ في العُهدة', N(tot)]])
-
-      + (L.length
-        ? cardFlush(t('العُهدة حسب المنفِّذ') + ' — ' + nm(L.length),
-            table(['المنفِّذ','أصناف','قطع','التفصيل'],
-              L.map(function(r){
-                var ks = Object.keys(r.items).filter(function(k){ return r.items[k] > 0; });
-                return ['<strong>' + esc(dispName(r.who)) + '</strong>', N(ks.length), N(r.total),
-                        '<span class="hint" style="margin:0">'
-                          + ks.map(function(k){ return esc(itemName(k)) + ' \u00d7' + nm(r.items[k]); }).join(' \u00b7 ')
-                          + '</span>'];
-              })))
-        : card('لا عُهدةَ مصروفةً الآن',
-            '<p class="hint" style="text-align:center;margin:0">'
-            + esc(t('تظهر هنا فور أول صرفٍ من «دفتر حركة المخزون».')) + '</p>'))
-
-      + '<p class="hint">' + esc(t('العُهدةُ صرفٌ ناقصَ ما استُهلك أو أُرجع أو شُطب — لا رقمَ يُكتب بيد.')) + '</p>';
-  }};
 
 /* ── المال ──────────────────────────────────────── */
 PAGE.buys = { m:'القسم المالي', t:'دفتر المشتريات', l:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
@@ -14924,9 +15304,129 @@ function wipeGo(){
   render(1);
 }
 
-PAGE.wipe = { m:'النظام', t:'تصفير البيانات',
-  l:'بدايةُ الموسم من صفر — تُمسَح السجلاتُ ويبقى التعريف.',
+PAGE.sys = { m:'النظام', t:'صحة النظام',
+  l:'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.',
   body:function(){
+    var head = tabHead('sys'), cur = tabCur('sys');
+    if (cur === 'sys') return head + (function(){
+    return card('الفحوص', table(['الفحص','النتيجة'], [
+      ['نقاط مُركّبة بلا قطع معتمدة', pill('٠','ok')],
+      ['نقاط مجدولة بلا مسح', pill('٠','ok')],
+      ['أصناف برصيد سالب', pill('٠','ok')],
+      ['مشتريات بلا مورّد', pill('٠','ok')]
+    ]));
+  })();
+    if (cur === 'sync') return head + (function(){
+    /* كانت أربعةَ أصفارٍ مكتوبةً بيدٍ — والحارسُ لم يمسكها لأن جسمَ الصفحة
+       التي بعدها كان يمدّها بمصدرٍ حيٍّ صدفةً. كُشفت حين حُذفت تلك الصفحة. */
+    var Q = STATE.queue || [];
+    var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
+    var day = new Date().toISOString().slice(0, 10);
+    var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
+    return softErrCard()
+      + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok'],
+               ['أخطاءُ رفع', N(errs.length), errs.length ? 'bad' : 'ok'],
+               ['أخطاءُ اليوم', N(today), today ? 'wrn' : 'ok'],
+               ['الشبكة', pill(STATE.meta.online ? 'متصلة' : 'مقطوعة', STATE.meta.online ? 'ok' : 'off')]])
+      + (Q.length
+        ? cardFlush('الطابور — ' + nm(Q.length),
+            table(['النوع','السجل','سُجّل'],
+              Q.slice(0, 50).map(function(x){
+                return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'), '<strong>' + esc(String(x.id || '—')) + '</strong>',
+                        '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));
+  })();
+    if (cur === 'vers') return head + (function(){
+    return card('الأجهزة الظاهرة', table(['المستخدم','النسخة','الدور','آخر ظهور'], [
+      ['محمد صفوت', pill('V14.0','ok'), 'مهندس','<span class="num">٠٢:٥١</span>'],
+      ['مشرف منى', pill('V13.84','off'), 'مشرف','أمس']
+    ]))
+    + alertBox('error','جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.');
+  })();
+    if (cur === 'retain') return head + (function(){
+    /* أعدادُ السجلات تُعَدُّ من الحالة لا تُكتَب: كانت محفورةً «سجل الأحداث
+       ٤٬٨٢٠» و«الصور ١٢» — أرقامَ يومٍ مضى تُقرأ اليومَ حجمًا حقيقيًّا،
+       ويُبنى عليها قرارُ أرشفة. والحجمُ بالميغا يُقدَّر من العدد بمتوسّطٍ
+       معلومٍ لكلِّ نوعٍ فيبقى تقديرًا معلنًا لا رقمًا مخترعًا. */
+    var cnt = function(k){
+      var v = STATE[k];
+      return Array.isArray(v) ? v.length : Object.keys(v || {}).length;
+    };
+    var mb = function(n, kb){ return (n * kb / 1024).toFixed(1); };
+    var SETS = [
+      ['المواقع',       (STATE.sites || []).length, mb((STATE.sites || []).length, 1.4),
+                        'دائم',      'أصل المشروع لا يُؤرشَف'],
+      ['سجل الأحداث',   cnt('events'),  mb(cnt('events'), 0.4),
+                        '٩٠ يومًا',  'يُؤرشَف شهريًّا في ملف مضغوط'],
+      ['نبضات الأجهزة', cnt('beats'),   mb(cnt('beats'), 0.2),
+                        '٣٠ يومًا',  'الأكثر نموًّا — نبضة كل خمس دقائق'],
+      ['الصور',         cnt('photos'),  mb(cnt('photos'), 1600),
+                        'دائم',      'مضغوطة على الجهاز قبل الرفع'],
+      ['دفتر المخزون',  cnt('moves'),   mb(cnt('moves'), 0.3),
+                        'دائم',      'الأرصدة مشتقّة منه فلا يُمسّ'],
+      ['المشتريات',     cnt('buys'),    mb(cnt('buys'), 0.3),
+                        'دائم',      'مستند مالي'],
+      ['سجل التدقيق',   cnt('events'),  mb(cnt('events'), 0.4),
+                        '٣ سنوات',  'مدة المساءلة'],
+      ['مسودّات محلية', (STATE.queue || []).length, mb((STATE.queue || []).length, 0.5),
+                        '٧ أيام',    'تُمسح بعد المزامنة الناجحة']
+    ];
+    var tot = SETS.reduce(function(a,s){ return a + parseFloat(s[2]); }, 0);
+    return stats([['الحجم الكلي', '<span class="num">'+tot.toFixed(1)+'</span> م.ب'],
+                  ['سجلات', '<span class="num">'+nm(SETS.reduce(function(a,s){return a+s[1];},0))+'</span>'],
+                  ['الأسرع نموًّا','نبضات','wrn'],
+                  ['حدّ الخطة المجانية','١ ج.ب','acc']])
+      + card('مجموعات البيانات',
+          table(['المجموعة','سجلات','م.ب','مدة الاحتفاظ','السياسة'],
+            SETS.map(function(s){
+              return [esc(t(s[0])), '<span class="num">'+nm(s[1])+'</span>',
+                      '<span class="num">'+s[2]+'</span>',
+                      s[3]==='دائم' ? pill('دائم','acc') : pill(s[3],'warn'),
+                      '<span class="hint" style="margin:0">'+esc(t(s[4]))+'</span>'];
+            })),
+          btn('تشغيل الأرشفة الآن','btn-quiet btn-sm disabled', ' disabled title="'
+      + esc(t('الأرشفةُ التلقائيةُ تحتاج دالةً على الخادم — لم تُبنَ بعد. الحذفُ اليدويُّ من Firestore متاحٌ لمن يملك القاعدة.')) + '"'))
+      + card('النسخ الاحتياطي',
+          alertBox('error','مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.')
+          + table(['البند','الحالة'], [
+              ['آخر نسخة فعلية', pill('لا توجد','off')],
+              ['الدورية', '<span class="num">٠٥:٣٠</span> ' + esc(t('يوميًّا'))],
+              ['التشفير', pill('مطلوب مفتاح','warn')],
+              ['المكان', '<span class="hint" style="margin:0">' + esc(t('مستودع خاص — لا العام')) + '</span>']
+            ]))
+
+      + card('دورة المزامنة', flow(['يُكتب محليًّا','في الطابور','رُفع','أُكِّد'],0)
+        + '<p class="hint">' + esc(t('الكتابة تنجح دائمًا على الجهاز — والشبكة تفصيلٌ لاحق لا شرطٌ مسبق.')) + '</p>')
+      + card('سياسة التعارض',
+          table(['الحقل','السياسة','لماذا'], [
+            ['حالة المسح','<span class="pill acc">' + esc(t('الأحدث يفوز')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('تقدُّمٌ لا يرجع')) + '</span>'],
+            ['حالة التركيب','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('«مُركّب» و«متعذّر» لا يجتمعان')) + '</span>'],
+            ['الإحداثيات','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('تحريكان مختلفان يعنيان خلافًا على الموقع')) + '</span>'],
+            ['الصور','<span class="pill ok">' + esc(t('تُضاف كلها')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('لا صورة تُلغي أخرى')) + '</span>'],
+            ['القطع المستهلكة','<span class="pill off">' + esc(t('يُرفض الثاني')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('وإلا استُهلك المخزون مرتين')) + '</span>'],
+            ['الملاحظات','<span class="pill ok">' + esc(t('تُدمَج بسطر فاصل')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('كلاهما شهادة')) + '</span>']
+          ]),
+          btn('حفظ السياسة','btn-quiet btn-sm disabled', ' disabled title="'
+      + esc(t('مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.')) + '"'))
+      + card('تعارضات بانتظار القرار',
+          '<p class="hint">' + esc(t('لا تعارضات — تظهر هنا بالنسختين جنبًا إلى جنب ليختار المهندس.')) + '</p>')
+      + card('طابور الرفع',
+          '<div class="actions">'
+          + btn('رفع الآن','btn-primary btn-sm',' data-pull="1"')
+          + btn('عرض الطابور','btn-secondary btn-sm',' data-pq="1"')
+          + '<span class="hint" style="margin:0">' + esc(t('آخر مزامنة')) + ' <span class="num">'
+          + esc(STATE.meta.lastSync ? new Date(STATE.meta.lastSync).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) : '—')
+          + '</span></span></div>')
+      + '<p class="hint">' + esc(t('«آخر كتابة تفوز» صامتةً هي أخطر سياسة: تمحو عمل زميلٍ بلا أن يعلم أحد. ما لا يُحسم آليًّا يُعرَض.')) + '</p>';
+  })();
+    return head + (function(){
     var C = wipeCounts(), tot = C.reduce(function(a, r){ return a + r[1]; }, 0);
     return alertBox('warn','يمسحُ ما سُجِّل: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والأحداثُ والمقترحات. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.')
       + halves(t('ما سيُمسَح') + ' — ' + nm(tot) + ' ' + t('سجلًّا'),
@@ -14941,6 +15441,7 @@ PAGE.wipe = { m:'النظام', t:'تصفير البيانات',
             + '<div class="actions">' + btn('صفّر الآن','btn-danger',' data-wipego="1"') + '</div>'
             + '<p class="hint">' + esc(t('لا رجعةَ بعدها — ويُقيَّد لكلِّ سجلٍّ أمرُ حذفٍ يُنفَّذ على السحابة، فلا يعود مع المزامنة.')) + '</p>')
         : alertBox('info','التصفيرُ للمهندس وحده.'));
+  })();
   }};
 
 /* ═══ الفنيون والفرق: يُضافون ويُعدَّلون ويُحذَفون ═══════════════════════
@@ -15415,66 +15916,6 @@ PAGE.vehkind = { m:'الإعدادات', t:'أنواع السيارات',
       + '<p class="hint">' + esc(t('النوعُ الذي عليه سياراتٌ لا يُحذَف — انقلها إلى نوعٍ آخر أولًا. والتكلفةُ الشهريةُ تُجمَع من سيارات النوع فتُعرَف كلفةُ كلِّ صنفٍ على المشروع.')) + '</p>';
   }};
 
-PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
-  l:'ما يعمله الشخصُ — ومنه يُشتقُّ دورُه وصلاحيتُه.',
-  body:function(){
-    var L = jobsList();
-    var roleOpts = function(cur){
-      return Object.keys(ROLES).map(function(k){
-        return '<option value="' + esc(k) + '"' + (cur === k ? ' selected' : '') + '>'
-          + esc(t(ROLES[k].n)) + '</option>';
-      }).join('');
-    };
-    return '<p class="lede" style="margin:0 0 16px">' + esc(t('الوظيفةُ ما يعمله الشخصُ، والدورُ ما يستطيعه في النظام. ومسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبها يُعرَف من يستلم العهدةَ ومن ينزل المشاعر. والوظيفةُ تتغيّر في أثناء الموسم، والنقلةُ تُسجَّل ولا تُمحى.')) + '</p>'
-
-      + cardFlush(t('الوظائف') + ' — ' + nm(L.length),
-          table(['الوظيفة','الدور','ماذا تعمل','عليها',''],
-            L.map(function(j){
-              var u = jobUsed(j.id);
-              return ['<input value="' + esc(j.n) + '" data-jbn="' + esc(j.id) + '" dir="auto">',
-                      '<select data-jbr="' + esc(j.id) + '">' + roleOpts(j.role) + '</select>',
-                      '<input value="' + esc(j.d || '') + '" data-jbd="' + esc(j.id) + '" dir="auto">',
-                      u ? pill(nm(u), 'acc') : N(0),
-                      u ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
-                        : btn('حذف','btn-quiet btn-sm',' data-jbdel="' + esc(j.id) + '"')];
-            })))
-
-      + (may('users')
-        ? card('إضافة وظيفة',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('اسم الوظيفة')) + ' <span class="req">*</span></label>'
-            +   '<input id="jbN" dir="auto" placeholder="' + esc(t('مسؤول سلامة')) + '"></div>'
-            + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-            +   '<select id="jbR">' + roleOpts('tech') + '</select></div>'
-            + '<div class="field"><label>' + esc(t('ماذا تعمل')) + '</label>'
-            +   '<input id="jbD" dir="auto"></div>'
-            + '</div>',
-            btn('➕ إضافة وظيفة','btn-primary btn-sm',' data-jbadd="1"'))
-        : '')
-
-      + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
-      +   '<input type="search" id="jbQ" data-jbq="1" value="' + esc(JB_Q) + '" placeholder="'
-      +     esc(t('ابحث باسم الشخص')) + '" dir="auto">'
-      + '</form>'
-      + cardFlush('من على كل وظيفة',
-          table(['الشخص','الوظيفة','الدور المشتقّ','آخر نقلة'],
-            techsList().filter(function(x){ return !JB_Q || x.n.indexOf(JB_Q) > -1; })
-              .map(function(x){
-              var j = x.job ? jobOf(x.job) : null;
-              var last = (x.jobLog || []).slice(-1)[0];
-              return [esc(x.n),
-                      '<select data-tkjob="' + esc(x.n) + '">'
-                      + '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
-                      + L.map(function(y){
-                          return '<option value="' + esc(y.id) + '"' + (x.job === y.id ? ' selected' : '')
-                            + '>' + esc(y.n) + '</option>';
-                        }).join('') + '</select>',
-                      j ? pill(t((ROLES[j.role] || {}).n || j.role), 'off') : '—',
-                      last ? '<span class="num">' + esc(new Date(last.at).toISOString().slice(0,10)) + '</span>' : '—'];
-            })))
-
-      + '<p class="hint">' + esc(t('الوظيفةُ التي عليها أشخاصٌ لا تُحذَف — انقلهم أولًا. وكلُّ نقلةٍ تدخل سجلَّ الأحداث وتصل صاحبَها إشعارًا.')) + '</p>';
-  }};
 
 /* ── تفصيلُ أداء الفني: عددٌ ووزنٌ لكلِّ نوعٍ، لا رقمٌ واحدٌ مجهولُ المصدر ── */
 function breakCell(count, pts, byType){
@@ -16034,8 +16475,183 @@ function vehCost(){
 
 
 PAGE.fleet = { m:'الميدان', t:'السيارات',
-  l:'أسطولُ المشروع — لوحاتُه ورخصُه وتكلفتُه.',
+  l:'أسطولُ المشروع كلُّه في شاشةٍ واحدة — الأسطولُ وإسنادُه وعُهدتُه وتكلفتُه وسيارتُك.',
   body:function(){
+    var head = tabHead('fleet'), cur = tabCur('fleet');
+    if (cur === 'fleetAsn') return head + (function(){
+    var A = vehAsnList(), free = vehList().filter(function(v){ return v.st === 'متاحة'; });
+    var people = techsList().map(function(x){ return x.n; });
+    var crews = crewsList().map(function(c){ return c.n; });
+
+    return stats([['إسناداتٌ قائمة', N(A.length)],
+                  ['سياراتٌ متاحة', N(free.length), free.length ? 'ok' : 'wrn'],
+                  ['فرقٌ بلا سيارة',
+                    N(crews.filter(function(c){ return !vehOfWho(c).length; }).length), 'wrn']])
+
+      + ((may('fleet') || may('settings'))
+        ? card('إسنادٌ جديد',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('السيارة')) + ' <span class="req">*</span></label>'
+            +   '<select id="vaVeh"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+            +   free.map(function(v){
+                  return '<option value="' + esc(v.id) + '">' + esc(v.plate) + ' — '
+                    + esc(vehKindName(v.kind)) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '<div class="field"><label>' + esc(t('إلى')) + ' <span class="req">*</span></label>'
+            +   '<select id="vaTo"><option value="">— ' + esc(t('اختر')) + ' —</option>'
+            +   '<optgroup label="' + esc(t('فرق')) + '">'
+            +     crews.map(function(c){ return '<option>' + esc(c) + '</option>'; }).join('')
+            +   '</optgroup>'
+            +   '<optgroup label="' + esc(t('أشخاص')) + '">'
+            +     people.map(function(p){ return '<option>' + esc(p) + '</option>'; }).join('')
+            +   '</optgroup></select></div>'
+            + '<div class="field"><label>' + esc(t('لأيِّ عمل')) + '</label><select id="vaKind">'
+            +   Object.keys(ASN_LABEL).map(function(k){
+                  return '<option value="' + esc(k) + '">' + esc(t(ASN_LABEL[k])) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '</div>',
+            btn('➕ أسنِد','btn-primary btn-sm',' data-vaadd="1"'))
+        : '')
+
+      + cardFlush(t('الإسنادات القائمة') + ' — ' + nm(A.length),
+          A.length
+            ? table(['السيارة','النوع','إلى','العمل','منذ',''],
+                A.map(function(a){
+                  var v = vehOf(a.veh) || { plate:a.veh, kind:'' };
+                  var days = Math.max(0, Math.round((Date.now() - (a.at || Date.now())) / 86400000));
+                  return ['<span class="num">' + esc(v.plate) + '</span>',
+                          esc(vehKindName(v.kind)), esc(a.to),
+                          pill(t(ASN_LABEL[a.kind] || a.kind), 'off'),
+                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
+                          (may('fleet') || may('settings'))
+                            ? btn('أنهِ','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"') : ''];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ قائمة.')) + '</p>')
+
+      + '<p class="hint">' + esc(t('السيارةُ الواحدةُ لا تُسنَد مرتين في وقتٍ واحد — وإلا وقف فريقٌ ينتظر ما أُخذ منه.')) + '</p>';
+  })();
+    if (cur === 'fleetLog') return head + (function(){
+    var all = vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+    var mis = vehMismatch();
+    var dayMs = VLOG_D ? new Date(VLOG_D + 'T12:00:00').getTime() : 0;
+    var onDay = dayMs ? vehOnDay(dayMs) : [];
+    var shown = all.filter(function(a){
+      if (!VLOG_Q) return true;
+      var v = vehOf(a.veh);
+      return ((v ? v.plate : '') + ' ' + a.to).indexOf(VLOG_Q) > -1;
+    });
+
+    return stats([['إسناداتٌ في السجل', N(all.length)],
+                  ['جاريةٌ الآن', N(all.filter(function(a){ return !a.end; }).length), 'acc'],
+                  ['منتهية', N(all.filter(function(a){ return a.end; }).length)],
+                  ['سيارةٌ لا تناسب عملَها', N(mis.length), mis.length ? 'bad' : 'ok']])
+
+      + (mis.length
+        ? alertBox('warn', 'سيارةٌ لا تناسب عملَها: '
+            + mis.map(function(a){
+                var v = vehOf(a.veh);
+                return (v ? v.plate : a.veh) + ' — ' + vehKindName(v ? v.kind : '')
+                  + ' مع ' + a.to + ' في ' + t(ASN_LABEL[a.kind] || a.kind);
+              }).join(' · ')
+            + '. العدّةُ تحتاج بيك أب أو فان، والتنقّلُ سيدان — ومن معه سيدانٌ وحدَه لا يحمل عدّتَه فيقف في الموقع بلا قطع.')
+        : '')
+
+      + card('من كانت معه سيارةٌ في يومٍ بعينه',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('التاريخ')) + '</label>'
+          +   '<input type="date" id="vlD" data-vlgd="1" value="' + esc(VLOG_D) + '"></div>'
+          + '<div class="field"><label>' + esc(t('بحث بلوحةٍ أو اسم')) + '</label>'
+          +   '<input type="search" id="vlQ" data-vlgq="1" value="' + esc(VLOG_Q) + '" dir="auto"></div>'
+          + '</div>'
+          + (VLOG_D
+            ? (onDay.length
+              ? table(['اللوحة','النوع','كانت مع','العمل','من','إلى'],
+                  onDay.map(function(x){
+                    return ['<span class="num">' + esc(x.veh.plate) + '</span>',
+                            esc(vehKindName(x.veh.kind)),
+                            '<strong>' + esc(x.asn.to) + '</strong>',
+                            esc(t(ASN_LABEL[x.asn.kind] || x.asn.kind || '—')),
+                            '<span class="num">' + esc(msDay(x.asn.at)) + '</span>',
+                            x.asn.end ? '<span class="num">' + esc(msDay(x.asn.end)) + '</span>'
+                                      : pill(t('جارٍ'), 'ok')];
+                  }))
+              : '<p class="hint" style="padding:14px 0;margin:0">'
+                + esc(t('لا سيارةَ كانت مُسنَدةً في هذا اليوم.')) + '</p>')
+            : '<p class="hint" style="margin:11px 0 0">'
+              + esc(t('اختر يومًا — تظهر كلُّ سيارةٍ كانت مُسنَدةً فيه ومن كانت معه.')) + '</p>'))
+
+      + cardFlush(t('السجل كلُّه') + ' — ' + nm(shown.length),
+          shown.length
+            ? table(['اللوحة','النوع','إلى','العمل','من','إلى','المدة',''],
+                shown.slice(0, 200).map(function(a){
+                  var v = vehOf(a.veh);
+                  var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
+                  var fit = v && a.kind ? vehFits(v.kind, a.kind) : true;
+                  return ['<span class="num">' + esc(v ? v.plate : a.veh) + '</span>',
+                          esc(v ? vehKindName(v.kind) : '—'),
+                          esc(a.to),
+                          esc(t(ASN_LABEL[a.kind] || a.kind || '—')),
+                          '<span class="num">' + esc(msDay(a.at)) + '</span>',
+                          a.end ? '<span class="num">' + esc(msDay(a.end)) + '</span>' : pill(t('جارٍ'), 'ok'),
+                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
+                          fit ? '' : pill(t('لا تناسب'), 'bad')];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetLog"') : '')
+
+      + '<p class="hint">' + esc(t('السجلُّ لا يُمحى: من أُنهي إسنادُه يبقى فيه بتاريخيه — فالمخالفةُ تأتي بعد شهرٍ بتاريخِ يومٍ مضى، ومن معه السيارةُ اليومَ لم يكن فيها يومَها.')) + '</p>';
+  })();
+    if (cur === 'fleetCost') return head + (function(){
+    var L = vehList(), tot = vehCost();
+    var byKind = {};
+    L.forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + (+v.cost || 0); });
+    return stats([['سيارات', N(L.length)],
+                  ['التكلفة الشهرية', N(tot)],
+                  ['ملك', N(L.filter(function(v){ return v.own === 'ملك'; }).length)],
+                  ['مستأجرة', N(L.filter(function(v){ return v.own === 'مستأجرة'; }).length), 'acc']])
+      + cardFlush('حسب النوع',
+          table(['النوع','عدد','التكلفة الشهرية'],
+            vehKinds().map(function(k){
+              return [esc(k.n), N(L.filter(function(v){ return v.kind === k.id; }).length),
+                      N(byKind[k.id] || 0)];
+            }), ['الإجمالي', N(L.length), N(tot)]))
+      + cardFlush('التفصيل',
+          L.length
+            ? table(['اللوحة','النوع','الملكية','من تاريخ','أشهر','الشهرية','التراكمي'],
+                L.map(function(v){
+                  var mo = v.start
+                    ? Math.max(1, Math.round((Date.now() - Date.parse(v.start)) / 2592000000)) : 1;
+                  return ['<span class="num">' + esc(v.plate) + '</span>',
+                          esc(vehKindName(v.kind)), esc(t(v.own || 'ملك')),
+                          '<span class="num">' + esc(v.start || '—') + '</span>',
+                          N(mo), N(+v.cost || 0), '<b>' + N((+v.cost || 0) * mo) + '</b>'];
+                }))
+            : '<p class="hint" style="padding:16px">' + esc(t('لا سياراتٍ بعد.')) + '</p>',
+          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetCost"') : '')
+      + '<p class="hint">' + esc(t('التراكميُّ يُحسَب من تاريخ التشغيل إلى اليوم — فما استُؤجر شهرًا لا يُحمَّل كما يُحمَّل ما عمل موسمًا.')) + '</p>';
+  })();
+    if (cur === 'myveh') return head + (function(){
+    var me = STATE.meta.name || '';
+    var mine = vehOfWho(me);
+    var crew = (techsList().filter(function(x){ return x.n === me; })[0] || {}).crew || '';
+    if (crew) mine = mine.concat(vehOfWho(crew));
+    if (!mine.length)
+      return card('', '<p class="hint" style="text-align:center;margin:0">'
+        + esc(t('لا سيارةَ مُسنَدةً إليك الآن.')) + '</p>');
+    return mine.map(function(a){
+      var v = vehOf(a.veh) || {};
+      return card(v.plate || '—',
+        '<div class="pop-rows" style="margin:0">'
+        + '<div><span class="k">' + esc(t('النوع')) + '</span><span>' + esc(vehKindName(v.kind)) + '</span></div>'
+        + '<div><span class="k">' + esc(t('الموديل')) + '</span><span>' + esc(v.model || '—') + '</span></div>'
+        + '<div><span class="k">' + esc(t('لأيِّ عمل')) + '</span><span>'
+        +   esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span></div>'
+        + '<div><span class="k">' + esc(t('انتهاء الرخصة')) + '</span><span class="num">'
+        +   esc(v.licExp || '—') + '</span></div>'
+        + '</div>');
+    }).join('');
+  })();
+    return head + (function(){
     var L = vehList().filter(function(v){
       if (!VEH_Q) return true;
       return (v.plate + ' ' + (v.model || '') + ' ' + vehKindName(v.kind)).indexOf(VEH_Q) > -1;
@@ -16122,6 +16738,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
         : '')
 
       + '<p class="hint">' + esc(t('اللوحةُ لا تتكرّر. والسيارةُ المسنَدةُ لا تُحذَف — يُنهى إسنادُها أولًا، فيبقى في السجل من كانت معه ومتى.')) + '</p>';
+  })();
   }};
 
 /* ═══ سجلُّ عهدة السيارات ═══════════════════════════════════════════════════
@@ -16366,189 +16983,9 @@ function fupExport(){
   });
 }
 
-PAGE.fleetLog = { m:'الميدان', t:'سجل عهدة السيارات',
-  l:'من كانت معه أيُّ سيارةٍ وفي أيِّ يوم — للمخالفات والمساءلة.',
-  body:function(){
-    var all = vehAsnAll().slice().sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
-    var mis = vehMismatch();
-    var dayMs = VLOG_D ? new Date(VLOG_D + 'T12:00:00').getTime() : 0;
-    var onDay = dayMs ? vehOnDay(dayMs) : [];
-    var shown = all.filter(function(a){
-      if (!VLOG_Q) return true;
-      var v = vehOf(a.veh);
-      return ((v ? v.plate : '') + ' ' + a.to).indexOf(VLOG_Q) > -1;
-    });
 
-    return stats([['إسناداتٌ في السجل', N(all.length)],
-                  ['جاريةٌ الآن', N(all.filter(function(a){ return !a.end; }).length), 'acc'],
-                  ['منتهية', N(all.filter(function(a){ return a.end; }).length)],
-                  ['سيارةٌ لا تناسب عملَها', N(mis.length), mis.length ? 'bad' : 'ok']])
 
-      + (mis.length
-        ? alertBox('warn', 'سيارةٌ لا تناسب عملَها: '
-            + mis.map(function(a){
-                var v = vehOf(a.veh);
-                return (v ? v.plate : a.veh) + ' — ' + vehKindName(v ? v.kind : '')
-                  + ' مع ' + a.to + ' في ' + t(ASN_LABEL[a.kind] || a.kind);
-              }).join(' · ')
-            + '. العدّةُ تحتاج بيك أب أو فان، والتنقّلُ سيدان — ومن معه سيدانٌ وحدَه لا يحمل عدّتَه فيقف في الموقع بلا قطع.')
-        : '')
 
-      + card('من كانت معه سيارةٌ في يومٍ بعينه',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('التاريخ')) + '</label>'
-          +   '<input type="date" id="vlD" data-vlgd="1" value="' + esc(VLOG_D) + '"></div>'
-          + '<div class="field"><label>' + esc(t('بحث بلوحةٍ أو اسم')) + '</label>'
-          +   '<input type="search" id="vlQ" data-vlgq="1" value="' + esc(VLOG_Q) + '" dir="auto"></div>'
-          + '</div>'
-          + (VLOG_D
-            ? (onDay.length
-              ? table(['اللوحة','النوع','كانت مع','العمل','من','إلى'],
-                  onDay.map(function(x){
-                    return ['<span class="num">' + esc(x.veh.plate) + '</span>',
-                            esc(vehKindName(x.veh.kind)),
-                            '<strong>' + esc(x.asn.to) + '</strong>',
-                            esc(t(ASN_LABEL[x.asn.kind] || x.asn.kind || '—')),
-                            '<span class="num">' + esc(msDay(x.asn.at)) + '</span>',
-                            x.asn.end ? '<span class="num">' + esc(msDay(x.asn.end)) + '</span>'
-                                      : pill(t('جارٍ'), 'ok')];
-                  }))
-              : '<p class="hint" style="padding:14px 0;margin:0">'
-                + esc(t('لا سيارةَ كانت مُسنَدةً في هذا اليوم.')) + '</p>')
-            : '<p class="hint" style="margin:11px 0 0">'
-              + esc(t('اختر يومًا — تظهر كلُّ سيارةٍ كانت مُسنَدةً فيه ومن كانت معه.')) + '</p>'))
-
-      + cardFlush(t('السجل كلُّه') + ' — ' + nm(shown.length),
-          shown.length
-            ? table(['اللوحة','النوع','إلى','العمل','من','إلى','المدة',''],
-                shown.slice(0, 200).map(function(a){
-                  var v = vehOf(a.veh);
-                  var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
-                  var fit = v && a.kind ? vehFits(v.kind, a.kind) : true;
-                  return ['<span class="num">' + esc(v ? v.plate : a.veh) + '</span>',
-                          esc(v ? vehKindName(v.kind) : '—'),
-                          esc(a.to),
-                          esc(t(ASN_LABEL[a.kind] || a.kind || '—')),
-                          '<span class="num">' + esc(msDay(a.at)) + '</span>',
-                          a.end ? '<span class="num">' + esc(msDay(a.end)) + '</span>' : pill(t('جارٍ'), 'ok'),
-                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
-                          fit ? '' : pill(t('لا تناسب'), 'bad')];
-                }))
-            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ بعد.')) + '</p>',
-          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetLog"') : '')
-
-      + '<p class="hint">' + esc(t('السجلُّ لا يُمحى: من أُنهي إسنادُه يبقى فيه بتاريخيه — فالمخالفةُ تأتي بعد شهرٍ بتاريخِ يومٍ مضى، ومن معه السيارةُ اليومَ لم يكن فيها يومَها.')) + '</p>';
-  }};
-
-PAGE.fleetAsn = { m:'الميدان', t:'إسناد السيارات',
-  l:'مَن يقود ماذا ولأيِّ عمل.',
-  body:function(){
-    var A = vehAsnList(), free = vehList().filter(function(v){ return v.st === 'متاحة'; });
-    var people = techsList().map(function(x){ return x.n; });
-    var crews = crewsList().map(function(c){ return c.n; });
-
-    return stats([['إسناداتٌ قائمة', N(A.length)],
-                  ['سياراتٌ متاحة', N(free.length), free.length ? 'ok' : 'wrn'],
-                  ['فرقٌ بلا سيارة',
-                    N(crews.filter(function(c){ return !vehOfWho(c).length; }).length), 'wrn']])
-
-      + ((may('fleet') || may('settings'))
-        ? card('إسنادٌ جديد',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('السيارة')) + ' <span class="req">*</span></label>'
-            +   '<select id="vaVeh"><option value="">— ' + esc(t('اختر')) + ' —</option>'
-            +   free.map(function(v){
-                  return '<option value="' + esc(v.id) + '">' + esc(v.plate) + ' — '
-                    + esc(vehKindName(v.kind)) + '</option>'; }).join('')
-            +   '</select></div>'
-            + '<div class="field"><label>' + esc(t('إلى')) + ' <span class="req">*</span></label>'
-            +   '<select id="vaTo"><option value="">— ' + esc(t('اختر')) + ' —</option>'
-            +   '<optgroup label="' + esc(t('فرق')) + '">'
-            +     crews.map(function(c){ return '<option>' + esc(c) + '</option>'; }).join('')
-            +   '</optgroup>'
-            +   '<optgroup label="' + esc(t('أشخاص')) + '">'
-            +     people.map(function(p){ return '<option>' + esc(p) + '</option>'; }).join('')
-            +   '</optgroup></select></div>'
-            + '<div class="field"><label>' + esc(t('لأيِّ عمل')) + '</label><select id="vaKind">'
-            +   Object.keys(ASN_LABEL).map(function(k){
-                  return '<option value="' + esc(k) + '">' + esc(t(ASN_LABEL[k])) + '</option>'; }).join('')
-            +   '</select></div>'
-            + '</div>',
-            btn('➕ أسنِد','btn-primary btn-sm',' data-vaadd="1"'))
-        : '')
-
-      + cardFlush(t('الإسنادات القائمة') + ' — ' + nm(A.length),
-          A.length
-            ? table(['السيارة','النوع','إلى','العمل','منذ',''],
-                A.map(function(a){
-                  var v = vehOf(a.veh) || { plate:a.veh, kind:'' };
-                  var days = Math.max(0, Math.round((Date.now() - (a.at || Date.now())) / 86400000));
-                  return ['<span class="num">' + esc(v.plate) + '</span>',
-                          esc(vehKindName(v.kind)), esc(a.to),
-                          pill(t(ASN_LABEL[a.kind] || a.kind), 'off'),
-                          '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
-                          (may('fleet') || may('settings'))
-                            ? btn('أنهِ','btn-quiet btn-sm',' data-vaend="' + esc(a.id) + '"') : ''];
-                }))
-            : '<p class="hint" style="padding:16px">' + esc(t('لا إسناداتٍ قائمة.')) + '</p>')
-
-      + '<p class="hint">' + esc(t('السيارةُ الواحدةُ لا تُسنَد مرتين في وقتٍ واحد — وإلا وقف فريقٌ ينتظر ما أُخذ منه.')) + '</p>';
-  }};
-
-PAGE.fleetCost = { m:'القسم المالي', t:'تكلفة الأسطول',
-  l:'ما تكلّفه السياراتُ شهريًّا ومنذ متى تعمل.',
-  body:function(){
-    var L = vehList(), tot = vehCost();
-    var byKind = {};
-    L.forEach(function(v){ byKind[v.kind] = (byKind[v.kind] || 0) + (+v.cost || 0); });
-    return stats([['سيارات', N(L.length)],
-                  ['التكلفة الشهرية', N(tot)],
-                  ['ملك', N(L.filter(function(v){ return v.own === 'ملك'; }).length)],
-                  ['مستأجرة', N(L.filter(function(v){ return v.own === 'مستأجرة'; }).length), 'acc']])
-      + cardFlush('حسب النوع',
-          table(['النوع','عدد','التكلفة الشهرية'],
-            vehKinds().map(function(k){
-              return [esc(k.n), N(L.filter(function(v){ return v.kind === k.id; }).length),
-                      N(byKind[k.id] || 0)];
-            }), ['الإجمالي', N(L.length), N(tot)]))
-      + cardFlush('التفصيل',
-          L.length
-            ? table(['اللوحة','النوع','الملكية','من تاريخ','أشهر','الشهرية','التراكمي'],
-                L.map(function(v){
-                  var mo = v.start
-                    ? Math.max(1, Math.round((Date.now() - Date.parse(v.start)) / 2592000000)) : 1;
-                  return ['<span class="num">' + esc(v.plate) + '</span>',
-                          esc(vehKindName(v.kind)), esc(t(v.own || 'ملك')),
-                          '<span class="num">' + esc(v.start || '—') + '</span>',
-                          N(mo), N(+v.cost || 0), '<b>' + N((+v.cost || 0) * mo) + '</b>'];
-                }))
-            : '<p class="hint" style="padding:16px">' + esc(t('لا سياراتٍ بعد.')) + '</p>',
-          may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="fleetCost"') : '')
-      + '<p class="hint">' + esc(t('التراكميُّ يُحسَب من تاريخ التشغيل إلى اليوم — فما استُؤجر شهرًا لا يُحمَّل كما يُحمَّل ما عمل موسمًا.')) + '</p>';
-  }};
-
-PAGE.myveh = { m:'الميدان', t:'سيارتي', l:'ما أُسنِد إليك من مركبات.',
-  body:function(){
-    var me = STATE.meta.name || '';
-    var mine = vehOfWho(me);
-    var crew = (techsList().filter(function(x){ return x.n === me; })[0] || {}).crew || '';
-    if (crew) mine = mine.concat(vehOfWho(crew));
-    if (!mine.length)
-      return card('', '<p class="hint" style="text-align:center;margin:0">'
-        + esc(t('لا سيارةَ مُسنَدةً إليك الآن.')) + '</p>');
-    return mine.map(function(a){
-      var v = vehOf(a.veh) || {};
-      return card(v.plate || '—',
-        '<div class="pop-rows" style="margin:0">'
-        + '<div><span class="k">' + esc(t('النوع')) + '</span><span>' + esc(vehKindName(v.kind)) + '</span></div>'
-        + '<div><span class="k">' + esc(t('الموديل')) + '</span><span>' + esc(v.model || '—') + '</span></div>'
-        + '<div><span class="k">' + esc(t('لأيِّ عمل')) + '</span><span>'
-        +   esc(t(ASN_LABEL[a.kind] || a.kind)) + '</span></div>'
-        + '<div><span class="k">' + esc(t('انتهاء الرخصة')) + '</span><span class="num">'
-        +   esc(v.licExp || '—') + '</span></div>'
-        + '</div>');
-    }).join('');
-  }};
 
 /* ═══ سجلُّ الأحداث ═══
    كان يعرض خمسةَ أسطرٍ ثابتةً من بيانات العرض لا السجلَّ الحقيقي — فالأثرُ
@@ -16669,24 +17106,7 @@ PAGE.ev = { m:'النظام', t:'سجل الأحداث',
       + '<p class="hint">' + esc(t('الأثرُ لا يُمحى: قواعدُ القاعدة تمنع حذفَ سجل الأحداث على الجميع. والشرائحُ أعلاه عدسةُ الحوكمة — نفس السجل، لا سجلٌّ ثانٍ.')) + '</p>';
   }};
 
-PAGE.sys = { m:'النظام', t:'سلامة البيانات', l:'فحوص تكشف التناقض قبل أن يصير رقمًا في تقرير.',
-  body:function(){
-    return card('الفحوص', table(['الفحص','النتيجة'], [
-      ['نقاط مُركّبة بلا قطع معتمدة', pill('٠','ok')],
-      ['نقاط مجدولة بلا مسح', pill('٠','ok')],
-      ['أصناف برصيد سالب', pill('٠','ok')],
-      ['مشتريات بلا مورّد', pill('٠','ok')]
-    ]));
-  }};
 
-PAGE.vers = { m:'النظام', t:'نسخ الأجهزة', l:'نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.',
-  body:function(){
-    return card('الأجهزة الظاهرة', table(['المستخدم','النسخة','الدور','آخر ظهور'], [
-      ['محمد صفوت', pill('V14.0','ok'), 'مهندس','<span class="num">٠٢:٥١</span>'],
-      ['مشرف منى', pill('V13.84','off'), 'مشرف','أمس']
-    ]))
-    + alertBox('error','جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.');
-  }};
 
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
@@ -17020,11 +17440,124 @@ var PAGE_CAP = {
   disp:'settings', items:'settings', buycat:'settings', sup:'settings', consts:'settings',
   exp:'exportAll', retain:'delete', sync:'settings'
 };
-function seesPage(id){
+/* ═══ الصفحاتُ المدموجة — شرائحُ لا شاشات ═══
+   أربعٌ وتسعون شاشةً في اثنتي عشرةَ مجموعة، وكثيرٌ منها يجيب سؤالًا واحدًا
+   لشخصٍ واحد: «السيارات» و«إسناد السيارات» و«سجل عهدة السيارات» و«تكلفة
+   الأسطول» و«سيارتي» — خمسُ شاشاتٍ عن الأسطول، يفتحها المرءُ بالتناوب يبحث
+   عن رقمه. فجُمع ما يجيب سؤالًا واحدًا في شاشةٍ واحدةٍ بشرائح.
+
+   ولم يُحذَف شيء: كلُّ شريحةٍ كانت صفحةً واحتفظت بمعرِّفها القديم — في
+   قوائم الأدوار، وفي PAGE_CAP، وفي كلِّ زرِّ انتقالٍ (data-p / data-goto /
+   CUR=). فلا تتغيّر صلاحيةُ أحدٍ ولا ينكسر رابط: المعرِّفُ القديم يُفتَح فيصل
+   إلى الأمِّ على شريحته. والشريحةُ لا تظهر إلا لمن كان يرى صفحتَها — بقواعد
+   seesPage نفسِها لا بقائمةٍ ثانية.
+
+   كلُّ شريحة: [المعرِّفُ القديم، الاسمُ القصير، الأيقونة، وصفُ الصفحة الأصلية] */
+/* السجلّ: الأمُّ وشرائحُها — كلُّ شريحةٍ بمعرِّفها القديم واسمها القصير وأيقونتها ووصفها الأصلي */
+var TABS = {
+  fleet:[
+    ['fleet','الأسطول','\u{1F697}','أسطولُ المشروع — لوحاتُه ورخصُه وتكلفتُه.'],
+    ['fleetAsn','الإسناد','\u{1F511}','مَن يقود ماذا ولأيِّ عمل.'],
+    ['fleetLog','سجل العُهدة','\u{1F4D2}','من كانت معه أيُّ سيارةٍ وفي أيِّ يوم — للمخالفات والمساءلة.'],
+    ['fleetCost','التكلفة','\u{1F4B0}','ما تكلّفه السياراتُ شهريًّا ومنذ متى تعمل.'],
+    ['myveh','سيارتي','\u{1F64B}','ما أُسنِد إليك من مركبات.']],
+  over:[
+    ['over','الصورة العامة','\u{1F4CA}','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.'],
+    ['reg','حسب المشعر والنوع','\u{1F5FA}','التوزيع الكامل بالنسب.'],
+    ['pace','الوتيرة والهدف','\u{23F1}','المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.'],
+    ['daily','المعدل اليومي','\u{1F4C5}','اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.'],
+    ['inst','التركيب والجدولة','\u{1F527}','ما جُدول وما نُفّذ وما تعذّر — بحالته ونوعه.']],
+  pts:[
+    ['visits','الزيارات','\u{1F50D}','وزن زيارة كل نوع وتارجت المسح.'],
+    ['prep','التهيئة','\u{2699}','نقاط تهيئة كل جهاز في الورشة.'],
+    ['asm','التجميع','\u{1F9F0}','نقاط تجميع مكوّنات البوكس.'],
+    ['install','التركيب','\u{1F527}','نقاط كل قطعة وتارجت التركيب.'],
+    ['disp','الفك','\u{1F4E6}','وزن الفك ومعاملا الحالة.']],
+  inv:[
+    ['invb','الأرصدة','\u{1F4E6}','المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.'],
+    ['invmv','دفتر الحركة','\u{1F4D2}','إلحاقيٌّ لا يُعدَّل — كل تصحيح حركةٌ جديدة تُوازنه.'],
+    ['stock','عُهدة الأجهزة','\u{1F464}','ما في يد كل منفِّذ الآن — من دفتر الحركة.']],
+  users:[
+    ['users','الحسابات','\u{1F464}','كل حساب ودوره في مكانٍ واحد — إنشاءً وبحثًا وتصفيةً بالنوع.'],
+    ['assignRole','إسناد الأدوار','\u{1F517}','من في أيِّ وظيفةٍ وأيِّ فريق.'],
+    ['roles','الأدوار والصلاحيات','\u{1F6E1}','الدورُ ما يستطيعه الشخصُ في النظام — لا ما يعمله في الميدان.'],
+    ['jobs','الوظائف','\u{1F4BC}','ما يعمله الشخصُ — ومنه يُشتقُّ دورُه وصلاحيتُه.']],
+  sys:[
+    ['sys','سلامة البيانات','\u{1FA7A}','فحوص تكشف التناقض قبل أن يصير رقمًا في تقرير.'],
+    ['sync','المزامنة والتعارض','\u{1F504}','ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.'],
+    ['vers','نسخ الأجهزة','\u{1F4F1}','نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.'],
+    ['retain','عمر البيانات','\u{23F3}','ما يبقى وما يُؤرشَف وما يُحذف — وحجم كلٍّ.'],
+    ['wipe','تصفير البيانات','\u{1F5D1}','بدايةُ الموسم من صفر — تُمسَح السجلاتُ ويبقى التعريف.']],
+  items:[
+    ['items','القطع والأسعار','\u{1F4CB}','كتالوج القطع وسعر كل قطعة.'],
+    ['buycat','فئات المشتريات','\u{1F3F7}','تبويب مشتريات السوق المحلي.'],
+    ['sup','المورّدون','\u{1F3EA}','قائمة موحّدة لمن نشتري منهم.']],
+  org:[
+    ['cover','خريطة التغطية','\u{1F5FA}','كلُّ قسمٍ في الشركة وكلُّ إدارةٍ عند العميل — وما يخصّه.'],
+    ['raci','مصفوفة المسؤوليات','\u{1F4CB}','من ينفّذ ومن يُساءل ومن يُستشار ومن يُبلَّغ.'],
+    ['esc','التصعيد','\u{1F6A8}','ما تجاوز مهلتَه — ومن يُرفَع إليه.']]
+};
+var PTAB = {};      /* الأمُّ → شريحتُها الحالية */
+var PARENT = {};    /* معرِّفُ الشريحة → أمُّها */
+function tabsInit(){
+  Object.keys(TABS).forEach(function(pid){
+    TABS[pid].forEach(function(tb){ PARENT[tb[0]] = pid; });
+  });
+}
+tabsInit();
+/* ما يراه هذا الدورُ من شرائح الأم — بقواعد الرؤية نفسِها */
+function tabsOf(pid){
+  return (TABS[pid] || []).filter(function(tb){ return seesRaw(tb[0]); });
+}
+/* الشريحةُ الحالية — وتُردُّ إلى أوّلِ مرئيّةٍ إن لم تكن مرئية */
+function tabCur(pid){
+  var vis = tabsOf(pid);
+  if (!vis.some(function(tb){ return tb[0] === PTAB[pid]; })) PTAB[pid] = vis.length ? vis[0][0] : '';
+  return PTAB[pid];
+}
+function tabHead(pid){
+  var cur = tabCur(pid), vis = tabsOf(pid);
+  if (vis.length < 2) return '';          /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
+  return '<div class="chips" role="tablist">' + vis.map(function(tb){
+    return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"'
+      + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
+      + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
+  }).join('') + '</div>';
+}
+/* بياناتُ صفحةٍ أو شريحةٍ بمعرِّفها — للمساعد والأدلة والمساعدة */
+function pageMeta(id){
+  var p = (typeof FIELD_PAGES === 'object' && FIELD_PAGES[id]) || PAGE[id];
+  if (p) return { id:id, m:p.m || '', t:p.t || '', l:p.l || '', sub:'' };
+  var par = PARENT[id];
+  if (!par || !PAGE[par]) return null;
+  var tb = TABS[par].filter(function(x){ return x[0] === id; })[0];
+  return { id:id, m:PAGE[par].m || '', t:tb[1], l:tb[3] || '', sub:PAGE[par].t };
+}
+/* كلُّ ما يُفتَح: الصفحاتُ، وشرائحُ المدموجة كلُّ واحدةٍ باسمها */
+function pageIds(){
+  var out = [];
+  Object.keys(PAGE).forEach(function(id){
+    if (TABS[id]) TABS[id].forEach(function(tb){ out.push(tb[0]); });
+    else out.push(id);
+  });
+  if (typeof FIELD_PAGES === 'object') Object.keys(FIELD_PAGES).forEach(function(id){ out.push(id); });
+  return out;
+}
+/* الانتقالُ الصريحُ إلى صفحة: الأمُّ التي هي شريحتُها الأولى تُفتَح عليها —
+   فمن نقر «المستخدمين والأدوار» في القائمة يجد الحساباتِ لا آخرَ شريحةٍ فُتحت */
+function goPage(id){
+  if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
+  CUR = id;
+}
+function seesRaw(id){
   var n = R().nav;
   var cap = PAGE_CAP[id];
   if (cap && !may(cap)) return false;
   return n === '*' || n.indexOf(id) > -1;
+}
+function seesPage(id){
+  if (TABS[id]) return tabsOf(id).length > 0;   /* الأمُّ تُرى إن رُئيت شريحةٌ واحدة */
+  return seesRaw(id);
 }
 
 /* «جدولي» — ما أُسند لي وحدي، بلا أرقام زملائي */
@@ -17099,12 +17632,11 @@ function roleGuide(k){
   if (!x) return '';
   var caps = Object.keys(x.can || {}).filter(function(c){ return x.can[c]; });
   /* شاشاتُه: ما يبلغه فعلًا بقواعد seesPage نفسِها لا بقائمةٍ تُحفَظ */
-  var ids = (x.nav === '*')
-    ? Object.keys(PAGE)
-    : x.nav.filter(function(id){ return PAGE[id] || (typeof FIELD_PAGES === 'object' && FIELD_PAGES[id]); });
+  /* الشرائحُ تُعدُّ كلُّ واحدةٍ شاشةً — فالسائقُ يقرأ «سيارتي» لا «السيارات» */
+  var ids = (x.nav === '*') ? pageIds() : x.nav.filter(pageMeta);
   var byGroup = {};
   ids.forEach(function(id){
-    var p = (typeof FIELD_PAGES === 'object' && FIELD_PAGES[id]) || PAGE[id];
+    var p = pageMeta(id);
     if (!p) return;
     var cap = PAGE_CAP[id];
     if (cap && !x.can[cap]) return;
@@ -17130,7 +17662,8 @@ function roleGuide(k){
     + groups.map(function(g){
         return cardFlush(t(g) + ' — ' + nm(byGroup[g].length),
           table(['الشاشة','ما يفعله فيها'],
-            byGroup[g].map(function(p){ return [esc(t(p.t)), esc(t(p.l || ''))]; })));
+            byGroup[g].map(function(p){
+              return [(p.sub ? esc(t(p.sub)) + ' \u2190 ' : '') + esc(t(p.t)), esc(t(p.l || ''))]; })));
       }).join('')
 
     + (sops.length
@@ -17183,7 +17716,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.28' + '.docx" download>⬇ '
+              +   'V15.29' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17465,28 +17998,6 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
 /* ── ٦ · تعارض المزامنة ───────────────────────────
    الميدان بلا شبكة، وتحريران على نقطة واحدة يتصادمان. */
 
-PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
-  body:function(){
-    /* كانت أربعةَ أصفارٍ مكتوبةً بيدٍ — والحارسُ لم يمسكها لأن جسمَ الصفحة
-       التي بعدها كان يمدّها بمصدرٍ حيٍّ صدفةً. كُشفت حين حُذفت تلك الصفحة. */
-    var Q = STATE.queue || [];
-    var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
-    var day = new Date().toISOString().slice(0, 10);
-    var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
-    return softErrCard()
-      + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok'],
-               ['أخطاءُ رفع', N(errs.length), errs.length ? 'bad' : 'ok'],
-               ['أخطاءُ اليوم', N(today), today ? 'wrn' : 'ok'],
-               ['الشبكة', pill(STATE.meta.online ? 'متصلة' : 'مقطوعة', STATE.meta.online ? 'ok' : 'off')]])
-      + (Q.length
-        ? cardFlush('الطابور — ' + nm(Q.length),
-            table(['النوع','السجل','سُجّل'],
-              Q.slice(0, 50).map(function(x){
-                return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'), '<strong>' + esc(String(x.id || '—')) + '</strong>',
-                        '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
-              })))
-        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));
-  }};
 
 /* المحدَّد — بعد التحديد المتعدد من الخريطة */
 PAGE.sel = { m:'الميدان', t:'المحدَّد', l:'ما حدّدته من الخريطة — لعملٍ جماعي عليه.',
@@ -17659,56 +18170,6 @@ function escDue(){
   return out.sort(function(a, b){ return b.days - a.days; });
 }
 
-PAGE.esc = { m:'النظام', t:'التصعيد', l:'ما تجاوز مهلتَه — ومن يُرفَع إليه.',
-  body:function(){
-    var L = escList(), due = escDue();
-    var today = due.filter(function(x){ return x.days === (byDays(x)); });
-    function byDays(x){ return x.days; }
-    var late = due.filter(function(x){ return x.days > 7; });
-    var oldest = due.length ? due[0].days : null;
-
-    return stats([['بانتظار التصعيد', N(due.length), due.length ? 'wrn' : 'ok'],
-                  ['متأخر أكثر من أسبوع', N(late.length), late.length ? 'bad' : 'ok'],
-                  ['قواعد مضبوطة', N(L.length)],
-                  ['أقدم عنصر', oldest === null ? '—' : (nm(oldest) + ' ' + t('يوم')),
-                    oldest > 7 ? 'bad' : '']])
-
-      + cardFlush(t('قواعد التصعيد') + ' — ' + nm(L.length),
-          table(['الحالة','بعد (يوم)','المسؤول','يُصعَّد إلى','الإجراء',''],
-            L.map(function(r, i){
-              return ['<input value="' + esc(r.w) + '" data-esw="' + i + '" dir="auto">',
-                      '<input type="number" min="1" value="' + esc(String(r.days)) + '" data-esd="' + i + '" style="max-width:78px">',
-                      '<input value="' + esc(r.who || '') + '" data-eswho="' + i + '" dir="auto">',
-                      '<input value="' + esc(r.to || '') + '" data-esto="' + i + '" dir="auto">',
-                      '<input value="' + esc(r.act || '') + '" data-esact="' + i + '" dir="auto">',
-                      may('settings') ? btn('حذف','btn-quiet btn-sm',' data-esdel="' + i + '"') : ''];
-            })),
-          '<p class="hint" style="margin:0">' + esc(t('يُحفَظ فورَ كتابته — ولا زرَّ حفظٍ يَعِد بما وقع سلفًا.')) + '</p>')
-
-      + (may('settings')
-        ? card('إضافة قاعدة',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('الحالة')) + ' <span class="req">*</span></label><input id="esW" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('بعد (يوم)')) + '</label><input id="esD" type="number" min="1" value="3"></div>'
-            + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="esWho" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('يُصعَّد إلى')) + '</label><input id="esTo" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('الإجراء')) + '</label><input id="esAct" dir="auto"></div>'
-            + '</div>',
-            btn('➕ إضافة قاعدة','btn-primary btn-sm',' data-esadd="1"'))
-        : '')
-
-      + cardFlush(t('قائمة التصعيد اليوم') + ' — ' + nm(due.length),
-          due.length
-            ? table(['الحالة','العنصر','منذ','يُرفَع إلى','الإجراء'],
-                due.slice(0, 100).map(function(x){
-                  return [pill(t(x.w), x.days > 7 ? 'bad' : 'wrn'),
-                          '<span class="num">' + esc(x.what) + '</span>',
-                          '<span class="num">' + nm(x.days) + ' ' + esc(t('يوم')) + '</span>',
-                          esc(t(x.to || '—')),
-                          '<span class="hint" style="margin:0">' + esc(t(x.act || '')) + '</span>'];
-                }))
-            : '<p class="hint" style="padding:16px">' + esc(t('لا شيءَ تجاوز مهلتَه — كلُّ ما ينتظر داخلَ مدّته.')) + '</p>');
-  }};
 
 /* ═══ مصفوفة المسؤوليات ═══ */
 function raciList(){
@@ -17812,89 +18273,6 @@ PAGE.chain = { m:'المتابعة', t:'سلسلة المراحل',
 /* ── ٤ · عمر البيانات ─────────────────────────────
    سجل إلحاقي بلا سقف ينمو حتى يخنق الموسم. */
 
-PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى وما يُؤرشَف وما يُحذف — وحجم كلٍّ.',
-  body:function(){
-    /* أعدادُ السجلات تُعَدُّ من الحالة لا تُكتَب: كانت محفورةً «سجل الأحداث
-       ٤٬٨٢٠» و«الصور ١٢» — أرقامَ يومٍ مضى تُقرأ اليومَ حجمًا حقيقيًّا،
-       ويُبنى عليها قرارُ أرشفة. والحجمُ بالميغا يُقدَّر من العدد بمتوسّطٍ
-       معلومٍ لكلِّ نوعٍ فيبقى تقديرًا معلنًا لا رقمًا مخترعًا. */
-    var cnt = function(k){
-      var v = STATE[k];
-      return Array.isArray(v) ? v.length : Object.keys(v || {}).length;
-    };
-    var mb = function(n, kb){ return (n * kb / 1024).toFixed(1); };
-    var SETS = [
-      ['المواقع',       (STATE.sites || []).length, mb((STATE.sites || []).length, 1.4),
-                        'دائم',      'أصل المشروع لا يُؤرشَف'],
-      ['سجل الأحداث',   cnt('events'),  mb(cnt('events'), 0.4),
-                        '٩٠ يومًا',  'يُؤرشَف شهريًّا في ملف مضغوط'],
-      ['نبضات الأجهزة', cnt('beats'),   mb(cnt('beats'), 0.2),
-                        '٣٠ يومًا',  'الأكثر نموًّا — نبضة كل خمس دقائق'],
-      ['الصور',         cnt('photos'),  mb(cnt('photos'), 1600),
-                        'دائم',      'مضغوطة على الجهاز قبل الرفع'],
-      ['دفتر المخزون',  cnt('moves'),   mb(cnt('moves'), 0.3),
-                        'دائم',      'الأرصدة مشتقّة منه فلا يُمسّ'],
-      ['المشتريات',     cnt('buys'),    mb(cnt('buys'), 0.3),
-                        'دائم',      'مستند مالي'],
-      ['سجل التدقيق',   cnt('events'),  mb(cnt('events'), 0.4),
-                        '٣ سنوات',  'مدة المساءلة'],
-      ['مسودّات محلية', (STATE.queue || []).length, mb((STATE.queue || []).length, 0.5),
-                        '٧ أيام',    'تُمسح بعد المزامنة الناجحة']
-    ];
-    var tot = SETS.reduce(function(a,s){ return a + parseFloat(s[2]); }, 0);
-    return stats([['الحجم الكلي', '<span class="num">'+tot.toFixed(1)+'</span> م.ب'],
-                  ['سجلات', '<span class="num">'+nm(SETS.reduce(function(a,s){return a+s[1];},0))+'</span>'],
-                  ['الأسرع نموًّا','نبضات','wrn'],
-                  ['حدّ الخطة المجانية','١ ج.ب','acc']])
-      + card('مجموعات البيانات',
-          table(['المجموعة','سجلات','م.ب','مدة الاحتفاظ','السياسة'],
-            SETS.map(function(s){
-              return [esc(t(s[0])), '<span class="num">'+nm(s[1])+'</span>',
-                      '<span class="num">'+s[2]+'</span>',
-                      s[3]==='دائم' ? pill('دائم','acc') : pill(s[3],'warn'),
-                      '<span class="hint" style="margin:0">'+esc(t(s[4]))+'</span>'];
-            })),
-          btn('تشغيل الأرشفة الآن','btn-quiet btn-sm disabled', ' disabled title="'
-      + esc(t('الأرشفةُ التلقائيةُ تحتاج دالةً على الخادم — لم تُبنَ بعد. الحذفُ اليدويُّ من Firestore متاحٌ لمن يملك القاعدة.')) + '"'))
-      + card('النسخ الاحتياطي',
-          alertBox('error','مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.')
-          + table(['البند','الحالة'], [
-              ['آخر نسخة فعلية', pill('لا توجد','off')],
-              ['الدورية', '<span class="num">٠٥:٣٠</span> ' + esc(t('يوميًّا'))],
-              ['التشفير', pill('مطلوب مفتاح','warn')],
-              ['المكان', '<span class="hint" style="margin:0">' + esc(t('مستودع خاص — لا العام')) + '</span>']
-            ]))
-
-      + card('دورة المزامنة', flow(['يُكتب محليًّا','في الطابور','رُفع','أُكِّد'],0)
-        + '<p class="hint">' + esc(t('الكتابة تنجح دائمًا على الجهاز — والشبكة تفصيلٌ لاحق لا شرطٌ مسبق.')) + '</p>')
-      + card('سياسة التعارض',
-          table(['الحقل','السياسة','لماذا'], [
-            ['حالة المسح','<span class="pill acc">' + esc(t('الأحدث يفوز')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('تقدُّمٌ لا يرجع')) + '</span>'],
-            ['حالة التركيب','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('«مُركّب» و«متعذّر» لا يجتمعان')) + '</span>'],
-            ['الإحداثيات','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('تحريكان مختلفان يعنيان خلافًا على الموقع')) + '</span>'],
-            ['الصور','<span class="pill ok">' + esc(t('تُضاف كلها')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('لا صورة تُلغي أخرى')) + '</span>'],
-            ['القطع المستهلكة','<span class="pill off">' + esc(t('يُرفض الثاني')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('وإلا استُهلك المخزون مرتين')) + '</span>'],
-            ['الملاحظات','<span class="pill ok">' + esc(t('تُدمَج بسطر فاصل')) + '</span>',
-             '<span class="hint" style="margin:0">' + esc(t('كلاهما شهادة')) + '</span>']
-          ]),
-          btn('حفظ السياسة','btn-quiet btn-sm disabled', ' disabled title="'
-      + esc(t('مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.')) + '"'))
-      + card('تعارضات بانتظار القرار',
-          '<p class="hint">' + esc(t('لا تعارضات — تظهر هنا بالنسختين جنبًا إلى جنب ليختار المهندس.')) + '</p>')
-      + card('طابور الرفع',
-          '<div class="actions">'
-          + btn('رفع الآن','btn-primary btn-sm',' data-pull="1"')
-          + btn('عرض الطابور','btn-secondary btn-sm',' data-pq="1"')
-          + '<span class="hint" style="margin:0">' + esc(t('آخر مزامنة')) + ' <span class="num">'
-          + esc(STATE.meta.lastSync ? new Date(STATE.meta.lastSync).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) : '—')
-          + '</span></span></div>')
-      + '<p class="hint">' + esc(t('«آخر كتابة تفوز» صامتةً هي أخطر سياسة: تمحو عمل زميلٍ بلا أن يعلم أحد. ما لا يُحسم آليًّا يُعرَض.')) + '</p>';
-  }};
 
 /* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
    نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
@@ -18205,57 +18583,6 @@ function usrAdd(){
   render(1);
 }
 
-PAGE.users = { m:'الإعدادات', t:'المستخدمون',
-  l:'كل حساب ودوره في مكانٍ واحد — إنشاءً وبحثًا وتصفيةً بالنوع.',
-  body:function(){
-    var L = usersList();
-    var byRole = {};
-    Object.keys(STATE.users || {}).forEach(function(uid){
-      var r = (STATE.users[uid] || {}).role || '';
-      if (r) byRole[r] = (byRole[r] || 0) + 1;
-    });
-    var total = Object.keys(STATE.users || {}).length;
-
-    return '<p class="lede" style="margin:0 0 16px">'
-      + esc(t('أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.'))
-      + '</p>'
-
-      + stats([['كل الحسابات', N(total), 'acc']]
-              .concat(Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
-                return [t(ROLES[k].n), N(byRole[k])];
-              })))
-
-      + '<div class="chips">'
-      + '<button type="button" class="chip' + (!USR_ROLE ? ' on' : '') + '" data-usrrolef="">'
-      +   esc(t('الكل')) + ' <span class="num">' + nm(total) + '</span></button>'
-      + Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
-          return '<button type="button" class="chip' + (USR_ROLE===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
-            + esc(t(ROLES[k].n)) + ' <span class="num">' + nm(byRole[k]) + '</span></button>';
-        }).join('')
-      + '</div>'
-
-      + card('إنشاء حساب',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
-          +   '<input id="uU" dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
-          + '<div class="field"><label>' + esc(t('الاسم الكامل')) + ' <span class="req">*</span></label>'
-          +   '<input id="uN" dir="auto" maxlength="160"></div>'
-          + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
-          +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
-          + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
-          +   '<select id="uR">'
-          +   Object.keys(ROLES).map(function(k){
-                return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>'
-                  + esc(t(ROLES[k].n)) + '</option>';
-              }).join('') + '</select></div>'
-          + '</div>'
-          + '<p class="hint" style="margin:11px 0 0">'
-          + esc(t('اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.'))
-          + '</p>',
-          btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"'))
-
-      + usersCard();
-  }};
 
 /* ═══ صفُّ الوزن يُدار كاملًا: المشعرُ والنوعُ والوزنُ والحذف ══════════════
    كان الصفُّ يعرض المشعرَ والنوعَ نصًّا ويُعدَّل وزنُه وحدَه. فمن أراد أن
@@ -18406,75 +18733,13 @@ function mxTable(path, label){
     + '</p>';
 }
 
-PAGE.visits = { m:'الإعدادات', t:'نقاط الزيارات', l:'وزن زيارة كل نوع وتارجت المسح.',
+PAGE.pts = { m:'الإعدادات', t:'نقاط المراحل',
+  l:'وزنُ كلِّ مرحلةٍ ونقاطُها — زيارةٌ وتهيئةٌ وتجميعٌ وتركيبٌ وفك.',
   body:function(){
-    return typesCard() + mxTable('w', t('وزن الزيارة'))
-      + card('التارجت',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('تارجت المسح الشهري')) + '</label>'
-          +   cfgInput('tgtSurvey') + '</div>'
-          + '<div class="field"><label>' + esc(t('تارجت المسح الأسبوعي')) + '</label>'
-          +   cfgDerived(cfgWk(cfgGet('tgtSurvey'))) + '</div>'
-          + '</div>')
-      + '<p class="hint">' + esc(t('لا قيمةَ افتراضية: كل وزنٍ يبدأ صفرًا وتضبطه أنت — وما تكتبه هنا يسري فورًا على المسح والفنيين والتقارير.')) + '</p>';
-  }};
-
-function prepAsm(pg){
-  var get = pg === 'prep' ? itPrep : itAsm;
-  var path = pg === 'prep' ? 'itPrep' : 'itAsm';
-  var on = itemsList().filter(function(i){ return get(i.code) > 0; });
-  var tot = on.reduce(function(a,i){ return a + get(i.code); }, 0);
-  var h = '<p class="lede" style="margin:0 0 16px">' + esc(t(pg === 'prep'
-      ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
-      : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.'))
-    + '</p>';
-  if (!on.length){
-    h += card('', '<p class="hint" style="text-align:center;margin:0">'
-      + esc(t(pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.')) + '</p>');
-  } else {
-    h += stats([[pg==='prep'?'أجهزة في التهيئة':'مكوّنات في التجميع', N(on.length), 'acc'],
-                ['إجمالي النقاط', N(tot)]])
-      + cardFlush((pg==='prep'?'أجهزة التهيئة':'مكوّنات التجميع') + ' — ' + nm(on.length),
-          table(['الجهاز','المنطقة','النقاط',''],
-            on.map(function(i){
-              return ['<input value="' + esc(i.name) + '" data-itname="' + esc(i.code) + '" dir="auto">',
-                      esc(t(i.z==='cor'?'ممر':'مخيم')),
-                      cfgInput(path, i.code, { dec:1 }),
-                      (may('settings')
-                        ? btn('أخرِج من المرحلة','btn-quiet btn-sm',
-                              ' data-stgout="' + esc(path + '|' + i.code) + '"')
-                          + btn('احذف الصنف','btn-quiet btn-sm',' data-itdel="' + esc(i.code) + '"')
-                        : '')];
-            })));
-  }
-  h += (may('settings')
-      ? card((pg === 'prep' ? 'أضِف صنفًا جديدًا للتهيئة' : 'أضِف صنفًا جديدًا للتجميع'),
-          '<div class="grid cols-3">'
-          + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
-          +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
-          +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
-          + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
-          +   '<input id="itN" dir="auto"></div>'
-          + '<div class="field"><label>' + esc(t('نقاط هذه المرحلة')) + '</label>'
-          +   '<input id="itS" type="number" step="0.5" min="0" value="1"></div>'
-          + '</div>',
-          btn('➕ إضافة صنف','btn-primary btn-sm',' data-stgadd="' + path + '"'))
-      : '')
-     + cfgAddStage(path, pg)
-     + tgtBlock(pg === 'prep' ? 'tgtPrepCamp' : 'tgtAsmCamp',
-                pg === 'prep' ? 'tgtPrepCor'  : 'tgtAsmCor');
-  if (pg === 'prep')
-    h += '<p class="hint">' + esc(t('الهوائي والبطارية والكابل قطعٌ سلبيةٌ لا تُهيَّأ، فلا تظهر هنا أصلًا.')) + '</p>';
-  return h;
-}
-
-PAGE.prep = { m:'الإعدادات', t:'نقاط التهيئة', l:'نقاط تهيئة كل جهاز في الورشة.',
-  body:function(){ return prepAsm('prep'); }};
-PAGE.asm = { m:'الإعدادات', t:'نقاط التجميع', l:'نقاط تجميع مكوّنات البوكس.',
-  body:function(){ return prepAsm('asm'); }};
-
-PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقاط كل قطعة وتارجت التركيب.',
-  body:function(){
+    var head = tabHead('pts'), cur = tabCur('pts');
+    if (cur === 'prep') return head + (function(){ return prepAsm('prep'); })();
+    if (cur === 'asm') return head + (function(){ return prepAsm('asm'); })();
+    if (cur === 'install') return head + (function(){
     /* الممرُّ قصادَ المخيم: عمودان تُقارَن بهما القائمتان بنظرةٍ واحدة */
     return '<div class="grid cols-2" style="align-items:start">'
       + [['cor','الممر'],['camp','المخيم']].map(function(g){
@@ -18527,10 +18792,8 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
           + '<p class="hint">' + esc(t('يُستعمَل حين لا يُضبَط وزنُ النوع أعلاه — فلا ينكسر ما ضُبط قبل هذا الإصدار.')) + '</p>',
           btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + tgtBlock('tgtInsCamp', 'tgtInsCor');
-  }};
-
-PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك ومعاملا الحالة.',
-  body:function(){
+  })();
+    if (cur === 'disp') return head + (function(){
     /* عمودُ «النقاط» كان يعرض وزنَ الزيارة المكتوبَ في الإعدادات — وليس هو
        ما يُفَكّ. الفكُّ يقع على ما رُكِّب فعلًا في الأرض، فيُجمَع تراكميًّا على
        مدار الموسم: كلُّ تركيبٍ معتمَدٍ يضيف قطعَه إلى مشعره ونوعه. فيقرأ
@@ -18568,10 +18831,113 @@ PAGE.disp = { m:'الإعدادات', t:'نقاط الفك', l:'وزن الفك 
           +   cfgInput('disBad', undefined, { dec:1, step:'0.05' }) + '</div>'
           + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + '<p class="hint">' + esc(t('المعاملان يضربان وزن الفك بحسب حالة الجهاز المفكوك — فيتساوى الجهدُ ويختلف الناتج.')) + '</p>';
+  })();
+    return head + (function(){
+    return typesCard() + mxTable('w', t('وزن الزيارة'))
+      + card('التارجت',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('تارجت المسح الشهري')) + '</label>'
+          +   cfgInput('tgtSurvey') + '</div>'
+          + '<div class="field"><label>' + esc(t('تارجت المسح الأسبوعي')) + '</label>'
+          +   cfgDerived(cfgWk(cfgGet('tgtSurvey'))) + '</div>'
+          + '</div>')
+      + '<p class="hint">' + esc(t('لا قيمةَ افتراضية: كل وزنٍ يبدأ صفرًا وتضبطه أنت — وما تكتبه هنا يسري فورًا على المسح والفنيين والتقارير.')) + '</p>';
+  })();
   }};
 
-PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كتالوج القطع وسعر كل قطعة.',
+function prepAsm(pg){
+  var get = pg === 'prep' ? itPrep : itAsm;
+  var path = pg === 'prep' ? 'itPrep' : 'itAsm';
+  var on = itemsList().filter(function(i){ return get(i.code) > 0; });
+  var tot = on.reduce(function(a,i){ return a + get(i.code); }, 0);
+  var h = '<p class="lede" style="margin:0 0 16px">' + esc(t(pg === 'prep'
+      ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
+      : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.'))
+    + '</p>';
+  if (!on.length){
+    h += card('', '<p class="hint" style="text-align:center;margin:0">'
+      + esc(t(pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.')) + '</p>');
+  } else {
+    h += stats([[pg==='prep'?'أجهزة في التهيئة':'مكوّنات في التجميع', N(on.length), 'acc'],
+                ['إجمالي النقاط', N(tot)]])
+      + cardFlush((pg==='prep'?'أجهزة التهيئة':'مكوّنات التجميع') + ' — ' + nm(on.length),
+          table(['الجهاز','المنطقة','النقاط',''],
+            on.map(function(i){
+              return ['<input value="' + esc(i.name) + '" data-itname="' + esc(i.code) + '" dir="auto">',
+                      esc(t(i.z==='cor'?'ممر':'مخيم')),
+                      cfgInput(path, i.code, { dec:1 }),
+                      (may('settings')
+                        ? btn('أخرِج من المرحلة','btn-quiet btn-sm',
+                              ' data-stgout="' + esc(path + '|' + i.code) + '"')
+                          + btn('احذف الصنف','btn-quiet btn-sm',' data-itdel="' + esc(i.code) + '"')
+                        : '')];
+            })));
+  }
+  h += (may('settings')
+      ? card((pg === 'prep' ? 'أضِف صنفًا جديدًا للتهيئة' : 'أضِف صنفًا جديدًا للتجميع'),
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('المنطقة')) + '</label>'
+          +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
+          +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
+          + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
+          +   '<input id="itN" dir="auto"></div>'
+          + '<div class="field"><label>' + esc(t('نقاط هذه المرحلة')) + '</label>'
+          +   '<input id="itS" type="number" step="0.5" min="0" value="1"></div>'
+          + '</div>',
+          btn('➕ إضافة صنف','btn-primary btn-sm',' data-stgadd="' + path + '"'))
+      : '')
+     + cfgAddStage(path, pg)
+     + tgtBlock(pg === 'prep' ? 'tgtPrepCamp' : 'tgtAsmCamp',
+                pg === 'prep' ? 'tgtPrepCor'  : 'tgtAsmCor');
+  if (pg === 'prep')
+    h += '<p class="hint">' + esc(t('الهوائي والبطارية والكابل قطعٌ سلبيةٌ لا تُهيَّأ، فلا تظهر هنا أصلًا.')) + '</p>';
+  return h;
+}
+
+
+
+
+PAGE.items = { m:'الإعدادات', t:'الكتالوج والمورّدون',
+  l:'ما نشتريه وبكم وممّن — القطعُ وفئاتُ المشتريات والمورّدون.',
   body:function(){
+    var head = tabHead('items'), cur = tabCur('items');
+    if (cur === 'buycat') return head + (function(){
+    var L = catList(), B = buysList();
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.')) + '</p>'
+      + halves(t('الفئات') + ' — ' + nm(L.length),
+          ['الفئة','عمليات','المصروف',''],
+          L.map(function(c){
+              var used = B.filter(function(b){ return b.cat === c; });
+              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+              return [esc(c), N(used.length), N(sum),
+                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
+                                  : btn('احذف','btn-quiet btn-sm',' data-catrm="' + esc(c) + '"')];
+            }),
+          may('money')
+            ? '<form class="inline-form" onsubmit="return false">'
+              + '<input id="catNew" dir="auto" placeholder="' + esc(t('فئة جديدة')) + '">'
+              + btn('إضافة فئة','btn-primary btn-sm',' data-catadd="1"') + '</form>'
+            : '');
+  })();
+    if (cur === 'sup') return head + (function(){
+    var L = supList(), B = buysList();
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.')) + '</p>'
+      + cardFlush(t('المورّدون') + ' — ' + nm(L.length),
+          table(['المورّد','عمليات','المصروف',''],
+            L.map(function(c){
+              var used = B.filter(function(b){ return b.sup === c; });
+              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
+              return [esc(c), N(used.length), N(sum),
+                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                                  : btn('احذف','btn-quiet btn-sm',' data-suprm="' + esc(c) + '"')];
+            })),
+          may('money')
+            ? '<form class="inline-form" onsubmit="return false">'
+              + '<input id="supNew" dir="auto" placeholder="' + esc(t('مورّد جديد')) + '">'
+              + btn('إضافة مورّد','btn-primary btn-sm',' data-supadd="1"') + '</form>'
+            : '');
+  })();
+    return head + (function(){
     /* الكتالوجُ يُحرَّر هنا: الاسمُ والمنطقةُ والنقاطُ والسعر، ويُضاف صنفٌ
        ويُحذَف. وكان النموذجُ مرسومًا وأزرارُه بلا خاصيةٍ فيبتلعها حارسُ
        الأزرار الميتة — يُكتَب الاسمُ ويُضغَط «حفظ» ولا يقع شيء.
@@ -18628,47 +18994,10 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
           + '</div>',
           btn('➕ إضافة صنف','btn-primary btn-sm',' data-itadd="1"'))
       + '<p class="hint">' + esc(t('نقلُ الصنف بين الممر والمخيم ينقل معه احتسابَه في تقسيم النقاط. والحذفُ ممنوعٌ على ما رُكِّب — وإلا فقدت سجلاتُ التركيب أسماءَ قطعها.')) + '</p>';
+  })();
   }};
 
-PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تبويب مشتريات السوق المحلي.',
-  body:function(){
-    var L = catList(), B = buysList();
-    return '<p class="lede" style="margin:0 0 16px">' + esc(t('هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.')) + '</p>'
-      + halves(t('الفئات') + ' — ' + nm(L.length),
-          ['الفئة','عمليات','المصروف',''],
-          L.map(function(c){
-              var used = B.filter(function(b){ return b.cat === c; });
-              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
-              return [esc(c), N(used.length), N(sum),
-                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعملة')) + '</span>'
-                                  : btn('احذف','btn-quiet btn-sm',' data-catrm="' + esc(c) + '"')];
-            }),
-          may('money')
-            ? '<form class="inline-form" onsubmit="return false">'
-              + '<input id="catNew" dir="auto" placeholder="' + esc(t('فئة جديدة')) + '">'
-              + btn('إضافة فئة','btn-primary btn-sm',' data-catadd="1"') + '</form>'
-            : '');
-  }};
 
-PAGE.sup = { m:'الإعدادات', t:'المورّدون', l:'قائمة موحّدة لمن نشتري منهم.',
-  body:function(){
-    var L = supList(), B = buysList();
-    return '<p class="lede" style="margin:0 0 16px">' + esc(t('قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.')) + '</p>'
-      + cardFlush(t('المورّدون') + ' — ' + nm(L.length),
-          table(['المورّد','عمليات','المصروف',''],
-            L.map(function(c){
-              var used = B.filter(function(b){ return b.sup === c; });
-              var sum = used.reduce(function(a,b){ return a + (+b.amt || 0); }, 0);
-              return [esc(c), N(used.length), N(sum),
-                      used.length ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
-                                  : btn('احذف','btn-quiet btn-sm',' data-suprm="' + esc(c) + '"')];
-            })),
-          may('money')
-            ? '<form class="inline-form" onsubmit="return false">'
-              + '<input id="supNew" dir="auto" placeholder="' + esc(t('مورّد جديد')) + '">'
-              + btn('إضافة مورّد','btn-primary btn-sm',' data-supadd="1"') + '</form>'
-            : '');
-  }};
 
 PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
   body:function(){
@@ -18769,94 +19098,40 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
       + '<p class="hint">' + esc(t('هذه الثوابت يُشتقّ منها التارجت الأسبوعي من الشهري، وتقديرُ الأزمنة في التخطيط.')) + '</p>';
   }};
 
-PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات',
-  l:'الدورُ ما يستطيعه الشخصُ في النظام — لا ما يعمله في الميدان.',
-  body:function(){
-    /* السؤالُ يتكرّر: ما الفرقُ بين الوظيفة والدور؟ فصار مكتوبًا في أول
-       الشاشة لا في ذاكرة من شرحه مرة. */
-    var _INTRO = card('الوظيفة والدور — فرقٌ لا يُخلَط',
-        table(['','الوظيفة','الدور'], [
-          ['ما هي','ما يعمله الشخصُ في الميدان','ما يستطيعه في النظام'],
-          ['مثال','مسؤول مستودع · مشرف ميدان','كلاهما دورُه «مشرف»'],
-          ['أين تُضبَط','الإعدادات ← الوظائف','هذه الشاشة'],
-          ['من أين تأتي','تُكتَب في سجل الموظف','يُشتقُّ من وظيفته'],
-          ['ماذا تُغيّر','من يستلم العهدةَ ومن ينزل المشاعر','ما يراه من شاشاتٍ وما يكتبه']
-        ])
-        + '<p class="hint">' + esc(t('الوظيفةُ تتغيّر في أثناء الموسم فيتغيّر الدورُ معها — والنقلةُ تُسجَّل ولا تُمحى. ودليلُ كلِّ دورٍ في «المساعدة ← دليل الاستخدام» يقول ما يراه صاحبُه بالضبط.')) + '</p>');
-    /* كان جدولًا محفورًا بأربعة أدوارٍ و«✓» مكتوبةٍ بيد — والأدوارُ سبعةٌ
-       والقدراتُ تُقرأ من `ROLES`. فمن قرأ الجدولَ ظنَّ أن المشرفَ لا يرى
-       الهواتفَ وهو يراها، وأن الفنيَّ لا يركّب وهو يركّب.
-       صار يُبنى من مصدر الحقيقة نفسِه، ويُبدَّل فيه فيُكتَب. */
-    var CAPS = [['edit','تحرير البيانات'], ['approve','الاعتمادات'], ['settings','الإعدادات'],
-                ['money','المال والمشتريات'], ['inventory','المخزون والعُهدة'], ['workshop','الورشة'],
-                ['exportAll','التصدير الكامل'], ['importAll','الاستيراد'],
-                ['users','إدارة المستخدمين'], ['phones','أرقام الهواتف'], ['delete','الحذف والتصفير']];
-    var RS = Object.keys(ROLES);
-    return _INTRO + cardFlush(t('القدرات') + ' — ' + nm(RS.length) + ' ' + t('أدوار'),
-        table([''].concat(RS.map(function(k){ return t(ROLES[k].n); })),
-          CAPS.map(function(c){
-            return ['<strong>' + esc(t(c[1])) + '</strong>'].concat(
-              RS.map(function(k){
-                var on = !!((ROLES[k].can || {})[c[0]]);
-                return may('users')
-                  ? '<button type="button" class="pill ' + (on ? 'ok' : 'off')
-                    + '" style="border:0;cursor:pointer" data-capt="' + esc(k + '|' + c[0]) + '">'
-                    + (on ? '✓' : '—') + '</button>'
-                  : pill(on ? '✓' : '—', on ? 'ok' : 'off');
-              }));
-          })),
-        (may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="roles"') : '')
-        + '<p class="hint" style="margin:9px 0 0">'
-        + esc(t(may('users')
-            ? 'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.'
-            : 'العرضُ فقط — التبديلُ للمهندس.'))
-        + '</p>')
-
-      + card('الأدوار السبعة',
-          table(['الدور','من هو','ماذا يرى ويفعل'],
-            RS.map(function(k){
-              return [pill(t(ROLES[k].n), 'acc'), esc(t(ROLES[k].d || '—')),
-                      '<span class="hint" style="margin:0">'
-                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' ' + t('قدرة'))) + '</span>'];
-            })))
-
-      + '<p class="hint">' + esc(t('الأدوارُ ثابتةٌ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة، وحذفُ دورٍ منها يجعل حساباتِه ترفضها القاعدةُ صامتةً. وما يُغيَّر هو قدراتُها.')) + '</p>';
-  }};
 
 /* ═══ القائمة والشل ═══ */
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mywork','شغلي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['svForm','نموذج المسح'],
-      ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
+  { g:'الميدان', icon:'\u25F1', items:[
+      ['sites','المواقع'],['mywork','شغلي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],
+      ['newsite','تسجيل موقع جديد'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],
+      ['sel','المحدَّد'],['fleet','السيارات'],['svForm','نموذج المسح'],['insForm','نموذج التركيب'],
+      ['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
-      ['exec','اللوحة التنفيذية'],['repcenter','مركز التقارير'],['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
-      ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
-  { g:'التخطيط', icon:'\u25F7', items:[['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],
-      ['risks','سجل المخاطر'],['chg','ضبط التغيير'],['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
+      ['over','نظرة عامة'],['exec','اللوحة التنفيذية'],['repcenter','مركز التقارير'],['co','حسب شركة الخدمة'],
+      ['chalm','التحديات'],['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
+  { g:'التخطيط', icon:'\u25F7', items:[
+      ['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],['risks','سجل المخاطر'],['chg','ضبط التغيير'],
+      ['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
-      ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],
-      ['solution','حل التركيب'],
-      ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي'],
-      ['ncr','عدم المطابقة']] },
+      ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],['solution','حل التركيب'],
+      ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي'],['ncr','عدم المطابقة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
-      ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
-      ['ships','الشحنات والتوريد'],['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
-  { g:'القسم المالي', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
+      ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['inv','المخزون'],['ships','الشحنات والتوريد']] },
+  { g:'القسم المالي', icon:'\u25B0', items:[
+      ['ipc','المستخلصات'],['buys','دفتر المشتريات'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق', icon:'\u25D4', items:[
-      ['crewman','الفرق'],['crewplan','الطواقم والمعدلات'],
-      ['perf','الأداء'],['conote','إشعار الشركات']] },
+      ['crewman','الفرق'],['crewplan','الطواقم والمعدلات'],['perf','الأداء'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
-      ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
-      ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
-      ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
-      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['names','أسماء العرض'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
-  { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
-      ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
-      ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
-      ['notif','الإشعارات'],['ev','سجل الأحداث'],['wipe','تصفير البيانات'],['sys','سلامة البيانات'],['vers','نسخ الأجهزة']] },
-  { g:'المساعدة', icon:'\u003F', items:[['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
+      ['users','المستخدمون والأدوار'],['vehkind','أنواع السيارات'],['pts','نقاط المراحل'],['items','الكتالوج والمورّدون'],
+      ['names','أسماء العرض'],['consts','ثوابت النظام']] },
+  { g:'النظام', icon:'\u25A1', items:[
+      ['appr','الاعتمادات'],['drive','تخزين الصور'],['org','التنظيم'],['hse','السلامة والحوادث'],
+      ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['probe','أداة الفحص'],['notif','الإشعارات'],
+      ['ev','سجل الأحداث'],['sys','صحة النظام']] },
+  { g:'المساعدة', icon:'\u003F', items:[
+      ['sop','دليل العمليات'],['guide','دليل الاستخدام'],['acct','حسابي']] }
 ];
 
 var CUR = 'map';
@@ -18947,12 +19222,26 @@ function render(force){
       && document.getElementById('content').children.length) return;
   RENDER_KEY = key; RENDER_N++;
 
+  /* معرِّفُ شريحةٍ قديمٌ — من رابطٍ أو قائمةٍ أو زرٍّ — يصل إلى أمِّه على شريحته.
+     والوصولُ بمعرِّف الأمِّ نفسِه (وهو معرِّفُ شريحتها الأولى) يفتح تلك الشريحة
+     — فمن قصد «المستخدمين» لا يجد نفسَه في «الوظائف» لأنها آخرُ ما فُتح.
+     أمّا إعادةُ الرسم في المكان (CUR لم يتغيّر) فتُبقي الشريحةَ المفتوحة. */
+  if (PARENT[CUR] && PARENT[CUR] !== CUR){ PTAB[PARENT[CUR]] = CUR; CUR = PARENT[CUR]; }
+  else if (TABS[CUR] && PARENT[CUR] === CUR && CUR !== RENDER_CUR) PTAB[CUR] = CUR;
   if (!seesPage(CUR)){
     var n = R().nav;
     CUR = (n === '*') ? 'map' : n[0];
+    if (PARENT[CUR] && PARENT[CUR] !== CUR){ PTAB[PARENT[CUR]] = CUR; CUR = PARENT[CUR]; }
   }
+  RENDER_CUR = CUR;
   var p = FIELD_PAGES[CUR] || PAGE[CUR];
   if (!p) p = PAGE.over;
+  /* الوصفُ تحت العنوان وصفُ الشريحة المفتوحة لا وصفُ الأمِّ وحدها */
+  var pl = p.l;
+  if (TABS[CUR]){
+    var tbc = tabCur(CUR), tbm = TABS[CUR].filter(function(x){ return x[0] === tbc; })[0];
+    if (tbm && tbm[3]) pl = tbm[3];
+  }
 
   document.getElementById('nav').innerHTML = navHtml();
   var bk = document.getElementById('backBtn');
@@ -18999,7 +19288,7 @@ function render(force){
   c.hidden = false;
   c.className = 'content' + (p.full ? ' flush' : '');
   /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
-  var head = p.full ? '' : pageHead(p.m, p.t, p.l,
+  var head = p.full ? '' : pageHead(p.m, p.t, pl,
     (p.m === 'المتابعة' || may('exportAll'))
       ? btn('تصدير','btn-secondary',' data-exp="1"') : '');
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
@@ -19123,7 +19412,7 @@ function onDocClick(e){
   if (a){
     e.preventDefault();
     navPush(CUR);
-    CUR = a.getAttribute('data-p');
+    goPage(a.getAttribute('data-p'));
     NAV_Q = '';
     document.body.classList.remove('nav-open');
     render();
@@ -19279,8 +19568,10 @@ function onDocClick(e){
   if (cdl){ coRemove(cdl.getAttribute('data-codel')); return; }
   var mwt = e.target.closest('[data-mywtab]');
   if (mwt){ MYW_TAB = mwt.getAttribute('data-mywtab'); render(1); return; }
+  var ptb = e.target.closest('[data-ptab]');
+  if (ptb){ var pt = ptb.getAttribute('data-ptab').split(':'); PTAB[pt[0]] = pt[1]; render(1); return; }
   var gto = e.target.closest('[data-goto]');
-  if (gto){ POP_OPEN = false; CUR = gto.getAttribute('data-goto'); render(); return; }
+  if (gto){ POP_OPEN = false; goPage(gto.getAttribute('data-goto')); render(); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
@@ -20048,6 +20339,11 @@ document.addEventListener('input', function(e){
 
 document.addEventListener('change', function(e){
   var el = e.target;
+  if (el && el.hasAttribute && el.hasAttribute('data-cfgdate')){
+    var dv = el.value ? Date.parse(el.value) : 0;
+    cfgSet(el.getAttribute('data-cfgdate'), null, isFinite(dv) ? dv : 0);
+    render(); return;
+  }
   if (!el || !el.hasAttribute || !el.hasAttribute('data-cfg')) return;
   cfgSet(el.getAttribute('data-cfg'), el.getAttribute('data-cfgk'), el.value);
   var path = el.getAttribute('data-cfg'), key = el.getAttribute('data-cfgk');

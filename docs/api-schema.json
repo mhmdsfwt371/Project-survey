@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.28",
+  "app_version": "V15.29",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1397,7 +1397,8 @@
     "V15.25": "الدمج الأول: mytasks+myscore+myteam+mywork → PAGE.mywork «شغلي» بأربع شرائح (MYW_TAB). الأجسام نُقلت كما هي — لا حذف ولا إعادة كتابة. شريحة 'فريقي' تظهر لمن تحته أحد أو maySupEng. 97 → 94 صفحة. الحراس أمسكوا: بند مكرر، بند لصفحة محذوفة، زر بلا صفحة.",
     "V15.26": "بُني audit-journey (الجرد 21): يمشي رحلة المسح بثلاثة أدوار على النقطة نفسها — إسناد → مسح → حفظ → svDone → حل التركيب → تحديد القطع → اعتماد → طبقة التركيب → النقاط. 13 تحققًا. وأمسك عطلًا صامتًا: solution.items مقابل ins.parts — الحل المعتمد لا يغذّي ptsInstall فالتقدير صفر. أُصلح: ptsInstall تقرأ solution.items المعتمد.",
     "V15.27": "LAYERS.survey.c كان #E8C34B — نفس لون الانتظار، فالمزورة وغير المزورة سواء على الخريطة. صار #4FA3FF (المنطق كان سليمًا). وأُضيف لنافذة النقطة سطر 'الخطوة التالية': يقرأ الحال ويقول أين تقف ومن صاحب الدور، ويعرض زر الانتقال لمن يملك الخطوة فقط (data-goto).",
-    "V15.28": "viewer (وزارة): 12 شاشة متابعة + exportAll:1 — تُصدّر ما تقرأ ولا تكتب (كان exportAll:0 خطأً: العميل يرفع تقاريره لجهة أعلى). وأُضيف لـPAGE.roles جدول 'الوظيفة والدور'. وتخزين الصور: الآلية مبنية (OAuth drive.file) والناقص Client ID وحده — و legacy/v13.99 لا تحوي تخزين صور أصلًا."
+    "V15.28": "viewer (وزارة): 12 شاشة متابعة + exportAll:1 — تُصدّر ما تقرأ ولا تكتب (كان exportAll:0 خطأً: العميل يرفع تقاريره لجهة أعلى). وأُضيف لـPAGE.roles جدول 'الوظيفة والدور'. وتخزين الصور: الآلية مبنية (OAuth drive.file) والناقص Client ID وحده — و legacy/v13.99 لا تحوي تخزين صور أصلًا.",
+    "V15.29": "الدمج الثاني: 33 شاشة → 8 صفحات بشرائح (94 → 69). آلية واحدة TABS: كل شريحة بمعرّفها القديم في ROLES.nav وPAGE_CAP والروابط؛ render() يوصل المعرّف القديم إلى أمّه على شريحته؛ الرؤية بقواعد seesRaw نفسها. عطل أخطر: CFG (الأوزان/التارجتات/نقاط القطع/الثوابت) لم تكن تُرفع إلى settings/points قط — cfgSet محلية فقط؛ صار cfgPushSoon يرفع المسارات الملموسة بدمج لمن يملك settings. إصلاح over (أصفار مكتوبة + بطاقة ميتة)، pace وsetup حقيقيان من CFG (dueSurvey/dueInstall/minCamp/minCor). حارسان: audit-pages §3 وaudit-tabs (الجرد 22)."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2251,14 +2252,15 @@
       "after_help_button_fix": 2570
     },
     "caps": {
-      "CAP_PAGES": 19,
-      "CAP_TEXTS": 107,
-      "CAP_SHELL": 3
+      "CAP_PAGES": 17,
+      "CAP_TEXTS": 102,
+      "CAP_SHELL": 2
     },
     "top_offenders": "ips(810 غالبها بيانات شبكة) · jobs(94) · svForm(90) · retain(69) · invmv(67)",
     "live_name_exclusion": "LIVE_NAMES تُبنى وقت الفحص من w.techsList()+w.crewsList()+STATE.sites[].co/.name — أي اسم يُضاف لاحقًا يُستثنى تلقائيًا بلا تعديل في السكربت",
     "language_scope": "الإنجليزية وحدها — الأردية تُفحَص بالتكافؤ في audit-lang §5",
-    "by_design_excluded": "PAGE.names — تعرض الاسم العربي بقصد إلى جانب نقحرته"
+    "by_design_excluded": "PAGE.names — تعرض الاسم العربي بقصد إلى جانب نقحرته",
+    "tabs": "V15.29: كل شريحة تُفحص بمعرّفها — 92 صفحة/شريحة لا 68"
   },
   "i18n_batches": {
     "V15.01": {
@@ -2571,7 +2573,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 20,
+  "audits_total": 22,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -2690,6 +2692,74 @@
       "preserved": "كل جسم نُقل حرفيًا — نفس الأرقام والجداول والصلاحيات ونقاط الزيادة والمستحَق",
       "conditional_tab": "team تظهر لمن تحته أحد أو maySupEng",
       "pages": "97 → 94"
+    },
+    "V15.29": {
+      "count": "33 شريحة في 8 صفحات — 94 → 69",
+      "mechanism": {
+        "registry": "var TABS = { parent: [[oldId, label, icon, oldLede], ...] }",
+        "visibility": "tabsOf(pid) = TABS[pid].filter(seesRaw) — الشريحة لمن كان يرى صفحتها؛ seesPage(parent) = أي شريحة مرئية",
+        "routing": "render(): PARENT[CUR] → PTAB[parent]=CUR; CUR=parent — كل data-p/data-goto/CUR= قديم يعمل",
+        "parent_nav": "goPage(id): الأم التي هي شريحتها الأولى تُفتح عليها؛ إعادة الرسم في المكان تبقي المفتوحة (RENDER_CUR)",
+        "meta": "pageMeta(id) للمساعد والمساعدة ودليل الدور — الشريحة باسمها ووصفها الأصلي مع sub=عنوان الأم",
+        "preserved": "كل جسم نُقل حرفيًا داخل (function(){…})() — لا حذف ولا إعادة كتابة"
+      },
+      "merges": {
+        "fleet": [
+          "fleet",
+          "fleetAsn",
+          "fleetLog",
+          "fleetCost",
+          "myveh"
+        ],
+        "over": [
+          "over",
+          "reg",
+          "pace",
+          "daily",
+          "inst"
+        ],
+        "pts": [
+          "visits",
+          "prep",
+          "asm",
+          "install",
+          "disp"
+        ],
+        "inv": [
+          "invb",
+          "invmv",
+          "stock"
+        ],
+        "users": [
+          "users",
+          "assignRole",
+          "roles",
+          "jobs"
+        ],
+        "sys": [
+          "sys",
+          "sync",
+          "vers",
+          "retain",
+          "wipe"
+        ],
+        "items": [
+          "items",
+          "buycat",
+          "sup"
+        ],
+        "org": [
+          "cover",
+          "raci",
+          "esc"
+        ]
+      },
+      "new_parent_ids": [
+        "pts",
+        "inv",
+        "org"
+      ],
+      "roles_nav_unchanged": true
     }
   },
   "merge_candidates_next": [
@@ -2770,5 +2840,36 @@
     "job": "ما يعمله الشخص في الميدان — يُكتَب في سجل الموظف، الإعدادات ← الوظائف",
     "role": "ما يستطيعه في النظام — يُشتقّ من الوظيفة، الإعدادات ← الأدوار والصلاحيات",
     "example": "مسؤول المستودع ومشرف الميدان: وظيفتان مختلفتان، ودورهما واحد «مشرف»"
+  },
+  "cfg_cloud_sync_v15_29": {
+    "bug": "cfgSet تعدّل CFG محليًا فقط؛ pull يقرأ settings/points ولا شيء يكتبها — الأوزان والتارجتات ونقاط القطع والثوابت تبقى على جهاز من كتبها",
+    "since": "إعادة البناء V14.x — V14.01 كانت تكتب settings/points",
+    "fix": "cfgPushSoon(path): يجمع المسارات الملموسة ويرفعها بعد 1.2s كوثيقة واحدة CORE.dirty('cfg','points',{path:CFG[path]}) — merge على مستوى المفتاح الأعلى",
+    "gate": "may('settings') فقط — القاعدة تردّ غيره أصلًا (settings/{id} write: mgr())",
+    "why_partial": "رفع الوثيقة كاملة يجعل جهازًا قديم الذاكرة يمحو ما ضبطه غيره في مسار لم يلمسه"
+  },
+  "pace_setup_v15_29": {
+    "cfg_keys": {
+      "dueSurvey": "ms",
+      "dueInstall": "ms",
+      "minCamp": "دقائق تركيب نقطة المخيم",
+      "minCor": "دقائق تركيب نقطة الممر"
+    },
+    "date_input": "cfgDate(path) + معالج change على data-cfgdate — CFG رقمية فتُخزَّن التواريخ ms",
+    "pace": "لكل مرحلة: المتبقي، الموعد، أيام للموعد، المطلوب يوميًا = ceil(left/days)، معدل 7 أيام من اللقطات أو السجلات، الانتهاء المتوقع = now + left/avg، والحكم",
+    "setup": "أزمنة التركيب: count بـsiteZone (مخيم / غيره) × دقائق CFG ÷ 60"
+  },
+  "audit_tabs": {
+    "why": "الدمج وعدٌ بأن لا يتغير شيء — والوعد بلا حارس ينكسر عند أول دمج قادم",
+    "checks": [
+      "كل شريحة ترسم والمعرّف القديم يصل إلى أمّه",
+      "كل دور يرى من الشرائح ما كان يراه من الصفحات بالحرف",
+      "القائمة بلا شريحة",
+      "المساعد يجد الشريحة باسم صفحتها القديم",
+      "معرّف الأم يفتح شريحتها الأولى وإعادة الرسم لا تغيّر المفتوحة",
+      "الوتيرة والمواعيد تقرآن CFG",
+      "كل مسار لُمس يُرفع إلى settings/points وما لم يُلمس لا يُكتب",
+      "الفني لا يُقيَّد له رفع"
+    ]
   }
 }

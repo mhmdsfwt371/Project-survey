@@ -43,6 +43,20 @@ for (const m of src.matchAll(/^  (\w+):\s*\{ m:'([^']*)', t:'([^']*)', l:'((?:[^
   if (!PAGES[m[1]]) PAGES[m[1]] = { m: m[2], t: m[3], l: m[4].replace(/\\'/g, "'") };
 
 const CAP_SAY = evalObj(block('CAP_SAY'));
+/* V15.29: شرائحُ الصفحات المدموجة — كلُّ شريحةٍ تُذكَر في الدليل باسمها القديم
+   ووصفِها الأصلي («السيارات ← الإسناد»)، فالسائقُ يقرأ «سيارتي» لا «السيارات».
+   والأمُّ التي ليست شريحةً (نقاط المراحل، المخزون، التنظيم) لا تُذكَر وحدَها. */
+const TABS = evalObj(block('TABS'));
+const TAB_PARENT = {};
+Object.keys(TABS).forEach(pid => TABS[pid].forEach(tb => { TAB_PARENT[tb[0]] = pid; }));
+Object.keys(TABS).forEach(pid => {
+  const par = PAGES[pid]; if (!par) return;
+  TABS[pid].forEach(tb => {
+    PAGES[tb[0]] = { m: par.m, t: par.t + ' ← ' + tb[1], l: tb[3] || '' };
+  });
+});
+/* كلُّ ما يُفتَح لمن يرى كلَّ شيء: الشرائحُ بدل أمهاتها */
+const ALL_IDS = Object.keys(PAGES).filter(id => !TABS[id] || TAB_PARENT[id] === id);
 
 /* ── التنسيق ── */
 const FONT = 'Arial';
@@ -74,7 +88,7 @@ function table(head, rows, widths){
 function manualFor(id){
   const x = ROLES[id];
   const caps = Object.keys(x.can || {}).filter(c => x.can[c]);
-  const ids = x.nav === '*' ? Object.keys(PAGES) : x.nav.filter(i => PAGES[i]);
+  const ids = x.nav === '*' ? ALL_IDS : x.nav.filter(i => PAGES[i]);
   const byGroup = {};
   ids.forEach(i => {
     const p = PAGES[i]; if (!p) return;

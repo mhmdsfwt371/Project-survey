@@ -52,6 +52,8 @@ jobs:
         run: node scripts/audit-stability.mjs
       - name: رحلة المسح — من الإسناد إلى نقاط التركيب
         run: node scripts/audit-journey.mjs
+      - name: جرد الشرائح — الدمج لا يغيّر رؤية أحد ولا يكسر رابطًا
+        run: node scripts/audit-tabs.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
