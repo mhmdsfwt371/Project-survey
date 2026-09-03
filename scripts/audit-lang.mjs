@@ -150,6 +150,38 @@ check(copied.length <= CAP_COPIED,
     ? 'المطابقُ حرفيًّا محصورٌ — وحداتٌ ورموزٌ لا تُترجَم'
     : `مطابقٌ حرفيًّا كبر: ${copied.join(' · ')}`);
 
+console.log('\n══ ٦ · كلُّ دالةِ عرضٍ تمرِّر نصَّها بالمترجم ══');
+/* بُني هذا بعد أن ظهر أن `table()` تترجم رؤوسَها ولا تترجم خلاياها،
+   فبقيت أربعُمئةِ خليةٍ عربيةً وترجماتُ دفعاتٍ كاملةٍ بلا أثر. فالقاعدةُ
+   الآن: كلُّ دالةٍ تبني HTML من نصٍّ تمرّره بـt() أو cellT() أو تُفوّض
+   إلى دالةٍ تفعل — ومن أضاف دالةَ عرضٍ جديدةً نسيها، أمسكه هذا. */
+const RENDERERS = {
+  card:'title', cardFlush:'title', alertBox:'txt', btn:'label', pill:'txt',
+  stat:'k + v', table:'head + cells', flow:'steps', meter:'label'
+};
+const DELEGATES = { stats:'stat', halves:'cardFlush + table' };
+const unwired = [];
+Object.keys(RENDERERS).forEach(f => {
+  const m = new RegExp('^function ' + f + '\\([^)]*\\)\\{[\\s\\S]*?\\n\\}', 'm').exec(src);
+  if (!m){ unwired.push(f + ' (مفقودة)'); return; }
+  if (!/esc\(t\(|cellT\(|\bt\(/.test(m[0])) unwired.push(f);
+});
+Object.keys(DELEGATES).forEach(f => {
+  const m = new RegExp('^function ' + f + '\\([^)]*\\)\\{[\\s\\S]*?\\n\\}', 'm').exec(src);
+  if (!m){ unwired.push(f + ' (مفقودة)'); return; }
+  const to = DELEGATES[f].split(' + ')[0];
+  if (!new RegExp('\\b' + to + '\\(').test(m[0])) unwired.push(f + ' (لا تفوّض إلى ' + to + ')');
+});
+check(unwired.length === 0,
+  unwired.length ? `دوالُّ عرضٍ لا تمرِّر نصَّها بالمترجم: ${unwired.join(' · ')}`
+                 : `كلُّ دوالِّ العرض تمرِّر نصَّها (${Object.keys(RENDERERS).length} مباشرةً · ${Object.keys(DELEGATES).length} بالتفويض)`);
+
+/* cellT: النصُّ الصرفُ يُترجَم وما فيه وسمٌ يُترك — القاعدةُ التي منعت
+   كسرَ الأزرار والشارات حين صارت الخلايا تُترجَم */
+const cell = /^function cellT\([\s\S]*?\n\}/m.exec(src);
+check(!!cell && /indexOf\('<'\)/.test(cell[0]) && /\bt\(/.test(cell[0]),
+  cell ? 'cellT تحمي ما فيه وسمٌ وتترجم النصَّ الصرف' : 'cellT مفقودة — الخلايا بلا مترجم');
+
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ اللغة فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
 console.log('جردُ اللغة نظيف — لا حرفَ عربيٍّ يبقى بلا قرار ✅');
