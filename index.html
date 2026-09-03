@@ -286,8 +286,31 @@ input[type="number"]{max-width:140px}
   display:flex;flex-direction:column;gap:8px;align-items:flex-start;
   max-width:calc(100% - 160px);max-height:calc(100% - 170px);pointer-events:none}
 /* الأسطورةُ تُطوى حين تضيق الشاشة: كانت تطول فتزاحم أزرارَ الفعل */
+/* ═══ الشاشاتُ اللمسية ═══
+   الإصبعُ ليس مؤشِّرًا: أصغرُ هدفٍ يُصاب باطمئنانٍ أربعةٌ وأربعون بكسلًا،
+   ودونَها يُخطئ المرءُ ويُعيد ويظنُّ أن الزرَّ لا يعمل. والأزرارُ هنا كانت
+   ستةً وثلاثين — تكفي الفأرةَ ولا تكفي اليد. وثلاثةُ أعطالٍ لمسيةٍ أخرى
+   تُصلَح معها: التأخيرُ ثلاثُمئةِ جزءٍ من الثانية قبل النقرة، والتكبيرُ
+   المزدوجُ حين تُنقَر النقطتان سريعًا، وإبرازُ اللمسة رماديًّا على أندرويد. */
+@media (pointer:coarse){
+  .btn, .chip, .map-chip{ min-height:44px }
+  .btn-sm{ min-height:44px; padding:9px 14px }
+  .chip{ padding:10px 15px }
+  .map-chip{ padding:10px 15px; font-size:13px }
+  select, input, textarea{ min-height:44px; font-size:16px }   /* ١٦ يمنع تكبيرَ iOS التلقائي */
+  .list-item{ min-height:52px }
+  table td, table th{ padding-block:11px }
+  .lg-row{ min-height:26px }
+}
+button, .btn, .chip, .map-chip, .list-item, a[data-p]{
+  touch-action:manipulation;                 /* لا تأخيرَ ولا تكبيرَ بنقرتين */
+  -webkit-tap-highlight-color:transparent;
+}
+.leaflet-container{ touch-action:pan-x pan-y }
 @media(max-width:760px){
-  .map-legend{max-height:96px;overflow:auto}
+  /* على الهاتف: الأسطورةُ أعرضُ وأطولُ قليلًا — بها أرقامٌ تُقرأ لا ألوانٌ
+     تُلمَح، وصفوفُها هدفُ لمسٍ إن أُضيف إليها فعلٌ يومًا. */
+  .map-legend{max-height:172px;overflow:auto;min-width:184px;font-size:12.5px}
   .map-stack{max-width:calc(100% - 130px)}
 }
 /* إسنادُ ليفلت لا يظهر في شاشةٍ تُعرَض على الوزارة */
@@ -295,7 +318,11 @@ input[type="number"]{max-width:140px}
 .map-stack > *{pointer-events:auto}
 .map-legend{background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
   padding:10px 12px;font-size:12px;color:#C6CFD7;backdrop-filter:blur(6px)}
-.lg-row{display:flex;align-items:center;gap:7px;margin:4px 0}
+.lg-row{display:flex;align-items:center;gap:7px;margin:4px 0;min-height:22px}
+.lg-n{flex:1 1 auto}
+.lg-c{flex:0 0 auto;font-weight:800;color:#EAF1F6}
+.lg-row.lg-off{opacity:.42}
+.lg-tot{border-top:1px solid #2A333C;margin-top:6px;padding-top:6px}
 .lg-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
 
 /* ── نافذة النقطة ──────────────────────────────────── */
@@ -417,7 +444,8 @@ body.nav-open .mapwrap{pointer-events:none}
 
 /* علامةُ الممر والكاميرا: معيّنٌ مائلٌ يُميّزها عن دوائر الباقي */
 .mkC{background:none!important;border:0!important}
-.mkC i{display:block;width:100%;height:100%;transform:rotate(45deg);
+.mkC{display:flex;align-items:center;justify-content:center}
+.mkC i{display:block;transform:rotate(45deg);
   border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
 
 .pst{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0 0}
@@ -678,7 +706,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.37</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.38</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2608,6 +2636,7 @@ en:{
  'الوظيفتان قد تشتركان في دورٍ واحد: مسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبهما يُعرَف من يستلم العهدةَ ومن ينزل المشاعر.':'Two jobs may share one role: the store keeper and the field supervisor both have the “supervisor” role — their jobs differ, and by them we know who receives custody and who goes to the holy sites.',
  'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'Only higher ranks are shown: the technician’s manager is their supervisor, the supervisor’s is the engineer, and the engineer’s is the project manager.',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'No accounts yet. This table is where every account in the system lives: from it the name, job, department, and manager are edited, and from it an account is deactivated or deleted. Create the first account in the form above.',
+ 'المعروض':'Shown',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4489,6 +4518,7 @@ ur:{
  'الوظيفتان قد تشتركان في دورٍ واحد: مسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبهما يُعرَف من يستلم العهدةَ ومن ينزل المشاعر.':'دو عہدے ایک کردار میں شریک ہو سکتے ہیں: اسٹور کیپر اور فیلڈ سپروائزر دونوں کا کردار “سپروائزر” ہے — عہدے مختلف ہیں، اور انہی سے معلوم ہوتا ہے کہ تحویل کون لیتا ہے اور مشاعر کون جاتا ہے۔',
  'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'صرف بلند درجے دکھائے جاتے ہیں: ٹیکنیشن کا منتظم اس کا سپروائزر، سپروائزر کا انجینئر، اور انجینئر کا پروجیکٹ منیجر۔',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'ابھی کوئی اکاؤنٹ نہیں۔ یہ جدول نظام کے ہر اکاؤنٹ کی جگہ ہے: یہیں سے نام، عہدہ، شعبہ اور منتظم تبدیل ہوتے ہیں، اور یہیں سے اکاؤنٹ غیر فعال یا حذف ہوتا ہے۔ اوپر کے فارم سے پہلا اکاؤنٹ بنائیں۔',
+ 'المعروض':'دکھایا گیا',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -12464,7 +12494,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.37' + '.docx" download>⬇ '
+              +   'V15.38' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -13556,7 +13586,13 @@ function mapInit(){
     toast('تعذّر المزوّد — تحوّلنا لبديل');
   });
 
-  MAP_CV    = L.canvas({ padding:0.3 });
+  /* ═══ هامشُ اللمس ═══
+     الإصبعُ أعرضُ من النقطة: ممرٌّ نصفُ قطره ثلاثةُ بكسلاتٍ على مستوى تقريبٍ
+     متوسط لا يُصاب إلا بالحظّ، فيضغط المرءُ ثلاثًا فتتحرّك الخريطةُ ولا تُفتَح
+     النقطة. وLeaflet يقيس الإصابةَ على الرسم نفسِه ما لم يُعطَ هامشًا —
+     فأُعطي: اثنا عشرَ بكسلًا حول كلِّ شكلٍ في اللوح، لا يُرى ولا يُبطئ،
+     ويجعل هدفَ اللمس أربعةً وعشرين بكسلًا فأكثرَ لأصغر نقطة. */
+  MAP_CV    = L.canvas({ padding:0.3, tolerance:12 });
   MAP_POLY  = L.layerGroup().addTo(MAP);
   MAP_LAYER = L.layerGroup().addTo(MAP);
 
@@ -13582,7 +13618,11 @@ function mapPaint(){
   if (MAP_POLY) MAP_POLY.clearLayers();
 
   var b = MAP.getBounds(), z = MAP.getZoom();
+  /* على الشاشات اللمسية تكبر النقطةُ قليلًا: البصرُ يقرأ الصغيرَ والإصبعُ لا
+     يصيبه. والفرقُ محسوسٌ في النقاط غير المخيمات — وهي الأصغرُ أصلًا. */
+  var TOUCH = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) ? 1 : 0;
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
+  if (TOUCH) r = Math.max(r + 1.5, 4.5);
   var shown = 0, cap = 4000, inView = 0;
 
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
@@ -13599,10 +13639,15 @@ function mapPaint(){
     /* الممرُّ معيّنٌ مائل، والمخيمُ مضلّعٌ إن تقرّبت وإلا دائرة، وما عداهما دائرة —
        فيُعرَف النوعُ بالشكل قبل أن يُقرَأ اللون. */
     if (x.type === 'ممر' || x.type === 'كاميرا'){
+      /* المعيّنُ يبقى بحجمه المرسوم، ويُلَفُّ بإطارٍ شفافٍ لا يقلُّ عن أربعةٍ
+         وأربعين بكسلًا — هدفُ لمسٍ كاملٌ بلا تغييرِ منظر. */
       var ds = z >= 16 ? 22 : (z >= 14 ? 17 : 12);
+      if (TOUCH) ds += 3;
+      var hit = Math.max(ds + 20, 44);
       mk = L.marker([x.lat, x.lng], { keyboard:false, icon:L.divIcon({
-        className:'mkC', iconSize:[ds, ds], iconAnchor:[ds/2, ds/2], popupAnchor:[0, -ds/2],
-        html:'<i style="background:' + col + (picked ? ';outline:2px solid #fff' : '') + '"></i>'
+        className:'mkC', iconSize:[hit, hit], iconAnchor:[hit/2, hit/2], popupAnchor:[0, -ds/2],
+        html:'<i style="width:' + ds + 'px;height:' + ds + 'px;background:' + col
+             + (picked ? ';outline:2px solid #fff' : '') + '"></i>'
       })});
     } else if (x.type === 'مخيم' && z >= 16 && POLY && POLY[x.id]){
       mk = L.polygon(POLY[x.id].map(function(p){ return [p[1], p[0]]; }), {
@@ -15089,18 +15134,40 @@ function legendRows(){
   }
   var L = (typeof LAYER === 'function') ? LAYER() : LAYERS.survey;
   var rows = [];
+  /* ═══ الأسطورةُ تعدُّ ═══
+     كانت تقول «معتمدة» ولا تقول كم — فيبقى السؤالُ الأوّلُ بلا جواب: «كم
+     نقطةً في كلِّ حالة؟». صارت تعدُّ ما هو معروضٌ في الطبقة الحالية بعد
+     الترشيح، فالرقمُ يوافق ما تراه العينُ لا ما في القاعدة كلِّها. */
+  var CNT = {}, TOT = 0;
+  (function(){
+    var LST = (typeof layerFiltered === 'function') ? layerFiltered()
+            : (typeof filtered === 'function' ? filtered() : STATE.sites);
+    LST.forEach(function(x){
+      var k;
+      if (FIELD_MODE === 'survey') k = lifeOf(x);
+      else if (FIELD_MODE === 'install') k = insDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
+      else k = disDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
+      CNT[k] = (CNT[k] || 0) + 1; TOT++;
+    });
+  })();
   if (FIELD_MODE === 'survey'){
     /* الأسطورةُ تُشتقُّ من دورة الحياة نفسِها — فلا تفترق عن الخريطة */
-    rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n]; });
+    rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n, k]; });
   } else if (FIELD_MODE === 'install'){
-    rows = [['#E8C34B','بانتظار التركيب'], ['#FF8C42','مُسند'], [L.c,'مُركّب']];
+    rows = [['#E8C34B','بانتظار التركيب','wait'], ['#FF8C42','مُسند','asn'], [L.c,'مُركّب','done']];
   } else {
-    rows = [['#E8C34B','قابل للفك'], ['#FF8C42','مجدول للفك'], [L.c,'تم الفك']];
+    rows = [['#E8C34B','قابل للفك','wait'], ['#FF8C42','مجدول للفك','asn'], [L.c,'تم الفك','done']];
   }
   var out = rows.map(function(r){
-    return '<div class="lg-row"><i class="lg-dot" style="background:' + r[0] + '"></i>'
-      + esc(t(r[1])) + '</div>';
-  }).join('');
+    var n = CNT[r[2]] || 0;
+    /* الحالةُ الخاليةُ تخفت ولا تختفي — فيُعرَف أنها حالةٌ قائمةٌ لا شيءَ فيها */
+    return '<div class="lg-row' + (n ? '' : ' lg-off') + '">'
+      + '<i class="lg-dot" style="background:' + r[0] + '"></i>'
+      + '<span class="lg-n">' + esc(t(r[1])) + '</span>'
+      + '<b class="num lg-c">' + nm(n) + '</b></div>';
+  }).join('')
+  + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('المعروض')) + '</span>'
+  + '<b class="num lg-c">' + nm(TOT) + '</b></div>';
   /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة */
   out += '<div class="lg-sep"></div>'
     + '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'

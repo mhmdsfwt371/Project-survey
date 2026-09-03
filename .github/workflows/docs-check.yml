@@ -58,6 +58,8 @@ jobs:
         run: node scripts/audit-cycle.mjs
       - name: جرد سلسلة الإدارة — المدير أعلى مرتبةً والقسم من أقسام الشركة
         run: node scripts/audit-mgr.mjs
+      - name: جرد اللمس — أهداف ٤٤ بكسلًا وأرقام الأسطورة
+        run: node scripts/audit-touch.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
