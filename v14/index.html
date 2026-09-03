@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.20</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.21</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11152,7 +11152,7 @@ var HELP_KEYWORDS = {
   req:       ['طلب زيارة','SR','رقم الطلب','اعتماد زيارة'],
   solution:  ['اعتماد الحل','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
   qa:        ['اعتماد تركيب','تدقيق','رفض تركيب','مراجعة السيريال'],
-  survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة','الزيارات اللى تمت','الزيارات المكتملة','اكسبورت الزيارات','تصدير الزيارات','النقاط اللى اتزارت','اعادة زيارة','ارجاع نقطة متعذرة'],
+  survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة','visits list','visit list','completed visits','export visits','reopen point','الزيارات اللى تمت','الزيارات المكتملة','اكسبورت الزيارات','تصدير الزيارات','النقاط اللى اتزارت','اعادة زيارة','ارجاع نقطة متعذرة'],
   svForm:    ['فورم المسح','املأ نموذج المسح'],
   insForm:   ['فورم التركيب','تسجيل تركيب','ابلغ عن تركيب'],
   disp2:     ['فك جهاز','ارجاع عهدة','فك تركيب'],
@@ -11216,8 +11216,13 @@ var HELP_STEPS = {
 };
 
 function helpIndexAll(){
-  return Object.keys(PAGE).map(function(id){
-    var p = PAGE[id];
+  /* شاشاتُ الميدان مصدرٌ ثانٍ للصفحات — كانت خارجَ الفهرس فلا يجدها
+     المساعدُ وإن ملكها السائل. */
+  var all = Object.keys(PAGE).map(function(id){ return [id, PAGE[id]]; });
+  if (typeof FIELD_PAGES === 'object')
+    Object.keys(FIELD_PAGES).forEach(function(id){ all.push([id, FIELD_PAGES[id]]); });
+  return all.map(function(pr){
+    var id = pr[0], p = pr[1];
     if (!p || !p.t) return null;
     return { id:id, m:p.m || '', t:p.t || '', l:p.l || '' };
   }).filter(Boolean);
@@ -11231,10 +11236,24 @@ function helpSearch(q){
   helpIndexAll().forEach(function(e){
     if (!seesPage(e.id)) return;
     var kw = (HELP_KEYWORDS[e.id] || []).join(' ');
-    var hay = arNorm(e.t + ' ' + e.m + ' ' + e.l + ' ' + kw);
+    /* كان الفهرسُ عربيًّا صرفًا، فمن بحث بالإنجليزية لم يجد شيئًا وإن كانت
+       الشاشةُ أمامه مترجَمةً بالاسم الذي كتبه. فصار يفهرس الأصلَ وترجمتَه
+       معًا — يبحث المرءُ باللغة التي يقرأ بها، وبالعربية إن عرفها. */
+    var hay = arNorm(e.t + ' ' + e.m + ' ' + e.l + ' ' + kw + ' '
+                     + t(e.t) + ' ' + t(e.m) + ' ' + t(e.l));
+    /* العنوانُ أدلُّ من الوصف: من كتب «visits» يريد الشاشةَ التي اسمُها
+       ذلك، لا كلَّ شاشةٍ ذُكرت فيها الكلمةُ في سطر شرحها. فيُوزَن العنوانُ
+       أثقلَ، ويُتجاهَل حروفُ الجرِّ التي لا تدلُّ على شيء. */
+    var ttl = arNorm(e.t + ' ' + t(e.t) + ' ' + kw);
+    var STOP = { 'for':1, 'the':1, 'of':1, 'and':1, 'in':1, 'to':1, 'a':1, 'my':1 };
+    var real = toks.filter(function(tok){ return !STOP[tok] && tok.length > 1; });
     var score = 0;
+    if (ttl.indexOf(q) > -1) score += 40;
     if (hay.indexOf(q) > -1) score += 10;
-    toks.forEach(function(tok){ if (hay.indexOf(tok) > -1) score += 3; });
+    real.forEach(function(tok){
+      if (ttl.indexOf(tok) > -1) score += 12;
+      else if (hay.indexOf(tok) > -1) score += 3;
+    });
     if (!score && subseq(hay, q)) score = 1;
     if (score) out.push({ e:e, score:score });
   });
@@ -16889,7 +16908,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.20' + '.docx" download>⬇ '
+              +   'V15.21' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
