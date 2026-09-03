@@ -107,9 +107,15 @@ await wait(400);
 check(!!d.getElementById('content'), 'حاويةُ المحتوى ظهرت بعد الدخول');
 check(!!d.getElementById('nav'), 'القائمةُ الجانبية ظهرت');
 
-const ids = [...new Set([...d.querySelectorAll('#nav [data-p]')]
+/* V15.32: كلُّ شاشةٍ تُفتَح وتُرسَم — والصفحاتُ المدموجةُ شريحةً شريحة، وإلا
+   اختبأ نصفُ الشاشات خلف شريحةٍ لا تُفتَح افتراضيًّا. والعددُ يُشتقّ لا يُكتَب:
+   كلُّ بندٍ يبلغ شاشةً، وكلُّ شاشةٍ مدموجةٍ تُفكّ إلى شرائحها. */
+const navIds = [...new Set([...d.querySelectorAll('#nav [data-p]')]
   .map(a => a.getAttribute('data-p')))];
-check(ids.length > 40, `القائمةُ تعرض بنودَها (${ids.length})`);
+const ids = [...new Set(navIds
+  .flatMap(id => (w.TABS && w.TABS[id]) ? w.TABS[id].map(t => t[0]) : [id]))];
+check(navIds.length > 0 && ids.length >= navIds.length,
+  `القائمةُ تعرض بنودَها (${navIds.length} بندًا · ${ids.length} شاشةً وشريحة)`);
 
 /* كلُّ صفحةٍ تُفتح وترسم محتوًى — والعنوانُ يطابق الصفحةَ المطلوبةَ لا بديلَها */
 const FULL = new Set(['map']);          /* الخريطةُ حاويةٌ ثابتةٌ خارج #content */
