@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.22</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.23</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -745,7 +745,7 @@ en:{
  'التحديات الميدانية':'Field challenges','المتعذّر والراكد':'Blocked and stale',
  'التدقيق الهندسي':'Engineering audit','الورشة والمخزون':'Workshop and inventory',
  'طلبات المستودع':'Warehouse orders','نقاط اليوم':'Today’s points','أرصدة المخزون':'Inventory balances',
- 'دفتر الحركة':'Movement ledger','عُهدة الأجهزة':'Device custody','المال':'Finance',
+ 'دفتر الحركة':'Movement ledger','عُهدة الأجهزة':'Device custody','المال':'Finance','القسم المالي':'Finance',
  'دفتر المشتريات':'Purchases ledger','الميزانية والاعتماد':'Budget and approval',
  'الفنيون':'Technicians','سجل الفنيين':'Technician register','مقابل التارجت':'Against target',
  'إنتاجية الفريق':'Team output','إشعار الشركات':'Company notification',
@@ -2197,6 +2197,26 @@ en:{
  'ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.':'What is written here never touches the stored name — it changes only how it reads in English, so no records or reports break.',
  'دليل':'Guide for',
  'دليلُك — ملف Word':'Your guide — Word file',
+ 'كما يُكتَب على لافتة المخيم':'As written on the camp’s sign',
+ 'تدخل القائمةَ الموحّدةَ فورًا فيختارها الميدانُ عند تسجيل موقعٍ جديد. الاسمُ الحرُّ كان يصنع شركتين من واحدة باختلاف حرف.':'It enters the unified list at once, so the field can pick it when registering a new site. Free text used to make two companies out of one over a single letter.',
+ 'شركاتٌ أُضيفت':'Companies added',
+ 'أضافها':'Added by',
+ 'مواقعُها':'Its sites',
+ 'إضافة شركة':'Add a company',
+ 'إضافةُ الشركات للمهندس وحده':'Adding companies is for the engineer only',
+ 'حذفُ الشركات للمهندس وحده':'Deleting companies is for the engineer only',
+ 'موجودة في القائمة':'Already in the list',
+ 'أُضيفت الشركة':'Company added',
+ 'عليها مواقعُ — انقلها أولًا':'It has sites — move them first',
+ 'من السجل الأصلي — لا تُحذف':'From the original register — cannot be deleted',
+ 'معرّف النقطة':'Point ID',
+ 'إضافة عنوان لنقطة':'Add an address to a point',
+ 'تُشتقّ العناوينُ الثلاثةُ من البادئة — .1 راوتر و.2 قارئ و.3 كاميرا — وتُعدَّل من الجدول إن اختلفت.':'The three addresses derive from the prefix — .1 router, .2 reader, .3 camera — and can be edited in the table if they differ.',
+ '➕ أضِف':'+ Add',
+ 'معرّفٌ غيرُ موجود':'ID not found',
+ 'البادئةُ ثلاثةُ أرقامٍ بنقاط — مثل 10.20.30':'The prefix is three numbers with dots — like 10.20.30',
+ 'أُضيف العنوان':'Address added',
+ 'مُسحت العناوين':'Addresses cleared',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -2237,7 +2257,7 @@ ur:{
  'التحديات الميدانية':'میدانی چیلنجز','المتعذّر والراكد':'رکا ہوا اور جامد',
  'التدقيق الهندسي':'انجینئرنگ آڈٹ','الورشة والمخزون':'ورکشاپ اور انوینٹری',
  'طلبات المستودع':'گودام آرڈرز','نقاط اليوم':'آج کے پوائنٹس','أرصدة المخزون':'انوینٹری بیلنس',
- 'دفتر الحركة':'حرکت رجسٹر','عُهدة الأجهزة':'آلات کی امانت','المال':'مالیات',
+ 'دفتر الحركة':'حرکت رجسٹر','عُهدة الأجهزة':'آلات کی امانت','المال':'مالیات','القسم المالي':'مالیاتی شعبہ',
  'دفتر المشتريات':'خریداری رجسٹر','الميزانية والاعتماد':'بجٹ اور منظوری',
  'الفنيون':'ٹیکنیشنز','سجل الفنيين':'ٹیکنیشن رجسٹر','مقابل التارجت':'ہدف کے مقابلے',
  'إنتاجية الفريق':'ٹیم کی پیداوار','إشعار الشركات':'کمپنیوں کو اطلاع',
@@ -3685,6 +3705,26 @@ ur:{
  'ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.':'یہاں جو لکھا جائے وہ محفوظ نام کو نہیں چھوتا — صرف انگریزی میں اس کی قرا��ت بدلتا ہے، سو نہ ریکارڈ ٹوٹتے ہیں نہ رپورٹس۔',
  'دليل':'گائیڈ برائے',
  'دليلُك — ملف Word':'آپ کی گائیڈ — Word فائل',
+ 'كما يُكتَب على لافتة المخيم':'جیسا کیمپ کی تختی پر لکھا ہے',
+ 'تدخل القائمةَ الموحّدةَ فورًا فيختارها الميدانُ عند تسجيل موقعٍ جديد. الاسمُ الحرُّ كان يصنع شركتين من واحدة باختلاف حرف.':'یہ فوراً متحد فہرست میں آتی ہے، سو فیلڈ نیا مقام درج کرتے وقت اسے منتخب کر سکے۔ آزاد متن ایک حرف کے فرق سے ایک کمپنی کو دو بنا دیتا تھا۔',
+ 'شركاتٌ أُضيفت':'شامل کی گئی کمپنیاں',
+ 'أضافها':'شامل کیا',
+ 'مواقعُها':'اس کے مقامات',
+ 'إضافة شركة':'کمپنی شامل کریں',
+ 'إضافةُ الشركات للمهندس وحده':'کمپنیاں شامل کرنا صرف انجینئر کے لیے',
+ 'حذفُ الشركات للمهندس وحده':'کمپنیاں حذف کرنا صرف انجینئر کے لیے',
+ 'موجودة في القائمة':'فہرست میں پہلے سے موجود',
+ 'أُضيفت الشركة':'کمپنی شامل ہو گئی',
+ 'عليها مواقعُ — انقلها أولًا':'اس پر مقامات ہیں — پہلے انہیں منتقل کریں',
+ 'من السجل الأصلي — لا تُحذف':'اصل رجسٹر سے — حذف نہیں ہو سکتی',
+ 'معرّف النقطة':'پوائنٹ کی شناخت',
+ 'إضافة عنوان لنقطة':'پوائنٹ کے لیے پتہ شامل کریں',
+ 'تُشتقّ العناوينُ الثلاثةُ من البادئة — .1 راوتر و.2 قارئ و.3 كاميرا — وتُعدَّل من الجدول إن اختلفت.':'تینوں پتے سابقے سے نکلتے ہیں — .1 راؤٹر، .2 ریڈر، .3 کیمرہ — اور مختلف ہونے پر جدول سے ترمیم کیے جا سکتے ہیں۔',
+ '➕ أضِف':'+ شامل کریں',
+ 'معرّفٌ غيرُ موجود':'شناخت نہیں ملی',
+ 'البادئةُ ثلاثةُ أرقامٍ بنقاط — مثل 10.20.30':'سابقہ نقطوں کے ساتھ تین اعداد ہے — جیسے 10.20.30',
+ 'أُضيف العنوان':'پتہ شامل ہو گیا',
+ 'مُسحت العناوين':'پتے صاف ہو گئے',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -10422,7 +10462,7 @@ function ncrClose(i){
 /* ── المستخلصات IPC ── */
 var IPCS = [];
 
-PAGE.ipc = { m:'المال', t:'المستخلصات',
+PAGE.ipc = { m:'القسم المالي', t:'المستخلصات',
   l:'ما أُنجز واعتُمد — يُقدَّم للعميل ويُتابَع صرفُه.',
   body:function(){
     var v = (typeof evm === 'function') ? evm() : null;
@@ -11453,6 +11493,15 @@ function popHtml(){
     +   kv('حالة التركيب', pill(st, st==='مُركّب' ? 'ok' : (st==='متعذّر' ? 'off' : '')))
     +   (task ? kv('مُسند إلى', esc(task.to) + (task.when ? ' · ' + esc(task.when) : '')) : '')
     +   kv('الإحداثيات', '<span class="num">' + s.lat.toFixed(5) + ', ' + s.lng.toFixed(5) + '</span>')
+    /* عناوينُ الأجهزة الثلاثة — تُقرأ من النافذة مباشرةً بلا فتح شاشةٍ أخرى.
+       البادئةُ من التركيب المعتمد إن وُجد وإلا من سجل الموقع. */
+    + (function(){
+        var ins = STATE.inss[s.id], pre = (ins && ins.prefix) || s.net || '';
+        pre = String(pre).trim().replace(/\.+$/, '');
+        if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(pre)) return '';
+        var ip = function(n){ return '<span class="num" dir="ltr">' + esc(pre + '.' + n) + '</span>'; };
+        return kv('الراوتر', ip(1)) + kv('القارئ', ip(2)) + kv('الكاميرا', ip(3));
+      })()
     + '</div>'
 
     + (moved ? '<div class="hint" style="color:#7FB3FF;margin:6px 0 0">\u{1F4CD} '
@@ -13362,7 +13411,12 @@ function coFill(){
   /* والأسماءُ التي تحملها السجلاتُ نفسها: أحدَ عشرَ اسمًا في المواقع لم تكن
      في القائمتين، فكان الميدانُ يُمنَع من إعادة اختيار شركةٍ قائمةٍ في سجلّه. */
   var onRows = (SITES_RAW.g || []).concat(SITES_RAW.p || []).map(function(r){ return r[9]; });
-  [].concat(SITES_RAW.co || [], SITES_RAW.dm || [], onRows).forEach(function(c){
+  /* والشركاتُ المعتمدةُ من الطلبات — كانت تُضاف للقائمة لحظةَ الاعتماد ثم
+     تُنسى عند إعادة التحميل، فتعود الشركةُ «غيرَ موجودة» بعد يوم. */
+  var approved = Object.keys(STATE.coreqs || {}).filter(function(k){
+    return STATE.coreqs[k] && STATE.coreqs[k].status === 'معتمد'; })
+    .map(function(k){ return STATE.coreqs[k].name || k; });
+  [].concat(SITES_RAW.co || [], SITES_RAW.dm || [], onRows, approved).forEach(function(c){
     c = String(c || '').trim();
     if (c && !seen[c]){ seen[c] = 1; CO_LIST.push(c); }
   });
@@ -13700,9 +13754,30 @@ PAGE.reg = { m:'المتابعة', t:'حسب المشعر والنوع', l:'ال
 
 PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأقل إنجازًا أولًا — لتوجيه التنسيق.',
   body:function(){
+    /* إدارةُ القائمة — لمن يملك الاعتماد: إضافةٌ مباشرةٌ وحذفُ ما أُضيف يدويًّا */
+    var manage = '';
+    if (may('approve')){
+      var added = Object.keys(STATE.coreqs || {}).filter(function(k){
+        return STATE.coreqs[k] && STATE.coreqs[k].status === 'معتمد'; });
+      manage = card('إضافة شركة',
+          '<div class="field"><label>' + esc(t('اسم الشركة')) + ' <span class="req">*</span></label>'
+          + '<input id="coAddName" dir="auto" placeholder="' + esc(t('كما يُكتَب على لافتة المخيم')) + '"></div>'
+          + '<p class="hint">' + esc(t('تدخل القائمةَ الموحّدةَ فورًا فيختارها الميدانُ عند تسجيل موقعٍ جديد. الاسمُ الحرُّ كان يصنع شركتين من واحدة باختلاف حرف.')) + '</p>',
+          btn('➕ أضِف','btn-primary btn-sm',' data-coadd="1"'))
+        + (added.length
+          ? cardFlush(t('شركاتٌ أُضيفت') + ' — ' + nm(added.length),
+              table(['الشركة','أضافها','مواقعُها',''],
+                added.map(function(k){
+                  var c = STATE.coreqs[k], used = (STATE.sites || []).filter(function(x){ return x.co === (c.name || k); }).length;
+                  return ['<strong>' + esc(dispName(c.name || k)) + '</strong>', esc(dispName(c.by2 || c.by || '—')), N(used),
+                          used ? '' : btn('حذف','btn-quiet btn-sm',' data-codel="' + esc(c.name || k) + '"')];
+                })))
+          : '');
+    }
     /* كانت أسماءُ شركاتٍ مكتوبةً بيدٍ بأعدادٍ مخترعة — «شركة الراجحي ١٤٢ موقعًا»
        — تُعرَض في تقريرٍ للوزارة. تُحسب الآن من السجل نفسه. */
     var S = siteStats(), sv = {}, ins = {};
+    var _MANAGE = manage;
     STATE.sites.forEach(function(x){
       if (!x.co) return;
       if (svDone(STATE.recs[x.id])) sv[x.co] = (sv[x.co] || 0) + 1;
@@ -13720,7 +13795,7 @@ PAGE.co = { m:'المتابعة', t:'حسب شركة الخدمة', l:'الأق�
                 + coColor(c) + ';margin-inline-end:7px"></i>' + esc(c),
                 N(S.byCo[c]), N(sv[c] || 0), N(ins[c] || 0), pct(sv[c] || 0, S.byCo[c])];
       });
-    return card(t('الشركات') + ' — ' + nm(Object.keys(S.byCo || {}).length),
+    return _MANAGE + card(t('الشركات') + ' — ' + nm(Object.keys(S.byCo || {}).length),
         table(['الشركة','مواقعها','مُسح','مُركّب','٪'], rows))
       + '<p class="hint">' + esc(t('الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.')) + '</p>';
   }};
@@ -14562,7 +14637,7 @@ PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة',
   }};
 
 /* ── المال ──────────────────────────────────────── */
-PAGE.buys = { m:'المال', t:'دفتر المشتريات', l:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
+PAGE.buys = { m:'القسم المالي', t:'دفتر المشتريات', l:'مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.',
   body:function(){
     var L = buysList();
     var spent = L.filter(function(b){ return b.st === 'معتمد'; })
@@ -15038,6 +15113,17 @@ function ipSet(id, key, val){
   statBump();
 }
 
+/* مسحُ عناوين نقطة: تُفرَغ الحقولُ الأربعةُ وتُقيَّد في الطابور — والنقطةُ
+   نفسُها تبقى، فالعنوانُ صفةٌ لها لا هي. */
+function ipClear(id){
+  if (!may('edit')){ toast(t('التحريرُ ليس من صلاحيتك')); return; }
+  var x = siteFind(id); if (!x) return;
+  x.net = ''; x.ipRtr = ''; x.ipRdr = ''; x.ipCam = '';
+  CORE.set('sites', id, { net:'', ipRtr:'', ipRdr:'', ipCam:'' });
+  logEvent('مسح عناوين — ' + id);
+  toast(t('مُسحت العناوين')); statBump(); render(1);
+}
+
 PAGE.ips = { m:'الميدان', t:'عناوين الشبكة',
   l:'بادئةُ كلِّ نقطةٍ وعناوينُ أجهزتها — تُستورَد وتُصدَّر.',
   body:function(){
@@ -15051,16 +15137,33 @@ PAGE.ips = { m:'الميدان', t:'عناوين الشبكة',
       +     esc(t('ابحث بالمعرّف أو الاسم أو البادئة')) + '" dir="auto">'
       + '</form>'
 
+      /* إضافةُ عنوانٍ لنقطةٍ بمعرّفها: كان الطريقُ الوحيدُ الاستيرادَ من ملف —
+         ونقطةٌ واحدةٌ لا تستحق ملفًّا. */
+      + (may('edit')
+          ? card('إضافة عنوان لنقطة',
+              '<div class="grid cols-2">'
+              + '<div class="field"><label>' + esc(t('معرّف النقطة')) + ' <span class="req">*</span></label>'
+              +   '<input id="ipAddId" dir="ltr" placeholder="NSK-MIN-CMP-0001" list="ipSiteList">'
+              +   '<datalist id="ipSiteList">' + (STATE.sites || []).slice(0, 400).map(function(x){
+                    return '<option value="' + esc(x.id) + '">'; }).join('') + '</datalist></div>'
+              + '<div class="field"><label>' + esc(t('البادئة')) + ' <span class="req">*</span></label>'
+              +   '<input id="ipAddNet" dir="ltr" placeholder="10.20.30"></div>'
+              + '</div>'
+              + '<p class="hint">' + esc(t('تُشتقّ العناوينُ الثلاثةُ من البادئة — .1 راوتر و.2 قارئ و.3 كاميرا — وتُعدَّل من الجدول إن اختلفت.')) + '</p>',
+              btn('➕ أضِف','btn-primary btn-sm',' data-ipadd="1"'))
+          : '')
+
       + cardFlush(t('العناوين') + ' — ' + nm(L.length),
           L.length
-            ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا'],
+            ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا',''],
                 L.slice(0, 200).map(function(x){
                   return ['<span class="num">' + esc(x.id) + '</span>',
                           esc(x.name),
                           '<input value="' + esc(x.net || '') + '" data-ipn="' + esc(x.id) + '" dir="ltr" placeholder="10.20.30">',
                           '<input value="' + esc(x.ipRtr || '') + '" data-ipr="' + esc(x.id) + '" dir="ltr" placeholder=".1">',
                           '<input value="' + esc(x.ipRdr || '') + '" data-ipd="' + esc(x.id) + '" dir="ltr" placeholder=".2">',
-                          '<input value="' + esc(x.ipCam || '') + '" data-ipc="' + esc(x.id) + '" dir="ltr" placeholder=".3">'];
+                          '<input value="' + esc(x.ipCam || '') + '" data-ipc="' + esc(x.id) + '" dir="ltr" placeholder=".3">',
+                          may('edit') ? btn('مسح','btn-quiet btn-sm',' data-ipclr="' + esc(x.id) + '"') : ''];
                 }))
             : '<p class="hint" style="padding:16px">'
               + esc(t('لا عناوينَ بعد — استوردها من «التصدير والاستيراد» بنوع «عناوين الشبكة».')) + '</p>',
@@ -16230,7 +16333,7 @@ PAGE.fleetAsn = { m:'الميدان', t:'إسناد السيارات',
       + '<p class="hint">' + esc(t('السيارةُ الواحدةُ لا تُسنَد مرتين في وقتٍ واحد — وإلا وقف فريقٌ ينتظر ما أُخذ منه.')) + '</p>';
   }};
 
-PAGE.fleetCost = { m:'المال', t:'تكلفة الأسطول',
+PAGE.fleetCost = { m:'القسم المالي', t:'تكلفة الأسطول',
   l:'ما تكلّفه السياراتُ شهريًّا ومنذ متى تعمل.',
   body:function(){
     var L = vehList(), tot = vehCost();
@@ -16919,7 +17022,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.22' + '.docx" download>⬇ '
+              +   'V15.23' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17002,6 +17105,34 @@ function fixSend(siteId){
 
 /* القرار: اعتمادٌ يُنفِّذ الأثر، وردٌّ يُبقيه مكتوبًا بسببه.
    ولا يُحذَف الطلبُ في الحالين — الأثرُ التدقيقيُّ يبقى. */
+/* إضافةُ شركةٍ مباشرةً — لمن يملك الاعتماد. تُسجَّل طلبًا معتمدًا في
+   اللحظة نفسها فتمرُّ بالمسار الذي تمرُّ به كلُّ شركة، ويبقى أثرُها. */
+function coAddDirect(name){
+  if (!may('approve')){ toast(t('إضافةُ الشركات للمهندس وحده')); return false; }
+  name = String(name || '').trim();
+  if (!name){ toast(t('اكتب اسم الشركة أولًا')); return false; }
+  if (CO_LIST.indexOf(name) > -1){ toast(t('موجودة في القائمة')); return false; }
+  if (!STATE.coreqs) STATE.coreqs = {};
+  var who = STATE.meta.name || '', now = Date.now();
+  STATE.coreqs[name] = { name:name, by:who, at:now, status:'معتمد', by2:who, at2:now, direct:true };
+  CORE.set('coreqs', name, STATE.coreqs[name]);
+  CO_LIST.push(name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); });
+  logEvent('إضافة شركة — ' + name);
+  toast(t('أُضيفت الشركة')); return true;
+}
+/* حذفُ شركةٍ أُضيفت يدويًّا — لا شركةٌ عليها مواقع، فأسماؤها في السجل */
+function coRemove(name){
+  if (!may('approve')){ toast(t('حذفُ الشركات للمهندس وحده')); return; }
+  var used = (STATE.sites || []).filter(function(x){ return x.co === name; }).length;
+  if (used){ toast(t('عليها مواقعُ — انقلها أولًا') + ' (' + nm(used) + ')'); return; }
+  var c = (STATE.coreqs || {})[name];
+  if (!c){ toast(t('من السجل الأصلي — لا تُحذف')); return; }
+  delete STATE.coreqs[name]; CORE.dirty('coreqs', name, null);
+  var i = CO_LIST.indexOf(name); if (i > -1) CO_LIST.splice(i, 1);
+  logEvent('حذف شركة — ' + name);
+  toast(t('حُذفت')); render(1);
+}
+
 function apprDecide(kind, id, ok, why){
   if (!may('approve')){ toast(t('الاعتمادُ للمهندس وحده')); return; }
   var now = Date.now(), who = STATE.meta.name || '';
@@ -18642,7 +18773,7 @@ var NAV = [
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['invb','أرصدة المخزون'],
       ['ships','الشحنات والتوريد'],['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
-  { g:'المال', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
+  { g:'القسم المالي', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق', icon:'\u25D4', items:[
       ['crewman','الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
       ['creps','التقارير الدورية'],['perf','الأداء'],['conote','إشعار الشركات']] },
@@ -18951,6 +19082,11 @@ function onDocClick(e){
 
   var pk = e.target.closest('[data-pop]');
   if (pk){ POP_OPEN = pk.getAttribute('data-pop') === '1'; render(); return; }
+  /* نافذةُ النقطة تُغلَق بأيِّ نقرةٍ خارجها — علامةُ X وحدَها إجبارٌ على
+     التصويب في جوّالٍ بيدٍ واحدة. والنقرُ داخلها يبقى كما هو. */
+  if (POP_OPEN && !e.target.closest('#pkPop') && !e.target.closest('[data-pop]')){
+    POP_OPEN = false; render(); return;
+  }
   if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return; }
 
   if (e.target.closest('[data-print]')){ try{ window.print(); }catch(err){} return; }
@@ -19048,6 +19184,28 @@ function onDocClick(e){
   if (sst){ SURV_ST = sst.getAttribute('data-survst'); render(1); return; }
   var grl = e.target.closest('[data-grole]');
   if (grl){ GUIDE_ROLE = grl.getAttribute('data-grole'); render(1); return; }
+  if (e.target.closest('[data-ipadd]')){
+    var idEl = document.getElementById('ipAddId'), netEl = document.getElementById('ipAddNet');
+    var id0 = (idEl && idEl.value || '').trim().toUpperCase(), net0 = (netEl && netEl.value || '').trim().replace(/\.+$/, '');
+    if (!siteFind(id0)){ toast(t('معرّفٌ غيرُ موجود')); return; }
+    if (!/^\d{1,3}(\.\d{1,3}){2}$/.test(net0)){ toast(t('البادئةُ ثلاثةُ أرقامٍ بنقاط — مثل 10.20.30')); return; }
+    ipSet(id0, 'net', net0);
+    var x0 = siteFind(id0);
+    if (!x0.ipRtr) ipSet(id0, 'ipRtr', '.1');
+    if (!x0.ipRdr) ipSet(id0, 'ipRdr', '.2');
+    if (!x0.ipCam) ipSet(id0, 'ipCam', '.3');
+    logEvent('إضافة عنوان — ' + id0 + ' · ' + net0);
+    toast(t('أُضيف العنوان')); render(1); return;
+  }
+  var ipc = e.target.closest('[data-ipclr]');
+  if (ipc){ ipClear(ipc.getAttribute('data-ipclr')); return; }
+  if (e.target.closest('[data-coadd]')){
+    var cn = document.getElementById('coAddName');
+    if (coAddDirect(cn ? cn.value : '')) render(1);
+    return;
+  }
+  var cdl = e.target.closest('[data-codel]');
+  if (cdl){ coRemove(cdl.getAttribute('data-codel')); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
