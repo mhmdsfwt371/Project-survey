@@ -738,7 +738,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.41</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.42</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2735,6 +2735,7 @@ en:{
  'ما سُلِّم للعميل وحده — يُجدوَل للفك وإرجاع العُهدة.':'Only what was handed over to the client — scheduled for dismantling and custody return.',
  'لا نقطةَ سُلِّمت بعد — الفكُّ إرجاعُ ما سُلِّم، ويُحرَّر محضرُ التسليم في «التسليم والضمان».':'No point has been handed over yet — dismantling returns what was handed over, and the record is issued in “Handover and warranty”.',
  'الفكُّ إرجاعُ ما سُلِّم: لا تظهر نقطةٌ في طبقة الفك قبل تحرير محضر تسليمها.':'Dismantling returns what was handed over: a point does not appear in the dismantle layer before its handover record is issued.',
+ 'في الإطار':'in view',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4679,6 +4680,7 @@ ur:{
  'ما سُلِّم للعميل وحده — يُجدوَل للفك وإرجاع العُهدة.':'صرف جو کلائنٹ کو حوالے ہوا — ڈسمینٹل اور تحویل واپسی کے لیے طے۔',
  'لا نقطةَ سُلِّمت بعد — الفكُّ إرجاعُ ما سُلِّم، ويُحرَّر محضرُ التسليم في «التسليم والضمان».':'ابھی کوئی پوائنٹ حوالے نہیں ہوا — ڈسمینٹل وہی واپس کرتا ہے جو حوالے ہوا، اور دستاویز “حوالگی اور وارنٹی” میں جاری ہوتی ہے۔',
  'الفكُّ إرجاعُ ما سُلِّم: لا تظهر نقطةٌ في طبقة الفك قبل تحرير محضر تسليمها.':'ڈسمینٹل وہی واپس کرتا ہے جو حوالے ہوا: حوالگی کی دستاویز جاری ہونے سے پہلے پوائنٹ ڈسمینٹل تہ میں ظاہر نہیں ہوتا۔',
+ 'في الإطار':'فریم میں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -5177,7 +5179,7 @@ en:{
  'الوسيلة':'Channel',
  'يُولَّد لكل فنيٍّ اسمُ مستخدمٍ من اسمه وكلمةُ مرورٍ عشوائية، وصلاحيتُه «فني» ومشرفُه كما هو مسجَّل. ويبدّل كلمته أولَ دخول.':'Generates for each technician a username from their name and a random password, with the \'technician\' role and their supervisor as recorded. They change the password on first sign-in.',
  'القطع لكل نقطة تُحدَّد بعد اعتماد المسح — فالتارجت بالقطع يبقى تقديريًّا حتى يكتمل المسح.':'Parts per site are fixed only after the survey is approved — so the parts target stays an estimate until surveying completes.',
- 'وزن':'Weight','معروض':'Offered','ابحث بالشاخص أو المربع أو المشعر':'Search by signpost, block or zone',
+ 'وزن':'Weight','معروض':'Shown','ابحث بالشاخص أو المربع أو المشعر':'Search by signpost, block or zone',
  'يُعرض مئةٌ وعشرون — ضيّق بالفئة أو البحث':'Showing 120 — narrow by category or search','الموعد':'Due date',
  'أسند':'Assign',
  'لا طلبات بعد — أنشئ أول طلب بتحديد نقاط من القائمة أو الخريطة.':'No requests yet — create the first by selecting sites from the list or the map.',
@@ -9019,8 +9021,9 @@ function layerBar(){
     + '<span class="lb-n"><b>' + nm(S.ready) + '</b> ' + esc(t('جاهز')) + '</span>'
     + '<span class="lb-n">' + nm(S.done) + ' ' + esc(t('تمّ')) + '</span>'
     + (S.ptsAll ? '<span class="lb-n">' + nm(S.ptsReady) + ' ' + esc(t('وزن')) + '</span>' : '')
-    + '<span class="lb-c"><span class="num" id="mapCount">\u2014</span> '
-    +   esc(t('معروض')) + '</span>'
+    /* QA: كانت الكلمةُ خارج الرقم فتُركَّب الجملةُ بالجمع وتنكسر بالإنجليزية
+       («1,787 outside the view Offered») — صار النصُّ كلُّه يُبنى في موضعٍ واحد */
+    + '<span class="lb-c"><span class="num" id="mapCount">\u2014</span></span>'
     + '</div>';
 }
 
@@ -10737,6 +10740,30 @@ function formReset(){
   SV_EXTRA_KEYS.forEach(function(k){ FORM[k] = ''; });
 }
 
+/* ═══ التقاطُ أخطاء الإنتاج ═══
+   خطأٌ برمجيٌّ على هاتفٍ في الشمس لا يراه أحد: الشاشةُ تتجمّد أو زرٌّ يصمت،
+   ويظنُّ الفنيُّ أنه أخطأ. صار كلُّ خطأٍ غيرِ ملتقَطٍ يُسجَّل في سجل الأحداث
+   — الذي يُرفَع — برسالته وسطره ونسخته، فيقرؤه المكتبُ في «السجلات» ويعرف
+   أيَّ زرٍّ وأيَّ نسخة. ويُرفَع الخطأُ الواحدُ مرةً لا في كلِّ إعادة رسم،
+   وبسقفٍ يمنع إغراقَ السجل إن انفجر شيءٌ في حلقة. */
+var ERR_SEEN = {};
+function errCapture(msg, src, line){
+  try {
+    var key = String(msg || '').slice(0, 80) + '@' + (line || 0);
+    if (ERR_SEEN[key]) return;
+    if (Object.keys(ERR_SEEN).length >= 20) return;
+    ERR_SEEN[key] = 1;
+    var ver = (document.querySelector('[data-p="vers"]') || {}).textContent || '';
+    logEvent('خطأ برمجي — ' + String(msg || '').slice(0, 140)
+             + ' \u00b7 ' + String(src || '').split('/').pop().slice(0, 40) + ':' + (line || 0)
+             + (ver ? ' \u00b7 ' + String(ver).replace(/\s+/g, ' ').trim().slice(0, 20) : ''));
+  } catch (e) {}
+}
+window.addEventListener('error', function(e){ errCapture(e.message, e.filename, e.lineno); });
+window.addEventListener('unhandledrejection', function(e){
+  var r = e && e.reason;
+  errCapture('promise: ' + (r && (r.message || r)), '', 0);
+});
 function logEvent(what){
   var now = Date.now();
   var e = { id:uid36(), ts:now,
@@ -12810,7 +12837,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.41' + '.docx" download>⬇ '
+              +   'V15.42' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14146,7 +14173,7 @@ function mapPaint(){
   var lb = document.getElementById('mapCount');
   if (lb){
     var out = LIST.length - inView;
-    lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length)
+    lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length) + ' ' + t('في الإطار')
       + (out > 0 ? ' · ' + nm(out) + ' ' + t('خارج الإطار') : '');
   }
 }

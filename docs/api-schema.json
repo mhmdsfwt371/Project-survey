@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.41",
+  "app_version": "V15.42",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1410,7 +1410,8 @@
     "V15.38": "الأسطورة تعدّ: رقم لكل حالة + مجموع، من layerFiltered() لا من القاعدة كلها (lg-c/lg-off/lg-tot). اللمس: L.canvas({tolerance:12})، إطار لمس 44px للمعيّن (ممر/كاميرا) مع إبقاء الرسم، r+1.5 على اللمس، @media(pointer:coarse) أهداف 44px وحقول 16px، touch-action:manipulation. الجرد 25: audit-touch.",
     "V15.39": "ipPreset(x) يحجز المُركّبة سابقًا من التوليد؛ حقل old_net في نموذج المسح يكتب net على النقطة عند الحفظ؛ شاشة العناوين تفرد «عنوانها يُقرأ من الميدان» وتكشف البادئات المكرّرة بلا إصلاح صامت. النافذة تحت 760px لوح سفلي بعرض الشاشة بمقبض. الجرد 26: audit-ip.",
     "V15.40": "جدول «ما له عنوان — بالمشعر والنوع» في شاشة العناوين. توثيق فحص legacy/v13.99: 546 بادئة في العمود 20، كلها MIN/CMP، مطابقة للبذرة الحالية 546/546.",
-    "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand."
+    "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand.",
+    "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2585,7 +2586,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 27,
+  "audits_total": 28,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3341,5 +3342,48 @@
     },
     "lifecycle": "LIFE.handed (#12A594) بين installed وmaint؛ LAYERS.dis.pass = handDone",
     "ui": "شريحة hand: تسليم نقطة (hoSite/hoTo/hoNote + data-hogo) · محضر (hoDocSite/hoDocCo + data-hodoc) · جدول ما سُلِّم"
+  },
+  "post_deploy_v15_42": {
+    "script": "scripts/post-deploy.mjs",
+    "workflow": ".github/workflows/post-deploy.yml",
+    "triggers": [
+      "push main (index.html/sw.js/manifest/season1447)",
+      "schedule 17 */6 * * *",
+      "workflow_dispatch"
+    ],
+    "steps": [
+      "انتظار وصول النسخة (NSK_TRIES×NSK_WAIT_MS)",
+      "index.html يحمل النسخة وكامل >500KB",
+      "JSDOM boot + login + render كل شاشة/شريحة × 4 أدوار",
+      "لا انفجار/فراغ/أخطاء",
+      "manifest.json + season1447.json تصل"
+    ],
+    "env": {
+      "NSK_URL": "عنوان النشر (افتراضي github.io)",
+      "NSK_FALLBACK_RAW": "1 للسقوط إلى raw بعد 3 محاولات",
+      "NSK_TRIES": "18",
+      "NSK_WAIT_MS": "20000"
+    },
+    "note": "لا يُشغَّل من check-version لأنه يحتاج شبكة النشر — CI فقط"
+  },
+  "error_capture_v15_42": {
+    "fn": "errCapture(msg,src,line)",
+    "hooks": [
+      "window error",
+      "unhandledrejection"
+    ],
+    "sink": "logEvent → STATE.evlog (يُرفَع) — يظهر في «السجلات والإشعارات ← سجل الأحداث»",
+    "dedupe": "ERR_SEEN per message@line، سقف 20"
+  },
+  "td_review_v15_42": {
+    "rules": "deny-by-default؛ كل مجموعة في الطابور لها قاعدة؛ قواعد موروثة بلا كاتب: colist/databases/hb/hbev/misc/props/srvorders",
+    "secrets": "لا keystore/apk/env في المستودع؛ مفتاح Firebase العام مقصود",
+    "sw": "skipWaiting + clients.claim + updatefound → التحديث يصل الهاتف فورًا",
+    "size": "index.html 1452KB · JS 1411KB · 496 دالة · onDocClick 37KB (يحرسه audit-writes)",
+    "gaps_noted": [
+      "لا اختبار على متصفح حقيقي (JSDOM فقط)",
+      "لا محاكي Firestore للقواعد (audit-rules يفحص النص)",
+      "قواعد موروثة تحتاج تنظيفًا"
+    ]
   }
 }

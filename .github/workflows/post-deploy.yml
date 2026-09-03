@@ -1,0 +1,23 @@
+name: Post-deploy smoke
+# ما بعد النشر: الحرّاسُ تفحص المستودع، وهذا يفحص ما وصل الهاتفَ فعلًا —
+# النسخةُ الحيّةُ هي المدفوعة، وتُقلع وتدخل وترسم كلَّ شاشةٍ بكلِّ دور.
+on:
+  push:
+    branches: [main]
+    paths: ['index.html', 'sw.js', 'manifest.json', 'season1447.json']
+  schedule:
+    - cron: '17 */6 * * *'     # حارسُ الخدمة كلَّ ستِّ ساعات
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: npm i --no-save --no-audit --no-fund jsdom@^24
+      - name: النسخةُ الحيّةُ تُقلع وترسم كلَّ شاشة
+        run: node scripts/post-deploy.mjs
