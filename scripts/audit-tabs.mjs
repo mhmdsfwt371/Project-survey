@@ -65,8 +65,15 @@ console.log('\n══ ٢ · كلُّ دورٍ يرى من الشرائح ما ك
     w.ROLE = rn; const R = w.ROLES[rn];
     for (const pid of Object.keys(TABS)){
       const vis = w.tabsOf(pid).map(x => x[0]);
-      const should = TABS[pid].map(x => x[0]).filter(id =>
-        (R.nav === '*' || R.nav.indexOf(id) > -1) && !(w.PAGE_CAP[id] && !(R.can || {})[w.PAGE_CAP[id]]));
+      /* V15.33: شريحةٌ لم تكن صفحةً قطّ (العنصر الخامس) لا تُطلَب في قوائم
+         الأدوار — رؤيتُها رؤيةُ أمِّها، وقد يُضاف إليها شرطٌ مسمّى. فتُقارَن
+         برؤية الأمّ لا بقائمةِ الدور. */
+      const seeParent = (R.nav === '*' || R.nav.indexOf(pid) > -1)
+        && !(w.PAGE_CAP[pid] && !(R.can || {})[w.PAGE_CAP[pid]]);
+      const should = TABS[pid].map(x => x).filter(tb => tb[4]
+        ? (seeParent && (tb[4] === 'self' || w.TAB_SEE[tb[4]](pid)))
+        : ((R.nav === '*' || R.nav.indexOf(tb[0]) > -1)
+           && !(w.PAGE_CAP[tb[0]] && !(R.can || {})[w.PAGE_CAP[tb[0]]]))).map(x => x[0]);
       if (vis.join() !== should.join()) diff.push(rn + '·' + pid + ' يرى [' + vis + '] وكان يرى [' + should + ']');
       if (vis.length){
         w.CUR = vis[vis.length - 1];
@@ -87,6 +94,10 @@ console.log('\n══ ٣ · القائمةُ والمساعد ══');
   const kids = Object.keys(w.PARENT).filter(k => w.PARENT[k] !== k);
   const leak = navIds.filter(id => kids.indexOf(id) > -1);
   check(leak.length === 0, leak.length ? 'شرائحُ في القائمة: ' + leak.join('، ') : `القائمةُ ${navIds.length} بندًا بلا شريحة`);
+  /* الشريحةُ التي لم تكن صفحةً تُفهرَس أيضًا — «أدائي» يُوجَد باسمه */
+  const inner = w.helpSearch('أدائي').map(e => e.id);
+  check(inner.indexOf('myscore') > -1, 'المساعدُ يجد الشريحةَ التي لم تكن صفحةً'
+    + (inner.indexOf('myscore') > -1 ? '' : ' — وجد: ' + inner.slice(0, 3)));
   const hits = w.helpSearch('سجل عهدة السيارات').map(e => e.id);
   check(hits[0] === 'fleetLog', 'المساعدُ يجد الشريحةَ باسم صفحتها القديم' + (hits[0] === 'fleetLog' ? '' : ' — وجد: ' + hits.slice(0, 3)));
   /* الوصولُ بمعرِّف الأمِّ يفتح شريحتَها الأولى، وإعادةُ الرسم تُبقي المفتوحة */

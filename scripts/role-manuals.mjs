@@ -88,7 +88,17 @@ function table(head, rows, widths){
 function manualFor(id){
   const x = ROLES[id];
   const caps = Object.keys(x.can || {}).filter(c => x.can[c]);
-  const ids = x.nav === '*' ? ALL_IDS : x.nav.filter(i => PAGES[i]);
+  /* V15.33: الشريحةُ التي لم تكن صفحةً ليست في قوائم الأدوار — رؤيتُها
+     رؤيةُ أمِّها. فتُضاف إلى دليل من يرى أمَّها، وإلا نقص الدليلُ عمّا يراه. */
+  let ids = x.nav === '*' ? ALL_IDS : x.nav.filter(i => PAGES[i]);
+  if (x.nav !== '*'){
+    const extra = [];
+    Object.keys(TABS).forEach(pid => {
+      if (ids.indexOf(pid) < 0) return;
+      TABS[pid].forEach(tb => { if (tb[4] && ids.indexOf(tb[0]) < 0) extra.push(tb[0]); });
+    });
+    ids = ids.concat(extra);
+  }
   const byGroup = {};
   ids.forEach(i => {
     const p = PAGES[i]; if (!p) return;
