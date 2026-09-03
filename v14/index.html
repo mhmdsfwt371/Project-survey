@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.14</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.15</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2039,6 +2039,113 @@ en:{
  'توريد المخزون':'Inventory supply',
  'كل صف حركةُ توريدٍ تدخل الدفتر — ولا تُعدَّل بعدها بل تُوازَن بحركة.':'Each row is a supply movement entering the ledger — never edited afterwards, only balanced by another movement.',
  'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.':'The category and supplier must come from the two approved lists.',
+ 'الحجم الكلي':'Total size',
+ 'الأسرع نموًّا':'Fastest growing',
+ 'حدّ الخطة المجانية':'Free plan limit',
+ 'مجموعات البيانات':'Data collections',
+ 'تشغيل الأرشفة الآن':'Run archiving now',
+ 'مدة الاحتفاظ':'Retention period',
+ 'أصل المشروع لا يُؤرشَف':'The project origin is never archived',
+ 'يُؤرشَف شهريًّا في ملف مضغوط':'Archived monthly in a compressed file',
+ 'نبضات الأجهزة':'Device heartbeats',
+ 'الأكثر نموًّا — نبضة كل خمس دقائق':'The fastest growing — one pulse every five minutes',
+ 'مضغوطة على الجهاز قبل الرفع':'Compressed on the device before upload',
+ 'دفتر المخزون':'Inventory ledger',
+ 'الأرصدة مشتقّة منه فلا يُمسّ':'Balances derive from it, so it is never touched',
+ 'مستند مالي':'Financial document',
+ 'مدة المساءلة':'Accountability period',
+ 'مسودّات محلية':'Local drafts',
+ 'تُمسح بعد المزامنة الناجحة':'Cleared after a successful sync',
+ 'النسخ الاحتياطي':'Backup',
+ 'مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.':'The backup key is not set — the bot succeeds but creates no file. The only copy is the live database.',
+ 'آخر نسخة فعلية':'Last actual backup',
+ 'مطلوب مفتاح':'Key required',
+ 'مستودع خاص — لا العام':'Private repository — not the public one',
+ 'يُكتب محليًّا':'Written locally',
+ 'سياسة التعارض':'Conflict policy',
+ 'حفظ السياسة':'Save the policy',
+ 'حالة المسح':'Survey status',
+ 'تقدُّمٌ لا يرجع':'Progress does not go back',
+ '«مُركّب» و«متعذّر» لا يجتمعان':'“Installed” and “Unreachable” cannot coexist',
+ 'تحريكان مختلفان يعنيان خلافًا على الموقع':'Two different moves mean a dispute over the site',
+ 'لا صورة تُلغي أخرى':'No photo cancels another',
+ 'وإلا استُهلك المخزون مرتين':'Otherwise stock is consumed twice',
+ 'الملاحظات':'Notes',
+ 'كلاهما شهادة':'Both are testimony',
+ 'تعارضات بانتظار القرار':'Conflicts awaiting decision',
+ 'طابور الرفع':'Upload queue',
+ 'عرض الطابور':'Show the queue',
+ 'غير مقروء':'Unread',
+ 'إشعارُ النظام':'System notification',
+ 'قنوات الوصول':'Delivery channels',
+ 'اسمح بإشعار النظام':'Allow system notifications',
+ 'كل الأحداث':'All events',
+ 'تعديل':'Edit',
+ 'رفض وحذف':'Rejection and deletion',
+ 'امسح التصفية':'Clear the filter',
+ 'يمسحُ ما سُجِّل: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والأحداثُ والمقترحات. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.':'Wipes what was recorded: surveys, installations, dismantling, tasks, photos, inventory movements, purchases, events and proposals. It does not touch the 1,787 sites, the crew, the catalog or the settings — it wipes what was recorded, not what was defined.',
+ 'التأكيد':'Confirmation',
+ 'صفّر الآن':'Reset now',
+ 'الفحوص':'Checks',
+ 'الفحص':'Check',
+ 'نقاط مُركّبة بلا قطع معتمدة':'Installed points without approved parts',
+ 'نقاط مجدولة بلا مسح':'Scheduled points without survey',
+ 'أصناف برصيد سالب':'Items with negative balance',
+ 'مشتريات بلا مورّد':'Purchases without a supplier',
+ 'الأجهزة الظاهرة':'Devices seen',
+ 'مشرف منى':'Mina supervisor',
+ 'أمس':'Yesterday',
+ 'جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.':'A device on an old release runs logic that was fixed for everyone — ask them to close and reopen the app.',
+ '🔍 دورة المسح الميداني':'🔍 Field survey cycle',
+ '🧩 دورة الفك وإرجاع العُهدة':'🧩 Dismantle and custody return cycle',
+ '📋 دورة الإسناد':'📋 Assignment cycle',
+ '✓ دورة عدم المطابقة':'✓ Non-conformity cycle',
+ '🔄 دورة التغيير':'🔄 Change cycle',
+ '⛑ دورة الحادث':'⛑ Incident cycle',
+ 'المشرف والفني':'Supervisor and technician',
+ 'إسنادُ زيارةٍ لفنيٍّ من طلبات الزيارة':'Assigning a visit to a technician from visit requests',
+ 'الخطوات':'Steps',
+ 'ما يفعل':'What they do',
+ 'يُحدِّد النقاطَ من الخريطة أو القائمة ويُسندها لفنيٍّ بموعد':'Selects points from the map or list and assigns them to a technician with a date',
+ 'يرى المهمّةَ في «مهامي» ويتوجّه بالأقرب أولًا':'Sees the task in “My tasks” and heads to the nearest first',
+ 'يفتح نموذج المسح فيرى المعلومَ ويجمع المجهول':'Opens the survey form, sees what is known and collects what is not',
+ 'يلتقط صورةَ الموقع وصورةَ نقطة التركيب — إلزامٌ لا يُتجاوَز':'Takes the site photo and the installation-point photo — mandatory, no exceptions',
+ 'يضغط الصورَ على الجهاز ويحفظ محليًّا ثم يرفع':'Compresses the photos on the device, saves locally, then uploads',
+ 'تلقائي':'Automatic',
+ 'يراجع ما جُمع فيعتمده أو يردّه بسبب':'Reviews what was collected and approves or returns it with a reason',
+ 'يحتسب نقاطَ الزيارة للفني بوزنها من الإعدادات':'Counts the visit points for the technician at their weight from settings',
+ 'القواعد التي لا تُخرَق':'The rules that are never broken',
+ '⚠ لا حفظَ بلا صورتين':'⚠ No saving without two photos',
+ '⚠ الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'⚠ A moved site is documented with its origin and the distance moved',
+ '⚠ لا تُحتسب النقاطُ قبل الاعتماد':'⚠ Points do not count before approval',
+ 'التدفّق':'Flow',
+ '⬇ إكسل — دليل العمليات':'⬇ Excel — Operations guide',
+ 'دليل المهندس — إدارة المشروع':'Engineer’s guide — Project management',
+ 'دليل الفني والمشرف — العمل الميداني':'Technician and supervisor guide — Field work',
+ 'دليل الوزارة — المتابعة':'Ministry guide — Monitoring',
+ 'دليل الفني — العمل الميداني':'Technician’s guide — Field work',
+ 'دليل الورشة — التهيئة':'Workshop guide — Prep',
+ 'دليل الورشة — التجميع':'Workshop guide — Assembly',
+ 'دليل الميدان — التركيب':'Field guide — Installation',
+ 'التطبيق على الجهاز':'The app on the device',
+ 'ثبّته على الشاشة الرئيسية: يفتح ملءَ الشاشة، ويعمل بلا شبكة، وتصله الإشعارات.':'Install it on the home screen: it opens full-screen, works offline, and receives notifications.',
+ 'اللوحةُ مفتاح: ما وُجد يُعدَّل وما لم يوجد يُنشَأ. والنوعُ من «أنواع السيارات».':'The plate is the key: what exists is updated, what does not is created. The type comes from “Vehicle types”.',
+ 'يعدّل الاسمَ والدورَ والحالةَ لحسابٍ قائمٍ بمعرّفه — ولا يُنشئ حسابًا، فالإنشاءُ في المصادقة لا في القاعدة.':'Updates the name, role and status of an existing account by its ID — it does not create an account, since creation happens in authentication, not the database.',
+ 'المتصفّح لا يملك ping — تُطلَب صفحةُ الجهاز ويُقاس ردُّه. والردُّ بخطأٍ دليلُ حياةٍ أيضًا: المنفذُ موجود. الصمتُ وحده موت.':'The browser has no ping — the device’s page is requested and its response timed. Even an error response is a sign of life: the port exists. Only silence means dead.',
+ 'البادئة تكفي: العناوين تُشتقّ منها باصطلاح ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا.':'The prefix is enough: addresses derive from it by the convention .1 router, .2 reader, .3 camera.',
+ 'ID · Holy site · Type · Signpost · Block · Company · خط العرض · خط الطول':'ID · Holy site · Type · Signpost · Block · Company · Latitude · Longitude',
+ 'Item · Quantity · Supplier · Date · رقم الفاتورة':'Item · Quantity · Supplier · Date · Invoice number',
+ 'Date · Item · Category · Holy site · Quantity · سعر الوحدة · Supplier':'Date · Item · Category · Holy site · Quantity · Unit price · Supplier',
+ 'حرج':'critical',
+ 'دورة المسح الميداني':'Field survey cycle',
+ 'دورة الفك وإرجاع العُهدة':'Dismantle and custody return cycle',
+ 'دورة الإسناد':'Assignment cycle',
+ 'دورة عدم المطابقة':'Non-conformity cycle',
+ 'دورة التغيير':'Change cycle',
+ 'دورة الحادث':'Incident cycle',
+ 'لا حفظَ بلا صورتين':'No saving without two photos',
+ 'الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'A moved site is documented with its origin and the distance moved',
+ 'لا تُحتسب النقاطُ قبل الاعتماد':'Points do not count before approval',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3369,6 +3476,113 @@ ur:{
  'توريد المخزون':'انوینٹری سپلائی',
  'كل صف حركةُ توريدٍ تدخل الدفتر — ولا تُعدَّل بعدها بل تُوازَن بحركة.':'ہر قطار ایک سپلائی کی حرکت ہے جو کھاتے میں آتی ہے — بعد میں ترمیم نہیں، صرف دوسری حرکت سے متوازن۔',
  'الفئة والمورّد يجب أن يكونا من القائمتين المعتمدتين.':'زمرہ اور سپلائر دونوں منظور شدہ فہرستوں سے ہونے چاہئیں۔',
+ 'الحجم الكلي':'کل حجم',
+ 'الأسرع نموًّا':'تیز ترین بڑھنے والا',
+ 'حدّ الخطة المجانية':'مفت پلان کی حد',
+ 'مجموعات البيانات':'ڈیٹا کلیکشنز',
+ 'تشغيل الأرشفة الآن':'ابھی آرکائیو چلائیں',
+ 'مدة الاحتفاظ':'برقرار رکھنے کی مدت',
+ 'أصل المشروع لا يُؤرشَف':'پروجیکٹ کی اصل کبھی آرکائیو نہیں ہوتی',
+ 'يُؤرشَف شهريًّا في ملف مضغوط':'ماہانہ کمپریسڈ فائل میں آرکائیو',
+ 'نبضات الأجهزة':'آلات کی دھڑکنیں',
+ 'الأكثر نموًّا — نبضة كل خمس دقائق':'سب سے تیز بڑھنے والا — ہر پانچ منٹ میں ایک پلس',
+ 'مضغوطة على الجهاز قبل الرفع':'اپ لوڈ سے پہلے آلے پر کمپریسڈ',
+ 'دفتر المخزون':'انوینٹری کھاتہ',
+ 'الأرصدة مشتقّة منه فلا يُمسّ':'بیلنس اسی سے نکلتے ہیں، سو اسے کبھی نہیں چھیڑا جاتا',
+ 'مستند مالي':'مالی دستاویز',
+ 'مدة المساءلة':'جوابدہی کی مدت',
+ 'مسودّات محلية':'مقامی مسودے',
+ 'تُمسح بعد المزامنة الناجحة':'کامیاب مطابقت کے بعد صاف',
+ 'النسخ الاحتياطي':'بیک اپ',
+ 'مفتاح النسخ غير مضبوط — البوت ينجح ولا يُنشئ ملفًا. النسخة الوحيدة هي القاعدة الحيّة.':'بیک اپ کی کلید طے نہیں — بوٹ کامیاب ہوتا ہے لیکن کوئی فائل نہیں بناتا۔ واحد نقل زندہ ڈیٹا بیس ہے۔',
+ 'آخر نسخة فعلية':'آخری حقیقی بیک اپ',
+ 'مطلوب مفتاح':'کلید درکار',
+ 'مستودع خاص — لا العام':'نجی ریپوزٹری — عوامی نہیں',
+ 'يُكتب محليًّا':'مقامی طور پر لکھا',
+ 'سياسة التعارض':'تضاد کی پالیسی',
+ 'حفظ السياسة':'پالیسی محفوظ کریں',
+ 'حالة المسح':'سروے کی حالت',
+ 'تقدُّمٌ لا يرجع':'پیش رفت پیچھے نہیں جاتی',
+ '«مُركّب» و«متعذّر» لا يجتمعان':'“نصب شدہ” اور “ناقابل رسائی” ایک ساتھ نہیں ہو سکتے',
+ 'تحريكان مختلفان يعنيان خلافًا على الموقع':'دو مختلف حرکتیں مقام پر اختلاف کا مطلب ہیں',
+ 'لا صورة تُلغي أخرى':'کوئی تصویر دوسری کو منسوخ نہیں کرتی',
+ 'وإلا استُهلك المخزون مرتين':'ورنہ اسٹاک دو بار استعمال ہوگا',
+ 'الملاحظات':'نوٹس',
+ 'كلاهما شهادة':'دونوں گواہی ہیں',
+ 'تعارضات بانتظار القرار':'فیصلے کے منتظر تضادات',
+ 'طابور الرفع':'اپ لوڈ قطار',
+ 'عرض الطابور':'قطار دکھائیں',
+ 'غير مقروء':'ان پڑھ',
+ 'إشعارُ النظام':'نظام کی اطلاع',
+ 'قنوات الوصول':'ترسیل کے ذرائع',
+ 'اسمح بإشعار النظام':'نظام کی اطلاعات کی اجازت دیں',
+ 'كل الأحداث':'تمام واقعات',
+ 'تعديل':'ترمیم',
+ 'رفض وحذف':'مسترد اور حذف',
+ 'امسح التصفية':'فلٹر صاف کریں',
+ 'يمسحُ ما سُجِّل: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والأحداثُ والمقترحات. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.':'جو درج ہوا مٹاتا ہے: سروے، تنصیبات، ڈسمینٹل، ٹاسکس، تصاویر، انوینٹری کی حرکات، خریداری، واقعات اور تجاویز۔ 1,787 مقامات، عملہ، کیٹلاگ یا ترتیبات کو نہیں چھوتا — جو درج ہوا مٹاتا ہے، جو تعریف ہوا نہیں۔',
+ 'التأكيد':'تصدیق',
+ 'صفّر الآن':'ابھی ری سیٹ کریں',
+ 'الفحوص':'جانچیں',
+ 'الفحص':'جانچ',
+ 'نقاط مُركّبة بلا قطع معتمدة':'منظور شدہ پرزوں کے بغیر نصب پوائنٹس',
+ 'نقاط مجدولة بلا مسح':'سروے کے بغیر شیڈول پوائنٹس',
+ 'أصناف برصيد سالب':'منفی بیلنس والی اشیاء',
+ 'مشتريات بلا مورّد':'بغیر سپلائر خریداری',
+ 'الأجهزة الظاهرة':'نظر آنے والے آلات',
+ 'مشرف منى':'منیٰ سپروائزر',
+ 'أمس':'کل',
+ 'جهاز على إصدار قديم يعمل بمنطق صُحّح للجميع — اطلب منه إغلاق التطبيق وفتحه.':'پرانے ورژن پر آلہ ایسی منطق چلا رہا ہے جو سب کے لیے درست ہو چکی — انہیں ایپ بند کر کے دوبارہ کھولنے کو کہیں۔',
+ '🔍 دورة المسح الميداني':'🔍 فیلڈ سروے کا دور',
+ '🧩 دورة الفك وإرجاع العُهدة':'🧩 ڈسمینٹل اور تحویل واپسی کا دور',
+ '📋 دورة الإسناد':'📋 تفویض کا دور',
+ '✓ دورة عدم المطابقة':'✓ عدم مطابقت کا دور',
+ '🔄 دورة التغيير':'🔄 تبدیلی کا دور',
+ '⛑ دورة الحادث':'⛑ واقعے کا دور',
+ 'المشرف والفني':'سپروائزر اور ٹیکنیشن',
+ 'إسنادُ زيارةٍ لفنيٍّ من طلبات الزيارة':'دورے کی درخواستوں سے ٹیکنیشن کو دورہ تفویض کرنا',
+ 'الخطوات':'مراحل',
+ 'ما يفعل':'وہ کیا کرتا ہے',
+ 'يُحدِّد النقاطَ من الخريطة أو القائمة ويُسندها لفنيٍّ بموعد':'نقشے یا فہرست سے پوائنٹس منتخب کرتا ہے اور تاریخ کے ساتھ ٹیکنیشن کو تفویض کرتا ہے',
+ 'يرى المهمّةَ في «مهامي» ويتوجّه بالأقرب أولًا':'“میرے ٹاسکس” میں ٹاسک دیکھتا ہے اور پہلے قریب ترین کی طرف جاتا ہے',
+ 'يفتح نموذج المسح فيرى المعلومَ ويجمع المجهول':'سروے فارم کھولتا ہے، معلوم دیکھتا ہے اور نامعلوم جمع کرتا ہے',
+ 'يلتقط صورةَ الموقع وصورةَ نقطة التركيب — إلزامٌ لا يُتجاوَز':'مقام کی تصویر اور تنصیب کے نقطے کی تصویر لیتا ہے — لازمی، کوئی استثنا نہیں',
+ 'يضغط الصورَ على الجهاز ويحفظ محليًّا ثم يرفع':'آلے پر تصاویر کمپریس کرتا ہے، مقامی طور پر محفوظ کرتا ہے، پھر اپ لوڈ کرتا ہے',
+ 'تلقائي':'خودکار',
+ 'يراجع ما جُمع فيعتمده أو يردّه بسبب':'جو جمع ہوا اس کا جائزہ لیتا ہے اور منظور کرتا ہے یا وجہ کے ساتھ واپس کرتا ہے',
+ 'يحتسب نقاطَ الزيارة للفني بوزنها من الإعدادات':'ترتیبات سے وزن کے حساب سے ٹیکنیشن کے دورے کے پوائنٹس شمار کرتا ہے',
+ 'القواعد التي لا تُخرَق':'وہ قواعد جو کبھی نہیں ٹوٹتے',
+ '⚠ لا حفظَ بلا صورتين':'⚠ دو تصاویر کے بغیر محفوظ نہیں',
+ '⚠ الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'⚠ منتقل شدہ مقام اپنی اصل اور منتقلی کے فاصلے کے ساتھ درج ہوتا ہے',
+ '⚠ لا تُحتسب النقاطُ قبل الاعتماد':'⚠ منظوری سے پہلے پوائنٹس شمار نہیں',
+ 'التدفّق':'بہاؤ',
+ '⬇ إكسل — دليل العمليات':'⬇ ایکسل — آپریشنز گائیڈ',
+ 'دليل المهندس — إدارة المشروع':'انجینئر کی گائیڈ — پروجیکٹ مینجمنٹ',
+ 'دليل الفني والمشرف — العمل الميداني':'ٹیکنیشن اور سپروائزر گائیڈ — فیلڈ کا کام',
+ 'دليل الوزارة — المتابعة':'وزارت کی گائیڈ — نگرانی',
+ 'دليل الفني — العمل الميداني':'ٹیکنیشن کی گائیڈ — فیلڈ کا کام',
+ 'دليل الورشة — التهيئة':'ورکشاپ گائیڈ — تیاری',
+ 'دليل الورشة — التجميع':'ورکشاپ گائیڈ — اسمبلی',
+ 'دليل الميدان — التركيب':'فیلڈ گائیڈ — تنصیب',
+ 'التطبيق على الجهاز':'آلے پر ایپ',
+ 'ثبّته على الشاشة الرئيسية: يفتح ملءَ الشاشة، ويعمل بلا شبكة، وتصله الإشعارات.':'اسے ہوم اسکرین پر انسٹال کریں: یہ پوری اسکرین پر کھلتا ہے، آف لائن کام کرتا ہے، اور اطلاعات وصول کرتا ہے۔',
+ 'اللوحةُ مفتاح: ما وُجد يُعدَّل وما لم يوجد يُنشَأ. والنوعُ من «أنواع السيارات».':'نمبر پلیٹ کلید ہے: جو موجود ہے تازہ ہوتا ہے، جو نہیں بنتا ہے۔ قسم “گاڑیوں کی اقسام” سے آتی ہے۔',
+ 'يعدّل الاسمَ والدورَ والحالةَ لحسابٍ قائمٍ بمعرّفه — ولا يُنشئ حسابًا، فالإنشاءُ في المصادقة لا في القاعدة.':'موجودہ اکاؤنٹ کا نام، کردار اور حالت اس کی شناخت سے تازہ کرتا ہے — اکاؤنٹ نہیں بناتا، کیونکہ بنانا تصدیق میں ہوتا ہے، ڈیٹا بیس میں نہیں۔',
+ 'المتصفّح لا يملك ping — تُطلَب صفحةُ الجهاز ويُقاس ردُّه. والردُّ بخطأٍ دليلُ حياةٍ أيضًا: المنفذُ موجود. الصمتُ وحده موت.':'براؤزر کے پاس ping نہیں — آلے کا صفحہ طلب ہوتا ہے اور اس کا جواب ناپا جاتا ہے۔ خرابی کا جواب بھی زندگی کی علامت ہے: پورٹ موجود ہے۔ صرف خاموشی موت ہے۔',
+ 'البادئة تكفي: العناوين تُشتقّ منها باصطلاح ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا.':'سابقہ کافی ہے: پتے اس سے .1 راؤٹر، .2 ریڈر، .3 کیمرہ کے اصول سے نکلتے ہیں۔',
+ 'ID · Holy site · Type · Signpost · Block · Company · خط العرض · خط الطول':'ID · Holy site · Type · Signpost · Block · Company · عرض بلد · طول بلد',
+ 'Item · Quantity · Supplier · Date · رقم الفاتورة':'Item · Quantity · Supplier · Date · بل نمبر',
+ 'Date · Item · Category · Holy site · Quantity · سعر الوحدة · Supplier':'Date · Item · Category · Holy site · Quantity · فی یونٹ قیمت · Supplier',
+ 'حرج':'نازک',
+ 'دورة المسح الميداني':'فیلڈ سروے کا دور',
+ 'دورة الفك وإرجاع العُهدة':'ڈسمینٹل اور تحویل واپسی کا دور',
+ 'دورة الإسناد':'تفویض کا دور',
+ 'دورة عدم المطابقة':'عدم مطابقت کا دور',
+ 'دورة التغيير':'تبدیلی کا دور',
+ 'دورة الحادث':'واقعے کا دور',
+ 'لا حفظَ بلا صورتين':'دو تصاویر کے بغیر محفوظ نہیں',
+ 'الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'منتقل شدہ مقام اپنی اصل اور منتقلی کے فاصلے کے ساتھ درج ہوتا ہے',
+ 'لا تُحتسب النقاطُ قبل الاعتماد':'منظوری سے پہلے پوائنٹس شمار نہیں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -3908,7 +4122,7 @@ en:{
  'كل مرحلة صفحةٌ مستقلةٌ برسمها البياني وجدولها — كما تظهر على الشاشة.':'Each stage is a separate page with its chart and table — exactly as it appears on screen.',
  'أرقام الهواتف لا تظهر في أي تقرير وزاري — لا إخفاءً في الواجهة بل منعًا في القواعد.':'Phone numbers appear in no ministry report — not hidden in the interface but forbidden in the rules.',
  'وقت الإرسال':'Sent at','تصفية بالكيان':'Filter by entity','كل الكيانات':'All entities','مشترى':'Purchase',
- 'قطعة':'Part','مخزون':'Stock','يوميًّا':'Daily','تارجت المخيمات — الشهري':'Camp target — monthly',
+ 'قطعة':'parts','مخزون':'Stock','يوميًّا':'Daily','تارجت المخيمات — الشهري':'Camp target — monthly',
  'الأسبوعي':'Weekly','تارجت الممرات — الشهري':'Corridor target — monthly','الإجمالي الشهري':'Monthly total',
  'الاسم الكامل':'Full name',
  'بدل إنشاء حسابٍ لكل فنيٍّ يدويًّا — أنشئها كلها من صفحة الفنيين بصلاحية «فني» ومشرفٍ لكلٍّ.':'Instead of creating an account for each technician by hand — create them all from the technicians page with the \'technician\' role and a supervisor for each.',
@@ -6855,7 +7069,7 @@ PAGE.creps = { m:'الفرق', t:'التقارير الدورية', l:'ما يُ
       + card('قناة الإرسال',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
-          + '<select><option>داخل التطبيق</option><option>واتساب</option><option>الاثنان</option></select></div>'
+          + '<select><option value="داخل التطبيق">' + esc(t('داخل التطبيق')) + '</option><option value="واتساب">' + esc(t('واتساب')) + '</option><option value="الاثنان">' + esc(t('الاثنان')) + '</option></select></div>'
           + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
           + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
           + '</div>')
@@ -7036,8 +7250,7 @@ PAGE.crewplan = { m:'الفرق', t:'الطواقم والمعدلات',
           btn('حفظ المعدلات','btn-primary btn-sm',' data-cfgok="1"'))
 
       + card('تارجت التركيب يُحسب على القطع',
-          '<p class="hint" style="margin:0 0 12px">عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. '
-          + 'فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.</p>'
+          '<p class="hint" style="margin:0 0 12px">' + esc(t('عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.')) + '</p>'
           + flow(['مسح الموقع','اعتماد المسح','تُحدَّد قطع النقطة','تدخل الجدولة','تُركَّب وتُحتسب قطعًا'], 0)
           + '<div class="alert warn" style="margin:12px 0 0"><span>'
           + esc(t('القطع لكل نقطة تُحدَّد بعد اعتماد المسح — فالتارجت بالقطع يبقى تقديريًّا حتى يكتمل المسح.'))
@@ -7348,8 +7561,7 @@ PAGE.layers = { m:'الميدان', t:'الطبقات الثلاث',
 
       + card('ترتيب الدورة',
           flow(['مسح','تركيب','فك'], FIELD_MODE==='dis'?2:(FIELD_MODE==='install'?1:0))
-          + '<p class="hint">لا تُجدوَل مرحلةٌ قبل ما يسبقها: التركيبُ لا يظهر إلا لما مُسح، '
-          + 'والفكُّ لا يظهر إلا لما رُكِّب واعتُمد.</p>');
+          + '<p class="hint">' + esc(t('لا تُجدوَل مرحلةٌ قبل ما يسبقها: التركيبُ لا يظهر إلا لما مُسح، والفكُّ لا يظهر إلا لما رُكِّب واعتُمد.')) + '</p>');
   }};
 
 /* ── صفحة الفك ── */
@@ -9659,11 +9871,11 @@ PAGE.risks = { m:'التخطيط', t:'سجل المخاطر',
             sorted.map(function(r){
               var sc = riskScore(r), L = riskLevel(sc);
               return ['<span class="num">' + esc(r.id) + '</span>',
-                      '<strong>' + esc(r.t) + '</strong><br>'
-                        + '<span class="hint" style="margin:0">' + esc(r.plan) + '</span>',
-                      esc(r.cat), N(r.p), N(r.i),
+                      '<strong>' + esc(t(r.t)) + '</strong><br>'
+                        + '<span class="hint" style="margin:0">' + esc(t(r.plan)) + '</span>',
+                      esc(t(r.cat)), N(r.p), N(r.i),
                       '<span class="pill ' + L.c + '">' + nm(sc) + ' · ' + esc(t(L.t)) + '</span>',
-                      esc(r.resp), esc(r.own),
+                      esc(t(r.resp)), esc(t(r.own)),
                       pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn')];
             })),
           btn('⬇ إكسل — سجل المخاطر','btn-secondary btn-sm',' data-xls="risks"'))
@@ -10576,7 +10788,7 @@ PAGE.sop = { m:'المساعدة', t:'دليل العمليات',
               return ['<span class="num">' + nm(i+1) + '</span>',
                       '<span class="pill acc">' + esc(t(st[0])) + '</span>',
                       esc(t(st[1])),
-                      st[2] === '—' ? '<span class="hint" style="margin:0">تلقائي</span>'
+                      st[2] === '—' ? '<span class="hint" style="margin:0">' + esc(t('تلقائي')) + '</span>'
                                     : '<span class="hint" style="margin:0">' + esc(t(st[2])) + '</span>'];
             })))
 
@@ -14703,7 +14915,7 @@ PAGE.vehkind = { m:'الإعدادات', t:'أنواع السيارات',
       byKind[v.kind] = (byKind[v.kind] || 0) + 1;
       costKind[v.kind] = (costKind[v.kind] || 0) + (+v.cost || 0);
     });
-    return '<p class="lede" style="margin:0 0 16px">النوعُ يُضاف هنا، والعددُ يُشتقُّ مما أُضيف من كلِّ نوعٍ في «السيارات» — لا يُكتَب بيدٍ فيتجمّد. والسعةُ عددُ من تحملهم، وبها تُحسَب حاجةُ الفرق.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('النوعُ يُضاف هنا، والعددُ يُشتقُّ مما أُضيف من كلِّ نوعٍ في «السيارات» — لا يُكتَب بيدٍ فيتجمّد. والسعةُ عددُ من تحملهم، وبها تُحسَب حاجةُ الفرق.')) + '</p>'
 
       + stats([['أنواع', N(K.length)],
                ['في الأسطول', N(V.length)],
@@ -14751,7 +14963,7 @@ PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
           + esc(t(ROLES[k].n)) + '</option>';
       }).join('');
     };
-    return '<p class="lede" style="margin:0 0 16px">الوظيفةُ ما يعمله الشخصُ، والدورُ ما يستطيعه في النظام. ومسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبها يُعرَف من يستلم العهدةَ ومن ينزل المشاعر. والوظيفةُ تتغيّر في أثناء الموسم، والنقلةُ تُسجَّل ولا تُمحى.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('الوظيفةُ ما يعمله الشخصُ، والدورُ ما يستطيعه في النظام. ومسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبها يُعرَف من يستلم العهدةَ ومن ينزل المشاعر. والوظيفةُ تتغيّر في أثناء الموسم، والنقلةُ تُسجَّل ولا تُمحى.')) + '</p>'
 
       + cardFlush(t('الوظائف') + ' — ' + nm(L.length),
           table(['الوظيفة','الدور','ماذا تعمل','عليها',''],
@@ -16410,11 +16622,11 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
     var r = R();
     var rows = Object.keys(ROLES).map(function(k){
       var x = ROLES[k];
-      return [esc(t(x.n)), esc(x.guide),
+      return [esc(t(x.n)), esc(t(x.guide)),
               '<span class="hint" style="margin:0">' + esc(t('يشمله الدليل الكامل')) + '</span>'];
     });
     return card('دليلك',
-        '<div class="alert info"><span><strong>'+esc(r.guide)+'</strong> — '
+        '<div class="alert info"><span><strong>'+esc(t(r.guide))+'</strong> — '
         + esc(t('يشرح شاشاتك أنت خطوةً خطوة.'))+'</span></div>'
         + '<div class="actions">'
         + '<a class="btn btn-primary btn-sm" href="docs/nusuk-user-manual.docx" download>'
@@ -16431,7 +16643,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.14' + '.docx" download>⬇ '
+              +   'V15.15' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17191,18 +17403,18 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
         + '<p class="hint">' + esc(t('الكتابة تنجح دائمًا على الجهاز — والشبكة تفصيلٌ لاحق لا شرطٌ مسبق.')) + '</p>')
       + card('سياسة التعارض',
           table(['الحقل','السياسة','لماذا'], [
-            ['حالة المسح','<span class="pill acc">الأحدث يفوز</span>',
-             '<span class="hint" style="margin:0">تقدُّمٌ لا يرجع</span>'],
-            ['حالة التركيب','<span class="pill warn">يُعرَض للمهندس</span>',
-             '<span class="hint" style="margin:0">«مُركّب» و«متعذّر» لا يجتمعان</span>'],
-            ['الإحداثيات','<span class="pill warn">يُعرَض للمهندس</span>',
-             '<span class="hint" style="margin:0">تحريكان مختلفان يعنيان خلافًا على الموقع</span>'],
-            ['الصور','<span class="pill ok">تُضاف كلها</span>',
-             '<span class="hint" style="margin:0">لا صورة تُلغي أخرى</span>'],
-            ['القطع المستهلكة','<span class="pill off">يُرفض الثاني</span>',
-             '<span class="hint" style="margin:0">وإلا استُهلك المخزون مرتين</span>'],
-            ['الملاحظات','<span class="pill ok">تُدمَج بسطر فاصل</span>',
-             '<span class="hint" style="margin:0">كلاهما شهادة</span>']
+            ['حالة المسح','<span class="pill acc">' + esc(t('الأحدث يفوز')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('تقدُّمٌ لا يرجع')) + '</span>'],
+            ['حالة التركيب','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('«مُركّب» و«متعذّر» لا يجتمعان')) + '</span>'],
+            ['الإحداثيات','<span class="pill warn">' + esc(t('يُعرَض للمهندس')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('تحريكان مختلفان يعنيان خلافًا على الموقع')) + '</span>'],
+            ['الصور','<span class="pill ok">' + esc(t('تُضاف كلها')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('لا صورة تُلغي أخرى')) + '</span>'],
+            ['القطع المستهلكة','<span class="pill off">' + esc(t('يُرفض الثاني')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('وإلا استُهلك المخزون مرتين')) + '</span>'],
+            ['الملاحظات','<span class="pill ok">' + esc(t('تُدمَج بسطر فاصل')) + '</span>',
+             '<span class="hint" style="margin:0">' + esc(t('كلاهما شهادة')) + '</span>']
           ]),
           btn('حفظ السياسة','btn-quiet btn-sm disabled', ' disabled title="'
       + esc(t('مددُ الاحتفاظ أعلاه معلَنةٌ لا مضبوطة — تعديلُها يحتاج تطبيقَ الأرشفةِ أولًا.')) + '"'))
@@ -17394,7 +17606,7 @@ function cfgAddStage(path, pg){
   var get = path === 'itPrep' ? itPrep : itAsm;
   var off = itemsList().filter(function(i){ return !get(i.code); });
   if (!off.length) return '';
-  return card((pg === 'prep' ? 'أضِف جهازًا للتهيئة' : 'أضِف مكوّنًا للتجميع') + ' — ' + nm(off.length),
+  return card(t(pg === 'prep' ? 'أضِف جهازًا للتهيئة' : 'أضِف مكوّنًا للتجميع') + ' — ' + nm(off.length),
     '<p class="hint" style="margin:0 0 11px">' + esc(t('اكتب نقاطًا لأيِّ صنفٍ أدناه فيدخل المرحلة، واتركه صفرًا فيبقى خارجها.')) + '</p>'
     + table(['الصنف','المنطقة','النقاط'],
         off.map(function(i){
@@ -17909,7 +18121,7 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
       var L = itemsList().filter(function(x){
         return x.z === z && (!IT_Q || x.name.indexOf(IT_Q) > -1);
       });
-      return cardFlush(label + ' — ' + nm(L.length) + ' ' + t('قطعة'),
+      return cardFlush(t(label) + ' — ' + nm(L.length) + ' ' + t('قطعة'),
         L.length
           ? table(['القطعة','نقاط التركيب','السعر',''],
               L.map(function(it){
@@ -17926,7 +18138,7 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
             + esc(t('لا قطع في هذه المنطقة.')) + '</p>');
     };
 
-    return '<p class="lede" style="margin:0 0 16px">كلُّ حقلٍ هنا قابلٌ للتعديل: الاسمُ والمنطقةُ ونقاطُ التركيب والسعر — ويُحفَظ فورَ كتابته. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. والصنفُ المستعملُ في تركيبٍ قائمٍ لا يُحذَف.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('كلُّ حقلٍ هنا قابلٌ للتعديل: الاسمُ والمنطقةُ ونقاطُ التركيب والسعر — ويُحفَظ فورَ كتابته. ونقاطُ التهيئة والتجميع تُضبط كلٌّ في صفحتها. والصنفُ المستعملُ في تركيبٍ قائمٍ لا يُحذَف.')) + '</p>'
       + '<form class="inline-form" onsubmit="return false" style="margin:0 0 14px">'
       +   '<input type="search" id="itQ" data-itq="1" value="' + esc(IT_Q) + '" placeholder="'
       +     esc(t('ابحث باسم القطعة')) + '" dir="auto">'
@@ -17954,7 +18166,7 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
 PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تبويب مشتريات السوق المحلي.',
   body:function(){
     var L = catList(), B = buysList();
-    return '<p class="lede" style="margin:0 0 16px">هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.')) + '</p>'
       + halves(t('الفئات') + ' — ' + nm(L.length),
           ['الفئة','عمليات','المصروف',''],
           L.map(function(c){
@@ -17974,7 +18186,7 @@ PAGE.buycat = { m:'الإعدادات', t:'فئات المشتريات', l:'تب
 PAGE.sup = { m:'الإعدادات', t:'المورّدون', l:'قائمة موحّدة لمن نشتري منهم.',
   body:function(){
     var L = supList(), B = buysList();
-    return '<p class="lede" style="margin:0 0 16px">قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('قائمةٌ موحّدةٌ لمن نشتري منهم — كالشركات تمامًا. الاسم الحر كان يصنع مورّدَين من مورّدٍ واحد باختلاف حرف، فتفرّق تقريرُه. والمورّد المستعمل في عملياتٍ قائمة لا يُحذف.')) + '</p>'
       + cardFlush(t('المورّدون') + ' — ' + nm(L.length),
           table(['المورّد','عمليات','المصروف',''],
             L.map(function(c){
@@ -17994,7 +18206,7 @@ PAGE.sup = { m:'الإعدادات', t:'المورّدون', l:'قائمة مو�
 PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد', l:'سقف الصرف وحدّ اعتماد المهندس.',
   body:function(){
     var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:buysSpent(), pending:0 };
-    return '<p class="lede" style="margin:0 0 16px">الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.</p>'
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.')) + '</p>'
       + card('الضبط',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('الميزانية المعتمدة')) + ' (ريال)</label>'
@@ -18029,8 +18241,7 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
           + '<div class="field"><label>' + esc(t('معامل الإضافي')) + '</label>'
           +   cfgInput('otRate', undefined, { dec:1, step:'0.05' }) + '</div>'
           + '</div>'
-          + '<p class="hint">تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه '
-          + 'يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.</p>')
+          + '<p class="hint">' + esc(t('تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.')) + '</p>')
       + card('وزن المراحل في النقطة',
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('التهيئة')) + ' ٪</label>'
@@ -18085,7 +18296,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
             RS.map(function(k){
               return [pill(t(ROLES[k].n), 'acc'), esc(t(ROLES[k].d || '—')),
                       '<span class="hint" style="margin:0">'
-                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' قدرة')) + '</span>'];
+                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' ' + t('قدرة'))) + '</span>'];
             })))
 
       + '<p class="hint">' + esc(t('الأدوارُ ثابتةٌ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة، وحذفُ دورٍ منها يجعل حساباتِه ترفضها القاعدةُ صامتةً. وما يُغيَّر هو قدراتُها.')) + '</p>';
