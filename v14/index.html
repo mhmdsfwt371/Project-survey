@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.29</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.30</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2291,6 +2291,113 @@ en:{
  'يُحفَظ فورَ التغيير — وتقرؤه «نظرة عامة ← الوتيرة والهدف» لتقول كم يلزم يوميًّا.':'Saved the moment it changes — and read by “Overview → Pace and target” to say how much is needed per day.',
  'الزمن التقديري (دقيقة)':'Estimated time (minutes)',
  'الإجمالي (ساعة)':'Total (hours)',
+
+ /* V15.30 — دورةُ الزيارة واعتمادُها والمنتقي ولوحةُ أمس·الآن·غدًا */
+ 'اعتمادُ الزيارة للمهندس وحده':'Approving a visit is for the engineer only',
+ 'لا زيارةَ منجزةً لهذه النقطة':'No completed visit for this point',
+ 'ردُّ الزيارة للمهندس وحده':'Returning a visit is for the engineer only',
+ 'اكتب ما ينقص الزيارةَ — ليعرف المشرفُ ما يعود لأجله':'Write what the visit is missing — so the supervisor knows what to go back for',
+ 'تحتاج زيارة أخرى':'Needs another visit',
+ 'اعتمد الزيارةَ أولًا في «اعتماد الزيارات» ثم اقترح حلَّها':'Approve the visit first in “Visit approval”, then propose its solution',
+ 'مُسند إليك':'Assigned to you',
+ 'مُسند لغيرك':'Assigned to someone else',
+ 'مجدول غدًا':'Scheduled for tomorrow',
+ 'تمت — بانتظار الاعتماد':'Done — awaiting approval',
+ 'تمّت — بانتظار الاعتماد':'Done — awaiting approval',
+ 'إسناداتٌ مفتوحة':'Open assignments',
+ 'مشرفون':'Supervisors',
+ 'تمّت — تنتظر اعتمادك':'Done — awaiting your approval',
+ 'زيارةً تنتظر اعتمادك — من «اعتماد الزيارات».':'visits await your approval — from “Visit approval”.',
+ 'اعتماد الزيارات':'Visit approval',
+ 'لا إسناداتٍ مفتوحة':'No open assignments',
+ 'أسند نقاطًا للمشرفين من الخريطة أو «توزيع الفرق» فتظهر هنا بمشرفها وحالتها.':'Assign points to supervisors from the map or “Team distribution” and they appear here with their supervisor and status.',
+ 'الدورة: يُسنِد المهندسُ ← يزور المشرفُ ويحفظ ← تظهر في «اعتماد الزيارات» ← يعتمدها المهندسُ أو يردُّها «تحتاج زيارةً أخرى» فتعود إلى مهام المشرف بسبب الردّ.':'The cycle: the engineer assigns → the supervisor visits and saves → it appears in “Visit approval” → the engineer approves it or returns it as “needs another visit”, and it goes back to the supervisor’s tasks with the reason.',
+ 'مُسندة إليك':'Assigned to you',
+ 'زُرتها وحفظت':'Visited and saved',
+ 'لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت — وإن ردَّها «تحتاج زيارةً أخرى» عادت إلى قائمتك بسبب الردّ.':'Your points do not count until the engineer approves what you did — and if returned as “needs another visit”, it comes back to your list with the reason.',
+ 'حفظُ الأنماط للمهندس وحده':'Saving patterns is for the engineer only',
+ 'اكتب اسمًا للنمط':'Enter a name for the pattern',
+ 'أضِف الأسطرَ أولًا ثم احفظها نمطًا':'Add the lines first, then save them as a pattern',
+ 'حُفظ النمطُ':'Pattern saved',
+ 'حذفُ الأنماط للمهندس وحده':'Deleting patterns is for the engineer only',
+ 'اختر نمطًا':'Choose a pattern',
+ 'طُبِّق النمطُ':'Pattern applied',
+ 'نمطٌ جاهز':'Ready pattern',
+ 'لا أنماطَ محفوظةً بعد':'No patterns saved yet',
+ 'صنف':'item',
+ 'طبّق النمط':'Apply pattern',
+ 'احفظ الأسطرَ الحاليةَ نمطًا':'Save the current lines as a pattern',
+ 'مثلًا: مخيم قياسي':'e.g. Standard camp',
+ 'احفظ نمطًا':'Save pattern',
+ 'ابحث في الكتالوج':'Search the catalog',
+ 'اكتب جزءًا من اسم القطعة':'Type part of the part name',
+ 'لا صنفَ يطابق البحث':'No item matches the search',
+ 'أضِف':'Add',
+ 'لا أسطرَ بعد — ابحث عن القطعة وأضفها بكمّيتها، أو طبّق نمطًا جاهزًا.':'No lines yet — search for the part and add it with its quantity, or apply a ready pattern.',
+ 'اختر قطعةً من القائمة':'Choose a part from the list',
+ 'اكتب كمّيةً أكبرَ من صفر':'Enter a quantity greater than zero',
+ 'أضِف قطعةً واحدةً على الأقل':'Add at least one part',
+ 'زيارةٌ معتمدةٌ بلا حلٍّ بعد':'Approved visit without a solution yet',
+ 'زيارةٌ تنتظر اعتمادَها أولًا':'Visit awaiting its approval first',
+ 'لا زيارةَ معتمدةً بلا حلٍّ الآن — اعتمد زيارةً أولًا من «اعتماد الزيارات» ثم اقترح حلَّها.':'No approved visit without a solution now — approve a visit first from “Visit approval”, then propose its solution.',
+ 'ما زاره المشرفون ببياناته الجديدة — تعتمده أو تردُّه لزيارةٍ أخرى، ثم تقترح حلَّه فورًا.':'What the supervisors visited, with its new data — approve it or return it for another visit, then propose its solution right away.',
+ 'أطقمٌ منجزة':'Kits completed',
+ 'تفصيل التحديات':'Challenge details',
+ 'نُقلت النقطة':'Point moved',
+ 'عن موقعها المسجَّل':'from its registered location',
+ 'ملاحظة المشرف':'Supervisor’s note',
+ 'بانتظار اعتمادك':'Awaiting your approval',
+ 'ابحث بالنقطة أو الاسم أو المشرف':'Search by point, name, or supervisor',
+ 'لا زياراتٍ تنتظر اعتمادك — كلُّ ما زاره المشرفون رُوجع.':'No visits await your approval — everything the supervisors visited has been reviewed.',
+ 'لا زياراتٍ معتمدةً بعد.':'No approved visits yet.',
+ 'لا زياراتٍ مردودةً — كلُّ ما رُوجع اعتُمد.':'No returned visits — everything reviewed was approved.',
+ 'الجولة':'Round',
+ 'سببُ الردِّ السابق':'Reason for the previous return',
+ 'ما أفاد به المشرف':'What the supervisor reported',
+ 'رُدَّت':'Returned',
+ 'اعتمدها':'Approved by',
+ 'بلا حلٍّ بعد':'no solution yet',
+ 'اعتمد الزيارة':'Approve the visit',
+ 'ما ينقص الزيارة — يقرؤه المشرفُ في مهامّه':'What the visit is missing — the supervisor reads it in their tasks',
+ 'مثلًا: الصورة لا تُظهر نقطةَ التثبيت، وقياسُ الطول ناقص':'e.g. The photo does not show the mounting point, and the length measurement is missing',
+ 'تأكيد الردّ':'Confirm return',
+ 'الأجهزة المقترحة لهذه النقطة':'Proposed devices for this point',
+ 'تُحفَظ الأسطرُ حلًّا للنقطة وتُعتمَد فورًا — فتدخل طبقةَ التركيب.':'The lines are saved as the point’s solution and approved immediately — so it enters the installation layer.',
+ 'احفظ الحلَّ واعتمده':'Save and approve the solution',
+ 'اقترح حلَّها الآن':'Propose its solution now',
+ 'اعتمدها رغم ذلك':'Approve it anyway',
+ 'يُعرَض ستون — ضيّق البحث لترى الباقي.':'Sixty are shown — narrow the search to see the rest.',
+ 'الردُّ لا يمحو بيانات الزيارة — يبقيها للمقارنة ويعيد النقطةَ إلى مهام المشرف بسببه. والاعتمادُ يُغلق مهمةَ الزيارة فتُحتسب نقاطُها.':'Returning does not erase the visit data — it keeps it for comparison and sends the point back to the supervisor’s tasks with the reason. Approving closes the visit task so its points count.',
+ 'اعتُمدت الزيارة — اقترح حلَّها الآن':'Visit approved — propose its solution now',
+ 'رُدَّت — عادت إلى مهام المشرف':'Returned — back in the supervisor’s tasks',
+ 'أمس · الآن · غدًا':'Yesterday · Now · Tomorrow',
+ 'ما انتهى، وما يجري الآن ومن يفعله وأين، وما هو مجدولٌ لغد.':'What has finished, what is happening now and who is doing it where, and what is scheduled for tomorrow.',
+ 'ما انتهى':'Finished',
+ 'أمس — مسح':'Yesterday — surveys',
+ 'أمس — تركيب':'Yesterday — installations',
+ 'أمس — فك':'Yesterday — dismantles',
+ 'حتى الآن':'So far',
+ 'زيارات معتمدة':'Approved visits',
+ 'زيارات تمّت':'Completed visits',
+ 'نسبة المسح':'Survey rate',
+ 'نسبة التركيب':'Installation rate',
+ 'الآن — اليوم':'Now — today',
+ 'اليوم — مسح':'Today — surveys',
+ 'اليوم — تركيب':'Today — installations',
+ 'تنتظر الاعتماد':'Awaiting approval',
+ 'متأخّرة عن موعدها':'Past due',
+ 'تمّ اليوم':'Done today',
+ 'بانتظار':'Waiting',
+ 'مردود':'Returned',
+ 'لا مهامَّ مفتوحةً الآن — لم يُسنَد شيءٌ بعد.':'No open tasks now — nothing has been assigned yet.',
+ 'أين نحن اليوم':'Where we are today',
+ 'غدًا — المجدول':'Tomorrow — scheduled',
+ 'نقاطٌ مجدولةٌ لغد':'Points scheduled for tomorrow',
+ 'بالمشعر':'By holy site',
+ 'لا شيءَ مجدولٌ لغد بعد — تُجدوَل النقاطُ بموعدها من الخريطة أو «توزيع الفرق».':'Nothing scheduled for tomorrow yet — points are scheduled with a date from the map or “Team distribution”.',
+ 'الخريطةُ تلوّن الدورةَ كلَّها: لم يُزر · مُسند · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد · معتمدة.':'The map colours the whole cycle: not visited · assigned · scheduled for tomorrow · needs another visit · done awaiting approval · approved.',
+ 'الحل':'Solution',
+ 'تراجع':'Cancel',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3871,6 +3978,111 @@ ur:{
  'يُحفَظ فورَ التغيير — وتقرؤه «نظرة عامة ← الوتيرة والهدف» لتقول كم يلزم يوميًّا.':'تبدیلی کے ساتھ ہی محفوظ ہو جاتا ہے — اور “جائزہ ← رفتار اور ہدف” اسے پڑھ کر بتاتا ہے کہ روزانہ کتنا درکار ہے۔',
  'الزمن التقديري (دقيقة)':'تخمینی وقت (منٹ)',
  'الإجمالي (ساعة)':'کل (گھنٹے)',
+ 'اعتمادُ الزيارة للمهندس وحده':'دورے کی منظوری صرف انجینئر کے لیے ہے',
+ 'لا زيارةَ منجزةً لهذه النقطة':'اس پوائنٹ کا کوئی مکمل دورہ نہیں',
+ 'ردُّ الزيارة للمهندس وحده':'دورہ واپس کرنا صرف انجینئر کے لیے ہے',
+ 'اكتب ما ينقص الزيارةَ — ليعرف المشرفُ ما يعود لأجله':'لکھیں دورے میں کیا کمی ہے — تاکہ سپروائزر جانے کہ کس لیے واپس جانا ہے',
+ 'تحتاج زيارة أخرى':'دوبارہ دورہ درکار',
+ 'اعتمد الزيارةَ أولًا في «اعتماد الزيارات» ثم اقترح حلَّها':'پہلے “دوروں کی منظوری” میں دورہ منظور کریں، پھر اس کا حل تجویز کریں',
+ 'مُسند إليك':'آپ کو تفویض',
+ 'مُسند لغيرك':'کسی اور کو تفویض',
+ 'مجدول غدًا':'کل کے لیے طے شدہ',
+ 'تمت — بانتظار الاعتماد':'مکمل — منظوری کا انتظار',
+ 'تمّت — بانتظار الاعتماد':'مکمل — منظوری کا انتظار',
+ 'إسناداتٌ مفتوحة':'کھلی تفویضات',
+ 'مشرفون':'سپروائزرز',
+ 'تمّت — تنتظر اعتمادك':'مکمل — آپ کی منظوری کے منتظر',
+ 'زيارةً تنتظر اعتمادك — من «اعتماد الزيارات».':'دورے آپ کی منظوری کے منتظر ہیں — “دوروں کی منظوری” سے۔',
+ 'اعتماد الزيارات':'دوروں کی منظوری',
+ 'لا إسناداتٍ مفتوحة':'کوئی کھلی تفویض نہیں',
+ 'أسند نقاطًا للمشرفين من الخريطة أو «توزيع الفرق» فتظهر هنا بمشرفها وحالتها.':'نقشے یا “ٹیم کی تقسیم” سے سپروائزرز کو پوائنٹس تفویض کریں تو وہ یہاں اپنے سپروائزر اور حالت کے ساتھ ظاہر ہوں گے۔',
+ 'الدورة: يُسنِد المهندسُ ← يزور المشرفُ ويحفظ ← تظهر في «اعتماد الزيارات» ← يعتمدها المهندسُ أو يردُّها «تحتاج زيارةً أخرى» فتعود إلى مهام المشرف بسبب الردّ.':'چکر: انجینئر تفویض کرتا ہے ← سپروائزر دورہ کر کے محفوظ کرتا ہے ← “دوروں کی منظوری” میں ظاہر ہوتا ہے ← انجینئر منظور کرتا ہے یا “دوبارہ دورہ درکار” کہہ کر واپس کرتا ہے، اور وہ سبب کے ساتھ سپروائزر کے ٹاسکس میں لوٹ جاتا ہے۔',
+ 'مُسندة إليك':'آپ کو تفویض',
+ 'زُرتها وحفظت':'دورہ کیا اور محفوظ کیا',
+ 'لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت — وإن ردَّها «تحتاج زيارةً أخرى» عادت إلى قائمتك بسبب الردّ.':'آپ کے پوائنٹس تب تک شمار نہیں ہوتے جب تک انجینئر آپ کا کام منظور نہ کرے — اور اگر “دوبارہ دورہ درکار” کہہ کر واپس ہو تو سبب کے ساتھ آپ کی فہرست میں لوٹ آتا ہے۔',
+ 'حفظُ الأنماط للمهندس وحده':'پیٹرن محفوظ کرنا صرف انجینئر کے لیے ہے',
+ 'اكتب اسمًا للنمط':'پیٹرن کا نام لکھیں',
+ 'أضِف الأسطرَ أولًا ثم احفظها نمطًا':'پہلے لائنیں شامل کریں، پھر انہیں پیٹرن کے طور پر محفوظ کریں',
+ 'حُفظ النمطُ':'پیٹرن محفوظ ہو گیا',
+ 'حذفُ الأنماط للمهندس وحده':'پیٹرن حذف کرنا صرف انجینئر کے لیے ہے',
+ 'اختر نمطًا':'پیٹرن منتخب کریں',
+ 'طُبِّق النمطُ':'پیٹرن لاگو ہو گیا',
+ 'نمطٌ جاهز':'تیار پیٹرن',
+ 'لا أنماطَ محفوظةً بعد':'ابھی کوئی پیٹرن محفوظ نہیں',
+ 'صنف':'شے',
+ 'طبّق النمط':'پیٹرن لاگو کریں',
+ 'احفظ الأسطرَ الحاليةَ نمطًا':'موجودہ لائنوں کو پیٹرن کے طور پر محفوظ کریں',
+ 'مثلًا: مخيم قياسي':'مثلاً: معیاری کیمپ',
+ 'احفظ نمطًا':'پیٹرن محفوظ کریں',
+ 'ابحث في الكتالوج':'کیٹلاگ میں تلاش کریں',
+ 'اكتب جزءًا من اسم القطعة':'پرزے کے نام کا کچھ حصہ لکھیں',
+ 'لا صنفَ يطابق البحث':'کوئی شے تلاش سے میل نہیں کھاتی',
+ 'أضِف':'شامل کریں',
+ 'لا أسطرَ بعد — ابحث عن القطعة وأضفها بكمّيتها، أو طبّق نمطًا جاهزًا.':'ابھی کوئی لائن نہیں — پرزہ تلاش کر کے مقدار کے ساتھ شامل کریں، یا تیار پیٹرن لاگو کریں۔',
+ 'اختر قطعةً من القائمة':'فہرست سے پرزہ منتخب کریں',
+ 'اكتب كمّيةً أكبرَ من صفر':'صفر سے بڑی مقدار لکھیں',
+ 'أضِف قطعةً واحدةً على الأقل':'کم از کم ایک پرزہ شامل کریں',
+ 'زيارةٌ معتمدةٌ بلا حلٍّ بعد':'منظور شدہ دورہ جس کا ابھی حل نہیں',
+ 'زيارةٌ تنتظر اعتمادَها أولًا':'دورہ پہلے اپنی منظوری کا منتظر',
+ 'لا زيارةَ معتمدةً بلا حلٍّ الآن — اعتمد زيارةً أولًا من «اعتماد الزيارات» ثم اقترح حلَّها.':'ابھی کوئی منظور شدہ دورہ بغیر حل کے نہیں — پہلے “دوروں کی منظوری” سے دورہ منظور کریں، پھر اس کا حل تجویز کریں۔',
+ 'ما زاره المشرفون ببياناته الجديدة — تعتمده أو تردُّه لزيارةٍ أخرى، ثم تقترح حلَّه فورًا.':'سپروائزرز نے جو دورہ کیا، اس کے نئے ڈیٹا کے ساتھ — منظور کریں یا دوبارہ دورے کے لیے واپس کریں، پھر فوراً حل تجویز کریں۔',
+ 'أطقمٌ منجزة':'مکمل کٹس',
+ 'تفصيل التحديات':'چیلنجز کی تفصیل',
+ 'نُقلت النقطة':'پوائنٹ منتقل ہوا',
+ 'عن موقعها المسجَّل':'اس کے رجسٹرڈ مقام سے',
+ 'ملاحظة المشرف':'سپروائزر کا نوٹ',
+ 'بانتظار اعتمادك':'آپ کی منظوری کا انتظار',
+ 'ابحث بالنقطة أو الاسم أو المشرف':'پوائنٹ، نام یا سپروائزر سے تلاش کریں',
+ 'لا زياراتٍ تنتظر اعتمادك — كلُّ ما زاره المشرفون رُوجع.':'کوئی دورہ آپ کی منظوری کا منتظر نہیں — سپروائزرز کے تمام دوروں کا جائزہ لیا جا چکا ہے۔',
+ 'لا زياراتٍ معتمدةً بعد.':'ابھی کوئی منظور شدہ دورہ نہیں۔',
+ 'لا زياراتٍ مردودةً — كلُّ ما رُوجع اعتُمد.':'کوئی واپس کیا گیا دورہ نہیں — جن کا جائزہ لیا گیا سب منظور ہوئے۔',
+ 'الجولة':'راؤنڈ',
+ 'سببُ الردِّ السابق':'پچھلی واپسی کی وجہ',
+ 'ما أفاد به المشرف':'سپروائزر نے کیا بتایا',
+ 'رُدَّت':'واپس کی گئی',
+ 'اعتمدها':'منظور کیا',
+ 'بلا حلٍّ بعد':'ابھی کوئی حل نہیں',
+ 'اعتمد الزيارة':'دورہ منظور کریں',
+ 'ما ينقص الزيارة — يقرؤه المشرفُ في مهامّه':'دورے میں کیا کمی ہے — سپروائزر اسے اپنے ٹاسکس میں پڑھتا ہے',
+ 'مثلًا: الصورة لا تُظهر نقطةَ التثبيت، وقياسُ الطول ناقص':'مثلاً: تصویر میں نصب کا مقام نظر نہیں آتا، اور لمبائی کی پیمائش نہیں',
+ 'تأكيد الردّ':'واپسی کی تصدیق',
+ 'الأجهزة المقترحة لهذه النقطة':'اس پوائنٹ کے لیے تجویز کردہ آلات',
+ 'تُحفَظ الأسطرُ حلًّا للنقطة وتُعتمَد فورًا — فتدخل طبقةَ التركيب.':'لائنیں پوائنٹ کے حل کے طور پر محفوظ اور فوراً منظور ہوتی ہیں — سو یہ تنصیب کی تہ میں داخل ہو جاتا ہے۔',
+ 'احفظ الحلَّ واعتمده':'حل محفوظ کر کے منظور کریں',
+ 'اقترح حلَّها الآن':'ابھی اس کا حل تجویز کریں',
+ 'اعتمدها رغم ذلك':'پھر بھی منظور کریں',
+ 'يُعرَض ستون — ضيّق البحث لترى الباقي.':'ساٹھ دکھائے گئے — باقی دیکھنے کے لیے تلاش محدود کریں۔',
+ 'الردُّ لا يمحو بيانات الزيارة — يبقيها للمقارنة ويعيد النقطةَ إلى مهام المشرف بسببه. والاعتمادُ يُغلق مهمةَ الزيارة فتُحتسب نقاطُها.':'واپسی دورے کا ڈیٹا نہیں مٹاتی — موازنے کے لیے رکھتی ہے اور پوائنٹ کو سبب کے ساتھ سپروائزر کے ٹاسکس میں لوٹا دیتی ہے۔ منظوری دورے کا ٹاسک بند کرتی ہے سو اس کے پوائنٹس شمار ہوتے ہیں۔',
+ 'اعتُمدت الزيارة — اقترح حلَّها الآن':'دورہ منظور ہو گیا — ابھی اس کا حل تجویز کریں',
+ 'رُدَّت — عادت إلى مهام المشرف':'واپس ہو گیا — سپروائزر کے ٹاسکس میں لوٹ گیا',
+ 'أمس · الآن · غدًا':'کل · اب · آنے والا کل',
+ 'ما انتهى، وما يجري الآن ومن يفعله وأين، وما هو مجدولٌ لغد.':'کیا مکمل ہوا، اب کیا ہو رہا ہے اور کون کہاں کر رہا ہے، اور کل کے لیے کیا طے ہے۔',
+ 'ما انتهى':'مکمل',
+ 'أمس — مسح':'گزشتہ کل — سروے',
+ 'أمس — تركيب':'گزشتہ کل — تنصیبات',
+ 'أمس — فك':'گزشتہ کل — ڈسمینٹل',
+ 'حتى الآن':'اب تک',
+ 'زيارات معتمدة':'منظور شدہ دورے',
+ 'زيارات تمّت':'مکمل دورے',
+ 'نسبة المسح':'سروے کی شرح',
+ 'نسبة التركيب':'تنصیب کی شرح',
+ 'الآن — اليوم':'اب — آج',
+ 'اليوم — مسح':'آج — سروے',
+ 'اليوم — تركيب':'آج — تنصیبات',
+ 'تنتظر الاعتماد':'منظوری کے منتظر',
+ 'متأخّرة عن موعدها':'مقررہ وقت سے تاخیر',
+ 'تمّ اليوم':'آج مکمل',
+ 'بانتظار':'انتظار میں',
+ 'مردود':'واپس شدہ',
+ 'لا مهامَّ مفتوحةً الآن — لم يُسنَد شيءٌ بعد.':'ابھی کوئی کھلا ٹاسک نہیں — ابھی کچھ تفویض نہیں ہوا۔',
+ 'أين نحن اليوم':'آج ہم کہاں ہیں',
+ 'غدًا — المجدول':'آنے والا کل — طے شدہ',
+ 'نقاطٌ مجدولةٌ لغد':'کل کے لیے طے شدہ پوائنٹس',
+ 'بالمشعر':'مشعر کے حساب سے',
+ 'لا شيءَ مجدولٌ لغد بعد — تُجدوَل النقاطُ بموعدها من الخريطة أو «توزيع الفرق».':'کل کے لیے ابھی کچھ طے نہیں — پوائنٹس نقشے یا “ٹیم کی تقسیم” سے تاریخ کے ساتھ طے ہوتے ہیں۔',
+ 'الخريطةُ تلوّن الدورةَ كلَّها: لم يُزر · مُسند · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد · معتمدة.':'نقشہ پورے چکر کو رنگ دیتا ہے: دورہ نہیں ہوا · تفویض شدہ · کل کے لیے طے شدہ · دوبارہ دورہ درکار · مکمل منظوری کے منتظر · منظور شدہ۔',
+ 'الحل':'حل',
+ 'تراجع':'منسوخ',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6041,6 +6253,9 @@ var FB = {
       FB.db.collection('settings').doc('raci').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.raci = arr; }
       }).catch(function(e){ softErr('سحب مصفوفة المسؤوليات', e, 'تعذّر سحبُ مصفوفة RACI'); });
+      FB.db.collection('settings').doc('patterns').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.patterns = arr; }
+      }).catch(function(e){ softErr('سحب أنماط القطع', e, 'تعذّر سحبُ أنماط القطع — قد تظهر ناقصة'); });
       FB.db.collection('settings').doc('types').get().then(function(doc){
         if (doc && doc.exists && Object.keys(doc.data()).length) STATE.types = doc.data();
       }).catch(function(e){ softErr('سحب أنواع المواقع', e, 'تعذّر سحبُ أنواع المواقع'); });
@@ -6950,39 +7165,87 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
     return head + (function(){
     var me = STATE.meta.name || 'محمد صفوت';
+    /* حالةُ مهمةِ زيارة: من تعليقة الحفظ إلى قرار المهندس */
+    function taskPill(x){
+      var r = STATE.recs[x.site], rv = svReview(r);
+      if (rv === 'approved') return pill('معتمدة', 'ok');
+      if (rv === 'revisit')  return pill('تحتاج زيارة أخرى', 'off');
+      if (rv === 'pending')  return pill('تمّت — بانتظار الاعتماد', 'acc');
+      if (r && !svDone(r))   return pill(r.access || 'متعذّر', 'wrn');
+      return pill('بانتظارك', 'warn');
+    }
+    /* المهندسُ والمديرُ يريان الإسناداتِ كلَّها — كلُّ مشرفٍ ونقاطُه التي سيزورها */
+    if (may('approve')){
+      var by = {}, open = 0, pend = 0, rev = 0;
+      Object.keys(STATE.tasks).forEach(function(k){
+        var x = STATE.tasks[k];
+        if (!x || x.status === 'معتمد') return;
+        (by[x.to || '—'] = by[x.to || '—'] || []).push(x); open++;
+        var rv = svReview(STATE.recs[x.site]);
+        if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
+      });
+      var sups = Object.keys(by).sort(function(a, b){ return by[b].length - by[a].length; });
+      return stats([['إسناداتٌ مفتوحة', N(open), 'acc'], ['مشرفون', N(sups.length)],
+                    ['تمّت — تنتظر اعتمادك', N(pend), pend ? 'wrn' : ''],
+                    ['تحتاج زيارة أخرى', N(rev), rev ? 'bad' : '']])
+        + (pend ? alertBox('info', nm(pend) + ' ' + t('زيارةً تنتظر اعتمادك — من «اعتماد الزيارات».'))
+                  + '<div class="actions" style="margin:-4px 0 12px">' + btn('✅ ' + t('اعتماد الزيارات'),'btn-primary btn-sm',' data-p="svappr"') + '</div>' : '')
+        + (sups.length
+          ? sups.map(function(sp){
+              var L = by[sp];
+              return cardFlush(esc(dispName(sp)) + ' — ' + nm(L.length) + ' ' + t('نقطة'),
+                table(['النقطة','النوع','الموعد','الحالة'],
+                  L.slice(0, 80).map(function(x){
+                    var st = siteFind(x.site), k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+                    return ['<strong>' + esc(x.site) + '</strong><br><span class="hint" style="margin:0">'
+                              + esc(((st && st.name) || '').slice(0, 28)) + '</span>',
+                            k.i + ' ' + esc(t(k.n)),
+                            x.when ? '<span class="num">' + esc(x.when) + '</span>' : '—',
+                            taskPill(x)];
+                  })));
+            }).join('')
+          : card('لا إسناداتٍ مفتوحة', '<p class="hint" style="text-align:center;margin:0">'
+              + esc(t('أسند نقاطًا للمشرفين من الخريطة أو «توزيع الفرق» فتظهر هنا بمشرفها وحالتها.')) + '</p>'))
+        + '<p class="hint">' + esc(t('الدورة: يُسنِد المهندسُ ← يزور المشرفُ ويحفظ ← تظهر في «اعتماد الزيارات» ← يعتمدها المهندسُ أو يردُّها «تحتاج زيارةً أخرى» فتعود إلى مهام المشرف بسبب الردّ.')) + '</p>';
+    }
     var mine = [];
     Object.keys(STATE.tasks).forEach(function(k){
       var x = STATE.tasks[k];
       if (x.to === me && x.status !== 'معتمد') mine.push(x);
     });
-    var done = mine.filter(function(x){ return STATE.recs[x.site]; }).length;
+    var done = mine.filter(function(x){ return svDone(STATE.recs[x.site]); }).length;
+    var back = mine.filter(function(x){ return svReview(STATE.recs[x.site]) === 'revisit'; }).length;
+    var myPts = (typeof scoreOf === 'function') ? (scoreOf(me) || {}).total || 0 : 0;
 
     return stats([['مُسند إليّ', N(mine.length), 'acc'],
                   ['أنجزتُ', N(done), 'ok'],
                   ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
-                  ['نقاطي', N(0)]])
+                  ['تحتاج زيارة أخرى', N(back), back ? 'bad' : ''],
+                  ['نقاطي', N(myPts)]])
       + (mine.length
         ? cardFlush(t('مهامي') + ' — ' + nm(mine.length),
             '<div class="list">' + mine.slice(0, 60).map(function(x){
               var s = siteFind(x.site);
               if (!s) return '';
               var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
-              var ok = !!STATE.recs[x.site];
+              var rr = STATE.recs[x.site];
+              var why = (rr && svReview(rr) === 'revisit' && rr.revisitNote)
+                ? '<div class="hint" style="margin:2px 0 0;color:var(--danger)">\u21a9 ' + esc(rr.revisitNote) + '</div>' : '';
               return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
                 + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
                 + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
-                +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>'
+                +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>' + why
                 + '</div><div class="li-end">'
                 + (typeof distTxt === 'function' && distTxt(s)
                     ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(s) + '</div>' : '')
-                + pill(ok ? 'تمّ' : 'بانتظارك', ok ? 'ok' : 'warn') + '</div></div>';
+                + taskPill(x) + '</div></div>';
             }).join('') + '</div>',
             btn('🗺 على الخريطة','btn-secondary btn-sm',' data-mymap="1"'))
         : card('مهامي',
             '<p class="hint" style="text-align:center;margin:0">'
             + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>'))
-      + card('دورة مهمتك', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
-        + '<p class="hint">' + esc(t('لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت.')) + '</p>');})();
+      + card('دورة مهمتك', flow(['مُسندة إليك','زُرتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)
+        + '<p class="hint">' + esc(t('لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت — وإن ردَّها «تحتاج زيارةً أخرى» عادت إلى قائمتك بسبب الردّ.')) + '</p>');})();
   }};
 ;
 
@@ -8336,6 +8599,7 @@ function solutionSave(site, itemsMap){
   var s = siteFind(site);
   if (!s){ toast(t('الموقعُ غيرُ موجود')); return; }
   if (!svDone(STATE.recs[site])){ toast(t('امسح النقطةَ أولًا قبل اقتراح حلّها')); return; }
+  if (!svApproved(STATE.recs[site])){ toast(t('اعتمد الزيارةَ أولًا في «اعتماد الزيارات» ثم اقترح حلَّها')); return; }
   var old = solutionOf(site);
   if (old && old.status === 'معتمد'){
     toast(t('حلُّ هذه النقطة معتمدٌ بالفعل — راجع المهندس لتعديله')); return;
@@ -8871,7 +9135,64 @@ var SV_PHOTOS = [
 
 /* الزيارةُ التي مُنع فيها الدخولُ ليست مسحًا: تُسجَّل ليُعرَف السببُ ويُتصرَّف،
    ولا تُحتسب إنجازًا. وإلا صار المنعُ يرفع نسبةَ الإنجاز. */
-function svDone(r){ return !!r && (!r.access || r.access === 'تم الوصول'); }
+/* ═══ اعتمادُ الزيارة — الدورةُ الكاملة ═══
+   كانت الزيارةُ تُحتسَب منجزةً لحظةَ حفظها، وتدخل من فورها في حلِّ التركيب
+   بلا عينٍ تراجعها. والمطلوبُ: المشرفُ يزور ويحفظ ويقول «تمت الزيارة»، ثم
+   تظهر النقطةُ ببياناتها الجديدة في «اعتماد الزيارات» فيعتمدها المهندسُ أو
+   يردُّها «تحتاج زيارةً أخرى» فتعود إلى الدورة من أولها.
+     review: 'pending'  — حُفظت وتنتظر المهندس (الافتراضيُّ لكلِّ سجلٍّ حُفظ)
+             'approved' — اعتمدها المهندس؛ عندها يُقترَح حلُّها ويُركَّب
+             'revisit'  — رُدَّت؛ لا تُعدُّ منجزةً حتى تُزار ثانيةً
+   المنجَزُ (svDone) ما حُفظ بوصولٍ ولم يُرَدّ — فالرَّدُّ يُخرجها من العِداد
+   ومن طبقة التركيب معًا. والمعتمَدُ (svApproved) وحدَه يُقترَح له حلّ. */
+function svDone(r){ return !!r && (!r.access || r.access === 'تم الوصول') && r.review !== 'revisit'; }
+function svApproved(r){ return svDone(r) && r.review === 'approved'; }
+function svReview(r){
+  if (!r) return '';
+  if (r.review === 'revisit') return 'revisit';
+  if (r.review === 'approved') return 'approved';
+  return svDone(r) ? 'pending' : '';
+}
+/* مهمةُ الزيارة لهذه النقطة — تُغلَق بالاعتماد فتُحتسب نقاطُها */
+function visitTaskOf(site){
+  var T = STATE.tasks;
+  for (var k in T) if (T[k] && T[k].site === site && T[k].kind === 'visit') return T[k];
+  return null;
+}
+function svApprove(id){
+  if (!may('approve')){ toast(t('اعتمادُ الزيارة للمهندس وحده')); return false; }
+  var r = STATE.recs[id];
+  if (!r || !svDone(r)){ toast(t('لا زيارةَ منجزةً لهذه النقطة')); return false; }
+  r.review = 'approved';
+  r.reviewBy = STATE.meta.name || 'محمد صفوت';
+  r.reviewAt = Date.now();
+  CORE.set('recs', id, r);
+  var tk = visitTaskOf(id);
+  if (tk && tk.status !== 'معتمد'){ tk.status = 'معتمد'; CORE.set('tasks', tk.id, tk); }
+  logEvent('اعتماد زيارة — ' + id);
+  notifPush('اعتماد', 'اعتُمدت زيارةُ ' + id, { to:r.by || '', site:id, lv:'عادي' });
+  statBump();
+  return true;
+}
+function svRevisit(id, note){
+  if (!may('approve')){ toast(t('ردُّ الزيارة للمهندس وحده')); return false; }
+  var r = STATE.recs[id];
+  if (!r){ toast(t('لا سجلَّ مسحٍ لهذه النقطة')); return false; }
+  note = String(note || '').trim();
+  if (!note){ toast(t('اكتب ما ينقص الزيارةَ — ليعرف المشرفُ ما يعود لأجله')); return false; }
+  r.review = 'revisit';
+  r.revisitNote = note;
+  r.revisitBy = STATE.meta.name || 'محمد صفوت';
+  r.revisitAt = Date.now();
+  CORE.set('recs', id, r);
+  /* مهمةُ الزيارة تبقى مفتوحةً على صاحبها — تعود إلى «مهامي» بسببها */
+  var tk = visitTaskOf(id);
+  if (tk && tk.status === 'معتمد'){ tk.status = 'مطلوب'; CORE.set('tasks', tk.id, tk); }
+  logEvent('ردّ زيارة — تحتاج زيارةً أخرى — ' + id + ' \u00b7 ' + note);
+  notifPush('تحتاج زيارة أخرى', id + ' — ' + note, { to:r.by || '', site:id, lv:'مهم' });
+  statBump();
+  return true;
+}
 
 function formSite(){
   return (FORM.site && siteFind(FORM.site)) || STATE.sites[0] || null;
@@ -9231,6 +9552,14 @@ function svSave(next){
     access:FORM.access
   };
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
+  /* تنتظر المهندسَ — وإن كانت عودةً بعد ردٍّ فهي جولةٌ ثانيةٌ تحمل سببَ الردّ */
+  rec.review = 'pending';
+  var prevRec = STATE.recs[s.id];
+  if (prevRec && prevRec.review === 'revisit'){
+    rec.round = (prevRec.round || 1) + 1;
+    rec.prevNote = prevRec.revisitNote || '';
+  } else if (prevRec && prevRec.round) rec.round = prevRec.round;
+  if (prevRec && prevRec.loc) rec.loc = prevRec.loc;   /* التحريكُ لا يضيع بحفظ النموذج */
   CORE.set('recs', s.id, rec);
   Object.keys(FORM.photos).forEach(function(k){
     /* لا صورةَ خامٌ في القاعدة ولو تعذّر الطابور: تبقى محليًّا حتى يُضبَط درايف */
@@ -9319,6 +9648,106 @@ function logEvent(what){
   CORE.dirty('evlog', e.id, e);
 }
 
+
+/* ═══ مُنتقي القطع — قائمةٌ واحدةٌ مبحوثةٌ وأنماطٌ جاهزة ═══
+   كان اقتراحُ الحلِّ شبكةَ كلِّ أصناف الكتالوج بحقولِ كمّياتٍ فارغة — يبحث
+   المهندسُ بعينه بين ثلاثين صنفًا عن أربعةٍ يريدها. صار قائمةً واحدةً تُبحَث
+   بالكتابة، يُضاف منها الصنفُ بكمّيته سطرًا سطرًا. والأسطرُ التي تتكرّر من
+   نقطةٍ لأخرى — قارئٌ وهوائيٌّ ولوحٌ شمسيٌّ وبطاريةٌ للمخيم القياسي — تُحفَظ
+   نمطًا باسمٍ يُطبَّق بضغطة. والأنماطُ إعدادٌ يُرفَع ويُقرأ كسائر الإعدادات. */
+var SOL_LINES = {}, SOL_Q = '', PAT_NAME = '';
+function patList(){
+  if (!Array.isArray(STATE.patterns)) STATE.patterns = [];
+  return STATE.patterns;
+}
+function patSave(name){
+  if (!may('settings')){ toast(t('حفظُ الأنماط للمهندس وحده')); return false; }
+  name = String(name || '').trim();
+  if (!name){ toast(t('اكتب اسمًا للنمط')); return false; }
+  if (!Object.keys(SOL_LINES).length){ toast(t('أضِف الأسطرَ أولًا ثم احفظها نمطًا')); return false; }
+  var L = patList().filter(function(x){ return x.n !== name; });
+  var items = {}; Object.keys(SOL_LINES).forEach(function(c){ items[c] = cfgN(SOL_LINES[c]); });
+  L.push({ n:name, items:items, by:STATE.meta.name || '', at:Date.now() });
+  STATE.patterns = L;
+  CORE.set('cfg', 'patterns', L.slice());
+  logEvent('حفظ نمط قطع — ' + name + ' \u00b7 ' + nm(Object.keys(items).length) + ' صنف');
+  toast(t('حُفظ النمطُ') + ' \u00b7 ' + name);
+  PAT_NAME = '';
+  return true;
+}
+function patDel(name){
+  if (!may('settings')){ toast(t('حذفُ الأنماط للمهندس وحده')); return; }
+  STATE.patterns = patList().filter(function(x){ return x.n !== name; });
+  CORE.set('cfg', 'patterns', STATE.patterns.slice());
+  logEvent('حذف نمط قطع — ' + name);
+  render(1);
+}
+function patApply(name){
+  var pt = patList().filter(function(x){ return x.n === name; })[0];
+  if (!pt){ toast(t('اختر نمطًا')); return; }
+  Object.keys(pt.items || {}).forEach(function(c){ if (cfgN(pt.items[c]) > 0) SOL_LINES[c] = cfgN(pt.items[c]); });
+  toast(t('طُبِّق النمطُ') + ' \u00b7 ' + pt.n);
+  render(1);
+}
+/* واجهةُ المنتقي — تُعرَض في «حل التركيب» وفي «اعتماد الزيارات» سواءً */
+function itemPickerHtml(){
+  var all = itemsList();
+  var q = (typeof arNorm === 'function') ? arNorm(SOL_Q) : String(SOL_Q || '').trim();
+  var hits = all.filter(function(i){
+    if (!q) return true;
+    var hay = (typeof arNorm === 'function') ? arNorm(i.name + ' ' + i.code) : (i.name + ' ' + i.code);
+    return hay.indexOf(q) > -1;
+  });
+  var pats = patList();
+  var lines = Object.keys(SOL_LINES).filter(function(c){ return cfgN(SOL_LINES[c]) > 0; });
+  return (pats.length || may('settings')
+      ? '<div class="grid cols-3" style="align-items:end">'
+        + '<div class="field"><label>' + esc(t('نمطٌ جاهز')) + '</label>'
+        +   '<select id="patSel">' + (pats.length ? '' : '<option value="">' + esc(t('لا أنماطَ محفوظةً بعد')) + '</option>')
+        +   pats.map(function(pt){
+              return '<option value="' + esc(pt.n) + '">' + esc(pt.n) + ' \u00b7 ' + nm(Object.keys(pt.items || {}).length) + ' ' + esc(t('صنف')) + '</option>';
+            }).join('') + '</select></div>'
+        + '<div class="field"><label>&nbsp;</label>' + btn('\u2699 ' + t('طبّق النمط'),'btn-secondary btn-sm',' data-patapply="1"' + (pats.length ? '' : ' disabled')) + '</div>'
+        + (may('settings')
+          ? '<div class="field"><label>' + esc(t('احفظ الأسطرَ الحاليةَ نمطًا')) + '</label>'
+            + '<div class="actions" style="margin:0"><input id="patName" value="' + esc(PAT_NAME) + '" placeholder="' + esc(t('مثلًا: مخيم قياسي')) + '" dir="auto" style="flex:1">'
+            + btn('\u{1F4BE} ' + t('احفظ نمطًا'),'btn-quiet btn-sm',' data-patsave="1"') + '</div></div>'
+          : '')
+        + '</div>'
+        + (pats.length && may('settings')
+          ? '<div class="chips" style="margin:0 0 10px">' + pats.map(function(pt){
+              return '<span class="chip">' + esc(pt.n) + ' <button type="button" class="btn btn-quiet btn-sm" data-patdel="' + esc(pt.n) + '" aria-label="' + esc(t('حذف')) + '" style="padding:0 6px">\u2715</button></span>';
+            }).join('') + '</div>'
+          : '')
+      : '')
+    + '<div class="grid cols-3" style="align-items:end">'
+    + '<div class="field"><label>' + esc(t('ابحث في الكتالوج')) + '</label>'
+    +   '<input type="search" id="pkQ" data-pkq value="' + esc(SOL_Q) + '" placeholder="' + esc(t('اكتب جزءًا من اسم القطعة')) + '" dir="auto"></div>'
+    + '<div class="field"><label>' + esc(t('القطعة')) + ' <span class="num">' + nm(hits.length) + '/' + nm(all.length) + '</span></label>'
+    +   '<select id="pkItem">' + (hits.length ? '' : '<option value="">' + esc(t('لا صنفَ يطابق البحث')) + '</option>')
+    +   hits.slice(0, 200).map(function(i){
+          return '<option value="' + esc(i.code) + '">' + esc(i.name) + ' \u00b7 ' + esc(t(i.z === 'cor' ? 'ممر' : 'مخيم')) + '</option>';
+        }).join('') + '</select></div>'
+    + '<div class="field"><label>' + esc(t('الكمية')) + '</label>'
+    +   '<div class="actions" style="margin:0"><input type="number" id="pkQty" min="1" value="1" inputmode="numeric" style="width:88px">'
+    +   btn('\u2795 ' + t('أضِف'),'btn-secondary btn-sm',' data-pkadd="1"') + '</div></div>'
+    + '</div>'
+    + (lines.length
+      ? table(['الصنف','الكمية',''], lines.map(function(c){
+          return [esc(itemName(c)), '<span class="num">' + nm(SOL_LINES[c]) + '</span>',
+                  btn('\u2715','btn-quiet btn-sm',' data-pkrm="' + esc(c) + '" aria-label="' + esc(t('حذف')) + '"')];
+        }))
+      : '<p class="hint" style="margin:6px 0 0">' + esc(t('لا أسطرَ بعد — ابحث عن القطعة وأضفها بكمّيتها، أو طبّق نمطًا جاهزًا.')) + '</p>');
+}
+function pkAdd(){
+  var sel = document.getElementById('pkItem'), q = document.getElementById('pkQty');
+  var code = sel && sel.value, qty = cfgN(q && q.value);
+  if (!code){ toast(t('اختر قطعةً من القائمة')); return; }
+  if (!(qty > 0)){ toast(t('اكتب كمّيةً أكبرَ من صفر')); return; }
+  SOL_LINES[code] = cfgN(SOL_LINES[code]) + qty;
+  render(1);
+}
+
 /* ── التدقيق الهندسي — الاعتماد يحوّل الحالة ── */
 /* ── حلُّ التركيب: الأجهزةُ المقترحة قبل طلب التركيب ── */
 PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
@@ -9328,13 +9757,19 @@ PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
       .filter(function(r){ return r && r.solution; });
     var wait = all.filter(function(r){ return r.solution.status === 'مقترح'; });
     var done = all.filter(function(r){ return r.solution.status === 'معتمد'; });
+    /* لا يُقترَح حلٌّ إلا لزيارةٍ اعتمدها المهندس — فالبياناتُ التي يُبنى
+       عليها الحلُّ راجعها أحدٌ قبل أن يُشترى على أساسها */
     var surveyed = STATE.sites.filter(function(s){
-      return svDone(STATE.recs[s.id]) && !solutionOf(s.id);
+      return svApproved(STATE.recs[s.id]) && !solutionOf(s.id);
     });
+    var unreviewed = STATE.sites.filter(function(s){
+      return svReview(STATE.recs[s.id]) === 'pending' && !solutionOf(s.id);
+    }).length;
 
     return stats([['بانتظار الاعتماد', N(wait.length), wait.length ? 'wrn' : ''],
                   ['معتمد', N(done.length), 'ok'],
-                  ['ممسوحةٌ بلا حلٍّ بعد', N(surveyed.length)]])
+                  ['زيارةٌ معتمدةٌ بلا حلٍّ بعد', N(surveyed.length)],
+                  ['زيارةٌ تنتظر اعتمادَها أولًا', N(unreviewed), unreviewed ? 'wrn' : '']])
 
       + (function(){
           /* الإجمالي المعتمد لموسم ١٤٤٨: كم نقطةً من كل نوعٍ خلصت حلَّها،
@@ -9387,28 +9822,25 @@ PAGE.solution = { m:'الطلبات والمسح', t:'حل التركيب',
                     return '<option value="' + esc(s.id) + '">' + esc(s.id)
                       + ' — ' + esc((s.name || '').slice(0,30)) + '</option>';
                   }).join('') + '</select></div>'
-                + '<div class="grid cols-3" style="margin-top:10px">'
-                + itemsList().map(function(i){
-                    return '<div class="field" style="margin:0"><label>' + esc(i.name) + '</label>'
-                      + '<input type="number" min="0" id="solQ_' + esc(i.code) + '" placeholder="0"></div>';
-                  }).join('')
-                + '</div>'
-              : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ ممسوحةً بلا حلٍّ الآن — امسح نقطةً أولًا من «المسح الميداني».')) + '</p>',
+                + itemPickerHtml()
+              : '<p class="hint" style="margin:0">' + esc(t('لا زيارةَ معتمدةً بلا حلٍّ الآن — اعتمد زيارةً أولًا من «اعتماد الزيارات» ثم اقترح حلَّها.')) + '</p>',
             surveyed.length ? btn('➕ اقترح الحل','btn-primary btn-sm',' data-solgo="1"') : '')
         : '')
 
       + '<p class="hint">' + esc(t('لا يُتاح طلبُ تركيبٍ (DR) لنقطةٍ إلا بعد اعتماد حلِّها هنا — والفكُّ (PR) لا يحتاج هذه البوابة، فما رُكِّب معروفٌ من سجله فور اختيار النقطة.')) + '</p>';
   }};
 
-function solGo(){
-  var site = (document.getElementById('solSite') || {}).value;
-  if (!site){ toast(t('لا نقطةَ مختارة')); return; }
+function solGo(site){
+  site = site || (document.getElementById('solSite') || {}).value;
+  if (!site){ toast(t('لا نقطةَ مختارة')); return false; }
   var itemsMap = {};
-  itemsList().forEach(function(i){
-    var e = document.getElementById('solQ_' + i.code);
-    if (e && cfgN(e.value) > 0) itemsMap[i.code] = e.value;
-  });
+  Object.keys(SOL_LINES).forEach(function(c){ if (cfgN(SOL_LINES[c]) > 0) itemsMap[c] = cfgN(SOL_LINES[c]); });
+  if (!Object.keys(itemsMap).length){ toast(t('أضِف قطعةً واحدةً على الأقل')); return false; }
+  var before = solutionOf(site);
   solutionSave(site, itemsMap);
+  var after = solutionOf(site);
+  if (after && after !== before){ SOL_LINES = {}; SOL_Q = ''; return true; }
+  return !!(after && after.at !== (before && before.at));
 }
 
 PAGE.qa = { m:'الطلبات والمسح', t:'التدقيق الهندسي',
@@ -12012,6 +12444,8 @@ function moveApply(lat, lng){
   s.lat = lat; s.lng = lng;
   var rec = STATE.recs[s.id] || { id:s.id, at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
   rec.loc = { lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || 'محمد صفوت' };
+  /* بياناتٌ جديدةٌ بعد الاعتماد تحتاج نظرةً ثانية */
+  if (rec.review === 'approved' || !rec.review) rec.review = 'pending';
   CORE.set('recs', s.id, rec);
   logEvent('تحريك موقع — ' + s.id);
   toast(t('حُرِّك الموقع') + ' · ' + nm(Math.round(distKm(old, { lat:lat, lng:lng }) * 1000)) + ' ' + t('م'));
@@ -12133,17 +12567,20 @@ function statBump(){ STAT_CACHE = null; STAT_VER++; }
 
 function siteStats(){
   if (STAT_CACHE) return STAT_CACHE;
-  var s = STATE.sites, by = {}, co = {}, wk = {}, sv = 0, ins = 0;
+  var s = STATE.sites, by = {}, co = {}, wk = {}, sv = 0, ins = 0, apv = 0, pend = 0, rev = 0;
   for (var i = 0; i < s.length; i++){
     var x = s[i], k = x.zone + '|' + x.type;
     by[k] = (by[k] || 0) + 1;
     if (x.co) co[x.co] = (co[x.co] || 0) + 1;
     if (x.work) wk[x.work] = (wk[x.work] || 0) + 1;
+    var rv = svReview(STATE.recs[x.id]);
+    if (rv === 'approved') apv++; else if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
     if (svDone(STATE.recs[x.id])) sv++;
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب') ins++;
   }
-  STAT_CACHE = { total:s.length, byKey:by, byCo:co, byWork:wk, surveyed:sv, installed:ins };
+  STAT_CACHE = { total:s.length, byKey:by, byCo:co, byWork:wk, surveyed:sv, installed:ins,
+                 approved:apv, pending:pend, revisit:rev };
   return STAT_CACHE;
 }
 
@@ -12365,6 +12802,9 @@ var MAP_COL = {
   install: { 'لم يبدأ':'#9FB0AA', 'مجدول':'#FF8C42', 'مُركّب':'#3AD6A0', 'متعذّر':'#E05252' }
 };
 
+/* ألوانُ دورة الزيارة — تُقرأ في التلوين والأسطورة معًا فلا يفترقان */
+var SV_COL = { todo:'#E8C34B', mine:'#FF8C42', others:'#C9A27E', tomorrow:'#B388FF',
+               revisit:'#FF6B6B', pending:'#4FA3FF', approved:'#3AD6A0' };
 function mapColorOf(x){
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
@@ -12374,6 +12814,22 @@ function mapColorOf(x){
   if ((CO_OPEN || CO_MODE) && x.co) return coColor(x.co);
   if (CO_SEL.length && x.co) return coColor(x.co);
   if (FILT.type && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
+  /* طبقةُ المسح: دورةُ الزيارة كاملةً بألوانها — لم يُزر · مُسندٌ إليك ·
+     مُسندٌ لغيرك · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد ·
+     معتمدة. فالمشرفُ يرى نقاطَه بلونٍ لا يشبه نقاطَ غيره، والوزارةُ ترى ما
+     انتهى وما يجري وما سيجري غدًا على الخريطة نفسِها. */
+  if (FIELD_MODE === 'survey' && typeof svReview === 'function'){
+    var rv = svReview(STATE.recs[x.id]);
+    if (rv === 'approved') return SV_COL.approved;
+    if (rv === 'pending')  return SV_COL.pending;
+    if (rv === 'revisit')  return SV_COL.revisit;
+    var tk = asnOf(x.id);
+    if (tk){
+      if (tk.when && tk.when > dayKey(Date.now())) return SV_COL.tomorrow;
+      return (tk.to === (STATE.meta.name || '')) || may('approve') ? SV_COL.mine : SV_COL.others;
+    }
+    return SV_COL.todo;
+  }
   /* لونُ الطبقة: المنجَزُ بلونها والجاهزُ أصفرُ انتظار والمُسنَدُ برتقالي */
   if (typeof LAYERS === 'object' && LAYERS[FIELD_MODE]){
     var L = LAYERS[FIELD_MODE];
@@ -13974,7 +14430,13 @@ function legendRows(){
   var L = (typeof LAYER === 'function') ? LAYER() : LAYERS.survey;
   var rows = [];
   if (FIELD_MODE === 'survey'){
-    rows = [['#E8C34B','لم يُزر'], ['#FF8C42','مُسند'], [L.c,'تمت الزيارة']];
+    rows = [[SV_COL.todo,'لم يُزر'],
+            [SV_COL.mine, may('approve') ? 'مُسند' : 'مُسند إليك'],
+            [SV_COL.tomorrow,'مجدول غدًا'],
+            [SV_COL.revisit,'تحتاج زيارة أخرى'],
+            [SV_COL.pending,'تمت — بانتظار الاعتماد'],
+            [SV_COL.approved,'معتمدة']];
+    if (!may('approve')) rows.splice(2, 0, [SV_COL.others,'مُسند لغيرك']);
   } else if (FIELD_MODE === 'install'){
     rows = [['#E8C34B','بانتظار التركيب'], ['#FF8C42','مُسند'], [L.c,'مُركّب']];
   } else {
@@ -14109,10 +14571,92 @@ function fieldTools(){
 /* ═══ موديولات اللوحة — كل قسم بمحتواه ═══ */
 
 /* ── لوحة القيادة ───────────────────────────────── */
+/* ما أُنجز في يومٍ بعينه: من اللقطة المحفوظة إن وُجدت، وإلا من السجلات
+   التي على هذا الجهاز — تقرؤه الوتيرةُ ولوحةُ «أمس · الآن · غدًا» معًا */
+function dayDone(day){
+  var snap = (STATE.stats || {})[day];
+  if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0, dis: snap.dayDismantle || 0 };
+  var sv = 0, ins = 0, dis = 0;
+  Object.keys(STATE.recs).forEach(function(k){
+    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svDone(r)) sv++; });
+  Object.keys(STATE.inss).forEach(function(k){
+    var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
+  Object.keys(STATE.diss || {}).forEach(function(k){
+    var r = STATE.diss[k]; if (r && dayKey(r.at || r._at) === day && (r.status === 'تم الفك' || r.done)) dis++; });
+  return { sv:sv, ins:ins, dis:dis };
+}
 PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
+    if (cur === 'now') return head + (function(){
+    /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
+       الآن ومن يفعله وأين؟ وماذا سيحدث غدًا؟ فصارت شاشةً واحدةً بثلاثة
+       أعمدةٍ تُقرأ من السجلات والمهام لحظيًّا — لا من أرقامٍ تُكتَب. */
+    var S = siteStats(), DAY = 86400000, now = Date.now();
+    var today = dayKey(now), yday = dayKey(now - DAY), tmr = dayKey(now + DAY);
+    var Y = dayDone(yday), T0 = dayDone(today);
+    /* المهامُّ المفتوحة: بمشرفها، وما تمّ منها اليوم، وما جُدول لغد */
+    var bySup = {}, open = 0, tmrN = 0, bySupTmr = {}, byZoneTmr = {}, lateN = 0;
+    Object.keys(STATE.tasks).forEach(function(k){
+      var x = STATE.tasks[k];
+      if (!x || x.status === 'معتمد') return;
+      open++;
+      var who = x.to || '\u2014', st = siteFind(x.site), r = STATE.recs[x.site];
+      var g = bySup[who] = bySup[who] || { n:0, doneToday:0, wait:0, rev:0 };
+      g.n++;
+      var rv = svReview(r);
+      if (rv === 'revisit') g.rev++;
+      else if (r && svDone(r)){ if (dayKey(r.at || r._at) === today) g.doneToday++; }
+      else g.wait++;
+      if (x.when === tmr){ tmrN++; bySupTmr[who] = (bySupTmr[who] || 0) + 1; if (st) byZoneTmr[st.zone] = (byZoneTmr[st.zone] || 0) + 1; }
+      if (x.when && x.when < today && !(r && svDone(r))) lateN++;
+    });
+    /* أين نحن اليوم: زياراتُ اليوم بالمشعر */
+    var zoneToday = {};
+    Object.keys(STATE.recs).forEach(function(k){
+      var r = STATE.recs[k]; if (dayKey(r.at || r._at) !== today || !svDone(r)) return;
+      var st = siteFind(k); if (st) zoneToday[st.zone] = (zoneToday[st.zone] || 0) + 1;
+    });
+    var sups = Object.keys(bySup).sort(function(a, b){ return bySup[b].n - bySup[a].n; });
+    var col = function(title, inner){ return '<div>' + card(title, inner) + '</div>'; };
+    return '<div class="grid cols-3" style="align-items:start">'
+      + col('\u2705 ' + t('ما انتهى'),
+          stats([['أمس — مسح', N(Y.sv), Y.sv ? 'ok' : ''], ['أمس — تركيب', N(Y.ins), Y.ins ? 'ok' : ''],
+                 ['أمس — فك', N(Y.dis)]])
+          + table(['حتى الآن','العدد','من'], [
+              [esc(t('زيارات معتمدة')), N(S.approved), N(S.total)],
+              [esc(t('زيارات تمّت')), N(S.surveyed), N(S.total)],
+              [esc(t('مُركّب')), N(S.installed), N(S.total)]])
+          + meter('نسبة المسح', S.surveyed, S.total) + meter('نسبة التركيب', S.installed, S.total))
+      + col('\u26A1 ' + t('الآن — اليوم'),
+          stats([['اليوم — مسح', N(T0.sv), T0.sv ? 'acc' : ''], ['اليوم — تركيب', N(T0.ins), T0.ins ? 'acc' : ''],
+                 ['تنتظر الاعتماد', N(S.pending), S.pending ? 'wrn' : ''],
+                 ['متأخّرة عن موعدها', N(lateN), lateN ? 'bad' : '']])
+          + (sups.length
+            ? table(['المشرف','مُسند','تمّ اليوم','بانتظار','مردود'], sups.slice(0, 12).map(function(sp){
+                var g = bySup[sp];
+                return [esc(dispName(sp)), N(g.n), N(g.doneToday), N(g.wait), g.rev ? '<b>' + nm(g.rev) + '</b>' : N(0)];
+              }))
+            : '<p class="hint" style="margin:0">' + esc(t('لا مهامَّ مفتوحةً الآن — لم يُسنَد شيءٌ بعد.')) + '</p>')
+          + (Object.keys(zoneToday).length
+            ? '<p class="hint" style="margin:8px 0 0"><b>' + esc(t('أين نحن اليوم')) + ':</b> '
+              + Object.keys(zoneToday).map(function(z){ return esc(t(z)) + ' <span class="num">' + nm(zoneToday[z]) + '</span>'; }).join(' \u00b7 ') + '</p>'
+            : ''))
+      + col('\u{1F4C5} ' + t('غدًا — المجدول'),
+          stats([['نقاطٌ مجدولةٌ لغد', N(tmrN), tmrN ? 'acc' : ''], ['مشرفون', N(Object.keys(bySupTmr).length)]])
+          + (tmrN
+            ? table(['المشرف','نقاط'], Object.keys(bySupTmr).map(function(sp){ return [esc(dispName(sp)), N(bySupTmr[sp])]; }))
+              + '<p class="hint" style="margin:8px 0 0"><b>' + esc(t('بالمشعر')) + ':</b> '
+              + Object.keys(byZoneTmr).map(function(z){ return esc(t(z)) + ' <span class="num">' + nm(byZoneTmr[z]) + '</span>'; }).join(' \u00b7 ') + '</p>'
+            : '<p class="hint" style="margin:0">' + esc(t('لا شيءَ مجدولٌ لغد بعد — تُجدوَل النقاطُ بموعدها من الخريطة أو «توزيع الفرق».')) + '</p>'))
+      + '</div>'
+      + '<div class="actions" style="margin-top:12px">'
+      + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-secondary btn-sm',' data-p="map"')
+      + (may('approve') ? btn('\u2705 ' + t('اعتماد الزيارات'),'btn-primary btn-sm',' data-p="svappr"') : '')
+      + '</div>'
+      + '<p class="hint">' + esc(t('الخريطةُ تلوّن الدورةَ كلَّها: لم يُزر · مُسند · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد · معتمدة.')) + '</p>';
+  })();
     if (cur === 'reg') return head + (function(){
     /* كان جدولًا محفورًا صحيحًا يومَ كُتب. ويبقى صحيحًا حتى يُسجَّل موقعٌ
        جديدٌ واحد — ثم يكذب ولا يقول. يُحسَب من السجلات. */
@@ -14135,17 +14679,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
        آخر سبعة أيامٍ كما سُجّل، والانتهاءُ المتوقّعُ على هذا المعدل. */
     var S = siteStats(), DAY = 86400000, now = Date.now();
     var dueS = cfgGet('dueSurvey'), dueI = cfgGet('dueInstall');
-    /* ما أُنجز في يومٍ بعينه: من اللقطة المحفوظة إن وُجدت، وإلا من السجلات */
-    function doneOn(day){
-      var snap = (STATE.stats || {})[day];
-      if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0 };
-      var sv = 0, ins = 0;
-      Object.keys(STATE.recs).forEach(function(k){
-        var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svDone(r)) sv++; });
-      Object.keys(STATE.inss).forEach(function(k){
-        var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
-      return { sv:sv, ins:ins };
-    }
+    var doneOn = dayDone;
     var y = doneOn(dayKey(now - DAY)), w = { sv:0, ins:0 };
     for (var d = 1; d <= 7; d++){ var o = doneOn(dayKey(now - d * DAY)); w.sv += o.sv; w.ins += o.ins; }
     function daysTo(due){ return due ? Math.ceil((due - now) / DAY) : 0; }
@@ -14560,6 +15094,120 @@ PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني'
           + esc(t('تظهر هنا فور أول مسحٍ ميداني.')) + '</p>'));
 
     html += '<p class="hint">' + esc(t('«أعِد تصنيفها كمتعذّرة» تُبقي بيانات الزيارة السابقة كما هي — لا حذف ولا فقدان سجلّ — لكنها تُخرجها من عِداد المُنجَز حتى تُزار ثانيةً.')) + '</p>';
+    return html;
+  }};
+
+
+/* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
+   الصفحةُ التي تُغلق الدورة: كلُّ زيارةٍ حُفظت تظهر هنا ببياناتها الجديدة —
+   أين نُقلت النقطة، وما القياسات، وما التحديات، وكم صورة — فيعتمدها المهندسُ
+   أو يردُّها «تحتاج زيارةً أخرى» بسببٍ يقرؤه المشرفُ في مهامّه. وفورَ الاعتماد
+   يُقترَح حلُّها من الكتالوج نفسِه — قائمةٌ مبحوثةٌ أو نمطٌ جاهز — فلا يخرج
+   المهندسُ إلى شاشةٍ أخرى ليُكمل ما بدأه. */
+var SVA_ST = 'pending', SVA_REV = '', SVA_SOL = '', SVA_Q = '';
+var SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'الارتفاع (متر)', cable:'طول الكابل (متر)',
+  len_m:'الطول المتاح (متر)', wid_m:'العرض المتاح (متر)', hgt_m:'الارتفاع المتاح (متر)',
+  fit:'هل الموقع مناسب للتركيب؟', tents:'عدد الغرف أو الخيام', gates:'عدد بوابات المخيم',
+  corr_w:'عرض المسار للاتجاه الواحد (متر)', kits:'عدد الأطقم الكاملة المطلوبة', jam_pos:'الدور والجهة',
+  power_yn:'هل يوجد مصدر كهرباء؟', kits_done:'أطقمٌ منجزة', old_base:'هل القاعدة أو التثبيت القديم موجود؟',
+  old_cable:'هل مسار الكابل القديم سليم؟', cam_ok:'هل الكاميرا تعمل؟', router_sp:'هل يوجد مكان لتركيب راوتر؟',
+  power_src:'أقرب مصدر كهرباء', pdist:'المسافة إلى المصدر (متر)', p24:'التغذية متاحة ٢٤ ساعة؟',
+  power_note:'ماذا تغيّر؟', n_ant:'عدد الهوائيات', n_rdr:'عدد القارئات', n_cam:'عدد الكاميرات',
+  n_sens:'عدد الحساسات البيئية', metal:'هياكل معدنية مؤثرة قرب النقطة؟', chal_note:'تفصيل التحديات',
+  civil:'هل يحتاج أعمال مدنية؟', equip:'المعدات اللازمة للوصول', hours:'تقدير ساعات التركيب', crew_n:'عدد أفراد الطاقم' };
+/* ما أفاد به المشرفُ في الزيارة — كلُّ حقلٍ له قيمة، بتسميته */
+function svFacts(r){
+  var out = [];
+  if (r.loc && r.loc.from){
+    var m = Math.round(distKm(r.loc.from, { lat:r.loc.lat, lng:r.loc.lng }) * 1000);
+    out.push(['نُقلت النقطة', nm(m) + ' ' + t('م') + ' \u2014 ' + t('عن موقعها المسجَّل')]);
+  }
+  ['mount','power','height','cable'].concat(SV_EXTRA_KEYS).forEach(function(k){
+    var v = r[k];
+    if (v === '' || v == null || v === 0 || v === '0') return;
+    out.push([SV_LABEL[k] || k, String(v)]);
+  });
+  if (r.chals && r.chals.length) out.push(['التحديات', r.chals.map(function(c){ return t(c); }).join(' \u00b7 ')]);
+  if (r.note) out.push(['ملاحظة المشرف', r.note]);
+  out.push(['الصور', nm((r.photos || []).length)]);
+  return out;
+}
+PAGE.svappr = { m:'الطلبات والمسح', t:'اعتماد الزيارات',
+  l:'ما زاره المشرفون ببياناته الجديدة — تعتمده أو تردُّه لزيارةٍ أخرى، ثم تقترح حلَّه فورًا.',
+  body:function(){
+    var S = siteStats();
+    var all = surveyList().filter(function(x){ return x.rec && (x.rec.review || x.done); });
+    var lists = { pending:[], approved:[], revisit:[] };
+    all.forEach(function(x){ var rv = svReview(x.rec); if (lists[rv]) lists[rv].push(x); });
+    var rows = lists[SVA_ST] || [];
+    if (SVA_Q) rows = rows.filter(function(x){
+      return (x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '')).indexOf(SVA_Q) > -1; });
+
+    var views = [['pending','بانتظار اعتمادك', lists.pending.length],
+                 ['approved','معتمدة', lists.approved.length],
+                 ['revisit','تحتاج زيارة أخرى', lists.revisit.length]];
+    var html = '<div class="chips">' + views.map(function(v){
+        return '<button type="button" class="chip' + (SVA_ST === v[0] ? ' on' : '')
+          + '" data-svast="' + v[0] + '">' + esc(t(v[1])) + ' <span class="num">' + nm(v[2]) + '</span></button>';
+      }).join('') + '</div>'
+      + stats([['بانتظار اعتمادك', N(S.pending), S.pending ? 'wrn' : ''],
+               ['معتمدة', N(S.approved), 'ok'],
+               ['تحتاج زيارة أخرى', N(S.revisit), S.revisit ? 'bad' : ''],
+               ['لم يُزر', N(S.total - S.surveyed - S.revisit)]])
+      + card('بحث', '<input type="search" id="svaQ" data-svaq value="' + esc(SVA_Q) + '" placeholder="'
+          + esc(t('ابحث بالنقطة أو الاسم أو المشرف')) + '" dir="auto">');
+
+    if (!rows.length){
+      return html + card('', '<p class="hint" style="text-align:center;margin:0">'
+        + esc(t(SVA_ST === 'pending' ? 'لا زياراتٍ تنتظر اعتمادك — كلُّ ما زاره المشرفون رُوجع.'
+              : (SVA_ST === 'approved' ? 'لا زياراتٍ معتمدةً بعد.' : 'لا زياراتٍ مردودةً — كلُّ ما رُوجع اعتُمد.'))) + '</p>');
+    }
+    html += rows.slice(0, 60).map(function(x){
+      var r = x.rec, rv = svReview(r);
+      var facts = svFacts(r);
+      var so = solutionOf(x.id);
+      var head0 = '<strong>' + esc(x.id) + '</strong> \u2014 ' + esc((x.site.name || '').slice(0, 40))
+        + ' <span class="hint" style="margin:0;display:inline">\u00b7 ' + esc(dispName(r.by) || '\u2014')
+        + ' \u00b7 <span class="num">' + esc(new Date(r.at || 0).toLocaleDateString('ar-EG')) + '</span>'
+        + (r.round > 1 ? ' \u00b7 ' + esc(t('الجولة')) + ' <span class="num">' + nm(r.round) + '</span>' : '') + '</span>';
+      var body = (r.prevNote ? alertBox('info', t('سببُ الردِّ السابق') + ': ' + r.prevNote) : '')
+        + table(['البند','ما أفاد به المشرف'], facts.map(function(f){ return [esc(t(f[0])), esc(f[1])]; }))
+        + (rv === 'revisit' && r.revisitNote
+            ? alertBox('warn', t('رُدَّت') + ' \u2014 ' + r.revisitNote + ' \u00b7 ' + esc(dispName(r.revisitBy) || '')) : '')
+        + (rv === 'approved'
+            ? alertBox('success', t('اعتمدها') + ' ' + esc(dispName(r.reviewBy) || '\u2014') + ' \u00b7 <span class="num">'
+                + esc(new Date(r.reviewAt || 0).toLocaleDateString('ar-EG')) + '</span>'
+                + (so ? ' \u00b7 ' + t('الحل') + ': ' + t(so.status) : ' \u00b7 ' + t('بلا حلٍّ بعد'))) : '');
+      var actions = '';
+      if (rv === 'pending' && may('approve')){
+        actions = '<div class="actions">'
+          + btn('\u2705 ' + t('اعتمد الزيارة'),'btn-primary btn-sm',' data-svappr="' + esc(x.id) + '"')
+          + btn('\u21a9 ' + t('تحتاج زيارة أخرى'),'btn-danger btn-sm',' data-svrevisit="' + esc(x.id) + '"')
+          + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"') + '</div>';
+        if (SVA_REV === x.id){
+          actions += '<div class="field" style="margin-top:10px"><label>' + esc(t('ما ينقص الزيارة — يقرؤه المشرفُ في مهامّه')) + '</label>'
+            + '<input id="svaNote" dir="auto" placeholder="' + esc(t('مثلًا: الصورة لا تُظهر نقطةَ التثبيت، وقياسُ الطول ناقص')) + '"></div>'
+            + '<div class="actions">' + btn(t('تأكيد الردّ'),'btn-danger btn-sm',' data-svrevisitgo="' + esc(x.id) + '"')
+            + btn(t('تراجع'),'btn-quiet btn-sm',' data-svrevisitcancel="1"') + '</div>';
+        }
+      }
+      if (rv === 'approved' && !so && may('edit')){
+        if (SVA_SOL === x.id){
+          actions = card('الأجهزة المقترحة لهذه النقطة', itemPickerHtml()
+              + '<p class="hint" style="margin:8px 0 0">' + esc(t('تُحفَظ الأسطرُ حلًّا للنقطة وتُعتمَد فورًا — فتدخل طبقةَ التركيب.')) + '</p>',
+              btn('\u{1F4BE} ' + t('احفظ الحلَّ واعتمده'),'btn-primary btn-sm',' data-svsolgo="' + esc(x.id) + '"')
+              + btn(t('لاحقًا'),'btn-quiet btn-sm',' data-svsolcancel="1"'));
+        } else {
+          actions = '<div class="actions">' + btn('\u{1F527} ' + t('اقترح حلَّها الآن'),'btn-secondary btn-sm',' data-svsol="' + esc(x.id) + '"') + '</div>';
+        }
+      }
+      if (rv === 'revisit' && may('approve')){
+        actions = '<div class="actions">' + btn('\u2705 ' + t('اعتمدها رغم ذلك'),'btn-quiet btn-sm',' data-svappr="' + esc(x.id) + '"') + '</div>';
+      }
+      return card(head0, body + actions);
+    }).join('')
+    + (rows.length > 60 ? '<p class="hint">' + esc(t('يُعرَض ستون — ضيّق البحث لترى الباقي.')) + '</p>' : '')
+    + '<p class="hint">' + esc(t('الردُّ لا يمحو بيانات الزيارة — يبقيها للمقارنة ويعيد النقطةَ إلى مهام المشرف بسببه. والاعتمادُ يُغلق مهمةَ الزيارة فتُحتسب نقاطُها.')) + '</p>';
     return html;
   }};
 
@@ -17334,14 +17982,14 @@ var ROLES = {
   supervisor:{
     n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
     guide:'دليل الفني والمشرف — العمل الميداني',
-    nav:['map','mywork','sites','sel','svForm','insForm','recs','tools','mine','over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','recs','tools','mine','over','now','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   viewer:{
     n:'وزارة', d:'متابعةٌ وتصدير — لا تكتب حرفًا، والهواتف محجوبة حتى في القواعد',
     guide:'دليل الوزارة — المتابعة',
-    nav:['over','repcenter','pace','inst','daily','reg','co','chalm','dis','budm','guide','acct'],
+    nav:['map','over','now','repcenter','pace','inst','daily','reg','co','chalm','dis','budm','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -17435,7 +18083,7 @@ var PAGE_CAP = {
   wos:'workshop', wday:'workshop',
   perms:'users', assignRole:'users', users:'users', roles:'users',
   svForm:'edit', insForm:'edit', newsite:'edit',
-  qa:'approve', appr:'approve', esc:'approve',
+  qa:'approve', appr:'approve', esc:'approve', svappr:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
   disp:'settings', items:'settings', buycat:'settings', sup:'settings', consts:'settings',
   exp:'exportAll', retain:'delete', sync:'settings'
@@ -17463,6 +18111,7 @@ var TABS = {
     ['myveh','سيارتي','\u{1F64B}','ما أُسنِد إليك من مركبات.']],
   over:[
     ['over','الصورة العامة','\u{1F4CA}','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.'],
+    ['now','أمس · الآن · غدًا','\u{23F1}','ما انتهى، وما يجري الآن ومن يفعله وأين، وما هو مجدولٌ لغد.'],
     ['reg','حسب المشعر والنوع','\u{1F5FA}','التوزيع الكامل بالنسب.'],
     ['pace','الوتيرة والهدف','\u{23F1}','المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.'],
     ['daily','المعدل اليومي','\u{1F4C5}','اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.'],
@@ -17716,7 +18365,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.29' + '.docx" download>⬇ '
+              +   'V15.30' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19115,7 +19764,7 @@ var NAV = [
       ['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],['risks','سجل المخاطر'],['chg','ضبط التغيير'],
       ['setup','المواعيد والأزمنة'],['pipe','سلامة خط الإنتاج']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
-      ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],['solution','حل التركيب'],
+      ['req','طلبات الزيارة'],['assign','توزيع الفرق'],['survey','المسح الميداني'],['svappr','اعتماد الزيارات'],['solution','حل التركيب'],
       ['chal','التحديات الميدانية'],['stuck','المتعذّر والراكد'],['qa','التدقيق الهندسي'],['ncr','عدم المطابقة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['wos','طلبات المستودع'],['wday','نقاط اليوم'],['inv','المخزون'],['ships','الشحنات والتوريد']] },
@@ -19572,6 +20221,36 @@ function onDocClick(e){
   if (ptb){ var pt = ptb.getAttribute('data-ptab').split(':'); PTAB[pt[0]] = pt[1]; render(1); return; }
   var gto = e.target.closest('[data-goto]');
   if (gto){ POP_OPEN = false; goPage(gto.getAttribute('data-goto')); render(); return; }
+  var sva = e.target.closest('[data-svast]');
+  if (sva){ SVA_ST = sva.getAttribute('data-svast'); SVA_REV = ''; SVA_SOL = ''; render(1); return; }
+  var svap = e.target.closest('[data-svappr]');
+  if (svap){ var idA = svap.getAttribute('data-svappr');
+    if (svApprove(idA)){ toast(idA + ' \u00b7 ' + t('اعتُمدت الزيارة — اقترح حلَّها الآن'));
+      SVA_ST = 'approved'; SVA_SOL = idA; SOL_LINES = {}; SOL_Q = ''; }
+    render(1); return; }
+  var svrv = e.target.closest('[data-svrevisit]');
+  if (svrv){ SVA_REV = svrv.getAttribute('data-svrevisit'); render(1);
+    var ne = document.getElementById('svaNote'); if (ne) ne.focus(); return; }
+  if (e.target.closest('[data-svrevisitcancel]')){ SVA_REV = ''; render(1); return; }
+  var svrg = e.target.closest('[data-svrevisitgo]');
+  if (svrg){ var idR = svrg.getAttribute('data-svrevisitgo');
+    if (svRevisit(idR, (document.getElementById('svaNote') || {}).value)){
+      toast(idR + ' \u00b7 ' + t('رُدَّت — عادت إلى مهام المشرف')); SVA_REV = ''; }
+    render(1); return; }
+  var svso = e.target.closest('[data-svsol]');
+  if (svso){ SVA_SOL = svso.getAttribute('data-svsol'); SOL_LINES = {}; SOL_Q = ''; render(1); return; }
+  if (e.target.closest('[data-svsolcancel]')){ SVA_SOL = ''; render(1); return; }
+  var svsg = e.target.closest('[data-svsolgo]');
+  if (svsg){ var idS = svsg.getAttribute('data-svsolgo');
+    if (solGo(idS)){ if (may('users')) solutionAppr(idS, 1); SVA_SOL = ''; }
+    render(1); return; }
+  if (e.target.closest('[data-pkadd]')){ pkAdd(); return; }
+  var pkrm = e.target.closest('[data-pkrm]');
+  if (pkrm){ delete SOL_LINES[pkrm.getAttribute('data-pkrm')]; render(1); return; }
+  if (e.target.closest('[data-patapply]')){ patApply((document.getElementById('patSel') || {}).value); return; }
+  if (e.target.closest('[data-patsave]')){ if (patSave((document.getElementById('patName') || {}).value)) render(1); return; }
+  var pdl = e.target.closest('[data-patdel]');
+  if (pdl){ patDel(pdl.getAttribute('data-patdel')); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
@@ -20277,19 +20956,22 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-tksup')){ techSet(el2.getAttribute('data-tksup'), { sup:el2.value.trim() }); return; }
   }
+  if (e.target && e.target.id === 'patName'){ PAT_NAME = e.target.value; return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
     itemRename(e.target.getAttribute('data-itname'), e.target.value);
     return;
   }
   /* بحثُ القوائم الطويلة: كلٌّ يحفظ نصَّه ويُعيد التركيزَ إلى مكانه بعد
      الرسم — وإلا خرج المؤشّرُ من الحقل عند كلِّ حرف. */
-  var Q_MAP = { 'data-tkq':'TK_Q', 'data-itq':'IT_Q', 'data-jbq':'JB_Q' };
+  var Q_MAP = { 'data-tkq':'TK_Q', 'data-itq':'IT_Q', 'data-jbq':'JB_Q', 'data-pkq':'SOL_Q', 'data-svaq':'SVA_Q' };
   var qk = Object.keys(Q_MAP).filter(function(a){
     return e.target.hasAttribute && e.target.hasAttribute(a); })[0];
   if (qk){
     var id3 = e.target.id, v3 = e.target.value.trim();
     if (Q_MAP[qk] === 'TK_Q') TK_Q = v3;
     else if (Q_MAP[qk] === 'IT_Q') IT_Q = v3;
+    else if (Q_MAP[qk] === 'SOL_Q') SOL_Q = v3;
+    else if (Q_MAP[qk] === 'SVA_Q') SVA_Q = v3;
     else JB_Q = v3;
     render(1);
     var el3 = document.getElementById(id3);

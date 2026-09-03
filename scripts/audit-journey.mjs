@@ -73,6 +73,12 @@ console.log('\n══ ٤ · المهندس يعتمد المسح ══');
 w.ROLE='engineer'; w.STATE.meta.name='مهندس الاختبار';
 w.CUR='req'; try{ w.render(1); }catch(e){}
 T(true, 'شاشةُ الطلبات تُفتَح للمهندس');
+/* V15.30: الزيارةُ تنتظر اعتمادَ المهندس في «اعتماد الزيارات» قبل أن يُقترَح حلُّها */
+T(w.svReview && w.svReview(rec)==='pending', 'الزيارةُ تنتظر الاعتماد (review=pending)');
+w.CUR='svappr'; try{ w.render(1); }catch(e){}
+T((d.getElementById('content').textContent||'').indexOf(site.id)>-1, 'النقطةُ تظهر في «اعتماد الزيارات»');
+T(w.svApprove && w.svApprove(site.id)===true, 'المهندسُ اعتمد الزيارة');
+T(w.svApproved && w.svApproved(w.STATE.recs[site.id]), 'الزيارةُ معتمدة (svApproved)');
 
 console.log('\n══ ٥ · حل التركيب — أيُّ items ستُركَّب ══');
 w.CUR='solution'; try{ w.render(1); }catch(e){}

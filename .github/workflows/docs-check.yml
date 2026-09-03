@@ -54,6 +54,8 @@ jobs:
         run: node scripts/audit-journey.mjs
       - name: جرد الشرائح — الدمج لا يغيّر رؤية أحد ولا يكسر رابطًا
         run: node scripts/audit-tabs.mjs
+      - name: جرد دورة الزيارة — من الإسناد إلى طبقة التركيب بالنقر
+        run: node scripts/audit-cycle.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

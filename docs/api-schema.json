@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.29",
+  "app_version": "V15.30",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1398,7 +1398,8 @@
     "V15.26": "بُني audit-journey (الجرد 21): يمشي رحلة المسح بثلاثة أدوار على النقطة نفسها — إسناد → مسح → حفظ → svDone → حل التركيب → تحديد القطع → اعتماد → طبقة التركيب → النقاط. 13 تحققًا. وأمسك عطلًا صامتًا: solution.items مقابل ins.parts — الحل المعتمد لا يغذّي ptsInstall فالتقدير صفر. أُصلح: ptsInstall تقرأ solution.items المعتمد.",
     "V15.27": "LAYERS.survey.c كان #E8C34B — نفس لون الانتظار، فالمزورة وغير المزورة سواء على الخريطة. صار #4FA3FF (المنطق كان سليمًا). وأُضيف لنافذة النقطة سطر 'الخطوة التالية': يقرأ الحال ويقول أين تقف ومن صاحب الدور، ويعرض زر الانتقال لمن يملك الخطوة فقط (data-goto).",
     "V15.28": "viewer (وزارة): 12 شاشة متابعة + exportAll:1 — تُصدّر ما تقرأ ولا تكتب (كان exportAll:0 خطأً: العميل يرفع تقاريره لجهة أعلى). وأُضيف لـPAGE.roles جدول 'الوظيفة والدور'. وتخزين الصور: الآلية مبنية (OAuth drive.file) والناقص Client ID وحده — و legacy/v13.99 لا تحوي تخزين صور أصلًا.",
-    "V15.29": "الدمج الثاني: 33 شاشة → 8 صفحات بشرائح (94 → 69). آلية واحدة TABS: كل شريحة بمعرّفها القديم في ROLES.nav وPAGE_CAP والروابط؛ render() يوصل المعرّف القديم إلى أمّه على شريحته؛ الرؤية بقواعد seesRaw نفسها. عطل أخطر: CFG (الأوزان/التارجتات/نقاط القطع/الثوابت) لم تكن تُرفع إلى settings/points قط — cfgSet محلية فقط؛ صار cfgPushSoon يرفع المسارات الملموسة بدمج لمن يملك settings. إصلاح over (أصفار مكتوبة + بطاقة ميتة)، pace وsetup حقيقيان من CFG (dueSurvey/dueInstall/minCamp/minCor). حارسان: audit-pages §3 وaudit-tabs (الجرد 22)."
+    "V15.29": "الدمج الثاني: 33 شاشة → 8 صفحات بشرائح (94 → 69). آلية واحدة TABS: كل شريحة بمعرّفها القديم في ROLES.nav وPAGE_CAP والروابط؛ render() يوصل المعرّف القديم إلى أمّه على شريحته؛ الرؤية بقواعد seesRaw نفسها. عطل أخطر: CFG (الأوزان/التارجتات/نقاط القطع/الثوابت) لم تكن تُرفع إلى settings/points قط — cfgSet محلية فقط؛ صار cfgPushSoon يرفع المسارات الملموسة بدمج لمن يملك settings. إصلاح over (أصفار مكتوبة + بطاقة ميتة)، pace وsetup حقيقيان من CFG (dueSurvey/dueInstall/minCamp/minCor). حارسان: audit-pages §3 وaudit-tabs (الجرد 22).",
+    "V15.30": "دورة الزيارة كاملة: recs.review (pending/approved/revisit) + svApprove/svRevisit + صفحة svappr (approve) + منتقي القطع المبحوث والأنماط settings/patterns + ألوان الخريطة SV_COL للدورة + «مهامي» للمهندس بالمشرف + شريحة now «أمس·الآن·غدًا» + الخريطة للوزارة + قاعدة recs تردّ review=approved لغير المدير + audit-cycle (23)."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2252,8 +2253,8 @@
       "after_help_button_fix": 2570
     },
     "caps": {
-      "CAP_PAGES": 17,
-      "CAP_TEXTS": 102,
+      "CAP_PAGES": 13,
+      "CAP_TEXTS": 98,
       "CAP_SHELL": 2
     },
     "top_offenders": "ips(810 غالبها بيانات شبكة) · jobs(94) · svForm(90) · retain(69) · invmv(67)",
@@ -2573,7 +2574,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 22,
+  "audits_total": 23,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -2871,5 +2872,61 @@
       "كل مسار لُمس يُرفع إلى settings/points وما لم يُلمس لا يُكتب",
       "الفني لا يُقيَّد له رفع"
     ]
+  },
+  "visit_review_v15_30": {
+    "field": "recs[id].review",
+    "values": {
+      "pending": "حُفظت وتنتظر المهندس — الافتراضي لكل حفظ (svSave, moveApply)",
+      "approved": "اعتمدها المهندس (svApprove) — reviewBy/reviewAt؛ تُغلق مهمة الزيارة TK-visit-*",
+      "revisit": "رُدّت (svRevisit) — revisitNote/revisitBy/revisitAt؛ svDone=false فتخرج من المنجز وطبقة التركيب"
+    },
+    "round": "الجولة الثانية بعد الرد: rec.round++ و rec.prevNote = سبب الرد السابق",
+    "gates": {
+      "solutionSave": "يشترط svApproved",
+      "LAYERS.install.pass": "يشترط solution معتمد (والحل يشترط الزيارة معتمدة)"
+    },
+    "rules": "recs create/update: mgr() || (canW() && review != 'approved')",
+    "page": "svappr — اعتماد الزيارات — PAGE_CAP approve — شرائح pending/approved/revisit + بحث + بطاقة لكل نقطة ببياناتها (svFacts) + المنتقي بعد الاعتماد",
+    "legacy_records": "سجل بلا review يُعامل pending — لم يعتمده أحد بعد"
+  },
+  "item_picker_v15_30": {
+    "state": "SOL_LINES {code:qty}, SOL_Q بحث, PAT_NAME",
+    "ui": "itemPickerHtml(): نمط جاهز + بحث (data-pkq) + select#pkItem + كمية#pkQty + data-pkadd + جدول الأسطر data-pkrm",
+    "patterns": {
+      "store": "STATE.patterns [{n, items:{code:qty}, by, at}]",
+      "cloud": "settings/patterns عبر CORE.set('cfg','patterns') — يُقرأ عند الإقلاع",
+      "fns": "patSave (settings) / patDel (settings) / patApply"
+    },
+    "used_in": [
+      "svappr بعد الاعتماد (data-svsolgo → solGo + solutionAppr)",
+      "solution (data-solgo)"
+    ],
+    "naming_note": "data-ipq/data-ipadd محجوزان لعناوين الشبكة — المنتقي يستعمل pk"
+  },
+  "map_colors_v15_30": {
+    "survey_mode": {
+      "todo": "#E8C34B لم يُزر",
+      "mine": "#FF8C42 مُسند إليك (أو مُسند للمهندس)",
+      "others": "#C9A27E مُسند لغيرك",
+      "tomorrow": "#B388FF مجدول غدًا (task.when > اليوم)",
+      "revisit": "#FF6B6B تحتاج زيارة أخرى",
+      "pending": "#4FA3FF تمت — بانتظار الاعتماد",
+      "approved": "#3AD6A0 معتمدة"
+    },
+    "source": "mapColorOf + legendRows يقرآن SV_COL معًا"
+  },
+  "dashboard_now_v15_30": {
+    "tab": "over ← now — TABS.over",
+    "roles": "viewer, supervisor, وكل نافذ *; الوزارة صار لها map",
+    "columns": {
+      "finished": "dayDone(أمس) + الإجمالي (approved/surveyed/installed) + نسب",
+      "now": "dayDone(اليوم) + pending + متأخر + جدول بالمشرف (n/doneToday/wait/rev) + zoneToday",
+      "tomorrow": "tasks.when === غدًا بالمشرف والمشعر"
+    },
+    "helper": "dayDone(day) مشترك مع الوتيرة"
+  },
+  "audit_cycle": {
+    "steps": 28,
+    "how": "بالنقر على الأزرار في JSDOM لا باستدعاء الدوال — ما ينكسر في الزر يُمسك"
   }
 }
