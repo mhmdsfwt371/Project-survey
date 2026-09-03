@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.17</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.18</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11492,7 +11492,7 @@ function fieldList(){
             + '<div class="li-main">'
             + '<div class="li-t">' + esc(x.name) + '</div>'
             + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
-            +   esc(x.zone) + ' · ' + esc(x.type) + (x.co ? ' · ' + esc(x.co.slice(0, 26)) : '')
+            +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(x.co.slice(0, 26)) : '')
             + '</div></div><div class="li-end">'
             + (typeof distTxt === 'function' && distTxt(x)
                 ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(x) + '</div>' : '')
@@ -16665,7 +16665,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.17' + '.docx" download>⬇ '
+              +   'V15.18' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17527,7 +17527,8 @@ function typesCard(){
       table(['النوع','الاسم المعروض','الرمز','مواقع',''],
         keys.map(function(k){
           var u = typeUsed(k);
-          return ['<strong>' + esc(k) + '</strong>',
+          return ['<strong>' + esc(k) + '</strong>'
+                    + (t(k) !== k ? '<br><span class="hint" style="margin:0">' + esc(t(k)) + '</span>' : ''),
                   '<input value="' + esc(T[k].l) + '" data-tyl="' + esc(k) + '" dir="auto">',
                   '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr">',
                   u ? pill(nm(u), 'acc') : N(0),
