@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.40",
+  "app_version": "V15.41",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1409,7 +1409,8 @@
     "V15.37": "سلسلة الإدارة: sup صار «مديره» — قائمة من mgrCandidates(role) بمرتبة أعلى (ROLE_RANK/rankOf/roleOfUser). حقل dept من ORG.co.units (deptOptions/deptName). جدول الفروق بين الوظيفة والدور والقسم والمدير في شريحة jobs. حالة الفراغ في جدول الحسابات تشرح نفسها. الجرد 24: audit-mgr.",
     "V15.38": "الأسطورة تعدّ: رقم لكل حالة + مجموع، من layerFiltered() لا من القاعدة كلها (lg-c/lg-off/lg-tot). اللمس: L.canvas({tolerance:12})، إطار لمس 44px للمعيّن (ممر/كاميرا) مع إبقاء الرسم، r+1.5 على اللمس، @media(pointer:coarse) أهداف 44px وحقول 16px، touch-action:manipulation. الجرد 25: audit-touch.",
     "V15.39": "ipPreset(x) يحجز المُركّبة سابقًا من التوليد؛ حقل old_net في نموذج المسح يكتب net على النقطة عند الحفظ؛ شاشة العناوين تفرد «عنوانها يُقرأ من الميدان» وتكشف البادئات المكرّرة بلا إصلاح صامت. النافذة تحت 760px لوح سفلي بعرض الشاشة بمقبض. الجرد 26: audit-ip.",
-    "V15.40": "جدول «ما له عنوان — بالمشعر والنوع» في شاشة العناوين. توثيق فحص legacy/v13.99: 546 بادئة في العمود 20، كلها MIN/CMP، مطابقة للبذرة الحالية 546/546."
+    "V15.40": "جدول «ما له عنوان — بالمشعر والنوع» في شاشة العناوين. توثيق فحص legacy/v13.99: 546 بادئة في العمود 20، كلها MIN/CMP، مطابقة للبذرة الحالية 546/546.",
+    "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2584,7 +2585,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 26,
+  "audits_total": 27,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3317,5 +3318,28 @@
     "scan": "مسح كل الأعمدة: البادئات في العمود 20 فقط",
     "vs_seed": "البذرة الحالية 546 — متطابقة بالمعرّف والقيمة (0 مفقود، 0 مختلف)",
     "gap_explanation": "أي زيادة حية مصدرها collection('sites') التي تُدمج فوق البذرة عند الإقلاع"
+  },
+  "handover_v15_41": {
+    "store": "inss[id].hand — خاتمة وثيقة التركيب لا سجل منفصل (قواعد inss تحمي بعد approved: mgr فقط = التسليم فعل مهندس)",
+    "record": {
+      "no": "HO-#### من settings/handSeq",
+      "at": "وقت التحرير",
+      "by": "من سلّم",
+      "to": "المستلم عن العميل",
+      "note": "ملاحظات",
+      "warranty": "شهور من cfg.warranty"
+    },
+    "gates": [
+      "التركيب مُركّب ومعتمد",
+      "لا تسليم مرتين",
+      "لا بلاغ جوهري مفتوح على النقطة (handBlock)",
+      "may('approve')"
+    ],
+    "docs": {
+      "site": "handDocSite(id) — بالأجهزة والسيريالات وخانتي توقيع",
+      "company": "handDocCo(co) — كل نقاطها + بالنوع + إجمالي الأجهزة"
+    },
+    "lifecycle": "LIFE.handed (#12A594) بين installed وmaint؛ LAYERS.dis.pass = handDone",
+    "ui": "شريحة hand: تسليم نقطة (hoSite/hoTo/hoNote + data-hogo) · محضر (hoDocSite/hoDocCo + data-hodoc) · جدول ما سُلِّم"
   }
 }

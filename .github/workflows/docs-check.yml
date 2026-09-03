@@ -62,6 +62,8 @@ jobs:
         run: node scripts/audit-touch.mjs
       - name: جرد العناوين — المُركّبة سابقًا تُقرأ من الميدان ولا تُخترَع
         run: node scripts/audit-ip.mjs
+      - name: جرد التسليم — محضر لكل نقطة ولكل شركة، والفك بعده
+        run: node scripts/audit-hand.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
