@@ -174,6 +174,29 @@ if (typeof w.helpOf === 'function') {
 
 check(errs.length === 0 && errsBoot.length === 0, 'لا خطأَ تشغيلٍ أثناء فتح الشاشات' + (errs.length ? ` — ${errs[0].slice(0, 70)}` : ''));
 
+/* ── نافذةُ النقطة: تُفتَح بنقرة العلامة وتبقى، وتُغلَق بنقرةٍ خارجها ──
+   كُسرت في V15.23 حين أُضيف «الإغلاقُ بأي نقرة»: نقرةُ العلامة تفتحها ثم
+   يصل الحدثُ نفسُه إلى معالج المستند فيُغلقها في اللحظة نفسها — ولا يرى
+   أحدٌ شيئًا. الحارسُ يحاكي التسلسلَ الحقيقيَّ لا الدالةَ وحدَها. */
+try {
+  w.CUR = 'map'; w.render(1);
+  const site = (w.STATE.sites || [])[0];
+  if (site){
+    w.POP_OPEN = false; w.POP_JUST = 0;
+    /* نقرةُ العلامة كما يفعلها Leaflet: تفتح ثم يبلغ الحدثُ المستند */
+    w.POP_JUST = Date.now(); w.POP_SITE = site.id; w.POP_OPEN = true; w.render(1);
+    const fakeMarker = d.createElement('div');
+    d.body.appendChild(fakeMarker);
+    fakeMarker.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+    check(w.POP_OPEN === true && !!d.getElementById('pkPop'), 'نافذةُ النقطة تبقى مفتوحةً بعد نقرة العلامة');
+    /* بعد مهلةٍ: نقرةٌ خارجها تُغلقها */
+    w.POP_JUST = Date.now() - 1000;
+    fakeMarker.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+    check(w.POP_OPEN === false, 'نقرةٌ خارج النافذة تُغلقها');
+    fakeMarker.remove();
+  }
+} catch (e){ check(false, 'اختبارُ نافذة النقطة تعثّر — ' + String(e.message || e).slice(0, 60)); }
+
 /* ── الحصاد ────────────────────────────────────────────────────────────── */
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) { fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }

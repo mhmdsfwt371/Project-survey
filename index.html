@@ -12063,6 +12063,10 @@ function mapPaint(){
           else toast(t('هذه النقطة مُسندة بالفعل'));
           return;
         }
+        /* الحدثُ نفسُه يصل بعدها إلى معالج المستند الذي يُغلق النافذةَ عند
+           أيِّ نقرةٍ خارجها — فتُفتَح وتُغلَق في اللحظة نفسها ولا يرى أحدٌ
+           شيئًا. تُعلَّم النقرةُ فيتركها المعالجُ. */
+        POP_JUST = Date.now();
         POP_SITE = id; POP_OPEN = true; render();
       };
     })(x.id));
@@ -16555,7 +16559,7 @@ PAGE.vers = { m:'النظام', t:'نسخ الأجهزة', l:'نسخة التط�
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
 
-var POP_OPEN = false;
+var POP_OPEN = false, POP_JUST = 0;
 
 /* نافذةُ النقطة في p27 — بأفعالها الحقيقية */
 
@@ -19007,7 +19011,8 @@ function onDocClick(e){
   if (pk){ POP_OPEN = pk.getAttribute('data-pop') === '1'; render(); return; }
   /* نافذةُ النقطة تُغلَق بأيِّ نقرةٍ خارجها — علامةُ X وحدَها إجبارٌ على
      التصويب في جوّالٍ بيدٍ واحدة. والنقرُ داخلها يبقى كما هو. */
-  if (POP_OPEN && !e.target.closest('#pkPop') && !e.target.closest('[data-pop]')){
+  if (POP_OPEN && !e.target.closest('#pkPop') && !e.target.closest('[data-pop]')
+      && Date.now() - POP_JUST > 300){
     POP_OPEN = false; render(); return;
   }
   if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return; }
