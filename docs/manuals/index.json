@@ -1,84 +1,70 @@
 {
   "version": "V15.22",
-  "generated": "2026-09-03T10:39:29.924Z",
   "manuals": [
     {
       "id": "admin",
       "n": "مدير المشروع",
-      "file": "nusuk-manual-admin.docx",
-      "bytes": 16256
+      "file": "nusuk-manual-admin.docx"
     },
     {
       "id": "engineer",
       "n": "مهندس",
-      "file": "nusuk-manual-engineer.docx",
-      "bytes": 16491
+      "file": "nusuk-manual-engineer.docx"
     },
     {
       "id": "supervisor",
       "n": "مشرف",
-      "file": "nusuk-manual-supervisor.docx",
-      "bytes": 11940
+      "file": "nusuk-manual-supervisor.docx"
     },
     {
       "id": "viewer",
       "n": "وزارة",
-      "file": "nusuk-manual-viewer.docx",
-      "bytes": 10268
+      "file": "nusuk-manual-viewer.docx"
     },
     {
       "id": "tech",
       "n": "فني",
-      "file": "nusuk-manual-tech.docx",
-      "bytes": 11985
+      "file": "nusuk-manual-tech.docx"
     },
     {
       "id": "cprep",
       "n": "فريق التهيئة",
-      "file": "nusuk-manual-cprep.docx",
-      "bytes": 10123
+      "file": "nusuk-manual-cprep.docx"
     },
     {
       "id": "casm",
       "n": "فريق التجميع",
-      "file": "nusuk-manual-casm.docx",
-      "bytes": 10123
+      "file": "nusuk-manual-casm.docx"
     },
     {
       "id": "cins",
       "n": "فريق التركيب",
-      "file": "nusuk-manual-cins.docx",
-      "bytes": 10134
+      "file": "nusuk-manual-cins.docx"
     },
     {
       "id": "buyer",
       "n": "مشتريات",
-      "file": "nusuk-manual-buyer.docx",
-      "bytes": 10184
+      "file": "nusuk-manual-buyer.docx"
     },
     {
       "id": "store",
       "n": "مستودع",
-      "file": "nusuk-manual-store.docx",
-      "bytes": 10217
+      "file": "nusuk-manual-store.docx"
     },
     {
       "id": "acct",
       "n": "محاسب",
-      "file": "nusuk-manual-acct.docx",
-      "bytes": 10092
+      "file": "nusuk-manual-acct.docx"
     },
     {
       "id": "helper",
       "n": "مساعد فني",
-      "file": "nusuk-manual-helper.docx",
-      "bytes": 10033
+      "file": "nusuk-manual-helper.docx"
     },
     {
       "id": "driver",
       "n": "سائق",
-      "file": "nusuk-manual-driver.docx",
-      "bytes": 9729
+      "file": "nusuk-manual-driver.docx"
     }
   ]
 }

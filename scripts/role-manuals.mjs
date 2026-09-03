@@ -134,9 +134,9 @@ for (const id of Object.keys(ROLES)){
   const buf = await Packer.toBuffer(doc);
   const file = `nusuk-manual-${id}.docx`;
   writeFileSync(new URL('../docs/manuals/' + file, import.meta.url), buf);
-  index.push({ id, n: ROLES[id].n, file, bytes: buf.length });
+  index.push({ id, n: ROLES[id].n, file });
   console.log('  ✓ ' + id.padEnd(11) + ROLES[id].n.padEnd(16) + file + '  ' + (buf.length / 1024).toFixed(0) + ' ك.ب');
 }
 writeFileSync(new URL('../docs/manuals/index.json', import.meta.url),
-  JSON.stringify({ version: VER, generated: new Date().toISOString(), manuals: index }, null, 2) + '\n');
+  JSON.stringify({ version: VER, manuals: index }, null, 2) + '\n');
 console.log(`\n${index.length} دليلًا — النسخة ${VER} ✅`);
