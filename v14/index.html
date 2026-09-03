@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.10</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.11</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1791,6 +1791,42 @@ en:{
  'Approval limit per single transaction (ريال)':'Approval limit per single transaction (SAR)',
  'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.':'Arrival of devices and parts at the store — and what was issued from them to the teams.',
  '🌍 KMZ — إعادة تركيب ١٤٤٧':'🌍 KMZ — 1447 reinstallation',
+ 'سعرُ النقطة لم يُضبط بعد — يُكتب في الإعدادات ← ثوابت النظام.':'The point price is not set yet — write it in Settings → System constants.',
+ 'لم تُضبط أوزانُ هذه الطبقة بعد — اكتبها في الإعدادات لتُحسب النقاط.':'This layer’s weights are not set yet — write them in Settings so points are computed.',
+ 'لا تُجدوَل مرحلةٌ قبل ما يسبقها: التركيبُ لا يظهر إلا لما مُسح، والفكُّ لا يظهر إلا لما رُكِّب واعتُمد.':'No stage is scheduled before the one preceding it: installation appears only for what was surveyed, and dismantling only for what was installed and approved.',
+ 'ما رُكِّب واعتُمد وحده — يُجدوَل للفك وإرجاع العُهدة.':'Only what was installed and approved — scheduled for dismantling and custody return.',
+ 'هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.':'This site has not been surveyed yet — installing before surveying breaks the order.',
+ 'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.':'After the season — dismantle the point and return its custody with each item’s condition.',
+ 'لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.':'Target dates are not set yet — the pace is computed on nothing until they are set from Planning.',
+ 'لا لقطاتٍ محفوظةً بعد — هذا يومُك أنت محسوبًا من سجلاتك.':'No snapshots saved yet — this is your own day computed from your records.',
+ 'لا نقاطَ عالقةً الآن — كلُّ ما أُفيد بتحدٍّ فيه إمّا رُكِّب أو لم يبلغ بعد.':'No stuck points now — everything reported with a challenge was either installed or has not reached that stage.',
+ 'لم يُجمَّد خطُّ أساسٍ بعد — ولا تُقاس القيمةُ المكتسبةُ بلا مرجعٍ يُقاس عليه.':'No baseline frozen yet — and earned value cannot be measured without a reference to measure against.',
+ 'لا تعارضاتٍ الآن — كلُّ نقطةٍ في مكانها من التسلسل.':'No conflicts now — every point is in its place in the sequence.',
+ 'التهيئةُ والتجميعُ لا يُحتسَبان هنا بعد — نظامُ طلبات الورشة (من نفَّذ ماذا) لم يُبنَ، كما في «طلبات المستودع».':'Prep and assembly do not count here yet — the workshop request system (who executed what) is not built, as in “Warehouse requests”.',
+ 'الفرقُ الميدانيةُ 3 وتحتاج 6 سيارةً — المتاحُ 0، فالنقصُ 6. سجّل طلبَ شراءٍ أو استئجار.':'There are 3 field teams needing 6 vehicles — 0 available, so the shortfall is 6. Log a purchase or rental request.',
+ 'الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.':'The budget is a ceiling that spend is measured against, and the approval limit is an amount above which the engineer must approve before a transaction enters approved spend. Zero in either means no ceiling and no approval.',
+ 'عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.':'The number of points does not measure effort: a camp with fifteen parts is not like one with three. So the target is measured on the point’s parts — and each point’s parts are determined after its survey is approved.',
+ 'الحديدُ المجاور يشوّش قراءة القارئ ويغيّر مكان التثبيت':'Adjacent steel interferes with the reader and changes the mounting position',
+ 'الأعمالُ المدنية لها موعدُ إغلاقٍ مبكر — هذا الحقلُ يحدّد المسار الحرج':'Civil works have an early cut-off — this field sets the critical path',
+ 'الدوريات':'Schedules',
+ 'حفظ المواعيد':'Save the schedule',
+ 'نهاية كل يوم عمل':'End of each working day',
+ 'صباح أول يوم في الأسبوع':'Morning of the first day of the week',
+ 'أول يوم في الشهر':'First day of the month',
+ 'نقاط اليوم لكل منفِّذ':'Today’s points per executor',
+ 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته':'What each person did today by their task type',
+ 'المفتوح والمتأخر':'Open and overdue',
+ 'المهام التي لم تُقفل ومَن عندها':'Tasks not closed and who holds them',
+ 'الفريق مقابل تارجته':'The team against its target',
+ 'الأسبوعي مقابل ما أُنجز فعلًا':'Weekly against what was actually done',
+ 'الورشة — تهيئةً وتجميعًا':'Workshop — prep and assembly',
+ 'التهيئة والتجميع':'Prep and assembly',
+ 'ما خرج من الورشة جاهزًا للنزول':'What left the workshop ready for deployment',
+ 'التركيب في الميدان':'Installation in the field',
+ 'ما رُكّب وما تعذّر وما ينتظر التدقيق':'What was installed, what failed, and what awaits audit',
+ 'عرفات · مخيم':'Arafat · Camp',
+ 'د':'D',
+ 'س':'S',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -2873,6 +2909,42 @@ ur:{
  'Approval limit per single transaction (ريال)':'فی لین دین منظوری کی حد (ریال)',
  'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.':'آلات اور پرزوں کی گودام میں آمد — اور ان میں سے ٹیموں کو کیا جاری ہوا۔',
  '🌍 KMZ — إعادة تركيب ١٤٤٧':'🌍 KMZ — ١٤٤٧ دوبارہ تنصیب',
+ 'سعرُ النقطة لم يُضبط بعد — يُكتب في الإعدادات ← ثوابت النظام.':'پوائنٹ کی قیمت ابھی طے نہیں — اسے ترتیبات ← نظام کے مستقلات میں لکھیں۔',
+ 'لم تُضبط أوزانُ هذه الطبقة بعد — اكتبها في الإعدادات لتُحسب النقاط.':'اس پرت کے اوزان ابھی طے نہیں — پوائنٹس شمار ہونے کے لیے انہیں ترتیبات میں لکھیں۔',
+ 'لا تُجدوَل مرحلةٌ قبل ما يسبقها: التركيبُ لا يظهر إلا لما مُسح، والفكُّ لا يظهر إلا لما رُكِّب واعتُمد.':'کوئی مرحلہ اپنے پچھلے سے پہلے شیڈول نہیں ہوتا: تنصیب صرف سروے شدہ کے لیے، اور ڈسمینٹل صرف نصب و منظور شدہ کے لیے۔',
+ 'ما رُكِّب واعتُمد وحده — يُجدوَل للفك وإرجاع العُهدة.':'صرف جو نصب اور منظور ہوا — ڈسمینٹل اور تحویل واپسی کے لیے شیڈول۔',
+ 'هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.':'اس مقام کا ابھی سروے نہیں ہوا — سروے سے پہلے تنصیب ترتیب توڑتی ہے۔',
+ 'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.':'سیزن کے بعد — پوائنٹ ہٹائیں اور ہر شے کی حالت کے ساتھ تحویل واپس کریں۔',
+ 'لم تُضبط المواعيد المستهدفة بعد — الوتيرة تُحسب على فراغ حتى تُضبط من التخطيط.':'ہدف کی تاریخیں ابھی طے نہیں — منصوبہ بندی سے طے ہونے تک رفتار خلا پر شمار ہوتی ہے۔',
+ 'لا لقطاتٍ محفوظةً بعد — هذا يومُك أنت محسوبًا من سجلاتك.':'ابھی کوئی سنیپ شاٹ محفوظ نہیں — یہ آپ کا اپنا دن ہے جو آپ کے ریکارڈز سے شمار ہوا۔',
+ 'لا نقاطَ عالقةً الآن — كلُّ ما أُفيد بتحدٍّ فيه إمّا رُكِّب أو لم يبلغ بعد.':'ابھی کوئی اٹکا پوائنٹ نہیں — جس پر بھی چیلنج رپورٹ ہوا وہ یا تو نصب ہوا یا ابھی اس مرحلے تک نہیں پہنچا۔',
+ 'لم يُجمَّد خطُّ أساسٍ بعد — ولا تُقاس القيمةُ المكتسبةُ بلا مرجعٍ يُقاس عليه.':'ابھی کوئی بنیادی لائن منجمد نہیں — اور حاصل شدہ قدر بغیر حوالے کے ناپی نہیں جا سکتی۔',
+ 'لا تعارضاتٍ الآن — كلُّ نقطةٍ في مكانها من التسلسل.':'ابھی کوئی تضاد نہیں — ہر پوائنٹ ترتیب میں اپنی جگہ پر ہے۔',
+ 'التهيئةُ والتجميعُ لا يُحتسَبان هنا بعد — نظامُ طلبات الورشة (من نفَّذ ماذا) لم يُبنَ، كما في «طلبات المستودع».':'تیاری اور اسمبلی یہاں ابھی شمار نہیں — ورکشاپ درخواستی نظام (کس نے کیا کیا) نہیں بنا، جیسا کہ “گودام کی درخواستیں” میں۔',
+ 'الفرقُ الميدانيةُ 3 وتحتاج 6 سيارةً — المتاحُ 0، فالنقصُ 6. سجّل طلبَ شراءٍ أو استئجار.':'3 فیلڈ ٹیمیں ہیں جنہیں 6 گاڑیاں چاہئیں — 0 دستیاب، سو کمی 6 ہے۔ خریداری یا کرائے کی درخواست درج کریں۔',
+ 'الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.':'بجٹ ایک حد ہے جس کے مقابل خرچ ناپا جاتا ہے، اور منظوری کی حد وہ رقم ہے جس سے اوپر انجینئر کی منظوری لازم ہے قبل اس کے کہ لین دین منظور شدہ خرچ میں آئے۔ کسی میں بھی صفر کا مطلب نہ حد نہ منظوری۔',
+ 'عدد النقاط لا يقيس الجهد: مخيمٌ فيه خمس عشرة قطعة ليس كمخيمٍ فيه ثلاث. فالتارجت يُقاس على قطع النقطة — وتُحدَّد قطع كل نقطةٍ بعد اعتماد مسحها.':'پوائنٹس کی تعداد محنت نہیں ناپتی: پندرہ پرزوں والا کیمپ تین والے جیسا نہیں۔ سو ہدف پوائنٹ کے پرزوں پر ناپا جاتا ہے — اور ہر پوائنٹ کے پرزے اس کے سروے کی منظوری کے بعد متعین ہوتے ہیں۔',
+ 'الحديدُ المجاور يشوّش قراءة القارئ ويغيّر مكان التثبيت':'قریبی فولاد ریڈر میں مداخلت کرتا ہے اور نصب کی جگہ بدلتا ہے',
+ 'الأعمالُ المدنية لها موعدُ إغلاقٍ مبكر — هذا الحقلُ يحدّد المسار الحرج':'سول کاموں کی جلد بندش ہوتی ہے — یہ فیلڈ نازک راستہ طے کرتا ہے',
+ 'الدوريات':'شیڈولز',
+ 'حفظ المواعيد':'شیڈول محفوظ کریں',
+ 'نهاية كل يوم عمل':'ہر کام کے دن کے اختتام پر',
+ 'صباح أول يوم في الأسبوع':'ہفتے کے پہلے دن کی صبح',
+ 'أول يوم في الشهر':'مہینے کا پہلا دن',
+ 'نقاط اليوم لكل منفِّذ':'ہر عامل کے آج کے پوائنٹس',
+ 'ما أنجزه كلُّ فردٍ اليوم بنوع مهمته':'ہر شخص نے آج اپنے ٹاسک کی قسم کے حساب سے کیا کیا',
+ 'المفتوح والمتأخر':'کھلا اور تاخیر شدہ',
+ 'المهام التي لم تُقفل ومَن عندها':'بند نہ ہونے والے ٹاسکس اور کس کے پاس ہیں',
+ 'الفريق مقابل تارجته':'ٹیم اپنے ہدف کے مقابل',
+ 'الأسبوعي مقابل ما أُنجز فعلًا':'ہفتہ وار بمقابلہ حقیقی کارکردگی',
+ 'الورشة — تهيئةً وتجميعًا':'ورکشاپ — تیاری اور اسمبلی',
+ 'التهيئة والتجميع':'تیاری اور اسمبلی',
+ 'ما خرج من الورشة جاهزًا للنزول':'ورکشاپ سے کیا روانگی کے لیے تیار نکلا',
+ 'التركيب في الميدان':'فیلڈ میں تنصیب',
+ 'ما رُكّب وما تعذّر وما ينتظر التدقيق':'کیا نصب ہوا، کیا نہ ہو سکا، اور کیا آڈٹ کا منتظر ہے',
+ 'عرفات · مخيم':'عرفات · کیمپ',
+ 'د':'ڈ',
+ 'س':'سیکنڈ',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -15935,7 +16007,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.10' + '.docx" download>⬇ '
+              +   'V15.11' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
