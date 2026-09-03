@@ -657,7 +657,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     <nav class="nav" id="nav"></nav>
     <div class="sidebar-foot">
       
-      <div class="who">محمد صفوت</div>
+      <div class="who" id="sideWho">محمد صفوت</div>
       <div class="foot-row">
         <select id="langSel" aria-label="اللغة" data-i18n-aria="اللغة">
           <option value="ar">العربية</option>
@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.18</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.19</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2157,6 +2157,7 @@ en:{
  'اسم الشركة · its sites · المنسّق · Mobile':'Company name · its sites · Coordinator · Mobile',
  'اسم الشركة':'Company name',
  'المنسّق':'Coordinator',
+ 'الاسمُ لا يُترجَم بل يُنقحَر: «محمد صفوت» تُكتَب Mohamed Safwat كما في جواز السفر. والنقحرةُ حسابٌ محليٌّ يجري في اللحظة — فمن يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّل. والأرديةُ تُكتَب بالحرف العربيِّ نفسِه فيبقى الاسمُ كما هو.':'A name is not translated but transliterated: “محمد صفوت” is written Mohamed Safwat, as on a passport. Transliteration is a local computation that runs at the moment — so whoever is added tomorrow reads in English the instant they are added, with no intervention. Urdu is written in the same Arabic script, so the name stays as it is.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3605,6 +3606,7 @@ ur:{
  'اسم الشركة · its sites · المنسّق · Mobile':'کمپنی کا نام · اس کے مقامات · کوآرڈینیٹر · موبائل',
  'اسم الشركة':'کمپنی کا نام',
  'المنسّق':'کوآرڈینیٹر',
+ 'الاسمُ لا يُترجَم بل يُنقحَر: «محمد صفوت» تُكتَب Mohamed Safwat كما في جواز السفر. والنقحرةُ حسابٌ محليٌّ يجري في اللحظة — فمن يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّل. والأرديةُ تُكتَب بالحرف العربيِّ نفسِه فيبقى الاسمُ كما هو.':'نام کا ترجمہ نہیں بلکہ نقل حرفی ہوتی ہے: “محمد صفوت” کو Mohamed Safwat لکھا جاتا ہے، جیسے پاسپورٹ پر۔ نقل حرفی ایک مقامی حساب ہے جو اسی لمحے چلتا ہے — سو کل جو شامل ہو وہ شامل ہوتے ہی انگریزی میں پڑھا جاتا ہے، بغیر کسی مداخلت کے۔ اردو اسی عربی رسم الخط میں لکھی جاتی ہے، سو نام جوں کا توں رہتا ہے۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -3641,6 +3643,9 @@ function nm(v){
    تُحفَظ — فكلُّ عنصرٍ جديدٍ يُوسَم يُترجَم بلا تعديل هنا، وحارسُ اللغة
    يمسك ما نُسي وسمُه. */
 function shellLang(){
+  /* اسمُ صاحب الجلسة في الشريط الجانبي: يُنقحَر مع اللغة كبقيّة الأسماء */
+  var sw = document.getElementById('sideWho');
+  if (sw) sw.textContent = dispName(STATE.meta.name || 'محمد صفوت');
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     el.textContent = t(el.getAttribute('data-i18n'));
   });
@@ -5170,6 +5175,7 @@ var CFG = {
   /* نقاط النقطة الكاملة ومعاملا الفك — والوزنُ لكلِّ نوعٍ على حدة */
   insCamp:0, insCor:0, disOk:0, disBad:0,
   insType:{},
+  nameEn:{},   /* تصحيحُ نقحرةِ اسمٍ بعينه — يُكتَب مرةً ويثبت */
 
   /* ثوابت النظام */
   ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
@@ -6597,7 +6603,7 @@ function perfRankTable(){
             S.list.map(function(e){
               var R = STAGE_ROLES[e.stage] || { n:e.stage, i:'' };
               return [e.rank <= 3 ? '<b>' + nm(e.rank) + '</b>' : nm(e.rank),
-                      '<strong>' + esc(e.name) + '</strong>',
+                      '<strong>' + esc(dispName(e.name)) + '</strong>',
                       R.i + ' ' + esc(t(R.n)),
                       N(e.survey), N(e.install), N(e.dis),
                       e.pBonus ? ('<span class="' + (e.pBonus > 0 ? 'num' : 'req') + '">'
@@ -6660,7 +6666,7 @@ function perfStageTable(){
       ? cardFlush(t('الفريق') + ' — ' + nm(L.length),
           table(['#','الفني','زيارة','تركيب','فك','تهيئة','تجميع','أعمال','عادي','إضافي','النقاط','المستحَق'],
             L.map(function(e, i){
-              return [nm(i+1), '<strong>' + esc(e.name) + '</strong>',
+              return [nm(i+1), '<strong>' + esc(dispName(e.name)) + '</strong>',
                       N(e.survey), N(e.install), N(e.dis), N(e.prep), N(e.asm),
                       N(e.acts), N(e.regular),
                       e.over ? '<span class="pill warn">' + nm(e.over) + '</span>' : '٠',
@@ -6931,7 +6937,7 @@ PAGE.crewman = { m:'الفرق', t:'الفرق',
 
       + '<div class="chips">' + subs.map(function(x){
           return '<button type="button" class="chip' + (CTEAM_CUR===x.id?' on':'') + '" data-depteam="' + x.id + '">'
-            + esc(x.n) + ' <span class="num">' + nm(x.members.length) + '</span></button>';
+            + esc(dispName(x.n)) + ' <span class="num">' + nm(x.members.length) + '</span></button>';
         }).join('')
         + (may('users') ? btn('➕ فريق فرعي','btn-secondary btn-sm',' data-depteamnew="' + esc(crew.id) + '"') : '')
         + '</div>';
@@ -7457,6 +7463,78 @@ function disDone(id){
 function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 
 /* ── النقاط: كلُّ عملٍ وزنُه من الإعدادات ── */
+/* ═══ عرضُ أسماء البيانات بلغة القارئ ═══
+   اسمُ شخصٍ أو شركةٍ لا يُترجَم — يُنقحَر. «محمد صفوت» لا يصير شيئًا آخر
+   بالإنجليزية، بل يُكتَب بحروفها: Mohamed Safwat — كما في جواز السفر.
+   ولا يحتاج شبكةً ولا خدمةً: النقحرةُ حسابٌ محليٌّ يجري في اللحظة، فمن
+   يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّلٍ من أحد.
+
+   والأرديةُ تُكتَب بالحرف العربيِّ نفسِه — فالاسمُ يُقرأ كما هو ولا يُمَسّ.
+
+   وحين تخطئ النقحرةُ في اسمٍ بعينه — وهي تخطئ، فالعربيةُ لا تكتب الحركات —
+   يُكتَب الصوابُ مرةً في «الإعدادات ← أسماءُ العرض» فيثبت لكلِّ من يقرأ. */
+
+/* أسماءٌ شائعةٌ لها كتابةٌ لاتينيةٌ متعارَفةٌ لا تُشتقّ بالحرف */
+var NAME_FIX = {
+  'محمد':'Mohamed', 'أحمد':'Ahmed', 'احمد':'Ahmed', 'محمود':'Mahmoud',
+  'عبدالله':'Abdullah', 'عبد الله':'Abdullah', 'عبدالرحمن':'Abdulrahman',
+  'عبد الخالق':'Abdulkhaliq', 'خالد':'Khaled', 'سعد':'Saad', 'فهد':'Fahd',
+  'ماجد':'Majed', 'طارق':'Tarek', 'ياسر':'Yasser', 'مصطفى':'Mostafa',
+  'إبراهيم':'Ibrahim', 'ابراهيم':'Ibrahim', 'علي':'Ali', 'عمر':'Omar',
+  'عمرو':'Amr', 'حسن':'Hassan', 'حسين':'Hussein', 'سليمان':'Suleiman',
+  'سمير':'Samir', 'تامر':'Tamer', 'بدر':'Badr', 'أنس':'Anas', 'انس':'Anas',
+  'علاء':'Alaa', 'عوض':'Awad', 'سعيد':'Saeed', 'أسامة':'Osama', 'اسامة':'Osama',
+  'بلال':'Bilal', 'عدنان':'Adnan', 'رضوان':'Radwan', 'سهيل':'Suhail',
+  'حكيم':'Hakim', 'حمود':'Hamoud', 'غريب':'Ghareeb', 'سليم':'Salim',
+  'صفوت':'Safwat', 'عزام':'Azzam', 'عرفة':'Arafa', 'إقبال':'Iqbal',
+  'اقبال':'Iqbal', 'إكرام':'Ikram', 'اكرام':'Ikram', 'شركة':'Company',
+  'مؤسسة':'Est.', 'مكتب':'Office', 'فندق':'Hotel', 'مجموعة':'Group',
+  'السعيد':'Al-Saeed', 'الراجحي':'Al-Rajhi', 'الأمانة':'Al-Amanah',
+  'أرسلان':'Arslan', 'ارسلان':'Arslan', 'حفيظ':'Hafeez', 'مشير':'Musheer',
+  'برويز':'Parvez', 'زيشان':'Zeeshan', 'فيزان':'Faizan', 'شهداب':'Shahdab',
+  'شهويز':'Shahwaiz', 'راجابابو':'Rajababu', 'عاقب':'Aqib', 'وحيد':'Waheed',
+  'بصرور':'Basrour', 'حسيب':'Haseeb', 'فرمان':'Farman', 'سيد':'Syed',
+  'آل':'Al', 'مسؤول':'Officer', 'سلامة':'Safety', 'النور':'Al-Noor',
+  'الحرم':'Al-Haram', 'محل':'Store', 'ضيوف':'Guests', 'البيت':'Al-Bayt',
+  'الرفادة':'Al-Rifada', 'رفاد':'Rifad', 'الزوار':'Al-Zowar', 'دليل':'Daleel',
+  'بشرى':'Bushra', 'الضيافة':'Al-Diyafa', 'مشارق':'Mashareq', 'الماسية':'Al-Masiya',
+  'إكرام الضيف':'Ikram Al-Dhaif', 'الخطوط':'Airlines', 'السعودية':'Saudi',
+  'رحلات':'Rehlat', 'ومنافع':'Wa-Manafe', 'ابراج':'Abraj', 'مكه':'Makkah'
+};
+
+/* جدولُ النقحرة — حرفًا حرفًا، وما لا مقابلَ له يسقط */
+var TRANSLIT = {
+  'ا':'a','أ':'a','إ':'i','آ':'aa','ب':'b','ت':'t','ث':'th','ج':'j','ح':'h',
+  'خ':'kh','د':'d','ذ':'dh','ر':'r','ز':'z','س':'s','ش':'sh','ص':'s','ض':'d',
+  'ط':'t','ظ':'z','ع':'a','غ':'gh','ف':'f','ق':'q','ك':'k','ل':'l','م':'m',
+  'ن':'n','ه':'h','ة':'a','و':'w','ؤ':'w','ي':'y','ى':'a','ئ':'y','ء':'',
+  'ٱ':'a','ـ':'', 'َ':'a','ُ':'u','ِ':'i','ّ':'','ْ':'','ً':'an','ٌ':'un','ٍ':'in'
+};
+
+function translitWord(w){
+  if (NAME_FIX[w]) return NAME_FIX[w];
+  var out = '', i = 0;
+  /* «ال» التعريفُ تُكتَب Al- كما هو متعارَف */
+  if (w.length > 3 && w.slice(0, 2) === 'ال'){ out = 'Al-'; i = 2; }
+  for (; i < w.length; i++){
+    var c = w[i];
+    out += (TRANSLIT[c] !== undefined) ? TRANSLIT[c] : c;
+  }
+  /* أولُ حرفٍ لاتينيٍّ يُرفَع، وبعد الشرطة كذلك */
+  return out.replace(/(^|-)([a-z])/g, function(m, a, b){ return a + b.toUpperCase(); });
+}
+
+/* اسمُ العرض: عربيٌّ كما هو، وأرديٌّ كما هو (نفسُ الحرف)، وإنجليزيٌّ
+   بالتصحيح المحفوظ إن وُجد وإلا بالنقحرة. */
+function dispName(s){
+  if (!s || typeof s !== 'string') return s;
+  if (LANG !== 'en') return s;
+  if (!/[\u0600-\u06FF]/.test(s)) return s;
+  var fix = (CFG.nameEn || {})[s];
+  if (fix) return fix;
+  return s.split(/\s+/).map(translitWord).join(' ');
+}
+
 function catLabel(x){
   var d = CAT_DEF[x.type];
   return d ? d.l : x.type;
@@ -11159,7 +11237,7 @@ function queueHtml(){
           var who = v.by || v.user || v.doneBy || v.reopenBy || STATE.meta.name || '\u2014';
           return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'),
                   '<strong>' + esc(String(x.id || '\u2014')) + '</strong>',
-                  esc(who),
+                  esc(dispName(who)),
                   '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
         })) : '')
     + (Q.length > 200
@@ -11492,7 +11570,7 @@ function fieldList(){
             + '<div class="li-main">'
             + '<div class="li-t">' + esc(x.name) + '</div>'
             + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
-            +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(x.co.slice(0, 26)) : '')
+            +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(dispName(x.co.slice(0, 26))) : '')
             + '</div></div><div class="li-end">'
             + (typeof distTxt === 'function' && distTxt(x)
                 ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(x) + '</div>' : '')
@@ -13577,7 +13655,7 @@ PAGE.chalm = { m:'المتابعة', t:'التحديات', l:'أين هي وما
                         typeLabel(x.site && x.site.type),
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
                         days > 0 ? (nm(days) + ' ' + t('يوم')) : t('اليوم'),
-                        esc(x.by || '—')];
+                        esc(dispName(x.by) || '—')];
               })))
         : alertBox('success','لا نقاطَ عالقةً الآن — كلُّ ما أُفيد بتحدٍّ فيه إمّا رُكِّب أو لم يبلغ بعد.'))
 
@@ -13610,7 +13688,7 @@ PAGE.dis = { m:'المتابعة', t:'الفك بعد الموسم', l:'جدول
                 return ['<strong>' + esc(x.id) + '</strong>',
                         pill(x.status, x.status === 'تم الفك' ? 'ok' : 'wrn'),
                         x.cond ? pill(x.cond, x.cond === 'تالف' ? 'bad' : 'ok') : '—',
-                        esc(x.by || '—'),
+                        esc(dispName(x.by) || '—'),
                         '<span class="num">' + esc(new Date(x.at||0).toLocaleDateString('ar-EG')) + '</span>'];
               })))
         : '');
@@ -13756,7 +13834,7 @@ PAGE.survey = { m:'الطلبات والمسح', t:'المسح الميداني'
               return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
                         + esc((x.site.name || '').slice(0, 28)) + '</span>',
                       x.done ? pill('تمت الزيارة','ok') : pill(x.rec.access || 'متعذّر','wrn'),
-                      esc(x.rec.by || '—'),
+                      esc(dispName(x.rec.by) || '—'),
                       '<span class="num">' + esc(new Date(x.rec.at || 0).toLocaleDateString('ar-EG')) + '</span>',
                       esc(x.rec.note || x.rec.reopenNote || '—'),
                       x.done
@@ -13805,7 +13883,7 @@ PAGE.chal = { m:'الطلبات والمسح', t:'التحديات الميدا�
                 return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
-                        esc(x.note || '—'), esc(x.by || '—'),
+                        esc(x.note || '—'), esc(dispName(x.by) || '—'),
                         x.closed ? pill('أُغلقت بالتركيب', 'ok') : pill('بانتظار حل', 'wrn')];
               })))
         : card('لا إفاداتٍ بعد',
@@ -13852,7 +13930,7 @@ PAGE.stuck = { m:'الطلبات والمسح', t:'المتعذّر والراك
                           + esc((x.site.name || '').slice(0, 28)) + '</span>',
                         x.blocked ? pill(x.rec.access || 'متعذّر', 'bad') : pill('راكد بانتظار التركيب', 'wrn'),
                         nm(x.days) + ' ' + t('يوم'),
-                        esc(x.rec.by || '—')];
+                        esc(dispName(x.rec.by) || '—')];
               })))
         : alertBox('success','لا عناصرَ متعذّرةً ولا راكدةً الآن.'))
 
@@ -14374,7 +14452,7 @@ PAGE.stock = { m:'الورشة والمخزون', t:'عُهدة الأجهزة',
             table(['المنفِّذ','أصناف','قطع','التفصيل'],
               L.map(function(r){
                 var ks = Object.keys(r.items).filter(function(k){ return r.items[k] > 0; });
-                return ['<strong>' + esc(r.who) + '</strong>', N(ks.length), N(r.total),
+                return ['<strong>' + esc(dispName(r.who)) + '</strong>', N(ks.length), N(r.total),
                         '<span class="hint" style="margin:0">'
                           + ks.map(function(k){ return esc(itemName(k)) + ' \u00d7' + nm(r.items[k]); }).join(' \u00b7 ')
                           + '</span>'];
@@ -15090,7 +15168,7 @@ function techPerfTable(list, showRank){
       ['الفني','زيارة','تركيب','فك','زيادة','الإجمالي','من التارجت']),
     list.map(function(e, i){
       var row = [
-        '<strong>' + esc(e.name) + '</strong>',
+        '<strong>' + esc(dispName(e.name)) + '</strong>',
         breakCell(e.survey, e.pSurvey),
         breakCell(e.install, e.pInstall, e.installT),
         breakCell(e.dis, e.pDis, e.disT),
@@ -16665,7 +16743,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.18' + '.docx" download>⬇ '
+              +   'V15.19' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16822,7 +16900,7 @@ PAGE.appr = { m:'النظام', t:'الاعتمادات', l:'ما اقترحه �
       var days = Math.max(0, Math.round((Date.now() - (x.at || Date.now())) / 86400000));
       return [pill(ttl, it.k === 'buy' ? 'wrn' : 'off'),
               det + (x.why ? '<br><span class="hint" style="margin:0">' + esc(x.why) + '</span>' : ''),
-              esc(x.by || '—'),
+              esc(dispName(x.by) || '—'),
               '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>',
               may('approve')
                 ? btn('اعتمد','btn-primary btn-sm',' data-apok="' + it.k + '|' + esc(it.id) + '"')
@@ -16874,7 +16952,7 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
                 ['users','إدارة المستخدمين'],['phones','أرقام الهواتف']];
     return card('دوري',
         '<div class="pop-rows" style="margin:0">'
-        + '<div><span class="k">'+esc(t('الاسم'))+'</span><span>محمد صفوت</span></div>'
+        + '<div><span class="k">'+esc(t('الاسم'))+'</span><span>'+esc(dispName(STATE.meta.name || 'محمد صفوت'))+'</span></div>'
         + '<div><span class="k">'+esc(t('الدور'))+'</span>'+pill(r.n,'acc')+'</div>'
         + '<div><span class="k">'+esc(t('الوصف'))+'</span><span>'+esc(t(r.d))+'</span></div>'
         + '<div><span class="k">'+esc(t('النسخة'))+'</span><span class="num">V14.0</span></div>'
@@ -18243,6 +18321,48 @@ PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد
       + '<p class="hint">' + esc(t('تغييرُ السقف لا يمسّ عمليةً مسجّلة — الوزن يُثبَّت لحظةَ الحدث.')) + '</p>';
   }};
 
+/* ═══ أسماءُ العرض — تصحيحُ ما تُخطئ فيه النقحرة ═══
+   النقحرةُ حسابٌ حرفيٌّ لا يعرف النطق، والعربيةُ لا تكتب الحركات — فـ«فريق»
+   تصير Fryq. والصوابُ يُكتَب هنا مرةً فيثبت لكلِّ من يقرأ بالإنجليزية،
+   ولا يُمَسُّ الاسمُ المخزَّنُ في القاعدة. */
+PAGE.names = { m:'الإعدادات', t:'أسماء العرض',
+  l:'كيف تُكتَب أسماءُ الأشخاص والشركات بالإنجليزية — تصحيحٌ يُكتَب مرةً ويثبت.',
+  body:function(){
+    var seen = {};
+    function add(x){ if (x && /[\u0600-\u06FF]/.test(x)) seen[x] = 1; }
+    techsList().forEach(function(x){ add(x.n); add(x.sup); });
+    crewsList().forEach(function(x){ add(x.n); });
+    (STATE.sites || []).forEach(function(x){ add(x.co); });
+    add(STATE.meta.name);
+    var L = Object.keys(seen).sort();
+    var fix = CFG.nameEn || {};
+    var done = L.filter(function(k){ return fix[k]; }).length;
+
+    return stats([['أسماءٌ في النظام', N(L.length), 'acc'],
+                  ['صُحّحت يدويًّا', N(done), done ? 'ok' : ''],
+                  ['تُنقحَر آليًّا', N(L.length - done)]])
+
+      + card('كيف تعمل',
+          '<p class="hint" style="margin:0">'
+          + esc(t('الاسمُ لا يُترجَم بل يُنقحَر: «محمد صفوت» تُكتَب Mohamed Safwat كما في جواز السفر. والنقحرةُ حسابٌ محليٌّ يجري في اللحظة — فمن يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّل. والأرديةُ تُكتَب بالحرف العربيِّ نفسِه فيبقى الاسمُ كما هو.'))
+          + '</p>')
+
+      + (L.length
+        ? cardFlush('الأسماء — ' + nm(L.length),
+            table(['الاسم كما كُتب','كما يُقرأ بالإنجليزية','تصحيحُك'],
+              L.slice(0, 300).map(function(k){
+                return ['<strong>' + esc(k) + '</strong>',
+                        '<span class="hint" style="margin:0">' + esc(dispName(k)) + '</span>',
+                        may('settings')
+                          ? '<input value="' + esc(fix[k] || '') + '" data-nmen="' + esc(k)
+                            + '" dir="ltr" placeholder="' + esc(dispName(k)) + '">'
+                          : esc(fix[k] || '—')];
+              })))
+        : card('', alertBox('info','لا أسماءَ عربيةً في النظام بعد.')))
+
+      + '<p class="hint">ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.</p>';
+  }};
+
 PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام العمل وساعات اليوم.',
   body:function(){
     return card('الثوابت',
@@ -18353,7 +18473,7 @@ var NAV = [
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
       ['asm','نقاط التجميع'],['install','نقاط التركيب'],['disp','نقاط الفك'],
-      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
+      ['items','القطع والأسعار'],['buycat','فئات المشتريات'],['sup','المورّدون'],['names','أسماء العرض'],['consts','ثوابت النظام'],['roles','الأدوار والصلاحيات']] },
   { g:'النظام', icon:'\u25A1', items:[['appr','الاعتمادات'],['esc','التصعيد'],
       ['drive','تخزين الصور'],['cover','خريطة التغطية'],['raci','مصفوفة المسؤوليات'],['hse','السلامة والحوادث'],
       ['less','سجل الدروس'],['exp','التصدير والاستيراد'],['probe','أداة الفحص'],['sync','المزامنة والتعارض'],['retain','عمر البيانات'],
@@ -19482,6 +19602,13 @@ document.addEventListener('input', function(e){
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-evf')){
     EVF[e.target.getAttribute('data-evf')] = e.target.value; render(1); return;
+  }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nmen')){
+    var k = e.target.getAttribute('data-nmen'), v = e.target.value.trim();
+    CFG.nameEn = CFG.nameEn || {};
+    if (v) CFG.nameEn[k] = v; else delete CFG.nameEn[k];
+    CORE.set('cfg', 'nameEn', CFG.nameEn);
+    return;
   }
   if (e.target && e.target.id === 'survQ'){
     SURV_Q = e.target.value; render(1);
