@@ -50,6 +50,8 @@ jobs:
         run: node scripts/audit-i18n.mjs
       - name: جرد الاستقرار — ما يسوء يُرى ولا يُبتلَع
         run: node scripts/audit-stability.mjs
+      - name: رحلة المسح — من الإسناد إلى نقاط التركيب
+        run: node scripts/audit-journey.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

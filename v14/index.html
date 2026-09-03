@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.25</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.26</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7724,6 +7724,17 @@ function ptsInstall(x){
     byParts += cfgN(ins.parts[k]) * itPts(k);
   });
   if (byParts) return byParts;
+  /* الحلُّ المعتمدُ يُقدِّر ما سيُركَّب قبل أن يُركَّب: كان يُكتَب في
+     `solution.items` بينما ptsInstall تقرأ `parts` التي لا تُملأ إلا عند
+     التركيب الفعلي — فنقطةٌ حلُّها معتمدٌ بخمس عشرة قطعةً كانت تساوي
+     صفرًا في الجدولة والتقدير، ويُخطَّط الموسمُ على وزنٍ عام. */
+  if (ins && ins.solution && ins.solution.status === 'معتمد' && ins.solution.items){
+    var bySol = 0;
+    Object.keys(ins.solution.items).forEach(function(k){
+      bySol += cfgN(ins.solution.items[k]) * itPts(k);
+    });
+    if (bySol) return bySol;
+  }
   /* وزنُ النوع نفسِه إن ضُبط — فمحطةُ القطارِ ليست مخيمًا ولا ممرًّا، وكان
      كلُّ ما ليس مخيمًا يأخذ وزنَ الممر. وإن لم يُضبط رجع للوزن القديم
      (insCamp/insCor) فلا ينكسر ما ضُبط قبل هذا الإصدار. */
@@ -17080,7 +17091,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.25' + '.docx" download>⬇ '
+              +   'V15.26' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
