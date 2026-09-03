@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.33</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.34</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2452,6 +2452,43 @@ en:{
  'من تحتك ونقاطُهم.':'Those under you and their points.',
  'ما على فريقك الميداني من عمل.':'The work your field crew has.',
  'مهامُّك وجدولُك وأداؤك وفريقُك — في شاشةٍ واحدة.':'Your tasks, schedule, performance, and team — on one screen.',
+
+ /* V15.34 — دورةُ العمل والدفعةُ الرابعة */
+ 'دورة النقطة':'Point cycle',
+ 'دورةُ النقطة كلُّها — مسحُها واعتمادُها وحلُّها وتدقيقُ تركيبها، وما أفاد به الميدان وما تعثّر.':'The whole point cycle — its survey, approval, solution, installation audit, field reports, and what stalled.',
+ 'التخطيط والمخاطر':'Planning and risks',
+ 'المواعيدُ والمعالمُ وخطُّ الأساس — وما قد يسوء وما تغيّر وسلامةُ الخط.':'Deadlines, milestones, and the baseline — and what could go wrong, what changed, and pipeline integrity.',
+ 'الكتالوج والقوائم':'Catalog and lists',
+ 'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.':'What we buy and from whom — and the constants, display names, and vehicle types.',
+ 'التنظيم والسلامة':'Organisation and safety',
+ 'من يغطّي ماذا ومن يُساءل — والحوادثُ وإجراءاتُ السلامة والدروس.':'Who covers what and who is accountable — and incidents, safety procedures, and lessons.',
+ 'دورة العمل':'Workflow',
+ 'كلُّ دورةٍ خطوةً خطوة — من يفعل ماذا وأين، حتى الاعتماد.':'Every cycle step by step — who does what and where, up to approval.',
+ 'كيف تسير الدورة؟':'How does the cycle work?',
+ 'دورة الزيارة — حتى تُعتمَد':'Visit cycle — until approved',
+ 'دورة التركيب — حتى يكتمل':'Installation cycle — until complete',
+ 'المتابعة — من أين تُراقب':'Follow-up — where to watch from',
+ 'الجميع':'Everyone',
+ 'المكتب':'Office',
+ 'يُنشئ طلبَ زيارةٍ (SR) أو يُسنِد نقاطًا من الخريطة لمشرفٍ بموعد':'Creates a visit request (SR) or assigns points from the map to a supervisor with a date',
+ 'يفتح «شغلي ← مهامي» فيجد نقاطَه — وعلى الخريطة نقاطُه بلونٍ لا يشبه نقاطَ غيره':'Opens “My work → My tasks” and finds his points — and on the map his points wear a colour unlike anyone else’s',
+ 'يزور النقطةَ ويملأ نموذجَ المسح بصورتَيه وقياساته — أو يسجّل تعذُّرَ الوصول بسببه':'Visits the point and fills the survey form with its two photos and measurements — or records failure to reach with its reason',
+ 'تُحفَظ الزيارةُ «بانتظار الاعتماد» — وتظهر فورًا في اعتماد الزيارات ببياناتها الجديدة':'The visit is saved “awaiting approval” — and appears immediately in Visit approval with its new data',
+ 'يعتمد الزيارةَ فتُغلَق مهمتُها وتُحتسب نقاطُها — أو يردُّها «تحتاج زيارةً أخرى» بسببٍ مكتوب':'Approves the visit — its task closes and its points count — or returns it as “needs another visit” with a written reason',
+ 'إن رُدَّت وجدها في مهامّه بسبب الردّ — يزورها ثانيةً وتُحفَظ جولةً ثانيةً تنتظر الاعتماد':'If returned, he finds it in his tasks with the reason — visits again, and it is saved as a second round awaiting approval',
+ 'لا تُحتسب زيارةٌ في المنجَز وهي مردودة — والاعتمادُ وحدَه يفتح بابَ الحل.':'A returned visit does not count as done — and only approval opens the door to the solution.',
+ 'بعد اعتماد الزيارة يقترح حلَّها: الأصنافُ وكمّياتُها من الكتالوج — يدويًّا أو بنمطٍ جاهز':'After the visit is approved he proposes its solution: items and quantities from the catalog — manually or with a ready pattern',
+ 'يعتمد الحلَّ — فتدخل النقطةُ طبقةَ التركيب ولا يُقبَل طلبُ تركيبٍ (DR) قبل ذلك':'Approves the solution — the point enters the installation layer, and no installation request (DR) is accepted before that',
+ 'يُسنِد التركيبَ لفريقٍ من الخريطة أو «توزيع الفرق» — التركيبُ عملُ أيدٍ لا يدٍ واحدة':'Assigns the installation to a team from the map or “Team allocation” — installation is many hands’ work, not one',
+ 'يركّب ويملأ نموذجَ التركيب: صورتا قبلُ وبعدُ، والسيريالاتُ، والقطعُ المستهلكة':'Installs and fills the installation form: before/after photos, serials, and consumed parts',
+ 'تُخصَم القطعُ من المخزون في دفتر الحركة — فلا يُخصَم شيءٌ مرتين ولا يضيع':'Parts are deducted from stock in the movement ledger — nothing is deducted twice or lost',
+ 'يدقّق التركيبَ في «التدقيق الهندسي» فيعتمده — أو يفتح عدمَ مطابقةٍ إن وجد خللًا':'Audits the installation in “Engineering audit” and approves it — or opens a non-conformity if he finds a fault',
+ 'بالاعتماد تصير النقطةُ «مُركّب» وتُحتسب نقاطُ الفريق — وتظهر خضراءَ على الخريطة':'With approval the point becomes “installed”, the team’s points count — and it turns green on the map',
+ 'البواباتُ بالترتيب: لا حلَّ قبل اعتماد الزيارة، ولا طلبَ تركيبٍ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.':'Gates in order: no solution before visit approval, no installation request before solution approval, no points before audit approval.',
+ '«أمس · الآن · غدًا»: ما انتهى، وما يجري الآن ومن يفعله وأين، وما جُدول لغد':'“Yesterday · Now · Tomorrow”: what finished, what is happening now and who is doing it where, and what is scheduled for tomorrow',
+ 'الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد':'The map colours the whole cycle — not visited · assigned · scheduled tomorrow · returned · waiting · approved',
+ '«الوتيرة والهدف» تجيب «هنلحق؟» بالأرقام: المطلوبُ يوميًّا والانتهاءُ المتوقَّع':'“Pace and target” answers “will we make it?” with numbers: the daily requirement and the expected finish',
+ 'التقاريرُ التنفيذية: اللوحةُ ومركزُ التقارير والملخّصُ المالي — للتصدير والاجتماعات':'Executive reports: the dashboard, the report centre, and the financial summary — for export and meetings',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4185,6 +4222,41 @@ ur:{
  'من تحتك ونقاطُهم.':'آپ کے ماتحت اور ان کے پوائنٹس۔',
  'ما على فريقك الميداني من عمل.':'آپ کے فیلڈ عملے کے پاس جو کام ہے۔',
  'مهامُّك وجدولُك وأداؤك وفريقُك — في شاشةٍ واحدة.':'آپ کے ٹاسکس، شیڈول، کارکردگی، اور ٹیم — ایک اسکرین پر۔',
+ 'دورة النقطة':'پوائنٹ کا چکر',
+ 'دورةُ النقطة كلُّها — مسحُها واعتمادُها وحلُّها وتدقيقُ تركيبها، وما أفاد به الميدان وما تعثّر.':'پوائنٹ کا پورا چکر — سروے، منظوری، حل، تنصیب کا آڈٹ، فیلڈ رپورٹس، اور جو رُکا۔',
+ 'التخطيط والمخاطر':'منصوبہ بندی اور خطرات',
+ 'المواعيدُ والمعالمُ وخطُّ الأساس — وما قد يسوء وما تغيّر وسلامةُ الخط.':'آخری تاریخیں، سنگ میل اور بنیادی لکیر — اور کیا غلط ہو سکتا ہے، کیا بدلا، اور پائپ لائن کی سلامتی۔',
+ 'الكتالوج والقوائم':'کیٹلاگ اور فہرستیں',
+ 'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.':'ہم کیا اور کس سے خریدتے ہیں — اور ثوابت، ڈسپلے نام اور گاڑیوں کی اقسام۔',
+ 'التنظيم والسلامة':'تنظیم اور حفاظت',
+ 'من يغطّي ماذا ومن يُساءل — والحوادثُ وإجراءاتُ السلامة والدروس.':'کون کیا کور کرتا ہے اور کون جوابدہ — اور واقعات، حفاظتی طریقہ کار اور اسباق۔',
+ 'دورة العمل':'ورک فلو',
+ 'كلُّ دورةٍ خطوةً خطوة — من يفعل ماذا وأين، حتى الاعتماد.':'ہر چکر قدم بہ قدم — کون کیا اور کہاں کرتا ہے، منظوری تک۔',
+ 'كيف تسير الدورة؟':'چکر کیسے چلتا ہے؟',
+ 'دورة الزيارة — حتى تُعتمَد':'دورے کا چکر — منظوری تک',
+ 'دورة التركيب — حتى يكتمل':'تنصیب کا چکر — تکمیل تک',
+ 'المتابعة — من أين تُراقب':'پیروی — کہاں سے نگرانی کریں',
+ 'الجميع':'سب',
+ 'المكتب':'دفتر',
+ 'يُنشئ طلبَ زيارةٍ (SR) أو يُسنِد نقاطًا من الخريطة لمشرفٍ بموعد':'دورے کی درخواست (SR) بناتا ہے یا نقشے سے پوائنٹس سپروائزر کو تاریخ کے ساتھ تفویض کرتا ہے',
+ 'يفتح «شغلي ← مهامي» فيجد نقاطَه — وعلى الخريطة نقاطُه بلونٍ لا يشبه نقاطَ غيره':'“میرا کام ← میرے ٹاسکس” کھولتا ہے اور اپنے پوائنٹس پاتا ہے — اور نقشے پر اس کے پوائنٹس الگ رنگ میں',
+ 'يزور النقطةَ ويملأ نموذجَ المسح بصورتَيه وقياساته — أو يسجّل تعذُّرَ الوصول بسببه':'پوائنٹ کا دورہ کر کے سروے فارم دو تصاویر اور پیمائشوں کے ساتھ بھرتا ہے — یا وجہ کے ساتھ رسائی کی ناکامی درج کرتا ہے',
+ 'تُحفَظ الزيارةُ «بانتظار الاعتماد» — وتظهر فورًا في اعتماد الزيارات ببياناتها الجديدة':'دورہ “منظوری کے انتظار” میں محفوظ ہوتا ہے — اور فوراً نئے ڈیٹا کے ساتھ دوروں کی منظوری میں ظاہر ہوتا ہے',
+ 'يعتمد الزيارةَ فتُغلَق مهمتُها وتُحتسب نقاطُها — أو يردُّها «تحتاج زيارةً أخرى» بسببٍ مكتوب':'دورہ منظور کرتا ہے — ٹاسک بند اور پوائنٹس شمار — یا لکھی وجہ کے ساتھ “دوبارہ دورہ درکار” کہہ کر واپس کرتا ہے',
+ 'إن رُدَّت وجدها في مهامّه بسبب الردّ — يزورها ثانيةً وتُحفَظ جولةً ثانيةً تنتظر الاعتماد':'اگر واپس ہو تو وجہ کے ساتھ اپنے ٹاسکس میں پاتا ہے — دوبارہ دورہ کرتا ہے اور دوسرا راؤنڈ منظوری کے انتظار میں محفوظ ہوتا ہے',
+ 'لا تُحتسب زيارةٌ في المنجَز وهي مردودة — والاعتمادُ وحدَه يفتح بابَ الحل.':'واپس شدہ دورہ مکمل شمار نہیں ہوتا — اور صرف منظوری حل کا دروازہ کھولتی ہے۔',
+ 'بعد اعتماد الزيارة يقترح حلَّها: الأصنافُ وكمّياتُها من الكتالوج — يدويًّا أو بنمطٍ جاهز':'دورے کی منظوری کے بعد حل تجویز کرتا ہے: کیٹلاگ سے اشیاء اور مقداریں — دستی یا تیار پیٹرن سے',
+ 'يعتمد الحلَّ — فتدخل النقطةُ طبقةَ التركيب ولا يُقبَل طلبُ تركيبٍ (DR) قبل ذلك':'حل منظور کرتا ہے — پوائنٹ تنصیب کی تہ میں داخل ہوتا ہے، اور اس سے پہلے تنصیب کی درخواست (DR) قبول نہیں ہوتی',
+ 'يُسنِد التركيبَ لفريقٍ من الخريطة أو «توزيع الفرق» — التركيبُ عملُ أيدٍ لا يدٍ واحدة':'نقشے یا “ٹیم کی تقسیم” سے تنصیب ٹیم کو تفویض کرتا ہے — تنصیب کئی ہاتھوں کا کام ہے',
+ 'يركّب ويملأ نموذجَ التركيب: صورتا قبلُ وبعدُ، والسيريالاتُ، والقطعُ المستهلكة':'تنصیب کر کے فارم بھرتی ہے: پہلے/بعد کی تصاویر، سیریل اور استعمال شدہ پرزے',
+ 'تُخصَم القطعُ من المخزون في دفتر الحركة — فلا يُخصَم شيءٌ مرتين ولا يضيع':'پرزے موومنٹ لیجر میں اسٹاک سے کٹتے ہیں — کچھ بھی دو بار نہیں کٹتا نہ کھوتا ہے',
+ 'يدقّق التركيبَ في «التدقيق الهندسي» فيعتمده — أو يفتح عدمَ مطابقةٍ إن وجد خللًا':'“انجینئرنگ آڈٹ” میں تنصیب کا جائزہ لے کر منظور کرتا ہے — یا خرابی ملنے پر عدم مطابقت کھولتا ہے',
+ 'بالاعتماد تصير النقطةُ «مُركّب» وتُحتسب نقاطُ الفريق — وتظهر خضراءَ على الخريطة':'منظوری سے پوائنٹ “نصب شدہ” بن جاتا ہے، ٹیم کے پوائنٹس شمار ہوتے ہیں — اور نقشے پر سبز ہو جاتا ہے',
+ 'البواباتُ بالترتيب: لا حلَّ قبل اعتماد الزيارة، ولا طلبَ تركيبٍ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.':'دروازے ترتیب سے: دورے کی منظوری سے پہلے حل نہیں، حل کی منظوری سے پہلے تنصیب کی درخواست نہیں، آڈٹ کی منظوری سے پہلے پوائنٹس نہیں۔',
+ '«أمس · الآن · غدًا»: ما انتهى، وما يجري الآن ومن يفعله وأين، وما جُدول لغد':'“کل · اب · آنے والا کل”: کیا مکمل ہوا، اب کیا ہو رہا ہے اور کون کہاں، اور کل کے لیے کیا طے ہے',
+ 'الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد':'نقشہ پورے چکر کو رنگتا ہے — دورہ نہیں · تفویض · کل طے · واپس · منتظر · منظور',
+ '«الوتيرة والهدف» تجيب «هنلحق؟» بالأرقام: المطلوبُ يوميًّا والانتهاءُ المتوقَّع':'“رفتار اور ہدف” اعداد سے جواب دیتا ہے: روزانہ کتنا درکار اور متوقع اختتام',
+ 'التقاريرُ التنفيذية: اللوحةُ ومركزُ التقارير والملخّصُ المالي — للتصدير والاجتماعات':'ایگزیکٹو رپورٹس: ڈیش بورڈ، رپورٹ سینٹر اور مالیاتی خلاصہ — برآمد اور میٹنگز کے لیے',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7375,7 +7447,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
             btn('🗺 على الخريطة','btn-secondary btn-sm',' data-mymap="1"'))
         : card('مهامي',
             '<p class="hint" style="text-align:center;margin:0">'
-            + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>'))
+            + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>',
+            btn('\u2753 ' + t('كيف تسير الدورة؟'),'btn-quiet btn-sm',' data-p="wf"')))
       + card('دورة مهمتك', flow(['مُسندة إليك','زُرتها وحفظت','بانتظار الاعتماد','معتمدة'], 0)
         + '<p class="hint">' + esc(t('لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت — وإن ردَّها «تحتاج زيارةً أخرى» عادت إلى قائمتك بسبب الردّ.')) + '</p>');})();
   }};
@@ -10116,86 +10189,6 @@ function solGo(site){
   return !!(after && after.at !== (before && before.at));
 }
 
-PAGE.qa = { m:'الطلبات والمسح', t:'الجودة',
-  l:'التدقيقُ الهندسيُّ وحالاتُ عدم المطابقة.',
-  body:function(){
-    var head = tabHead('qa'), cur = tabCur('qa');
-    if (cur === 'ncr') return head + (function(){
-    var open = NCRS.filter(function(x){ return x.st !== 'مغلق'; });
-    return stats([['بلاغات', N(NCRS.length)],
-                  ['مفتوحة', N(open.length), open.length ? 'wrn' : 'ok'],
-                  ['مغلقة', N(NCRS.length - open.length), 'ok'],
-                  ['متوسط الإغلاق', NCRS.length ? N(3) + ' ' + t('يوم') : '—']])
-
-      + card('بلاغ جديد',
-          '<div class="grid cols-3">'
-          + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
-          + '<input id="ncrSite" placeholder="NSK-…" dir="ltr"></div>'
-          + '<div class="field"><label>' + esc(t('الفئة')) + '</label>'
-          + '<select id="ncrCat">'
-          + ['تركيبٌ مخالفٌ للمواصفة','قطعةٌ غيرُ معتمدة','توصيلٌ كهربائيٌّ خاطئ',
-             'ارتفاعٌ غيرُ مطابق','توثيقٌ ناقص','سيريالٌ غيرُ مطابق']
-              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('الخطورة')) + '</label>'
-          + '<select id="ncrSev">'
-          + ['جوهري','متوسط','طفيف'].map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '</div>'
-          + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
-          + '<textarea id="ncrWhy" rows="2"></textarea></div>',
-          btn('افتح بلاغًا','btn-primary',' data-ncradd="1"'))
-
-      + (NCRS.length
-        ? cardFlush('البلاغات',
-            table(['#','النقطة','الفئة','الخطورة','الوصف','الحالة',''],
-              NCRS.map(function(x, i){
-                return ['<span class="num">NCR-' + nm(i+1) + '</span>',
-                        '<span class="num">' + esc(x.site || '—') + '</span>',
-                        esc(x.cat),
-                        pill(x.sev, x.sev==='جوهري'?'off':(x.sev==='متوسط'?'warn':'')),
-                        '<span class="hint" style="margin:0">' + esc(x.why.slice(0,40)) + '</span>',
-                        pill(x.st, x.st==='مغلق'?'ok':'warn'),
-                        x.st !== 'مغلق'
-                          ? btn('أغلِق','btn-quiet btn-sm',' data-ncrok="' + i + '"') : ''];
-              })),
-            btn('⬇ إكسل — عدم المطابقة','btn-secondary btn-sm',' data-xls="ncr"'))
-        : card('', alertBox('success','لا بلاغاتِ عدمِ مطابقةٍ مفتوحة.')))
-
-      + card('دورة البلاغ',
-          flow(['رُصد','أُبلغ','إجراءٌ تصحيحي','تُحقّق','أُغلق'], 0)
-          + '<p class="hint">' + esc(t('لا تُقفَل نقطةٌ عليها بلاغٌ جوهريٌّ مفتوح — والتحقّقُ بمن لم يرتكب.')) + '</p>');
-  })();
-    return head + (function(){
-    var wait = Object.keys(STATE.inss).filter(function(k){
-      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
-    });
-    var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
-    return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],
-                  ['معتمد', N(done.length), 'ok'],
-                  ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
-                      return STATE.inss[k].status === 'مسودّة'; }).length)],
-                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
-      + (wait.length
-        ? cardFlush(t('بانتظار قرارك') + ' — ' + nm(wait.length),
-            table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
-              wait.slice(0, 30).map(function(k){
-                var r = STATE.inss[k], s = siteFind(k);
-                return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc((s && s.name) || '') + '</span>',
-                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
-                        '<span class="num">' + new Date(r.at).toLocaleTimeString('ar-EG',
-                          { hour:'2-digit', minute:'2-digit' }) + '</span>',
-                        '<div class="actions">'
-                        + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
-                        + btn('ردّ','btn-danger btn-sm',' data-rej="' + esc(k) + '"') + '</div>'];
-              })))
-        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تركيبات بانتظار التدقيق.')) + '</p>'))
-      + card('قاعدة الاعتماد',
-          flow(['تركيب مُبلَّغ','مراجعة الصور','مطابقة السيريال','معتمد'], 0)
-          + '<p class="hint">' + esc(t('الردُّ يُعيد النقطة لمنفّذها بحالة «مُعاد» مع سبب — ولا تُحتسب نقاطُها حتى تُعتمد.')) + '</p>');
-  })();
-  }};
 
 function apprIns(id, ok){
   if (!may('approve')){ toast(t('اعتمادُ التركيب للمهندس وحده')); return; }
@@ -10925,10 +10918,134 @@ function evmVerdict(v){
   return { t:'متجاوزٌ للكلفة', c:'wrn' };
 }
 
-PAGE.plan = { m:'التخطيط', t:'الخطة والمواعيد',
-  l:'المواعيدُ المستهدفة والمعالمُ التعاقدية وخطُّ الأساس والقيمةُ المكتسبة.',
+PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
+  l:'المواعيدُ والمعالمُ وخطُّ الأساس — وما قد يسوء وما تغيّر وسلامةُ الخط.',
   body:function(){
     var head = tabHead('plan'), cur = tabCur('plan');
+    if (cur === 'risks') return head + (function(){
+    var open = RISKS.filter(function(r){ return r.st === 'مفتوح'; });
+    var crit = open.filter(function(r){ return riskScore(r) >= 15; });
+    var high = open.filter(function(r){ return riskScore(r) >= 9 && riskScore(r) < 15; });
+    var sorted = RISKS.slice().sort(function(a,b){ return riskScore(b) - riskScore(a); });
+
+    return stats([['مخاطر مفتوحة', N(open.length), open.length?'wrn':'ok'],
+                  ['حرجة', N(crit.length), crit.length?'bad':'ok'],
+                  ['عالية', N(high.length), high.length?'wrn':''],
+                  ['مغلقة', N(RISKS.length - open.length), 'ok']])
+
+      + cardFlush(t('السجل') + ' — ' + nm(RISKS.length),
+          table(['#','الخطر','الفئة','احتمال','أثر','الدرجة','الاستجابة','المالك','الحالة'],
+            sorted.map(function(r){
+              var sc = riskScore(r), L = riskLevel(sc);
+              return ['<span class="num">' + esc(r.id) + '</span>',
+                      '<strong>' + esc(t(r.t)) + '</strong><br>'
+                        + '<span class="hint" style="margin:0">' + esc(t(r.plan)) + '</span>',
+                      esc(t(r.cat)), N(r.p), N(r.i),
+                      '<span class="pill ' + L.c + '">' + nm(sc) + ' · ' + esc(t(L.t)) + '</span>',
+                      esc(t(r.resp)), esc(t(r.own)),
+                      pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn')];
+            })),
+          btn('⬇ إكسل — سجل المخاطر','btn-secondary btn-sm',' data-xls="risks"'))
+
+      + card('مصفوفة الاحتمال والأثر',
+          (function(){
+            var rows = [];
+            for (var p = 5; p >= 1; p--){
+              var cells = ['<b>' + nm(p) + '</b>'];
+              for (var i = 1; i <= 5; i++){
+                var sc = p * i, L = riskLevel(sc);
+                var here = RISKS.filter(function(r){ return r.p === p && r.i === i && r.st === 'مفتوح'; });
+                cells.push('<span class="pill ' + L.c + '">' + nm(sc)
+                  + (here.length ? ' · ' + here.map(function(r){ return r.id; }).join(' ') : '') + '</span>');
+              }
+              rows.push(cells);
+            }
+            return table(['احتمال ↓ / أثر →','١','٢','٣','٤','٥'], rows);
+          })()
+          + '<p class="hint">' + esc(t('الدرجةُ حاصلُ ضربهما: خمسةَ عشرَ فأكثرُ حرجٌ يُرفع للإدارة، وتسعةٌ فأكثرُ عالٍ يُتابَع أسبوعيًّا.')) + '</p>')
+
+      + card('توزيع الاستجابات',
+          table(['الاستجابة','عددها','ما تعنيه'], [
+            ['تجنّب', N(RISKS.filter(function(r){ return r.resp==='تجنّب'; }).length), 'يُغيَّر الخطُّ فلا يقع'],
+            ['تخفيف', N(RISKS.filter(function(r){ return r.resp==='تخفيف'; }).length), 'يُقلَّل احتمالُه أو أثرُه'],
+            ['نقل',   N(RISKS.filter(function(r){ return r.resp==='نقل'; }).length),   'يُحمَّل طرفًا آخر'],
+            ['قبول',  N(RISKS.filter(function(r){ return r.resp==='قبول'; }).length),  'يُحتمَل ويُرصَد له احتياطي']
+          ]));
+  })();
+    if (cur === 'chg') return head + (function(){
+    var pend = CHANGES.filter(function(c){ return c.st === 'مقدَّم'; });
+    return stats([['طلبات قائمة', N(CHANGES.length)],
+                  ['بانتظار القرار', N(pend.length), pend.length?'wrn':''],
+                  ['معتمدة', N(CHANGES.filter(function(c){ return c.st==='معتمد'; }).length), 'ok'],
+                  ['مرفوضة', N(CHANGES.filter(function(c){ return c.st==='مرفوض'; }).length)]])
+
+      + card('طلب تغيير جديد',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('نوع التغيير')) + '</label>'
+          + '<select id="chgKind">'
+          + ['نطاق','جدول','ميزانية','جودة','موارد'].map(function(k){
+              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الأثر على خط الأساس')) + '</label>'
+          + '<select id="chgImp">'
+          + ['لا أثر','أثرٌ محدود','أثرٌ جوهري'].map(function(k){
+              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الوصف والمبرّر')) + '</label>'
+          + '<textarea id="chgWhy" rows="3" placeholder="'
+          + esc(t('ما التغيير؟ ولماذا؟ وما بديلُه إن رُفض؟')) + '"></textarea></div>',
+          btn('📋 قدّم الطلب','btn-primary',' data-chgadd="1"'))
+
+      + (CHANGES.length
+        ? cardFlush('الطلبات',
+            table(['#','النوع','الأثر','المبرّر','مُقدِّمه','الحالة',''],
+              CHANGES.map(function(c, i){
+                return ['<span class="num">CR-' + nm(i+1) + '</span>', esc(c.kind), esc(c.imp),
+                        '<span class="hint" style="margin:0">' + esc(c.why.slice(0,60)) + '</span>',
+                        esc(c.by),
+                        pill(c.st, c.st==='معتمد'?'ok':(c.st==='مرفوض'?'off':'warn')),
+                        c.st === 'مقدَّم'
+                          ? '<div class="actions">'
+                            + btn('اعتمد','btn-quiet btn-sm',' data-chgok="' + i + '"')
+                            + btn('ارفض','btn-quiet btn-sm',' data-chgno="' + i + '"') + '</div>'
+                          : ''];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('لا طلبات — وخطُّ الأساس على حاله.')) + '</p>'))
+
+      + card('قاعدة الضبط',
+          flow(['طلب','تقييم الأثر','قرار','تحديث خط الأساس'], 0)
+          + '<p class="hint">' + esc(t('كلُّ طلبٍ معتمدٍ يُلزم بتجميد نسخةٍ جديدةٍ من خط الأساس — وإلا قِيس الأداءُ على مرجعٍ باطل.')) + '</p>');
+  })();
+    if (cur === 'pipe') return head + (function(){
+    var taskInstallSite = Object.create(null);
+    Object.keys(STATE.tasks).forEach(function(tid){
+      var tk = STATE.tasks[tid];
+      if (tk.kind === 'install') taskInstallSite[tk.site] = true;
+    });
+    var ready = 0, noSurvey = 0;
+    STATE.sites.forEach(function(x){
+      var r = STATE.recs[x.id];
+      var ins = STATE.inss[x.id];
+      var installed = !!(ins && ins.status === 'مُركّب' && ins.approved);
+      if (svDone(r) && !installed) ready++;
+      if (taskInstallSite[x.id] && !svDone(r)) noSurvey++;
+    });
+    var noAppr = Object.keys(STATE.inss).filter(function(id){
+      var r = STATE.inss[id]; return r.status === 'مُركّب' && !r.approved;
+    }).length;
+    var conflicts = noSurvey + noAppr;
+
+    return stats([['جاهز للجدولة', N(ready), 'ok'],
+                  ['جُدول بلا مسح', N(noSurvey), noSurvey ? 'bad' : 'ok'],
+                  ['رُكّب بلا اعتماد', N(noAppr), noAppr ? 'wrn' : 'ok'],
+                  ['تعارضات', N(conflicts), conflicts ? 'bad' : 'ok']])
+      + card('التسلسل السليم', flow(['مسح','اعتماد','جدولة','تركيب','تدقيق'], 0)
+        + (conflicts
+            ? alertBox('error', 'فيه ' + nm(conflicts) + ' ' + t('نقطةً خرجت عن التسلسل — راجع «التدقيق الهندسي» و«توزيع الفرق».'))
+            : alertBox('success','لا تعارضاتٍ الآن — كلُّ نقطةٍ في مكانها من التسلسل.')));
+  })();
     if (cur === 'setup') return head + (function(){
     /* كانت تاريخين مكتوبَين بيدٍ لا يُحفَظان، وزرُّ «حفظ» يقول «محفوظٌ
        بالفعل» وهو لم يحفظ شيئًا — فبقيت «الوتيرة والهدف» تقول «لم تُضبط
@@ -11083,135 +11200,6 @@ function riskLevel(n){
   return { t:'منخفض', c:'ok' };
 }
 
-PAGE.risks = { m:'التخطيط', t:'المخاطر والتغيير',
-  l:'ما قد يسوء، وما تغيّر عن الخطة، وسلامةُ خط الإنتاج.',
-  body:function(){
-    var head = tabHead('risks'), cur = tabCur('risks');
-    if (cur === 'chg') return head + (function(){
-    var pend = CHANGES.filter(function(c){ return c.st === 'مقدَّم'; });
-    return stats([['طلبات قائمة', N(CHANGES.length)],
-                  ['بانتظار القرار', N(pend.length), pend.length?'wrn':''],
-                  ['معتمدة', N(CHANGES.filter(function(c){ return c.st==='معتمد'; }).length), 'ok'],
-                  ['مرفوضة', N(CHANGES.filter(function(c){ return c.st==='مرفوض'; }).length)]])
-
-      + card('طلب تغيير جديد',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('نوع التغيير')) + '</label>'
-          + '<select id="chgKind">'
-          + ['نطاق','جدول','ميزانية','جودة','موارد'].map(function(k){
-              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('الأثر على خط الأساس')) + '</label>'
-          + '<select id="chgImp">'
-          + ['لا أثر','أثرٌ محدود','أثرٌ جوهري'].map(function(k){
-              return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '</div>'
-          + '<div class="field"><label>' + esc(t('الوصف والمبرّر')) + '</label>'
-          + '<textarea id="chgWhy" rows="3" placeholder="'
-          + esc(t('ما التغيير؟ ولماذا؟ وما بديلُه إن رُفض؟')) + '"></textarea></div>',
-          btn('📋 قدّم الطلب','btn-primary',' data-chgadd="1"'))
-
-      + (CHANGES.length
-        ? cardFlush('الطلبات',
-            table(['#','النوع','الأثر','المبرّر','مُقدِّمه','الحالة',''],
-              CHANGES.map(function(c, i){
-                return ['<span class="num">CR-' + nm(i+1) + '</span>', esc(c.kind), esc(c.imp),
-                        '<span class="hint" style="margin:0">' + esc(c.why.slice(0,60)) + '</span>',
-                        esc(c.by),
-                        pill(c.st, c.st==='معتمد'?'ok':(c.st==='مرفوض'?'off':'warn')),
-                        c.st === 'مقدَّم'
-                          ? '<div class="actions">'
-                            + btn('اعتمد','btn-quiet btn-sm',' data-chgok="' + i + '"')
-                            + btn('ارفض','btn-quiet btn-sm',' data-chgno="' + i + '"') + '</div>'
-                          : ''];
-              })))
-        : card('', '<p class="hint" style="text-align:center;margin:0">'
-            + esc(t('لا طلبات — وخطُّ الأساس على حاله.')) + '</p>'))
-
-      + card('قاعدة الضبط',
-          flow(['طلب','تقييم الأثر','قرار','تحديث خط الأساس'], 0)
-          + '<p class="hint">' + esc(t('كلُّ طلبٍ معتمدٍ يُلزم بتجميد نسخةٍ جديدةٍ من خط الأساس — وإلا قِيس الأداءُ على مرجعٍ باطل.')) + '</p>');
-  })();
-    if (cur === 'pipe') return head + (function(){
-    var taskInstallSite = Object.create(null);
-    Object.keys(STATE.tasks).forEach(function(tid){
-      var tk = STATE.tasks[tid];
-      if (tk.kind === 'install') taskInstallSite[tk.site] = true;
-    });
-    var ready = 0, noSurvey = 0;
-    STATE.sites.forEach(function(x){
-      var r = STATE.recs[x.id];
-      var ins = STATE.inss[x.id];
-      var installed = !!(ins && ins.status === 'مُركّب' && ins.approved);
-      if (svDone(r) && !installed) ready++;
-      if (taskInstallSite[x.id] && !svDone(r)) noSurvey++;
-    });
-    var noAppr = Object.keys(STATE.inss).filter(function(id){
-      var r = STATE.inss[id]; return r.status === 'مُركّب' && !r.approved;
-    }).length;
-    var conflicts = noSurvey + noAppr;
-
-    return stats([['جاهز للجدولة', N(ready), 'ok'],
-                  ['جُدول بلا مسح', N(noSurvey), noSurvey ? 'bad' : 'ok'],
-                  ['رُكّب بلا اعتماد', N(noAppr), noAppr ? 'wrn' : 'ok'],
-                  ['تعارضات', N(conflicts), conflicts ? 'bad' : 'ok']])
-      + card('التسلسل السليم', flow(['مسح','اعتماد','جدولة','تركيب','تدقيق'], 0)
-        + (conflicts
-            ? alertBox('error', 'فيه ' + nm(conflicts) + ' ' + t('نقطةً خرجت عن التسلسل — راجع «التدقيق الهندسي» و«توزيع الفرق».'))
-            : alertBox('success','لا تعارضاتٍ الآن — كلُّ نقطةٍ في مكانها من التسلسل.')));
-  })();
-    return head + (function(){
-    var open = RISKS.filter(function(r){ return r.st === 'مفتوح'; });
-    var crit = open.filter(function(r){ return riskScore(r) >= 15; });
-    var high = open.filter(function(r){ return riskScore(r) >= 9 && riskScore(r) < 15; });
-    var sorted = RISKS.slice().sort(function(a,b){ return riskScore(b) - riskScore(a); });
-
-    return stats([['مخاطر مفتوحة', N(open.length), open.length?'wrn':'ok'],
-                  ['حرجة', N(crit.length), crit.length?'bad':'ok'],
-                  ['عالية', N(high.length), high.length?'wrn':''],
-                  ['مغلقة', N(RISKS.length - open.length), 'ok']])
-
-      + cardFlush(t('السجل') + ' — ' + nm(RISKS.length),
-          table(['#','الخطر','الفئة','احتمال','أثر','الدرجة','الاستجابة','المالك','الحالة'],
-            sorted.map(function(r){
-              var sc = riskScore(r), L = riskLevel(sc);
-              return ['<span class="num">' + esc(r.id) + '</span>',
-                      '<strong>' + esc(t(r.t)) + '</strong><br>'
-                        + '<span class="hint" style="margin:0">' + esc(t(r.plan)) + '</span>',
-                      esc(t(r.cat)), N(r.p), N(r.i),
-                      '<span class="pill ' + L.c + '">' + nm(sc) + ' · ' + esc(t(L.t)) + '</span>',
-                      esc(t(r.resp)), esc(t(r.own)),
-                      pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn')];
-            })),
-          btn('⬇ إكسل — سجل المخاطر','btn-secondary btn-sm',' data-xls="risks"'))
-
-      + card('مصفوفة الاحتمال والأثر',
-          (function(){
-            var rows = [];
-            for (var p = 5; p >= 1; p--){
-              var cells = ['<b>' + nm(p) + '</b>'];
-              for (var i = 1; i <= 5; i++){
-                var sc = p * i, L = riskLevel(sc);
-                var here = RISKS.filter(function(r){ return r.p === p && r.i === i && r.st === 'مفتوح'; });
-                cells.push('<span class="pill ' + L.c + '">' + nm(sc)
-                  + (here.length ? ' · ' + here.map(function(r){ return r.id; }).join(' ') : '') + '</span>');
-              }
-              rows.push(cells);
-            }
-            return table(['احتمال ↓ / أثر →','١','٢','٣','٤','٥'], rows);
-          })()
-          + '<p class="hint">' + esc(t('الدرجةُ حاصلُ ضربهما: خمسةَ عشرَ فأكثرُ حرجٌ يُرفع للإدارة، وتسعةٌ فأكثرُ عالٍ يُتابَع أسبوعيًّا.')) + '</p>')
-
-      + card('توزيع الاستجابات',
-          table(['الاستجابة','عددها','ما تعنيه'], [
-            ['تجنّب', N(RISKS.filter(function(r){ return r.resp==='تجنّب'; }).length), 'يُغيَّر الخطُّ فلا يقع'],
-            ['تخفيف', N(RISKS.filter(function(r){ return r.resp==='تخفيف'; }).length), 'يُقلَّل احتمالُه أو أثرُه'],
-            ['نقل',   N(RISKS.filter(function(r){ return r.resp==='نقل'; }).length),   'يُحمَّل طرفًا آخر'],
-            ['قبول',  N(RISKS.filter(function(r){ return r.resp==='قبول'; }).length),  'يُحتمَل ويُرصَد له احتياطي']
-          ]));
-  })();
-  }};
 
 /* ── ضبط التغيير ── */
 var CHANGES = [];
@@ -11268,10 +11256,91 @@ var ORG = {
   ]}
 };
 
-PAGE.org = { m:'النظام', t:'التنظيم',
-  l:'من يغطّي ماذا ومن يُساءل ومن يُرفَع إليه — التغطيةُ والمسؤولياتُ والتصعيد.',
+PAGE.org = { m:'النظام', t:'التنظيم والسلامة',
+  l:'من يغطّي ماذا ومن يُساءل — والحوادثُ وإجراءاتُ السلامة والدروس.',
   body:function(){
     var head = tabHead('org'), cur = tabCur('org');
+    if (cur === 'hse') return head + (function(){
+    var SC = scores();
+    var manDays = SC.list.reduce(function(a,e){ return a + e.nDays; }, 0);
+    var hrs = manDays * (cfgGet('hours') || 8);
+    var n = HSE.incidents.length;
+    /* معدّلُ التكرار: حوادثُ لكلِّ مئتَي ألف ساعةِ عمل — التعريفُ المعتمد */
+    var trir = hrs ? Math.round(n * 200000 / hrs * 100) / 100 : 0;
+
+    return stats([['ساعات عمل', N(hrs), 'acc'],
+                  ['حوادث مسجّلة', N(n), n ? 'bad' : 'ok'],
+                  ['أيام فُقدت', N(HSE.lost), HSE.lost ? 'wrn' : 'ok'],
+                  ['معدّل التكرار', nm(trir), trir > 3 ? 'bad' : 'ok']])
+
+      + card('تسجيل حادث',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+          + '<select id="hseKind">'
+          + ['وشيك — بلا إصابة','إسعاف أولي','علاج طبي','فقدُ أيام عمل','ضررٌ بالمعدات']
+              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الموقع')) + '</label>'
+          + '<input id="hseSite" placeholder="NSK-…" dir="ltr"></div>'
+          + '<div class="field"><label>' + esc(t('أيام العمل المفقودة')) + '</label>'
+          + '<input type="number" id="hseLost" min="0" value="0"></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الوصف والإجراء')) + '</label>'
+          + '<textarea id="hseWhy" rows="2"></textarea></div>',
+          btn('سجّل','btn-danger',' data-hseadd="1"'))
+
+      + (n
+        ? cardFlush('سجل الحوادث',
+            table(['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل'],
+              HSE.incidents.map(function(x){
+                return ['<span class="num">' + new Date(x.at).toLocaleDateString('ar-EG') + '</span>',
+                        pill(x.kind, x.lost ? 'off' : 'warn'), '<span class="num">' + esc(x.site || '—') + '</span>',
+                        N(x.lost), '<span class="hint" style="margin:0">' + esc(x.why.slice(0,44)) + '</span>',
+                        esc(x.by)];
+              })),
+            btn('⬇ إكسل — السلامة','btn-secondary btn-sm',' data-xls="hse"'))
+        : card('', alertBox('success','لا حوادثَ مسجّلة — والصفرُ هو الهدف.')))
+
+      + card('اشتراطات الموقع',
+          table(['الاشتراط','الإلزام','ملاحظة'], [
+            ['خوذة وحذاء أمان', 'إلزامي', 'في كلِّ نقاط الممرات والجسور'],
+            ['حزام ارتفاع', 'إلزامي', 'فوق مترين — أعمدةُ الكاميرات'],
+            ['عزل الكهرباء قبل العمل', 'إلزامي', 'إقفالٌ ووسمٌ قبل فتح البوكس'],
+            ['تصريح عملٍ ساخن', 'عند اللزوم', 'اللحامُ والقطع'],
+            ['ماءٌ وظلٌّ للفريق', 'إلزامي', 'حرارةُ المشاعر تتجاوز الأربعين']
+          ])
+          + '<p class="hint">' + esc(t('معدّلُ التكرار = الحوادثُ × مئتَي ألفٍ ÷ ساعات العمل — وثلاثةٌ فأقلُّ مقبولٌ دوليًّا.')) + '</p>');
+  })();
+    if (cur === 'less') return head + (function(){
+    var L = lessList();
+    return cardFlush(t('الدروس') + ' — ' + nm(L.length),
+        L.length
+          ? table(['المرحلة','ما وقع','ما فُعل',''],
+              L.map(function(l, i){
+                return [pill(l.p,'acc'),
+                        '<input value="' + esc(l.w) + '" data-lsw="' + i + '" dir="auto">',
+                        '<input value="' + esc(l.a || '') + '" data-lsa="' + i + '" dir="auto">',
+                        may('settings')
+                          ? btn('حذف','btn-quiet btn-sm',' data-lsdel="' + i + '"') : ''];
+              }))
+          : '<p class="hint" style="padding:16px">' + esc(t('لا دروسَ مسجَّلةٌ بعد.')) + '</p>',
+        btn('⬇ إكسل — الدروس','btn-secondary btn-sm',' data-xls="less"'))
+      + (may('settings')
+        ? card('سجّل درسًا',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('المرحلة')) + '</label><select id="lsP">'
+            +   ['التخطيط','المسح','التهيئة','التجميع','التركيب','الفك','الإغلاق']
+                 .map(function(p){ return '<option value="' + esc(p) + '">' + esc(t(p)) + '</option>'; }).join('')
+            +   '</select></div>'
+            + '<div class="field"><label>' + esc(t('ما وقع')) + ' <span class="req">*</span></label>'
+            +   '<input id="lsW" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('ما فُعل')) + '</label>'
+            +   '<input id="lsA" dir="auto"></div>'
+            + '</div>',
+            btn('➕ سجّل الدرس','btn-primary btn-sm',' data-lsadd="1"'))
+        : '')
+      + '<p class="hint">' + esc(t('يُراجَع عند إغلاق المشروع ويُسلَّم مع وثائقه — فما كلّف مرةً لا يُكلِّف ثانية.')) + '</p>';
+  })();
     if (cur === 'raci') return head + (function(){
     return card('المفتاح',
         table(['الرمز','المعنى','الشرط'], [
@@ -11563,92 +11632,6 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
 /* ── السلامة HSE ── */
 var HSE = { hours:0, incidents:[], permits:[], lost:0 };
 
-PAGE.hse = { m:'النظام', t:'السلامة والدروس',
-  l:'الحوادثُ وإجراءاتُ السلامة، وما تعلّمناه فلا يتكرّر.',
-  body:function(){
-    var head = tabHead('hse'), cur = tabCur('hse');
-    if (cur === 'less') return head + (function(){
-    var L = lessList();
-    return cardFlush(t('الدروس') + ' — ' + nm(L.length),
-        L.length
-          ? table(['المرحلة','ما وقع','ما فُعل',''],
-              L.map(function(l, i){
-                return [pill(l.p,'acc'),
-                        '<input value="' + esc(l.w) + '" data-lsw="' + i + '" dir="auto">',
-                        '<input value="' + esc(l.a || '') + '" data-lsa="' + i + '" dir="auto">',
-                        may('settings')
-                          ? btn('حذف','btn-quiet btn-sm',' data-lsdel="' + i + '"') : ''];
-              }))
-          : '<p class="hint" style="padding:16px">' + esc(t('لا دروسَ مسجَّلةٌ بعد.')) + '</p>',
-        btn('⬇ إكسل — الدروس','btn-secondary btn-sm',' data-xls="less"'))
-      + (may('settings')
-        ? card('سجّل درسًا',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('المرحلة')) + '</label><select id="lsP">'
-            +   ['التخطيط','المسح','التهيئة','التجميع','التركيب','الفك','الإغلاق']
-                 .map(function(p){ return '<option value="' + esc(p) + '">' + esc(t(p)) + '</option>'; }).join('')
-            +   '</select></div>'
-            + '<div class="field"><label>' + esc(t('ما وقع')) + ' <span class="req">*</span></label>'
-            +   '<input id="lsW" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('ما فُعل')) + '</label>'
-            +   '<input id="lsA" dir="auto"></div>'
-            + '</div>',
-            btn('➕ سجّل الدرس','btn-primary btn-sm',' data-lsadd="1"'))
-        : '')
-      + '<p class="hint">' + esc(t('يُراجَع عند إغلاق المشروع ويُسلَّم مع وثائقه — فما كلّف مرةً لا يُكلِّف ثانية.')) + '</p>';
-  })();
-    return head + (function(){
-    var SC = scores();
-    var manDays = SC.list.reduce(function(a,e){ return a + e.nDays; }, 0);
-    var hrs = manDays * (cfgGet('hours') || 8);
-    var n = HSE.incidents.length;
-    /* معدّلُ التكرار: حوادثُ لكلِّ مئتَي ألف ساعةِ عمل — التعريفُ المعتمد */
-    var trir = hrs ? Math.round(n * 200000 / hrs * 100) / 100 : 0;
-
-    return stats([['ساعات عمل', N(hrs), 'acc'],
-                  ['حوادث مسجّلة', N(n), n ? 'bad' : 'ok'],
-                  ['أيام فُقدت', N(HSE.lost), HSE.lost ? 'wrn' : 'ok'],
-                  ['معدّل التكرار', nm(trir), trir > 3 ? 'bad' : 'ok']])
-
-      + card('تسجيل حادث',
-          '<div class="grid cols-3">'
-          + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
-          + '<select id="hseKind">'
-          + ['وشيك — بلا إصابة','إسعاف أولي','علاج طبي','فقدُ أيام عمل','ضررٌ بالمعدات']
-              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
-          + '</select></div>'
-          + '<div class="field"><label>' + esc(t('الموقع')) + '</label>'
-          + '<input id="hseSite" placeholder="NSK-…" dir="ltr"></div>'
-          + '<div class="field"><label>' + esc(t('أيام العمل المفقودة')) + '</label>'
-          + '<input type="number" id="hseLost" min="0" value="0"></div>'
-          + '</div>'
-          + '<div class="field"><label>' + esc(t('الوصف والإجراء')) + '</label>'
-          + '<textarea id="hseWhy" rows="2"></textarea></div>',
-          btn('سجّل','btn-danger',' data-hseadd="1"'))
-
-      + (n
-        ? cardFlush('سجل الحوادث',
-            table(['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل'],
-              HSE.incidents.map(function(x){
-                return ['<span class="num">' + new Date(x.at).toLocaleDateString('ar-EG') + '</span>',
-                        pill(x.kind, x.lost ? 'off' : 'warn'), '<span class="num">' + esc(x.site || '—') + '</span>',
-                        N(x.lost), '<span class="hint" style="margin:0">' + esc(x.why.slice(0,44)) + '</span>',
-                        esc(x.by)];
-              })),
-            btn('⬇ إكسل — السلامة','btn-secondary btn-sm',' data-xls="hse"'))
-        : card('', alertBox('success','لا حوادثَ مسجّلة — والصفرُ هو الهدف.')))
-
-      + card('اشتراطات الموقع',
-          table(['الاشتراط','الإلزام','ملاحظة'], [
-            ['خوذة وحذاء أمان', 'إلزامي', 'في كلِّ نقاط الممرات والجسور'],
-            ['حزام ارتفاع', 'إلزامي', 'فوق مترين — أعمدةُ الكاميرات'],
-            ['عزل الكهرباء قبل العمل', 'إلزامي', 'إقفالٌ ووسمٌ قبل فتح البوكس'],
-            ['تصريح عملٍ ساخن', 'عند اللزوم', 'اللحامُ والقطع'],
-            ['ماءٌ وظلٌّ للفريق', 'إلزامي', 'حرارةُ المشاعر تتجاوز الأربعين']
-          ])
-          + '<p class="hint">' + esc(t('معدّلُ التكرار = الحوادثُ × مئتَي ألفٍ ÷ ساعات العمل — وثلاثةٌ فأقلُّ مقبولٌ دوليًّا.')) + '</p>');
-  })();
-  }};
 
 function hseAdd(){
   var kind = (document.getElementById('hseKind') || {}).value || '';
@@ -12110,6 +12093,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
   l:'دليلُك أنت بما تملكه من شاشات، ودليلُ العمليات خطوةً خطوة.',
   body:function(){
     var head = tabHead('guide'), cur = tabCur('guide');
+    if (cur === 'wf') return head + wfBody();
     if (cur === 'guide') return head + (function(){
     var r = R();
     /* المهندسُ يقرأ دليلَ أيِّ دورٍ ليعرف ما يراه فريقُه؛ وغيرُه يقرأ دليلَه */
@@ -12148,7 +12132,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.33' + '.docx" download>⬇ '
+              +   'V15.34' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -12449,12 +12433,15 @@ function helpSearch(q){
     /* كان الفهرسُ عربيًّا صرفًا، فمن بحث بالإنجليزية لم يجد شيئًا وإن كانت
        الشاشةُ أمامه مترجَمةً بالاسم الذي كتبه. فصار يفهرس الأصلَ وترجمتَه
        معًا — يبحث المرءُ باللغة التي يقرأ بها، وبالعربية إن عرفها. */
+    /* t() تُترجم في الواجهة الإنجليزية وحدَها — فمن بحث بالإنجليزية والواجهةُ
+       عربيةٌ لم يجد شيئًا. يُفهرَس القاموسُ الإنجليزيُّ نفسُه أيًّا كانت اللغة. */
+    var EN = D.en || {};
     var hay = arNorm(e.t + ' ' + e.m + ' ' + e.l + ' ' + kw + ' '
-                     + t(e.t) + ' ' + t(e.m) + ' ' + t(e.l));
+                     + (EN[e.t] || '') + ' ' + (EN[e.m] || '') + ' ' + (EN[e.l] || ''));
     /* العنوانُ أدلُّ من الوصف: من كتب «visits» يريد الشاشةَ التي اسمُها
        ذلك، لا كلَّ شاشةٍ ذُكرت فيها الكلمةُ في سطر شرحها. فيُوزَن العنوانُ
        أثقلَ، ويُتجاهَل حروفُ الجرِّ التي لا تدلُّ على شيء. */
-    var ttl = arNorm(e.t + ' ' + t(e.t) + ' ' + kw);
+    var ttl = arNorm(e.t + ' ' + (EN[e.t] || '') + ' ' + kw);
     var STOP = { 'for':1, 'the':1, 'of':1, 'and':1, 'in':1, 'to':1, 'a':1, 'my':1 };
     var real = toks.filter(function(tok){ return !STOP[tok] && tok.length > 1; });
     var score = 0;
@@ -14956,6 +14943,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       + '<div class="actions" style="margin-top:12px">'
       + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-secondary btn-sm',' data-p="map"')
       + (may('approve') ? btn('\u2705 ' + t('اعتماد الزيارات'),'btn-primary btn-sm',' data-p="svappr"') : '')
+      + btn('\u2753 ' + t('كيف تسير الدورة؟'),'btn-quiet btn-sm',' data-p="wf"')
       + '</div>'
       + '<p class="hint">' + esc(t('الخريطةُ تلوّن الدورةَ كلَّها: لم يُزر · مُسند · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد · معتمدة.')) + '</p>';
   })();
@@ -15120,10 +15108,85 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
 
 
 
-PAGE.survey = { m:'الطلبات والمسح', t:'الزيارات والحلول',
-  l:'دورةُ النقطة كلُّها — ما مُسح، وما ينتظر اعتمادك، وحلُّه، وما أفاد به الميدان، وما تعثّر.',
+PAGE.survey = { m:'الطلبات والمسح', t:'دورة النقطة',
+  l:'دورةُ النقطة كلُّها — مسحُها واعتمادُها وحلُّها وتدقيقُ تركيبها، وما أفاد به الميدان وما تعثّر.',
   body:function(){
     var head = tabHead('survey'), cur = tabCur('survey');
+    if (cur === 'qa') return head + (function(){
+    var wait = Object.keys(STATE.inss).filter(function(k){
+      return STATE.inss[k].status === 'مُركّب' && !STATE.inss[k].approved;
+    });
+    var done = Object.keys(STATE.inss).filter(function(k){ return STATE.inss[k].approved; });
+    return stats([['بانتظار التدقيق', N(wait.length), wait.length?'wrn':''],
+                  ['معتمد', N(done.length), 'ok'],
+                  ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
+                      return STATE.inss[k].status === 'مسودّة'; }).length)],
+                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
+      + (wait.length
+        ? cardFlush(t('بانتظار قرارك') + ' — ' + nm(wait.length),
+            table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
+              wait.slice(0, 30).map(function(k){
+                var r = STATE.inss[k], s = siteFind(k);
+                return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
+                          + esc((s && s.name) || '') + '</span>',
+                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
+                        '<span class="num">' + new Date(r.at).toLocaleTimeString('ar-EG',
+                          { hour:'2-digit', minute:'2-digit' }) + '</span>',
+                        '<div class="actions">'
+                        + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
+                        + btn('ردّ','btn-danger btn-sm',' data-rej="' + esc(k) + '"') + '</div>'];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تركيبات بانتظار التدقيق.')) + '</p>'))
+      + card('قاعدة الاعتماد',
+          flow(['تركيب مُبلَّغ','مراجعة الصور','مطابقة السيريال','معتمد'], 0)
+          + '<p class="hint">' + esc(t('الردُّ يُعيد النقطة لمنفّذها بحالة «مُعاد» مع سبب — ولا تُحتسب نقاطُها حتى تُعتمد.')) + '</p>');
+  })();
+    if (cur === 'ncr') return head + (function(){
+    var open = NCRS.filter(function(x){ return x.st !== 'مغلق'; });
+    return stats([['بلاغات', N(NCRS.length)],
+                  ['مفتوحة', N(open.length), open.length ? 'wrn' : 'ok'],
+                  ['مغلقة', N(NCRS.length - open.length), 'ok'],
+                  ['متوسط الإغلاق', NCRS.length ? N(3) + ' ' + t('يوم') : '—']])
+
+      + card('بلاغ جديد',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
+          + '<input id="ncrSite" placeholder="NSK-…" dir="ltr"></div>'
+          + '<div class="field"><label>' + esc(t('الفئة')) + '</label>'
+          + '<select id="ncrCat">'
+          + ['تركيبٌ مخالفٌ للمواصفة','قطعةٌ غيرُ معتمدة','توصيلٌ كهربائيٌّ خاطئ',
+             'ارتفاعٌ غيرُ مطابق','توثيقٌ ناقص','سيريالٌ غيرُ مطابق']
+              .map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '<div class="field"><label>' + esc(t('الخطورة')) + '</label>'
+          + '<select id="ncrSev">'
+          + ['جوهري','متوسط','طفيف'].map(function(k){ return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
+          + '</select></div>'
+          + '</div>'
+          + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
+          + '<textarea id="ncrWhy" rows="2"></textarea></div>',
+          btn('افتح بلاغًا','btn-primary',' data-ncradd="1"'))
+
+      + (NCRS.length
+        ? cardFlush('البلاغات',
+            table(['#','النقطة','الفئة','الخطورة','الوصف','الحالة',''],
+              NCRS.map(function(x, i){
+                return ['<span class="num">NCR-' + nm(i+1) + '</span>',
+                        '<span class="num">' + esc(x.site || '—') + '</span>',
+                        esc(x.cat),
+                        pill(x.sev, x.sev==='جوهري'?'off':(x.sev==='متوسط'?'warn':'')),
+                        '<span class="hint" style="margin:0">' + esc(x.why.slice(0,40)) + '</span>',
+                        pill(x.st, x.st==='مغلق'?'ok':'warn'),
+                        x.st !== 'مغلق'
+                          ? btn('أغلِق','btn-quiet btn-sm',' data-ncrok="' + i + '"') : ''];
+              })),
+            btn('⬇ إكسل — عدم المطابقة','btn-secondary btn-sm',' data-xls="ncr"'))
+        : card('', alertBox('success','لا بلاغاتِ عدمِ مطابقةٍ مفتوحة.')))
+
+      + card('دورة البلاغ',
+          flow(['رُصد','أُبلغ','إجراءٌ تصحيحي','تُحقّق','أُغلق'], 0)
+          + '<p class="hint">' + esc(t('لا تُقفَل نقطةٌ عليها بلاغٌ جوهريٌّ مفتوح — والتحقّقُ بمن لم يرتكب.')) + '</p>');
+  })();
     if (cur === 'solution') return head + (function(){
     var all = Object.keys(STATE.inss).map(function(k){ return STATE.inss[k]; })
       .filter(function(r){ return r && r.solution; });
@@ -15537,6 +15600,61 @@ function surveyList(){
 
 
 
+
+/* ═══ دورةُ العمل — الخريطةُ التي تشرح النظامَ لنفسه ═══
+   سؤالُ كلِّ مستخدمٍ جديد: «أعمل إيه، وبعدين أروح فين؟». والجوابُ كان
+   مبعثرًا في تلميحات الصفحات. فجُمع في شاشةٍ واحدة: كلُّ دورةٍ خطواتُها
+   بالترتيب — من يفعلها، وأين (بزرٍّ يقفز إلى الشاشة نفسِها)، وما الذي يحدث
+   بعدها. والأزرارُ لا تظهر إلا لمن يرى شاشتَها — فالفنيُّ لا يُدعى إلى شاشة
+   اعتماد لا يملكها. */
+function wfStep(n, who, what, page){
+  var jump = '';
+  if (page && seesPage(PARENT[page] || page)){
+    var pm = pageMeta(page);
+    jump = '<div style="margin-top:6px">' + btn('\u{1F4CD} ' + esc(t(pm ? pm.t : page)),
+      'btn-secondary btn-sm', ' data-p="' + esc(page) + '"') + '</div>';
+  }
+  return '<div class="list-item" style="align-items:flex-start"><div class="li-main">'
+    + '<div class="li-t"><span class="num">' + nm(n) + '.</span> ' + esc(t(what)) + '</div>'
+    + '<div class="li-s">' + esc(t(who)) + '</div>' + jump
+    + '</div></div>';
+}
+function wfBody(){
+  var visit = [
+    ['المهندس','يُنشئ طلبَ زيارةٍ (SR) أو يُسنِد نقاطًا من الخريطة لمشرفٍ بموعد','req'],
+    ['المشرف','يفتح «شغلي ← مهامي» فيجد نقاطَه — وعلى الخريطة نقاطُه بلونٍ لا يشبه نقاطَ غيره','mywork'],
+    ['المشرف','يزور النقطةَ ويملأ نموذجَ المسح بصورتَيه وقياساته — أو يسجّل تعذُّرَ الوصول بسببه','svForm'],
+    ['النظام','تُحفَظ الزيارةُ «بانتظار الاعتماد» — وتظهر فورًا في اعتماد الزيارات ببياناتها الجديدة','svappr'],
+    ['المهندس','يعتمد الزيارةَ فتُغلَق مهمتُها وتُحتسب نقاطُها — أو يردُّها «تحتاج زيارةً أخرى» بسببٍ مكتوب','svappr'],
+    ['المشرف','إن رُدَّت وجدها في مهامّه بسبب الردّ — يزورها ثانيةً وتُحفَظ جولةً ثانيةً تنتظر الاعتماد','mywork']
+  ];
+  var install = [
+    ['المهندس','بعد اعتماد الزيارة يقترح حلَّها: الأصنافُ وكمّياتُها من الكتالوج — يدويًّا أو بنمطٍ جاهز','solution'],
+    ['المهندس','يعتمد الحلَّ — فتدخل النقطةُ طبقةَ التركيب ولا يُقبَل طلبُ تركيبٍ (DR) قبل ذلك','solution'],
+    ['المهندس','يُسنِد التركيبَ لفريقٍ من الخريطة أو «توزيع الفرق» — التركيبُ عملُ أيدٍ لا يدٍ واحدة','req'],
+    ['الفريق','يركّب ويملأ نموذجَ التركيب: صورتا قبلُ وبعدُ، والسيريالاتُ، والقطعُ المستهلكة','insForm'],
+    ['النظام','تُخصَم القطعُ من المخزون في دفتر الحركة — فلا يُخصَم شيءٌ مرتين ولا يضيع','invmv'],
+    ['المهندس','يدقّق التركيبَ في «التدقيق الهندسي» فيعتمده — أو يفتح عدمَ مطابقةٍ إن وجد خللًا','qa'],
+    ['النظام','بالاعتماد تصير النقطةُ «مُركّب» وتُحتسب نقاطُ الفريق — وتظهر خضراءَ على الخريطة','map']
+  ];
+  var follow = [
+    ['الجميع','«أمس · الآن · غدًا»: ما انتهى، وما يجري الآن ومن يفعله وأين، وما جُدول لغد','now'],
+    ['الجميع','الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد','map'],
+    ['المكتب','«الوتيرة والهدف» تجيب «هنلحق؟» بالأرقام: المطلوبُ يوميًّا والانتهاءُ المتوقَّع','pace'],
+    ['المكتب','التقاريرُ التنفيذية: اللوحةُ ومركزُ التقارير والملخّصُ المالي — للتصدير والاجتماعات','exec']
+  ];
+  function cyc(title, icon, steps, note){
+    var i = 0;
+    return card(icon + ' ' + t(title),
+        '<div class="list">' + steps.map(function(st){ i++; return wfStep(i, st[0], st[1], st[2]); }).join('') + '</div>'
+        + (note ? '<p class="hint" style="margin:10px 0 0">' + esc(t(note)) + '</p>' : ''));
+  }
+  return cyc('دورة الزيارة — حتى تُعتمَد', '\u{1F50D}', visit,
+        'لا تُحتسب زيارةٌ في المنجَز وهي مردودة — والاعتمادُ وحدَه يفتح بابَ الحل.')
+    + cyc('دورة التركيب — حتى يكتمل', '\u{1F527}', install,
+        'البواباتُ بالترتيب: لا حلَّ قبل اعتماد الزيارة، ولا طلبَ تركيبٍ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.')
+    + cyc('المتابعة — من أين تُراقب', '\u{1F4CA}', follow, '');
+}
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
    الصفحةُ التي تُغلق الدورة: كلُّ زيارةٍ حُفظت تظهر هنا ببياناتها الجديدة —
    أين نُقلت النقطة، وما القياسات، وما التحديات، وكم صورة — فيعتمدها المهندسُ
@@ -15608,117 +15726,6 @@ function stuckList(){
 /* ── الورشة والمخزون ─────────────────────────────── */
 var WR_DONE = '';
 
-PAGE.wos = { m:'الورشة والمخزون', t:'طلبات المستودع',
-  l:'طلباتُ المستودع ونقاطُ اليوم.',
-  body:function(){
-    var head = tabHead('wos'), cur = tabCur('wos');
-    if (cur === 'wday') return head + (function(){
-    var today = new Date().toISOString().slice(0, 10);
-    var byName = Object.create(null);
-    Object.keys(STATE.inss).forEach(function(id){
-      var r = STATE.inss[id], x = siteFind(id);
-      if (!x || r.status !== 'مُركّب' || !r.by) return;
-      var day = new Date(r.at || 0).toISOString().slice(0, 10);
-      if (day !== today) return;
-      if (!byName[r.by]) byName[r.by] = { n:0, pts:0 };
-      byName[r.by].n++;
-      byName[r.by].pts += r.approved ? ptsInstall(x) : 0;
-    });
-    var names = Object.keys(byName).sort(function(a,b){ return byName[b].pts - byName[a].pts; });
-    var totN = names.reduce(function(a,n){ return a + byName[n].n; }, 0);
-    var totP = names.reduce(function(a,n){ return a + byName[n].pts; }, 0);
-
-    return stats([['نفّذوا اليوم', N(names.length), 'acc'],
-                  ['تركيباتٌ اليوم', N(totN)],
-                  ['نقاطُ اليوم', N(Math.round(totP))]])
-
-      + (names.length
-        ? cardFlush(t('تركيبُ اليوم') + ' — ' + nm(names.length),
-            table(['المنفِّذ','تركيب','نقاط'],
-              names.map(function(n){ return [esc(n), N(byName[n].n), N(Math.round(byName[n].pts))]; }),
-              ['<b>' + t('الإجمالي') + '</b>', N(totN), N(Math.round(totP))]))
-        : card('تركيبُ اليوم',
-            '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تركيبَ اليوم بعد.')) + '</p>'))
-
-      + alertBox('warn','التهيئةُ والتجميعُ لا يُحتسَبان هنا بعد — نظامُ طلبات الورشة (من نفَّذ ماذا) لم يُبنَ، كما في «طلبات المستودع».');
-  })();
-    return head + (function(){
-    var Tg = T();
-    var L = workReqList();
-    var prepReq = L.filter(function(x){ return x.kind === 'prep'; });
-    var asmReq  = L.filter(function(x){ return x.kind === 'asm'; });
-    var openPrep = prepReq.filter(function(x){ return x.status !== 'تم'; }).length;
-    var openAsm  = asmReq.filter(function(x){ return x.status !== 'تم'; }).length;
-
-    var byItem = {};
-    itemsList().forEach(function(i){ byItem[i.code] = i; });
-    var pp = { camp:0, cor:0 }, pa = { camp:0, cor:0 };
-    (STATE.moves || []).forEach(function(m){
-      var it = byItem[m.item];
-      if (!it) return;
-      var zone = it.z === 'cor' ? 'cor' : 'camp';
-      if (m.kind === 'تهيئة') pp[zone] += itPrep(m.item) * cfgN(m.qty);
-      if (m.kind === 'تجميع') pa[zone] += itAsm(m.item) * cfgN(m.qty);
-    });
-
-    return stats([['طلباتُ تهيئةٍ مفتوحة', N(openPrep), openPrep ? 'wrn' : 'ok'],
-                  ['طلباتُ تجميعٍ مفتوحة', N(openAsm), openAsm ? 'wrn' : 'ok'],
-                  ['طلباتٌ مكتملة', N(L.filter(function(x){ return x.status === 'تم'; }).length), 'ok']])
-
-      + card('الورشة مقابل التارجت',
-          table(['المرحلة','النوع','نقاط الشهر','تارجت الشهر','٪','تارجت الأسبوع'], [
-            ['تهيئة','مخيمات', N(Math.round(pp.camp)), N(Tg.prepCamp), pct(pp.camp,Tg.prepCamp), N(cfgWk(Tg.prepCamp))],
-            ['تهيئة','ممرات',  N(Math.round(pp.cor)),  N(Tg.prepCor),  pct(pp.cor,Tg.prepCor),   N(cfgWk(Tg.prepCor))],
-            ['تجميع','مخيمات', N(Math.round(pa.camp)), N(Tg.asmCamp), pct(pa.camp,Tg.asmCamp),  N(cfgWk(Tg.asmCamp))],
-            ['تجميع','ممرات',  N(Math.round(pa.cor)),  N(Tg.asmCor),  pct(pa.cor,Tg.asmCor),    N(cfgWk(Tg.asmCor))]
-          ], ['الإجمالي','', N(Math.round(pp.camp+pp.cor+pa.camp+pa.cor)), N(Tg.prep+Tg.asm),
-              pct(pp.camp+pp.cor+pa.camp+pa.cor, Tg.prep+Tg.asm), N(cfgWk(Tg.prep+Tg.asm))]))
-
-      + (may('edit')
-        ? card('طلبٌ جديد',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
-            + '<select id="wrKind"><option value="prep">' + esc(t('تهيئة')) + ' (CR)</option>'
-            + '<option value="asm">' + esc(t('تجميع')) + ' (AR)</option></select></div>'
-            + '<div class="field"><label>' + esc(t('الصنف')) + '</label>'
-            + '<select id="wrItem">' + itemsList().map(function(i){
-                return '<option value="' + esc(i.code) + '">' + esc(i.name) + '</option>'; }).join('') + '</select></div>'
-            + '<div class="field"><label>' + esc(t('الكمية المطلوبة')) + '</label>'
-            + '<input type="number" id="wrQty" min="1" value="10"></div>'
-            + '</div>',
-            btn('➕ إنشاء الطلب','btn-primary btn-sm',' data-wradd="1"'))
-        : '')
-
-      + (WR_DONE
-        ? card(t('تسجيل تنفيذٍ') + ' — ' + esc(WR_DONE),
-            '<div class="field" style="max-width:220px;margin:0"><label>' + esc(t('الكمية المُنفَّذة الآن')) + '</label>'
-            + '<input type="number" id="wrDoneQty" min="1" value="1"></div>',
-            btn('تأكيد','btn-primary btn-sm',' data-wrdonego="' + esc(WR_DONE) + '"')
-            + btn('تراجع','btn-quiet btn-sm',' data-wrdonecancel="1"'))
-        : '')
-
-      + (L.length
-        ? cardFlush(t('الطلبات') + ' — ' + nm(L.length),
-            table(['الرقم','النوع','الصنف','المطلوب','المنفَّذ','الحالة','بواسطة','التاريخ',''],
-              L.map(function(r){
-                return ['<span class="num">' + esc(r.no) + '</span>',
-                        r.kind === 'prep' ? pill('تهيئة','acc') : pill('تجميع','warn'),
-                        esc(itemName(r.item)),
-                        N(r.qty), N(r.qtyDone || 0),
-                        pill(r.status, r.status === 'تم' ? 'ok' : (r.status === 'قيد التنفيذ' ? 'warn' : 'off')),
-                        esc(r.by), '<span class="num">' + esc(new Date(r.at).toLocaleDateString('ar-EG')) + '</span>',
-                        r.status !== 'تم'
-                          ? (btn('سجّل تنفيذًا','btn-quiet btn-sm',' data-wrdone="' + esc(r.id) + '"')
-                             + (r.qtyDone ? '' : btn('إلغِ','btn-quiet btn-sm',' data-wrcancel="' + esc(r.id) + '"')))
-                          : '—'];
-              })))
-        : card('لا طلباتٍ بعد',
-            '<p class="hint" style="text-align:center;margin:0">'
-            + esc(t('أنشئ أوّل طلب تهيئةٍ أو تجميعٍ أعلاه.')) + '</p>'))
-
-      + '<p class="hint">' + esc(t('كلُّ تنفيذٍ يُسجَّل في دفتر الحركة بنوعه الصحيح فيدخل حساب النقاط — لا تقديرَ ولا تارجت بلا منفَّذ.')) + '</p>';
-  })();
-  }};
 
 
 /* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════
@@ -16021,6 +16028,112 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
   l:'الأرصدةُ وحركتُها وعُهدةُ كلِّ منفِّذ — في شاشةٍ واحدة.',
   body:function(){
     var head = tabHead('inv'), cur = tabCur('inv');
+    if (cur === 'wos') return head + (function(){
+    var Tg = T();
+    var L = workReqList();
+    var prepReq = L.filter(function(x){ return x.kind === 'prep'; });
+    var asmReq  = L.filter(function(x){ return x.kind === 'asm'; });
+    var openPrep = prepReq.filter(function(x){ return x.status !== 'تم'; }).length;
+    var openAsm  = asmReq.filter(function(x){ return x.status !== 'تم'; }).length;
+
+    var byItem = {};
+    itemsList().forEach(function(i){ byItem[i.code] = i; });
+    var pp = { camp:0, cor:0 }, pa = { camp:0, cor:0 };
+    (STATE.moves || []).forEach(function(m){
+      var it = byItem[m.item];
+      if (!it) return;
+      var zone = it.z === 'cor' ? 'cor' : 'camp';
+      if (m.kind === 'تهيئة') pp[zone] += itPrep(m.item) * cfgN(m.qty);
+      if (m.kind === 'تجميع') pa[zone] += itAsm(m.item) * cfgN(m.qty);
+    });
+
+    return stats([['طلباتُ تهيئةٍ مفتوحة', N(openPrep), openPrep ? 'wrn' : 'ok'],
+                  ['طلباتُ تجميعٍ مفتوحة', N(openAsm), openAsm ? 'wrn' : 'ok'],
+                  ['طلباتٌ مكتملة', N(L.filter(function(x){ return x.status === 'تم'; }).length), 'ok']])
+
+      + card('الورشة مقابل التارجت',
+          table(['المرحلة','النوع','نقاط الشهر','تارجت الشهر','٪','تارجت الأسبوع'], [
+            ['تهيئة','مخيمات', N(Math.round(pp.camp)), N(Tg.prepCamp), pct(pp.camp,Tg.prepCamp), N(cfgWk(Tg.prepCamp))],
+            ['تهيئة','ممرات',  N(Math.round(pp.cor)),  N(Tg.prepCor),  pct(pp.cor,Tg.prepCor),   N(cfgWk(Tg.prepCor))],
+            ['تجميع','مخيمات', N(Math.round(pa.camp)), N(Tg.asmCamp), pct(pa.camp,Tg.asmCamp),  N(cfgWk(Tg.asmCamp))],
+            ['تجميع','ممرات',  N(Math.round(pa.cor)),  N(Tg.asmCor),  pct(pa.cor,Tg.asmCor),    N(cfgWk(Tg.asmCor))]
+          ], ['الإجمالي','', N(Math.round(pp.camp+pp.cor+pa.camp+pa.cor)), N(Tg.prep+Tg.asm),
+              pct(pp.camp+pp.cor+pa.camp+pa.cor, Tg.prep+Tg.asm), N(cfgWk(Tg.prep+Tg.asm))]))
+
+      + (may('edit')
+        ? card('طلبٌ جديد',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
+            + '<select id="wrKind"><option value="prep">' + esc(t('تهيئة')) + ' (CR)</option>'
+            + '<option value="asm">' + esc(t('تجميع')) + ' (AR)</option></select></div>'
+            + '<div class="field"><label>' + esc(t('الصنف')) + '</label>'
+            + '<select id="wrItem">' + itemsList().map(function(i){
+                return '<option value="' + esc(i.code) + '">' + esc(i.name) + '</option>'; }).join('') + '</select></div>'
+            + '<div class="field"><label>' + esc(t('الكمية المطلوبة')) + '</label>'
+            + '<input type="number" id="wrQty" min="1" value="10"></div>'
+            + '</div>',
+            btn('➕ إنشاء الطلب','btn-primary btn-sm',' data-wradd="1"'))
+        : '')
+
+      + (WR_DONE
+        ? card(t('تسجيل تنفيذٍ') + ' — ' + esc(WR_DONE),
+            '<div class="field" style="max-width:220px;margin:0"><label>' + esc(t('الكمية المُنفَّذة الآن')) + '</label>'
+            + '<input type="number" id="wrDoneQty" min="1" value="1"></div>',
+            btn('تأكيد','btn-primary btn-sm',' data-wrdonego="' + esc(WR_DONE) + '"')
+            + btn('تراجع','btn-quiet btn-sm',' data-wrdonecancel="1"'))
+        : '')
+
+      + (L.length
+        ? cardFlush(t('الطلبات') + ' — ' + nm(L.length),
+            table(['الرقم','النوع','الصنف','المطلوب','المنفَّذ','الحالة','بواسطة','التاريخ',''],
+              L.map(function(r){
+                return ['<span class="num">' + esc(r.no) + '</span>',
+                        r.kind === 'prep' ? pill('تهيئة','acc') : pill('تجميع','warn'),
+                        esc(itemName(r.item)),
+                        N(r.qty), N(r.qtyDone || 0),
+                        pill(r.status, r.status === 'تم' ? 'ok' : (r.status === 'قيد التنفيذ' ? 'warn' : 'off')),
+                        esc(r.by), '<span class="num">' + esc(new Date(r.at).toLocaleDateString('ar-EG')) + '</span>',
+                        r.status !== 'تم'
+                          ? (btn('سجّل تنفيذًا','btn-quiet btn-sm',' data-wrdone="' + esc(r.id) + '"')
+                             + (r.qtyDone ? '' : btn('إلغِ','btn-quiet btn-sm',' data-wrcancel="' + esc(r.id) + '"')))
+                          : '—'];
+              })))
+        : card('لا طلباتٍ بعد',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('أنشئ أوّل طلب تهيئةٍ أو تجميعٍ أعلاه.')) + '</p>'))
+
+      + '<p class="hint">' + esc(t('كلُّ تنفيذٍ يُسجَّل في دفتر الحركة بنوعه الصحيح فيدخل حساب النقاط — لا تقديرَ ولا تارجت بلا منفَّذ.')) + '</p>';
+  })();
+    if (cur === 'wday') return head + (function(){
+    var today = new Date().toISOString().slice(0, 10);
+    var byName = Object.create(null);
+    Object.keys(STATE.inss).forEach(function(id){
+      var r = STATE.inss[id], x = siteFind(id);
+      if (!x || r.status !== 'مُركّب' || !r.by) return;
+      var day = new Date(r.at || 0).toISOString().slice(0, 10);
+      if (day !== today) return;
+      if (!byName[r.by]) byName[r.by] = { n:0, pts:0 };
+      byName[r.by].n++;
+      byName[r.by].pts += r.approved ? ptsInstall(x) : 0;
+    });
+    var names = Object.keys(byName).sort(function(a,b){ return byName[b].pts - byName[a].pts; });
+    var totN = names.reduce(function(a,n){ return a + byName[n].n; }, 0);
+    var totP = names.reduce(function(a,n){ return a + byName[n].pts; }, 0);
+
+    return stats([['نفّذوا اليوم', N(names.length), 'acc'],
+                  ['تركيباتٌ اليوم', N(totN)],
+                  ['نقاطُ اليوم', N(Math.round(totP))]])
+
+      + (names.length
+        ? cardFlush(t('تركيبُ اليوم') + ' — ' + nm(names.length),
+            table(['المنفِّذ','تركيب','نقاط'],
+              names.map(function(n){ return [esc(n), N(byName[n].n), N(Math.round(byName[n].pts))]; }),
+              ['<b>' + t('الإجمالي') + '</b>', N(totN), N(Math.round(totP))]))
+        : card('تركيبُ اليوم',
+            '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تركيبَ اليوم بعد.')) + '</p>'))
+
+      + alertBox('warn','التهيئةُ والتجميعُ لا يُحتسَبان هنا بعد — نظامُ طلبات الورشة (من نفَّذ ماذا) لم يُبنَ، كما في «طلبات المستودع».');
+  })();
     if (cur === 'ships') return head + (function(){
     var L = shipList().filter(function(x){
       return !SHIP_Q || (x.ref + ' ' + (x.item || '') + ' ' + (x.sup || '')).indexOf(SHIP_Q) > -1;
@@ -16904,128 +17017,6 @@ function vehKindDel(id){
   render(1);
 }
 
-PAGE.consts = { m:'الإعدادات', t:'الثوابت والقوائم',
-  l:'ثوابتُ النظام وأسماءُ العرض وأنواعُ السيارات.',
-  body:function(){
-    var head = tabHead('consts'), cur = tabCur('consts');
-    if (cur === 'consts') return head + (function(){
-    return card('الثوابت',
-        '<div class="grid cols-3">'
-        + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
-        +   cfgInput('days') + '</div>'
-        + '<div class="field"><label>' + esc(t('ساعات العمل في اليوم')) + '</label>'
-        +   cfgInput('hours') + '</div>'
-        + '<div class="field"><label>' + esc(t('أيام العمل في الأسبوع')) + '</label>'
-        +   cfgInput('daysWeek', undefined, { max:7 }) + '</div>'
-        + '</div>'
-        + '<div class="alert info" style="margin:4px 0 0"><span>'
-        +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
-        btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
-      + card('سعر النقطة والإضافي',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (' + t('ريال') + ')</label>'
-          +   cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>'
-          + '<div class="field"><label>' + esc(t('معامل الإضافي')) + '</label>'
-          +   cfgInput('otRate', undefined, { dec:1, step:'0.05' }) + '</div>'
-          + '</div>'
-          + '<p class="hint">' + esc(t('تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.')) + '</p>')
-      + card('وزن المراحل في النقطة',
-          '<div class="grid cols-3">'
-          + '<div class="field"><label>' + esc(t('التهيئة')) + ' ' + t('٪') + '</label>'
-          +   cfgInput('stgCfg', undefined, { max:100 }) + '</div>'
-          + '<div class="field"><label>' + esc(t('التجميع')) + ' ' + t('٪') + '</label>'
-          +   cfgInput('stgVal', undefined, { max:100 }) + '</div>'
-          + '<div class="field"><label>' + esc(t('التركيب')) + ' ' + t('٪') + '</label>'
-          +   cfgInput('stgIns', undefined, { max:100 }) + '</div>'
-          + '</div>'
-          + '<div class="alert '
-          + ((cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) === 100 ? 'success' : 'warn')
-          + '" style="margin:4px 0 0"><span>' + esc(t('المجموع')) + ': <b>'
-          + nm(cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) + '٪</b></span></div>'
-          + '<p class="hint">' + esc(t('النقطة الواحدة تُقسَّم على مراحلها الثلاث — فمن هيّأ يأخذ نصيبه ومن جمّع نصيبه ومن ركّب نصيبه. والمجموع مئةٌ دائمًا.')) + '</p>',
-          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
-      + '<p class="hint">' + esc(t('هذه الثوابت يُشتقّ منها التارجت الأسبوعي من الشهري، وتقديرُ الأزمنة في التخطيط.')) + '</p>';
-  })();
-    if (cur === 'names') return head + (function(){
-    var seen = {};
-    function add(x){ if (x && /[\u0600-\u06FF]/.test(x)) seen[x] = 1; }
-    techsList().forEach(function(x){ add(x.n); add(x.sup); });
-    crewsList().forEach(function(x){ add(x.n); });
-    (STATE.sites || []).forEach(function(x){ add(x.co); });
-    add(STATE.meta.name);
-    var L = Object.keys(seen).sort();
-    var fix = CFG.nameEn || {};
-    var done = L.filter(function(k){ return fix[k]; }).length;
-
-    return stats([['أسماءٌ في النظام', N(L.length), 'acc'],
-                  ['صُحّحت يدويًّا', N(done), done ? 'ok' : ''],
-                  ['تُنقحَر آليًّا', N(L.length - done)]])
-
-      + card('كيف تعمل',
-          '<p class="hint" style="margin:0">'
-          + esc(t('الاسمُ لا يُترجَم بل يُنقحَر: «محمد صفوت» تُكتَب Mohamed Safwat كما في جواز السفر. والنقحرةُ حسابٌ محليٌّ يجري في اللحظة — فمن يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّل. والأرديةُ تُكتَب بالحرف العربيِّ نفسِه فيبقى الاسمُ كما هو.'))
-          + '</p>')
-
-      + (L.length
-        ? cardFlush('الأسماء — ' + nm(L.length),
-            table(['الاسم كما كُتب','كما يُقرأ بالإنجليزية','تصحيحُك'],
-              L.slice(0, 300).map(function(k){
-                return ['<strong>' + esc(k) + '</strong>',
-                        '<span class="hint" style="margin:0">' + esc(dispName(k)) + '</span>',
-                        may('settings')
-                          ? '<input value="' + esc(fix[k] || '') + '" data-nmen="' + esc(k)
-                            + '" dir="ltr" placeholder="' + esc(dispName(k)) + '">'
-                          : esc(fix[k] || '—')];
-              })))
-        : card('', alertBox('info','لا أسماءَ عربيةً في النظام بعد.')))
-
-      + '<p class="hint">ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.</p>';
-  })();
-    return head + (function(){
-    var K = vehKinds(), V = vehList();
-    var byKind = {}, costKind = {};
-    V.forEach(function(v){
-      byKind[v.kind] = (byKind[v.kind] || 0) + 1;
-      costKind[v.kind] = (costKind[v.kind] || 0) + (+v.cost || 0);
-    });
-    return '<p class="lede" style="margin:0 0 16px">' + esc(t('النوعُ يُضاف هنا، والعددُ يُشتقُّ مما أُضيف من كلِّ نوعٍ في «السيارات» — لا يُكتَب بيدٍ فيتجمّد. والسعةُ عددُ من تحملهم، وبها تُحسَب حاجةُ الفرق.')) + '</p>'
-
-      + stats([['أنواع', N(K.length)],
-               ['في الأسطول', N(V.length)],
-               ['تكلفةٌ شهرية', N(V.reduce(function(a, v){ return a + (+v.cost || 0); }, 0))]])
-
-      + cardFlush(t('الأنواع') + ' — ' + nm(K.length),
-          table(['النوع','ما يُستعمَل له','السعة','العدد','تكلفةٌ شهرية',''],
-            K.map(function(k){
-              var n2 = byKind[k.id] || 0;
-              return ['<input value="' + esc(k.n) + '" data-vkn="' + esc(k.id) + '" dir="auto">',
-                      '<input value="' + esc(k.d || '') + '" data-vkd="' + esc(k.id) + '" dir="auto">',
-                      '<input type="number" min="1" value="' + esc(String(k.cap || 2))
-                        + '" data-vkc="' + esc(k.id) + '" style="max-width:78px">',
-                      n2 ? pill(nm(n2), 'acc') : N(0),
-                      N(costKind[k.id] || 0),
-                      (may('settings')
-                        ? (n2 ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
-                              : btn('حذف','btn-quiet btn-sm',' data-vkdel="' + esc(k.id) + '"'))
-                        : '')];
-            })))
-
-      + (may('settings')
-        ? card('إضافة نوع',
-            '<div class="grid cols-3">'
-            + '<div class="field"><label>' + esc(t('اسم النوع')) + ' <span class="req">*</span></label>'
-            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
-            + '<div class="field"><label>' + esc(t('ما يُستعمَل له')) + '</label>'
-            +   '<input id="vkD" dir="auto"></div>'
-            + '<div class="field"><label>' + esc(t('السعة')) + '</label>'
-            +   '<input id="vkC" type="number" min="1" value="2"></div>'
-            + '</div>',
-            btn('➕ إضافة نوع','btn-primary btn-sm',' data-vkadd="1"'))
-        : '')
-
-      + '<p class="hint">' + esc(t('النوعُ الذي عليه سياراتٌ لا يُحذَف — انقلها إلى نوعٍ آخر أولًا. والتكلفةُ الشهريةُ تُجمَع من سيارات النوع فتُعرَف كلفةُ كلِّ صنفٍ على المشروع.')) + '</p>';
-  })();
-  }};
 
 
 /* ── تفصيلُ أداء الفني: عددٌ ووزنٌ لكلِّ نوعٍ، لا رقمٌ واحدٌ مجهولُ المصدر ── */
@@ -18552,11 +18543,11 @@ var PAGE_CAP = {
 /* السجلّ: الأمُّ وشرائحُها — كلُّ شريحةٍ بمعرِّفها القديم واسمها القصير وأيقونتها ووصفها الأصلي */
 var TABS = {
   mywork:[
-    ['mywork','مهامي','\u{1F4CB}','ما أُسند إليك — وحالةُ كلِّ زيارةٍ منها.','self'],
-    ['mine','جدولي','\u{1F5D3}','ما أُسند إليك — وترتيبك بلا أرقام زملائك.'],
-    ['myscore','أدائي','\u{1F3AF}','نقاطُك وترتيبُك ومستحقُّك.','self'],
-    ['myteam','فريقي','\u{1F465}','من تحتك ونقاطُهم.','team'],
-    ['mycrew','شغل فريقي','\u{1F527}','ما على فريقك الميداني من عمل.','self']],
+    ['mywork','مهامي','📋','ما أُسند إليك — وحالةُ كلِّ زيارةٍ منها.','self'],
+    ['mine','جدولي','🗓','ما أُسند إليك — وترتيبك بلا أرقام زملائك.'],
+    ['myscore','أدائي','🎯','نقاطُك وترتيبُك ومستحقُّك.','self'],
+    ['myteam','فريقي','👥','من تحتك ونقاطُهم.','team'],
+    ['mycrew','شغل فريقي','🔧','ما على فريقك الميداني من عمل.','self']],
   fleet:[
     ['fleet','الأسطول','🚗','أسطولُ المشروع — لوحاتُه ورخصُه وتكلفتُه.'],
     ['fleetAsn','الإسناد','🔑','مَن يقود ماذا ولأيِّ عمل.'],
@@ -18580,7 +18571,9 @@ var TABS = {
     ['invb','الأرصدة','📦','المخزن والعُهدة والتالف — مشتقّةً من دفتر الحركة لا مكتوبةً بإصبع.'],
     ['invmv','دفتر الحركة','📒','إلحاقيٌّ لا يُعدَّل — كل تصحيح حركةٌ جديدة تُوازنه.'],
     ['stock','عُهدة الأجهزة','👤','ما في يد كل منفِّذ الآن — من دفتر الحركة.'],
-    ['ships','الشحنات والتوريد','\\u{1F69B}','ما شُحن ومتى يصل — وما تأخّر عن موعده.']],
+    ['ships','الشحنات والتوريد','🚛','ما شُحن ومتى يصل — وما تأخّر عن موعده.'],
+    ['wos','الطلبات','📥','طلباتُ التهيئة والتجميع — رقمُها وحالتُها ومن نفَّذها ومتى.'],
+    ['wday','نقاط اليوم','📆','ما نُفِّذ اليوم — تركيبًا حقيقيًّا؛ والتهيئةُ والتجميعُ حين يُبنى نظامُ طلباتهما.']],
   users:[
     ['users','الحسابات','👤','كل حساب ودوره في مكانٍ واحد — إنشاءً وبحثًا وتصفيةً بالنوع.'],
     ['assignRole','إسناد الأدوار','🔗','من في أيِّ وظيفةٍ وأيِّ فريق.'],
@@ -18592,15 +18585,20 @@ var TABS = {
     ['vers','نسخ الأجهزة','📱','نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.'],
     ['retain','عمر البيانات','⏳','ما يبقى وما يُؤرشَف وما يُحذف — وحجم كلٍّ.'],
     ['wipe','تصفير البيانات','🗑','بدايةُ الموسم من صفر — تُمسَح السجلاتُ ويبقى التعريف.'],
-    ['hb','صحة الأجهزة','\\u{1F493}','الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.']],
+    ['hb','صحة الأجهزة','💓','الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.']],
   items:[
     ['items','القطع والأسعار','📋','كتالوج القطع وسعر كل قطعة.'],
     ['buycat','فئات المشتريات','🏷','تبويب مشتريات السوق المحلي.'],
-    ['sup','المورّدون','🏪','قائمة موحّدة لمن نشتري منهم.']],
+    ['sup','المورّدون','🏪','قائمة موحّدة لمن نشتري منهم.'],
+    ['consts','ثوابت النظام','🔢','أيام العمل وساعات اليوم.'],
+    ['names','أسماء العرض','🏷','كيف تُكتَب أسماءُ الأشخاص والشركات بالإنجليزية — تصحيحٌ يُكتَب مرةً ويثبت.'],
+    ['vehkind','أنواع السيارات','🚙','أنواعُ الأسطول وسعةُ كلٍّ — والعددُ يُشتقُّ مما أُضيف.']],
   org:[
     ['cover','خريطة التغطية','🗺','كلُّ قسمٍ في الشركة وكلُّ إدارةٍ عند العميل — وما يخصّه.'],
     ['raci','مصفوفة المسؤوليات','📋','من ينفّذ ومن يُساءل ومن يُستشار ومن يُبلَّغ.'],
-    ['esc','التصعيد','🚨','ما تجاوز مهلتَه — ومن يُرفَع إليه.']],
+    ['esc','التصعيد','🚨','ما تجاوز مهلتَه — ومن يُرفَع إليه.'],
+    ['hse','السلامة والحوادث','🦺','ساعاتُ العمل الآمنة والحوادثُ والتصاريح — في موقعٍ يزدحم بالحجاج.'],
+    ['less','سجل الدروس','📖','ما تعلّمناه — ليُنقل للموسم القادم لا ليُعاد.']],
   forms:[
     ['svForm','المسح','🔍','المعلوم يُراجَع ولا يُعاد إدخاله — والمطلوب ما لا يُعرف.'],
     ['insForm','التركيب','🔧','ما يُوثَّق عند إتمام التركيب — بصوره وسيرياته.'],
@@ -18617,33 +18615,24 @@ var TABS = {
     ['chal','إفادات الميدان','⚠','ما أفاد به الميدان أثناء المسح — بنوعه وحالته.'],
     ['chalm','متابعة التحديات','📋','أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.'],
     ['stuck','المتعذّر والراكد','⏸','بالعمر — أقدمها أولًا.'],
-    ['solution','حل التركيب','\\u{1F527}','الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.']],
+    ['solution','حل التركيب','🔧','الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.'],
+    ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
+    ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.']],
   req:[
     ['req','طلبات الزيارة','📨','إسناد زيارات المسح للفنيين واعتمادها.'],
     ['assign','توزيع الفرق','👥','ما أُسند وما بقي — لكل مشعرٍ ونوع.']],
-  qa:[
-    ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
-    ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.']],
   ev:[
     ['ev','سجل الأحداث','📜','كل تغيير بمن أجراه ومتى — خامًا أو مصنَّفًا بالحوكمة، من نفس السجل.'],
     ['notif','الإشعارات','🔔','ما يجب أن يعرفه أحدٌ الآن — وبأيِّ قناةٍ يصله.'],
     ['appr','الاعتمادات','✔','ما اقترحه المشرفون بانتظار قرارك.']],
-  hse:[
-    ['hse','السلامة والحوادث','🦺','ساعاتُ العمل الآمنة والحوادثُ والتصاريح — في موقعٍ يزدحم بالحجاج.'],
-    ['less','سجل الدروس','📖','ما تعلّمناه — ليُنقل للموسم القادم لا ليُعاد.']],
   exec:[
     ['exec','اللوحة التنفيذية','🎯','ما يحتاجه القرار في شاشةٍ واحدة.'],
     ['repcenter','مركز التقارير','📄','كلُّ تقريرٍ بمن يستقبله ودوريّته ومحتواه — يُولَّد بضغطة.'],
     ['budm','الملخّص المالي','💰','المنصرفُ من الميزانية بأبوابه — بلا مورّدين ولا فواتير.']],
-  consts:[
-    ['consts','ثوابت النظام','🔢','أيام العمل وساعات اليوم.'],
-    ['names','أسماء العرض','🏷','كيف تُكتَب أسماءُ الأشخاص والشركات بالإنجليزية — تصحيحٌ يُكتَب مرةً ويثبت.'],
-    ['vehkind','أنواع السيارات','🚙','أنواعُ الأسطول وسعةُ كلٍّ — والعددُ يُشتقُّ مما أُضيف.']],
   plan:[
     ['setup','المواعيد والأزمنة','📅','الموعد المستهدف وزمن التركيب لكل نوع.'],
     ['miles','المعالم والتسليم','🏁','محطّاتُ المشروع وأوزانُها وما اعتمد عليه كلٌّ منها.'],
-    ['evm','خط الأساس والقيمة','📈','أين نحن من المخطَّط — بلغةِ التقارير المعتمدة.']],
-  risks:[
+    ['evm','خط الأساس والقيمة','📈','أين نحن من المخطَّط — بلغةِ التقارير المعتمدة.'],
     ['risks','سجل المخاطر','⚠','ما قد يقع، واحتمالُه وأثرُه، ومن يملك الردَّ عليه.'],
     ['chg','ضبط التغيير','🔄','لا يُمسّ خطُّ الأساس إلا بطلبٍ يُوثَّق ويُقيَّم ويُعتمَد.'],
     ['pipe','سلامة خط الإنتاج','🛠','مسح ← جدولة ← تركيب — وأي تعارض بينها.']],
@@ -18651,22 +18640,20 @@ var TABS = {
     ['perf','الأداء','🎯','أداءُ المشروع على خمسة مستويات: الترتيب العام، بالمرحلة، بالوظيفة، بالفريق، وللمشروع كله.'],
     ['crewman','الفرق','👥','كلُّ فريقٍ صفحتُه وحده: موظفوه وفرقُه الفرعية معًا.'],
     ['crewplan','الطواقم والمعدلات','📊','كم فريقًا يلزم لبلوغ الموعد — محسوبًا من معدل كل نوع.']],
-  wos:[
-    ['wos','الطلبات','📥','طلباتُ التهيئة والتجميع — رقمُها وحالتُها ومن نفَّذها ومتى.'],
-    ['wday','نقاط اليوم','📆','ما نُفِّذ اليوم — تركيبًا حقيقيًّا؛ والتهيئةُ والتجميعُ حين يُبنى نظامُ طلباتهما.']],
   ipc:[
     ['ipc','المستخلصات','🧾','ما أُنجز واعتُمد — يُقدَّم للعميل ويُتابَع صرفُه.'],
     ['buys','دفتر المشتريات','🛒','مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.'],
-    ['budget','الميزانية والاعتماد','\\u{1F4CA}','سقف الصرف وحدّ اعتماد المهندس.']],
+    ['budget','الميزانية والاعتماد','📊','سقف الصرف وحدّ اعتماد المهندس.']],
   dis:[
-    ['dis','الفك بعد الموسم','\\u{1F4E6}','جدولة الفك وإرجاع العُهدة بحالة كل صنف.'],
-    ['chain','سلسلة المراحل','\\u{1F517}','كلُّ عددٍ من الذي قبله — لا رقمَ ثابتًا قبل أوانه.']],
+    ['dis','الفك بعد الموسم','📦','جدولة الفك وإرجاع العُهدة بحالة كل صنف.'],
+    ['chain','سلسلة المراحل','🔗','كلُّ عددٍ من الذي قبله — لا رقمَ ثابتًا قبل أوانه.']],
   co:[
-    ['co','حسب شركة الخدمة','\\u{1F3E2}','الأقل إنجازًا أولًا — لتوجيه التنسيق.'],
-    ['conote','إشعار الشركات','\\u{1F4E3}','رسالةٌ جاهزةٌ لكل شركةٍ بموعد تركيبها — تُفتح في واتساب.']],
+    ['co','حسب شركة الخدمة','🏢','الأقل إنجازًا أولًا — لتوجيه التنسيق.'],
+    ['conote','إشعار الشركات','📣','رسالةٌ جاهزةٌ لكل شركةٍ بموعد تركيبها — تُفتح في واتساب.']],
   guide:[
-    ['guide','دليل الاستخدام','\\u{1F4D8}','دليلك أنت — بما تملكه من شاشات لا بما لا تملك.'],
-    ['sop','دليل العمليات','\\u{1F4CB}','كلُّ دورةٍ في المشروع — من يبدأها ومن ينفّذها وأين وبأي قاعدة.']]
+    ['guide','دليل الاستخدام','📘','دليلك أنت — بما تملكه من شاشات لا بما لا تملك.'],
+    ['wf','دورة العمل','\u{1F5FA}','كلُّ دورةٍ خطوةً خطوة — من يفعل ماذا وأين، حتى الاعتماد.','self'],
+    ['sop','دليل العمليات','📋','كلُّ دورةٍ في المشروع — من يبدأها ومن ينفّذها وأين وبأي قاعدة.']]
 };
 var PTAB = {};      /* الأمُّ → شريحتُها الحالية */
 var PARENT = {};    /* معرِّفُ الشريحة → أمُّها */
@@ -19808,10 +19795,127 @@ function prepAsm(pg){
 
 
 
-PAGE.items = { m:'الإعدادات', t:'الكتالوج والمورّدون',
-  l:'ما نشتريه وبكم وممّن — القطعُ وفئاتُ المشتريات والمورّدون.',
+PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
+  l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
     var head = tabHead('items'), cur = tabCur('items');
+    if (cur === 'consts') return head + (function(){
+    return card('الثوابت',
+        '<div class="grid cols-3">'
+        + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
+        +   cfgInput('days') + '</div>'
+        + '<div class="field"><label>' + esc(t('ساعات العمل في اليوم')) + '</label>'
+        +   cfgInput('hours') + '</div>'
+        + '<div class="field"><label>' + esc(t('أيام العمل في الأسبوع')) + '</label>'
+        +   cfgInput('daysWeek', undefined, { max:7 }) + '</div>'
+        + '</div>'
+        + '<div class="alert info" style="margin:4px 0 0"><span>'
+        +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
+        btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + card('سعر النقطة والإضافي',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (' + t('ريال') + ')</label>'
+          +   cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>'
+          + '<div class="field"><label>' + esc(t('معامل الإضافي')) + '</label>'
+          +   cfgInput('otRate', undefined, { dec:1, step:'0.05' }) + '</div>'
+          + '</div>'
+          + '<p class="hint">' + esc(t('تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.')) + '</p>')
+      + card('وزن المراحل في النقطة',
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('التهيئة')) + ' ' + t('٪') + '</label>'
+          +   cfgInput('stgCfg', undefined, { max:100 }) + '</div>'
+          + '<div class="field"><label>' + esc(t('التجميع')) + ' ' + t('٪') + '</label>'
+          +   cfgInput('stgVal', undefined, { max:100 }) + '</div>'
+          + '<div class="field"><label>' + esc(t('التركيب')) + ' ' + t('٪') + '</label>'
+          +   cfgInput('stgIns', undefined, { max:100 }) + '</div>'
+          + '</div>'
+          + '<div class="alert '
+          + ((cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) === 100 ? 'success' : 'warn')
+          + '" style="margin:4px 0 0"><span>' + esc(t('المجموع')) + ': <b>'
+          + nm(cfgGet('stgCfg') + cfgGet('stgVal') + cfgGet('stgIns')) + '٪</b></span></div>'
+          + '<p class="hint">' + esc(t('النقطة الواحدة تُقسَّم على مراحلها الثلاث — فمن هيّأ يأخذ نصيبه ومن جمّع نصيبه ومن ركّب نصيبه. والمجموع مئةٌ دائمًا.')) + '</p>',
+          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + '<p class="hint">' + esc(t('هذه الثوابت يُشتقّ منها التارجت الأسبوعي من الشهري، وتقديرُ الأزمنة في التخطيط.')) + '</p>';
+  })();
+    if (cur === 'names') return head + (function(){
+    var seen = {};
+    function add(x){ if (x && /[\u0600-\u06FF]/.test(x)) seen[x] = 1; }
+    techsList().forEach(function(x){ add(x.n); add(x.sup); });
+    crewsList().forEach(function(x){ add(x.n); });
+    (STATE.sites || []).forEach(function(x){ add(x.co); });
+    add(STATE.meta.name);
+    var L = Object.keys(seen).sort();
+    var fix = CFG.nameEn || {};
+    var done = L.filter(function(k){ return fix[k]; }).length;
+
+    return stats([['أسماءٌ في النظام', N(L.length), 'acc'],
+                  ['صُحّحت يدويًّا', N(done), done ? 'ok' : ''],
+                  ['تُنقحَر آليًّا', N(L.length - done)]])
+
+      + card('كيف تعمل',
+          '<p class="hint" style="margin:0">'
+          + esc(t('الاسمُ لا يُترجَم بل يُنقحَر: «محمد صفوت» تُكتَب Mohamed Safwat كما في جواز السفر. والنقحرةُ حسابٌ محليٌّ يجري في اللحظة — فمن يُضاف غدًا يُقرأ بالإنجليزية فورَ إضافته بلا تدخّل. والأرديةُ تُكتَب بالحرف العربيِّ نفسِه فيبقى الاسمُ كما هو.'))
+          + '</p>')
+
+      + (L.length
+        ? cardFlush('الأسماء — ' + nm(L.length),
+            table(['الاسم كما كُتب','كما يُقرأ بالإنجليزية','تصحيحُك'],
+              L.slice(0, 300).map(function(k){
+                return ['<strong>' + esc(k) + '</strong>',
+                        '<span class="hint" style="margin:0">' + esc(dispName(k)) + '</span>',
+                        may('settings')
+                          ? '<input value="' + esc(fix[k] || '') + '" data-nmen="' + esc(k)
+                            + '" dir="ltr" placeholder="' + esc(dispName(k)) + '">'
+                          : esc(fix[k] || '—')];
+              })))
+        : card('', alertBox('info','لا أسماءَ عربيةً في النظام بعد.')))
+
+      + '<p class="hint">ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.</p>';
+  })();
+    if (cur === 'vehkind') return head + (function(){
+    var K = vehKinds(), V = vehList();
+    var byKind = {}, costKind = {};
+    V.forEach(function(v){
+      byKind[v.kind] = (byKind[v.kind] || 0) + 1;
+      costKind[v.kind] = (costKind[v.kind] || 0) + (+v.cost || 0);
+    });
+    return '<p class="lede" style="margin:0 0 16px">' + esc(t('النوعُ يُضاف هنا، والعددُ يُشتقُّ مما أُضيف من كلِّ نوعٍ في «السيارات» — لا يُكتَب بيدٍ فيتجمّد. والسعةُ عددُ من تحملهم، وبها تُحسَب حاجةُ الفرق.')) + '</p>'
+
+      + stats([['أنواع', N(K.length)],
+               ['في الأسطول', N(V.length)],
+               ['تكلفةٌ شهرية', N(V.reduce(function(a, v){ return a + (+v.cost || 0); }, 0))]])
+
+      + cardFlush(t('الأنواع') + ' — ' + nm(K.length),
+          table(['النوع','ما يُستعمَل له','السعة','العدد','تكلفةٌ شهرية',''],
+            K.map(function(k){
+              var n2 = byKind[k.id] || 0;
+              return ['<input value="' + esc(k.n) + '" data-vkn="' + esc(k.id) + '" dir="auto">',
+                      '<input value="' + esc(k.d || '') + '" data-vkd="' + esc(k.id) + '" dir="auto">',
+                      '<input type="number" min="1" value="' + esc(String(k.cap || 2))
+                        + '" data-vkc="' + esc(k.id) + '" style="max-width:78px">',
+                      n2 ? pill(nm(n2), 'acc') : N(0),
+                      N(costKind[k.id] || 0),
+                      (may('settings')
+                        ? (n2 ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                              : btn('حذف','btn-quiet btn-sm',' data-vkdel="' + esc(k.id) + '"'))
+                        : '')];
+            })))
+
+      + (may('settings')
+        ? card('إضافة نوع',
+            '<div class="grid cols-3">'
+            + '<div class="field"><label>' + esc(t('اسم النوع')) + ' <span class="req">*</span></label>'
+            +   '<input id="vkN" dir="auto" placeholder="ونش"></div>'
+            + '<div class="field"><label>' + esc(t('ما يُستعمَل له')) + '</label>'
+            +   '<input id="vkD" dir="auto"></div>'
+            + '<div class="field"><label>' + esc(t('السعة')) + '</label>'
+            +   '<input id="vkC" type="number" min="1" value="2"></div>'
+            + '</div>',
+            btn('➕ إضافة نوع','btn-primary btn-sm',' data-vkadd="1"'))
+        : '')
+
+      + '<p class="hint">' + esc(t('النوعُ الذي عليه سياراتٌ لا يُحذَف — انقلها إلى نوعٍ آخر أولًا. والتكلفةُ الشهريةُ تُجمَع من سيارات النوع فتُعرَف كلفةُ كلِّ صنفٍ على المشروع.')) + '</p>';
+  })();
     if (cur === 'buycat') return head + (function(){
     var L = catList(), B = buysList();
     return '<p class="lede" style="margin:0 0 16px">' + esc(t('هذه التبويبات هي ما تُصنَّف به كل عملية شراء، وعليها يقوم تجميع المصروف. والفئة المستعملة في عملياتٍ قائمة لا تُحذف حتى لا يفقد تقريرها تصنيفه.')) + '</p>'
@@ -19928,20 +20032,19 @@ var NAV = [
   { g:'المتابعة', icon:'\u25A6', items:[
       ['over','نظرة عامة'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
-      ['risks','المخاطر والتغيير'],['plan','الخطة والمواعيد']] },
+      ['plan','التخطيط والمخاطر']] },
   { g:'الطلبات والمسح', icon:'\u25CE', items:[
-      ['req','الطلبات والتوزيع'],['survey','الزيارات والحلول'],['qa','الجودة']] },
+      ['req','الطلبات والتوزيع'],['survey','دورة النقطة']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
-      ['wos','طلبات المستودع'],['inv','المخزون']] },
+      ['inv','المخزون']] },
   { g:'القسم المالي', icon:'\u25B0', items:[
       ['ipc','الشؤون المالية']] },
   { g:'الفرق', icon:'\u25D4', items:[
       ['perf','الفرق والأداء']] },
   { g:'الإعدادات', icon:'\u2699', items:[
-      ['users','المستخدمون والأدوار'],['pts','نقاط المراحل'],['items','الكتالوج والمورّدون'],['consts','الثوابت والقوائم']] },
+      ['users','المستخدمون والأدوار'],['pts','نقاط المراحل'],['items','الكتالوج والقوائم']] },
   { g:'النظام', icon:'\u25A1', items:[
-      ['org','التنظيم'],['hse','السلامة والدروس'],['exp','التصدير والاستيراد'],['ev','السجلات والإشعارات'],
-      ['sys','صحة النظام']] },
+      ['org','التنظيم والسلامة'],['exp','التصدير والاستيراد'],['ev','السجلات والإشعارات'],['sys','صحة النظام']] },
   { g:'المساعدة', icon:'\u003F', items:[
       ['guide','الأدلة'],['acct','حسابي']] }
 ];
