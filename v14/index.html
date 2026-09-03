@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.23</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.24</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2217,6 +2217,12 @@ en:{
  'البادئةُ ثلاثةُ أرقامٍ بنقاط — مثل 10.20.30':'The prefix is three numbers with dots — like 10.20.30',
  'أُضيف العنوان':'Address added',
  'مُسحت العناوين':'Addresses cleared',
+ 'لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.':'Nothing awaiting upload — everything recorded has arrived.',
+ 'أخطاءُ رفع':'Upload errors',
+ 'أخطاءُ اليوم':'Errors today',
+ 'متصلة':'Connected',
+ 'مقطوعة':'Disconnected',
+ 'الطابور':'Queue',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3725,6 +3731,12 @@ ur:{
  'البادئةُ ثلاثةُ أرقامٍ بنقاط — مثل 10.20.30':'سابقہ نقطوں کے ساتھ تین اعداد ہے — جیسے 10.20.30',
  'أُضيف العنوان':'پتہ شامل ہو گیا',
  'مُسحت العناوين':'پتے صاف ہو گئے',
+ 'لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.':'اپ لوڈ کے لیے کچھ نہیں — جو درج ہوا سب پہنچ گیا۔',
+ 'أخطاءُ رفع':'اپ لوڈ کی خرابیاں',
+ 'أخطاءُ اليوم':'آج کی خرابیاں',
+ 'متصلة':'جڑا ہوا',
+ 'مقطوعة':'منقطع',
+ 'الطابور':'قطار',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7185,42 +7197,7 @@ function crSaveTimes(){
   toast(t('حُفظت المواعيد'));
 }
 
-PAGE.creps = { m:'الفرق', t:'التقارير الدورية', l:'ما يُرفع تلقائيًّا — يوميًّا وأسبوعيًّا وشهريًّا.',
-  body:function(){
-    return card('الدوريات',
-        table(['الدورية','متى تُرسَل','الوقت','تقارير'],
-          PERIODS.map(function(p){
-            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
-            return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
-                    '<input type="time" data-crtime="' + p[0] + '" value="'
-                      + ((CFG.crTime && CFG.crTime[p[0]]) || (p[0]==='day'?'17:00':'07:00'))
-                      + '" style="max-width:130px">',
-                    N(n)];
-          })),
-        btn('حفظ المواعيد','btn-primary btn-sm',' data-crsave="1"'))
-      + alertBox('warn',
-          t('الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».'))
-      + PERIODS.map(function(p){
-          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
-          return cardFlush(t(p[1]) + ' — ' + nm(L.length),
-            table(['التقرير','لمن','ما يحويه',''],
-              L.map(function(r){
-                return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
-                        '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
-                        '<div class="actions">'
-                        + '<button type="button" class="btn btn-quiet btn-sm" data-p="reps">'
-                        + esc(t('في مركز التقارير')) + '</button></div>'];
-              })));
-        }).join('')
-      + card('قناة الإرسال',
-          '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
-          + '<select><option value="داخل التطبيق">' + esc(t('داخل التطبيق')) + '</option><option value="واتساب">' + esc(t('واتساب')) + '</option><option value="الاثنان">' + esc(t('الاثنان')) + '</option></select></div>'
-          + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
-          + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
-          + '</div>')
-      + '<p class="hint">' + esc(t('التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.')) + '</p>';
-  }};
+
 
 /* ── شغل الفريق — ما يراه عضوه ──────────────────── */
 PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
@@ -10218,8 +10195,8 @@ var ORG = {
     { id:'it',    n:'تقنية المعلومات',     i:'\u{1F5A5}', needs:'الشبكة وصحة الأجهزة والنسخ',      pages:['hb','probe','sys','retain'] }
   ]},
   cl: { n:'الوزارة — العميل', i:'\u{1F54B}', units:[
-    { id:'cexec', n:'الإدارة العليا',      i:'\u{1F3AF}', needs:'التقدّم الكلي والمعالم',          pages:['moh','miles','over'] },
-    { id:'cprj',  n:'إدارة المشاريع',       i:'\u{1F4C8}', needs:'الجدول والإنجاز بالمشعر',        pages:['mohRep','reg','pace','inst'] },
+    { id:'cexec', n:'الإدارة العليا',      i:'\u{1F3AF}', needs:'التقدّم الكلي والمعالم',          pages:['over','miles','chain'] },
+    { id:'cprj',  n:'إدارة المشاريع',       i:'\u{1F4C8}', needs:'الجدول والإنجاز بالمشعر',        pages:['repcenter','reg','pace','inst'] },
     { id:'cfin',  n:'الإدارة المالية',      i:'\u{1F4B3}', needs:'المستخلصات المعتمدة والصرف',      pages:['ipc','budm'] },
     { id:'ctec',  n:'الإدارة الفنية',       i:'\u2699',    needs:'المطابقة للمواصفة والفحص',        pages:['ncr','hb','sites'] },
     { id:'cops',  n:'إدارة التشغيل',        i:'\u{1F504}', needs:'التسليم والضمان والتشغيل',        pages:['hand','dis'] },
@@ -10806,22 +10783,64 @@ var REPORTS = [
 ];
 
 var REP_SIDE = 'co';
+/* شرائحُ مركز التقارير: الشركةُ والوزارةُ والدوريات — الثالثةُ كانت صفحةً
+   مستقلةً «التقارير الدورية» في مجموعة الفرق تضبط متى يُرسَل ما يُعرَض هنا. */
+function repChips(){
+  var co = REPORTS.filter(function(r){ return r.side==='co'; }).length;
+  var cl = REPORTS.filter(function(r){ return r.side==='cl'; }).length;
+  return [['co','\u{1F3E2} ' + t('تقارير الشركة'), co],
+          ['cl','\u{1F54B} ' + t('تقارير الوزارة'), cl],
+          ['sched','\u23F0 ' + t('الدوريات'), PERIODS.length]].map(function(c){
+    return '<button type="button" class="chip' + (REP_SIDE===c[0]?' on':'') + '" data-repside="' + c[0] + '">'
+      + esc(c[1]) + ' <span class="num">' + nm(c[2]) + '</span></button>';
+  }).join('');
+}
 
 PAGE.repcenter = { m:'المتابعة', t:'مركز التقارير',
   l:'كلُّ تقريرٍ بمن يستقبله ودوريّته ومحتواه — يُولَّد بضغطة.',
   body:function(){
+    if (REP_SIDE === 'sched'){
+      return '<div class="chips">' + repChips() + '</div>' + (function(){
+    return card('الدوريات',
+        table(['الدورية','متى تُرسَل','الوقت','تقارير'],
+          PERIODS.map(function(p){
+            var n = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; }).length;
+            return [pill(p[1],'acc'), '<span class="hint" style="margin:0">' + esc(t(p[2])) + '</span>',
+                    '<input type="time" data-crtime="' + p[0] + '" value="'
+                      + ((CFG.crTime && CFG.crTime[p[0]]) || (p[0]==='day'?'17:00':'07:00'))
+                      + '" style="max-width:130px">',
+                    N(n)];
+          })),
+        btn('حفظ المواعيد','btn-primary btn-sm',' data-crsave="1"'))
+      + alertBox('warn',
+          t('الإرسالُ التلقائيُّ في الموعد يحتاج خادمًا مجدولًا — لم يُبنَ بعد. الأوقاتُ تُحفَظ الآن، والتقريرُ نفسُه يُصدَّر يدويًّا في «مركز التقارير».'))
+      + PERIODS.map(function(p){
+          var L = CREW_REPORTS.filter(function(r){ return r[1] === p[0]; });
+          return cardFlush(t(p[1]) + ' — ' + nm(L.length),
+            table(['التقرير','لمن','ما يحويه',''],
+              L.map(function(r){
+                return ['<strong>' + esc(t(r[0])) + '</strong>', pill(r[2],'info'),
+                        '<span class="hint" style="margin:0">' + esc(t(r[3])) + '</span>',
+                        '<div class="actions">'
+                        + '<button type="button" class="btn btn-quiet btn-sm" data-p="reps">'
+                        + esc(t('في مركز التقارير')) + '</button></div>'];
+              })));
+        }).join('')
+      + card('قناة الإرسال',
+          '<div class="grid cols-2">'
+          + '<div class="field"><label>' + esc(t('الوسيلة')) + '</label>'
+          + '<select><option value="داخل التطبيق">' + esc(t('داخل التطبيق')) + '</option><option value="واتساب">' + esc(t('واتساب')) + '</option><option value="الاثنان">' + esc(t('الاثنان')) + '</option></select></div>'
+          + '<div class="field"><label>' + esc(t('لغة التقرير')) + '</label>'
+          + '<select><option>العربية</option><option>English</option><option>اردو</option></select></div>'
+          + '</div>')
+      + '<p class="hint">' + esc(t('التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.')) + '</p>';
+      })();
+    }
     var list = REPORTS.filter(function(r){ return r.side === REP_SIDE; });
     var pers = {};
     REPORTS.forEach(function(r){ pers[r.per] = (pers[r.per] || 0) + 1; });
 
-    return '<div class="chips">'
-      + '<button type="button" class="chip' + (REP_SIDE==='co'?' on':'') + '" data-repside="co">'
-      +   '\u{1F3E2} ' + esc(t('تقارير الشركة')) + ' <span class="num">'
-      +   nm(REPORTS.filter(function(r){ return r.side==='co'; }).length) + '</span></button>'
-      + '<button type="button" class="chip' + (REP_SIDE==='cl'?' on':'') + '" data-repside="cl">'
-      +   '\u{1F54B} ' + esc(t('تقارير الوزارة')) + ' <span class="num">'
-      +   nm(REPORTS.filter(function(r){ return r.side==='cl'; }).length) + '</span></button>'
-      + '</div>'
+    return '<div class="chips">' + repChips() + '</div>'
 
       + stats([['تقارير معرَّفة', N(REPORTS.length), 'acc'],
                ['يومية', N(pers['يومي'] || 0)],
@@ -10843,7 +10862,7 @@ PAGE.repcenter = { m:'المتابعة', t:'مركز التقارير',
             +   '</span></div>'
             + '</div>',
             '<div class="actions">'
-            + btn('⬇ ولّد التقرير','btn-primary btn-sm',' data-repgo="' + esc(r.id) + '"')
+            + (may('exportAll') ? btn('⬇ ولّد التقرير','btn-primary btn-sm',' data-repgo="' + esc(r.id) + '"') : '')
             + btn('🖨 PDF','btn-secondary btn-sm',' data-print="1"')
             + '</div>');
         }).join('')
@@ -10852,8 +10871,10 @@ PAGE.repcenter = { m:'المتابعة', t:'مركز التقارير',
           '<p class="hint" style="margin:0 0 12px">'
           + esc(t('كلُّ تقارير هذه الجهة في ملفٍّ واحدٍ بأوراقه — للأرشيف أو للمراجعة.'))
           + '</p>',
-          btn('📦 حزمة ' + (REP_SIDE==='co' ? t('الشركة') : t('الوزارة')),
-              'btn-primary',' data-reppack="' + REP_SIDE + '"'));
+          may('exportAll')
+            ? btn('📦 حزمة ' + (REP_SIDE==='co' ? t('الشركة') : t('الوزارة')),
+                  'btn-primary',' data-reppack="' + REP_SIDE + '"')
+            : '');
   }};
 
 function repGen(id){
@@ -13653,6 +13674,11 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة', l:'الصورة ال�
               return [esc(t(p[0])), esc(t(p[1])), N(S.byKey[k]), '٠', '٠'];
             }),
             ['الإجمالي','', N(S.total), N(S.surveyed), N(S.installed)]));
+      + card('المخرجات الورقية',
+          '<div class="actions">'
+          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary btn-sm',' data-xls="over"')
+          + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
+          + '</div>')
   }};
 
 PAGE.pace = { m:'المتابعة', t:'الوتيرة والهدف', l:'المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.',
@@ -16753,14 +16779,14 @@ var ROLES = {
     n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
     guide:'دليل الفني والمشرف — العمل الميداني',
     nav:['map','mytasks','sites','sel','svForm','insForm','recs','tools','mine','mywork','myteam',
-         'moh','over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
+         'over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   viewer:{
     n:'وزارة', d:'عرض نصي بلا فعل — والهواتف محجوبة حتى في القواعد',
     guide:'دليل الوزارة — المتابعة',
-    nav:['moh','mohRep','over','pace','inst','daily','reg','co','chalm','dis','budm','guide','acct'],
+    nav:['over','repcenter','pace','inst','daily','reg','co','chalm','dis','budm','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -17022,7 +17048,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.23' + '.docx" download>⬇ '
+              +   'V15.24' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17306,128 +17332,25 @@ PAGE.acct = { m:'المساعدة', t:'حسابي', l:'دورك وصلاحيات
 
 PAGE.sync = { m:'النظام', t:'المزامنة والتعارض', l:'ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.',
   body:function(){
-    return softErrCard() + stats([['بانتظار الرفع','٠'], ['تعارضات معلّقة','٠','wrn'],
-                  ['حُلّت اليوم','٠','ok'], ['فشل رفع','٠','bad']]);
-  }};
-
-/* ═══ موديول الوزارة — دورة الحياة مرحلةً مرحلة ═══
-   من الزيارة الميدانية إلى التوريد إلى الورشة إلى التركيب إلى الفك.
-   كل مرحلة برقمها وتقدمها ومخرَجها الورقي. */
-
-/* مراحلُ المشروع الخمس — أعدادُها تُشتقُّ من الحالة لا تُكتَب بيد.
-   كانت مصفوفةً محفورةً: «التوريد ١٣٧» و«في المخزن ١٢٦» و«تارجت ١٦٬٩٠٠»،
-   وهي أرقامُ يومٍ مضى تُقرأ اليومَ حقيقةً. */
-function stageRows(){
-  var S = siteStats(), N0 = S.total;
-  var mv = (STATE.moves || []).filter(Boolean);
-  var cnt = function(kind){ return mv.filter(function(m){ return m.kind === kind; }).length; };
-  var ins = Object.keys(STATE.inss || {}).map(function(k){ return STATE.inss[k]; }).filter(Boolean);
-  var dis = Object.keys(STATE.diss || {}).map(function(k){ return STATE.diss[k]; }).filter(Boolean);
-  var sup = cnt('توريد');
-  var wo  = Object.keys(CFG.stgCfg ? {} : {}).length;
-  var prep = 0, asm = 0;
-  Object.keys(STATE.recs || {}).forEach(function(){});
-  var tgtWo = (cfgN(CFG.tgtPrepCamp) + cfgN(CFG.tgtPrepCor)
-             + cfgN(CFG.tgtAsmCamp)  + cfgN(CFG.tgtAsmCor)) || 0;
-
-  return [
-    { k:'sv', n:'الزيارة الميدانية', ic:'\u25CE', done:S.surveyed, tot:N0,
-      d:'مسح الموقع وتوثيق حالته وتحدياته قبل أي عمل.',
-      kpi:[['مواقع مُسحت', N(S.surveyed)], ['لم تُزر', N(N0 - S.surveyed)],
-           ['تحديات مفتوحة', N(Object.keys(STATE.fixreqs || {}).length)],
-           ['متوسط الزيارة اليومي', N(0)]] },
-    { k:'sup', n:'التوريد', ic:'\u25A3', done:sup, tot:N0,
-      d:'وصول الأجهزة والقطع للمخزن — وما صُرف منها للفرق.',
-      kpi:[['أصناف موردة', N(sup)],
-           ['في المخزن', N(Math.max(0, sup - cnt('صرف')))],
-           ['في العُهدة', N(Math.max(0, cnt('صرف') - cnt('إرجاع')))],
-           ['تالف معزول', N(cnt('شطب'))]] },
-    { k:'wo', n:'الورشة', ic:'\u25A6', done:prep + asm, tot:tgtWo,
-      d:'التهيئة ثم التجميع قبل النزول للميدان.',
-      kpi:[['نقاط تهيئة', N(prep)], ['نقاط تجميع', N(asm)],
-           ['تارجت الشهر', N(tgtWo)],
-           ['نسبة الإنجاز', (tgtWo ? Math.round((prep + asm) * 100 / tgtWo) : 0) + '٪']] },
-    { k:'ins', n:'التركيب', ic:'\u25C9', done:S.installed, tot:N0,
-      d:'تركيب النقطة في موقعها واعتماد قطعها وسيرياتها.',
-      kpi:[['مُركّب', N(S.installed)],
-           ['مجدول', N(Object.keys(STATE.tasks || {}).length)],
-           ['متعذّر', N(ins.filter(function(x){ return x.status === 'متعذّر'; }).length)],
-           ['بانتظار التدقيق', N(ins.filter(function(x){ return !x.approved; }).length)]] },
-    { k:'dis', n:'الفك', ic:'\u25F7', done:dis.filter(function(x){ return x.status === 'تم الفك'; }).length, tot:N0,
-      d:'بعد الموسم — فك النقطة وإرجاع عُهدتها بحالة كل صنف.',
-      kpi:[['قابل للفك', N(ins.filter(function(x){ return x.approved; }).length)],
-           ['فك مجدول', N(dis.filter(function(x){ return x.status !== 'تم الفك'; }).length)],
-           ['تم الفك', N(dis.filter(function(x){ return x.status === 'تم الفك'; }).length)],
-           ['عُهدة مرتجعة', N(cnt('إرجاع'))]] }
-  ];
-};
-
-function stageBar(){
-  return '<div class="card"><div class="card-body">'
-    + '<div class="flow" style="justify-content:space-between">'
-    + stageRows().map(function(s,i){
-        var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
-        var cls = p >= 100 ? ' done' : (p > 0 ? ' on' : '');
-        return '<span class="flow-step'+cls+'" style="flex:1;text-align:center;min-width:0">'
-          + s.ic + ' ' + esc(t(s.n)) + '<br><span class="num" style="font-size:11px;opacity:.8">'
-          + nm(p) + '٪</span></span>'
-          + (i < stageRows().length-1 ? '<span class="flow-arr">\u2190</span>' : '');
-      }).join('')
-    + '</div></div></div>';
-}
-
-PAGE.moh = { m:'المتابعة', t:'متابعة المشروع', l:'دورة الحياة كاملةً — من الزيارة الميدانية إلى الفك.',
-  body:function(){
-    return stageBar()
-      + stats([['إجمالي النقاط', N(1787)], ['مُسح','٠','acc'], ['مُركّب','٠','ok'], ['مُفكّك','٠']])
-      + stageRows().map(function(s){
-          var p = s.tot ? Math.round(s.done/s.tot*100) : 0;
-          return card(s.ic + ' ' + t(s.n),
-            '<p class="hint" style="margin:0 0 12px">'+esc(t(s.d))+'</p>'
-            + meter('التقدم', s.done, s.tot)
-            + '<div class="stats" style="margin:14px 0 0">'
-            + s.kpi.map(function(k){ return stat(k[0], '<span class="num">'+k[1]+'</span>'); }).join('')
-            + '</div>',
-            '<span class="pill '+(p>=100?'ok':(p>0?'warn':''))+'">'+nm(p)+'٪</span>');
-        }).join('')
-      + card('المخرجات الورقية',
-          '<div class="actions">'
-          + btn('⬇ '+t('الملخص التنفيذي — إكسل'),'btn-primary btn-sm',' data-xls="over"')
-          + btn('⬇ '+t('تقرير المراحل — PDF'),'btn-quiet btn-sm disabled', ' disabled title="'
-              + esc(t('تصديرُ PDF لهذه الشاشة لم يُبنَ بعد — استعمل الإكسلَ أو الطباعة.')) + '"')
-          + btn('🖨 '+t('طباعة'),'btn-secondary btn-sm',' data-print="1"')
-          + '</div>'
-          + '<p class="hint">'+esc(t('كل مرحلة صفحةٌ مستقلةٌ برسمها البياني وجدولها — كما تظهر على الشاشة.'))+'</p>');
-  }};
-
-PAGE.mohRep = { m:'المتابعة', t:'التقارير', l:'ما يُسلَّم للوزارة — جاهزًا بلا تجميع يدوي.',
-  body:function(){
-    var REPS = [
-      ['الملخص التنفيذي','صفحة واحدة: النقاط والمراحل الخمس ونسبها','يومي'],
-      ['تقرير المراحل','صفحة لكل مرحلة برسمها وجدولها','أسبوعي'],
-      ['تقرير المشاعر','عرفات ومنى ومزدلفة — كلٌّ بأنواع نقاطه','أسبوعي'],
-      ['تقرير الشركات','١٦٢ شركة بترتيب الأقل إنجازًا','أسبوعي'],
-      ['تقرير التحديات','ما يعطّل الميدان وما المطلوب لحلّه','عند الطلب'],
-      ['تقرير الفك','بعد الموسم — ما فُكّ وما أُرجع بحالته','موسمي']
-    ];
-    return card('التقارير الجاهزة',
-        table(['التقرير','ما يحويه','الدورية',''],
-          REPS.map(function(r){
-            return [ '<strong>'+esc(t(r[0]))+'</strong>', '<span class="hint" style="margin:0">'+esc(t(r[1]))+'</span>',
-                     pill(r[2],'info'),
-                     '<div class="actions">'
-                     + '<button type="button" class="btn btn-quiet btn-sm" data-p="reps">'
-                     + esc(t('في مركز التقارير')) + '</button></div>' ];
-          })))
-      + card('نطاق التقرير',
-          '<div class="grid cols-3">'
-          + '<div class="field"><label>'+esc(t('من تاريخ'))+'</label><input type="date"></div>'
-          + '<div class="field"><label>'+esc(t('إلى تاريخ'))+'</label><input type="date"></div>'
-          + '<div class="field"><label>'+esc(t('المشعر'))+'</label>'
-          + '<select><option value="">'+esc(t('الكل'))+'</option><option value="منى">'+esc(t('منى'))+'</option>'
-          + '<option value="عرفات">'+esc(t('عرفات'))+'</option></select></div>'
-          + '</div>', btn('⬇ إكسل — الملخص','btn-primary btn-sm',' data-xls="over"'))
-      + '<p class="hint">'+esc(t('أرقام الهواتف لا تظهر في أي تقرير وزاري — لا إخفاءً في الواجهة بل منعًا في القواعد.'))+'</p>';
+    /* كانت أربعةَ أصفارٍ مكتوبةً بيدٍ — والحارسُ لم يمسكها لأن جسمَ الصفحة
+       التي بعدها كان يمدّها بمصدرٍ حيٍّ صدفةً. كُشفت حين حُذفت تلك الصفحة. */
+    var Q = STATE.queue || [];
+    var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
+    var day = new Date().toISOString().slice(0, 10);
+    var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
+    return softErrCard()
+      + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok'],
+               ['أخطاءُ رفع', N(errs.length), errs.length ? 'bad' : 'ok'],
+               ['أخطاءُ اليوم', N(today), today ? 'wrn' : 'ok'],
+               ['الشبكة', pill(STATE.meta.online ? 'متصلة' : 'مقطوعة', STATE.meta.online ? 'ok' : 'off')]])
+      + (Q.length
+        ? cardFlush('الطابور — ' + nm(Q.length),
+            table(['النوع','السجل','سُجّل'],
+              Q.slice(0, 50).map(function(x){
+                return [pill(t(Q_LBL[x.kind] || x.kind), 'acc'), '<strong>' + esc(String(x.id || '—')) + '</strong>',
+                        '<span class="num">' + esc(new Date(x.at || 0).toLocaleString('ar-EG')) + '</span>'];
+              })))
+        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));
   }};
 
 /* المحدَّد — بعد التحديد المتعدد من الخريطة */
@@ -18760,7 +18683,7 @@ var NAV = [
   { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['moh','متابعة المشروع'],['mohRep','التقارير'],['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
+      ['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
       ['exec','اللوحة التنفيذية'],['repcenter','مركز التقارير'],['reg','حسب المشعر والنوع'],['co','حسب شركة الخدمة'],['chalm','التحديات'],
       ['dis','الفك بعد الموسم'],['hb','صحة الأجهزة'],['budm','الملخّص المالي']] },
   { g:'التخطيط', icon:'\u25F7', items:[['evm','خط الأساس والقيمة المكتسبة'],['miles','المعالم والتسليم'],
@@ -18776,7 +18699,7 @@ var NAV = [
   { g:'القسم المالي', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق', icon:'\u25D4', items:[
       ['crewman','الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
-      ['creps','التقارير الدورية'],['perf','الأداء'],['conote','إشعار الشركات']] },
+      ['perf','الأداء'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
       ['visits','نقاط الزيارات'],['prep','نقاط التهيئة'],
