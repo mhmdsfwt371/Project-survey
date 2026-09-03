@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.15</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.16</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1524,8 +1524,6 @@ en:{
  'لا مهام مفتوحة من نوع Configuration.':'No open tasks of type Configuration.',
  'العارضة الحديدية ناقصة أو غير مكتملة':'Steel beam missing or incomplete',
  'لا يوجد سطح تثبيت — يحتاج هيكلًا جديدًا':'No mounting surface — needs a new structure',
- 'Mount height (م)':'Mount height (m)',
- 'Cable length needed (م)':'Cable length needed (m)',
  'الأحد ٠٧:٠٠':'Sunday 07:00',
  'الأوّل من الشهر':'First of the month',
  'الخميس ١٦:٠٠':'Thursday 16:00',
@@ -1911,9 +1909,6 @@ en:{
  'Point price (ريال)':'Point price (SAR)',
  'تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.':'The stage target divided by the month’s days is the daily ceiling — anything above it counts as overtime at this factor. Zero means no overtime is counted.',
  'وزن المراحل في النقطة':'Stage weights within the point',
- 'Preparation ٪':'Preparation %',
- 'Assembly ٪':'Assembly %',
- 'Installation ٪':'Installation %',
  'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.':'Tap a cell to toggle it — the change is written at once and enters the event log.',
  'شركات مقترحة':'Proposed companies',
  'تصويبات بيانات':'Data corrections',
@@ -2146,6 +2141,13 @@ en:{
  'لا حفظَ بلا صورتين':'No saving without two photos',
  'الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'A moved site is documented with its origin and the distance moved',
  'لا تُحتسب النقاطُ قبل الاعتماد':'Points do not count before approval',
+ 'خط العرض':'Latitude',
+ 'خط الطول':'Longitude',
+ 'رقم الفاتورة':'Invoice number',
+ 'سعر الوحدة':'Unit price',
+ 'توزيع النقاط على المراحل':'Points distribution across stages',
+ 'موظفو':'Staff of',
+ 'التوريد':'Supply',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -2961,8 +2963,6 @@ ur:{
  'لا مهام مفتوحة من نوع Configuration.':'Configuration قسم کا کوئی کھلا ٹاسک نہیں۔',
  'العارضة الحديدية ناقصة أو غير مكتملة':'فولادی بیم غائب یا نامکمل',
  'لا يوجد سطح تثبيت — يحتاج هيكلًا جديدًا':'نصب کرنے کی سطح نہیں — نئے ڈھانچے کی ضرورت',
- 'Mount height (م)':'نصب کی اونچائی (میٹر)',
- 'Cable length needed (م)':'درکار کیبل لمبائی (میٹر)',
  'الأحد ٠٧:٠٠':'اتوار ٠٧:٠٠',
  'الأوّل من الشهر':'مہینے کی پہلی تاریخ',
  'الخميس ١٦:٠٠':'جمعرات ١٦:٠٠',
@@ -3348,9 +3348,6 @@ ur:{
  'Point price (ريال)':'پوائنٹ کی قیمت (ریال)',
  'تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.':'مرحلے کا ہدف مہینے کے دنوں پر تقسیم روزانہ کی حد ہے — اس سے اوپر جو ہو وہ اس عنصر سے اوور ٹائم شمار ہوتا ہے۔ صفر کا مطلب اوور ٹائم شمار نہیں۔',
  'وزن المراحل في النقطة':'پوائنٹ میں مراحل کے اوزان',
- 'Preparation ٪':'تیاری %',
- 'Assembly ٪':'اسمبلی %',
- 'Installation ٪':'تنصیب %',
  'اضغط الخانةَ لتبديلها — والتبديلُ يُكتَب فورًا ويدخل سجلَّ الأحداث.':'بدلنے کے لیے خانہ دبائیں — تبدیلی فوراً لکھی جاتی ہے اور واقعات کے ریکارڈ میں آتی ہے۔',
  'شركات مقترحة':'مجوزہ کمپنیاں',
  'تصويبات بيانات':'ڈیٹا کی تصحیحات',
@@ -3583,6 +3580,13 @@ ur:{
  'لا حفظَ بلا صورتين':'دو تصاویر کے بغیر محفوظ نہیں',
  'الموقعُ المعدَّلُ يُوثَّق بأصله ومسافةِ نقلته':'منتقل شدہ مقام اپنی اصل اور منتقلی کے فاصلے کے ساتھ درج ہوتا ہے',
  'لا تُحتسب النقاطُ قبل الاعتماد':'منظوری سے پہلے پوائنٹس شمار نہیں',
+ 'خط العرض':'عرض بلد',
+ 'خط الطول':'طول بلد',
+ 'رقم الفاتورة':'بل نمبر',
+ 'سعر الوحدة':'فی یونٹ قیمت',
+ 'توزيع النقاط على المراحل':'مراحل پر پوائنٹس کی تقسیم',
+ 'موظفو':'عملہ',
+ 'التوريد':'سپلائی',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6195,7 +6199,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
           + row('رقم الشاخص', x.sign ? '<span class="num">' + esc(x.sign) + '</span>' : '', 'sign')
           + row('المشعر', esc(x.zone))
           + row('التصنيف', d.i + ' ' + esc(t(d.l)))
-          + row('وجه العمل', esc(x.work), 'work')
+          + row('وجه العمل', esc(t(x.work)), 'work')
           + row('المنطقة', esc(x.region))
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout)), 'inout')
@@ -6872,7 +6876,7 @@ PAGE.crewman = { m:'الفرق', t:'الفرق',
                 : btn('حذف الفريق','btn-quiet btn-sm',' data-crdel="' + esc(crew.n) + '"'))
             : '')
 
-      + cardFlush('موظفو ' + esc(crew.n) + ' — ' + nm(techs.length),
+      + cardFlush(t('موظفو') + ' ' + esc(crew.n) + ' — ' + nm(techs.length),
           techs.length
             ? table(['الموظف','الوظيفة','الجوال','المشرف','نقاط الشهر',''],
                 techs.map(function(x){
@@ -6974,7 +6978,7 @@ PAGE.crewman = { m:'الفرق', t:'الفرق',
             + '<select id="depMemRole">' + Object.keys(TEAM_ROLE).map(function(k){
                 return '<option value="' + k + '">' + TEAM_ROLE[k].i + ' ' + esc(t(TEAM_ROLE[k].n)) + '</option>';
               }).join('') + '</select></div>'
-            + '<div class="field"><label>' + esc(t('النسبة')) + ' ٪</label>'
+            + '<div class="field"><label>' + esc(t('النسبة')) + ' ' + t('٪') + '</label>'
             + '<input type="number" id="depMemShare" min="0" max="100" value="20"></div>'
             + '</div>', btn('➕ إضافة','btn-primary btn-sm',' data-depmemadd="1"'));
     }
@@ -8482,7 +8486,7 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
           + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
           + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(s.zone) + ' · ' + esc(s.type) + '</span></div>'
           + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
-          + (s.work ? '<div><span class="k">' + esc(t('وجه العمل')) + '</span><span>' + esc(s.work) + '</span></div>' : '')
+          + (s.work ? '<div><span class="k">' + esc(t('وجه العمل')) + '</span><span>' + esc(t(s.work)) + '</span></div>' : '')
           + (s.co   ? '<div><span class="k">' + esc(t('الشركة')) + '</span><span>' + esc(s.co) + '</span></div>' : '')
           + '</div>'
           + '<p class="hint">' + esc(t('خطأٌ في المعلوم؟ اطلب تصويبًا — يعتمده المهندس.')) + '</p>',
@@ -8504,15 +8508,15 @@ PAGE.svForm = { m:'الميدان', t:'نموذج المسح',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + '</label>'
           + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].map(function(o){
-              return '<option' + (FORM.mount===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
+              return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + '</label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
-              return '<option' + (FORM.power===o?' selected':'') + '>' + esc(o) + '</option>'; }).join('')
+              return '<option value="' + esc(o) + '"' + (FORM.power===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
-          + '<div class="field"><label>' + esc(t('ارتفاع التركيب')) + ' (م)</label>'
+          + '<div class="field"><label>' + esc(t('ارتفاع التركيب')) + ' (' + t('م') + ')</label>'
           + '<input type="number" step="0.5" min="0" data-form="height" value="' + esc(FORM.height) + '"></div>'
-          + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (م)</label>'
+          + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (' + t('م') + ')</label>'
           + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
           + '</div>'
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + '</label>'
@@ -15600,7 +15604,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
       + card('الأسطول حسب النوع',
           '<div class="chips" style="margin:0">'
           + vehKinds().map(function(k){
-              return '<span class="cat">' + esc(k.n) + ' <span class="n">'
+              return '<span class="cat">' + esc(t(k.n)) + ' <span class="n">'
                 + nm(byKind[k.id] || 0) + '</span></span>';
             }).join('')
           + '</div>')
@@ -15620,7 +15624,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
                           '<select data-vhk="' + esc(v.id) + '">'
                             + vehKinds().map(function(k){
                                 return '<option value="' + esc(k.id) + '"' + (v.kind === k.id ? ' selected' : '')
-                                  + '>' + esc(k.n) + '</option>'; }).join('') + '</select>',
+                                  + '>' + esc(t(k.n)) + '</option>'; }).join('') + '</select>',
                           '<input value="' + esc(v.model || '') + '" data-vhm="' + esc(v.id) + '" dir="auto">',
                           esc(t(v.own || 'ملك')),
                           '<input type="date" value="' + esc(v.licExp || '') + '" data-vhe="' + esc(v.id) + '"'
@@ -15644,7 +15648,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
             + '<div class="field"><label>' + esc(t('رقم اللوحة')) + ' <span class="req">*</span></label>'
             +   '<input id="vhPlate" dir="ltr" placeholder="ABC 1234"></div>'
             + '<div class="field"><label>' + esc(t('النوع')) + '</label><select id="vhKind">'
-            +   vehKinds().map(function(k){ return '<option value="' + esc(k.id) + '">' + esc(k.n) + '</option>'; }).join('')
+            +   vehKinds().map(function(k){ return '<option value="' + esc(k.id) + '">' + esc(t(k.n)) + '</option>'; }).join('')
             +   '</select></div>'
             + '<div class="field"><label>' + esc(t('الموديل')) + '</label><input id="vhModel" dir="auto"></div>'
             + '<div class="field"><label>' + esc(t('سنة الصنع')) + '</label><input id="vhYear" type="number" min="1990"></div>'
@@ -16643,7 +16647,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.15' + '.docx" download>⬇ '
+              +   'V15.16' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17396,7 +17400,7 @@ PAGE.retain = { m:'النظام', t:'عمر البيانات', l:'ما يبقى 
               ['آخر نسخة فعلية', pill('لا توجد','off')],
               ['الدورية', '<span class="num">٠٥:٣٠</span> ' + esc(t('يوميًّا'))],
               ['التشفير', pill('مطلوب مفتاح','warn')],
-              ['المكان', '<span class="hint" style="margin:0">مستودع خاص — لا العام</span>']
+              ['المكان', '<span class="hint" style="margin:0">' + esc(t('مستودع خاص — لا العام')) + '</span>']
             ]))
 
       + card('دورة المزامنة', flow(['يُكتب محليًّا','في الطابور','رُفع','أُكِّد'],0)
@@ -17957,13 +17961,13 @@ function prepAsm(pg){
   var path = pg === 'prep' ? 'itPrep' : 'itAsm';
   var on = itemsList().filter(function(i){ return get(i.code) > 0; });
   var tot = on.reduce(function(a,i){ return a + get(i.code); }, 0);
-  var h = '<p class="lede" style="margin:0 0 16px">' + (pg === 'prep'
+  var h = '<p class="lede" style="margin:0 0 16px">' + esc(t(pg === 'prep'
       ? 'التهيئة عملُ الورشة قبل النزول: ضبط الجهاز وعنوانه ونظامه وفحصه. وهي للأجهزة ذات الإعداد وحدها — الكاميرات والقارئات والراوترات والحساسات والجيت واي.'
-      : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.')
+      : 'التجميع تركيب ما يدخل البوكس وتوصيله قبل النزول. وهو للمكوّنات التي تُجمَّع داخله وحدها.'))
     + '</p>';
   if (!on.length){
     h += card('', '<p class="hint" style="text-align:center;margin:0">'
-      + (pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.') + '</p>');
+      + esc(t(pg==='prep'?'لا أجهزة في التهيئة بعد.':'لا مكوّنات في التجميع بعد.')) + '</p>');
   } else {
     h += stats([[pg==='prep'?'أجهزة في التهيئة':'مكوّنات في التجميع', N(on.length), 'acc'],
                 ['إجمالي النقاط', N(tot)]])
@@ -18012,7 +18016,7 @@ PAGE.install = { m:'الإعدادات', t:'نقاط التركيب', l:'نقا�
     return '<div class="grid cols-2" style="align-items:start">'
       + [['cor','الممر'],['camp','المخيم']].map(function(g){
           var L = itemsList().filter(function(x){ return x.z === g[0]; });
-          return '<div>' + cardFlush(g[1] + ' — ' + nm(L.length) + ' ' + t('قطعة'),
+          return '<div>' + cardFlush(t(g[1]) + ' — ' + nm(L.length) + ' ' + t('قطعة'),
             L.length
               ? table(may('settings') ? ['القطعة','النقاط',''] : ['القطعة','النقاط'],
                   L.map(function(it){
@@ -18144,8 +18148,8 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
       +     esc(t('ابحث باسم القطعة')) + '" dir="auto">'
       + '</form>'
       + '<div class="grid cols-2" style="align-items:start">'
-      +   '<div>' + col('cor', t('الممر')) + '</div>'
-      +   '<div>' + col('camp', t('المخيم')) + '</div>'
+      +   '<div>' + col('cor', 'الممر') + '</div>'
+      +   '<div>' + col('camp', 'المخيم') + '</div>'
       + '</div>'
       + card('إضافة صنف',
           '<div class="grid cols-2">'
@@ -18209,9 +18213,9 @@ PAGE.budget = { m:'الإعدادات', t:'الميزانية والاعتماد
     return '<p class="lede" style="margin:0 0 16px">' + esc(t('الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.')) + '</p>'
       + card('الضبط',
           '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('الميزانية المعتمدة')) + ' (ريال)</label>'
+          + '<div class="field"><label>' + esc(t('الميزانية المعتمدة')) + ' (' + t('ريال') + ')</label>'
           +   cfgInput('budCap') + '</div>'
-          + '<div class="field"><label>' + esc(t('حدّ الاعتماد للعملية الواحدة')) + ' (ريال)</label>'
+          + '<div class="field"><label>' + esc(t('حدّ الاعتماد للعملية الواحدة')) + ' (' + t('ريال') + ')</label>'
           +   cfgInput('budApp') + '</div>'
           + '</div>', btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + stats([['المنصرف المعتمد', N(B.spent)], ['من', N(B.cap), 'acc'],
@@ -18236,7 +18240,7 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + card('سعر النقطة والإضافي',
           '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (ريال)</label>'
+          + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (' + t('ريال') + ')</label>'
           +   cfgInput('ph', undefined, { dec:1, step:'0.01' }) + '</div>'
           + '<div class="field"><label>' + esc(t('معامل الإضافي')) + '</label>'
           +   cfgInput('otRate', undefined, { dec:1, step:'0.05' }) + '</div>'
@@ -18244,11 +18248,11 @@ PAGE.consts = { m:'الإعدادات', t:'ثوابت النظام', l:'أيام
           + '<p class="hint">' + esc(t('تارجتُ المرحلة مقسومًا على أيام الشهر هو سقفُ اليوم — وما زاد عنه يُحتسب إضافيًّا بهذا المعامل. صفرٌ يعني بلا احتساب إضافي.')) + '</p>')
       + card('وزن المراحل في النقطة',
           '<div class="grid cols-3">'
-          + '<div class="field"><label>' + esc(t('التهيئة')) + ' ٪</label>'
+          + '<div class="field"><label>' + esc(t('التهيئة')) + ' ' + t('٪') + '</label>'
           +   cfgInput('stgCfg', undefined, { max:100 }) + '</div>'
-          + '<div class="field"><label>' + esc(t('التجميع')) + ' ٪</label>'
+          + '<div class="field"><label>' + esc(t('التجميع')) + ' ' + t('٪') + '</label>'
           +   cfgInput('stgVal', undefined, { max:100 }) + '</div>'
-          + '<div class="field"><label>' + esc(t('التركيب')) + ' ٪</label>'
+          + '<div class="field"><label>' + esc(t('التركيب')) + ' ' + t('٪') + '</label>'
           +   cfgInput('stgIns', undefined, { max:100 }) + '</div>'
           + '</div>'
           + '<div class="alert '
