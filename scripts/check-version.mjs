@@ -362,6 +362,23 @@ try {
   fail.push('دفترُ المطابقة غيرُ مغلق — شغّل: node scripts/parity.mjs');
 }
 
+/* ── أدلةُ الأدوار: ملفٌّ لكلِّ دورٍ وبرقم النسخة نفسه ──
+   تُولَّد من ROLES بـrole-manuals.mjs. إن تغيّر دورٌ أو الرقمُ ولم تُعَد
+   تُولَّد، قرأ صاحبُ الدور دليلًا لنسخةٍ غيرِ التي بين يديه. */
+try {
+  const mi = JSON.parse(readFileSync('docs/manuals/index.json','utf8'));
+  const html2 = readFileSync('index.html', 'utf8');
+  const i0 = html2.indexOf('var ROLES = {');
+  const roles = [...html2.slice(i0, html2.indexOf('\n};', i0)).matchAll(/^  (\w+):\{/gm)].map(m => m[1]);
+  const have = new Set((mi.manuals || []).map(m => m.id));
+  const missing = roles.filter(r => !have.has(r));
+  if (mi.version !== schema) fail.push(`أدلةُ الأدوار لنسخة ${mi.version} والتطبيقُ ${schema} — شغّل: node scripts/role-manuals.mjs`);
+  else if (missing.length) fail.push(`أدوارٌ بلا دليل: ${missing.join('، ')} — شغّل: node scripts/role-manuals.mjs`);
+  else ok.push(`أدلةُ الأدوار: ${have.size} ملفًّا بالنسخة ${schema} ✓`);
+} catch (e) {
+  fail.push('أدلةُ الأدوار غيرُ مولَّدة — شغّل: node scripts/role-manuals.mjs');
+}
+
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
 console.log('\nالتوثيق متطابق مع التطبيق ✅');

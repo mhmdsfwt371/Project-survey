@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.21</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.22</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2195,6 +2195,8 @@ en:{
  'الأسماء':'Names',
  'لا أسماءَ عربيةً في النظام بعد.':'No Arabic names in the system yet.',
  'ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.':'What is written here never touches the stored name — it changes only how it reads in English, so no records or reports break.',
+ 'دليل':'Guide for',
+ 'دليلُك — ملف Word':'Your guide — Word file',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3681,6 +3683,8 @@ ur:{
  'الأسماء':'نام',
  'لا أسماءَ عربيةً في النظام بعد.':'ابھی نظام میں کوئی عربی نام نہیں۔',
  'ما يُكتَب هنا لا يمسُّ الاسمَ المخزَّن — يغيّر قراءتَه بالإنجليزية وحدها، فلا تنكسر السجلاتُ ولا التقارير.':'یہاں جو لکھا جائے وہ محفوظ نام کو نہیں چھوتا — صرف انگریزی میں اس کی قرا��ت بدلتا ہے، سو نہ ریکارڈ ٹوٹتے ہیں نہ رپورٹس۔',
+ 'دليل':'گائیڈ برائے',
+ 'دليلُك — ملف Word':'آپ کی گائیڈ — Word فائل',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -16892,10 +16896,17 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
 
       + roleGuide(cur)
 
-      + card('الملفات',
+      /* الملفُّ المُنزَّلُ كان واحدًا للجميع — فتقرأ الوزارةُ عن اعتماداتٍ لا
+       تملكها. صار لكلِّ دورٍ ملفُّه، مُولَّدًا من الصلاحيات نفسِها التي
+       تُولِّد هذه الصفحة. */
+    + card('دليلُك — ملف Word',
           '<div class="actions">'
-          + '<a class="btn btn-primary btn-sm" href="docs/nusuk-user-manual.docx" download>'
-          +   '⬇ ' + esc(t('الدليل الكامل — Word')) + '</a>'
+          + '<a class="btn btn-primary btn-sm" href="docs/manuals/nusuk-manual-' + esc(cur) + '.docx" download>'
+          +   '⬇ ' + esc(t('دليل') + ' ' + t(ROLES[cur].n) + ' — Word') + '</a>'
+          + (may('settings')
+              ? '<a class="btn btn-secondary btn-sm" href="docs/nusuk-user-manual.docx" download>'
+                + '⬇ ' + esc(t('الدليل الكامل — Word')) + '</a>'
+              : '')
           + '</div>'
           + '<p class="hint" style="margin:9px 0 0">'
           + esc(t('ما فوق يُشتقُّ من صلاحيات الدور لحظةَ فتحه — فمن غيّر صلاحيةً غيّر الدليلَ معها.'))
@@ -16908,7 +16919,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.21' + '.docx" download>⬇ '
+              +   'V15.22' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
