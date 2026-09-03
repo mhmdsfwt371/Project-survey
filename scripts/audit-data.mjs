@@ -76,7 +76,12 @@ const html = readFileSync('index.html', 'utf8');
     }
     return '';
   };
-  check(names.length > 40, `أجسامُ الشاشات مقروءة (${names.length})`);
+  /* كان الشرطُ «أكثرُ من أربعين شاشة» — رقمٌ يصلح يومَ كُتب ثم يكذب: الدمجُ
+     يُنقص الشاشاتِ عمدًا فيسقط الجردُ على نجاح. الشرطُ الصحيح: كلُّ شاشةٍ
+     معرَّفةٍ يُقرأ جسمُها — فما لا يُقرأ لا يُفحَص وهو المقصود. */
+  const unread = names.filter(n => !bodyOf(n));
+  check(names.length > 0 && unread.length === 0,
+    `أجسامُ الشاشات مقروءة (${names.length})` + (unread.length ? ' — تعذّر: ' + unread.join('، ') : ''));
   const bad = [];
   names.forEach(n => {
     [...bodyOf(n).matchAll(/DATA\.(\w+)/g)].forEach(k => {

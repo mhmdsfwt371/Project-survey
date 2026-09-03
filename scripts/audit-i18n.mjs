@@ -128,7 +128,7 @@ report.sort((a, b) => b[1].length - a[1].length)
 shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 
 /* سقفٌ يهبط ولا يرتفع — يُخفَّض دفعةً كلَّ إصدار */
-const CAP_PAGES = 13, CAP_TEXTS = 98, CAP_SHELL = 2;
+const CAP_PAGES = 12, CAP_TEXTS = 95, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');

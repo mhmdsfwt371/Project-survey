@@ -36,7 +36,18 @@ const html = readFileSync('index.html', 'utf8');
      بندٌ وإمّا مستثناةٌ بتصريح (site تُفتَح من نقطة) */
   const defined = (html.match(/^PAGE\.\w+ = \{/gm) || []).length
                 + ((html.match(/^  (\w+):\s*\{ m:'/gm) || []).length);
-  check(ids.length >= 60 && ids.length === defined - 1, 'القائمة تحمل بنودها (' + ids.length + ' من ' + defined + ' صفحة)');
+  /* V15.30: صفحتان تُفتحان من غير القائمة — site من نقطةٍ على الخريطة،
+     وsvForm من زرِّ «امسح» بعد تسجيل موقعٍ جديد. البقيةُ كلُّها بندٌ أو شريحةُ
+     بندٍ — ولا يُكتَب العددُ رقمًا بل يُشتقّ، فالدمجُ القادم لا يُسقط الجرد. */
+  const tabsB = (/var TABS = \{[\s\S]*?\n\};/.exec(html) || [''])[0];
+  let TB = {}; try { TB = new Function(tabsB + ' return TABS;')(); } catch (e){}
+  const kids = new Set(Object.keys(TB).flatMap(k => TB[k].map(t => t[0])).filter(id => !TB[id]));
+  const pages = (html.match(/^PAGE\.(\w+) = \{/gm) || []).map(m => m.slice(5, -4).trim())
+    .concat([...html.matchAll(/^  (\w+):\s*\{ m:'/gm)].map(m => m[1]));
+  const orphan = pages.filter(id => !ids.includes(id) && !kids.has(id));
+  check(ids.length > 0 && orphan.length <= 1,
+    'القائمة تحمل بنودها (' + ids.length + ' بندًا · ' + pages.length + ' صفحة · ' + kids.size + ' شريحة)'
+    + (orphan.length > 1 ? ' — بلا بند: ' + orphan.join('، ') : ''));
   check(new Set(ids).size === ids.length, 'لا معرّفَ مكرّرًا في القائمة');
 
   /* V14 يربط بالتفويض لا بـonclick السطريّ. فمعالجٌ يترصّد خاصيةً لا يصدرها
@@ -172,7 +183,10 @@ if (typeof w.helpOf === 'function') {
   const rec = w.STATE.sites[w.STATE.sites.length - 1];
   check(w.STATE.sites.length === before + 1, 'الحفظُ الكاملُ يُنشئ السجل');
   check(rec && rec.approved === false && rec.isNew === true, 'السجلُّ يُوسَم جديدًا بانتظار الاعتماد');
-  check(w.CUR === 'svForm', 'يُفتَح نموذجُ المسح على الموقع الجديد');
+  /* V15.30: نموذجُ المسح صار شريحةً في «النماذج الميدانية» — الوصولُ إليه
+     بمعرِّفه القديم يفتح الأمَّ على شريحته، وهو المقصود نفسُه */
+  check(w.CUR === 'svForm' || (w.CUR === 'forms' && w.PTAB && w.PTAB.forms === 'svForm'),
+    'يُفتَح نموذجُ المسح على الموقع الجديد');
 
   w.toast = realToast;
 }

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.30",
+  "app_version": "V15.31",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1399,7 +1399,8 @@
     "V15.27": "LAYERS.survey.c كان #E8C34B — نفس لون الانتظار، فالمزورة وغير المزورة سواء على الخريطة. صار #4FA3FF (المنطق كان سليمًا). وأُضيف لنافذة النقطة سطر 'الخطوة التالية': يقرأ الحال ويقول أين تقف ومن صاحب الدور، ويعرض زر الانتقال لمن يملك الخطوة فقط (data-goto).",
     "V15.28": "viewer (وزارة): 12 شاشة متابعة + exportAll:1 — تُصدّر ما تقرأ ولا تكتب (كان exportAll:0 خطأً: العميل يرفع تقاريره لجهة أعلى). وأُضيف لـPAGE.roles جدول 'الوظيفة والدور'. وتخزين الصور: الآلية مبنية (OAuth drive.file) والناقص Client ID وحده — و legacy/v13.99 لا تحوي تخزين صور أصلًا.",
     "V15.29": "الدمج الثاني: 33 شاشة → 8 صفحات بشرائح (94 → 69). آلية واحدة TABS: كل شريحة بمعرّفها القديم في ROLES.nav وPAGE_CAP والروابط؛ render() يوصل المعرّف القديم إلى أمّه على شريحته؛ الرؤية بقواعد seesRaw نفسها. عطل أخطر: CFG (الأوزان/التارجتات/نقاط القطع/الثوابت) لم تكن تُرفع إلى settings/points قط — cfgSet محلية فقط؛ صار cfgPushSoon يرفع المسارات الملموسة بدمج لمن يملك settings. إصلاح over (أصفار مكتوبة + بطاقة ميتة)، pace وsetup حقيقيان من CFG (dueSurvey/dueInstall/minCamp/minCor). حارسان: audit-pages §3 وaudit-tabs (الجرد 22).",
-    "V15.30": "دورة الزيارة كاملة: recs.review (pending/approved/revisit) + svApprove/svRevisit + صفحة svappr (approve) + منتقي القطع المبحوث والأنماط settings/patterns + ألوان الخريطة SV_COL للدورة + «مهامي» للمهندس بالمشرف + شريحة now «أمس·الآن·غدًا» + الخريطة للوزارة + قاعدة recs تردّ review=approved لغير المدير + audit-cycle (23)."
+    "V15.30": "دورة الزيارة كاملة: recs.review (pending/approved/revisit) + svApprove/svRevisit + صفحة svappr (approve) + منتقي القطع المبحوث والأنماط settings/patterns + ألوان الخريطة SV_COL للدورة + «مهامي» للمهندس بالمشرف + شريحة now «أمس·الآن·غدًا» + الخريطة للوزارة + قاعدة recs تردّ review=approved لغير المدير + audit-cycle (23).",
+    "V15.31": "الدمج الثاني: 34 شاشة → 16 صفحة بشرائح (70 → 42، القائمة 40 بندًا). أمهات جديدة: forms, sel, hand, survey, req, qa, ev, hse, exec, consts, plan, risks, perf, wos, ipc + probe/drive أُضيفتا إلى sys. إصلاح data-asn (goPage('req') بدل شرط CUR). ثلاثة حرّاس تحرس برقم مكتوب صارت تشتقّ: audit-data أجسام الشاشات، audit-writes الوعود، qa القائمة. audit-writes يفحص كل شريحة وينتقل بـgoPage."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2253,8 +2254,8 @@
       "after_help_button_fix": 2570
     },
     "caps": {
-      "CAP_PAGES": 13,
-      "CAP_TEXTS": 98,
+      "CAP_PAGES": 12,
+      "CAP_TEXTS": 95,
       "CAP_SHELL": 2
     },
     "top_offenders": "ips(810 غالبها بيانات شبكة) · jobs(94) · svForm(90) · retain(69) · invmv(67)",
@@ -2761,6 +2762,96 @@
         "org"
       ],
       "roles_nav_unchanged": true
+    },
+    "V15.31": {
+      "count": "34 شريحة في 16 صفحة — 70 → 42 (الأصل 94)",
+      "merges": {
+        "forms": [
+          "svForm",
+          "insForm",
+          "disp2",
+          "newsite"
+        ],
+        "sel": [
+          "sel",
+          "layers"
+        ],
+        "hand": [
+          "hand",
+          "ips"
+        ],
+        "survey": [
+          "survey",
+          "svappr",
+          "chal",
+          "chalm",
+          "stuck"
+        ],
+        "req": [
+          "req",
+          "assign"
+        ],
+        "qa": [
+          "qa",
+          "ncr"
+        ],
+        "ev": [
+          "ev",
+          "notif",
+          "appr"
+        ],
+        "hse": [
+          "hse",
+          "less"
+        ],
+        "exec": [
+          "exec",
+          "repcenter",
+          "budm"
+        ],
+        "consts": [
+          "consts",
+          "names",
+          "vehkind"
+        ],
+        "plan": [
+          "setup",
+          "miles",
+          "evm"
+        ],
+        "risks": [
+          "risks",
+          "chg",
+          "pipe"
+        ],
+        "perf": [
+          "perf",
+          "crewman",
+          "crewplan"
+        ],
+        "wos": [
+          "wos",
+          "wday"
+        ],
+        "ipc": [
+          "ipc",
+          "buys"
+        ],
+        "sys(+)": [
+          "probe",
+          "drive"
+        ]
+      },
+      "new_parent_ids": [
+        "forms",
+        "plan"
+      ],
+      "cross_group": "chalm انتقلت من المتابعة إلى الطلبات والمسح كشريحة في «الزيارات» — تجيب سؤال chal نفسه من الجهة الأخرى",
+      "known_trap": "زر ينقل بين صفحتين صارتا شريحتين: شرط CUR !== 'x' يصير دائمًا كاذبًا — استعمل goPage('x')",
+      "excluded_from_nav": [
+        "site (من نقطة على الخريطة)",
+        "svForm (من زر «امسح» بعد تسجيل موقع جديد — وهو الآن شريحة)"
+      ]
     }
   },
   "merge_candidates_next": [
@@ -2928,5 +3019,13 @@
   "audit_cycle": {
     "steps": 28,
     "how": "بالنقر على الأزرار في JSDOM لا باستدعاء الدوال — ما ينكسر في الزر يُمسك"
+  },
+  "derived_thresholds_v15_31": {
+    "why": "حارس يحرس برقم مكتوب يسقط على نجاح كلما نقصت الشاشات عمدًا — وهو ضد audit-zero نفسها",
+    "fixed": {
+      "audit-data": "names.length > 40 → كل شاشة معرَّفة يُقرأ جسمها",
+      "audit-writes": "promises > 15 → promises > 0 مع ذكر عدد الشاشات والشرائح",
+      "qa": "ids.length === defined - 1 → يُشتقّ من TABS: لا صفحة بلا بند إلا ما يُفتح من غير القائمة"
+    }
   }
 }

@@ -82,14 +82,20 @@ w.CORE.dirty = function(){ writes++; try { return odirty.apply(w.CORE, arguments
 w.toast = m => said.push(String(m));
 
 /* ── الجولة: كلُّ صفحةٍ، كلُّ وعدٍ فيها ───────────────────────────────────── */
-const ids = [...new Set([...d.querySelectorAll('#nav [data-p]')].map(a => a.getAttribute('data-p')))];
-check(ids.length > 40, `القائمةُ تعرض بنودَها (${ids.length})`);
+/* V15.31: الصفحاتُ المدموجة تُفحَص شريحةً شريحة — وإلا اختبأ نصفُ الأزرار
+   خلف شريحةٍ لا تُفتَح افتراضيًّا. والانتقالُ بـgo() لا بإسناد CUR: الشريحةُ
+   المفتوحةُ من ضغطةٍ سابقةٍ تبقى مفتوحةً وإلا فُحصت شاشةٌ وضُغط زرُّ أخرى. */
+const goTo = id => { if (w.goPage) w.goPage(id); else w.CUR = id; if (w.PARENT && w.PARENT[id] && w.PTAB) w.PTAB[w.PARENT[id]] = id; w.render(1); };
+const ids = [...new Set([...d.querySelectorAll('#nav [data-p]')]
+  .map(a => a.getAttribute('data-p'))
+  .flatMap(id => (w.TABS && w.TABS[id]) ? w.TABS[id].map(t => t[0]) : [id]))];
+check(ids.length > 40, `القائمةُ تعرض بنودَها وشرائحَها (${ids.length})`);
 
 const silent = [], threw = [];
 let promises = 0;
 
 for (const id of ids){
-  try { w.CUR = id; w.render(1); } catch { continue; }
+  try { goTo(id); } catch { continue; }
   const C = d.getElementById('content');
   if (!C) continue;
   const seen = new Set();
@@ -106,11 +112,14 @@ for (const id of ids){
     catch (e){ threw.push(tag + ' → ' + String(e.message).slice(0,50)); continue; }
     if (writes === 0 && said.length === 0) silent.push(tag);
     /* الشاشةُ قد تتبدّل بالضغط — تُعاد لموضعها */
-    try { w.CUR = id; w.render(1); } catch {}
+    try { goTo(id); } catch {}
   }
 }
 
-check(promises > 15, `وُجدت وعودُ حفظٍ لتُفحَص (${promises})`);
+/* كان الشرطُ «أكثرُ من خمسةَ عشرَ وعدًا» — رقمٌ مكتوبٌ يصلح يومَه ثم يكذب:
+   الدمجُ يُنقص الشاشاتِ عمدًا فيسقط الجردُ على نجاح. الشرطُ الصحيح: أن
+   يوجدَ وعدُ حفظٍ في كلِّ شاشةٍ تعِد بحفظ — أي أن يُفحَص ما وُجد كلُّه. */
+check(promises > 0, `وُجدت وعودُ حفظٍ لتُفحَص (${promises} في ${ids.length} شاشةً وشريحة)`);
 
 /* ══ الجولةُ الشاملة: كلُّ خاصيةٍ مفوَّضةٍ في كلِّ شاشةٍ تظهر فيها ══════════ */
 {
@@ -138,7 +147,7 @@ check(promises > 15, `وُجدت وعودُ حفظٍ لتُفحَص (${promises}
   const roleWas = w.ROLE;
 
   for (const id of ids){
-    try { w.CUR = id; w.render(1); } catch { continue; }
+    try { goTo(id); } catch { continue; }
     const C = d.getElementById('content');
     if (!C) continue;
     const seen = new Set();
@@ -174,7 +183,7 @@ check(promises > 15, `وُجدت وعودُ حفظٍ لتُفحَص (${promises}
       let hit = false, blew = null;
       for (const el of cands){
         reset();
-        try { w.CUR = id; w.render(1); } catch {}
+        try { goTo(id); } catch {}
         const live = d.querySelector('[' + attr + '="' + (el.getAttribute(attr) || '') + '"]') || el;
         writes = 0; said = [];
         const beforeHtml = snap(), beforeCur = w.CUR;
@@ -190,7 +199,7 @@ check(promises > 15, `وُجدت وعودُ حفظٍ لتُفحَص (${promises}
       if (blew) threw2.push(id + ' · ' + attr + ' → ' + blew);
       else if (!hit) silent2.push(id + ' · ' + attr);
       reset();
-      try { w.CUR = id; w.render(1); } catch {}
+      try { goTo(id); } catch {}
     }
   }
   w.ROLE = roleWas;
