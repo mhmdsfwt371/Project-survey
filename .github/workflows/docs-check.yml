@@ -60,6 +60,8 @@ jobs:
         run: node scripts/audit-mgr.mjs
       - name: جرد اللمس — أهداف ٤٤ بكسلًا وأرقام الأسطورة
         run: node scripts/audit-touch.mjs
+      - name: جرد العناوين — المُركّبة سابقًا تُقرأ من الميدان ولا تُخترَع
+        run: node scripts/audit-ip.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

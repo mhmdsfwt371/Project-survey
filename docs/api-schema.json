@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.38",
+  "app_version": "V15.39",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1407,7 +1407,8 @@
     "V15.35": "المصدر الواحد للأشخاص = الحسابات: حذف بذرة TECHS وطاقم 1447، techsList() تُشتق من STATE.users، techSet/jobAssign/techDel تكتب على وثيقة الحساب، depTechAdd ينسب فقط (يشترط techUid)، usrAdd بوظيفة uJ ومشرف uS والوظيفة تجرّ الدور، صف التعديل + data-usrdel بحمايتين، زر data-tkpurge يحذف settings/techs ويفرغ الفرق من أسماء بلا حساب. PROV + provHtml في tabHead: سطر «تأتي من · تُقرأ في» لـ14 شاشة. stageOf من دور الوظيفة.",
     "V15.36": "دورة حياة النقطة LIFE/lifeOf/lifeColor بعشر حالات — مصدر واحد للون في mapColorOf وlegendRows وwfDiagram. نوع عمل جديد maint (MR) يُسنَد بالمحرك نفسه. رسم SVG wfDiagram في شريحة wf. توليد بادئات الشبكة الناقصة ipFillMissing + جدول الناقص بالمشعر والنوع. نموذج المسح: SV_MORE يطوي الكميات والتقدير خلف زر (لا حقل حُذف).",
     "V15.37": "سلسلة الإدارة: sup صار «مديره» — قائمة من mgrCandidates(role) بمرتبة أعلى (ROLE_RANK/rankOf/roleOfUser). حقل dept من ORG.co.units (deptOptions/deptName). جدول الفروق بين الوظيفة والدور والقسم والمدير في شريحة jobs. حالة الفراغ في جدول الحسابات تشرح نفسها. الجرد 24: audit-mgr.",
-    "V15.38": "الأسطورة تعدّ: رقم لكل حالة + مجموع، من layerFiltered() لا من القاعدة كلها (lg-c/lg-off/lg-tot). اللمس: L.canvas({tolerance:12})، إطار لمس 44px للمعيّن (ممر/كاميرا) مع إبقاء الرسم، r+1.5 على اللمس، @media(pointer:coarse) أهداف 44px وحقول 16px، touch-action:manipulation. الجرد 25: audit-touch."
+    "V15.38": "الأسطورة تعدّ: رقم لكل حالة + مجموع، من layerFiltered() لا من القاعدة كلها (lg-c/lg-off/lg-tot). اللمس: L.canvas({tolerance:12})، إطار لمس 44px للمعيّن (ممر/كاميرا) مع إبقاء الرسم، r+1.5 على اللمس، @media(pointer:coarse) أهداف 44px وحقول 16px، touch-action:manipulation. الجرد 25: audit-touch.",
+    "V15.39": "ipPreset(x) يحجز المُركّبة سابقًا من التوليد؛ حقل old_net في نموذج المسح يكتب net على النقطة عند الحفظ؛ شاشة العناوين تفرد «عنوانها يُقرأ من الميدان» وتكشف البادئات المكرّرة بلا إصلاح صامت. النافذة تحت 760px لوح سفلي بعرض الشاشة بمقبض. الجرد 26: audit-ip."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2582,7 +2583,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 25,
+  "audits_total": 26,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3293,5 +3294,16 @@
     "survey": "lifeOf(x) لكل حالة من LIFE_ORDER",
     "install/dis": "wait/asn/done",
     "ui": "lg-c رقم · lg-off للحالة الخالية · lg-tot سطر المجموع"
+  },
+  "existing_addresses_v15_39": {
+    "problem": "264 نقطة رُكّبت سابقًا وعناوينها في أجهزتها؛ season1447.json لا يحمل شبكة (team/pri/ptype/co/sub…)",
+    "ipPreset": "work ~ /إعادة تركيب|ترقية|تفعيل/ أو insDone(id) → لا يُولَّد لها",
+    "capture": "SV_EXTRA_KEYS += old_net؛ svSave يكتب s.net + CORE.set('sites',…) إن طابق ^\\d{1,3}(\\.\\d{1,3}){2,3}$",
+    "duplicates": "تُعرَض المكرّرة بنقطتيها في شاشة العناوين — لا إصلاح صامت"
+  },
+  "popup_sheet_v15_39": {
+    "why": "pop كان يُوسَّط بـinset-inline-start:50% + translate(50%) — يصحّ إن كانت الحاوية بعرض الشاشة",
+    "mobile": "@media(max-width:760px): inset-block-end:0 · inset-inline:0 · width:100% · transform:none (بـ!important لتجاوز العرض المضمَّن) · radius 18px أعلى · max-height 76vh · safe-area · ::before مقبض",
+    "actions": ".pop .actions تلتفّ وأزرارها min-width:104px"
   }
 }

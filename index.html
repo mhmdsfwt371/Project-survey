@@ -292,6 +292,35 @@ input[type="number"]{max-width:140px}
    ستةً وثلاثين — تكفي الفأرةَ ولا تكفي اليد. وثلاثةُ أعطالٍ لمسيةٍ أخرى
    تُصلَح معها: التأخيرُ ثلاثُمئةِ جزءٍ من الثانية قبل النقرة، والتكبيرُ
    المزدوجُ حين تُنقَر النقطتان سريعًا، وإبرازُ اللمسة رماديًّا على أندرويد. */
+/* ═══ النافذةُ على الهاتف: لوحٌ سفليٌّ لا مربّعٌ معلّق ═══
+   كانت تُوسَّط بالحساب: «ابدأ من نصف العرض ثم ارجع بنصف عرضك». والحسابُ
+   يصحُّ إن كانت الحاويةُ بعرض الشاشة — ولوحُ الخريطة أعرضُ منها أحيانًا
+   (شريطُ الطبقات يمتدُّ فيُزاح)، فتنزاح النافذةُ إلى الجانب وتُقطَع.
+   وعرضُها ثلاثمئةٍ وأربعون على شاشةٍ عرضُها ثلاثمئةٌ وثلاثةٌ وتسعون: تكاد
+   تملؤها ولا تُوسَّط.
+     فصارت على الشاشات الصغيرة لوحًا سفليًّا: ملتصقًا بالحافّتين والأسفل،
+   بحوافَّ عليا مستديرة، ومقبضٍ يدلُّ على أنه يُسحَب — وهو النمطُ الذي
+   تعرفه اليدُ في كلِّ تطبيق. ولا حسابَ يُخطئ: لا توسيطَ ولا إزاحة. */
+@media (max-width:760px){
+  .pop{
+    inset-block-start:auto !important; inset-block-end:0 !important;
+    inset-inline:0 !important; transform:none !important;
+    width:100% !important; max-width:100% !important;
+    border-radius:18px 18px 0 0 !important;
+    border-inline-width:0; border-block-end-width:0;
+    max-height:min(76vh, calc(var(--vh,1vh) * 76)) !important;
+    padding-block-end:env(safe-area-inset-bottom,0px);
+    box-shadow:0 -14px 44px rgba(0,0,0,.5) !important;
+  }
+  [dir="ltr"] .pop{ transform:none !important }
+  /* المقبض: خطٌّ صغيرٌ يقول «هذا لوحٌ من الأسفل» */
+  .pop::before{ content:''; display:block; flex:0 0 auto;
+    width:38px; height:4px; border-radius:99px; background:var(--line);
+    margin:9px auto 3px }
+  .pop > .pop-body{ padding:12px 14px }
+  .pop > .pop-head{ padding:10px 14px 11px }
+  .pop > .pop-foot{ padding:11px 14px calc(12px + env(safe-area-inset-bottom,0px)) }
+}
 @media (pointer:coarse){
   .btn, .chip, .map-chip{ min-height:44px }
   .btn-sm{ min-height:44px; padding:9px 14px }
@@ -333,6 +362,9 @@ button, .btn, .chip, .map-chip, .list-item, a[data-p]{
 .pop h3{font-size:15px;color:var(--brand);margin-bottom:3px}
 .pop .pid{font-size:12px;color:var(--ink-soft);font-family:ui-monospace,monospace;direction:ltr}
 .pop-rows{margin:11px 0;font-size:13.5px}
+/* أزرارُ النافذة تلتفُّ ولا تخرج من حافّتها */
+.pop .actions{flex-wrap:wrap;gap:8px}
+.pop .actions .btn{flex:1 1 auto;min-width:104px}
 .pop-rows div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
   border-bottom:1px solid var(--line-2)}
 .pop-rows div:last-child{border-bottom:0}
@@ -706,7 +738,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.38</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.39</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2637,6 +2669,21 @@ en:{
  'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'Only higher ranks are shown: the technician’s manager is their supervisor, the supervisor’s is the engineer, and the engineer’s is the project manager.',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'No accounts yet. This table is where every account in the system lives: from it the name, job, department, and manager are edited, and from it an account is deactivated or deleted. Create the first account in the form above.',
  'المعروض':'Shown',
+
+ /* V15.39 — العناوينُ القائمةُ واللوحُ السفلي */
+ 'العنوان القائم (بادئة الشبكة)':'Existing address (network prefix)',
+ 'اقرأه من ملصق الراوتر أو شاشته — مثل 10.10.40.7':'Read it from the router’s label or screen — e.g. 10.10.40.7',
+ 'عنوانُها في الميدان':'Address in the field',
+ 'مُركّبةٌ سابقًا — عنوانُها يُقرأ من الميدان':'Previously installed — its address is read in the field',
+ 'هذه النقاطُ رُكِّبت في موسمٍ ماضٍ (إعادةُ تركيبٍ أو ترقيةٌ أو تفعيل)، وعناوينُها مكتوبةٌ في أجهزتها فعلًا. لا يُولَّد لها عنوانٌ يخالف الواقع: يقرؤه الفنيُّ من الراوتر ويكتبه في «العنوان القائم» داخل نموذج المسح، فيُحفَظ على النقطة.':'These points were installed in a past season (reinstall, upgrade, or activation) and their addresses are already written in their devices. No address is generated that would contradict reality: the technician reads it from the router and enters it in “Existing address” in the survey form, and it is saved on the point.',
+ 'بانتظار قراءة الميدان':'Awaiting a field reading',
+ 'مُركّبةٌ سابقًا تُركت لتُقرأ من الميدان':'previously installed, left to be read in the field',
+ 'نقطةً عنوانُها قائمٌ في الميدان — لا يُخترَع لها بديل':'points whose address exists in the field — no substitute is invented',
+ 'بادئةٌ واحدةٌ على أكثرَ من نقطة':'One prefix on more than one point',
+ 'عنوانان متطابقان على الشبكة يمنعان الجهازين من العمل معًا، ولا يظهر العطلُ إلا حين يسقط أحدُهما. صحّح البادئةَ في الجدول أدناه — لا يُصلِحها النظامُ صامتًا لأن اختيارَ من يبقى على عنوانه قرارُ مهندس.':'Two identical addresses on the network stop both devices from working together, and the fault appears only when one of them drops. Correct the prefix in the table below — the system does not fix it silently, because choosing which device keeps its address is an engineer’s decision.',
+ 'النقطة الأولى':'First point',
+ 'النقطة الثانية':'Second point',
+ 'في هذا الترشيح':'In this filter',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4519,6 +4566,19 @@ ur:{
  'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'صرف بلند درجے دکھائے جاتے ہیں: ٹیکنیشن کا منتظم اس کا سپروائزر، سپروائزر کا انجینئر، اور انجینئر کا پروجیکٹ منیجر۔',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'ابھی کوئی اکاؤنٹ نہیں۔ یہ جدول نظام کے ہر اکاؤنٹ کی جگہ ہے: یہیں سے نام، عہدہ، شعبہ اور منتظم تبدیل ہوتے ہیں، اور یہیں سے اکاؤنٹ غیر فعال یا حذف ہوتا ہے۔ اوپر کے فارم سے پہلا اکاؤنٹ بنائیں۔',
  'المعروض':'دکھایا گیا',
+ 'العنوان القائم (بادئة الشبكة)':'موجودہ پتہ (نیٹ ورک پریفکس)',
+ 'اقرأه من ملصق الراوتر أو شاشته — مثل 10.10.40.7':'راؤٹر کے لیبل یا اسکرین سے پڑھیں — مثلاً 10.10.40.7',
+ 'عنوانُها في الميدان':'پتہ فیلڈ میں',
+ 'مُركّبةٌ سابقًا — عنوانُها يُقرأ من الميدان':'پہلے نصب شدہ — اس کا پتہ فیلڈ میں پڑھا جاتا ہے',
+ 'هذه النقاطُ رُكِّبت في موسمٍ ماضٍ (إعادةُ تركيبٍ أو ترقيةٌ أو تفعيل)، وعناوينُها مكتوبةٌ في أجهزتها فعلًا. لا يُولَّد لها عنوانٌ يخالف الواقع: يقرؤه الفنيُّ من الراوتر ويكتبه في «العنوان القائم» داخل نموذج المسح، فيُحفَظ على النقطة.':'یہ پوائنٹس پچھلے سیزن میں نصب ہوئے (دوبارہ تنصیب، اپ گریڈ یا فعال سازی) اور ان کے پتے پہلے سے ان کے آلات میں لکھے ہیں۔ حقیقت کے خلاف کوئی پتہ نہیں بنایا جاتا: ٹیکنیشن راؤٹر سے پڑھ کر سروے فارم میں “موجودہ پتہ” میں لکھتا ہے، اور وہ پوائنٹ پر محفوظ ہو جاتا ہے۔',
+ 'بانتظار قراءة الميدان':'فیلڈ سے پڑھنے کے منتظر',
+ 'مُركّبةٌ سابقًا تُركت لتُقرأ من الميدان':'پہلے نصب شدہ، فیلڈ سے پڑھنے کے لیے چھوڑے گئے',
+ 'نقطةً عنوانُها قائمٌ في الميدان — لا يُخترَع لها بديل':'وہ پوائنٹس جن کا پتہ فیلڈ میں موجود ہے — کوئی متبادل نہیں بنایا جاتا',
+ 'بادئةٌ واحدةٌ على أكثرَ من نقطة':'ایک پریفکس ایک سے زیادہ پوائنٹس پر',
+ 'عنوانان متطابقان على الشبكة يمنعان الجهازين من العمل معًا، ولا يظهر العطلُ إلا حين يسقط أحدُهما. صحّح البادئةَ في الجدول أدناه — لا يُصلِحها النظامُ صامتًا لأن اختيارَ من يبقى على عنوانه قرارُ مهندس.':'نیٹ ورک پر دو یکساں پتے دونوں آلات کو ایک ساتھ کام کرنے سے روکتے ہیں، اور خرابی تبھی ظاہر ہوتی ہے جب ایک گر جائے۔ نیچے جدول میں پریفکس درست کریں — نظام خاموشی سے درست نہیں کرتا، کیونکہ کون سا آلہ اپنا پتہ رکھے یہ انجینئر کا فیصلہ ہے۔',
+ 'النقطة الأولى':'پہلا پوائنٹ',
+ 'النقطة الثانية':'دوسرا پوائنٹ',
+ 'في هذا الترشيح':'اس فلٹر میں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8982,19 +9042,58 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
   })();
     if (cur === 'ips') return head + (function(){
     var L = ipRows(), all = (STATE.sites || []).filter(function(x){ return x.net; }).length;
-    var missBy = {};
+    var missBy = {}, heldBy = {}, heldN = 0;
     (STATE.sites || []).forEach(function(x){
       if (x.net) return;
       /* المفتاحُ مركَّبٌ بالجمع فلا يبلغه القاموس — يُخزَّن جزآه ويُترجَم كلٌّ
          على حدة عند العرض */
       var k = x.zone + '\u0000' + x.type;
+      if (ipPreset(x)){ heldBy[k] = (heldBy[k] || 0) + 1; heldN++; return; }
       missBy[k] = (missBy[k] || 0) + 1;
     });
+    var heldKeys = Object.keys(heldBy).sort(function(a, b){ return heldBy[b] - heldBy[a]; });
     var missKeys = Object.keys(missBy).sort(function(a, b){ return missBy[b] - missBy[a]; });
     return stats([['نقاطٌ لها شبكة', N(all), all ? 'ok' : 'wrn'],
                   ['بلا عنوان', N((STATE.sites || []).length - all),
                    (STATE.sites || []).length - all ? 'wrn' : 'ok'],
+                  ['عنوانُها في الميدان', N(heldN), heldN ? 'acc' : ''],
                   ['معروض', N(L.length)]])
+
+      /* ما رُكِّب سابقًا عنوانُه قائمٌ في جهازه — لا يُخترَع له بديل */
+      /* بادئةٌ واحدةٌ على نقطتين: خطأٌ يمنع الجهازين من العمل معًا ولا يظهر
+         إلا حين يسقط أحدُهما. يُكشَف هنا ولا يُصلَح صامتًا — تصحيحُه قرارُ
+         مهندسٍ يعرف أيَّ الجهازين يبقى على عنوانه. */
+      + (function(){
+          var seen = {}, dup = [];
+          (STATE.sites || []).forEach(function(x){
+            if (!x.net) return;
+            if (seen[x.net]) dup.push([x.net, seen[x.net], x.id]);
+            else seen[x.net] = x.id;
+          });
+          if (!dup.length) return '';
+          return card('\u26A0 ' + t('بادئةٌ واحدةٌ على أكثرَ من نقطة'),
+            '<p class="hint" style="margin:0 0 10px">'
+            + esc(t('عنوانان متطابقان على الشبكة يمنعان الجهازين من العمل معًا، ولا يظهر العطلُ إلا حين يسقط أحدُهما. صحّح البادئةَ في الجدول أدناه — لا يُصلِحها النظامُ صامتًا لأن اختيارَ من يبقى على عنوانه قرارُ مهندس.')) + '</p>'
+            + table(['البادئة','النقطة الأولى','النقطة الثانية'],
+                dup.slice(0, 30).map(function(r){
+                  return ['<span class="num">' + esc(r[0]) + '</span>',
+                          '<span class="num">' + esc(r[1]) + '</span>',
+                          '<span class="num">' + esc(r[2]) + '</span>'];
+                }))
+            + (dup.length > 30 ? '<p class="hint" style="margin:8px 0 0">' + esc(t('و')) + ' '
+                + nm(dup.length - 30) + ' ' + esc(t('أخرى')) + '</p>' : ''));
+        })()
+
+      + (heldN
+        ? card('\u{1F517} ' + t('مُركّبةٌ سابقًا — عنوانُها يُقرأ من الميدان'),
+            '<p class="hint" style="margin:0 0 10px">'
+            + esc(t('هذه النقاطُ رُكِّبت في موسمٍ ماضٍ (إعادةُ تركيبٍ أو ترقيةٌ أو تفعيل)، وعناوينُها مكتوبةٌ في أجهزتها فعلًا. لا يُولَّد لها عنوانٌ يخالف الواقع: يقرؤه الفنيُّ من الراوتر ويكتبه في «العنوان القائم» داخل نموذج المسح، فيُحفَظ على النقطة.')) + '</p>'
+            + table(['المشعر والنوع','بانتظار قراءة الميدان'],
+                heldKeys.slice(0, 20).map(function(k){
+                  var pr = k.split('\u0000');
+                  return [esc(t(pr[0])) + ' \u00b7 ' + esc(t(pr[1])), N(heldBy[k])];
+                })))
+        : '')
 
       /* الناقصُ بالمشعر والنوع: كان يُقال «بلا عنوان ٩٠٠» ولا يُعرف أينها —
          فتُعنوَن المخيماتُ وتُنسى الممرات. */
@@ -9913,13 +10012,13 @@ var TK_ST = ['مطلوب','قيد التنفيذ','منفّذ','معتمد','م�
 var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:'',
              photos:{}, parts:{}, serials:{}, prefix:'', status:'', access:'تم الوصول',
              /* ما نقص عن القديم: القياساتُ والكمياتُ والتقدير */
-             len_m:'', wid_m:'', hgt_m:'', fit:'', tents:'', gates:'',
+             len_m:'', wid_m:'', hgt_m:'', fit:'', tents:'', gates:'', old_net:'',
              corr_w:'', kits:'', jam_pos:'', old_base:'', old_cable:'',
              cam_ok:'', router_sp:'', power_src:'', pdist:'', p24:'', power_note:'',
              n_ant:'', n_rdr:'', n_cam:'', n_sens:'', metal:'',
              chal_note:'', civil:'', equip:'', hours:'', crew_n:'', power_yn:'', kits_done:'' };
 var SV_EXTRA_KEYS = ['len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kits','jam_pos','power_yn','kits_done',
-                     'old_base','old_cable','cam_ok','router_sp','power_src','pdist','p24',
+                     'old_base','old_cable','old_net','cam_ok','router_sp','power_src','pdist','p24',
                      'power_note','n_ant','n_rdr','n_cam','n_sens','metal','chal_note',
                      'civil','equip','hours','crew_n'];
 
@@ -10148,6 +10247,8 @@ function svExtra(s){
       '<div class="grid cols-2">'
       + svSel('old_base','هل القاعدة أو التثبيت القديم موجود؟', SV_BASE)
       + svSel('old_cable','هل مسار الكابل القديم سليم؟', SV_CABLE)
+      /* العنوانُ القائمُ يُقرأ من الراوتر لا يُخترَع من المكتب */
+      + svTxt('old_net','العنوان القائم (بادئة الشبكة)','اقرأه من ملصق الراوتر أو شاشته — مثل 10.10.40.7')
       + '</div>');
 
   if (isCam) h += card('الكاميرا القائمة',
@@ -10220,17 +10321,26 @@ function svExtra(s){
    الثالثة، والرقمُ الأخيرُ تسلسلٌ داخل النوع. وما له بادئةٌ لا يُمَسّ. */
 var IP_OCT2 = { 'منى':10, 'عرفات':20, 'مزدلفة':30, 'الجمرات':40, 'مكة':50 };
 var IP_OCT3 = { 'مخيم':0, 'ممر':40, 'جسر':80, 'كاميرا':120, 'محطة':160, 'بوابة':200, 'مبنى':230 };
+/* نقطةٌ رُكِّبت في موسمٍ ماضٍ: عنوانُها قائمٌ في جهازها فعلًا — لا يُخترَع
+   له بديلٌ يخالفه، بل يُقرأ من الميدان عند الزيارة ويُكتَب في النموذج. */
+function ipPreset(x){
+  return /إعادة تركيب|ترقية|تفعيل/.test(String(x.work || ''))
+      || (typeof insDone === 'function' && insDone(x.id));
+}
 function ipFillMissing(zoneOnly, typeOnly){
   if (!may('edit')){ toast(t('التحريرُ ليس من صلاحيتك')); return; }
   var used = {};
   (STATE.sites || []).forEach(function(x){ if (x.net) used[x.net] = 1; });
-  var seq = {}, made = 0, skipped = 0;
+  var seq = {}, made = 0, skipped = 0, held = 0;
   (STATE.sites || []).forEach(function(x){
     if (x.net) return;
     if (zoneOnly && x.zone !== zoneOnly) return;
     if (typeOnly && x.type !== typeOnly) return;
+    if (ipPreset(x)){ held++; return; }
     var o2 = IP_OCT2[x.zone], o3b = IP_OCT3[x.type];
     if (o2 == null || o3b == null){ skipped++; return; }
+    /* الشريحةُ للنوع في مشعره — والتسلسلُ يتقدّم في المشعر كلِّه لا في كلِّ
+       نوعٍ على حدة، وإلا تصادمت أنواعٌ تتجاور شرائحُها عند الامتلاء. */
     var key = x.zone + '|' + x.type;
     var i = seq[key] || 0, net = '';
     /* لكلِّ نوعٍ في المشعر أربعون شبكةً (o3b … o3b+39)، وكلُّ شبكةٍ تحمل
@@ -10252,8 +10362,10 @@ function ipFillMissing(zoneOnly, typeOnly){
   logEvent('توليد بادئات الشبكة — ' + nm(made) + ' نقطة'
            + (zoneOnly ? ' \u00b7 ' + zoneOnly : '') + (typeOnly ? ' \u00b7 ' + typeOnly : ''));
   toast(made ? (nm(made) + ' ' + t('نقطةً نالت بادئتَها')
+                 + (held ? ' \u00b7 ' + nm(held) + ' ' + t('مُركّبةٌ سابقًا تُركت لتُقرأ من الميدان') : '')
                  + (skipped ? ' \u00b7 ' + nm(skipped) + ' ' + t('تُخُطِّيت') : ''))
-             : t('لا نقطةَ بلا بادئةٍ في هذا الترشيح'));
+             : (held ? nm(held) + ' ' + t('نقطةً عنوانُها قائمٌ في الميدان — لا يُخترَع لها بديل')
+                     : t('لا نقطةَ بلا بادئةٍ في هذا الترشيح')));
   render(1);
 }
 function ipsOf(p){
@@ -10339,6 +10451,14 @@ function svSave(next){
     access:FORM.access
   };
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
+  /* العنوانُ الذي قرأه الفنيُّ من الجهاز يُكتَب على النقطة نفسِها — فتخرج من
+     قائمة «بلا عنوان» بعنوانها الحقيقيِّ لا بعنوانٍ مولَّد */
+  var netIn = String(FORM.old_net || '').trim().replace(/\.+$/, '');
+  if (netIn && /^\d{1,3}(\.\d{1,3}){2,3}$/.test(netIn) && netIn !== s.net){
+    s.net = netIn;
+    CORE.set('sites', s.id, { net:netIn, ipRtr:s.ipRtr || '', ipRdr:s.ipRdr || '', ipCam:s.ipCam || '' });
+    logEvent('عنوانُ شبكةٍ من الميدان — ' + s.id + ' \u00b7 ' + netIn);
+  }
   /* تنتظر المهندسَ — وإن كانت عودةً بعد ردٍّ فهي جولةٌ ثانيةٌ تحمل سببَ الردّ */
   rec.review = 'pending';
   var prevRec = STATE.recs[s.id];
@@ -12494,7 +12614,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.38' + '.docx" download>⬇ '
+              +   'V15.39' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15166,7 +15286,7 @@ function legendRows(){
       + '<span class="lg-n">' + esc(t(r[1])) + '</span>'
       + '<b class="num lg-c">' + nm(n) + '</b></div>';
   }).join('')
-  + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('المعروض')) + '</span>'
+  + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('في هذا الترشيح')) + '</span>'
   + '<b class="num lg-c">' + nm(TOT) + '</b></div>';
   /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة */
   out += '<div class="lg-sep"></div>'
@@ -16163,6 +16283,7 @@ var SV_LABEL = { mount:'التثبيت', power:'الكهرباء', height:'ال�
   power_yn:'هل يوجد مصدر كهرباء؟', kits_done:'أطقمٌ منجزة', old_base:'هل القاعدة أو التثبيت القديم موجود؟',
   old_cable:'هل مسار الكابل القديم سليم؟', cam_ok:'هل الكاميرا تعمل؟', router_sp:'هل يوجد مكان لتركيب راوتر؟',
   power_src:'أقرب مصدر كهرباء', pdist:'المسافة إلى المصدر (متر)', p24:'التغذية متاحة ٢٤ ساعة؟',
+  old_net:'العنوان القائم (بادئة الشبكة)',
   power_note:'ماذا تغيّر؟', n_ant:'عدد الهوائيات', n_rdr:'عدد القارئات', n_cam:'عدد الكاميرات',
   n_sens:'عدد الحساسات البيئية', metal:'هياكل معدنية مؤثرة قرب النقطة؟', chal_note:'تفصيل التحديات',
   civil:'هل يحتاج أعمال مدنية؟', equip:'المعدات اللازمة للوصول', hours:'تقدير ساعات التركيب', crew_n:'عدد أفراد الطاقم' };
