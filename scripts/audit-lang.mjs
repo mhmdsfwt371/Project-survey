@@ -182,6 +182,47 @@ const cell = /^function cellT\([\s\S]*?\n\}/m.exec(src);
 check(!!cell && /indexOf\('<'\)/.test(cell[0]) && /\bt\(/.test(cell[0]),
   cell ? 'cellT تحمي ما فيه وسمٌ وتترجم النصَّ الصرف' : 'cellT مفقودة — الخلايا بلا مترجم');
 
+console.log('\n══ ٧ · صياغةُ الترجمة — مراجعةُ كاتبٍ تقنيّ ══');
+/* الترجمةُ الموجودةُ ليست ترجمةً صحيحة. فُحصت أربعَ مرّاتٍ بالعين فوُجد
+   في كلِّ مرّةٍ نمطٌ يتكرّر: قوسا الجمع `(s)` في أربعةَ عشرَ نصًّا —
+   وهي تُلحَق برقمٍ دائمًا («٥ camp(s)») فلا تُقرأ ولا تُنطَق؛ وفراغٌ
+   طرفيٌّ يكسر التنسيقَ حين تُضَمُّ؛ وقيمةٌ تساوي مفتاحَها فلم تُترجَم. */
+const KV = /'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'/g;
+function enSide(name){
+  const i = src.indexOf('var ' + name + ' = {');
+  if (i < 0) return {};
+  const g = src.slice(i, src.indexOf('\n};', i));
+  const mu = /\nur:\s*\{/.exec(g);
+  if (!mu) return {};
+  const o = {};
+  [...g.slice(0, mu.index).matchAll(KV)].forEach(m => { o[m[1]] = m[2]; });
+  return o;
+}
+const EN2 = Object.assign({}, enSide('D2'), enSide('D'));
+/* عبارةُ التأكيد الأمنية تبقى عربيةً بحق: تُطابَق حرفًا بحرفٍ قبل التصفير */
+const KEEP = /مسح نهائي/;
+const plural = [], spaced = [], same = [], arIn = [];
+Object.entries(EN2).forEach(([a, e]) => {
+  if (/\(s\)/.test(e)) plural.push(a);
+  if (e !== e.trim() && !/—\s*$/.test(e)) spaced.push(a);
+  if (e === a) same.push(a);
+  if (AR.test(e) && !KEEP.test(a)) arIn.push(a);
+});
+check(plural.length === 0,
+  plural.length ? `قوسا الجمع «(s)» في ${plural.length}: ${plural.slice(0,3).join(' · ')}`
+                : 'لا قوسَي جمعٍ — الجمعُ صريحٌ يُقرأ ويُنطَق');
+check(arIn.length === 0,
+  arIn.length ? `عربيةٌ داخل الترجمة الإنجليزية (${arIn.length}): ${arIn.slice(0,3).join(' · ')}`
+              : 'لا عربيةَ متسرّبةٌ في الإنجليزية (عدا عبارة التأكيد بقرار)');
+check(same.length === 0,
+  same.length ? `قيمةٌ تساوي مفتاحَها — لم تُترجَم (${same.length}): ${same.slice(0,3).join(' · ')}`
+              : 'لا قيمةَ تساوي مفتاحَها');
+const CAP_SPACED = 2;
+console.log(`  \u00b7 فراغٌ طرفيٌّ: ${spaced.length} (السقف ${CAP_SPACED} — لواحقُ تركيبٍ مقصودة)`);
+check(spaced.length <= CAP_SPACED,
+  spaced.length <= CAP_SPACED ? 'الفراغُ الطرفيُّ محصورٌ في لواحق التركيب'
+                              : `فراغٌ طرفيٌّ كبر: ${spaced.join(' · ')}`);
+
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ اللغة فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
 console.log('جردُ اللغة نظيف — لا حرفَ عربيٍّ يبقى بلا قرار ✅');
