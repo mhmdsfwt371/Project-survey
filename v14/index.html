@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.16</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.17</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2148,6 +2148,15 @@ en:{
  'توزيع النقاط على المراحل':'Points distribution across stages',
  'موظفو':'Staff of',
  'التوريد':'Supply',
+ 'حجاج خارج':'External pilgrims',
+ 'حجاج داخل':'Internal pilgrims',
+ '🌍 KMZ — بلون الشركة':'🌍 KMZ — coloured by company',
+ '١٦٢ شركة بترتيب الأقل إنجازًا':'162 companies ordered by lowest completion',
+ 'لم تصل أي نبضة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.':'No heartbeat has arrived yet — run the probe tool on the office device connected to the field network.',
+ 'فعّل Google Drive API من مكتبة الواجهات':'Enable the Google Drive API from the API library',
+ 'اسم الشركة · its sites · المنسّق · Mobile':'Company name · its sites · Coordinator · Mobile',
+ 'اسم الشركة':'Company name',
+ 'المنسّق':'Coordinator',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3587,6 +3596,15 @@ ur:{
  'توزيع النقاط على المراحل':'مراحل پر پوائنٹس کی تقسیم',
  'موظفو':'عملہ',
  'التوريد':'سپلائی',
+ 'حجاج خارج':'بیرونی حجاج',
+ 'حجاج داخل':'اندرونی حجاج',
+ '🌍 KMZ — بلون الشركة':'🌍 KMZ — کمپنی کے رنگ سے',
+ '١٦٢ شركة بترتيب الأقل إنجازًا':'162 کمپنیاں کم ترین تکمیل کے حساب سے',
+ 'لم تصل أي نبضة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.':'ابھی کوئی دھڑکن نہیں آئی — فیلڈ نیٹ ورک سے جڑے دفتری آلے پر پروب ٹول چلائیں۔',
+ 'فعّل Google Drive API من مكتبة الواجهات':'API لائبریری سے Google Drive API فعال کریں',
+ 'اسم الشركة · its sites · المنسّق · Mobile':'کمپنی کا نام · اس کے مقامات · کوآرڈینیٹر · موبائل',
+ 'اسم الشركة':'کمپنی کا نام',
+ 'المنسّق':'کوآرڈینیٹر',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6202,7 +6220,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
           + row('وجه العمل', esc(t(x.work)), 'work')
           + row('المنطقة', esc(x.region))
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
-          + row('تصنيف الحجاج', esc(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout)), 'inout')
+          + row('تصنيف الحجاج', esc(t(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout))), 'inout')
       /* بيانةُ الموسم الماضي في التفاصيل كما هي في النموذج: من فتح النقطةَ
          ليقرأها لم يجد ما يقرؤه، فيرجع إلى ملفٍ خارج النظام. */
       + (function(){
@@ -6998,7 +7016,7 @@ function crewNewCard(){
   return card('إضافة فريق',
       '<div class="grid cols-3">'
       + '<div class="field"><label>' + esc(t('اسم الفريق')) + ' <span class="req">*</span></label>'
-      +   '<input id="crN" dir="auto" placeholder="فريق المستودع"></div>'
+      +   '<input id="crN" dir="auto" placeholder="' + esc(t('فريق المستودع')) + '"></div>'
       + '<div class="field"><label>' + esc(t('نوع العمل')) + '</label>'
       +   '<select id="crKind">'
       +   Object.keys(WO_KINDS).map(function(k){
@@ -7098,8 +7116,8 @@ PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند ل
           meter('الشهري', S.month, S.tgtM)
           + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
       + cardFlush('مهام الفريق',
-          '<p class="hint" style="padding:16px;text-align:center;margin:0">لا مهام مفتوحة من نوع '
-          + esc(K ? t(K.n) : t('كل الأنواع')) + '.</p>',
+          '<p class="hint" style="padding:16px;text-align:center;margin:0">' + esc(t('لا مهام مفتوحة من نوع '
+          + esc(K ? t(K.n) : t('كل الأنواع')) + '.')) + '</p>',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');
@@ -11253,7 +11271,7 @@ function popHtml(){
     +   kv('الشاخص', s.sign ? '<span class="num">' + esc(s.sign) + '</span>' : '')
     +   kv('المربع', s.sq ? '<span class="num">' + esc(s.sq) + '</span>' : '')
     +   kv('الشركة', esc(s.co))
-    +   kv('التصنيف', esc(s.inout === 'خارج' ? 'حجاج خارج' : (s.inout === 'داخل' ? 'حجاج داخل' : s.inout)))
+    +   kv('التصنيف', esc(t(s.inout === 'خارج' ? 'حجاج خارج' : (s.inout === 'داخل' ? 'حجاج داخل' : s.inout))))
     +   kv('وجه العمل', esc(s.work))
     +   kv('المنطقة', esc(s.region))
     +   kv('حالة المسح', pill(sv ? 'تمت الزيارة' : 'لم يُزر', sv ? 'ok' : 'warn'))
@@ -14985,7 +15003,7 @@ PAGE.jobs = { m:'الإعدادات', t:'الوظائف',
         ? card('إضافة وظيفة',
             '<div class="grid cols-3">'
             + '<div class="field"><label>' + esc(t('اسم الوظيفة')) + ' <span class="req">*</span></label>'
-            +   '<input id="jbN" dir="auto" placeholder="مسؤول سلامة"></div>'
+            +   '<input id="jbN" dir="auto" placeholder="' + esc(t('مسؤول سلامة')) + '"></div>'
             + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
             +   '<select id="jbR">' + roleOpts('tech') + '</select></div>'
             + '<div class="field"><label>' + esc(t('ماذا تعمل')) + '</label>'
@@ -16647,7 +16665,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.16' + '.docx" download>⬇ '
+              +   'V15.17' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18157,7 +18175,7 @@ PAGE.items = { m:'الإعدادات', t:'القطع والأسعار', l:'كت�
           +   '<select id="itZ"><option value="camp">' + esc(t('مخيم')) + '</option>'
           +   '<option value="cor">' + esc(t('ممر')) + '</option></select></div>'
           + '<div class="field"><label>' + esc(t('اسم القطعة')) + ' <span class="req">*</span></label>'
-          +   '<input id="itN" dir="auto" placeholder="مفتاح شبكة ٨ منافذ"></div>'
+          +   '<input id="itN" dir="auto" placeholder="' + esc(t('مفتاح شبكة ٨ منافذ')) + '"></div>'
           + '<div class="field"><label>' + esc(t('نقاط تركيبها')) + '</label>'
           +   '<input id="itP" type="number" step="0.5" min="0" value="1"></div>'
           + '<div class="field"><label>' + esc(t('سعرها')) + '</label>'
