@@ -1,11 +1,16 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v15.42';
+const CACHE = 'nusuk-survey-v15.43';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
   './icon-192.png',
-  './icon-512.png'
+  './icon-512.png',
+  /* الخريطةُ تعمل حيث يعمل التطبيق — لا اعتمادَ على شبكةٍ عامة */
+  './vendor/leaflet/leaflet.js',
+  './vendor/leaflet/leaflet.css',
+  './vendor/leaflet/images/marker-icon.png',
+  './vendor/leaflet/images/marker-shadow.png'
 ];
 
 self.addEventListener('install', function (e) {

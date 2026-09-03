@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.42",
+  "app_version": "V15.43",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1411,7 +1411,8 @@
     "V15.39": "ipPreset(x) يحجز المُركّبة سابقًا من التوليد؛ حقل old_net في نموذج المسح يكتب net على النقطة عند الحفظ؛ شاشة العناوين تفرد «عنوانها يُقرأ من الميدان» وتكشف البادئات المكرّرة بلا إصلاح صامت. النافذة تحت 760px لوح سفلي بعرض الشاشة بمقبض. الجرد 26: audit-ip.",
     "V15.40": "جدول «ما له عنوان — بالمشعر والنوع» في شاشة العناوين. توثيق فحص legacy/v13.99: 546 بادئة في العمود 20، كلها MIN/CMP، مطابقة للبذرة الحالية 546/546.",
     "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand.",
-    "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة."
+    "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة.",
+    "V15.43": "browser-test.mjs (Playwright/Chromium هاتف لمسي + 5 صور) وrules-test.mjs (rules-unit-testing على المحاكي) وreal-tests.yml. Leaflet في vendor/leaflet ومخزّنة في sw.js. إصلاحات كشفها المتصفح الحقيقي: pop position:fixed؛ pop-btns 44px؛ أهداف اللمس تحت max-width:760 أيضًا."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -3384,6 +3385,39 @@
       "لا اختبار على متصفح حقيقي (JSDOM فقط)",
       "لا محاكي Firestore للقواعد (audit-rules يفحص النص)",
       "قواعد موروثة تحتاج تنظيفًا"
+    ]
+  },
+  "real_tests_v15_43": {
+    "browser": {
+      "script": "scripts/browser-test.mjs",
+      "engine": "Playwright chromium · devices['iPhone 13'] · hasTouch",
+      "checks": [
+        "login",
+        "Leaflet map",
+        "touchscreen.tap على ممر → POP_OPEN",
+        "النافذة: عرض=viewport، bottom=viewport، h≤76%، أزرار≥43",
+        "الأسطورة ≥11 رقمًا",
+        "كل بنود القائمة تُرسم",
+        "SVG دورة العمل",
+        "service worker registered",
+        "season1447.json fetch",
+        "لا pageerror"
+      ],
+      "artifacts": "test-artifacts/*.png (upload-artifact 14 يومًا)",
+      "local": "PW_MOD=مسار playwright العام PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers"
+    },
+    "rules": {
+      "script": "scripts/rules-test.mjs",
+      "how": "npx firebase emulators:exec --only firestore --project demo-nusuk",
+      "cases": 23,
+      "seed": "users/{eng,sup,tec,vwr,off} + recs/S1 + inss/S1 + settings/points",
+      "local_limit": "تنزيل cloud-firestore-emulator.jar من storage.googleapis.com محجوب في بيئة التطوير — CI فقط"
+    },
+    "vendor": "vendor/leaflet/{leaflet.js,leaflet.css,images/} — SHELL في sw.js",
+    "found_by_real_browser": [
+      "pop anchored to #mapBox bottom not viewport",
+      "pop-btns 40px (specific rule wins)",
+      "touch targets only under pointer:coarse"
     ]
   }
 }

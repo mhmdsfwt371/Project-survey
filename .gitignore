@@ -1,13 +1,13 @@
+
+!backups/latest/_meta.json
+# توقيع أندرويد ومخرجات البناء — لا تدخل المستودع العام أبدًا
+# وحدات التطوير — لجنة الفحص تُثبّتها عند الحاجة
+*.aab
+*.apk
+*.jks
+*.keystore
 backups/bundle.json
 backups/latest/*.json
-!backups/latest/_meta.json
-
-# توقيع أندرويد ومخرجات البناء — لا تدخل المستودع العام أبدًا
-*.keystore
-*.jks
-*.apk
-*.aab
-nusuk-app-*.zip
-
-# وحدات التطوير — لجنة الفحص تُثبّتها عند الحاجة
 node_modules/
+nusuk-app-*.zip
+test-artifacts/

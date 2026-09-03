@@ -303,6 +303,9 @@ input[type="number"]{max-width:140px}
    تعرفه اليدُ في كلِّ تطبيق. ولا حسابَ يُخطئ: لا توسيطَ ولا إزاحة. */
 @media (max-width:760px){
   .pop{
+    /* اختبارُ المتصفّح الحقيقي كشف أن «الأسفل» كان أسفلَ حاوية الخريطة لا
+       أسفلَ الشاشة — فيبقى شريطٌ فارغٌ تحت اللوح. صار ثابتًا على الشاشة. */
+    position:fixed !important;
     inset-block-start:auto !important; inset-block-end:0 !important;
     inset-inline:0 !important; transform:none !important;
     width:100% !important; max-width:100% !important;
@@ -321,7 +324,7 @@ input[type="number"]{max-width:140px}
   .pop > .pop-head{ padding:10px 14px 11px }
   .pop > .pop-foot{ padding:11px 14px calc(12px + env(safe-area-inset-bottom,0px)) }
 }
-@media (pointer:coarse){
+@media (pointer:coarse), (max-width:760px){
   .btn, .chip, .map-chip{ min-height:44px }
   .btn-sm{ min-height:44px; padding:9px 14px }
   .chip{ padding:10px 15px }
@@ -486,6 +489,11 @@ body.nav-open .mapwrap{pointer-events:none}
   font-size:12.5px;font-weight:600;cursor:pointer}
 .pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
 .pop-btns .btn,.pop-btns a.btn{min-height:36px}
+/* على الشاشات الصغيرة واللمسية: أزرارُ النافذة أهدافُ لمسٍ كاملة — كشفه
+   المتصفّحُ الحقيقي: القاعدةُ العامةُ أعطت ٤٤ ثم أعادتها هذه إلى ٤٠ لأنها أخصّ */
+@media (pointer:coarse), (max-width:760px){
+  .pop-btns .btn,.pop-btns a.btn,.pop .actions .btn{min-height:44px}
+}
 
 .map-layerbar{display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
   border-radius:99px;padding:7px 14px;font-size:12px;backdrop-filter:blur(8px);
@@ -738,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.42</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.43</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -12837,7 +12845,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.42' + '.docx" download>⬇ '
+              +   'V15.43' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -14025,13 +14033,18 @@ function mapLoad(){
   if (MAP_LOADING) return MAP_LOADING;
 
   MAP_LOADING = new Promise(function(res){
+    /* ═══ Leaflet من المستودع لا من شبكةٍ عامة ═══
+       كانت تُحمَّل من unpkg: خدمةٌ ثالثةٌ لا يُخزّنها عاملُ الخلفية، فإن
+       انقطعت الشبكةُ في المشاعر أو سقط الموقعُ العامُّ ماتت الخريطةُ وحدَها —
+       والخريطةُ مدخلُ الميدان. صارت في المستودع نفسِه وتُخزَّن مع الهيكل،
+       فتعمل حيث يعمل التطبيق، ويُختبَر ذلك في متصفّحٍ حقيقيٍّ بلا شبكة. */
     var css = document.createElement('link');
     css.rel = 'stylesheet';
-    css.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    css.href = 'vendor/leaflet/leaflet.css';
     document.head.appendChild(css);
 
     var js = document.createElement('script');
-    js.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    js.src = 'vendor/leaflet/leaflet.js';
     js.onload  = function(){ MAP_READY = true; res(true); };
     js.onerror = function(){ res(false); };
     document.head.appendChild(js);
