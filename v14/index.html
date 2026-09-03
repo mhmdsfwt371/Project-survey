@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.24</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.25</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2223,6 +2223,8 @@ en:{
  'متصلة':'Connected',
  'مقطوعة':'Disconnected',
  'الطابور':'Queue',
+ 'شغلي':'My work',
+ 'مهامُّك ونقاطُك وفريقُك — في شاشةٍ واحدة.':'Your tasks, your points and your team — on one screen.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3737,6 +3739,8 @@ ur:{
  'متصلة':'جڑا ہوا',
  'مقطوعة':'منقطع',
  'الطابور':'قطار',
+ 'شغلي':'میرا کام',
+ 'مهامُّك ونقاطُك وفريقُك — في شاشةٍ واحدة.':'آپ کے ٹاسکس، پوائنٹس اور ٹیم — ایک اسکرین پر۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6645,9 +6649,37 @@ function dayCapOf(e){
 }
 
 /* ── صفحة الفني: ما عمله ورقمُه ── */
-PAGE.myscore = { m:'الميدان', t:'أدائي',
-  l:'ما عملتَه ونقاطُه ورقمُك بين فريقك.',
+/* ═══ «شغلي» — أربعُ شاشاتٍ كانت تجيب سؤالًا واحدًا ═══
+   «مهامي» و«أدائي» و«فريقي» و«شغل فريقي»: أربعٌ في القائمة يراها الفنيُّ
+   والمشرفُ معًا، وكلُّها تجيب «ما عملتُه وما أُسند إليّ». فكان يفتحها
+   بالتناوب يبحث عن رقمه، والقائمةُ تطول بلا أن تزيد معرفةً.
+
+   جُمعت في شاشةٍ بأربع شرائح. **ولم يُحذف شيء**: كلُّ جسمٍ نُقل كما هو —
+   نفسُ الأرقام ونفسُ الجداول ونفسُ الصلاحيات — وإنما صار المدخلُ واحدًا.
+   والشريحةُ لا تظهر لمن لا يملك أصلَها: من لا يرى «فريقي» لا تظهر له. */
+var MYW_TAB = 'tasks';
+
+PAGE.mywork = { m:'الميدان', t:'شغلي',
+  l:'مهامُّك ونقاطُك وفريقُك — في شاشةٍ واحدة.',
   body:function(){
+    var tabs = [['tasks','مهامي','\u{1F4CB}'],
+                ['score','أدائي','\u{1F3AF}'],
+                ['team','فريقي','\u{1F465}'],
+                ['crew','شغل فريقي','\u{1F527}']];
+    /* «فريقي» لمن تحته أحدٌ فقط، و«شغل فريقي» لمن له فريقٌ ميداني */
+    var mineSup = techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); });
+    tabs = tabs.filter(function(tb){
+      if (tb[0] === 'team') return mineSup.length > 0 || maySupEng();
+      return true;
+    });
+    if (!tabs.filter(function(tb){ return tb[0] === MYW_TAB; }).length) MYW_TAB = 'tasks';
+
+    var head = '<div class="chips">' + tabs.map(function(tb){
+        return '<button type="button" class="chip' + (MYW_TAB === tb[0] ? ' on' : '')
+          + '" data-mywtab="' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
+      }).join('') + '</div>';
+
+    if (MYW_TAB === 'score') return head + (function(){
     var me = STATE.meta.name || 'محمد صفوت';
     var e = scoreOf(me);
     var peers = stageList(e.stage);
@@ -6707,8 +6739,87 @@ PAGE.myscore = { m:'الميدان', t:'أدائي',
 
       + card('كيف تُحسب نقاطي',
           flow(['أعمل','يُوزَن بالإعدادات','يُعتمد','يدخل نقاطي'], 0)
-          + '<p class="hint">' + esc(t('وزنُ كل عملٍ ثابتٌ في الإعدادات ولا يتغيّر — وما تعمله يُوزَن به.')) + '</p>');
+          + '<p class="hint">' + esc(t('وزنُ كل عملٍ ثابتٌ في الإعدادات ولا يتغيّر — وما تعمله يُوزَن به.')) + '</p>');})();
+    if (MYW_TAB === 'team')  return head + (function(){
+    var mine = techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); });
+    var names = mine.map(function(x){ return x.n; });
+    if (!names.length){
+      return card('لا أحدَ تحت إشرافك بعد',
+        '<p class="hint" style="margin:0">'
+        + esc(t('حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».'))
+        + '</p>');
+    }
+    var byName = scores().byName;
+    var list = names.map(function(n){ return byName[n] || {
+      name:n, survey:0, install:0, dis:0, pSurvey:0, pInstall:0, pDis:0,
+      pBonus:bonusFor(n), total:bonusFor(n), installT:{}, disT:{}
+    }; });
+    list.sort(function(a,b){ return b.total - a.total; });
+
+    return stats([['أفراد الفريق', N(names.length), 'acc'],
+                  ['نقاط الفريق هذا الشهر', N(Math.round(list.reduce(function(a,e){ return a + e.total; }, 0)))]])
+      + card('أداء فريقي هذا الشهر', techPerfTable(list, false))
+      + '<p class="hint">' + esc(t('أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.')) + '</p>'
+      + (maySupEng() ? bonusFormHtml(names, 'mt') : '')
+      + bonusLogHtml(names);})();
+    if (MYW_TAB === 'crew')  return head + (function(){
+    var c = crewOf(CREW_VIEW);
+    var S = crewStat(c);
+    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
+    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
+        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
+          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
+      }).join('') + '</div>'
+      + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
+               ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
+               ['هذا الشهر','<span class="num">'+nm(S.month)+'</span>','acc'],
+               ['مفتوح','<span class="num">'+nm(S.open)+'</span>','wrn']])
+      + (S.tgtM ? card('مقابل التارجت',
+          meter('الشهري', S.month, S.tgtM)
+          + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
+      + cardFlush('مهام الفريق',
+          '<p class="hint" style="padding:16px;text-align:center;margin:0">' + esc(t('لا مهام مفتوحة من نوع '
+          + esc(K ? t(K.n) : t('كل الأنواع')) + '.')) + '</p>',
+          btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
+      + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
+        + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
+    return head + (function(){
+    var me = STATE.meta.name || 'محمد صفوت';
+    var mine = [];
+    Object.keys(STATE.tasks).forEach(function(k){
+      var x = STATE.tasks[k];
+      if (x.to === me && x.status !== 'معتمد') mine.push(x);
+    });
+    var done = mine.filter(function(x){ return STATE.recs[x.site]; }).length;
+
+    return stats([['مُسند إليّ', N(mine.length), 'acc'],
+                  ['أنجزتُ', N(done), 'ok'],
+                  ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
+                  ['نقاطي', N(0)]])
+      + (mine.length
+        ? cardFlush(t('مهامي') + ' — ' + nm(mine.length),
+            '<div class="list">' + mine.slice(0, 60).map(function(x){
+              var s = siteFind(x.site);
+              if (!s) return '';
+              var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
+              var ok = !!STATE.recs[x.site];
+              return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
+                + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
+                + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
+                +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>'
+                + '</div><div class="li-end">'
+                + (typeof distTxt === 'function' && distTxt(s)
+                    ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(s) + '</div>' : '')
+                + pill(ok ? 'تمّ' : 'بانتظارك', ok ? 'ok' : 'warn') + '</div></div>';
+            }).join('') + '</div>',
+            btn('🗺 على الخريطة','btn-secondary btn-sm',' data-mymap="1"'))
+        : card('مهامي',
+            '<p class="hint" style="text-align:center;margin:0">'
+            + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>'))
+      + card('دورة مهمتك', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
+        + '<p class="hint">' + esc(t('لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت.')) + '</p>');})();
   }};
+;
 
 /* ── تبويبُ كل مرحلة: فريقُها وأعمالُهم ── */
 var STAGE_TAB = 'ins';
@@ -7200,29 +7311,7 @@ function crSaveTimes(){
 
 
 /* ── شغل الفريق — ما يراه عضوه ──────────────────── */
-PAGE.mywork = { m:'الميدان', t:'شغل فريقي', l:'ما أُسند لفريقك من نوع مهمته وحده.',
-  body:function(){
-    var c = crewOf(CREW_VIEW);
-    var S = crewStat(c);
-    var K = c.kind === '*' ? null : WO_KINDS[c.kind];
-    return '<div class="chips">' + CREWS.filter(function(x){ return x.kind !== '*'; }).map(function(x){
-        return '<button type="button" class="chip' + (CREW_VIEW===x.id?' on':'') + '" data-crew="' + x.id + '">'
-          + (WO_KINDS[x.kind] ? WO_KINDS[x.kind].i + ' ' : '') + esc(t(x.n)) + '</button>';
-      }).join('') + '</div>'
-      + stats([['اليوم','<span class="num">'+nm(S.day)+'</span>','ok'],
-               ['هذا الأسبوع','<span class="num">'+nm(S.week)+'</span>'],
-               ['هذا الشهر','<span class="num">'+nm(S.month)+'</span>','acc'],
-               ['مفتوح','<span class="num">'+nm(S.open)+'</span>','wrn']])
-      + (S.tgtM ? card('مقابل التارجت',
-          meter('الشهري', S.month, S.tgtM)
-          + meter('الأسبوعي', S.week, cfgWk(S.tgtM))) : '')
-      + cardFlush('مهام الفريق',
-          '<p class="hint" style="padding:16px;text-align:center;margin:0">' + esc(t('لا مهام مفتوحة من نوع '
-          + esc(K ? t(K.n) : t('كل الأنواع')) + '.')) + '</p>',
-          btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
-      + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
-        + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');
-  }};
+;
 
 var CREW_VIEW = 'cprep';
 
@@ -7479,30 +7568,7 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
 
 /* ═══ فريق المشرف — من معه ═══ */
 
-PAGE.myteam = { m:'الفرق', t:'فريقي', l:'من معك ومَن أنجز ماذا — نقاطًا حقيقيةً مقابل تارجتها.',
-  body:function(){
-    var mine = techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); });
-    var names = mine.map(function(x){ return x.n; });
-    if (!names.length){
-      return card('لا أحدَ تحت إشرافك بعد',
-        '<p class="hint" style="margin:0">'
-        + esc(t('حقلُ «المشرف» في سجل كلِّ موظفٍ هو ما يربطه بك — تأكّد أنه مكتوبٌ باسمك بالضبط في صفحة «الفرق».'))
-        + '</p>');
-    }
-    var byName = scores().byName;
-    var list = names.map(function(n){ return byName[n] || {
-      name:n, survey:0, install:0, dis:0, pSurvey:0, pInstall:0, pDis:0,
-      pBonus:bonusFor(n), total:bonusFor(n), installT:{}, disT:{}
-    }; });
-    list.sort(function(a,b){ return b.total - a.total; });
-
-    return stats([['أفراد الفريق', N(names.length), 'acc'],
-                  ['نقاط الفريق هذا الشهر', N(Math.round(list.reduce(function(a,e){ return a + e.total; }, 0)))]])
-      + card('أداء فريقي هذا الشهر', techPerfTable(list, false))
-      + '<p class="hint">' + esc(t('أرقام زملائك في الفرق الأخرى لا تظهر لك — المقارنة داخل فريقك وحده.')) + '</p>'
-      + (maySupEng() ? bonusFormHtml(names, 'mt') : '')
-      + bonusLogHtml(names);
-  }};
+;
 
 /* ═══ الطبقات الثلاث — لكلٍّ ما تُظهر وما تُسند ═══
    المسحُ يرى الكلَّ ويُسند زيارة، والتركيبُ لا يرى إلا ما مُسح ويُسند تركيبًا،
@@ -8381,44 +8447,7 @@ function mapSelBar(){
 }
 
 /* ── خريطة الفني: ما أُسند إليه وحده ── */
-PAGE.mytasks = { m:'الميدان', t:'مهامي',
-  l:'ما أُسند إليك وحدك — على الخريطة وفي القائمة.',
-  body:function(){
-    var me = STATE.meta.name || 'محمد صفوت';
-    var mine = [];
-    Object.keys(STATE.tasks).forEach(function(k){
-      var x = STATE.tasks[k];
-      if (x.to === me && x.status !== 'معتمد') mine.push(x);
-    });
-    var done = mine.filter(function(x){ return STATE.recs[x.site]; }).length;
-
-    return stats([['مُسند إليّ', N(mine.length), 'acc'],
-                  ['أنجزتُ', N(done), 'ok'],
-                  ['المتبقي', N(mine.length - done), mine.length-done?'wrn':''],
-                  ['نقاطي', N(0)]])
-      + (mine.length
-        ? cardFlush(t('مهامي') + ' — ' + nm(mine.length),
-            '<div class="list">' + mine.slice(0, 60).map(function(x){
-              var s = siteFind(x.site);
-              if (!s) return '';
-              var k = WO_KINDS[x.kind] || { i:'', n:x.kind };
-              var ok = !!STATE.recs[x.site];
-              return '<div class="list-item" data-site="' + esc(x.site) + '"><div class="li-main">'
-                + '<div class="li-t">' + (s.sign ? esc(t('شاخص')) + ' ' + esc(s.sign) : esc(s.name.slice(0,36))) + '</div>'
-                + '<div class="li-s"><span class="num">' + esc(x.site) + '</span> · '
-                +   k.i + ' ' + esc(t(k.n)) + (x.when ? ' · ' + esc(x.when) : '') + '</div>'
-                + '</div><div class="li-end">'
-                + (typeof distTxt === 'function' && distTxt(s)
-                    ? '<div class="num" style="margin-bottom:3px">\u{1F4CD} ' + distTxt(s) + '</div>' : '')
-                + pill(ok ? 'تمّ' : 'بانتظارك', ok ? 'ok' : 'warn') + '</div></div>';
-            }).join('') + '</div>',
-            btn('🗺 على الخريطة','btn-secondary btn-sm',' data-mymap="1"'))
-        : card('مهامي',
-            '<p class="hint" style="text-align:center;margin:0">'
-            + esc(t('لا مهام مسندة إليك — يُسندها المشرف من طلبات الزيارة.')) + '</p>'))
-      + card('دورة مهمتك', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
-        + '<p class="hint">' + esc(t('لا تُحتسب نقاطُك حتى يعتمد المهندسُ ما نفّذت.')) + '</p>');
-  }};
+;
 
 /* الفنيُّ يرى ما أُسند إليه وحده على الخريطة */
 var MY_ONLY = false;
@@ -16782,8 +16811,7 @@ var ROLES = {
   supervisor:{
     n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
     guide:'دليل الفني والمشرف — العمل الميداني',
-    nav:['map','mytasks','sites','sel','svForm','insForm','recs','tools','mine','mywork','myteam',
-         'over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','recs','tools','mine','over','pace','inst','daily','reg','co','chalm','dis','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -16798,7 +16826,7 @@ var ROLES = {
   tech:{
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
-    nav:['map','mytasks','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','recs','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -16807,21 +16835,21 @@ var ROLES = {
   cprep:{
     n:'فريق التهيئة', d:'الورشة — تهيئةً وحدها', base:'supervisor', kind:'prep',
     guide:'دليل الورشة — التهيئة',
-    nav:['mywork','myteam','sites','recs','mine','wos','wday','guide','acct'],
+    nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   casm:{
     n:'فريق التجميع', d:'الورشة — تجميعًا وحده', base:'supervisor', kind:'asm',
     guide:'دليل الورشة — التجميع',
-    nav:['mywork','myteam','sites','recs','mine','wos','wday','guide','acct'],
+    nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
-    nav:['map','mytasks','sites','sel','svForm','insForm','recs','mine','mywork','myteam','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','recs','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -16852,14 +16880,14 @@ var ROLES = {
   helper:{
     n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
     base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
-    nav:['map','mytasks','sites','svForm','insForm','mine','mywork','myteam','guide','acct'],
+    nav:['map','mywork','sites','svForm','insForm','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
 
   driver:{
     n:'سائق', d:'ينقل الفريقَ والعُهدةَ — يرى مهامَّه وسيارتَه ولا يكتب سجلًّا',
     base:'supervisor', guide:'دليل الفني — العمل الميداني',
-    nav:['map','mytasks','myveh','mine','guide','acct'],
+    nav:['map','mywork','myveh','mine','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } }
 };
@@ -17052,7 +17080,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.24' + '.docx" download>⬇ '
+              +   'V15.25' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18684,7 +18712,7 @@ PAGE.roles = { m:'الإعدادات', t:'الأدوار والصلاحيات', 
 
 var NAV = [
   { id:'map',  icon:'\u25C8', label:'الخريطة', solo:true, field:true },
-  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mytasks','مهامي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['myscore','أدائي'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['mywork','شغل فريقي'],['svForm','نموذج المسح'],
+  { g:'الميدان', icon:'\u25F1', items:[['sites','المواقع'],['mywork','شغلي'],['chain','سلسلة المراحل'],['ips','عناوين الشبكة'],['newsite','تسجيل موقع جديد'],['layers','الطبقات الثلاث'],['disp2','الفك وإرجاع العُهدة'],['hand','التسليم والضمان'],['sel','المحدَّد'],['fleet','السيارات'],['fleetAsn','إسناد السيارات'],['fleetLog','سجل عهدة السيارات'],['myveh','سيارتي'],['svForm','نموذج المسح'],
       ['insForm','نموذج التركيب'],['recs','السجلات'],['mine','جدولي'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['over','نظرة عامة'],['pace','الوتيرة والهدف'],['inst','التركيب والجدولة'],['daily','المعدل اليومي'],
@@ -18702,7 +18730,7 @@ var NAV = [
       ['ships','الشحنات والتوريد'],['invmv','دفتر الحركة'],['stock','عُهدة الأجهزة']] },
   { g:'القسم المالي', icon:'\u25B0', items:[['ipc','المستخلصات'],['buys','دفتر المشتريات'],['fleetCost','تكلفة الأسطول'],['budget','الميزانية والاعتماد']] },
   { g:'الفرق', icon:'\u25D4', items:[
-      ['crewman','الفرق'],['myteam','فريقي'],['crewplan','الطواقم والمعدلات'],
+      ['crewman','الفرق'],['crewplan','الطواقم والمعدلات'],
       ['perf','الأداء'],['conote','إشعار الشركات']] },
   { g:'الإعدادات', icon:'\u2699', items:[
       ['users','المستخدمون'],['vehkind','أنواع السيارات'],['jobs','الوظائف'],['assignRole','إسناد الأدوار'],
@@ -19134,6 +19162,8 @@ function onDocClick(e){
   }
   var cdl = e.target.closest('[data-codel]');
   if (cdl){ coRemove(cdl.getAttribute('data-codel')); return; }
+  var mwt = e.target.closest('[data-mywtab]');
+  if (mwt){ MYW_TAB = mwt.getAttribute('data-mywtab'); render(1); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
