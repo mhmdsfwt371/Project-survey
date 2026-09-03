@@ -128,10 +128,14 @@ cycle('الوظائف', 'jobs',
   null, null, null,
   () => lastOf('data-jbdel'));
 
-/* ══ ٣ · الفنيون (من صفحة فريقهم — لا سجلَّ منفصلَ بعد الآن) ═══════════════ */
+/* ══ ٣ · الفنيون — V15.35: المصدرُ الواحدُ الحسابات ═══════════════════════
+   الإضافةُ إنشاءُ حسابٍ (فيظهر في القائمة فورًا)، وشاشةُ الفرق تنسبه فقط،
+   والحذفُ حذفُ الحساب نفسِه. */
 cycle('الفنيون', 'crewman',
   () => w.techsList().length,
-  () => { set('depN', 'فنيُّ اختبار'); set('depPh', '0551112223'); },
+  () => { w.STATE.users = w.STATE.users || {};
+          w.STATE.users['t.crud'] = { name:'فنيُّ اختبار', user:'t.crud', role:'tech', at:Date.now() };
+          set('depN', 'فنيُّ اختبار'); set('depPh', '0551112223'); },
   '[data-depadd]',
   null, null, null,
   () => lastOf('data-tkdel'));
@@ -196,6 +200,10 @@ cycle('فئات المشتريات', 'buycat',
   check(w.escList()[0].days === 11, 'مهلةُ التصعيد تُحفَظ');
 
   go('tech');
+  if (!w.techsList().length){
+    w.STATE.users = w.STATE.users || {};
+    w.STATE.users['t.sup'] = { name:'فنيُّ المشرف', user:'t.sup', role:'tech', at:Date.now() };
+  }
   const who = w.techsList()[0].n;
   w.techSet(who, { sup: 'مشرفُ اختبار' });
   check(w.techsList()[0].sup === 'مشرفُ اختبار', 'مشرفُ الفني يُحفَظ');
@@ -213,6 +221,12 @@ function blocked(name, hint, act){
   w.STATE.inss = { X:{ id:'X', parts:{ [first.code]:1 }, status:'مُركّب', approved:true } };
   blocked('صنفٌ رُكِّب لا يُحذَف', 'مستعمل', () => w.itemDel(first.code));
 
+  /* V15.35: القائمةُ من الحسابات — يُضمَن ثلاثةُ أشخاصٍ لفحوص المنع */
+  w.STATE.users = w.STATE.users || {};
+  ['g1','g2','g3','g4','g5'].forEach((k, i) => {
+    if (w.techsList().length < i + 1)
+      w.STATE.users['t.' + k] = { name:'فنيُّ المنع ' + (i + 1), user:'t.' + k, role:'tech', at:Date.now() };
+  });
   const cr = w.crewsList().filter(c => c.id !== 'eng')[0];
   w.techSet(w.techsList()[0].n, { crew: cr.n });
   blocked('فريقٌ فيه فنيون لا يُحذَف', 'فنيًّا|انقلهم', () => w.crewDel(cr.id));

@@ -82,12 +82,20 @@ console.log('\n══ ١ · الحسابات والوظائف ══');
 asRole('engineer');
 go('crewman');
 
+/* V15.35: لا يُخلَق شخصٌ من شاشة الفرق — الحسابُ أولًا (المصدرُ الواحد)،
+   ثم شاشةُ الفرق تنسبه لفريقه فقط. */
 const T0 = w.techsList().length;
 set('depN', 'فنيُّ السيناريو أ'); set('depPh', '0551000001');
 click('[data-depadd]');
-set('depN', 'فنيُّ السيناريو ب'); set('depPh', '0551000002');
+step(w.techsList().length === T0, 'شاشةُ الفرق لا تخلق شخصًا بلا حساب');
+w.STATE.users = w.STATE.users || {};
+w.STATE.users['sc.a'] = { name:'فنيُّ السيناريو أ', user:'sc.a', role:'tech', at:Date.now() };
+w.STATE.users['sc.b'] = { name:'فنيُّ السيناريو ب', user:'sc.b', role:'tech', at:Date.now() };
+step(w.techsList().length === T0 + 2, 'الحسابان ظهرا في قائمة الأشخاص فورًا');
+go('crewman');
+set('depN', 'فنيُّ السيناريو أ'); set('depPh', '0551000001');
 click('[data-depadd]');
-step(w.techsList().length === T0 + 2, 'أُضيف فنيّان');
+step((w.STATE.users['sc.a'].ph || '') === '0551000001', 'النسبةُ من شاشة الفرق تكتب على الحساب نفسِه');
 
 const A = 'فنيُّ السيناريو أ', B = 'فنيُّ السيناريو ب';
 w.jobAssign(A, 'j_tech');

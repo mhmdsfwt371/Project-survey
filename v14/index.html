@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.34</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.35</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2489,6 +2489,51 @@ en:{
  'الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد':'The map colours the whole cycle — not visited · assigned · scheduled tomorrow · returned · waiting · approved',
  '«الوتيرة والهدف» تجيب «هنلحق؟» بالأرقام: المطلوبُ يوميًّا والانتهاءُ المتوقَّع':'“Pace and target” answers “will we make it?” with numbers: the daily requirement and the expected finish',
  'التقاريرُ التنفيذية: اللوحةُ ومركزُ التقارير والملخّصُ المالي — للتصدير والاجتماعات':'Executive reports: the dashboard, the report centre, and the financial summary — for export and meetings',
+
+ /* V15.35 — المصدرُ الواحد للأشخاص وسطرُ النسب */
+ 'مشرفه المباشر':'Direct supervisor',
+ 'حذف الحساب':'Delete account',
+ 'لا تحذف حسابَك وأنت فيه':'Do not delete your own account while signed in to it',
+ 'عملًا مسجَّلًا — عطِّله بدل حذفه':'recorded works — deactivate instead of deleting',
+ 'حُذف الحساب':'Account deleted',
+ 'امسح قوائم الفنيين الموروثة':'Wipe legacy technician lists',
+ 'يحذف قائمة settings/techs القديمة من السحابة ويُفرغ من الفرق كلَّ اسمٍ لا حسابَ له — الحساباتُ لا تُمَسّ':'Deletes the old settings/techs list from the cloud and clears from crews every name without an account — accounts are untouched',
+ 'مُسحت القوائمُ الموروثة':'Legacy lists wiped',
+ 'اسمًا أُفرغ من الفرق':'names cleared from crews',
+ 'نُسب للفريق':'Assigned to the crew',
+ 'لا حسابَ بهذا الاسم — أنشئه أولًا من «المستخدمون والأدوار ← الحسابات» ثم انسبه هنا':'No account with this name — create it first in “Users and roles → Accounts”, then assign it here',
+ 'لا حسابَ بهذا الاسم — الأسماءُ تُضاف من الحسابات وحدَها':'No account with this name — names are added from Accounts only',
+ 'لا أحدَ تحت إشرافك بعد':'No one under your supervision yet',
+ 'تأتي من':'Comes from',
+ 'تُقرأ في':'Read in',
+ 'تُولَّد آليًّا من أسماء الحسابات والشركات — لا تُخزَّن؛ يُخزَّن تصحيحُك اليدويُّ وحدَه':'Generated automatically from account and company names — not stored; only your manual correction is stored',
+ 'كلُّ شاشةٍ وتقريرٍ يعرض اسمًا بالواجهة الإنجليزية':'Every screen and report that shows a name in the English interface',
+ 'الوظائفُ تُعرَّف هنا، والأشخاصُ من «الحسابات»':'Jobs are defined here; people come from “Accounts”',
+ 'رؤيةُ الشاشات (الدور من الوظيفة) ودورةُ كلِّ شخص وأدلةُ الأدوار':'Screen visibility (role from job), each person’s cycle, and the role manuals',
+ 'تُنشأ الحساباتُ هنا — بالاسم والوظيفة والمشرف؛ لا مكانَ ثانيًا يُضاف فيه اسم':'Accounts are created here — with name, job, and supervisor; there is no second place where a name is added',
+ 'قوائمُ الإسناد والفرقُ والأداءُ و«مهامي» — كلُّ من يظهر اسمُه في النظام':'Assignment lists, crews, performance, and “My tasks” — everyone whose name appears in the system',
+ 'الحسابات — دورُ كلِّ حساب':'Accounts — each account’s role',
+ 'كلُّ شاشةٍ تُفتَح أو تُحجَب':'Every screen that opens or is blocked',
+ 'أعضاءُ الفريق أسماءٌ من «الحسابات» — لا يُخلَق شخصٌ من هنا':'Crew members are names from “Accounts” — no person is created here',
+ 'إسنادُ التركيب والفكِّ للفرق، وتقاريرُ أداء الفريق':'Installation and dismantle assignment to crews, and crew performance reports',
+ 'المهامُّ من إسناد الخريطة و«الطلبات والتوزيع» — وحالةُ كلِّ زيارةٍ من قرار المهندس في «اعتماد الزيارات»':'Tasks come from map assignment and “Requests and allocation” — and each visit’s status from the engineer’s decision in “Visit approval”',
+ 'الخريطة (لون نقاطك) و«أمس · الآن · غدًا»':'The map (your points’ colour) and “Yesterday · Now · Tomorrow”',
+ 'ما حفظه المشرفون في نموذج المسح — بصوره وقياساته وتحريك النقطة':'What supervisors saved in the survey form — its photos, measurements, and point moves',
+ 'حلُّ التركيب (لا حلَّ إلا لمعتمَدة) ونقاطُ المشرف و«أمس · الآن · غدًا»':'Install solution (only for approved visits), the supervisor’s points, and “Yesterday · Now · Tomorrow”',
+ 'زياراتٌ اعتمدتَها في «اعتماد الزيارات» + كتالوجُ القطع من «الكتالوج والقوائم»':'Visits you approved in “Visit approval” + the parts catalog from “Catalog and lists”',
+ 'طبقةُ التركيب على الخريطة وطلباتُ التركيب (DR) وإجماليُّ المشتريات المتوقَّع':'The installation layer on the map, installation requests (DR), and the expected purchase totals',
+ 'الشحناتُ والتوريد يزيدان، ونموذجُ التركيب يستهلك — كلُّه عبر دفتر الحركة':'Shipments and supply add stock, the installation form consumes it — all through the movement ledger',
+ 'منتقي القطع في الحل، وعُهدةُ كلِّ منفِّذ، والملخّصُ المالي':'The part picker in the solution, each executor’s custody, and the financial summary',
+ 'كلُّ حركةٍ: استلامُ شحنةٍ، صرفٌ، استهلاكُ تركيبٍ من النموذج، إرجاعُ فكّ':'Every movement: shipment receipt, issue, installation consumption from the form, dismantle return',
+ 'الأرصدةُ والعُهدةُ — لا يُخصَم شيءٌ مرتين':'Balances and custody — nothing is deducted twice',
+ 'سجلاتُ المسح والتركيب والفكِّ والورشة المعتمدةُ — لا يُحتسَب غيرُ المعتمَد':'Approved survey, installation, dismantle, and workshop records — only the approved counts',
+ 'ترتيبُ «شغلي ← أدائي» والمستحقّاتُ والتقاريرُ التنفيذية':'The “My work → My performance” ranking, dues, and executive reports',
+ 'سجلاتُ اليوم والمهامُّ المفتوحةُ ومواعيدُ الغد — لحظيًّا لا أرقامًا تُكتَب':'Today’s records, open tasks, and tomorrow’s dates — live, not hand-written numbers',
+ 'شاشةُ الوزارة والاجتماعُ الصباحي':'The ministry screen and the morning meeting',
+ 'المواعيدُ من «التخطيط ← المواعيد والأزمنة» والإنجازُ من اللقطات اليومية':'Deadlines from “Planning → Deadlines and durations”, progress from the daily snapshots',
+ 'قرارُ «هنلحق؟» وتوزيعُ الفرق':'The “will we make it?” decision and team allocation',
+ 'إسناداتُ السيارات — الجاري والمنتهي بتواريخه':'Vehicle assignments — current and ended, with their dates',
+ 'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم':'Violations and accountability: who had the plate on that day',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4257,6 +4302,49 @@ ur:{
  'الخريطةُ تلوّن الدورةَ كلَّها — لم يُزر · مُسند · مجدولٌ غدًا · مردود · ينتظر · معتمد':'نقشہ پورے چکر کو رنگتا ہے — دورہ نہیں · تفویض · کل طے · واپس · منتظر · منظور',
  '«الوتيرة والهدف» تجيب «هنلحق؟» بالأرقام: المطلوبُ يوميًّا والانتهاءُ المتوقَّع':'“رفتار اور ہدف” اعداد سے جواب دیتا ہے: روزانہ کتنا درکار اور متوقع اختتام',
  'التقاريرُ التنفيذية: اللوحةُ ومركزُ التقارير والملخّصُ المالي — للتصدير والاجتماعات':'ایگزیکٹو رپورٹس: ڈیش بورڈ، رپورٹ سینٹر اور مالیاتی خلاصہ — برآمد اور میٹنگز کے لیے',
+ 'مشرفه المباشر':'براہ راست سپروائزر',
+ 'حذف الحساب':'اکاؤنٹ حذف کریں',
+ 'لا تحذف حسابَك وأنت فيه':'جس اکاؤنٹ میں آپ ہیں اسے حذف نہ کریں',
+ 'عملًا مسجَّلًا — عطِّله بدل حذفه':'درج کام — حذف کے بجائے غیر فعال کریں',
+ 'حُذف الحساب':'اکاؤنٹ حذف ہو گیا',
+ 'امسح قوائم الفنيين الموروثة':'پرانی ٹیکنیشن فہرستیں صاف کریں',
+ 'يحذف قائمة settings/techs القديمة من السحابة ويُفرغ من الفرق كلَّ اسمٍ لا حسابَ له — الحساباتُ لا تُمَسّ':'کلاؤڈ سے پرانی settings/techs فہرست حذف کرتا ہے اور ٹیموں سے ہر بے اکاؤنٹ نام ہٹاتا ہے — اکاؤنٹس محفوظ رہتے ہیں',
+ 'مُسحت القوائمُ الموروثة':'پرانی فہرستیں صاف ہو گئیں',
+ 'اسمًا أُفرغ من الفرق':'نام ٹیموں سے ہٹائے گئے',
+ 'نُسب للفريق':'ٹیم سے منسوب ہو گیا',
+ 'لا حسابَ بهذا الاسم — أنشئه أولًا من «المستخدمون والأدوار ← الحسابات» ثم انسبه هنا':'اس نام کا کوئی اکاؤنٹ نہیں — پہلے “صارفین اور کردار ← اکاؤنٹس” میں بنائیں، پھر یہاں منسوب کریں',
+ 'لا حسابَ بهذا الاسم — الأسماءُ تُضاف من الحسابات وحدَها':'اس نام کا کوئی اکاؤنٹ نہیں — نام صرف اکاؤنٹس سے شامل ہوتے ہیں',
+ 'لا أحدَ تحت إشرافك بعد':'ابھی آپ کی نگرانی میں کوئی نہیں',
+ 'تأتي من':'آتا ہے',
+ 'تُقرأ في':'پڑھا جاتا ہے',
+ 'تُولَّد آليًّا من أسماء الحسابات والشركات — لا تُخزَّن؛ يُخزَّن تصحيحُك اليدويُّ وحدَه':'اکاؤنٹس اور کمپنیوں کے ناموں سے خودکار بنتے ہیں — محفوظ نہیں ہوتے؛ صرف آپ کی دستی اصلاح محفوظ ہوتی ہے',
+ 'كلُّ شاشةٍ وتقريرٍ يعرض اسمًا بالواجهة الإنجليزية':'ہر اسکرین اور رپورٹ جو انگریزی انٹرفیس میں نام دکھاتی ہے',
+ 'الوظائفُ تُعرَّف هنا، والأشخاصُ من «الحسابات»':'عہدے یہاں بنتے ہیں؛ لوگ “اکاؤنٹس” سے آتے ہیں',
+ 'رؤيةُ الشاشات (الدور من الوظيفة) ودورةُ كلِّ شخص وأدلةُ الأدوار':'اسکرینوں کی رسائی (عہدے سے کردار)، ہر فرد کا چکر، اور کردار کے رہنما',
+ 'تُنشأ الحساباتُ هنا — بالاسم والوظيفة والمشرف؛ لا مكانَ ثانيًا يُضاف فيه اسم':'اکاؤنٹس یہاں بنتے ہیں — نام، عہدہ اور سپروائزر کے ساتھ؛ نام شامل کرنے کی کوئی دوسری جگہ نہیں',
+ 'قوائمُ الإسناد والفرقُ والأداءُ و«مهامي» — كلُّ من يظهر اسمُه في النظام':'تفویض کی فہرستیں، ٹیمیں، کارکردگی اور “میرے ٹاسکس” — ہر وہ شخص جس کا نام نظام میں آتا ہے',
+ 'الحسابات — دورُ كلِّ حساب':'اکاؤنٹس — ہر اکاؤنٹ کا کردار',
+ 'كلُّ شاشةٍ تُفتَح أو تُحجَب':'ہر اسکرین جو کھلتی یا رکتی ہے',
+ 'أعضاءُ الفريق أسماءٌ من «الحسابات» — لا يُخلَق شخصٌ من هنا':'ٹیم کے ارکان “اکاؤنٹس” کے نام ہیں — یہاں کوئی فرد نہیں بنتا',
+ 'إسنادُ التركيب والفكِّ للفرق، وتقاريرُ أداء الفريق':'ٹیموں کو تنصیب اور ڈسمینٹل کی تفویض، اور ٹیم کی کارکردگی رپورٹس',
+ 'المهامُّ من إسناد الخريطة و«الطلبات والتوزيع» — وحالةُ كلِّ زيارةٍ من قرار المهندس في «اعتماد الزيارات»':'ٹاسکس نقشے کی تفویض اور “درخواستیں اور تقسیم” سے آتے ہیں — اور ہر دورے کی حالت انجینئر کے فیصلے سے',
+ 'الخريطة (لون نقاطك) و«أمس · الآن · غدًا»':'نقشہ (آپ کے پوائنٹس کا رنگ) اور “کل · اب · آنے والا کل”',
+ 'ما حفظه المشرفون في نموذج المسح — بصوره وقياساته وتحريك النقطة':'سپروائزرز نے سروے فارم میں جو محفوظ کیا — تصاویر، پیمائشیں اور پوائنٹ کی منتقلی',
+ 'حلُّ التركيب (لا حلَّ إلا لمعتمَدة) ونقاطُ المشرف و«أمس · الآن · غدًا»':'تنصیب کا حل (صرف منظور شدہ دوروں کے لیے)، سپروائزر کے پوائنٹس اور “کل · اب · آنے والا کل”',
+ 'زياراتٌ اعتمدتَها في «اعتماد الزيارات» + كتالوجُ القطع من «الكتالوج والقوائم»':'وہ دورے جو آپ نے “دوروں کی منظوری” میں منظور کیے + “کیٹلاگ اور فہرستیں” سے پرزوں کا کیٹلاگ',
+ 'طبقةُ التركيب على الخريطة وطلباتُ التركيب (DR) وإجماليُّ المشتريات المتوقَّع':'نقشے پر تنصیب کی تہ، تنصیب کی درخواستیں (DR) اور متوقع خریداری کا مجموعہ',
+ 'الشحناتُ والتوريد يزيدان، ونموذجُ التركيب يستهلك — كلُّه عبر دفتر الحركة':'ترسیلات اور سپلائی اسٹاک بڑھاتی ہیں، تنصیب کا فارم خرچ کرتا ہے — سب موومنٹ لیجر سے',
+ 'منتقي القطع في الحل، وعُهدةُ كلِّ منفِّذ، والملخّصُ المالي':'حل میں پرزہ منتخب کنندہ، ہر عامل کی تحویل، اور مالیاتی خلاصہ',
+ 'كلُّ حركةٍ: استلامُ شحنةٍ، صرفٌ، استهلاكُ تركيبٍ من النموذج، إرجاعُ فكّ':'ہر حرکت: ترسیل کی وصولی، اجرا، فارم سے تنصیب کا خرچ، ڈسمینٹل کی واپسی',
+ 'الأرصدةُ والعُهدةُ — لا يُخصَم شيءٌ مرتين':'بیلنس اور تحویل — کچھ بھی دو بار نہیں کٹتا',
+ 'سجلاتُ المسح والتركيب والفكِّ والورشة المعتمدةُ — لا يُحتسَب غيرُ المعتمَد':'منظور شدہ سروے، تنصیب، ڈسمینٹل اور ورکشاپ ریکارڈ — صرف منظور شدہ شمار ہوتا ہے',
+ 'ترتيبُ «شغلي ← أدائي» والمستحقّاتُ والتقاريرُ التنفيذية':'“میرا کام ← میری کارکردگی” کی درجہ بندی، واجبات اور ایگزیکٹو رپورٹس',
+ 'سجلاتُ اليوم والمهامُّ المفتوحةُ ومواعيدُ الغد — لحظيًّا لا أرقامًا تُكتَب':'آج کے ریکارڈ، کھلے ٹاسکس اور کل کی تاریخیں — لمحہ بہ لمحہ، ہاتھ سے لکھے اعداد نہیں',
+ 'شاشةُ الوزارة والاجتماعُ الصباحي':'وزارت کی اسکرین اور صبح کی میٹنگ',
+ 'المواعيدُ من «التخطيط ← المواعيد والأزمنة» والإنجازُ من اللقطات اليومية':'آخری تاریخیں “منصوبہ بندی ← آخری تاریخیں” سے، پیش رفت روزانہ کے سنیپ شاٹس سے',
+ 'قرارُ «هنلحق؟» وتوزيعُ الفرق':'“کیا ہم پہنچ پائیں گے؟” کا فیصلہ اور ٹیموں کی تقسیم',
+ 'إسناداتُ السيارات — الجاري والمنتهي بتواريخه':'گاڑیوں کی تفویضات — جاری اور ختم شدہ، تاریخوں کے ساتھ',
+ 'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم':'خلاف ورزیاں اور جوابدہی: اس دن پلیٹ کس کے پاس تھی',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6403,8 +6491,10 @@ var FB = {
       FB.db.collection('settings').doc('crews').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.crews = arr; }
       }).catch(function(e){ softErr('سحب الفرق', e, 'تعذّر سحبُ الفرق — قد تظهر بذورها الأصلية فقط'); });
+      /* V15.35: قائمةُ الفنيين تُشتقُّ من الحسابات — الوثيقةُ القديمةُ لا
+         تُقرأ، وتُترَك حتى يمسحها زرُّ التنظيف من شاشة الحسابات. */
       FB.db.collection('settings').doc('techs').get().then(function(doc){
-        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.techs = arr; }
+        if (doc && doc.exists){ /* موروثةٌ — تُتجاهَل */ }
       }).catch(function(e){ softErr('سحب الفنيين', e, 'تعذّر سحبُ الفنيين — قد يظهر طاقمٌ ناقص'); });
       FB.db.collection('settings').doc('items').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.items = arr; }
@@ -7016,7 +7106,14 @@ var TECH_STAGE = {
   'خالد':'eng', 'فهد':'eng', 'محمد صفوت':'eng'
 };
 
-function stageOf(name){ return TECH_STAGE[name] || 'srv'; }
+function stageOf(name){
+  /* مرحلةُ الشخص من وظيفته: دورُ الوظيفة يقرّر الدورةَ التي يظهر فيها */
+  var x = techsList().filter(function(y){ return y.n === name; })[0];
+  var role = x && x.job ? (jobOf(x.job) || {}).role : '';
+  var map = { tech:'srv', cprep:'prep', casm:'asm', cins:'ins' };
+  if (map[role]) return map[role];
+  return TECH_STAGE[name] || 'srv';
+}
 
 /* ── حصادُ العمل: يُمشَّط السجلُّ مرةً ويُخزَّن ── */
 var SCORE_CACHE = null, SCORE_VER = -1;
@@ -7967,8 +8064,7 @@ function crewNewCard(){
       + '<div class="field"><label>' + esc(t('الوصف')) + '</label>'
       +   '<input id="crD" dir="auto"></div>'
       + '</div>',
-      btn('➕ إضافة فريق','btn-primary btn-sm',' data-craddgo="1"')
-      + btn('استورد طاقم ١٤٤٧','btn-quiet btn-sm',' data-tkseed="1"'));
+      btn('➕ إضافة فريق','btn-primary btn-sm',' data-craddgo="1"'));
 }
 
 
@@ -8018,50 +8114,11 @@ var CREW_VIEW = 'cprep';
    اثنان وأربعون فنيًّا. وكانت هنا ستةُ أسماءٍ مخترعةٍ للعرض بأرقامٍ وهمية،
    فمن وزّع العملَ عليها وزّعه على من لا وجودَ له. الهاتفُ والفريقُ والمشرفُ
    تُملأ من شاشة الفنيين — ولا تُخترَع هنا. */
-var TECHS = [
-  { n:'محمود السعيد', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عزام', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'أرسلان حفيظ', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عدنان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'رضوان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'ياسر', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'حسيب', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سليمان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عمرو', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'غريب', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'فرمان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'محمد أرسلان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سليم', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'فيزان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'بلال', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'محمد عاقب', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'حكيم', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سهيل', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'خالد', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'حمود', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'شهداب', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'برويز', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'اكرام', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'أسامة', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'زيشان', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سيد', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عوض', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عبد الخالق', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'شهويز', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'أحمد آل عبدالله', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سعيد بصرور', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'تامر', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'بدر', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'إقبال', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'مشير', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'راجابابو', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عاقب وحيد', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'سمير', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'عرفة', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'علاء', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'مصطفى شطا', ph:'', crew:'', sup:'', u:'', has:0 },
-  { n:'أنس', ph:'', crew:'', sup:'', u:'', has:0 }
-];
+/* بذرةُ الفنيين حُذفت في V15.35 — المصدرُ الواحدُ للأشخاص هو الحسابات:
+   من يُضاف في «المستخدمون والأدوار ← الحسابات» بوظيفته يظهر في دورة وظيفته
+   تلقائيًّا. لا مكانَ ثانيًا تُضاف فيه أسماء. */
+var TECHS = [];
+
 
 /* ═══ الطواقم والمعدلات — من الواقع الميداني ═══
    التركيب: المخيم أربعةٌ (مشرف + ثلاثة) بمعدل مخيمين يوميًّا،
@@ -8199,6 +8256,14 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           +   '<input id="uU" dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
           + '<div class="field"><label>' + esc(t('الاسم الكامل')) + ' <span class="req">*</span></label>'
           +   '<input id="uN" dir="auto" maxlength="160"></div>'
+          + '<div class="field"><label>' + esc(t('الوظيفة')) + '</label>'
+          +   '<select id="uJ"><option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
+          +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(j.n) + '</option>'; }).join('')
+          +   '</select></div>'
+          + '<div class="field"><label>' + esc(t('مشرفه المباشر')) + '</label>'
+          +   '<select id="uS"><option value="">—</option>'
+          +   techsList().map(function(x){ return '<option value="' + esc(x.n) + '">' + esc(x.n) + '</option>'; }).join('')
+          +   '</select></div>'
           + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
           +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
           + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
@@ -12132,7 +12197,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.34' + '.docx" download>⬇ '
+              +   'V15.35' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16327,27 +16392,7 @@ function custodyByWho(){
    وأربعون فنيًّا مستخرجين من أوراق التنفيذ اليومية. ومن أراد إضافةَ فنيٍّ
    أو حذفَه أو نقلَه بين الفرق لم يجد أين. */
 
-var TECH_SEED_1447 = ['محمود السعيد','عزام','أرسلان حفيظ','عدنان','رضوان','ياسر','حسيب',
-  'سليمان','عمرو','غريب','فرمان','محمد أرسلان','سليم','فيزان','بلال','محمد عاقب','حكيم',
-  'سهيل','خالد','حمود','شهداب','برويز','اكرام','أسامة','زيشان','سيد','عوض','عبد الخالق',
-  'شهويز','أحمد آل عبدالله','سعيد بصرور','تامر','بدر','إقبال','مشير','راجابابو','عاقب وحيد',
-  'سمير','عرفة','علاء','مصطفى شطا','أنس'];
 
-function techSeed(){
-  if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
-  var L = techsList(), add = 0;
-  TECH_SEED_1447.forEach(function(n){
-    if (!L.some(function(x){ return x.n === n; })){
-      L.push({ n:n, ph:'', crew:'', sup:'', u:'', has:0 });
-      add++;
-    }
-  });
-  if (!add){ toast(t('الطاقمُ مضافٌ بالكامل')); return; }
-  techSave();
-  logEvent('إضافة طاقم الموسم — ' + nm(add) + ' فنيًّا');
-  toast(nm(add) + ' ' + t('فنيًّا أُضيفوا من طاقم الموسم الماضي'));
-  render(1);
-}
 
 /* الفرقُ: تُضاف وتُحذَف كالفنيين */
 /* ═══ التصفير: بدايةُ الموسم من صفر ═══
@@ -16644,21 +16689,39 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
    ومن أراد فنيًّا جديدًا لم يجد أين يكتبه، ومن انصرف فنيٌّ لم يجد كيف
    يرفعه — فيبقى في التوزيع ويُسنَد إليه عملٌ لا يؤدّيه أحد. */
 
+/* ═══ المصدرُ الواحدُ للأشخاص: الحسابات ═══
+   كانت قائمةُ الفنيين قائمةً ثانيةً موازيةً للحسابات — تُزرَع في الشيفرة
+   وتُضاف من شاشة الفرق وتُخزَّن في settings/techs — فالاسمُ الواحد يُكتَب في
+   مكانين ويختلف فيهما، ومن حُذف من هنا بقي هناك. صارت القائمةُ تُشتقُّ من
+   الحسابات: من له حسابٌ ظهر، ووظيفتُه تقرّر في أيِّ دورةٍ يظهر — الفنيُّ في
+   دورة الفني وهكذا. ولا يُخزَّن شيءٌ باسم القائمة: التعديلُ يقع على وثيقة
+   الحساب نفسِها. */
 function techsList(){
-  if (!Array.isArray(STATE.techs) || !STATE.techs.length) STATE.techs = TECHS.slice();
-  return STATE.techs;
+  var out = [];
+  Object.keys(STATE.users || {}).forEach(function(uid){
+    var u = STATE.users[uid];
+    if (!u || !u.name || u.active === false) return;
+    out.push({ n:u.name, u:uid, ph:u.ph || '', job:u.job || '', sup:u.sup || '',
+               crew:u.crew || '', jobLog:u.jobLog || [], has:u.has || 0 });
+  });
+  return out.sort(function(a, b){ return a.n.localeCompare(b.n, 'ar'); });
 }
-function techSave(){ CORE.set('cfg', 'techs', techsList().slice()); }
+function techUid(name){
+  var U = STATE.users || {};
+  for (var k in U) if (U[k] && U[k].name === name) return k;
+  return '';
+}
 
 /* إضافةُ موظفٍ عامٍّ بلا فريقٍ لم تعد تُتاح من هنا: كل موظفٍ يُضاف من صفحة
    فريقه في «الفرق» (`depTechAdd`) فيُنسب لفريقٍ منذ لحظة ميلاده — لا يُترك
    بلا فريقٍ لينساه أحد. */
 function techSet(name, patch){
   if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
-  var x = techsList().filter(function(y){ return y.n === name; })[0];
-  if (!x) return;
-  Object.keys(patch).forEach(function(k){ x[k] = patch[k]; });
-  techSave();
+  var uid = techUid(name);
+  if (!uid){ toast(t('لا حسابَ بهذا الاسم — الأسماءُ تُضاف من الحسابات وحدَها')); return; }
+  var u = Object.assign({}, STATE.users[uid], patch);
+  STATE.users[uid] = u;
+  CORE.set('users', uid, u);
 }
 function techDel(name){
   if (!may('users')){ toast(t('إدارةُ الفنيين للمهندس وحده')); return; }
@@ -16669,13 +16732,13 @@ function techDel(name){
     toast(t('له') + ' ' + nm(acts) + ' ' + t('عملًا مسجَّلًا — لا يُحذَف'));
     return;
   }
-  var L = techsList(), i = -1;
-  L.forEach(function(x, k){ if (x.n === name) i = k; });
-  if (i < 0) return;
-  L.splice(i, 1);
-  techSave();
-  logEvent('حذف فني — ' + name);
-  toast(t('حُذف'));
+  /* الحذفُ حذفُ حسابٍ — فالقائمةُ مشتقّةٌ منه */
+  var uid = techUid(name);
+  if (!uid) return;
+  delete STATE.users[uid];
+  CORE.dirty('users', uid, null);
+  logEvent('حذف حساب — ' + name);
+  toast(t('حُذف الحساب'));
   render(1);
 }
 
@@ -16754,11 +16817,20 @@ function depTechAdd(crewId){
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
   var n = g('depN');
   if (!n){ toast(t('اكتب اسم الموظف')); return; }
-  if (techsList().some(function(x){ return x.n === n; })){ toast(t('الاسمُ موجودٌ بالفعل')); return; }
-  techsList().push({ n:n, ph:g('depPh'), crew:crew.n, sup:g('depSup'), u:'', has:0 });
-  techSave();
-  logEvent('موظف جديد — ' + n + ' \u00b7 ' + crew.n);
-  toast(t('أُضيف الموظف'));
+  /* لا يُخلَق شخصٌ من هنا: الأسماءُ من الحسابات وحدَها — وهذه الشاشةُ
+     تنسبه لفريقه فقط. من لا حسابَ له يُنشأ أولًا في «الحسابات». */
+  var uid = techUid(n);
+  if (!uid){
+    toast(t('لا حسابَ بهذا الاسم — أنشئه أولًا من «المستخدمون والأدوار ← الحسابات» ثم انسبه هنا'));
+    return;
+  }
+  var u = Object.assign({}, STATE.users[uid], { crew:crew.n });
+  if (g('depPh'))  u.ph  = g('depPh');
+  if (g('depSup')) u.sup = g('depSup');
+  STATE.users[uid] = u;
+  CORE.set('users', uid, u);
+  logEvent('نُسب لفريق — ' + n + ' \u00b7 ' + crew.n);
+  toast(t('نُسب للفريق'));
   render(1);
 }
 
@@ -16909,13 +16981,15 @@ function jobDel(id){
 
 /* إسنادُ وظيفةٍ لشخص: تُسجَّل النقلةُ ولا تُمحى السابقة */
 function jobAssign(who, jobId){
-  var x = techsList().filter(function(y){ return y.n === who; })[0];
-  if (!x) return;
-  var was = x.job ? (jobOf(x.job) || {}).n : '';
-  if (x.job === jobId) return;
-  x.job = jobId;
-  x.jobLog = (x.jobLog || []).concat([{ job:jobId, at:Date.now(), by:STATE.meta.name || '' }]);
-  techSave();
+  var uid = techUid(who);
+  if (!uid) return;
+  var u = STATE.users[uid];
+  var was = u.job ? (jobOf(u.job) || {}).n : '';
+  if (u.job === jobId) return;
+  u = Object.assign({}, u, { job:jobId,
+    jobLog:(u.jobLog || []).concat([{ job:jobId, at:Date.now(), by:STATE.meta.name || '' }]) });
+  STATE.users[uid] = u;
+  CORE.set('users', uid, u);
   var now = (jobOf(jobId) || {}).n || '—';
   logEvent('وظيفة — ' + who + ': ' + (was || 'بلا وظيفة') + ' → ' + now);
   notifPush('وظيفة', who + ': ' + (was || 'بلا وظيفة') + ' → ' + now, { to:who, lv:'عادي' });
@@ -18674,7 +18748,8 @@ var TAB_SEE = {
   self: function(pid){ return seesRaw(pid); },
   /* «فريقي» لمن تحته أحدٌ فعلًا، أو لمشرفٍ ومهندس */
   team: function(pid){
-    return seesRaw(pid) && (maySupEng()
+    var r = ROLE || (STATE.meta && STATE.meta.role) || '';
+    return seesRaw(pid) && (r === 'supervisor' || r === 'engineer'
       || techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); }).length > 0);
   }
 };
@@ -18691,14 +18766,58 @@ function tabCur(pid){
   if (!vis.some(function(tb){ return tb[0] === PTAB[pid]; })) PTAB[pid] = vis.length ? vis[0][0] : '';
   return PTAB[pid];
 }
+
+/* ═══ البيانات: من أين تأتي وأين تُقرأ ═══
+   الشاشةُ التي تعرض أرقامًا بلا نسبٍ تُتَّهم — «الـ٢٠٨ دي جاية منين؟».
+   فصار تحت عنوان كلِّ شاشةٍ سطرُ نسبٍ: من أين تأتي بياناتُها (أيُّ شاشةٍ
+   تكتبها)، وأين تُقرأ (أيُّ شاشةٍ تسمعها). يُملأ للشاشات التي بياناتُها
+   تعبر الصفحات — لا لما يشرح نفسَه. */
+var PROV = {
+  names:   ['تُولَّد آليًّا من أسماء الحسابات والشركات — لا تُخزَّن؛ يُخزَّن تصحيحُك اليدويُّ وحدَه',
+            'كلُّ شاشةٍ وتقريرٍ يعرض اسمًا بالواجهة الإنجليزية'],
+  jobs:    ['الوظائفُ تُعرَّف هنا، والأشخاصُ من «الحسابات»',
+            'رؤيةُ الشاشات (الدور من الوظيفة) ودورةُ كلِّ شخص وأدلةُ الأدوار'],
+  users:   ['تُنشأ الحساباتُ هنا — بالاسم والوظيفة والمشرف؛ لا مكانَ ثانيًا يُضاف فيه اسم',
+            'قوائمُ الإسناد والفرقُ والأداءُ و«مهامي» — كلُّ من يظهر اسمُه في النظام'],
+  assignRole:['الحسابات — دورُ كلِّ حساب', 'كلُّ شاشةٍ تُفتَح أو تُحجَب'],
+  crewman: ['أعضاءُ الفريق أسماءٌ من «الحسابات» — لا يُخلَق شخصٌ من هنا',
+            'إسنادُ التركيب والفكِّ للفرق، وتقاريرُ أداء الفريق'],
+  mywork:  ['المهامُّ من إسناد الخريطة و«الطلبات والتوزيع» — وحالةُ كلِّ زيارةٍ من قرار المهندس في «اعتماد الزيارات»',
+            'الخريطة (لون نقاطك) و«أمس · الآن · غدًا»'],
+  svappr:  ['ما حفظه المشرفون في نموذج المسح — بصوره وقياساته وتحريك النقطة',
+            'حلُّ التركيب (لا حلَّ إلا لمعتمَدة) ونقاطُ المشرف و«أمس · الآن · غدًا»'],
+  solution:['زياراتٌ اعتمدتَها في «اعتماد الزيارات» + كتالوجُ القطع من «الكتالوج والقوائم»',
+            'طبقةُ التركيب على الخريطة وطلباتُ التركيب (DR) وإجماليُّ المشتريات المتوقَّع'],
+  invb:    ['الشحناتُ والتوريد يزيدان، ونموذجُ التركيب يستهلك — كلُّه عبر دفتر الحركة',
+            'منتقي القطع في الحل، وعُهدةُ كلِّ منفِّذ، والملخّصُ المالي'],
+  invmv:   ['كلُّ حركةٍ: استلامُ شحنةٍ، صرفٌ، استهلاكُ تركيبٍ من النموذج، إرجاعُ فكّ',
+            'الأرصدةُ والعُهدةُ — لا يُخصَم شيءٌ مرتين'],
+  perf:    ['سجلاتُ المسح والتركيب والفكِّ والورشة المعتمدةُ — لا يُحتسَب غيرُ المعتمَد',
+            'ترتيبُ «شغلي ← أدائي» والمستحقّاتُ والتقاريرُ التنفيذية'],
+  now:     ['سجلاتُ اليوم والمهامُّ المفتوحةُ ومواعيدُ الغد — لحظيًّا لا أرقامًا تُكتَب',
+            'شاشةُ الوزارة والاجتماعُ الصباحي'],
+  pace:    ['المواعيدُ من «التخطيط ← المواعيد والأزمنة» والإنجازُ من اللقطات اليومية',
+            'قرارُ «هنلحق؟» وتوزيعُ الفرق'],
+  fleetLog:['إسناداتُ السيارات — الجاري والمنتهي بتواريخه',
+            'المخالفاتُ والمساءلة: من كانت معه اللوحةُ في ذلك اليوم']
+};
+function provHtml(id){
+  var pv = PROV[id];
+  if (!pv) return '';
+  return '<p class="hint" style="margin:-6px 0 14px">'
+    + '\u{1F4E5} ' + esc(t('تأتي من')) + ': ' + esc(t(pv[0]))
+    + '<br>\u{1F4E4} ' + esc(t('تُقرأ في')) + ': ' + esc(t(pv[1])) + '</p>';
+}
 function tabHead(pid){
   var cur = tabCur(pid), vis = tabsOf(pid);
-  if (vis.length < 2) return '';          /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
-  return '<div class="chips" role="tablist">' + vis.map(function(tb){
-    return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"'
-      + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
-      + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
-  }).join('') + '</div>';
+  var chips = vis.length < 2 ? '' :        /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
+    '<div class="chips" role="tablist">' + vis.map(function(tb){
+      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"'
+        + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
+        + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
+    }).join('') + '</div>';
+  /* سطرُ النسب: تحت شرائح الأم، لشريحتها المفتوحة */
+  return chips + provHtml(cur);
 }
 /* بياناتُ صفحةٍ أو شريحةٍ بمعرِّفها — للمساعد والأدلة والمساعدة */
 function pageMeta(id){
@@ -19417,16 +19536,28 @@ function usersCard(){
             L.map(function(x){
               var uid = x[0], u = x[1], on = u.active !== false;
               if (USR_EDIT === uid){
+                var jbOpts = '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
+                  + jobsList().map(function(j){ return '<option value="' + esc(j.id) + '"'
+                      + (u.job === j.id ? ' selected' : '') + '>' + esc(j.n) + '</option>'; }).join('');
+                var supOpts = '<option value="">—</option>'
+                  + techsList().filter(function(x){ return x.u !== uid; }).map(function(x){
+                      return '<option value="' + esc(x.n) + '"' + (u.sup === x.n ? ' selected' : '') + '>'
+                        + esc(x.n) + '</option>'; }).join('');
                 return ['<input data-usrn="' + esc(uid) + '" value="' + esc(u.name || '') + '" dir="auto">',
-                        '<select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>',
+                        '<select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>'
+                        + '<div style="margin-top:6px"><select data-usrj="' + esc(uid) + '">' + jbOpts + '</select></div>'
+                        + '<div style="margin-top:6px"><select data-usrs="' + esc(uid) + '">' + supOpts + '</select></div>',
                         pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                         '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
                         btn('احفظ','btn-primary btn-sm',' data-usrsave="' + esc(uid) + '"')
-                        + btn('إلغاء','btn-quiet btn-sm',' data-usredit=""')];
+                        + btn('إلغاء','btn-quiet btn-sm',' data-usredit=""')
+                        + btn('🗑 ' + t('حذف الحساب'),'btn-danger btn-sm',' data-usrdel="' + esc(uid) + '"')];
               }
               return ['<strong>' + esc(u.name || uid) + '</strong><br><span class="hint" dir="ltr" style="margin:0">'
                         + esc(u.user || '') + '</span>',
-                      esc(t((ROLES[u.role] || {}).n || u.role || '—')),
+                      esc(t((ROLES[u.role] || {}).n || u.role || '—'))
+                        + (u.job && jobOf(u.job) ? '<br><span class="hint" style="margin:0">💼 ' + esc(jobOf(u.job).n)
+                            + (u.sup ? ' \u00b7 \u2B06 ' + esc(u.sup) : '') + '</span>' : ''),
                       pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                       '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
                       btn('تعديل','btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
@@ -19439,6 +19570,10 @@ function usersCard(){
       + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR_Q) + '" placeholder="'
       +   esc(t('بحث')) + '" dir="auto">'
       + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="users"')
+      + (may('users')
+          ? btn('🧹 ' + t('امسح قوائم الفنيين الموروثة'),'btn-quiet btn-sm',' data-tkpurge="1"'
+              + ' title="' + esc(t('يحذف قائمة settings/techs القديمة من السحابة ويُفرغ من الفرق كلَّ اسمٍ لا حسابَ له — الحساباتُ لا تُمَسّ')) + '"')
+          : '')
       + '</form>');
 }
 
@@ -19448,6 +19583,9 @@ function usrAdd(){
   if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
   var u = g('uU'), n = g('uN'), p = g('uP'), r = g('uR') || 'tech';
+  var jb = g('uJ'), sup = g('uS');
+  /* الوظيفةُ تُغني عن اختيار الدور: دورُ الحساب دورُ وظيفته إن اختيرت */
+  if (jb && jobOf(jb)) r = jobOf(jb).role || r;
   if (!u){ toast(t('اكتب اسم المستخدم')); return; }
   if (!n){ toast(t('اكتب الاسم الكامل')); return; }
   if (p.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }
@@ -19462,6 +19600,9 @@ function usrAdd(){
   CORE.set('accounts', u, made);
   STATE.users = STATE.users || {};
   STATE.users[u] = { name:n, user:u, role:r, at:Date.now() };
+  if (jb){ STATE.users[u].job = jb;
+           STATE.users[u].jobLog = [{ job:jb, at:Date.now(), by:STATE.meta.name || '' }]; }
+  if (sup) STATE.users[u].sup = sup;
   CORE.set('users', u, STATE.users[u]);
   /* ويُنشَأ في Auth بتطبيقٍ ثانٍ إن كانت شبكة — فيدخل صاحبُه بكلمته.
      وإن تعذّر بقي مسجَّلًا هنا ويُنشَأ من المكتب: التسجيلُ لا يُفقَد. */
@@ -20540,8 +20681,53 @@ function onDocClick(e){
     var patch = {};
     if (nEl) patch.name = String(nEl.value || '').trim();
     if (rEl) patch.role = rEl.value;
+    var jEl = document.querySelector('[data-usrj="' + id2 + '"]');
+    var sEl = document.querySelector('[data-usrs="' + id2 + '"]');
+    if (jEl){
+      patch.job = jEl.value;
+      var uOld = (STATE.users || {})[id2] || {};
+      if (patch.job !== (uOld.job || ''))
+        patch.jobLog = (uOld.jobLog || []).concat([{ job:patch.job, at:Date.now(), by:STATE.meta.name || '' }]);
+      /* الوظيفةُ تجرُّ دورَها ما لم يُغيَّر الدورُ بيدٍ في اللحظة نفسِها */
+      if (patch.job && jobOf(patch.job) && (!rEl || rEl.value === uOld.role))
+        patch.role = jobOf(patch.job).role || patch.role;
+    }
+    if (sEl) patch.sup = sEl.value;
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
     USR_EDIT = ''; usrSet(id2, patch); return;
+  }
+  if (e.target.closest('[data-tkpurge]')){
+    if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
+    /* الوثيقةُ الموروثةُ تُحذَف من السحابة، وأسماءُ الفرق التي لا حسابَ لها
+       تُفرَغ — فلا يبقى مكانٌ ثانٍ يعيش فيه اسم. الحساباتُ لا تُمَسّ. */
+    CORE.dirty('cfg', 'techs', null);
+    STATE.techs = [];
+    var cleaned = 0;
+    crewsList().forEach(function(c){
+      var keep = (c.members || []).filter(function(nm2){ return !!techUid(nm2); });
+      cleaned += (c.members || []).length - keep.length;
+      c.members = keep;
+    });
+    crewSave();
+    logEvent('تنظيف قوائم الفنيين الموروثة — أُفرغ ' + nm(cleaned) + ' اسمًا بلا حساب');
+    toast(t('مُسحت القوائمُ الموروثة') + (cleaned ? ' \u00b7 ' + nm(cleaned) + ' ' + t('اسمًا أُفرغ من الفرق') : ''));
+    render(1); return;
+  }
+  var ud = e.target.closest('[data-usrdel]');
+  if (ud){
+    var idD = ud.getAttribute('data-usrdel');
+    if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
+    if (idD === (STATE.meta.uid || '')){ toast(t('لا تحذف حسابَك وأنت فيه')); return; }
+    var uD = (STATE.users || {})[idD] || {};
+    /* من له عملٌ مسجَّلٌ لا يُحذَف — سجلاتُه تحمل اسمَه */
+    var wk = scores().list.filter(function(x){ return x.name === uD.name; })[0];
+    var acts = wk ? (wk.survey + wk.install + wk.dis + wk.prep + wk.asm) : 0;
+    if (acts){ toast(t('له') + ' ' + nm(acts) + ' ' + t('عملًا مسجَّلًا — عطِّله بدل حذفه')); return; }
+    delete STATE.users[idD];
+    CORE.dirty('users', idD, null);
+    logEvent('حذف حساب — ' + (uD.name || idD));
+    toast(t('حُذف الحساب'));
+    USR_EDIT = ''; render(1); return;
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-serrclr]')){
@@ -20560,7 +20746,6 @@ function onDocClick(e){
   }
   var bnd = e.target.closest('[data-bndel]');
   if (bnd){ bonusDel(bnd.getAttribute('data-bndel')); return; }
-  if (e.target.closest('[data-tkseed]')){ techSeed(); return; }
   var crc = e.target.closest('[data-crewcur]');
   if (crc){
     var cid = crc.getAttribute('data-crewcur');
