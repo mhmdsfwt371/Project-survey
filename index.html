@@ -678,7 +678,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.26</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.27</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2225,6 +2225,18 @@ en:{
  'الطابور':'Queue',
  'شغلي':'My work',
  'مهامُّك ونقاطُك وفريقُك — في شاشةٍ واحدة.':'Your tasks, your points and your team — on one screen.',
+ 'الخطوة التالية':'Next step',
+ 'صاحبُها':'Owner',
+ 'امسحها الآن':'Survey it now',
+ 'حدّد القطع':'Pick the parts',
+ 'اذهب للاعتماد':'Go to approval',
+ 'تنتظر الزيارةَ الميدانية':'Awaiting the field visit',
+ 'الفنيُّ المُسنَد إليه':'The assigned technician',
+ 'مُسحت — تنتظر تحديدَ ما سيُركَّب':'Surveyed — awaiting the parts to install',
+ 'حلُّها مقترحٌ — ينتظر الاعتماد':'Its solution is proposed — awaiting approval',
+ 'حلُّها معتمد — جاهزةٌ للتركيب':'Its solution is approved — ready to install',
+ 'رُكّبت واعتُمدت':'Installed and approved',
+ 'فريقُ التركيب':'The installation crew',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -3741,6 +3753,18 @@ ur:{
  'الطابور':'قطار',
  'شغلي':'میرا کام',
  'مهامُّك ونقاطُك وفريقُك — في شاشةٍ واحدة.':'آپ کے ٹاسکس، پوائنٹس اور ٹیم — ایک اسکرین پر۔',
+ 'الخطوة التالية':'اگلا مرحلہ',
+ 'صاحبُها':'ذمہ دار',
+ 'امسحها الآن':'ابھی سروے کریں',
+ 'حدّد القطع':'پرزے منتخب کریں',
+ 'اذهب للاعتماد':'منظوری پر جائیں',
+ 'تنتظر الزيارةَ الميدانية':'فیلڈ دورے کی منتظر',
+ 'الفنيُّ المُسنَد إليه':'تفویض شدہ ٹیکنیشن',
+ 'مُسحت — تنتظر تحديدَ ما سيُركَّب':'سروے شدہ — نصب ہونے والے پرزوں کی منتظر',
+ 'حلُّها مقترحٌ — ينتظر الاعتماد':'اس کا حل تجویز شدہ — منظوری کا منتظر',
+ 'حلُّها معتمد — جاهزةٌ للتركيب':'اس کا حل منظور — تنصیب کے لیے تیار',
+ 'رُكّبت واعتُمدت':'نصب و منظور شدہ',
+ 'فريقُ التركيب':'تنصیب عملہ',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7576,7 +7600,7 @@ PAGE.assignRole = { m:'الإعدادات', t:'إسناد الأدوار',
 
 var LAYERS = {
   survey: {
-    n:'المسح', i:'\u{1F50D}', kind:'visit', c:'#E8C34B',
+    n:'المسح', i:'\u{1F50D}', kind:'visit', c:'#4FA3FF',
     d:'كلُّ النقاط — تُحدَّد وتُسند زيارةً ميدانية.',
     pass:function(){ return true; },
     ready:function(x){ return !svDone(STATE.recs[x.id]); },
@@ -11589,6 +11613,38 @@ function popHtml(){
     +   btn((FIELD_MODE === 'install' ? '🔧 ' + t('نموذج التركيب') : '🔍 ' + t('نموذج المسح')),
             'btn-secondary btn-sm',
             (FIELD_MODE === 'install' ? ' data-insform="' : ' data-form="') + esc(s.id) + '"')
+
+    /* ═══ الخطوةُ التالية — أين تقف النقطةُ ومن صاحبُ الدور ═══
+       من رأى نقطةً مسوحةً لا تظهر في التركيب سأل: أهي معطَّلةٌ أم تنتظر؟
+       فصار كلُّ حالٍ يقول ما بعده ومن يملكه — ومن يملكه يجد الزرَّ، ومن
+       لا يملكه يعرف من ينتظر بدل أن يظنَّ العطل. */
+    +   (function(){
+          var ins2 = STATE.inss[s.id] || {}, so = ins2.solution;
+          var step = '', go = '', who = '';
+          if (!sv){
+            step = 'تنتظر الزيارةَ الميدانية'; who = 'الفنيُّ المُسنَد إليه';
+            if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
+          } else if (!so){
+            step = 'مُسحت — تنتظر تحديدَ ما سيُركَّب'; who = 'المهندس';
+            if (may('edit')) go = btn('🧩 ' + t('حدّد القطع'),'btn-primary btn-sm',' data-goto="solution"');
+          } else if (so.status !== 'معتمد'){
+            step = 'حلُّها مقترحٌ — ينتظر الاعتماد'; who = 'المهندس';
+            go = may('users')
+              ? btn('✔ ' + t('اذهب للاعتماد'),'btn-primary btn-sm',' data-goto="solution"')
+              : '';
+          } else if (!insDone(s.id)){
+            step = 'حلُّها معتمد — جاهزةٌ للتركيب'; who = 'فريقُ التركيب';
+            if (may('edit')) go = btn('🔧 ' + t('نموذج التركيب'),'btn-primary btn-sm',' data-insform="' + esc(s.id) + '"');
+          } else {
+            step = 'رُكّبت واعتُمدت'; who = '—';
+          }
+          return '<div class="alert info" style="margin:10px 0 0"><span>'
+            + '<strong>' + esc(t('الخطوة التالية')) + ':</strong> ' + esc(t(step))
+            + (who !== '—' ? ' \u00b7 <span class="hint" style="margin:0">'
+                + esc(t('صاحبُها')) + ': ' + esc(t(who)) + '</span>' : '')
+            + '</span></div>'
+            + (go ? '<div class="actions" style="margin:8px 0 0">' + go + '</div>' : '');
+        })()
     + '</div></div>';
 }
 
@@ -17091,7 +17147,7 @@ PAGE.guide = { m:'المساعدة', t:'دليل الاستخدام', l:'دلي�
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.26' + '.docx" download>⬇ '
+              +   'V15.27' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19175,6 +19231,8 @@ function onDocClick(e){
   if (cdl){ coRemove(cdl.getAttribute('data-codel')); return; }
   var mwt = e.target.closest('[data-mywtab]');
   if (mwt){ MYW_TAB = mwt.getAttribute('data-mywtab'); render(1); return; }
+  var gto = e.target.closest('[data-goto]');
+  if (gto){ POP_OPEN = false; CUR = gto.getAttribute('data-goto'); render(); return; }
   var svr = e.target.closest('[data-svreopen]');
   if (svr){ SURV_REOPEN = svr.getAttribute('data-svreopen'); render(1); return; }
   if (e.target.closest('[data-svreopencancel]')){ SURV_REOPEN = ''; render(1); return; }
