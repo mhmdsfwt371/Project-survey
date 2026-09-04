@@ -41,6 +41,8 @@ jobs:
         run: |
           if [ -z "$GDRIVE_SA" ]; then
             echo "::notice::GDRIVE_SA غير مضبوط — تخطّي الرفع للدرايف"
+            mkdir -p backups/latest
+            printf '{\n  "ok": false,\n  "at": "%s",\n  "why": "GDRIVE_SA غير مضبوط — لم يُرفَع شيءٌ إلى درايف",\n  "fix": "Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)"\n}\n' "$(date -u +%FT%TZ)" > backups/latest/_drive.json
           else
             npm i googleapis@144 --no-save --no-audit --no-fund
             node scripts/drive-upload.mjs
@@ -86,7 +88,7 @@ jobs:
       - name: Guard — no plaintext data may be committed
         run: |
           rm -f backups/photos.json
-          LEAK=$(find backups/latest -name '*.json' ! -name '_meta.json' | head -5)
+          LEAK=$(find backups/latest -name '*.json' ! -name '_meta.json' ! -name '_drive.json' | head -5)
           if [ -n "$LEAK" ]; then
             echo "::error::وُجد ملف بيانات صريح: $LEAK — أُلغيت العملية"
             exit 1

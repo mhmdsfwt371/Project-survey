@@ -15,6 +15,10 @@ const KEEP_PHOTO = parseInt(process.env.GDRIVE_PHOTO_DAYS  || '21',  10);
 
 if (!SA_RAW || !ROOT) {
   console.log('drive-upload: GDRIVE_SA أو GDRIVE_FOLDER غير مضبوط — تخطّي الرفع');
+  try { const fs = await import('fs'); fs.mkdirSync('backups/latest', { recursive:true });
+        fs.writeFileSync('backups/latest/_drive.json', JSON.stringify({ ok:false, at:new Date().toISOString(),
+          why:'GDRIVE_SA أو GDRIVE_FOLDER غير مضبوط — لم يُرفَع شيءٌ إلى درايف',
+          fix:'Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)' }, null, 2)); } catch {}
   process.exit(0);
 }
 
@@ -97,15 +101,23 @@ async function prune(parent) {
   if (!delPhotos && !delFolders) console.log('  🧹 لا شيء للحذف');
 }
 
+/* حالةُ الرفع تُكتَب في backups/latest/_drive.json — أعدادٌ لا بيانات — فيقرؤها
+   التطبيقُ ويعرضها في «صحة النظام»: هل وصلت نسخةُ اليوم إلى درايف المالك؟ */
+import { writeFileSync as _wf, statSync as _st, existsSync as _ex } from 'fs';
+const driveMeta = (o) => { try { _wf('backups/latest/_drive.json', JSON.stringify(Object.assign({ at:new Date().toISOString() }, o), null, 2)); } catch {} };
 try {
   const dayFolder = await folderFor(day, ROOT);
   console.log(`drive-upload: فولدر ${day}`);
+  const sz = f => (_ex(f) ? _st(f).size : 0);
+  const files = { 'backup-full.json': sz('backups/bundle.json'), 'photos.json': sz('backups/photos.json') };
   await put('backups/bundle.json',      'backup-full.json',  dayFolder);
   await put('backups/photos.json',      'photos.json',       dayFolder);
   await put('backups/latest/_meta.json', '_meta.json',       dayFolder);
   await prune(ROOT);
+  driveMeta({ ok:true, day, folder:ROOT, bytes:files, keepDays:KEEP_DATA, photoDays:KEEP_PHOTO });
   console.log('drive-upload: تم ✓');
 } catch (e) {
   /* لا نُفشل النسخ الاحتياطي بسبب الدرايف — نُبلّغ ونكمل */
+  driveMeta({ ok:false, why:'فشل الرفع — ' + String(e?.message || e).slice(0, 160) });
   console.log('::warning::drive-upload فشل — ' + (e?.message || e));
 }

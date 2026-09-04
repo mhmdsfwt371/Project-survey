@@ -38,6 +38,6 @@ writeFileSync(`${out}/../bundle.json`, JSON.stringify(bundle, iso, 1));
 
 /* الملخّص وحده هو ما يُنشر صراحةً — أعداد بلا أي بيانات شخصية */
 writeFileSync(`${out}/_meta.json`, JSON.stringify(
-  { at: new Date().toISOString(), collections: report, totalDocs: total,
+  { ok: true, at: new Date().toISOString(), collections: report, totalDocs: total,
     note: 'البيانات الخام في backup.enc — مشفّرة. هذا الملف أعداد فقط.' }, null, 1));
 console.log('backup ok —', report.join(' | '), '| total', total);
