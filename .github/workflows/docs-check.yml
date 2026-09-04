@@ -72,6 +72,10 @@ jobs:
         run: node scripts/audit-pmp2.mjs
       - name: جرد إشعار الشركات — دفتر الجوالات وزر واتساب بنصوصه الثلاثة
         run: node scripts/audit-wa.mjs
+      - name: جرد إغلاق اللوحات — كل لوح يُغلَق بنقرة خارجه
+        run: node scripts/audit-dismiss.mjs
+      - name: جرد الملاءمة — ما يُعرَض على كل دور يُقرأ على شاشته
+        run: node scripts/audit-fit.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

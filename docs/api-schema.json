@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.47",
+  "app_version": "V15.48",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1416,7 +1416,8 @@
     "V15.44": "inboxItems/inboxCard «قراراتك اليوم» (8 عدّادات بأزرار قفز) في mywork للمعتمِد وفي now. سجل المخاطر حي: risksList/riskSave/riskSet/riskAdd + settings/risks + riskSignals. viewer += miles, ncr؛ حراسة ncrAdd (edit) وncrClose (approve) في الواجهة والدوال. الجرد 29: audit-pmp.",
     "V15.45": "firestore.rules: isBoss يقرأ token.get('email','') (الوصول المباشر لحقل غائب يُسقط التقييم كله). rules-test: authenticatedContext ببريد + اختبار الرئيس + حساب بلا بريد. post-deploy: عنوان Pages /Project-survey/ بلا شرطة. setup-java@v5.",
     "V15.46": "chgAdd يحمل dCost/dDays/dScope؛ chgDecide→chgApply يجمّد BASE v+1 (bac+=dCost، due*+=dDays، scope+=dScope، reason=CR-n، applied[]). mileDateOf/mileDateSet/mileLate + settings/miles + عمود الموعد المستهدف والمتأخر. cfg.reservePct + عرض الاحتياطي واستهلاكه (EAC−BAC) + إنذار في riskSignals. الجرد 30: audit-pmp2.",
-    "V15.47": "دفتر جوالات الشركات: CFG.cotel ← settings/cotel (coTel/coTelOf/coTelSet، الكتابة may('approve')). WA_KINDS {plan,hand,dis} + waText يُبنى من coStat + waGo يفتح wa.me. جدول الشركات: حقل جوال + 3 أزرار؛ زر إشعار على محضر التسليم (شركة ونقطة). الجرد 31: audit-wa."
+    "V15.47": "دفتر جوالات الشركات: CFG.cotel ← settings/cotel (coTel/coTelOf/coTelSet، الكتابة may('approve')). WA_KINDS {plan,hand,dis} + waText يُبنى من coStat + waGo يفتح wa.me. جدول الشركات: حقل جوال + 3 أزرار؛ زر إشعار على محضر التسليم (شركة ونقطة). الجرد 31: audit-wa.",
+    "V15.48": "سجل SHEETS: عشرة لوحات تُغلَق بالنقر خارجها (الأعلى أولًا)، وزر كل لوح يتولّاه. جدول المعالم 4 أعمدة لغير may('settings'). الجردان 32 و33: audit-dismiss وaudit-fit."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2592,7 +2593,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 31,
+  "audits_total": 33,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3538,5 +3539,41 @@
       "hand: زر على محضر الشركة وعلى محضر النقطة (شركتها)"
     ],
     "trap": "card(title,body,right) بلا عنوان تُسقِط الرأس ومعه right — ضع الزر في body"
+  },
+  "dismiss_v15_48": {
+    "registry": "SHEETS[] = {on, off, sel, btn} — عشرة لوحات",
+    "order": "POP → ASSIST → QUEUE → HELP → EXP → ASN_PICK → ASN_OPEN → CO_OPEN → MAP_FILT (الأعلى أولًا)",
+    "rules": [
+      "النقر داخل sel لا يغلق",
+      "النقر على btn يتركه لمعالجه",
+      "POP_JUST يمنع الإغلاق خلال 300ms من الفتح"
+    ],
+    "excluded": "NS_CO_OPEN بطاقة داخل الصفحة لا لوح عائم"
+  },
+  "fit_v15_48": {
+    "thresholds": {
+      "cols": ">=7",
+      "inputs": ">=14",
+      "chars": ">9000"
+    },
+    "exempt": {
+      "FORMS": [
+        "svForm",
+        "insForm",
+        "forms",
+        "disp2",
+        "newsite"
+      ],
+      "DESK": [
+        "pts",
+        "items",
+        "users",
+        "consts",
+        "org",
+        "sys",
+        "exp"
+      ]
+    },
+    "fixed": "miles: 7 → 4 أعمدة لغير may('settings') (الوزن والتبعية تخطيط داخلي)"
   }
 }

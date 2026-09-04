@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.47</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.48</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -12127,24 +12127,34 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
       + card('', meter('الإنجاز الموزون بالمعالم', earned, tot))
 
       + cardFlush('المعالم',
-          table(['#','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز','الحالة'],
-            MILES.map(function(m){
+          /* الوزنُ والتبعيةُ تخطيطٌ داخليّ: يراهما من يضبط الخطة وحدَه.
+             سبعةُ أعمدةٍ على هاتف الوزارة تُقرأ بالتمرير الأفقيّ ولا تُقرأ. */
+          (function(){
+            var full = may('settings');
+            var head = full ? ['#','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز','الحالة']
+                            : ['المعلَم','الموعد المستهدف','الإنجاز','الحالة'];
+            var rows = MILES.map(function(m){
               var p = mileDone(m), dt = mileDateOf(m), late = mileLate(m);
               var manual = mileDates().some(function(x){ return x.id === m.id && x.d; });
-              return ['<span class="num">' + esc(m.id) + '</span>',
-                      '<strong>' + esc(t(m.n)) + '</strong>', N(m.w),
-                      m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—',
-                      may('settings')
-                        ? '<input type="date" value="' + esc(dt) + '" data-mld="' + esc(m.id) + '" style="width:150px">'
-                          + (dt && !manual ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مشتقٌّ من المواعيد')) + '</div>' : '')
-                        : (dt ? '<span class="num">' + esc(dt) + '</span>' : '—'),
-                      nm(Math.round(p * 100)) + '٪',
-                      late ? pill('متأخّر', 'off')
-                           : pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
-                                  p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''))];
-            }),
-            ['','<b>' + t('الإجمالي') + '</b>', N(tot), '', '',
-             '<b>' + nm(Math.round(earned)) + '٪</b>', '']),
+              var nameCell = '<strong>' + esc(t(m.n)) + '</strong>'
+                + (full ? '' : '<br><span class="hint num" style="margin:0">' + esc(m.id) + '</span>');
+              var dateCell = full
+                ? '<input type="date" value="' + esc(dt) + '" data-mld="' + esc(m.id) + '" style="width:150px">'
+                  + (dt && !manual ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مشتقٌّ من المواعيد')) + '</div>' : '')
+                : (dt ? '<span class="num">' + esc(dt) + '</span>' : '—');
+              var stCell = late ? pill('متأخّر', 'off')
+                : pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
+                       p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''));
+              var pc = nm(Math.round(p * 100)) + '٪';
+              return full
+                ? ['<span class="num">' + esc(m.id) + '</span>', nameCell, N(m.w),
+                   m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—', dateCell, pc, stCell]
+                : [nameCell, dateCell, pc, stCell];
+            });
+            var foot = full ? ['','<b>' + t('الإجمالي') + '</b>', N(tot), '', '', '<b>' + nm(Math.round(earned)) + '٪</b>', '']
+                            : ['<b>' + t('الإجمالي') + '</b>', '', '<b>' + nm(Math.round(earned)) + '٪</b>', ''];
+            return table(head, rows, foot);
+          })(),
           btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"'))
 
       + card('المسار المتتابع',
@@ -13356,7 +13366,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.47' + '.docx" download>⬇ '
+              +   'V15.48' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -22037,11 +22047,34 @@ function onDocClick(e){
 
   var pk = e.target.closest('[data-pop]');
   if (pk){ POP_OPEN = pk.getAttribute('data-pop') === '1'; render(); return; }
-  /* نافذةُ النقطة تُغلَق بأيِّ نقرةٍ خارجها — علامةُ X وحدَها إجبارٌ على
-     التصويب في جوّالٍ بيدٍ واحدة. والنقرُ داخلها يبقى كما هو. */
-  if (POP_OPEN && !e.target.closest('#pkPop') && !e.target.closest('[data-pop]')
-      && Date.now() - POP_JUST > 300){
-    POP_OPEN = false; render(); return;
+
+  /* ═══ كلُّ لوحٍ يُغلَق بنقرةٍ خارجه ═══
+     كانت نافذةُ النقطة وحدَها تُغلَق بالنقر خارجها، وسائرُ اللوحات — منتقي
+     التصفية والمساعدُ والطابورُ والمساعدةُ والتصديرُ ولوحُ الإسناد ومنتقي
+     الشركات — لا تُغلَق إلا بعلامة X. وعلامةُ X في زاويةِ لوحٍ على هاتفٍ
+     بيدٍ واحدةٍ إجبارٌ على تصويبٍ لا يلزم: اليدُ تنقر حيث تشاء والمنطقُ
+     يفهم. فوُحِّد السلوك: لكلِّ لوحٍ رايتُه ومعرِّفُه وزرُّ فتحه، والنقرةُ
+     خارجَ الثلاثة تُغلقه. وأوّلُ ما يُغلَق ما فُتح آخرًا — فلا يُغلَق
+     الأسفلُ ويبقى الأعلى. */
+  var SHEETS = [
+    { on:function(){ return POP_OPEN; },       off:function(){ POP_OPEN = false; },       sel:'#pkPop',           btn:'[data-pop]' },
+    { on:function(){ return ASSIST_OPEN; },    off:function(){ ASSIST_OPEN = false; },    sel:'#assistPop',       btn:'[data-assist]' },
+    { on:function(){ return QUEUE_OPEN; },     off:function(){ QUEUE_OPEN = false; },     sel:'#queuePop',        btn:'[data-pq]' },
+    { on:function(){ return HELP_OPEN; },      off:function(){ HELP_OPEN = false; },      sel:'#helpPop',         btn:'[data-help]' },
+    { on:function(){ return EXP_OPEN; },       off:function(){ EXP_OPEN = false; },       sel:'#expPop',          btn:'[data-exp]' },
+    { on:function(){ return ASN_PICK; },       off:function(){ ASN_PICK = false; },       sel:'#asnPick',         btn:'[data-apick]' },
+    { on:function(){ return ASN_OPEN; },       off:function(){ ASN_OPEN = false; },       sel:'#asnPop',          btn:'[data-asn]' },
+    { on:function(){ return CO_OPEN; },        off:function(){ CO_OPEN = false; },        sel:'#coFilt',          btn:'[data-co],[data-cofilt],[data-comode]' },
+    { on:function(){ return MAP_FILT_OPEN; },  off:function(){ MAP_FILT_OPEN = false; },  sel:'.map-sheet',       btn:'[data-mfilt]' }
+  ];
+  if (Date.now() - POP_JUST > 300){
+    for (var si = 0; si < SHEETS.length; si++){
+      var sh = SHEETS[si];
+      if (!sh.on()) continue;
+      if (e.target.closest(sh.sel)) break;          /* النقرُ داخله شأنُه */
+      if (sh.btn && e.target.closest(sh.btn)) break; /* وزرُّه يتولّاه بنفسه */
+      sh.off(); render(); return;
+    }
   }
   if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return; }
 
