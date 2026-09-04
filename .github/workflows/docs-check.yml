@@ -86,8 +86,10 @@ jobs:
         run: node scripts/audit-del.mjs
       - name: جرد الجاهز للإسناد — لكل نوع طلب بابه من التوزيع
         run: node scripts/audit-asnq.mjs
-      - name: جرد طلب الصرف — IR يُسنَد ويدخل عهدة صاحبه
+      - name: جرد طلب الصرف — DR يُسنَد ويدخل عهدة صاحبه
         run: node scripts/audit-issue.mjs
+      - name: جرد رموز الطلبات — SR/IR/MR/UR/DR بمعانيها، والصيانة من الخريطة
+        run: node scripts/audit-codes.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

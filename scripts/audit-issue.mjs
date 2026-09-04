@@ -3,7 +3,7 @@
    ───────────────────────────────────────────────────────────────────────────
    صرفُ القطع من المستودع كان سطرًا يُكتَب في دفتر الحركة مباشرةً: لا رقمَ له
    ولا مُسنَدَ إليه ولا حالةَ تُتابَع. صار نوعًا ثالثًا في طلبات الورشة —
-   «صرف أصناف (IR)» — بترقيمه ومُسنَدٍ إليه فنيٍّ أو مشرف؛ وحين يُنفَّذ
+   «صرف أصناف (DR)» — بترقيمه ومُسنَدٍ إليه فنيٍّ أو مشرف؛ وحين يُنفَّذ
    يُقيَّد «صرف» في دفتر الحركة **باسم المُسنَد إليه** لا باسم من ضغط الزر،
    فتدخل القطعُ عهدتَه هو. ولا يُقبَل صرفٌ بلا من يُصرَف له.
    ويتحقّق الجردُ كذلك من بقايا `TECHS` الفارغة بعد توحيد مصدر الأشخاص:
@@ -35,14 +35,14 @@ T(mvBy && mvBy.options.length>=3, 'منتقي المنفِّذ في دفتر ا�
 /* طلبُ الصرف */
 w.goPage('wos'); w.render(1);
 const kindSel=d.getElementById('wrKind');
-T(kindSel && [...kindSel.options].some(o=>o.value==='issue'), 'نوعُ «صرف أصناف (IR)» في المنتقي');
+T(kindSel && [...kindSel.options].some(o=>o.value==='issue'), 'نوعُ «صرف أصناف (DR)» في المنتقي');
 T(!!d.getElementById('wrTo'), 'حقلُ «يُصرَف له» موجود');
 const it=w.itemsList()[0];
 kindSel.value='issue'; d.getElementById('wrItem').value=it.code;
 d.getElementById('wrQty').value='6'; d.getElementById('wrTo').value='فني التركيب';
 click('[data-wradd]');
 const r=w.workReqList()[0];
-T(!!r && /^IR-\d{4}$/.test(r.no), 'الطلبُ برقم IR — '+(r&&r.no));
+T(!!r && /^DR-\d{4}$/.test(r.no), 'الطلبُ برقم DR (Delivery Request) — '+(r&&r.no));
 T(r.kind==='issue' && r.to==='فني التركيب' && r.qty===6, 'بنوعه ومُسنَدِه وكميته');
 T(w.STATE.queue.some(q=>q.kind==='workReqs'&&q.id===r.id), 'ويُرفَع');
 /* بلا مُسنَدٍ يُرفَض */

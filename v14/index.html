@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.53</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.54</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2885,6 +2885,7 @@ en:{
  'يلزم مع «صرف أصناف» — القطعُ تدخل عُهدةَ من يُصرَف له لا عهدةَ من سجّل التنفيذ.':'Required with “Issue items” — the parts enter the custody of the person issued to, not of whoever recorded the execution.',
  'اختر من يُصرَف له':'Choose who it is issued to',
  'طلب صرف':'Issue request',
+ 'لا تظهر في كلِّ طبقةٍ إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما سُلِّم، والصيانةُ ما رُكِّب.':'Each layer shows only its own points: installation what was surveyed, dismantling what was handed over, maintenance what was installed.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4959,6 +4960,7 @@ ur:{
  'يلزم مع «صرف أصناف» — القطعُ تدخل عُهدةَ من يُصرَف له لا عهدةَ من سجّل التنفيذ.':'“اشیاء کا اجرا” کے ساتھ لازم — پرزے اس شخص کی تحویل میں جاتے ہیں جسے اجرا ہوا، اس کی نہیں جس نے انجام درج کیا۔',
  'اختر من يُصرَف له':'منتخب کریں کس کو اجرا ہو',
  'طلب صرف':'اجرا کی درخواست',
+ 'لا تظهر في كلِّ طبقةٍ إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما سُلِّم، والصيانةُ ما رُكِّب.':'ہر تہ صرف اپنے پوائنٹس دکھاتی ہے: تنصیب جو سروے ہوا، ڈسمینٹل جو حوالے ہوا، دیکھ بھال جو نصب ہوا۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7082,13 +7084,25 @@ var FB = {
         arr.forEach(function(x){ TEAMS.push(x); });
         FB.readCount = (FB.readCount || 0) + sn.size;
       }).catch(function(e){ softErr('سحب الفرق الفرعية', e, 'تعذّر سحبُ الفرق الفرعية — قد تظهر فارغة'); });
-      /* عدّاد ترقيم الطلبات (SR/DR/PR): وثيقةٌ مفردةٌ بحقولٍ رقمية —
+      /* عدّاد ترقيم الطلبات (SR/IR/UR/MR/DR/CR/AR): وثيقةٌ مفردةٌ بحقولٍ رقمية —
          تُقرأ بنفس الأسلوب الآمن الذي أصلح فرق الأنصبة، لا بمصفوفةٍ تفسدها
          Firestore حين تتحول كائنًا بمفاتيح رقمية. */
       FB.db.collection('settings').doc('reqSeq').get().then(function(doc){
         if (doc && doc.exists){
           var v = doc.data();
-          ['SR','DR','PR','CR','AR','MR','IR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
+          /* نقلُ العدّادات مرةً واحدة: التركيبُ كان DR فصار IR، والفكُّ كان
+             PR فصار UR، والصرفُ كان IR فصار DR — يُقرأ القديمُ ويُبدأ من
+             حيث انتهى، فلا يُولَد IR-0001 وقد سبقه DR-0001 تركيبًا. */
+          ['SR','IR','UR','CR','AR','MR','DR'].forEach(function(k){
+            if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k];
+          });
+          /* ثم يُنقَل العدّادُ القديم: الرمزُ الذي كان يُستعمَل للمعنى نفسِه
+             يرفع الجديدَ إلى حيث انتهى — فلا يُولَد IR-0001 تركيبًا وقد سبقه
+             DR-0001 تركيبًا في السجل القديم. */
+          [['IR','DR'], ['UR','PR'], ['DR','IR']].forEach(function(pr){
+            var b = cfgN(v[pr[1]]) || 0;
+            if (b > REQSEQ[pr[0]]) REQSEQ[pr[0]] = b;
+          });
         }
       }).catch(function(e){ softErr('سحب ترقيم الطلبات', e, 'تعذّر سحبُ آخر رقم طلب — قد يتكرّر الترقيم'); });
       /* الفكُّ والورشةُ (تهيئة وتجميع) كانا يُكتَبان في 'dismantles' و'inventory'
@@ -10041,10 +10055,21 @@ function kindLabel(kind){
    التقارير والمكالمات، منفصلٌ عن معرّف المهمة الداخلي (TK-kind-site) الذي
    لا يتغيّر ولا يتكرّر. الأنواعُ الأخرى (تهيئة، تجميع، مستودع…) بلا ترقيم —
    لم يُطلب لها. */
-/* DR طلبُ تركيبِ نقطة، وIR طلبُ صرفِ أصناف: الأولُ عن موضعٍ في المشاعر
-   والثاني عن قطعٍ تخرج من المستودع إلى عهدة شخص — فلا يُخلَط ترقيمُهما. */
-var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR', prep:'CR', asm:'AR', maint:'MR', issue:'IR' };
-var REQSEQ = { SR:0, DR:0, PR:0, CR:0, AR:0, MR:0, IR:0 };
+/* ═══ رموزُ الطلبات بلغة الميدان ═══
+   كانت الرموزُ اصطلاحًا داخليًّا: DR للتركيب وPR للفكّ وIR للصرف. والميدانُ
+   يقولها بمعانيها الإنجليزية المعروفة — فمن قرأ DR فهم «تسليمًا» لا
+   «تركيبًا»، فيُطلَب الشيءُ باسم غيره. صارت الرموزُ تقول ما تعنيه:
+     SR  Survey Request        زيارةُ مسح
+     IR  Installation Request  تركيبُ نقطة
+     MR  Maintenance Request   صيانةٌ في أثناء الموسم
+     UR  Unplug Request        فكٌّ بعد الموسم
+     DR  Delivery Request      صرفُ أصنافٍ لعهدة شخص
+     CR  Configuration Request تهيئةٌ في الورشة
+     AR  Assembly Request      تجميعٌ في الورشة
+   والأرقامُ القديمةُ تبقى في سجلّاتها كما كُتبت — لا تُبدَّل بأثرٍ رجعيّ؛
+   والعدّاداتُ تُنقَل عند الإقلاع فلا يتكرّر رقمٌ بمعنيين. */
+var REQ_PREFIX = { visit:'SR', install:'IR', dis:'UR', prep:'CR', asm:'AR', maint:'MR', issue:'DR' };
+var REQSEQ = { SR:0, IR:0, UR:0, CR:0, AR:0, MR:0, DR:0 };
 function reqNext(kind){
   var p = REQ_PREFIX[kind];
   if (!p) return '';
@@ -10119,30 +10144,38 @@ function asnPickHtml(){
     + '</div>'
     + '<div class="pop-body">'
     + '<div class="list" style="margin:14px 0 0;border:1px solid var(--line);border-radius:var(--radius-sm)">'
-    + Object.keys(LAYERS).map(function(k){
-        var L = LAYERS[k], S = layerStats(k);
+    /* الصيانةُ ليست طبقةً على الخريطة (تشترك مع التركيب في نقاطه) — فكانت
+       تغيب عن المنتقي، فلا يُسنَد MR إلا من «توزيع الفرق». صارت خيارًا
+       خامسًا يفتح طبقةَ التركيب ويضبط النوعَ صيانةً. */
+    + Object.keys(LAYERS).concat(['maint']).map(function(k){
+        var isM = k === 'maint';
+        var L = isM ? { n:WO_KINDS.maint.n, i:WO_KINDS.maint.i, c:LIFE.maint.c, kind:'maint' } : LAYERS[k];
+        var ready = isM ? (typeof asnReadyList === 'function' ? asnReadyList('maint').length : 0)
+                        : layerStats(k).ready;
         var dest = ASN_KIND_DEST[L.kind] || 'tech';
         return '<button type="button" class="list-item" style="width:100%;text-align:inherit;'
           + 'background:none;border:0;border-bottom:1px solid var(--line-2);cursor:pointer"'
           + ' data-akind="' + esc(k) + '">'
           + '<div class="li-main"><div class="li-t" style="color:' + L.c + '">'
-          +   L.i + ' ' + esc(t(L.n)) + '</div>'
+          +   L.i + ' ' + esc(t(L.n)) + ' <span class="num">' + esc(REQ_PREFIX[L.kind] || '') + '</span></div>'
           + '<div class="li-s">' + esc(t(dest === 'team' ? 'يُسنَد لفريقٍ يُوزَّع عليه'
                                                         : 'يُسنَد لفنيٍّ واحد'))
-          +   ' · ' + nm(S.ready) + ' ' + esc(t('جاهز')) + '</div></div>'
-          + '<div class="li-end">' + (S.ready ? pill('متاح','ok') : pill('لا نقاط','off')) + '</div>'
+          +   ' · ' + nm(ready) + ' ' + esc(t('جاهز')) + '</div></div>'
+          + '<div class="li-end">' + (ready ? pill('متاح','ok') : pill('لا نقاط','off')) + '</div>'
           + '</button>';
       }).join('')
     + '</div>'
-    + '<p class="hint">' + esc(t('لا تظهر في كلِّ طبقةٍ إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما رُكِّب.')) + '</p>'
+    + '<p class="hint">' + esc(t('لا تظهر في كلِّ طبقةٍ إلا نقاطُها: التركيبُ ما مُسح، والفكُّ ما سُلِّم، والصيانةُ ما رُكِّب.')) + '</p>'
     + '</div></div>';
 }
 
 /* اختيارُ النوع: تُفتَح طبقتُه، ويُضبَط من يستلمه، ويُبدأ التحديد */
 function asnPickKind(k){
-  var L = LAYERS[k];
+  /* الصيانةُ تستعير طبقةَ التركيب لأن نقاطَها نقاطُه المُركَّبة */
+  var isM = k === 'maint';
+  var L = isM ? { n:WO_KINDS.maint.n, i:WO_KINDS.maint.i, kind:'maint' } : LAYERS[k];
   if (!L) return;
-  FIELD_MODE = k;
+  FIELD_MODE = isM ? 'install' : k;
   ASN_MODE = ASN_KIND_DEST[L.kind] || 'tech';
   ASN_KIND = L.kind;
   selClear();
@@ -13707,7 +13740,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.53' + '.docx" download>⬇ '
+              +   'V15.54' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -13924,7 +13957,7 @@ var HELP_KEYWORDS = {
   users:     ['انشاء حساب فني','حساب دخول','يوزر وباسورد','كلمة مرور فني','انشاء مستخدم','حساب جديد','صلاحيات المستخدم','تعطيل حساب'],
   assign:    ['اسناد نقاط','توزيع نقاط','ارسال فريق','اسناد فني','اسناد تركيب','اسناد فك','اسناد زيارة'],
   req:       ['طلب زيارة','SR','رقم الطلب','اعتماد زيارة'],
-  solution:  ['اعتماد الحل','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
+  solution:  ['اعتماد الحل','IR','DR','اجهزة التركيب','اقتراح اجهزة','ايه اللي هيترکب'],
   qa:        ['اعتماد تركيب','تدقيق','رفض تركيب','مراجعة السيريال'],
   survey:    ['نموذج المسح','بيانات الزيارة','تسجيل زيارة','visits list','visit list','completed visits','export visits','reopen point','الزيارات اللى تمت','الزيارات المكتملة','اكسبورت الزيارات','تصدير الزيارات','النقاط اللى اتزارت','اعادة زيارة','ارجاع نقطة متعذرة'],
   svForm:    ['فورم المسح','املأ نموذج المسح'],

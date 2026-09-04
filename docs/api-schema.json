@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.53",
+  "app_version": "V15.54",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1422,7 +1422,8 @@
     "V15.50": "شريحة reqreg «سجل الإسنادات» في req (self): ترشيح بالنوع والحالة وبحث + تعديل (to/when) وحذف وقفز للخريطة. regList/regStatus/regSet/regDel. workReqEdit + جدول wos 9→6 أعمدة + زرّا تعديل وحذف. audit-fit يفكّ الشرائح. الجرد 36: audit-registry.",
     "V15.51": "hseSet/hseDel/hseRecount (may approve) + حقول التعديل وزر الحذف في سجل الحوادث. riskDel (المغلق لا يُحذَف). إصلاح فخ N() داخل value في ثلاثة حقول. الجرد 37: audit-del.",
     "V15.52": "ASN_READY + asnReadyList(kind) + asnQuick(kind) + asnReadyCard() في شريحة assign: صف لكل نوع بشرطه وعدده وزر يحدّد الجاهز ويفتح ASN_OPEN على نوعه (سقف 300). الجرد 38: audit-asnq.",
-    "V15.53": "نوع issue في طلبات الورشة بترقيم IR + حقل to (يُصرَف له) إلزامي؛ التنفيذ يقيّد حركة «صرف» باسم to. إصلاح بقايا TECHS الفارغة في mvBy وtechNames وnotifPhone. الجرد 39: audit-issue."
+    "V15.53": "نوع issue في طلبات الورشة بترقيم IR + حقل to (يُصرَف له) إلزامي؛ التنفيذ يقيّد حركة «صرف» باسم to. إصلاح بقايا TECHS الفارغة في mvBy وtechNames وnotifPhone. الجرد 39: audit-issue.",
+    "V15.54": "REQ_PREFIX بلغة الميدان: visit=SR install=IR maint=MR dis=UR issue=DR prep=CR asm=AR. ترحيل العدّادات عند الإقلاع (IR←DR، UR←PR، DR←IR). الصيانة خيار رابع في asnPickHtml/asnPickKind (تستعير طبقة install). الجرد 40: audit-codes."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2598,7 +2599,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 39,
+  "audits_total": 40,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3694,5 +3695,29 @@
       "techNames()",
       "notifPhone()"
     ]
+  },
+  "request_codes_v15_54": {
+    "map": {
+      "SR": "Survey Request — زيارة مسح",
+      "IR": "Installation Request — تركيب نقطة",
+      "MR": "Maintenance Request — صيانة في أثناء الموسم",
+      "UR": "Unplug Request — فك بعد الموسم",
+      "DR": "Delivery Request — صرف أصناف لعهدة شخص",
+      "CR": "Configuration Request — تهيئة",
+      "AR": "Assembly Request — تجميع"
+    },
+    "was": {
+      "install": "DR",
+      "dis": "PR",
+      "issue": "IR"
+    },
+    "migration": "عند سحب settings/reqSeq: REQSEQ[IR]=max(IR, DR_old) · [UR]=max(UR, PR_old) · [DR]=max(DR, IR_old)",
+    "legacy": "الأرقام المكتوبة في السجلات لا تُبدَّل بأثر رجعي"
+  },
+  "map_maint_assign_v15_54": {
+    "why": "الصيانة ليست طبقة — نقاطها نقاط install المُركَّبة",
+    "how": "asnPickHtml: Object.keys(LAYERS).concat(['maint'])؛ asnPickKind: FIELD_MODE='install' وASN_KIND='maint'",
+    "ready": "asnReadyList('maint')",
+    "badge": "رمز كل نوع يظهر بجانبه في المنتقي"
   }
 }
