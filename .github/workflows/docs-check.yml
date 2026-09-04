@@ -70,6 +70,8 @@ jobs:
         run: node scripts/audit-pmp.mjs
       - name: جرد الفجوات الإدارية — التغيير يحدّث خط الأساس، ومواعيد المعالم، والاحتياطي
         run: node scripts/audit-pmp2.mjs
+      - name: جرد إشعار الشركات — دفتر الجوالات وزر واتساب بنصوصه الثلاثة
+        run: node scripts/audit-wa.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

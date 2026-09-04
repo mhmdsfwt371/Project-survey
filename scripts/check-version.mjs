@@ -347,7 +347,8 @@ try {
  ['scripts/audit-hand.mjs',     'جردُ التسليم'],
  ['scripts/audit-qa.mjs',       'جردُ الجودة'],
  ['scripts/audit-pmp.mjs',      'جردُ مبادئ الإدارة'],
- ['scripts/audit-pmp2.mjs',     'جردُ الفجوات الإدارية']]).forEach(([f, name]) => {
+ ['scripts/audit-pmp2.mjs',     'جردُ الفجوات الإدارية'],
+ ['scripts/audit-wa.mjs',       'جردُ إشعار الشركات']]).forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ

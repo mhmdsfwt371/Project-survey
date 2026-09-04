@@ -66,12 +66,30 @@ try {
   (w.techsList ? w.techsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); if (x && x.sup) LIVE_NAMES.add(x.sup); });
   (w.crewsList ? w.crewsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
   (w.itemsList ? w.itemsList() : []).forEach(x => { if (x && x.name) LIVE_NAMES.add(x.name); });
+  /* أسماءُ الشركات بياناتٌ لا نصوصُ واجهة — وتُقطَع في العرض بثلاث نقاطٍ حين
+     تطول، فيُستثنى المقطوعُ كما يُستثنى الكامل. */
+  (w.STATE && w.STATE.sites || []).forEach(x => {
+    if (!x || !x.co) return;
+    LIVE_NAMES.add(x.co);
+    LIVE_NAMES.add(x.co.length > 30 ? x.co.slice(0, 29) + '\u2026' : x.co);
+    LIVE_NAMES.add(x.co.length > 34 ? x.co.slice(0, 33) + '\u2026' : x.co);
+  });
   (w.jobsList ? w.jobsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
   ((w.DATA && w.DATA.buyCats) || []).forEach(x => LIVE_NAMES.add(x));
   ((w.DATA && w.DATA.suppliers) || []).forEach(x => LIVE_NAMES.add(x));
   (w.STATE && w.STATE.sites || []).forEach(x => { if (x && x.co) LIVE_NAMES.add(x.co); if (x && x.name) LIVE_NAMES.add(x.name); });
 } catch (e) {}
-const isData = s => LIVE_NAMES.has(s) || DATA_AR.some(r => r.test(s));
+/* الاسمُ الطويلُ يُقطَع في العرض بثلاث نقاط — فيُقارَن أصلُه بالبادئة */
+const LIVE_ARR = [...LIVE_NAMES];
+/* «تسميةٌ — قيمةُ بيانات»: الجزءُ الأيسرُ مترجَمٌ والأيمنُ بيانات — فيُفحَص
+   الجزآن كلٌّ على حدة بدل عدِّ السطر كلِّه نصًّا غيرَ مترجَم. */
+const isData = s => {
+  if (LIVE_NAMES.has(s) || DATA_AR.some(r => r.test(s))) return true;
+  if (/\u2026$/.test(s) && LIVE_ARR.some(v => v.indexOf(s.slice(0, -1)) === 0)) return true;
+  const m = /^(.*?[=:]\s*)?(.+?)\s+\u2014\s+(.+)$/.exec(s);
+  if (m && !/[\u0600-\u06FF]/.test(m[2]) && (LIVE_NAMES.has(m[3]) || DATA_AR.some(r => r.test(m[3])))) return true;
+  return false;
+};
 
 /* نصوصُ الواجهة الظاهرة: ما بين الوسوم وقيمُ الخصائص المقروءة */
 function arabicIn(root){
