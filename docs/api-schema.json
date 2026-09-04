@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.54",
+  "app_version": "V15.55",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1423,7 +1423,8 @@
     "V15.51": "hseSet/hseDel/hseRecount (may approve) + حقول التعديل وزر الحذف في سجل الحوادث. riskDel (المغلق لا يُحذَف). إصلاح فخ N() داخل value في ثلاثة حقول. الجرد 37: audit-del.",
     "V15.52": "ASN_READY + asnReadyList(kind) + asnQuick(kind) + asnReadyCard() في شريحة assign: صف لكل نوع بشرطه وعدده وزر يحدّد الجاهز ويفتح ASN_OPEN على نوعه (سقف 300). الجرد 38: audit-asnq.",
     "V15.53": "نوع issue في طلبات الورشة بترقيم IR + حقل to (يُصرَف له) إلزامي؛ التنفيذ يقيّد حركة «صرف» باسم to. إصلاح بقايا TECHS الفارغة في mvBy وtechNames وnotifPhone. الجرد 39: audit-issue.",
-    "V15.54": "REQ_PREFIX بلغة الميدان: visit=SR install=IR maint=MR dis=UR issue=DR prep=CR asm=AR. ترحيل العدّادات عند الإقلاع (IR←DR، UR←PR، DR←IR). الصيانة خيار رابع في asnPickHtml/asnPickKind (تستعير طبقة install). الجرد 40: audit-codes."
+    "V15.54": "REQ_PREFIX بلغة الميدان: visit=SR install=IR maint=MR dis=UR issue=DR prep=CR asm=AR. ترحيل العدّادات عند الإقلاع (IR←DR، UR←PR، DR←IR). الصيانة خيار رابع في asnPickHtml/asnPickKind (تستعير طبقة install). الجرد 40: audit-codes.",
+    "V15.55": "مراجعة أخيرة: usrDel يمنع الحذف مع مهام/طلبات مفتوحة؛ itemDel يمنع مع طلب ورشة مفتوح أو حل؛ coRename؛ تنبيه موعد ماضٍ؛ مؤشر مهام على حسابات معطّلة؛ store += wos/stock/ships؛ acct += ipc/budget/evm؛ حراسة ضبط الميزانية وتجميد الأساس؛ توحيد 3 مفاتيح متضاربة و3 أردية منسوخة. الجرد 41: audit-invariants."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2599,7 +2600,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 40,
+  "audits_total": 41,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3719,5 +3720,52 @@
     "how": "asnPickHtml: Object.keys(LAYERS).concat(['maint'])؛ asnPickKind: FIELD_MODE='install' وASN_KIND='maint'",
     "ready": "asnReadyList('maint')",
     "badge": "رمز كل نوع يظهر بجانبه في المنتقي"
+  },
+  "final_review_v15_55": {
+    "code": {
+      "dup_functions": 0,
+      "dup_globals": 0,
+      "console_log": 0,
+      "todo": 0,
+      "queue_kinds_unmapped": 0
+    },
+    "business_invariants": {
+      "tested": 10,
+      "broken_found": 3,
+      "fixed": [
+        "usrDel مع مهام مفتوحة",
+        "itemDel مع طلب/حل",
+        "coRename"
+      ]
+    },
+    "features": {
+      "store_added": [
+        "wos",
+        "stock",
+        "ships"
+      ],
+      "acct_added": [
+        "ipc",
+        "budget",
+        "evm"
+      ],
+      "guards_added": [
+        "budget data-cfg",
+        "evm data-baseset"
+      ]
+    },
+    "i18n": {
+      "keys": 3242,
+      "en_with_arabic": 0,
+      "en_missing_ur": 0,
+      "conflicting_fixed": 3,
+      "ur_copied_fixed": 3,
+      "remaining_copies": "أسماء أماكن ورموز (عرفات، مشاعر، ٪، م…)"
+    },
+    "pwa": {
+      "manifest": "standalone · 3 icons · ar/rtl",
+      "sw": "skipWaiting+claim · 10 files",
+      "size_kb": 1527
+    }
   }
 }
