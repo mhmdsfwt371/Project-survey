@@ -84,6 +84,8 @@ jobs:
         run: node scripts/audit-registry.mjs
       - name: جرد التصحيح والحذف — ما يُضاف يُصحَّح ويُحذَف
         run: node scripts/audit-del.mjs
+      - name: جرد الجاهز للإسناد — لكل نوع طلب بابه من التوزيع
+        run: node scripts/audit-asnq.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

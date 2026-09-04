@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.51</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.52</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2862,6 +2862,21 @@ en:{
  'تصحيحُ سجل الحوادث للمهندس وحده':'Correcting the incident log is for the engineer only',
  'حذفُ الحادث للمهندس وحده':'Deleting an incident is for the engineer only',
  'حُذف الحادث':'Incident deleted',
+
+ /* V15.52 — الجاهزُ للإسناد */
+ 'جاهزٌ للإسناد — لكلِّ نوعِ طلب':'Ready to assign — for every request kind',
+ 'النوع والشرط':'Kind and condition',
+ 'مفتوحٌ الآن':'Open now',
+ 'لم تُزر ولم تُسنَد بعد':'Not visited and not yet assigned',
+ 'اعتُمدت زيارتُها وحلُّها ولم تُركَّب':'Its visit and solution are approved and it is not installed',
+ 'رُكِّبت واعتُمدت — تُخدَم في أثناء الموسم':'Installed and approved — serviced during the season',
+ 'سُلِّمت بمحضرٍ ولم تُفَكّ':'Handed over with a record and not dismantled',
+ 'لا جاهزَ الآن':'None ready now',
+ 'لا نقطةَ جاهزةً لهذا النوع':'No point is ready for this kind',
+ 'نقطةً جاهزةً حُدِّدت':'ready points selected',
+ 'بقيت — أسندها بعدها':'remain — assign them next',
+ 'إنشاءُ الطلب للمهندس وحده':'Creating a request is for the engineer only',
+ 'الزرُّ يحدّد الجاهزَ كلَّه ويفتح لوحَ الإسناد على نوعه — والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه.':'The button selects everything ready and opens the assignment sheet on its kind — the map remains the other route for a specific selection.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4917,6 +4932,19 @@ ur:{
  'تصحيحُ سجل الحوادث للمهندس وحده':'واقعات کے ریکارڈ کی درستی صرف انجینئر کے لیے',
  'حذفُ الحادث للمهندس وحده':'واقعہ حذف کرنا صرف انجینئر کے لیے',
  'حُذف الحادث':'واقعہ حذف ہو گیا',
+ 'جاهزٌ للإسناد — لكلِّ نوعِ طلب':'تفویض کے لیے تیار — ہر قسم کی درخواست',
+ 'النوع والشرط':'قسم اور شرط',
+ 'مفتوحٌ الآن':'ابھی کھلا',
+ 'لم تُزر ولم تُسنَد بعد':'دورہ نہیں ہوا اور ابھی تفویض نہیں',
+ 'اعتُمدت زيارتُها وحلُّها ولم تُركَّب':'دورہ اور حل منظور اور ابھی نصب نہیں',
+ 'رُكِّبت واعتُمدت — تُخدَم في أثناء الموسم':'نصب اور منظور — سیزن کے دوران خدمت',
+ 'سُلِّمت بمحضرٍ ولم تُفَكّ':'دستاویز کے ساتھ حوالے اور ڈسمینٹل نہیں',
+ 'لا جاهزَ الآن':'ابھی کوئی تیار نہیں',
+ 'لا نقطةَ جاهزةً لهذا النوع':'اس قسم کے لیے کوئی پوائنٹ تیار نہیں',
+ 'نقطةً جاهزةً حُدِّدت':'تیار پوائنٹس منتخب',
+ 'بقيت — أسندها بعدها':'باقی — انہیں بعد میں تفویض کریں',
+ 'إنشاءُ الطلب للمهندس وحده':'درخواست بنانا صرف انجینئر کے لیے',
+ 'الزرُّ يحدّد الجاهزَ كلَّه ويفتح لوحَ الإسناد على نوعه — والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه.':'بٹن تمام تیار منتخب کرتا ہے اور اسی قسم پر تفویض شیٹ کھولتا ہے — مخصوص انتخاب کے لیے نقشہ دوسرا راستہ ہے۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -10323,6 +10351,81 @@ function asnTeamCommit(){
   render(1);
 }
 
+
+/* ═══ الجاهزُ لكلِّ نوعِ طلب ═══
+   كان إنشاءُ الطلب يبدأ من الخريطة دائمًا: تُفتَح، وتُبدَّل الطبقةُ إلى
+   النوع المطلوب، وتُحدَّد النقاطُ واحدةً واحدةً أو بـ«حدّد الكل»، ثم يُفتَح
+   اللوح. فمن أراد إسنادَ فكِّ ما سُلِّم لم يعرف كم هو ولا أين يبدأ — وسُئل:
+   «أين طلبُ التركيب وطلبُ الفكّ؟ أمِن الخريطة فقط؟».
+     صار في «توزيع الفرق» صفٌّ لكلِّ نوع: كم نقطةً جاهزةً له الآن، وما
+   الشرطُ الذي يجعلها جاهزة، وزرٌّ واحدٌ يحدّدها كلَّها ويفتح لوحَ الإسناد
+   على نوعها. والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه. */
+var ASN_READY = {
+  visit:   { layer:'survey',  why:'لم تُزر ولم تُسنَد بعد',
+             ok:function(x){ return !svDone(STATE.recs[x.id]); } },
+  install: { layer:'install', why:'اعتُمدت زيارتُها وحلُّها ولم تُركَّب',
+             ok:function(x){ var so = solutionOf(x.id);
+                             return !!so && so.status === 'معتمد' && !insDone(x.id); } },
+  maint:   { layer:'install', why:'رُكِّبت واعتُمدت — تُخدَم في أثناء الموسم',
+             ok:function(x){ return insDone(x.id); } },
+  dis:     { layer:'dis',     why:'سُلِّمت بمحضرٍ ولم تُفَكّ',
+             ok:function(x){ return (typeof handDone === 'function') && handDone(x.id) && !disDone(x.id); } }
+};
+function asnReadyList(kind){
+  var R = ASN_READY[kind];
+  if (!R) return [];
+  return (STATE.sites || []).filter(function(x){
+    return !asnOf(x.id) && R.ok(x);
+  });
+}
+/* زرٌّ واحد: يحدّد الجاهزَ ويفتح اللوحَ على نوعه في الخريطة */
+var ASN_QCAP = 300;
+function asnQuick(kind){
+  if (!may('approve')){ toast(t('إنشاءُ الطلب للمهندس وحده')); return; }
+  var L = asnReadyList(kind);
+  if (!L.length){
+    toast(t('لا نقطةَ جاهزةً لهذا النوع') + ' — ' + t(ASN_READY[kind].why));
+    return;
+  }
+  selClear();
+  var n = 0;
+  L.forEach(function(x){ if (n < ASN_QCAP){ SEL[x.id] = 1; SEL_N++; n++; } });
+  ASN_KIND = kind;
+  FIELD_MODE = ASN_READY[kind].layer;
+  ASN_MODE = (ASN_KIND_DEST[kind] === 'team') ? 'team' : 'tech';
+  ASN_OPEN = true;
+  goPage('map');
+  render(1);
+  /* إعادةُ الطلاء تفشل إن لم تُنشَأ الخريطةُ بعدُ — والرسمُ التالي يتولّاها */
+  if (typeof mapPaint === 'function'){
+    try { mapPaint(); }
+    catch (e){ if (typeof softErr === 'function') softErr('طلاء الخريطة', e, ''); }
+  }
+  toast(nm(n) + ' ' + t('نقطةً جاهزةً حُدِّدت')
+        + (L.length > n ? ' \u00b7 ' + nm(L.length - n) + ' ' + t('بقيت — أسندها بعدها') : ''));
+}
+function asnReadyCard(){
+  var rows = Object.keys(ASN_READY).map(function(k){
+    var K = WO_KINDS[k] || { i:'', n:k };
+    var n = asnReadyList(k).length;
+    var open = 0;
+    Object.keys(STATE.tasks || {}).forEach(function(t2){
+      var x = STATE.tasks[t2];
+      if (x && x.kind === k && x.status !== 'معتمد') open++;
+    });
+    return [K.i + ' <strong>' + esc(t(K.n)) + '</strong><br>'
+              + '<span class="hint" style="margin:0">' + esc(t(ASN_READY[k].why)) + '</span>',
+            n ? '<b class="num">' + nm(n) + '</b>' : N(0),
+            N(open),
+            n && may('approve')
+              ? btn(t('أسند') + ' \u2190', 'btn-primary btn-sm', ' data-asnq="' + k + '"')
+              : '<span class="hint" style="margin:0">' + esc(t(n ? '—' : 'لا جاهزَ الآن')) + '</span>'];
+  });
+  return cardFlush('\u{1F4E6} ' + t('جاهزٌ للإسناد — لكلِّ نوعِ طلب'),
+      table(['النوع والشرط','جاهز','مفتوحٌ الآن',''], rows)
+      + '<p class="hint" style="margin:10px 0 0">'
+      + esc(t('الزرُّ يحدّد الجاهزَ كلَّه ويفتح لوحَ الإسناد على نوعه — والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه.')) + '</p>');
+}
 function asnCommit(){
   if (ASN_MODE === 'team'){ asnTeamCommit(); return; }
   var to   = curTech();
@@ -10476,6 +10579,7 @@ PAGE.req = { m:'الطلبات والمسح', t:'الطلبات والتوزيع
 
     return stats([['الإجمالي', N(totAll)], ['ممسوح', N(svAll), 'acc'],
                   ['مُسند', N(asnAll), 'wrn'], ['متاح', N(totAll - svAll - asnAll), 'ok']])
+      + asnReadyCard()
       + cardFlush('المتاح لكل مشعرٍ ونوع',
           table(['المشعر','النوع','الإجمالي','ممسوح','مُسند','متاح'], rows,
                 ['الإجمالي','', N(totAll), N(svAll), N(asnAll), N(totAll - svAll - asnAll)]),
@@ -13585,7 +13689,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.51' + '.docx" download>⬇ '
+              +   'V15.52' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -22553,6 +22657,8 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  var aq = e.target.closest('[data-asnq]');
+  if (aq){ asnQuick(aq.getAttribute('data-asnq')); return; }
   var hsd = e.target.closest('[data-hsedel]');
   if (hsd){ hseDel(+hsd.getAttribute('data-hsedel')); return; }
   var rkd = e.target.closest('[data-rkdel]');

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.51",
+  "app_version": "V15.52",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1420,7 +1420,8 @@
     "V15.48": "سجل SHEETS: عشرة لوحات تُغلَق بالنقر خارجها (الأعلى أولًا)، وزر كل لوح يتولّاه. جدول المعالم 4 أعمدة لغير may('settings'). الجردان 32 و33: audit-dismiss وaudit-fit.",
     "V15.49": "langSync() يزامن langSel + langTop + data-setlang + #lgLangs في كل setLang. وصل data-vlgd/data-vlgq (VLOG_D/VLOG_Q كانا يُقرآن ولا يُكتبان). الجردان 34 و35: audit-lang2 وaudit-buttons.",
     "V15.50": "شريحة reqreg «سجل الإسنادات» في req (self): ترشيح بالنوع والحالة وبحث + تعديل (to/when) وحذف وقفز للخريطة. regList/regStatus/regSet/regDel. workReqEdit + جدول wos 9→6 أعمدة + زرّا تعديل وحذف. audit-fit يفكّ الشرائح. الجرد 36: audit-registry.",
-    "V15.51": "hseSet/hseDel/hseRecount (may approve) + حقول التعديل وزر الحذف في سجل الحوادث. riskDel (المغلق لا يُحذَف). إصلاح فخ N() داخل value في ثلاثة حقول. الجرد 37: audit-del."
+    "V15.51": "hseSet/hseDel/hseRecount (may approve) + حقول التعديل وزر الحذف في سجل الحوادث. riskDel (المغلق لا يُحذَف). إصلاح فخ N() داخل value في ثلاثة حقول. الجرد 37: audit-del.",
+    "V15.52": "ASN_READY + asnReadyList(kind) + asnQuick(kind) + asnReadyCard() في شريحة assign: صف لكل نوع بشرطه وعدده وزر يحدّد الجاهز ويفتح ASN_OPEN على نوعه (سقف 300). الجرد 38: audit-asnq."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2596,7 +2597,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 37,
+  "audits_total": 38,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3660,5 +3661,17 @@
     ],
     "guard": "may('approve') للتعديل والحذف",
     "why": "HSE.lost كان عدّادًا يُزاد عند الإضافة فقط — صار يُحسب من incidents"
+  },
+  "assign_ready_v15_52": {
+    "card": "asnReadyCard() في assign",
+    "conditions": {
+      "visit": "!svDone && !asnOf",
+      "install": "solution.status=معتمد && !insDone && !asnOf",
+      "maint": "insDone && !asnOf",
+      "dis": "handDone && !disDone && !asnOf"
+    },
+    "action": "asnQuick(kind): selClear → SEL (≤300) → ASN_KIND/FIELD_MODE/ASN_MODE → ASN_OPEN → goPage('map')",
+    "guard": "may('approve')",
+    "note": "الخريطة تبقى الطريق الآخر للاختيار المخصّص"
   }
 }
