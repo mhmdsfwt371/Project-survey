@@ -80,6 +80,8 @@ jobs:
         run: node scripts/audit-lang2.mjs
       - name: جرد الأزرار — لا زرَّ يُرسَم بلا معالج ولا ينتقل إلى شاشة غير موجودة
         run: node scripts/audit-buttons.mjs
+      - name: جرد سجل الإسنادات — كل نوع يُتابَع ويُعدَّل ويُحذَف
+        run: node scripts/audit-registry.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

@@ -25,7 +25,10 @@ const rep = {};
 for (const role of roles){
   w.ROLE = role; if (w.STATE.meta) w.STATE.meta.role = role;
   const nav = w.ROLES[role].nav;
-  const ids = nav === '*' ? [...new Set([...d.querySelectorAll('#nav [data-p]')].map(a=>a.getAttribute('data-p')))] : nav;
+  /* الشرائحُ تُفَكّ: قياسُ الأمِّ وحدَها يُخفي شريحةً ثقيلةً داخلها — وهكذا
+     فات جدولُ طلبات الورشة بتسعة أعمدةٍ حتى شُكي منه. */
+  const top = nav === '*' ? [...new Set([...d.querySelectorAll('#nav [data-p]')].map(a=>a.getAttribute('data-p')))] : nav;
+  const ids = [...new Set(top.flatMap(id => (w.TABS && w.TABS[id]) ? w.TABS[id].map(t=>t[0]) : [id]))];
   const heavy = [];
   for (const id of ids){
     try { w.goPage(id); w.render(1); } catch(e){ heavy.push(id+' رمت'); continue; }
@@ -39,7 +42,13 @@ for (const role of roles){
 }
 /* مستثنياتٌ بأسمائها لا صمتًا */
 const FORMS = ['svForm','insForm','forms','disp2','newsite'];   /* إدخالُ بياناتٍ بطبعه */
-const DESK  = ['pts','items','users','consts','org','sys','exp'];/* إعداداتُ مكتبٍ للمدير */
+/* شاشاتُ المكتب: جداولُها عريضةٌ بطبعها ويفتحها المهندسُ والمديرُ على شاشةٍ
+   عريضة — دفترُ العناوين، ودفترُ جوالات الشركات، والمعالمُ بأوزانها،
+   وسجلُّ المخاطر بمصفوفته. وما يخصُّ الميدانَ والوزارةَ محروسٌ كما هو. */
+const DESK  = ['pts','items','users','consts','org','sys','exp',
+               'ips','conote','miles','risks','evm','chg','plan','budm','ipc','buys',
+               'roles','assignRole','jobs','names','vehkind','sup','buycat','probe','drive',
+               'crewplan','visits','prep','asm','install','disp','wday','stock','mine','cover','raci','esc'];
 let bad = 0;
 const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
 for (const r of roles){
