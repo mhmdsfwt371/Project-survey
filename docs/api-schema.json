@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.43",
+  "app_version": "V15.44",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1412,7 +1412,8 @@
     "V15.40": "جدول «ما له عنوان — بالمشعر والنوع» في شاشة العناوين. توثيق فحص legacy/v13.99: 546 بادئة في العمود 20، كلها MIN/CMP، مطابقة للبذرة الحالية 546/546.",
     "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand.",
     "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة.",
-    "V15.43": "browser-test.mjs (Playwright/Chromium هاتف لمسي + 5 صور) وrules-test.mjs (rules-unit-testing على المحاكي) وreal-tests.yml. Leaflet في vendor/leaflet ومخزّنة في sw.js. إصلاحات كشفها المتصفح الحقيقي: pop position:fixed؛ pop-btns 44px؛ أهداف اللمس تحت max-width:760 أيضًا."
+    "V15.43": "browser-test.mjs (Playwright/Chromium هاتف لمسي + 5 صور) وrules-test.mjs (rules-unit-testing على المحاكي) وreal-tests.yml. Leaflet في vendor/leaflet ومخزّنة في sw.js. إصلاحات كشفها المتصفح الحقيقي: pop position:fixed؛ pop-btns 44px؛ أهداف اللمس تحت max-width:760 أيضًا.",
+    "V15.44": "inboxItems/inboxCard «قراراتك اليوم» (8 عدّادات بأزرار قفز) في mywork للمعتمِد وفي now. سجل المخاطر حي: risksList/riskSave/riskSet/riskAdd + settings/risks + riskSignals. viewer += miles, ncr؛ حراسة ncrAdd (edit) وncrClose (approve) في الواجهة والدوال. الجرد 29: audit-pmp."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2587,7 +2588,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 28,
+  "audits_total": 29,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3418,6 +3419,62 @@
       "pop anchored to #mapBox bottom not viewport",
       "pop-btns 40px (specific rule wins)",
       "touch targets only under pointer:coarse"
+    ]
+  },
+  "pm_inbox_v15_44": {
+    "fn": "inboxItems() → [label,count,page,tone] ×8",
+    "where": [
+      "mywork (may approve)",
+      "now (may approve)"
+    ],
+    "counts": [
+      "S.pending",
+      "solution مقترح",
+      "inss مُركّب غير معتمد",
+      "handReady",
+      "NCRS مفتوحة",
+      "CHANGES مقدَّم",
+      "tasks متأخرة",
+      "S.revisit"
+    ]
+  },
+  "risk_register_v15_44": {
+    "store": "STATE.risks ← settings/risks (بذرة RISKS أول مرة)",
+    "fns": [
+      "risksList",
+      "riskSave",
+      "riskSet(id,patch)",
+      "riskAdd()",
+      "riskSignals()"
+    ],
+    "ui": "data-rkp/rki/rko/rkst تعديل مباشر؛ data-rkadd إضافة؛ حراسة may('settings')",
+    "signals": [
+      "SPI<0.9",
+      "CPI<0.9",
+      "زيارات متعذّرة",
+      "مردودة",
+      "NCR جوهرية مفتوحة",
+      "مهام متأخرة",
+      "بلا شبكة >100"
+    ]
+  },
+  "pmp_review_v15_44": {
+    "present_and_fed": [
+      "Integration: chg + baseline",
+      "Scope: baseline/sites",
+      "Schedule: pace/miles/EVM SPI",
+      "Cost: budget/ipc/buys/EVM CPI",
+      "Quality: qa/ncr",
+      "Resources: crews/perf",
+      "Communications: conote/notif/repcenter",
+      "Risk: risks (حي الآن) + signals",
+      "Procurement: buys/sup/ships",
+      "Stakeholders: RACI/org"
+    ],
+    "gaps": [
+      "approved change → baseline auto-update",
+      "milestone dates default empty",
+      "contingency reserve not tracked"
     ]
   }
 }
