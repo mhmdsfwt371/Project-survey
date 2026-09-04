@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.44",
+  "app_version": "V15.45",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1413,7 +1413,8 @@
     "V15.41": "التسليم: inss[id].hand {no,at,by,to,note,warranty} + handNext/handSave/handOf/handReady/handDone/handBlock. محضر نقطة (handDocSite) ومحضر شركة (handDocCo) يُعرضان ويُطبعان. حالة LIFE.handed بين installed وmaint، وLAYERS.dis.pass يشترط handDone. الجرد 27: audit-hand.",
     "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة.",
     "V15.43": "browser-test.mjs (Playwright/Chromium هاتف لمسي + 5 صور) وrules-test.mjs (rules-unit-testing على المحاكي) وreal-tests.yml. Leaflet في vendor/leaflet ومخزّنة في sw.js. إصلاحات كشفها المتصفح الحقيقي: pop position:fixed؛ pop-btns 44px؛ أهداف اللمس تحت max-width:760 أيضًا.",
-    "V15.44": "inboxItems/inboxCard «قراراتك اليوم» (8 عدّادات بأزرار قفز) في mywork للمعتمِد وفي now. سجل المخاطر حي: risksList/riskSave/riskSet/riskAdd + settings/risks + riskSignals. viewer += miles, ncr؛ حراسة ncrAdd (edit) وncrClose (approve) في الواجهة والدوال. الجرد 29: audit-pmp."
+    "V15.44": "inboxItems/inboxCard «قراراتك اليوم» (8 عدّادات بأزرار قفز) في mywork للمعتمِد وفي now. سجل المخاطر حي: risksList/riskSave/riskSet/riskAdd + settings/risks + riskSignals. viewer += miles, ncr؛ حراسة ncrAdd (edit) وncrClose (approve) في الواجهة والدوال. الجرد 29: audit-pmp.",
+    "V15.45": "firestore.rules: isBoss يقرأ token.get('email','') (الوصول المباشر لحقل غائب يُسقط التقييم كله). rules-test: authenticatedContext ببريد + اختبار الرئيس + حساب بلا بريد. post-deploy: عنوان Pages /Project-survey/ بلا شرطة. setup-java@v5."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -3476,5 +3477,11 @@
       "milestone dates default empty",
       "contingency reserve not tracked"
     ]
+  },
+  "ci_findings_v15_45": {
+    "rules_job": "سقط لأن التوكنات بلا email → خطأ تقييم → رفض كل شيء؛ ثغرة إنتاج كامنة أُغلقت بـtoken.get",
+    "post_deploy": "العنوان الصحيح https://mhmdsfwt371.github.io/Project-survey/ (بلا الشرطة الأولى)",
+    "how_read": "الواجهة العامة: actions/runs + jobs + check-runs/{id}/annotations — السجل الكامل يحتاج actions:read",
+    "deploy_rules": "Deploy Firestore Rules → success (1705a7d)"
   }
 }

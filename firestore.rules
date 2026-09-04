@@ -3,8 +3,11 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{db}/documents {
 
+    // token.email يُقرأ بـget بقيمةٍ افتراضية: الوصولُ المباشرُ إلى حقلٍ غائبٍ
+    // في القواعد خطأٌ يُسقِط التقييمَ كلَّه فيُرفَض كلُّ شيء — وقد أسقط اختبارَ
+    // المحاكي لأن حساباتِه بلا بريد؛ وسيُسقِط أيَّ حسابٍ مستقبليٍّ بلا بريد.
     function isBoss(){ return request.auth != null
-        && request.auth.token.email == 'mohammed.safwat@afaqy.com'; }
+        && request.auth.token.get('email', '') == 'mohammed.safwat@afaqy.com'; }
     function uDoc()  { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
     function ok()    { return isBoss() || (request.auth != null && uDoc().active == true); }
     function role()  { return isBoss() ? 'admin' : uDoc().role; }

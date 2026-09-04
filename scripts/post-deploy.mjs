@@ -12,7 +12,10 @@ import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 
-const PAGES = process.env.NSK_URL || 'https://mhmdsfwt371.github.io/-Project-survey/';
+/* عنوانُ النشر بلا الشرطة الأولى: اسمُ المستودع «-Project-survey» لكنّ Pages
+   تنشره على «/Project-survey/» — والفحصُ الأوّلُ انتظر ستَّ دقائقَ على عنوانٍ
+   لا يوجد ثم قال «النشرُ لم يصل». يُقرأ من واجهة المستودع: html_url. */
+const PAGES = process.env.NSK_URL || 'https://mhmdsfwt371.github.io/Project-survey/';
 const RAW   = 'https://raw.githubusercontent.com/mhmdsfwt371/-Project-survey/main/';
 const want  = (/const CACHE = 'nusuk-survey-(v[\d.]+)'/.exec(readFileSync('sw.js','utf8')) || [])[1];
 if (!want){ console.log('✗ لا نسخةَ في sw.js المحلي'); process.exit(1); }

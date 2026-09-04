@@ -34,7 +34,9 @@ await env.withSecurityRulesDisabled(async (c) => {
   await setDoc(doc(db, 'inss/S1'),    { id:'S1', status:'مُركّب', approved:false, parts:{} });
   await setDoc(doc(db, 'settings/points'), { tgtSurvey: 10 });
 });
-const as = (uid) => env.authenticatedContext(uid).firestore();
+/* الحسابُ الحقيقيُّ يدخل ببريدٍ — فيُعطى بريدٌ هنا كما في الإنتاج، وإلا اختلف
+   ما يُختبَر عمّا يُنشَر */
+const as = (uid) => env.authenticatedContext(uid, { email: uid + '@nusuk.test' }).firestore();
 const anon = env.unauthenticatedContext().firestore();
 const rec = { id:'S2', access:'تم الوصول', by:'فني', at:1 };
 
@@ -70,6 +72,13 @@ await deny('الفنيُّ لا يقرأ حسابَ غيره',             getDo
 await ok  ('المهندسُ يعدّل الحسابات',               updateDoc(doc(as('eng'), 'users/tec'), { job:'j_tech' }));
 await deny('لا أحدَ يحذف حسابًا — ولا المهندس',     deleteDoc(doc(as('eng'), 'users/tec')));
 
+
+console.log('\n══ الرئيسُ ببريده — يُعرَف من بريده لا من وثيقة حساب ══');
+const boss = env.authenticatedContext('boss-uid', { email: 'mohammed.safwat@afaqy.com' }).firestore();
+await ok('الرئيسُ يقرأ بلا وثيقةِ حساب — يُعرَف من بريده', getDoc(doc(boss, 'recs/S1')));
+await ok('ويكتب الإعدادات',                                setDoc(doc(boss, 'settings/points'), { tgtSurvey: 1 }));
+/* وحسابٌ بلا بريدٍ في رمزه لا يُسقِط التقييمَ كلَّه — يُقرأ بريدُه بقيمةٍ افتراضية */
+await ok('حسابٌ بلا بريدٍ في رمزه يقرأ بدوره لا يُرفَض خطأً', getDoc(doc(env.authenticatedContext('tec').firestore(), 'recs/S1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
