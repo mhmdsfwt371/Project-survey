@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.50</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.51</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2857,6 +2857,11 @@ en:{
  'معروضٌ الآن':'Shown now',
  'إسنادٌ منجَزٌ لا يُعدَّل':'A completed assignment is not edited',
  'زِيرت النقطةُ فعلًا — اعتمد الزيارةَ أو ردّها بدل الحذف':'The point was actually visited — approve or return the visit instead of deleting',
+ 'خطرٌ مغلقٌ يبقى في السجل شاهدًا — لا يُحذَف':'A closed risk stays in the register as a record — it is not deleted',
+ 'حُذف الخطر':'Risk deleted',
+ 'تصحيحُ سجل الحوادث للمهندس وحده':'Correcting the incident log is for the engineer only',
+ 'حذفُ الحادث للمهندس وحده':'Deleting an incident is for the engineer only',
+ 'حُذف الحادث':'Incident deleted',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4907,6 +4912,11 @@ ur:{
  'معروضٌ الآن':'ابھی دکھایا گیا',
  'إسنادٌ منجَزٌ لا يُعدَّل':'مکمل تفویض میں ترمیم نہیں',
  'زِيرت النقطةُ فعلًا — اعتمد الزيارةَ أو ردّها بدل الحذف':'پوائنٹ کا دورہ ہو چکا — حذف کے بجائے منظور یا واپس کریں',
+ 'خطرٌ مغلقٌ يبقى في السجل شاهدًا — لا يُحذَف':'بند خطرہ ریکارڈ کے طور پر رجسٹر میں رہتا ہے — حذف نہیں ہوتا',
+ 'حُذف الخطر':'خطرہ حذف ہو گیا',
+ 'تصحيحُ سجل الحوادث للمهندس وحده':'واقعات کے ریکارڈ کی درستی صرف انجینئر کے لیے',
+ 'حذفُ الحادث للمهندس وحده':'واقعہ حذف کرنا صرف انجینئر کے لیے',
+ 'حُذف الحادث':'واقعہ حذف ہو گیا',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -12108,13 +12118,14 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                       '<strong>' + esc(t(r.t)) + '</strong><br>'
                         + '<span class="hint" style="margin:0">' + esc(t(r.plan || '')) + '</span>',
                       esc(t(r.cat)),
-                      ed ? '<input type="number" min="1" max="5" value="' + N(r.p) + '" data-rkp="' + esc(r.id) + '" style="width:58px">' : N(r.p),
-                      ed ? '<input type="number" min="1" max="5" value="' + N(r.i) + '" data-rki="' + esc(r.id) + '" style="width:58px">' : N(r.i),
+                      ed ? '<input type="number" min="1" max="5" value="' + esc(String(cfgN(r.p))) + '" data-rkp="' + esc(r.id) + '" style="width:58px">' : N(r.p),
+                      ed ? '<input type="number" min="1" max="5" value="' + esc(String(cfgN(r.i))) + '" data-rki="' + esc(r.id) + '" style="width:58px">' : N(r.i),
                       '<span class="pill ' + L.c + '">' + nm(sc) + ' · ' + esc(t(L.t)) + '</span>',
                       esc(t(r.resp)),
                       ed ? '<input value="' + esc(r.own || '') + '" data-rko="' + esc(r.id) + '" dir="auto" style="width:110px">' : esc(t(r.own)),
-                      ed ? '<select data-rkst="' + esc(r.id) + '"><option value="مفتوح"' + (r.st === 'مفتوح' ? ' selected' : '') + '>' + esc(t('مفتوح')) + '</option><option value="مغلق"' + (r.st === 'مغلق' ? ' selected' : '') + '>' + esc(t('مغلق')) + '</option></select>'
-                         : pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn')];
+                      (ed ? btn('🗑','btn-quiet btn-sm',' data-rkdel="' + esc(r.id) + '" aria-label="' + esc(t('حذف')) + '"') : '')
+                      + (ed ? '<select data-rkst="' + esc(r.id) + '"><option value="مفتوح"' + (r.st === 'مفتوح' ? ' selected' : '') + '>' + esc(t('مفتوح')) + '</option><option value="مغلق"' + (r.st === 'مغلق' ? ' selected' : '') + '>' + esc(t('مغلق')) + '</option></select>'
+                         : pill(r.st, r.st === 'مغلق' ? 'ok' : 'warn'))];
             })),
           btn('⬇ إكسل — سجل المخاطر','btn-secondary btn-sm',' data-xls="risks"'))
 
@@ -12418,6 +12429,18 @@ function riskSet(id, patch){
   riskSave();
   logEvent('خطر — ' + id + ' \u00b7 ' + Object.keys(patch).join('،'));
 }
+/* الخطرُ المسجَّلُ بالخطأ يُحذَف — والمغلقُ يبقى في السجل شاهدًا */
+function riskDel(id){
+  if (!may('settings')){ toast(t('سجلُّ المخاطر للمهندس وحده')); return; }
+  var L = risksList(), x = L.filter(function(r){ return r.id === id; })[0];
+  if (!x) return;
+  if (x.st === 'مغلق'){ toast(t('خطرٌ مغلقٌ يبقى في السجل شاهدًا — لا يُحذَف')); return; }
+  STATE.risks = L.filter(function(r){ return r.id !== id; });
+  riskSave();
+  logEvent('حذف خطر — ' + id + ' \u00b7 ' + x.t);
+  toast(t('حُذف الخطر'));
+  render(1);
+}
 function riskAdd(){
   if (!may('settings')){ toast(t('سجلُّ المخاطر للمهندس وحده')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
@@ -12624,12 +12647,18 @@ PAGE.org = { m:'النظام', t:'التنظيم والسلامة',
 
       + (n
         ? cardFlush('سجل الحوادث',
-            table(['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل'],
-              HSE.incidents.map(function(x){
-                return ['<span class="num">' + new Date(x.at).toLocaleDateString('ar-EG') + '</span>',
+            table(['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء',''],
+              HSE.incidents.map(function(x, i){
+                var ed = may('approve');
+                return ['<span class="num">' + new Date(x.at).toLocaleDateString('ar-EG') + '</span><br>'
+                          + '<span class="hint" style="margin:0">' + esc(dispName(x.by)) + '</span>',
                         pill(x.kind, x.lost ? 'off' : 'warn'), '<span class="num">' + esc(x.site || '—') + '</span>',
-                        N(x.lost), '<span class="hint" style="margin:0">' + esc(x.why.slice(0,44)) + '</span>',
-                        esc(x.by)];
+                        /* N() تُعيد وسمَ span لا رقمًا — ووسمٌ داخل value="" يُغلق
+                           الاقتباسَ فيُكسَر الحقلُ ولا يُرسَم. تُستعمل القيمةُ الخام. */
+                        ed ? '<input type="number" min="0" value="' + esc(String(cfgN(x.lost))) + '" data-hsel="' + i + '" style="width:74px">' : N(x.lost),
+                        ed ? '<input value="' + esc(x.why) + '" data-hsew="' + i + '" dir="auto">'
+                           : '<span class="hint" style="margin:0">' + esc(x.why.slice(0,44)) + '</span>',
+                        ed ? btn('🗑','btn-quiet btn-sm',' data-hsedel="' + i + '" aria-label="' + esc(t('حذف')) + '"') : '—'];
               })),
             btn('⬇ إكسل — السلامة','btn-secondary btn-sm',' data-xls="hse"'))
         : card('', alertBox('success','لا حوادثَ مسجّلة — والصفرُ هو الهدف.')))
@@ -12998,6 +13027,38 @@ function hseAdd(){
   CORE.dirty('hse', 'INC-' + HSE.incidents.length, HSE.incidents[0]);
   logEvent('حادث سلامة — ' + kind + (site ? ' · ' + site : ''));
   toast(t('سُجّل'));
+  render(1);
+}
+
+/* ═══ الحادثُ يُصحَّح ويُحذَف ═══
+   كان الحادثُ يُسجَّل ولا يُمَسّ: من كتب «يومين مفقودين» وتبيّن أنها ثلاثةٌ
+   لم يجد أين يصحّح، ومن سجّل حادثًا بالخطأ أبقاه في سجلٍّ يُعرَض على
+   الوزارة. والأيامُ المفقودةُ تدخل مؤشِّراتِ السلامة — فخطأٌ فيها خطأٌ في
+   الرقم المعلَن. صار يُعدَّل ويُحذَف، ويُعاد حسابُ المجموع من السجل نفسِه
+   لا من عدّادٍ يُزاد ويُنسى. */
+function hseRecount(){
+  HSE.lost = HSE.incidents.reduce(function(a, x){ return a + cfgN(x.lost); }, 0);
+}
+function hseSet(i, patch){
+  if (!may('approve')){ toast(t('تصحيحُ سجل الحوادث للمهندس وحده')); return; }
+  var x = HSE.incidents[i];
+  if (!x) return;
+  Object.keys(patch).forEach(function(k){ x[k] = patch[k]; });
+  x.editBy = STATE.meta.name || '';
+  x.editAt = Date.now();
+  hseRecount();
+  CORE.dirty('hse', 'INC-' + (HSE.incidents.length - i), x);
+  logEvent('تعديل حادث — ' + x.kind + ' \u00b7 ' + Object.keys(patch).join('،'));
+}
+function hseDel(i){
+  if (!may('approve')){ toast(t('حذفُ الحادث للمهندس وحده')); return; }
+  var x = HSE.incidents[i];
+  if (!x) return;
+  HSE.incidents.splice(i, 1);
+  hseRecount();
+  CORE.dirty('hse', 'INC-' + (HSE.incidents.length - i + 1), null);
+  logEvent('حذف حادث — ' + x.kind + ' \u00b7 ' + (x.site || ''));
+  toast(t('حُذف الحادث'));
   render(1);
 }
 
@@ -13524,7 +13585,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.50' + '.docx" download>⬇ '
+              +   'V15.51' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17901,7 +17962,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
                                 + esc(i.name) + '</option>'; }).join('') + '</select>'
                           : esc(itemName(r.item)),
                         ed
-                          ? '<input type="number" min="1" id="wrEQ_' + esc(r.id) + '" value="' + N(r.qty) + '" style="width:84px">'
+                          ? '<input type="number" min="1" id="wrEQ_' + esc(r.id) + '" value="' + esc(String(cfgN(r.qty))) + '" style="width:84px">'
                           : (N(r.qty) + ' / ' + N(r.qtyDone || 0)),
                         pill(r.status, r.status === 'تم' ? 'ok' : (r.status === 'قيد التنفيذ' ? 'warn' : 'off')),
                         '<span class="hint" style="margin:0">' + esc(dispName(r.by)) + '<br>'
@@ -22492,6 +22553,10 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  var hsd = e.target.closest('[data-hsedel]');
+  if (hsd){ hseDel(+hsd.getAttribute('data-hsedel')); return; }
+  var rkd = e.target.closest('[data-rkdel]');
+  if (rkd){ riskDel(rkd.getAttribute('data-rkdel')); return; }
   var rgk = e.target.closest('[data-regk]');
   if (rgk){
     var kv = rgk.getAttribute('data-regk');
@@ -23319,6 +23384,8 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-cotel')){ coTelSet(el2.getAttribute('data-cotel'), el2.value); render(1); return; }
     if (el2.hasAttribute('data-waco')){ WA_CO = el2.value; render(1); return; }
+    if (el2.hasAttribute('data-hsel')){ hseSet(+el2.getAttribute('data-hsel'), { lost:cfgN(el2.value) }); render(1); return; }
+    if (el2.hasAttribute('data-hsew')){ hseSet(+el2.getAttribute('data-hsew'), { why:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-rkp')){ riskSet(el2.getAttribute('data-rkp'), { p:Math.min(5, Math.max(1, cfgN(el2.value) || 1)) }); render(1); return; }
     if (el2.hasAttribute('data-rki')){ riskSet(el2.getAttribute('data-rki'), { i:Math.min(5, Math.max(1, cfgN(el2.value) || 1)) }); render(1); return; }
     if (el2.hasAttribute('data-rko')){ riskSet(el2.getAttribute('data-rko'), { own:el2.value.trim() }); return; }
