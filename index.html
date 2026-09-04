@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.52</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.53</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2877,6 +2877,14 @@ en:{
  'بقيت — أسندها بعدها':'remain — assign them next',
  'إنشاءُ الطلب للمهندس وحده':'Creating a request is for the engineer only',
  'الزرُّ يحدّد الجاهزَ كلَّه ويفتح لوحَ الإسناد على نوعه — والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه.':'The button selects everything ready and opens the assignment sheet on its kind — the map remains the other route for a specific selection.',
+
+ /* V15.53 — طلبُ الصرف */
+ 'صرف أصناف':'Issue items',
+ 'يُصرَف له':'Issued to',
+ 'للورشة — بلا عهدة شخص':'To the workshop — no personal custody',
+ 'يلزم مع «صرف أصناف» — القطعُ تدخل عُهدةَ من يُصرَف له لا عهدةَ من سجّل التنفيذ.':'Required with “Issue items” — the parts enter the custody of the person issued to, not of whoever recorded the execution.',
+ 'اختر من يُصرَف له':'Choose who it is issued to',
+ 'طلب صرف':'Issue request',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4945,6 +4953,12 @@ ur:{
  'بقيت — أسندها بعدها':'باقی — انہیں بعد میں تفویض کریں',
  'إنشاءُ الطلب للمهندس وحده':'درخواست بنانا صرف انجینئر کے لیے',
  'الزرُّ يحدّد الجاهزَ كلَّه ويفتح لوحَ الإسناد على نوعه — والخريطةُ تبقى الطريقَ الآخر لمن أراد اختيارًا بعينه.':'بٹن تمام تیار منتخب کرتا ہے اور اسی قسم پر تفویض شیٹ کھولتا ہے — مخصوص انتخاب کے لیے نقشہ دوسرا راستہ ہے۔',
+ 'صرف أصناف':'اشیاء کا اجرا',
+ 'يُصرَف له':'کس کو اجرا',
+ 'للورشة — بلا عهدة شخص':'ورکشاپ کو — کسی کی ذاتی تحویل نہیں',
+ 'يلزم مع «صرف أصناف» — القطعُ تدخل عُهدةَ من يُصرَف له لا عهدةَ من سجّل التنفيذ.':'“اشیاء کا اجرا” کے ساتھ لازم — پرزے اس شخص کی تحویل میں جاتے ہیں جسے اجرا ہوا، اس کی نہیں جس نے انجام درج کیا۔',
+ 'اختر من يُصرَف له':'منتخب کریں کس کو اجرا ہو',
+ 'طلب صرف':'اجرا کی درخواست',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7074,7 +7088,7 @@ var FB = {
       FB.db.collection('settings').doc('reqSeq').get().then(function(doc){
         if (doc && doc.exists){
           var v = doc.data();
-          ['SR','DR','PR','CR','AR','MR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
+          ['SR','DR','PR','CR','AR','MR','IR'].forEach(function(k){ if (typeof v[k] === 'number' && v[k] > REQSEQ[k]) REQSEQ[k] = v[k]; });
         }
       }).catch(function(e){ softErr('سحب ترقيم الطلبات', e, 'تعذّر سحبُ آخر رقم طلب — قد يتكرّر الترقيم'); });
       /* الفكُّ والورشةُ (تهيئة وتجميع) كانا يُكتَبان في 'dismantles' و'inventory'
@@ -10027,8 +10041,10 @@ function kindLabel(kind){
    التقارير والمكالمات، منفصلٌ عن معرّف المهمة الداخلي (TK-kind-site) الذي
    لا يتغيّر ولا يتكرّر. الأنواعُ الأخرى (تهيئة، تجميع، مستودع…) بلا ترقيم —
    لم يُطلب لها. */
-var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR', prep:'CR', asm:'AR', maint:'MR' };
-var REQSEQ = { SR:0, DR:0, PR:0, CR:0, AR:0, MR:0 };
+/* DR طلبُ تركيبِ نقطة، وIR طلبُ صرفِ أصناف: الأولُ عن موضعٍ في المشاعر
+   والثاني عن قطعٍ تخرج من المستودع إلى عهدة شخص — فلا يُخلَط ترقيمُهما. */
+var REQ_PREFIX = { visit:'SR', install:'DR', dis:'PR', prep:'CR', asm:'AR', maint:'MR', issue:'IR' };
+var REQSEQ = { SR:0, DR:0, PR:0, CR:0, AR:0, MR:0, IR:0 };
 function reqNext(kind){
   var p = REQ_PREFIX[kind];
   if (!p) return '';
@@ -10139,7 +10155,9 @@ function asnPickKind(k){
 }
 
 function techNames(){
-  var out = TECHS.map(function(x){ return x.n; });
+  /* TECHS صارت فارغةً منذ توحيد مصدر الأشخاص (V15.35) — القراءةُ منها
+     تُرجع لا شيء. تُقرأ القائمةُ المشتقّةُ من الحسابات. */
+  var out = techsList().map(function(x){ return x.n; });
   assignRows().forEach(function(u){
     if (['tech','cins','cprep','casm','supervisor'].indexOf(u[2]) > -1 && out.indexOf(u[0]) < 0)
       out.push(u[0]);
@@ -13689,7 +13707,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.52' + '.docx" download>⬇ '
+              +   'V15.53' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17706,19 +17724,28 @@ function workReqList(){
   return Object.keys(STATE.workReqs || {}).map(function(k){ return STATE.workReqs[k]; })
     .sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
 }
-function workReqAdd(kind, item, qty){
+/* ═══ طلبُ صرفِ أصناف (IR) ═══
+   كان صرفُ القطع من المستودع سطرًا يُكتَب في دفتر الحركة مباشرةً: لا رقمَ
+   له ولا مُسنَدَ إليه ولا حالةَ تُتابَع — فمن طلب قطعًا لفنيٍّ لم يجد أين
+   يسجّل الطلبَ حتى يُنفَّذ، ومن سُئل «أين طلبُ الصرف؟» لم يجد. صار نوعًا
+   ثالثًا في طلبات الورشة بترقيمه (IR) ومُسنَدٍ إليه — فنيٍّ أو مشرف —
+   وحين يُنفَّذ يُسجَّل «صرف» في دفتر الحركة باسم المُسنَد إليه، فتدخل القطعُ
+   عُهدتَه لا عهدةَ من ضغط الزر. */
+function workReqAdd(kind, item, qty, to){
   if (!may('edit')){ toast(t('طلبُ الورشة يحتاج صلاحية تعديل')); return; }
   var q = cfgN(qty);
   if (!item){ toast(t('اختر صنفًا')); return; }
   if (!q){ toast(t('اكتب كميةً غير صفر')); return; }
+  if (kind === 'issue' && !to){ toast(t('اختر من يُصرَف له')); return; }
   var id = 'wr' + Date.now().toString(36) + Math.random().toString(36).slice(2,5);
   var rec = { id:id, no:reqNext(kind), kind:kind, item:item, qty:q, qtyDone:0,
-              status:'مطلوب', by:STATE.meta.name || 'محمد صفوت', at:Date.now() };
+              to:to || '', status:'مطلوب', by:STATE.meta.name || 'محمد صفوت', at:Date.now() };
   STATE.workReqs = STATE.workReqs || {};
   STATE.workReqs[id] = rec;
   CORE.set('workReqs', id, rec);
-  logEvent((kind === 'prep' ? 'طلب تهيئة — ' : 'طلب تجميع — ') + rec.no + ' \u00b7 '
-           + itemName(item) + ' \u00d7' + nm(q));
+  logEvent({ prep:'طلب تهيئة — ', asm:'طلب تجميع — ', issue:'طلب صرف — ' }[kind] + rec.no + ' \u00b7 '
+           + itemName(item) + ' \u00d7' + nm(q) + (to ? ' \u2190 ' + to : ''));
+  if (to) notifPush('طلب صرف', rec.no + ' \u00b7 ' + itemName(item) + ' \u00d7' + nm(q), { to:to, lv:'عادي' });
   toast(rec.no + ' \u00b7 ' + t('أُنشئ الطلب'));
   statBump();
   render(1);
@@ -17736,12 +17763,15 @@ function workReqComplete(id, qtyDone){
   r.doneBy = STATE.meta.name || 'محمد صفوت';
   r.doneAt = Date.now();
   CORE.set('workReqs', id, r);
-  var mv = { id:uid36(), at:Date.now(), kind: r.kind === 'prep' ? 'تهيئة' : 'تجميع',
-             item:r.item, qty:q, by:r.doneBy, req:r.no };
+  /* الصرفُ يُقيَّد باسم المُسنَد إليه — القطعُ تدخل عهدتَه هو */
+  var mvKind = { prep:'تهيئة', asm:'تجميع', issue:'صرف' }[r.kind] || 'تهيئة';
+  var mv = { id:uid36(), at:Date.now(), kind:mvKind, item:r.item, qty:q,
+             by: r.kind === 'issue' ? (r.to || r.doneBy) : r.doneBy, req:r.no };
   STATE.moves = STATE.moves || [];
   STATE.moves.push(mv);
   CORE.dirty('moves', mv.id, mv);
-  logEvent((r.kind === 'prep' ? 'تنفيذ تهيئة — ' : 'تنفيذ تجميع — ') + r.no + ' \u00b7 ' + nm(q));
+  logEvent({ prep:'تنفيذ تهيئة — ', asm:'تنفيذ تجميع — ', issue:'تنفيذ صرف — ' }[r.kind] + r.no
+           + ' \u00b7 ' + nm(q) + (r.kind === 'issue' && r.to ? ' \u2190 ' + r.to : ''));
   toast(r.no + ' \u00b7 ' + (r.status === 'تم' ? t('اكتمل الطلب') : t('تحديثٌ مُسجَّل')));
   statBump();
   render(1);
@@ -18032,12 +18062,19 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
             '<div class="grid cols-3">'
             + '<div class="field"><label>' + esc(t('النوع')) + '</label>'
             + '<select id="wrKind"><option value="prep">' + esc(t('تهيئة')) + ' (CR)</option>'
-            + '<option value="asm">' + esc(t('تجميع')) + ' (AR)</option></select></div>'
+            + '<option value="asm">' + esc(t('تجميع')) + ' (AR)</option>'
+            + '<option value="issue">' + esc(t('صرف أصناف')) + ' (IR)</option></select></div>'
             + '<div class="field"><label>' + esc(t('الصنف')) + '</label>'
             + '<select id="wrItem">' + itemsList().map(function(i){
                 return '<option value="' + esc(i.code) + '">' + esc(i.name) + '</option>'; }).join('') + '</select></div>'
             + '<div class="field"><label>' + esc(t('الكمية المطلوبة')) + '</label>'
             + '<input type="number" id="wrQty" min="1" value="10"></div>'
+            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('يُصرَف له')) + '</label>'
+            +   '<select id="wrTo"><option value="">— ' + esc(t('للورشة — بلا عهدة شخص')) + ' —</option>'
+            +   techsList().map(function(x){
+                  return '<option value="' + esc(x.n) + '">' + esc(x.n) + '</option>'; }).join('')
+            +   '</select>'
+            +   '<p class="hint" style="margin:6px 0 0">' + esc(t('يلزم مع «صرف أصناف» — القطعُ تدخل عُهدةَ من يُصرَف له لا عهدةَ من سجّل التنفيذ.')) + '</p></div>'
             + '</div>',
             btn('➕ إنشاء الطلب','btn-primary btn-sm',' data-wradd="1"'))
         : '')
@@ -18059,7 +18096,8 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
               L.map(function(r){
                 var ed = WR_EDIT === r.id;
                 return ['<span class="num">' + esc(r.no) + '</span><br>'
-                          + (r.kind === 'prep' ? pill('تهيئة','acc') : pill('تجميع','warn')),
+                          + (r.kind === 'prep' ? pill('تهيئة','acc')
+                             : (r.kind === 'issue' ? pill('صرف','off') : pill('تجميع','warn'))),
                         ed && !cfgN(r.qtyDone)
                           ? '<select data-wreitem="' + esc(r.id) + '">' + itemsList().map(function(i){
                               return '<option value="' + esc(i.code) + '"' + (i.code === r.item ? ' selected' : '') + '>'
@@ -18206,7 +18244,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
           +   '<input id="mvQty" type="number" min="1" step="1"></div>'
           + '<div class="field"><label>' + esc(t('المنفِّذ')) + '</label><select id="mvBy">'
           +   '<option value="">—</option>'
-          +   TECHS.map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
+          +   techsList().map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
           +   '<input id="mvSite" dir="ltr" placeholder="NSK-…"></div>'
@@ -19179,7 +19217,7 @@ function notifSystem(n){
 
 /* رقمُ المرسَل إليه من سجل الفنيين — ولا يُعرَض لمن مُنع من الهواتف */
 function notifPhone(name){
-  var x = TECHS.filter(function(y){ return y.n === name; })[0];
+  var x = techsList().filter(function(y){ return y.n === name; })[0];
   return (x && x.ph) || '';
 }
 function notifMail(n){
@@ -22579,9 +22617,10 @@ function onDocClick(e){
     }
     EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' }; render(1); return; }
   if (e.target.closest('[data-wradd]')){
-    workReqAdd((document.getElementById('wrKind') || {}).value,
-               (document.getElementById('wrItem') || {}).value,
-               (document.getElementById('wrQty') || {}).value);
+    workReqAdd((document.getElementById('wrKind') || {}).value || 'prep',
+      (document.getElementById('wrItem') || {}).value || '',
+      (document.getElementById('wrQty') || {}).value || 0,
+      (document.getElementById('wrTo') || {}).value || '');
     return;
   }
   var wrd = e.target.closest('[data-wrdone]');

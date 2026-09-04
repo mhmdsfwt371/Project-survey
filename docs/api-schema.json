@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.52",
+  "app_version": "V15.53",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1421,7 +1421,8 @@
     "V15.49": "langSync() يزامن langSel + langTop + data-setlang + #lgLangs في كل setLang. وصل data-vlgd/data-vlgq (VLOG_D/VLOG_Q كانا يُقرآن ولا يُكتبان). الجردان 34 و35: audit-lang2 وaudit-buttons.",
     "V15.50": "شريحة reqreg «سجل الإسنادات» في req (self): ترشيح بالنوع والحالة وبحث + تعديل (to/when) وحذف وقفز للخريطة. regList/regStatus/regSet/regDel. workReqEdit + جدول wos 9→6 أعمدة + زرّا تعديل وحذف. audit-fit يفكّ الشرائح. الجرد 36: audit-registry.",
     "V15.51": "hseSet/hseDel/hseRecount (may approve) + حقول التعديل وزر الحذف في سجل الحوادث. riskDel (المغلق لا يُحذَف). إصلاح فخ N() داخل value في ثلاثة حقول. الجرد 37: audit-del.",
-    "V15.52": "ASN_READY + asnReadyList(kind) + asnQuick(kind) + asnReadyCard() في شريحة assign: صف لكل نوع بشرطه وعدده وزر يحدّد الجاهز ويفتح ASN_OPEN على نوعه (سقف 300). الجرد 38: audit-asnq."
+    "V15.52": "ASN_READY + asnReadyList(kind) + asnQuick(kind) + asnReadyCard() في شريحة assign: صف لكل نوع بشرطه وعدده وزر يحدّد الجاهز ويفتح ASN_OPEN على نوعه (سقف 300). الجرد 38: audit-asnq.",
+    "V15.53": "نوع issue في طلبات الورشة بترقيم IR + حقل to (يُصرَف له) إلزامي؛ التنفيذ يقيّد حركة «صرف» باسم to. إصلاح بقايا TECHS الفارغة في mvBy وtechNames وnotifPhone. الجرد 39: audit-issue."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2597,7 +2598,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 38,
+  "audits_total": 39,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3673,5 +3674,25 @@
     "action": "asnQuick(kind): selClear → SEL (≤300) → ASN_KIND/FIELD_MODE/ASN_MODE → ASN_OPEN → goPage('map')",
     "guard": "may('approve')",
     "note": "الخريطة تبقى الطريق الآخر للاختيار المخصّص"
+  },
+  "issue_request_v15_53": {
+    "kind": "issue",
+    "prefix": "IR",
+    "field": "to (فني أو مشرف من techsList)",
+    "on_complete": "move {kind:'صرف', by: r.to, req: r.no} — العهدة لمن صُرف له",
+    "guards": [
+      "may('edit')",
+      "issue بلا to يُرفَض",
+      "يرث تعديل/حذف/تنفيذ جزئي من CR/AR"
+    ],
+    "why_not_DR": "DR محجوز لطلب تركيب نقطة — الخلط يُفسد الترقيم والتتبّع"
+  },
+  "techs_leftovers_v15_53": {
+    "cause": "V15.35 أفرغت TECHS ووحّدت المصدر في الحسابات",
+    "fixed": [
+      "mvBy في invmv (منتقي المنفّذ كان فارغًا)",
+      "techNames()",
+      "notifPhone()"
+    ]
   }
 }
