@@ -94,6 +94,8 @@ jobs:
         run: node scripts/audit-invariants.mjs
       - name: جرد حالة النسخ — لا نجاح كاذبًا
         run: node scripts/audit-backup.mjs
+      - name: جرد الوثيقة المسمومة — لا توقف الطابور
+        run: node scripts/audit-poison.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

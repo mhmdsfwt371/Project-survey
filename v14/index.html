@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.57</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2927,6 +2927,14 @@ en:{
  'آخر نسخةٍ احتياطية منذ':'Last backup was',
  'النسخةُ لا تُرفَع إلى درايف':'The backup is not uploaded to Drive',
  'GDRIVE_SA غير مضبوط':'GDRIVE_SA is not set',
+
+ /* V15.57 — الوثيقةُ المسمومة */
+ 'وثائقُ عُزلت عن الرفع':'Documents quarantined from upload',
+ 'أعد الرفع':'Retry upload',
+ 'أسقط':'Drop',
+ 'أُعيد إلى الطابور':'Returned to the queue',
+ 'وثيقةً رُفضت — السببُ في «المزامنة والتعارض»':'documents were rejected — the reason is in “Sync and conflicts”',
+ 'رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.':'Rejected three times, so quarantined not to block what follows — the reason is written: an unacceptable value or a rule that denies. Retry after fixing, or drop it if it was a mistake.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5039,6 +5047,12 @@ ur:{
  'آخر نسخةٍ احتياطية منذ':'آخری بیک اپ',
  'النسخةُ لا تُرفَع إلى درايف':'بیک اپ ڈرائیو پر اپلوڈ نہیں ہوتا',
  'GDRIVE_SA غير مضبوط':'GDRIVE_SA سیٹ نہیں',
+ 'وثائقُ عُزلت عن الرفع':'اپلوڈ سے الگ کی گئی دستاویزات',
+ 'أعد الرفع':'دوبارہ اپلوڈ',
+ 'أسقط':'ہٹائیں',
+ 'أُعيد إلى الطابور':'قطار میں واپس',
+ 'وثيقةً رُفضت — السببُ في «المزامنة والتعارض»':'دستاویزات مسترد ہوئیں — وجہ “ہم آہنگی اور تصادم” میں',
+ 'رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.':'تین بار مسترد ہوئیں، سو الگ کر دی گئیں تاکہ باقی نہ رکیں — وجہ لکھی ہے: ناقابل قبول قدر یا روکنے والا قاعدہ۔ درست کر کے دوبارہ اپلوڈ کریں، یا غلطی ہو تو ہٹا دیں۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6894,14 +6908,15 @@ var CORE = {
   saveLocal: function(){
     return idbSet('state', {
       recs:STATE.recs, inss:STATE.inss, tasks:STATE.tasks,
-      moves:STATE.moves, buys:STATE.buys, cfg:CFG, queue:STATE.queue
+      moves:STATE.moves, buys:STATE.buys, cfg:CFG, queue:STATE.queue,
+      poison:STATE.poison || []
     });
   },
 
   loadLocal: function(){
     return idbGet('state').then(function(v){
       if (!v) return false;
-      ['recs','inss','tasks','moves','buys','queue'].forEach(function(k){
+      ['recs','inss','tasks','moves','buys','queue','poison'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
@@ -6930,25 +6945,57 @@ var CORE = {
   },
 
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
+  _busy: false,
   flush: function(){
     if (!STATE.meta.online || !STATE.queue.length) return Promise.resolve(0);
+    /* رفعٌ واحدٌ في كلِّ لحظة: كان الرفعُ يُستدعى من الدورة ومن الحفظ ومن
+       الاتصال معًا، فتُرفَع الدفعةُ نفسُها مرتين وتُعَدُّ محاولاتُ الوثيقة
+       المرفوضة ثلاثًا في ثانية. */
+    /* والقفلُ يُفَكُّ بعد نصف دقيقةٍ ولو لم يعد الرفعُ السابق — فإن علق
+       تهيئةُ Firebase على شبكةٍ رديئةٍ لا يعلق الطابورُ معه إلى الأبد */
+    if (CORE._busy && Date.now() - (CORE._busyAt || 0) < 30000) return Promise.resolve(0);
+    CORE._busy = true; CORE._busyAt = Date.now();
     var batch = STATE.queue.slice(0, 50);
     /* يُهيَّأ Firebase قبل الدفع: كان يُنادى `push` مباشرةً وهي ترفض
        بـ«not-ready» إن لم يُحمَّل بعد — وهو يُحمَّل كسولًا. فيبقى الطابورُ
        واقفًا ويُعاد الرفضُ في كلِّ دورةٍ فلا يصل شيءٌ أبدًا. */
     return FB.init().then(function(ok){
       if (!ok) return Promise.reject(new Error('offline'));
-      return FB.push(batch);
-    }).then(function(){
-      STATE.queue = STATE.queue.slice(batch.length);
-      STATE.meta.lastSync = Date.now();
-      if (typeof rollupToday === 'function') rollupToday();
+      return FB.push(batch).then(function(){ return { ok:batch, failed:[] }; })
+        .catch(function(e){
+          /* الدفعةُ سقطت جملةً — يُعرَف السببُ وثيقةً وثيقة */
+          if (/offline|not-ready|unavailable|network/i.test(String(e && (e.message || e.code) || e))) throw e;
+          return FB.pushEach(batch);
+        });
+    }).then(function(r){
+      var okIds = {};
+      r.ok.forEach(function(it){ okIds[it.kind + '|' + it.id] = 1; });
+      STATE.queue = STATE.queue.filter(function(it){ return !okIds[it.kind + '|' + it.id]; });
+      r.failed.forEach(function(f){
+        var it = f.it; it.tries = (it.tries || 0) + 1; it.err = f.msg;
+        softErr('رفع وثيقة — ' + it.kind + '/' + it.id, f.msg, '');
+        if (it.tries >= 3){
+          /* تُعزَل: تخرج من الطابور إلى ركنٍ يُرى — فلا تعيق ما بعدها */
+          STATE.poison = STATE.poison || [];
+          if (!STATE.poison.some(function(p2){ return p2.kind === it.kind && String(p2.id) === String(it.id); }))
+            STATE.poison.push({ kind:it.kind, id:it.id, v:it.v, err:f.msg, at:Date.now() });
+          STATE.queue = STATE.queue.filter(function(q){ return q !== it; });
+          logEvent('وثيقةٌ عُزلت عن الرفع — ' + it.kind + '/' + it.id + ' \u00b7 ' + f.msg.slice(0, 80));
+        }
+      });
+      if (r.failed.length && !SOFT_SAID['رفع الطابور']){
+        SOFT_SAID['رفع الطابور'] = 1;
+        toast(nm(r.failed.length) + ' ' + t('وثيقةً رُفضت — السببُ في «المزامنة والتعارض»'));
+      }
+      if (r.ok.length){ STATE.meta.lastSync = Date.now(); if (typeof rollupToday === 'function') rollupToday(); }
       CORE.saveLocal();
       syncBadge();
-      return batch.length;
+      CORE._busy = false;
+      return r.ok.length;
     }).catch(function(e){
       /* كان يعود صفرًا صامتًا: يبقى «ثلاثةٌ بانتظار الرفع» ولا يُعرَف لماذا،
          فينتظر المستخدمُ دورةً لن تنجح. */
+      CORE._busy = false;
       softErr('رفع الطابور', e, 'تعذّر الرفعُ — ما سُجّل محفوظٌ على الجهاز ويُعاد تلقائيًّا');
       return 0;
     });
@@ -7057,6 +7104,46 @@ var FB = {
     });
   },
 
+  /* ═══ الوثيقةُ المسمومة لا توقف الطابور ═══
+     الدفعةُ تُرفَع كلُّها أو لا شيء — فوثيقةٌ واحدةٌ فيها قيمةٌ غيرُ
+     مقبولة (undefined) أو ترفضها القاعدةُ كانت تُسقِط الدفعةَ كلَّها، وتعود
+     في الدورة التالية فتسقطها ثانيةً، إلى الأبد: «تعذّر الرفع» كلَّ دقيقةٍ ولا
+     يصل شيءٌ ولا يُعرَف أيُّ وثيقةٍ السبب. صار الرفعُ إن فشل جملةً يُعاد
+     وثيقةً وثيقة: ما نجح يخرج من الطابور، وما فشل ثلاثًا يُعزَل في ركنٍ
+     يُرى بسببه — ويُصفّى من undefined قبل الإرسال أصلًا. */
+  clean: function(v){
+    if (v === undefined) return null;
+    if (v === null || typeof v !== 'object') return (typeof v === 'number' && !isFinite(v)) ? null : v;
+    if (Array.isArray(v)) return v.map(FB.clean);
+    var o = {};
+    Object.keys(v).forEach(function(k){ if (v[k] !== undefined) o[k] = FB.clean(v[k]); });
+    return o;
+  },
+  colOf: function(kind){
+    return { recs:'recs', inss:'inss', tasks:'tasks', moves:'inventory',
+             buys:'purchases', cfg:'settings', users:'users',
+             evlog:'events', diss:'dismantles', newsites:'newsites',
+             coreqs:'coreqs', fixreqs:'fixreqs', sites:'sites', ships:'ships',
+             vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
+             stats:'stats', teams:'teams', baseline:'baseline',
+             changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
+             workReqs:'workreqs' }[kind] || 'misc';
+  },
+  putOne: function(it){
+    var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
+    if (it.v === null) return ref.delete();
+    return ref.set(FB.clean(Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() })), { merge:true });
+  },
+  /* يُرفَع كلٌّ على حدة: يُرجِع ما نجح وما فشل بسببه */
+  pushEach: function(batch){
+    var ok = [], failed = [];
+    return batch.reduce(function(p, it){
+      return p.then(function(){
+        return FB.putOne(it).then(function(){ ok.push(it); })
+          .catch(function(e){ failed.push({ it:it, msg:String((e && (e.message || e.code)) || e).slice(0, 160) }); });
+      });
+    }, Promise.resolve()).then(function(){ return { ok:ok, failed:failed }; });
+  },
   push: function(batch){
     if (!FB.ready) return Promise.reject(new Error('not-ready'));
     var w = FB.db.batch();
@@ -7074,7 +7161,7 @@ var FB = {
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
-      else w.set(ref, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }), { merge:true });
+      else w.set(ref, FB.clean(Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() })), { merge:true });
     });
     return w.commit();
   },
@@ -13920,7 +14007,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.56' + '.docx" download>⬇ '
+              +   'V15.57' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18743,11 +18830,24 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     if (cur === 'sync') return head + (function(){
     /* كانت أربعةَ أصفارٍ مكتوبةً بيدٍ — والحارسُ لم يمسكها لأن جسمَ الصفحة
        التي بعدها كان يمدّها بمصدرٍ حيٍّ صدفةً. كُشفت حين حُذفت تلك الصفحة. */
-    var Q = STATE.queue || [];
+    var Q = STATE.queue || [], PZ = STATE.poison || [];
     var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
     var day = new Date().toISOString().slice(0, 10);
     var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
     return softErrCard()
+      + (PZ.length
+        ? cardFlush('\u26A0 ' + t('وثائقُ عُزلت عن الرفع') + ' — ' + nm(PZ.length),
+            table(['النوع','المعرّف','السبب',''],
+              PZ.map(function(x, i){
+                return [esc(x.kind), '<span class="num">' + esc(String(x.id)) + '</span>',
+                        '<span class="hint" style="margin:0">' + esc(x.err) + '</span>',
+                        '<div class="actions" style="margin:0">'
+                        + btn('\u21BB','btn-quiet btn-sm',' data-pzretry="' + i + '" aria-label="' + esc(t('أعد الرفع')) + '"')
+                        + btn('\u{1F5D1}','btn-danger btn-sm',' data-pzdrop="' + i + '" aria-label="' + esc(t('أسقط')) + '"')
+                        + '</div>'];
+              }))
+            + '<p class="hint" style="margin:8px 0 0">' + esc(t('رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.')) + '</p>')
+        : '')
       + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok'],
                ['أخطاءُ رفع', N(errs.length), errs.length ? 'bad' : 'ok'],
                ['أخطاءُ اليوم', N(today), today ? 'wrn' : 'ok'],
@@ -22922,6 +23022,18 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  var pzr = e.target.closest('[data-pzretry]');
+  if (pzr){
+    var pz = (STATE.poison || [])[+pzr.getAttribute('data-pzretry')];
+    if (pz){ STATE.poison.splice(+pzr.getAttribute('data-pzretry'), 1); CORE.dirty(pz.kind, pz.id, pz.v); toast(t('أُعيد إلى الطابور')); render(1); }
+    return;
+  }
+  var pzd = e.target.closest('[data-pzdrop]');
+  if (pzd){
+    var pd = (STATE.poison || [])[+pzd.getAttribute('data-pzdrop')];
+    if (pd){ STATE.poison.splice(+pzd.getAttribute('data-pzdrop'), 1); logEvent('أُسقطت وثيقةٌ معزولة — ' + pd.kind + '/' + pd.id); CORE.saveLocal(); render(1); }
+    return;
+  }
   if (e.target.closest('[data-bkref]')){ bkFetch(true); toast(t('تُقرأ الحالة…')); return; }
   if (e.target.closest('[data-coren]')){
     coRename((document.getElementById('coRenFrom') || {}).value, (document.getElementById('coRenTo') || {}).value);
