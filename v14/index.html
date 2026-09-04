@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.48</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.49</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -4895,6 +4895,28 @@ function shellLang(){
   });
 }
 
+/* ═══ اللغةُ تُغيَّر من مكانين — فتتفق في المكانين ═══
+   المبدِّلُ في الشريط العلويِّ والمنسدلةُ في أسفل القائمة يكتبان القيمةَ
+   نفسَها، لكنَّ كلًّا منهما كان يعرض ما اختير منه هو وحده: من غيّر من فوق
+   وجد المنسدلةَ تقول العربية، ومن غيّر من المنسدلة وجد الحرفَ العلويَّ
+   صحيحًا وعلامةَ الاختيار في قائمة اللغات على غيرها. فصارت كلُّ أداةٍ
+   تُزامَن من موضعٍ واحد: من غيّر من أيِّهما وجد الأخرى تقول ما اختاره. */
+function langSync(){
+  var sel = document.getElementById('langSel');
+  if (sel && sel.value !== LANG) sel.value = LANG;
+  var lt = document.getElementById('langTop');
+  if (lt) lt.textContent = { ar:'ع', en:'EN', ur:'اُر' }[LANG] || 'ع';
+  /* قائمةُ اللغات العلوية: علامةُ الاختيار تنتقل ولو كانت مفتوحة */
+  document.querySelectorAll('[data-setlang]').forEach(function(b){
+    var on = b.getAttribute('data-setlang') === LANG;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-current', on ? 'true' : 'false');
+  });
+  /* أزرارُ شاشة الدخول قبل الدخول */
+  document.querySelectorAll('#lgLangs [data-l]').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-l') === LANG);
+  });
+}
 function setLang(l){
   if (!I18N[l]) return;
   LANG = l;
@@ -4904,9 +4926,7 @@ function setLang(l){
   try{ localStorage.setItem('nsk14.lang', l); }catch(e){}
   render();
   shellLang();
-  var lt = document.getElementById('langTop');
-  if (lt) lt.textContent = { ar:'ع', en:'EN', ur:'اُر' }[l] || 'ع';
-
+  langSync();
 }
 
 function setTheme(m){
@@ -13366,7 +13386,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.48' + '.docx" download>⬇ '
+              +   'V15.49' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -23026,6 +23046,13 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-rkst')){ riskSet(el2.getAttribute('data-rkst'), { st:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-tksup')){ techSet(el2.getAttribute('data-tksup'), { sup:el2.value.trim() }); return; }
   }
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-vlgq')){
+    VLOG_Q = e.target.value.trim();
+    render(1);
+    var vq = document.getElementById('vlQ');
+    if (vq){ vq.focus(); vq.setSelectionRange(vq.value.length, vq.value.length); }
+    return;
+  }
   if (e.target && e.target.id === 'patName'){ PAT_NAME = e.target.value; return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-itname')){
     itemRename(e.target.getAttribute('data-itname'), e.target.value);
@@ -23091,6 +23118,12 @@ document.addEventListener('input', function(e){
 
 document.addEventListener('change', function(e){
   var el = e.target;
+  /* «من كانت معه سيارةٌ في يومٍ بعينه»: الحقلان كانا يُرسَمان بقيمتهما
+     ويُقرآن في الجدول — ولا شيءَ يكتبهما. فيكتب المرءُ تاريخًا فلا يتغيّر
+     شيءٌ ويظنُّ أن لا إسنادَ في ذلك اليوم. أمسكه جردُ الأزرار. */
+  if (el && el.hasAttribute && el.hasAttribute('data-vlgd')){
+    VLOG_D = el.value || ''; render(1); return;
+  }
   if (el && el.hasAttribute && el.hasAttribute('data-mld')){
     mileDateSet(el.getAttribute('data-mld'), el.value || ''); render(); return;
   }
@@ -23215,6 +23248,7 @@ if (window.visualViewport){
 
   document.getElementById('langSel').value  = LANG;
   document.getElementById('langSel').onchange = function(){ setLang(this.value); };
+  langSync();
   /* الشريطُ العلويّ: قائمةُ لغاتٍ تُبنى من `I18N` فلا تُكتَب اللغاتُ مرتين
      ولا تُنسى واحدةٌ إن أُضيفت رابعة. */
   function langPaint(){
@@ -23230,7 +23264,7 @@ if (window.visualViewport){
   function langMenu(open){
     var mn = document.getElementById('langMenu'), bt = document.getElementById('langTop');
     if (!mn || !bt) return;
-    if (open) langPaint();
+    if (open){ langPaint(); langSync(); }
     mn.hidden = !open;
     bt.setAttribute('aria-expanded', open ? 'true' : 'false');
   }

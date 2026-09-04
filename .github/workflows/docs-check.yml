@@ -76,6 +76,10 @@ jobs:
         run: node scripts/audit-dismiss.mjs
       - name: جرد الملاءمة — ما يُعرَض على كل دور يُقرأ على شاشته
         run: node scripts/audit-fit.mjs
+      - name: جرد تزامن اللغة — تُغيَّر من موضع فتتفق في المواضع الثلاثة
+        run: node scripts/audit-lang2.mjs
+      - name: جرد الأزرار — لا زرَّ يُرسَم بلا معالج ولا ينتقل إلى شاشة غير موجودة
+        run: node scripts/audit-buttons.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
