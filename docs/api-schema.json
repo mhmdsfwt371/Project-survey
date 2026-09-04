@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.45",
+  "app_version": "V15.46",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1414,7 +1414,8 @@
     "V15.42": "QA: شارة الخريطة تُبنى في موضع واحد (في الإطار/خارج الإطار)؛ audit-qa (28). TD: errCapture — window error/unhandledrejection → logEvent (مرة لكل خطأ، سقف 20). post-deploy.mjs + post-deploy.yml: بعد كل دفعة وكل 6 ساعات — النسخة الحية = المدفوعة، تُقلع وترسم 182 رسمة.",
     "V15.43": "browser-test.mjs (Playwright/Chromium هاتف لمسي + 5 صور) وrules-test.mjs (rules-unit-testing على المحاكي) وreal-tests.yml. Leaflet في vendor/leaflet ومخزّنة في sw.js. إصلاحات كشفها المتصفح الحقيقي: pop position:fixed؛ pop-btns 44px؛ أهداف اللمس تحت max-width:760 أيضًا.",
     "V15.44": "inboxItems/inboxCard «قراراتك اليوم» (8 عدّادات بأزرار قفز) في mywork للمعتمِد وفي now. سجل المخاطر حي: risksList/riskSave/riskSet/riskAdd + settings/risks + riskSignals. viewer += miles, ncr؛ حراسة ncrAdd (edit) وncrClose (approve) في الواجهة والدوال. الجرد 29: audit-pmp.",
-    "V15.45": "firestore.rules: isBoss يقرأ token.get('email','') (الوصول المباشر لحقل غائب يُسقط التقييم كله). rules-test: authenticatedContext ببريد + اختبار الرئيس + حساب بلا بريد. post-deploy: عنوان Pages /Project-survey/ بلا شرطة. setup-java@v5."
+    "V15.45": "firestore.rules: isBoss يقرأ token.get('email','') (الوصول المباشر لحقل غائب يُسقط التقييم كله). rules-test: authenticatedContext ببريد + اختبار الرئيس + حساب بلا بريد. post-deploy: عنوان Pages /Project-survey/ بلا شرطة. setup-java@v5.",
+    "V15.46": "chgAdd يحمل dCost/dDays/dScope؛ chgDecide→chgApply يجمّد BASE v+1 (bac+=dCost، due*+=dDays، scope+=dScope، reason=CR-n، applied[]). mileDateOf/mileDateSet/mileLate + settings/miles + عمود الموعد المستهدف والمتأخر. cfg.reservePct + عرض الاحتياطي واستهلاكه (EAC−BAC) + إنذار في riskSignals. الجرد 30: audit-pmp2."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2589,7 +2590,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 29,
+  "audits_total": 30,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3483,5 +3484,34 @@
     "post_deploy": "العنوان الصحيح https://mhmdsfwt371.github.io/Project-survey/ (بلا الشرطة الأولى)",
     "how_read": "الواجهة العامة: actions/runs + jobs + check-runs/{id}/annotations — السجل الكامل يحتاج actions:read",
     "deploy_rules": "Deploy Firestore Rules → success (1705a7d)"
+  },
+  "change_to_baseline_v15_46": {
+    "request_fields": [
+      "dCost",
+      "dDays",
+      "dScope"
+    ],
+    "on_approve": "chgApply: BASE = copy(prev) with ver+1, bac+=dCost, scope+=dScope, dueSurvey/dueInstall += dDays*86400000, reason, applied[] → CORE.set('baseline','v'+ver)",
+    "guards": [
+      "may('approve')",
+      "لا قرار مرتين",
+      "لا تطبيق بلا BASE",
+      "لا أثر مقيس → اعتُمد بلا تطبيق"
+    ]
+  },
+  "milestone_dates_v15_46": {
+    "store": "STATE.mileDates ← settings/miles [{id,d}]",
+    "derive": "mileDateOf: مسار المسح على dueSurvey ومسار التركيب على dueInstall بتوزيع الأوزان التراكمية",
+    "manual_wins": true,
+    "late": "mileLate: d < اليوم && mileDone < 0.999"
+  },
+  "contingency_v15_46": {
+    "cfg": "reservePct (٪ من budCap)",
+    "consumed": "max(0, EAC − BAC)",
+    "ui": "budm: stats + card + meter + alert",
+    "signals": [
+      "> reserve → bad",
+      "> reserve/2 → wrn"
+    ]
   }
 }

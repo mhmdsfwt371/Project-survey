@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.45</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.46</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2778,6 +2778,30 @@ en:{
  'الطاولةُ نظيفة — لا قرارَ ينتظرك الآن.':'The desk is clear — no decision is waiting for you now.',
  'فتحُ البلاغ يحتاج صلاحية تعديل':'Opening a report needs edit permission',
  'إغلاقُ البلاغ للمهندس وحده':'Closing a report is for the engineer only',
+
+ /* V15.46 — الفجواتُ الإداريةُ الثلاث */
+ 'أثرُه على الكلفة':'Cost impact',
+ 'أثرُه على الجدول':'Schedule impact',
+ 'أثرُه على النطاق':'Scope impact',
+ 'احتياطي المخاطر':'Contingency reserve',
+ 'الاحتياطي المرصود':'Reserve set aside',
+ 'المستهلك من الاحتياطي':'Reserve consumed',
+ 'نسبة الاحتياطي من السقف':'Reserve as a share of the ceiling',
+ 'قيمته':'Its value',
+ 'الموعد المستهدف':'Target date',
+ 'مشتقٌّ من المواعيد':'Derived from the deadlines',
+ 'متأخّر':'Late',
+ 'مواعيدُ المعالم للمهندس وحده':'Milestone dates are for the engineer only',
+ 'يُستهلك الاحتياطيُّ بقدر ما يزيد تقديرُ الاكتمال (EAC) على خط الأساس (BAC) — لا بما يُصرَف: الصرفُ في حدود الخط ليس استهلاكًا للاحتياطي.':'The reserve is consumed by how much the estimate at completion (EAC) exceeds the baseline (BAC) — not by what is spent: spending within the baseline does not consume the reserve.',
+ 'التقديرُ عند الاكتمال تجاوز الاحتياطيَّ كلَّه — يحتاج قرارَ إدارةٍ أو طلبَ تغيير.':'The estimate at completion exceeds the whole reserve — it needs a management decision or a change request.',
+ 'التقديرُ عند الاكتمال تجاوز الاحتياطيَّ':'Estimate at completion exceeds the reserve',
+ 'استُهلك نصفُ الاحتياطي':'Half the reserve is consumed',
+ 'لا خطَّ أساسٍ مجمَّدًا بعد — جمّده أولًا من «المعالم»':'No baseline frozen yet — freeze it first in “Milestones”',
+ 'قرارُ التغيير للمهندس وحده':'The change decision is for the engineer only',
+ 'قُرِّر من قبل':'Already decided',
+ 'اعتُمد وطُبِّق على خط الأساس':'Approved and applied to the baseline',
+ 'اعتُمد — بلا أثرٍ مقيسٍ على خط الأساس':'Approved — no measured impact on the baseline',
+ 'طُبِّق على خط الأساس':'Applied to the baseline',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -4755,6 +4779,28 @@ ur:{
  'الطاولةُ نظيفة — لا قرارَ ينتظرك الآن.':'میز صاف ہے — ابھی کوئی فیصلہ آپ کا منتظر نہیں۔',
  'فتحُ البلاغ يحتاج صلاحية تعديل':'رپورٹ کھولنے کے لیے ترمیم کی اجازت درکار',
  'إغلاقُ البلاغ للمهندس وحده':'رپورٹ بند کرنا صرف انجینئر کے لیے',
+ 'أثرُه على الكلفة':'لاگت پر اثر',
+ 'أثرُه على الجدول':'شیڈول پر اثر',
+ 'أثرُه على النطاق':'دائرہ کار پر اثر',
+ 'احتياطي المخاطر':'ہنگامی ریزرو',
+ 'الاحتياطي المرصود':'مختص ریزرو',
+ 'المستهلك من الاحتياطي':'ریزرو کا استعمال',
+ 'نسبة الاحتياطي من السقف':'حد کا ریزرو فیصد',
+ 'قيمته':'اس کی قدر',
+ 'الموعد المستهدف':'ہدف کی تاریخ',
+ 'مشتقٌّ من المواعيد':'آخری تاریخوں سے اخذ',
+ 'متأخّر':'تاخیر',
+ 'مواعيدُ المعالم للمهندس وحده':'سنگ میل کی تاریخیں صرف انجینئر کے لیے',
+ 'يُستهلك الاحتياطيُّ بقدر ما يزيد تقديرُ الاكتمال (EAC) على خط الأساس (BAC) — لا بما يُصرَف: الصرفُ في حدود الخط ليس استهلاكًا للاحتياطي.':'ریزرو اتنا استعمال ہوتا ہے جتنا تکمیل کا تخمینہ (EAC) بیس لائن (BAC) سے بڑھے — خرچ سے نہیں: بیس لائن کے اندر خرچ ریزرو کا استعمال نہیں۔',
+ 'التقديرُ عند الاكتمال تجاوز الاحتياطيَّ كلَّه — يحتاج قرارَ إدارةٍ أو طلبَ تغيير.':'تکمیل کا تخمینہ پورے ریزرو سے بڑھ گیا — انتظامی فیصلہ یا تبدیلی کی درخواست درکار۔',
+ 'التقديرُ عند الاكتمال تجاوز الاحتياطيَّ':'تکمیل کا تخمینہ ریزرو سے زائد',
+ 'استُهلك نصفُ الاحتياطي':'آدھا ریزرو استعمال ہو چکا',
+ 'لا خطَّ أساسٍ مجمَّدًا بعد — جمّده أولًا من «المعالم»':'ابھی کوئی بیس لائن منجمد نہیں — پہلے “سنگ میل” سے منجمد کریں',
+ 'قرارُ التغيير للمهندس وحده':'تبدیلی کا فیصلہ صرف انجینئر کے لیے',
+ 'قُرِّر من قبل':'پہلے فیصلہ ہو چکا',
+ 'اعتُمد وطُبِّق على خط الأساس':'منظور اور بیس لائن پر لاگو',
+ 'اعتُمد — بلا أثرٍ مقيسٍ على خط الأساس':'منظور — بیس لائن پر کوئی ناپا گیا اثر نہیں',
+ 'طُبِّق على خط الأساس':'بیس لائن پر لاگو',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -6333,7 +6379,7 @@ var CFG = {
   dueSurvey:0, dueInstall:0, minCamp:0, minCor:0,
 
   /* المال */
-  budCap:0, budApp:0,
+  budCap:0, budApp:0, reservePct:0,
 
   /* الكتالوج — مفتاحها معرّف الصنف */
   itPts:{}, itPrice:{}, itPrep:{}, itAsm:{},
@@ -6927,6 +6973,9 @@ var FB = {
       FB.db.collection('settings').doc('raci').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.raci = arr; }
       }).catch(function(e){ softErr('سحب مصفوفة المسؤوليات', e, 'تعذّر سحبُ مصفوفة RACI'); });
+      FB.db.collection('settings').doc('miles').get().then(function(doc){
+        if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
+      }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
       FB.db.collection('settings').doc('risks').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.risks = arr; }
       }).catch(function(e){ softErr('سحب سجل المخاطر', e, 'تعذّر سحبُ سجل المخاطر — قد يظهر بالبذرة'); });
@@ -11808,6 +11857,16 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
               return '<option value="' + esc(k) + '">' + esc(t(k)) + '</option>'; }).join('')
           + '</select></div>'
           + '</div>'
+          /* المقاديرُ تُكتَب رقمًا لا وصفًا — فتُطبَّق على خط الأساس عند الاعتماد
+             لا أن يُقال «اعتُمد — جمّد خطًّا جديدًا» ويُترَك التطبيقُ للذاكرة */
+          + '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('أثرُه على الكلفة')) + ' (' + esc(t('ريال')) + ' ±)</label>'
+          +   '<input type="number" id="chgCost" value="0" inputmode="numeric"></div>'
+          + '<div class="field"><label>' + esc(t('أثرُه على الجدول')) + ' (' + esc(t('يوم')) + ' ±)</label>'
+          +   '<input type="number" id="chgDays" value="0" inputmode="numeric"></div>'
+          + '<div class="field"><label>' + esc(t('أثرُه على النطاق')) + ' (' + esc(t('نقطة')) + ' ±)</label>'
+          +   '<input type="number" id="chgScope" value="0" inputmode="numeric"></div>'
+          + '</div>'
           + '<div class="field"><label>' + esc(t('الوصف والمبرّر')) + '</label>'
           + '<textarea id="chgWhy" rows="3" placeholder="'
           + esc(t('ما التغيير؟ ولماذا؟ وما بديلُه إن رُفض؟')) + '"></textarea></div>',
@@ -11817,7 +11876,13 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
         ? cardFlush('الطلبات',
             table(['#','النوع','الأثر','المبرّر','مُقدِّمه','الحالة',''],
               CHANGES.map(function(c, i){
-                return ['<span class="num">CR-' + nm(i+1) + '</span>', esc(c.kind), esc(c.imp),
+                var q = [];
+                if (+c.dCost)  q.push(nm(c.dCost) + ' ' + t('ريال'));
+                if (+c.dDays)  q.push(nm(c.dDays) + ' ' + t('يوم'));
+                if (+c.dScope) q.push(nm(c.dScope) + ' ' + t('نقطة'));
+                return ['<span class="num">CR-' + nm(i+1) + '</span>', esc(c.kind),
+                        esc(t(c.imp)) + (q.length ? '<br><span class="num hint" style="margin:0">' + esc(q.join(' · ')) + '</span>' : '')
+                        + (c.applied ? '<br>' + pill('طُبِّق على خط الأساس', 'ok') : ''),
                         '<span class="hint" style="margin:0">' + esc(c.why.slice(0,60)) + '</span>',
                         esc(c.by),
                         pill(c.st, c.st==='معتمد'?'ok':(c.st==='مرفوض'?'off':'warn')),
@@ -11887,26 +11952,34 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
     var tot = MILES.reduce(function(a,m){ return a + m.w; }, 0);
     var earned = MILES.reduce(function(a,m){ return a + m.w * mileDone(m); }, 0);
     var doneN = MILES.filter(function(m){ return mileDone(m) >= 0.999; }).length;
+    var lateN = MILES.filter(mileLate).length;
 
     return stats([['المعالم', N(MILES.length)],
                   ['بلغت', N(doneN), doneN ? 'ok' : ''],
+                  ['متأخّرة عن موعدها', N(lateN), lateN ? 'bad' : 'ok'],
                   ['الإنجاز الموزون', nm(Math.round(earned)) + '٪', 'acc'],
                   ['المتبقّي', nm(Math.round(tot - earned)) + '٪']])
 
       + card('', meter('الإنجاز الموزون بالمعالم', earned, tot))
 
       + cardFlush('المعالم',
-          table(['#','المعلَم','الوزن ٪','يعتمد على','الإنجاز','الحالة'],
+          table(['#','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز','الحالة'],
             MILES.map(function(m){
-              var p = mileDone(m);
+              var p = mileDone(m), dt = mileDateOf(m), late = mileLate(m);
+              var manual = mileDates().some(function(x){ return x.id === m.id && x.d; });
               return ['<span class="num">' + esc(m.id) + '</span>',
                       '<strong>' + esc(t(m.n)) + '</strong>', N(m.w),
                       m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—',
+                      may('settings')
+                        ? '<input type="date" value="' + esc(dt) + '" data-mld="' + esc(m.id) + '" style="width:150px">'
+                          + (dt && !manual ? '<div class="hint" style="margin:2px 0 0">' + esc(t('مشتقٌّ من المواعيد')) + '</div>' : '')
+                        : (dt ? '<span class="num">' + esc(dt) + '</span>' : '—'),
                       nm(Math.round(p * 100)) + '٪',
-                      pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
-                           p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''))];
+                      late ? pill('متأخّر', 'off')
+                           : pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
+                                  p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''))];
             }),
-            ['','<b>' + t('الإجمالي') + '</b>', N(tot), '',
+            ['','<b>' + t('الإجمالي') + '</b>', N(tot), '', '',
              '<b>' + nm(Math.round(earned)) + '٪</b>', '']),
           btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"'))
 
@@ -12052,6 +12125,12 @@ function riskSignals(){
     if (x && x.status !== 'معتمد' && x.when && x.when < today && !svDone(STATE.recs[x.site])) late++;
   });
   if (late) out.push([late > 10 ? 'bad' : 'wrn', nm(late) + ' ' + t('مهمةً تجاوزت موعدَها'), 'req']);
+  var resPct = cfgGet('reservePct') || 0, reserve = Math.round((cfgGet('budCap') || 0) * resPct / 100);
+  if (v && reserve){
+    var eaten = Math.max(0, v.EAC - v.BAC);
+    if (eaten > reserve)          out.push(['bad', t('التقديرُ عند الاكتمال تجاوز الاحتياطيَّ') + ' — ' + nm(eaten - reserve), 'budm']);
+    else if (eaten > reserve / 2) out.push(['wrn', t('استُهلك نصفُ الاحتياطي') + ' — ' + nm(eaten) + ' / ' + nm(reserve), 'budm']);
+  }
   var noNet = STATE.sites.filter(function(x){ return !x.net && !(typeof ipPreset === 'function' && ipPreset(x)); }).length;
   if (noNet > 100) out.push(['wrn', nm(noNet) + ' ' + t('نقطةً بلا بادئة شبكة'), 'ips']);
   if (!out.length) out.push(['ok', t('لا مؤشرَ خطرٍ حيًّا الآن'), '']);
@@ -12094,23 +12173,61 @@ function chgAdd(){
   var imp  = (document.getElementById('chgImp') || {}).value || 'لا أثر';
   var why  = (document.getElementById('chgWhy') || {}).value || '';
   if (!why.trim()){ toast(t('اكتب المبرّر أولًا')); return; }
+  var num = function(id){ var e = document.getElementById(id); return e ? (cfgN(e.value) || 0) : 0; };
   CHANGES.push({ kind:kind, imp:imp, why:why, by:STATE.meta.name || 'محمد صفوت',
-                 at:Date.now(), st:'مقدَّم' });
+                 at:Date.now(), st:'مقدَّم',
+                 dCost:num('chgCost'), dDays:num('chgDays'), dScope:num('chgScope') });
   CORE.dirty('changes', 'CR-' + CHANGES.length, CHANGES[CHANGES.length-1]);
   logEvent('طلب تغيير — ' + kind + ' · ' + imp);
   toast(t('قُدّم الطلب'));
   render(1);
 }
 
+/* ═══ التغييرُ المعتمَدُ يُطبَّق على خط الأساس آليًّا ═══
+   كان الاعتمادُ يقول «اعتُمد — جمّد خطَّ أساسٍ جديد» ويترك التطبيقَ للذاكرة:
+   فيبقى خطُّ الأساس القديمُ يقيس المشروعَ على نطاقٍ وميزانيةٍ لم تعودا،
+   وتقول القيمةُ المكتسبة «متجاوزٌ للكلفة» عن تغييرٍ اعتمده المدير بنفسه.
+   صار الاعتمادُ يُطبِّق المقاديرَ: الكلفةُ تُضاف إلى الميزانية عند الاكتمال،
+   والأيامُ تُزاح بها المواعيدُ المستهدفة، والنطاقُ يُعدَّل — ويُجمَّد خطُّ
+   أساسٍ جديدٌ برقمٍ أعلى يحمل رقمَ التغيير سببًا، فيبقى القديمُ في سجله. */
+function chgApply(c, no){
+  if (!BASE){ toast(t('لا خطَّ أساسٍ مجمَّدًا بعد — جمّده أولًا من «المعالم»')); return false; }
+  var dCost = +c.dCost || 0, dDays = +c.dDays || 0, dScope = +c.dScope || 0;
+  if (!dCost && !dDays && !dScope) return false;
+  var prev = BASE;
+  BASE = JSON.parse(JSON.stringify(prev));
+  BASE.ver = (prev.ver || 1) + 1;
+  BASE.at = Date.now(); BASE.by = STATE.meta.name || 'محمد صفوت';
+  BASE.bac = Math.round((prev.bac || 0) + dCost);
+  BASE.scope = (prev.scope || 0) + dScope;
+  BASE.reason = no + ' \u00b7 ' + c.kind;
+  BASE.applied = (prev.applied || []).concat([{ no:no, dCost:dCost, dDays:dDays, dScope:dScope, at:Date.now() }]);
+  if (dDays){
+    /* المواعيدُ تُزاح — والوتيرةُ تقرؤها من الإعدادات فتتغيّر إجابةُ «هنلحق؟» معها */
+    ['dueSurvey','dueInstall'].forEach(function(k){
+      var v = cfgGet(k);
+      if (v) cfgSet(k, null, v + dDays * 86400000);   /* المواعيدُ تُخزَّن ميلّي ثانية */
+    });
+  }
+  CORE.set('baseline', 'v' + BASE.ver, BASE);
+  logEvent('خط أساس جديد ' + nm(BASE.ver) + ' — تطبيق ' + no
+           + (dCost ? ' \u00b7 كلفة ' + nm(dCost) : '') + (dDays ? ' \u00b7 أيام ' + nm(dDays) : '') + (dScope ? ' \u00b7 نطاق ' + nm(dScope) : ''));
+  return true;
+}
 function chgDecide(i, ok){
   var c = CHANGES[i];
   if (!c) return;
+  if (!may('approve')){ toast(t('قرارُ التغيير للمهندس وحده')); return; }
+  if (c.st === 'معتمد' || c.st === 'مرفوض'){ toast(t('قُرِّر من قبل')); return; }
   c.st = ok ? 'معتمد' : 'مرفوض';
   c.decBy = STATE.meta.name || 'محمد صفوت';
   c.decAt = Date.now();
-  CORE.dirty('changes', 'CR-' + (i+1), c);
-  logEvent((ok ? 'اعتماد' : 'رفض') + ' طلب تغيير — ' + c.kind);
-  toast(ok ? t('اعتُمد — جمّد خط أساسٍ جديد') : t('رُفض'));
+  var no = 'CR-' + (i+1), applied = false;
+  if (ok) applied = chgApply(c, no);
+  c.applied = applied;
+  CORE.dirty('changes', no, c);
+  logEvent((ok ? 'اعتماد' : 'رفض') + ' طلب تغيير — ' + no + ' \u00b7 ' + c.kind);
+  toast(ok ? (applied ? t('اعتُمد وطُبِّق على خط الأساس') + ' \u00b7 ' + nm(BASE.ver) : t('اعتُمد — بلا أثرٍ مقيسٍ على خط الأساس')) : t('رُفض'));
   render(1);
 }
 
@@ -12433,10 +12550,30 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
       byCat[b.cat] = (byCat[b.cat] || 0) + (+b.amt || 0); });
     var cats = Object.keys(byCat).sort(function(a,b){ return byCat[b] - byCat[a]; });
 
+    /* ═══ الاحتياطي ═══
+       الميزانيةُ المعتمدةُ سقفٌ واحد — فلا يُعرَف إن كان التجاوزُ يأكل من
+       احتياطيِّ المخاطر المرصود أم من لحم المشروع. صار الاحتياطيُّ نسبةً من
+       السقف تُرصَد في الإعدادات، ويُقاس ما استُهلك منه: ما زاد عن التقدير
+       عند الاكتمال على خطِّ الأساس هو ما أُكل من الاحتياطي. */
+    var resPct = cfgGet('reservePct') || 0, reserve = Math.round(cap * resPct / 100);
+    var v = (typeof evm === 'function') ? evm() : null;
+    var eaten = v ? Math.max(0, v.EAC - v.BAC) : 0;
     return stats([['الميزانية المعتمدة', cap ? N(cap) : '—', 'acc'],
                   ['المنصرف', N(spent)],
                   ['المتبقي', cap ? N(cap - spent) : '—', cap ? 'ok' : ''],
-                  ['نسبة الصرف', cap ? (nm(Math.round(spent / cap * 100)) + '٪') : '—']])
+                  ['نسبة الصرف', cap ? (nm(Math.round(spent / cap * 100)) + '٪') : '—'],
+                  ['الاحتياطي المرصود', reserve ? N(reserve) : '—', reserve ? 'acc' : 'wrn'],
+                  ['المستهلك من الاحتياطي', reserve ? N(Math.min(eaten, reserve)) : (eaten ? N(eaten) : '—'),
+                   !reserve ? '' : (eaten > reserve ? 'bad' : (eaten ? 'wrn' : 'ok'))]])
+      + (may('settings')
+        ? card('احتياطي المخاطر',
+            '<div class="grid cols-2"><div class="field" style="margin:0"><label>' + esc(t('نسبة الاحتياطي من السقف')) + ' (' + esc(t('٪')) + ')</label>'
+            + cfgInput('reservePct', undefined, { dec:0 }) + '</div>'
+            + '<div class="field" style="margin:0"><label>' + esc(t('قيمته')) + '</label><div class="num" style="padding:10px 0">' + (reserve ? nm(reserve) : '—') + '</div></div></div>'
+            + (reserve ? meter('المستهلك من الاحتياطي', Math.min(eaten, reserve), reserve) : '')
+            + '<p class="hint" style="margin:8px 0 0">' + esc(t('يُستهلك الاحتياطيُّ بقدر ما يزيد تقديرُ الاكتمال (EAC) على خط الأساس (BAC) — لا بما يُصرَف: الصرفُ في حدود الخط ليس استهلاكًا للاحتياطي.')) + '</p>'
+            + (eaten > reserve && reserve ? alertBox('error', t('التقديرُ عند الاكتمال تجاوز الاحتياطيَّ كلَّه — يحتاج قرارَ إدارةٍ أو طلبَ تغيير.')) : ''))
+        : (reserve && eaten > reserve ? alertBox('error', t('التقديرُ عند الاكتمال تجاوز الاحتياطيَّ كلَّه — يحتاج قرارَ إدارةٍ أو طلبَ تغيير.')) : ''))
 
       + (cap ? card('', meter('المستهلك من السقف المعتمد', spent, cap)) : '')
 
@@ -12714,6 +12851,43 @@ var MILES = [
   { id:'M8', n:'التسليم الابتدائي',        d:'', w:2,  dep:'M7' }
 ];
 
+/* ═══ تواريخُ المعالم ═══
+   كانت المعالمُ بلا تواريخَ — وزنٌ وتبعيةٌ ونسبةُ إنجازٍ ولا موعدَ يُقاس
+   عليه التأخّر. صار لكلِّ معلَمٍ موعدٌ مستهدَف: يُشتقُّ آليًّا من موعدَي
+   انتهاء المسح والتركيب بتوزيع الأوزان على المسار، ويُضبَط باليد ويُحفَظ
+   في settings/miles — واليدُ تغلب الاشتقاق. ومنه يُعرَف المتأخّرُ: موعدٌ
+   مضى والإنجازُ دون التمام. */
+function mileDates(){
+  if (!Array.isArray(STATE.mileDates)) STATE.mileDates = [];
+  return STATE.mileDates;
+}
+function mileDateOf(m){
+  var manual = mileDates().filter(function(x){ return x.id === m.id; })[0];
+  if (manual && manual.d) return manual.d;
+  var dS = cfgGet('dueSurvey'), dI = cfgGet('dueInstall');
+  if (!dS && !dI) return '';
+  /* المسحُ وما قبله يقيس على موعد المسح، والباقي على موعد التركيب */
+  var isSv = /مسح|النطاق/.test(m.n);
+  var end = isSv ? (dS || dI) : (dI || dS);
+  var start = BASE ? BASE.at : (end - (cfgGet('phase') || 4) * 30 * 86400000);
+  var chain = MILES.filter(function(x){ return isSv ? /مسح|النطاق/.test(x.n) : !/مسح|النطاق/.test(x.n); });
+  var tot = chain.reduce(function(a, x){ return a + x.w; }, 0) || 1, cum = 0;
+  for (var i = 0; i < chain.length; i++){ cum += chain[i].w; if (chain[i].id === m.id) break; }
+  var s0 = isSv ? start : ((dS && dS < end) ? dS : start);
+  return dayKey(s0 + (end - s0) * (cum / tot));
+}
+function mileDateSet(id, d){
+  if (!may('settings')){ toast(t('مواعيدُ المعالم للمهندس وحده')); return; }
+  var L = mileDates().filter(function(x){ return x.id !== id; });
+  if (d) L.push({ id:id, d:d });
+  STATE.mileDates = L;
+  CORE.set('cfg', 'miles', L.slice());
+  logEvent('موعد معلَم — ' + id + ' \u00b7 ' + (d || 'أُعيد إلى الاشتقاق'));
+}
+function mileLate(m){
+  var d = mileDateOf(m);
+  return !!(d && d < dayKey(Date.now()) && mileDone(m) < 0.999);
+}
 function mileDone(m){
   var S = siteStats();
   var byZone = function(z, type){
@@ -13018,7 +13192,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.45' + '.docx" download>⬇ '
+              +   'V15.46' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -22712,6 +22886,9 @@ document.addEventListener('input', function(e){
 
 document.addEventListener('change', function(e){
   var el = e.target;
+  if (el && el.hasAttribute && el.hasAttribute('data-mld')){
+    mileDateSet(el.getAttribute('data-mld'), el.value || ''); render(); return;
+  }
   if (el && el.hasAttribute && el.hasAttribute('data-cfgdate')){
     var dv = el.value ? Date.parse(el.value) : 0;
     cfgSet(el.getAttribute('data-cfgdate'), null, isFinite(dv) ? dv : 0);
