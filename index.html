@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.60</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.61</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2960,6 +2960,8 @@ en:{
  'تعذّرت قراءةُ وثيقة حسابك':'Could not read your account document',
  'سجّل الدخول أولًا':'Sign in first',
  'لا شبكة':'No network',
+ 'وثيقةً عادت للرفع':'documents returned for upload',
+ 'بلا شبكة — تُقرأ عند الاتصال':'No network — read on connect',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5099,6 +5101,8 @@ ur:{
  'تعذّرت قراءةُ وثيقة حسابك':'آپ کا اکاؤنٹ دستاویز نہیں پڑھا جا سکا',
  'سجّل الدخول أولًا':'پہلے سائن ان کریں',
  'لا شبكة':'نیٹ ورک نہیں',
+ 'وثيقةً عادت للرفع':'دستاویزات اپلوڈ کے لیے واپس',
+ 'بلا شبكة — تُقرأ عند الاتصال':'نیٹ ورک نہیں — کنیکٹ ہونے پر پڑھی جائے گی',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7033,7 +7037,12 @@ var CORE = {
         SOFT_SAID['رفع الطابور'] = 1;
         toast(nm(r.failed.length) + ' ' + t('وثيقةً رُفضت — السببُ في «المزامنة والتعارض»'));
       }
-      if (r.ok.length){ STATE.meta.lastSync = Date.now(); if (typeof rollupToday === 'function') rollupToday(); }
+      if (r.ok.length){
+        STATE.meta.lastSync = Date.now();
+        if (typeof rollupToday === 'function') rollupToday();
+        /* نجحت دفعةٌ — يُصفَّر التكتّمُ ليُقال الفشلُ التالي ولا يُبتلَع */
+        if (!r.failed.length) SOFT_SAID = {};
+      }
       CORE.saveLocal();
       syncBadge();
       CORE._busy = false;
@@ -12820,8 +12829,34 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
    (أدنى الأدوار — والقاعدةُ لا تسمح بأكثر) فيخرج من الحصار ويُرفَع عملُه،
    ثم يرقّيه المكتبُ إلى دوره الحقيقي. */
 var MYDOC = { at:0, has:null, err:'' };
+/* ═══ إصلاحُ السبب يُطلِق ما حُبس بسببه ═══
+   الوثائقُ التي عُزلت لأن القاعدةَ رفضتها كانت تبقى معزولةً بعد زوال السبب:
+   يُصلَح الحسابُ فلا يعود شيءٌ إلى الطابور، وينتظر صاحبُه أن يضغط ↻ على كلِّ
+   واحدةٍ ولا يدري أن عليه ذلك. صار إصلاحُ الوثيقة يُعيد كلَّ ما عُزل برفضِ
+   صلاحيةٍ إلى الطابور، ويُصفَّر تكتّمُ الرسائل، ويُدفَع الطابورُ فورًا. */
+function permRelease(){
+  var PZ = STATE.poison || [], back = 0;
+  STATE.poison = PZ.filter(function(x){
+    if (!/permission|insufficient|PERMISSION_DENIED/i.test(String(x.err || ''))) return true;
+    CORE.dirty(x.kind, x.id, x.v); back++;
+    return false;
+  });
+  /* التكتّمُ يُصفَّر: كان يُقال مرةً واحدةً في العمر، فلا يُقال بعد الإصلاح
+     إن فشل شيءٌ آخر — ولا يُقال إنه نجح. */
+  SOFT_SAID = {};
+  if (back) logEvent('عادت للرفع بعد إصلاح الصلاحية — ' + nm(back) + ' وثيقة');
+  CORE.saveLocal();
+  if (STATE.meta.online) setTimeout(function(){ CORE._busy = false; CORE.flush(); }, 200);
+  return back;
+}
 function myDocFetch(force){
-  if (!FB.ready || !FB.db || !STATE.meta.uid) return Promise.resolve(null);
+  if (!STATE.meta.uid) return Promise.resolve(null);
+  /* بلا شبكةٍ تبقى الحالةُ «تُقرأ…» إلى الأبد — فيُظنُّ أن القراءةَ معلّقةٌ
+     وهي لم تبدأ. تُهيَّأ الوصلةُ إن أمكن، وإلا قيلت الحالُ كما هي. */
+  if (!FB.ready || !FB.db){
+    if (!STATE.meta.online){ MYDOC.err = 'offline'; return Promise.resolve(null); }
+    return FB.init().then(function(ok){ return ok ? myDocFetch(true) : null; }).catch(function(){ return null; });
+  }
   if (!force && Date.now() - MYDOC.at < 60000) return Promise.resolve(MYDOC.has);
   MYDOC.at = Date.now();
   return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
@@ -12843,7 +12878,9 @@ function myDocFix(){
     if (doc && doc.exists){
       STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
       MYDOC.has = true;
-      toast(t('الوثيقةُ موجودةٌ — سُحبت'));
+      var back0 = permRelease();
+      toast(t('الوثيقةُ موجودةٌ — سُحبت')
+            + (back0 ? ' \u00b7 ' + nm(back0) + ' ' + t('وثيقةً عادت للرفع') : ''));
       render(1); return true;
     }
     /* القاعدةُ لا تقبل إلا «فني» لمن يسجّل نفسَه — والترقيةُ من المكتب */
@@ -12853,7 +12890,9 @@ function myDocFix(){
       STATE.users[STATE.meta.uid] = v;
       MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
       logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + STATE.meta.uid);
-      toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك'));
+      var back = permRelease();
+      toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك')
+            + (back ? ' \u00b7 ' + nm(back) + ' ' + t('وثيقةً عادت للرفع') : ''));
       render(1); return true;
     }).catch(function(e){
       softErr('إنشاء وثيقة الحساب', e, 'تعذّر إنشاءُ وثيقة حسابك — راجع المكتب');
@@ -14106,7 +14145,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.60' + '.docx" download>⬇ '
+              +   'V15.61' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18945,7 +18984,8 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       ['وثيقةُ الحساب users/{uid}',
         myDoc ? pill('موجودة','ok')
               : (MYDOC.has === false ? pill('غيرُ موجودة — هذا سببُ الرفض','off')
-                                     : pill('تُقرأ…','warn'))],
+                 : (MYDOC.err === 'offline' ? pill('بلا شبكة — تُقرأ عند الاتصال','warn')
+                                            : pill('تُقرأ…','warn')))],
       ['دورُها', myDoc ? esc(t((ROLES[myDoc.role] || {}).n || myDoc.role || '—')) : '—'],
       ['active', myDoc ? (myDoc.active === false ? pill('false — معطَّل','off') : pill(myDoc.active === true ? 'true' : 'غير مكتوب (يُعدُّ فعّالًا)', myDoc.active === true ? 'ok' : 'warn')) : '—']
     ];
