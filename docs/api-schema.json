@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.71",
+  "app_version": "V15.72",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1440,7 +1440,8 @@
     "V15.68": "HO_TPL لسبعة أنواع + HO_PARTIES/HO_SIGNERS (CFG.hoParties/hoSigners) + hoSetupCard في consts + handDocSite أُعيد على نموذج الوزارة + ورقة SHEETS.hodoc + زرّا إكسل وPDF. الجرد 54: audit-hodoc.",
     "V15.69": "readyRows/readyCard: 11 بندًا لجاهزية الموسم بسببه وزر موضع ضبطه، في mywork وhb (may settings). الجرد 55: audit-ready.",
     "V15.70": "seedPlan/seedApply/seedCard: مقترح مبني على البيانات يُكتَب في الحقول الفارغة فقط (may settings). audit-craft: عشرة فحوص صنعة (مؤقتات/مستمعات/حقن/الصفر/حجم الدوال/قواعد مفتوحة/أسرار/تسجيل الجرود). الجردان 56 و57.",
-    "V15.71": "baseSet يمنع التجميد بلا cfg.ph (BAC = مجموع النقاط × ph). سعر النقطة صار بندًا في readyRows فوق سقف الميزانية. audit-seed يقبل البنود البشرية الستة."
+    "V15.71": "baseSet يمنع التجميد بلا cfg.ph (BAC = مجموع النقاط × ph). سعر النقطة صار بندًا في readyRows فوق سقف الميزانية. audit-seed يقبل البنود البشرية الستة.",
+    "V15.72": "gateChain/gateFirst/gateCard/gateSay: سلسلة شروط لكل نوع تُعرَض في asnSheet وفي رسالة الرفض. asnCommit (الفردي والجماعي) يفحص بالسلسلة لكل نوع لا للتركيب وحده. الجرد 58: audit-gate."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2616,7 +2617,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 57,
+  "audits_total": 58,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4078,5 +4079,29 @@
       "readyRows: بند «سعر النقطة» → consts، فوق budCap"
     ],
     "why_first": "budCap يعطّل شاشة الميزانية؛ ph يعطّل القيمة المكتسبة وخط الأساس والانحرافات كلها"
+  },
+  "gate_chain_v15_72": {
+    "chains": {
+      "visit": [],
+      "install": [
+        "زيارة",
+        "اعتماد الزيارة",
+        "حل معتمد"
+      ],
+      "maint": [
+        "+ تركيب مسجّل",
+        "+ اعتماد التركيب"
+      ],
+      "dis": [
+        "+ تسليم بمحضر"
+      ]
+    },
+    "extra": "إسناد مفتوح من النوع نفسه يُغلق (taskKindOf) ويُقال رقمه ومن يمسكه",
+    "ui": [
+      "asnGateCard في لوح الإسناد لنقطة واحدة",
+      "gateSay في رفض المسارين",
+      "«ابدأ هنا» + زر ← اذهب على أول ناقص"
+    ],
+    "fixed": "الفحص كان لـinstall فقط — dis وmaint كانا يمرّان بلا شرط في المسار الفردي"
   }
 }

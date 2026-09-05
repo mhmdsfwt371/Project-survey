@@ -134,6 +134,8 @@ jobs:
         run: node scripts/audit-seed.mjs
       - name: جرد الصنعة — ما لا يظهر في شاشة
         run: node scripts/audit-craft.mjs
+      - name: جرد سلسلة الشروط — الطريق يُرى قبل الرفض
+        run: node scripts/audit-gate.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
