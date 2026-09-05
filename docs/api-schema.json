@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.70",
+  "app_version": "V15.71",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1439,7 +1439,8 @@
     "V15.67": "نموذج disp2 (الفك) + تبويب maintForm (الصيانة) + disSave/maintSave/maintList/maintDone + photoBox عام. stepDone/stepsCard: كل حفظ يُعلن (notif بلا وجهة + سطر في «آخر ما تمّ») في now وover. إصلاح بنيوي: colOf/col + STATE init + saveLocal/loadLocal + سحب maints/steps + قواعد maints وsteps. الجرود 51-53.",
     "V15.68": "HO_TPL لسبعة أنواع + HO_PARTIES/HO_SIGNERS (CFG.hoParties/hoSigners) + hoSetupCard في consts + handDocSite أُعيد على نموذج الوزارة + ورقة SHEETS.hodoc + زرّا إكسل وPDF. الجرد 54: audit-hodoc.",
     "V15.69": "readyRows/readyCard: 11 بندًا لجاهزية الموسم بسببه وزر موضع ضبطه، في mywork وhb (may settings). الجرد 55: audit-ready.",
-    "V15.70": "seedPlan/seedApply/seedCard: مقترح مبني على البيانات يُكتَب في الحقول الفارغة فقط (may settings). audit-craft: عشرة فحوص صنعة (مؤقتات/مستمعات/حقن/الصفر/حجم الدوال/قواعد مفتوحة/أسرار/تسجيل الجرود). الجردان 56 و57."
+    "V15.70": "seedPlan/seedApply/seedCard: مقترح مبني على البيانات يُكتَب في الحقول الفارغة فقط (may settings). audit-craft: عشرة فحوص صنعة (مؤقتات/مستمعات/حقن/الصفر/حجم الدوال/قواعد مفتوحة/أسرار/تسجيل الجرود). الجردان 56 و57.",
+    "V15.71": "baseSet يمنع التجميد بلا cfg.ph (BAC = مجموع النقاط × ph). سعر النقطة صار بندًا في readyRows فوق سقف الميزانية. audit-seed يقبل البنود البشرية الستة."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4068,5 +4069,14 @@
       "كل audit-*.mjs مسجّل (استثناء VIA_PREFLIGHT)"
     ],
     "result": "عشرة فحوص نظيفة؛ onDocClick 44KB أكبر دالة ويحرسها audit-writes"
+  },
+  "point_price_v15_71": {
+    "found": "دورة كاملة أعطت نقاطًا صحيحة وEVM أصفارًا",
+    "cause": "BASE.bac = Σ(ptsSurvey+ptsInstall) × cfg.ph؛ ph=0 → bac=0 → PV/EV/SPI/CPI أصفار بلا شكوى",
+    "fix": [
+      "baseSet يرفض التجميد بلا ph ويقول السبب",
+      "readyRows: بند «سعر النقطة» → consts، فوق budCap"
+    ],
+    "why_first": "budCap يعطّل شاشة الميزانية؛ ph يعطّل القيمة المكتسبة وخط الأساس والانحرافات كلها"
   }
 }

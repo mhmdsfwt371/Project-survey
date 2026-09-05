@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.70</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.71</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3150,6 +3150,10 @@ en:{
  'بدءُ الموسم للمهندس وحده':'Starting the season is for the engineer only',
  'حقلًا كُتب بمقترحه — راجعه في شاشته':'fields written with their proposal — review each in its screen',
  'نسبةُ الاحتياطي':'Reserve share',
+ 'سعرُ النقطة':'Point price',
+ 'بلا سعرٍ للنقطة تكون القيمةُ المكتسبة صفرًا مهما أُنجز — ولا يُجمَّد خطُّ أساسٍ له ميزانية':'Without a point price the earned value is zero however much is done — and no baseline with a budget can be frozen',
+ 'بلا سقفٍ لا انحرافَ كلفةٍ ولا احتياطيَّ يُقاس':'Without a ceiling there is no cost variance and no reserve to measure',
+ 'اضبط سعرَ النقطة أوّلًا — وإلا كان خطُّ الأساس بميزانيةٍ صفر':'Set the point price first — otherwise the baseline has a zero budget',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5465,6 +5469,10 @@ ur:{
  'بدءُ الموسم للمهندس وحده':'سیزن شروع کرنا صرف انجینئر کے لیے',
  'حقلًا كُتب بمقترحه — راجعه في شاشته':'خانے تجویز کے ساتھ لکھے گئے — ہر ایک کو اس کی اسکرین میں دیکھیں',
  'نسبةُ الاحتياطي':'ریزرو کا حصہ',
+ 'سعرُ النقطة':'پوائنٹ کی قیمت',
+ 'بلا سعرٍ للنقطة تكون القيمةُ المكتسبة صفرًا مهما أُنجز — ولا يُجمَّد خطُّ أساسٍ له ميزانية':'پوائنٹ کی قیمت کے بغیر ارنڈ ویلیو صفر رہتی ہے چاہے کتنا ہی کام ہو',
+ 'بلا سقفٍ لا انحرافَ كلفةٍ ولا احتياطيَّ يُقاس':'حد کے بغیر لاگت کا فرق اور ریزرو نہیں ناپا جاتا',
+ 'اضبط سعرَ النقطة أوّلًا — وإلا كان خطُّ الأساس بميزانيةٍ صفر':'پہلے پوائنٹ کی قیمت مقرر کریں — ورنہ بیس لائن کا بجٹ صفر ہوگا',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -13081,6 +13089,12 @@ function drvTest(){
 var BASE = null;
 
 function baseSet(){
+  /* تجميدُ خطِّ أساسٍ ميزانيتُه صفرٌ يُسكِت القيمةَ المكتسبةَ إلى الأبد ولا
+     يشكو — ومن جمّده يظنُّ أنه خطّط. يُقال له ما ينقص قبل التجميد. */
+  if (!cfgGet('ph')){
+    toast(t('اضبط سعرَ النقطة أوّلًا — وإلا كان خطُّ الأساس بميزانيةٍ صفر'));
+    return null;
+  }
   var S = siteStats();
   BASE = {
     at: Date.now(),
@@ -14828,7 +14842,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.70' + '.docx" download>⬇ '
+              +   'V15.71' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18985,7 +18999,12 @@ function readyRows(){
     { ok:!!cfgGet('insCamp') || !!cfgGet('insCor'), t:'نقاطُ التركيب', why:t('بلا نقاطٍ للتركيب لا يُقاس عملُ فرق التركيب'), p:'pts' },
     { ok:!!cfgGet('tgtSurvey'),     t:'تارجتُ المسح اليوميّ',  why:t('بلا تارجتٍ لا تُقاس الوتيرةُ ولا يُعرَف «هل نلحق؟»'), p:'setup' },
     { ok:!!cfgGet('dueSurvey') && !!cfgGet('dueInstall'), t:'موعدا المسح والتركيب', why:t('بلا موعدٍ لا يُعرَف متأخّرٌ من مُنجِز'), p:'setup' },
-    { ok:!!cfgGet('budCap'),        t:'سقفُ الميزانية',        why:t('بلا سقفٍ لا قيمةَ مكتسبةً ولا انحرافَ كلفة'), p:'budget' },
+    /* سعرُ النقطة يدخل خطَّ الأساس نفسَه: BAC = مجموعُ النقاط × السعر.
+       فبلا سعرٍ يُجمَّد خطُّ أساسٍ ميزانيتُه صفر، وتعود القيمةُ المكتسبةُ
+       أصفارًا مهما أُنجز — وهو أخطرُ من غياب السقف لأنه يُسكِت المؤشِّراتِ
+       كلَّها لا شاشةَ الميزانية وحدَها. */
+    { ok:!!cfgGet('ph'),            t:'سعرُ النقطة',           why:t('بلا سعرٍ للنقطة تكون القيمةُ المكتسبة صفرًا مهما أُنجز — ولا يُجمَّد خطُّ أساسٍ له ميزانية'), p:'consts' },
+    { ok:!!cfgGet('budCap'),        t:'سقفُ الميزانية',        why:t('بلا سقفٍ لا انحرافَ كلفةٍ ولا احتياطيَّ يُقاس'), p:'budget' },
     { ok:!!BASE,                    t:'خطُّ الأساس مجمَّد',     why:t('بلا خطِّ أساسٍ لا يُقارَن الواقعُ بشيء'), p:'miles' },
     { ok:MILES.some(function(m){ return mileDateOf(m); }), t:'مواعيدُ المعالم', why:t('بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر'), p:'miles' },
     { ok:signed,                    t:'أسماءُ المعتمِدين',     why:t('محضرٌ بأسماءٍ فارغةٍ يُرَدُّ من الوزارة'), p:'consts' },

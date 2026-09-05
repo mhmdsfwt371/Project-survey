@@ -48,7 +48,10 @@ w.goPage('mywork'); w.render(1);
 const h=d.getElementById('content').textContent;
 T(h.indexOf('ابدأ الموسم بمقترح')<0, 'والبطاقةُ تختفي بعد الكتابة');
 const rdy=w.readyRows().filter(r=>!r.ok).map(r=>r.t);
-T(rdy.length<=5, 'وجاهزيةُ الموسم انخفضت إلى ما يبقى للإنسان', rdy.join(' · '));
+/* الباقي كلُّه قراراتُ إنسانٍ لا تُقترَح: سعرُ النقطة والميزانيةُ وخطُّ
+   الأساس والأسماءُ وتوحيدُ الشركات والنسخة. */
+T(rdy.length<=6 && rdy.every(x=>/سعرُ النقطة|الميزانية|خطُّ الأساس|المعتمِدين|المركَّبة|الاحتياطية/.test(x)),
+  'وجاهزيةُ الموسم انخفضت إلى ما يبقى للإنسان', rdy.join(' · '));
 /* الحماية */
 w.ROLE='tech'; w.STATE.meta.role='tech';
 const before=w.cfgGet('tgtSurvey'); w.cfgSet('tgtSurvey',null,0); w.seedApply();
