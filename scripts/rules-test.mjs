@@ -87,6 +87,14 @@ await ok  ('حسابٌ بلا حقل active يقرأ',   getDoc(doc(as('noflag')
 await ok  ('ويكتب سجلًّا',                setDoc(doc(as('noflag'), 'events/E9'), { what:'x', ts:1 }));
 await ok  ('ويكتب لقطةَ اليوم',           setDoc(doc(as('noflag'), 'stats/2026-09-05'), { n:1 }));
 await deny('والمعطَّلُ صراحةً (false) لا يقرأ', getDoc(doc(as('off'), 'recs/S1')));
+console.log('\n══ من لا وثيقةَ له: لا يُرفَض بغموضٍ ويسجّل نفسَه فنيًّا ══');
+const nodoc = env.authenticatedContext('newbie', { email:'newbie@nusuk.test' }).firestore();
+await deny('بلا وثيقةٍ لا يقرأ السجلات',            getDoc(doc(nodoc, 'recs/S1')));
+await deny('ولا يكتب حدثًا',                        setDoc(doc(nodoc, 'events/E8'), { what:'x' }));
+await deny('ولا يسجّل نفسَه مهندسًا',                setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'engineer', active:true }));
+await ok  ('ويسجّل نفسَه فنيًّا فيخرج من الحصار',    setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'tech', active:true }));
+await ok  ('ثم يكتب عملَه',                          setDoc(doc(nodoc, 'events/E8'), { what:'x', ts:1 }));
+await deny('ولا يرفع نفسَه بعد ذلك',                 updateDoc(doc(nodoc, 'users/newbie'), { role:'admin' }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);

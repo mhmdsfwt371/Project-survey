@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.59</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.60</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2947,6 +2947,19 @@ en:{
  'false — معطَّل':'false — disabled',
  'غير مكتوب (يُعدُّ فعّالًا)':'Not written (treated as active)',
  '«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.':'“Missing or insufficient permissions” means the rules do not recognise this account: its document is not under the uid, its role is not one of the roles, or active is written as false.',
+
+ /* V15.60 — وثيقةُ الحساب */
+ 'غيرُ موجودة — هذا سببُ الرفض':'Not present — this is the reason for the rejection',
+ 'تُقرأ…':'Reading…',
+ 'أنشئ وثيقة حسابي':'Create my account document',
+ 'أعد قراءة وثيقتي':'Re-read my document',
+ 'لا وثيقةَ لحسابك باسم معرِّفه — فكلُّ ما تكتبه يُرفَض. أنشئها الآن (فنيًّا) ليُرفَع عملُك، ثم اطلب من المكتب ترقيةَ دورك.':'Your account has no document under its id — so everything you write is rejected. Create it now (as a technician) so your work uploads, then ask the office to raise your role.',
+ 'أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك':'Your account document was created as technician — ask the office to raise your role',
+ 'الوثيقةُ موجودةٌ — سُحبت':'The document exists — fetched',
+ 'تعذّر إنشاءُ وثيقة حسابك — راجع المكتب':'Could not create your account document — check with the office',
+ 'تعذّرت قراءةُ وثيقة حسابك':'Could not read your account document',
+ 'سجّل الدخول أولًا':'Sign in first',
+ 'لا شبكة':'No network',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5075,6 +5088,17 @@ ur:{
  'false — معطَّل':'false — غیر فعال',
  'غير مكتوب (يُعدُّ فعّالًا)':'نہیں لکھا (فعال سمجھا جاتا ہے)',
  '«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.':'“Missing or insufficient permissions” کا مطلب قواعد اس اکاؤنٹ کو نہیں پہچانتے: دستاویز uid کے نام نہیں، کردار کرداروں میں نہیں، یا active کو false لکھا ہے۔',
+ 'غيرُ موجودة — هذا سببُ الرفض':'موجود نہیں — یہی مسترد ہونے کی وجہ',
+ 'تُقرأ…':'پڑھی جا رہی ہے…',
+ 'أنشئ وثيقة حسابي':'میرا اکاؤنٹ دستاویز بنائیں',
+ 'أعد قراءة وثيقتي':'میری دستاویز دوبارہ پڑھیں',
+ 'لا وثيقةَ لحسابك باسم معرِّفه — فكلُّ ما تكتبه يُرفَض. أنشئها الآن (فنيًّا) ليُرفَع عملُك، ثم اطلب من المكتب ترقيةَ دورك.':'آپ کے اکاؤنٹ کی شناخت کے نام کوئی دستاویز نہیں — سو آپ جو لکھیں مسترد ہوتا ہے۔ ابھی بنائیں (ٹیکنیشن کے طور پر) تاکہ کام اپلوڈ ہو، پھر دفتر سے کردار بڑھوائیں۔',
+ 'أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك':'آپ کا اکاؤنٹ دستاویز ٹیکنیشن کے طور پر بنا — دفتر سے کردار بڑھوائیں',
+ 'الوثيقةُ موجودةٌ — سُحبت':'دستاویز موجود ہے — لے لی گئی',
+ 'تعذّر إنشاءُ وثيقة حسابك — راجع المكتب':'آپ کا اکاؤنٹ دستاویز نہیں بن سکا — دفتر سے رجوع کریں',
+ 'تعذّرت قراءةُ وثيقة حسابك':'آپ کا اکاؤنٹ دستاویز نہیں پڑھا جا سکا',
+ 'سجّل الدخول أولًا':'پہلے سائن ان کریں',
+ 'لا شبكة':'نیٹ ورک نہیں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -12787,6 +12811,59 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
 /* ── سجل المخاطر: احتمال × أثر ── */
 
 
+
+/* ═══ وثيقةُ حسابي: تُقرأ، وإن غابت تُنشأ ═══
+   القاعدةُ تعرف الحسابَ من وثيقةٍ باسم معرِّفه — ومن لا وثيقةَ له يُرفَض كلُّ
+   ما يكتب بـ«Missing or insufficient permissions»، ويظهر له دورُه صحيحًا في
+   التطبيق لأنه محفوظٌ في جلسته، فيرى شاشاتِ المهندس ولا يصل عملُه. صار
+   التطبيقُ يقرأ وثيقتَه عند الدخول ويضعها في مكانها، فإن غابت أنشأها فنيًّا
+   (أدنى الأدوار — والقاعدةُ لا تسمح بأكثر) فيخرج من الحصار ويُرفَع عملُه،
+   ثم يرقّيه المكتبُ إلى دوره الحقيقي. */
+var MYDOC = { at:0, has:null, err:'' };
+function myDocFetch(force){
+  if (!FB.ready || !FB.db || !STATE.meta.uid) return Promise.resolve(null);
+  if (!force && Date.now() - MYDOC.at < 60000) return Promise.resolve(MYDOC.has);
+  MYDOC.at = Date.now();
+  return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
+    MYDOC.has = !!(doc && doc.exists);
+    if (MYDOC.has){
+      STATE.users = STATE.users || {};
+      STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
+    }
+    return MYDOC.has;
+  }).catch(function(e){
+    MYDOC.err = String(e && (e.message || e.code) || e).slice(0, 120);
+    return null;
+  });
+}
+function myDocFix(){
+  if (!STATE.meta.uid){ toast(t('سجّل الدخول أولًا')); return; }
+  if (!FB.ready || !FB.db){ toast(t('لا شبكة')); return; }
+  return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
+    if (doc && doc.exists){
+      STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
+      MYDOC.has = true;
+      toast(t('الوثيقةُ موجودةٌ — سُحبت'));
+      render(1); return true;
+    }
+    /* القاعدةُ لا تقبل إلا «فني» لمن يسجّل نفسَه — والترقيةُ من المكتب */
+    var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
+              role:'tech', active:true, at:Date.now(), self:true };
+    return FB.db.collection('users').doc(STATE.meta.uid).set(v).then(function(){
+      STATE.users[STATE.meta.uid] = v;
+      MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
+      logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + STATE.meta.uid);
+      toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك'));
+      render(1); return true;
+    }).catch(function(e){
+      softErr('إنشاء وثيقة الحساب', e, 'تعذّر إنشاءُ وثيقة حسابك — راجع المكتب');
+      return false;
+    });
+  }).catch(function(e){
+    softErr('قراءة وثيقة الحساب', e, 'تعذّرت قراءةُ وثيقة حسابك');
+    return false;
+  });
+}
 /* ═══ حالةُ النسخ الاحتياطي والدرايف — تُقرأ من المستودع ═══
    السيرُ اليوميُّ ينجح كلَّ يوم ويقول «نجح» — وهو لا يحفظ شيئًا حين تغيب
    الأسرار: يكتب أعدادًا ويتخطّى الرفعَ بإشعارٍ لطيفٍ لا يقرؤه أحد. فظُنَّ
@@ -14029,7 +14106,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.59' + '.docx" download>⬇ '
+              +   'V15.60' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16545,6 +16622,10 @@ function autoSignIn(){
           STATE.meta.online = true;
           FB.db.collection('users').doc(u.uid).get().then(function(doc){
             var v = doc.exists ? (doc.data() || {}) : {};
+            /* الوثيقةُ تُحفَظ في مكانها ليُرى وجودُها في بطاقة الهوية —
+               ولئلّا يُقال «لم تُسحَب» عن موجودة. */
+            MYDOC.at = Date.now(); MYDOC.has = !!doc.exists;
+            if (doc.exists){ STATE.users = STATE.users || {}; STATE.users[u.uid] = Object.assign({}, v); }
             STATE.meta.name = v.name || lgRemembered();
             ROLE = ROLES[v.role] ? v.role : 'tech';
             res(true);
@@ -18856,11 +18937,15 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     /* «Missing or insufficient permissions» بلا هويةٍ لا يُشخَّص: من يكتب؟
        وبأيِّ دورٍ في وثيقته؟ وهل هو فعّال؟ وهل وثيقتُه باسم uid أصلًا؟ */
     var me = STATE.meta || {}, myDoc = (STATE.users || {})[me.uid] || null;
+    if (me.uid && MYDOC.has === null) myDocFetch(false);
     var idRows = [
       ['uid', me.uid ? '<span class="num" dir="ltr">' + esc(me.uid) + '</span>' : pill('غير مسجَّل الدخول','off')],
       ['الاسم', esc(me.name || '—')],
       ['الدورُ في التطبيق', esc(t((ROLES[ROLE] || {}).n || ROLE))],
-      ['وثيقةُ الحساب users/{uid}', myDoc ? pill('موجودة','ok') : pill('لم تُسحَب أو باسمٍ آخر','warn')],
+      ['وثيقةُ الحساب users/{uid}',
+        myDoc ? pill('موجودة','ok')
+              : (MYDOC.has === false ? pill('غيرُ موجودة — هذا سببُ الرفض','off')
+                                     : pill('تُقرأ…','warn'))],
       ['دورُها', myDoc ? esc(t((ROLES[myDoc.role] || {}).n || myDoc.role || '—')) : '—'],
       ['active', myDoc ? (myDoc.active === false ? pill('false — معطَّل','off') : pill(myDoc.active === true ? 'true' : 'غير مكتوب (يُعدُّ فعّالًا)', myDoc.active === true ? 'ok' : 'warn')) : '—']
     ];
@@ -18869,7 +18954,12 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
     return card('\u{1FAAA} ' + t('بأيِّ هويةٍ يكتب هذا الجهاز'),
         table(['','' ], idRows.map(function(r){ return [esc(t(r[0])), r[1]]; }))
-        + '<p class="hint" style="margin:8px 0 0">' + esc(t('«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.')) + '</p>')
+        + '<p class="hint" style="margin:8px 0 0">' + esc(t('«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.')) + '</p>'
+        + (me.uid && MYDOC.has === false
+          ? alertBox('error', 'لا وثيقةَ لحسابك باسم معرِّفه — فكلُّ ما تكتبه يُرفَض. أنشئها الآن (فنيًّا) ليُرفَع عملُك، ثم اطلب من المكتب ترقيةَ دورك.')
+            + '<div class="actions">' + btn('\u{1F527} ' + t('أنشئ وثيقة حسابي'),'btn-primary btn-sm',' data-mydocfix="1"') + '</div>'
+          : '<div class="actions" style="margin-top:8px">'
+            + btn('\u21BB ' + t('أعد قراءة وثيقتي'),'btn-quiet btn-sm',' data-mydocfix="1"') + '</div>'))
       + softErrCard()
       + (PZ.length
         ? cardFlush('\u26A0 ' + t('وثائقُ عُزلت عن الرفع') + ' — ' + nm(PZ.length),
@@ -23064,6 +23154,7 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  if (e.target.closest('[data-mydocfix]')){ myDocFix(); return; }
   var pzr = e.target.closest('[data-pzretry]');
   if (pzr){
     var pz = (STATE.poison || [])[+pzr.getAttribute('data-pzretry')];

@@ -8,13 +8,20 @@ service cloud.firestore {
     // المحاكي لأن حساباتِه بلا بريد؛ وسيُسقِط أيَّ حسابٍ مستقبليٍّ بلا بريد.
     function isBoss(){ return request.auth != null
         && request.auth.token.get('email', '') == 'mohammed.safwat@afaqy.com'; }
-    function uDoc()  { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
+    // وثيقةُ الحساب قد لا توجد أصلًا — وقراءةُ ما لا يوجد ليست فارغةً بل
+    // **خطأٌ يُسقِط التقييمَ كلَّه** فيُرفَض كلُّ شيء بلا سببٍ يُقرأ. فيُسأل
+    // عن وجودها أوّلًا: من لا وثيقةَ له ليس مرفوضًا بغموضٍ بل معروفًا أنه
+    // بلا حساب — ويُتاح له أن يسجّل نفسَه فنيًّا (أدنى الأدوار) ليخرج من
+    // البئر: حسابٌ بلا وثيقةٍ كان يُقفَل عليه الرفعُ كلُّه إلى الأبد.
+    function uPath() { return /databases/$(db)/documents/users/$(request.auth.uid); }
+    function uHas()  { return request.auth != null && exists(uPath()); }
+    function uDoc()  { return get(uPath()).data; }
     // الحسابُ الفعّالُ من لم يُكتَب له active=false: كانت القاعدةُ تشترط
     // active==true، والحساباتُ التي يُنشئها التطبيقُ لم تكن تكتب الحقلَ —
     // فرُفض كلُّ حسابٍ جديدٍ بلا سببٍ يُرى («Missing or insufficient permissions»
     // على كلِّ رفع). التعطيلُ فعلٌ صريحٌ لا غيابُ حقل.
-    function ok()    { return isBoss() || (request.auth != null && uDoc().get('active', true) != false); }
-    function role()  { return isBoss() ? 'admin' : uDoc().role; }
+    function ok()    { return isBoss() || (uHas() && uDoc().get('active', true) != false); }
+    function role()  { return isBoss() ? 'admin' : (uHas() ? uDoc().get('role', 'tech') : 'none'); }
     function mgr()   { return ok() && role() in ['engineer', 'admin']; }
 
     // الأدوارُ الميدانية: الفنيُّ والتهيئةُ والتجميعُ والتركيب. وهي التي تنتج
@@ -30,7 +37,14 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if request.auth != null && (request.auth.uid == uid || mgr());
       // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات
-      allow create, update: if mgr();
+      allow create, update: if mgr()
+        // ومن دخل ولا وثيقةَ له يسجّل نفسَه — فنيًّا فقط ونشطًا: أدنى دورٍ
+        // في النظام، ولا يرفع نفسَه ولا يكتب فوق وثيقةٍ قائمة. بها يخرج من
+        // الحصار ويُرفَع عملُه، ويرقّيه المكتبُ إلى دوره الحقيقي.
+        || (request.auth.uid == uid
+            && !exists(uPath())
+            && request.resource.data.role == 'tech'
+            && request.resource.data.get('active', true) == true);
       allow delete: if false;
     }
 

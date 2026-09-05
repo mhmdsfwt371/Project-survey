@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.59",
+  "app_version": "V15.60",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1428,7 +1428,8 @@
     "V15.56": "backup.mjs يكتب ok:true؛ drive-upload.mjs وbackup.yml يكتبان backups/latest/_drive.json (ok/why/fix)؛ التطبيق: bkFetch/bkCard في شريحة hb + مؤشرا خطر في riskSignals (may settings). الجرد 42: audit-backup.",
     "V15.57": "FB.clean (undefined→حذف، NaN→null) + FB.colOf + FB.putOne + FB.pushEach؛ flush: batch ثم per-doc عند الفشل، tries/err على العنصر، STATE.poison بعد 3 محاولات (يُحفَظ محليًا) + شريحة sync تعرضه مع data-pzretry/data-pzdrop؛ قفل CORE._busy بمهلة 30s. الجرد 43: audit-poison.",
     "V15.58": "firestore.rules: ok() = isBoss || uDoc().get('active',true) != false. createUser يكتب active:true (+meta.doc). usrAdd: وثيقة محلية باسم المستخدم تُنقل إلى uid بعد createUser، بلا users/{username} في السحابة. بطاقة الهوية في sync. rules-test: حالة noflag.",
-    "V15.59": "كل خطوات npm i/npx install في السيور السبعة تُعاد 3 مرات بمهلة تتضاعف. rerun.yml يعيد ما سقط من السيور الخمسة مرة واحدة (run_attempt==1، actions:write، rerun-failed-jobs). الجرد 44: audit-ci."
+    "V15.59": "كل خطوات npm i/npx install في السيور السبعة تُعاد 3 مرات بمهلة تتضاعف. rerun.yml يعيد ما سقط من السيور الخمسة مرة واحدة (run_attempt==1، actions:write، rerun-failed-jobs). الجرد 44: audit-ci.",
+    "V15.60": "rules: uHas()/uPath() بـexists قبل get، role() = none بلا وثيقة، وself-register على users/{uid} (role=tech، active=true، !exists). app: MYDOC + myDocFetch/myDocFix + قراءة الوثيقة عند الدخول + بطاقة الهوية تقول «غير موجودة — هذا سبب الرفض» + زر الإنشاء. الجرد 45: audit-mydoc."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2604,7 +2605,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 44,
+  "audits_total": 45,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3828,5 +3829,20 @@
       "api": "POST actions/runs/{id}/rerun-failed-jobs"
     },
     "audit": "audit-ci: لا تثبيت بلا إعادة · أسماء السيور صحيحة · الشرط موجود · تطابق الجرود بين check-version وdocs-check (استثناء VIA_PREFLIGHT)"
+  },
+  "missing_user_doc_v15_60": {
+    "diagnosis": "بطاقة الهوية: users/{uid} غير موجودة → get() في القاعدة يخطئ → رفض كل شيء",
+    "rules": [
+      "uHas() = exists(uPath())",
+      "ok() = isBoss || (uHas && active != false)",
+      "role() = none بلا وثيقة",
+      "users/{uid} create ذاتيًا: uid == auth.uid && !exists && role=='tech' && active==true"
+    ],
+    "app": [
+      "myDocFetch(force) عند الدخول وفي البطاقة",
+      "myDocFix(): يقرأ فإن غابت أنشأها tech/active وينزل ROLE",
+      "البطاقة: موجودة / غير موجودة — هذا سبب الرفض / تُقرأ…"
+    ],
+    "note": "الترقية إلى الدور الحقيقي من المكتب — القاعدة لا تسمح برفع الذات"
   }
 }
