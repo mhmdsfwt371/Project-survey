@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.65",
+  "app_version": "V15.66",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1434,7 +1434,8 @@
     "V15.62": "asnReadyList وlayerStats: taskKindOf(id, kind) بدل asnOf(id) — إسناد من نوع كان يحجب الأنواع كلها. الجرد 47: audit-e2e (13 خطوة).",
     "V15.63": "myDocFix يهيّئ FB قبل أن يقول «لا شبكة»، ويقرأ+يُطلق+يدفع ويقول النتيجة بعددها. زر data-pushnow «ادفع الطابور الآن» (يكرّر ما دام يتقدّم، يظهر مع طابور غير فارغ). permRelease(now=false) لمنع دفعتين متزامنتين. الجرد 48: audit-push.",
     "V15.64": "coSplit/siteCos/coCompounds/coPick + coFill يفكّ المركّبات (CO_LIST 162→212). بطاقة «أسماء مركّبة» في co مع أزرار الأجزاء (مفتاح رقمي لا NUL). audit-data/audit-i18n يقبلان الأجزاء. الجرد 49: audit-cosplit.",
-    "V15.65": "coDash/coDashCard: 6 بطاقات + «الأكثر مخيّمات» في رأس شريحة co. CO_FORM وُسّع (بلا «شركة» قبلها، مساهمة مقفلة، مهنية، قابضة) فلا تُفصَل الصيغ القانونية. زر «إدارة الشركات» تحت منتقي الشركة في newsite. محاولة نقل co إلى forms رُدّت (جسم الشاشة لا يُنقَل بالسجل وحده)."
+    "V15.65": "coDash/coDashCard: 6 بطاقات + «الأكثر مخيّمات» في رأس شريحة co. CO_FORM وُسّع (بلا «شركة» قبلها، مساهمة مقفلة، مهنية، قابضة) فلا تُفصَل الصيغ القانونية. زر «إدارة الشركات» تحت منتقي الشركة في newsite. محاولة نقل co إلى forms رُدّت (جسم الشاشة لا يُنقَل بالسجل وحده).",
+    "V15.66": "coName(c) للعرض (ar كما هو · en نقحرة/تصحيح · ur = en)؛ dispName للأردية تُرجِع الإنجليزي. coHit يطابق اللغتين. طُبّق في كل منتقيات وجداول الشركات. coDash/coDashCard أُعيدت (سقطت في V15.65 بخطأ مرساة). الجرد 50: audit-coname."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -3910,5 +3911,22 @@
     ],
     "why": "جسم الشاشة يُرندَر تحت PAGE.co؛ وco كان أمًّا وشريحةً معًا",
     "resolution": "أُعيدت وأُضيف زر وصول من newsite"
+  },
+  "company_name_lang_v15_66": {
+    "fn": "coName(c)",
+    "ar": "كما هو",
+    "en": "CFG.nameEn[c] أو translitWord",
+    "ur": "= en",
+    "applied": [
+      "nsCoCard",
+      "coFiltHtml",
+      "coDashCard",
+      "بطاقة المركّبة",
+      "coRenFrom",
+      "conote",
+      "محاضر التسليم"
+    ],
+    "invariant": "قيمة data-nscopick/option value عربية دائمًا — المفتاح لا يُترجَم",
+    "search": "coHit(c,q) يطابق العربي والإنجليزي"
   }
 }

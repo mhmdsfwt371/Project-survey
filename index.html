@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.65</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.66</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9515,9 +9515,25 @@ function translitWord(w){
 
 /* اسمُ العرض: عربيٌّ كما هو، وأرديٌّ كما هو (نفسُ الحرف)، وإنجليزيٌّ
    بالتصحيح المحفوظ إن وُجد وإلا بالنقحرة. */
+/* ═══ اسمُ الشركة بلغة الواجهة ═══
+   الأسماءُ عربيةٌ في القاعدة — وهي المفتاحُ الذي تُربَط به النقاطُ والمحاضرُ
+   ودفترُ الجوالات، فلا تُبدَّل. وإنما يُبدَّل ما يُعرَض: بالعربية كما هو،
+   وبالإنجليزية نقحرةً أو تصحيحًا يدويًّا من «أسماء العرض». والأرديةُ تقرأ
+   الإنجليزيَّ لا العربيَّ — فالقارئُ بالأردية لا يقرأ العربيةَ بالضرورة،
+   وحروفُها اللاتينيةُ أقربُ إليه من حروفٍ لا يعرفها.
+     coName للعرض وحدَه — والقيمةُ المخزَّنةُ في السمات والمنتقيات تبقى
+   عربيةً، وإلا لم تُطابَق نقطةٌ بشركتها. */
+function coName(c){
+  if (!c || typeof c !== 'string') return c;
+  if (LANG === 'ar') return c;
+  if (!/[؀-ۿ]/.test(c)) return c;
+  var fix = (CFG.nameEn || {})[c];
+  if (fix) return fix;
+  return c.split(/\s+/).map(translitWord).join(' ');
+}
 function dispName(s){
   if (!s || typeof s !== 'string') return s;
-  if (LANG !== 'en') return s;
+  if (LANG === 'ar') return s;
   if (!/[\u0600-\u06FF]/.test(s)) return s;
   var fix = (CFG.nameEn || {})[s];
   if (fix) return fix;
@@ -11951,7 +11967,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
   l:'ما لكلِّ شركةِ خدمةٍ من نقاط، وما يُرسَل إليها من إشعارات.',
   body:function(){
     var head = tabHead('co'), cur = tabCur('co');
-    if (cur === 'co') return head + (function(){
+    if (cur === 'co') return head + coDashCard() + (function(){
     /* إدارةُ القائمة — لمن يملك الاعتماد: إضافةٌ مباشرةٌ وحذفُ ما أُضيف يدويًّا */
     var manage = '';
     if (may('approve')){
@@ -11968,7 +11984,8 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
               '<div class="grid cols-2">'
               + '<div class="field"><label>' + esc(t('الاسم الحالي')) + '</label>'
               +   '<select id="coRenFrom">' + Object.keys(siteStats().byCo).sort().map(function(c){
-                    return '<option value="' + esc(c) + '">' + esc(c.length > 40 ? c.slice(0, 39) + '\u2026' : c) + '</option>'; }).join('')
+                    var lb = coName(c);
+                    return '<option value="' + esc(c) + '">' + esc(lb.length > 40 ? lb.slice(0, 39) + '\u2026' : lb) + '</option>'; }).join('')
               +   '</select></div>'
               + '<div class="field"><label>' + esc(t('الاسم الجديد')) + '</label>'
               +   '<input id="coRenTo" dir="auto" placeholder="' + esc(t('أو اسمُ شركةٍ قائمةٍ لدمجهما')) + '"></div>'
@@ -11987,11 +12004,12 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
             var rows = [];
             keys.forEach(function(raw, ri){
               var g = CM[raw];
-              rows.push(['<span class="hint" style="margin:0">' + esc(raw.slice(0, 90)) + '</span>',
+              rows.push(['<span class="hint" style="margin:0">' + esc(coName(raw).slice(0, 90)) + '</span>',
                          N(g.n),
                          '<div class="chips" style="margin:0">' + g.parts.map(function(pt, pi){
+                           var pl = coName(pt);
                            return '<button type="button" class="chip" data-copick="' + ri + ':' + pi + '">'
-                             + esc(pt.length > 34 ? pt.slice(0, 33) + '\u2026' : pt) + '</button>';
+                             + esc(pl.length > 34 ? pl.slice(0, 33) + '\u2026' : pl) + '</button>';
                          }).join('') + '</div>']);
             });
             return cardFlush('\u{1F517} ' + t('أسماءٌ مركَّبةٌ — عدةُ شركاتٍ في سطرٍ واحد') + ' \u2014 ' + nm(keys.length),
@@ -12131,9 +12149,14 @@ function nsNear(){
 }
 
 /* القائمةُ الموحّدة مرشَّحةً بالبحث — والمرجعُ بياناتُ المشروع لا قائمةٌ مكتوبةٌ بيد */
+function coHit(c, q){
+  if (!q) return true;
+  var s2 = String(q).toLowerCase();
+  return c.toLowerCase().indexOf(s2) > -1 || String(coName(c)).toLowerCase().indexOf(s2) > -1;
+}
 function nsCoRows(){
   var q = String(NS_CO_Q || '').trim();
-  return CO_LIST.filter(function(c){ return !q || c.indexOf(q) > -1; });
+  return CO_LIST.filter(function(c){ return coHit(c, q); });
 }
 
 function nsCoCard(){
@@ -12144,11 +12167,12 @@ function nsCoCard(){
     + '<div style="max-height:44vh;overflow:auto;border:1px solid var(--line);border-radius:var(--radius-sm)">'
     + (rows.length
         ? rows.map(function(c){
+            /* القيمةُ عربيةٌ (المفتاح) والنصُّ بلغة الواجهة */
             return '<button type="button" class="btn btn-quiet" data-nscopick="' + esc(c) + '" '
               + 'style="width:100%;justify-content:flex-start;text-align:start;border:0;'
               + 'border-bottom:1px solid var(--line-2);border-radius:0;min-height:44px">'
               + '<i style="width:10px;height:10px;border-radius:50%;background:' + coColor(c)
-              + ';flex:0 0 auto;margin-inline-end:8px"></i>' + esc(c) + '</button>';
+              + ';flex:0 0 auto;margin-inline-end:8px"></i>' + esc(coName(c)) + '</button>';
           }).join('')
         : '<p class="hint" style="padding:14px">' + esc(t('لا نتائج')) + '</p>')
     + '</div>'
@@ -14264,7 +14288,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.65' + '.docx" download>⬇ '
+              +   'V15.66' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15288,7 +15312,7 @@ function handDocSite(id){
         [esc(t('رقم المحضر')), h ? '<span class="num">' + esc(h.no) + '</span>' : pill('لم يُسلَّم بعد','warn')],
         [esc(t('النقطة')), '<span class="num">' + esc(s.id) + '</span> \u2014 ' + esc(s.name || '')],
         [esc(t('المشعر والنوع')), esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type))],
-        [esc(t('الشركة')), esc(s.co || '\u2014')],
+        [esc(t('الشركة')), esc(coName(s.co) || '\u2014')],
         [esc(t('بادئة الشبكة')), s.net ? '<span class="num">' + esc(s.net) + '</span>' : '\u2014'],
         [esc(t('تاريخ التركيب')), '<span class="num">' + esc(new Date(r.at || 0).toLocaleDateString('ar-EG')) + '</span>'],
         [esc(t('نفّذه')), esc(dispName(r.by) || '\u2014')],
@@ -16967,6 +16991,48 @@ var CO_SEL = [];
    مسؤولية محدودة» صيغتان قانونيتان تلحقان الاسمَ ولا تصنعان شركةً ثانيةً —
    ومن فكَّ عندهما صنع من الواحدة اثنتين. فما لا يبدأ بكلمةِ كيانٍ يُضَمُّ
    إلى ما قبله، وكذلك الصيغُ القانونية. */
+
+/* ═══ لوحةُ الشركات ═══
+   القائمةُ وحدَها لا تُجيب: كم شركةً عندنا؟ وكم منها يخدم أكثرَ من مخيّم؟
+   وكم في القائمة ولا مخيّمَ له؟ وكم بقي من الأسماء المركَّبة؟ فتُقرأ الأرقامُ
+   أوّلًا ثم تُفتَح القائمة. والعدُّ بعد فكِّ المركَّبات — فيُحسَب المخيّمُ
+   المشتركُ لكلِّ شركةٍ تخدمه لا لسطرٍ يحمل أسماءها ملتصقة. */
+function coDash(){
+  var byCo = {}, multi = 0, totalSites = 0;
+  (STATE.sites || []).forEach(function(x){
+    if (!x.co) return;
+    totalSites++;
+    coSplit(x.co).forEach(function(one){
+      (byCo[one] = byCo[one] || { n:0, zones:{} }).n++;
+      if (x.zone) byCo[one].zones[x.zone] = 1;
+    });
+  });
+  var served = Object.keys(byCo);
+  served.forEach(function(c){ if (byCo[c].n > 1) multi++; });
+  var idle = CO_LIST.filter(function(c){ return !byCo[c]; }).length;
+  var top = served.slice().sort(function(a, b){ return byCo[b].n - byCo[a].n; }).slice(0, 8);
+  return { byCo:byCo, served:served.length, multi:multi, idle:idle,
+           cmp:Object.keys(coCompounds()).length, top:top, sites:totalSites };
+}
+function coDashCard(){
+  var D = coDash();
+  return stats([['شركاتٌ في القائمة', N(CO_LIST.length), 'acc'],
+                ['لها مخيّمات', N(D.served), D.served ? 'ok' : 'wrn'],
+                ['على أكثرَ من مخيّم', N(D.multi), D.multi ? 'acc' : ''],
+                ['في القائمة بلا مخيّم', N(D.idle), D.idle ? 'wrn' : 'ok'],
+                ['أسماءٌ مركَّبةٌ لم تُوحَّد', N(D.cmp), D.cmp ? 'bad' : 'ok'],
+                ['مواقعُ لها شركة', N(D.sites)]])
+    + (D.top.length
+      ? cardFlush('\u{1F3E2} ' + t('الأكثرُ مخيّمات'),
+          table(['الشركة','مخيّماتها','مشاعرها'],
+            D.top.map(function(c){
+              var lb = coName(c);
+              return [esc(lb.length > 44 ? lb.slice(0, 43) + '\u2026' : lb),
+                      '<b class="num">' + nm(D.byCo[c].n) + '</b>',
+                      esc(Object.keys(D.byCo[c].zones).map(function(z){ return t(z); }).join(' \u00b7 '))];
+            })))
+      : '');
+}
 var CO_CMP = null, CO_CMP_KEYS = [];
 var CO_HEAD = /^(شرك[ةه]|مؤسس[ةه]|مكتب|مجموع[ةه]|مصنع|جمعي[ةه])\s/;
 var CO_FORM = /^شرك[ةه]\s+(شخص\s+واحد|ذات\s+مسؤولي[ةه]\s+محدود[ةه]|مساهم[ةه]|تضامن|توصي[ةه]\s+بسيط[ةه])\s*$/;
@@ -17049,7 +17115,7 @@ function coFiltHtml(){
   /* الرأسُ والذيلُ ثابتان والقائمةُ وحدَها تُمرَّر: كان اللوحُ كلُّه يُمرَّر،
      فيغيب زرُّ الإغلاق ويغيب «عرض» عمن نزل في مئةٍ واثنتين وستين شركةً — فيبحث
      عنهما بالتمرير صعودًا ونزولًا في كلِّ مرة. */
-  var shown = CO_LIST.filter(function(c){ return !CO_Q || c.indexOf(CO_Q) > -1; });
+  var shown = CO_LIST.filter(function(c){ return coHit(c, CO_Q); });
   var allOn = shown.length > 0 && shown.every(function(c){ return CO_SEL.indexOf(c) > -1; });
   return '<div class="pop copop" id="coFilt">'
     + '<div class="pop-head">'
@@ -23734,7 +23800,7 @@ function onDocClick(e){
   var cal = e.target.closest('[data-coall]');
   if (cal){
     var on2 = cal.getAttribute('data-coall') === '1';
-    CO_LIST.filter(function(c){ return !CO_Q || c.indexOf(CO_Q) > -1; })
+    CO_LIST.filter(function(c){ return coHit(c, CO_Q); })
       .forEach(function(c){
         var k = CO_SEL.indexOf(c);
         if (on2 && k < 0) CO_SEL.push(c);

@@ -70,12 +70,21 @@ try {
      تطول، فيُستثنى المقطوعُ كما يُستثنى الكامل. */
   /* الأجزاءُ المفكوكةُ من الاسم المركَّب بياناتٌ كذلك — تُعرَض في قائمة
      الشركات كلٌّ على حدة، فتُستثنى كما يُستثنى الأصل. */
-  (w.CO_LIST || []).forEach(c => { LIVE_NAMES.add(c);
-    LIVE_NAMES.add(c.length > 34 ? c.slice(0, 33) + '\u2026' : c); });
+  /* اسمُ الشركة يُعرَض بالإنجليزية نقحرةً — والنقحرةُ قد تُبقي حرفًا عربيًّا
+     في اسمٍ لم يُصحَّح يدويًّا. الاسمُ بياناتٌ لا نصُّ واجهة، فيُستثنى معروضًا
+     كما هو ومقطوعًا وبنقحرته. */
+  const _co = c => { LIVE_NAMES.add(c);
+    [30, 34, 44, 90].forEach(k => LIVE_NAMES.add(c.length > k ? c.slice(0, k - 1) + '\u2026' : c));
+    if (w.coName){ const e2 = w.coName(c);
+      LIVE_NAMES.add(e2);
+      [30, 34, 44, 90].forEach(k => LIVE_NAMES.add(e2.length > k ? e2.slice(0, k - 1) + '\u2026' : e2)); } };
+  /* والقيمةُ المركَّبةُ تُعرَض كما وردت في بطاقة التوحيد — بنقحرتها كذلك،
+     وفيها الفاصلةُ العربيةُ فتبدو «نصًّا عربيًّا» وهي اسمُ شركةٍ لا نصُّ واجهة. */
+  const _cmp = v => { _co(v); if (w.coSplit) w.coSplit(v).forEach(_co); };
+  (w.CO_LIST || []).forEach(_co);
   (w.STATE && w.STATE.sites || []).forEach(x => {
     if (!x || !x.co) return;
-    (w.coSplit ? w.coSplit(x.co) : []).forEach(one => { LIVE_NAMES.add(one);
-      LIVE_NAMES.add(one.length > 34 ? one.slice(0, 33) + '\u2026' : one); });
+    _cmp(x.co);
     LIVE_NAMES.add(x.co);
     LIVE_NAMES.add(x.co.length > 30 ? x.co.slice(0, 29) + '\u2026' : x.co);
     LIVE_NAMES.add(x.co.length > 34 ? x.co.slice(0, 33) + '\u2026' : x.co);
@@ -91,7 +100,13 @@ try {
 const LIVE_ARR = [...LIVE_NAMES];
 /* «تسميةٌ — قيمةُ بيانات»: الجزءُ الأيسرُ مترجَمٌ والأيمنُ بيانات — فيُفحَص
    الجزآن كلٌّ على حدة بدل عدِّ السطر كلِّه نصًّا غيرَ مترجَم. */
+/* نقحرةُ اسمٍ مركَّبٍ تحمل فاصلةً عربيةً وعلاماتِ اتجاه — والقطعُ يقع في
+   موضعٍ لا يُتوقَّع. فما كان أكثرُه لاتينيًّا وفيه فاصلةٌ عربيةٌ فهو اسمُ
+   شركةٍ منقحَرٌ لا نصُّ واجهة. */
+const isTranslitCo = s => /[A-Za-z]/.test(s)
+  && (s.match(/[A-Za-z]/g) || []).length > (s.match(/[\u0600-\u06FF]/g) || []).length * 3;
 const isData = s => {
+  if (isTranslitCo(s)) return true;
   if (LIVE_NAMES.has(s) || DATA_AR.some(r => r.test(s))) return true;
   if (/\u2026$/.test(s) && LIVE_ARR.some(v => v.indexOf(s.slice(0, -1)) === 0)) return true;
   const m = /^(.*?[=:]\s*)?(.+?)\s+\u2014\s+(.+)$/.exec(s);
@@ -157,7 +172,7 @@ shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 /* السقفُ ارتفع بواحدٍ في V15.64: القيمةُ المركَّبةُ تُعرَض كما وردت في
    بطاقة توحيد الأسماء — وهي بياناتٌ لا نصُّ واجهة، لكنها مقطوعةٌ بطولٍ
    يصعب استثناؤه بدقةٍ في كلِّ حالة. */
-const CAP_PAGES = 12, CAP_TEXTS = 62, CAP_SHELL = 2;
+const CAP_PAGES = 11, CAP_TEXTS = 43, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');
