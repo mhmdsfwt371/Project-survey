@@ -18,6 +18,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm i --no-save --no-audit --no-fund jsdom@^24
+      - name: المتصفّح الصوريّ
+        # التثبيتُ يُعاد ثلاثًا: سقط سيرٌ كاملٌ مرةً لا لخللٍ في الكود بل
+        # لتعثّرِ سِجلِّ الحزم لحظةً — والحارسُ الذي يسقط لسببٍ خارجيٍّ
+        # يُعلِّم صاحبَه تجاهلَ الأحمر. المهلةُ تتضاعف، وما بقي أحمرَ بعدها
+        # عطلٌ حقيقيٌّ يستحقُّ النظر.
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund jsdom@^24 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
       - name: النسخةُ الحيّةُ تُقلع وترسم كلَّ شاشة
         run: node scripts/post-deploy.mjs

@@ -14,7 +14,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm i firebase-admin@12 --no-save --no-audit --no-fund
+      - name: أدواتُ النسخ
+        # التثبيتُ يُعاد ثلاثًا: تعثّرُ سِجلِّ الحزم لحظةً لا يُسقِط سيرًا.
+        run: |
+          for i in 1 2 3; do
+            npm i firebase-admin@12 --no-save --no-audit --no-fund && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
       - name: Sync devices
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}

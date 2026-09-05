@@ -22,7 +22,14 @@ jobs:
           node-version: "20"
 
       - name: Install Bubblewrap
-        run: npm i -g @bubblewrap/cli
+        # التثبيتُ يُعاد ثلاثًا: تعثّرُ سِجلِّ الحزم لحظةً لا يُسقِط سيرًا.
+        run: |
+          for i in 1 2 3; do
+            npm i -g @bubblewrap/cli && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
 
       - name: Prepare Android SDK for Bubblewrap
         run: |

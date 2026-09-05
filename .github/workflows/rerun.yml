@@ -1,0 +1,35 @@
+name: Rerun failed jobs
+# ═══ إعادةُ ما سقط تلقائيًّا ═══
+# سيرٌ يسقط لتعثّرِ شبكةٍ أو سِجلِّ حزمٍ لحظةً ليس عطلًا في الكود — وإعادتُه
+# باليد تحتاج من يفتح الهاتفَ ويضغط. صار يُعاد مرةً واحدةً تلقائيًّا حين
+# يسقط، فإن سقط في الثانية فهو عطلٌ حقيقيٌّ يستحقُّ النظر ولا يُعاد ثالثةً.
+on:
+  workflow_run:
+    workflows:
+      - Docs Version Check
+      - Post-deploy smoke
+      - Real browser + rules emulator
+      - Deploy Firestore Rules
+      - Daily Firestore Backup
+    types: [completed]
+permissions:
+  actions: write        # إعادةُ التشغيل تحتاجها
+  contents: read
+jobs:
+  rerun:
+    if: >
+      github.event.workflow_run.conclusion == 'failure' &&
+      github.event.workflow_run.run_attempt == 1
+    runs-on: ubuntu-latest
+    steps:
+      - name: أعِد ما سقط — مرةً واحدة
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          WF: ${{ github.event.workflow_run.name }}
+        run: |
+          echo "::notice::«$WF» سقط في المحاولة الأولى — يُعاد ما سقط منه وحدَه"
+          gh api --method POST \
+            "repos/${{ github.repository }}/actions/runs/$RUN_ID/rerun-failed-jobs" \
+            && echo "✓ أُعيد" \
+            || { echo "::warning::تعذّرت الإعادة — أعِدها من Actions"; exit 0; }
