@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.61</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.62</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9541,7 +9541,10 @@ function layerStats(mode){
     var p = L.pts(x);
     if (L.done(x)){ done++; ptsDone += p; }
     else { ready++; ptsReady += p; }
-    if (asnOf(x.id)) asn++;
+    /* المُسنَدُ في هذه الطبقة: إسنادٌ من نوعها هي — كان أيُّ إسنادٍ مفتوحٍ
+       على النقطة يُعَدُّ في كلِّ طبقة، فيُقال «مُسنَد» في الفكِّ عن نقطةٍ
+       إسنادُها تركيبٌ لم يُغلَق. */
+    if (taskKindOf(x.id, L.kind)) asn++;
   }
   return { pool:pool, ready:ready, done:done, asn:asn,
            ptsReady:Math.round(ptsReady), ptsDone:Math.round(ptsDone),
@@ -10645,8 +10648,13 @@ var ASN_READY = {
 function asnReadyList(kind){
   var R = ASN_READY[kind];
   if (!R) return [];
+  /* الحجبُ بالنوع لا بأيِّ إسنادٍ مفتوح: كان `asnOf` يُرجِع أيَّ مهمةٍ
+     مفتوحةٍ على النقطة أيًّا كان نوعُها — فنقطةٌ رُكِّبت وسُلِّمت ومهمةُ
+     تركيبها لم تُغلَق بعد لا تظهر جاهزةً للصيانة ولا للفكِّ أبدًا، وهو
+     الحالُ الغالبُ في الميدان: المهمةُ تُغلَق باعتماد المهندس لا بالتركيب.
+     فيُسأل عن مهمةٍ **من هذا النوع** وحدَها. */
   return (STATE.sites || []).filter(function(x){
-    return !asnOf(x.id) && R.ok(x);
+    return !taskKindOf(x.id, kind) && R.ok(x);
   });
 }
 /* زرٌّ واحد: يحدّد الجاهزَ ويفتح اللوحَ على نوعه في الخريطة */
@@ -14145,7 +14153,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.61' + '.docx" download>⬇ '
+              +   'V15.62' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

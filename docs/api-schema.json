@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.61",
+  "app_version": "V15.62",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1430,7 +1430,8 @@
     "V15.58": "firestore.rules: ok() = isBoss || uDoc().get('active',true) != false. createUser يكتب active:true (+meta.doc). usrAdd: وثيقة محلية باسم المستخدم تُنقل إلى uid بعد createUser، بلا users/{username} في السحابة. بطاقة الهوية في sync. rules-test: حالة noflag.",
     "V15.59": "كل خطوات npm i/npx install في السيور السبعة تُعاد 3 مرات بمهلة تتضاعف. rerun.yml يعيد ما سقط من السيور الخمسة مرة واحدة (run_attempt==1، actions:write، rerun-failed-jobs). الجرد 44: audit-ci.",
     "V15.60": "rules: uHas()/uPath() بـexists قبل get، role() = none بلا وثيقة، وself-register على users/{uid} (role=tech، active=true، !exists). app: MYDOC + myDocFetch/myDocFix + قراءة الوثيقة عند الدخول + بطاقة الهوية تقول «غير موجودة — هذا سبب الرفض» + زر الإنشاء. الجرد 45: audit-mydoc.",
-    "V15.61": "permRelease(): يعيد المعزول برفض صلاحية إلى الطابور + يصفّر SOFT_SAID + flush فورًا؛ يُستدعى من myDocFix (الإنشاء والقراءة). نجاح دفعة بلا فشل يصفّر SOFT_SAID. myDocFetch يهيّئ FB أو يقول offline. الجرد 46: audit-release."
+    "V15.61": "permRelease(): يعيد المعزول برفض صلاحية إلى الطابور + يصفّر SOFT_SAID + flush فورًا؛ يُستدعى من myDocFix (الإنشاء والقراءة). نجاح دفعة بلا فشل يصفّر SOFT_SAID. myDocFetch يهيّئ FB أو يقول offline. الجرد 46: audit-release.",
+    "V15.62": "asnReadyList وlayerStats: taskKindOf(id, kind) بدل asnOf(id) — إسناد من نوع كان يحجب الأنواع كلها. الجرد 47: audit-e2e (13 خطوة)."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2606,7 +2607,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 46,
+  "audits_total": 47,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3851,5 +3852,16 @@
     "kept": "المعزول لسبب آخر (undefined…) يبقى — سببه لم يزل",
     "soft_said": "يُصفَّر عند permRelease وعند دفعة ناجحة بلا فشل",
     "offline": "MYDOC.err='offline' + شارة «بلا شبكة — تُقرأ عند الاتصال»"
+  },
+  "type_scoped_block_v15_62": {
+    "bug": "asnOf(id) يرجع أي مهمة مفتوحة أيًا كان نوعها",
+    "impact": "نقطة مُركّبة ومُسلَّمة ومهمة تركيبها مفتوحة لا تظهر جاهزة للصيانة ولا للفك",
+    "why": "مهمة التركيب تُغلَق باعتماد المهندس لا بالتركيب",
+    "fix": "taskKindOf(id, kind) في asnReadyList وفي عدّاد asn داخل layerStats"
+  },
+  "e2e_v15_62": {
+    "file": "scripts/audit-e2e.mjs",
+    "steps": 13,
+    "path": "إسناد زيارة → زيارة → اعتماد → حل يُعتمد → جاهز للتركيب → إسناد تركيب → تركيب معتمد → تسليم بمحضر → جاهز للصيانة → جاهز للفك → إسناد فك → نقاط → سجل الإسنادات → دفتر الأرصدة"
   }
 }
