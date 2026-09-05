@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.67</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.68</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3047,6 +3047,57 @@ en:{
  'الصيانة':'Maintenance',
  'عطلٌ يُسجَّل وإصلاحٌ يُوثَّق — فتُغلَق مهمةُ الصيانة.':'A fault is recorded and a repair documented — the maintenance task closes.',
  'اختر النقطة أولًا':'Choose the point first',
+
+ /* V15.68 — محضرُ الاستلام الرسمي */
+ 'ترويسةُ محضر الاستلام':'Handover record letterhead',
+ 'الجهة المالكة':'Owner authority',
+ 'الوكالة':'The agency',
+ 'المقاول':'Contractor',
+ 'الاستشاري':'Consultant',
+ 'المعتمِدون':'Approvers',
+ 'صفته':'Title',
+ 'الجهة':'Organisation',
+ 'التوقيع':'Signature',
+ 'تُكتَب مرةً فتُطبَع في كلِّ محضرٍ لكلِّ نوع — كانت تُملأ باليد في كلِّ مرة أو تُترَك فارغةً فيُرَدُّ المحضر.':'Written once and printed on every record of every kind — they used to be filled by hand each time or left blank so the record was returned.',
+ 'ضبطُ المحضر للمهندس وحده':'Configuring the record is for the engineer only',
+ 'المملكة العربية السعودية':'Kingdom of Saudi Arabia',
+ 'محضر استلام عهدة':'Custody handover record',
+ 'محضر استلام الممرات':'Corridors handover record',
+ 'محضر استلام محطات القطار':'Train stations handover record',
+ 'محضر استلام الجمرات':'Jamarat handover record',
+ 'محضر استلام مسجد نمرة':'Namirah Mosque handover record',
+ 'محضر استلام كاميرات الوزارة':'Ministry cameras handover record',
+ 'محضر استلام المباني':'Buildings handover record',
+ 'نوع التقديم':'Submission type',
+ 'إعادة تقديم':'Resubmission',
+ 'مكان الأعمال':'Work location',
+ 'رقم المخيم':'Camp number',
+ 'اسم الممر ورقم المظلة':'Corridor name and canopy number',
+ 'اسم المحطة والبوابة':'Station and gate',
+ 'الدور والمدخل':'Floor and entrance',
+ 'البوابة':'The gate',
+ 'المبنى والدور':'Building and floor',
+ 'الأعمال':'The works',
+ 'يُقدَّم إلى':'Submitted to',
+ 'وزارة الحج والعمرة':'Ministry of Hajj and Umrah',
+ 'تعهدات الاستلام':'Handover undertakings',
+ 'اعتمادُ الأعمال لا يُعفي المقاولَ من مسؤولياته التعاقدية والقانونية.':'Approval of the works does not relieve the contractor of contractual and legal responsibilities.',
+ 'تتعهد الشركة ({co}) بتسليم الأجهزة سليمةً بعد الموسم بموجب محضر تسليمٍ كما استلمتها بلا خدوشٍ أو كسور.':'The company ({co}) undertakes to return the devices intact after the season by a handover record, as received, without scratches or breakage.',
+ 'يُسلَّم النظامُ متكاملًا مع تشغيل القارئ والكاميرا والتأكد من عملهما بكفاءة.':'The system is handed over complete, with the reader and camera running and verified.',
+ 'يُسلَّم النظامُ متكاملًا ومربوطًا بشبكة المحطة، ويُتأكَّد من عمله بكفاءة.':'The system is handed over complete and connected to the station network, and verified.',
+ 'يُسلَّم النظامُ متكاملًا في موضعه من الجسر ويُتأكَّد من عمله بكفاءة.':'The system is handed over complete in its place on the bridge and verified.',
+ 'يُسلَّم النظامُ متكاملًا عند البوابة ويُتأكَّد من عمله بكفاءة.':'The system is handed over complete at the gate and verified.',
+ 'تُسلَّم الكاميرا مركَّبةً ومربوطةً ومُختبَرةً على شبكة الوزارة.':'The camera is handed over installed, connected, and tested on the ministry network.',
+ 'يُسلَّم النظامُ متكاملًا في موضعه ويُتأكَّد من عمله بكفاءة.':'The system is handed over complete in its place and verified.',
+ 'إكسل — المحضر':'Excel — the record',
+ 'مدير برامج رقمية':'Digital programmes manager',
+ 'مدير البرنامج':'Programme manager',
+ 'مهندس الموقع':'Site engineer',
+ 'وكالة التخطيط والتحول الرقمي':'Planning and Digital Transformation Agency',
+ 'اسم المشروع':'Project name',
+ 'تاريخ المحضر':'Record date',
+ 'نهاية الضمان':'Warranty end',
+ 'ملاحظات المشرف':'Supervisor notes',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5265,6 +5316,55 @@ ur:{
  'الصيانة':'دیکھ بھال',
  'عطلٌ يُسجَّل وإصلاحٌ يُوثَّق — فتُغلَق مهمةُ الصيانة.':'خرابی درج اور مرمت دستاویزی — دیکھ بھال کا ٹاسک بند۔',
  'اختر النقطة أولًا':'پہلے پوائنٹ منتخب کریں',
+ 'ترويسةُ محضر الاستلام':'حوالگی دستاویز کا سرنامہ',
+ 'الجهة المالكة':'مالک ادارہ',
+ 'الوكالة':'ایجنسی',
+ 'المقاول':'ٹھیکیدار',
+ 'الاستشاري':'مشیر',
+ 'المعتمِدون':'منظوری دینے والے',
+ 'صفته':'عہدہ',
+ 'الجهة':'ادارہ',
+ 'التوقيع':'دستخط',
+ 'تُكتَب مرةً فتُطبَع في كلِّ محضرٍ لكلِّ نوع — كانت تُملأ باليد في كلِّ مرة أو تُترَك فارغةً فيُرَدُّ المحضر.':'ایک بار لکھیں اور ہر قسم کے ہر دستاویز پر چھپیں — پہلے ہر بار ہاتھ سے بھری جاتی تھیں یا خالی رہتی تھیں۔',
+ 'ضبطُ المحضر للمهندس وحده':'دستاویز کی ترتیب صرف انجینئر کے لیے',
+ 'المملكة العربية السعودية':'مملکت سعودی عرب',
+ 'محضر استلام عهدة':'تحویل حوالگی دستاویز',
+ 'محضر استلام الممرات':'راہداریوں کی حوالگی دستاویز',
+ 'محضر استلام محطات القطار':'ٹرین اسٹیشنوں کی حوالگی دستاویز',
+ 'محضر استلام الجمرات':'جمرات کی حوالگی دستاویز',
+ 'محضر استلام مسجد نمرة':'مسجد نمرہ کی حوالگی دستاویز',
+ 'محضر استلام كاميرات الوزارة':'وزارتی کیمروں کی حوالگی دستاویز',
+ 'محضر استلام المباني':'عمارتوں کی حوالگی دستاویز',
+ 'نوع التقديم':'جمع کرانے کی قسم',
+ 'إعادة تقديم':'دوبارہ جمع',
+ 'مكان الأعمال':'کام کی جگہ',
+ 'رقم المخيم':'کیمپ نمبر',
+ 'اسم الممر ورقم المظلة':'راہداری کا نام اور سائبان نمبر',
+ 'اسم المحطة والبوابة':'اسٹیشن اور گیٹ',
+ 'الدور والمدخل':'منزل اور داخلہ',
+ 'البوابة':'گیٹ',
+ 'المبنى والدور':'عمارت اور منزل',
+ 'الأعمال':'کام',
+ 'يُقدَّم إلى':'کس کو پیش',
+ 'وزارة الحج والعمرة':'وزارت حج و عمرہ',
+ 'تعهدات الاستلام':'حوالگی کے عہد',
+ 'اعتمادُ الأعمال لا يُعفي المقاولَ من مسؤولياته التعاقدية والقانونية.':'کاموں کی منظوری ٹھیکیدار کو معاہداتی و قانونی ذمہ داریوں سے بری نہیں کرتی۔',
+ 'تتعهد الشركة ({co}) بتسليم الأجهزة سليمةً بعد الموسم بموجب محضر تسليمٍ كما استلمتها بلا خدوشٍ أو كسور.':'کمپنی ({co}) سیزن کے بعد آلات صحیح حالت میں واپس کرنے کی پابند ہے۔',
+ 'يُسلَّم النظامُ متكاملًا مع تشغيل القارئ والكاميرا والتأكد من عملهما بكفاءة.':'نظام مکمل حوالے ہوتا ہے، ریڈر اور کیمرہ چالو اور تصدیق شدہ۔',
+ 'يُسلَّم النظامُ متكاملًا ومربوطًا بشبكة المحطة، ويُتأكَّد من عمله بكفاءة.':'نظام مکمل اور اسٹیشن نیٹ ورک سے منسلک حوالے ہوتا ہے۔',
+ 'يُسلَّم النظامُ متكاملًا في موضعه من الجسر ويُتأكَّد من عمله بكفاءة.':'نظام پل پر اپنی جگہ مکمل حوالے ہوتا ہے۔',
+ 'يُسلَّم النظامُ متكاملًا عند البوابة ويُتأكَّد من عمله بكفاءة.':'نظام گیٹ پر مکمل حوالے ہوتا ہے۔',
+ 'تُسلَّم الكاميرا مركَّبةً ومربوطةً ومُختبَرةً على شبكة الوزارة.':'کیمرہ نصب، منسلک اور وزارتی نیٹ ورک پر جانچا ہوا حوالے ہوتا ہے۔',
+ 'يُسلَّم النظامُ متكاملًا في موضعه ويُتأكَّد من عمله بكفاءة.':'نظام اپنی جگہ مکمل حوالے ہوتا ہے۔',
+ 'إكسل — المحضر':'ایکسل — دستاویز',
+ 'مدير برامج رقمية':'ڈیجیٹل پروگرام منیجر',
+ 'مدير البرنامج':'پروگرام منیجر',
+ 'مهندس الموقع':'سائٹ انجینئر',
+ 'وكالة التخطيط والتحول الرقمي':'منصوبہ بندی و ڈیجیٹل تبدیلی ایجنسی',
+ 'اسم المشروع':'منصوبے کا نام',
+ 'تاريخ المحضر':'دستاویز کی تاریخ',
+ 'نهاية الضمان':'وارنٹی کا اختتام',
+ 'ملاحظات المشرف':'سپروائزر کے نوٹس',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -10030,12 +10130,14 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
             var sx = siteFind(HO_DOC);
             var co = sx && sx.co;
             return card('', handDocSite(HO_DOC)
+              + '<div class="actions" style="margin-top:12px">'
+              + btn('\u2B07 ' + t('إكسل — المحضر'),'btn-secondary btn-sm',' data-xls="hodoc"')
+              + btn('\u{1F5A8} PDF','btn-secondary btn-sm',' data-print="1"')
               + (co && coTelOf(co)
-                  ? '<div class="actions" style="margin-top:12px">'
-                    + btn('\u{1F4AC} ' + t('أبلغ') + ' ' + esc(co.length > 22 ? co.slice(0, 21) + '\u2026' : co),
-                          'btn-secondary btn-sm',' data-wasend="hand|' + esc(co) + '"')
-                    + '</div>'
-                  : ''));
+                  ? btn('\u{1F4AC} ' + t('أبلغ') + ' ' + esc(co.length > 22 ? co.slice(0, 21) + '\u2026' : co),
+                        'btn-quiet btn-sm',' data-wasend="hand|' + esc(co) + '"')
+                  : '')
+              + '</div>');
           })()
         : '')
       /* الزرُّ في جسم البطاقة لا في رأسها: البطاقةُ بلا عنوانٍ تُسقِط الرأسَ
@@ -14625,7 +14727,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.67' + '.docx" download>⬇ '
+              +   'V15.68' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15638,45 +15740,158 @@ function handSave(id, to, note){
   return true;
 }
 /* ── محضرٌ لنقطةٍ واحدة ── */
+
+/* ═══ محضرُ الاستلام الرسميّ ═══
+   المحضرُ الذي يُسلَّم للوزارة نموذجٌ لها لا لنا: ترويسةُ المملكة والوزارة
+   والوكالة، ثم المشروعُ والمقاولُ والاستشاري، ثم الأعمالُ بمكانها ورقمها،
+   ثم البنودُ بأعدادها وسيرياتها، ثم التعهدُ والتوقيعاتُ والاعتماد.
+     ولكلِّ نوعٍ نموذجُه: المخيّمُ يذكر رقمَه والشركةَ المستلمة، والممرُّ
+   يذكر اسمَه ورقمَ مظلته ويُقدَّم للوزارة نفسِها، والمحطةُ والجمراتُ ومسجدُ
+   نمرة وكاميرا الوزارة كلٌّ بعنوانه وبنوده. وأسماءُ المعتمِدين وصفاتُهم
+   وجهاتُهم تُضبَط مرةً في «ثوابت النظام» فتُطبَع في كلِّ محضر — كانت تُكتَب
+   باليد في كلِّ مرة أو تُترَك فارغةً فيُرَدُّ المحضر. */
+/* تُضبَط مرةً في «ثوابت النظام» وتُطبَع في كلِّ محضر */
+function hoSetParty(k, v){
+  if (!may('settings')){ toast(t('ضبطُ المحضر للمهندس وحده')); return; }
+  CFG.hoParties = CFG.hoParties || {};
+  CFG.hoParties[k] = String(v || '').trim();
+  CORE.set('cfg', 'hoParties', Object.assign({}, CFG.hoParties));
+}
+function hoSetSigner(i, k, v){
+  if (!may('settings')){ toast(t('ضبطُ المحضر للمهندس وحده')); return; }
+  var L = hoSigners().map(function(x){ return Object.assign({}, x); });
+  if (!L[i]) return;
+  L[i][k] = String(v || '').trim();
+  CFG.hoSigners = L;
+  CORE.set('cfg', 'hoSigners', L);
+}
+function hoSetupCard(){
+  var P = ['owner','agency','project','contractor','consultant'];
+  var LB = { owner:'الجهة المالكة', agency:'الوكالة', project:'اسم المشروع',
+             contractor:'المقاول', consultant:'الاستشاري' };
+  return card('\u{1F4C4} ' + t('ترويسةُ محضر الاستلام'),
+      '<div class="grid cols-2">'
+      + P.map(function(k){
+          return '<div class="field"><label>' + esc(t(LB[k])) + '</label>'
+            + '<input data-hop="' + k + '" value="' + esc(hoParty(k)) + '" dir="auto"></div>';
+        }).join('')
+      + '</div>'
+      + cardFlush(t('المعتمِدون'),
+          table(['م','الاسم','صفته','الجهة'],
+            hoSigners().map(function(g, i){
+              return [N(i + 1),
+                '<input data-hosn="' + i + '" value="' + esc(g.n || '') + '" dir="auto" placeholder="' + esc(t('الاسم')) + '">',
+                '<input data-hosr="' + i + '" value="' + esc(g.role || '') + '" dir="auto">',
+                '<input data-hoso="' + i + '" value="' + esc(g.org || '') + '" dir="auto">'];
+            })))
+      + '<p class="hint" style="margin:8px 0 0">' + esc(t('تُكتَب مرةً فتُطبَع في كلِّ محضرٍ لكلِّ نوع — كانت تُملأ باليد في كلِّ مرة أو تُترَك فارغةً فيُرَدُّ المحضر.')) + '</p>');
+}
+var HO_PARTIES = { owner:'وزارة الحج والعمرة', agency:'وكالة التخطيط والتحول الرقمي',
+                   contractor:'آفاقي', consultant:'شركة علم',
+                   project:'مشروع قارئات بطاقات نُسُك' };
+var HO_SIGNERS = [
+  { n:'', role:'مدير برامج رقمية', org:'وزارة الحج والعمرة' },
+  { n:'', role:'مدير البرنامج',    org:'شركة آفاقي' },
+  { n:'', role:'مدير المشروع',     org:'شركة آفاقي' },
+  { n:'', role:'مهندس الموقع',     org:'شركة آفاقي' }
+];
+/* نموذجٌ لكلِّ نوع: عنوانُه، وحقلُ موضعه، ومن يُقدَّم إليه، وتعهُّدُه */
+var HO_TPL = {
+  'مخيم':   { t:'محضر استلام عهدة',           loc:'رقم المخيم',   to:'شركة تقديم الخدمة',
+              pledge:'تتعهد الشركة ({co}) بتسليم الأجهزة سليمةً بعد الموسم بموجب محضر تسليمٍ كما استلمتها بلا خدوشٍ أو كسور.' },
+  'ممر':    { t:'محضر استلام الممرات',        loc:'اسم الممر ورقم المظلة', to:'وزارة الحج والعمرة',
+              pledge:'يُسلَّم النظامُ متكاملًا مع تشغيل القارئ والكاميرا والتأكد من عملهما بكفاءة.' },
+  'محطة':   { t:'محضر استلام محطات القطار',   loc:'اسم المحطة والبوابة',   to:'وزارة الحج والعمرة',
+              pledge:'يُسلَّم النظامُ متكاملًا ومربوطًا بشبكة المحطة، ويُتأكَّد من عمله بكفاءة.' },
+  'جسر':    { t:'محضر استلام الجمرات',        loc:'الدور والمدخل',         to:'وزارة الحج والعمرة',
+              pledge:'يُسلَّم النظامُ متكاملًا في موضعه من الجسر ويُتأكَّد من عمله بكفاءة.' },
+  'بوابة':  { t:'محضر استلام مسجد نمرة',      loc:'البوابة',               to:'وزارة الحج والعمرة',
+              pledge:'يُسلَّم النظامُ متكاملًا عند البوابة ويُتأكَّد من عمله بكفاءة.' },
+  'كاميرا': { t:'محضر استلام كاميرات الوزارة', loc:'الموضع',               to:'وزارة الحج والعمرة',
+              pledge:'تُسلَّم الكاميرا مركَّبةً ومربوطةً ومُختبَرةً على شبكة الوزارة.' },
+  'مبنى':   { t:'محضر استلام المباني',        loc:'المبنى والدور',         to:'وزارة الحج والعمرة',
+              pledge:'يُسلَّم النظامُ متكاملًا في موضعه ويُتأكَّد من عمله بكفاءة.' }
+};
+function hoTpl(x){ return HO_TPL[x && x.type] || HO_TPL['مخيم']; }
+function hoParty(k){ return (CFG.hoParties || {})[k] || HO_PARTIES[k]; }
+function hoSigners(){
+  var L = CFG.hoSigners;
+  return (Array.isArray(L) && L.length) ? L : HO_SIGNERS;
+}
+function hoLocOf(x){
+  if (!x) return '';
+  var T = hoTpl(x);
+  var bits = [];
+  if (x.sq)   bits.push(x.sq);
+  if (x.sign) bits.push(x.sign);
+  if (x.name && x.name !== x.sq) bits.push(x.name);
+  return bits.join(' \u00b7 ') || '\u2014';
+}
+/* صفوفُ البنود: من قطع التركيب وسيرياتها — لا تُكتَب باليد */
+function hoItems(id){
+  var r = STATE.inss[id] || {};
+  return Object.keys(r.parts || {}).map(function(k){
+    return { item:itemName(k), qty:cfgN(r.parts[k]), sn:(r.serials || {})[k] || '' };
+  });
+}
 function handDocSite(id){
   var s = siteFind(id), r = STATE.inss[id], h = handOf(id);
   if (!s || !r) return '';
-  var parts = Object.keys(r.parts || {});
-  var end = h ? new Date(h.at + (h.warranty || 12) * 30 * 86400000) : null;
+  var T = hoTpl(s), IT = hoItems(id);
+  var end = h ? new Date(h.at + (h.warranty || cfgGet('warranty') || 12) * 30 * 86400000) : null;
+  var hijri = function(ms){
+    try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic', { day:'numeric', month:'numeric', year:'numeric' }).format(new Date(ms)); }
+    catch (e){ return new Date(ms).toLocaleDateString('ar-EG'); }
+  };
   return '<div class="hdoc">'
-    + '<h3 style="margin:0 0 2px">' + esc(t('محضر تسليم نقطة')) + '</h3>'
-    + '<p class="hint" style="margin:0 0 12px">' + esc(t('مشروع نُسُك — قارئات RFID · موسم ١٤٤٨هـ')) + '</p>'
+    /* ترويسةُ الجهة — كما في نموذج الوزارة */
+    + '<div style="text-align:center;line-height:1.7;margin:0 0 10px">'
+    +   '<div>' + esc(t('المملكة العربية السعودية')) + '</div>'
+    +   '<div><strong>' + esc(hoParty('owner')) + '</strong></div>'
+    +   '<div class="hint" style="margin:0">' + esc(hoParty('agency')) + '</div>'
+    + '</div>'
+    + '<h3 style="margin:0 0 10px;text-align:center">' + esc(t(T.t)) + '</h3>'
+
+    + table(['البند','البيان','البند','البيان'], [
+        [esc(t('اسم المشروع')), esc(hoParty('project')), esc(t('المقاول')), esc(hoParty('contractor'))],
+        [esc(t('الاستشاري')), esc(hoParty('consultant')), esc(t('نوع التقديم')), esc(t(h && h.re ? 'إعادة تقديم' : 'جديد'))],
+        [esc(t('رقم المحضر')), h ? '<span class="num">' + esc(h.no) + '</span>' : pill('لم يُسلَّم بعد','warn'),
+         esc(t('تاريخ المحضر')), h ? '<span class="num">' + esc(hijri(h.at)) + '</span>' : '\u2014'],
+        [esc(t('مكان الأعمال')), esc(t(s.zone)), esc(t(T.loc)), '<span class="num">' + esc(hoLocOf(s)) + '</span>']
+      ])
+
+    + '<h4 style="margin:14px 0 6px">' + esc(t('الأعمال')) + '</h4>'
+    + table(['البند','العدد','السيريال'],
+        (IT.length ? IT : [{ item:'\u2014', qty:0, sn:'' }]).map(function(o){
+          return [esc(o.item), N(o.qty), o.sn ? '<span class="num" dir="ltr">' + esc(o.sn) + '</span>' : '\u2014'];
+        }),
+        ['<b>' + t('الإجمالي') + '</b>', N(IT.reduce(function(a, o){ return a + o.qty; }, 0)), ''])
+
     + table(['البند','البيان'], [
-        [esc(t('رقم المحضر')), h ? '<span class="num">' + esc(h.no) + '</span>' : pill('لم يُسلَّم بعد','warn')],
-        [esc(t('النقطة')), '<span class="num">' + esc(s.id) + '</span> \u2014 ' + esc(s.name || '')],
-        [esc(t('المشعر والنوع')), esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type))],
-        [esc(t('الشركة')), esc(coName(s.co) || '\u2014')],
+        [esc(t('يُقدَّم إلى')), esc(T.to === 'شركة تقديم الخدمة' ? (coName(s.co) || t(T.to)) : t(T.to))],
         [esc(t('بادئة الشبكة')), s.net ? '<span class="num">' + esc(s.net) + '</span>' : '\u2014'],
         [esc(t('تاريخ التركيب')), '<span class="num">' + esc(new Date(r.at || 0).toLocaleDateString('ar-EG')) + '</span>'],
         [esc(t('نفّذه')), esc(dispName(r.by) || '\u2014')],
         [esc(t('اعتمده')), esc(dispName(r.qaBy || r.apprBy || '') || '\u2014')],
         [esc(t('سلَّم')), h ? esc(dispName(h.by)) : '\u2014'],
         [esc(t('استلم عن العميل')), h ? esc(h.to) : '\u2014'],
-        [esc(t('تاريخ التسليم')), h ? '<span class="num">' + esc(new Date(h.at).toLocaleDateString('ar-EG')) + '</span>' : '\u2014'],
-        [esc(t('الضمان ينتهي')), end ? '<span class="num">' + esc(end.toLocaleDateString('ar-EG')) + '</span>' : '\u2014']
+        [esc(t('نهاية الضمان')), end ? '<span class="num">' + esc(end.toLocaleDateString('ar-EG')) + '</span>' : '\u2014']
       ])
-    + (parts.length
-      ? card(t('الأجهزة المسلَّمة'),
-          table(['الصنف','الكمية','الرقم التسلسلي'],
-            parts.map(function(c){
-              return [esc(itemName(c)), N(r.parts[c]),
-                      '<span class="num">' + esc((r.serials || {})[c] || '\u2014') + '</span>'];
-            })))
-      : '')
-    + (h && h.note ? '<p class="hint"><b>' + esc(t('ملاحظات')) + ':</b> ' + esc(h.note) + '</p>' : '')
-    + '<div class="grid cols-2" style="margin-top:18px">'
-    + '<div><p class="hint" style="margin:0">' + esc(t('عن المنفِّذ — أفاقي')) + '</p>'
-    +   '<div style="border-bottom:1px solid var(--line);height:42px"></div></div>'
-    + '<div><p class="hint" style="margin:0">' + esc(t('عن العميل — الوزارة')) + '</p>'
-    +   '<div style="border-bottom:1px solid var(--line);height:42px"></div></div>'
-    + '</div></div>';
+
+    + '<p style="margin:12px 0 4px"><strong>' + esc(t('تعهدات الاستلام')) + ':</strong> '
+    +   esc(String(T.pledge).replace('{co}', coName(s.co) || '')) + '</p>'
+    + (h && h.note ? '<p class="hint">' + esc(t('ملاحظات المشرف')) + ': ' + esc(h.note) + '</p>' : '')
+    + '<p class="hint">' + esc(t('اعتمادُ الأعمال لا يُعفي المقاولَ من مسؤولياته التعاقدية والقانونية.')) + '</p>'
+
+    + '<h4 style="margin:14px 0 6px">' + esc(t('الاعتماد')) + '</h4>'
+    + table(['م','الاسم','صفته','الجهة','التوقيع'],
+        hoSigners().map(function(g, i2){
+          return [N(i2 + 1), esc(g.n || '\u2014'), esc(t(g.role)), esc(g.org),
+                  '<div style="height:34px;border-bottom:1px dashed var(--line)"></div>'];
+        }))
+    + '</div>';
 }
-/* ── محضرٌ لشركةٍ بكلِّ نقاطها المسلَّمة ── */
+
 function handDocCo(co){
   var L = STATE.sites.filter(function(x){
     var r = STATE.inss[x.id];
@@ -16153,6 +16368,34 @@ var SHEETS = {
       ['المتوقَّع عند الإتمام','EAC',v.EAC], ['المتبقّي','ETC',v.ETC],
       ['فرق الإتمام','VAC',v.VAC], ['كفاءة ما بقي','TCPI',v.TCPI],
       ['الميزانية الكلية','BAC',v.BAC]];
+  },
+  /* المحضرُ إكسل: الترويسةُ والأعمالُ والاعتمادُ في ورقةٍ واحدةٍ كما تُقدَّم */
+  hodoc: function(){
+    var id = HO_DOC || '', s2 = siteFind(id), r = STATE.inss[id], h = handOf(id);
+    if (!s2 || !r) return [['لا محضرَ معروضٌ الآن — افتح محضرَ نقطةٍ أوّلًا']];
+    var T = hoTpl(s2), out = [];
+    out.push(['المملكة العربية السعودية']);
+    out.push([hoParty('owner'), hoParty('agency')]);
+    out.push([T.t]);
+    out.push([]);
+    out.push(['اسم المشروع', hoParty('project'), 'المقاول', hoParty('contractor')]);
+    out.push(['الاستشاري', hoParty('consultant'), 'نوع التقديم', h && h.re ? 'إعادة تقديم' : 'جديد']);
+    out.push(['رقم المحضر', h ? h.no : '', 'تاريخ المحضر', h ? new Date(h.at).toLocaleDateString('ar-EG') : '']);
+    out.push(['مكان الأعمال', s2.zone, T.loc, hoLocOf(s2)]);
+    out.push([]);
+    out.push(['البند', 'العدد', 'السيريال']);
+    hoItems(id).forEach(function(o){ out.push([o.item, o.qty, o.sn]); });
+    out.push([]);
+    out.push(['يُقدَّم إلى', T.to === 'شركة تقديم الخدمة' ? (s2.co || '') : T.to]);
+    out.push(['بادئة الشبكة', s2.net || '']);
+    out.push(['نفّذه', r.by || '', 'اعتمده', r.qaBy || r.apprBy || '']);
+    out.push(['سلَّم', h ? h.by : '', 'استلم عن العميل', h ? h.to : '']);
+    out.push([]);
+    out.push(['تعهدات الاستلام', String(T.pledge).replace('{co}', s2.co || '')]);
+    out.push([]);
+    out.push(['م', 'الاسم', 'صفته', 'الجهة', 'التوقيع']);
+    hoSigners().forEach(function(g, i){ out.push([i + 1, g.n || '', g.role || '', g.org || '', '']); });
+    return out;
   },
   risks: function(){
     var out = [['المعرّف','الخطر','الفئة','الاحتمال','الأثر','الدرجة','المستوى','الاستجابة','الخطة','المالك','الحالة']];
@@ -23110,7 +23353,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
     var head = tabHead('items'), cur = tabCur('items');
-    if (cur === 'consts') return head + (function(){
+    if (cur === 'consts') return head + hoSetupCard() + (function(){
     return card('الثوابت',
         '<div class="grid cols-3">'
         + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
@@ -24757,6 +25000,10 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-cotel')){ coTelSet(el2.getAttribute('data-cotel'), el2.value); render(1); return; }
     if (el2.hasAttribute('data-waco')){ WA_CO = el2.value; render(1); return; }
+    if (el2.hasAttribute('data-hop')){ hoSetParty(el2.getAttribute('data-hop'), el2.value); return; }
+    if (el2.hasAttribute('data-hosn')){ hoSetSigner(+el2.getAttribute('data-hosn'), 'n', el2.value); return; }
+    if (el2.hasAttribute('data-hosr')){ hoSetSigner(+el2.getAttribute('data-hosr'), 'role', el2.value); return; }
+    if (el2.hasAttribute('data-hoso')){ hoSetSigner(+el2.getAttribute('data-hoso'), 'org', el2.value); return; }
     if (el2.hasAttribute('data-dissite')){ DISF.site = el2.value; DISF.items = {}; render(1); return; }
     if (el2.hasAttribute('data-discond')){ DISF.items[el2.getAttribute('data-discond')] = el2.value; return; }
     if (el2.hasAttribute('data-disnote')){ DISF.note = el2.value; return; }

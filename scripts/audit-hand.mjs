@@ -48,8 +48,9 @@ T(w.LAYERS.dis.pass(a)===true, 'وبعد التسليم تدخل طبقةَ ال
 T(w.handSave(a.id,'x','')===false, 'لا تُسلَّم مرتين');
 /* المحضران */
 const ds=w.handDocSite(a.id);
-T(ds.indexOf(rec.no)>-1 && ds.indexOf('SN-'+a.id)>-1 && ds.indexOf('محضر تسليم نقطة')>-1, 'محضرُ النقطة يحمل رقمه وسيرياته');
-T(ds.indexOf('عن العميل')>-1, 'وفيه خانتا التوقيع');
+/* العنوانُ صار من نموذج الوزارة لكلِّ نوع (V15.68) — لا عنوانًا واحدًا */
+T(ds.indexOf(rec.no)>-1 && ds.indexOf('SN-'+a.id)>-1 && /محضر استلام/.test(ds), 'محضرُ النقطة يحمل رقمه وسيرياته');
+T(ds.indexOf('عن العميل')>-1 && ds.indexOf('الاعتماد')>-1, 'وفيه خاناتُ التوقيع وجدولُ الاعتماد');
 const dc=w.handDocCo(co);
 T(dc.indexOf('محضر تسليم شركة')>-1 && dc.indexOf(co)>-1, 'محضرُ الشركة باسمها');
 T(dc.indexOf(L[1].id)>-1 && dc.indexOf(L[2].id)>-1, 'وفيه كلُّ نقاطها المُركّبة');
