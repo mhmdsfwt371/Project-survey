@@ -120,6 +120,12 @@ jobs:
         run: node scripts/audit-cosplit.mjs
       - name: جرد اسم الشركة — بلغة الواجهة والقيمة عربية
         run: node scripts/audit-coname.mjs
+      - name: جرد الفكِّ والصيانة — لكل نوع نموذجه يُغلِق مهمته
+        run: node scripts/audit-urmr.mjs
+      - name: جرد إعلان الخطوات — كل حفظ يُعلن ويصل اللوحات
+        run: node scripts/audit-steps.mjs
+      - name: جرد التمام البنيوي — ما يُرى في الشاشة يصل القاعدة
+        run: node scripts/audit-wiring.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

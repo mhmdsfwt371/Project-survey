@@ -34,6 +34,18 @@ service cloud.firestore {
 
     // المستخدمون: كل واحد يقرأ حسابه — المدير يقرأ الكل
     // الأدمن يكتب أي حساب — المهندس يكتب وثائق المشرفين فقط (بدون تغيير الدور)
+    // سجلُّ الصيانة: يكتبه الميدانُ ويقرؤه الجميع — كسجل التركيب
+    match /maints/{id} {
+      allow read:  if ok();
+      allow write: if canW();
+    }
+    // «آخرُ ما تمّ»: يُعلَن ولا يُعدَّل — سطرٌ يُكتَب مرةً ولا يُمحى، فهو
+    // إعلانٌ لا سجلٌّ يُراجَع؛ وحذفُه يُخفي ما جرى.
+    match /steps/{id} {
+      allow read:   if ok();
+      allow create: if canW();
+      allow update, delete: if false;
+    }
     match /users/{uid} {
       allow read: if request.auth != null && (request.auth.uid == uid || mgr());
       // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات

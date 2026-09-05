@@ -367,7 +367,10 @@ try {
  ['scripts/audit-e2e.mjs',      'جردُ الدورة الكاملة'],
  ['scripts/audit-push.mjs',     'جردُ الدفع اليدوي'],
  ['scripts/audit-cosplit.mjs',  'جردُ فكِّ الأسماء'],
- ['scripts/audit-coname.mjs',   'جردُ اسم الشركة']]).forEach(([f, name]) => {
+ ['scripts/audit-coname.mjs',   'جردُ اسم الشركة'],
+ ['scripts/audit-urmr.mjs',     'جردُ الفكِّ والصيانة'],
+ ['scripts/audit-steps.mjs',    'جردُ إعلان الخطوات'],
+ ['scripts/audit-wiring.mjs',   'جردُ التمام البنيوي']]).forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ

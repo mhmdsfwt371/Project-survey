@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.66",
+  "app_version": "V15.67",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1435,7 +1435,8 @@
     "V15.63": "myDocFix يهيّئ FB قبل أن يقول «لا شبكة»، ويقرأ+يُطلق+يدفع ويقول النتيجة بعددها. زر data-pushnow «ادفع الطابور الآن» (يكرّر ما دام يتقدّم، يظهر مع طابور غير فارغ). permRelease(now=false) لمنع دفعتين متزامنتين. الجرد 48: audit-push.",
     "V15.64": "coSplit/siteCos/coCompounds/coPick + coFill يفكّ المركّبات (CO_LIST 162→212). بطاقة «أسماء مركّبة» في co مع أزرار الأجزاء (مفتاح رقمي لا NUL). audit-data/audit-i18n يقبلان الأجزاء. الجرد 49: audit-cosplit.",
     "V15.65": "coDash/coDashCard: 6 بطاقات + «الأكثر مخيّمات» في رأس شريحة co. CO_FORM وُسّع (بلا «شركة» قبلها، مساهمة مقفلة، مهنية، قابضة) فلا تُفصَل الصيغ القانونية. زر «إدارة الشركات» تحت منتقي الشركة في newsite. محاولة نقل co إلى forms رُدّت (جسم الشاشة لا يُنقَل بالسجل وحده).",
-    "V15.66": "coName(c) للعرض (ar كما هو · en نقحرة/تصحيح · ur = en)؛ dispName للأردية تُرجِع الإنجليزي. coHit يطابق اللغتين. طُبّق في كل منتقيات وجداول الشركات. coDash/coDashCard أُعيدت (سقطت في V15.65 بخطأ مرساة). الجرد 50: audit-coname."
+    "V15.66": "coName(c) للعرض (ar كما هو · en نقحرة/تصحيح · ur = en)؛ dispName للأردية تُرجِع الإنجليزي. coHit يطابق اللغتين. طُبّق في كل منتقيات وجداول الشركات. coDash/coDashCard أُعيدت (سقطت في V15.65 بخطأ مرساة). الجرد 50: audit-coname.",
+    "V15.67": "نموذج disp2 (الفك) + تبويب maintForm (الصيانة) + disSave/maintSave/maintList/maintDone + photoBox عام. stepDone/stepsCard: كل حفظ يُعلن (notif بلا وجهة + سطر في «آخر ما تمّ») في now وover. إصلاح بنيوي: colOf/col + STATE init + saveLocal/loadLocal + سحب maints/steps + قواعد maints وsteps. الجرود 51-53."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2611,7 +2612,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 49,
+  "audits_total": 53,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3928,5 +3929,57 @@
     ],
     "invariant": "قيمة data-nscopick/option value عربية دائمًا — المفتاح لا يُترجَم",
     "search": "coHit(c,q) يطابق العربي والإنجليزي"
+  },
+  "dismantle_form_v15_67": {
+    "page": "forms ← disp2",
+    "state": "DISF {site,items,note,photos}",
+    "guard": [
+      "insDone",
+      "handDone (لا فكَّ قبل التسليم)",
+      "!disDone",
+      "صورة after إلزامية",
+      "may('edit')"
+    ],
+    "effect": [
+      "STATE.diss[id] = {status:'تم الفك', items:{code:{qty,cond}}}",
+      "moves: سليم→إرجاع · غيره→شطب",
+      "تُغلَق مهمة dis",
+      "stepDone('dis')"
+    ]
+  },
+  "maint_form_v15_67": {
+    "page": "forms ← maintForm",
+    "state": "MNTF {site,fault,act,parts,note,photos}",
+    "guard": [
+      "insDone",
+      "fault وact إلزاميان",
+      "may('edit')"
+    ],
+    "effect": [
+      "STATE.maints[id] = {id,list:[{at,by,fault,act,parts,note,photos}]}",
+      "moves: استهلاك",
+      "تُغلَق مهمة maint",
+      "stepDone('maint')"
+    ],
+    "shape_trap": "CORE.set يكتب الوثيقة في مكانها — المصفوفة تعود كائنًا؛ maintList يقرأ الشكلين"
+  },
+  "steps_feed_v15_67": {
+    "fn": "stepDone(kind, site, detail, pts)",
+    "kinds": [
+      "visit",
+      "install",
+      "dis",
+      "maint",
+      "hand",
+      "newsite"
+    ],
+    "notif": "kind='تمّ' بلا to — يراه المكتب كله",
+    "feed": "STATE.steps (سقف 300) + collection steps (رفع + سحب آخر 200)",
+    "cards": [
+      "now (تحت قراراتك اليوم)",
+      "over (أول شاشة الوزارة)"
+    ],
+    "rules": "steps: create فقط — لا تعديل ولا حذف؛ maints: read ok · write canW",
+    "semantics": "«تمّ» = أُنجز العمل لا أنه اعتُمد"
   }
 }

@@ -95,6 +95,14 @@ await deny('ولا يسجّل نفسَه مهندسًا',                setDoc(
 await ok  ('ويسجّل نفسَه فنيًّا فيخرج من الحصار',    setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'tech', active:true }));
 await ok  ('ثم يكتب عملَه',                          setDoc(doc(nodoc, 'events/E8'), { what:'x', ts:1 }));
 await deny('ولا يرفع نفسَه بعد ذلك',                 updateDoc(doc(nodoc, 'users/newbie'), { role:'admin' }));
+console.log('\n══ الصيانةُ وسجلُّ ما تمّ ══');
+await ok  ('الفنيُّ يكتب سجلَّ صيانة',        setDoc(doc(as('tec'), 'maints/S1'), { id:'S1', list:[{ at:1, fault:'x' }] }));
+await ok  ('ويقرؤه',                          getDoc(doc(as('tec'), 'maints/S1')));
+await deny('والمطّلعُ لا يكتبه',              setDoc(doc(as('vwr'), 'maints/S2'), { id:'S2', list:[] }));
+await ok  ('والفنيُّ يُعلن خطوةً تمّت',        setDoc(doc(as('tec'), 'steps/K1'), { kind:'visit', site:'S1', at:1 }));
+await ok  ('والمطّلعُ يقرأ ما تمّ',            getDoc(doc(as('vwr'), 'steps/K1')));
+await deny('ولا يُعدَّل ما أُعلن',             updateDoc(doc(as('eng'), 'steps/K1'), { kind:'install' }));
+await deny('ولا يُحذَف — الإعلانُ لا يُمحى',   deleteDoc(doc(as('eng'), 'steps/K1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
