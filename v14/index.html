@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.68</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.69</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3098,6 +3098,37 @@ en:{
  'تاريخ المحضر':'Record date',
  'نهاية الضمان':'Warranty end',
  'ملاحظات المشرف':'Supervisor notes',
+
+ /* V15.69 — جاهزيةُ الموسم */
+ 'جاهزيةُ الموسم':'Season readiness',
+ 'ينقص':'missing',
+ 'ما ينقص':'What is missing',
+ 'لماذا يهمّ':'Why it matters',
+ 'اضبطه':'Set it',
+ 'كلُّ ما يُعطِّل الحسابَ مضبوط — النظامُ يقيس ويقارن ويُصدِر المحاضر.':'Everything that would break a calculation is set — the system measures, compares, and issues records.',
+ 'كلُّ سطرٍ هنا يُعطِّل حسابًا في صمت: الشاشةُ تعمل وتعرض صفرًا فيُظنُّ أن العملَ لم يبدأ. ويختفي السطرُ فورَ ضبطه.':'Every line here silently breaks a calculation: the screen works and shows zero, so the work is assumed not to have started. The line disappears as soon as it is set.',
+ 'أوزانُ الزيارة':'Survey weights',
+ 'بلا وزنٍ لا تُحتسَب نقطةٌ لأحدٍ — والأداءُ كلُّه صفر':'Without weights no points are counted for anyone — all performance is zero',
+ 'نقاطُ التركيب':'Installation points',
+ 'بلا نقاطٍ للتركيب لا يُقاس عملُ فرق التركيب':'Without installation points the installation crews’ work is not measured',
+ 'تارجتُ المسح اليوميّ':'Daily survey target',
+ 'بلا تارجتٍ لا تُقاس الوتيرةُ ولا يُعرَف «هل نلحق؟»':'Without a target the pace is not measured and “will we make it?” has no answer',
+ 'موعدا المسح والتركيب':'Survey and installation deadlines',
+ 'بلا موعدٍ لا يُعرَف متأخّرٌ من مُنجِز':'Without a deadline the late cannot be told from the on-time',
+ 'سقفُ الميزانية':'Budget ceiling',
+ 'بلا سقفٍ لا قيمةَ مكتسبةً ولا انحرافَ كلفة':'Without a ceiling there is no earned value and no cost variance',
+ 'خطُّ الأساس مجمَّد':'Baseline frozen',
+ 'بلا خطِّ أساسٍ لا يُقارَن الواقعُ بشيء':'Without a baseline reality is compared to nothing',
+ 'مواعيدُ المعالم':'Milestone dates',
+ 'بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر':'Without dates a late milestone is not known',
+ 'أسماءُ المعتمِدين':'Approver names',
+ 'محضرٌ بأسماءٍ فارغةٍ يُرَدُّ من الوزارة':'A record with blank names is returned by the ministry',
+ 'توحيدُ الأسماء المركَّبة':'Merging compound names',
+ 'شهورُ الضمان':'Warranty months',
+ 'المحضرُ يذكر نهايةَ الضمان — وبلا مدةٍ لا نهاية':'The record states the warranty end — without a period there is no end',
+ 'النسخةُ الاحتياطية':'The backup',
+ 'السيرُ ينجح ولا يحفظ حتى تُضبَط أسرارُه':'The workflow succeeds but saves nothing until its secrets are set',
+ 'قيمةً تحمل عدةَ شركاتٍ — لا تُحسَب نقاطُها':'values carry several companies — their points are not counted',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5365,6 +5396,35 @@ ur:{
  'تاريخ المحضر':'دستاویز کی تاریخ',
  'نهاية الضمان':'وارنٹی کا اختتام',
  'ملاحظات المشرف':'سپروائزر کے نوٹس',
+ 'جاهزيةُ الموسم':'سیزن کی تیاری',
+ 'ينقص':'کم',
+ 'ما ينقص':'کیا کم ہے',
+ 'لماذا يهمّ':'کیوں اہم ہے',
+ 'اضبطه':'ترتیب دیں',
+ 'كلُّ ما يُعطِّل الحسابَ مضبوط — النظامُ يقيس ويقارن ويُصدِر المحاضر.':'ہر وہ چیز جو حساب روکتی ہے ترتیب دی گئی — نظام ناپتا، موازنہ کرتا اور دستاویزات جاری کرتا ہے۔',
+ 'كلُّ سطرٍ هنا يُعطِّل حسابًا في صمت: الشاشةُ تعمل وتعرض صفرًا فيُظنُّ أن العملَ لم يبدأ. ويختفي السطرُ فورَ ضبطه.':'یہاں ہر سطر خاموشی سے ایک حساب روکتی ہے: اسکرین چلتی ہے اور صفر دکھاتی ہے۔ ترتیب دیتے ہی سطر غائب ہو جاتی ہے۔',
+ 'أوزانُ الزيارة':'سروے کے وزن',
+ 'بلا وزنٍ لا تُحتسَب نقطةٌ لأحدٍ — والأداءُ كلُّه صفر':'وزن کے بغیر کسی کے پوائنٹس شمار نہیں — کارکردگی صفر',
+ 'نقاطُ التركيب':'تنصیب کے پوائنٹس',
+ 'بلا نقاطٍ للتركيب لا يُقاس عملُ فرق التركيب':'تنصیب پوائنٹس کے بغیر ٹیموں کا کام نہیں ناپا جاتا',
+ 'تارجتُ المسح اليوميّ':'روزانہ سروے ہدف',
+ 'بلا تارجتٍ لا تُقاس الوتيرةُ ولا يُعرَف «هل نلحق؟»':'ہدف کے بغیر رفتار نہیں ناپی جاتی',
+ 'موعدا المسح والتركيب':'سروے اور تنصیب کی آخری تاریخیں',
+ 'بلا موعدٍ لا يُعرَف متأخّرٌ من مُنجِز':'آخری تاریخ کے بغیر تاخیر کا پتہ نہیں چلتا',
+ 'سقفُ الميزانية':'بجٹ کی حد',
+ 'بلا سقفٍ لا قيمةَ مكتسبةً ولا انحرافَ كلفة':'حد کے بغیر ارنڈ ویلیو اور لاگت کا فرق نہیں',
+ 'خطُّ الأساس مجمَّد':'بیس لائن منجمد',
+ 'بلا خطِّ أساسٍ لا يُقارَن الواقعُ بشيء':'بیس لائن کے بغیر حقیقت کا موازنہ کسی سے نہیں',
+ 'مواعيدُ المعالم':'سنگ میل کی تاریخیں',
+ 'بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر':'تاریخوں کے بغیر تاخیر شدہ سنگ میل معلوم نہیں',
+ 'أسماءُ المعتمِدين':'منظوری دینے والوں کے نام',
+ 'محضرٌ بأسماءٍ فارغةٍ يُرَدُّ من الوزارة':'خالی ناموں والا دستاویز وزارت واپس کرتی ہے',
+ 'توحيدُ الأسماء المركَّبة':'مرکب ناموں کا اتحاد',
+ 'شهورُ الضمان':'وارنٹی کے مہینے',
+ 'المحضرُ يذكر نهايةَ الضمان — وبلا مدةٍ لا نهاية':'دستاویز وارنٹی کا اختتام بتاتا ہے — مدت کے بغیر کوئی اختتام نہیں',
+ 'النسخةُ الاحتياطية':'بیک اپ',
+ 'السيرُ ينجح ولا يحفظ حتى تُضبَط أسرارُه':'ورک فلو کامیاب ہوتا ہے مگر رازوں کے بغیر کچھ محفوظ نہیں کرتا',
+ 'قيمةً تحمل عدةَ شركاتٍ — لا تُحسَب نقاطُها':'اقدار کئی کمپنیاں رکھتی ہیں — ان کے پوائنٹس شمار نہیں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8644,7 +8704,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
       });
       var sups = Object.keys(by).sort(function(a, b){ return by[b].length - by[a].length; });
-      return inboxCard()
+      return (may('settings') ? readyCard() : '')
+        + inboxCard()
         + stats([['إسناداتٌ مفتوحة', N(open), 'acc'], ['مشرفون', N(sups.length)],
                     ['تمّت — تنتظر اعتمادك', N(pend), pend ? 'wrn' : ''],
                     ['تحتاج زيارة أخرى', N(rev), rev ? 'bad' : '']])
@@ -14727,7 +14788,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.68' + '.docx" download>⬇ '
+              +   'V15.69' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18786,6 +18847,53 @@ function wfBody(){
    وتغييراتٌ، ونقاطٌ جاهزةٌ للتسليم — يفتحها بالتناوب ويسأل «هل بقي شيء؟».
    فجُمع ما ينتظره في بطاقةٍ واحدةٍ بأرقامه وزرِّ قفزٍ لكلٍّ: صفرٌ في الكلِّ
    يعني أن الطاولةَ نظيفة. */
+
+/* ═══ جاهزيةُ الموسم ═══
+   النظامُ كاملٌ والإعداداتُ صفر. أوزانُ الزيارة صفرٌ فلا نقطةَ تُحتسَب لأحد،
+   والتارجتاتُ صفرٌ فلا وتيرةَ تُقاس، والمواعيدُ صفرٌ فلا تأخّرَ يُعرَف،
+   والميزانيةُ صفرٌ فالقيمةُ المكتسبةُ تقسم على صفر. وكلٌّ منها يعطّل حسابًا
+   بعينه في صمت: الشاشةُ تعمل وتعرض صفرًا، فيُظنُّ أن العملَ لم يبدأ.
+     فصارت بطاقةٌ تقول ما ينقص قبل أن يبدأ الموسم، بترتيب الأثر: ما يُعطّل
+   الحسابَ أوّلًا، ثم ما يُعطّل التقرير، ثم ما يُعطّل المحضر. ولكلِّ سطرٍ
+   زرٌّ يذهب إلى موضع ضبطه — لا يُقال «اضبطه» ويُترَك البحثُ للناظر. */
+function readyRows(){
+  var wKeys = Object.keys(CFG.w || {}).length;
+  var signed = hoSigners().some(function(g){ return g.n; });
+  var cmp = Object.keys(coCompounds()).length;
+  var bk = (BK_STATE.meta && BK_STATE.meta.ok) === true;
+  return [
+    { ok:wKeys > 0,                 t:'أوزانُ الزيارة',        why:t('بلا وزنٍ لا تُحتسَب نقطةٌ لأحدٍ — والأداءُ كلُّه صفر'), p:'pts' },
+    { ok:!!cfgGet('insCamp') || !!cfgGet('insCor'), t:'نقاطُ التركيب', why:t('بلا نقاطٍ للتركيب لا يُقاس عملُ فرق التركيب'), p:'pts' },
+    { ok:!!cfgGet('tgtSurvey'),     t:'تارجتُ المسح اليوميّ',  why:t('بلا تارجتٍ لا تُقاس الوتيرةُ ولا يُعرَف «هل نلحق؟»'), p:'setup' },
+    { ok:!!cfgGet('dueSurvey') && !!cfgGet('dueInstall'), t:'موعدا المسح والتركيب', why:t('بلا موعدٍ لا يُعرَف متأخّرٌ من مُنجِز'), p:'setup' },
+    { ok:!!cfgGet('budCap'),        t:'سقفُ الميزانية',        why:t('بلا سقفٍ لا قيمةَ مكتسبةً ولا انحرافَ كلفة'), p:'budget' },
+    { ok:!!BASE,                    t:'خطُّ الأساس مجمَّد',     why:t('بلا خطِّ أساسٍ لا يُقارَن الواقعُ بشيء'), p:'miles' },
+    { ok:MILES.some(function(m){ return mileDateOf(m); }), t:'مواعيدُ المعالم', why:t('بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر'), p:'miles' },
+    { ok:signed,                    t:'أسماءُ المعتمِدين',     why:t('محضرٌ بأسماءٍ فارغةٍ يُرَدُّ من الوزارة'), p:'consts' },
+    /* الرقمُ يُركَّب مع نصٍّ مترجَم — لا يُصنَع سطرٌ عربيٌّ ثابتٌ بالجمع */
+    { ok:cmp === 0,                 t:'توحيدُ الأسماء المركَّبة', why:nm(cmp) + ' ' + t('قيمةً تحمل عدةَ شركاتٍ — لا تُحسَب نقاطُها'), p:'co' },
+    { ok:!!cfgGet('warranty'),      t:'شهورُ الضمان',          why:t('المحضرُ يذكر نهايةَ الضمان — وبلا مدةٍ لا نهاية'), p:'consts' },
+    { ok:bk,                        t:'النسخةُ الاحتياطية',    why:t('السيرُ ينجح ولا يحفظ حتى تُضبَط أسرارُه'), p:'hb' }
+  ];
+}
+function readyCard(){
+  bkFetch(false);
+  var R = readyRows(), miss = R.filter(function(r){ return !r.ok; });
+  if (!miss.length) return card('\u2705 ' + t('جاهزيةُ الموسم'),
+    '<p class="hint" style="text-align:center;margin:0">'
+    + esc(t('كلُّ ما يُعطِّل الحسابَ مضبوط — النظامُ يقيس ويقارن ويُصدِر المحاضر.')) + '</p>');
+  return cardFlush('\u26A0 ' + t('جاهزيةُ الموسم') + ' \u2014 ' + nm(miss.length) + ' ' + t('ينقص'),
+      table(['ما ينقص','لماذا يهمّ',''],
+        miss.map(function(r){
+          return ['<strong>' + esc(t(r.t)) + '</strong>',
+                  '<span class="hint" style="margin:0">' + esc(r.why) + '</span>',
+                  seesPage(PARENT[r.p] || r.p)
+                    ? btn('\u2190 ' + t('اضبطه'),'btn-quiet btn-sm',' data-p="' + esc(r.p) + '"') : '\u2014'];
+        }))
+      + '<p class="hint" style="margin:8px 0 0">'
+      + esc(t('كلُّ سطرٍ هنا يُعطِّل حسابًا في صمت: الشاشةُ تعمل وتعرض صفرًا فيُظنُّ أن العملَ لم يبدأ. ويختفي السطرُ فورَ ضبطه.'))
+      + '</p>');
+}
 function inboxItems(){
   var out = [], S = siteStats();
   var solWait = 0, qaWait = 0, ncrOpen = 0, chgWait = 0, handReadyN = 0, lateN = 0, tkWait = 0;
@@ -19691,7 +19799,8 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
   body:function(){
     var head = tabHead('sys'), cur = tabCur('sys');
     if (cur === 'hb') return head + (function(){
-    return bkCard()
+    return (may('settings') ? readyCard() : '')
+      + bkCard()
       + alertBox('error','لم تصل أي نبضة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.')
       + stats([['متصل','٠','ok'], ['غير متصل','٠','bad'],
                ['فاصل ≥١٠ دقائق','٠','wrn'], ['متذبذب اليوم','٠']])

@@ -128,6 +128,8 @@ jobs:
         run: node scripts/audit-wiring.mjs
       - name: جرد محضر الاستلام — لكل نوع نموذجه الرسمي
         run: node scripts/audit-hodoc.mjs
+      - name: جرد جاهزية الموسم — ما ينقص يُقال قبل أن يبدأ
+        run: node scripts/audit-ready.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
