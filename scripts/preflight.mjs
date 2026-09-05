@@ -42,9 +42,9 @@ function steps(){
       }
       continue;
     }
-    const rn = /^\s*run:\s*(.+?)\s*$/.exec(y[i]);
-    if (rn && name){ out.push({ name, cmd: rn[1], env }); name = null; env = null; }
-    else if (/^\s*run:\s*\|/.test(y[i]) && name){
+    /* «run: |» يُفحَص أوّلًا: كان التعبيرُ العامُّ يلتقطه فيصير الأمرُ «|»
+       وحدَه — فيسقط الفحصُ القبليُّ بخطأِ صياغةٍ لا علاقةَ له بالسير. */
+    if (/^\s*run:\s*\|-?\s*$/.test(y[i]) && name){
       /* أمرٌ متعدّدُ الأسطر — يُجمَع حتى أول سطرٍ أقلَّ إزاحة */
       const ind = (y[i].match(/^\s*/) || [''])[0].length;
       const buf = [];
@@ -56,7 +56,10 @@ function steps(){
       }
       out.push({ name, cmd: buf.join('\n'), env });
       name = null; env = null;
+      continue;
     }
+    const rn = /^\s*run:\s*(.+?)\s*$/.exec(y[i]);
+    if (rn && name){ out.push({ name, cmd: rn[1], env }); name = null; env = null; }
   }
   return out;
 }
