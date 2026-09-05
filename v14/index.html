@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.62</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.63</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2962,6 +2962,16 @@ en:{
  'لا شبكة':'No network',
  'وثيقةً عادت للرفع':'documents returned for upload',
  'بلا شبكة — تُقرأ عند الاتصال':'No network — read on connect',
+
+ /* V15.63 — الدفعُ اليدوي */
+ 'ادفع الطابور الآن':'Push the queue now',
+ 'الدورةُ تدفع تلقائيًّا كلَّ دقيقة — وهذا يدفع فورًا.':'The cycle pushes automatically every minute — this pushes right away.',
+ 'الطابورُ فارغ':'The queue is empty',
+ 'يُدفَع الطابور…':'Pushing the queue…',
+ 'بقي':'Remaining',
+ 'السببُ في «ما سقط بلا صوت»':'The reason is in “What failed silently”',
+ 'الوثيقةُ موجودةٌ':'The document exists',
+ 'عادت للرفع':'returned for upload',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5103,6 +5113,14 @@ ur:{
  'لا شبكة':'نیٹ ورک نہیں',
  'وثيقةً عادت للرفع':'دستاویزات اپلوڈ کے لیے واپس',
  'بلا شبكة — تُقرأ عند الاتصال':'نیٹ ورک نہیں — کنیکٹ ہونے پر پڑھی جائے گی',
+ 'ادفع الطابور الآن':'قطار ابھی بھیجیں',
+ 'الدورةُ تدفع تلقائيًّا كلَّ دقيقة — وهذا يدفع فورًا.':'چکر ہر منٹ خودکار بھیجتا ہے — یہ فوراً بھیجتا ہے۔',
+ 'الطابورُ فارغ':'قطار خالی ہے',
+ 'يُدفَع الطابور…':'قطار بھیجی جا رہی ہے…',
+ 'بقي':'باقی',
+ 'السببُ في «ما سقط بلا صوت»':'وجہ “جو خاموشی سے گرا” میں ہے',
+ 'الوثيقةُ موجودةٌ':'دستاویز موجود ہے',
+ 'عادت للرفع':'اپلوڈ کے لیے واپس',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -12842,7 +12860,10 @@ var MYDOC = { at:0, has:null, err:'' };
    يُصلَح الحسابُ فلا يعود شيءٌ إلى الطابور، وينتظر صاحبُه أن يضغط ↻ على كلِّ
    واحدةٍ ولا يدري أن عليه ذلك. صار إصلاحُ الوثيقة يُعيد كلَّ ما عُزل برفضِ
    صلاحيةٍ إلى الطابور، ويُصفَّر تكتّمُ الرسائل، ويُدفَع الطابورُ فورًا. */
-function permRelease(){
+/* `now=false` حين يتولّى المنادي الدفعَ بنفسه: كانت هذه تجدول دفعةً بعد
+   جزءٍ من الثانية، فتسبق دفعةَ المنادي أو تُعطِّلها بالقفل — فيقول الزرُّ
+   «رُفع ٠» ثم يُرفَع فعلًا بعد لحظة، فيُقرأ الرقمُ كذبًا. */
+function permRelease(now){
   var PZ = STATE.poison || [], back = 0;
   STATE.poison = PZ.filter(function(x){
     if (!/permission|insufficient|PERMISSION_DENIED/i.test(String(x.err || ''))) return true;
@@ -12854,7 +12875,8 @@ function permRelease(){
   SOFT_SAID = {};
   if (back) logEvent('عادت للرفع بعد إصلاح الصلاحية — ' + nm(back) + ' وثيقة');
   CORE.saveLocal();
-  if (STATE.meta.online) setTimeout(function(){ CORE._busy = false; CORE.flush(); }, 200);
+  if (now !== false && STATE.meta.online)
+    setTimeout(function(){ CORE._busy = false; CORE.flush(); }, 200);
   return back;
 }
 function myDocFetch(force){
@@ -12881,15 +12903,30 @@ function myDocFetch(force){
 }
 function myDocFix(){
   if (!STATE.meta.uid){ toast(t('سجّل الدخول أولًا')); return; }
-  if (!FB.ready || !FB.db){ toast(t('لا شبكة')); return; }
+  /* «لا شبكة» كانت تُقال والشبكةُ متصلة: الوصلةُ تُحمَّل كسولًا، فمن ضغط
+     قبل أوّل قراءةٍ من السحابة وجد الزرَّ يقول ما ليس صحيحًا. تُهيَّأ أوّلًا،
+     ولا يُقال «لا شبكة» إلا حين لا تكون. */
+  if (!FB.ready || !FB.db){
+    if (!STATE.meta.online){ toast(t('لا شبكة')); return; }
+    return FB.init().then(function(ok){
+      if (!ok){ toast(t('لا شبكة')); return false; }
+      return myDocFix();
+    });
+  }
   return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
     if (doc && doc.exists){
       STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
       MYDOC.has = true;
-      var back0 = permRelease();
-      toast(t('الوثيقةُ موجودةٌ — سُحبت')
-            + (back0 ? ' \u00b7 ' + nm(back0) + ' ' + t('وثيقةً عادت للرفع') : ''));
-      render(1); return true;
+      var back0 = permRelease(false);
+      /* الزرُّ يُنهي العملَ لا يُخبر عنه: يقرأ ويُطلِق ويدفع ثم يقول ما بقي */
+      CORE._busy = false;
+      return CORE.flush().then(function(sent){
+        toast(t('الوثيقةُ موجودةٌ')
+              + (back0 ? ' \u00b7 ' + nm(back0) + ' ' + t('عادت للرفع') : '')
+              + ' \u00b7 ' + t('رُفع') + ' ' + nm(sent || 0)
+              + ' \u00b7 ' + t('بقي') + ' ' + nm(STATE.queue.length));
+        render(1); return true;
+      });
     }
     /* القاعدةُ لا تقبل إلا «فني» لمن يسجّل نفسَه — والترقيةُ من المكتب */
     var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
@@ -12898,7 +12935,7 @@ function myDocFix(){
       STATE.users[STATE.meta.uid] = v;
       MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
       logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + STATE.meta.uid);
-      var back = permRelease();
+      var back = permRelease(true);
       toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك')
             + (back ? ' \u00b7 ' + nm(back) + ' ' + t('وثيقةً عادت للرفع') : ''));
       render(1); return true;
@@ -14153,7 +14190,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.62' + '.docx" download>⬇ '
+              +   'V15.63' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19022,6 +19059,14 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               }))
             + '<p class="hint" style="margin:8px 0 0">' + esc(t('رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.')) + '</p>')
         : '')
+      /* الدورةُ تدفع كلَّ دقيقة — ومن رأى «بانتظار الرفع ١» ينتظر ولا يدري
+         متى. زرٌّ يدفع الآن ويقول كم ذهب وكم بقي. */
+      + (Q.length
+        ? card('', '<div class="actions" style="margin:0">'
+            + btn('\u2191 ' + t('ادفع الطابور الآن'),'btn-primary btn-sm',' data-pushnow="1"')
+            + '<span class="hint" style="margin:0 10px">'
+            + esc(t('الدورةُ تدفع تلقائيًّا كلَّ دقيقة — وهذا يدفع فورًا.')) + '</span></div>')
+        : '')
       + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok'],
                ['أخطاءُ رفع', N(errs.length), errs.length ? 'bad' : 'ok'],
                ['أخطاءُ اليوم', N(today), today ? 'wrn' : 'ok'],
@@ -23203,6 +23248,26 @@ function onDocClick(e){
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
   if (e.target.closest('[data-mydocfix]')){ myDocFix(); return; }
+  if (e.target.closest('[data-pushnow]')){
+    if (!STATE.queue.length){ toast(t('الطابورُ فارغ')); return; }
+    var was = STATE.queue.length;
+    toast(t('يُدفَع الطابور…'));
+    CORE._busy = false;
+    var go = function(){
+      return CORE.flush().then(function(sent){
+        if (STATE.queue.length && sent){ CORE._busy = false; return go(); }
+        toast(t('رُفع') + ' ' + nm(was - STATE.queue.length) + ' \u00b7 ' + t('بقي') + ' ' + nm(STATE.queue.length)
+              + (STATE.queue.length ? ' — ' + t('السببُ في «ما سقط بلا صوت»') : ''));
+        render(1);
+      });
+    };
+    if (!FB.ready || !FB.db){
+      if (!STATE.meta.online){ toast(t('لا شبكة')); return; }
+      FB.init().then(function(ok){ if (ok) go(); else toast(t('لا شبكة')); });
+      return;
+    }
+    go(); return;
+  }
   var pzr = e.target.closest('[data-pzretry]');
   if (pzr){
     var pz = (STATE.poison || [])[+pzr.getAttribute('data-pzretry')];
