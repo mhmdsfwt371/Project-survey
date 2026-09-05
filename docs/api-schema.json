@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.69",
+  "app_version": "V15.70",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1438,7 +1438,8 @@
     "V15.66": "coName(c) للعرض (ar كما هو · en نقحرة/تصحيح · ur = en)؛ dispName للأردية تُرجِع الإنجليزي. coHit يطابق اللغتين. طُبّق في كل منتقيات وجداول الشركات. coDash/coDashCard أُعيدت (سقطت في V15.65 بخطأ مرساة). الجرد 50: audit-coname.",
     "V15.67": "نموذج disp2 (الفك) + تبويب maintForm (الصيانة) + disSave/maintSave/maintList/maintDone + photoBox عام. stepDone/stepsCard: كل حفظ يُعلن (notif بلا وجهة + سطر في «آخر ما تمّ») في now وover. إصلاح بنيوي: colOf/col + STATE init + saveLocal/loadLocal + سحب maints/steps + قواعد maints وsteps. الجرود 51-53.",
     "V15.68": "HO_TPL لسبعة أنواع + HO_PARTIES/HO_SIGNERS (CFG.hoParties/hoSigners) + hoSetupCard في consts + handDocSite أُعيد على نموذج الوزارة + ورقة SHEETS.hodoc + زرّا إكسل وPDF. الجرد 54: audit-hodoc.",
-    "V15.69": "readyRows/readyCard: 11 بندًا لجاهزية الموسم بسببه وزر موضع ضبطه، في mywork وhb (may settings). الجرد 55: audit-ready."
+    "V15.69": "readyRows/readyCard: 11 بندًا لجاهزية الموسم بسببه وزر موضع ضبطه، في mywork وhb (may settings). الجرد 55: audit-ready.",
+    "V15.70": "seedPlan/seedApply/seedCard: مقترح مبني على البيانات يُكتَب في الحقول الفارغة فقط (may settings). audit-craft: عشرة فحوص صنعة (مؤقتات/مستمعات/حقن/الصفر/حجم الدوال/قواعد مفتوحة/أسرار/تسجيل الجرود). الجردان 56 و57."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2614,7 +2615,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 55,
+  "audits_total": 57,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4026,5 +4027,46 @@
     ],
     "why": "كل بند يعطّل حسابًا في صمت — الشاشة تعمل وتعرض صفرًا فيُظن أن العمل لم يبدأ",
     "guard": "may('settings') — ولا يراها من لا يضبط"
+  },
+  "season_seed_v15_70": {
+    "fn": "seedApply()",
+    "builds_from": "عدد النقاط وأنواعها وأيام الموسم",
+    "weights": "بالجهد: مخيمات 1 · ممرات 2 · الجمرات 3 · المحطات 2 · نمرة 2 · الكاميرات 1.5",
+    "values": {
+      "insCamp": 5,
+      "insCor": 8,
+      "disOk": 2,
+      "disBad": 1,
+      "days": 26,
+      "warranty": 12,
+      "reservePct": 10,
+      "minCamp": 1,
+      "minCor": 1
+    },
+    "computed": {
+      "tgtSurvey": "ceil(المتبقي / أيام عمل حتى dueSurvey)",
+      "dueSurvey": "+45 يومًا",
+      "dueInstall": "+100 يوم"
+    },
+    "rules": [
+      "لا يُكتَب إلا الحقل الفارغ",
+      "budCap لا يُقترَح — رقم تعاقدي",
+      "logEvent باسم من ضغطه",
+      "كل رقم قابل للتغيير في شاشته"
+    ]
+  },
+  "craft_review_v15_70": {
+    "checks": [
+      "مؤقت في دالة متكررة بلا clearInterval",
+      "addEventListener داخل render",
+      "innerHTML بمدخل غير مهروب",
+      "if(x.qty) على عدد قد يكون صفرًا",
+      "أكبر دالة < 60KB",
+      "allow ... if true في القواعد",
+      "sw.js لا يخزّن بيانات حساسة",
+      "أسرار في index.html",
+      "كل audit-*.mjs مسجّل (استثناء VIA_PREFLIGHT)"
+    ],
+    "result": "عشرة فحوص نظيفة؛ onDocClick 44KB أكبر دالة ويحرسها audit-writes"
   }
 }
