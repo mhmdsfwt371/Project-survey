@@ -1,6 +1,6 @@
 {
   "ok": false,
-  "at": "2026-09-05T07:04:05Z",
+  "at": "2026-09-05T10:14:44Z",
   "why": "BACKUP_KEY غير مضبوط — لم تُؤخَذ نسخة",
   "fix": "Settings ← Secrets and variables ← Actions ← New repository secret · الاسم BACKUP_KEY"
 }
