@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.63</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.64</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2972,6 +2972,14 @@ en:{
  'السببُ في «ما سقط بلا صوت»':'The reason is in “What failed silently”',
  'الوثيقةُ موجودةٌ':'The document exists',
  'عادت للرفع':'returned for upload',
+
+ /* V15.64 — فكُّ الأسماء المركّبة */
+ 'أسماءٌ مركَّبةٌ — عدةُ شركاتٍ في سطرٍ واحد':'Compound names — several companies in one line',
+ 'القيمة كما وردت':'The value as it came',
+ 'اختر التي تخدمها':'Choose the one that serves it',
+ 'هذه القيمُ جاءت من الملف بعدة شركاتٍ في سطرٍ واحد — فلا تُختار شركةٌ منها بمفردها ولا تُحسَب لها نقاطُها. اضغط الشركةَ التي تخدم المخيّمَ فعلًا فتنتقل نقاطُه إليها؛ والأجزاءُ كلُّها في القائمة الموحّدة أصلًا فتُختار لمخيّماتٍ أخرى.':'These values came from the file with several companies in one line — so none of them can be chosen alone and none gets its points. Tap the company that actually serves the camp and its points move to it; all the parts are already in the unified list for other camps.',
+ 'توحيدُ الأسماء للمهندس وحده':'Merging names is for the engineer only',
+ 'نقطةً صارت لـ':'points now belong to',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5121,6 +5129,12 @@ ur:{
  'السببُ في «ما سقط بلا صوت»':'وجہ “جو خاموشی سے گرا” میں ہے',
  'الوثيقةُ موجودةٌ':'دستاویز موجود ہے',
  'عادت للرفع':'اپلوڈ کے لیے واپس',
+ 'أسماءٌ مركَّبةٌ — عدةُ شركاتٍ في سطرٍ واحد':'مرکب نام — ایک سطر میں کئی کمپنیاں',
+ 'القيمة كما وردت':'قدر جیسے آئی',
+ 'اختر التي تخدمها':'وہ منتخب کریں جو خدمت کرتی ہے',
+ 'هذه القيمُ جاءت من الملف بعدة شركاتٍ في سطرٍ واحد — فلا تُختار شركةٌ منها بمفردها ولا تُحسَب لها نقاطُها. اضغط الشركةَ التي تخدم المخيّمَ فعلًا فتنتقل نقاطُه إليها؛ والأجزاءُ كلُّها في القائمة الموحّدة أصلًا فتُختار لمخيّماتٍ أخرى.':'یہ اقدار فائل سے ایک سطر میں کئی کمپنیوں کے ساتھ آئیں — سو کوئی ایک الگ منتخب نہیں ہو سکتی اور نہ اسے پوائنٹس ملتے ہیں۔ جو کمپنی واقعی کیمپ کی خدمت کرتی ہے اسے دبائیں تو پوائنٹس اس کو منتقل ہوں گے۔',
+ 'توحيدُ الأسماء للمهندس وحده':'ناموں کا اتحاد صرف انجینئر کے لیے',
+ 'نقطةً صارت لـ':'پوائنٹس اب اس کے ہیں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -11927,6 +11941,29 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
               + '<p class="hint">' + esc(t('تنتقل نقاطُها ودفترُ جوالها ومحاضرُها إلى الاسم الجديد — واسمان لشركةٍ واحدة يصيران واحدًا.')) + '</p>',
               btn('\u270E ' + t('أعد التسمية'),'btn-secondary btn-sm',' data-coren="1"'))
           : '')
+        /* الأسماءُ المركَّبةُ: تُعرَض بأجزائها ويُسنَد المخيّمُ إلى واحدةٍ
+           منها بضغطة — والباقي يبقى في القائمة الموحّدة لمن يخدم مخيّمًا آخر */
+        + (function(){
+            var CM = coCompounds(), keys = Object.keys(CM);
+            if (!keys.length) return '';
+            /* المفتاحُ رقمان لا نصّان: حرفُ الفصل NUL يستبدله محلِّلُ HTML
+               بمحرفِ الاستبدال، فلا تعود القيمةُ كما كُتبت ولا تُطابَق. */
+            CO_CMP = CM; CO_CMP_KEYS = keys;
+            var rows = [];
+            keys.forEach(function(raw, ri){
+              var g = CM[raw];
+              rows.push(['<span class="hint" style="margin:0">' + esc(raw.slice(0, 90)) + '</span>',
+                         N(g.n),
+                         '<div class="chips" style="margin:0">' + g.parts.map(function(pt, pi){
+                           return '<button type="button" class="chip" data-copick="' + ri + ':' + pi + '">'
+                             + esc(pt.length > 34 ? pt.slice(0, 33) + '\u2026' : pt) + '</button>';
+                         }).join('') + '</div>']);
+            });
+            return cardFlush('\u{1F517} ' + t('أسماءٌ مركَّبةٌ — عدةُ شركاتٍ في سطرٍ واحد') + ' \u2014 ' + nm(keys.length),
+              table(['القيمة كما وردت','نقاطها','اختر التي تخدمها'], rows)
+              + '<p class="hint" style="margin:8px 0 0">'
+              + esc(t('هذه القيمُ جاءت من الملف بعدة شركاتٍ في سطرٍ واحد — فلا تُختار شركةٌ منها بمفردها ولا تُحسَب لها نقاطُها. اضغط الشركةَ التي تخدم المخيّمَ فعلًا فتنتقل نقاطُه إليها؛ والأجزاءُ كلُّها في القائمة الموحّدة أصلًا فتُختار لمخيّماتٍ أخرى.')) + '</p>');
+          })()
         + (added.length
           ? cardFlush(t('شركاتٌ أُضيفت') + ' — ' + nm(added.length),
               table(['الشركة','أضافها','مواقعُها',''],
@@ -12146,7 +12183,9 @@ function nsSave(){
   var camp = NEWSITE.type === 'مخيم';
   if (camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
     toast(t('اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»')); return; }
-  if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0){
+  /* المركَّبةُ لا تُطابِق القائمةَ نصًّا — يُقبَل ما كانت أجزاؤه كلُّها فيها */
+  if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0
+      && !siteCos({ co:NEWSITE.co }).every(function(one){ return CO_LIST.indexOf(one) > -1; })){
     toast(t('اسم الشركة يجب أن يكون من القائمة الموحّدة فقط')); return; }
   if (!NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
 
@@ -14190,7 +14229,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.63' + '.docx" download>⬇ '
+              +   'V15.64' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16883,6 +16922,62 @@ var CO_SEL = [];
 /* القائمةُ الموحّدة — تُبنى من بيانات المشروع نفسها لا تُكتَب بيد.
    كانت عشرةَ أسماءٍ مخترعةٍ بينما الشاشةُ تقول «مئةٌ واثنتان وستون شركة»،
    والميدانُ يختار من قائمةٍ لا تشبه ما في السجل. */
+
+/* ═══ الاسمُ المركَّبُ يُفَكّ ═══
+   إحدى وثلاثون قيمةً في القائمة تحمل أكثرَ من شركةٍ في نصٍّ واحدٍ مفصولةٍ
+   بفاصلة — مخيّمٌ تخدمه عدةُ شركات، أُدخل اسمُها كما جاء في الملف. فتظهر
+   في المنتقي سطرًا واحدًا طويلًا لا يُقرأ، ولا تُختار شركةٌ منها بمفردها،
+   ولا تُحسَب لها نقاطُها.
+     والفكُّ بالفاصلة وحدَها لا بكلِّ «شركة»: «شركة شخص واحد» و«شركة ذات
+   مسؤولية محدودة» صيغتان قانونيتان تلحقان الاسمَ ولا تصنعان شركةً ثانيةً —
+   ومن فكَّ عندهما صنع من الواحدة اثنتين. فما لا يبدأ بكلمةِ كيانٍ يُضَمُّ
+   إلى ما قبله، وكذلك الصيغُ القانونية. */
+var CO_CMP = null, CO_CMP_KEYS = [];
+var CO_HEAD = /^(شرك[ةه]|مؤسس[ةه]|مكتب|مجموع[ةه]|مصنع|جمعي[ةه])\s/;
+var CO_FORM = /^شرك[ةه]\s+(شخص\s+واحد|ذات\s+مسؤولي[ةه]\s+محدود[ةه]|مساهم[ةه]|تضامن|توصي[ةه]\s+بسيط[ةه])\s*$/;
+function coSplit(v){
+  var raw = String(v || '').replace(/[\u200e\u200f\u202a-\u202e]/g, '').trim();
+  if (!raw) return [];
+  var parts = raw.split(/\s*[،,؛;|]\s*/).map(function(x){ return x.trim(); }).filter(Boolean);
+  var out = [];
+  parts.forEach(function(x){
+    /* صيغةٌ قانونيةٌ أو جزءٌ لا يبدأ بكيان: يعود إلى ما قبله */
+    if (out.length && (CO_FORM.test(x) || !CO_HEAD.test(x))) out[out.length - 1] += '، ' + x;
+    else out.push(x);
+  });
+  return out.length ? out : [raw];
+}
+/* شركاتُ نقطةٍ بعينها — واحدةٌ في الغالب، وقد تكون عدةً في المخيم المشترك */
+function siteCos(x){ return coSplit(x && x.co); }
+function coCompounds(){
+  var m = {};
+  (STATE.sites || []).forEach(function(x){
+    if (!x.co) return;
+    var pr = coSplit(x.co);
+    if (pr.length < 2) return;
+    if (!m[x.co]) m[x.co] = { parts:pr, n:0, ids:[] };
+    m[x.co].n++;
+    if (m[x.co].ids.length < 12) m[x.co].ids.push(x.id);
+  });
+  return m;
+}
+/* تُسنَد نقاطُ قيمةٍ مركَّبةٍ إلى واحدةٍ من أجزائها */
+function coPick(raw, part){
+  if (!may('settings')){ toast(t('توحيدُ الأسماء للمهندس وحده')); return 0; }
+  var n = 0;
+  (STATE.sites || []).forEach(function(x){
+    if (x.co !== raw) return;
+    x.co = part; n++;
+    CORE.set('sites', x.id, { co:part });
+  });
+  if (n){
+    coFill(); statBump();
+    logEvent('توحيد اسم مركَّب — ' + nm(n) + ' نقطة \u2190 ' + part);
+    toast(nm(n) + ' ' + t('نقطةً صارت لـ') + ' ' + part);
+    render(1);
+  }
+  return n;
+}
 var CO_LIST = [];
 function coFill(){
   var seen = {}; CO_LIST.length = 0;
@@ -16895,8 +16990,11 @@ function coFill(){
     return STATE.coreqs[k] && STATE.coreqs[k].status === 'معتمد'; })
     .map(function(k){ return STATE.coreqs[k].name || k; });
   [].concat(SITES_RAW.co || [], SITES_RAW.dm || [], onRows, approved).forEach(function(c){
-    c = String(c || '').trim();
-    if (c && !seen[c]){ seen[c] = 1; CO_LIST.push(c); }
+    /* القائمةُ أسماءٌ مفردة: القيمةُ المركَّبةُ تدخل مفكوكةً — ويبقى الأصلُ
+       على النقطة حتى يُوحَّد من شاشة الشركات. */
+    coSplit(c).forEach(function(one){
+      if (one && !seen[one]){ seen[one] = 1; CO_LIST.push(one); }
+    });
   });
   CO_LIST.sort(function(x, y){ return x.localeCompare(y, 'ar'); });
   return CO_LIST.length;
@@ -23281,6 +23379,14 @@ function onDocClick(e){
     return;
   }
   if (e.target.closest('[data-bkref]')){ bkFetch(true); toast(t('تُقرأ الحالة…')); return; }
+  var cpk = e.target.closest('[data-copick]');
+  if (cpk){
+    var ix = cpk.getAttribute('data-copick').split(':');
+    var rawK = (CO_CMP_KEYS || [])[+ix[0]];
+    var grp = rawK && (CO_CMP || {})[rawK];
+    if (grp) coPick(rawK, grp.parts[+ix[1]]);
+    return;
+  }
   if (e.target.closest('[data-coren]')){
     coRename((document.getElementById('coRenFrom') || {}).value, (document.getElementById('coRenTo') || {}).value);
     render(1); return;

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.63",
+  "app_version": "V15.64",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1432,7 +1432,8 @@
     "V15.60": "rules: uHas()/uPath() بـexists قبل get، role() = none بلا وثيقة، وself-register على users/{uid} (role=tech، active=true، !exists). app: MYDOC + myDocFetch/myDocFix + قراءة الوثيقة عند الدخول + بطاقة الهوية تقول «غير موجودة — هذا سبب الرفض» + زر الإنشاء. الجرد 45: audit-mydoc.",
     "V15.61": "permRelease(): يعيد المعزول برفض صلاحية إلى الطابور + يصفّر SOFT_SAID + flush فورًا؛ يُستدعى من myDocFix (الإنشاء والقراءة). نجاح دفعة بلا فشل يصفّر SOFT_SAID. myDocFetch يهيّئ FB أو يقول offline. الجرد 46: audit-release.",
     "V15.62": "asnReadyList وlayerStats: taskKindOf(id, kind) بدل asnOf(id) — إسناد من نوع كان يحجب الأنواع كلها. الجرد 47: audit-e2e (13 خطوة).",
-    "V15.63": "myDocFix يهيّئ FB قبل أن يقول «لا شبكة»، ويقرأ+يُطلق+يدفع ويقول النتيجة بعددها. زر data-pushnow «ادفع الطابور الآن» (يكرّر ما دام يتقدّم، يظهر مع طابور غير فارغ). permRelease(now=false) لمنع دفعتين متزامنتين. الجرد 48: audit-push."
+    "V15.63": "myDocFix يهيّئ FB قبل أن يقول «لا شبكة»، ويقرأ+يُطلق+يدفع ويقول النتيجة بعددها. زر data-pushnow «ادفع الطابور الآن» (يكرّر ما دام يتقدّم، يظهر مع طابور غير فارغ). permRelease(now=false) لمنع دفعتين متزامنتين. الجرد 48: audit-push.",
+    "V15.64": "coSplit/siteCos/coCompounds/coPick + coFill يفكّ المركّبات (CO_LIST 162→212). بطاقة «أسماء مركّبة» في co مع أزرار الأجزاء (مفتاح رقمي لا NUL). audit-data/audit-i18n يقبلان الأجزاء. الجرد 49: audit-cosplit."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2608,7 +2609,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 48,
+  "audits_total": 49,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -3869,5 +3870,19 @@
     "myDocFix": "FB.init() إن !ready وonline؛ permRelease(false) ثم flush ثم toast بالأعداد",
     "pushnow": "data-pushnow: FB.init إن لزم → flush متكرر ما دام sent>0 → toast «رُفع/بقي» + إشارة إلى «ما سقط بلا صوت»",
     "truthful_count": "permRelease(now) يمنع الجدولة الموازية فلا يُعلَن رقم قبل أوانه"
+  },
+  "company_split_v15_64": {
+    "why": "31 قيمة تحمل عدة شركات في سطر — لا تُختار منفردة ولا تُحسب نقاطها",
+    "rule": "الفصل بـ[،,؛;|] فقط؛ ما لا يبدأ بـ(شركة|مؤسسة|مكتب|مجموعة|مصنع|جمعية) أو كان صيغة قانونية يُضمّ لما قبله؛ نزع علامات الاتجاه",
+    "legal_forms": [
+      "شركة شخص واحد",
+      "شركة ذات مسؤولية محدودة",
+      "شركة مساهمة",
+      "شركة تضامن",
+      "شركة توصية بسيطة"
+    ],
+    "list": "CO_LIST = 212 اسمًا مفردًا (كانت 162)",
+    "merge_ui": "co ← «أسماء مركّبة»: أزرار الأجزاء → coPick(raw, part) ينقل co لكل نقاط القيمة",
+    "trap": "NUL في data-* يستبدله محلّل HTML — المفتاح رقمان (ri:pi)"
   }
 }

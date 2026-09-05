@@ -445,7 +445,10 @@ eq(out.length, 0, 'كلُّ الإحداثيات داخل نطاق المشاع�
 
 /* الشركاتُ من القائمة الموحّدة — لا اسمَ حرٍّ يصنع شركتين من واحدة */
 const CO = new Set(w.CO_LIST);
-const oddCo = [...new Set(S.map(x => x.co).filter(Boolean))].filter(c => !CO.has(c));
+/* المركَّبةُ لا تُطابِق نصًّا — تُقبَل إن كانت أجزاؤها كلُّها في القائمة،
+   وتُوحَّد من «الشركات ← أسماءٌ مركَّبة». */
+const oddCo = [...new Set(S.map(x => x.co).filter(Boolean))]
+  .filter(c => !CO.has(c) && !(w.coSplit(c) || []).every(one => CO.has(one)));
 check(oddCo.length === 0, 'كلُّ شركات المواقع في القائمة الموحّدة'
   + (oddCo.length ? ` — خارجها ${oddCo.length}: ` + oddCo.slice(0,3).join(' · ') : ''));
 

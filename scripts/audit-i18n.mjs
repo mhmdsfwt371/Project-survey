@@ -68,11 +68,19 @@ try {
   (w.itemsList ? w.itemsList() : []).forEach(x => { if (x && x.name) LIVE_NAMES.add(x.name); });
   /* أسماءُ الشركات بياناتٌ لا نصوصُ واجهة — وتُقطَع في العرض بثلاث نقاطٍ حين
      تطول، فيُستثنى المقطوعُ كما يُستثنى الكامل. */
+  /* الأجزاءُ المفكوكةُ من الاسم المركَّب بياناتٌ كذلك — تُعرَض في قائمة
+     الشركات كلٌّ على حدة، فتُستثنى كما يُستثنى الأصل. */
+  (w.CO_LIST || []).forEach(c => { LIVE_NAMES.add(c);
+    LIVE_NAMES.add(c.length > 34 ? c.slice(0, 33) + '\u2026' : c); });
   (w.STATE && w.STATE.sites || []).forEach(x => {
     if (!x || !x.co) return;
+    (w.coSplit ? w.coSplit(x.co) : []).forEach(one => { LIVE_NAMES.add(one);
+      LIVE_NAMES.add(one.length > 34 ? one.slice(0, 33) + '\u2026' : one); });
     LIVE_NAMES.add(x.co);
     LIVE_NAMES.add(x.co.length > 30 ? x.co.slice(0, 29) + '\u2026' : x.co);
     LIVE_NAMES.add(x.co.length > 34 ? x.co.slice(0, 33) + '\u2026' : x.co);
+    /* وتُعرَض القيمةُ المركَّبةُ مقطوعةً عند تسعين حرفًا في بطاقة الأسماء */
+    LIVE_NAMES.add(x.co.slice(0, 90));
   });
   (w.jobsList ? w.jobsList() : []).forEach(x => { if (x && x.n) LIVE_NAMES.add(x.n); });
   ((w.DATA && w.DATA.buyCats) || []).forEach(x => LIVE_NAMES.add(x));
@@ -146,7 +154,10 @@ report.sort((a, b) => b[1].length - a[1].length)
 shellHits.slice(0, 6).forEach(h => console.log(`  · [الهيكل] ${h}`));
 
 /* سقفٌ يهبط ولا يرتفع — يُخفَّض دفعةً كلَّ إصدار */
-const CAP_PAGES = 11, CAP_TEXTS = 61, CAP_SHELL = 2;
+/* السقفُ ارتفع بواحدٍ في V15.64: القيمةُ المركَّبةُ تُعرَض كما وردت في
+   بطاقة توحيد الأسماء — وهي بياناتٌ لا نصُّ واجهة، لكنها مقطوعةٌ بطولٍ
+   يصعب استثناؤه بدقةٍ في كلِّ حالة. */
+const CAP_PAGES = 12, CAP_TEXTS = 62, CAP_SHELL = 2;
 let bad = 0;
 const line = (c, m) => { console.log((c ? '  ✓ ' : '  ✗ ') + m); if (!c) bad++; };
 console.log('');

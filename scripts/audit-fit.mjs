@@ -48,7 +48,7 @@ const FORMS = ['svForm','insForm','forms','disp2','newsite'];   /* إدخالُ 
 const DESK  = ['pts','items','users','consts','org','sys','exp',
                'ips','conote','miles','risks','evm','chg','plan','budm','ipc','buys',
                'roles','assignRole','jobs','names','vehkind','sup','buycat','probe','drive',
-               'crewplan','visits','prep','asm','install','disp','wday','stock','mine','cover','raci','esc'];
+               'crewplan','visits','prep','asm','install','disp','wday','stock','mine','cover','raci','esc','co'];
 let bad = 0;
 const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
 for (const r of roles){
