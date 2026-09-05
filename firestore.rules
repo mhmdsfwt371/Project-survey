@@ -9,7 +9,11 @@ service cloud.firestore {
     function isBoss(){ return request.auth != null
         && request.auth.token.get('email', '') == 'mohammed.safwat@afaqy.com'; }
     function uDoc()  { return get(/databases/$(db)/documents/users/$(request.auth.uid)).data; }
-    function ok()    { return isBoss() || (request.auth != null && uDoc().active == true); }
+    // الحسابُ الفعّالُ من لم يُكتَب له active=false: كانت القاعدةُ تشترط
+    // active==true، والحساباتُ التي يُنشئها التطبيقُ لم تكن تكتب الحقلَ —
+    // فرُفض كلُّ حسابٍ جديدٍ بلا سببٍ يُرى («Missing or insufficient permissions»
+    // على كلِّ رفع). التعطيلُ فعلٌ صريحٌ لا غيابُ حقل.
+    function ok()    { return isBoss() || (request.auth != null && uDoc().get('active', true) != false); }
     function role()  { return isBoss() ? 'admin' : uDoc().role; }
     function mgr()   { return ok() && role() in ['engineer', 'admin']; }
 

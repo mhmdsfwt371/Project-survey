@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.57</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.58</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2935,6 +2935,18 @@ en:{
  'أُعيد إلى الطابور':'Returned to the queue',
  'وثيقةً رُفضت — السببُ في «المزامنة والتعارض»':'documents were rejected — the reason is in “Sync and conflicts”',
  'رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.':'Rejected three times, so quarantined not to block what follows — the reason is written: an unacceptable value or a rule that denies. Retry after fixing, or drop it if it was a mistake.',
+
+ /* V15.58 — الهويةُ والفعّالية */
+ 'بأيِّ هويةٍ يكتب هذا الجهاز':'Under which identity this device writes',
+ 'غير مسجَّل الدخول':'Not signed in',
+ 'الدورُ في التطبيق':'Role in the app',
+ 'وثيقةُ الحساب users/{uid}':'Account document users/{uid}',
+ 'موجودة':'Present',
+ 'لم تُسحَب أو باسمٍ آخر':'Not fetched, or under another name',
+ 'دورُها':'Its role',
+ 'false — معطَّل':'false — disabled',
+ 'غير مكتوب (يُعدُّ فعّالًا)':'Not written (treated as active)',
+ '«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.':'“Missing or insufficient permissions” means the rules do not recognise this account: its document is not under the uid, its role is not one of the roles, or active is written as false.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5053,6 +5065,16 @@ ur:{
  'أُعيد إلى الطابور':'قطار میں واپس',
  'وثيقةً رُفضت — السببُ في «المزامنة والتعارض»':'دستاویزات مسترد ہوئیں — وجہ “ہم آہنگی اور تصادم” میں',
  'رُفضت ثلاثَ مرات فعُزلت كي لا تعيق ما بعدها — السببُ مكتوب: قيمةٌ غيرُ مقبولة أو قاعدةٌ تمنع. أعد رفعَها بعد الإصلاح، أو أسقطها إن كانت خطأً.':'تین بار مسترد ہوئیں، سو الگ کر دی گئیں تاکہ باقی نہ رکیں — وجہ لکھی ہے: ناقابل قبول قدر یا روکنے والا قاعدہ۔ درست کر کے دوبارہ اپلوڈ کریں، یا غلطی ہو تو ہٹا دیں۔',
+ 'بأيِّ هويةٍ يكتب هذا الجهاز':'یہ ڈیوائس کس شناخت سے لکھتی ہے',
+ 'غير مسجَّل الدخول':'لاگ ان نہیں',
+ 'الدورُ في التطبيق':'ایپ میں کردار',
+ 'وثيقةُ الحساب users/{uid}':'اکاؤنٹ دستاویز users/{uid}',
+ 'موجودة':'موجود',
+ 'لم تُسحَب أو باسمٍ آخر':'نہیں لائی گئی، یا دوسرے نام سے',
+ 'دورُها':'اس کا کردار',
+ 'false — معطَّل':'false — غیر فعال',
+ 'غير مكتوب (يُعدُّ فعّالًا)':'نہیں لکھا (فعال سمجھا جاتا ہے)',
+ '«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.':'“Missing or insufficient permissions” کا مطلب قواعد اس اکاؤنٹ کو نہیں پہچانتے: دستاویز uid کے نام نہیں، کردار کرداروں میں نہیں، یا active کو false لکھا ہے۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -14007,7 +14029,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.57' + '.docx" download>⬇ '
+              +   'V15.58' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18831,10 +18853,24 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     /* كانت أربعةَ أصفارٍ مكتوبةً بيدٍ — والحارسُ لم يمسكها لأن جسمَ الصفحة
        التي بعدها كان يمدّها بمصدرٍ حيٍّ صدفةً. كُشفت حين حُذفت تلك الصفحة. */
     var Q = STATE.queue || [], PZ = STATE.poison || [];
+    /* «Missing or insufficient permissions» بلا هويةٍ لا يُشخَّص: من يكتب؟
+       وبأيِّ دورٍ في وثيقته؟ وهل هو فعّال؟ وهل وثيقتُه باسم uid أصلًا؟ */
+    var me = STATE.meta || {}, myDoc = (STATE.users || {})[me.uid] || null;
+    var idRows = [
+      ['uid', me.uid ? '<span class="num" dir="ltr">' + esc(me.uid) + '</span>' : pill('غير مسجَّل الدخول','off')],
+      ['الاسم', esc(me.name || '—')],
+      ['الدورُ في التطبيق', esc(t((ROLES[ROLE] || {}).n || ROLE))],
+      ['وثيقةُ الحساب users/{uid}', myDoc ? pill('موجودة','ok') : pill('لم تُسحَب أو باسمٍ آخر','warn')],
+      ['دورُها', myDoc ? esc(t((ROLES[myDoc.role] || {}).n || myDoc.role || '—')) : '—'],
+      ['active', myDoc ? (myDoc.active === false ? pill('false — معطَّل','off') : pill(myDoc.active === true ? 'true' : 'غير مكتوب (يُعدُّ فعّالًا)', myDoc.active === true ? 'ok' : 'warn')) : '—']
+    ];
     var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
     var day = new Date().toISOString().slice(0, 10);
     var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
-    return softErrCard()
+    return card('\u{1FAAA} ' + t('بأيِّ هويةٍ يكتب هذا الجهاز'),
+        table(['','' ], idRows.map(function(r){ return [esc(t(r[0])), r[1]]; }))
+        + '<p class="hint" style="margin:8px 0 0">' + esc(t('«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.')) + '</p>')
+      + softErrCard()
       + (PZ.length
         ? cardFlush('\u26A0 ' + t('وثائقُ عُزلت عن الرفع') + ' — ' + nm(PZ.length),
             table(['النوع','المعرّف','السبب',''],
@@ -21937,16 +21973,22 @@ function usrAdd(){
                by:STATE.meta.name || '', at:Date.now() };
   CORE.set('accounts', u, made);
   STATE.users = STATE.users || {};
-  STATE.users[u] = { name:n, user:u, role:r, at:Date.now() };
-  if (jb){ STATE.users[u].job = jb;
-           STATE.users[u].jobLog = [{ job:jb, at:Date.now(), by:STATE.meta.name || '' }]; }
-  if (sup) STATE.users[u].sup = sup;
-  if (dp)  STATE.users[u].dept = dp;
-  CORE.set('users', u, STATE.users[u]);
+  /* الوثيقةُ باسم uid لا باسم المستخدم: القاعدةُ تقرأ users/{uid}، ووثيقةٌ
+     باسم «m.safwat» لا يجدها أحد — فيُقرأ الدورُ من العدم ويُرفَض كلُّ شيء.
+     وactive:true يُكتَب صراحةً. تُكتَب محليًّا باسم المستخدم ريثما يُعرَف uid،
+     ثم تُنقَل إليه. */
+  var docv = { name:n, user:u, role:r, active:true, at:Date.now() };
+  if (jb){ docv.job = jb; docv.jobLog = [{ job:jb, at:Date.now(), by:STATE.meta.name || '' }]; }
+  if (sup) docv.sup = sup;
+  if (dp)  docv.dept = dp;
+  STATE.users[u] = docv;
   /* ويُنشَأ في Auth بتطبيقٍ ثانٍ إن كانت شبكة — فيدخل صاحبُه بكلمته.
      وإن تعذّر بقي مسجَّلًا هنا ويُنشَأ من المكتب: التسجيلُ لا يُفقَد. */
-  FB.createUser(u, p, { name:n, role:r }).then(function(res){
-    if (res && res.ok){ toast(u + ' \u00b7 ' + t('يدخل بكلمته الآن')); return; }
+  FB.createUser(u, p, { name:n, role:r, doc:docv }).then(function(res){
+    if (res && res.ok){
+      if (res.uid){ STATE.users[res.uid] = Object.assign({}, docv); delete STATE.users[u]; statBump(); render(1); }
+      toast(u + ' \u00b7 ' + t('يدخل بكلمته الآن')); return;
+    }
     if (res && res.err === 'offline') return;
     softErr('إنشاء حساب', new Error(res && res.err || 'unknown'),
       'سُجّل الحسابُ ولم يُفعَّل — فعّله من المكتب');

@@ -79,6 +79,14 @@ await ok('الرئيسُ يقرأ بلا وثيقةِ حساب — يُعرَف 
 await ok('ويكتب الإعدادات',                                setDoc(doc(boss, 'settings/points'), { tgtSurvey: 1 }));
 /* وحسابٌ بلا بريدٍ في رمزه لا يُسقِط التقييمَ كلَّه — يُقرأ بريدُه بقيمةٍ افتراضية */
 await ok('حسابٌ بلا بريدٍ في رمزه يقرأ بدوره لا يُرفَض خطأً', getDoc(doc(env.authenticatedContext('tec').firestore(), 'recs/S1')));
+console.log('\n══ غيابُ active لا يعني معطَّلًا ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  await setDoc(doc(ctx.firestore(), 'users/noflag'), { name:'حساب من التطبيق', role:'engineer' });
+});
+await ok  ('حسابٌ بلا حقل active يقرأ',   getDoc(doc(as('noflag'), 'recs/S1')));
+await ok  ('ويكتب سجلًّا',                setDoc(doc(as('noflag'), 'events/E9'), { what:'x', ts:1 }));
+await ok  ('ويكتب لقطةَ اليوم',           setDoc(doc(as('noflag'), 'stats/2026-09-05'), { n:1 }));
+await deny('والمعطَّلُ صراحةً (false) لا يقرأ', getDoc(doc(as('off'), 'recs/S1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
