@@ -78,7 +78,13 @@ await deny('الفنيُّ لا يكتب الإعدادات',            setDoc(
 await ok  ('المهندسُ يكتب الإعدادات',               setDoc(doc(as('eng'), 'settings/points'), { tgtSurvey: 99 }));
 await deny('الفنيُّ لا يرفع دورَه',                 updateDoc(doc(as('tec'), 'users/tec'), { role:'admin' }));
 await ok  ('الفنيُّ يقرأ حسابَه',                    getDoc(doc(as('tec'), 'users/tec')));
-await deny('الفنيُّ لا يقرأ حسابَ غيره',             getDoc(doc(as('tec'), 'users/eng')));
+/* صار يقرؤه (V15.77): الاسمُ والدورُ ليسا سرًّا داخل الشركة، والترتيبُ
+   بالرتبة يُصفّى في التطبيق — لأن مقارنةَ الرتب في القاعدة تستدعي وثيقةَ
+   القارئ لكلِّ صفٍّ فتتجاوز سقفَ نداءات الوثائق وتُسقِط استعلامَ القائمة
+   كلَّه. والسرُّ هو الجوّال وله حراستُه في العرض. */
+await ok  ('الفنيُّ يقرأ حسابَ غيره — لا سرَّ في الاسم والدور',
+                                                     getDoc(doc(as('tec'), 'users/eng')));
+await deny('ولا يعدّله',                             updateDoc(doc(as('tec'), 'users/eng'), { role:'tech' }));
 await ok  ('المهندسُ يعدّل الحسابات',               updateDoc(doc(as('eng'), 'users/tec'), { job:'j_tech' }));
 await deny('لا أحدَ يحذف حسابًا — ولا المهندس',     deleteDoc(doc(as('eng'), 'users/tec')));
 
