@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.77</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3199,6 +3199,8 @@ en:{
  'اكتب كلمةَ مرورٍ عشرةَ أحرفٍ فأكثر':'Enter a password of ten characters or more',
  'يُنشَأ الحساب…':'Creating the account…',
  'إدارةُ الحسابات للمهندس وحده':'Managing accounts is for the engineer only',
+ 'وثيقةً رُفضت':'documents rejected',
+ 'التفصيلُ في «المزامنة والتعارض»':'Details in “Sync and conflicts”',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5555,6 +5557,8 @@ ur:{
  'اكتب كلمةَ مرورٍ عشرةَ أحرفٍ فأكثر':'دس حروف یا زیادہ کا پاس ورڈ لکھیں',
  'يُنشَأ الحساب…':'اکاؤنٹ بنایا جا رہا ہے…',
  'إدارةُ الحسابات للمهندس وحده':'اکاؤنٹس کا انتظام صرف انجینئر کے لیے',
+ 'وثيقةً رُفضت':'دستاویزات مسترد',
+ 'التفصيلُ في «المزامنة والتعارض»':'تفصیل “ہم آہنگی اور تصادم” میں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7496,7 +7500,11 @@ var CORE = {
       });
       if (r.failed.length && !SOFT_SAID['رفع الطابور']){
         SOFT_SAID['رفع الطابور'] = 1;
-        toast(nm(r.failed.length) + ' ' + t('وثيقةً رُفضت — السببُ في «المزامنة والتعارض»'));
+        /* الرسالةُ تسمّي أوّلَ مجموعةٍ رُفضت — «سبعُ وثائق» بلا اسمٍ لا تُشخَّص */
+        var f0 = r.failed[0].it;
+        toast(nm(r.failed.length) + ' ' + t('وثيقةً رُفضت')
+              + ' \u00b7 ' + esc(f0.kind) + '/' + esc(String(f0.id)).slice(0, 24)
+              + ' \u2014 ' + t('التفصيلُ في «المزامنة والتعارض»'));
       }
       if (r.ok.length){
         STATE.meta.lastSync = Date.now();
@@ -15126,7 +15134,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.76' + '.docx" download>⬇ '
+              +   'V15.77' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

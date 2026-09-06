@@ -119,12 +119,13 @@ await env.withSecurityRulesDisabled(async (ctx) => {
   await setDoc(doc(f, 'users/s9'),  { name:'مشرف تسع', role:'supervisor', active:true });
   await setDoc(doc(f, 'users/e9'),  { name:'مهندس تسع',role:'engineer',   active:true });
 });
-await ok  ('المشرفُ يرى الفنيَّ',              getDoc(doc(as('sup'), 'users/t9')));
-await deny('ولا يرى مشرفًا مثلَه',             getDoc(doc(as('sup'), 'users/s9')));
-await deny('ولا يرى المهندس',                  getDoc(doc(as('sup'), 'users/e9')));
-await ok  ('والمهندسُ يرى المشرفَ والفنيّ',     getDoc(doc(as('eng'), 'users/s9')));
+/* القراءةُ لكلِّ فعّال — والترتيبُ بالرتبة يُصفّى في التطبيق، لأن مقارنةَ
+   الرتب في القاعدة تُسقِط استعلامَ القائمة بسقف نداءات الوثائق. */
+await ok  ('المشرفُ يقرأ حساباتِ الشركة',      getDoc(doc(as('sup'), 'users/t9')));
+await ok  ('والمهندسُ كذلك',                    getDoc(doc(as('eng'), 'users/s9')));
 await ok  ('وكلُّ أحدٍ يرى وثيقتَه',            getDoc(doc(as('tec'), 'users/tec')));
-await deny('والفنيُّ لا يرى فنيًّا مثلَه',      getDoc(doc(as('tec'), 'users/t9')));
+await deny('ومن لا حسابَ له لا يقرأ',           getDoc(doc(env.unauthenticatedContext().firestore(), 'users/t9')));
+await deny('والفنيُّ لا يكتب حسابَ غيره',       setDoc(doc(as('tec'), 'users/t9'), { name:'x', role:'admin' }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
