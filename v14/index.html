@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.73</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.74</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9514,7 +9514,8 @@ function roleName(k){
    — تُعرَض فيُظنُّ أن هؤلاء في المشروع. */
 function assignRows(){
   var out = [['محمد صفوت', 'm.safwat', 'admin', '—', '—']];
-  techsList().forEach(function(x){
+  /* شاشةُ الأدوار تعرض الحساباتِ كلَّها — لا الميدانيّين وحدهم */
+  techsList(1).forEach(function(x){
     var job = jobsList().filter(function(j){ return j.id === x.job; })[0];
     out.push([x.n, x.u || '—', (job ? job.role : 'tech'),
               x.sup || '—', x.crew || '—', x.dept ? deptName(x.dept) : '—']);
@@ -9714,7 +9715,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
       + '</form>'
       + cardFlush('من على كل وظيفة',
           table(['الشخص','الوظيفة','الدور المشتقّ','القسم','مديره','آخر نقلة'],
-            techsList().filter(function(x){ return !JB_Q || x.n.indexOf(JB_Q) > -1; })
+            techsList(1).filter(function(x){ return !JB_Q || x.n.indexOf(JB_Q) > -1; })
               .map(function(x){
               var j = x.job ? jobOf(x.job) : null;
               var last = (x.jobLog || []).slice(-1)[0];
@@ -11074,11 +11075,21 @@ function asnPickKind(k){
 
 function techNames(){
   /* TECHS صارت فارغةً منذ توحيد مصدر الأشخاص (V15.35) — القراءةُ منها
-     تُرجع لا شيء. تُقرأ القائمةُ المشتقّةُ من الحسابات. */
+     تُرجع لا شيء. تُقرأ القائمةُ المشتقّةُ من الحسابات.
+       وهي قائمةُ **من يُسنَد إليه**: الميدانيّون وحدهم. كانت تقرأ الحساباتِ
+     كلَّها ثم تُضيف من الأدوار المشتقّة — فيظهر المحاسبُ والمستودعُ ومديرُ
+     المشروع في منتقي الإسناد، ويُسنَد إليهم مسحٌ لن يذهبوا إليه. */
   var out = techsList().map(function(x){ return x.n; });
+  /* والدورُ المشتقُّ من الوظيفة لا يُعتَدُّ به هنا: `assignRows` تُرجِع
+     «فنيًّا» لكلِّ من لا وظيفةَ له — فيعود المحاسبُ ومديرُ المشروع من الباب
+     الخلفيّ. العبرةُ بدور الحساب نفسِه. */
+  var roleOf = {};
+  Object.keys(STATE.users || {}).forEach(function(k){
+    var u = STATE.users[k]; if (u && u.name) roleOf[u.name] = u.role;
+  });
   assignRows().forEach(function(u){
-    if (['tech','cins','cprep','casm','supervisor'].indexOf(u[2]) > -1 && out.indexOf(u[0]) < 0)
-      out.push(u[0]);
+    var r = roleOf[u[0]] || u[2];
+    if (isFieldRole(r) && out.indexOf(u[0]) < 0) out.push(u[0]);
   });
   return out;
 }
@@ -14966,7 +14977,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.73' + '.docx" download>⬇ '
+              +   'V15.74' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19895,7 +19906,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
           +   '<input id="mvQty" type="number" min="1" step="1"></div>'
           + '<div class="field"><label>' + esc(t('المنفِّذ')) + '</label><select id="mvBy">'
           +   '<option value="">—</option>'
-          +   techsList().map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
+          +   techsList(1).map(function(x){ return '<option>' + esc(x.n) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
           +   '<input id="mvSite" dir="ltr" placeholder="NSK-…"></div>'
@@ -20352,11 +20363,23 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
    الحسابات: من له حسابٌ ظهر، ووظيفتُه تقرّر في أيِّ دورةٍ يظهر — الفنيُّ في
    دورة الفني وهكذا. ولا يُخزَّن شيءٌ باسم القائمة: التعديلُ يقع على وثيقة
    الحساب نفسِها. */
-function techsList(){
+/* ═══ من يُسنَد إليه عملٌ ميدانيّ ═══
+   كانت القائمةُ كلَّ الحسابات: يظهر فيها المشترياتُ والمحاسبُ والمستودعُ
+   ومديرُ المشروع — ويُسنَد إليهم مسحٌ لن يذهبوا إليه. والإسنادُ إلى من لا
+   يعمل ميدانًا ليس خطأَ عرضٍ فقط: تُحسَب له نقاطٌ، ويُنتظَر منه إنجازٌ،
+   وتظهر مهمتُه في «المتأخّر» بلا صاحب.
+     فالميدانُ ثلاثةٌ لا غير: فنيٌّ ومشرفٌ ومهندس — ومعهم أطقمُ التركيب
+   والتجميع والتهيئة لأن عملَهم ميدانيٌّ كذلك. ومن سواهم يبقى في حسابه
+   ولا يُسنَد إليه. */
+var FIELD_ROLES = { tech:1, supervisor:1, engineer:1, cins:1, casm:1, cprep:1 };
+function isFieldRole(r){ return !!FIELD_ROLES[r]; }
+function techsList(all){
   var out = [];
   Object.keys(STATE.users || {}).forEach(function(uid){
     var u = STATE.users[uid];
     if (!u || !u.name || u.active === false) return;
+    /* `all` لشاشات الإدارة التي تعرض الناسَ كلَّهم — لا للإسناد */
+    if (!all && !isFieldRole(u.role)) return;
     out.push({ n:u.name, u:uid, ph:u.ph || '', job:u.job || '', sup:u.sup || '', dept:u.dept || '',
                crew:u.crew || '', jobLog:u.jobLog || [], has:u.has || 0 });
   });

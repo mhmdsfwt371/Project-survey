@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.73",
+  "app_version": "V15.74",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1442,7 +1442,8 @@
     "V15.70": "seedPlan/seedApply/seedCard: مقترح مبني على البيانات يُكتَب في الحقول الفارغة فقط (may settings). audit-craft: عشرة فحوص صنعة (مؤقتات/مستمعات/حقن/الصفر/حجم الدوال/قواعد مفتوحة/أسرار/تسجيل الجرود). الجردان 56 و57.",
     "V15.71": "baseSet يمنع التجميد بلا cfg.ph (BAC = مجموع النقاط × ph). سعر النقطة صار بندًا في readyRows فوق سقف الميزانية. audit-seed يقبل البنود البشرية الستة.",
     "V15.72": "gateChain/gateFirst/gateCard/gateSay: سلسلة شروط لكل نوع تُعرَض في asnSheet وفي رسالة الرفض. asnCommit (الفردي والجماعي) يفحص بالسلسلة لكل نوع لا للتركيب وحده. الجرد 58: audit-gate.",
-    "V15.73": "scrollGrab/scrollBack حول render: يحفظ موضع النافذة وكل .pop-body/overflow:auto ويعيده؛ الصعود للرأس عند تبديل الشاشة أو الشريحة فقط. audit-push: مفتاح stats صار dayKey(Date.now()). الجرد 59: audit-scroll."
+    "V15.73": "scrollGrab/scrollBack حول render: يحفظ موضع النافذة وكل .pop-body/overflow:auto ويعيده؛ الصعود للرأس عند تبديل الشاشة أو الشريحة فقط. audit-push: مفتاح stats صار dayKey(Date.now()). الجرد 59: audit-scroll.",
+    "V15.74": "FIELD_ROLES/isFieldRole + techsList(all) تُصفّي بالدور؛ techNames تقرأ الدور من الحساب لا من الوظيفة. شاشات الإدارة تستعمل techsList(1). الجرد 60: audit-field."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2618,7 +2619,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 59,
+  "audits_total": 60,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4114,5 +4115,19 @@
       "يعمل في مسار الخريطة (return مبكر) كما في مسار المحتوى"
     ],
     "why_missed": "الشاشة تعمل ولا يفشل اختبار — يظهر بالاستعمال وحده"
+  },
+  "field_roles_v15_74": {
+    "roles": [
+      "tech",
+      "supervisor",
+      "engineer",
+      "cins",
+      "casm",
+      "cprep"
+    ],
+    "assign_pickers": "techsList() — الميدانيون فقط (الخريطة · التوزيع · سجل الإسنادات · صرف الأصناف)",
+    "admin_screens": "techsList(1) — كل الحسابات (assignRole · jobs · names · invmv)",
+    "backdoor_closed": "assignRows تُرجِع 'tech' لمن لا وظيفة له؛ techNames صارت تقرأ STATE.users[..].role",
+    "why": "الإسناد لغير ميداني يُحسب نقاطًا ويُنتظر إنجازًا وتظهر مهمته في المتأخر بلا صاحب"
   }
 }

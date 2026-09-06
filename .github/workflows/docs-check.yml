@@ -138,6 +138,8 @@ jobs:
         run: node scripts/audit-gate.mjs
       - name: جرد حفظ الموضع — لا قفزة إلى الرأس مع كل ضغطة
         run: node scripts/audit-scroll.mjs
+      - name: جرد من يُسنَد إليه — الميدان ثلاثة لا كل الحسابات
+        run: node scripts/audit-field.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
