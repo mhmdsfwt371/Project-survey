@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.87",
+  "app_version": "V15.88",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1456,7 +1456,8 @@
     "V15.84": "canProvision/canMakeRole/rolesICanMake: كل دور يُنشئ ≤ رتبته، admin بلا سقف. can.provision في exec/admin/engineer/supervisor؛ PAGE_CAP.users='provision'؛ المشرف يرى users. provision watch: غير المدير where by==اسمه. rules: canProv + rnk(role) + by==name، admin بلا سقف، engineer لا يطلب admin. الجرد 67.",
     "V15.85": "PW/pwOpen/pwNeeded/pwHtml/pwSave: نافذة تغيير الكلمة — مفروضة عند mustChange (بلا إغلاق، بلا قديمة) ومن القائمة (pwBtn، بقديمة + reauth). تُرسَم على body في render. بعد التبديل users/{uid}.mustChange=false. الجرد 68.",
     "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69.",
-    "V15.87": "routeTasks/routeOrder (nearest-neighbour)/routeLocate/mapsUrl/kmTxt/routeCard في mywork وmine للميدان؛ زر data-routego. الجرد 70."
+    "V15.87": "routeTasks/routeOrder (nearest-neighbour)/routeLocate/mapsUrl/kmTxt/routeCard في mywork وmine للميدان؛ زر data-routego. الجرد 70.",
+    "V15.88": "WA_LAST بعد asnCommit؛ techPhone/waAsnText/waAsn/waAsnCard؛ زر data-watask لكل إسناد في reqreg مع علامة ✓ عند waAt. الجرد 71."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2632,7 +2633,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 70,
+  "audits_total": 71,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4319,5 +4320,11 @@
     "maps": "iOS→maps.apple.com daddr؛ غيره→google maps dir walking",
     "shows": "# · النقطة · النوع · المسافة من السابقة · اتجاهات · المجموع",
     "hidden": "المهام المعتمدة؛ غير الميدان؛ بلا مهام"
+  },
+  "wa_assign_v15_88": {
+    "after": "asnCommit يحفظ WA_LAST={to,kind,ids,when} للمضاف فعلًا",
+    "message": "سلام + عدد النقاط + النوع + الموعد + قائمة (≤20) + رابط التطبيق + المرسل",
+    "mark": "tasks/{id}.waAt",
+    "limits": "المتصفح لا يرسل — wa.me يفتح المحادثة؛ الجماعي بلا بطاقة (أشخاص متعددون) — زر السجل يغطيه"
   }
 }

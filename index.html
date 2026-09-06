@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.87</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.88</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3312,6 +3312,17 @@ en:{
  'المسافة':'Distance',
  'من موقعي':'From my location',
  'كم':'km',
+
+ /* V15.88 — واتساب الإسناد */
+ 'السلام عليكم':'Peace be upon you',
+ 'أُسند إليك':'Assigned to you',
+ 'والباقي في التطبيق':'and the rest in the app',
+ 'افتح «مهامي» في التطبيق واضغط «من موقعي» لترتيب الطريق':'Open “My tasks” in the app and tap “From my location” to order the route',
+ 'لا إسنادَ يُبلَّغ':'No assignment to notify',
+ 'لا جوالَ محفوظٌ لهذا الشخص — أضفه في الحسابات أوّلًا':'No phone saved for this person — add it in Accounts first',
+ 'فُتح واتساب':'WhatsApp opened',
+ 'اضغط إرسال':'tap send',
+ 'لا جوالَ محفوظ':'No phone saved',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5766,6 +5777,15 @@ ur:{
  'المسافة':'فاصلہ',
  'من موقعي':'میرے مقام سے',
  'كم':'کلومیٹر',
+ 'السلام عليكم':'السلام علیکم',
+ 'أُسند إليك':'آپ کو تفویض',
+ 'والباقي في التطبيق':'باقی ایپ میں',
+ 'افتح «مهامي» في التطبيق واضغط «من موقعي» لترتيب الطريق':'ایپ میں “میرے کام” کھولیں اور راستہ ترتیب دینے کے لیے “میرے مقام سے” دبائیں',
+ 'لا إسنادَ يُبلَّغ':'مطلع کرنے کے لیے کوئی تفویض نہیں',
+ 'لا جوالَ محفوظٌ لهذا الشخص — أضفه في الحسابات أوّلًا':'اس شخص کا فون محفوظ نہیں — پہلے اکاؤنٹس میں شامل کریں',
+ 'فُتح واتساب':'واٹس ایپ کھل گیا',
+ 'اضغط إرسال':'بھیجیں دبائیں',
+ 'لا جوالَ محفوظ':'فون محفوظ نہیں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -11871,6 +11891,13 @@ function asnCommit(){
         + '= ' + nm(asnOfTech(to, kind).length) + ' ' + t('نقطة')
         + (busy ? ' \u00b7 ' + nm(busy) + ' ' + t('مُسندةٌ لغيره') : '')
         + (blockedSol ? ' \u00b7 ' + nm(blockedSol) + ' ' + t('بلا حلٍّ معتمد') : ''));
+  /* آخرُ إسنادٍ يُحفَظ ليُبلَّغ صاحبُه واتساب بضغطة */
+  if (add){
+    var addedIds = want.filter(function(id){
+      var tk = taskKindOf(id, kind); return tk && tk.to === to && had.indexOf(id) < 0;
+    });
+    if (addedIds.length) WA_LAST = { to:to, kind:kind, ids:addedIds, when:when || '' };
+  }
   render(1);
 }
 
@@ -11879,7 +11906,7 @@ PAGE.req = { m:'الطلبات والمسح', t:'الطلبات والتوزيع
   l:'طلباتُ الزيارة وتوزيعُ الفرق عليها.',
   body:function(){
     var head = tabHead('req'), cur = tabCur('req');
-    if (cur === 'reqreg') return head + (function(){
+    if (cur === 'reqreg') return head + waAsnCard() + (function(){
     var L0 = regList();
     var byKind = {};
     L0.forEach(function(x){ byKind[x.kind] = (byKind[x.kind] || 0) + 1; });
@@ -11944,6 +11971,10 @@ PAGE.req = { m:'الطلبات والمسح', t:'الطلبات والتوزيع
                             + btn('احفظ','btn-primary btn-sm',' data-regsave="' + esc(x.id) + '"')
                             + btn('إلغاء','btn-quiet btn-sm',' data-regedit=""') + '</div>'
                           : '<div class="actions" style="margin:0">'
+                            /* من لم يُبلَغ بعدُ يُبلَّغ واتساب من هنا — والمُبلَّغُ يُعلَّم */
+                            + (x.status !== 'معتمد'
+                                ? btn(x.waAt ? '\u2713\u{1F4F1}' : '\u{1F4F1}','btn-quiet btn-sm',' data-watask="' + esc(x.id) + '" aria-label="' + esc(t('واتساب')) + '"')
+                                : '')
                             + btn('✎','btn-quiet btn-sm',' data-regedit="' + esc(x.id) + '" aria-label="' + esc(t('تعديل')) + '"')
                             + btn('🗺','btn-quiet btn-sm',' data-site="' + esc(x.site) + '" aria-label="' + esc(t('على الخريطة')) + '"')
                             + (st.t === 'منجَز' ? '' : btn('🗑','btn-danger btn-sm',' data-regdel="' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"'))
@@ -15382,7 +15413,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.87' + '.docx" download>⬇ '
+              +   'V15.88' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20007,6 +20038,60 @@ function routeCard(){
                     '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(st.lat, st.lng, st.id)) + '">\u{1F4CD} ' + esc(t('اتجاهات')) + '</a>'];
           })),
       btn('\u{1F4CD} ' + t('من موقعي'),'btn-primary btn-sm',' data-routego="1"'));
+}
+
+/* ═══ واتساب للفنيِّ عند الإسناد ═══
+   الإشعارُ داخلَ التطبيق لا يراه من لم يفتحه — فإسنادُ التاسعة يُرى في
+   الحادية عشرة. والمتصفّحُ لا يُرسِل واتساب وحده: يفتح المحادثةَ والرسالةَ
+   جاهزةً ويبقى الإرسالُ ضغطةً. فبعد كلِّ إسنادٍ زرٌّ واحد: يفتح واتساب
+   الفنيِّ برسالةٍ فيها النقاطُ ونوعُ العمل والموعدُ ورابطُ التطبيق —
+   وتُسجَّل في «آخر ما تمّ» أنه أُبلغ. وفي سجل الإسنادات زرٌّ لكلِّ إسنادٍ
+   مفتوحٍ لمن لم يُبلَغ بعد. */
+var WA_LAST = null;   /* آخرُ إسناد: { to, kind, ids, when } */
+function techPhone(name){
+  var U = STATE.users || {};
+  for (var k in U) if (U[k] && U[k].name === name && U[k].ph) return String(U[k].ph);
+  var x = techsList(1).filter(function(y){ return y.n === name; })[0];
+  return x && x.ph ? String(x.ph) : '';
+}
+function waAsnText(to, kind, ids, when){
+  var L = ids.map(function(id){
+    var st = siteFind(id) || {};
+    return '\u2022 ' + id + (st.name ? ' \u2014 ' + String(st.name).slice(0, 30) : '') + (st.zone ? ' (' + st.zone + ')' : '');
+  });
+  return t('السلام عليكم') + ' ' + to + '\n'
+    + t('أُسند إليك') + ' ' + nm(ids.length) + ' ' + t('نقطة') + ' \u2014 ' + t(kindLabel(kind))
+    + (when ? ' \u00b7 ' + t('الموعد') + ' ' + when : '') + ':\n'
+    + L.slice(0, 20).join('\n') + (L.length > 20 ? '\n\u2026 ' + t('والباقي في التطبيق') : '') + '\n\n'
+    + t('افتح «مهامي» في التطبيق واضغط «من موقعي» لترتيب الطريق') + ':\n'
+    + 'https://mhmdsfwt371.github.io/Project-survey/\n'
+    + '\u2014 ' + (STATE.meta.name || '');
+}
+function waAsn(to, kind, ids, when){
+  if (!to || !ids || !ids.length){ toast(t('لا إسنادَ يُبلَّغ')); return false; }
+  var ph = techPhone(to);
+  if (!ph){ toast(t('لا جوالَ محفوظٌ لهذا الشخص — أضفه في الحسابات أوّلًا')); return false; }
+  var txt = waAsnText(to, kind, ids, when);
+  try { window.open(waLink(ph, txt), '_blank', 'noopener'); }
+  catch (e){ toast(t('تعذّر الفتح')); return false; }
+  ids.forEach(function(id){
+    var tk = taskKindOf(id, kind);
+    if (tk){ tk.waAt = Date.now(); CORE.set('tasks', tk.id, tk); }
+  });
+  logEvent('إبلاغ واتساب — ' + to + ' \u00b7 ' + nm(ids.length) + ' ' + t(kindLabel(kind)));
+  toast(t('فُتح واتساب') + ' ' + to + ' \u2014 ' + t('اضغط إرسال'));
+  statBump();
+  return true;
+}
+/* بطاقةٌ بعد الإسناد: أبلغه الآن */
+function waAsnCard(){
+  if (!WA_LAST || !WA_LAST.ids.length) return '';
+  var w2 = WA_LAST, ph = techPhone(w2.to);
+  return card('\u{1F4F1} ' + t('أبلغ') + ' ' + esc(w2.to),
+      '<p class="hint" style="margin:0 0 8px">' + nm(w2.ids.length) + ' ' + esc(t('نقطة')) + ' \u2014 ' + esc(t(kindLabel(w2.kind)))
+      + (ph ? '' : ' \u00b7 ' + pill('لا جوالَ محفوظ','off')) + '</p>',
+      btn('\u{1F4F1} ' + t('واتساب'),'btn-primary btn-sm',' data-waasn="1"')
+      + btn('\u2715','btn-quiet btn-sm',' data-waasnx="0"'));
 }
 function inboxItems(){
   var out = [], S = siteStats();
@@ -25501,6 +25586,14 @@ function onDocClick(e){
     var bt2 = document.getElementById('bulkT');
     if (bt2) BULK_TXT = bt2.value;
     bulkApply(); return;
+  }
+  if (e.target.closest('[data-waasn]')){ if (WA_LAST) waAsn(WA_LAST.to, WA_LAST.kind, WA_LAST.ids, WA_LAST.when); return; }
+  if (e.target.closest('[data-waasnx]')){ WA_LAST = null; render(1); return; }
+  var wat = e.target.closest('[data-watask]');
+  if (wat){
+    var tk2 = STATE.tasks[wat.getAttribute('data-watask')];
+    if (tk2) waAsn(tk2.to, tk2.kind, [tk2.site], tk2.when || '');
+    return;
   }
   if (e.target.closest('[data-routego]')){ toast(t('يُلتقَط موقعُك…')); routeLocate(); return; }
   if (e.target.closest('[data-attin]')){ attMark('in'); return; }

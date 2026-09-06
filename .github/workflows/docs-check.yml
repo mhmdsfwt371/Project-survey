@@ -160,6 +160,8 @@ jobs:
         run: node scripts/audit-att.mjs
       - name: جرد طريق اليوم — الأقرب أولًا واتجاهات لكل نقطة
         run: node scripts/audit-route.mjs
+      - name: جرد واتساب الإسناد — الفني يُبلَّغ بضغطة
+        run: node scripts/audit-waasn.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
