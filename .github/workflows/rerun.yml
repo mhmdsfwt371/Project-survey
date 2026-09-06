@@ -11,6 +11,7 @@ on:
       - Real browser + rules emulator
       - Deploy Firestore Rules
       - Daily Firestore Backup
+      - Provision accounts
     types: [completed]
 permissions:
   actions: write        # إعادةُ التشغيل تحتاجها

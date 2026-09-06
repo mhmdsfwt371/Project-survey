@@ -1,12 +1,13 @@
 /* ═══════════════════════════════════════════════════════════════════════════
-   جردُ الدعوة والتفعيل الذاتي — node scripts/audit-invite.mjs
+   جردُ إنشاء الحسابات من الخادم — node scripts/audit-invite.mjs
    ───────────────────────────────────────────────────────────────────────────
-   بمئةٍ وخمسين شخصًا لا يقف كلُّ حسابٍ على المكتب. فالمهندسُ يلصق جدولَ
-   الفريق كما هو من إكسل فتُكتَب الدعواتُ كلُّها، ويفتح كلُّ شخصٍ التطبيقَ
-   ويضع كلمتَه هو فيُفعَّل حسابُه — فلا كلمةَ تُرسَل في محادثة، ولا يُنتظَر
-   أحدٌ ليفعّل، ولا يُعاد الإنشاءُ حين تتعثّر الشبكةُ لحظة.
-     ويُحرَس أن لا سطرَ ناقصٍ ولا مكرَّرٍ ولا بدورٍ مجهولٍ يُكتَب، وأن يُعرَض
-   ما سيُكتَب وما سيُترَك وسببُه **قبل** الكتابة.
+   المتصفّحُ لا يُنشئ حسابَ دخولٍ لغير صاحبه بثبات، فبقيت حساباتٌ معلَّقةً
+   في أجهزة. صار المكتبُ يكتب الطلبَ كاملًا — فردًا أو لصقةً من إكسل —
+   بالاسم والمستخدم والكلمة والدور والوظيفة والقسم والبريد، والخادمُ يُنشئ
+   حسابَ الدخول بمفتاح المشروع كلَّ عشر دقائق ويُعلِّم الطلبَ «تمّ». ويُصدِر
+   المكتبُ ورقةَ الدخول إكسل ويوزّعها ثم يمسح الكلماتِ من القاعدة. ويُحرَس:
+   الفحصُ قبل الكتابة، وتوليدُ كلمةٍ حين لا تُلصَق، وأن لا كلمةَ تبقى بعد
+   المسح، وأن الفنيَّ لا يكتب طلبات.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
@@ -22,54 +23,56 @@ const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('
 await new Promise(r => setTimeout(r, 300));
 let bad=0; const T=(c,n,x)=>{ if(!c) bad++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
 w.ROLE='admin'; w.STATE.meta.role='admin'; w.STATE.meta.name='مدير';
-w.STATE.users={}; w.STATE.pending={};
-/* ═══ الفحصُ قبل الكتابة ═══ */
+w.STATE.users={}; w.STATE.pending={}; w.STATE.provision={}; w.STATE.queue=[];
+/* ═══ اللصقة: سبعةُ أعمدة ═══ */
 const TXT = [
-  'أحمد علي\tm.ahmed\tفني',
-  'سعيد حسن\tm.saeed\tمشرف\tمشرف',
-  'خالد\t\tفني',                 /* بلا اسم مستخدم */
-  'نور\tnour\tمخترع',            /* دورٌ مجهول */
-  'مكرر\tm.ahmed\tفني',          /* مكرَّر */
-  'عربي\tم.عربي\tفني'            /* اسمٌ غيرُ لاتيني */
+  'أحمد علي\tm.ahmed\tفني\tفني تركيب\tفريق ١\tSecretPass12\tahmed@afaqy.com',
+  'سعيد حسن\tm.saeed\tمشرف\tمشرف\tفريق ١',
+  'قصير\tm.short\tفني\t\t\tabc',
+  'خالد\t\tفني', 'نور\tnour\tمخترع', 'مكرر\tm.ahmed\tفني'
 ].join('\n');
 const rows = w.bulkParse(TXT);
-T(rows.length===6, 'كلُّ سطرٍ يُقرأ', rows.length+' سطرًا');
 const okR = rows.filter(r=>!r.why);
-T(okR.length===2 && okR[0].user==='m.ahmed' && okR[1].role==='supervisor',
-  'ويُقبَل الصحيحُ وحدَه', okR.map(r=>r.user+':'+r.role).join(' · '));
-T(rows[2].why && /إلزاميان/.test(rows[2].why), 'وسطرٌ بلا اسم مستخدمٍ يُترَك بسببه');
-T(rows[3].why && /دور/.test(rows[3].why), 'ودورٌ مجهولٌ يُترَك');
-T(rows[4].why && /مكرَّر/.test(rows[4].why), 'والمكرَّرُ يُترَك');
-T(rows[5].why && /لاتيني/.test(rows[5].why), 'والاسمُ غيرُ اللاتينيّ يُترَك');
-/* ═══ الكتابة ═══ */
-w.BULK_TXT = TXT; w.bulkApply();
-T(Object.keys(w.STATE.pending).length===2, 'يُكتَب الصحيحُ وحدَه', Object.keys(w.STATE.pending).join(' · '));
-T(w.STATE.queue.some(q=>q.kind==='pending' && q.id==='m.ahmed'), 'ويُرفَع فيراه كلُّ جهاز');
-T(w.STATE.pending['m.saeed'].role==='supervisor' && w.STATE.pending['m.saeed'].job==='j_sup' || true, 'ومعه دورُه');
-/* من له دعوةٌ لا يُدعى مرتين */
-const again = w.bulkParse('أحمد علي\tm.ahmed\tفني');
-T(again[0].why && /قائمة/.test(again[0].why), 'ومن له دعوةٌ لا يُدعى مرتين', again[0].why);
-/* من له حسابٌ لا يُدعى */
-w.STATE.users['UID9']={ name:'ز', user:'m.zaki', role:'tech', active:true };
-const third = w.bulkParse('زكي\tm.zaki\tفني');
-T(third[0].why && /بالفعل/.test(third[0].why), 'ومن له حسابٌ لا يُدعى');
-/* ═══ الشاشة ═══ */
-w.BULK_TXT=''; w.goPage('users'); w.render(1);
-const h=d.getElementById('content');
-T((h.textContent||'').indexOf('دعوةٌ جماعية')>-1, 'بطاقةُ الدعوة الجماعية في شاشة الحسابات');
-T(!!d.getElementById('bulkT'), 'وحقلُ اللصق');
+T(okR.length===2, 'يُقبَل الصحيحُ وحدَه', okR.map(r=>r.user).join(' · '));
+T(okR[0].pass==='SecretPass12' && okR[0].email==='ahmed@afaqy.com', 'والكلمةُ والبريدُ يُقرآن من اللصقة');
+T(okR[1].pass && okR[1].pass.length===10, 'والكلمةُ تُولَّد حين لا تُلصَق', okR[1].pass);
+T(!/[0O1lI]/.test(okR[1].pass), 'وبلا حروفٍ تلتبس في الطباعة');
+T(rows[2].why && /عشرة/.test(rows[2].why), 'وكلمةٌ قصيرةٌ تُترَك بسببها');
+T(rows[3].why && rows[4].why && rows[5].why, 'والناقصُ والمجهولُ والمكرَّرُ يُترَكون');
+/* ═══ الكتابة: طلبٌ للخادم ═══ */
+w.BULK_TXT=TXT; w.bulkApply();
+T(Object.keys(w.STATE.provision).length===2 && w.STATE.provision['m.ahmed'].status==='pending', 'يُكتَب طلبٌ بحالة «يُنشَأ»');
+T(w.STATE.queue.some(q=>q.kind==='provision'&&q.id==='m.ahmed'), 'ويُرفَع للخادم');
+T(w.STATE.users['m.ahmed'] && w.STATE.users['m.ahmed'].provisioning, 'ويظهر في القائمة معلَّمًا');
+T(!w.STATE.pending['m.ahmed'], 'ولا يُكتَب معلَّقًا — الطريقُ القديمُ انتهى');
+/* ═══ الفرديّ ═══ */
+w.goPage('users'); w.render(1);
+const set=(id,v)=>{ const e=d.getElementById(id); if(e) e.value=v; };
+set('uU','m.fardi'); set('uN','فردي'); set('uP','VeryStrong99'); set('uE','f@afaqy.com');
+const roleSel=d.getElementById('uR'); if (roleSel) roleSel.value='tech';
+w.usrAdd();
+T(w.STATE.provision['m.fardi'] && w.STATE.provision['m.fardi'].pass==='VeryStrong99' && w.STATE.provision['m.fardi'].email==='f@afaqy.com',
+  'والإنشاءُ الفرديُّ يكتب الطلبَ بالكلمة والبريد');
+/* ═══ الخادمُ أنجز: تصل الحالة ═══ */
+w.STATE.provision['m.ahmed']=Object.assign({},w.STATE.provision['m.ahmed'],{status:'done',uid:'UIDA'});
+w.STATE.provision['m.saeed']=Object.assign({},w.STATE.provision['m.saeed'],{status:'error',why:'اسمُ مستخدمٍ غيرُ صالح'});
+w.render(1);
+const h=d.getElementById('content').textContent;
+T(h.indexOf('طلباتُ الإنشاء')>-1 && h.indexOf('اسمُ مستخدمٍ غيرُ صالح')>-1, 'بطاقةُ الطلبات تعرض تمّ والخطأ بسببه');
+T(!!d.querySelector('#content [data-xls="provsheet"]'), 'وزرُّ ورقة الدخول يظهر لما تمّ وله كلمة');
+/* ═══ الورقة ═══ */
+const sheet=w.SHEETS.provsheet();
+T(sheet.length===2 && sheet[1][1]==='m.ahmed' && sheet[1][2]==='SecretPass12' && sheet[1][6]==='ahmed@afaqy.com',
+  'والورقةُ فيها المستخدمُ والكلمةُ والبريدُ لمن تمّ فقط', JSON.stringify(sheet[1]).slice(0,80));
+/* ═══ المسح ═══ */
+w.provWipe();
+T(w.STATE.provision['m.ahmed'].pass==='' && w.SHEETS.provsheet().length===1, 'وبعد التوزيع تُمسَح الكلماتُ فلا تبقى في القاعدة');
 /* ═══ الحماية ═══ */
 w.ROLE='tech'; w.STATE.meta.role='tech';
-const before=Object.keys(w.STATE.pending).length;
+const n0=Object.keys(w.STATE.provision).length;
 w.BULK_TXT='س\tm.x\tفني'; w.bulkApply();
-T(Object.keys(w.STATE.pending).length===before, 'والفنيُّ لا يكتب دعوات');
-w.goPage('users'); w.render(1);
-T((d.getElementById('content').textContent||'').indexOf('دعوةٌ جماعية')<0, 'ولا يرى البطاقة');
-/* ═══ التفعيلُ الذاتيّ ═══ */
-w.ROLE='admin'; w.STATE.meta.role='admin';
-T(typeof w.inviteClaim==='function' && typeof w.inviteHtml==='function', 'ونافذةُ التفعيل الذاتيّ موجودة');
-w.INVITE={ user:'m.ahmed' };
-T(/m\.ahmed/.test(w.inviteHtml()), 'وتُملأ باسم المستخدم مسبقًا');
-T(/ivP2/.test(w.inviteHtml()), 'وتطلب الكلمةَ مرتين');
-console.log(bad?'\nجردُ الدعوة فشل ✗ ('+bad+')':'\nمئةٌ وخمسون دعوةً بلصقةٍ — ويفعّل كلٌّ حسابَه ✅');
+T(Object.keys(w.STATE.provision).length===n0, 'والفنيُّ لا يكتب طلبات');
+/* ═══ لا تفعيلَ ذاتيًّا ═══ */
+T(typeof w.inviteClaim==='undefined' && !d.getElementById('lgNew'), 'ولا تفعيلَ ذاتيًّا بعد اليوم — الطريقُ من الخادم وحده');
+console.log(bad?'\nجردُ الإنشاء من الخادم فشل ✗ ('+bad+')':'\nالمكتبُ يكتب والخادمُ يُنشئ — ولا كلمةَ تبقى في القاعدة ✅');
 process.exit(bad?1:0);

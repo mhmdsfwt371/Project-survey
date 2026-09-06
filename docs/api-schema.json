@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.82",
+  "app_version": "V15.83",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1451,7 +1451,8 @@
     "V15.79": "rules-test: أُزيل بناء سياق غير مسجَّل داخل تعبير، وضُبط اختبار كتابة الفني، وأُضيفت اختبارات pending. القواعد لم تتغيّر.",
     "V15.80": "rules-test: fail() يكتب ::error title=… لكل فحص ساقط + ملخّص ::error في النهاية. real-tests.yml: tee + GITHUB_STEP_SUMMARY بكل الفحوص. القواعد والتطبيق لم يتغيّرا.",
     "V15.81": "rules-test: «الفني لا يقرأ حساب غيره» صار «يقرؤه ولا يعدّله» — مطابقةً لقاعدة V15.77. الفحص الوحيد الساقط من 56.",
-    "V15.82": "bulkParse/bulkApply/bulkCard: دعوة جماعية بلصق إكسل مع فحص قبل الكتابة. inviteOpen/inviteClaim/inviteHtml + زر lgNew في شاشة الدخول: تفعيل ذاتي بكلمة يختارها صاحبها. قواعد pending: read مفتوحة بحقول محصورة، create/update mgr، delete للمالك أو mgr؛ users create يقبل دور الدعوة. الجرد 65."
+    "V15.82": "bulkParse/bulkApply/bulkCard: دعوة جماعية بلصق إكسل مع فحص قبل الكتابة. inviteOpen/inviteClaim/inviteHtml + زر lgNew في شاشة الدخول: تفعيل ذاتي بكلمة يختارها صاحبها. قواعد pending: read مفتوحة بحقول محصورة، create/update mgr، delete للمالك أو mgr؛ users create يقبل دور الدعوة. الجرد 65.",
+    "V15.83": "provision collection + scripts/provision.mjs + provision.yml (cron */10 + dispatch): الخادم يُنشئ الحسابات بـAdmin SDK. usrAdd/bulkApply يكتبان طلبات (pass/email). roleGuess/jobGuess بالمرادفات. provCard + SHEETS.provsheet + provWipe. أُزيل التفعيل الذاتي. canSeeUser يُخفي viewer عن غير المديرين. الجردان 65-66."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2627,7 +2628,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 65,
+  "audits_total": 66,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4269,5 +4270,15 @@
       "pending delete: المالك (users/{uid}.user == id) أو mgr"
     ],
     "why": "لا كلمة تُرسَل في محادثة · لا انتظار للمكتب · لا إعادة إنشاء عند تعثّر الشبكة"
+  },
+  "provisioning_v15_83": {
+    "write": "CORE.set('provision', user, {name,user,pass,role,job,sup,dept,crew,email,status:'pending'})",
+    "server": "provision.mjs: getUserByEmail → updateUser(password) أو createUser؛ users/{uid} merge؛ status done/error+why؛ يمحو pending القديم",
+    "schedule": "cron */10 * * * * + workflow_dispatch",
+    "sheet": "SHEETS.provsheet: done && pass — 7 أعمدة مرتبة بالفريق",
+    "wipe": "provWipe: pass='' لكل done",
+    "reissue": "طلب باسم قائم = إعادة إصدار كلمة (لا يُرفَض)",
+    "rules": "provision: read/write mgr()؛ الخادم بمفتاح المشروع خارج القواعد",
+    "tradeoff": "الكلمة مؤقتة في القاعدة (mgr فقط) حتى تُصدَّر الورقة وتُمسَح"
   }
 }
