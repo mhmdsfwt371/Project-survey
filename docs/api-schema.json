@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.79",
+  "app_version": "V15.80",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1448,7 +1448,8 @@
     "V15.76": "liveSmall/liveSmallStop/liveTick: onSnapshot على users وpending وteams + سحب فارقي كل دقيقتين وعند visibilitychange. pending collection + pendCard/pendRetry. canSeeUser بالرتبة + rnk()/myRank() في firestore.rules. roleOfUser = أعلى رتبة بين الحساب والوظيفة. فصل تضارب اسم liveWatch. ترجمة أسماء الوظائف. الجردان 63 و64.",
     "V15.77": "firestore.rules: users read = self || ok() — أُزيلت مقارنة الرتب التي تتجاوز سقف نداءات الوثائق في استعلام القائمة. التصفية بالرتبة تبقى في التطبيق (canSeeUser). رسالة رفض الطابور تذكر المجموعة والمعرّف.",
     "V15.78": "myUid(): يقرأ المعرّف من STATE.meta.uid وإلا من FB.auth.currentUser ويثبّته. مستعمل في myDocFetch/myDocFix وبطاقة الهوية — كان الزر يرفض العمل لمن هو داخل فعلًا.",
-    "V15.79": "rules-test: أُزيل بناء سياق غير مسجَّل داخل تعبير، وضُبط اختبار كتابة الفني، وأُضيفت اختبارات pending. القواعد لم تتغيّر."
+    "V15.79": "rules-test: أُزيل بناء سياق غير مسجَّل داخل تعبير، وضُبط اختبار كتابة الفني، وأُضيفت اختبارات pending. القواعد لم تتغيّر.",
+    "V15.80": "rules-test: fail() يكتب ::error title=… لكل فحص ساقط + ملخّص ::error في النهاية. real-tests.yml: tee + GITHUB_STEP_SUMMARY بكل الفحوص. القواعد والتطبيق لم يتغيّرا."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4228,5 +4229,14 @@
       "pending: الفني لا يكتب",
       "pending: المهندس يكتب ويقرأ"
     ]
+  },
+  "guard_visibility_v15_80": {
+    "problem": "محاكي القواعد يسقط والتنبيه الوحيد «exit code 1» — بلا اسم فحص",
+    "why_blind": "سجل الوظيفة يُخدَم من blob خارج allowlist، والمحاكي لا يُنزَّل محليًا للسبب نفسه",
+    "fix": [
+      "::error title=<اسم الفحص>::<السبب> لكل ساقط",
+      "ملخّص في GITHUB_STEP_SUMMARY"
+    ],
+    "principle": "حارس يقول «فشل» ولا يقول أين = حارس لا يعمل"
   }
 }

@@ -65,4 +65,16 @@ jobs:
           done
           echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
       - name: كلُّ دورٍ يطرق كلَّ باب — يُفتَح ما يجب ويُغلَق ما يجب
-        run: npx firebase emulators:exec --only firestore --project demo-nusuk "node scripts/rules-test.mjs"
+        # المخرَجُ يُحفَظ ويُلخَّص: التنبيهاتُ تحمل اسمَ كلِّ فحصٍ ساقط،
+        # والملخَّصُ يُكتَب في صفحة التشغيل فيُقرأ بلا تنزيلِ سجلّ.
+        run: |
+          set -o pipefail
+          npx firebase emulators:exec --only firestore --project demo-nusuk \
+            "node scripts/rules-test.mjs" 2>&1 | tee /tmp/rules.txt || RC=$?
+          {
+            echo '### محاكي القواعد'
+            echo '```'
+            grep -aE '✓|✗|فحصًا' /tmp/rules.txt | tail -60
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          exit ${RC:-0}

@@ -19,8 +19,18 @@ const env = await initializeTestEnvironment({
                port: process.env.FIRESTORE_EMULATOR_HOST ? +process.env.FIRESTORE_EMULATOR_HOST.split(':')[1] : 8080 }
 });
 let bad = 0, n = 0;
-const ok   = async (name, p) => { n++; try { await assertSucceeds(p); console.log('  ✓ ' + name); } catch (e){ bad++; console.log('  ✗ ' + name + ' — ' + String(e.message).slice(0, 80)); } };
-const deny = async (name, p) => { n++; try { await assertFails(p);    console.log('  ✓ ' + name); } catch (e){ bad++; console.log('  ✗ ' + name + ' — كان يجب أن يُرفَض'); } };
+/* ═══ الساقطُ يُعلَن تنبيهًا لا سطرًا في سجلٍّ لا يُقرأ ═══
+   كانت الوظيفةُ تسقط فتقول «exit code 1» وحدَها: التنبيهاتُ لا تحمل اسمَ
+   الفحص، وسجلُّ الوظيفة يُنزَّل من مخزنٍ لا يُبلَغ من كلِّ مكان. فصار كلُّ
+   فحصٍ ساقطٍ يُكتَب بصيغة `::error::` — فيظهر في التنبيهات باسمه وسببه،
+   ويُقرأ من واجهة GitHub نفسِها بلا تنزيل. */
+const fail = (name, why) => {
+  bad++;
+  console.log('  ✗ ' + name + ' — ' + why);
+  console.log('::error title=' + name.replace(/[\r\n]/g, ' ') + '::' + String(why).replace(/[\r\n]/g, ' ').slice(0, 200));
+};
+const ok   = async (name, p) => { n++; try { await assertSucceeds(p); console.log('  ✓ ' + name); } catch (e){ fail(name, 'كان يجب أن يُقبَل — ' + String(e.message).slice(0, 120)); } };
+const deny = async (name, p) => { n++; try { await assertFails(p);    console.log('  ✓ ' + name); } catch (e){ fail(name, 'كان يجب أن يُرفَض ولم يُرفَض'); } };
 
 /* الحساباتُ التي تقرؤها القواعد من users/{uid} */
 await env.withSecurityRulesDisabled(async (c) => {
@@ -132,4 +142,5 @@ await ok  ('والمهندسُ يكتب المعلَّقَ ويقرؤه',    set
 await ok  ('ويقرؤه',                            getDoc(doc(as('eng'), 'pending/p1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
+if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');
 process.exit(bad ? 1 : 0);
