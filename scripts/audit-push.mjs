@@ -35,7 +35,10 @@ store['users/UX']={name:'mohamed safwat',role:'admin',active:true};
 w.MYDOC={at:Date.now(),has:true,err:''}; w.STATE.users={UX:store['users/UX']};
 w.FB.ready=false; w.FB.db=null;
 w.FB.init=()=>{ w.FB.ready=true; w.FB.db=mkdb(); return Promise.resolve(true); };
-w.STATE.queue=[]; w.CORE._busy=false; w.CORE.dirty('stats','2026-09-05',{n:1});
+/* المفتاحُ يومُ اليومِ لا يومٌ مكتوبٌ في الجرد: جردٌ يحمل تاريخًا ثابتًا
+   يسقط في اليوم التالي لكتابته — وهو سقوطٌ كاذبٌ يُعلِّم تجاهلَ الأحمر. */
+const TODAY = w.dayKey(Date.now());
+w.STATE.queue=[]; w.CORE._busy=false; w.CORE.dirty('stats',TODAY,{n:1});
 const toasts=[]; const old=w.toast; w.toast=m=>{ toasts.push(String(m)); return old&&old(m); };
 w.goPage('sync'); w.render(1);
 /* ١ · زرُّ الدفع اليدويّ ظاهرٌ ما دام الطابورُ غيرَ فارغ */
@@ -46,7 +49,7 @@ d.querySelector('#content [data-mydocfix]').dispatchEvent(new w.MouseEvent('clic
 await wait(500);
 T(!toasts.some(x=>/لا شبكة/.test(x)), 'لا يقول «لا شبكة» والشبكةُ متصلة', toasts.join(' | '));
 T(toasts.some(x=>/الوثيقةُ موجودةٌ/.test(x) && /رُفع ١/.test(x)), 'ويقول النتيجةَ بعددها الصادق', toasts.join(' | '));
-T(!!store['stats/2026-09-05'] && w.STATE.queue.length===0, 'ويدفع الطابورَ فعلًا فيفرغ');
+T(!!store['stats/'+TODAY] && w.STATE.queue.length===0, 'ويدفع الطابورَ فعلًا فيفرغ');
 /* ٣ · زرُّ الدفع اليدويّ يعمل ويقول ما بقي */
 w.CORE.dirty('recs','R1',{a:1}); w.CORE.dirty('recs','R2',{b:2}); w.CORE._busy=false;
 w.render(1); toasts.length=0;

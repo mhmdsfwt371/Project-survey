@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.72</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.73</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14966,7 +14966,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.72' + '.docx" download>⬇ '
+              +   'V15.73' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -24056,7 +24056,35 @@ function navBack(){
   render();
 }
 
+/* ═══ الموضعُ لا يضيع مع كلِّ ضغطة ═══
+   كلُّ زرٍّ يُعيد الرسمَ، وإعادةُ الرسم كانت تقذف القارئَ إلى رأس الصفحة:
+   من نزل في مئةٍ وعشرين نقطةً وضغط مربّعَ اختيارٍ عاد إلى أوّلها، ومن فتح
+   لوحًا وضغط فيه زرًّا وجد اللوحَ من أعلاه. وهذا يجعل كلَّ عملٍ متعدّدَ
+   الخطوات عذابًا — ولا يُكتشَف في اختبارٍ لأن الشاشةَ «تعمل».
+     صار الموضعُ يُلتقَط قبل الرسم — للنافذة ولكلِّ لوحٍ أو قائمةٍ مفتوحة —
+   ويُعاد بعده. والصعودُ إلى الرأس يبقى حيث يجب: عند تبديل الشاشة وحدَه. */
+var SCROLL_KEEP = null;
+function scrollGrab(){
+  var boxes = [];
+  ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body',
+   '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'].forEach(function(sel){
+    var L = document.querySelectorAll(sel);
+    for (var i = 0; i < L.length; i++) if (L[i].scrollTop) boxes.push([sel, i, L[i].scrollTop]);
+  });
+  SCROLL_KEEP = { win:(window.pageYOffset || document.documentElement.scrollTop || 0), boxes:boxes };
+}
+function scrollBack(sameScreen){
+  var K = SCROLL_KEEP; SCROLL_KEEP = null;
+  if (!sameScreen || !K){ window.scrollTo(0, 0); return; }
+  K.boxes.forEach(function(b){
+    var L = document.querySelectorAll(b[0]);
+    if (L[b[1]]) L[b[1]].scrollTop = b[2];
+  });
+  if (K.win) window.scrollTo(0, K.win);
+}
 function render(force){
+  var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
+  scrollGrab();
   var key = (typeof renderKey === 'function') ? renderKey() : String(Math.random());
   if (!force && key === RENDER_KEY && document.getElementById('content')
       && document.getElementById('content').children.length) return;
@@ -24121,6 +24149,7 @@ function render(force){
     mapDraw();
     if (MAP) mapPaint();
     if (mu) labelCells(mu);
+    scrollBack(wasCur === CUR);
     return;
   }
 
@@ -24138,7 +24167,8 @@ function render(force){
 
   labelCells(c);
   if (EXP_OPEN) c.insertAdjacentHTML('beforeend', expHtml());
-  window.scrollTo(0, 0);
+  /* الشاشةُ نفسُها والشريحةُ نفسُها: يبقى الموضع. غيرُهما: يُصعَد للرأس. */
+  scrollBack(wasCur === CUR && wasTab === (TABS[CUR] ? tabCur(CUR) : ''));
 }
 
 function enterApp(user, pass){
