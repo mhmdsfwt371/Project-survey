@@ -112,6 +112,19 @@ await ok  ('وتقرأ ما تمّ',            getDoc(doc(as('exe'), 'steps/K1'
 await deny('ولا تكتب زيارة',          setDoc(doc(as('exe'), 'recs/S9'), { id:'S9' })); 
 await deny('ولا تكتب إسنادًا',        setDoc(doc(as('exe'), 'tasks/T9'), { id:'T9' }));
 await deny('ولا تُدير الحسابات',      setDoc(doc(as('exe'), 'users/zz'), { name:'ز', role:'tech' }));
+console.log('\n══ كلُّ حسابٍ يرى من دونه رتبةً ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const f = ctx.firestore();
+  await setDoc(doc(f, 'users/t9'),  { name:'فني تسع',  role:'tech',       active:true });
+  await setDoc(doc(f, 'users/s9'),  { name:'مشرف تسع', role:'supervisor', active:true });
+  await setDoc(doc(f, 'users/e9'),  { name:'مهندس تسع',role:'engineer',   active:true });
+});
+await ok  ('المشرفُ يرى الفنيَّ',              getDoc(doc(as('sup'), 'users/t9')));
+await deny('ولا يرى مشرفًا مثلَه',             getDoc(doc(as('sup'), 'users/s9')));
+await deny('ولا يرى المهندس',                  getDoc(doc(as('sup'), 'users/e9')));
+await ok  ('والمهندسُ يرى المشرفَ والفنيّ',     getDoc(doc(as('eng'), 'users/s9')));
+await ok  ('وكلُّ أحدٍ يرى وثيقتَه',            getDoc(doc(as('tec'), 'users/tec')));
+await deny('والفنيُّ لا يرى فنيًّا مثلَه',      getDoc(doc(as('tec'), 'users/t9')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);

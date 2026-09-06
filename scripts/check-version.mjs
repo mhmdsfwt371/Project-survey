@@ -379,7 +379,9 @@ try {
  ['scripts/audit-scroll.mjs',   'جردُ حفظ الموضع'],
  ['scripts/audit-field.mjs',    'جردُ من يُسنَد إليه'],
  ['scripts/audit-photos.mjs',   'جردُ تسمية الصور'],
- ['scripts/audit-exec.mjs',     'جردُ الإدارة العليا']]).forEach(([f, name]) => {
+ ['scripts/audit-exec.mjs',     'جردُ الإدارة العليا'],
+ ['scripts/audit-rank.mjs',     'جردُ الرتبة والوظيفة'],
+ ['scripts/audit-live.mjs',     'جردُ الإنصات والرؤية']]).forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ

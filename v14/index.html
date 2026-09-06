@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.75</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.76</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3183,6 +3183,22 @@ en:{
  /* V15.75 — الإدارةُ العليا */
  'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً':'The executive position, the risks, and the decision — read-only',
  'دليل الإدارة العليا — الموقف والقرار':'Executive guide — position and decision',
+
+ /* V15.76 — أسماءُ الوظائف والإجراءات */
+ 'تعطيل':'Disable',
+ 'تفعيل':'Enable',
+ 'لا حسابَ أعلى رتبةً بعد':'No higher-ranked account yet',
+
+ /* V15.76 — الحساباتُ المعلَّقة */
+ 'حساباتٌ معلَّقة':'Pending accounts',
+ 'كلمةُ مرورٍ جديدة':'New password',
+ 'عشرةُ أحرفٍ فأكثر':'Ten characters or more',
+ 'فعّله':'Activate',
+ 'سُجِّلت ولم تُنشَأ في المصادقة — لا يدخل صاحبُها ولا تُرى في جهازٍ آخر إلا هنا. فعّلها بكلمةِ مرورٍ جديدة؛ القديمةُ لم تُحفَظ.':'Registered but not created in authentication — their owner cannot sign in and they appear on another device only here. Activate with a new password; the old one was never stored.',
+ 'لا حسابَ معلَّقٌ بهذا الاسم':'No pending account with this name',
+ 'اكتب كلمةَ مرورٍ عشرةَ أحرفٍ فأكثر':'Enter a password of ten characters or more',
+ 'يُنشَأ الحساب…':'Creating the account…',
+ 'إدارةُ الحسابات للمهندس وحده':'Managing accounts is for the engineer only',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5527,6 +5543,18 @@ ur:{
  'لم تُرسَل — ينقصها ما قبلها':'نہیں بھیجی گئیں — ان سے پہلے کا کچھ کم ہے',
  'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً':'ایگزیکٹو پوزیشن، خطرات اور فیصلہ — صرف پڑھنے کے لیے',
  'دليل الإدارة العليا — الموقف والقرار':'ایگزیکٹو گائیڈ — پوزیشن اور فیصلہ',
+ 'تعطيل':'غیر فعال کریں',
+ 'تفعيل':'فعال کریں',
+ 'لا حسابَ أعلى رتبةً بعد':'ابھی کوئی بالاتر درجہ اکاؤنٹ نہیں',
+ 'حساباتٌ معلَّقة':'زیر التوا اکاؤنٹس',
+ 'كلمةُ مرورٍ جديدة':'نیا پاس ورڈ',
+ 'عشرةُ أحرفٍ فأكثر':'دس حروف یا زیادہ',
+ 'فعّله':'فعال کریں',
+ 'سُجِّلت ولم تُنشَأ في المصادقة — لا يدخل صاحبُها ولا تُرى في جهازٍ آخر إلا هنا. فعّلها بكلمةِ مرورٍ جديدة؛ القديمةُ لم تُحفَظ.':'رجسٹرڈ مگر تصدیق میں نہیں بنے — مالک سائن اِن نہیں کر سکتا۔ نئے پاس ورڈ سے فعال کریں۔',
+ 'لا حسابَ معلَّقٌ بهذا الاسم':'اس نام کا کوئی زیر التوا اکاؤنٹ نہیں',
+ 'اكتب كلمةَ مرورٍ عشرةَ أحرفٍ فأكثر':'دس حروف یا زیادہ کا پاس ورڈ لکھیں',
+ 'يُنشَأ الحساب…':'اکاؤنٹ بنایا جا رہا ہے…',
+ 'إدارةُ الحسابات للمهندس وحده':'اکاؤنٹس کا انتظام صرف انجینئر کے لیے',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7307,6 +7335,7 @@ var STATE = {
   maints:{},     /* زياراتُ الصيانة (MR) — {id:{id,list:[]}} */
   steps:[],      /* آخرُ ما تمّ — يُعلَن ويُرفَع فتراه اللوحاتُ في كلِّ جهاز */
   photos:{},     /* سجلُّ الصور المرفوعة — {site-n:{site,kind,seq,name,driveId}} */
+  pending:{},    /* حساباتٌ سُجِّلت ولم تُنشَأ في المصادقة بعد */
   events:  [],   /* سجل الأحداث */
   users:   {},   /* المستخدمون وأدوارهم */
   cfg:     {},   /* الإعدادات — مرآةُ CFG */
@@ -7391,14 +7420,14 @@ var CORE = {
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
       diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
-      photos:STATE.photos || {}
+      photos:STATE.photos || {}, pending:STATE.pending || {}
     });
   },
 
   loadLocal: function(){
     return idbGet('state').then(function(v){
       if (!v) return false;
-      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos'].forEach(function(k){
+      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
@@ -7614,7 +7643,7 @@ var FB = {
              vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
              stats:'stats', teams:'teams', baseline:'baseline',
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-             workReqs:'workreqs', maints:'maints', steps:'steps' }[kind] || 'misc';
+             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending' }[kind] || 'misc';
   },
   putOne: function(it){
     var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
@@ -7644,7 +7673,7 @@ var FB = {
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-                  workReqs:'workreqs', maints:'maints', steps:'steps' }[it.kind];
+                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
@@ -7719,12 +7748,23 @@ var FB = {
       });
     })).then(function(){
       /* المستخدمون: للمهندس وحده — وهم عشراتٌ لا آلاف */
-      if (typeof may === 'function' && may('users')){
+      /* والسحبُ الأوّلُ كذلك: من رتبتُه فوق الأدنى يسحب ما يحقُّ له —
+         والقاعدةُ تُسقِط ما لا يحقُّ فلا يُرى ما ليس له. */
+      if (rankOf(ROLE) > 30){
         FB.db.collection('users').limit(300).get().then(function(sn){
           if (!STATE.users) STATE.users = {};
           sn.forEach(function(d){ STATE.users[d.id] = d.data(); });
           FB.readCount = (FB.readCount || 0) + sn.size;
         }).catch(function(e){ softErr('سحب المستخدمين', e, 'تعذّر سحبُ الحسابات — الشاشةُ قد تظهر ناقصة'); });
+        /* والمعلَّقةُ كذلك: من أُنشئ على جهازٍ ولم يُفعَّل يُرى في كلِّ جهاز */
+        FB.db.collection('pending').limit(200).get().then(function(sn){
+          STATE.pending = STATE.pending || {};
+          sn.forEach(function(d){
+            STATE.pending[d.id] = d.data();
+            if (!STATE.users[d.id]) STATE.users[d.id] = Object.assign({ pending:true }, d.data());
+          });
+          if (sn.size && CUR === 'users') render(1);
+        }).catch(function(e){ softErr('سحب الحسابات المعلَّقة', e, ''); });
       }
       /* الفرقُ الفرعيةُ (نسب الأنصبة) كانت تُكتب بـ`CORE.dirty('teams',…)` ولا
          تُقرأ هنا أبدًا — فكلُّ فريقٍ يُنشأ يضيع بإعادة الفتح أو على جهازٍ آخر،
@@ -8061,6 +8101,80 @@ function statsHistory(days){
    وما لا يُقال لا يُصلَح. فصار يُسجَّل هنا محليًّا — لا يُرفَع ولا يُزعِج —
    ويُقرأ في شاشة المزامنة عند السؤال «لماذا لا تصل البيانات؟». وما يستطيع
    المستخدمُ فعلَ شيءٍ حياله يُقال له مرةً واحدةً لا كلَّ مرة. */
+
+/* ═══ الاستماعُ الحيّ: ما يُكتَب في جهازٍ يُرى في الباقي ═══
+   القاعدةُ خادمٌ مشتركٌ لا صندوقٌ في كلِّ جهاز — لكنَّ التطبيقَ كان يقرؤها
+   مرةً واحدةً عند الفتح ثم لا يعود. فمن أنشأ حسابًا أو فريقًا أو غيّر دورًا
+   في جهاز، لم يره الآخرون حتى يُغلقوا التطبيقَ ويفتحوه — فظُنَّ أن الحفظَ
+   لم يقع، وأُنشئ الحسابُ مرتين.
+     فصار يُنصَت للمجموعات الصغيرة إنصاتًا دائمًا: الحساباتُ والمعلَّقُ منها
+   والفرقُ والإعدادات. وهي عشراتٌ لا آلاف، والإنصاتُ لا يُحاسَب إلا على ما
+   تغيّر بعد القراءة الأولى — فلا يُثقِل الحصّة.
+     أما الكبيرةُ — الزياراتُ والتركيباتُ والمهامُّ — فتُسحَب بالفارق كلَّ
+   دقيقتين وعند العودة من الخلفية: كثيرةٌ ولا تحتمل إنصاتًا دائمًا. */
+var LIVE_SMALL = [], LIVE_TICK = null;
+function liveSmallStop(){
+  /* إلغاءُ إنصاتٍ مات لا يُبلَّغ عنه — لكنه يُسجَّل كي لا يُبتلَع صامتًا */
+  LIVE_SMALL.forEach(function(f){
+    try { f(); } catch (e){ if (typeof softErr === 'function') softErr('إغلاق إنصات', e, ''); }
+  });
+  LIVE_SMALL = [];
+  liveTickStop();
+}
+function liveSmall(){
+  if (!FB.ready || !FB.db) return;
+  liveSmallStop();
+  var watch = function(col, apply, cap){
+    try {
+      var q = FB.db.collection(col);
+      if (cap) q = q.limit(cap);
+      LIVE_SMALL.push(q.onSnapshot(function(sn){
+        var n = 0;
+        sn.docChanges().forEach(function(ch){
+          apply(ch.doc.id, ch.type === 'removed' ? null : ch.doc.data()); n++;
+        });
+        if (n && !(sn.metadata && sn.metadata.fromCache)){
+          statBump();
+          if (CUR === 'users' || CUR === 'crews' || CUR === 'assignRole') render(1);
+        }
+      }, function(e){ softErr('إنصات ' + col, e, ''); }));
+    } catch (e){ softErr('إنصات ' + col, e, ''); }
+  };
+  /* الإنصاتُ لمن يرى غيرَه: كان للمهندس وحده — فالمشرفُ لا يرى فنيّيه
+     ولا يعلم بمن أُضيف إلى فريقه. والقاعدةُ تحرس ما يُقرأ، فالإنصاتُ
+     يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
+  if (rankOf(ROLE) > 30){
+    watch('users', function(id, v){
+      STATE.users = STATE.users || {};
+      if (v) STATE.users[id] = v; else delete STATE.users[id];
+    }, 300);
+    watch('pending', function(id, v){
+      STATE.pending = STATE.pending || {};
+      if (v){ STATE.pending[id] = v; if (!STATE.users[id]) STATE.users[id] = Object.assign({ pending:true }, v); }
+      else { delete STATE.pending[id]; delete STATE.users[id]; }
+    }, 200);
+  }
+  watch('teams', function(id, v){
+    var i = -1;
+    for (var k = 0; k < TEAMS.length; k++) if (TEAMS[k].id === id){ i = k; break; }
+    if (!v){ if (i > -1) TEAMS.splice(i, 1); return; }
+    var row = Object.assign({ id:id }, v);
+    if (i > -1) TEAMS[i] = row; else TEAMS.push(row);
+  }, 500);
+  liveTick();
+}
+function liveTickStop(){ if (LIVE_TICK){ clearInterval(LIVE_TICK); LIVE_TICK = null; } }
+function liveTick(){
+  /* مؤقّتٌ واحدٌ لا غير — ولو نودي مرتين. وله مُلغٍ صريحٌ يُنادى عند
+     الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
+  liveTickStop();
+  LIVE_TICK = setInterval(function(){
+    if (STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
+  }, 120000);
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden && STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
+  });
+}
 var SOFT_ERRS = [], SOFT_SAID = {};
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
@@ -9068,7 +9182,7 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
                             + '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
                             + jobsList().map(function(j){
                                 return '<option value="' + esc(j.id) + '"' + (x.job === j.id ? ' selected' : '')
-                                  + '>' + esc(j.n) + '</option>';
+                                  + '>' + esc(t(j.n)) + '</option>';
                               }).join('') + '</select>',
                           may('phones')
                             ? '<input value="' + esc(x.ph || '') + '" data-tkph="' + esc(x.n) + '" dir="ltr" placeholder="05…">'
@@ -9557,7 +9671,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
   l:'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.',
   body:function(){
     var head = tabHead('users'), cur = tabCur('users');
-    if (cur === 'users') return head + (function(){
+    if (cur === 'users') return head + pendCard() + (function(){
     var L = usersList();
     var byRole = {};
     Object.keys(STATE.users || {}).forEach(function(uid){
@@ -9592,7 +9706,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           +   '<input id="uN" dir="auto" maxlength="160"></div>'
           + '<div class="field"><label>' + esc(t('الوظيفة')) + '</label>'
           +   '<select id="uJ"><option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
-          +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(j.n) + '</option>'; }).join('')
+          +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(t(j.n)) + '</option>'; }).join('')
           +   '</select></div>'
           + '<div class="field"><label>' + esc(t('القسم')) + '</label>'
           +   '<select id="uD">' + deptOptions('') + '</select></div>'
@@ -9757,7 +9871,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
         +   '</select></div>'
         + '<div class="field"><label>' + esc(t('الوظيفة')) + '</label>'
         +   '<select id="asnJob">'
-        +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(j.n) + '</option>'; }).join('')
+        +   jobsList().map(function(j){ return '<option value="' + esc(j.id) + '">' + esc(t(j.n)) + '</option>'; }).join('')
         +   '</select></div>'
         + '<div class="field"><label>' + esc(t('الفريق')) + '</label>'
         +   '<select id="asnCrew"><option value="">—</option>'
@@ -9773,7 +9887,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
               var role = job ? job.role : 'tech';
               return ['<strong>' + esc(x.n) + '</strong>'
                         + (x.u ? '<br><span class="hint" dir="ltr" style="margin:0">' + esc(x.u) + '</span>' : ''),
-                      job ? esc(job.n) : '<span class="hint" style="margin:0">—</span>',
+                      job ? esc(t(job.n)) : '<span class="hint" style="margin:0">—</span>',
                       pill(esc(t(roleName(role))), role === 'engineer' ? 'ok' : (role === 'viewer' ? 'info' : 'acc')),
                       x.crew ? esc(x.crew) : '<span class="hint" style="margin:0">—</span>'];
             })))
@@ -15012,7 +15126,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.75' + '.docx" download>⬇ '
+              +   'V15.76' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17700,7 +17814,7 @@ function bootAuto(){
        لا شاشةَ دخولٍ ولا تطبيق. */
     enterShell();
     var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
-    first.then(function(){ return pullDelta(); })
+    first.then(function(){ return pullDelta(); }).then(function(){ liveWatch(); liveSmall(); return 0; })
          .then(function(){ statBump(); render(1); syncBadge(); })
          .catch(function(e){
            softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
@@ -22385,13 +22499,23 @@ var ROLE_RANK = { exec:110, admin:100, engineer:90, supervisor:70,
                   tech:30, buyer:30, store:30, acct:30, helper:30, driver:30,
                   viewer:10 };
 function rankOf(role){ return ROLE_RANK[role] != null ? ROLE_RANK[role] : 30; }
+/* ═══ الرتبةُ أعلى الاثنين ═══
+   كان دورُ الوظيفة يغلب دورَ الحساب دائمًا. فمن دورُ حسابه «الإدارة العليا»
+   ووظيفتُه «مدير المشروع» تُقرأ رتبتُه رتبةَ مديرِ المشروع — فلا يصلح مديرًا
+   لمديرِ المشروع، ويُقال «لا حسابَ أعلى رتبةً بعد» وهو موجود.
+     والوظيفةُ وصفُ عملٍ لا سقفُ صلاحية: من رُفع دورُه صراحةً لا تخفضه
+   وظيفتُه القديمة. فتُقرأ الرتبةُ أعلى الاثنين. */
 function roleOfUser(u){
   if (!u) return '';
+  var byJob = '';
   if (u.job && typeof jobOf === 'function'){
     var j = jobOf(u.job);
-    if (j && j.role) return j.role;
+    if (j && j.role) byJob = j.role;
   }
-  return u.role || '';
+  var byAcc = u.role || '';
+  if (!byJob) return byAcc;
+  if (!byAcc) return byJob;
+  return rankOf(byAcc) >= rankOf(byJob) ? byAcc : byJob;
 }
 /* من يصلح مديرًا لصاحب هذا الدور: كلُّ حسابٍ مرتبتُه أعلى منه */
 function mgrCandidates(role, exceptUid){
@@ -23347,10 +23471,19 @@ function tgtBlock(kCamp, kCor){
    الأزرار الميتة ويقول نصَّها. فصارت تقرأ `STATE.users` وتكتب فيها. */
 var USR_Q = '', USR_EDIT = '', USR_ROLE = '';
 
+/* من يظهر لي: من رتبتُه دوني — ونفسي. ومن يُدير الأدوارَ يرى الجميعَ
+   لأنه هو من يرفعهم ويخفضهم. */
+function canSeeUser(u){
+  if (!u) return false;
+  if (may('users')) return true;
+  if (u.name && u.name === STATE.meta.name) return true;
+  return rankOf(ROLE) > rankOf(roleOfUser(u));
+}
 function usersList(){
   var U = STATE.users || {}, out = [];
   Object.keys(U).forEach(function(uid){
     var u = U[uid] || {};
+    if (!canSeeUser(u)) return;
     if (USR_ROLE && u.role !== USR_ROLE) return;
     var hay = (u.name || '') + ' ' + (u.user || '') + ' ' + (u.role || '');
     if (USR_Q && hay.indexOf(USR_Q) < 0) return;
@@ -23385,7 +23518,7 @@ function usersCard(){
               if (USR_EDIT === uid){
                 var jbOpts = '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
                   + jobsList().map(function(j){ return '<option value="' + esc(j.id) + '"'
-                      + (u.job === j.id ? ' selected' : '') + '>' + esc(j.n) + '</option>'; }).join('');
+                      + (u.job === j.id ? ' selected' : '') + '>' + esc(t(j.n)) + '</option>'; }).join('');
                 var supOpts = mgrOptions(roleOfUser(u) || u.role, u.sup || '', uid);
                 return ['<input data-usrn="' + esc(uid) + '" value="' + esc(u.name || '') + '" dir="auto">',
                         '<select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>'
@@ -23409,8 +23542,8 @@ function usersCard(){
                               + '</span>' : ''),
                       pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                       '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
-                      btn('تعديل','btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
-                      + btn(on ? 'تعطيل' : 'تفعيل','btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
+                      btn(t('تعديل'),'btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
+                      + btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
             }))
         : '<p class="hint" style="padding:16px">'
           + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'
@@ -23428,6 +23561,50 @@ function usersCard(){
 
 /* إنشاءُ حسابٍ: كانت الشاشةُ واجهةً بلا وظيفة — حقولٌ بلا معرّفاتٍ وزرٌّ
    بلا خاصية. فمن ملأها وضغط لم يقع شيءٌ ولا قيل لماذا. */
+/* المعلَّقُ يُنشَأ بضغطةٍ حين تعود الشبكة — بكلمةِ مرورٍ جديدةٍ تُكتَب الآن،
+   فالقديمةُ لم تُحفَظ ولا تُحفَظ. */
+function pendList(){
+  var P = STATE.pending || {};
+  return Object.keys(P).map(function(k){ return Object.assign({ user:k }, P[k]); })
+    .sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+}
+function pendRetry(user, pass){
+  if (!may('users')){ toast(t('إدارةُ الحسابات للمهندس وحده')); return; }
+  var v = (STATE.pending || {})[user];
+  if (!v){ toast(t('لا حسابَ معلَّقٌ بهذا الاسم')); return; }
+  if (!pass || String(pass).length < 10){ toast(t('اكتب كلمةَ مرورٍ عشرةَ أحرفٍ فأكثر')); return; }
+  toast(t('يُنشَأ الحساب…'));
+  FB.createUser(user, pass, { name:v.name, role:v.role, doc:Object.assign({}, v, { pending:undefined }) })
+    .then(function(res){
+      if (res && res.ok && res.uid){
+        var nv = Object.assign({}, v); delete nv.pending;
+        STATE.users[res.uid] = nv;
+        delete STATE.users[user];
+        delete STATE.pending[user];
+        CORE.rm('pending', user);
+        logEvent('تفعيل حساب معلَّق — ' + user);
+        toast(user + ' \u00b7 ' + t('يدخل بكلمته الآن'));
+        statBump(); render(1);
+        return;
+      }
+      softErr('تفعيل حساب معلَّق', new Error(res && res.err || 'unknown'),
+        'لم يُفعَّل — راجع الشبكةَ أو اسمَ المستخدم');
+    });
+}
+function pendCard(){
+  var L = pendList();
+  if (!L.length) return '';
+  return cardFlush('\u23F3 ' + t('حساباتٌ معلَّقة') + ' \u2014 ' + nm(L.length),
+      table(['المستخدم','الاسم','الدور','كلمةُ مرورٍ جديدة',''],
+        L.map(function(x){
+          return ['<span class="num" dir="ltr">' + esc(x.user) + '</span>',
+                  esc(x.name || ''), esc(t((ROLES[x.role] || {}).n || x.role)),
+                  '<input type="password" id="pnd_' + esc(x.user) + '" placeholder="' + esc(t('عشرةُ أحرفٍ فأكثر')) + '" dir="ltr">',
+                  btn('\u26A1 ' + t('فعّله'),'btn-primary btn-sm',' data-pndgo="' + esc(x.user) + '"')];
+        }))
+      + '<p class="hint" style="margin:8px 0 0">'
+      + esc(t('سُجِّلت ولم تُنشَأ في المصادقة — لا يدخل صاحبُها ولا تُرى في جهازٍ آخر إلا هنا. فعّلها بكلمةِ مرورٍ جديدة؛ القديمةُ لم تُحفَظ.')) + '</p>');
+}
 function usrAdd(){
   if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
@@ -23456,12 +23633,25 @@ function usrAdd(){
   if (jb){ docv.job = jb; docv.jobLog = [{ job:jb, at:Date.now(), by:STATE.meta.name || '' }]; }
   if (sup) docv.sup = sup;
   if (dp)  docv.dept = dp;
+  /* ═══ الحسابُ المعلَّق ═══
+     كان الحسابُ الذي يفشل إنشاؤه في المصادقة يبقى في ذاكرة الجهاز وحدَه:
+     لا يُرفَع لأن وثيقتَه باسم المستخدم لا باسم معرِّفٍ لم يُولَد بعد. فمن
+     أنشأه رآه في جهازه وظنَّه محفوظًا، ولا يراه جهازٌ آخرُ ولا يدخل صاحبُه.
+       صار يُرفَع في «الحسابات المعلَّقة» بمعرِّفٍ من اسم المستخدم — تراه
+     الأجهزةُ كلُّها ويُعاد إنشاؤه بضغطة، ولا يُخلَط بالحسابات العاملة. */
+  docv.pending = true;
   STATE.users[u] = docv;
-  /* ويُنشَأ في Auth بتطبيقٍ ثانٍ إن كانت شبكة — فيدخل صاحبُه بكلمته.
-     وإن تعذّر بقي مسجَّلًا هنا ويُنشَأ من المكتب: التسجيلُ لا يُفقَد. */
+  CORE.set('pending', u, Object.assign({}, docv, { user:u }));
   FB.createUser(u, p, { name:n, role:r, doc:docv }).then(function(res){
     if (res && res.ok){
-      if (res.uid){ STATE.users[res.uid] = Object.assign({}, docv); delete STATE.users[u]; statBump(); render(1); }
+      if (res.uid){
+        delete docv.pending;
+        STATE.users[res.uid] = Object.assign({}, docv);
+        delete STATE.users[u];
+        STATE.pending = STATE.pending || {}; delete STATE.pending[u];
+        CORE.rm('pending', u);
+        statBump(); render(1);
+      }
       toast(u + ' \u00b7 ' + t('يدخل بكلمته الآن')); return;
     }
     if (res && res.err === 'offline') return;
@@ -24264,6 +24454,7 @@ function enterApp(user, pass){
       {
         ROLE = ROLES[r.role] ? r.role : 'tech';
         var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
+        setTimeout(function(){ liveWatch(); liveSmall(); }, 1200);
         first.then(function(n){
           if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
           return pullDelta();
@@ -24569,6 +24760,13 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  var pnd = e.target.closest('[data-pndgo]');
+  if (pnd){
+    var pu = pnd.getAttribute('data-pndgo');
+    var pe = document.getElementById('pnd_' + pu);
+    pendRetry(pu, pe ? pe.value : '');
+    return;
+  }
   if (e.target.closest('[data-seedgo]')){ seedApply(); return; }
   if (e.target.closest('[data-dissave]')){ disSave(); return; }
   if (e.target.closest('[data-mntsave]')){ maintSave(); return; }

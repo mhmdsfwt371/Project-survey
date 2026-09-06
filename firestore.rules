@@ -34,6 +34,19 @@ service cloud.firestore {
     // في القاعدة، إذنُها في التطبيق أوسعُ عرضًا لا كتابةً. فمن رفع بدورها
     // شيئًا رُفض، ومن قرأ رأى ما يقرؤه المطّلع.
     function viewer() { return ok() && role() in ['viewer', 'exec']; }
+    // ═══ الرتبةُ في القاعدة كما في التطبيق ═══
+    // كلُّ حسابٍ يرى من هو دونه رتبةً: المشرفُ يرى فنيّيه، والمهندسُ يرى
+    // المشرفين ومن دونهم. وكانت القراءةُ للمهندس وحده — فالمشرفُ لا يرى
+    // فريقَه أصلًا، ولا تُعرَف أسماءُ من يعمل تحته إلا من المكتب.
+    function rnk(r) {
+      return r == 'exec' ? 110
+           : r == 'admin' ? 100
+           : r == 'engineer' ? 90
+           : r == 'supervisor' ? 70
+           : r in ['cprep', 'casm', 'cins'] ? 50
+           : r == 'viewer' ? 10 : 30;
+    }
+    function myRank() { return rnk(role()); }
 
     // المستخدمون: كل واحد يقرأ حسابه — المدير يقرأ الكل
     // الأدمن يكتب أي حساب — المهندس يكتب وثائق المشرفين فقط (بدون تغيير الدور)
@@ -49,8 +62,17 @@ service cloud.firestore {
       allow create: if canW();
       allow update, delete: if false;
     }
+    // الحساباتُ المعلَّقة: سُجِّلت ولم تُنشَأ في المصادقة — يراها المكتبُ
+    // كي لا تضيع في جهازٍ واحد، ويحذفُها حين تُفعَّل.
+    match /pending/{id} {
+      allow read:   if mgr();
+      allow write:  if mgr();
+    }
     match /users/{uid} {
-      allow read: if request.auth != null && (request.auth.uid == uid || mgr());
+      // نفسُه دائمًا · والمديرُ كلَّهم · ومن رتبتُه أعلى يرى من دونه
+      allow read: if request.auth != null
+        && (request.auth.uid == uid || mgr()
+            || (ok() && myRank() > rnk(resource.data.get('role', 'tech'))));
       // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات
       allow create, update: if mgr()
         // ومن دخل ولا وثيقةَ له يسجّل نفسَه — فنيًّا فقط ونشطًا: أدنى دورٍ

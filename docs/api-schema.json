@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.75",
+  "app_version": "V15.76",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1444,7 +1444,8 @@
     "V15.72": "gateChain/gateFirst/gateCard/gateSay: سلسلة شروط لكل نوع تُعرَض في asnSheet وفي رسالة الرفض. asnCommit (الفردي والجماعي) يفحص بالسلسلة لكل نوع لا للتركيب وحده. الجرد 58: audit-gate.",
     "V15.73": "scrollGrab/scrollBack حول render: يحفظ موضع النافذة وكل .pop-body/overflow:auto ويعيده؛ الصعود للرأس عند تبديل الشاشة أو الشريحة فقط. audit-push: مفتاح stats صار dayKey(Date.now()). الجرد 59: audit-scroll.",
     "V15.74": "FIELD_ROLES/isFieldRole + techsList(all) تُصفّي بالدور؛ techNames تقرأ الدور من الحساب لا من الوظيفة. شاشات الإدارة تستعمل techsList(1). الجرد 60: audit-field.",
-    "V15.75": "photoNext/photoQueue seq: اسم الصورة = {site}-{n}.jpg؛ مفتاح photos = site-n؛ STATE.photos مهيّأة وتُسحَب وتُحفَظ. دور exec (rank 110) فوق admin: قراءة تنفيذية بلا كتابة، وفي firestore.rules ضمن viewer(). الجردان 61 و62."
+    "V15.75": "photoNext/photoQueue seq: اسم الصورة = {site}-{n}.jpg؛ مفتاح photos = site-n؛ STATE.photos مهيّأة وتُسحَب وتُحفَظ. دور exec (rank 110) فوق admin: قراءة تنفيذية بلا كتابة، وفي firestore.rules ضمن viewer(). الجردان 61 و62.",
+    "V15.76": "liveSmall/liveSmallStop/liveTick: onSnapshot على users وpending وteams + سحب فارقي كل دقيقتين وعند visibilitychange. pending collection + pendCard/pendRetry. canSeeUser بالرتبة + rnk()/myRank() في firestore.rules. roleOfUser = أعلى رتبة بين الحساب والوظيفة. فصل تضارب اسم liveWatch. ترجمة أسماء الوظائف. الجردان 63 و64."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2620,7 +2621,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 62,
+  "audits_total": 64,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4173,5 +4174,36 @@
     "rules": "viewer() تشمل exec — قراءة بلا كتابة",
     "field": "غير ميداني — لا يُسنَد إليه عمل",
     "why": "مدير المشروع كان بلا مدير: أعلى رتبة في السلّم فلا أحد يُسأل عنه"
+  },
+  "realtime_v15_76": {
+    "live": [
+      "users",
+      "pending",
+      "teams"
+    ],
+    "delta": "FB.pull(0) كل 120s وعند visibilitychange",
+    "why": "القراءة كانت مرة واحدة عند الفتح — فما يُكتَب في جهاز لا يُرى في غيره",
+    "cost": "onSnapshot يحاسب على المتغيّر بعد القراءة الأولى فقط"
+  },
+  "pending_accounts_v15_76": {
+    "collection": "pending",
+    "when": "فشل FB.createUser (شبكة/اسم موجود)",
+    "before": "يبقى في ذاكرة جهاز واحد — لا يُرفَع ولا يُرى ولا يدخل صاحبه",
+    "now": "يُرفَع ويُرى في كل جهاز ويُفعَّل بـpendRetry(user, newPass)",
+    "rules": "pending: mgr() قراءةً وكتابة"
+  },
+  "visibility_by_rank_v15_76": {
+    "app": "canSeeUser: may('users') || نفسه || rankOf(ROLE) > rankOf(roleOfUser(u))",
+    "rules": "users read: self || mgr() || (ok() && myRank() > rnk(resource.data.role))",
+    "ranks": {
+      "exec": 110,
+      "admin": 100,
+      "engineer": 90,
+      "supervisor": 70,
+      "cins/casm/cprep": 50,
+      "tech/buyer/store/acct/helper/driver": 30,
+      "viewer": 10
+    },
+    "roleOfUser": "أعلى رتبة بين دور الحساب ودور الوظيفة — الوظيفة لا تخفض دورًا مرفوعًا"
   }
 }
