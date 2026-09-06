@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.74</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.75</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3179,6 +3179,10 @@ en:{
  'الفكُّ إرجاعُ ما سُلِّم — فلا يُفَكُّ ما لم يُسلَّم':'Dismantling returns what was handed over — so what was not handed over is not dismantled',
  'ليس مُسنَدًا من قبل':'Not already assigned',
  'لم تُرسَل — ينقصها ما قبلها':'were not sent — what precedes them is missing',
+
+ /* V15.75 — الإدارةُ العليا */
+ 'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً':'The executive position, the risks, and the decision — read-only',
+ 'دليل الإدارة العليا — الموقف والقرار':'Executive guide — position and decision',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5521,6 +5525,8 @@ ur:{
  'الفكُّ إرجاعُ ما سُلِّم — فلا يُفَكُّ ما لم يُسلَّم':'ڈسمینٹل حوالے شدہ کی واپسی ہے',
  'ليس مُسنَدًا من قبل':'پہلے سے تفویض نہیں',
  'لم تُرسَل — ينقصها ما قبلها':'نہیں بھیجی گئیں — ان سے پہلے کا کچھ کم ہے',
+ 'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً':'ایگزیکٹو پوزیشن، خطرات اور فیصلہ — صرف پڑھنے کے لیے',
+ 'دليل الإدارة العليا — الموقف والقرار':'ایگزیکٹو گائیڈ — پوزیشن اور فیصلہ',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7300,6 +7306,7 @@ var STATE = {
   diss:{},       /* الفكُّ وإرجاعُ العُهدة (UR) */
   maints:{},     /* زياراتُ الصيانة (MR) — {id:{id,list:[]}} */
   steps:[],      /* آخرُ ما تمّ — يُعلَن ويُرفَع فتراه اللوحاتُ في كلِّ جهاز */
+  photos:{},     /* سجلُّ الصور المرفوعة — {site-n:{site,kind,seq,name,driveId}} */
   events:  [],   /* سجل الأحداث */
   users:   {},   /* المستخدمون وأدوارهم */
   cfg:     {},   /* الإعدادات — مرآةُ CFG */
@@ -7383,14 +7390,15 @@ var CORE = {
       poison:STATE.poison || [],
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
-      diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || []
+      diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
+      photos:STATE.photos || {}
     });
   },
 
   loadLocal: function(){
     return idbGet('state').then(function(v){
       if (!v) return false;
-      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps'].forEach(function(k){
+      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
@@ -7809,6 +7817,11 @@ var FB = {
       FB.db.collection('settings').doc('raci').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.raci = arr; }
       }).catch(function(e){ softErr('سحب مصفوفة المسؤوليات', e, 'تعذّر سحبُ مصفوفة RACI'); });
+      /* سجلُّ الصور يُسحَب: بدونه يبدأ الترقيمُ من واحدٍ في كلِّ جهازٍ فتُكتَب
+         صورتان باسمٍ واحدٍ على الدرايف. */
+      FB.db.collection('photos').get().then(function(sn){
+        sn.forEach(function(dd){ STATE.photos[dd.id] = dd.data(); });
+      }).catch(function(e){ softErr('سحب سجل الصور', e, ''); });
       FB.db.collection('maints').get().then(function(sn){
         sn.forEach(function(dd){ STATE.maints[dd.id] = dd.data(); });
       }).catch(function(e){ softErr('سحب سجل الصيانة', e, ''); });
@@ -13078,8 +13091,25 @@ function drvUpload(name, dataUrl){
    تُعرَض في شاشة التخزين بزرِّ إعادة، فالفقدُ المعلَنُ يُعالَج والصامتُ لا. */
 var PHOTO_Q = [], PHOTO_FAIL = [];
 
+/* ═══ اسمُ الصورة على الدرايف ═══
+   كان الاسمُ يحمل النوعَ والوقتَ بالثانية: «NSK-…-0001__site__2026-09-06-14-30-05»
+   — لا يُقرأ، ولا تُعرَف صورةُ نقطةٍ من أختها إلا بفتحها. صار اسمَ النقطة
+   ورقمًا يزيد: أوّلُ صورةٍ «NSK-…-0001-1» ثم «-2» ثم «-3». فيُفرَز المجلدُ
+   بالاسم فتتجاور صورُ النقطة الواحدة مرتَّبةً كما التُقطت.
+     والرقمُ يُحسب مما رُفع فعلًا لهذه النقطة وما ينتظر في الطابور — لا من
+   عدّادٍ في الذاكرة يبدأ من واحدٍ كلَّما أُغلق التطبيق. */
+function photoNext(siteId){
+  var n = 0;
+  Object.keys(STATE.photos || {}).forEach(function(k){
+    var v = STATE.photos[k];
+    if (v && v.site === siteId) n++;
+  });
+  PHOTO_Q.forEach(function(q){ if (q.site === siteId) n++; });
+  return n + 1;
+}
 function photoQueue(siteId, kind, dataUrl){
-  PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0 });
+  PHOTO_Q.push({ site:siteId, kind:kind, data:dataUrl, at:Date.now(), tries:0,
+                 seq:photoNext(siteId) });
   CORE.saveSoon();
   photoFlush();
 }
@@ -13087,14 +13117,19 @@ function photoQueue(siteId, kind, dataUrl){
 function photoFlush(){
   if (!PHOTO_Q.length || !STATE.meta.online || !drvCfg()) return Promise.resolve(0);
   var it = PHOTO_Q[0];
-  var nm2 = it.site + '__' + it.kind + '__' + new Date(it.at).toISOString().slice(0,19).replace(/[:T]/g,'-') + '.jpg';
+  /* الرقمُ يُثبَّت عند الإدراج ويُعاد حسابُه إن غاب (طابورٌ من نسخةٍ أقدم) */
+  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site));
+  var nm2 = it.site + '-' + seq + '.jpg';
   return drvUpload(nm2, it.data).then(function(r){
     PHOTO_Q.shift();
     /* في الوثيقة معرّفُ الملف ورابطُه لا الصورةُ نفسها */
-    CORE.set('photos', it.site + '_' + it.kind, {
-      site:it.site, kind:it.kind, driveId:r.id, link:r.webViewLink, at:it.at
+    /* المفتاحُ بالرقم لا بالنوع: كانت صورةٌ ثانيةٌ من النوع نفسِه تكتب فوق
+       الأولى في السجل — فيبقى الملفان على الدرايف ولا يُعرَف إلا آخرُهما. */
+    CORE.set('photos', it.site + '-' + seq, {
+      site:it.site, kind:it.kind, seq:seq, name:nm2,
+      driveId:r.id, link:r.webViewLink, at:it.at
     });
-    logEvent('رفع صورة — ' + it.site + ' · ' + it.kind);
+    logEvent('رفع صورة — ' + nm2 + ' \u00b7 ' + it.kind);
     if (PHOTO_Q.length) setTimeout(photoFlush, 400);
     return 1;
   }).catch(function(e){
@@ -14977,7 +15012,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.74' + '.docx" download>⬇ '
+              +   'V15.75' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -22219,6 +22254,20 @@ PAGE.exp = { m:'الأدوات', t:'التصدير والاستيراد', l:'م�
    الحجب بالبنية لا بالجافاسكربت وحده: بندٌ لا يُبنى أصلًا لمن لا يملكه. */
 
 var ROLES = {
+  /* ═══ الإدارةُ العليا فوق مديرِ المشروع ═══
+     كان السلَّمُ ينتهي عند مديرِ المشروع: فلا مديرَ له، ولا يُسأل عن عمله
+     أحدٌ داخل النظام — وهو في الواقع يرفع إلى إدارةٍ عليا في الشركة تسأل
+     عن الربحية والمخاطر الكبرى والقرار. فأُضيفت مرتبةٌ فوقه بدورها:
+     تقرأ الموقفَ التنفيذيَّ والمعالمَ والقيمةَ المكتسبةَ والمخاطر، ولا
+     تعدّل ولا تعتمد ولا تضبط — فالإشرافُ لا يعني الإمساك بكلِّ مقبض.
+     وبها صار مديرُ المشروع يُسنَد إلى مديرٍ كما يُسنَد غيرُه. */
+  exec:{
+    n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
+    guide:'دليل الإدارة العليا — الموقف والقرار',
+    nav:['exec','over','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
+    can:{ edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
+          exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
+
   /* الأدمنُ فوق المهندس: يملك كلَّ شيءٍ ويُدير الأدوارَ نفسَها.
      والمهندسُ يرث منه ولا يملك تبديلَ الأدوار — فمن يضبط الصلاحياتِ لا
      يُصلح لأن يوسّع صلاحيةَ نفسِه بلا رقيب. */
@@ -22331,7 +22380,7 @@ function may(k){ return !!R().can[k]; }
    «مديره»: حسابًا من النظام مرتبتُه أعلى. فالفنيُّ مديرُه مشرفُه،
    والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.
    والمرتبةُ تُقرأ من الدور — والدورُ يُشتقُّ من الوظيفة. */
-var ROLE_RANK = { admin:100, engineer:90, supervisor:70,
+var ROLE_RANK = { exec:110, admin:100, engineer:90, supervisor:70,
                   cprep:50, casm:50, cins:50,
                   tech:30, buyer:30, store:30, acct:30, helper:30, driver:30,
                   viewer:10 };

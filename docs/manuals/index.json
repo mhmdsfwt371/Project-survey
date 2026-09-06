@@ -1,6 +1,11 @@
 {
-  "version": "V15.74",
+  "version": "V15.75",
   "manuals": [
+    {
+      "id": "exec",
+      "n": "الإدارة العليا",
+      "file": "nusuk-manual-exec.docx"
+    },
     {
       "id": "admin",
       "n": "مدير المشروع",

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.74",
+  "app_version": "V15.75",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1443,7 +1443,8 @@
     "V15.71": "baseSet يمنع التجميد بلا cfg.ph (BAC = مجموع النقاط × ph). سعر النقطة صار بندًا في readyRows فوق سقف الميزانية. audit-seed يقبل البنود البشرية الستة.",
     "V15.72": "gateChain/gateFirst/gateCard/gateSay: سلسلة شروط لكل نوع تُعرَض في asnSheet وفي رسالة الرفض. asnCommit (الفردي والجماعي) يفحص بالسلسلة لكل نوع لا للتركيب وحده. الجرد 58: audit-gate.",
     "V15.73": "scrollGrab/scrollBack حول render: يحفظ موضع النافذة وكل .pop-body/overflow:auto ويعيده؛ الصعود للرأس عند تبديل الشاشة أو الشريحة فقط. audit-push: مفتاح stats صار dayKey(Date.now()). الجرد 59: audit-scroll.",
-    "V15.74": "FIELD_ROLES/isFieldRole + techsList(all) تُصفّي بالدور؛ techNames تقرأ الدور من الحساب لا من الوظيفة. شاشات الإدارة تستعمل techsList(1). الجرد 60: audit-field."
+    "V15.74": "FIELD_ROLES/isFieldRole + techsList(all) تُصفّي بالدور؛ techNames تقرأ الدور من الحساب لا من الوظيفة. شاشات الإدارة تستعمل techsList(1). الجرد 60: audit-field.",
+    "V15.75": "photoNext/photoQueue seq: اسم الصورة = {site}-{n}.jpg؛ مفتاح photos = site-n؛ STATE.photos مهيّأة وتُسحَب وتُحفَظ. دور exec (rank 110) فوق admin: قراءة تنفيذية بلا كتابة، وفي firestore.rules ضمن viewer(). الجردان 61 و62."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2619,7 +2620,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 60,
+  "audits_total": 62,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4129,5 +4130,48 @@
     "admin_screens": "techsList(1) — كل الحسابات (assignRole · jobs · names · invmv)",
     "backdoor_closed": "assignRows تُرجِع 'tech' لمن لا وظيفة له؛ techNames صارت تقرأ STATE.users[..].role",
     "why": "الإسناد لغير ميداني يُحسب نقاطًا ويُنتظر إنجازًا وتظهر مهمته في المتأخر بلا صاحب"
+  },
+  "photo_naming_v15_75": {
+    "before": "{site}__{kind}__{ISO}.jpg",
+    "after": "{site}-{n}.jpg",
+    "seq": "photoNext(site) = عدد وثائق photos لهذه النقطة + ما ينتظر في الطابور + 1؛ يُثبَّت لحظة التصوير",
+    "fixed": [
+      "مفتاح السجل site_kind → site-n (الثانية كانت تمسح الأولى)",
+      "STATE.photos أُضيفت للحالة وsaveLocal/loadLocal وسحب collection('photos')",
+      "الطابور المنتظر يُحسَب في الترقيم"
+    ]
+  },
+  "exec_role_v15_75": {
+    "role": "exec",
+    "rank": 110,
+    "above": "admin (100)",
+    "nav": [
+      "exec",
+      "over",
+      "now",
+      "pace",
+      "miles",
+      "evm",
+      "budm",
+      "risks",
+      "chg",
+      "ncr",
+      "repcenter",
+      "reg",
+      "guide",
+      "acct",
+      "notif"
+    ],
+    "can": {
+      "money": 1,
+      "exportAll": 1,
+      "edit": 0,
+      "approve": 0,
+      "settings": 0,
+      "users": 0
+    },
+    "rules": "viewer() تشمل exec — قراءة بلا كتابة",
+    "field": "غير ميداني — لا يُسنَد إليه عمل",
+    "why": "مدير المشروع كان بلا مدير: أعلى رتبة في السلّم فلا أحد يُسأل عنه"
   }
 }

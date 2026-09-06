@@ -103,6 +103,15 @@ await ok  ('والفنيُّ يُعلن خطوةً تمّت',        setDoc(doc(
 await ok  ('والمطّلعُ يقرأ ما تمّ',            getDoc(doc(as('vwr'), 'steps/K1')));
 await deny('ولا يُعدَّل ما أُعلن',             updateDoc(doc(as('eng'), 'steps/K1'), { kind:'install' }));
 await deny('ولا يُحذَف — الإعلانُ لا يُمحى',   deleteDoc(doc(as('eng'), 'steps/K1')));
+console.log('\n══ الإدارةُ العليا: تقرأ ولا تكتب ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  await setDoc(doc(ctx.firestore(), 'users/exe'), { name:'إدارة عليا', role:'exec', active:true });
+});
+await ok  ('تقرأ السجلات',           getDoc(doc(as('exe'), 'recs/S1')));
+await ok  ('وتقرأ ما تمّ',            getDoc(doc(as('exe'), 'steps/K1')));
+await deny('ولا تكتب زيارة',          setDoc(doc(as('exe'), 'recs/S9'), { id:'S9' })); 
+await deny('ولا تكتب إسنادًا',        setDoc(doc(as('exe'), 'tasks/T9'), { id:'T9' }));
+await deny('ولا تُدير الحسابات',      setDoc(doc(as('exe'), 'users/zz'), { name:'ز', role:'tech' }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
