@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.81</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.82</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3201,6 +3201,49 @@ en:{
  'إدارةُ الحسابات للمهندس وحده':'Managing accounts is for the engineer only',
  'وثيقةً رُفضت':'documents rejected',
  'التفصيلُ في «المزامنة والتعارض»':'Details in “Sync and conflicts”',
+
+ /* V15.82 — التفعيلُ الذاتي */
+ 'أوّلُ مرة؟ فعّل حسابك':'First time? Activate your account',
+ 'فعّل حسابك':'Activate your account',
+ 'المكتبُ سجّل اسمَك ودورَك — وأنت تضع كلمتَك.':'The office registered your name and role — you set your password.',
+ 'كلمةُ مرورٍ تختارها':'A password you choose',
+ 'أعِدْها':'Repeat it',
+ 'لا يعرف كلمتَك أحدٌ سواك — ولا تُرسَل في محادثة. وإن نسيتَها يُعيد المكتبُ الدعوة.':'No one but you knows your password — and it is never sent in a chat. If you forget it, the office reissues the invitation.',
+ 'فعّل':'Activate',
+ 'اكتب اسم المستخدم كما أعطاك المكتب':'Enter the username the office gave you',
+ 'الكلمتان غير متطابقتين':'The two passwords do not match',
+ 'التفعيلُ يحتاج شبكة':'Activation needs a network',
+ 'يُفعَّل حسابك…':'Activating your account…',
+ 'تعذّر الاتصال — أعد المحاولة':'Could not connect — try again',
+ 'لا دعوةَ بهذا الاسم — راجع المكتب':'No invitation under this name — check with the office',
+ 'فُعِّل حسابك — ادخل بكلمتك الآن':'Your account is active — sign in with your password now',
+ 'هذا الاسمُ مفعَّلٌ من قبل — ادخل بكلمتك':'This name is already active — sign in with your password',
+ 'كلمةُ المرور ضعيفة':'The password is weak',
+ 'تعذّر التفعيل':'Activation failed',
+ 'سُجِّل — يفعّله صاحبُه من «أوّلُ مرة؟» بشاشة الدخول':'Registered — its owner activates it from “First time?” on the sign-in screen',
+
+ /* V15.82 — الدعوةُ الجماعية */
+ 'دعوةٌ جماعية — الصق قائمةَ الفريق':'Bulk invite — paste the team list',
+ 'سطرٌ لكلِّ شخص: الاسم · اسم المستخدم · الدور · الوظيفة · الفريق — مفصولةً بجدولةٍ أو فاصلة. انسخها من إكسل كما هي.':'One line per person: name · username · role · job · crew — separated by a tab or comma. Copy it from Excel as it is.',
+ 'الحال':'Status',
+ 'يُكتَب':'Will be written',
+ 'سيُكتَب':'will be written',
+ 'يُترَك':'skipped',
+ 'يُترَك — لكلٍّ سببُه أعلاه':'skipped — each with its reason above',
+ 'افحص':'Check',
+ 'اكتب':'Write',
+ 'دعوة':'invitations',
+ 'الصق قائمةَ الفريق أوّلًا':'Paste the team list first',
+ 'لا سطرَ صالحٌ للكتابة':'No valid line to write',
+ 'دعوةً كُتبت — يفعّل كلٌّ حسابَه من شاشة الدخول':'invitations written — each activates their account from the sign-in screen',
+ 'الاسمُ واسمُ المستخدم إلزاميان':'Name and username are required',
+ 'اسمُ المستخدم حروفٌ لاتينيةٌ وأرقامٌ ونقطة':'The username is Latin letters, digits, and a dot',
+ 'دورٌ غيرُ معروف: ':'Unknown role: ',
+ 'مكرَّرٌ في اللصق':'Duplicated in the paste',
+ 'له دعوةٌ قائمة':'Already has an invitation',
+ 'أحمد علي\\tm.ahmed\\tفني\\tفني تركيب\\tفريق ١':'Ahmed Ali\\tm.ahmed\\tTechnician\\tInstallation technician\\tCrew 1',
+ 'أحمد علي':'Ahmed Ali',
+ 'فريق':'Crew',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5559,6 +5602,45 @@ ur:{
  'إدارةُ الحسابات للمهندس وحده':'اکاؤنٹس کا انتظام صرف انجینئر کے لیے',
  'وثيقةً رُفضت':'دستاویزات مسترد',
  'التفصيلُ في «المزامنة والتعارض»':'تفصیل “ہم آہنگی اور تصادم” میں',
+ 'أوّلُ مرة؟ فعّل حسابك':'پہلی بار؟ اپنا اکاؤنٹ فعال کریں',
+ 'فعّل حسابك':'اپنا اکاؤنٹ فعال کریں',
+ 'المكتبُ سجّل اسمَك ودورَك — وأنت تضع كلمتَك.':'دفتر نے آپ کا نام اور کردار درج کیا — پاس ورڈ آپ رکھیں۔',
+ 'كلمةُ مرورٍ تختارها':'آپ کا منتخب کردہ پاس ورڈ',
+ 'أعِدْها':'دوبارہ لکھیں',
+ 'لا يعرف كلمتَك أحدٌ سواك — ولا تُرسَل في محادثة. وإن نسيتَها يُعيد المكتبُ الدعوة.':'آپ کے سوا کوئی آپ کا پاس ورڈ نہیں جانتا۔ بھول جائیں تو دفتر دعوت دوبارہ بھیجتا ہے۔',
+ 'فعّل':'فعال کریں',
+ 'اكتب اسم المستخدم كما أعطاك المكتب':'دفتر کا دیا ہوا صارف نام لکھیں',
+ 'الكلمتان غير متطابقتين':'دونوں پاس ورڈ مماثل نہیں',
+ 'التفعيلُ يحتاج شبكة':'فعال کرنے کے لیے نیٹ ورک درکار',
+ 'يُفعَّل حسابك…':'آپ کا اکاؤنٹ فعال ہو رہا ہے…',
+ 'تعذّر الاتصال — أعد المحاولة':'رابطہ نہیں ہو سکا — دوبارہ کوشش کریں',
+ 'لا دعوةَ بهذا الاسم — راجع المكتب':'اس نام کی کوئی دعوت نہیں — دفتر سے رجوع کریں',
+ 'فُعِّل حسابك — ادخل بكلمتك الآن':'آپ کا اکاؤنٹ فعال — اب اپنے پاس ورڈ سے سائن ان کریں',
+ 'هذا الاسمُ مفعَّلٌ من قبل — ادخل بكلمتك':'یہ نام پہلے سے فعال ہے — اپنے پاس ورڈ سے سائن ان کریں',
+ 'كلمةُ المرور ضعيفة':'پاس ورڈ کمزور ہے',
+ 'تعذّر التفعيل':'فعال کرنا ناکام',
+ 'سُجِّل — يفعّله صاحبُه من «أوّلُ مرة؟» بشاشة الدخول':'درج ہو گیا — مالک سائن اِن اسکرین پر “پہلی بار؟” سے فعال کرے',
+ 'دعوةٌ جماعية — الصق قائمةَ الفريق':'اجتماعی دعوت — ٹیم کی فہرست چسپاں کریں',
+ 'سطرٌ لكلِّ شخص: الاسم · اسم المستخدم · الدور · الوظيفة · الفريق — مفصولةً بجدولةٍ أو فاصلة. انسخها من إكسل كما هي.':'ہر شخص کے لیے ایک سطر: نام · صارف نام · کردار · ملازمت · ٹیم — ٹیب یا کوما سے الگ۔',
+ 'الحال':'حالت',
+ 'يُكتَب':'لکھا جائے گا',
+ 'سيُكتَب':'لکھا جائے گا',
+ 'يُترَك':'چھوڑا گیا',
+ 'يُترَك — لكلٍّ سببُه أعلاه':'چھوڑے گئے — ہر ایک کی وجہ اوپر',
+ 'افحص':'جانچیں',
+ 'اكتب':'لکھیں',
+ 'دعوة':'دعوتیں',
+ 'الصق قائمةَ الفريق أوّلًا':'پہلے ٹیم کی فہرست چسپاں کریں',
+ 'لا سطرَ صالحٌ للكتابة':'لکھنے کے لیے کوئی درست سطر نہیں',
+ 'دعوةً كُتبت — يفعّل كلٌّ حسابَه من شاشة الدخول':'دعوتیں لکھی گئیں — ہر ایک سائن اِن اسکرین سے اپنا اکاؤنٹ فعال کرے',
+ 'الاسمُ واسمُ المستخدم إلزاميان':'نام اور صارف نام لازمی',
+ 'اسمُ المستخدم حروفٌ لاتينيةٌ وأرقامٌ ونقطة':'صارف نام لاطینی حروف، اعداد اور نقطہ',
+ 'دورٌ غيرُ معروف: ':'نامعلوم کردار: ',
+ 'مكرَّرٌ في اللصق':'چسپاں میں دہرایا گیا',
+ 'له دعوةٌ قائمة':'پہلے سے دعوت موجود',
+ 'أحمد علي\\tm.ahmed\\tفني\\tفني تركيب\\tفريق ١':'احمد علی\\tm.ahmed\\tٹیکنیشن\\tتنصیب ٹیکنیشن\\tٹیم ١',
+ 'أحمد علي':'احمد علی',
+ 'فريق':'ٹیم',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8183,6 +8265,8 @@ function liveTick(){
     if (!document.hidden && STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
   });
 }
+/* دعوةٌ مفتوحةٌ على شاشة الدخول — تُعرَّف قبلها لأنها تُقرأ فيها */
+var INVITE = null;
 var SOFT_ERRS = [], SOFT_SAID = {};
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
@@ -9679,7 +9763,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
   l:'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.',
   body:function(){
     var head = tabHead('users'), cur = tabCur('users');
-    if (cur === 'users') return head + pendCard() + (function(){
+    if (cur === 'users') return head + bulkCard() + pendCard() + (function(){
     var L = usersList();
     var byRole = {};
     Object.keys(STATE.users || {}).forEach(function(uid){
@@ -15151,7 +15235,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.81' + '.docx" download>⬇ '
+              +   'V15.82' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17868,6 +17952,17 @@ function loginPaint(){
     +     '<input type="checkbox" id="lgRem"' + (lgRemembered() ? ' checked' : '') + '>'
     +     '<span>' + esc(t('تذكّرني على هذا الجهاز')) + '</span></label>'
     +   '<button type="button" class="go" id="lgGo">'+esc(t('دخول'))+'</button>'
+    /* ═══ التفعيلُ الذاتيّ ═══
+       بمئةٍ وخمسين شخصًا لا يصحُّ أن يقف كلُّ حسابٍ على المكتب: يُسجّل
+       المهندسُ الاسمَ والدورَ فحسب، ويفتح صاحبُه التطبيقَ فيضع كلمتَه هو
+       ويدخل. فلا كلمةَ تُرسَل في محادثة، ولا يُنتظَر أحدٌ ليفعّل، ولا
+       يُعاد الإنشاءُ حين تتعثّر الشبكةُ لحظة. */
+    +   '<button type="button" class="go" id="lgNew" style="background:transparent;border:1px solid var(--line);color:var(--ink);margin-top:8px">'
+    +     esc(t('أوّلُ مرة؟ فعّل حسابك')) + '</button>'
+    +   ((typeof INVITE !== 'undefined' && INVITE)
+        ? '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;'
+          + 'justify-content:center;background:rgba(0,0,0,.55);z-index:90">' + inviteHtml() + '</div>'
+        : '')
     +   '<div class="langs" id="lgLangs">'
     +     ['ar','en','ur'].map(function(l){
             return '<button type="button" data-l="'+l+'" class="'+(LANG===l?'on':'')+'">'+I18N[l].name+'</button>';
@@ -17898,6 +17993,9 @@ function loginPaint(){
     if (pEl) try { pEl.focus(); } catch (e){}
   }
   document.getElementById('lgGo').onclick = go;
+  /* زرُّ التفعيل يُربَط هنا كما يُربَط الدخول — لا داخل الرسم */
+  var nb = document.getElementById('lgNew');
+  if (nb) nb.onclick = inviteOpen;
   document.getElementById('lgP').onkeydown = function(e){ if (e.key === 'Enter') go(); };
   document.getElementById('lgLangs').onclick = function(e){
     var b = e.target.closest('[data-l]');
@@ -19340,6 +19438,151 @@ function readyCard(){
       + '<p class="hint" style="margin:8px 0 0">'
       + esc(t('كلُّ سطرٍ هنا يُعطِّل حسابًا في صمت: الشاشةُ تعمل وتعرض صفرًا فيُظنُّ أن العملَ لم يبدأ. ويختفي السطرُ فورَ ضبطه.'))
       + '</p>');
+}
+
+/* ═══ الدعوةُ يفعّلها صاحبُها ═══
+   الحسابُ يُسجَّل في «المدعوّون» باسمه ودوره — بلا كلمةِ مرور. ويفتح صاحبُه
+   التطبيقَ ويضع كلمتَه هو، فيُنشَأ حسابُ دخوله وتُكتَب وثيقتُه بالدور الذي
+   دُعي به، ثم تُمحى الدعوة. والقاعدةُ تحرس ذلك: لا يكتب أحدٌ لنفسه دورًا
+   غيرَ الذي في دعوته، ولا يفعّل دعوةَ غيره. */
+
+/* ═══ الدعوةُ الجماعية ═══
+   بمئةٍ وخمسين شخصًا لا يُنشأ حسابٌ حسابًا: يُلصَق جدولُ الفريق كما هو من
+   إكسل — اسمٌ واسمُ مستخدمٍ ودورٌ (والوظيفةُ والفريقُ إن وُجدا) — فتُكتَب
+   الدعواتُ كلُّها في نداءٍ واحد، ويفعّل كلٌّ حسابَه بنفسه.
+     ولا يُكتَب سطرٌ ناقصٌ ولا مكرَّرٌ ولا بدورٍ لا تعرفه القاعدة: يُعرَض ما
+   سيُكتَب وما سيُترَك وسببُه قبل الكتابة — فلا يُفاجَأ أحدٌ بنصف فريقٍ ناقص. */
+var BULK_TXT = '';
+function bulkParse(txt){
+  var ROLE_AR = {};
+  Object.keys(ROLES).forEach(function(k){ ROLE_AR[ROLES[k].n] = k; ROLE_AR[k] = k; });
+  var JOB_AR = {};
+  jobsList().forEach(function(j){ JOB_AR[j.n] = j.id; JOB_AR[j.id] = j.id; });
+  var seen = {}, out = [];
+  String(txt || '').split(/\r?\n/).forEach(function(line, i){
+    var raw = line.trim();
+    if (!raw) return;
+    var c = raw.split(/\t|,|;|\|/).map(function(x){ return x.trim(); }).filter(function(x, k){ return k < 5; });
+    var name = c[0] || '', user = (c[1] || '').replace(/\s+/g, ''), rl = c[2] || '', jb = c[3] || '', cr = c[4] || '';
+    var row = { n:i + 1, name:name, user:user, role:ROLE_AR[rl] || '', job:JOB_AR[jb] || '', crew:cr };
+    if (!name || !user) row.why = 'الاسمُ واسمُ المستخدم إلزاميان';
+    else if (!/^[A-Za-z0-9._-]{3,}$/.test(user)) row.why = 'اسمُ المستخدم حروفٌ لاتينيةٌ وأرقامٌ ونقطة';
+    else if (!row.role) row.why = 'دورٌ غيرُ معروف: ' + (rl || '—');
+    else if (seen[user]) row.why = 'مكرَّرٌ في اللصق';
+    else if ((STATE.pending || {})[user]) row.why = 'له دعوةٌ قائمة';
+    else if (Object.keys(STATE.users || {}).some(function(k){ return (STATE.users[k] || {}).user === user; }))
+      row.why = 'له حسابٌ بالفعل';
+    if (!row.why) seen[user] = 1;
+    out.push(row);
+  });
+  return out;
+}
+function bulkApply(){
+  if (!may('users')){ toast(t('إدارةُ الحسابات للمهندس وحده')); return; }
+  var rows = bulkParse(BULK_TXT).filter(function(r){ return !r.why; });
+  if (!rows.length){ toast(t('لا سطرَ صالحٌ للكتابة')); return; }
+  STATE.pending = STATE.pending || {};
+  rows.forEach(function(r){
+    var v = { name:r.name, user:r.user, role:r.role, active:true,
+              at:Date.now(), by:STATE.meta.name || '', pending:true };
+    if (r.job)  v.job  = r.job;
+    if (r.crew) v.crew = r.crew;
+    STATE.pending[r.user] = v;
+    STATE.users[r.user] = Object.assign({}, v);
+    CORE.set('pending', r.user, v);
+  });
+  logEvent('دعوةٌ جماعية — ' + nm(rows.length) + ' حسابًا');
+  toast(nm(rows.length) + ' ' + t('دعوةً كُتبت — يفعّل كلٌّ حسابَه من شاشة الدخول'));
+  BULK_TXT = ''; statBump(); render(1);
+}
+function bulkCard(){
+  if (!may('users')) return '';
+  var rows = BULK_TXT ? bulkParse(BULK_TXT) : [];
+  var okN = rows.filter(function(r){ return !r.why; }).length;
+  return card('\u{1F465} ' + t('دعوةٌ جماعية — الصق قائمةَ الفريق'),
+      '<p class="hint" style="margin:0 0 8px">'
+      + esc(t('سطرٌ لكلِّ شخص: الاسم · اسم المستخدم · الدور · الوظيفة · الفريق — مفصولةً بجدولةٍ أو فاصلة. انسخها من إكسل كما هي.'))
+      + '</p>'
+      + '<div class="field"><textarea id="bulkT" rows="6" dir="auto" '
+      /* المثالُ يُركَّب من كلماتٍ مترجَمةٍ لا سطرًا واحدًا فيه جدولات:
+         سطرٌ بالجدولات لا يُترجَم ويظهر عربيًّا في واجهةٍ إنجليزية. */
+      +   'placeholder="' + esc([t('أحمد علي'), 'm.ahmed', t('فني'), t('فني تركيب'), t('فريق') + ' ١'].join('\t')) + '">'
+      +   esc(BULK_TXT) + '</textarea></div>'
+      + (rows.length
+        ? table(['#','الاسم','المستخدم','الدور','الحال'],
+            rows.slice(0, 60).map(function(r){
+              return [N(r.n), esc(r.name || '—'),
+                      '<span class="num" dir="ltr">' + esc(r.user || '—') + '</span>',
+                      esc(r.role ? t((ROLES[r.role] || {}).n || r.role) : '—'),
+                      r.why ? pill(r.why, 'off') : pill('يُكتَب','ok')];
+            }))
+        : '')
+      + (rows.length
+        ? '<p class="hint" style="margin:8px 0 0">' + nm(okN) + ' ' + esc(t('سيُكتَب')) + ' \u00b7 '
+          + nm(rows.length - okN) + ' ' + esc(t('يُترَك — لكلٍّ سببُه أعلاه')) + '</p>'
+        : ''),
+      btn('\u{1F441} ' + t('افحص'),'btn-secondary btn-sm',' data-bulkchk="1"')
+      + (okN ? btn('\u2709 ' + t('اكتب') + ' ' + nm(okN) + ' ' + t('دعوة'),'btn-primary btn-sm',' data-bulkgo="1"') : ''));
+}
+function inviteOpen(){
+  var u = (document.getElementById('lgU') || {}).value || '';
+  INVITE = { user:String(u).trim() };
+  render(1);
+}
+function inviteClaim(){
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
+  var user = g('ivU'), p1 = g('ivP'), p2 = g('ivP2');
+  if (!user){ toast(t('اكتب اسم المستخدم كما أعطاك المكتب')); return; }
+  if (p1.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }
+  if (p1 !== p2){ toast(t('الكلمتان غير متطابقتين')); return; }
+  if (!STATE.meta.online){ toast(t('التفعيلُ يحتاج شبكة')); return; }
+  toast(t('يُفعَّل حسابك…'));
+  FB.init().then(function(ok){
+    if (!ok){ toast(t('تعذّر الاتصال — أعد المحاولة')); return; }
+    return FB.db.collection('pending').doc(user).get().then(function(doc){
+      if (!doc || !doc.exists){ toast(t('لا دعوةَ بهذا الاسم — راجع المكتب')); return; }
+      var inv = doc.data() || {};
+      var email = user + '@nusuk.local';
+      return FB.auth.createUserWithEmailAndPassword(email, p1)
+        .then(function(c){
+          var uid = c.user.uid;
+          var v = { name:inv.name || user, user:user, role:inv.role || 'tech', active:true,
+                    at:Date.now(), by:inv.by || '' };
+          if (inv.job)  v.job  = inv.job;
+          if (inv.sup)  v.sup  = inv.sup;
+          if (inv.dept) v.dept = inv.dept;
+          return FB.db.collection('users').doc(uid).set(v)
+            .then(function(){ return FB.db.collection('pending').doc(user).delete().catch(function(){}); })
+            .then(function(){
+              STATE.meta.uid = uid;
+              toast(t('فُعِّل حسابك — ادخل بكلمتك الآن'));
+              INVITE = null; render(1);
+            });
+        })
+        .catch(function(e){
+          var m = String(e && e.code || e && e.message || '');
+          toast(/already-in-use/.test(m) ? t('هذا الاسمُ مفعَّلٌ من قبل — ادخل بكلمتك')
+              : /weak-password/.test(m) ? t('كلمةُ المرور ضعيفة')
+              : t('تعذّر التفعيل') + ' — ' + m.slice(0, 40));
+        });
+    });
+  }).catch(function(e){ toast(t('تعذّر التفعيل') + ' — ' + String(e && e.message || '').slice(0, 40)); });
+}
+function inviteHtml(){
+  return '<div class="pop" style="width:min(460px,94vw)">'
+    + '<div class="pop-head"><div><h3>' + esc(t('فعّل حسابك')) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">' + esc(t('المكتبُ سجّل اسمَك ودورَك — وأنت تضع كلمتَك.')) + '</p></div>'
+    +   btn('\u2715','btn-quiet btn-sm',' data-ivx="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + '<div class="pop-body">'
+    +   '<div class="field"><label>' + esc(t('اسم المستخدم')) + '</label>'
+    +     '<input id="ivU" dir="ltr" value="' + esc((INVITE && INVITE.user) || '') + '" placeholder="m.safwat"></div>'
+    +   '<div class="field"><label>' + esc(t('كلمةُ مرورٍ تختارها')) + '</label>'
+    +     '<input id="ivP" type="password" dir="ltr" placeholder="' + esc(t('عشرةُ أحرفٍ فأكثر')) + '"></div>'
+    +   '<div class="field"><label>' + esc(t('أعِدْها')) + '</label>'
+    +     '<input id="ivP2" type="password" dir="ltr"></div>'
+    +   '<p class="hint">' + esc(t('لا يعرف كلمتَك أحدٌ سواك — ولا تُرسَل في محادثة. وإن نسيتَها يُعيد المكتبُ الدعوة.')) + '</p>'
+    + '</div>'
+    + '<div class="pop-foot">' + btn('\u26A1 ' + t('فعّل'),'btn-primary',' data-ivgo="1"') + '</div></div>';
 }
 function inboxItems(){
   var out = [], S = siteStats();
@@ -23665,9 +23908,14 @@ function usrAdd(){
      أنشأه رآه في جهازه وظنَّه محفوظًا، ولا يراه جهازٌ آخرُ ولا يدخل صاحبُه.
        صار يُرفَع في «الحسابات المعلَّقة» بمعرِّفٍ من اسم المستخدم — تراه
      الأجهزةُ كلُّها ويُعاد إنشاؤه بضغطة، ولا يُخلَط بالحسابات العاملة. */
+  /* الدعوةُ تُكتَب دائمًا لا عند الفشل وحدَه: بمئةٍ وخمسين شخصًا لا يقف
+     الحسابُ على نجاح نداءٍ لحظيّ. فإن نجح إنشاءُ الدخول مُحيت الدعوةُ فورًا،
+     وإن تعثّر بقيت ففعّلها صاحبُها من شاشة الدخول بلا تدخُّلٍ من المكتب. */
   docv.pending = true;
   STATE.users[u] = docv;
-  CORE.set('pending', u, Object.assign({}, docv, { user:u }));
+  STATE.pending = STATE.pending || {};
+  STATE.pending[u] = Object.assign({}, docv, { user:u, by:STATE.meta.name || '' });
+  CORE.set('pending', u, STATE.pending[u]);
   FB.createUser(u, p, { name:n, role:r, doc:docv }).then(function(res){
     if (res && res.ok){
       if (res.uid){
@@ -23680,6 +23928,9 @@ function usrAdd(){
       }
       toast(u + ' \u00b7 ' + t('يدخل بكلمته الآن')); return;
     }
+    /* لم يُنشَأ حسابُ الدخول — والدعوةُ قائمة، فيفعّلها صاحبُها */
+    toast(u + ' \u00b7 ' + t('سُجِّل — يفعّله صاحبُه من «أوّلُ مرة؟» بشاشة الدخول'));
+    return;
     if (res && res.err === 'offline') return;
     softErr('إنشاء حساب', new Error(res && res.err || 'unknown'),
       'سُجّل الحسابُ ولم يُفعَّل — فعّله من المكتب');
@@ -24793,6 +25044,21 @@ function onDocClick(e){
     pendRetry(pu, pe ? pe.value : '');
     return;
   }
+  if (e.target.closest('[data-bulkchk]')){
+    var bt = document.getElementById('bulkT');
+    BULK_TXT = bt ? String(bt.value || '').trim() : '';
+    if (!BULK_TXT){ toast(t('الصق قائمةَ الفريق أوّلًا')); return; }
+    var pr = bulkParse(BULK_TXT), okn = pr.filter(function(r){ return !r.why; }).length;
+    toast(nm(okn) + ' ' + t('سيُكتَب') + ' \u00b7 ' + nm(pr.length - okn) + ' ' + t('يُترَك'));
+    render(1); return;
+  }
+  if (e.target.closest('[data-bulkgo]')){
+    var bt2 = document.getElementById('bulkT');
+    if (bt2) BULK_TXT = bt2.value;
+    bulkApply(); return;
+  }
+  if (e.target.closest('[data-ivgo]')){ inviteClaim(); return; }
+  if (e.target.closest('[data-ivx]')){ INVITE = null; render(1); return; }
   if (e.target.closest('[data-seedgo]')){ seedApply(); return; }
   if (e.target.closest('[data-dissave]')){ disSave(); return; }
   if (e.target.closest('[data-mntsave]')){ maintSave(); return; }

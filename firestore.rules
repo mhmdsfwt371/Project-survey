@@ -65,8 +65,20 @@ service cloud.firestore {
     // الحساباتُ المعلَّقة: سُجِّلت ولم تُنشَأ في المصادقة — يراها المكتبُ
     // كي لا تضيع في جهازٍ واحد، ويحذفُها حين تُفعَّل.
     match /pending/{id} {
-      allow read:   if mgr();
-      allow write:  if mgr();
+      // الدعوةُ يقرؤها المكتبُ ليتابعها — ويقرؤها **غيرُ المسجَّل** ليفعّلها
+      // بنفسه: بمئةٍ وخمسين شخصًا لا يقف كلُّ حسابٍ على المكتب. وليس فيها
+      // سرٌّ: اسمٌ ودورٌ بلا كلمةِ مرور — والكلمةُ يضعها صاحبُها ولا تُخزَّن.
+      // القراءةُ مفتوحةٌ عمدًا: من يفعّل دعوتَه لم يُسجَّل بعدُ فلا هويةَ له،
+      // وليس في الدعوة سرّ — اسمٌ ودورٌ بلا كلمةِ مرور، والكلمةُ يضعها
+      // صاحبُها ولا تُخزَّن. ولا يُقرَأ بها شيءٌ من بيانات المشروع.
+      allow read: if resource == null || resource.data.keys().hasOnly(
+        ['name','user','role','job','sup','dept','active','at','by','pending','jobLog']);
+      allow create, update: if mgr();
+      // ويمحوها من فعّلها: صار له حسابٌ باسم المستخدم نفسِه
+      allow delete: if mgr()
+        || (request.auth != null
+            && exists(/databases/$(db)/documents/users/$(request.auth.uid))
+            && get(/databases/$(db)/documents/users/$(request.auth.uid)).data.get('user', '') == id);
     }
     match /users/{uid} {
       // ═══ لماذا لا تُقارَن الرتبةُ هنا ═══
@@ -86,8 +98,15 @@ service cloud.firestore {
         // الحصار ويُرفَع عملُه، ويرقّيه المكتبُ إلى دوره الحقيقي.
         || (request.auth.uid == uid
             && !exists(uPath())
-            && request.resource.data.role == 'tech'
-            && request.resource.data.get('active', true) == true);
+            && request.resource.data.get('active', true) == true
+            && (
+              // إمّا تسجيلٌ ذاتيٌّ فنيًّا (أدنى الأدوار)
+              request.resource.data.role == 'tech'
+              // وإمّا تفعيلُ دعوةٍ: الدورُ من الدعوة نفسِها لا من كاتبها
+              || (exists(/databases/$(db)/documents/pending/$(request.resource.data.get('user', '\u0000')))
+                  && get(/databases/$(db)/documents/pending/$(request.resource.data.user)).data.get('role', 'tech')
+                     == request.resource.data.role)
+            ));
       allow delete: if false;
     }
 

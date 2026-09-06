@@ -146,6 +146,17 @@ await deny('والفنيُّ لا يكتب حسابَ غيره',       setDoc(do
 await deny('ولا يكتب حسابًا معلَّقًا',           setDoc(doc(as('tec'), 'pending/p1'), { name:'س', role:'tech' }));
 await ok  ('والمهندسُ يكتب المعلَّقَ ويقرؤه',    setDoc(doc(as('eng'), 'pending/p1'), { name:'س', role:'tech', user:'p1' }));
 await ok  ('ويقرؤه',                            getDoc(doc(as('eng'), 'pending/p1')));
+
+console.log('\n══ الدعوةُ يفعّلها صاحبُها ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  await setDoc(doc(ctx.firestore(), 'pending/inv1'), { name:'مدعوّ', user:'inv1', role:'supervisor' });
+});
+const iv = env.authenticatedContext('IVUID', { email:'inv1@nusuk.local' }).firestore();
+await ok  ('يقرأ دعوتَه قبل أن يُسجَّل',        getDoc(doc(iv, 'pending/inv1')));
+await deny('ولا يكتب دورًا غيرَ دوره',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'admin', active:true }));
+await ok  ('ويكتب وثيقتَه بدور دعوته',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'supervisor', active:true }));
+await ok  ('ثم يمحو دعوتَه',                     deleteDoc(doc(iv, 'pending/inv1')));
+await deny('ولا يمحو دعوةَ غيره',                deleteDoc(doc(iv, 'pending/p1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');
