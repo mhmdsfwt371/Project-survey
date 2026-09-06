@@ -1,6 +1,19 @@
 {
-  "ok": false,
-  "at": "2026-09-06T07:15:27Z",
-  "why": "BACKUP_KEY غير مضبوط — لم تُؤخَذ نسخة",
-  "fix": "Settings ← Secrets and variables ← Actions ← New repository secret · الاسم BACKUP_KEY"
+ "ok": true,
+ "at": "2026-09-06T12:56:04.399Z",
+ "collections": [
+  "accounts: 39",
+  "events: 1922",
+  "hb: 1",
+  "settings: 13",
+  "sites: 2",
+  "srvorders: 1",
+  "stats: 5",
+  "tasks: 2",
+  "teams: 2",
+  "users: 4",
+  "workreqs: 1"
+ ],
+ "totalDocs": 1992,
+ "note": "البيانات الخام في backup.enc — مشفّرة. هذا الملف أعداد فقط."
 }
