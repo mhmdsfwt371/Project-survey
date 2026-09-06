@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.77</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.78</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -13798,6 +13798,23 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
    التطبيقُ يقرأ وثيقتَه عند الدخول ويضعها في مكانها، فإن غابت أنشأها فنيًّا
    (أدنى الأدوار — والقاعدةُ لا تسمح بأكثر) فيخرج من الحصار ويُرفَع عملُه،
    ثم يرقّيه المكتبُ إلى دوره الحقيقي. */
+/* ═══ المعرِّفُ يُقرأ من المصادقة لا من الجلسة وحدَها ═══
+   `STATE.meta.uid` يُملأ في مسار الدخول — ومن دخل ثم أُعيد تحميلُ الصفحة،
+   أو دخل من مسارٍ آخر، بقي فارغًا والمصادقةُ عارفةٌ به. فيقول زرُّ الإصلاح
+   «سجّل الدخول أوّلًا» لمن هو داخلٌ فعلًا، ويُرفَض كلُّ ما يكتب بلا مخرج:
+   الوثيقةُ لا تُقرأ لأنه «غير مسجَّل»، ولا تُنشَأ لأن الزرَّ يرفض. */
+function myUid(){
+  if (STATE.meta.uid) return STATE.meta.uid;
+  try {
+    var u = FB.auth && FB.auth.currentUser;
+    if (u && u.uid){ STATE.meta.uid = u.uid; return u.uid; }
+  } catch (e){
+    /* المصادقةُ إن لم تُهيَّأ بعدُ فليست عطلًا — لكنها تُسجَّل كي لا يُبتلَع
+       سببُ بقاء المعرِّف فارغًا صامتًا. */
+    if (typeof softErr === 'function') softErr('قراءة المعرِّف', e, '');
+  }
+  return '';
+}
 var MYDOC = { at:0, has:null, err:'' };
 /* ═══ إصلاحُ السبب يُطلِق ما حُبس بسببه ═══
    الوثائقُ التي عُزلت لأن القاعدةَ رفضتها كانت تبقى معزولةً بعد زوال السبب:
@@ -13824,7 +13841,7 @@ function permRelease(now){
   return back;
 }
 function myDocFetch(force){
-  if (!STATE.meta.uid) return Promise.resolve(null);
+  if (!myUid()) return Promise.resolve(null);
   /* بلا شبكةٍ تبقى الحالةُ «تُقرأ…» إلى الأبد — فيُظنُّ أن القراءةَ معلّقةٌ
      وهي لم تبدأ. تُهيَّأ الوصلةُ إن أمكن، وإلا قيلت الحالُ كما هي. */
   if (!FB.ready || !FB.db){
@@ -13833,11 +13850,11 @@ function myDocFetch(force){
   }
   if (!force && Date.now() - MYDOC.at < 60000) return Promise.resolve(MYDOC.has);
   MYDOC.at = Date.now();
-  return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
+  return FB.db.collection('users').doc(myUid()).get().then(function(doc){
     MYDOC.has = !!(doc && doc.exists);
     if (MYDOC.has){
       STATE.users = STATE.users || {};
-      STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
+      STATE.users[myUid()] = Object.assign({}, doc.data());
     }
     return MYDOC.has;
   }).catch(function(e){
@@ -13846,7 +13863,7 @@ function myDocFetch(force){
   });
 }
 function myDocFix(){
-  if (!STATE.meta.uid){ toast(t('سجّل الدخول أولًا')); return; }
+  if (!myUid()){ toast(t('سجّل الدخول أولًا')); return; }
   /* «لا شبكة» كانت تُقال والشبكةُ متصلة: الوصلةُ تُحمَّل كسولًا، فمن ضغط
      قبل أوّل قراءةٍ من السحابة وجد الزرَّ يقول ما ليس صحيحًا. تُهيَّأ أوّلًا،
      ولا يُقال «لا شبكة» إلا حين لا تكون. */
@@ -13857,9 +13874,9 @@ function myDocFix(){
       return myDocFix();
     });
   }
-  return FB.db.collection('users').doc(STATE.meta.uid).get().then(function(doc){
+  return FB.db.collection('users').doc(myUid()).get().then(function(doc){
     if (doc && doc.exists){
-      STATE.users[STATE.meta.uid] = Object.assign({}, doc.data());
+      STATE.users[myUid()] = Object.assign({}, doc.data());
       MYDOC.has = true;
       var back0 = permRelease(false);
       /* الزرُّ يُنهي العملَ لا يُخبر عنه: يقرأ ويُطلِق ويدفع ثم يقول ما بقي */
@@ -13875,10 +13892,10 @@ function myDocFix(){
     /* القاعدةُ لا تقبل إلا «فني» لمن يسجّل نفسَه — والترقيةُ من المكتب */
     var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
               role:'tech', active:true, at:Date.now(), self:true };
-    return FB.db.collection('users').doc(STATE.meta.uid).set(v).then(function(){
-      STATE.users[STATE.meta.uid] = v;
+    return FB.db.collection('users').doc(myUid()).set(v).then(function(){
+      STATE.users[myUid()] = v;
       MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
-      logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + STATE.meta.uid);
+      logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + myUid());
       var back = permRelease(true);
       toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك')
             + (back ? ' \u00b7 ' + nm(back) + ' ' + t('وثيقةً عادت للرفع') : ''));
@@ -15134,7 +15151,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.77' + '.docx" download>⬇ '
+              +   'V15.78' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20341,10 +20358,11 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     var Q = STATE.queue || [], PZ = STATE.poison || [];
     /* «Missing or insufficient permissions» بلا هويةٍ لا يُشخَّص: من يكتب؟
        وبأيِّ دورٍ في وثيقته؟ وهل هو فعّال؟ وهل وثيقتُه باسم uid أصلًا؟ */
-    var me = STATE.meta || {}, myDoc = (STATE.users || {})[me.uid] || null;
-    if (me.uid && MYDOC.has === null) myDocFetch(false);
+    var me = STATE.meta || {}, uid0 = myUid();
+    var myDoc = (STATE.users || {})[uid0] || null;
+    if (uid0 && MYDOC.has === null) myDocFetch(false);
     var idRows = [
-      ['uid', me.uid ? '<span class="num" dir="ltr">' + esc(me.uid) + '</span>' : pill('غير مسجَّل الدخول','off')],
+      ['uid', uid0 ? '<span class="num" dir="ltr">' + esc(uid0) + '</span>' : pill('غير مسجَّل الدخول','off')],
       ['الاسم', esc(me.name || '—')],
       ['الدورُ في التطبيق', esc(t((ROLES[ROLE] || {}).n || ROLE))],
       ['وثيقةُ الحساب users/{uid}',
@@ -20361,7 +20379,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     return card('\u{1FAAA} ' + t('بأيِّ هويةٍ يكتب هذا الجهاز'),
         table(['','' ], idRows.map(function(r){ return [esc(t(r[0])), r[1]]; }))
         + '<p class="hint" style="margin:8px 0 0">' + esc(t('«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.')) + '</p>'
-        + (me.uid && MYDOC.has === false
+        + (uid0 && MYDOC.has === false
           ? alertBox('error', 'لا وثيقةَ لحسابك باسم معرِّفه — فكلُّ ما تكتبه يُرفَض. أنشئها الآن (فنيًّا) ليُرفَع عملُك، ثم اطلب من المكتب ترقيةَ دورك.')
             + '<div class="actions">' + btn('\u{1F527} ' + t('أنشئ وثيقة حسابي'),'btn-primary btn-sm',' data-mydocfix="1"') + '</div>'
           : '<div class="actions" style="margin-top:8px">'

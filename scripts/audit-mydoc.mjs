@@ -55,4 +55,21 @@ T(txt.indexOf('غيرُ موجودة')<0 && txt.indexOf('أنشئ وثيقة ح�
 w.STATE.meta.uid=''; await w.myDocFix(); await wait(100);
 T(Object.keys(store).length===1, 'بلا معرِّفٍ لا تُكتَب وثيقة');
 console.log(bad?'\nجردُ وثيقة الحساب فشل ✗ ('+bad+')':'\nوثيقةُ الحساب تُقرأ وتُصلَح — لا حصارَ صامت ✅');
-process.exit(bad?1:0);
+
+/* ═══ المعرِّفُ من المصادقة حين تخلو الجلسةُ منه ═══ */
+let bad3=0; const T3=(c,n,x)=>{ if(!c) bad3++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
+w.STATE.meta.uid='';
+w.FB.auth = { currentUser:{ uid:'UID_AUTH' } };
+T3(w.myUid()==='UID_AUTH', 'الجلسةُ خاليةٌ والمصادقةُ عارفة — يُقرأ منها', w.myUid());
+T3(w.STATE.meta.uid==='UID_AUTH', 'ويُثبَّت في الجلسة فلا يُقرأ مرتين');
+w.STATE.meta.uid=''; w.FB.auth = null;
+T3(w.myUid()==='', 'وبلا مصادقةٍ يبقى فارغًا ولا ينفجر');
+const say2=[]; const old2=w.toast; w.toast=m=>{ say2.push(String(m)); return old2&&old2(m); };
+w.myDocFix();
+T3(say2.some(m=>/سجّل الدخول/.test(m)), 'ويُقال «سجّل الدخول» لمن ليس داخلًا فعلًا');
+w.STATE.meta.uid=''; w.FB.auth = { currentUser:{ uid:'UID_AUTH' } };
+say2.length=0; store['users/UID_AUTH']={ name:'ش', role:'engineer', active:true };
+await w.myDocFix(); await wait(200);
+T3(!say2.some(m=>/سجّل الدخول/.test(m)), 'ولا يُقال لمن هو داخلٌ والجلسةُ خالية', say2.join(' | ').slice(0,60));
+console.log(bad3?'\nجردُ وثيقة الحساب فشل ✗ ('+bad3+')':'\nوالمعرِّفُ يُقرأ من المصادقة حين تخلو الجلسة ✅');
+process.exit(bad3?1:0);
