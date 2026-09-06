@@ -167,6 +167,12 @@ await deny('ولا يقرأ ما كتبه غيرُه',              getDoc(doc(a
 await ok  ('والمهندسُ يقرأ الكلَّ',                getDoc(doc(as('eng'), 'provision/t7')));
 await deny('والفنيُّ لا يطلب شيئًا',               setDoc(doc(as('tec'), 'provision/t9'), { user:'t9', name:'ف', role:'tech', pass:'Abcdefghij', by:'فني', status:'pending' }));
 await deny('والمهندسُ لا يطلب مديرًا',             setDoc(doc(as('eng'), 'provision/a7'), { user:'a7', name:'م', role:'admin', pass:'Abcdefghij', by:'مهندس', status:'pending' }));
+console.log('\n══ الحضور: يكتبه صاحبُه وحدَه ══');
+await ok  ('الفنيُّ يسجّل حضورَه',            setDoc(doc(as('tec'), 'att/tec_2026-09-06'), { uid:'tec', day:'2026-09-06', name:'فني', in:{ at:1, ok:true } }));
+await deny('ولا يسجّل حضورَ غيره',            setDoc(doc(as('tec'), 'att/sup_2026-09-06'), { uid:'sup', day:'2026-09-06', name:'مشرف', in:{ at:1 } }));
+await deny('ولا باسمٍ لا يطابق المعرِّف',      setDoc(doc(as('tec'), 'att/tec_2026-09-07'), { uid:'sup', day:'2026-09-07', in:{ at:1 } }));
+await ok  ('والمشرفُ يقرأ حضورَ فنيّه',         getDoc(doc(as('sup'), 'att/tec_2026-09-06')));
+await deny('ولا يمحوه',                        deleteDoc(doc(as('sup'), 'att/tec_2026-09-06')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.85</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.86</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3282,6 +3282,28 @@ en:{
  'الكلمةُ الحالية غيرُ صحيحة':'The current password is wrong',
  'ادخل من جديد ثم بدّل الكلمة':'Sign in again, then change the password',
  'تعذّر التبديل':'Could not change it',
+
+ /* V15.86 — الحضور */
+ 'لم تبدأ بعد — اضغط حين تصل موقعَ العمل.':'Not started yet — tap when you reach the work site.',
+ 'بدأتَ':'Started',
+ 'أنهيتَ':'Finished',
+ 'بدأتُ يومي':'I started my day',
+ 'أنهيتُ يومي':'I finished my day',
+ 'الحضورُ للميدان':'Attendance is for field staff',
+ 'بدأتَ يومَك بالفعل':'You already started your day',
+ 'لم تبدأ يومَك بعد':'You have not started your day',
+ 'أنهيتَ يومَك بالفعل':'You already finished your day',
+ 'يُلتقَط موقعُك…':'Capturing your location…',
+ 'بدأ يومُك':'Your day has started',
+ 'أُنهي يومُك':'Your day is finished',
+ 'خارج نطاق المشاعر — يراها مشرفُك':'Outside the holy sites area — your supervisor will see it',
+ 'بلا موقع':'No location',
+ 'خارج النطاق':'Out of range',
+ 'الحضورُ اليوم':'Attendance today',
+ 'يعمل':'Working',
+ 'أنهى':'Finished',
+ 'بدأ':'Started',
+ 'يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.':'Each person taps on arrival and departure — the location is captured. “Out of range” is recorded, not rejected: ask its owner.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5710,6 +5732,26 @@ ur:{
  'الكلمةُ الحالية غيرُ صحيحة':'موجودہ پاس ورڈ غلط ہے',
  'ادخل من جديد ثم بدّل الكلمة':'دوبارہ سائن اِن کریں پھر بدلیں',
  'تعذّر التبديل':'تبدیل نہیں ہو سکا',
+ 'لم تبدأ بعد — اضغط حين تصل موقعَ العمل.':'ابھی شروع نہیں — کام کی جگہ پہنچ کر دبائیں۔',
+ 'بدأتَ':'شروع کیا',
+ 'أنهيتَ':'ختم کیا',
+ 'بدأتُ يومي':'میں نے دن شروع کیا',
+ 'أنهيتُ يومي':'میں نے دن ختم کیا',
+ 'الحضورُ للميدان':'حاضری میدانی عملے کے لیے',
+ 'بدأتَ يومَك بالفعل':'آپ نے دن پہلے ہی شروع کیا',
+ 'لم تبدأ يومَك بعد':'آپ نے ابھی دن شروع نہیں کیا',
+ 'أنهيتَ يومَك بالفعل':'آپ نے دن پہلے ہی ختم کیا',
+ 'يُلتقَط موقعُك…':'آپ کا مقام لیا جا رہا ہے…',
+ 'بدأ يومُك':'آپ کا دن شروع',
+ 'أُنهي يومُك':'آپ کا دن ختم',
+ 'خارج نطاق المشاعر — يراها مشرفُك':'مشاعر کے علاقے سے باہر — سپروائزر دیکھے گا',
+ 'بلا موقع':'مقام نہیں',
+ 'خارج النطاق':'حد سے باہر',
+ 'الحضورُ اليوم':'آج کی حاضری',
+ 'يعمل':'کام کر رہا ہے',
+ 'أنهى':'ختم کیا',
+ 'بدأ':'شروع',
+ 'يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.':'ہر شخص آنے اور جانے پر خود دباتا ہے — مقام لیا جاتا ہے۔ “حد سے باہر” درج ہوتا ہے، مسترد نہیں۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7492,6 +7534,7 @@ var STATE = {
   photos:{},     /* سجلُّ الصور المرفوعة — {site-n:{site,kind,seq,name,driveId}} */
   pending:{},    /* حساباتٌ سُجِّلت ولم تُنشَأ في المصادقة بعد */
   provision:{},  /* طلباتُ إنشاءٍ للخادم — {user:{name,pass,role,status}} */
+  att:{},        /* الحضورُ — {uid_day:{in:{at,lat,lng,ok},out,hours}} */
   events:  [],   /* سجل الأحداث */
   users:   {},   /* المستخدمون وأدوارهم */
   cfg:     {},   /* الإعدادات — مرآةُ CFG */
@@ -7576,14 +7619,15 @@ var CORE = {
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
       diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
-      photos:STATE.photos || {}, pending:STATE.pending || {}, provision:STATE.provision || {}
+      photos:STATE.photos || {}, pending:STATE.pending || {}, provision:STATE.provision || {},
+      att:STATE.att || {}
     });
   },
 
   loadLocal: function(){
     return idbGet('state').then(function(v){
       if (!v) return false;
-      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision'].forEach(function(k){
+      ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
@@ -7804,7 +7848,7 @@ var FB = {
              vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
              stats:'stats', teams:'teams', baseline:'baseline',
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision' }[kind] || 'misc';
+             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att' }[kind] || 'misc';
   },
   putOne: function(it){
     var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
@@ -7834,7 +7878,7 @@ var FB = {
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision' }[it.kind];
+                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
@@ -8322,6 +8366,13 @@ function liveSmall(){
       if (v){ STATE.pending[id] = v; if (!STATE.users[id]) STATE.users[id] = Object.assign({ pending:true }, v); }
       else { delete STATE.pending[id]; delete STATE.users[id]; }
     }, 200);
+  }
+  if (rankOf(ROLE) >= rankOf('supervisor')){
+    watch('att', function(id, v){
+      STATE.att = STATE.att || {};
+      if (v) STATE.att[id] = v; else delete STATE.att[id];
+      if (CUR === 'now') render(1);
+    }, 400, ['day', dayKey(Date.now())]);
   }
   watch('teams', function(id, v){
     var i = -1;
@@ -8939,7 +8990,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var day = new Date().toISOString().slice(0, 10);
     var doneToday = (e.days && e.days[day]) || 0;
 
-    return stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
+    return attMyCard()
+      + stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
                   ['أنجزتُ اليوم', N(doneToday), 'ok'],
                   ['نقاطي هذا الشهر', N(Math.round(e.total)), 'acc'],
                   ['ترتيبي', e.rank ? nm(e.rank) : '—']])
@@ -9074,7 +9126,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
-    return head + (function(){
+    return head + attMyCard() + (function(){
     var me = STATE.meta.name || 'محمد صفوت';
     /* حالةُ مهمةِ زيارة: من تعليقة الحفظ إلى قرار المهندس */
     function taskPill(x){
@@ -9096,7 +9148,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
       });
       var sups = Object.keys(by).sort(function(a, b){ return by[b].length - by[a].length; });
-      return (may('settings') ? seedCard() + readyCard() : '')
+      return attMyCard()
+        + (may('settings') ? seedCard() + readyCard() : '')
         + inboxCard()
         + stats([['إسناداتٌ مفتوحة', N(open), 'acc'], ['مشرفون', N(sups.length)],
                     ['تمّت — تنتظر اعتمادك', N(pend), pend ? 'wrn' : ''],
@@ -15314,7 +15367,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.85' + '.docx" download>⬇ '
+              +   'V15.86' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18575,7 +18628,8 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
     });
     var sups = Object.keys(bySup).sort(function(a, b){ return bySup[b].n - bySup[a].n; });
     var col = function(title, inner){ return '<div>' + card(title, inner) + '</div>'; };
-    return (may('approve') ? inboxCard() : '')
+    return attTeamCard()
+      + (may('approve') ? inboxCard() : '')
       + stepsCard(10)
       + '<div class="grid cols-3" style="align-items:start">'
       + col('\u2705 ' + t('ما انتهى'),
@@ -19786,6 +19840,90 @@ function pwSave(){
         : /requires-recent-login/.test(m) ? t('ادخل من جديد ثم بدّل الكلمة')
         : t('تعذّر التبديل') + ' — ' + m.slice(0, 40));
   });
+}
+
+/* ═══ الحضور: بدأتُ يومي · أنهيتُ يومي ═══
+   النظامُ يعرف ما أُنجز ولا يعرف من كان موجودًا. بمئةٍ وخمسين شخصًا في ستة
+   مشاعرَ أوّلُ سؤالِ المدير صباحًا: من بدأ؟ ومن لم يبدأ؟ ومن أنهى ومتى؟
+     يضغط الفنيُّ بنفسه — لا يسجّل له أحد — ويُلتقَط موقعُه: داخلَ المشاعر
+   أم خارجها. ولا يُرفَض الخارجُ: يُسجَّل ويُعلَّم «خارج النطاق» فيراه المشرفُ
+   ويسأل — فالرفضُ في الميدان بجهازٍ يخطئ موقعَه عذاب. وثيقةٌ لكلِّ شخصٍ في
+   كلِّ يوم، يكتبها صاحبُها وحدَه ويقرؤها من فوقه. */
+var ATT_IN  = { s:21.2, n:21.6, w:39.7, e:40.2 };   /* نطاقُ المشاعر */
+function attKey(uid, day){ return uid + '_' + day; }
+function attToday(){ return (STATE.att || {})[attKey(myUid(), dayKey(Date.now()))] || null; }
+function attInZone(lat, lng){
+  return lat > ATT_IN.s && lat < ATT_IN.n && lng > ATT_IN.w && lng < ATT_IN.e;
+}
+function attLocate(){
+  return new Promise(function(res){
+    if (!navigator.geolocation){ res(null); return; }
+    var done = false, stop = setTimeout(function(){ if (!done){ done = true; res(null); } }, 12000);
+    navigator.geolocation.getCurrentPosition(function(p){
+      if (done) return; done = true; clearTimeout(stop);
+      res({ lat:+p.coords.latitude.toFixed(6), lng:+p.coords.longitude.toFixed(6), acc:Math.round(p.coords.accuracy || 0) });
+    }, function(){ if (!done){ done = true; clearTimeout(stop); res(null); } },
+    { enableHighAccuracy:true, timeout:11000, maximumAge:60000 });
+  });
+}
+function attMark(kind){
+  if (!myUid()){ toast(t('سجّل الدخول أولًا')); return; }
+  if (!isFieldRole(ROLE)){ toast(t('الحضورُ للميدان')); return; }
+  var day = dayKey(Date.now()), k = attKey(myUid(), day);
+  STATE.att = STATE.att || {};
+  var r = STATE.att[k] || { id:k, uid:myUid(), name:STATE.meta.name || '', day:day, role:ROLE };
+  if (kind === 'in'  && r.in){  toast(t('بدأتَ يومَك بالفعل') + ' \u00b7 ' + hm(r.in.at)); return; }
+  if (kind === 'out' && !r.in){ toast(t('لم تبدأ يومَك بعد')); return; }
+  if (kind === 'out' && r.out){ toast(t('أنهيتَ يومَك بالفعل') + ' \u00b7 ' + hm(r.out.at)); return; }
+  toast(t('يُلتقَط موقعُك…'));
+  return attLocate().then(function(loc){
+    var stamp = { at:Date.now(), lat:loc ? loc.lat : null, lng:loc ? loc.lng : null,
+                  acc:loc ? loc.acc : null, ok:loc ? attInZone(loc.lat, loc.lng) : null };
+    r[kind] = stamp;
+    if (kind === 'out' && r.in) r.hours = Math.round((stamp.at - r.in.at) / 360000) / 10;
+    STATE.att[k] = r;
+    CORE.set('att', k, r);
+    logEvent((kind === 'in' ? 'بدأ يومَه' : 'أنهى يومَه') + ' — ' + (STATE.meta.name || '')
+      + (loc ? (stamp.ok ? ' · داخل المشاعر' : ' · خارج النطاق') : ' · بلا موقع'));
+    toast((kind === 'in' ? t('بدأ يومُك') : t('أُنهي يومُك') + ' \u00b7 ' + nm(r.hours || 0) + ' ' + t('ساعة'))
+      + (loc ? (stamp.ok ? '' : ' \u00b7 ' + t('خارج نطاق المشاعر — يراها مشرفُك')) : ' \u00b7 ' + t('بلا موقع')));
+    statBump(); render(1);
+  });
+}
+function hm(ms){ var d = new Date(ms); return ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); }
+/* بطاقةُ الفنيّ: زرٌّ واحدٌ يقول ما بعده */
+function attMyCard(){
+  if (!isFieldRole(ROLE)) return '';
+  var r = attToday();
+  var st = !r || !r.in ? 'none' : (r.out ? 'done' : 'in');
+  return card('\u{1F552} ' + t('يومي'),
+      (st === 'none' ? '<p class="hint" style="margin:0 0 8px">' + esc(t('لم تبدأ بعد — اضغط حين تصل موقعَ العمل.')) + '</p>'
+       : st === 'in' ? '<p style="margin:0 0 8px">' + esc(t('بدأتَ')) + ' <b class="num">' + esc(hm(r.in.at)) + '</b>'
+           + (r.in.ok === false ? ' ' + pill('خارج النطاق','wrn') : '') + '</p>'
+       : '<p style="margin:0 0 8px">' + esc(t('بدأتَ')) + ' <b class="num">' + esc(hm(r.in.at)) + '</b> \u00b7 '
+           + esc(t('أنهيتَ')) + ' <b class="num">' + esc(hm(r.out.at)) + '</b> \u00b7 ' + nm(r.hours || 0) + ' ' + esc(t('ساعة')) + '</p>'),
+      st === 'none' ? btn('\u25B6 ' + t('بدأتُ يومي'),'btn-primary btn-sm',' data-attin="1"')
+      : st === 'in' ? btn('\u25A0 ' + t('أنهيتُ يومي'),'btn-secondary btn-sm',' data-attout="1"')
+      : '');
+}
+/* بطاقةُ المشرف: من بدأ ومن لم يبدأ — اليوم */
+function attTeamCard(){
+  if (rankOf(ROLE) < rankOf('supervisor')) return '';
+  var day = dayKey(Date.now()), A = STATE.att || {};
+  var people = techsList().filter(function(x){ return x.n !== STATE.meta.name; });
+  var rows = [], inN = 0, outN = 0, offN = 0, farN = 0;
+  people.forEach(function(x){
+    var r = A[attKey(x.u, day)];
+    if (!r || !r.in){ offN++; rows.push([esc(x.n), pill('لم يبدأ','off'), '\u2014', '\u2014']); return; }
+    if (r.in.ok === false) farN++;
+    if (r.out){ outN++; rows.push([esc(x.n), pill('أنهى','ok'), '<span class="num">' + esc(hm(r.in.at)) + '</span>', '<span class="num">' + esc(hm(r.out.at)) + ' \u00b7 ' + nm(r.hours || 0) + t('س') + '</span>']); }
+    else { inN++; rows.push([esc(x.n) + (r.in.ok === false ? ' ' + pill('خارج النطاق','wrn') : ''), pill('يعمل','acc'), '<span class="num">' + esc(hm(r.in.at)) + '</span>', '\u2014']); }
+  });
+  rows.sort(function(a, b){ return (a[1].indexOf('لم يبدأ') > -1 ? 1 : 0) - (b[1].indexOf('لم يبدأ') > -1 ? 1 : 0); });
+  return cardFlush('\u{1F552} ' + t('الحضورُ اليوم') + ' \u2014 ' + nm(people.length),
+      stats([['يعمل', N(inN), 'acc'], ['أنهى', N(outN), 'ok'], ['لم يبدأ', N(offN), offN ? 'wrn' : ''], ['خارج النطاق', N(farN), farN ? 'bad' : '']])
+      + (rows.length ? table(['الشخص','الحال','بدأ','أنهى'], rows.slice(0, 200)) : '')
+      + '<p class="hint" style="margin:8px 0 0">' + esc(t('يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.')) + '</p>');
 }
 function inboxItems(){
   var out = [], S = siteStats();
@@ -25281,6 +25419,8 @@ function onDocClick(e){
     if (bt2) BULK_TXT = bt2.value;
     bulkApply(); return;
   }
+  if (e.target.closest('[data-attin]')){ attMark('in'); return; }
+  if (e.target.closest('[data-attout]')){ attMark('out'); return; }
   if (e.target.closest('[data-pwgo]')){ pwSave(); return; }
   if (e.target.closest('[data-pwx]')){ if (!(PW && PW.forced)){ PW = null; render(1); } return; }
   if (e.target.closest('[data-pwopen]')){ pwOpen(false); return; }

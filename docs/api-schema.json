@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.85",
+  "app_version": "V15.86",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1454,7 +1454,8 @@
     "V15.82": "bulkParse/bulkApply/bulkCard: دعوة جماعية بلصق إكسل مع فحص قبل الكتابة. inviteOpen/inviteClaim/inviteHtml + زر lgNew في شاشة الدخول: تفعيل ذاتي بكلمة يختارها صاحبها. قواعد pending: read مفتوحة بحقول محصورة، create/update mgr، delete للمالك أو mgr؛ users create يقبل دور الدعوة. الجرد 65.",
     "V15.83": "provision collection + scripts/provision.mjs + provision.yml (cron */10 + dispatch): الخادم يُنشئ الحسابات بـAdmin SDK. usrAdd/bulkApply يكتبان طلبات (pass/email). roleGuess/jobGuess بالمرادفات. provCard + SHEETS.provsheet + provWipe. أُزيل التفعيل الذاتي. canSeeUser يُخفي viewer عن غير المديرين. الجردان 65-66.",
     "V15.84": "canProvision/canMakeRole/rolesICanMake: كل دور يُنشئ ≤ رتبته، admin بلا سقف. can.provision في exec/admin/engineer/supervisor؛ PAGE_CAP.users='provision'؛ المشرف يرى users. provision watch: غير المدير where by==اسمه. rules: canProv + rnk(role) + by==name، admin بلا سقف، engineer لا يطلب admin. الجرد 67.",
-    "V15.85": "PW/pwOpen/pwNeeded/pwHtml/pwSave: نافذة تغيير الكلمة — مفروضة عند mustChange (بلا إغلاق، بلا قديمة) ومن القائمة (pwBtn، بقديمة + reauth). تُرسَم على body في render. بعد التبديل users/{uid}.mustChange=false. الجرد 68."
+    "V15.85": "PW/pwOpen/pwNeeded/pwHtml/pwSave: نافذة تغيير الكلمة — مفروضة عند mustChange (بلا إغلاق، بلا قديمة) ومن القائمة (pwBtn، بقديمة + reauth). تُرسَم على body في render. بعد التبديل users/{uid}.mustChange=false. الجرد 68.",
+    "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2630,7 +2631,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 68,
+  "audits_total": 69,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4300,5 +4301,16 @@
     "manual": "pwBtn في القائمة — الكلمة القديمة + reauthenticateWithCredential ثم updatePassword",
     "after": "CORE.set('users', uid, {mustChange:false, pwAt})",
     "render": "على document.body لأن مسار الخريطة يعود قبل المحتوى"
+  },
+  "attendance_v15_86": {
+    "who": "isFieldRole(ROLE) يسجّل لنفسه",
+    "zone": "ATT_IN 21.2–21.6 / 39.7–40.2",
+    "out_of_zone": "يُسجَّل ok:false ويُعلَّم — لا يُرفَض",
+    "hours": "round((out.at-in.at)/3.6e5)/10",
+    "rules": "create/update: uid==auth.uid && id==uid_day؛ read ok()؛ delete mgr",
+    "views": [
+      "mywork/mine: attMyCard",
+      "now: attTeamCard (supervisor+)"
+    ]
   }
 }

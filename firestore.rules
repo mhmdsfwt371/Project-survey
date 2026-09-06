@@ -82,6 +82,13 @@ service cloud.firestore {
             && myRank() >= rnk(request.resource.data.get('role', 'tech')));
       allow delete: if mgr();
     }
+    // الحضور: يكتبه صاحبُه وحدَه — وثيقتُه باسمه — ويقرؤه من فوقه
+    match /att/{id} {
+      allow read: if ok();
+      allow create, update: if ok() && request.resource.data.uid == request.auth.uid
+                             && id == request.auth.uid + '_' + request.resource.data.day;
+      allow delete: if mgr();
+    }
     match /pending/{id} {
       // الدعوةُ يقرؤها المكتبُ ليتابعها — ويقرؤها **غيرُ المسجَّل** ليفعّلها
       // بنفسه: بمئةٍ وخمسين شخصًا لا يقف كلُّ حسابٍ على المكتب. وليس فيها
