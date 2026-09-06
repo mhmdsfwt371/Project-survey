@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.83",
+  "app_version": "V15.84",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1452,7 +1452,8 @@
     "V15.80": "rules-test: fail() يكتب ::error title=… لكل فحص ساقط + ملخّص ::error في النهاية. real-tests.yml: tee + GITHUB_STEP_SUMMARY بكل الفحوص. القواعد والتطبيق لم يتغيّرا.",
     "V15.81": "rules-test: «الفني لا يقرأ حساب غيره» صار «يقرؤه ولا يعدّله» — مطابقةً لقاعدة V15.77. الفحص الوحيد الساقط من 56.",
     "V15.82": "bulkParse/bulkApply/bulkCard: دعوة جماعية بلصق إكسل مع فحص قبل الكتابة. inviteOpen/inviteClaim/inviteHtml + زر lgNew في شاشة الدخول: تفعيل ذاتي بكلمة يختارها صاحبها. قواعد pending: read مفتوحة بحقول محصورة، create/update mgr، delete للمالك أو mgr؛ users create يقبل دور الدعوة. الجرد 65.",
-    "V15.83": "provision collection + scripts/provision.mjs + provision.yml (cron */10 + dispatch): الخادم يُنشئ الحسابات بـAdmin SDK. usrAdd/bulkApply يكتبان طلبات (pass/email). roleGuess/jobGuess بالمرادفات. provCard + SHEETS.provsheet + provWipe. أُزيل التفعيل الذاتي. canSeeUser يُخفي viewer عن غير المديرين. الجردان 65-66."
+    "V15.83": "provision collection + scripts/provision.mjs + provision.yml (cron */10 + dispatch): الخادم يُنشئ الحسابات بـAdmin SDK. usrAdd/bulkApply يكتبان طلبات (pass/email). roleGuess/jobGuess بالمرادفات. provCard + SHEETS.provsheet + provWipe. أُزيل التفعيل الذاتي. canSeeUser يُخفي viewer عن غير المديرين. الجردان 65-66.",
+    "V15.84": "canProvision/canMakeRole/rolesICanMake: كل دور يُنشئ ≤ رتبته، admin بلا سقف. can.provision في exec/admin/engineer/supervisor؛ PAGE_CAP.users='provision'؛ المشرف يرى users. provision watch: غير المدير where by==اسمه. rules: canProv + rnk(role) + by==name، admin بلا سقف، engineer لا يطلب admin. الجرد 67."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2628,7 +2629,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 66,
+  "audits_total": 67,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4280,5 +4281,17 @@
     "reissue": "طلب باسم قائم = إعادة إصدار كلمة (لا يُرفَض)",
     "rules": "provision: read/write mgr()؛ الخادم بمفتاح المشروع خارج القواعد",
     "tradeoff": "الكلمة مؤقتة في القاعدة (mgr فقط) حتى تُصدَّر الورقة وتُمسَح"
+  },
+  "hierarchy_provision_v15_84": {
+    "rule": "rankOf(role) <= rankOf(me)",
+    "exception": "admin (may roles) يُنشئ حتى exec",
+    "who": {
+      "supervisor": "supervisor فما دون",
+      "engineer": "engineer فما دون",
+      "admin": "الجميع",
+      "tech/viewer": "لا شيء ولا يرون الشاشة"
+    },
+    "visibility": "mgr كل الطلبات؛ غيره where('by','==',name) — القاعدة تُثبَت على الشرط",
+    "rules": "provision create: (admin) || (canProv && by==uDoc().name && myRank()>=rnk(role))"
   }
 }

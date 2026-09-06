@@ -157,6 +157,16 @@ await deny('ولا يكتب دورًا غيرَ دوره',          setDoc(doc(i
 await ok  ('ويكتب وثيقتَه بدور دعوته',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'supervisor', active:true }));
 await ok  ('ثم يمحو دعوتَه',                     deleteDoc(doc(iv, 'pending/inv1')));
 await deny('ولا يمحو دعوةَ غيره',                deleteDoc(doc(iv, 'pending/p1')));
+console.log('\n══ كلٌّ يُنشئ في مستواه أو دونه ══');
+await ok  ('المشرفُ يطلب فنيًّا',                 setDoc(doc(as('sup'), 'provision/t7'), { user:'t7', name:'ف', role:'tech', pass:'Abcdefghij', by:'مشرف', status:'pending' }));
+await ok  ('ومشرفًا مثلَه',                       setDoc(doc(as('sup'), 'provision/s7'), { user:'s7', name:'م', role:'supervisor', pass:'Abcdefghij', by:'مشرف', status:'pending' }));
+await deny('ولا يطلب مهندسًا',                    setDoc(doc(as('sup'), 'provision/e7'), { user:'e7', name:'هـ', role:'engineer', pass:'Abcdefghij', by:'مشرف', status:'pending' }));
+await deny('ولا ينتحل كاتبًا آخر',                setDoc(doc(as('sup'), 'provision/t8'), { user:'t8', name:'ف', role:'tech', pass:'Abcdefghij', by:'مهندس', status:'pending' }));
+await ok  ('ويقرأ ما كتبه',                        getDoc(doc(as('sup'), 'provision/t7')));
+await deny('ولا يقرأ ما كتبه غيرُه',              getDoc(doc(as('sup'), 'provision/p1')));
+await ok  ('والمهندسُ يقرأ الكلَّ',                getDoc(doc(as('eng'), 'provision/t7')));
+await deny('والفنيُّ لا يطلب شيئًا',               setDoc(doc(as('tec'), 'provision/t9'), { user:'t9', name:'ف', role:'tech', pass:'Abcdefghij', by:'فني', status:'pending' }));
+await deny('والمهندسُ لا يطلب مديرًا',             setDoc(doc(as('eng'), 'provision/a7'), { user:'a7', name:'م', role:'admin', pass:'Abcdefghij', by:'مهندس', status:'pending' }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

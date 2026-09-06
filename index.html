@@ -746,7 +746,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.83</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.84</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3260,6 +3260,12 @@ en:{
  'الخادمُ يُنشئ الحسابات كلَّ عشر دقائق. صدِّر الورقةَ ووزِّعها على المشرفين، ثم امسح الكلمات — الورقةُ تصير النسخةَ الوحيدة، وكلٌّ يبدّل كلمتَه أوّلَ دخول.':'The server creates accounts every ten minutes. Export the sheet and hand it to the supervisors, then wipe the passwords — the sheet becomes the only copy, and everyone changes their password on first sign-in.',
  'كلمةً مُسحت — الورقةُ المصدَّرةُ هي النسخةُ الوحيدة':'passwords wiped — the exported sheet is the only copy',
  'إعادةُ إصدار كلمة':'Password reissue',
+
+ /* V15.84 — من يُنشئ من */
+ 'إنشاءُ الحسابات من المشرف فصاعدًا':'Creating accounts is for supervisors and above',
+ 'لا تُنشئ دورًا أعلى من دورك':'You cannot create a role above your own',
+ 'أعلى من دورك — لا يُنشئه إلا من فوقك':'Above your role — only someone above you creates it',
+ 'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه':'Field and monitoring board — without colleagues’ numbers — and creates their technicians',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5671,6 +5677,10 @@ ur:{
  'الخادمُ يُنشئ الحسابات كلَّ عشر دقائق. صدِّر الورقةَ ووزِّعها على المشرفين، ثم امسح الكلمات — الورقةُ تصير النسخةَ الوحيدة، وكلٌّ يبدّل كلمتَه أوّلَ دخول.':'سرور ہر دس منٹ میں اکاؤنٹ بناتا ہے۔ شیٹ برآمد کر کے سپروائزروں کو دیں، پھر پاس ورڈ مٹائیں۔',
  'كلمةً مُسحت — الورقةُ المصدَّرةُ هي النسخةُ الوحيدة':'پاس ورڈ مٹ گئے — برآمد شدہ شیٹ واحد نقل ہے',
  'إعادةُ إصدار كلمة':'پاس ورڈ دوبارہ جاری',
+ 'إنشاءُ الحسابات من المشرف فصاعدًا':'اکاؤنٹ بنانا سپروائزر اور اوپر کے لیے',
+ 'لا تُنشئ دورًا أعلى من دورك':'اپنے سے اونچا کردار نہیں بنا سکتے',
+ 'أعلى من دورك — لا يُنشئه إلا من فوقك':'آپ کے کردار سے اونچا — صرف آپ سے اوپر والا بنائے',
+ 'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه':'میدان اور نگرانی بورڈ — ساتھیوں کے نمبروں کے بغیر — اور اپنے ٹیکنیشن بناتا ہے',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8245,9 +8255,12 @@ function liveSmallStop(){
 function liveSmall(){
   if (!FB.ready || !FB.db) return;
   liveSmallStop();
-  var watch = function(col, apply, cap){
+  var watch = function(col, apply, cap, filt){
     try {
       var q = FB.db.collection(col);
+      /* طلباتُ الإنشاء: غيرُ المدير يُنصِت لما كتبه هو — فتُثبَت القاعدةُ
+         على الشرط لا على كلِّ وثيقةٍ، ولا يرى كلماتٍ ليست له */
+      if (filt) q = q.where(filt[0], '==', filt[1]);
       if (cap) q = q.limit(cap);
       LIVE_SMALL.push(q.onSnapshot(function(sn){
         var n = 0;
@@ -8273,7 +8286,7 @@ function liveSmall(){
       STATE.provision = STATE.provision || {};
       if (v){ STATE.provision[id] = v; if (v.status === 'done' && STATE.users[id] && STATE.users[id].provisioning) delete STATE.users[id]; }
       else delete STATE.provision[id];
-    }, 300);
+    }, 300, may('users') ? null : ['by', STATE.meta.name || '\u0000']);
     watch('pending', function(id, v){
       STATE.pending = STATE.pending || {};
       if (v){ STATE.pending[id] = v; if (!STATE.users[id]) STATE.users[id] = Object.assign({ pending:true }, v); }
@@ -9797,7 +9810,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
   l:'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.',
   body:function(){
     var head = tabHead('users'), cur = tabCur('users');
-    if (cur === 'users') return head + bulkCard() + provCard() + pendCard() + (function(){
+    if (cur === 'users') return head + bulkCard() + provCard() + (may('users') ? pendCard() : '') + (function(){
     var L = usersList();
     var byRole = {};
     Object.keys(STATE.users || {}).forEach(function(uid){
@@ -9846,7 +9859,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           +   '<input id="uE" dir="ltr" type="email" placeholder="m.ahmed@afaqy.com"></div>'
           + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
           +   '<select id="uR">'
-          +   Object.keys(ROLES).map(function(k){
+          +   rolesICanMake().map(function(k){
                 return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>'
                   + esc(t(ROLES[k].n)) + '</option>';
               }).join('') + '</select></div>'
@@ -15271,7 +15284,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.83' + '.docx" download>⬇ '
+              +   'V15.84' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19559,6 +19572,7 @@ function bulkParse(txt){
     if (!name || !user) row.why = 'الاسمُ واسمُ المستخدم إلزاميان';
     else if (!/^[A-Za-z0-9._-]{3,}$/.test(user)) row.why = 'اسمُ المستخدم حروفٌ لاتينيةٌ وأرقامٌ ونقطة';
     else if (!row.role) row.why = 'دورٌ غيرُ معروف: ' + (rl || '—');
+    else if (!canMakeRole(row.role)) row.why = 'أعلى من دورك — لا يُنشئه إلا من فوقك';
     else if (seen[user]) row.why = 'مكرَّرٌ في اللصق';
     else if (pw && pw.length < 10) row.why = 'كلمةُ المرور أقلُّ من عشرة أحرف';
     else if ((STATE.provision || {})[user] && (STATE.provision[user].status === 'pending')) row.why = 'له طلبٌ قائم';
@@ -19573,7 +19587,7 @@ function bulkParse(txt){
   return out;
 }
 function bulkApply(){
-  if (!may('users')){ toast(t('إدارةُ الحسابات للمهندس وحده')); return; }
+  if (!canProvision()){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return; }
   var rows = bulkParse(BULK_TXT).filter(function(r){ return !r.why; });
   if (!rows.length){ toast(t('لا سطرَ صالحٌ للكتابة')); return; }
   STATE.provision = STATE.provision || {};
@@ -19595,7 +19609,7 @@ function bulkApply(){
   BULK_TXT = ''; statBump(); render(1);
 }
 function bulkCard(){
-  if (!may('users')) return '';
+  if (!canProvision()) return '';
   var rows = BULK_TXT ? bulkParse(BULK_TXT) : [];
   var okN = rows.filter(function(r){ return !r.why; }).length;
   return card('\u{1F465} ' + t('دعوةٌ جماعية — الصق قائمةَ الفريق'),
@@ -19634,7 +19648,7 @@ function provList(){
     .sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
 function provWipe(){
-  if (!may('users')){ toast(t('إدارةُ الحسابات للمهندس وحده')); return; }
+  if (!canProvision()){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return; }
   var n = 0;
   provList().forEach(function(r){
     if (r.status === 'done' && r.pass){
@@ -19647,7 +19661,7 @@ function provWipe(){
   render(1);
 }
 function provCard(){
-  if (!may('users')) return '';
+  if (!canProvision()) return '';
   var L = provList();
   if (!L.length) return '';
   var pend = L.filter(function(r){ return r.status === 'pending'; }).length;
@@ -22736,7 +22750,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     nav:['exec','over','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
-    can:{ edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
+    can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
   /* الأدمنُ فوق المهندس: يملك كلَّ شيءٍ ويُدير الأدوارَ نفسَها.
@@ -22745,21 +22759,21 @@ var ROLES = {
   admin:{
     n:'مدير المشروع', d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات',
     guide:'دليل المهندس — إدارة المشروع', nav:'*',
-    can:{ edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1, roles:1, fleet:1 } },
 
   engineer:{
     n:'مهندس', d:'صلاحية كاملة — يدير الحسابات والاعتمادات',
     guide:'دليل المهندس — إدارة المشروع',
     nav:'*',   /* بما فيه بند «الإعدادات» الذي يفتح الشاشة الكاملة */
-    can:{ edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1 }
   },
   supervisor:{
-    n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء',
+    n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه',
     guide:'دليل الفني والمشرف — العمل الميداني',
-    nav:['map','mywork','sites','sel','svForm','insForm','co','recs','tools','mine','over','now','pace','inst','daily','reg','chalm','dis','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    nav:['map','mywork','sites','sel','svForm','insForm','co','recs','tools','mine','over','now','pace','inst','daily','reg','chalm','dis','users','guide','acct'],
+    can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   viewer:{
@@ -22841,7 +22855,11 @@ var ROLES = {
 
 var ROLE = 'engineer';
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
-function may(k){ return !!R().can[k]; }
+function may(k){
+  /* «provision» تُشتقُّ من الرتبة: المشرفُ فما فوق — لا تُكتَب في كلِّ دور */
+  if (k === 'provision') return rankOf(ROLE) >= rankOf('supervisor');
+  return !!R().can[k];
+}
 /* المشرفُ والمهندسُ فقط — لا الفنيُّ ولا قائدُ فريقٍ ميدانيٍّ، رغم أن
    الثلاثةَ يرثون can.edit من «مشرف» فيجتازون may('edit') سواءً بسواء.
    نقاطُ الزيادة قرارُ من يشرف لا من يُنفَّذ له. */
@@ -22918,7 +22936,7 @@ var PAGE_CAP = {
   ipc:'money', buys:'money', budget:'money', exec:'money',
   invb:'inventory', invmv:'inventory', stock:'inventory',
   wos:'workshop', wday:'workshop',
-  perms:'users', assignRole:'users', users:'users', roles:'users',
+  perms:'users', assignRole:'users', users:'provision', roles:'users',
   svForm:'edit', insForm:'edit', newsite:'edit',
   qa:'approve', appr:'approve', esc:'approve', svappr:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
@@ -23965,13 +23983,24 @@ function pendCard(){
       + '<p class="hint" style="margin:8px 0 0">'
       + esc(t('سُجِّلت ولم تُنشَأ في المصادقة — لا يدخل صاحبُها ولا تُرى في جهازٍ آخر إلا هنا. فعّلها بكلمةِ مرورٍ جديدة؛ القديمةُ لم تُحفَظ.')) + '</p>');
 }
+/* ═══ من يُنشئ من ═══
+   كان الإنشاءُ للمهندس وحده، فيقف الفريقُ كلُّه على مكتبٍ واحد. صار كلٌّ
+   يُنشئ في مستواه أو دونه: المشرفُ يُنشئ مشرفًا أو فنيًّا ولا يُنشئ مهندسًا،
+   والمهندسُ يُنشئ مهندسًا فما دون، والمديرُ الجميع. ومن فوقُ يرى كلَّ ما
+   أُنشئ تحته. والقاعدةُ تحرس الرتبةَ لا الشاشةُ وحدَها. */
+function canProvision(){ return rankOf(ROLE) >= rankOf('supervisor'); }
+/* مديرُ المشروع يُدير الأدوارَ كلَّها فيُنشئ حتى من فوقه (حسابَ الإدارة
+   العليا) — وهو الاستثناءُ الوحيد؛ المهندسُ ومن دونه في مستواهم فما دون. */
+function canMakeRole(r){ return canProvision() && (may('roles') || rankOf(r) <= rankOf(ROLE)); }
+function rolesICanMake(){ return Object.keys(ROLES).filter(canMakeRole); }
 function usrAdd(){
-  if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
+  if (!canProvision()){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
   var u = g('uU'), n = g('uN'), p = g('uP'), r = g('uR') || 'tech';
   var jb = g('uJ'), sup = g('uS'), dp = g('uD');
   /* الوظيفةُ تُغني عن اختيار الدور: دورُ الحساب دورُ وظيفته إن اختيرت */
   if (jb && jobOf(jb)) r = jobOf(jb).role || r;
+  if (!canMakeRole(r)){ toast(t('لا تُنشئ دورًا أعلى من دورك') + ' — ' + t((ROLES[r] || {}).n || r)); return; }
   if (!u){ toast(t('اكتب اسم المستخدم')); return; }
   if (!n){ toast(t('اكتب الاسم الكامل')); return; }
   if (p.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }

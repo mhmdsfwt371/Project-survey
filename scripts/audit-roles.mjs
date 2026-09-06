@@ -29,7 +29,9 @@ const GATED = {
   settings:  ['data-cfg','data-baseset','data-role','data-depteamnew'],
   exportAll: ['data-expall','data-kmz','data-repgo','data-reppack'],
   importAll: ['data-tpl','data-imp','data-impgo'],
-  users:     ['data-usradd','data-role','data-assignRole'],
+  users:     ['data-role','data-assignRole'],
+  /* الإنشاءُ صار قدرةً مشتقّةً من الرتبة (المشرف فصاعدًا) — لا من «users» */
+  provision: ['data-usradd','data-bulkgo','data-bulkchk','data-provwipe'],
   edit:      ['data-svsave','data-inssave','data-nssave','data-smark','data-fmark','data-asngo']
 };
 /* رقمُ جوّالٍ سعوديٍّ في أيِّ صورة */
