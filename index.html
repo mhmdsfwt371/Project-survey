@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.86</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.87</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3304,6 +3304,14 @@ en:{
  'أنهى':'Finished',
  'بدأ':'Started',
  'يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.':'Each person taps on arrival and departure — the location is captured. “Out of range” is recorded, not rejected: ask its owner.',
+
+ /* V15.87 — طريقُ اليوم */
+ 'طريقُ اليوم':'Today’s route',
+ 'من موقعك — الأقربُ أوّلًا، ثم كلُّ تاليةٍ أقربُ إلى سابقتها':'From your location — nearest first, then each next one nearest to the previous',
+ 'بترتيب الإسناد — اضغط «من موقعي» ليُرتَّب من الأقرب':'In assignment order — tap “From my location” to sort by nearest',
+ 'المسافة':'Distance',
+ 'من موقعي':'From my location',
+ 'كم':'km',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5752,6 +5760,12 @@ ur:{
  'أنهى':'ختم کیا',
  'بدأ':'شروع',
  'يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.':'ہر شخص آنے اور جانے پر خود دباتا ہے — مقام لیا جاتا ہے۔ “حد سے باہر” درج ہوتا ہے، مسترد نہیں۔',
+ 'طريقُ اليوم':'آج کا راستہ',
+ 'من موقعك — الأقربُ أوّلًا، ثم كلُّ تاليةٍ أقربُ إلى سابقتها':'آپ کے مقام سے — قریب ترین پہلے، پھر ہر اگلا پچھلے کے قریب',
+ 'بترتيب الإسناد — اضغط «من موقعي» ليُرتَّب من الأقرب':'تفویض کی ترتیب — قریب ترین کے لیے “میرے مقام سے” دبائیں',
+ 'المسافة':'فاصلہ',
+ 'من موقعي':'میرے مقام سے',
+ 'كم':'کلومیٹر',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8991,6 +9005,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
     var doneToday = (e.days && e.days[day]) || 0;
 
     return attMyCard()
+      + routeCard()
       + stats([['مُسند إليّ', N(mine.length), mine.length ? 'wrn' : 'ok'],
                   ['أنجزتُ اليوم', N(doneToday), 'ok'],
                   ['نقاطي هذا الشهر', N(Math.round(e.total)), 'acc'],
@@ -9126,7 +9141,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
-    return head + attMyCard() + (function(){
+    return head + attMyCard() + routeCard() + (function(){
     var me = STATE.meta.name || 'محمد صفوت';
     /* حالةُ مهمةِ زيارة: من تعليقة الحفظ إلى قرار المهندس */
     function taskPill(x){
@@ -15367,7 +15382,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.86' + '.docx" download>⬇ '
+              +   'V15.87' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19924,6 +19939,74 @@ function attTeamCard(){
       stats([['يعمل', N(inN), 'acc'], ['أنهى', N(outN), 'ok'], ['لم يبدأ', N(offN), offN ? 'wrn' : ''], ['خارج النطاق', N(farN), farN ? 'bad' : '']])
       + (rows.length ? table(['الشخص','الحال','بدأ','أنهى'], rows.slice(0, 200)) : '')
       + '<p class="hint" style="margin:8px 0 0">' + esc(t('يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.')) + '</p>');
+}
+
+/* ═══ طريقُ اليوم ═══
+   كانت المهامُّ قائمةً بترتيب الإسناد — والفنيُّ في منى يمشي بينها كما
+   جاءت: من الطرف إلى الطرف ثم يعود. فالفرقُ بين خمس نقاطٍ بترتيب القرب
+   وخمسٍ عشوائيةٍ ساعةُ مشيٍ في الحرّ. صار «طريقُ اليوم»: يُلتقَط موقعُه،
+   وتُرتَّب مهامُّه المفتوحةُ من الأقرب — ثم كلُّ تاليةٍ أقربُ إلى سابقتها
+   (الجارُ الأقرب: يكفي لخمسٍ إلى خمس عشرة نقطةً ولا يحتاج أكثر) — وبجوار
+   كلِّ نقطةٍ مسافتُها وزرُّ «اتجاهات» يفتح خرائطَ الجهاز نفسِه: أبل على
+   الآيفون، جوجل على غيره. */
+var ROUTE_POS = null;
+function routeLocate(){
+  return attLocate().then(function(loc){ ROUTE_POS = loc; render(1); return loc; });
+}
+function routeTasks(){
+  var me = STATE.meta.name || '', out = [];
+  Object.keys(STATE.tasks || {}).forEach(function(k){
+    var x = STATE.tasks[k];
+    if (x.to !== me || x.status === 'معتمد') return;
+    var st = siteFind(x.site);
+    if (!st || !st.lat || !st.lng) return;
+    out.push({ task:x, site:st });
+  });
+  return out;
+}
+function routeOrder(items, from){
+  var left = items.slice(), order = [], cur = from;
+  while (left.length){
+    var bi = 0, bd = Infinity;
+    for (var i = 0; i < left.length; i++){
+      var d = cur ? distKm(cur, left[i].site) : 0;
+      if (d < bd){ bd = d; bi = i; }
+    }
+    var pick = left.splice(bi, 1)[0];
+    pick.d = cur ? bd : null;
+    order.push(pick);
+    cur = { lat:pick.site.lat, lng:pick.site.lng };
+  }
+  return order;
+}
+function kmTxt(k){ return k < 1 ? (nm(Math.round(k * 1000)) + ' ' + t('م')) : (nm(Math.round(k * 10) / 10) + ' ' + t('كم')); }
+function mapsUrl(lat, lng, label){
+  var ios = /iPhone|iPad|iPod/i.test(navigator.userAgent || '');
+  return ios
+    ? 'https://maps.apple.com/?daddr=' + lat + ',' + lng + '&q=' + encodeURIComponent(label || '')
+    : 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '&travelmode=walking';
+}
+function routeCard(){
+  if (!isFieldRole(ROLE)) return '';
+  var items = routeTasks();
+  if (!items.length) return '';
+  var order = routeOrder(items, ROUTE_POS);
+  var total = order.reduce(function(a, o){ return a + (o.d || 0); }, 0);
+  return cardFlush('\u{1F9ED} ' + t('طريقُ اليوم') + ' \u2014 ' + nm(order.length),
+      (ROUTE_POS
+        ? '<p class="hint" style="margin:0 0 8px">' + esc(t('من موقعك — الأقربُ أوّلًا، ثم كلُّ تاليةٍ أقربُ إلى سابقتها')) + ' \u00b7 '
+          + esc(t('المجموع')) + ' ' + esc(kmTxt(total)) + '</p>'
+        : '<p class="hint" style="margin:0 0 8px">' + esc(t('بترتيب الإسناد — اضغط «من موقعي» ليُرتَّب من الأقرب')) + '</p>')
+      + table(['#','النقطة','النوع','المسافة',''],
+          order.map(function(o, i){
+            var st = o.site, x = o.task;
+            return [N(i + 1),
+                    '<strong>' + esc(st.id) + '</strong><br><span class="hint" style="margin:0">' + esc((st.name || '').slice(0, 26)) + '</span>',
+                    pill(kindLabel(x.kind), 'acc'),
+                    o.d != null ? '<span class="num">' + esc(kmTxt(o.d)) + '</span>' : '\u2014',
+                    '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(st.lat, st.lng, st.id)) + '">\u{1F4CD} ' + esc(t('اتجاهات')) + '</a>'];
+          })),
+      btn('\u{1F4CD} ' + t('من موقعي'),'btn-primary btn-sm',' data-routego="1"'));
 }
 function inboxItems(){
   var out = [], S = siteStats();
@@ -25419,6 +25502,7 @@ function onDocClick(e){
     if (bt2) BULK_TXT = bt2.value;
     bulkApply(); return;
   }
+  if (e.target.closest('[data-routego]')){ toast(t('يُلتقَط موقعُك…')); routeLocate(); return; }
   if (e.target.closest('[data-attin]')){ attMark('in'); return; }
   if (e.target.closest('[data-attout]')){ attMark('out'); return; }
   if (e.target.closest('[data-pwgo]')){ pwSave(); return; }

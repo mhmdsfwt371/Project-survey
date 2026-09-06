@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.86",
+  "app_version": "V15.87",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1455,7 +1455,8 @@
     "V15.83": "provision collection + scripts/provision.mjs + provision.yml (cron */10 + dispatch): الخادم يُنشئ الحسابات بـAdmin SDK. usrAdd/bulkApply يكتبان طلبات (pass/email). roleGuess/jobGuess بالمرادفات. provCard + SHEETS.provsheet + provWipe. أُزيل التفعيل الذاتي. canSeeUser يُخفي viewer عن غير المديرين. الجردان 65-66.",
     "V15.84": "canProvision/canMakeRole/rolesICanMake: كل دور يُنشئ ≤ رتبته، admin بلا سقف. can.provision في exec/admin/engineer/supervisor؛ PAGE_CAP.users='provision'؛ المشرف يرى users. provision watch: غير المدير where by==اسمه. rules: canProv + rnk(role) + by==name، admin بلا سقف، engineer لا يطلب admin. الجرد 67.",
     "V15.85": "PW/pwOpen/pwNeeded/pwHtml/pwSave: نافذة تغيير الكلمة — مفروضة عند mustChange (بلا إغلاق، بلا قديمة) ومن القائمة (pwBtn، بقديمة + reauth). تُرسَم على body في render. بعد التبديل users/{uid}.mustChange=false. الجرد 68.",
-    "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69."
+    "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69.",
+    "V15.87": "routeTasks/routeOrder (nearest-neighbour)/routeLocate/mapsUrl/kmTxt/routeCard في mywork وmine للميدان؛ زر data-routego. الجرد 70."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2631,7 +2632,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 69,
+  "audits_total": 70,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4312,5 +4313,11 @@
       "mywork/mine: attMyCard",
       "now: attTeamCard (supervisor+)"
     ]
+  },
+  "route_v15_87": {
+    "order": "nearest-neighbour من ROUTE_POS ثم من كل سابقة",
+    "maps": "iOS→maps.apple.com daddr؛ غيره→google maps dir walking",
+    "shows": "# · النقطة · النوع · المسافة من السابقة · اتجاهات · المجموع",
+    "hidden": "المهام المعتمدة؛ غير الميدان؛ بلا مهام"
   }
 }
