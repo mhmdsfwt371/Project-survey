@@ -120,12 +120,16 @@ await env.withSecurityRulesDisabled(async (ctx) => {
   await setDoc(doc(f, 'users/e9'),  { name:'مهندس تسع',role:'engineer',   active:true });
 });
 /* القراءةُ لكلِّ فعّال — والترتيبُ بالرتبة يُصفّى في التطبيق، لأن مقارنةَ
-   الرتب في القاعدة تُسقِط استعلامَ القائمة بسقف نداءات الوثائق. */
+   الرتب في القاعدة تُسقِط استعلامَ القائمة بسقف نداءات الوثائق.
+     ولا يُختبَر هنا غيرُ المسجَّل: بابُه مغلقٌ بشرطٍ واحدٍ في رأس القاعدة
+   (`request.auth != null`) وقد امتُحن في أوّل الملف. */
 await ok  ('المشرفُ يقرأ حساباتِ الشركة',      getDoc(doc(as('sup'), 'users/t9')));
 await ok  ('والمهندسُ كذلك',                    getDoc(doc(as('eng'), 'users/s9')));
 await ok  ('وكلُّ أحدٍ يرى وثيقتَه',            getDoc(doc(as('tec'), 'users/tec')));
-await deny('ومن لا حسابَ له لا يقرأ',           getDoc(doc(env.unauthenticatedContext().firestore(), 'users/t9')));
-await deny('والفنيُّ لا يكتب حسابَ غيره',       setDoc(doc(as('tec'), 'users/t9'), { name:'x', role:'admin' }));
+await deny('والفنيُّ لا يكتب حسابَ غيره',       setDoc(doc(as('tec'), 'users/t9'), { name:'x', role:'tech', active:true }));
+await deny('ولا يكتب حسابًا معلَّقًا',           setDoc(doc(as('tec'), 'pending/p1'), { name:'س', role:'tech' }));
+await ok  ('والمهندسُ يكتب المعلَّقَ ويقرؤه',    setDoc(doc(as('eng'), 'pending/p1'), { name:'س', role:'tech', user:'p1' }));
+await ok  ('ويقرؤه',                            getDoc(doc(as('eng'), 'pending/p1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 process.exit(bad ? 1 : 0);
