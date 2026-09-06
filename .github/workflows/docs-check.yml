@@ -154,6 +154,8 @@ jobs:
         run: node scripts/audit-accounts.mjs
       - name: جرد من يُنشئ من — كلٌّ في مستواه أو دونه
         run: node scripts/audit-hier.mjs
+      - name: جرد كلمة المرور — المؤقتة تُبدَّل أول دخول
+        run: node scripts/audit-pw.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

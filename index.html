@@ -735,6 +735,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
         <button type="button" class="btn btn-secondary btn-sm" id="themeBtn"
                 aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
       </div>
+      <button type="button" class="btn btn-quiet btn-block" id="pwBtn" data-pwopen="1" style="margin-bottom:6px"></button>
       <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
   </aside>
@@ -746,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.84</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.85</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3266,6 +3267,21 @@ en:{
  'لا تُنشئ دورًا أعلى من دورك':'You cannot create a role above your own',
  'أعلى من دورك — لا يُنشئه إلا من فوقك':'Above your role — only someone above you creates it',
  'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه':'Field and monitoring board — without colleagues’ numbers — and creates their technicians',
+
+ /* V15.85 — كلمةُ المرور */
+ 'تغيير كلمة المرور':'Change password',
+ 'بدّل كلمتَك المؤقتة':'Change your temporary password',
+ 'الكلمةُ التي على الورقة مؤقتةٌ يعرفها من طبعها — اختر كلمتَك أنت ولا تُغلَق هذه النافذةُ حتى تفعل.':'The password on the sheet is temporary and known to whoever printed it — choose your own; this window stays until you do.',
+ 'عشرةُ أحرفٍ فأكثر — ولا يعرفها أحدٌ سواك.':'Ten characters or more — and no one but you knows it.',
+ 'الكلمةُ الحالية':'Current password',
+ 'الكلمةُ الجديدة':'New password',
+ 'بدّل الكلمة':'Change it',
+ 'تبديلُ الكلمة يحتاج شبكة':'Changing the password needs a network',
+ 'تُبدَّل الكلمة…':'Changing the password…',
+ 'بُدِّلت كلمتُك — لا يعرفها أحدٌ سواك':'Your password is changed — no one but you knows it',
+ 'الكلمةُ الحالية غيرُ صحيحة':'The current password is wrong',
+ 'ادخل من جديد ثم بدّل الكلمة':'Sign in again, then change the password',
+ 'تعذّر التبديل':'Could not change it',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5681,6 +5697,19 @@ ur:{
  'لا تُنشئ دورًا أعلى من دورك':'اپنے سے اونچا کردار نہیں بنا سکتے',
  'أعلى من دورك — لا يُنشئه إلا من فوقك':'آپ کے کردار سے اونچا — صرف آپ سے اوپر والا بنائے',
  'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه':'میدان اور نگرانی بورڈ — ساتھیوں کے نمبروں کے بغیر — اور اپنے ٹیکنیشن بناتا ہے',
+ 'تغيير كلمة المرور':'پاس ورڈ تبدیل کریں',
+ 'بدّل كلمتَك المؤقتة':'اپنا عارضی پاس ورڈ بدلیں',
+ 'الكلمةُ التي على الورقة مؤقتةٌ يعرفها من طبعها — اختر كلمتَك أنت ولا تُغلَق هذه النافذةُ حتى تفعل.':'شیٹ پر پاس ورڈ عارضی ہے — اپنا پاس ورڈ چنیں؛ یہ ونڈو تب تک رہے گی۔',
+ 'عشرةُ أحرفٍ فأكثر — ولا يعرفها أحدٌ سواك.':'دس حروف یا زیادہ — اور کوئی نہیں جانتا۔',
+ 'الكلمةُ الحالية':'موجودہ پاس ورڈ',
+ 'الكلمةُ الجديدة':'نیا پاس ورڈ',
+ 'بدّل الكلمة':'بدلیں',
+ 'تبديلُ الكلمة يحتاج شبكة':'پاس ورڈ بدلنے کے لیے نیٹ ورک درکار',
+ 'تُبدَّل الكلمة…':'پاس ورڈ بدلا جا رہا ہے…',
+ 'بُدِّلت كلمتُك — لا يعرفها أحدٌ سواك':'آپ کا پاس ورڈ بدل گیا',
+ 'الكلمةُ الحالية غيرُ صحيحة':'موجودہ پاس ورڈ غلط ہے',
+ 'ادخل من جديد ثم بدّل الكلمة':'دوبارہ سائن اِن کریں پھر بدلیں',
+ 'تعذّر التبديل':'تبدیل نہیں ہو سکا',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7745,6 +7774,7 @@ var FB = {
           STATE.meta.role = u.role || 'tech';
           STATE.meta.name = u.name || user;
           STATE.meta.kind = u.kind || '';
+          if (u.mustChange) setTimeout(function(){ pwOpen(true); }, 900);
           return { ok:true, role:STATE.meta.role, name:STATE.meta.name };
         })
         .catch(function(e){ return { ok:false, err:String(e && e.code || e) }; });
@@ -15284,7 +15314,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.84' + '.docx" download>⬇ '
+              +   'V15.85' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17959,6 +17989,8 @@ function autoSignIn(){
             if (doc.exists){ STATE.users = STATE.users || {}; STATE.users[u.uid] = Object.assign({}, v); }
             STATE.meta.name = v.name || lgRemembered();
             ROLE = ROLES[v.role] ? v.role : 'tech';
+            /* كلمةٌ مؤقتةٌ من الورقة: تُبدَّل قبل أيِّ عمل */
+            if (v.mustChange) setTimeout(function(){ pwOpen(true); }, 600);
             res(true);
           }).catch(function(){ res(true); });
         });
@@ -19685,6 +19717,75 @@ function provCard(){
       + '<p class="hint" style="margin:8px 0 0">'
       + esc(t('الخادمُ يُنشئ الحسابات كلَّ عشر دقائق. صدِّر الورقةَ ووزِّعها على المشرفين، ثم امسح الكلمات — الورقةُ تصير النسخةَ الوحيدة، وكلٌّ يبدّل كلمتَه أوّلَ دخول.'))
       + '</p>');
+}
+
+/* ═══ كلمةُ المرور: تُبدَّل أوّلَ دخولٍ ومتى شاء صاحبُها ═══
+   ورقةُ الدخول تُطبَع وتُوزَّع، والخادمُ يكتب على الحساب أن كلمتَه مؤقتة —
+   ولم يكن في التطبيق مكانٌ لتبديلها: فتبقى الكلمةُ المطبوعةُ على الورق هي
+   الكلمةَ طولَ الموسم، ووعدُ «يبدّلها أوّلَ دخول» بلا تنفيذ. صارت نافذةٌ
+   تُفرَض عند الدخول إن كانت الكلمةُ مؤقتة (لا تُغلَق حتى تُبدَّل)، وتُفتَح
+   من القائمة متى شاء صاحبُها. والقديمةُ تُطلَب لتُثبَت الهوية — إلا في
+   الدخول الأوّل فالمصادقةُ أثبتتها للتوّ. */
+var PW = null;   /* { forced:true } عند الدخول الأوّل — أو {} من القائمة */
+function pwOpen(forced){ PW = { forced:!!forced }; render(1); }
+function pwNeeded(){
+  var me = (STATE.users || {})[myUid()];
+  return !!(me && me.mustChange);
+}
+function pwHtml(){
+  if (!PW) return '';
+  var f = PW.forced;
+  return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;'
+    + 'justify-content:center;background:rgba(0,0,0,.6);z-index:95">'
+    + '<div class="pop" style="width:min(440px,94vw)">'
+    + '<div class="pop-head"><div><h3>' + esc(t(f ? 'بدّل كلمتَك المؤقتة' : 'تغيير كلمة المرور')) + '</h3>'
+    +   '<p class="hint" style="margin:2px 0 0">' + esc(t(f
+        ? 'الكلمةُ التي على الورقة مؤقتةٌ يعرفها من طبعها — اختر كلمتَك أنت ولا تُغلَق هذه النافذةُ حتى تفعل.'
+        : 'عشرةُ أحرفٍ فأكثر — ولا يعرفها أحدٌ سواك.')) + '</p></div>'
+    +   (f ? '' : btn('\u2715','btn-quiet btn-sm',' data-pwx="0" aria-label="' + esc(t('إغلاق')) + '"')) + '</div>'
+    + '<div class="pop-body">'
+    +   (f ? '' : '<div class="field"><label>' + esc(t('الكلمةُ الحالية')) + '</label>'
+                 + '<input id="pw0" type="password" dir="ltr" autocomplete="current-password"></div>')
+    +   '<div class="field"><label>' + esc(t('الكلمةُ الجديدة')) + '</label>'
+    +     '<input id="pw1" type="password" dir="ltr" autocomplete="new-password" placeholder="' + esc(t('عشرةُ أحرفٍ فأكثر')) + '"></div>'
+    +   '<div class="field"><label>' + esc(t('أعِدْها')) + '</label>'
+    +     '<input id="pw2" type="password" dir="ltr" autocomplete="new-password"></div>'
+    + '</div>'
+    + '<div class="pop-foot">' + btn('\u{1F511} ' + t('بدّل الكلمة'),'btn-primary',' data-pwgo="1"') + '</div>'
+    + '</div></div>';
+}
+function pwSave(){
+  var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '') : ''; };
+  var p0 = g('pw0'), p1 = g('pw1'), p2 = g('pw2');
+  if (p1.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }
+  if (p1 !== p2){ toast(t('الكلمتان غير متطابقتين')); return; }
+  if (!STATE.meta.online){ toast(t('تبديلُ الكلمة يحتاج شبكة')); return; }
+  var u = FB.auth && FB.auth.currentUser;
+  if (!u){ toast(t('سجّل الدخول أولًا')); return; }
+  toast(t('تُبدَّل الكلمة…'));
+  var go = function(){
+    return u.updatePassword(p1).then(function(){
+      var me = (STATE.users || {})[myUid()];
+      if (me){ me.mustChange = false; CORE.set('users', myUid(), { mustChange:false, pwAt:Date.now() }); }
+      logEvent('تبديل كلمة المرور — ' + (STATE.meta.name || ''));
+      toast(t('بُدِّلت كلمتُك — لا يعرفها أحدٌ سواك'));
+      PW = null; render(1);
+    });
+  };
+  var chain;
+  if (PW && PW.forced) chain = go();
+  else {
+    /* الهويةُ تُثبَت بالكلمة الحالية قبل التبديل — كما تفعل كلُّ الأنظمة */
+    var cred = window.firebase.auth.EmailAuthProvider.credential(u.email, p0);
+    chain = u.reauthenticateWithCredential(cred).then(go);
+  }
+  chain.catch(function(e){
+    var m = String(e && e.code || '');
+    toast(/wrong-password|invalid-credential/.test(m) ? t('الكلمةُ الحالية غيرُ صحيحة')
+        : /weak-password/.test(m) ? t('كلمةُ المرور ضعيفة')
+        : /requires-recent-login/.test(m) ? t('ادخل من جديد ثم بدّل الكلمة')
+        : t('تعذّر التبديل') + ' — ' + m.slice(0, 40));
+  });
 }
 function inboxItems(){
   var out = [], S = siteStats();
@@ -24735,6 +24836,16 @@ function scrollBack(sameScreen){
 function render(force){
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   scrollGrab();
+  /* نافذةُ الكلمة على الجسد لا على المحتوى: مسارُ الخريطة يعود قبل رسم
+     المحتوى، وشاشةُ الفنيِّ الأولى هي الخريطة — فلو رُسمت في المحتوى لم
+     يرها من أُريد أن يراها. */
+  var pwOld = document.getElementById('pwWrap');
+  if (pwOld) pwOld.parentNode.removeChild(pwOld);
+  if (PW){
+    var pwEl = document.createElement('div'); pwEl.id = 'pwWrap';
+    pwEl.innerHTML = pwHtml();
+    document.body.appendChild(pwEl);
+  }
   var key = (typeof renderKey === 'function') ? renderKey() : String(Math.random());
   if (!force && key === RENDER_KEY && document.getElementById('content')
       && document.getElementById('content').children.length) return;
@@ -24771,6 +24882,8 @@ function render(force){
   if (wr) wr.textContent = t(R().n) + ' — ' + t(R().d);
   var outEl = document.getElementById('outBtn');
   outEl.textContent = t('تسجيل الخروج');
+  var pwB = document.getElementById('pwBtn');
+  if (pwB) pwB.textContent = '\u{1F511} ' + t('تغيير كلمة المرور');
 
   document.getElementById('syncMeta').innerHTML  =
       '<span class="dot"></span>' + esc(t('آخر مزامنة')) + ' <span class="num">٠٢:٥١</span>';
@@ -25168,6 +25281,9 @@ function onDocClick(e){
     if (bt2) BULK_TXT = bt2.value;
     bulkApply(); return;
   }
+  if (e.target.closest('[data-pwgo]')){ pwSave(); return; }
+  if (e.target.closest('[data-pwx]')){ if (!(PW && PW.forced)){ PW = null; render(1); } return; }
+  if (e.target.closest('[data-pwopen]')){ pwOpen(false); return; }
   if (e.target.closest('[data-provwipe]')){ provWipe(); return; }
   if (e.target.closest('[data-seedgo]')){ seedApply(); return; }
   if (e.target.closest('[data-dissave]')){ disSave(); return; }
