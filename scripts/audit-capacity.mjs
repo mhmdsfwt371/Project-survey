@@ -71,11 +71,11 @@ check(writes <= CAP.writes * 0.8,
    مراتٍ صامتًا في السحابة لأنه لم يكن مسجَّلًا في الحارس المحليّ. ولمّا قُرئت
    الأرقامُ الحقيقيةُ كانت الميزانيةُ تسعةَ أضعافِ الحصة: كلُّ من فوق المشرف
    يسحب الكلَّ ويُنصِت إليه فوق ذلك. فصار النطاقُ شجرةً والتسليمُ مرةً. */
-const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
+const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
              && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:true/.test(src)
              && /if \(r === 'viewer'\) return \{ cols:\['stats'\]/.test(src)
              && /cols:\['recs','inss','dismantles','maints'\], mine:true/.test(src);
-check(layered, 'السحبُ أربعُ طبقات: الإدارةُ الكلَّ، ومن دونها شجرتَه، والوزارةُ الأرقامَ، والميدانُ ما كتبه');
+check(layered, 'السحبُ أربعُ طبقات: الإدارةُ والمهندسون الكلَّ، والمشرفُ شجرتَه، والوزارةُ الأرقامَ، والميدانُ ما كتبه');
 const scoped = /if \(sc\.mine && c !== 'stats' && me\) q = q\.where\('_by', '==', me\)/.test(src)
             && /where\(tq\.fld, 'in', k\)/.test(src);
 check(scoped, 'والميدانُ لا يقرأ سجلاتِ غيره — والمشرفُ شجرتَه بـ«in»');
@@ -95,7 +95,8 @@ const dayDocs = Math.min(workWrites, peakDocs);
 /* من يقرأ الوثيقةَ الواحدة: الإدارةُ كلُّها (مديرٌ وإدارةٌ عليا) + سلسلةُ من فوقها
    في الشجرة (مشرفٌ، مهندسٌ، ومديرا المهندسين) — لا كلُّ مشرفٍ في المشروع */
 const ADMINS = 2, CHAIN = 4, VIEW = 2, FIELD = USERS - ADMINS - CHAIN * 5 - VIEW;
-const perDoc = ADMINS + CHAIN;
+const ENGS = 5;                                /* مهندسو المشروع — يقرؤون الكلَّ ليعتمدوه */
+const perDoc = ADMINS + ENGS + 1;             /* الإدارةُ + كلُّ مهندسٍ + مشرفُ النقطة */
 const rawReads   = perDoc * dayDocs;                          /* تسليمٌ واحدٌ لكلِّ قارئ */
 const safety     = (ADMINS + 20) * Math.round(86400000 / officeEvery) * 5;
 const viewReads  = VIEW * Math.round(86400000 / 300000);

@@ -20,9 +20,9 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 /* ═══ ساكن ═══ */
 /* V16.11: الإدارةُ الكلَّ، ومن دونها إلى المشرف شجرتَه (tree:true)، والميدانُ ما كتبه —
    ومن له إنصاتٌ لا يسحب دوريًّا: السحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات. */
-T(/function pullScope\(\)/.test(js) && /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\)\) return \{ cols:ALL_WORK, mine:false, tree:false, every:21600000 \}/.test(js)
+T(/function pullScope\(\)/.test(js) && /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK, mine:false, tree:false, every:21600000 \}/.test(js)
   && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:true, every:21600000 \}/.test(js),
-  'نطاقُ السحب: الإدارةُ الكلَّ، ومن دونها شجرتَه — والسحبُ الدوريُّ لمن يُنصِت كلَّ ستِّ ساعات');
+  'نطاقُ السحب: الإدارةُ والمهندسون الكلَّ، والمشرفُ شجرتَه — والسحبُ الدوريُّ لمن يُنصِت كلَّ ستِّ ساعات');
 T(/var since = \(at\[c\] \|\| 0\) - 120000;/.test(js) && !/var since = STATE\.meta\.lastSync/.test(js), 'المؤشِّرُ خاصٌّ بالسحب بتداخل دقيقتين — لا «آخر مزامنة»');
 T(/pullAt:STATE\.meta\.pullAt \|\| \{\}/.test(js) && /STATE\.meta\.pullAt = v\.pullAt/.test(js), 'ويُحفَظ ويُستعاد');
 T(/PULL_COL = \{ recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints'/.test(js), 'وكلُّ مجموعةٍ تصل مفتاحَها في الحالة');
