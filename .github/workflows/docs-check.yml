@@ -174,6 +174,8 @@ jobs:
         run: node scripts/audit-perms.mjs
       - name: الأدوار المخصَّصة — تُضاف وتُحذَف وتنفذ في القاعدة، والميدان يرى المُسنَد
         run: node scripts/audit-crole.mjs
+      - name: الحساب المكرَّر وإعادة الكلمة — المؤقت لا يكتب وثيقة، والمكرَّر يُدمَج، والكلمة تُعاد من الشاشة
+        run: node scripts/audit-dupe.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير
