@@ -196,6 +196,8 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 
 /* ── الجداول ───────────────────────────────────────── */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* صفُّ تحرير الحساب: أربعُ قوائمَ بلا عناوين تنكمش على الهاتف إلى أسهمٍ صمّاء */
+.usrEd{min-width:190px}.usrEd label.mini{display:block;font-size:11px;opacity:.7;margin:6px 0 3px}.usrEd select{width:100%}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
 .data-table th,.data-table td{padding:10px 12px;text-align:start;
   border-bottom:1px solid var(--line);vertical-align:middle}
@@ -747,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.10</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -2675,7 +2677,7 @@ en:{
  'يُختار من «الحسابات»، ولا يُقبَل من مرتبتُه أدنى':'Chosen in “Accounts”; a lower-ranked person is not accepted',
  'الفنيُّ ← مشرفُه ← المهندس ← مديرُ المشروع':'Technician → their supervisor → the engineer → the project manager',
  'الوظيفتان قد تشتركان في دورٍ واحد: مسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبهما يُعرَف من يستلم العهدةَ ومن ينزل المشاعر.':'Two jobs may share one role: the store keeper and the field supervisor both have the “supervisor” role — their jobs differ, and by them we know who receives custody and who goes to the holy sites.',
- 'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'Only higher ranks are shown: the technician’s manager is their supervisor, the supervisor’s is the engineer, and the engineer’s is the project manager.',
+ 'يُعرَض من مرتبتُه أعلى أو مساوية: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مهندسٌ أو مديرُ المشروع — والوزارةُ مديرُها من المهندس فصاعدًا.':'Only higher ranks are shown: the technician’s manager is their supervisor, the supervisor’s is the engineer, and the engineer’s is the project manager.',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'No accounts yet. This table is where every account in the system lives: from it the name, job, department, and manager are edited, and from it an account is deactivated or deleted. Create the first account in the form above.',
  'المعروض':'Shown',
 
@@ -5355,7 +5357,7 @@ ur:{
  'يُختار من «الحسابات»، ولا يُقبَل من مرتبتُه أدنى':'“اکاؤنٹس” میں منتخب؛ کم درجہ فرد قبول نہیں',
  'الفنيُّ ← مشرفُه ← المهندس ← مديرُ المشروع':'ٹیکنیشن ← سپروائزر ← انجینئر ← پروجیکٹ منیجر',
  'الوظيفتان قد تشتركان في دورٍ واحد: مسؤولُ المستودع ومشرفُ الميدان كلاهما دورُه «مشرف» — ووظيفتاهما مختلفتان، وبهما يُعرَف من يستلم العهدةَ ومن ينزل المشاعر.':'دو عہدے ایک کردار میں شریک ہو سکتے ہیں: اسٹور کیپر اور فیلڈ سپروائزر دونوں کا کردار “سپروائزر” ہے — عہدے مختلف ہیں، اور انہی سے معلوم ہوتا ہے کہ تحویل کون لیتا ہے اور مشاعر کون جاتا ہے۔',
- 'يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.':'صرف بلند درجے دکھائے جاتے ہیں: ٹیکنیشن کا منتظم اس کا سپروائزر، سپروائزر کا انجینئر، اور انجینئر کا پروجیکٹ منیجر۔',
+ 'يُعرَض من مرتبتُه أعلى أو مساوية: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مهندسٌ أو مديرُ المشروع — والوزارةُ مديرُها من المهندس فصاعدًا.':'صرف بلند درجے دکھائے جاتے ہیں: ٹیکنیشن کا منتظم اس کا سپروائزر، سپروائزر کا انجینئر، اور انجینئر کا پروجیکٹ منیجر۔',
  'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.':'ابھی کوئی اکاؤنٹ نہیں۔ یہ جدول نظام کے ہر اکاؤنٹ کی جگہ ہے: یہیں سے نام، عہدہ، شعبہ اور منتظم تبدیل ہوتے ہیں، اور یہیں سے اکاؤنٹ غیر فعال یا حذف ہوتا ہے۔ اوپر کے فارم سے پہلا اکاؤنٹ بنائیں۔',
  'المعروض':'دکھایا گیا',
  'العنوان القائم (بادئة الشبكة)':'موجودہ پتہ (نیٹ ورک پریفکس)',
@@ -9626,7 +9628,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           flow(['أعمل','يُوزَن بالإعدادات','يُعتمد','يدخل نقاطي'], 0)
           + '<p class="hint">' + esc(t('وزنُ كل عملٍ ثابتٌ في الإعدادات ولا يتغيّر — وما تعمله يُوزَن به.')) + '</p>');})();
     if (cur === 'myteam') return head + (function(){
-    var mine = techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); });
+    var mine = techsList().filter(function(x){ return underNames(STATE.meta.name || '').indexOf(x.n) > -1; });
     var names = mine.map(function(x){ return x.n; });
     if (!names.length){
       return card('لا أحدَ تحت إشرافك بعد',
@@ -10479,7 +10481,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           + '<div class="field"><label>' + esc(t('مديره')) + '</label>'
           +   '<select id="uS">' + mgrOptions('tech', '', '') + '</select>'
           +   '<p class="hint" style="margin:6px 0 0">'
-          +     esc(t('يُعرَض من مرتبتُه أعلى فقط: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مديرُ المشروع.')) + '</p></div>'
+          +     esc(t('يُعرَض من مرتبتُه أعلى أو مساوية: الفنيُّ مديرُه مشرفُه، والمشرفُ مديرُه المهندس، والمهندسُ مديرُه مهندسٌ أو مديرُ المشروع — والوزارةُ مديرُها من المهندس فصاعدًا.')) + '</p></div>'
           + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
           +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
           + '<div class="field"><label>' + esc(t('البريد')) + '</label>'
@@ -15974,7 +15976,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.9' + '.docx" download>⬇ '
+              +   'V16.10' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -21837,7 +21839,12 @@ function wipeGo(){
   if (STATE.queue) STATE.queue.length = 0;
   STATE.poison = [];
   /* ثم تُقيَّد أوامرُ الحذف — بعد الإفراغ لئلّا تُمحى معه */
-  dels.forEach(function(d){ CORE.dirty(d[0], d[1], null); });
+  /* ما له شاهدُ قبرٍ يُصفَّر شاهدًا فيصل كلَّ جهازٍ سحبَ نسخةً قبل التصفير؛ والمحوُ
+     الصامتُ لا يصل أحدًا — فتبقى السجلاتُ عند الآخرين كأن لم يُصفَّر شيء. */
+  dels.forEach(function(d){
+    if (CORE.TOMB[d[0]]) CORE.dirty(d[0], d[1], { id:String(d[1]), deleted:true, at:Date.now(), by:STATE.meta.name || '' });
+    else CORE.dirty(d[0], d[1], null);
+  });
   /* والحالةُ الميدانيةُ على المواقع تعود كما وُلدت */
   STATE.sites.forEach(function(x){ x.fstat = 'لم يبدأ'; });
   SITE_IX = null; SITE_TOK = null;
@@ -22421,6 +22428,7 @@ var JOBS_SEED = [
   /* الوظيفةُ ما يعمله الشخص، والدورُ ما تسمح به القاعدة. وهذه الوظائفُ
      الإحدى عشرةُ هي هيكلُ الفريق كما هو في الأرض — ولكلٍّ دورٌ من السبعة
      التي تعرفها قواعدُ القاعدة، فلا يُنشَأ دورٌ لا تعرفه فتُرفَض كتابتُه. */
+  { id:'j_exec',  n:'الإدارة العليا', role:'exec',       d:'فوق مدير المشروع: تطّلع على كلِّ شيءٍ وتعتمد — ولا تدير الأدوار.' },
   { id:'j_admin', n:'مدير المشروع',  role:'admin',      d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات.' },
   { id:'j_eng',   n:'مهندس المشروع', role:'engineer',   d:'يدير التنفيذَ ويعتمد ما يرفعه الميدان — يرث من المدير دون إدارة الأدوار.' },
   { id:'j_buy',   n:'مشتريات',       role:'supervisor', d:'يسجّل المشترياتِ ويتابع المورّدين والفئات.' },
@@ -22437,6 +22445,11 @@ var JOBS_SEED = [
 
 function jobsList(){
   if (!Array.isArray(STATE.jobs) || !STATE.jobs.length) STATE.jobs = JOBS_SEED.slice();
+  /* وظيفةٌ زِيدت في البذرة بعد أن حُفظت القائمةُ في القاعدة لا تظهر — فتُلحَق
+     بموضعها (الإدارةُ العليا أوّلًا) دون أن تمسَّ ما عدّله المكتب */
+  JOBS_SEED.forEach(function(j, i){
+    if (!STATE.jobs.some(function(x){ return x.id === j.id; })) STATE.jobs.splice(Math.min(i, STATE.jobs.length), 0, Object.assign({}, j));
+  });
   return STATE.jobs;
 }
 function jobSave(){ CORE.set('cfg', 'jobs', jobsList().slice()); }
@@ -24446,12 +24459,36 @@ function roleOfUser(u){
   return rankOf(byAcc) >= rankOf(byJob) ? byAcc : byJob;
 }
 /* من يصلح مديرًا لصاحب هذا الدور: كلُّ حسابٍ مرتبتُه أعلى منه */
+/* ═══ من تحتَ فلان — الشجرةُ كلُّها لا الصفُّ الأوّل ═══
+   الإدارةُ سلسلةٌ: شعراوي ← صفوت ← شكري ← لاشين ← المهندسون ← المشرفون ←
+   الفنيّون ← المساعدون. ومن فوقُ يرى ما تحته إلى آخره، لا من يتبعه مباشرةً. */
+function underNames(name){
+  var U = STATE.users || {}, kids = {}, out = [], seen = {};
+  Object.keys(U).forEach(function(k){
+    var u = U[k]; if (!u || !u.name || u.active === false) return;
+    (kids[u.sup || ''] = kids[u.sup || ''] || []).push(u.name);
+  });
+  var stack = [name || ''];
+  while (stack.length){
+    (kids[stack.pop()] || []).forEach(function(c){ if (!seen[c]){ seen[c] = 1; out.push(c); stack.push(c); } });
+  }
+  return out;
+}
 function mgrCandidates(role, exceptUid){
   var r = rankOf(role), U = STATE.users || {}, out = [];
+  /* كان المديرُ من رتبةٍ أعلى حصرًا، فلم يُمكن أن يدير مهندسٌ مهندسًا — والسلسلةُ
+     في الأرض أعمقُ من سلّم الأدوار (شكري ← لاشين ← المهندسون). فصار: الأعلى أو
+     المساوي، ما لم يكن تحته أصلًا (فلا دورة). والوزارةُ مديرُها من المهندس فصاعدًا. */
+  var eq = r === rankOf('engineer');           /* المساواةُ للمهندسين وحدَهم: مهندسٌ يدير مهندسًا — والباقي سلّم */
+  var floor = effRole(role) === 'viewer' ? rankOf('engineer') : r;
+  var me = exceptUid && U[exceptUid] ? U[exceptUid].name : '';
+  var below = me ? underNames(me) : [];
   Object.keys(U).forEach(function(uid){
     var u = U[uid];
     if (!u || !u.name || u.active === false || uid === exceptUid) return;
-    if (rankOf(roleOfUser(u)) <= r) return;
+    var ur = rankOf(roleOfUser(u));
+    if (effRole(role) === 'viewer' ? ur < floor : (eq ? ur < r : ur <= r)) return;
+    if (below.indexOf(u.name) > -1 || (me && u.name === me)) return;
     out.push({ uid:uid, n:u.name, role:roleOfUser(u) });
   });
   return out.sort(function(a, b){ return rankOf(b.role) - rankOf(a.role) || a.n.localeCompare(b.n, 'ar'); });
@@ -24647,7 +24684,7 @@ var TAB_SEE = {
   team: function(pid){
     var r = ROLE || (STATE.meta && STATE.meta.role) || '';
     return seesRaw(pid) && (r === 'supervisor' || r === 'engineer'
-      || techsList().filter(function(x){ return x.sup === (STATE.meta.name || ''); }).length > 0);
+      || techsList().filter(function(x){ return underNames(STATE.meta.name || '').indexOf(x.n) > -1; }).length > 0);
   }
 };
 /* ما يراه هذا الدورُ من شرائح الأم — بقواعد الرؤية نفسِها */
@@ -25567,11 +25604,13 @@ function usersCard(){
                   + jobsList().map(function(j){ return '<option value="' + esc(j.id) + '"'
                       + (u.job === j.id ? ' selected' : '') + '>' + esc(t(j.n)) + '</option>'; }).join('');
                 var supOpts = mgrOptions(roleOfUser(u) || u.role, u.sup || '', uid);
-                return ['<input data-usrn="' + esc(uid) + '" value="' + esc(u.name || '') + '" dir="auto">',
-                        '<select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>'
-                        + '<div style="margin-top:6px"><select data-usrj="' + esc(uid) + '">' + jbOpts + '</select></div>'
-                        + '<div style="margin-top:6px"><select data-usrd="' + esc(uid) + '">' + deptOptions(u.dept || '') + '</select></div>'
-                        + '<div style="margin-top:6px"><select data-usrs="' + esc(uid) + '">' + supOpts + '</select></div>',
+                return ['<input data-usrn="' + esc(uid) + '" value="' + esc(u.name || '') + '" dir="auto" style="min-width:150px">',
+                        '<div class="usrEd">'
+                        + '<label class="mini">' + esc(t('الدور')) + '</label><select data-usrr="' + esc(uid) + '">' + roleOpts(u.role) + '</select>'
+                        + '<label class="mini">' + esc(t('الوظيفة')) + '</label><select data-usrj="' + esc(uid) + '">' + jbOpts + '</select>'
+                        + '<label class="mini">' + esc(t('القسم')) + '</label><select data-usrd="' + esc(uid) + '">' + deptOptions(u.dept || '') + '</select>'
+                        + '<label class="mini">' + esc(t('مديره')) + '</label><select data-usrs="' + esc(uid) + '">' + supOpts + '</select>'
+                        + '</div>',
                         pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                         '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                         btn('احفظ','btn-primary btn-sm',' data-usrsave="' + esc(uid) + '"')

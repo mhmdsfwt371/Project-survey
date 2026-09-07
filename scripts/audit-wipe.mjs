@@ -50,7 +50,7 @@ const evBlock = (rules.match(/match \/events\/\{id\}[\s\S]{0,700}?\n\s*\}/) || [
 T(/allow delete: if false/.test(evBlock), 'وسجلُّ الأحداث يبقى إلحاقيًّا لا يُحذَف');
 const wg = (/function wipeGo\(\)\{[\s\S]*?\n\}/.exec(js) || [''])[0];
 T(/STATE\.evlog = \{\};/.test(wg) && /STATE\.poison = \[\];/.test(wg), 'التصفيرُ يُفرِغ مرآةَ الأحداث والمعزولَ القديم');
-T(/CORE\.dirty\(d\[0\], d\[1\], null\)/.test(wg) && /dels\.push\(\[k\[2\], id\]\)/.test(wg), 'وأمرُ الحذف يُقيَّد باسم النوع في الطابور لا في الحالة');
+T(/CORE\.TOMB\[d\[0\]\]/.test(wg) && /CORE\.dirty\(d\[0\], d\[1\], null\)/.test(wg) && /dels\.push\(\[k\[2\], id\]\)/.test(wg), 'وأمرُ الحذف يُقيَّد باسم النوع في الطابور لا في الحالة');
 
 /* ═══ ٢ · ساكن: لا رقمَ نسخةٍ حرفيًّا غيرَ الحالية، ولا وقتَ رأسٍ حرفيًّا ═══ */
 const lits = [...js.matchAll(/'(V\d+\.\d+)'/g)].map(m => m[1]).filter(v => v !== cur);
@@ -102,9 +102,14 @@ okIn.value = 'مسح نهائي';
 w.CORE.flush = () => Promise.resolve(0);
 w.wipeGo();
 const Q = w.STATE.queue || [];
-const dels = Q.filter(q => q.v === null);
+/* V16.10: ما له شاهدُ قبرٍ (recs/inss…) يُصفَّر شاهدًا يصل الأجهزةَ الأخرى؛ وما لا شاهدَ له
+   (stats/fixreqs) محوٌ كما كان. فأمرُ الحذف اثنان: {deleted:true} أو null. */
+const dels = Q.filter(q => q.v === null || (q.v && q.v.deleted === true));
 const kinds = [...new Set(dels.map(q => q.kind))];
 T(dels.length === 5, 'خمسةُ أوامرِ حذفٍ للسحابة: زيارةٌ وتركيبٌ ولقطتان وتصويب', dels.length + ' — ' + kinds.join(','));
+const tomb = dels.filter(q => q.v && q.v.deleted === true).map(q => q.kind);
+T(tomb.indexOf('recs') > -1 && tomb.indexOf('inss') > -1 && !tomb.some(k => k === 'stats' || k === 'fixreqs'),
+  'والزيارةُ والتركيبُ شاهدَا قبرٍ يصلان الأجهزةَ الأخرى — واللقطاتُ والتصويبُ محوٌ', tomb.join(','));
 T(!Q.some(q => w.FB.colOf(q.kind) === 'misc'), 'ولا أمرَ يذهب إلى «متفرقات»', Q.filter(q => w.FB.colOf(q.kind) === 'misc').map(q => q.kind).join(','));
 T(!Q.some(q => q.kind === 'events' || q.kind === 'notifs'), 'ولا حذفَ للأحداث أو الإشعارات');
 T(w.STATE.events.length === 1 && /تصفير النظام/.test(w.STATE.events[0].what), 'سجلُّ الأحداث المحليُّ فيه التصفيرُ وحدَه', w.STATE.events.length + ' — ' + (w.STATE.events[0] || {}).what);

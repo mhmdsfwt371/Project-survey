@@ -35,7 +35,15 @@ w.STATE.users = {
 const nm = r => w.mgrCandidates(r,'').map(x=>x.n);
 T(JSON.stringify(nm('tech'))==='["مدير المشروع أ","مهندس أ","مشرف أ"]', 'مدير الفني: مشرف فما فوق — '+nm('tech'));
 T(JSON.stringify(nm('supervisor'))==='["مدير المشروع أ","مهندس أ"]', 'مدير المشرف: مهندس فما فوق — '+nm('supervisor'));
-T(JSON.stringify(nm('engineer'))==='["مدير المشروع أ"]', 'مدير المهندس: مدير المشروع — '+nm('engineer'));
+/* V16.10: سلسلةُ الإدارة أعمقُ من سلّم الأدوار (شكري ← لاشين ← المهندسون) —
+   فالمساوي يصلح مديرًا من رتبة المهندس فصاعدًا، والميدانُ يبقى سلّمًا. */
+T(JSON.stringify(nm('engineer'))==='["مدير المشروع أ","مهندس أ"]', 'مدير المهندس: مديرُ المشروع أو مهندسٌ مثلُه — '+nm('engineer'));
+w.STATE.users['vw'] = { name:'وزارة أ', user:'vw', role:'viewer', at:Date.now() };
+T(JSON.stringify(nm('viewer'))==='["مدير المشروع أ","مهندس أ"]', 'مدير الوزارة: من المهندس فصاعدًا لا المشرف — '+nm('viewer'));
+w.STATE.users['en2'] = { name:'مهندس ب', user:'en2', role:'engineer', sup:'مهندس أ', at:Date.now() };
+T(w.mgrCandidates('engineer','en').every(x=>x.n!=='مهندس ب'), 'من تحتَه لا يُقترَح مديرًا له — لا دورة');
+T(JSON.stringify(w.underNames('مهندس أ'))==='["مهندس ب"]' , 'underNames: الشجرةُ من تحت المهندس — '+JSON.stringify(w.underNames('مهندس أ')));
+delete w.STATE.users['vw']; delete w.STATE.users['en2'];
 T(nm('admin').length===0, 'مدير المشروع بلا مدير فوقه');
 T(w.mgrCandidates('tech','sv').indexOf && w.mgrCandidates('tech','sv').every(x=>x.uid!=='sv'), 'لا يُقترَح الشخصُ مديرًا لنفسه');
 /* الوظيفةُ تجرُّ الدورَ فترتفع المرتبة */
