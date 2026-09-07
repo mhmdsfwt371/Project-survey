@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.5</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3482,7 +3482,9 @@ en:{
  'القديمةُ تبطل فورَ تنفيذ الخادم.':'The old one stops working once the server applies it.',
  'دمجُ الحساب المكرَّر':'Merge duplicate account',
  'يبقى حسابُ الدخول ويُمحى الباقي. لا رجوع.':'The sign-in account stays and the rest is removed. No way back.',
- 'أُلغي':'Cancelled'
+ 'أُلغي':'Cancelled',
+ 'الكلمةُ المؤقتة (التي على الورقة)':'Temporary password (the one on the sheet)',
+ 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'Enter your temporary password first to prove identity — then change'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6090,7 +6092,9 @@ ur:{
  'القديمةُ تبطل فورَ تنفيذ الخادم.':'سرور کے لاگو کرتے ہی پرانا ختم۔',
  'دمجُ الحساب المكرَّر':'ڈپلیکیٹ اکاؤنٹ ضم کریں',
  'يبقى حسابُ الدخول ويُمحى الباقي. لا رجوع.':'سائن اِن اکاؤنٹ رہے گا باقی مٹ جائے گا۔ واپسی نہیں۔',
- 'أُلغي':'منسوخ'
+ 'أُلغي':'منسوخ',
+ 'الكلمةُ المؤقتة (التي على الورقة)':'عارضی پاس ورڈ (جو شیٹ پر ہے)',
+ 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'شناخت ثابت کرنے کے لیے پہلے عارضی پاس ورڈ لکھیں — پھر بدلیں'
 }
 };
 
@@ -15922,7 +15926,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.4' + '.docx" download>⬇ '
+              +   'V16.5' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20529,6 +20533,10 @@ function provCard(){
    من القائمة متى شاء صاحبُها. والقديمةُ تُطلَب لتُثبَت الهوية — إلا في
    الدخول الأوّل فالمصادقةُ أثبتتها للتوّ. */
 var PW = null;   /* { forced:true } عند الدخول الأوّل — أو {} من القائمة */
+/* كلمةُ هذه الجلسة كما كُتبت في نموذج الدخول — في الذاكرة فقط: بها تُثبَت
+   الهويةُ صامتةً إن طلبت المصادقةُ دخولًا حديثًا عند تبديل المؤقتة، فلا يُقال
+   «ادخل من جديد» لمن دخل للتوّ. والجلسةُ المستعادةُ بلا كلمةٍ تسأل عنها. */
+var SESS_PW = '';
 function pwOpen(forced){ PW = { forced:!!forced }; render(1); }
 function pwNeeded(){
   var me = (STATE.users || {})[myUid()];
@@ -20546,7 +20554,7 @@ function pwHtml(){
         : 'عشرةُ أحرفٍ فأكثر — ولا يعرفها أحدٌ سواك.')) + '</p></div>'
     +   (f ? '' : btn('\u2715','btn-quiet btn-sm',' data-pwx="0" aria-label="' + esc(t('إغلاق')) + '"')) + '</div>'
     + '<div class="pop-body">'
-    +   (f ? '' : '<div class="field"><label>' + esc(t('الكلمةُ الحالية')) + '</label>'
+    +   ((f && !PW.needOld) ? '' : '<div class="field"><label>' + esc(t(f ? 'الكلمةُ المؤقتة (التي على الورقة)' : 'الكلمةُ الحالية')) + '</label>'
                  + '<input id="pw0" type="password" dir="ltr" autocomplete="current-password"></div>')
     +   '<div class="field"><label>' + esc(t('الكلمةُ الجديدة')) + '</label>'
     +     '<input id="pw1" type="password" dir="ltr" autocomplete="new-password" placeholder="' + esc(t('عشرةُ أحرفٍ فأكثر')) + '"></div>'
@@ -20567,24 +20575,43 @@ function pwSave(){
   toast(t('تُبدَّل الكلمة…'));
   var go = function(){
     return u.updatePassword(p1).then(function(){
-      var me = (STATE.users || {})[myUid()];
-      if (me){ me.mustChange = false; CORE.set('users', myUid(), { mustChange:false, pwAt:Date.now() }); }
+      var me = (STATE.users || {})[myUid()], now = Date.now();
+      /* الحقلان وحدهما يُرفَعان — لا الوثيقةُ كلُّها: كان يُكتَب فوق النسخة
+         المحليةِ كائنٌ من حقلين فيضيع الاسمُ والدورُ حتى السحبةِ التالية، والقاعدةُ
+         تقبل من صاحب الحساب هذين الحقلين فقط */
+      if (me){ me.mustChange = false; me.pwAt = now; }
+      CORE.dirty('users', myUid(), { mustChange:false, pwAt:now });
+      SESS_PW = p1;
       logEvent('تبديل كلمة المرور — ' + (STATE.meta.name || ''));
       toast(t('بُدِّلت كلمتُك — لا يعرفها أحدٌ سواك'));
       PW = null; render(1);
     });
   };
+  var reauth = function(pw){
+    var cred = window.firebase.auth.EmailAuthProvider.credential(u.email, pw);
+    return u.reauthenticateWithCredential(cred);
+  };
   var chain;
-  if (PW && PW.forced) chain = go();
-  else {
+  if (PW && PW.forced){
+    /* الدخولُ الأوّلُ حديثٌ فتُبدَّل مباشرة. وإن كانت الجلسةُ مستعادةً وطلبت
+       المصادقةُ دخولًا حديثًا: تُثبَت بكلمة الجلسة إن عُرفت، وإلا بالمؤقتة المكتوبة،
+       وإلا سُئل عنها في النافذة نفسِها — لا «ادخل من جديد» */
+    var old9 = p0 || SESS_PW;
+    chain = (old9 && PW.needOld ? reauth(old9).then(go) : go()).catch(function(e){
+      if (!/requires-recent-login/.test(String(e && e.code || ''))) throw e;
+      if (old9) return reauth(old9).then(go);
+      PW.needOld = true; render(1);
+      throw { code:'need-old' };
+    });
+  } else {
     /* الهويةُ تُثبَت بالكلمة الحالية قبل التبديل — كما تفعل كلُّ الأنظمة */
-    var cred = window.firebase.auth.EmailAuthProvider.credential(u.email, p0);
-    chain = u.reauthenticateWithCredential(cred).then(go);
+    chain = reauth(p0).then(go);
   }
   chain.catch(function(e){
     var m = String(e && e.code || '');
     toast(/wrong-password|invalid-credential/.test(m) ? t('الكلمةُ الحالية غيرُ صحيحة')
         : /weak-password/.test(m) ? t('كلمةُ المرور ضعيفة')
+        : /need-old/.test(m) ? t('اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل')
         : /requires-recent-login/.test(m) ? t('ادخل من جديد ثم بدّل الكلمة')
         : t('تعذّر التبديل') + ' — ' + m.slice(0, 40));
   });
@@ -26447,6 +26474,7 @@ function enterApp(user, pass){
     return { ok:false, err:String(e && e.code || e) };
   }).then(function(r){
     r = r || { ok:false, err:'unknown' };
+    if (r.ok) SESS_PW = pass;
     if (!r.ok){
       if (r.err === 'offline'){
         /* بلا شبكة: تُقبَل جلسةٌ حفظتها المصادقةُ على هذا الجهاز لهذا الاسم وحده */

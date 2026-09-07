@@ -278,6 +278,14 @@ await ok  ('فيعتمد',                                      updateDoc(doc(as
 await ok  ('ودورٌ لا تعرفه الوثيقةُ يقرأ كأيِّ حسابٍ فعّال',  getDoc(doc(as('ghost'), 'recs/S1')));
 await deny('ولا يكتب حرفًا',                               setDoc(doc(as('ghost'), 'recs/G1'), { ...rec, id:'G1', review:'pending' }));
 await deny('ولا يعلن خطوة',                                setDoc(doc(as('ghost'), 'steps/G1'), { kind:'visit', site:'S1', at:1 }));
+console.log('\n══ الكلمةُ المؤقتة: صاحبُها يرفع «لم تعد مؤقتة» وحدَه ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  await setDoc(doc(ctx.firestore(), 'users/tmp1'), { name:'مؤقت', role:'tech', active:true, mustChange:true });
+});
+await ok  ('الفنيُّ يرفع mustChange عن نفسه مع pwAt',      updateDoc(doc(as('tmp1'), 'users/tmp1'), { mustChange:false, pwAt:1, _at:1, _by:'tmp1' }));
+await deny('ولا يعيدها مؤقتةً',                             updateDoc(doc(as('tmp1'), 'users/tmp1'), { mustChange:true }));
+await deny('ولا يمسّ معها حقلًا آخر',                        updateDoc(doc(as('tmp1'), 'users/tmp1'), { mustChange:false, role:'admin' }));
+await deny('ولا يرفعها عن غيره',                            updateDoc(doc(as('tec'), 'users/tmp1'), { mustChange:false }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

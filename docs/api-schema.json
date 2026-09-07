@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.4",
+  "app_version": "V16.5",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1473,7 +1473,8 @@
     "V16.1": "provList {key, user:user||key}؛ provWipe/provClear بالمفتاح، provClear لا يمسّ action:delete غير المنتهي؛ CORE.validId + dirty يرفض الفارغ؛ loadLocal يُخرج الفارغ من الطابور؛ flush يعزل badIds قبل الدفع؛ pushEach يلفّ putOne بـPromise.resolve؛ audit-sync §5.",
     "V16.2": "settings/roles {r:{key:{n,base,rank,at,by}},v,at}؛ rules: knownRole/docRole/customRole، role()=base، myRank()=rank، pmCell بـdocRole؛ app: BASE_ROLES/effRole/rolesApply/roleUsers/roleAdd/roleDel/pmSetDirect؛ data-capt يكتب perms أيضًا؛ data-roleadd/data-roledel؛ isCrewRole/SITES_ALL/data-sitesall؛ fieldList وlayerFiltered بالمُسنَد؛ provision.mjs يقرأ settings/roles؛ rules-test +10؛ audit-crole (77).",
     "V16.3": "rules-test: الدور غير المعرَّف يقرأ (ok()) ولا يكتب — تصحيح توقّع الفحص.",
-    "V16.4": "uidLike؛ usrSet على المؤقت يعدّل provision (roleExplicit:true) لا users؛ watch provision done يمحو users/{username} الشاردة (CORE.rm)؛ usrDupes/usrMerge + data-usrmerge؛ genPass/usrPwReset + data-usrpw (provision reissue:true, roleExplicit:false)؛ زر الإسناد !isCrewRole؛ audit-dupe (78)."
+    "V16.4": "uidLike؛ usrSet على المؤقت يعدّل provision (roleExplicit:true) لا users؛ watch provision done يمحو users/{username} الشاردة (CORE.rm)؛ usrDupes/usrMerge + data-usrmerge؛ genPass/usrPwReset + data-usrpw (provision reissue:true, roleExplicit:false)؛ زر الإسناد !isCrewRole؛ audit-dupe (78).",
+    "V16.5": "rules users update: self && exists && affectedKeys hasOnly [mustChange,pwAt,_at,_by] && mustChange==false؛ pwSave: CORE.dirty حقلين فقط، SESS_PW من enterApp، forced: updatePassword ثم عند requires-recent-login reauth بـSESS_PW/pw0 أو PW.needOld يُظهر خانة المؤقتة؛ rules-test +4؛ audit-pw موسَّع."
   },
   "map_and_geolocation": {
     "tile_layers": {

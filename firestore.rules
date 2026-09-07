@@ -149,6 +149,11 @@ service cloud.firestore {
       allow read: if request.auth != null && (request.auth.uid == uid || ok());
       // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات
       allow create, update: if pm('users', 'w', mgr())
+        // صاحبُ الحساب يرفع «لم تعد مؤقتة» بعد أن يبدّل كلمتَه — الحقلان وحدهما،
+        // ولا يرفع الوصفَ عن نفسه إلى مؤقتةٍ (mustChange=true يكتبه الخادم وحده)
+        || (request.auth.uid == uid && exists(uPath())
+            && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['mustChange', 'pwAt', '_at', '_by'])
+            && request.resource.data.get('mustChange', false) == false)
         // ومن دخل ولا وثيقةَ له يسجّل نفسَه — فنيًّا فقط ونشطًا: أدنى دورٍ
         // في النظام، ولا يرفع نفسَه ولا يكتب فوق وثيقةٍ قائمة. بها يخرج من
         // الحصار ويُرفَع عملُه، ويرقّيه المكتبُ إلى دوره الحقيقي.
