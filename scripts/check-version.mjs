@@ -391,7 +391,8 @@ try {
  ['scripts/audit-waasn.mjs',    'جردُ واتساب الإسناد'],
  ['scripts/audit-e2e-accounts.mjs', 'جردُ الفريق من طرفٍ إلى طرف'],
  ['scripts/audit-login.mjs',    'جردُ الدخول'],
- ['scripts/audit-wipe.mjs',     'جردُ التصفير ونسخ الأجهزة']]).forEach(([f, name]) => {
+ ['scripts/audit-wipe.mjs',     'جردُ التصفير ونسخ الأجهزة'],
+ ['scripts/audit-sync.mjs',     'جردُ عدّاد المزامنة والسجلات']]).forEach(([f, name]) => {
   try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
   catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ

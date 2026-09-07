@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.98</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.99</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3393,7 +3393,13 @@ en:{
  'أقدم':'Older',
  'من الجهاز فقط':'this device only',
  'يمسحُ ما سُجِّل من الجهاز ومن القاعدة: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والمقترحاتُ واللقطاتُ اليومية. وسجلُّ الأحداث والإشعاراتُ يُفرَغان من هذا الجهاز فقط — الأثرُ لا يُمحى من القاعدة. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.':'Wipes what was recorded, on this device and in the database: surveys, installations, dismantling, tasks, photos, stock movements, purchases, proposals and daily snapshots. The event log and notifications are cleared from this device only — the audit trail is never erased from the database. It does not touch the 1,787 sites, the crew, the catalogue or the settings — it wipes what was recorded, not what was defined.',
- 'لا رجعةَ بعدها — ولكلِّ سجلٍّ له مجموعةٌ أمرُ حذفٍ يُنفَّذ على السحابة فلا يعود مع المزامنة، وما هو من الجهاز فقط يُفرَغ هنا.':'No way back — every record that has a collection gets a delete command executed in the cloud so it does not return with sync; device-only data is cleared here.'
+ 'لا رجعةَ بعدها — ولكلِّ سجلٍّ له مجموعةٌ أمرُ حذفٍ يُنفَّذ على السحابة فلا يعود مع المزامنة، وما هو من الجهاز فقط يُفرَغ هنا.':'No way back — every record that has a collection gets a delete command executed in the cloud so it does not return with sync; device-only data is cleared here.',
+ 'حسابُه حُذف':'Account deleted',
+ 'امسح المنتهية':'Clear finished',
+ 'مسحُ الطلبات للمهندس فما فوق':'Clearing requests is for engineers and above',
+ 'طلبًا مُسح':'requests cleared',
+ 'التالية':'Next',
+ 'المزامنةُ التالية — عند الصفر تُدفَع وتُسحَب ثم يُعاد العدّ':'Next sync — at zero it pushes and pulls, then the countdown restarts'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -5912,7 +5918,13 @@ ur:{
  'أقدم':'پرانا',
  'من الجهاز فقط':'صرف اس آلے سے',
  'يمسحُ ما سُجِّل من الجهاز ومن القاعدة: المسحُ والتركيبُ والفكُّ والمهامُّ والصورُ وحركاتُ المخزون والمشترياتُ والمقترحاتُ واللقطاتُ اليومية. وسجلُّ الأحداث والإشعاراتُ يُفرَغان من هذا الجهاز فقط — الأثرُ لا يُمحى من القاعدة. ولا يمسّ المواقعَ الألفَ والسبعمئةَ والسبعةَ والثمانين، ولا الطاقمَ، ولا الكتالوجَ، ولا الإعدادات — يمسح ما سُجِّل لا ما عُرِّف.':'جو ریکارڈ ہوا اسے آلے اور ڈیٹابیس دونوں سے مٹاتا ہے: سروے، تنصیب، اکھاڑنا، کام، تصاویر، اسٹاک کی نقل و حرکت، خریداری، تجاویز اور روزانہ کے اسنیپ شاٹ۔ واقعات کا ریکارڈ اور اطلاعات صرف اس آلے سے صاف ہوتے ہیں — آڈٹ ٹریل ڈیٹابیس سے کبھی نہیں مٹتی۔ 1,787 مقامات، عملہ، کیٹلاگ اور ترتیبات کو نہیں چھیڑتا — جو ریکارڈ ہوا وہ مٹاتا ہے، جو متعین ہوا وہ نہیں۔',
- 'لا رجعةَ بعدها — ولكلِّ سجلٍّ له مجموعةٌ أمرُ حذفٍ يُنفَّذ على السحابة فلا يعود مع المزامنة، وما هو من الجهاز فقط يُفرَغ هنا.':'اس کے بعد واپسی نہیں — جس ریکارڈ کا مجموعہ ہے اس کے لیے کلاؤڈ پر حذف کا حکم چلتا ہے تاکہ ہم آہنگی کے ساتھ واپس نہ آئے؛ صرف آلے والا ڈیٹا یہاں صاف ہوتا ہے۔'
+ 'لا رجعةَ بعدها — ولكلِّ سجلٍّ له مجموعةٌ أمرُ حذفٍ يُنفَّذ على السحابة فلا يعود مع المزامنة، وما هو من الجهاز فقط يُفرَغ هنا.':'اس کے بعد واپسی نہیں — جس ریکارڈ کا مجموعہ ہے اس کے لیے کلاؤڈ پر حذف کا حکم چلتا ہے تاکہ ہم آہنگی کے ساتھ واپس نہ آئے؛ صرف آلے والا ڈیٹا یہاں صاف ہوتا ہے۔',
+ 'حسابُه حُذف':'اکاؤنٹ حذف ہو گیا',
+ 'امسح المنتهية':'مکمل شدہ صاف کریں',
+ 'مسحُ الطلبات للمهندس فما فوق':'درخواستیں صاف کرنا انجینئر اور اس سے اوپر کے لیے ہے',
+ 'طلبًا مُسح':'درخواستیں صاف ہوئیں',
+ 'التالية':'اگلی',
+ 'المزامنةُ التالية — عند الصفر تُدفَع وتُسحَب ثم يُعاد العدّ':'اگلی ہم آہنگی — صفر پر بھیجتا اور کھینچتا ہے، پھر گنتی دوبارہ شروع'
 }
 };
 
@@ -8591,13 +8603,50 @@ function liveTickStop(){
   if (BADGE_TICK){ clearInterval(BADGE_TICK); BADGE_TICK = null; }
 }
 var BADGE_TICK = null;
+/* ═══ عدّادُ المزامنة ═══
+   كان الرأسُ يعرض «آخر مزامنة» وحدَها، والسحبُ الدوريُّ يجري خلف الستار كلَّ
+   دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
+   دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
+   العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
+var SYNC_CYCLE = 180, SYNC_LEFT = 180, SYNC_BUSY = false;
+function syncCdTxt(){
+  /* دقيقتان ورقمان بأرقام لغة الواجهة — `nm` للأعداد لا للنصوص */
+  var m = Math.floor(SYNC_LEFT / 60), s = SYNC_LEFT % 60;
+  var dg = (I18N[LANG] || I18N.ar).dig;
+  return (String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'))
+    .replace(/\d/g, function(c){ return LANG === 'en' ? c : dg[+c]; });
+}
+function syncCycle(){
+  SYNC_LEFT = SYNC_CYCLE;
+  if (SYNC_BUSY || !STATE.meta.online) return Promise.resolve(0);
+  SYNC_BUSY = true;
+  PULL_ASK = true; PULL_LAST = 0;
+  var pushed = CORE.flush().catch(function(){ return 0; });
+  return pushed.then(function(){
+    return (FB.ready && FB.db) ? FB.pull(0).catch(function(){ return 0; }) : 0;
+  }).then(function(){ return pullDelta(); }).then(function(n){
+    /* لا إعادةَ رسمٍ آليةً: من يكتب في نموذجٍ لا يُقذَف منه — الإنصاتُ الحيُّ
+       يُعيد رسمَ ما يتغيّر، والشارةُ تكفي هنا */
+    statBump(); syncBadge();
+    if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
+    return n;
+  }).catch(function(e){ softErr('دورة المزامنة', e, ''); return 0; })
+    .then(function(n){ SYNC_BUSY = false; SYNC_LEFT = SYNC_CYCLE; return n; });
+}
 function liveTick(){
   /* مؤقّتٌ واحدٌ لا غير — ولو نودي مرتين. وله مُلغٍ صريحٌ يُنادى عند
      الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
   liveTickStop();
+  SYNC_LEFT = SYNC_CYCLE;
   LIVE_TICK = setInterval(function(){
-    if (STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
-  }, 120000);
+    SYNC_LEFT = Math.max(0, SYNC_LEFT - 1);
+    var cd = document.getElementById('syncCd');
+    if (cd) cd.textContent = syncCdTxt();
+    if (SYNC_LEFT === 0){
+      if (STATE.meta.online && FB.ready) syncCycle();
+      else SYNC_LEFT = SYNC_CYCLE;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
+    }
+  }, 1000);
   if (!BADGE_TICK) BADGE_TICK = setInterval(function(){
     try { syncBadge(); } catch (e){ softErr('شارة المزامنة', e, ''); }
   }, 30000);
@@ -8674,7 +8723,10 @@ function syncBadge(){
               : ('\u2713 ' + esc(t('الكلُّ وصل')))) + '</button> ')
     + (STATE.meta.dropped
         ? '<span class="pill off">' + esc(t('أُسقط من الطابور')) + '</span> ' : '')
-    + esc(t('آخر مزامنة')) + ' <span class="num">' + esc(ts) + '</span>';
+    + esc(t('آخر مزامنة')) + ' <span class="num">' + esc(ts) + '</span>'
+    /* العدُّ التنازليُّ للدورة التالية — يُحدَّث كلَّ ثانيةٍ من liveTick */
+    + ' <span class="hint" style="margin:0" title="' + esc(t('المزامنةُ التالية — عند الصفر تُدفَع وتُسحَب ثم يُعاد العدّ')) + '">'
+    + esc(t('التالية')) + ' <span class="num" id="syncCd" dir="ltr">' + syncCdTxt() + '</span></span>';
 }
 
 /* ── الاتصال — يُراقَب فيُستأنف الرفع تلقائيًّا ── */
@@ -15639,7 +15691,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.98' + '.docx" download>⬇ '
+              +   'V15.99' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18908,15 +18960,22 @@ function fieldRecords(){
     E.length
       ? '<div class="timeline">' + E.map(function(e){
           return '<div class="tl-item"><div class="tl-t">' + esc(e.what || '') + '</div>'
+            /* `at` في الحدث نصٌّ عربيٌّ («١٢:٠٥ م») لا رقم — كان يُحوَّل تاريخًا
+               فينفجر `toISOString` على أوّل حدثٍ حقيقيٍّ ويُترَك المحتوى على
+               الصفحة السابقة والعنوانُ «السجلات». الوقتُ من `ts` أو النصُّ كما هو. */
             + '<div class="tl-s"><span class="num">'
-            + esc(new Date(e.at || Date.now()).toISOString().slice(11, 16)) + '</span> · '
-            + esc(e.by || '') + '</div></div>';
+            + esc(typeof e.at === 'string' ? e.at
+                  : (e.ts ? new Date(e.ts).toLocaleTimeString('ar-EG', { hour:'2-digit', minute:'2-digit' }) : '—'))
+            + '</span> · ' + esc(e.by || '') + '</div></div>';
         }).join('') + '</div>'
       : '<p class="hint" style="margin:0">' + esc(t('لا سجلاتٍ بعد — تظهر هنا أفعالُك أولًا بأول.')) + '</p>');
 }
 
 function fieldTools(){
-  return stats([['المواقع', N(siteStats().total)], ['المسح','٠','acc'], ['التركيب','٠','ok'], ['غير مزامن','٠']])
+  /* كانت ثلاثةُ أصفارٍ مكتوبةً بيدٍ بجوار رقمٍ حقيقيٍّ واحد */
+  var S9 = siteStats(), pend9 = CORE.pending();
+  return stats([['المواقع', N(S9.total)], ['المسح', N(S9.surveyed), 'acc'], ['التركيب', N(S9.installed), 'ok'],
+                ['غير مزامن', N(pend9), pend9 ? 'wrn' : '']])
     + card('التصديرات',
         '<div class="actions">'
         + btn('⬇ إكسل — المواقع','btn-secondary',' data-xls="sites"')
@@ -20163,9 +20222,30 @@ function provWipe(){
   toast(nm(n) + ' ' + t('كلمةً مُسحت — الورقةُ المصدَّرةُ هي النسخةُ الوحيدة'));
   render(1);
 }
+/* المنتهيةُ (تمّ/خطأ) تُمسَح بضغطة — تاريخُ الإنشاء في سجل الأحداث لا هنا */
+function provClear(){
+  if (!may('users')){ toast(t('مسحُ الطلبات للمهندس فما فوق')); return; }
+  var n = 0;
+  provList().forEach(function(r){
+    if (r.status === 'done' || r.status === 'error' || r.action === 'delete'){
+      delete STATE.provision[r.user]; CORE.rm('provision', r.user); n++;
+    }
+  });
+  logEvent('مسحُ طلبات الإنشاء المنتهية — ' + nm(n));
+  toast(nm(n) + ' ' + t('طلبًا مُسح'));
+  render(1);
+}
+function provUserGone(r){
+  var un = String(r.user || '').toLowerCase();
+  if (!un || r.action === 'delete') return false;
+  return !Object.keys(STATE.users || {}).some(function(k){
+    var u = STATE.users[k] || {};
+    return String(u.user || '').toLowerCase() === un || k.toLowerCase() === un;
+  });
+}
 function provCard(){
   if (!canProvision()) return '';
-  var L = provList();
+  var L = provList().filter(function(r){ return r.action !== 'delete'; });
   if (!L.length) return '';
   var pend = L.filter(function(r){ return r.status === 'pending'; }).length;
   var done = L.filter(function(r){ return r.status === 'done'; }).length;
@@ -20177,12 +20257,14 @@ function provCard(){
           L.slice(0, 200).map(function(r){
             return ['<span class="num" dir="ltr">' + esc(r.user) + '</span>', esc(r.name || ''),
                     esc(t((ROLES[r.role] || {}).n || r.role)),
-                    r.status === 'done' ? pill('تمّ','ok')
+                    (r.status === 'done' ? pill('تمّ','ok')
                   : r.status === 'error' ? pill(r.why || 'خطأ','off')
-                  : pill('يُنشَأ — خلال دقائق','wrn')];
+                  : pill('يُنشَأ — خلال دقائق','wrn'))
+                    + (provUserGone(r) ? ' ' + pill('حسابُه حُذف','off') : '')];
           }))
       + '<div class="actions" style="margin-top:10px">'
       +   (pend ? btn('\u26A1 ' + t('شغّل الخادمَ الآن'),'btn-primary btn-sm',' data-ghrun="1"') : '')
+      +   ((done || err) && may('users') ? btn('\u{1F9F9} ' + t('امسح المنتهية') + ' (' + nm(done + err) + ')','btn-quiet btn-sm',' data-provclear="1"') : '')
       +   (withPw ? btn('\u2B07 ' + t('إكسل — ورقةُ الدخول') + ' (' + nm(withPw) + ')','btn-primary btn-sm',' data-xls="provsheet"') : '')
       +   (withPw ? btn('\u{1F9F9} ' + t('امسح كلمات المرور بعد التوزيع'),'btn-quiet btn-sm',' data-provwipe="1"') : '')
       + '</div>'
@@ -24792,8 +24874,17 @@ function usrDel(uid){
     STATE.provision[key] = { action:'delete', uid:uid, user:u.user || '', name:nm2, status:'pending', at:Date.now(), by:STATE.meta.name || '' };
     CORE.set('provision', key, STATE.provision[key]);
   }
-  ['pending', 'provision'].forEach(function(col){
-    if (u.user && (STATE[col] || {})[u.user] && col !== 'provision'){ delete STATE[col][u.user]; CORE.rm(col, u.user); }
+  if (u.user && (STATE.pending || {})[u.user]){ delete STATE.pending[u.user]; CORE.rm('pending', u.user); }
+  /* طلبُ إنشائه يُمحى معه: كان يبقى «تمّ» في القائمة بعد حذف صاحبه — ثمانيةُ
+     أسطرٍ لحساباتٍ لم تعد موجودة، ومنها ما يحمل كلمةَ مرورٍ. المطابقةُ باسم
+     المستخدم بلا حساسيةٍ لحالة الحروف (M.shaaraqi = m.shaaraqi). */
+  var uname = String(u.user || '').toLowerCase();
+  Object.keys(STATE.provision || {}).forEach(function(k){
+    var pr = STATE.provision[k] || {};
+    if (pr.action === 'delete') return;
+    if (uname && (k.toLowerCase() === uname || String(pr.user || '').toLowerCase() === uname)){
+      delete STATE.provision[k]; CORE.rm('provision', k);
+    }
   });
   logEvent('حذف حساب — ' + nm2 + ' (' + (u.user || uid) + ')');
   toast(t('حُذف') + ' ' + nm2);
@@ -26165,6 +26256,7 @@ function onDocClick(e){
     }
     go(); return;
   }
+  if (e.target.closest('[data-provclear]')){ provClear(); return; }
   if (e.target.closest('[data-presfetch]')){
     presenceFetch(true).then(function(n){ toast(t('حُدِّثت القائمة') + ' — ' + nm(n)); render(1); });
     return;
@@ -26748,7 +26840,7 @@ function onDocClick(e){
   if (e.target.closest('[data-pull]')){
     /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
        أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
-    PULL_ASK = true; PULL_LAST = 0;
+    PULL_ASK = true; PULL_LAST = 0; SYNC_LEFT = SYNC_CYCLE;
     toast(t('تُزامَن الآن…'));
     CORE.flush();
     pullDelta().then(function(n){

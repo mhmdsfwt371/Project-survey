@@ -107,6 +107,9 @@ w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
 if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(400);
 
+/* حدثٌ حقيقيُّ الشكل قبل فتح الشاشات: `at` فيه نصٌّ عربيٌّ لا رقم — وهو ما
+   أسقط «السجلات» في الميدان بينما اللجنةُ تفتحها فارغةً وتظنّها سليمة */
+if (typeof w.logEvent === 'function') w.logEvent('اختبارُ لجنة الفحص');
 check(!!d.getElementById('content'), 'حاويةُ المحتوى ظهرت بعد الدخول');
 check(!!d.getElementById('nav'), 'القائمةُ الجانبية ظهرت');
 

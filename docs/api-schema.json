@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.98",
+  "app_version": "V15.99",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1467,7 +1467,8 @@
     "V15.95": "provision.yml input team + provision.mjs direct path (TEAM env) مع genPass وnotice بكلمة الدخول؛ enterApp لا هيكل قبل الهوية؛ CORE.legacyDone→FB؛ ROLE default tech؛ data-pushnow في queueHtml؛ 61 جردًا تدخل بهوية. الجرد 73.",
     "V15.96": "usrDel + data-usrdel (rank ≥ engineer، لا self، لا أعلى)؛ provision action:delete → provision.mjs auth.deleteUser؛ rules users delete؛ syncBadge «منذ كم» + lastSync عند كل snapshot + BADGE_TICK 30s.",
     "V15.97": "isBossHere (BOSS_EMAILS) في autoSignIn وsignIn؛ rules isBoss يقبل m.safwat@nusuk.local؛ provision.mjs: existing role/name محفوظان (roleExplicit)؛ rules-test: الفحص القديم لا يحذف tec.",
-    "V15.98": "WIPE_KEYS ثلاثية [state,label,queueKind|null]: events/notifs محليان؛ rules: stats/fixreqs delete mgr()؛ presence/{uid} (read ok, write own, delete mgr) + presenceBeat عند الدخول وكل 30 د + presenceFetch + SHEETS.vers؛ sync: عمود الأمر + data-pzall retry/drop؛ loadLocal يسقط poison بنوع misc؛ render لا يكتب syncMeta؛ acct/hb/retain من البيانات؛ لا `|| 'محمد صفوت'`؛ audit-wipe."
+    "V15.98": "WIPE_KEYS ثلاثية [state,label,queueKind|null]: events/notifs محليان؛ rules: stats/fixreqs delete mgr()؛ presence/{uid} (read ok, write own, delete mgr) + presenceBeat عند الدخول وكل 30 د + presenceFetch + SHEETS.vers؛ sync: عمود الأمر + data-pzall retry/drop؛ loadLocal يسقط poison بنوع misc؛ render لا يكتب syncMeta؛ acct/hb/retain من البيانات؛ لا `|| 'محمد صفوت'`؛ audit-wipe.",
+    "V15.99": "fieldRecords: at نصي يُعرض كما هو أو من ts (لا toISOString)؛ fieldTools من siteStats/CORE.pending؛ SYNC_CYCLE/SYNC_LEFT/syncCycle + id=syncCd في syncBadge + liveTick كل ثانية (بديل FB.pull كل دقيقتين)؛ usrDel يمحو provision/{user} (case-insensitive)؛ provClear + data-provclear + provUserGone؛ qa.mjs يسجّل logEvent قبل الشاشات؛ audit-sync (75)."
   },
   "map_and_geolocation": {
     "tile_layers": {
