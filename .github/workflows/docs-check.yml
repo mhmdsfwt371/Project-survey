@@ -166,6 +166,8 @@ jobs:
         run: node scripts/audit-e2e-accounts.mjs
       - name: جرد الدخول — لا دخول بلا هوية مُثبَتة
         run: node scripts/audit-login.mjs
+      - name: جرد شاهد القبر — ما يُمسح في جهاز يُمحى في الباقي
+        run: node scripts/audit-tomb.mjs
       - name: التصفير ونسخ الأجهزة — كلُّ بندٍ له مجموعةٌ وحذفٌ في القاعدة، والنسخُ من الأجهزة لا من الحفر
         run: node scripts/audit-wipe.mjs
       - name: عدّاد المزامنة والسجلات وطلبات الإنشاء — السجلات تُفتح بحدث حقيقي، والعدّاد يعدّ ويزامن، والطلب يذهب مع صاحبه

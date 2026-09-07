@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.6",
+  "app_version": "V16.7",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1475,7 +1475,8 @@
     "V16.3": "rules-test: الدور غير المعرَّف يقرأ (ok()) ولا يكتب — تصحيح توقّع الفحص.",
     "V16.4": "uidLike؛ usrSet على المؤقت يعدّل provision (roleExplicit:true) لا users؛ watch provision done يمحو users/{username} الشاردة (CORE.rm)؛ usrDupes/usrMerge + data-usrmerge؛ genPass/usrPwReset + data-usrpw (provision reissue:true, roleExplicit:false)؛ زر الإسناد !isCrewRole؛ audit-dupe (78).",
     "V16.5": "rules users update: self && exists && affectedKeys hasOnly [mustChange,pwAt,_at,_by] && mustChange==false؛ pwSave: CORE.dirty حقلين فقط، SESS_PW من enterApp، forced: updatePassword ثم عند requires-recent-login reauth بـSESS_PW/pw0 أو PW.needOld يُظهر خانة المؤقتة؛ rules-test +4؛ audit-pw موسَّع.",
-    "V16.6": "PULL_COL/pullScope (رتبة≥70|exec|admin: recs,inss,tasks,dismantles,maints كل 5 د؛ viewer: stats؛ الميدان: _by==me كل 15 د)؛ pullDelta بمؤشر STATE.meta.pullAt[col] − 120000 وسقف 6000 باردة/2000 فارقية، يُحفظ في saveLocal؛ liveSmall: watch على العمل لمن ≥ مشرف بشرط [_at,>,t0] + LIVE_WORK_PAGES تُعاد رسمها؛ SYNC_CYCLE=60، syncCycle يدفع كل دقيقة ويسحب عند due؛ الدورة 120000 أُزيلت؛ visibilitychange → PULL_ASK+syncCycle؛ audit-cascade (79)."
+    "V16.6": "PULL_COL/pullScope (رتبة≥70|exec|admin: recs,inss,tasks,dismantles,maints كل 5 د؛ viewer: stats؛ الميدان: _by==me كل 15 د)؛ pullDelta بمؤشر STATE.meta.pullAt[col] − 120000 وسقف 6000 باردة/2000 فارقية، يُحفظ في saveLocal؛ liveSmall: watch على العمل لمن ≥ مشرف بشرط [_at,>,t0] + LIVE_WORK_PAGES تُعاد رسمها؛ SYNC_CYCLE=60، syncCycle يدفع كل دقيقة ويسحب عند due؛ الدورة 120000 أُزيلت؛ visibilitychange → PULL_ASK+syncCycle؛ audit-cascade (79).",
+    "V16.7": "CORE.TOMB/rm شاهد قبر؛ CORE.applyDoc في pullDelta وpull وإنصات المهام؛ loadLocal يمحو الشواهد؛ إنصات المهام assignedTo==name. audit-tomb."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2651,7 +2652,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 73,
+  "audits_total": 74,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4489,7 +4490,12 @@
     "doc": "settings/perms = { m: { <collection>: { <role>: { r|w|a|d: true|false|null } } }, v, at, by }",
     "rules": "pm(col, op, dflt) = isBoss() || (ok() && (cell.get(op,null)==null ? dflt : cell[op]==true)); cell = settings/perms.m[col][role()]",
     "defaults": "ok | canW | mgr | r90 (rank>=90) | mgrOrViewer — مرآة سلوك القاعدة قبل المصفوفة",
-    "fixed": ["events delete=false", "phones: !viewer()", "provision/pending/att/presence/ghcfg/misc", "isBoss فوق المصفوفة"],
+    "fixed": [
+      "events delete=false",
+      "phones: !viewer()",
+      "provision/pending/att/presence/ghcfg/misc",
+      "isBoss فوق المصفوفة"
+    ],
     "ui": "users/perms — pmCard: chips per ROLES key, table PM_COLS × PM_OPS, click toggles override (null→!default→null), save writes cfg/perms via queue",
     "may": "PM_CAP maps edit/approve/settings/money/users/delete/phones/inventory/workshop إلى (col,op) — الصريح يغلب ROLES",
     "guard": "scripts/audit-perms.mjs يقارن نداءات pm في القاعدة مع PM_COLS ويجرّب الحفظ"

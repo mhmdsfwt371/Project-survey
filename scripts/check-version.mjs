@@ -391,6 +391,7 @@ try {
  ['scripts/audit-waasn.mjs',    'جردُ واتساب الإسناد'],
  ['scripts/audit-e2e-accounts.mjs', 'جردُ الفريق من طرفٍ إلى طرف'],
  ['scripts/audit-login.mjs',    'جردُ الدخول'],
+ ['scripts/audit-tomb.mjs',     'جردُ شاهد القبر'],
  ['scripts/audit-wipe.mjs',     'جردُ التصفير ونسخ الأجهزة'],
  ['scripts/audit-sync.mjs',     'جردُ عدّاد المزامنة والسجلات'],
  ['scripts/audit-perms.mjs',    'جردُ مصفوفة الصلاحيات'],

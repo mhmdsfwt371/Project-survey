@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.7</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7905,7 +7905,24 @@ var CORE = {
     CORE.dirty(kind, id, v);
     return v;
   },
-  rm:   function(kind, id){ delete STATE[kind][id]; CORE.dirty(kind, id, null); },
+  /* ═══ الحذفُ شاهدُ قبرٍ لا محوٌ ═══
+     المحوُ لا يصل الأجهزةَ الأخرى: السحبُ الفارقيُّ يجلب ما كُتب بعد آخر
+     مزامنةٍ — والممحوُّ لم يُكتَب. فمُسح خمسةَ عشرَ إسنادًا من مكتبٍ وبقيت
+     على هاتفَي مهندسٍ وفنيّ. صار الحذفُ كتابةَ شاهدٍ صغيرٍ {deleted:true}
+     يصل كأيِّ تحديث، وكلُّ جهازٍ يمحو ما عليه شاهد. (الحساباتُ تُمحى محوًا —
+     لها قاعدتُها وطلبُ خادمٍ.) */
+  TOMB: { tasks:1, recs:1, inss:1, diss:1, maints:1, ncr:1, issues:1, moves:1, buys:1 },
+  rm:   function(kind, id){
+    delete STATE[kind][id];
+    if (CORE.TOMB[kind]) CORE.dirty(kind, id, { id:String(id), deleted:true, at:Date.now(), by:STATE.meta.name || '' });
+    else CORE.dirty(kind, id, null);
+  },
+  /* ما عليه شاهدٌ يُمحى محليًّا بدل أن يُخزَّن */
+  applyDoc: function(kind, id, v){
+    if (!STATE[kind]) STATE[kind] = {};
+    if (v && v.deleted){ delete STATE[kind][id]; return false; }
+    STATE[kind][id] = v; return true;
+  },
   push: function(kind, v){ STATE[kind].push(v); CORE.dirty(kind, v.id || String(STATE[kind].length-1), v); return v; },
   total:function(){ return STATE.sites.length; },
 
@@ -7973,6 +7990,11 @@ var CORE = {
   loadLocal: function(){
     return idbGet('state').then(function(v){
       if (!v) return false;
+      /* ما عليه شاهدُ قبرٍ في الحفظ المحليِّ يُمحى عند التحميل */
+      Object.keys(CORE.TOMB).forEach(function(k){
+        var T = v[k]; if (!T || Array.isArray(T)) return;
+        Object.keys(T).forEach(function(id){ if (T[id] && T[id].deleted) delete T[id]; });
+      });
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
@@ -8360,7 +8382,7 @@ var FB = {
       return q.get().then(function(snap){
         if (!since && !mine) STATE[c] = {};      /* سحبٌ كاملٌ يستبدل */
         if (!STATE[c]) STATE[c] = {};
-        snap.forEach(function(d){ STATE[c][d.id] = d.data(); });
+        snap.forEach(function(d){ CORE.applyDoc(c, d.id, d.data()); });
         FB.readCount = (FB.readCount || 0) + snap.size;
       });
     })).then(function(){
@@ -15950,7 +15972,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.6' + '.docx" download>⬇ '
+              +   'V16.7' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16821,7 +16843,7 @@ function pullDelta(){
     if (since > 0) q = q.where('_at', '>', since);
     /* السحبةُ الباردةُ بلا سقفٍ يقطع: ألفٌ وسبعمئةٌ زيارةٌ لا تُقصّ عند خمسمئة */
     return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
-      snap.forEach(function(doc){ STATE[key][doc.id] = doc.data(); got++; });
+      snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });
       FB.readCount = (FB.readCount || 0) + snap.size;
       at[c] = start;
     }).catch(function(e){
@@ -16842,12 +16864,15 @@ var LIVE = [];
 function liveWatch(){
   if (!FB.ready || !FB.db || LIVE.length) return;
   try{
-    var me = STATE.meta.uid;
+    /* الحقلُ في المهمة اسمٌ (to/assignedTo) والمقارنةُ كانت بالمعرِّف — فلم
+       يُطابَق شيءٌ قطُّ ولم تصل مهمةٌ ولا حذفٌ حيًّا: يرى الفنيُّ إسنادًا
+       مُسح من المكتب أيامًا. */
+    var me = STATE.meta.name || '\u0000';
     LIVE.push(FB.db.collection('tasks').where('assignedTo', '==', me).limit(200)
       .onSnapshot(function(snap){
         snap.docChanges().forEach(function(ch){
           if (ch.type === 'removed') delete STATE.tasks[ch.doc.id];
-          else STATE.tasks[ch.doc.id] = ch.doc.data();
+          else CORE.applyDoc('tasks', ch.doc.id, ch.doc.data());
         });
         statBump();
         if (['map','sites','mywork'].indexOf(CUR) > -1) render();
