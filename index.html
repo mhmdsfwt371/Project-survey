@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.10</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.11</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8778,12 +8778,13 @@ function liveSmallStop(){
 function liveSmall(){
   if (!FB.ready || !FB.db) return;
   liveSmallStop();
-  var watch = function(col, apply, cap, filt){
+  var watch = function(col, apply, cap, filt, filt2){
     try {
       var q = FB.db.collection(col);
       /* طلباتُ الإنشاء: غيرُ المدير يُنصِت لما كتبه هو — فتُثبَت القاعدةُ
          على الشرط لا على كلِّ وثيقةٍ، ولا يرى كلماتٍ ليست له */
       if (filt) q = filt.length === 3 ? q.where(filt[0], filt[1], filt[2]) : q.where(filt[0], '==', filt[1]);
+      if (filt2) q = q.where(filt2[0], filt2[1], filt2[2]);
       if (cap) q = q.limit(cap);
       LIVE_SMALL.push(q.onSnapshot(function(sn){
         var n = 0;
@@ -8803,10 +8804,17 @@ function liveSmall(){
   /* الإنصاتُ لمن يرى غيرَه: كان للمهندس وحده — فالمشرفُ لا يرى فنيّيه
      ولا يعلم بمن أُضيف إلى فريقه. والقاعدةُ تحرس ما يُقرأ، فالإنصاتُ
      يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
+  var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   if (rankOf(ROLE) > 30){
     watch('users', function(id, v){
       STATE.users = STATE.users || {};
       if (v) STATE.users[id] = v; else delete STATE.users[id];
+      /* شجرتي تغيّرت (وصل الناسُ بعد الدخول، أو نُقل أحد): يُعاد الإنصاتُ على
+         الشجرة الجديدة ويُسحَب تاريخُ من انضمّ — مرةً، بعد سكونٍ قصير */
+      if (scope.tree && treeKeys().sig !== sig0){
+        clearTimeout(liveSmall._re);
+        liveSmall._re = setTimeout(function(){ liveSmall(); PULL_ASK = true; syncCycle(); }, 1500);
+      }
     }, 300);
     watch('provision', function(id, v){
       STATE.provision = STATE.provision || {};
@@ -8832,17 +8840,32 @@ function liveSmall(){
      والتركيبات والإسنادات والفكِّ والصيانة بعد بدء الجلسة — فيُرى الإسنادُ
      والاعتمادُ وإفادةُ الميدان في كلِّ جهازٍ في ثوانٍ، والإنصاتُ لا يكلّف إلا
      ما تغيّر لا ما يُستعلَم. والسحبةُ الدوريةُ تبقى شبكةَ أمانٍ بمؤشِّرها. */
-  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'exec'){
-    var t0 = Date.now() - 60000;
-    ['recs','inss','tasks','dismantles','maints'].forEach(function(col){
+  /* الميدانُ: ما كتبه هو — أربعةُ إنصاتاتٍ تسلّم اعتمادَ المكتب لحظةَ وقوعه، بدل
+     أربعةِ استعلاماتٍ فارغةٍ كلَّ نصف ساعة */
+  if (scope.mine && STATE.meta.uid){
+    var tf = Date.now() - 60000;
+    scope.cols.forEach(function(col){
       var key = PULL_COL[col] || col;
       watch(col, function(id, v){
+        if (!STATE[key]) STATE[key] = {};
+        if (v) CORE.applyDoc(key, id, v); else delete STATE[key][id];
+      }, 200, ['_by', '==', STATE.meta.uid], ['_at', '>', tf]);
+    });
+  }
+  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'exec'){
+    var t0 = Date.now() - 60000, tk = scope.tree ? treeKeys() : null;
+    ['recs','inss','tasks','dismantles','maints'].forEach(function(col){
+      var key = PULL_COL[col] || col;
+      var apply = function(id, v){
         if (!STATE[key]) STATE[key] = {};
         /* شاهدُ القبر يصل هنا **تحديثًا** لا حذفًا — الوثيقةُ قائمةٌ عليها
            {deleted:true}. فلولا applyDoc عاد ما مُحي من المكتب إلى شاشة
            المشرف والمهندس بعد لحظات، وهو العطلُ نفسُه الذي عولج في السحب. */
         if (v) CORE.applyDoc(key, id, v); else delete STATE[key][id];
-      }, 500, ['_at', '>', t0]);
+      };
+      /* الإدارةُ تُنصِت إلى الكلّ؛ ومن دونها إلى شجرته — ثلاثون في الاستعلام */
+      if (tk){ var tq = treeQuery(col, tk); chunk30(tq.keys).forEach(function(k){ watch(col, apply, 500, [tq.fld, 'in', k], ['_at', '>', t0]); }); }
+      else watch(col, apply, 500, ['_at', '>', t0]);
     });
   }
   if (rankOf(ROLE) >= rankOf('supervisor')){
@@ -15976,7 +15999,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.10' + '.docx" download>⬇ '
+              +   'V16.11' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16824,33 +16847,69 @@ var CFG_VER = 0;
    كتبه هو. والمؤشِّرُ لكلِّ مجموعةٍ وقتُ آخرِ سحبةٍ ناجحةٍ لها — بتداخلِ دقيقتين —
    ويُحفَظ على الجهاز فلا تُعاد السحبةُ الباردةُ مع كلِّ فتح. */
 var PULL_COL = { recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints', stats:'stats' };
+/* ═══ نطاقُ السحب — V16.11 ═══
+   كان كلُّ من رتبتُه فوق المشرف يسحب السجلاتِ كلَّها خامًّا كلَّ خمس دقائق، ويُنصِت
+   إليها كلِّها فوق ذلك — فتُحسَب القراءةُ مرتين على كلِّ جهازٍ من ثلاثةٍ وعشرين،
+   وميزانيةُ اليوم تسعةُ أضعافِ الحصة. صار:
+   · الإدارةُ (مديرُ المشروع والإدارةُ العليا وصاحبُ المشروع): الكلُّ خامًّا.
+   · من دونها إلى المشرف: **شجرتُه** — من تحته إلى آخر الفرع (underNames)، لا غير.
+   · الوزارةُ: الأرقامَ وحدَها. · الميدانُ: ما كتبه هو، كلَّ نصف ساعة.
+   ومن له إنصاتٌ حيٌّ لا يسحب دوريًّا — الإنصاتُ يسلّم التغييرَ مرةً، والسحبُ
+   شبكةُ أمانٍ كلَّ ستِّ ساعاتٍ وعند الطلب. */
+var ALL_WORK = ['recs','inss','tasks','dismantles','maints'];
 function pullScope(){
   var r = effRole(ROLE);
-  if (rankOf(ROLE) >= rankOf('supervisor') || r === 'exec' || r === 'admin')
-    return { cols:['recs','inss','tasks','dismantles','maints'], mine:false, every:300000 };
-  if (r === 'viewer') return { cols:['stats'], mine:false, every:300000 };
-  return { cols:['recs','inss','dismantles','maints'], mine:true, every:900000 };
+  if (r === 'exec' || r === 'admin' || isBossHere()) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
+  if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:true, every:21600000 };
+  if (r === 'viewer') return { cols:['stats'], mine:false, tree:false, every:300000 };
+  /* الميدانُ يُنصِت إلى ما كتبه هو (اعتمادٌ أو ردٌّ من المكتب يصل حيًّا) — والسحبُ
+     الدوريُّ كان ثمانيةً وأربعين استعلامًا فارغًا في اليوم لكلِّ جهازٍ من مئةٍ وربع */
+  return { cols:['recs','inss','dismantles','maints'], mine:true, tree:false, every:21600000 };
 }
+/* شجرتي في القاعدة: المعرِّفاتُ لمن كتب، والأسماءُ لمن أُسنِد إليه — وأنا معهم */
+function treeKeys(){
+  var names = underNames(STATE.meta.name || ''), U = STATE.users || {}, uids = [];
+  Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name && names.indexOf(u.name) > -1) uids.push(k); });
+  if (STATE.meta.uid) uids.push(STATE.meta.uid);
+  if (STATE.meta.name) names = names.concat([STATE.meta.name]);
+  return { uids:uids, names:names, sig:uids.slice().sort().join('|') };
+}
+/* «in» في القاعدة ثلاثون قيمةً في الاستعلام — فتُقسَّم */
+function chunk30(a){ var out = []; for (var i = 0; i < a.length; i += 30) out.push(a.slice(i, i + 30)); return out; }
+function treeQuery(c, k){ return { fld: c === 'tasks' ? 'to' : '_by', keys: c === 'tasks' ? k.names : k.uids }; }
 function pullDelta(){
   if (!FB.ready || !FB.db) return Promise.resolve(0);
   var sc = pullScope(), got = 0, me = STATE.meta.uid;
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
   var wasAsk = PULL_ASK; PULL_ASK = false;
   if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
+  /* الشجرةُ إن تغيّرت (أُضيف مشرفٌ أو نُقل فنيٌّ) صار الفارقُ كاذبًا: من انضمّ
+     له تاريخٌ قبل المؤشِّر — فيُصفَّر المؤشِّرُ وتُسحَب الشجرةُ باردةً */
+  var tk = sc.tree ? treeKeys() : null;
+  if (tk && at.__sig !== tk.sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = tk.sig; }
   return Promise.all(sc.cols.map(function(c){
     var key = PULL_COL[c] || c;
     if (!STATE[key]) STATE[key] = {};
     var start = Date.now();
     var since = (at[c] || 0) - 120000;
-    var q = FB.db.collection(c);
-    if (sc.mine && c !== 'stats' && me) q = q.where('_by', '==', me);
-    if (since > 0) q = q.where('_at', '>', since);
+    var qs = [];
+    if (tk){
+      var tq = treeQuery(c, tk);
+      chunk30(tq.keys).forEach(function(k){ qs.push(FB.db.collection(c).where(tq.fld, 'in', k)); });
+    } else {
+      var q = FB.db.collection(c);
+      if (sc.mine && c !== 'stats' && me) q = q.where('_by', '==', me);
+      qs.push(q);
+    }
+    if (!qs.length) return Promise.resolve();
     /* السحبةُ الباردةُ بلا سقفٍ يقطع: ألفٌ وسبعمئةٌ زيارةٌ لا تُقصّ عند خمسمئة */
-    return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
-      snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });
-      FB.readCount = (FB.readCount || 0) + snap.size;
-      at[c] = start;
-    }).catch(function(e){
+    return Promise.all(qs.map(function(q){
+      if (since > 0) q = q.where('_at', '>', since);
+      return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
+        snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });
+        FB.readCount = (FB.readCount || 0) + snap.size;
+      });
+    })).then(function(){ at[c] = start; }).catch(function(e){
       /* بلا هذا يقف السحبُ صامتًا: المكتبُ يفتح فلا يجد ما رفعه الميدانُ
          ولا يعرف أن السحبَ سقط أصلًا. */
       softErr('سحب ' + c, e, 'تعذّر سحبُ بعض البيانات — جرّب المزامنةَ يدويًّا');

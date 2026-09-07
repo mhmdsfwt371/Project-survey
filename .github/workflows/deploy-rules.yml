@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - 'firestore.rules'
+      - 'firestore.indexes.json'
       - 'firebase.json'
       - '.github/workflows/deploy-rules.yml'
   workflow_dispatch:
@@ -20,7 +21,7 @@ jobs:
         env:
           SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
-      - name: Deploy Firestore rules
+      - name: Deploy Firestore rules + indexes
         env:
           GOOGLE_APPLICATION_CREDENTIALS: ${{ runner.temp }}/sa.json
-        run: npx firebase-tools@13 deploy --only firestore:rules --project project-survey-60600 --non-interactive
+        run: npx firebase-tools@13 deploy --only firestore:rules,firestore:indexes --project project-survey-60600 --non-interactive

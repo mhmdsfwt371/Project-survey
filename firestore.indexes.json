@@ -1,0 +1,89 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "recs",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_by",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "inss",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_by",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_by",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "dismantles",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_by",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "maints",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "_by",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "tasks",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "to",
+          "order": "ASCENDING"
+        },
+        {
+          "fieldPath": "_at",
+          "order": "ASCENDING"
+        }
+      ]
+    }
+  ],
+  "fieldOverrides": []
+}

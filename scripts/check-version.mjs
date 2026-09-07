@@ -328,6 +328,7 @@ try {
  ['scripts/audit-calc.mjs',  'جردُ المعادلات'],
  ['scripts/audit-exports.mjs','جردُ التصديرات'],
  ['scripts/audit-rules.mjs',  'جردُ القواعد'],
+ ['scripts/audit-capacity.mjs', 'جردُ السعة'],       /* كان في السحابة وحدَها — فسقط أربعَ دفعاتٍ والحارسُ أخضر */
  ['scripts/audit-scale.mjs',  'جردُ الاتساع'],
  ['scripts/audit-db-rules.mjs','جردُ قواعد القاعدة'],
  ['scripts/audit-crud.mjs',   'جردُ الدورة الكاملة'],

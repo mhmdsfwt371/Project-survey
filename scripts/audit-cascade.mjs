@@ -18,7 +18,11 @@ let bad = 0; const T = (c, n, x) => { if (!c) bad++; console.log((c ? '  ✓ ' :
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 /* ═══ ساكن ═══ */
-T(/function pullScope\(\)/.test(js) && /rankOf\(ROLE\) >= rankOf\('supervisor'\) \|\| r === 'exec' \|\| r === 'admin'/.test(js), 'نطاقُ السحب بالرتبة: المشرفُ فما فوق والإدارةُ العليا يرون الكلّ');
+/* V16.11: الإدارةُ الكلَّ، ومن دونها إلى المشرف شجرتَه (tree:true)، والميدانُ ما كتبه —
+   ومن له إنصاتٌ لا يسحب دوريًّا: السحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات. */
+T(/function pullScope\(\)/.test(js) && /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\)\) return \{ cols:ALL_WORK, mine:false, tree:false, every:21600000 \}/.test(js)
+  && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:true, every:21600000 \}/.test(js),
+  'نطاقُ السحب: الإدارةُ الكلَّ، ومن دونها شجرتَه — والسحبُ الدوريُّ لمن يُنصِت كلَّ ستِّ ساعات');
 T(/var since = \(at\[c\] \|\| 0\) - 120000;/.test(js) && !/var since = STATE\.meta\.lastSync/.test(js), 'المؤشِّرُ خاصٌّ بالسحب بتداخل دقيقتين — لا «آخر مزامنة»');
 T(/pullAt:STATE\.meta\.pullAt \|\| \{\}/.test(js) && /STATE\.meta\.pullAt = v\.pullAt/.test(js), 'ويُحفَظ ويُستعاد');
 T(/PULL_COL = \{ recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints'/.test(js), 'وكلُّ مجموعةٍ تصل مفتاحَها في الحالة');
@@ -89,13 +93,35 @@ function fakeDb(w, docsByCol, log){
 }
 { const { w } = await boot('supervisor', 'مشرف');
   const sc = w.pullScope();
-  T(sc.mine === false && sc.cols.includes('tasks'), 'المشرفُ يرى زياراتِ فنيّيه وإسناداتِهم لا زياراتِه وحده');
+  T(sc.mine === false && sc.tree === true && sc.cols.includes('tasks'), 'المشرفُ يرى زياراتِ فنيّيه وإسناداتِهم لا زياراتِه وحده — شجرتُه');
+  /* شجرتُه في الاستعلام: «in» على المعرِّفات للسجلات وعلى الأسماء للمهامّ — وهو معهم */
+  w.STATE.users = { 'u-supervisor':{ name:'مشرف', role:'supervisor' }, 't1':{ name:'فني ١', role:'tech', sup:'مشرف' },
+                    't2':{ name:'فني ٢', role:'tech', sup:'مشرف' }, 'x9':{ name:'فني غريب', role:'tech', sup:'مشرف آخر' } };
+  const tk = w.treeKeys();
+  T(tk.uids.slice().sort().join(',') === 't1,t2,u-supervisor' && tk.names.includes('فني ١') && !tk.names.includes('فني غريب'), 'treeKeys: فنيّاه وهو — لا فنيُّ غيره', tk.uids.join(','));
+  const log = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, log); w.STATE.meta.pullAt = {};
+  w.pullDelta = w.__real.pullDelta; await w.pullDelta();
+  const rq = log.find(x => x.col === 'recs'), tq = log.find(x => x.col === 'tasks');
+  T(!!rq && rq.wheres.some(x => x[0] === '_by' && x[1] === 'in' && x[2].includes('t1') && !x[2].includes('x9')), 'سحبُ المشرف: recs where _by in شجرته', rq && JSON.stringify(rq.wheres));
+  T(!!tq && tq.wheres.some(x => x[0] === 'to' && x[1] === 'in' && x[2].includes('فني ١')), 'ومهامُّه: tasks where to in أسماء شجرته');
+  T(w.STATE.meta.pullAt.__sig === tk.sig, 'ومؤشِّرُ السحب يحمل بصمةَ الشجرة — فيُصفَّر إن تغيّرت');
+  log.length = 0; w.liveSmall = w.__real.liveSmall; w.liveSmall();
+  const li = log.find(x => x.listen && x.col === 'inss');
+  T(!!li && li.wheres.some(x => x[0] === '_by' && x[1] === 'in') && li.wheres.some(x => x[0] === '_at' && x[1] === '>'), 'وإنصاتُه على شجرته فقط — بعد بدء الجلسة');
+  /* ثلاثون في الاستعلام: خمسون فنيًّا = استعلامان */
+  for (let i = 0; i < 50; i++) w.STATE.users['b' + i] = { name:'ف' + i, role:'tech', sup:'مشرف' };
+  log.length = 0; w.STATE.meta.pullAt = {}; await w.pullDelta();
+  const rqs = log.filter(x => x.col === 'recs');
+  T(rqs.length === 2 && rqs.every(x => x.wheres[0][2].length <= 30), 'أكثرُ من ثلاثين تُقسَّم استعلاماتٍ', String(rqs.length));
 }
 { const { w } = await boot('tech', 'فني');
   const sc = w.pullScope();
-  T(sc.mine === true && !sc.cols.includes('tasks') && sc.every === 900000, 'الفنيُّ يسحب ما كتبه هو كلَّ ربع ساعة — ومهامُّه بالإنصات');
+  T(sc.mine === true && !sc.cols.includes('tasks') && sc.every === 21600000, 'الفنيُّ يُنصِت إلى ما كتبه ومهامِّه — والسحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات');
+  const logF = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, logF); w.liveSmall = w.__real.liveSmall; w.liveSmall();
+  const lf = logF.filter(x => x.listen && ['recs','inss','dismantles','maints'].includes(x.col));
+  T(lf.length === 4 && lf.every(x => x.wheres.some(y => y[0] === '_by' && y[2] === 'u-tech') && x.wheres.some(y => y[0] === '_at')), 'أربعةُ إنصاتاتٍ على ما كتبه هو — بعد بدء الجلسة', String(lf.length));
   const log = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, log); w.liveSmall = w.__real.liveSmall; w.liveSmall();
-  T(!log.some(x => x.listen && x.col === 'recs'), 'ولا يُنصِت إلى زيارات غيره');
+  T(!log.some(x => x.listen && x.col === 'recs' && !x.wheres.some(y => y[0] === '_by' && y[2] === 'u-tech')), 'ولا يُنصِت إلى زيارات غيره — ما كتبه هو فقط');
 }
 { const { w } = await boot('viewer', 'وزارة');
   const sc = w.pullScope();

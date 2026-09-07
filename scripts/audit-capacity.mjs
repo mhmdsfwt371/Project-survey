@@ -30,7 +30,8 @@ const K = {
   queueCap:  num(/QUEUE_CAP\s*=\s*(\d+)/, 0),
   batch:     num(/queue\.slice\(0,\s*(\d+)\)/, 0),
   pullLimit: num(/limit\((\d+)\)\.get/, 0),
-  syncMs:    num(/pullDelta\(\)\.then\(function\(n\)\{ if \(n\) render\(1\); \}\);\s*\n\}, (\d+)\)/, 0),
+  /* V16.6 بدّل المؤقّتَ بعدّادٍ ثانويّ: SYNC_CYCLE بالثواني لا بالمللي */
+  syncMs:    num(/var SYNC_CYCLE = (\d+)/, 0) * 1000,
   rollMs:    num(/now - ROLL_LAST < (\d+)/, 0),
   pushMs:    num(/now - ROLL_PUSH > (\d+)/, 0)
 };
@@ -60,22 +61,47 @@ check(writes <= CAP.writes * 0.8,
 
 /* ── القراءة: سحبٌ باردٌ مرةً + فوارقُ اليوم ─────────────────────────────── */
 /* الميدانُ يسحب ما كتبه هو، والمكتبُ يسحب الكلَّ — فيُحسَب كلٌّ على حدة */
-const layered = /var cols  = deep \? \['recs','inss','tasks'\]/.test(src)
-             && /: stat \? \['stats'\]/.test(src);
-check(layered, 'السحبُ ثلاثُ طبقات: المهندسُ خامًّا، والمكتبُ تجميعًا، والميدانُ لا شيء');
-const scoped = /if \(!deep && c !== 'stats' && me\) q = q\.where\('_by'/.test(src);
-check(scoped, 'ما دون المهندسِ لا يقرأ سجلاتِ غيره');
-const officeEvery = num(/var every  = office \? (\d+)/, 300000);
-const DEEP = 3, DESK = 5, FIELD = USERS - DEEP - DESK;
-const dayDocs = workWrites;
-const deepReads  = DEEP * dayDocs + DEEP * Math.round(86400000 / officeEvery);
-const deskReads  = DESK * Math.round(86400000 / officeEvery);   /* وثيقةُ اليوم لا غير */
-const fieldCold  = FIELD * 2;                                   /* سحبةٌ باردةٌ واحدة */
+/* ═══ الطبقاتُ كما صارت في V16.11 ═══
+   كان الفحصُ يقرأ `cols/deep` — شكلًا لم يعد له وجودٌ منذ V16.6 — فسقط أربعَ
+   مراتٍ صامتًا في السحابة لأنه لم يكن مسجَّلًا في الحارس المحليّ. ولمّا قُرئت
+   الأرقامُ الحقيقيةُ كانت الميزانيةُ تسعةَ أضعافِ الحصة: كلُّ من فوق المشرف
+   يسحب الكلَّ ويُنصِت إليه فوق ذلك. فصار النطاقُ شجرةً والتسليمُ مرةً. */
+const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
+             && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:true/.test(src)
+             && /if \(r === 'viewer'\) return \{ cols:\['stats'\]/.test(src)
+             && /cols:\['recs','inss','dismantles','maints'\], mine:true/.test(src);
+check(layered, 'السحبُ أربعُ طبقات: الإدارةُ الكلَّ، ومن دونها شجرتَه، والوزارةُ الأرقامَ، والميدانُ ما كتبه');
+const scoped = /if \(sc\.mine && c !== 'stats' && me\) q = q\.where\('_by', '==', me\)/.test(src)
+            && /where\(tq\.fld, 'in', k\)/.test(src);
+check(scoped, 'والميدانُ لا يقرأ سجلاتِ غيره — والمشرفُ شجرتَه بـ«in»');
+const officeEvery = num(/mine:false, tree:true, every:(\d+)/, 21600000);
+const fieldEvery  = num(/mine:true, tree:false, every:(\d+)/, 21600000);
+check(/if \(scope\.mine && STATE\.meta\.uid\)\{/.test(src) && /\['_by', '==', STATE\.meta\.uid\], \['_at', '>', tf\]/.test(src),
+  'والميدانُ يُنصِت إلى ما كتبه هو — لا يستعلم فارغًا كلَّ نصف ساعة');
+check(officeEvery >= 3600000, `ومن يُنصِت لا يسحب دوريًّا إلا شبكةَ أمانٍ — كلَّ ${Math.round(officeEvery/3600000)} ساعات`);
+
+/* ═══ يومُ الذروة من نطاق المشروع لا من عددِ الناس ═══
+   كان يومُ الذروة «كلُّ شخصٍ عشرون مسحًا وثمانيةُ تركيبات» — أي ألفان وخمسمئةُ
+   مسحٍ في يومٍ والنطاقُ كلُّه ١٧٨٧ نقطة. فصار: المسحُ كلُّه في يومٍ واحدٍ (أقصى ما
+   يمكن)، والتركيبُ سُبعُ النطاق. */
+const SITES = 1787;
+const peakDocs = SITES * docsPerSurvey + Math.ceil(SITES / 7) * docsPerInstall;
+const dayDocs = Math.min(workWrites, peakDocs);
+/* من يقرأ الوثيقةَ الواحدة: الإدارةُ كلُّها (مديرٌ وإدارةٌ عليا) + سلسلةُ من فوقها
+   في الشجرة (مشرفٌ، مهندسٌ، ومديرا المهندسين) — لا كلُّ مشرفٍ في المشروع */
+const ADMINS = 2, CHAIN = 4, VIEW = 2, FIELD = USERS - ADMINS - CHAIN * 5 - VIEW;
+const perDoc = ADMINS + CHAIN;
+const rawReads   = perDoc * dayDocs;                          /* تسليمٌ واحدٌ لكلِّ قارئ */
+const safety     = (ADMINS + 20) * Math.round(86400000 / officeEvery) * 5;
+const viewReads  = VIEW * Math.round(86400000 / 300000);
+const fieldCold  = FIELD * 4;                                 /* أربعُ مجموعاتٍ باردة */
+const fieldDelta = FIELD * Math.round(86400000 / fieldEvery) * 4;   /* أربعُ مجموعاتٍ كلَّ سحبة */
 const liveTasks  = FIELD * 20;
-const reads = deepReads + deskReads + fieldCold + liveTasks;
+const reads = rawReads + safety + viewReads + fieldCold + fieldDelta + liveTasks;
 check(reads <= CAP.reads,
   `القراءةُ اليوميةُ داخل الحصة — ${reads.toLocaleString('en')} من ${CAP.reads.toLocaleString('en')}`
-  + ` (مهندسون ${deepReads.toLocaleString('en')} · مكتب ${deskReads.toLocaleString('en')} · ميدان ${(fieldCold+liveTasks).toLocaleString('en')})`);
+  + ` (${perDoc} قرّاءٍ لكلِّ وثيقةٍ من ${dayDocs.toLocaleString('en')}: ${rawReads.toLocaleString('en')} · أمان ${safety.toLocaleString('en')}`
+  + ` · وزارة ${viewReads.toLocaleString('en')} · ميدان ${(fieldCold+fieldDelta+liveTasks).toLocaleString('en')})`);
 check(reads <= CAP.reads * 0.8, `وفيها متّسعٌ — المستعمَل ${Math.round(reads / CAP.reads * 100)}٪`);
 
 /* ── التخزين: لا صورةَ خامٌ في القاعدة ──────────────────────────────────── */
