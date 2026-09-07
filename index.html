@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.11</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.12</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3486,7 +3486,8 @@ en:{
  'يبقى حسابُ الدخول ويُمحى الباقي. لا رجوع.':'The sign-in account stays and the rest is removed. No way back.',
  'أُلغي':'Cancelled',
  'الكلمةُ المؤقتة (التي على الورقة)':'Temporary password (the one on the sheet)',
- 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'Enter your temporary password first to prove identity — then change'
+ 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'Enter your temporary password first to prove identity — then change',
+ 'معتمدة — جاهزة للإسناد':'Approved — ready to assign', 'اعتمد واختر الأجهزة':'Approve and pick devices', 'اعتمد واحفظ الأجهزة':'Approve and save devices', 'اعتُمدت ودخلت طبقةَ التركيب':'Approved — now in the install layer', 'مُسندة للتركيب':'Assigned for install', 'اعتماد الزيارة واختيار الأجهزة':'Approve the visit and pick devices', 'الحفظُ يعتمد الزيارةَ ويحفظ الأسطرَ حلًّا معتمدًا — فتدخل طبقةَ التركيب جاهزةً للإسناد.':'Saving approves the visit and stores the lines as an approved solution — the point enters the install layer ready to assign.',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6096,7 +6097,8 @@ ur:{
  'يبقى حسابُ الدخول ويُمحى الباقي. لا رجوع.':'سائن اِن اکاؤنٹ رہے گا باقی مٹ جائے گا۔ واپسی نہیں۔',
  'أُلغي':'منسوخ',
  'الكلمةُ المؤقتة (التي على الورقة)':'عارضی پاس ورڈ (جو شیٹ پر ہے)',
- 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'شناخت ثابت کرنے کے لیے پہلے عارضی پاس ورڈ لکھیں — پھر بدلیں'
+ 'اكتب كلمتَك المؤقتة أوّلًا لإثبات الهوية — ثم بدّل':'شناخت ثابت کرنے کے لیے پہلے عارضی پاس ورڈ لکھیں — پھر بدلیں',
+ 'معتمدة — جاهزة للإسناد':'منظور — تفویض کے لیے تیار', 'اعتمد واختر الأجهزة':'منظور کریں اور آلات چنیں', 'اعتمد واحفظ الأجهزة':'منظور کریں اور آلات محفوظ کریں', 'اعتُمدت ودخلت طبقةَ التركيب':'منظور — تنصیب کی تہ میں', 'مُسندة للتركيب':'تنصیب کے لیے تفویض', 'اعتماد الزيارة واختيار الأجهزة':'دورہ منظور کریں اور آلات چنیں', 'الحفظُ يعتمد الزيارةَ ويحفظ الأسطرَ حلًّا معتمدًا — فتدخل طبقةَ التركيب جاهزةً للإسناد.':'محفوظ کرنے سے دورہ منظور اور حل محفوظ ہوتا ہے — نقطہ تنصیب کی تہ میں آتا ہے۔',
 }
 };
 
@@ -15999,7 +16001,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.11' + '.docx" download>⬇ '
+              +   'V16.12' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17340,6 +17342,9 @@ function mapColorOf(x){
   if (typeof LAYERS === 'object' && LAYERS[FIELD_MODE]){
     var L = LAYERS[FIELD_MODE];
     if (L.done(x)) return L.c;
+    /* التركيبُ بألوان دورة الحياة نفسِها: المعتمدةُ الجاهزةُ للإسناد برتقاليةٌ
+       (كما هي في طبقة المسح) والمُسندةُ بنفسجية — فلا يتبدّل معنى اللون بين طبقتين */
+    if (FIELD_MODE === 'install') return asnOf(x.id) ? LIFE.sched.c : LIFE.ready.c;
     if (asnOf(x.id)) return '#FF8C42';
     return '#E8C34B';
   }
@@ -19208,7 +19213,7 @@ function legendRows(){
     /* الأسطورةُ تُشتقُّ من دورة الحياة نفسِها — فلا تفترق عن الخريطة */
     rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n, k]; });
   } else if (FIELD_MODE === 'install'){
-    rows = [['#E8C34B','بانتظار التركيب','wait'], ['#FF8C42','مُسند','asn'], [L.c,'مُركّب','done']];
+    rows = [[LIFE.ready.c,'معتمدة — جاهزة للإسناد','wait'], [LIFE.sched.c,'مُسندة للتركيب','asn'], [L.c,'مُركّب','done']];
   } else {
     rows = [['#E8C34B','قابل للفك','wait'], ['#FF8C42','مجدول للفك','asn'], [L.c,'تم الفك','done']];
   }
@@ -19886,8 +19891,19 @@ PAGE.survey = { m:'الطلبات والمسح', t:'دورة النقطة',
                 + (so ? ' \u00b7 ' + t('الحل') + ': ' + t(so.status) : ' \u00b7 ' + t('بلا حلٍّ بعد'))) : '');
       var actions = '';
       if (rv === 'pending' && may('approve')){
+        /* الاعتمادُ واختيارُ الأجهزة خطوةٌ واحدة: كان يعتمد ثم يبحث عن النقطة في
+           «معتمدة» ليقترح حلَّها — فصار الاختيارُ هنا، والحفظُ يعتمد ويحفظ الحلَّ
+           معًا، فتدخل النقطةُ طبقةَ التركيب برتقاليةً جاهزةً للإسناد. */
+        if (SVA_SOL === x.id && may('edit')){
+          actions = card('اعتماد الزيارة واختيار الأجهزة', itemPickerHtml()
+            + '<p class="hint" style="margin:8px 0 0">' + esc(t('الحفظُ يعتمد الزيارةَ ويحفظ الأسطرَ حلًّا معتمدًا — فتدخل طبقةَ التركيب جاهزةً للإسناد.')) + '</p>'
+            + btn('\u2705 ' + t('اعتمد واحفظ الأجهزة'),'btn-primary btn-sm',' data-svsolgo="' + esc(x.id) + '"')
+            + btn(t('تراجع'),'btn-quiet btn-sm',' data-svsolcancel="1"'));
+          return card(head0, body + actions);
+        }
         actions = '<div class="actions">'
-          + btn('\u2705 ' + t('اعتمد الزيارة'),'btn-primary btn-sm',' data-svappr="' + esc(x.id) + '"')
+          + (may('edit') ? btn('\u2705 ' + t('اعتمد واختر الأجهزة'),'btn-primary btn-sm',' data-svsol="' + esc(x.id) + '"') : '')
+          + btn('\u2705 ' + t('اعتمد الزيارة'),(may('edit') ? 'btn-secondary' : 'btn-primary') + ' btn-sm',' data-svappr="' + esc(x.id) + '"')
           + btn('\u21a9 ' + t('تحتاج زيارة أخرى'),'btn-danger btn-sm',' data-svrevisit="' + esc(x.id) + '"')
           + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"') + '</div>';
         if (SVA_REV === x.id){
@@ -26934,7 +26950,10 @@ function onDocClick(e){
   if (e.target.closest('[data-svsolcancel]')){ SVA_SOL = ''; render(1); return; }
   var svsg = e.target.closest('[data-svsolgo]');
   if (svsg){ var idS = svsg.getAttribute('data-svsolgo');
-    if (solGo(idS)){ if (may('users')) solutionAppr(idS, 1); SVA_SOL = ''; }
+    /* من بطاقة الانتظار: تُعتمَد الزيارةُ أوّلًا ثم يُحفَظ الحلّ — خطوةٌ واحدةٌ للمهندس */
+    var rS = STATE.recs[idS];
+    if (rS && svReview(rS) !== 'approved' && !svApprove(idS)){ render(1); return; }
+    if (solGo(idS)){ if (may('users')) solutionAppr(idS, 1); SVA_SOL = ''; toast(idS + ' \u00b7 ' + t('اعتُمدت ودخلت طبقةَ التركيب')); }
     render(1); return; }
   var ipf = e.target.closest('[data-ipfill]');
   if (ipf){
