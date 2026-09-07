@@ -55,6 +55,8 @@ for (const d of snap.docs){
     await db.collection('pending').doc(user).delete().catch(() => {});
     done++;
     console.log(`  ✓ ${user} → ${u.uid}`);
+    /* تنبيهٌ يُقرأ من واجهة GitHub البرمجية: مَن أُنشئ فعلًا لا في السجل وحده */
+    console.log(`::notice title=${user}::أُنشئ — ${p.role || 'tech'} — ${u.uid}`);
   } catch (e){
     failed++;
     const why = String(e && (e.message || e.code) || e).slice(0, 160);

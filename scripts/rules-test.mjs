@@ -192,7 +192,8 @@ await ok  ('والمهندسُ يعتمده',                     updateDoc(doc(
 await deny('المشرفُ لا يكتب الإعدادات',            setDoc(doc(as('sup'), 'settings/points'), { tgtSurvey:1 }));
 await deny('ولا خطَّ الأساس',                      setDoc(doc(as('sup'), 'baseline/b1'), { ver:1 }));
 await deny('ولا المشتريات',                        setDoc(doc(as('sup'), 'purchases/p1'), { id:'p1' }));
-await ok  ('لكنه يكتب نقاطَ زيادةٍ لفنيّه',        setDoc(doc(as('sup'), 'bonus/bn1'), { tech:'فني', pts:2, why:'جهد' }));
+await deny('ولا نقاطَ زيادة — فهي فوق الميدان',    setDoc(doc(as('sup'), 'bonus/bn1'), { tech:'فني', pts:2, why:'جهد' }));
+await ok  ('والمهندسُ يكتبها',                     setDoc(doc(as('eng'), 'bonus/bn1'), { tech:'فني', pts:2, why:'جهد' }));
 await env.withSecurityRulesDisabled(async (ctx) => {
   await setDoc(doc(ctx.firestore(), 'users/adm'), { name:'مدير', role:'admin', active:true });
 });

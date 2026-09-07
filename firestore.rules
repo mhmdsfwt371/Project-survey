@@ -255,9 +255,11 @@ service cloud.firestore {
     match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
     /* نقاطُ الزيادة: قرارُ من يشرف لا من يُنفَّذ له — مشرفٌ أو مهندسٌ وحدهما،
        لا كلُّ من يملك canW() (فالفنيَّ وقائدَ الفريق الميدانيّ يرثانها أيضًا). */
-    // نقاطُ الزيادة قرارُ من يشرف: المشرفُ والمهندسُ ومديرُ المشروع — لا الفنيّ
+    // نقاطُ الزيادة قرارٌ فوق الميدان: المهندسُ ومديرُ المشروع والإدارةُ العليا —
+    // لا المشرفُ ولا الفنيّ؛ فالنقاطُ تدخل المستحقَّ ولا تُترَك لمن يعمل مع من
+    // يقيّمه يومًا بيوم.
     match /bonus/{id}    { allow read: if ok();
-                            allow create, update, delete: if ok() && role() in ['engineer', 'supervisor', 'admin']; }
+                            allow create, update, delete: if ok() && myRank() >= 90; }
     match /workreqs/{id} { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
     match /baseline/{id} { allow read: if ok();   allow create, update: if mgr();  allow delete: if false; }
     match /changes/{id}  { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if false; }
