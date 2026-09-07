@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.19",
+  "app_version": "V16.20",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1488,7 +1488,8 @@
     "V16.16": "notifOnArrival(kind,id,prev,v) يُستدعى من CORE.applyDoc: tasks→إسناد لمن أُسند إليه/تمّ للمعتمِد؛ recs→زيارة تمّت (may approve)/اعتماد/تحتاج زيارة أخرى (notifMine: أنا أو شجرتي)؛ inss→تركيب تمّ/اعتماد؛ diss/maints→إسناد. علامة STATE.meta.notifAt (تُحفَظ) + NOTIF_SEEN؛ أوّل دخول يضبط العلامة بلا إخبار. presence.reads + بطاقة «قراءات القاعدة اليوم» في نسخ الأجهزة.",
     "V16.17": "provSync (data-provsync): STATE.provision = القاعدة كما هي + إزالة الصفوف المؤقتة بلا طلب منتظر؛ provCancelAll (data-provcancel/go) يلغي المعلّق محليًّا وفي القاعدة ويُسقطه من الطابور؛ provQueued + تنبيه «في طابور هذا الجهاز» + ادفع الآن؛ provReask (data-usrreq) يعيد الطلب من الصف المؤقت بكلمة genPass.",
     "V16.18": "pullScope: rank≥engineer → الكل (tree:false) كالإدارة — أي نقطة تُنجَز يصل اعتمادُها كلَّ مهندس؛ المشرف شجرته. audit-capacity: perDoc = ADMINS + ENGS(5) + 1 → 72k قراءة في يوم الذروة (Blaze: ~٠٫٠٠٧ دولار).",
-    "V16.19": "NAV: وحدة «الطلبات والمسح» أُزيلت وصفحتاها survey/req دخلتا «الميدان» (PAGE.m)؛ تبويب ready في survey: asnReadyList(install) + data-asnq=install + data-golayer؛ الإشعار الفعّال: data-ngo (svappr/qa) يفتح دورة النقطة على التبويب والنقطة (SVA_Q) ويعلّم الإشعار مقروءًا، data-site لإسناد/اعتماد/ردّ."
+    "V16.19": "NAV: وحدة «الطلبات والمسح» أُزيلت وصفحتاها survey/req دخلتا «الميدان» (PAGE.m)؛ تبويب ready في survey: asnReadyList(install) + data-asnq=install + data-golayer؛ الإشعار الفعّال: data-ngo (svappr/qa) يفتح دورة النقطة على التبويب والنقطة (SVA_Q) ويعلّم الإشعار مقروءًا، data-site لإسناد/اعتماد/ردّ.",
+    "V16.20": "العهد: settings/app.epoch يكتبه wipeGo؛ epochApply(cloud) يفرغ WIPE_KEYS+queue+poison+notifs ويصفّر pullAt ويحفظ meta.epoch؛ يُقرأ في pullStatic قبل pullStatic2 (EPOCH_CHECKED يحجب flush) وفي إنصات settings/app. pendHasAccount/pendDel (data-pnddel). mywork:board لوحة الفريق (underNames: مُسند مفتوح/زيارات اليوم/بانتظار الاعتماد/مُركّب/آخر ظهور من presence)."
   },
   "map_and_geolocation": {
     "tile_layers": {
