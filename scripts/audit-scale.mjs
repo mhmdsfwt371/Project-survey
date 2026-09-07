@@ -76,8 +76,12 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
   const naked = cols.filter(c => !new RegExp('match /' + c + '/').test(rules));
   check(naked.length === 0, 'كلُّ مجموعةٍ تُكتَب لها قاعدةُ وصول'
     + (naked.length ? ' — بلا قاعدة: ' + naked.join(' · ') : ''));
-  check(/match \/events\/\{id\}[\s\S]{0,180}allow update, delete: if false/.test(rules),
-    'سجلُّ الأحداث لا يُعدَّل ولا يُحذَف — أثرٌ يُعدَّل لا يصلح جوابًا');
+  /* المحتوى لا يُعدَّل ولا يُحذَف — لكنَّ إعادةَ الإرسال (ختمُ الدفعة وحده) تُقبَل
+     لئلّا يُرفَض ما وصل أصلًا ثلاثًا ويُعزَل (V15.90) */
+  const evBlock = (rules.match(/match \/events\/\{id\}[\s\S]{0,700}?\n\s*\}/) || [''])[0];
+  check(/allow delete: if false/.test(evBlock)
+        && /allow update: if ok\(\)[\s\S]{0,160}hasOnly\(\['_at', '_by'\]\)/.test(evBlock),
+    'سجلُّ الأحداث لا يُعدَّل محتواه ولا يُحذَف — وإعادةُ إرساله لا تُعاقَب');
 }
 
 /* ══ ٤ · التشغيل: الفرادةُ واللقطةُ والأثر ═══════════════════════════════ */

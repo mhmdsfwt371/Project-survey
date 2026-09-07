@@ -173,6 +173,11 @@ await deny('ولا يسجّل حضورَ غيره',            setDoc(doc(as('te
 await deny('ولا باسمٍ لا يطابق المعرِّف',      setDoc(doc(as('tec'), 'att/tec_2026-09-07'), { uid:'sup', day:'2026-09-07', in:{ at:1 } }));
 await ok  ('والمشرفُ يقرأ حضورَ فنيّه',         getDoc(doc(as('sup'), 'att/tec_2026-09-06')));
 await deny('ولا يمحوه',                        deleteDoc(doc(as('sup'), 'att/tec_2026-09-06')));
+console.log('\n══ الأثرُ يُكتَب مرةً — وإعادةُ الإرسال لا تُرفَض ══');
+await ok  ('الفنيُّ يكتب أثرًا',                 setDoc(doc(as('tec'), 'events/ev1'), { t:'زيارة', by:'فني', at:1, _at:1, _by:'tec' }));
+await ok  ('وإعادةُ الإرسال نفسِها تُقبَل',       setDoc(doc(as('tec'), 'events/ev1'), { t:'زيارة', by:'فني', at:1, _at:2, _by:'tec' }));
+await deny('ولا يُعدَّل محتواه',                  setDoc(doc(as('tec'), 'events/ev1'), { t:'تركيب', by:'فني', at:1, _at:3, _by:'tec' }));
+await deny('ولا يُحذَف',                          deleteDoc(doc(as('eng'), 'events/ev1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

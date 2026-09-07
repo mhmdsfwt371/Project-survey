@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.89",
+  "app_version": "V15.90",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1458,7 +1458,8 @@
     "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69.",
     "V15.87": "routeTasks/routeOrder (nearest-neighbour)/routeLocate/mapsUrl/kmTxt/routeCard في mywork وmine للميدان؛ زر data-routego. الجرد 70.",
     "V15.88": "WA_LAST بعد asnCommit؛ techPhone/waAsnText/waAsn/waAsnCard؛ زر data-watask لكل إسناد في reqreg مع علامة ✓ عند waAt. الجرد 71.",
-    "V15.89": "ghToken/ghSetToken/ghRunNow/ghCard: مفتاح Actions:write في ghcfg/gh (admin فقط) وزر data-ghrun يستدعي workflow_dispatch؛ pendList تخفي من له provision؛ «أُنشئ في» dayKey. القاعدة: ghcfg admin فقط."
+    "V15.89": "ghToken/ghSetToken/ghRunNow/ghCard: مفتاح Actions:write في ghcfg/gh (admin فقط) وزر data-ghrun يستدعي workflow_dispatch؛ pendList تخفي من له provision؛ «أُنشئ في» dayKey. القاعدة: ghcfg admin فقط.",
+    "V15.90": "rules events: update يُقبَل إن كان diff().affectedKeys() ⊆ [_at,_by]؛ أُزيلت كتلة events المكرَّرة؛ audit-db-rules: لا مسار مطابَق مرتين."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4334,5 +4335,11 @@
     "token": "fine-grained: هذا المستودع فقط · Actions: Read and write · يُحفَظ في ghcfg/gh · rules: admin فقط",
     "fallback": "بلا مفتاح: يفتح صفحة Actions ويقول",
     "note": "مفتاح النشر (Contents) لا يكفي — 403"
+  },
+  "events_resend_v15_90": {
+    "symptom": "events/{id} مرفوضة ثلاثًا ومعزولة من حساب admin",
+    "cause": "الطابور يُعيد إرسال وثيقة كُتبت — set merge على موجودة = update — والقاعدة update:false",
+    "fix": "update: ok() && diff(resource).affectedKeys().hasOnly(['_at','_by'])",
+    "also": "match /events مكرَّرة → واحدة؛ فحص التكرار في الجرد"
   }
 }

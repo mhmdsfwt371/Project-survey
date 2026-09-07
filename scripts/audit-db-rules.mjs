@@ -113,4 +113,12 @@ check(!canW.includes("'viewer'"), 'الوزارةُ خارج صلاحية الك
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
+/* مسارٌ يُطابَق مرتين: الكتلتان تُقيَّمان معًا فتُمنَح أوسعُهما — وقد وقع أن
+   كتلةً تمنع التحديثَ والأخرى تُقيَّد غيرَ ذلك، فلا يُعرَف أيُّهما الحاكمة. */
+{
+  const paths = [...R.matchAll(/match\s+(\/[\w{}\/]+)\s*\{/g)].map(m => m[1]);
+  const dup = paths.filter((p, i) => paths.indexOf(p) !== i);
+  check(dup.length === 0, 'لا مسارٌ مطابَقٌ مرتين في القواعد' + (dup.length ? ' — ' + [...new Set(dup)].join(' · ') : ''));
+}
+
 console.log('جردُ قواعد القاعدة نظيف ✅');
