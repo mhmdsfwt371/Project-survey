@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.20</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.21</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9833,10 +9833,13 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       /* ═══ لوحةُ الفريق — من تحتي في صفٍّ لكلِّ واحد ═══
          الأداءُ في «فريقي» نقاطٌ ومعدّلات؛ وهذه العملُ نفسُه: ما أُسند لكلٍّ الآن،
          وما أنجزه اليوم، وما ينتظر اعتمادَ المهندس منه، ومتى ظهر آخرَ مرة. */
-      var me = STATE.meta.name || '', names = underNames(me);
-      if (!names.length) return card('لا أحدَ تحت إشرافك بعد', '<p class="hint" style="margin:0">' + esc(t('حقلُ «مديره» في سجل كلِّ موظفٍ هو ما يربطه بك.')) + '</p>');
+      var me = STATE.meta.name || '';
       var today = dayKey(Date.now()), U = STATE.users || {}, P = STATE.presence || {};
       var roleOf = {}; Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name) roleOf[u.name] = u.role; });
+      /* الميدانُ وحدَه: الفنيّون والمشرفون والأطقم — لا المهندسون؛ فالنقاطُ والزياراتُ
+         والتركيبُ والفكُّ والصيانةُ عملُهم هم، والمهندسُ يعتمد لا يُعَدُّ له */
+      var names = underNames(me).filter(function(n){ var r = roleOf[n] || ''; return effRole(r) === 'supervisor' || isCrewRole(r); });
+      if (!names.length) return card('لا أحدَ تحت إشرافك بعد', '<p class="hint" style="margin:0">' + esc(t('حقلُ «مديره» في سجل كلِّ موظفٍ هو ما يربطه بك.')) + '</p>');
       var seen = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.name && (!seen[p.name] || p.at > seen[p.name])) seen[p.name] = p.at || 0; });
       var rows = names.map(function(n){
         var open = 0, doneToday = 0, visits = 0, pend = 0, inst = 0;
@@ -16188,7 +16191,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.20' + '.docx" download>⬇ '
+              +   'V16.21' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
