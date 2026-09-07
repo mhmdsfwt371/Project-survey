@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.97",
+  "app_version": "V15.98",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1466,7 +1466,8 @@
     "V15.94": "photoFlushCloud: بلا drvCfg تُكتب photos/{site-n} {status:pending,data} والخادم photos-sync.mjs ينقلها للدرايف ويمحو data. provision.yml يشغّل photos-sync. SHEETS: asnreg/visits/installs/dismantles/maints/attendance/mywork + أزرار في reqreg/svappr/disp/maintForm/mywork/now.",
     "V15.95": "provision.yml input team + provision.mjs direct path (TEAM env) مع genPass وnotice بكلمة الدخول؛ enterApp لا هيكل قبل الهوية؛ CORE.legacyDone→FB؛ ROLE default tech؛ data-pushnow في queueHtml؛ 61 جردًا تدخل بهوية. الجرد 73.",
     "V15.96": "usrDel + data-usrdel (rank ≥ engineer، لا self، لا أعلى)؛ provision action:delete → provision.mjs auth.deleteUser؛ rules users delete؛ syncBadge «منذ كم» + lastSync عند كل snapshot + BADGE_TICK 30s.",
-    "V15.97": "isBossHere (BOSS_EMAILS) في autoSignIn وsignIn؛ rules isBoss يقبل m.safwat@nusuk.local؛ provision.mjs: existing role/name محفوظان (roleExplicit)؛ rules-test: الفحص القديم لا يحذف tec."
+    "V15.97": "isBossHere (BOSS_EMAILS) في autoSignIn وsignIn؛ rules isBoss يقبل m.safwat@nusuk.local؛ provision.mjs: existing role/name محفوظان (roleExplicit)؛ rules-test: الفحص القديم لا يحذف tec.",
+    "V15.98": "WIPE_KEYS ثلاثية [state,label,queueKind|null]: events/notifs محليان؛ rules: stats/fixreqs delete mgr()؛ presence/{uid} (read ok, write own, delete mgr) + presenceBeat عند الدخول وكل 30 د + presenceFetch + SHEETS.vers؛ sync: عمود الأمر + data-pzall retry/drop؛ loadLocal يسقط poison بنوع misc؛ render لا يكتب syncMeta؛ acct/hb/retain من البيانات؛ لا `|| 'محمد صفوت'`؛ audit-wipe."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4437,5 +4438,43 @@
     "rules": "isBoss: email in [afaqy, nusuk.local]",
     "server": "reissue يحفظ existing.role/name ما لم يُطلبا",
     "why": "وثيقة صاحب المشروع كُتب عليها دور أدنى فحُبس خارج الإعدادات"
+  },
+  "wipe_presence_v15_98": {
+    "symptom": "بعد «صفّر الآن»: 11 وثيقة معزولة (6 events + 5 stats) بسبب Missing or insufficient permissions — والشاشة تقول القاعدة لا تعرف الحساب",
+    "root": [
+      "kind 'events' ليس في colOf → misc (المقفولة)",
+      "stats delete:false في القاعدة",
+      "fixreqs delete:false",
+      "notifs محلية بلا مجموعة"
+    ],
+    "wipe": "WIPE_KEYS: [stateKey,label,queueKind|null] — null يُفرَغ محليًا فقط (events,notifs)؛ يفرغ evlog وpoison والطابور ثم يقيّد الحذف باسم queueKind",
+    "rules": {
+      "stats": "delete: mgr()",
+      "fixreqs": "update, delete: mgr()",
+      "events": "delete: false (أثر لا يُمحى)",
+      "presence": "read ok(); create,update ok() && auth.uid == uid; delete mgr()"
+    },
+    "presence": {
+      "doc": "presence/{uid} = {uid,name,role,ver,at,day,dev,ua}",
+      "write": "presenceBeat(true) بعد الدخول (المسارين) + كل 30 دقيقة (10 دقائق حد أدنى ما لم تتغير النسخة)",
+      "read": "presenceFetch للمدير عند فتح الشريحة (حد 2 دقيقة) + زر حدّث",
+      "ui": "sys/vers: إحصاءات + جدول + إنذار مشتق لمن ver != appVer() خلال 7 أيام",
+      "export": "SHEETS.vers"
+    },
+    "sync_screen": {
+      "column": "الأمر: حذف (v===null) / كتابة",
+      "bulk": "data-pzall=retry|drop (drop بضغطتين خلال 5 ث — PZ_ARM)",
+      "hint": "حذف ردّته القاعدة ليس رفضًا للحساب"
+    },
+    "load": "loadLocal يسقط poison الذي colOf(kind)==='misc' ويكتب logEventQuiet",
+    "removed_mocks": [
+      "render: syncMeta '٠٢:٥١'",
+      "sys/vers جدول V14.0/V13.84",
+      "acct V14.0",
+      "sys/hb أربعة أصفار",
+      "retain بطاقة نسخ 'لا توجد'",
+      "35× STATE.meta.name || 'محمد صفوت'"
+    ],
+    "guard": "scripts/audit-wipe.mjs"
   }
 }

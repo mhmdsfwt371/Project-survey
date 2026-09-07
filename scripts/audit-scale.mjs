@@ -70,7 +70,7 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
 /* ══ ٣ · القواعدُ تعرف كلَّ مجموعةٍ تُكتَب ═══════════════════════════════ */
 {
   const cols = [...new Set([...html.matchAll(/(\w+):'(\w+)'/g)]
-    .filter(m => /recs|inss|tasks|inventory|purchases|settings|users|events|dismantles|newsites|coreqs|accounts|photos|stats/.test(m[2]))
+    .filter(m => /recs|inss|tasks|inventory|purchases|settings|users|events|dismantles|newsites|coreqs|accounts|photos|stats|presence/.test(m[2]))
     .map(m => m[2]))];
   check(cols.length > 8, `المجموعاتُ المكتوبة (${cols.length})`);
   const naked = cols.filter(c => !new RegExp('match /' + c + '/').test(rules));

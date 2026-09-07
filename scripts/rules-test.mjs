@@ -208,6 +208,27 @@ await ok  ('المهندسُ يحذف فنيًّا',              deleteDoc(doc(
 await deny('ولا يحذف نفسَه',                    deleteDoc(doc(as('eng'), 'users/eng')));
 await deny('ولا يحذف مديرًا',                   deleteDoc(doc(as('eng'), 'users/adm')));
 await deny('والمشرفُ لا يحذف أحدًا',            deleteDoc(doc(as('sup'), 'users/s9')));
+console.log('\n══ التصفيرُ يحذف اللقطاتِ والتصويباتِ — للإدارة وحدَها — ولا يحذف الأثر ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const f = ctx.firestore();
+  await setDoc(doc(f, 'stats/2026-09-01'), { day:'2026-09-01', n:1 });
+  await setDoc(doc(f, 'fixreqs/fx1'), { id:'fx1', site:'S1', by:'فني' });
+});
+await deny('الفنيُّ لا يحذف لقطةً يومية',            deleteDoc(doc(as('tec'), 'stats/2026-09-01')));
+await deny('ولا المشرف',                              deleteDoc(doc(as('sup'), 'stats/2026-09-01')));
+await ok  ('والمهندسُ يحذفها — تصفيرُ الموسم',        deleteDoc(doc(as('eng'), 'stats/2026-09-01')));
+await deny('الفنيُّ لا يحذف طلبَ تصويب',              deleteDoc(doc(as('tec'), 'fixreqs/fx1')));
+await ok  ('والمهندسُ يحذفه',                          deleteDoc(doc(as('eng'), 'fixreqs/fx1')));
+await deny('وسجلُّ الأحداث لا يُحذَف حتى بالتصفير',    deleteDoc(doc(as('eng'), 'events/ev1')));
+console.log('\n══ نسخُ الأجهزة: كلُّ جهازٍ يكتب حضورَه هو ══');
+const pr = { uid:'tec', name:'فني', role:'tech', ver:'V15.98', at:1, dev:'d1' };
+await ok  ('الفنيُّ يكتب حضورَ جهازه',                setDoc(doc(as('tec'), 'presence/tec'), pr));
+await deny('ولا يكتب حضورَ جهازٍ آخر',                setDoc(doc(as('tec'), 'presence/sup'), { ...pr, uid:'sup' }));
+await ok  ('والمطّلعُ يكتب حضورَ جهازه — تليمتري لا بيانات', setDoc(doc(as('vwr'), 'presence/vwr'), { ...pr, uid:'vwr', role:'viewer' }));
+await deny('والمعطَّلُ لا يكتب حضورًا',               setDoc(doc(as('off'), 'presence/off'), { ...pr, uid:'off' }));
+await ok  ('والمشرفُ يقرأ الكلَّ',                     getDoc(doc(as('sup'), 'presence/tec')));
+await deny('ولا يحذفه',                                deleteDoc(doc(as('sup'), 'presence/tec')));
+await ok  ('والمهندسُ يحذفه',                          deleteDoc(doc(as('eng'), 'presence/tec')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');
