@@ -274,7 +274,10 @@ await deny('ولا يعتمدها',                                 updateDoc(do
 await deny('ولا يكتب المصفوفة — رتبته ٦٠',               setDoc(doc(as('lead'), 'settings/perms'), { v:9 }, { merge:true }));
 await ok  ('والمصفوفةُ تخصّه بمفتاحه: تُفتَح له الاعتماد', updateDoc(doc(as('eng'), 'settings/perms'), { 'm.recs.c_lead.a': true }));
 await ok  ('فيعتمد',                                      updateDoc(doc(as('lead'), 'recs/L1'), { review:'approved' }));
-await deny('ودورٌ لا تعرفه الوثيقةُ بلا صلاحية',           getDoc(doc(as('ghost'), 'recs/S1')));
+/* دورٌ لا تعرفه الوثيقةُ ولا القاعدة: يقرأ كأيِّ حسابٍ فعّال (كما كان قبل المصفوفة) ولا يكتب حرفًا */
+await ok  ('ودورٌ لا تعرفه الوثيقةُ يقرأ كأيِّ حسابٍ فعّال',  getDoc(doc(as('ghost'), 'recs/S1')));
+await deny('ولا يكتب حرفًا',                               setDoc(doc(as('ghost'), 'recs/G1'), { ...rec, id:'G1', review:'pending' }));
+await deny('ولا يعلن خطوة',                                setDoc(doc(as('ghost'), 'steps/G1'), { kind:'visit', site:'S1', at:1 }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

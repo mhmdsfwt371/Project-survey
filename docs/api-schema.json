@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.2",
+  "app_version": "V16.3",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1471,7 +1471,8 @@
     "V15.99": "fieldRecords: at نصي يُعرض كما هو أو من ts (لا toISOString)؛ fieldTools من siteStats/CORE.pending؛ SYNC_CYCLE/SYNC_LEFT/syncCycle + id=syncCd في syncBadge + liveTick كل ثانية (بديل FB.pull كل دقيقتين)؛ usrDel يمحو provision/{user} (case-insensitive)؛ provClear + data-provclear + provUserGone؛ qa.mjs يسجّل logEvent قبل الشاشات؛ audit-sync (75).",
     "V16.0": "settings/perms {m:{col:{role:{r,w,a,d}}},v,at,by}؛ rules: pm(col,op,dflt) + pmCell + pmPath (100 نداء، 35 مجموعة)؛ settings/perms read ok / write rank≥90؛ phones: !viewer() && pm؛ app: PM_COLS/PM_OPS/PM_CAP/pmDefault/pmGet/pmOverride/pmToggle/pmSave/pmResetRole/pmRefresh/pmCard؛ may() يقرأ pmOverride؛ تبويب users/perms بقدرة perms (engineer, admin)؛ rules-test +20؛ audit-perms (76).",
     "V16.1": "provList {key, user:user||key}؛ provWipe/provClear بالمفتاح، provClear لا يمسّ action:delete غير المنتهي؛ CORE.validId + dirty يرفض الفارغ؛ loadLocal يُخرج الفارغ من الطابور؛ flush يعزل badIds قبل الدفع؛ pushEach يلفّ putOne بـPromise.resolve؛ audit-sync §5.",
-    "V16.2": "settings/roles {r:{key:{n,base,rank,at,by}},v,at}؛ rules: knownRole/docRole/customRole، role()=base، myRank()=rank، pmCell بـdocRole؛ app: BASE_ROLES/effRole/rolesApply/roleUsers/roleAdd/roleDel/pmSetDirect؛ data-capt يكتب perms أيضًا؛ data-roleadd/data-roledel؛ isCrewRole/SITES_ALL/data-sitesall؛ fieldList وlayerFiltered بالمُسنَد؛ provision.mjs يقرأ settings/roles؛ rules-test +10؛ audit-crole (77)."
+    "V16.2": "settings/roles {r:{key:{n,base,rank,at,by}},v,at}؛ rules: knownRole/docRole/customRole، role()=base، myRank()=rank، pmCell بـdocRole؛ app: BASE_ROLES/effRole/rolesApply/roleUsers/roleAdd/roleDel/pmSetDirect؛ data-capt يكتب perms أيضًا؛ data-roleadd/data-roledel؛ isCrewRole/SITES_ALL/data-sitesall؛ fieldList وlayerFiltered بالمُسنَد؛ provision.mjs يقرأ settings/roles؛ rules-test +10؛ audit-crole (77).",
+    "V16.3": "rules-test: الدور غير المعرَّف يقرأ (ok()) ولا يكتب — تصحيح توقّع الفحص."
   },
   "map_and_geolocation": {
     "tile_layers": {
