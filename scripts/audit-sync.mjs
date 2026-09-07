@@ -62,6 +62,7 @@ T(pend >= 1 && new RegExp('غير مزامن[\\s\\S]{0,80}' + w.nm(pend)).test(c
 /* ٣ · العدّادُ في الرأس يتحرّك ويُزامِن عند الصفر */
 w.STATE.meta.online = true; w.FB.ready = true; w.FB.db = w.FB.db || {};
 w.FB.pull = () => Promise.resolve(0);
+const realFlush = w.CORE.flush;
 w.CORE.flush = () => { flushes++; return Promise.resolve(0); };
 w.liveTick();
 w.syncBadge();
@@ -93,6 +94,27 @@ const clr = c.querySelector('[data-provclear]');
 T(!!clr, 'زرُّ «امسح المنتهية» ظاهرٌ للمهندس');
 if (clr) clr.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 T(!Object.keys(w.STATE.provision).some(k => (w.STATE.provision[k] || {}).status === 'done'), 'وبضغطته تُمسَح المنتهية', Object.keys(w.STATE.provision).join(','));
+
+/* ٥ · وثيقةٌ بمعرِّفٍ فارغٍ لا توقف الطابور — ولا تدخله أصلًا */
+T(/validId: function\(id\)/.test(js) && /Promise\.resolve\(\)\.then\(function\(\)\{ return FB\.putOne\(it\); \}\)/.test(js), 'المعرِّفُ يُفحَص والانفجارُ المتزامنُ يُحوَّل رفضًا لوثيقته');
+w.STATE.queue = []; w.STATE.poison = [];
+w.CORE.dirty('provision', '', null);
+T(w.STATE.queue.length === 0 && (w.SOFT_ERRS || []).some(e => /معرِّفٌ فارغ/.test(String(e.msg || e.err || ''))), 'معرِّفٌ فارغٌ لا يدخل الطابور ويُقال', w.STATE.queue.length + ' في الطابور');
+w.STATE.queue = [{ kind:'provision', id:'', v:null, at:1 }, { kind:'presence', id:'u-eng', v:{ ver:'x' }, at:2 }];
+w.STATE.meta.online = true; w.FB.ready = true; w.FB.db = w.FB.db || {};
+w.FB.init = () => Promise.resolve(true);
+w.FB.push = () => Promise.reject(new Error('PERMISSION_DENIED'));
+w.FB.putOne = it => { if (!it.id) throw new Error('Function CollectionReference.doc() cannot be called with an empty path.'); return Promise.resolve(); };
+w.CORE._busy = false; w.CORE.flush = realFlush;
+const sent = await w.CORE.flush();
+T(sent === 1 && !w.STATE.queue.some(q => q.kind === 'presence' || !w.CORE.validId(q.id)), 'الوثيقةُ الصالحةُ تُرفَع رغم جارتها الفارغة', 'sent=' + sent + ' بقي=' + w.STATE.queue.map(q => q.kind).join(','));
+T(w.STATE.poison.some(p => p.kind === 'provision' && p.id === '' && /معرِّف/.test(p.err)), 'والفارغةُ تُعزَل باسم سببها');
+/* provList يحفظ المفتاح */
+w.STATE.provision = { 'del-u1':{ action:'delete', uid:'u1', user:'', status:'done', at:1 }, 'm.ok':{ user:'M.OK', status:'done', at:2 } };
+const L = w.provList();
+T(L.every(r => r.key) && L.find(r => r.key === 'del-u1').user === 'del-u1' && L.find(r => r.key === 'm.ok').user === 'M.OK', 'provList يحمل المفتاحَ ولا يكتب الحقلُ فوقه');
+w.STATE.queue = []; w.provClear();
+T(w.STATE.queue.every(q => w.CORE.validId(q.id)) && w.STATE.queue.some(q => q.id === 'del-u1') && w.STATE.queue.some(q => q.id === 'm.ok'), 'ومسحُ المنتهية يحذف بالمفتاح لا بالحقل', w.STATE.queue.map(q => q.id).join(','));
 
 console.log(bad ? '\nجردُ المزامنة والسجلات فشل ✗ (' + bad + ')' : '\nالسجلاتُ تُفتَح والعدّادُ يعدّ ويُزامِن والطلباتُ تذهب مع أصحابها ✅');
 process.exit(bad ? 1 : 0);

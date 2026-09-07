@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.1</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7805,6 +7805,12 @@ var CORE = {
      فلا يُثقَل القرصُ بخمسين كتابةً كاملةً للحالة. والطابور محدودٌ بألفين
      فلا يملأ الذاكرةَ انقطاعٌ طويل — وأقدمُه يُسقَط أولًا مع تحذير. */
   dirty: function(kind, id, v){
+    /* معرِّفٌ فارغٌ أو فيه «/» ينفجر عند بناء المرجع فيُسقِط الدفعةَ كلَّها —
+       يُرفَض هنا ويُقال، ولا يدخل الطابور */
+    if (!CORE.validId(id)){
+      if (typeof softErr === 'function') softErr('طابور — ' + kind, 'معرِّفٌ فارغٌ أو غيرُ صالح: «' + String(id) + '»', 'وثيقةٌ بلا معرِّفٍ لم تدخل الطابور — ' + kind);
+      return;
+    }
     if (typeof statBump === 'function') statBump();
     /* المفتاحُ الواحدُ لا يدخل الطابورَ مرتين: الإعدادُ يُكتَب مرارًا وهو
        يُقرَأ — فيتضخّم الطابورُ بكتاباتٍ لقيمةٍ واحدة، ويُرفَع القديمُ ثم
@@ -7833,6 +7839,10 @@ var CORE = {
   },
 
   /* حفظٌ مؤجَّل — يُجمَّع ما تتابع من كتابات */
+  validId: function(id){
+    var sId = (id === undefined || id === null) ? '' : String(id);
+    return !!sId && sId.indexOf('/') < 0 && sId !== '.' && sId !== '..';
+  },
   saveSoon: function(){
     if (_saveT) return;
     _saveT = setTimeout(function(){ _saveT = 0; CORE.saveLocal(); }, 400);
@@ -7869,6 +7879,15 @@ var CORE = {
         }
         STATE.queue = keep;
       }
+      /* وما دخل الطابورَ بمعرِّفٍ فارغٍ من نسخةٍ سابقة يُخرَج منه ويُقال — لا يُرفَع أبدًا */
+      if (Array.isArray(STATE.queue)){
+        var badQ = STATE.queue.filter(function(q){ return !CORE.validId(q.id); });
+        if (badQ.length){
+          STATE.queue = STATE.queue.filter(function(q){ return CORE.validId(q.id); });
+          if (typeof logEventQuiet === 'function')
+            logEventQuiet('أُخرج ' + badQ.length + ' من الطابور بمعرِّفٍ فارغ — ' + badQ.map(function(q){ return q.kind; }).join(','));
+        }
+      }
       /* معزولاتٌ باسمِ نوعٍ لا مجموعةَ له (أوامرُ حذفِ الأحداث باسم `events`
          من تصفيرِ V15.97 وما قبل) لا تُرفَع أبدًا مهما أُعيدت — تُسقَط ويُقال كم. */
       if (Array.isArray(STATE.poison) && STATE.poison.length && typeof FB === 'object' && FB && FB.colOf){
@@ -7903,6 +7922,18 @@ var CORE = {
        تهيئةُ Firebase على شبكةٍ رديئةٍ لا يعلق الطابورُ معه إلى الأبد */
     if (CORE._busy && Date.now() - (CORE._busyAt || 0) < 30000) return Promise.resolve(0);
     CORE._busy = true; CORE._busyAt = Date.now();
+    /* ما لا يصلح معرِّفُه يُعزَل باسمه قبل الدفع ولا يُوقف ما بعده */
+    var badIds = STATE.queue.filter(function(q){ return !CORE.validId(q.id); });
+    if (badIds.length){
+      STATE.poison = STATE.poison || [];
+      badIds.forEach(function(q){
+        if (!STATE.poison.some(function(p2){ return p2.kind === q.kind && String(p2.id) === String(q.id); }))
+          STATE.poison.push({ kind:q.kind, id:String(q.id || ''), v:q.v, err:'معرِّفٌ فارغٌ أو غيرُ صالح — لا يُرفَع', at:Date.now() });
+      });
+      STATE.queue = STATE.queue.filter(function(q){ return CORE.validId(q.id); });
+      CORE.saveSoon();
+      if (!STATE.queue.length){ CORE._busy = false; return Promise.resolve(0); }
+    }
     var batch = STATE.queue.slice(0, 50);
     /* يُهيَّأ Firebase قبل الدفع: كان يُنادى `push` مباشرةً وهي ترفض
        بـ«not-ready» إن لم يُحمَّل بعد — وهو يُحمَّل كسولًا. فيبقى الطابورُ
@@ -8122,7 +8153,8 @@ var FB = {
     var ok = [], failed = [], healed = 0;
     return batch.reduce(function(p, it){
       return p.then(function(){
-        return FB.putOne(it).then(function(){ ok.push(it); })
+        /* انفجارٌ متزامنٌ في بناء المرجع كان يُسقِط السلسلةَ كلَّها — يُحوَّل رفضًا لهذه الوثيقة وحدَها */
+        return Promise.resolve().then(function(){ return FB.putOne(it); }).then(function(){ ok.push(it); })
           .catch(function(e){
             return FB.reconcile(it, e).then(function(same){
               if (same){ ok.push(it); healed++; return; }
@@ -15762,7 +15794,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.0' + '.docx" download>⬇ '
+              +   'V16.1' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20275,9 +20307,13 @@ function ghCard(){
       btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-ghsave="1"')
       + (has ? btn('\u{1F5D1} ' + t('امسح'),'btn-quiet btn-sm',' data-ghclear="1"') : ''));
 }
+/* المفتاحُ محفوظٌ في `key`: كان الحقلُ `user` في الوثيقة يكتب فوق المفتاح —
+   فطلبُ حذفِ حسابٍ بلا اسمِ مستخدمٍ (`user:''`) صار بمفتاحٍ فارغ، وأمرُ
+   حذفِه دخل الطابورَ بمعرِّفٍ فارغٍ ينفجر عند بناء المرجع فيُسقِط الدفعةَ
+   كلَّها كلَّ دقيقةٍ بلا صوت — سبعُ وثائقَ بانتظار الرفع نصفَ ساعة. */
 function provList(){
   var P = STATE.provision || {};
-  return Object.keys(P).map(function(k){ return Object.assign({ user:k }, P[k]); })
+  return Object.keys(P).map(function(k){ return Object.assign({ user:k }, P[k] || {}, { key:k, user:(P[k] || {}).user || k }); })
     .sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
 function provWipe(){
@@ -20285,8 +20321,8 @@ function provWipe(){
   var n = 0;
   provList().forEach(function(r){
     if (r.status === 'done' && r.pass){
-      var v = Object.assign({}, STATE.provision[r.user], { pass:'' });
-      STATE.provision[r.user] = v; CORE.set('provision', r.user, v); n++;
+      var v = Object.assign({}, STATE.provision[r.key], { pass:'' });
+      STATE.provision[r.key] = v; CORE.set('provision', r.key, v); n++;
     }
   });
   logEvent('مسحُ كلمات المرور من الطلبات — ' + nm(n));
@@ -20298,8 +20334,9 @@ function provClear(){
   if (!may('users')){ toast(t('مسحُ الطلبات للمهندس فما فوق')); return; }
   var n = 0;
   provList().forEach(function(r){
-    if (r.status === 'done' || r.status === 'error' || r.action === 'delete'){
-      delete STATE.provision[r.user]; CORE.rm('provision', r.user); n++;
+    /* المنتهيةُ وحدَها — وطلبُ حذفِ الدخول يبقى حتى ينفّذه الخادم (status: done) */
+    if (r.status === 'done' || r.status === 'error'){
+      delete STATE.provision[r.key]; CORE.rm('provision', r.key); n++;
     }
   });
   logEvent('مسحُ طلبات الإنشاء المنتهية — ' + nm(n));
