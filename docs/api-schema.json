@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.12",
+  "app_version": "V16.13",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1481,7 +1481,8 @@
     "V16.9": "إنصات «من فوق» يمرُّ بـCORE.applyDoc: شاهد القبر يصل تحديثًا لا حذفًا فكان يُكتب كما جاء. audit-tomb يثبت المنفذ لا الدالة وحدَها.",
     "V16.10": "j_exec (exec) في JOBS_SEED + ترحيل البذرة إلى STATE.jobs؛ underNames(name) شجرة التبعية؛ mgrCandidates: الأعلى أو المساوي، floor=engineer للوزارة، منع الدورة؛ فنيّيه = الشجرة؛ wipeGo يكتب شاهد قبر لما في TOMB؛ .usrEd عناوين القوائم في صف التحرير.",
     "V16.11": "pullScope: exec/admin/boss الكل every 6h؛ ≥supervisor tree:true (treeKeys/chunk30/treeQuery: _by in uids، tasks to in names) every 6h؛ field mine:true every 6h + 4 إنصاتات _by==uid؛ pullDelta: بصمة الشجرة __sig تصفّر المؤشر؛ liveSmall: watch(filt2)، إعادة البناء عند تغيّر users؛ firestore.indexes.json (_by,_at)×5 + (to,_at) tasks + deploy indexes؛ audit-capacity في check-version + نموذج ذروة من النطاق؛ audit-cascade محدَّث.",
-    "V16.12": "svappr: بطاقة الانتظار تفتح itemPicker (data-svsol) وdata-svsolgo يعتمد ثم يحفظ الحل؛ طبقة التركيب: wait=LIFE.ready.c برتقالي، asn=LIFE.sched.c بنفسجي — الأسطورة والعلامة معًا."
+    "V16.12": "svappr: بطاقة الانتظار تفتح itemPicker (data-svsol) وdata-svsolgo يعتمد ثم يحفظ الحل؛ طبقة التركيب: wait=LIFE.ready.c برتقالي، asn=LIFE.sched.c بنفسجي — الأسطورة والعلامة معًا.",
+    "V16.13": "sites overlay: STATE.siteOv (يُحفَظ في saveLocal/loadLocal) + siteOvApply يزيل hidden إلى STATE.hiddenSites؛ siteEditSave/siteHide/siteRestore (maySiteEdit = rank≥engineer)؛ محرّر في PAGE.site (data-edit) وبطاقة المخفيّ أسفل المواقع؛ CORE.set('sites', id, patch) — بلا سجل زيارة."
   },
   "map_and_geolocation": {
     "tile_layers": {
