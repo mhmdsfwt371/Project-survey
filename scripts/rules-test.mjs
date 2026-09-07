@@ -178,6 +178,27 @@ await ok  ('الفنيُّ يكتب أثرًا',                 setDoc(doc(as('
 await ok  ('وإعادةُ الإرسال نفسِها تُقبَل',       setDoc(doc(as('tec'), 'events/ev1'), { t:'زيارة', by:'فني', at:1, _at:2, _by:'tec' }));
 await deny('ولا يُعدَّل محتواه',                  setDoc(doc(as('tec'), 'events/ev1'), { t:'تركيب', by:'فني', at:1, _at:3, _by:'tec' }));
 await deny('ولا يُحذَف',                          deleteDoc(doc(as('eng'), 'events/ev1')));
+console.log('\n══ المهندسُ والمشرف: الفرقُ في القاعدة نفسِها ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const f = ctx.firestore();
+  await setDoc(doc(f, 'recs/RV1'), { id:'RV1', access:'تم الوصول', review:'pending', by:'فني' });
+  await setDoc(doc(f, 'inss/IN1'), { id:'IN1', status:'مُركّب', approved:false, by:'فريق' });
+});
+await ok  ('المشرفُ يكتب زيارةً ويعدّلها',        updateDoc(doc(as('sup'), 'recs/RV1'), { note:'ملاحظة' }));
+await deny('ولا يعتمدها',                          updateDoc(doc(as('sup'), 'recs/RV1'), { review:'approved' }));
+await ok  ('والمهندسُ يعتمدها',                    updateDoc(doc(as('eng'), 'recs/RV1'), { review:'approved' }));
+await deny('المشرفُ لا يعتمد تركيبًا',             updateDoc(doc(as('sup'), 'inss/IN1'), { approved:true }));
+await ok  ('والمهندسُ يعتمده',                     updateDoc(doc(as('eng'), 'inss/IN1'), { approved:true }));
+await deny('المشرفُ لا يكتب الإعدادات',            setDoc(doc(as('sup'), 'settings/points'), { tgtSurvey:1 }));
+await deny('ولا خطَّ الأساس',                      setDoc(doc(as('sup'), 'baseline/b1'), { ver:1 }));
+await deny('ولا المشتريات',                        setDoc(doc(as('sup'), 'purchases/p1'), { id:'p1' }));
+await ok  ('لكنه يكتب نقاطَ زيادةٍ لفنيّه',        setDoc(doc(as('sup'), 'bonus/bn1'), { tech:'فني', pts:2, why:'جهد' }));
+await env.withSecurityRulesDisabled(async (ctx) => {
+  await setDoc(doc(ctx.firestore(), 'users/adm'), { name:'مدير', role:'admin', active:true });
+});
+await ok  ('والمديرُ كذلك',                        setDoc(doc(as('adm'), 'bonus/bn2'), { tech:'فني', pts:2, why:'جهد' }));
+await deny('والفنيُّ لا',                          setDoc(doc(as('tec'), 'bonus/bn3'), { tech:'فني', pts:9, why:'لنفسي' }));
+await deny('والمطّلعُ لا يكتب أثرًا',              setDoc(doc(as('vwr'), 'events/evv'), { t:'x', at:1 }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

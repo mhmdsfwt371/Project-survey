@@ -220,7 +220,8 @@ service cloud.firestore {
     // الدفعة (_at و_by) — والمحتوى يبقى كما كُتب أوّلَ مرة.
     match /events/{id} {
       allow read:   if ok();
-      allow create: if ok();
+      // الأثرُ يكتبه من يعمل — لا المطّلعُ ولا الإدارةُ العليا فهما يقرآن فقط
+      allow create: if canW();
       allow update: if ok()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['_at', '_by']);
       allow delete: if false;
@@ -254,8 +255,9 @@ service cloud.firestore {
     match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
     /* نقاطُ الزيادة: قرارُ من يشرف لا من يُنفَّذ له — مشرفٌ أو مهندسٌ وحدهما،
        لا كلُّ من يملك canW() (فالفنيَّ وقائدَ الفريق الميدانيّ يرثانها أيضًا). */
+    // نقاطُ الزيادة قرارُ من يشرف: المشرفُ والمهندسُ ومديرُ المشروع — لا الفنيّ
     match /bonus/{id}    { allow read: if ok();
-                            allow create, update, delete: if ok() && role() in ['engineer', 'supervisor']; }
+                            allow create, update, delete: if ok() && role() in ['engineer', 'supervisor', 'admin']; }
     match /workreqs/{id} { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
     match /baseline/{id} { allow read: if ok();   allow create, update: if mgr();  allow delete: if false; }
     match /changes/{id}  { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if false; }
