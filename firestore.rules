@@ -22,7 +22,17 @@ service cloud.firestore {
     // فرُفض كلُّ حسابٍ جديدٍ بلا سببٍ يُرى («Missing or insufficient permissions»
     // على كلِّ رفع). التعطيلُ فعلٌ صريحٌ لا غيابُ حقل.
     function ok()    { return isBoss() || (uHas() && uDoc().get('active', true) != false); }
-    function role()  { return isBoss() ? 'admin' : (uHas() ? uDoc().get('role', 'tech') : 'none'); }
+    // ═══ الأدوارُ المخصَّصة ═══
+    // دورٌ يُضاف من التطبيق (settings/roles: { r: { <مفتاح>: { base, rank } } }) يُعامَل هنا
+    // بدور أساسه في كلِّ شرط، وبرتبته المكتوبة، وبمفتاحه في مصفوفة الصلاحيات —
+    // فيُضبَط وحدَه دون أن يُنشَر شيء. والمفتاحُ غيرُ المعروف بلا وثيقةٍ = بلا دور.
+    function knownRole(r){ return r in ['exec', 'admin', 'engineer', 'supervisor', 'viewer', 'tech', 'cprep', 'casm', 'cins', 'buyer', 'store', 'acct', 'helper', 'driver']; }
+    function rolesPath(){ return /databases/$(db)/documents/settings/roles; }
+    function customRole(r){
+      return exists(rolesPath()) ? get(rolesPath()).data.get('r', {}).get(r, {}) : {};
+    }
+    function docRole(){ return isBoss() ? 'admin' : (uHas() ? uDoc().get('role', 'tech') : 'none'); }
+    function role()  { return knownRole(docRole()) ? docRole() : customRole(docRole()).get('base', 'none'); }
     function mgr()   { return ok() && role() in ['engineer', 'admin']; }
 
     // الأدوارُ الميدانية: الفنيُّ والتهيئةُ والتجميعُ والتركيب. وهي التي تنتج
@@ -47,7 +57,7 @@ service cloud.firestore {
            : r in ['cprep', 'casm', 'cins'] ? 50
            : r == 'viewer' ? 10 : 30;
     }
-    function myRank() { return rnk(role()); }
+    function myRank() { return knownRole(docRole()) ? rnk(role()) : customRole(docRole()).get('rank', rnk(role())); }
 
     // ═══ مصفوفةُ الصلاحيات — تُكتَب من التطبيق وتُقرأ هنا ═══
     // settings/perms = { m: { <مجموعة>: { <دور>: { r|w|a|d: true|false|null } } } }
@@ -57,7 +67,8 @@ service cloud.firestore {
     // عن الوزارة، لا كتابةَ بلا هوية) مكتوبةٌ خارجها ولا تصلها.
     function pmPath(){ return /databases/$(db)/documents/settings/perms; }
     function pmCell(col){
-      return exists(pmPath()) ? get(pmPath()).data.get('m', {}).get(col, {}).get(role(), {}) : {};
+      // بمفتاح الدور كما في وثيقته — فالدورُ المخصَّصُ له خانتُه هو لا خانةُ أساسه
+      return exists(pmPath()) ? get(pmPath()).data.get('m', {}).get(col, {}).get(docRole(), {}) : {};
     }
     function pm(col, op, dflt){
       return isBoss() || (ok() && (pmCell(col).get(op, null) == null ? dflt : pmCell(col)[op] == true));
@@ -220,6 +231,7 @@ service cloud.firestore {
     match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق
     match /settings/perms    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
+    match /settings/roles    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/{id} {
       allow read: if ok() && id != 'contacts' && id != 'cotel';
       allow write: if pm('settings', 'w', mgr());

@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.2</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3430,7 +3430,40 @@ en:{
  'طلبات التغيير':'Change requests',
  'الحسابات المالية (قديم)':'Financial accounts (legacy)',
  'مواقع مقترحة (قديم)':'Proposed sites (legacy)',
- 'أوامر الخدمة (قديم)':'Service orders (legacy)'
+ 'أوامر الخدمة (قديم)':'Service orders (legacy)',
+ 'الأدوار':'Roles',
+ 'الرتبة':'Rank',
+ 'خط الأساس':'Baseline',
+ 'يرث':'Inherits',
+ 'رتبة':'rank',
+ 'إضافةُ الأدوار لمدير المشروع وحده':'Adding roles is for the project manager only',
+ 'اكتب اسمَ الدور':'Enter the role name',
+ 'اختر الأساسَ من الأدوار الأساسية':'Choose a base from the built-in roles',
+ 'اسمُ الدور مستعملٌ من قبل':'This role name is already in use',
+ 'لا تُنشئ دورًا أعلى من رتبتك':'You cannot create a role above your own rank',
+ 'أُضيف الدور':'Role added',
+ 'تنفذ في القاعدة الآن':'enforced by the database now',
+ 'حذفُ الأدوار لمدير المشروع وحده':'Deleting roles is for the project manager only',
+ 'الأدوارُ الأساسيةُ لا تُحذَف':'Built-in roles cannot be deleted',
+ 'لا يُحذَف دورٌ عليه حسابات':'A role that still has accounts cannot be deleted',
+ 'حُذف الدور':'Role deleted',
+ 'وفي القاعدة':'and in the database',
+ 'تنفذ في قاعدة البيانات فورًا':'Enforced by the database immediately',
+ 'الأساس':'Base',
+ 'حسابات':'Accounts',
+ 'أساسي':'Built-in',
+ 'عليه حسابات':'Has accounts',
+ 'دور جديد':'New role',
+ 'اسم الدور':'Role name',
+ 'مندوب شركة الخدمة':'Service company representative',
+ 'فارغةٌ = رتبةُ الأساس':'Empty = base rank',
+ 'يرث شاشاتِ أساسه وقدراتِه — ثم تُعدَّل قدراتُه أعلاه وخانتُه في «صلاحيات القاعدة» بمفتاحه. الرتبةُ تحكم من يرى من ومن يُنشئ من. وتنفذ في القاعدة فورًا.':'Inherits its base’s screens and capabilities — then adjust its capabilities above and its own cells in “Database permissions”. Rank governs who sees whom and who creates whom. Enforced by the database immediately.',
+ 'أضف الدور':'Add role',
+ 'الأدوارُ الأساسيةُ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة. والمخصَّصُ يُحذَف إن لم يبقَ عليه حساب.':'Built-in roles cannot be deleted: their names are written in the database rules. A custom role can be deleted once no account holds it.',
+ 'حذفُ الدور':'Delete role',
+ 'لا رجوع.':'No way back.',
+ 'المُسنَد إليّ':'Assigned to me',
+ 'كل المواقع':'All sites'
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -5986,7 +6019,40 @@ ur:{
  'طلبات التغيير':'تبدیلی کی درخواستیں',
  'الحسابات المالية (قديم)':'مالی کھاتے (پرانا)',
  'مواقع مقترحة (قديم)':'تجویز کردہ مقامات (پرانا)',
- 'أوامر الخدمة (قديم)':'سروس آرڈر (پرانا)'
+ 'أوامر الخدمة (قديم)':'سروس آرڈر (پرانا)',
+ 'الأدوار':'کردار',
+ 'الرتبة':'درجہ',
+ 'خط الأساس':'بنیادی لکیر',
+ 'يرث':'وراثت',
+ 'رتبة':'درجہ',
+ 'إضافةُ الأدوار لمدير المشروع وحده':'کردار شامل کرنا صرف پروجیکٹ منیجر کے لیے',
+ 'اكتب اسمَ الدور':'کردار کا نام لکھیں',
+ 'اختر الأساسَ من الأدوار الأساسية':'بنیادی کرداروں میں سے بنیاد چنیں',
+ 'اسمُ الدور مستعملٌ من قبل':'یہ نام پہلے سے استعمال میں ہے',
+ 'لا تُنشئ دورًا أعلى من رتبتك':'اپنے درجے سے اونچا کردار نہیں بنا سکتے',
+ 'أُضيف الدور':'کردار شامل ہو گیا',
+ 'تنفذ في القاعدة الآن':'اب ڈیٹابیس میں نافذ',
+ 'حذفُ الأدوار لمدير المشروع وحده':'کردار حذف کرنا صرف پروجیکٹ منیجر کے لیے',
+ 'الأدوارُ الأساسيةُ لا تُحذَف':'بنیادی کردار حذف نہیں ہوتے',
+ 'لا يُحذَف دورٌ عليه حسابات':'جس کردار پر اکاؤنٹ ہوں وہ حذف نہیں ہوتا',
+ 'حُذف الدور':'کردار حذف ہو گیا',
+ 'وفي القاعدة':'اور ڈیٹابیس میں',
+ 'تنفذ في قاعدة البيانات فورًا':'ڈیٹابیس میں فوراً نافذ',
+ 'الأساس':'بنیاد',
+ 'حسابات':'اکاؤنٹس',
+ 'أساسي':'بنیادی',
+ 'عليه حسابات':'اکاؤنٹ موجود ہیں',
+ 'دور جديد':'نیا کردار',
+ 'اسم الدور':'کردار کا نام',
+ 'مندوب شركة الخدمة':'سروس کمپنی کا نمائندہ',
+ 'فارغةٌ = رتبةُ الأساس':'خالی = بنیاد کا درجہ',
+ 'يرث شاشاتِ أساسه وقدراتِه — ثم تُعدَّل قدراتُه أعلاه وخانتُه في «صلاحيات القاعدة» بمفتاحه. الرتبةُ تحكم من يرى من ومن يُنشئ من. وتنفذ في القاعدة فورًا.':'اپنی بنیاد کی اسکرینیں اور صلاحیتیں وراثت میں لیتا ہے — پھر اوپر صلاحیتیں اور «ڈیٹابیس اجازتیں» میں اس کے خانے بدلیں۔ درجہ طے کرتا ہے کون کسے دیکھتا اور بناتا ہے۔ ڈیٹابیس میں فوراً نافذ۔',
+ 'أضف الدور':'کردار شامل کریں',
+ 'الأدوارُ الأساسيةُ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة. والمخصَّصُ يُحذَف إن لم يبقَ عليه حساب.':'بنیادی کردار حذف نہیں ہوتے: ان کے نام ڈیٹابیس قواعد میں لکھے ہیں۔ حسب ضرورت کردار تب حذف ہوتا ہے جب اس پر کوئی اکاؤنٹ نہ رہے۔',
+ 'حذفُ الدور':'کردار حذف کریں',
+ 'لا رجوع.':'واپسی نہیں۔',
+ 'المُسنَد إليّ':'مجھے تفویض شدہ',
+ 'كل المواقع':'تمام مقامات'
 }
 };
 
@@ -8413,15 +8479,15 @@ var FB = {
         if (doc && doc.exists) CFG.perms = doc.data();
         PM_AT = Date.now();
       }).catch(function(e){ softErr('سحب مصفوفة الصلاحيات', e, ''); });
+      /* الأدوارُ المخصَّصةُ أوّلًا ثم القدراتُ فوقها — أيًّا كان ترتيبُ وصولهما */
+      FB.db.collection('settings').doc('roles').get().then(function(doc){
+        if (doc && doc.exists) CFG.roles = doc.data();
+        rolesApply();
+      }).catch(function(e){ softErr('سحب الأدوار المخصَّصة', e, ''); });
       FB.db.collection('settings').doc('roleCaps').get().then(function(doc){
         if (!doc || !doc.exists) return;
-        var v = doc.data();
-        Object.keys(v).forEach(function(k){
-          if (ROLES[k] && v[k] && typeof v[k] === 'object'){
-            ROLES[k].can = Object.assign({}, ROLES[k].can || {}, v[k]);
-          }
-        });
-        PERM_CACHE = null;
+        CFG.roleCaps = doc.data();
+        rolesApply();
       }).catch(function(e){ softErr('سحب الصلاحيات المخصَّصة', e, 'تعذّر سحبُ تعديلات الصلاحيات — قد تظهر افتراضيةً'); });
 
       /* بقيةُ المجموعات المكتوبة ولا تُقرأ قط — نفس الباغ في أحد عشر
@@ -10357,7 +10423,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
     return _INTRO + cardFlush(t('القدرات') + ' — ' + nm(RS.length) + ' ' + t('أدوار'),
         table([''].concat(RS.map(function(k){ return t(ROLES[k].n); })),
           CAPS.map(function(c){
-            return ['<strong>' + esc(t(c[1])) + '</strong>'].concat(
+            return ['<strong>' + esc(t(c[1])) + '</strong>' + (PM_CAP[c[0]] ? ' <span class="hint" style="margin:0" title="' + esc(t('تنفذ في قاعدة البيانات فورًا')) + '">\u{1F510}</span>' : '')].concat(
               RS.map(function(k){
                 var on = !!((ROLES[k].can || {})[c[0]]);
                 return may('users')
@@ -10374,15 +10440,31 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
             : 'العرضُ فقط — التبديلُ للمهندس.'))
         + '</p>')
 
-      + card('الأدوار السبعة',
-          table(['الدور','من هو','ماذا يرى ويفعل'],
+      + card(t('الأدوار') + ' — ' + nm(RS.length),
+          table(['الدور','من هو','الأساس','الرتبة','حسابات',''],
             RS.map(function(k){
-              return [pill(t(ROLES[k].n), 'acc'), esc(t(ROLES[k].d || '—')),
-                      '<span class="hint" style="margin:0">'
-                        + esc(t(Object.keys(ROLES[k].can || {}).length + ' ' + t('قدرة'))) + '</span>'];
+              var cu = ROLES[k].custom, nU = roleUsers(k);
+              return [pill(t(ROLES[k].n), cu ? 'wrn' : 'acc'), esc(t(ROLES[k].d || '—')),
+                      cu ? esc(t((ROLES[ROLES[k].base] || {}).n || ROLES[k].base)) : '<span class="hint" style="margin:0">' + esc(t('أساسي')) + '</span>',
+                      '<span class="num">' + nm(rankOf(k)) + '</span>', N(nU),
+                      cu && may('roles')
+                        ? (nU ? '<span class="hint" style="margin:0">' + esc(t('عليه حسابات')) + '</span>'
+                              : btn('\u{1F5D1} ' + t('حذف'),'btn-danger btn-sm',' data-roledel="' + esc(k) + '"'))
+                        : ''];
             })))
-
-      + '<p class="hint">' + esc(t('الأدوارُ ثابتةٌ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة، وحذفُ دورٍ منها يجعل حساباتِه ترفضها القاعدةُ صامتةً. وما يُغيَّر هو قدراتُها.')) + '</p>';
+      + (may('roles')
+        ? card('\u2795 ' + t('دور جديد'),
+            '<div class="grid cols-3">'
+            + '<div class="field" style="margin:0"><label>' + esc(t('اسم الدور')) + '</label><input id="nrName" dir="auto" placeholder="' + esc(t('مندوب شركة الخدمة')) + '"></div>'
+            + '<div class="field" style="margin:0"><label>' + esc(t('يرث')) + '</label><select id="nrBase">'
+            +   BASE_ROLES.map(function(k){ return '<option value="' + esc(k) + '"' + (k === 'tech' ? ' selected' : '') + '>' + esc(t(ROLES[k].n)) + '</option>'; }).join('')
+            + '</select></div>'
+            + '<div class="field" style="margin:0"><label>' + esc(t('الرتبة')) + '</label><input id="nrRank" type="number" inputmode="numeric" placeholder="' + esc(t('فارغةٌ = رتبةُ الأساس')) + '"></div>'
+            + '</div>'
+            + '<p class="hint">' + esc(t('يرث شاشاتِ أساسه وقدراتِه — ثم تُعدَّل قدراتُه أعلاه وخانتُه في «صلاحيات القاعدة» بمفتاحه. الرتبةُ تحكم من يرى من ومن يُنشئ من. وتنفذ في القاعدة فورًا.')) + '</p>',
+            btn('\u2795 ' + t('أضف الدور'),'btn-primary btn-sm',' data-roleadd="1"'))
+        : '')
+      + '<p class="hint">' + esc(t('الأدوارُ الأساسيةُ لا تُحذَف: أسماؤها مكتوبةٌ في قواعد القاعدة. والمخصَّصُ يُحذَف إن لم يبقَ عليه حساب.')) + '</p>';
   })();
     if (cur === 'perms') return head + (function(){
     if (may('perms')) pmRefresh(false);
@@ -10834,7 +10916,7 @@ function layerStats(mode){
 /* الخريطةُ تُرشِّح بالطبقة ثم بالتصنيف */
 function layerFiltered(){
   var L = LAYER();
-  var base = (MY_ONLY || ROLE === 'tech') ? mineFiltered() : filtered();
+  var base = (MY_ONLY || isCrewRole(ROLE)) ? mineFiltered() : filtered();
   return base.filter(function(x){ return L.pass(x); });
 }
 
@@ -15794,7 +15876,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.1' + '.docx" download>⬇ '
+              +   'V16.2' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16545,7 +16627,9 @@ var LIST_PAGE = 40, LIST_SHOWN = 40, SEL_MODE = false;
 /* عدٌّ بلا بناءِ مصفوفة — يُعرَف الإجمالي دون نسخِ الصفوف */
 function fieldList(){
   var S = siteStats();
-  var base = filtered();
+  /* الفنيُّ وطاقمُه: ما أُسند إليهم وحده. المشرفُ: المُسنَدُ أوّلًا ومفتاحٌ يفتح الكلّ */
+  var mineOnly = isCrewRole(ROLE) || (effRole(ROLE) === 'supervisor' && !SITES_ALL);
+  var base = mineOnly ? mineFiltered() : filtered();
   var view, total;
   if (SITE_Q){
     var hits = siteSearch(SITE_Q, 4000);
@@ -16562,7 +16646,15 @@ function fieldList(){
     } else view = base.slice(0, LIST_SHOWN);
   }
   var L = { length: total };
-  return catBar(1) + cardFlush(t('المواقع') + ' — ' + nm(total) + (filtOn() ? ' / ' + nm(S.total) : ''),
+  var scopeBar = mineOnly || (effRole(ROLE) === 'supervisor' && SITES_ALL)
+    ? '<div class="chips" style="margin:0 0 8px">'
+      + '<span class="chip' + (mineOnly ? ' on' : '') + '">' + esc(t('المُسنَد إليّ')) + ' \u00b7 ' + nm(mineFiltered().length) + '</span>'
+      + (effRole(ROLE) === 'supervisor'
+          ? '<button type="button" class="chip' + (SITES_ALL ? ' on' : '') + '" data-sitesall="' + (SITES_ALL ? '0' : '1') + '">' + esc(t('كل المواقع')) + '</button>'
+          : '')
+      + '</div>'
+    : '';
+  return scopeBar + catBar(1) + cardFlush(t('المواقع') + ' — ' + nm(total) + (filtOn() ? ' / ' + nm(S.total) : ''),
     (view.length
       ? '<div class="list">' + view.map(function(x){
           var sv = !!STATE.recs[x.id];
@@ -18994,7 +19086,7 @@ function mapUIHtml(){
     +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="'
     +     (MAP_SELECT?'0':'1')+'">'
     +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>'
-    +   (MY_ONLY || ROLE==='tech' ? '<button type="button" class="map-chip on" data-myonly="0">'
+    +   (MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">'
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<span class="chip-pair">'
     +     '<button type="button" class="map-chip'+(CO_MODE?' on':'')+'" data-comode="'+(CO_MODE?'0':'1')+'">'
@@ -19091,7 +19183,8 @@ function fieldTools(){
         + '</div>')
     + card('المزامنة',
         '<div class="actions">' + btn('مزامنة الآن','btn-primary',' data-pull="1"')
-        + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">٠٢:٥١</span></span></div>');
+        /* كان وقتًا محفورًا «٠٢:٥١» — يُقرأ من آخر مزامنةٍ فعلية */
+        + '<span class="hint" style="margin:0">'+esc(t('آخر مزامنة'))+' <span class="num">' + esc(agoTxt(STATE.meta.lastSync)) + '</span></span></div>');
 }
 
 /* ═══ موديولات اللوحة — كل قسم بمحتواه ═══ */
@@ -21971,7 +22064,11 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
    والتجميع والتهيئة لأن عملَهم ميدانيٌّ كذلك. ومن سواهم يبقى في حسابه
    ولا يُسنَد إليه. */
 var FIELD_ROLES = { tech:1, supervisor:1, engineer:1, cins:1, casm:1, cprep:1 };
-function isFieldRole(r){ return !!FIELD_ROLES[r]; }
+function isFieldRole(r){ return !!FIELD_ROLES[effRole(r)]; }
+/* الطاقمُ المنفِّذ: يرى على الخريطة وفي القائمة ما أُسند إليه وحده —
+   والمشرفُ يرى الخريطةَ كلَّها وقائمتَه مُسنَدةً مع مفتاحٍ يفتح الكلّ */
+function isCrewRole(r){ return ['tech','cins','casm','cprep','helper','driver'].indexOf(effRole(r)) > -1; }
+var SITES_ALL = false;
 function techsList(all){
   var out = [];
   Object.keys(STATE.users || {}).forEach(function(uid){
@@ -24131,6 +24228,78 @@ var ROLE_RANK = { exec:110, admin:100, engineer:90, supervisor:70,
                   tech:30, buyer:30, store:30, acct:30, helper:30, driver:30,
                   viewer:10 };
 function rankOf(role){ return ROLE_RANK[role] != null ? ROLE_RANK[role] : 30; }
+/* ═══ الأدوارُ المخصَّصة ═══
+   كانت الأدوارُ أربعةَ عشرَ مكتوبةً في الشيفرة وفي القاعدة، ومن أراد «مندوبَ
+   شركة» أو «قائدَ فرقة» انتظر إصدارًا. صار الدورُ يُضاف من شاشة الأدوار:
+   اسمٌ وأساسٌ ورتبة — يرث شاشاتِ أساسه وقدراتِه، وتُعدَّل قدراتُه هنا وخانتُه
+   في مصفوفة القاعدة بمفتاحه، والقاعدةُ تعامله بأساسه ورتبته (settings/roles)
+   دون نشر. ويُحذَف إن لم يبقَ عليه حساب. والأساسيّةُ لا تُحذَف. */
+var BASE_ROLES = ['exec','admin','engineer','supervisor','viewer','tech','cprep','casm','cins','buyer','store','acct','helper','driver'];
+function effRole(r){ var x = ROLES[r]; return (x && x.custom && x.base) ? x.base : r; }
+function rolesApply(){
+  var R9 = (CFG.roles && CFG.roles.r) || {};
+  /* ما زال مخصَّصًا وليس في الوثيقة: أُزيل */
+  Object.keys(ROLES).forEach(function(k){ if (ROLES[k].custom && !R9[k]){ delete ROLES[k]; delete ROLE_RANK[k]; } });
+  Object.keys(R9).forEach(function(k){
+    var c = R9[k] || {}, b = ROLES[c.base] && !ROLES[c.base].custom ? ROLES[c.base] : ROLES.tech;
+    if (BASE_ROLES.indexOf(k) > -1) return;   /* لا يُكتَب فوق أساسيّ */
+    ROLES[k] = { n:c.n || k, d:c.d || (t('يرث') + ' ' + t(b.n)), base:c.base || 'tech', custom:true,
+                 kind:b.kind, guide:b.guide, nav:Array.isArray(b.nav) ? b.nav.slice() : b.nav,
+                 can:Object.assign({}, b.can || {}) };
+    ROLE_RANK[k] = (typeof c.rank === 'number') ? c.rank : rankOf(c.base || 'tech');
+  });
+  /* القدراتُ المخصَّصةُ فوق الجميع */
+  var caps = CFG.roleCaps || {};
+  Object.keys(caps).forEach(function(k){
+    if (ROLES[k] && caps[k] && typeof caps[k] === 'object') ROLES[k].can = Object.assign({}, ROLES[k].can || {}, caps[k]);
+  });
+  PERM_CACHE = null;
+}
+function roleUsers(k){
+  return Object.keys(STATE.users || {}).filter(function(uid){ var u = STATE.users[uid]; return u && u.role === k; }).length;
+}
+function roleAdd(name, base, rank){
+  if (!may('roles')){ toast(t('إضافةُ الأدوار لمدير المشروع وحده')); return false; }
+  name = String(name || '').trim();
+  if (!name){ toast(t('اكتب اسمَ الدور')); return false; }
+  if (BASE_ROLES.indexOf(base) < 0){ toast(t('اختر الأساسَ من الأدوار الأساسية')); return false; }
+  if (Object.keys(ROLES).some(function(k){ return ROLES[k].n === name; })){ toast(t('اسمُ الدور مستعملٌ من قبل')); return false; }
+  var rk = cfgN(rank); if (!rk) rk = rankOf(base);
+  if (rk > rankOf(ROLE)){ toast(t('لا تُنشئ دورًا أعلى من رتبتك')); return false; }
+  var key = 'c_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+  CFG.roles = CFG.roles || { r:{} }; CFG.roles.r = CFG.roles.r || {};
+  CFG.roles.r[key] = { n:name, base:base, rank:rk, at:Date.now(), by:STATE.meta.name || '' };
+  CFG.roles.v = (CFG.roles.v || 0) + 1; CFG.roles.at = Date.now();
+  CORE.set('cfg', 'roles', CFG.roles);
+  rolesApply();
+  logEvent('دور جديد — ' + name + ' · ' + t('يرث') + ' ' + ROLES[base].n + ' · ' + t('رتبة') + ' ' + nm(rk));
+  toast(t('أُضيف الدور') + ' ' + name + ' — ' + t('تنفذ في القاعدة الآن'));
+  render(1);
+  return key;
+}
+function roleDel(k){
+  if (!may('roles')){ toast(t('حذفُ الأدوار لمدير المشروع وحده')); return false; }
+  if (!ROLES[k] || !ROLES[k].custom){ toast(t('الأدوارُ الأساسيةُ لا تُحذَف')); return false; }
+  var nU = roleUsers(k);
+  if (nU){ toast(t('لا يُحذَف دورٌ عليه حسابات') + ' — ' + nm(nU)); return false; }
+  var nm2 = ROLES[k].n;
+  delete CFG.roles.r[k]; CFG.roles.v = (CFG.roles.v || 0) + 1; CFG.roles.at = Date.now();
+  CORE.set('cfg', 'roles', CFG.roles);
+  if (CFG.roleCaps && CFG.roleCaps[k]){ delete CFG.roleCaps[k]; CORE.set('cfg', 'roleCaps', CFG.roleCaps); }
+  rolesApply();
+  logEvent('حذف دور — ' + nm2);
+  toast(t('حُذف الدور') + ' ' + nm2);
+  render(1);
+  return true;
+}
+/* خليةٌ في مصفوفة القاعدة تُكتَب صراحةً وتُحفَظ فورًا — من تبديل قدرةٍ في شاشة الأدوار */
+function pmSetDirect(col, op, role, val){
+  var m = JSON.parse(JSON.stringify((CFG.perms && CFG.perms.m) || {}));
+  m[col] = m[col] || {}; m[col][role] = m[col][role] || {}; m[col][role][op] = !!val;
+  var doc = { m:m, v:((CFG.perms && CFG.perms.v) || 0) + 1, at:Date.now(), by:STATE.meta.name || '' };
+  CFG.perms = doc; PM_DRAFT = null;
+  CORE.set('cfg', 'perms', doc);
+}
 /* ═══ الرتبةُ أعلى الاثنين ═══
    كان دورُ الوظيفة يغلب دورَ الحساب دائمًا. فمن دورُ حسابه «الإدارة العليا»
    ووظيفتُه «مدير المشروع» تُقرأ رتبتُه رتبةَ مديرِ المشروع — فلا يصلح مديرًا
@@ -26533,6 +26702,16 @@ function onDocClick(e){
     go(); return;
   }
   if (e.target.closest('[data-provclear]')){ provClear(); return; }
+  if (e.target.closest('[data-roleadd]')){
+    roleAdd((document.getElementById('nrName') || {}).value, (document.getElementById('nrBase') || {}).value, (document.getElementById('nrRank') || {}).value);
+    return;
+  }
+  var rdl = e.target.closest('[data-roledel]');
+  if (rdl){
+    var rk9 = rdl.getAttribute('data-roledel');
+    if (typeof confirm === 'function' && !confirm(t('حذفُ الدور') + ' ' + ((ROLES[rk9] || {}).n || rk9) + '\n' + t('لا رجوع.'))){ toast(t('أُلغي الحذف')); return; }
+    roleDel(rk9); return;
+  }
   var pmr = e.target.closest('[data-pmrole]');
   if (pmr){ PM_ROLE = pmr.getAttribute('data-pmrole'); render(1); return; }
   var pmk = e.target.closest('[data-pmk]');
@@ -26793,10 +26972,14 @@ function onDocClick(e){
     var R2 = ROLES[p2[0]]; if (!R2) return;
     R2.can = R2.can || {};
     if (R2.can[p2[1]]) delete R2.can[p2[1]]; else R2.can[p2[1]] = 1;
-    CORE.set('cfg', 'roleCaps', (function(){
+    CFG.roleCaps = (function(){
       var o2 = {}; Object.keys(ROLES).forEach(function(k){ o2[k] = ROLES[k].can || {}; }); return o2;
-    })());
-    logEvent('صلاحية — ' + R2.n + ' · ' + p2[1] + ': ' + (R2.can[p2[1]] ? 'مُنحت' : 'سُحبت'));
+    })();
+    CORE.set('cfg', 'roleCaps', CFG.roleCaps);
+    /* القدرةُ التي لها خانةٌ في القاعدة تُكتَب فيها في اللحظة نفسِها — فلا شاشةٌ تعِد وقاعدةٌ تردّ */
+    var pk2 = PM_CAP[p2[1]];
+    if (pk2 && !pmLocked(pk2[0], pk2[1], p2[0])) pmSetDirect(pk2[0], pk2[1], p2[0], !!R2.can[p2[1]]);
+    logEvent('صلاحية — ' + R2.n + ' · ' + p2[1] + ': ' + (R2.can[p2[1]] ? 'مُنحت' : 'سُحبت') + (pk2 ? ' · ' + t('وفي القاعدة') : ''));
     PERM_CACHE = null;
     toast(t(R2.can[p2[1]] ? 'مُنحت' : 'سُحبت'));
     render(1); return;
@@ -27169,6 +27352,8 @@ function onDocClick(e){
     if (nq){ nq.focus(); nq.setSelectionRange(nq.value.length, nq.value.length); }
     return;
   }
+  var sal = e.target.closest('[data-sitesall]');
+  if (sal){ SITES_ALL = sal.getAttribute('data-sitesall') === '1'; render(1); return; }
   var my = e.target.closest('[data-myonly]');
   if (my){ MY_ONLY = my.getAttribute('data-myonly') === '1'; render(1); if (MAP) mapPaint(); return; }
   if (e.target.closest('[data-mymap]')){ MY_ONLY = true; CUR = 'map'; render(1); return; }

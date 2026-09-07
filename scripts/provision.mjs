@@ -31,6 +31,13 @@ const ROLE_AR = { 'الإدارة العليا':'exec','إدارة عليا':'ex
   'مشرف':'supervisor','فني':'tech','وزارة':'viewer','مطلع':'viewer','مطّلع':'viewer','فريق التهيئة':'cprep',
   'فريق التجميع':'casm','فريق التركيب':'cins','مشتريات':'buyer','مستودع':'store','محاسب':'acct','مساعد فني':'helper','سائق':'driver' };
 const KNOWN = new Set(['exec','admin','engineer','supervisor','tech','viewer','cprep','casm','cins','buyer','store','acct','helper','driver']);
+/* الأدوارُ المخصَّصةُ من التطبيق (settings/roles) تُقبَل بمفتاحها أو باسمها — كالأساسية */
+try {
+  const rd = await db.collection('settings').doc('roles').get();
+  const R9 = (rd.exists && (rd.data() || {}).r) || {};
+  Object.keys(R9).forEach(k => { KNOWN.add(k); if (R9[k] && R9[k].n) ROLE_AR[R9[k].n] = k; });
+  if (Object.keys(R9).length) console.log(`أدوارٌ مخصَّصة: ${Object.keys(R9).length}`);
+} catch (e) { console.log('::warning::تعذّرت قراءةُ الأدوار المخصَّصة — ' + String(e.message || e).slice(0, 80)); }
 const direct = [];
 String(process.env.TEAM || '').split(/\r?\n/).forEach((line, i) => {
   const c = line.split(/\t|,|;|\|/).map(x => x.trim());

@@ -257,6 +257,24 @@ await ok  ('وnull يُعيد الافتراضي',                        update
 await ok  ('فيكتب الفنيُّ زيارتَه ثانيةً',                setDoc(doc(as('tec'), 'recs/S7'), { ...rec, id:'S7', review:'pending' }));
 await deny('ولا يعتمدها — الاعتمادُ على افتراضيّه',        setDoc(doc(as('tec'), 'recs/S7'), { ...rec, id:'S7', review:'approved' }));
 await ok  ('والاستعلامُ على القائمة يمرّ بالمصفوفة',       getDocs(query(collection(as('buy'), 'purchases'), limit(5))));
+console.log('\n══ دورٌ مخصَّصٌ من التطبيق — بأساسه ورتبته وخانته ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const f = ctx.firestore();
+  await setDoc(doc(f, 'users/rep'),   { name:'مندوب',  role:'c_rep',  active:true });
+  await setDoc(doc(f, 'users/lead'),  { name:'قائد',   role:'c_lead', active:true });
+  await setDoc(doc(f, 'users/ghost'), { name:'شبح',    role:'c_none', active:true });
+});
+const RD = { r:{ c_rep:{ n:'مندوب شركة', base:'viewer', rank:20 }, c_lead:{ n:'قائد فرقة', base:'supervisor', rank:60 } }, v:1 };
+await deny('المشرفُ لا يكتب الأدوار',                    setDoc(doc(as('sup'), 'settings/roles'), RD));
+await ok  ('والمهندسُ يكتبها',                            setDoc(doc(as('eng'), 'settings/roles'), RD));
+await ok  ('المندوبُ (أساسه مطّلع) يقرأ',                 getDoc(doc(as('rep'), 'recs/S1')));
+await deny('ولا يكتب',                                    setDoc(doc(as('rep'), 'recs/R1'), { ...rec, id:'R1', review:'pending' }));
+await ok  ('والقائدُ (أساسه مشرف) يكتب زيارة',            setDoc(doc(as('lead'), 'recs/L1'), { ...rec, id:'L1', review:'pending' }));
+await deny('ولا يعتمدها',                                 updateDoc(doc(as('lead'), 'recs/L1'), { review:'approved' }));
+await deny('ولا يكتب المصفوفة — رتبته ٦٠',               setDoc(doc(as('lead'), 'settings/perms'), { v:9 }, { merge:true }));
+await ok  ('والمصفوفةُ تخصّه بمفتاحه: تُفتَح له الاعتماد', updateDoc(doc(as('eng'), 'settings/perms'), { 'm.recs.c_lead.a': true }));
+await ok  ('فيعتمد',                                      updateDoc(doc(as('lead'), 'recs/L1'), { review:'approved' }));
+await deny('ودورٌ لا تعرفه الوثيقةُ بلا صلاحية',           getDoc(doc(as('ghost'), 'recs/S1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');
