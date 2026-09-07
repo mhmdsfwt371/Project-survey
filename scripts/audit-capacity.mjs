@@ -23,6 +23,11 @@ const num = (re, dflt) => { const m = re.exec(src); return m ? +m[1] : dflt; };
 
 /* ── حدودُ الخطة المجانية ─────────────────────────────────────────────── */
 const CAP = { writes:20000, reads:50000, storeGiB:1 };
+/* الخطةُ من الشيفرة نفسِها: Spark = سقفٌ يوقف، Blaze = الحصةُ نفسُها ثم ٠٫٠٣ دولار
+   لكلِّ مئة ألف قراءة و٠٫٠٩ لكلِّ مئة ألف كتابة — فالجردُ على Blaze يحرس التكلفةَ لا السقف */
+const PLAN = (/var FB_PLAN = '(\w+)'/.exec(src) || [])[1] || 'spark';
+const PRICE = { read:0.03 / 100000, write:0.09 / 100000 };
+const BUDGET_USD_DAY = 1;
 const USERS = 150, MONTHS = 6;
 
 /* ── ثوابتُ الشيفرة كما هي ────────────────────────────────────────────── */
@@ -112,12 +117,19 @@ const staticField  = FIELD * LOGINS * 40;            /* إعداداتٌ وسي�
 const staticOffice = (ADMINS + CHAIN * 5 + VIEW) * LOGINS * 450;   /* + المخزونُ والمشترياتُ واللقطات — الحساباتُ والفرقُ بالإنصات */
 check(/if \(false && rankOf\(ROLE\) > 30\)\{/.test(src) && /false && FB\.db\.collection\('teams'\)/.test(src), 'والحساباتُ والفرقُ لا تُقرأ مرتين — الإنصاتُ يكفي');
 const reads = rawReads + safety + viewReads + fieldCold + fieldDelta + liveTasks + staticField + staticOffice;
+const overReads = Math.max(0, reads - CAP.reads), overWrites = Math.max(0, writes - CAP.writes);
+const usd = overReads * PRICE.read + overWrites * PRICE.write;
+if (PLAN === 'blaze'){
+  check(usd <= BUDGET_USD_DAY, `على Blaze: ما فوق الحصة يكلّف ${usd.toFixed(3)} دولارًا في يوم الذروة — الميزانيةُ ${BUDGET_USD_DAY} دولار`
+    + ` (قراءة ${reads.toLocaleString('en')} · فوق الحصة ${overReads.toLocaleString('en')})`);
+} else
 check(reads <= CAP.reads,
   `القراءةُ اليوميةُ داخل الحصة — ${reads.toLocaleString('en')} من ${CAP.reads.toLocaleString('en')}`
   + ` (${perDoc} قرّاءٍ لكلِّ وثيقةٍ من ${dayDocs.toLocaleString('en')}: ${rawReads.toLocaleString('en')} · أمان ${safety.toLocaleString('en')}`
   + ` · وزارة ${viewReads.toLocaleString('en')} · ميدان ${(fieldCold+fieldDelta+liveTasks).toLocaleString('en')}`
   + ` · ثوابتُ الدخول ${(staticField+staticOffice).toLocaleString('en')})`);
-check(reads <= CAP.reads * 0.8, `وفيها متّسعٌ — المستعمَل ${Math.round(reads / CAP.reads * 100)}٪`);
+if (PLAN !== 'blaze') check(reads <= CAP.reads * 0.8, `وفيها متّسعٌ — المستعمَل ${Math.round(reads / CAP.reads * 100)}٪`);
+else console.log(`  · الخطة Blaze — المستعمَل من الحصة المجانية ${Math.round(reads / CAP.reads * 100)}٪ ولا سقفَ يوقف`);
 
 /* ── التخزين: لا صورةَ خامٌ في القاعدة ──────────────────────────────────── */
 const rawPhoto = /CORE\.set\('photos',[^)]*\bdata:\s*(FORM|NEWSITE)/.test(src)

@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.14</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.15</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3390,6 +3390,7 @@ en:{
  'حُدِّثت القائمة':'List refreshed',
  'أجهزةٌ على إصدارٍ قديم':'Devices on an old version',
  'اطلب من أصحابها إغلاقَ التطبيق وفتحَه.':'Ask their owners to close and reopen the app.',
+ 'المفتوحُ منها يتحدّث تلقائيًّا خلال دقيقة — والمغلقُ حين يُفتَح.':'Open ones update automatically within a minute — closed ones when reopened.',
  'كلُّ الأجهزة الظاهرة على النسخة الحالية.':'Every device seen is on the current version.',
  'الحالية':'Current',
  'أقدم':'Older',
@@ -6001,7 +6002,7 @@ ur:{
  'حدّث القائمة':'فہرست تازہ کریں',
  'حُدِّثت القائمة':'فہرست تازہ ہو گئی',
  'أجهزةٌ على إصدارٍ قديم':'پرانے ورژن پر آلات',
- 'اطلب من أصحابها إغلاقَ التطبيق وفتحَه.':'ان کے مالکان سے ایپ بند کر کے دوبارہ کھولنے کو کہیں۔',
+ 'اطلب من أصحابها إغلاقَ التطبيق وفتحَه.':'ان کے مالکان سے ایپ بند کر کے دوبارہ کھولنے کو کہیں۔', 'المفتوحُ منها يتحدّث تلقائيًّا خلال دقيقة — والمغلقُ حين يُفتَح.':'کھلے آلات ایک منٹ میں خود اپ ڈیٹ ہوتے ہیں — بند والے کھلنے پر۔',
  'كلُّ الأجهزة الظاهرة على النسخة الحالية.':'دیکھے گئے تمام آلات موجودہ ورژن پر ہیں۔',
  'الحالية':'موجودہ',
  'أقدم':'پرانا',
@@ -7888,6 +7889,10 @@ var QUEUE_CAP = 2000, _saveT = 0;
 /* ═══ الاتساعُ إلى مئةٍ وخمسين جهازًا ═══
    معرّفٌ ثابتٌ لكلِّ جهاز: بلا معرّفٍ يشترك جهازان في معرّفٍ متسلسلٍ واحدٍ
    فيمحو أحدُهما الآخر، ولا يُعرَف أيُّهما كتب. */
+/* خطةُ القاعدة — يقرؤها جردُ السعة: على Spark السقفُ يوقف الخدمة، وعلى Blaze
+   يُحاسَب ما فوق الحصة نفسِها ولا يوقف. رُفعت إلى Blaze في ٧ سبتمبر ٢٠٢٦ بعد
+   نفاد حصة يومٍ واحد. */
+var FB_PLAN = 'blaze';
 var DEV_ID = (function(){
   try {
     var k = 'nsk14.dev';
@@ -8810,6 +8815,13 @@ function liveSmall(){
      ولا يعلم بمن أُضيف إلى فريقه. والقاعدةُ تحرس ما يُقرأ، فالإنصاتُ
      يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
+  try {
+    LIVE_SMALL.push(FB.db.collection('settings').doc('app').onSnapshot(function(doc){
+      var v = doc && doc.exists ? (doc.data() || {}).ver : '';
+      if (v) verChase(v);
+      verPublish();
+    }, function(e){ softErr('إنصات النسخة', e, ''); }));
+  } catch (e){ softErr('إنصات النسخة', e, ''); }
   if (rankOf(ROLE) > 30){
     watch('users', function(id, v){
       STATE.users = STATE.users || {};
@@ -16115,7 +16127,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.14' + '.docx" download>⬇ '
+              +   'V16.15' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18660,8 +18672,34 @@ function swNow(){
   toast(t('تُحدَّث النسخة…'));
   setTimeout(function(){ try { location.reload(); } catch (e){} }, 400);
 }
+/* ═══ النسخةُ تُعلَن من القاعدة ═══
+   كان الجهازُ يعرف بالإصدار الجديد حين يسأل الخادمَ كلَّ ربع ساعة — فتبقى أجهزةٌ
+   على إصدارٍ أقدم ساعةً وأكثر، والمكتبُ يرى ذلك في «نسخ الأجهزة» ولا يملك إلا
+   أن يطلب من أصحابها الإغلاقَ والفتح. صار المكتبُ يكتب رقمَ نسخته في
+   settings/app أوّلَ ما يدخل، وكلُّ جهازٍ مفتوحٍ يُنصِت إليه: نسخةٌ أعلى من نسختي
+   = اسأل عامل الخدمة الآن، وإن لم يجد جديدًا (تأخّرُ النشر) يسأل كلَّ دقيقة حتى
+   يجد. والمغلقُ يتحدّث حين يُفتَح — لا سبيلَ إلى جهازٍ مغلق. */
+function verNum(v){ var m = /V(\d+)\.(\d+)/.exec(String(v || '')); return m ? (+m[1]) * 1000 + (+m[2]) : 0; }
+function verPublish(){
+  var mine = appVer(); if (!mine || !may('roles')) return;
+  var cloud = (STATE.appVerCloud || '');
+  if (verNum(mine) > verNum(cloud)){ STATE.appVerCloud = mine; CORE.set('cfg', 'app', { ver:mine, at:Date.now(), by:STATE.meta.name || '' }); }
+}
+var VER_CHASE = 0;
+function verChase(cloud){
+  STATE.appVerCloud = cloud;
+  if (verNum(cloud) <= verNum(appVer())){ clearInterval(VER_CHASE); VER_CHASE = 0; return; }
+  var b = document.querySelector('.ver-tag'); if (b) b.classList.add('upd');
+  swPoll();
+  if (!VER_CHASE) VER_CHASE = setInterval(function(){
+    if (verNum(STATE.appVerCloud || '') <= verNum(appVer())){ clearInterval(VER_CHASE); VER_CHASE = 0; return; }
+    swPoll();
+  }, 60000);
+}
 function swLater(){
   swCancel();
+  /* «لاحقًا» ليست «أبدًا»: يُعاد العرضُ بعد ثلاث دقائق ما دام الجديدُ منتظرًا */
+  setTimeout(function(){ if (SW_STATE.waiting && !SW_RELOADED) swApply(); }, 180000);
   toast(t('أُجّل — يُطبَّق عند الفتح القادم'));
 }
 
@@ -18671,7 +18709,7 @@ function swPoll(){
   if (!SW_STATE.reg || !SW_STATE.reg.update) return;
   try { SW_STATE.reg.update(); } catch (e){}
 }
-setInterval(swPoll, 900000);
+setInterval(swPoll, 300000);
 /* الشحناتُ تُراجَع كلَّ ساعة: ما تأخّر يُنبَّه عليه مرةً في اليوم */
 setInterval(function(){ try { shipWatch(); } catch (e){} }, 3600000);
 document.addEventListener('visibilitychange', function(){
@@ -22269,7 +22307,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       + (stale.length
         ? '<div class="alert error"><span>' + esc(t('أجهزةٌ على إصدارٍ قديم')) + ' — ' + nm(stale.length) + ': '
           + esc(stale.map(function(r){ return dispName(r.name || r.uid) + ' (' + (r.ver || '—') + ')'; }).join('، '))
-          + ' — ' + esc(t('اطلب من أصحابها إغلاقَ التطبيق وفتحَه.')) + '</span></div>'
+          + ' — ' + esc(t('المفتوحُ منها يتحدّث تلقائيًّا خلال دقيقة — والمغلقُ حين يُفتَح.')) + '</span></div>'
         : (rows.length ? alertBox('ok','كلُّ الأجهزة الظاهرة على النسخة الحالية.') : ''));
   })();
     if (cur === 'retain') return head + (function(){

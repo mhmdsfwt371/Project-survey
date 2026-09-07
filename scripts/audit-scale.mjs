@@ -30,7 +30,8 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
 {
   /* كانت نافذةً ثابتةً بألفٍ وثمانمئة حرف، فلمّا كبرت الدالةُ خرج ما يُفحَص
      منها وفشل الفحصُ والشيفرةُ سليمة. تُقرأ الدالةُ كلُّها بموازنة الأقواس. */
-  const i = html.indexOf('pull: function');
+  /* V16.14: الفارقيُّ في pullDelta — وpull القديمةُ صارت pullStatic (ثوابتُ الدخول) */
+  const i = html.indexOf('function pullDelta(');
   const seg = (function(){
     const st = html.indexOf('{', i);
     let d = 0;
@@ -43,13 +44,16 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
   check(i > 0, 'دالةُ السحب موجودة');
   check(/where\('_at',\s*'>'/.test(seg), 'السحبُ فارقيٌّ بـ_at — لا يُعاد قراءةُ ما لم يتغيّر');
   check(/where\('_by',\s*'=='/.test(seg), 'الميدانُ مقصورٌ على سجلاته — لا يقرأ كتاباتِ غيره');
-  check(/collection\('stats'\)/.test(seg) && /limit\(30\)/.test(seg),
+  /* اللقطاتُ صارت في ثوابت الدخول (pullStatic) لا في الفارقيّ */
+  const stSeg = html.slice(html.indexOf('pullStatic: function'), html.indexOf('pullStatic: function') + 60000);
+  check(/collection\('stats'\)/.test(stSeg) && /limit\(30\)/.test(stSeg),
     'اللوحةُ تُقرأ من اللقطات لا من السجلات الخام');
   /* القراءةُ الكاملةُ مشروعةٌ مرةً واحدةً: أوّلَ مزامنةٍ لمن يملك الكلَّ.
      والمطلوبُ أن تكون مشروطةً صراحةً لا أن تقع افتراضًا — فالفرقُ بينهما
      أن الأولى تقع مرةً والثانيةَ ثماني مراتٍ في اليوم لكلِّ جهاز. */
-  check(/if \(!since && !mine\)/.test(seg),
-    'السحبُ الكاملُ مشروطٌ بأوّل مزامنةٍ ولمن يملك الكلَّ وحده');
+  /* V16.6+: الباردةُ حين لا مؤشِّر (since ≤ 0) وبسقفٍ يسع النطاق — لا افتراضًا كلَّ مرة */
+  check(/q\.limit\(since > 0 \? 2000 : 6000\)/.test(seg) && /var since = \(at\[c\] \|\| 0\) - 120000/.test(seg),
+    'السحبُ الكاملُ مشروطٌ بغياب المؤشِّر — والفارقيُّ ما بعده وحدَه');
   check(/FB\.readCount/.test(seg), 'القراءةُ تُعَدُّ فتُرى الحصةُ لا تُظَنّ');
 }
 
