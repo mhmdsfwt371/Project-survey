@@ -97,11 +97,26 @@ const viewReads  = VIEW * Math.round(86400000 / 300000);
 const fieldCold  = FIELD * 4;                                 /* أربعُ مجموعاتٍ باردة */
 const fieldDelta = FIELD * Math.round(86400000 / fieldEvery) * 4;   /* أربعُ مجموعاتٍ كلَّ سحبة */
 const liveTasks  = FIELD * 20;
-const reads = rawReads + safety + viewReads + fieldCold + fieldDelta + liveTasks;
+/* ═══ الثوابتُ عند الدخول ═══
+   كانت `pull(0)` تقرأ عشرين وثيقةَ إعداداتٍ وطبقةَ النقاط والمخزونَ والمشترياتِ
+   كلَّ دقيقةٍ على كلِّ جهاز، ثم ماتت في V16.6. صارت `pullStatic` مرةً عند
+   الدخول: الميدانُ إعداداتٍ وطبقةً بمؤشِّرٍ (ما تغيّر) وسياراتٍ، والمكتبُ فوقها
+   المخزونَ والمشترياتِ والشحناتِ — ولا شيءَ منها كلَّ دقيقة. */
+check(/pullStatic: function\(\)/.test(src) && /return FB\.pullStatic\(\)\.catch/.test(src) && !/FB\.pull\(0\)/.test(src),
+  'الثوابتُ تُقرأ مرةً عند الدخول لا كلَّ دقيقة — pullStatic');
+check(/office && FB\.db\.collection\('inventory'\)/.test(src) && /office && FB\.db\.collection\('purchases'\)/.test(src),
+  'والمخزونُ والمشترياتُ للمكتب وحده');
+check(/if \(sSince > 0\) sq = sq\.where\('_at', '>', sSince\)/.test(src), 'وطبقةُ النقاط بمؤشِّرٍ — ما تغيّر لا ألفٌ وسبعمئة');
+const LOGINS = 2;                                    /* دخولان في اليوم لكلِّ جهاز */
+const staticField  = FIELD * LOGINS * 40;            /* إعداداتٌ وسياراتٌ وطبقةٌ فارقية */
+const staticOffice = (ADMINS + CHAIN * 5 + VIEW) * LOGINS * 450;   /* + المخزونُ والمشترياتُ واللقطات — الحساباتُ والفرقُ بالإنصات */
+check(/if \(false && rankOf\(ROLE\) > 30\)\{/.test(src) && /false && FB\.db\.collection\('teams'\)/.test(src), 'والحساباتُ والفرقُ لا تُقرأ مرتين — الإنصاتُ يكفي');
+const reads = rawReads + safety + viewReads + fieldCold + fieldDelta + liveTasks + staticField + staticOffice;
 check(reads <= CAP.reads,
   `القراءةُ اليوميةُ داخل الحصة — ${reads.toLocaleString('en')} من ${CAP.reads.toLocaleString('en')}`
   + ` (${perDoc} قرّاءٍ لكلِّ وثيقةٍ من ${dayDocs.toLocaleString('en')}: ${rawReads.toLocaleString('en')} · أمان ${safety.toLocaleString('en')}`
-  + ` · وزارة ${viewReads.toLocaleString('en')} · ميدان ${(fieldCold+fieldDelta+liveTasks).toLocaleString('en')})`);
+  + ` · وزارة ${viewReads.toLocaleString('en')} · ميدان ${(fieldCold+fieldDelta+liveTasks).toLocaleString('en')}`
+  + ` · ثوابتُ الدخول ${(staticField+staticOffice).toLocaleString('en')})`);
 check(reads <= CAP.reads * 0.8, `وفيها متّسعٌ — المستعمَل ${Math.round(reads / CAP.reads * 100)}٪`);
 
 /* ── التخزين: لا صورةَ خامٌ في القاعدة ──────────────────────────────────── */
