@@ -1,19 +1,19 @@
 {
  "ok": true,
- "at": "2026-09-06T12:56:04.399Z",
+ "at": "2026-09-07T07:29:06.389Z",
  "collections": [
-  "accounts: 39",
-  "events: 1922",
+  "accounts: 42",
+  "events: 1968",
   "hb: 1",
+  "provision: 2",
   "settings: 13",
   "sites: 2",
   "srvorders: 1",
-  "stats: 5",
-  "tasks: 2",
+  "stats: 6",
   "teams: 2",
-  "users: 4",
+  "users: 9",
   "workreqs: 1"
  ],
- "totalDocs": 1992,
+ "totalDocs": 2047,
  "note": "البيانات الخام في backup.enc — مشفّرة. هذا الملف أعداد فقط."
 }
