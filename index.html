@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.8</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -12120,8 +12120,7 @@ function asnSheet(){
             return tm && tm.members.length
               ? '<p class="hint" style="margin:0 0 10px">' + esc(t('سيُوزَّع'))
                 + ' <b>' + nm(SEL_N) + '</b> ' + esc(t('نقطة على'))
-                + ' ' + tm.members.map(function(m){
-                    return esc(m.name) + ' <span class="num">' + nm(m.share) + '٪</span>'; }).join(' · ')
+                + ' <b>' + nm(tm.members.length) + '</b> ' + esc(t('أعضاء'))
                 + '</p>'
               : alertBox('warn','لا أعضاءَ في هذا الفريق — أضفهم من «الفرق».');
           })()
@@ -15972,7 +15971,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.7' + '.docx" download>⬇ '
+              +   'V16.8' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
