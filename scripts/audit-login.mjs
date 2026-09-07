@@ -65,7 +65,7 @@ const inApp=(d)=>!d.getElementById('login') && d.getElementById('app').style.dis
   w.FB.legacyDone=()=>true; w.pullDelta=()=>Promise.resolve(0);
   let listened=0; w.liveWatch=()=>{ listened++; }; w.liveSmall=()=>{ listened++; };
   d.getElementById('lgU').value='sup.a'; d.getElementById('lgP').value='rightpass12';
-  d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await wait(1500);
+  d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await wait(2600);
   T(inApp(d) && w.ROLE==='supervisor', 'الدخولُ الصحيح: يدخل بدوره', 'ROLE='+w.ROLE);
   T(listened>=2, 'ويبدأ الإنصاتُ بعده', listened+' نداء'); }
 /* ٧ · لا نداءَ على CORE لدالتَي FB */
@@ -73,7 +73,7 @@ T(!/CORE\.legacyDone|CORE\.pullLegacy/.test(html), 'الدالتان تُناد�
 /* ٨ · زرُّ الدفع في نافذة الطابور على الخريطة */
 { const {w,d}=await fresh();
   const lg=d.getElementById('lgGo'); w.FB.signIn=()=>Promise.resolve({ok:true,role:'engineer',name:'م'}); w.FB.legacyDone=()=>true; w.pullDelta=()=>Promise.resolve(0);
-  d.getElementById('lgU').value='e'; d.getElementById('lgP').value='rightpass12'; lg.dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await wait(1500);
+  d.getElementById('lgU').value='e'; d.getElementById('lgP').value='rightpass12'; lg.dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await wait(2600);
   w.STATE.meta.online=true; w.STATE.queue=[{kind:'stats',id:'x',v:{n:1}}]; w.QUEUE_OPEN=true; w.CUR='map'; w.render(1);
   const has=!!d.querySelector('[data-pushnow]');
   T(has, 'نافذةُ «بانتظار الرفع» فيها «↑ ادفع الآن»'); }

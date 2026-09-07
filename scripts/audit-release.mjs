@@ -51,7 +51,9 @@ T(!!store['stats/2026-09-03'] && !!store['events/E1'], 'ودُفعا إلى ال
 T(w.STATE.queue.length===0, 'والطابورُ فرغ');
 /* نجاحُ دفعةٍ يُصفِّر التكتّم */
 w.SOFT_SAID['رفع الطابور']=1; w.CORE._busy=false;
-w.CORE.dirty('recs','R10',{c:3}); await w.CORE.flush(); await wait(200);
+/* تحت حملٍ متوازٍ قد تكون دفعةٌ سابقةٌ ما زالت في الطريق — يُنتظَر فراغُ الطابور لا مدةً ثابتة */
+w.CORE.dirty('recs','R10',{c:3});
+for (let i=0;i<20 && (w.STATE.queue.length || Object.keys(w.SOFT_SAID).length);i++){ w.CORE._busy=false; await w.CORE.flush(); await wait(250); }
 T(Object.keys(w.SOFT_SAID).length===0, 'ونجاحُ أيِّ دفعةٍ يُصفِّره كذلك');
 /* بلا شبكة: الحالةُ تُقال ولا تبقى «تُقرأ…» */
 w.MYDOC={at:0,has:null,err:''}; w.FB.ready=false; w.FB.db=null; w.STATE.meta.online=false;

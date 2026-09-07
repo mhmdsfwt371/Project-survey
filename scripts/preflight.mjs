@@ -87,22 +87,40 @@ try {
   console.log(`خطواتٌ من ${WF}: ${st.length}\n`);
   if (!st.length) throw new Error('لم تُقرأ خطواتٌ من سير العمل — تغيّرت صيغتُه؟');
 
-  for (const s of st){
-    process.stdout.write('  ' + s.name.padEnd(46).slice(0, 46) + ' … ');
+  /* ═══ بالتوازي لا تباعًا ═══
+     ثلاثةٌ وسبعون جردًا تباعًا تتجاوز أيَّ مهلةٍ معقولة. تُشغَّل الجرودُ
+     (وكلُّ خطوةٍ لا ترتّب على سابقتها) في أربعة مساراتٍ متوازية؛ وما يجب أن
+     يسبق غيرَه — التثبيتُ والتحقّقُ من الصياغة — يبقى أوّلًا وتباعًا. */
+  const { spawn } = await import('node:child_process');
+  const runOne = (s) => new Promise(res => {
     const t0 = Date.now();
-    try {
-      execSync(s.cmd, { cwd: dir, stdio: 'pipe', shell: '/bin/bash', timeout: 900000,
-                        env: Object.assign({}, process.env, s.env || {}) });
-      console.log('✓  ' + Math.round((Date.now() - t0) / 1000) + 'ث');
-    } catch (e){
-      console.log('✗');
-      const out = String((e.stdout || '') + (e.stderr || ''));
-      const lines = out.split('\n').filter(l => /✗|Error|error|فشل/.test(l)).slice(0, 6);
-      console.error('\n  الأمر: ' + s.cmd.split('\n')[0]);
+    const ch = spawn('/bin/bash', ['-c', s.cmd], { cwd: dir, env: Object.assign({}, process.env, s.env || {}) });
+    let out = '';
+    ch.stdout.on('data', d => { out += d; }); ch.stderr.on('data', d => { out += d; });
+    const kill = setTimeout(() => { try { ch.kill('SIGKILL'); } catch {} }, 900000);
+    ch.on('close', code => { clearTimeout(kill); res({ s, code, out, sec: Math.round((Date.now() - t0) / 1000) }); });
+  });
+  const serial = st.filter(s => !/scripts\/(audit|qa|parity)/.test(s.cmd));
+  const par    = st.filter(s =>  /scripts\/(audit|qa|parity)/.test(s.cmd));
+  const report = (r) => {
+    console.log('  ' + r.s.name.padEnd(46).slice(0, 46) + ' … ' + (r.code === 0 ? '✓  ' + r.sec + 'ث' : '✗'));
+    if (r.code !== 0){
+      const lines = r.out.split('\n').filter(l => /✗|Error|error|فشل/.test(l)).slice(0, 6);
+      console.error('\n  الأمر: ' + r.s.cmd.split('\n')[0]);
       lines.forEach(l => console.error('  ' + l.trim().slice(0, 150)));
-      failed = s.name;
-      break;
     }
+  };
+  for (const s of serial){
+    const r = await runOne(s); report(r);
+    if (r.code !== 0){ failed = s.name; break; }
+  }
+  if (!failed){
+    const LANES = 5, queue = par.slice(), results = [];
+    await Promise.all(Array.from({ length: LANES }, async () => {
+      while (queue.length){ const s = queue.shift(); const r = await runOne(s); results.push(r); report(r); }
+    }));
+    const bad = results.find(r => r.code !== 0);
+    if (bad) failed = bad.s.name;
   }
 } catch (e){
   console.error('تعذّر تجهيزُ البيئة: ' + e.message);

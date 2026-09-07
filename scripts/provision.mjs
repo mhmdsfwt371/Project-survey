@@ -37,7 +37,7 @@ String(process.env.TEAM || '').split(/\r?\n/).forEach((line, i) => {
   if (!c[0] && !c[1]) return;
   const roleRaw = (c[2] || 'فني').trim();
   const role = KNOWN.has(roleRaw) ? roleRaw : (ROLE_AR[roleRaw] || '');
-  direct.push({ id:'direct-' + (i + 1), data:{ name:c[0] || c[1], user:(c[1] || '').replace(/\s+/g, ''), role: role || 'tech',
+  direct.push({ id:'direct-' + (i + 1), data:{ name:c[0] || c[1], user:(c[1] || '').replace(/\s+/g, ''), role: role || 'tech', roleExplicit: !!(c[2] && role),
     pass:c[3] || '', job:c[4] || '', crew:c[5] || '', by:'workflow_dispatch', status:'pending' }, direct:true, badRole:!role && roleRaw });
 });
 const snap = await db.collection('provision').where('status', '==', 'pending').limit(300).get();
@@ -73,18 +73,23 @@ for (const d of docs){
       if (d.direct && !pass){ pass = genPass(); p.pass = pass; }
       else throw new Error('كلمةُ المرور أقلُّ من عشرة أحرف');
     }
-    let u;
+    let u, existed = false;
     try {
-      u = await auth.getUserByEmail(email);
+      u = await auth.getUserByEmail(email); existed = true;
       /* موجودٌ من قبل: تُضبَط كلمتُه على ما طلبه المكتب — إعادةُ إصدار */
       await auth.updateUser(u.uid, { password: pass, displayName: p.name || user, disabled: false });
     } catch (e){
       if (e.code !== 'auth/user-not-found') throw e;
       u = await auth.createUser({ email, password: pass, displayName: p.name || user, emailVerified: false });
     }
+    /* حسابٌ قائمٌ يُعاد إصدارُ كلمته: لا يُنزَل دورُه ولا يُبدَّل اسمُه إلا إن
+       طُلب صراحةً — كان المسارُ المباشرُ يكتب «فنيًّا» افتراضيًّا فوق مديرٍ
+       أعاد كلمتَه فيفقد صلاحياتِه ويُحبَس خارج شاشاته. */
+    const existing = existed ? ((await db.collection('users').doc(u.uid).get()).data() || {}) : {};
     const doc = {
-      name: p.name || user, user, role: p.role || 'tech', active: true,
-      at: Date.now(), by: p.by || 'server', mustChange: true
+      name: p.name || existing.name || user, user,
+      role: (p.roleExplicit === false && existing.role) ? existing.role : (p.role || existing.role || 'tech'),
+      active: true, at: existing.at || Date.now(), by: p.by || existing.by || 'server', mustChange: true
     };
     if (p.job)   doc.job   = p.job;
     if (p.sup)   doc.sup   = p.sup;
