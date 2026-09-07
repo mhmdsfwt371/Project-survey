@@ -25,6 +25,9 @@ if(!w.matchMedia)w.matchMedia=()=>({matches:false,addListener(){},removeListener
 if(!w.scrollTo)w.scrollTo=()=>{};
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 await wait(500);
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const go=d.getElementById('lgGo'); if(go)go.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 await wait(400);
 let ok=0,bad=0; const say=[];

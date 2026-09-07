@@ -40,9 +40,20 @@ console.log('══ ١ · الإقلاعُ والدخول ══');
 await page.goto(base + 'index.html', { waitUntil:'domcontentloaded' });
 await page.waitForSelector('#lgGo', { timeout: 15000 });
 T(true, 'شاشةُ الدخول رُسمت في كروميوم');
+/* ثغرةُ الدخول بحقلين فارغين سُدَّت (V15.94): يُثبَت ذلك في كروميوم حقيقيٍّ —
+   ضغطٌ فارغٌ لا يفتح شيئًا، ثم يُدخَل بهويةٍ صوريةٍ مُثبَتة. */
+await page.click('#lgGo');
+await page.waitForTimeout(600);
+const openedEmpty = await page.evaluate(() => !document.getElementById('login'));
+T(!openedEmpty, 'حقلان فارغان لا يفتحان التطبيق');
+await page.evaluate(() => {
+  FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+  FB.legacyDone = () => true; window.pullDelta = () => Promise.resolve(0);
+  document.getElementById('lgU').value = 'eng.test'; document.getElementById('lgP').value = 'TestPass1234';
+});
 await page.click('#lgGo');
 await page.waitForSelector('#nav', { timeout: 15000 });
-T(true, 'الدخولُ فتح القائمة');
+T(true, 'الدخولُ بهويةٍ فتح القائمة');
 const sites = await page.evaluate(() => (window.STATE && STATE.sites || []).length);
 T(sites > 1000, 'المواقعُ محمَّلة (' + sites + ')');
 await page.screenshot({ path: OUT + '/01-home.png' });

@@ -20,6 +20,11 @@ if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, remov
 let Y=0; w.scrollTo=(x,y)=>{ Y=y||0; };
 Object.defineProperty(w,'pageYOffset',{ get:()=>Y, configurable:true });
 await new Promise(r => setTimeout(r, 900));
+/* الدخولُ في الجرد كما يدخل مهندسٌ حقيقيٌّ: كان يُضغَط «دخول» بحقلين فارغين
+   فيُفتَح الهيكلُ — وذلك الثغرةُ التي سُدَّت (V15.94)، فصار الجردُ يُثبِت هويةً. */
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 300));
 let bad=0; const T=(c,n,x)=>{ if(!c) bad++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };

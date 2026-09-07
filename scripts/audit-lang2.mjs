@@ -24,6 +24,11 @@ T(!!d.querySelector('#lgLangs [data-l]'), 'شاشةُ الدخول فيها مب
 click('#lgLangs [data-l="en"]');
 T(w.LANG==='en' && d.querySelector('#lgLangs [data-l="en"]').classList.contains('on'), 'التغييرُ من شاشة الدخول يُعلَّم فيها');
 click('#lgLangs [data-l="ar"]');
+/* الدخولُ في الجرد كما يدخل مهندسٌ حقيقيٌّ: كان يُضغَط «دخول» بحقلين فارغين
+   فيُفتَح الهيكلُ — وذلك الثغرةُ التي سُدَّت (V15.94)، فصار الجردُ يُثبِت هويةً. */
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 400));
 const sel = d.getElementById('langSel'), top = d.getElementById('langTop');

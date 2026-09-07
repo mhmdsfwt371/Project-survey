@@ -22,6 +22,11 @@ const files={'_meta.json':{ok:false,at:new Date().toISOString(),why:'BACKUP_KEY 
 w.fetch=(u)=>{ const f=Object.keys(files).find(k=>u.indexOf(k)>-1); return Promise.resolve({ok:!!f, json:()=>Promise.resolve(files[f])}); };
 Object.defineProperty(w.navigator,'onLine',{get:()=>true});
 await new Promise(r => setTimeout(r, 800));
+/* الدخولُ في الجرد كما يدخل مهندسٌ حقيقيٌّ: كان يُضغَط «دخول» بحقلين فارغين
+   فيُفتَح الهيكلُ — وذلك الثغرةُ التي سُدَّت (V15.94)، فصار الجردُ يُثبِت هويةً. */
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 300));
 let bad=0; const T=(c,n)=>{console.log((c?'  ✓ ':'  ✗ ')+n); if(!c)bad++;};

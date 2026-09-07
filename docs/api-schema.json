@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.94",
+  "app_version": "V15.95",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1463,7 +1463,8 @@
     "V15.91": "FB.sameDoc/FB.reconcile: عند permission-denied تُقرأ الوثيقة؛ إن وُجدت بمحتوانا (عدا _at/_by) تُعَدّ ناجحة. pushEach يُرجِع healed. جرد التسميم يختبرها.",
     "V15.92": "rules: bonus يشمل admin؛ events create canW (لا viewer). rules-test: 12 فحصًا للفرق مهندس/مشرف.",
     "V15.93": "mayBonus (rank ≥ engineer) بدل maySupEng؛ rules bonus: myRank() >= 90؛ provision.mjs يكتب ::notice لكل حساب أُنشئ؛ audit-e2e-accounts بثلاثة أجهزة. الجرد 72.",
-    "V15.94": "photoFlushCloud: بلا drvCfg تُكتب photos/{site-n} {status:pending,data} والخادم photos-sync.mjs ينقلها للدرايف ويمحو data. provision.yml يشغّل photos-sync. SHEETS: asnreg/visits/installs/dismantles/maints/attendance/mywork + أزرار في reqreg/svappr/disp/maintForm/mywork/now."
+    "V15.94": "photoFlushCloud: بلا drvCfg تُكتب photos/{site-n} {status:pending,data} والخادم photos-sync.mjs ينقلها للدرايف ويمحو data. provision.yml يشغّل photos-sync. SHEETS: asnreg/visits/installs/dismantles/maints/attendance/mywork + أزرار في reqreg/svappr/disp/maintForm/mywork/now.",
+    "V15.95": "provision.yml input team + provision.mjs direct path (TEAM env) مع genPass وnotice بكلمة الدخول؛ enterApp لا هيكل قبل الهوية؛ CORE.legacyDone→FB؛ ROLE default tech؛ data-pushnow في queueHtml؛ 61 جردًا تدخل بهوية. الجرد 73."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -2639,7 +2640,7 @@
       "CAP_EMPTY_CATCH": 39
     }
   },
-  "audits_total": 72,
+  "audits_total": 73,
   "transliteration": {
     "principle": "الاسم لا يُترجَم بل يُنقحَر — محمد صفوت → Mohamed Safwat كما في جواز السفر",
     "layers": [
@@ -4415,5 +4416,11 @@
     "dismantles": "disp",
     "maints": "maintForm",
     "mywork": "mywork"
+  },
+  "direct_provision_v15_95": {
+    "where": "Actions → Provision accounts → Run workflow → team",
+    "line": "الاسم,اسم المستخدم,الدور,كلمة المرور,الوظيفة,الفريق",
+    "pass": "إن فرغت تُولَّد وتُطبع في notice",
+    "result": "users/{uid} + provision/{user} status done"
   }
 }

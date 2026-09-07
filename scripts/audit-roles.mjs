@@ -64,6 +64,9 @@ if (!w.CSS.escape) w.CSS.escape = s => String(s);
 
 await new Promise(r => setTimeout(r, 800));
 const go = d.getElementById('lgGo');
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 400));
 

@@ -34,6 +34,9 @@ console.log('باقٍ فيه فاصلة:', (w.CO_LIST||[]).filter(x=>/[،,؛;|]/
 const cm=w.coCompounds(); console.log('قيمٌ مركّبةٌ على نقاط:', Object.keys(cm).length, '— أجزاؤها:', Object.values(cm).reduce((a,x)=>a+x.parts.length,0));
 /* الشاشةُ والإسناد */
 const d=w.document;
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg=d.getElementById('lgGo'); if(lg) lg.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 await new Promise(r=>setTimeout(r,300));
 w.ROLE='admin'; w.STATE.meta.role='admin';

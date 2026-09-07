@@ -65,6 +65,11 @@ if (!w.scrollTo) w.scrollTo = () => {};
 w.fetch = () => Promise.reject(new Error('no network in smoke'));
 await new Promise(r => setTimeout(r, 900));
 T(!!d.getElementById('lgGo'), 'شاشةُ الدخول ظهرت');
+/* الدخولُ في الجرد كما يدخل مهندسٌ حقيقيٌّ: كان يُضغَط «دخول» بحقلين فارغين
+   فيُفتَح الهيكلُ — وذلك الثغرةُ التي سُدَّت (V15.94)، فصار الجردُ يُثبِت هويةً. */
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 400));
 T(!!d.getElementById('content') && !!d.getElementById('nav'), 'الدخولُ يفتح المحتوى والقائمة');

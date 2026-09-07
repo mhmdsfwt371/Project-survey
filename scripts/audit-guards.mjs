@@ -110,9 +110,11 @@ const MUT = [
     b:'  jobSave();' },
   { n:'دالةٌ عامةٌ تُعرَّف مرتين', g:'scripts/audit-data.mjs',
     a:'function techNames(){', b:'function techNames(){}\nfunction techNames(){' },
-  { n:'الدخولُ يُخفي شاشتَه ولا يُظهر الهيكل', g:'scripts/audit-data.mjs',
-    a:'    enterShell();\n    var first = CORE.legacyDone()',
-    b:'    var first = CORE.legacyDone()' },
+  /* المرساةُ تبعت الإصلاح (V15.94): الهيكلُ لا يظهر إلا بعد إثبات الهوية —
+     فالزرعُ يُظهره قبلها، ويمسكه جردُ الدخول */
+  { n:'الدخولُ يفتح الهيكلَ قبل إثبات الهوية', g:'scripts/audit-login.mjs',
+    a:"  if (!user || !pass){ toast(t('اكتب اسمَ المستخدم وكلمةَ المرور')); return; }",
+    b:"  if (!user || !pass){ enterShell(); return; }" },
   { n:'لوحٌ يفقد رأسَه الثابتَ فيُمرَّر كلُّه', g:'scripts/audit-data.mjs',
     a:'\'<div class="pop-head">\'\n    +   \'<div style="min-width:0"><div class="pid"',
     b:'\'<div>\'\n    +   \'<div style="min-width:0"><div class="pid"' },

@@ -101,7 +101,10 @@ await wait(500);
 
 const go = d.getElementById('lgGo');
 check(!!go, 'شاشةُ الدخول موجودة');
-if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
+if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(400);
 
 check(!!d.getElementById('content'), 'حاويةُ المحتوى ظهرت بعد الدخول');

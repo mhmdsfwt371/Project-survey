@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.94</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.95</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3348,6 +3348,13 @@ en:{
  'الفكّ':'Dismantling',
  'الحضور':'Attendance',
  'التركيبات':'Installations',
+
+ /* V15.94 — الدخول */
+ 'اكتب اسمَ المستخدم وكلمةَ المرور':'Enter the username and password',
+ 'بلا شبكة — الدخولُ الأوّلُ يحتاج شبكة':'No network — the first sign-in needs a network',
+ 'بلا شبكة — دخلتَ بجلستك المحفوظة ويُرفَع ما تسجّله حين تعود':'No network — you are in with your saved session; what you record is uploaded when it returns',
+ 'ادفع الآن':'Push now',
+ 'تعذّر الدخول — تأكّد من الاسم وكلمة المرور':'Sign-in failed — check the username and password',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5834,6 +5841,11 @@ ur:{
  'الفكّ':'ڈسمینٹلنگ',
  'الحضور':'حاضری',
  'التركيبات':'تنصیبات',
+ 'اكتب اسمَ المستخدم وكلمةَ المرور':'صارف نام اور پاس ورڈ لکھیں',
+ 'بلا شبكة — الدخولُ الأوّلُ يحتاج شبكة':'نیٹ ورک نہیں — پہلا سائن اِن نیٹ ورک چاہتا ہے',
+ 'بلا شبكة — دخلتَ بجلستك المحفوظة ويُرفَع ما تسجّله حين تعود':'نیٹ ورک نہیں — محفوظ سیشن سے داخل؛ واپسی پر اپ لوڈ ہوگا',
+ 'ادفع الآن':'ابھی بھیجیں',
+ 'تعذّر الدخول — تأكّد من الاسم وكلمة المرور':'سائن اِن ناکام — صارف نام اور پاس ورڈ چیک کریں',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -15543,7 +15555,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.94' + '.docx" download>⬇ '
+              +   'V15.95' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -15923,8 +15935,12 @@ function queueHtml(){
     +   '<p class="hint" style="margin:2px 0 0">'
     +     esc(t(STATE.meta.online ? 'الشبكةُ متاحة — تُرفَع تلقائيًّا الآن.'
                                  : 'لا شبكة — تُرفَع كاملةً حين تعود، ولا يسقط منها شيء.')) + '</p></div>'
-    +   '<button type="button" class="btn btn-quiet btn-sm" data-pq="0" aria-label="'
-    +     esc(t('إغلاق')) + '">\u2715</button>'
+    +   '<div class="actions" style="margin:0">'
+    /* الزرُّ هنا أيضًا: من يرى الطابورَ على الخريطة لا يذهب إلى شاشةٍ أخرى ليدفعه */
+    +     (Q.length && STATE.meta.online ? btn('\u2191 ' + t('ادفع الآن'),'btn-primary btn-sm',' data-pushnow="1"') : '')
+    +     '<button type="button" class="btn btn-quiet btn-sm" data-pq="0" aria-label="'
+    +       esc(t('إغلاق')) + '">\u2715</button>'
+    +   '</div>'
     + '</div>'
     + '<div class="pop-body">'
     + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok']]
@@ -18311,7 +18327,9 @@ function bootAuto(){
        وكان يُخفى الدخولُ ولا يُظهَر الهيكل — فتبقى الصفحةُ فارغةً تمامًا،
        لا شاشةَ دخولٍ ولا تطبيق. */
     enterShell();
-    var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
+    /* كانتا تُنادَيان على CORE وهما على FB — فينفجر الوعدُ بعد الدخول التلقائيِّ
+       ولا يُنصَت ولا يُسحَب ولا يُدفَع الطابورُ حتى يُضغَط بيد. */
+    var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
     first.then(function(){ return pullDelta(); }).then(function(){ liveWatch(); liveSmall(); return 0; })
          .then(function(){ statBump(); render(1); syncBadge(); })
          .catch(function(e){
@@ -23521,7 +23539,9 @@ var ROLES = {
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } }
 };
 
-var ROLE = 'engineer';
+/* الدورُ قبل الدخول أدنى الأدوار — لا مهندسٌ كاملُ الصلاحية: يُرفَع بعد أن
+   تُثبِت المصادقةُ الهويةَ، فلا يرى من لم يدخل شيئًا لا يراه الفنيّ. */
+var ROLE = 'tech';
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
 function may(k){
   /* «provision» تُشتقُّ من الرتبة: المشرفُ فما فوق — لا تُكتَب في كلِّ دور */
@@ -25500,40 +25520,48 @@ function render(force){
 }
 
 function enterApp(user, pass){
-  if (user && pass){
-    /* الهيكلُ يظهر أولًا ثم يُحاوَل الدخول: كان يُنتظَر وعدُ `signIn` ثم
-       يُظهَر — فإن رفض الوعدُ بقيت الشاشةُ بيضاءَ بلا رسالة. والتطبيقُ يعمل
-       بلا شبكةٍ بحكم تصميمه، فلا يصحُّ أن تحجبه شبكةٌ غائبة. */
-    enterShell();
-    FB.signIn(user, pass).catch(function(e){
-      return { ok:false, err:String(e && e.code || e) };
-    }).then(function(r){
-      r = r || { ok:false, err:'unknown' };
-      if (!r.ok){
-        toast(t(r.err === 'offline'
-          ? 'بلا شبكة — تعمل محليًّا ويُرفَع ما سجّلتَه حين تعود'
-          : 'تعذّر الدخول — تأكّد من الاسم وكلمة المرور'));
-        STATE.meta.name = STATE.meta.name || user;
-        render(1);
+  /* ═══ لا دخولَ بلا هويةٍ مُثبَتة ═══
+     كان الهيكلُ يظهر أوّلًا ثم يُحاوَل الدخول — «لأن التطبيقَ يعمل بلا
+     شبكةٍ بحكم تصميمه». وكان الدورُ الافتراضيُّ مهندسًا. فمن فتح الرابطَ
+     وضغط «دخول» بحقلين فارغين دخل مهندسًا كاملَ الصلاحية بلا اسمٍ ولا كلمة
+     — وهذا ما وقع حين أُرسل الرابطُ لغيرِ أهله. صار الهيكلُ لا يظهر إلا بعد
+     أن تُثبِت المصادقةُ الهويةَ؛ وبلا شبكةٍ لا يُفتَح إلا لمن دخل من قبل
+     على هذا الجهاز فحفظت المصادقةُ جلستَه — وهي تُثبِتها بلا شبكة. */
+  user = String(user || '').trim(); pass = String(pass || '');
+  if (!user || !pass){ toast(t('اكتب اسمَ المستخدم وكلمةَ المرور')); return; }
+  var goBtn = document.getElementById('lgGo');
+  if (goBtn) goBtn.disabled = true;
+  FB.signIn(user, pass).catch(function(e){
+    return { ok:false, err:String(e && e.code || e) };
+  }).then(function(r){
+    r = r || { ok:false, err:'unknown' };
+    if (!r.ok){
+      if (r.err === 'offline'){
+        /* بلا شبكة: تُقبَل جلسةٌ حفظتها المصادقةُ على هذا الجهاز لهذا الاسم وحده */
+        var cu = FB.auth && FB.auth.currentUser;
+        var same = cu && String(cu.email || '').toLowerCase().indexOf(user.toLowerCase()) === 0;
+        if (!same){ toast(t('بلا شبكة — الدخولُ الأوّلُ يحتاج شبكة')); if (goBtn) goBtn.disabled = false; return; }
+        toast(t('بلا شبكة — دخلتَ بجلستك المحفوظة ويُرفَع ما تسجّله حين تعود'));
+      } else {
+        toast(t('تعذّر الدخول — تأكّد من الاسم وكلمة المرور'));
+        if (goBtn) goBtn.disabled = false;
         return;
       }
-      {
-        ROLE = ROLES[r.role] ? r.role : 'tech';
-        var first = CORE.legacyDone() ? Promise.resolve(0) : CORE.pullLegacy();
-        setTimeout(function(){ liveWatch(); liveSmall(); }, 1200);
-        first.then(function(n){
-          if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
-          return pullDelta();
-        }).then(function(){ statBump(); render(1); liveWatch(); })
-          .catch(function(e){
-            softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
-            render(1);
-          });
-      }
-    });
-    return;
-  }
-  enterShell();
+    } else {
+      ROLE = ROLES[r.role] ? r.role : 'tech';
+    }
+    enterShell();
+    var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
+    setTimeout(function(){ liveWatch(); liveSmall(); }, 1200);
+    first.then(function(n){
+      if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
+      return pullDelta();
+    }).then(function(){ statBump(); render(1); liveWatch(); })
+      .catch(function(e){
+        softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
+        render(1);
+      });
+  });
 }
 
 function enterShell(){

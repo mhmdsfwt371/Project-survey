@@ -6,7 +6,13 @@ name: Provision accounts + photos
 on:
   schedule:
     - cron: '*/10 * * * *'
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      team:
+        description: 'فريقٌ يُنشَأ فورًا (اختياري): سطرٌ لكلِّ شخص — الاسم,اسم المستخدم,الدور,كلمة المرور,الوظيفة,الفريق'
+        required: false
+        type: string
+        default: ''
 permissions:
   contents: read
 jobs:
@@ -29,6 +35,7 @@ jobs:
       - name: إنشاءُ ما طلبه المكتب
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          TEAM: ${{ inputs.team }}
         run: node scripts/provision.mjs
       - name: نقلُ الصور من القاعدة إلى الدرايف
         env:

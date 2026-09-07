@@ -102,6 +102,9 @@ if (!w.CSS.escape) w.CSS.escape = s => String(s);
   if (!w.scrollTo) w.scrollTo = () => {};
 }
 await new Promise(r => setTimeout(r, 800));
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
+{ const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 await new Promise(r => setTimeout(r, 400));
 

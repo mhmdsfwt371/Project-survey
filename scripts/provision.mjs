@@ -16,19 +16,48 @@ if (!raw){ console.log('::error::FIREBASE_SERVICE_ACCOUNT غير مضبوط'); p
 admin.initializeApp({ credential: admin.credential.cert(JSON.parse(raw)) });
 const db = admin.firestore(), auth = admin.auth();
 const DOMAIN = process.env.NUSUK_DOMAIN || 'nusuk.local';
+function genPass(){
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; let out = '';
+  for (let i = 0; i < 10; i++) out += A[Math.floor(Math.random() * A.length)];
+  return out;
+}
 
+/* ═══ مسارٌ مباشرٌ من صفحة التشغيل ═══
+   حين لا يصل طلبُ التطبيق — طابورٌ معلَّقٌ أو جهازٌ لا يُزامِن — يُلصَق الفريقُ
+   في حقل «Run workflow» نفسِه فيُنشَأ فورًا بلا وسيط: سطرٌ لكلِّ شخص:
+   الاسم,اسم المستخدم,الدور,كلمة المرور,الوظيفة,الفريق — والدورُ بالعربيّ
+   أو بالمفتاح. ويُكتَب لكلٍّ طلبٌ في «provision» بحالة «تمّ» فيراه التطبيق. */
+const ROLE_AR = { 'الإدارة العليا':'exec','إدارة عليا':'exec','مدير المشروع':'admin','مدير':'admin','مهندس':'engineer',
+  'مشرف':'supervisor','فني':'tech','وزارة':'viewer','مطلع':'viewer','مطّلع':'viewer','فريق التهيئة':'cprep',
+  'فريق التجميع':'casm','فريق التركيب':'cins','مشتريات':'buyer','مستودع':'store','محاسب':'acct','مساعد فني':'helper','سائق':'driver' };
+const KNOWN = new Set(['exec','admin','engineer','supervisor','tech','viewer','cprep','casm','cins','buyer','store','acct','helper','driver']);
+const direct = [];
+String(process.env.TEAM || '').split(/\r?\n/).forEach((line, i) => {
+  const c = line.split(/\t|,|;|\|/).map(x => x.trim());
+  if (!c[0] && !c[1]) return;
+  const roleRaw = (c[2] || 'فني').trim();
+  const role = KNOWN.has(roleRaw) ? roleRaw : (ROLE_AR[roleRaw] || '');
+  direct.push({ id:'direct-' + (i + 1), data:{ name:c[0] || c[1], user:(c[1] || '').replace(/\s+/g, ''), role: role || 'tech',
+    pass:c[3] || '', job:c[4] || '', crew:c[5] || '', by:'workflow_dispatch', status:'pending' }, direct:true, badRole:!role && roleRaw });
+});
 const snap = await db.collection('provision').where('status', '==', 'pending').limit(300).get();
-if (snap.empty){ console.log('لا طلباتِ إنشاءٍ منتظرة'); process.exit(0); }
-console.log(`طلبات: ${snap.size}`);
+const docs = snap.docs.map(d => ({ id:d.id, data:d.data(), ref:d.ref }))
+  .concat(direct.map(x => ({ id:x.data.user || x.id, data:x.data, ref:db.collection('provision').doc(x.data.user || x.id), direct:true, badRole:x.badRole })));
+if (!docs.length){ console.log('لا طلباتِ إنشاءٍ منتظرة — لا في القاعدة ولا في حقل التشغيل'); process.exit(0); }
+console.log(`طلبات: ${snap.size} من القاعدة · ${direct.length} من حقل التشغيل`);
 
 let done = 0, failed = 0;
-for (const d of snap.docs){
-  const p = d.data(), user = String(p.user || d.id).trim();
+for (const d of docs){
+  const p = d.data, user = String(p.user || d.id).trim();
+  if (d.badRole) console.log(`::warning title=${user}::دورٌ غيرُ معروفٍ «${d.badRole}» — أُنشئ فنيًّا`);
   const email = /@/.test(user) ? user : `${user}@${DOMAIN}`;
   const pass  = String(p.pass || '');
   try {
     if (!user || !/^[A-Za-z0-9._@-]{3,}$/.test(user)) throw new Error('اسمُ مستخدمٍ غيرُ صالح');
-    if (pass.length < 10) throw new Error('كلمةُ المرور أقلُّ من عشرة أحرف');
+    if (pass.length < 10){
+      if (d.direct && !pass){ pass = genPass(); p.pass = pass; }
+      else throw new Error('كلمةُ المرور أقلُّ من عشرة أحرف');
+    }
     let u;
     try {
       u = await auth.getUserByEmail(email);
@@ -50,13 +79,13 @@ for (const d of snap.docs){
     if (p.ph)    doc.ph    = p.ph;
     await db.collection('users').doc(u.uid).set(doc, { merge: true });
     /* الطلبُ يُعلَّم «تمّ» ويحمل المعرِّفَ — وتبقى الكلمةُ حتى تُصدَّر الورقة */
-    await d.ref.set({ status: 'done', uid: u.uid, doneAt: Date.now(), why: '' }, { merge: true });
+    await d.ref.set(Object.assign(d.direct ? p : {}, { status: 'done', uid: u.uid, doneAt: Date.now(), why: '' }), { merge: true });
     /* الدعوةُ القديمةُ إن وُجدت تُمحى: لم تعد تُحتاج */
     await db.collection('pending').doc(user).delete().catch(() => {});
     done++;
     console.log(`  ✓ ${user} → ${u.uid}`);
     /* تنبيهٌ يُقرأ من واجهة GitHub البرمجية: مَن أُنشئ فعلًا لا في السجل وحده */
-    console.log(`::notice title=${user}::أُنشئ — ${p.role || 'tech'} — ${u.uid}`);
+    console.log(`::notice title=${user}::أُنشئ — ${p.role || 'tech'} — ${u.uid}` + (d.direct ? ` — كلمةُ الدخول: ${pass}` : ''));
   } catch (e){
     failed++;
     const why = String(e && (e.message || e.code) || e).slice(0, 160);
