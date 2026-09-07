@@ -19,7 +19,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 /* ═══ ساكن ═══ */
 T(!/new Date\(e\.at \|\| Date\.now\(\)\)\.toISOString/.test(js), 'وقتُ الحدث لا يُحوَّل تاريخًا من نصٍّ');
-T(/id="syncCd"/.test(js) && /SYNC_CYCLE = 180/.test(js), 'عدّادُ ثلاثِ دقائق في الرأس');
+T(/id="syncCd"/.test(js) && /SYNC_CYCLE = 60/.test(js), 'عدّادُ دقيقةٍ في الرأس');
 T(!/setInterval\(function\(\)\{\s*\n\s*if \(STATE\.meta\.online && FB\.ready\) FB\.pull\(0\)/.test(js), 'لا سحبَ دوريًّا ثانيًا موازيًا للعدّاد');
 T(/function provClear/.test(js) && /data-provclear/.test(js), 'زرُّ مسح الطلبات المنتهية موصول');
 T(!/\['المسح','٠','acc'\]/.test(js), 'أرقامُ «الأدوات» لا تُكتَب أصفارًا');
@@ -72,7 +72,7 @@ const v1 = cd && cd.textContent; await wait(1300);
 T(cd && cd.textContent !== v1, 'ويتحرّك كلَّ ثانية', v1 + ' → ' + (cd && cd.textContent));
 w.SYNC_LEFT = 1; const p0 = pulls, f0 = flushes; await wait(1400);
 T(pulls === p0 + 1 && flushes === f0 + 1, 'عند الصفر: دفعٌ وسحبٌ مرةً واحدة', 'pulls +' + (pulls - p0) + ' flushes +' + (flushes - f0));
-T(w.SYNC_LEFT >= w.SYNC_CYCLE - 2, 'ثم يُعاد العدُّ من ثلاث دقائق', String(w.SYNC_LEFT));
+T(w.SYNC_LEFT >= w.SYNC_CYCLE - 2, 'ثم يُعاد العدُّ من دقيقة', String(w.SYNC_LEFT));
 w.SYNC_LEFT = 42; d.querySelector('[data-pull]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 T(w.SYNC_LEFT === w.SYNC_CYCLE, 'والمزامنةُ اليدويةُ تُعيده أيضًا', String(w.SYNC_LEFT));
 w.liveTickStop();

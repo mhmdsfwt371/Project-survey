@@ -176,6 +176,8 @@ jobs:
         run: node scripts/audit-crole.mjs
       - name: الحساب المكرَّر وإعادة الكلمة — المؤقت لا يكتب وثيقة، والمكرَّر يُدمَج، والكلمة تُعاد من الشاشة
         run: node scripts/audit-dupe.mjs
+      - name: الرؤية من فوق — النطاق بالرتبة، والمؤشر لا يقفز، والإنصات الحي على العمل، ودورة دقيقة
+        run: node scripts/audit-cascade.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

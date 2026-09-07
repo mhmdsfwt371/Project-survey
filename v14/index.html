@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.6</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7965,7 +7965,8 @@ var CORE = {
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
       diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
       photos:STATE.photos || {}, pending:STATE.pending || {}, provision:STATE.provision || {},
-      att:STATE.att || {}
+      att:STATE.att || {},
+      pullAt:STATE.meta.pullAt || {}
     });
   },
 
@@ -7976,6 +7977,7 @@ var CORE = {
         if (v[k]) STATE[k] = v[k];
       });
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
+      if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
       /* يُطوى المكرَّرُ فيما حُمِّل: الطابورُ المحفوظُ قبل الطيِّ فيه مفاتيحُ
          مكرَّرة، فتُطوى مرةً هنا ولا تُرفَع مرارًا. */
       if (Array.isArray(STATE.queue) && STATE.queue.length > 1){
@@ -8739,6 +8741,8 @@ function statsHistory(days){
      أما الكبيرةُ — الزياراتُ والتركيباتُ والمهامُّ — فتُسحَب بالفارق كلَّ
    دقيقتين وعند العودة من الخلفية: كثيرةٌ ولا تحتمل إنصاتًا دائمًا. */
 var LIVE_SMALL = [], LIVE_TICK = null;
+/* الشاشاتُ التي تُعاد رسمُها حين يصل عملٌ جديد */
+var LIVE_WORK_PAGES = ['over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','daily','pace','map'];
 function liveSmallStop(){
   /* إلغاءُ إنصاتٍ مات لا يُبلَّغ عنه — لكنه يُسجَّل كي لا يُبتلَع صامتًا */
   LIVE_SMALL.forEach(function(f){
@@ -8755,7 +8759,7 @@ function liveSmall(){
       var q = FB.db.collection(col);
       /* طلباتُ الإنشاء: غيرُ المدير يُنصِت لما كتبه هو — فتُثبَت القاعدةُ
          على الشرط لا على كلِّ وثيقةٍ، ولا يرى كلماتٍ ليست له */
-      if (filt) q = q.where(filt[0], '==', filt[1]);
+      if (filt) q = filt.length === 3 ? q.where(filt[0], filt[1], filt[2]) : q.where(filt[0], '==', filt[1]);
       if (cap) q = q.limit(cap);
       LIVE_SMALL.push(q.onSnapshot(function(sn){
         var n = 0;
@@ -8766,6 +8770,8 @@ function liveSmall(){
           STATE.meta.lastSync = Date.now();
           statBump();
           if (CUR === 'users' || CUR === 'crews' || CUR === 'assignRole') render(1);
+          else if (LIVE_WORK_PAGES.indexOf(CUR) > -1 && CUR !== 'map') render(1);
+          else if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
         }
       }, function(e){ softErr('إنصات ' + col, e, ''); }));
     } catch (e){ softErr('إنصات ' + col, e, ''); }
@@ -8797,6 +8803,21 @@ function liveSmall(){
       else { delete STATE.pending[id]; delete STATE.users[id]; }
     }, 200);
   }
+  /* ═══ العملُ يصل من فوقُ لحظةً بلحظة ═══
+     المشرفُ فما فوق (والإدارةُ العليا) يُنصِتون إلى ما يتغيّر في الزيارات
+     والتركيبات والإسنادات والفكِّ والصيانة بعد بدء الجلسة — فيُرى الإسنادُ
+     والاعتمادُ وإفادةُ الميدان في كلِّ جهازٍ في ثوانٍ، والإنصاتُ لا يكلّف إلا
+     ما تغيّر لا ما يُستعلَم. والسحبةُ الدوريةُ تبقى شبكةَ أمانٍ بمؤشِّرها. */
+  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'exec'){
+    var t0 = Date.now() - 60000;
+    ['recs','inss','tasks','dismantles','maints'].forEach(function(col){
+      var key = PULL_COL[col] || col;
+      watch(col, function(id, v){
+        if (!STATE[key]) STATE[key] = {};
+        if (v) STATE[key][id] = v; else delete STATE[key][id];
+      }, 500, ['_at', '>', t0]);
+    });
+  }
   if (rankOf(ROLE) >= rankOf('supervisor')){
     watch('att', function(id, v){
       STATE.att = STATE.att || {};
@@ -8823,7 +8844,7 @@ var BADGE_TICK = null;
    دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
    دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
    العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
-var SYNC_CYCLE = 180, SYNC_LEFT = 180, SYNC_BUSY = false;
+var SYNC_CYCLE = 60, SYNC_LEFT = 60, SYNC_BUSY = false;
 function syncCdTxt(){
   /* دقيقتان ورقمان بأرقام لغة الواجهة — `nm` للأعداد لا للنصوص */
   var m = Math.floor(SYNC_LEFT / 60), s = SYNC_LEFT % 60;
@@ -8835,11 +8856,14 @@ function syncCycle(){
   SYNC_LEFT = SYNC_CYCLE;
   if (SYNC_BUSY || !STATE.meta.online) return Promise.resolve(0);
   SYNC_BUSY = true;
-  PULL_ASK = true; PULL_LAST = 0;
+  /* الدفعُ كلَّ دقيقة (لا يُقرأ فيه شيء)، والسحبُ حين يحين موعدُه بنطاق الدور —
+     فالمكتبُ كلَّ خمسٍ والميدانُ كلَّ ربع ساعة — لأن كلَّ استعلامٍ يُحاسَب ولو
+     عاد فارغًا؛ وما بين السحبتين يصل بالإنصات الحيّ. */
   var pushed = CORE.flush().catch(function(){ return 0; });
   return pushed.then(function(){
-    return (FB.ready && FB.db) ? FB.pull(0).catch(function(){ return 0; }) : 0;
-  }).then(function(){ return pullDelta(); }).then(function(n){
+    var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every);
+    return due ? pullDelta() : 0;
+  }).then(function(n){
     /* لا إعادةَ رسمٍ آليةً: من يكتب في نموذجٍ لا يُقذَف منه — الإنصاتُ الحيُّ
        يُعيد رسمَ ما يتغيّر، والشارةُ تكفي هنا */
     statBump(); syncBadge();
@@ -8866,7 +8890,7 @@ function liveTick(){
     try { syncBadge(); } catch (e){ softErr('شارة المزامنة', e, ''); }
   }, 30000);
   document.addEventListener('visibilitychange', function(){
-    if (!document.hidden && STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
+    if (!document.hidden && STATE.meta.online && FB.ready){ PULL_ASK = true; syncCycle(); }
   });
 }
 var SOFT_ERRS = [], SOFT_SAID = {};
@@ -15926,7 +15950,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.5' + '.docx" download>⬇ '
+              +   'V16.6' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16761,43 +16785,45 @@ function renderKey(){
 var CFG_VER = 0;
 
 /* ── السحبُ الفارقي: ما تغيّر بعد آخر مزامنةٍ وحده ── */
+/* ═══ من فوقُ يرى ما تحته ═══
+   كان السحبُ ثلاثَ طبقات: «التيّارُ الخامُ» لمن يعتمد (مهندسٌ ومدير)، و«الأرقامُ
+   وحدَها» لمن يضبط، و«ما كتبتُه أنا» للباقين — فالإدارةُ العليا (لا تعتمد ولا
+   تضبط) والمشرفُ سقطا في الطبقة الثالثة: لا يريان زيارةً ولا تركيبًا ولا
+   إسنادًا كتبه من دونهما. والمؤشِّرُ كان «آخر مزامنة» التي صارت (V15.96) تُبدَّل
+   مع كلِّ إنصاتٍ ونبض — فيقفز أمامَ ما لم يُسحَب بعدُ ويضيع الفارقُ إلى الأبد:
+   المديرُ يزامِن ولا يرى ما أسنده المهندسُ قبل عشر دقائق. وسقفُ خمسمئةٍ في
+   السحبة الباردة يُسقِط ما فوقه من ألفٍ وسبعمئة نقطة.
+     صار النطاقُ بالرتبة: المشرفُ فما فوق (والإدارةُ العليا) يسحبون العملَ كلَّه —
+   زياراتٍ وتركيباتٍ وإسناداتٍ وفكًّا وصيانة؛ والوزارةُ الأرقامَ؛ والميدانُ ما
+   كتبه هو. والمؤشِّرُ لكلِّ مجموعةٍ وقتُ آخرِ سحبةٍ ناجحةٍ لها — بتداخلِ دقيقتين —
+   ويُحفَظ على الجهاز فلا تُعاد السحبةُ الباردةُ مع كلِّ فتح. */
+var PULL_COL = { recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints', stats:'stats' };
+function pullScope(){
+  var r = effRole(ROLE);
+  if (rankOf(ROLE) >= rankOf('supervisor') || r === 'exec' || r === 'admin')
+    return { cols:['recs','inss','tasks','dismantles','maints'], mine:false, every:300000 };
+  if (r === 'viewer') return { cols:['stats'], mine:false, every:300000 };
+  return { cols:['recs','inss','dismantles','maints'], mine:true, every:900000 };
+}
 function pullDelta(){
   if (!FB.ready || !FB.db) return Promise.resolve(0);
-  var since = STATE.meta.lastSync || 0, got = 0;
-
-  /* ═══ الفنيُّ لا يحتاج سجلاتِ زملائه ═══
-     كان كلُّ جهازٍ يسحب `recs` و`inss` و`tasks` كاملةً كلَّ دقيقتين. وبمئةٍ
-     وخمسين جهازًا وسبعمئةٍ وعشرين سحبةً في اليوم: ملايينُ القراءات على حصةٍ
-     سقفُها خمسون ألفًا. والفنيُّ لا ينتفع بشيءٍ منها: مواقعُه في التطبيق
-     نفسِه، ومهامُّه تصله بالاستماع الحيِّ لا بالسحب، وسجلاتُه عنده أصلًا.
-     فالسحبُ الكاملُ للمكتب — الذي يحتاج الصورةَ كلَّها — والميدانُ يسحب
-     ما كتبه هو وحده، ليستعيده إن بدّل جهازَه. */
-  /* ثلاثُ طبقاتٍ لا طبقتان — والفرقُ بينها هو الفرقُ بين ثلاثين ألفَ قراءةٍ
-     ومئةٍ وثمانية عشر ألفًا:
-       المهندسُ وحده يحتاج التيّارَ الخام — هو الذي يدقّق سجلًّا سجلًّا.
-       والمكتبُ والوزارةُ يحتاجان الأرقامَ لا السجلات: يقرآن التجميعَ اليوميَّ،
-         ثلاثين وثيقةً للشهر بدل عشرة آلافٍ في اليوم.
-       والميدانُ لا يحتاج شيئًا: مواقعُه في التطبيق، ومهامُّه تصله بالاستماع
-         الحيّ، وسجلاتُه عنده — ولا يسحب إلا عند جهازٍ جديدٍ أو بطلبه. */
-  var deep  = (typeof may === 'function') && may('approve');
-  var stat  = (typeof may === 'function') && may('settings');
-  var me    = STATE.meta.uid;
-  var cold  = !since;
-  var cols  = deep ? ['recs','inss','tasks']
-            : stat ? ['stats']
-            : (cold || PULL_ASK) ? ['recs','inss'] : [];
-  PULL_ASK = false;
-  if (!cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
-
-  return Promise.all(cols.map(function(c){
+  var sc = pullScope(), got = 0, me = STATE.meta.uid;
+  var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
+  var wasAsk = PULL_ASK; PULL_ASK = false;
+  if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
+  return Promise.all(sc.cols.map(function(c){
+    var key = PULL_COL[c] || c;
+    if (!STATE[key]) STATE[key] = {};
+    var start = Date.now();
+    var since = (at[c] || 0) - 120000;
     var q = FB.db.collection(c);
-    if (!deep && c !== 'stats' && me) q = q.where('_by', '==', me);
-    if (since) q = q.where('_at', '>', since);
-    return q.limit(deep ? 500 : 100).get().then(function(snap){
-      snap.forEach(function(doc){
-        STATE[c][doc.id] = doc.data();
-        got++;
-      });
+    if (sc.mine && c !== 'stats' && me) q = q.where('_by', '==', me);
+    if (since > 0) q = q.where('_at', '>', since);
+    /* السحبةُ الباردةُ بلا سقفٍ يقطع: ألفٌ وسبعمئةٌ زيارةٌ لا تُقصّ عند خمسمئة */
+    return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
+      snap.forEach(function(doc){ STATE[key][doc.id] = doc.data(); got++; });
+      FB.readCount = (FB.readCount || 0) + snap.size;
+      at[c] = start;
     }).catch(function(e){
       /* بلا هذا يقف السحبُ صامتًا: المكتبُ يفتح فلا يجد ما رفعه الميدانُ
          ولا يعرف أن السحبَ سقط أصلًا. */
@@ -16805,7 +16831,8 @@ function pullDelta(){
     });
   })).then(function(){
     STATE.meta.lastSync = Date.now();
-    if (got){ statBump(); CORE.saveSoon(); }
+    PULL_LAST = Date.now();
+    if (got || wasAsk){ statBump(); CORE.saveSoon(); }
     return got;
   });
 }
@@ -27920,16 +27947,8 @@ document.addEventListener('change', function(e){
    ما كتبه هو. */
 var PULL_LAST = 0;
 var PULL_ASK = false;   /* يرفعه زرُّ «مزامنة الآن» فيسحب الميدانُ مرةً */
-setInterval(function(){
-  if (typeof document !== 'undefined' && document.hidden) return;
-  if (!STATE.meta.online) return;
-  CORE.flush();
-  var office = (typeof may === 'function') && may('settings');
-  var every  = office ? 300000 : 900000;
-  if (Date.now() - PULL_LAST < every) return;
-  PULL_LAST = Date.now();
-  pullDelta().then(function(n){ if (n) render(1); });
-}, 120000);
+/* كانت هنا دورةٌ ثانيةٌ كلَّ دقيقتين توازي عدّادَ الرأس — صارت الدورةُ واحدةً:
+   العدّادُ (syncCycle) يدفع كلَّ دقيقةٍ ويسحب حين يحين موعدُ النطاق */
 
 /* الهروبُ يغلق ما هو مفتوح، الأحدثَ فالأقدم */
 document.addEventListener('keydown', function(e){
