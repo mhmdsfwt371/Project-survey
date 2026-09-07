@@ -96,10 +96,12 @@ check(!canW.includes("'viewer'"), 'الوزارةُ خارج صلاحية الك
   const tel = /match \/settings\/(contacts|cotel)\s*\{[^}]*\}/g;
   const blocks = R.match(tel) || [];
   check(blocks.length === 2, `مساراتُ الهواتف معرَّفة (${blocks.length}/2)`);
-  check(blocks.every(b => /allow read:\s*if canW\(\)/.test(b)),
-    'الهواتفُ تُقرأ بصلاحية الكتابة — فالوزارةُ خارجها');
-  check(blocks.every(b => /allow write:\s*if mgr\(\)/.test(b)),
-    'الهواتفُ لا يكتبها إلا المهندس');
+  /* V16.0: الهواتفُ تمرّ بالمصفوفة لمن يكتب — والوزارةُ والإدارةُ العليا محجوبتان
+     بشرطٍ ثابتٍ قبلها لا تصله المصفوفة */
+  check(blocks.every(b => /allow read:\s*if !viewer\(\) && pm\('phones', 'r', canW\(\)\)/.test(b)),
+    'الهواتفُ تُقرأ بصلاحية الكتابة (بالمصفوفة) — والوزارةُ خارجها ثابتًا');
+  check(blocks.every(b => /allow write:\s*if pm\('phones', 'w', mgr\(\)\)/.test(b)),
+    'الهواتفُ لا يكتبها إلا المهندس — إلا أن تقول المصفوفةُ غيرَ ذلك');
 }
 
 /* ── ٥ · النشر: قاعدةٌ في المستودع لا تحرس شيئًا حتى تُنشَر ───────────── */

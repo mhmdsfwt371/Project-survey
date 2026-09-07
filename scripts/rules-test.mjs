@@ -10,7 +10,7 @@
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
-import { doc, setDoc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, query, collection, limit } from 'firebase/firestore';
 
 const env = await initializeTestEnvironment({
   projectId: 'demo-nusuk',
@@ -229,6 +229,34 @@ await deny('والمعطَّلُ لا يكتب حضورًا',               setD
 await ok  ('والمشرفُ يقرأ الكلَّ',                     getDoc(doc(as('sup'), 'presence/tec')));
 await deny('ولا يحذفه',                                deleteDoc(doc(as('sup'), 'presence/tec')));
 await ok  ('والمهندسُ يحذفه',                          deleteDoc(doc(as('eng'), 'presence/tec')));
+console.log('\n══ مصفوفةُ الصلاحيات: تُكتَب من التطبيق وتحكم القاعدة ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const f = ctx.firestore();
+  await setDoc(doc(f, 'users/buy'), { name:'مشتريات', role:'buyer', active:true });
+  await setDoc(doc(f, 'purchases/p1'), { id:'p1', amt:1 });
+  await setDoc(doc(f, 'settings/contacts'), { office:'0500000000' });
+});
+const PM = { m:{ purchases:{ buyer:{ r:true, w:true } }, recs:{ tech:{ w:false }, admin:{ w:false } },
+                 events:{ engineer:{ d:true } }, phones:{ viewer:{ r:true } } }, v:1, at:1 };
+await deny('قبل المصفوفة: المشتريات لا يقرأ المشتريات (الافتراضي)', getDoc(doc(as('buy'), 'purchases/p1')));
+await deny('المشرفُ لا يكتب المصفوفة',                     setDoc(doc(as('sup'), 'settings/perms'), PM));
+await deny('ولا الفنيّ',                                   setDoc(doc(as('tec'), 'settings/perms'), PM));
+await ok  ('والمهندسُ يكتبها',                             setDoc(doc(as('eng'), 'settings/perms'), PM));
+await ok  ('والإدارةُ العليا تكتبها (رتبة ١١٠)',           setDoc(doc(as('exe'), 'settings/perms'), { v:2 }, { merge:true }));
+await ok  ('والفنيُّ يقرؤها — التطبيقُ يعرض بها',          getDoc(doc(as('tec'), 'settings/perms')));
+await ok  ('بعدها: المشترياتُ يقرأ المشتريات',            getDoc(doc(as('buy'), 'purchases/p1')));
+await ok  ('ويكتبها',                                      setDoc(doc(as('buy'), 'purchases/p2'), { id:'p2', amt:2 }));
+await deny('ولا يحذفها — لم تُذكَر فتبقى للإدارة',         deleteDoc(doc(as('buy'), 'purchases/p1')));
+await deny('والفنيُّ الممنوعُ صراحةً لا يكتب زيارة',       setDoc(doc(as('tec'), 'recs/S7'), { ...rec, id:'S7', review:'pending' }));
+await ok  ('وما لم تذكره المصفوفةُ على افتراضيّه — يكتب تركيبًا', setDoc(doc(as('tec'), 'inss/S7'), { id:'S7', status:'مُركّب', approved:false, parts:{} }));
+await deny('ومديرُ مشروعٍ ممنوعٌ صراحةً يُمنَع',          setDoc(doc(as('adm'), 'recs/S8'), { ...rec, id:'S8', review:'pending' }));
+await ok  ('وصاحبُ المشروع ببريده فوق المصفوفة',          setDoc(doc(boss, 'recs/S8'), { ...rec, id:'S8', review:'pending' }));
+await deny('الثابتُ لا تفتحه: المهندسُ لا يحذف أثرًا ولو قالت',  deleteDoc(doc(as('eng'), 'events/ev1')));
+await deny('ولا ترى الوزارةُ الهواتفَ ولو قالت',           getDoc(doc(as('vwr'), 'settings/contacts')));
+await ok  ('وnull يُعيد الافتراضي',                        updateDoc(doc(as('eng'), 'settings/perms'), { 'm.recs.tech.w': null }));
+await ok  ('فيكتب الفنيُّ زيارتَه ثانيةً',                setDoc(doc(as('tec'), 'recs/S7'), { ...rec, id:'S7', review:'pending' }));
+await deny('ولا يعتمدها — الاعتمادُ على افتراضيّه',        setDoc(doc(as('tec'), 'recs/S7'), { ...rec, id:'S7', review:'approved' }));
+await ok  ('والاستعلامُ على القائمة يمرّ بالمصفوفة',       getDocs(query(collection(as('buy'), 'purchases'), limit(5))));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

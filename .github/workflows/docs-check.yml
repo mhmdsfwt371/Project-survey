@@ -170,6 +170,8 @@ jobs:
         run: node scripts/audit-wipe.mjs
       - name: عدّاد المزامنة والسجلات وطلبات الإنشاء — السجلات تُفتح بحدث حقيقي، والعدّاد يعدّ ويزامن، والطلب يذهب مع صاحبه
         run: node scripts/audit-sync.mjs
+      - name: مصفوفة الصلاحيات — الشاشة تكتب ما تقرؤه القاعدة والافتراضيات مرآة
+        run: node scripts/audit-perms.mjs
       - name: مراجعة الأدوار — أمن وقواعد وتشغيل وجودة ومعمار ووصولية وتدقيق
         run: node scripts/audit-review.mjs
       - name: الدورة الحياتية — سيناريو كامل من الحساب إلى التقرير

@@ -49,18 +49,33 @@ service cloud.firestore {
     }
     function myRank() { return rnk(role()); }
 
+    // ═══ مصفوفةُ الصلاحيات — تُكتَب من التطبيق وتُقرأ هنا ═══
+    // settings/perms = { m: { <مجموعة>: { <دور>: { r|w|a|d: true|false|null } } } }
+    // القيمةُ الصريحةُ تحكم، وnull أو الغيابُ = الافتراضيُّ المكتوبُ في كلِّ قاعدة
+    // (كما كانت قبل المصفوفة). وصاحبُ المشروع ببريده لا تحكمه المصفوفةُ — فلا
+    // يُقفَل على نفسه بضغطةٍ خاطئة. والثوابتُ (الأثرُ لا يُحذَف، الهواتفُ محجوبةٌ
+    // عن الوزارة، لا كتابةَ بلا هوية) مكتوبةٌ خارجها ولا تصلها.
+    function pmPath(){ return /databases/$(db)/documents/settings/perms; }
+    function pmCell(col){
+      return exists(pmPath()) ? get(pmPath()).data.get('m', {}).get(col, {}).get(role(), {}) : {};
+    }
+    function pm(col, op, dflt){
+      return isBoss() || (ok() && (pmCell(col).get(op, null) == null ? dflt : pmCell(col)[op] == true));
+    }
+
     // المستخدمون: كل واحد يقرأ حسابه — المدير يقرأ الكل
     // الأدمن يكتب أي حساب — المهندس يكتب وثائق المشرفين فقط (بدون تغيير الدور)
     // سجلُّ الصيانة: يكتبه الميدانُ ويقرؤه الجميع — كسجل التركيب
     match /maints/{id} {
-      allow read:  if ok();
-      allow write: if canW();
+      allow read:  if pm('maints', 'r', ok());
+      allow create, update: if pm('maints', 'w', canW());
+      allow delete: if pm('maints', 'd', canW());
     }
     // «آخرُ ما تمّ»: يُعلَن ولا يُعدَّل — سطرٌ يُكتَب مرةً ولا يُمحى، فهو
     // إعلانٌ لا سجلٌّ يُراجَع؛ وحذفُه يُخفي ما جرى.
     match /steps/{id} {
-      allow read:   if ok();
-      allow create: if canW();
+      allow read:   if pm('steps', 'r', ok());
+      allow create: if pm('steps', 'w', canW());
       allow update, delete: if false;
     }
     // الحساباتُ المعلَّقة: سُجِّلت ولم تُنشَأ في المصادقة — يراها المكتبُ
@@ -122,7 +137,7 @@ service cloud.firestore {
       // بالرتبة يُصفّى في التطبيق حيث لا يكلّف نداءً.
       allow read: if request.auth != null && (request.auth.uid == uid || ok());
       // المهندس صلاحيته صلاحية الأدمن كاملةً على الحسابات
-      allow create, update: if mgr()
+      allow create, update: if pm('users', 'w', mgr())
         // ومن دخل ولا وثيقةَ له يسجّل نفسَه — فنيًّا فقط ونشطًا: أدنى دورٍ
         // في النظام، ولا يرفع نفسَه ولا يكتب فوق وثيقةٍ قائمة. بها يخرج من
         // الحصار ويُرفَع عملُه، ويرقّيه المكتبُ إلى دوره الحقيقي.
@@ -138,7 +153,7 @@ service cloud.firestore {
                      == request.resource.data.role)
             ));
       // الحذفُ للمهندس ومدير المشروع: لا نفسَه، ولا من هو أعلى منه رتبة
-      allow delete: if mgr() && request.auth.uid != uid
+      allow delete: if pm('users', 'd', mgr()) && request.auth.uid != uid
                     && myRank() >= rnk(resource.data.get('role', 'tech'));
     }
 
@@ -147,11 +162,12 @@ service cloud.firestore {
        يكتب سجلَّه وينتظر، ولو كتب 'approved' بيده ردّته القاعدةُ كما تردّ
        اعتمادَ التركيب. الرَّدُّ ('revisit') لا يرفع صلاحيةً فلا يُمنَع. */
     match /recs/{id} {
-      allow read: if ok();
-      allow create, update: if mgr() || (
-        canW() &&
+      allow read: if pm('recs', 'r', ok());
+      // الكتابةُ (w) لمن يكتب العمل، والاعتمادُ (a) للإدارة — كلٌّ من المصفوفة بافتراضيّه
+      allow create, update: if pm('recs', 'w', canW()) && (
+        pm('recs', 'a', mgr()) ||
         (!('review' in request.resource.data) || request.resource.data.review != 'approved'));
-      allow delete: if mgr();
+      allow delete: if pm('recs', 'd', mgr());
     }
     /* اعتمادُ التركيب واعتمادُ حل التركيب فعلا مديرٍ لا فعلَ منفِّذ — كلاهما
        حقلٌ داخل هذه الوثيقة نفسها لا وثيقةٌ مستقلّة، فمن يملك canW() ليكتب
@@ -159,57 +175,60 @@ service cloud.firestore {
        التقنيُّ يقترح، والمهندسُ وحده يعتمد — لا فرقَ بين الاثنين في القاعدة
        العامة، ففُرِّق هنا. */
     match /inss/{id} {
-      allow read: if ok();
-      allow create: if canW();
-      allow update: if mgr() || (
-        canW() &&
-        request.resource.data.approved != true &&
+      allow read: if pm('inss', 'r', ok());
+      allow create: if pm('inss', 'w', canW());
+      allow update: if pm('inss', 'w', canW()) && (
+        pm('inss', 'a', mgr()) ||
+        (request.resource.data.approved != true &&
         (!('solution' in request.resource.data) ||
          !('status' in request.resource.data.solution) ||
-         request.resource.data.solution.status != 'معتمد')
+         request.resource.data.solution.status != 'معتمد'))
       );
-      allow delete: if mgr();
+      allow delete: if pm('inss', 'd', mgr());
     }
-    match /props/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /props/{id} { allow read: if pm('props', 'r', ok()); allow create, update: if pm('props', 'w', canW()); allow delete: if pm('props', 'd', mgr()); }
 
     // صور المسح والتركيب — مستند لكل لقطة (فُصلت عن السجل لتجاوز حد 1MB)
     // الصورةُ تصعد من الهاتف بمحتواها ثم يمحوه الخادمُ بعد النقل؛ الحقلُ
     // `data` لا يُقرأ إلا للمكتب لأنه ثقيلٌ — والرابطُ يكفي الجميع.
-    match /photos/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /photos/{id} { allow read: if pm('photos', 'r', ok()); allow create, update: if pm('photos', 'w', canW()); allow delete: if pm('photos', 'd', mgr()); }
 
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
     // أوامر المسح: المهندس ينشئ ويقفل، والمشرف يسجّل زياراته
     // مهام المسح: المهندس ينشئ ويعتمد، والفني يبدأ وينفّذ مهمته
     match /tasks/{id} {
-      allow read: if ok();
-      allow create, update: if canW();
-      allow delete: if mgr();
+      allow read: if pm('tasks', 'r', ok());
+      allow create, update: if pm('tasks', 'w', canW());
+      allow delete: if pm('tasks', 'd', mgr());
     }
     match /srvorders/{id} {
-      allow read: if ok();
-      allow create, update: if canW();
-      allow delete: if mgr();
+      allow read: if pm('srvorders', 'r', ok());
+      allow create, update: if pm('srvorders', 'w', canW());
+      allow delete: if pm('srvorders', 'd', mgr());
     }
-    match /hb/{id} { allow read: if ok(); allow write: if canW(); }
+    match /hb/{id} { allow read: if pm('hb', 'r', ok()); allow create, update: if pm('hb', 'w', canW()); allow delete: if pm('hb', 'd', canW()); }
 
     // انتقالات الصحة (سقوط/عودة) — سجل إلحاقي للتحليلات لا يُعدَّل
-    match /hbev/{id} { allow read: if ok(); allow create: if canW(); allow update, delete: if false; }
+    match /hbev/{id} { allow read: if pm('hbev', 'r', ok()); allow create: if pm('hbev', 'w', canW()); allow update, delete: if false; }
 
     // إعدادات مشتركة (الموعد المستهدف للمسح) — الجميع يقرأ، الإدارة تكتب
     // أرقام الهواتف (المكتب والشركات) للميدان والإدارة — لا تُعرض لحساب الوزارة
     // الهواتف: الميدانُ والإدارةُ يقرآن — والوزارةُ لا. والحجبُ هنا لا في
     // الواجهة وحدها، فالواجهةُ تُفتَح والقاعدةُ لا تُفتَح.
-    match /settings/contacts { allow read: if canW(); allow write: if mgr(); }
-    match /settings/cotel    { allow read: if canW(); allow write: if mgr(); }
+    // الهواتفُ: المصفوفةُ تفتحها وتغلقها لمن يكتب — والوزارةُ والإدارةُ العليا لا، مهما قالت
+    match /settings/contacts { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
+    match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
+    // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق
+    match /settings/perms    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/{id} {
       allow read: if ok() && id != 'contacts' && id != 'cotel';
-      allow write: if mgr();
+      allow write: if pm('settings', 'w', mgr());
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط
     match /colist/{id} {
-      allow read: if ok();
-      allow write: if mgr();
+      allow read: if pm('colist', 'r', ok());
+      allow write: if pm('colist', 'w', mgr());
       allow create: if ok() && role() == 'supervisor'
                     && request.resource.data.st == 'req';
     }
@@ -224,9 +243,9 @@ service cloud.firestore {
     // أعطالًا لأثرٍ وصل أصلًا. فيُقبَل التحديثُ الذي لا يغيّر شيئًا سوى ختم
     // الدفعة (_at و_by) — والمحتوى يبقى كما كُتب أوّلَ مرة.
     match /events/{id} {
-      allow read:   if ok();
+      allow read:   if pm('events', 'r', ok());
       // الأثرُ يكتبه من يعمل — لا المطّلعُ ولا الإدارةُ العليا فهما يقرآن فقط
-      allow create: if canW();
+      allow create: if pm('events', 'w', canW());
       allow update: if ok()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['_at', '_by']);
       allow delete: if false;
@@ -236,45 +255,46 @@ service cloud.firestore {
     // اللوحةُ بقراءةٍ واحدةٍ بدل ثلاثة آلاف.
     // اللقطاتُ اليومية مشتقّةٌ لا أثر: تصفيرُ الموسم يحذفها — للإدارة وحدَها (كانت لا تُحذَف
     // فيُرفَض أمرُ التصفير وتعود لقطاتُ التجارب مع أوّل سحب)
-    match /stats/{day} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /stats/{day} { allow read: if pm('stats', 'r', ok()); allow create, update: if pm('stats', 'w', canW()); allow delete: if pm('stats', 'd', mgr()); }
 
     // الفكُّ والمواقعُ المقترحةُ وطلباتُ الشركات وحساباتُ الفنيين
-    match /dismantles/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
-    match /newsites/{id}   { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
-    match /coreqs/{id}     { allow read: if ok(); allow create: if canW(); allow update, delete: if mgr(); }
+    match /dismantles/{id} { allow read: if pm('dismantles', 'r', ok()); allow create, update: if pm('dismantles', 'w', canW()); allow delete: if pm('dismantles', 'd', mgr()); }
+    match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create, update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
+    match /coreqs/{id} { allow read: if pm('coreqs', 'r', ok()); allow create: if pm('coreqs', 'w', canW()); allow update: if pm('coreqs', 'a', mgr()); allow delete: if pm('coreqs', 'd', mgr()); }
     // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
-    match /fixreqs/{id}    { allow read: if ok(); allow create: if canW(); allow update, delete: if mgr(); }
+    match /fixreqs/{id} { allow read: if pm('fixreqs', 'r', ok()); allow create: if pm('fixreqs', 'w', canW()); allow update: if pm('fixreqs', 'a', mgr()); allow delete: if pm('fixreqs', 'd', mgr()); }
     // عناوينُ الشبكة على السجل الأمّ: يقرؤها الجميعُ ويكتبها من له التحرير
-    match /sites/{id}      { allow read: if ok(); allow write: if canW(); allow delete: if false; }
+    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
-    match /ships/{id}      { allow read: if ok(); allow write: if canW(); allow delete: if mgr(); }
+    match /ships/{id} { allow read: if pm('ships', 'r', ok()); allow create, update: if pm('ships', 'w', canW()); allow delete: if pm('ships', 'd', mgr()); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير
-    match /vehicles/{id}   { allow read: if ok(); allow write: if canW(); }
-    match /vehAsn/{id}     { allow read: if ok(); allow write: if canW(); allow delete: if false; }
-    match /accounts/{id}   { allow read: if mgr(); allow create, update: if mgr(); allow delete: if false; }
+    match /vehicles/{id} { allow read: if pm('vehicles', 'r', ok()); allow create, update: if pm('vehicles', 'w', canW()); allow delete: if pm('vehicles', 'd', canW()); }
+    match /vehAsn/{id} { allow read: if pm('vehAsn', 'r', ok()); allow create, update: if pm('vehAsn', 'w', canW()); allow delete: if false; }
+    match /accounts/{id} { allow read: if pm('accounts', 'r', mgr()); allow create, update: if pm('accounts', 'w', mgr()); allow delete: if false; }
 
     // المخزونُ والمشتريات — كانتا تُكتبان بلا قاعدةٍ فتُرفضان
-    match /inventory/{id} { allow read: if ok(); allow create, update: if canW(); allow delete: if mgr(); }
+    match /inventory/{id} { allow read: if pm('inventory', 'r', ok()); allow create, update: if pm('inventory', 'w', canW()); allow delete: if pm('inventory', 'd', mgr()); }
     // المشترياتُ مالٌ داخليّ: لا يقرؤها الميدانُ ولا الوزارة
-    match /purchases/{id} { allow read: if mgr(); allow create, update: if mgr(); allow delete: if mgr(); }
+    match /purchases/{id} { allow read: if pm('purchases', 'r', mgr()); allow create, update: if pm('purchases', 'w', mgr()); allow delete: if pm('purchases', 'd', mgr()); }
 
     // الفرقُ وخطُّ الأساس وطلباتُ التغيير والسلامةُ وعدمُ المطابقة والمستخلصات
-    match /teams/{id}    { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
+    match /teams/{id} { allow read: if pm('teams', 'r', ok()); allow create, update: if pm('teams', 'w', canW()); allow delete: if pm('teams', 'd', mgr()); }
     /* نقاطُ الزيادة: قرارُ من يشرف لا من يُنفَّذ له — مشرفٌ أو مهندسٌ وحدهما،
        لا كلُّ من يملك canW() (فالفنيَّ وقائدَ الفريق الميدانيّ يرثانها أيضًا). */
     // نقاطُ الزيادة قرارٌ فوق الميدان: المهندسُ ومديرُ المشروع والإدارةُ العليا —
     // لا المشرفُ ولا الفنيّ؛ فالنقاطُ تدخل المستحقَّ ولا تُترَك لمن يعمل مع من
     // يقيّمه يومًا بيوم.
-    match /bonus/{id}    { allow read: if ok();
-                            allow create, update, delete: if ok() && myRank() >= 90; }
-    match /workreqs/{id} { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
-    match /baseline/{id} { allow read: if ok();   allow create, update: if mgr();  allow delete: if false; }
-    match /changes/{id}  { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if false; }
-    match /hse/{id}      { allow read: if ok();   allow create, update: if canW(); allow delete: if mgr(); }
-    match /ncr/{id}      { allow read: if ok();   allow create: if canW(); allow update: if mgr(); allow delete: if mgr(); }
+    match /bonus/{id}    { allow read: if pm('bonus', 'r', ok());
+                            allow create, update: if pm('bonus', 'w', ok() && myRank() >= 90);
+                            allow delete: if pm('bonus', 'd', ok() && myRank() >= 90); }
+    match /workreqs/{id} { allow read: if pm('workreqs', 'r', ok()); allow create, update: if pm('workreqs', 'w', canW()); allow delete: if pm('workreqs', 'd', mgr()); }
+    match /baseline/{id} { allow read: if pm('baseline', 'r', ok()); allow create, update: if pm('baseline', 'w', mgr()); allow delete: if false; }
+    match /changes/{id} { allow read: if pm('changes', 'r', ok()); allow create: if pm('changes', 'w', canW()); allow update: if pm('changes', 'a', mgr()); allow delete: if false; }
+    match /hse/{id} { allow read: if pm('hse', 'r', ok()); allow create, update: if pm('hse', 'w', canW()); allow delete: if pm('hse', 'd', mgr()); }
+    match /ncr/{id} { allow read: if pm('ncr', 'r', ok()); allow create: if pm('ncr', 'w', canW()); allow update: if pm('ncr', 'a', mgr()); allow delete: if pm('ncr', 'd', mgr()); }
     // المستخلصُ مالٌ: يُقرأ لمن يملك المال، ولا يعتمده إلا المهندس
     // المستخلصُ: يقرؤه المهندسُ والوزارةُ (فهو مستخلصُها المعتمَد) لا الميدان
-    match /ipc/{id}      { allow read: if mgr() || viewer(); allow create: if mgr(); allow update: if mgr(); allow delete: if false; }
+    match /ipc/{id} { allow read: if pm('ipc', 'r', mgr() || viewer()); allow create, update: if pm('ipc', 'w', mgr()); allow delete: if false; }
 
     // لا شيءَ يسقط في «misc» بعد اليوم
     // حضورُ الأجهزة: كلُّ جهازٍ يكتب وثيقتَه هو (النسخةُ والدورُ والوقت) — تليمتري لا
