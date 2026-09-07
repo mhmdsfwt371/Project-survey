@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.90</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.91</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7923,15 +7923,48 @@ var FB = {
     if (it.v === null) return ref.delete();
     return ref.set(FB.clean(Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() })), { merge:true });
   },
-  /* يُرفَع كلٌّ على حدة: يُرجِع ما نجح وما فشل بسببه */
+  /* ═══ الرفضُ يُصالَح قبل أن يُعَدَّ رفضًا ═══
+     وثيقةٌ وصلت الخادمَ ثم انقطعت الشبكةُ قبل الجواب تبقى في الطابور وتُعاد
+     — فإن كانت قاعدتُها «إضافةٌ لا تعديل» رُفضت الإعادةُ ثلاثًا وعُزلت،
+     وامتلأت شاشةُ المزامنة أعطالًا لأثرٍ موجودٍ أصلًا. فعند رفضِ الصلاحية
+     تُقرأ الوثيقةُ مرةً: إن كانت موجودةً ومحتواها هو محتوانا (عدا ختمِ
+     الدفعة) فقد وصلت — تُعَدُّ ناجحةً وتُسقَط من الطابور بلا صخب. قراءةٌ
+     واحدةٌ لكلِّ رفضٍ أرخصُ من ثلاث إعاداتٍ وعزلٍ ومكالمة. */
+  sameDoc: function(mine, theirs){
+    if (!mine || !theirs) return false;
+    var skip = { _at:1, _by:1 };
+    var ks = Object.keys(mine).filter(function(k){ return !skip[k]; });
+    for (var i = 0; i < ks.length; i++){
+      var k = ks[i];
+      if (JSON.stringify(FB.clean(mine[k])) !== JSON.stringify(FB.clean(theirs[k]))) return false;
+    }
+    return true;
+  },
+  reconcile: function(it, e){
+    var msg = String((e && (e.message || e.code)) || e);
+    if (!/permission|PERMISSION_DENIED/i.test(msg) || it.v === null) return Promise.resolve(false);
+    var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
+    return ref.get().then(function(doc){
+      return !!(doc && doc.exists && FB.sameDoc(it.v, doc.data() || {}));
+    }).catch(function(){ return false; });
+  },
+  /* يُرفَع كلٌّ على حدة: يُرجِع ما نجح وما فشل بسببه — وما رُفض وهو واصلٌ يُعَدُّ ناجحًا */
   pushEach: function(batch){
-    var ok = [], failed = [];
+    var ok = [], failed = [], healed = 0;
     return batch.reduce(function(p, it){
       return p.then(function(){
         return FB.putOne(it).then(function(){ ok.push(it); })
-          .catch(function(e){ failed.push({ it:it, msg:String((e && (e.message || e.code)) || e).slice(0, 160) }); });
+          .catch(function(e){
+            return FB.reconcile(it, e).then(function(same){
+              if (same){ ok.push(it); healed++; return; }
+              failed.push({ it:it, msg:String((e && (e.message || e.code)) || e).slice(0, 160) });
+            });
+          });
       });
-    }, Promise.resolve()).then(function(){ return { ok:ok, failed:failed }; });
+    }, Promise.resolve()).then(function(){
+      if (healed) logEventQuiet('صُولح ' + healed + ' وثيقةً كانت واصلةً وأُعيدت');
+      return { ok:ok, failed:failed, healed:healed };
+    });
   },
   push: function(batch){
     if (!FB.ready) return Promise.reject(new Error('not-ready'));
@@ -8470,6 +8503,11 @@ function liveTick(){
   });
 }
 var SOFT_ERRS = [], SOFT_SAID = {};
+/* ملاحظةٌ في سجل الصامت لا حدثٌ يُرفَع — فلا يُصنَع أثرٌ عن مصالحة أثر */
+function logEventQuiet(msg){
+  SOFT_ERRS.unshift({ at:Date.now(), where:'مصالحة', msg:String(msg).slice(0, 120) });
+  if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
+}
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
@@ -15453,7 +15491,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.90' + '.docx" download>⬇ '
+              +   'V15.91' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

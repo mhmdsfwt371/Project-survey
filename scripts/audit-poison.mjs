@@ -51,4 +51,26 @@ w.FB.init=()=>Promise.resolve(false); w.CORE._busy=false; w.CORE.dirty('recs','X
 await w.CORE.flush(); await wait(300);
 T(w.STATE.queue.some(q=>q.id==='X1' && !q.tries), 'بلا شبكة: يبقى الطابورُ كما هو بلا عدِّ محاولات');
 console.log(bad?'\nجردُ الوثيقة المسمومة فشل ✗ ('+bad+')':'\nالوثيقةُ المسمومةُ لا توقف الطابور ✅');
-process.exit(bad?1:0);
+if (bad) process.exit(1);
+
+/* ═══ الرفضُ يُصالَح: الواصلُ لا يُعزَل ═══ */
+{
+  let bad2=0; const T2=(c,n,x)=>{ if(!c) bad2++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
+  const remote = { 'events/E1': { t:'زيارة', by:'فني', at:5, _at:1, _by:'x' } };
+  w.FB.ready=true;
+  w.FB.db={ collection:(c)=>({ doc:(id)=>({
+    set:()=>Promise.reject(Object.assign(new Error('Missing or insufficient permissions.'),{code:'permission-denied'})),
+    delete:()=>Promise.resolve(),
+    get:()=>Promise.resolve({ exists:!!remote[c+'/'+id], data:()=>remote[c+'/'+id] }) }) }), batch:()=>({ set(){}, delete(){}, commit:()=>Promise.reject(new Error('permission-denied')) }) };
+  const r = await w.FB.pushEach([
+    { kind:'evlog', id:'E1', v:{ t:'زيارة', by:'فني', at:5 } },          /* واصلةٌ بالمحتوى نفسِه */
+    { kind:'evlog', id:'E1', v:{ t:'تركيب', by:'فني', at:5 } },          /* محتوًى مختلف */
+    { kind:'evlog', id:'E9', v:{ t:'زيارة', by:'فني', at:5 } }           /* غيرُ موجودة */
+  ]);
+  T2(r.ok.length===1 && r.ok[0].id==='E1' && r.healed===1, 'المرفوضةُ الواصلةُ بمحتواها تُعَدُّ ناجحة', 'ok '+r.ok.length+' · healed '+r.healed);
+  T2(r.failed.length===2, 'والمختلفةُ وغيرُ الموجودة تبقيان مرفوضتين', r.failed.map(f=>f.it.id+':'+f.it.v.t).join(' · '));
+  T2((w.SOFT_ERRS||[]).some(e=>/صُولح/.test(e.msg)), 'ويُذكَر في سجل الصامت أنها صُولحت');
+  console.log(bad2?'\nجردُ المصالحة فشل ✗ ('+bad2+')':'\nما وصل لا يُعزَل ✅');
+  if (bad2) process.exit(1);
+}
+process.exit(0);
