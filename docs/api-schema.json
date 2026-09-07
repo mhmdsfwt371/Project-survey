@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.88",
+  "app_version": "V15.89",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1457,7 +1457,8 @@
     "V15.85": "PW/pwOpen/pwNeeded/pwHtml/pwSave: نافذة تغيير الكلمة — مفروضة عند mustChange (بلا إغلاق، بلا قديمة) ومن القائمة (pwBtn، بقديمة + reauth). تُرسَم على body في render. بعد التبديل users/{uid}.mustChange=false. الجرد 68.",
     "V15.86": "att collection {uid_day: {uid,name,day,role,in:{at,lat,lng,acc,ok},out,hours}}؛ attMark/attLocate/attInZone/attMyCard/attTeamCard؛ الزر في mywork وmine للميدان؛ بطاقة المشرف في now؛ إنصات att where day==اليوم للمشرف فما فوق؛ قواعد att. الجرد 69.",
     "V15.87": "routeTasks/routeOrder (nearest-neighbour)/routeLocate/mapsUrl/kmTxt/routeCard في mywork وmine للميدان؛ زر data-routego. الجرد 70.",
-    "V15.88": "WA_LAST بعد asnCommit؛ techPhone/waAsnText/waAsn/waAsnCard؛ زر data-watask لكل إسناد في reqreg مع علامة ✓ عند waAt. الجرد 71."
+    "V15.88": "WA_LAST بعد asnCommit؛ techPhone/waAsnText/waAsn/waAsnCard؛ زر data-watask لكل إسناد في reqreg مع علامة ✓ عند waAt. الجرد 71.",
+    "V15.89": "ghToken/ghSetToken/ghRunNow/ghCard: مفتاح Actions:write في ghcfg/gh (admin فقط) وزر data-ghrun يستدعي workflow_dispatch؛ pendList تخفي من له provision؛ «أُنشئ في» dayKey. القاعدة: ghcfg admin فقط."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4326,5 +4327,12 @@
     "message": "سلام + عدد النقاط + النوع + الموعد + قائمة (≤20) + رابط التطبيق + المرسل",
     "mark": "tasks/{id}.waAt",
     "limits": "المتصفح لا يرسل — wa.me يفتح المحادثة؛ الجماعي بلا بطاقة (أشخاص متعددون) — زر السجل يغطيه"
+  },
+  "run_now_v15_89": {
+    "why": "cron */10 عمل 21:44 ثم 23:11 — 87 دقيقة",
+    "how": "POST /repos/{repo}/actions/workflows/provision.yml/dispatches",
+    "token": "fine-grained: هذا المستودع فقط · Actions: Read and write · يُحفَظ في ghcfg/gh · rules: admin فقط",
+    "fallback": "بلا مفتاح: يفتح صفحة Actions ويقول",
+    "note": "مفتاح النشر (Contents) لا يكفي — 403"
   }
 }

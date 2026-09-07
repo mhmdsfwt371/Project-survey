@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.88</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.89</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3323,6 +3323,24 @@ en:{
  'فُتح واتساب':'WhatsApp opened',
  'اضغط إرسال':'tap send',
  'لا جوالَ محفوظ':'No phone saved',
+
+ /* V15.89 — تشغيلُ الخادم */
+ 'مفتاحُ تشغيل الخادم':'Server run key',
+ 'مفتاحُ التشغيل لمدير المشروع وحده':'The run key is for the project manager only',
+ 'حُفظ مفتاحُ التشغيل':'Run key saved',
+ 'مُسح المفتاح':'Key cleared',
+ 'لا مفتاحَ تشغيلٍ محفوظًا — افتح صفحة Actions وشغّله يدويًّا، أو ضع المفتاح في ثوابت النظام':'No run key saved — open the Actions page and run it manually, or set the key in System constants',
+ 'يُطلَب تشغيلُ الخادم…':'Requesting the server run…',
+ 'انطلق الخادم — الحساباتُ خلال دقيقة، وتصلك «تمّ» هنا فورًا':'The server started — accounts within a minute, and “done” arrives here instantly',
+ 'رفض GitHub التشغيل':'GitHub refused the run',
+ 'المفتاحُ غيرُ صالحٍ أو بلا صلاحية Actions':'The key is invalid or lacks Actions permission',
+ 'تعذّر الاتصال بـ GitHub':'Could not reach GitHub',
+ 'جدولةُ GitHub تتأخّر إلى ساعةٍ على المستودعات الهادئة. بمفتاحٍ صلاحيتُه تشغيلُ السيور وحدَها يُشغَّل الخادمُ فورًا من زرِّ «شغّل الآن» في طلبات الإنشاء.':'GitHub’s schedule can slip to an hour on quiet repositories. With a key whose only permission is running workflows, the server starts instantly from “Run now” in creation requests.',
+ 'محفوظ':'Saved',
+ 'GitHub ← Settings ← Developer settings ← Fine-grained tokens ← Generate: هذا المستودع فقط · Actions: Read and write · لا شيءَ آخر. يُقرأ من مدير المشروع وحده.':'GitHub → Settings → Developer settings → Fine-grained tokens → Generate: this repository only · Actions: Read and write · nothing else. Readable by the project manager only.',
+ 'امسح':'Clear',
+ 'شغّل الخادمَ الآن':'Run the server now',
+ 'اضغط «شغّل الخادمَ الآن» فتُنشَأ خلال دقيقة — الجدولةُ وحدَها قد تتأخّر ساعة. ثم صدِّر الورقةَ ووزِّعها، وامسح الكلمات.':'Tap “Run the server now” and they are created within a minute — the schedule alone may slip an hour. Then export the sheet, distribute it, and wipe the passwords.',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5786,6 +5804,22 @@ ur:{
  'فُتح واتساب':'واٹس ایپ کھل گیا',
  'اضغط إرسال':'بھیجیں دبائیں',
  'لا جوالَ محفوظ':'فون محفوظ نہیں',
+ 'مفتاحُ تشغيل الخادم':'سرور رن کلید',
+ 'مفتاحُ التشغيل لمدير المشروع وحده':'رن کلید صرف پروجیکٹ منیجر کے لیے',
+ 'حُفظ مفتاحُ التشغيل':'رن کلید محفوظ',
+ 'مُسح المفتاح':'کلید مٹا دی گئی',
+ 'لا مفتاحَ تشغيلٍ محفوظًا — افتح صفحة Actions وشغّله يدويًّا، أو ضع المفتاح في ثوابت النظام':'رن کلید محفوظ نہیں — Actions صفحہ کھول کر دستی چلائیں، یا سسٹم کانسٹنٹس میں کلید رکھیں',
+ 'يُطلَب تشغيلُ الخادم…':'سرور رن کی درخواست…',
+ 'انطلق الخادم — الحساباتُ خلال دقيقة، وتصلك «تمّ» هنا فورًا':'سرور چل پڑا — اکاؤنٹ ایک منٹ میں، اور “ہو گیا” یہاں فوراً',
+ 'رفض GitHub التشغيل':'GitHub نے رن مسترد کیا',
+ 'المفتاحُ غيرُ صالحٍ أو بلا صلاحية Actions':'کلید غلط ہے یا Actions کی اجازت نہیں',
+ 'تعذّر الاتصال بـ GitHub':'GitHub سے رابطہ نہیں ہو سکا',
+ 'جدولةُ GitHub تتأخّر إلى ساعةٍ على المستودعات الهادئة. بمفتاحٍ صلاحيتُه تشغيلُ السيور وحدَها يُشغَّل الخادمُ فورًا من زرِّ «شغّل الآن» في طلبات الإنشاء.':'GitHub کا شیڈول خاموش ریپوز پر ایک گھنٹہ تاخیر کر سکتا ہے۔ صرف ورک فلو چلانے کی اجازت والی کلید سے سرور فوراً چلتا ہے۔',
+ 'محفوظ':'محفوظ',
+ 'GitHub ← Settings ← Developer settings ← Fine-grained tokens ← Generate: هذا المستودع فقط · Actions: Read and write · لا شيءَ آخر. يُقرأ من مدير المشروع وحده.':'GitHub → Settings → Developer settings → Fine-grained tokens → Generate: صرف یہ ریپو · Actions: Read and write · اور کچھ نہیں۔',
+ 'امسح':'مٹائیں',
+ 'شغّل الخادمَ الآن':'سرور ابھی چلائیں',
+ 'اضغط «شغّل الخادمَ الآن» فتُنشَأ خلال دقيقة — الجدولةُ وحدَها قد تتأخّر ساعة. ثم صدِّر الورقةَ ووزِّعها، وامسح الكلمات.':'“سرور ابھی چلائیں” دبائیں تو ایک منٹ میں بن جاتے ہیں۔ پھر شیٹ برآمد کریں، تقسیم کریں اور پاس ورڈ مٹائیں۔',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -7882,7 +7916,7 @@ var FB = {
              vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
              stats:'stats', teams:'teams', baseline:'baseline',
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att' }[kind] || 'misc';
+             workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg' }[kind] || 'misc';
   },
   putOne: function(it){
     var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
@@ -7912,7 +7946,7 @@ var FB = {
                   vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
-                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att' }[it.kind];
+                  workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
@@ -8101,6 +8135,12 @@ var FB = {
       FB.db.collection('photos').get().then(function(sn){
         sn.forEach(function(dd){ STATE.photos[dd.id] = dd.data(); });
       }).catch(function(e){ softErr('سحب سجل الصور', e, ''); });
+      /* مفتاحُ التشغيل: مديرُ المشروع وحدَه — والقاعدةُ ترفض غيرَه */
+      if (may('roles')){
+        FB.db.collection('ghcfg').doc('gh').get().then(function(doc){
+          if (doc && doc.exists){ CFG.gh = doc.data() || {}; }
+        }).catch(function(e){ softErr('سحب مفتاح التشغيل', e, ''); });
+      }
       FB.db.collection('maints').get().then(function(sn){
         sn.forEach(function(dd){ STATE.maints[dd.id] = dd.data(); });
       }).catch(function(e){ softErr('سحب سجل الصيانة', e, ''); });
@@ -15413,7 +15453,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.88' + '.docx" download>⬇ '
+              +   'V15.89' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19774,6 +19814,65 @@ function bulkCard(){
    المكتبُ يرى حالَ كلِّ طلب — يُنشَأ · تمّ · خطأ بسببه — ويُصدِر ورقةَ
    الدخول إكسل: الاسمُ والمستخدمُ والكلمةُ والدور، ورقةٌ لكلِّ فريق يوزّعها
    مشرفُه. ثم يمسح الكلماتِ من الطلبات بضغطة — فلا تبقى في القاعدة. */
+
+/* ═══ شغّل الخادمَ الآن ═══
+   جدولةُ GitHub «كلَّ عشر دقائق» ليست عشرًا: على مستودعٍ هادئٍ تتأخّر إلى
+   ساعةٍ ونصف كما وقع — فيبقى الطلبُ «يُنشَأ — خلال دقائق» ساعةً. الطريقُ
+   المضمونُ نداءُ التشغيل نفسِه، وهو يحتاج مفتاحًا بصلاحية تشغيل السيور
+   وحدَها (Actions: write على هذا المستودع لا غير) — يضعه مديرُ المشروع
+   مرةً في الإعدادات، ويبقى في وثيقةٍ لا يقرؤها إلا هو. وبلا مفتاحٍ يبقى
+   رابطُ صفحة التشغيل اليدويّ. */
+var GH_REPO = 'mhmdsfwt371/Project-survey';
+function ghToken(){ return String((CFG.gh || {}).tok || ''); }
+function ghSetToken(v){
+  if (!may('roles')){ toast(t('مفتاحُ التشغيل لمدير المشروع وحده')); return; }
+  var tk = String(v || '').trim();
+  CFG.gh = Object.assign({}, CFG.gh || {}, { tok:tk, at:Date.now() });
+  /* وثيقةٌ مستقلةٌ لا تُخلَط بالإعدادات العامّة التي يقرؤها الجميع */
+  CORE.set('ghcfg', 'gh', { tok:tk, at:Date.now() });
+  toast(tk ? t('حُفظ مفتاحُ التشغيل') : t('مُسح المفتاح'));
+}
+function ghRunNow(){
+  if (!may('provision')){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return Promise.resolve(false); }
+  var tk = ghToken();
+  if (!tk){
+    toast(t('لا مفتاحَ تشغيلٍ محفوظًا — افتح صفحة Actions وشغّله يدويًّا، أو ضع المفتاح في ثوابت النظام'));
+    try { window.open('https://github.com/' + GH_REPO + '/actions/workflows/provision.yml', '_blank', 'noopener'); }
+    catch (e){ softErr('فتح صفحة التشغيل', e, ''); }
+    return Promise.resolve(false);
+  }
+  toast(t('يُطلَب تشغيلُ الخادم…'));
+  return fetch('https://api.github.com/repos/' + GH_REPO + '/actions/workflows/provision.yml/dispatches', {
+    method:'POST',
+    headers:{ 'Authorization':'Bearer ' + tk, 'Accept':'application/vnd.github+json', 'Content-Type':'application/json' },
+    body:JSON.stringify({ ref:'main' })
+  }).then(function(r){
+    if (r.status === 204){
+      GH_RAN = Date.now();
+      logEvent('تشغيلُ خادم الحسابات يدويًّا');
+      toast(t('انطلق الخادم — الحساباتُ خلال دقيقة، وتصلك «تمّ» هنا فورًا'));
+      render(1); return true;
+    }
+    toast(t('رفض GitHub التشغيل') + ' \u2014 ' + r.status + (r.status === 401 || r.status === 403 ? ' \u00b7 ' + t('المفتاحُ غيرُ صالحٍ أو بلا صلاحية Actions') : ''));
+    return false;
+  }).catch(function(e){ toast(t('تعذّر الاتصال بـ GitHub') + ' \u2014 ' + String(e && e.message || '').slice(0, 40)); return false; });
+}
+var GH_RAN = 0;
+function ghCard(){
+  if (!may('roles')) return '';
+  var has = !!ghToken();
+  return card('\u{1F511} ' + t('مفتاحُ تشغيل الخادم'),
+      '<p class="hint" style="margin:0 0 8px">'
+      + esc(t('جدولةُ GitHub تتأخّر إلى ساعةٍ على المستودعات الهادئة. بمفتاحٍ صلاحيتُه تشغيلُ السيور وحدَها يُشغَّل الخادمُ فورًا من زرِّ «شغّل الآن» في طلبات الإنشاء.'))
+      + '</p>'
+      + '<div class="field"><label>' + esc(t('المفتاح')) + (has ? ' ' + pill('محفوظ','ok') : '') + '</label>'
+      +   '<input id="ghTok" type="password" dir="ltr" autocomplete="off" placeholder="github_pat_…"></div>'
+      + '<p class="hint" style="margin:8px 0 0">'
+      + esc(t('GitHub ← Settings ← Developer settings ← Fine-grained tokens ← Generate: هذا المستودع فقط · Actions: Read and write · لا شيءَ آخر. يُقرأ من مدير المشروع وحده.'))
+      + '</p>',
+      btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-ghsave="1"')
+      + (has ? btn('\u{1F5D1} ' + t('امسح'),'btn-quiet btn-sm',' data-ghclear="1"') : ''));
+}
 function provList(){
   var P = STATE.provision || {};
   return Object.keys(P).map(function(k){ return Object.assign({ user:k }, P[k]); })
@@ -19811,11 +19910,13 @@ function provCard(){
                   : pill('يُنشَأ — خلال دقائق','wrn')];
           }))
       + '<div class="actions" style="margin-top:10px">'
+      +   (pend ? btn('\u26A1 ' + t('شغّل الخادمَ الآن'),'btn-primary btn-sm',' data-ghrun="1"') : '')
       +   (withPw ? btn('\u2B07 ' + t('إكسل — ورقةُ الدخول') + ' (' + nm(withPw) + ')','btn-primary btn-sm',' data-xls="provsheet"') : '')
       +   (withPw ? btn('\u{1F9F9} ' + t('امسح كلمات المرور بعد التوزيع'),'btn-quiet btn-sm',' data-provwipe="1"') : '')
       + '</div>'
       + '<p class="hint" style="margin:8px 0 0">'
-      + esc(t('الخادمُ يُنشئ الحسابات كلَّ عشر دقائق. صدِّر الورقةَ ووزِّعها على المشرفين، ثم امسح الكلمات — الورقةُ تصير النسخةَ الوحيدة، وكلٌّ يبدّل كلمتَه أوّلَ دخول.'))
+      + esc(t(pend ? 'اضغط «شغّل الخادمَ الآن» فتُنشَأ خلال دقيقة — الجدولةُ وحدَها قد تتأخّر ساعة. ثم صدِّر الورقةَ ووزِّعها، وامسح الكلمات.'
+                   : 'صدِّر الورقةَ ووزِّعها على المشرفين، ثم امسح الكلمات — الورقةُ تصير النسخةَ الوحيدة، وكلٌّ يبدّل كلمتَه أوّلَ دخول.'))
       + '</p>');
 }
 
@@ -24311,7 +24412,7 @@ function usersCard(){
                         + '<div style="margin-top:6px"><select data-usrd="' + esc(uid) + '">' + deptOptions(u.dept || '') + '</select></div>'
                         + '<div style="margin-top:6px"><select data-usrs="' + esc(uid) + '">' + supOpts + '</select></div>',
                         pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
-                        '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
+                        '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                         btn('احفظ','btn-primary btn-sm',' data-usrsave="' + esc(uid) + '"')
                         + btn('إلغاء','btn-quiet btn-sm',' data-usredit=""')
                         + btn('🗑 ' + t('حذف الحساب'),'btn-danger btn-sm',' data-usrdel="' + esc(uid) + '"')];
@@ -24326,7 +24427,7 @@ function usersCard(){
                               + (u.sup ? ' \u00b7 \u2B06 ' + esc(t('مديره')) + ' ' + esc(u.sup) : '')
                               + '</span>' : ''),
                       pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
-                      '<span class="num">' + esc(String(u.at || '').slice(0,10)) + '</span>',
+                      '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                       btn(t('تعديل'),'btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
                       + btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
             }))
@@ -24349,8 +24450,9 @@ function usersCard(){
 /* المعلَّقُ يُنشَأ بضغطةٍ حين تعود الشبكة — بكلمةِ مرورٍ جديدةٍ تُكتَب الآن،
    فالقديمةُ لم تُحفَظ ولا تُحفَظ. */
 function pendList(){
-  var P = STATE.pending || {};
-  return Object.keys(P).map(function(k){ return Object.assign({ user:k }, P[k]); })
+  var P = STATE.pending || {}, V = STATE.provision || {};
+  /* من له طلبُ خادمٍ لا يُعرَض معلَّقًا — الطريقُ الجديدُ يغني عن القديم */
+  return Object.keys(P).filter(function(k){ return !V[k]; }).map(function(k){ return Object.assign({ user:k }, P[k]); })
     .sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
 function pendRetry(user, pass){
@@ -24781,7 +24883,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
     var head = tabHead('items'), cur = tabCur('items');
-    if (cur === 'consts') return head + hoSetupCard() + (function(){
+    if (cur === 'consts') return head + ghCard() + hoSetupCard() + (function(){
     return card('الثوابت',
         '<div class="grid cols-3">'
         + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
@@ -25587,6 +25689,9 @@ function onDocClick(e){
     if (bt2) BULK_TXT = bt2.value;
     bulkApply(); return;
   }
+  if (e.target.closest('[data-ghrun]')){ ghRunNow(); return; }
+  if (e.target.closest('[data-ghsave]')){ var gt = document.getElementById('ghTok'); ghSetToken(gt ? gt.value : ''); render(1); return; }
+  if (e.target.closest('[data-ghclear]')){ ghSetToken(''); render(1); return; }
   if (e.target.closest('[data-waasn]')){ if (WA_LAST) waAsn(WA_LAST.to, WA_LAST.kind, WA_LAST.ids, WA_LAST.when); return; }
   if (e.target.closest('[data-waasnx]')){ WA_LAST = null; render(1); return; }
   var wat = e.target.closest('[data-watask]');

@@ -72,6 +72,10 @@ service cloud.firestore {
     // هو — بالاستعلام `where('by','==',اسمه)` فتُثبَت القاعدةُ على الشرط لا
     // على كلِّ وثيقة (وفي الطلب كلمةُ مرورٍ لا يراها إلا كاتبُها أو المدير).
     function canProv() { return ok() && myRank() >= 70; }
+    // مفتاحُ تشغيل السيور: مديرُ المشروع وحدَه يقرأ ويكتب — سرٌّ لا يُشارَك
+    match /ghcfg/{id} {
+      allow read, write: if ok() && role() == 'admin';
+    }
     match /provision/{id} {
       allow read: if mgr() || (canProv() && resource.data.by == uDoc().name);
       // مديرُ المشروع وحدَه يُنشئ فوق مستواه (حسابَ الإدارة العليا) —
