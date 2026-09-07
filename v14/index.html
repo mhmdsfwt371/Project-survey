@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.95</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.96</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3355,6 +3355,15 @@ en:{
  'بلا شبكة — دخلتَ بجلستك المحفوظة ويُرفَع ما تسجّله حين تعود':'No network — you are in with your saved session; what you record is uploaded when it returns',
  'ادفع الآن':'Push now',
  'تعذّر الدخول — تأكّد من الاسم وكلمة المرور':'Sign-in failed — check the username and password',
+
+ /* V15.96 — حذفُ الحساب وآخر مزامنة */
+ 'حذفُ الحسابات للمهندس ومدير المشروع':'Deleting accounts is for the engineer and project manager',
+ 'لا حسابَ بهذا المعرِّف':'No account with this id',
+ 'لا تحذف حسابَك':'You cannot delete your own account',
+ 'لا تحذف من هو أعلى منك رتبة':'You cannot delete someone above your rank',
+ 'حذفُ الحساب':'Delete account',
+ 'يُمحى من القاعدة ولا يدخل صاحبُه بعدها. لا رجوع.':'Removed from the database; its owner can no longer sign in. No undo.',
+ 'أُلغي الحذف':'Deletion cancelled',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5846,6 +5855,13 @@ ur:{
  'بلا شبكة — دخلتَ بجلستك المحفوظة ويُرفَع ما تسجّله حين تعود':'نیٹ ورک نہیں — محفوظ سیشن سے داخل؛ واپسی پر اپ لوڈ ہوگا',
  'ادفع الآن':'ابھی بھیجیں',
  'تعذّر الدخول — تأكّد من الاسم وكلمة المرور':'سائن اِن ناکام — صارف نام اور پاس ورڈ چیک کریں',
+ 'حذفُ الحسابات للمهندس ومدير المشروع':'اکاؤنٹ حذف کرنا انجینئر اور پروجیکٹ منیجر کے لیے',
+ 'لا حسابَ بهذا المعرِّف':'اس شناخت کا کوئی اکاؤنٹ نہیں',
+ 'لا تحذف حسابَك':'اپنا اکاؤنٹ حذف نہیں کر سکتے',
+ 'لا تحذف من هو أعلى منك رتبة':'اپنے سے اونچے کو حذف نہیں کر سکتے',
+ 'حذفُ الحساب':'اکاؤنٹ حذف کریں',
+ 'يُمحى من القاعدة ولا يدخل صاحبُه بعدها. لا رجوع.':'ڈیٹا بیس سے مٹ جائے گا؛ مالک سائن اِن نہیں کر سکے گا۔ واپسی نہیں۔',
+ 'أُلغي الحذف':'حذف منسوخ',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -8475,6 +8491,7 @@ function liveSmall(){
           apply(ch.doc.id, ch.type === 'removed' ? null : ch.doc.data()); n++;
         });
         if (n && !(sn.metadata && sn.metadata.fromCache)){
+          STATE.meta.lastSync = Date.now();
           statBump();
           if (CUR === 'users' || CUR === 'crews' || CUR === 'assignRole') render(1);
         }
@@ -8516,7 +8533,11 @@ function liveSmall(){
   }, 500);
   liveTick();
 }
-function liveTickStop(){ if (LIVE_TICK){ clearInterval(LIVE_TICK); LIVE_TICK = null; } }
+function liveTickStop(){
+  if (LIVE_TICK){ clearInterval(LIVE_TICK); LIVE_TICK = null; }
+  if (BADGE_TICK){ clearInterval(BADGE_TICK); BADGE_TICK = null; }
+}
+var BADGE_TICK = null;
 function liveTick(){
   /* مؤقّتٌ واحدٌ لا غير — ولو نودي مرتين. وله مُلغٍ صريحٌ يُنادى عند
      الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
@@ -8524,6 +8545,9 @@ function liveTick(){
   LIVE_TICK = setInterval(function(){
     if (STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
   }, 120000);
+  if (!BADGE_TICK) BADGE_TICK = setInterval(function(){
+    try { syncBadge(); } catch (e){ softErr('شارة المزامنة', e, ''); }
+  }, 30000);
   document.addEventListener('visibilitychange', function(){
     if (!document.hidden && STATE.meta.online && FB.ready) FB.pull(0).catch(function(){});
   });
@@ -8567,10 +8591,16 @@ function syncBadge(){
   if (!el) return;
   var n = CORE.pending();
   var on = STATE.meta.online;
-  var ts = STATE.meta.lastSync
-    ? new Date(STATE.meta.lastSync).toLocaleTimeString(LANG === 'en' ? 'en-GB' : 'ar-EG',
-        { hour:'2-digit', minute:'2-digit' })
-    : '—';
+  /* «آخر مزامنة» كانت طابعًا ثابتًا لا يتحرّك إلا عند كتابةٍ — فتبقى ساعاتٍ
+     ويُظنُّ أنها معطّلة. صارت تُكتَب عند كلِّ إنصاتٍ وسحبٍ ودفعٍ، وتُعرَض
+     «منذ كم» فيُرى أنها حيّة، والأرقامُ بلغة الواجهة. */
+  var ts = '\u2014';
+  if (STATE.meta.lastSync){
+    var ago = Math.max(0, Math.round((Date.now() - STATE.meta.lastSync) / 60000));
+    var unit = ago < 60 ? t('د') : t('س'), val = nm(ago < 60 ? ago : Math.round(ago / 60));
+    ts = ago < 1 ? t('الآن')
+       : (LANG === 'en' ? (val + ' ' + unit + ' ago') : (t('منذ') + ' ' + val + ' ' + unit));
+  }
   var un = (typeof notifUnread === 'function') ? notifUnread() : 0;
   el.innerHTML = (un ? '<button type="button" class="pill warn" data-p="notif" '
                      + 'style="border:0;cursor:pointer" aria-label="الإشعارات">\u1F514 '
@@ -15555,7 +15585,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.95' + '.docx" download>⬇ '
+              +   'V15.96' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -24555,6 +24585,38 @@ function usersList(){
   return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
 }
 
+/* ═══ حذفُ الحساب ═══
+   كان التعطيلُ وحدَه — فتبقى الحساباتُ المكرَّرةُ والخاطئةُ في القائمة إلى
+   الأبد. صار الحذفُ للمهندس ومدير المشروع فما فوق: يُمحى من القاعدة فورًا
+   ويختفي من كلِّ جهاز، ويُكتَب للخادم طلبُ حذفِ حسابِ الدخول فلا يدخل
+   صاحبُه بعدها. ولا يحذف أحدٌ نفسَه، ولا من هو أعلى منه رتبة. */
+function usrDel(uid){
+  if (rankOf(ROLE) < rankOf('engineer')){ toast(t('حذفُ الحسابات للمهندس ومدير المشروع')); return false; }
+  var u = (STATE.users || {})[uid];
+  if (!u){ toast(t('لا حسابَ بهذا المعرِّف')); return false; }
+  if (uid === myUid()){ toast(t('لا تحذف حسابَك')); return false; }
+  if (rankOf(roleOfUser(u)) > rankOf(ROLE)){ toast(t('لا تحذف من هو أعلى منك رتبة')); return false; }
+  var nm2 = u.name || u.user || uid;
+  if (typeof confirm === 'function' && !confirm(t('حذفُ الحساب') + ' ' + nm2 + '\n' + t('يُمحى من القاعدة ولا يدخل صاحبُه بعدها. لا رجوع.'))){
+    toast(t('أُلغي الحذف')); return false;
+  }
+  delete STATE.users[uid];
+  CORE.rm('users', uid);
+  /* حسابُ الدخول يُحذَف من الخادم — المتصفّحُ لا يملك ذلك */
+  if (u.user || /^[A-Za-z0-9]{20,}$/.test(uid)){
+    var key = 'del-' + uid;
+    STATE.provision = STATE.provision || {};
+    STATE.provision[key] = { action:'delete', uid:uid, user:u.user || '', name:nm2, status:'pending', at:Date.now(), by:STATE.meta.name || '' };
+    CORE.set('provision', key, STATE.provision[key]);
+  }
+  ['pending', 'provision'].forEach(function(col){
+    if (u.user && (STATE[col] || {})[u.user] && col !== 'provision'){ delete STATE[col][u.user]; CORE.rm(col, u.user); }
+  });
+  logEvent('حذف حساب — ' + nm2 + ' (' + (u.user || uid) + ')');
+  toast(t('حُذف') + ' ' + nm2);
+  statBump(); render(1);
+  return true;
+}
 function usrSet(uid, patch){
   if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
   var U = STATE.users || (STATE.users = {});
@@ -24606,7 +24668,9 @@ function usersCard(){
                       pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                       '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                       btn(t('تعديل'),'btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
-                      + btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
+                      + (rankOf(ROLE) >= rankOf('engineer') && uid !== myUid()
+                            ? btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-usrdel="' + esc(uid) + '" style="color:var(--danger, #e5484d)"') : '')
+                        + btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
             }))
         : '<p class="hint" style="padding:16px">'
           + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'
@@ -26026,6 +26090,8 @@ function onDocClick(e){
   if (evc){ EVF.cat = evc.getAttribute('data-evcat'); render(1); return; }
   var ue = e.target.closest('[data-usredit]');
   if (ue){ USR_EDIT = ue.getAttribute('data-usredit'); render(1); return; }
+  var ud = e.target.closest('[data-usrdel]');
+  if (ud){ usrDel(ud.getAttribute('data-usrdel')); return; }
   var ua = e.target.closest('[data-usract]');
   if (ua){ var id1 = ua.getAttribute('data-usract');
     usrSet(id1, { active: ((STATE.users||{})[id1]||{}).active === false }); return; }

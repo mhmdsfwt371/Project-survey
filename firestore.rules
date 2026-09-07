@@ -136,7 +136,9 @@ service cloud.firestore {
                   && get(/databases/$(db)/documents/pending/$(request.resource.data.user)).data.get('role', 'tech')
                      == request.resource.data.role)
             ));
-      allow delete: if false;
+      // الحذفُ للمهندس ومدير المشروع: لا نفسَه، ولا من هو أعلى منه رتبة
+      allow delete: if mgr() && request.auth.uid != uid
+                    && myRank() >= rnk(resource.data.get('role', 'tech'));
     }
 
     // سجلات المسح والتركيب والمواقع المقترحة

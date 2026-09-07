@@ -200,6 +200,11 @@ await env.withSecurityRulesDisabled(async (ctx) => {
 await ok  ('والمديرُ كذلك',                        setDoc(doc(as('adm'), 'bonus/bn2'), { tech:'فني', pts:2, why:'جهد' }));
 await deny('والفنيُّ لا',                          setDoc(doc(as('tec'), 'bonus/bn3'), { tech:'فني', pts:9, why:'لنفسي' }));
 await deny('والمطّلعُ لا يكتب أثرًا',              setDoc(doc(as('vwr'), 'events/evv'), { t:'x', at:1 }));
+console.log('\n══ حذفُ الحسابات ══');
+await ok  ('المهندسُ يحذف فنيًّا',              deleteDoc(doc(as('eng'), 'users/t9')));
+await deny('ولا يحذف نفسَه',                    deleteDoc(doc(as('eng'), 'users/eng')));
+await deny('ولا يحذف مديرًا',                   deleteDoc(doc(as('eng'), 'users/adm')));
+await deny('والمشرفُ لا يحذف أحدًا',            deleteDoc(doc(as('sup'), 'users/s9')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

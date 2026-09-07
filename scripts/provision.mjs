@@ -49,6 +49,21 @@ console.log(`طلبات: ${snap.size} من القاعدة · ${direct.length} م
 let done = 0, failed = 0;
 for (const d of docs){
   const p = d.data, user = String(p.user || d.id).trim();
+  /* ═══ طلبُ حذف ═══ حسابُ الدخول لا يحذفه المتصفّح — يُحذَف هنا فلا يدخل صاحبُه بعدها */
+  if (p.action === 'delete'){
+    try {
+      if (p.uid) await auth.deleteUser(p.uid).catch(e => { if (e.code !== 'auth/user-not-found') throw e; });
+      await db.collection('users').doc(p.uid).delete().catch(() => {});
+      await d.ref.set({ status:'done', doneAt:Date.now(), why:'' }, { merge:true });
+      done++; console.log(`  ✓ حُذف ${p.name || p.user || p.uid}`);
+      console.log(`::notice title=${p.user || p.uid}::حُذف حسابُ الدخول`);
+    } catch (e){
+      failed++; const why = String(e && (e.message || e.code) || e).slice(0, 160);
+      await d.ref.set({ status:'error', why, triedAt:Date.now() }, { merge:true });
+      console.log(`::warning title=${p.user || p.uid}::تعذّر الحذف — ${why}`);
+    }
+    continue;
+  }
   if (d.badRole) console.log(`::warning title=${user}::دورٌ غيرُ معروفٍ «${d.badRole}» — أُنشئ فنيًّا`);
   const email = /@/.test(user) ? user : `${user}@${DOMAIN}`;
   const pass  = String(p.pass || '');

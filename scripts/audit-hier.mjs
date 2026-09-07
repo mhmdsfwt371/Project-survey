@@ -51,4 +51,28 @@ T(Object.keys(w.STATE.provision).length===b0, 'ولا يكتب طلبًا');
 as('viewer','وزارة');
 T(!w.canProvision(), 'والوزارةُ كذلك');
 console.log(bad?'\nجردُ من يُنشئ من فشل ✗ ('+bad+')':'\nكلٌّ يُنشئ في مستواه أو دونه — والمديرُ الجميع ✅');
-process.exit(bad?1:0);
+if (bad) process.exit(1);
+
+/* ═══ حذفُ الحساب: للمهندس والمدير — لا نفسَه ولا من فوقه ═══ */
+{
+  let bad3=0; const T3=(c,n,x)=>{ if(!c) bad3++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
+  w.confirm=()=>true;
+  w.STATE.users={ ME:{name:'مهندس',role:'engineer',active:true}, A:{name:'مدير',role:'admin',active:true}, T:{name:'فني',role:'tech',active:true,user:'t.x'}, S:{name:'مشرف',role:'supervisor',active:true} };
+  w.STATE.meta.uid='ME'; w.STATE.provision={}; w.STATE.queue=[];
+  as('engineer','مهندس');
+  T3(w.usrDel('T')===true && !w.STATE.users.T, 'المهندسُ يحذف فنيًّا');
+  T3(w.STATE.queue.some(q=>q.kind==='users'&&q.id==='T'&&q.v===null), 'ويُمحى من القاعدة');
+  T3(w.STATE.provision['del-T'] && w.STATE.provision['del-T'].action==='delete', 'ويُطلَب من الخادم حذفُ حساب الدخول');
+  T3(w.usrDel('ME')===false && w.STATE.users.ME, 'ولا يحذف نفسَه');
+  T3(w.usrDel('A')===false && w.STATE.users.A, 'ولا يحذف مديرًا');
+  as('supervisor','مشرف');
+  T3(w.usrDel('S')===false, 'والمشرفُ لا يحذف');
+  w.goPage('users'); w.render(1);
+  T3(!d.querySelector('#content [data-usrdel]'), 'ولا يرى الزر');
+  as('admin','مدير'); w.STATE.meta.uid='A'; w.goPage('users'); w.render(1);
+  T3(!!d.querySelector('#content [data-usrdel]') && !d.querySelector('#content [data-usrdel="A"]'), 'والمديرُ يراه لغيره لا لنفسه');
+  console.log(bad3?'\nجردُ الحذف فشل ✗ ('+bad3+')':'\nالحذفُ للمهندس والمدير — لا نفسَه ولا من فوقه ✅');
+  if (bad3) process.exit(1);
+}
+
+process.exit(0);
