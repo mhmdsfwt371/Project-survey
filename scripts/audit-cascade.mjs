@@ -22,7 +22,7 @@ T(/function pullScope\(\)/.test(js) && /rankOf\(ROLE\) >= rankOf\('supervisor'\)
 T(/var since = \(at\[c\] \|\| 0\) - 120000;/.test(js) && !/var since = STATE\.meta\.lastSync/.test(js), 'المؤشِّرُ خاصٌّ بالسحب بتداخل دقيقتين — لا «آخر مزامنة»');
 T(/pullAt:STATE\.meta\.pullAt \|\| \{\}/.test(js) && /STATE\.meta\.pullAt = v\.pullAt/.test(js), 'ويُحفَظ ويُستعاد');
 T(/PULL_COL = \{ recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints'/.test(js), 'وكلُّ مجموعةٍ تصل مفتاحَها في الحالة');
-T(/\['recs','inss','tasks','dismantles','maints'\]\.forEach\(function\(col\)\{[\s\S]{0,300}\['_at', '>', t0\]/.test(js), 'إنصاتٌ حيٌّ على العمل لمن فوق المشرف');
+T(/\['recs','inss','tasks','dismantles','maints'\]\.forEach\(function\(col\)\{[\s\S]{0,700}\['_at', '>', t0\]/.test(js), 'إنصاتٌ حيٌّ على العمل لمن فوق المشرف');
 T(/var SYNC_CYCLE = 60/.test(js) && !/\}, 120000\);/.test(js), 'دورةٌ واحدةٌ من دقيقة — لا دورةَ ثانية');
 T(/var due = PULL_ASK \|\| \(Date\.now\(\) - PULL_LAST >= pullScope\(\)\.every\)/.test(js), 'الدفعُ كلَّ دقيقةٍ والسحبُ في موعد النطاق');
 

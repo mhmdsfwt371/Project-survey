@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.9</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8836,7 +8836,10 @@ function liveSmall(){
       var key = PULL_COL[col] || col;
       watch(col, function(id, v){
         if (!STATE[key]) STATE[key] = {};
-        if (v) STATE[key][id] = v; else delete STATE[key][id];
+        /* شاهدُ القبر يصل هنا **تحديثًا** لا حذفًا — الوثيقةُ قائمةٌ عليها
+           {deleted:true}. فلولا applyDoc عاد ما مُحي من المكتب إلى شاشة
+           المشرف والمهندس بعد لحظات، وهو العطلُ نفسُه الذي عولج في السحب. */
+        if (v) CORE.applyDoc(key, id, v); else delete STATE[key][id];
       }, 500, ['_at', '>', t0]);
     });
   }
@@ -15971,7 +15974,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.8' + '.docx" download>⬇ '
+              +   'V16.9' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

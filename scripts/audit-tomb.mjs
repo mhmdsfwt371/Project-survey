@@ -48,7 +48,15 @@ B.w.STATE.tasks['TK-dead']={ id:'TK-dead', deleted:true };
 await B.w.CORE.saveLocal(); const st = await B.w.idbGet('state');
 B.w.STATE.tasks={}; await B.w.CORE.loadLocal();
 T(!B.w.STATE.tasks['TK-dead'], 'وما عليه شاهدٌ في الحفظ المحليِّ لا يعود عند التحميل');
-/* ٥ · الحساباتُ تُمحى محوًا (لها قاعدةٌ وطلبُ خادم) */
+/* ٥ · كلُّ منفذِ استقبالٍ يمرُّ بـapplyDoc — لا إسنادَ مباشرًا لمجموعةٍ لها شاهد.
+       إنصاتُ «من فوقُ لحظةً بلحظة» (V16.6) كان يكتب الوثيقةَ كما جاءت، فيعود
+       الممحوُّ إلى شاشة المشرف بعد ثوانٍ من محوه في المكتب: الشاهدُ يصل
+       تحديثًا لا حذفًا. الجردُ يثبت المنفذَ لا الدالةَ وحدَها. */
+const a0 = html.indexOf('العملُ يصل من فوقُ لحظةً بلحظة');
+const live = html.slice(a0, html.indexOf("watch('att'", a0));
+T(/CORE\.applyDoc\(key, id, v\)/.test(live), 'إنصاتُ «من فوق» يمرُّ بـapplyDoc');
+T(!/STATE\[key\]\[id\] = v/.test(html), 'ولا إسنادَ مباشرًا في أيِّ منفذِ استقبال');
+/* ٦ · الحساباتُ تُمحى محوًا (لها قاعدةٌ وطلبُ خادم) */
 A.w.STATE.users['UX']={ name:'س', role:'tech' }; A.w.CORE.rm('users','UX');
 const qu=A.w.STATE.queue.filter(x=>x.kind==='users'&&x.id==='UX')[0];
 T(qu && qu.v===null, 'والحساباتُ تُمحى محوًا لا شاهدًا');

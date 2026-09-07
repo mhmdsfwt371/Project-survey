@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.8",
+  "app_version": "V16.9",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1477,7 +1477,8 @@
     "V16.5": "rules users update: self && exists && affectedKeys hasOnly [mustChange,pwAt,_at,_by] && mustChange==false؛ pwSave: CORE.dirty حقلين فقط، SESS_PW من enterApp، forced: updatePassword ثم عند requires-recent-login reauth بـSESS_PW/pw0 أو PW.needOld يُظهر خانة المؤقتة؛ rules-test +4؛ audit-pw موسَّع.",
     "V16.6": "PULL_COL/pullScope (رتبة≥70|exec|admin: recs,inss,tasks,dismantles,maints كل 5 د؛ viewer: stats؛ الميدان: _by==me كل 15 د)؛ pullDelta بمؤشر STATE.meta.pullAt[col] − 120000 وسقف 6000 باردة/2000 فارقية، يُحفظ في saveLocal؛ liveSmall: watch على العمل لمن ≥ مشرف بشرط [_at,>,t0] + LIVE_WORK_PAGES تُعاد رسمها؛ SYNC_CYCLE=60، syncCycle يدفع كل دقيقة ويسحب عند due؛ الدورة 120000 أُزيلت؛ visibilitychange → PULL_ASK+syncCycle؛ audit-cascade (79).",
     "V16.7": "CORE.TOMB/rm شاهد قبر؛ CORE.applyDoc في pullDelta وpull وإنصات المهام؛ loadLocal يمحو الشواهد؛ إنصات المهام assignedTo==name. audit-tomb.",
-    "V16.8": "إسناد لفريق: تلميح التوزيع يذكر عدد الأعضاء بدل أسمائهم ونسبهم."
+    "V16.8": "إسناد لفريق: تلميح التوزيع يذكر عدد الأعضاء بدل أسمائهم ونسبهم.",
+    "V16.9": "إنصات «من فوق» يمرُّ بـCORE.applyDoc: شاهد القبر يصل تحديثًا لا حذفًا فكان يُكتب كما جاء. audit-tomb يثبت المنفذ لا الدالة وحدَها."
   },
   "map_and_geolocation": {
     "tile_layers": {
