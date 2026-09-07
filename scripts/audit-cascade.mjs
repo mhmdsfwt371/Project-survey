@@ -115,6 +115,14 @@ function fakeDb(w, docsByCol, log){
   T(rqs.length === 2 && rqs.every(x => x.wheres[0][2].length <= 30), 'أكثرُ من ثلاثين تُقسَّم استعلاماتٍ', String(rqs.length));
 }
 { const { w } = await boot('tech', 'فني');
+  /* V16.16: الإشعارُ يُولَد عند الوصول — الفنيُّ يُخبَر بإسنادٍ كتبه المكتب */
+  w.STATE.meta.notifAt = 1; w.STATE.notifs = [];
+  w.CORE.applyDoc('tasks', 'TK-n1', { id:'TK-n1', no:'SR-9', site:'S1', kind:'visit', to:'فني', assignedTo:'فني', status:'مطلوب', _at:Date.now(), _by:'u-office' });
+  T(w.STATE.notifs.length === 1 && w.STATE.notifs[0].kind === 'إسناد', 'إسنادٌ يصل الفنيَّ إشعارًا حين تصل وثيقتُه', JSON.stringify(w.STATE.notifs[0] || {}).slice(0, 80));
+  w.CORE.applyDoc('tasks', 'TK-n1', { id:'TK-n1', no:'SR-9', site:'S1', kind:'visit', to:'فني', assignedTo:'فني', status:'مطلوب', _at:Date.now(), _by:'u-office' });
+  T(w.STATE.notifs.length === 1, 'ولا يُكرَّر الإشعارُ لوصول الوثيقة نفسِها');
+  w.CORE.applyDoc('recs', 'S1', { id:'S1', by:'فني', access:'تم الوصول', review:'approved', reviewBy:'مهندس', _at:Date.now(), _by:'u-eng' });
+  T(w.STATE.notifs.length === 2 && w.STATE.notifs[0].kind === 'اعتماد', 'واعتمادُ زيارته يصله إشعارًا', (w.STATE.notifs[0] || {}).kind);
   const sc = w.pullScope();
   T(sc.mine === true && !sc.cols.includes('tasks') && sc.every === 21600000, 'الفنيُّ يُنصِت إلى ما كتبه ومهامِّه — والسحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات');
   const logF = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, logF); w.liveSmall = w.__real.liveSmall; w.liveSmall();
@@ -126,6 +134,14 @@ function fakeDb(w, docsByCol, log){
 { const { w } = await boot('viewer', 'وزارة');
   const sc = w.pullScope();
   T(sc.cols.join(',') === 'stats', 'الوزارةُ الأرقامَ وحدَها');
+}
+{ const { w } = await boot('engineer', 'مهندس');
+  w.STATE.meta.notifAt = 1; w.STATE.notifs = [];
+  w.CORE.applyDoc('recs', 'S2', { id:'S2', by:'فني', access:'تم الوصول', review:'pending', at:Date.now(), _at:Date.now(), _by:'u-tech' });
+  T(w.STATE.notifs.length === 1 && w.STATE.notifs[0].kind === 'زيارة تمّت', 'زيارةٌ حفظها الميدانُ تصل المهندسَ إشعارًا بانتظار اعتماده', (w.STATE.notifs[0] || {}).kind);
+  w.STATE.meta.notifAt = 0; w.STATE.notifs = [];
+  w.CORE.applyDoc('recs', 'S3', { id:'S3', by:'فني', access:'تم الوصول', review:'pending', at:1, _at:1, _by:'u-tech' });
+  T(w.STATE.notifs.length === 0 && w.STATE.meta.notifAt > 0, 'وأوّلُ دخولٍ لا يُخبَر بالتاريخ — تُضبَط العلامةُ وحدَها');
 }
 console.log(bad ? '\nجردُ الرؤية من فوق فشل ✗ (' + bad + ')' : '\nمن فوقُ يرى ما تحته — لحظةً بلحظة وبمؤشِّرٍ لا يقفز ✅');
 process.exit(bad ? 1 : 0);

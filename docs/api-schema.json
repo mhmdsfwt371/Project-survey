@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.15",
+  "app_version": "V16.16",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1484,7 +1484,8 @@
     "V16.12": "svappr: بطاقة الانتظار تفتح itemPicker (data-svsol) وdata-svsolgo يعتمد ثم يحفظ الحل؛ طبقة التركيب: wait=LIFE.ready.c برتقالي، asn=LIFE.sched.c بنفسجي — الأسطورة والعلامة معًا.",
     "V16.13": "sites overlay: STATE.siteOv (يُحفَظ في saveLocal/loadLocal) + siteOvApply يزيل hidden إلى STATE.hiddenSites؛ siteEditSave/siteHide/siteRestore (maySiteEdit = rank≥engineer)؛ محرّر في PAGE.site (data-edit) وبطاقة المخفيّ أسفل المواقع؛ CORE.set('sites', id, patch) — بلا سجل زيارة.",
     "V16.14": "FB.pull (كان يُقرأ كل دقيقة ثم مات في V16.6 بلا بديل) → FB.pullStatic مرةً عند الدخول وعند PULL_ASK: الإعدادات، طبقة sites بمؤشر _at، المخزون/المشتريات/الشحنات/الشركات/التصويب/التغييرات/الملاحظات/الورشة للمكتب فقط (office &&)، الحسابات والفرق لا تُقرأ (الإنصات يكفي). audit-capacity يحسب ثوابت الدخول — أحمر بصدق على نموذج ١٥٠ مستخدمًا في Spark.",
-    "V16.15": "settings/app {ver,at,by} يكتبه المكتب (verPublish عبر cfg/app) ويُنصِت إليه كل جهاز في liveSmall؛ verChase: نسخة أعلى → swPoll فورًا ثم كل دقيقة حتى تصل؛ swPoll كل 5 د بدل 15؛ swLater يعيد العرض بعد 3 د؛ FB_PLAN='blaze' وaudit-capacity يحرس التكلفة (≤1$/يوم) بدل السقف."
+    "V16.15": "settings/app {ver,at,by} يكتبه المكتب (verPublish عبر cfg/app) ويُنصِت إليه كل جهاز في liveSmall؛ verChase: نسخة أعلى → swPoll فورًا ثم كل دقيقة حتى تصل؛ swPoll كل 5 د بدل 15؛ swLater يعيد العرض بعد 3 د؛ FB_PLAN='blaze' وaudit-capacity يحرس التكلفة (≤1$/يوم) بدل السقف.",
+    "V16.16": "notifOnArrival(kind,id,prev,v) يُستدعى من CORE.applyDoc: tasks→إسناد لمن أُسند إليه/تمّ للمعتمِد؛ recs→زيارة تمّت (may approve)/اعتماد/تحتاج زيارة أخرى (notifMine: أنا أو شجرتي)؛ inss→تركيب تمّ/اعتماد؛ diss/maints→إسناد. علامة STATE.meta.notifAt (تُحفَظ) + NOTIF_SEEN؛ أوّل دخول يضبط العلامة بلا إخبار. presence.reads + بطاقة «قراءات القاعدة اليوم» في نسخ الأجهزة."
   },
   "map_and_geolocation": {
     "tile_layers": {
