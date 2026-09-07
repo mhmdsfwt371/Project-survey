@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V15.93",
+  "app_version": "V15.94",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1462,7 +1462,8 @@
     "V15.90": "rules events: update يُقبَل إن كان diff().affectedKeys() ⊆ [_at,_by]؛ أُزيلت كتلة events المكرَّرة؛ audit-db-rules: لا مسار مطابَق مرتين.",
     "V15.91": "FB.sameDoc/FB.reconcile: عند permission-denied تُقرأ الوثيقة؛ إن وُجدت بمحتوانا (عدا _at/_by) تُعَدّ ناجحة. pushEach يُرجِع healed. جرد التسميم يختبرها.",
     "V15.92": "rules: bonus يشمل admin؛ events create canW (لا viewer). rules-test: 12 فحصًا للفرق مهندس/مشرف.",
-    "V15.93": "mayBonus (rank ≥ engineer) بدل maySupEng؛ rules bonus: myRank() >= 90؛ provision.mjs يكتب ::notice لكل حساب أُنشئ؛ audit-e2e-accounts بثلاثة أجهزة. الجرد 72."
+    "V15.93": "mayBonus (rank ≥ engineer) بدل maySupEng؛ rules bonus: myRank() >= 90؛ provision.mjs يكتب ::notice لكل حساب أُنشئ؛ audit-e2e-accounts بثلاثة أجهزة. الجرد 72.",
+    "V15.94": "photoFlushCloud: بلا drvCfg تُكتب photos/{site-n} {status:pending,data} والخادم photos-sync.mjs ينقلها للدرايف ويمحو data. provision.yml يشغّل photos-sync. SHEETS: asnreg/visits/installs/dismantles/maints/attendance/mywork + أزرار في reqreg/svappr/disp/maintForm/mywork/now."
   },
   "map_and_geolocation": {
     "tile_layers": {
@@ -4400,5 +4401,19 @@
     "app": "mayBonus() = rankOf(ROLE) >= 90",
     "rules": "bonus: ok() && myRank() >= 90",
     "why": "النقاط تدخل المستحق — لا تُترك لمن يعمل مع من يقيّمه يوميًا"
+  },
+  "photos_cloud_v15_94": {
+    "phone": "photos/{site-n}: {site,kind,seq,name,at,by,status:'pending',data:base64≤900KB}",
+    "server": "photos-sync.mjs: where status==pending limit 150 → Drive photos/<day>/<name> → {status:done,driveId,link, data:delete}",
+    "schedule": "provision.yml (cron */10 + dispatch + زر شغّل الخادم)",
+    "fallback": "drvCfg() موجود → الطريق القديم"
+  },
+  "page_exports_v15_94": {
+    "asnreg": "reqreg",
+    "visits": "svappr",
+    "installs+attendance": "now",
+    "dismantles": "disp",
+    "maints": "maintForm",
+    "mywork": "mywork"
   }
 }

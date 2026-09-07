@@ -52,4 +52,22 @@ T(w.photoNext(A)===4, 'وبعد إعادة التحميل يكمل من ٤ لا 
 w.PHOTO_Q.push({site:A,kind:'x',data:'d',at:1,tries:0,seq:4});
 T(w.photoNext(A)===5, 'وما ينتظر في الطابور يُحسَب أيضًا', String(w.photoNext(A)));
 console.log(bad?'\nجردُ تسمية الصور فشل ✗ ('+bad+')':'\nالصورةُ باسم نقطتها ورقمِها ✅');
-process.exit(bad?1:0);
+if (bad) process.exit(1);
+
+/* ═══ الصورةُ تصعد للقاعدة بلا إعدادٍ — والخادمُ ينقلها ═══ */
+{
+  let b2=0; const T2=(c,n,x)=>{ if(!c) b2++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
+  w.drvCfg=()=>false;                   /* لا معرِّفَ عميلٍ على هذا الهاتف */
+  w.PHOTO_Q.length=0; w.STATE.queue=[]; w.STATE.meta.online=true; w.STATE.meta.name='فني';
+  const site=w.STATE.sites[3].id;
+  w.photoQueue(site,'before','data:image/jpeg;base64,AAAA'); await wait(200);
+  const q=w.STATE.queue.filter(x=>x.kind==='photos');
+  T2(q.length===1 && q[0].v.status==='pending' && q[0].v.data && q[0].v.name===site+'-1.jpg', 'بلا معرِّفِ عميلٍ تصعد الصورةُ للقاعدة بحالة «منتظرة»', q[0]&&q[0].v.name);
+  T2(w.PHOTO_Q.length===0, 'ويخلو الطابورُ المحليّ');
+  /* الكبيرةُ لا تُدفَع */
+  w.photoQueue(site,'after','data:,'+'x'.repeat(950000)); await wait(200);
+  T2(w.PHOTO_Q.length===1 && /سقف/.test(w.PHOTO_Q[0].why||''), 'والأكبرُ من سقف الوثيقة يبقى ويُقال سببُه');
+  console.log(b2?'\nجردُ الصور فشل ✗ ('+b2+')':'\nالصورةُ تصعد بلا إعدادٍ والخادمُ ينقلها ✅');
+  if (b2) process.exit(1);
+}
+process.exit(0);

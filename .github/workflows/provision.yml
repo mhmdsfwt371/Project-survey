@@ -1,4 +1,4 @@
-name: Provision accounts
+name: Provision accounts + photos
 # ═══ إنشاءُ الحسابات من الخادم ═══
 # المكتبُ يكتب الطلبَ في التطبيق — والخادمُ يُنشئ حسابَ الدخول بمفتاح
 # المشروع، فلا يقف حسابٌ على متصفّحٍ ولا شبكةٍ لحظية. كلَّ عشر دقائق،
@@ -21,7 +21,7 @@ jobs:
         # التثبيتُ يُعاد ثلاثًا: تعثّرُ سِجلِّ الحزم لحظةً لا يُسقِط سيرًا.
         run: |
           for i in 1 2 3; do
-            npm i firebase-admin@12 --no-save --no-audit --no-fund && exit 0
+            npm i firebase-admin@12 googleapis@140 --no-save --no-audit --no-fund && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
             sleep $((i*15))
           done
@@ -30,3 +30,8 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/provision.mjs
+      - name: نقلُ الصور من القاعدة إلى الدرايف
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+        run: node scripts/photos-sync.mjs

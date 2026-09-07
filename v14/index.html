@@ -747,7 +747,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.93</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V15.94</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3344,6 +3344,10 @@ en:{
  'نقاطُ الزيادة للمهندس ومدير المشروع فما فوق':'Bonus points are for the engineer and project manager and above',
  'إضافة نقاط زيادة':'Add bonus points',
  '➕ إضافة':'➕ Add',
+ 'الإسنادات':'Assignments',
+ 'الفكّ':'Dismantling',
+ 'الحضور':'Attendance',
+ 'التركيبات':'Installations',
  'إغلاق القائمة':'Close menu',
  'اضغط لفحص التحديثات':'Tap to check for updates',
  'فحص التحديثات':'Check for updates',
@@ -5826,6 +5830,10 @@ ur:{
  'نقاطُ الزيادة للمهندس ومدير المشروع فما فوق':'بونس پوائنٹس انجینئر اور پروجیکٹ منیجر اور اوپر کے لیے',
  'إضافة نقاط زيادة':'بونس پوائنٹس شامل کریں',
  '➕ إضافة':'➕ شامل کریں',
+ 'الإسنادات':'تفویضات',
+ 'الفكّ':'ڈسمینٹلنگ',
+ 'الحضور':'حاضری',
+ 'التركيبات':'تنصیبات',
  'إغلاق القائمة':'مینو بند کریں',
  'اضغط لفحص التحديثات':'اپ ڈیٹس چیک کرنے کے لیے دبائیں',
  'فحص التحديثات':'اپ ڈیٹس چیک کریں',
@@ -9249,7 +9257,9 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
-    return head + attMyCard() + routeCard() + (function(){
+    return head + attMyCard() + routeCard()
+      + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('مهامي'),'btn-secondary btn-sm',' data-xls="mywork"') + '</div>'
+      + (function(){
     var me = STATE.meta.name || 'محمد صفوت';
     /* حالةُ مهمةِ زيارة: من تعليقة الحفظ إلى قرار المهندس */
     function taskPill(x){
@@ -10857,7 +10867,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
         : '');
   })();
 
-    if (cur === 'maintForm') return head + (function(){
+    if (cur === 'maintForm') return head + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الصيانة'),'btn-secondary btn-sm',' data-xls="maints"') + '</div>' + (function(){
     var pool = (STATE.sites || []).filter(function(x){ return insDone(x.id); });
     var asn  = pool.filter(function(x){ return taskKindOf(x.id, 'maint'); });
     var sel = MNTF.site && siteFind(MNTF.site);
@@ -11994,7 +12004,7 @@ PAGE.req = { m:'الطلبات والمسح', t:'الطلبات والتوزيع
   l:'طلباتُ الزيارة وتوزيعُ الفرق عليها.',
   body:function(){
     var head = tabHead('req'), cur = tabCur('req');
-    if (cur === 'reqreg') return head + waAsnCard() + (function(){
+    if (cur === 'reqreg') return head + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الإسنادات'),'btn-secondary btn-sm',' data-xls="asnreg"') + '</div>' + waAsnCard() + (function(){
     var L0 = regList();
     var byKind = {};
     L0.forEach(function(x){ byKind[x.kind] = (byKind[x.kind] || 0) + 1; });
@@ -13586,8 +13596,18 @@ function photoQueue(siteId, kind, dataUrl){
   photoFlush();
 }
 
+/* ═══ الصورةُ تصعد إلى القاعدة والخادمُ ينقلها إلى الدرايف ═══
+   كان الرفعُ إلى الدرايف من الهاتف نفسِه، ويحتاج معرِّفَ عميلٍ في كلِّ جهازٍ
+   وتسجيلَ دخولٍ إلى جوجل من كلِّ فنيّ — ومئةٌ وخمسون هاتفًا لا يُضبَط
+   واحدُها بعد الآخر، فبقيت الصورُ في الطوابير. أما الخادمُ فعنده مفتاحُ
+   المشروع والدرايفُ مشارَكٌ معه أصلًا (به تُؤخَذ النسخةُ الاحتياطية).
+     فصار الهاتفُ يكتب الصورةَ مضغوطةً في وثيقتها بالقاعدة — بلا إعدادٍ ولا
+   دخولٍ — والخادمُ يمرُّ كلَّ عشر دقائق: ينقلها إلى مجلد الدرايف باسم النقطة
+   ورقمها، ويكتب رابطَها في الوثيقة ويمحو الصورةَ منها فلا تُثقِل القاعدة.
+   ومن كان عنده معرِّفُ العميل القديمُ بقي طريقُه يعمل. */
 function photoFlush(){
-  if (!PHOTO_Q.length || !STATE.meta.online || !drvCfg()) return Promise.resolve(0);
+  if (!PHOTO_Q.length || !STATE.meta.online) return Promise.resolve(0);
+  if (!drvCfg()) return photoFlushCloud();
   var it = PHOTO_Q[0];
   /* الرقمُ يُثبَّت عند الإدراج ويُعاد حسابُه إن غاب (طابورٌ من نسخةٍ أقدم) */
   var seq = cfgN(it.seq) || (it.seq = photoNext(it.site));
@@ -13615,6 +13635,28 @@ function photoFlush(){
     }
     return 0;
   });
+}
+
+function photoFlushCloud(){
+  var it = PHOTO_Q[0];
+  var seq = cfgN(it.seq) || (it.seq = photoNext(it.site));
+  var nm2 = it.site + '-' + seq + '.jpg';
+  var data = String(it.data || '');
+  /* سقفُ الوثيقة ميغابايت: ما زاد يُضغَط ثانيةً — وما بقي فوقه يُترَك للدرايف المباشر */
+  if (data.length > 900000){
+    it.tries++; it.why = 'الصورةُ أكبرُ من سقف القاعدة';
+    if (it.tries > 5){ PHOTO_Q.shift(); PHOTO_FAIL.push(it); CORE.saveSoon(); }
+    return Promise.resolve(0);
+  }
+  PHOTO_Q.shift();
+  CORE.set('photos', it.site + '-' + seq, {
+    site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
+    status:'pending', data:data
+  });
+  CORE.saveSoon();
+  logEvent('صورةٌ صعدت للقاعدة — ' + nm2 + ' \u00b7 ' + it.kind + ' — ينقلها الخادمُ إلى الدرايف');
+  if (PHOTO_Q.length) setTimeout(photoFlush, 300);
+  return Promise.resolve(1);
 }
 
 /* ═══ الصورُ: من رفع، ومن شاهد، ومن حذف ═══
@@ -15501,7 +15543,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V15.93' + '.docx" download>⬇ '
+              +   'V15.94' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17155,6 +17197,74 @@ var SHEETS = {
      });
     return out;
   },
+  /* ═══ ورقةٌ لكلِّ صفحةٍ فيها إسناد — بما في الصفحة وحدَها ═══ */
+  asnreg: function(){
+    var out = [['الطلب','النوع','النقطة','المشعر','المُسنَد إليه','الموعد','الحالة','أُبلغ واتساب','أُسند في','أسنده']];
+    Object.keys(STATE.tasks || {}).map(function(k){ return STATE.tasks[k]; })
+      .sort(function(a, b){ return (b.at || 0) - (a.at || 0); })
+      .forEach(function(x){
+        var st = siteFind(x.site) || {};
+        out.push([x.no || '', kindLabel(x.kind), x.site, st.zone || '', x.to || '', x.when || '', x.status || '',
+                  x.waAt ? dayKey(x.waAt) : '', x.at ? dayKey(x.at) : '', x.by || '']);
+      });
+    return out;
+  },
+  visits: function(){
+    var out = [['النقطة','المشعر','النوع','الوصول','المراجعة','راجعه','الزائر','التاريخ','ملاحظة']];
+    Object.keys(STATE.recs || {}).forEach(function(id){
+      var r = STATE.recs[id], st = siteFind(id) || {};
+      out.push([id, st.zone || '', st.type || '', r.access || '', svReview(r) || '', r.reviewBy || '', r.by || '', r.at ? dayKey(r.at) : '', r.note || '']);
+    });
+    return out;
+  },
+  installs: function(){
+    var out = [['النقطة','المشعر','الحالة','اعتُمد','اعتمده','نفّذه','التاريخ','القطع','السيريالات']];
+    Object.keys(STATE.inss || {}).forEach(function(id){
+      var r = STATE.inss[id], st = siteFind(id) || {};
+      var parts = Object.keys(r.parts || {}).map(function(k){ return itemName(k) + '×' + cfgN(r.parts[k]); }).join(' · ');
+      var sn = Object.keys(r.serials || {}).map(function(k){ return itemName(k) + ':' + r.serials[k]; }).join(' · ');
+      out.push([id, st.zone || '', r.status || '', r.approved ? 'نعم' : 'لا', r.apprBy || r.qaBy || '', r.by || '', r.at ? dayKey(r.at) : '', parts, sn]);
+    });
+    return out;
+  },
+  dismantles: function(){
+    var out = [['النقطة','المشعر','الحالة','فكّه','التاريخ','سليم','تالف','مفقود','ملاحظة']];
+    Object.keys(STATE.diss || {}).forEach(function(id){
+      var r = STATE.diss[id], st = siteFind(id) || {}, it = r.items || {};
+      var c = { ok:0, bad:0, lost:0 };
+      Object.keys(it).forEach(function(k){ var q = cfgN((it[k] || {}).qty); var cd = (it[k] || {}).cond; if (cd === 'سليم') c.ok += q; else if (cd === 'تالف') c.bad += q; else c.lost += q; });
+      out.push([id, st.zone || '', r.status || '', r.by || '', r.at ? dayKey(r.at) : '', c.ok, c.bad, c.lost, r.note || '']);
+    });
+    return out;
+  },
+  maints: function(){
+    var out = [['النقطة','المشعر','التاريخ','الفنيّ','العطل','ما عُمل','القطع','ملاحظة']];
+    Object.keys(STATE.maints || {}).forEach(function(id){
+      var st = siteFind(id) || {};
+      maintList(id).forEach(function(m){
+        var parts = Object.keys(m.parts || {}).map(function(k){ return itemName(k) + '×' + cfgN(m.parts[k]); }).join(' · ');
+        out.push([id, st.zone || '', m.at ? dayKey(m.at) : '', m.by || '', m.fault || '', m.act || '', parts, m.note || '']);
+      });
+    });
+    return out;
+  },
+  attendance: function(){
+    var out = [['اليوم','الشخص','الدور','بدأ','أنهى','ساعات','بدأ داخل النطاق','أنهى داخل النطاق']];
+    Object.keys(STATE.att || {}).map(function(k){ return STATE.att[k]; })
+      .sort(function(a, b){ return String(b.day).localeCompare(String(a.day)) || String(a.name).localeCompare(String(b.name), 'ar'); })
+      .forEach(function(r){
+        out.push([r.day, r.name, (ROLES[r.role] || {}).n || r.role || '', r.in ? hm(r.in.at) : '', r.out ? hm(r.out.at) : '',
+                  r.hours || '', r.in ? (r.in.ok === false ? 'لا' : (r.in.ok ? 'نعم' : '—')) : '', r.out ? (r.out.ok === false ? 'لا' : (r.out.ok ? 'نعم' : '—')) : '']);
+      });
+    return out;
+  },
+  mywork: function(){
+    var me = STATE.meta.name || '', out = [['الطلب','النوع','النقطة','المشعر','الموعد','الحالة']];
+    Object.keys(STATE.tasks || {}).map(function(k){ return STATE.tasks[k]; })
+      .filter(function(x){ return x.to === me; })
+      .forEach(function(x){ var st = siteFind(x.site) || {}; out.push([x.no || '', kindLabel(x.kind), x.site, st.zone || '', x.when || '', x.status || '']); });
+    return out;
+  },
   hodoc: function(){
     var id = HO_DOC || '', s2 = siteFind(id), r = STATE.inss[id], h = handOf(id);
     if (!s2 || !r) return [['لا محضرَ معروضٌ الآن — افتح محضرَ نقطةٍ أوّلًا']];
@@ -18762,7 +18872,9 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
     });
     var sups = Object.keys(bySup).sort(function(a, b){ return bySup[b].n - bySup[a].n; });
     var col = function(title, inner){ return '<div>' + card(title, inner) + '</div>'; };
-    return attTeamCard()
+    return (rankOf(ROLE) >= rankOf('supervisor')
+              ? '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الحضور'),'btn-secondary btn-sm',' data-xls="attendance"') + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('التركيبات'),'btn-secondary btn-sm',' data-xls="installs"') + '</div>' : '')
+      + attTeamCard()
       + (may('approve') ? inboxCard() : '')
       + stepsCard(10)
       + '<div class="grid cols-3" style="align-items:start">'
@@ -19196,7 +19308,7 @@ PAGE.survey = { m:'الطلبات والمسح', t:'دورة النقطة',
     html += '<p class="hint">' + esc(t('«أعِد تصنيفها كمتعذّرة» تُبقي بيانات الزيارة السابقة كما هي — لا حذف ولا فقدان سجلّ — لكنها تُخرجها من عِداد المُنجَز حتى تُزار ثانيةً.')) + '</p>';
     return html;
   })();
-    if (cur === 'svappr') return head + (function(){
+    if (cur === 'svappr') return head + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الزيارات'),'btn-secondary btn-sm',' data-xls="visits"') + '</div>' + (function(){
     var S = siteStats();
     var all = surveyList().filter(function(x){ return x.rec && (x.rec.review || x.done); });
     var lists = { pending:[], approved:[], revisit:[] };
@@ -24820,7 +24932,7 @@ PAGE.pts = { m:'الإعدادات', t:'نقاط المراحل',
           btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + tgtBlock('tgtInsCamp', 'tgtInsCor');
   })();
-    if (cur === 'disp') return head + (function(){
+    if (cur === 'disp') return head + '<div class="actions" style="margin:0 0 10px">' + btn('\u2B07 ' + t('إكسل') + ' \u2014 ' + t('الفكّ'),'btn-secondary btn-sm',' data-xls="dismantles"') + '</div>' + (function(){
     /* عمودُ «النقاط» كان يعرض وزنَ الزيارة المكتوبَ في الإعدادات — وليس هو
        ما يُفَكّ. الفكُّ يقع على ما رُكِّب فعلًا في الأرض، فيُجمَع تراكميًّا على
        مدار الموسم: كلُّ تركيبٍ معتمَدٍ يضيف قطعَه إلى مشعره ونوعه. فيقرأ
