@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.40</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.41</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8012,6 +8012,8 @@ var CORE = {
       }
     }
     STATE.queue.push({ kind:kind, id:id, v:v, at:Date.now() });
+    /* صفحةُ المزامنة تُحدَّث لحظةً بلحظة — بمهلةٍ قصيرة تجمع دفعةً واحدة */
+    if (CUR === 'sys' && typeof render === 'function'){ clearTimeout(CORE._dr); CORE._dr = setTimeout(function(){ if (CUR === 'sys') render(1); }, 200); }
     /* لا يُسقَط شيء: أقدمُ ما في الطابور أوّلُ ما لم يُرفَع — أي أقدمُ عملٍ
        ميدانيٍّ لم يصل. كان يُقتطَع صامتًا فيضيع يومُ فنيٍّ ولا يعلم.
        فيُبقى كلُّه، ويُصاح إن طال، ويُمنَع النموُّ بلا حدٍّ بإيقاف قبولِ
@@ -8183,6 +8185,9 @@ var CORE = {
       }
       CORE.saveLocal();
       syncBadge();
+      /* صفحةُ المزامنة تعرض الطابورَ نفسَه — فإن دُفع من الدورة التلقائية بقيت
+         تقول «بانتظار الرفع ١» وقد فرغ، ويضغط المستخدمُ فيُقال له «فارغ» */
+      if (CUR === 'sys' || CUR === 'sync'){ clearTimeout(CORE._dr); CORE._dr = setTimeout(function(){ if (CUR === 'sys' || CUR === 'sync') render(1); }, 200); }
       CORE._busy = false;
       return r.ok.length;
     }).catch(function(e){
@@ -16399,7 +16404,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.40' + '.docx" download>⬇ '
+              +   'V16.41' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
