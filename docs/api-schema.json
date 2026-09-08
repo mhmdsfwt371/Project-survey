@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.45",
+  "app_version": "V16.46",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1514,6 +1514,7 @@
     "V16.43": "siteKeyStats()/svLabel() مصدر واحد لجدول التوزيع وورقة over وsites و«لم يُزر» (noRec) في الصفحات الثلاث؛ LIFE.stuck + lifeOf يعيد stuck لسجل بلا وصول؛ stepsCard يقول نقاطًا وخطوات؛ بطاقة النقطة: حدّد للمشرف فما فوق، تحريك/نموذج لمن may(edit)؛ المعالم: mileList/mileOv/mileUpsert/mileAdd/mileRemove في settings/miles (n,w,dep,prog,hidden,custom) + MILE_EDIT/MILE_NEW؛ التصدير: EXP_PAGE/expAllowed/expSecs يرشّحان الأقسام بالشاشة في الحوار والمعالج.",
     "V16.44": "جدول المتابعة (WBS): settings/wbs {rows:[{id,n,s,e,dur,pct,type,resp,party}],keys:[{n,d}],at,by}؛ wbsImport من xlsx (صف «هيكل تقسيم العمل» + «المواعيد الحاكمة»)، wbsPct مجمّع للآباء بالمدة، wbsStatus/wbsTiming من اليوم، wbsSetPct (data-wbspct)، PAGE.wbs في المتابعة لكل الأدوار المكتبية والوزارة، إنصات settings/wbs لكل دور، SHEETS.wbs، EXP_SECS wbs. الجرس: bellToggle/bellHtml نافذة (data-bell) بآخر ١٠ وقرأتُ الكل. العدّاد: syncCdSecs يعدّ إلى السحب وevery=10 دقائق للمكتب/المشرف/الوزارة، وسحبةٌ تجلب جديدًا تعيد رسم LIVE_WORK_PAGES. الأحداث: canWriteEvents — الوزارة والإدارة العليا لا تدفعان evlog.",
     "V16.45": "جدول المتابعة: كروت البنود الرئيسية (data-wbstog) بشريط إنجاز ولون، طيّ/فتح WBS_OPEN مع wbsShown (البحث والمرشّح يتجاوزانه)، تعديل صفّ WBS_EDIT (data-wbsedit/wbssave/wbscancel، data-wbse=n|s|e|type|resp|party)، wbsRemove (البند وأبناؤه)، wbsClear بتأكيد WBS_RESET؛ إزالة pageHead المكرّرة واستعمال cardRaw للعنوان.",
+    "V16.46": "PAGE.wtask (متابعة المهام الأسبوعية) في settings/wtask {rows:[{id,n,track,code,d,who,st,seen,due,src,upd}]}: wtImport/wtAdd/wtSet/wtRemove/wtClear/wtStats/wtDue، تبويب محلي WT_TAB (قائمة/لوحة)، SHEETS.wtask، إنصات settings/wtask. PAGE.wbs.t = متابعة الخطة التفصيلية. expSecs يستبعد ما لا ورقة له، وexpPdf ينفّذ خيار PDF (نافذة طباعة). audit-guards: مرساة الزرع تتبع siteKeyStats.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {
