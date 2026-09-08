@@ -99,9 +99,12 @@ service cloud.firestore {
     // هو — بالاستعلام `where('by','==',اسمه)` فتُثبَت القاعدةُ على الشرط لا
     // على كلِّ وثيقة (وفي الطلب كلمةُ مرورٍ لا يراها إلا كاتبُها أو المدير).
     function canProv() { return ok() && myRank() >= 70; }
-    // مفتاحُ تشغيل السيور: مديرُ المشروع وحدَه يقرأ ويكتب — سرٌّ لا يُشارَك
+    // مفتاحُ تشغيل السيور: يكتبه مديرُ المشروع وحدَه — ويقرؤه من يُنشئ الحساباتِ
+    // ويُعيد الكلماتِ (المشرفُ فما فوق) والإدارةُ العليا، فلا يُرسَل أحدٌ إلى GitHub.
+    // المفتاحُ لا يملك إلا تشغيلَ السيور (Actions) — لا الشيفرةَ ولا القاعدة.
     match /ghcfg/{id} {
-      allow read, write: if ok() && role() == 'admin';
+      allow read: if ok() && (role() == 'admin' || role() == 'exec' || myRank() >= 70);
+      allow write: if ok() && role() == 'admin';
     }
     match /provision/{id} {
       allow read: if mgr() || (canProv() && resource.data.by == uDoc().name);
