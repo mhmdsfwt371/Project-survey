@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.23</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.24</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11883,13 +11883,16 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 + CAT_DEF[k].i + ' ' + esc(t(CAT_DEF[k].l)) + '</option>'; }).join('')
           + '</select></div>'
 
-          + '<div class="field"><label>' + esc(t('رقم المربع')) + ' <span class="req">*</span></label>'
+          /* المربعُ والشاخصُ من هويّة المخيمات وحدَها — الممرُّ والكاميرا والمحطةُ
+             والجمراتُ ونمرةُ والتسكينُ لا مربعَ لها ولا شاخص، فلا يُطلَبان ولا يُعرَضان */
+          + (camp
+            ? '<div class="field"><label>' + esc(t('رقم المربع')) + ' <span class="req">*</span></label>'
           + '<input data-ns="sq" value="' + esc(NEWSITE.sq) + '" dir="auto">'
           + '<p class="hint">' + esc(t('من الشاخص المثبت في الموقع')) + '</p></div>'
-
           + '<div class="field"><label>' + esc(t('رقم الشاخص')) + ' <span class="req">*</span></label>'
           + '<input data-ns="sign" value="' + esc(NEWSITE.sign) + '" dir="auto">'
           + '<p class="hint">' + esc(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')) + '</p></div>'
+            : '')
           + '</div>'
 
           + '<div class="field"><label>' + esc(t('شركة تقديم الخدمة'))
@@ -14076,14 +14079,16 @@ function nsSave(){
   NEWSITE.sign = String(NEWSITE.sign || '').trim();
 
   if (!NEWSITE.zone || !NEWSITE.type){ toast(t('اختر المشعر ونوع الموقع')); return; }
-  if (!NEWSITE.sq){   toast(t('رقم المربع مطلوب')); return; }
-  if (!NEWSITE.sign){ toast(t('رقم الشاخص مطلوب')); return; }
-  if (!NS_SQ_RE.test(NEWSITE.sq)){
-    toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return; }
-  if (!NS_SIGN_RE.test(NEWSITE.sign)){
-    toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
-
   var camp = NEWSITE.type === 'مخيم';
+  /* المربعُ والشاخصُ للمخيم وحدَه؛ وغيرُه يُحفَظ بلا مربعٍ ولا شاخص */
+  if (camp){
+    if (!NEWSITE.sq){   toast(t('رقم المربع مطلوب')); return; }
+    if (!NEWSITE.sign){ toast(t('رقم الشاخص مطلوب')); return; }
+    if (!NS_SQ_RE.test(NEWSITE.sq)){
+      toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return; }
+    if (!NS_SIGN_RE.test(NEWSITE.sign)){
+      toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
+  } else { NEWSITE.sq = ''; NEWSITE.sign = ''; }
   if (camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
     toast(t('اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»')); return; }
   /* المركَّبةُ لا تُطابِق القائمةَ نصًّا — يُقبَل ما كانت أجزاؤه كلُّها فيها */
@@ -16211,7 +16216,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.23' + '.docx" download>⬇ '
+              +   'V16.24' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
