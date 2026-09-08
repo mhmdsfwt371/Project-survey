@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.38</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.39</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8897,6 +8897,20 @@ function liveSmall(){
       verPublish();
     }, function(e){ softErr('إنصات النسخة', e, ''); }));
   } catch (e){ softErr('إنصات النسخة', e, ''); }
+  /* ═══ وثيقتي أنا — لكلِّ دور ═══
+     إنصاتُ «users» لمن رتبتُه فوق ثلاثين وحدَه، فالفنيُّ والمساعدُ والسائقُ
+     والمشترياتُ والوزارةُ لا يصلهم تغييرُ دورهم إلا بخروجٍ ودخول — وهي أكثرُ
+     الحالات وقوعًا (ترقيةُ فنيٍّ إلى مشرف). ووثيقةٌ واحدةٌ لا تكلّف شيئًا. */
+  if (STATE.meta.uid && rankOf(ROLE) <= 30){
+    try {
+      LIVE_SMALL.push(FB.db.collection('users').doc(STATE.meta.uid).onSnapshot(function(doc){
+        if (!doc || !doc.exists) return;
+        var mv = doc.data() || {};
+        STATE.users = STATE.users || {}; STATE.users[STATE.meta.uid] = mv;
+        roleWatch(mv);
+      }, function(e){ softErr('إنصات حسابي', e, ''); }));
+    } catch (e){ softErr('إنصات حسابي', e, ''); }
+  }
   if (rankOf(ROLE) > 30){
     watch('users', function(id, v){
       STATE.users = STATE.users || {};
@@ -16383,7 +16397,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.38' + '.docx" download>⬇ '
+              +   'V16.39' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19091,7 +19105,7 @@ function roleWatch(v){
   toast(t('تغيّرت صلاحيتُك إلى') + ' «' + t((ROLES[nr] || {}).n || nr) + '» — ' + t('طُبِّقت الآن'));
   try { liveSmallStop(); } catch (e){ LS_ERR = e; }
   STATE.meta.pullAt = {};
-  liveSmall(); PULL_ASK = true; syncCycle();
+  liveSmall(); presenceBeat(true); PULL_ASK = true; syncCycle();
   /* شاشةٌ (أو شريحةٌ) لم تعد تُرى: نُقلَ إلى أوّلِ ما يراه دورُه الجديد */
   if (PARENT[CUR] && PARENT[CUR] !== CUR && !seesPage(CUR)) CUR = PARENT[CUR];
   if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['over']).filter(seesPage)[0] || 'acct';
@@ -21281,9 +21295,18 @@ function provReask(uid){
   var req = { user:u.user, name:u.name || u.user, pass:pass, role:u.role || 'tech', roleExplicit:true, status:'pending', at:Date.now(), by:STATE.meta.name || '' };
   ['job','sup','dept','email','crew'].forEach(function(k){ if (u[k]) req[k] = u[k]; });
   STATE.provision = STATE.provision || {};
-  STATE.provision[u.user] = req; CORE.set('provision', u.user, req);
+  STATE.provision[u.user] = req;
   logEvent('إعادةُ طلب إنشاء — ' + (u.name || u.user) + ' (' + u.user + ')');
-  toast(u.user + ' \u00b7 ' + t('أُعيد الطلبُ بكلمةٍ جديدة — اضغط «شغّل الخادم الآن» ثم صدِّر الورقة'));
+  /* مباشرةً إلى القاعدة ثم الخادم — كما في «كلمة جديدة»؛ وكان يمرُّ بالطابور
+     فيقف على شبكةٍ بطيئة ولا يعلم أحدٌ أين وقف */
+  pwFlowStart(u, pass);
+  if (!FB.ready || !FB.db){ CORE.set('provision', u.user, req); pwFlowSet('nokey', ''); return true; }
+  var doc = Object.assign({}, req, { _at:Date.now(), _by:STATE.meta.uid || '' });
+  FB.db.collection('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
+    if (!ghToken()){ pwFlowSet('nokey'); return; }
+    pwFlowSet('run');
+    return ghRunNow().then(function(ok){ pwFlowSet(ok ? 'wait' : 'nokey'); if (ok) pwFlowWatch(); });
+  }).catch(function(e){ pwFlowSet('error', String(e && (e.code || e.message) || '').slice(0, 80)); });
   return true;
 }
 function provUserGone(r){
