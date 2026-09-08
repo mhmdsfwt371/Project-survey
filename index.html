@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.26</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.27</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8412,6 +8412,8 @@ var FB = {
     if (!FB.ready || !FB.db) return Promise.resolve(false);
     /* العهدُ أوّلًا — قبل الثوابت وقبل أيِّ رفعٍ من الطابور */
     EPOCH_PENDING = true;
+    /* شبكةٌ بطيئةٌ لا تحبس الطابورَ: ثمانِ ثوانٍ ثم يُرفَع ما عندنا */
+    setTimeout(function(){ EPOCH_PENDING = false; }, 8000);
     var epochRead = FB.db.collection('settings').doc('app').get().then(function(doc){
       var v = doc && doc.exists ? (doc.data() || {}) : {};
       if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; }
@@ -16225,7 +16227,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.26' + '.docx" download>⬇ '
+              +   'V16.27' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -21011,6 +21013,17 @@ function provSync(){
     var local = STATE.provision || {}, dropped = 0;
     Object.keys(local).forEach(function(k){ if (!cloud[k]) dropped++; });
     STATE.provision = cloud;
+    /* والحساباتُ كما في القاعدة: صفٌّ لحسابٍ حُذف بقي في الجهاز يزول، ودورٌ تغيّر يصل */
+    return FB.db.collection('users').limit(500).get().then(function(us){
+      var U = STATE.users || {}, keepTemp = {};
+      Object.keys(U).forEach(function(k){ if (U[k] && U[k].provisioning && !uidLike(k)) keepTemp[k] = U[k]; });
+      var fresh = {}; us.forEach(function(d){ fresh[d.id] = d.data(); });
+      FB.readCount = (FB.readCount || 0) + us.size;
+      STATE.users = Object.assign(fresh, keepTemp);
+      return { sn:sn, cloud:cloud, dropped:dropped };
+    });
+  }).then(function(r){
+    var sn = r.sn, cloud = r.cloud, dropped = r.dropped;
     /* صفٌّ مؤقتٌ في الحسابات بلا طلبٍ منتظرٍ في القاعدة: ميتٌ — يُزال */
     var U = STATE.users || {}, gone = 0;
     Object.keys(U).forEach(function(k){

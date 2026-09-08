@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.26",
+  "app_version": "V16.27",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1495,7 +1495,8 @@
     "V16.23": "nsk14.page (cur+tab) يُحفَظ في render ويُستعاد في enterShell (seesPage، لا site)؛ nsk14.session يُكتب في enterShell و#login.resuming يخفي النموذج أثناء autoSignIn؛ xlsPage (data-xlspage ⬇ بجوار تصدير): يبني body() في عنصر منفصل مع تعطيل slice(0,n≥10) على المصفوفات (XLS_ALL)، ويحوّل كل table و.list (li-t/li-s/li-end) أوراقًا باسم البطاقة.",
     "V16.24": "تسجيل موقع جديد: حقلا المربع والشاخص يُعرَضان ويُلزَمان للمخيم وحده (camp)؛ غيره يُحفَظ بلا sq/sign.",
     "V16.25": "لوحة الفريق: presenceFetch عند الرسم؛ المُسند المفتوح بنوعه (WO_KINDS) + عمودا فُكّ (diss تم الفك) وصيانة (maints)؛ exec.nav += map,mywork,board؛ TAB_SEE.team يشمل admin/exec؛ TAB_SEE.self يستثني exec.",
-    "V16.26": "supervisor.nav += req, reqreg, assign — الطلبات والتوزيع للمشرف (نطاق سحبه شجرته)."
+    "V16.26": "supervisor.nav += req, reqreg, assign — الطلبات والتوزيع للمشرف (نطاق سحبه شجرته).",
+    "V16.27": "pullStatic: مهلة 8 ث لقراءة العهد ثم EPOCH_PENDING=false (شبكة بطيئة لا تحبس الطابور)؛ provSync يجلب users (limit 500) ويستبدل المحلي مع إبقاء الصفوف المؤقتة ذات الطلب المنتظر."
   },
   "map_and_geolocation": {
     "tile_layers": {
