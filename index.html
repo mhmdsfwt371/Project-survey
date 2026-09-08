@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.27</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.28</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3499,6 +3499,7 @@ en:{
  'العنوان':'Title',
  'يُجهَّز إكسلُ الصفحة كاملةً…':'Preparing the full-page Excel…',
  'فُكّ':'Dismantled',
+ 'تُبدّلها أوّلَ دخول':'Change it on first sign-in', 'انسخ':'Copy', 'أرسل عبر واتساب':'Send via WhatsApp', 'يُكتَب الطلبُ في القاعدة…':'Writing the request to the database…', 'يُشغَّل الخادم… الكلمةُ تُضبَط خلال دقيقة':'Starting the server… the password is set within a minute', 'الخادمُ يعمل — انتظر، تظهر «تمّ» هنا':'Server running — wait, “done” appears here', 'تمّ — الكلمةُ صالحةٌ الآن. أرسلها لصاحبها؛ يبدّلها أوّلَ دخول':'Done — the password is live. Send it to its owner; they change it on first sign-in', 'تأخّر الخادمُ أكثرَ من ثلاث دقائق — اضغط «شغّل الخادم الآن» في طلبات الإنشاء وعُد':'The server took over three minutes — press “Run server now” in provisioning and come back', 'كُتب الطلب — لا مفتاحَ لتشغيل الخادم من التطبيق: اضغط «شغّل الخادم الآن» في طلبات الإنشاء':'Request written — no key to run the server from the app: press “Run server now” in provisioning', 'نُسخت':'Copied',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6120,6 +6121,7 @@ ur:{
  'العنوان':'عنوان',
  'يُجهَّز إكسلُ الصفحة كاملةً…':'پورے صفحے کا ایکسل تیار ہو رہا ہے…',
  'فُكّ':'اتارا گیا',
+ 'تُبدّلها أوّلَ دخول':'پہلے لاگ اِن پر بدلیں', 'انسخ':'کاپی', 'أرسل عبر واتساب':'واٹس ایپ سے بھیجیں', 'يُكتَب الطلبُ في القاعدة…':'درخواست ڈیٹابیس میں لکھی جا رہی ہے…', 'يُشغَّل الخادم… الكلمةُ تُضبَط خلال دقيقة':'سرور چل رہا ہے… پاس ورڈ ایک منٹ میں', 'الخادمُ يعمل — انتظر، تظهر «تمّ» هنا':'سرور کام کر رہا ہے — انتظار کریں، «ہو گیا» یہاں آئے گا', 'تمّ — الكلمةُ صالحةٌ الآن. أرسلها لصاحبها؛ يبدّلها أوّلَ دخول':'ہو گیا — پاس ورڈ فعال ہے۔ مالک کو بھیجیں؛ پہلے لاگ اِن پر بدلے گا', 'تأخّر الخادمُ أكثرَ من ثلاث دقائق — اضغط «شغّل الخادم الآن» في طلبات الإنشاء وعُد':'سرور تین منٹ سے زیادہ لے گیا — «سرور ابھی چلائیں» دبائیں اور واپس آئیں', 'كُتب الطلب — لا مفتاحَ لتشغيل الخادم من التطبيق: اضغط «شغّل الخادم الآن» في طلبات الإنشاء':'درخواست لکھی گئی — ایپ سے سرور چلانے کی کلید نہیں: «سرور ابھی چلائیں» دبائیں', 'نُسخت':'کاپی ہو گیا',
 }
 };
 
@@ -10685,7 +10687,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
   l:'الحساباتُ ووظائفُها وأدوارُها — من هو وما يعمل وما يستطيع.',
   body:function(){
     var head = tabHead('users'), cur = tabCur('users');
-    if (cur === 'users') return head + bulkCard() + provCard() + (may('users') ? pendCard() : '') + (function(){
+    if (cur === 'users') return head + pwFlowHtml() + bulkCard() + provCard() + (may('users') ? pendCard() : '') + (function(){
     var L = usersList();
     var byRole = {};
     Object.keys(STATE.users || {}).forEach(function(uid){
@@ -16227,7 +16229,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.27' + '.docx" download>⬇ '
+              +   'V16.28' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -26178,6 +26180,49 @@ function genPass(){
    من نسي كلمتَه لا يُغيّرها المتصفّحُ لغيره — الخادمُ وحده يملك حسابَ الدخول.
    فيُكتَب طلبٌ باسم المستخدم نفسِه وكلمةٍ جديدة، والخادمُ يضبطها ويُعلِّم
    الحسابَ «تُبدَّل أوّلَ دخول»، وتظهر الكلمةُ هنا وفي ورقة الدخول. */
+/* ═══ كلمةُ المرور الجديدة — ضغطةٌ واحدةٌ إلى النهاية ═══
+   كانت أربعَ خطواتٍ في ثلاث شاشات: «كلمة جديدة» تكتب طلبًا في طابور الجهاز،
+   ثم «ادفع الآن»، ثم «شغّل الخادم»، ثم ورقةُ الدخول — وأيُّ حلقةٍ تقف (طابورٌ
+   لا يُرفَع على شبكةٍ بطيئة، خادمٌ لم يُشغَّل) تركت الفنيَّ بلا كلمة. صارت
+   ضغطةً: الطلبُ يُكتَب في القاعدة مباشرةً بانتظار جوابها (فيُرى الرفضُ بسببه
+   لا يُبتلَع)، ثم يُشغَّل الخادمُ من التطبيق، ثم يُراقَب الطلبُ حتى «تمّ» —
+   وتظهر الكلمةُ كبيرةً بزرِّ نسخٍ وزرِّ واتساب. */
+var PW_FLOW = null, PW_POLL = 0;
+function pwFlowStart(u, pass){
+  PW_FLOW = { user:u.user, name:u.name || u.user, pass:pass, st:'writing', at:Date.now(), why:'' };
+  clearInterval(PW_POLL); PW_POLL = 0;
+  render(1);
+}
+function pwFlowSet(st, why){ if (!PW_FLOW) return; PW_FLOW.st = st; PW_FLOW.why = why || ''; render(1); }
+function pwFlowWatch(){
+  clearInterval(PW_POLL);
+  var tries = 0;
+  PW_POLL = setInterval(function(){
+    if (!PW_FLOW || !FB.ready || !FB.db){ clearInterval(PW_POLL); PW_POLL = 0; return; }
+    tries++;
+    FB.db.collection('provision').doc(PW_FLOW.user).get().then(function(d){
+      var v = d && d.exists ? (d.data() || {}) : {};
+      if (v.status === 'done'){ clearInterval(PW_POLL); PW_POLL = 0; STATE.provision[PW_FLOW.user] = v; pwFlowSet('done'); logEvent('كلمةٌ جديدةٌ ضُبطت — ' + PW_FLOW.user); }
+      else if (v.status === 'error'){ clearInterval(PW_POLL); PW_POLL = 0; pwFlowSet('error', v.why || ''); }
+      else if (tries > 36){ clearInterval(PW_POLL); PW_POLL = 0; pwFlowSet('slow'); }
+    }).catch(function(e){ LS_ERR = e; });
+  }, 5000);
+}
+function pwFlowHtml(){
+  if (!PW_FLOW) return '';
+  var f = PW_FLOW, big = '<div style="font:700 26px/1.4 ui-monospace,monospace;letter-spacing:.06em;direction:ltr;text-align:center;padding:10px;border:1px dashed rgba(255,255,255,.25);border-radius:10px;user-select:all">' + esc(f.pass) + '</div>';
+  var wa = 'https://wa.me/?text=' + encodeURIComponent(t('اسم المستخدم') + ': ' + f.user + '\n' + t('كلمة المرور') + ': ' + f.pass + '\n' + t('تُبدّلها أوّلَ دخول') + '\n' + location.origin + location.pathname);
+  var body = '<p class="hint" style="margin:0 0 8px">' + esc(dispName(f.name)) + ' \u00b7 <span dir="ltr">' + esc(f.user) + '</span></p>' + big
+    + '<div class="actions" style="margin-top:10px">'
+    + btn('\u{1F4CB} ' + t('انسخ'),'btn-secondary btn-sm',' data-pwcopy="1"')
+    + '<a class="btn btn-primary btn-sm" href="' + esc(wa) + '" target="_blank" rel="noopener">\u{1F4AC} ' + esc(t('أرسل عبر واتساب')) + '</a>'
+    + btn(t('إغلاق'),'btn-quiet btn-sm',' data-pwclose="1"')
+    + '</div>';
+  var st = { writing:['warn','يُكتَب الطلبُ في القاعدة…'], run:['warn','يُشغَّل الخادم… الكلمةُ تُضبَط خلال دقيقة'], wait:['warn','الخادمُ يعمل — انتظر، تظهر «تمّ» هنا'],
+             done:['ok','تمّ — الكلمةُ صالحةٌ الآن. أرسلها لصاحبها؛ يبدّلها أوّلَ دخول'], error:['bad','رُفض: ' + (f.why || '')], slow:['bad','تأخّر الخادمُ أكثرَ من ثلاث دقائق — اضغط «شغّل الخادم الآن» في طلبات الإنشاء وعُد'],
+             nokey:['bad','كُتب الطلب — لا مفتاحَ لتشغيل الخادم من التطبيق: اضغط «شغّل الخادم الآن» في طلبات الإنشاء'] }[f.st] || ['warn', f.st];
+  return card('\u{1F511} ' + t('كلمةُ مرورٍ جديدة'), alertBox(st[0], st[1]) + body);
+}
 function usrPwReset(uid){
   if (!canProvision()){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return false; }
   var u = (STATE.users || {})[uid];
@@ -26187,10 +26232,18 @@ function usrPwReset(uid){
   var req = { user:u.user, name:u.name || u.user, role:u.role || 'tech', roleExplicit:false, pass:pass, reissue:true,
               status:'pending', at:Date.now(), by:STATE.meta.name || '' };
   STATE.provision = STATE.provision || {};
-  STATE.provision[u.user] = req; CORE.set('provision', u.user, req);
+  STATE.provision[u.user] = req;
   logEvent('إعادة إصدار كلمة مرور — ' + (u.name || u.user) + ' (' + u.user + ')');
-  toast(t('كلمةٌ جديدة') + ' ' + u.user + ': ' + pass + ' — ' + t('يضبطها الخادمُ خلال دقائق وتظهر في ورقة الدخول'));
-  statBump(); render(1);
+  pwFlowStart(u, pass);
+  if (!FB.ready || !FB.db){ CORE.set('provision', u.user, req); pwFlowSet('nokey', ''); statBump(); return pass; }
+  /* مباشرةً إلى القاعدة — لا طابورَ يقف على شبكةٍ بطيئة، والرفضُ يُرى بسببه */
+  var doc = Object.assign({}, req, { _at:Date.now(), _by:STATE.meta.uid || '' });
+  FB.db.collection('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
+    if (!ghToken()){ pwFlowSet('nokey'); return; }
+    pwFlowSet('run');
+    return ghRunNow().then(function(ok){ pwFlowSet(ok ? 'wait' : 'nokey'); if (ok) pwFlowWatch(); });
+  }).catch(function(e){ pwFlowSet('error', String(e && (e.code || e.message) || '').slice(0, 80)); });
+  statBump();
   return pass;
 }
 function usersCard(){
@@ -27559,6 +27612,8 @@ function onDocClick(e){
   if (svm){ SV_MORE = svm.getAttribute('data-svmore') === '1'; render(1); return; }
   /* الشريحةُ المفتوحةُ سلفًا لا تتغيّر بالضغط عليها — فيُقال ما هو معروضٌ
      الآن بدل صمتٍ يظنُّه الناقرُ عطلًا. */
+  if (e.target.closest('[data-pwcopy]')){ if (PW_FLOW){ try { navigator.clipboard.writeText(PW_FLOW.pass); toast(t('نُسخت')); } catch (er){ toast(PW_FLOW.pass); } } return; }
+  if (e.target.closest('[data-pwclose]')){ PW_FLOW = null; clearInterval(PW_POLL); PW_POLL = 0; render(1); return; }
   var pndd = e.target.closest('[data-pnddel]');
   if (pndd){ pendDel(pndd.getAttribute('data-pnddel')); return; }
   var pnd = e.target.closest('[data-pndgo]');
