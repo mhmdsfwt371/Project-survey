@@ -757,7 +757,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.34</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.35</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3512,6 +3512,7 @@ en:{
  'لا صورَ لهذه النقطة على هذا الجهاز ولا في القاعدة.':'No photos for this point on this device or in the database.', 'على الدرايف ✓':'On Drive ✓', 'افتح على الدرايف':'Open on Drive', 'خطأ في النقل':'Transfer error', 'في القاعدة — ينقلها الخادم إلى الدرايف':'In the database — the server moves it to Drive', 'في طابور هذا الجهاز — لم تُرفَع بعد':'In this device’s queue — not uploaded yet',
  'تنزيل':'Download',
  'لا صورة':'No image', 'تعذّر تجهيزُ الصورة':'Could not prepare the image', 'تعذّر التنزيل':'Download failed',
+ 'لمدير المشروع وحدَه':'Project manager only', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'Command sent — every open device is pulling now; closed ones when reopened', 'مزامنةٌ من المكتب — يُسحَب الآن':'Sync from the office — pulling now', 'زامِن كلَّ الأجهزة المفتوحة الآن':'Sync all open devices now', 'زامِن الجميع':'Sync all',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6138,6 +6139,7 @@ ur:{
  'لا صورَ لهذه النقطة على هذا الجهاز ولا في القاعدة.':'اس نقطے کی کوئی تصویر نہ اس آلے پر نہ ڈیٹابیس میں۔', 'على الدرايف ✓':'ڈرائیو پر ✓', 'افتح على الدرايف':'ڈرائیو پر کھولیں', 'خطأ في النقل':'منتقلی میں خرابی', 'في القاعدة — ينقلها الخادم إلى الدرايف':'ڈیٹابیس میں — سرور ڈرائیو پر منتقل کرے گا', 'في طابور هذا الجهاز — لم تُرفَع بعد':'اس آلے کی قطار میں — ابھی اپ لوڈ نہیں',
  'تنزيل':'ڈاؤن لوڈ',
  'لا صورة':'کوئی تصویر نہیں', 'تعذّر تجهيزُ الصورة':'تصویر تیار نہیں ہو سکی', 'تعذّر التنزيل':'ڈاؤن لوڈ ناکام',
+ 'لمدير المشروع وحدَه':'صرف پروجیکٹ منیجر', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'حکم بھیج دیا — ہر کھلا آلہ ابھی لا رہا ہے، بند والے کھلنے پر', 'مزامنةٌ من المكتب — يُسحَب الآن':'دفتر سے مطابقت — ابھی لایا جا رہا ہے', 'زامِن كلَّ الأجهزة المفتوحة الآن':'تمام کھلے آلات ابھی ہم آہنگ کریں', 'زامِن الجميع':'سب ہم آہنگ',
 }
 };
 
@@ -8441,6 +8443,7 @@ var FB = {
     var epochRead = FB.db.collection('settings').doc('app').get().then(function(doc){
       var v = doc && doc.exists ? (doc.data() || {}) : {};
       if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; }
+      if (v.syncAll) SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
       if (v.ver && typeof verChase === 'function') verChase(v.ver);
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
     return epochRead.then(function(){ return FB.pullStatic2(); });
@@ -8884,6 +8887,7 @@ function liveSmall(){
     LIVE_SMALL.push(FB.db.collection('settings').doc('app').onSnapshot(function(doc){
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
       if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; syncCycle(); }
+      if (dv.syncAll) syncAllApply(dv.syncAll);
       if (dv.ver) verChase(dv.ver);
       verPublish();
     }, function(e){ softErr('إنصات النسخة', e, ''); }));
@@ -9080,7 +9084,9 @@ function syncBadge(){
   var un = (typeof notifUnread === 'function') ? notifUnread() : 0;
   /* الجرسُ دائمًا بجوار المزامنة، والشارةُ الحمراءُ تعدُّ غيرَ المقروء وتزيد مع كلِّ
      إشعارٍ يصل. (كان الرمزُ يُكتَب \u1F514 — هروبًا ناقصًا يرسم «ὑ4» بدل الجرس) */
-  el.innerHTML = '<button type="button" class="tb-bell' + (un ? ' has' : '') + '" data-p="notif" title="'
+  el.innerHTML = (may('roles') ? '<button type="button" class="tb-sync" data-syncall="1" title="'
+      + esc(t('زامِن كلَّ الأجهزة المفتوحة الآن')) + '">\u{1F4E1} ' + esc(t('زامِن الجميع')) + '</button> ' : '')
+    + '<button type="button" class="tb-bell' + (un ? ' has' : '') + '" data-p="notif" title="'
     + esc(t('الإشعارات')) + '" aria-label="' + esc(t('الإشعارات')) + '">\u{1F514}'
     + (un ? '<span class="tb-badge">' + nm(un) + '</span>' : '') + '</button> '
     /* زرُّ المزامنة: كانت المزامنةُ اليدويةُ موجودةً بلا زرٍّ يبلغها، فيرى
@@ -16369,7 +16375,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.34' + '.docx" download>⬇ '
+              +   'V16.35' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17232,7 +17238,10 @@ function pullScope(){
   /* المهندسون كالإدارة: أيُّ نقطةٍ تُنجَز تصل اعتمادُها كلَّ مهندسٍ لا مهندسَ شجرتها
      وحدَه — قرارُ صاحب المشروع، وثمنُه على Blaze سنتاتٌ لا سقف */
   if (r === 'exec' || r === 'admin' || isBossHere() || rankOf(ROLE) >= rankOf('engineer')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
-  if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:true, every:21600000 };
+  /* والمشرفون كذلك: قرارُ صاحب المشروع أن يرى المشرفُ زياراتِ الفنيّين كلَّها لا
+     فنيّيه وحدَهم — فمشرفٌ يفتح الخريطةَ يرى ما تمّ في المشعر كلِّه لا جزءًا منه.
+     والشجرةُ تبقى للتكليف والمتابعة (لوحةُ الفريق) لا للرؤية. */
+  if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
   if (r === 'viewer') return { cols:['stats'], mine:false, tree:false, every:300000 };
   /* الميدانُ يُنصِت إلى ما كتبه هو (اعتمادٌ أو ردٌّ من المكتب يصل حيًّا) — والسحبُ
      الدوريُّ كان ثمانيةً وأربعين استعلامًا فارغًا في اليوم لكلِّ جهازٍ من مئةٍ وربع */
@@ -19009,6 +19018,33 @@ function verPublish(){
    ما عنده — سجلاتٍ وطابورًا ومعزولًا — ويسحب من القاعدة باردًا. الحساباتُ
    والإعداداتُ وطبقةُ النقاط تبقى لأنها في القاعدة أصلًا. */
 var EPOCH_PENDING = false;   /* قراءةُ العهد جارية — لا رفعَ حتى تنتهي */
+/* ═══ «زامِن الجميع الآن» ═══
+   كان المكتبُ إن أراد أن يصل الفريقَ شيءٌ فورًا لا يملك إلا أن يطلب من كلٍّ أن
+   يضغط المزامنة. والقاعدةُ تصل كلَّ جهازٍ مفتوحٍ أصلًا (settings/app منصَتٌ إليه):
+   فرقمٌ يزيد هناك = أمرٌ بسحبٍ فوريٍّ يمرُّ به كلُّ مفتوح، والمغلقُ يسحب حين يُفتَح.
+   ولمديرِ المشروع وحدَه — والقاعدةُ تحرسه لا الشاشةُ فقط. */
+var SYNC_ALL_SEEN = 0;
+function syncAllNow(){
+  if (!may('roles')){ toast(t('لمدير المشروع وحدَه')); return false; }
+  if (!FB.ready || !FB.db){ toast(t('يحتاج شبكة')); return false; }
+  var n = Date.now();
+  CORE.set('cfg', 'app', { syncAll:n, syncAllBy:STATE.meta.name || '', syncAllAt:n });
+  SYNC_ALL_SEEN = n;
+  logEvent('مزامنةٌ فوريةٌ للجميع');
+  toast(t('أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح'));
+  PULL_ASK = true; syncCycle();
+  return true;
+}
+function syncAllApply(v){
+  var n = +v || 0;
+  if (!n || n <= (SYNC_ALL_SEEN || 0)) return false;
+  var first = !SYNC_ALL_SEEN;
+  SYNC_ALL_SEEN = n;
+  if (first) return false;                      /* أوّلُ قراءةٍ تضبط العلامةَ ولا تسحب */
+  PULL_ASK = true; syncCycle();
+  toast(t('مزامنةٌ من المكتب — يُسحَب الآن'));
+  return true;
+}
 function epochApply(cloud){
   cloud = +cloud || 0;
   if (!cloud || cloud === (STATE.meta.epoch || 0)) return false;
@@ -27601,6 +27637,7 @@ function onDocClick(e){
   if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return; }
 
+  if (e.target.closest('[data-syncall]')){ syncAllNow(); return; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return; }
   var phd = e.target.closest('[data-phdl]');
