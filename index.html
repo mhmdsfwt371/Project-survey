@@ -636,6 +636,14 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tb-sync:hover{border-color:var(--brand);color:var(--brand)}
+.tb-bell{position:relative;background:transparent;border:1px solid var(--line);border-radius:99px;
+  width:30px;height:26px;cursor:pointer;font-size:14px;line-height:1;padding:0;color:var(--ink-soft)}
+.tb-bell.has{border-color:#E8C34B;color:#fff}
+.tb-bell:hover{border-color:var(--brand)}
+.tb-badge{position:absolute;top:-7px;inset-inline-end:-7px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:99px;background:#E05252;color:#fff;font-size:10.5px;font-weight:700;line-height:17px;
+  text-align:center;box-shadow:0 0 0 2px var(--bg,#0d1117)}
+.notif-rows tbody tr{cursor:pointer}.notif-rows tbody tr:hover td{background:rgba(255,255,255,.04)}
 
 /* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
    أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
@@ -749,7 +757,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.30</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.31</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9066,9 +9074,11 @@ function syncBadge(){
        : (LANG === 'en' ? (val + ' ' + unit + ' ago') : (t('منذ') + ' ' + val + ' ' + unit));
   }
   var un = (typeof notifUnread === 'function') ? notifUnread() : 0;
-  el.innerHTML = (un ? '<button type="button" class="pill warn" data-p="notif" '
-                     + 'style="border:0;cursor:pointer" aria-label="الإشعارات">\u1F514 '
-                     + nm(un) + '</button> ' : '')
+  /* الجرسُ دائمًا بجوار المزامنة، والشارةُ الحمراءُ تعدُّ غيرَ المقروء وتزيد مع كلِّ
+     إشعارٍ يصل. (كان الرمزُ يُكتَب \u1F514 — هروبًا ناقصًا يرسم «ὑ4» بدل الجرس) */
+  el.innerHTML = '<button type="button" class="tb-bell' + (un ? ' has' : '') + '" data-p="notif" title="'
+    + esc(t('الإشعارات')) + '" aria-label="' + esc(t('الإشعارات')) + '">\u{1F514}'
+    + (un ? '<span class="tb-badge">' + nm(un) + '</span>' : '') + '</button> '
     /* زرُّ المزامنة: كانت المزامنةُ اليدويةُ موجودةً بلا زرٍّ يبلغها، فيرى
        المستخدمُ «ثلاثةٌ بانتظار الرفع» ولا يجد كيف يرفعها فينتظر. */
     + '<button type="button" class="tb-sync" data-pull="1" title="'
@@ -16274,7 +16284,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.30' + '.docx" download>⬇ '
+              +   'V16.31' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -23745,7 +23755,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
 
       + cardFlush('السجل',
           L.length
-            ? table(['الوقت','النوع','الرسالة','إلى','قنوات'],
+            ? '<div class="notif-rows">' + table(['الوقت','النوع','الرسالة','إلى','قنوات'],
                 L.slice(0, 200).map(function(n){
                   var ph = notifPhone(n.to);
                   return ['<span class="num">' + esc(new Date(n.at).toLocaleString('ar-EG',
@@ -23767,7 +23777,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
                               ? btn('\u{1F50E} ' + t('دقّق التركيب'),'btn-primary btn-sm',' data-ngo="qa" data-nsite="' + esc(n.site) + '" data-nid="' + esc(n.id) + '"') : '')
                           + (n.site && (n.kind === 'إسناد' || n.kind === 'اعتماد' || n.kind === 'تحتاج زيارة أخرى')
                               ? btn('\u25C8 ' + t('افتح النقطة'),'btn-secondary btn-sm',' data-site="' + esc(n.site) + '"') : '')];
-                }))
+                })) + '</div>'
             : '<p class="hint" style="padding:16px">' + esc(t('لا إشعاراتٍ بعد.')) + '</p>');
   })();
   }};
@@ -27624,6 +27634,11 @@ function onDocClick(e){
   if (e.target.closest('[data-xlspage]')){ toast(t('يُجهَّز إكسلُ الصفحة كاملةً…')); xlsPage(); return; }
   var brl = e.target.closest('[data-boardrole]');
   if (brl){ BOARD_ROLE = brl.getAttribute('data-boardrole') || ''; render(1); return; }
+  var nrow = e.target.closest('.notif-rows tbody tr');
+  if (nrow && !e.target.closest('button,a,input,select')){
+    var act = nrow.querySelector('[data-ngo],[data-site]');
+    if (act){ act.click(); return; }
+  }
   var gl = e.target.closest('[data-golayer]');
   if (gl){ FIELD_MODE = gl.getAttribute('data-golayer') || 'install'; goPage('map'); render(1); if (typeof mapPaint === 'function') mapPaint(); return; }
   var ngo = e.target.closest('[data-ngo]');
