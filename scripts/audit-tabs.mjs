@@ -76,7 +76,8 @@ console.log('\n══ ٢ · كلُّ دورٍ يرى من الشرائح ما ك
       const seeParent = (R.nav === '*' || R.nav.indexOf(pid) > -1)
         && !(w.PAGE_CAP[pid] && !(R.can || {})[w.PAGE_CAP[pid]]);
       const should = TABS[pid].map(x => x).filter(tb => tb[4]
-        ? (seeParent && (tb[4] === 'self' || w.TAB_SEE[tb[4]](pid)))
+        /* V16.25: «self» له شرطُه أيضًا (الإدارةُ العليا لا ترى «مهامي») — يُسأل TAB_SEE لا يُفترَض */
+        ? (seeParent && w.TAB_SEE[tb[4]](pid))
         : ((R.nav === '*' || R.nav.indexOf(tb[0]) > -1)
            && !(w.PAGE_CAP[tb[0]] && !(R.can || {})[w.PAGE_CAP[tb[0]]]))).map(x => x[0]);
       if (vis.join() !== should.join()) diff.push(rn + '·' + pid + ' يرى [' + vis + '] وكان يرى [' + should + ']');

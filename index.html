@@ -749,7 +749,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.24</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.25</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3498,6 +3498,7 @@ en:{
  'يُستأنَف الدخول…':'Resuming sign-in…', 'إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف':'Excel of this whole page — every table, every row', 'لا صفحةَ تُصدَّر':'No page to export', 'تعذّر تحميلُ مكتبة إكسل':'Could not load the Excel library', 'لا جداولَ في هذه الصفحة':'No tables on this page', 'جدولًا صُدِّر بكلِّ صفوفه':'tables exported with all rows',
  'العنوان':'Title',
  'يُجهَّز إكسلُ الصفحة كاملةً…':'Preparing the full-page Excel…',
+ 'فُكّ':'Dismantled',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6118,6 +6119,7 @@ ur:{
  'يُستأنَف الدخول…':'سائن اِن بحال ہو رہا ہے…', 'إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف':'اس پورے صفحے کا ایکسل — ہر جدول ہر قطار', 'لا صفحةَ تُصدَّر':'برآمد کے لیے کوئی صفحہ نہیں', 'تعذّر تحميلُ مكتبة إكسل':'ایکسل لائبریری لوڈ نہیں ہوئی', 'لا جداولَ في هذه الصفحة':'اس صفحے میں کوئی جدول نہیں', 'جدولًا صُدِّر بكلِّ صفوفه':'جدول تمام قطاروں کے ساتھ برآمد',
  'العنوان':'عنوان',
  'يُجهَّز إكسلُ الصفحة كاملةً…':'پورے صفحے کا ایکسل تیار ہو رہا ہے…',
+ 'فُكّ':'اتارا گیا',
 }
 };
 
@@ -9842,6 +9844,8 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
          الأداءُ في «فريقي» نقاطٌ ومعدّلات؛ وهذه العملُ نفسُه: ما أُسند لكلٍّ الآن،
          وما أنجزه اليوم، وما ينتظر اعتمادَ المهندس منه، ومتى ظهر آخرَ مرة. */
       var me = STATE.meta.name || '';
+      /* آخرُ ظهورٍ من نبضات الحضور — تُجلَب كما تُجلَب في صحة النظام */
+      if (may('users') || may('exportAll')) presenceFetch(false);
       var today = dayKey(Date.now()), U = STATE.users || {}, P = STATE.presence || {};
       var roleOf = {}; Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name) roleOf[u.name] = u.role; });
       /* الكلُّ تحتي — ميدانًا ومكتبًا — بمرشِّح الدور: مديرُ المشروع يرى الجميع،
@@ -9859,26 +9863,31 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         + '</div>';
       var seen = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.name && (!seen[p.name] || p.at > seen[p.name])) seen[p.name] = p.at || 0; });
       var rows = names.map(function(n){
-        var open = 0, doneToday = 0, visits = 0, pend = 0, inst = 0, appr = 0;
+        var open = 0, doneToday = 0, visits = 0, pend = 0, inst = 0, appr = 0, dis = 0, mnt = 0, byKind = {};
+        /* المُسندُ المفتوحُ بنوعه: زيارةٌ وتركيبٌ وصيانةٌ وفكٌّ وتهيئةٌ وتجميع — كلُّ ما يُسنَد */
         Object.keys(STATE.tasks || {}).forEach(function(k){ var x = STATE.tasks[k]; if (!x || x.to !== n) return;
-          if (x.status === 'مُنجز' || x.status === 'معتمد'){ if (dayKey(x.doneAt || x.at) === today) doneToday++; } else open++; });
+          if (x.status === 'مُنجز' || x.status === 'معتمد'){ if (dayKey(x.doneAt || x.at) === today) doneToday++; }
+          else { open++; byKind[x.kind || 'visit'] = (byKind[x.kind || 'visit'] || 0) + 1; } });
+        Object.keys(STATE.diss || {}).forEach(function(k){ var r = STATE.diss[k]; if (r && r.by === n && r.status === 'تم الفك') dis++; });
+        Object.keys(STATE.maints || {}).forEach(function(k){ var r = STATE.maints[k]; if (r && (r.by === n || r.to === n)) mnt++; });
         Object.keys(STATE.recs || {}).forEach(function(k){ var r = STATE.recs[k]; if (!r) return;
           if ((r.reviewBy === n && dayKey(r.reviewAt) === today) || (r.revisitBy === n && dayKey(r.revisitAt) === today)) appr++;
           if (r.by !== n) return;
           if (dayKey(r.at) === today) visits++; if (svReview(r) === 'pending') pend++; });
         Object.keys(STATE.inss || {}).forEach(function(k){ var r = STATE.inss[k]; if (r && r.by === n && r.status === 'مُركّب') inst++; });
         var ago = seen[n] ? Math.round((Date.now() - seen[n]) / 60000) : -1;
-        return { n:n, role:roleOf[n] || '', open:open, done:doneToday, visits:visits, pend:pend, inst:inst, appr:appr, ago:ago };
+        var kinds = Object.keys(byKind).map(function(k){ return nm(byKind[k]) + ' ' + t((WO_KINDS[k] || { n:k }).n); }).join(' · ');
+        return { n:n, role:roleOf[n] || '', open:open, kinds:kinds, done:doneToday, visits:visits, pend:pend, inst:inst, dis:dis, mnt:mnt, appr:appr, ago:ago };
       }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || a.n.localeCompare(b.n, 'ar'); });
       var tot = rows.reduce(function(a, r){ a.open += r.open; a.visits += r.visits; a.pend += r.pend; return a; }, { open:0, visits:0, pend:0 });
       return chips
         + stats([['أفراد', N(rows.length), 'acc'], ['مُسند مفتوح', N(tot.open), tot.open ? 'wrn' : ''],
                     ['زيارات اليوم', N(tot.visits), 'ok'], ['بانتظار الاعتماد', N(tot.pend), tot.pend ? 'wrn' : 'ok']])
         + cardFlush(t('لوحة الفريق') + ' \u2014 ' + nm(rows.length),
-            table(['الاسم','الدور','مُسند مفتوح','زيارات اليوم','بانتظار الاعتماد','مُركّب','اعتمادات اليوم','آخر ظهور'], rows.map(function(r){
+            table(['الاسم','الدور','مُسند مفتوح','زيارات اليوم','بانتظار الاعتماد','مُركّب','فُكّ','صيانة','اعتمادات اليوم','آخر ظهور'], rows.map(function(r){
               return ['<strong>' + esc(dispName(r.n)) + '</strong>', esc(t((ROLES[r.role] || {}).n || r.role || '—')),
-                      r.open ? '<b class="num">' + nm(r.open) + '</b>' : N(0), N(r.visits),
-                      r.pend ? '<b class="num" style="color:#E8C34B">' + nm(r.pend) + '</b>' : N(0), N(r.inst), N(r.appr),
+                      r.open ? '<b class="num">' + nm(r.open) + '</b>' + (r.kinds ? '<br><span class="hint" style="margin:0">' + esc(r.kinds) + '</span>' : '') : N(0), N(r.visits),
+                      r.pend ? '<b class="num" style="color:#E8C34B">' + nm(r.pend) + '</b>' : N(0), N(r.inst), N(r.dis), N(r.mnt), N(r.appr),
                       r.ago < 0 ? '<span class="hint" style="margin:0">' + esc(t('لم يظهر')) + '</span>'
                         : (r.ago < 60 ? pill(nm(r.ago) + ' ' + t('د'), 'ok') : (r.ago < 1440 ? pill(nm(Math.round(r.ago / 60)) + ' ' + t('س'), 'wrn') : pill(nm(Math.round(r.ago / 1440)) + ' ' + t('يوم'), 'off')))];
             })))
@@ -16216,7 +16225,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.24' + '.docx" download>⬇ '
+              +   'V16.25' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -24644,7 +24653,8 @@ var ROLES = {
   exec:{
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
-    nav:['exec','over','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
+    /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
+    nav:['map','mywork','board','exec','over','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -25260,11 +25270,12 @@ tabsInit();
    الأدوار ولا تملك صلاحيةً خاصّة — فرؤيتُها رؤيةُ أمِّها. ويُعلَن ذلك
    صراحةً في العنصر الخامس من صفِّ الشريحة، ومعه شرطٌ إن كان لها شرط. */
 var TAB_SEE = {
-  self: function(pid){ return seesRaw(pid); },
+  /* «مهامي» و«أدائي» لمن له مهامُّ ونقاط — لا للإدارة العليا التي ترى لا تعمل */
+  self: function(pid){ return seesRaw(pid) && !(pid === 'mywork' && effRole(ROLE) === 'exec'); },
   /* «فريقي» لمن تحته أحدٌ فعلًا، أو لمشرفٍ ومهندس */
   team: function(pid){
     var r = ROLE || (STATE.meta && STATE.meta.role) || '';
-    return seesRaw(pid) && (r === 'supervisor' || r === 'engineer'
+    return seesRaw(pid) && (r === 'supervisor' || r === 'engineer' || r === 'admin' || r === 'exec'
       || techsList().filter(function(x){ return underNames(STATE.meta.name || '').indexOf(x.n) > -1; }).length > 0);
   }
 };
