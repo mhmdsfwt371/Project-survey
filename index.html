@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.41</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.42</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8446,15 +8446,30 @@ var FB = {
      في الساعة لأشياءَ لا تتغيّر. ثم أُزيل الاستدعاءُ في V16.6 فماتت كلُّها:
      لا إعداداتٌ ولا طبقةٌ ولا مخزونٌ يصل جهازًا جديدًا. فصارت تُقرأ مرةً عند
      الدخول ومرةً عند الطلب، وطبقةُ النقاط بمؤشِّرٍ: ما تغيّر لا ما كُتب. */
-  pullStatic: function(){
+  /* ═══ الثوابتُ ثمنُها أربعةٌ وثلاثون استعلامًا ═══
+     `pullStatic` تقرأ الإعداداتِ والقوائمَ والنقاطَ — أربعةً وثلاثين استعلامًا،
+     وكلُّ استعلامٍ يُحاسَب ولو عاد فارغًا. وكانت كلُّ عودةٍ إلى التطبيق (تبديلُ
+     تطبيقٍ على الجوّال، إظهارُ تبويبٍ على الحاسوب) ترفع PULL_ASK فتُجلَب كلُّها
+     من جديد: فنيٌّ يبدّل التطبيقَ ثلاثين مرةً في اليوم = ألفُ استعلامٍ بلا
+     فائدة، وعشرون جهازًا = عشرون ألفًا. فصار لها حدٌّ زمنيٌّ: لا تتكرر قبل
+     ربع ساعةٍ إلا بأمرٍ صريح (تصفيرٌ، أو «زامِن الجميع»، أو زرُّ المزامنة). */
+  pullStatic: function(force){
     if (!FB.ready || !FB.db) return Promise.resolve(false);
+    var now = Date.now();
+    if (!force && FB._staticAt && now - FB._staticAt < 900000) return Promise.resolve(false);
+    FB._staticAt = now;
+    /* خطأٌ متزامنٌ هنا (قاعدةٌ لم تُهيَّأ) كان يُسقِط سلسلةَ الدورة كلَّها ويترك
+       SYNC_BUSY مرفوعًا — فتتوقف المزامنةُ لبقية الجلسة بلا صوت */
+    try { return FB._pullStatic(); } catch (e){ softErr('قراءة الثوابت', e, ''); return Promise.resolve(false); }
+  },
+  _pullStatic: function(){
     /* العهدُ أوّلًا — قبل الثوابت وقبل أيِّ رفعٍ من الطابور */
     EPOCH_PENDING = true;
     /* شبكةٌ بطيئةٌ لا تحبس الطابورَ: ثمانِ ثوانٍ ثم يُرفَع ما عندنا */
     setTimeout(function(){ EPOCH_PENDING = false; }, 8000);
     var epochRead = FB.db.collection('settings').doc('app').get().then(function(doc){
       var v = doc && doc.exists ? (doc.data() || {}) : {};
-      if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; }
+      if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; FB._staticAt = 0; }
       if (v.syncAll) SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
       if (v.ver && typeof verChase === 'function') verChase(v.ver);
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
@@ -8898,7 +8913,7 @@ function liveSmall(){
   try {
     LIVE_SMALL.push(FB.db.collection('settings').doc('app').onSnapshot(function(doc){
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
-      if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; syncCycle(); }
+      if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; FB._staticAt = 0; syncCycle(); }
       if (dv.syncAll) syncAllApply(dv.syncAll);
       if (dv.ver) verChase(dv.ver);
       verPublish();
@@ -8929,7 +8944,9 @@ function liveSmall(){
          الشجرة الجديدة ويُسحَب تاريخُ من انضمّ — مرةً، بعد سكونٍ قصير */
       if (scope.tree && treeKeys().sig !== sig0){
         clearTimeout(liveSmall._re);
-        liveSmall._re = setTimeout(function(){ liveSmall(); PULL_ASK = true; syncCycle(); }, 1500);
+        /* بصمةُ النطاق في pullDelta تكشف تبدُّلَ الشجرة وتسحب باردًا — والثوابتُ
+           لم تتغيّر، فلا تُجلَب أربعةً وثلاثين استعلامًا لأن اسمَ موظفٍ عُدِّل */
+        liveSmall._re = setTimeout(function(){ liveSmall(); syncCycle(); }, 1500);
       }
     }, 300);
     watch('provision', function(id, v){
@@ -9028,8 +9045,9 @@ function syncCycle(){
   var pushed = CORE.flush().catch(function(){ return 0; });
   return pushed.then(function(){
     var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every);
-    /* الطلبُ اليدويُّ (زرُّ «مزامنة الآن») يجلب الثوابتَ أيضًا — لا الدورةُ */
-    var ask = PULL_ASK;
+    /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
+       فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
+    var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
     /* لا إعادةَ رسمٍ آليةً: من يكتب في نموذجٍ لا يُقذَف منه — الإنصاتُ الحيُّ
@@ -9057,8 +9075,13 @@ function liveTick(){
   if (!BADGE_TICK) BADGE_TICK = setInterval(function(){
     try { syncBadge(); } catch (e){ softErr('شارة المزامنة', e, ''); }
   }, 30000);
+  /* العودةُ إلى التطبيق تسحب الجديدَ فارقيًّا — لا الثوابتَ كلَّها؛ ومرةً كلَّ
+     دقيقةٍ على الأكثر، فمن يبدّل بين تطبيقين لا يفتح دورةً مع كلِّ تبديل */
   document.addEventListener('visibilitychange', function(){
-    if (!document.hidden && STATE.meta.online && FB.ready){ PULL_ASK = true; syncCycle(); }
+    if (document.hidden || !STATE.meta.online || !FB.ready) return;
+    if (Date.now() - (VIS_LAST || 0) < 60000) return;
+    VIS_LAST = Date.now();
+    syncCycle();
   });
 }
 var SOFT_ERRS = [], SOFT_SAID = {};
@@ -16404,7 +16427,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.41' + '.docx" download>⬇ '
+              +   'V16.42' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19080,7 +19103,7 @@ function syncAllApply(v){
   var first = !SYNC_ALL_SEEN;
   SYNC_ALL_SEEN = n;
   if (first) return false;                      /* أوّلُ قراءةٍ تضبط العلامةَ ولا تسحب */
-  PULL_ASK = true; syncCycle();
+  PULL_ASK = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
   toast(t('مزامنةٌ من المكتب — يُسحَب الآن'));
   return true;
 }
@@ -19122,6 +19145,7 @@ function roleWatch(v){
   if (TABS[CUR]) PTAB[CUR] = tabCur(CUR);
   render(1); syncBadge();
 }
+var VIS_LAST = 0;
 var VER_CHASE = 0;
 function verChase(cloud){
   STATE.appVerCloud = cloud;
@@ -28605,7 +28629,7 @@ function onDocClick(e){
   if (e.target.closest('[data-pull]')){
     /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
        أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
-    PULL_ASK = true; PULL_LAST = 0; SYNC_LEFT = SYNC_CYCLE;
+    PULL_ASK = true; PULL_LAST = 0; SYNC_LEFT = SYNC_CYCLE; FB._staticAt = 0;
     toast(t('تُزامَن الآن…'));
     CORE.flush();
     pullDelta().then(function(n){

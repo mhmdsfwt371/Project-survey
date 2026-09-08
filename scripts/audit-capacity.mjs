@@ -107,8 +107,13 @@ const liveTasks  = FIELD * 20;
    كلَّ دقيقةٍ على كلِّ جهاز، ثم ماتت في V16.6. صارت `pullStatic` مرةً عند
    الدخول: الميدانُ إعداداتٍ وطبقةً بمؤشِّرٍ (ما تغيّر) وسياراتٍ، والمكتبُ فوقها
    المخزونَ والمشترياتِ والشحناتِ — ولا شيءَ منها كلَّ دقيقة. */
-check(/pullStatic: function\(\)/.test(src) && /return FB\.pullStatic\(\)\.catch/.test(src) && !/FB\.pull\(0\)/.test(src),
+check(/pullStatic: function\(force\)/.test(src) && /return FB\.pullStatic\(\)\.catch/.test(src) && !/FB\.pull\(0\)/.test(src),
   'الثوابتُ تُقرأ مرةً عند الدخول لا كلَّ دقيقة — pullStatic');
+/* V16.42: أربعةٌ وثلاثون استعلامًا لا تُعاد مع كلِّ عودةٍ إلى التطبيق */
+check(/if \(!force && FB\._staticAt && now - FB\._staticAt < 900000\) return Promise\.resolve\(false\)/.test(src),
+  'ولا تُعاد قبل ربع ساعةٍ إلا بأمرٍ صريح — حدٌّ زمنيٌّ على الثوابت');
+check(!/visibilitychange[\s\S]{0,200}PULL_ASK = true/.test(src) && /Date\.now\(\) - \(VIS_LAST \|\| 0\) < 60000/.test(src),
+  'والعودةُ إلى التطبيق تسحب فارقيًّا مرةً في الدقيقة — لا الثوابتَ كلَّها');
 check(/office && FB\.db\.collection\('inventory'\)/.test(src) && /office && FB\.db\.collection\('purchases'\)/.test(src),
   'والمخزونُ والمشترياتُ للمكتب وحده');
 check(/if \(sSince > 0\) sq = sq\.where\('_at', '>', sSince\)/.test(src), 'وطبقةُ النقاط بمؤشِّرٍ — ما تغيّر لا ألفٌ وسبعمئة');

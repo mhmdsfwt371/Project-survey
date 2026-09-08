@@ -106,6 +106,9 @@ w.FB.init = () => Promise.resolve(true);
 w.FB.push = () => Promise.reject(new Error('PERMISSION_DENIED'));
 w.FB.putOne = it => { if (!it.id) throw new Error('Function CollectionReference.doc() cannot be called with an empty path.'); return Promise.resolve(); };
 w.CORE._busy = false; w.CORE.flush = realFlush;
+/* V16.42: الرفعُ محجوبٌ حتى يُقرأ العهدُ — وقاعدةُ الجرد صوريةٌ لا تُتِمُّ القراءة.
+   وهذا الاختبارُ يقيس عزلَ الوثيقة المعطوبة لا حجبَ العهد (وله جردُه في audit-wipe). */
+w.EPOCH_PENDING = false;
 const sent = await w.CORE.flush();
 T(sent === 1 && !w.STATE.queue.some(q => q.kind === 'presence' || !w.CORE.validId(q.id)), 'الوثيقةُ الصالحةُ تُرفَع رغم جارتها الفارغة', 'sent=' + sent + ' بقي=' + w.STATE.queue.map(q => q.kind).join(','));
 T(w.STATE.poison.some(p => p.kind === 'provision' && p.id === '' && /معرِّف/.test(p.err)), 'والفارغةُ تُعزَل باسم سببها');
