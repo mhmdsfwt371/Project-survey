@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.42",
+  "app_version": "V16.43",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1511,6 +1511,7 @@
     "V16.40": "الوزارة لحظية: pullScope viewer = ALL_WORK+stats؛ liveSmall يُنصِت للعمل والحضور للوزارة؛ LIVE_WORK_PAGES += co,plan,perf,ipc؛ خريطة: إسناد/تحديد للمشرف فما فوق، موقع جديد لمن may(edit)؛ JOBS_SEED += j_view (مراقب الوزارة → viewer).",
     "V16.41": "صفحة المزامنة لحظية: CORE.dirty وCORE.flush يعيدان رسم CUR===sys بمهلة ٢٠٠ مللي (CORE._dr) — كانت تعرض «بانتظار الرفع ١» بعد أن فرغ الطابور.",
     "V16.42": "تسريب قراءات: visibilitychange كان يرفع PULL_ASK فتُجلَب 34 استعلام ثوابت مع كل عودة للتطبيق — صار syncCycle فارقيًّا بخنق 60 ث (VIS_LAST)؛ pullStatic(force) بحد 15 دقيقة (FB._staticAt) وينعشها ask كل 6 ساعات؛ epoch/syncAll/زر المزامنة يصفّرون _staticAt؛ تغيّر users لا يرفع PULL_ASK.",
+    "V16.43": "siteKeyStats()/svLabel() مصدر واحد لجدول التوزيع وورقة over وsites و«لم يُزر» (noRec) في الصفحات الثلاث؛ LIFE.stuck + lifeOf يعيد stuck لسجل بلا وصول؛ stepsCard يقول نقاطًا وخطوات؛ بطاقة النقطة: حدّد للمشرف فما فوق، تحريك/نموذج لمن may(edit)؛ المعالم: mileList/mileOv/mileUpsert/mileAdd/mileRemove في settings/miles (n,w,dep,prog,hidden,custom) + MILE_EDIT/MILE_NEW؛ التصدير: EXP_PAGE/expAllowed/expSecs يرشّحان الأقسام بالشاشة في الحوار والمعالج.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

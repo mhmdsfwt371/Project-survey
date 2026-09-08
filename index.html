@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.42</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.43</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3517,6 +3517,8 @@ en:{
  'تغيّرت صلاحيتُك إلى':'Your role changed to', 'طُبِّقت الآن':'applied now',
  'متابعة العمل الميداني':'Field work tracking',
  'مراقب الوزارة':'Ministry observer', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'Monitors and exports — writes nothing; phone numbers are hidden.',
+ 'خطوة':'steps', 'متعذّرٌ — يحتاج زيارةً أخرى':'Unreachable — needs another visit', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'The supervisor arrived but could not survey (closed, no permit…) — to be revisited.',
+ 'المعالم للمهندس وحده':'Milestones are for engineers only', 'اسمُ المعلَم مطلوب':'Milestone name is required', 'أُضيف المعلَم':'Milestone added', 'حُذف المعلَم':'Milestone deleted', 'معلَم جديد':'New milestone', 'حُفظ المعلَم':'Milestone saved', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'A new milestone’s progress (%) is entered by hand via Edit — built-in milestones are computed from the field unless a manual value is set.',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6147,6 +6149,8 @@ ur:{
  'تغيّرت صلاحيتُك إلى':'آپ کا کردار بدل گیا', 'طُبِّقت الآن':'ابھی نافذ',
  'متابعة العمل الميداني':'میدانی کام کی نگرانی',
  'مراقب الوزارة':'وزارت کا مبصر', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'نگرانی اور برآمد — کچھ نہیں لکھتا؛ فون نمبر پوشیدہ۔',
+ 'خطوة':'اقدامات', 'متعذّرٌ — يحتاج زيارةً أخرى':'ناممکن — دوبارہ دورہ درکار', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'سپروائزر پہنچا مگر سروے نہ کر سکا (بند، اجازت نہیں…) — دوبارہ دورہ۔',
+ 'المعالم للمهندس وحده':'سنگِ میل صرف انجینئر کے لیے', 'اسمُ المعلَم مطلوب':'سنگِ میل کا نام درکار', 'أُضيف المعلَم':'سنگِ میل شامل', 'حُذف المعلَم':'سنگِ میل حذف', 'معلَم جديد':'نیا سنگِ میل', 'حُفظ المعلَم':'سنگِ میل محفوظ', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'نئے سنگِ میل کی پیش رفت (٪) ترمیم سے دستی لکھی جاتی ہے — بلٹ اِن میدان سے شمار ہوتے ہیں۔',
 }
 };
 
@@ -14940,12 +14944,12 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
       ], ['الإجمالي', '', N(S.total), '<span class="num">' + nm(Math.round((nCamp * mC + nCor * mR) / 60)) + '</span>']));
   })();
     if (cur === 'miles') return head + (function(){
-    var tot = MILES.reduce(function(a,m){ return a + m.w; }, 0);
-    var earned = MILES.reduce(function(a,m){ return a + m.w * mileDone(m); }, 0);
-    var doneN = MILES.filter(function(m){ return mileDone(m) >= 0.999; }).length;
-    var lateN = MILES.filter(mileLate).length;
+    var tot = mileList().reduce(function(a,m){ return a + m.w; }, 0);
+    var earned = mileList().reduce(function(a,m){ return a + m.w * mileDone(m); }, 0);
+    var doneN = mileList().filter(function(m){ return mileDone(m) >= 0.999; }).length;
+    var lateN = mileList().filter(mileLate).length;
 
-    return stats([['المعالم', N(MILES.length)],
+    return stats([['المعالم', N(mileList().length)],
                   ['بلغت', N(doneN), doneN ? 'ok' : ''],
                   ['متأخّرة عن موعدها', N(lateN), lateN ? 'bad' : 'ok'],
                   ['الإنجاز الموزون', nm(Math.round(earned)) + '٪', 'acc'],
@@ -14960,7 +14964,7 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
             var full = may('settings');
             var head = full ? ['#','المعلَم','الوزن ٪','يعتمد على','الموعد المستهدف','الإنجاز','الحالة']
                             : ['المعلَم','الموعد المستهدف','الإنجاز','الحالة'];
-            var rows = MILES.map(function(m){
+            var rows = mileList().map(function(m){
               var p = mileDone(m), dt = mileDateOf(m), late = mileLate(m);
               var manual = mileDates().some(function(x){ return x.id === m.id && x.d; });
               var nameCell = '<strong>' + esc(t(m.n)) + '</strong>'
@@ -14973,19 +14977,43 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
                 : pill(p >= 0.999 ? 'بلغ' : (p > 0 ? 'جارٍ' : 'لم يبدأ'),
                        p >= 0.999 ? 'ok' : (p > 0 ? 'warn' : ''));
               var pc = nm(Math.round(p * 100)) + '٪';
+              if (full && MILE_EDIT === m.id){
+                var o = mileOv(m.id);
+                nameCell = '<input value="' + esc(m.n) + '" data-mle="n" dir="auto" style="min-width:180px">';
+                return ['<span class="num">' + esc(m.id) + '</span>', nameCell,
+                        '<input type="number" min="0" max="100" value="' + esc(m.w) + '" data-mle="w" style="width:70px">',
+                        '<input value="' + esc(m.dep || '') + '" data-mle="dep" placeholder="M1" style="width:80px">',
+                        dateCell,
+                        '<input type="number" min="0" max="100" value="' + esc(o.prog != null ? o.prog : Math.round(p * 100)) + '" data-mle="prog" style="width:70px">',
+                        btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-mlsave="' + esc(m.id) + '"') + ' '
+                        + btn(t('إلغاء'),'btn-quiet btn-sm',' data-mlcancel="1"')];
+              }
               return full
                 ? ['<span class="num">' + esc(m.id) + '</span>', nameCell, N(m.w),
-                   m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—', dateCell, pc, stCell]
+                   m.dep ? '<span class="num">' + esc(m.dep) + '</span>' : '—', dateCell, pc,
+                   stCell + ' ' + btn('\u270E','btn-quiet btn-sm',' data-mledit="' + esc(m.id) + '" aria-label="' + esc(t('تعديل')) + '"')
+                   + btn('\u{1F5D1}','btn-quiet btn-sm',' data-mldel="' + esc(m.id) + '" aria-label="' + esc(t('حذف')) + '"')]
                 : [nameCell, dateCell, pc, stCell];
             });
             var foot = full ? ['','<b>' + t('الإجمالي') + '</b>', N(tot), '', '', '<b>' + nm(Math.round(earned)) + '٪</b>', '']
                             : ['<b>' + t('الإجمالي') + '</b>', '', '<b>' + nm(Math.round(earned)) + '٪</b>', ''];
             return table(head, rows, foot);
           })(),
-          btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"'))
+          btn('⬇ إكسل — المعالم','btn-secondary btn-sm',' data-xls="miles"')
+          + (may('settings') ? ' ' + btn('\u2795 ' + t('معلَم جديد'),'btn-primary btn-sm',' data-mlnew="1"') : ''))
+      + (may('settings') && MILE_NEW
+          ? card(t('معلَم جديد'),
+              '<div class="grid cols-2">'
+              + '<div class="field"><label>' + esc(t('المعلَم')) + '</label><input id="mlnN" dir="auto"></div>'
+              + '<div class="field"><label>' + esc(t('الوزن ٪')) + '</label><input id="mlnW" type="number" min="0" max="100" value="5"></div>'
+              + '<div class="field"><label>' + esc(t('الموعد المستهدف')) + '</label><input id="mlnD" type="date"></div>'
+              + '<div class="field"><label>' + esc(t('يعتمد على')) + '</label><input id="mlnDep" placeholder="M6"></div>'
+              + '</div><div class="actions">' + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-mlnsave="1"') + btn(t('إلغاء'),'btn-quiet btn-sm',' data-mlncancel="1"') + '</div>'
+              + '<p class="hint" style="margin:8px 0 0">' + esc(t('إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.')) + '</p>')
+          : '')
 
       + card('المسار المتتابع',
-          flow(MILES.map(function(m){ return m.id; }),
+          flow(mileList().map(function(m){ return m.id; }),
                Math.max(0, doneN - 1))
           + '<p class="hint">' + esc(t('كلُّ معلَمٍ يعتمد على سابقه — فتأخّرُ واحدٍ يزيح ما بعده. والأوزانُ مجموعُها مئة.')) + '</p>');
   })();
@@ -16096,6 +16124,45 @@ function mileDates(){
   if (!Array.isArray(STATE.mileDates)) STATE.mileDates = [];
   return STATE.mileDates;
 }
+/* ═══ المعالمُ تُدار لا تُقرأ فقط ═══
+   كانت ثمانيةً مكتوبةً في الشيفرة لا تُزاد ولا تُعدَّل ولا تُحذَف — والموعدُ
+   وحدَه باليد. صار السجلُّ نفسُه (settings/miles) يحمل لكلِّ معلَمٍ ما عُدِّل:
+   اسمًا ووزنًا وتبعيةً وإنجازًا يدويًّا، وإخفاءً لمن أُلغي، ومعالمَ جديدةً
+   بمعرِّفاتٍ خاصة. والمضمَّنةُ تبقى أساسًا يُحسَب إنجازُها من الميدان. */
+function mileOv(id){ return mileDates().filter(function(x){ return x.id === id; })[0] || {}; }
+function mileList(){
+  var out = [];
+  MILES.forEach(function(m){
+    var o = mileOv(m.id); if (o.hidden) return;
+    out.push({ id:m.id, n:o.n || m.n, w:(o.w != null ? +o.w : m.w), dep:(o.dep != null ? o.dep : m.dep), builtin:true });
+  });
+  mileDates().forEach(function(o){ if (o.custom && !o.hidden) out.push({ id:o.id, n:o.n || o.id, w:+o.w || 0, dep:o.dep || '', custom:true }); });
+  return out;
+}
+function mileUpsert(id, patch){
+  if (!may('settings')){ toast(t('المعالم للمهندس وحده')); return false; }
+  var L = mileDates().slice(), cur = L.filter(function(x){ return x.id === id; })[0];
+  if (!cur){ cur = { id:id }; L.push(cur); }
+  Object.keys(patch).forEach(function(k){ if (patch[k] === undefined || patch[k] === '') delete cur[k]; else cur[k] = patch[k]; });
+  STATE.mileDates = L; CORE.set('cfg', 'miles', L.slice()); CORE.saveSoon();
+  logEvent('معلَم — ' + id + ' \u00b7 ' + Object.keys(patch).join(','));
+  return true;
+}
+function mileAdd(name, w, d, dep){
+  if (!may('settings')){ toast(t('المعالم للمهندس وحده')); return false; }
+  name = String(name || '').trim(); if (!name){ toast(t('اسمُ المعلَم مطلوب')); return false; }
+  var id = 'X' + Date.now().toString(36).slice(-5).toUpperCase();
+  mileUpsert(id, { custom:true, n:name, w:+w || 0, d:d || '', dep:dep || '', prog:0 });
+  toast(t('أُضيف المعلَم') + ' ' + name); MILE_EDIT = ''; render(1); return true;
+}
+function mileRemove(id){
+  if (!may('settings')){ toast(t('المعالم للمهندس وحده')); return false; }
+  var o = mileOv(id);
+  if (o.custom){ STATE.mileDates = mileDates().filter(function(x){ return x.id !== id; }); CORE.set('cfg', 'miles', STATE.mileDates.slice()); CORE.saveSoon(); }
+  else mileUpsert(id, { hidden:true });
+  logEvent('حذفُ معلَم — ' + id); toast(t('حُذف المعلَم')); MILE_EDIT = ''; render(1); return true;
+}
+var MILE_EDIT = '', MILE_NEW = false;
 function mileDateOf(m){
   var manual = mileDates().filter(function(x){ return x.id === m.id; })[0];
   if (manual && manual.d) return manual.d;
@@ -16124,6 +16191,10 @@ function mileLate(m){
   return !!(d && d < dayKey(Date.now()) && mileDone(m) < 0.999);
 }
 function mileDone(m){
+  /* إنجازٌ يدويٌّ كُتب من المكتب يغلب الاشتقاق — وللمعالم الجديدة لا مصدرَ غيرُه */
+  var o = mileOv(m.id);
+  if (o.prog != null && o.prog !== '') return Math.max(0, Math.min(1, (+o.prog || 0) / 100));
+  if (m.custom || o.custom) return 0;
   var S = siteStats();
   var byZone = function(z, type){
     var tot = 0, done = 0;
@@ -16427,7 +16498,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.42' + '.docx" download>⬇ '
+              +   'V16.43' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -16970,18 +17041,24 @@ function popHtml(){
         + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
         + '</div>' : '')
 
+    /* لكلٍّ ما يملك: التحديدُ لمن يُسنِد (المشرفُ فما فوق)، والتحريكُ والنموذجُ
+       لمن يكتب — والوزارةُ تتابع: اتجاهاتٌ وتفاصيلُ فقط، فلا يُعرَض عليها زرٌّ
+       ترفضه القاعدة */
     + '<div class="pop-btns">'
-    +   btn(selHas(s.id) ? '☑ ' + t('محدَّد') : '☐ ' + t('حدّد'),
-            selHas(s.id) ? 'btn-primary btn-sm' : 'btn-secondary btn-sm',
-            ' data-psel="' + esc(s.id) + '"')
+    +   (rankOf(ROLE) >= rankOf('supervisor')
+          ? btn(selHas(s.id) ? '☑ ' + t('محدَّد') : '☐ ' + t('حدّد'),
+                selHas(s.id) ? 'btn-primary btn-sm' : 'btn-secondary btn-sm',
+                ' data-psel="' + esc(s.id) + '"') : '')
     +   '<a class="btn btn-primary btn-sm" target="_blank" rel="noopener" '
     +   'href="https://www.google.com/maps/dir/?api=1&destination=' + s.lat + ',' + s.lng + '">'
     +   '↗ ' + esc(t('اتجاهات')) + '</a>'
-    +   btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"')
-    +   btn('✎ ' + t('تعديل البيانات'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
-    +   btn((FIELD_MODE === 'install' ? '🔧 ' + t('نموذج التركيب') : '🔍 ' + t('نموذج المسح')),
-            'btn-secondary btn-sm',
-            (FIELD_MODE === 'install' ? ' data-insform="' : ' data-form="') + esc(s.id) + '"')
+    +   (may('edit') ? btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"') : '')
+    +   btn(may('edit') ? '✎ ' + t('تعديل البيانات') : '\u25C8 ' + t('التفاصيل'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
+    +   (may('edit')
+          ? btn((FIELD_MODE === 'install' ? '🔧 ' + t('نموذج التركيب') : '🔍 ' + t('نموذج المسح')),
+                'btn-secondary btn-sm',
+                (FIELD_MODE === 'install' ? ' data-insform="' : ' data-form="') + esc(s.id) + '"')
+          : '')
 
     /* ═══ الخطوةُ التالية — أين تقف النقطةُ ومن صاحبُ الدور ═══
        من رأى نقطةً مسوحةً لا تظهر في التركيب سأل: أهي معطَّلةٌ أم تنتظر؟
@@ -17153,6 +17230,32 @@ var STAT_CACHE = null, STAT_VER = 0;
 
 function statBump(){ STAT_CACHE = null; STAT_VER++; }
 
+/* ═══ التوزيعُ بالمشعر والنوع — من حلقةٍ واحدة ═══
+   كانت صفوفُ الجدول تُحسَب في مكانٍ والإجماليُّ في آخر (كاشٌ قد يكون أقدمَ
+   بسجلٍّ)، والإكسلُ بتعريفٍ ثالث («سجلٌّ موجود» لا «مُسح») — فخرج للوزارة ٦٢+٢
+   في الصفوف و٦٣ في الإجمالي. صار كلُّ شيءٍ من حلقةٍ واحدةٍ بتعريفٍ واحد:
+   مُسح = svDone، مُركّب = حالةُ التركيب. */
+function siteKeyStats(){
+  var by = {}, sv = {}, ins = {}, T = { n:0, sv:0, ins:0, noRec:0, stuck:0 };
+  STATE.sites.forEach(function(x){
+    var k = x.zone + '|' + x.type, r = STATE.recs[x.id];
+    by[k] = (by[k] || 0) + 1; T.n++;
+    if (!r) T.noRec++;
+    else if (svDone(r)){ sv[k] = (sv[k] || 0) + 1; T.sv++; }
+    else if (r.review !== 'revisit') T.stuck++;
+    var st = (STATE.inss[x.id] || {}).status;
+    if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; }
+  });
+  var keys = Object.keys(by).sort(function(a, b){ return by[b] - by[a]; });
+  return { keys:keys, by:by, sv:sv, ins:ins, total:T };
+}
+/* حالةُ المسح بكلمةٍ واحدةٍ — للقوائم والإكسل، بالتعريف نفسِه */
+function svLabel(r){
+  if (!r) return 'لم يُزر';
+  if (r.review === 'revisit') return 'تحتاج زيارة أخرى';
+  if (!svDone(r)) return 'متعذّر';
+  return r.review === 'approved' ? 'معتمدة' : 'تمت الزيارة';
+}
 function siteStats(){
   if (STAT_CACHE) return STAT_CACHE;
   var s = STATE.sites, by = {}, co = {}, wk = {}, sv = 0, ins = 0, apv = 0, pend = 0, rev = 0;
@@ -17723,6 +17826,7 @@ function handDocCo(co){
    بلغتها لا أوّلِها. */
 var LIFE = {
   todo:      { c:'#9FB0AA', n:'لم تُزر',                 d:'لم تُسجَّل زيارتُها بعد.' },
+  stuck:     { c:'#8D6E63', n:'متعذّرٌ — يحتاج زيارةً أخرى', d:'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.' },
   assigned:  { c:'#C9A27E', n:'زيارةٌ مُسندة',            d:'أُسندت لمشرفٍ ولم تُزر بعد.' },
   tomorrow:  { c:'#B388FF', n:'مجدولةٌ غدًا',             d:'موعدُ زيارتها غدًا.' },
   visited:   { c:'#4FA3FF', n:'زيارةٌ تمّت — تنتظر الاعتماد', d:'المشرفُ زارها وحفظ، والمهندسُ لم يراجعها بعد.' },
@@ -17734,7 +17838,7 @@ var LIFE = {
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
   dis:       { c:'#E01B1B', n:'فكٌّ مُسند أو تمّ',         d:'أُسند فكُّها بعد الموسم أو تمّ فعلًا.' }
 };
-var LIFE_ORDER = ['todo','assigned','tomorrow','visited','revisit','ready','sched','installed','handed','maint','dis'];
+var LIFE_ORDER = ['todo','stuck','assigned','tomorrow','visited','revisit','ready','sched','installed','handed','maint','dis'];
 /* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
 function taskKindOf(id, kind){
   var T = STATE.tasks;
@@ -17755,6 +17859,9 @@ function lifeOf(x){
   }
   if (rv === 'revisit') return 'revisit';
   if (rv === 'pending') return 'visited';
+  /* سجلٌّ بلا وصولٍ: زارها ولم يستطع — كانت تُعَدُّ «لم تُزر» على الخريطة
+     بينما صفحةُ المتابعة تعدُّها «متعذّرة»، فاختلف الرقمان بواحد */
+  if (r && !svDone(r)) return 'stuck';
   var tk = taskKindOf(id, 'visit');
   if (tk) return (tk.when && tk.when > dayKey(Date.now())) ? 'tomorrow' : 'assigned';
   return 'todo';
@@ -18051,21 +18158,10 @@ var SHEETS = {
     return out;
   },
   over: function(){
-    var S = siteStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
-    /* كان كلُّ صفٍّ يقول صفرًا والإجماليُّ يقول العددَ الحقيقيَّ — فالورقةُ
-       تخرج إلى الوزارة وهي تناقض نفسَها سطرًا بسطر. تُحسب كلُّ خليةٍ الآن. */
-    var svK = {}, insK = {};
-    STATE.sites.forEach(function(x){
-      var k = x.zone + '|' + x.type;
-      if (STATE.recs[x.id]) svK[k] = (svK[k] || 0) + 1;
-      var r = STATE.inss[x.id];
-      if (r && r.status === 'مُركّب' && r.approved) insK[k] = (insK[k] || 0) + 1;
-    });
-    Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b]-S.byKey[a]; }).forEach(function(k){
-      var p = k.split('|');
-      out.push([p[0], p[1], S.byKey[k], svK[k] || 0, insK[k] || 0]);
-    });
-    out.push(['الإجمالي','', S.total, S.surveyed, S.installed]);
+    /* الورقةُ والشاشةُ من حلقةٍ واحدةٍ بتعريفٍ واحد — لا يناقض الإجماليُّ صفوفَه */
+    var K = siteKeyStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
+    K.keys.forEach(function(k){ var p = k.split('|'); out.push([p[0], p[1], K.by[k], K.sv[k] || 0, K.ins[k] || 0]); });
+    out.push(['الإجمالي','', K.total.n, K.total.sv, K.total.ins]);
     return out;
   },
   sites: function(){
@@ -18073,7 +18169,7 @@ var SHEETS = {
                 'خط العرض','خط الطول','حالة المسح','حالة التركيب']];
     STATE.sites.forEach(function(x){
       out.push([x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
-                STATE.recs[x.id] ? 'تمت الزيارة' : 'لم يُزر',
+                svLabel(STATE.recs[x.id]),
                 (STATE.inss[x.id]||{}).status || x.fstat || 'لم يبدأ']);
     });
     return out;
@@ -18131,7 +18227,7 @@ var SHEETS = {
   },
   miles: function(){
     var out = [['المعرّف','المعلَم','الوزن ٪','يعتمد على','الإنجاز ٪','الحالة']];
-    MILES.forEach(function(m){
+    mileList().forEach(function(m){
       var p = Math.round(mileDone(m) * 100);
       out.push([m.id, m.n, m.w, m.dep || '', p, p>=100?'بلغ':(p>0?'جارٍ':'لم يبدأ')]);
     });
@@ -20199,29 +20295,19 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   })();
     /* «نظرة عامة» شاشةُ الوزارة الأولى — يبدأ فيها آخرُ ما تمّ */
     return head + stepsCard(8) + (function(){
-    var S = siteStats();
-    var keys = Object.keys(S.byKey).sort(function(a,b){ return S.byKey[b] - S.byKey[a]; });
-    /* «مُسح» و«مُركّب» لكلِّ مشعرٍ ونوع كانا صفرين مكتوبَين بيد — فالجدولُ
-       يقول إن عرفات لم يُمسَح منها شيءٌ والمجموعُ أسفله يقول غيرَ ذلك.
-       يُحسَبان من السجلات بالمعيار نفسِه الذي تعدُّ به siteStats مجموعَها. */
-    var sv = {}, ins = {};
-    STATE.sites.forEach(function(x){
-      var k = x.zone + '|' + x.type;
-      if (svDone(STATE.recs[x.id])) sv[k] = (sv[k] || 0) + 1;
-      var st = (STATE.inss[x.id] || {}).status;
-      if (st === 'مُركّب' || x.fstat === 'مُركّب') ins[k] = (ins[k] || 0) + 1;
-    });
-    return stats([['إجمالي المواقع', N(S.total)], ['تم المسح', N(S.surveyed), 'acc'],
-                  ['مُركّب', N(S.installed), 'ok'], ['لم يُزر', N(S.total - S.surveyed)]])
-      + card('تقدّم المشروع', meter('تقدّم المسح من إجمالي المواقع', S.surveyed, S.total)
-                            + meter('نسبة التركيب من إجمالي المشروع', S.installed, S.total))
+    var K = siteKeyStats(), S = K.total;
+    /* «لم يُزر» = بلا سجلٍّ أصلًا؛ والمتعذّرُ له عدُّه — كما في صفحة المتابعة والخريطة */
+    return stats([['إجمالي المواقع', N(S.n)], ['تم المسح', N(S.sv), 'acc'],
+                  ['مُركّب', N(S.ins), 'ok'], ['لم يُزر', N(S.noRec)], ['متعذّر', N(S.stuck), S.stuck ? 'wrn' : '']])
+      + card('تقدّم المشروع', meter('تقدّم المسح من إجمالي المواقع', S.sv, S.n)
+                            + meter('نسبة التركيب من إجمالي المشروع', S.ins, S.n))
       + cardFlush('التوزيع حسب المشعر والنوع',
           table(['المشعر','النوع','العدد','مُسح','مُركّب'],
-            keys.map(function(k){
+            K.keys.map(function(k){
               var p = k.split('|');
-              return [esc(t(p[0])), esc(t(p[1])), N(S.byKey[k]), N(sv[k] || 0), N(ins[k] || 0)];
+              return [esc(t(p[0])), esc(t(p[1])), N(K.by[k]), N(K.sv[k] || 0), N(K.ins[k] || 0)];
             }),
-            ['الإجمالي','', N(S.total), N(S.surveyed), N(S.installed)]))
+            ['الإجمالي','', N(S.n), N(S.sv), N(S.ins)]))
       /* كانت بعد فاصلةٍ منقوطةٍ في غير موضعها — تُحسَب ولا تُعاد، فلم تظهر قطّ */
       + card('المخرجات الورقية',
           '<div class="actions">'
@@ -20422,7 +20508,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           + ' <span class="num">' + nm(v[2]) + '</span></button>';
       }).join('') + '</div>'
       + stats([['مُسح', N(S.surveyed), 'acc'],
-                       ['لم يُزر', N(S.total - all.length)],
+                       ['لم يُزر', N(siteKeyStats().total.noRec)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
                        ['متعذّر — يحتاج زيارة', N(blocked.length), blocked.length ? 'wrn' : 'ok']])
 
@@ -20487,7 +20573,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       + stats([['بانتظار اعتمادك', N(S.pending), S.pending ? 'wrn' : ''],
                ['معتمدة', N(S.approved), 'ok'],
                ['تحتاج زيارة أخرى', N(S.revisit), S.revisit ? 'bad' : ''],
-               ['لم يُزر', N(S.total - S.surveyed - S.revisit)]])
+               ['لم يُزر', N(siteKeyStats().total.noRec)]])
       + card('بحث', '<input type="search" id="svaQ" data-svaq value="' + esc(SVA_Q) + '" placeholder="'
           + esc(t('ابحث بالنقطة أو الاسم أو المشرف')) + '" dir="auto">');
 
@@ -20990,7 +21076,7 @@ function readyRows(){
     { ok:!!cfgGet('ph'),            t:'سعرُ النقطة',           why:t('بلا سعرٍ للنقطة تكون القيمةُ المكتسبة صفرًا مهما أُنجز — ولا يُجمَّد خطُّ أساسٍ له ميزانية'), p:'consts' },
     { ok:!!cfgGet('budCap'),        t:'سقفُ الميزانية',        why:t('بلا سقفٍ لا انحرافَ كلفةٍ ولا احتياطيَّ يُقاس'), p:'budget' },
     { ok:!!BASE,                    t:'خطُّ الأساس مجمَّد',     why:t('بلا خطِّ أساسٍ لا يُقارَن الواقعُ بشيء'), p:'miles' },
-    { ok:MILES.some(function(m){ return mileDateOf(m); }), t:'مواعيدُ المعالم', why:t('بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر'), p:'miles' },
+    { ok:mileList().some(function(m){ return mileDateOf(m); }), t:'مواعيدُ المعالم', why:t('بلا مواعيدَ لا يُعرَف معلَمٌ تأخّر'), p:'miles' },
     { ok:signed,                    t:'أسماءُ المعتمِدين',     why:t('محضرٌ بأسماءٍ فارغةٍ يُرَدُّ من الوزارة'), p:'consts' },
     /* الرقمُ يُركَّب مع نصٍّ مترجَم — لا يُصنَع سطرٌ عربيٌّ ثابتٌ بالجمع */
     { ok:cmp === 0,                 t:'توحيدُ الأسماء المركَّبة', why:nm(cmp) + ' ' + t('قيمةً تحمل عدةَ شركاتٍ — لا تُحسَب نقاطُها'), p:'co' },
@@ -23654,10 +23740,14 @@ function stepsList(n){
 }
 function stepsCard(n){
   var L = stepsList(n || 12);
+  /* الرقمُ خطواتٌ (كلُّ حفظٍ خطوة، والنقطةُ قد تُحفَظ مرتين) لا نقاطٌ — فيُقال
+     العددان كي لا يُقارَن «٦٩ خطوة» بـ«٦٣ نقطةً مُسحت» */
+  var uniq = {}; (STATE.steps || []).forEach(function(x){ if (x.site) uniq[x.kind + '|' + x.site] = 1; });
+  var nSites = Object.keys(uniq).length;
   if (!L.length) return card('\u2705 ' + t('آخر ما تمّ'),
     '<p class="hint" style="text-align:center;margin:0">'
     + esc(t('لا خطوةَ سُجِّلت بعد — أوّلُ حفظٍ في أيِّ نموذجٍ يظهر هنا.')) + '</p>');
-  return cardFlush('\u2705 ' + t('آخر ما تمّ') + ' \u2014 ' + nm(stepsList().length),
+  return cardFlush('\u2705 ' + t('آخر ما تمّ') + ' \u2014 ' + nm(nSites) + ' ' + t('نقطة') + ' \u00b7 ' + nm(stepsList().length) + ' ' + t('خطوة'),
     table(['الخطوة','النقطة','مَن','متى'],
       L.map(function(r){
         var K = STEP_KINDS[r.kind] || { n:r.kind, i:'', code:'' };
@@ -24816,6 +24906,17 @@ var EXP_SECS = [
   ['roles','الأدوار والصلاحيات',1]
 ];
 
+/* ═══ التصديرُ بعين الدور ═══
+   كان الحوارُ يعرض الأقسامَ كلَّها لكلِّ أحد — فترى الوزارةُ «الأدوار والصلاحيات»
+   و«عهدة السيارات» و«تكلفة الأسطول» وتختارها وتُصدَّر لها. صار كلُّ قسمٍ
+   مربوطًا بشاشته: لا يُعرَض ولا يُصدَّر إلا لمن يرى تلك الشاشة. */
+var EXP_PAGE = { setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
+                 hb:'sys', vers:'sys', work:'over', items:'items', crews:'org', reps:'exec', appr:'ev', ips:'sys',
+                 fleet:'fleet', fleetCost:'fleet', fleetLog:'fleet', ships:'inv', roles:'roles', invb:'inv', invmv:'inv',
+                 wos:'inv', buys:'inv', notif:'ev', users:'users', recs:'survey', chal:'survey', stuck:'survey', qa:'survey',
+                 chalm:'survey', assign:'req', inst:'over', daily:'over', pace:'over', reg:'over', dis:'dis', sys:'sys', ev:'ev', survey:'survey', co:'co', over:'over' };
+function expAllowed(k){ var p = EXP_PAGE[k] || k; return typeof seesPage === 'function' ? seesPage(p) : true; }
+function expSecs(){ return EXP_SECS.filter(function(x){ return expAllowed(x[0]); }); }
 function expHtml(){
   return '<div class="pop" id="expPop" style="width:min(430px,92vw);max-height:82vh;overflow:auto">'
     + '<div class="pop-head">'
@@ -24829,7 +24930,7 @@ function expHtml(){
     +   btn('إلغاء الكل','btn-secondary btn-sm',' data-expall="0"')
     + '</div>'
     + '<div id="expList" style="margin:0 0 14px">'
-    +   EXP_SECS.map(function(s){
+    +   expSecs().map(function(s){
           var has = !!SHEETS[s[0]];
           return '<label style="display:flex;gap:9px;align-items:flex-start;padding:7px 2px;'
             + 'border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer'
@@ -27782,6 +27883,25 @@ function onDocClick(e){
   var phd = e.target.closest('[data-phdl]');
   if (phd){ photoDownload(phd.getAttribute('data-phdl')); return; }
   if (e.target.closest('[data-phclose]')){ var pv = document.getElementById('phView'); if (pv) pv.remove(); return; }
+  var mle = e.target.closest('[data-mledit]');
+  if (mle){ MILE_EDIT = mle.getAttribute('data-mledit'); MILE_NEW = false; render(1); return; }
+  if (e.target.closest('[data-mlcancel]')){ MILE_EDIT = ''; render(1); return; }
+  var mls = e.target.closest('[data-mlsave]');
+  if (mls){
+    var mid = mls.getAttribute('data-mlsave'), tr = mls.closest('tr'), g = function(k){ var el = tr && tr.querySelector('[data-mle="' + k + '"]'); return el ? el.value : ''; };
+    var w = +g('w'), pr = g('prog');
+    if (mileUpsert(mid, { n:g('n').trim(), w:isNaN(w) ? undefined : w, dep:g('dep').trim(), prog:(pr === '' ? undefined : +pr) })){ toast(t('حُفظ المعلَم')); MILE_EDIT = ''; render(1); }
+    return;
+  }
+  var mld = e.target.closest('[data-mldel]');
+  if (mld){ mileRemove(mld.getAttribute('data-mldel')); return; }
+  if (e.target.closest('[data-mlnew]')){ MILE_NEW = true; MILE_EDIT = ''; render(1); return; }
+  if (e.target.closest('[data-mlncancel]')){ MILE_NEW = false; render(1); return; }
+  if (e.target.closest('[data-mlnsave]')){
+    var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
+    if (mileAdd(v('mlnN'), v('mlnW'), v('mlnD'), v('mlnDep').trim())) MILE_NEW = false;
+    return;
+  }
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return; }
   var fz = e.target.closest('[data-fz]');
@@ -28506,7 +28626,7 @@ function onDocClick(e){
   if (e.target.closest('[data-expgo]')){
     var picked = Array.prototype.filter.call(document.querySelectorAll('.expCk'), function(c){
       return c.checked && !c.disabled;
-    }).map(function(c){ return c.getAttribute('data-k'); });
+    }).map(function(c){ return c.getAttribute('data-k'); }).filter(expAllowed);   /* الشاشةُ تُرشِّح والمعالجُ يحرس */
     if (!picked.length){ toast(t('اختر قسمًا واحدًا على الأقل')); return; }
     EXP_OPEN = false; render();
     toast(t('يُجهَّز الملف…'));
