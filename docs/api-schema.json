@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.37",
+  "app_version": "V16.38",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1506,6 +1506,7 @@
     "V16.34": "mapColorOf: لون CAT_DEF عند FILT.type يُقصر على غير FIELD_MODE=survey فيفوز lifeColor؛ photos-sync وdrive-upload: خطأ الحصة (storage quota) يُعلَن ::error ويُبقي الصورة pending للنقل التلقائي بعد ضبط Shared Drive.",
     "V16.35": "pullScope: rank≥supervisor → tree:false (الكل) كالمهندس؛ syncAllNow/syncAllApply عبر settings/app.syncAll (زر tb-sync data-syncall لـmay(roles) فقط، أول قراءة تضبط SYNC_ALL_SEEN بلا سحب)؛ audit-capacity: perDoc = ADMINS+ENGS+SUPS_ALL.",
     "V16.36": "PAGE.survey.t = متابعة العمل الميداني؛ notifPop/notifPopGo بطاقة عائمة (#notifPop، data-npop) تُضغَط فتفتح الفعل؛ roleWatch(v) من إنصات users على uid نفسه: يبدّل ROLE ويعيد liveSmall ويصفّر pullAt وينقل الشاشة؛ viewer.nav مدموج (بلا pace/inst/daily/budm) وpullScope للوزارة stats+recs+inss.",
+    "V16.38": "gitignore: النفيُ بعد النمط — _drive.json كان مُبتلَعًا بـbackups/latest/*.json فلم يصل المستودعَ ولم تُقرأ حالةُ الدرايف في «صحة النظام» قط؛ audit-backup: حارسٌ يشتقُّ قائمةَ ملفات الحالة من index.html ويسأل git check-ignore عن كلٍّ منها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

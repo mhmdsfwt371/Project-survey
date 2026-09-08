@@ -8,6 +8,29 @@
    ينقص. وحين تُضبَط الأسرارُ تخضرُّ البطاقةُ ويختفي المؤشر.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { execFileSync } from 'child_process';
+/* ═══ الحارسُ الأول: ما يقرؤه التطبيقُ لا بدّ أن يصل المستودعَ ═══
+   `_drive.json` كُتب في السير كلَّ يومٍ ولم يصل المستودعَ قطُّ: نمطُ
+   `backups/latest/*.json` ابتلعه لأن النفيَ كان قبل النمط لا بعده. فبقيت
+   خانةُ الدرايف في «صحة النظام» تقول «يُقرأ…» شهرًا، ولم يعلم أحدٌ أن
+   الرفعَ متوقف. القائمةُ تُشتقُّ من الشيفرة نفسِها لا تُكتَب هنا. */
+{
+  const src = readFileSync('index.html', 'utf8');
+  const m = src.match(/\[([^\]]+)\]\.forEach\(function\(f\)\s*\{\s*fetch\(BK_RAW/);
+  const list = m ? (m[1].match(/'[^']+'/g) || []).map(s => s.slice(1, -1)) : [];
+  let g = 0;
+  if (!list.length) { console.log('  \u2717 لم تُعثر قائمةُ ملفات الحالة في index.html'); g++; }
+  for (const f of list) {
+    let ignored = null;
+    try { execFileSync('git', ['check-ignore', '-q', 'backups/latest/' + f], { stdio: 'ignore' }); ignored = true; }
+    catch (e) { ignored = e && e.status === 1 ? false : null; }
+    if (ignored === null) { console.log('  \u2013 ' + f + ': تعذّر فحصُ التجاهل — تُخطّى'); continue; }
+    console.log((ignored ? '  \u2717 ' : '  \u2713 ') + f + (ignored ? ' مُتجاهَلٌ في .gitignore — لن يصل المستودعَ ولن يقرأه التطبيق' : ' يصل المستودعَ'));
+    if (ignored) g++;
+  }
+  if (g) { console.log('\nجردُ حالة النسخ فشل \u2717 (' + g + ')'); process.exit(1); }
+}
+
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');

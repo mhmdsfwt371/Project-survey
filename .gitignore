@@ -1,5 +1,4 @@
 
-!backups/latest/_meta.json
 # توقيع أندرويد ومخرجات البناء — لا تدخل المستودع العام أبدًا
 # وحدات التطوير — لجنة الفحص تُثبّتها عند الحاجة
 *.aab
@@ -8,6 +7,10 @@
 *.keystore
 backups/bundle.json
 backups/latest/*.json
+# ملفّا الحالة علنيّان بلا بيانات — يقرؤهما التطبيقُ من raw؛
+# والنفيُ بعد النمط لا قبله، وإلا ابتلعهما النمطُ ولم يصلا المستودعَ أبدًا.
+!backups/latest/_meta.json
+!backups/latest/_drive.json
 node_modules/
 nusuk-app-*.zip
 test-artifacts/
