@@ -71,7 +71,14 @@ for (const d of snap.docs){
   } catch (e){
     failed++;
     const why = String(e && (e.message || e.code) || e).slice(0, 140);
-    await d.ref.set({ status: 'error', why, triedAt: Date.now() }, { merge: true }).catch(() => {});
+    /* «حسابُ الخدمة بلا حصة تخزين»: عطلُ إعدادٍ لا عطلُ صورة — تبقى منتظرةً
+       فتُنقَل وحدَها متى صار المجلدُ درايفًا مشتركًا، ولا تُشطَب صورةٌ سليمة. */
+    const quota = /storage quota|storageQuotaExceeded/i.test(why);
+    await d.ref.set(quota ? { why, triedAt: Date.now() } : { status: 'error', why, triedAt: Date.now() }, { merge: true }).catch(() => {});
+    if (quota){
+      console.log('::error title=درايف::حسابُ الخدمة بلا حصة تخزين — المجلدُ الشخصيُّ لا يقبل ملفاته. الحلّ: درايف مشترك (Shared Drive) يُضاف إليه بريدُ حساب الخدمة، ويوضع معرّفُه في GDRIVE_FOLDER. الصورُ محفوظةٌ في القاعدة وتُنقَل تلقائيًّا بعدها.');
+      break;
+    }
     console.log(`  ✗ ${name} — ${why}`);
     console.log(`::warning title=${name}::${why}`);
   }

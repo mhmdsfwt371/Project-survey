@@ -119,5 +119,9 @@ try {
 } catch (e) {
   /* لا نُفشل النسخ الاحتياطي بسبب الدرايف — نُبلّغ ونكمل */
   driveMeta({ ok:false, why:'فشل الرفع — ' + String(e?.message || e).slice(0, 160) });
-  console.log('::warning::drive-upload فشل — ' + (e?.message || e));
+  /* كان تحذيرًا فيمرُّ السيرُ أخضرَ ولا يعلم أحدٌ أن النسخةَ لم تصل الدرايفَ
+     منذ أسابيع. صار خطأً يُرى في السير وفي بطاقة صحة النظام. */
+  const quota = /storage quota|storageQuotaExceeded/i.test(String(e?.message || e));
+  console.log((quota ? '::error title=درايف::حسابُ الخدمة بلا حصة تخزين — المجلدُ الشخصيُّ لا يقبل ملفاته. الحلّ: درايف مشترك (Shared Drive) يُضاف إليه بريدُ حساب الخدمة، ويوضع معرّفُه في GDRIVE_FOLDER. — '
+                     : '::error title=درايف::drive-upload فشل — ') + (e?.message || e));
 }

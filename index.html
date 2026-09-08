@@ -757,7 +757,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.33</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.34</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -16369,7 +16369,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.33' + '.docx" download>⬇ '
+              +   'V16.34' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17700,7 +17700,10 @@ function mapColorOf(x){
      شركاتٍ بعينها — لا عند التلوين. */
   if ((CO_OPEN || CO_MODE) && x.co) return coColor(x.co);
   if (CO_SEL.length && x.co) return coColor(x.co);
-  if (FILT.type && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
+  /* لونُ التصنيف كان يفوز متى رُشِّح نوعٌ — فتصير كلُّ النقاط لونًا واحدًا
+     ويختفي ما زير مما لم يُزَر. والتصنيفُ معلومٌ حين يُرشَّح، والحالةُ هي
+     المطلوبة. فصار لونُ التصنيف لغير طبقات الميدان وحدَها. */
+  if (FILT.type && FIELD_MODE !== 'survey' && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
   /* طبقةُ المسح: دورةُ الزيارة كاملةً بألوانها — لم يُزر · مُسندٌ إليك ·
      مُسندٌ لغيرك · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد ·
      معتمدة. فالمشرفُ يرى نقاطَه بلونٍ لا يشبه نقاطَ غيره، والوزارةُ ترى ما
