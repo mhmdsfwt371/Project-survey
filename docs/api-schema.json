@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.47",
+  "app_version": "V16.48",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1516,6 +1516,7 @@
     "V16.45": "جدول المتابعة: كروت البنود الرئيسية (data-wbstog) بشريط إنجاز ولون، طيّ/فتح WBS_OPEN مع wbsShown (البحث والمرشّح يتجاوزانه)، تعديل صفّ WBS_EDIT (data-wbsedit/wbssave/wbscancel، data-wbse=n|s|e|type|resp|party)، wbsRemove (البند وأبناؤه)، wbsClear بتأكيد WBS_RESET؛ إزالة pageHead المكرّرة واستعمال cardRaw للعنوان.",
     "V16.46": "PAGE.wtask (متابعة المهام الأسبوعية) في settings/wtask {rows:[{id,n,track,code,d,who,st,seen,due,src,upd}]}: wtImport/wtAdd/wtSet/wtRemove/wtClear/wtStats/wtDue، تبويب محلي WT_TAB (قائمة/لوحة)، SHEETS.wtask، إنصات settings/wtask. PAGE.wbs.t = متابعة الخطة التفصيلية. expSecs يستبعد ما لا ورقة له، وexpPdf ينفّذ خيار PDF (نافذة طباعة). audit-guards: مرساة الزرع تتبع siteKeyStats.",
     "V16.47": "viewer.nav += survey (تبويب المسح الميداني ضمن متابعة العمل الميداني، قراءةً)؛ زر «أعِد تصنيفها كمتعذّرة» مشروط بـmay(edit).",
+    "V16.48": "خمسُ catch فارغة صارت lsSet/lsGet أو LS_ERR (اللغة والسمة والإرث ومفاتيح درايف)؛ CAP_EMPTY هبط 39→34 فصار الهامشُ خمسةً.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

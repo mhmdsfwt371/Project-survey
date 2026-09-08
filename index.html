@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.47</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.48</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -6242,7 +6242,7 @@ function setLang(l){
   document.documentElement.lang = l;
   document.documentElement.dir  = I18N[l].dir;
   document.body.setAttribute('data-lang', l);
-  try{ localStorage.setItem('nsk14.lang', l); }catch(e){}
+  lsSet('nsk14.lang', l);
   render();
   shellLang();
   langSync();
@@ -6250,7 +6250,7 @@ function setLang(l){
 
 function setTheme(m){
   document.documentElement.setAttribute('data-theme', m);
-  try{ localStorage.setItem('nsk14.theme', m); }catch(e){}
+  lsSet('nsk14.theme', m);
   var b = document.getElementById('themeBtn');
   if (b) b.textContent = (m === 'dark') ? '\u2600' : '\u263D';
   var b2 = document.getElementById('themeTop');
@@ -8456,7 +8456,7 @@ var FB = {
       if (got){
         statBump();
         CORE.saveSoon();
-        try{ localStorage.setItem('nsk14.legacy', '1'); }catch(e){}
+        lsSet('nsk14.legacy', '1');
         logEvent('استيراد من النسخة العاملة — ' + nm(got) + ' سجلًّا');
       }
       return got;
@@ -14750,8 +14750,8 @@ var DRV = {
 function drvCfg(){
   try{
     DRV.clientId = localStorage.getItem('nsk14.drv.client') || '';
-    DRV.folderId = localStorage.getItem('nsk14.drv.folder') || '';
-  }catch(e){}
+    DRV.folderId = lsGet('nsk14.drv.folder') || '';
+  }catch(e){ LS_ERR = e; }
   return !!DRV.clientId;
 }
 
@@ -15093,9 +15093,9 @@ function drvSave(){
   var c = (document.getElementById('drvClient') || {}).value || '';
   var f = (document.getElementById('drvFolder') || {}).value || '';
   try{
-    localStorage.setItem('nsk14.drv.client', c.trim());
-    localStorage.setItem('nsk14.drv.folder', f.trim());
-  }catch(e){}
+    lsSet('nsk14.drv.client', c.trim());
+    lsSet('nsk14.drv.folder', f.trim());
+  }catch(e){ LS_ERR = e; }
   DRV.clientId = c.trim(); DRV.folderId = f.trim();
   logEvent('وصل درايف — ' + (c ? 'مُعرَّف' : 'أُفرغ'));
   toast(c ? t('حُفظ — جرّب الإذن') : t('أُفرغ الوصل'));
@@ -16960,7 +16960,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.47' + '.docx" download>⬇ '
+              +   'V16.48' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
