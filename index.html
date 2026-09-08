@@ -636,6 +636,12 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tb-sync:hover{border-color:var(--brand);color:var(--brand)}
+.bell-pop{position:fixed;top:54px;inset-inline-end:14px;z-index:160;width:min(360px,94vw);background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden;animation:npop .2s ease}
+.bell-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.bell-list{max-height:min(60vh,420px);overflow:auto}
+.bell-row{padding:9px 12px;border-bottom:1px solid var(--line-2,rgba(255,255,255,.06));cursor:pointer}
+.bell-row.un{background:rgba(232,195,75,.07)}
+.bell-row:hover{background:rgba(255,255,255,.05)}
 .tb-bell{position:relative;background:transparent;border:1px solid var(--line);border-radius:99px;
   width:30px;height:26px;cursor:pointer;font-size:14px;line-height:1;padding:0;color:var(--ink-soft)}
 .tb-bell.has{border-color:#E8C34B;color:#fff}
@@ -758,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.43</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.44</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3519,6 +3525,9 @@ en:{
  'مراقب الوزارة':'Ministry observer', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'Monitors and exports — writes nothing; phone numbers are hidden.',
  'خطوة':'steps', 'متعذّرٌ — يحتاج زيارةً أخرى':'Unreachable — needs another visit', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'The supervisor arrived but could not survey (closed, no permit…) — to be revisited.',
  'المعالم للمهندس وحده':'Milestones are for engineers only', 'اسمُ المعلَم مطلوب':'Milestone name is required', 'أُضيف المعلَم':'Milestone added', 'حُذف المعلَم':'Milestone deleted', 'معلَم جديد':'New milestone', 'حُفظ المعلَم':'Milestone saved', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'A new milestone’s progress (%) is entered by hand via Edit — built-in milestones are computed from the field unless a manual value is set.',
+ 'السحب التالي':'Next pull', 'السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ':'Next pull — at zero the queue is pushed, all changes are pulled and the screen refreshes; in between, changes arrive live', 'علّم الكل مقروءًا':'Mark all read', 'كل الإشعارات':'All notifications',
+ 'جدول المتابعة':'Tracking table', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'Every project item — who is on it, when it ends and where it stands; updated by the office, visible to all.', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.':'No table yet — import the “Nusuk readers project tracking” file from the button above.', 'لا جدولَ بعد — يستورده المكتب.':'No table yet — the office imports it.', 'مضى':'elapsed', 'البنود':'Items', 'ابحث بالبند أو المسؤول أو الجهة':'Search by item, owner or party', 'آخر تحديث':'Last update', 'إكسل — جدول المتابعة':'Excel — tracking table', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'Progress is entered for leaf items and rolled up to parents by duration. Status and schedule position are computed from today’s date — never typed.', 'البدء':'Start', 'الانتهاء':'Finish', 'الموقف الزمني':'Schedule', 'مكتملة':'Complete', 'لم تبدأ':'Not started', 'ضمن مدته':'On track', 'لم يحن موعده':'Not due yet', 'معلم':'Milestone', 'جدولُ المتابعة للمهندس فما فوق':'Tracking table is for engineers and above', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'Header row “WBS” not found', 'لا صفوفَ في الملف':'No rows in the file', 'بندًا استُورد':'items imported', 'موعدًا حاكمًا':'key dates', 'جدول المتابعة — هيكل تقسيم العمل':'Tracking table — WBS',
+ 'متأخر':'Late', 'مكتمل':'Done',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6151,6 +6160,9 @@ ur:{
  'مراقب الوزارة':'وزارت کا مبصر', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'نگرانی اور برآمد — کچھ نہیں لکھتا؛ فون نمبر پوشیدہ۔',
  'خطوة':'اقدامات', 'متعذّرٌ — يحتاج زيارةً أخرى':'ناممکن — دوبارہ دورہ درکار', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'سپروائزر پہنچا مگر سروے نہ کر سکا (بند، اجازت نہیں…) — دوبارہ دورہ۔',
  'المعالم للمهندس وحده':'سنگِ میل صرف انجینئر کے لیے', 'اسمُ المعلَم مطلوب':'سنگِ میل کا نام درکار', 'أُضيف المعلَم':'سنگِ میل شامل', 'حُذف المعلَم':'سنگِ میل حذف', 'معلَم جديد':'نیا سنگِ میل', 'حُفظ المعلَم':'سنگِ میل محفوظ', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'نئے سنگِ میل کی پیش رفت (٪) ترمیم سے دستی لکھی جاتی ہے — بلٹ اِن میدان سے شمار ہوتے ہیں۔',
+ 'السحب التالي':'اگلا سنک', 'السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ':'اگلا سنک — صفر پر قطار بھیجی، تبدیلیاں لائی اور اسکرین تازہ؛ درمیان میں لائیو', 'علّم الكل مقروءًا':'سب پڑھا ہوا', 'كل الإشعارات':'تمام اطلاعات',
+ 'جدول المتابعة':'نگرانی جدول', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'منصوبے کی تمام مدیں — کون، کب ختم، کہاں کھڑی ہیں؛ دفتر سے تازہ، سب دیکھتے ہیں۔', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.':'ابھی جدول نہیں — اوپر کے بٹن سے فائل درآمد کریں۔', 'لا جدولَ بعد — يستورده المكتب.':'ابھی جدول نہیں — دفتر درآمد کرے گا۔', 'مضى':'گزر گئے', 'البنود':'مدیں', 'ابحث بالبند أو المسؤول أو الجهة':'مد، ذمہ دار یا فریق سے تلاش', 'آخر تحديث':'آخری تازہ کاری', 'إكسل — جدول المتابعة':'ایکسل — نگرانی جدول', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'پیش رفت ذیلی مدوں میں لکھی جاتی ہے اور مدت سے والدین میں جمع؛ حالت اور شیڈول آج کی تاریخ سے شمار۔', 'البدء':'آغاز', 'الانتهاء':'اختتام', 'الموقف الزمني':'شیڈول', 'مكتملة':'مکمل', 'لم تبدأ':'شروع نہیں', 'ضمن مدته':'مدت میں', 'لم يحن موعده':'ابھی وقت نہیں', 'معلم':'سنگِ میل', 'جدولُ المتابعة للمهندس فما فوق':'نگرانی جدول انجینئر یا اوپر کے لیے', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'عنوان کی قطار نہیں ملی', 'لا صفوفَ في الملف':'فائل میں قطاریں نہیں', 'بندًا استُورد':'مدیں درآمد', 'موعدًا حاكمًا':'کلیدی تاریخیں', 'جدول المتابعة — هيكل تقسيم العمل':'نگرانی جدول — WBS',
+ 'متأخر':'تاخیر', 'مكتمل':'مکمل',
 }
 };
 
@@ -8057,7 +8069,8 @@ var CORE = {
       siteOv:STATE.siteOv || {},
       pullAt:STATE.meta.pullAt || {},
       notifAt:STATE.meta.notifAt || 0,
-      epoch:STATE.meta.epoch || 0
+      epoch:STATE.meta.epoch || 0,
+      wbs:STATE.wbs || null
     });
   },
 
@@ -8077,6 +8090,7 @@ var CORE = {
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
       if (v.notifAt) STATE.meta.notifAt = v.notifAt;
       if (v.epoch) STATE.meta.epoch = v.epoch;
+      if (v.wbs && Array.isArray(v.wbs.rows)) STATE.wbs = v.wbs;
       /* يُطوى المكرَّرُ فيما حُمِّل: الطابورُ المحفوظُ قبل الطيِّ فيه مفاتيحُ
          مكرَّرة، فتُطوى مرةً هنا ولا تُرفَع مرارًا. */
       if (Array.isArray(STATE.queue) && STATE.queue.length > 1){
@@ -8625,6 +8639,9 @@ var FB = {
       FB.db.collection('settings').doc('miles').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
       }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
+      FB.db.collection('settings').doc('wbs').get().then(function(doc){
+        if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by }; }
+      }).catch(function(e){ softErr('سحب جدول المتابعة', e, ''); });
       FB.db.collection('settings').doc('risks').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.risks = arr; }
       }).catch(function(e){ softErr('سحب سجل المخاطر', e, 'تعذّر سحبُ سجل المخاطر — قد يظهر بالبذرة'); });
@@ -8923,6 +8940,16 @@ function liveSmall(){
       verPublish();
     }, function(e){ softErr('إنصات النسخة', e, ''); }));
   } catch (e){ softErr('إنصات النسخة', e, ''); }
+  /* جدولُ المتابعة: وثيقةٌ واحدةٌ يُنصِت إليها الجميع — فتحديثُ المكتب يصل الوزارةَ في ثوانٍ */
+  try {
+    LIVE_SMALL.push(FB.db.collection('settings').doc('wbs').onSnapshot(function(doc){
+      if (!doc || !doc.exists) return;
+      var w = doc.data() || {}; if (!Array.isArray(w.rows)) return;
+      STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by };
+      CORE.saveSoon();
+      if (CUR === 'wbs' && !document.querySelector('#content input:focus')) render(1);
+    }, function(e){ softErr('إنصات جدول المتابعة', e, ''); }));
+  } catch (e){ softErr('إنصات جدول المتابعة', e, ''); }
   /* ═══ وثيقتي أنا — لكلِّ دور ═══
      إنصاتُ «users» لمن رتبتُه فوق ثلاثين وحدَه، فالفنيُّ والمساعدُ والسائقُ
      والمشترياتُ والوزارةُ لا يصلهم تغييرُ دورهم إلا بخروجٍ ودخول — وهي أكثرُ
@@ -9032,11 +9059,20 @@ var BADGE_TICK = null;
    دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
    العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
 var SYNC_CYCLE = 60, SYNC_LEFT = 60, SYNC_BUSY = false;
+/* ═══ العدّادُ يعدُّ إلى السحب ═══
+   كان يعدُّ ستين ثانيةً إلى «دفعة» لا تقرأ شيئًا — والسحبُ الفعليُّ كلَّ ستِّ
+   ساعاتٍ للمكتب. فيبلغ الصفرَ ولا يتغيّر شيءٌ على الشاشة، ويظنُّ الناظرُ أنه
+   لا يعمل. صار يعدُّ إلى السحب نفسِه (عشرُ دقائقَ للمكتب والوزارة والمشرف —
+   والإنصاتُ الحيُّ يملأ ما بينها)، وعند الصفر يُدفَع ويُسحَب وتُعاد الشاشة. */
+function syncCdSecs(){
+  var ev = (typeof pullScope === 'function') ? pullScope().every : 600000;
+  var left = Math.max(0, (PULL_LAST || 0) + ev - Date.now());
+  return Math.ceil(left / 1000);
+}
 function syncCdTxt(){
-  /* دقيقتان ورقمان بأرقام لغة الواجهة — `nm` للأعداد لا للنصوص */
-  var m = Math.floor(SYNC_LEFT / 60), s = SYNC_LEFT % 60;
+  var tot = syncCdSecs(), h = Math.floor(tot / 3600), m = Math.floor((tot % 3600) / 60), s = tot % 60;
   var dg = (I18N[LANG] || I18N.ar).dig;
-  return (String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'))
+  return ((h ? String(h) + ':' : '') + String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0'))
     .replace(/\d/g, function(c){ return LANG === 'en' ? c : dg[+c]; });
 }
 function syncCycle(){
@@ -9049,15 +9085,19 @@ function syncCycle(){
   var pushed = CORE.flush().catch(function(){ return 0; });
   return pushed.then(function(){
     var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every);
+    /* موعدُ السحب يُضبَط عند المحاولة لا عند النجاح — وإلا بقي العدّادُ صفرًا
+       بعد سحبةٍ فاشلة وحاول كلَّ ثانية */
+    if (due) PULL_LAST = Date.now();
     /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
        فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
     var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
-    /* لا إعادةَ رسمٍ آليةً: من يكتب في نموذجٍ لا يُقذَف منه — الإنصاتُ الحيُّ
-       يُعيد رسمَ ما يتغيّر، والشارةُ تكفي هنا */
     statBump(); syncBadge();
     if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
+    /* سحبةٌ جلبت جديدًا تُعيد رسمَ شاشات المتابعة — لا النماذجَ ولا الخريطة،
+       فمن يكتب لا يُقذَف مما يكتب */
+    else if (n && LIVE_WORK_PAGES.indexOf(CUR) > -1 && !document.querySelector('#content input:focus, #content textarea:focus')) render(1);
     return n;
   }).catch(function(e){ softErr('دورة المزامنة', e, ''); return 0; })
     .then(function(n){ SYNC_BUSY = false; SYNC_LEFT = SYNC_CYCLE; return n; });
@@ -9071,7 +9111,9 @@ function liveTick(){
     SYNC_LEFT = Math.max(0, SYNC_LEFT - 1);
     var cd = document.getElementById('syncCd');
     if (cd) cd.textContent = syncCdTxt();
-    if (SYNC_LEFT === 0){
+    /* الدفعُ كلَّ دقيقة، والسحبُ عند بلوغ عدّاده الصفر — لا انتظارَ لدقيقة الدفع */
+    var pullDue = STATE.meta.online && FB.ready && syncCdSecs() === 0 && !SYNC_BUSY;
+    if (SYNC_LEFT === 0 || pullDue){
       if (STATE.meta.online && FB.ready) syncCycle();
       else SYNC_LEFT = SYNC_CYCLE;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
     }
@@ -9142,7 +9184,7 @@ function syncBadge(){
      إشعارٍ يصل. (كان الرمزُ يُكتَب \u1F514 — هروبًا ناقصًا يرسم «ὑ4» بدل الجرس) */
   el.innerHTML = (may('roles') ? '<button type="button" class="tb-sync" data-syncall="1" title="'
       + esc(t('زامِن كلَّ الأجهزة المفتوحة الآن')) + '">\u{1F4E1} ' + esc(t('زامِن الجميع')) + '</button> ' : '')
-    + '<button type="button" class="tb-bell' + (un ? ' has' : '') + '" data-p="notif" title="'
+    + '<button type="button" class="tb-bell' + (un ? ' has' : '') + '" data-bell="1" title="'
     + esc(t('الإشعارات')) + '" aria-label="' + esc(t('الإشعارات')) + '">\u{1F514}'
     + (un ? '<span class="tb-badge">' + nm(un) + '</span>' : '') + '</button> '
     /* زرُّ المزامنة: كانت المزامنةُ اليدويةُ موجودةً بلا زرٍّ يبلغها، فيرى
@@ -9163,8 +9205,8 @@ function syncBadge(){
         ? '<span class="pill off">' + esc(t('أُسقط من الطابور')) + '</span> ' : '')
     + esc(t('آخر مزامنة')) + ' <span class="num">' + esc(ts) + '</span>'
     /* العدُّ التنازليُّ للدورة التالية — يُحدَّث كلَّ ثانيةٍ من liveTick */
-    + ' <span class="hint" style="margin:0" title="' + esc(t('المزامنةُ التالية — عند الصفر تُدفَع وتُسحَب ثم يُعاد العدّ')) + '">'
-    + esc(t('التالية')) + ' <span class="num" id="syncCd" dir="ltr">' + syncCdTxt() + '</span></span>';
+    + ' <span class="hint" style="margin:0" title="' + esc(t('السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ')) + '">'
+    + esc(t('السحب التالي')) + ' <span class="num" id="syncCd" dir="ltr">' + syncCdTxt() + '</span></span>';
 }
 
 /* ── الاتصال — يُراقَب فيُستأنف الرفع تلقائيًّا ── */
@@ -13569,6 +13611,11 @@ window.addEventListener('unhandledrejection', function(e){
   var r = e && e.reason;
   errCapture('promise: ' + (r && (r.message || r)), '', 0);
 });
+/* من تقبل القاعدةُ أحداثَه: كلُّ دورٍ يكتب — لا الوزارةُ ولا الإدارةُ العليا */
+function canWriteEvents(){
+  var r = effRole(ROLE);
+  return ['engineer','admin','supervisor','buyer','store','acct','tech','cprep','casm','cins','helper','driver'].indexOf(r) > -1;
+}
 function logEvent(what){
   var now = Date.now();
   var e = { id:uid36(), ts:now,
@@ -13577,7 +13624,11 @@ function logEvent(what){
             what:what, by:STATE.meta.name || '', dev:DEV_ID };
   STATE.events.unshift(e);
   if (STATE.events.length > 500) STATE.events.length = 500;
-  /* الأثرُ التدقيقيُّ يُرفَع: الوزارةُ تسأل من فعل ومتى، والذاكرةُ لا تجيب. */
+  /* الأثرُ التدقيقيُّ يُرفَع: الوزارةُ تسأل من فعل ومتى، والذاكرةُ لا تجيب.
+     — لكن القاعدةَ تقبل الحدثَ ممن يعمل لا ممن يطّلع: الوزارةُ والإدارةُ العليا
+     تقرآن فقط، وكان حدثُ دخولهما يُدفَع فيُرفَض ويُعزَل ويُظهر لهما «عُزلت عن
+     الرفع» في كلِّ جلسة. يبقى في جهازهما ولا يُرفَع. */
+  if (typeof canWriteEvents === 'function' && !canWriteEvents()) return;
   if (!STATE.evlog) STATE.evlog = {};
   STATE.evlog[e.id] = e;
   CORE.dirty('evlog', e.id, e);
@@ -13938,6 +13989,147 @@ function waGo(co, kind, when, copy){
   notifPush('إشعار شركة', co + ' \u00b7 ' + t(WA_KINDS[kind] ? WA_KINDS[kind].n : ''), { lv:'عادي' });
 }
 
+/* ═══ جدولُ المتابعة — هيكلُ تقسيم العمل ═══
+   الجدولُ الذي يُتابَع به المشروعُ مع الوزارة كان ملفَّ إكسل يُرسَل ويُعدَّل
+   باليد: ١٦٣ بندًا بمعرِّف هيكلٍ وبدايةٍ ونهايةٍ وإنجازٍ ومسؤولٍ وجهة. صار في
+   النظام: يُستورَد من الملف نفسِه، ويُعدَّل إنجازُ كلِّ بندٍ من المكتب، وتُحسَب
+   حالتُه وموقفُه الزمنيُّ من تاريخ اليوم لا من خليةٍ مكتوبة، ويراه الجميعُ —
+   والوزارةُ قراءةً — لحظةً بلحظة. الآباءُ يُجمَّع إنجازُهم من أبنائهم. */
+function wbsRows(){ return (STATE.wbs && Array.isArray(STATE.wbs.rows)) ? STATE.wbs.rows : []; }
+function wbsKeys(){ return (STATE.wbs && Array.isArray(STATE.wbs.keys)) ? STATE.wbs.keys : []; }
+function wbsDepth(id){ return String(id || '').split('.').length; }
+function wbsChildren(id){ var p = String(id) + '.'; return wbsRows().filter(function(r){ return String(r.id).indexOf(p) === 0 && wbsDepth(r.id) === wbsDepth(id) + 1; }); }
+function wbsPct(r){
+  var kids = wbsChildren(r.id);
+  if (!kids.length) return Math.max(0, Math.min(100, +r.pct || 0));
+  var tot = 0, w = 0;
+  kids.forEach(function(k){ var d = Math.max(1, +k.dur || 1); tot += wbsPct(k) * d; w += d; });
+  return w ? Math.round(tot / w) : 0;
+}
+function wbsStatus(r){ var p = wbsPct(r); return p >= 100 ? 'مكتملة' : (p > 0 ? 'قيد التنفيذ' : 'لم تبدأ'); }
+function wbsTiming(r){
+  var p = wbsPct(r), today = dayKey(Date.now());
+  if (p >= 100) return 'مكتمل';
+  if (r.e && r.e < today) return 'متأخر';
+  if (r.s && r.s > today) return 'لم يحن موعده';
+  return 'ضمن مدته';
+}
+function wbsLeft(r){
+  if (!r.e) return null;
+  var d = Math.round((new Date(r.e) - new Date(dayKey(Date.now()))) / 86400000);
+  return d;
+}
+function wbsSave(){
+  if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return false; }
+  STATE.wbs = STATE.wbs || { rows:[], keys:[] };
+  STATE.wbs.at = Date.now(); STATE.wbs.by = STATE.meta.name || '';
+  CORE.set('cfg', 'wbs', { rows:STATE.wbs.rows, keys:STATE.wbs.keys, at:STATE.wbs.at, by:STATE.wbs.by });
+  CORE.saveSoon(); return true;
+}
+function wbsSetPct(id, pct){
+  var r = wbsRows().filter(function(x){ return String(x.id) === String(id); })[0]; if (!r) return;
+  r.pct = Math.max(0, Math.min(100, +pct || 0));
+  if (wbsSave()){ logEvent('جدول المتابعة — ' + id + ' \u00b7 ' + r.pct + '٪'); toast(id + ' \u00b7 ' + nm(r.pct) + '٪'); }
+}
+/* تاريخٌ من خلية إكسل: Date أو رقمٌ تسلسليٌّ أو نصٌّ */
+function wbsDate(v){
+  if (!v && v !== 0) return '';
+  var iso = '';
+  if (v && typeof v.getTime === 'function'){ iso = isNaN(v.getTime()) ? '' : new Date(v.getTime() - v.getTimezoneOffset() * 60000).toISOString().slice(0, 10); }
+  else if (typeof v === 'number'){ var d = new Date(Math.round((v - 25569) * 86400000)); iso = isNaN(d) ? '' : d.toISOString().slice(0, 10); }
+  else { var m = /(\d{4})-(\d{2})-(\d{2})/.exec(String(v)); iso = m ? m[1] + '-' + m[2] + '-' + m[3] : ''; }
+  return (iso && iso >= '2000-01-01') ? iso : '';
+}
+function wbsImport(file){
+  if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return; }
+  xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var wb = XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true });
+        var ws = wb.Sheets[wb.SheetNames[0]];
+        var A = XLSX.utils.sheet_to_json(ws, { header:1, raw:true });
+        var hdr = -1, keys = [];
+        for (var i = 0; i < A.length; i++){
+          var c0 = String(A[i][0] || '').trim();
+          if (c0 === 'المواعيد الحاكمة' && A[i + 1]){
+            for (var c = 1; c < A[i].length; c++){ var lab = String(A[i][c] || '').trim(), dt = wbsDate(A[i + 1][c]); if (lab && dt && lab !== 'تاريخ اليوم') keys.push({ n:lab, d:dt }); }
+          }
+          if (c0 === 'هيكل تقسيم العمل'){ hdr = i; break; }
+        }
+        if (hdr < 0){ toast(t('لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»')); return; }
+        var rows = [];
+        for (var r = hdr + 1; r < A.length; r++){
+          var row = A[r]; if (!row || !row[1]) continue;
+          var id = String(row[0] || '').replace(/[\u200f\u200e\s]/g, ''); if (!id) continue;
+          rows.push({ id:id, n:String(row[1]).trim(), s:wbsDate(row[2]), e:wbsDate(row[3]), dur:+row[4] || 0,
+                      pct:Math.max(0, Math.min(100, +row[5] || 0)), type:String(row[8] || 'مهمة').trim(),
+                      resp:String(row[9] || '').trim(), party:String(row[10] || '').trim() });
+        }
+        if (!rows.length){ toast(t('لا صفوفَ في الملف')); return; }
+        /* الإنجازُ المكتوبُ في الملف للآباء يُهمَل — يُجمَّع من الأبناء */
+        STATE.wbs = { rows:rows, keys:keys };
+        if (wbsSave()){ logEvent('استيرادُ جدول المتابعة — ' + rows.length + ' بندًا'); toast(nm(rows.length) + ' ' + t('بندًا استُورد') + ' \u00b7 ' + nm(keys.length) + ' ' + t('موعدًا حاكمًا')); render(1); }
+      } catch (e){ softErr('استيراد جدول المتابعة', e, 'تعذّرت قراءةُ الملف'); }
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+var WBS_F = '', WBS_Q = '', WBS_T = 0;
+PAGE.wbs = { m:'المتابعة', t:'جدول المتابعة', l:'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.',
+  body:function(){
+    var head = pageHead('المتابعة', 'جدول المتابعة', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.',
+      may('settings') ? '<label class="btn btn-secondary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('استيراد من إكسل')) + '<input type="file" accept=".xlsx,.xls" data-wbsfile="1" style="display:none"></label>' : '');
+    var R = wbsRows();
+    if (!R.length) return head + card('', '<p class="hint" style="text-align:center;margin:0">'
+      + esc(t(may('settings') ? 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.' : 'لا جدولَ بعد — يستورده المكتب.')) + '</p>');
+    var today = dayKey(Date.now());
+    var strip = wbsKeys().length ? '<div class="grid cols-3" style="margin-bottom:10px">' + wbsKeys().map(function(k){
+      var left = Math.round((new Date(k.d) - new Date(today)) / 86400000);
+      return '<div class="card" style="padding:10px 12px"><div class="hint" style="margin:0">' + esc(k.n) + '</div>'
+        + '<div class="num" style="font-size:15px;font-weight:700">' + esc(k.d) + '</div>'
+        + '<div>' + (left < 0 ? pill(t('مضى') + ' ' + nm(-left) + ' ' + t('يوم'), 'off') : pill(t('بقي') + ' ' + nm(left) + ' ' + t('يوم'), left <= 14 ? 'warn' : 'ok')) + '</div></div>';
+    }).join('') + '</div>' : '';
+    var leaves = R.filter(function(r){ return !wbsChildren(r.id).length; });
+    var c = { done:0, run:0, todo:0, late:0, ms:0 };
+    leaves.forEach(function(r){ var st = wbsStatus(r), tm = wbsTiming(r); if (st === 'مكتملة') c.done++; else if (st === 'قيد التنفيذ') c.run++; else c.todo++; if (tm === 'متأخر') c.late++; if (r.type === 'معلم') c.ms++; });
+    var chips = [['','الكل',leaves.length],['late','متأخر',c.late],['run','قيد التنفيذ',c.run],['done','مكتمل',c.done],['todo','لم يبدأ',c.todo],['ms','المعالم',c.ms]];
+    var pass = function(r){
+      if (WBS_Q && (r.n + ' ' + r.id + ' ' + (r.resp || '') + ' ' + (r.party || '')).indexOf(WBS_Q) < 0) return false;
+      var st = wbsStatus(r), tm = wbsTiming(r);
+      if (WBS_F === 'late') return tm === 'متأخر';
+      if (WBS_F === 'run') return st === 'قيد التنفيذ';
+      if (WBS_F === 'done') return st === 'مكتملة';
+      if (WBS_F === 'todo') return st === 'لم تبدأ';
+      if (WBS_F === 'ms') return r.type === 'معلم';
+      return true;
+    };
+    /* الأبُ يظهر إن ظهر أحدُ أبنائه أو طابق هو نفسُه */
+    var show = {}; R.forEach(function(r){ if (pass(r)){ show[r.id] = 1; var parts = String(r.id).split('.'); for (var i = 1; i < parts.length; i++) show[parts.slice(0, i).join('.')] = 1; } });
+    var rows = R.filter(function(r){ return show[r.id]; }).map(function(r){
+      var dep = wbsDepth(r.id), kids = wbsChildren(r.id).length, p = wbsPct(r), st = wbsStatus(r), tm = wbsTiming(r), left = wbsLeft(r);
+      var name = '<div style="padding-inline-start:' + ((dep - 1) * 14) + 'px">' + (kids ? '<strong>' : '') + esc(r.n) + (kids ? '</strong>' : '')
+        + (r.type === 'معلم' ? ' ' + pill('معلم', 'acc') : '') + '</div>';
+      var pctCell = (may('settings') && !kids)
+        ? '<input type="number" min="0" max="100" value="' + p + '" data-wbspct="' + esc(r.id) + '" style="width:64px">'
+        : '<span class="num">' + nm(p) + '٪</span>';
+      var tmPill = tm === 'مكتمل' ? pill('مكتمل','ok') : (tm === 'متأخر' ? pill('متأخر','bad') : (tm === 'لم يحن موعده' ? pill('لم يحن موعده','off') : pill('ضمن مدته','warn')));
+      return ['<span class="num hint" style="margin:0">' + esc(r.id) + '</span>', name,
+              '<span class="num">' + esc(r.s || '—') + '</span>', '<span class="num">' + esc(r.e || '—') + '</span>',
+              pctCell, pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')), tmPill,
+              esc(r.resp || '—'), esc(r.party || '—'),
+              left == null || p >= 100 ? '—' : '<span class="num">' + (left < 0 ? '-' : '') + nm(Math.abs(left)) + '</span>'];
+    });
+    return head + strip
+      + stats([['البنود', N(leaves.length)], ['مكتمل', N(c.done), 'ok'], ['قيد التنفيذ', N(c.run), 'wrn'], ['لم يبدأ', N(c.todo)], ['متأخر', N(c.late), c.late ? 'bad' : 'ok'], ['المعالم', N(c.ms), 'acc']])
+      + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WBS_F === x[0] ? ' on' : '') + '" data-wbsf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
+      + card('', '<input type="search" data-wbsq value="' + esc(WBS_Q) + '" placeholder="' + esc(t('ابحث بالبند أو المسؤول أو الجهة')) + '" dir="auto">')
+      + cardFlush(t('جدول المتابعة') + ' \u2014 ' + nm(rows.length) + (STATE.wbs && STATE.wbs.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wbs.by)) + ' ' + esc(stepAgo(STATE.wbs.at || 0)) + '</span>' : ''),
+          table(['#','البند','البدء','الانتهاء','الإنجاز','الحالة','الموقف الزمني','المسؤول','الجهة','المتبقي'], rows),
+          btn('\u2B07 ' + t('إكسل — جدول المتابعة'),'btn-secondary btn-sm',' data-xls="wbs"'))
+      + '<p class="hint">' + esc(t('الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.')) + '</p>';
+  }};
 PAGE.co = { m:'المتابعة', t:'الشركات',
   l:'ما لكلِّ شركةِ خدمةٍ من نقاط، وما يُرسَل إليها من إشعارات.',
   body:function(){
@@ -16498,7 +16690,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.43' + '.docx" download>⬇ '
+              +   'V16.44' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17392,17 +17584,17 @@ function pullScope(){
   var r = effRole(ROLE);
   /* المهندسون كالإدارة: أيُّ نقطةٍ تُنجَز تصل اعتمادُها كلَّ مهندسٍ لا مهندسَ شجرتها
      وحدَه — قرارُ صاحب المشروع، وثمنُه على Blaze سنتاتٌ لا سقف */
-  if (r === 'exec' || r === 'admin' || isBossHere() || rankOf(ROLE) >= rankOf('engineer')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
+  if (r === 'exec' || r === 'admin' || isBossHere() || rankOf(ROLE) >= rankOf('engineer')) return { cols:ALL_WORK, mine:false, tree:false, every:600000 };
   /* والمشرفون كذلك: قرارُ صاحب المشروع أن يرى المشرفُ زياراتِ الفنيّين كلَّها لا
      فنيّيه وحدَهم — فمشرفٌ يفتح الخريطةَ يرى ما تمّ في المشعر كلِّه لا جزءًا منه.
      والشجرةُ تبقى للتكليف والمتابعة (لوحةُ الفريق) لا للرؤية. */
-  if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
+  if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:false, every:600000 };
   /* الوزارةُ: الأرقامُ لِلَوحاتها، والزياراتُ والتركيباتُ لتلوين الخريطة — قراءةً
      فقط. وكانت تسحب اللقطاتِ وحدَها فتظهر لها الخريطةُ رماديةً بلا حالة. */
   /* الوزارةُ تُسلَّم حساباتِها وتسأل: ماذا انتهى، وماذا يجري الآن ومن يفعله،
      وماذا سيحدث غدًا — والمهامُّ والفكُّ والصيانةُ جزءٌ من الجواب. تقرأ العملَ كلَّه
      كالمكتب وتُنصِت إليه لحظةً بلحظة، ولا تكتب حرفًا: القاعدةُ تمنعها. */
-  if (r === 'viewer') return { cols:ALL_WORK.concat(['stats']), mine:false, tree:false, every:21600000 };
+  if (r === 'viewer') return { cols:ALL_WORK.concat(['stats']), mine:false, tree:false, every:600000 };
   /* الميدانُ يُنصِت إلى ما كتبه هو (اعتمادٌ أو ردٌّ من المكتب يصل حيًّا) — والسحبُ
      الدوريُّ كان ثمانيةً وأربعين استعلامًا فارغًا في اليوم لكلِّ جهازٍ من مئةٍ وربع */
   return { cols:['recs','inss','dismantles','maints'], mine:true, tree:false, every:21600000 };
@@ -18162,6 +18354,11 @@ var SHEETS = {
     var K = siteKeyStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
     K.keys.forEach(function(k){ var p = k.split('|'); out.push([p[0], p[1], K.by[k], K.sv[k] || 0, K.ins[k] || 0]); });
     out.push(['الإجمالي','', K.total.n, K.total.sv, K.total.ins]);
+    return out;
+  },
+  wbs: function(){
+    var out = [['هيكل تقسيم العمل','البند','تاريخ البدء','تاريخ الانتهاء','المدة','الإنجاز ٪','الحالة','الموقف الزمني','النوع','المسؤول','الجهة المعنية','المتبقي']];
+    wbsRows().forEach(function(r){ var l = wbsLeft(r); out.push([r.id, r.n, r.s, r.e, r.dur, wbsPct(r), wbsStatus(r), wbsTiming(r), r.type, r.resp, r.party, (l == null || wbsPct(r) >= 100) ? '—' : l]); });
     return out;
   },
   sites: function(){
@@ -23798,6 +23995,36 @@ function notifPop(n){
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 9000);
   while (wrap.children.length > 3) wrap.removeChild(wrap.firstChild);
 }
+/* ═══ نافذةُ الجرس ═══
+   كان الجرسُ يذهب إلى صفحة الإشعارات — فيترك المستخدمُ ما كان فيه ليرى
+   سطرًا. صار يفتح نافذةً تحته بآخر عشرة: كلٌّ يُضغَط فيذهب إلى فعله، و«قرأت
+   الكل» و«كل الإشعارات» في أسفلها. تُغلَق بالضغط خارجها. */
+var BELL_OPEN = false;
+function bellHtml(){
+  var L = notifMine().slice(0, 10);
+  var rows = L.length ? L.map(function(n){
+    var lv = n.lv === 'عاجل' ? '#E05252' : (n.lv === 'مهم' ? '#E8C34B' : '#3B9BF5');
+    return '<div class="bell-row' + (n.read ? '' : ' un') + '" data-npop="' + esc(n.id) + '" style="border-inline-start:3px solid ' + lv + '">'
+      + '<div style="font-weight:600;font-size:12.5px">' + esc(t(n.kind)) + ' <span class="hint num" style="margin:0;font-weight:400">' + esc(stepAgo(n.at)) + '</span></div>'
+      + '<div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(n.text.slice(0, 90)) + '</div></div>';
+  }).join('') : '<p class="hint" style="padding:14px;text-align:center;margin:0">' + esc(t('لا إشعاراتٍ بعد.')) + '</p>';
+  return '<div id="bellPop" class="bell-pop" dir="auto">'
+    + '<div class="bell-head"><strong>\u{1F514} ' + esc(t('الإشعارات')) + '</strong>'
+    + (notifUnread() ? ' <span class="pill warn">' + nm(notifUnread()) + ' ' + esc(t('غير مقروء')) + '</span>' : '') + '</div>'
+    + '<div class="bell-list">' + rows + '</div>'
+    + '<div class="actions" style="padding:8px 10px;margin:0;border-top:1px solid var(--line)">'
+    + btn(t('علّم الكل مقروءًا'),'btn-quiet btn-sm',' data-nreadall="1"')
+    + btn(t('كل الإشعارات'),'btn-secondary btn-sm',' data-p="notif" data-bellclose="1"')
+    + '</div></div>';
+}
+function bellToggle(open){
+  BELL_OPEN = (open === undefined) ? !BELL_OPEN : !!open;
+  var old = document.getElementById('bellPop'); if (old) old.remove();
+  if (!BELL_OPEN) return;
+  var host = document.getElementById('syncMeta') || document.body;
+  var d = document.createElement('div'); d.innerHTML = bellHtml();
+  document.body.appendChild(d.firstChild);
+}
 function notifPopGo(id){
   var n = notifStore().filter(function(x){ return x.id === id; })[0];
   var el = document.querySelector('[data-npop="' + id + '"]'); if (el) el.remove();
@@ -24866,7 +25093,7 @@ var POP_OPEN = false, POP_JUST = 0;
 /* ═══ مركز التصدير — قسمًا قسمًا كالقديم ═══ */
 
 var EXP_SECS = [
-  ['over','نظرة عامة',1], ['pace','الوتيرة والهدف',1],
+  ['over','نظرة عامة',1], ['wbs','جدول المتابعة — هيكل تقسيم العمل',1], ['pace','الوتيرة والهدف',1],
   ['chalm','التحديات — أين وما هي وما المطلوب',1], ['inst','التركيب والجدولة',1],
   ['daily','معدل التركيب اليومي — آخر ١٤ يوم',1], ['reg','حسب المشعر ونوع النقطة',1],
   ['co','حسب شركة الخدمة — الأقل إنجازًا أولًا',1],
@@ -25085,7 +25312,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','over','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','over','wbs','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -25110,7 +25337,7 @@ var ROLES = {
     guide:'دليل الفني والمشرف — العمل الميداني',
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
-    nav:['map','mywork','sites','sel','svForm','insForm','co','recs','tools','mine','over','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','co','recs','tools','mine','over','wbs','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
     can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -25120,7 +25347,7 @@ var ROLES = {
     /* V16.36: «الوتيرة» و«اليومي» و«التركيب» أرقامٌ تعرضها «نظرة عامة» و«مركز
        التقارير» نفسُها — فحُذفت من الوزارة لتبقى شاشاتُها ستًّا يُتابَع منها
        العمل: الخريطةُ ونظرةٌ عامةٌ والآنَ ومركزُ التقارير والمعالمُ والسجل. */
-    nav:['map','over','now','repcenter','miles','reg','co','chalm','dis','ncr','guide','acct'],
+    nav:['map','over','wbs','now','repcenter','miles','reg','co','chalm','dis','ncr','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -27423,7 +27650,7 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['over','نظرة عامة'],['wbs','جدول المتابعة'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
       ['plan','التخطيط والمخاطر']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
@@ -27875,8 +28102,14 @@ function onDocClick(e){
   if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return; }
 
+  var wf = e.target.closest('[data-wbsf]');
+  if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return; }
+  if (e.target.closest('[data-bell]')){ bellToggle(); return; }
+  if (e.target.closest('[data-bellclose]')){ bellToggle(false); /* ثم يكمل إلى data-p */ }
+  if (BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
+  if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return; }
   var npo = e.target.closest('[data-npop]');
-  if (npo){ notifPopGo(npo.getAttribute('data-npop')); return; }
+  if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return; }
@@ -28887,6 +29120,9 @@ function toast(label){
 document.addEventListener('change', function(e){
   var t0 = e.target;
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  /* جدولُ المتابعة: إنجازُ بندٍ يُكتب ويُرفَع فورًا؛ وملفُّ الاستيراد */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbspct')){ wbsSetPct(t0.getAttribute('data-wbspct'), t0.value); render(1); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tname')){
     var tmn = teamOf(CTEAM_CUR);
     if (tmn){ tmn.n = t0.value || tmn.n; CORE.dirty('teams', tmn.id, tmn); render(1); }
@@ -28960,6 +29196,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ var el = document.querySelector('[data-wbsq]'); render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
   if (e.target && e.target.id === 'assistQ'){
     ASSIST_Q = e.target.value;
     var ap = document.getElementById('assistPop');

@@ -78,11 +78,13 @@ const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf
 check(layered, 'السحبُ طبقتان: من فوق الفنيِّ والوزارةُ الكلَّ (قراءةً)، والميدانُ ما كتبه');
 const scoped = /if \(sc\.mine && c !== 'stats' && me\) q = q\.where\('_by', '==', me\)/.test(src);
 check(scoped, 'والميدانُ لا يقرأ سجلاتِ غيره');
-const officeEvery = num(/mine:false, tree:false, every:(\d+)/, 21600000);
+const officeEvery = num(/mine:false, tree:false, every:(\d+)/, 600000);
 const fieldEvery  = num(/mine:true, tree:false, every:(\d+)/, 21600000);
 check(/if \(scope\.mine && STATE\.meta\.uid\)\{/.test(src) && /\['_by', '==', STATE\.meta\.uid\], \['_at', '>', tf\]/.test(src),
   'والميدانُ يُنصِت إلى ما كتبه هو — لا يستعلم فارغًا كلَّ نصف ساعة');
-check(officeEvery >= 3600000, `ومن يُنصِت لا يسحب دوريًّا إلا شبكةَ أمانٍ — كلَّ ${Math.round(officeEvery/3600000)} ساعات`);
+/* V16.44: شبكةُ الأمان للمكتب كلَّ عشر دقائقَ — ٦ استعلاماتٍ × ١٤٤ = ٨٦٤ لكلِّ جهازٍ يوميًّا،
+   لا أقلَّ من خمس (فتصير ٢ ألفًا) ولا أكثرَ من ساعةٍ (فيُظنُّ العدّادُ ميتًا) */
+check(officeEvery >= 300000 && officeEvery <= 3600000, `ومن يُنصِت يسحب شبكةَ أمانٍ كلَّ ${Math.round(officeEvery/60000)} دقيقة — بين خمسٍ وستين`);
 
 /* ═══ يومُ الذروة من نطاق المشروع لا من عددِ الناس ═══
    كان يومُ الذروة «كلُّ شخصٍ عشرون مسحًا وثمانيةُ تركيبات» — أي ألفان وخمسمئةُ

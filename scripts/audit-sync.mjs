@@ -64,13 +64,15 @@ w.STATE.meta.online = true; w.FB.ready = true; w.FB.db = w.FB.db || {};
 w.FB.pull = () => Promise.resolve(0);
 const realFlush = w.CORE.flush;
 w.CORE.flush = () => { flushes++; return Promise.resolve(0); };
+/* V16.44: العدّادُ يعدُّ إلى السحب التالي — يُضبَط موعدُ آخر سحبٍ ليكون له ما يعدُّه */
+w.PULL_LAST = Date.now();
 w.liveTick();
 w.syncBadge();
 const cd = d.getElementById('syncCd');
 T(!!cd, 'عدّادٌ بجوار «آخر مزامنة»');
 const v1 = cd && cd.textContent; await wait(1300);
 T(cd && cd.textContent !== v1, 'ويتحرّك كلَّ ثانية', v1 + ' → ' + (cd && cd.textContent));
-w.SYNC_LEFT = 1; const p0 = pulls, f0 = flushes; await wait(1400);
+w.SYNC_LEFT = 1; w.PULL_LAST = 0; const p0 = pulls, f0 = flushes; await wait(1400);
 T(pulls === p0 + 1 && flushes === f0 + 1, 'عند الصفر: دفعٌ وسحبٌ مرةً واحدة', 'pulls +' + (pulls - p0) + ' flushes +' + (flushes - f0));
 T(w.SYNC_LEFT >= w.SYNC_CYCLE - 2, 'ثم يُعاد العدُّ من دقيقة', String(w.SYNC_LEFT));
 w.SYNC_LEFT = 42; d.querySelector('[data-pull]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
