@@ -119,7 +119,7 @@ function fakeDb(w, docsByCol, log){
 }
 { const { w } = await boot('viewer', 'وزارة');
   const sc = w.pullScope();
-  T(sc.cols.join(',') === 'stats', 'الوزارةُ الأرقامَ وحدَها');
+  T(sc.cols.join(',') === 'stats,recs,inss' && sc.mine === false, 'الوزارةُ الأرقامَ والزياراتِ والتركيباتِ — لتلوين خريطتها، قراءةً', sc.cols.join(','));
 }
 { const { w } = await boot('engineer', 'مهندس');
   w.STATE.meta.notifAt = 1; w.STATE.notifs = [];

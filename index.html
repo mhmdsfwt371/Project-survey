@@ -644,6 +644,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   border-radius:99px;background:#E05252;color:#fff;font-size:10.5px;font-weight:700;line-height:17px;
   text-align:center;box-shadow:0 0 0 2px var(--bg,#0d1117)}
 .notif-rows tbody tr{cursor:pointer}.notif-rows tbody tr:hover td{background:rgba(255,255,255,.04)}
+@keyframes npop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 
 /* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
    أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
@@ -757,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.35</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.36</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3513,6 +3514,8 @@ en:{
  'تنزيل':'Download',
  'لا صورة':'No image', 'تعذّر تجهيزُ الصورة':'Could not prepare the image', 'تعذّر التنزيل':'Download failed',
  'لمدير المشروع وحدَه':'Project manager only', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'Command sent — every open device is pulling now; closed ones when reopened', 'مزامنةٌ من المكتب — يُسحَب الآن':'Sync from the office — pulling now', 'زامِن كلَّ الأجهزة المفتوحة الآن':'Sync all open devices now', 'زامِن الجميع':'Sync all',
+ 'تغيّرت صلاحيتُك إلى':'Your role changed to', 'طُبِّقت الآن':'applied now',
+ 'متابعة العمل الميداني':'Field work tracking',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6140,6 +6143,8 @@ ur:{
  'تنزيل':'ڈاؤن لوڈ',
  'لا صورة':'کوئی تصویر نہیں', 'تعذّر تجهيزُ الصورة':'تصویر تیار نہیں ہو سکی', 'تعذّر التنزيل':'ڈاؤن لوڈ ناکام',
  'لمدير المشروع وحدَه':'صرف پروجیکٹ منیجر', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'حکم بھیج دیا — ہر کھلا آلہ ابھی لا رہا ہے، بند والے کھلنے پر', 'مزامنةٌ من المكتب — يُسحَب الآن':'دفتر سے مطابقت — ابھی لایا جا رہا ہے', 'زامِن كلَّ الأجهزة المفتوحة الآن':'تمام کھلے آلات ابھی ہم آہنگ کریں', 'زامِن الجميع':'سب ہم آہنگ',
+ 'تغيّرت صلاحيتُك إلى':'آپ کا کردار بدل گیا', 'طُبِّقت الآن':'ابھی نافذ',
+ 'متابعة العمل الميداني':'میدانی کام کی نگرانی',
 }
 };
 
@@ -8896,6 +8901,9 @@ function liveSmall(){
     watch('users', function(id, v){
       STATE.users = STATE.users || {};
       if (v) STATE.users[id] = v; else delete STATE.users[id];
+      /* دوري تغيّر من المكتب: يُطبَّق فورًا — كانت الوثيقةُ تُقرأ عند الدخول
+         وحدَه، فيبقى المشرفُ مشرفًا على جهازه بعد ترقيته حتى يخرج ويدخل */
+      if (v && id === STATE.meta.uid) roleWatch(v);
       /* شجرتي تغيّرت (وصل الناسُ بعد الدخول، أو نُقل أحد): يُعاد الإنصاتُ على
          الشجرة الجديدة ويُسحَب تاريخُ من انضمّ — مرةً، بعد سكونٍ قصير */
       if (scope.tree && treeKeys().sig !== sig0){
@@ -16375,7 +16383,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.35' + '.docx" download>⬇ '
+              +   'V16.36' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17242,7 +17250,9 @@ function pullScope(){
      فنيّيه وحدَهم — فمشرفٌ يفتح الخريطةَ يرى ما تمّ في المشعر كلِّه لا جزءًا منه.
      والشجرةُ تبقى للتكليف والمتابعة (لوحةُ الفريق) لا للرؤية. */
   if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
-  if (r === 'viewer') return { cols:['stats'], mine:false, tree:false, every:300000 };
+  /* الوزارةُ: الأرقامُ لِلَوحاتها، والزياراتُ والتركيباتُ لتلوين الخريطة — قراءةً
+     فقط. وكانت تسحب اللقطاتِ وحدَها فتظهر لها الخريطةُ رماديةً بلا حالة. */
+  if (r === 'viewer') return { cols:['stats','recs','inss'], mine:false, tree:false, every:21600000 };
   /* الميدانُ يُنصِت إلى ما كتبه هو (اعتمادٌ أو ردٌّ من المكتب يصل حيًّا) — والسحبُ
      الدوريُّ كان ثمانيةً وأربعين استعلامًا فارغًا في اليوم لكلِّ جهازٍ من مئةٍ وربع */
   return { cols:['recs','inss','dismantles','maints'], mine:true, tree:false, every:21600000 };
@@ -19061,6 +19071,28 @@ function epochApply(cloud){
   toast(t('بدايةٌ جديدة من المكتب — أُفرغ هذا الجهازُ ويُسحَب من القاعدة'));
   return true;
 }
+/* ═══ الدورُ يتبدّل تحت اليد ═══
+   الشاشةُ تُبنى من ROLE، والنطاقُ والإنصاتُ منه، والقاعدةُ تحكم بوثيقة الحساب.
+   فإن غُيّر الدورُ من المكتب طُبِّق على الفور: الصلاحياتُ تُعاد، والشاشةُ إن
+   لم تعد تُرى انتقل إلى أولى شاشاته، والإنصاتُ والسحبُ يُعادان بنطاقه الجديد. */
+function roleWatch(v){
+  var nr = isBossHere() ? 'admin' : (ROLES[v.role] ? v.role : 'tech');
+  if (nr === ROLE) return;
+  var was = (ROLES[ROLE] || {}).n || ROLE;
+  ROLE = nr; STATE.meta.role = nr;
+  if (v.name) STATE.meta.name = v.name;
+  CORE.saveSoon();
+  logEvent('تغيّر الدور — من ' + was + ' إلى ' + ((ROLES[nr] || {}).n || nr));
+  toast(t('تغيّرت صلاحيتُك إلى') + ' «' + t((ROLES[nr] || {}).n || nr) + '» — ' + t('طُبِّقت الآن'));
+  try { liveSmallStop(); } catch (e){ LS_ERR = e; }
+  STATE.meta.pullAt = {};
+  liveSmall(); PULL_ASK = true; syncCycle();
+  /* شاشةٌ (أو شريحةٌ) لم تعد تُرى: نُقلَ إلى أوّلِ ما يراه دورُه الجديد */
+  if (PARENT[CUR] && PARENT[CUR] !== CUR && !seesPage(CUR)) CUR = PARENT[CUR];
+  if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['over']).filter(seesPage)[0] || 'acct';
+  if (TABS[CUR]) PTAB[CUR] = tabCur(CUR);
+  render(1); syncBadge();
+}
 var VER_CHASE = 0;
 function verChase(cloud){
   STATE.appVerCloud = cloud;
@@ -20150,7 +20182,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
 
 
 
-PAGE.survey = { m:'الميدان', t:'دورة النقطة',
+PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني',
   l:'دورةُ النقطة كلُّها — مسحُها واعتمادُها وحلُّها وتدقيقُ تركيبها، وما أفاد به الميدان وما تعثّر.',
   body:function(){
     var head = tabHead('survey'), cur = tabCur('survey');
@@ -23580,9 +23612,44 @@ function notifPush(kind, text, opt){
   CORE.saveSoon();
   logEvent('إشعار — ' + kind + ' · ' + n.text.slice(0, 60));
   if (NOTIF_LV[n.lv] >= 2) notifSystem(n);
+  /* داخل التطبيق: بطاقةٌ عائمةٌ تُرى فورًا — كانت الإشعاراتُ تُخزَّن ويعدُّ الجرسُ
+     وحدَه، فمن لم ينظر إلى الشريط لم يعلم بشيءٍ حتى يفتح الصفحة. */
+  notifPop(n);
   syncBadge();
   if (CUR === 'notif') render(1);
   return n;
+}
+var POP_T = 0;
+function notifPop(n){
+  if (!n || typeof document === 'undefined' || !document.body) return;
+  var wrap = document.getElementById('notifPop');
+  if (!wrap){
+    wrap = document.createElement('div'); wrap.id = 'notifPop';
+    wrap.style.cssText = 'position:fixed;top:56px;inset-inline-end:12px;z-index:150;display:flex;flex-direction:column;gap:8px;max-width:min(360px,92vw)';
+    document.body.appendChild(wrap);
+  }
+  var lv = n.lv === 'عاجل' ? '#E05252' : (n.lv === 'مهم' ? '#E8C34B' : '#3B9BF5');
+  var el = document.createElement('div');
+  el.className = 'notif-pop'; el.dir = 'auto';
+  el.setAttribute('data-npop', n.id);
+  el.style.cssText = 'background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-inline-start:4px solid ' + lv
+    + ';border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;animation:npop .25s ease';
+  el.innerHTML = '<div style="font-weight:700;font-size:13px">' + esc(t(n.kind)) + '</div>'
+    + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(n.text) + '</div>';
+  wrap.appendChild(el);
+  clearTimeout(POP_T);
+  setTimeout(function(){ if (el.parentNode) el.remove(); }, 9000);
+  while (wrap.children.length > 3) wrap.removeChild(wrap.firstChild);
+}
+function notifPopGo(id){
+  var n = notifStore().filter(function(x){ return x.id === id; })[0];
+  var el = document.querySelector('[data-npop="' + id + '"]'); if (el) el.remove();
+  if (!n) return;
+  n.read = true;
+  if (n.site && n.kind === 'زيارة تمّت' && may('approve')){ SVA_ST = 'pending'; SVA_Q = n.site; SVA_PH = n.site; goPage('svappr'); render(1); return; }
+  if (n.site && n.kind === 'تركيب تمّ' && may('approve')){ goPage('qa'); render(1); return; }
+  if (n.site){ DETAIL_ID = n.site; goPage('site'); render(1); return; }
+  goPage('notif'); render(1);
 }
 
 /* إشعارُ النظام: يظهر خارج التطبيق. الإذنُ يُطلَب مرةً ولا يُلحَّ فيه. */
@@ -24882,7 +24949,10 @@ var ROLES = {
   viewer:{
     n:'وزارة', d:'متابعةٌ وتصدير — لا تكتب حرفًا، والهواتف محجوبة حتى في القواعد',
     guide:'دليل الوزارة — المتابعة',
-    nav:['map','over','now','repcenter','pace','inst','daily','reg','co','chalm','dis','budm','miles','ncr','guide','acct'],
+    /* V16.36: «الوتيرة» و«اليومي» و«التركيب» أرقامٌ تعرضها «نظرة عامة» و«مركز
+       التقارير» نفسُها — فحُذفت من الوزارة لتبقى شاشاتُها ستًّا يُتابَع منها
+       العمل: الخريطةُ ونظرةٌ عامةٌ والآنَ ومركزُ التقارير والمعالمُ والسجل. */
+    nav:['map','over','now','repcenter','miles','reg','co','chalm','dis','ncr','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -27181,7 +27251,7 @@ var NAV = [
   /* «الطلبات والمسح» كانت وحدةً وحدَها: طلباتٌ ودورةُ نقطةٍ واعتمادٌ — وكلُّها
      عملُ الميدان ومتابعتُه، فتُقرأ من مكانٍ واحد */
   { g:'الميدان', icon:'\u25F1', items:[
-      ['sites','المواقع'],['mywork','شغلي'],['survey','دورة النقطة'],['req','الطلبات والتوزيع'],
+      ['sites','المواقع'],['mywork','شغلي'],['survey','متابعة العمل الميداني'],['req','الطلبات والتوزيع'],
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
@@ -27637,6 +27707,8 @@ function onDocClick(e){
   if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return; }
 
+  var npo = e.target.closest('[data-npop]');
+  if (npo){ notifPopGo(npo.getAttribute('data-npop')); return; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return; }
