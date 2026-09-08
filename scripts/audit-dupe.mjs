@@ -23,7 +23,8 @@ T(/wasCloud && may\('users'\)\) CORE\.rm\('users', id\)/.test(js), 'وعند «�
 T(/function usrDupes\(\)/.test(js) && /function usrMerge\(/.test(js) && /data-usrmerge/.test(js), 'المكرَّرُ يُكشَف ويُدمَج');
 T(/function usrPwReset\(/.test(js) && /reissue:true/.test(js) && /data-usrpw/.test(js), 'زرُّ كلمةٍ جديدة يكتب طلبَ إعادة إصدار');
 T(/auth\.updateUser\(u\.uid, \{ password: pass/.test(prov) && /mustChange: true/.test(prov), 'والخادمُ يضبط الكلمةَ ويفرض تبديلَها أوّلَ دخول');
-T(/isCrewRole\(ROLE\) \? '' : '<button type="button" class="map-chip acc" data-apick="1">'/.test(js), 'زرُّ الإسناد ليس للطاقم');
+/* V16.40: الإسنادُ للمشرف فما فوق — لا للطاقم ولا للوزارة */
+T(/rankOf\(ROLE\) >= rankOf\('supervisor'\) && !isCrewRole\(ROLE\) \? '<button type=\"button\" class=\"map-chip acc\" data-apick=\"1\">'/.test(js), 'زرُّ الإسناد للمشرف فما فوق — لا للطاقم ولا للوزارة');
 
 async function boot(role, name){
   const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });

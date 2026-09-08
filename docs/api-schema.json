@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.39",
+  "app_version": "V16.40",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1508,6 +1508,7 @@
     "V16.36": "PAGE.survey.t = متابعة العمل الميداني؛ notifPop/notifPopGo بطاقة عائمة (#notifPop، data-npop) تُضغَط فتفتح الفعل؛ roleWatch(v) من إنصات users على uid نفسه: يبدّل ROLE ويعيد liveSmall ويصفّر pullAt وينقل الشاشة؛ viewer.nav مدموج (بلا pace/inst/daily/budm) وpullScope للوزارة stats+recs+inss.",
     "V16.38": "gitignore: النفيُ بعد النمط — _drive.json كان مُبتلَعًا بـbackups/latest/*.json فلم يصل المستودعَ ولم تُقرأ حالةُ الدرايف في «صحة النظام» قط؛ audit-backup: حارسٌ يشتقُّ قائمةَ ملفات الحالة من index.html ويسأل git check-ignore عن كلٍّ منها.",
     "V16.39": "liveSmall: إنصات users/{myUid} لمن rank<=30؛ roleWatch يستدعي presenceBeat(true)؛ provReask يكتب provision مباشرة ثم ghRunNow عبر pwFlow بدل الطابور.",
+    "V16.40": "الوزارة لحظية: pullScope viewer = ALL_WORK+stats؛ liveSmall يُنصِت للعمل والحضور للوزارة؛ LIVE_WORK_PAGES += co,plan,perf,ipc؛ خريطة: إسناد/تحديد للمشرف فما فوق، موقع جديد لمن may(edit)؛ JOBS_SEED += j_view (مراقب الوزارة → viewer).",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

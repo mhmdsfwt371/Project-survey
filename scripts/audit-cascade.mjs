@@ -131,7 +131,11 @@ function fakeDb(w, docsByCol, log){
 }
 { const { w } = await boot('viewer', 'وزارة');
   const sc = w.pullScope();
-  T(sc.cols.join(',') === 'stats,recs,inss' && sc.mine === false, 'الوزارةُ الأرقامَ والزياراتِ والتركيباتِ — لتلوين خريطتها، قراءةً', sc.cols.join(','));
+  T(sc.cols.join(',') === 'recs,inss,tasks,dismantles,maints,stats' && sc.mine === false, 'الوزارةُ العملَ كلَّه قراءةً — ماذا انتهى وماذا يجري ومن يفعله', sc.cols.join(','));
+  /* وإنصاتٌ حيٌّ كالمكتب: ما يحفظه الميدانُ يصل شاشتَها في ثوانٍ */
+  const lv = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, lv); w.liveSmall = w.__real.liveSmall; w.liveSmall();
+  const cols = lv.filter(x => x.listen).map(x => x.col);
+  T(['recs','inss','tasks','dismantles','maints','att'].every(c => cols.indexOf(c) > -1), 'وتُنصِت إلى العمل والحضور لحظةً بلحظة', cols.join(','));
 }
 { const { w } = await boot('engineer', 'مهندس');
   w.STATE.meta.notifAt = 1; w.STATE.notifs = [];

@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.39</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.40</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3516,6 +3516,7 @@ en:{
  'لمدير المشروع وحدَه':'Project manager only', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'Command sent — every open device is pulling now; closed ones when reopened', 'مزامنةٌ من المكتب — يُسحَب الآن':'Sync from the office — pulling now', 'زامِن كلَّ الأجهزة المفتوحة الآن':'Sync all open devices now', 'زامِن الجميع':'Sync all',
  'تغيّرت صلاحيتُك إلى':'Your role changed to', 'طُبِّقت الآن':'applied now',
  'متابعة العمل الميداني':'Field work tracking',
+ 'مراقب الوزارة':'Ministry observer', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'Monitors and exports — writes nothing; phone numbers are hidden.',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6145,6 +6146,7 @@ ur:{
  'لمدير المشروع وحدَه':'صرف پروجیکٹ منیجر', 'أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح':'حکم بھیج دیا — ہر کھلا آلہ ابھی لا رہا ہے، بند والے کھلنے پر', 'مزامنةٌ من المكتب — يُسحَب الآن':'دفتر سے مطابقت — ابھی لایا جا رہا ہے', 'زامِن كلَّ الأجهزة المفتوحة الآن':'تمام کھلے آلات ابھی ہم آہنگ کریں', 'زامِن الجميع':'سب ہم آہنگ',
  'تغيّرت صلاحيتُك إلى':'آپ کا کردار بدل گیا', 'طُبِّقت الآن':'ابھی نافذ',
  'متابعة العمل الميداني':'میدانی کام کی نگرانی',
+ 'مراقب الوزارة':'وزارت کا مبصر', 'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.':'نگرانی اور برآمد — کچھ نہیں لکھتا؛ فون نمبر پوشیدہ۔',
 }
 };
 
@@ -8849,7 +8851,7 @@ function statsHistory(days){
    دقيقتين وعند العودة من الخلفية: كثيرةٌ ولا تحتمل إنصاتًا دائمًا. */
 var LIVE_SMALL = [], LIVE_TICK = null;
 /* الشاشاتُ التي تُعاد رسمُها حين يصل عملٌ جديد */
-var LIVE_WORK_PAGES = ['over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','daily','pace','map'];
+var LIVE_WORK_PAGES = ['over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','daily','pace','map','co','plan','perf','ipc'];
 function liveSmallStop(){
   /* إلغاءُ إنصاتٍ مات لا يُبلَّغ عنه — لكنه يُسجَّل كي لا يُبتلَع صامتًا */
   LIVE_SMALL.forEach(function(f){
@@ -8961,7 +8963,7 @@ function liveSmall(){
       }, 200, ['_by', '==', STATE.meta.uid], ['_at', '>', tf]);
     });
   }
-  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'exec'){
+  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'exec' || effRole(ROLE) === 'viewer'){
     var t0 = Date.now() - 60000, tk = scope.tree ? treeKeys() : null;
     ['recs','inss','tasks','dismantles','maints'].forEach(function(col){
       var key = PULL_COL[col] || col;
@@ -8977,7 +8979,7 @@ function liveSmall(){
       else watch(col, apply, 500, ['_at', '>', t0]);
     });
   }
-  if (rankOf(ROLE) >= rankOf('supervisor')){
+  if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'viewer'){
     watch('att', function(id, v){
       STATE.att = STATE.att || {};
       if (v) STATE.att[id] = v; else delete STATE.att[id];
@@ -16397,7 +16399,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.39' + '.docx" download>⬇ '
+              +   'V16.40' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17266,7 +17268,10 @@ function pullScope(){
   if (rankOf(ROLE) >= rankOf('supervisor')) return { cols:ALL_WORK, mine:false, tree:false, every:21600000 };
   /* الوزارةُ: الأرقامُ لِلَوحاتها، والزياراتُ والتركيباتُ لتلوين الخريطة — قراءةً
      فقط. وكانت تسحب اللقطاتِ وحدَها فتظهر لها الخريطةُ رماديةً بلا حالة. */
-  if (r === 'viewer') return { cols:['stats','recs','inss'], mine:false, tree:false, every:21600000 };
+  /* الوزارةُ تُسلَّم حساباتِها وتسأل: ماذا انتهى، وماذا يجري الآن ومن يفعله،
+     وماذا سيحدث غدًا — والمهامُّ والفكُّ والصيانةُ جزءٌ من الجواب. تقرأ العملَ كلَّه
+     كالمكتب وتُنصِت إليه لحظةً بلحظة، ولا تكتب حرفًا: القاعدةُ تمنعها. */
+  if (r === 'viewer') return { cols:ALL_WORK.concat(['stats']), mine:false, tree:false, every:21600000 };
   /* الميدانُ يُنصِت إلى ما كتبه هو (اعتمادٌ أو ردٌّ من المكتب يصل حيًّا) — والسحبُ
      الدوريُّ كان ثمانيةً وأربعين استعلامًا فارغًا في اليوم لكلِّ جهازٍ من مئةٍ وربع */
   return { cols:['recs','inss','dismantles','maints'], mine:true, tree:false, every:21600000 };
@@ -19838,11 +19843,13 @@ function mapUIHtml(){
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
     +     (MAP_FILT_OPEN?'0':'1')+'">'
     +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' \u00b7 '+nm(layerFiltered().length):'')+'</button>'
-    +   (isCrewRole(ROLE) ? '' : '<button type="button" class="map-chip acc" data-apick="1">'
-    +     '\u2795 '+esc(t('إسناد'))+'</button>')
-    +   '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="'
+    /* الإسنادُ والتحديدُ لمن يُسنِد — المشرفُ فما فوق. والوزارةُ ترى الخريطةَ ولا
+       يُعرَض عليها زرٌّ يرفضها التطبيقُ بعد الضغط فتظنُّه عطلًا */
+    +   (rankOf(ROLE) >= rankOf('supervisor') && !isCrewRole(ROLE) ? '<button type="button" class="map-chip acc" data-apick="1">'
+    +     '\u2795 '+esc(t('إسناد'))+'</button>' : '')
+    +   (rankOf(ROLE) >= rankOf('supervisor') ? '<button type="button" class="map-chip'+(MAP_SELECT?' on':'')+'" data-selmap="'
     +     (MAP_SELECT?'0':'1')+'">'
-    +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>'
+    +     '\u2611 '+esc(t('تحديد'))+(SEL_N?' \u00b7 '+nm(SEL_N):'')+'</button>' : '')
     +   (MY_ONLY || isCrewRole(ROLE) ? '<button type="button" class="map-chip on" data-myonly="0">'
     +     '\u25C9 '+esc(t('مهامي'))+'</button>' : '')
     +   '<span class="chip-pair">'
@@ -19868,7 +19875,7 @@ function mapUIHtml(){
         + '</div></div>' : '')
 
     + '<div class="map-fab">'
-    +   btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"')
+    +   (may('edit') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')
     +   btn('\u25CE '+t('موقعي'),'btn-light btn-sm',' data-locate="1"')
     + '</div>'
 
@@ -23223,6 +23230,9 @@ var JOBS_SEED = [
   { id:'j_sup',   n:'مشرف',          role:'supervisor', d:'يوزّع العملَ على فرقه ويتابع تنفيذَه في المشاعر.' },
   { id:'j_ins',   n:'فني تركيب',     role:'cins',       d:'يركّب في الموقع ويوثّق بالصور.' },
   { id:'j_tech',  n:'مساعد فني',     role:'tech',       d:'يمسح النقاطَ ويحدّث حالتَها ويصوّر.' },
+  /* V16.40: حساباتُ الوزارة تُسلَّم — وكانت بلا وظيفةٍ فيُختار لها ما يرفع دورَها؛
+     الوظيفةُ «مراقب الوزارة» تشتقُّ الدورَ الصحيح: قراءةٌ بلا كتابة */
+  { id:'j_view',  n:'مراقب الوزارة', role:'viewer',     d:'يتابع ويصدّر — ولا يكتب حرفًا، والهواتفُ محجوبةٌ عنه.' },
   { id:'j_drv',   n:'سائق',          role:'tech',       d:'ينقل الفريقَ والعدّةَ — وتُسنَد إليه سيارة.' },
   { id:'j_view',  n:'مراقب وزاري',   role:'viewer',     d:'يقرأ التقدّمَ ولا يكتب شيئًا.' }
 ];

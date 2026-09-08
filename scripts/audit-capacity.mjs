@@ -73,9 +73,9 @@ check(writes <= CAP.writes * 0.8,
    يسحب الكلَّ ويُنصِت إليه فوق ذلك. فصار النطاقُ شجرةً والتسليمُ مرةً. */
 const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
              && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
-             && /if \(r === 'viewer'\) return \{ cols:\['stats','recs','inss'\]/.test(src)
+             && /if \(r === 'viewer'\) return \{ cols:ALL_WORK\.concat\(\['stats'\]\)/.test(src)
              && /cols:\['recs','inss','dismantles','maints'\], mine:true/.test(src);
-check(layered, 'السحبُ ثلاثُ طبقات: من فوق الفنيِّ الكلَّ، والوزارةُ الأرقامَ، والميدانُ ما كتبه');
+check(layered, 'السحبُ طبقتان: من فوق الفنيِّ والوزارةُ الكلَّ (قراءةً)، والميدانُ ما كتبه');
 const scoped = /if \(sc\.mine && c !== 'stats' && me\) q = q\.where\('_by', '==', me\)/.test(src);
 check(scoped, 'والميدانُ لا يقرأ سجلاتِ غيره');
 const officeEvery = num(/mine:false, tree:false, every:(\d+)/, 21600000);
