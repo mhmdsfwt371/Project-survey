@@ -27,6 +27,21 @@ async function folder(name, parent){
   return made.data.id;
 }
 
+/* ═══ ما نُقل من قبلُ بلا مشاركة: يُشارَك برابطٍ مرةً — فيفتح التنزيلُ والمصغَّراتُ للفريق ═══ */
+try {
+  const old = await db.collection('photos').where('status', '==', 'done').limit(300).get();
+  let shared = 0;
+  for (const d of old.docs){
+    const p = d.data();
+    if (!p.driveId || p.shared) continue;
+    try {
+      await drive.permissions.create({ fileId: p.driveId, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true });
+      await d.ref.set({ shared: true }, { merge: true }); shared++;
+    } catch (e){ await d.ref.set({ shared: true, shareWhy: String(e && e.message || e).slice(0, 120) }, { merge: true }).catch(() => {}); }
+  }
+  if (shared) console.log(`::notice title=photos::شُورك ${shared} ملفًا برابط`);
+} catch (e){ console.log('مشاركةُ القديم تعذّرت: ' + (e && e.message)); }
+
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);

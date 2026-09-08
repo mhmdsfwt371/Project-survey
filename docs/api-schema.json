@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.31",
+  "app_version": "V16.32",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1500,7 +1500,8 @@
     "V16.28": "usrPwReset: كتابة مباشرة provision/{user}.set (لا CORE queue) ← ghRunNow ← pwFlowWatch (get كل 5 ث حتى done/error/36 محاولة)؛ PW_FLOW/pwFlowHtml بطاقة أعلى الحسابات: الكلمة كبيرة + نسخ + wa.me + حالات writing/run/wait/done/error/slow/nokey.",
     "V16.29": "ghcfg: read لـ admin/exec/myRank≥70، write لـ admin (القواعد)؛ الجلب عند الدخول لمن may(roles)||may(provision)||exec؛ ghRunNow بلا مفتاح لا يفتح GitHub — رسالة تقول من يحفظه.",
     "V16.30": "cardRaw(titleHtml) لعناوين اعتماد الزيارات (كانت تُهرَّب فتظهر الوسوم)؛ photoGalleryHtml(site)+photoCount: صور القاعدة (data إن بقيت) والدرايف (thumbnail?id=driveId) وطابور الجهاز وPHOTO_FAIL بشاراتها؛ زر data-svph في بطاقة الاعتماد (SVA_PH)؛ photos-sync يشارك الملف anyone/reader؛ data-ngo يفتح الشريحة بـgoPage(tab) ويفتح المعرض.",
-    "V16.31": "syncBadge: زر .tb-bell دائم بجوار المزامنة + .tb-badge حمراء بعدد غير المقروء (كان \\u1F514 هروبًا ناقصًا يرسم ὑ4)؛ .notif-rows: الصف كله يضغط فيُفعَّل أول data-ngo/data-site فيه."
+    "V16.31": "syncBadge: زر .tb-bell دائم بجوار المزامنة + .tb-badge حمراء بعدد غير المقروء (كان \\u1F514 هروبًا ناقصًا يرسم ὑ4)؛ .notif-rows: الصف كله يضغط فيُفعَّل أول data-ngo/data-site فيه.",
+    "V16.32": "FILT.life (data-fl) في filtPass/filtOn/مفتاح الكاش وصف حالات في catBar بأعداد lifeOf؛ معرض الصور: زر تنزيل (uc?export=download&id= للدرايف، والصورة نفسها download= لما في القاعدة/الطابور)؛ photos-sync يشارك الملفات القديمة (done بلا shared) برابط ويعلّمها shared:true."
   },
   "map_and_geolocation": {
     "tile_layers": {
