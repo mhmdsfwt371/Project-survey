@@ -68,12 +68,24 @@ function fakeDb(w, docsByCol, log){
   w.FB.ready = true; w.FB.db = fakeDb(w, { recs:[{ id:'R-new', _at:Date.now(), by:'فني', access:'تم الوصول', review:'pending' }],
     tasks:[{ id:'TK-visit-X', site:w.STATE.sites[0].id, kind:'visit', to:'فني', assignedTo:'u-t', status:'مطلوب', _at:Date.now() }],
     dismantles:[{ id:'D1', status:'مجدول' }] }, log);
-  w.STATE.meta.lastSync = Date.now(); w.STATE.meta.pullAt = { recs:T0, inss:T0, tasks:T0 };
+  /* V16.37: المؤشِّرُ يحمل بصمةَ النطاق — تُوضَع كما يضعها التطبيقُ وإلا صُفِّرت بحقّ */
+  w.STATE.meta.lastSync = Date.now();
+  const sc0 = w.pullScope();
+  w.STATE.meta.pullAt = { recs:T0, inss:T0, tasks:T0,
+    __sig: w.effRole(w.ROLE) + '|' + sc0.cols.join(',') + '|' + (sc0.mine ? 'mine' : 'all') + '|' + (sc0.tree ? w.treeKeys().sig : '-') };
   w.pullDelta = w.__real.pullDelta; /* الحقيقية لا الصورية */
   const got = await w.pullDelta();
   const rq = log.find(x => x.col === 'recs');
   const atW = rq && rq.wheres.find(x => x[0] === '_at');
   T(!!atW && atW[1] === '>' && atW[2] === T0 - 120000, 'الفارقُ من مؤشِّر السحب ناقصَ دقيقتين لا من «آخر مزامنة»', atW && String(atW[2] - T0));
+  /* V16.37: نطاقٌ اتّسع (مشرفٌ صار يرى الكلَّ) ومؤشِّرٌ قديم = سحبةٌ باردةٌ لا فارقيّة —
+     وإلا لم يصل ما كتبه الآخرون قبل التوسيع أبدًا. */
+  log.length = 0;
+  w.STATE.meta.pullAt = { recs:T0, inss:T0, tasks:T0, dismantles:T0, maints:T0, __sig:'نطاقٌ قديم' };
+  await w.pullDelta();
+  const cold = log.find(x => x.col === 'recs');
+  T(!!cold && !cold.wheres.some(x => x[0] === '_at'), 'ونطاقٌ اتّسع يُصفّر المؤشِّرَ فيسحب باردًا — لا يبقى ما فات', cold && JSON.stringify(cold.wheres));
+  T(String(w.STATE.meta.pullAt.__sig).indexOf('|') > -1, 'والبصمةُ الجديدةُ تُحفَظ فلا تتكرر السحبةُ الباردة', String(w.STATE.meta.pullAt.__sig).slice(0, 40));
   T(!rq.wheres.some(x => x[0] === '_by'), 'وبلا قيدِ «ما كتبتُه أنا»');
   const dq = log.find(x => x.col === 'dismantles');
   T(!!dq && !dq.wheres.some(x => x[0] === '_at') && dq.lim >= 6000, 'والباردةُ بلا مؤشِّرٍ وبسقفٍ يسع ألفًا وسبعمئة', dq && String(dq.lim));

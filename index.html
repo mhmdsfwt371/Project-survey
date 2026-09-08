@@ -758,7 +758,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.36</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.37</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -16383,7 +16383,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.36' + '.docx" download>⬇ '
+              +   'V16.37' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17274,10 +17274,15 @@ function pullDelta(){
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
   var wasAsk = PULL_ASK; PULL_ASK = false;
   if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
-  /* الشجرةُ إن تغيّرت (أُضيف مشرفٌ أو نُقل فنيٌّ) صار الفارقُ كاذبًا: من انضمّ
-     له تاريخٌ قبل المؤشِّر — فيُصفَّر المؤشِّرُ وتُسحَب الشجرةُ باردةً */
+  /* ═══ المؤشِّرُ يتبع النطاق ═══
+     الفارقيُّ يجلب ما كُتب بعد آخر سحبة. فإن اتّسع النطاقُ — شجرةٌ تغيّرت، أو
+     مشرفٌ صار يرى الكلَّ بعد أن كان يرى فنيّيه، أو رُقّي دورُه — بقي المؤشِّرُ
+     على حاله فلا يُجلَب إلا الجديدُ، وما كتبه الآخرون **قبل** التوسيع لا يصل
+     أبدًا: يفتح المشرفُ الخريطةَ فيرى شغلَه وحدَه ويظنُّ الصلاحيةَ ناقصة.
+     فالبصمةُ صارت للنطاق كلِّه — أيُّ تبدّلٍ فيه يُصفّر المؤشِّرَ ويسحب باردًا. */
   var tk = sc.tree ? treeKeys() : null;
-  if (tk && at.__sig !== tk.sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = tk.sig; }
+  var sig = effRole(ROLE) + '|' + sc.cols.join(',') + '|' + (sc.mine ? 'mine' : 'all') + '|' + (tk ? tk.sig : '-');
+  if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; }
   return Promise.all(sc.cols.map(function(c){
     var key = PULL_COL[c] || c;
     if (!STATE[key]) STATE[key] = {};
