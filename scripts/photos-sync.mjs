@@ -46,6 +46,9 @@ for (const d of snap.docs){
       media: { mimeType: 'image/jpeg', body: Readable.from(buf) },
       fields: 'id,webViewLink', supportsAllDrives: true
     });
+    /* رابطٌ يفتح لكلِّ من عنده الرابط — فتظهر الصورةُ في معرض التطبيق لكلِّ الفريق
+       لا لصاحب الدرايف وحدَه؛ وإن تعذّرت المشاركةُ بقي الملفُ مرفوعًا */
+    await drive.permissions.create({ fileId: made.data.id, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true }).catch(() => {});
     await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(),
                       data: admin.firestore.FieldValue.delete() }, { merge: true });
     done++;
