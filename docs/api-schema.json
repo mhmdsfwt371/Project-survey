@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.22",
+  "app_version": "V16.23",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1491,7 +1491,8 @@
     "V16.19": "NAV: وحدة «الطلبات والمسح» أُزيلت وصفحتاها survey/req دخلتا «الميدان» (PAGE.m)؛ تبويب ready في survey: asnReadyList(install) + data-asnq=install + data-golayer؛ الإشعار الفعّال: data-ngo (svappr/qa) يفتح دورة النقطة على التبويب والنقطة (SVA_Q) ويعلّم الإشعار مقروءًا، data-site لإسناد/اعتماد/ردّ.",
     "V16.20": "العهد: settings/app.epoch يكتبه wipeGo؛ epochApply(cloud) يفرغ WIPE_KEYS+queue+poison+notifs ويصفّر pullAt ويحفظ meta.epoch؛ يُقرأ في pullStatic قبل pullStatic2 (EPOCH_CHECKED يحجب flush) وفي إنصات settings/app. pendHasAccount/pendDel (data-pnddel). mywork:board لوحة الفريق (underNames: مُسند مفتوح/زيارات اليوم/بانتظار الاعتماد/مُركّب/آخر ظهور من presence).",
     "V16.21": "لوحة الفريق: الصفوف للميدان وحده — supervisor أو isCrewRole (tech/cins/casm/cprep/helper/driver)؛ المهندسون لا يُعرَضون لأن النقاط والزيارات لهم لا للمهندس.",
-    "V16.22": "لوحة الفريق: الكل تحتي (underNames) بمرشّح الدور BOARD_ROLE (data-boardrole، شرائح بالعدد مرتبة بالرتبة) + عمود اعتمادات اليوم (reviewBy/revisitBy)."
+    "V16.22": "لوحة الفريق: الكل تحتي (underNames) بمرشّح الدور BOARD_ROLE (data-boardrole، شرائح بالعدد مرتبة بالرتبة) + عمود اعتمادات اليوم (reviewBy/revisitBy).",
+    "V16.23": "nsk14.page (cur+tab) يُحفَظ في render ويُستعاد في enterShell (seesPage، لا site)؛ nsk14.session يُكتب في enterShell و#login.resuming يخفي النموذج أثناء autoSignIn؛ xlsPage (data-xlspage ⬇ بجوار تصدير): يبني body() في عنصر منفصل مع تعطيل slice(0,n≥10) على المصفوفات (XLS_ALL)، ويحوّل كل table و.list (li-t/li-s/li-end) أوراقًا باسم البطاقة."
   },
   "map_and_geolocation": {
     "tile_layers": {
