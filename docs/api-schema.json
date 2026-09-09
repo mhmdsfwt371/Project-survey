@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.75",
+  "app_version": "V16.76",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1543,6 +1543,7 @@
     "V16.73": "استيراد KMZ/KML: unzipKml (DecompressionStream deflate-raw) + kmlPlaces (name|n، description، Point/Polygon/LineString بمركزه، ExtendedData، والتقاط شاخص/مربع/شركة من الوصف) + geoM/nameKey/nameLike + kmiClassify (same ≤١٥م · doubt ≤٧٥م باسمٍ مشابه · new) + معاينة kmiCard وkmiApply يكتب newsites بمعرّف NSK-{ZONE}-{TYPE}-Kxxx وsrc:kmz.",
     "V16.74": "التوأم الرقمي: settings/twin {d:{site:{ts,vb,sl,rd,rs,on}},at,src,n} تكتبه scripts/telemetry-ingest.mjs من TELEMETRY_URL (JSON) كل ١٠ دقائق (provision.yml)؛ في التطبيق twinOf/twinHealth (online/lowbat/silent/unknown/notins بعتبات TWIN_SILENT_H=2h وTWIN_VB_LOW=11.8V)/twinNeighbors/twinStats، PAGE.twin بلوحة الطبقات الثلاث و«لو تعطّل»، SHEETS.twin، إنصات settings/twin للمكتب والوزارة، ألوان الصحة في العرض الثلاثي.",
     "V16.75": "بوابةُ الدفع: .githooks/pre-push يُثبَّت تلقائيًّا (core.hooksPath) ويرفض دفعةً لم تُختَم شجرتُها (.git/nusuk-gate = git write-tree للشجرة كما ستُلتزَم) بحارسٍ كاملٍ أخضر، مخرج الطوارئ NUSUK_NO_GATE=1؛ check-version.mjs يقرأ الجرودَ من docs-check.yml عبر scripts/cloud-steps.mjs (localSteps: كل خطوة إلا npm والحارس نفسه) بأسمائها وبيئتها ويختم عند النجاح ويفحص وجود الخُطّاف وصلاحيته؛ quick.mjs يشغّل الحارسَ السريعَ أوّلًا (NUSUK_SKIP_AUDITS=1) ويختار الجرودَ بالأثر التلقائيّ (autoPick: معرِّفات نادرة ≤60 ظهورًا) إلى جانب الخريطة، وALWAYS += pages/tabs/fit؛ role-manuals.mjs توليدٌ ثابتُ البايتات (STAMP ثابت في core.xml ومداخل الضغط عبر jszip) فلا يتّسخ docs/manuals بعد خطوة الأدلة، والحارسُ يُرجع ملفات docx إن اختلفت بلا فرقٍ في الفهرس؛ NAV: map3d في مجموعة المتابعة وPAGE.map3d.m=المتابعة؛ خيارا استيراد KMZ بقيمة value ثابتة (audit-lang).",
+    "V16.76": "الخريطة ثلاثيةً كوضعٍ لا صفحة: زر data-m3 على شريط الخريطة يبدّل MAP_3D؛ #m3Box حاويةٌ فوق #mapBox تحت #mapUI؛ m3Points()=layerFiltered()+mapColorOf() (القائمة والألوان نفسها)، m3Cols() مضلّعات 4.4م للأعمدة (fill-extrusion لا يرفع نقطة)، m3Layers على style.load (dem/hillshade/terrain + nskc + nsk)، m3Click = نقرة المسطّح (تحديد أو POP_SITE)، m3From2D/m3Off تزامن الكاميرا، m3Restyle مع القمر الصناعي (نمط raster esri)، mapPaint يستدعي m3Paint. أُزيل التوأم الرقمي كاملًا: PAGE.twin/map3d، twin*، TWIN_H، SHEETS.twin، EXP_SECS/EXP_PAGE، settings/twin (سحب وإنصات وحالة)، telemetry-ingest.mjs وخطوته. sw.js: بلاطات openfreemap وelevation-tiles شبكةٌ فقط. جرد audit-map3d.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

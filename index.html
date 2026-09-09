@@ -562,6 +562,13 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 }
 #mapBox{position:absolute;inset:0}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
+#m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
+#m3Box[hidden]{display:none}
+#m3Box .maplibregl-ctrl-bottom-right{inset-block-end:calc(150px + env(safe-area-inset-bottom,0px));inset-inline-end:14px}
+#m3Box .maplibregl-ctrl-bottom-left{inset-block-end:calc(110px + env(safe-area-inset-bottom,0px))}
+#m3Box .maplibregl-ctrl-group{background:rgba(18,23,28,.94);border:1px solid #2A333C}
+#m3Box .maplibregl-ctrl-group button+button{border-top-color:#2A333C}
+#m3Box .maplibregl-ctrl-icon{filter:invert(1)}
 #mapUI > *{pointer-events:auto}
 #mapUI .pop{pointer-events:auto}
 .content[hidden]{display:none}
@@ -770,7 +777,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.75</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.76</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -787,6 +794,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
     </header>
     <div class="mapwrap" id="mapWrap" hidden>
       <div id="mapBox"></div>
+      <div id="m3Box" hidden></div>
       <div id="mapUI"></div>
     </div>
     <div class="content" id="content"></div>
@@ -3558,6 +3566,7 @@ en:{
  'العرض الثلاثي':'3D view', 'تضاريسُ المشاعر وأعمدةُ التركيب بارتفاعها الحقيقيّ ولونِ حالتها — للعرض والمراجعة، لا للعمل الميداني.':'Holy-sites terrain and installation poles at their real height, coloured by state — for review and presentation, not field work.', 'كل المشاعر':'All sites', 'التضاريس':'Terrain', 'الخريطة المسطّحة':'Flat map', 'ارتفاعُ العمود هو ارتفاعُ التركيب المسجَّل في نموذج المسح — وما لم يُسجَّل يُعرَض بارتفاعٍ افتراضيٍّ بحسب النوع. اسحب بإصبعين لتدوير المشهد وإمالته.':'The pole height is the installation height recorded in the survey form; what was not recorded is shown at a default height by type. Drag with two fingers to rotate and tilt.', 'تعذّر تحميلُ محرّك العرض الثلاثي':'Could not load the 3D engine', 'تأخّر تحميلُ محرّك العرض':'The 3D engine took too long to load',
  'استيراد KMZ / KML من جوجل إيرث':'Import KMZ / KML from Google Earth', 'يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.':'The file is read and previewed before anything is written. A point within fifteen metres of one of ours is the same point — whatever its name — and is not added. Beyond that it is added with an ID from our system and the category you choose.', 'اختر ملف KMZ أو KML':'Choose a KMZ or KML file', 'إلغاء المعاينة':'Cancel preview', 'يُقرأ الملف…':'Reading the file…', 'موجودة عندنا':'Already ours', 'مشكوكٌ فيها':'Uncertain', 'جديدة':'New', 'مضلّع — أُخذ مركزُه':'Polygon — centre taken', 'خط — أُخذ مركزُه':'Line — centre taken', 'في الملف':'In the file', 'ستُضاف':'Will be added', 'معاينةُ الملف':'File preview', 'الاسم في الملف':'Name in the file', 'الحكم':'Verdict', 'أقربُ نقطةٍ عندنا':'Nearest point of ours', 'حقولٌ قرأناها':'Fields we read', 'أضِف المحدَّد':'Add selected', 'حدّد الجديدةَ فقط':'Select new only', 'ألغِ التحديد':'Clear selection', '«موجودة عندنا» لا تُضاف افتراضًا — وإن أضفتها صارت نقطتين في موضعٍ واحد. و«مشكوكٌ فيها» قرارُك: قريبةٌ واسمُها يشبه، فراجعها على الخريطة قبل أن تقرّر.':'“Already ours” is not added by default — adding it makes two points in one place. “Uncertain” is your call: it is close and its name resembles ours, so review it on the map first.', 'الاستيراد لمن يكتب في الميدان':'Import is for those who write field data', 'تعذّرت قراءةُ الملف — تأكّد أنه KMZ أو KML':'Could not read the file — make sure it is KMZ or KML', 'لا نقاطَ في الملف':'No points in the file', 'لم تُحدَّد نقطةٌ للإضافة':'No point selected to add', 'نقاطٌ مستورَدة':'Imported points', 'نقطةً أُضيفت من ملف':'points added from a file', 'نقطةً أُضيفت':'points added',
  'التوأم الرقمي':'Digital twin', 'كلُّ قارئٍ بطبقاته الثلاث: ما هو فيزيائيًّا، وممَّ يتكوّن، وما يقوله الآن — وسؤالُ «لو تعطّل».':'Every reader in its three layers: what it is physically, what it is made of, and what it says now — plus the “what if it fails” question.', 'نبضةٌ خلال الساعتين وبطاريةٌ سليمة.':'Heartbeat within two hours and a healthy battery.', 'بطارية منخفضة':'Low battery', 'الجهدُ تحت الحدِّ — تُزار قبل أن تصمت.':'Voltage below threshold — visit before it goes silent.', 'صامتة':'Silent', 'لا نبضةَ منذ أكثر من ساعتين — فحصُ الكهرباء أو الشبكة.':'No heartbeat for over two hours — check power or network.', 'بلا تليمتري':'No telemetry', 'مركَّبةٌ ولم يصل منها شيءٌ بعد — أو مصدرُ التليمتري لم يُوصَل.':'Installed but nothing received yet — or the telemetry source is not connected.', 'لم تُركَّب بعد':'Not installed yet', 'التوأمُ يكتمل بالتركيب.':'The twin completes with installation.', 'الطبقة الفيزيائية':'Physical layer', 'التكوين':'Configuration', 'الحالة الحيّة':'Live state', 'المتاح (عرض × ارتفاع)':'Available (width × height)', 'تحديات الموقع':'Site challenges', 'رُكّبت بواسطة':'Installed by', 'القطع والأرقام التسلسلية':'Parts and serials', 'آخر نبضة':'Last heartbeat', 'جهد البطارية':'Battery voltage', 'شحن اللوح':'Solar charge', 'القراءات / ساعة':'Reads / hour', 'قوة الإشارة':'Signal strength', 'التليمتري':'Telemetry', 'لم يصل من هذا الجهاز شيءٌ بعد':'Nothing received from this device yet', 'لو تعطّل هذا القارئ':'If this reader fails', 'يغطّي مكانَه':'Its place is covered by', 'قارئٌ متصلٌ في نطاق ٦٠ م':'online readers within 60 m', 'لا قارئَ متصلًا في نطاق ٦٠ م — تعطّلُه فجوةُ تغطية':'No online reader within 60 m — its failure is a coverage gap', 'أسنِد صيانة':'Assign maintenance', 'التوأم':'Twin', 'مركَّبة':'Installed', 'القارئات المركَّبة':'Installed readers', 'إكسل — التوأم':'Excel — twin', 'ابحث بالنقطة أو الشركة':'Search by point or company', 'آخر لقطة تليمتري':'Last telemetry snapshot', 'لم يُوصَل مصدرُ التليمتري بعد — الطبقتان الفيزيائيةُ والتكوينيةُ جاهزتان، والحالةُ الحيّةُ تظهر فورَ وصول أول لقطة.':'Telemetry source not connected yet — the physical and configuration layers are ready; the live state appears with the first snapshot.', 'لا قارئاتٍ في هذه الخانة.':'No readers in this bucket.', 'لا قارئاتٍ مركَّبةً بعد — التوأمُ يبدأ مع أول تركيب.':'No readers installed yet — the twin starts with the first installation.', 'مصدرُ التليمتري — عقدُ الربط':'Telemetry source — integration contract', 'يُضبَط سرٌّ باسم TELEMETRY_URL يعيد JSON بهذا الشكل — يُقرأ كلَّ عشر دقائق ويُكتَب لقطةً واحدة:':'Set a secret named TELEMETRY_URL returning JSON of this shape — read every ten minutes and written as one snapshot:', 'ts زمنُ آخر نبضة (مللي ثانية) · vb جهدُ البطارية · sl شحنُ اللوح ٪ · rd القراءاتُ في الساعة · rs قوةُ الإشارة dBm. كلُّ حقلٍ اختياريٌّ سوى site وts.':'ts last heartbeat (ms) · vb battery voltage · sl solar % · rd reads per hour · rs signal dBm. Everything is optional except site and ts.', 'التوأم الرقمي — صحة القارئات':'Digital twin — reader health',
+ '٣د':'3D', '٢د':'2D', 'الخريطة بالتضاريس والأعمدة':'Map with terrain and columns', 'العودة إلى الخريطة المسطّحة':'Back to the flat map',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6217,6 +6226,7 @@ ur:{
  'العرض الثلاثي':'تھری ڈی منظر', 'تضاريسُ المشاعر وأعمدةُ التركيب بارتفاعها الحقيقيّ ولونِ حالتها — للعرض والمراجعة، لا للعمل الميداني.':'مشاعر کی زمینی ساخت اور تنصیب کے کھمبے — جائزے کے لیے۔', 'كل المشاعر':'تمام مشاعر', 'التضاريس':'زمینی ساخت', 'الخريطة المسطّحة':'ہموار نقشہ', 'ارتفاعُ العمود هو ارتفاعُ التركيب المسجَّل في نموذج المسح — وما لم يُسجَّل يُعرَض بارتفاعٍ افتراضيٍّ بحسب النوع. اسحب بإصبعين لتدوير المشهد وإمالته.':'کھمبے کی اونچائی سروے فارم سے — دو انگلیوں سے گھمائیں۔', 'تعذّر تحميلُ محرّك العرض الثلاثي':'تھری ڈی انجن لوڈ نہ ہوا', 'تأخّر تحميلُ محرّك العرض':'انجن لوڈ ہونے میں تاخیر',
  'استيراد KMZ / KML من جوجل إيرث':'گوگل ارتھ سے KMZ/KML درآمد', 'يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.':'فائل پہلے دکھائی جاتی ہے۔ پندرہ میٹر کے اندر نقطہ وہی سمجھا جاتا ہے۔', 'اختر ملف KMZ أو KML':'KMZ یا KML فائل چنیں', 'إلغاء المعاينة':'معائنہ منسوخ', 'يُقرأ الملف…':'فائل پڑھی جا رہی ہے…', 'موجودة عندنا':'ہمارے پاس موجود', 'مشكوكٌ فيها':'مشکوک', 'جديدة':'نئی', 'مضلّع — أُخذ مركزُه':'پولیگون — مرکز لیا', 'خط — أُخذ مركزُه':'لائن — مرکز لیا', 'في الملف':'فائل میں', 'ستُضاف':'شامل ہوں گی', 'معاينةُ الملف':'فائل کا معائنہ', 'الاسم في الملف':'فائل میں نام', 'الحكم':'فیصلہ', 'أقربُ نقطةٍ عندنا':'ہمارا قریب ترین نقطہ', 'حقولٌ قرأناها':'پڑھے گئے خانے', 'أضِف المحدَّد':'منتخب شامل کریں', 'حدّد الجديدةَ فقط':'صرف نئی منتخب', 'ألغِ التحديد':'انتخاب ہٹائیں', '«موجودة عندنا» لا تُضاف افتراضًا — وإن أضفتها صارت نقطتين في موضعٍ واحد. و«مشكوكٌ فيها» قرارُك: قريبةٌ واسمُها يشبه، فراجعها على الخريطة قبل أن تقرّر.':'«موجود» بطور طے شدہ شامل نہیں ہوتی۔ «مشکوک» آپ کا فیصلہ ہے۔', 'الاستيراد لمن يكتب في الميدان':'درآمد میدانی لکھنے والوں کے لیے', 'تعذّرت قراءةُ الملف — تأكّد أنه KMZ أو KML':'فائل پڑھی نہ جا سکی', 'لا نقاطَ في الملف':'فائل میں نقاط نہیں', 'لم تُحدَّد نقطةٌ للإضافة':'کوئی نقطہ منتخب نہیں', 'نقاطٌ مستورَدة':'درآمد شدہ نقاط', 'نقطةً أُضيفت من ملف':'فائل سے نقاط شامل', 'نقطةً أُضيفت':'نقاط شامل',
  'التوأم الرقمي':'ڈیجیٹل ٹوئن', 'كلُّ قارئٍ بطبقاته الثلاث: ما هو فيزيائيًّا، وممَّ يتكوّن، وما يقوله الآن — وسؤالُ «لو تعطّل».':'ہر ریڈر تین تہوں میں: طبعی، ترکیب، اور موجودہ حالت۔', 'نبضةٌ خلال الساعتين وبطاريةٌ سليمة.':'دو گھنٹے میں دھڑکن اور بیٹری ٹھیک۔', 'بطارية منخفضة':'کم بیٹری', 'الجهدُ تحت الحدِّ — تُزار قبل أن تصمت.':'وولٹیج کم — خاموش ہونے سے پہلے دورہ۔', 'صامتة':'خاموش', 'لا نبضةَ منذ أكثر من ساعتين — فحصُ الكهرباء أو الشبكة.':'دو گھنٹے سے دھڑکن نہیں — بجلی یا نیٹ ورک جانچیں۔', 'بلا تليمتري':'ٹیلی میٹری نہیں', 'مركَّبةٌ ولم يصل منها شيءٌ بعد — أو مصدرُ التليمتري لم يُوصَل.':'نصب مگر ابھی کچھ موصول نہیں۔', 'لم تُركَّب بعد':'ابھی نصب نہیں', 'التوأمُ يكتمل بالتركيب.':'ٹوئن تنصیب سے مکمل ہوتا ہے۔', 'الطبقة الفيزيائية':'طبعی تہہ', 'التكوين':'ترکیب', 'الحالة الحيّة':'لائیو حالت', 'المتاح (عرض × ارتفاع)':'دستیاب (چوڑائی × اونچائی)', 'تحديات الموقع':'مقام کے چیلنجز', 'رُكّبت بواسطة':'نصب کنندہ', 'القطع والأرقام التسلسلية':'پرزے اور سیریل', 'آخر نبضة':'آخری دھڑکن', 'جهد البطارية':'بیٹری وولٹیج', 'شحن اللوح':'سولر چارج', 'القراءات / ساعة':'ریڈز فی گھنٹہ', 'قوة الإشارة':'سگنل کی طاقت', 'التليمتري':'ٹیلی میٹری', 'لم يصل من هذا الجهاز شيءٌ بعد':'اس آلے سے ابھی کچھ نہیں', 'لو تعطّل هذا القارئ':'اگر یہ ریڈر ناکام ہو', 'يغطّي مكانَه':'اس کی جگہ پوری کرے گا', 'قارئٌ متصلٌ في نطاق ٦٠ م':'۶۰ میٹر میں آن لائن ریڈر', 'لا قارئَ متصلًا في نطاق ٦٠ م — تعطّلُه فجوةُ تغطية':'۶۰ میٹر میں کوئی آن لائن ریڈر نہیں — خلا', 'أسنِد صيانة':'مرمت تفویض کریں', 'التوأم':'ٹوئن', 'مركَّبة':'نصب شدہ', 'القارئات المركَّبة':'نصب شدہ ریڈرز', 'إكسل — التوأم':'ایکسل — ٹوئن', 'ابحث بالنقطة أو الشركة':'نقطہ یا کمپنی سے تلاش', 'آخر لقطة تليمتري':'آخری ٹیلی میٹری سنیپ شاٹ', 'لم يُوصَل مصدرُ التليمتري بعد — الطبقتان الفيزيائيةُ والتكوينيةُ جاهزتان، والحالةُ الحيّةُ تظهر فورَ وصول أول لقطة.':'ٹیلی میٹری ماخذ ابھی منسلک نہیں۔', 'لا قارئاتٍ في هذه الخانة.':'اس خانے میں ریڈر نہیں۔', 'لا قارئاتٍ مركَّبةً بعد — التوأمُ يبدأ مع أول تركيب.':'ابھی ریڈر نصب نہیں۔', 'مصدرُ التليمتري — عقدُ الربط':'ٹیلی میٹری ماخذ — معاہدہ', 'يُضبَط سرٌّ باسم TELEMETRY_URL يعيد JSON بهذا الشكل — يُقرأ كلَّ عشر دقائق ويُكتَب لقطةً واحدة:':'TELEMETRY_URL نامی سیکرٹ سیٹ کریں۔', 'ts زمنُ آخر نبضة (مللي ثانية) · vb جهدُ البطارية · sl شحنُ اللوح ٪ · rd القراءاتُ في الساعة · rs قوةُ الإشارة dBm. كلُّ حقلٍ اختياريٌّ سوى site وts.':'ts آخری دھڑکن · vb بیٹری · sl سولر · rd ریڈز · rs سگنل۔', 'التوأم الرقمي — صحة القارئات':'ڈیجیٹل ٹوئن — ریڈر کی صحت',
+ '٣د':'3D', '٢د':'2D', 'الخريطة بالتضاريس والأعمدة':'نقشہ ارتفاعات اور ستونوں کے ساتھ', 'العودة إلى الخريطة المسطّحة':'ہموار نقشے پر واپس',
 }
 };
 
@@ -8127,8 +8137,7 @@ var CORE = {
       notifAt:STATE.meta.notifAt || 0,
       epoch:STATE.meta.epoch || 0,
       wbs:STATE.wbs || null,
-      wtask:STATE.wtask || null,
-      twin:STATE.twin || null
+      wtask:STATE.wtask || null
     });
   },
 
@@ -8150,7 +8159,6 @@ var CORE = {
       if (v.epoch) STATE.meta.epoch = v.epoch;
       if (v.wbs && Array.isArray(v.wbs.rows)) STATE.wbs = v.wbs;
       if (v.wtask && Array.isArray(v.wtask.rows)) STATE.wtask = v.wtask;
-      if (v.twin && v.twin.d) STATE.twin = v.twin;
       /* يُطوى المكرَّرُ فيما حُمِّل: الطابورُ المحفوظُ قبل الطيِّ فيه مفاتيحُ
          مكرَّرة، فتُطوى مرةً هنا ولا تُرفَع مرارًا. */
       if (Array.isArray(STATE.queue) && STATE.queue.length > 1){
@@ -8699,9 +8707,6 @@ var FB = {
       FB.db.collection('settings').doc('miles').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
       }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
-      FB.db.collection('settings').doc('twin').get().then(function(doc){
-        if (doc && doc.exists){ var tw = doc.data() || {}; if (tw.d) STATE.twin = { d:tw.d, at:tw.at, src:tw.src }; }
-      }).catch(function(e){ softErr('سحب التليمتري', e, ''); });
       FB.db.collection('settings').doc('wtask').get().then(function(doc){
         if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.wtask = { rows:k.rows, at:k.at, by:k.by }; }
       }).catch(function(e){ softErr('سحب المهام الأسبوعية', e, ''); });
@@ -9008,14 +9013,6 @@ function liveSmall(){
   } catch (e){ softErr('إنصات النسخة', e, ''); }
   /* جدولُ المتابعة: وثيقةٌ واحدةٌ يُنصِت إليها الجميع — فتحديثُ المكتب يصل الوزارةَ في ثوانٍ */
   try {
-    /* لقطةُ التليمتري: وثيقةٌ واحدةٌ — قراءةٌ واحدةٌ لكلِّ جهازٍ حين تتغيّر */
-    if (rankOf(ROLE) >= rankOf('supervisor') || effRole(ROLE) === 'viewer' || effRole(ROLE) === 'exec')
-      LIVE_SMALL.push(FB.db.collection('settings').doc('twin').onSnapshot(function(doc){
-        if (!doc || !doc.exists) return;
-        var tw = doc.data() || {}; if (!tw.d) return;
-        STATE.twin = { d:tw.d, at:tw.at, src:tw.src }; CORE.saveSoon();
-        if (CUR === 'twin' || CUR === 'map3d') render(1);
-      }, function(e){ softErr('إنصات التليمتري', e, ''); }));
     LIVE_SMALL.push(FB.db.collection('settings').doc('wtask').onSnapshot(function(doc){
       if (!doc || !doc.exists) return;
       var k = doc.data() || {}; if (!Array.isArray(k.rows)) return;
@@ -14715,15 +14712,16 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
             btn('\u2B07 ' + t('إكسل — المهام'),'btn-secondary btn-sm',' data-xls="wtask"'))
         : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t(may('settings') ? 'لا مهامَّ بعد — أضف مهمةً أو استورد ملفَ المهام.' : 'لا مهامَّ بعد — يضيفها المكتب.')) + '</p>'));
   }};
-/* ═══ العرضُ الثلاثيُّ — للمكتب والوزارة لا للميدان ═══
-   خريطةُ الميدان تبقى كما هي: سريعةٌ تعمل بلا شبكةٍ ولا تأكل بطارية، وهي
-   مدخلُ الفنيِّ في المشاعر. والعرضُ الثلاثيُّ شيءٌ آخر: يُفتَح على شاشةِ
-   المكتب أو في اجتماع الوزارة فيُري ما لا تُريه الخريطةُ المسطَّحة —
-   **تضاريسَ منى الحقيقية** التي تفسّر تحدياتِ المسار والتغطية، و**أعمدةً
-   مجسَّمةً بارتفاع التركيب المسجَّل في نموذج المسح** بلون حالتها. فهو من
-   بياناتنا لا زينةً فوق مبانٍ عامة. ولا يُحمَّل إلا إن فُتح — ثمانمئة
-   كيلوبايتٍ لا تُثقل من لم يطلبه. */
-var M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '', M3_ZONE = '', M3_TERR = true;
+/* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
+   كان العرضُ الثلاثيُّ صفحةً مستقلةً بمرشِّحاتها وألوانها — فتعرض غيرَ ما
+   تعرضه الخريطة، ويُسأل «أيُّهما الصحيح؟». والصحيحُ واحد: الخريطةُ بطبقتها
+   (المسح · التركيب · الفك) ومرشِّحاتها وشركاتها وحالاتها وألوانها. فصار
+   الثلاثيُّ **وضعًا** للخريطة نفسِها: زرُّ «٣د» يرفع المشهدَ نفسَه بتضاريس
+   المشاعر وأعمدةٍ بارتفاع التركيب المسجَّل — النقاطُ نفسُها بالألوان نفسِها
+   والنقرةُ نفسُها تفتح البطاقةَ نفسَها — و«٢د» يعيده حيث كان.
+   المحرّكُ لا يُحمَّل إلا عند أوّل ضغطة (ثمانمئة كيلوبايتٍ لا تُثقل الميدان
+   الذي لا يطلبه)، ويبقى حيًّا بعدها؛ والقمرُ الصناعيُّ يتبعه من الزرِّ نفسِه. */
+var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
 function m3Load(){
   if (M3_READY || (typeof window !== 'undefined' && window.maplibregl)){ M3_READY = true; return Promise.resolve(true); }
   if (M3_LOADING) return M3_LOADING;
@@ -14734,9 +14732,9 @@ function m3Load(){
     var js = document.createElement('script');
     js.src = 'vendor/maplibre/maplibre-gl.js';
     js.onload = function(){ M3_READY = true; res(true); };
-    js.onerror = function(){ M3_ERR = 'تعذّر تحميلُ محرّك العرض الثلاثي'; res(false); };
+    js.onerror = function(){ M3_ERR = 'تعذّر تحميلُ محرّك العرض الثلاثي'; M3_LOADING = null; res(false); };
     document.head.appendChild(js);
-    setTimeout(function(){ if (!M3_READY){ M3_ERR = 'تأخّر تحميلُ محرّك العرض'; res(false); } }, 15000);
+    setTimeout(function(){ if (!M3_READY){ M3_ERR = 'تأخّر تحميلُ محرّك العرض'; M3_LOADING = null; res(false); } }, 15000);
   });
   return M3_LOADING;
 }
@@ -14746,27 +14744,91 @@ function m3Height(x){
   if (h > 0) return Math.max(2, Math.min(25, h));
   return x.type === 'مخيم' ? 4 : (x.type === 'كاميرا' ? 8 : 6);
 }
+/* النقاطُ هي نقاطُ الخريطة المسطّحة حرفًا: القائمةُ نفسُها بعد الطبقة
+   والمرشِّحات والشركات، واللونُ نفسُه — لا قائمةَ ثانيةً ولا لونًا ثانيًا */
 function m3Points(){
-  return (STATE.sites || []).filter(function(x){
-    if (!(+x.lat) || !(+x.lng)) return false;
-    if (M3_ZONE && x.zone !== M3_ZONE) return false;
-    return true;
-  }).map(function(x){
-    var lf = lifeOf(x), hh = twinHealth(x.id);
-    /* حين تصل التليمتري يصير لونُ العمود المركَّب صحّتَه لا مجرّدَ «مُركّبة» */
-    var col = (hh !== 'notins' && hh !== 'unknown') ? TWIN_H[hh].c : ((LIFE[lf] || {}).c || '#9FB0AA');
-    var colN = (hh !== 'notins' && hh !== 'unknown') ? t(TWIN_H[hh].n) : t((LIFE[lf] || {}).n || lf);
-    return { type:'Feature',
-      geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, name:x.name || x.id, zone:x.zone || '', type:x.type || '', co:x.co || '',
-                   sign:x.sign || '', life:lf, lifeN:colN,
-                   color:col, h:m3Height(x) } };
+  var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : (STATE.sites || []);
+  return LIST.filter(function(x){ return +x.lat && +x.lng; }).map(function(x){
+    var picked = (typeof selHas === 'function') && selHas(x.id);
+    return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
+      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0, ring:picked ? '#ffffff' : '#0b1220' } };
   });
+}
+/* العمودُ مضلّعٌ صغيرٌ حول النقطة — المحرّكُ لا يرفع نقطةً، يرفع مضلّعًا */
+function m3Cols(P){
+  return P.map(function(f){
+    var c = f.geometry.coordinates, lng = c[0], lat = c[1];
+    var d = 2.2, dy = d / 111320, dx = d / (111320 * Math.cos(lat * Math.PI / 180));
+    return { type:'Feature', properties:f.properties,
+      geometry:{ type:'Polygon', coordinates:[[[lng - dx, lat - dy], [lng + dx, lat - dy], [lng + dx, lat + dy], [lng - dx, lat + dy], [lng - dx, lat - dy]]] } };
+  });
+}
+/* القمرُ الصناعيُّ نفسُه الذي تعرفه الخريطة المسطّحة — وإلا نمطٌ مفتوحٌ بلا مفتاح */
+function m3Style(){
+  if (MAP_SAT) return { version:8,
+    sources:{ sat:{ type:'raster', tiles:[TILES.esri], tileSize:256, attribution:'&copy; Esri' } },
+    layers:[{ id:'sat', type:'raster', source:'sat' }] };
+  return 'https://tiles.openfreemap.org/styles/liberty';
+}
+/* الطبقاتُ تُضاف بعد كلِّ تحميلِ نمطٍ — أوّلِ مرةٍ وبعد تبديل القمر */
+function m3Layers(){
+  if (!M3) return;
+  try {
+    if (!M3.getSource('dem')){
+      M3.addSource('dem', { type:'raster-dem', tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+                            encoding:'terrarium', tileSize:256, maxzoom:14, attribution:'Terrain &copy; Mapzen/AWS' });
+      M3.setTerrain({ source:'dem', exaggeration:1.25 });
+      M3.addLayer({ id:'hills', type:'hillshade', source:'dem',
+                    paint:{ 'hillshade-exaggeration':0.35, 'hillshade-shadow-color':'#243044' } });
+    }
+  } catch (e){ LS_ERR = e; }
+  try {
+    var P = m3Points();
+    if (!M3.getSource('nskc')){
+      M3.addSource('nskc', { type:'geojson', data:{ type:'FeatureCollection', features:m3Cols(P) } });
+      M3.addLayer({ id:'nsk-cols', type:'fill-extrusion', source:'nskc',
+        paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'],
+                'fill-extrusion-base':0, 'fill-extrusion-opacity':0.92 } });
+    }
+    if (!M3.getSource('nsk')){
+      M3.addSource('nsk', { type:'geojson', data:{ type:'FeatureCollection', features:P } });
+      M3.addLayer({ id:'nsk-pts', type:'circle', source:'nsk',
+        paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 12, 3.5, 17, 8],
+                'circle-color':['get','color'],
+                'circle-stroke-width':['case', ['==', ['get','sel'], 1], 2.5, 1],
+                'circle-stroke-color':['get','ring'] } });
+    }
+    /* مبانٍ ثلاثيةٌ من النمط نفسِه إن وُجدت — سياقٌ لا أكثر */
+    var lyr = (M3.getStyle().layers || []).filter(function(l){ return /building/i.test(l.id) && l.type === 'fill-extrusion'; })[0];
+    if (lyr) M3.setPaintProperty(lyr.id, 'fill-extrusion-opacity', 0.45);
+  } catch (e){ LS_ERR = e; }
+}
+function m3Count(P){
+  var lb = document.getElementById('mapCount');
+  if (!lb || !MAP_3D || !M3) return;
+  try {
+    var b = M3.getBounds(), inV = P.filter(function(f){ return b.contains(f.geometry.coordinates); }).length, out = P.length - inV;
+    lb.textContent = nm(inV) + ' / ' + nm(P.length) + ' ' + t('في الإطار') + (out > 0 ? ' \u00b7 ' + nm(out) + ' ' + t('خارج الإطار') : '');
+  } catch (e){ LS_ERR = e; }
 }
 function m3Paint(){
   if (!M3 || !M3.getSource) return;
-  var src = M3.getSource('nsk');
-  if (src) src.setData({ type:'FeatureCollection', features:m3Points() });
+  var P = m3Points();
+  try {
+    var s1 = M3.getSource('nsk');  if (s1) s1.setData({ type:'FeatureCollection', features:P });
+    var s2 = M3.getSource('nskc'); if (s2) s2.setData({ type:'FeatureCollection', features:m3Cols(P) });
+  } catch (e){ LS_ERR = e; }
+  m3Count(P);
+}
+/* النقرةُ في الثلاثيِّ هي نقرةُ الخريطة المسطّحة: تحديدٌ في وضع الإسناد، وبطاقةُ النقطة سواه */
+function m3Click(id){
+  if (typeof MAP_SELECT !== 'undefined' && MAP_SELECT){
+    if (!asnOf(id)){ selToggle(id); m3Paint(); render(1); }
+    else toast(t('هذه النقطة مُسندة بالفعل'));
+    return;
+  }
+  POP_JUST = Date.now();
+  POP_SITE = id; POP_OPEN = true; render();
 }
 function m3Init(){
   var el = document.getElementById('m3Box');
@@ -14774,198 +14836,48 @@ function m3Init(){
   if (M3){ try { M3.resize(); } catch (e){ LS_ERR = e; } m3Paint(); return true; }
   try {
     M3 = new maplibregl.Map({
-      container:el,
-      /* نمطٌ مفتوحٌ بلا مفتاحٍ ولا حدٍّ للاستعمال — لا توكنَ يُسرَّب من مستودعٍ عامّ */
-      style:'https://tiles.openfreemap.org/styles/liberty',
-      center:[39.89, 21.41], zoom:14.2, pitch:62, bearing:-18, attributionControl:true, maxPitch:80
+      container:el, style:m3Style(),
+      center:[39.89, 21.41], zoom:14.2, pitch:60, bearing:-18, maxPitch:80,
+      attributionControl:{ compact:true }
     });
-  } catch (e){ M3_ERR = String(e && e.message || e).slice(0, 90); return false; }
-  M3.addControl(new maplibregl.NavigationControl({ visualizePitch:true }), 'top-left');
+  } catch (e){ M3_ERR = String(e && e.message || e).slice(0, 90); M3 = null; return false; }
+  M3.addControl(new maplibregl.NavigationControl({ visualizePitch:true }), 'bottom-right');
   M3.on('error', function(ev){ if (ev && ev.error) LS_ERR = ev.error; });
-  M3.on('load', function(){
-    /* التضاريسُ من مصدرٍ مفتوح — جبالُ منى ليست خلفيةً بل سببُ نصفِ تحديات المسار */
-    try {
-      M3.addSource('dem', { type:'raster-dem', tiles:['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-                            encoding:'terrarium', tileSize:256, maxzoom:14, attribution:'Terrain © Mapzen/AWS' });
-      if (M3_TERR) M3.setTerrain({ source:'dem', exaggeration:1.25 });
-      M3.addLayer({ id:'hills', type:'hillshade', source:'dem',
-                    paint:{ 'hillshade-exaggeration':0.4, 'hillshade-shadow-color':'#243044' } });
-    } catch (e){ LS_ERR = e; }
-    M3.addSource('nsk', { type:'geojson', data:{ type:'FeatureCollection', features:m3Points() } });
-    /* العمودُ بارتفاعِ التركيب المسجَّل وبلون الحالة */
-    M3.addLayer({ id:'nsk-cols', type:'fill-extrusion', source:'nsk',
-      paint:{ 'fill-extrusion-color':['get','color'],
-              'fill-extrusion-height':['get','h'],
-              'fill-extrusion-base':0, 'fill-extrusion-opacity':0.92 } });
-    /* نقطةٌ صغيرةٌ تُلتقَط باللمس فوق العمود */
-    M3.addLayer({ id:'nsk-pts', type:'circle', source:'nsk',
-      paint:{ 'circle-radius':['interpolate',['linear'],['zoom'],12,3,17,7],
-              'circle-color':['get','color'], 'circle-stroke-width':1, 'circle-stroke-color':'#0b1220' } });
-    M3.on('click', 'nsk-pts', function(ev){
-      var p = ev.features && ev.features[0] && ev.features[0].properties; if (!p) return;
-      new maplibregl.Popup({ closeButton:true, maxWidth:'300px' })
-        .setLngLat(ev.lngLat)
-        .setHTML('<div style="font:13px/1.6 system-ui;direction:rtl;text-align:right">'
-          + '<b>' + esc(p.name) + '</b><br><span style="color:#667">' + esc(p.id) + '</span><br>'
-          + esc(p.zone) + (p.sign ? ' \u00b7 ' + esc(p.sign) : '') + '<br>'
-          + '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + esc(p.color) + ';margin-inline-end:6px"></span>'
-          + esc(p.lifeN) + (p.co ? '<br><span style="color:#667">' + esc(p.co) + '</span>' : '')
-          + '<br><a href="#" data-m3go="' + esc(p.id) + '" style="color:#3B9BF5">' + esc(t('التفاصيل')) + '</a></div>')
-        .addTo(M3);
-    });
-    M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
-    M3.on('mouseleave', 'nsk-pts', function(){ M3.getCanvas().style.cursor = ''; });
-    /* مبانٍ ثلاثيةٌ من النمط نفسِه إن وُجدت — سياقٌ لا أكثر */
-    try {
-      var lyr = (M3.getStyle().layers || []).filter(function(l){ return /building/i.test(l.id) && l.type === 'fill-extrusion'; })[0];
-      if (lyr) M3.setPaintProperty(lyr.id, 'fill-extrusion-opacity', 0.45);
-    } catch (e){ LS_ERR = e; }
-  });
+  M3.on('style.load', m3Layers);
+  M3.on('moveend', function(){ if (MAP_3D) m3Count(m3Points()); });
+  var hit = function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id); };
+  M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
+  M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
+  M3.on('mouseleave', 'nsk-pts', function(){ M3.getCanvas().style.cursor = ''; });
   return true;
 }
-PAGE.map3d = { m:'المتابعة', t:'العرض الثلاثي', l:'تضاريسُ المشاعر وأعمدةُ التركيب بارتفاعها الحقيقيّ ولونِ حالتها — للعرض والمراجعة، لا للعمل الميداني.',
-  body:function(){
-    var zones = {}; (STATE.sites || []).forEach(function(x){ if (x.zone) zones[x.zone] = (zones[x.zone] || 0) + 1; });
-    var zs = Object.keys(zones).sort(function(a, b){ return zones[b] - zones[a]; });
-    var life = {}; m3Points().forEach(function(p){ life[p.properties.life] = (life[p.properties.life] || 0) + 1; });
-    return '<div class="chips" style="margin-bottom:8px">'
-      + '<button type="button" class="chip' + (M3_ZONE ? '' : ' on') + '" data-m3z="">' + esc(t('كل المشاعر')) + ' <span class="num">' + nm(m3Points().length) + '</span></button>'
-      + zs.map(function(z){ return '<button type="button" class="chip' + (M3_ZONE === z ? ' on' : '') + '" data-m3z="' + esc(z) + '">' + esc(t(z)) + ' <span class="num">' + nm(zones[z]) + '</span></button>'; }).join('')
-      + '<button type="button" class="chip' + (M3_TERR ? ' on' : '') + '" data-m3terr="1">\u26F0 ' + esc(t('التضاريس')) + '</button>'
-      + btn('\u{1F5FA} ' + t('الخريطة المسطّحة'),'btn-quiet btn-sm',' data-p="map"')
-      + '</div>'
-      + '<div id="m3Box" style="height:min(72vh,620px);border-radius:14px;overflow:hidden;background:#0b1220"></div>'
-      + (M3_ERR ? alertBox('warn', M3_ERR) : '')
-      + '<div class="map-legend" style="position:static;margin-top:10px;max-height:none">' + legendRows() + '</div>'
-      + '<p class="hint">' + esc(t('ارتفاعُ العمود هو ارتفاعُ التركيب المسجَّل في نموذج المسح — وما لم يُسجَّل يُعرَض بارتفاعٍ افتراضيٍّ بحسب النوع. اسحب بإصبعين لتدوير المشهد وإمالته.')) + '</p>';
-  }};
-/* ═══ التوأمُ الرقميُّ ═══
-   النظامُ يحمل عن كلِّ نقطةٍ ثلاثَ طبقات: **الفيزيائية** (الموضعُ والارتفاعُ
-   ونوعُ التثبيت والكهرباءُ والمقاساتُ من نموذج المسح)، و**التكوينية** (القطعُ
-   المركَّبةُ وأرقامُها التسلسليةُ من نموذج التركيب)، و**الحالية** (ما يقوله
-   الجهازُ نفسُه: آخرُ نبضةٍ، جهدُ البطارية، شحنُ اللوح، القراءاتُ في الساعة،
-   قوةُ الإشارة). الأُوليان في القاعدة منذ اليوم الأول؛ والثالثةُ تصل من
-   التليمتري حين يُوصَل مصدرُه (مرشِّح `telemetry-ingest.mjs`). وبالثلاث يصير
-   السجلُّ توأمًا: يُقرأ فيه الجهازُ لا الورقة، ويُسأل «لو تعطّل هذا القارئُ
-   فمن يُغطّي مكانَه؟» قبل أن يقع.
-
-   لقطةُ التليمتري وثيقةٌ واحدةٌ `settings/twin` بمفتاحٍ لكلِّ نقطة — لا وثيقةٌ
-   لكلِّ نقطة: ألفٌ وثمانمئةُ قراءةٍ كلَّ عشر دقائقَ تُفلس الحصةَ في يوم؛
-   والوثيقةُ الواحدةُ قراءةٌ واحدةٌ لكلِّ جهازٍ حين تتغيّر. */
-var TWIN_SILENT_H = 2, TWIN_VB_LOW = 11.8, TWIN_F = '', TWIN_Q = '', TWIN_OPEN = '', TWIN_T = 0;
-function twinData(){ return (STATE.twin && STATE.twin.d) || {}; }
-function twinState(id){ return twinData()[id] || null; }
-function twinHealth(id){
-  if (!insDone(id)) return 'notins';
-  var st = twinState(id); if (!st || !st.ts) return 'unknown';
-  var ageH = (Date.now() - (+st.ts || 0)) / 3600000;
-  if (ageH > TWIN_SILENT_H) return 'silent';
-  if (st.vb != null && +st.vb > 0 && +st.vb < TWIN_VB_LOW) return 'lowbat';
-  return 'online';
+/* الكاميرا تنتقل حيث كان الناظر — لا تبدأ من مكانٍ آخر */
+function m3From2D(){
+  if (!MAP || !M3) return;
+  try { var c = MAP.getCenter(); M3.jumpTo({ center:[c.lng, c.lat], zoom:Math.max(11, MAP.getZoom() - 1), pitch:60, bearing:-18 }); }
+  catch (e){ LS_ERR = e; }
 }
-var TWIN_H = {
-  online:  { c:'#3AD6A0', n:'متصلة',                    d:'نبضةٌ خلال الساعتين وبطاريةٌ سليمة.' },
-  lowbat:  { c:'#E8C34B', n:'بطارية منخفضة',            d:'الجهدُ تحت الحدِّ — تُزار قبل أن تصمت.' },
-  silent:  { c:'#E05252', n:'صامتة',                    d:'لا نبضةَ منذ أكثر من ساعتين — فحصُ الكهرباء أو الشبكة.' },
-  unknown: { c:'#9FB0AA', n:'بلا تليمتري',              d:'مركَّبةٌ ولم يصل منها شيءٌ بعد — أو مصدرُ التليمتري لم يُوصَل.' },
-  notins:  { c:'#4B5563', n:'لم تُركَّب بعد',            d:'التوأمُ يكتمل بالتركيب.' }
-};
-function twinOf(id){
-  var x = siteFind(id); if (!x) return null;
-  var r = STATE.recs[id] || {}, ins = STATE.inss[id] || {}, st = twinState(id) || {};
-  return {
-    id:id, site:x,
-    phys:{ lat:+x.lat || 0, lng:+x.lng || 0, h:+r.hgt || 0, mount:r.mount || '', power:r.power || '',
-           wid:r.wid_m, hgt:r.hgt_m, cable:r.cable, chals:r.chals || [] },
-    conf:{ parts:ins.parts || {}, serials:ins.serials || {}, status:ins.status || x.fstat || 'لم يبدأ', by:ins.by || '', at:ins.at || 0 },
-    state:{ ts:+st.ts || 0, vb:st.vb, sl:st.sl, rd:st.rd, rs:st.rs, on:st.on },
-    health:twinHealth(id)
-  };
+function m3Toggle(){
+  if (MAP_3D){ m3Off(); return; }
+  MAP_3D = true; render(1);
+  var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = false;
+  m3Load().then(function(ok){
+    if (!ok || !m3Init()){ toast(t(M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }
+    m3From2D(); m3Paint();
+  });
 }
-/* لو تعطّل هذا القارئ — من حوله يغطّي؟ الجيرانُ المركَّبون في نطاق التغطية */
-function twinNeighbors(id, radiusM){
-  var x = siteFind(id); if (!x || !(+x.lat)) return [];
-  var R = radiusM || 60;
-  return (STATE.sites || []).filter(function(y){
-    return y.id !== id && +y.lat && +y.lng && geoM(+x.lat, +x.lng, +y.lat, +y.lng) <= R;
-  }).map(function(y){ return { site:y, d:Math.round(geoM(+x.lat, +x.lng, +y.lat, +y.lng)), health:twinHealth(y.id), installed:insDone(y.id) }; })
-    .sort(function(a, b){ return a.d - b.d; });
+function m3Off(){
+  var was = MAP_3D; MAP_3D = false;
+  var b3 = document.getElementById('m3Box'); if (b3) b3.hidden = true;
+  if (was && MAP && M3){ try { var c = M3.getCenter(); MAP.setView([c.lat, c.lng], Math.round(M3.getZoom() + 1)); } catch (e){ LS_ERR = e; } }
+  render(1);
+  setTimeout(function(){ try { if (MAP){ MAP.invalidateSize(); mapPaint(); } } catch (e){ LS_ERR = e; } }, 80);
 }
-function twinStats(){
-  var c = { ins:0, online:0, lowbat:0, silent:0, unknown:0, notins:0 };
-  (STATE.sites || []).forEach(function(x){ var h = twinHealth(x.id); c[h]++; if (h !== 'notins') c.ins++; });
-  c.at = (STATE.twin && STATE.twin.at) || 0; c.src = (STATE.twin && STATE.twin.src) || '';
-  return c;
+/* تبديلُ القمر أثناء الثلاثيِّ: نمطٌ جديدٌ فتُعاد الطبقاتُ عند تحميله */
+function m3Restyle(){
+  if (!MAP_3D || !M3) return;
+  try { M3.setStyle(m3Style()); } catch (e){ LS_ERR = e; }
 }
-function twinPanel(tw){
-  var x = tw.site, p = tw.phys, cf = tw.conf, st = tw.state, H = TWIN_H[tw.health];
-  var parts = Object.keys(cf.parts).map(function(k){ return k + ' \u00d7 ' + nm(cf.parts[k]) + (cf.serials[k] ? ' \u2014 ' + cf.serials[k] : ''); });
-  var ph = [['الإحداثيات', p.lat.toFixed(5) + ', ' + p.lng.toFixed(5)], ['ارتفاع التركيب (م)', p.h ? String(p.h) : '—'],
-            ['نوع التركيب', p.mount || '—'], ['مصدر الكهرباء', p.power || '—'],
-            ['المتاح (عرض × ارتفاع)', (p.wid != null ? p.wid : '—') + ' \u00d7 ' + (p.hgt != null ? p.hgt : '—')],
-            ['تحديات الموقع', p.chals.filter(function(c){ return c !== 'لا توجد تحديات'; }).join(' \u00b7 ') || '—']];
-  var cfg = [['حالة التركيب', cf.status], ['رُكّبت بواسطة', dispName(cf.by) || '—'], ['تاريخ التركيب', cf.at ? dayKey(cf.at) : '—'],
-             ['القطع والأرقام التسلسلية', parts.length ? parts.join('<br>') : '—']];
-  var live = st.ts
-    ? [['آخر نبضة', stepAgo(st.ts) + ' \u00b7 ' + new Date(st.ts).toLocaleString('ar-EG')],
-       ['جهد البطارية', st.vb != null ? nm(st.vb) + ' V' : '—'], ['شحن اللوح', st.sl != null ? nm(st.sl) + '%' : '—'],
-       ['القراءات / ساعة', st.rd != null ? nm(st.rd) : '—'], ['قوة الإشارة', st.rs != null ? nm(st.rs) + ' dBm' : '—']]
-    : [['التليمتري', 'لم يصل من هذا الجهاز شيءٌ بعد']];
-  var nb = twinNeighbors(tw.id, 60);
-  var cover = nb.filter(function(n2){ return n2.installed && n2.health === 'online'; });
-  var what = tw.health === 'notins' ? '' :
-    '<div class="alert ' + (cover.length ? 'info' : 'warn') + '" style="margin-top:10px"><span><b>' + esc(t('لو تعطّل هذا القارئ')) + ':</b> '
-    + (cover.length
-        ? esc(t('يغطّي مكانَه')) + ' ' + nm(cover.length) + ' ' + esc(t('قارئٌ متصلٌ في نطاق ٦٠ م')) + ' \u2014 ' + cover.slice(0, 4).map(function(n2){ return esc(n2.site.id) + ' (' + nm(n2.d) + ' ' + esc(t('م')) + ')'; }).join(' \u00b7 ')
-        : esc(t('لا قارئَ متصلًا في نطاق ٦٠ م — تعطّلُه فجوةُ تغطية')))
-    + '</span></div>';
-  var box = function(title, rows){ return '<div>' + table([title, ''], rows.map(function(m){ return [esc(t(m[0])), '<span dir="auto">' + (m[0] === 'القطع والأرقام التسلسلية' ? m[1] : esc(m[1])) + '</span>']; })) + '</div>'; };
-  return '<tr><td colspan="7" style="background:rgba(255,255,255,.03);padding:12px 14px">'
-    + '<div style="display:flex;gap:8px;align-items:center;margin-bottom:8px"><span style="width:12px;height:12px;border-radius:50%;background:' + H.c + ';display:inline-block"></span><b>' + esc(t(H.n)) + '</b> <span class="hint" style="margin:0">' + esc(t(H.d)) + '</span></div>'
-    + '<div class="grid cols-3">' + box('الطبقة الفيزيائية', ph) + box('التكوين', cfg) + box('الحالة الحيّة', live) + '</div>'
-    + what
-    + '<div class="actions" style="margin:10px 0 0">' + btn('\u{1F5FA} ' + t('الخريطة'),'btn-quiet btn-sm',' data-fly="' + esc(tw.id) + '"')
-    + btn('\u25C8 ' + t('التفاصيل'),'btn-quiet btn-sm',' data-site="' + esc(tw.id) + '"')
-    + (may('approve') && (tw.health === 'silent' || tw.health === 'lowbat') ? btn('\u{1F527} ' + t('أسنِد صيانة'),'btn-primary btn-sm',' data-goto="req"') : '')
-    + '</div></td></tr>';
-}
-PAGE.twin = { m:'المتابعة', t:'التوأم الرقمي', l:'كلُّ قارئٍ بطبقاته الثلاث: ما هو فيزيائيًّا، وممَّ يتكوّن، وما يقوله الآن — وسؤالُ «لو تعطّل».',
-  body:function(){
-    var c = twinStats();
-    var chips = [['','الكل',c.ins],['online','متصلة',c.online],['lowbat','بطارية منخفضة',c.lowbat],['silent','صامتة',c.silent],['unknown','بلا تليمتري',c.unknown]];
-    var L = (STATE.sites || []).filter(function(x){ var h = twinHealth(x.id); if (h === 'notins') return false; if (TWIN_F && h !== TWIN_F) return false;
-      if (TWIN_Q && (x.id + ' ' + (x.name || '') + ' ' + (x.co || '')).indexOf(TWIN_Q) < 0) return false; return true; });
-    var order = { silent:0, lowbat:1, unknown:2, online:3 };
-    L.sort(function(a, b){ return (order[twinHealth(a.id)] || 0) - (order[twinHealth(b.id)] || 0); });
-    var rows = [];
-    L.slice(0, 200).forEach(function(x){
-      var tw = twinOf(x.id), H = TWIN_H[tw.health], st = tw.state, open = TWIN_OPEN === x.id;
-      rows.push(['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.name || '').slice(0, 26)) + '</span>',
-                 esc(t(x.zone || '—')),
-                 '<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + H.c + ';margin-inline-end:6px"></span>' + esc(t(H.n)),
-                 st.ts ? '<span class="num">' + esc(stepAgo(st.ts)) + '</span>' : '—',
-                 st.vb != null ? '<span class="num">' + nm(st.vb) + ' V</span>' : '—',
-                 st.rd != null ? '<span class="num">' + nm(st.rd) + '</span>' : '—',
-                 btn(open ? '\u25BE ' + t('إغلاق') : '\u25B8 ' + t('التوأم'), open ? 'btn-quiet btn-sm' : 'btn-secondary btn-sm', ' data-twopen="' + esc(open ? '' : x.id) + '"')]);
-      if (open) rows.push({ raw:twinPanel(tw) });
-    });
-    var feed = c.at
-      ? alertBox('ok', t('آخر لقطة تليمتري') + ': ' + stepAgo(c.at) + (c.src ? ' \u00b7 ' + c.src : ''))
-      : alertBox('info', t('لم يُوصَل مصدرُ التليمتري بعد — الطبقتان الفيزيائيةُ والتكوينيةُ جاهزتان، والحالةُ الحيّةُ تظهر فورَ وصول أول لقطة.'));
-    return feed
-      + stats([['مركَّبة', N(c.ins), 'acc'], ['متصلة', N(c.online), 'ok'], ['بطارية منخفضة', N(c.lowbat), c.lowbat ? 'wrn' : ''],
-               ['صامتة', N(c.silent), c.silent ? 'bad' : 'ok'], ['بلا تليمتري', N(c.unknown)]])
-      + '<div class="chips">' + chips.map(function(ch){ return '<button type="button" class="chip' + (TWIN_F === ch[0] ? ' on' : '') + '" data-twf="' + ch[0] + '">' + esc(t(ch[1])) + ' <span class="num">' + nm(ch[2]) + '</span></button>'; }).join('') + '</div>'
-      + card('', '<input type="search" data-twq value="' + esc(TWIN_Q) + '" placeholder="' + esc(t('ابحث بالنقطة أو الشركة')) + '" dir="auto">')
-      + (rows.length
-          ? cardFlush(t('القارئات المركَّبة') + ' \u2014 ' + nm(L.length), table(['النقطة','المشعر','الصحة','آخر نبضة','البطارية','قراءات/س',''], rows),
-              btn('\u2B07 ' + t('إكسل — التوأم'),'btn-secondary btn-sm',' data-xls="twin"'))
-          : alertBox('info', c.ins ? 'لا قارئاتٍ في هذه الخانة.' : 'لا قارئاتٍ مركَّبةً بعد — التوأمُ يبدأ مع أول تركيب.'))
-      + (may('settings') ? card('مصدرُ التليمتري — عقدُ الربط',
-          '<p class="hint" style="margin:0 0 8px">' + esc(t('يُضبَط سرٌّ باسم TELEMETRY_URL يعيد JSON بهذا الشكل — يُقرأ كلَّ عشر دقائق ويُكتَب لقطةً واحدة:')) + '</p>'
-          + '<pre dir="ltr" style="font-size:11.5px;background:rgba(255,255,255,.05);padding:10px;border-radius:8px;overflow:auto;margin:0">[{ "site": "NSK-MIN-RDR-0012", "ts": 1788950000000,\n  "vb": 12.6, "sl": 88, "rd": 340, "rs": -67 }]</pre>'
-          + '<p class="hint" style="margin:8px 0 0">' + esc(t('ts زمنُ آخر نبضة (مللي ثانية) · vb جهدُ البطارية · sl شحنُ اللوح ٪ · rd القراءاتُ في الساعة · rs قوةُ الإشارة dBm. كلُّ حقلٍ اختياريٌّ سوى site وts.')) + '</p>') : '');
-  }};
 PAGE.co = { m:'المتابعة', t:'الشركات',
   l:'ما لكلِّ شركةِ خدمةٍ من نقاط، وما يُرسَل إليها من إشعارات.',
   body:function(){
@@ -17563,7 +17475,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.75' + '.docx" download>⬇ '
+              +   'V16.76' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19083,6 +18995,8 @@ function mapPaintDebounced(){
 }
 
 function mapPaint(){
+  /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
+  if (MAP_3D) m3Paint();
   if (!MAP || !MAP_LAYER) return;
   MAP_LAYER.clearLayers();
   if (MAP_POLY) MAP_POLY.clearLayers();
@@ -19157,7 +19071,7 @@ function mapPaint(){
      الإطار لا يُرسَم، وهو صوابٌ للأداء. لكنّ من رأى «٣٢ من ١٧٨٧» ظنَّ أن
      ألفًا وسبعمئةٍ ضاعت. فيُقال إن ما نقص «خارجَ الإطار» لا مفقود. */
   var lb = document.getElementById('mapCount');
-  if (lb){
+  if (lb && !MAP_3D){
     var out = LIST.length - inView;
     lb.textContent = nm(shown) + (shown >= cap ? '+' : '') + ' / ' + nm(LIST.length) + ' ' + t('في الإطار')
       + (out > 0 ? ' · ' + nm(out) + ' ' + t('خارج الإطار') : '');
@@ -19167,6 +19081,7 @@ function mapPaint(){
 function mapFly(id){
   var x = siteFind(id);
   if (x && MAP) MAP.setView([x.lat, x.lng], 18);
+  if (x && MAP_3D && M3){ try { M3.flyTo({ center:[+x.lng, +x.lat], zoom:17, pitch:60, duration:900 }); } catch (e){ LS_ERR = e; } }
 }
 
 function mapLocate(){
@@ -19176,6 +19091,7 @@ function mapLocate(){
     function(p){
       MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, at:Date.now() };
       if (MAP) MAP.setView([MYPOS.lat, MYPOS.lng], 17);
+      if (MAP_3D && M3){ try { M3.flyTo({ center:[MYPOS.lng, MYPOS.lat], zoom:16, duration:900 }); } catch (e){ LS_ERR = e; } }
       /* علامةٌ تبقى فيُعرَف أين هو */
       try{
         if (MAP_ME) MAP.removeLayer(MAP_ME);
@@ -19326,13 +19242,6 @@ var SHEETS = {
       out.push([x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
                 ms === 'approved' ? 'اعتمدت الوزارة' : (ms === 'returned' ? 'أعادتها الوزارة' : 'بانتظار الوزارة'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
                 r.mount || '', r.power || '', r.wid_m != null ? r.wid_m : '', r.hgt_m != null ? r.hgt_m : '', (r.chals || []).join(' · ')]); });
-    return out;
-  },
-  twin: function(){
-    var out = [['النقطة','الاسم','المشعر','الصحة','آخر نبضة','البطارية V','شحن اللوح ٪','قراءات/س','الإشارة dBm','ارتفاع التركيب','نوع التركيب','الكهرباء','حالة التركيب','القطع']];
-    (STATE.sites || []).forEach(function(x){ if (!insDone(x.id)) return; var tw = twinOf(x.id); if (!tw) return; var st = tw.state;
-      out.push([x.id, x.name || '', x.zone || '', TWIN_H[tw.health].n, st.ts ? new Date(st.ts).toLocaleString('ar-EG') : '', st.vb != null ? st.vb : '', st.sl != null ? st.sl : '', st.rd != null ? st.rd : '', st.rs != null ? st.rs : '',
-                tw.phys.h || '', tw.phys.mount, tw.phys.power, tw.conf.status, Object.keys(tw.conf.parts).map(function(k){ return k + '×' + tw.conf.parts[k]; }).join(' · ')]); });
     return out;
   },
   wtask: function(){
@@ -21445,6 +21354,10 @@ function mapUIHtml(){
         }).join('')
     +   '<button type="button" class="map-chip'+(MAP_SAT?' on':'')+'" data-sat="1">'
     +     esc(t('قمر صناعي'))+'</button>'
+    /* الثلاثيُّ وضعٌ للخريطة نفسِها لا صفحةٌ أخرى — النقاطُ والألوانُ والمرشِّحاتُ هي هي */
+    +   '<button type="button" class="map-chip'+(MAP_3D?' on':'')+'" data-m3="1" title="'
+    +     esc(t(MAP_3D ? 'العودة إلى الخريطة المسطّحة' : 'الخريطة بالتضاريس والأعمدة'))+'">'
+    +     (MAP_3D ? '\u25A6 ' : '\u26F0 ')+esc(t(MAP_3D ? '٢د' : '٣د'))+'</button>'
     +   '<button type="button" class="map-chip'+(filtOn()?' on':'')+'" data-mfilt="'
     +     (MAP_FILT_OPEN?'0':'1')+'">'
     +     '\u2261 '+esc(t('تصفية'))+(filtOn()?' \u00b7 '+nm(layerFiltered().length):'')+'</button>'
@@ -26626,7 +26539,7 @@ var POP_OPEN = false, POP_JUST = 0;
 
 var EXP_SECS = [
   ['summary','الملخّص التنفيذي — أرقامُ المشروع في ورقة',1],
-  ['over','نظرة عامة',1], ['twin','التوأم الرقمي — صحة القارئات',1], ['minappr','اعتماد الوزارة لإعداد التركيب',1], ['wbs','متابعة الخطة التفصيلية',1], ['wtask','متابعة المهام الأسبوعية',1], ['pace','الوتيرة والهدف',1],
+  ['over','نظرة عامة',1], ['minappr','اعتماد الوزارة لإعداد التركيب',1], ['wbs','متابعة الخطة التفصيلية',1], ['wtask','متابعة المهام الأسبوعية',1], ['pace','الوتيرة والهدف',1],
   ['chalm','التحديات — أين وما هي وما المطلوب',1], ['inst','التركيب والجدولة',1],
   ['daily','معدل التركيب اليومي — آخر ١٤ يوم',1], ['reg','حسب المشعر ونوع النقطة',1],
   ['co','حسب شركة الخدمة — الأقل إنجازًا أولًا',1],
@@ -26670,7 +26583,7 @@ var EXP_SECS = [
    كان الحوارُ يعرض الأقسامَ كلَّها لكلِّ أحد — فترى الوزارةُ «الأدوار والصلاحيات»
    و«عهدة السيارات» و«تكلفة الأسطول» وتختارها وتُصدَّر لها. صار كلُّ قسمٍ
    مربوطًا بشاشته: لا يُعرَض ولا يُصدَّر إلا لمن يرى تلك الشاشة. */
-var EXP_PAGE = { summary:'over', twin:'twin', minappr:'survey', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
+var EXP_PAGE = { summary:'over', minappr:'survey', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
                  hb:'sys', vers:'sys', work:'over', items:'items', crews:'org', reps:'exec', appr:'ev', ips:'sys',
                  fleet:'fleet', fleetCost:'fleet', fleetLog:'fleet', ships:'inv', roles:'roles', invb:'inv', invmv:'inv',
                  wos:'inv', buys:'inv', notif:'ev', users:'users', recs:'survey', chal:'survey', stuck:'survey', qa:'survey',
@@ -26999,7 +26912,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','map3d','over','twin','wbs','wtask','now','repcenter','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','over','wbs','wtask','now','repcenter','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
@@ -29384,7 +29297,7 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['twin','التوأم الرقمي'],['map3d','العرض الثلاثي'],['wbs','متابعة الخطة التفصيلية'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['over','نظرة عامة'],['wbs','متابعة الخطة التفصيلية'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
       ['plan','التخطيط والمخاطر']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
@@ -29571,16 +29484,8 @@ function render(force){
   var mw = document.getElementById('mapWrap');
   var mu = document.getElementById('mapUI');
 
-  /* العرضُ الثلاثيُّ: المحرّكُ يُحمَّل عند فتح صفحته لا قبلها */
-  if (CUR === 'map3d'){
-    setTimeout(function(){
-      m3Load().then(function(ok){
-        if (!ok){ if (CUR === 'map3d') render(1); return; }
-        if (!m3Init() && CUR === 'map3d') render(1);
-        else m3Paint();
-      });
-    }, 30);
-  } else if (M3){ /* غادرها: يبقى المحرّكُ حيًّا ولا يُعاد بناؤه */ }
+  /* الخريطةُ ثلاثيةً: عند العودة إلى الخريطة يستعيد المحرّكُ حجمَه ونقاطَه */
+  if (CUR === 'map' && MAP_3D && M3){ setTimeout(function(){ try { M3.resize(); m3Paint(); } catch (e){ LS_ERR = e; } }, 60); }
   if (CUR === 'map'){
     /* لا يُمَسُّ #mapBox — تُرسَم واجهتُه في طبقةٍ فوقه وحدها */
     if (mw) mw.hidden = false;
@@ -29753,21 +29658,6 @@ function clickTables(e){
     KMI.rows.forEach(function(r){ r.take = (mode === 'new') ? (r.st === 'new') : false; });
     render(1); return true;
   }
-  var m3z = e.target.closest('[data-m3z]');
-  if (m3z){ M3_ZONE = m3z.getAttribute('data-m3z') || ''; render(1);
-    setTimeout(function(){ m3Paint();
-      if (M3 && M3_ZONE){ var P = m3Points(); if (P.length){ var b = P.reduce(function(a, p){
-          var c2 = p.geometry.coordinates;
-          return [Math.min(a[0], c2[0]), Math.min(a[1], c2[1]), Math.max(a[2], c2[0]), Math.max(a[3], c2[1])];
-        }, [180, 90, -180, -90]); try { M3.fitBounds([[b[0], b[1]], [b[2], b[3]]], { padding:60, pitch:60, duration:900 }); } catch (e2){ LS_ERR = e2; } } }
-    }, 120); return true; }
-  if (e.target.closest('[data-m3terr]')){
-    M3_TERR = !M3_TERR;
-    try { if (M3) M3.setTerrain(M3_TERR ? { source:'dem', exaggeration:1.25 } : null); } catch (e2){ LS_ERR = e2; }
-    render(1); return true;
-  }
-  var m3g = e.target.closest('[data-m3go]');
-  if (m3g){ DETAIL_ID = m3g.getAttribute('data-m3go'); goPage('site'); render(1); return true; }
   var gg = e.target.closest('[data-guideg]');
   if (gg){ GUIDE_G = gg.getAttribute('data-guideg') || ''; render(1); return true; }
   var lg = e.target.closest('[data-legend]');
@@ -30946,7 +30836,8 @@ function onDocClick(e){
             toast(t('أُلغيت')); render(1); return; }
 
   var sa = e.target.closest('[data-sat]');
-  if (sa){ mapSat(!MAP_SAT); render(1); if (MAP) mapPaint(); return; }
+  if (sa){ mapSat(!MAP_SAT); render(1); if (MAP) mapPaint(); m3Restyle(); return; }
+  if (e.target.closest('[data-m3]')){ m3Toggle(); return; }
   var mf = e.target.closest('[data-mfilt]');
   if (mf){ MAP_FILT_OPEN = mf.getAttribute('data-mfilt') === '1'; render(1); return; }
   if (e.target.closest('[data-mclear]')){

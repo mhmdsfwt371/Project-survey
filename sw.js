@@ -1,5 +1,5 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v16.75';
+const CACHE = 'nusuk-survey-v16.76';
 const SHELL = [
   './',
   './index.html',
@@ -66,8 +66,10 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // map tiles: network only, never cached
-  if (req.url.indexOf('basemaps.cartocdn.com') !== -1) {
+  // map tiles: network only, never cached — ومعها بلاطاتُ الثلاثيِّ (النمطُ
+  // والتضاريس): للمكتب لا للميدان، ولا تُخزَّن فلا يمتلئ تخزينُ الجهاز بها
+  if (req.url.indexOf('basemaps.cartocdn.com') !== -1 || req.url.indexOf('tiles.openfreemap.org') !== -1
+      || req.url.indexOf('elevation-tiles-prod') !== -1) {
     e.respondWith(fetch(req).catch(function () { return new Response('', { status: 504 }); }));
     return;
   }

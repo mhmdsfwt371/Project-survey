@@ -43,10 +43,3 @@ jobs:
           GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
         run: node scripts/photos-sync.mjs
-      - name: التليمتري — لقطةُ التوأم الرقمي
-        # لا يعمل إلا إن ضُبط TELEMETRY_URL — وإلا خرج بهدوءٍ في ثانية
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          TELEMETRY_URL: ${{ secrets.TELEMETRY_URL }}
-          TELEMETRY_TOKEN: ${{ secrets.TELEMETRY_TOKEN }}
-        run: node scripts/telemetry-ingest.mjs
