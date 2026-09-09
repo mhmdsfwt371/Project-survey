@@ -1,5 +1,5 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v16.71';
+const CACHE = 'nusuk-survey-v16.72';
 const SHELL = [
   './',
   './index.html',
@@ -12,6 +12,9 @@ const SHELL = [
   './vendor/leaflet/images/marker-icon.png',
   './vendor/leaflet/images/marker-shadow.png'
 ];
+/* محرّكُ العرض الثلاثيّ لا يُخزَّن مع الهيكل: ثمانمئةُ كيلوبايتٍ لا يحتاجها
+   الفنيُّ في المشاعر، ومن فتح الصفحةَ مرةً خُزِّن له عند أوّل طلب. */
+const LAZY = ['/vendor/maplibre/'];
 
 self.addEventListener('install', function (e) {
   e.waitUntil(
@@ -48,6 +51,18 @@ self.addEventListener('fetch', function (e) {
   // Firebase / Google APIs: network only, never cached (auth + live channels)
   if (req.url.indexOf('googleapis.com') !== -1 || req.url.indexOf('firebaseapp.com') !== -1 || req.url.indexOf('firebaseio.com') !== -1) {
     e.respondWith(fetch(req).catch(function () { return new Response('', { status: 504 }); }));
+    return;
+  }
+
+  /* محرّكُ العرض الثلاثيّ: يُخزَّن عند أوّل طلبٍ ثم يُخدَم من التخزين — يفتح
+     المكتبُ الصفحةَ مرةً فتعمل بعدها بلا شبكة، ولا يُثقَل تثبيتُ التطبيق به. */
+  if (LAZY.some(function (p2) { return req.url.indexOf(p2) !== -1; })) {
+    e.respondWith(caches.match(req).then(function (hit) {
+      return hit || fetch(req).then(function (res) {
+        if (res && res.ok) { const c2 = res.clone(); caches.open(CACHE).then(function (c) { c.put(req, c2); }); }
+        return res;
+      }).catch(function () { return new Response('', { status: 504 }); });
+    }));
     return;
   }
 
