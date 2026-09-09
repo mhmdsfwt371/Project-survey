@@ -121,7 +121,8 @@ function fakeDb(w, docsByCol, log){
   w.CORE.applyDoc('tasks', 'TK-n1', { id:'TK-n1', no:'SR-9', site:'S1', kind:'visit', to:'فني', assignedTo:'فني', status:'مطلوب', _at:Date.now(), _by:'u-office' });
   T(w.STATE.notifs.length === 1, 'ولا يُكرَّر الإشعارُ لوصول الوثيقة نفسِها');
   w.CORE.applyDoc('recs', 'S1', { id:'S1', by:'فني', access:'تم الوصول', review:'approved', reviewBy:'مهندس', _at:Date.now(), _by:'u-eng' });
-  T(w.STATE.notifs.length === 2 && w.STATE.notifs[0].kind === 'اعتماد', 'واعتمادُ زيارته يصله إشعارًا', (w.STATE.notifs[0] || {}).kind);
+  /* V16.66: صار الاعتمادُ اعتمادًا تقنيًّا — يليه اعتمادُ الوزارة */
+T(w.STATE.notifs.length === 2 && w.STATE.notifs[0].kind === 'اعتماد تقني', 'واعتمادُ زيارته يصله إشعارًا', (w.STATE.notifs[0] || {}).kind);
   const sc = w.pullScope();
   T(sc.mine === true && !sc.cols.includes('tasks') && sc.every === 21600000, 'الفنيُّ يُنصِت إلى ما كتبه ومهامِّه — والسحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات');
   const logF = []; w.FB.ready = true; w.FB.db = fakeDb(w, {}, logF); w.liveSmall = w.__real.liveSmall; w.liveSmall();

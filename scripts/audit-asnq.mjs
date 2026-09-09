@@ -31,7 +31,8 @@ w.ROLE='engineer'; w.STATE.meta.role='engineer'; w.STATE.meta.name='مهندس';
 const S=w.STATE.sites, it=w.itemsList()[0];
 /* أ · جاهزٌ للتركيب: زيارةٌ معتمدةٌ وحلٌّ معتمد */
 const a=S[0];
-w.STATE.recs[a.id]={id:a.id,access:'تم الوصول',review:'approved',at:Date.now(),by:'مشرف',photos:[]};
+/* V16.66: لا يُسنَد تركيبٌ قبل اعتماد الوزارة لإعداد التركيب */
+w.STATE.recs[a.id]={id:a.id,access:'تم الوصول',review:'approved',minReview:'approved',minBy:'وزارة',minAt:Date.now(),at:Date.now(),by:'مشرف',photos:[]};
 w.STATE.inss[a.id]={id:a.id,solution:{status:'معتمد',items:{[it.code]:1}},at:Date.now()};
 /* ب · جاهزٌ للفكّ: مُركّبةٌ ومعتمدةٌ ومُسلَّمة */
 const b=S[1];
