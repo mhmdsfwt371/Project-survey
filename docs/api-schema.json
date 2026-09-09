@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.72",
+  "app_version": "V16.73",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1540,6 +1540,7 @@
     "V16.70": "دليل الأدوار: مجموعات الشاشات مطويّة (GUIDE_G + data-guideg) تُفتَح واحدةً واحدة — صفحة المدير هبطت من ٩٠١٦ حرفًا إلى ١٠٣٧.",
     "V16.71": "بطاقة النقطة: «الخطوة التالية» تعرف الاعتمادين (مردودة/بانتظار التقني/ردّتها الوزارة/بانتظار الوزارة) بأصحابها وأزرارها؛ ونموذج التركيب لا يُعرَض إلا مع minOk + حلٍّ معتمد أو إسنادٍ قائم أو تركيبٍ تمّ.",
     "V16.72": "PAGE.map3d: MapLibre GL من vendor/maplibre (تحميل كسول m3Load) + نمط OpenFreeMap بلا مفتاح + تضاريس terrarium وhillshade؛ m3Points/m3Height/m3Paint — أعمدة fill-extrusion بارتفاع rec.hgt ولون lifeOf، نقاط دائرية للمس، نافذة بالتفاصيل؛ شرائح المشاعر وزر التضاريس؛ القائمة للمدير والمهندس والوزارة لا للميدان؛ sw.js LAZY يخزّن المحرّك عند أول طلب.",
+    "V16.73": "استيراد KMZ/KML: unzipKml (DecompressionStream deflate-raw) + kmlPlaces (name|n، description، Point/Polygon/LineString بمركزه، ExtendedData، والتقاط شاخص/مربع/شركة من الوصف) + geoM/nameKey/nameLike + kmiClassify (same ≤١٥م · doubt ≤٧٥م باسمٍ مشابه · new) + معاينة kmiCard وkmiApply يكتب newsites بمعرّف NSK-{ZONE}-{TYPE}-Kxxx وsrc:kmz.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
