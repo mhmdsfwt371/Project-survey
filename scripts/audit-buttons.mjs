@@ -32,6 +32,11 @@ const src = readFileSync('index.html','utf8');
 const click = (/function onDocClick\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
             + (/function clickTables\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
             + (/function clickA\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0];
+/* ═══ الحارسُ يحرس نفسَه (V16.68) ═══
+   `actList()` تشتقُّ الخصائصَ المربوطةَ من نصِّ المستمع، وبها يقرّر الحارسُ
+   العامُّ أيَّ زرٍّ يبتلعه. فلمّا فُصلت أجزاءُ المستمع إلى دوالَّ صارت خصائصُ
+   ما فُصل غيرَ مسجّلة — فتُبتلَع نقراتُها بلا أثر. تُقاس هنا: كلُّ دالةٍ من
+   دوالِّ النقر مذكورةٌ في `actList`، وعيّنةٌ من خصائصها موجودةٌ فيما تقرؤه. */
 const chg = src.slice(src.indexOf("document.addEventListener('change'"), src.indexOf("document.addEventListener('change'")+9000);
 const inp = src.slice(src.indexOf("document.addEventListener('input'"), src.indexOf("document.addEventListener('input'")+16000);
 const bound = new Set([...(click+chg+inp).matchAll(/data-[\w-]+/g)].map(m=>m[0]));
@@ -63,6 +68,12 @@ let bad=0; const T=(c,n)=>{console.log((c?'  ✓ ':'  ✗ ')+n); if(!c)bad++;};
 T(bound.size >= 150, 'الخصائصُ المربوطةُ في المعالجات: '+bound.size);
 T(seen.size >= 100, 'الخصائصُ المرسومةُ في الشاشات: '+seen.size);
 T(dead.length === 0, 'لا خاصيةَ تُرسَم بلا معالج' + (dead.length ? ' — ' + dead.map(a=>a+' في '+seen.get(a)).slice(0,6).join(' | ') : ''));
+{
+  const al = (/function actList\(\)\{[\s\S]*?\n\}/.exec(src) || [''])[0];
+  const parts = ['onDocClick', 'clickTables', 'clickA'].filter(fn => new RegExp('function ' + fn + '\\(e\\)\\{').test(src));
+  const missing = parts.filter(fn => !al.includes(fn));
+  T(missing.length === 0, 'actList تقرأ كلَّ دوالِّ النقر — وإلا ابتُلعت نقراتُ ما فُصل', missing.join(' · '));
+}
 T(badP.size === 0, 'كلُّ زرِّ انتقالٍ يبلغ شاشةً موجودة' + (badP.size ? ' — ' + [...badP].slice(0,5).join(' | ') : ''));
 console.log(bad?'\nجردُ الأزرار فشل ✗ ('+bad+')':'\nكلُّ زرٍّ موصولٌ ويبلغ مكانَه من الدورة ✅');
 process.exit(bad?1:0);

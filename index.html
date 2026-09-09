@@ -770,7 +770,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.67</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.68</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17257,7 +17257,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.67' + '.docx" download>⬇ '
+              +   'V16.68' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -29137,8 +29137,18 @@ function enterShell(){
 var ACTS_CACHE = null;
 function actList(){
   if (ACTS_CACHE) return ACTS_CACHE;
+  /* ═══ الخصائصُ تُشتقُّ من المستمع كلِّه لا من دالةٍ واحدة ═══
+     كانت تُقرأ من `onDocClick` وحدَها. ولمّا طالت فصُلت أجزاؤها إلى
+     `clickTables` و`clickA` صارت خصائصُ ما فُصل **غيرَ مسجّلة**: يضغط
+     المستخدمُ «راجع» أو شريحةَ «متعذّرٌ يحتاج قرارًا» أو زرَّ اعتماد الوزارة
+     فيبتلعها الحارسُ نفسُه ولا يقع شيء — وهو الحارسُ الذي كُتب ليمنع هذا
+     بالضبط. تُقرأ الثلاثُ معًا. */
   var src = '';
-  try { src = String(onDocClick); } catch (e){}
+  try {
+    src = String(onDocClick)
+        + (typeof clickTables === 'function' ? String(clickTables) : '')
+        + (typeof clickA === 'function' ? String(clickA) : '');
+  } catch (e){ LS_ERR = e; }
   var found = src.match(/data-[\w-]+/g) || [];
   ACTS_CACHE = found.length >= 20 ? found.filter(function(v, i){ return found.indexOf(v) === i; })
                                   : null;
