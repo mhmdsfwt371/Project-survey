@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.54</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.55</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -10907,7 +10907,8 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
         }).join('')
       + '</div>'
 
-      + card('إنشاء حساب',
+      /* بطاقةُ الإنشاء لمن يُنشئ — والوزارةُ تقرأ الجدولَ ولا تُضيف */
+      + (canProvision() ? card('إنشاء حساب',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
           +   '<input id="uU" dir="ltr" placeholder="m.safwat" maxlength="80"></div>'
@@ -10937,7 +10938,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           + '<p class="hint" style="margin:11px 0 0">'
           + esc(t('اسمُ المستخدم بلا مسافات — ويُكمَّل بنطاق المشروع تلقائيًّا. وكلمةُ المرور عشرةُ أحرفٍ فأكثر، ويبدّلها صاحبُها أولَ دخول.'))
           + '</p>',
-          btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"'))
+          btn('إنشاء الحساب','btn-primary btn-sm',' data-usradd="1"')) : '')
 
       + usersCard();
   })();
@@ -16985,7 +16986,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.54' + '.docx" download>⬇ '
+              +   'V16.55' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -25845,7 +25846,8 @@ var ROLES = {
        العمل: الخريطةُ ونظرةٌ عامةٌ والآنَ ومركزُ التقارير والمعالمُ والسجل. */
     /* V16.47: «المسح الميداني» ضمن متابعة العمل الميداني — تُتابَع كلُّ زيارةٍ
        ومن زارها ومتى، قراءةً؛ والأزرارُ لمن يملكها لا لها */
-    nav:['map','over','wbs','wtask','now','repcenter','miles','reg','co','survey','chalm','dis','ncr','guide','acct'],
+    /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
+    nav:['map','over','wbs','wtask','now','repcenter','miles','reg','co','survey','chalm','dis','ncr','users','guide','acct'],
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 }
   },
@@ -26273,7 +26275,10 @@ var PAGE_CAP = {
   ipc:'money', buys:'money', budget:'money', exec:'money',
   invb:'inventory', invmv:'inventory', stock:'inventory',
   wos:'workshop', wday:'workshop',
-  perms:'perms', assignRole:'users', users:'provision', roles:'users',
+  /* شاشةُ الحسابات كانت مقيَّدةً بقدرة الإنشاء وحدَها — فمن يقرأ ولا يُنشئ
+     (الوزارةُ) لا يراها. صار القيدُ في القائمة (nav) والصفوفُ في canSeeUser،
+     والأزرارُ في قدراتها — فتُقرأ بلا أن تُكتَب. */
+  perms:'perms', assignRole:'users', roles:'users',
   svForm:'edit', insForm:'edit', newsite:'edit',
   qa:'approve', appr:'approve', esc:'approve', svappr:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
@@ -27190,14 +27195,21 @@ var USR_Q = '', USR_EDIT = '', USR_ROLE = '';
 
 /* من يظهر لي: من رتبتُه دوني — ونفسي. ومن يُدير الأدوارَ يرى الجميعَ
    لأنه هو من يرفعهم ويخفضهم. */
+/* ═══ من يرى مَن ═══
+   كان مَن يملك «إدارة الحسابات» (المهندسُ ومديرُ المشروع) يرى الجميعَ ومنهم
+   من هو فوقه — فيرى المهندسُ حسابَ مدير المشروع والإدارةِ العليا، ويرى
+   المشرفُ حسابَ المهندس. والقاعدةُ التي أرادها صاحبُ المشروع: **لا يُرى إلا
+   من هو في رتبتك أو دونها**، فمن فوقك ليس من شأنك. والإدارةُ العليا وصاحبُ
+   المشروع فوق الجميع فيريان الكلَّ. والمطّلعُ الوزاريُّ ليس من الفريق: لا
+   يظهر لأحدٍ من الميدان، ولا يرى هو إلا نظراءَه من الوزارة. */
 function canSeeUser(u){
   if (!u) return false;
-  if (may('users')) return true;
-  if (u.name && u.name === STATE.meta.name) return true;
-  /* المطّلعُ الوزاريُّ ليس من الفريق: أدنى الرتب لكنه ليس «تحت» أحدٍ من
-     الميدان — فلا يظهر للفنيِّ ولا للمشرف في قائمة الناس. */
-  if (roleOfUser(u) === 'viewer') return false;
-  return rankOf(ROLE) > rankOf(roleOfUser(u));
+  var meR = effRole(ROLE), uR = roleOfUser(u);
+  if (u.name && u.name === STATE.meta.name) return true;      /* نفسي دائمًا */
+  if (meR === 'viewer') return uR === 'viewer';               /* الوزارةُ نظراءَها وحدَهم */
+  if (uR === 'viewer') return false;                          /* ولا يراها الميدانُ ولا المكتب */
+  if (meR === 'exec' || isBossHere()) return true;            /* من فوق الجميع يرى الجميع */
+  return rankOf(meR) >= rankOf(uR);                           /* رتبتي فما دونها */
 }
 function usersList(){
   var U = STATE.users || {}, out = [];
@@ -27498,12 +27510,13 @@ function usersCard(){
                               + '</span>' : ''),
                       pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
                       '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
-                      btn(t('تعديل'),'btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"')
+                      /* الوزارةُ تقرأ الجدولَ ولا تُعدّل: التعديلُ والتعطيلُ لمن يُنشئ */
+                      (canProvision() ? btn(t('تعديل'),'btn-quiet btn-sm',' data-usredit="' + esc(uid) + '"') : '')
                       + (uidLike(uid) && u.user && canProvision() && uid !== myUid()
                             ? btn('\u{1F511} ' + t('كلمة جديدة'),'btn-quiet btn-sm',' data-usrpw="' + esc(uid) + '" title="' + esc(t('يكتب طلبًا فيضبط الخادمُ كلمةً جديدةً — لمن نسي كلمتَه')) + '"') : '')
                       + (rankOf(ROLE) >= rankOf('engineer') && uid !== myUid()
                             ? btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-usrdel="' + esc(uid) + '" style="color:var(--danger, #e5484d)"') : '')
-                        + btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"')];
+                        + (canProvision() ? btn(on ? t('تعطيل') : t('تفعيل'),'btn-quiet btn-sm',' data-usract="' + esc(uid) + '"') : '')];
             }))
         : '<p class="hint" style="padding:16px">'
           + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'

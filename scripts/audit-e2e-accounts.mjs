@@ -69,12 +69,15 @@ T(E.w.rolesICanMake().includes('supervisor') && !E.w.rolesICanMake().includes('a
 const S = await device('supervisor','مشرف أ',ids['sup.a'],cloud);
 const ss=S.w.usersList().map(x=>x[1].name);
 T(ss.includes('فني ١') && ss.includes('فني ٢') && ss.includes('فني ٣'), '٤ · المشرفُ يرى الفنيّين', ss.join(' · '));
-T(!ss.includes('محمد شكري') && !ss.includes('mohamed safwat') && !ss.includes('مشرف ب'), '   ولا يرى المهندسَ ولا المديرَ ولا مشرفًا آخر');
+/* V16.55: الرؤيةُ صارت «رتبتي فما دونها» — فالمشرفُ يرى نظراءَه ولا يرى من فوقه */
+T(!ss.includes('محمد شكري') && !ss.includes('mohamed safwat'), '   ولا يرى المهندسَ ولا المديرَ');
+T(ss.includes('مشرف ب'), '   ويرى نظيرَه في الرتبة', ss.join(' · '));
 T(!S.w.mayBonus(), '   ولا يكتب نقاطَ زيادة');
 T(E.w.mayBonus() && A.w.mayBonus(), '   والمهندسُ والمديرُ يكتبانها');
 /* ═══ الفنيّ ═══ */
 const F = await device('tech','فني ١',ids['tec.1'],cloud);
-T(F.w.usersList().map(x=>x[1].name).join()==='فني ١', '٥ · الفنيُّ يرى نفسَه وحده');
+/* الفنيُّ يرى نظراءَه في القائمة، ولا يرى شاشتَها أصلًا — فالقائمةُ لا تُعرَض له */
+T(F.w.usersList().every(x => F.w.rankOf(x[1].role || 'tech') <= F.w.rankOf('tech')), '٥ · الفنيُّ لا يرى فوقَ رتبته', F.w.usersList().map(x=>x[1].name).join(' · '));
 T(!F.w.seesPage('users'), '   ولا يرى شاشةَ الحسابات');
 console.log(bad?'\nجردُ الفريق من طرفٍ إلى طرف فشل ✗ ('+bad+')':'\nالمديرُ يُنشئ ويوزّع — والمهندسُ على لابه يرى كلَّ المشرفين ✅');
 process.exit(bad?1:0);
