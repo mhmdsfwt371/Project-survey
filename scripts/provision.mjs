@@ -56,6 +56,33 @@ console.log(`طلبات: ${snap.size} من القاعدة · ${direct.length} م
 let done = 0, failed = 0;
 for (const d of docs){
   const p = d.data, user = String(p.user || d.id).trim();
+  /* ═══ طلبُ تغييرِ اسم الدخول ═══
+     اسمُ الدخول هويةٌ في المصادقة (بريدٌ داخليٌّ) لا حقلٌ في الوثيقة: تعديلُه
+     في الشاشة يغيّر ما يُعرَض ولا يغيّر ما يُدخَل به — فيبقى القديمُ عاملًا
+     ويظنُّ المكتبُ أنه بدّله. يُبدَّل هنا: بريدُ المصادقة وحقلُ الوثيقة معًا،
+     والمعرِّفُ (uid) لا يتغيّر فلا يضيع شيءٌ مما كتبه صاحبُه. */
+  if (p.action === 'rename'){
+    try {
+      const to = String(p.newUser || '').trim();
+      if (!p.uid) throw new Error('لا معرِّفَ للحساب');
+      if (!/^[A-Za-z0-9._-]{3,}$/.test(to)) throw new Error('اسمُ دخولٍ غيرُ صالح');
+      const newEmail = `${to}@${DOMAIN}`;
+      try {
+        const clash = await auth.getUserByEmail(newEmail);
+        if (clash && clash.uid !== p.uid) throw new Error('الاسمُ مستعملٌ لحسابٍ آخر');
+      } catch (e){ if (e.code !== 'auth/user-not-found') throw e; }
+      await auth.updateUser(p.uid, { email: newEmail });
+      await db.collection('users').doc(p.uid).set({ user: to }, { merge: true });
+      await d.ref.set({ status:'done', doneAt:Date.now(), why:'' }, { merge:true });
+      done++; console.log(`  ✓ اسمُ الدخول: ${user} ← ${to}`);
+      console.log(`::notice title=${to}::بُدِّل اسمُ الدخول من ${user}`);
+    } catch (e){
+      failed++; const why = String(e && (e.message || e.code) || e).slice(0, 160);
+      await d.ref.set({ status:'error', why, triedAt:Date.now() }, { merge:true });
+      console.log(`::warning title=${user}::تعذّر تبديلُ اسم الدخول — ${why}`);
+    }
+    continue;
+  }
   /* ═══ طلبُ حذف ═══ حسابُ الدخول لا يحذفه المتصفّح — يُحذَف هنا فلا يدخل صاحبُه بعدها */
   if (p.action === 'delete'){
     try {
