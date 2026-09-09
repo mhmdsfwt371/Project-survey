@@ -54,6 +54,7 @@ T(bad2.length===0 || (d.getElementById('content').textContent||'').indexOf('با
 w.FORM.site=r0.id; w.FORM.access='تم الوصول';
 w.FORM.photos={ site:{data:'data:,a'}, mount:{data:'data:,b'} };
 w.FORM.old_net='10.10.40.7';
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(0);
 T(r0.net==='10.10.40.7', 'العنوانُ المقروءُ من الميدان كُتب على النقطة');
 T(w.STATE.queue.some(q=>q.kind==='sites' && q.id===r0.id), 'ويُرفَع إلى السحابة');

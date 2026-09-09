@@ -150,6 +150,7 @@ w.formReset(); w.FORM.site = site.id;
 w.FORM.access = 'تم الوصول';
 w.FORM.photos = { site:{ size:1 }, mount:{ size:1 } };
 said = [];
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(false);
 step(!!w.STATE.recs[site.id], 'حُفظ المسحُ باسم الفنيّ');
 step(w.STATE.recs[site.id].by === A, 'السجلُّ يحمل اسمَ من مسح');

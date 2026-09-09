@@ -42,6 +42,7 @@ say(!!w.STATE.tasks['TK-visit-'+x.id], '١ إسنادُ زيارة', (w.STATE.ta
 say(w.lifeOf(x)==='assigned', '  الحالة: زيارةٌ مُسندة');
 // ٢ زيارةٌ تُحفَظ
 w.FORM.site=x.id; w.FORM.access='تم الوصول'; w.FORM.photos={site:{data:'data:,a'},mount:{data:'data:,b'}};
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(0);
 say(w.lifeOf(x)==='visited', '٢ الزيارةُ حُفظت — تنتظر الاعتماد');
 // ٣ اعتماد

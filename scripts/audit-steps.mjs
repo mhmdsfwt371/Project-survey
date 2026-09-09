@@ -31,6 +31,7 @@ const n0=(w.STATE.steps||[]).length, nt0=w.notifStore().length;
 /* ١ · الزيارة */
 const x=S[0];
 w.FORM.site=x.id; w.FORM.access='تم الوصول'; w.FORM.photos={site:{data:'a'},mount:{data:'b'}};
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(0);
 T((w.STATE.steps||[]).length===n0+1 && w.STATE.steps[0].kind==='visit', 'حفظُ الزيارة يُعلن خطوتَه');
 T(w.notifStore().length>nt0 && w.notifStore()[0].kind==='تمّ', 'ويُشعِر المكتبَ', w.notifStore()[0].text.slice(0,44));

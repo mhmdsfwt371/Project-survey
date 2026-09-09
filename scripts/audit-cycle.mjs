@@ -57,6 +57,7 @@ T(w.lifeOf(site) === 'tomorrow', 'موعدُ الغد يجعلها «مجدول�
 w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now());
 /* ٣ · المشرف يزور ويحفظ */
 w.FORM.site = site.id; w.FORM.access = 'تم الوصول'; w.FORM.photos = { site:{data:'data:,a'}, mount:{data:'data:,b'} }; w.FORM.note = 'مسح تجريبي';
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(0);
 let rec = w.STATE.recs[site.id];
 T(rec && w.svReview(rec) === 'pending', 'الزيارة حُفظت وتنتظر الاعتماد');
@@ -82,6 +83,7 @@ w.CUR = 'mywork'; w.MYW_TAB = 'tasks'; w.render(1);
 h = d.getElementById('content').textContent;
 T(h.indexOf('الصورة لا تُظهر التثبيت') > -1, 'المشرف يقرأ سبب الردّ في مهامه');
 w.FORM.site = site.id; w.FORM.access = 'تم الوصول'; w.FORM.photos = { site:{data:'data:,a'}, mount:{data:'data:,b'} }; w.FORM.note = 'الجولة الثانية';
+  /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
 w.svSave(0);
 rec = w.STATE.recs[site.id];
 T(rec.round === 2 && rec.prevNote === 'الصورة لا تُظهر التثبيت' && w.svReview(rec) === 'pending', 'الجولة الثانية تحمل سبب الردّ وتنتظر');
