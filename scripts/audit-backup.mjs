@@ -32,6 +32,31 @@ import { execFileSync } from 'child_process';
 }
 
 import { createRequire } from 'module';
+/* ═══ الحارسُ الثاني: هويةُ الدرايف من مكانٍ واحد ═══
+   حسابُ الخدمة لا يملك حصةَ تخزينٍ عند جوجل، فكلُّ ملفٍ يرفعه إلى مجلدٍ
+   شخصيٍّ يُرَدُّ. الرفعُ صار باسم المالك عبر GDRIVE_OAUTH، وهويةُ الدرايف
+   تُبنى في drive-auth.mjs وحدَه — فمن بنى عميلًا بنفسِه في سكربتٍ آخر أعاد
+   العطلَ من حيث لا يُرى. */
+{
+  let g = 0;
+  for (const f of ['scripts/drive-upload.mjs', 'scripts/photos-sync.mjs']) {
+    const src = readFileSync(f, 'utf8');
+    const viaModule = /from '\.\/drive-auth\.mjs'/.test(src);
+    const ownClient = /google\.auth\.(GoogleAuth|OAuth2)/.test(src);
+    console.log(((viaModule && !ownClient) ? '  \u2713 ' : '  \u2717 ') + f
+      + (viaModule ? (ownClient ? ' يبني عميلَ درايفٍ بنفسِه بدل drive-auth' : ' يمرُّ بـdrive-auth')
+                   : ' لا يمرُّ بـdrive-auth'));
+    if (!viaModule || ownClient) g++;
+  }
+  for (const [f, k] of [['.github/workflows/backup.yml', 'GDRIVE_OAUTH'],
+                        ['.github/workflows/provision.yml', 'GDRIVE_OAUTH']]) {
+    const ok = readFileSync(f, 'utf8').includes(k);
+    console.log((ok ? '  \u2713 ' : '  \u2717 ') + f.split('/').pop() + ' يمرِّر ' + k);
+    if (!ok) g++;
+  }
+  if (g) { console.log('\nجردُ حالة النسخ فشل \u2717 (' + g + ')'); process.exit(1); }
+}
+
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 const dom = new JSDOM(readFileSync('index.html','utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });

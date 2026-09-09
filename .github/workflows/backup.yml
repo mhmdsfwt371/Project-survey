@@ -42,13 +42,14 @@ jobs:
       # إلى مساحته الخاصة. يتجاوز نفسه بهدوء إن لم تُضبط الأسرار.
       - name: Upload to Google Drive
         env:
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
           GDRIVE_KEEP_DAYS: '0'      # 0 = لا يُحذف شيء أبدًا — المساحة ٥ تيرا
           GDRIVE_PHOTO_DAYS: '540'   # الصور: ١٨ شهرًا ≈ ١٫٢ تيرا
         run: |
-          if [ -z "$GDRIVE_SA" ]; then
-            echo "::notice::GDRIVE_SA غير مضبوط — تخطّي الرفع للدرايف"
+          if [ -z "$GDRIVE_OAUTH" ] && [ -z "$GDRIVE_SA" ]; then
+            echo "::notice::GDRIVE_OAUTH غير مضبوط — تخطّي الرفع للدرايف"
             mkdir -p backups/latest
             printf '{\n  "ok": false,\n  "at": "%s",\n  "why": "GDRIVE_SA غير مضبوط — لم يُرفَع شيءٌ إلى درايف",\n  "fix": "Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)"\n}\n' "$(date -u +%FT%TZ)" > backups/latest/_drive.json
           else

@@ -40,5 +40,6 @@ jobs:
       - name: نقلُ الصور من القاعدة إلى الدرايف
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
         run: node scripts/photos-sync.mjs

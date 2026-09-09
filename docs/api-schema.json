@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.63",
+  "app_version": "V16.64",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1531,6 +1531,7 @@
     "V16.60": "wbsExcel(): تصدير الخطة بصيغ الملف الأصلي عبر ExcelJS (exlLoad من cdnjs) — صف المواعيد الحاكمة وصيغ المتبقي، MIN/MAX/AVERAGE للآباء على صفوفهم، SUMPRODUCT للمدة، IF للحالة والموقف والمتبقي، outlineLevel=depth-1، تجميد A6، autoFilter، RTL، عرض أعمدة، تنسيق شرطي (dataBar بحدَّيه + cellIs + expression)؛ زر data-wbsxl، وcdnjs مسموح في عامل الخدمة.",
     "V16.61": "audit-journey يملأ الحقول الإلزامية (mount/power/chals/wid_m/hgt_m/fit) قبل svSave — الحارس يتبع قاعدة V16.56.",
     "V16.62": "الخريطة: زر data-legend يخفي/يظهر الأسطورة (LEGEND_ON محفوظ في nsk14.legend)؛ ملف الخطة: xlDate (UTC بلا انزياح)، workDays، كل صيغة مع result محسوب (المدة/الحالة/الموقف/المتبقي/الآباء)، calcProperties.fullCalcOnLoad.",
+    "V16.64": "drive-auth.mjs: هويةُ الدرايف من مكانٍ واحد — GDRIVE_OAUTH (توكن المالك، نطاق drive.file) أولًا ثم حسابُ الخدمة؛ المجلدُ الجذرُ يُصنَع ويُعرَف بالاسم فلا يُلصَق معرِّف؛ explain() يترجم storageQuotaExceeded وinvalid_grant وinvalid_client إلى سببٍ يُقرأ؛ حارسٌ يمنع بناءَ عميلِ درايفٍ خارج الوحدة.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

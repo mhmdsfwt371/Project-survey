@@ -7,20 +7,19 @@
    الصورةَ منها — فلا تبقى في القاعدة إلا ما لم يُنقَل بعد.
    ═════════════════════════════════════════════════════════════════════════ */
 import admin from 'firebase-admin';
-import { google } from 'googleapis';
 import { Readable } from 'stream';
+import { driveClient, rootFolder, explain, q as qEsc } from './drive-auth.mjs';
 
 const SA = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.GDRIVE_SA || '';
-const ROOT = (process.env.GDRIVE_FOLDER || '').trim();
-if (!SA || !ROOT){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT أو GDRIVE_FOLDER غير مضبوط — لا نقلَ للصور'); process.exit(0); }
+if (!SA){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT غير مضبوط — لا نقلَ للصور'); process.exit(0); }
 const key = JSON.parse(SA);
 admin.initializeApp({ credential: admin.credential.cert(key) });
 const db = admin.firestore();
-const auth = new google.auth.GoogleAuth({ credentials: key, scopes: ['https://www.googleapis.com/auth/drive'] });
-const drive = google.drive({ version: 'v3', auth });
+const { drive, mode, err: driveErr } = driveClient();
+if (driveErr){ console.log('::warning::' + driveErr + ' — لا نقلَ للصور'); process.exit(0); }
 
 async function folder(name, parent){
-  const q = `name='${name.replace(/'/g, "\\'")}' and '${parent}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
+  const q = `name='${qEsc(name)}' and '${parent}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`;
   const f = await drive.files.list({ q, fields: 'files(id)', pageSize: 1, supportsAllDrives: true, includeItemsFromAllDrives: true });
   if (f.data.files && f.data.files[0]) return f.data.files[0].id;
   const made = await drive.files.create({ requestBody: { name, mimeType: 'application/vnd.google-apps.folder', parents: [parent] }, fields: 'id', supportsAllDrives: true });
@@ -45,7 +44,7 @@ try {
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);
-const photosRoot = await folder('photos', ROOT);
+const photosRoot = await folder('photos', await rootFolder(drive, mode));
 let done = 0, failed = 0;
 for (const d of snap.docs){
   const p = d.data(), name = p.name || (d.id + '.jpg');
@@ -70,13 +69,13 @@ for (const d of snap.docs){
     console.log(`  ✓ ${name} (${Math.round(buf.length / 1024)}KB)`);
   } catch (e){
     failed++;
-    const why = String(e && (e.message || e.code) || e).slice(0, 140);
+    const why = explain(e).slice(0, 200);
     /* «حسابُ الخدمة بلا حصة تخزين»: عطلُ إعدادٍ لا عطلُ صورة — تبقى منتظرةً
        فتُنقَل وحدَها متى صار المجلدُ درايفًا مشتركًا، ولا تُشطَب صورةٌ سليمة. */
-    const quota = /storage quota|storageQuotaExceeded/i.test(why);
+    const quota = /حصةِ تخزين|invalid_grant|invalid_client|drive\.file/.test(why);
     await d.ref.set(quota ? { why, triedAt: Date.now() } : { status: 'error', why, triedAt: Date.now() }, { merge: true }).catch(() => {});
     if (quota){
-      console.log('::error title=درايف::حسابُ الخدمة بلا حصة تخزين — المجلدُ الشخصيُّ لا يقبل ملفاته. الحلّ: درايف مشترك (Shared Drive) يُضاف إليه بريدُ حساب الخدمة، ويوضع معرّفُه في GDRIVE_FOLDER. الصورُ محفوظةٌ في القاعدة وتُنقَل تلقائيًّا بعدها.');
+      console.log('::error title=درايف::' + why + ' — الصورُ محفوظةٌ في القاعدة وتُنقَل تلقائيًّا بعد الضبط.');
       break;
     }
     console.log(`  ✗ ${name} — ${why}`);

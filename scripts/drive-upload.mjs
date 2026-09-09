@@ -2,42 +2,30 @@
    يعمل داخل سير GitHub قبل خطوة التشفير، لأن نسخة الدرايف تُرفع خامًا
    إلى درايف المالك الخاص (وليس إلى المستودع العام).
    يتجاوز نفسه بهدوء إن لم تُضبط الأسرار — فلا يُفشل النسخ الاحتياطي. */
-import { google } from 'googleapis';
+import { driveClient, rootFolder, explain, q as qEsc, SETUP_FIX } from './drive-auth.mjs';
 import { readFileSync, existsSync, statSync } from 'fs';
 import { Readable } from 'stream';
 
-const SA_RAW = process.env.GDRIVE_SA || '';
-const ROOT   = (process.env.GDRIVE_FOLDER || '').trim();
+const { drive, mode, err } = driveClient();
 /* احتفاظ بمستويين: البيانات خفيفة فتبقى طويلًا، والصور ضخمة فمدتها أقصر.
    صفر في أيٍّ منهما = لا حذف إطلاقًا. */
 const KEEP_DATA  = parseInt(process.env.GDRIVE_KEEP_DAYS   || '120', 10);
 const KEEP_PHOTO = parseInt(process.env.GDRIVE_PHOTO_DAYS  || '21',  10);
 
-if (!SA_RAW || !ROOT) {
-  console.log('drive-upload: GDRIVE_SA أو GDRIVE_FOLDER غير مضبوط — تخطّي الرفع');
+if (err) {
+  console.log('drive-upload: ' + err + ' — تخطّي الرفع');
   try { const fs = await import('fs'); fs.mkdirSync('backups/latest', { recursive:true });
         fs.writeFileSync('backups/latest/_drive.json', JSON.stringify({ ok:false, at:new Date().toISOString(),
-          why:'GDRIVE_SA أو GDRIVE_FOLDER غير مضبوط — لم يُرفَع شيءٌ إلى درايف',
-          fix:'Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)' }, null, 2)); } catch {}
+          why: err, fix: SETUP_FIX }, null, 2)); } catch {}
   process.exit(0);
 }
-
-let sa;
-try { sa = JSON.parse(SA_RAW); }
-catch { console.log('::warning::GDRIVE_SA ليس JSON صالحًا — تخطّي الرفع'); process.exit(0); }
-
-const auth = new google.auth.GoogleAuth({
-  credentials: sa,
-  scopes: ['https://www.googleapis.com/auth/drive']
-});
-const drive = google.drive({ version: 'v3', auth });
 
 const pad = n => String(n).padStart(2, '0');
 const now = new Date();
 const day = `${now.getUTCFullYear()}-${pad(now.getUTCMonth() + 1)}-${pad(now.getUTCDate())}`;
 
 async function folderFor(name, parent) {
-  const q = `name='${name.replace(/'/g, "\\'")}' and '${parent}' in parents`
+  const q = `name='${qEsc(name)}' and '${parent}' in parents`
           + ` and mimeType='application/vnd.google-apps.folder' and trashed=false`;
   const found = await drive.files.list({ q, fields: 'files(id,name)', pageSize: 1,
     supportsAllDrives: true, includeItemsFromAllDrives: true });
@@ -106,6 +94,7 @@ async function prune(parent) {
 import { writeFileSync as _wf, statSync as _st, existsSync as _ex } from 'fs';
 const driveMeta = (o) => { try { _wf('backups/latest/_drive.json', JSON.stringify(Object.assign({ at:new Date().toISOString() }, o), null, 2)); } catch {} };
 try {
+  const ROOT = await rootFolder(drive, mode);
   const dayFolder = await folderFor(day, ROOT);
   console.log(`drive-upload: فولدر ${day}`);
   const sz = f => (_ex(f) ? _st(f).size : 0);
@@ -118,10 +107,8 @@ try {
   console.log('drive-upload: تم ✓');
 } catch (e) {
   /* لا نُفشل النسخ الاحتياطي بسبب الدرايف — نُبلّغ ونكمل */
-  driveMeta({ ok:false, why:'فشل الرفع — ' + String(e?.message || e).slice(0, 160) });
+  driveMeta({ ok:false, why:'فشل الرفع — ' + explain(e), fix:SETUP_FIX });
   /* كان تحذيرًا فيمرُّ السيرُ أخضرَ ولا يعلم أحدٌ أن النسخةَ لم تصل الدرايفَ
      منذ أسابيع. صار خطأً يُرى في السير وفي بطاقة صحة النظام. */
-  const quota = /storage quota|storageQuotaExceeded/i.test(String(e?.message || e));
-  console.log((quota ? '::error title=درايف::حسابُ الخدمة بلا حصة تخزين — المجلدُ الشخصيُّ لا يقبل ملفاته. الحلّ: درايف مشترك (Shared Drive) يُضاف إليه بريدُ حساب الخدمة، ويوضع معرّفُه في GDRIVE_FOLDER. — '
-                     : '::error title=درايف::drive-upload فشل — ') + (e?.message || e));
+  console.log('::error title=درايف::' + explain(e));
 }
