@@ -27,14 +27,21 @@ jobs:
           done
           echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
       - name: متصفّح Chromium
-        # التثبيتُ يُعاد ثلاثًا: تعثّرُ سِجلِّ الحزم لحظةً لا يُسقِط حارسًا.
+        # `--with-deps` يشغّل `apt-get` على مرايا أوبونتو، وهي تتعثّر أحيانًا في
+        # المُشغِّل («Some index files failed to download») فيسقط الحارسُ بسببِ
+        # شبكةٍ لا بسببِ شيفرة. ومكتباتُ النظام موجودةٌ أصلًا في صورة
+        # `ubuntu-latest` — فيُجرَّب التثبيتُ بلا حزمِ النظام أولًا، ولا يُلجَأ
+        # إلى `apt` إلا إن فشل، ومع تحديثِ الفهارس قبله.
         run: |
           for i in 1 2 3; do
-            npx playwright install --with-deps chromium && exit 0
-            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            npx playwright install chromium && exit 0
+            echo "::warning::محاولةُ تنزيل المتصفّح $i تعثّرت — إعادةٌ بعد $((i*15))ث"
             sleep $((i*15))
           done
-          echo "::error::تعذّر التثبيتُ بعد ثلاث محاولات"; exit 1
+          echo "::warning::تنزيلُ المتصفّح تعثّر ثلاثًا — تُجرَّب حزمُ النظام"
+          sudo apt-get update -qq || true
+          npx playwright install --with-deps chromium && exit 0
+          echo "::error::تعذّر تثبيتُ المتصفّح"; exit 1
       - name: يدخل ويلمس نقطةَ ممرٍّ ويقيس النافذةَ ويرسم كلَّ شاشة
         run: node scripts/browser-test.mjs
       - uses: actions/upload-artifact@v4
