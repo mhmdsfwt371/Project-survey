@@ -1,5 +1,5 @@
 {
-  "at": "2026-09-09T07:31:39.085Z",
+  "at": "2026-09-09T16:06:01.351Z",
   "ok": false,
   "why": "فشل الرفع — Service Accounts do not have storage quota. Leverage shared drives (https://developers.google.com/workspace/drive/api/guides/about-shareddrives), or use OAuth d"
 }
