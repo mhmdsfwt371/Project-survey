@@ -1,22 +1,25 @@
 {
  "ok": true,
- "at": "2026-09-08T07:22:34.697Z",
+ "at": "2026-09-09T07:31:33.053Z",
  "collections": [
-  "accounts: 51",
+  "accounts: 52",
   "att: 2",
-  "events: 2459",
+  "events: 3291",
   "ghcfg: 1",
   "hb: 1",
-  "presence: 5",
-  "provision: 2",
-  "recs: 2",
-  "settings: 15",
+  "inss: 5",
+  "photos: 142",
+  "presence: 9",
+  "provision: 1",
+  "recs: 66",
+  "settings: 17",
   "sites: 3",
   "srvorders: 1",
-  "stats: 2",
+  "stats: 3",
+  "steps: 69",
   "teams: 2",
-  "users: 8"
+  "users: 10"
  ],
- "totalDocs": 2554,
+ "totalDocs": 3533,
  "note": "البيانات الخام في backup.enc — مشفّرة. هذا الملف أعداد فقط."
 }
