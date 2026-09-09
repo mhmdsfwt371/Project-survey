@@ -1,10 +1,10 @@
 {
  "ok": true,
- "at": "2026-09-09T16:17:08.026Z",
+ "at": "2026-09-09T17:05:34.150Z",
  "collections": [
   "accounts: 54",
   "att: 2",
-  "events: 4246",
+  "events: 4253",
   "ghcfg: 1",
   "hb: 1",
   "inss: 5",
@@ -20,6 +20,6 @@
   "teams: 2",
   "users: 12"
  ],
- "totalDocs": 4651,
+ "totalDocs": 4658,
  "note": "البيانات الخام في backup.enc — مشفّرة. هذا الملف أعداد فقط."
 }
