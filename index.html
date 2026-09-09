@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.50</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.51</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -10039,7 +10039,9 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       var roleOf = {}; Object.keys(U).forEach(function(k){ var u = U[k]; if (u && u.name) roleOf[u.name] = u.role; });
       /* الكلُّ تحتي — ميدانًا ومكتبًا — بمرشِّح الدور: مديرُ المشروع يرى الجميع،
          والمهندسُ من تحته، والمشرفُ فريقَه. المهندسُ يُعَدُّ له اعتمادُه لا زياراتُه. */
-      var all = underNames(me);
+      /* المطّلعُ الوزاريُّ ليس من الفريق: لا عملَ يُعَدُّ له، فصفُّه أصفارٌ تشوّش
+         اللوحةَ — يُستبعَد كما يُستبعَد من قائمة الناس */
+      var all = underNames(me).filter(function(n2){ return effRole(roleOf[n2] || 'tech') !== 'viewer'; });
       if (!all.length) return card('لا أحدَ تحت إشرافك بعد', '<p class="hint" style="margin:0">' + esc(t('حقلُ «مديره» في سجل كلِّ موظفٍ هو ما يربطه بك.')) + '</p>');
       var byRole = {}; all.forEach(function(n){ var r = effRole(roleOf[n] || 'tech'); byRole[r] = (byRole[r] || 0) + 1; });
       if (BOARD_ROLE && !byRole[BOARD_ROLE]) BOARD_ROLE = '';
@@ -16977,7 +16979,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.50' + '.docx" download>⬇ '
+              +   'V16.51' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
