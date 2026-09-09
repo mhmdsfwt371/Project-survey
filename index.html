@@ -636,6 +636,10 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
   color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
 .tb-sync:hover{border-color:var(--brand);color:var(--brand)}
+.co-pop-wrap{position:fixed;inset:0;z-index:170;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.co-pop{background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);width:min(980px,96vw);max-height:88vh;display:flex;flex-direction:column;animation:npop .2s ease}
+.co-pop-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.co-pop-body{overflow:auto;padding:0 2px 8px}
 .bell-pop{position:fixed;top:54px;inset-inline-end:14px;z-index:160;width:min(360px,94vw);background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden;animation:npop .2s ease}
 .bell-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .bell-list{max-height:min(60vh,420px);overflow:auto}
@@ -764,7 +768,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.57</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.58</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3540,6 +3544,7 @@ en:{
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'Sent to the server — runs within a minute',
  'قارئات نُسُك في المشاعر':'Nusuk readers in the Holy Sites',
  'أكمِل المطلوب':'Complete the required fields',
+ 'كلُّ المخيّمات':'All camps', 'تمّ المسح':'Surveyed', 'متعذّر — يحتاج قرارًا':'Unreachable — needs a decision', 'تمّ التركيب':'Installed', 'مخيّم':'camps', 'لا مخيّماتٍ في هذه الخانة.':'No camps in this bucket.', 'سببُ التعذّر':'Reason', 'التحديات والملاحظات':'Challenges and notes', 'مَن ومتى':'Who and when', 'المخيّم':'Camp', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'Tap any number to see its camps.', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'Lowest percentage first — sixty companies per page. Tap any number to see its camps.', 'لا بيانات للتصدير':'No data to export',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6187,6 +6192,7 @@ ur:{
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'سرور کو بھیجا گیا — ایک منٹ میں چلے گا',
  'قارئات نُسُك في المشاعر':'مشاعر میں نُسُک ریڈرز',
  'أكمِل المطلوب':'مطلوبہ خانے مکمل کریں',
+ 'كلُّ المخيّمات':'تمام کیمپ', 'تمّ المسح':'سروے مکمل', 'متعذّر — يحتاج قرارًا':'ناممکن — فیصلہ درکار', 'تمّ التركيب':'نصب مکمل', 'مخيّم':'کیمپ', 'لا مخيّماتٍ في هذه الخانة.':'اس خانے میں کیمپ نہیں۔', 'سببُ التعذّر':'وجہ', 'التحديات والملاحظات':'چیلنجز اور نوٹس', 'مَن ومتى':'کون اور کب', 'المخيّم':'کیمپ', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'کوئی بھی عدد دبائیں۔', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'کم ترین فیصد پہلے — فی صفحہ ساٹھ کمپنیاں۔', 'لا بيانات للتصدير':'برآمد کے لیے ڈیٹا نہیں',
 }
 };
 
@@ -14455,7 +14461,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
   l:'ما لكلِّ شركةِ خدمةٍ من نقاط، وما يُرسَل إليها من إشعارات.',
   body:function(){
     var head = tabHead('co'), cur = tabCur('co');
-    if (cur === 'co') return head + coDashCard() + (function(){
+    if (cur === 'co') return head + coPopHtml() + coDashCard() + (function(){
     /* إدارةُ القائمة — لمن يملك الاعتماد: إضافةٌ مباشرةٌ وحذفُ ما أُضيف يدويًّا */
     var manage = '';
     if (may('approve')){
@@ -14517,28 +14523,33 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
     }
     /* كانت أسماءُ شركاتٍ مكتوبةً بيدٍ بأعدادٍ مخترعة — «شركة الراجحي ١٤٢ موقعًا»
        — تُعرَض في تقريرٍ للوزارة. تُحسب الآن من السجل نفسه. */
-    var S = siteStats(), sv = {}, ins = {};
-    var _MANAGE = manage;
-    STATE.sites.forEach(function(x){
-      if (!x.co) return;
-      if (svDone(STATE.recs[x.id])) sv[x.co] = (sv[x.co] || 0) + 1;
-      var r = STATE.inss[x.id];
-      if (r && r.status === 'مُركّب' && r.approved) ins[x.co] = (ins[x.co] || 0) + 1;
-    });
+    /* «مُسح» و«مُركّب» كلمتان يقرؤهما القارئُ حالةً لا إنجازًا — صارتا «تمّ
+       المسح» و«تمّ التركيب». وأُضيف **المتعذّر**: مخيّماتٌ وصلها المشرفُ ولم
+       يستطع، وهي أهمُّ عمودٍ للشركة لأنها ما تحتاج قرارَها. وكلُّ رقمٍ يُضغَط
+       فيفتح نافذةً بمخيّماته: الاسمُ والشاخصُ والموقعُ على الخريطة والتفاصيل. */
+    var S = siteStats(), _MANAGE = manage;
     var rows = Object.keys(S.byCo || {})
       .sort(function(a, b){
-        var pa = (sv[a] || 0) / S.byCo[a], pb = (sv[b] || 0) / S.byCo[b];
+        var A = coBuckets(a), B = coBuckets(b);
+        var pa = A.sv.length / Math.max(1, S.byCo[a]), pb = B.sv.length / Math.max(1, S.byCo[b]);
         return pa - pb || S.byCo[b] - S.byCo[a];
       })
       .slice(0, 60)
       .map(function(c){
+        var B = coBuckets(c);
+        var cell = function(kind, n2, cls){
+          return n2 ? '<button type="button" class="btn btn-quiet btn-sm" data-copop="' + esc(c) + '" data-cok="' + kind + '"'
+                      + ' style="font-weight:700' + (cls ? ';color:' + cls : '') + '">' + nm(n2) + '</button>'
+                    : '<span class="num hint">' + nm(0) + '</span>';
+        };
         return ['<i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'
                 + coColor(c) + ';margin-inline-end:7px"></i>' + esc(c),
-                N(S.byCo[c]), N(sv[c] || 0), N(ins[c] || 0), pct(sv[c] || 0, S.byCo[c])];
+                cell('all', S.byCo[c]), cell('sv', B.sv.length), cell('stuck', B.stuck.length, '#E05252'),
+                cell('ins', B.ins.length), pct(B.sv.length, S.byCo[c])];
       });
     return _MANAGE + card(t('الشركات') + ' — ' + nm(Object.keys(S.byCo || {}).length),
-        table(['الشركة','مواقعها','مُسح','مُركّب','٪'], rows))
-      + '<p class="hint">' + esc(t('الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة.')) + '</p>';
+        table(['الشركة','مواقعها','تمّ المسح','متعذّر','تمّ التركيب','٪'], rows))
+      + '<p class="hint">' + esc(t('الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.')) + '</p>';
   })();
     return head + (function(){
     var S = siteStats();
@@ -17011,7 +17022,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.57' + '.docx" download>⬇ '
+              +   'V16.58' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19289,6 +19300,26 @@ function xlsPage(){
     return true;
   });
 }
+/* ورقةٌ مبنيّةٌ في اللحظة لا من SHEETS — لنوافذِ التفاصيل */
+function xlsSheets(pairs, fname){
+  return xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return false; }
+    var wb = XLSX.utils.book_new(), n = 0;
+    (pairs || []).forEach(function(p){
+      var rows = p[1]; if (!rows || rows.length < 2) return;
+      var ws = XLSX.utils.aoa_to_sheet(rows);
+      ws['!cols'] = rows[0].map(function(_, i){
+        var w = 10; rows.forEach(function(r){ w = Math.max(w, Math.min(46, String(r[i] == null ? '' : r[i]).length + 2)); });
+        return { wch:w };
+      });
+      XLSX.utils.book_append_sheet(wb, ws, String(p[0] || 'ورقة').slice(0, 30)); n++;
+    });
+    if (!n){ toast(t('لا بيانات للتصدير')); return false; }
+    XLSX.writeFile(wb, (fname || 'نسك') + '-' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    toast(nm(n) + ' ' + t('ورقةً صُدّرت'));
+    return true;
+  });
+}
 function xlsExport(keys, fname){
   return xlsxLoad().then(function(ok){
     if (!ok){ toast('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة'); return false; }
@@ -20313,6 +20344,72 @@ function coDash(){
   var top = served.slice().sort(function(a, b){ return byCo[b].n - byCo[a].n; }).slice(0, 8);
   return { byCo:byCo, served:served.length, multi:multi, idle:idle,
            cmp:Object.keys(coCompounds()).length, top:top, sites:totalSites };
+}
+/* ═══ مخيّماتُ الشركة مصنَّفةً ═══
+   من حلقةٍ واحدةٍ بالتعريف نفسِه المستعمَل في «نظرة عامة»: تمَّ المسحُ = وصل
+   وسجّل ولم يُردّ؛ المتعذّرُ = وصل ولم يستطع؛ تمَّ التركيبُ = حالةُ التركيب. */
+function coBuckets(co){
+  var out = { all:[], sv:[], stuck:[], ins:[] };
+  (STATE.sites || []).forEach(function(x){
+    if (x.co !== co) return;
+    out.all.push(x);
+    var r = STATE.recs[x.id];
+    if (r && svDone(r)) out.sv.push(x);
+    else if (r && r.review !== 'revisit') out.stuck.push(x);
+    var i2 = STATE.inss[x.id];
+    if ((i2 && i2.status === 'مُركّب') || x.fstat === 'مُركّب') out.ins.push(x);
+  });
+  return out;
+}
+var CO_POP = null;   /* { co, kind } */
+var CO_POP_LBL = { all:'كلُّ المخيّمات', sv:'تمّ المسح', stuck:'متعذّر — يحتاج قرارًا', ins:'تمّ التركيب' };
+function coPopRows(co, kind){
+  var B = coBuckets(co), L = B[kind] || [];
+  return L.map(function(x){
+    var r = STATE.recs[x.id] || {}, i2 = STATE.inss[x.id] || {};
+    var chal = (r.chals || []).filter(function(c){ return c !== 'لا توجد تحديات'; });
+    return { x:x, r:r,
+      why: kind === 'stuck' ? (r.reason || r.note || '—')
+         : (chal.length ? chal.join(' \u00b7 ') : (r.note || '—')),
+      who: r.by || '—', when: r.at ? dayKey(r.at) : '—',
+      st: i2.status || x.fstat || (r.id ? svLabel(r) : 'لم يُزر') };
+  });
+}
+function coPopHtml(){
+  if (!CO_POP) return '';
+  var co = CO_POP.co, kind = CO_POP.kind, L = coPopRows(co, kind);
+  var rows = L.map(function(o){
+    var x = o.x;
+    return ['<strong>' + esc(x.name || x.id) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
+            esc(x.sign || '—'),
+            esc(t(x.zone || '—')) + (x.sq ? ' \u00b7 ' + esc(x.sq) : ''),
+            esc(o.why.slice(0, 90)),
+            esc(o.who) + '<br><span class="num hint">' + esc(o.when) + '</span>',
+            pill(o.st, o.st === 'مُركّب' ? 'ok' : (o.st === 'متعذّر' ? 'bad' : 'wrn')),
+            (x.lat && x.lng ? btn('\u{1F5FA} ' + t('الخريطة'),'btn-quiet btn-sm',' data-cogo="' + esc(x.id) + '"') : '')
+            + btn('\u25C8 ' + t('التفاصيل'),'btn-quiet btn-sm',' data-copopsite="' + esc(x.id) + '"')];
+  });
+  return '<div id="coPopWrap" class="co-pop-wrap">'
+    + '<div class="co-pop" role="dialog" aria-modal="true">'
+    + '<div class="co-pop-head">'
+    +   '<div><strong>' + esc(coName(co)) + '</strong>'
+    +   '<div class="hint" style="margin:2px 0 0">' + esc(t(CO_POP_LBL[kind] || '')) + ' \u00b7 ' + nm(L.length) + ' ' + esc(t('مخيّم')) + '</div></div>'
+    +   '<div class="actions" style="margin:0">'
+    +     btn('\u2B07 ' + t('إكسل'),'btn-secondary btn-sm',' data-copopxls="1"')
+    +     btn('\u2715','btn-quiet btn-sm',' data-copopx="1" aria-label="' + esc(t('إغلاق')) + '"')
+    +   '</div></div>'
+    + '<div class="co-pop-body">'
+    + (rows.length ? table(['المخيّم','الشاخص','الموقع', kind === 'stuck' ? 'سببُ التعذّر' : 'التحديات والملاحظات','مَن ومتى','الحالة',''], rows)
+                   : '<p class="hint" style="padding:18px;text-align:center;margin:0">' + esc(t('لا مخيّماتٍ في هذه الخانة.')) + '</p>')
+    + '</div></div></div>';
+}
+function coPopXls(){
+  if (!CO_POP) return;
+  var L = coPopRows(CO_POP.co, CO_POP.kind);
+  var out = [['المخيّم','المعرّف','الشاخص','المشعر','المربع','التحديات/السبب','مَن','متى','الحالة','خط العرض','خط الطول']];
+  L.forEach(function(o){ var x = o.x;
+    out.push([x.name || '', x.id, x.sign || '', x.zone || '', x.sq || '', o.why, o.who, o.when, o.st, x.lat || '', x.lng || '']); });
+  xlsSheets([[t(CO_POP_LBL[CO_POP.kind] || 'مخيّمات'), out]], 'نُسُك — ' + coName(CO_POP.co));
 }
 function coDashCard(){
   var D = coDash();
@@ -28599,6 +28696,57 @@ function actList(){
 
 /* المستمعُ دالةٌ مسمّاةٌ لا مجهولة: منها تُشتقُّ قائمةُ الخصائص المربوطة،
    فلا تُكتَب بيدٍ ولا تُنسى. */
+/* ═══ نقراتُ الجداول والنوافذ ═══
+   `onDocClick` تجاوزت ستّين ألفَ حرفٍ — دالةٌ بهذا الطول لا تُقرأ ولا تُصان،
+   والحارسُ يمسك ذلك. فصُلت نقراتُ الجداول الحديثة (نافذةُ الشركات، جدولُ
+   المتابعة، المهامُّ الأسبوعية، المعالم) إلى دالةٍ ترجع `true` إن التقطت
+   الحدثَ فيتوقّف الباقي. */
+function clickTables(e){
+  /* نافذةُ مخيّمات الشركة: تُفتَح برقمٍ، وتُغلَق بالإكس أو بالضغط خارجَها */
+  var cop = e.target.closest('[data-copop]');
+  if (cop){ CO_POP = { co:cop.getAttribute('data-copop'), kind:cop.getAttribute('data-cok') || 'all' }; render(1); return true; }
+  if (e.target.closest('[data-copopx]')){ CO_POP = null; render(1); return true; }
+  if (e.target.closest('[data-copopxls]')){ coPopXls(); return true; }
+  var cogo = e.target.closest('[data-cogo]');
+  if (cogo){ var gid = cogo.getAttribute('data-cogo'); CO_POP = null;
+             POP_SITE = gid; POP_OPEN = true; CUR = 'map'; render();
+             setTimeout(function(){ mapFly(gid); }, 500); return true; }
+  var cst = e.target.closest('[data-copopsite]');
+  if (cst){ DETAIL_ID = cst.getAttribute('data-copopsite'); CO_POP = null; goPage('site'); render(1); return true; }
+  if (CO_POP && e.target.id === 'coPopWrap'){ CO_POP = null; render(1); return true; }
+  if (e.target.closest('[data-bell]')){ bellToggle(); return true; }
+  if (e.target.closest('[data-bellclose]')){ bellToggle(false); /* ثم يكمل إلى data-p */ }
+  if (BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
+  if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return true; }
+  var npo = e.target.closest('[data-npop]');
+  if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return true; }
+  if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  var phv = e.target.closest('[data-phview]');
+  if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return true; }
+  var phd = e.target.closest('[data-phdl]');
+  if (phd){ photoDownload(phd.getAttribute('data-phdl')); return true; }
+  if (e.target.closest('[data-phclose]')){ var pv = document.getElementById('phView'); if (pv) pv.remove(); return true; }
+  var mle = e.target.closest('[data-mledit]');
+  if (mle){ MILE_EDIT = mle.getAttribute('data-mledit'); MILE_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-mlcancel]')){ MILE_EDIT = ''; render(1); return true; }
+  var mls = e.target.closest('[data-mlsave]');
+  if (mls){
+    var mid = mls.getAttribute('data-mlsave'), tr = mls.closest('tr'), g = function(k){ var el = tr && tr.querySelector('[data-mle="' + k + '"]'); return el ? el.value : ''; };
+    var w = +g('w'), pr = g('prog');
+    if (mileUpsert(mid, { n:g('n').trim(), w:isNaN(w) ? undefined : w, dep:g('dep').trim(), prog:(pr === '' ? undefined : +pr) })){ toast(t('حُفظ المعلَم')); MILE_EDIT = ''; render(1); }
+    return true;
+  }
+  var mld = e.target.closest('[data-mldel]');
+  if (mld){ mileRemove(mld.getAttribute('data-mldel')); return true; }
+  if (e.target.closest('[data-mlnew]')){ MILE_NEW = true; MILE_EDIT = ''; render(1); return true; }
+  if (e.target.closest('[data-mlncancel]')){ MILE_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-mlnsave]')){
+    var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
+    if (mileAdd(v('mlnN'), v('mlnW'), v('mlnD'), v('mlnDep').trim())) MILE_NEW = false;
+    return true;
+  }
+  return false;
+}
 function onDocClick(e){
   var pqb = e.target.closest('[data-pq]');
   if (pqb && pqb.getAttribute('data-pq') === '0'){ QUEUE_OPEN = false; render(1); return; }
@@ -28780,37 +28928,7 @@ function onDocClick(e){
   if (e.target.closest('[data-wbsreset]')){ if (WBS_RESET) wbsClear(); else { WBS_RESET = 1; render(1); } return; }
   var wf = e.target.closest('[data-wbsf]');
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return; }
-  if (e.target.closest('[data-bell]')){ bellToggle(); return; }
-  if (e.target.closest('[data-bellclose]')){ bellToggle(false); /* ثم يكمل إلى data-p */ }
-  if (BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
-  if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return; }
-  var npo = e.target.closest('[data-npop]');
-  if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return; }
-  if (e.target.closest('[data-syncall]')){ syncAllNow(); return; }
-  var phv = e.target.closest('[data-phview]');
-  if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return; }
-  var phd = e.target.closest('[data-phdl]');
-  if (phd){ photoDownload(phd.getAttribute('data-phdl')); return; }
-  if (e.target.closest('[data-phclose]')){ var pv = document.getElementById('phView'); if (pv) pv.remove(); return; }
-  var mle = e.target.closest('[data-mledit]');
-  if (mle){ MILE_EDIT = mle.getAttribute('data-mledit'); MILE_NEW = false; render(1); return; }
-  if (e.target.closest('[data-mlcancel]')){ MILE_EDIT = ''; render(1); return; }
-  var mls = e.target.closest('[data-mlsave]');
-  if (mls){
-    var mid = mls.getAttribute('data-mlsave'), tr = mls.closest('tr'), g = function(k){ var el = tr && tr.querySelector('[data-mle="' + k + '"]'); return el ? el.value : ''; };
-    var w = +g('w'), pr = g('prog');
-    if (mileUpsert(mid, { n:g('n').trim(), w:isNaN(w) ? undefined : w, dep:g('dep').trim(), prog:(pr === '' ? undefined : +pr) })){ toast(t('حُفظ المعلَم')); MILE_EDIT = ''; render(1); }
-    return;
-  }
-  var mld = e.target.closest('[data-mldel]');
-  if (mld){ mileRemove(mld.getAttribute('data-mldel')); return; }
-  if (e.target.closest('[data-mlnew]')){ MILE_NEW = true; MILE_EDIT = ''; render(1); return; }
-  if (e.target.closest('[data-mlncancel]')){ MILE_NEW = false; render(1); return; }
-  if (e.target.closest('[data-mlnsave]')){
-    var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
-    if (mileAdd(v('mlnN'), v('mlnW'), v('mlnD'), v('mlnDep').trim())) MILE_NEW = false;
-    return;
-  }
+  if (clickTables(e)) return;
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return; }
   var fz = e.target.closest('[data-fz]');
