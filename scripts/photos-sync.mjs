@@ -41,6 +41,25 @@ try {
   if (shared) console.log(`::notice title=photos::شُورك ${shared} ملفًا برابط`);
 } catch (e){ console.log('مشاركةُ القديم تعذّرت: ' + (e && e.message)); }
 
+/* ═══ ما عُلِّم «خطأً» بسبب الدرايف يُعاد إلى الطابور ═══
+   قبل V16.34 كان تعثّرُ السعة أو الإذن يُعلِّم الصورةَ `error` نهائيًّا — ثم
+   ضُبط الدرايفُ وصار الرفعُ يعمل، وبقيت تلك الصورُ «خطأً في النقل» إلى الأبد
+   لأن الدورةَ لا تلتقط إلا `pending`. فتُعاد كلُّ صورةٍ سببُ خطئها من الدرايف
+   (سعةٌ · إذنٌ · حصةٌ · مجلدٌ) إلى الطابور في كلِّ دورة — والصورُ التي سببُها
+   في البيانات نفسِها (لا صورةَ في الوثيقة) تبقى كما هي. */
+try {
+  const errs = await db.collection('photos').where('status', '==', 'error').limit(200).get();
+  let requeued = 0;
+  const DRIVE_ERR = /storage quota|shared drives|storageQuotaExceeded|permission|insufficient|403|404|429|503|quota|GDRIVE_OAUTH|درايف|الدرايف|السعة|الإذن/i;
+  for (const d of errs.docs){
+    const p = d.data();
+    if (!DRIVE_ERR.test(String(p.why || ''))) continue;
+    await d.ref.set({ status: 'pending', why: '', requeuedAt: Date.now() }, { merge: true }).catch(() => {});
+    requeued++;
+  }
+  if (requeued) console.log(`::notice title=photos::أُعيدت ${requeued} صورةً من «خطأ» إلى الطابور — كان سببُها الدرايفَ لا الصورة`);
+} catch (e){ console.log('إعادةُ الطابور: ' + (e && e.message)); }
+
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);
