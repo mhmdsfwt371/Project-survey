@@ -15,9 +15,26 @@
 
    وهو لا يغني عن الحارس قبل الدفعات الكبيرة — يغني عن انتظاره في الصغيرة. */
 
-import { execSync, spawn } from 'child_process';
-import { readdirSync, existsSync } from 'fs';
+import { execSync, spawn, spawnSync } from 'child_process';
+import { readdirSync, readFileSync, existsSync } from 'fs';
 import { cpus } from 'os';
+
+/* ═══ الحارسُ السريعُ أوّلًا — ما تسقط به السحابةُ في ثانيتها الأولى ═══
+   كانت الدورةُ السريعةُ تشغّل الجرودَ ولا تشغّل الحارسَ نفسَه: تطابقَ النسخ
+   وسجلَّ الصفحات والترجمةَ والنطاقات — وهي أوّلُ ما تفحصه السحابةُ وأرخصُه
+   (ثانيةٌ واحدة). فمرّت ثلاثُ دفعاتٍ هنا خضراءَ وسقطت هناك في الخطوة الأولى
+   بصفحةٍ لا يصلها بند. الحارسُ السريع يُشغَّل هنا قبل أيِّ جرد، ورسوبُه يوقف
+   الدورةَ — لا معنى لدقائقَ من الجرود على شجرةٍ ستسقط في ثانيتها الأولى. */
+{
+  const g = spawnSync('node', ['scripts/check-version.mjs'], { env:{ ...process.env, NUSUK_SKIP_AUDITS:'1' }, encoding:'utf8' });
+  if (g.status !== 0){
+    const bad = (String(g.stdout) + String(g.stderr)).split('\n').filter(l => l.includes('✗'));
+    console.log('✗ الحارسُ السريع (ما تفحصه السحابةُ أوّلًا):\n' + bad.map(l => '   ' + l.trim()).join('\n')
+      + '\n— أصلِح هذا قبل أيِّ جرد؛ السحابةُ تسقط به في ثانيتها الأولى.');
+    process.exit(1);
+  }
+  console.log('✓ الحارسُ السريع مرّ — النسخُ · سجلُّ الصفحات · الترجمةُ · النطاقاتُ · بوابةُ الدفع مثبَّتة');
+}
 
 const ARG = process.argv.slice(2);
 const ALL = ARG.includes('--all');
@@ -44,7 +61,31 @@ const MAP = [
   [/firestore\.rules/,                ['db-rules', 'rules-test', 'perms']],
 ];
 /* جرودٌ تعمل دائمًا: رخيصةٌ وتكشف الكسرَ العامّ */
-const ALWAYS = ['data', 'craft', 'stability'];
+const ALWAYS = ['data', 'craft', 'stability', 'pages', 'tabs', 'fit'];
+
+/* ═══ الأثرُ التلقائيّ — الخريطةُ اليدويةُ تعرف ما عرفه كاتبُها فقط ═══
+   خمسُ دفعاتٍ سقطت في السحابة بجردَين لم تختَرهما الخريطة: «الملاءمة»
+   و«الجاهز للإسناد» — لأن التغييرَ مسَّ ما يفحصانه ولم يمسَّ نمطًا مكتوبًا
+   هنا. فإلى جانب الخريطة: تُستخرَج من أسطر التغيير معرِّفاتُها النادرة
+   (ما يرد في index.html ستين مرةً فأقل — أسماءُ دوالٍّ وحقولٍ وصفحاتٍ لا
+   كلماتٌ عامّة)، ويُختار كلُّ جردٍ يذكر واحدًا منها في نصِّه. يُوسِّع
+   الاختيارَ ولا يُضيّقه — وما فات الاثنين تمسكه بوابةُ الدفع بالحارس الكامل. */
+const STOP = new Set(('function return const else true false null undefined this typeof style class span '
+  + 'button label data name value text html join filter forEach push length Object keys String Number Math Date '
+  + 'JSON window document render toast esc STATE CFG PAGE ROLES FB CORE nsk true false void break case switch '
+  + 'while catch throw await async static width height color margin padding display border').split(' '));
+function autoPick(diff, have){
+  let src = ''; try { src = readFileSync('index.html', 'utf8'); } catch { return new Set(); }
+  const toks = new Set();
+  for (const m of diff.matchAll(/[A-Za-z_$][A-Za-z0-9_$]{3,}/g)) if (!STOP.has(m[0])) toks.add(m[0]);
+  const rare = [...toks].filter(t => { const n = src.split(t).length - 1; return n > 0 && n <= 60; });
+  const out = new Set();
+  for (const a of have){
+    let body = ''; try { body = readFileSync(`scripts/audit-${a}.mjs`, 'utf8'); } catch { continue; }
+    if (rare.some(t => body.includes(t))) out.add(a);
+  }
+  return out;
+}
 
 const have = new Set(readdirSync('scripts')
   .filter(f => f.startsWith('audit-') && f.endsWith('.mjs'))
@@ -65,8 +106,10 @@ else {
   if (!diff.trim()){ console.log('لا تغييرَ على index.html — لا شيءَ يُفحَص'); process.exit(0); }
   const set = new Set(ALWAYS);
   MAP.forEach(([re, names]) => { if (re.test(diff)) names.forEach(n => set.add(n)); });
+  const byMap = set.size;
+  autoPick(diff, have).forEach(n => set.add(n));
   pick = [...set];
-  console.log(`أسطرُ التغيير: ${diff.split('\n').length} · الجرودُ المعنيّة: ${pick.length}`);
+  console.log(`أسطرُ التغيير: ${diff.split('\n').length} · الجرودُ المعنيّة: ${pick.length} (${byMap} بالخريطة + ${pick.length - byMap} بالأثر التلقائيّ)`);
 }
 pick = pick.filter(n => have.has(n));
 if (!pick.length){ console.log('لا جردَ مطابقًا'); process.exit(0); }
@@ -109,5 +152,5 @@ await Promise.all(Array.from({ length:LANES }, lane));
 const secs = Math.round((Date.now() - t0) / 1000);
 console.log(bad
   ? `\n✗ ${bad} من ${pick.length} فشل — ${secs}ث. أصلِحه، أو شغّل الحارسَ الكاملَ للتفصيل.`
-  : `\n✅ ${pick.length} جردًا مرَّت في ${secs}ث — والحارسُ الكاملُ يعمل في السحابة على الدفعة.`);
+  : `\n✅ ${pick.length} جردًا مرَّت في ${secs}ث — وهذا للتطوير لا للدفع: الدفعُ يمرُّ ببوابةٍ تشغّل قائمةَ السحابة كاملةً (node scripts/check-version.mjs يختم الشجرة فيمرُّ الدفعُ فورًا).`);
 process.exit(bad ? 1 : 0);

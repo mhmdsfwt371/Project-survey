@@ -318,100 +318,83 @@ try {
   else ok.push('لا عنصر يحمل كلاسَين مربوطَين بمعالجَين ✓');
 } catch (e) { fail.push('حارس الكلاسات تعثّر: ' + String(e && e.message).slice(0, 100)); }
 
-/* ── جردا البيانات والكتابة: الرقمُ الخاطئ أسوأ من زرٍّ مفقود ── */
-/* عند زرع طفرةٍ تخصُّ ما يفحصه الحارسُ بنفسه — سجلَّ الصفحات أو الترجمة —
-   لا معنى لإعادة الجرود التسعة معها: تُعاد دقائقَ بلا فائدة. */
-(process.env.NUSUK_SKIP_AUDITS ? [] :
-[['scripts/audit-data.mjs',  'جردُ البيانات'],
- ['scripts/audit-writes.mjs','جردُ الكتابة'],
- ['scripts/audit-roles.mjs', 'جردُ الأدوار'],
- ['scripts/audit-calc.mjs',  'جردُ المعادلات'],
- ['scripts/audit-exports.mjs','جردُ التصديرات'],
- ['scripts/audit-rules.mjs',  'جردُ القواعد'],
- ['scripts/audit-capacity.mjs', 'جردُ السعة'],       /* كان في السحابة وحدَها — فسقط أربعَ دفعاتٍ والحارسُ أخضر */
- ['scripts/audit-scale.mjs',  'جردُ الاتساع'],
- ['scripts/audit-db-rules.mjs','جردُ قواعد القاعدة'],
- ['scripts/audit-crud.mjs',   'جردُ الدورة الكاملة'],
- ['scripts/audit-flow.mjs',   'جردُ الدورة الحياتية'],
- ['scripts/audit-review.mjs', 'مراجعةُ الأدوار'],
- ['scripts/audit-zero.mjs',   'جردُ الحالة الصفرية'],
- ['scripts/audit-pages.mjs',  'جردُ الصفحات'],
- ['scripts/audit-lang.mjs',   'جردُ اللغة'],
- ['scripts/audit-i18n.mjs',   'جردُ الترجمة بالرندر'],
- ['scripts/audit-stability.mjs','جردُ الاستقرار'],
- ['scripts/audit-journey.mjs',  'رحلةُ المسح'],
- ['scripts/audit-tabs.mjs',     'جردُ الشرائح'],
- ['scripts/audit-cycle.mjs',    'جردُ دورة الزيارة'],
- ['scripts/audit-mgr.mjs',      'جردُ سلسلة الإدارة'],
- ['scripts/audit-touch.mjs',    'جردُ اللمس'],
- ['scripts/audit-ip.mjs',       'جردُ العناوين'],
- ['scripts/audit-hand.mjs',     'جردُ التسليم'],
- ['scripts/audit-qa.mjs',       'جردُ الجودة'],
- ['scripts/audit-pmp.mjs',      'جردُ مبادئ الإدارة'],
- ['scripts/audit-pmp2.mjs',     'جردُ الفجوات الإدارية'],
- ['scripts/audit-wa.mjs',       'جردُ إشعار الشركات'],
- ['scripts/audit-dismiss.mjs',  'جردُ إغلاق اللوحات'],
- ['scripts/audit-fit.mjs',      'جردُ الملاءمة'],
- ['scripts/audit-lang2.mjs',    'جردُ تزامن اللغة'],
- ['scripts/audit-buttons.mjs',  'جردُ الأزرار'],
- ['scripts/audit-registry.mjs', 'جردُ سجل الإسنادات'],
- ['scripts/audit-del.mjs',      'جردُ التصحيح والحذف'],
- ['scripts/audit-asnq.mjs',     'جردُ الجاهز للإسناد'],
- ['scripts/audit-issue.mjs',    'جردُ طلب الصرف'],
- ['scripts/audit-codes.mjs',    'جردُ رموز الطلبات'],
- ['scripts/audit-invariants.mjs','جردُ ثوابت العمل'],
- ['scripts/audit-backup.mjs',   'جردُ حالة النسخ'],
- ['scripts/audit-poison.mjs',   'جردُ الوثيقة المسمومة'],
- ['scripts/audit-ci.mjs',       'جردُ سيور السحابة'],
- ['scripts/audit-mydoc.mjs',    'جردُ وثيقة الحساب'],
- ['scripts/audit-release.mjs',  'جردُ إطلاق المعزول'],
- ['scripts/audit-e2e.mjs',      'جردُ الدورة الكاملة'],
- ['scripts/audit-push.mjs',     'جردُ الدفع اليدوي'],
- ['scripts/audit-cosplit.mjs',  'جردُ فكِّ الأسماء'],
- ['scripts/audit-coname.mjs',   'جردُ اسم الشركة'],
- ['scripts/audit-urmr.mjs',     'جردُ الفكِّ والصيانة'],
- ['scripts/audit-steps.mjs',    'جردُ إعلان الخطوات'],
- ['scripts/audit-wiring.mjs',   'جردُ التمام البنيوي'],
- ['scripts/audit-hodoc.mjs',    'جردُ محضر الاستلام'],
- ['scripts/audit-ready.mjs',    'جردُ جاهزية الموسم'],
- ['scripts/audit-seed.mjs',     'جردُ بدء الموسم'],
- ['scripts/audit-craft.mjs',    'جردُ الصنعة'],
- ['scripts/audit-gate.mjs',     'جردُ سلسلة الشروط'],
- ['scripts/audit-scroll.mjs',   'جردُ حفظ الموضع'],
- ['scripts/audit-field.mjs',    'جردُ من يُسنَد إليه'],
- ['scripts/audit-photos.mjs',   'جردُ تسمية الصور'],
- ['scripts/audit-exec.mjs',     'جردُ الإدارة العليا'],
- ['scripts/audit-rank.mjs',     'جردُ الرتبة والوظيفة'],
- ['scripts/audit-live.mjs',     'جردُ الإنصات والرؤية'],
- ['scripts/audit-invite.mjs',   'جردُ الإنشاء من الخادم'],
- ['scripts/audit-accounts.mjs', 'جردُ سلسلة الحساب'],
- ['scripts/audit-hier.mjs',     'جردُ من يُنشئ من'],
- ['scripts/audit-pw.mjs',       'جردُ كلمة المرور'],
- ['scripts/audit-att.mjs',      'جردُ الحضور'],
- ['scripts/audit-route.mjs',    'جردُ طريق اليوم'],
- ['scripts/audit-waasn.mjs',    'جردُ واتساب الإسناد'],
- ['scripts/audit-e2e-accounts.mjs', 'جردُ الفريق من طرفٍ إلى طرف'],
- ['scripts/audit-login.mjs',    'جردُ الدخول'],
- ['scripts/audit-tomb.mjs',     'جردُ شاهد القبر'],
- ['scripts/audit-wipe.mjs',     'جردُ التصفير ونسخ الأجهزة'],
- ['scripts/audit-sync.mjs',     'جردُ عدّاد المزامنة والسجلات'],
- ['scripts/audit-perms.mjs',    'جردُ مصفوفة الصلاحيات'],
- ['scripts/audit-crole.mjs',    'جردُ الأدوار المخصَّصة'],
- ['scripts/audit-dupe.mjs',     'جردُ الحساب المكرَّر'],
- ['scripts/audit-cascade.mjs',  'جردُ الرؤية من فوق']]).forEach(([f, name]) => {
-  try { execSync('node ' + f, { stdio:'pipe' }); ok.push(name + ' نظيف ✓'); }
-  catch (e) {
+/* ── الجرودُ: القائمةُ هي قائمةُ السحابة نفسُها ──
+   كانت هنا قائمةٌ مكتوبةٌ بيدٍ من سبعةٍ وسبعين جردًا، وفي سير السحابة قائمةٌ
+   أخرى من ثمانين — وما يُضاف إلى إحداهما لا يُضاف إلى الأخرى، فيمرُّ الحارسُ
+   هنا أخضرَ وتسقط السحابةُ بعد الدفع بجردٍ لم يعرفه. صارت القائمةُ تُقرأ من
+   ملفِّ السير (docs-check.yml) بالحرف: الاسمُ نفسُه والبيئةُ نفسُها والأمرُ
+   نفسُه — فما تشغّله السحابةُ يُشغَّل هنا قبلها، ولا قائمةَ ثانية.
+   وعند زرع طفرةٍ تخصُّ ما يفحصه الحارسُ بنفسه — سجلَّ الصفحات أو الترجمة —
+   لا معنى لإعادة الجرود معها: NUSUK_SKIP_AUDITS=1 يكتفي بالفحوص السريعة. */
+import { localSteps } from './cloud-steps.mjs';
+import { existsSync, copyFileSync } from 'fs';
+const CI = !!process.env.GITHUB_ACTIONS;
+const FAST = !!process.env.NUSUK_SKIP_AUDITS;
+const STEPS = FAST ? [] : localSteps();
+if (!FAST && !existsSync('node_modules/jsdom')){
+  console.log('المتصفّحُ الصوريُّ غيرُ مثبَّت — يُثبَّت الآن كما تفعل السحابة…');
+  try { execSync('npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3', { stdio:'pipe' }); }
+  catch { fail.push('تعذّر تثبيتُ jsdom/docx — لا تُشغَّل الجرودُ بدونهما'); }
+}
+if (!FAST) console.log(`الجرودُ: ${STEPS.length} خطوةً — كما في السحابة بالحرف`);
+STEPS.forEach(({ name, env, run }) => {
+  const t0 = Date.now();
+  try {
+    execSync('set -e\n' + run, { stdio:'pipe', shell:'/bin/bash', env:{ ...process.env, ...env } });
+    ok.push(`${name} ✓ (${Math.round((Date.now() - t0) / 1000)}ث)`);
+  } catch (e) {
     /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ
        بينهما يوفّر ساعةً من البحث في سجلِّ سير العمل. */
-    if (e.status === 2){
+    if (e.status === 2 && /jsdom|Cannot find module/.test(String(e.stderr || ''))){
       fail.push(name + ' لم يُشغَّل — المتصفّحُ الصوريُّ غير مثبَّت. شغّل: npm i jsdom');
       return;
     }
     const out = String((e.stdout || '') + (e.stderr || '')).split('\n')
       .filter(l => l.includes('✗')).slice(0, 3).join(' | ');
-    fail.push(name + ' فشل — ' + (out || ('شغّل: node ' + f)));
+    const hint = /role-manuals/.test(run) ? ' — أُعيد توليدُ docs/manuals الآن: أضِفها إلى الدفعة وأعد الحارس' : '';
+    fail.push(name + ' فشل — ' + (out || ('شغّل: ' + run.split('\n')[0])) + hint);
   }
 });
+
+/* خطوةُ الأدلة تعيد توليدَ الملفات لتطابق الفهرس — وهي منذ V16.75 ثابتةُ
+   البايتات فلا تُغيّر شيئًا؛ وإن اختلف ملفٌّ بلا تغييرٍ في الفهرس (مكتبةٌ
+   مختلفة مثلًا) أُرجع كما كان، فلا يُرفَض دفعٌ لشجرةٍ لم يتغيّر فيها معنى. */
+if (!FAST && !CI){
+  try {
+    const dirty = execSync('git status --porcelain -- docs/manuals', { encoding:'utf8' }).split('\n').filter(Boolean);
+    const onlyDocx = dirty.length && dirty.every(l => /\.docx$/.test(l));
+    if (onlyDocx){ execSync('git checkout -- docs/manuals/*.docx', { stdio:'pipe' }); ok.push('أدلةُ الأدوار أُعيد توليدُها بلا فرقٍ في الفهرس — أُرجعت ملفاتُها كما كانت'); }
+  } catch {}
+}
+
+/* ── بوابةُ الدفع: خُطّافٌ يُثبِّت نفسَه ──
+   ثماني دفعاتٍ حمراءُ في ليلةٍ سببُها واحد: الدفعُ لا يمرُّ بما تمرُّ به
+   السحابة. فصار في المستودع خُطّافُ pre-push (.githooks/pre-push) يرفض أيَّ
+   دفعةٍ لم تُختَم شجرتُها بحارسٍ كاملٍ أخضر — ويُثبِّت نفسَه في كلِّ نسخةٍ
+   يُشغَّل فيها الحارسُ أو الدورةُ السريعة، فلا خطوةَ تُنسى. */
+export function installHook(){
+  if (CI || !existsSync('.githooks/pre-push')) return;
+  try {
+    const cur = execSync('git config --get core.hooksPath', { stdio:'pipe', encoding:'utf8' }).trim();
+    if (cur !== '.githooks') execSync('git config core.hooksPath .githooks', { stdio:'pipe' });
+  } catch { try { execSync('git config core.hooksPath .githooks', { stdio:'pipe' }); } catch {} }
+}
+/* بصمةُ الشجرة: ما فُحص هو ما يُدفَع — الشجرةُ كما ستُلتزَم (المتعقَّبُ وغيرُ المتعقَّب
+   وفق .gitignore)، ويقارنها الخُطّاف بشجرة HEAD وقت الدفع. */
+export function treeHash(){
+  const dir = execSync('git rev-parse --git-dir', { encoding:'utf8' }).trim();
+  const idx = `/tmp/nsk-index-${process.pid}`;
+  try { copyFileSync(`${dir}/index`, idx); } catch {}
+  const env = { ...process.env, GIT_INDEX_FILE: idx };
+  execSync('git add -A .', { stdio:'pipe', env });
+  return execSync('git write-tree', { encoding:'utf8', env }).trim();
+}
+installHook();
+{
+  if (!existsSync('.githooks/pre-push')) fail.push('بوابةُ الدفع مفقودة: .githooks/pre-push — أعِده من المستودع');
+  else try { const mode = execSync('git ls-files -s .githooks/pre-push', { encoding:'utf8' }).trim();
+    if (mode && !mode.startsWith('100755')) fail.push('بوابةُ الدفع بلا صلاحية تنفيذ — git update-index --chmod=+x .githooks/pre-push'); } catch {}
+}
 
 /* ── دفترُ المطابقة: لا قدرةَ في القديم بلا مقابلٍ أو حكم ── */
 try {
@@ -442,4 +425,11 @@ try {
 
 ok.forEach(x => console.log('✓', x));
 if (fail.length) { fail.forEach(x => console.error('✗', x)); process.exit(1); }
-console.log('\nالتوثيق متطابق مع التطبيق ✅');
+if (!FAST && !CI){
+  try {
+    const dir = execSync('git rev-parse --git-dir', { encoding:'utf8' }).trim();
+    writeFileSync2(`${dir}/nusuk-gate`, treeHash());
+    console.log('\n🔏 خُتمت الشجرةُ — الدفعُ يمرُّ من البوابة بلا إعادة (ما لم يتغيّر ملفٌّ بعد الختم)');
+  } catch (e) { console.log('لم تُختَم الشجرة: ' + String(e && e.message).slice(0, 80)); }
+}
+console.log(FAST ? '\nالفحوصُ السريعةُ مرّت ✅ — الجرودُ تُشغَّل بلا NUSUK_SKIP_AUDITS' : '\nالتوثيق متطابق مع التطبيق ✅');

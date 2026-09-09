@@ -52,12 +52,10 @@ T(!/backup|\.enc|users/.test(sw), 'عاملُ الخدمة لا يخزّن بي�
 /* ٩ · لا مفاتيحَ سرّيةٌ في المستودع */
 const secrets=[...src.matchAll(/(?:secret|password|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}/gi)].length;
 T(secrets===0, 'لا سرَّ مكتوبٌ في الملف', String(secrets));
-/* ١٠ · الجرودُ كلُّها مسجَّلة */
-const cv=readFileSync('scripts/check-version.mjs','utf8');
+/* ١٠ · الجرودُ كلُّها مسجَّلة — في سير السحابة، وهو قائمةُ الحارس الوحيدة منذ V16.75 */
+const wfy=readFileSync('.github/workflows/docs-check.yml','utf8');
 const files=readdirSync('scripts').filter(f=>/^audit-.*\.mjs$/.test(f));
-/* جردان يُشغَّلان من preflight لا بالاسم — كما في audit-ci */
-const VIA_PREFLIGHT=['audit-capacity.mjs','audit-guards.mjs'];
-const missing=files.filter(f=>!cv.includes(f) && !VIA_PREFLIGHT.includes(f));
-T(missing.length===0, 'كلُّ جردٍ في المجلد مسجَّلٌ في الحارس ('+files.length+')', missing.join(' · '));
+const missing=files.filter(f=>!wfy.includes('scripts/'+f));
+T(missing.length===0, 'كلُّ جردٍ في المجلد خطوةٌ في سير السحابة ('+files.length+') — فيشغّله الحارسُ والبوابةُ معًا', missing.join(' · '));
 console.log(bad?'\nجردُ الصنعة فشل ✗ ('+bad+')':'\nلا ملاحظةَ صنعةٍ باقية ✅');
 process.exit(bad?1:0);

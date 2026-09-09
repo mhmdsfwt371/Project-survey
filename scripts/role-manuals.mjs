@@ -9,6 +9,7 @@
    يُخرج:   docs/manuals/nusuk-manual-<role>.docx */
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import JSZip from 'jszip';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow,
@@ -147,6 +148,27 @@ function manualFor(id){
 }
 
 /* ── الإخراج ── */
+/* ═══ توليدٌ ثابتُ البايتات ═══
+   كانت المكتبةُ تختم كلَّ ملفٍّ بلحظة توليده — في خصائص الوثيقة وفي مداخل
+   الضغط — فيختلف الملفُّ بايتاتٍ عند كلِّ توليدٍ ومحتواه هو هو. والسحابةُ
+   تعيد التوليدَ لتطابق الفهرس، فيتّسخ مجلدُ الأدلة بعد كلِّ حارسٍ ويرفض
+   خُطّافُ الدفع شجرةً «متغيّرة» لم يتغيّر فيها شيء. فتُثبَّت اللحظةُ:
+   توليدٌ مرتين من المصدر نفسِه = الملفُّ نفسُه بايتًا بايتًا. */
+const STAMP = new Date('2026-01-01T00:00:00Z');
+const STAMP_S = '2026-01-01T00:00:00Z';
+async function stable(buf){
+  const z = await JSZip.loadAsync(buf);
+  const core = 'docProps/core.xml';
+  if (z.file(core)){
+    const x = (await z.file(core).async('string'))
+      .replace(/(<dcterms:created[^>]*>)[^<]*(<\/dcterms:created>)/, `$1${STAMP_S}$2`)
+      .replace(/(<dcterms:modified[^>]*>)[^<]*(<\/dcterms:modified>)/, `$1${STAMP_S}$2`);
+    z.file(core, x);
+  }
+  z.forEach((_, f) => { f.date = STAMP; });
+  return z.generateAsync({ type:'nodebuffer', compression:'DEFLATE', compressionOptions:{ level: 9 },
+                           platform:'UNIX' });
+}
 mkdirSync(new URL('../docs/manuals/', import.meta.url), { recursive: true });
 const index = [];
 for (const id of Object.keys(ROLES)){
@@ -155,7 +177,7 @@ for (const id of Object.keys(ROLES)){
     sections: [{ properties: { page: { margin: { top: 1134, right: 1134, bottom: 1134, left: 1134 } } },
                  children: manualFor(id) }],
   });
-  const buf = await Packer.toBuffer(doc);
+  const buf = await stable(await Packer.toBuffer(doc));
   const file = `nusuk-manual-${id}.docx`;
   writeFileSync(new URL('../docs/manuals/' + file, import.meta.url), buf);
   index.push({ id, n: ROLES[id].n, file });

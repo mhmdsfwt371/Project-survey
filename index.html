@@ -770,7 +770,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.74</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.75</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14823,7 +14823,7 @@ function m3Init(){
   });
   return true;
 }
-PAGE.map3d = { m:'الميدان', t:'العرض الثلاثي', l:'تضاريسُ المشاعر وأعمدةُ التركيب بارتفاعها الحقيقيّ ولونِ حالتها — للعرض والمراجعة، لا للعمل الميداني.',
+PAGE.map3d = { m:'المتابعة', t:'العرض الثلاثي', l:'تضاريسُ المشاعر وأعمدةُ التركيب بارتفاعها الحقيقيّ ولونِ حالتها — للعرض والمراجعة، لا للعمل الميداني.',
   body:function(){
     var zones = {}; (STATE.sites || []).forEach(function(x){ if (x.zone) zones[x.zone] = (zones[x.zone] || 0) + 1; });
     var zs = Object.keys(zones).sort(function(a, b){ return zones[b] - zones[a]; });
@@ -17563,7 +17563,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.74' + '.docx" download>⬇ '
+              +   'V16.75' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20192,9 +20192,9 @@ function kmiCard(){
     + esc(t('يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.'))
     + '</p><div class="grid cols-3">'
     +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-kmiz>'
-    +     ZS.map(function(z){ return '<option' + (KMI_ZONE === z ? ' selected' : '') + '>' + esc(t(z)) + '</option>'; }).join('') + '</select></div>'
+    +     ZS.map(function(z){ return '<option value="' + esc(z) + '"' + (KMI_ZONE === z ? ' selected' : '') + '>' + esc(t(z)) + '</option>'; }).join('') + '</select></div>'
     +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-kmit>'
-    +     TS.map(function(x){ return '<option' + (KMI_TYPE === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('') + '</select></div>'
+    +     TS.map(function(x){ return '<option value="' + esc(x) + '"' + (KMI_TYPE === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('') + '</select></div>'
     +   '<div class="field"><label>' + esc(t('وجه العمل')) + '</label><input data-kmiw value="' + esc(KMI_WORK) + '" dir="auto"></div>'
     + '</div>'
     + '<div class="actions" style="margin:8px 0 0">'
@@ -29384,7 +29384,7 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['twin','التوأم الرقمي'],['wbs','متابعة الخطة التفصيلية'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['over','نظرة عامة'],['twin','التوأم الرقمي'],['map3d','العرض الثلاثي'],['wbs','متابعة الخطة التفصيلية'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
       ['plan','التخطيط والمخاطر']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[

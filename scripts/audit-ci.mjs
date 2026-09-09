@@ -41,18 +41,19 @@ T(/conclusion == 'failure'/.test(rr), 'ولا تُعاد إلا ما سقط');
 T(/actions: write/.test(rr), 'ولها صلاحيةُ الإعادة');
 T(/rerun-failed-jobs/.test(rr), 'وتُعيد ما سقط وحدَه لا السيرَ كلَّه');
 
-/* ٣ · الجرودُ: ما في الحارس هو ما في السحابة */
+/* ٣ · الجرودُ: قائمةٌ واحدة — الحارسُ يقرأ خطواتِ السحابة من ملفِّ السير نفسِه
+   (كانت قائمتان تُقارَنان هنا فتفترقان بين مقارنةٍ وأخرى؛ صارت واحدةً بالبناء) */
 const cv = readFileSync('scripts/check-version.mjs', 'utf8');
-const inGuard = [...cv.matchAll(/'(scripts\/audit-[\w-]+\.mjs|scripts\/qa\.mjs|scripts\/parity\.mjs)'/g)].map(m => m[1]);
+T(/from '\.\/cloud-steps\.mjs'/.test(cv) && /localSteps\(\)/.test(cv), 'الحارسُ يقرأ جرودَه من سير السحابة نفسِه (cloud-steps) لا من قائمةٍ بيد');
+const { cloudSteps, localSteps } = await import('./cloud-steps.mjs');
 const dc = wf('docs-check.yml');
-const inCI = [...dc.matchAll(/node (scripts\/[\w-]+\.mjs)/g)].map(m => m[1]);
-const missCI = inGuard.filter(x => !inCI.includes(x));
-T(missCI.length === 0, 'كلُّ جردٍ في الحارس له خطوةٌ في السحابة (' + inGuard.length + ')' + (missCI.length ? ' — ناقص: ' + missCI.join(' | ') : ''));
-/* بعضُ الجرود يشغّلها الحارسُ ضمنًا عبر preflight لا بالاسم — تُستثنى بأسمائها */
-const VIA_PREFLIGHT = ['scripts/qa.mjs','scripts/parity.mjs','scripts/audit-guards.mjs','scripts/audit-capacity.mjs'];
-const missGuard = inCI.filter(x => !inGuard.includes(x) && !VIA_PREFLIGHT.includes(x)
-  && !/role-manuals|check-version|preflight/.test(x));
-T(missGuard.length === 0, 'ولا خطوةَ في السحابة بلا جردٍ في الحارس' + (missGuard.length ? ' — ' + missGuard.join(' | ') : ''));
+const inCI = [...new Set([...dc.matchAll(/node (scripts\/[\w-]+\.mjs)/g)].map(m => m[1]))];
+const parsed = new Set(cloudSteps().flatMap(s => [...s.run.matchAll(/node (scripts\/[\w-]+\.mjs)/g)].map(m => m[1])));
+const unread = inCI.filter(x => !parsed.has(x));
+T(unread.length === 0, 'قارئُ السير يلتقط كلَّ خطوةٍ في السحابة (' + inCI.length + ')' + (unread.length ? ' — لم يُقرأ: ' + unread.join(' | ') : ''));
+const local = localSteps();
+T(local.length >= inCI.length - 1 && !local.some(s => /check-version\.mjs|npm (i|install)\b/.test(s.run)),
+  'الخطواتُ المحليةُ هي خطواتُ السحابة إلا التثبيتَ والحارسَ نفسَه (' + local.length + ')');
 
 console.log(bad ? '\nجردُ سيور السحابة فشل ✗ (' + bad + ')' : '\nالسحابةُ لا تسقط لسببٍ خارجيّ — وما سقط يُعاد مرةً ✅');
 process.exit(bad ? 1 : 0);

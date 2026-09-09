@@ -71,9 +71,10 @@ console.log('\n══ ٥ · الحالةُ تُستعاد بعد إغلاقٍ م
 check(/localStorage\.setItem\('nsk14\./.test(js), 'الحالةُ تُحفَظ في التخزين المحليّ بمفتاحٍ مسمًّى');
 check(/STATE\.queue/.test(js) && /queue\.length/.test(js), 'الطابورُ جزءٌ من الحالة المحفوظة');
 
-/* الحارسُ نفسُه: أيُّ فحصٍ يُبنى ولا يُسجَّل لا يُشغَّل */
-const cv = readFileSync(new URL('./check-version.mjs', import.meta.url), 'utf8');
-check(cv.includes('audit-stability.mjs'), 'جردُ الاستقرار مسجَّلٌ في الحارس الكلي');
+/* الحارسُ نفسُه: أيُّ فحصٍ يُبنى ولا يُسجَّل لا يُشغَّل — والسجلُّ منذ V16.75
+   هو سيرُ السحابة، يقرؤه الحارسُ والبوابةُ منه */
+const wfy = readFileSync(new URL('../.github/workflows/docs-check.yml', import.meta.url), 'utf8');
+check(wfy.includes('scripts/audit-stability.mjs'), 'جردُ الاستقرار مسجَّلٌ في سير السحابة (قائمةُ الحارس)');
 
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ الاستقرار فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
