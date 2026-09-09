@@ -777,7 +777,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.77</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14750,16 +14750,25 @@ function m3Points(){
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : (STATE.sites || []);
   return LIST.filter(function(x){ return +x.lat && +x.lng; }).map(function(x){
     var picked = (typeof selHas === 'function') && selHas(x.id);
+    /* المخيمُ بحدوده الحقيقية كما يُرسَم في المسطّح — لا نقطةً — إن كانت حدودُه محمَّلة */
+    var foot = x.type === 'مخيم' && POLY && POLY[x.id] && POLY[x.id].length >= 3 ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0, ring:picked ? '#ffffff' : '#0b1220' } };
+      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0, ring:picked ? '#ffffff' : '#0b1220', foot:foot } };
   });
 }
-/* العمودُ مضلّعٌ صغيرٌ حول النقطة — المحرّكُ لا يرفع نقطةً، يرفع مضلّعًا */
+/* المخيمُ يُرفَع بحدوده المرسومة (poly.json — الحدودُ نفسُها التي يرسمها المسطّح
+   عند التقريب)، وما سواه عمودٌ مضلّعٌ صغيرٌ حول نقطته — المحرّكُ لا يرفع نقطةً */
 function m3Cols(P){
   return P.map(function(f){
-    var c = f.geometry.coordinates, lng = c[0], lat = c[1];
+    var p = f.properties, c = f.geometry.coordinates, lng = c[0], lat = c[1];
+    if (p.foot){
+      var R = POLY[p.id].map(function(q){ return [+q[0], +q[1]]; });
+      var a0 = R[0], aN = R[R.length - 1];
+      if (a0[0] !== aN[0] || a0[1] !== aN[1]) R.push([a0[0], a0[1]]);
+      return { type:'Feature', properties:p, geometry:{ type:'Polygon', coordinates:[R] } };
+    }
     var d = 2.2, dy = d / 111320, dx = d / (111320 * Math.cos(lat * Math.PI / 180));
-    return { type:'Feature', properties:f.properties,
+    return { type:'Feature', properties:p,
       geometry:{ type:'Polygon', coordinates:[[[lng - dx, lat - dy], [lng + dx, lat - dy], [lng + dx, lat + dy], [lng - dx, lat + dy], [lng - dx, lat - dy]]] } };
   });
 }
@@ -14789,10 +14798,15 @@ function m3Layers(){
       M3.addLayer({ id:'nsk-cols', type:'fill-extrusion', source:'nskc',
         paint:{ 'fill-extrusion-color':['get','color'], 'fill-extrusion-height':['get','h'],
                 'fill-extrusion-base':0, 'fill-extrusion-opacity':0.92 } });
+      /* حدُّ المخيم يُرى من فوق كما في المسطّح — ويبيضُّ عند تحديده */
+      M3.addLayer({ id:'nsk-cols-line', type:'line', source:'nskc', filter:['==', ['get','foot'], 1],
+        paint:{ 'line-color':['case', ['==', ['get','sel'], 1], '#ffffff', 'rgba(11,18,32,.55)'],
+                'line-width':['case', ['==', ['get','sel'], 1], 2.4, 1] } });
     }
     if (!M3.getSource('nsk')){
       M3.addSource('nsk', { type:'geojson', data:{ type:'FeatureCollection', features:P } });
-      M3.addLayer({ id:'nsk-pts', type:'circle', source:'nsk',
+      /* النقطةُ لما لا حدودَ له — المخيمُ المحدود يُلمَس على حدوده */
+      M3.addLayer({ id:'nsk-pts', type:'circle', source:'nsk', filter:['==', ['get','foot'], 0],
         paint:{ 'circle-radius':['interpolate', ['linear'], ['zoom'], 12, 3.5, 17, 8],
                 'circle-color':['get','color'],
                 'circle-stroke-width':['case', ['==', ['get','sel'], 1], 2.5, 1],
@@ -14864,6 +14878,8 @@ function m3Toggle(){
   m3Load().then(function(ok){
     if (!ok || !m3Init()){ toast(t(M3_ERR || 'تعذّر تحميلُ محرّك العرض الثلاثي')); m3Off(); return; }
     m3From2D(); m3Paint();
+    /* حدودُ المخيمات تُطلَب مع الثلاثيِّ لا مع التقريب وحده — فتُرفَع كما تُرسَم */
+    if (!POLY && typeof polyLoad === 'function') polyLoad().then(function(ok2){ if (ok2 && MAP_3D) m3Paint(); });
   });
 }
 function m3Off(){
@@ -17475,7 +17491,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.76' + '.docx" download>⬇ '
+              +   'V16.77' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

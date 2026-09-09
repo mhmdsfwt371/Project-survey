@@ -56,6 +56,17 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++;
  const BY={}; w.layerFiltered().forEach(x=>BY[x.id]=x);
  T(feats.every(f=>f.properties.color===w.mapColorOf(BY[f.properties.id])), 'والألوانُ هي ألوانُها نفسُها');
  const cols=calls.sources.nskc.data.features; T(cols.length===feats.length && cols[0].geometry.type==='Polygon' && cols[0].properties.h>0, 'لكلِّ نقطةٍ عمودٌ مضلّعٌ بارتفاع: h='+cols[0].properties.h);
+ /* المخيمُ بحدوده الحقيقية حين تُحمَّل — لا مربّعًا حول نقطته */
+ const camp=feats.find(f=>w.siteFind && (w.siteFind(f.properties.id)||{}).type==='مخيم') || feats[0];
+ w.POLY={ [camp.properties.id]: [[39.98378,21.33815],[39.98384,21.33783],[39.98399,21.33761],[39.98381,21.33762],[39.98378,21.33815]] };
+ w.mapPaint();
+ const cf=calls.sources.nskc.data.features.find(f=>f.properties.id===camp.properties.id);
+ const pf=calls.sources.nsk.data.features.find(f=>f.properties.id===camp.properties.id);
+ T(cf && cf.properties.foot===1 && cf.geometry.coordinates[0].length>=5 && cf.geometry.coordinates[0][0][0]===39.98378, 'المخيمُ يُرفَع بحدوده من poly.json لا بمربّع: '+(cf?cf.geometry.coordinates[0].length:0)+' رأسًا');
+ T(pf && pf.properties.foot===1, 'ونقطتُه تختفي خلف حدوده (foot=1)');
+ const other=calls.sources.nskc.data.features.find(f=>f.properties.id!==camp.properties.id);
+ T(other && other.properties.foot===0 && other.geometry.coordinates[0].length===5, 'وما لا حدودَ له يبقى عمودًا صغيرًا');
+ w.POLY=null;
  T(!w.MAP || (calls.jump && Math.abs(calls.jump.center[1]-w.MAP.getCenter().lat)<1e-6 && calls.jump.pitch===60), 'الكاميرا انتقلت حيث كانت الخريطةُ المسطّحة'+(w.MAP?'':' (لا خريطةَ مسطّحةً في المحاكي — تُختبَر في المتصفّح)'));
  // تغييرُ الطبقة يُعيد الرسم في الثلاثيّ
  const before=calls.sources.nsk.data; w.FIELD_MODE='install'; w.mapPaint(); T(calls.sources.nsk.data!==before, 'تبديلُ الطبقة يُعيد رسمَ الثلاثيّ');
