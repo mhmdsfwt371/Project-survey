@@ -640,6 +640,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .co-pop{background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);width:min(980px,96vw);max-height:88vh;display:flex;flex-direction:column;animation:npop .2s ease}
 .co-pop-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
 .co-pop-body{overflow:auto;padding:0 2px 8px}
+.lg-toggle{padding:4px 10px;font-size:12px;min-height:30px;line-height:1.2}
+@media(max-width:640px){ .map-legend{max-height:132px} .lg-toggle{min-height:34px} }
 .bell-pop{position:fixed;top:54px;inset-inline-end:14px;z-index:160;width:min(360px,94vw);background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden;animation:npop .2s ease}
 .bell-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
 .bell-list{max-height:min(60vh,420px);overflow:auto}
@@ -768,7 +770,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.62</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.63</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17199,7 +17201,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.62' + '.docx" download>⬇ '
+              +   'V16.63' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20039,7 +20041,9 @@ function roleWatch(v){
   render(1); syncBadge();
 }
 var VIS_LAST = 0;
-var LEGEND_ON = lsGet('nsk14.legend') !== '0';
+/* على الهاتف تبدأ مطويّةً — الشاشةُ للخريطة؛ ومن فتحها تبقى له */
+var LEGEND_ON = (function(){ var v = lsGet('nsk14.legend'); if (v === '0') return false; if (v === '1') return true;
+  return !(typeof window !== 'undefined' && window.innerWidth < 640); })();
 var VER_CHASE = 0;
 function verChase(cloud){
   STATE.appVerCloud = cloud;
@@ -20874,7 +20878,7 @@ function mapUIHtml(){
 
     /* الأسطورةُ تحجب الخريطةَ على الشاشة الصغيرة — تُطوى بزرٍّ ويُذكَر اختيارُه */
     + '<div class="map-stack">' + layerBar()
-      + '<button type="button" class="map-chip" data-legend="' + (LEGEND_ON ? '0' : '1') + '" style="align-self:flex-end;margin:4px 0" title="'
+      + '<button type="button" class="map-chip lg-toggle" data-legend="' + (LEGEND_ON ? '0' : '1') + '" title="'
       +   esc(t(LEGEND_ON ? 'إخفاء حالات النقاط' : 'إظهار حالات النقاط')) + '">'
       +   (LEGEND_ON ? '\u25BE ' + esc(t('إخفاء الحالات')) : '\u25B4 ' + esc(t('الحالات'))) + '</button>'
       + (LEGEND_ON ? '<div class="map-legend">' + legendRows() + '</div>' : '')

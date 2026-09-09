@@ -97,7 +97,8 @@ const btns = await page.$$eval('.pop .btn', L => L.map(b => Math.round(b.getBoun
 T(btns.length > 0 && btns.every(h => h >= 43), 'أزرارُ النافذة أهدافُ لمسٍ ≥ ٤٤ بكسلًا (' + btns.join(',') + ')');
 
 console.log('\n══ ٤ · الأسطورةُ بأرقامها ══');
-await page.evaluate(() => { POP_OPEN = false; render(1); });
+/* V16.63: الأسطورةُ تبدأ مطويّةً على الهاتف — تُفتَح ثم تُعَدّ */
+await page.evaluate(() => { POP_OPEN = false; LEGEND_ON = true; render(1); });
 const legend = await page.evaluate(() => [...document.querySelectorAll('.map-legend .lg-c')].map(e => e.textContent.trim()));
 T(legend.length >= 11, 'الأسطورةُ تحمل رقمًا لكلِّ حالةٍ والمجموع (' + legend.length + ')');
 await page.screenshot({ path: OUT + '/04-legend.png' });
