@@ -71,7 +71,8 @@ check(writes <= CAP.writes * 0.8,
    مراتٍ صامتًا في السحابة لأنه لم يكن مسجَّلًا في الحارس المحليّ. ولمّا قُرئت
    الأرقامُ الحقيقيةُ كانت الميزانيةُ تسعةَ أضعافِ الحصة: كلُّ من فوق المشرف
    يسحب الكلَّ ويُنصِت إليه فوق ذلك. فصار النطاقُ شجرةً والتسليمُ مرةً. */
-const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
+/* V16.57: المكتبُ يسحب الأثرَ التدقيقيَّ معه — سجلُّ الجميع لا سجلُّ الجهاز */
+const layered = /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK\.concat\(\['events'\]\), mine:false, tree:false/.test(src)
              && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:false/.test(src)
              && /if \(r === 'viewer'\) return \{ cols:ALL_WORK\.concat\(\['stats'\]\)/.test(src)
              && /cols:\['recs','inss','dismantles','maints'\], mine:true/.test(src);

@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.57</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17011,7 +17011,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.56' + '.docx" download>⬇ '
+              +   'V16.57' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -17890,7 +17890,8 @@ var CFG_VER = 0;
    زياراتٍ وتركيباتٍ وإسناداتٍ وفكًّا وصيانة؛ والوزارةُ الأرقامَ؛ والميدانُ ما
    كتبه هو. والمؤشِّرُ لكلِّ مجموعةٍ وقتُ آخرِ سحبةٍ ناجحةٍ لها — بتداخلِ دقيقتين —
    ويُحفَظ على الجهاز فلا تُعاد السحبةُ الباردةُ مع كلِّ فتح. */
-var PULL_COL = { recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints', stats:'stats' };
+var PULL_COL = { recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints', stats:'stats',
+                 events:'evlog' };   /* الأثرُ: مجموعتُه «events» ومفتاحُه في الحالة «evlog» */
 /* ═══ نطاقُ السحب — V16.11 ═══
    كان كلُّ من رتبتُه فوق المشرف يسحب السجلاتِ كلَّها خامًّا كلَّ خمس دقائق، ويُنصِت
    إليها كلِّها فوق ذلك — فتُحسَب القراءةُ مرتين على كلِّ جهازٍ من ثلاثةٍ وعشرين،
@@ -17905,7 +17906,8 @@ function pullScope(){
   var r = effRole(ROLE);
   /* المهندسون كالإدارة: أيُّ نقطةٍ تُنجَز تصل اعتمادُها كلَّ مهندسٍ لا مهندسَ شجرتها
      وحدَه — قرارُ صاحب المشروع، وثمنُه على Blaze سنتاتٌ لا سقف */
-  if (r === 'exec' || r === 'admin' || isBossHere() || rankOf(ROLE) >= rankOf('engineer')) return { cols:ALL_WORK, mine:false, tree:false, every:600000 };
+  /* الأثرُ التدقيقيُّ للمكتب: من فعل ماذا ومتى — يُقرأ ولا يُكتَب إلا ممن يعمل */
+  if (r === 'exec' || r === 'admin' || isBossHere() || rankOf(ROLE) >= rankOf('engineer')) return { cols:ALL_WORK.concat(['events']), mine:false, tree:false, every:600000 };
   /* والمشرفون كذلك: قرارُ صاحب المشروع أن يرى المشرفُ زياراتِ الفنيّين كلَّها لا
      فنيّيه وحدَهم — فمشرفٌ يفتح الخريطةَ يرى ما تمّ في المشعر كلِّه لا جزءًا منه.
      والشجرةُ تبقى للتكليف والمتابعة (لوحةُ الفريق) لا للرؤية. */
@@ -24610,7 +24612,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
   body:function(){
     var head = tabHead('ev'), cur = tabCur('ev');
     if (cur === 'ev') return head + (function(){
-    var all = STATE.events || [], L = evRows();
+    var all = evAll(), L = evRows();
     var users = [], seen = {};
     all.forEach(function(e){ var b = e.by || ''; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
     var kinds = {}; all.forEach(function(e){ var k = evKind(e.what); kinds[k] = (kinds[k]||0)+1; });
@@ -25495,8 +25497,25 @@ function evPillKind(what){
 }
 var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
 
+/* ═══ الأثرُ يُقرأ من القاعدة لا من الجهاز ═══
+   كان `STATE.events` ذاكرةَ هذا الجهاز وحدَه: يفتح مديرُ المشروع السجلَّ فيرى
+   حدثًا واحدًا — دخولَه هو — وقد كتب الفريقُ مئاتِ الأحداث. والأثرُ يُرفَع منذ
+   V15 إلى «events» وما كان يُقرَأ. فصار المكتبُ يسحبه ويُدمَج بما على الجهاز
+   بلا تكرار: ما رُفع وما لم يُرفَع بعدُ في قائمةٍ واحدةٍ مرتّبةٍ بالزمن. */
+function evAll(){
+  var byId = {}, out = [];
+  (STATE.events || []).forEach(function(e){ if (e && e.id && !byId[e.id]){ byId[e.id] = 1; out.push(e); } });
+  var C = STATE.evlog || {};
+  Object.keys(C).forEach(function(k){
+    var e = C[k]; if (!e || byId[e.id || k]) return;
+    byId[e.id || k] = 1;
+    out.push({ id:e.id || k, ts:e.ts || e._at || 0, at:e.at || '', day:e.day || '',
+               what:e.what || '', by:e.by || '', dev:e.dev || '' });
+  });
+  return out.sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); });
+}
 function evRows(){
-  var L = (STATE.events || []).slice();
+  var L = evAll();
   return L.filter(function(e){
     if (EVF.kind && evKind(e.what) !== EVF.kind) return false;
     if (EVF.cat && evCat(e.what) !== EVF.cat) return false;

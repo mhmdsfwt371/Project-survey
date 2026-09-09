@@ -20,7 +20,8 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 /* ═══ ساكن ═══ */
 /* V16.11: الإدارةُ الكلَّ، ومن دونها إلى المشرف شجرتَه (tree:true)، والميدانُ ما كتبه —
    ومن له إنصاتٌ لا يسحب دوريًّا: السحبُ شبكةُ أمانٍ كلَّ ستِّ ساعات. */
-T(/function pullScope\(\)/.test(js) && /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK, mine:false, tree:false, every:600000 \}/.test(js)
+/* V16.57: المكتبُ يسحب الأثرَ التدقيقيَّ مع العمل */
+T(/function pullScope\(\)/.test(js) && /r === 'exec' \|\| r === 'admin' \|\| isBossHere\(\) \|\| rankOf\(ROLE\) >= rankOf\('engineer'\)\) return \{ cols:ALL_WORK\.concat\(\['events'\]\), mine:false, tree:false, every:600000 \}/.test(js)
   && /rankOf\(ROLE\) >= rankOf\('supervisor'\)\) return \{ cols:ALL_WORK, mine:false, tree:false, every:600000 \}/.test(js),
   'نطاقُ السحب: من فوق الفنيِّ الكلَّ بشبكة أمانٍ كلَّ عشر دقائق، والميدانُ ما كتبه');
 T(/var since = \(at\[c\] \|\| 0\) - 120000;/.test(js) && !/var since = STATE\.meta\.lastSync/.test(js), 'المؤشِّرُ خاصٌّ بالسحب بتداخل دقيقتين — لا «آخر مزامنة»');
@@ -62,7 +63,7 @@ function fakeDb(w, docsByCol, log){
 }
 { const { w, d } = await boot('exec', 'إدارة عليا');
   const sc = w.pullScope();
-  T(sc.cols.join(',') === 'recs,inss,tasks,dismantles,maints' && sc.mine === false, 'الإدارةُ العليا تسحب العملَ كلَّه لا ما كتبته', sc.cols.join(','));
+  T(sc.cols.join(',') === 'recs,inss,tasks,dismantles,maints,events' && sc.mine === false, 'الإدارةُ العليا تسحب العملَ كلَّه والأثرَ — لا ما كتبته', sc.cols.join(','));
   /* المؤشِّرُ لا يقفز مع «آخر مزامنة» */
   const log = []; const T0 = Date.now() - 3600000;
   w.FB.ready = true; w.FB.db = fakeDb(w, { recs:[{ id:'R-new', _at:Date.now(), by:'فني', access:'تم الوصول', review:'pending' }],
