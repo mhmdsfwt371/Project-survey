@@ -47,7 +47,10 @@ w.svSave(0);
 say(w.lifeOf(x)==='visited', '٢ الزيارةُ حُفظت — تنتظر الاعتماد');
 // ٣ اعتماد
 w.svApprove(x.id);
-say(w.lifeOf(x)==='ready', '٣ اعتُمدت — بانتظار الجدولة');
+say(w.lifeOf(x)==='minwait', '٣ اعتُمدت تقنيًّا — بانتظار الوزارة');
+/* V16.66: اعتمادُ الوزارة لإعداد التركيب — مديرُ المشروع يملكه بديلًا */
+{ const R0 = w.ROLE; w.ROLE = 'admin'; w.minApprove(x.id, ''); w.ROLE = R0; }
+say(w.lifeOf(x)==='ready', '٣ب اعتمدت الوزارةُ — بانتظار الجدولة');
 // ٤ حلٌّ يُقترَح ويُعتمَد
 w.solutionSave(x.id, { [it.code]: 2 });
 const sol=(w.STATE.inss[x.id]||{}).solution;

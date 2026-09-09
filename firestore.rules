@@ -186,6 +186,14 @@ service cloud.firestore {
       allow create, update: if pm('recs', 'w', canW()) && (
         pm('recs', 'a', mgr()) ||
         (!('review' in request.resource.data) || request.resource.data.review != 'approved'));
+      // ═══ اعتمادُ الوزارة لإعداد التركيب (V16.66) ═══
+      // الفعلُ الوحيدُ الذي تكتبه الوزارة: حقولُ minReview وحدَها في وثيقةٍ قائمةٍ
+      // اعتُمدت تقنيًّا — لا تُنشئ ولا تمسُّ حقلًا غيرَها، ولا تعتمد ما لم يعتمده المهندس.
+      allow update: if ok() && role() == 'viewer'
+        && resource.data.review == 'approved'
+        && request.resource.data.diff(resource.data).affectedKeys()
+             .hasOnly(['minReview', 'minBy', 'minAt', 'minNote', '_at', '_by'])
+        && request.resource.data.minReview in ['approved', 'returned'];
       allow delete: if pm('recs', 'd', mgr());
     }
     /* اعتمادُ التركيب واعتمادُ حل التركيب فعلا مديرٍ لا فعلَ منفِّذ — كلاهما

@@ -30,7 +30,8 @@ const src = readFileSync('index.html','utf8');
 /* الخصائصُ المربوطة: من نصِّ معالجَي النقر والتغيير */
 /* V16.58: نقراتُ الجداول فُصلت إلى `clickTables` — تُقرأ معها لا دونها */
 const click = (/function onDocClick\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
-            + (/function clickTables\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0];
+            + (/function clickTables\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
+            + (/function clickA\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0];
 const chg = src.slice(src.indexOf("document.addEventListener('change'"), src.indexOf("document.addEventListener('change'")+9000);
 const inp = src.slice(src.indexOf("document.addEventListener('input'"), src.indexOf("document.addEventListener('input'")+16000);
 const bound = new Set([...(click+chg+inp).matchAll(/data-[\w-]+/g)].map(m=>m[0]));

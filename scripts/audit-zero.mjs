@@ -130,6 +130,17 @@ allow.add(966);
   [2, 3, 4, 5, 6, 8, 10, 12].forEach(k => { add(Math.ceil(n0 / k)); add(Math.round(n0 / k)); });
 }
 
+/* V16.66: دليلُ الأدوار يعدُّ شاشاتِ كلِّ دورٍ وقدراتِه ومجموعاتِه — مشتقٌّ من
+   ROLES وPAGE لحظةَ الفتح، فيُشتقُّ هنا بالطريقة نفسِها لكلِّ دور */
+Object.keys(w.ROLES || {}).forEach(rk => {
+  const x = w.ROLES[rk]; if (!x) return;
+  /* بالدوالِّ نفسِها التي يستعملها الدليل: pageIds وpageMeta تعدّان الشرائحَ شاشات */
+  const nav = x.nav === '*' ? w.pageIds() : (x.nav || []).filter(id => w.pageMeta(id));
+  const byG = {};
+  nav.forEach(id => { const p = w.pageMeta(id); if (!p) return; const cap = (w.PAGE_CAP || {})[id]; if (cap && !(x.can || {})[cap]) return; (byG[p.m] = byG[p.m] || []).push(id); });
+  add(Object.values(byG).reduce((s2, L) => s2 + L.length, 0)); add(Object.keys(byG).length);
+  add(Object.keys(x.can || {}).filter(k => x.can[k]).length);
+});
 /* أرقامٌ داخلَ أسماء القطع — «لوح سولار ٤٠٠و» و«بطارية ٢٠٠أ» — أسماءٌ لا أعداد */
 (w.itemsList() || []).forEach(it => {
   (String(it.name).match(/[٠-٩0-9]+/g) || []).forEach(x => {

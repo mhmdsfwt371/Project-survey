@@ -62,6 +62,14 @@ await deny('الفنيُّ لا يكتب زيارةً معتمدةً بيده', 
 await deny('المشرفُ لا يعتمد زيارتَه بيده',         updateDoc(doc(as('sup'), 'recs/S1'), { review:'approved' }));
 await ok  ('المهندسُ يعتمد الزيارة',                updateDoc(doc(as('eng'), 'recs/S1'), { review:'approved' }));
 await deny('المطّلعُ لا يكتب شيئًا',                setDoc(doc(as('vwr'), 'recs/S4'), { ...rec, id:'S4' }));
+/* V16.66: اعتمادُ الوزارة لإعداد التركيب — حقولُ minReview وحدَها على ما اعتُمد تقنيًّا */
+await setDoc(doc(as('eng'), 'recs/SM'), { ...rec, id:'SM', review:'approved', minReview:'pending' });
+await ok  ('والوزارةُ تعتمد إعدادَ التركيب على ما اعتُمد تقنيًّا', updateDoc(doc(as('vwr'), 'recs/SM'), { minReview:'approved', minBy:'وزارة', minAt:1, minNote:'' }));
+await ok  ('أو تُعيده بملاحظة',                          updateDoc(doc(as('vwr'), 'recs/SM'), { minReview:'returned', minBy:'وزارة', minAt:2, minNote:'الموضع' }));
+await deny('ولا تمسُّ الاعتمادَ التقنيَّ',              updateDoc(doc(as('vwr'), 'recs/SM'), { review:'revisit' }));
+await deny('ولا حقلًا آخر',                             updateDoc(doc(as('vwr'), 'recs/SM'), { minReview:'approved', mount:'x' }));
+await setDoc(doc(as('eng'), 'recs/SN'), { ...rec, id:'SN' });
+await deny('ولا تعتمد ما لم يعتمده المهندس',            updateDoc(doc(as('vwr'), 'recs/SN'), { minReview:'approved' }));
 await deny('الفنيُّ لا يحذف',                       deleteDoc(doc(as('tec'), 'recs/S1')));
 await ok  ('المهندسُ يحذف',                         deleteDoc(doc(as('eng'), 'recs/S2')));
 
