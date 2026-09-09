@@ -768,7 +768,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.58</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.59</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3545,6 +3545,7 @@ en:{
  'قارئات نُسُك في المشاعر':'Nusuk readers in the Holy Sites',
  'أكمِل المطلوب':'Complete the required fields',
  'كلُّ المخيّمات':'All camps', 'تمّ المسح':'Surveyed', 'متعذّر — يحتاج قرارًا':'Unreachable — needs a decision', 'تمّ التركيب':'Installed', 'مخيّم':'camps', 'لا مخيّماتٍ في هذه الخانة.':'No camps in this bucket.', 'سببُ التعذّر':'Reason', 'التحديات والملاحظات':'Challenges and notes', 'مَن ومتى':'Who and when', 'المخيّم':'Camp', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'Tap any number to see its camps.', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'Lowest percentage first — sixty companies per page. Tap any number to see its camps.', 'لا بيانات للتصدير':'No data to export',
+ 'يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.':'What is exported is what the filter shows — with no filter, everything.',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6193,6 +6194,7 @@ ur:{
  'قارئات نُسُك في المشاعر':'مشاعر میں نُسُک ریڈرز',
  'أكمِل المطلوب':'مطلوبہ خانے مکمل کریں',
  'كلُّ المخيّمات':'تمام کیمپ', 'تمّ المسح':'سروے مکمل', 'متعذّر — يحتاج قرارًا':'ناممکن — فیصلہ درکار', 'تمّ التركيب':'نصب مکمل', 'مخيّم':'کیمپ', 'لا مخيّماتٍ في هذه الخانة.':'اس خانے میں کیمپ نہیں۔', 'سببُ التعذّر':'وجہ', 'التحديات والملاحظات':'چیلنجز اور نوٹس', 'مَن ومتى':'کون اور کب', 'المخيّم':'کیمپ', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'کوئی بھی عدد دبائیں۔', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'کم ترین فیصد پہلے — فی صفحہ ساٹھ کمپنیاں۔', 'لا بيانات للتصدير':'برآمد کے لیے ڈیٹا نہیں',
+ 'يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.':'فلٹر کے مطابق برآمد — بغیر فلٹر سب کچھ۔',
 }
 };
 
@@ -14087,6 +14089,28 @@ function wbsLeft(r){
   var d = Math.round((new Date(r.e) - new Date(dayKey(Date.now()))) / 86400000);
   return d;
 }
+/* المرشِّحُ نفسُه للشاشة وللورقة */
+function wbsPass(r){
+  if (WBS_Q && (r.n + ' ' + r.id + ' ' + (r.resp || '') + ' ' + (r.party || '')).indexOf(WBS_Q) < 0) return false;
+  var st = wbsStatus(r), tm = wbsTiming(r);
+  if (WBS_F === 'late') return tm === 'متأخر';
+  if (WBS_F === 'run') return st === 'قيد التنفيذ';
+  if (WBS_F === 'done') return st === 'مكتملة';
+  if (WBS_F === 'todo') return st === 'لم تبدأ';
+  if (WBS_F === 'ms') return r.type === 'معلم';
+  return true;
+}
+function wbsFiltered(){
+  if (!WBS_F && !WBS_Q) return wbsRows();
+  var keep = {};
+  wbsRows().forEach(function(r){
+    if (!wbsPass(r)) return;
+    keep[r.id] = 1;                                   /* والآباءُ معه ليُقرأ في سياقه */
+    var p = String(r.id).split('.');
+    for (var i = 1; i < p.length; i++) keep[p.slice(0, i).join('.')] = 1;
+  });
+  return wbsRows().filter(function(r){ return keep[r.id]; });
+}
 function wbsSave(){
   if (!may('settings')){ toast(t('جدولُ المتابعة للمهندس فما فوق')); return false; }
   STATE.wbs = STATE.wbs || { rows:[], keys:[] };
@@ -14191,16 +14215,7 @@ PAGE.wbs = { m:'المتابعة', t:'متابعة الخطة التفصيلية
     var c = { done:0, run:0, todo:0, late:0, ms:0 };
     leaves.forEach(function(r){ var st = wbsStatus(r), tm = wbsTiming(r); if (st === 'مكتملة') c.done++; else if (st === 'قيد التنفيذ') c.run++; else c.todo++; if (tm === 'متأخر') c.late++; if (r.type === 'معلم') c.ms++; });
     var chips = [['','الكل',leaves.length],['late','متأخر',c.late],['run','قيد التنفيذ',c.run],['done','مكتمل',c.done],['todo','لم يبدأ',c.todo],['ms','المعالم',c.ms]];
-    var pass = function(r){
-      if (WBS_Q && (r.n + ' ' + r.id + ' ' + (r.resp || '') + ' ' + (r.party || '')).indexOf(WBS_Q) < 0) return false;
-      var st = wbsStatus(r), tm = wbsTiming(r);
-      if (WBS_F === 'late') return tm === 'متأخر';
-      if (WBS_F === 'run') return st === 'قيد التنفيذ';
-      if (WBS_F === 'done') return st === 'مكتملة';
-      if (WBS_F === 'todo') return st === 'لم تبدأ';
-      if (WBS_F === 'ms') return r.type === 'معلم';
-      return true;
-    };
+    var pass = wbsPass;
     /* الأبُ يظهر إن ظهر أحدُ أبنائه أو طابق هو نفسُه */
     var show = {}; R.forEach(function(r){ if (pass(r)){ show[r.id] = 1; var parts = String(r.id).split('.'); for (var i = 1; i < parts.length; i++) show[parts.slice(0, i).join('.')] = 1; } });
     /* البحثُ والمرشِّحُ يفتحان الطريقَ إلى ما طابق؛ وبلا بحثٍ يُطوى ما لم يُفتَح */
@@ -14343,6 +14358,21 @@ function wtRemind(){
   notifPush('مهام الاجتماع', (c.late ? nm(c.late) + ' ' + t('متأخرة') : '') + (c.late && c.d0 ? ' \u00b7 ' : '') + (c.d0 ? nm(c.d0) + ' ' + t('مستحقة اليوم') : ''),
             { lv: c.late ? 'مهم' : 'عادي', to:STATE.meta.name || '' });
 }
+/* ═══ المرشِّحُ واحدٌ للشاشة وللورقة ═══
+   كانت الورقةُ تُبنى من كلِّ الصفوف مهما رُشِّحت الشاشة: يرى المستخدمُ سبعةَ
+   عشرَ ويُصدِّر اثنين وأربعين، فيرسلها إلى الوزارة وفيها ما لم يقصده. صار ما
+   يُصدَّر هو ما يُرى — وبلا ترشيحٍ يُصدَّر الكلُّ كما كان. */
+function wtFiltered(){
+  return wtRows().filter(function(r){
+    if (WT_Q && (r.n + ' ' + (r.who || '') + ' ' + (r.track || '') + ' ' + (r.upd || '')).indexOf(WT_Q) < 0) return false;
+    if (WT_F === 'late') return wtLate(r);
+    if (WT_F === 'due'){ var d = wtDue(r); return d != null && d >= 0 && d <= 7; }
+    if (WT_F === 'run') return r.st === 'جاري العمل';
+    if (WT_F === 'wait') return r.st === 'قيد الانتظار';
+    if (WT_F === 'done') return r.st === 'مكتمل';
+    return true;
+  });
+}
 function wtStats(){
   var R = wtRows(), today = dayKey(Date.now()), c = { all:R.length, done:0, run:0, wait:0, stop:0, late:0, d0:0, d1:0, week:0, next:0, month:0, none:0 };
   R.forEach(function(r){
@@ -14393,16 +14423,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
     /* ── المهام ── */
     var chips = [['','الكل',c.all],['late','متأخر',c.late],['due','مستحق قريبًا',c.d0 + c.d1 + c.week],
                  ['run','جاري العمل',c.run],['wait','قيد الانتظار',c.wait],['done','مكتمل',c.done]];
-    var pass = function(r){
-      if (WT_Q && (r.n + ' ' + (r.who || '') + ' ' + (r.track || '') + ' ' + (r.upd || '')).indexOf(WT_Q) < 0) return false;
-      if (WT_F === 'late') return wtLate(r);
-      if (WT_F === 'due'){ var d = wtDue(r); return d != null && d >= 0 && d <= 7; }
-      if (WT_F === 'run') return r.st === 'جاري العمل';
-      if (WT_F === 'wait') return r.st === 'قيد الانتظار';
-      if (WT_F === 'done') return r.st === 'مكتمل';
-      return true;
-    };
-    var L = R.filter(pass).sort(function(a, b){
+    var L = wtFiltered().sort(function(a, b){
       var la = wtLate(a) ? 0 : 1, lb = wtLate(b) ? 0 : 1;
       if (la !== lb) return la - lb;
       return String(a.due || '9999').localeCompare(String(b.due || '9999'));
@@ -17022,7 +17043,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.58' + '.docx" download>⬇ '
+              +   'V16.59' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -18736,18 +18757,19 @@ var SHEETS = {
   },
   wtask: function(){
     var out = [['#','المهمة','المسار','الكود','الوصف','المسؤول','الحالة','تاريخ الرصد','تاريخ الاستحقاق','المصدر','آخر تحديث','المتبقي']];
-    wtRows().forEach(function(r){ var d = wtDue(r); out.push([r.id, r.n, r.track, r.code, r.d, r.who, r.st, r.seen, r.due, r.src, r.upd, d == null ? '—' : d]); });
+    wtFiltered().forEach(function(r){ var d = wtDue(r); out.push([r.id, r.n, r.track, r.code, r.d, r.who, r.st, r.seen, r.due, r.src, r.upd, d == null ? '—' : d]); });
     return out;
   },
   wbs: function(){
     var out = [['هيكل تقسيم العمل','البند','تاريخ البدء','تاريخ الانتهاء','المدة','الإنجاز ٪','الحالة','الموقف الزمني','النوع','المسؤول','الجهة المعنية','المتبقي']];
-    wbsRows().forEach(function(r){ var l = wbsLeft(r); out.push([r.id, r.n, r.s, r.e, r.dur, wbsPct(r), wbsStatus(r), wbsTiming(r), r.type, r.resp, r.party, (l == null || wbsPct(r) >= 100) ? '—' : l]); });
+    wbsFiltered().forEach(function(r){ var l = wbsLeft(r); out.push([r.id, r.n, r.s, r.e, r.dur, wbsPct(r), wbsStatus(r), wbsTiming(r), r.type, r.resp, r.party, (l == null || wbsPct(r) >= 100) ? '—' : l]); });
     return out;
   },
   sites: function(){
     var out = [['المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
                 'خط العرض','خط الطول','حالة المسح','حالة التركيب']];
-    STATE.sites.forEach(function(x){
+    /* ما رُشِّح على الخريطة والقائمة هو ما يُصدَّر — وبلا ترشيحٍ الكلُّ */
+    (typeof filtered === 'function' ? filtered() : STATE.sites).forEach(function(x){
       out.push([x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
                 svLabel(STATE.recs[x.id]),
                 (STATE.inss[x.id]||{}).status || x.fstat || 'لم يبدأ']);
@@ -25836,7 +25858,8 @@ function expHtml(){
     + '<div class="actions">' + btn('تصدير','btn-primary',' data-expgo="1"')
     +   btn('إلغاء','btn-secondary',' data-exp="0"') + '</div></div>'
     + '<p class="hint" style="font-size:11.5px">'
-    +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.'))
+    +   esc(t('الإكسل ورقةٌ لكل قسم بعناوينها كما تظهر على الشاشة · والPDF صفحةٌ لكل قسم برسمها البياني.')) + '<br>'
+    +   esc(t('يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.'))
     + '</p></div>';
 }
 
