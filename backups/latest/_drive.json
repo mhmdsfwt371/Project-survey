@@ -1,5 +1,12 @@
 {
-  "at": "2026-09-09T16:07:53.986Z",
-  "ok": false,
-  "why": "فشل الرفع — Service Accounts do not have storage quota. Leverage shared drives (https://developers.google.com/workspace/drive/api/guides/about-shareddrives), or use OAuth d"
+  "at": "2026-09-09T16:17:17.337Z",
+  "ok": true,
+  "day": "2026-09-09",
+  "folder": "1AT8mbFHwWGh_fuwywSiJzewc1_WTvXeY",
+  "bytes": {
+    "backup-full.json": 1475776,
+    "photos.json": 92423275
+  },
+  "keepDays": 0,
+  "photoDays": 540
 }
