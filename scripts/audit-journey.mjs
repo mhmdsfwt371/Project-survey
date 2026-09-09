@@ -66,6 +66,9 @@ try{
   w.FORM.site=site.id; w.FORM.access='تم الوصول';
   w.FORM.photos = w.FORM.photos || {};
   w.FORM.photos.site='data:,a'; w.FORM.photos.mount='data:,b';
+  /* V16.56: ستةُ حقولٍ صارت إلزاميةً — ما لا يُبنى عليه حلٌّ لا يُحفَظ */
+  w.FORM.mount='عمود قائم'; w.FORM.power='كهرباء الموقع';
+  w.FORM.chals=['لا توجد تحديات']; w.FORM.wid_m=4; w.FORM.hgt_m=3.5; w.FORM.fit='مناسب';
   w.svSave(0);
 }catch(e){ console.log('   svSave: '+String(e.message).slice(0,70)); }
 const rec=w.STATE.recs[site.id];

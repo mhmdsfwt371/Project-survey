@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.60",
+  "app_version": "V16.61",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1529,6 +1529,7 @@
     "V16.58": "الشركات: أعمدة «تمّ المسح · متعذّر · تمّ التركيب» وكلُّ رقمٍ زرّ (data-copop/data-cok)؛ coBuckets/coPopRows/coPopHtml/coPopXls نافذةٌ بالمخيّم والشاخص والموقع والتحديات ومَن ومتى، بأزرار الخريطة (mapFly) والتفاصيل والإكسل والإغلاق (data-copopx أو الضغط على #coPopWrap)؛ xlsSheets مصدِّر أوراقٍ حرّة.",
     "V16.59": "التصدير يتبع التصفية: wtFiltered/wbsPass+wbsFiltered (مع آباء المطابق) وSHEETS.sites عبر filtered() — الشاشة والورقة من مرشّحٍ واحد؛ وحاشيةٌ في حوار التصدير تقولها.",
     "V16.60": "wbsExcel(): تصدير الخطة بصيغ الملف الأصلي عبر ExcelJS (exlLoad من cdnjs) — صف المواعيد الحاكمة وصيغ المتبقي، MIN/MAX/AVERAGE للآباء على صفوفهم، SUMPRODUCT للمدة، IF للحالة والموقف والمتبقي، outlineLevel=depth-1، تجميد A6، autoFilter، RTL، عرض أعمدة، تنسيق شرطي (dataBar بحدَّيه + cellIs + expression)؛ زر data-wbsxl، وcdnjs مسموح في عامل الخدمة.",
+    "V16.61": "audit-journey يملأ الحقول الإلزامية (mount/power/chals/wid_m/hgt_m/fit) قبل svSave — الحارس يتبع قاعدة V16.56.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

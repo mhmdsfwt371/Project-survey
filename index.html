@@ -768,7 +768,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.60</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.61</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17159,7 +17159,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.60' + '.docx" download>⬇ '
+              +   'V16.61' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20543,7 +20543,10 @@ function coPopHtml(){
             esc(o.why.slice(0, 90)),
             esc(o.who) + '<br><span class="num hint">' + esc(o.when) + '</span>',
             pill(o.st, o.st === 'مُركّب' ? 'ok' : (o.st === 'متعذّر' ? 'bad' : 'wrn')),
-            (x.lat && x.lng ? btn('\u{1F5FA} ' + t('الخريطة'),'btn-quiet btn-sm',' data-cogo="' + esc(x.id) + '"') : '')
+            /* `data-cogo` محجوزةٌ منذ V14 لزرَّي «عرض» و«مسح التحديد» في مرشِّح
+               الشركات على الخريطة — فمعالجُ النافذة الجديد كان يخطف ضغطتَهما
+               ويفتح شاشةَ الاعتماد. اسمٌ خاصٌّ بها: `data-comap`. */
+            (x.lat && x.lng ? btn('\u{1F5FA} ' + t('الخريطة'),'btn-quiet btn-sm',' data-comap="' + esc(x.id) + '"') : '')
             + btn('\u25C8 ' + t('التفاصيل'),'btn-quiet btn-sm',' data-copopsite="' + esc(x.id) + '"')];
   });
   return '<div id="coPopWrap" class="co-pop-wrap">'
@@ -28865,8 +28868,8 @@ function clickTables(e){
   if (cop){ CO_POP = { co:cop.getAttribute('data-copop'), kind:cop.getAttribute('data-cok') || 'all' }; render(1); return true; }
   if (e.target.closest('[data-copopx]')){ CO_POP = null; render(1); return true; }
   if (e.target.closest('[data-copopxls]')){ coPopXls(); return true; }
-  var cogo = e.target.closest('[data-cogo]');
-  if (cogo){ var gid = cogo.getAttribute('data-cogo'); CO_POP = null;
+  var cogo = e.target.closest('[data-comap]');
+  if (cogo){ var gid = cogo.getAttribute('data-comap'); CO_POP = null;
              POP_SITE = gid; POP_OPEN = true; CUR = 'map'; render();
              setTimeout(function(){ mapFly(gid); }, 500); return true; }
   var cst = e.target.closest('[data-copopsite]');
@@ -28906,6 +28909,9 @@ function clickTables(e){
   return false;
 }
 function onDocClick(e){
+  /* نقراتُ الجداول والنوافذ أوّلًا: خصائصُها دقيقةٌ لا تلتبس، وكانت تُقرَأ
+     بعد مئةِ فرعٍ فيخطفها فرعٌ أعمُّ قبلها. */
+  if (clickTables(e)) return;
   var pqb = e.target.closest('[data-pq]');
   if (pqb && pqb.getAttribute('data-pq') === '0'){ QUEUE_OPEN = false; render(1); return; }
   if (pqb){
@@ -29087,7 +29093,6 @@ function onDocClick(e){
   if (e.target.closest('[data-wbsreset]')){ if (WBS_RESET) wbsClear(); else { WBS_RESET = 1; render(1); } return; }
   var wf = e.target.closest('[data-wbsf]');
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return; }
-  if (clickTables(e)) return;
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return; }
   var fz = e.target.closest('[data-fz]');
