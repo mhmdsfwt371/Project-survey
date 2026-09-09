@@ -770,7 +770,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.69</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.70</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17291,7 +17291,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.69' + '.docx" download>⬇ '
+              +   'V16.70' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -27213,6 +27213,7 @@ var CAP_SAY = {
    والدليلُ المكتوبُ بيدٍ يشيخ: تُضاف شاشةٌ أو تُنقَل قدرةٌ فيبقى الدليلُ
    على حاله يصف نظامًا لم يعد قائمًا. فهذا يُشتقّ من ROLES نفسِها لحظةَ
    فتحه — من غيّر صلاحيةً غيّر الدليلَ معها، ولا سبيلَ لأن يفترقا. */
+var GUIDE_G = '';
 function roleGuide(k){
   var x = ROLES[k];
   if (!x) return '';
@@ -27245,11 +27246,18 @@ function roleGuide(k){
               return '<span class="chip on">' + esc(t(CAP_SAY[c] || c)) + '</span>'; }).join('') + '</div>'
           : alertBox('info','عرضٌ فقط — لا يكتب في النظام شيئًا.')))
 
+    /* مئةٌ وخمسُ شاشاتٍ في قائمةٍ واحدةٍ لا تُقرأ — ولا تُقاس على شاشة هاتف.
+       فالمجموعاتُ مطويّةٌ بأعدادها، وتُفتَح واحدةً واحدة. */
     + groups.map(function(g){
-        return cardFlush(t(g) + ' — ' + nm(byGroup[g].length),
-          table(['الشاشة','ما يفعله فيها'],
-            byGroup[g].map(function(p){
-              return [(p.sub ? esc(t(p.sub)) + ' \u2190 ' : '') + esc(t(p.t)), esc(t(p.l || ''))]; })));
+        var open = GUIDE_G === g;
+        return card('',
+          '<button type="button" class="btn btn-quiet" data-guideg="' + esc(open ? '' : g) + '" style="width:100%;justify-content:space-between;font-weight:700">'
+          + '<span>' + (open ? '\u25BE ' : '\u25B8 ') + esc(t(g)) + '</span><span class="num">' + nm(byGroup[g].length) + '</span></button>'
+          + (open
+            ? table(['الشاشة','ما يفعله فيها'],
+                byGroup[g].map(function(p){
+                  return [(p.sub ? esc(t(p.sub)) + ' \u2190 ' : '') + esc(t(p.t)), esc(t(p.l || ''))]; }))
+            : ''));
       }).join('')
 
     + (sops.length
@@ -29215,6 +29223,8 @@ function clickTables(e){
   if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return true; }
   var npo = e.target.closest('[data-npop]');
   if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return true; }
+  var gg = e.target.closest('[data-guideg]');
+  if (gg){ GUIDE_G = gg.getAttribute('data-guideg') || ''; render(1); return true; }
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
