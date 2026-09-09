@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.68",
+  "app_version": "V16.69",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1536,6 +1536,7 @@
     "V16.66": "اعتمادان: svApprove = اعتماد تقني يضبط rec.minReview=pending؛ minState/minOk/minApprove/minReturn/minResubmit (rec.minReview approved|returned|pending + minBy/minAt/minNote/minResubmitNote)؛ قدرة minapprove للوزارة ومدير المشروع؛ LIFE minwait/minback قبل ready؛ ASN_READY.install يشترط minOk؛ تبويب minappr في الميدان (قائمة/لوحة/أزرار) + SHEETS.minappr + EXP_SECS؛ إشعارات الدورة؛ قاعدة recs: viewer يحدّث حقول minReview فقط على ما review=approved (rules-test)؛ clickA فُصلت من onDocClick.",
     "V16.67": "الراكد: idleStep(id) يشخّص أين وقف الطريق (تقني/وزارة/حل/إسناد) ويعطي زر الخطوة نفسها؛ لوحة مراجعة للراكد بصوره وتواريخ اعتماداته وزر إعادة للمشرف (data-stkopenback)؛ عمود السبب يعرض التشخيص.",
     "V16.68": "actList() تقرأ onDocClick + clickTables + clickA — كانت تقرأ الأولى وحدَها فتُبتلَع نقراتُ ما فُصل (data-stkf/stkopen/stkok/minopen/minok/minback/minre/wt*/wbs*)؛ حارسٌ في audit-buttons يمنع تكرارها.",
+    "V16.69": "PH_ERR/phErr: ترجمة أخطاء رفع الصور (storage quota / permission / 404 / rate) إلى جملة عربية قصيرة تحت الصورة + لافتة واحدة فوق المعرض فيها ما يُفعَل — بدل نصّ جوجل الخام تحت كل صورة.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
