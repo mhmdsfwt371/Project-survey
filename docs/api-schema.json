@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.49",
+  "app_version": "V16.50",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1518,6 +1518,7 @@
     "V16.47": "viewer.nav += survey (تبويب المسح الميداني ضمن متابعة العمل الميداني، قراءةً)؛ زر «أعِد تصنيفها كمتعذّرة» مشروط بـmay(edit).",
     "V16.48": "خمسُ catch فارغة صارت lsSet/lsGet أو LS_ERR (اللغة والسمة والإرث ومفاتيح درايف)؛ CAP_EMPTY هبط 39→34 فصار الهامشُ خمسةً.",
     "V16.49": "PDF: pdfCover/pdfTile/pdfBar/pdfCols/pdfDonut — غلاف ببطاقات وأشرطة وأعمدة SVG وحلقة دورة الحياة قبل الجداول (بلا مكتبة خارجية)؛ SHEETS.summary ورقة ملخّص تنفيذي (مؤشرات + دورة النقطة + المشاعر + المهام الأسبوعية + الخطة التفصيلية) وأولُ قسمٍ في EXP_SECS.",
+    "V16.50": "صحة النظام › الفحوص: فحوصٌ حقيقية (insNoSol/schedNoSv/negStock/buyNoSup/taskGhost/dupUsers/poison) + جودة البيانات (noCoord/compound/svNoPhoto/oldRevisit) بأزرار افتح؛ wtRemind تذكيرٌ يوميٌّ بالمهام المتأخرة/المستحقة (nsk14.wtRemind) يفتح wtask مرشّحًا متأخرًا؛ زر تقرير الاجتماع (data-wtmeet) = expPdf(summary,wtask,wbs,chalm).",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {
