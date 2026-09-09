@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.55</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.56</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3539,6 +3539,7 @@ en:{
  'اسم الدخول':'Login name', 'بدّل اسم الدخول':'Change login name', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'The login name is an identity in authentication — changed by the server via its button, not by saving the row.', 'لا حسابَ لتبديله':'No account to rename', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'Login name: Latin letters, digits and dots — three or more', 'الاسمُ نفسُه':'Same name', 'الاسمُ مستعملٌ لحسابٍ آخر':'The name is used by another account',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'Sent to the server — runs within a minute',
  'قارئات نُسُك في المشاعر':'Nusuk readers in the Holy Sites',
+ 'أكمِل المطلوب':'Complete the required fields',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6185,6 +6186,7 @@ ur:{
  'اسم الدخول':'لاگ اِن نام', 'بدّل اسم الدخول':'لاگ اِن نام بدلیں', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'لاگ اِن نام تصدیق میں شناخت ہے — سرور سے بدلتا ہے۔', 'لا حسابَ لتبديله':'بدلنے کے لیے اکاؤنٹ نہیں', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'لاگ اِن نام: لاطینی حروف اور ہندسے — کم از کم تین', 'الاسمُ نفسُه':'وہی نام', 'الاسمُ مستعملٌ لحسابٍ آخر':'نام دوسرے اکاؤنٹ کے پاس',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'سرور کو بھیجا گیا — ایک منٹ میں چلے گا',
  'قارئات نُسُك في المشاعر':'مشاعر میں نُسُک ریڈرز',
+ 'أكمِل المطلوب':'مطلوبہ خانے مکمل کریں',
 }
 };
 
@@ -11964,11 +11966,11 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
 
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
-          + '<div class="field"><label>' + esc(t('نوع التركيب')) + '</label>'
+          + '<div class="field"><label>' + esc(t('نوع التركيب')) + ' <span class="req">*</span></label>'
           + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].map(function(o){
               return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
-          + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + '</label>'
+          + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + ' <span class="req">*</span></label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
               return '<option value="' + esc(o) + '"' + (FORM.power===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
@@ -11977,7 +11979,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (' + t('م') + ')</label>'
           + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
           + '</div>'
-          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + '</label>'
+          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
           + chalsOf(s).map(function(c){
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
@@ -13222,14 +13224,20 @@ var SV_CAM   = ['','تعمل','لا تعمل','غير موجودة'];
 var SV_ROUT  = ['','يوجد','ضيق','لا يوجد'];
 var SV_KITS  = ['','١','٢','٣'];
 
+/* ═══ الإلزاميُّ يُعلَّم ويُمنَع الحفظُ بدونه ═══
+   كانت الحقولُ كلُّها اختياريةً في الشيفرة: يحفظ الفنيُّ زيارةً بلا نوعِ تركيبٍ
+   ولا مصدرِ كهرباءَ ولا مقاسات، فيصل المكتبَ سجلٌّ لا يُبنى عليه حلٌّ ويُردُّ
+   فتُعاد الزيارة. صار المطلوبُ معلَّمًا بنجمةٍ ومحروسًا عند الحفظ. */
+var SV_REQ = ['mount','power','wid_m','hgt_m','fit'];
+function reqStar(key){ return SV_REQ.indexOf(key) > -1 ? ' <span class="req">*</span>' : ''; }
 function svNum(key, label, hint){
-  return '<div class="field"><label>' + esc(t(label)) + '</label>'
+  return '<div class="field"><label>' + esc(t(label)) + reqStar(key) + '</label>'
     + '<input type="number" min="0" step="0.5" data-form="' + key + '" value="'
     + esc(FORM[key] == null ? '' : FORM[key]) + '">'
     + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
 }
 function svSel(key, label, opts, hint){
-  return '<div class="field"><label>' + esc(t(label)) + '</label>'
+  return '<div class="field"><label>' + esc(t(label)) + reqStar(key) + '</label>'
     + '<select data-form="' + key + '">' + opts.map(function(o){
         return '<option value="' + esc(o) + '"' + (FORM[key] === o ? ' selected' : '') + '>'
           + (o ? esc(t(o)) : '— ' + esc(t('اختر')) + ' —') + '</option>'; }).join('')
@@ -13524,6 +13532,23 @@ function svSave(next){
   if (reached && (!FORM.photos.site || !FORM.photos.mount)){
     toast(t('الصورتان مطلوبتان قبل الحفظ'));
     return;
+  }
+  /* ما لا يُبنى عليه حلٌّ لا يُحفَظ: النوعُ والكهرباءُ والمقاسان والصلاحيةُ
+     وتحدٍّ واحدٌ على الأقل («لا توجد تحديات» خيارٌ صريحٌ يُختار). */
+  if (reached){
+    var need = [];
+    if (!FORM.mount) need.push('نوع التركيب');
+    if (!FORM.power) need.push('مصدر الكهرباء');
+    if (!(FORM.chals || []).length) need.push('تحديات التركيب');
+    if (!cfgN(FORM.wid_m)) need.push('العرض المتاح (متر)');
+    if (!cfgN(FORM.hgt_m)) need.push('الارتفاع المتاح (متر)');
+    if (!FORM.fit) need.push('هل الموقع مناسب للتركيب؟');
+    if (need.length){
+      toast(t('أكمِل المطلوب') + ': ' + need.map(function(x){ return t(x); }).join(' \u00b7 '));
+      var first = document.querySelector('[data-form="' + (FORM.mount ? (FORM.power ? (FORM.wid_m ? (FORM.hgt_m ? 'fit' : 'hgt_m') : 'wid_m') : 'power') : 'mount') + '"]');
+      if (first && first.scrollIntoView){ first.scrollIntoView({ block:'center', behavior:'smooth' }); try { first.focus(); } catch (e){ LS_ERR = e; } }
+      return;
+    }
   }
   var rec = {
     id:s.id, by:STATE.meta.name || '', at:Date.now(),
@@ -16986,7 +17011,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.55' + '.docx" download>⬇ '
+              +   'V16.56' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -21419,7 +21444,22 @@ function wfDiagram(){
     { t:'دورة التركيب', k:['ready','sched','installed'], why:'لا جدولةَ قبل اعتماد الحل، ولا نقاطَ قبل اعتماد التدقيق.' },
     { t:'بعد التركيب',  k:['installed','maint','dis'], why:'الصيانةُ في أثناء الموسم، والفكُّ بعده — كلاهما يُسنَد كما يُسنَد التركيب.' }
   ];
-  var W = 660, bw = 132, bh = 46, gap = 26, out = '';
+  /* النصُّ العربيُّ لا يُقَصُّ ولا يفيض: يُلَفُّ سطرين ويتّسع الصندوقُ لهما.
+     كان `slice(22)` يقطع الكلمةَ نصفَها، والوصفُ يمتدُّ خارجَ إطاره فيركب
+     على جاره — تُقرأ الصورةُ فتظنُّ الرسمَ معطوبًا. */
+  var wrap = function(txt, per, lines){
+    var w = String(txt || '').split(/\s+/), out2 = [], cur = '';
+    for (var i = 0; i < w.length; i++){
+      var nx = cur ? cur + ' ' + w[i] : w[i];
+      if (nx.length > per && cur){ out2.push(cur); cur = w[i]; if (out2.length === lines - 1) break; }
+      else cur = nx;
+    }
+    if (cur && out2.length < lines) out2.push(cur);
+    var rest = w.slice(out2.join(' ').split(/\s+/).length).join(' ');
+    if (rest && out2.length === lines) out2[lines - 1] = (out2[lines - 1] + ' …');
+    return out2;
+  };
+  var W = 900, bw = 196, bh = 82, gap = 22, out = '';
   var y = 8;
   rows.forEach(function(r){
     out += '<text x="' + (W - 6) + '" y="' + (y + 14) + '" text-anchor="end" '
@@ -21431,13 +21471,18 @@ function wfDiagram(){
     r.k.forEach(function(key, i){
       var L = LIFE[key] || LIFE.todo;
       var x = x0 - i * (bw + gap);
+      var nm2 = wrap(t(L.n), 20, 2), ds = wrap(t(L.d), 26, 3);
       out += '<rect x="' + x + '" y="' + y + '" rx="10" width="' + bw + '" height="' + bh + '" '
           +  'fill="' + L.c + '" fill-opacity="0.18" stroke="' + L.c + '" stroke-width="2"/>'
-          +  '<circle cx="' + (x + bw - 14) + '" cy="' + (y + 14) + '" r="6" fill="' + L.c + '"/>'
-          +  '<text x="' + (x + bw - 26) + '" y="' + (y + 19) + '" text-anchor="end" font-size="12.5" '
-          +  'font-weight="700" fill="var(--ink)">' + esc(t(L.n).slice(0, 22)) + '</text>'
-          +  '<text x="' + (x + bw - 10) + '" y="' + (y + 36) + '" text-anchor="end" font-size="10.5" '
-          +  'fill="var(--ink-soft)">' + esc(t(L.d).slice(0, 34)) + '</text>';
+          +  '<circle cx="' + (x + bw - 13) + '" cy="' + (y + 15) + '" r="5.5" fill="' + L.c + '"/>'
+          +  nm2.map(function(ln, j){
+               return '<text x="' + (x + bw - (j ? 12 : 25)) + '" y="' + (y + 19 + j * 15) + '" text-anchor="end" '
+                 + 'font-size="12.5" font-weight="700" fill="var(--ink)">' + esc(ln) + '</text>';
+             }).join('')
+          +  ds.map(function(ln, j){
+               return '<text x="' + (x + bw - 12) + '" y="' + (y + 22 + nm2.length * 15 + j * 13) + '" text-anchor="end" '
+                 + 'font-size="10.5" fill="var(--ink-soft)">' + esc(ln) + '</text>';
+             }).join('');
       if (i < n - 1){
         var ax = x - gap + 4, ay = y + bh / 2;
         out += '<line x1="' + (ax + gap - 8) + '" y1="' + ay + '" x2="' + (ax + 4) + '" y2="' + ay + '" '
@@ -21446,14 +21491,14 @@ function wfDiagram(){
             +  'fill="var(--ink-soft)"/>';
       }
     });
-    y += bh + 8;
+    y += bh + 10;
     out += '<text x="' + (W - 6) + '" y="' + (y + 10) + '" text-anchor="end" font-size="11" '
         +  'fill="var(--ink-soft)">' + esc(t(r.why)) + '</text>';
     y += 30;
   });
   return card('\u{1F5FA} ' + t('رسمُ الدورة — بألوان الخريطة نفسِها'),
       '<div style="overflow-x:auto"><svg viewBox="0 0 ' + W + ' ' + y + '" width="100%" '
-      + 'style="min-width:600px;height:auto" role="img" aria-label="' + esc(t('رسم دورة حياة النقطة')) + '">'
+      + 'style="min-width:820px;height:auto" role="img" aria-label="' + esc(t('رسم دورة حياة النقطة')) + '">'
       + out + '</svg></div>'
       + '<div class="chips" style="margin:10px 0 0">' + LIFE_ORDER.map(function(k){
           return '<span class="chip"><i style="display:inline-block;width:10px;height:10px;border-radius:50%;'
