@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.53",
+  "app_version": "V16.54",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1522,6 +1522,7 @@
     "V16.51": "لوحة الفريق: underNames مُرشَّحة من viewer — المطّلع ليس من الفريق فلا يُعَدُّ له صفٌّ أصفار.",
     "V16.52": "تبديل اسم الدخول: usrRename يكتب provision {action:rename,uid,newUser} ويشغّل الخادم عبر pwFlow؛ provision.mjs فرعُ rename يبدّل بريدَ المصادقة (auth.updateUser email) وحقلَ users/{uid}.user بلا تغيير uid؛ حقل data-usru وزر data-usrren في صف التحرير.",
     "V16.53": "provKick(quiet): كل كتابة في provision (إنشاء/جماعي/تعديل طلب/حذف/كلمة/تبديل اسم) تُشغّل الخادم تلقائيًّا — تجميع ٢ث + فاصل ٢٠ث بين تشغيلين (PROV_KICK/PROV_LAST)؛ ghRunNow(quiet) يكتم الرسائل في النبضة.",
+    "V16.54": "ترويسة PDF: مفتاحٌ واحدٌ فيه \\u00b7 فُصل إلى مفتاحين حرفيّين — الحارسُ يقرأ المصدرَ نصًّا فلا يطابق الهروبَ بالقاموس.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
   "map_and_geolocation": {

@@ -764,7 +764,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.53</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.54</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3538,6 +3538,7 @@ en:{
  'تقرير الاجتماع':'Meeting report', 'PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات':'PDF: executive summary + tasks + detailed plan + challenges', 'يُجهَّز تقريرُ الاجتماع…':'Preparing the meeting report…', 'مهام الاجتماع':'Meeting tasks', 'مستحقة اليوم':'due today',
  'اسم الدخول':'Login name', 'بدّل اسم الدخول':'Change login name', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'The login name is an identity in authentication — changed by the server via its button, not by saving the row.', 'لا حسابَ لتبديله':'No account to rename', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'Login name: Latin letters, digits and dots — three or more', 'الاسمُ نفسُه':'Same name', 'الاسمُ مستعملٌ لحسابٍ آخر':'The name is used by another account',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'Sent to the server — runs within a minute',
+ 'قارئات نُسُك في المشاعر':'Nusuk readers in the Holy Sites',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6183,6 +6184,7 @@ ur:{
  'تقرير الاجتماع':'اجلاس رپورٹ', 'PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات':'PDF: خلاصہ + امور + منصوبہ + چیلنجز', 'يُجهَّز تقريرُ الاجتماع…':'اجلاس رپورٹ تیار…', 'مهام الاجتماع':'اجلاس کے امور', 'مستحقة اليوم':'آج واجب',
  'اسم الدخول':'لاگ اِن نام', 'بدّل اسم الدخول':'لاگ اِن نام بدلیں', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'لاگ اِن نام تصدیق میں شناخت ہے — سرور سے بدلتا ہے۔', 'لا حسابَ لتبديله':'بدلنے کے لیے اکاؤنٹ نہیں', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'لاگ اِن نام: لاطینی حروف اور ہندسے — کم از کم تین', 'الاسمُ نفسُه':'وہی نام', 'الاسمُ مستعملٌ لحسابٍ آخر':'نام دوسرے اکاؤنٹ کے پاس',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'سرور کو بھیجا گیا — ایک منٹ میں چلے گا',
+ 'قارئات نُسُك في المشاعر':'مشاعر میں نُسُک ریڈرز',
 }
 };
 
@@ -16983,7 +16985,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.53' + '.docx" download>⬇ '
+              +   'V16.54' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -25611,7 +25613,7 @@ function expPdf(keys){
     + '.btrack{height:10px;border-radius:99px;background:#eef2f6;overflow:hidden}.btrack i{display:block;height:100%;border-radius:99px}'
     + '@media print{h2{page-break-before:always}.cover{page-break-after:always}}';
   var body = '<h1>' + esc(t('نُسُك Survey — تقرير اللوحة')) + '</h1>'
-    + '<div class="hint">' + esc(t('حج ١٤٤٨هـ \u00b7 قارئات نُسُك في المشاعر')) + ' \u00b7 '
+    + '<div class="hint">' + esc(t('حج ١٤٤٨هـ')) + ' \u00b7 ' + esc(t('قارئات نُسُك في المشاعر')) + ' \u00b7 '
     + esc(new Date().toLocaleString('ar-EG')) + ' \u00b7 ' + esc(dispName(STATE.meta.name || '')) + '</div>';
   /* الغلافُ أولًا: البطاقاتُ والرسومُ ثم الجداول */
   try { body += '<div class="cover">' + pdfCover() + '</div>'; } catch (e){ softErr('غلاف التقرير', e, ''); }
