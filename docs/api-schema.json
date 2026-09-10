@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.78",
+  "app_version": "V16.79",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1546,6 +1546,7 @@
     "V16.76": "الخريطة ثلاثيةً كوضعٍ لا صفحة: زر data-m3 على شريط الخريطة يبدّل MAP_3D؛ #m3Box حاويةٌ فوق #mapBox تحت #mapUI؛ m3Points()=layerFiltered()+mapColorOf() (القائمة والألوان نفسها)، m3Cols() مضلّعات 4.4م للأعمدة (fill-extrusion لا يرفع نقطة)، m3Layers على style.load (dem/hillshade/terrain + nskc + nsk)، m3Click = نقرة المسطّح (تحديد أو POP_SITE)، m3From2D/m3Off تزامن الكاميرا، m3Restyle مع القمر الصناعي (نمط raster esri)، mapPaint يستدعي m3Paint. أُزيل التوأم الرقمي كاملًا: PAGE.twin/map3d، twin*، TWIN_H، SHEETS.twin، EXP_SECS/EXP_PAGE، settings/twin (سحب وإنصات وحالة)، telemetry-ingest.mjs وخطوته. sw.js: بلاطات openfreemap وelevation-tiles شبكةٌ فقط. جرد audit-map3d.",
     "V16.77": "الثلاثي: المخيم يُرفَع بحدوده الحقيقية من poly.json (m3Points: foot=1 لمخيمٍ له POLY[id]؛ m3Cols يستعمل الحلقة مغلقةً)، طبقة nsk-cols-line لحدِّ المخيم (تبيضّ عند التحديد)، nsk-pts بمرشّح foot=0 فلا نقطةَ فوق مخيمٍ محدود، وpolyLoad يُطلَب عند دخول الثلاثي ثم m3Paint.",
     "V16.78": "الصور على الدرايف بمجلد لكل نقطة: photos-sync.mjs يرفع إلى photos/<siteId>/ (siteFolder مع ذاكرة داخل الدورة) ويكتب في وثيقة الصورة inSite:true وfolderId؛ ترتيب القديم صفحةً (150) كل دورة بمؤشر في settings/photosLayout {cursor, bySite, at} — files.update addParents/removeParents (المعرّف والرابط ثابتان)، وما لا يُرى يُعلَّم inSite+moveWhy، وعند انتهاء الصفحات bySite:true وتُمحى مجلدات الأيام الفارغة؛ المعرض: زر «مجلد النقطة على الدرايف» (folderId) لرتبة admin فأعلى.",
+    "V16.79": "مجلداتُ الصور بأسماء النقاط: photos-sync يقرأ SITES_RAW من index.html بعدِّ الأقواس (لا بنمط \\n};) ويبني SITE_LABEL = «<id> — <اسم بلا مشعر>»، وللمخيم «<id> — شاخص <sign> · مربع <sq>»؛ مجلداتُ photos تُقرأ صفحةً صفحةً مرةً في الدورة (pageSize 1000 + nextPageToken) وتُفهرَس بصدر الاسم، فالمجلدُ القديمُ باسم المعرِّف يُعاد تسميتُه (files.update name، ≤300 في الدورة) لا يُنشَأ غيرُه — المعرِّفُ والرابطُ وfolderId كما هي. جرد audit-photo-folders.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

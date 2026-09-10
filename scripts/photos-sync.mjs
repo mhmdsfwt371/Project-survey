@@ -3,17 +3,66 @@
    ───────────────────────────────────────────────────────────────────────────
    الهاتفُ يكتب الصورةَ مضغوطةً في وثيقتها بالقاعدة (بلا إعدادٍ ولا دخولٍ
    إلى جوجل)، والخادمُ يمرُّ: يرفعها إلى درايف المشروع في مجلدٍ باسم نقطتها
-   «photos/<معرِّف النقطة>/» — لكلِّ نقطةٍ مجلدٌ وفيه صورُها كلُّها باسمها
-   ورقمها — ويكتب في الوثيقة رابطَها ومعرِّفَها، ويمحو الصورةَ منها فلا تبقى
-   في القاعدة إلا ما لم يُنقَل بعد.
+   «photos/<معرِّف النقطة> — <اسمها>/» — لكلِّ نقطةٍ مجلدٌ وفيه صورُها كلُّها
+   باسمها ورقمها — ويكتب في الوثيقة رابطَها ومعرِّفَها، ويمحو الصورةَ منها
+   فلا تبقى في القاعدة إلا ما لم يُنقَل بعد.
+     والمجلدُ يحمل اسمَ النقطة كما تقرؤه في بطاقتها لا معرِّفَها وحدَه
+   (V16.79): معرِّفٌ كـ«NSK-MIN-RDR-0018» لا يقول لمن يفتح الدرايفَ أيَّ ممرٍّ
+   هو، واسمُه «ممر Path-SH62-21» يقوله. والمخيمُ يُعرَف بشاخصه فيُقدَّم على
+   ما سواه: «NSK-MIN-CMP-0207 — شاخص 12/48 · مربع 5-3». والأسماءُ تُقرأ من
+   سجل النقاط المضمَّن في التطبيق نفسِه — مصدرٌ واحدٌ لا نسخةٌ ثانيةٌ تفترق.
      كان المجلدُ باليوم «photos/<اليوم>» فتتفرّق صورُ النقطة الواحدة على
    أيامٍ ولا يُعرَف ما لها إلا بالبحث. فصار بالنقطة (V16.78)، وما رُفع من
    قبلُ على الأيام يُنقَل إلى مجلد نقطته دفعةً كلَّ دورة حتى لا يبقى شيء، ثم
    تُمحى مجلداتُ الأيام الفارغة.
    ═════════════════════════════════════════════════════════════════════════ */
 import admin from 'firebase-admin';
+import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { driveClient, rootFolder, explain, q as qEsc } from './drive-auth.mjs';
+
+/* ═══ أسماءُ النقاط — من سجل التطبيق نفسِه ═══
+   لا تُنسَخ الأسماءُ إلى ملفٍّ ثانٍ يفترق عن الأول: تُقرأ من `SITES_RAW` في
+   index.html كما يقرؤها التطبيق. وإن تعذّرت القراءةُ بقيت المجلداتُ بمعرِّفاتها
+   ولم يتوقّف النقل — الصورةُ أهمُّ من اسم مجلدها. */
+const SITE_LABEL = new Map();
+try {
+  const html = readFileSync('index.html', 'utf8');
+  const at = html.indexOf('{', html.indexOf('var SITES_RAW = '));
+  /* نهايةُ الكائن تُحسَب بعدِّ الأقواس لا بنمطٍ نصّيّ: السجلُّ يُغلَق بـ«};»
+     في آخر سطرٍ طويلٍ واحد، فالبحثُ عن «\\n};» يلتقط قوسًا لاحقًا ويأتي
+     بنصٍّ ليس بجيسون — وهذا ما وقع عند أوّل كتابةٍ لهذا الجرد. */
+  let depth = 0, str = false, esc = false, end = -1;
+  for (let i = at; i < html.length; i++){
+    const c = html[i];
+    if (str){ if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') str = false; continue; }
+    if (c === '"') str = true;
+    else if (c === '{') depth++;
+    else if (c === '}' && --depth === 0){ end = i + 1; break; }
+  }
+  const RAW = JSON.parse(html.slice(at, end));
+  const ZONES = RAW.z || [], TYPES = RAW.t || [];
+  /* اسمُ النقطة يبدأ بمشعرها («منى - ممر …») والمعرِّفُ يحمل المشعرَ أصلًا،
+     فيُحذَف المكرَّرُ ويبقى المميِّز — فلا يُقتطَع المميِّزُ في شبكة الدرايف. */
+  const tail = (name) => {
+    let s = String(name || '').trim();
+    for (const z of ZONES) if (s.startsWith(z + ' - ')) { s = s.slice(z.length + 3); break; }
+    return s.trim();
+  };
+  const clean = (s) => String(s || '').replace(/[\u0000-\u001f]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, 110);
+  const put = (r, camp) => {
+    const id = r[0], type = TYPES[r[3]] || '', sq = r[7] || '', sign = r[8] || '';
+    let lab = tail(r[1]);
+    /* المخيمُ يُعرَف بشاخصه — فيُقدَّم ليُقرأ من خارج المجلد قبل أن يُقتطَع */
+    if (camp && String(sign).trim()) lab = 'شاخص ' + sign + (String(sq).trim() ? ' · مربع ' + sq : '');
+    lab = clean(lab);
+    SITE_LABEL.set(id, lab ? id + ' — ' + lab : id);
+  };
+  (RAW.g || []).forEach(r => put(r, true));
+  (RAW.p || []).forEach(r => put(r, false));
+  console.log(`أسماءُ النقاط: ${SITE_LABEL.size} — المجلداتُ تحمل الاسمَ لا المعرِّفَ وحدَه`);
+} catch (e){ console.log('تعذّرت قراءةُ أسماء النقاط — تبقى المجلداتُ بمعرِّفاتها: ' + (e && e.message)); }
+const labelOf = (id) => SITE_LABEL.get(String(id || '').trim()) || String(id || '').trim() || 'بلا-نقطة';
 
 const SA = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.GDRIVE_SA || '';
 if (!SA){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT غير مضبوط — لا نقلَ للصور'); process.exit(0); }
@@ -66,13 +115,57 @@ try {
 } catch (e){ console.log('إعادةُ الطابور: ' + (e && e.message)); }
 
 const photosRoot = await folder('photos', await rootFolder(drive, mode));
-/* مجلدُ النقطة: يُبحَث عنه مرةً في الدورة ثم يُذكَر — لا استعلامَ لكلِّ صورة */
-const SITE_DIR = new Map();
+
+/* ═══ مجلداتُ النقاط: تُقرأ كلُّها مرةً في الدورة ═══
+   استعلامٌ لكلِّ نقطةٍ يعني ألفًا وأربعمئة استعلامٍ في الدورة الواحدة؛ وقراءةُ
+   الأبناء صفحةً صفحةً تكفي. والمفتاحُ هو المعرِّفُ في صدر الاسم — فمجلدٌ اسمُه
+   المعرِّفُ وحدَه (ترتيبُ ما قبل V16.79) هو مجلدُ النقطة نفسِه، يُعاد تسميتُه
+   لا يُنشَأ غيرُه، فلا ينكسر رابطٌ ولا تتكرّر مجلدات. */
+const SITE_DIR = new Map();      /* معرِّفُ النقطة → معرِّفُ مجلدها */
+const DIR_NAME = new Map();      /* معرِّفُ النقطة → اسمُ مجلدها الحاليّ */
+try {
+  let token = null;
+  do {
+    const r = await drive.files.list({
+      q: `'${photosRoot}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+      fields: 'nextPageToken, files(id,name)', pageSize: 1000, pageToken: token || undefined,
+      supportsAllDrives: true, includeItemsFromAllDrives: true });
+    for (const f of (r.data.files || [])){
+      const id = String(f.name).split(' — ')[0].trim();
+      if (!SITE_DIR.has(id)){ SITE_DIR.set(id, f.id); DIR_NAME.set(id, f.name); }
+    }
+    token = r.data.nextPageToken || null;
+  } while (token);
+  console.log(`مجلداتُ النقاط الموجودة: ${SITE_DIR.size}`);
+} catch (e){ console.log('قراءةُ مجلدات النقاط تعذّرت: ' + (e && e.message)); }
+
 async function siteFolder(siteId){
   const key = String(siteId || '').trim() || 'بلا-نقطة';
-  if (!SITE_DIR.has(key)) SITE_DIR.set(key, await folder(key, photosRoot));
+  const want = labelOf(key);
+  if (!SITE_DIR.has(key)){
+    const made = await folder(want, photosRoot);
+    SITE_DIR.set(key, made); DIR_NAME.set(key, want);
+  }
   return SITE_DIR.get(key);
 }
+
+/* ═══ تسميةُ ما أُنشئ بمعرِّفه وحدَه ═══
+   الملفُّ لا يُمَسّ — الاسمُ وحدَه يتغيّر، فالروابطُ والمعرِّفاتُ في القاعدة
+   وفي التطبيق كما هي. ثلاثمئةٌ في الدورة تكفي: ما بقي يُسمّى في التي تليها،
+   وحين لا يبقى شيءٌ لا يُطلَب شيء. */
+try {
+  let renamed = 0;
+  for (const [id, dirId] of SITE_DIR){
+    if (renamed >= 300) break;
+    const want = labelOf(id);
+    if (!want || DIR_NAME.get(id) === want) continue;
+    try {
+      await drive.files.update({ fileId: dirId, requestBody: { name: want }, fields: 'id', supportsAllDrives: true });
+      DIR_NAME.set(id, want); renamed++;
+    } catch (e){ /* مجلدٌ لا يُرى بهويةٍ أخرى — يُترَك ولا يُعاد بناؤه */ }
+  }
+  if (renamed) console.log(`::notice title=photos::سُمّي ${renamed} مجلدًا باسم نقطته`);
+} catch (e){ console.log('تسميةُ المجلدات تعذّرت: ' + (e && e.message)); }
 
 /* ═══ ما رُفع على مجلدات الأيام يُنقَل إلى مجلد نقطته ═══
    الملفُّ نفسُه يبقى بمعرِّفه ورابطه — يتغيّر أبوه فقط — فلا ينكسر رابطٌ في
