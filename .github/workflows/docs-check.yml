@@ -200,6 +200,8 @@ jobs:
         run: node scripts/audit-map3d.mjs
       - name: جرد مجلدات الصور — لكلِّ نقطةٍ مجلدُها باسمها
         run: node scripts/audit-photo-folders.mjs
+      - name: جرد الزرِّ يصل — ما يُعرَض على دورٍ يفتح شاشتَه لا غيرَها
+        run: node scripts/audit-btn-lands.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك

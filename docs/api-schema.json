@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.79",
+  "app_version": "V16.80",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1547,6 +1547,7 @@
     "V16.77": "الثلاثي: المخيم يُرفَع بحدوده الحقيقية من poly.json (m3Points: foot=1 لمخيمٍ له POLY[id]؛ m3Cols يستعمل الحلقة مغلقةً)، طبقة nsk-cols-line لحدِّ المخيم (تبيضّ عند التحديد)، nsk-pts بمرشّح foot=0 فلا نقطةَ فوق مخيمٍ محدود، وpolyLoad يُطلَب عند دخول الثلاثي ثم m3Paint.",
     "V16.78": "الصور على الدرايف بمجلد لكل نقطة: photos-sync.mjs يرفع إلى photos/<siteId>/ (siteFolder مع ذاكرة داخل الدورة) ويكتب في وثيقة الصورة inSite:true وfolderId؛ ترتيب القديم صفحةً (150) كل دورة بمؤشر في settings/photosLayout {cursor, bySite, at} — files.update addParents/removeParents (المعرّف والرابط ثابتان)، وما لا يُرى يُعلَّم inSite+moveWhy، وعند انتهاء الصفحات bySite:true وتُمحى مجلدات الأيام الفارغة؛ المعرض: زر «مجلد النقطة على الدرايف» (folderId) لرتبة admin فأعلى.",
     "V16.79": "مجلداتُ الصور بأسماء النقاط: photos-sync يقرأ SITES_RAW من index.html بعدِّ الأقواس (لا بنمط \\n};) ويبني SITE_LABEL = «<id> — <اسم بلا مشعر>»، وللمخيم «<id> — شاخص <sign> · مربع <sq>»؛ مجلداتُ photos تُقرأ صفحةً صفحةً مرةً في الدورة (pageSize 1000 + nextPageToken) وتُفهرَس بصدر الاسم، فالمجلدُ القديمُ باسم المعرِّف يُعاد تسميتُه (files.update name، ≤300 في الدورة) لا يُنشَأ غيرُه — المعرِّفُ والرابطُ وfolderId كما هي. جرد audit-photo-folders.",
+    "V16.80": "زرُّ «موقع غير مسجّل» يصل: ROLES.supervisor/tech/cins/helper.nav += newsite (كان الزرُّ مشروطًا بmay(edit) والصفحةُ خارج nav، فtabCur يردُّ PTAB[forms] إلى أوّل شريحةٍ مرئيةٍ = svForm). جرد audit-btn-lands: لكلِّ دورٍ يرى الخريطة يُبنى mapUIHtml+popHtml ويُلتقَط data-newsite/data-form/data-insform، ثم يُطلَب الهدفُ بrender الحقيقيِّ ويُقاس tabCur — ويثبت أيضًا ألّا newsite في قائمة دورٍ بلا can.edit.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

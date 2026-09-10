@@ -777,7 +777,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.79</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.80</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17499,7 +17499,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.79' + '.docx" download>⬇ '
+              +   'V16.80' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -26921,7 +26921,7 @@ var ROLES = {
     guide:'دليل الفني والمشرف — العمل الميداني',
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
-    nav:['map','mywork','sites','sel','svForm','insForm','co','recs','tools','mine','over','wbs','wtask','wtask','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','wtask','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
     can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -26945,7 +26945,7 @@ var ROLES = {
   tech:{
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
-    nav:['map','mywork','sites','sel','svForm','insForm','recs','mine','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -26968,7 +26968,7 @@ var ROLES = {
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
-    nav:['map','mywork','sites','sel','svForm','insForm','recs','mine','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -26999,7 +26999,7 @@ var ROLES = {
   helper:{
     n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
     base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
-    nav:['map','mywork','sites','svForm','insForm','mine','guide','acct'],
+    nav:['map','mywork','sites','svForm','insForm','newsite','mine','guide','acct'],
     can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -27359,6 +27359,10 @@ function deptName(id){
 function maySupEng(){ return mayBonus(); }   /* اسمٌ قديم — النقاطُ للمهندس فما فوق */
 /* القدرةُ المعلنةُ تُسأل هنا: كانت `can` تعلن إحدى عشرةَ قدرةً ولا يُسأل منها
    إلا أربع، فسبعٌ إعلانٌ بلا حارس. وكلُّ شاشةٍ ترتبط بقدرتها فيُسأل عنها. */
+/* «موقع جديد» في قائمة كلِّ دورٍ ميدانيٍّ يملك التسجيل (V16.80): كان الزرُّ
+   يُعرَض على الخريطة لمن يملك «edit»، والصفحةُ ليست في قائمته — فيُردُّ إلى
+   أوّلِ شريحةٍ مرئيةٍ من «النماذج» وهي «المسح»، فيجد المشرفُ نموذجَ مسحٍ مكان
+   نموذج الموقع الجديد. الزرُّ يُعرَض والصفحةُ تُرى — أو لا يُعرَض. */
 var PAGE_CAP = {
   /* «الملخّص المالي» شاشةُ العميل لا شاشةُ الشركة: المستخلصُ المعتمَدُ وحده
      يراه، وهو مصرَّحٌ له في nav — فلا يُقيَّد بقدرة المال الداخلية. */
