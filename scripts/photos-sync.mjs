@@ -2,9 +2,14 @@
    نقلُ الصور من القاعدة إلى الدرايف — node scripts/photos-sync.mjs
    ───────────────────────────────────────────────────────────────────────────
    الهاتفُ يكتب الصورةَ مضغوطةً في وثيقتها بالقاعدة (بلا إعدادٍ ولا دخولٍ
-   إلى جوجل)، والخادمُ يمرُّ: يرفعها إلى مجلد «photos/<اليوم>» في درايف
-   المشروع باسم النقطة ورقمها، ويكتب في الوثيقة رابطَها ومعرِّفَها، ويمحو
-   الصورةَ منها — فلا تبقى في القاعدة إلا ما لم يُنقَل بعد.
+   إلى جوجل)، والخادمُ يمرُّ: يرفعها إلى درايف المشروع في مجلدٍ باسم نقطتها
+   «photos/<معرِّف النقطة>/» — لكلِّ نقطةٍ مجلدٌ وفيه صورُها كلُّها باسمها
+   ورقمها — ويكتب في الوثيقة رابطَها ومعرِّفَها، ويمحو الصورةَ منها فلا تبقى
+   في القاعدة إلا ما لم يُنقَل بعد.
+     كان المجلدُ باليوم «photos/<اليوم>» فتتفرّق صورُ النقطة الواحدة على
+   أيامٍ ولا يُعرَف ما لها إلا بالبحث. فصار بالنقطة (V16.78)، وما رُفع من
+   قبلُ على الأيام يُنقَل إلى مجلد نقطته دفعةً كلَّ دورة حتى لا يبقى شيء، ثم
+   تُمحى مجلداتُ الأيام الفارغة.
    ═════════════════════════════════════════════════════════════════════════ */
 import admin from 'firebase-admin';
 import { Readable } from 'stream';
@@ -60,10 +65,70 @@ try {
   if (requeued) console.log(`::notice title=photos::أُعيدت ${requeued} صورةً من «خطأ» إلى الطابور — كان سببُها الدرايفَ لا الصورة`);
 } catch (e){ console.log('إعادةُ الطابور: ' + (e && e.message)); }
 
+const photosRoot = await folder('photos', await rootFolder(drive, mode));
+/* مجلدُ النقطة: يُبحَث عنه مرةً في الدورة ثم يُذكَر — لا استعلامَ لكلِّ صورة */
+const SITE_DIR = new Map();
+async function siteFolder(siteId){
+  const key = String(siteId || '').trim() || 'بلا-نقطة';
+  if (!SITE_DIR.has(key)) SITE_DIR.set(key, await folder(key, photosRoot));
+  return SITE_DIR.get(key);
+}
+
+/* ═══ ما رُفع على مجلدات الأيام يُنقَل إلى مجلد نقطته ═══
+   الملفُّ نفسُه يبقى بمعرِّفه ورابطه — يتغيّر أبوه فقط — فلا ينكسر رابطٌ في
+   السجل ولا في التطبيق. يُمشى على سجل «done» صفحةً في كلِّ دورة بمؤشّرٍ
+   محفوظٍ في settings/photosLayout، فلا تُقرأ القاعدةُ كلُّها في كلِّ عشر
+   دقائق؛ وحين تنتهي الصفحاتُ يُختَم الترتيبُ (bySite) فلا يُعاد، وتُمحى
+   مجلداتُ الأيام الفارغة. وما لا يُرى (رُفع بهويةٍ أخرى قبل OAuth) يُعلَّم
+   فلا يُعاد طلبُه إلى الأبد. */
+const LAYOUT = db.collection('settings').doc('photosLayout');
+try {
+  const lay = (await LAYOUT.get()).data() || {};
+  if (!lay.bySite){
+    let q = db.collection('photos').where('status', '==', 'done').orderBy(admin.firestore.FieldPath.documentId()).limit(150);
+    if (lay.cursor) q = q.startAfter(lay.cursor);
+    const page = await q.get();
+    let moved = 0, skipped = 0;
+    for (const d of page.docs){
+      const p = d.data();
+      if (!p.driveId || p.inSite) continue;
+      try {
+        const dest = await siteFolder(p.site || String(d.id).replace(/-\d+$/, ''));
+        const cur = await drive.files.get({ fileId: p.driveId, fields: 'parents', supportsAllDrives: true });
+        const have = cur.data.parents || [], others = have.filter(x => x !== dest);
+        if (others.length || !have.includes(dest))
+          await drive.files.update({ fileId: p.driveId, addParents: dest, removeParents: others.join(','), fields: 'id', supportsAllDrives: true });
+        await d.ref.set({ inSite: true, folderId: dest }, { merge: true });
+        moved++;
+      } catch (e){
+        skipped++;
+        await d.ref.set({ inSite: true, moveWhy: explain(e).slice(0, 120) }, { merge: true }).catch(() => {});
+      }
+    }
+    if (moved || skipped) console.log(`::notice title=photos::رُتِّب ${moved} صورةً في مجلد نقطتها${skipped ? ' · ' + skipped + ' لم تُرَ (هويةٌ أقدم)' : ''}`);
+    if (page.empty){
+      await LAYOUT.set({ bySite: true, at: Date.now(), cursor: admin.firestore.FieldValue.delete() }, { merge: true });
+      /* مجلداتُ الأيام الفارغة تُمحى — الصورُ كلُّها صارت بمجلدات نقاطها */
+      const days = await drive.files.list({ q: `'${photosRoot}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`,
+                                            fields: 'files(id,name)', pageSize: 200, supportsAllDrives: true, includeItemsFromAllDrives: true });
+      let gone = 0;
+      for (const f of (days.data.files || [])){
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(f.name)) continue;
+        const kids = await drive.files.list({ q: `'${f.id}' in parents and trashed=false`, fields: 'files(id)', pageSize: 1, supportsAllDrives: true, includeItemsFromAllDrives: true });
+        if ((kids.data.files || []).length) continue;
+        await drive.files.delete({ fileId: f.id, supportsAllDrives: true }).catch(() => {});
+        gone++;
+      }
+      console.log(`::notice title=photos::اكتمل ترتيبُ الصور بمجلدات النقاط${gone ? ' — ومُحي ' + gone + ' مجلدَ يومٍ فارغًا' : ''}`);
+    } else {
+      await LAYOUT.set({ cursor: page.docs[page.docs.length - 1].id, at: Date.now() }, { merge: true });
+    }
+  }
+} catch (e){ console.log('ترتيبُ القديم تعذّر: ' + (e && e.message)); }
+
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }
 console.log(`صور منتظرة: ${snap.size}`);
-const photosRoot = await folder('photos', await rootFolder(drive, mode));
 let done = 0, failed = 0;
 for (const d of snap.docs){
   const p = d.data(), name = p.name || (d.id + '.jpg');
@@ -72,10 +137,9 @@ for (const d of snap.docs){
     if (!data){ throw new Error('وثيقةٌ بلا صورة'); }
     const b64 = data.replace(/^data:[^;]+;base64,/, '');
     const buf = Buffer.from(b64, 'base64');
-    const day = new Date(p.at || Date.now()).toISOString().slice(0, 10);
-    const dayId = await folder(day, photosRoot);
+    const dirId = await siteFolder(p.site || String(d.id).replace(/-\d+$/, ''));
     const made = await drive.files.create({
-      requestBody: { name, parents: [dayId], description: `${p.site || ''} · ${p.kind || ''} · ${p.by || ''}` },
+      requestBody: { name, parents: [dirId], description: `${p.site || ''} · ${p.kind || ''} · ${p.by || ''}` },
       media: { mimeType: 'image/jpeg', body: Readable.from(buf) },
       fields: 'id,webViewLink', supportsAllDrives: true
     });
@@ -83,7 +147,7 @@ for (const d of snap.docs){
        لا لصاحب الدرايف وحدَه؛ وإن تعذّرت المشاركةُ بقي الملفُ مرفوعًا */
     await drive.permissions.create({ fileId: made.data.id, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true }).catch(() => {});
     await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(),
-                      data: admin.firestore.FieldValue.delete() }, { merge: true });
+                      inSite: true, folderId: dirId, data: admin.firestore.FieldValue.delete() }, { merge: true });
     done++;
     console.log(`  ✓ ${name} (${Math.round(buf.length / 1024)}KB)`);
   } catch (e){
