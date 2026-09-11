@@ -69,6 +69,11 @@ T(!main.querySelector('[data-wtfile]'), 'الاستيرادُ لا يظهر إل
 /* ٣ · اللوحة والحالة */
 T(click('[data-wtopen="2"]'), 'ضغطةُ البطاقة'); await wait(120);
 T(w.WT_OPEN === '2' && !!d.getElementById('wtSheet'), 'تفتح لوحةَ المهمة');
+/* V16.85: اللوحةُ خارج المحتوى — «الثابتُ» داخل أبٍ فيه تحويلٌ يظهر في أوّل الصفحة لا أسفلَ الشاشة */
+const sh0 = d.getElementById('wtSheet');
+T(sh0.parentElement && sh0.parentElement.id === 'wtHost' && sh0.parentElement.parentElement === d.body && !sh0.closest('#content'), 'واللوحةُ تُرسَم في مضيفٍ على الجسد مباشرةً — لا داخل الصفحة ولا قشرتها');
+const css = readFileSync('index.html', 'utf8');
+T(/\.wt-sheet\{position:fixed !important/.test(css), 'وثابتةٌ على الشاشة في كلِّ عرض');
 const chips = [...d.querySelectorAll('#wtSheet [data-wtstat]')].map(e => e.getAttribute('data-wtstat'));
 T(chips.length === 4 && chips.every(x => x.indexOf('2|') === 0), 'الحالةُ أربعُ شرائحَ تُضغَط: ' + chips.map(x => x.split('|')[1]).join(' · '));
 T(click('#wtSheet [data-wtstat="2|جاري العمل"]'), 'ضغطُ «جاري العمل»'); await wait(120);
