@@ -91,6 +91,8 @@ const nEl = d.querySelector('#wtSheet [data-wte2="who"]'); T(!!nEl && nEl.getAtt
 nEl.value = 'خالد بندر';
 click('#wtSheet [data-wtsave2="2"]'); await wait(120);
 T(w.wtRow(2).who === 'خالد بندر', 'حفظُ البيانات من اللوحة');
+w.wtRow(2).code = 'PM-04'; w.wtRow(2).track = 'PM-04'; w.render(1); await wait(100);
+T((d.querySelector('#wtSheet').textContent.match(/PM-04/g) || []).length === 1, 'المسارُ والكودُ المتطابقان يُكتبان مرةً لا مرتين');
 click('[data-wtclose]'); await wait(80);
 T(w.WT_OPEN === '' && !d.getElementById('wtSheet'), 'الإغلاقُ يطوي اللوحة');
 
@@ -131,8 +133,16 @@ const before = w.wtSince().items.length;
 T(before >= 3, 'قبل الاجتماع: «ما تغيّر منذ الاجتماع الماضي» يجمع من السجلات: ' + before);
 T(click('[data-wtmeetstart]'), 'زرُّ «اجتماع الأسبوع» يبدأ'); await wait(150);
 T(w.WT_MEET === true && !!main.querySelector('.wt-meet'), 'الوضعُ يحلُّ محلَّ القائمة');
-T(/#1\b/.test(main.querySelector('.wt-meet').textContent) && /١ \/ ٣|1 \/ 3/.test(main.textContent.replace(/\s+/g, ' ')), 'يبدأ بالمتأخر: المهمةُ ١ من ٣');
+T(/#1\b/.test(main.querySelector('.wt-meet').textContent), 'يبدأ بالمتأخر: المهمةُ #1');
 T(!!main.querySelector('.wt-meet [data-wtstat="1|جاري العمل"]') && !!d.getElementById('wtNote'), 'وفي كلِّ مهمةٍ اللوحةُ نفسُها: شرائحُ الحالة و«ما الجديد؟»');
+/* V16.84: خروجٌ بلا ختم، والعدّادُ «١ من ٣» لا شرطةً تنقلب */
+T(/١ من ٣|1 من 3/.test(main.textContent.replace(/\s+/g, ' ')), 'العدّادُ يُقرأ «١ من ٣» — لا شرطةً تنقلب في الاتجاه');
+T(!!main.querySelector('[data-wtmeetexit]'), 'زرُّ «خروج بلا ختم» موجود');
+const stampBefore = w.STATE.wtask.meetAt || 0;
+click('[data-wtmeetexit]'); await wait(120);
+T(w.WT_MEET === false && (w.STATE.wtask.meetAt || 0) === stampBefore && (w.__pdf || 0) === 0, 'الخروجُ يترك الوضعَ بلا تقريرٍ ولا ختم');
+click('[data-wtmeetstart]'); await wait(150);
+T(w.WT_MEET === true, 'والدخولُ ثانيةً يعمل');
 click('.wt-meet [data-wtstat="1|جاري العمل"]'); await wait(120);
 T(w.wtRow(1).st === 'جاري العمل' && w.WT_MEET === true, 'الحالةُ تُحدَّث على الهواء والوضعُ باقٍ');
 click('[data-wtmeetnext]'); await wait(120);
