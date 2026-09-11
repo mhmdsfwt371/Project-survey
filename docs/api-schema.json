@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.81",
+  "app_version": "V16.82",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1549,6 +1549,7 @@
     "V16.79": "مجلداتُ الصور بأسماء النقاط: photos-sync يقرأ SITES_RAW من index.html بعدِّ الأقواس (لا بنمط \\n};) ويبني SITE_LABEL = «<id> — <اسم بلا مشعر>»، وللمخيم «<id> — شاخص <sign> · مربع <sq>»؛ مجلداتُ photos تُقرأ صفحةً صفحةً مرةً في الدورة (pageSize 1000 + nextPageToken) وتُفهرَس بصدر الاسم، فالمجلدُ القديمُ باسم المعرِّف يُعاد تسميتُه (files.update name، ≤300 في الدورة) لا يُنشَأ غيرُه — المعرِّفُ والرابطُ وfolderId كما هي. جرد audit-photo-folders.",
     "V16.80": "زرُّ «موقع غير مسجّل» يصل: ROLES.supervisor/tech/cins/helper.nav += newsite (كان الزرُّ مشروطًا بmay(edit) والصفحةُ خارج nav، فtabCur يردُّ PTAB[forms] إلى أوّل شريحةٍ مرئيةٍ = svForm). جرد audit-btn-lands: لكلِّ دورٍ يرى الخريطة يُبنى mapUIHtml+popHtml ويُلتقَط data-newsite/data-form/data-insform، ثم يُطلَب الهدفُ بrender الحقيقيِّ ويُقاس tabCur — ويثبت أيضًا ألّا newsite في قائمة دورٍ بلا can.edit.",
     "V16.81": "المهامُّ الأسبوعية بطاقاتٌ ولوحة: wtMay() = rankOf(effRole)≥90 أو viewer (بدل may(settings)) لwtSave/wtAdd/wtSet/wtRemove؛ الاستيرادُ والمسحُ يبقيان لsettings. حقولٌ جديدةٌ على الصف: log[{at,by,st?,note?}] (أحدثُه أوّلًا، ≤20)، doneAt عند «مكتمل»؛ wtStatus(id,st) وwtNote(id,note) يحفظان فورًا ويكتبان upd للتقرير؛ wtGroups (late/week/later/none/done)، wtWhen (كلمات)، wtAv، wtWhoList (datalist wtWhoList)، wtDoneWeek؛ لوحة wtSheet (.pop.wt-sheet + .wt-back) بمعرِّف WT_OPEN؛ data-wtopen/wtclose/wtstat=id|st/wtnoteadd/wtsave2/wttools/wtdone. القاعدة: settings/wtask write لrank≥90 أو viewer (اختبار في rules-test). جرد audit-wtask.",
+    "V16.82": "المهمةُ الأسبوعية تُربَط ببند الخطة: حقل wbs (معرِّف ورقةٍ من wbsRows) في wtAdd/wtSet، اختيارُه من wtWbsSelect في نموذج «مهمة جديدة» (#wtWbs) ولوحة التعديل (data-wte2=wbs)؛ wtForWbs(id) = المفتوحُ المربوطُ بالبند أو فروعه + متأخرُه، wtWbsBadge على اسم البند في صفحة الخطة (data-wtgo → goPage(wtask) + WT_WBS)، مرشِّح WT_WBS في wtFiltered مع شريط data-wtwbs للعودة؛ wtMine() = المفتوحُ الذي who يساوي اسمَ الحساب أو dispName له، يُعرَض في مهامي (الفرع الافتراضي لـmywork) بwtCardOf + wtSheet. wtCardOf دالةٌ عامة.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

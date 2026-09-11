@@ -94,6 +94,36 @@ T(w.wtRow(2).who === 'خالد بندر', 'حفظُ البيانات من الل
 click('[data-wtclose]'); await wait(80);
 T(w.WT_OPEN === '' && !d.getElementById('wtSheet'), 'الإغلاقُ يطوي اللوحة');
 
+/* ٧ · الربطُ بالخطة (V16.82): المهمةُ تحمل بندًا، والبندُ يحمل شارةَ مهامه، و«شغلي» يعرض ما على اسمي */
+w.STATE.wbs = { rows:[
+  { id:'1', n:'الشبكة', s:day(-30), e:day(30) },
+  { id:'1.1', n:'مدُّ الفيبر', s:day(-30), e:day(10), pct:40 },
+  { id:'1.2', n:'تشغيل الراوترات', s:day(-5), e:day(20), pct:0 },
+  { id:'2', n:'الاعتمادات', s:day(-10), e:day(15), pct:0 }
+], keys:[] };
+click('[data-wtopen="1"]'); await wait(120);
+const sel = d.querySelector('#wtSheet select[data-wte2="wbs"]');
+T(!!sel && sel.options.length === 4 && /1\.1 — مدُّ الفيبر/.test(sel.options[1].textContent), 'اختيارُ بند الخطة من أوراقها بمعرِّفها واسمها');
+sel.value = '1.1'; click('#wtSheet [data-wtsave2="1"]'); await wait(120);
+T(w.wtRow(1).wbs === '1.1', 'المهمةُ تحمل بندَها');
+T(/مدُّ الفيبر/.test(d.querySelector('[data-wtopen="1"]').textContent), 'والبطاقةُ تقول اسمَ البند');
+w.WT_OPEN = ''; w.goPage('wbs'); w.WBS_OPEN['1'] = true; w.render(1); await wait(200);
+const badge = main.querySelector('[data-wtgo="1.1"]');
+T(!!badge && /١|1/.test(badge.textContent) && /متأخر/.test(badge.textContent), 'بندُ الخطة يحمل شارةَ مهامه — وتحمرُّ بما تأخّر: ' + (badge ? badge.textContent.trim() : '—'));
+const parentBadge = main.querySelector('[data-wtgo="1"]');
+T(!!parentBadge, 'والأبُ يجمع مهامَّ فروعه');
+badge.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150);
+T(w.CUR === 'wtask' && w.WT_WBS === '1.1' && main.querySelectorAll('.wt-card').length === 1 && !!main.querySelector('[data-wtwbs=""]'),
+  'ضغطُ الشارة يفتح مهامَّ البند وحدَها مع زرِّ العودة إلى الكل');
+click('[data-wtwbs=""]'); await wait(120);
+T(w.WT_WBS === '' && main.querySelectorAll('.wt-card').length === 3, 'والعودةُ تعرض الكلَّ (ثلاثٌ مفتوحةٌ والمكتملُ مطويّ)');
+w.STATE.meta.name = 'أحمد سعيد'; w.goPage('mywork'); w.PTAB.mywork = 'mywork'; w.render(1); await wait(200);
+const mineCards = [...main.querySelectorAll('.wt-card')].map(e => e.getAttribute('data-wtopen'));
+T(mineCards.length === 1 && mineCards[0] === '1', '«مهامي» تعرض مهامَّ الاجتماع التي على اسمي — المفتوحةَ وحدَها: ' + mineCards.join(','));
+click('[data-wtopen="1"]'); await wait(120);
+T(!!d.getElementById('wtSheet'), 'وتُفتَح لوحتُها من هناك أيضًا');
+w.WT_OPEN = ''; w.STATE.meta.name = 'م. فحص'; w.goPage('wtask'); w.render(1); await wait(150);
+
 /* ٦ · المشرفُ يقرأ ولا يجد زرًّا */
 w.ROLE = 'supervisor'; w.render(1); await wait(150);
 T(!main.querySelector('[data-wtnew]') && !main.querySelector('[data-wttools]'), 'المشرفُ: لا «مهمة جديدة» ولا أدوات');
