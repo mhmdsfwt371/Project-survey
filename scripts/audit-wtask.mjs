@@ -124,6 +124,30 @@ click('[data-wtopen="1"]'); await wait(120);
 T(!!d.getElementById('wtSheet'), 'وتُفتَح لوحتُها من هناك أيضًا');
 w.WT_OPEN = ''; w.STATE.meta.name = 'م. فحص'; w.goPage('wtask'); w.render(1); await wait(150);
 
+/* ٨ · وضعُ الاجتماع (V16.83): واحدةً واحدة، المتأخرُ أوّلًا، واللوحةُ نفسُها، والختمُ يُصدِر التقريرَ ويؤرّخ */
+w.ROLE = 'engineer'; w.WT_OPEN = ''; w.goPage('wtask'); w.render(1); await wait(150);
+w.expPdf = () => { w.__pdf = (w.__pdf || 0) + 1; }; w.window.open = () => null;
+const before = w.wtSince().items.length;
+T(before >= 3, 'قبل الاجتماع: «ما تغيّر منذ الاجتماع الماضي» يجمع من السجلات: ' + before);
+T(click('[data-wtmeetstart]'), 'زرُّ «اجتماع الأسبوع» يبدأ'); await wait(150);
+T(w.WT_MEET === true && !!main.querySelector('.wt-meet'), 'الوضعُ يحلُّ محلَّ القائمة');
+T(/#1\b/.test(main.querySelector('.wt-meet').textContent) && /١ \/ ٣|1 \/ 3/.test(main.textContent.replace(/\s+/g, ' ')), 'يبدأ بالمتأخر: المهمةُ ١ من ٣');
+T(!!main.querySelector('.wt-meet [data-wtstat="1|جاري العمل"]') && !!d.getElementById('wtNote'), 'وفي كلِّ مهمةٍ اللوحةُ نفسُها: شرائحُ الحالة و«ما الجديد؟»');
+click('.wt-meet [data-wtstat="1|جاري العمل"]'); await wait(120);
+T(w.wtRow(1).st === 'جاري العمل' && w.WT_MEET === true, 'الحالةُ تُحدَّث على الهواء والوضعُ باقٍ');
+click('[data-wtmeetnext]'); await wait(120);
+T(w.WT_MI === 1 && /#3\b/.test(main.querySelector('.wt-meet').textContent), '«التالي» ينتقل إلى المهمة التالية بالترتيب (٣: مستحقُّ الأسبوع… ثم لاحقًا)');
+T(main.querySelectorAll('[data-wtmeetgo]').length === 3, 'وشريطُ القفز بعدد المفتوح');
+click('[data-wtmeetend]'); await wait(100);
+T(w.WT_MEET === true && w.WT_MEND === 1, 'الضغطةُ الأولى على الإنهاء تطلب تأكيدًا');
+click('[data-wtmeetend]'); await wait(200);
+T(w.WT_MEET === false && (w.__pdf || 0) === 1 && w.STATE.wtask.meetAt > 0 && w.STATE.wtask.meetBy === 'م. فحص', 'الختمُ يُصدِر التقريرَ ثم يؤرّخ الاجتماعَ باسم من ختم');
+T(w.wtSince().items.length === 0, 'وبعد الختم لا شيءَ «منذ الاجتماع الماضي» — حتى يتغيّر شيء');
+w.wtNote(3, 'وصل عرضُ السعر'); await wait(100);
+T(w.wtSince().items.length === 1 && /وصل عرضُ السعر/.test(w.wtSince().items[0].what), 'وأوّلُ تغييرٍ بعده يُحسَب');
+const sheet = w.SHEETS.wtsince(); T(sheet.length === 2 && sheet[1][1] === 'شراء الراوترات' && /وصل عرضُ السعر/.test(sheet[1][3]), 'وقسمُ التقرير «ما تغيّر» يقرؤه من السجل نفسِه');
+T(w.EXP_SECS.some(x => x[0] === 'wtsince') && w.EXP_PAGE.wtsince === 'wtask', 'والقسمُ مسجَّلٌ في التصدير وصفحته');
+
 /* ٦ · المشرفُ يقرأ ولا يجد زرًّا */
 w.ROLE = 'supervisor'; w.render(1); await wait(150);
 T(!main.querySelector('[data-wtnew]') && !main.querySelector('[data-wttools]'), 'المشرفُ: لا «مهمة جديدة» ولا أدوات');

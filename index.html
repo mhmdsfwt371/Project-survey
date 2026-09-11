@@ -574,6 +574,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .wt-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:calc(var(--z-map-ui) + 1)}
 .wt-sheet{z-index:calc(var(--z-map-ui) + 2)}
 .wt-log .wt-le{padding:6px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;line-height:1.5}
+.wt-meet{padding:12px 14px}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
 #m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
 #m3Box[hidden]{display:none}
@@ -790,7 +791,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.82</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.83</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3583,6 +3584,7 @@ en:{
  'مجلد النقطة على الدرايف':'Point folder on Drive',
  'اكتب ما الجديد أوّلًا':'Write what is new first', 'أُضيفت إلى سجل المهمة':'Added to the task log', 'بعد':'in', 'بلا مسؤول':'No owner', 'المهامُّ الأسبوعية للمهندس والوزارة فما فوق':'Weekly tasks are for engineers, the Ministry and above', 'مستحق هذا الأسبوع':'Due this week', 'أُنجز هذا الأسبوع':'Done this week', 'أدوات المكتب':'Office tools', 'المهمةُ سطرٌ واحد: ماذا — من — متى.':'A task is one line: what — who — when.', 'ماذا يُفعَل؟':'What is to be done?', 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».':'No tasks yet — a task is one line: what — who — when. Add the first from "New task".', 'لا مهامَّ تطابق الترشيح':'No tasks match the filter', 'ما الجديد؟':'What is new?', 'سطرٌ واحد يقوله من يفتح المهمة بعدك':'One line for whoever opens this task after you', 'حُدِّثت خلال أسبوع':'Updated within a week', 'مهامُّ الاجتماع — كلُّ مهمةٍ بطاقةٌ تقول ماذا ومن ومتى وأين وقفت؛ اضغطها لتحدّث حالتَها أو تكتب ما الجديد. يعدّلها المهندسُ فما فوق والوزارة.':'Meeting tasks — each task is a card saying what, who, when and where it stands; tap it to update its status or write what is new. Editable by engineers and above, and the Ministry.',
  'مهامّي من الاجتماع':'My meeting tasks', 'مهامُّ الاجتماع لهذا البند':'Meeting tasks for this item', '— بلا بند —':'— no plan item —', 'بند الخطة':'Plan item', 'كل المهام':'All tasks',
+ 'مهمةٌ جديدة':'New task', 'لا مهامَّ مفتوحةً للاجتماع':'No open tasks for the meeting', 'خُتم الاجتماع':'Meeting closed', 'تغييرًا':'changes', 'اجتماع الأسبوع':'Weekly meeting', 'منذ الاجتماع الماضي':'since the last meeting', 'السابق':'Previous', 'التالي':'Next', 'تأكيد الإنهاء — يُصدَر التقريرُ ويُختم':'Confirm closing — the report is issued and the meeting stamped', 'إنهاء الاجتماع':'Close the meeting', 'ما تغيّر منذ الاجتماع الماضي':'What changed since the last meeting', 'خُتم':'closed', 'والباقي في تقرير الاجتماع':'The rest is in the meeting report', 'لا تغييرَ منذ الاجتماع الماضي':'No change since the last meeting',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6246,6 +6248,7 @@ ur:{
  'مجلد النقطة على الدرايف':'ڈرائیو پر پوائنٹ کا فولڈر',
  'اكتب ما الجديد أوّلًا':'پہلے لکھیں کہ نیا کیا ہے', 'أُضيفت إلى سجل المهمة':'ٹاسک لاگ میں شامل ہو گیا', 'بعد':'بعد', 'بلا مسؤول':'کوئی ذمہ دار نہیں', 'المهامُّ الأسبوعية للمهندس والوزارة فما فوق':'ہفتہ وار ٹاسک انجینئر، وزارت اور اوپر کے لیے ہیں', 'مستحق هذا الأسبوع':'اس ہفتے واجب', 'أُنجز هذا الأسبوع':'اس ہفتے مکمل', 'أدوات المكتب':'دفتر کے اوزار', 'المهمةُ سطرٌ واحد: ماذا — من — متى.':'ٹاسک ایک سطر ہے: کیا — کون — کب۔', 'ماذا يُفعَل؟':'کیا کرنا ہے؟', 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».':'ابھی کوئی ٹاسک نہیں — ٹاسک ایک سطر ہے: کیا — کون — کب۔ پہلا "نیا ٹاسک" سے شامل کریں۔', 'لا مهامَّ تطابق الترشيح':'فلٹر سے کوئی ٹاسک نہیں ملا', 'ما الجديد؟':'نیا کیا ہے؟', 'سطرٌ واحد يقوله من يفتح المهمة بعدك':'ایک سطر اس کے لیے جو آپ کے بعد یہ ٹاسک کھولے', 'حُدِّثت خلال أسبوع':'ایک ہفتے میں اپ ڈیٹ', 'مهامُّ الاجتماع — كلُّ مهمةٍ بطاقةٌ تقول ماذا ومن ومتى وأين وقفت؛ اضغطها لتحدّث حالتَها أو تكتب ما الجديد. يعدّلها المهندسُ فما فوق والوزارة.':'میٹنگ ٹاسک — ہر ٹاسک ایک کارڈ ہے جو بتاتا ہے کیا، کون، کب اور کہاں کھڑا ہے؛ حالت بدلنے یا نیا لکھنے کے لیے دبائیں۔ انجینئر اور اوپر، اور وزارت ترمیم کر سکتے ہیں۔',
  'مهامّي من الاجتماع':'میٹنگ سے میرے ٹاسک', 'مهامُّ الاجتماع لهذا البند':'اس آئٹم کے میٹنگ ٹاسک', '— بلا بند —':'— کوئی آئٹم نہیں —', 'بند الخطة':'منصوبے کا آئٹم', 'كل المهام':'تمام ٹاسک',
+ 'مهمةٌ جديدة':'نیا ٹاسک', 'لا مهامَّ مفتوحةً للاجتماع':'میٹنگ کے لیے کوئی کھلا ٹاسک نہیں', 'خُتم الاجتماع':'میٹنگ ختم ہوئی', 'تغييرًا':'تبدیلیاں', 'اجتماع الأسبوع':'ہفتہ وار میٹنگ', 'منذ الاجتماع الماضي':'پچھلی میٹنگ کے بعد', 'السابق':'پچھلا', 'التالي':'اگلا', 'تأكيد الإنهاء — يُصدَر التقريرُ ويُختم':'بند کرنے کی تصدیق — رپورٹ جاری اور میٹنگ مہر بند', 'إنهاء الاجتماع':'میٹنگ ختم کریں', 'ما تغيّر منذ الاجتماع الماضي':'پچھلی میٹنگ کے بعد کیا بدلا', 'خُتم':'ختم ہوئی', 'والباقي في تقرير الاجتماع':'باقی میٹنگ رپورٹ میں', 'لا تغييرَ منذ الاجتماع الماضي':'پچھلی میٹنگ کے بعد کوئی تبدیلی نہیں',
 }
 };
 
@@ -8727,7 +8730,7 @@ var FB = {
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
       }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
       FB.db.collection('settings').doc('wtask').get().then(function(doc){
-        if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.wtask = { rows:k.rows, at:k.at, by:k.by }; }
+        if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; }
       }).catch(function(e){ softErr('سحب المهام الأسبوعية', e, ''); });
       FB.db.collection('settings').doc('wbs').get().then(function(doc){
         if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by }; }
@@ -9035,7 +9038,7 @@ function liveSmall(){
     LIVE_SMALL.push(FB.db.collection('settings').doc('wtask').onSnapshot(function(doc){
       if (!doc || !doc.exists) return;
       var k = doc.data() || {}; if (!Array.isArray(k.rows)) return;
-      STATE.wtask = { rows:k.rows, at:k.at, by:k.by }; CORE.saveSoon();
+      STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; CORE.saveSoon();
       wtRemind();
       if (CUR === 'wtask' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات المهام', e, ''); }));
@@ -14578,6 +14581,94 @@ function wtMine(){
   if (!me) return [];
   return wtRows().filter(function(r){ var w = String(r.who || '').trim(); return r.st !== 'مكتمل' && w && (w === me || w === dn); });
 }
+/* ═══ V16.83 — وضعُ الاجتماع: المهامُّ واحدةً واحدة، والتقريرُ يقول ما تغيّر ═══
+   الاجتماعُ كان يُدار بالتمرير في قائمةٍ طويلة، ومن يعرض يقفز بين المهام
+   ويفوته ما تأخّر. صار «اجتماعُ الأسبوع» يمشي على المفتوح مهمةً مهمة —
+   المتأخرُ أوّلًا — وفي كلِّ مهمةٍ اللوحةُ نفسُها: الحالةُ تُضغَط و«ما الجديد؟»
+   يُكتَب على الهواء، وكلُّ من يفتح الشاشةَ يرى التحديثَ في ثوانٍ. و«إنهاءُ
+   الاجتماع» يُصدِر التقريرَ ثم يختم وقتَه — فالتقريرُ التالي يقول ما تغيّر
+   منذ هذا الختم، من سجل كلِّ مهمة، لا من الذاكرة. */
+var WT_MEET = false, WT_MI = 0, WT_MEND = 0;
+function wtMeetList(){ var G = wtGroups(wtRows()); return G.late.concat(G.week, G.later, G.none); }
+function wtSince(){
+  var since = (STATE.wtask && STATE.wtask.meetAt) || 0, out = [];
+  wtRows().forEach(function(r){
+    (Array.isArray(r.log) ? r.log : []).forEach(function(e){
+      if ((e.at || 0) <= since) return;
+      var what = e.note === 'أُنشئت' ? t('مهمةٌ جديدة') : (e.st ? t('الحالة') + ': ' + t(e.st) : String(e.note || ''));
+      if (what) out.push({ r:r, e:e, what:what });
+    });
+  });
+  out.sort(function(a, b){ return (b.e.at || 0) - (a.e.at || 0); });
+  return { since:since, items:out };
+}
+function wtMeetStart(){
+  if (!wtMay()) return;
+  if (!wtMeetList().length){ toast(t('لا مهامَّ مفتوحةً للاجتماع')); return; }
+  WT_MEET = true; WT_MI = 0; WT_MEND = 0; WT_OPEN = ''; WT_NEW = false; WT_TAB = 'list';
+  logEvent('اجتماعُ الأسبوع — بدأ'); render(1);
+}
+function wtMeetEnd(){
+  if (!WT_MEET) return;
+  var n = wtSince().items.length;
+  try { expPdf(['summary','wtsince','wtask','wbs','chalm'].filter(expAllowed)); } catch (e){ LS_ERR = e; }
+  STATE.wtask = STATE.wtask || { rows:[] };
+  STATE.wtask.meetAt = Date.now(); STATE.wtask.meetBy = STATE.meta.name || '';
+  if (wtSave()){ logEvent('اجتماعُ الأسبوع — خُتم: ' + n + ' تغييرًا'); toast(t('خُتم الاجتماع') + ' \u00b7 ' + nm(n) + ' ' + t('تغييرًا')); }
+  WT_MEET = false; WT_MI = 0; WT_MEND = 0; render(1);
+}
+/* لوحةُ المهمة من الداخل — تُستعمل في اللوحة المنزلقة وفي وضع الاجتماع سواء */
+function wtPanelInner(r, me){
+  var log = Array.isArray(r.log) ? r.log : [];
+  var stRow = '<div class="chips" style="margin:0">' + WT_ST.map(function(x){
+    var on = r.st === x;
+    return me
+      ? '<button type="button" class="chip' + (on ? ' on' : '') + '" data-wtstat="' + esc(r.id) + '|' + esc(x) + '">' + esc(t(x)) + '</button>'
+      : (on ? pill(x, x === 'مكتمل' ? 'ok' : (x === 'جاري العمل' ? 'warn' : '')) : '');
+  }).join('') + '</div>';
+  var info = '<div class="pop-rows">'
+    + '<div><span class="k">' + esc(t('المسؤول')) + '</span><span>' + wtAv(r.who) + ' ' + esc(r.who || t('بلا مسؤول')) + '</span></div>'
+    + '<div><span class="k">' + esc(t('الاستحقاق')) + '</span><span>' + wtWhen(r) + (r.due ? ' <span class="num hint" style="margin:0">' + esc(r.due) + '</span>' : '') + '</span></div>'
+    + (r.track ? '<div><span class="k">' + esc(t('المسار')) + '</span><span>' + esc(r.track) + (r.code ? ' <span class="num hint" style="margin:0">' + esc(r.code) + '</span>' : '') + '</span></div>' : '')
+    + (r.d ? '<div><span class="k">' + esc(t('الوصف')) + '</span><span>' + esc(r.d) + '</span></div>' : '')
+    + (r.wbs ? '<div><span class="k">' + esc(t('بند الخطة')) + '</span><span><span class="num">' + esc(r.wbs) + '</span> ' + esc(wtWbsName(r.wbs)) + '</span></div>' : '')
+    + '</div>';
+  var note = me
+    ? '<div class="field" style="margin-top:10px"><label>' + esc(t('ما الجديد؟')) + '</label>'
+      + '<div style="display:flex;gap:6px"><input id="wtNote" dir="auto" placeholder="' + esc(t('سطرٌ واحد يقوله من يفتح المهمة بعدك')) + '" style="flex:1">'
+      + btn('\u2795 ' + t('أضِف'),'btn-primary btn-sm',' data-wtnoteadd="' + esc(r.id) + '"') + '</div></div>'
+    : '';
+  var hist = log.length
+    ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('السجل')) + '</div><div class="wt-log">' + log.slice(0, 8).map(function(e){
+        return '<div class="wt-le"><span class="hint num" style="margin:0">' + esc(stepAgo(e.at || 0)) + '</span> <b>' + esc(dispName(e.by || '')) + '</b>'
+          + (e.st ? ' ' + pill(e.st, e.st === 'مكتمل' ? 'ok' : (e.st === 'جاري العمل' ? 'warn' : '')) : '')
+          + (e.note ? ' <span>' + esc(e.note) + '</span>' : '') + '</div>';
+      }).join('') + '</div>'
+    : (r.upd ? '<div class="hint" style="margin-top:8px">\u{1F4AC} ' + esc(r.upd) + '</div>' : '');
+  return stRow + info + note + hist;
+}
+function wtMeetHtml(me){
+  var L = wtMeetList();
+  if (!L.length){ WT_MEET = false; return ''; }
+  if (WT_MI >= L.length) WT_MI = L.length - 1;
+  var r = L[WT_MI], late = wtLate(r), col = late ? '#E05252' : (WT_STC[r.st] || '#9FB0AA');
+  var S = wtSince();
+  return card('', '<div class="wt-row" style="justify-content:space-between">'
+      + '<div><b>\u{1F5E3} ' + esc(t('اجتماع الأسبوع')) + '</b> <span class="num hint" style="margin:0">' + nm(WT_MI + 1) + ' / ' + nm(L.length) + '</span>'
+      +   ' <span class="hint" style="margin:0">\u00b7 ' + esc(t('منذ الاجتماع الماضي')) + ' <span class="num">' + nm(S.items.length) + '</span> ' + esc(t('تغييرًا')) + '</span></div>'
+      + '<div class="actions" style="margin:0">'
+      +   btn('\u2039 ' + t('السابق'),'btn-secondary btn-sm',' data-wtmeetprev="1"' + (WT_MI ? '' : ' disabled'))
+      +   btn(t('التالي') + ' \u203A','btn-secondary btn-sm',' data-wtmeetnext="1"' + (WT_MI < L.length - 1 ? '' : ' disabled'))
+      +   btn(WT_MEND ? '\u2705 ' + t('تأكيد الإنهاء — يُصدَر التقريرُ ويُختم') : '\u23F9 ' + t('إنهاء الاجتماع'), WT_MEND ? 'btn-primary btn-sm' : 'btn-quiet btn-sm', ' data-wtmeetend="1"')
+      + '</div></div>')
+    + '<div class="card wt-meet" style="border-inline-start:4px solid ' + col + '">'
+    +   '<div class="wt-row"><span class="num hint" style="margin:0">#' + esc(r.id) + '</span><strong class="wt-n" style="font-size:16px">' + esc(r.n) + '</strong>' + wtWhen(r) + '</div>'
+    +   wtPanelInner(r, me)
+    + '</div>'
+    + '<div class="chips" style="margin-top:8px">' + L.map(function(x, i){
+        return '<button type="button" class="chip' + (i === WT_MI ? ' on' : '') + '" data-wtmeetgo="' + i + '" title="' + esc(x.n) + '" style="' + (wtLate(x) ? 'border-color:#E05252' : '') + '">' + nm(i + 1) + '</button>';
+      }).join('') + '</div>';
+}
 var WT_STC = { 'مكتمل':'#3AD6A0', 'جاري العمل':'#E8C34B', 'قيد الانتظار':'#9FB0AA', 'متوقف':'#E05252' };
 function wtCardOf(r){
   var late = wtLate(r), col = late ? '#E05252' : (WT_STC[r.st] || '#9FB0AA');
@@ -14671,7 +14762,7 @@ function wtSave(){
   if (!wtMay()){ toast(t('المهامُّ الأسبوعية للمهندس والوزارة فما فوق')); return false; }
   STATE.wtask = STATE.wtask || { rows:[] };
   STATE.wtask.at = Date.now(); STATE.wtask.by = STATE.meta.name || '';
-  CORE.set('cfg', 'wtask', { rows:STATE.wtask.rows, at:STATE.wtask.at, by:STATE.wtask.by });
+  CORE.set('cfg', 'wtask', { rows:STATE.wtask.rows, at:STATE.wtask.at, by:STATE.wtask.by, meetAt:STATE.wtask.meetAt || 0, meetBy:STATE.wtask.meetBy || '' });
   CORE.saveSoon(); return true;
 }
 function wtDue(r){
@@ -14792,6 +14883,17 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
           return ks.length ? cardFlush(t('المفتوح على كلِّ جهة'), table(['الجهة','مفتوح','متأخر'],
             ks.map(function(k){ return [esc(k), N(by[k].n), by[k].l ? '<b class="num" style="color:#E05252">' + nm(by[k].l) + '</b>' : N(0)]; }))) : '';
         })()
+      /* ما تغيّر منذ الاجتماع الماضي — من سجل كلِّ مهمة، لا من الذاكرة */
+      + (function(){
+          var S = wtSince(), wt = STATE.wtask || {};
+          return card(t('ما تغيّر منذ الاجتماع الماضي') + ' — ' + nm(S.items.length)
+              + (wt.meetAt ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('خُتم')) + ' ' + esc(stepAgo(wt.meetAt)) + (wt.meetBy ? ' \u00b7 ' + esc(dispName(wt.meetBy)) : '') + '</span>' : ''),
+            S.items.length
+              ? '<div class="wt-log">' + S.items.slice(0, 15).map(function(x){
+                  return '<div class="wt-le"><b>' + esc(x.r.n) + '</b> \u2014 ' + esc(x.what) + ' <span class="hint num" style="margin:0">\u00b7 ' + esc(dispName(x.e.by || '')) + ' \u00b7 ' + esc(stepAgo(x.e.at || 0)) + '</span></div>';
+                }).join('') + (S.items.length > 15 ? '<p class="hint" style="margin:6px 0 0">' + esc(t('والباقي في تقرير الاجتماع')) + '</p>' : '') + '</div>'
+              : '<p class="hint" style="margin:0">' + esc(t('لا تغييرَ منذ الاجتماع الماضي')) + '</p>');
+        })()
       /* عدّادُ الحياة: كم مهمةً مفتوحةً قال أحدٌ فيها شيئًا خلال أسبوع — وكم بلا مسؤولٍ أو تاريخ */
       + (function(){
           var open = R.filter(function(r){ return r.st !== 'مكتمل'; }), live = 0, noWho = 0, noDue = 0;
@@ -14808,6 +14910,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
       + '<button type="button" class="chip' + (WT_TAB === 'list' ? ' on' : '') + '" data-wttab="list">\u{1F4CB} ' + esc(t('المهام')) + ' <span class="num">' + nm(c.all) + '</span></button>'
       + '<button type="button" class="chip' + (WT_TAB === 'dash' ? ' on' : '') + '" data-wttab="dash">\u{1F4CA} ' + esc(t('لوحة المهام')) + '</button></div>';
     if (WT_TAB === 'dash') return tabs + dash;
+    if (WT_MEET && me) return tabs + wtMeetHtml(me);
 
     /* ── الشريط: ثلاثةُ أرقامٍ يقرؤها الجديدُ قبل كلِّ شيء ── */
     var doneWk = R.filter(wtDoneWeek).length;
@@ -14819,6 +14922,7 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
     var acts = (me || may('settings'))
       ? card('', '<div class="actions" style="margin:0">'
           + (me ? btn('\u2795 ' + t('مهمة جديدة'),'btn-primary btn-sm',' data-wtnew="1"') : '')
+          + (me && wtMeetList().length ? btn('\u{1F5E3} ' + t('اجتماع الأسبوع'),'btn-secondary btn-sm',' data-wtmeetstart="1"') : '')
           + (may('settings') ? btn((WT_TOOLS ? '\u25BE ' : '\u2026 ') + t('أدوات المكتب'),'btn-quiet btn-sm',' data-wttools="1"') : '')
           + '</div>'
           + (WT_TOOLS && may('settings')
@@ -14880,32 +14984,6 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
 function wtSheet(me){
   if (!WT_OPEN) return '';
   var r = wtRow(WT_OPEN); if (!r){ WT_OPEN = ''; return ''; }
-  var log = Array.isArray(r.log) ? r.log : [];
-  var stRow = '<div class="chips" style="margin:0">' + WT_ST.map(function(x){
-    var on = r.st === x;
-    return me
-      ? '<button type="button" class="chip' + (on ? ' on' : '') + '" data-wtstat="' + esc(r.id) + '|' + esc(x) + '">' + esc(t(x)) + '</button>'
-      : (on ? pill(x, x === 'مكتمل' ? 'ok' : (x === 'جاري العمل' ? 'warn' : '')) : '');
-  }).join('') + '</div>';
-  var info = '<div class="pop-rows">'
-    + '<div><span class="k">' + esc(t('المسؤول')) + '</span><span>' + wtAv(r.who) + ' ' + esc(r.who || t('بلا مسؤول')) + '</span></div>'
-    + '<div><span class="k">' + esc(t('الاستحقاق')) + '</span><span>' + wtWhen(r) + (r.due ? ' <span class="num hint" style="margin:0">' + esc(r.due) + '</span>' : '') + '</span></div>'
-    + (r.track ? '<div><span class="k">' + esc(t('المسار')) + '</span><span>' + esc(r.track) + (r.code ? ' <span class="num hint" style="margin:0">' + esc(r.code) + '</span>' : '') + '</span></div>' : '')
-    + (r.d ? '<div><span class="k">' + esc(t('الوصف')) + '</span><span>' + esc(r.d) + '</span></div>' : '')
-    + (r.wbs ? '<div><span class="k">' + esc(t('بند الخطة')) + '</span><span><span class="num">' + esc(r.wbs) + '</span> ' + esc(wtWbsName(r.wbs)) + '</span></div>' : '')
-    + '</div>';
-  var note = me
-    ? '<div class="field" style="margin-top:10px"><label>' + esc(t('ما الجديد؟')) + '</label>'
-      + '<div style="display:flex;gap:6px"><input id="wtNote" dir="auto" placeholder="' + esc(t('سطرٌ واحد يقوله من يفتح المهمة بعدك')) + '" style="flex:1">'
-      + btn('\u2795 ' + t('أضِف'),'btn-primary btn-sm',' data-wtnoteadd="' + esc(r.id) + '"') + '</div></div>'
-    : '';
-  var hist = log.length
-    ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('السجل')) + '</div><div class="wt-log">' + log.slice(0, 8).map(function(e){
-        return '<div class="wt-le"><span class="hint num" style="margin:0">' + esc(stepAgo(e.at || 0)) + '</span> <b>' + esc(dispName(e.by || '')) + '</b>'
-          + (e.st ? ' ' + pill(e.st, e.st === 'مكتمل' ? 'ok' : (e.st === 'جاري العمل' ? 'warn' : '')) : '')
-          + (e.note ? ' <span>' + esc(e.note) + '</span>' : '') + '</div>';
-      }).join('') + '</div>'
-    : (r.upd ? '<div class="hint" style="margin-top:8px">\u{1F4AC} ' + esc(r.upd) + '</div>' : '');
   var edit = me
     ? '<details style="margin-top:12px"><summary class="hint" style="cursor:pointer">\u270E ' + esc(t('تعديل البيانات')) + '</summary>'
       + '<div class="grid cols-2" style="margin-top:8px">'
@@ -14922,7 +15000,7 @@ function wtSheet(me){
     + '<div class="pop wt-sheet" id="wtSheet" role="dialog" aria-label="' + esc(t('المهمة')) + '">'
     + '<div class="pop-head"><div style="min-width:0"><div class="pid num hint" style="margin:0">#' + esc(r.id) + '</div><h3 style="margin-top:3px">' + esc(r.n) + '</h3></div>'
     + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-wtclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
-    + '<div class="pop-body">' + stRow + info + note + hist + edit + '</div></div>';
+    + '<div class="pop-body">' + wtPanelInner(r, me) + edit + '</div></div>';
 }
 /* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
    كان العرضُ الثلاثيُّ صفحةً مستقلةً بمرشِّحاتها وألوانها — فتعرض غيرَ ما
@@ -17709,7 +17787,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.82' + '.docx" download>⬇ '
+              +   'V16.83' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19476,6 +19554,11 @@ var SHEETS = {
       out.push([x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
                 ms === 'approved' ? 'اعتمدت الوزارة' : (ms === 'returned' ? 'أعادتها الوزارة' : 'بانتظار الوزارة'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
                 r.mount || '', r.power || '', r.wid_m != null ? r.wid_m : '', r.hgt_m != null ? r.hgt_m : '', (r.chals || []).join(' · ')]); });
+    return out;
+  },
+  wtsince: function(){
+    var out = [['#','المهمة','المسؤول','ما تغيّر','من','متى']], S = wtSince();
+    S.items.forEach(function(x){ out.push([x.r.id, x.r.n, x.r.who || '', x.what, dispName(x.e.by || ''), new Date(x.e.at || 0).toLocaleString('ar-EG')]); });
     return out;
   },
   wtask: function(){
@@ -26773,7 +26856,7 @@ var POP_OPEN = false, POP_JUST = 0;
 
 var EXP_SECS = [
   ['summary','الملخّص التنفيذي — أرقامُ المشروع في ورقة',1],
-  ['over','نظرة عامة',1], ['minappr','اعتماد الوزارة لإعداد التركيب',1], ['wbs','متابعة الخطة التفصيلية',1], ['wtask','متابعة المهام الأسبوعية',1], ['pace','الوتيرة والهدف',1],
+  ['over','نظرة عامة',1], ['minappr','اعتماد الوزارة لإعداد التركيب',1], ['wbs','متابعة الخطة التفصيلية',1], ['wtask','متابعة المهام الأسبوعية',1], ['wtsince','ما تغيّر منذ الاجتماع الماضي',1], ['pace','الوتيرة والهدف',1],
   ['chalm','التحديات — أين وما هي وما المطلوب',1], ['inst','التركيب والجدولة',1],
   ['daily','معدل التركيب اليومي — آخر ١٤ يوم',1], ['reg','حسب المشعر ونوع النقطة',1],
   ['co','حسب شركة الخدمة — الأقل إنجازًا أولًا',1],
@@ -26817,7 +26900,7 @@ var EXP_SECS = [
    كان الحوارُ يعرض الأقسامَ كلَّها لكلِّ أحد — فترى الوزارةُ «الأدوار والصلاحيات»
    و«عهدة السيارات» و«تكلفة الأسطول» وتختارها وتُصدَّر لها. صار كلُّ قسمٍ
    مربوطًا بشاشته: لا يُعرَض ولا يُصدَّر إلا لمن يرى تلك الشاشة. */
-var EXP_PAGE = { summary:'over', minappr:'survey', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
+var EXP_PAGE = { summary:'over', minappr:'survey', wtsince:'wtask', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
                  hb:'sys', vers:'sys', work:'over', items:'items', crews:'org', reps:'exec', appr:'ev', ips:'sys',
                  fleet:'fleet', fleetCost:'fleet', fleetLog:'fleet', ships:'inv', roles:'roles', invb:'inv', invmv:'inv',
                  wos:'inv', buys:'inv', notif:'ev', users:'users', recs:'survey', chal:'survey', stuck:'survey', qa:'survey',
@@ -30030,7 +30113,7 @@ function clickA(e){
   if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return true; }
 
-  if (e.target.closest('[data-wtmeet]')){ toast(t('يُجهَّز تقريرُ الاجتماع…')); expPdf(['summary','wtask','wbs','chalm'].filter(expAllowed)); return true; }
+  if (e.target.closest('[data-wtmeet]')){ toast(t('يُجهَّز تقريرُ الاجتماع…')); expPdf(['summary','wtsince','wtask','wbs','chalm'].filter(expAllowed)); return true; }
   if (e.target.closest('[data-wbsxl]')){ wbsExcel(); return true; }
   /* اعتمادُ الوزارة */
   var mno = e.target.closest('[data-minopen]');
@@ -30090,6 +30173,12 @@ function clickA(e){
     toast(t('حُفظت المهمة')); return true;
   }
   if (e.target.closest('[data-wttools]')){ WT_TOOLS = !WT_TOOLS; render(1); return true; }
+  if (e.target.closest('[data-wtmeetstart]')){ wtMeetStart(); return true; }
+  if (e.target.closest('[data-wtmeetprev]')){ WT_MI = Math.max(0, WT_MI - 1); WT_MEND = 0; render(1); return true; }
+  if (e.target.closest('[data-wtmeetnext]')){ WT_MI = Math.min(wtMeetList().length - 1, WT_MI + 1); WT_MEND = 0; render(1); return true; }
+  var wmg = e.target.closest('[data-wtmeetgo]');
+  if (wmg){ WT_MI = +wmg.getAttribute('data-wtmeetgo') || 0; WT_MEND = 0; render(1); return true; }
+  if (e.target.closest('[data-wtmeetend]')){ if (WT_MEND) wtMeetEnd(); else { WT_MEND = 1; render(1); } return true; }
   var wgo = e.target.closest('[data-wtgo]');
   if (wgo){ WT_WBS = wgo.getAttribute('data-wtgo') || ''; WT_F = ''; WT_Q = ''; WT_TAB = 'list'; WT_OPEN = ''; goPage('wtask'); render(1); return true; }
   var wwb = e.target.closest('[data-wtwbs]');
