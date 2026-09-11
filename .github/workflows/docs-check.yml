@@ -202,6 +202,8 @@ jobs:
         run: node scripts/audit-photo-folders.mjs
       - name: جرد الزرِّ يصل — ما يُعرَض على دورٍ يفتح شاشتَه لا غيرَها
         run: node scripts/audit-btn-lands.mjs
+      - name: جرد المهام الأسبوعية — بطاقاتٌ تُقرأ ولوحةٌ واحدةٌ وسجلٌّ لا يمحو
+        run: node scripts/audit-wtask.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك

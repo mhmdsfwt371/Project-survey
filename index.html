@@ -561,6 +561,19 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   height:calc(100dvh - 62px - env(safe-area-inset-top,0px))}
 }
 #mapBox{position:absolute;inset:0}
+/* ═══ المهامُّ الأسبوعية — بطاقاتٌ ولوحة ═══ */
+.wt-card{display:block;width:100%;text-align:start;cursor:pointer;padding:10px 12px}
+.wt-card.on{outline:1px solid var(--brand)}
+.wt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
+.wt-n{font-size:14px;line-height:1.35;flex:1 1 60%}
+.wt-last{margin:6px 0 0;font-size:12px}
+.wt-av{display:inline-flex;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.wt-group{margin:12px 0 0}
+.wt-gh{margin:0 0 6px;display:flex;align-items:center;gap:6px}
+.wt-grid{margin:0}
+.wt-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:calc(var(--z-map-ui) + 1)}
+.wt-sheet{z-index:calc(var(--z-map-ui) + 2)}
+.wt-log .wt-le{padding:6px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;line-height:1.5}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
 #m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
 #m3Box[hidden]{display:none}
@@ -777,7 +790,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.80</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.81</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3568,6 +3581,7 @@ en:{
  'التوأم الرقمي':'Digital twin', 'كلُّ قارئٍ بطبقاته الثلاث: ما هو فيزيائيًّا، وممَّ يتكوّن، وما يقوله الآن — وسؤالُ «لو تعطّل».':'Every reader in its three layers: what it is physically, what it is made of, and what it says now — plus the “what if it fails” question.', 'نبضةٌ خلال الساعتين وبطاريةٌ سليمة.':'Heartbeat within two hours and a healthy battery.', 'بطارية منخفضة':'Low battery', 'الجهدُ تحت الحدِّ — تُزار قبل أن تصمت.':'Voltage below threshold — visit before it goes silent.', 'صامتة':'Silent', 'لا نبضةَ منذ أكثر من ساعتين — فحصُ الكهرباء أو الشبكة.':'No heartbeat for over two hours — check power or network.', 'بلا تليمتري':'No telemetry', 'مركَّبةٌ ولم يصل منها شيءٌ بعد — أو مصدرُ التليمتري لم يُوصَل.':'Installed but nothing received yet — or the telemetry source is not connected.', 'لم تُركَّب بعد':'Not installed yet', 'التوأمُ يكتمل بالتركيب.':'The twin completes with installation.', 'الطبقة الفيزيائية':'Physical layer', 'التكوين':'Configuration', 'الحالة الحيّة':'Live state', 'المتاح (عرض × ارتفاع)':'Available (width × height)', 'تحديات الموقع':'Site challenges', 'رُكّبت بواسطة':'Installed by', 'القطع والأرقام التسلسلية':'Parts and serials', 'آخر نبضة':'Last heartbeat', 'جهد البطارية':'Battery voltage', 'شحن اللوح':'Solar charge', 'القراءات / ساعة':'Reads / hour', 'قوة الإشارة':'Signal strength', 'التليمتري':'Telemetry', 'لم يصل من هذا الجهاز شيءٌ بعد':'Nothing received from this device yet', 'لو تعطّل هذا القارئ':'If this reader fails', 'يغطّي مكانَه':'Its place is covered by', 'قارئٌ متصلٌ في نطاق ٦٠ م':'online readers within 60 m', 'لا قارئَ متصلًا في نطاق ٦٠ م — تعطّلُه فجوةُ تغطية':'No online reader within 60 m — its failure is a coverage gap', 'أسنِد صيانة':'Assign maintenance', 'التوأم':'Twin', 'مركَّبة':'Installed', 'القارئات المركَّبة':'Installed readers', 'إكسل — التوأم':'Excel — twin', 'ابحث بالنقطة أو الشركة':'Search by point or company', 'آخر لقطة تليمتري':'Last telemetry snapshot', 'لم يُوصَل مصدرُ التليمتري بعد — الطبقتان الفيزيائيةُ والتكوينيةُ جاهزتان، والحالةُ الحيّةُ تظهر فورَ وصول أول لقطة.':'Telemetry source not connected yet — the physical and configuration layers are ready; the live state appears with the first snapshot.', 'لا قارئاتٍ في هذه الخانة.':'No readers in this bucket.', 'لا قارئاتٍ مركَّبةً بعد — التوأمُ يبدأ مع أول تركيب.':'No readers installed yet — the twin starts with the first installation.', 'مصدرُ التليمتري — عقدُ الربط':'Telemetry source — integration contract', 'يُضبَط سرٌّ باسم TELEMETRY_URL يعيد JSON بهذا الشكل — يُقرأ كلَّ عشر دقائق ويُكتَب لقطةً واحدة:':'Set a secret named TELEMETRY_URL returning JSON of this shape — read every ten minutes and written as one snapshot:', 'ts زمنُ آخر نبضة (مللي ثانية) · vb جهدُ البطارية · sl شحنُ اللوح ٪ · rd القراءاتُ في الساعة · rs قوةُ الإشارة dBm. كلُّ حقلٍ اختياريٌّ سوى site وts.':'ts last heartbeat (ms) · vb battery voltage · sl solar % · rd reads per hour · rs signal dBm. Everything is optional except site and ts.', 'التوأم الرقمي — صحة القارئات':'Digital twin — reader health',
  '٣د':'3D', '٢د':'2D', 'الخريطة بالتضاريس والأعمدة':'Map with terrain and columns', 'العودة إلى الخريطة المسطّحة':'Back to the flat map',
  'مجلد النقطة على الدرايف':'Point folder on Drive',
+ 'اكتب ما الجديد أوّلًا':'Write what is new first', 'أُضيفت إلى سجل المهمة':'Added to the task log', 'بعد':'in', 'بلا مسؤول':'No owner', 'المهامُّ الأسبوعية للمهندس والوزارة فما فوق':'Weekly tasks are for engineers, the Ministry and above', 'مستحق هذا الأسبوع':'Due this week', 'أُنجز هذا الأسبوع':'Done this week', 'أدوات المكتب':'Office tools', 'المهمةُ سطرٌ واحد: ماذا — من — متى.':'A task is one line: what — who — when.', 'ماذا يُفعَل؟':'What is to be done?', 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».':'No tasks yet — a task is one line: what — who — when. Add the first from "New task".', 'لا مهامَّ تطابق الترشيح':'No tasks match the filter', 'ما الجديد؟':'What is new?', 'سطرٌ واحد يقوله من يفتح المهمة بعدك':'One line for whoever opens this task after you', 'حُدِّثت خلال أسبوع':'Updated within a week', 'مهامُّ الاجتماع — كلُّ مهمةٍ بطاقةٌ تقول ماذا ومن ومتى وأين وقفت؛ اضغطها لتحدّث حالتَها أو تكتب ما الجديد. يعدّلها المهندسُ فما فوق والوزارة.':'Meeting tasks — each task is a card saying what, who, when and where it stands; tap it to update its status or write what is new. Editable by engineers and above, and the Ministry.',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6229,6 +6243,7 @@ ur:{
  'التوأم الرقمي':'ڈیجیٹل ٹوئن', 'كلُّ قارئٍ بطبقاته الثلاث: ما هو فيزيائيًّا، وممَّ يتكوّن، وما يقوله الآن — وسؤالُ «لو تعطّل».':'ہر ریڈر تین تہوں میں: طبعی، ترکیب، اور موجودہ حالت۔', 'نبضةٌ خلال الساعتين وبطاريةٌ سليمة.':'دو گھنٹے میں دھڑکن اور بیٹری ٹھیک۔', 'بطارية منخفضة':'کم بیٹری', 'الجهدُ تحت الحدِّ — تُزار قبل أن تصمت.':'وولٹیج کم — خاموش ہونے سے پہلے دورہ۔', 'صامتة':'خاموش', 'لا نبضةَ منذ أكثر من ساعتين — فحصُ الكهرباء أو الشبكة.':'دو گھنٹے سے دھڑکن نہیں — بجلی یا نیٹ ورک جانچیں۔', 'بلا تليمتري':'ٹیلی میٹری نہیں', 'مركَّبةٌ ولم يصل منها شيءٌ بعد — أو مصدرُ التليمتري لم يُوصَل.':'نصب مگر ابھی کچھ موصول نہیں۔', 'لم تُركَّب بعد':'ابھی نصب نہیں', 'التوأمُ يكتمل بالتركيب.':'ٹوئن تنصیب سے مکمل ہوتا ہے۔', 'الطبقة الفيزيائية':'طبعی تہہ', 'التكوين':'ترکیب', 'الحالة الحيّة':'لائیو حالت', 'المتاح (عرض × ارتفاع)':'دستیاب (چوڑائی × اونچائی)', 'تحديات الموقع':'مقام کے چیلنجز', 'رُكّبت بواسطة':'نصب کنندہ', 'القطع والأرقام التسلسلية':'پرزے اور سیریل', 'آخر نبضة':'آخری دھڑکن', 'جهد البطارية':'بیٹری وولٹیج', 'شحن اللوح':'سولر چارج', 'القراءات / ساعة':'ریڈز فی گھنٹہ', 'قوة الإشارة':'سگنل کی طاقت', 'التليمتري':'ٹیلی میٹری', 'لم يصل من هذا الجهاز شيءٌ بعد':'اس آلے سے ابھی کچھ نہیں', 'لو تعطّل هذا القارئ':'اگر یہ ریڈر ناکام ہو', 'يغطّي مكانَه':'اس کی جگہ پوری کرے گا', 'قارئٌ متصلٌ في نطاق ٦٠ م':'۶۰ میٹر میں آن لائن ریڈر', 'لا قارئَ متصلًا في نطاق ٦٠ م — تعطّلُه فجوةُ تغطية':'۶۰ میٹر میں کوئی آن لائن ریڈر نہیں — خلا', 'أسنِد صيانة':'مرمت تفویض کریں', 'التوأم':'ٹوئن', 'مركَّبة':'نصب شدہ', 'القارئات المركَّبة':'نصب شدہ ریڈرز', 'إكسل — التوأم':'ایکسل — ٹوئن', 'ابحث بالنقطة أو الشركة':'نقطہ یا کمپنی سے تلاش', 'آخر لقطة تليمتري':'آخری ٹیلی میٹری سنیپ شاٹ', 'لم يُوصَل مصدرُ التليمتري بعد — الطبقتان الفيزيائيةُ والتكوينيةُ جاهزتان، والحالةُ الحيّةُ تظهر فورَ وصول أول لقطة.':'ٹیلی میٹری ماخذ ابھی منسلک نہیں۔', 'لا قارئاتٍ في هذه الخانة.':'اس خانے میں ریڈر نہیں۔', 'لا قارئاتٍ مركَّبةً بعد — التوأمُ يبدأ مع أول تركيب.':'ابھی ریڈر نصب نہیں۔', 'مصدرُ التليمتري — عقدُ الربط':'ٹیلی میٹری ماخذ — معاہدہ', 'يُضبَط سرٌّ باسم TELEMETRY_URL يعيد JSON بهذا الشكل — يُقرأ كلَّ عشر دقائق ويُكتَب لقطةً واحدة:':'TELEMETRY_URL نامی سیکرٹ سیٹ کریں۔', 'ts زمنُ آخر نبضة (مللي ثانية) · vb جهدُ البطارية · sl شحنُ اللوح ٪ · rd القراءاتُ في الساعة · rs قوةُ الإشارة dBm. كلُّ حقلٍ اختياريٌّ سوى site وts.':'ts آخری دھڑکن · vb بیٹری · sl سولر · rd ریڈز · rs سگنل۔', 'التوأم الرقمي — صحة القارئات':'ڈیجیٹل ٹوئن — ریڈر کی صحت',
  '٣د':'3D', '٢د':'2D', 'الخريطة بالتضاريس والأعمدة':'نقشہ ارتفاعات اور ستونوں کے ساتھ', 'العودة إلى الخريطة المسطّحة':'ہموار نقشے پر واپس',
  'مجلد النقطة على الدرايف':'ڈرائیو پر پوائنٹ کا فولڈر',
+ 'اكتب ما الجديد أوّلًا':'پہلے لکھیں کہ نیا کیا ہے', 'أُضيفت إلى سجل المهمة':'ٹاسک لاگ میں شامل ہو گیا', 'بعد':'بعد', 'بلا مسؤول':'کوئی ذمہ دار نہیں', 'المهامُّ الأسبوعية للمهندس والوزارة فما فوق':'ہفتہ وار ٹاسک انجینئر، وزارت اور اوپر کے لیے ہیں', 'مستحق هذا الأسبوع':'اس ہفتے واجب', 'أُنجز هذا الأسبوع':'اس ہفتے مکمل', 'أدوات المكتب':'دفتر کے اوزار', 'المهمةُ سطرٌ واحد: ماذا — من — متى.':'ٹاسک ایک سطر ہے: کیا — کون — کب۔', 'ماذا يُفعَل؟':'کیا کرنا ہے؟', 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».':'ابھی کوئی ٹاسک نہیں — ٹاسک ایک سطر ہے: کیا — کون — کب۔ پہلا "نیا ٹاسک" سے شامل کریں۔', 'لا مهامَّ تطابق الترشيح':'فلٹر سے کوئی ٹاسک نہیں ملا', 'ما الجديد؟':'نیا کیا ہے؟', 'سطرٌ واحد يقوله من يفتح المهمة بعدك':'ایک سطر اس کے لیے جو آپ کے بعد یہ ٹاسک کھولے', 'حُدِّثت خلال أسبوع':'ایک ہفتے میں اپ ڈیٹ', 'مهامُّ الاجتماع — كلُّ مهمةٍ بطاقةٌ تقول ماذا ومن ومتى وأين وقفت؛ اضغطها لتحدّث حالتَها أو تكتب ما الجديد. يعدّلها المهندسُ فما فوق والوزارة.':'میٹنگ ٹاسک — ہر ٹاسک ایک کارڈ ہے جو بتاتا ہے کیا، کون، کب اور کہاں کھڑا ہے؛ حالت بدلنے یا نیا لکھنے کے لیے دبائیں۔ انجینئر اور اوپر، اور وزارت ترمیم کر سکتے ہیں۔',
 }
 };
 
@@ -14519,9 +14534,84 @@ PAGE.wbs = { m:'المتابعة', t:'متابعة الخطة التفصيلية
    وتُنهى، ولوحةٌ تحسب ما كانت الدوالُّ تحسبه من تاريخ اليوم لا من خليةٍ. */
 var WT_F = '', WT_Q = '', WT_EDIT = '', WT_NEW = false, WT_T = 0, WT_RESET = 0;
 var WT_ST = ['مكتمل','جاري العمل','قيد الانتظار','متوقف'];
+/* ═══ V16.81 — المهامُّ بطاقاتٌ تُقرأ كجملة، ولوحةٌ واحدةٌ للتعديل ═══
+   كانت جدولًا من عشرة أعمدة يفتح عشرَ خاناتٍ في السطر عند التعديل، ويعدّله
+   مديرُ المشروع وحدَه. صارت البطاقةُ تقول «ماذا — من — متى — أين وقفت»
+   بلا ضغطة، وتُضغَط فتفتح لوحةً واحدة: الحالةُ شرائحُ تُضغَط، و«ما الجديد؟»
+   يُضاف إلى سجلٍّ باسم كاتبه ووقته لا يمحو ما قبله. ومن يعدّل: المهندسُ فما
+   فوق، والوزارةُ — لأن الاجتماعَ معها والمهامَّ مهامُّها أيضًا؛ والقاعدةُ
+   تفتح لها وثيقةَ المهام وحدَها. وأدواتُ المكتب (استيرادٌ ومسحٌ) تبقى لمدير
+   المشروع، فلا يمسح الجدولَ إلا من يملكه. */
+var WT_OPEN = '', WT_TOOLS = false, WT_DONE_OPEN = false;
+function wtMay(){ var r = effRole(ROLE); return rankOf(r) >= 90 || r === 'viewer'; }
 function wtRows(){ return (STATE.wtask && Array.isArray(STATE.wtask.rows)) ? STATE.wtask.rows : []; }
+function wtRow(id){ return wtRows().filter(function(x){ return String(x.id) === String(id); })[0] || null; }
+/* السجلُّ: أحدثُه أوّلًا، عشرون سطرًا للمهمة تكفي اجتماعاتِ موسم */
+function wtLogPush(r, e){
+  e.at = Date.now(); e.by = STATE.meta.name || '';
+  r.log = [e].concat(Array.isArray(r.log) ? r.log : []).slice(0, 20);
+}
+function wtStatus(id, st){
+  var r = wtRow(id); if (!r || WT_ST.indexOf(st) < 0 || r.st === st) return false;
+  wtLogPush(r, { st:st }); r.st = st;
+  if (st === 'مكتمل') r.doneAt = Date.now();
+  if (wtSave()){ logEvent('مهمةٌ أسبوعية — ' + id + ' \u00b7 ' + st); toast(t(st)); render(1); return true; }
+  return false;
+}
+function wtNote(id, note){
+  var r = wtRow(id); note = String(note || '').trim();
+  if (!r) return false;
+  if (!note){ toast(t('اكتب ما الجديد أوّلًا')); return false; }
+  wtLogPush(r, { note:note }); r.upd = note;
+  if (wtSave()){ logEvent('مهمةٌ أسبوعية — ' + id + ' \u00b7 ملاحظة'); toast(t('أُضيفت إلى سجل المهمة')); render(1); return true; }
+  return false;
+}
+/* «أُنجز هذا الأسبوع» — من وقت الإنجاز لا من وجود الحالة */
+function wtDoneWeek(r){
+  if (r.st !== 'مكتمل') return false;
+  var at = r.doneAt || 0;
+  if (!at && Array.isArray(r.log)) r.log.forEach(function(e){ if (!at && e.st === 'مكتمل') at = e.at; });
+  return !!at && (Date.now() - at) < 7 * 86400000;
+}
+/* الاستحقاقُ بكلماتٍ يقرؤها الجديد: «بعد ٣ أيام» لا «2026-09-14» */
+function wtWhen(r){
+  var d = wtDue(r);
+  if (r.st === 'مكتمل') return pill('مكتمل', 'ok');
+  if (!r.due) return pill('بلا تاريخ', 'off');
+  if (d < 0) return pill(t('تأخّر') + ' ' + nm(-d) + ' ' + t('يوم'), 'bad');
+  if (d === 0) return pill('اليوم', 'warn');
+  if (d === 1) return pill('غدًا', 'warn');
+  return pill(t('بعد') + ' ' + nm(d) + ' ' + t('يوم'), d <= 7 ? 'warn' : 'ok');
+}
+/* حرفان من اسم المسؤول في دائرة — يُعرَف صاحبُ المهمة بنظرة */
+function wtAv(name){
+  var w = String(name || '').trim().split(/\s+/).filter(Boolean);
+  var ini = w.length ? w.slice(0, 2).map(function(x){ return x.charAt(0); }).join('') : '?';
+  return '<span class="wt-av" title="' + esc(name || t('بلا مسؤول')) + '">' + esc(ini) + '</span>';
+}
+/* المجموعاتُ بترتيب القراءة: ما تأخّر أوّلًا، ثم الأسبوع، ثم الأبعد */
+function wtGroups(L){
+  var G = { late:[], week:[], later:[], none:[], done:[] };
+  L.forEach(function(r){
+    var d = wtDue(r);
+    if (r.st === 'مكتمل') G.done.push(r);
+    else if (!r.due) G.none.push(r);
+    else if (d < 0) G.late.push(r);
+    else if (d <= 7) G.week.push(r);
+    else G.later.push(r);
+  });
+  G.done.sort(function(a, b){ return (b.doneAt || 0) - (a.doneAt || 0); });
+  return G;
+}
+/* أسماءُ المسؤولين للاقتراح: ما سُمّي قبلُ في المهام، ومن يُرى من الحسابات */
+function wtWhoList(){
+  var seen = {}, out = [];
+  wtRows().forEach(function(r){ var w = String(r.who || '').trim(); if (w && !seen[w]){ seen[w] = 1; out.push(w); } });
+  try { (typeof usersList === 'function' ? usersList() : []).forEach(function(u){ var w = dispName(u.name || ''); if (w && !seen[w]){ seen[w] = 1; out.push(w); } }); } catch (e){ LS_ERR = e; }
+  return out;
+}
 function wtSave(){
-  if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return false; }
+  if (!wtMay()){ toast(t('المهامُّ الأسبوعية للمهندس والوزارة فما فوق')); return false; }
   STATE.wtask = STATE.wtask || { rows:[] };
   STATE.wtask.at = Date.now(); STATE.wtask.by = STATE.meta.name || '';
   CORE.set('cfg', 'wtask', { rows:STATE.wtask.rows, at:STATE.wtask.at, by:STATE.wtask.by });
@@ -14533,13 +14623,14 @@ function wtDue(r){
 }
 function wtLate(r){ var d = wtDue(r); return d != null && d < 0; }
 function wtAdd(o){
-  if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return false; }
+  if (!wtMay()){ toast(t('المهامُّ الأسبوعية للمهندس والوزارة فما فوق')); return false; }
   if (!o.n){ toast(t('اسمُ المهمة مطلوب')); return false; }
   STATE.wtask = STATE.wtask || { rows:[] };
   var mx = wtRows().reduce(function(a, x){ return Math.max(a, +x.id || 0); }, 0);
   STATE.wtask.rows.push({ id:mx + 1, n:o.n, track:o.track || '', code:o.code || '', d:o.d || '',
                           who:o.who || '', st:o.st || 'قيد الانتظار', seen:o.seen || dayKey(Date.now()),
-                          due:o.due || '', src:o.src || '', upd:o.upd || '' });
+                          due:o.due || '', src:o.src || '', upd:o.upd || '',
+                          log:[{ at:Date.now(), by:STATE.meta.name || '', note:'أُنشئت' }] });
   if (wtSave()){ logEvent('مهمةٌ أسبوعية — إضافة: ' + o.n); toast(t('أُضيفت المهمة')); WT_NEW = false; render(1); }
   return true;
 }
@@ -14549,9 +14640,9 @@ function wtSet(id, patch){
   if (wtSave()){ logEvent('مهمةٌ أسبوعية — ' + id + ' \u00b7 ' + Object.keys(patch).join(',')); WT_EDIT = ''; render(1); }
 }
 function wtRemove(id){
-  if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return; }
+  if (!wtMay()){ toast(t('المهامُّ الأسبوعية للمهندس والوزارة فما فوق')); return; }
   STATE.wtask.rows = wtRows().filter(function(x){ return String(x.id) !== String(id); });
-  if (wtSave()){ logEvent('حذفُ مهمةٍ أسبوعية — ' + id); toast(t('حُذفت المهمة')); render(1); }
+  if (wtSave()){ logEvent('حذفُ مهمةٍ أسبوعية — ' + id); toast(t('حُذفت المهمة')); WT_OPEN = ''; render(1); }
 }
 function wtClear(){
   if (!may('settings')){ toast(t('المهامُّ الأسبوعية للمهندس فما فوق')); return; }
@@ -14621,17 +14712,9 @@ function wtStats(){
   return c;
 }
 var WT_TAB = 'list';
-PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوعية', l:'مهامُّ الاجتماع الدوريِّ — من عليه ماذا، ومتى تستحقّ، وأين وقفت.',
+PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوعية', l:'مهامُّ الاجتماع — كلُّ مهمةٍ بطاقةٌ تقول ماذا ومن ومتى وأين وقفت؛ اضغطها لتحدّث حالتَها أو تكتب ما الجديد. يعدّلها المهندسُ فما فوق والوزارة.',
   body:function(){
-    var c = wtStats(), R = wtRows();
-    var head = may('settings')
-      ? card('', '<div class="actions" style="margin:0">'
-          + btn('\u2795 ' + t('مهمة جديدة'),'btn-primary btn-sm',' data-wtnew="1"')
-          + btn('\u{1F4C4} ' + t('تقرير الاجتماع'),'btn-secondary btn-sm',' data-wtmeet="1" title="' + esc(t('PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات')) + '"')
-          + '<label class="btn btn-secondary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('استيراد من إكسل'))
-          + '<input type="file" accept=".xlsx,.xls" data-wtfile="1" style="display:none"></label>'
-          + (R.length ? btn('\u{1F5D1} ' + t(WT_RESET ? 'تأكيد المسح' : 'امسح الكل'), WT_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wtreset="1"') : '')
-          + '</div>') : '';
+    var c = wtStats(), R = wtRows(), me = wtMay();
     /* ── اللوحة: ما كانت الدوالُّ تحسبه — من تاريخ اليوم ── */
     var dash = stats([['إجمالي المهام', N(c.all)], ['مكتملة', N(c.done), 'ok'],
                       ['قيد التنفيذ والانتظار', N(c.run + c.wait), 'wrn'], ['متأخرة', N(c.late), c.late ? 'bad' : 'ok']])
@@ -14650,70 +14733,147 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
           var ks = Object.keys(by).sort(function(a, b){ return by[b].n - by[a].n; });
           return ks.length ? cardFlush(t('المفتوح على كلِّ جهة'), table(['الجهة','مفتوح','متأخر'],
             ks.map(function(k){ return [esc(k), N(by[k].n), by[k].l ? '<b class="num" style="color:#E05252">' + nm(by[k].l) + '</b>' : N(0)]; }))) : '';
+        })()
+      /* عدّادُ الحياة: كم مهمةً مفتوحةً قال أحدٌ فيها شيئًا خلال أسبوع — وكم بلا مسؤولٍ أو تاريخ */
+      + (function(){
+          var open = R.filter(function(r){ return r.st !== 'مكتمل'; }), live = 0, noWho = 0, noDue = 0;
+          open.forEach(function(r){
+            var at = (Array.isArray(r.log) && r.log[0] && r.log[0].at) || 0;
+            if (at && Date.now() - at < 7 * 86400000) live++;
+            if (!String(r.who || '').trim()) noWho++;
+            if (!r.due) noDue++;
+          });
+          return open.length ? stats([['حُدِّثت خلال أسبوع', '<span class="num">' + nm(live) + ' / ' + nm(open.length) + '</span>', live === open.length ? 'ok' : 'wrn'],
+                                       ['بلا مسؤول', N(noWho), noWho ? 'bad' : 'ok'], ['بلا تاريخ', N(noDue), noDue ? 'wrn' : 'ok']]) : '';
         })();
     var tabs = '<div class="chips" style="margin-bottom:8px">'
       + '<button type="button" class="chip' + (WT_TAB === 'list' ? ' on' : '') + '" data-wttab="list">\u{1F4CB} ' + esc(t('المهام')) + ' <span class="num">' + nm(c.all) + '</span></button>'
       + '<button type="button" class="chip' + (WT_TAB === 'dash' ? ' on' : '') + '" data-wttab="dash">\u{1F4CA} ' + esc(t('لوحة المهام')) + '</button></div>';
-    head = tabs + head;
-    if (WT_TAB === 'dash') return head + dash;
-    /* ── المهام ── */
+    if (WT_TAB === 'dash') return tabs + dash;
+
+    /* ── الشريط: ثلاثةُ أرقامٍ يقرؤها الجديدُ قبل كلِّ شيء ── */
+    var doneWk = R.filter(wtDoneWeek).length;
+    var strip = stats([['متأخر', N(c.late), c.late ? 'bad' : 'ok'],
+                       ['مستحق هذا الأسبوع', N(c.d0 + c.d1 + c.week), (c.d0 + c.d1 + c.week) ? 'wrn' : ''],
+                       ['أُنجز هذا الأسبوع', N(doneWk), 'ok']]);
+
+    /* ── الأفعال: «مهمة جديدة» لمن يعدّل، وأدواتُ المكتب مطويّةٌ لمن يملكها ── */
+    var acts = (me || may('settings'))
+      ? card('', '<div class="actions" style="margin:0">'
+          + (me ? btn('\u2795 ' + t('مهمة جديدة'),'btn-primary btn-sm',' data-wtnew="1"') : '')
+          + (may('settings') ? btn((WT_TOOLS ? '\u25BE ' : '\u2026 ') + t('أدوات المكتب'),'btn-quiet btn-sm',' data-wttools="1"') : '')
+          + '</div>'
+          + (WT_TOOLS && may('settings')
+              ? '<div class="actions" style="margin:8px 0 0">'
+                + btn('\u{1F4C4} ' + t('تقرير الاجتماع'),'btn-secondary btn-sm',' data-wtmeet="1" title="' + esc(t('PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات')) + '"')
+                + '<label class="btn btn-secondary btn-sm" style="cursor:pointer">\u2B06 ' + esc(t('استيراد من إكسل'))
+                + '<input type="file" accept=".xlsx,.xls" data-wtfile="1" style="display:none"></label>'
+                + btn('\u2B07 ' + t('إكسل — المهام'),'btn-secondary btn-sm',' data-xls="wtask"')
+                + (R.length ? btn('\u{1F5D1} ' + t(WT_RESET ? 'تأكيد المسح' : 'امسح الكل'), WT_RESET ? 'btn-danger btn-sm' : 'btn-quiet btn-sm', ' data-wtreset="1"') : '')
+                + '</div>' : ''))
+      : '';
+
+    var whoList = '<datalist id="wtWhoList">' + wtWhoList().map(function(w){ return '<option value="' + esc(w) + '">'; }).join('') + '</datalist>';
+    var newForm = (WT_NEW && me)
+      ? card(t('مهمة جديدة'),
+          '<p class="hint" style="margin:0 0 8px">' + esc(t('المهمةُ سطرٌ واحد: ماذا — من — متى.')) + '</p>'
+          + '<div class="grid cols-2">'
+          + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('المهمة')) + '</label><input id="wtN" dir="auto" placeholder="' + esc(t('ماذا يُفعَل؟')) + '"></div>'
+          + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="wtWho" dir="auto" list="wtWhoList"></div>'
+          + '<div class="field"><label>' + esc(t('تاريخ الاستحقاق')) + '</label><input id="wtDue" type="date"></div>'
+          + '<div class="field"><label>' + esc(t('المسار')) + '</label><input id="wtTr" dir="auto"></div>'
+          + '<div class="field"><label>' + esc(t('الوصف')) + '</label><input id="wtD" dir="auto"></div>'
+          + '</div><div class="actions">' + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-wtnsave="1"') + btn(t('إلغاء'),'btn-quiet btn-sm',' data-wtncancel="1"') + '</div>')
+      : '';
+
     var chips = [['','الكل',c.all],['late','متأخر',c.late],['due','مستحق قريبًا',c.d0 + c.d1 + c.week],
                  ['run','جاري العمل',c.run],['wait','قيد الانتظار',c.wait],['done','مكتمل',c.done]];
-    var L = wtFiltered().sort(function(a, b){
-      var la = wtLate(a) ? 0 : 1, lb = wtLate(b) ? 0 : 1;
-      if (la !== lb) return la - lb;
-      return String(a.due || '9999').localeCompare(String(b.due || '9999'));
-    });
-    var stSel = function(r){
-      return '<select data-wtst="' + esc(r.id) + '" style="min-width:118px">'
-        + WT_ST.map(function(x){ return '<option value="' + esc(x) + '"' + (r.st === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('') + '</select>';
-    };
-    var rows = L.map(function(r){
-      var d = wtDue(r), late = wtLate(r);
-      if (WT_EDIT === String(r.id) && may('settings')){
-        return ['<span class="num hint">' + esc(r.id) + '</span>',
-                '<input value="' + esc(r.n) + '" data-wte="n" dir="auto" style="min-width:190px">',
-                '<input value="' + esc(r.track || '') + '" data-wte="track" dir="auto" style="width:150px">',
-                '<input value="' + esc(r.who || '') + '" data-wte="who" dir="auto" style="width:130px">',
-                stSel(r), '<input type="date" value="' + esc(r.due || '') + '" data-wte="due" style="width:140px">',
-                '<input value="' + esc(r.upd || '') + '" data-wte="upd" dir="auto" style="min-width:180px">',
-                btn('\u{1F4BE}','btn-primary btn-sm',' data-wtsave="' + esc(r.id) + '" aria-label="' + esc(t('حفظ')) + '"')
-                + btn('\u2715','btn-quiet btn-sm',' data-wtcancel="1" aria-label="' + esc(t('إلغاء')) + '"')];
-      }
-      return ['<span class="num hint">' + esc(r.id) + '</span>',
-              '<strong>' + esc(r.n) + '</strong>' + (r.d ? '<br><span class="hint" style="margin:0">' + esc(r.d.slice(0, 70)) + '</span>' : ''),
-              esc(r.track || '—') + (r.code ? ' <span class="num hint">' + esc(r.code) + '</span>' : ''),
-              esc(r.who || '—'),
-              may('settings') ? stSel(r) : pill(r.st, r.st === 'مكتمل' ? 'ok' : (r.st === 'جاري العمل' ? 'warn' : '')),
-              (r.due ? '<span class="num">' + esc(r.due) + '</span>' : '—')
-                + (d == null ? '' : '<br>' + (late ? pill(t('تأخّر') + ' ' + nm(-d) + ' ' + t('يوم'), 'bad')
-                    : pill(d === 0 ? t('اليوم') : (t('بقي') + ' ' + nm(d) + ' ' + t('يوم')), d <= 2 ? 'warn' : 'ok'))),
-              '<span class="hint" style="margin:0">' + esc((r.upd || '').slice(0, 90)) + '</span>',
-              may('settings')
-                ? btn('\u270E','btn-quiet btn-sm',' data-wtedit="' + esc(r.id) + '" aria-label="' + esc(t('تعديل')) + '"')
-                  + btn('\u{1F5D1}','btn-quiet btn-sm',' data-wtdel="' + esc(r.id) + '" aria-label="' + esc(t('حذف')) + '"')
-                : ''];
-    });
-    return head
-      + (WT_NEW && may('settings')
-          ? card(t('مهمة جديدة'),
-              '<div class="grid cols-2">'
-              + '<div class="field"><label>' + esc(t('المهمة')) + '</label><input id="wtN" dir="auto"></div>'
-              + '<div class="field"><label>' + esc(t('المسار')) + '</label><input id="wtTr" dir="auto"></div>'
-              + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input id="wtWho" dir="auto"></div>'
-              + '<div class="field"><label>' + esc(t('تاريخ الاستحقاق')) + '</label><input id="wtDue" type="date"></div>'
-              + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('الوصف')) + '</label><input id="wtD" dir="auto"></div>'
-              + '</div><div class="actions">' + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-wtnsave="1"') + btn(t('إلغاء'),'btn-quiet btn-sm',' data-wtncancel="1"') + '</div>')
-          : '')
-      + stats([['المهام', N(c.all)], ['متأخر', N(c.late), c.late ? 'bad' : 'ok'], ['مستحق قريبًا', N(c.d0 + c.d1 + c.week), 'wrn'], ['مكتمل', N(c.done), 'ok']])
-      + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WT_F === x[0] ? ' on' : '') + '" data-wtf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
-      + card('', '<input type="search" data-wtq value="' + esc(WT_Q) + '" placeholder="' + esc(t('ابحث بالمهمة أو المسؤول أو المسار')) + '" dir="auto">')
-      + (R.length
-        ? cardRaw(esc(t('المهام')) + ' \u2014 ' + nm(rows.length) + (STATE.wtask && STATE.wtask.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wtask.by)) + ' ' + esc(stepAgo(STATE.wtask.at || 0)) + '</span>' : ''),
-            table(['#','المهمة','المسار','المسؤول','الحالة','الاستحقاق','آخر تحديث',''], rows),
-            btn('\u2B07 ' + t('إكسل — المهام'),'btn-secondary btn-sm',' data-xls="wtask"'))
-        : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t(may('settings') ? 'لا مهامَّ بعد — أضف مهمةً أو استورد ملفَ المهام.' : 'لا مهامَّ بعد — يضيفها المكتب.')) + '</p>'));
+    var filt = '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WT_F === x[0] ? ' on' : '') + '" data-wtf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
+      + card('', '<input type="search" data-wtq value="' + esc(WT_Q) + '" placeholder="' + esc(t('ابحث بالمهمة أو المسؤول أو المسار')) + '" dir="auto">');
+
+    /* ── البطاقة: تُقرأ كجملة — ماذا · من · متى · آخرُ كلمة ── */
+    var STC = { 'مكتمل':'#3AD6A0', 'جاري العمل':'#E8C34B', 'قيد الانتظار':'#9FB0AA', 'متوقف':'#E05252' };
+    function cardOf(r){
+      var late = wtLate(r), col = late ? '#E05252' : (STC[r.st] || '#9FB0AA');
+      var last = Array.isArray(r.log) && r.log[0];
+      var lastTxt = last ? (esc(dispName(last.by || '')) + ' \u00b7 ' + esc(stepAgo(last.at || 0)) + (last.st ? ' \u00b7 ' + esc(t(last.st)) : '') + (last.note ? ' \u00b7 ' + esc(String(last.note).slice(0, 80)) : ''))
+                         : (r.upd ? esc(String(r.upd).slice(0, 80)) : '');
+      return '<button type="button" class="card wt-card' + (WT_OPEN === String(r.id) ? ' on' : '') + '" data-wtopen="' + esc(r.id) + '" style="border-inline-start:4px solid ' + col + '">'
+        + '<div class="wt-row"><strong class="wt-n">' + esc(r.n) + '</strong>' + wtWhen(r) + '</div>'
+        + '<div class="wt-row hint">' + wtAv(r.who) + '<span>' + esc(r.who || t('بلا مسؤول')) + '</span>'
+        +   (r.due ? '<span class="num">\u{1F4C5} ' + esc(r.due) + '</span>' : '')
+        +   (r.track ? '<span>\u{1F516} ' + esc(r.track) + '</span>' : '')
+        +   pill(r.st, r.st === 'مكتمل' ? 'ok' : (r.st === 'جاري العمل' ? 'warn' : (r.st === 'متوقف' ? 'bad' : ''))) + '</div>'
+        + (lastTxt ? '<div class="hint wt-last">\u{1F4AC} ' + lastTxt + '</div>' : '')
+        + '</button>';
+    }
+    var L = wtFiltered(), G = wtGroups(L);
+    var order = [['late','متأخر','bad'], ['week','هذا الأسبوع','warn'], ['later','لاحقًا',''], ['none','بلا تاريخ','off']];
+    var groups = order.map(function(g){
+      var items = G[g[0]]; if (!items.length) return '';
+      return '<div class="wt-group"><div class="wt-gh">' + pill(g[1], g[2]) + ' <span class="num hint" style="margin:0">' + nm(items.length) + '</span></div>'
+        + '<div class="grid cols-2 wt-grid">' + items.map(cardOf).join('') + '</div></div>';
+    }).join('')
+      + (G.done.length
+          ? '<div class="wt-group"><button type="button" class="btn btn-quiet btn-sm" data-wtdone="1">' + (WT_DONE_OPEN ? '\u25BE ' : '\u25B8 ') + esc(t('مكتمل')) + ' <span class="num">' + nm(G.done.length) + '</span></button>'
+            + (WT_DONE_OPEN ? '<div class="grid cols-2 wt-grid">' + G.done.map(cardOf).join('') + '</div>' : '') + '</div>'
+          : '');
+    var empty = !R.length
+      ? card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t(me ? 'لا مهامَّ بعد — المهمةُ سطرٌ واحد: ماذا — من — متى. أضف الأولى من «مهمة جديدة».' : 'لا مهامَّ بعد — يضيفها المكتب.')) + '</p>')
+      : (!L.length ? card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا مهامَّ تطابق الترشيح')) + '</p>') : '');
+    var byLine = (STATE.wtask && STATE.wtask.by)
+      ? '<p class="hint" style="margin:6px 0 0">' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wtask.by)) + ' ' + esc(stepAgo(STATE.wtask.at || 0)) + '</p>' : '';
+
+    return tabs + strip + acts + newForm + whoList + filt + empty + groups + byLine + wtSheet(me);
   }};
+/* ═══ لوحةُ المهمة — مكانٌ واحدٌ لكلِّ تعديل ═══
+   الحالةُ شرائحُ تُضغَط فتُحفَظ وتُسجَّل، و«ما الجديد؟» سطرٌ يُضاف إلى سجلٍّ
+   باسم كاتبه ووقته، وبياناتُ المهمة تحت «تعديل البيانات» لمن يريدها. */
+function wtSheet(me){
+  if (!WT_OPEN) return '';
+  var r = wtRow(WT_OPEN); if (!r){ WT_OPEN = ''; return ''; }
+  var log = Array.isArray(r.log) ? r.log : [];
+  var stRow = '<div class="chips" style="margin:0">' + WT_ST.map(function(x){
+    var on = r.st === x;
+    return me
+      ? '<button type="button" class="chip' + (on ? ' on' : '') + '" data-wtstat="' + esc(r.id) + '|' + esc(x) + '">' + esc(t(x)) + '</button>'
+      : (on ? pill(x, x === 'مكتمل' ? 'ok' : (x === 'جاري العمل' ? 'warn' : '')) : '');
+  }).join('') + '</div>';
+  var info = '<div class="pop-rows">'
+    + '<div><span class="k">' + esc(t('المسؤول')) + '</span><span>' + wtAv(r.who) + ' ' + esc(r.who || t('بلا مسؤول')) + '</span></div>'
+    + '<div><span class="k">' + esc(t('الاستحقاق')) + '</span><span>' + wtWhen(r) + (r.due ? ' <span class="num hint" style="margin:0">' + esc(r.due) + '</span>' : '') + '</span></div>'
+    + (r.track ? '<div><span class="k">' + esc(t('المسار')) + '</span><span>' + esc(r.track) + (r.code ? ' <span class="num hint" style="margin:0">' + esc(r.code) + '</span>' : '') + '</span></div>' : '')
+    + (r.d ? '<div><span class="k">' + esc(t('الوصف')) + '</span><span>' + esc(r.d) + '</span></div>' : '')
+    + '</div>';
+  var note = me
+    ? '<div class="field" style="margin-top:10px"><label>' + esc(t('ما الجديد؟')) + '</label>'
+      + '<div style="display:flex;gap:6px"><input id="wtNote" dir="auto" placeholder="' + esc(t('سطرٌ واحد يقوله من يفتح المهمة بعدك')) + '" style="flex:1">'
+      + btn('\u2795 ' + t('أضِف'),'btn-primary btn-sm',' data-wtnoteadd="' + esc(r.id) + '"') + '</div></div>'
+    : '';
+  var hist = log.length
+    ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('السجل')) + '</div><div class="wt-log">' + log.slice(0, 8).map(function(e){
+        return '<div class="wt-le"><span class="hint num" style="margin:0">' + esc(stepAgo(e.at || 0)) + '</span> <b>' + esc(dispName(e.by || '')) + '</b>'
+          + (e.st ? ' ' + pill(e.st, e.st === 'مكتمل' ? 'ok' : (e.st === 'جاري العمل' ? 'warn' : '')) : '')
+          + (e.note ? ' <span>' + esc(e.note) + '</span>' : '') + '</div>';
+      }).join('') + '</div>'
+    : (r.upd ? '<div class="hint" style="margin-top:8px">\u{1F4AC} ' + esc(r.upd) + '</div>' : '');
+  var edit = me
+    ? '<details style="margin-top:12px"><summary class="hint" style="cursor:pointer">\u270E ' + esc(t('تعديل البيانات')) + '</summary>'
+      + '<div class="grid cols-2" style="margin-top:8px">'
+      + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('المهمة')) + '</label><input value="' + esc(r.n) + '" data-wte2="n" dir="auto"></div>'
+      + '<div class="field"><label>' + esc(t('المسؤول')) + '</label><input value="' + esc(r.who || '') + '" data-wte2="who" dir="auto" list="wtWhoList"></div>'
+      + '<div class="field"><label>' + esc(t('تاريخ الاستحقاق')) + '</label><input type="date" value="' + esc(r.due || '') + '" data-wte2="due"></div>'
+      + '<div class="field"><label>' + esc(t('المسار')) + '</label><input value="' + esc(r.track || '') + '" data-wte2="track" dir="auto"></div>'
+      + '<div class="field"><label>' + esc(t('الوصف')) + '</label><input value="' + esc(r.d || '') + '" data-wte2="d" dir="auto"></div>'
+      + '</div><div class="actions">' + btn('\u{1F4BE} ' + t('حفظ'),'btn-primary btn-sm',' data-wtsave2="' + esc(r.id) + '"')
+      + btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-wtdel="' + esc(r.id) + '"') + '</div></details>'
+    : '';
+  return '<div class="wt-back" data-wtclose="0"></div>'
+    + '<div class="pop wt-sheet" id="wtSheet" role="dialog" aria-label="' + esc(t('المهمة')) + '">'
+    + '<div class="pop-head"><div style="min-width:0"><div class="pid num hint" style="margin:0">#' + esc(r.id) + '</div><h3 style="margin-top:3px">' + esc(r.n) + '</h3></div>'
+    + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-wtclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<div class="pop-body">' + stRow + info + note + hist + edit + '</div></div>';
+}
 /* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
    كان العرضُ الثلاثيُّ صفحةً مستقلةً بمرشِّحاتها وألوانها — فتعرض غيرَ ما
    تعرضه الخريطة، ويُسأل «أيُّهما الصحيح؟». والصحيحُ واحد: الخريطةُ بطبقتها
@@ -17499,7 +17659,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.80' + '.docx" download>⬇ '
+              +   'V16.81' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -29865,19 +30025,25 @@ function clickA(e){
   if (wtb){ WT_TAB = wtb.getAttribute('data-wttab'); render(1); return true; }
   var wtf = e.target.closest('[data-wtf]');
   if (wtf){ WT_F = wtf.getAttribute('data-wtf') || ''; render(1); return true; }
-  var wte = e.target.closest('[data-wtedit]');
-  if (wte){ WT_EDIT = wte.getAttribute('data-wtedit'); render(1); return true; }
-  if (e.target.closest('[data-wtcancel]')){ WT_EDIT = ''; render(1); return true; }
-  var wts = e.target.closest('[data-wtsave]');
-  if (wts){
-    var wid = wts.getAttribute('data-wtsave'), tr = wts.closest('tr');
-    var g = function(k){ var el = tr && tr.querySelector('[data-wte="' + k + '"]'); return el ? el.value.trim() : ''; };
-    wtSet(wid, { n:g('n'), track:g('track'), who:g('who'), due:g('due'), upd:g('upd') });
+  var wto = e.target.closest('[data-wtopen]');
+  if (wto){ WT_OPEN = wto.getAttribute('data-wtopen'); WT_NEW = false; render(1); return true; }
+  if (e.target.closest('[data-wtclose]')){ WT_OPEN = ''; render(1); return true; }
+  var wst = e.target.closest('[data-wtstat]');
+  if (wst){ var pr = wst.getAttribute('data-wtstat').split('|'); wtStatus(pr[0], pr[1]); return true; }
+  var wna = e.target.closest('[data-wtnoteadd]');
+  if (wna){ var ni = document.getElementById('wtNote'); wtNote(wna.getAttribute('data-wtnoteadd'), ni ? ni.value : ''); return true; }
+  var ws2 = e.target.closest('[data-wtsave2]');
+  if (ws2){
+    var sh = ws2.closest('.wt-sheet'), g3 = function(k){ var el = sh && sh.querySelector('[data-wte2="' + k + '"]'); return el ? el.value.trim() : ''; };
+    if (!g3('n')){ toast(t('اسمُ المهمة مطلوب')); return true; }
+    wtSet(ws2.getAttribute('data-wtsave2'), { n:g3('n'), who:g3('who'), due:g3('due'), track:g3('track'), d:g3('d') });
     toast(t('حُفظت المهمة')); return true;
   }
+  if (e.target.closest('[data-wttools]')){ WT_TOOLS = !WT_TOOLS; render(1); return true; }
+  if (e.target.closest('[data-wtdone]')){ WT_DONE_OPEN = !WT_DONE_OPEN; render(1); return true; }
   var wtd = e.target.closest('[data-wtdel]');
   if (wtd){ wtRemove(wtd.getAttribute('data-wtdel')); return true; }
-  if (e.target.closest('[data-wtnew]')){ WT_NEW = true; WT_EDIT = ''; toast(t('املأ المهمة الجديدة ثم احفظ')); render(1); return true; }
+  if (e.target.closest('[data-wtnew]')){ WT_NEW = true; WT_EDIT = ''; WT_OPEN = ''; toast(t('املأ المهمة الجديدة ثم احفظ')); render(1); return true; }
   if (e.target.closest('[data-wtncancel]')){ WT_NEW = false; render(1); return true; }
   if (e.target.closest('[data-wtnsave]')){
     var v = function(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; };

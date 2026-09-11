@@ -246,6 +246,11 @@ service cloud.firestore {
     match /settings/contacts { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق
+    // المهامُّ الأسبوعية — مهامُّ الاجتماع مع الوزارة: يكتبها المهندسُ فما فوق
+    // والوزارةُ نفسُها. وهذا الاستثناءُ الوحيدُ لدورٍ يقرأ ولا يكتب — لأن
+    // المهامَّ مهامُّها، وتحديثُها في الاجتماع أسرعُ من إملائها على المكتب.
+    // ولا تفتح لها وثيقةً أخرى: الإعداداتُ الأخرى والمصفوفةُ كما كانت.
+    match /settings/wtask    { allow read: if ok(); allow write: if ok() && (myRank() >= 90 || role() == 'viewer'); }
     match /settings/perms    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/roles    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/{id} {

@@ -247,6 +247,15 @@ await env.withSecurityRulesDisabled(async (ctx) => {
 const PM = { m:{ purchases:{ buyer:{ r:true, w:true } }, recs:{ tech:{ w:false }, admin:{ w:false } },
                  events:{ engineer:{ d:true } }, phones:{ viewer:{ r:true } } }, v:1, at:1 };
 await deny('قبل المصفوفة: المشتريات لا يقرأ المشتريات (الافتراضي)', getDoc(doc(as('buy'), 'purchases/p1')));
+/* ═══ المهامُّ الأسبوعية: الوزارةُ تكتب هذه الوثيقةَ وحدَها (V16.81) ═══ */
+const WT = { rows:[{ id:1, n:'مهمة', st:'قيد الانتظار' }], at:1, by:'وزارة' };
+await ok  ('الوزارةُ تكتب المهامَّ الأسبوعية — مهامُّ اجتماعها',     setDoc(doc(as('vwr'), 'settings/wtask'), WT));
+await ok  ('والإدارةُ العليا تكتبها',                                setDoc(doc(as('exe'), 'settings/wtask'), WT));
+await ok  ('والمهندس',                                               setDoc(doc(as('eng'), 'settings/wtask'), WT));
+await deny('والمشرفُ لا',                                            setDoc(doc(as('sup'), 'settings/wtask'), WT));
+await deny('ولا الفنيّ',                                             setDoc(doc(as('tec'), 'settings/wtask'), WT));
+await deny('ولا تفتح الوثيقةُ للوزارة غيرَها — الإعداداتُ كما كانت',   setDoc(doc(as('vwr'), 'settings/points'), { tgtSurvey: 5 }));
+await ok  ('والفنيُّ يقرأ المهامَّ — يراها في شاشته',                 getDoc(doc(as('tec'), 'settings/wtask')));
 await deny('المشرفُ لا يكتب المصفوفة',                     setDoc(doc(as('sup'), 'settings/perms'), PM));
 await deny('ولا الفنيّ',                                   setDoc(doc(as('tec'), 'settings/perms'), PM));
 await ok  ('والمهندسُ يكتبها',                             setDoc(doc(as('eng'), 'settings/perms'), PM));
