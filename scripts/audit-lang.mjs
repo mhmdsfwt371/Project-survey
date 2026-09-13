@@ -225,6 +225,33 @@ check(spaced.length <= CAP_SPACED,
   spaced.length <= CAP_SPACED ? 'الفراغُ الطرفيُّ محصورٌ في لواحق التركيب'
                               : `فراغٌ طرفيٌّ كبر: ${spaced.join(' · ')}`);
 
+/* ═══ ٤ — النصُّ الذي يمرُّ بالمترجم بمتغيّر (V16.91) ═══
+   الحارسُ يفحص `t('…')` بنصِّها الحرفيِّ — فما مرَّ بمتغيّرٍ (t(LABELS[k]) أو
+   t(x) في حلقةٍ على مصفوفة) لم يره أحد. فظهرت بطاقةُ الميدان بالإنجليزية
+   وفيها خمسةٌ وثلاثون وسمًا عربيًّا وخمسةُ تحدياتٍ — والحارسُ أخضر.
+     فتُقرأ هنا جداولُ النصوص التي تُمرَّر بمتغيّرٍ بأسمائها: كلُّ قيمةٍ
+   عربيةٍ فيها يجب أن يكون لها مفتاحٌ في القاموسين. ومن أضاف جدولًا جديدًا
+   من هذا النوع أضاف اسمَه إلى هذه القائمة — وإلا فحصَه أحدٌ بالعين. */
+const TABLES = ['SV_LABELS', 'CH_CAMP', 'CH_PATH', 'CH_STN', 'CH_CAM', 'CH_GEN',
+                'BRIEF_ST', 'WT_ST', 'BRIEF_STAGE'];
+{
+  const vals = new Set();
+  for (const name of TABLES){
+    const at = src.indexOf('var ' + name + ' = ');
+    if (at < 0) continue;
+    /* الجدولُ إمّا كائنٌ يُغلَق بـ};‏ وإمّا مصفوفةٌ تُغلَق بـ]; — وأقربُهما هو نهايتُه */
+    const objEnd = src.indexOf('\n};', at), arrEnd = src.indexOf('];', at);
+    const ends = [objEnd, arrEnd].filter(x => x > at);
+    const block = src.slice(at, ends.length ? Math.min(...ends) : at + 600);
+    for (const m of block.matchAll(/'([^']+)'/g)) if (AR.test(m[1])) vals.add(m[1]);
+  }
+  const noKey = [...vals].filter(v => !(v in enD) || !(v in urD));
+  console.log(`  \u00b7 نصوصٌ تمرُّ بالمترجم بمتغيّر: ${vals.size} في ${TABLES.length} جدولًا`);
+  check(noKey.length === 0,
+    noKey.length ? `نصٌّ يُترجَم بمتغيّرٍ بلا مفتاحٍ في القاموسين (${noKey.length}): ${noKey.slice(0, 4).join(' · ')}`
+                 : 'كلُّ نصٍّ يُترجَم بمتغيّرٍ له مفتاحٌ في القاموسين');
+}
+
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ اللغة فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
 console.log('جردُ اللغة نظيف — لا حرفَ عربيٍّ يبقى بلا قرار ✅');
