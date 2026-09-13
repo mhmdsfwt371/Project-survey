@@ -64,6 +64,24 @@ d.getElementById('mapBox').dispatchEvent(new w.MouseEvent('click', { bubbles:tru
 await wait(80);
 T(w.POP_OPEN === true, 'فلا تُغلَق داخل المهلة');
 
+/* ═══ لوحٌ ثانٍ فوق لوح النقاط يبتلع كلَّ نقرة (V16.87) ═══
+   كلُّ شكلٍ يُضاف إلى الخريطة بلا لوحٍ معيَّن يُنشئ لوحًا ثانيًا يغطّيها
+   كلَّها؛ والأعلى يلتقط النقرَ ولا يمرّره. فيُشترَط: كلُّ متّجهٍ يُرسَم على
+   MAP_CV، وعلامةُ الموضع غيرُ قابلةٍ للنقر، وتُعاد بعد كلِّ رسمٍ لأن لوحَ
+   النقاط يُمسَح في أوّله. */
+{
+  /* نافذةٌ نصّيةٌ بعد كلِّ إنشاءِ متّجه: الأقواسُ المتداخلةُ لا تُعَدُّ بنمط */
+  const vec = [...src.matchAll(/L\.(circleMarker|polygon|polyline|circle|rectangle)\(/g)]
+    .map(m => ({ at:m.index, win:src.slice(m.index, m.index + 700) }));
+  const onMap = vec.filter(v => /\.addTo\(MAP\)/.test(v.win.split(';')[0] || ''));
+  T(onMap.length === 0, 'لا متّجهَ يُضاف إلى الخريطة مباشرةً — فلا لوحَ ثانٍ فوق لوح النقاط'
+    + (onMap.length ? ' — ' + onMap.length : ''));
+  const noRenderer = vec.filter(v => !/renderer:\s*MAP_CV/.test(v.win.slice(0, 400)));
+  T(noRenderer.length === 0, 'وكلُّ متّجهٍ على اللوح نفسِه (MAP_CV): ' + (vec.length - noRenderer.length) + ' من ' + vec.length);
+  T(/MAP_ME = L\.circleMarker\([\s\S]{0,120}interactive:false/.test(src), 'وعلامةُ موضعك تُرى ولا تُنقَر — فلا تحجب نقطةً تحتها');
+  T(/if \(MAP_ME_LL\)/.test(src) && src.indexOf('if (MAP_ME_LL)') > src.indexOf('function mapPaint('), 'وتُعاد مع كلِّ رسمٍ — لأن لوحَ النقاط يُمسَح في أوّله');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ نافذة النقطة فشل ✗ (${bad})` : '\nالحدثُ الذي يفتح النافذةَ لا يُغلقها ✅');
 process.exit(bad ? 1 : 0);
