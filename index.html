@@ -592,6 +592,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .sw-row{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin:0}
 .sw-row.is-off{cursor:default;opacity:.75}
 .sw-row input{width:20px;height:20px;margin-top:2px;flex:0 0 auto;accent-color:var(--brand)}
+/* بندُ الشاشة يُضيء مع خطوتها */
+.tour-spot{outline:2px solid var(--brand);outline-offset:2px;border-radius:10px;
+  background:color-mix(in srgb, var(--brand) 16%, transparent);animation:tourPulse 1.6s ease-in-out infinite}
+@keyframes tourPulse{0%,100%{outline-color:var(--brand)}50%{outline-color:transparent}}
+@media (prefers-reduced-motion:reduce){.tour-spot{animation:none}}
 .wt-meet{padding:12px 14px}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
 #m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
@@ -809,7 +814,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.99</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.0</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -821,6 +826,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="تثبيت التطبيق" title="تثبيت التطبيق" data-i18n-aria="تثبيت التطبيق" data-i18n-title="تثبيت التطبيق" hidden>⬇</button>
         <button type="button" class="tb-btn" id="assistBtn" data-assist="1"
               aria-label="المساعد" title="المساعد" data-i18n-aria="المساعد" data-i18n-title="المساعد">🧭</button>
+        <button type="button" class="tb-btn" data-tour="1"
+              aria-label="جولة البداية" title="جولة البداية" data-i18n-aria="جولة البداية" data-i18n-title="جولة البداية">🎓</button>
         <button type="button" class="tb-btn" data-bugopen="1"
               aria-label="بلّغ عن عطل" title="بلّغ عن عطل" data-i18n-aria="بلّغ عن عطل" data-i18n-title="بلّغ عن عطل">🛠</button>
       <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر" data-i18n-aria="المظهر" data-i18n-title="المظهر">☾</button>
@@ -3618,6 +3625,7 @@ en:{
  'بلاغ اليوم':'Daily briefing', 'لا إسنادَ عليك اليوم — راجع «مهامي» فقد يصلك خلال النهار.':'Nothing assigned to you today — check "My tasks", it may arrive during the day.', 'عليك':'You have', 'من مهام الاجتماع':'meeting tasks', 'حدّث حالتَها من «مهامي»':'Update their status from "My tasks"', 'تعذّر فتحُ واتساب':'Could not open WhatsApp', 'نُسخت رسائلُ الفريق — ألصقها في مجموعة واتساب':'Team messages copied — paste them in the WhatsApp group', 'بلاغ اليوم عبر واتساب':'Daily briefing via WhatsApp', 'لكلِّ شخصٍ رسالةٌ جاهزةٌ بما عليه اليومَ ورابطِ التطبيق — ضغطةٌ تفتح واتساب على رقمه، وأنت تضغط إرسال.':'A ready message for each person with today\'s work and the app link. One tap opens WhatsApp on their number, and you tap send.', 'أُسند إليهم ولم يبدؤوا':'Assigned, not started', 'أنجزوا اليوم':'Done today', 'عليه اليوم':'Today', 'أنجز اليوم':'Done today', 'لا أعضاءَ ميدانيّين في الحسابات بعد.':'No field members in Accounts yet.', 'انسخ رسائل الكل':'Copy all messages',
  'اكتب ما حدث في سطرٍ على الأقل':'Write what happened, at least one line', 'وصل البلاغ — يُفتَح في المستودع خلال دقائق':'Report received — it opens in the repository within minutes', 'إدارةُ البلاغات لمدير المشروع':'Managing reports is for the project manager', 'بلاغ':'Report', 'بلّغ عن عطلٍ أو اطلب جديدًا':'Report a fault or request something new', 'بلّغ عن عطل':'Report a fault', 'عطل':'Fault', 'طلب جديد':'New request', 'اقتراح':'Suggestion', 'ما الذي حدث؟':'What happened?', 'اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.':'Write exactly what you saw: I tapped this and that happened.', 'ما الذي كنتَ تتوقّعه؟':'What did you expect?', 'يُرفَق تلقائيًّا':'Attached automatically', 'آخرُ خطأٍ في جلستك':'last error in your session', 'أرسل البلاغ':'Send the report', 'بلاغٌ جديد':'New report',
  'أرقامُ الفريق لمن يدير الحسابات':'Team numbers are for whoever manages accounts', 'ألصق الأرقامَ أوّلًا':'Paste the numbers first', 'رقمًا':'numbers', 'لم يُعرَف':'Not recognised', 'لم يُطابَق أيُّ اسم — تأكّد أن الأسماء كما في الحسابات':'No name matched — check the names are as in Accounts', 'أرقام الفريق':'Team numbers', 'ألصق سطرًا لكلِّ شخص: الاسمُ ثم الرقم — بأيِّ فاصل. يُطابَق بالاسم كما هو في الحسابات.':'Paste one line per person: name then number, any separator. Matched by the name as in Accounts.', 'كلُّ الفريق له رقم — «بلاغ اليوم» جاهز':'Everyone has a number — the daily briefing is ready', 'احفظ الأرقام':'Save the numbers', 'ما أُبلغ عنه من التطبيق: يُفتَح في مستودع المشروع خلال دقائق، ويُغلق هنا حين يُغلق هناك.':'What was reported from the app: it opens in the project repository within minutes, and closes here when it closes there.', 'البلاغات':'Reports', 'المتوقَّع':'Expected', 'لا بلاغاتٍ بعد — الزرُّ 🛠 في الشريط العلويّ.':'No reports yet — the 🛠 button is in the top bar.', 'بلاغاتي':'My reports', 'ما أُبلغ عنه من التطبيق — وأين وصل في المستودع.':'What was reported from the app — and where it stands in the repository.',
+ 'جولة البداية':'Getting started', 'مكانها':'Where it is', 'شاشةٌ من شاشاتك — افتحها لترى ما فيها.':'One of your screens — open it to see what it holds.', 'هذه شاشاتُك أنت — لكلِّ دورٍ شاشاتُه. البندُ المضيءُ في القائمة هو مكانُ هذه الشاشة.':'These are your screens — each role has its own. The highlighted menu item is where this screen lives.', 'وبقيّةُ الشاشات في القائمة — والمساعدُ 🧭 يجيبك إن سألتَه بكلماتك، وزرُّ 🛠 يبلّغ عن أيِّ عطل.':'The rest are in the menu — the 🧭 assistant answers in your own words, and 🛠 reports any fault.', 'افتح هذه الشاشة':'Open this screen', 'تمّت الجولة':'Tour complete', 'لا تعرضها ثانيةً':'Do not show again', 'لن تُعرَض ثانيةً — زرُّ 🎓 يفتحها متى شئت':'It will not show again — the 🎓 button opens it whenever you want', 'تمّت الجولة — زرُّ 🎓 يفتحها متى شئت':'Tour complete — the 🎓 button opens it whenever you want', 'كلُّ ما عن نقطةٍ واحدة: بيانُها وزيارتُها وتركيبُها وصورُها وسجلُّها — تُفتَح من الخريطة أو من القوائم.':'Everything about one point: its data, visit, installation, photos and log — opened from the map or the lists.',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6295,6 +6303,7 @@ ur:{
  'بلاغ اليوم':'آج کی بریفنگ', 'لا إسنادَ عليك اليوم — راجع «مهامي» فقد يصلك خلال النهار.':'آج آپ کو کچھ تفویض نہیں — "میرے ٹاسک" دیکھیں، دن میں آ سکتا ہے۔', 'عليك':'آپ کے ذمے', 'من مهام الاجتماع':'میٹنگ کے ٹاسک', 'حدّث حالتَها من «مهامي»':'"میرے ٹاسک" سے حالت اپ ڈیٹ کریں', 'تعذّر فتحُ واتساب':'واٹس ایپ نہیں کھل سکا', 'نُسخت رسائلُ الفريق — ألصقها في مجموعة واتساب':'ٹیم کے پیغامات کاپی ہو گئے — واٹس ایپ گروپ میں پیسٹ کریں', 'بلاغ اليوم عبر واتساب':'واٹس ایپ کے ذریعے آج کی بریفنگ', 'لكلِّ شخصٍ رسالةٌ جاهزةٌ بما عليه اليومَ ورابطِ التطبيق — ضغطةٌ تفتح واتساب على رقمه، وأنت تضغط إرسال.':'ہر شخص کے لیے آج کے کام اور ایپ لنک کے ساتھ تیار پیغام۔ ایک ٹیپ اس کے نمبر پر واٹس ایپ کھولتی ہے، اور آپ بھیجیں دباتے ہیں۔', 'أُسند إليهم ولم يبدؤوا':'تفویض ہوا، شروع نہیں', 'أنجزوا اليوم':'آج مکمل', 'عليه اليوم':'آج', 'أنجز اليوم':'آج مکمل', 'لا أعضاءَ ميدانيّين في الحسابات بعد.':'اکاؤنٹس میں ابھی کوئی فیلڈ رکن نہیں۔', 'انسخ رسائل الكل':'سب پیغامات کاپی کریں',
  'اكتب ما حدث في سطرٍ على الأقل':'کیا ہوا لکھیں، کم از کم ایک سطر', 'وصل البلاغ — يُفتَح في المستودع خلال دقائق':'رپورٹ موصول — چند منٹ میں ریپوزٹری میں کھلے گی', 'إدارةُ البلاغات لمدير المشروع':'رپورٹس کا انتظام پروجیکٹ مینیجر کے پاس', 'بلاغ':'رپورٹ', 'بلّغ عن عطلٍ أو اطلب جديدًا':'خرابی کی اطلاع دیں یا نئی درخواست کریں', 'بلّغ عن عطل':'خرابی کی اطلاع دیں', 'عطل':'خرابی', 'طلب جديد':'نئی درخواست', 'اقتراح':'تجویز', 'ما الذي حدث؟':'کیا ہوا؟', 'اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.':'بالکل وہی لکھیں جو دیکھا: میں نے یہ دبایا اور یہ ہوا۔', 'ما الذي كنتَ تتوقّعه؟':'آپ کیا توقع کر رہے تھے؟', 'يُرفَق تلقائيًّا':'خودکار طور پر منسلک', 'آخرُ خطأٍ في جلستك':'آپ کے سیشن کی آخری خرابی', 'أرسل البلاغ':'رپورٹ بھیجیں', 'بلاغٌ جديد':'نئی رپورٹ',
  'أرقامُ الفريق لمن يدير الحسابات':'ٹیم کے نمبر اکاؤنٹس سنبھالنے والے کے لیے', 'ألصق الأرقامَ أوّلًا':'پہلے نمبر پیسٹ کریں', 'رقمًا':'نمبر', 'لم يُعرَف':'پہچانا نہیں گیا', 'لم يُطابَق أيُّ اسم — تأكّد أن الأسماء كما في الحسابات':'کوئی نام نہیں ملا — یقینی بنائیں نام اکاؤنٹس جیسے ہیں', 'أرقام الفريق':'ٹیم کے نمبر', 'ألصق سطرًا لكلِّ شخص: الاسمُ ثم الرقم — بأيِّ فاصل. يُطابَق بالاسم كما هو في الحسابات.':'ہر شخص کے لیے ایک سطر: نام پھر نمبر، کوئی بھی علامت۔ اکاؤنٹس کے نام سے ملایا جاتا ہے۔', 'كلُّ الفريق له رقم — «بلاغ اليوم» جاهز':'سب کے نمبر موجود — آج کی بریفنگ تیار', 'احفظ الأرقام':'نمبر محفوظ کریں', 'ما أُبلغ عنه من التطبيق: يُفتَح في مستودع المشروع خلال دقائق، ويُغلق هنا حين يُغلق هناك.':'ایپ سے جو رپورٹ ہوا: چند منٹ میں پروجیکٹ ریپوزٹری میں کھلتا ہے، اور وہاں بند ہونے پر یہاں بند ہو جاتا ہے۔', 'البلاغات':'رپورٹس', 'المتوقَّع':'متوقع', 'لا بلاغاتٍ بعد — الزرُّ 🛠 في الشريط العلويّ.':'ابھی کوئی رپورٹ نہیں — 🛠 بٹن اوپر کی پٹی میں ہے۔', 'بلاغاتي':'میری رپورٹس', 'ما أُبلغ عنه من التطبيق — وأين وصل في المستودع.':'ایپ سے جو رپورٹ ہوا — اور ریپوزٹری میں کہاں پہنچا۔',
+ 'جولة البداية':'آغاز کی سیر', 'مكانها':'یہ کہاں ہے', 'شاشةٌ من شاشاتك — افتحها لترى ما فيها.':'آپ کی ایک اسکرین — کھول کر دیکھیں اس میں کیا ہے۔', 'هذه شاشاتُك أنت — لكلِّ دورٍ شاشاتُه. البندُ المضيءُ في القائمة هو مكانُ هذه الشاشة.':'یہ آپ کی اسکرینیں ہیں — ہر کردار کی اپنی۔ روشن مینو آئٹم اس اسکرین کی جگہ ہے۔', 'وبقيّةُ الشاشات في القائمة — والمساعدُ 🧭 يجيبك إن سألتَه بكلماتك، وزرُّ 🛠 يبلّغ عن أيِّ عطل.':'باقی مینو میں ہیں — 🧭 مددگار آپ کے الفاظ میں جواب دیتا ہے، اور 🛠 کسی بھی خرابی کی اطلاع دیتا ہے۔', 'افتح هذه الشاشة':'یہ اسکرین کھولیں', 'تمّت الجولة':'سیر مکمل', 'لا تعرضها ثانيةً':'دوبارہ نہ دکھائیں', 'لن تُعرَض ثانيةً — زرُّ 🎓 يفتحها متى شئت':'دوبارہ نہیں دکھے گی — 🎓 بٹن جب چاہیں کھول دے گا', 'تمّت الجولة — زرُّ 🎓 يفتحها متى شئت':'سیر مکمل — 🎓 بٹن جب چاہیں کھول دے گا', 'كلُّ ما عن نقطةٍ واحدة: بيانُها وزيارتُها وتركيبُها وصورُها وسجلُّها — تُفتَح من الخريطة أو من القوائم.':'ایک پوائنٹ کے بارے میں سب کچھ: ڈیٹا، دورہ، تنصیب، تصاویر اور ریکارڈ — نقشے یا فہرستوں سے کھلتا ہے۔',
 }
 };
 
@@ -9685,7 +9694,7 @@ function filtered(){
 var DETAIL_ID = '';
 
 /* يُوسَم شريطُ الصور في شاشة الموقع أدناه */
-PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'',
+PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ ما عن نقطةٍ واحدة: بيانُها وزيارتُها وتركيبُها وصورُها وسجلُّها — تُفتَح من الخريطة أو من القوائم.',
   body:function(){
     var x = siteFind(DETAIL_ID) || STATE.sites[0];
     if (!x) return alertBox('warn','لا مواقع محمّلة.');
@@ -14260,6 +14269,84 @@ function probeRun(){
 }
 
 
+/* ═══ جولةُ البداية (V17.0) ═══
+   من يفتح النظامَ أوّلَ مرةٍ يرى ستَّ مجموعاتٍ وستًّا وعشرين شاشةً فلا يعرف
+   من أين يبدأ، فيسأل جارَه أو يترك. والمساعدُ القائمُ يجيب من سأل — ومن لا
+   يعرف ماذا يسأل لا يسأل. فصارت جولةٌ تفتح نفسَها أوّلَ دخولٍ لكلِّ حسابٍ
+   جديد: خطوةٌ لكلِّ شاشةٍ **من شاشاته هو** — لا شاشاتِ غيره — بترتيب يومه،
+   فيها ما تفعله الشاشةُ بكلمةٍ واحدة، ويُضاء بندُها في القائمة وهو يقرأ،
+   وزرٌّ يأخذه إليها. وتُفتَح بعدها متى شاء من زرِّ القبّعة في الشريط. */
+var TOUR_OPEN = false, TOUR_I = 0;
+/* صفحاتٌ تُفتَح من غيرها لا من القائمة — لا تصلح خطوةً في جولة */
+var TOUR_SKIP = { site:1, sel:1, svappr:1, minappr:1 };
+/* أوّلُ ما يُفتَح في اليوم — إن كان من شاشات صاحب الحساب */
+var TOUR_PRIME = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
+function tourPages(){
+  var r = effRole(ROLE), nav = (ROLES[r] || {}).nav;
+  var vis = (nav === '*') ? Object.keys(PAGE).filter(function(k){ return seesRaw(k); })
+                          : (nav || []).filter(function(k){ return PAGE[k] && seesRaw(k); });
+  vis = vis.filter(function(k){ return !TOUR_SKIP[k]; });
+  var head = TOUR_PRIME.filter(function(p){ return vis.indexOf(p) > -1; });
+  var rest = vis.filter(function(p){ return head.indexOf(p) < 0; });
+  return head.concat(rest).slice(0, 8);
+}
+function tourStart(){ TOUR_I = 0; TOUR_OPEN = true; render(1); }
+function tourEnd(forever){
+  TOUR_OPEN = false;
+  if (forever) lsSet('nsk14.tour', myUid() || '1');
+  render(1);
+}
+function tourMaybe(){
+  try { if (lsGet('nsk14.tour') === (myUid() || '1')) return; } catch (e){ return; }
+  if (!tourPages().length) return;
+  TOUR_I = 0; TOUR_OPEN = true;
+}
+/* يُضاء بندُ الشاشة في القائمة مع خطوتها — فيُعرَف مكانُها لا اسمُها فقط */
+function tourSpot(){
+  try {
+    var old = document.querySelectorAll('.tour-spot');
+    for (var i = 0; i < old.length; i++) old[i].classList.remove('tour-spot');
+    if (!TOUR_OPEN) return;
+    var P = tourPages(); if (!P.length) return;
+    var id = P[Math.min(TOUR_I, P.length - 1)];
+    var el = document.querySelector('.nav a[data-p="' + id + '"], [data-p="' + id + '"]');
+    if (el){
+      el.classList.add('tour-spot');
+      var sec = el.closest('.nav-section');
+      if (sec && sec.getAttribute('data-open') === 'false'){ sec.setAttribute('data-open', 'true'); OPEN[sec.getAttribute('data-g')] = true; }
+      if (el.scrollIntoView) el.scrollIntoView({ block:'nearest' });
+    }
+  } catch (e){ LS_ERR = e; }
+}
+function tourHtml(){
+  if (!TOUR_OPEN) return '';
+  var P = tourPages(); if (!P.length){ TOUR_OPEN = false; return ''; }
+  if (TOUR_I >= P.length) TOUR_I = P.length - 1;
+  var id = P[TOUR_I], pg = PAGE[id] || {}, last = TOUR_I === P.length - 1;
+  return '<div class="wt-back" data-tourclose="0"></div>'
+    + '<div class="pop wt-sheet" id="tourSheet" role="dialog" aria-label="' + esc(t('جولة البداية')) + '">'
+    + '<div class="pop-head"><div style="min-width:0">'
+    +   '<div class="pid hint" style="margin:0">\u{1F393} ' + esc(t('جولة البداية')) + ' \u00b7 <span class="num">' + nm(TOUR_I + 1) + ' ' + esc(t('من')) + ' ' + nm(P.length) + '</span></div>'
+    +   '<h3 style="margin-top:3px">' + esc(t(pg.t || id)) + '</h3></div>'
+    +   '<button type="button" class="btn btn-quiet btn-sm pop-x" data-tourclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<div class="pop-body">'
+    +   '<div class="hint" style="margin:0 0 6px">' + esc(t('مكانها')) + ': <b>' + esc(t(pg.m || '')) + '</b> \u2190 ' + esc(t(pg.t || '')) + '</div>'
+    +   '<p style="margin:0 0 10px;font-size:14px;line-height:1.7">' + esc(t(pg.l || t('شاشةٌ من شاشاتك — افتحها لترى ما فيها.'))) + '</p>'
+    +   (TOUR_I === 0
+        ? '<div class="alert info" style="margin:0 0 10px"><span>' + esc(t('هذه شاشاتُك أنت — لكلِّ دورٍ شاشاتُه. البندُ المضيءُ في القائمة هو مكانُ هذه الشاشة.')) + '</span></div>'
+        : '')
+    +   (last
+        ? '<div class="alert ok" style="margin:0 0 10px"><span>' + esc(t('وبقيّةُ الشاشات في القائمة — والمساعدُ 🧭 يجيبك إن سألتَه بكلماتك، وزرُّ 🛠 يبلّغ عن أيِّ عطل.')) + '</span></div>'
+        : '')
+    +   '<div class="actions" style="margin:0">'
+    +     btn('\u2190 ' + t('افتح هذه الشاشة'),'btn-primary btn-sm',' data-tourgo="' + esc(id) + '"')
+    +     btn('\u2039 ' + t('السابق'),'btn-quiet btn-sm',' data-tourprev="1"' + (TOUR_I ? '' : ' disabled'))
+    +     btn(last ? '\u2714 ' + t('تمّت الجولة') : t('التالي') + ' \u203A', last ? 'btn-secondary btn-sm' : 'btn-secondary btn-sm', ' data-tournext="1"')
+    +   '</div>'
+    +   '<p class="hint" style="margin:10px 0 0"><button type="button" class="btn btn-quiet btn-sm" data-tourstop="1">' + esc(t('لا تعرضها ثانيةً')) + '</button></p>'
+    + '</div></div>';
+}
+
 /* ═══ أرقامُ الفريق دفعةً واحدة (V16.99) ═══
    الرقمُ حقلٌ في الحساب، وإدخالُه واحدًا واحدًا لخمسةَ عشرَ حسابًا يُؤجَّل
    فلا يُعمَل — و«بلاغُ اليوم» بلا أرقامٍ نصفُ شاشة. فصار يُلصَق الجدولُ كما
@@ -18303,7 +18390,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.99' + '.docx" download>⬇ '
+              +   'V17.0' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -30585,6 +30672,11 @@ function render(force){
   { var bh = document.getElementById('bugHost');
     if (!bh){ bh = document.createElement('div'); bh.id = 'bugHost'; document.body.appendChild(bh); }
     bh.innerHTML = BUG_OPEN ? bugSheet() : ''; }
+  /* جولةُ البداية: لوحٌ على الجسد وإضاءةُ بندِ الشاشة في القائمة */
+  { var th = document.getElementById('tourHost');
+    if (!th){ th = document.createElement('div'); th.id = 'tourHost'; document.body.appendChild(th); }
+    th.innerHTML = TOUR_OPEN ? tourHtml() : '';
+    if (typeof tourSpot === 'function') tourSpot(); }
   if (CUR === 'map'){
     /* لا يُمَسُّ #mapBox — تُرسَم واجهتُه في طبقةٍ فوقه وحدها */
     if (mw) mw.hidden = false;
@@ -30693,6 +30785,8 @@ function enterShell(){
   }
   render();
   syncBadge();
+  /* أوّلُ دخولٍ لهذا الحساب: تُفتَح الجولةُ بنفسها — ومن رآها لا تُعاد */
+  try { tourMaybe(); if (TOUR_OPEN) render(1); } catch (e){ LS_ERR = e; }
 }
 
 /* قائمةُ الخصائص المربوطة، مشتقّةً من نصِّ المعالجات لا مكتوبةً بيد.
@@ -30965,6 +31059,18 @@ function clickA(e){
     toast(t('حُفظت المهمة')); return true;
   }
   if (e.target.closest('[data-wttools]')){ WT_TOOLS = !WT_TOOLS; render(1); return true; }
+  if (e.target.closest('[data-tour]')){ tourStart(); return true; }
+  if (e.target.closest('[data-tourclose]')){ tourEnd(false); return true; }
+  if (e.target.closest('[data-tourstop]')){ tourEnd(true); toast(t('لن تُعرَض ثانيةً — زرُّ 🎓 يفتحها متى شئت')); return true; }
+  if (e.target.closest('[data-tourprev]')){ TOUR_I = Math.max(0, TOUR_I - 1); render(1); return true; }
+  if (e.target.closest('[data-tournext]')){
+    var TP = tourPages();
+    if (TOUR_I >= TP.length - 1){ tourEnd(true); toast(t('تمّت الجولة — زرُّ 🎓 يفتحها متى شئت')); }
+    else { TOUR_I++; render(1); }
+    return true;
+  }
+  var tg = e.target.closest('[data-tourgo]');
+  if (tg){ goPage(tg.getAttribute('data-tourgo')); render(1); return true; }
   if (e.target.closest('[data-phbulk]')){ phonesBulk(); return true; }
   if (e.target.closest('[data-bugopen]')){ BUG_OPEN = true; render(1); return true; }
   if (e.target.closest('[data-bugclose]')){ BUG_OPEN = false; render(1); return true; }
