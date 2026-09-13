@@ -75,7 +75,9 @@ R('مسؤولُ قواعد البيانات');
   chk(cols.length >= 30, `مجموعاتٌ مسمّاةٌ في القواعد (${cols.length})`);
 
   /* كلُّ ما يُكتَب له مجموعةٌ مسمّاة — وإلا سقط في misc المغلقة */
-  const map = /var col = \{([\s\S]{0,700}?)\}/.exec(js);
+  /* تُقرأ الخريطةُ إلى قوسِها لا إلى عددٍ من الحروف: نافذةٌ ثابتةٌ تنكسر
+     بأوّلِ مجموعةٍ تُضاف فتصير الخريطةُ «غيرَ موجودة» وكلُّ ما يُكتَب يتيمًا. */
+  const map = /var col = \{([\s\S]*?)\n\s*\};/.exec(js);
   const named = map ? [...map[1].matchAll(/(\w+)\s*:/g)].map(m => m[1]) : [];
   const written = [...new Set([...js.matchAll(/CORE\.set\('(\w+)'/g)].map(m => m[1]))];
   const orphan = written.filter(k => named.indexOf(k) < 0);

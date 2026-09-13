@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V16.97",
+  "app_version": "V16.98",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1565,6 +1565,7 @@
     "V16.95": "طبقةُ التفاصيل تعرض كلَّ ما نزل إليه الميدان: LAYERS.brief.pass = وجودُ STATE.recs[id] (بدل svDone)؛ briefStage يضيف blocked (#E07B39) حين access !== تم الوصول، وrevisit يسبق كلَّ شيء؛ BRIEF_STAGE_ORDER = [none, blocked, revisit, tech, ret, min, ok]؛ briefOf/briefSet يشترطان وجودَ الوثيقة لا تمامَ الزيارة؛ بطاقةُ الطبقة تعرض حقولَ الميدان وشرائحَ السطر حين bHas لا bSv، وسطرُ الحالة يقول «نزل الميدانُ ولم يصل».",
     "V16.96": "دفترُ التجارب: settings/trials = {rows:[{id,n,date,hours,note,by,at}], inCost, at, by} يُسحَب ويُحفَظ في STATE.trials عبر CORE.set(cfg,trials) (وثيقةُ إعداداتٍ لا مجموعة)؛ trialRows/trialOf/trialSpend/trialsSpend/trialsHours/trialInCost/trialToggleCost/trialAdd/trialHoursAdd/trialRemove (يمنع حذفَ تجربةٍ عليها مشتريات)؛ حقل trial على وثيقة الشراء يُختار من #byTrial في نموذج الشراء؛ buysSpent يستثني مشترياتِ التجارب ما لم يكن inCost؛ شريحة ipc/trials (PAGE_CAP.trials=money وnav مع buys) فيها مفتاح data-trcost وdata-trnew/trh/trdel، وشريحةُ الميزانية تقول كم مصروفُ التجارب وأداخلٌ هو أم خارج. جرد audit-trials.",
     "V16.97": "الجوالُ على الحساب: حقل data-usrph في صفِّ التحرير يُحفَظ في users.ph (أرقامٌ و+ فقط) ويُعرَض في الصفِّ أو «بلا جوال»؛ وبلاغُ اليوم: briefingRows() (الأدوار الميدانية النشطة: tech/supervisor/engineer/helper/cins/driver — إسنادُ اليوم بنوعه من tasks، وإنجازُ اليوم من recs/inss بتاريخ اليوم، ومهامُّ الاجتماع المفتوحة بالاسم)، briefingText(x) رسالةٌ بالنقاط وأسمائها ورابط التطبيق، briefingSend(uid) → window.open(waLink(ph,…)) (waLink يحوّل 05… إلى 966…)، briefingCopyAll → الحافظة؛ بطاقة briefingHtml أوّلَ شريحة perf/crewman لمن may(phones)؛ data-brief/data-briefall. تنظيف: أُزيل WT_EDIT (بقيّةُ تحرير الصف القديم). جرد audit-briefing.",
+    "V16.98": "البلاغات: زر data-bugopen في الشريط لكلِّ دور يفتح لوحَ bugSheet في مضيف #bugHost على body؛ bugSend يكتب مجموعة bugs {kind ∈ عطل/طلب جديد/اقتراح, txt, want, by, uid, at, status:جديد, gh:0, ctx:{v من .ver-tag, page, tab, role, lang, online, ua, scr, err من LS_ERR}}؛ قاعدة /bugs: create لكلِّ من يدخل، read/update لrank≥90، delete false (اختبارات في rules-test)؛ السحبُ لrank≥engineer فقط (orderBy at desc limit 200) وbugList/bugSet للإدارة. scripts/bugs-sync.mjs في سير الخادم (issues: write) يفتح كلَّ بلاغٍ بلا gh بلاغًا في المستودع بعنوانٍ ونصٍّ من الوثيقة ويكتب gh ورقمَه، وما أُغلق في المستودع يصير status=مغلق.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

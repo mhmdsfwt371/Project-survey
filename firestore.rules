@@ -333,6 +333,15 @@ service cloud.firestore {
     // حضورُ الأجهزة: كلُّ جهازٍ يكتب وثيقتَه هو (النسخةُ والدورُ والوقت) — تليمتري لا
     // بيانات، فيكتبها المطّلعُ والإدارةُ العليا أيضًا؛ ويقرؤها كلُّ فعّال، والحذفُ للإدارة
     match /presence/{uid} { allow read: if ok(); allow create, update: if ok() && request.auth.uid == uid; allow delete: if mgr(); }
+    // ═══ البلاغات: يكتبها كلُّ من يدخل، ويقرؤها ويغلقها من يُصلح ═══
+    // العطلُ يقع عند الميدان لا عند المكتب — فمن رآه يكتبه. والتعديلُ
+    // (الحالةُ ورقمُ البلاغ في المستودع) لمن يُصلح ولخادم المشروع.
+    match /bugs/{id} {
+      allow read:   if ok() && myRank() >= 90;
+      allow create: if ok();
+      allow update: if ok() && myRank() >= 90;
+      allow delete: if false;
+    }
     match /misc/{id} { allow read, write: if false; }
 
   }

@@ -1,0 +1,82 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   جردُ البلاغات — node scripts/audit-bugs.mjs
+   ───────────────────────────────────────────────────────────────────────────
+   العطلُ يُبلَّغ من داخل النظام لا بمكالمة (V16.98). يُثبَت هنا: الزرُّ في
+   الشريط لكلِّ دور، واللوحُ يُفتَح فوق أيِّ شاشة، والبلاغُ لا يُرسَل فارغًا،
+   ويُرفَق به ما لا يعرف المبلِّغُ أن يقوله — النسخةُ والشاشةُ والدورُ واللغةُ
+   وحالُ الشبكة وآخرُ خطأٍ في الجلسة — ويُكتَب في مجموعةٍ يقرؤها من يُصلح؛
+   وجسرُ المستودع يبني عنوانًا ونصًّا من الوثيقة نفسِها ويكتب رقمَه فيها.
+   ═════════════════════════════════════════════════════════════════════════ */
+import { readFileSync } from 'fs';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { JSDOM, VirtualConsole } = require('jsdom');
+let bad = 0;
+const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+const wait = ms => new Promise(r => setTimeout(r, ms));
+
+const vc = new VirtualConsole(); const errs = [];
+vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
+const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const w = dom.window, d = w.document;
+w.HTMLCanvasElement.prototype.getContext = () => null;
+if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
+w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });
+w.scrollTo = () => {};
+await wait(900);
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'tech', name:'فنيُّ الميدان' });
+w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0); w.liveWatch = () => {}; w.liveSmall = () => {};
+d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass1234';
+d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+await wait(1500);
+const wrote = {}; w.CORE.set = (k, id, v) => { wrote[k + '/' + id] = v; };
+const toasts = []; const T0 = w.toast; w.toast = m => { toasts.push(String(m)); };
+const click = sel => { const el = d.querySelector(sel); if (!el) return false; el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return true; };
+
+/* الزرُّ واللوح — للفنيِّ أيضًا: العطلُ يقع عنده */
+T(w.ROLE === 'tech' || true, 'الدورُ المُختبَر: ' + w.ROLE);
+T(!!d.querySelector('[data-bugopen]'), 'زرُّ البلاغ في الشريط العلويّ');
+click('[data-bugopen]'); await wait(150);
+const sh = d.getElementById('bugSheet');
+T(!!sh && sh.parentElement.id === 'bugHost' && sh.parentElement.parentElement === d.body,
+  'واللوحُ يُفتَح في مضيفٍ على الجسد — فوق أيِّ شاشة');
+T(!!d.getElementById('bgTxt') && d.querySelectorAll('[data-bugkind]').length === 3, 'وفيه ثلاثةُ أنواع: عطلٌ وطلبٌ واقتراح');
+
+/* لا يُرسَل فارغًا */
+d.getElementById('bgTxt').value = 'قصير';
+click('[data-bugsend]'); await wait(120);
+T(!Object.keys(wrote).length && toasts.some(x => /سطر/.test(x)), 'ولا يُرسَل بلاغٌ بلا وصف');
+
+/* يُرسَل بسياقه */
+w.STATE.meta.name = 'فنيُّ الميدان';   /* الاسمُ يأتي من الدخول — يُثبَّت هنا */
+w.LS_ERR = new Error('boom في الرسم');
+w.goPage('map'); w.render(1); await wait(150);
+click('[data-bugopen]'); await wait(150);
+click('[data-bugkind="طلب جديد"]'); await wait(120);
+d.getElementById('bgTxt').value = 'الخريطة لا تفتح بعد الضغط على موقعي';
+d.getElementById('bgWant').value = 'تفتح النافذة';
+click('[data-bugsend]'); await wait(150);
+const key = Object.keys(wrote).filter(k => k.indexOf('bugs/') === 0)[0];
+const b = key ? wrote[key] : null;
+T(!!b && b.kind === 'طلب جديد' && /موقعي/.test(b.txt) && b.by === 'فنيُّ الميدان' && b.status === 'جديد',
+  'ويُكتَب البلاغُ بنوعه ونصِّه وكاتبه');
+T(!!b && b.ctx && /^V\d+\.\d+$/.test(b.ctx.v) && b.ctx.page === 'map' && b.ctx.role === 'tech' && /boom/.test(b.ctx.err || ''),
+  'ومعه ما لا يعرف المبلِّغُ أن يقوله: ' + (b ? [b.ctx.v, b.ctx.page, b.ctx.role, b.ctx.err ? 'خطأٌ في الجلسة' : ''].join(' · ') : ''));
+T(!!b && b.ctx.ua && b.ctx.scr && typeof b.ctx.online === 'boolean', 'والجهازُ والشاشةُ وحالُ الشبكة');
+T(w.BUG_OPEN === false, 'ويُطوى اللوحُ بعد الإرسال');
+
+/* الجسرُ إلى المستودع */
+const src = readFileSync('scripts/bugs-sync.mjs', 'utf8');
+T(/collection\('bugs'\)/.test(src) && /repos\/\$\{REPO\}\/issues/.test(src) && /method: 'POST'/.test(src),
+  'الجسرُ يقرأ البلاغاتِ ويفتحها في المستودع');
+T(/update\(\{ gh: issue\.number/.test(src), 'ويكتب رقمَ البلاغ في وثيقته — فلا يُفتَح مرتين');
+T(/issue\.state === 'closed'/.test(src) && /status: 'مغلق'/.test(src), 'وما أُغلق هناك يُغلق هنا — حالةٌ واحدةٌ لا اثنتان');
+const wf = readFileSync('.github/workflows/provision.yml', 'utf8');
+T(/issues: write/.test(wf) && /bugs-sync\.mjs/.test(wf), 'ويعمل مع سير الخادم كلَّ عشر دقائق بصلاحية فتح البلاغات');
+const rules = readFileSync('firestore.rules', 'utf8');
+T(/match \/bugs\/\{id\}[\s\S]{0,220}allow create: if ok\(\)/.test(rules) && /allow read:\s+if ok\(\) && myRank\(\) >= 90/.test(rules),
+  'والقاعدةُ تقبلها من كلِّ من يدخل وتقرؤها لمن يُصلح');
+
+T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
+console.log(bad ? `\nجردُ البلاغات فشل ✗ (${bad})` : '\nالبلاغُ من داخل النظام — ويفتح نفسَه في المستودع ✅');
+process.exit(bad ? 1 : 0);

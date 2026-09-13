@@ -15,6 +15,7 @@ on:
         default: ''
 permissions:
   contents: read
+  issues: write        # جسرُ البلاغات: يفتح بلاغَ المستودع من بلاغ التطبيق
 jobs:
   provision:
     runs-on: ubuntu-latest
@@ -43,3 +44,8 @@ jobs:
           GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
         run: node scripts/photos-sync.mjs
+      - name: البلاغات — من التطبيق إلى المستودع
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/bugs-sync.mjs
