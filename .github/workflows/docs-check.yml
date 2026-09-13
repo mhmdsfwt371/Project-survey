@@ -208,6 +208,8 @@ jobs:
         run: node scripts/audit-pop-race.mjs
       - name: جرد التفاصيل المختصرة — طبقةٌ تُقرأ بلونها وتُكتَب بسطر
         run: node scripts/audit-brief.mjs
+      - name: جرد دفتر التجارب — كلُّ ريالٍ وساعةٍ، والقرارُ مفتاحٌ واحد
+        run: node scripts/audit-trials.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك

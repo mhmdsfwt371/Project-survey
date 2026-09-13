@@ -588,6 +588,10 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .bf-tx{padding:6px 0;border-top:1px solid var(--line-2)}
 .bf-ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
 .bf-ph img{width:100%;height:88px;object-fit:cover;border-radius:8px;display:block;cursor:zoom-in}
+/* مفتاحُ قرارٍ يُقرأ كجملة */
+.sw-row{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin:0}
+.sw-row.is-off{cursor:default;opacity:.75}
+.sw-row input{width:20px;height:20px;margin-top:2px;flex:0 0 auto;accent-color:var(--brand)}
 .wt-meet{padding:12px 14px}
 #mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
 #m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
@@ -805,7 +809,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.95</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.96</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3608,6 +3612,7 @@ en:{
  'تمام':'Fine', 'تحدٍّ':'Challenge',
  'ما كُتب عن النقطة':'What was written about the point', 'لم تصل هذا الجهاز بعد':'Not on this device yet', 'سببُ إعادة الزيارة':'Reason for revisit', 'ملاحظةُ الوزارة':'Ministry note', 'ملاحظةُ التركيب':'Installation note', 'سببُ تعذُّر الوصول':'Reason access failed',
  'تُكتَب بعد نزول الميدان إلى النقطة':'Written after the field visits the point', 'لم ينزل الميدانُ إلى هذه النقطة بعد':'The field has not been to this point yet', 'تعذّر الوصول':'Access failed', 'نزل الميدانُ ولم يصل':'The field went but could not reach it',
+ 'التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا. سجِّل هنا ما اشتُري لها وكم استغرقت، ثم قرِّر بمفتاحٍ واحدٍ أيدخل مصروفُها في تكاليف المشروع أم يبقى مسجَّلًا خارجَها.':'A trial is spend and time before it becomes work. Record what was bought for it and how long it took, then decide with one switch whether its spend counts in project costs or stays recorded outside them.', 'احسب مصروف التجارب ضمن تكاليف المشروع':'Count trial spend in project costs', 'اسم التجربة':'Trial name', 'ما الذي جُرِّب؟':'What was tried?', 'التجارب':'Trials', 'كلُّ ريالٍ وكلُّ ساعةٍ في التجارب — وقرارُ دخولها التكاليف.':'Every riyal and every hour in trials — and the decision to count them in costs.', 'تجارب':'Trials', 'ساعات':'Hours', 'مصروفُ التجارب':'Trial spend', 'في تكاليف المشروع':'In project costs', 'المصروفُ داخلٌ الآن في المنصرف المعتمد وفي نسبة استهلاك السقف.':'The spend is now inside approved spending and the cap usage.', 'المصروفُ خارجٌ الآن — يُرى في هذا الدفتر ولا يُحسَب على السقف.':'The spend is now outside — visible in this ledger and not counted against the cap.', 'تجربةٌ جديدة':'New trial', 'الساعات':'Hours', 'النتيجةُ أو ما تعلّمناه':'The result or what we learned', 'سجّل التجربة':'Record the trial', 'مشترياتُ هذه التجربة':'Purchases for this trial', 'بلا مشتريات — تُربَط من دفتر المشتريات باختيار التجربة.':'No purchases — link them from the purchases ledger by choosing the trial.', 'لا تجاربَ بعد.':'No trials yet.', 'لتجربة':'For trial', '— ليس لتجربة —':'— not for a trial —', 'التجاربُ للمهندس فما فوق':'Trials are for engineers and above', 'اكتب اسمَ التجربة':'Write the trial name', 'سُجّلت التجربة':'Trial recorded', 'حُدّثت ساعاتُ التجربة':'Trial hours updated', 'لا تُحذَف تجربةٌ عليها مشتريات':'A trial with purchases cannot be deleted', 'حُذفت التجربة':'Trial deleted', 'دخل مصروفُ التجارب في التكاليف':'Trial spend now counts in costs', 'خرج مصروفُ التجارب من التكاليف':'Trial spend no longer counts in costs', 'داخلٌ في المنصرف أعلاه':'included in the spending above', 'خارجٌ عن المنصرف أعلاه — يُبدَّل من شريحة التجارب':'outside the spending above — switch it from the Trials tab',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6281,6 +6286,7 @@ ur:{
  'تمام':'ٹھیک', 'تحدٍّ':'چیلنج',
  'ما كُتب عن النقطة':'پوائنٹ کے بارے میں کیا لکھا گیا', 'لم تصل هذا الجهاز بعد':'ابھی اس ڈیوائس پر نہیں', 'سببُ إعادة الزيارة':'دوبارہ دورے کی وجہ', 'ملاحظةُ الوزارة':'وزارت کا نوٹ', 'ملاحظةُ التركيب':'تنصیب کا نوٹ', 'سببُ تعذُّر الوصول':'رسائی ناکام ہونے کی وجہ',
  'تُكتَب بعد نزول الميدان إلى النقطة':'فیلڈ کے دورے کے بعد لکھی جاتی ہے', 'لم ينزل الميدانُ إلى هذه النقطة بعد':'فیلڈ ابھی اس پوائنٹ پر نہیں گیا', 'تعذّر الوصول':'رسائی ناکام', 'نزل الميدانُ ولم يصل':'فیلڈ گیا مگر پہنچ نہ سکا',
+ 'التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا. سجِّل هنا ما اشتُري لها وكم استغرقت، ثم قرِّر بمفتاحٍ واحدٍ أيدخل مصروفُها في تكاليف المشروع أم يبقى مسجَّلًا خارجَها.':'آزمائش کام بننے سے پہلے خرچ اور وقت ہے۔ یہاں درج کریں کیا خریدا گیا اور کتنا وقت لگا، پھر ایک سوئچ سے طے کریں کہ اس کا خرچ منصوبے کی لاگت میں شمار ہو یا باہر رہے۔', 'احسب مصروف التجارب ضمن تكاليف المشروع':'آزمائشی خرچ کو منصوبے کی لاگت میں شمار کریں', 'اسم التجربة':'آزمائش کا نام', 'ما الذي جُرِّب؟':'کیا آزمایا گیا؟', 'التجارب':'آزمائشیں', 'كلُّ ريالٍ وكلُّ ساعةٍ في التجارب — وقرارُ دخولها التكاليف.':'آزمائشوں کا ہر ریال اور ہر گھنٹہ — اور لاگت میں شمار کا فیصلہ۔', 'تجارب':'آزمائشیں', 'ساعات':'گھنٹے', 'مصروفُ التجارب':'آزمائشی خرچ', 'في تكاليف المشروع':'منصوبے کی لاگت میں', 'المصروفُ داخلٌ الآن في المنصرف المعتمد وفي نسبة استهلاك السقف.':'خرچ اب منظور شدہ اخراجات اور حد کے استعمال میں شامل ہے۔', 'المصروفُ خارجٌ الآن — يُرى في هذا الدفتر ولا يُحسَب على السقف.':'خرچ اب باہر ہے — اس رجسٹر میں نظر آتا ہے اور حد پر شمار نہیں ہوتا۔', 'تجربةٌ جديدة':'نئی آزمائش', 'الساعات':'گھنٹے', 'النتيجةُ أو ما تعلّمناه':'نتیجہ یا جو سیکھا', 'سجّل التجربة':'آزمائش درج کریں', 'مشترياتُ هذه التجربة':'اس آزمائش کی خریداری', 'بلا مشتريات — تُربَط من دفتر المشتريات باختيار التجربة.':'کوئی خریداری نہیں — خریداری رجسٹر سے آزمائش منتخب کر کے جوڑیں۔', 'لا تجاربَ بعد.':'ابھی کوئی آزمائش نہیں۔', 'لتجربة':'آزمائش کے لیے', '— ليس لتجربة —':'— کسی آزمائش کے لیے نہیں —', 'التجاربُ للمهندس فما فوق':'آزمائشیں انجینئر اور اوپر کے لیے', 'اكتب اسمَ التجربة':'آزمائش کا نام لکھیں', 'سُجّلت التجربة':'آزمائش درج ہو گئی', 'حُدّثت ساعاتُ التجربة':'آزمائش کے گھنٹے اپ ڈیٹ', 'لا تُحذَف تجربةٌ عليها مشتريات':'جس آزمائش پر خریداری ہو وہ حذف نہیں ہوتی', 'حُذفت التجربة':'آزمائش حذف ہو گئی', 'دخل مصروفُ التجارب في التكاليف':'آزمائشی خرچ اب لاگت میں شمار ہے', 'خرج مصروفُ التجارب من التكاليف':'آزمائشی خرچ اب لاگت میں شمار نہیں', 'داخلٌ في المنصرف أعلاه':'اوپر کے اخراجات میں شامل', 'خارجٌ عن المنصرف أعلاه — يُبدَّل من شريحة التجارب':'اوپر کے اخراجات سے باہر — آزمائشیں ٹیب سے بدلیں',
 }
 };
 
@@ -8191,7 +8197,8 @@ var CORE = {
       notifAt:STATE.meta.notifAt || 0,
       epoch:STATE.meta.epoch || 0,
       wbs:STATE.wbs || null,
-      wtask:STATE.wtask || null
+      wtask:STATE.wtask || null,
+      trials:STATE.trials || null
     });
   },
 
@@ -8213,6 +8220,7 @@ var CORE = {
       if (v.epoch) STATE.meta.epoch = v.epoch;
       if (v.wbs && Array.isArray(v.wbs.rows)) STATE.wbs = v.wbs;
       if (v.wtask && Array.isArray(v.wtask.rows)) STATE.wtask = v.wtask;
+      if (v.trials && Array.isArray(v.trials.rows)) STATE.trials = v.trials;
       /* يُطوى المكرَّرُ فيما حُمِّل: الطابورُ المحفوظُ قبل الطيِّ فيه مفاتيحُ
          مكرَّرة، فتُطوى مرةً هنا ولا تُرفَع مرارًا. */
       if (Array.isArray(STATE.queue) && STATE.queue.length > 1){
@@ -8761,6 +8769,9 @@ var FB = {
       FB.db.collection('settings').doc('miles').get().then(function(doc){
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
       }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
+      FB.db.collection('settings').doc('trials').get().then(function(doc){
+        if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.trials = { rows:k.rows, inCost:!!k.inCost, at:k.at, by:k.by }; }
+      }).catch(function(e){ softErr('سحب دفتر التجارب', e, ''); });
       FB.db.collection('settings').doc('wtask').get().then(function(doc){
         if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; }
       }).catch(function(e){ softErr('سحب المهام الأسبوعية', e, ''); });
@@ -17434,6 +17445,50 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
   l:'المستخلصاتُ ودفترُ المشتريات والميزانيةُ واعتمادُها.',
   body:function(){
     var head = tabHead('ipc'), cur = tabCur('ipc');
+    if (cur === 'trials') return head + (function(){
+      var me = trialMay(), R = trialRows(), inC = trialInCost(), d = trialsDoc();
+      var spend = trialsSpend(), hrs = trialsHours();
+      return '<p class="lede" style="margin:0 0 16px">' + esc(t('التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا. سجِّل هنا ما اشتُري لها وكم استغرقت، ثم قرِّر بمفتاحٍ واحدٍ أيدخل مصروفُها في تكاليف المشروع أم يبقى مسجَّلًا خارجَها.')) + '</p>'
+        + stats([['تجارب', N(R.length)], ['ساعات', N(hrs)], ['مصروفُ التجارب', N(spend), 'acc'],
+                 ['في تكاليف المشروع', inC ? esc(t('نعم')) : esc(t('لا')), inC ? 'ok' : 'wrn']])
+        /* المفتاحُ: قرارٌ يُبدَّل متى شئت ولا يُعاد تسجيلُ شيء */
+        + card('', '<label class="sw-row' + (me ? '' : ' is-off') + '">'
+            + '<input type="checkbox"' + (inC ? ' checked' : '') + (me ? '' : ' disabled') + ' data-trcost="1">'
+            + '<span><b>' + esc(t('احسب مصروف التجارب ضمن تكاليف المشروع')) + '</b>'
+            + '<span class="hint" style="display:block;margin:2px 0 0">'
+            +   esc(t(inC ? 'المصروفُ داخلٌ الآن في المنصرف المعتمد وفي نسبة استهلاك السقف.'
+                          : 'المصروفُ خارجٌ الآن — يُرى في هذا الدفتر ولا يُحسَب على السقف.')) + '</span></span></label>')
+        + (me ? card('تجربةٌ جديدة',
+            '<div class="grid cols-2">'
+            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('اسم التجربة')) + '</label><input id="trN" dir="auto" placeholder="' + esc(t('ما الذي جُرِّب؟')) + '"></div>'
+            + '<div class="field"><label>' + esc(t('التاريخ')) + '</label><input id="trD" type="date" value="' + esc(new Date().toISOString().slice(0, 10)) + '"></div>'
+            + '<div class="field"><label>' + esc(t('الساعات')) + '</label><input id="trH" type="number" min="0" step="0.5" inputmode="decimal"></div>'
+            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('ملاحظة')) + '</label><input id="trNote" dir="auto" placeholder="' + esc(t('النتيجةُ أو ما تعلّمناه')) + '"></div>'
+            + '</div>', btn('\u{1F9EA} ' + t('سجّل التجربة'),'btn-primary btn-sm',' data-trnew="1"')) : '')
+        + (R.length
+            ? R.map(function(r){
+                var bs = trialBuys(r.id), sp = trialSpend(r.id);
+                return card('', '<div class="wt-row" style="justify-content:space-between">'
+                  + '<div style="min-width:0"><strong>' + esc(r.n) + '</strong>'
+                  +   '<div class="hint" style="margin:2px 0 0">' + esc(r.date || '') + (r.by ? ' \u00b7 ' + esc(dispName(r.by)) : '') + '</div></div>'
+                  + '<div class="wt-row" style="margin:0">' + pill(nm(+r.hours || 0) + ' ' + t('ساعة'), 'acc')
+                  +   pill(nm(sp) + ' ' + t('ريال'), sp ? (inC ? 'ok' : 'warn') : 'off') + '</div></div>'
+                  + (r.note ? '<div class="hint" style="margin:6px 0 0">' + esc(r.note) + '</div>' : '')
+                  + (bs.length
+                      ? '<div class="hint" style="margin:8px 0 4px;font-weight:700">' + esc(t('مشترياتُ هذه التجربة')) + '</div>'
+                        + table(['الصنف','المورّد','المبلغ','الحال'], bs.map(function(b){
+                            return [esc(b.item), esc(b.sup || ''), N(+b.amt || 0), pill(b.st, b.st === 'معتمد' ? 'ok' : 'warn')]; }))
+                      : '<p class="hint" style="margin:6px 0 0">' + esc(t('بلا مشتريات — تُربَط من دفتر المشتريات باختيار التجربة.')) + '</p>')
+                  + (me ? '<div class="actions" style="margin:8px 0 0">'
+                      + btn('+1 ' + t('ساعة'),'btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|1"')
+                      + btn('+0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|0.5"')
+                      + btn('\u2212 0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|-0.5"')
+                      + (sp ? '' : btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-trdel="' + esc(r.id) + '"'))
+                      + '</div>' : ''));
+              }).join('')
+            : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تجاربَ بعد.')) + '</p>'))
+        + (d.at ? '<p class="hint" style="margin:6px 0 0">' + esc(t('آخر تحديث')) + ' ' + esc(dispName(d.by || '')) + ' ' + esc(stepAgo(d.at)) + '</p>' : '');
+    })();
     if (cur === 'budget') return head + (function(){
     var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:buysSpent(), pending:0 };
     return '<p class="lede" style="margin:0 0 16px">' + esc(t('الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.')) + '</p>'
@@ -17447,6 +17502,10 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
       + stats([['المنصرف المعتمد', N(B.spent)], ['من', N(B.cap), 'acc'],
                ['المتبقي', N(B.cap - B.spent), 'ok'], ['بانتظار الاعتماد', N(B.pending)]])
       + card('', meter('المستهلك من السقف المعتمد', B.spent, B.cap))
+      + (trialsSpend()
+          ? '<p class="hint" style="margin:6px 0 0">\u{1F9EA} ' + esc(t('مصروفُ التجارب')) + ': <b class="num">' + nm(trialsSpend()) + '</b> '
+            + esc(t('ريال')) + ' \u00b7 ' + esc(t(trialInCost() ? 'داخلٌ في المنصرف أعلاه' : 'خارجٌ عن المنصرف أعلاه — يُبدَّل من شريحة التجارب')) + '</p>'
+          : '')
       + '<p class="hint">' + esc(t('تغييرُ السقف لا يمسّ عمليةً مسجّلة — الوزن يُثبَّت لحظةَ الحدث.')) + '</p>';
   })();
     if (cur === 'buys') return head + (function(){
@@ -17476,6 +17535,13 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
             + '<div class="field"><label>' + esc(t('المشعر')) + '</label><select id="byZone">'
             +   ['منى','عرفات','مزدلفة','—'].map(function(z){ return '<option value="' + esc(z) + '">' + esc(t(z)) + '</option>'; }).join('')
             + '</select></div>'
+            /* لأيِّ تجربةٍ هذا الشراء — فيُعرَف مصروفُ كلِّ تجربةٍ على حدة */
+            + (trialRows().length
+                ? '<div class="field"><label>' + esc(t('لتجربة')) + '</label><select id="byTrial">'
+                  + '<option value="">' + esc(t('— ليس لتجربة —')) + '</option>'
+                  + trialRows().map(function(r){ return '<option value="' + esc(r.id) + '">' + esc(r.n) + '</option>'; }).join('')
+                  + '</select></div>'
+                : '')
             + '</div>'
             + '<div class="actions">' + btn('سجّل الشراء','btn-primary',' data-byadd="1"') + '</div>'
             + '<p class="hint">' + esc(t('ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.')) + '</p>')
@@ -17963,7 +18029,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.95' + '.docx" download>⬇ '
+              +   'V16.96' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -24471,9 +24537,71 @@ function moveAdd(){
 /* المنصرفُ يُحسَب مرةً في مكانٍ واحد: خمسةُ مواضعَ كانت تجمعه، ولو اختلف
    شرطُ واحدٍ منها عن الآخر تفرّقت الأرقامُ في تقريرٍ واحد. */
 function buysSpent(){
+  /* مصروفُ التجارب يدخل أو لا يدخل بحسب مفتاحِ الدفتر — والدفترُ يبقى كما هو */
+  var inC = trialInCost();
   return buysList().reduce(function(a,b){
-    return a + (b.st === 'معتمد' ? (+b.amt || 0) : 0); }, 0);
+    if (b.st !== 'معتمد') return a;
+    if (b.trial && !inC) return a;
+    return a + (+b.amt || 0); }, 0);
 }
+
+/* ═══ التجارب: كلُّ ريالٍ وكلُّ ساعة — وقرارُ دخولها التكاليف (V16.96) ═══
+   التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا: يُشترى لها ويُجرَّب ثم يُقال هذا
+   يصلح أو لا يصلح. وكان مصروفُها يذوب في دفتر المشتريات فلا يُعرَف كم كلّفت
+   التجاربُ وحدَها، ولا وقتُها يُسجَّل أصلًا. فصار لها دفترٌ: اسمُ التجربة
+   وتاريخُها وساعاتُها، ولكلِّ شراءٍ حقلٌ يقول لأيِّ تجربةٍ هو. و**قرارُ
+   دخولها في تكاليف المشروع مفتاحٌ واحد**: إن رُفع خرج مصروفُ التجارب من
+   المنصرف المعتمد وبقي مسجَّلًا في دفتره — يُرى ولا يُحسَب؛ وإن وُضع دخل.
+   فالقرارُ يُبدَّل متى شئت ولا يُعاد تسجيلُ شيء. */
+function trialsDoc(){
+  var d = STATE.trials;
+  if (!d || !Array.isArray(d.rows)) d = STATE.trials = { rows:[], inCost:false, at:0, by:'' };
+  return d;
+}
+function trialRows(){ return trialsDoc().rows; }
+function trialOf(id){ return trialRows().filter(function(x){ return String(x.id) === String(id); })[0] || null; }
+function trialInCost(){ return !!trialsDoc().inCost; }
+function trialMay(){ return may('money'); }
+function trialSave(){
+  if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return false; }
+  var d = trialsDoc(); d.at = Date.now(); d.by = STATE.meta.name || '';
+  CORE.set('cfg', 'trials', { rows:d.rows, inCost:!!d.inCost, at:d.at, by:d.by });
+  CORE.saveSoon(); return true;
+}
+function trialAdd(){
+  if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
+  var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
+  var n = g('trN'); if (!n){ toast(t('اكتب اسمَ التجربة')); return; }
+  var hrs = +g('trH') || 0;
+  trialRows().unshift({ id:uid36(), n:n, date:g('trD') || new Date().toISOString().slice(0, 10),
+                        hours:hrs, note:g('trNote'), by:STATE.meta.name || '', at:Date.now() });
+  if (trialSave()){ logEvent('تجربة — ' + n + (hrs ? ' · ' + hrs + ' ساعة' : '')); toast(t('سُجّلت التجربة')); render(1); }
+}
+function trialHoursAdd(id, h){
+  var r = trialOf(id); if (!r) return;
+  r.hours = Math.max(0, (+r.hours || 0) + h);
+  if (trialSave()){ toast(t('حُدّثت ساعاتُ التجربة')); render(1); }
+}
+function trialRemove(id){
+  if (!trialMay()) return;
+  if (trialSpend(id) > 0){ toast(t('لا تُحذَف تجربةٌ عليها مشتريات')); return; }
+  trialsDoc().rows = trialRows().filter(function(x){ return String(x.id) !== String(id); });
+  if (trialSave()){ logEvent('حذفُ تجربة — ' + id); toast(t('حُذفت التجربة')); render(1); }
+}
+function trialToggleCost(){
+  if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
+  var d = trialsDoc(); d.inCost = !d.inCost;
+  if (trialSave()){
+    logEvent('مصروفُ التجارب ' + (d.inCost ? 'داخلٌ في التكاليف' : 'خارجٌ عن التكاليف'));
+    toast(t(d.inCost ? 'دخل مصروفُ التجارب في التكاليف' : 'خرج مصروفُ التجارب من التكاليف'));
+    render(1);
+  }
+}
+/* مشترياتُ تجربةٍ بعينها، وساعاتُها، ومجموعُ الدفتر */
+function trialBuys(id){ return buysList().filter(function(b){ return String(b.trial || '') === String(id); }); }
+function trialSpend(id){ return trialBuys(id).reduce(function(a, b){ return a + (+b.amt || 0); }, 0); }
+function trialsSpend(){ return buysList().reduce(function(a, b){ return a + (b.trial ? (+b.amt || 0) : 0); }, 0); }
+function trialsHours(){ return trialRows().reduce(function(a, r){ return a + (+r.hours || 0); }, 0); }
 
 /* ── المشتريات ── */
 function buysList(){
@@ -24488,7 +24616,7 @@ function buyAdd(){
   if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
   var item = g('byItem'), cat = g('byCat'), sup = g('bySup');
-  var amt = +g('byAmt') || 0, zone = g('byZone');
+  var amt = +g('byAmt') || 0, zone = g('byZone'), trial = g('byTrial');
   if (!item){ toast(t('اكتب الصنف')); return; }
   if (catList().indexOf(cat) < 0){ toast(t('الفئةُ من القائمة المعتمدة')); return; }
   if (supList().indexOf(sup) < 0){ toast(t('المورّدُ من القائمة المعتمدة')); return; }
@@ -24496,7 +24624,7 @@ function buyAdd(){
 
   var cap = cfgGet('budApp') || 0;
   var id = uid36();
-  var b = { id:id, item:item, cat:cat, sup:sup, amt:amt, zone:zone,
+  var b = { id:id, item:item, cat:cat, sup:sup, amt:amt, zone:zone, trial:trial || '',
             at:Date.now(), by:STATE.meta.name || '',
             st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
   if (!STATE.buys) STATE.buys = {};
@@ -27635,7 +27763,7 @@ var ROLES = {
   buyer:{
     n:'مشتريات', d:'يسجّل المشترياتِ ويتابع المورّدين — ولا يعتمد ولا يصرف عهدة',
     guide:'دليل المهندس — إدارة المشروع',
-    nav:['buys','ships','fleet','fleetAsn','fleetCost','over','guide','acct','notif'],
+    nav:['buys','trials','ships','fleet','fleetAsn','fleetCost','over','guide','acct','notif'],
     can:{ edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:1, delete:0, users:0, phones:1, fleet:1 } },
 
@@ -27649,7 +27777,7 @@ var ROLES = {
   acct:{
     n:'محاسب', d:'يقرأ المالَ ويصدّره — ولا يسجّل شراءً ولا يعتمده',
     guide:'دليل المهندس — إدارة المشروع',
-    nav:['buys','ipc','budget','budm','evm','exec','fleetCost','over','guide','acct','notif'],
+    nav:['buys','trials','ipc','budget','budm','evm','exec','fleetCost','over','guide','acct','notif'],
     can:{ edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -28024,7 +28152,7 @@ function maySupEng(){ return mayBonus(); }   /* اسمٌ قديم — النقا
 var PAGE_CAP = {
   /* «الملخّص المالي» شاشةُ العميل لا شاشةُ الشركة: المستخلصُ المعتمَدُ وحده
      يراه، وهو مصرَّحٌ له في nav — فلا يُقيَّد بقدرة المال الداخلية. */
-  ipc:'money', buys:'money', budget:'money', exec:'money',
+  ipc:'money', buys:'money', trials:'money', budget:'money', exec:'money',
   invb:'inventory', invmv:'inventory', stock:'inventory',
   wos:'workshop', wday:'workshop',
   /* شاشةُ الحسابات كانت مقيَّدةً بقدرة الإنشاء وحدَها — فمن يقرأ ولا يُنشئ
@@ -28164,6 +28292,7 @@ var TABS = {
   ipc:[
     ['ipc','المستخلصات','🧾','ما أُنجز واعتُمد — يُقدَّم للعميل ويُتابَع صرفُه.'],
     ['buys','دفتر المشتريات','🛒','مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.'],
+    ['trials','التجارب','🧪','كلُّ ريالٍ وكلُّ ساعةٍ في التجارب — وقرارُ دخولها التكاليف.'],
     ['budget','الميزانية والاعتماد','📊','سقف الصرف وحدّ اعتماد المهندس.']],
   dis:[
     ['dis','الفك بعد الموسم','📦','جدولة الفك وإرجاع العُهدة بحالة كل صنف.'],
@@ -30554,6 +30683,12 @@ function clickA(e){
     toast(t('حُفظت المهمة')); return true;
   }
   if (e.target.closest('[data-wttools]')){ WT_TOOLS = !WT_TOOLS; render(1); return true; }
+  if (e.target.closest('[data-trnew]')){ trialAdd(); return true; }
+  if (e.target.closest('[data-trcost]')){ trialToggleCost(); return true; }
+  var trh = e.target.closest('[data-trh]');
+  if (trh){ var pr2 = trh.getAttribute('data-trh').split('|'); trialHoursAdd(pr2[0], +pr2[1] || 0); return true; }
+  var trd = e.target.closest('[data-trdel]');
+  if (trd){ trialRemove(trd.getAttribute('data-trdel')); return true; }
   if (e.target.closest('[data-wtmeetstart]')){ wtMeetStart(); return true; }
   if (e.target.closest('[data-wtmeetprev]')){ WT_MI = Math.max(0, WT_MI - 1); WT_MEND = 0; render(1); return true; }
   if (e.target.closest('[data-wtmeetnext]')){ WT_MI = Math.min(wtMeetList().length - 1, WT_MI + 1); WT_MEND = 0; render(1); return true; }
