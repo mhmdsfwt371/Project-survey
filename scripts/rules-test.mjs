@@ -249,9 +249,10 @@ const PM = { m:{ purchases:{ buyer:{ r:true, w:true } }, recs:{ tech:{ w:false }
 await deny('قبل المصفوفة: المشتريات لا يقرأ المشتريات (الافتراضي)', getDoc(doc(as('buy'), 'purchases/p1')));
 /* ═══ البلاغات: يكتبها كلُّ من يدخل، ويقرؤها من يُصلح (V16.98) ═══ */
 const BUG = { kind:'عطل', txt:'الشاشة لا تفتح', by:'فنيّ', at:1, status:'جديد' };
-await ok  ('الفنيُّ يكتب بلاغًا — العطلُ يقع عنده',      setDoc(doc(as('tec'), 'bugs/b1'), BUG));
-await ok  ('والمشرف',                                    setDoc(doc(as('sup'), 'bugs/b2'), BUG));
-await deny('ولا يقرؤها الفنيُّ — ليست شاشتَه',            getDoc(doc(as('tec'), 'bugs/b1')));
+await ok  ('الفنيُّ يكتب بلاغًا — العطلُ يقع عنده',      setDoc(doc(as('tec'), 'bugs/b1'), Object.assign({}, BUG, { uid:'tec' })));
+await ok  ('والمشرف',                                    setDoc(doc(as('sup'), 'bugs/b2'), Object.assign({}, BUG, { uid:'sup' })));
+await ok  ('ويقرأ الفنيُّ بلاغَه هو — وصل؟ فُتح؟',        getDoc(doc(as('tec'), 'bugs/b1')));
+await deny('ولا يقرأ بلاغَ غيره',                        getDoc(doc(as('tec'), 'bugs/b2')));
 await ok  ('ويقرؤها المهندسُ ليصلحها',                    getDoc(doc(as('eng'), 'bugs/b1')));
 await ok  ('ويغلقها',                                    setDoc(doc(as('eng'), 'bugs/b1'), Object.assign({}, BUG, { status:'مغلق' })));
 await deny('ولا يغلقها الفنيّ',                           setDoc(doc(as('tec'), 'bugs/b2'), Object.assign({}, BUG, { status:'مغلق' })));

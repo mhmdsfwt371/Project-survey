@@ -337,7 +337,8 @@ service cloud.firestore {
     // العطلُ يقع عند الميدان لا عند المكتب — فمن رآه يكتبه. والتعديلُ
     // (الحالةُ ورقمُ البلاغ في المستودع) لمن يُصلح ولخادم المشروع.
     match /bugs/{id} {
-      allow read:   if ok() && myRank() >= 90;
+      // يقرؤها من يُصلح — ويقرأ كلُّ مبلِّغٍ بلاغَه هو: «وصل؟ فُتح؟ أُغلق؟»
+      allow read:   if ok() && (myRank() >= 90 || resource.data.uid == request.auth.uid);
       allow create: if ok();
       allow update: if ok() && myRank() >= 90;
       allow delete: if false;

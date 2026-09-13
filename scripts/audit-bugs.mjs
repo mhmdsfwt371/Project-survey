@@ -74,8 +74,39 @@ T(/issue\.state === 'closed'/.test(src) && /status: 'مغلق'/.test(src), 'وم
 const wf = readFileSync('.github/workflows/provision.yml', 'utf8');
 T(/issues: write/.test(wf) && /bugs-sync\.mjs/.test(wf), 'ويعمل مع سير الخادم كلَّ عشر دقائق بصلاحية فتح البلاغات');
 const rules = readFileSync('firestore.rules', 'utf8');
-T(/match \/bugs\/\{id\}[\s\S]{0,220}allow create: if ok\(\)/.test(rules) && /allow read:\s+if ok\(\) && myRank\(\) >= 90/.test(rules),
+T(/match \/bugs\/\{id\}[\s\S]{0,400}allow create: if ok\(\);/.test(rules)
+  && /allow read:\s+if ok\(\) && \(myRank\(\) >= 90/.test(rules),
   'والقاعدةُ تقبلها من كلِّ من يدخل وتقرؤها لمن يُصلح');
+
+/* ═══ V16.99: بلاغاتي في اللوح، وشاشةٌ لمن يُصلح، وأرقامُ الفريق دفعةً ═══ */
+w.STATE.bugs = { z1:{ id:'z1', txt:'الخريطة لا تفتح', by:'فنيُّ الميدان', uid:w.myUid(), at:Date.now()-6e5, status:'مفتوح', gh:12, kind:'عطل', ctx:{ v:'V16.98', page:'map' } },
+                 z2:{ id:'z2', txt:'بلاغُ غيري', by:'خالد', uid:'other', at:Date.now(), status:'جديد', kind:'عطل', ctx:{} } };
+w.BUG_OPEN = true; w.render(1); await wait(150);
+const sheet2 = d.getElementById('bugSheet');
+T(/بلاغاتي/.test(sheet2.textContent) && /الخريطة لا تفتح/.test(sheet2.textContent) && !/بلاغُ غيري/.test(sheet2.textContent),
+  'اللوحُ يعرض بلاغاتي وحدَها بحالتها');
+T(!!sheet2.querySelector('a[href*="/issues/12"]'), 'ورقمُها في المستودع رابطٌ يُفتَح');
+w.BUG_OPEN = false;
+const rules2 = readFileSync('firestore.rules', 'utf8');
+T(/resource\.data\.uid == request\.auth\.uid/.test(rules2), 'والقاعدةُ تُقرئ كلَّ مبلِّغٍ بلاغَه هو');
+/* شاشةُ من يُصلح */
+w.ROLE = 'engineer'; w.goPage('sys'); w.render(1); await wait(150);
+w.PTAB.sys = 'bugs'; w.render(1); await wait(200);
+const main2 = d.getElementById('main') || d.body;
+T(/البلاغات/.test(main2.textContent) && /الخريطة لا تفتح/.test(main2.textContent) && /بلاغُ غيري/.test(main2.textContent),
+  'ومن يُصلح يرى البلاغاتِ كلَّها في شريحتها');
+/* أرقامُ الفريق دفعةً واحدة */
+w.ROLE = 'admin';
+w.STATE.users = { u1:{ user:'ahmed', name:'أحمد سعيد', role:'tech', active:true },
+                  u2:{ user:'khaled', name:'خالد بندر', role:'supervisor', active:true } };
+w.goPage('users'); w.render(1); await wait(200);
+const ta = d.getElementById('phBulk');
+T(!!ta && /أرقام الفريق/.test(main2.textContent) && /بلا جوال/.test(main2.textContent), 'وبطاقةُ أرقام الفريق تقول من بلا رقم');
+ta.value = 'أحمد سعيد 0551234567\nخالد بندر, +966 55 987 6543\nشخصٌ غريب 0500000000';
+click('[data-phbulk]'); await wait(180);
+T(w.STATE.users.u1.ph === '0551234567' && w.STATE.users.u2.ph === '0559876543',
+  'واللصقُ يحفظ الأرقامَ نظيفةً — والدوليُّ يصير محليًّا');
+T(w.PH_MISS.length === 1 && /غريب/.test(w.PH_MISS[0]), 'ويقول بالحرف من لم يُعرَف اسمُه');
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ البلاغات فشل ✗ (${bad})` : '\nالبلاغُ من داخل النظام — ويفتح نفسَه في المستودع ✅');
