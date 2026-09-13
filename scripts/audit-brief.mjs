@@ -121,11 +121,41 @@ T(a4.length === 1 && /اعتماد الوزارة/.test(a4[0].textContent), 'ف�
 T(/اعتُمدت تقنيًّا/.test(d.getElementById('pkPop').textContent), 'والحالةُ مكتوبةٌ بجملةٍ تُقرأ');
 w.ROLE = 'engineer'; w.STATE.recs.C1.review = '';
 
+/* ═══ النصوصُ والصورُ في البطاقة (V16.93) ═══ */
+w.ROLE = 'engineer';
+Object.assign(w.STATE.recs.C1, { chal_note:'العارضةُ مائلة', power_note:'المصدرُ بعيدٌ ٤٠ م', minNote:'أعيدت لتصوير الزاوية', minBy:'الوزارة', minAt:Date.now() });
+w.STATE.inss = w.STATE.inss || {}; w.STATE.inss.C1 = { note:'رُكّب على عمودٍ جديد', by:'فريق التركيب', at:Date.now() };
+const TX = w.svTexts('C1').map(x => x.src);
+T(TX.length >= 5 && TX.indexOf('ملاحظةُ الميدان') > -1 && TX.indexOf('ملاحظةُ الوزارة') > -1 && TX.indexOf('ملاحظةُ التركيب') > -1,
+  'كلُّ نصٍّ كُتب عن النقطة يُجمَع بمصدره: ' + TX.join(' · '));
+w.STATE.photos = { p1:{ site:'C1', kind:'صورة الموقع', at:Date.now(), driveId:'D1', folderId:'F1' },
+                   p2:{ site:'C1', kind:'صورة التثبيت', at:Date.now(), data:'data:image/jpeg;base64,AAA' },
+                   p3:{ site:'C1', kind:'محذوفة', del:{ by:'x' } } };
+w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
+const pc = d.getElementById('pkPop');
+T(/ما كُتب عن النقطة/.test(pc.textContent) && /العارضةُ مائلة/.test(pc.textContent) && /رُكّب على عمودٍ جديد/.test(pc.textContent),
+  'وتُقرأ في البطاقة نصًّا نصًّا');
+const ph = [...pc.querySelectorAll('.bf-ph img[data-phview]')];
+T(ph.length === 2, 'والصورُ مُصغَّراتٌ تُفتَح بالضغط — والمحذوفةُ لا تُعرَض: ' + ph.length);
+T(/drive\.google\.com\/thumbnail\?id=D1/.test(ph[0].src) || /drive\.google\.com\/thumbnail\?id=D1/.test(ph[1].src), 'ما على الدرايف يُعرَض بمصغّرته');
+w.ROLE = 'admin'; w.render(1); await wait(120);
+T(!!d.querySelector('#pkPop a[href*="drive.google.com/drive/folders/F1"]'), 'ومجلدُ النقطة يُفتَح لمدير المشروع فما فوق');
+w.ROLE = 'engineer';
+{
+  const raw2 = readFileSync('index.html', 'utf8');
+  T(/fillOpacity: picked \? 1 : 0\.95/.test(raw2) && /color: picked \? '#fff' : \(ring \|\| '#0B1220'\)/.test(raw2),
+    'والنقاطُ مصمتةٌ بحافّةٍ داكنةٍ — فلا تذوب المتجاوراتُ في كتلةٍ واحدة');
+}
+
 /* ═══ العلامةُ البيضاء: «أفاقي» لا «نُسُك» (V16.92) ═══ */
 {
   const raw = readFileSync('index.html', 'utf8');
   T(!/نُسُك/.test(raw), 'لا أثرَ لاسمٍ سابقٍ في الواجهة' + (/نُسُك/.test(raw) ? ' — ' + (raw.match(/نُسُك/g) || []).length : ''));
   T(d.title === 'قارئات أفاقي — حج ١٤٤٨هـ' && w.MANIFEST.name === 'قارئات أفاقي', 'الاسمُ «قارئات أفاقي» في العنوان والبيان');
+  /* شارةُ النسخة هي المرجع — لا أوّلُ ظهورٍ لنصِّ نسخةٍ في الملف (تعليقٌ قد يسبقها) */
+  const badge = (raw.match(/>نسخة (V\d+\.\d+)<\/button>/) || [])[1];
+  const swv = (readFileSync('sw.js', 'utf8').match(/nusuk-survey-v([\d.]+)/) || [])[1];
+  T(!!badge && badge.slice(1) === swv, 'وشارةُ النسخة تطابق عاملَ الخدمة: ' + badge + ' · v' + swv);
   const mark = d.querySelector('.brand-mark img');
   /* شاشةُ الدخول أُزيلت بعد الدخول — فيُقرأ بناؤها من المصدر */
   T(!!mark && /class="lgm"><img src="' \+ LOGO/.test(raw), 'والعلامةُ صورةٌ في الجانب وفي شاشة الدخول');

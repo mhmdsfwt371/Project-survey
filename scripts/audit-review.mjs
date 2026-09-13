@@ -95,7 +95,9 @@ R('مهندسُ التشغيل');
   chk(existsSync('sw.js'), 'عاملُ خدمةٍ موجود');
   const sw = existsSync('sw.js') ? readFileSync('sw.js', 'utf8') : '';
   const v = /nusuk-survey-v([\d.]+)/.exec(sw);
-  const appV = /V(\d+\.\d+)/.exec(html);
+  /* النسخةُ هي ما في الشارة لا أوّلُ نصٍّ يشبهها: تعليقٌ في الأنماط يحمل رقمَ
+     نسخته سبق الشارةَ مرةً فقُرئ مكانَها، فسقط الحارسُ على شجرةٍ سليمة. */
+  const appV = /نسخة V(\d+\.\d+)</.exec(html) || /V(\d+\.\d+)/.exec(html);
   chk(!!v && !!appV && v[1] === appV[1].toLowerCase(), 'رقمُ الكاش يطابق رقمَ التطبيق');
   chk(/skipWaiting/.test(sw) && /clients\.claim/.test(sw), 'العاملُ يتولّى فورًا');
   chk(/controllerchange/.test(js), 'الصفحةُ تُعاد عند تولّي عاملٍ جديد');
