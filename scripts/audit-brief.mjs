@@ -65,7 +65,7 @@ T(w.mapColorOf(w.siteFind('C2')) === '#3AD6A0', 'وتمامٌ أخضر');
 w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
 const pop = d.getElementById('pkPop');
 T(!!pop && /الكابل لم يصل/.test(pop.textContent), 'النافذةُ تعرض السطرَ');
-T(pop.textContent.indexOf('الكابل لم يصل') < pop.textContent.indexOf('الإحداثيات'), 'قبل البيانات لا بعدها');
+T(pop.textContent.indexOf('الكابل لم يصل') < pop.textContent.indexOf('ما سجّله الميدان'), 'قبل ما سجّله الميدانُ لا بعده');
 T(!!pop.querySelector('[data-bst="C1|تمام"]') && !!pop.querySelector('#bfTxt') && !!pop.querySelector('[data-bfsave="C1"]'),
   'ومن يكتب يجد الشرائحَ والسطرَ في النافذة نفسِها');
 
@@ -79,6 +79,32 @@ T(!!d.querySelector('#pkPop [data-bst]'), 'وتجد شرائحَها في الن
 /* نقطةٌ لم تُزَر: يُقال لماذا لا تُكتَب */
 w.POP_SITE = 'C3'; w.render(1); await wait(120);
 T(/تُكتَب بعد تمام الزيارة/.test(d.getElementById('pkPop').textContent), 'وما لم يُزَر يقول لماذا لا تُكتَب تفاصيلُه');
+
+/* ═══ البطاقةُ في هذه الطبقة: تقييمٌ بالعين وزرٌّ واحد (V16.89) ═══ */
+w.ROLE = 'engineer';
+w.STATE.recs.C1 = Object.assign({}, w.STATE.recs.C1, {
+  by:'فنيُّ الميدان', at:Date.now(), access:'تم الوصول', mount:'عمود', power:'مولّد',
+  wid_m:3, hgt_m:4, fit:'نعم', note:'الموقع ضيّقٌ من الجهة الشرقية',
+  chals:['العارضة الحديدية ناقصة أو غير مكتملة'], photos:['site','mount']
+});
+w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);
+const p2 = d.getElementById('pkPop'); const txt = p2.textContent;
+T(/ما سجّله الميدان/.test(txt) && /نوع التركيب/.test(txt) && /عمود/.test(txt) && /مولّد/.test(txt),
+  'البطاقةُ تعرض ما سجّله الميدانُ بالحرف — فيُقيَّم بالعين بلا فتح نموذج');
+T(/الموقع ضيّقٌ من الجهة الشرقية/.test(txt) && /العارضة الحديدية/.test(txt) && /التحديات المرصودة/.test(txt) && /الصور/.test(txt),
+  'ومعه الملاحظةُ والتحدياتُ وعددُ الصور');
+T(!/تعديل البيانات|نموذج المسح|اتجاهات|تحريك/.test(txt) && !p2.querySelector('[data-psel],[data-move],[data-site],[data-form],[data-insform]'),
+  'ولا زرَّ سواه: لا تعديلَ ولا نموذجَ ولا اتجاهاتٍ ولا تحريك');
+const aprs = [...p2.querySelectorAll('.actions .btn, .actions a')];
+T(aprs.length === 1 && /الاعتماد التقني/.test(aprs[0].textContent), 'والزرُّ الوحيدُ هو الاعتمادُ التقنيُّ للمهندس: ' + (aprs[0] ? aprs[0].textContent.trim() : '—'));
+w.ROLE = 'viewer'; w.render(1); await wait(120);
+const p3 = d.getElementById('pkPop'), a3 = [...p3.querySelectorAll('.actions .btn, .actions a')];
+T(a3.length === 0, 'والوزارةُ لا تُعرَض عليها الاعتمادُ التقني — ليس من شأنها');
+w.STATE.recs.C1.review = 'approved'; w.render(1); await wait(120);
+const a4 = [...d.querySelectorAll('#pkPop .actions .btn, #pkPop .actions a')];
+T(a4.length === 1 && /اعتماد الوزارة/.test(a4[0].textContent), 'فإذا اعتُمدت تقنيًّا وجدت زرَّها وحدَه: ' + (a4[0] ? a4[0].textContent.trim() : '—'));
+T(/اعتُمدت تقنيًّا/.test(d.getElementById('pkPop').textContent), 'والحالةُ مكتوبةٌ بجملةٍ تُقرأ');
+w.ROLE = 'engineer'; w.STATE.recs.C1.review = '';
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ التفاصيل المختصرة فشل ✗ (${bad})` : '\nالتفاصيلُ المختصرة طبقةٌ تُقرأ بلونها وتُكتَب بسطر ✅');
