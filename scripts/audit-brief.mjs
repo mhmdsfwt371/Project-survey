@@ -49,7 +49,16 @@ w.FIELD_MODE = 'brief'; w.render(1); await wait(150);
 
 const L = w.layerFiltered().map(x => x.id);
 T(L.length === 2 && L.indexOf('C3') < 0, 'الطبقةُ تعرض ما تمّت زيارتُه وحدَه: ' + L.join(','));
-T(w.mapColorOf(w.siteFind('C1')) === '#6B7A87', 'وما لم يُكتَب بعدُ رمادٌ يقول «ينتظر سطرًا»');
+/* ═══ اللونُ مرحلةُ الاعتماد (V16.90) — والإطارُ خبرُ السطر ═══ */
+T(w.mapColorOf(w.siteFind('C1')) === '#4FA3FF', 'المسوحةُ التي تنتظر الاعتمادَ التقنيَّ زرقاء');
+w.STATE.recs.C2.review = 'approved';
+T(w.briefStage('C2') === 'min' && w.mapColorOf(w.siteFind('C2')) === '#E8C34B', 'والمعتمَدةُ تقنيًّا التي تنتظر الوزارةَ صفراء — وهي ما كان لا يُرى');
+w.STATE.recs.C2.minReview = 'approved';
+T(w.briefStage('C2') === 'ok' && w.mapColorOf(w.siteFind('C2')) === '#3AD6A0', 'وما اعتمدته الوزارةُ خضراء');
+w.STATE.recs.C2.minReview = 'returned';
+T(w.mapColorOf(w.siteFind('C2')) === '#E05252', 'وما أعادته الوزارةُ حمراء');
+T(w.mapColorOf(w.siteFind('C3')) === '#6B7A87', 'وما لم يُزَر رمادية');
+w.STATE.recs.C2.review = ''; delete w.STATE.recs.C2.minReview;
 
 /* الكتابة: حالةٌ وسطرٌ على وثيقة الزيارة */
 w.briefSet('C1', 'تحدٍّ', 'الكابل لم يصل — الشركة وعدت غدًا');
@@ -57,9 +66,15 @@ const r1 = w.STATE.recs.C1;
 T(r1.bst === 'تحدٍّ' && r1.brief === 'الكابل لم يصل — الشركة وعدت غدًا' && r1.briefBy === 'م. فحص' && r1.briefAt > 0,
   'تُكتَب على وثيقة الزيارة نفسِها باسم كاتبها ووقته — لا في مجموعةٍ جديدة');
 T(w.__wrote === 'recs', 'فتُزامَن وتُنسَخ احتياطيًّا بقواعد الزيارة كما هي');
-T(w.mapColorOf(w.siteFind('C1')) === '#E05252', 'واللونُ يتبع الحالة: تحدٍّ أحمر');
+T(w.briefRing('C1') === '#E05252', 'وإطارُ النقطة يحمل خبرَ السطر: تحدٍّ أحمر');
 w.briefSet('C2', 'تمام', 'رُكّب واختُبر');
-T(w.mapColorOf(w.siteFind('C2')) === '#3AD6A0', 'وتمامٌ أخضر');
+T(w.briefRing('C2') === '#3AD6A0' && w.briefRing('C3') === '', 'وتمامٌ أخضر — ولا إطارَ لمن لا سطرَ له');
+w.LEGEND_ON = true; w.render(1); await wait(150);
+const lg = d.querySelector('.map-legend');
+T(!!lg && /تنتظر الاعتمادَ التقني/.test(lg.textContent) && /تنتظر الوزارة/.test(lg.textContent) && /اعتمدتها الوزارة/.test(lg.textContent),
+  'والأسطورةُ تعدُّ كلَّ مرحلةٍ بلونها');
+T(/إطارُ النقطة/.test(lg.textContent) && /بلا تفاصيلَ بعد/.test(lg.textContent), 'وتفصل خبرَ الإطار عن لون المرحلة');
+w.LEGEND_ON = false;
 
 /* النافذة: الخبرُ قبل البيانات، والشرائحُ لمن يكتب */
 w.POP_SITE = 'C1'; w.POP_OPEN = true; w.render(1); await wait(150);

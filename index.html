@@ -797,7 +797,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.89</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.90</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3595,6 +3595,7 @@ en:{
  'التفاصيلُ المختصرة للميدان والمهندس والوزارة':'Brief details are for the field, engineers and the Ministry', 'تُكتَب بعد تمام الزيارة':'Written after the visit is complete', 'حُفظت التفاصيل':'Details saved', 'بلا تفاصيلَ مكتوبة':'No details written', 'تفاصيل مختصرة':'Brief details', 'ما وقع في كلِّ نقطةٍ زارها الميدان — سطرٌ يُقرأ بلونه: تمام · تحدٍّ · ملاحظة.':'What happened at each visited point — one line read by its colour: fine, challenge, note.', 'لا زيارةَ تمّت بعد — التفاصيلُ تُكتَب على الزيارة.':'No visit completed yet — details are written on the visit.', 'لم تُكتَب تفاصيلُ هذه النقطة بعد':'No details for this point yet', 'سطرٌ واحد: ما الذي وقع في هذه النقطة؟':'One line: what happened at this point?',
  'ما سجّله الميدان':'What the field recorded', 'لم تُزر بعد':'Not visited yet', 'اعتُمدت من الوزارة':'Approved by the Ministry', 'أعادتها الوزارةُ بملاحظة':'Returned by the Ministry with a note', 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة':'Technically approved — awaiting Ministry approval',
  'التحديات المرصودة':'Challenges recorded',
+ 'إطارُ النقطة — التفاصيل المكتوبة':'Point ring — written details', 'بلا تفاصيلَ بعد':'No details yet', 'تنتظر الاعتمادَ التقني':'Awaiting technical approval', 'اعتُمدت تقنيًّا — تنتظر الوزارة':'Technically approved — awaiting the Ministry',
 },
 ur:{
  'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6263,6 +6264,7 @@ ur:{
  'التفاصيلُ المختصرة للميدان والمهندس والوزارة':'مختصر تفصیلات فیلڈ، انجینئر اور وزارت کے لیے ہیں', 'تُكتَب بعد تمام الزيارة':'دورہ مکمل ہونے کے بعد لکھی جاتی ہے', 'حُفظت التفاصيل':'تفصیلات محفوظ ہو گئیں', 'بلا تفاصيلَ مكتوبة':'کوئی تفصیل نہیں لکھی گئی', 'تفاصيل مختصرة':'مختصر تفصیلات', 'ما وقع في كلِّ نقطةٍ زارها الميدان — سطرٌ يُقرأ بلونه: تمام · تحدٍّ · ملاحظة.':'ہر دورہ شدہ پوائنٹ پر کیا ہوا — ایک سطر اپنے رنگ سے پڑھی جائے: ٹھیک، چیلنج، نوٹ۔', 'لا زيارةَ تمّت بعد — التفاصيلُ تُكتَب على الزيارة.':'ابھی کوئی دورہ مکمل نہیں — تفصیلات دورے پر لکھی جاتی ہیں۔', 'لم تُكتَب تفاصيلُ هذه النقطة بعد':'اس پوائنٹ کی تفصیلات ابھی نہیں', 'سطرٌ واحد: ما الذي وقع في هذه النقطة؟':'ایک سطر: اس پوائنٹ پر کیا ہوا؟',
  'ما سجّله الميدان':'فیلڈ نے کیا درج کیا', 'لم تُزر بعد':'ابھی دورہ نہیں ہوا', 'اعتُمدت من الوزارة':'وزارت سے منظور', 'أعادتها الوزارةُ بملاحظة':'وزارت نے نوٹ کے ساتھ واپس کی', 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة':'تکنیکی منظوری — وزارت کی منظوری کا انتظار',
  'التحديات المرصودة':'درج شدہ چیلنجز',
+ 'إطارُ النقطة — التفاصيل المكتوبة':'پوائنٹ کا کنارہ — لکھی تفصیلات', 'بلا تفاصيلَ بعد':'ابھی کوئی تفصیل نہیں', 'تنتظر الاعتمادَ التقني':'تکنیکی منظوری کا انتظار', 'اعتُمدت تقنيًّا — تنتظر الوزارة':'تکنیکی منظور — وزارت کا انتظار',
 }
 };
 
@@ -11428,9 +11430,36 @@ function briefOf(id){
   if (!st && !d) return null;
   return { st:st || 'ملاحظة', d:d, by:r.briefBy || r.by || '', at:r.briefAt || r.at || 0 };
 }
-function briefColor(id){
+/* ═══ لونُ الطبقة = مرحلةُ الاعتماد (V16.90) ═══
+   كانت النقاطُ تُلوَّن بحالة السطر المكتوب — وأكثرُها بلا سطرٍ بعد، فصارت
+   الشاشةُ رماديةً كلَّها ولا يُرى فيها ما اعتُمد تقنيًّا وينتظر الوزارةَ من
+   غيره. والوزارةُ تفتح هذه الطبقةَ لتعرف **أين تقف كلُّ نقطةٍ من الاعتماد**
+   لا لتعرف من كتب سطرًا. فصار اللونُ للمرحلة، والسطرُ المكتوبُ يُقرأ في
+   إطار النقطة: حافّةٌ حمراءُ لما فيه تحدٍّ وخضراءُ لما هو تمام — فيُقرأ
+   الخبران معًا بلا لبس. */
+var BRIEF_STAGE = {
+  none:    { c:'#6B7A87', n:'لم تُزر بعد' },
+  revisit: { c:'#C77DFF', n:'رُدّت لزيارةٍ أخرى' },
+  tech:    { c:'#4FA3FF', n:'تنتظر الاعتمادَ التقني' },
+  ret:     { c:'#E05252', n:'أعادتها الوزارةُ بملاحظة' },
+  min:     { c:'#E8C34B', n:'اعتُمدت تقنيًّا — تنتظر الوزارة' },
+  ok:      { c:'#3AD6A0', n:'اعتمدتها الوزارة' }
+};
+var BRIEF_STAGE_ORDER = ['none','revisit','tech','ret','min','ok'];
+function briefStage(id){
+  var r = STATE.recs[id];
+  if (!svDone(r)) return svReview(r) === 'revisit' ? 'revisit' : 'none';
+  var rv = svReview(r);
+  if (rv !== 'approved') return 'tech';
+  var ms = minState(r);
+  if (ms === 'returned') return 'ret';
+  return ms === 'approved' ? 'ok' : 'min';
+}
+function briefColor(id){ return (BRIEF_STAGE[briefStage(id)] || BRIEF_STAGE.none).c; }
+/* الإطار: خبرُ السطر المكتوب — ولا إطارَ مميّزًا لمن لم يُكتَب له */
+function briefRing(id){
   var b = briefOf(id);
-  return b ? (BRIEF_C[b.st] || '#E8C34B') : '#6B7A87';   /* بلا تفاصيلَ بعد */
+  return b ? (BRIEF_C[b.st] || '#E8C34B') : '';
 }
 function briefMay(){ var r = effRole(ROLE); return rankOf(r) >= 90 || r === 'viewer' || may('edit'); }
 function briefSet(id, st, d){
@@ -15147,7 +15176,8 @@ function m3Points(){
     /* المخيمُ بحدوده الحقيقية كما يُرسَم في المسطّح — لا نقطةً — إن كانت حدودُه محمَّلة */
     var foot = x.type === 'مخيم' && POLY && POLY[x.id] && POLY[x.id].length >= 3 ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0, ring:picked ? '#ffffff' : '#0b1220', foot:foot } };
+      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0,
+        ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
   });
 }
 /* المخيمُ يُرفَع بحدوده المرسومة (poly.json — الحدودُ نفسُها التي يرسمها المسطّح
@@ -17890,7 +17920,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.89' + '.docx" download>⬇ '
+              +   'V16.90' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19522,6 +19552,8 @@ function mapPaint(){
     shown++;
     var picked = (typeof selHas === 'function') && selHas(x.id);
     var col = mapColorOf(x);
+    /* طبقةُ التفاصيل: حافّةٌ تحمل خبرَ السطر المكتوب فوق لونِ المرحلة */
+    var ring = (FIELD_MODE === 'brief' && !picked) ? briefRing(x.id) : '';
     var mk;
 
     /* الممرُّ معيّنٌ مائل، والمخيمُ مضلّعٌ إن تقرّبت وإلا دائرة، وما عداهما دائرة —
@@ -19535,19 +19567,19 @@ function mapPaint(){
       mk = L.marker([x.lat, x.lng], { keyboard:false, icon:L.divIcon({
         className:'mkC', iconSize:[hit, hit], iconAnchor:[hit/2, hit/2], popupAnchor:[0, -ds/2],
         html:'<i style="width:' + ds + 'px;height:' + ds + 'px;background:' + col
-             + (picked ? ';outline:2px solid #fff' : '') + '"></i>'
+             + (picked ? ';outline:2px solid #fff' : (ring ? ';outline:2px solid ' + ring : '')) + '"></i>'
       })});
     } else if (x.type === 'مخيم' && z >= 16 && POLY && POLY[x.id]){
       mk = L.polygon(POLY[x.id].map(function(p){ return [p[1], p[0]]; }), {
-        renderer:MAP_CV, color:col, weight: picked ? 2.4 : 1.3,
+        renderer:MAP_CV, color: ring || col, weight: picked ? 2.4 : (ring ? 2.2 : 1.3),
         fillColor:col, fillOpacity: picked ? 0.5 : 0.32
       });
     } else {
       mk = L.circleMarker([x.lat, x.lng], {
         renderer:MAP_CV,
         radius: picked ? r + 2.5 : r,
-        color: picked ? '#fff' : col,
-        weight: picked ? 2 : (z >= 14 ? 1.3 : 1),
+        color: picked ? '#fff' : (ring || col),
+        weight: picked ? 2 : (ring ? 2.2 : (z >= 14 ? 1.3 : 1)),
         fillColor:col, fillOpacity: picked ? 1 : 0.6
       });
     }
@@ -21834,6 +21866,7 @@ function legendRows(){
     LST.forEach(function(x){
       var k;
       if (FIELD_MODE === 'survey') k = lifeOf(x);
+      else if (FIELD_MODE === 'brief') k = briefStage(x.id);
       else if (FIELD_MODE === 'install') k = insDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
       else k = disDone(x.id) ? 'done' : (asnOf(x.id) ? 'asn' : 'wait');
       CNT[k] = (CNT[k] || 0) + 1; TOT++;
@@ -21842,6 +21875,8 @@ function legendRows(){
   if (FIELD_MODE === 'survey'){
     /* الأسطورةُ تُشتقُّ من دورة الحياة نفسِها — فلا تفترق عن الخريطة */
     rows = LIFE_ORDER.map(function(k){ return [LIFE[k].c, LIFE[k].n, k]; });
+  } else if (FIELD_MODE === 'brief'){
+    rows = BRIEF_STAGE_ORDER.map(function(k){ return [BRIEF_STAGE[k].c, BRIEF_STAGE[k].n, k]; });
   } else if (FIELD_MODE === 'install'){
     rows = [[LIFE.ready.c,'معتمدة — جاهزة للإسناد','wait'], [LIFE.sched.c,'مُسندة للتركيب','asn'], [L.c,'مُركّب','done']];
   } else {
@@ -21857,6 +21892,23 @@ function legendRows(){
   }).join('')
   + '<div class="lg-row lg-tot"><span class="lg-n">' + esc(t('في هذا الترشيح')) + '</span>'
   + '<b class="num lg-c">' + nm(TOT) + '</b></div>';
+  /* وفي طبقة التفاصيل: الإطارُ خبرٌ ثانٍ فوق لون المرحلة — يُقال في أسطورتها */
+  if (FIELD_MODE === 'brief'){
+    var BC = { 'تمام':0, 'تحدٍّ':0, 'ملاحظة':0 }, noB = 0;
+    ((typeof layerFiltered === 'function') ? layerFiltered() : []).forEach(function(x){
+      var b = briefOf(x.id);
+      if (b && BC[b.st] !== undefined) BC[b.st]++; else noB++;
+    });
+    out += '<div class="lg-sep"></div>'
+      + '<div style="font-weight:700;margin:0 0 4px">' + esc(t('إطارُ النقطة — التفاصيل المكتوبة')) + '</div>'
+      + BRIEF_ST.map(function(k){
+          return '<div class="lg-row' + (BC[k] ? '' : ' lg-off') + '">'
+            + '<i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 2px ' + BRIEF_C[k] + '"></i>'
+            + '<span class="lg-n">' + esc(t(k)) + '</span><b class="num lg-c">' + nm(BC[k]) + '</b></div>';
+        }).join('')
+      + '<div class="lg-row' + (noB ? '' : ' lg-off') + '"><i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line)"></i>'
+      + '<span class="lg-n">' + esc(t('بلا تفاصيلَ بعد')) + '</span><b class="num lg-c">' + nm(noB) + '</b></div>';
+  }
   /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة */
   out += '<div class="lg-sep"></div>'
     + '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'
