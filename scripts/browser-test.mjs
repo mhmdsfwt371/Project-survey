@@ -30,6 +30,16 @@ const OUT = 'test-artifacts'; if (!existsSync(OUT)) mkdirSync(OUT);
    من بعيدٍ يرى «فشل» ولا يرى **ما** فشل — فيخمّن. وGitHub يعرض سطورَ
    `::error` تعليقاتٍ على السير تُقرأ بواجهته البرمجية. فصار كلُّ فحصٍ ساقطٍ
    يُكتَب مرتين: في السجلّ لمن يفتحه، وتعليقًا لمن لا يفتحه. */
+/* والاستثناءُ الذي يُسقِط الاختبارَ قبل أوّل فحصٍ يُكتَب كذلك: سطرٌ يقول
+   أين وقع وماذا قال — وإلا لم يبقَ إلا «exit code 1» ولا لقطةَ ولا سبب. */
+const crash = (what, e) => {
+  const msg = String(e && e.stack || e && e.message || e).replace(/[\r\n]+/g, ' ⏎ ').slice(0, 600);
+  console.log('::error title=استثناءٌ في ' + what + '::' + msg);
+  console.log('✗ ' + what + ': ' + msg);
+  process.exit(1);
+};
+process.on('uncaughtException', e => crash('الاختبار', e));
+process.on('unhandledRejection', e => crash('وعدٌ بلا التقاط', e));
 let bad = 0;
 const T = (c, n) => {
   console.log((c ? '  ✓ ' : '  ✗ ') + n);
@@ -69,7 +79,10 @@ T(true, 'الدخولُ بهويةٍ فتح القائمة');
    لا تفتح» — والعطلُ في الحاجب لا في النقطة. */
 const tourUp = await page.evaluate(() => !!document.getElementById('tourSheet'));
 T(tourUp, 'جولةُ البداية تُفتَح أوّلَ دخول');
-if (tourUp) await page.click('[data-tourclose]');
+if (tourUp){
+  try { await page.click('#tourSheet button[data-tourclose]', { timeout: 5000 }); }
+  catch (e){ await page.evaluate(() => { if (typeof tourEnd === 'function') tourEnd(false); }); }
+}
 await page.waitForTimeout(300);
 const tourGone = await page.evaluate(() => !document.getElementById('tourSheet') && !document.querySelector('.wt-back'));
 T(tourGone, 'وتُغلَق بضغطةٍ فلا تحجب العمل');

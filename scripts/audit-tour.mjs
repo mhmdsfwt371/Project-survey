@@ -82,6 +82,7 @@ T(/tourclose/.test(bt) && /لا حاجبَ فوق الخريطة قبل اللم
 T(!/page\.reload\(/.test(bt), 'ولا يُعيد تحميلَ الصفحة فيُفقِد الجلسةَ الصورية');
 /* وما يسقط في السحابة يُقرأ من بعيد: سطرُ ::error تعليقٌ على السير */
 T(/::error title=/.test(bt), 'واختبارُ المتصفّح يكتب ما سقط تعليقًا يُقرأ بلا فتح السجلّ');
+T(/uncaughtException/.test(bt) && /unhandledRejection/.test(bt), 'والاستثناءُ الذي يُسقطه قبل أوّل فحصٍ يُكتَب كذلك — لا «exit code 1» صامت');
 w.tourEnd(true);
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
