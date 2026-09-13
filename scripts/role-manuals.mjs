@@ -110,7 +110,7 @@ function manualFor(id){
   const n = Object.values(byGroup).reduce((a, g) => a + g.length, 0);
 
   const kids = [
-    rtl('قارئات نُسُك — حج ١٤٤٨هـ', { size: 20, color: '666666' }),
+    rtl('قارئات أفاقي — حج ١٤٤٨هـ', { size: 20, color: '666666' }),
     h1('دليل المستخدم — ' + x.n),
     rtl('النسخة ' + VER + ' · يُولَّد من صلاحيات الدور نفسِها — فلا يصف ما لا تملك.', { size: 20, color: '666666' }),
     rtl(x.d || '', { size: 24 }),

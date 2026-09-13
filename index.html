@@ -8,11 +8,11 @@
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-title" content="قارئات نُسُك">
-<title>قارئات نُسُك — حج ١٤٤٨هـ</title>
+<meta name="apple-mobile-web-app-title" content="قارئات أفاقي">
+<title>قارئات أفاقي — حج ١٤٤٨هـ</title>
 <style>
 /* ═══════════════════════════════════════════════════════════════════
-   نُسُك V14 — نظام التصميم
+   أفاقي V14 — نظام التصميم
    وضعان: فاتح للإدارة على المكتب · داكن للميدان تحت الشمس
    والاتجاه ينقلب مع dir بالخصائص المنطقية وحدها
    ═══════════════════════════════════════════════════════════════════ */
@@ -91,9 +91,13 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
   overflow:hidden;
   z-index:var(--z-side);overscroll-behavior:contain}
 .brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 2px}
-.brand-mark{width:38px;height:38px;border-radius:9px;background:var(--brand);
-  color:var(--brand-ink);display:grid;place-items:center;font-weight:800;font-size:9.5px;
-  letter-spacing:.5px;flex:0 0 auto}
+/* ═══ العلامةُ صورةٌ لا حروفًا (V16.92) ═══
+   كانت كلمةً مكتوبةً في مربّعٍ ملوّن. صارت علامةَ «أفاقي» نفسَها — تُحفَظ
+   داخل الملفِّ فتعمل بلا شبكةٍ ولا تنتظر طلبًا، وعلى أرضيةٍ بيضاءَ لأن
+   حروفَها داكنةٌ ولا تُقرأ على الداكن. */
+.brand-mark{width:44px;height:38px;border-radius:9px;background:#fff;
+  display:grid;place-items:center;padding:4px 5px;flex:0 0 auto;overflow:hidden}
+.brand-mark img{width:100%;height:auto;display:block}
 .brand-name{font-weight:600;line-height:1.25;min-width:0}
 .brand-sub{font-size:11px;opacity:.6;font-weight:400}
 
@@ -768,7 +772,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   <div id="navVeil" data-navx aria-hidden="true"></div>
   <aside class="sidebar">
     <div class="brand sidebar-head">
-      <div class="brand-mark">AFAQY</div>
+      <div class="brand-mark"><img src="data:image/png;base64,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" alt="AFAQY" width="380" height="133"></div>
       <div class="brand-name" id="brandName"></div>
       <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة" data-i18n-aria="إغلاق القائمة">✕</button>
     </div>
@@ -797,7 +801,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.91</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.92</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -833,7 +837,7 @@ var I18N = {
 var D = {
 en:{
  /* الهوية والشل */
- 'قارئات نُسُك':'Nusuk Readers','حج ١٤٤٨هـ':'Hajj 1448 AH',
+ 'قارئات أفاقي':'AFAQY Readers','حج ١٤٤٨هـ':'Hajj 1448 AH',
  'مهندس — صلاحية كاملة':'Engineer — full access','اللغة':'Language','المظهر':'Theme',
  'فاتح':'Light','داكن':'Dark','تسجيل الخروج':'Sign out','القائمة':'Menu',
  'آخر مزامنة':'Last sync','متصل':'Online','تصدير':'Export','بحث':'Search','حفظ':'Save',
@@ -2764,7 +2768,7 @@ en:{
  'اعرض محضر الشركة':'Show the company record',
  'محضر تسليم نقطة':'Point handover record',
  'محضر تسليم شركة':'Company handover record',
- 'مشروع نُسُك — قارئات RFID · موسم ١٤٤٨هـ':'Nusuk project — RFID readers · 1448 AH season',
+ 'قارئات أفاقي — RFID · موسم ١٤٤٨هـ':'AFAQY readers — RFID · 1448 AH season',
  'رقم المحضر':'Record number',
  'لم يُسلَّم بعد':'Not handed over yet',
  'لم يُسلَّم':'Not handed over',
@@ -3560,23 +3564,23 @@ en:{
  'خطوة':'steps', 'متعذّرٌ — يحتاج زيارةً أخرى':'Unreachable — needs another visit', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'The supervisor arrived but could not survey (closed, no permit…) — to be revisited.',
  'المعالم للمهندس وحده':'Milestones are for engineers only', 'اسمُ المعلَم مطلوب':'Milestone name is required', 'أُضيف المعلَم':'Milestone added', 'حُذف المعلَم':'Milestone deleted', 'معلَم جديد':'New milestone', 'حُفظ المعلَم':'Milestone saved', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'A new milestone’s progress (%) is entered by hand via Edit — built-in milestones are computed from the field unless a manual value is set.',
  'السحب التالي':'Next pull', 'السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ':'Next pull — at zero the queue is pushed, all changes are pulled and the screen refreshes; in between, changes arrive live', 'علّم الكل مقروءًا':'Mark all read', 'كل الإشعارات':'All notifications',
- 'جدول المتابعة':'Tracking table', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'Every project item — who is on it, when it ends and where it stands; updated by the office, visible to all.', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.':'No table yet — import the “Nusuk readers project tracking” file from the button above.', 'لا جدولَ بعد — يستورده المكتب.':'No table yet — the office imports it.', 'مضى':'elapsed', 'البنود':'Items', 'ابحث بالبند أو المسؤول أو الجهة':'Search by item, owner or party', 'آخر تحديث':'Last update', 'إكسل — جدول المتابعة':'Excel — tracking table', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'Progress is entered for leaf items and rolled up to parents by duration. Status and schedule position are computed from today’s date — never typed.', 'البدء':'Start', 'الانتهاء':'Finish', 'الموقف الزمني':'Schedule', 'مكتملة':'Complete', 'لم تبدأ':'Not started', 'ضمن مدته':'On track', 'لم يحن موعده':'Not due yet', 'معلم':'Milestone', 'جدولُ المتابعة للمهندس فما فوق':'Tracking table is for engineers and above', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'Header row “WBS” not found', 'لا صفوفَ في الملف':'No rows in the file', 'بندًا استُورد':'items imported', 'موعدًا حاكمًا':'key dates', 'جدول المتابعة — هيكل تقسيم العمل':'Tracking table — WBS',
+ 'جدول المتابعة':'Tracking table', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'Every project item — who is on it, when it ends and where it stands; updated by the office, visible to all.', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات أفاقي» من الزرِّ أعلاه.':'No table yet — import the “Nusuk readers project tracking” file from the button above.', 'لا جدولَ بعد — يستورده المكتب.':'No table yet — the office imports it.', 'مضى':'elapsed', 'البنود':'Items', 'ابحث بالبند أو المسؤول أو الجهة':'Search by item, owner or party', 'آخر تحديث':'Last update', 'إكسل — جدول المتابعة':'Excel — tracking table', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'Progress is entered for leaf items and rolled up to parents by duration. Status and schedule position are computed from today’s date — never typed.', 'البدء':'Start', 'الانتهاء':'Finish', 'الموقف الزمني':'Schedule', 'مكتملة':'Complete', 'لم تبدأ':'Not started', 'ضمن مدته':'On track', 'لم يحن موعده':'Not due yet', 'معلم':'Milestone', 'جدولُ المتابعة للمهندس فما فوق':'Tracking table is for engineers and above', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'Header row “WBS” not found', 'لا صفوفَ في الملف':'No rows in the file', 'بندًا استُورد':'items imported', 'موعدًا حاكمًا':'key dates', 'جدول المتابعة — هيكل تقسيم العمل':'Tracking table — WBS',
  'متأخر':'Late', 'مكتمل':'Done',
  'اطوِ':'Collapse', 'افتح':'Expand', 'بند':'items', 'امسح الجدول وابدأ من جديد':'Clear the table and start over', 'تأكيد المسح — يُمحى الجدولُ كلُّه':'Confirm clear — the whole table is erased', 'حُذف البند':'Item deleted', 'حُفظ البند':'Item saved', 'مُسح الجدول — استورد ملفًا جديدًا':'Table cleared — import a new file',
- 'نُسُك Survey — تقرير اللوحة':'Nusuk Survey — dashboard report', 'عُرض أربعُمئة صفٍّ — والإكسلُ فيه الباقي':'400 rows shown — the Excel file has the rest', 'لا بياناتٍ في الأقسام المختارة':'No data in the selected sections', 'امنع حجبَ النوافذ لتصدير PDF':'Allow pop-ups to export PDF', 'قسمًا — اختر «حفظ كـPDF» من نافذة الطباعة':'sections — choose “Save as PDF” in the print dialog',
+ 'قارئات أفاقي — تقرير اللوحة':'AFAQY Readers — dashboard report', 'عُرض أربعُمئة صفٍّ — والإكسلُ فيه الباقي':'400 rows shown — the Excel file has the rest', 'لا بياناتٍ في الأقسام المختارة':'No data in the selected sections', 'امنع حجبَ النوافذ لتصدير PDF':'Allow pop-ups to export PDF', 'قسمًا — اختر «حفظ كـPDF» من نافذة الطباعة':'sections — choose “Save as PDF” in the print dialog',
  'متابعة الخطة التفصيلية':'Detailed plan tracking', 'متابعة المهام الأسبوعية':'Weekly task tracking', 'لوحة المهام':'Task dashboard', 'مهامُّ الاجتماع الدوريِّ — من عليه ماذا، ومتى تستحقّ، وأين وقفت.':'Items of the recurring meeting — who owes what, when it is due, and where it stands.', 'مهمة جديدة':'New task', 'امسح الكل':'Clear all', 'تأكيد المسح':'Confirm clear', 'الاستحقاق القريب':'Due soon', 'مستحق اليوم':'Due today', 'غدًا':'Tomorrow', 'باقي الأسبوع':'Rest of week', 'الأسبوع القادم':'Next week', 'بلا تاريخ':'No date', 'حسب المسار':'By track', 'المسار':'Track', 'المفتوح على كلِّ جهة':'Open per party', 'مستحق قريبًا':'Due soon', 'جاري العمل':'In progress', 'قيد الانتظار':'Waiting', 'متوقف':'Blocked', 'ابحث بالمهمة أو المسؤول أو المسار':'Search by task, owner or track', 'إكسل — المهام':'Excel — tasks', 'لا مهامَّ بعد — أضف مهمةً أو استورد ملفَ المهام.':'No tasks yet — add one or import the tasks file.', 'لا مهامَّ بعد — يضيفها المكتب.':'No tasks yet — the office adds them.', 'المهامُّ الأسبوعية للمهندس فما فوق':'Weekly tasks are for engineers and above', 'اسمُ المهمة مطلوب':'Task name is required', 'أُضيفت المهمة':'Task added', 'حُذفت المهمة':'Task deleted', 'مُسحت المهام':'Tasks cleared', 'لم يُعثَر على عمود «المهمة» في الملف':'Column “Task” not found in the file', 'مهمةً استُوردت':'tasks imported', 'حُفظت المهمة':'Task saved', 'تأخّر':'Late by', 'الاستحقاق':'Due', 'المهمة':'Task', 'تاريخ الاستحقاق':'Due date', 'المؤشراتُ التي كانت الدوالُّ تحسبها — من تاريخ اليوم.':'The indicators the formulas used to compute — from today’s date.', 'مهامُّ الاجتماع الدوريِّ — تُضاف وتُعدَّل وتُنهى.':'Recurring-meeting items — added, edited and closed.', 'إجمالي المهام':'Total tasks', 'قيد التنفيذ والانتظار':'In progress and waiting',
  'املأ المهمة الجديدة ثم احفظ':'Fill in the new task, then save',
  'افتح النافذةَ واطبع منها':'Open the window and print from there',
- 'المسح المنجز حسب المشعر':'Survey completed by site', 'دورة النقطة — أين هي الآن':'Point lifecycle — where it stands now', 'مهامُّ متأخرة':'Overdue tasks', 'مهمة':'tasks', 'حج ١٤٤٨هـ · قارئات نُسُك في المشاعر':'Hajj 1448 AH · Nusuk readers in the Holy Sites', 'الملخّص التنفيذي — أرقامُ المشروع في ورقة':'Executive summary — project figures on one sheet',
+ 'المسح المنجز حسب المشعر':'Survey completed by site', 'دورة النقطة — أين هي الآن':'Point lifecycle — where it stands now', 'مهامُّ متأخرة':'Overdue tasks', 'مهمة':'tasks', 'حج ١٤٤٨هـ · قارئات أفاقي في المشاعر':'Hajj 1448 AH · Nusuk readers in the Holy Sites', 'الملخّص التنفيذي — أرقامُ المشروع في ورقة':'Executive summary — project figures on one sheet',
  'ملاحظةً تحتاج نظرًا — الأرقامُ أدناه حيّةٌ لحظةَ الفتح':'items need attention — the figures below are live at open', 'لا تناقضَ في البيانات — كلُّ الفحوص صفر':'No inconsistencies — all checks are zero', 'فحوص التناقض':'Inconsistency checks', 'جودة البيانات':'Data quality', 'نقاط مُركّبة بلا حلٍّ معتمد':'Installed points without an approved solution', 'رُكّبت والحلُّ لم يُعتمَد — لا يُقفَل إقفالٌ ولا يُحسَب استلامٌ':'Installed but the solution was never approved — no closure, no handover', 'تركيبات مُسندة لنقاطٍ لم تُمسح':'Installs assigned to unsurveyed points', 'إسنادُ تركيبٍ قبل المسح — الفنيُّ سيصل بلا حلّ':'Install assigned before survey — the technician arrives with no solution', 'صرفٌ أكثرُ من التوريد — سجلٌّ ناقص':'More issued than received — a record is missing', 'مهام مُسندة لاسمٍ لا حسابَ له':'Tasks assigned to a name with no account', 'كُتب الاسمُ ولم يُطابق حسابًا — لا يصله شيء':'Name typed but matches no account — nothing reaches them', 'حسابات مكرَّرة':'Duplicate accounts', 'وثائق معزولة عن الرفع على هذا الجهاز':'Documents quarantined from upload on this device', 'مواقع بلا إحداثيات':'Sites without coordinates', 'لا تظهر على الخريطة ولا تُسنَد':'Not on the map and cannot be assigned', 'أسماء شركات مركَّبة (تحمل أكثر من شركة)':'Compound company names (more than one company)', 'لا تُحسَب نقاطُها لشركةٍ — توحَّد من شاشة الشركات':'Their points count for no company — unify from the Companies screen', 'زيارات تمّت بلا صورة':'Visits completed without a photo', 'المعتمِدُ لا يرى ما رآه المشرف':'The approver cannot see what the supervisor saw', 'مردودة لزيارةٍ أخرى منذ أكثر من ٣ أيام':'Returned for another visit more than 3 days ago', 'رُدّت ولم تُزَر ثانيةً':'Returned and not revisited',
  'تقرير الاجتماع':'Meeting report', 'PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات':'PDF: executive summary + tasks + detailed plan + challenges', 'يُجهَّز تقريرُ الاجتماع…':'Preparing the meeting report…', 'مهام الاجتماع':'Meeting tasks', 'مستحقة اليوم':'due today',
  'اسم الدخول':'Login name', 'بدّل اسم الدخول':'Change login name', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'The login name is an identity in authentication — changed by the server via its button, not by saving the row.', 'لا حسابَ لتبديله':'No account to rename', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'Login name: Latin letters, digits and dots — three or more', 'الاسمُ نفسُه':'Same name', 'الاسمُ مستعملٌ لحسابٍ آخر':'The name is used by another account',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'Sent to the server — runs within a minute',
- 'قارئات نُسُك في المشاعر':'Nusuk readers in the Holy Sites',
+ 'قارئات أفاقي في المشاعر':'AFAQY readers in the Holy Sites',
  'أكمِل المطلوب':'Complete the required fields',
  'كلُّ المخيّمات':'All camps', 'تمّ المسح':'Surveyed', 'متعذّر — يحتاج قرارًا':'Unreachable — needs a decision', 'تمّ التركيب':'Installed', 'مخيّم':'camps', 'لا مخيّماتٍ في هذه الخانة.':'No camps in this bucket.', 'سببُ التعذّر':'Reason', 'التحديات والملاحظات':'Challenges and notes', 'مَن ومتى':'Who and when', 'المخيّم':'Camp', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'Tap any number to see its camps.', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'Lowest percentage first — sixty companies per page. Tap any number to see its camps.', 'لا بيانات للتصدير':'No data to export',
  'يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.':'What is exported is what the filter shows — with no filter, everything.',
- 'متابعة مشروع قارئات نُسُك':'Nusuk readers project tracking', 'المواعيد الحاكمة':'Key dates', 'إكسل — بالمعادلات والطيّ':'Excel — with formulas and grouping', 'إكسل — قيمًا فقط':'Excel — values only', 'ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية':'A file like the tracking sheet: self-updating formulas, outline levels and conditional colours', 'صُدِّر من نُسُك Survey':'Exported from Nusuk Survey', 'بندًا صُدِّرت بالمعادلات والطيّ':'items exported with formulas and grouping', 'لا جدولَ بعد':'No table yet', 'ملاحظات المتابعة':'Tracking notes', 'الجهة المعنية':'Party', 'اسم المهمة':'Task name', 'تاريخ البدء':'Start date', 'تاريخ الانتهاء':'Finish date',
+ 'متابعة مشروع قارئات أفاقي':'AFAQY readers project tracking', 'المواعيد الحاكمة':'Key dates', 'إكسل — بالمعادلات والطيّ':'Excel — with formulas and grouping', 'إكسل — قيمًا فقط':'Excel — values only', 'ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية':'A file like the tracking sheet: self-updating formulas, outline levels and conditional colours', 'صُدِّر من قارئات أفاقي':'Exported from Nusuk Survey', 'بندًا صُدِّرت بالمعادلات والطيّ':'items exported with formulas and grouping', 'لا جدولَ بعد':'No table yet', 'ملاحظات المتابعة':'Tracking notes', 'الجهة المعنية':'Party', 'اسم المهمة':'Task name', 'تاريخ البدء':'Start date', 'تاريخ الانتهاء':'Finish date',
  'إخفاء حالات النقاط':'Hide point states', 'إظهار حالات النقاط':'Show point states', 'إخفاء الحالات':'Hide states', 'الحالات':'States',
  'قرارُ المتعذّر للمهندس وحده':'Unreachable decisions are for engineers only', 'اكتب القرار: لماذا يُقبَل التعذّرُ ومن يحلُّه':'Write the decision: why the block is accepted and who resolves it', 'قُبل التعذّر':'Block accepted', 'المشرف / الفني':'Supervisor / technician', 'حالة الوصول':'Access', 'القرار':'Decision', 'رُدّت لزيارة أخرى':'Returned for another visit', 'صورُ الزيارة':'Visit photos', 'قرارُ المهندس':'Engineer’s decision', 'مثال: تصريحُ دخولٍ مطلوبٌ من كدانة — يُرفَع للوزارة · أو: المشرفُ يعود مع الفني ومعه الأداة':'e.g. Access permit needed from Kidana — escalate to the Ministry · or: the supervisor returns with the technician and the tool', 'يعود المشرفُ لزيارةٍ أخرى':'Supervisor returns for another visit', 'أقبل التعذّر — سببٌ حقيقيّ':'Accept the block — real reason', '«يعود المشرف»: تُردُّ الزيارةُ بسببك ويصله إشعارٌ. «أقبل التعذّر»: يخرج من هذه القائمة إلى «مقبول» وتُسجَّل الحُجّةُ باسمك.':'“Supervisor returns”: the visit is sent back with your reason and they are notified. “Accept”: it moves to “accepted” with your justification on record.', 'أعد فتحه':'Reopen', 'متعذّر يحتاج قرارًا':'Blocked — needs a decision', 'متعذّر مقبول':'Blocked — accepted', 'راكد':'Idle', 'متعذّر — مقبول':'Blocked — accepted', 'السبب / الملاحظة':'Reason / note', 'راجع':'Review', 'لا عناصرَ في هذه الخانة الآن.':'Nothing in this bucket right now.', 'المتعذّر: وصل المشرفُ ولم يستطع المسح — يُراجَع بصوره وسببه ويُقرَّر فيه: يعود لزيارةٍ أخرى، أو يُقبَل التعذّرُ بحُجّةٍ مكتوبة. والراكد: زيارةٌ تمّت ولم تُركَّب نقطتُه بعد.':'Blocked: the supervisor arrived but could not survey — reviewed with photos and reason, then decided: return for another visit, or accept with a written justification. Idle: surveyed but not yet installed.', 'رُدّت — سيصل المشرفَ إشعارٌ بسببك':'Sent back — the supervisor will be notified with your reason', 'قُبل التعذّرُ وسُجِّلت الحُجّة':'Accepted — justification recorded', 'أُعيد فتحُه':'Reopened',
  'اعتمادُ إعداد التركيب للوزارة':'Installation-setup approval belongs to the Ministry', 'لم تُعتمَد تقنيًّا بعد':'Not technically approved yet', 'اعتمدت الوزارة':'Ministry approved', 'جاهزةٌ للتركيب':'ready for installation', 'اكتب ما تطلبه الوزارةُ تعديلَه':'Write what the Ministry asks to be changed', 'ردّت الوزارة':'Ministry returned it', 'الرفعُ للوزارة للمهندس وحده':'Resubmitting to the Ministry is for engineers only', 'بانتظار اعتماد الوزارة':'Awaiting Ministry approval', 'أُعيد رفعُها بعد المعالجة':'resubmitted after handling', 'اعتماد تقني':'Technical approval', 'رُفعت للوزارة':'sent to the Ministry', 'بانتظار اعتمادكم':'Awaiting your approval', 'إعدادُ التركيب بانتظار اعتماد الوزارة':'installation setup awaits Ministry approval', 'معتمدةٌ تقنيًّا — بانتظار الوزارة':'Technically approved — awaiting Ministry', 'اعتمدها المهندسُ تقنيًّا، وتنتظر اعتمادَ الوزارة لإعداد التركيب.':'Technically approved by the engineer; awaiting Ministry approval of the installation setup.', 'ردّتها الوزارة — تحتاج معالجة':'Returned by the Ministry — needs handling', 'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.':'Returned by the Ministry with a note — the engineer handles it and resubmits.', 'معتمدةٌ من الوزارة — بانتظار الجدولة':'Ministry-approved — awaiting scheduling', 'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.':'The Ministry approved its installation setup; awaiting an installation assignment.', 'الاعتماد التقني':'Technical approval', 'اعتماد الوزارة':'Ministry approval', 'ما زاره المشرفون ببياناته الجديدة — يعتمده المهندسُ تقنيًّا أو يردُّه لزيارةٍ أخرى، ثم يقترح حلَّه.':'What supervisors visited, with its new data — the engineer approves it technically or returns it, then proposes its solution.', 'ما اعتُمد تقنيًّا وينتظر اعتمادَ الوزارة لإعداد التركيب — تعتمده أو تُعيده بملاحظة.':'Technically approved items awaiting Ministry approval of the installation setup — approve or return with a note.', 'ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.':'Ministry-approved with an approved solution and not yet assigned for installation — scheduled from here.', 'أعادتها الوزارة':'Returned by the Ministry', 'اعتمدتها الوزارة':'Approved by the Ministry', 'بانتظار الوزارة':'Awaiting Ministry', 'المشعر / الشركة':'Site / company', 'ارتفاع التركيب (م)':'Mount height (m)', 'طول الكابل (م)':'Cable length (m)', 'هل الموقع مناسب':'Is the site suitable', 'ملاحظة الوزارة':'Ministry note', 'ملاحظة الاعتماد':'Approval note', 'معالجة المهندس':'Engineer’s handling', 'اختياريةٌ عند الاعتماد — مطلوبةٌ عند الإعادة':'Optional when approving — required when returning', 'اعتماد إعداد التركيب':'Approve installation setup', 'إعادة للمهندس':'Return to the engineer', 'ما عُولج':'What was handled', 'أعد الرفع للوزارة':'Resubmit to the Ministry', 'يعود المشرف لزيارة أخرى':'Supervisor returns for another visit', 'ابحث بالنقطة أو المشرف أو الشركة':'Search by point, supervisor or company', 'الدورة: زيارةُ المشرف ← الاعتمادُ التقنيُّ (المهندس) ← اعتمادُ الوزارة لإعداد التركيب ← اقتراحُ الحل واعتمادُه ← إسنادُ التركيب. لا يُسنَد تركيبٌ لنقطةٍ لم تعتمدها الوزارة.':'Cycle: supervisor visit → technical approval (engineer) → Ministry approval of installation setup → solution proposal and approval → installation assignment. Nothing is assigned for installation without Ministry approval.', 'اعتمدت الوزارةُ إعدادَ التركيب':'The Ministry approved the installation setup', 'أُعيدت للمهندس بملاحظتكم':'Returned to the engineer with your note', 'رُفعت للوزارة ثانيةً':'Resubmitted to the Ministry', 'اعتمدت الوزارةُ إعدادَها وحلُّها معتمدٌ ولم تُركَّب':'Ministry approved its setup, solution approved, not yet installed', 'اعتماد الوزارة لإعداد التركيب':'Ministry approval of installation setup',
@@ -3600,7 +3604,7 @@ en:{
  'تمام':'Fine', 'تحدٍّ':'Challenge',
 },
 ur:{
- 'قارئات نُسُك':'نسک ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
+ 'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
  'مهندس — صلاحية كاملة':'انجینئر — مکمل رسائی','اللغة':'زبان','المظهر':'تھیم',
  'فاتح':'روشن','داكن':'گہرا','تسجيل الخروج':'سائن آؤٹ','القائمة':'مینو',
  'آخر مزامنة':'آخری ہم آہنگی','متصل':'آن لائن','تصدير':'برآمد','بحث':'تلاش','حفظ':'محفوظ',
@@ -5502,7 +5506,7 @@ ur:{
  'اعرض محضر الشركة':'کمپنی کی دستاویز دکھائیں',
  'محضر تسليم نقطة':'پوائنٹ حوالگی کی دستاویز',
  'محضر تسليم شركة':'کمپنی حوالگی کی دستاویز',
- 'مشروع نُسُك — قارئات RFID · موسم ١٤٤٨هـ':'نُسُک پروجیکٹ — RFID ریڈرز · 1448ھ سیزن',
+ 'قارئات أفاقي — RFID · موسم ١٤٤٨هـ':'افاقی ریڈرز — RFID · 1448ھ سیزن',
  'رقم المحضر':'دستاویز نمبر',
  'لم يُسلَّم بعد':'ابھی حوالے نہیں',
  'لم يُسلَّم':'حوالے نہیں',
@@ -6231,23 +6235,23 @@ ur:{
  'خطوة':'اقدامات', 'متعذّرٌ — يحتاج زيارةً أخرى':'ناممکن — دوبارہ دورہ درکار', 'وصل المشرفُ ولم يستطع المسحَ (مغلقٌ، لا تصريح…) — تُزار ثانيةً.':'سپروائزر پہنچا مگر سروے نہ کر سکا (بند، اجازت نہیں…) — دوبارہ دورہ۔',
  'المعالم للمهندس وحده':'سنگِ میل صرف انجینئر کے لیے', 'اسمُ المعلَم مطلوب':'سنگِ میل کا نام درکار', 'أُضيف المعلَم':'سنگِ میل شامل', 'حُذف المعلَم':'سنگِ میل حذف', 'معلَم جديد':'نیا سنگِ میل', 'حُفظ المعلَم':'سنگِ میل محفوظ', 'إنجازُ المعلَم الجديد يُكتب باليد (٪) من زرِّ التعديل — والمعالمُ المضمَّنةُ تُحسَب من الميدان ما لم يُكتب لها إنجازٌ يدويّ.':'نئے سنگِ میل کی پیش رفت (٪) ترمیم سے دستی لکھی جاتی ہے — بلٹ اِن میدان سے شمار ہوتے ہیں۔',
  'السحب التالي':'اگلا سنک', 'السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ':'اگلا سنک — صفر پر قطار بھیجی، تبدیلیاں لائی اور اسکرین تازہ؛ درمیان میں لائیو', 'علّم الكل مقروءًا':'سب پڑھا ہوا', 'كل الإشعارات':'تمام اطلاعات',
- 'جدول المتابعة':'نگرانی جدول', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'منصوبے کی تمام مدیں — کون، کب ختم، کہاں کھڑی ہیں؛ دفتر سے تازہ، سب دیکھتے ہیں۔', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.':'ابھی جدول نہیں — اوپر کے بٹن سے فائل درآمد کریں۔', 'لا جدولَ بعد — يستورده المكتب.':'ابھی جدول نہیں — دفتر درآمد کرے گا۔', 'مضى':'گزر گئے', 'البنود':'مدیں', 'ابحث بالبند أو المسؤول أو الجهة':'مد، ذمہ دار یا فریق سے تلاش', 'آخر تحديث':'آخری تازہ کاری', 'إكسل — جدول المتابعة':'ایکسل — نگرانی جدول', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'پیش رفت ذیلی مدوں میں لکھی جاتی ہے اور مدت سے والدین میں جمع؛ حالت اور شیڈول آج کی تاریخ سے شمار۔', 'البدء':'آغاز', 'الانتهاء':'اختتام', 'الموقف الزمني':'شیڈول', 'مكتملة':'مکمل', 'لم تبدأ':'شروع نہیں', 'ضمن مدته':'مدت میں', 'لم يحن موعده':'ابھی وقت نہیں', 'معلم':'سنگِ میل', 'جدولُ المتابعة للمهندس فما فوق':'نگرانی جدول انجینئر یا اوپر کے لیے', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'عنوان کی قطار نہیں ملی', 'لا صفوفَ في الملف':'فائل میں قطاریں نہیں', 'بندًا استُورد':'مدیں درآمد', 'موعدًا حاكمًا':'کلیدی تاریخیں', 'جدول المتابعة — هيكل تقسيم العمل':'نگرانی جدول — WBS',
+ 'جدول المتابعة':'نگرانی جدول', 'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.':'منصوبے کی تمام مدیں — کون، کب ختم، کہاں کھڑی ہیں؛ دفتر سے تازہ، سب دیکھتے ہیں۔', 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات أفاقي» من الزرِّ أعلاه.':'ابھی جدول نہیں — اوپر کے بٹن سے فائل درآمد کریں۔', 'لا جدولَ بعد — يستورده المكتب.':'ابھی جدول نہیں — دفتر درآمد کرے گا۔', 'مضى':'گزر گئے', 'البنود':'مدیں', 'ابحث بالبند أو المسؤول أو الجهة':'مد، ذمہ دار یا فریق سے تلاش', 'آخر تحديث':'آخری تازہ کاری', 'إكسل — جدول المتابعة':'ایکسل — نگرانی جدول', 'الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.':'پیش رفت ذیلی مدوں میں لکھی جاتی ہے اور مدت سے والدین میں جمع؛ حالت اور شیڈول آج کی تاریخ سے شمار۔', 'البدء':'آغاز', 'الانتهاء':'اختتام', 'الموقف الزمني':'شیڈول', 'مكتملة':'مکمل', 'لم تبدأ':'شروع نہیں', 'ضمن مدته':'مدت میں', 'لم يحن موعده':'ابھی وقت نہیں', 'معلم':'سنگِ میل', 'جدولُ المتابعة للمهندس فما فوق':'نگرانی جدول انجینئر یا اوپر کے لیے', 'لم يُعثَر على صفِّ العناوين «هيكل تقسيم العمل»':'عنوان کی قطار نہیں ملی', 'لا صفوفَ في الملف':'فائل میں قطاریں نہیں', 'بندًا استُورد':'مدیں درآمد', 'موعدًا حاكمًا':'کلیدی تاریخیں', 'جدول المتابعة — هيكل تقسيم العمل':'نگرانی جدول — WBS',
  'متأخر':'تاخیر', 'مكتمل':'مکمل',
  'اطوِ':'سمیٹیں', 'افتح':'کھولیں', 'بند':'مدیں', 'امسح الجدول وابدأ من جديد':'جدول صاف کریں اور نئے سرے سے', 'تأكيد المسح — يُمحى الجدولُ كلُّه':'صاف کرنے کی تصدیق — پورا جدول مٹ جائے گا', 'حُذف البند':'مد حذف', 'حُفظ البند':'مد محفوظ', 'مُسح الجدول — استورد ملفًا جديدًا':'جدول صاف — نئی فائل درآمد کریں',
- 'نُسُك Survey — تقرير اللوحة':'نُسُک سروے — ڈیش بورڈ رپورٹ', 'عُرض أربعُمئة صفٍّ — والإكسلُ فيه الباقي':'400 قطاریں — باقی ایکسل میں', 'لا بياناتٍ في الأقسام المختارة':'منتخب حصوں میں ڈیٹا نہیں', 'امنع حجبَ النوافذ لتصدير PDF':'PDF کے لیے پاپ اپ کی اجازت دیں', 'قسمًا — اختر «حفظ كـPDF» من نافذة الطباعة':'حصے — پرنٹ ونڈو سے «Save as PDF» چنیں',
+ 'قارئات أفاقي — تقرير اللوحة':'افاقی ریڈرز — ڈیش بورڈ رپورٹ', 'عُرض أربعُمئة صفٍّ — والإكسلُ فيه الباقي':'400 قطاریں — باقی ایکسل میں', 'لا بياناتٍ في الأقسام المختارة':'منتخب حصوں میں ڈیٹا نہیں', 'امنع حجبَ النوافذ لتصدير PDF':'PDF کے لیے پاپ اپ کی اجازت دیں', 'قسمًا — اختر «حفظ كـPDF» من نافذة الطباعة':'حصے — پرنٹ ونڈو سے «Save as PDF» چنیں',
  'متابعة الخطة التفصيلية':'تفصیلی منصوبے کی نگرانی', 'متابعة المهام الأسبوعية':'ہفتہ وار امور کی نگرانی', 'لوحة المهام':'امور ڈیش بورڈ', 'مهامُّ الاجتماع الدوريِّ — من عليه ماذا، ومتى تستحقّ، وأين وقفت.':'باقاعدہ اجلاس کی مدیں — کس پر کیا، کب واجب، کہاں کھڑی۔', 'مهمة جديدة':'نیا کام', 'امسح الكل':'سب صاف', 'تأكيد المسح':'صاف کرنے کی تصدیق', 'الاستحقاق القريب':'قریب الواجب', 'مستحق اليوم':'آج واجب', 'غدًا':'کل', 'باقي الأسبوع':'باقی ہفتہ', 'الأسبوع القادم':'اگلا ہفتہ', 'بلا تاريخ':'بلا تاریخ', 'حسب المسار':'ٹریک کے مطابق', 'المسار':'ٹریک', 'المفتوح على كلِّ جهة':'ہر فریق پر کھلا', 'مستحق قريبًا':'جلد واجب', 'جاري العمل':'جاری', 'قيد الانتظار':'انتظار میں', 'متوقف':'رکا ہوا', 'ابحث بالمهمة أو المسؤول أو المسار':'کام، ذمہ دار یا ٹریک سے تلاش', 'إكسل — المهام':'ایکسل — امور', 'لا مهامَّ بعد — أضف مهمةً أو استورد ملفَ المهام.':'ابھی امور نہیں — شامل کریں یا فائل درآمد کریں۔', 'لا مهامَّ بعد — يضيفها المكتب.':'ابھی امور نہیں — دفتر شامل کرے گا۔', 'المهامُّ الأسبوعية للمهندس فما فوق':'ہفتہ وار امور انجینئر یا اوپر', 'اسمُ المهمة مطلوب':'کام کا نام درکار', 'أُضيفت المهمة':'کام شامل', 'حُذفت المهمة':'کام حذف', 'مُسحت المهام':'امور صاف', 'لم يُعثَر على عمود «المهمة» في الملف':'فائل میں «کام» کالم نہیں ملا', 'مهمةً استُوردت':'امور درآمد', 'حُفظت المهمة':'کام محفوظ', 'تأخّر':'تاخیر', 'الاستحقاق':'واجب', 'المهمة':'کام', 'تاريخ الاستحقاق':'واجب تاریخ', 'المؤشراتُ التي كانت الدوالُّ تحسبها — من تاريخ اليوم.':'وہ اشاریے جو فارمولے شمار کرتے تھے — آج کی تاریخ سے۔', 'مهامُّ الاجتماع الدوريِّ — تُضاف وتُعدَّل وتُنهى.':'باقاعدہ اجلاس کی مدیں — شامل، ترمیم، مکمل۔', 'إجمالي المهام':'کل امور', 'قيد التنفيذ والانتظار':'جاری اور انتظار',
  'املأ المهمة الجديدة ثم احفظ':'نیا کام بھریں پھر محفوظ کریں',
  'افتح النافذةَ واطبع منها':'ونڈو کھولیں اور وہاں سے پرنٹ کریں',
- 'المسح المنجز حسب المشعر':'مشعر کے مطابق مکمل سروے', 'دورة النقطة — أين هي الآن':'نقطے کا چکر — اب کہاں', 'مهامُّ متأخرة':'تاخیر شدہ امور', 'مهمة':'امور', 'حج ١٤٤٨هـ · قارئات نُسُك في المشاعر':'حج ١٤٤٨ھ · مشاعر میں نُسُک ریڈرز', 'الملخّص التنفيذي — أرقامُ المشروع في ورقة':'ایگزیکٹو خلاصہ — ایک شیٹ میں اعداد',
+ 'المسح المنجز حسب المشعر':'مشعر کے مطابق مکمل سروے', 'دورة النقطة — أين هي الآن':'نقطے کا چکر — اب کہاں', 'مهامُّ متأخرة':'تاخیر شدہ امور', 'مهمة':'امور', 'حج ١٤٤٨هـ · قارئات أفاقي في المشاعر':'حج ١٤٤٨ھ · مشاعر میں نُسُک ریڈرز', 'الملخّص التنفيذي — أرقامُ المشروع في ورقة':'ایگزیکٹو خلاصہ — ایک شیٹ میں اعداد',
  'ملاحظةً تحتاج نظرًا — الأرقامُ أدناه حيّةٌ لحظةَ الفتح':'مدیں توجہ چاہتی ہیں — نیچے اعداد لائیو', 'لا تناقضَ في البيانات — كلُّ الفحوص صفر':'ڈیٹا میں تضاد نہیں — تمام جانچیں صفر', 'فحوص التناقض':'تضاد کی جانچیں', 'جودة البيانات':'ڈیٹا کا معیار', 'نقاط مُركّبة بلا حلٍّ معتمد':'منظور حل کے بغیر نصب نقاط', 'رُكّبت والحلُّ لم يُعتمَد — لا يُقفَل إقفالٌ ولا يُحسَب استلامٌ':'نصب مگر حل منظور نہیں', 'تركيبات مُسندة لنقاطٍ لم تُمسح':'بغیر سروے نقاط پر تنصیب کی تفویض', 'إسنادُ تركيبٍ قبل المسح — الفنيُّ سيصل بلا حلّ':'سروے سے پہلے تنصیب — تکنیشن بغیر حل', 'صرفٌ أكثرُ من التوريد — سجلٌّ ناقص':'فراہمی سے زیادہ اجرا — ریکارڈ ناقص', 'مهام مُسندة لاسمٍ لا حسابَ له':'بغیر اکاؤنٹ نام کو تفویض', 'كُتب الاسمُ ولم يُطابق حسابًا — لا يصله شيء':'نام کسی اکاؤنٹ سے نہیں ملتا', 'حسابات مكرَّرة':'ڈپلیکیٹ اکاؤنٹس', 'وثائق معزولة عن الرفع على هذا الجهاز':'اس آلے پر اپ لوڈ سے الگ دستاویزات', 'مواقع بلا إحداثيات':'بغیر محلِ وقوع مقامات', 'لا تظهر على الخريطة ولا تُسنَد':'نقشے پر نہیں', 'أسماء شركات مركَّبة (تحمل أكثر من شركة)':'مرکب کمپنی نام', 'لا تُحسَب نقاطُها لشركةٍ — توحَّد من شاشة الشركات':'کمپنی اسکرین سے یکجا کریں', 'زيارات تمّت بلا صورة':'بغیر تصویر دورے', 'المعتمِدُ لا يرى ما رآه المشرف':'منظور کنندہ نہیں دیکھ سکتا', 'مردودة لزيارةٍ أخرى منذ أكثر من ٣ أيام':'۳ دن سے زیادہ سے واپس', 'رُدّت ولم تُزَر ثانيةً':'واپس مگر دوبارہ دورہ نہیں',
  'تقرير الاجتماع':'اجلاس رپورٹ', 'PDF: الملخّص التنفيذي + المهام + الخطة التفصيلية + التحديات':'PDF: خلاصہ + امور + منصوبہ + چیلنجز', 'يُجهَّز تقريرُ الاجتماع…':'اجلاس رپورٹ تیار…', 'مهام الاجتماع':'اجلاس کے امور', 'مستحقة اليوم':'آج واجب',
  'اسم الدخول':'لاگ اِن نام', 'بدّل اسم الدخول':'لاگ اِن نام بدلیں', 'اسمُ الدخول هويةٌ في المصادقة — يُبدَّل من الخادم بزرِّه، لا بحفظ الصف.':'لاگ اِن نام تصدیق میں شناخت ہے — سرور سے بدلتا ہے۔', 'لا حسابَ لتبديله':'بدلنے کے لیے اکاؤنٹ نہیں', 'اسمُ الدخول: حروفٌ لاتينيةٌ وأرقامٌ ونقطةٌ — ثلاثةٌ فأكثر':'لاگ اِن نام: لاطینی حروف اور ہندسے — کم از کم تین', 'الاسمُ نفسُه':'وہی نام', 'الاسمُ مستعملٌ لحسابٍ آخر':'نام دوسرے اکاؤنٹ کے پاس',
  'أُرسل إلى الخادم — يُنفَّذ خلال دقيقة':'سرور کو بھیجا گیا — ایک منٹ میں چلے گا',
- 'قارئات نُسُك في المشاعر':'مشاعر میں نُسُک ریڈرز',
+ 'قارئات أفاقي في المشاعر':'مشاعر میں افاقی ریڈرز',
  'أكمِل المطلوب':'مطلوبہ خانے مکمل کریں',
  'كلُّ المخيّمات':'تمام کیمپ', 'تمّ المسح':'سروے مکمل', 'متعذّر — يحتاج قرارًا':'ناممکن — فیصلہ درکار', 'تمّ التركيب':'نصب مکمل', 'مخيّم':'کیمپ', 'لا مخيّماتٍ في هذه الخانة.':'اس خانے میں کیمپ نہیں۔', 'سببُ التعذّر':'وجہ', 'التحديات والملاحظات':'چیلنجز اور نوٹس', 'مَن ومتى':'کون اور کب', 'المخيّم':'کیمپ', 'اضغط أيَّ رقمٍ لترى مخيّماته.':'کوئی بھی عدد دبائیں۔', 'الأقلُّ نسبةً أولًا — وستون شركةً في الصفحة. اضغط أيَّ رقمٍ لترى مخيّماته.':'کم ترین فیصد پہلے — فی صفحہ ساٹھ کمپنیاں۔', 'لا بيانات للتصدير':'برآمد کے لیے ڈیٹا نہیں',
  'يُصدَّر ما بعد التصفية — وبلا تصفيةٍ يُصدَّر الكلّ.':'فلٹر کے مطابق برآمد — بغیر فلٹر سب کچھ۔',
- 'متابعة مشروع قارئات نُسُك':'نُسُک ریڈرز منصوبے کی نگرانی', 'المواعيد الحاكمة':'کلیدی تاریخیں', 'إكسل — بالمعادلات والطيّ':'ایکسل — فارمولوں اور گروپنگ کے ساتھ', 'إكسل — قيمًا فقط':'ایکسل — صرف اقدار', 'ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية':'خود کار فارمولے، گروپنگ اور مشروط رنگ', 'صُدِّر من نُسُك Survey':'نُسُک سروے سے برآمد', 'بندًا صُدِّرت بالمعادلات والطيّ':'مدیں فارمولوں کے ساتھ برآمد', 'لا جدولَ بعد':'ابھی جدول نہیں', 'ملاحظات المتابعة':'نگرانی نوٹس', 'الجهة المعنية':'متعلقہ فریق', 'اسم المهمة':'کام کا نام', 'تاريخ البدء':'آغاز کی تاریخ', 'تاريخ الانتهاء':'اختتام کی تاریخ',
+ 'متابعة مشروع قارئات أفاقي':'افاقی ریڈرز منصوبے کی نگرانی', 'المواعيد الحاكمة':'کلیدی تاریخیں', 'إكسل — بالمعادلات والطيّ':'ایکسل — فارمولوں اور گروپنگ کے ساتھ', 'إكسل — قيمًا فقط':'ایکسل — صرف اقدار', 'ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية':'خود کار فارمولے، گروپنگ اور مشروط رنگ', 'صُدِّر من قارئات أفاقي':'نُسُک سروے سے برآمد', 'بندًا صُدِّرت بالمعادلات والطيّ':'مدیں فارمولوں کے ساتھ برآمد', 'لا جدولَ بعد':'ابھی جدول نہیں', 'ملاحظات المتابعة':'نگرانی نوٹس', 'الجهة المعنية':'متعلقہ فریق', 'اسم المهمة':'کام کا نام', 'تاريخ البدء':'آغاز کی تاریخ', 'تاريخ الانتهاء':'اختتام کی تاریخ',
  'إخفاء حالات النقاط':'نقاط کی حالتیں چھپائیں', 'إظهار حالات النقاط':'نقاط کی حالتیں دکھائیں', 'إخفاء الحالات':'حالتیں چھپائیں', 'الحالات':'حالتیں',
  'قرارُ المتعذّر للمهندس وحده':'ناممکن کا فیصلہ انجینئر کا', 'اكتب القرار: لماذا يُقبَل التعذّرُ ومن يحلُّه':'فیصلہ لکھیں: کیوں قبول اور کون حل کرے', 'قُبل التعذّر':'رکاوٹ قبول', 'المشرف / الفني':'سپروائزر / تکنیشن', 'حالة الوصول':'رسائی', 'القرار':'فیصلہ', 'رُدّت لزيارة أخرى':'دوبارہ دورے کے لیے واپس', 'صورُ الزيارة':'دورے کی تصاویر', 'قرارُ المهندس':'انجینئر کا فیصلہ', 'مثال: تصريحُ دخولٍ مطلوبٌ من كدانة — يُرفَع للوزارة · أو: المشرفُ يعود مع الفني ومعه الأداة':'مثال: اجازت درکار — وزارت کو بھیجیں', 'يعود المشرفُ لزيارةٍ أخرى':'سپروائزر دوبارہ جائے', 'أقبل التعذّر — سببٌ حقيقيّ':'رکاوٹ قبول — حقیقی وجہ', '«يعود المشرف»: تُردُّ الزيارةُ بسببك ويصله إشعارٌ. «أقبل التعذّر»: يخرج من هذه القائمة إلى «مقبول» وتُسجَّل الحُجّةُ باسمك.':'واپس بھیجیں: اطلاع جائے گی۔ قبول: قبول شدہ میں چلا جائے گا۔', 'أعد فتحه':'دوبارہ کھولیں', 'متعذّر يحتاج قرارًا':'رکاوٹ — فیصلہ درکار', 'متعذّر مقبول':'رکاوٹ — قبول', 'راكد':'ٹھہرا ہوا', 'متعذّر — مقبول':'رکاوٹ — قبول', 'السبب / الملاحظة':'وجہ / نوٹ', 'راجع':'جائزہ', 'لا عناصرَ في هذه الخانة الآن.':'اس خانے میں کچھ نہیں۔', 'المتعذّر: وصل المشرفُ ولم يستطع المسح — يُراجَع بصوره وسببه ويُقرَّر فيه: يعود لزيارةٍ أخرى، أو يُقبَل التعذّرُ بحُجّةٍ مكتوبة. والراكد: زيارةٌ تمّت ولم تُركَّب نقطتُه بعد.':'رکاوٹ: تصاویر اور وجہ سے جائزہ پھر فیصلہ۔ ٹھہرا ہوا: سروے ہوا مگر نصب نہیں۔', 'رُدّت — سيصل المشرفَ إشعارٌ بسببك':'واپس — سپروائزر کو اطلاع', 'قُبل التعذّرُ وسُجِّلت الحُجّة':'قبول — وجہ درج', 'أُعيد فتحُه':'دوبارہ کھلا',
  'اعتمادُ إعداد التركيب للوزارة':'تنصیب کی تیاری کی منظوری وزارت کی', 'لم تُعتمَد تقنيًّا بعد':'ابھی تکنیکی منظوری نہیں', 'اعتمدت الوزارة':'وزارت نے منظور کیا', 'جاهزةٌ للتركيب':'تنصیب کے لیے تیار', 'اكتب ما تطلبه الوزارةُ تعديلَه':'لکھیں وزارت کیا تبدیلی چاہتی ہے', 'ردّت الوزارة':'وزارت نے واپس کیا', 'الرفعُ للوزارة للمهندس وحده':'وزارت کو بھیجنا انجینئر کا', 'بانتظار اعتماد الوزارة':'وزارت کی منظوری کا انتظار', 'أُعيد رفعُها بعد المعالجة':'نمٹانے کے بعد دوبارہ بھیجا', 'اعتماد تقني':'تکنیکی منظوری', 'رُفعت للوزارة':'وزارت کو بھیجا', 'بانتظار اعتمادكم':'آپ کی منظوری کا انتظار', 'إعدادُ التركيب بانتظار اعتماد الوزارة':'تنصیب کی تیاری وزارت کی منظوری کے انتظار میں', 'معتمدةٌ تقنيًّا — بانتظار الوزارة':'تکنیکی منظور — وزارت کا انتظار', 'اعتمدها المهندسُ تقنيًّا، وتنتظر اعتمادَ الوزارة لإعداد التركيب.':'انجینئر نے منظور کیا؛ وزارت کی منظوری باقی۔', 'ردّتها الوزارة — تحتاج معالجة':'وزارت نے واپس کیا — نمٹانا ہے', 'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.':'وزارت نے نوٹ کے ساتھ واپس کیا۔', 'معتمدةٌ من الوزارة — بانتظار الجدولة':'وزارت سے منظور — شیڈول کا انتظار', 'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.':'وزارت نے تنصیب کی تیاری منظور کی۔', 'الاعتماد التقني':'تکنیکی منظوری', 'اعتماد الوزارة':'وزارت کی منظوری', 'ما زاره المشرفون ببياناته الجديدة — يعتمده المهندسُ تقنيًّا أو يردُّه لزيارةٍ أخرى، ثم يقترح حلَّه.':'سپروائزرز کے دورے — انجینئر تکنیکی منظوری دیتا ہے۔', 'ما اعتُمد تقنيًّا وينتظر اعتمادَ الوزارة لإعداد التركيب — تعتمده أو تُعيده بملاحظة.':'تکنیکی منظور شدہ — وزارت منظور یا واپس کرے۔', 'ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.':'وزارت سے منظور، حل منظور، تنصیب باقی۔', 'أعادتها الوزارة':'وزارت نے واپس کیا', 'اعتمدتها الوزارة':'وزارت نے منظور کیا', 'بانتظار الوزارة':'وزارت کا انتظار', 'المشعر / الشركة':'مشعر / کمپنی', 'ارتفاع التركيب (م)':'تنصیب کی اونچائی (م)', 'طول الكابل (م)':'کیبل کی لمبائی (م)', 'هل الموقع مناسب':'کیا مقام موزوں ہے', 'ملاحظة الوزارة':'وزارت کا نوٹ', 'ملاحظة الاعتماد':'منظوری کا نوٹ', 'معالجة المهندس':'انجینئر کا نمٹانا', 'اختياريةٌ عند الاعتماد — مطلوبةٌ عند الإعادة':'منظوری پر اختیاری — واپسی پر لازمی', 'اعتماد إعداد التركيب':'تنصیب کی تیاری منظور کریں', 'إعادة للمهندس':'انجینئر کو واپس', 'ما عُولج':'کیا نمٹایا گیا', 'أعد الرفع للوزارة':'وزارت کو دوبارہ بھیجیں', 'يعود المشرف لزيارة أخرى':'سپروائزر دوبارہ جائے', 'ابحث بالنقطة أو المشرف أو الشركة':'نقطہ، سپروائزر یا کمپنی سے تلاش', 'الدورة: زيارةُ المشرف ← الاعتمادُ التقنيُّ (المهندس) ← اعتمادُ الوزارة لإعداد التركيب ← اقتراحُ الحل واعتمادُه ← إسنادُ التركيب. لا يُسنَد تركيبٌ لنقطةٍ لم تعتمدها الوزارة.':'چکر: دورہ ← تکنیکی منظوری ← وزارت کی منظوری ← حل ← تنصیب۔', 'اعتمدت الوزارةُ إعدادَ التركيب':'وزارت نے تنصیب کی تیاری منظور کی', 'أُعيدت للمهندس بملاحظتكم':'آپ کے نوٹ کے ساتھ انجینئر کو واپس', 'رُفعت للوزارة ثانيةً':'دوبارہ وزارت کو بھیجا', 'اعتمدت الوزارةُ إعدادَها وحلُّها معتمدٌ ولم تُركَّب':'وزارت سے منظور، حل منظور، نصب باقی', 'اعتماد الوزارة لإعداد التركيب':'تنصیب کی تیاری کی وزارتی منظوری',
@@ -9260,7 +9264,7 @@ function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
-  try { console.warn('[نُسُك] ' + where + ': ' + msg); } catch (e2){}
+  try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){}
   if (tell && !SOFT_SAID[where]){
     SOFT_SAID[where] = 1;
     toast(t(tell));
@@ -14251,7 +14255,7 @@ function coStat(co){
 }
 function waText(kind, co, when){
   var S = coStat(co), L = ['السلام عليكم ورحمة الله'];
-  L.push('مشروع نُسُك — قارئات RFID · موسم ١٤٤٨هـ');
+  L.push('قارئات أفاقي — RFID · موسم ١٤٤٨هـ');
   L.push('');
   L.push('الشركة: ' + co);
   if (kind === 'plan'){
@@ -14380,12 +14384,12 @@ function wbsExcel(){
   exlLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
     var E = window.ExcelJS, wb = new E.Workbook();
-    wb.creator = 'نُسُك Survey'; wb.created = new Date();
-    var ws = wb.addWorksheet(t('متابعة مشروع قارئات نُسُك'), { views:[{ rightToLeft:true, state:'frozen', ySplit:5 }] });
+    wb.creator = 'قارئات أفاقي'; wb.created = new Date();
+    var ws = wb.addWorksheet(t('متابعة مشروع قارئات أفاقي'), { views:[{ rightToLeft:true, state:'frozen', ySplit:5 }] });
     var GREEN = 'FF0E4C3F', SOFT = 'FFE6EFEB';
     var R = wbsRows(), K = wbsKeyRow();
     /* ١ · الترويسةُ والمواعيدُ الحاكمة */
-    ws.getCell('A1').value = t('متابعة مشروع قارئات نُسُك') + ' — ' + t('حج ١٤٤٨هـ') + ' \u00b7 ' + (CFG.orgName || 'أفاقي');
+    ws.getCell('A1').value = t('متابعة مشروع قارئات أفاقي') + ' — ' + t('حج ١٤٤٨هـ') + ' \u00b7 ' + (CFG.orgName || 'أفاقي');
     ws.getCell('A1').font = { bold:true, size:14, color:{ argb:GREEN } };
     ws.getCell('A2').value = t('المواعيد الحاكمة'); ws.getCell('A2').font = { bold:true };
     ws.getCell('A3').value = t('التاريخ'); ws.getCell('A4').value = t('المتبقي');
@@ -14485,7 +14489,7 @@ function wbsExcel(){
         style:{ fill:{ type:'pattern', pattern:'solid', bgColor:{ argb:'FFFFF3CD' } } } },
       { type:'expression', formulae:['AND(ISNUMBER(L6),L6<0)'], priority:2,
         style:{ fill:{ type:'pattern', pattern:'solid', bgColor:{ argb:'FFFBD5D5' } }, font:{ color:{ argb:'FF8B1E1E' }, bold:true } } }]);
-    ws.getCell('A' + (last + 2)).value = t('صُدِّر من نُسُك Survey') + ' \u00b7 ' + new Date().toLocaleString('ar-EG')
+    ws.getCell('A' + (last + 2)).value = t('صُدِّر من قارئات أفاقي') + ' \u00b7 ' + new Date().toLocaleString('ar-EG')
       + ' \u00b7 ' + dispName(STATE.meta.name || '');
     ws.getCell('A' + (last + 2)).font = { size:9, color:{ argb:'FF889099' } };
     /* إكسلُ يُعيد الحسابَ عند الفتح — فالصيغُ تبقى الحاكمةَ والقيمُ المكتوبةُ للعرض الفوريّ */
@@ -14590,7 +14594,7 @@ PAGE.wbs = { m:'المتابعة', t:'متابعة الخطة التفصيلية
           + '</div>') : '';
     var R = wbsRows();
     if (!R.length) return head + card('', '<p class="hint" style="text-align:center;margin:0">'
-      + esc(t(may('settings') ? 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات نُسُك» من الزرِّ أعلاه.' : 'لا جدولَ بعد — يستورده المكتب.')) + '</p>');
+      + esc(t(may('settings') ? 'لا جدولَ بعد — استورد ملفَ «متابعة مشروع قارئات أفاقي» من الزرِّ أعلاه.' : 'لا جدولَ بعد — يستورده المكتب.')) + '</p>');
     var today = dayKey(Date.now());
     var strip = wbsKeys().length ? '<div class="grid cols-3" style="margin-bottom:10px">' + wbsKeys().map(function(k){
       var left = Math.round((new Date(k.d) - new Date(today)) / 86400000);
@@ -17924,7 +17928,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.91' + '.docx" download>⬇ '
+              +   'V16.92' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19198,7 +19202,7 @@ function hoSetupCard(){
 }
 var HO_PARTIES = { owner:'وزارة الحج والعمرة', agency:'وكالة التخطيط والتحول الرقمي',
                    contractor:'آفاقي', consultant:'شركة علم',
-                   project:'مشروع قارئات بطاقات نُسُك' };
+                   project:'مشروع قارئات أفاقي' };
 var HO_SIGNERS = [
   { n:'', role:'مدير برامج رقمية', org:'وزارة الحج والعمرة' },
   { n:'', role:'مدير البرنامج',    org:'شركة آفاقي' },
@@ -19318,7 +19322,7 @@ function handDocCo(co){
   return '<div class="hdoc">'
     + '<h3 style="margin:0 0 2px">' + esc(t('محضر تسليم شركة')) + '</h3>'
     + '<p class="hint" style="margin:0 0 12px">' + esc(co) + ' \u00b7 '
-    + esc(t('مشروع نُسُك — قارئات RFID · موسم ١٤٤٨هـ')) + '</p>'
+    + esc(t('قارئات أفاقي — RFID · موسم ١٤٤٨هـ')) + '</p>'
     + stats([['نقاطٌ مُركّبةٌ معتمدة', N(L.length), 'acc'],
              ['سُلِّمت', N(done.length), done.length === L.length && L.length ? 'ok' : 'wrn'],
              ['بانتظار التسليم', N(L.length - done.length), L.length - done.length ? 'wrn' : 'ok']])
@@ -19755,7 +19759,7 @@ var SHEETS = {
     var K = siteKeyStats(), S = K.total, out = [];
     /* النسبةُ بأرقام لغة الواجهة — «4٪» بأرقامٍ لاتينيةٍ في ورقةٍ عربيةٍ تُقرَأ عوجاء */
     var pc = function(v, t2){ return t2 ? nm(Math.round(v / t2 * 100)) + '٪' : '—'; };
-    out.push(['نُسُك Survey — الملخّص التنفيذي', '', '']);
+    out.push(['قارئات أفاقي — الملخّص التنفيذي', '', '']);
     out.push(['التاريخ', new Date().toLocaleString('ar-EG'), '']);
     out.push(['', '', '']);
     out.push(['المؤشر', 'العدد', 'النسبة']);
@@ -20702,19 +20706,19 @@ function kmiCard(){
     + '<p class="hint">' + esc(t('«موجودة عندنا» لا تُضاف افتراضًا — وإن أضفتها صارت نقطتين في موضعٍ واحد. و«مشكوكٌ فيها» قرارُك: قريبةٌ واسمُها يشبه، فراجعها على الخريطة قبل أن تقرّر.')) + '</p>';
 }
 function kmzExport(kind){
-  var f = null, title = 'نُسُك — قارئات RFID ١٤٤٨هـ', name = 'nusuk.kmz';
+  var f = null, title = 'أفاقي — قارئات RFID ١٤٤٨هـ', name = 'nusuk.kmz';
   if (kind === 'main'){
     f = function(x){ return x.zone === 'منى' || x.zone === 'عرفات'; };
-    title = 'نُسُك — منى وعرفات · ١٤٤٨هـ'; name = 'nusuk-mina-arafat.kmz';
+    title = 'أفاقي — منى وعرفات · ١٤٤٨هـ'; name = 'nusuk-mina-arafat.kmz';
   } else if (kind === 'co'){
     f = function(x){ return !CO_SEL.length || CO_SEL.indexOf(x.co) > -1; };
-    title = 'نُسُك — بلون الشركة'; name = 'nusuk-companies.kmz';
+    title = 'أفاقي — بلون الشركة'; name = 'nusuk-companies.kmz';
   } else if (kind === 'redo'){
     f = function(x){ return x.work === 'إعادة تركيب ١٤٤٧'; };
-    title = 'نُسُك — إعادة تركيب ١٤٤٧'; name = 'nusuk-redo-1447.kmz';
+    title = 'أفاقي — إعادة تركيب ١٤٤٧'; name = 'nusuk-redo-1447.kmz';
   } else if (kind === 'sel'){
     f = function(x){ return SEL_IDS.indexOf(x.id) > -1; };
-    title = 'نُسُك — المحدَّد'; name = 'nusuk-selected.kmz';
+    title = 'أفاقي — المحدَّد'; name = 'nusuk-selected.kmz';
   }
   var b = kmzBuild(f, title);
   if (!b.count){ toast('لا نقاط في هذا التحديد'); return false; }
@@ -21308,15 +21312,18 @@ function iosHelpCard(){
     btn('فهمت','btn-quiet btn-sm',' data-poph="0"'));
 }
 
+/* العلامةُ مرةً واحدةً في الملف — يقرؤها البيانُ والدخولُ والتقارير */
+var LOGO = document.querySelector('.brand-mark img') ? document.querySelector('.brand-mark img').src : '';
+
 var MANIFEST = {
-  name:'قارئات نُسُك', short_name:'نُسُك',
+  name:'قارئات أفاقي', short_name:'أفاقي',
   start_url:'./', display:'standalone', orientation:'any',
   background_color:'#0A0D10', theme_color:'#185FA5', dir:'rtl', lang:'ar',
   icons:[{ src:'data:image/svg+xml,' + encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">'
     + '<rect width="512" height="512" rx="96" fill="#185FA5"/>'
     + '<text x="256" y="300" font-size="150" font-family="system-ui" font-weight="700"'
-    + ' text-anchor="middle" fill="#fff">نُسُك</text></svg>'),
+    + ' text-anchor="middle" fill="#fff">أفاقي</text></svg>'),
     sizes:'512x512', type:'image/svg+xml', purpose:'any maskable' }]
 };
 
@@ -21348,8 +21355,9 @@ var LOGIN_CSS = `
   background:rgba(15,20,25,.93);border:1px solid #232B33;border-radius:16px;
   padding:26px 24px;backdrop-filter:blur(10px);box-shadow:0 24px 70px rgba(0,0,0,.6)}
 #login .lg{display:flex;align-items:center;gap:11px;margin-bottom:18px}
-#login .lgm{width:46px;height:46px;border-radius:11px;background:#185FA5;color:#fff;
-  display:grid;place-items:center;font-weight:800;font-size:11px;letter-spacing:.6px;flex:0 0 auto}
+#login .lgm{width:64px;height:46px;border-radius:11px;background:#fff;
+  display:grid;place-items:center;padding:5px 7px;flex:0 0 auto;overflow:hidden}
+.lgm img{width:100%;height:auto;display:block}
 #login h1{font-size:19px;color:#E8EBEE;line-height:1.3}
 #login .sub{font-size:12.5px;color:#8A939D;margin-top:2px}
 #login .cnt{font-size:12px;color:#5FA8E8;margin:0 0 16px;font-variant-numeric:tabular-nums}
@@ -21455,8 +21463,8 @@ function loginPaint(){
   el.innerHTML =
       '<canvas id="loginCv" aria-hidden="true"></canvas><div class="veil"></div>'
     + '<div class="box">'
-    +   '<div class="lg"><div class="lgm">AFAQY</div><div>'
-    +     '<h1>'+esc(t('قارئات نُسُك'))+'</h1>'
+    +   '<div class="lg"><div class="lgm"><img src="' + LOGO + '" alt="AFAQY" width="380" height="133"></div><div>'
+    +     '<h1>'+esc(t('قارئات أفاقي'))+'</h1>'
     +     '<div class="sub">'+esc(t('نظام متابعة تركيب قارئات الحجاج'))+'</div></div></div>'
     +   '<p class="cnt" id="lgCount">'+nm(0)+' / '+nm(siteStats().total)+' '+esc(t('نقطة'))+' · '+esc(t('المشاعر المقدسة'))+'</p>'
     +   '<label for="lgU">'+esc(t('اسم المستخدم'))+'</label>'
@@ -21692,7 +21700,7 @@ function coPopXls(){
   var out = [['المخيّم','المعرّف','الشاخص','المشعر','المربع','التحديات/السبب','مَن','متى','الحالة','خط العرض','خط الطول']];
   L.forEach(function(o){ var x = o.x;
     out.push([x.name || '', x.id, x.sign || '', x.zone || '', x.sq || '', o.why, o.who, o.when, o.st, x.lat || '', x.lng || '']); });
-  xlsSheets([[t(CO_POP_LBL[CO_POP.kind] || 'مخيّمات'), out]], 'نُسُك — ' + coName(CO_POP.co));
+  xlsSheets([[t(CO_POP_LBL[CO_POP.kind] || 'مخيّمات'), out]], 'أفاقي — ' + coName(CO_POP.co));
 }
 function coDashCard(){
   var D = coDash();
@@ -26065,10 +26073,10 @@ function notifSystem(n){
   try {
     /* عبر عامل الخدمة إن وُجد — فيظهر ولو كان التطبيقُ مغلقًا */
     if (SW_STATE && SW_STATE.reg && SW_STATE.reg.showNotification){
-      SW_STATE.reg.showNotification('نُسُك — ' + n.kind, { body:body, tag:n.id, dir:'rtl', lang:'ar' });
+      SW_STATE.reg.showNotification('أفاقي — ' + n.kind, { body:body, tag:n.id, dir:'rtl', lang:'ar' });
       return;
     }
-    new Notification('نُسُك — ' + n.kind, { body:body, dir:'rtl', lang:'ar' });
+    new Notification('أفاقي — ' + n.kind, { body:body, dir:'rtl', lang:'ar' });
   } catch (e){}
 }
 
@@ -26078,7 +26086,7 @@ function notifPhone(name){
   return (x && x.ph) || '';
 }
 function notifMail(n){
-  var sub = 'نُسُك — ' + n.kind;
+  var sub = 'أفاقي — ' + n.kind;
   var body = n.text + (n.site ? '\nالموقع: ' + n.site : '')
            + '\nالوقت: ' + new Date(n.at).toLocaleString('ar-EG')
            + '\nمن: ' + (n.by || '—');
@@ -27017,7 +27025,7 @@ function fupExport(){
     var blob = zipWrite(files);
     var a = document.createElement('a');
     a.href = URL.createObjectURL(blob);
-    a.download = 'متابعة-نُسُك-' + todayISO() + '.xlsx';
+    a.download = 'متابعة-أفاقي-' + todayISO() + '.xlsx';
     document.body.appendChild(a); a.click(); a.remove();
     logEvent('تصدير ملف المتابعة — ' + wrote + ' صفًّا');
     toast(nm(wrote) + ' ' + t('صفًّا حُدِّث — الباقي يحسبه إكسل عند الفتح'));
@@ -27270,8 +27278,8 @@ function expPdf(keys){
     + '.bar{margin:0 0 10px}.bl{display:flex;justify-content:space-between;font-size:11.5px;color:#445;margin-bottom:4px}'
     + '.btrack{height:10px;border-radius:99px;background:#eef2f6;overflow:hidden}.btrack i{display:block;height:100%;border-radius:99px}'
     + '@media print{h2{page-break-before:always}.cover{page-break-after:always}}';
-  var body = '<h1>' + esc(t('نُسُك Survey — تقرير اللوحة')) + '</h1>'
-    + '<div class="hint">' + esc(t('حج ١٤٤٨هـ')) + ' \u00b7 ' + esc(t('قارئات نُسُك في المشاعر')) + ' \u00b7 '
+  var body = '<h1>' + esc(t('قارئات أفاقي — تقرير اللوحة')) + '</h1>'
+    + '<div class="hint">' + esc(t('حج ١٤٤٨هـ')) + ' \u00b7 ' + esc(t('قارئات أفاقي في المشاعر')) + ' \u00b7 '
     + esc(new Date().toLocaleString('ar-EG')) + ' \u00b7 ' + esc(dispName(STATE.meta.name || '')) + '</div>';
   /* الغلافُ أولًا: البطاقاتُ والرسومُ ثم الجداول */
   try { body += '<div class="cover">' + pdfCover() + '</div>'; } catch (e){ softErr('غلاف التقرير', e, ''); }
@@ -27293,7 +27301,7 @@ function expPdf(keys){
   var w2 = window.open('', '_blank');
   if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير PDF')); return; }
   w2.document.write('<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8">'
-    + '<title>' + esc(t('نُسُك Survey — تقرير اللوحة')) + '</title><style>' + css + '</style></head><body>'
+    + '<title>' + esc(t('قارئات أفاقي — تقرير اللوحة')) + '</title><style>' + css + '</style></head><body>'
     + body + '</body></html>');
   w2.document.close();
   setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('طباعة PDF', e, 'افتح النافذةَ واطبع منها'); } }, 400);
@@ -30067,7 +30075,7 @@ function render(force){
   if (bk) bk.hidden = !NAV_HIST.length;
   document.getElementById('crumb').textContent = t(p.t);
   document.getElementById('brandName').innerHTML =
-      esc(t('قارئات نُسُك')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
+      esc(t('قارئات أفاقي')) + '<div class="brand-sub">' + esc(t('حج ١٤٤٨هـ')) + '</div>';
   var wr = document.getElementById('whoRole');
   if (wr) wr.textContent = t(R().n) + ' — ' + t(R().d);
   var outEl = document.getElementById('outBtn');

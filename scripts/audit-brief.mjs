@@ -121,6 +121,19 @@ T(a4.length === 1 && /اعتماد الوزارة/.test(a4[0].textContent), 'ف�
 T(/اعتُمدت تقنيًّا/.test(d.getElementById('pkPop').textContent), 'والحالةُ مكتوبةٌ بجملةٍ تُقرأ');
 w.ROLE = 'engineer'; w.STATE.recs.C1.review = '';
 
+/* ═══ العلامةُ البيضاء: «أفاقي» لا «نُسُك» (V16.92) ═══ */
+{
+  const raw = readFileSync('index.html', 'utf8');
+  T(!/نُسُك/.test(raw), 'لا أثرَ لاسمٍ سابقٍ في الواجهة' + (/نُسُك/.test(raw) ? ' — ' + (raw.match(/نُسُك/g) || []).length : ''));
+  T(d.title === 'قارئات أفاقي — حج ١٤٤٨هـ' && w.MANIFEST.name === 'قارئات أفاقي', 'الاسمُ «قارئات أفاقي» في العنوان والبيان');
+  const mark = d.querySelector('.brand-mark img');
+  /* شاشةُ الدخول أُزيلت بعد الدخول — فيُقرأ بناؤها من المصدر */
+  T(!!mark && /class="lgm"><img src="' \+ LOGO/.test(raw), 'والعلامةُ صورةٌ في الجانب وفي شاشة الدخول');
+  T(/^data:image\/png;base64,/.test(mark.src) && mark.src.length > 3000,
+    'محفوظةٌ داخل الملف — تعمل بلا شبكةٍ ولا تنتظر طلبًا (' + Math.round(mark.src.length / 1024) + ' ك.ب)');
+  T((w.LOGO || '').indexOf('data:image/png') === 0, 'وثابتُ LOGO يقرؤها لمن يحتاجها');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ التفاصيل المختصرة فشل ✗ (${bad})` : '\nالتفاصيلُ المختصرة طبقةٌ تُقرأ بلونها وتُكتَب بسطر ✅');
 process.exit(bad ? 1 : 0);
