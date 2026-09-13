@@ -83,6 +83,11 @@ T(!/page\.reload\(/.test(bt), 'ولا يُعيد تحميلَ الصفحة في�
 /* وما يسقط في السحابة يُقرأ من بعيد: سطرُ ::error تعليقٌ على السير */
 T(/::error title=/.test(bt), 'واختبارُ المتصفّح يكتب ما سقط تعليقًا يُقرأ بلا فتح السجلّ');
 T(/uncaughtException/.test(bt) && /unhandledRejection/.test(bt), 'والاستثناءُ الذي يُسقطه قبل أوّل فحصٍ يُكتَب كذلك — لا «exit code 1» صامت');
+/* أوّلُ تثبيتٍ للعامل لا يُعامَل تحديثًا — وإلا أُعيد التحميلُ في منتصف العمل (V17.5) */
+const raw3 = readFileSync('index.html', 'utf8');
+T(/var SW_HAD = !!navigator\.serviceWorker\.controller;/.test(raw3) && /if \(!SW_HAD\)\{ SW_HAD = true; return; \}/.test(raw3),
+  'وأوّلُ تثبيتٍ لعامل الخدمة ليس تحديثًا — لا إعادةَ تحميلٍ على جهازٍ جديد');
+T(/window\.__probe = 1/.test(bt) && /__probe === 1/.test(bt), 'واختبارُ المتصفّح يثبت أن الصفحةَ لم يُعَد تحميلُها في أثنائه');
 w.tourEnd(true);
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));

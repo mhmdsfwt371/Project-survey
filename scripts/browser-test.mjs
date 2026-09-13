@@ -59,6 +59,9 @@ console.log('══ ١ · الإقلاعُ والدخول ══');
 await page.goto(base + 'index.html', { waitUntil:'domcontentloaded' });
 await page.waitForSelector('#lgGo', { timeout: 15000 });
 T(true, 'شاشةُ الدخول رُسمت في كروميوم');
+/* علامةٌ تعيش في الصفحة: إن اختفت فقد أُعيد تحميلُها في أثناء الاختبار —
+   وهو ما فعله أوّلُ تثبيتٍ للعامل قبل V17.5، فسقط كلُّ ما بعده بلا سبب */
+await page.evaluate(() => { window.__probe = 1; });
 /* ثغرةُ الدخول بحقلين فارغين سُدَّت (V15.94): يُثبَت ذلك في كروميوم حقيقيٍّ —
    ضغطٌ فارغٌ لا يفتح شيئًا، ثم يُدخَل بهويةٍ صوريةٍ مُثبَتة. */
 await page.click('#lgGo');
@@ -98,6 +101,9 @@ T(tourAgain === false, 'ولا تعود مع الإقلاع التالي — ر�
 const sites = await page.evaluate(() => (window.STATE && STATE.sites || []).length);
 T(sites > 1000, 'المواقعُ محمَّلة (' + sites + ')');
 await page.screenshot({ path: OUT + '/01-home.png' });
+
+const alive = await page.evaluate(() => window.__probe === 1 && typeof goPage === 'function');
+T(alive, 'الصفحةُ لم يُعَد تحميلُها في أثناء الاختبار — أوّلُ تثبيتٍ للعامل ليس تحديثًا');
 
 console.log('\n══ ٢ · الخريطةُ الحقيقيةُ ولمسُ نقطةِ ممرّ ══');
 await page.evaluate(() => { window.ROLE = 'engineer'; STATE.meta.role = 'engineer'; goPage('map'); render(1); });
