@@ -10,7 +10,9 @@
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, readdirSync } from 'fs';
 let bad = 0;
-const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  /* ما يسقط يُكتَب تعليقًا على السير — يُقرأ بلا فتح السجلّ (V17.3) */
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 const wf = f => readFileSync('.github/workflows/' + f, 'utf8');
 
 /* ١ · كلُّ خطوةِ تثبيتٍ محصَّنة */

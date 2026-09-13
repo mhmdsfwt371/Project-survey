@@ -22,7 +22,9 @@ if (!want){ console.log('✗ لا نسخةَ في sw.js المحلي'); process.
 console.log('النسخةُ المتوقَّعة:', want);
 
 let bad = 0;
-const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  /* ما يسقط يُكتَب تعليقًا على السير — يُقرأ بلا فتح السجلّ (V17.3) */
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 const get = async (u) => {
   const r = await fetch(u, { headers:{ 'cache-control':'no-cache' } });
   if (!r.ok) throw new Error(u + ' → ' + r.status);

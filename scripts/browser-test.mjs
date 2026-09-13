@@ -25,7 +25,16 @@ await new Promise(r => srv.listen(0, '127.0.0.1', r));
 const base = 'http://127.0.0.1:' + srv.address().port + '/';
 const OUT = 'test-artifacts'; if (!existsSync(OUT)) mkdirSync(OUT);
 
-let bad = 0; const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+/* ═══ ما يسقط يُكتَب حيث يُقرَأ (V17.3) ═══
+   سجلُّ سير العمل يُحفَظ في خدمةٍ لا تُقرأ إلا من المتصفّح، فمن يصلح العطلَ
+   من بعيدٍ يرى «فشل» ولا يرى **ما** فشل — فيخمّن. وGitHub يعرض سطورَ
+   `::error` تعليقاتٍ على السير تُقرأ بواجهته البرمجية. فصار كلُّ فحصٍ ساقطٍ
+   يُكتَب مرتين: في السجلّ لمن يفتحه، وتعليقًا لمن لا يفتحه. */
+let bad = 0;
+const T = (c, n) => {
+  console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); }
+};
 const browser = await chromium.launch();
 const ctx = await browser.newContext({ ...devices['iPhone 13'], locale:'ar', hasTouch:true, isMobile:true });
 const page = await ctx.newPage();

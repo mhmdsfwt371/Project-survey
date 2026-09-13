@@ -12,7 +12,9 @@ import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let bad = 0;
-const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  /* ما يسقط يُكتَب تعليقًا على السير — يُقرأ بلا فتح السجلّ (V17.3) */
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
@@ -78,6 +80,8 @@ T(/tourclose/.test(bt) && /لا حاجبَ فوق الخريطة قبل اللم
 /* ولا يُعيد تحميلَ الصفحة في أثنائه: الجلسةُ صوريةٌ تُفقَد بإعادة التحميل،
    فيسقط ما بعدها بلا عطلٍ في التطبيق — وهو ما وقع في V17.1 */
 T(!/page\.reload\(/.test(bt), 'ولا يُعيد تحميلَ الصفحة فيُفقِد الجلسةَ الصورية');
+/* وما يسقط في السحابة يُقرأ من بعيد: سطرُ ::error تعليقٌ على السير */
+T(/::error title=/.test(bt), 'واختبارُ المتصفّح يكتب ما سقط تعليقًا يُقرأ بلا فتح السجلّ');
 w.tourEnd(true);
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));

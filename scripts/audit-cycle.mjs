@@ -34,7 +34,9 @@ w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
 { const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 400));
-let bad = 0; const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+let bad = 0; const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  /* ما يسقط يُكتَب تعليقًا على السير — يُقرأ بلا فتح السجلّ (V17.3) */
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 const click = sel => { const b = d.querySelector(sel); if (!b) return false; b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return true; };
 const site = w.STATE.sites[0];
 /* ١ · المهندس يُسنِد للمشرف */

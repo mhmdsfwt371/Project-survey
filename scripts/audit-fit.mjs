@@ -55,7 +55,9 @@ const DESK  = ['pts','items','users','consts','org','sys','exp',
                'roles','assignRole','jobs','names','vehkind','sup','buycat','probe','drive',
                'crewplan','visits','prep','asm','install','disp','wday','stock','mine','cover','raci','esc','co'];
 let bad = 0;
-const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n); if (!c) bad++; };
+const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
+  /* ما يسقط يُكتَب تعليقًا على السير — يُقرأ بلا فتح السجلّ (V17.3) */
+  if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 for (const r of roles){
   const real = rep[r].heavy.filter(h => {
     const id = h.split('{')[0].split(' ')[0];
