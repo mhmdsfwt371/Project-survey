@@ -1,10 +1,15 @@
 name: Post-deploy smoke
 # ما بعد النشر: الحرّاسُ تفحص المستودع، وهذا يفحص ما وصل الهاتفَ فعلًا —
 # النسخةُ الحيّةُ هي المدفوعة، وتُقلع وتدخل وترسم كلَّ شاشةٍ بكلِّ دور.
+# ═══ يعمل بعد النشر لا معه ═══
+# كان يبدأ مع الدفع ويستطلع ستَّ دقائقَ حتى تصل النسخةُ. ونشرُ الصفحات قد
+# يبقى في الطابور أطولَ من ذلك، فيسقط الفحصُ أحمرَ ولا عطلَ في شيءٍ سوى أنه
+# سبق النشر — «فشل النشرُ لم يصل» وقد وصل بعده بدقيقة. والحمرةُ التي لا تدلُّ
+# على عطلٍ تُعلِّم صاحبَها تجاهلَ الأحمر.
+#   فصار يبدأ بحدث النشر نفسِه (deployment_status عند نجاحه): لا سباقَ أصلًا.
+# والاستطلاعُ يبقى احتياطًا لانتشار المخبأ، والجدولةُ حارسًا على الخدمة.
 on:
-  push:
-    branches: [main]
-    paths: ['index.html', 'sw.js', 'manifest.json', 'season1447.json']
+  deployment_status:
   schedule:
     - cron: '17 */6 * * *'     # حارسُ الخدمة كلَّ ستِّ ساعات
   workflow_dispatch: {}
@@ -12,9 +17,15 @@ permissions:
   contents: read
 jobs:
   smoke:
+    # حدثُ النشر يقع مرتين: عند بدئه وعند نجاحه — ولا يُفحَص إلا الناجح
+    if: github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success'
     runs-on: ubuntu-latest
     steps:
+      # النسخةُ المتوقَّعةُ تُقرأ من الشجرة التي نُشرت لا من رأس الفرع:
+      # دفعةٌ تالية أثناء النشر كانت تجعل الفحصَ ينتظر نسخةً لم تُنشَر بعد
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.deployment && github.event.deployment.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 20

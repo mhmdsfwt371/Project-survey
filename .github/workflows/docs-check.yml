@@ -206,6 +206,8 @@ jobs:
         run: node scripts/audit-wtask.mjs
       - name: جرد نافذة النقطة — الحدثُ الذي يفتحها لا يُغلقها
         run: node scripts/audit-pop-race.mjs
+      - name: جرد التفاصيل المختصرة — طبقةٌ تُقرأ بلونها وتُكتَب بسطر
+        run: node scripts/audit-brief.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
