@@ -58,6 +58,17 @@ T(w.briefStage('C2') === 'ok' && w.mapColorOf(w.siteFind('C2')) === '#3AD6A0', '
 w.STATE.recs.C2.minReview = 'returned';
 T(w.mapColorOf(w.siteFind('C2')) === '#E05252', 'وما أعادته الوزارةُ حمراء');
 T(w.mapColorOf(w.siteFind('C3')) === '#6B7A87', 'وما لم يُزَر رمادية');
+/* المتعذّرُ والمردودُ خبرٌ يُرى — لا نقطةٌ غائبةٌ عن الطبقة (V16.95) */
+w.STATE.recs.C3 = { st:'لم يتم الوصول', access:'لم يتم الوصول', accessWhy:'بوابةٌ مغلقة', by:'فنيُّ الميدان', at:Date.now() };
+w.FILT_CACHE = null; w.FILT_KEY = '';
+T(w.briefStage('C3') === 'blocked' && w.mapColorOf(w.siteFind('C3')) === '#E07B39', 'ما تعذّر الوصولُ إليه يظهر بلونه (برتقاليّ) لا يختفي');
+T(w.layerFiltered().map(x => x.id).indexOf('C3') > -1, 'والطبقةُ تعرضه — فهي تقول ما وقع لا ما تمَّ فقط');
+w.STATE.recs.C3.review = 'revisit';
+T(w.briefStage('C3') === 'revisit' && w.mapColorOf(w.siteFind('C3')) === '#C77DFF', 'والمردودُ لزيارةٍ أخرى ببنفسجيّه');
+w.POP_SITE = 'C3'; w.POP_OPEN = true; w.render(1); await wait(140);
+T(/بوابةٌ مغلقة/.test(d.getElementById('pkPop').textContent), 'وبطاقتُه تقول سببَ التعذُّر كما كتبه الميدان');
+T(!!d.querySelector('#pkPop [data-bst]'), 'ويُكتَب له سطرٌ كغيره');
+delete w.STATE.recs.C3; w.FILT_CACHE = null; w.FILT_KEY = ''; w.POP_OPEN = false;
 w.STATE.recs.C2.review = ''; delete w.STATE.recs.C2.minReview;
 
 /* الكتابة: حالةٌ وسطرٌ على وثيقة الزيارة */
@@ -93,7 +104,7 @@ T(!!d.querySelector('#pkPop [data-bst]'), 'وتجد شرائحَها في الن
 
 /* نقطةٌ لم تُزَر: يُقال لماذا لا تُكتَب */
 w.POP_SITE = 'C3'; w.render(1); await wait(120);
-T(/تُكتَب بعد تمام الزيارة/.test(d.getElementById('pkPop').textContent), 'وما لم يُزَر يقول لماذا لا تُكتَب تفاصيلُه');
+T(/لم ينزل الميدانُ إلى هذه النقطة بعد/.test(d.getElementById('pkPop').textContent), 'وما لم يُنزَل إليه يقول ذلك صراحةً');
 
 /* ═══ البطاقةُ في هذه الطبقة: تقييمٌ بالعين وزرٌّ واحد (V16.89) ═══ */
 w.ROLE = 'engineer';
