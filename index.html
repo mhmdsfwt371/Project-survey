@@ -814,7 +814,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.1</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14291,9 +14291,12 @@ function tourPages(){
   return head.concat(rest).slice(0, 8);
 }
 function tourStart(){ TOUR_I = 0; TOUR_OPEN = true; render(1); }
-function tourEnd(forever){
+function tourEnd(said){
+  /* من أغلقها بالزاوية أو بالخلفية فقد رآها — وكانت تُفتَح له مع كلِّ إقلاعٍ
+     لأن الختمَ لا يُكتَب إلا بزرِّ «لا تعرضها ثانيةً»، فتصير الجولةُ إزعاجًا
+     يوميًّا لا ترحيبًا بأوّل مرة (V17.1). تُختَم بأيِّ إغلاق، ويفتحها 🎓. */
   TOUR_OPEN = false;
-  if (forever) lsSet('nsk14.tour', myUid() || '1');
+  try { lsSet('nsk14.tour', myUid() || '1'); } catch (e){ LS_ERR = e; }
   render(1);
 }
 function tourMaybe(){
@@ -18390,7 +18393,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.0' + '.docx" download>⬇ '
+              +   'V17.1' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

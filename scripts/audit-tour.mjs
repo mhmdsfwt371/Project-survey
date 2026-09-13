@@ -62,12 +62,19 @@ click('[data-tourgo="' + w.tourPages()[1] + '"]'); await wait(140);
 T(w.CUR === w.tourPages()[1], 'والزرُّ يفتح الشاشةَ فعلًا');
 
 /* ٥ · لا تُعاد بعد إنهائها */
-click('[data-tourstop]'); await wait(140);
-T(w.TOUR_OPEN === false && !d.getElementById('tourSheet'), 'و«لا تعرضها ثانيةً» تطويها');
+/* أيُّ إغلاقٍ يُعدُّ رؤيةً — وإلا عادت مع كلِّ إقلاعٍ لمن أغلقها بالزاوية (V17.1) */
+click('[data-tourclose]'); await wait(140);
+T(w.TOUR_OPEN === false && !d.getElementById('tourSheet'), 'تُغلَق بالزاوية');
 w.tourMaybe();
-T(w.TOUR_OPEN === false, 'ولا تعود بعدها');
+T(w.TOUR_OPEN === false, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
+click('[data-tour]'); await wait(140);
+click('[data-tourstop]'); await wait(140);
+T(w.TOUR_OPEN === false, 'و«لا تعرضها ثانيةً» تطويها كذلك');
 click('[data-tour]'); await wait(140);
 T(w.TOUR_OPEN === true, 'وزرُّ 🎓 يفتحها متى شاء');
+const bt = readFileSync('scripts/browser-test.mjs', 'utf8');
+T(/tourclose/.test(bt) && /لا حاجبَ فوق الخريطة قبل اللمس/.test(bt),
+  'واختبارُ المتصفّح الحقيقيِّ يُغلقها ويتحقّق ألّا حاجبَ قبل لمس الخريطة');
 w.tourEnd(true);
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));

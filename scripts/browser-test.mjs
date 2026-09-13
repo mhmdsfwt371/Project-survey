@@ -54,6 +54,20 @@ await page.evaluate(() => {
 await page.click('#lgGo');
 await page.waitForSelector('#nav', { timeout: 15000 });
 T(true, 'الدخولُ بهويةٍ فتح القائمة');
+/* جولةُ البداية تُفتَح أوّلَ دخول (V17.0) — لوحٌ فوق كلِّ شيءٍ بخلفيةٍ تلتقط
+   اللمس. فيُثبَت أنها تُفتَح، ثم تُغلَق بضغطةٍ كما يفعل المستخدِم، ولا تعود.
+   وبلا هذا كانت خلفيتُها تبتلع لمسةَ الخريطة في القسم التالي ويُقال «النقطة
+   لا تفتح» — والعطلُ في الحاجب لا في النقطة. */
+const tourUp = await page.evaluate(() => !!document.getElementById('tourSheet'));
+T(tourUp, 'جولةُ البداية تُفتَح أوّلَ دخول');
+if (tourUp) await page.click('[data-tourclose]');
+await page.waitForTimeout(300);
+const tourGone = await page.evaluate(() => !document.getElementById('tourSheet') && !document.querySelector('.wt-back'));
+T(tourGone, 'وتُغلَق بضغطةٍ فلا تحجب العمل');
+await page.reload({ waitUntil:'domcontentloaded' });
+await page.waitForSelector('#nav', { timeout: 20000 }).catch(() => {});
+const tourAgain = await page.evaluate(() => !!document.getElementById('tourSheet'));
+T(!tourAgain, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
 const sites = await page.evaluate(() => (window.STATE && STATE.sites || []).length);
 T(sites > 1000, 'المواقعُ محمَّلة (' + sites + ')');
 await page.screenshot({ path: OUT + '/01-home.png' });
@@ -77,6 +91,12 @@ const pt = await page.evaluate(({ lat, lng }) => {
   return { x: r.left + p.x, y: r.top + p.y };
 }, target);
 await page.screenshot({ path: OUT + '/02-map-before-tap.png' });
+/* لا لوحَ فوق الخريطة قبل اللمس — وإلا اختُبر الحاجبُ لا النقطة */
+const blocker = await page.evaluate(() => {
+  const b = document.querySelector('.wt-back, #tourSheet, #bugSheet');
+  return b ? (b.id || b.className) : '';
+});
+T(!blocker, 'لا حاجبَ فوق الخريطة قبل اللمس' + (blocker ? ' — ' + blocker : ''));
 await page.touchscreen.tap(pt.x, pt.y);
 await page.waitForTimeout(500);
 const opened = await page.evaluate(() => ({ open: !!window.POP_OPEN, site: window.POP_SITE }));
