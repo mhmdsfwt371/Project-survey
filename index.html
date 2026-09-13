@@ -797,7 +797,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.85</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.86</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -15144,14 +15144,13 @@ function m3Paint(){
   m3Count(P);
 }
 /* النقرةُ في الثلاثيِّ هي نقرةُ الخريطة المسطّحة: تحديدٌ في وضع الإسناد، وبطاقةُ النقطة سواه */
-function m3Click(id){
+function m3Click(id, ev){
   if (typeof MAP_SELECT !== 'undefined' && MAP_SELECT){
     if (!asnOf(id)){ selToggle(id); m3Paint(); render(1); }
     else toast(t('هذه النقطة مُسندة بالفعل'));
     return;
   }
-  POP_JUST = Date.now();
-  POP_SITE = id; POP_OPEN = true; render();
+  popOpenAt(id, ev);
 }
 function m3Init(){
   var el = document.getElementById('m3Box');
@@ -15168,7 +15167,7 @@ function m3Init(){
   M3.on('error', function(ev){ if (ev && ev.error) LS_ERR = ev.error; });
   M3.on('style.load', m3Layers);
   M3.on('moveend', function(){ if (MAP_3D) m3Count(m3Points()); });
-  var hit = function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id); };
+  var hit = function(ev){ var f = ev.features && ev.features[0]; if (f && f.properties && f.properties.id) m3Click(f.properties.id, ev); };
   M3.on('click', 'nsk-pts', hit); M3.on('click', 'nsk-cols', hit);
   M3.on('mouseenter', 'nsk-pts', function(){ M3.getCanvas().style.cursor = 'pointer'; });
   M3.on('mouseleave', 'nsk-pts', function(){ M3.getCanvas().style.cursor = ''; });
@@ -17806,7 +17805,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.85' + '.docx" download>⬇ '
+              +   'V16.86' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19379,17 +19378,15 @@ function mapPaint(){
       });
     }
     mk.on('click', (function(id){
-      return function(){
+      return function(ev){
         if (typeof MAP_SELECT !== 'undefined' && MAP_SELECT){
           if (!asnOf(id)){ selToggle(id); mapPaint(); render(1); }
           else toast(t('هذه النقطة مُسندة بالفعل'));
           return;
         }
-        /* الحدثُ نفسُه يصل بعدها إلى معالج المستند الذي يُغلق النافذةَ عند
-           أيِّ نقرةٍ خارجها — فتُفتَح وتُغلَق في اللحظة نفسها ولا يرى أحدٌ
-           شيئًا. تُعلَّم النقرةُ فيتركها المعالجُ. */
-        POP_JUST = Date.now();
-        POP_SITE = id; POP_OPEN = true; render();
+        /* الحدثُ نفسُه يصل بعدها إلى معالج المستند الذي يُغلق ما نُقر خارجه —
+           فيُعلَّم بعينه لا بوقته (انظر popOpenAt). */
+        popOpenAt(id, ev);
       };
     })(x.id));
     mk.addTo(MAP_LAYER);
@@ -26867,7 +26864,23 @@ function evRows(){
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
 
-var POP_OPEN = false, POP_JUST = 0;
+var POP_OPEN = false, POP_JUST = 0, POP_EV = null;
+/* ═══ النقرةُ تُعرَف بعينها لا بوقتها ═══
+   نقرةُ النقطة تفتح النافذةَ، ثم يصل الحدثُ نفسُه إلى معالج المستند الذي
+   يُغلق كلَّ لوحٍ نُقر خارجه — فكانت النافذةُ تُفتَح وتُغلَق في اللحظة
+   نفسها. وحُلَّ بمهلةٍ: «إن مضى أقلُّ من ثلاثِ مئةِ جزءٍ فاتركها». والمهلةُ
+   تكفي حتى يبطئ الرسم: مخيماتٌ بمضلّعاتها عند التقريب، أو قائمةٌ طويلةٌ
+   يُعاد بناؤها — فيتجاوز الرسمُ المهلةَ، ويصل الحدثُ بعدها، فتُغلَق النافذةُ
+   قبل أن تُرى. ولا يقع ذلك إلا على الأجهزة البطيئة وفي أثقل الحالات، فيبدو
+   العطلُ متقطّعًا لا يُصدَّق.
+     فصارت النقرةُ تُعلَّم بعينها: يُحفَظ الحدثُ الأصليُّ نفسُه، ويقارنه
+   معالجُ المستند بهويته — فلا يهمُّ كم استغرق الرسمُ، الحدثُ الذي فتحها لا
+   يُغلقها أبدًا. والمهلةُ تبقى احتياطًا لمن لا حدثَ أصليَّ له. */
+function popOpenAt(id, ev){
+  POP_EV = (ev && (ev.originalEvent || ev.detail && ev.detail.originalEvent)) || ev || null;
+  POP_JUST = Date.now();
+  POP_SITE = id; POP_OPEN = true; render();
+}
 
 /* نافذةُ النقطة في p27 — بأفعالها الحقيقية */
 
@@ -30091,7 +30104,10 @@ function clickA(e){
     { on:function(){ return CO_OPEN; },        off:function(){ CO_OPEN = false; },        sel:'#coFilt',          btn:'[data-co],[data-cofilt],[data-comode]' },
     { on:function(){ return MAP_FILT_OPEN; },  off:function(){ MAP_FILT_OPEN = false; },  sel:'.map-sheet',       btn:'[data-mfilt]' }
   ];
-  if (Date.now() - POP_JUST > 300){
+  /* الحدثُ الذي فتح النافذةَ لا يُغلقها — بهويته، مهما استغرق الرسمُ */
+  var justOpened = (POP_EV && POP_EV === e) || (Date.now() - POP_JUST <= 300);
+  if (POP_EV && POP_EV !== e) POP_EV = null;
+  if (!justOpened){
     for (var si = 0; si < SHEETS.length; si++){
       var sh = SHEETS[si];
       if (!sh.on()) continue;

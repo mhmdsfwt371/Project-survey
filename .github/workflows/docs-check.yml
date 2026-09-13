@@ -204,6 +204,8 @@ jobs:
         run: node scripts/audit-btn-lands.mjs
       - name: جرد المهام الأسبوعية — بطاقاتٌ تُقرأ ولوحةٌ واحدةٌ وسجلٌّ لا يمحو
         run: node scripts/audit-wtask.mjs
+      - name: جرد نافذة النقطة — الحدثُ الذي يفتحها لا يُغلقها
+        run: node scripts/audit-pop-race.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
