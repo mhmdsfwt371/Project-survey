@@ -805,7 +805,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.93</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V16.94</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -17954,7 +17954,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V16.93' + '.docx" download>⬇ '
+              +   'V16.94' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19101,6 +19101,8 @@ function liveStop(){
 var MAP_ME = null;
 var MAP = null, MAP_LAYER = null, MAP_BASE = null, MAP_POLY = null, MAP_CV = null, MAP_ME_LL = null;
 var MAP_READY = false, MAP_LOADING = false;
+/* حدُّ رسمِ حدود المخيمات — مصدرٌ واحدٌ يقرؤه الرسمُ والتحميلُ معًا */
+var POLY_Z = 12;
 var POLY = null, POLY_LOADING = null;
 
 /* بيانةُ الموسم الماضي التي كان الفنيُّ يقرؤها في القديم: الجنسيةُ والسعةُ
@@ -19630,10 +19632,16 @@ function mapPaint(){
         html:'<i style="width:' + ds + 'px;height:' + ds + 'px;background:' + col
              + (picked ? ';outline:2px solid #fff' : (ring ? ';outline:2px solid ' + ring : '')) + '"></i>'
       })});
-    } else if (x.type === 'مخيم' && z >= 16 && POLY && POLY[x.id]){
+    } else if (x.type === 'مخيم' && z >= POLY_Z && POLY && POLY[x.id]){
+      /* المخيمُ بحدوده في كلِّ تقريبٍ عمليّ (V16.94): كان بحدوده من السادس
+         عشر فقط وتحته دائرةً — فإذا ابتعد الناظرُ قليلًا صارت المخيماتُ
+         دوائرَ متراكبةً تذوب في كتلة. الحدُّ الآن الثاني عشر: عنده يبقى
+         للمخيم شكلُه على الشاشة، وتحته لا يُرى شكلٌ مهما رُسم فتعود الدائرة.
+         والحافّةُ والتعبئةُ تغلظان في البعيد فلا تختفي الحدودُ. */
       mk = L.polygon(POLY[x.id].map(function(p){ return [p[1], p[0]]; }), {
-        renderer:MAP_CV, color: ring || col, weight: picked ? 2.4 : (ring ? 2.2 : 1.3),
-        fillColor:col, fillOpacity: picked ? 0.5 : 0.32
+        renderer:MAP_CV, color: ring || col,
+        weight: picked ? 2.4 : (ring ? 2 : (z >= 15 ? 1.3 : (z >= 13 ? 1 : 0.8))),
+        fillColor:col, fillOpacity: picked ? 0.55 : (z >= 15 ? 0.4 : 0.55)
       });
     } else {
       /* ═══ الزحامُ يُقرأ بالحافّة لا بالحجم (V16.93) ═══
@@ -19673,8 +19681,8 @@ function mapPaint(){
     } catch (e){ LS_ERR = e; }
   }
 
-  /* المضلّعات ثقيلة — لا تُرسم إلا قريبًا وللمخيمات وحدها */
-  if (z >= 16 && !POLY) polyLoad();
+  /* حدودُ المخيمات تُطلَب عند حدِّها لا قبله — ملفٌّ واحدٌ يُحمَّل مرةً ويبقى */
+  if (z >= POLY_Z && !POLY) polyLoad();
 
   /* «معروض» يقول لماذا يقلُّ: العلاماتُ تُرشَّح بمدى الشاشة — فما خرج عن
      الإطار لا يُرسَم، وهو صوابٌ للأداء. لكنّ من رأى «٣٢ من ١٧٨٧» ظنَّ أن
