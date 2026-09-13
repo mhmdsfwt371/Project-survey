@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V17.1",
+  "app_version": "V17.2",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1569,6 +1569,7 @@
     "V16.99": "أربعة: (١) phonesCard/phonesBulk في شاشة الحسابات — لصقُ «اسم رقم» بأيِّ فاصل، phoneClean يحوّل +966/966 إلى 05، يُطابَق بname/user/dispName ويُحفَظ ph على كلِّ حساب، وPH_MISS يقول من لم يُعرَف. (٢) locOf/fmtDate/fmtTime/fmtDT/fmtDT2 تتبع LANG (ar-EG/ur-PK/en-GB) وحلّت محلَّ 37 نداءَ toLocale*(ar-EG) ثابتًا. (٣) أيقونةُ التطبيق icon-192/512.png مولَّدةٌ من علامة أفاقي (بيضاءُ بهوامش) وMANIFEST الداخليُّ يشير إليهما بدل SVG المؤقّت؛ وترويسةُ تقرير الـPDF تحمل العلامة. (٤) شريحة sys/bugs (bugsPageHtml + bugList: من يُصلح يرى الكلَّ وغيرُه بلاغاتِه)، وقائمةُ «بلاغاتي» داخل لوح البلاغ برقم المستودع رابطًا، وقاعدةُ bugs تُقرئ المبلِّغَ بلاغَه (resource.data.uid == auth.uid) والسحبُ where(uid==myUid) لغير المهندس.",
     "V17.0": "جولةُ البداية: tourPages() تبني الخطواتِ من nav الدور (PAGE موجودة وseesRaw) مستثنيةً TOUR_SKIP (site/sel/svappr/minappr) ومقدِّمةً TOUR_PRIME (map, mywork, wtask, over, perf, ipc, users, sys) وحتى ثماني خطوات؛ tourMaybe يفتحها أوّلَ دخولٍ ما لم يُخزَّن nsk14.tour=uid؛ tourHtml لوحٌ في مضيف #tourHost على body فيه مكانُ الشاشة وسطرُها وأزرار data-tourgo/tourprev/tournext/tourstop/tourclose؛ tourSpot يضيء [data-p=id] في القائمة (.tour-spot) ويفتح مجموعتَها؛ زر data-tour (🎓) في الشريط. وPAGE.site نال سطرَ تعريفٍ — فلا صفحةَ بلا سطر.",
     "V17.1": "tourEnd يكتب nsk14.tour عند أيِّ إغلاق (كان لا يُكتَب إلا بزرِّ «لا تعرضها ثانيةً» فتعود الجولةُ مع كلِّ إقلاع)؛ browser-test.mjs يغلق الجولةَ بعد الدخول ويتحقّق من غيابها بعد إعادة التحميل، ويتأكّد ألّا .wt-back/#tourSheet/#bugSheet فوق الخريطة قبل اللمس.",
+    "V17.2": "browser-test: فحصُ «لا تعود الجولةُ» صار باستدعاء tourMaybe()+render بدل page.reload (إعادةُ التحميل تُفقِد الجلسةَ الصوريةَ FB.signIn فتعود شاشةُ الدخول ويسقط ما بعدها)؛ وaudit-tour يشترط ألّا page.reload في الاختبار.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },

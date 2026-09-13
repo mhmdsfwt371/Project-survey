@@ -64,10 +64,15 @@ if (tourUp) await page.click('[data-tourclose]');
 await page.waitForTimeout(300);
 const tourGone = await page.evaluate(() => !document.getElementById('tourSheet') && !document.querySelector('.wt-back'));
 T(tourGone, 'وتُغلَق بضغطةٍ فلا تحجب العمل');
-await page.reload({ waitUntil:'domcontentloaded' });
-await page.waitForSelector('#nav', { timeout: 20000 }).catch(() => {});
-const tourAgain = await page.evaluate(() => !!document.getElementById('tourSheet'));
-T(!tourAgain, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
+/* «لا تعود» تُفحَص بمنطق الإقلاع نفسِه لا بإعادة تحميلٍ تُفقِد الجلسةَ
+   الصورية: إعادةُ التحميل تُعيد شاشةَ الدخول فيسقط ما بعدها بلا عطلٍ في
+   التطبيق — فيُنادى ما يُنادى عند كلِّ إقلاع، ويُقاس أثرُه. */
+const tourAgain = await page.evaluate(() => {
+  if (typeof tourMaybe !== 'function') return null;
+  tourMaybe(); render(1);
+  return !!document.getElementById('tourSheet');
+});
+T(tourAgain === false, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
 const sites = await page.evaluate(() => (window.STATE && STATE.sites || []).length);
 T(sites > 1000, 'المواقعُ محمَّلة (' + sites + ')');
 await page.screenshot({ path: OUT + '/01-home.png' });
