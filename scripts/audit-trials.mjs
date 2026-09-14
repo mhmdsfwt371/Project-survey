@@ -80,6 +80,35 @@ const other = { id:'b2', item:'كابل', cat:'', sup:'', amt:500, st:'معتم�
 w.STATE.buys.b2 = other;
 T(w.buysSpent() === 500, 'وما ليس لتجربةٍ يُحسَب دائمًا');
 
+/* ═══ أصنافُ التجربة وإجمالياتُها (V17.7) ═══ */
+w.PTAB.ipc = 'trials'; w.render(1); await wait(200);
+d.getElementById('itN' + tid).value = 'هوائي تجريبيّ';
+d.getElementById('itQ' + tid).value = '3';
+d.getElementById('itP' + tid).value = '250';
+click('[data-tritem="' + tid + '"]'); await wait(150);
+const it = w.trialItems(w.trialOf(tid));
+T(it.length === 1 && it[0].n === 'هوائي تجريبيّ' && +it[0].q === 3 && +it[0].p === 250, 'الصنفُ يُسجَّل بكميته وسعرِ وحدته');
+T(w.itemsSum(w.trialOf(tid)) === 750, 'وإجماليُّ السطر كميةٌ في سعر: ٧٥٠');
+T(w.trialTotal(w.trialOf(tid)) === 750 + 1200, 'وإجماليُّ التجربة = أصنافُها + مشترياتُها المربوطة');
+d.getElementById('itN' + tid).value = 'كابل';
+d.getElementById('itQ' + tid).value = '2';
+d.getElementById('itP' + tid).value = '40';
+click('[data-tritem="' + tid + '"]'); await wait(150);
+T(w.itemsSum(w.trialOf(tid)) === 830 && w.trialsItemsSpend() === 830, 'والأصنافُ تتراكم في التجربة وفي الدفتر');
+w.render(1); await wait(150);
+const mtxt = (d.getElementById('main') || d.body).textContent.replace(/\s+/g, ' ');
+T(/أصناف التجربة/.test(mtxt) && /إجمالي الأصناف/.test(mtxt) && /إجمالي التجربة/.test(mtxt), 'والبطاقةُ تطبع الأصنافَ وإجماليَّها وإجماليَّ التجربة');
+T(/إجماليُّ التجارب/.test(mtxt), 'والشريطُ يطبع إجماليَّ التجارب كلِّها');
+T(w.trialsTotal() === 830 + 1200, 'وإجماليُّ التجارب = أصنافُ الكلِّ + مشترياتُ الكلّ');
+/* المفتاحُ يحكم الأصنافَ كما يحكم المشتريات */
+T(w.trialInCost() === false && w.buysSpent() === 500, 'والأصنافُ خارجُ المنصرف ما دام المفتاحُ مرفوعًا');
+w.trialToggleCost(); await wait(120);
+T(w.buysSpent() === 500 + 1200 + 830, 'فإذا وُضع دخل الصنفُ والشراءُ معًا');
+w.trialToggleCost(); await wait(120);
+/* الحذف */
+click('[data-tridel="' + tid + '|1"]'); await wait(150);
+T(w.trialItems(w.trialOf(tid)).length === 1 && w.itemsSum(w.trialOf(tid)) === 750, 'وصنفٌ يُحذَف وحدَه فيُعاد الحساب');
+
 /* الحذفُ مشروط */
 w.PTAB.ipc = 'trials'; w.render(1); await wait(180);
 T(!d.querySelector('[data-trdel="' + tid + '"]'), 'ولا يُعرَض حذفُ تجربةٍ عليها مشتريات');

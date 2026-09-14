@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V17.6",
+  "app_version": "V17.7",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1574,6 +1574,7 @@
     "V17.4": "browser-test: process.on(uncaughtException/unhandledRejection) يطبع ::error title=استثناء:: بالرسالة والمكدّس ثم يخرج 1 — فلا يبقى «exit code 1» بلا سبب؛ وإغلاقُ الجولة بالزرِّ داخل #tourSheet مع مهلة، وإن تعذّر فبـtourEnd(false) بدل السقوط.",
     "V17.5": "SW: controllerchange عند أوّل تثبيتٍ (لا controller سابق) يُتجاهَل — SW_HAD = !!navigator.serviceWorker.controller قبل الاستماع، والحدثُ الأوّلُ بلا سابقٍ يضبطه فقط؛ فلا swApply ولا إعادةَ تحميلٍ على جهازٍ جديد. browser-test: window.__probe قبل الدخول ويُفحَص قبل الخريطة أن الصفحةَ لم يُعَد تحميلُها وأن goPage معرَّفة.",
     "V17.6": "canSeeUser: حسابُ viewer يُرى لنظرائه ولrankOf(me) >= rankOf(admin) (كان مخفيًّا عن الجميع عدا viewer/exec، فيُنشئ مديرُ المشروع حساباتِ الوزارة ولا يراها)؛ وعدّاداتُ شرائح الأدوار في شاشة الحسابات تُحسَب من canSeeUser لا من STATE.users كلِّها — فلا شريحةَ تَعِدُ بصفوفٍ لا تُعرَض.",
+    "V17.7": "أصنافُ التجربة: صفُّ التجربة يحمل items:[{n,q,p,at,by}]؛ itemsSum(r)=Σ q×p، trialTotal(r)=itemsSum+trialSpend(id)، trialsItemsSpend/trialsTotal للدفتر كلِّه؛ trialItemAdd(id) من حقول itN/itQ/itP+id وtrialItemDel(id,i) عبر data-tritem/data-tridel='id|index'؛ البطاقةُ تطبع جدولَ الأصناف بسطر «إجمالي الأصناف» ثم «إجمالي التجربة» (أصناف + مشتريات)، والشريطُ يطبع أصنافًا ومشترياتٍ مربوطةً وإجماليَّ التجارب؛ buysSpent يضيف trialsItemsSpend حين inCost؛ وحذفُ التجربة يُمنَع إن كان لها أيُّ مصروف.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
