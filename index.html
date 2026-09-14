@@ -814,7 +814,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.6</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -11035,12 +11035,16 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
     var head = tabHead('users'), cur = tabCur('users');
     if (cur === 'users') return head + pwFlowHtml() + (may('users') ? phonesCard() : '') + bulkCard() + provCard() + (may('users') ? pendCard() : '') + (function(){
     var L = usersList();
-    var byRole = {};
+    /* الشريحةُ تعدُّ ما أراه لا ما في القاعدة: كانت تقول «وزارة ٥» ثم تقول
+       القائمةُ «لا مستخدمَ يطابق» — رقمٌ يَعِدُ بصفوفٍ لا تُعرَض (V17.6). */
+    var byRole = {}, total = 0;
     Object.keys(STATE.users || {}).forEach(function(uid){
-      var r = (STATE.users[uid] || {}).role || '';
+      var u = STATE.users[uid] || {};
+      if (!canSeeUser(u)) return;
+      total++;
+      var r = u.role || '';
       if (r) byRole[r] = (byRole[r] || 0) + 1;
     });
-    var total = Object.keys(STATE.users || {}).length;
 
     return '<p class="lede" style="margin:0 0 16px">'
       + esc(t('أنشئ الحساب وحدّد دوره، وصفّه بالنوع من الشرائح، وابحث بالاسم في القائمة أسفله — والتغييرُ يُزامَن فورًا.'))
@@ -18393,7 +18397,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.5' + '.docx" download>⬇ '
+              +   'V17.6' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -29470,7 +29474,12 @@ function canSeeUser(u){
   var meR = effRole(ROLE), uR = roleOfUser(u);
   if (u.name && u.name === STATE.meta.name) return true;      /* نفسي دائمًا */
   if (meR === 'viewer') return uR === 'viewer';               /* الوزارةُ نظراءَها وحدَهم */
-  if (uR === 'viewer') return false;                          /* ولا يراها الميدانُ ولا المكتب */
+  /* حساباتُ الوزارة: يراها نظراؤها، ومن يُنشئها ويوزّع كلماتِها — مديرُ
+     المشروع فما فوق (V17.6). كان يخفيها عن الجميع، فيُنشئ مديرُ المشروع
+     حساباتٍ لا يراها بعدها: لا يصحّح اسمًا ولا يضيف رقمًا ولا يعطّل حسابًا،
+     والشرائحُ تعدُّها فوقها ثم تقول القائمةُ «لا مستخدمَ يطابق». ويبقى
+     محجوبًا عن المهندس فما دون. */
+  if (uR === 'viewer') return rankOf(meR) >= rankOf('admin');
   if (meR === 'exec' || isBossHere()) return true;            /* من فوق الجميع يرى الجميع */
   return rankOf(meR) >= rankOf(uR);                           /* رتبتي فما دونها */
 }

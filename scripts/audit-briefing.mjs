@@ -83,6 +83,30 @@ T(w.STATE.users.u2.ph === '0559876543' && wrote['users/u2'] && wrote['users/u2']
 w.USR_EDIT = ''; w.render(1); await wait(120);
 T(/0559876543/.test(main.textContent), 'ويُعرَض في الصفِّ بعد الحفظ');
 
+/* ═══ من يرى حساباتِ الوزارة (V17.6) ═══
+   مديرُ المشروع يُنشئها ويوزّع كلماتِها — فلا تُخفى عنه؛ والشريحةُ لا تَعِدُ
+   بصفوفٍ لا تُعرَض. */
+w.STATE.meta.name = 'مدير المشروع';
+w.STATE.users = { a1:{ user:'m.safwat', name:'مدير المشروع', role:'admin', active:true },
+                  v1:{ user:'aalmalki', name:'احمد المالكي', role:'viewer', active:true },
+                  v2:{ user:'abadawi',  name:'انس بدوي',    role:'viewer', active:true },
+                  t1:{ user:'tech1',    name:'فنيّ',         role:'tech',   active:true },
+                  e1:{ user:'eng1',     name:'مهندس',       role:'engineer',active:true } };
+const seenBy = r => { w.ROLE = r; return w.usersList().map(x => x[1].user); };
+T(seenBy('admin').indexOf('aalmalki') > -1 && seenBy('exec').indexOf('abadawi') > -1,
+  'مديرُ المشروع والإدارةُ العليا يريان حساباتِ الوزارة');
+T(seenBy('engineer').indexOf('aalmalki') < 0 && seenBy('supervisor').indexOf('aalmalki') < 0,
+  'ولا يراها المهندسُ ولا المشرف');
+T(seenBy('viewer').indexOf('abadawi') > -1 && seenBy('viewer').indexOf('tech1') < 0,
+  'والوزارةُ ترى نظراءَها وحدَهم');
+w.ROLE = 'admin'; w.USR_ROLE = ''; w.USR_Q = '';
+w.goPage('users'); w.render(1); await wait(250);
+const chips = [...d.querySelectorAll('[data-usrrolef]')].map(e => e.textContent.replace(/\s+/g, ' ').trim());
+const rows = d.querySelectorAll('[data-usredit]').length;
+T(rows === w.usersList().length && rows === 5, 'والقائمةُ تعرض ما تعدُّه: ' + rows);
+const chipAll = (chips[0] || '').match(/[٠-٩0-9]+/);
+T(chipAll && w.nm(w.usersList().length) === chipAll[0], 'وشريحةُ «الكل» تساوي عددَ الصفوف — لا رقمَ يَعِدُ بما لا يُعرَض: ' + chips.join(' | '));
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ بلاغ اليوم فشل ✗ (${bad})` : '\nبلاغُ اليوم: رقمٌ في النظام ورسالةٌ جاهزةٌ لكلِّ عضو ✅');
 process.exit(bad ? 1 : 0);
