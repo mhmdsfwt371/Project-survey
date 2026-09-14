@@ -1,0 +1,38 @@
+# ═══ تقريرُ النظام — كلَّ ثلاثة أيام ═══
+# يُولَّد من المستودع والقاعدة ويُنشَر بلاغًا يُقرأ من الهاتف.
+# التاريخُ كاملٌ (fetch-depth: 0) وإلا حُسب عمرُ المشروع من دفعةٍ واحدة.
+name: System report
+on:
+  schedule:
+    - cron: '0 6 */3 * *'      # كلَّ ثلاثة أيامٍ ٦ صباحًا بتوقيت غرينتش (٩ بمكة)
+  workflow_dispatch: {}
+permissions:
+  contents: read
+  issues: write
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: الحزم
+        # التثبيتُ يُعاد ثلاثًا كما في بقية السيور: تعثُّرُ سجلِّ الحزم لحظةً
+        # لا يصحُّ أن يُسقِط تقريرًا، والأحمرُ بلا عطلٍ يُعلِّم تجاهلَ الأحمر.
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::warning::تعذّر التثبيتُ — يُكتَب قسمُ الشيفرة بلا الاستعمال"
+          exit 0
+      - name: التقرير — يُولَّد ويُنشَر
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISH: '1'
+        run: node scripts/report-system.mjs
