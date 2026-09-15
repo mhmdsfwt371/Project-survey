@@ -220,6 +220,8 @@ jobs:
         run: node scripts/audit-reads.mjs
       - name: جرد ملفِّ البند — من يدفع وما يُشترى وما يُركَّب وما العائد
         run: node scripts/audit-dossier.mjs
+      - name: جرد تسرُّبِ النقاط — كلُّ نقطةٍ تُفتَح على نفسها
+        run: node scripts/audit-site-bleed.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك

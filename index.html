@@ -837,7 +837,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.21</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.22</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3658,6 +3658,7 @@ en:{
  'إكسل — الملف بمعادلاته':'Excel — file with formulas', 'ورقةُ المهام ولوحةُ المؤشِّرات — بالمعادلات كما يعمل عليها المكتب':'Tasks sheet and dashboard — with the formulas the office works with', 'صُدّر الملفُّ بمعادلاته':'File exported with its formulas',
  'محذوفة':'deleted', 'سجلُّ النقطة':'Point log', 'كلُّ ما جرى لهذه النقطة من أوّل يوم: من زارها ومن رفع صورَها ومن اعتمدها — بالتاريخ.':'Everything that happened to this point since day one: who visited it, who uploaded its photos, who approved it — with dates.', 'الصورة':'Photo', 'لا سجلَّ بعد لهذه النقطة.':'No log yet for this point.', 'اجلب القديم من القاعدة':'Fetch older entries', 'يُجلَب سجلُّ النقطة…':'Fetching the point log…',
  'لا سجلَّ زيارةٍ لهذه النقطة':'No visit record for this point', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'The field never reached the point — a visit that did not happen cannot be approved', 'فُتحت على':'Opened on', 'تراجعٌ عن ردِّ الزيارة':'Revisit decision reversed',
+ 'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'unsaved photos — discarded when the point changed',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6345,6 +6346,7 @@ ur:{
  'إكسل — الملف بمعادلاته':'ایکسل — فارمولوں سمیت فائل', 'ورقةُ المهام ولوحةُ المؤشِّرات — بالمعادلات كما يعمل عليها المكتب':'ٹاسک شیٹ اور ڈیش بورڈ — انہی فارمولوں کے ساتھ', 'صُدّر الملفُّ بمعادلاته':'فائل فارمولوں سمیت برآمد ہوئی',
  'محذوفة':'حذف شدہ', 'سجلُّ النقطة':'پوائنٹ کا ریکارڈ', 'كلُّ ما جرى لهذه النقطة من أوّل يوم: من زارها ومن رفع صورَها ومن اعتمدها — بالتاريخ.':'پہلے دن سے اس پوائنٹ پر جو کچھ ہوا: کس نے دورہ کیا، کس نے تصاویر اپ لوڈ کیں، کس نے منظوری دی — تاریخوں کے ساتھ۔', 'الصورة':'تصویر', 'لا سجلَّ بعد لهذه النقطة.':'اس پوائنٹ کا ابھی کوئی ریکارڈ نہیں۔', 'اجلب القديم من القاعدة':'پرانی اندراجات لائیں', 'يُجلَب سجلُّ النقطة…':'پوائنٹ کا ریکارڈ لایا جا رہا ہے…',
  'لا سجلَّ زيارةٍ لهذه النقطة':'اس پوائنٹ کا کوئی دورہ ریکارڈ نہیں', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'فیلڈ پوائنٹ تک نہیں پہنچا — جو دورہ ہوا ہی نہیں اس کی منظوری نہیں', 'فُتحت على':'کھولا گیا', 'تراجعٌ عن ردِّ الزيارة':'دوبارہ دورے کا فیصلہ واپس',
+ 'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'غیر محفوظ تصاویر — پوائنٹ بدلنے پر ختم',
 }
 };
 
@@ -14033,7 +14035,7 @@ function svSave(next){
   formReset();
   if (next){
     var un = STATE.sites.filter(function(x){ return !STATE.recs[x.id]; })[0];
-    if (un) FORM.site = un.id;
+    if (un) formGo(un.id);
   }
   render();
 }
@@ -14086,6 +14088,21 @@ function insSave(draft){
   render();
 }
 
+/* ═══ نموذجٌ لنقطةٍ واحدة (V17.22) ═══
+   النموذجُ كائنٌ واحدٌ يُعاد استعمالُه لكلِّ نقطة، وصورُه فيه. وتبديلُ النقطة
+   كان يكتب FORM.site ولا يمسح ما قبلَه — فمن فتح نقطةً وصوّرها ولم يحفظ، ثم
+   فتح غيرَها وحفظ، ذهبت صورُ الأولى إلى الثانية. هكذا صعدت صورُ ممرات منى
+   إلى مخيمٍ في عرفات. فصار تبديلُ النقطة يمسح ما لم يُحفَظ، ويُقال ذلك. */
+function formGo(id, why){
+  id = String(id || '');
+  if (FORM.site && FORM.site !== id){
+    var n = Object.keys(FORM.photos || {}).length;
+    formReset();
+    if (n) toast(nm(n) + ' ' + t('صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة'));
+  }
+  FORM.site = id;
+  if (why === 'new') formReset();
+}
 function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
   FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
@@ -16513,8 +16530,7 @@ function nsSave(){
 
   /* يُفتَح نموذجُ المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
   DETAIL_ID = id;
-  FORM.site = id;
-  formReset();
+  formGo(id, 'new');
   CUR = 'svForm';
   render(1);
 }
@@ -18820,7 +18836,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.21' + '.docx" download>⬇ '
+              +   'V17.22' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -31855,7 +31871,7 @@ function clickA(e){
            setTimeout(function(){ mapFly(POP_SITE); }, 500); return true; }
   var fm = e.target.closest('[data-form]');
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
-    FORM.site = fm.getAttribute('data-form'); CUR = 'svForm'; render(1); return true; }
+    formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }
   if (e.target.closest('[data-edit]')){
     if (maySiteEdit()){ SITE_ED = 1; render(1); var ne = document.getElementById('seName'); if (ne) ne.focus(); }
     else toast(t('التعديل يمرّ باعتماد المهندس'));
@@ -31885,7 +31901,7 @@ function clickA(e){
   if (e.target.closest('[data-fsq]')){
     var q = document.getElementById('fSiteQ');
     var hit = q ? siteSearch(q.value, 1)[0] : null;
-    if (hit){ FORM.site = hit.id; render(); toast(hit.id); }
+    if (hit){ formGo(hit.id); render(); toast(hit.id); }
     else toast(t('لا نتائج'));
     return true;
   }
@@ -32728,7 +32744,7 @@ function onDocClick(e){
            if (!asnOf(pid)) selToggle(pid); else toast(t('هذه النقطة مُسندة بالفعل'));
            render(1); if (MAP) mapPaint(); return; }
   var inf = e.target.closest('[data-insform]');
-  if (inf){ FORM.site = inf.getAttribute('data-insform'); CUR='insForm'; POP_OPEN=false; render(1); return; }
+  if (inf){ formGo(inf.getAttribute('data-insform')); CUR='insForm'; POP_OPEN=false; render(1); return; }
 
   var an = e.target.closest('[data-asn]');
   if (an){
