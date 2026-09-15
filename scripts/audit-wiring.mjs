@@ -39,8 +39,13 @@ const ll=(/loadLocal: function\(\)\{[\s\S]*?\n  \},/.exec(js)||[''])[0];
 say(/steps/.test(sl)&&/steps/.test(ll),'وسجلُّ الخطوات يُحفَظ ويُستعاد', (/steps/.test(sl)?'':'حفظ ')+(/steps/.test(ll)?'':'استعادة'));
 say(/diss/.test(sl)&&/maints/.test(sl),'وسجلّا الفكِّ والصيانة كذلك', (/diss/.test(sl)?'':'diss ')+(/maints/.test(sl)?'':'maints'));
 /* تُسحَب من السحابة؟ */
-say(/collection\('diss'\)|collection\('dismantles'\)/.test(js),'الفكُّ يُسحَب من السحابة');
-say(/collection\('maints'\)/.test(js),'والصيانةُ كذلك');
+/* السحبُ يُفحَص بأثره لا بلفظه: بعضُ السجلّات صارت تُسحَب بـreadDelta
+   (فارقيًّا بمؤشِّرٍ وسقف) بدل نداءِ المجموعة مباشرةً — والمطلوبُ أنها
+   تُسحَب، لا أن تُسحَب بصيغةٍ بعينها (V17.10). */
+const pulled = c => new RegExp("collection\\('" + c + "'\\)").test(js)
+              || new RegExp("readDelta\\('" + c + "'").test(js);
+say(pulled('diss') || pulled('dismantles'), 'الفكُّ يُسحَب من السحابة');
+say(pulled('maints'), 'والصيانةُ كذلك');
 /* القاعدةُ تسمح؟ */
 const R=readFileSync('firestore.rules','utf8');
 ['dismantles','maints','steps'].forEach(c=>say(new RegExp('match /'+c+'/').test(R),'قاعدةٌ لـ'+c));
