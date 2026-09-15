@@ -50,5 +50,35 @@ T(/readDelta\(/.test(js) && /where\('_at', '>', since\)/.test(js),
 /* ٥ · ما يُعرَض للمستخدم */
 T(/قراءاتُ هذه الجلسة|قراءات الجلسة/.test(js), 'وعددُ القراءات معروضٌ في شاشة المزامنة — يُرى ما يكلّف');
 
+/* ═══ ٦ · النبضةُ بدل الاستطلاع (V17.26) ═══
+   طزاجةٌ في ثوانٍ بلا استطلاعٍ كلَّ دقيقة: كتابةٌ واحدةٌ بعد كلِّ دفعةٍ
+   ناجحة، ومستمعٌ على وثيقةٍ واحدة، وسحبٌ موجَّهٌ لما تغيّر وحدَه. */
+T(/pulse: function\(kinds\)/.test(js) && /FB\.pulse\(Object\.keys\(kinds\)\)/.test(js),
+  'كلُّ دفعةٍ ناجحةٍ تُنبِض بما تغيّر — كتابةٌ واحدة');
+T(/collection\('settings'\)\.doc\('pulse'\)\.onSnapshot/.test(js), 'والأجهزةُ تُنصِت لوثيقةٍ واحدةٍ لا تكلّف وهي ساكنة');
+T(/pullDelta\(\{ only:stale, why:'pulse' \}\)/.test(js), 'وتسحب المتغيّرَ وحدَه لا النطاقَ كلَّه');
+T(!/every:60000\b/.test(js), 'ولا استطلاعَ كلَّ دقيقة — الطزاجةُ من النبضة والكلفةُ من التغيير');
+/* ═══ ٧ · سقفُ القراءات لكلِّ جهاز ═══ */
+T(/READ_CAP_WARN = 3000, READ_CAP_SLOW = 6000/.test(js) && /readSlowFactor\(\)/.test(js),
+  'وجهازٌ يتجاوز سقفَه يُنبَّه ثم يُبطَّأ سحبُه الدوريّ');
+/* ═══ ٨ · كلُّ مجموعةٍ في الشيفرة موثَّقةٌ بمرحلتها في سير العمل ═══ */
+{
+  const sch = JSON.parse(readFileSync('docs/api-schema.json', 'utf8'));
+  const documented = Object.keys((sch.firestore || {}).collections || {});
+  const m = /colOf: function\(kind\)\{\s*return \{([\s\S]*?)\}\[kind\]/.exec(js);
+  const inCode = [...new Set([...(m ? m[1] : '').matchAll(/:'(\w+)'/g)].map(x => x[1]))];
+  const missing = inCode.filter(c => documented.indexOf(c) < 0);
+  T(missing.length === 0, `وكلُّ مجموعةٍ في الشيفرة موثَّقةٌ بمرحلتها (${inCode.length})` + (missing.length ? ' — بلا توثيق: ' + missing.join(' · ') : ''));
+  T(documented.every(c => (sch.firestore.collections[c] || {}).stage), 'ولكلِّ مجموعةٍ مرحلةٌ مسمّاة');
+}
+
+/* ═══ ٩ · السجلُّ يقول من فعل ومتى (V17.26) ═══ */
+T(/function logEvent\(what, site, who, when\)/.test(js) && /if \(who && who !== mine\) e\.rec = mine;/.test(js),
+  'والحدثُ يحمل فاعلَه ووقتَ فعله — وصاحبُ الجهاز في «سُجِّل على»');
+T(/by:opt\.actor \|\| STATE\.meta\.name/.test(js) && /at:\+opt\.at \|\| Date\.now\(\)/.test(js),
+  'والإشعارُ كذلك — لا تُختَم إشعاراتُ اليوم كلِّها بلحظة فتح التطبيق');
+T((js.match(/actor:\(v\.by \|\| v\._byName \|\| who\), at:at/g) || []).length >= 10,
+  'وكلُّ إشعارِ وصولٍ يمرّر فاعلَ الوثيقة ووقتَها');
+
 console.log(bad ? `\nجردُ القراءات فشل ✗ (${bad})` : '\nلا مجموعةَ تُقرأ بلا سقف، وما يُقرأ يُحصى ✅');
 process.exit(bad ? 1 : 0);

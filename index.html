@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.25</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.26</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3667,6 +3667,8 @@ en:{
  'لا سجلَّ زيارةٍ لهذه النقطة':'No visit record for this point', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'The field never reached the point — a visit that did not happen cannot be approved', 'فُتحت على':'Opened on', 'تراجعٌ عن ردِّ الزيارة':'Revisit decision reversed',
  'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'unsaved photos — discarded when the point changed',
  'ابحث في هذه الصفحة':'Search this page',
+ 'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'This device is reading more than usual — periodic sync slowed to protect the project quota', 'قراءاتُ هذا الجهاز اليوم':'Reads on this device today', 'تُراقَب':'being watched',
+ 'سُجِّل على':'recorded on',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6356,6 +6358,8 @@ ur:{
  'لا سجلَّ زيارةٍ لهذه النقطة':'اس پوائنٹ کا کوئی دورہ ریکارڈ نہیں', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'فیلڈ پوائنٹ تک نہیں پہنچا — جو دورہ ہوا ہی نہیں اس کی منظوری نہیں', 'فُتحت على':'کھولا گیا', 'تراجعٌ عن ردِّ الزيارة':'دوبارہ دورے کا فیصلہ واپس',
  'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'غیر محفوظ تصاویر — پوائنٹ بدلنے پر ختم',
  'ابحث في هذه الصفحة':'اس صفحے میں تلاش کریں',
+ 'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'یہ ڈیوائس معمول سے زیادہ پڑھ رہی ہے — منصوبے کے کوٹے کے تحفظ کے لیے متواتر سنک سست کر دی گئی', 'قراءاتُ هذا الجهاز اليوم':'آج اس ڈیوائس کی ریڈز', 'تُراقَب':'زیرِ نگرانی',
+ 'سُجِّل على':'ریکارڈ ہوا',
 }
 };
 
@@ -8450,6 +8454,12 @@ var CORE = {
       var okIds = {};
       r.ok.forEach(function(it){ okIds[it.kind + '|' + it.id] = 1; });
       STATE.queue = STATE.queue.filter(function(it){ return !okIds[it.kind + '|' + it.id]; });
+      /* نبضةٌ واحدةٌ لكلِّ دفعةٍ ناجحة: أيُّ مجموعاتٍ تغيّرت — فتسحب الأجهزةُ
+         الأخرى فارقَها في ثوانٍ لا بعد عشر دقائق (V17.26). النبضةُ نفسُها
+         لا تُنبِض (settings) وإلا دار الجهازُ على نفسه. */
+      var kinds = {};
+      r.ok.forEach(function(it){ if (it.kind !== 'cfg' && it.kind !== 'presence' && it.kind !== 'stats' && it.kind !== 'evlog') kinds[it.kind] = 1; });
+      if (Object.keys(kinds).length) FB.pulse(Object.keys(kinds));
       r.failed.forEach(function(f){
         var it = f.it; it.tries = (it.tries || 0) + 1; it.err = f.msg;
         softErr('رفع وثيقة — ' + it.kind + '/' + it.id, f.msg, '');
@@ -8653,6 +8663,22 @@ var FB = {
     }).catch(function(){ return false; });
   },
   /* يُرفَع كلٌّ على حدة: يُرجِع ما نجح وما فشل بسببه — وما رُفض وهو واصلٌ يُعَدُّ ناجحًا */
+  /* ═══ نبضةُ التغيير (V17.26) ═══
+     السحبُ الدوريُّ كلَّ عشر دقائق يُبقي الجهازَ يجهل ما تغيّر تسعَ دقائقَ
+     وخمسين ثانيةً في المتوسط، وتقصيرُه إلى دقيقةٍ يعني ثمانيَ قراءاتٍ في
+     الدقيقة لكلِّ جهازٍ ولو لم يتغيّر شيء (كلُّ استعلامٍ يُحاسَب بقراءةٍ على
+     الأقلّ) — أي ستّون ألفَ قراءةٍ في اليوم تتجاوز الحصةَ المجانية. فصار
+     الحلُّ نبضةً: بعد كلِّ رفعٍ ناجحٍ يكتب الجهازُ في وثيقةٍ واحدةٍ
+     settings/pulse أيَّ مجموعاتٍ تغيّرت ومتى — كتابةٌ واحدةٌ مهما كبرت
+     الدفعة. وكلُّ جهازٍ يُنصِت لهذه الوثيقة وحدَها: لا تكلّف شيئًا وهي
+     ساكنة، وحين تتغيّر يسحب الجهازُ فارقَ ما تغيّر فقط. فالطزاجةُ ثوانٍ،
+     والكلفةُ بقدر التغيير الحقيقيّ، والسحبُ الدوريُّ يبقى شبكةَ أمانٍ خلفها. */
+  pulse: function(kinds){
+    if (!FB.ready || !FB.db || !kinds || !kinds.length) return Promise.resolve();
+    var now = Date.now(), doc = { at:now, by:STATE.meta.uid || '' };
+    kinds.forEach(function(k){ doc[FB.colOf(k)] = now; });
+    return FB.db.collection('settings').doc('pulse').set(doc, { merge:true }).catch(function(e){ softErr('نبضة التغيير', e, ''); });
+  },
   pushEach: function(batch){
     var ok = [], failed = [], healed = 0;
     return batch.reduce(function(p, it){
@@ -9248,6 +9274,8 @@ function liveSmallStop(){
 function liveSmall(){
   if (!FB.ready || !FB.db) return;
   liveSmallStop();
+  /* النبضةُ تُعاد مع إعادة الإنصات — مستمعٌ واحدٌ لا أكثر (V17.26) */
+  pulseStop(); setTimeout(pulseWatch, 0);
   var watch = function(col, apply, cap, filt, filt2){
     try {
       var q = FB.db.collection(col);
@@ -9416,7 +9444,7 @@ var SYNC_CYCLE = 60, SYNC_LEFT = 60, SYNC_BUSY = false;
    لا يعمل. صار يعدُّ إلى السحب نفسِه (عشرُ دقائقَ للمكتب والوزارة والمشرف —
    والإنصاتُ الحيُّ يملأ ما بينها)، وعند الصفر يُدفَع ويُسحَب وتُعاد الشاشة. */
 function syncCdSecs(){
-  var ev = (typeof pullScope === 'function') ? pullScope().every : 600000;
+  var ev = ((typeof pullScope === 'function') ? pullScope().every : 600000) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1);
   var left = Math.max(0, (PULL_LAST || 0) + ev - Date.now());
   return Math.ceil(left / 1000);
 }
@@ -9435,7 +9463,8 @@ function syncCycle(){
      عاد فارغًا؛ وما بين السحبتين يصل بالإنصات الحيّ. */
   var pushed = CORE.flush().catch(function(){ return 0; });
   return pushed.then(function(){
-    var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every);
+    /* الجهازُ الذي تجاوز سقفَ قراءاته يُبطَّأ سحبُه الدوريُّ إلى الربع (V17.26) */
+  var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
     /* موعدُ السحب يُضبَط عند المحاولة لا عند النجاح — وإلا بقي العدّادُ صفرًا
        بعد سحبةٍ فاشلة وحاول كلَّ ثانية */
     if (due) PULL_LAST = Date.now();
@@ -14215,12 +14244,19 @@ function canWriteEvents(){
    ولا يُستعلَم به: لا يُقال «أرني كلَّ ما جرى لهذه النقطة» إلا ببحثٍ نصيٍّ
    في الخمسمئة حدثٍ المحمَّلة. فصار لكلِّ حدثٍ حقلُ نقطته حين يخصُّ نقطة —
    فتُسأل القاعدةُ عنها مباشرةً مهما تقادمت. */
-function logEvent(what, site){
-  var now = Date.now();
+/* ═══ الحدثُ يحمل فاعلَه لا مستقبِلَه (V17.26) ═══
+   كان «من» في السجل دائمًا صاحبَ الجهاز: يصل جهازَ المديرِ إشعارٌ بزيارةٍ
+   سجّلها خالدٌ فيُكتَب «محمد صفوت — زيارة تمّت»، فلا يُعرَف من عمل ماذا وهو
+   أصلُ ما يُراجَع. صار الفاعلُ وسيطًا: من كتب الوثيقةَ هو «من»، وصاحبُ
+   الجهاز يُذكَر في «سُجِّل على». والوقتُ وقتُ الفعل لا وقتُ وصوله. */
+function logEvent(what, site, who, when){
+  var now = +when || Date.now();
+  var mine = STATE.meta.name || '';
   var e = { id:uid36(), ts:now,
             at:fmtTime(now, { hour:'2-digit', minute:'2-digit' }),
             day:new Date(now).toISOString().slice(0,10),
-            what:what, by:STATE.meta.name || '', dev:DEV_ID };
+            what:what, by:String(who || mine), dev:DEV_ID };
+  if (who && who !== mine) e.rec = mine;
   if (site) e.site = String(site);
   STATE.events.unshift(e);
   if (STATE.events.length > 500) STATE.events.length = 500;
@@ -18907,7 +18943,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.25' + '.docx" download>⬇ '
+              +   'V17.26' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19968,9 +20004,12 @@ function treeKeys(){
 /* «in» في القاعدة ثلاثون قيمةً في الاستعلام — فتُقسَّم */
 function chunk30(a){ var out = []; for (var i = 0; i < a.length; i += 30) out.push(a.slice(i, i + 30)); return out; }
 function treeQuery(c, k){ return { fld: c === 'tasks' ? 'to' : '_by', keys: c === 'tasks' ? k.names : k.uids }; }
-function pullDelta(){
+function pullDelta(opt){
   if (!FB.ready || !FB.db) return Promise.resolve(0);
   var sc = pullScope(), got = 0, me = STATE.meta.uid;
+  /* سحبٌ موجَّه: النبضةُ تقول أيَّ مجموعاتٍ تغيّرت فتُسحَب هي وحدَها (V17.26) */
+  if (opt && Array.isArray(opt.only) && opt.only.length)
+    sc = Object.assign({}, sc, { cols:sc.cols.filter(function(c){ return opt.only.indexOf(c) > -1; }) });
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
   var wasAsk = PULL_ASK; PULL_ASK = false;
   if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
@@ -20024,6 +20063,27 @@ function pullDelta(){
    تُسحَب كاملةً في كلِّ إقلاع. صارت تُسحَب كما يُسحَب غيرُها: ما كُتب بعد
    آخر سحبةٍ فقط، وبسقفٍ يقطع؛ وأوّلُ مرةٍ على الجهاز تُسحَب الأحدثُ وحدَها.
    ويُحصى ما قُرئ في عدّاد القراءات — فما يكلّف يُرى. */
+/* ═══ سقفُ القراءات لكلِّ جهاز (V17.26) ═══
+   جهازٌ واحدٌ في حلقةٍ خاطئة يستهلك حصةَ المشروع كلَّها وحدَه، ولا يُعرَف
+   إلا آخرَ الشهر. فيُحصى ما يقرؤه الجهازُ في اليوم: إن تجاوز ثلاثةَ آلافٍ
+   قيل لصاحبه، وإن تجاوز ستةَ آلافٍ تباطأ السحبُ الدوريُّ إلى الربع ونُبِّه
+   المكتبُ بحدث — والإنصاتُ والنبضةُ يبقيان فلا يتعطّل العمل. */
+var READ_CAP_WARN = 3000, READ_CAP_SLOW = 6000, READ_DAY = '', READ_DAY_N = 0, READ_WARNED = 0;
+function readBudget(){
+  var day = dayKey(Date.now());
+  if (READ_DAY !== day){ READ_DAY = day; READ_DAY_N = FB.readCount || 0; READ_WARNED = 0; }
+  var n = (FB.readCount || 0) - READ_DAY_N;
+  if (n > READ_CAP_SLOW && READ_WARNED < 2){
+    READ_WARNED = 2;
+    logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · أُبطئ سحبُه');
+    toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع'));
+  } else if (n > READ_CAP_WARN && READ_WARNED < 1){
+    READ_WARNED = 1;
+    toast(t('قراءاتُ هذا الجهاز اليوم') + ': ' + nm(n) + ' — ' + t('تُراقَب'));
+  }
+  return n;
+}
+function readSlowFactor(){ return readBudget() > READ_CAP_SLOW ? 4 : 1; }
 function readDelta(col, key, cap){
   if (!FB.ready || !FB.db) return;
   if (!STATE[key]) STATE[key] = {};
@@ -20043,6 +20103,34 @@ function readDelta(col, key, cap){
     softErr('سحب ' + col, e, '');
   });
 }
+
+/* ═══ الإنصاتُ لنبضة التغيير (V17.26) ═══
+   وثيقةٌ واحدةٌ تُراقَب: settings/pulse. لا تكلّف قراءةً وهي ساكنة، وحين
+   تتغيّر يُقارَن وقتُ كلِّ مجموعةٍ فيها بمؤشِّر سحبِ هذا الجهاز؛ فإن كان في
+   القاعدة أحدثُ مما عندنا سُحب فارقُ تلك المجموعة وحدَها — مجمَّعًا بثانيتين
+   حتى لا تتوالى السحباتُ على دفعةٍ من عشر وثائق. */
+var PULSE_UNSUB = null, PULSE_T = 0, PULSE_LAST = 0;
+function pulseWatch(){
+  if (!FB.ready || !FB.db || PULSE_UNSUB) return;
+  try {
+    PULSE_UNSUB = FB.db.collection('settings').doc('pulse').onSnapshot(function(doc){
+      if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
+      FB.readCount = (FB.readCount || 0) + 1;
+      var p = doc.data() || {}, at = STATE.meta.pullAt || {}, mine = pullScope().cols || [];
+      var stale = mine.filter(function(col){ return (+p[col] || 0) > (+at[col] || 0); });
+      if (!stale.length) return;
+      PULSE_LAST = Date.now();
+      clearTimeout(PULSE_T);
+      PULSE_T = setTimeout(function(){
+        if (typeof pullDelta === 'function') pullDelta({ only:stale, why:'pulse' }).then(function(n){
+          if (n && CUR === 'map' && typeof mapPaint === 'function') mapPaint();
+          else if (n) render(1);
+        }).catch(function(e){ softErr('سحب النبضة', e, ''); });
+      }, 2000);
+    }, function(e){ softErr('إنصات النبضة', e, ''); });
+  } catch (e){ softErr('إنصات النبضة', e, ''); }
+}
+function pulseStop(){ if (PULSE_UNSUB){ try { PULSE_UNSUB(); } catch (e){} PULSE_UNSUB = null; } }
 
 /* استماعٌ حيٌّ محدودٌ بما يخصّ المستخدم — لا بالمجموعة كلها */
 var LIVE = [];
@@ -22662,7 +22750,7 @@ function bootAuto(){
        ولا يُنصَت ولا يُسحَب ولا يُدفَع الطابورُ حتى يُضغَط بيد. */
     var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
     first.then(function(){ return FB.pullStatic().catch(function(){ return 0; }); })
-         .then(function(){ return pullDelta(); }).then(function(){ liveWatch(); liveSmall(); presenceBeat(true); return 0; })
+         .then(function(){ return pullDelta(); }).then(function(){ liveWatch(); liveSmall(); pulseWatch(); presenceBeat(true); return 0; })
          .then(function(){ statBump(); render(1); syncBadge(); })
          .catch(function(e){
            softErr('بدء الجلسة', e, 'دخلتَ — وتعذّر جلبُ البيانات، جرّب المزامنة');
@@ -27225,38 +27313,38 @@ function notifOnArrival(kind, id, prev, v){
   var me = STATE.meta.name || '';
   if (kind === 'tasks'){
     if ((v.to === me || v.assignedTo === me) && p.to !== me && p.assignedTo !== me)
-      notifPush('إسناد', (v.no || '') + ' \u00b7 ' + (v.site || '') + ' \u2014 ' + t(v.kind === 'install' ? 'تركيب' : (v.kind === 'visit' ? 'زيارة' : String(v.kind || ''))), { to:me, site:v.site || '', lv:'مهم' });
+      notifPush('إسناد', (v.no || '') + ' \u00b7 ' + (v.site || '') + ' \u2014 ' + t(v.kind === 'install' ? 'تركيب' : (v.kind === 'visit' ? 'زيارة' : String(v.kind || ''))), { to:me, site:v.site || '', lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (v.status === 'مُنجز' && p.status !== 'مُنجز' && (may('approve') || notifConcerns(v)))
-      notifPush('تمّ', (v.no || '') + ' \u00b7 ' + (v.site || '') + ' \u2014 ' + (v.to || ''), { site:v.site || '', lv:'عادي' });
+      notifPush('تمّ', (v.no || '') + ' \u00b7 ' + (v.site || '') + ' \u2014 ' + (v.to || ''), { site:v.site || '', lv:'عادي', actor:(v.by || v._byName || who), at:at });
     return;
   }
   if (kind === 'recs'){
     var rv = svReview(v), pv = svReview(p);
     if (rv === 'pending' && (pv !== 'pending' || (v.at || 0) !== (p.at || 0)) && may('approve'))
-      notifPush('زيارة تمّت', id + ' \u00b7 ' + who + ' \u2014 ' + t('بانتظار اعتمادك'), { site:id, lv:'مهم' });
+      notifPush('زيارة تمّت', id + ' \u00b7 ' + who + ' \u2014 ' + t('بانتظار اعتمادك'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (rv === 'approved' && pv !== 'approved' && notifConcerns(v))
-      notifPush('اعتماد تقني', t('اعتُمدت زيارةُ') + ' ' + id, { to:v.by || '', site:id, lv:'عادي' });
+      notifPush('اعتماد تقني', t('اعتُمدت زيارةُ') + ' ' + id, { to:v.by || '', site:id, lv:'عادي', actor:(v.by || v._byName || who), at:at });
     /* الوزارةُ تُخبَر بما ينتظرها، والمهندسُ بما قرّرته */
     else if (minState(v) === 'pending' && minState(p) !== 'pending' && may('minapprove') && effRole(ROLE) === 'viewer')
-      notifPush('بانتظار اعتمادكم', id + ' \u2014 ' + t('إعدادُ التركيب بانتظار اعتماد الوزارة'), { site:id, lv:'مهم' });
+      notifPush('بانتظار اعتمادكم', id + ' \u2014 ' + t('إعدادُ التركيب بانتظار اعتماد الوزارة'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (minState(v) === 'approved' && minState(p) !== 'approved' && (may('approve') || notifConcerns(v)))
-      notifPush('اعتمدت الوزارة', id + ' \u2014 ' + t('جاهزةٌ للتركيب'), { site:id, lv:'مهم' });
+      notifPush('اعتمدت الوزارة', id + ' \u2014 ' + t('جاهزةٌ للتركيب'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (minState(v) === 'returned' && minState(p) !== 'returned' && may('approve'))
-      notifPush('ردّت الوزارة', id + (v.minNote ? ' \u2014 ' + v.minNote : ''), { site:id, lv:'عاجل' });
+      notifPush('ردّت الوزارة', id + (v.minNote ? ' \u2014 ' + v.minNote : ''), { site:id, lv:'عاجل', actor:(v.by || v._byName || who), at:at });
     else if (rv === 'revisit' && pv !== 'revisit' && notifConcerns(v))
-      notifPush('تحتاج زيارة أخرى', id + (v.revisitNote ? ' \u2014 ' + v.revisitNote : ''), { to:v.by || '', site:id, lv:'عاجل' });
+      notifPush('تحتاج زيارة أخرى', id + (v.revisitNote ? ' \u2014 ' + v.revisitNote : ''), { to:v.by || '', site:id, lv:'عاجل', actor:(v.by || v._byName || who), at:at });
     return;
   }
   if (kind === 'inss'){
     if (v.status === 'مُركّب' && !v.approved && (p.status !== 'مُركّب' || (v.at || 0) !== (p.at || 0)) && may('approve'))
-      notifPush('تركيب تمّ', id + ' \u00b7 ' + who + ' \u2014 ' + t('بانتظار التدقيق'), { site:id, lv:'مهم' });
+      notifPush('تركيب تمّ', id + ' \u00b7 ' + who + ' \u2014 ' + t('بانتظار التدقيق'), { site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     else if (v.approved && !p.approved && notifConcerns(v))
-      notifPush('اعتماد', t('اعتُمد تركيبُ') + ' ' + id, { to:v.by || '', site:id, lv:'مهم' });
+      notifPush('اعتماد', t('اعتُمد تركيبُ') + ' ' + id, { to:v.by || '', site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
     return;
   }
   if (kind === 'diss' || kind === 'maints'){
     if ((v.to === me || v.assignedTo === me) && p.to !== me && p.assignedTo !== me)
-      notifPush('إسناد', id + ' \u2014 ' + t(kind === 'diss' ? 'فك' : 'صيانة'), { to:me, site:id, lv:'مهم' });
+      notifPush('إسناد', id + ' \u2014 ' + t(kind === 'diss' ? 'فك' : 'صيانة'), { to:me, site:id, lv:'مهم', actor:(v.by || v._byName || who), at:at });
   }
 }
 /* الأهميةُ تحدّد ما يُدفَع إلى نظام التشغيل وما يُترَك للمركز */
@@ -27294,6 +27382,7 @@ function stepDone(kind, siteId, detail, pts){
   notifPush('تمّ', K.i + ' ' + t(K.n) + (siteId ? ' \u00b7 ' + siteId : '')
             + (detail ? ' \u00b7 ' + detail : '')
             + (rec.pts ? ' \u00b7 ' + nm(rec.pts) + ' ' + t('نقطة') : ''),
+            /* فاعلُ الخطوة صاحبُ الجهاز نفسُه — هو من نفّذها الآن */
             { site:siteId || '', lv:'عادي' });
   return rec;
 }
@@ -27332,13 +27421,15 @@ function stepsCard(n){
 }
 function notifPush(kind, text, opt){
   opt = opt || {};
+  /* وقتُ الفعل وفاعلُه — لا لحظةُ وصولِ الوثيقة وصاحبُ الجهاز: كانت إشعاراتُ
+     يومٍ كاملٍ تُختَم بلحظة فتح التطبيق فتُقرأ كأنها وقعت في دقيقةٍ واحدة. */
   var n = { id:uid36(), kind:kind, text:String(text || ''),
             lv:opt.lv || 'عادي', to:opt.to || '', site:opt.site || '',
-            by:STATE.meta.name || '', at:Date.now(), read:false };
+            by:opt.actor || STATE.meta.name || '', at:+opt.at || Date.now(), read:false };
   notifStore().unshift(n);
   if (notifStore().length > NOTIF_MAX) notifStore().length = NOTIF_MAX;
   CORE.saveSoon();
-  logEvent('إشعار — ' + kind + ' · ' + n.text.slice(0, 60));
+  logEvent('إشعار — ' + kind + ' · ' + n.text.slice(0, 60), n.site || '', n.by, n.at);
   if (NOTIF_LV[n.lv] >= 2) notifSystem(n);
   /* داخل التطبيق: بطاقةٌ عائمةٌ تُرى فورًا — كانت الإشعاراتُ تُخزَّن ويعدُّ الجرسُ
      وحدَه، فمن لم ينظر إلى الشريط لم يعلم بشيءٍ حتى يفتح الصفحة. */
@@ -27604,7 +27695,12 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
                 L.slice(0, PG_Q ? 5000 : 300).map(function(e){
                   return ['<span class="num">' + esc(e.day || '') + ' ' + esc(e.at || '') + '</span>',
                           pill(t(evKind(e.what)), evPillKind(e.what)),
-                          esc(e.what || ''), esc(e.by || '—')];
+                          esc(e.what || ''),
+                          /* الفاعلُ أوّلًا، ومن سجّله تحته إن اختلفا (V17.26) */
+                          esc(dispName(e.by || '') || '—')
+                            + (e.rec && e.rec !== e.by
+                                ? '<br><span class="hint" style="margin:0">' + esc(t('سُجِّل على')) + ' ' + esc(dispName(e.rec)) + '</span>'
+                                : '')];
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا أحداثَ تطابق التصفية.')) + '</p>')
 
@@ -31576,7 +31672,7 @@ function enterApp(user, pass){
     }
     enterShell();
     var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
-    setTimeout(function(){ liveWatch(); liveSmall(); presenceBeat(true); }, 1200);
+    setTimeout(function(){ liveWatch(); liveSmall(); pulseWatch(); presenceBeat(true); }, 1200);
     first.then(function(n){
       if (n) toast(nm(n) + ' ' + t('سجلًّا من النسخة السابقة'));
       return pullDelta();

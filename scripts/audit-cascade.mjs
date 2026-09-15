@@ -29,7 +29,12 @@ T(/pullAt:STATE\.meta\.pullAt \|\| \{\}/.test(js) && /STATE\.meta\.pullAt = v\.p
 T(/PULL_COL = \{ recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints'/.test(js), 'وكلُّ مجموعةٍ تصل مفتاحَها في الحالة');
 T(/\['recs','inss','tasks','dismantles','maints'\]\.forEach\(function\(col\)\{[\s\S]{0,700}\['_at', '>', t0\]/.test(js), 'إنصاتٌ حيٌّ على العمل لمن فوق المشرف');
 T(/var SYNC_CYCLE = 60/.test(js) && !/\}, 120000\);/.test(js), 'دورةٌ واحدةٌ من دقيقة — لا دورةَ ثانية');
-T(/var due = PULL_ASK \|\| \(Date\.now\(\) - PULL_LAST >= pullScope\(\)\.every\)/.test(js), 'الدفعُ كلَّ دقيقةٍ والسحبُ في موعد النطاق');
+/* موعدُ السحب صار يُضرَب في معامل الإبطاء حين يتجاوز الجهازُ سقفَ قراءاته
+   (V17.26) — والقاعدةُ المحروسةُ هي أن الدفعَ كلَّ دقيقةٍ والسحبَ في موعد
+   النطاق لا أن تكون الصيغةُ حرفًا واحدًا. */
+T(/var due = PULL_ASK \|\| \(Date\.now\(\) - PULL_LAST >= pullScope\(\)\.every/.test(js),
+  'الدفعُ كلَّ دقيقةٍ والسحبُ في موعد النطاق');
+T(/readSlowFactor\(\)/.test(js), 'ويتباطأ موعدُه لجهازٍ تجاوز سقفَ قراءاته');
 
 /* ═══ تشغيل ═══ */
 async function boot(role, name){

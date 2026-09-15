@@ -253,6 +253,12 @@ await ok  ('الفنيُّ يكتب بلاغًا — العطلُ يقع عند�
 await ok  ('والمشرف',                                    setDoc(doc(as('sup'), 'bugs/b2'), Object.assign({}, BUG, { uid:'sup' })));
 await ok  ('ويقرأ الفنيُّ بلاغَه هو — وصل؟ فُتح؟',        getDoc(doc(as('tec'), 'bugs/b1')));
 await deny('ولا يقرأ بلاغَ غيره',                        getDoc(doc(as('tec'), 'bugs/b2')));
+
+/* ═══ نبضةُ التغيير (V17.26) ═══ */
+await ok  ('الفنيُّ يكتب النبضةَ بعد رفعه',              setDoc(doc(as('tec'), 'settings/pulse'), { at:1, recs:1 }, { merge:true }));
+await ok  ('والمشرفُ يقرؤها',                             getDoc(doc(as('sup'), 'settings/pulse')));
+await ok  ('والوزارةُ تقرؤها لتعرف متى تسحب',             getDoc(doc(as('vwr'), 'settings/pulse')));
+await deny('ولا تكتبها — لا ترفع شيئًا أصلًا',            setDoc(doc(as('vwr'), 'settings/pulse'), { at:2 }, { merge:true }));
 await ok  ('ويقرؤها المهندسُ ليصلحها',                    getDoc(doc(as('eng'), 'bugs/b1')));
 await ok  ('ويغلقها',                                    setDoc(doc(as('eng'), 'bugs/b1'), Object.assign({}, BUG, { status:'مغلق' })));
 await deny('ولا يغلقها الفنيّ',                           setDoc(doc(as('tec'), 'bugs/b2'), Object.assign({}, BUG, { status:'مغلق' })));
