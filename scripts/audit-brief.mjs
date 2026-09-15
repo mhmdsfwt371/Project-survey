@@ -217,6 +217,27 @@ w.ROLE = 'engineer';
   T(/سجلُّ النقطة/.test(sp.textContent) && !!sp.querySelector('[data-sitelog]'), 'والبطاقةُ في شاشة الموقع بزرِّ جلبِ القديم');
 }
 
+/* ═══ الاعتمادُ يُفتَح على النقطة، و«رغم ذلك» تعمل (V17.21) ═══ */
+{
+  w.ROLE = 'engineer'; w.STATE.meta.name = 'م. فحص';
+  w.STATE.sites = [{ id:'P1', name:'نقطةٌ أولى', zone:'عرفات', type:'مخيم', lat:21.3, lng:39.9 }];
+  w.STATE.recs = { P1:{ by:'خالد', at:Date.now(), st:'تمت الزيارة', access:'تم الوصول',
+                        review:'revisit', revisitNote:'الصور خاطئة', revisitBy:'م. فحص' } };
+  T(w.svApprove('P1') === true, '«اعتمدها رغم ذلك» تعمل على المردودة — لا «لا زيارةَ منجزة»');
+  T(w.svReview(w.STATE.recs.P1) === 'approved' && (w.STATE.recs.P1.revisitCleared || {}).was === 'الصور خاطئة',
+    'وترفع وسمَ الردِّ وتُبقي سببَه في السجل');
+  w.STATE.recs.P2 = { by:'خالد', at:Date.now(), access:'لم يتم الوصول' };
+  T(w.svApprove('P2') === false, 'ولا تُعتمَد زيارةٌ لم يصل إليها الميدان');
+  w.STATE.recs.P1.review = ''; w.SVA_Q = ''; w.SVA_ST = 'pending';
+  /* النافذةُ لا تُرسَم إلا على الخريطة — والكتلةُ السابقةُ تركتنا في شاشة الموقع */
+  w.goPage('map'); w.FIELD_MODE = 'brief'; w.POP_SITE = 'P1'; w.POP_OPEN = true; w.render(1); await wait(250);
+  const gb = d.querySelector('#pkPop [data-goto="svappr"]');
+  T(!!gb && gb.getAttribute('data-gotosite') === 'P1', 'وزرُّ الاعتماد في النافذة يحمل معرِّفَ نقطته');
+  gb.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(250);
+  T(w.SVA_Q === 'P1', 'فيُفتَح مُرشَّحًا عليها وحدَها — لا على قائمةٍ من مئات');
+  w.SVA_Q = '';
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ التفاصيل المختصرة فشل ✗ (${bad})` : '\nالتفاصيلُ المختصرة طبقةٌ تُقرأ بلونها وتُكتَب بسطر ✅');
 process.exit(bad ? 1 : 0);
