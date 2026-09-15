@@ -655,6 +655,13 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   .map-layerbar{font-size:11px;padding:6px 12px;gap:8px}
 }
 
+/* صندوقُ بحثِ الصفحة */
+.pg-find{position:relative;display:flex;align-items:center}
+.pg-find input{width:200px;padding:7px 10px;border-radius:9px;border:1px solid var(--line);
+  background:var(--surface-2);color:inherit;font:inherit}
+.pg-find input:focus{outline:2px solid var(--brand);outline-offset:1px}
+.pg-find-n{position:absolute;inset-inline-end:10px;font-size:11px;opacity:.7;pointer-events:none}
+@media (max-width:760px){ .pg-find input{width:130px} }
 .head-acts{display:flex;gap:7px;align-items:flex-start;flex:0 0 auto}
 .help-rows{margin:14px 0 0;display:flex;flex-direction:column;gap:12px}
 .help-rows > div{border-inline-start:3px solid var(--brand);padding-inline-start:11px}
@@ -837,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.22</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.23</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3659,6 +3666,7 @@ en:{
  'محذوفة':'deleted', 'سجلُّ النقطة':'Point log', 'كلُّ ما جرى لهذه النقطة من أوّل يوم: من زارها ومن رفع صورَها ومن اعتمدها — بالتاريخ.':'Everything that happened to this point since day one: who visited it, who uploaded its photos, who approved it — with dates.', 'الصورة':'Photo', 'لا سجلَّ بعد لهذه النقطة.':'No log yet for this point.', 'اجلب القديم من القاعدة':'Fetch older entries', 'يُجلَب سجلُّ النقطة…':'Fetching the point log…',
  'لا سجلَّ زيارةٍ لهذه النقطة':'No visit record for this point', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'The field never reached the point — a visit that did not happen cannot be approved', 'فُتحت على':'Opened on', 'تراجعٌ عن ردِّ الزيارة':'Revisit decision reversed',
  'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'unsaved photos — discarded when the point changed',
+ 'ابحث في هذه الصفحة':'Search this page',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6347,6 +6355,7 @@ ur:{
  'محذوفة':'حذف شدہ', 'سجلُّ النقطة':'پوائنٹ کا ریکارڈ', 'كلُّ ما جرى لهذه النقطة من أوّل يوم: من زارها ومن رفع صورَها ومن اعتمدها — بالتاريخ.':'پہلے دن سے اس پوائنٹ پر جو کچھ ہوا: کس نے دورہ کیا، کس نے تصاویر اپ لوڈ کیں، کس نے منظوری دی — تاریخوں کے ساتھ۔', 'الصورة':'تصویر', 'لا سجلَّ بعد لهذه النقطة.':'اس پوائنٹ کا ابھی کوئی ریکارڈ نہیں۔', 'اجلب القديم من القاعدة':'پرانی اندراجات لائیں', 'يُجلَب سجلُّ النقطة…':'پوائنٹ کا ریکارڈ لایا جا رہا ہے…',
  'لا سجلَّ زيارةٍ لهذه النقطة':'اس پوائنٹ کا کوئی دورہ ریکارڈ نہیں', 'لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع':'فیلڈ پوائنٹ تک نہیں پہنچا — جو دورہ ہوا ہی نہیں اس کی منظوری نہیں', 'فُتحت على':'کھولا گیا', 'تراجعٌ عن ردِّ الزيارة':'دوبارہ دورے کا فیصلہ واپس',
  'صورةً لم تُحفَظ — أُلغيت مع تبديل النقطة':'غیر محفوظ تصاویر — پوائنٹ بدلنے پر ختم',
+ 'ابحث في هذه الصفحة':'اس صفحے میں تلاش کریں',
 }
 };
 
@@ -7914,17 +7923,55 @@ function flow(steps, activeIdx){
 function btn(label, kind, extra){
   return '<button type="button" class="btn '+(kind||'btn-secondary')+'"'+(extra||'')+'>'+esc(t(label))+'</button>';
 }
+/* ═══ بحثٌ في كلِّ شاشة (V17.23) ═══
+   بعضُ الشاشات لها بحثُها وأكثرُها بلا بحث، فيُلجَأ إلى بحث المتصفّح: يجد
+   الكلمةَ ويلوّنها ولا يُخفي ما سواها، ولا يعمل على ما طُوي أو لم يُرسَم.
+   فصار لكلِّ صفحةٍ صندوقٌ واحدٌ في رأسها يُصفّي **ما هو معروضٌ أمامك**:
+   صفوفَ الجداول وبطاقاتِ القوائم — ويقول كم بقي من كم. ولا يُعيد الرسمَ
+   عند كلِّ حرفٍ (فلا تضيع البؤرةُ ولا يُثقَل الجهاز)، بل يُخفي ويُظهر. */
 function pageHead(eyebrow, title, lede, right){
   var canExp = (typeof SHEETS === 'object') && !!SHEETS[CUR];
   return '<div class="page-head"><div><span class="eyebrow">'+esc(t(eyebrow))+'</span>'
     + '<h1>'+esc(t(title))+'</h1>'
     + (lede ? '<p class="lede">'+esc(t(lede))+'</p>' : '') + '</div>'
     + '<div class="head-acts">'
+    +   '<div class="pg-find"><input id="pgQ" type="search" dir="auto" value="' + esc(PG_Q) + '"'
+    +     ' placeholder="' + esc(t('ابحث في هذه الصفحة')) + '" aria-label="' + esc(t('ابحث في هذه الصفحة')) + '">'
+    +     '<span class="pg-find-n" id="pgQN"></span></div>'
     +   '<button type="button" class="btn btn-secondary btn-sm" data-help="1" '
     +     'aria-label="'+esc(t('ما هذه الصفحة؟'))+'" title="'+esc(t('ما هذه الصفحة؟'))+'">'+esc(t('؟'))+'</button>'
     +   (right !== undefined ? right
         : (canExp ? btn('تصدير','btn-secondary',' data-xls="'+CUR+'"') : ''))
     + '</div></div>';
+}
+/* ما يُصفّى: صفُّ جدولٍ أو بطاقةٌ أو سطرُ سجلٍّ — ورأسُ الجدول يبقى */
+var PG_Q = '';
+function pgFind(q){
+  PG_Q = String(q == null ? PG_Q : q);
+  var c = document.getElementById('content'); if (!c) return;
+  var key = PG_Q.trim().toLowerCase();
+  var rows = c.querySelectorAll('table tbody tr, .wt-le, .lg-row');
+  var cards = c.querySelectorAll('#content > .card, .grid > .card, .wt-card');
+  var seen = 0, hit = 0;
+  var test = function(el){
+    seen++;
+    var ok = !key || (el.textContent || '').toLowerCase().indexOf(key) > -1;
+    el.style.display = ok ? '' : 'none';
+    if (ok) hit++;
+    return ok;
+  };
+  for (var i = 0; i < rows.length; i++) test(rows[i]);
+  /* البطاقةُ تُخفى إن لم تطابق هي ولا ما فيها من صفوفٍ ظاهرة */
+  for (var j = 0; j < cards.length; j++){
+    var cd = cards[j];
+    if (!key){ cd.style.display = ''; continue; }
+    var inner = cd.querySelectorAll('table tbody tr, .wt-le');
+    var any = false;
+    for (var k = 0; k < inner.length; k++) if (inner[k].style.display !== 'none'){ any = true; break; }
+    cd.style.display = (any || (cd.textContent || '').toLowerCase().indexOf(key) > -1) ? '' : 'none';
+  }
+  var n = document.getElementById('pgQN');
+  if (n) n.textContent = key ? (nm(hit) + ' ' + t('من') + ' ' + nm(seen)) : '';
 }
 
 /* ═══ مصدر القيم الواحد ═══
@@ -18836,7 +18883,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.22' + '.docx" download>⬇ '
+              +   'V17.23' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -31367,6 +31414,8 @@ function render(force){
   if (CUR === 'map' && MAP_3D && M3){ setTimeout(function(){ try { M3.resize(); m3Paint(); } catch (e){ LS_ERR = e; } }, 60); }
   /* لوحةُ المهمة: تُرسَم في مضيفها الثابت خارج المحتوى — أسفلَ الشاشة على الهاتف ووسطَها على المكتب */
   if (typeof wtHostSync === 'function') wtHostSync();
+  /* الترشيحُ يُعاد بعد الرسم — وإلا عاد ما أُخفي عند أوّل تحديثٍ حيّ */
+  if (typeof pgFind === 'function' && PG_Q) setTimeout(function(){ pgFind(); }, 0);
   /* لوحُ البلاغ على الجسد كلوح المهمة — يُفتَح فوق أيِّ شاشة */
   { var bh = document.getElementById('bugHost');
     if (!bh){ bh = document.createElement('div'); bh.id = 'bugHost'; document.body.appendChild(bh); }
@@ -31411,6 +31460,8 @@ function render(force){
      كلَّها، فما كُتب قبله يُمحى. */
   var WIDE = ['wbs','over','survey','inv','perf','ipc','recs','users','plan'];
   c.className = 'content' + (p.full ? ' flush' : '') + (WIDE.indexOf(CUR) > -1 ? ' wide' : '');
+  /* بحثُ الصفحة يخصُّ صفحتَه: يُمسَح عند الانتقال (V17.23) */
+  if (wasCur !== CUR) PG_Q = '';
   /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
   var head = p.full ? '' : pageHead(p.m, p.t, pl,
     (p.m === 'المتابعة' || may('exportAll'))
@@ -33013,6 +33064,8 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
+  if (e.target && e.target.id === 'pgQ'){ pgFind(e.target.value); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-twq')){ TWIN_Q = e.target.value.trim(); clearTimeout(TWIN_T); TWIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-twq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-minq')){ MIN_Q = e.target.value.trim(); clearTimeout(MIN_T); MIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-minq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wtq')){ WT_Q = e.target.value.trim(); clearTimeout(WT_T); WT_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-wtq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
@@ -33259,6 +33312,11 @@ var PULL_ASK = false;   /* يرفعه زرُّ «مزامنة الآن» فيس�
 
 /* الهروبُ يغلق ما هو مفتوح، الأحدثَ فالأقدم */
 document.addEventListener('keydown', function(e){
+  /* Ctrl+F يفتح بحثَ الصفحة — وهو أنفعُ هنا من بحث المتصفّح (V17.23) */
+  if ((e.ctrlKey || e.metaKey) && (e.key === 'f' || e.key === 'F')){
+    var q = document.getElementById('pgQ');
+    if (q){ e.preventDefault(); q.focus(); q.select(); return; }
+  }
   if (e.key !== 'Escape') return;
   if (QUEUE_OPEN){ QUEUE_OPEN = false; render(1); return; }
   if (ASSIST_OPEN){ ASSIST_OPEN = false; render(1); return; }

@@ -145,4 +145,18 @@ check(excuses.length <= 2,
 
 console.log(`\nنجح ${ok} · فشل ${bad}`);
 if (bad){ console.log('\nجردُ الصفحات فشل ✗'); fail.forEach(f => console.log('  ✗ ' + f)); process.exit(1); }
+/* ═══ بحثٌ في كلِّ شاشة (V17.23) ═══
+   بعضُ الشاشات لها بحثُها وأكثرُها بلا بحث، فيُلجَأ إلى بحث المتصفّح — وهو
+   يجد ولا يُخفي، ولا يعمل على ما طُوي. فصار لكلِّ صفحةٍ صندوقٌ في رأسها. */
+{
+  const raw = readFileSync('index.html', 'utf8');
+  const jsx = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw)[1];
+  check(/id="pgQ"/.test(jsx) && /function pageHead\(/.test(jsx) && jsx.indexOf('id="pgQ"') > jsx.indexOf('function pageHead('),
+    'صندوقُ البحث في رأس الصفحة المشترك — فيَظهر في كلِّ شاشة');
+  check(/e\.target\.id === 'pgQ'\)\{ pgFind\(/.test(jsx), 'والكتابةُ تُصفّي في اللحظة بلا إعادة رسم');
+  check(/if \(typeof pgFind === 'function' && PG_Q\)/.test(jsx), 'ويُعاد الترشيحُ بعد كلِّ رسمٍ فلا يعود المخفيّ');
+  check(/if \(wasCur !== CUR\) PG_Q = '';/.test(jsx), 'ويُمسَح عند تبديل الصفحة — بحثُ صفحةٍ لا يتبع غيرَها');
+  check(/e\.key === 'f' \|\| e\.key === 'F'/.test(jsx), 'وCtrl\u200F+F يفتحه بدل بحث المتصفّح');
+}
+
 console.log('جردُ الصفحات نظيف — لا شاشةَ ميتةٌ ولا معزولة ✅');
