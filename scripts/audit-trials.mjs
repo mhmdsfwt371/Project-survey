@@ -37,9 +37,10 @@ w.CORE.saveSoon = () => {};
 const click = sel => { const el = d.querySelector(sel); if (!el) return false; el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return true; };
 
 w.STATE.meta.name = 'م. فحص'; w.STATE.buys = {};
-/* الرسمُ يُعيد الشريحةَ إلى الأمِّ عند تغيّر الصفحة — فتُختار بعد أوّل رسم */
-w.goPage('ipc'); w.render(1); await wait(150);
-w.PTAB.ipc = 'trials'; w.render(1); await wait(200);
+/* صارت صفحةً في «التخطيط» لا شريحةً في القسم المالي (V17.12) */
+T(w.PAGE.trials && w.PAGE.trials.m === 'التخطيط', 'التجاربُ صفحةٌ في «التخطيط»: ' + (w.PAGE.trials || {}).m);
+T(w.TABS.ipc.every(tb => tb[0] !== 'trials'), 'ولم تبقَ شريحةً في القسم المالي');
+w.goPage('trials'); w.render(1); await wait(250);
 const main = d.getElementById('main') || d.body;
 T(/التجارب/.test(main.textContent) && !!main.querySelector('[data-trnew]'), 'شريحةُ التجارب في القسم المالي');
 
@@ -57,7 +58,7 @@ click('[data-trh="' + tid + '|0.5"]'); await wait(120);
 T(+w.trialOf(tid).hours === 3.5, 'والساعاتُ تُزاد بضغطةٍ من البطاقة');
 
 /* ريالٌ يُربَط بتجربته */
-w.PTAB.ipc = 'buys'; w.render(1); await wait(180);
+w.goPage('ipc'); w.render(1); await wait(150); w.PTAB.ipc = 'buys'; w.render(1); await wait(200);
 const sel = d.getElementById('byTrial');
 T(!!sel && sel.options.length === 2, 'ونموذجُ الشراء يسأل: لأيِّ تجربة؟');
 d.getElementById('byItem').value = 'قارئ تجريبيّ';
@@ -81,7 +82,7 @@ w.STATE.buys.b2 = other;
 T(w.buysSpent() === 500, 'وما ليس لتجربةٍ يُحسَب دائمًا');
 
 /* ═══ أصنافُ التجربة وإجمالياتُها (V17.7) ═══ */
-w.PTAB.ipc = 'trials'; w.render(1); await wait(200);
+w.goPage('trials'); w.render(1); await wait(200);
 d.getElementById('itN' + tid).value = 'هوائي تجريبيّ';
 d.getElementById('itQ' + tid).value = '3';
 d.getElementById('itP' + tid).value = '250';
@@ -110,7 +111,7 @@ click('[data-tridel="' + tid + '|1"]'); await wait(150);
 T(w.trialItems(w.trialOf(tid)).length === 1 && w.itemsSum(w.trialOf(tid)) === 750, 'وصنفٌ يُحذَف وحدَه فيُعاد الحساب');
 
 /* الحذفُ مشروط */
-w.PTAB.ipc = 'trials'; w.render(1); await wait(180);
+w.goPage('trials'); w.render(1); await wait(200);
 T(!d.querySelector('[data-trdel="' + tid + '"]'), 'ولا يُعرَض حذفُ تجربةٍ عليها مشتريات');
 w.trialRemove(tid);
 T(w.trialRows().length === 1, 'ولو طُلب لم يُنفَّذ');

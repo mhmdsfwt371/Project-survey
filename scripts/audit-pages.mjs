@@ -41,6 +41,9 @@ const LIVE = new RegExp([
   'STATE\\.', 'scores\\(', 'siteStats\\(', 'siteFind\\(', 'cfgGet\\(', 'cfgN\\(',
   '\\bT\\(\\)', '[A-Za-z]List\\(\\)', 'itemsList', 'techsList', 'crewsList', 'jobsList',
   'usersList', 'movesList', 'buysList', 'chalSites', 'stuckList', 'surveyList',
+  /* قارئاتُ الدفاتر الجديدة: التجاربُ تقرأ صفوفَها ووثيقتَها كما تقرأ غيرُها
+     قوائمَها — والقائمةُ هنا سجلُّ القُرّاء المعروفين، فمن أضاف قارئًا أضافه */
+  'trialRows\\(', 'trialsDoc\\(',
   'workReqList', 'bonusList', 'rollupBy', 'evRows', 'asnOf', 'solutionOf',
   'stockBalance', 'custodyByWho', 'scoreOf', 'stageList', 'vehList', 'vehOfWho', 'chainRows\\(',
   'CHANGES', 'NCRS', 'IPCS', 'HSE\\.', 'BASE', 'REQSEQ', 'POLY', 'S47'

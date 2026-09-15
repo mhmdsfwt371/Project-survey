@@ -814,7 +814,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.11</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.12</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -15183,6 +15183,83 @@ function wbsShown(id){
   for (var i = 1; i < parts.length; i++) if (!WBS_OPEN[parts.slice(0, i).join('.')]) return false;
   return true;
 }
+/* ═══ التجارب صفحةٌ في «التخطيط» (V17.12) ═══
+   التجربةُ تسبق العملَ: يُجرَّب ثم يُقرَّر أيصلح أم لا. فموضعُها مع التخطيط
+   لا مع الصرف — وإن كان مصروفُها يظهر في الميزانية ويحكمه مفتاحُها هناك.
+   فبقيت الأرقامُ واحدةً في الموضعين: ما يُسجَّل هنا يُحسَب هناك. */
+PAGE.trials = { m:'التخطيط', t:'التجارب',
+  l:'كلُّ ريالٍ وكلُّ ساعةٍ في التجارب — وقرارُ دخولها في تكاليف المشروع.',
+  body:function(){
+    return (function(){
+      var me = trialMay(), R = trialRows(), inC = trialInCost(), d = trialsDoc();
+      var spend = trialsTotal(), hrs = trialsHours(), items = trialsItemsSpend(), buysP = trialsSpend();
+      return '<p class="lede" style="margin:0 0 16px">' + esc(t('التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا. سجِّل هنا ما اشتُري لها وكم استغرقت، ثم قرِّر بمفتاحٍ واحدٍ أيدخل مصروفُها في تكاليف المشروع أم يبقى مسجَّلًا خارجَها.')) + '</p>'
+        + stats([['تجارب', N(R.length)], ['ساعات', N(hrs)],
+                 ['أصناف', N(items), 'acc'], ['مشتريات مربوطة', N(buysP)],
+                 ['إجماليُّ التجارب', N(spend), 'acc'],
+                 ['في تكاليف المشروع', inC ? esc(t('نعم')) : esc(t('لا')), inC ? 'ok' : 'wrn']])
+        /* المفتاحُ: قرارٌ يُبدَّل متى شئت ولا يُعاد تسجيلُ شيء */
+        + card('', '<label class="sw-row' + (me ? '' : ' is-off') + '">'
+            + '<input type="checkbox"' + (inC ? ' checked' : '') + (me ? '' : ' disabled') + ' data-trcost="1">'
+            + '<span><b>' + esc(t('احسب مصروف التجارب ضمن تكاليف المشروع')) + '</b>'
+            + '<span class="hint" style="display:block;margin:2px 0 0">'
+            +   esc(t(inC ? 'المصروفُ داخلٌ الآن في المنصرف المعتمد وفي نسبة استهلاك السقف.'
+                          : 'المصروفُ خارجٌ الآن — يُرى في هذا الدفتر ولا يُحسَب على السقف.')) + '</span></span></label>')
+        + (me ? card('تجربةٌ جديدة',
+            '<div class="grid cols-2">'
+            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('اسم التجربة')) + '</label><input id="trN" dir="auto" placeholder="' + esc(t('ما الذي جُرِّب؟')) + '"></div>'
+            + '<div class="field"><label>' + esc(t('التاريخ')) + '</label><input id="trD" type="date" value="' + esc(new Date().toISOString().slice(0, 10)) + '"></div>'
+            + '<div class="field"><label>' + esc(t('الساعات')) + '</label><input id="trH" type="number" min="0" step="0.5" inputmode="decimal"></div>'
+            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('ملاحظة')) + '</label><input id="trNote" dir="auto" placeholder="' + esc(t('النتيجةُ أو ما تعلّمناه')) + '"></div>'
+            + '</div>', btn('\u{1F9EA} ' + t('سجّل التجربة'),'btn-primary btn-sm',' data-trnew="1"')) : '')
+        + (R.length
+            ? R.map(function(r){
+                var bs = trialBuys(r.id), sp = trialSpend(r.id), its = trialItems(r), isum = itemsSum(r), tot = trialTotal(r);
+                return card('', '<div class="wt-row" style="justify-content:space-between">'
+                  + '<div style="min-width:0"><strong>' + esc(r.n) + '</strong>'
+                  +   '<div class="hint" style="margin:2px 0 0">' + esc(r.date || '') + (r.by ? ' \u00b7 ' + esc(dispName(r.by)) : '') + '</div></div>'
+                  + '<div class="wt-row" style="margin:0">' + pill(nm(+r.hours || 0) + ' ' + t('ساعة'), 'acc')
+                  +   pill(nm(tot) + ' ' + t('ريال'), tot ? (inC ? 'ok' : 'warn') : 'off') + '</div></div>'
+                  + (r.note ? '<div class="hint" style="margin:6px 0 0">' + esc(r.note) + '</div>' : '')
+                  /* أصنافُ التجربة: كلُّ صنفٍ بكميته وسعرِ وحدته وإجماليِّ سطره */
+                  + '<div class="hint" style="margin:8px 0 4px;font-weight:700">\u{1F9FE} ' + esc(t('أصناف التجربة'))
+                  +   (isum ? ' <span class="num">' + nm(isum) + '</span> ' + esc(t('ريال')) : '') + '</div>'
+                  + (its.length
+                      ? table(['الصنف','الكمية','سعر الوحدة','الإجمالي', me ? '' : null].filter(function(x){ return x !== null; }),
+                          its.map(function(x, ix){
+                            var row = [esc(x.n), N(+x.q || 0), N(+x.p || 0), '<b class="num">' + nm((+x.q || 0) * (+x.p || 0)) + '</b>'];
+                            if (me) row.push(btn('\u{1F5D1}','btn-quiet btn-sm',' data-tridel="' + esc(r.id) + '|' + ix + '"'));
+                            return row;
+                          }).concat([[ '<b>' + esc(t('إجمالي الأصناف')) + '</b>', '', '', '<b class="num">' + nm(isum) + '</b>' ].concat(me ? [''] : [])]))
+                      : '<p class="hint" style="margin:0 0 6px">' + esc(t('بلا أصناف — أضِف ما اشتُري لها أدناه.')) + '</p>')
+                  + (me
+                      ? '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
+                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + '</label><input id="itN' + esc(r.id) + '" dir="auto"></div>'
+                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
+                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"></div>'
+                        + '</div><div class="actions" style="margin:6px 0 0">'
+                        + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"') + '</div>'
+                      : '')
+                  + (bs.length
+                      ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('مشترياتُ هذه التجربة'))
+                        +   ' <span class="num">' + nm(sp) + '</span> ' + esc(t('ريال')) + '</div>'
+                        + table(['الصنف','المورّد','المبلغ','الحال'], bs.map(function(b){
+                            return [esc(b.item), esc(b.sup || ''), N(+b.amt || 0), pill(b.st, b.st === 'معتمد' ? 'ok' : 'warn')]; }))
+                      : '<p class="hint" style="margin:8px 0 0">' + esc(t('ولا مشترياتٍ مربوطة — تُربَط من دفتر المشتريات باختيار التجربة.')) + '</p>')
+                  + '<div class="alert info" style="margin:8px 0 0"><span><b>' + esc(t('إجمالي التجربة')) + ':</b> <b class="num">' + nm(tot) + '</b> ' + esc(t('ريال'))
+                  +   (isum && sp ? ' <span class="hint" style="margin:0">(' + esc(t('أصناف')) + ' ' + nm(isum) + ' + ' + esc(t('مشتريات')) + ' ' + nm(sp) + ')' + '</span>' : '') + '</span></div>'
+                  + (me ? '<div class="actions" style="margin:8px 0 0">'
+                      + btn('+1 ' + t('ساعة'),'btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|1"')
+                      + btn('+0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|0.5"')
+                      + btn('\u2212 0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|-0.5"')
+                      + (tot ? '' : btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-trdel="' + esc(r.id) + '"'))
+                      + '</div>' : ''));
+              }).join('')
+            : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تجاربَ بعد.')) + '</p>'))
+        + (d.at ? '<p class="hint" style="margin:6px 0 0">' + esc(t('آخر تحديث')) + ' ' + esc(dispName(d.by || '')) + ' ' + esc(stepAgo(d.at)) + '</p>' : '');
+    })();
+  }};
+
 PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية', l:'بنودُ المشروع كلُّها — من يعمل عليها ومتى تنتهي وأين وقفت؛ تُحدَّث من المكتب ويراها الجميع.',
   body:function(){
     /* الإطارُ يرسم ترويسةَ الصفحة — كانت تُرسَم هنا ثانيةً فتظهر مرتين */
@@ -18006,74 +18083,6 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
   l:'المستخلصاتُ ودفترُ المشتريات والميزانيةُ واعتمادُها.',
   body:function(){
     var head = tabHead('ipc'), cur = tabCur('ipc');
-    if (cur === 'trials') return head + (function(){
-      var me = trialMay(), R = trialRows(), inC = trialInCost(), d = trialsDoc();
-      var spend = trialsTotal(), hrs = trialsHours(), items = trialsItemsSpend(), buysP = trialsSpend();
-      return '<p class="lede" style="margin:0 0 16px">' + esc(t('التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا. سجِّل هنا ما اشتُري لها وكم استغرقت، ثم قرِّر بمفتاحٍ واحدٍ أيدخل مصروفُها في تكاليف المشروع أم يبقى مسجَّلًا خارجَها.')) + '</p>'
-        + stats([['تجارب', N(R.length)], ['ساعات', N(hrs)],
-                 ['أصناف', N(items), 'acc'], ['مشتريات مربوطة', N(buysP)],
-                 ['إجماليُّ التجارب', N(spend), 'acc'],
-                 ['في تكاليف المشروع', inC ? esc(t('نعم')) : esc(t('لا')), inC ? 'ok' : 'wrn']])
-        /* المفتاحُ: قرارٌ يُبدَّل متى شئت ولا يُعاد تسجيلُ شيء */
-        + card('', '<label class="sw-row' + (me ? '' : ' is-off') + '">'
-            + '<input type="checkbox"' + (inC ? ' checked' : '') + (me ? '' : ' disabled') + ' data-trcost="1">'
-            + '<span><b>' + esc(t('احسب مصروف التجارب ضمن تكاليف المشروع')) + '</b>'
-            + '<span class="hint" style="display:block;margin:2px 0 0">'
-            +   esc(t(inC ? 'المصروفُ داخلٌ الآن في المنصرف المعتمد وفي نسبة استهلاك السقف.'
-                          : 'المصروفُ خارجٌ الآن — يُرى في هذا الدفتر ولا يُحسَب على السقف.')) + '</span></span></label>')
-        + (me ? card('تجربةٌ جديدة',
-            '<div class="grid cols-2">'
-            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('اسم التجربة')) + '</label><input id="trN" dir="auto" placeholder="' + esc(t('ما الذي جُرِّب؟')) + '"></div>'
-            + '<div class="field"><label>' + esc(t('التاريخ')) + '</label><input id="trD" type="date" value="' + esc(new Date().toISOString().slice(0, 10)) + '"></div>'
-            + '<div class="field"><label>' + esc(t('الساعات')) + '</label><input id="trH" type="number" min="0" step="0.5" inputmode="decimal"></div>'
-            + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('ملاحظة')) + '</label><input id="trNote" dir="auto" placeholder="' + esc(t('النتيجةُ أو ما تعلّمناه')) + '"></div>'
-            + '</div>', btn('\u{1F9EA} ' + t('سجّل التجربة'),'btn-primary btn-sm',' data-trnew="1"')) : '')
-        + (R.length
-            ? R.map(function(r){
-                var bs = trialBuys(r.id), sp = trialSpend(r.id), its = trialItems(r), isum = itemsSum(r), tot = trialTotal(r);
-                return card('', '<div class="wt-row" style="justify-content:space-between">'
-                  + '<div style="min-width:0"><strong>' + esc(r.n) + '</strong>'
-                  +   '<div class="hint" style="margin:2px 0 0">' + esc(r.date || '') + (r.by ? ' \u00b7 ' + esc(dispName(r.by)) : '') + '</div></div>'
-                  + '<div class="wt-row" style="margin:0">' + pill(nm(+r.hours || 0) + ' ' + t('ساعة'), 'acc')
-                  +   pill(nm(tot) + ' ' + t('ريال'), tot ? (inC ? 'ok' : 'warn') : 'off') + '</div></div>'
-                  + (r.note ? '<div class="hint" style="margin:6px 0 0">' + esc(r.note) + '</div>' : '')
-                  /* أصنافُ التجربة: كلُّ صنفٍ بكميته وسعرِ وحدته وإجماليِّ سطره */
-                  + '<div class="hint" style="margin:8px 0 4px;font-weight:700">\u{1F9FE} ' + esc(t('أصناف التجربة'))
-                  +   (isum ? ' <span class="num">' + nm(isum) + '</span> ' + esc(t('ريال')) : '') + '</div>'
-                  + (its.length
-                      ? table(['الصنف','الكمية','سعر الوحدة','الإجمالي', me ? '' : null].filter(function(x){ return x !== null; }),
-                          its.map(function(x, ix){
-                            var row = [esc(x.n), N(+x.q || 0), N(+x.p || 0), '<b class="num">' + nm((+x.q || 0) * (+x.p || 0)) + '</b>'];
-                            if (me) row.push(btn('\u{1F5D1}','btn-quiet btn-sm',' data-tridel="' + esc(r.id) + '|' + ix + '"'));
-                            return row;
-                          }).concat([[ '<b>' + esc(t('إجمالي الأصناف')) + '</b>', '', '', '<b class="num">' + nm(isum) + '</b>' ].concat(me ? [''] : [])]))
-                      : '<p class="hint" style="margin:0 0 6px">' + esc(t('بلا أصناف — أضِف ما اشتُري لها أدناه.')) + '</p>')
-                  + (me
-                      ? '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + '</label><input id="itN' + esc(r.id) + '" dir="auto"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"></div>'
-                        + '</div><div class="actions" style="margin:6px 0 0">'
-                        + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"') + '</div>'
-                      : '')
-                  + (bs.length
-                      ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('مشترياتُ هذه التجربة'))
-                        +   ' <span class="num">' + nm(sp) + '</span> ' + esc(t('ريال')) + '</div>'
-                        + table(['الصنف','المورّد','المبلغ','الحال'], bs.map(function(b){
-                            return [esc(b.item), esc(b.sup || ''), N(+b.amt || 0), pill(b.st, b.st === 'معتمد' ? 'ok' : 'warn')]; }))
-                      : '<p class="hint" style="margin:8px 0 0">' + esc(t('ولا مشترياتٍ مربوطة — تُربَط من دفتر المشتريات باختيار التجربة.')) + '</p>')
-                  + '<div class="alert info" style="margin:8px 0 0"><span><b>' + esc(t('إجمالي التجربة')) + ':</b> <b class="num">' + nm(tot) + '</b> ' + esc(t('ريال'))
-                  +   (isum && sp ? ' <span class="hint" style="margin:0">(' + esc(t('أصناف')) + ' ' + nm(isum) + ' + ' + esc(t('مشتريات')) + ' ' + nm(sp) + ')' + '</span>' : '') + '</span></div>'
-                  + (me ? '<div class="actions" style="margin:8px 0 0">'
-                      + btn('+1 ' + t('ساعة'),'btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|1"')
-                      + btn('+0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|0.5"')
-                      + btn('\u2212 0.5','btn-quiet btn-sm',' data-trh="' + esc(r.id) + '|-0.5"')
-                      + (tot ? '' : btn('\u{1F5D1} ' + t('حذف'),'btn-quiet btn-sm',' data-trdel="' + esc(r.id) + '"'))
-                      + '</div>' : ''));
-              }).join('')
-            : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا تجاربَ بعد.')) + '</p>'))
-        + (d.at ? '<p class="hint" style="margin:6px 0 0">' + esc(t('آخر تحديث')) + ' ' + esc(dispName(d.by || '')) + ' ' + esc(stepAgo(d.at)) + '</p>' : '');
-    })();
     if (cur === 'budget') return head + (function(){
     var B = { cap:cfgGet('budCap'), appAbove:cfgGet('budApp'), spent:buysSpent(), pending:0 };
     return '<p class="lede" style="margin:0 0 16px">' + esc(t('الميزانية سقفٌ يُقاس عليه المنصرف، وحدُّ الاعتماد مبلغٌ فوقه يلزم اعتماد المهندس قبل أن تدخل العملية المنصرفَ المعتمد. صفرٌ في أيٍّ منهما يعني بلا سقفٍ وبلا اعتماد.')) + '</p>'
@@ -18614,7 +18623,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.11' + '.docx" download>⬇ '
+              +   'V17.12' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -28965,7 +28974,6 @@ var TABS = {
   ipc:[
     ['ipc','المستخلصات','🧾','ما أُنجز واعتُمد — يُقدَّم للعميل ويُتابَع صرفُه.'],
     ['buys','دفتر المشتريات','🛒','مصروفات السوق المحلي بفواتيرها ومورّديها ومشاعرها.'],
-    ['trials','التجارب','🧪','كلُّ ريالٍ وكلُّ ساعةٍ في التجارب — وقرارُ دخولها التكاليف.'],
     ['budget','الميزانية والاعتماد','📊','سقف الصرف وحدّ اعتماد المهندس.']],
   dis:[
     ['dis','الفك بعد الموسم','📦','جدولة الفك وإرجاع العُهدة بحالة كل صنف.'],
@@ -30794,8 +30802,9 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['wbs','متابعة الخطة التفصيلية'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['over','نظرة عامة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
+      ['trials','التجارب'],['wbs','متابعة الخطة التفصيلية'],
       ['plan','التخطيط والمخاطر']] },
   { g:'الورشة والمخزون', icon:'\u25A3', items:[
       ['inv','المخزون']] },
