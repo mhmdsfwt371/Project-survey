@@ -182,6 +182,41 @@ w.ROLE = 'engineer';
   T((w.LOGO || '').indexOf('data:image/png') === 0, 'وثابتُ LOGO يقرؤها لمن يحتاجها');
 }
 
+/* ═══ سجلُّ النقطة — كلُّ ما جرى لها من أوّل يوم (V17.20) ═══ */
+{
+  const T0 = Date.now(), DAY = 86400000;
+  w.STATE.sites = [{ id:'L1', name:'نقطةُ السجل', zone:'منى', type:'مخيم', lat:21.41, lng:39.89 }];
+  w.STATE.recs = { L1:{ by:'فنيُّ الميدان', at:T0 - 9 * DAY, st:'تمت الزيارة', access:'تم الوصول',
+    review:'approved', apprBy:'المهندس', apprAt:T0 - 7 * DAY,
+    minBy:'الوزارة', minAt:T0 - 5 * DAY, minReview:'approved',
+    briefBy:'المهندس', briefAt:T0 - DAY, bst:'تمام', brief:'رُكّب واختُبر' } };
+  w.STATE.inss  = { L1:{ by:'فريق التركيب', at:T0 - 3 * DAY, status:'مُركّب' } };
+  w.STATE.photos = { 'L1-1':{ site:'L1', kind:'صورة الموقع',  by:'فنيُّ الميدان', at:T0 - 9 * DAY, driveId:'D1' },
+                     'L1-2':{ site:'L1', kind:'صورة التثبيت', by:'فريق التركيب', at:T0 - 3 * DAY, driveId:'D2' } };
+  w.STATE.tasks = { tk:{ site:'L1', to:'فنيُّ الميدان', kind:'survey', by:'المشرف', at:T0 - 10 * DAY } };
+  w.STATE.evlog = { e1:{ ts:T0 - 2 * DAY, what:'تعديل بيانات نقطة — L1', by:'المهندس', site:'L1' },
+                    e2:{ ts:T0 - 2 * DAY, what:'حدثُ نقطةٍ أخرى', by:'س', site:'L9' } };
+  const L = w.siteLog('L1');
+  T(L.length >= 8, 'السجلُّ يجمع من كلِّ المصادر: ' + L.length + ' سطرًا');
+  const kinds = L.map(x => x.kind);
+  ['visit','ok','ins','photo','task','note','ev'].forEach(k => {
+    if (kinds.indexOf(k) < 0) T(false, 'مصدرٌ غائبٌ عن السجل: ' + k);
+  });
+  T(kinds.indexOf('visit') > -1 && kinds.indexOf('photo') > -1 && kinds.indexOf('ok') > -1,
+    'فيه الزيارةُ والصورُ والاعتمادات');
+  T(L.filter(x => x.kind === 'photo').every(x => x.who), 'ولكلِّ صورةٍ رافعُها');
+  T(L.every((x, i) => i === 0 || L[i - 1].at >= x.at), 'ومرتَّبٌ من الأحدث إلى الأقدم');
+  T(!L.some(x => /نقطةٍ أخرى/.test(x.what)), 'ولا يتسرّب إليه حدثُ نقطةٍ أخرى');
+  const raw5 = readFileSync('index.html', 'utf8');
+  T((raw5.match(/logEvent\([^;]*?,\s*(?:id|site|x\.id|s\.id|r\.id|it\.site|b\.site)\s*\)/g) || []).length >= 40,
+    'وأحداثُ النقاط تُوسَم بنقطتها فتُستعلَم من القاعدة لا بالبحث في النصّ');
+  T(/collection\('events'\)\.where\('site', '==', id\)\.limit\(200\)/.test(raw5),
+    'والقديمُ يُجلَب بسقفٍ عند الطلب لا في كلِّ إقلاع');
+  w.DETAIL_ID = 'L1'; w.goPage('site'); w.render(1); await wait(250);
+  const sp = d.getElementById('main') || d.body;
+  T(/سجلُّ النقطة/.test(sp.textContent) && !!sp.querySelector('[data-sitelog]'), 'والبطاقةُ في شاشة الموقع بزرِّ جلبِ القديم');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ التفاصيل المختصرة فشل ✗ (${bad})` : '\nالتفاصيلُ المختصرة طبقةٌ تُقرأ بلونها وتُكتَب بسطر ✅');
 process.exit(bad ? 1 : 0);
