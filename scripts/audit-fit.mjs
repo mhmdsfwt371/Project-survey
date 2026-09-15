@@ -39,7 +39,11 @@ for (const role of roles){
     try { w.goPage(id); w.render(1); } catch(e){ heavy.push(id+' رمت'); continue; }
     const C = d.getElementById('content');
     const cols = Math.max(0, ...[...C.querySelectorAll('table tr')].map(r=>r.children.length));
-    const inputs = C.querySelectorAll('input,select,textarea').length;
+    /* صندوقُ بحثِ الصفحة في الرأس المشترك ليس حقلَ إدخالٍ للشاشة: هو أداةُ
+       تنقّلٍ تظهر في كلِّ شاشةٍ بعد V17.23 — فلا تُحسَب في ثقل الشاشة، وإلا
+       صار مقياسُ الثقل يعاقب كلَّ شاشةٍ بسببِ ما ليس منها. */
+    const inputs = [...C.querySelectorAll('input,select,textarea')]
+      .filter(el => !el.closest('.page-head')).length;
     const len = (C.textContent||'').trim().length;
     if (cols >= 7 || inputs >= 14 || len > 9000) heavy.push(id+'{عمود:'+cols+' حقل:'+inputs+' حرف:'+len+'}');
   }

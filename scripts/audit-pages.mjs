@@ -153,10 +153,21 @@ if (bad){ console.log('\nجردُ الصفحات فشل ✗'); fail.forEach(f =>
   const jsx = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw)[1];
   check(/id="pgQ"/.test(jsx) && /function pageHead\(/.test(jsx) && jsx.indexOf('id="pgQ"') > jsx.indexOf('function pageHead('),
     'صندوقُ البحث في رأس الصفحة المشترك — فيَظهر في كلِّ شاشة');
-  check(/e\.target\.id === 'pgQ'\)\{ pgFind\(/.test(jsx), 'والكتابةُ تُصفّي في اللحظة بلا إعادة رسم');
-  check(/if \(typeof pgFind === 'function' && PG_Q\)/.test(jsx), 'ويُعاد الترشيحُ بعد كلِّ رسمٍ فلا يعود المخفيّ');
-  check(/if \(wasCur !== CUR\) PG_Q = '';/.test(jsx), 'ويُمسَح عند تبديل الصفحة — بحثُ صفحةٍ لا يتبع غيرَها');
+  check(/e\.target\.id === 'pgQ'/.test(jsx) && /\} else pgFind\(PG_Q\);/.test(jsx),
+    'والكتابةُ تُصفّي المعروضَ في اللحظة حين لا بحثَ للشاشة');
+  check(/if \(typeof pgFind === 'function' && PG_Q && !pgBindOf\(\)\)/.test(jsx),
+    'ويُعاد الترشيحُ بعد كلِّ رسمٍ فلا يعود المخفيّ');
+  check(/if \(wasCur !== CUR\)\{[\s\S]{0,200}PG_Q = '';/.test(jsx), 'ويُمسَح عند تبديل الصفحة — بحثُ صفحةٍ لا يتبع غيرَها');
   check(/e\.key === 'f' \|\| e\.key === 'F'/.test(jsx), 'وCtrl\u200F+F يفتحه بدل بحث المتصفّح');
+  /* ═══ وحيث للشاشة بحثُها، يقوده الصندوقُ لا يزاحمه (V17.24) ═══ */
+  const bindBlock = /var PG_BIND = \{([\s\S]*?)\n\};/.exec(jsx);
+  const bound = bindBlock ? [...bindBlock[1].matchAll(/(\w+):\s*function/g)].map(m => m[1]) : [];
+  check(bound.length >= 15, `وصندوقُ الرأس يقود بحثَ الشاشة الحقيقيَّ حيث وُجد (${bound.length} شاشة)`);
+  ['svappr','minappr','survey','wbs','wtask','users','ev','sites','co'].forEach(p => {
+    if (bound.indexOf(p) < 0) check(false, 'شاشةٌ لها بحثُها ولم تُربَط: ' + p);
+  });
+  check(/PG_LAST_BIND\(''\)/.test(jsx), 'ويُمسَح بحثُ الشاشة عند مغادرتها — فلا تعود مُرشَّحةً بلا علم');
+  check(/PG_Q \? 5000 :/.test(jsx), 'وسقفُ الصفوف يرتفع أثناء البحث فلا يختبئ المطلوبُ خلفه');
 }
 
 console.log('جردُ الصفحات نظيف — لا شاشةَ ميتةٌ ولا معزولة ✅');
