@@ -113,6 +113,20 @@ w.ROLE = 'admin';
     T(/\.content\.wide\{max-width:none\}/.test(css), 'وصفحاتُ الجداول العريضة تُطلَق من حدِّ العرض');
     T(d.getElementById('content').classList.contains('wide'), 'وصفحةُ الخطة منها — تملأ الشاشةَ مهما كبرت');
   }
+  /* ═══ لا حقلَ مفتوحًا خارج التحرير (V17.17) ═══ */
+  {
+    w.WBS_EDIT = ''; w.render(1); await wait(200);
+    T(d.querySelectorAll('[data-wbspct]').length === 0, 'ولا حقلَ إنجازٍ مفتوحًا في الجدول خارج وضع التحرير');
+    const leaf = [...(d.getElementById('main') || d.body).querySelectorAll('table tbody tr')]
+      .find(r => /حلَّ بدؤُه/.test(r.textContent));
+    T(!!leaf && /٪/.test([...leaf.querySelectorAll('td')][5].textContent), 'والإنجازُ يُقرأ نصًّا بنسبته');
+    w.WBS_EDIT = '9.1'; w.render(1); await wait(200);
+    T(d.querySelectorAll('[data-wbspct]').length === 1, 'ويُفتَح بزرِّ التعديل وحدَه');
+    w.WBS_EDIT = '';
+    const css2 = readFileSync('index.html', 'utf8');
+    T(/addEventListener\('wheel'[\s\S]{0,200}el\.type === 'number'[\s\S]{0,60}blur\(\)/.test(css2),
+      'وعجلةُ الفأرة لا تكتب رقمًا في حقلٍ تحتها');
+  }
   w.WBS_EDIT = '9.1'; w.render(1); await wait(250);
   const sel2 = d.querySelector('select[data-wbse="type"]');
   T(!!sel2 && [...sel2.options].map(o => o.value).join(',') === 'مهمة,معلم', 'والنوعُ قائمةٌ تُختار لا حقلٌ يُكتَب');
