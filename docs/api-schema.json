@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V17.10",
+  "app_version": "V17.11",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -1578,6 +1578,7 @@
     "V17.8": "حوكمةُ القراءات: readDelta(col,key,cap) يسحب where(_at > since).limit(cap) ومؤشِّرُه STATE.meta.pullAt['@col'] (وأوّلُ مرةٍ orderBy(_at desc).limit(cap))، وحلَّ محلَّ سحبِ photos وmaints كاملَين في كلِّ إقلاع (1500/1000)؛ كلُّ مسارِ قراءةٍ يزيد FB.readCount (67 موضعًا)؛ بطاقةُ «قراءاتُ هذه الجلسة» في شريحة المزامنة تعرض المقروءَ ومدّةَ التشغيل وتقديرَ يومِ عملٍ والحصةَ المجانية (BOOT_AT)؛ وaudit-reads يمنع أيَّ collection().get() بلا .doc/.limit وأيَّ onSnapshot على مجموعةٍ بلا مرشِّحٍ أو سقف وأيَّ سقفٍ فوق 6000.",
     "V17.9": "scripts/report-system.mjs: يَعُدُّ الشيفرةَ من المستودع (أسطرُ التطبيق والمنطق والأنماط والدوال والشاشات ومفاتيح الترجمة والسكربتات والجرود والسيور والقواعد وعامل الخدمة والتوثيق)، والمدّةَ من git (ويُعلن النقصَ إن كانت النسخةُ ضحلة)، والاستعمالَ من القاعدة بمفتاح الخدمة (users/presence/events + count() للمجموعات) — حسابات وأدوار ومن استعمله خلال ٧ و١ يوم وأجهزة ونسخ وأحداث/يوم وأكثر يومٍ وأكثر المستعملين. سير report.yml كلَّ ثلاثة أيام (cron 0 6 */3 * *) بfetch-depth:0 وissues:write وPUBLISH=1 فيُنشَر بلاغًا بعنوان «تقريرُ النظام — التاريخ».",
     "V17.10": "جدولُ الخطة التفصيلية: عددُ الفروع خرج من خلية الاسم إلى عمودٍ ثالثٍ عنوانُه «فروع» (بعد «البند»)، ويُعرَض — للورقة؛ وصفُّ التحرير يوازيه بخليةٍ مثلها.",
+    "V17.11": "PAGE.wbs.m = التخطيط (كانت المتابعة)؛ وملفُّ البند: r.dos = {payer, val, gain, buy, items:[{n,q,p}], inst, how, where, files:[{n,u,at,by}], at, by} في صفِّ الخطة نفسِه (CORE.set cfg/wbs)، دوالُّ dosOf/dosItems/dosFiles/dosCost/dosSet/dosSave/dosItemAdd/dosItemDel/dosFileAdd/dosFileDel، وعمود «الملف» في الجدول بشارة dosBadge (📁 وكلفةُ أصنافه أو عددُ ملفاته)، ولوحُ wbsDosSheet في مضيف #dosHost على body عبر data-wbsdos/dosclose/dossave/dositem/dosdel/dosfile/dosfdel؛ الكتابةُ لmay(settings) والقراءةُ للجميع. جرد audit-dossier.",
     "V16.63": "LEGEND_ON يبدأ مطويًّا على الشاشات < 640 (ما لم يُحفَظ اختيار)، زر .lg-toggle صغير، .map-legend 132px على الهاتف؛ browser-test يفتح الأسطورة قبل عدّها.",
     "V16.37": "pullAt.__sig صار بصمة النطاق كله (effRole|cols|mine/all|treeSig) لا الشجرة وحدها — أي اتساع يصفّر المؤشرات ويسحب باردًا؛ audit-cascade يثبتها."
   },
