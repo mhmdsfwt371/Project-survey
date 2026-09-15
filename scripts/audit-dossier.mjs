@@ -105,6 +105,14 @@ w.ROLE = 'admin';
   T(th2.indexOf('النوع') > -1 && th2.indexOf('الحالة') > -1 && th2.indexOf('الموقف الزمني') > -1,
     'وللجدول عمودٌ للنوع غيرُ عمود الحالة: ' + th2.join(' · '));
   T(!!main2.querySelector('.table-wrap.sticky-1'), 'ويُمرَّر أفقيًّا بعمودِ بندٍ ثابت');
+  /* ═══ عرضٌ يتبع الشاشةَ لا رقمًا ثابتًا (V17.16) ═══ */
+  {
+    const css = readFileSync('index.html', 'utf8');
+    T(!/\.table-wrap\.sticky-1 table\{min-width/.test(css), 'ولا عرضَ أدنى مفروضًا يُجبر التمريرَ على الشاشات الكبيرة');
+    T(!/\.table-wrap\.sticky-1\{max-height/.test(css), 'ولا صندوقَ داخليًّا بشريطٍ رأسيٍّ ثانٍ');
+    T(/\.content\.wide\{max-width:none\}/.test(css), 'وصفحاتُ الجداول العريضة تُطلَق من حدِّ العرض');
+    T(d.getElementById('content').classList.contains('wide'), 'وصفحةُ الخطة منها — تملأ الشاشةَ مهما كبرت');
+  }
   w.WBS_EDIT = '9.1'; w.render(1); await wait(250);
   const sel2 = d.querySelector('select[data-wbse="type"]');
   T(!!sel2 && [...sel2.options].map(o => o.value).join(',') === 'مهمة,معلم', 'والنوعُ قائمةٌ تُختار لا حقلٌ يُكتَب');

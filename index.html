@@ -204,9 +204,13 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
    أفقيًّا ضاع عنه اسمُ البند فلا يعرف أيَّ صفٍّ يقرأ. فصار التمريرُ داخل
    الجدول نفسِه بحدٍّ أدنى لعرض الأعمدة، ورأسُ الجدول وعمودا الرقم والبند
    يثبتان في مكانهما بينما يتحرّك ما سواهما. */
+/* ═══ عرضٌ يتبع الشاشةَ لا رقمًا ثابتًا (V17.16) ═══
+   كان الجدولُ يُجبَر على ألفِ بكسلٍ ويُحبَس في صندوقٍ بارتفاعٍ ثابت، فعلى
+   شاشةٍ كبيرةٍ يظهر شريطُ تمريرٍ أفقيٌّ والصفحةُ حولها فراغ، وشريطان
+   رأسيّان أحدُهما داخل الآخر. صار الجدولُ يأخذ عرضَ الحاويةِ ولا يُمرَّر إلا
+   إن لم تتّسع، ورأسُه يثبت مع تمرير الصفحة نفسِها بلا صندوقٍ داخليّ.
+   وصفحةُ الخطة تُطلَق من حدِّ العرض فتملأ الشاشةَ مهما كبرت. */
 .table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
-.table-wrap.sticky-1{max-height:70vh;overflow-y:auto}
-.table-wrap.sticky-1 table{min-width:1000px}
 .table-wrap.sticky-1 thead th{position:sticky;top:0;z-index:3;background:var(--surface)}
 .table-wrap.sticky-1 tbody td:nth-child(1),
 .table-wrap.sticky-1 thead th:nth-child(1){position:sticky;inset-inline-start:0;z-index:2;background:var(--surface);min-width:44px}
@@ -217,6 +221,8 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 [dir="rtl"] .table-wrap.sticky-1 thead th:nth-child(2){box-shadow:-1px 0 0 var(--line)}
 .table-wrap.sticky-1 thead th:nth-child(-n+2){z-index:4}
 .table-wrap.sticky-1 td,.table-wrap.sticky-1 th{white-space:nowrap}
+/* الصفحاتُ العريضة: جدولٌ من أربعةَ عشرَ عمودًا لا يُقرأ في ١٢٠٠ بكسل */
+.content.wide{max-width:none}
 /* صفُّ تحرير الحساب: أربعُ قوائمَ بلا عناوين تنكمش على الهاتف إلى أسهمٍ صمّاء */
 .usrEd{min-width:190px}.usrEd label.mini{display:block;font-size:11px;opacity:.7;margin:6px 0 3px}.usrEd select{width:100%}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
@@ -831,7 +837,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.15</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.16</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -18688,7 +18694,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.15' + '.docx" download>⬇ '
+              +   'V17.16' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -31098,7 +31104,11 @@ function render(force){
 
   if (mw) mw.hidden = true;
   c.hidden = false;
-  c.className = 'content' + (p.full ? ' flush' : '');
+  /* الصفحاتُ ذاتُ الجداول العريضة تُطلَق من حدِّ العرض (V17.16) — وغيرُها
+     يبقى في عرضٍ مقروء. ويُكتَب الصنفُ هنا لأن السطرَ يُعيد بناءَ الأصناف
+     كلَّها، فما كُتب قبله يُمحى. */
+  var WIDE = ['wbs','over','survey','inv','perf','ipc','recs','users','plan'];
+  c.className = 'content' + (p.full ? ' flush' : '') + (WIDE.indexOf(CUR) > -1 ? ' wide' : '');
   /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
   var head = p.full ? '' : pageHead(p.m, p.t, pl,
     (p.m === 'المتابعة' || may('exportAll'))
