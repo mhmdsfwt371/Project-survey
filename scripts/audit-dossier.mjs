@@ -85,6 +85,34 @@ T(!!sh2 && /الوزارة/.test(sh2.textContent) && !d.getElementById('dsPayer'
   'والوزارةُ تقرأ الملفَّ ولا تكتبه');
 w.ROLE = 'admin';
 
+/* ═══ جدولُ الخطة: يُقرأ ويقول الحقيقةَ عن البدء (V17.15) ═══ */
+{
+  const day = n => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+  w.STATE.wbs = { rows:[
+    { id:'9',   n:'بندٌ أبٌ', s:day(-20), e:day(20) },
+    { id:'9.1', n:'حلَّ بدؤُه ولم يبدأ', s:day(-20), e:day(20), pct:0 },
+    { id:'9.2', n:'لم يحن بدؤُه',      s:day(20),  e:day(40), pct:0 },
+    { id:'9.3', n:'تجاوز نهايتَه',     s:day(-40), e:day(-1), pct:30 },
+    { id:'9.4', n:'مكتمل',             s:day(-40), e:day(-1), pct:100 }
+  ], keys:[] };
+  w.ROLE = 'admin'; w.goPage('wbs'); w.render(1); await wait(200);
+  w.WBS_OPEN['9'] = true; w.render(1); await wait(250);
+  T(w.wbsTiming(w.wbsRow('9.1')) === 'تأخّر البدء', 'ما حلَّ بدؤُه ولم يبدأ يُقال له «تأخّر البدء» لا «ضمن مدته»');
+  T(w.wbsTiming(w.wbsRow('9.2')) === 'لم يحن موعده' && w.wbsTiming(w.wbsRow('9.3')) === 'متأخر'
+    && w.wbsTiming(w.wbsRow('9.4')) === 'مكتمل', 'وسائرُ المواقف كما هي');
+  const main2 = d.getElementById('main') || d.body;
+  const th2 = [...main2.querySelectorAll('table th')].map(e => e.textContent.trim());
+  T(th2.indexOf('النوع') > -1 && th2.indexOf('الحالة') > -1 && th2.indexOf('الموقف الزمني') > -1,
+    'وللجدول عمودٌ للنوع غيرُ عمود الحالة: ' + th2.join(' · '));
+  T(!!main2.querySelector('.table-wrap.sticky-1'), 'ويُمرَّر أفقيًّا بعمودِ بندٍ ثابت');
+  w.WBS_EDIT = '9.1'; w.render(1); await wait(250);
+  const sel2 = d.querySelector('select[data-wbse="type"]');
+  T(!!sel2 && [...sel2.options].map(o => o.value).join(',') === 'مهمة,معلم', 'والنوعُ قائمةٌ تُختار لا حقلٌ يُكتَب');
+  const editCells = [...d.querySelector('[data-wbse="n"]').closest('tr').querySelectorAll('td')].length;
+  T(editCells === th2.length, 'وصفُّ التحرير بعدد أعمدة الرأس — فلا يقع حقلٌ تحت عنوانٍ ليس له: ' + editCells + '/' + th2.length);
+  w.WBS_EDIT = '';
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ ملفِّ البند فشل ✗ (${bad})` : '\nلكلِّ بندٍ ملفُّه: من يدفع وما يُشترى وما يُركَّب وما العائد ✅');
 process.exit(bad ? 1 : 0);

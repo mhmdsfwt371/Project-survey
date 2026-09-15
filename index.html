@@ -199,7 +199,24 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 .track i{display:block;height:100%;border-radius:99px;background:var(--brand);transition:width .3s}
 
 /* ── الجداول ───────────────────────────────────────── */
-.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+/* ═══ جدولٌ عريضٌ يُقرأ (V17.15) ═══
+   ثلاثةَ عشرَ عمودًا في عرض الشاشة تُضغَط حتى تصير الكلماتُ حرفين، ومن مرّر
+   أفقيًّا ضاع عنه اسمُ البند فلا يعرف أيَّ صفٍّ يقرأ. فصار التمريرُ داخل
+   الجدول نفسِه بحدٍّ أدنى لعرض الأعمدة، ورأسُ الجدول وعمودا الرقم والبند
+   يثبتان في مكانهما بينما يتحرّك ما سواهما. */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.table-wrap.sticky-1{max-height:70vh;overflow-y:auto}
+.table-wrap.sticky-1 table{min-width:1000px}
+.table-wrap.sticky-1 thead th{position:sticky;top:0;z-index:3;background:var(--surface)}
+.table-wrap.sticky-1 tbody td:nth-child(1),
+.table-wrap.sticky-1 thead th:nth-child(1){position:sticky;inset-inline-start:0;z-index:2;background:var(--surface);min-width:44px}
+.table-wrap.sticky-1 tbody td:nth-child(2),
+.table-wrap.sticky-1 thead th:nth-child(2){position:sticky;inset-inline-start:44px;z-index:2;background:var(--surface);min-width:220px;
+  box-shadow:1px 0 0 var(--line)}
+[dir="rtl"] .table-wrap.sticky-1 tbody td:nth-child(2),
+[dir="rtl"] .table-wrap.sticky-1 thead th:nth-child(2){box-shadow:-1px 0 0 var(--line)}
+.table-wrap.sticky-1 thead th:nth-child(-n+2){z-index:4}
+.table-wrap.sticky-1 td,.table-wrap.sticky-1 th{white-space:nowrap}
 /* صفُّ تحرير الحساب: أربعُ قوائمَ بلا عناوين تنكمش على الهاتف إلى أسهمٍ صمّاء */
 .usrEd{min-width:190px}.usrEd label.mini{display:block;font-size:11px;opacity:.7;margin:6px 0 3px}.usrEd select{width:100%}
 .data-table{width:100%;border-collapse:collapse;font-size:14px}
@@ -814,7 +831,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.14</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.15</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7853,8 +7870,8 @@ function cellT(c){
   if (c.indexOf('<') > -1 || c.indexOf('&') > -1) return c;
   return esc(t(c));
 }
-function table(head, rows, foot){
-  return '<div class="table-wrap"><table class="data-table rows"><thead><tr>'
+function table(head, rows, foot, opt){
+  return '<div class="table-wrap' + ((opt && opt.sticky) ? ' sticky-1' : '') + '"><table class="data-table rows"><thead><tr>'
     + head.map(function(h){ return '<th>'+esc(t(h))+'</th>'; }).join('')
     + '</tr></thead><tbody>'
     + rows.map(function(r){
@@ -14801,6 +14818,11 @@ function wbsTiming(r){
   if (p >= 100) return 'مكتمل';
   if (r.e && r.e < today) return 'متأخر';
   if (r.s && r.s > today) return 'لم يحن موعده';
+  /* ═══ بندٌ حلَّ بدؤُه ولم يبدأ (V17.15) ═══
+     كان يُقال عنه «ضمن مدته» لأن نهايتَه لم تحن — وهو قد تأخّر عن **بدئه**:
+     تاريخُ البدء مضى والإنجازُ صفر. فيُقرأ «لم تبدأ · ضمن مدته» فيُطمأنُّ
+     إليه وهو أوّلُ ما يجب أن يُسأل عنه. صار له اسمُه: «تأخّر البدء». */
+  if (r.s && r.s < today && p <= 0) return 'تأخّر البدء';
   return 'ضمن مدته';
 }
 function wbsLeft(r){
@@ -15307,14 +15329,25 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       var pctCell = (may('settings') && !kids)
         ? '<input type="number" min="0" max="100" value="' + p + '" data-wbspct="' + esc(r.id) + '" style="width:64px">'
         : '<span class="num">' + nm(p) + '٪</span>';
-      var tmPill = tm === 'مكتمل' ? pill('مكتمل','ok') : (tm === 'متأخر' ? pill('متأخر','bad') : (tm === 'لم يحن موعده' ? pill('لم يحن موعده','off') : pill('ضمن مدته','warn')));
+      var tmPill = tm === 'مكتمل' ? pill('مكتمل','ok')
+        : (tm === 'متأخر' ? pill('متأخر','bad')
+        : (tm === 'تأخّر البدء' ? pill('تأخّر البدء','bad')
+        : (tm === 'لم يحن موعده' ? pill('لم يحن موعده','off') : pill('ضمن مدته','warn'))));
       if (WBS_EDIT === r.id && may('settings')){
+        /* الحالةُ تُشتقُّ من الإنجاز فلا تُكتَب؛ والنوعُ قائمةٌ تُختار — وكان
+           حقلُه يقع تحت عمود «الحالة» لأن الرأسَ بلا عمودِ نوعٍ أصلًا (V17.15) */
+        var typeSel = '<select data-wbse="type" style="width:100px">'
+          + ['مهمة','معلم'].map(function(x){
+              return '<option value="' + esc(x) + '"' + ((r.type || 'مهمة') === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>';
+            }).join('') + '</select>';
         return ['<span class="num hint" style="margin:0">' + esc(r.id) + '</span>',
                 '<input value="' + esc(r.n) + '" data-wbse="n" dir="auto" style="min-width:200px">',
                 kids ? '<span class="num">' + nm(kids) + '</span>' : '<span class="hint">—</span>',
                 '<input type="date" value="' + esc(r.s || '') + '" data-wbse="s" style="width:140px">',
                 '<input type="date" value="' + esc(r.e || '') + '" data-wbse="e" style="width:140px">',
-                pctCell, '<input value="' + esc(r.type || 'مهمة') + '" data-wbse="type" style="width:80px">', '',
+                pctCell,
+                pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')),
+                typeSel, tmPill,
                 '<input value="' + esc(r.resp || '') + '" data-wbse="resp" dir="auto" style="width:130px">',
                 '<input value="' + esc(r.party || '') + '" data-wbse="party" dir="auto" style="width:130px">', '', dosBadge(r),
                 btn('\u{1F4BE}','btn-primary btn-sm',' data-wbssave="' + esc(r.id) + '" aria-label="' + esc(t('حفظ')) + '"')
@@ -15323,7 +15356,9 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       return ['<span class="num hint" style="margin:0">' + esc(r.id) + '</span>', name,
               kids ? '<span class="num">' + nm(kids) + '</span>' : '<span class="hint">—</span>',
               '<span class="num">' + esc(r.s || '—') + '</span>', '<span class="num">' + esc(r.e || '—') + '</span>',
-              pctCell, pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')), tmPill,
+              pctCell, pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')),
+              r.type === 'معلم' ? pill('معلم','acc') : '<span class="hint">' + esc(t(r.type || 'مهمة')) + '</span>',
+              tmPill,
               esc(r.resp || '—'), esc(r.party || '—'),
               left == null || p >= 100 ? '—' : '<span class="num">' + (left < 0 ? '-' : '') + nm(Math.abs(left)) + '</span>',
               dosBadge(r),
@@ -15351,7 +15386,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WBS_F === x[0] ? ' on' : '') + '" data-wbsf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
       + card('', '<input type="search" data-wbsq value="' + esc(WBS_Q) + '" placeholder="' + esc(t('ابحث بالبند أو المسؤول أو الجهة')) + '" dir="auto">')
       + cardRaw(esc(t('جدول المتابعة')) + ' \u2014 ' + nm(rows.length) + (STATE.wbs && STATE.wbs.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wbs.by)) + ' ' + esc(stepAgo(STATE.wbs.at || 0)) + '</span>' : ''),
-          table(['#','البند','فروع','البدء','الانتهاء','الإنجاز','الحالة','الموقف الزمني','المسؤول','الجهة','المتبقي','الملف',''], rows),
+          table(['#','البند','فروع','البدء','الانتهاء','الإنجاز','الحالة','النوع','الموقف الزمني','المسؤول','الجهة','المتبقي','الملف',''], rows, null, { sticky:true }),
           btn('\u2B07 ' + t('إكسل — بالمعادلات والطيّ'),'btn-primary btn-sm',' data-wbsxl="1" title="' + esc(t('ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية')) + '"')
           + btn('\u2B07 ' + t('إكسل — قيمًا فقط'),'btn-secondary btn-sm',' data-xls="wbs"'))
       + '<p class="hint">' + esc(t('الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.')) + '</p>';
@@ -18653,7 +18688,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.14' + '.docx" download>⬇ '
+              +   'V17.15' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
