@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.24</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.25</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -7961,7 +7961,8 @@ var PG_BIND = {
   reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ SHIP_Q = v; },
   myveh:   function(v){ VEH_Q  = v; }, fleetLog: function(v){ VLOG_Q = v; },
   ips:     function(v){ IP_Q   = v; }, solution: function(v){ SOL_Q = v; },
-  ev:      function(v){ EVF.q  = v; }
+  ev:      function(v){ EVF.q  = v; },
+  chal:    function(v){ CHAL_Q = v; }, notif: function(v){ NTF_Q = v; }
 };
 var PG_LAST_BIND = null;
 function pgBindOf(){
@@ -18906,7 +18907,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.24' + '.docx" download>⬇ '
+              +   'V17.25' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -23923,7 +23924,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا نقاطَ جاهزةً — ما يُعتمَد مع حلِّه يظهر هنا.')) + '</p>'));
     })();
     if (cur === 'chal') return head + (function(){
-    var L = chalSites(), open = L.filter(function(x){ return !x.closed; });
+    var L = chalSitesQ(), open = L.filter(function(x){ return !x.closed; });
 
     return stats([['إفاداتٌ مسجَّلة', N(L.length), 'acc'],
                   ['بانتظار حل', N(open.length), open.length ? 'wrn' : 'ok'],
@@ -25149,6 +25150,38 @@ function svFacts(r){
    موجودٌ منذ البداية ولم تقرأه أيُّ شاشة. النقطةُ «مفتوحة» ما دام لم
    يُعتمَد تركيبُها بعد؛ تُغلَق تلقائيًّا حين يُعتمَد — لا زرَّ إغلاقٍ
    يدويًّا يُنسى. */
+/* ═══ بحثُ التحديات والإشعارات بكلِّ حقل (V17.25) ═══
+   البحثُ في الصف كلِّه: المعرِّفُ واسمُ النقطة ومشعرُها وشاخصُها ومربعُها
+   وشركتُها ونوعُها، ونصُّ كلِّ تحدٍّ، والملاحظةُ، واسمُ المُفيد، والحالةُ.
+   وفي الإشعارات: النصُّ والنوعُ والمستوى والوجهةُ والمرسِلُ والنقطةُ واسمُها
+   والوقتُ. يُطابَق بلا حساسيةٍ لحالة الحرف، وبكلِّ كلمةٍ على حدة — فتُكتَب
+   «منى ٥٠٦» فتُقصَر على ما جمعهما. */
+var CHAL_Q = '', NTF_Q = '';
+function qMatch(q, parts){
+  var words = String(q || '').trim().toLowerCase().split(/\s+/).filter(Boolean);
+  if (!words.length) return true;
+  var hay = parts.filter(Boolean).join(' \u2022 ').toLowerCase();
+  return words.every(function(wd){ return hay.indexOf(wd) > -1; });
+}
+function siteParts(st){
+  st = st || {};
+  return [st.id, st.name, st.zone, st.sign, st.sq, st.co, st.type, st.region, st.inout, st.work];
+}
+function chalSitesQ(){
+  var L = chalSites(); if (!CHAL_Q) return L;
+  return L.filter(function(x){
+    return qMatch(CHAL_Q, [x.id].concat(siteParts(x.site), x.chals, [x.note, x.by, dispName(x.by),
+      x.closed ? 'أُغلقت بالتركيب' : 'بانتظار حل']));
+  });
+}
+function notifMineQ(){
+  var L = notifMine(); if (!NTF_Q) return L;
+  return L.filter(function(n){
+    var st = n.site ? siteFind(n.site) : null;
+    return qMatch(NTF_Q, [n.text, n.kind, t(n.kind), n.lv, n.to, dispName(n.to), n.by, dispName(n.by),
+      n.site].concat(siteParts(st), [n.at ? fmtDT(n.at) : '', n.read ? 'مقروء' : 'غير مقروء']));
+  });
+}
 function chalSites(){
   return Object.keys(STATE.recs).map(function(id){
     var r = STATE.recs[id];
@@ -27649,7 +27682,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
         + '<p class="hint">' + esc(t('الطلبُ لا يُحذَف باعتمادٍ ولا بردّ — يبقى بمن قرّر ومتى ولماذا.')) + '</p>');
   })();
     return head + (function(){
-    var L = notifMine(), un = notifUnread();
+    var L = notifMineQ(), un = notifUnread();
     var perm = (typeof Notification === 'undefined') ? 'غير مدعوم' : Notification.permission;
 
     return stats([['غير مقروء', N(un), un ? 'wrn' : 'ok'],
