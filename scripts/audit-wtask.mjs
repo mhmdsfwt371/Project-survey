@@ -66,7 +66,9 @@ T(/بلا مسؤول/.test(main.querySelector('[data-wtopen="4"]').textContent),
 const stripTxt = main.querySelector('.stats, .grid') ? main.textContent : '';
 T(/متأخر/.test(stripTxt) && /مستحق هذا الأسبوع/.test(stripTxt) && /أُنجز هذا الأسبوع/.test(stripTxt), 'الشريطُ الثلاثيُّ فوق البطاقات');
 T(!!main.querySelector('[data-wtnew]') && !!main.querySelector('[data-wttools]'), 'للمهندس: «مهمة جديدة» ظاهرٌ و«أدوات المكتب» مطويّة');
-T(!main.querySelector('[data-wtfile]'), 'الاستيرادُ لا يظهر إلا بعد فتح الأدوات');
+/* الاستيرادُ صار ظاهرًا دائمًا لمن يعدّل (V17.18) — والمطويُّ هو ما يندر */
+T(!!main.querySelector('[data-wtfile]') && !main.querySelector('[data-xls="wtsince"]'),
+  'الرفعُ ظاهرٌ دائمًا، والنادرُ وحدَه مطويٌّ تحت «المزيد»');
 
 /* ٣ · اللوحة والحالة */
 T(click('[data-wtopen="2"]'), 'ضغطةُ البطاقة'); await wait(120);
@@ -172,6 +174,38 @@ click('[data-wtopen="1"]'); await wait(120);
 T(!!d.getElementById('wtSheet') && !d.querySelector('#wtSheet [data-wtstat]') && !d.getElementById('wtNote'), 'يفتح اللوحةَ قراءةً: لا شرائحَ ولا خانةَ جديد');
 w.ROLE = 'viewer'; w.WT_OPEN = ''; w.render(1); await wait(150);
 T(!!main.querySelector('[data-wtnew]') && !main.querySelector('[data-wttools]'), 'الوزارةُ: تضيف وتعدّل — وأدواتُ المكتب ليست لها');
+
+/* ═══ دورةُ الورقة ومحضرُ الاجتماع (V17.18) ═══ */
+w.ROLE = 'engineer'; w.WT_TOOLS = false; w.WT_MEET = false; w.WT_OPEN = '';
+w.STATE.wtask.meetAt = Date.now() - 3 * 86400000;
+w.STATE.wtask.rows = [
+  { id:'a', n:'باقيةٌ من قبل', who:'أحمد', st:'جاري العمل', due:day(3), at:Date.now() - 10 * 86400000,
+    log:[{ at:Date.now() - 3600000, by:'أحمد', note:'وصل الكابل' }] },
+  { id:'b', n:'جديدةٌ اليوم',   who:'خالد', st:'قيد الانتظار', due:day(5), at:Date.now() - 3600000 },
+  { id:'c', n:'اكتملت اليوم',   who:'سعيد', st:'مكتمل', due:day(-1), at:Date.now() - 10 * 86400000, doneAt:Date.now() - 1800000 },
+  { id:'d', n:'اكتملت قديمًا',  who:'سعيد', st:'مكتمل', due:day(-9), at:Date.now() - 20 * 86400000, doneAt:Date.now() - 9 * 86400000 }
+];
+w.render(1); await wait(200);
+const M = w.SHEETS.wtmeet();
+const secs = M.slice(1).map(r => r[0]);
+T(M[0][0] === 'القسم' && secs.length === 3, 'محضرُ الاجتماع ثلاثةُ أقسامٍ لا أكثر: ' + secs.join(' · '));
+T(/باقٍ/.test(secs[0]) && /جديدة/.test(secs[1]) && /اكتمل/.test(secs[2]), 'ما بقي · ما استُجدّ · ما اكتمل منذ الختم');
+T(!secs.some(x => /اكتملت قديمًا/.test(x)) && M.slice(1).every(r => r[1] !== 'اكتملت قديمًا'), 'وما اكتمل قبل الختم لا يُعاد');
+T(/وصل الكابل/.test(M[1][5]), 'ولكلِّ سطرٍ ما قيل فيه منذ الاجتماع الماضي');
+const raw4 = readFileSync('index.html', 'utf8');
+T(/data-wtmeet[\s\S]{0,120}\n?[\s\S]{0,200}expPdf\(\['wtmeet'\]/.test(raw4) || /expPdf\(\['wtmeet'\]/.test(raw4),
+  'وزرُّ المحضر يُصدِر المحضرَ وحدَه — بلا لوحةِ زياراتٍ ولا خطةٍ تفصيلية');
+/* الورقةُ الكاملةُ ودورتُها */
+const all = w.SHEETS.wtaskAll();
+T(all[0].join(',') === '#,المهمة,المسار,الكود,الوصف,المسؤول,الحالة,تاريخ الرصد,تاريخ الاستحقاق,المصدر,آخر تحديث',
+  'وورقةُ العمل بترتيب أعمدةٍ يقرؤه الاستيراد حرفًا بحرف');
+T(all.length === 5, 'وتحمل كلَّ المهام لا ما رُشِّح منها: ' + (all.length - 1));
+w.WT_F = 'late'; w.render(1); await wait(150);
+T(w.SHEETS.wtaskAll().length === 5 && w.SHEETS.wtask().length < 5, 'وترشيحُ الشاشة يغيّر ورقةَ التقرير ولا يمسُّ ورقةَ العمل');
+w.WT_F = ''; w.render(1); await wait(200);
+const bar = (d.getElementById('main') || d.body);
+T(!!bar.querySelector('[data-wtfile]') && !!bar.querySelector('[data-xls="wtaskAll"]') && !!bar.querySelector('[data-wtreset]'),
+  'والرفعُ والتصديرُ والمسحُ ظاهرةٌ دائمًا — لا في قائمةٍ مطوية');
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ المهام الأسبوعية فشل ✗ (${bad})` : '\nالمهامُّ بطاقاتٌ تُقرأ وتُحدَّث من لوحةٍ واحدة ✅');
