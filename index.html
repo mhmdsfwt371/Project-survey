@@ -357,7 +357,29 @@ input[type="number"]{max-width:140px}
 .map-route-box{position:absolute;inset-inline:11px;bottom:84px;z-index:var(--z-map-ui);
   pointer-events:auto;background:rgba(18,23,28,.96);border:1px solid #2A333C;border-radius:14px;
   padding:11px 13px;backdrop-filter:blur(6px);max-width:520px;margin-inline-start:auto}
-@media (max-width:760px){ .map-route-box{inset-inline:8px;bottom:76px;padding:9px 10px} }
+/* ═══ لوحُ الرسم على الهاتف: شريطٌ لا صفحة (V17.48) ═══
+   وُضع اللوحُ ليكون بطاقةً صغيرةً أسفلَ الخريطة، فابتلع الشاشةَ على الهاتف:
+   قاعدةُ الشبكة العامة (V17.33) تجعل كلَّ عمودين عمودًا واحدًا، فصارت حقولُه
+   الأربعةُ أربعةَ صفوفٍ طويلة، وعلت عليها أزرارُ الخريطة العائمةُ فتداخلَ
+   النصُّ بالأزرار ولم يبقَ من الخريطة ما يُضغَط عليه — ونقاطُ الرسم صفر.
+   فصار على الهاتف: حقولٌ في عمودين مضغوطين، وسقفٌ لا يتجاوز ثلث الشاشة مع
+   تمريرٍ داخليّ، والأزرارُ العائمةُ تختفي أثناء الرسم فلا تحجب شيئًا. */
+@media (max-width:760px){
+  .map-route-box{inset-inline:8px;bottom:8px;padding:8px 9px;max-height:34vh;overflow-y:auto;
+    -webkit-overflow-scrolling:touch}
+  .map-route-box .grid.cols-2{grid-template-columns:1fr 1fr!important;gap:6px}
+  .map-route-box .field{margin:0}
+  .map-route-box .field label{font-size:11px;margin:0 0 2px}
+  .map-route-box .field input,.map-route-box .field select{padding:6px 8px;font-size:12.5px;min-height:34px}
+  .map-route-box .hint{font-size:11px}
+  .map-route-box .actions{gap:6px;margin:6px 0 0}
+  .map-route-box .actions .btn{padding:6px 10px;font-size:12.5px}
+  /* الرسمُ يحتاج الخريطةَ مكشوفة: تُخفى الأزرارُ العائمةُ والأسطورةُ حتى ينتهي */
+  body.drawing .map-fab,
+  body.drawing .map-legend,
+  body.drawing .map-stat{display:none!important}
+}
+body.drawing .map-fab{opacity:.35}
 .map-chip{background:rgba(18,23,28,.92);border:1px solid #2A333C;color:#E8EBEE;
   border-radius:99px;padding:7px 13px;font-size:12.5px;cursor:pointer;
   backdrop-filter:blur(6px);min-height:36px;display:inline-flex;align-items:center;gap:6px}
@@ -902,7 +924,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.47</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.48</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -19193,7 +19215,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.47' + '.docx" download>⬇ '
+              +   'V17.48' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19948,9 +19970,14 @@ function popHtml(){
    يُعرَض عددُها قبل الحفظ، ولا تُكتَب إلا بضغطةٍ ثانية. والإحداثياتُ من
    الخريطة لا من تقديرٍ، فما يُرسَم هو ما يُحفَظ. */
 var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'' };
+function drawFlag(){
+  try { document.body.classList.toggle('drawing', !!(ROUTE && ROUTE.on) || (typeof PIN_ON !== 'undefined' && PIN_ON)); }
+  catch (e){ LS_ERR = e; }
+}
 function routeStart(mode){
   if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   ROUTE.on = true; ROUTE.mode = (mode === 'area' ? 'area' : 'line'); ROUTE.pts = []; POP_OPEN = false; PIN_ON = false;
+  drawFlag();
   if (ROUTE.mode === 'area' && ROUTE.every === 250) ROUTE.every = 50;
   toast(t(ROUTE.mode === 'area' ? 'ارسم حدودَ المساحة: اضغط على الخريطة حول الموقف' : 'ارسم المسار: اضغط على الخريطة نقطةً بعد نقطة'));
   render(1);
@@ -19961,7 +19988,7 @@ function routeAdd(lat, lng){
   render(1);
 }
 function routeUndo(){ ROUTE.pts.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
-function routeCancel(){ ROUTE.on = false; ROUTE.pts = []; if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function routeCancel(){ ROUTE.on = false; ROUTE.pts = []; drawFlag(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
 /* المسافةُ بالمتر بين نقطتين — هافرساين مبسّطة تكفي مسافاتِ المشاعر */
 function geoDist(a, b){
   var R = 6371000, p = Math.PI / 180;
@@ -20054,12 +20081,12 @@ function routeSave(){
 var PIN_ON = false;
 function pinStart(){
   if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
-  PIN_ON = true; POP_OPEN = false;
+  PIN_ON = true; POP_OPEN = false; drawFlag();
   toast(t('اضغط على الخريطة حيث تريد النقطة'));
   render(1);
 }
 function pinApply(lat, lng){
-  PIN_ON = false;
+  PIN_ON = false; drawFlag();
   NEWSITE.lat = lat; NEWSITE.lng = lng;
   NEWSITE.byMap = true;
   CUR = 'newsite';
@@ -21189,6 +21216,32 @@ function mapPaint(){
   /* «معروض» يقول لماذا يقلُّ: العلاماتُ تُرشَّح بمدى الشاشة — فما خرج عن
      الإطار لا يُرسَم، وهو صوابٌ للأداء. لكنّ من رأى «٣٢ من ١٧٨٧» ظنَّ أن
      ألفًا وسبعمئةٍ ضاعت. فيُقال إن ما نقص «خارجَ الإطار» لا مفقود. */
+  /* ═══ ما يُرسَم يُرى (V17.48) ═══
+     كان الرسمُ أعمى: تضغط على الخريطة فلا يظهر شيءٌ إلا رقمٌ في اللوح، فلا
+     تعرف أوقعت ضغطتُك في محلِّها أم لا. صار المسارُ خطًّا ونقاطُه دوائرَ
+     مرقَّمة، والمساحةُ مضلَّعًا مظلَّلًا — وتُعرَض نقاطُ التوليد الناتجةُ
+     باهتةً قبل الحفظ، فيُرى ما سيُحفَظ قبل أن يُحفَظ. */
+  try {
+    if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_LAYER){
+      var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
+      if (ROUTE.mode === 'area' && pts.length > 2){
+        L.polygon(pts, { renderer:MAP_CV, color:'#FF8C42', weight:2, fillColor:'#FF8C42', fillOpacity:0.18, interactive:false }).addTo(MAP_LAYER);
+      } else if (pts.length > 1){
+        L.polyline(pts, { renderer:MAP_CV, color:'#FF8C42', weight:3, opacity:0.95, interactive:false }).addTo(MAP_LAYER);
+      }
+      /* النقاطُ التي ستُولَّد — تُرى قبل الحفظ */
+      var gen = (ROUTE.mode === 'area' ? areaPoints() : routePoints());
+      gen.slice(0, 600).forEach(function(g){
+        L.circleMarker([g[0], g[1]], { renderer:MAP_CV, radius:3.5, color:'#fff', weight:1,
+          fillColor:'#FFD166', fillOpacity:0.95, interactive:false }).addTo(MAP_LAYER);
+      });
+      pts.forEach(function(p, i){
+        L.circleMarker(p, { renderer:MAP_CV, radius:6, color:'#fff', weight:2,
+          fillColor:'#FF8C42', fillOpacity:1, interactive:false }).addTo(MAP_LAYER);
+      });
+    }
+  } catch (e){ LS_ERR = e; }
+
   var lb = document.getElementById('mapCount');
   if (lb && !MAP_3D){
     var out = LIST.length - inView;

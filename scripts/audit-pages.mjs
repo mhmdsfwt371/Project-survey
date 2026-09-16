@@ -174,6 +174,17 @@ if (bad){ console.log('\nجردُ الصفحات فشل ✗'); fail.forEach(f =>
   check(/function focusGrab\(\)/.test(jsx) && /function focusBack\(g\)/.test(jsx) && /focusBack\(FOCUS_G\);/.test(jsx),
     'والبؤرةُ وموضعُ المؤشِّر يُلتقَطان قبل الرسم ويُعادان بعده — فيُكتَب حرفٌ بعد حرفٍ بلا ضغطِ الحقل');
   check(/var FOCUS_G = focusGrab\(\);/.test(jsx), 'ويُلتقَطان في أوّل الرسم لا بعد بناء الشاشة');
+  /* ═══ لوحُ الرسم لا يبتلع الشاشة ولا يُخفي الخريطة (V17.48) ═══ */
+  check(/\.map-route-box \.grid\.cols-2\{grid-template-columns:1fr 1fr!important/.test(raw),
+    'ولوحُ الرسم يبقى عمودين على الهاتف — لا أربعةَ صفوفٍ تبتلع الشاشة');
+  check(/\.map-route-box\{[^}]*max-height:34vh/.test(raw), 'وسقفُه ثلثُ الشاشة بتمريرٍ داخليّ');
+  check(/body\.drawing \.map-fab[\s\S]{0,60}display:none!important/.test(raw),
+    'والأزرارُ العائمةُ تختفي أثناء الرسم فلا تحجب موضعَ الضغط');
+  check(/function drawFlag\(\)/.test(jsx) && (jsx.match(/drawFlag\(\);/g) || []).length >= 4,
+    'وعلامةُ الرسم تُرفَع وتُنزَل مع بدء الرسم وانتهائه');
+  check(/L\.polyline\(pts, \{ color:'#FF8C42'/.test(jsx) && /L\.polygon\(pts, \{ color:'#FF8C42'/.test(jsx),
+    'وما يُرسَم يُرى: خطُّ المسار ومضلَّعُ المساحة على الخريطة');
+  check(/gen\.slice\(0, 600\)\.forEach/.test(jsx), 'ونقاطُ التوليد تُعرَض قبل الحفظ');
   check(/PG_Q \? 5000 :/.test(jsx), 'وسقفُ الصفوف يرتفع أثناء البحث فلا يختبئ المطلوبُ خلفه');
 }
 
