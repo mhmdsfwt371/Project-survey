@@ -902,7 +902,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.45</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.46</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -9209,6 +9209,20 @@ var FB = {
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.newsites) STATE.newsites = {};
         sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
+        /* ═══ الجديدُ يعود إلى السجل لا إلى رفٍّ جانبيّ (V17.46) ═══
+           كانت النقطةُ تُدفَع إلى STATE.sites في الجلسة التي أُنشئت فيها ثم
+           تُكتَب في newsites؛ فإذا أُعيد تحميلُ التطبيق عادت المجموعةُ إلى
+           STATE.newsites وحدَها — فتختفي النقطةُ من الخريطة والقوائم وهي في
+           القاعدة سليمة، ويُظنُّ أنها ضاعت. صارت تُدمَج في السجل عند كلِّ
+           إقلاع: ما لم يكن فيه، ولا يُكرَّر ما هو فيه. */
+        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; });
+        var add = 0;
+        Object.keys(STATE.newsites).forEach(function(k){
+          var v = STATE.newsites[k];
+          if (!v || !v.id || have[v.id] || !(+v.lat) || !(+v.lng)) return;
+          STATE.sites.push(v); have[v.id] = 1; add++;
+        });
+        if (add){ SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint(); }
       }).catch(function(e){ softErr('سحب المواقع الجديدة', e, 'تعذّر سحبُ طلبات تسجيل مواقع جديدة'); });
 
       office && FB.db.collection('changes').limit(1000).get().then(function(sn){
@@ -9747,8 +9761,15 @@ var SITES_RAW = {"z":["منى","عرفات","الجمرات","منشآت الت�
 function zoneOf(z, name){
   if (z === 'عرفات' || z === 'مسجد نمرة') return 'عرفات';
   if (z === 'منى' || z === 'الجمرات' || z === 'منشآت التسكين') return 'منى';
+  /* مكةُ والمدينةُ صارتا في النطاق (V17.45) — ولولا هذا لعاد كلُّ ما فيهما
+     «منى» صامتًا: تُحسَب في مشعرٍ ليس مشعرَها وتُرشَّح معه (V17.46). */
+  if (z === 'مكة' || z === 'مكة المكرمة') return 'مكة';
+  if (z === 'المدينة' || z === 'المدينة المنورة') return 'المدينة';
+  if (z === 'مزدلفة') return 'مزدلفة';
   if (String(name).indexOf('عرفات') >= 0) return 'عرفات';
   if (String(name).indexOf('مزدلفة') >= 0) return 'مزدلفة';
+  if (String(name).indexOf('مكة') >= 0) return 'مكة';
+  if (String(name).indexOf('المدينة') >= 0) return 'المدينة';
   return 'منى';
 }
 
@@ -19165,7 +19186,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.45' + '.docx" download>⬇ '
+              +   'V17.46' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'

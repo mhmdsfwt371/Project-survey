@@ -476,7 +476,23 @@ if (typeof w.siteStats === 'function'){
 }
 
 /* ── الحصاد ─────────────────────────────────────────────────────────────── */
+/* ═══ المواقعُ الجديدةُ تعود إلى السجل، والمشاعرُ الجديدةُ لا تُبتلَع (V17.46) ═══
+   نقطةٌ تُنشَأ تُدفَع إلى STATE.sites في جلستها وتُكتَب في newsites؛ ولولا
+   دمجُها عند الإقلاع لاختفت من الخريطة بعد إعادة التحميل وهي في القاعدة. */
+{
+  const raw8 = readFileSync('index.html', 'utf8');
+  check(/Object\.keys\(STATE\.newsites\)\.forEach\(function\(k\)\{[\s\S]{0,260}STATE\.sites\.push\(v\)/.test(raw8),
+    'المواقعُ الجديدةُ تُدمَج في السجل عند الإقلاع');
+  check(/if \(!v \|\| !v\.id \|\| have\[v\.id\] \|\| !\(\+v\.lat\) \|\| !\(\+v\.lng\)\) return;/.test(raw8),
+    'ولا تُكرَّر ولا تُدمَج بلا إحداثيات');
+  check(/if \(z === 'مكة' \|\| z === 'مكة المكرمة'\) return 'مكة';/.test(raw8)
+    && /if \(z === 'المدينة' \|\| z === 'المدينة المنورة'\) return 'المدينة';/.test(raw8),
+    'وzoneOf يعرف مكةَ والمدينة — فلا تُحسَبان في منى');
+  check(/'LPR':\s*\{ l:'قراءة اللوحات'/.test(raw8), 'ونوعُ LPR قائمٌ بلونه في الكتالوج');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
+
 console.log('جردُ البيانات نظيف ✅');
 process.exit(0);
