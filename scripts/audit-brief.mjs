@@ -258,6 +258,20 @@ w.ROLE = 'engineer';
   w.CHAL_Q = ''; w.NTF_Q = '';
 }
 
+/* ═══ V17.33: الاعتمادُ من كلِّ نافذةٍ يفتح على نقطته، والصورُ التي لم تصل تُقال ═══ */
+{
+  const raw6 = readFileSync('index.html', 'utf8');
+  const js6 = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw6)[1];
+  const gotos = js6.match(/data-goto="(?:svappr|minappr)"/g) || [];
+  const withSite = js6.match(/data-goto="(?:svappr|minappr)" data-gotosite=/g) || [];
+  T(gotos.length > 0 && gotos.length === withSite.length, 'كلُّ زرِّ اعتمادٍ في النوافذ يحمل نقطتَه: ' + withSite.length + '/' + gotos.length);
+  T(/PG_KEEP = true/.test(js6) && /wasCur !== CUR && !PG_KEEP/.test(js6), 'والانتقالُ الموجَّهُ يحتفظ ببحثه فلا يمسحه الرسم');
+  T(/rec\.phN = phN/.test(js6) && /got < r\.phN/.test(js6), 'والزيارةُ تختم عددَ صورها ويُقال ما لم يصل منها');
+  T(/\.stats > \.stat:last-child:nth-child\(odd\)\{grid-column:1 \/ -1\}/.test(raw6), 'ولا بطاقةَ وحيدةً في نصفِ صفٍّ على الهاتف');
+  const bt6 = readFileSync('scripts/browser-test.mjs', 'utf8');
+  T(/scrollWidth > W \+ 2/.test(bt6) && /getBoundingClientRect/.test(bt6), 'واختبارُ المتصفّح يقيس الأبعادَ على الهاتف: لا زرَّ خارجَ الشاشة');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ التفاصيل المختصرة فشل ✗ (${bad})` : '\nالتفاصيلُ المختصرة طبقةٌ تُقرأ بلونها وتُكتَب بسطر ✅');
 process.exit(bad ? 1 : 0);

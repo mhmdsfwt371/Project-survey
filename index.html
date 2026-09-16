@@ -183,6 +183,20 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 
 /* ── الإحصاءات ─────────────────────────────────────── */
 .stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:16px}
+/* على الهاتف: عمودان دائمًا، والبطاقةُ الوترُ الأخيرةُ تمتدّ على العرض فلا يبقى
+   نصفُ صفٍّ فارغًا؛ وأزرارُ الرأس تلتفّ ولا تخرج عن الشاشة (V17.33) */
+@media (max-width:760px){
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stats > .stat:last-child:nth-child(odd){grid-column:1 / -1}
+  .page-head{flex-direction:column;align-items:stretch;gap:10px}
+  .head-acts{flex-wrap:wrap;justify-content:flex-start;width:100%}
+  .pg-find{flex:1 1 100%;order:9}
+  .pg-find input{width:100%}
+  .chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .chips .chip{flex:0 0 auto}
+  .actions{flex-wrap:wrap}
+  .grid.cols-2,.grid.cols-3{grid-template-columns:1fr}
+}
 .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
   padding:14px 16px;box-shadow:var(--shadow)}
 .stat .k{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
@@ -844,7 +858,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.32</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.33</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3675,6 +3689,7 @@ en:{
  'سجلُّ المستخدم':'User log', 'لم يظهر بعد':'Not seen yet', 'قراءات':'reads', 'يُعرَض مئتان — والباقي في السجل.':'Showing 200 — the rest is in the log.', 'الأفعال المسجَّلة':'Recorded actions', 'آخر فعل':'Last action', 'لا أفعالَ مسجَّلةً لهذا الحساب بعد — أو لم يُجلَب سجلُّ الأحداث.':'No recorded actions for this account yet — or the event log has not been fetched.', 'مقروءٌ ممّا هو مسجَّلٌ أصلًا: الحضورُ والزياراتُ والتركيباتُ والصورُ والمهامُّ وسجلُّ الأحداث.':'Read from what is already recorded: presence, visits, installations, photos, tasks and the event log.', 'قرارُ الوزارة':'Ministry decision', 'ردٌّ لزيارةٍ أخرى':'Returned for another visit', 'رفعُ صورة':'Photo upload', 'إسنادُ مهمة':'Task assignment', 'إنجازُ مهمة':'Task completed', 'فكّ':'Dismantling',
  'شراء':'Purchase', 'اعتمادُ شراء':'Purchase approval', 'حركةُ مخزون':'Stock movement', 'مستخلص':'Payment certificate', 'اعتمادُ مستخلص':'Certificate approval', 'شحنة':'Shipment',
  'مهام':'Tasks',
+ 'والباقي في طابور جهاز الفنيّ أو تعذّر رفعُه':'the rest is queued on the technician device or failed to upload',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6372,6 +6387,7 @@ ur:{
  'سجلُّ المستخدم':'صارف کا ریکارڈ', 'لم يظهر بعد':'ابھی نظر نہیں آیا', 'قراءات':'ریڈز', 'يُعرَض مئتان — والباقي في السجل.':'٢٠٠ دکھائے جا رہے ہیں — باقی ریکارڈ میں ہیں۔', 'الأفعال المسجَّلة':'ریکارڈ شدہ اعمال', 'آخر فعل':'آخری عمل', 'لا أفعالَ مسجَّلةً لهذا الحساب بعد — أو لم يُجلَب سجلُّ الأحداث.':'اس اکاؤنٹ کا ابھی کوئی عمل ریکارڈ نہیں — یا واقعات کا ریکارڈ نہیں لایا گیا۔', 'مقروءٌ ممّا هو مسجَّلٌ أصلًا: الحضورُ والزياراتُ والتركيباتُ والصورُ والمهامُّ وسجلُّ الأحداث.':'جو پہلے سے ریکارڈ ہے اسی سے پڑھا گیا: حاضری، دورے، تنصیبات، تصاویر، ٹاسک اور واقعات کا ریکارڈ۔', 'قرارُ الوزارة':'وزارت کا فیصلہ', 'ردٌّ لزيارةٍ أخرى':'دوسرے دورے کے لیے واپس', 'رفعُ صورة':'تصویر اپ لوڈ', 'إسنادُ مهمة':'ٹاسک تفویض', 'إنجازُ مهمة':'ٹاسک مکمل', 'فكّ':'ہٹانا',
  'شراء':'خریداری', 'اعتمادُ شراء':'خریداری کی منظوری', 'حركةُ مخزون':'اسٹاک کی حرکت', 'مستخلص':'ادائیگی سرٹیفکیٹ', 'اعتمادُ مستخلص':'سرٹیفکیٹ کی منظوری', 'شحنة':'کھیپ',
  'مهام':'ٹاسک',
+ 'والباقي في طابور جهاز الفنيّ أو تعذّر رفعُه':'باقی ٹیکنیشن کی ڈیوائس کی قطار میں ہیں یا اپ لوڈ ناکام',
 }
 };
 
@@ -7980,7 +7996,7 @@ var PG_BIND = {
   ev:      function(v){ EVF.q  = v; },
   chal:    function(v){ CHAL_Q = v; }, notif: function(v){ NTF_Q = v; }
 };
-var PG_LAST_BIND = null;
+var PG_LAST_BIND = null, PG_KEEP = false;
 function pgBindOf(){
   var tab = (typeof TABS === 'object' && TABS[CUR]) ? PTAB[CUR] : '';
   return PG_BIND[tab] || PG_BIND[CUR] || null;
@@ -14083,6 +14099,9 @@ function svSave(next){
   var s = formSite();
   if (!s) return;
   var reached = FORM.access === 'تم الوصول';
+  /* عددُ الصور المأخوذة يُختَم على الزيارة نفسِها (V17.33): فإذا وصلت الزيارةُ
+     ولم تصل صورُها عرف المكتبُ أنها في طابور جهاز الفنيّ لا أنها لم تُؤخَذ. */
+  var phN = Object.keys(FORM.photos || {}).filter(function(k){ return FORM.photos[k] && FORM.photos[k].data; }).length;
   if (!reached && !String(FORM.note || '').trim()){
     toast(t('اكتب سببَ تعذُّر الوصول في الملاحظات'));
     return;
@@ -14131,7 +14150,8 @@ function svSave(next){
     rec.prevNote = prevRec.revisitNote || '';
   } else if (prevRec && prevRec.round) rec.round = prevRec.round;
   if (prevRec && prevRec.loc) rec.loc = prevRec.loc;   /* التحريكُ لا يضيع بحفظ النموذج */
-  CORE.set('recs', s.id, rec);
+  rec.phN = phN;
+      CORE.set('recs', s.id, rec);
   Object.keys(FORM.photos).forEach(function(k){
     /* لا صورةَ خامٌ في القاعدة ولو تعذّر الطابور: تبقى محليًّا حتى يُضبَط درايف */
     if (typeof photoQueue === 'function') photoQueue(s.id, k, FORM.photos[k].data);
@@ -14544,6 +14564,11 @@ function siteLog(id){
   }
   if (ins) push(ins.at, 'التركيب' + (ins.status ? ' — ' + t(ins.status) : '') + (ins.note ? ': ' + ins.note : ''), ins.by, 'ins');
   if (ds)  push(ds.at, 'الفكّ' + (ds.note ? ' — ' + ds.note : ''), ds.by, 'dis');
+  /* صورٌ أُخذت ولم تصل: الزيارةُ تقول كم أخذ الفنيُّ، والسجلُّ يقول كم وصل */
+  if (r && r.phN){
+    var got = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del; }).length;
+    if (got < r.phN) push(r.at + 1, t('أُخذت') + ' ' + nm(r.phN) + ' ' + t('صور') + ' — ' + t('وصل') + ' ' + nm(got) + ' — ' + t('والباقي في طابور جهاز الفنيّ أو تعذّر رفعُه'), 'back');
+  }
   /* الصورُ: من رفعها ومتى — ولكلِّ صورةٍ إثباتُها */
   (typeof photosOf === 'function' ? photosOf(id) : []).forEach(function(p){
     var ph = p[1] || {};
@@ -16802,7 +16827,7 @@ function photoFlush(){
       site:it.site, kind:it.kind, seq:seq, name:nm2,
       driveId:r.id, link:r.webViewLink, at:it.at
     });
-    logEvent('رفع صورة — ' + nm2 + ' \u00b7 ' + it.kind);
+    logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2, it.site);
     if (PHOTO_Q.length) setTimeout(photoFlush, 400);
     return 1;
   }).catch(function(e){
@@ -16835,7 +16860,7 @@ function photoFlushCloud(){
     status:'pending', data:data
   });
   CORE.saveSoon();
-  logEvent('صورةٌ صعدت للقاعدة — ' + nm2 + ' \u00b7 ' + it.kind + ' — ينقلها الخادمُ إلى الدرايف');
+  logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2 + ' — ينقلها الخادمُ إلى الدرايف', it.site);
   if (PHOTO_Q.length) setTimeout(photoFlush, 300);
   return Promise.resolve(1);
 }
@@ -18955,7 +18980,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.32' + '.docx" download>⬇ '
+              +   'V17.33' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19659,13 +19684,13 @@ function popHtml(){
             if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
           } else if (rv2 !== 'approved'){
             step = 'مُسحت — تنتظر الاعتمادَ التقني'; who = 'المهندس';
-            if (may('approve')) go = btn('✅ ' + t('افتح الاعتماد التقني'),'btn-primary btn-sm',' data-goto="svappr"');
+            if (may('approve')) go = btn('✅ ' + t('افتح الاعتماد التقني'),'btn-primary btn-sm',' data-goto="svappr" data-gotosite="' + esc(s.id) + '"');
           } else if (ms2 === 'returned'){
             step = 'أعادتها الوزارةُ بملاحظة — تنتظر المعالجة'; who = 'المهندس';
-            if (may('approve')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr"');
+            if (may('approve')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
           } else if (ms2 !== 'approved'){
             step = 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة لإعداد التركيب'; who = 'الوزارة';
-            if (may('minapprove')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr"');
+            if (may('minapprove')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
           } else if (!so){
             step = 'مُسحت — تنتظر تحديدَ ما سيُركَّب'; who = 'المهندس';
             if (may('edit')) go = btn('🧩 ' + t('حدّد القطع'),'btn-primary btn-sm',' data-goto="solution"');
@@ -31849,11 +31874,12 @@ function render(force){
   /* بحثُ الصفحة يخصُّ صفحتَه: يُمسَح عند الانتقال (V17.23) */
   /* بحثُ الشاشة يُمسَح عند مغادرتها — لا يُترَك مُرشِّحًا يعود إليه صاحبُه
      فيظنّ البياناتِ ناقصة (V17.24) */
-  if (wasCur !== CUR){
+  if (wasCur !== CUR && !PG_KEEP){
     PG_Q = '';
     if (PG_LAST_BIND){ try { PG_LAST_BIND(''); } catch (er){ LS_ERR = er; } PG_LAST_BIND = null; }
     var pb = PG_BIND[CUR]; if (pb) pb('');
   }
+  PG_KEEP = false;   /* الانتقالُ الموجَّهُ إلى نقطةٍ يحتفظ ببحثه مرةً واحدة (V17.33) */
   /* التصدير مكانه المتابعة: الوزارة تُصدّر تقاريرها وإن لم تملك التصدير الكامل */
   var head = p.full ? '' : pageHead(p.m, p.t, pl,
     (p.m === 'المتابعة' || may('exportAll'))
@@ -32461,13 +32487,17 @@ function onDocClick(e){
        ويُختار القسمُ الذي هي فيه، فلا يُعتمَد إلا المقصود. */
     var gsite = gto.getAttribute('data-gotosite') || '';
     var dest = gto.getAttribute('data-goto');
+    goPage(dest);
     if (gsite){
+      /* يُضبَط بعد goPage: الرسمُ يمسح بحثَ الصفحة عند تبديلها (V17.24)،
+         فلو ضُبط قبلَه مُسح — وهذا ما جعل الزرَّ يفتح الشاشةَ بلا نقطة (V17.33) */
       var rr = STATE.recs[gsite];
+      PG_Q = gsite; PG_KEEP = true;
       if (dest === 'svappr'){ SVA_Q = gsite; SVA_ST = svReview(rr) === 'revisit' ? 'revisit' : 'pending'; }
       if (dest === 'minappr'){ MIN_Q = gsite; }
       toast(t('فُتحت على') + ' ' + gsite);
     }
-    goPage(dest); render();
+    render();
     return;
   }
   var sva = e.target.closest('[data-svast]');

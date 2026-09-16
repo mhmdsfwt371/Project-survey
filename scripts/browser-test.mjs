@@ -156,6 +156,24 @@ const legend = await page.evaluate(() => [...document.querySelectorAll('.map-leg
 T(legend.length >= 11, 'الأسطورةُ تحمل رقمًا لكلِّ حالةٍ والمجموع (' + legend.length + ')');
 await page.screenshot({ path: OUT + '/04-legend.png' });
 
+console.log('\n══ ٤ب · الأبعادُ على الهاتف: لا زرَّ خارجَ الشاشة ولا صفحةَ أعرضَ منها (V17.33) ══');
+{
+  const bad = [];
+  for (const pid of ['ev','users','wbs','survey','trials','sys']){
+    await page.evaluate(id => { goPage(id); render(1); }, pid); await page.waitForTimeout(250);
+    const r = await page.evaluate(() => {
+      const W = window.innerWidth;
+      const wide = document.documentElement.scrollWidth > W + 2;
+      const off = [...document.querySelectorAll('#content button, #content input, #content select')]
+        .map(el => el.getBoundingClientRect())
+        .filter(b => b.width > 0 && (b.right > W + 2 || b.left < -2)).length;
+      return { wide, off };
+    });
+    if (r.wide || r.off) bad.push(pid + (r.wide ? ' عرض' : '') + (r.off ? ' أزرار:' + r.off : ''));
+  }
+  T(bad.length === 0, 'كلُّ شاشةٍ داخل عرض الهاتف وأزرارُها مرئية' + (bad.length ? ' — خالف: ' + bad.join(' · ') : ''));
+}
+
 console.log('\n══ ٥ · جولةٌ على الشاشات في المتصفّح الحقيقي ══');
 const ids = await page.evaluate(() => [...new Set([...document.querySelectorAll('#nav [data-p]')].map(a => a.getAttribute('data-p')))]);
 let drawn = 0;
