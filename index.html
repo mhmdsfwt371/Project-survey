@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.28</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.29</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3671,6 +3671,7 @@ en:{
  'سُجِّل على':'recorded on',
  'اجلب السجلَّ من القاعدة':'Fetch the log from the database', 'يُجلَب السجل…':'Fetching the log…',
  'اجلب هذا المدى من القاعدة':'Fetch this range from the database', 'أنزِل أقدمَ خمسمئة':'Load 500 older', 'حدثًا جُلبت':'events fetched', 'وثمّةَ أقدم':'and older ones remain', 'في اليد':'Loaded', 'حدثًا من سجلِّ القاعدة':'events from the database log', 'وثمّةَ أقدمُ لم يُنزَل بعد: استعمل «أنزِل أقدمَ خمسمئة» أو حدِّد مدًى بالتاريخ واجلبه.':'Older entries are not loaded yet: use “Load 500 older”, or set a date range and fetch it.', 'وهذا كلُّ ما في القاعدة ضمن هذا النطاق.':'This is everything in the database within this scope.',
+ 'من نصّ الحدث':'from the event text',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6364,6 +6365,7 @@ ur:{
  'سُجِّل على':'ریکارڈ ہوا',
  'اجلب السجلَّ من القاعدة':'ڈیٹابیس سے ریکارڈ لائیں', 'يُجلَب السجل…':'ریکارڈ لایا جا رہا ہے…',
  'اجلب هذا المدى من القاعدة':'یہ مدت ڈیٹابیس سے لائیں', 'أنزِل أقدمَ خمسمئة':'مزید ٥٠٠ پرانی لائیں', 'حدثًا جُلبت':'واقعات لائے گئے', 'وثمّةَ أقدم':'اور پرانی باقی ہیں', 'في اليد':'موجود', 'حدثًا من سجلِّ القاعدة':'ڈیٹابیس ریکارڈ سے واقعات', 'وثمّةَ أقدمُ لم يُنزَل بعد: استعمل «أنزِل أقدمَ خمسمئة» أو حدِّد مدًى بالتاريخ واجلبه.':'پرانی اندراجات ابھی نہیں آئیں: «مزید ٥٠٠ پرانی لائیں» استعمال کریں یا تاریخ کی مدت مقرر کر کے لائیں۔', 'وهذا كلُّ ما في القاعدة ضمن هذا النطاق.':'اس دائرے میں ڈیٹابیس میں یہی سب کچھ ہے۔',
+ 'من نصّ الحدث':'واقعے کے متن سے',
 }
 };
 
@@ -18947,7 +18949,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.28' + '.docx" download>⬇ '
+              +   'V17.29' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -27655,7 +27657,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
     if (evAll().length < 50) evFetch(false);
     var all = evAll(), L = evRows();
     var users = [], seen = {};
-    all.forEach(function(e){ var b = e.by || ''; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
+    all.forEach(function(e){ var b = evActor(e).name; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
     var kinds = {}; all.forEach(function(e){ var k = evKind(e.what); kinds[k] = (kinds[k]||0)+1; });
     var cats = {};  all.forEach(function(e){ var c = evCat(e.what); if (c) cats[c] = (cats[c]||0)+1; });
 
@@ -27705,11 +27707,16 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
                   return ['<span class="num">' + esc(e.day || '') + ' ' + esc(e.at || '') + '</span>',
                           pill(t(evKind(e.what)), evPillKind(e.what)),
                           esc(e.what || ''),
-                          /* الفاعلُ أوّلًا، ومن سجّله تحته إن اختلفا (V17.26) */
-                          esc(dispName(e.by || '') || '—')
-                            + (e.rec && e.rec !== e.by
-                                ? '<br><span class="hint" style="margin:0">' + esc(t('سُجِّل على')) + ' ' + esc(dispName(e.rec)) + '</span>'
-                                : '')];
+                          /* الفاعلُ أوّلًا — من حقله أو من نصِّه — ومن سجّله تحته */
+                          (function(){
+                            var a = evActor(e);
+                            return esc(dispName(a.name) || '—')
+                              + (a.from === 'text'
+                                  ? '<br><span class="hint" style="margin:0">' + esc(t('من نصّ الحدث')) + '</span>'
+                                  : (e.rec && e.rec !== e.by
+                                      ? '<br><span class="hint" style="margin:0">' + esc(t('سُجِّل على')) + ' ' + esc(dispName(e.rec)) + '</span>'
+                                      : ''));
+                          })()];
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا أحداثَ تطابق التصفية.')) + '</p>')
 
@@ -28594,6 +28601,33 @@ function evFetch(force, mode){
     softErr('جلب السجل', e, '');
   });
 }
+/* ═══ الفاعلُ يُقرأ من نصِّ الحدث حين لا يحمله حقلُه (V17.29) ═══
+   الأحداثُ المكتوبةُ قبل وسم الفاعل تحمل اسمَ صاحب الجهاز في حقل «من»،
+   واسمُ الفاعل الحقيقيِّ **مكتوبٌ في نصِّها**: «إشعار — زيارة تمّت ·
+   NSK-MIN-CMP-0149 · عمار حسين احمد عميش — بانتظار اعتمادك». ولا يجوز أن
+   يُكتَب على الوثيقة المخزَّنة اسمٌ لم تُكتَب به — تزويرٌ في سجلِّ تدقيق.
+   فيُقرأ للعرض فقط: إن ذُكر في النصِّ اسمُ حسابٍ من حسابات النظام غيرِ
+   صاحب الجهاز فهو الفاعل، ويُقال إنه مقروءٌ من النصّ لا مختومٌ في الحقل. */
+var EV_NAMES = null, EV_NAMES_V = 0;
+function evNames(){
+  var n = Object.keys(STATE.users || {}).length;
+  if (EV_NAMES && EV_NAMES_V === n) return EV_NAMES;
+  EV_NAMES_V = n;
+  EV_NAMES = Object.keys(STATE.users || {}).map(function(k){ return (STATE.users[k] || {}).name || ''; })
+    .filter(function(x){ return x && x.length > 3; })
+    .sort(function(a, b){ return b.length - a.length; });   /* الأطولُ أولًا فلا يبتلعه جزءٌ منه */
+  return EV_NAMES;
+}
+function evActor(e){
+  var by = String((e && e.by) || ''), txt = String((e && e.what) || '');
+  var mine = STATE.meta.name || '';
+  if (by && by !== mine) return { name:by, from:'field' };
+  var L = evNames();
+  for (var i = 0; i < L.length; i++){
+    if (L[i] !== mine && txt.indexOf(L[i]) > -1) return { name:L[i], from:'text' };
+  }
+  return { name:by || '', from:'field' };
+}
 function evAll(){
   var byId = {}, out = [];
   (STATE.events || []).forEach(function(e){ if (e && e.id && !byId[e.id]){ byId[e.id] = 1; out.push(e); } });
@@ -28611,7 +28645,7 @@ function evRows(){
   return L.filter(function(e){
     if (EVF.kind && evKind(e.what) !== EVF.kind) return false;
     if (EVF.cat && evCat(e.what) !== EVF.cat) return false;
-    if (EVF.by && String(e.by || '') !== EVF.by) return false;
+    if (EVF.by && evActor(e).name !== EVF.by) return false;   /* بالفاعل لا بصاحب الجهاز */
     if (EVF.q && String(e.what || '').indexOf(EVF.q) < 0) return false;
     /* التاريخُ والوقتُ معًا: `from` و`to` بصيغة datetime-local */
     if (EVF.from && e.ts < Date.parse(EVF.from)) return false;
