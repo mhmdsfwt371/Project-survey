@@ -54,6 +54,8 @@ jobs:
         run: node scripts/audit-zero.mjs
       - name: جرد الصفحات — لا شاشة ميتة ولا معزولة
         run: node scripts/audit-pages.mjs
+      - name: جرد مزايا الدورة — النبضة والسجل والأدوات والفهرس
+        run: node scripts/audit-session17.mjs
       - name: جرد اللغة — لا حرف عربي يبقى بلا قرار
         run: node scripts/audit-lang.mjs
       - name: جرد الترجمة بالرندر — كل صفحة تُفتح بالإنجليزية

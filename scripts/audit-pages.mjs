@@ -182,7 +182,7 @@ if (bad){ console.log('\nجردُ الصفحات فشل ✗'); fail.forEach(f =>
     'والأزرارُ العائمةُ تختفي أثناء الرسم فلا تحجب موضعَ الضغط');
   check(/function drawFlag\(\)/.test(jsx) && (jsx.match(/drawFlag\(\);/g) || []).length >= 4,
     'وعلامةُ الرسم تُرفَع وتُنزَل مع بدء الرسم وانتهائه');
-  check(/L\.polyline\(pts, \{ color:'#FF8C42'/.test(jsx) && /L\.polygon\(pts, \{ color:'#FF8C42'/.test(jsx),
+  check(/L\.polyline\(pts, \{ renderer:MAP_CV, color:'#FF8C42'/.test(jsx) && /L\.polygon\(pts, \{ renderer:MAP_CV, color:'#FF8C42'/.test(jsx),
     'وما يُرسَم يُرى: خطُّ المسار ومضلَّعُ المساحة على الخريطة');
   check(/gen\.slice\(0, 600\)\.forEach/.test(jsx), 'ونقاطُ التوليد تُعرَض قبل الحفظ');
   check(/PG_Q \? 5000 :/.test(jsx), 'وسقفُ الصفوف يرتفع أثناء البحث فلا يختبئ المطلوبُ خلفه');
