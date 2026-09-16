@@ -6,6 +6,10 @@ name: Provision accounts + photos
 on:
   schedule:
     - cron: '*/10 * * * *'
+  # الجدولةُ تتأخّر ساعاتٍ تحت ضغط GitHub — فالدفعُ إلى main يشغّل الجسرَ أيضًا (V17.39)
+  push:
+    branches: [main]
+    paths-ignore: ['backups/**']
   workflow_dispatch:
     inputs:
       team:

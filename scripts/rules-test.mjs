@@ -259,6 +259,8 @@ await ok  ('الفنيُّ يكتب النبضةَ بعد رفعه',            
 await ok  ('والمشرفُ يقرؤها',                             getDoc(doc(as('sup'), 'settings/pulse')));
 await ok  ('والوزارةُ تقرؤها لتعرف متى تسحب',             getDoc(doc(as('vwr'), 'settings/pulse')));
 await deny('ولا تكتبها — لا ترفع شيئًا أصلًا',            setDoc(doc(as('vwr'), 'settings/pulse'), { at:2 }, { merge:true }));
+await ok  ('وختمُ الجسر يُقرأ',                             getDoc(doc(as('sup'), 'settings/bridge')));
+await deny('ولا يكتبه إلا الخادم',                          setDoc(doc(as('tec'), 'settings/bridge'), { at:1 }, { merge:true }));
 await ok  ('ويقرؤها المهندسُ ليصلحها',                    getDoc(doc(as('eng'), 'bugs/b1')));
 await ok  ('ويغلقها',                                    setDoc(doc(as('eng'), 'bugs/b1'), Object.assign({}, BUG, { status:'مغلق' })));
 await deny('ولا يغلقها الفنيّ',                           setDoc(doc(as('tec'), 'bugs/b2'), Object.assign({}, BUG, { status:'مغلق' })));

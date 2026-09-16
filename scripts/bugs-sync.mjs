@@ -82,5 +82,8 @@ for (const d of snap.docs){
   } catch (e){ /* بلاغٌ حُذف أو لا يُقرأ — يُترَك كما هو */ }
 }
 
+/* ختمُ آخر تشغيلٍ (V17.39): تقرؤه شاشةُ الاستهلاك فيُعرَف إن وقف الجسرُ قبل أن يضيع بلاغ */
+try { await db.collection('settings').doc('bridge').set({ at: Date.now(), bugs: snap.size, opened, closed, run: process.env.GITHUB_RUN_NUMBER || '' }, { merge: true }); }
+catch (e){ console.log('تعذّر ختمُ التشغيل: ' + e.message); }
 console.log(`البلاغات: ${snap.size} في القاعدة · فُتح ${opened} · أُغلق ${closed}`);
 if (opened) console.log(`::notice title=بلاغات::فُتح ${opened} بلاغًا جديدًا من التطبيق`);
