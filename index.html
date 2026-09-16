@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.26</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.27</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3669,6 +3669,7 @@ en:{
  'ابحث في هذه الصفحة':'Search this page',
  'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'This device is reading more than usual — periodic sync slowed to protect the project quota', 'قراءاتُ هذا الجهاز اليوم':'Reads on this device today', 'تُراقَب':'being watched',
  'سُجِّل على':'recorded on',
+ 'اجلب السجلَّ من القاعدة':'Fetch the log from the database', 'يُجلَب السجل…':'Fetching the log…',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6360,6 +6361,7 @@ ur:{
  'ابحث في هذه الصفحة':'اس صفحے میں تلاش کریں',
  'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'یہ ڈیوائس معمول سے زیادہ پڑھ رہی ہے — منصوبے کے کوٹے کے تحفظ کے لیے متواتر سنک سست کر دی گئی', 'قراءاتُ هذا الجهاز اليوم':'آج اس ڈیوائس کی ریڈز', 'تُراقَب':'زیرِ نگرانی',
  'سُجِّل على':'ریکارڈ ہوا',
+ 'اجلب السجلَّ من القاعدة':'ڈیٹابیس سے ریکارڈ لائیں', 'يُجلَب السجل…':'ریکارڈ لایا جا رہا ہے…',
 }
 };
 
@@ -18943,7 +18945,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.26' + '.docx" download>⬇ '
+              +   'V17.27' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -27647,6 +27649,8 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
   body:function(){
     var head = tabHead('ev'), cur = tabCur('ev');
     if (cur === 'ev') return head + (function(){
+    /* ما في اليد قليلٌ؟ يُجلَب السجلُّ مرةً — فلا تُقرأ الشاشةُ فارغةً وهي مليئة */
+    if (evAll().length < 50) evFetch(false);
     var all = evAll(), L = evRows();
     var users = [], seen = {};
     all.forEach(function(e){ var b = e.by || ''; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
@@ -27686,6 +27690,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
         + '<input type="search" data-evf="q" value="' + esc(EVF.q) + '" dir="auto"></div>'
         + '<div class="actions">'
         + btn('امسح التصفية','btn-quiet btn-sm',' data-evclr="1"')
+        + btn('\u{1F5C3} ' + t('اجلب السجلَّ من القاعدة'),'btn-quiet btn-sm',' data-evfetch="1"')
         + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ev"')
         + '</div>')
 
@@ -28541,6 +28546,28 @@ var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
    حدثًا واحدًا — دخولَه هو — وقد كتب الفريقُ مئاتِ الأحداث. والأثرُ يُرفَع منذ
    V15 إلى «events» وما كان يُقرَأ. فصار المكتبُ يسحبه ويُدمَج بما على الجهاز
    بلا تكرار: ما رُفع وما لم يُرفَع بعدُ في قائمةٍ واحدةٍ مرتّبةٍ بالزمن. */
+/* ═══ السجلُّ من القاعدة لا من ذاكرة الجلسة (V17.27) ═══
+   الأحداثُ لا تُحفَظ على الجهاز (هي أثرٌ لا بيانات عمل)، والسحبُ الفارقيُّ
+   يجلب ما كُتب بعد المؤشِّر وحدَه — فمع كلِّ إعادةِ تحميلٍ تُفرَّغ الشاشةُ
+   وتقول «كل الأحداث ١»، والأثرُ كلُّه في القاعدة سليمٌ لا يُرى. فصارت
+   الشاشةُ تجلب آخرَ خمسمئةِ حدثٍ مرةً عند فتحها إن كان ما بيدها قليلًا —
+   بسقفٍ، ويُحصى في عدّاد القراءات، ولا يُعاد في الجلسة نفسِها. */
+var EV_FETCHED = 0, EV_FETCHING = false;
+function evFetch(force){
+  if (!FB.ready || !FB.db || EV_FETCHING) return;
+  if (!force && EV_FETCHED) return;
+  EV_FETCHING = true;
+  FB.db.collection('events').orderBy('ts', 'desc').limit(500).get().then(function(sn){
+    if (!STATE.evlog) STATE.evlog = {};
+    sn.forEach(function(dd){ STATE.evlog[dd.id] = dd.data(); });
+    FB.readCount = (FB.readCount || 0) + sn.size;
+    EV_FETCHED = Date.now(); EV_FETCHING = false;
+    if (CUR === 'ev') render(1);
+  }).catch(function(e){
+    EV_FETCHING = false; EV_FETCHED = Date.now();
+    softErr('جلب السجل', e, '');
+  });
+}
 function evAll(){
   var byId = {}, out = [];
   (STATE.events || []).forEach(function(e){ if (e && e.id && !byId[e.id]){ byId[e.id] = 1; out.push(e); } });
@@ -32114,6 +32141,7 @@ function clickA(e){
     else toast(t('لا نتائج'));
     return true;
   }
+  if (e.target.closest('[data-evfetch]')){ toast(t('يُجلَب السجل…')); evFetch(true); return true; }
   if (e.target.closest('[data-evclr]')){
     /* الضغطُ على مسحٍ بلا تصفيةٍ لا يغيّر شيئًا — فيُقال ذلك بدل الصمت */
     if (!EVF.kind && !EVF.by && !EVF.from && !EVF.to && !EVF.q && !EVF.cat){

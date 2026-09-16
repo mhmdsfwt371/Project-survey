@@ -80,5 +80,11 @@ T(/by:opt\.actor \|\| STATE\.meta\.name/.test(js) && /at:\+opt\.at \|\| Date\.no
 T((js.match(/actor:\(v\.by \|\| v\._byName \|\| who\), at:at/g) || []).length >= 10,
   'وكلُّ إشعارِ وصولٍ يمرّر فاعلَ الوثيقة ووقتَها');
 
+/* ═══ ١٠ · السجلُّ يُقرأ من القاعدة لا من ذاكرة الجلسة (V17.27) ═══ */
+T(/collection\('events'\)\.orderBy\('ts', 'desc'\)\.limit\(500\)/.test(js) && /EV_FETCHED/.test(js),
+  'وسجلُّ الأحداث يُجلَب من القاعدة بسقفِ خمسمئة');
+T(/if \(evAll\(\)\.length < 50\) evFetch\(false\);/.test(js) && /data-evfetch/.test(js),
+  'مرةً عند فتح الشاشة إن قلَّ ما بيدها — وبزرٍّ متى شئت');
+
 console.log(bad ? `\nجردُ القراءات فشل ✗ (${bad})` : '\nلا مجموعةَ تُقرأ بلا سقف، وما يُقرأ يُحصى ✅');
 process.exit(bad ? 1 : 0);
