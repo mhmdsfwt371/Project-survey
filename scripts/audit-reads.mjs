@@ -118,5 +118,14 @@ T(/EVF\.by && evActor\(e\)\.name !== EVF\.by/.test(js), 'وترشيحُ «الم
   T(order.indexOf('رفض وحذف') < order.indexOf('زيارة'), 'والردُّ قرارٌ يُفحَص قبل الزيارة فلا تبتلعه');
 }
 
+/* ═══ ١٣ · الاستهلاكُ والأداءُ يُقاسان ويُرفَعان ويُعرَضان (V17.34) ═══ */
+T(/function perfNote\(kind, ms\)/.test(js) && /perfNote\('r'/.test(js) && /perfNote\('p'/.test(js),
+  'وزمنُ الرسم وزمنُ السحب يُقاسان على الجهاز');
+T(/q:\(STATE\.queue \|\| \[\]\)\.length, pz:/.test(js) && /rms:perfAvg\('r'\), pms:perfAvg\('p'\), pulse:!!PULSE_UNSUB/.test(js),
+  'ونبضةُ الحضور تحمل الطوابيرَ والأخطاءَ والأزمنةَ وحالَ النبضة');
+T(/\['usage','الاستهلاك والأداء'/.test(js) && /pill\('منقطع', 'bad'\)/.test(js) && /pill\('قراءاتٌ عالية', 'warn'\)/.test(js),
+  'وشريحةُ «الاستهلاك والأداء» تعرض كلَّ جهازٍ وتَسِمُ المنقطعَ والعاليَ والبطيء');
+T(/function pulseBadge\(\)/.test(js) && /\+ pulseBadge\(\);/.test(js), 'وشارةُ النبضة في الشريط');
+
 console.log(bad ? `\nجردُ القراءات فشل ✗ (${bad})` : '\nلا مجموعةَ تُقرأ بلا سقف، وما يُقرأ يُحصى ✅');
 process.exit(bad ? 1 : 0);
