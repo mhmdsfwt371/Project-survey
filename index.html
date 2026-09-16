@@ -858,7 +858,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.35</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.36</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3693,6 +3693,9 @@ en:{
  'الاستهلاك والأداء':'Usage & performance', 'كلُّ جهاز: قراءاتُه وطوابيرُه وأعطالُه وزمنُ رسمه وسحبه — ومن سقط منها.':'Every device: its reads, queues, errors, render and pull times — and which ones dropped.', 'كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.':'Each device measures itself and reports with its presence beat: what it read, what waits in its queues, its errors, and how long render and pull take.', 'أجهزة':'Devices', 'متصلةٌ الآن':'Online now', 'منقطعةٌ في وقت العمل':'Silent during work hours', 'على نسخةٍ قديمة':'On an old version', 'بطوابيرَ عالقة':'With stuck queues', 'قراءاتُ اليوم كلِّها':'Reads today (all)', 'أخطاءٌ مسجَّلة':'Recorded errors', 'الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).':'The free quota is fifty thousand reads per day for the whole project — figures here come from each device\u2019s last beat (every half hour or on change).', 'الأجهزة':'Devices', 'لا نبضاتٍ بعد.':'No beats yet.', 'منقطع':'Silent', 'نسخة قديمة':'Old version', 'طابورٌ مسموم':'Poisoned queue', 'صور فشلت':'photos failed', 'قراءاتٌ عالية':'High reads', 'رسمٌ بطيء':'Slow render', 'بلا نبضة':'No pulse', 'م.ث':'ms', 'طوابير':'Queues', 'أخطاء':'Errors', 'زمن الرسم':'Render time', 'زمن السحب':'Pull time', 'النبضةُ حيّة: التغييراتُ تصل في ثوانٍ — والسحبُ الدوريُّ شبكةُ أمان':'Pulse is live: changes arrive within seconds — the periodic pull is a safety net', 'النبضةُ غيرُ متصلة — يُعتمَد على السحب الدوريّ':'Pulse not connected — relying on the periodic pull',
  'تعذّر الوصولُ — تُزار ثانيةً':'Could not be reached — to be revisited', 'المشرفُ المُسنَد إليه':'The assigned supervisor', 'لون النقطة':'Point colour',
  'الخلاصة':'Summary', 'التفاصيل التقنية':'Technical details', 'النظامُ يعمل بشكلٍ طبيعيّ: كلُّ الأجهزة تتزامن ولا شيءَ عالق.':'The system is running normally: all devices are syncing and nothing is stuck.', 'يوجد ما يستحقُّ نظرة:':'There is something worth a look:', 'جهازًا لم يتزامن منذ أكثر من ساعتين في وقت العمل — قد يكون مغلقًا أو بلا شبكة.':'devices have not synced for over two hours during work hours — possibly closed or offline.', 'جهازًا عنده عملٌ لم يُرفَع بعد (صورٌ أو زيارات) — يُفتَح على شبكةٍ فيُرفَع وحدَه.':'devices have work not yet uploaded (photos or visits) — open them on a network and it uploads itself.', 'جهازًا على نسخةٍ قديمة — يُعاد فتحُ التطبيق فيحدّث نفسَه.':'devices on an old version — reopen the app and it updates itself.', 'استهلاكُ القاعدة اليوم قريبٌ من الحدِّ المجانيّ.':'Database usage today is close to the free limit.', 'خطأً برمجيًّا مسجَّلًا على الأجهزة — يراه المطوّرُ في السجل.':'software errors recorded on devices — the developer sees them in the log.', 'متصلٌ الآن':'Online now', 'قراءاتُ اليوم':'Reads today',
+ 'تعذّر تحميلُ مكتبة الضغط':'Could not load the compression library',
+ 'سحبات باردة':'cold pulls', 'جلسة':'session', '«قراءات» هي قراءاتُ اليوم؛ وما وُسم «جلسة» فمن نسخةٍ أقدمَ يعدُّ منذ الفتح. و«سحبة باردة» تعني أن الجهازَ أعاد تحميلَ نطاقه كلِّه — وهي ما يرفع القراءاتِ بالآلاف.':'“Reads” are today’s reads; a “session” tag means an older version counting since launch. A “cold pull” means the device reloaded its whole scope — that is what pushes reads into the thousands.',
+ 'مُبطَّأ':'slowed', 'أُبطئ السحبُ الدوريُّ لأن هذا الجهاز قرأ':'Periodic pull slowed because this device read', 'اليوم — والنبضةُ تُبقي التغييراتِ تصل في ثوانٍ':'today — the pulse still delivers changes within seconds',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6394,6 +6397,9 @@ ur:{
  'الاستهلاك والأداء':'استعمال اور کارکردگی', 'كلُّ جهاز: قراءاتُه وطوابيرُه وأعطالُه وزمنُ رسمه وسحبه — ومن سقط منها.':'ہر ڈیوائس: ریڈز، قطاریں، خرابیاں، رینڈر اور پُل کا وقت — اور کون سی گر گئیں۔', 'كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.':'ہر ڈیوائس خود کو ناپتی ہے اور حاضری کے ساتھ رپورٹ کرتی ہے: کیا پڑھا، قطاروں میں کیا باقی ہے، کیا خرابیاں ہوئیں، اور رینڈر و پُل کتنا وقت لیتے ہیں۔', 'أجهزة':'ڈیوائسز', 'متصلةٌ الآن':'ابھی آن لائن', 'منقطعةٌ في وقت العمل':'کام کے اوقات میں خاموش', 'على نسخةٍ قديمة':'پرانے ورژن پر', 'بطوابيرَ عالقة':'رکی ہوئی قطاروں کے ساتھ', 'قراءاتُ اليوم كلِّها':'آج کی کل ریڈز', 'أخطاءٌ مسجَّلة':'ریکارڈ شدہ خرابیاں', 'الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).':'مفت حد پورے منصوبے کے لیے روزانہ پچاس ہزار ریڈز — یہاں کے اعداد ہر ڈیوائس کی آخری بیٹ سے ہیں (ہر آدھے گھنٹے یا تبدیلی پر)۔', 'الأجهزة':'ڈیوائسز', 'لا نبضاتٍ بعد.':'ابھی کوئی بیٹ نہیں۔', 'منقطع':'خاموش', 'نسخة قديمة':'پرانا ورژن', 'طابورٌ مسموم':'خراب قطار', 'صور فشلت':'تصاویر ناکام', 'قراءاتٌ عالية':'زیادہ ریڈز', 'رسمٌ بطيء':'سست رینڈر', 'بلا نبضة':'بغیر نبض', 'م.ث':'ms', 'طوابير':'قطاریں', 'أخطاء':'خرابیاں', 'زمن الرسم':'رینڈر وقت', 'زمن السحب':'پُل وقت', 'النبضةُ حيّة: التغييراتُ تصل في ثوانٍ — والسحبُ الدوريُّ شبكةُ أمان':'نبض زندہ ہے: تبدیلیاں سیکنڈوں میں پہنچتی ہیں — متواتر پُل حفاظتی جال ہے', 'النبضةُ غيرُ متصلة — يُعتمَد على السحب الدوريّ':'نبض منسلک نہیں — متواتر پُل پر انحصار',
  'تعذّر الوصولُ — تُزار ثانيةً':'پہنچ نہیں سکے — دوبارہ دورہ', 'المشرفُ المُسنَد إليه':'مقرر سپروائزر', 'لون النقطة':'پوائنٹ کا رنگ',
  'الخلاصة':'خلاصہ', 'التفاصيل التقنية':'تکنیکی تفصیلات', 'النظامُ يعمل بشكلٍ طبيعيّ: كلُّ الأجهزة تتزامن ولا شيءَ عالق.':'نظام معمول کے مطابق چل رہا ہے: تمام ڈیوائسز سنک ہو رہی ہیں اور کچھ رکا نہیں۔', 'يوجد ما يستحقُّ نظرة:':'کچھ توجہ کے لائق ہے:', 'جهازًا لم يتزامن منذ أكثر من ساعتين في وقت العمل — قد يكون مغلقًا أو بلا شبكة.':'ڈیوائس(ز) کام کے اوقات میں دو گھنٹے سے سنک نہیں ہوئیں — شاید بند یا آف لائن۔', 'جهازًا عنده عملٌ لم يُرفَع بعد (صورٌ أو زيارات) — يُفتَح على شبكةٍ فيُرفَع وحدَه.':'ڈیوائس(ز) پر کام اپ لوڈ نہیں ہوا (تصاویر یا دورے) — نیٹ ورک پر کھولیں تو خود اپ لوڈ ہو جائے گا۔', 'جهازًا على نسخةٍ قديمة — يُعاد فتحُ التطبيق فيحدّث نفسَه.':'ڈیوائس(ز) پرانے ورژن پر — ایپ دوبارہ کھولیں تو خود اپ ڈیٹ ہو جائے گی۔', 'استهلاكُ القاعدة اليوم قريبٌ من الحدِّ المجانيّ.':'آج ڈیٹابیس کا استعمال مفت حد کے قریب ہے۔', 'خطأً برمجيًّا مسجَّلًا على الأجهزة — يراه المطوّرُ في السجل.':'ڈیوائسز پر سافٹ ویئر خرابی ریکارڈ ہوئی — ڈویلپر ریکارڈ میں دیکھتا ہے۔', 'متصلٌ الآن':'ابھی آن لائن', 'قراءاتُ اليوم':'آج کی ریڈز',
+ 'تعذّر تحميلُ مكتبة الضغط':'کمپریشن لائبریری لوڈ نہ ہو سکی',
+ 'سحبات باردة':'کولڈ پُلز', 'جلسة':'سیشن', '«قراءات» هي قراءاتُ اليوم؛ وما وُسم «جلسة» فمن نسخةٍ أقدمَ يعدُّ منذ الفتح. و«سحبة باردة» تعني أن الجهازَ أعاد تحميلَ نطاقه كلِّه — وهي ما يرفع القراءاتِ بالآلاف.':'«ریڈز» آج کی ہیں؛ «سیشن» پرانا ورژن ہے جو کھلنے سے گنتا ہے۔ «کولڈ پُل» یعنی ڈیوائس نے پورا دائرہ دوبارہ لوڈ کیا — یہی ریڈز کو ہزاروں تک لے جاتا ہے۔',
+ 'مُبطَّأ':'سست', 'أُبطئ السحبُ الدوريُّ لأن هذا الجهاز قرأ':'متواتر پُل سست ہوا کیونکہ اس ڈیوائس نے پڑھا', 'اليوم — والنبضةُ تُبقي التغييراتِ تصل في ثوانٍ':'آج — نبض اب بھی تبدیلیاں سیکنڈوں میں پہنچاتی ہے',
 }
 };
 
@@ -9627,7 +9633,11 @@ function syncBadge(){
     + esc(t('آخر مزامنة')) + ' <span class="num">' + esc(ts) + '</span>'
     /* العدُّ التنازليُّ للدورة التالية — يُحدَّث كلَّ ثانيةٍ من liveTick */
     + ' <span class="hint" style="margin:0" title="' + esc(t('السحبُ التالي — عند الصفر تُدفَع الطوابيرُ وتُسحَب كلُّ التغييرات وتُعاد الشاشة؛ وما بينهما يصل بالإنصات الحيّ')) + '">'
-    + esc(t('السحب التالي')) + ' <span class="num" id="syncCd" dir="ltr">' + syncCdTxt() + '</span></span>'
+    + esc(t('السحب التالي')) + ' <span class="num" id="syncCd" dir="ltr">' + syncCdTxt() + '</span>'
+    + (typeof readSlowFactor === 'function' && readSlowFactor() > 1
+        ? ' <span class="pill warn" title="' + esc(t('أُبطئ السحبُ الدوريُّ لأن هذا الجهاز قرأ') + ' ' + nm(readBudget()) + ' ' + t('اليوم — والنبضةُ تُبقي التغييراتِ تصل في ثوانٍ')) + '">' + esc(t('مُبطَّأ')) + '</span>'
+        : '')
+    + '</span>'
     + pulseBadge();
 }
 
@@ -18994,7 +19004,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.35' + '.docx" download>⬇ '
+              +   'V17.36' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20086,7 +20096,7 @@ function pullDelta(opt){
      فالبصمةُ صارت للنطاق كلِّه — أيُّ تبدّلٍ فيه يُصفّر المؤشِّرَ ويسحب باردًا. */
   var tk = sc.tree ? treeKeys() : null;
   var sig = effRole(ROLE) + '|' + sc.cols.join(',') + '|' + (sc.mine ? 'mine' : 'all') + '|' + (tk ? tk.sig : '-');
-  if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; }
+  if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; COLD_N++; }
   return Promise.all(sc.cols.map(function(c){
     var key = PULL_COL[c] || c;
     if (!STATE[key]) STATE[key] = {};
@@ -20133,7 +20143,11 @@ function pullDelta(opt){
    إلا آخرَ الشهر. فيُحصى ما يقرؤه الجهازُ في اليوم: إن تجاوز ثلاثةَ آلافٍ
    قيل لصاحبه، وإن تجاوز ستةَ آلافٍ تباطأ السحبُ الدوريُّ إلى الربع ونُبِّه
    المكتبُ بحدث — والإنصاتُ والنبضةُ يبقيان فلا يتعطّل العمل. */
-var READ_CAP_WARN = 3000, READ_CAP_SLOW = 6000, READ_DAY = '', READ_DAY_N = 0, READ_WARNED = 0;
+/* السقفان (V17.36): كان الإبطاءُ عند ستة آلافٍ وبمعامل أربعة — فأصاب جهازَ
+   مدير المشروع في يومٍ عاديٍّ (سحبةٌ باردةٌ وسجلُّ صورٍ وسجلُّ أحداث) وصار
+   «السحبُ التالي» أربعين دقيقةً بلا تفسير. الإبطاءُ لجهازٍ جامحٍ لا لمن يعمل:
+   خمسةَ عشرَ ألفًا في اليوم، وبمعامل اثنين لا أربعة، ويُقال السببُ في الشريط. */
+var READ_CAP_WARN = 5000, READ_CAP_SLOW = 15000, READ_DAY = '', READ_DAY_N = 0, READ_WARNED = 0;
 function readBudget(){
   var day = dayKey(Date.now());
   if (READ_DAY !== day){ READ_DAY = day; READ_DAY_N = FB.readCount || 0; READ_WARNED = 0; }
@@ -20148,7 +20162,7 @@ function readBudget(){
   }
   return n;
 }
-function readSlowFactor(){ return readBudget() > READ_CAP_SLOW ? 4 : 1; }
+function readSlowFactor(){ return readBudget() > READ_CAP_SLOW ? 2 : 1; }
 function readDelta(col, key, cap){
   if (!FB.ready || !FB.db) return;
   if (!STATE[key]) STATE[key] = {};
@@ -21634,126 +21648,111 @@ function xlsSheets(pairs, fname){
     return true;
   });
 }
-/* ═══ ملفُّ المهام بمعادلاته (V17.19) ═══
-   الورقةُ التي يعمل عليها المكتبُ ليست جدولًا مسطّحًا: صفٌّ أوّلُ يكتب تاريخَ
-   اليومَ هجريًّا وميلاديًّا، وعمودان يحوّلان التاريخَ إلى نصٍّ مقروء، وعمودٌ
-   يصنّف الاستحقاقَ (متأخرة · اليوم · غدًا · هذا الأسبوع…)، وأعمدةُ الاجتماع
-   والتوقف، وورقةُ لوحةٍ بمؤشِّراتٍ تُحسَب من الأولى. فمن صدّر من النظام فقد
-   ذلك كلَّه وعاد يبنيه بيده. صار التصديرُ يكتب **الملفَّ نفسَه**: المعادلاتُ
-   تُكتَب كمعادلات، والبياناتُ تُملأ من النظام، والأعدادُ في اللوحة تتبع ما
-   يُضاف أو يُحذَف بعدها. */
-function wtSheetRows(){
-  var R = wtRows(), N = R.length, last = 2 + Math.max(N, 1);
-  var HDR = ['#','المهمة','مسار إدارة المشروع','كود المسار','الوصف','المسؤول','الحالة',
-             'تاريخ الرصد (هجري)','تاريخ الاستحقاق (هجري)','مصدر المهمة','التحديث',
-             'تاريخ الرصد (ميلادي)','تاريخ الاستحقاق (ميلادي)','فئة الاستحقاق',
-             'توقف المهمة','اجتماع الاحد','اجتماع الاربعاء'];
-  var ws = {}, F = function(a, v){ ws[a] = v; };
-  F('A1', { t:'s', f:'"اليوم: "&TEXT(TODAY(),"[$-060401]dddd، d mmmm yyyy")&" هـ  |  "&TEXT(TODAY(),"[$-ar-EG]dddd، d mmmm yyyy")&" م"' });
-  HDR.forEach(function(h, i){ F(XLSX.utils.encode_cell({ r:1, c:i }), { t:'s', v:h }); });
-  R.forEach(function(r, i){
-    var row = 2 + i, n = row + 1;                       /* صفُّ إكسل يبدأ من ١ */
-    var put = function(c, cell){ F(XLSX.utils.encode_cell({ r:row, c:c }), cell); };
-    put(0,  { t:'n', v:i + 1 });
-    put(1,  { t:'s', v:String(r.n || '') });
-    put(2,  { t:'s', v:String(r.track || '') });
-    put(3,  { t:'s', v:String(r.code || '') });
-    put(4,  { t:'s', v:String(r.d || '') });
-    put(5,  { t:'s', v:String(r.who || '') });
-    put(6,  { t:'s', v:String(r.st || '') });
-    if (r.seen) put(7, { t:'d', v:new Date(r.seen), z:'yyyy-mm-dd' });
-    if (r.due)  put(8, { t:'d', v:new Date(r.due),  z:'yyyy-mm-dd' });
-    put(9,  { t:'s', v:String(r.src || '') });
-    put(10, { t:'s', v:String(r.upd || '') });
-    /* المعادلاتُ الثلاثُ كما في الملفِّ الأصليّ */
-    put(11, { t:'s', f:'IF($H' + n + '="","",TEXT($H' + n + ',"[$-ar-EG]dddd، d mmmm yyyy"))' });
-    put(12, { t:'s', f:'IF($I' + n + '="","",TEXT($I' + n + ',"[$-ar-EG]dddd، d mmmm yyyy"))' });
-    put(13, { t:'s', f:'IF($B' + n + '="","",IF(TRIM($G' + n + ')="مكتمل","مكتملة",'
-      + 'IF($I' + n + '="","بدون تاريخ",'
-      + 'IF($I' + n + '<TODAY(),"متأخرة",'
-      + 'IF($I' + n + '=TODAY(),"اليوم",'
-      + 'IF($I' + n + '=TODAY()+1,"غدًا",'
-      + 'IF($I' + n + '<=TODAY()-WEEKDAY(TODAY(),2)+7,"باقي هذا الأسبوع",'
-      + 'IF($I' + n + '<=TODAY()-WEEKDAY(TODAY(),2)+14,"الأسبوع القادم",'
-      + 'IF($I' + n + '<=EOMONTH(TODAY(),0),"باقي هذا الشهر",'
-      + 'IF($I' + n + '<=EOMONTH(TODAY(),1),"الشهر القادم","لاحقًا")))))))))' });
-    put(14, { t:'s', v:String(r.stop || '') });
-    put(15, { t:'s', v:String(r.mSun || '') });
-    put(16, { t:'s', v:String(r.mWed || '') });
+/* ═══ ملفُّ المهام: كان يُبنى ورقةً ورقةً بمكتبة إكسل المجانية (V17.19) —
+   فلا أنماطَ ولا جدولَ ولا تنسيقاتٍ شرطية، ومعادلاتُ النصِّ بنوعٍ يرفضه
+   إكسل. أُزيل ذلك كلُّه في V17.36 لصالح القالب أدناه: الملفُّ الأصليُّ يُملأ. */
+/* ═══ الملفُّ نفسُه: قالبٌ يُملأ لا ورقةٌ تُبنى (V17.36) ═══
+   بناءُ الورقة من الصفر بمكتبة إكسل المجانية لا يكتب الألوانَ ولا الحدودَ
+   ولا الجدولَ المنسَّق ولا التنسيقاتِ الشرطية — وكتب معادلاتِ النصِّ بنوعٍ
+   خاطئٍ فرفضها إكسل وأصلحها بحذفها. فصار الملفُّ الأصليُّ نفسُه قالبًا: يُفتَح
+   كما هو (بأنماطه وجدوله ولوحته ومعادلاته)، وتُستبدَل صفوفُ البيانات وحدَها
+   بصفوفٍ تحمل أنماطَ صفِّه الأوّل ومعادلاتِه، ويُمَدُّ الجدولُ إلى آخر صف،
+   ويُطلَب من إكسل إعادةُ الحساب عند الفتح. فما يخرج هو ملفُّ المكتب بعينه
+   وفيه بياناتُ النظام. */
+var JSZIP_LOADING = null;
+function jszipLoad(){
+  if (typeof JSZip !== 'undefined') return Promise.resolve(true);
+  if (JSZIP_LOADING) return JSZIP_LOADING;
+  JSZIP_LOADING = new Promise(function(res){
+    var sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    sc.onload = function(){ res(true); }; sc.onerror = function(){ JSZIP_LOADING = null; res(false); };
+    document.head.appendChild(sc);
   });
-  ws['!ref'] = 'A1:Q' + Math.max(last, 3);
-  ws['!cols'] = [{wch:5},{wch:38},{wch:26},{wch:10},{wch:40},{wch:16},{wch:13},{wch:16},{wch:16},{wch:14},{wch:40},{wch:26},{wch:26},{wch:16},{wch:12},{wch:14},{wch:14}];
-  ws['!freeze'] = { xSplit:0, ySplit:2 };
-  return { ws:ws, last:last };
+  return JSZIP_LOADING;
 }
-function wtDashSheet(last){
-  var S = 'Sheet2!', ws = {}, F = function(a, c){ ws[a] = c; };
-  var s = function(a, v){ F(a, { t:'s', v:v }); }, fx = function(a, f){ F(a, { t:'n', f:f }); };
-  var R = '$I$3:$I$' + last, B = '$B$3:$B$' + last, G = '$G$3:$G$' + last, FF = '$F$3:$F$' + last;
-  var notDone = S + G + ',"<>مكتمل*"';
-  s('A1', 'لوحة متابعة المهام');
-  F('A2', { t:'s', f:'"اليوم: "&TEXT(TODAY(),"[$-060401]dddd، d mmmm yyyy")&" هـ  |  "&TEXT(TODAY(),"[$-ar-EG]dddd، d mmmm yyyy")&" م"' });
-  s('A3', 'المؤشرات العامة');
-  s('A4','إجمالي المهام'); s('C4','المهام المكتملة'); s('E4','قيد التنفيذ / الانتظار'); s('G4','متأخرة عن الاستحقاق');
-  fx('A5', 'COUNTA(' + S + B + ')');
-  fx('C5', 'COUNTIF(' + S + G + ',"مكتمل*")');
-  fx('E5', '$A$5-$C$5');
-  fx('G5', 'COUNTIFS(' + S + R + ',"<"&TODAY(),' + notDone + ')');
-  s('A7', 'مؤشرات الاستحقاق القريب — لا تشمل المهامَّ المكتملة');
-  s('A8','مستحق اليوم'); s('C8','مستحق غدًا'); s('E8','باقي هذا الأسبوع'); s('G8','الأسبوع القادم');
-  fx('A9', 'COUNTIFS(' + S + R + ',TODAY(),' + notDone + ')');
-  fx('C9', 'COUNTIFS(' + S + R + ',TODAY()+1,' + notDone + ')');
-  fx('E9', 'COUNTIFS(' + S + R + ',">="&TODAY(),' + S + R + ',"<="&TODAY()-WEEKDAY(TODAY(),2)+7,' + notDone + ')');
-  fx('G9', 'COUNTIFS(' + S + R + ',">"&TODAY()-WEEKDAY(TODAY(),2)+7,' + S + R + ',"<="&TODAY()-WEEKDAY(TODAY(),2)+14,' + notDone + ')');
-  s('A11', 'مؤشرات الاستحقاق الأبعد — لا تشمل المهامَّ المكتملة');
-  s('A12','باقي هذا الشهر'); s('C12','الشهر القادم'); s('E12','ما بعد الشهر القادم'); s('G12','بدون تاريخ استحقاق');
-  fx('A13', 'COUNTIFS(' + S + R + ',">"&TODAY()-WEEKDAY(TODAY(),2)+14,' + S + R + ',"<="&EOMONTH(TODAY(),0),' + notDone + ')');
-  fx('C13', 'COUNTIFS(' + S + R + ',">"&EOMONTH(TODAY(),0),' + S + R + ',"<="&EOMONTH(TODAY(),1),' + notDone + ')');
-  fx('E13', 'COUNTIFS(' + S + R + ',">"&EOMONTH(TODAY(),1),' + notDone + ')');
-  fx('G13', 'COUNTIFS(' + S + B + ',"<>",' + S + R + ',"",' + notDone + ')');
-  s('A16', 'نسبة الإنجاز'); F('C16', { t:'n', f:'IF($A$5=0,0,$C$5/$A$5)', z:'0%' });
-  s('A18', 'توزيع المهام حسب الحالة');
-  s('A19','الحالة'); s('B19','العدد'); s('C19','النسبة');
-  ['مكتمل','قيد التنفيذ','قيد الانتظار','متوقف'].forEach(function(st, i){
-    var r = 20 + i;
-    s('A' + r, st);
-    fx('B' + r, 'COUNTIF(' + S + G + ',"' + st + '*")');
-    F('C' + r, { t:'n', f:'IF($A$5=0,0,B' + r + '/$A$5)', z:'0%' });
-  });
-  /* بطاقاتُ الجهات — المهمةُ المشتركةُ تُحتسَب لكلِّ جهةٍ ذُكرت فيها */
-  var parties = [], seen = {};
-  wtRows().forEach(function(x){
-    String(x.who || '').split(/[+،,]/).forEach(function(p){
-      p = p.trim(); if (p && !seen[p]){ seen[p] = 1; parties.push(p); }
-    });
-  });
-  s('A25', 'بطاقات الجهات — المهمة المشتركة تُحتسب لكلِّ جهةٍ ذُكرت فيها');
-  parties.slice(0, 8).forEach(function(p, i){
-    var base = 26 + i * 5;
-    s('A' + base, p);
-    F('G' + base, { t:'s', f:'"إجمالي المهام: "&COUNTIF(' + S + FF + ',"*"&$A$' + base + '&"*")' });
-    s('A' + (base + 1),'مهام مكتملة'); s('C' + (base + 1),'تنتهي هذا الأسبوع');
-    s('E' + (base + 1),'تنتهي خلال الشهر'); s('G' + (base + 1),'متأخرة عن الاستحقاق');
-    var W = S + FF + ',"*"&$A$' + base + '&"*"';
-    fx('A' + (base + 2), 'COUNTIFS(' + W + ',' + S + G + ',"مكتمل*")');
-    fx('C' + (base + 2), 'COUNTIFS(' + W + ',' + S + R + ',">="&TODAY(),' + S + R + ',"<="&TODAY()-WEEKDAY(TODAY(),2)+7,' + notDone + ')');
-    fx('E' + (base + 2), 'COUNTIFS(' + W + ',' + S + R + ',">="&TODAY(),' + S + R + ',"<="&EOMONTH(TODAY(),0),' + notDone + ')');
-    fx('G' + (base + 2), 'COUNTIFS(' + W + ',' + S + R + ',"<"&TODAY(),' + notDone + ')');
-  });
-  ws['!ref'] = 'A1:H' + (26 + Math.max(parties.length, 1) * 5 + 3);
-  ws['!cols'] = [{wch:26},{wch:12},{wch:22},{wch:12},{wch:22},{wch:12},{wch:24},{wch:12}];
-  return ws;
+function xmlEsc(v){ return String(v == null ? '' : v).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function xlSerial(iso){
+  var d = iso ? new Date(String(iso).slice(0, 10) + 'T00:00:00Z') : null;
+  return d && !isNaN(d) ? Math.round((d.getTime() / 86400000) + 25569) : '';
 }
 function wtWorkbook(){
-  return xlsxLoad().then(function(ok){
-    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return false; }
-    var wb = XLSX.utils.book_new(), d = wtSheetRows();
-    XLSX.utils.book_append_sheet(wb, d.ws, 'Sheet2');
-    XLSX.utils.book_append_sheet(wb, wtDashSheet(d.last), 'Dashboard');
-    XLSX.writeFile(wb, 'المهام — ' + dayKey(Date.now()) + '.xlsx');
+  return jszipLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة الضغط')); return false; }
+    return fetch('docs/templates/tasks-template.xlsx', { cache:'no-store' }).then(function(r){
+      if (!r.ok) throw new Error('template ' + r.status);
+      return r.arrayBuffer();
+    });
+  }).then(function(buf){
+    if (!buf) return false;
+    return JSZip.loadAsync(buf).then(function(zip){
+      return zip.file('xl/worksheets/sheet1.xml').async('string').then(function(xml){
+        /* صفُّ القالب الأوّل: أنماطُ كلِّ عمودٍ ومعادلاتُ ل·م·ن كما هي */
+        var row3 = /<row r="3"[^>]*>[\s\S]*?<\/row>/.exec(xml)[0];
+        var st = {}; row3.replace(/<c r="([A-Z]+)3"([^>]*)>/g, function(m, col, attrs){ var mm = /s="(\d+)"/.exec(attrs); st[col] = mm ? mm[1] : ''; return m; });
+        var fL = (/<c r="L3"[^>]*>\s*<f>([\s\S]*?)<\/f>/.exec(row3) || [])[1] || '';
+        var fM = (/<c r="M3"[^>]*>\s*<f>([\s\S]*?)<\/f>/.exec(row3) || [])[1] || '';
+        var fN = (/<c r="N3"[^>]*>\s*<f[^>]*>([\s\S]*?)<\/f>/.exec(row3) || [])[1] || '';
+        var R = wtRows(), rows = [];
+        var cell = function(ref, col, v, kind){
+          var sa = st[col] ? ' s="' + st[col] + '"' : '';
+          if (kind === 'n') return v === '' ? '<c r="' + ref + '"' + sa + '/>' : '<c r="' + ref + '"' + sa + '><v>' + v + '</v></c>';
+          if (kind === 'f') return '<c r="' + ref + '"' + sa + ' t="str"><f>' + v + '</f></c>';
+          if (kind === 'fa') return '<c r="' + ref + '"' + sa + ' t="str"><f t="array" ref="' + ref + '">' + v + '</f></c>';
+          return v === '' ? '<c r="' + ref + '"' + sa + '/>' : '<c r="' + ref + '"' + sa + ' t="inlineStr"><is><t xml:space="preserve">' + xmlEsc(v) + '</t></is></c>';
+        };
+        R.forEach(function(x, i){
+          var n = 3 + i;
+          rows.push('<row r="' + n + '" spans="1:18">'
+            + cell('A' + n, 'A', i + 1, 'n')
+            + cell('B' + n, 'B', x.n || '') + cell('C' + n, 'C', x.track || '') + cell('D' + n, 'D', x.code || '')
+            + cell('E' + n, 'E', x.d || '') + cell('F' + n, 'F', x.who || '') + cell('G' + n, 'G', x.st || '')
+            + cell('H' + n, 'H', xlSerial(x.seen), 'n') + cell('I' + n, 'I', xlSerial(x.due), 'n')
+            + cell('J' + n, 'J', x.src || '') + cell('K' + n, 'K', x.upd || '')
+            + cell('L' + n, 'L', fL.replace(/\$H3/g, '$H' + n), 'f')
+            + cell('M' + n, 'M', fM.replace(/\$I3/g, '$I' + n), 'f')
+            + (fN ? cell('N' + n, 'N', fN, 'fa') : '')
+            + cell('O' + n, 'O', x.stop || '') + cell('P' + n, 'P', x.mSun || '') + cell('Q' + n, 'Q', x.mWed || '')
+            + '</row>');
+        });
+        var last = 2 + Math.max(R.length, 1);
+        /* الصفوفُ من ٣ فصاعدًا تُستبدَل كلُّها؛ ما قبلها (العنوانُ والرأس) يبقى */
+        var head = xml.slice(0, xml.indexOf('<row r="3"'));
+        var tail = xml.slice(xml.indexOf('</sheetData>'));
+        xml = head + rows.join('') + tail;
+        xml = xml.replace(/<dimension ref="[^"]+"\/>/, '<dimension ref="A1:R' + last + '"/>');
+        /* التنسيقاتُ الشرطيةُ تمتدّ إلى آخر صف */
+        xml = xml.replace(/sqref="([A-Z]+)3:([A-Z]+)\d+"/g, function(m, a, b){ return 'sqref="' + a + '3:' + b + last + '"'; });
+        zip.file('xl/worksheets/sheet1.xml', xml);
+        return zip.file('xl/tables/table1.xml').async('string').then(function(tx){
+          tx = tx.replace(/ref="B2:O\d+"/g, 'ref="B2:O' + last + '"');
+          zip.file('xl/tables/table1.xml', tx);
+          return zip.file('xl/workbook.xml').async('string');
+        }).then(function(wx){
+          /* إكسل يعيد الحسابَ عند الفتح — وسلسلةُ الحساب القديمة تُحذَف لأن صفوفَها تغيّرت */
+          wx = wx.replace(/<calcPr([^>]*)\/>/, function(m, a){ return '<calcPr' + a.replace(/ fullCalcOnLoad="[^"]*"/, '') + ' fullCalcOnLoad="1"/>'; });
+          zip.file('xl/workbook.xml', wx);
+          zip.remove('xl/calcChain.xml');
+          return zip.file('[Content_Types].xml').async('string');
+        }).then(function(ct){
+          ct = ct.replace(/<Override[^>]*calcChain\.xml"[^>]*\/>/, '');
+          zip.file('[Content_Types].xml', ct);
+          return zip.file('xl/_rels/workbook.xml.rels').async('string');
+        }).then(function(rl){
+          rl = rl.replace(/<Relationship[^>]*calcChain\.xml"[^>]*\/>/, '');
+          zip.file('xl/_rels/workbook.xml.rels', rl);
+          return zip.generateAsync({ type:'blob', mimeType:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+        });
+      });
+    });
+  }).then(function(blob){
+    if (!blob) return false;
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob); a.download = 'المهام — ' + dayKey(Date.now()) + '.xlsx';
+    document.body.appendChild(a); a.click(); setTimeout(function(){ URL.revokeObjectURL(a.href); a.remove(); }, 1500);
     toast(t('صُدّر الملفُّ بمعادلاته'));
     return true;
-  });
+  }).catch(function(e){ softErr('تصدير الملف', e, 'تعذّر بناءُ الملف'); return false; });
 }
 
 function xlsExport(keys, fname){
@@ -26322,6 +26321,9 @@ function presenceBeat(force){
               pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pf:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0,
               err:Object.keys(typeof ERR_SEEN === 'object' ? ERR_SEEN : {}).length,
               rms:perfAvg('r'), pms:perfAvg('p'), pulse:!!PULSE_UNSUB, up:Math.round((Date.now() - BOOT_AT) / 60000),
+              /* قراءاتُ اليوم لا الجلسة — الجلسةُ قد تمتدّ أيامًا فيبدو الرقمُ فادحًا (V17.36) —
+                 وعددُ السحبات الباردة: هي ما يرفع القراءاتِ بالآلاف */
+              rd:(typeof readBudget === 'function' ? readBudget() : 0), cp:COLD_N,
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
@@ -26688,19 +26690,21 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     var T = rows.map(function(p){
       var age = now - (+p.at || 0), isOn = age < 15 * 60000, isStale = age > 2 * H && work;
       var oldV = p.ver && p.ver !== cur9, hasBack = (+p.q || 0) + (+p.pz || 0) + (+p.pf || 0) > 0;
-      totReads += (+p.reads || 0); if (isOn) online++; if (isStale) stale++; if (oldV) old++; if (hasBack) back++; errs += (+p.err || 0);
+      var reads = (p.rd != null) ? +p.rd : (+p.reads || 0);      /* اليومُ إن رُفع، وإلا الجلسة */
+      totReads += reads; if (isOn) online++; if (isStale) stale++; if (oldV) old++; if (hasBack) back++; errs += (+p.err || 0);
       var flags = [];
       if (isStale) flags.push(pill('منقطع', 'bad'));
       if (oldV) flags.push(pill('نسخة قديمة', 'warn'));
       if (+p.pz || 0) flags.push(pill('طابورٌ مسموم', 'bad'));
       if (+p.pf || 0) flags.push(pill(nm(p.pf) + ' ' + t('صور فشلت'), 'warn'));
-      if ((+p.reads || 0) > 3000) flags.push(pill('قراءاتٌ عالية', 'warn'));
+      if (reads > 3000) flags.push(pill('قراءاتٌ عالية', 'warn'));
+      if ((+p.cp || 0) > 1) flags.push(pill(nm(p.cp) + ' ' + t('سحبات باردة'), 'warn'));
       if ((+p.rms || 0) > 400) flags.push(pill('رسمٌ بطيء', 'warn'));
       if (p.pulse === false) flags.push(pill('بلا نبضة', 'warn'));
       return [
         '<b>' + esc(dispName(p.name || '')) + '</b><br><span class="hint" style="margin:0">' + esc(t(roleName(p.role) || p.role || '')) + ' \u00b7 ' + esc(p.ver || '—') + '</span>',
         '<span class="num">' + esc(p.at ? stepAgo(p.at) : '—') + '</span>' + (isOn ? ' ' + pill('متصل', 'ok') : ''),
-        N(+p.reads || 0),
+        N(reads) + (p.rd == null ? ' <span class="hint" style="margin:0">' + esc(t('جلسة')) + '</span>' : ''),
         N(+p.q || 0) + (+p.pq ? ' + ' + nm(p.pq) + '\u{1F4F7}' : ''),
         N(+p.err || 0),
         '<span class="num">' + (p.rms != null ? nm(p.rms) + ' ' + t('م.ث') : '—') + '</span>',
@@ -26731,7 +26735,8 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
                ['بطوابيرَ عالقة', N(back), back ? 'wrn' : 'ok'],
                ['قراءاتُ اليوم كلِّها', N(totReads), totReads > 40000 ? 'wrn' : 'ok'],
                ['أخطاءٌ مسجَّلة', N(errs), errs ? 'wrn' : 'ok']])
-      + '<p class="hint" style="margin:0 0 8px">' + esc(t('الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).')) + '</p>'
+      + '<p class="hint" style="margin:0 0 8px">' + esc(t('الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).'))
+      +   ' ' + esc(t('«قراءات» هي قراءاتُ اليوم؛ وما وُسم «جلسة» فمن نسخةٍ أقدمَ يعدُّ منذ الفتح. و«سحبة باردة» تعني أن الجهازَ أعاد تحميلَ نطاقه كلِّه — وهي ما يرفع القراءاتِ بالآلاف.')) + '</p>'
       + card(t('الأجهزة'), rows.length
           ? table(['الجهاز','آخر ظهور','قراءات','طوابير','أخطاء','زمن الرسم','زمن السحب','الحالة'], T, null, { sticky:true })
           : '<p class="hint" style="margin:0">' + esc(t('لا نبضاتٍ بعد.')) + '</p>')
@@ -31851,7 +31856,7 @@ function scrollBack(sameScreen){
 /* ═══ الأداءُ يُقاس لا يُحكى (V17.34) ═══
    زمنُ كلِّ رسمٍ وكلِّ سحبٍ يُقاس على الجهاز ويُرفَع مع نبضة الحضور —
    فيُرى من المكتب أيُّ جهازٍ بطيءٌ وأيُّ سحبٍ طويل، قبل أن يُشكى. */
-var PERF = { r:[], p:[] };
+var PERF = { r:[], p:[] }, COLD_N = 0;
 function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); }
 function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
 function render(force){

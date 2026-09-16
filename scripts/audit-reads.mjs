@@ -59,7 +59,7 @@ T(/collection\('settings'\)\.doc\('pulse'\)\.onSnapshot/.test(js), 'والأجه
 T(/pullDelta\(\{ only:stale, why:'pulse' \}\)/.test(js), 'وتسحب المتغيّرَ وحدَه لا النطاقَ كلَّه');
 T(!/every:60000\b/.test(js), 'ولا استطلاعَ كلَّ دقيقة — الطزاجةُ من النبضة والكلفةُ من التغيير');
 /* ═══ ٧ · سقفُ القراءات لكلِّ جهاز ═══ */
-T(/READ_CAP_WARN = 3000, READ_CAP_SLOW = 6000/.test(js) && /readSlowFactor\(\)/.test(js),
+T(/READ_CAP_WARN = 5000, READ_CAP_SLOW = 15000/.test(js) && /readSlowFactor\(\)/.test(js) && /READ_CAP_SLOW \? 2 : 1/.test(js) && /t\('مُبطَّأ'\)/.test(js),
   'وجهازٌ يتجاوز سقفَه يُنبَّه ثم يُبطَّأ سحبُه الدوريّ');
 /* ═══ ٨ · كلُّ مجموعةٍ في الشيفرة موثَّقةٌ بمرحلتها في سير العمل ═══ */
 {

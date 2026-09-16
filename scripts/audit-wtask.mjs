@@ -207,43 +207,38 @@ const bar = (d.getElementById('main') || d.body);
 T(!!bar.querySelector('[data-wtfile]') && !!bar.querySelector('[data-wtxl]') && !!bar.querySelector('[data-wtreset]'),
   'والرفعُ والتصديرُ بمعادلاته والمسحُ ظاهرةٌ دائمًا — لا في قائمةٍ مطوية');
 
-/* ═══ الملفُّ بمعادلاته — كما يعمل عليه المكتب (V17.19) ═══ */
+/* ═══ الملفُّ نفسُه: قالبٌ يُملأ (V17.35) ═══
+   لا يُبنى من الصفر: القالبُ الأصليُّ يُفتَح وتُستبدَل صفوفُه — فتبقى الأنماطُ
+   والجدولُ واللوحةُ والتنسيقاتُ الشرطية، وتُكتَب المعادلاتُ بنوعها الصحيح. */
 {
-  const colName = c => { let s = ''; c++; while (c){ const m = (c - 1) % 26; s = String.fromCharCode(65 + m) + s; c = (c - m - 1) / 26; } return s; };
-  let cap = null;
-  w.XLSX = { utils:{ book_new:() => ({ SheetNames:[], Sheets:{} }),
-    encode_cell:({ r, c }) => colName(c) + (r + 1),
-    book_append_sheet:(wb, ws, nm) => { wb.SheetNames.push(nm); wb.Sheets[nm] = ws; } },
-    writeFile:(wb, fn) => { cap = { wb, fn }; } };
-  w.xlsxLoad = () => Promise.resolve(true);
+  const JSZip = require('jszip');
+  w.JSZip = JSZip; w.jszipLoad = () => Promise.resolve(true);
+  const tpl = readFileSync('docs/templates/tasks-template.xlsx');
+  w.fetch = () => Promise.resolve({ ok:true, arrayBuffer:() => Promise.resolve(tpl.buffer.slice(tpl.byteOffset, tpl.byteOffset + tpl.byteLength)) });
+  let blob = null; w.URL.createObjectURL = b => { blob = b; return 'blob:x'; }; w.URL.revokeObjectURL = () => {};
+  /* المتصفّحُ الصوريُّ لا يُنزِّل: ضغطةُ رابط التنزيل تُبتلَع — لا خطأَ في التطبيق */
+  w.HTMLAnchorElement.prototype.click = function(){};
   w.STATE.wtask = { rows:[
-    { id:1, n:'مهمةٌ أولى', track:'مسار', code:'PM-03', d:'وصف', who:'أفاقي', st:'مكتمل',
-      seen:'2026-08-16', due:'2026-09-09', src:'الوزارة', upd:'تحديث', stop:'', mSun:'نعم', mWed:'' },
-    { id:2, n:'مهمةٌ ثانية', track:'مسار', code:'PM-04', d:'وصف', who:'أفاقي + الوزارة',
-      st:'قيد الانتظار', seen:'2026-08-12', due:'2026-08-26', src:'أفاقي', upd:'تحديث' }
+    { id:1, n:'مهمةٌ أولى', track:'مسار', code:'PM-03', d:'وصف', who:'أفاقي', st:'مكتمل', seen:'2026-08-16', due:'2026-09-09', src:'الوزارة', upd:'تحديث', stop:'', mSun:'نعم', mWed:'' },
+    { id:2, n:'مهمةٌ ثانية <&>', track:'مسار', code:'PM-04', d:'', who:'أفاقي + الوزارة', st:'قيد الانتظار', seen:'', due:'2026-08-26', src:'أفاقي', upd:'' }
   ] };
-  await w.wtWorkbook();
-  T(!!cap && cap.wb.SheetNames.join(',') === 'Sheet2,Dashboard', 'الملفُّ ورقتان: البيانات واللوحة');
-  const S = cap.wb.Sheets.Sheet2, D = cap.wb.Sheets.Dashboard;
-  const hdr = ['#','المهمة','مسار إدارة المشروع','كود المسار','الوصف','المسؤول','الحالة',
-               'تاريخ الرصد (هجري)','تاريخ الاستحقاق (هجري)','مصدر المهمة','التحديث',
-               'تاريخ الرصد (ميلادي)','تاريخ الاستحقاق (ميلادي)','فئة الاستحقاق',
-               'توقف المهمة','اجتماع الاحد','اجتماع الاربعاء'];
-  T(hdr.every((h, i) => (S[colName(i) + '2'] || {}).v === h), 'ورأسُه سبعةَ عشرَ عمودًا بترتيب ملفِّ المكتب');
-  T(/TEXT\(TODAY\(\)/.test(S.A1.f || ''), 'وصفُّه الأوّلُ يكتب تاريخَ اليومَ هجريًّا وميلاديًّا');
-  T(/^IF\(\$H3="","",TEXT\(\$H3,/.test(S.L3.f || '') && /^IF\(\$I3="","",TEXT\(\$I3,/.test(S.M3.f || ''),
-    'وعمودا التاريخ الميلاديِّ معادلتان لا نصًّا');
-  T(/TRIM\(\$G3\)="مكتمل"/.test(S.N3.f || '') && /متأخرة/.test(S.N3.f) && /باقي هذا الأسبوع/.test(S.N3.f) && /لاحقًا/.test(S.N3.f),
-    'وفئةُ الاستحقاق معادلةٌ تصنّف: مكتملة · متأخرة · اليوم · غدًا · الأسبوع · الشهر · لاحقًا');
-  T(S.P3.v === 'نعم' && S.Q3 !== undefined, 'وأعمدةُ المكتب اليدويةُ تعود كما كُتبت — لا تُفقَد في الدورة');
-  T(S.I3 && S.I3.t === 'd', 'والتواريخُ تواريخُ إكسلَ لا نصوصًا — فتعمل بها المعادلات');
-  T(/^COUNTA\(Sheet2!\$B\$3:\$B\$\d+\)$/.test(D.A5.f || '') && /COUNTIF\(Sheet2!\$G/.test(D.C5.f || ''),
-    'واللوحةُ تعدُّ من ورقة البيانات بمدًى يتبع عددَ الصفوف');
-  T(/<>مكتمل\*/.test(D.G5.f || '') && /WEEKDAY\(TODAY\(\),2\)/.test(D.E9.f || ''),
-    'ومؤشِّراتُ الاستحقاق تستثني المكتملَ وتحسب الأسبوعَ من يوم الأحد');
-  T(D.C16 && D.C16.z === '0%' && /A\$5=0/.test(D.C16.f), 'ونسبةُ الإنجاز نسبةٌ مئويةٌ محسوبة');
-  T(D.A26 && /أفاقي|الوزارة/.test(D.A26.v), 'وبطاقاتُ الجهات تُبنى من المسؤولين في الجدول: ' + (D.A26 || {}).v);
-  T(/"\*"&\$A\$26&"\*"/.test((D.A28 || {}).f || ''), 'والمهمةُ المشتركةُ تُحتسَب لكلِّ جهةٍ ذُكرت فيها');
+  const okx = await w.wtWorkbook();
+  T(okx === true && !!blob, 'الملفُّ يُبنى من القالب ويُنزَّل');
+  const zip = await JSZip.loadAsync(Buffer.from(await blob.arrayBuffer()));
+  const names = Object.keys(zip.files);
+  T(names.indexOf('xl/styles.xml') > -1 && names.indexOf('xl/tables/table1.xml') > -1 && names.indexOf('xl/worksheets/sheet2.xml') > -1,
+    'وفيه أنماطُ القالب وجدولُه ولوحتُه كما هي');
+  T(names.indexOf('xl/calcChain.xml') < 0, 'وسلسلةُ الحساب القديمةُ محذوفةٌ فلا يشكو إكسل');
+  const s1 = await zip.file('xl/worksheets/sheet1.xml').async('string');
+  T(/<row r="3"/.test(s1) && /<row r="4"/.test(s1) && !/<row r="5"/.test(s1), 'وصفوفُ البيانات صفّان لا أكثر — القديمُ أُزيل');
+  T(/<c r="L3"[^>]*t="str"><f>IF\(\$H3=/.test(s1) && /<c r="M4"[^>]*t="str"><f>IF\(\$I4=/.test(s1), 'ومعادلاتُ التاريخ بنوع str لا s — فلا يرفضها إكسل');
+  T(/<c r="N3"[^>]*t="str"><f t="array" ref="N3">/.test(s1), 'ومعادلةُ فئة الاستحقاق مصفوفيةٌ كما في الأصل');
+  T(/<c r="H3" s="16"><v>46250<\/v>/.test(s1) && /<c r="B3" s="1" t="inlineStr">/.test(s1), 'والأنماطُ من صفِّ القالب على كلِّ عمود، والتواريخُ أرقامُ إكسل');
+  T(/&lt;&amp;&gt;/.test(s1), 'والنصُّ يُهرَّب — لا XML مكسورًا برمزٍ في مهمة');
+  const tb = await zip.file('xl/tables/table1.xml').async('string');
+  T(/ref="B2:O4"/.test(tb), 'والجدولُ يُمَدُّ إلى آخر صف: B2:O4');
+  const wbx = await zip.file('xl/workbook.xml').async('string');
+  T(/fullCalcOnLoad="1"/.test(wbx), 'ويُطلَب من إكسل إعادةُ الحساب عند الفتح');
 }
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
