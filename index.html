@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.27</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.28</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3670,6 +3670,7 @@ en:{
  'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'This device is reading more than usual — periodic sync slowed to protect the project quota', 'قراءاتُ هذا الجهاز اليوم':'Reads on this device today', 'تُراقَب':'being watched',
  'سُجِّل على':'recorded on',
  'اجلب السجلَّ من القاعدة':'Fetch the log from the database', 'يُجلَب السجل…':'Fetching the log…',
+ 'اجلب هذا المدى من القاعدة':'Fetch this range from the database', 'أنزِل أقدمَ خمسمئة':'Load 500 older', 'حدثًا جُلبت':'events fetched', 'وثمّةَ أقدم':'and older ones remain', 'في اليد':'Loaded', 'حدثًا من سجلِّ القاعدة':'events from the database log', 'وثمّةَ أقدمُ لم يُنزَل بعد: استعمل «أنزِل أقدمَ خمسمئة» أو حدِّد مدًى بالتاريخ واجلبه.':'Older entries are not loaded yet: use “Load 500 older”, or set a date range and fetch it.', 'وهذا كلُّ ما في القاعدة ضمن هذا النطاق.':'This is everything in the database within this scope.',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6362,6 +6363,7 @@ ur:{
  'هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع':'یہ ڈیوائس معمول سے زیادہ پڑھ رہی ہے — منصوبے کے کوٹے کے تحفظ کے لیے متواتر سنک سست کر دی گئی', 'قراءاتُ هذا الجهاز اليوم':'آج اس ڈیوائس کی ریڈز', 'تُراقَب':'زیرِ نگرانی',
  'سُجِّل على':'ریکارڈ ہوا',
  'اجلب السجلَّ من القاعدة':'ڈیٹابیس سے ریکارڈ لائیں', 'يُجلَب السجل…':'ریکارڈ لایا جا رہا ہے…',
+ 'اجلب هذا المدى من القاعدة':'یہ مدت ڈیٹابیس سے لائیں', 'أنزِل أقدمَ خمسمئة':'مزید ٥٠٠ پرانی لائیں', 'حدثًا جُلبت':'واقعات لائے گئے', 'وثمّةَ أقدم':'اور پرانی باقی ہیں', 'في اليد':'موجود', 'حدثًا من سجلِّ القاعدة':'ڈیٹابیس ریکارڈ سے واقعات', 'وثمّةَ أقدمُ لم يُنزَل بعد: استعمل «أنزِل أقدمَ خمسمئة» أو حدِّد مدًى بالتاريخ واجلبه.':'پرانی اندراجات ابھی نہیں آئیں: «مزید ٥٠٠ پرانی لائیں» استعمال کریں یا تاریخ کی مدت مقرر کر کے لائیں۔', 'وهذا كلُّ ما في القاعدة ضمن هذا النطاق.':'اس دائرے میں ڈیٹابیس میں یہی سب کچھ ہے۔',
 }
 };
 
@@ -18945,7 +18947,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.27' + '.docx" download>⬇ '
+              +   'V17.28' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -27691,6 +27693,8 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
         + '<div class="actions">'
         + btn('امسح التصفية','btn-quiet btn-sm',' data-evclr="1"')
         + btn('\u{1F5C3} ' + t('اجلب السجلَّ من القاعدة'),'btn-quiet btn-sm',' data-evfetch="1"')
+        + ((EVF.from || EVF.to) ? btn('\u{1F4C5} ' + t('اجلب هذا المدى من القاعدة'),'btn-secondary btn-sm',' data-evrange="1"') : '')
+        + (EV_MORE ? btn('\u23EC ' + t('أنزِل أقدمَ خمسمئة'),'btn-quiet btn-sm',' data-evolder="1"') : '')
         + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="ev"')
         + '</div>')
 
@@ -27712,6 +27716,10 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
       + (L.length > 300
           ? '<p class="hint">' + esc(t('يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.')) + '</p>'
           : '')
+      + '<p class="hint">' + esc(t('في اليد')) + ' <b class="num">' + nm(evAll().length) + '</b> '
+      +   esc(t('حدثًا من سجلِّ القاعدة')) + ' — '
+      +   esc(EV_MORE ? t('وثمّةَ أقدمُ لم يُنزَل بعد: استعمل «أنزِل أقدمَ خمسمئة» أو حدِّد مدًى بالتاريخ واجلبه.')
+                      : t('وهذا كلُّ ما في القاعدة ضمن هذا النطاق.')) + '</p>'
       + '<p class="hint">' + esc(t('الأثرُ لا يُمحى: قواعدُ القاعدة تمنع حذفَ سجل الأحداث على الجميع. والشرائحُ أعلاه عدسةُ الحوكمة — نفس السجل، لا سجلٌّ ثانٍ.')) + '</p>';
   })();
     if (cur === 'appr') return head + (function(){
@@ -28552,16 +28560,34 @@ var EVF = { kind:'', by:'', from:'', to:'', q:'', cat:'' };
    وتقول «كل الأحداث ١»، والأثرُ كلُّه في القاعدة سليمٌ لا يُرى. فصارت
    الشاشةُ تجلب آخرَ خمسمئةِ حدثٍ مرةً عند فتحها إن كان ما بيدها قليلًا —
    بسقفٍ، ويُحصى في عدّاد القراءات، ولا يُعاد في الجلسة نفسِها. */
-var EV_FETCHED = 0, EV_FETCHING = false;
-function evFetch(force){
+var EV_FETCHED = 0, EV_FETCHING = false, EV_MORE = false, EV_PAGE = 500;
+/* ═══ الأثرُ كلُّه متاحٌ — على دفعاتٍ لا دفعةً واحدة (V17.28) ═══
+   «آخرُ خمسمئة» كانت سقفَ أمانٍ لا حدَّ الأثر: الأثرُ كلُّه في القاعدة، وسحبُه
+   جملةً قراءاتٌ بلا داعٍ وذاكرةٌ تُملأ بما لا يُقرأ. فصار على دفعات: خمسُمئةٍ
+   عند الفتح، وزرٌّ يُنزِل الأقدمَ خمسَمئةٍ بعد خمسمئة ما دام هناك أقدم؛
+   وإن حُدِّد مدًى بالتاريخ في التصفية جُلب **ذلك المدى بعينه** من القاعدة —
+   فتُقرأ فترةٌ قديمةٌ بلا المرور بكلِّ ما بعدها. */
+function evFetch(force, mode){
   if (!FB.ready || !FB.db || EV_FETCHING) return;
-  if (!force && EV_FETCHED) return;
+  if (!force && !mode && EV_FETCHED) return;
   EV_FETCHING = true;
-  FB.db.collection('events').orderBy('ts', 'desc').limit(500).get().then(function(sn){
+  var q = FB.db.collection('events').orderBy('ts', 'desc');
+  var ranged = false;
+  if (mode === 'range' && (EVF.from || EVF.to)){
+    ranged = true;
+    if (EVF.to)   q = q.where('ts', '<=', Date.parse(EVF.to));
+    if (EVF.from) q = q.where('ts', '>=', Date.parse(EVF.from));
+  } else if (mode === 'older'){
+    var oldest = evAll().reduce(function(m, e){ return (e.ts && e.ts < m) ? e.ts : m; }, Infinity);
+    if (isFinite(oldest)) q = q.where('ts', '<', oldest);
+  }
+  q.limit(EV_PAGE).get().then(function(sn){
     if (!STATE.evlog) STATE.evlog = {};
     sn.forEach(function(dd){ STATE.evlog[dd.id] = dd.data(); });
     FB.readCount = (FB.readCount || 0) + sn.size;
+    EV_MORE = !ranged && sn.size >= EV_PAGE;     /* امتلأت الدفعةُ؟ فثمّةَ أقدمُ منها */
     EV_FETCHED = Date.now(); EV_FETCHING = false;
+    toast(nm(sn.size) + ' ' + t('حدثًا جُلبت') + (EV_MORE ? ' — ' + t('وثمّةَ أقدم') : ''));
     if (CUR === 'ev') render(1);
   }).catch(function(e){
     EV_FETCHING = false; EV_FETCHED = Date.now();
@@ -32142,6 +32168,8 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-evfetch]')){ toast(t('يُجلَب السجل…')); evFetch(true); return true; }
+  if (e.target.closest('[data-evrange]')){ toast(t('يُجلَب السجل…')); evFetch(true, 'range'); return true; }
+  if (e.target.closest('[data-evolder]')){ toast(t('يُجلَب السجل…')); evFetch(true, 'older'); return true; }
   if (e.target.closest('[data-evclr]')){
     /* الضغطُ على مسحٍ بلا تصفيةٍ لا يغيّر شيئًا — فيُقال ذلك بدل الصمت */
     if (!EVF.kind && !EVF.by && !EVF.from && !EVF.to && !EVF.q && !EVF.cat){
