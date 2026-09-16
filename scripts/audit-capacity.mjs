@@ -33,7 +33,8 @@ const USERS = 150, MONTHS = 6;
 /* ── ثوابتُ الشيفرة كما هي ────────────────────────────────────────────── */
 const K = {
   queueCap:  num(/QUEUE_CAP\s*=\s*(\d+)/, 0),
-  batch:     num(/queue\.slice\(0,\s*(\d+)\)/, 0),
+  /* V17.40: الدفعةُ تُؤخَذ من غير المؤجَّل — .filter(...).slice(0, N) */
+  batch:     num(/\.slice\(0,\s*(\d+)\);?\s*\n?\s*if \(!batch\.length\)/, 0) || num(/queue[^\n]{0,80}\.slice\(0,\s*(\d+)\)/, 0),
   pullLimit: num(/limit\((\d+)\)\.get/, 0),
   /* V16.6 بدّل المؤقّتَ بعدّادٍ ثانويّ: SYNC_CYCLE بالثواني لا بالمللي */
   syncMs:    num(/var SYNC_CYCLE = (\d+)/, 0) * 1000,

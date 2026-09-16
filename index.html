@@ -73,10 +73,22 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
   min-height:calc(var(--vh, 1vh) * 100);
   min-height:100dvh;
   display:flex;flex-direction:column}
+/* ═══ العرضُ يتبع الشاشةَ لا رقمًا واحدًا (V17.41) ═══
+   كان الحدُّ ألفًا ومئتين لكلِّ شاشة: على شاشة أربعَ عشرةَ بوصةً تُزحَم
+   الجداول، وعلى اثنتين وعشرين يبقى ثلثُ الشاشة فارغًا والجدولُ يُمرَّر.
+   فصار الحدُّ درجاتٍ تتبع عرضَ النافذة الفعليّ: ما دون ١٤٤٠ يأخذ العرضَ
+   كلَّه بحشوٍ أقلَّ، وفوقها يتّسع تدريجيًّا حتى ١٩٢٠. وصفحاتُ الجداول
+   العريضة تُطلَق من الحدِّ أصلًا (wide) فتملأ الشاشةَ مهما كبرت. */
 .content{padding:22px;max-width:1200px;width:100%;flex:1;
   min-width:0;                     /* وإلا رفض عنصرُ الفلكس أن يضيق */
   overflow-x:hidden}
 .content.flush{padding:0;max-width:none}
+@media (max-width:1439px){ .content{max-width:none;padding:16px} }
+@media (min-width:1440px){ .content{max-width:1360px} }
+@media (min-width:1680px){ .content{max-width:1560px} }
+@media (min-width:1920px){ .content{max-width:1800px} }
+/* الشاشاتُ الكبيرةُ تُفرَد بطاقاتُها أيضًا — لا عمودان في عرضٍ يتّسع لأربعة */
+@media (min-width:1680px){ .stats{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))} }
 
 .sidebar{position:fixed;inset-block:0;inset-inline-start:0;
   width:min(var(--sw), 86vw); max-width:340px;
@@ -314,6 +326,17 @@ input[type="number"]{max-width:140px}
   inset-block-start:calc(11px + env(safe-area-inset-top,0px));
   max-width:calc(100% - 22px);overflow-x:auto;scrollbar-width:none;
   flex-wrap:wrap;z-index:var(--z-map-ui);pointer-events:auto}
+/* ═══ الشريطُ على الهاتف يُرى كلُّه بلا تمريرٍ جانبيّ (V17.41) ═══
+   كان يلتفُّ ومعه تمريرٌ أفقيّ، فالأزرارُ الأخيرةُ تقع خارجَ الشاشة ولا
+   يُعرَف أنها هناك. صار على الشاشات الضيّقة: لا تمريرَ أفقيًّا البتّة،
+   يلتفُّ في أسطرٍ كاملة، وأزرارُه أصغرُ قليلًا لتتّسع أربعةٌ في السطر —
+   وإن كثرت تُمرَّر الأسطرُ رأسيًّا بسقفٍ لا يبتلع الخريطة. */
+@media (max-width:760px){
+  .map-top{overflow-x:visible;overflow-y:auto;max-height:42vh;
+    inset-inline:8px;max-width:calc(100% - 16px);gap:6px;
+    justify-content:flex-start;align-content:flex-start}
+  .map-chip{padding:6px 10px;font-size:12px;min-height:34px;flex:0 0 auto}
+}
 .map-chip{background:rgba(18,23,28,.92);border:1px solid #2A333C;color:#E8EBEE;
   border-radius:99px;padding:7px 13px;font-size:12.5px;cursor:pointer;
   backdrop-filter:blur(6px);min-height:36px;display:inline-flex;align-items:center;gap:6px}
@@ -858,7 +881,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.40</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.41</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3698,6 +3721,7 @@ en:{
  'مُبطَّأ':'slowed', 'أُبطئ السحبُ الدوريُّ لأن هذا الجهاز قرأ':'Periodic pull slowed because this device read', 'اليوم — والنبضةُ تُبقي التغييراتِ تصل في ثوانٍ':'today — the pulse still delivers changes within seconds',
  'لم يرسل الجهازُ نبضةً منذ أكثر من ساعتين في وقت العمل — مغلقٌ أو بلا شبكة':'No beat for over two hours during work time — closed or offline', 'على نسخةٍ أقدمَ من الحالية — يُحدَّث بإعادة فتح التطبيق على شبكة':'On an older version — updates when reopened online', 'وثيقةٌ رُفض رفعُها مرارًا فعُزلت كي لا توقف الطابور — تُراجَع في شاشة المزامنة: تُعاد أو تُهمَل':'A document whose upload was rejected repeatedly was set aside so it does not block the queue — review it in Sync: retry or discard', 'صورٌ تعذّر رفعُها بعد خمس محاولات — تبقى على الجهاز حتى تُعاد':'Photos that failed after five attempts — kept on the device until retried', 'قرأ اليومَ أكثرَ من ثلاثة آلاف وثيقة — طبيعيٌّ بعد سحبةٍ باردة، ويُراقَب إن تكرّر':'Read over three thousand documents today — normal after a cold pull, watched if it repeats', 'أعاد تحميلَ نطاقه كلِّه أكثرَ من مرة — كلُّ مرةٍ آلافُ القراءات':'Reloaded its whole scope more than once — thousands of reads each time', 'متوسّطُ رسم الشاشة فوق ٤٠٠ م.ث — جهازٌ ضعيفٌ أو بياناتٌ ثقيلة':'Average render over 400 ms — a weak device or heavy data', 'لم يتصل بنبضة التغيير — يعتمد على السحب الدوريِّ وحدَه':'Not connected to the change pulse — relies on the periodic pull only', 'لا شيءَ يستدعي النظر: متصلٌ وعلى النسخة الحالية وبلا طوابيرَ عالقةٍ ولا أخطاء':'Nothing to look at: online, current version, no stuck queues, no errors', 'مفتاحُ الحالة — قف على أيِّ وسمٍ ليُقرأ سببُه:':'Status key — hover any tag to read why:', 'بلا نبضةٍ لساعتين في وقت العمل':'no beat for two hours in work time', 'وثيقةٌ رُفض رفعُها فعُزلت — تُراجَع في المزامنة':'a rejected upload set aside — review in Sync', 'يُحدَّث بإعادة الفتح على شبكة':'updates when reopened online', 'لا شيءَ يستدعي النظر':'nothing to look at',
  'آخر تشغيلٍ للجسر':'Last bridge run', 'لم يُسجَّل بعد':'Not recorded yet', 'الجسرُ (الحساباتُ والصورُ والبلاغات) لم يعمل منذ أكثر من ٤٥ دقيقة — الجدولةُ تتأخّر أحيانًا. يُشغَّل يدويًّا من المستودع: Actions ← Provision ← Run workflow، ويعمل تلقائيًّا مع كلِّ دفعةِ نسخة.':'The bridge (accounts, photos and reports) has not run for over 45 minutes — the schedule sometimes lags. Run it manually from the repository: Actions → Provision → Run workflow; it also runs automatically with every release push.',
+ 'المتعذّر':'Unreachable', 'الراكد':'Idle', 'ما لم يصل إليه الميدانُ — بسببه وقراره.':'What the field could not reach — with its reason and decision.', 'زيارةٌ تمّت ولم يُركَّب موقعُها — بعمر الركود وسببه.':'Visited but not installed — with how long it has been idle and why.', 'المتعذّر — ما لم يصل إليه الميدان':'Unreachable — what the field could not reach', 'الراكد — زيارةٌ تمّت ولم يُركَّب موقعُها':'Idle — visited but not installed', 'يحتاج قرارًا':'Needs a decision', 'عذرٌ مقبول':'Excuse accepted', 'راكدٌ أسبوعًا فأكثر':'Idle a week or more', 'راكدٌ أسبوعين فأكثر':'Idle two weeks or more', 'لا نقاطَ في هذه الخانة.':'No points in this bucket.',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6404,6 +6428,7 @@ ur:{
  'مُبطَّأ':'سست', 'أُبطئ السحبُ الدوريُّ لأن هذا الجهاز قرأ':'متواتر پُل سست ہوا کیونکہ اس ڈیوائس نے پڑھا', 'اليوم — والنبضةُ تُبقي التغييراتِ تصل في ثوانٍ':'آج — نبض اب بھی تبدیلیاں سیکنڈوں میں پہنچاتی ہے',
  'لم يرسل الجهازُ نبضةً منذ أكثر من ساعتين في وقت العمل — مغلقٌ أو بلا شبكة':'کام کے وقت دو گھنٹے سے بیٹ نہیں — بند یا آف لائن', 'على نسخةٍ أقدمَ من الحالية — يُحدَّث بإعادة فتح التطبيق على شبكة':'پرانے ورژن پر — آن لائن دوبارہ کھولنے پر اپ ڈیٹ', 'وثيقةٌ رُفض رفعُها مرارًا فعُزلت كي لا توقف الطابور — تُراجَع في شاشة المزامنة: تُعاد أو تُهمَل':'ایسی دستاویز جس کا اپ لوڈ بار بار مسترد ہوا، الگ کر دی گئی — سنک میں دیکھیں: دوبارہ یا نظرانداز', 'صورٌ تعذّر رفعُها بعد خمس محاولات — تبقى على الجهاز حتى تُعاد':'پانچ کوششوں کے بعد ناکام تصاویر — دوبارہ کوشش تک ڈیوائس پر', 'قرأ اليومَ أكثرَ من ثلاثة آلاف وثيقة — طبيعيٌّ بعد سحبةٍ باردة، ويُراقَب إن تكرّر':'آج تین ہزار سے زیادہ دستاویزات پڑھیں — کولڈ پُل کے بعد معمول، دہرانے پر نگرانی', 'أعاد تحميلَ نطاقه كلِّه أكثرَ من مرة — كلُّ مرةٍ آلافُ القراءات':'پورا دائرہ ایک سے زیادہ بار لوڈ کیا — ہر بار ہزاروں ریڈز', 'متوسّطُ رسم الشاشة فوق ٤٠٠ م.ث — جهازٌ ضعيفٌ أو بياناتٌ ثقيلة':'اوسط رینڈر ٤٠٠ ms سے زیادہ — کمزور ڈیوائس یا بھاری ڈیٹا', 'لم يتصل بنبضة التغيير — يعتمد على السحب الدوريِّ وحدَه':'تبدیلی کی نبض سے منسلک نہیں — صرف متواتر پُل پر', 'لا شيءَ يستدعي النظر: متصلٌ وعلى النسخة الحالية وبلا طوابيرَ عالقةٍ ولا أخطاء':'کچھ نہیں: آن لائن، موجودہ ورژن، کوئی رکی قطار یا خرابی نہیں', 'مفتاحُ الحالة — قف على أيِّ وسمٍ ليُقرأ سببُه:':'حالت کی کلید — وجہ کے لیے کسی ٹیگ پر رکیں:', 'بلا نبضةٍ لساعتين في وقت العمل':'کام کے وقت دو گھنٹے بیٹ نہیں', 'وثيقةٌ رُفض رفعُها فعُزلت — تُراجَع في المزامنة':'مسترد اپ لوڈ الگ — سنک میں دیکھیں', 'يُحدَّث بإعادة الفتح على شبكة':'آن لائن کھولنے پر اپ ڈیٹ', 'لا شيءَ يستدعي النظر':'کچھ دیکھنے لائق نہیں',
  'آخر تشغيلٍ للجسر':'برج کا آخری رن', 'لم يُسجَّل بعد':'ابھی ریکارڈ نہیں', 'الجسرُ (الحساباتُ والصورُ والبلاغات) لم يعمل منذ أكثر من ٤٥ دقيقة — الجدولةُ تتأخّر أحيانًا. يُشغَّل يدويًّا من المستودع: Actions ← Provision ← Run workflow، ويعمل تلقائيًّا مع كلِّ دفعةِ نسخة.':'برج (اکاؤنٹس، تصاویر، رپورٹس) ٤٥ منٹ سے نہیں چلا — شیڈول کبھی تاخیر کرتا ہے۔ ریپو سے دستی چلائیں: Actions → Provision → Run workflow؛ ہر ریلیز پش پر خودکار بھی چلتا ہے۔',
+ 'المتعذّر':'ناقابلِ رسائی', 'الراكد':'ساکن', 'ما لم يصل إليه الميدانُ — بسببه وقراره.':'جہاں فیلڈ نہ پہنچ سکا — وجہ اور فیصلے کے ساتھ۔', 'زيارةٌ تمّت ولم يُركَّب موقعُها — بعمر الركود وسببه.':'دورہ ہوا مگر تنصیب نہیں — کتنے عرصے سے ساکن اور کیوں۔', 'المتعذّر — ما لم يصل إليه الميدان':'ناقابلِ رسائی — جہاں فیلڈ نہ پہنچا', 'الراكد — زيارةٌ تمّت ولم يُركَّب موقعُها':'ساکن — دورہ ہوا مگر تنصیب نہیں', 'يحتاج قرارًا':'فیصلہ درکار', 'عذرٌ مقبول':'عذر منظور', 'راكدٌ أسبوعًا فأكثر':'ایک ہفتہ یا زیادہ ساکن', 'راكدٌ أسبوعين فأكثر':'دو ہفتے یا زیادہ ساکن', 'لا نقاطَ في هذه الخانة.':'اس خانے میں کوئی پوائنٹ نہیں۔',
 }
 };
 
@@ -12505,7 +12530,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<div class="pop-rows" style="margin:0">'
           + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
           + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
-          + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(s.zone) + ' · ' + esc(s.type) + '</span></div>'
+          + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type)) + '</span></div>'
           + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
           + (s.work ? '<div><span class="k">' + esc(t('وجه العمل')) + '</span><span>' + esc(t(s.work)) + '</span></div>' : '')
           + (s.co   ? '<div><span class="k">' + esc(t('الشركة')) + '</span><span>' + esc(s.co) + '</span></div>' : '')
@@ -19025,7 +19050,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.40' + '.docx" download>⬇ '
+              +   'V17.41' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19656,7 +19681,7 @@ function popHtml(){
     +   kv('المربع', s.sq ? '<span class="num">' + esc(s.sq) + '</span>' : '')
     +   kv('الشركة', esc(s.co))
     +   kv('التصنيف', esc(t(s.inout === 'خارج' ? 'حجاج خارج' : (s.inout === 'داخل' ? 'حجاج داخل' : s.inout))))
-    +   kv('وجه العمل', esc(s.work))
+    +   kv('وجه العمل', esc(t(s.work)))
     +   kv('المنطقة', esc(s.region))
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ

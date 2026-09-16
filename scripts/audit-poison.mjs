@@ -40,11 +40,17 @@ T(JSON.stringify(c)==='{"a":1,"c":{"e":"x"},"f":[1,null,{}],"h":null}', 'undefin
 /* ٢+٣ · دفعةٌ فيها وثيقةٌ مرفوضةٌ لا توقف الباقي — وبعد ثلاث محاولاتٍ تُعزَل */
 const wait=ms=>new Promise(r=>setTimeout(r,ms));
 w.STATE.queue=[]; w.CORE.dirty('recs','OK1',{a:1}); w.CORE.dirty('recs','BAD',{a:1}); w.CORE.dirty('tasks','OK2',{b:2}); w.CORE.dirty('tasks','GONE',null);
-for (let i=0;i<6;i++){ w.CORE._busy=false; await w.CORE.flush(); await wait(120); }
+/* V17.40: العابرُ يُعاد بمهلةٍ متزايدة ولا يُعزَل إلا بعد اثنتي عشرةَ محاولة —
+   فتُسرَّع المهلُ هنا ليُبلَغ الحدُّ في الاختبار كما يُبلَغ في يومٍ حقيقيّ. */
+for (let i=0;i<14;i++){
+  w.CORE._busy=false; w.CORE._busyAt=0;
+  await w.CORE.flush(); await wait(120);
+  (w.STATE.queue||[]).forEach(q=>{ q.next = 0; });
+}
 T(written.includes('recs/OK1') && written.includes('tasks/OK2') && deleted.includes('tasks/GONE'), 'نجح ثلاثةٌ رغم واحدةٍ مرفوضة');
 T(!w.STATE.queue.some(q=>q.id==='OK1'||q.id==='OK2'||q.id==='GONE'), 'وخرجت الناجحةُ من الطابور');
 T(w.SOFT_ERRS.some(e=>/رفع وثيقة — recs\/BAD/.test(e.where) && /undefined/.test(e.msg)), 'والسببُ مكتوبٌ باسم الوثيقة');
-T(!w.STATE.queue.some(q=>q.id==='BAD') && (w.STATE.poison||[]).filter(p=>p.id==='BAD').length===1, 'وبعد الثالثة تُعزَل خارج الطابور — مرةً واحدة');
+T(!w.STATE.queue.some(q=>q.id==='BAD') && (w.STATE.poison||[]).filter(p=>p.id==='BAD').length===1, 'وبعد استنفادِ المحاولات تُعزَل خارج الطابور — مرةً واحدة');
 /* ٤ · الشاشةُ تعرضها وتتيح الإعادة والإسقاط */
 w.ROLE='engineer'; w.STATE.meta.role='engineer'; w.goPage('sync'); w.render(1);
 const h=d.getElementById('content');

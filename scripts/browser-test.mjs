@@ -174,6 +174,32 @@ console.log('\n══ ٤ب · الأبعادُ على الهاتف: لا زرَ�
   T(bad.length === 0, 'كلُّ شاشةٍ داخل عرض الهاتف وأزرارُها مرئية' + (bad.length ? ' — خالف: ' + bad.join(' · ') : ''));
 }
 
+/* ═══ ٤ج · شريطُ الخريطة يُرى كلُّه على الهاتف، والعرضُ يتبع الشاشة (V17.41) ═══ */
+{
+  await page.setViewportSize({ width:390, height:844 });
+  await page.evaluate(() => { goPage('map'); render(1); });
+  await page.waitForTimeout(400);
+  const bar = await page.evaluate(() => {
+    const b = document.querySelector('.map-top'); if (!b) return null;
+    const W = window.innerWidth, r = b.getBoundingClientRect();
+    const out = [...b.querySelectorAll('.map-chip')].map(c => c.getBoundingClientRect())
+      .filter(c => c.width > 0 && (c.right > W + 1 || c.left < -1)).length;
+    return { scrollX: b.scrollWidth > b.clientWidth + 1, out, chips:b.querySelectorAll('.map-chip').length, wide: r.width > W };
+  });
+  T(!!bar && !bar.scrollX && bar.out === 0 && !bar.wide,
+    'شريطُ الخريطة على الهاتف يُرى كلُّه: ' + (bar ? bar.chips + ' زرًّا · خارج الشاشة ' + bar.out + ' · تمريرٌ أفقيّ ' + bar.scrollX : 'غائب'));
+  /* ١٤ بوصةً ثم ٢٢: العرضُ يتّسع مع الشاشة */
+  const widthAt = async w => {
+    await page.setViewportSize({ width:w, height:900 });
+    await page.evaluate(() => { goPage('wbs'); render(1); });
+    await page.waitForTimeout(300);
+    return await page.evaluate(() => Math.round(document.getElementById('content').getBoundingClientRect().width));
+  };
+  const w14 = await widthAt(1366), w22 = await widthAt(1920);
+  T(w22 > w14 + 300, 'وعرضُ المحتوى يتبع الشاشة: ' + w14 + 'px على ١٤ بوصةً · ' + w22 + 'px على ٢٢');
+  await page.setViewportSize({ width:1280, height:800 });
+}
+
 console.log('\n══ ٥ · جولةٌ على الشاشات في المتصفّح الحقيقي ══');
 const ids = await page.evaluate(() => [...new Set([...document.querySelectorAll('#nav [data-p]')].map(a => a.getAttribute('data-p')))]);
 let drawn = 0;
