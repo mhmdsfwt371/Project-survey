@@ -57,13 +57,19 @@ const snap = await db.collection('bugs').orderBy('at', 'desc').limit(200).get();
 for (const d of snap.docs){
   const b = { id: d.id, ...d.data() };
   if (b.gh) continue;
+  /* ═══ لا يُفتَح إلا ما قُبل (V17.43) ═══
+     كان كلُّ بلاغٍ يُفتَح فورَ وصوله فيبدأ العملُ قبل قرار صاحبه. صار
+     المديرُ يقرّر في التطبيق: «مقبول» يُفتَح هنا ليُعمَل به، و«مرفوض» يبقى
+     في القاعدة بسببه ولا يُفتَح، و«جديد» ينتظر القرار. */
+  if (b.status !== 'مقبول') continue;
   const title = `[${b.kind || 'بلاغ'}] ${String(b.txt || '').replace(/\s+/g, ' ').slice(0, 70)}`;
+    const okBy = b.decBy ? `\n\n> قَبِله **${b.decBy}** — ${new Date(b.decAt || Date.now()).toISOString()}` : '';
   try {
     const issue = await gh(`repos/${REPO}/issues`, {
       method: 'POST',
-      body: JSON.stringify({ title, body: body(b), labels: ['بلاغ', b.kind || 'عطل'] })
+      body: JSON.stringify({ title, body: body(b) + okBy, labels: ['بلاغ', b.kind || 'عطل', 'مقبول'] })
     });
-    await d.ref.update({ gh: issue.number, status: 'مفتوح', ghAt: Date.now() });
+    await d.ref.update({ gh: issue.number, status: 'قيد التنفيذ', ghAt: Date.now() });
     opened++;
     console.log(`فُتح #${issue.number} — ${title}`);
   } catch (e){ console.log('تعذّر فتحُ بلاغ: ' + e.message); }
@@ -85,5 +91,8 @@ for (const d of snap.docs){
 /* ختمُ آخر تشغيلٍ (V17.39): تقرؤه شاشةُ الاستهلاك فيُعرَف إن وقف الجسرُ قبل أن يضيع بلاغ */
 try { await db.collection('settings').doc('bridge').set({ at: Date.now(), bugs: snap.size, opened, closed, run: process.env.GITHUB_RUN_NUMBER || '' }, { merge: true }); }
 catch (e){ console.log('تعذّر ختمُ التشغيل: ' + e.message); }
-console.log(`البلاغات: ${snap.size} في القاعدة · فُتح ${opened} · أُغلق ${closed}`);
+const pend = snap.docs.filter(d => ((d.data() || {}).status || 'جديد') === 'جديد').length;
+const nope = snap.docs.filter(d => (d.data() || {}).status === 'مرفوض').length;
+console.log(`البلاغات: ${snap.size} في القاعدة · فُتح ${opened} · أُغلق ${closed} · ينتظر قرارَ المدير ${pend} · مردودٌ ${nope}`);
+if (pend) console.log(`::notice title=بلاغات::${pend} بلاغًا ينتظر قرارَ المدير في التطبيق`);
 if (opened) console.log(`::notice title=بلاغات::فُتح ${opened} بلاغًا جديدًا من التطبيق`);

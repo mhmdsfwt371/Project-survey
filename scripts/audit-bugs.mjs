@@ -111,5 +111,19 @@ T(w.STATE.users.u1.ph === '0551234567' && w.STATE.users.u2.ph === '0559876543',
 T(w.PH_MISS.length === 1 && /غريب/.test(w.PH_MISS[0]), 'ويقول بالحرف من لم يُعرَف اسمُه');
 
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
+/* ═══ لا يُعمَل إلا بما قُبل (V17.43) ═══ */
+{
+  const sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
+  T(/if \(b\.status !== 'مقبول'\) continue;/.test(sync), 'والجسرُ لا يفتح إلا ما قُبل');
+  T(/labels: \['بلاغ', b\.kind \|\| 'عطل', 'مقبول'\]/.test(sync), 'ويَسِمُ المفتوحَ بأنه مقبول');
+  T(/ينتظر قرارَ المدير/.test(sync), 'ويقول كم ينتظر قرارَ المدير');
+  const raw7 = readFileSync('index.html', 'utf8');
+  T(/function bugDecide\(id, ok, why\)/.test(raw7) && /b\.decBy = STATE\.meta\.name/.test(raw7),
+    'والقرارُ يُختَم باسم صاحبه ووقته');
+  T(/data-bugok=/.test(raw7) && /data-bugno=/.test(raw7) && /data-bugf=/.test(raw7),
+    'وللشاشة قبولٌ وردٌّ وترشيحٌ بالحالة والنوع');
+  T(/if \(!ok && why\.length < 3\)/.test(raw7), 'ولا يُردُّ بلاغٌ بلا سبب');
+}
+
 console.log(bad ? `\nجردُ البلاغات فشل ✗ (${bad})` : '\nالبلاغُ من داخل النظام — ويفتح نفسَه في المستودع ✅');
 process.exit(bad ? 1 : 0);
