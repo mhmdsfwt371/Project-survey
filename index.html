@@ -858,7 +858,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.37</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.38</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -19006,7 +19006,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.37' + '.docx" download>⬇ '
+              +   'V17.38' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -31868,10 +31868,47 @@ function scrollBack(sameScreen){
 var PERF = { r:[], p:[] }, COLD_N = 0;
 function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); }
 function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
+/* ═══ البؤرةُ تبقى في الحقل عبر إعادة الرسم (V17.38) ═══
+   حقولُ الترشيح تُعيد الرسمَ عند كلِّ حرف، وإعادةُ الرسم تبني الحقلَ من جديدٍ
+   فتضيع البؤرةُ وموضعُ المؤشِّر — فيكتب المستخدمُ حرفًا ثم يضغط الحقلَ ليكتب
+   الثاني. فتُلتقَط هويةُ الحقل النشط وموضعُ مؤشِّره قبل الرسم، ويُعادان بعده
+   إلى الحقل نفسِه — بلا استثناءٍ لشاشة، فما يصحُّ لسجلِّ الأحداث يصحُّ لغيره. */
+function focusGrab(){
+  var el = document.activeElement;
+  if (!el || !el.tagName) return null;
+  var tag = el.tagName.toLowerCase();
+  if (tag !== 'input' && tag !== 'textarea') return null;
+  var sel = '';
+  if (el.id) sel = '#' + el.id;
+  else {
+    for (var i = 0; i < el.attributes.length; i++){
+      var a = el.attributes[i];
+      if (a.name.indexOf('data-') === 0){ sel = '[' + a.name + '="' + a.value.replace(/"/g, '\\"') + '"]'; break; }
+    }
+  }
+  if (!sel) return null;
+  var pos = null;
+  try { pos = el.selectionStart; } catch (e){ pos = null; }
+  return { sel:sel, pos:pos };
+}
+function focusBack(g){
+  if (!g) return;
+  var el;
+  try { el = document.querySelector(g.sel); } catch (e){ return; }
+  if (!el || el === document.activeElement) return;
+  try {
+    el.focus({ preventScroll:true });
+    if (g.pos != null && el.setSelectionRange) el.setSelectionRange(g.pos, g.pos);
+  } catch (e){ LS_ERR = e; }
+}
 function render(force){
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
+  var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
-  setTimeout(function(){ perfNote('r', ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now()) - T_R0); }, 0);
+  setTimeout(function(){
+    focusBack(FOCUS_G);
+    perfNote('r', ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now()) - T_R0);
+  }, 0);
   lsSet('nsk14.page', JSON.stringify({ cur:CUR, tab:TABS[CUR] ? PTAB[CUR] : '' }));
   scrollGrab();
   /* نافذةُ الكلمة على الجسد لا على المحتوى: مسارُ الخريطة يعود قبل رسم
@@ -33617,11 +33654,7 @@ document.addEventListener('input', function(e){
       /* بحثُ الشاشة نفسِه: يُرشِّح البياناتِ كلَّها لا المعروضَ منها */
       bind(PG_Q.trim());
       clearTimeout(PG_T);
-      PG_T = setTimeout(function(){
-        render(1);
-        var q = document.getElementById('pgQ');
-        if (q){ q.focus(); try { q.setSelectionRange(q.value.length, q.value.length); } catch (er){} }
-      }, 220);
+      PG_T = setTimeout(function(){ render(1); }, 220);   /* البؤرةُ تعود بآليةِ الرسم العامّة */
     } else pgFind(PG_Q);
     return;
   }

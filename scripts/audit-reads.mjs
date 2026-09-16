@@ -121,10 +121,16 @@ T(/EVF\.by && evActor\(e\)\.name !== EVF\.by/.test(js), 'وترشيحُ «الم
 /* ═══ ١٣ · الاستهلاكُ والأداءُ يُقاسان ويُرفَعان ويُعرَضان (V17.34) ═══ */
 T(/function perfNote\(kind, ms\)/.test(js) && /perfNote\('r'/.test(js) && /perfNote\('p'/.test(js),
   'وزمنُ الرسم وزمنُ السحب يُقاسان على الجهاز');
-T(/q:\(STATE\.queue \|\| \[\]\)\.length, pz:/.test(js) && /rms:perfAvg\('r'\), pms:perfAvg\('p'\), pulse:!!PULSE_UNSUB/.test(js),
+/* V17.37: الطابورُ يستثني نبضةَ الحضور نفسَها من العدّ — فتغيّرت الصيغةُ لا القاعدة */
+T(/q:\(STATE\.queue \|\| \[\]\)\.filter\(/.test(js) && /pz:\(STATE\.poison \|\| \[\]\)\.length/.test(js)
+  && /rms:perfAvg\('r'\), pms:perfAvg\('p'\), pulse:!!PULSE_UNSUB/.test(js),
   'ونبضةُ الحضور تحمل الطوابيرَ والأخطاءَ والأزمنةَ وحالَ النبضة');
-T(/\['usage','الاستهلاك والأداء'/.test(js) && /pill\('منقطع', 'bad'\)/.test(js) && /pill\('قراءاتٌ عالية', 'warn'\)/.test(js),
+T(/it\.kind !== 'presence' && it\.kind !== 'stats'/.test(js), 'ولا تُعَدُّ النبضةُ نفسُها طابورًا عالقًا');
+/* V17.37: الوسومُ صارت tip(...) بعنوانٍ يفسّرها — والقاعدةُ أن تُوسَم لا كيف تُكتَب */
+T(/\['usage','الاستهلاك والأداء'/.test(js) && /tip\('منقطع', 'bad'/.test(js) && /tip\('قراءاتٌ عالية', 'warn'/.test(js),
   'وشريحةُ «الاستهلاك والأداء» تعرض كلَّ جهازٍ وتَسِمُ المنقطعَ والعاليَ والبطيء');
+T(/var tip = function\(txt, cls, why\)/.test(js) && /title="' \+ esc\(t\(why\)\)/.test(js),
+  'ولكلِّ وسمٍ تفسيرُه عند الوقوف عليه');
 T(/function pulseBadge\(\)/.test(js) && /\+ pulseBadge\(\);/.test(js), 'وشارةُ النبضة في الشريط');
 
 console.log(bad ? `\nجردُ القراءات فشل ✗ (${bad})` : '\nلا مجموعةَ تُقرأ بلا سقف، وما يُقرأ يُحصى ✅');
