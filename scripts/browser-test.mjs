@@ -188,6 +188,16 @@ console.log('\n══ ٤ب · الأبعادُ على الهاتف: لا زرَ�
   });
   T(!!bar && !bar.scrollX && bar.out === 0 && !bar.wide,
     'شريطُ الخريطة على الهاتف يُرى كلُّه: ' + (bar ? bar.chips + ' زرًّا · خارج الشاشة ' + bar.out + ' · تمريرٌ أفقيّ ' + bar.scrollX : 'غائب'));
+  /* شريطُ الرأس: لا زرَّ خارج الشاشة ولا تمريرٌ أفقيّ (V17.42) */
+  const tb = await page.evaluate(() => {
+    const b = document.querySelector('.topbar'); if (!b) return null;
+    const W = window.innerWidth;
+    const out = [...b.querySelectorAll('button,select,a')].map(e => e.getBoundingClientRect())
+      .filter(r => r.width > 0 && (r.right > W + 1 || r.left < -1)).length;
+    return { out, scrollX: document.documentElement.scrollWidth > W + 2, h: Math.round(b.getBoundingClientRect().height) };
+  });
+  T(!!tb && tb.out === 0 && !tb.scrollX,
+    'وشريطُ الرأس يسع الهاتفَ: خارج الشاشة ' + (tb ? tb.out : '?') + ' · تمريرٌ أفقيّ ' + (tb ? tb.scrollX : '?') + ' · ارتفاعُه ' + (tb ? tb.h : '?') + 'px');
   /* ١٤ بوصةً ثم ٢٢: العرضُ يتّسع مع الشاشة */
   const widthAt = async w => {
     await page.setViewportSize({ width:w, height:900 });

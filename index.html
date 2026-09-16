@@ -179,6 +179,23 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
 @media (max-width:760px){
   .card-body table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
 }
+/* ═══ شريطُ الرأس يسع الهاتفَ فلا يخرج زرٌّ عنه (V17.42) ═══
+   كان صفًّا واحدًا لا يلتفّ: فمع أزرار الأدوات واللغة والنسخة يخرج أوّلُه
+   عن يسار الشاشة ولا يُعرَف أنه هناك، ويُدفَع صندوقُ البحث حتى يُقرأ
+   «ث في هذه الصفحة». صار على الهاتف: يلتفُّ في سطرين، والعنوانُ والقائمةُ
+   في الأوّل، والأدواتُ في الثاني مرتَّبةً من البداية، وأزرارُه أصغرُ قليلًا
+   — بلا تمريرٍ أفقيٍّ البتّة. */
+@media (max-width:760px){
+  .topbar{flex-wrap:wrap;row-gap:8px;padding:9px 12px;overflow-x:hidden}
+  .topbar .crumb{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-meta{margin-inline-start:0;width:100%;order:9;gap:8px;flex-wrap:wrap;
+    justify-content:flex-start;font-size:11.5px}
+  .tb-btn{width:34px;height:34px;min-height:34px;font-size:13px}
+  /* رأسُ الصفحة: الأزرارُ سطرٌ كاملٌ والبحثُ سطرٌ كامل — لا زحامَ ولا قصّ */
+  .page-head .head-acts{gap:6px}
+  .page-head .head-acts .btn{padding:6px 10px;font-size:12.5px}
+  .pg-find input{width:100%;min-width:0}
+}
 
 /* ═══ البطاقةُ الطويلةُ الضيّقة: نصفان متجاوران على الشاشة العريضة ═══
    الجدولُ الضيّقُ يترك نصفَ الشاشة فارغًا ويطول نزولًا، فيُمرَّر كثيرًا
@@ -881,7 +898,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.41</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.42</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -19050,7 +19067,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.41' + '.docx" download>⬇ '
+              +   'V17.42' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
