@@ -858,7 +858,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.34</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.35</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3691,6 +3691,8 @@ en:{
  'مهام':'Tasks',
  'والباقي في طابور جهاز الفنيّ أو تعذّر رفعُه':'the rest is queued on the technician device or failed to upload',
  'الاستهلاك والأداء':'Usage & performance', 'كلُّ جهاز: قراءاتُه وطوابيرُه وأعطالُه وزمنُ رسمه وسحبه — ومن سقط منها.':'Every device: its reads, queues, errors, render and pull times — and which ones dropped.', 'كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.':'Each device measures itself and reports with its presence beat: what it read, what waits in its queues, its errors, and how long render and pull take.', 'أجهزة':'Devices', 'متصلةٌ الآن':'Online now', 'منقطعةٌ في وقت العمل':'Silent during work hours', 'على نسخةٍ قديمة':'On an old version', 'بطوابيرَ عالقة':'With stuck queues', 'قراءاتُ اليوم كلِّها':'Reads today (all)', 'أخطاءٌ مسجَّلة':'Recorded errors', 'الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).':'The free quota is fifty thousand reads per day for the whole project — figures here come from each device\u2019s last beat (every half hour or on change).', 'الأجهزة':'Devices', 'لا نبضاتٍ بعد.':'No beats yet.', 'منقطع':'Silent', 'نسخة قديمة':'Old version', 'طابورٌ مسموم':'Poisoned queue', 'صور فشلت':'photos failed', 'قراءاتٌ عالية':'High reads', 'رسمٌ بطيء':'Slow render', 'بلا نبضة':'No pulse', 'م.ث':'ms', 'طوابير':'Queues', 'أخطاء':'Errors', 'زمن الرسم':'Render time', 'زمن السحب':'Pull time', 'النبضةُ حيّة: التغييراتُ تصل في ثوانٍ — والسحبُ الدوريُّ شبكةُ أمان':'Pulse is live: changes arrive within seconds — the periodic pull is a safety net', 'النبضةُ غيرُ متصلة — يُعتمَد على السحب الدوريّ':'Pulse not connected — relying on the periodic pull',
+ 'تعذّر الوصولُ — تُزار ثانيةً':'Could not be reached — to be revisited', 'المشرفُ المُسنَد إليه':'The assigned supervisor', 'لون النقطة':'Point colour',
+ 'الخلاصة':'Summary', 'التفاصيل التقنية':'Technical details', 'النظامُ يعمل بشكلٍ طبيعيّ: كلُّ الأجهزة تتزامن ولا شيءَ عالق.':'The system is running normally: all devices are syncing and nothing is stuck.', 'يوجد ما يستحقُّ نظرة:':'There is something worth a look:', 'جهازًا لم يتزامن منذ أكثر من ساعتين في وقت العمل — قد يكون مغلقًا أو بلا شبكة.':'devices have not synced for over two hours during work hours — possibly closed or offline.', 'جهازًا عنده عملٌ لم يُرفَع بعد (صورٌ أو زيارات) — يُفتَح على شبكةٍ فيُرفَع وحدَه.':'devices have work not yet uploaded (photos or visits) — open them on a network and it uploads itself.', 'جهازًا على نسخةٍ قديمة — يُعاد فتحُ التطبيق فيحدّث نفسَه.':'devices on an old version — reopen the app and it updates itself.', 'استهلاكُ القاعدة اليوم قريبٌ من الحدِّ المجانيّ.':'Database usage today is close to the free limit.', 'خطأً برمجيًّا مسجَّلًا على الأجهزة — يراه المطوّرُ في السجل.':'software errors recorded on devices — the developer sees them in the log.', 'متصلٌ الآن':'Online now', 'قراءاتُ اليوم':'Reads today',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6390,6 +6392,8 @@ ur:{
  'مهام':'ٹاسک',
  'والباقي في طابور جهاز الفنيّ أو تعذّر رفعُه':'باقی ٹیکنیشن کی ڈیوائس کی قطار میں ہیں یا اپ لوڈ ناکام',
  'الاستهلاك والأداء':'استعمال اور کارکردگی', 'كلُّ جهاز: قراءاتُه وطوابيرُه وأعطالُه وزمنُ رسمه وسحبه — ومن سقط منها.':'ہر ڈیوائس: ریڈز، قطاریں، خرابیاں، رینڈر اور پُل کا وقت — اور کون سی گر گئیں۔', 'كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.':'ہر ڈیوائس خود کو ناپتی ہے اور حاضری کے ساتھ رپورٹ کرتی ہے: کیا پڑھا، قطاروں میں کیا باقی ہے، کیا خرابیاں ہوئیں، اور رینڈر و پُل کتنا وقت لیتے ہیں۔', 'أجهزة':'ڈیوائسز', 'متصلةٌ الآن':'ابھی آن لائن', 'منقطعةٌ في وقت العمل':'کام کے اوقات میں خاموش', 'على نسخةٍ قديمة':'پرانے ورژن پر', 'بطوابيرَ عالقة':'رکی ہوئی قطاروں کے ساتھ', 'قراءاتُ اليوم كلِّها':'آج کی کل ریڈز', 'أخطاءٌ مسجَّلة':'ریکارڈ شدہ خرابیاں', 'الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).':'مفت حد پورے منصوبے کے لیے روزانہ پچاس ہزار ریڈز — یہاں کے اعداد ہر ڈیوائس کی آخری بیٹ سے ہیں (ہر آدھے گھنٹے یا تبدیلی پر)۔', 'الأجهزة':'ڈیوائسز', 'لا نبضاتٍ بعد.':'ابھی کوئی بیٹ نہیں۔', 'منقطع':'خاموش', 'نسخة قديمة':'پرانا ورژن', 'طابورٌ مسموم':'خراب قطار', 'صور فشلت':'تصاویر ناکام', 'قراءاتٌ عالية':'زیادہ ریڈز', 'رسمٌ بطيء':'سست رینڈر', 'بلا نبضة':'بغیر نبض', 'م.ث':'ms', 'طوابير':'قطاریں', 'أخطاء':'خرابیاں', 'زمن الرسم':'رینڈر وقت', 'زمن السحب':'پُل وقت', 'النبضةُ حيّة: التغييراتُ تصل في ثوانٍ — والسحبُ الدوريُّ شبكةُ أمان':'نبض زندہ ہے: تبدیلیاں سیکنڈوں میں پہنچتی ہیں — متواتر پُل حفاظتی جال ہے', 'النبضةُ غيرُ متصلة — يُعتمَد على السحب الدوريّ':'نبض منسلک نہیں — متواتر پُل پر انحصار',
+ 'تعذّر الوصولُ — تُزار ثانيةً':'پہنچ نہیں سکے — دوبارہ دورہ', 'المشرفُ المُسنَد إليه':'مقرر سپروائزر', 'لون النقطة':'پوائنٹ کا رنگ',
+ 'الخلاصة':'خلاصہ', 'التفاصيل التقنية':'تکنیکی تفصیلات', 'النظامُ يعمل بشكلٍ طبيعيّ: كلُّ الأجهزة تتزامن ولا شيءَ عالق.':'نظام معمول کے مطابق چل رہا ہے: تمام ڈیوائسز سنک ہو رہی ہیں اور کچھ رکا نہیں۔', 'يوجد ما يستحقُّ نظرة:':'کچھ توجہ کے لائق ہے:', 'جهازًا لم يتزامن منذ أكثر من ساعتين في وقت العمل — قد يكون مغلقًا أو بلا شبكة.':'ڈیوائس(ز) کام کے اوقات میں دو گھنٹے سے سنک نہیں ہوئیں — شاید بند یا آف لائن۔', 'جهازًا عنده عملٌ لم يُرفَع بعد (صورٌ أو زيارات) — يُفتَح على شبكةٍ فيُرفَع وحدَه.':'ڈیوائس(ز) پر کام اپ لوڈ نہیں ہوا (تصاویر یا دورے) — نیٹ ورک پر کھولیں تو خود اپ لوڈ ہو جائے گا۔', 'جهازًا على نسخةٍ قديمة — يُعاد فتحُ التطبيق فيحدّث نفسَه.':'ڈیوائس(ز) پرانے ورژن پر — ایپ دوبارہ کھولیں تو خود اپ ڈیٹ ہو جائے گی۔', 'استهلاكُ القاعدة اليوم قريبٌ من الحدِّ المجانيّ.':'آج ڈیٹابیس کا استعمال مفت حد کے قریب ہے۔', 'خطأً برمجيًّا مسجَّلًا على الأجهزة — يراه المطوّرُ في السجل.':'ڈیوائسز پر سافٹ ویئر خرابی ریکارڈ ہوئی — ڈویلپر ریکارڈ میں دیکھتا ہے۔', 'متصلٌ الآن':'ابھی آن لائن', 'قراءاتُ اليوم':'آج کی ریڈز',
 }
 };
 
@@ -18990,7 +18994,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.34' + '.docx" download>⬇ '
+              +   'V17.35' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19623,7 +19627,17 @@ function popHtml(){
     +   kv('التصنيف', esc(t(s.inout === 'خارج' ? 'حجاج خارج' : (s.inout === 'داخل' ? 'حجاج داخل' : s.inout))))
     +   kv('وجه العمل', esc(s.work))
     +   kv('المنطقة', esc(s.region))
-    +   kv('حالة المسح', pill(sv ? 'تمت الزيارة' : 'لم يُزر', sv ? 'ok' : 'warn'))
+    /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
+     سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
+     تقول تمّت. صار النصُّ والدائرةُ من دورة الحياة واحدةً، ويُقال لونُها. */
+  +   (function(){
+        var lf = (typeof lifeOf === 'function') ? lifeOf(s) : '';
+        var L2 = (typeof LIFE === 'object' && LIFE[lf]) || null;
+        var sv2 = svDone(rec);
+        return kv('حالة المسح', pill(sv2 ? 'تمت الزيارة' : (rec ? 'تعذّر الوصول' : 'لم يُزر'), sv2 ? 'ok' : (rec ? 'off' : 'warn'))
+          + (rec && !sv2 && rec.note ? ' <span class="hint" style="margin:0">' + esc(String(rec.note).slice(0, 60)) + '</span>' : ''))
+          + (L2 ? kv('لون النقطة', '<span style="display:inline-block;width:12px;height:12px;border-radius:3px;background:' + L2.c + ';vertical-align:middle;margin-inline-end:6px"></span>' + esc(t(L2.n))) : '');
+      })()
     +   kv('حالة التركيب', pill(st, st==='مُركّب' ? 'ok' : (st==='متعذّر' ? 'off' : '')))
     +   (task ? kv('مُسند إلى', esc(task.to) + (task.when ? ' · ' + esc(task.when) : '')) : '')
     +   kv('الإحداثيات', '<span class="num">' + s.lat.toFixed(5) + ', ' + s.lng.toFixed(5) + '</span>')
@@ -19686,7 +19700,10 @@ function popHtml(){
           var ins2 = STATE.inss[s.id] || {}, so = ins2.solution;
           var rec2 = STATE.recs[s.id], rv2 = svReview(rec2), ms2 = minState(rec2);
           var step = '', go = '', who = '';
-          if (!sv){
+          if (rec && !svDone(rec)){
+            step = 'تعذّر الوصولُ — تُزار ثانيةً'; who = 'المشرفُ المُسنَد إليه';
+            if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
+          } else if (!sv){
             step = 'تنتظر الزيارةَ الميدانية'; who = 'الفنيُّ المُسنَد إليه';
             if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
           } else if (rv2 === 'revisit'){
@@ -26691,7 +26708,23 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
         flags.join(' ') || pill('سليم', 'ok')
       ];
     });
-    return '<p class="lede" style="margin:0 0 12px">' + esc(t('كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.')) + '</p>'
+    /* ═══ خلاصةٌ بلا مصطلحات قبل الجدول التقنيّ (V17.35) ═══
+       المهندسُ يريد جملةً: النظامُ بخير أم لا، ومن غاب، وماذا يلزم — والتفاصيلُ
+       التقنيةُ لمن يريدها تحت «التفاصيل التقنية». */
+    var okAll = !stale && !back && !old && totReads <= 40000;
+    var plain = [];
+    plain.push(okAll ? t('النظامُ يعمل بشكلٍ طبيعيّ: كلُّ الأجهزة تتزامن ولا شيءَ عالق.') : t('يوجد ما يستحقُّ نظرة:'));
+    if (stale) plain.push(nm(stale) + ' ' + t('جهازًا لم يتزامن منذ أكثر من ساعتين في وقت العمل — قد يكون مغلقًا أو بلا شبكة.'));
+    if (back)  plain.push(nm(back) + ' ' + t('جهازًا عنده عملٌ لم يُرفَع بعد (صورٌ أو زيارات) — يُفتَح على شبكةٍ فيُرفَع وحدَه.'));
+    if (old)   plain.push(nm(old) + ' ' + t('جهازًا على نسخةٍ قديمة — يُعاد فتحُ التطبيق فيحدّث نفسَه.'));
+    if (totReads > 40000) plain.push(t('استهلاكُ القاعدة اليوم قريبٌ من الحدِّ المجانيّ.'));
+    if (errs) plain.push(nm(errs) + ' ' + t('خطأً برمجيًّا مسجَّلًا على الأجهزة — يراه المطوّرُ في السجل.'));
+    return card((okAll ? '\u2705 ' : '\u26A0\uFE0F ') + t('الخلاصة'),
+        '<p style="margin:0;font-size:15px;line-height:1.8">' + plain.map(esc).join('<br>') + '</p>'
+        + '<p class="hint" style="margin:8px 0 0">' + esc(t('متصلٌ الآن')) + ' <b class="num">' + nm(online) + '</b> ' + t('من') + ' <b class="num">' + nm(rows.length) + '</b> \u00b7 '
+        + esc(t('قراءاتُ اليوم')) + ' <b class="num">' + nm(totReads) + '</b> / ' + nm(50000) + '</p>')
+      + '<details' + (okAll ? '' : ' open') + '><summary class="hint" style="cursor:pointer;margin:0 0 10px">\u{1F527} ' + esc(t('التفاصيل التقنية')) + '</summary>'
+      + '<p class="lede" style="margin:0 0 12px">' + esc(t('كلُّ جهازٍ يقيس نفسَه ويرفع قياسَه مع نبضة حضوره: ما قرأ، وما ينتظر في طوابيره، وما وقع فيه من أخطاء، وكم يستغرق رسمُه وسحبُه.')) + '</p>'
       + stats([['أجهزة', N(rows.length)], ['متصلةٌ الآن', N(online), online ? 'ok' : ''],
                ['منقطعةٌ في وقت العمل', N(stale), stale ? 'wrn' : 'ok'],
                ['على نسخةٍ قديمة', N(old), old ? 'wrn' : 'ok'],
@@ -26701,7 +26734,8 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       + '<p class="hint" style="margin:0 0 8px">' + esc(t('الحصةُ المجانيةُ خمسون ألفَ قراءةٍ في اليوم للمشروع كلِّه — والأرقامُ هنا من آخر نبضةٍ لكلِّ جهاز (كلَّ نصف ساعة أو عند التغيّر).')) + '</p>'
       + card(t('الأجهزة'), rows.length
           ? table(['الجهاز','آخر ظهور','قراءات','طوابير','أخطاء','زمن الرسم','زمن السحب','الحالة'], T, null, { sticky:true })
-          : '<p class="hint" style="margin:0">' + esc(t('لا نبضاتٍ بعد.')) + '</p>');
+          : '<p class="hint" style="margin:0">' + esc(t('لا نبضاتٍ بعد.')) + '</p>')
+      + '</details>';
   })();
 if (cur === 'vers') return head + (function(){
     /* كان جدولًا مكتوبًا بيدٍ من عهد V14 — اسمان ونسختان وإنذارٌ ثابت */
