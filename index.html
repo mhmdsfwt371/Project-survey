@@ -844,7 +844,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.31</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.32</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -18955,7 +18955,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.31' + '.docx" download>⬇ '
+              +   'V17.32' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -27662,8 +27662,20 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
     /* ما في اليد قليلٌ؟ يُجلَب السجلُّ مرةً — فلا تُقرأ الشاشةُ فارغةً وهي مليئة */
     if (evAll().length < 50) evFetch(false);
     var all = evAll(), L = evRows();
+    /* ═══ القائمةُ كلُّ الحسابات لا من ظهر في المحمَّل (V17.32) ═══
+       كانت تُبنى من الأحداث التي في اليد وحدَها، فسبعةَ عشرَ حسابًا تظهر
+       منها خمسة — فيُظَنُّ أن الباقيَ محجوبٌ، وإنما لا حدثَ لهم في الخمسمئة
+       المحمَّلة. صارت تعرض كلَّ حسابٍ يراه صاحبُ الشاشة ومعه عددُ أحداثه في
+       المحمَّل — فيُعرَف الفرقُ بين «لم يعمل» و«لم يُنزَل عملُه». */
+    var evN = {};
+    all.forEach(function(e){ var b = evActor(e).name; if (b) evN[b] = (evN[b] || 0) + 1; });
     var users = [], seen = {};
-    all.forEach(function(e){ var b = evActor(e).name; if (b && !seen[b]){ seen[b] = 1; users.push(b); } });
+    usersList().forEach(function(p){
+      var nx = (p[1] || {}).name || '';
+      if (nx && !seen[nx]){ seen[nx] = 1; users.push(nx); }
+    });
+    Object.keys(evN).forEach(function(b){ if (!seen[b]){ seen[b] = 1; users.push(b); } });
+    users.sort(function(a, b){ return (evN[b] || 0) - (evN[a] || 0) || String(a).localeCompare(String(b)); });
     var kinds = {}; all.forEach(function(e){ var k = evKind(e.what); kinds[k] = (kinds[k]||0)+1; });
     var cats = {};  all.forEach(function(e){ var c = evCat(e.what); if (c) cats[c] = (cats[c]||0)+1; });
 
@@ -27688,8 +27700,10 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
         + '</select></div>'
         + '<div class="field"><label>' + esc(t('المستخدم')) + '</label>'
         + '<select data-evf="by"><option value="">— ' + esc(t('الكل')) + ' —</option>'
-        + users.sort().map(function(u){
-            return '<option' + (EVF.by===u?' selected':'') + '>' + esc(u) + '</option>'; }).join('')
+        + users.map(function(u){
+            /* القيمةُ الاسمُ وحدَه — والعدَدُ نصٌّ للعين لا جزءٌ من المفتاح */
+            return '<option value="' + esc(u) + '"' + (EVF.by===u?' selected':'') + '>'
+              + esc(u) + ' (' + nm(evN[u] || 0) + ')</option>'; }).join('')
         + '</select></div>'
         + '<div class="field"><label>' + esc(t('من')) + '</label>'
         + '<input type="datetime-local" data-evf="from" value="' + esc(EVF.from) + '"></div>'
