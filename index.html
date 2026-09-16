@@ -858,7 +858,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.39</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.40</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8482,7 +8482,10 @@ var CORE = {
       CORE.saveSoon();
       if (!STATE.queue.length){ CORE._busy = false; return Promise.resolve(0); }
     }
-    var batch = STATE.queue.slice(0, 50);
+    /* ما أُجِّل لا يُرفَع قبل موعده ولا يعيق ما بعده (V17.40) */
+  var nowQ = Date.now();
+    var batch = (STATE.queue || []).filter(function(it){ return !it.next || it.next <= nowQ; }).slice(0, 50);
+    if (!batch.length){ CORE._busy = false; return Promise.resolve(0); }   /* كلُّه مؤجَّلٌ — يُنتظَر موعدُه */
     /* يُهيَّأ Firebase قبل الدفع: كان يُنادى `push` مباشرةً وهي ترفض
        بـ«not-ready» إن لم يُحمَّل بعد — وهو يُحمَّل كسولًا. فيبقى الطابورُ
        واقفًا ويُعاد الرفضُ في كلِّ دورةٍ فلا يصل شيءٌ أبدًا. */
@@ -8507,7 +8510,21 @@ var CORE = {
       r.failed.forEach(function(f){
         var it = f.it; it.tries = (it.tries || 0) + 1; it.err = f.msg;
         softErr('رفع وثيقة — ' + it.kind + '/' + it.id, f.msg, '');
-        if (it.tries >= 3){
+        /* ═══ ما فشل يُعاد بمهلةٍ متزايدة لا يُعزَل بعد ثلاث (V17.40) ═══
+           أكثرُ أسباب الفشل عابرٌ: شبكةٌ انقطعت أو مهلةٌ انتهت أو القاعدةُ
+           مشغولة. فكان عزلُ الوثيقة بعد ثلاثِ محاولاتٍ متتاليةٍ يحبس عملًا
+           صحيحًا على الجهاز لأن الشبكةَ ساءت دقيقة. صارت تُؤجَّل وتُعاد:
+           دقيقةٌ ثم أربعٌ ثم خمسَ عشرةَ ثم ساعةٌ ثم ثلاثٌ — حتى اثنتي عشرةَ
+           محاولة. ولا يُعزَل إلا ما لا يُصلحه التكرار: رفضُ القواعد أو حجمٌ
+           فوق السقف — ذاك عزلُه فورًا وإعادتُه عبث. */
+        var msg = String(f.msg || '');
+        var hard = /permission|denied|PERMISSION|INVALID_ARGUMENT|invalid|too large|exceeds|maximum/i.test(msg);
+        if (!hard && it.tries < 12){
+          var waits = [60000, 240000, 900000, 3600000, 10800000];
+          it.next = Date.now() + waits[Math.min(it.tries - 1, waits.length - 1)];
+          return;
+        }
+        if (hard || it.tries >= 12){
           /* تُعزَل: تخرج من الطابور إلى ركنٍ يُرى — فلا تعيق ما بعدها */
           STATE.poison = STATE.poison || [];
           if (!STATE.poison.some(function(p2){ return p2.kind === it.kind && String(p2.id) === String(it.id); }))
@@ -19008,7 +19025,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.39' + '.docx" download>⬇ '
+              +   'V17.40' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -24117,19 +24134,33 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
 
       + '<p class="hint">' + esc(t('التحديات تُسجَّل أثناء المسح («المسح الميداني»)، وتُغلَق تلقائيًّا حين تُعتمَد تركيبتُها — لا يدويًّا.')) + '</p>';
   })();
-    if (cur === 'stuck') return head + (function(){
-    var L = stuckList();
+    /* ═══ المتعذّرُ والراكدُ شريحتان لا واحدة (بلاغ #٢ · V17.40) ═══
+   جُمعا في شاشةٍ لأنهما «ما توقّف»، وهما أمران مختلفان: المتعذّرُ زيارةٌ لم
+   تقع ويُقرَّر فيها (يُقبَل العذرُ أو يُعاد الإسناد)، والراكدُ زيارةٌ وقعت
+   ولم يُركَّب موقعُها فيُسأل عن التركيب. ومن يعمل على أحدهما لا يعنيه الآخر،
+   وخلطُهما يجعل العدَّ مضلِّلًا والقرارَ بطيئًا. فصار لكلٍّ شريحتُه بكلِّ
+   تفاصيله وشرائحِه وبحثِه وتصديره — كما طلب البلاغُ من الميدان. */
+if (cur === 'stuck' || cur === 'idle') return head + (function(){
+    var ONLY = cur;                       /* 'stuck' متعذّر · 'idle' راكد */
+    var L = stuckList().filter(function(x){ return ONLY === 'stuck' ? x.blocked : !x.blocked; });
     var blocked = L.filter(function(x){ return x.blocked; });
     var stuck7  = L.filter(function(x){ return !x.blocked && x.days >= 7 && x.days < 14; });
     var stuck14 = L.filter(function(x){ return !x.blocked && x.days >= 14; });
     var oldest = L.length ? L[0] : null;
 
     var open = blocked.filter(function(x){ return !x.accepted; }), accepted = blocked.filter(function(x){ return x.accepted; });
-    var chips = [['','الكل',L.length],['open','متعذّر يحتاج قرارًا',open.length],['ok','متعذّر مقبول',accepted.length],['idle','راكد',L.length - blocked.length]];
+    /* شرائحُ كلِّ شاشةٍ من جنسها: المتعذّرُ بقراره، والراكدُ بعمره */
+    var chips = ONLY === 'stuck'
+      ? [['','الكل',L.length],['open','يحتاج قرارًا',open.length],['ok','عذرٌ مقبول',accepted.length]]
+      : [['','الكل',L.length],['w7','راكدٌ أسبوعًا فأكثر',stuck7.length + stuck14.length],['w14','راكدٌ أسبوعين فأكثر',stuck14.length]];
     var show = L.filter(function(x){
-      if (STK_F === 'open') return x.blocked && !x.accepted;
-      if (STK_F === 'ok') return x.blocked && x.accepted;
-      if (STK_F === 'idle') return !x.blocked;
+      if (ONLY === 'stuck'){
+        if (STK_F === 'open') return !x.accepted;
+        if (STK_F === 'ok') return x.accepted;
+        return true;
+      }
+      if (STK_F === 'w7') return x.days >= 7;
+      if (STK_F === 'w14') return x.days >= 14;
       return true;
     });
     var rows = [];
@@ -28882,7 +28913,8 @@ var EXP_SECS = [
   ['assign','توزيع فرق التركيب',1], ['conote','إشعار الشركات بمواعيد التركيب',1],
   ['stock','عُهدة الأجهزة — القارئات مع الفرق والمخزن',1],
   ['survey','المسح الميداني',1], ['chal','التحديات الميدانية — إفادة المشرفين',1],
-  ['stuck','المتعذّر والمواقع الراكدة — بالعمر',1],
+  ['stuck','المتعذّر — ما لم يصل إليه الميدان',1],
+  ['idle','الراكد — زيارةٌ تمّت ولم يُركَّب موقعُها',1],
   ['qa','التدقيق الهندسي — اعتماد التركيبات والسيريالات',1],
   ['sys','سلامة البيانات — المشرف العام',1], ['ev','سجل الأحداث',1],
   ['invb','المخزون والعُهدة',1], ['invmv','دفتر حركة المخزون',1],
@@ -29792,7 +29824,8 @@ var TABS = {
     ['ready','جاهز للتركيب','🟠','ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.'],
     ['chal','إفادات الميدان','⚠','ما أفاد به الميدان أثناء المسح — بنوعه وحالته.'],
     ['chalm','متابعة التحديات','📋','أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.'],
-    ['stuck','المتعذّر والراكد','⏸','بالعمر — أقدمها أولًا.'],
+    ['stuck','المتعذّر','\u26D4','ما لم يصل إليه الميدانُ — بسببه وقراره.'],
+    ['idle','الراكد','\u23F8','زيارةٌ تمّت ولم يُركَّب موقعُها — بعمر الركود وسببه.'],
     ['solution','حل التركيب','🔧','الأجهزةُ المقترحة لكل نقطة — يعتمدها المهندس قبل أن تصير طلبَ تركيب.'],
     ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
     ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.']],
