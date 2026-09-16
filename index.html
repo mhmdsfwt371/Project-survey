@@ -902,7 +902,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.46</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.47</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -8355,6 +8355,9 @@ var CORE = {
   set:  function(kind, id, v){
     if (!STATE[kind]) STATE[kind] = {};
     STATE[kind][id] = v;
+    /* كلُّ كتابةٍ محليةٍ للمهامِّ تُبطِل فهرسَها — الفهرسُ سريعٌ لأنه مبنيٌّ
+       مرةً، فلا يصحُّ أن يُقرأ قديمًا بعد إسنادٍ أو إنجاز (V17.47) */
+    if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
     CORE.dirty(kind, id, v);
     return v;
   },
@@ -8373,6 +8376,10 @@ var CORE = {
   /* ما عليه شاهدٌ يُمحى محليًّا بدل أن يُخزَّن */
   applyDoc: function(kind, id, v){
     if (!STATE[kind]) STATE[kind] = {};
+    /* فهرسُ المهامِّ يُبطَل عند وصول أيِّ مهمةٍ من المزامنة — وإلا قرأ الفهرسُ
+       القديمُ حالةً قديمةً: نقطةٌ أُسندت في جهازٍ آخرَ تبقى «لم تُزر» هنا
+       حتى يُبطِله شيءٌ آخر. وكذلك أيُّ كتابةٍ مباشرةٍ على STATE.tasks. */
+    if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
     if (v && v.deleted){ delete STATE[kind][id]; return false; }
     /* الإشعارُ لصاحب الشأن يُولَد هنا — حيث تصل الوثيقةُ لا حيث كُتبت */
     try { if (typeof notifOnArrival === 'function') notifOnArrival(kind, id, STATE[kind][id], v); }
@@ -19186,7 +19193,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.46' + '.docx" download>⬇ '
+              +   'V17.47' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20193,7 +20200,9 @@ function siteSearch(q, lim){
 /* ── إحصاءٌ يُحسب مرةً ويُبطَل عند التغيير ── */
 var STAT_CACHE = null, STAT_VER = 0;
 
-function statBump(){ STAT_CACHE = null; STAT_VER++; }
+/* الفهرسُ يُبطَل مع كلِّ تغيُّرٍ في المهامّ — وstatBump يُستدعى بعد كلِّ تغيير */
+function statBump(){
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; }
 
 /* ═══ التوزيعُ بالمشعر والنوع — من حلقةٍ واحدة ═══
    كانت صفوفُ الجدول تُحسَب في مكانٍ والإجماليُّ في آخر (كاشٌ قد يكون أقدمَ
@@ -20544,7 +20553,7 @@ function liveWatch(){
     LIVE.push(FB.db.collection('tasks').where('assignedTo', '==', me).limit(200)
       .onSnapshot(function(snap){
         snap.docChanges().forEach(function(ch){
-          if (ch.type === 'removed') delete STATE.tasks[ch.doc.id];
+          if (ch.type === 'removed'){ delete STATE.tasks[ch.doc.id]; if (typeof TK_IX !== 'undefined') TK_IX = null; }
           else CORE.applyDoc('tasks', ch.doc.id, ch.doc.data());
         });
         statBump();
@@ -20908,11 +20917,31 @@ var LIFE = {
 };
 var LIFE_ORDER = ['todo','stuck','assigned','tomorrow','visited','revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
 /* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
-function taskKindOf(id, kind){
-  var T = STATE.tasks;
-  for (var k in T) if (T[k] && T[k].site === id && T[k].kind === kind && T[k].status !== 'معتمد') return T[k];
-  return null;
+/* ═══ فهرسُ المهامِّ بالنقطة والنوع (V17.47) ═══
+   كانت الدالةُ تمرُّ على المهامِّ كلِّها لكلِّ نقطةٍ ولكلِّ نوع: ألفٌ وسبعُمئةٍ
+   وسبعٌ وثمانون نقطةً × تسعُمئةِ مهمةٍ × أربعةِ أنواعٍ ≈ ستةُ ملايينِ دورةٍ في
+   كلِّ رسم — فبلغ رسمُ الخريطة وقائمةِ المواقع سبعَ مئةِ جزءٍ من الثانية على
+   بياناتِ موسم. صار الفهرسُ يُبنى مرةً ويُبطَل عند تغيُّر المهامّ: مفتاحُه
+   «النقطة|النوع»، فالبحثُ لحظيّ. */
+var TK_IX = null;
+/* من كتب مهمةً محليًّا يُبطِل الفهرسَ بهذه — فلا يُنسى النداءُ في موضعٍ جديد */
+function tasksTouched(){ TK_IX = null; }
+function taskIndex(){
+  /* لا يُعاد بناءُ الفهرس إلا بعد إبطالِه في statBump — وكان التحقُّقُ من
+     صلاحيته يمرُّ على مفاتيح المهامِّ في كلِّ نداءٍ (ستةُ آلافِ نداءٍ في الرسم
+     الواحد × تسعُمئةِ مفتاح)، فصار التحقُّقُ أغلى من الفهرس نفسِه. */
+  if (TK_IX) return TK_IX;
+  var T = STATE.tasks || {}, ix = {};
+  for (var k in T){
+    var x = T[k];
+    if (!x || !x.site || x.status === 'معتمد') continue;
+    var key = x.site + '|' + x.kind;
+    if (!ix[key]) ix[key] = x;
+  }
+  TK_IX = ix;
+  return ix;
 }
+function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
   var id = x.id;
   if (disDone(id) || taskKindOf(id, 'dis')) return 'dis';
@@ -25913,7 +25942,7 @@ function regDel(id){
   if (x.kind === 'visit' && svDone(STATE.recs[x.site])){
     toast(t('زِيرت النقطةُ فعلًا — اعتمد الزيارةَ أو ردّها بدل الحذف')); return;
   }
-  delete STATE.tasks[id];
+  delete STATE.tasks[id]; if (typeof TK_IX !== 'undefined') TK_IX = null;
   CORE.rm('tasks', id);
   logEvent('حذف إسناد — ' + (x.no || id) + ' \u00b7 ' + x.site);
   toast(t('حُذف الإسناد'));
@@ -32281,6 +32310,10 @@ function focusBack(g){
 }
 function render(force){
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
+  /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
+     أطولَ يجعل صحّتَه رهينةَ تذكُّرِ كلِّ كاتبٍ أن يُبطِله — وذلك عهدٌ يُنسى.
+     فيُبنى مرةً في الرسمة ويُستهلَك آلافَ المرات فيها، ويموت معها. */
+  TK_IX = null;
   var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
   setTimeout(function(){

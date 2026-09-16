@@ -41,7 +41,7 @@ const click = sel => { const b = d.querySelector(sel); if (!b) return false; b.d
 const site = w.STATE.sites[0];
 /* ١ · المهندس يُسنِد للمشرف */
 w.ROLE = 'engineer'; w.STATE.meta.name = 'مهندس الاختبار';
-w.STATE.tasks['TK-visit-' + site.id] = { id:'TK-visit-'+site.id, no:'SR-9001', site:site.id, kind:'visit', to:'مشرف الاختبار', assignedTo:'مشرف الاختبار', status:'مطلوب', when:w.dayKey(Date.now()), by:'مهندس الاختبار', at:Date.now() };
+w.CORE.set('tasks', 'TK-visit-' + site.id, { id:'TK-visit-'+site.id, no:'SR-9001', site:site.id, kind:'visit', to:'مشرف الاختبار', assignedTo:'مشرف الاختبار', status:'مطلوب', when:w.dayKey(Date.now()), by:'مهندس الاختبار', at:Date.now() });
 w.CUR = 'mywork'; w.MYW_TAB = 'tasks'; w.render(1);
 let h = d.getElementById('content').textContent;
 T(h.indexOf('مشرف الاختبار') > -1 && h.indexOf(site.id) > -1, 'المهندس يرى الإسناد بمشرفه ونقطته في «مهامي»');
@@ -54,9 +54,9 @@ w.FIELD_MODE = 'survey';
 /* V15.36: الخريطةُ تلوّن دورةَ الحياة كاملةً — المُسنَدُ غيرُ المزور «assigned» */
 T(w.lifeOf(site) === 'assigned' && w.mapColorOf(site) === w.LIFE.assigned.c,
   'نقطةٌ مُسندةٌ لم تُزر — لونُ «زيارةٌ مُسندة»');
-w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now() + 86400000);
+w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now() + 86400000); w.tasksTouched();
 T(w.lifeOf(site) === 'tomorrow', 'موعدُ الغد يجعلها «مجدولةٌ غدًا»');
-w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now());
+w.STATE.tasks['TK-visit-' + site.id].when = w.dayKey(Date.now()); w.tasksTouched();
 /* ٣ · المشرف يزور ويحفظ */
 w.FORM.site = site.id; w.FORM.access = 'تم الوصول'; w.FORM.photos = { site:{data:'data:,a'}, mount:{data:'data:,b'} }; w.FORM.note = 'مسح تجريبي';
   /* V16.56: الحقولُ الإلزامية */ w.FORM.mount = 'عمود قائم'; w.FORM.power = 'كهرباء الموقع'; w.FORM.chals = ['لا توجد تحديات']; w.FORM.wid_m = 4; w.FORM.hgt_m = 3.5; w.FORM.fit = 'مناسب';
@@ -120,18 +120,18 @@ T(w.LAYERS.install.pass(site), 'النقطة دخلت طبقة التركيب');
 T(w.lifeOf(site) === 'ready' && w.mapColorOf(site) === w.LIFE.ready.c,
   'معتمدةٌ بحلٍّ — لونُ «بانتظار الجدولة» البرتقالي');
 /* بقيةُ الدورة: جدولةٌ ← تركيبٌ ← صيانةٌ ← فكّ */
-w.STATE.tasks['TK-install-' + site.id] = { id:'TK-install-'+site.id, site:site.id, kind:'install',
-  to:'فريق الاختبار', status:'مطلوب', when:w.dayKey(Date.now()), at:Date.now() };
+w.CORE.set('tasks', 'TK-install-' + site.id, { id:'TK-install-'+site.id, site:site.id, kind:'install',
+  to:'فريق الاختبار', status:'مطلوب', when:w.dayKey(Date.now()), at:Date.now() });
 T(w.lifeOf(site) === 'sched', 'إسنادُ التركيب يجعلها «مُسندةً للتركيب»');
 w.STATE.inss[site.id] = Object.assign({}, w.STATE.inss[site.id], { status:'مُركّب', approved:true });
 T(w.lifeOf(site) === 'installed' && w.mapColorOf(site) === w.LIFE.installed.c, 'بعد التركيب: خضراء');
-w.STATE.tasks['TK-maint-' + site.id] = { id:'TK-maint-'+site.id, site:site.id, kind:'maint',
-  to:'فريق الاختبار', status:'مطلوب', at:Date.now() };
+w.CORE.set('tasks', 'TK-maint-' + site.id, { id:'TK-maint-'+site.id, site:site.id, kind:'maint',
+  to:'فريق الاختبار', status:'مطلوب', at:Date.now() });
 T(w.lifeOf(site) === 'maint' && w.mapColorOf(site) === w.LIFE.maint.c, 'إسنادُ الصيانة: صفراء');
-w.STATE.tasks['TK-dis-' + site.id] = { id:'TK-dis-'+site.id, site:site.id, kind:'dis',
-  to:'فريق الاختبار', status:'مطلوب', at:Date.now() };
+w.CORE.set('tasks', 'TK-dis-' + site.id, { id:'TK-dis-'+site.id, site:site.id, kind:'dis',
+  to:'فريق الاختبار', status:'مطلوب', at:Date.now() });
 T(w.lifeOf(site) === 'dis' && w.mapColorOf(site) === w.LIFE.dis.c, 'إسنادُ الفك: حمراء');
-delete w.STATE.tasks['TK-dis-' + site.id]; delete w.STATE.tasks['TK-maint-' + site.id];
+delete w.STATE.tasks['TK-dis-' + site.id]; delete w.STATE.tasks['TK-maint-' + site.id]; w.tasksTouched();
 /* الرسمُ يُبنى من الحالات نفسِها */
 w.ROLE = 'engineer'; w.goPage('wf'); w.render(1);
 const wfx = d.getElementById('content').textContent;

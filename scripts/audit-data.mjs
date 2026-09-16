@@ -491,6 +491,17 @@ if (typeof w.siteStats === 'function'){
   check(/'LPR':\s*\{ l:'قراءة اللوحات'/.test(raw8), 'ونوعُ LPR قائمٌ بلونه في الكتالوج');
 }
 
+/* ═══ فهرسُ المهامّ: بحثٌ لحظيٌّ لا مسحٌ كامل (V17.47) ═══ */
+{
+  const raw9 = readFileSync('index.html', 'utf8');
+  check(/function taskIndex\(\)\{[\s\S]{0,500}if \(TK_IX\) return TK_IX;/.test(raw9),
+    'فهرسُ المهامِّ يُبنى مرةً ولا يُتحقَّق من صلاحيته بمسح المفاتيح');
+  check(/function taskKindOf\(id, kind\)\{ return taskIndex\(\)\[id \+ '\|' \+ kind\] \|\| null; \}/.test(raw9),
+    'وطلبُ مهمةِ نقطةٍ لحظيٌّ بالمفتاح لا بمرورٍ على المهامِّ كلِّها');
+  check(/function statBump\(\)\{\s*\n?\s*TK_IX = null;/.test(raw9),
+    'ويُبطَل مع كلِّ تغيُّرٍ في المهامّ فلا يُقرأ قديمًا');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
 
