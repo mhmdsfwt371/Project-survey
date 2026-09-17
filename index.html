@@ -933,7 +933,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.52</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.53</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3782,6 +3782,7 @@ en:{
  'المدينة':'Madinah',
  'توسيع':'Expand', 'طيّ':'Collapse', 'مساحةٌ بنقاط':'Area of points',
  'كل المسارات':'All routes',
+ 'أُلغي وضعُ النقطة':'Point placement cancelled',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6497,6 +6498,7 @@ ur:{
  'المدينة':'مدینہ',
  'توسيع':'پھیلائیں', 'طيّ':'سمیٹیں', 'مساحةٌ بنقاط':'پوائنٹس کا رقبہ',
  'كل المسارات':'تمام راستے',
+ 'أُلغي وضعُ النقطة':'پوائنٹ رکھنا منسوخ',
 }
 };
 
@@ -19292,7 +19294,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.52' + '.docx" download>⬇ '
+              +   'V17.53' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20156,7 +20158,19 @@ function routeSave(){
    الميدان، فيلزمه أن **يختار الموضعَ على الخريطة**. فصار زرٌّ يضع النقطةَ
    حيث تضغط، ثم يُفتَح النموذجُ نفسُه بإحداثياتها — بلا مسارٍ ثانٍ ولا جدول. */
 var PIN_ON = false;
+/* ═══ لكلِّ وضعٍ مخرجٌ ظاهر (V17.53) ═══
+   «نقطة هنا» يُسلِّح الضغطةَ التالية، وأزرارُ الخريطة العائمةُ تختفي أثناءه
+   (V17.48) كي لا تحجب موضعَ الضغط — فلم يبقَ زرٌّ يُلغيه، ومن بدأه بالخطأ
+   لا يجد منه مخرجًا إلا أن يضع نقطةً لا يريدها. فصار له شريطٌ ظاهرٌ يقول ما
+   ينتظره ومعه «إلغاء»، ومفتاحُ الهروب يُلغيه، وضغطةُ الزرِّ نفسِه تُطفئه. */
+function pinCancel(){
+  if (!PIN_ON) return;
+  PIN_ON = false; drawFlag();
+  toast(t('أُلغي وضعُ النقطة'));
+  render(1);
+}
 function pinStart(){
+  if (PIN_ON){ pinCancel(); return; }
   if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   PIN_ON = true; POP_OPEN = false; drawFlag();
   toast(t('اضغط على الخريطة حيث تريد النقطة'));
@@ -23830,6 +23844,12 @@ function mapUIHtml(){
         + btn('التصنيف الكامل','btn-secondary btn-sm',' data-p="sites"')
         + '</div></div>' : '')
 
+    + (PIN_ON
+        ? '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;margin:0">'
+          + '<b>\u{1F4CC} ' + esc(t('اضغط على الخريطة حيث تريد النقطة')) + '</b>'
+          + btn('\u2716 ' + t('إلغاء'), 'btn-quiet btn-sm', ' data-pincancel="1"')
+          + '</div></div>'
+        : '')
     + (ROUTE.on
         ? '<div class="map-route-box' + (RT_MIN ? ' min' : '') + '">'
           + '<div class="wt-row" style="justify-content:space-between;margin:0 0 6px">'
@@ -32985,6 +33005,7 @@ function clickA(e){
   var uls = e.target.closest('[data-ulsite]');
   if (uls){ USR_LOG = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
   if (e.target.closest('[data-nspin]')){ goPage('map'); pinStart(); return true; }
+  if (e.target.closest('[data-pincancel]')){ pinCancel(); return true; }
   if (e.target.closest('[data-pin]')){ pinStart(); return true; }
   if (e.target.closest('[data-route]')){ if (ROUTE.on && ROUTE.mode === 'line') routeCancel(); else routeStart('line'); return true; }
   if (e.target.closest('[data-area]')){ if (ROUTE.on && ROUTE.mode === 'area') routeCancel(); else routeStart('area'); return true; }
@@ -34486,6 +34507,9 @@ document.addEventListener('keydown', function(e){
     if (q){ e.preventDefault(); q.focus(); q.select(); return; }
   }
   if (e.key !== 'Escape') return;
+  /* أوضاعُ الرسم أوّلًا: هي التي تحجز الضغطةَ التالية (V17.53) */
+  if (typeof PIN_ON !== 'undefined' && PIN_ON){ pinCancel(); return; }
+  if (typeof ROUTE === 'object' && ROUTE.on){ routeCancel(); return; }
   if (QUEUE_OPEN){ QUEUE_OPEN = false; render(1); return; }
   if (ASSIST_OPEN){ ASSIST_OPEN = false; render(1); return; }
   if (HELP_OPEN){ HELP_OPEN = false; render(1); return; }

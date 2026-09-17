@@ -192,6 +192,23 @@ console.log('\n══ ٨ · لوحُ الرسم والترشيحُ بالمسا�
     'و«مسح التصفية» يمسح الحالةَ والمسارَ أيضًا — لا يبقى مرشِّحٌ خفيّ');
 }
 
+console.log('\n══ ٩ · لكلِّ وضعٍ مخرج ══');
+{
+  w.goPage('map'); w.render(1); await wait(120);
+  w.pinStart(); w.render(1); await wait(120);
+  T(!!d.querySelector('[data-pincancel]'), 'وضعُ «نقطة هنا» يعرض شريطَه وفيه إلغاء');
+  w.pinCancel();
+  T(w.PIN_ON === false && d.body.className.indexOf('drawing') < 0, 'والإلغاءُ يُطفئه ويرفع علامةَ الرسم');
+  w.pinStart(); w.pinStart();
+  T(w.PIN_ON === false, 'وضغطةُ الزرِّ نفسِه ثانيةً تُطفئه');
+  w.pinStart();
+  d.dispatchEvent(new w.KeyboardEvent('keydown', { key:'Escape', bubbles:true })); await wait(80);
+  T(w.PIN_ON === false, 'ومفتاحُ الهروب يُلغيه');
+  w.routeStart('line');
+  d.dispatchEvent(new w.KeyboardEvent('keydown', { key:'Escape', bubbles:true })); await wait(80);
+  T(w.ROUTE.on === false, 'ويُلغي وضعَ الرسم كذلك');
+}
+
 console.log('\nأخطاءُ المتصفّح: ' + (errs.length ? errs[0] : 'لا'));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
