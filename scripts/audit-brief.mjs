@@ -161,7 +161,9 @@ w.ROLE = 'engineer';
   /* المخيمُ بحدوده في كلِّ تقريبٍ عمليّ — حدٌّ واحدٌ يقرؤه الرسمُ والتحميل (V16.94) */
   const pz = (raw2.match(/var POLY_Z = (\d+);/) || [])[1];
   T(pz && +pz <= 12, 'حدُّ رسم حدود المخيمات ' + pz + ' — فتبقى متفرّدةً عند الابتعاد لا دوائرَ متراكبة');
-  T(/z >= POLY_Z && POLY && POLY\[x\.id\]/.test(raw2) && /z >= POLY_Z && !POLY\) polyLoad/.test(raw2),
+  /* V17.59: الرسمُ يقرأ الحدودَ عبر campFoot — المرسومةُ في التطبيق ثم poly.json — والحدُّ هو هو */
+  T(/z >= POLY_Z && \(FT = campFoot\(x\)\)/.test(raw2) && /POLY && POLY\[x\.id\] && POLY\[x\.id\]\.length >= 3/.test(raw2)
+    && /z >= POLY_Z && !POLY\) polyLoad/.test(raw2),
     'والرسمُ والتحميلُ يقرآن الحدَّ نفسَه — فلا يُرسَم ما لم يُحمَّل');
 }
 

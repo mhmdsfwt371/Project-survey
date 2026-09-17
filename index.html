@@ -639,6 +639,14 @@ body.nav-open .mapwrap{pointer-events:none}
 .lg-sh.sh-c{border-radius:2px}
 .lg-sh.sh-d{transform:rotate(45deg);border-radius:2px}
 .lg-sh.sh-o{border-radius:50%}
+/* الأشكالُ المشتقّةُ من السجل تُرسَم بهندسة الخريطة نفسِها (V17.60) */
+.lg-svg{width:13px;height:13px;flex:0 0 auto;display:inline-block;overflow:visible;vertical-align:middle}
+.lg-shp span{min-width:0;line-height:1.35}
+/* نقاطُ الرسم ورؤوسُ المساحة تُسحَب بالإصبع (V17.58) — هدفُ اللمس أوسعُ من المرئي */
+.rtPt,.rtVx{background:none;border:0;cursor:grab;display:flex;align-items:center;justify-content:center}
+.rtPt i{display:block;width:12px;height:12px;border-radius:50%;background:#FFD166;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.rtVx i{display:block;width:14px;height:14px;border-radius:50%;background:#FF8C42;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.leaflet-dragging .rtPt,.leaflet-dragging .rtVx{cursor:grabbing}
 
 /* لمسُ الآيفون: لا تكبيرَ عند التركيز ولا تأخيرَ في الضغط */
 input,select,textarea{font-size:16px}
@@ -933,7 +941,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.60</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3787,6 +3795,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'كاميرات قراءة اللوحات':'Plate-reading cameras', 'حساسات الحرارة والرطوبة':'Temperature & humidity sensors', 'نجمة':'Star', 'قطرة':'Drop', 'معيّنٌ ثابت':'Fixed diamond', 'جدوِل زيارتَها: اختر من يزورها وموعدَه ثم «أسند»':'Schedule its visit: pick who visits and when, then “Assign”', 'سُجّلت — جدوِل زيارتَها الآن':'Saved — schedule its visit now', 'سُجّلت زيارةً — أكمل بياناتِ المسح':'Recorded as a visit — complete the survey data', 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.':'Photos are optional for the office — upload any you have; they are taken on the visit scheduled after saving.', 'احفظ وجدوِل زيارة':'Save and schedule a visit', 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.':'An office point is not a visit: it is saved as “new, awaiting approval”, then the assignment sheet opens on it to schedule its visit — the field team surveys it.', 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.':'Sending counts as a visit awaiting approval; the site is “new, awaiting approval” and stays out of the statistics until the engineer approves it. After sending, the survey form opens on it to complete its data — the visit is not approved before that.', 'سُجِّلت الزيارةُ بإضافة النقطة — أكمل بياناتِ المسح؛ فلا تُعتمَد قبل استكمالها.':'The visit was recorded when the point was added — complete the survey data; it cannot be approved before that.', 'بياناتُ المسح لم تُستكمَل بعد — تُستكمَل أو تُرَدّ لزيارةٍ أخرى':'Survey data is not complete yet — complete it or return it for another visit', 'تحتاج جدولةَ زيارة':'Needs a visit scheduled', 'المشرفُ أو المهندس':'Supervisor or engineer', 'جدوِل زيارة':'Schedule a visit', 'ارسم حدودَ المخيم: اضغط على الخريطة حول حدوده':'Draw the camp boundary: tap around it on the map', 'النقاطُ مثبَّتةٌ بعد التحريك — «أعد التوليد» لتعديل الرسم':'Points are locked after moving — use “Regenerate” to edit the drawing', 'رُبطت الحدودُ بالمخيم المسجَّل':'Boundary linked to the registered camp', 'مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد':'registered camps inside the boundary — draw a single camp’s boundary', 'مخيمٌ بحدوده — جدوِل زيارتَه الآن':'Camp saved with its boundary — schedule its visit now', 'جدوِل زيارتَها':'schedule their visit', 'الحدودُ تضمُّ مخيمًا مسجَّلًا — تُربَط به ولا يُنشأ غيرُه':'The boundary contains a registered camp — it is linked to it and no new camp is created', 'مخيمٌ واحدٌ بحدوده — بلا نقاطٍ داخله، وتُجدوَل زيارتُه بعد الحفظ.':'One camp with its boundary — no points inside; its visit is scheduled after saving.', 'نقطةً — مثبَّتةٌ بعد التحريك، والمسافةُ لا تغيّرها حتى «أعد التوليد».':'points — locked after moving; the spacing will not change them until “Regenerate”.', 'نقطةً — أكثرُ من أن تُسحَب؛ كبّر المسافةَ لتحريكها.':'points — too many to drag; increase the spacing to move them.', 'نقطةً على المسار — اسحب أيَّ نقطةٍ لتحريكها قبل الحفظ.':'points along the route — drag any point to move it before saving.', 'حُرِّك':'Moved', 'مساحةُ مخيم':'Camp area', 'المسافةُ مثبَّتةٌ بعد التحريك — «أعد التوليد» يعيدها':'Spacing is locked after moving — “Regenerate” restores it', 'اسم المخيم':'Camp name', 'اختياري — يُولَّد من المشعر والمربع':'Optional — generated from the zone and block', 'احفظ المخيم':'Save camp', 'أعد التوليد':'Regenerate',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6507,6 +6516,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'كاميرات قراءة اللوحات':'نمبر پلیٹ پڑھنے والے کیمرے', 'حساسات الحرارة والرطوبة':'درجہ حرارت اور نمی کے سینسر', 'نجمة':'ستارہ', 'قطرة':'قطرہ', 'معيّنٌ ثابت':'مقررہ معین', 'جدوِل زيارتَها: اختر من يزورها وموعدَه ثم «أسند»':'اس کا دورہ طے کریں: کون جائے اور کب منتخب کریں، پھر «تفویض کریں»', 'سُجّلت — جدوِل زيارتَها الآن':'محفوظ ہو گیا — ابھی اس کا دورہ طے کریں', 'سُجّلت زيارةً — أكمل بياناتِ المسح':'دورے کے طور پر درج — سروے کا ڈیٹا مکمل کریں', 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.':'دفتر کے لیے تصاویر اختیاری ہیں — موجود ہوں تو اپ لوڈ کریں؛ محفوظ کرنے کے بعد طے ہونے والے دورے میں لی جاتی ہیں۔', 'احفظ وجدوِل زيارة':'محفوظ کریں اور دورہ طے کریں', 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.':'دفتر کا پوائنٹ دورہ شمار نہیں ہوتا: یہ «نیا، منظوری کا منتظر» محفوظ ہوتا ہے، پھر اس پر تفویض کا پینل کھلتا ہے تاکہ اس کا دورہ طے ہو — سروے فیلڈ ٹیم کرتی ہے۔', 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.':'بھیجنا منظوری کے منتظر دورے کے طور پر شمار ہوتا ہے؛ مقام «نیا، منظوری کا منتظر» ہے اور انجینئر کی منظوری تک اعداد و شمار میں شامل نہیں ہوتا۔ بھیجنے کے بعد اس پر سروے فارم کھلتا ہے تاکہ ڈیٹا مکمل ہو — اس سے پہلے دورہ منظور نہیں ہوتا۔', 'سُجِّلت الزيارةُ بإضافة النقطة — أكمل بياناتِ المسح؛ فلا تُعتمَد قبل استكمالها.':'پوائنٹ شامل کرتے ہی دورہ درج ہو گیا — سروے کا ڈیٹا مکمل کریں؛ اس سے پہلے منظوری نہیں ہو سکتی۔', 'بياناتُ المسح لم تُستكمَل بعد — تُستكمَل أو تُرَدّ لزيارةٍ أخرى':'سروے کا ڈیٹا ابھی مکمل نہیں — مکمل کریں یا دوسرے دورے کے لیے واپس کریں', 'تحتاج جدولةَ زيارة':'دورہ طے ہونا باقی ہے', 'المشرفُ أو المهندس':'سپروائزر یا انجینئر', 'جدوِل زيارة':'دورہ طے کریں', 'ارسم حدودَ المخيم: اضغط على الخريطة حول حدوده':'کیمپ کی حد بنائیں: نقشے پر اس کے گرد ٹیپ کریں', 'النقاطُ مثبَّتةٌ بعد التحريك — «أعد التوليد» لتعديل الرسم':'منتقل کرنے کے بعد پوائنٹس مقفل ہیں — ڈرائنگ بدلنے کے لیے «دوبارہ بنائیں»', 'رُبطت الحدودُ بالمخيم المسجَّل':'حد رجسٹرڈ کیمپ سے جوڑ دی گئی', 'مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد':'رجسٹرڈ کیمپ حد کے اندر ہیں — ایک ہی کیمپ کی حد بنائیں', 'مخيمٌ بحدوده — جدوِل زيارتَه الآن':'کیمپ اپنی حد کے ساتھ محفوظ — ابھی اس کا دورہ طے کریں', 'جدوِل زيارتَها':'ان کا دورہ طے کریں', 'الحدودُ تضمُّ مخيمًا مسجَّلًا — تُربَط به ولا يُنشأ غيرُه':'حد میں ایک رجسٹرڈ کیمپ ہے — اسی سے جوڑی جائے گی اور نیا کیمپ نہیں بنے گا', 'مخيمٌ واحدٌ بحدوده — بلا نقاطٍ داخله، وتُجدوَل زيارتُه بعد الحفظ.':'اپنی حد کے ساتھ ایک کیمپ — اندر کوئی پوائنٹ نہیں؛ محفوظ کرنے کے بعد اس کا دورہ طے ہو گا۔', 'نقطةً — مثبَّتةٌ بعد التحريك، والمسافةُ لا تغيّرها حتى «أعد التوليد».':'پوائنٹس — منتقل کرنے کے بعد مقفل؛ «دوبارہ بنائیں» تک فاصلہ انہیں نہیں بدلے گا۔', 'نقطةً — أكثرُ من أن تُسحَب؛ كبّر المسافةَ لتحريكها.':'پوائنٹس — گھسیٹنے کے لیے بہت زیادہ؛ منتقل کرنے کے لیے فاصلہ بڑھائیں۔', 'نقطةً على المسار — اسحب أيَّ نقطةٍ لتحريكها قبل الحفظ.':'راستے پر پوائنٹس — محفوظ کرنے سے پہلے کسی بھی پوائنٹ کو گھسیٹ کر منتقل کریں۔', 'حُرِّك':'منتقل', 'مساحةُ مخيم':'کیمپ کا رقبہ', 'المسافةُ مثبَّتةٌ بعد التحريك — «أعد التوليد» يعيدها':'منتقل کرنے کے بعد فاصلہ مقفل ہے — «دوبارہ بنائیں» اسے بحال کرتا ہے', 'اسم المخيم':'کیمپ کا نام', 'اختياري — يُولَّد من المشعر والمربع':'اختیاری — مشعر اور بلاک سے بنتا ہے', 'احفظ المخيم':'کیمپ محفوظ کریں', 'أعد التوليد':'دوبارہ بنائیں',
 }
 };
 
@@ -9177,7 +9187,7 @@ var FB = {
       }).catch(function(e){ softErr('سحب أنماط القطع', e, 'تعذّر سحبُ أنماط القطع — قد تظهر ناقصة'); });
       FB.db.collection('settings').doc('types').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
-        if (doc && doc.exists && Object.keys(doc.data()).length) STATE.types = doc.data();
+        if (doc && doc.exists && Object.keys(doc.data()).length){ STATE.types = doc.data(); typesList(); }
       }).catch(function(e){ softErr('سحب أنواع المواقع', e, 'تعذّر سحبُ أنواع المواقع'); });
       FB.db.collection('settings').doc('mxExtra').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
@@ -10035,15 +10045,48 @@ function hiddenSitesCard(){
    دائرةٌ أو مربّعٌ أو معيّنٌ أو مثلّث، يُرسَم بإزاحةٍ بالبكسل فيثبت حجمُه مع
    التقريب. والدائرةُ تبقى الأصلَ لأن المخيماتِ ألفٌ وأربعُمئة، ولا يُحسَب
    المضلَّعُ إلا لما اختير له شكلٌ آخر — وهي عشراتٌ لا آلاف. */
-var SHAPES = [['circle','دائرة'], ['square','مربّع'], ['diamond','معيّن'], ['triangle','مثلّث']];
-function typeShape(ty){ var d = typesList()[ty]; return (d && d.s) || 'circle'; }
+var SHAPES = [['circle','دائرة'], ['square','مربّع'], ['diamond','معيّن'], ['triangle','مثلّث'],
+              ['star','نجمة'], ['drop','قطرة']];
+/* ═══ هندسةُ الأشكال بوحدةٍ واحدة (V17.60) ═══
+   كلُّ شكلٍ رؤوسٌ بمضاعفاتِ نصف القطر: يرسمه اللوحُ بإزاحةٍ بالبكسل، وترسمه
+   الأسطورةُ وشاشةُ الأنواع بالأرقام نفسِها — فلا تقول الأسطورةُ شكلًا وترسم
+   الخريطةُ غيرَه. النجمةُ والقطرةُ أُضيفتا للجيت واي والحساس. */
+var SHAPE_UNIT = (function(){
+  var U = {
+    square:   [[-1,-1],[1,-1],[1,1],[-1,1]],
+    diamond:  [[0,-1.25],[1.25,0],[0,1.25],[-1.25,0]],
+    triangle: [[0,-1.35],[1.2,0.95],[-1.2,0.95]],
+    star: [], drop: [[0,-1.6]]
+  };
+  for (var i = 0; i < 10; i++){
+    var a = -Math.PI / 2 + i * Math.PI / 5, rr = (i % 2) ? 0.68 : 1.6;
+    U.star.push([Math.cos(a) * rr, Math.sin(a) * rr]);
+  }
+  for (var g = -30; g <= 210; g += 30){
+    var b = g * Math.PI / 180;
+    U.drop.push([Math.cos(b) * 1.05, 0.35 + Math.sin(b) * 1.05]);
+  }
+  return U;
+})();
+function typeShape(ty){
+  var d = typesList()[ty], b = CAT_DEF[ty];
+  return (d && d.s) || (b && b.s) || 'circle';
+}
+/* الشكلُ كما يُرسَم فعلًا: الممرُّ والكاميرا معيّنٌ بعلامةٍ ثابتة، وغيرُهما شكلُ نوعه */
+function mapShapeOf(ty){ return (ty === 'ممر' || ty === 'كاميرا') ? 'diamond' : typeShape(ty); }
 function shapeRing(map, lat, lng, px, shape){
-  var c = map.latLngToContainerPoint([lat, lng]), pts = [];
-  if (shape === 'square') pts = [[-px,-px],[px,-px],[px,px],[-px,px]];
-  else if (shape === 'diamond') pts = [[0,-px*1.25],[px*1.25,0],[0,px*1.25],[-px*1.25,0]];
-  else if (shape === 'triangle') pts = [[0,-px*1.35],[px*1.2,px*0.95],[-px*1.2,px*0.95]];
-  else return null;
-  return pts.map(function(p){ return map.containerPointToLatLng([c.x + p[0], c.y + p[1]]); });
+  var U = SHAPE_UNIT[shape];
+  if (!U) return null;
+  var c = map.latLngToContainerPoint([lat, lng]);
+  return U.map(function(p){ return map.containerPointToLatLng([c.x + p[0] * px, c.y + p[1] * px]); });
+}
+/* الشكلُ نفسُه صورةً صغيرة — للأسطورة وشاشة الأنواع */
+function shapeSvg(shape, col){
+  var U = SHAPE_UNIT[shape], f = esc(col || '#C6CFD7');
+  var body = U
+    ? '<polygon points="' + U.map(function(p){ return (p[0] * 6.2).toFixed(1) + ',' + (p[1] * 6.2).toFixed(1); }).join(' ') + '"/>'
+    : '<circle r="6"/>';
+  return '<svg class="lg-svg" viewBox="-10 -10 20 20" aria-hidden="true"><g fill="' + f + '">' + body + '</g></svg>';
 }
 var CAT_DEF = {
   'مخيم':   { l:'مخيمات',          i:'\u26FA', c:'#3ED598' },
@@ -10053,12 +10096,21 @@ var CAT_DEF = {
   'محطة':   { l:'محطات القطار',    i:'\u{1F686}', c:'#F2C960' },
   'بوابة':  { l:'مسجد نمرة',       i:'\u{1F54C}', c:'#38B2AC' },
   'مبنى':   { l:'منشآت التسكين',   i:'\u{1F3E2}', c:'#B8C4BF' },
-  /* أنواعٌ جديدة (V17.45): قراءةُ اللوحات وكاميراتُ الذكاء — لكلٍّ لونُه
-     وأيقونتُه فتُقرأ على الخريطة بلا سؤال */
-  /* نوعٌ جديد (V17.45): قراءةُ اللوحات — بلونها وأيقونتها فتُقرأ على الخريطة.
-     أما «كاميرا» فهي كاميراتُ الوزارة الذكيّة نفسُها — لا نوعَ ثانٍ لها. */
-  'LPR':    { l:'قراءة اللوحات',   i:'\u{1F694}', c:'#FF6B6B' }
+  /* نوعٌ جديد (V17.45): كاميراتُ قراءة اللوحات — بلونها وأيقونتها فتُقرأ على الخريطة.
+     أما «كاميرا» فهي كاميراتُ الوزارة الذكيّة نفسُها — لا نوعَ ثانٍ لها.
+     والاسمُ «كاميراتُ قراءة اللوحات» (V17.60): القائمةُ تسمّي أجهزةً تُركَّب لا
+     وظيفةً تُؤدّى — والقيمةُ المخزَّنةُ هي المفتاح فلا يمسُّها تغييرُ الاسم. */
+  'LPR':    { l:'كاميرات قراءة اللوحات', i:'\u{1F694}', c:'#FF6B6B' },
+  /* ═══ الجيت واي والحساس — لكلٍّ شكلُه (V17.60) ═══
+     يُضافان من «نقطة هنا» كسائر الأنواع، ولكلٍّ شكلٌ لا يشاركه فيه غيرُه:
+     النجمةُ للجيت واي (عقدةٌ تتفرّع منها الأجهزة) والقطرةُ للحساس (حرارةٌ
+     ورطوبة) — فيُعرَفان على الخريطة قبل أن يُقرأ لونُهما. */
+  'جيت واي':           { l:'جيت واي',                 i:'\u{1F4E1}', c:'#22D3EE', s:'star' },
+  'حساس حرارة ورطوبة': { l:'حساسات الحرارة والرطوبة', i:'\u{1F321}', c:'#F472B6', s:'drop' }
 };
+/* الكتالوجُ كما كُتب — CAT_DEF يتبدّل مع سجلِّ الأنواع، وهذه النسخةُ تبقى مرجعَ
+   «المدمَج» فيُضاف إلى سجلٍّ سحابيٍّ سبقه (V17.60) */
+var CAT_DEF_BASE = JSON.parse(JSON.stringify(CAT_DEF));
 
 /* ═══ الترشيحُ بالمسار (V17.51 · طلبُ الوزارة) ═══
    النقاطُ المولَّدةُ تحمل اسمَ مسارها (route)، فيُسأل: أرِني «طريق كدانة»
@@ -12727,7 +12779,10 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var s = formSite();
     if (!s) return alertBox('warn','لا مواقع محمّلة.');
     var done = !!STATE.recs[s.id];
-    return (done ? alertBox('success','هذا الموقع مُسِح — ما تكتبه الآن تصويبٌ يُسجَّل باسمك.') : '')
+    /* زيارةٌ سُجِّلت بإضافة النقطة ولم تُستكمَل بياناتُها ليست «تصويبًا» (V17.57) */
+    var fresh = done && STATE.recs[s.id].src === 'newsite' && !STATE.recs[s.id].mount;
+    return (fresh ? alertBox('info','سُجِّلت الزيارةُ بإضافة النقطة — أكمل بياناتِ المسح؛ فلا تُعتمَد قبل استكمالها.')
+            : (done ? alertBox('success','هذا الموقع مُسِح — ما تكتبه الآن تصويبٌ يُسجَّل باسمك.') : ''))
       + card('الموقع',
           '<div class="inline-form" style="margin:0 0 12px">'
           + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
@@ -12844,6 +12899,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     if (NS_CO_OPEN) return nsCoCard();
 
     var has  = NEWSITE.lat && NEWSITE.lng;
+    var office = nsOffice();
     var near = nsNear();
     var camp = NEWSITE.type === 'مخيم';
 
@@ -12929,12 +12985,14 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + esc(t('اختياري — اكتبه فقط لو فيه تفصيلةٌ تساعد المكتب')) + '">' + esc(NEWSITE.why) + '</textarea></div>')
 
       + card('الصور',
-          '<p class="hint" style="margin-top:0">' + esc(t('الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
+          '<p class="hint" style="margin-top:0">' + esc(t(office
+              ? 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.'
+              : 'الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
           + '<div class="grid cols-2">'
           + NS_PHOTOS.map(function(lbl, i){
               var p = NEWSITE.photos[i];
               return '<div class="field"><label>' + nm(i+1) + ' · ' + esc(t(lbl))
-                + (i === 0 ? ' <span class="req">*</span>' : '') + '</label>'
+                + (i === 0 && !office ? ' <span class="req">*</span>' : '') + '</label>'
                 + '<label class="btn ' + (p ? 'btn-secondary' : 'btn-primary')
                 + '" style="cursor:pointer;width:100%">'
                 + (p ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
@@ -12947,10 +13005,14 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '</div>')
 
       + card('', '<div class="actions">'
-          + btn('إرسال للاعتماد','btn-primary',' data-nssave="1"')
+          + (office
+              ? btn('\u{1F4C5} ' + t('احفظ وجدوِل زيارة'),'btn-primary',' data-nssave="1"')
+              : btn('إرسال للاعتماد','btn-primary',' data-nssave="1"'))
           + btn('إلغاء','btn-secondary',' data-p="map"')
           + '</div>'
-          + '<p class="hint">' + esc(t('يُوسَم «جديدٌ بانتظار الاعتماد» ولا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — فالجديدُ كغيره: يُمسَح ثم يُدقَّق ثم يُعتمَد.')) + '</p>');
+          + '<p class="hint">' + esc(t(office
+              ? 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.'
+              : 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.')) + '</p>');
   })();
     return head + (function(){
     if (!STATE.diss) STATE.diss = {};
@@ -13266,6 +13328,13 @@ function asnSheet(){
   var L = (typeof LAYER === 'function') ? LAYER() : { n:'المسح', pts:function(){ return 0; }, pass:function(){ return true; } };
   var base = (typeof layerFiltered === 'function') ? layerFiltered() : filtered();
   var view = SITE_Q ? siteSearch(SITE_Q, 400).filter(filtPass).filter(L.pass) : base.slice(0, PG_Q ? 5000 : 200);
+  /* المحدَّدُ يُرى أوّلًا (V17.57): نقطةٌ أُضيفت الآن لتُجدوَل زيارتُها في آخر
+     السجل — فلا تُبحَث في مئتي سطرٍ ولا تختفي خلف مرشِّح */
+  if (SEL_N && SEL_N <= 50){
+    var seen0 = {}; view.forEach(function(x){ seen0[x.id] = 1; });
+    var pin0 = selIds().filter(function(id){ return !seen0[id]; }).map(siteFind).filter(Boolean);
+    if (pin0.length) view = pin0.concat(view);
+  }
   var techs = techNames();
   ASN_KIND = L.kind || ASN_KIND;
   if (!ASN_TO) ASN_TO = techs[0] || '';
@@ -14018,6 +14087,9 @@ function svApprove(id){
      يرفع وسمَ الردِّ ويُبقي سببَه في السجل: قرارٌ يُراجَع لا طريقٌ مسدود. */
   if (!r){ toast(t('لا سجلَّ زيارةٍ لهذه النقطة')); return false; }
   if (r.access && r.access !== 'تم الوصول'){ toast(t('لم يصل الميدانُ إلى النقطة — لا تُعتمَد زيارةٌ لم تقع')); return false; }
+  /* زيارةٌ سُجِّلت بإضافة نقطةٍ ولم تُستكمَل بياناتُ مسحها لا تُعتمَد (V17.57):
+     تصل الوزارةَ فارغةً ويُبنى عليها حلٌّ بلا قياس */
+  if (r.src === 'newsite' && !r.mount){ toast(t('بياناتُ المسح لم تُستكمَل بعد — تُستكمَل أو تُرَدّ لزيارةٍ أخرى')); return false; }
   if (r.review === 'revisit'){
     r.revisitCleared = { at:Date.now(), by:STATE.meta.name || '', was:r.revisitNote || '' };
     logEvent('تراجعٌ عن ردِّ الزيارة — ' + id, id);
@@ -14428,6 +14500,7 @@ function svSave(next){
     rec.prevNote = prevRec.revisitNote || '';
   } else if (prevRec && prevRec.round) rec.round = prevRec.round;
   if (prevRec && prevRec.loc) rec.loc = prevRec.loc;   /* التحريكُ لا يضيع بحفظ النموذج */
+  if (prevRec && prevRec.src) rec.src = prevRec.src;   /* وأصلُ الزيارة كذلك (V17.57) */
   rec.phN = phN;
       CORE.set('recs', s.id, rec);
   Object.keys(FORM.photos).forEach(function(k){
@@ -16600,12 +16673,18 @@ function m3Height(x){
 }
 /* النقاطُ هي نقاطُ الخريطة المسطّحة حرفًا: القائمةُ نفسُها بعد الطبقة
    والمرشِّحات والشركات، واللونُ نفسُه — لا قائمةَ ثانيةً ولا لونًا ثانيًا */
+/* حدودُ المخيمات كما حسبها m3Points — يقرؤها m3Cols في الرسمة نفسِها بلا بحثٍ
+   ثانٍ بالمعرِّف (الفهرسُ قد يكون أقدمَ من القائمة لحظةَ الرسم) */
+var M3_FOOT = {};
 function m3Points(){
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : (STATE.sites || []);
+  M3_FOOT = {};
   return LIST.filter(function(x){ return +x.lat && +x.lng; }).map(function(x){
     var picked = (typeof selHas === 'function') && selHas(x.id);
     /* المخيمُ بحدوده الحقيقية كما يُرسَم في المسطّح — لا نقطةً — إن كانت حدودُه محمَّلة */
-    var foot = x.type === 'مخيم' && POLY && POLY[x.id] && POLY[x.id].length >= 3 ? 1 : 0;
+    var ring = campFoot(x);   /* المرسومةُ في التطبيق أو poly.json (V17.59) */
+    if (ring) M3_FOOT[x.id] = ring;
+    var foot = ring ? 1 : 0;
     return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
       properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0,
         ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
@@ -16616,8 +16695,9 @@ function m3Points(){
 function m3Cols(P){
   return P.map(function(f){
     var p = f.properties, c = f.geometry.coordinates, lng = c[0], lat = c[1];
-    if (p.foot){
-      var R = POLY[p.id].map(function(q){ return [+q[0], +q[1]]; });
+    var FR = p.foot ? M3_FOOT[p.id] : null;
+    if (FR && FR.length >= 3){
+      var R = FR.map(function(q){ return [+q[0], +q[1]]; });
       var a0 = R[0], aN = R[R.length - 1];
       if (a0[0] !== aN[0] || a0[1] !== aN[1]) R.push([a0[0], a0[1]]);
       return { type:'Feature', properties:p, geometry:{ type:'Polygon', coordinates:[R] } };
@@ -17014,7 +17094,61 @@ function nsCoRequest(){
   render(1);
 }
 
+/* ═══ من يضيف النقطةَ يقرّر ما تكونه (V17.57) ═══
+   «نقطة هنا» أداةُ المكتب: المهندسُ يضعها من الخريطة ولم يقف عندها — فلا صورَ
+   تُطلَب، ولا تُحتسَب زيارة، ويُفتَح بعدها لوحُ الإسناد لتُجدوَل زيارتُها.
+   والمشرفُ أو الفنيُّ يضيفها واقفًا عندها — فالصورةُ إلزامية، والإضافةُ زيارةٌ
+   تُكتَب بانتظار الاعتماد ثم يُستكمَل مسحُها. والفرقُ بالرتبة لا بالزرّ: من
+   أضاف من «موقع غير مسجّل» بموضعه وهو مهندسٌ فإضافتُه إضافةُ مكتب. */
+function nsOffice(){ return rankOf(effRole(ROLE)) >= rankOf('engineer'); }
+
+/* رمزُ النوع في المعرِّف — جدولٌ واحدٌ لكلِّ من يُنشئ نقطة (V17.60) */
+var TYPE_CODE = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN', 'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD',
+                  'LPR':'LPR', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' };
+function typeCode(ty){
+  if (TYPE_CODE[ty]) return TYPE_CODE[ty];
+  var a = String(ty || '').replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+  return a ? a.slice(0, 4) : 'NEW';
+}
+/* اسمُ النقطة الجديدة: المخيمُ بمربعه وشاخصه، وغيرُه بنوعه ومشعره — كان كلُّ
+   ما ليس مخيمًا يُسمّى «منى - مربع  - شاخص » بخانتين فارغتين */
+function nsName(id){
+  if (NEWSITE.type === 'مخيم') return NEWSITE.zone + ' - مربع ' + NEWSITE.sq + ' - شاخص ' + NEWSITE.sign;
+  var ty = NEWSITE.type, d = CAT_DEF[ty] || {};
+  var tn = /[\u0600-\u06FF]/.test(ty) ? ty : (d.l || ty);
+  return tn + ' - ' + NEWSITE.zone + ' - ' + String(id).split('-').pop();
+}
+
+/* ═══ زيارةُ الميدان تُسجَّل بإضافة النقطة (V17.57) ═══
+   الواقفُ عند النقطة صوّرها — فالإضافةُ زيارة: تُكتَب بانتظار الاعتماد وتحمل
+   صورَها، ثم يُفتَح نموذجُ المسح لتُستكمَل بياناتُها، ولا يُعتمَد ما لم يُستكمَل. */
+function nsVisitRec(id){
+  var keys = Object.keys(NEWSITE.photos || {}).filter(function(k){ return NEWSITE.photos[k]; });
+  return CORE.set('recs', id, {
+    id:id, by:STATE.meta.name || '', at:Date.now(), access:'تم الوصول', review:'pending',
+    src:'newsite', photos:keys.map(function(k){ return 'new_' + k; }), phN:keys.length,
+    note:String(NEWSITE.why || '').trim()
+  });
+}
+
+/* ═══ جدولةُ زيارةٍ لما أضافه المكتب (V17.57) ═══
+   نقطةُ المكتب لم يزرها أحد: لا نموذجَ مسحٍ يُفتَح عليها، بل لوحُ الإسناد في
+   طبقة المسح وهي محدَّدةٌ فيه — يُختار من يزورها وموعدُه ويُسنَد. */
+function visitAsnOpen(ids, quiet){
+  ids = (Array.isArray(ids) ? ids : [ids]).filter(function(id){ return !!siteFind(id); });
+  if (!ids.length){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
+  selClear();
+  ids.forEach(function(id){ if (!asnOf(id)){ SEL[id] = 1; SEL_N++; } });
+  FIELD_MODE = 'survey'; ASN_KIND = 'visit'; ASN_PICK = false; ASN_BASE = [];
+  POP_OPEN = false; MAP_SELECT = false;
+  goPage('map'); ASN_OPEN = true;
+  if (!quiet) toast(t('جدوِل زيارتَها: اختر من يزورها وموعدَه ثم «أسند»'));
+  render(1);
+  return true;
+}
+
 function nsSave(){
+  var office = nsOffice();
   var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
 
@@ -17038,22 +17172,23 @@ function nsSave(){
   if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0
       && !siteCos({ co:NEWSITE.co }).every(function(one){ return CO_LIST.indexOf(one) > -1; })){
     toast(t('اسم الشركة يجب أن يكون من القائمة الموحّدة فقط')); return; }
-  if (!NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
+  /* الصورةُ إلزاميةٌ لمن يقف عند النقطة — والمكتبُ لم يقف (V17.57) */
+  if (!office && !NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
 
   var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[NEWSITE.zone] || 'NEW';
-  var tp  = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN',
-              'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD' }[NEWSITE.type] || 'NEW';
+  var tp  = typeCode(NEWSITE.type);
   var n = STATE.sites.filter(function(x){ return x.id.indexOf('NSK-' + pre + '-' + tp + '-N') === 0; }).length + 1;
   var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
 
   var site = {
-    id:id, name:NEWSITE.zone + ' - مربع ' + NEWSITE.sq + ' - شاخص ' + NEWSITE.sign,
+    id:id, name:nsName(id),
     zone:NEWSITE.zone, type:NEWSITE.type, work:'موقع جديد',
     lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign,
     co:NEWSITE.co, coReq:NEWSITE.coReq, tents:cfgN(NEWSITE.tents),
     reason:NEWSITE.reason, why:NEWSITE.why,
     region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
     isNew:true, approved:false, by:STATE.meta.name || '', at:Date.now(),
+    origin:office ? 'office' : 'field',
     note:NEWSITE.note
   };
   STATE.sites.push(site);
@@ -17068,19 +17203,23 @@ function nsSave(){
     if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
-  stepDone('newsite', '', NEWSITE.name || NEWSITE.sq || '', 0);
+  if (!office) nsVisitRec(id);
+  stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
   notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
             { site:id, lv:'مهم' });
   logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
     + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''), id);
   statBump();
-  toast(id + ' \u00b7 ' + t('سُجّل — بانتظار الاعتماد'));
+  toast(id + ' \u00b7 ' + t(office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح'));
 
   NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
               co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{} };
   NS_CO_OPEN = false; NS_CO_Q = '';
 
-  /* يُفتَح نموذجُ المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
+  /* المكتبُ لم يزرها: لا نموذجَ مسحٍ يُفتَح بل لوحُ الإسناد عليها — فتُجدوَل
+     زيارتُها الآن ولا تُنسى (V17.57). والميدانُ زارها فعلًا: يُفتَح نموذجُ
+     المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
+  if (office){ visitAsnOpen(id); return; }
   DETAIL_ID = id;
   formGo(id, 'new');
   CUR = 'svForm';
@@ -19387,8 +19526,11 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  ودليلُ النظام يحمل رقمَ نسخته في اسمه: من فتحه يعرف أيَّ
                  نسخةٍ يقرأ. */
               '<div class="actions">'
+              /* اسمُ الملف من نسخة الرأس لا مكتوبًا بيد (V17.60): كان رقمًا حرفيًّا
+                 يشيخ مع أوّل إصدارٍ فيُنزِّل ملفًا لا وجودَ له — وهو ما أمسكه جردُ
+                 التصفير حين تبدّلت النسخة */
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.56' + '.docx" download>⬇ '
+              +   esc(appVer()) + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -20097,6 +20239,12 @@ function popHtml(){
           if (rec && !svDone(rec)){
             step = 'تعذّر الوصولُ — تُزار ثانيةً'; who = 'المشرفُ المُسنَد إليه';
             if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
+          } else if (!sv && !taskKindOf(s.id, 'visit')){
+            /* لا زيارةَ ولا إسنادَ لها — ما بعدها جدولةُ زيارة (V17.57) */
+            step = 'تحتاج جدولةَ زيارة'; who = 'المشرفُ أو المهندس';
+            if (rankOf(ROLE) >= rankOf('supervisor') && !isCrewRole(ROLE))
+              go = btn('\u{1F4C5} ' + t('جدوِل زيارة'),'btn-primary btn-sm',' data-visitasn="' + esc(s.id) + '"');
+            else if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
           } else if (!sv){
             step = 'تنتظر الزيارةَ الميدانية'; who = 'الفنيُّ المُسنَد إليه';
             if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
@@ -20142,7 +20290,12 @@ function popHtml(){
    يُقال «كلَّ كم مترًا» فتُولَّد النقاطُ على استقامته بالمسافة المطلوبة —
    يُعرَض عددُها قبل الحفظ، ولا تُكتَب إلا بضغطةٍ ثانية. والإحداثياتُ من
    الخريطة لا من تقديرٍ، فما يُرسَم هو ما يُحفَظ. */
-var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'' }, RT_MIN = false;
+var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'',
+              gen:null, moved:0, sq:'', sign:'' }, RT_MIN = false;
+/* المسافةُ بيد الراسم (V17.58): أدناها خمسةُ أمتار لا خمسةٌ وعشرون، والعددُ
+   مسقوفٌ فلا يولِّد طريقٌ طويلٌ بمسافةٍ صغيرةٍ آلافَ النقاط؛ والسحبُ بالإصبع لما
+   دون الثلاثمئة — فوقها تُرسَم نقاطًا لا علاماتٍ تُسحَب */
+var RT_EVERY_MIN = 5, RT_CAP = 1000, RT_DRAG_MAX = 300;
 function drawFlag(){
   try { document.body.classList.toggle('drawing', !!(ROUTE && ROUTE.on) || (typeof PIN_ON !== 'undefined' && PIN_ON)); }
   catch (e){ LS_ERR = e; }
@@ -20150,18 +20303,28 @@ function drawFlag(){
 function routeStart(mode){
   if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   ROUTE.on = true; ROUTE.mode = (mode === 'area' ? 'area' : 'line'); ROUTE.pts = []; POP_OPEN = false; PIN_ON = false;
+  ROUTE.gen = null; ROUTE.moved = 0;
   RT_MIN = false; drawFlag();
   if (ROUTE.mode === 'area' && ROUTE.every === 250) ROUTE.every = 50;
-  toast(t(ROUTE.mode === 'area' ? 'ارسم حدودَ المساحة: اضغط على الخريطة حول الموقف' : 'ارسم المسار: اضغط على الخريطة نقطةً بعد نقطة'));
+  /* المساحةُ للمخيم أوّلًا (V17.59): تُرسَم حدودُه فيُحفَظ مخيمًا واحدًا بلا نقاط —
+     وغيرُه من الأنواع يبقى شبكةَ نقاطٍ كالمواقف. والمسارُ لا يكون مخيمًا. */
+  if (ROUTE.mode === 'area') ROUTE.type = 'مخيم';
+  else if (ROUTE.type === 'مخيم') ROUTE.type = 'ممر';
+  toast(t(ROUTE.mode === 'area' ? 'ارسم حدودَ المخيم: اضغط على الخريطة حول حدوده' : 'ارسم المسار: اضغط على الخريطة نقطةً بعد نقطة'));
   render(1);
 }
 function routeAdd(lat, lng){
+  /* بعد تحريك نقطةٍ تثبت المجموعة: الضغطةُ لا تضيف رأسًا بالخطأ (V17.58) */
+  if (ROUTE.gen){ toast(t('النقاطُ مثبَّتةٌ بعد التحريك — «أعد التوليد» لتعديل الرسم')); return; }
   ROUTE.pts.push([lat, lng]);
   if (typeof mapPaint === 'function') mapPaint();
   render(1);
 }
-function routeUndo(){ ROUTE.pts.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
-function routeCancel(){ ROUTE.on = false; ROUTE.pts = []; drawFlag(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function routeUndo(){
+  if (ROUTE.gen){ routeRegen(); return; }   /* التراجعُ بعد التحريك يرجع إلى المسافة أوّلًا */
+  ROUTE.pts.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1);
+}
+function routeCancel(){ ROUTE.on = false; ROUTE.pts = []; ROUTE.gen = null; ROUTE.moved = 0; drawFlag(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
 /* المسافةُ بالمتر بين نقطتين — هافرساين مبسّطة تكفي مسافاتِ المشاعر */
 function geoDist(a, b){
   var R = 6371000, p = Math.PI / 180;
@@ -20172,14 +20335,14 @@ function geoDist(a, b){
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 function routePoints(){
-  var P = ROUTE.pts, every = Math.max(25, cfgN(ROUTE.every) || 250);
+  var P = ROUTE.pts, every = Math.max(RT_EVERY_MIN, cfgN(ROUTE.every) || 250);
   if (P.length < 2) return [];
   var out = [P[0]], carry = 0;
   for (var i = 1; i < P.length; i++){
     var a = P[i - 1], b = P[i], seg = geoDist(a, b);
     if (seg <= 0) continue;
     var t0 = (every - carry) / seg;
-    while (t0 <= 1){
+    while (t0 <= 1 && out.length < RT_CAP){
       out.push([a[0] + (b[0] - a[0]) * t0, a[1] + (b[1] - a[1]) * t0]);
       t0 += every / seg;
     }
@@ -20191,6 +20354,48 @@ function routeLen(){
   var P = ROUTE.pts, d = 0;
   for (var i = 1; i < P.length; i++) d += geoDist(P[i - 1], P[i]);
   return Math.round(d);
+}
+/* ═══ النقاطُ تُسحَب قبل الحفظ (V17.58) ═══
+   ما تولّده المسافةُ اقتراحٌ لا قيد: عمودٌ هنا ومدخلُ مخيمٍ هناك يزيحان النقطةَ
+   أمتارًا. فتُسحَب كلُّ نقطةٍ بالإصبع قبل الحفظ؛ وأوّلُ سحبٍ يثبّت المجموعةَ
+   (ROUTE.gen) فلا تعيد الضغطةُ أو المسافةُ توليدَها فيضيعَ التحريك — و«أعد
+   التوليد» يرجعها إلى المسافة. والتثبيتُ عند بدء السحب بلا إعادة رسم: الرسمُ
+   يمحو العلامةَ المسحوبةَ من تحت الإصبع. */
+function routeGen(){ return ROUTE.gen || routePoints(); }
+function routeFreeze(){
+  if (!ROUTE.gen) ROUTE.gen = routePoints().map(function(p){ return [p[0], p[1]]; });
+  return ROUTE.gen;
+}
+function routeMovePt(i, lat, lng){
+  var G = routeFreeze();
+  if (!G[i] || !(+lat) || !(+lng)) return false;
+  G[i] = [+lat, +lng];
+  ROUTE.moved = (ROUTE.moved || 0) + 1;
+  render(1);
+  return true;
+}
+function routeRegen(){
+  ROUTE.gen = null; ROUTE.moved = 0;
+  render(1);
+}
+/* رأسُ المساحة يُسحَب كذلك — والحدودُ أو الشبكةُ تتبعه */
+function routeMoveVx(i, lat, lng){
+  if (!ROUTE.pts[i] || !(+lat) || !(+lng)) return false;
+  ROUTE.pts[i] = [+lat, +lng];
+  render(1);
+  return true;
+}
+function routeCount(){
+  if (ROUTE.mode === 'area') return ROUTE.type === 'مخيم' ? (ROUTE.pts.length > 2 ? 1 : 0) : areaPoints().length;
+  return routeGen().length;
+}
+/* الكتابةُ في حقول اللوح لا تُعيد بناءَه: كان كلُّ رقمٍ يُعيد رسمَ اللوح والخريطة
+   معًا — ثقيلٌ، وعلى الهاتف قد تُغلَق لوحةُ المفاتيح بعد أوّل رقم. فيُحدَّث العددُ
+   والخريطةُ في مكانهما، ويُعاد اللوحُ عند الخروج من الحقل (V17.58). */
+function routeLive(){
+  var el = document.getElementById('rtN');
+  if (el) el.textContent = nm(routeCount());
+  if (typeof mapPaintDebounced === 'function') mapPaintDebounced();
 }
 /* ═══ مساحةٌ تُرسَم فتُملأ بشبكة نقاط (V17.45) ═══
    مواقفُ الأتوبيسات وتجمّعاتُها مساحاتٌ لا خطوط: نقطةٌ كلَّ خمسين مترًا في
@@ -20206,7 +20411,7 @@ function polyIn(p, poly){
   return inside;
 }
 function areaPoints(){
-  var P = ROUTE.pts, every = Math.max(25, cfgN(ROUTE.every) || 250);
+  var P = ROUTE.pts, every = Math.max(RT_EVERY_MIN, cfgN(ROUTE.every) || 250);
   if (P.length < 3) return [];
   var lats = P.map(function(p){ return p[0]; }), lngs = P.map(function(p){ return p[1]; });
   var la0 = Math.min.apply(null, lats), la1 = Math.max.apply(null, lats);
@@ -20219,30 +20424,125 @@ function areaPoints(){
       if (polyIn([la, ln], P)) out.push([la, ln]);
   return out;
 }
+/* ═══ المساحةُ مخيمٌ بحدوده (V17.59) ═══
+   رسمُ مساحةٍ حول مخيمٍ يقول «هذا مخيم» لا «املأه نقاطًا»: المخيمُ نقطةُ قراءةٍ
+   واحدة، وحدودُه هي ما يُرى على الخريطة ويُرفَع في الثلاثي. فيُحفَظ مخيمًا
+   واحدًا بحدوده ومركزه — وإن ضمّت الحدودُ مخيمًا مسجَّلًا واحدًا رُبطت به ولا
+   يُنشأ مكرَّر، وإن ضمّت أكثرَ طُلب رسمُ مخيمٍ واحد. والحدودُ تُخزَّن أرقامًا
+   متتاليةً [عرض، طول، …] لأن القاعدةَ ترفض المصفوفاتِ المتداخلة. */
+function polyFlat(P){
+  var out = [];
+  P.forEach(function(p){ out.push(+(+p[0]).toFixed(6), +(+p[1]).toFixed(6)); });
+  return out;
+}
+function polyOf(x){
+  var F = x && x.poly, out = [];
+  if (!Array.isArray(F)) return out;
+  for (var i = 0; i + 1 < F.length; i += 2) if (+F[i] && +F[i + 1]) out.push([+F[i], +F[i + 1]]);
+  return out;
+}
+/* حدودُ المخيم: المرسومةُ في التطبيق أوّلًا ثم poly.json — حلقةً [طول، عرض]
+   كما يقرؤها المحرّكان المسطّحُ والثلاثي */
+function campFoot(x){
+  if (!x || x.type !== 'مخيم') return null;
+  var P = polyOf(x);
+  if (P.length >= 3) return P.map(function(p){ return [p[1], p[0]]; });
+  return (typeof POLY === 'object' && POLY && POLY[x.id] && POLY[x.id].length >= 3) ? POLY[x.id] : null;
+}
+function polyCentroid(P){
+  var a = 0, cx = 0, cy = 0, m = [0, 0];
+  for (var i = 0, j = P.length - 1; i < P.length; j = i++){
+    var f = P[j][0] * P[i][1] - P[i][0] * P[j][1];
+    a += f; cx += (P[j][0] + P[i][0]) * f; cy += (P[j][1] + P[i][1]) * f;
+  }
+  P.forEach(function(p){ m[0] += p[0] / P.length; m[1] += p[1] / P.length; });
+  if (Math.abs(a) < 1e-12) return m;
+  var c = [cx / (3 * a), cy / (3 * a)];
+  /* المضلَّعُ المقعَّرُ قد يقع مركزُه خارجه — فالمتوسّطُ، ثم أوّلُ رأس */
+  return polyIn(c, P) ? c : (polyIn(m, P) ? m : [P[0][0], P[0][1]]);
+}
+function areaCampHits(){
+  var P = ROUTE.pts;
+  if (P.length < 3) return [];
+  return (STATE.sites || []).filter(function(x){ return x.type === 'مخيم' && +x.lat && +x.lng && polyIn([+x.lat, +x.lng], P); });
+}
+function areaCampSave(){
+  var P = ROUTE.pts;
+  if (P.length < 3){ toast(t('ارسم ثلاثَ نقاطٍ على الأقل لتحديد المساحة')); return false; }
+  var sq = String(ROUTE.sq || '').trim(), sign = String(ROUTE.sign || '').trim();
+  if (sq && !NS_SQ_RE.test(sq)){ toast(t('رقم المربع: أرقامٌ أو أرقام-أرقام — مثال 7 أو 7-14')); return false; }
+  if (sign && !NS_SIGN_RE.test(sign)){ toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return false; }
+  var hits = areaCampHits();
+  if (hits.length > 1){ toast(nm(hits.length) + ' ' + t('مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد')); return false; }
+  var flat = polyFlat(P), who = STATE.meta.name || '', stamp = Date.now();
+  if (hits.length === 1){
+    /* مخيمٌ مسجَّل: تُربَط به الحدودُ ولا يُنشأ غيرُه — والمربعُ والشاخصُ يُكمَلان إن غابا */
+    var x = hits[0];
+    var patch = { poly:flat, polyBy:who, polyAt:stamp };
+    if (sq && !x.sq) patch.sq = sq;
+    if (sign && !x.sign) patch.sign = sign;
+    Object.assign(x, patch);
+    if (x.isNew) CORE.set('newsites', x.id, x);
+    else siteOvSet(x.id, patch);
+    SITE_IX = null; SITE_TOK = null;
+    statBump();
+    logEvent('حدودُ مخيم — ' + x.id + ' \u00b7 ' + nm(P.length) + ' رأسًا', x.id);
+    toast(x.id + ' \u00b7 ' + t('رُبطت الحدودُ بالمخيم المسجَّل'));
+    routeCancel();
+    return x.id;
+  }
+  var zone = ROUTE.zone || 'منى';
+  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD' }[zone] || 'NEW';
+  var id = 'NSK-' + pre + '-CMP-A' + String(stamp).slice(-6);
+  var c = polyCentroid(P);
+  var name = String(ROUTE.name || '').trim()
+          || (zone + (sq ? ' - مربع ' + sq : '') + (sign ? ' - شاخص ' + sign : '') + (sq || sign ? '' : ' - مخيم ' + id.split('-').pop()));
+  var site = { id:id, name:name, zone:zone, type:'مخيم', work:'موقع جديد',
+    lat:+c[0].toFixed(6), lng:+c[1].toFixed(6), sq:sq, sign:sign, co:'', region:'منطقة ' + zone,
+    fstat:'لم يبدأ', inout:'', isNew:true, approved:false, by:who, at:stamp,
+    origin:'office', src:'area', poly:flat };
+  STATE.sites.push(site);
+  CORE.set('newsites', id, site);
+  SITE_IX = null; SITE_TOK = null;
+  statBump();
+  stepDone('newsite', id, 'مخيمٌ بحدوده — أضافه المكتب', 0);
+  notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + zone, { site:id, lv:'مهم' });
+  logEvent('مخيمٌ جديدٌ بحدوده — ' + id + ' \u00b7 ' + zone, id);
+  routeCancel();
+  /* المكتبُ رسمه ولم يزره — تُجدوَل زيارتُه الآن (V17.57) */
+  visitAsnOpen([id], true);
+  toast(id + ' \u00b7 ' + t('مخيمٌ بحدوده — جدوِل زيارتَه الآن'));
+  return id;
+}
 function routeSave(){
-  var pts = ROUTE.mode === 'area' ? areaPoints() : routePoints();
+  if (ROUTE.mode === 'area' && ROUTE.type === 'مخيم'){ areaCampSave(); return; }
+  var pts = ROUTE.mode === 'area' ? areaPoints() : routeGen();
   if (ROUTE.mode === 'area' && pts.length < 1){ toast(t('ارسم ثلاثَ نقاطٍ على الأقل لتحديد المساحة')); return; }
   if (ROUTE.mode !== 'area' && pts.length < 2){ toast(t('ارسم نقطتين على الأقل')); return; }
   if (!ROUTE.zone || !ROUTE.type){ toast(t('اختر المشعر والنوع')); return; }
   var base = String(ROUTE.name || '').trim() || (t(ROUTE.type) + ' ' + t(ROUTE.zone));
   var pre = 'NSK-' + (ROUTE.zone === 'منى' ? 'MIN' : ROUTE.zone === 'عرفات' ? 'ARF' : ROUTE.zone === 'مزدلفة' ? 'MUZ'
-            : ROUTE.zone === 'مكة' ? 'MAK' : 'MAD') + '-' + (ROUTE.type === 'LPR' ? 'LPR' : ROUTE.type === 'كاميرا' ? 'CAM' : 'COR') + '-';
-  var n = 0, stamp = Date.now();
+            : ROUTE.zone === 'مكة' ? 'MAK' : 'MAD') + '-' + ({ 'LPR':'LPR', 'كاميرا':'CAM', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' }[ROUTE.type] || 'COR') + '-';
+  var n = 0, stamp = Date.now(), made = [];
   pts.forEach(function(p, i){
     var id = pre + String(stamp).slice(-6) + '-' + String(i + 1);
     var site = { id:id, name:base + ' — ' + nm(i + 1),
       zone:ROUTE.zone, type:ROUTE.type, work:'موقع جديد',
       lat:p[0], lng:p[1], sq:'', sign:'', co:'', region:'منطقة ' + ROUTE.zone,
       fstat:'لم يبدأ', inout:'', isNew:true, approved:false,
-      by:STATE.meta.name || '', at:stamp, route:base, every:cfgN(ROUTE.every) || 250 };
+      by:STATE.meta.name || '', at:stamp, route:base, every:cfgN(ROUTE.every) || 250,
+      origin:'office', moved:ROUTE.gen ? 1 : 0 };
     STATE.sites.push(site);
     CORE.set('newsites', id, site);
+    made.push(id);
     n++;
   });
   SITE_IX = null; SITE_TOK = null;
   logEvent('مسارٌ جديد — ' + base + ' · ' + nm(n) + ' نقطة كلَّ ' + nm(cfgN(ROUTE.every) || 250) + ' متر');
-  toast(nm(n) + ' ' + t('نقطةً أُضيفت على المسار'));
   routeCancel();
+  /* نقاطُ المكتب لم يزرها أحد — يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها (V17.57) */
+  visitAsnOpen(made, true);
+  toast(nm(n) + ' ' + t('نقطةً أُضيفت على المسار') + ' \u00b7 ' + t('جدوِل زيارتَها'));
   if (typeof mapPaint === 'function') mapPaint();
 }
 
@@ -21331,7 +21631,7 @@ function mapPaint(){
     var col = mapColorOf(x);
     /* طبقةُ التفاصيل: حافّةٌ تحمل خبرَ السطر المكتوب فوق لونِ المرحلة */
     var ring = (FIELD_MODE === 'brief' && !picked) ? briefRing(x.id) : '';
-    var mk;
+    var mk, FT = null;
 
     /* الممرُّ معيّنٌ مائل، والمخيمُ مضلّعٌ إن تقرّبت وإلا دائرة، وما عداهما دائرة —
        فيُعرَف النوعُ بالشكل قبل أن يُقرَأ اللون. */
@@ -21346,13 +21646,13 @@ function mapPaint(){
         html:'<i style="width:' + ds + 'px;height:' + ds + 'px;background:' + col
              + (picked ? ';outline:2px solid #fff' : (ring ? ';outline:2px solid ' + ring : '')) + '"></i>'
       })});
-    } else if (x.type === 'مخيم' && z >= POLY_Z && POLY && POLY[x.id]){
+    } else if (x.type === 'مخيم' && z >= POLY_Z && (FT = campFoot(x))){
       /* المخيمُ بحدوده في كلِّ تقريبٍ عمليّ (V16.94): كان بحدوده من السادس
          عشر فقط وتحته دائرةً — فإذا ابتعد الناظرُ قليلًا صارت المخيماتُ
          دوائرَ متراكبةً تذوب في كتلة. الحدُّ الآن الثاني عشر: عنده يبقى
          للمخيم شكلُه على الشاشة، وتحته لا يُرى شكلٌ مهما رُسم فتعود الدائرة.
          والحافّةُ والتعبئةُ تغلظان في البعيد فلا تختفي الحدودُ. */
-      mk = L.polygon(POLY[x.id].map(function(p){ return [p[1], p[0]]; }), {
+      mk = L.polygon(FT.map(function(p){ return [p[1], p[0]]; }), {
         renderer:MAP_CV, color: ring || col,
         weight: picked ? 2.4 : (ring ? 2 : (z >= 15 ? 1.3 : (z >= 13 ? 1 : 0.8))),
         fillColor:col, fillOpacity: picked ? 0.55 : (z >= 15 ? 0.4 : 0.55)
@@ -21417,18 +21717,39 @@ function mapPaint(){
   try {
     if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_LAYER){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
-      if (ROUTE.mode === 'area' && pts.length > 2){
-        L.polygon(pts, { renderer:MAP_CV, color:'#FF8C42', weight:2, fillColor:'#FF8C42', fillOpacity:0.18, interactive:false }).addTo(MAP_LAYER);
+      var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
+      if (isArea && pts.length > 2){
+        L.polygon(pts, { renderer:MAP_CV, color:'#FF8C42', weight:2, fillColor:'#FF8C42', fillOpacity: isCamp ? 0.3 : 0.18, interactive:false }).addTo(MAP_LAYER);
       } else if (pts.length > 1){
-        L.polyline(pts, { renderer:MAP_CV, color:'#FF8C42', weight:3, opacity:0.95, interactive:false }).addTo(MAP_LAYER);
+        L.polyline(pts, { renderer:MAP_CV, color:'#FF8C42', weight:3, opacity: ROUTE.gen ? 0.45 : 0.95, interactive:false }).addTo(MAP_LAYER);
       }
-      /* النقاطُ التي ستُولَّد — تُرى قبل الحفظ */
-      var gen = (ROUTE.mode === 'area' ? areaPoints() : routePoints());
-      gen.slice(0, 600).forEach(function(g){
-        L.circleMarker([g[0], g[1]], { renderer:MAP_CV, radius:3.5, color:'#fff', weight:1,
-          fillColor:'#FFD166', fillOpacity:0.95, interactive:false }).addTo(MAP_LAYER);
+      /* النقاطُ التي ستُولَّد — تُرى قبل الحفظ؛ ونقاطُ المسار تُسحَب بالإصبع (V17.58)،
+         والمخيمُ بحدوده لا شبكةَ داخله (V17.59) */
+      var gen = isArea ? (isCamp ? [] : areaPoints()) : routeGen();
+      var drag = !isArea && gen.length <= RT_DRAG_MAX;
+      gen.slice(0, drag ? RT_DRAG_MAX : 600).forEach(function(g, gi){
+        if (!drag){
+          L.circleMarker([g[0], g[1]], { renderer:MAP_CV, radius:3.5, color:'#fff', weight:1,
+            fillColor:'#FFD166', fillOpacity:0.95, interactive:false }).addTo(MAP_LAYER);
+          return;
+        }
+        var hs = TOUCH ? 34 : 24;
+        var pm = L.marker([g[0], g[1]], { draggable:true, autoPan:false, keyboard:false, zIndexOffset:500,
+          icon:L.divIcon({ className:'rtPt', iconSize:[hs, hs], iconAnchor:[hs / 2, hs / 2], html:'<i></i>' }) });
+        pm.on('dragstart', function(){ routeFreeze(); });
+        pm.on('dragend', function(ev){ var ll = ev.target.getLatLng(); routeMovePt(gi, ll.lat, ll.lng); });
+        pm.addTo(MAP_LAYER);
       });
       pts.forEach(function(p, i){
+        if (isArea){
+          /* رأسُ المساحة يُسحَب فتتبعه الحدود (V17.59) */
+          var vs = TOUCH ? 36 : 26;
+          var vm = L.marker(p, { draggable:true, autoPan:false, keyboard:false, zIndexOffset:600,
+            icon:L.divIcon({ className:'rtVx', iconSize:[vs, vs], iconAnchor:[vs / 2, vs / 2], html:'<i></i>' }) });
+          vm.on('dragend', function(ev){ var ll = ev.target.getLatLng(); routeMoveVx(i, ll.lat, ll.lng); });
+          vm.addTo(MAP_LAYER);
+          return;
+        }
         L.circleMarker(p, { renderer:MAP_CV, radius:6, color:'#fff', weight:2,
           fillColor:'#FF8C42', fillOpacity:1, interactive:false }).addTo(MAP_LAYER);
       });
@@ -22607,8 +22928,7 @@ function kmiApply(){
   var take = KMI.rows.filter(function(r){ return r.take; });
   if (!take.length){ toast(t('لم تُحدَّد نقطةٌ للإضافة')); return; }
   var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[KMI_ZONE] || 'NEW';
-  var tp  = { 'مخيم':'CMP', 'ممر':'RDR', 'كاميرا':'CAM', 'محطة':'STN',
-              'جسر':'JMR', 'بوابة':'GTE', 'مبنى':'BLD' }[KMI_TYPE] || 'NEW';
+  var tp  = typeCode(KMI_TYPE);
   var seq = STATE.sites.filter(function(x){ return String(x.id).indexOf('NSK-' + pre + '-' + tp + '-K') === 0; }).length;
   var n = 0;
   take.forEach(function(r){
@@ -22632,7 +22952,7 @@ function kmiApply(){
 }
 function kmiCard(){
   if (!may('edit')) return '';
-  var ZS = ['منى','عرفات','مزدلفة','مكة','المدينة'], TS = ['مخيم','ممر','كاميرا','محطة','جسر','بوابة','مبنى','LPR'];
+  var ZS = ['منى','عرفات','مزدلفة','مكة','المدينة'], TS = Object.keys(typesList());   /* من سجلِّ الأنواع لا قائمةٍ ثانية (V17.60) */
   var head = card('استيراد KMZ / KML من جوجل إيرث',
       '<p class="hint" style="margin:0 0 10px">'
     + esc(t('يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.'))
@@ -22640,7 +22960,7 @@ function kmiCard(){
     +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-kmiz>'
     +     ZS.map(function(z){ return '<option value="' + esc(z) + '"' + (KMI_ZONE === z ? ' selected' : '') + '>' + esc(t(z)) + '</option>'; }).join('') + '</select></div>'
     +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-kmit>'
-    +     TS.map(function(x){ return '<option value="' + esc(x) + '"' + (KMI_TYPE === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('') + '</select></div>'
+    +     TS.map(function(x){ return '<option value="' + esc(x) + '"' + (KMI_TYPE === x ? ' selected' : '') + '>' + esc(typeShort(x)) + '</option>'; }).join('') + '</select></div>'
     +   '<div class="field"><label>' + esc(t('وجه العمل')) + '</label><input data-kmiw value="' + esc(KMI_WORK) + '" dir="auto"></div>'
     + '</div>'
     + '<div class="actions" style="margin:8px 0 0">'
@@ -23902,16 +24222,101 @@ function legendRows(){
       + '<div class="lg-row' + (noB ? '' : ' lg-off') + '"><i class="lg-dot" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line)"></i>'
       + '<span class="lg-n">' + esc(t('بلا تفاصيلَ بعد')) + '</span><b class="num lg-c">' + nm(noB) + '</b></div>';
   }
-  /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة */
-  out += '<div class="lg-sep"></div>'
-    + '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'
-    + '<div class="lg-row"><i class="lg-sh sh-d"></i>' + esc(t('ممر · كاميرا')) + '</div>'
-    + '<div class="lg-row"><i class="lg-sh sh-o"></i>' + esc(t('محطة · جسر · بوابة')) + '</div>';
+  /* الأشكالُ — تُذكَر مرةً في آخر الأسطورة، وتُشتقُّ من سجلِّ الأنواع (V17.60):
+     كانت ثلاثةَ أسطرٍ مكتوبةٍ بيد، فلا يظهر فيها شكلُ نوعٍ أُضيف ولا شكلٌ غُيِّر. */
+  out += '<div class="lg-sep"></div>' + legendShapes();
   return out;
+}
+/* أسطرُ الأشكال: المخيمُ بحدوده، ثم كلُّ شكلٍ بأنواعه — بالهندسة التي يُرسَم بها */
+var SHAPE_ORDER = ['diamond','circle','square','triangle','star','drop'];
+/* اسمُ النوع القصير: المفتاحُ العربيُّ نفسُه، وإلا اسمُه المعروض (LPR لا يُقرأ حرفًا) */
+function typeShort(k){
+  if (/[\u0600-\u06FF]/.test(k)) return t(k);
+  var d = typesList()[k] || CAT_DEF[k] || {};
+  return t(d.l || k);
+}
+function legendShapes(){
+  var T = typesList(), by = {};
+  Object.keys(T).forEach(function(k){
+    if (k === 'مخيم') return;
+    var sh = mapShapeOf(k);
+    (by[sh] = by[sh] || []).push(k);
+  });
+  var order = Object.keys(by).sort(function(a, b){
+    var ia = SHAPE_ORDER.indexOf(a), ib = SHAPE_ORDER.indexOf(b);
+    return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib);
+  });
+  return '<div class="lg-row"><i class="lg-sh sh-c"></i>' + esc(t('مخيم')) + '</div>'
+    + order.map(function(sh){
+        return '<div class="lg-row lg-shp sh-' + esc(sh) + '">' + shapeSvg(sh)
+          + '<span>' + by[sh].map(function(k){ return esc(typeShort(k)); }).join(' \u00b7 ') + '</span></div>';
+      }).join('');
 }
 
 /* واجهةُ الخريطة تُرسَم في #mapUI فوق الحاوية الثابتة —
    والحاويةُ نفسها لا يمسّها إعادةُ الرسم فلا تُدمَّر Leaflet. */
+/* ═══ لوحُ الرسم (V17.58–V17.59) ═══
+   المسارُ: المسافةُ بيد الراسم، والنقاطُ تُسحَب ثم تُحفَظ. والمساحةُ: المخيمُ
+   بحدوده ومربعه وشاخصه، وغيرُه شبكةُ نقاطٍ بمسافتها. */
+function routePanelHtml(){
+  var area = ROUTE.mode === 'area', camp = area && ROUTE.type === 'مخيم';
+  var hits = camp ? areaCampHits() : [];
+  var n = routeCount(), big = !area && n > RT_DRAG_MAX;
+  var T = typesList();
+  var opt = function(v, lbl, cur){ return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(lbl) + '</option>'; };
+  var hint;
+  if (camp){
+    hint = hits.length === 1
+      ? esc(t('الحدودُ تضمُّ مخيمًا مسجَّلًا — تُربَط به ولا يُنشأ غيرُه')) + ': <b class="num">' + esc(hits[0].id) + '</b>'
+      : (hits.length > 1
+          ? '<b class="num">' + nm(hits.length) + '</b> ' + esc(t('مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد'))
+          : esc(t('مخيمٌ واحدٌ بحدوده — بلا نقاطٍ داخله، وتُجدوَل زيارتُه بعد الحفظ.')));
+  } else {
+    hint = esc(t('ستُضاف')) + ' <b class="num" id="rtN">' + nm(n) + '</b> '
+      + esc(t(area ? 'نقطةً داخل المساحة — تُراجَع قبل الحفظ.'
+             : (ROUTE.gen ? 'نقطةً — مثبَّتةٌ بعد التحريك، والمسافةُ لا تغيّرها حتى «أعد التوليد».'
+             : (big ? 'نقطةً — أكثرُ من أن تُسحَب؛ كبّر المسافةَ لتحريكها.'
+                    : 'نقطةً على المسار — اسحب أيَّ نقطةٍ لتحريكها قبل الحفظ.'))))
+      + (ROUTE.moved ? ' <span class="pill acc">' + esc(t('حُرِّك')) + ' ' + nm(ROUTE.moved) + '</span>' : '');
+  }
+  return '<div class="map-route-box' + (RT_MIN ? ' min' : '') + '">'
+    + '<div class="wt-row" style="justify-content:space-between;margin:0 0 6px">'
+    +   '<b>' + esc(t(camp ? 'مساحةُ مخيم' : (area ? 'مساحةٌ بنقاط' : 'مسارٌ بنقاط'))) + '</b>'
+    +   btn(RT_MIN ? '\u25B2 ' + t('توسيع') : '\u25BC ' + t('طيّ'), 'btn-quiet btn-sm', ' data-rtmin="1"')
+    +   '<span class="hint" style="margin:0">' + esc(t('نقاطُ الرسم')) + ' <span class="num">' + nm(ROUTE.pts.length) + '</span>'
+    +     (!area && ROUTE.pts.length > 1 ? ' \u00b7 ' + nm(routeLen()) + ' ' + esc(t('م')) : '') + '</span></div>'
+    + '<div class="grid cols-2" style="gap:6px">'
+    + (camp
+        ? '<div class="field"><label>' + esc(t('رقم المربع')) + '</label>'
+          + '<input dir="auto" value="' + esc(ROUTE.sq) + '" data-rt="sq" placeholder="7-14"></div>'
+          + '<div class="field"><label>' + esc(t('رقم الشاخص')) + '</label>'
+          + '<input dir="auto" value="' + esc(ROUTE.sign) + '" data-rt="sign" placeholder="57/2"></div>'
+        : '<div class="field"><label>' + esc(t('كلَّ كم مترًا')) + '</label>'
+          + '<input type="number" min="' + RT_EVERY_MIN + '" step="1" inputmode="numeric" value="' + esc(ROUTE.every) + '" data-rt="every"'
+          +   (ROUTE.gen ? ' disabled title="' + esc(t('المسافةُ مثبَّتةٌ بعد التحريك — «أعد التوليد» يعيدها')) + '"' : '') + '></div>')
+    +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-rt="type">'
+    /* الأنواعُ من سجلِّ الأنواع الذي تُدار منه الشاشةُ نفسُها — فما يُضاف
+       أو يُحذَف هناك يظهر هنا، ولا تبقى قائمةٌ ثانيةٌ فيها نوعٌ أُلغي
+       (بقي «AI» فيها بعد إلغائه وكاميراتُ الوزارة هي الذكيّة). والاسمُ
+       المعروضُ لا المفتاح: كان «LPR» يُقرأ حرفًا (V17.60). */
+    +     Object.keys(T).map(function(x){ return opt(x, typeShort(x), ROUTE.type); }).join('')
+    +     '</select></div>'
+    +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-rt="zone">'
+    +     ['منى','عرفات','مزدلفة','مكة','المدينة'].map(function(x){ return opt(x, t(x), ROUTE.zone); }).join('')
+    +     '</select></div>'
+    +   '<div class="field"><label>' + esc(t(camp ? 'اسم المخيم' : 'اسم المسار')) + '</label>'
+    +     '<input dir="auto" value="' + esc(ROUTE.name) + '" data-rt="name" placeholder="'
+    +       esc(t(camp ? 'اختياري — يُولَّد من المشعر والمربع' : 'طريق الهجرة · طريق كدانة…')) + '"></div>'
+    + '</div>'
+    + '<p class="hint" style="margin:6px 0">' + hint + '</p>'
+    + '<div class="actions" style="margin:0">'
+    +   btn('\u{1F4BE} ' + t(camp ? 'احفظ المخيم' : 'احفظ النقاط'),'btn-primary btn-sm',' data-rtsave="1"')
+    +   (ROUTE.gen ? btn('\u21BB ' + t('أعد التوليد'),'btn-quiet btn-sm',' data-rtregen="1"') : '')
+    +   btn('\u21A9 ' + t('تراجع'),'btn-quiet btn-sm',' data-rtundo="1"')
+    +   btn(t('إلغاء'),'btn-quiet btn-sm',' data-rtcancel="1"')
+    + '</div></div>';
+}
+
 function mapUIHtml(){
   var busy = (typeof MAP_SELECT !== 'undefined' && MAP_SELECT)
           || (typeof MOVE_ID !== 'undefined' && MOVE_ID);
@@ -23967,39 +24372,7 @@ function mapUIHtml(){
           + btn('\u2716 ' + t('إلغاء'), 'btn-quiet btn-sm', ' data-pincancel="1"')
           + '</div></div>'
         : '')
-    + (ROUTE.on
-        ? '<div class="map-route-box' + (RT_MIN ? ' min' : '') + '">'
-          + '<div class="wt-row" style="justify-content:space-between;margin:0 0 6px">'
-          +   '<b>' + esc(t(ROUTE.mode === 'area' ? 'مساحةٌ بنقاط' : 'مسارٌ بنقاط')) + '</b>'
-          +   btn(RT_MIN ? '\u25B2 ' + t('توسيع') : '\u25BC ' + t('طيّ'), 'btn-quiet btn-sm', ' data-rtmin="1"')
-          +   '<span class="hint" style="margin:0">' + esc(t('نقاطُ الرسم')) + ' <span class="num">' + nm(ROUTE.pts.length) + '</span>'
-          +     (ROUTE.pts.length > 1 ? ' \u00b7 ' + nm(routeLen()) + ' ' + esc(t('م')) : '') + '</span></div>'
-          + '<div class="grid cols-2" style="gap:6px">'
-          +   '<div class="field"><label>' + esc(t('كلَّ كم مترًا')) + '</label>'
-          +     '<input type="number" min="25" step="25" value="' + esc(ROUTE.every) + '" data-rt="every"></div>'
-          +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-rt="type">'
-          /* الأنواعُ من سجلِّ الأنواع الذي تُدار منه الشاشةُ نفسُها — فما يُضاف
-             أو يُحذَف هناك يظهر هنا، ولا تبقى قائمةٌ ثانيةٌ فيها نوعٌ أُلغي
-             (بقي «AI» فيها بعد إلغائه وكاميراتُ الوزارة هي الذكيّة). */
-          +     Object.keys(typesList()).map(function(x){
-                  return '<option value="' + esc(x) + '"' + (ROUTE.type === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('')
-          +     '</select></div>'
-          +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-rt="zone">'
-          +     ['منى','عرفات','مزدلفة','مكة','المدينة'].map(function(x){
-                  return '<option value="' + esc(x) + '"' + (ROUTE.zone === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('')
-          +     '</select></div>'
-          +   '<div class="field"><label>' + esc(t('اسم المسار')) + '</label>'
-          +     '<input dir="auto" value="' + esc(ROUTE.name) + '" data-rt="name" placeholder="' + esc(t('طريق الهجرة · طريق كدانة…')) + '"></div>'
-          + '</div>'
-          + '<p class="hint" style="margin:6px 0">' + esc(t('ستُضاف'))
-          +   ' <b class="num">' + nm(ROUTE.mode === 'area' ? areaPoints().length : routePoints().length) + '</b> '
-          +   esc(t(ROUTE.mode === 'area' ? 'نقطةً داخل المساحة — تُراجَع قبل الحفظ.' : 'نقطةً على المسار — تُراجَع قبل الحفظ.')) + '</p>'
-          + '<div class="actions" style="margin:0">'
-          +   btn('\u{1F4BE} ' + t('احفظ النقاط'),'btn-primary btn-sm',' data-rtsave="1"')
-          +   btn('\u21A9 ' + t('تراجع'),'btn-quiet btn-sm',' data-rtundo="1"')
-          +   btn(t('إلغاء'),'btn-quiet btn-sm',' data-rtcancel="1"')
-          + '</div></div>'
-        : '')
+    + (ROUTE.on ? routePanelHtml() : '')
     + '<div class="map-fab">'
     +   (may('edit') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')
     +   ((may('newsite') || may('settings'))
@@ -31117,21 +31490,54 @@ function chainRows(){
    والنوعُ الذي عليه مواقعُ لا يُحذَف: مواقعُه تحمل اسمَه، وحذفُه يجعلها
    بلا تصنيفٍ فتسقط من كلِّ تجميعٍ ولا يُعرَف أين ذهبت. */
 
+/* ═══ سجلُّ الأنواع يُطبَّع مرةً لكلِّ نسخةٍ منه (V17.60) ═══
+   كان يُزرَع من الكتالوج مرةً ثم لا يُعاد إليه — فالسجلُّ السحابيُّ الذي سبق
+   نوعًا مدمَجًا جديدًا لا يعرفه أبدًا: لا يظهر الجيت واي ولا الحساس في قائمة
+   المسار ولا في شاشة الأنواع. وكانت وثيقتُه تحمل ختمَي الكتابة (_by و_at)
+   فيُقرآن نوعين، والحذفُ لا يثبت لأن الكتابةَ دمجٌ يُبقي المحذوف، والشكلُ
+   يسقط عند الحفظ. فصار يُطبَّع حين تتبدّل نسختُه: يُنزَع الختم، ويُقرأ شاهدُ
+   الحذف {gone:true} فلا يُعاد المحذوف، ويُضاف المدمَجُ الغائب، ويُستبدَل الاسمُ
+   الافتراضيُّ القديمُ بجديده ما لم يغيّره أحد، ويُزامَن منه الكتالوج — فيرى
+   نموذجُ الموقع الجديد ما أُضيف في جهازٍ آخر. */
+var TYPES_NORM = null;
+var TYPES_OLD_L = { 'LPR':'قراءة اللوحات' };
+function typeCopy(v){
+  var o = { l:v.l, i:v.i, c:v.c };
+  if (v.s) o.s = v.s;
+  return o;
+}
+function typesNormalize(T){
+  var gone = {};
+  Object.keys(T).forEach(function(k){
+    var v = T[k];
+    if (k.charAt(0) === '_' || !v || typeof v !== 'object'){ delete T[k]; return; }
+    if (v.gone){ gone[k] = 1; delete T[k]; return; }
+    var b = CAT_DEF_BASE[k];
+    if (b && TYPES_OLD_L[k] && v.l === TYPES_OLD_L[k]) v.l = b.l;
+    if (b && !v.s && b.s) v.s = b.s;
+  });
+  Object.keys(CAT_DEF_BASE).forEach(function(k){
+    if (!T[k] && !gone[k]) T[k] = typeCopy(CAT_DEF_BASE[k]);
+  });
+  STATE.typesGone = gone;
+  TYPES_NORM = T;
+  Object.keys(T).forEach(function(k){ CAT_DEF[k] = typeCopy(T[k]); });
+  Object.keys(gone).forEach(function(k){ if (CAT_DEF[k] && !typeUsed(k)) delete CAT_DEF[k]; });
+}
 function typesList(){
   if (!STATE.types || typeof STATE.types !== 'object') STATE.types = {};
-  /* البذرةُ تُنقَل مرةً ثم لا يُعاد إليها */
-  if (!Object.keys(STATE.types).length){
-    Object.keys(CAT_DEF).forEach(function(k){
-      STATE.types[k] = { l:CAT_DEF[k].l, i:CAT_DEF[k].i, c:CAT_DEF[k].c };
-    });
-  }
+  if (TYPES_NORM !== STATE.types) typesNormalize(STATE.types);
   return STATE.types;
 }
 function typesSave(){
   var T = typesList();
-  Object.keys(T).forEach(function(k){ CAT_DEF[k] = { l:T[k].l, i:T[k].i, c:T[k].c }; });
+  Object.keys(T).forEach(function(k){ CAT_DEF[k] = typeCopy(T[k]); });
   Object.keys(CAT_DEF).forEach(function(k){ if (!T[k]) delete CAT_DEF[k]; });
-  CORE.set('cfg', 'types', T);
+  /* الكتابةُ دمجٌ في القاعدة: ما حُذف يُكتَب شاهدًا وإلا بقي فيها وعاد مع أوّل سحب */
+  var W = {};
+  Object.keys(T).forEach(function(k){ W[k] = T[k]; });
+  Object.keys(STATE.typesGone || {}).forEach(function(k){ if (!T[k]) W[k] = { gone:true }; });
+  CORE.set('cfg', 'types', W);
   SITE_IX = null; SITE_TOK = null;
   statBump();
 }
@@ -31152,6 +31558,7 @@ function typeAdd(){
   if (!k){ toast(t('اكتب اسم النوع')); return; }
   if (typesList()[k]){ toast(t('النوعُ موجودٌ بالفعل')); return; }
   typesList()[k] = { l:l || k, i:g('tyI') || '\u25CF', c:g('tyC') || '#8A939D', s:g('tyS') || 'circle' };
+  if (STATE.typesGone) delete STATE.typesGone[k];   /* نوعٌ حُذف ثم أُعيد: يُرفَع شاهدُه */
   typesSave();
   logEvent('نوع نقطة جديد — ' + k);
   toast(t('أُضيف النوع'));
@@ -31164,6 +31571,7 @@ function typeDel(k){
   var T = typesList();
   if (!T[k]) return;
   delete T[k];
+  (STATE.typesGone = STATE.typesGone || {})[k] = 1;   /* شاهدُ حذفٍ يُكتَب مع الحفظ */
   typesSave();
   logEvent('حذف نوع نقطة — ' + k);
   toast(t('حُذف النوع'));
@@ -31178,13 +31586,25 @@ function typesCard(){
      «نقاط التهيئة»: حقولٌ في صفٍّ والزرُّ في رأس بطاقتها. */
   var T = typesList(), keys = Object.keys(T);
   return cardFlush(t('أنواع النقاط') + ' — ' + nm(keys.length),
-      table(['النوع','الاسم المعروض','الرمز','مواقع',''],
+      table(['النوع','الاسم المعروض','الرمز','اللون','الشكل على الخريطة','مواقع',''],
         keys.map(function(k){
           var u = typeUsed(k);
+          /* اللونُ والشكلُ يُعدَّلان لكلِّ نوعٍ قائم (V17.60) — لا عند إضافته وحدَها؛
+             والممرُّ والكاميرا معيّنٌ بعلامةٍ ثابتةٍ لها هدفُ لمسٍ خاصّ */
+          var fixed = (k === 'ممر' || k === 'كاميرا'), sh = typeShape(k);
+          /* وسمُ الحقل للقارئ الصوتيِّ باسم النوع المترجَم — كان يُشتقُّ من الخلية
+             الأولى فيُقرأ «مخيمCamp» مفتاحًا عربيًّا ملتصقًا بترجمته */
+          var al = function(col){ return ' aria-label="' + esc(t(col) + ' \u2014 ' + typeShort(k)) + '"'; };
           return ['<strong>' + esc(k) + '</strong>'
                     + (t(k) !== k ? '<br><span class="hint" style="margin:0">' + esc(t(k)) + '</span>' : ''),
-                  '<input value="' + esc(T[k].l) + '" data-tyl="' + esc(k) + '" dir="auto">',
-                  '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr">',
+                  '<input value="' + esc(T[k].l) + '" data-tyl="' + esc(k) + '" dir="auto"' + al('الاسم المعروض') + '>',
+                  '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr"' + al('الرمز') + '>',
+                  '<input type="color" value="' + esc(T[k].c || '#8A939D') + '" data-tyc="' + esc(k) + '" style="width:48px;min-height:34px;padding:2px"' + al('اللون') + '>',
+                  fixed
+                    ? shapeSvg('diamond', T[k].c) + ' <span class="hint" style="margin:0">' + esc(t('معيّنٌ ثابت')) + '</span>'
+                    : shapeSvg(sh, T[k].c) + ' <select data-tys="' + esc(k) + '" style="max-width:110px"' + al('الشكل على الخريطة') + '>'
+                      + SHAPES.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (sh === o[0] ? ' selected' : '') + '>' + esc(t(o[1])) + '</option>'; }).join('')
+                      + '</select>',
                   u ? pill(nm(u), 'acc') : N(0),
                   (may('settings')
                     ? (u ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
@@ -33175,12 +33595,15 @@ function clickA(e){
   var uls = e.target.closest('[data-ulsite]');
   if (uls){ USR_LOG = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
   if (e.target.closest('[data-nspin]')){ goPage('map'); pinStart(); return true; }
+  var vas = e.target.closest('[data-visitasn]');
+  if (vas){ visitAsnOpen(vas.getAttribute('data-visitasn')); return true; }
   if (e.target.closest('[data-pincancel]')){ pinCancel(); return true; }
   if (e.target.closest('[data-pin]')){ pinStart(); return true; }
   if (e.target.closest('[data-route]')){ if (ROUTE.on && ROUTE.mode === 'line') routeCancel(); else routeStart('line'); return true; }
   if (e.target.closest('[data-area]')){ if (ROUTE.on && ROUTE.mode === 'area') routeCancel(); else routeStart('area'); return true; }
   if (e.target.closest('[data-rtsave]')){ routeSave(); return true; }
   if (e.target.closest('[data-rtundo]')){ routeUndo(); return true; }
+  if (e.target.closest('[data-rtregen]')){ routeRegen(); return true; }
   if (e.target.closest('[data-rtmin]')){ RT_MIN = !RT_MIN; render(1); return true; }
   if (e.target.closest('[data-rtcancel]')){ RT_MIN = false; routeCancel(); return true; }
   var slg = e.target.closest('[data-sitelog]');
@@ -34320,6 +34743,11 @@ document.addEventListener('wheel', function(e){
 document.addEventListener('change', function(e){
   var t0 = e.target;
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  /* لونُ النوع وشكلُه: يُحفَظان عند الاختيار لا مع كلِّ حركةٍ في المنتقي (V17.60) */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-tyc')){ typeSet(t0.getAttribute('data-tyc'), { c:t0.value }); render(1); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-tys')){ typeSet(t0.getAttribute('data-tys'), { s:t0.value }); render(1); return; }
+  /* المسافةُ تُكتَب بلا إعادة بناء، وعند الخروج من الحقل يُحدَّث اللوحُ كلُّه (V17.58) */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-rt') && String(t0.tagName).toUpperCase() === 'INPUT'){ render(1); return; }
   /* جدولُ المتابعة: إنجازُ بندٍ يُكتب ويُرفَع فورًا؛ وملفُّ الاستيراد */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmifile')){ if (t0.files && t0.files[0]) kmiImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-kmiz')){ KMI_ZONE = t0.value; return; }
@@ -34413,7 +34841,11 @@ document.addEventListener('change', function(e){
 document.addEventListener('input', function(e){
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){
-    ROUTE[e.target.getAttribute('data-rt')] = e.target.value; render(1); return;
+    ROUTE[e.target.getAttribute('data-rt')] = e.target.value;
+    /* حقلُ الكتابة لا يُعيد بناءَ اللوح (V17.58) — العددُ والخريطةُ في مكانهما؛
+       والقائمةُ تُعيده لأن ما بعدها يتبدّل بها (المخيمُ حقولُه غيرُ حقول المسار) */
+    if (String(e.target.tagName).toUpperCase() === 'INPUT'){ routeLive(); return; }
+    render(1); return;
   }
   if (e.target && e.target.id === 'pgQ'){
     PG_Q = e.target.value;

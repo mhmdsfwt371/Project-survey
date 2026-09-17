@@ -158,6 +158,9 @@ if (typeof w.helpOf === 'function') {
   w.toast = m => T.push(String(m));
   const clk = sel => { const el = d.querySelector(sel); if (el) el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return !!el; };
   const last = () => T[T.length - 1] || '';
+  /* الدورةُ كما يعيشها الميدان (V17.57): المشرفُ واقفٌ عند النقطة فالصورةُ
+     إلزاميةٌ ونموذجُ المسح يُفتَح بعد الإرسال — ودورةُ المكتب في جرد الإضافة */
+  const roleWas = w.ROLE; w.ROLE = 'supervisor';
 
   check(Array.isArray(w.CO_LIST) && w.CO_LIST.length > 100,
     `القائمةُ الموحّدة من بيانات المشروع (${(w.CO_LIST||[]).length} شركة)`);
@@ -200,6 +203,7 @@ if (typeof w.helpOf === 'function') {
   check(w.CUR === 'svForm' || (w.CUR === 'forms' && w.PTAB && w.PTAB.forms === 'svForm'),
     'يُفتَح نموذجُ المسح على الموقع الجديد');
 
+  w.ROLE = roleWas;
   w.toast = realToast;
 }
 
