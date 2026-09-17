@@ -933,7 +933,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.51</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.52</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -16247,6 +16247,7 @@ function wtRemind(){
    يُصدَّر هو ما يُرى — وبلا ترشيحٍ يُصدَّر الكلُّ كما كان. */
 function wtFiltered(){
   return wtRows().filter(function(r){
+    if (WT_TRACK && String(r.track || '').trim() !== WT_TRACK) return false;   /* بالمسار (V17.52) */
     if (WT_WBS){ var w = String(r.wbs || ''); if (!(w === WT_WBS || w.indexOf(WT_WBS + '.') === 0)) return false; }
     if (WT_Q && (r.n + ' ' + (r.who || '') + ' ' + (r.track || '') + ' ' + (r.upd || '') + ' ' + (r.wbs || '')).indexOf(WT_Q) < 0) return false;
     if (WT_F === 'late') return wtLate(r);
@@ -16257,8 +16258,25 @@ function wtFiltered(){
     return true;
   });
 }
+/* ═══ الترشيحُ بالمسار وحالُ كلِّ مسار (V17.52) ═══
+   المهامُّ سبعٌ وأربعون في ستة مسارات، والسؤالُ في كلِّ اجتماع: مسارُ جاهزية
+   المواقع — كم فيه وكم تأخّر؟ فكان الجوابُ بالعين على سبعٍ وأربعين بطاقة.
+   صار للمسار شريحتُه بعددِه ومتأخّرِه، وحين يُختار تُحسَب شرائحُ الحالة
+   داخله وحدَه — فيُقرأ المسارُ بحاله لا الكلُّ بحالته. */
+var WT_TRACK = '';
+function wtTracks(){
+  var R = wtRows(), m = {};
+  R.forEach(function(r){
+    var k = String(r.track || '').trim(); if (!k) return;
+    if (!m[k]) m[k] = { n:0, late:0, done:0, open:0 };
+    m[k].n++;
+    if (r.st === 'مكتمل') m[k].done++; else { m[k].open++; if (wtLate(r)) m[k].late++; }
+  });
+  return m;
+}
 function wtStats(){
-  var R = wtRows(), today = dayKey(Date.now()), c = { all:R.length, done:0, run:0, wait:0, stop:0, late:0, d0:0, d1:0, week:0, next:0, month:0, none:0 };
+  var R = wtRows().filter(function(r){ return !WT_TRACK || String(r.track || '').trim() === WT_TRACK; });
+  var today = dayKey(Date.now()), c = { all:R.length, done:0, run:0, wait:0, stop:0, late:0, d0:0, d1:0, week:0, next:0, month:0, none:0 };
   R.forEach(function(r){
     if (r.st === 'مكتمل'){ c.done++; return; }
     if (r.st === 'جاري العمل') c.run++; else if (r.st === 'متوقف') c.stop++; else c.wait++;
@@ -16370,7 +16388,29 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
 
     var chips = [['','الكل',c.all],['late','متأخر',c.late],['due','مستحق قريبًا',c.d0 + c.d1 + c.week],
                  ['run','جاري العمل',c.run],['wait','قيد الانتظار',c.wait],['done','مكتمل',c.done]];
-    var filt = '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WT_F === x[0] ? ' on' : '') + '" data-wtf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
+    /* شرائحُ المسارات: عددُ مهامِّه ومتأخّرُه — تُشتقُّ من المهامِّ نفسِها */
+    var TRK = wtTracks(), tks = Object.keys(TRK).sort(function(a, b){ return TRK[b].n - TRK[a].n; });
+    var trkRow = tks.length
+      ? '<div class="chips">'
+        + '<button type="button" class="chip' + (WT_TRACK ? '' : ' on') + '" data-wttrack="">'
+        +   esc(t('كل المسارات')) + ' <span class="num">' + nm(wtRows().length) + '</span></button>'
+        + tks.map(function(k){
+            var x = TRK[k];
+            return '<button type="button" class="chip' + (WT_TRACK === k ? ' on' : '') + '" data-wttrack="' + esc(k) + '">'
+              + esc(k) + ' <span class="num">' + nm(x.n) + '</span>'
+              + (x.late ? ' <span class="pill bad" style="margin-inline-start:4px">' + nm(x.late) + '</span>' : '')
+              + '</button>';
+          }).join('')
+        + '</div>'
+      : '';
+    var filt = trkRow
+      + (WT_TRACK
+          ? '<p class="hint" style="margin:0 0 6px">' + esc(WT_TRACK) + ' \u00b7 '
+            + esc(t('مكتمل')) + ' ' + nm(TRK[WT_TRACK] ? TRK[WT_TRACK].done : 0) + ' \u00b7 '
+            + esc(t('مفتوح')) + ' ' + nm(TRK[WT_TRACK] ? TRK[WT_TRACK].open : 0) + ' \u00b7 '
+            + esc(t('متأخر')) + ' ' + nm(TRK[WT_TRACK] ? TRK[WT_TRACK].late : 0) + '</p>'
+          : '')
+      + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WT_F === x[0] ? ' on' : '') + '" data-wtf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
       + card('', '<input type="search" data-wtq value="' + esc(WT_Q) + '" placeholder="' + esc(t('ابحث بالمهمة أو المسؤول أو المسار')) + '" dir="auto">');
 
     var cardOf = wtCardOf;
@@ -19252,7 +19292,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.51' + '.docx" download>⬇ '
+              +   'V17.52' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -32876,6 +32916,8 @@ function clickA(e){
   if (skr){ stuckReopen(skr.getAttribute('data-stkreopen')); toast(t('أُعيد فتحُه')); render(1); return true; }
   var wtb = e.target.closest('[data-wttab]');
   if (wtb){ WT_TAB = wtb.getAttribute('data-wttab'); render(1); return true; }
+  var wtk = e.target.closest('[data-wttrack]');
+  if (wtk){ WT_TRACK = wtk.getAttribute('data-wttrack'); render(1); return true; }
   var wtf = e.target.closest('[data-wtf]');
   if (wtf){ WT_F = wtf.getAttribute('data-wtf') || ''; render(1); return true; }
   var wto = e.target.closest('[data-wtopen]');

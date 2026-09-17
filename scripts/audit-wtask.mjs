@@ -241,6 +241,26 @@ T(!!bar.querySelector('[data-wtfile]') && !!bar.querySelector('[data-wtxl]') && 
   T(/fullCalcOnLoad="1"/.test(wbx), 'ويُطلَب من إكسل إعادةُ الحساب عند الفتح');
 }
 
+/* ═══ الترشيحُ بالمسار وحالُ كلِّ مسار (V17.52) ═══ */
+{
+  const D2 = 86400000, T2 = Date.now();
+  const mk = (id, n, track, st, dd) => ({ id, n, track, st, due:new Date(T2 + dd * D2).toISOString().slice(0, 10), who:'أفاقي', at:T2 });
+  w.STATE.wtask = { rows:[
+    mk(1, 'أ', 'مسارُ أ', 'قيد الانتظار', -2), mk(2, 'ب', 'مسارُ أ', 'مكتمل', -9),
+    mk(3, 'ج', 'مسارُ ب', 'جاري العمل', -7), mk(4, 'د', 'مسارُ ب', 'قيد الانتظار', 3) ] };
+  const TR = w.wtTracks();
+  T(TR['مسارُ أ'] && TR['مسارُ أ'].n === 2 && TR['مسارُ أ'].done === 1 && TR['مسارُ أ'].late === 1,
+    'لكلِّ مسارٍ عددُه ومكتملُه ومتأخّرُه: ' + JSON.stringify(TR['مسارُ أ']));
+  w.WT_TRACK = 'مسارُ ب';
+  T(w.wtFiltered().length === 2, 'والترشيحُ به يعرض مهامَّه وحدَها');
+  T(w.wtStats().all === 2 && w.wtStats().late === 1,
+    'وشرائحُ الحالة تُحسَب داخلَه لا على الكلّ: ' + w.wtStats().all + ' منها متأخر ' + w.wtStats().late);
+  w.WT_TRACK = '';
+  T(w.wtFiltered().length === 4, 'ورفعُه يعيد الكلّ');
+  const raw = readFileSync('index.html', 'utf8');
+  T(/data-wttrack=/.test(raw), 'وللمسارات شرائحُها في الشاشة');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 console.log(bad ? `\nجردُ المهام الأسبوعية فشل ✗ (${bad})` : '\nالمهامُّ بطاقاتٌ تُقرأ وتُحدَّث من لوحةٍ واحدة ✅');
 process.exit(bad ? 1 : 0);
