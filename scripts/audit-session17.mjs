@@ -165,6 +165,33 @@ console.log('\n══ ٧ · فهرسُ المهامّ: سريعٌ وصادق ═
   T(!!w.taskKindOf(site.id, 'install'), 'ومهمةٌ كُتبت الآن تُرى فورًا — لا فهرسٌ قديم');
 }
 
+console.log('\n══ ٨ · لوحُ الرسم والترشيحُ بالمسار ══');
+{
+  const raw = readFileSync('index.html', 'utf8');
+  T(/\.map-route-box\{[^}]*z-index:2147483001/.test(raw) && raw.indexOf('.map-route-back{') < 0,
+    'لوحُ الرسم فوق بطاقات الخريطة كلِّها وبلا خلفيةٍ تحجب الضغط');
+  T(/\.map-route-box\.min > \*:not\(\.wt-row\)\{display:none\}/.test(raw), 'ويُطوى بضغطةٍ فيُرى ما تحته');
+  /* الأنواعُ من سجلِّ الأنواع لا من قائمةٍ ثانية */
+  w.goPage('map'); w.render(1); await wait(120);
+  w.routeStart('line'); w.routeAdd(21.36, 39.98); w.routeAdd(21.37, 39.98); await wait(120);
+  const sel = d.querySelector('[data-rt="type"]');
+  const opts = sel ? [...sel.options].map(o => o.value) : [];
+  T(opts.length > 0 && JSON.stringify(opts) === JSON.stringify(Object.keys(w.typesList())),
+    'وأنواعُ المسار من سجلِّ الأنواع نفسِه: ' + opts.join('·'));
+  T(opts.indexOf('AI') < 0 && opts.indexOf('LPR') > -1, 'فلا نوعٌ أُلغي يبقى فيها، وLPR قائم');
+  /* الترشيحُ بالمسار */
+  w.ROUTE.zone = 'عرفات'; w.ROUTE.type = 'ممر'; w.ROUTE.every = 250; w.ROUTE.name = 'مسارُ الاختبار';
+  w.routeSave(); await wait(100);
+  const RT = w.routesList();
+  T(RT['مسارُ الاختبار'] === 5, 'والمسارُ يُشتقُّ من النقاط: ' + JSON.stringify(RT));
+  w.FILT.route = 'مسارُ الاختبار';
+  T(w.catCounts().shown === 5, 'والترشيحُ به يعرض نقاطَه وحدَها: ' + w.catCounts().shown);
+  w.FILT.route = '';
+  T(w.catCounts().shown > 100, 'ورفعُه يعيد الكلّ');
+  T(/FILT = \{ zone:'', type:'', work:'', life:'', route:'' \}/.test(raw),
+    'و«مسح التصفية» يمسح الحالةَ والمسارَ أيضًا — لا يبقى مرشِّحٌ خفيّ');
+}
+
 console.log('\nأخطاءُ المتصفّح: ' + (errs.length ? errs[0] : 'لا'));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

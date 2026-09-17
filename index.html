@@ -354,9 +354,19 @@ input[type="number"]{max-width:140px}
     justify-content:flex-start;align-content:flex-start}
   .map-chip{padding:6px 10px;font-size:12px;min-height:34px;flex:0 0 auto}
 }
-.map-route-box{position:absolute;inset-inline:11px;bottom:84px;z-index:var(--z-map-ui);
-  pointer-events:auto;background:rgba(18,23,28,.96);border:1px solid #2A333C;border-radius:14px;
-  padding:11px 13px;backdrop-filter:blur(6px);max-width:520px;margin-inline-start:auto}
+/* ═══ لوحُ الرسم فوق كلِّ شيءٍ لا بينه (V17.50) ═══
+   كان بطاقةً في طبقة واجهة الخريطة، فبقيت بطاقاتُ الإحصاء وقائمةُ الحالات
+   وأزرارُ الطبقات فوقه تحجب حقولَه وأزرارَ حفظه — وهي في طبقةٍ واحدةٍ معه.
+   صار لوحًا مستقلًّا كنموذج «موقع غير مسجّل»: خلفيةٌ معتمةٌ تُغلق ما تحتها،
+   واللوحُ فوقها بطبقةٍ أعلى — فلا شيءَ يعلوه ولا يُقرَأ نصفُه. */
+/* لا خلفيةَ حاجبة: الخريطةُ تبقى مكشوفةً للضغط أثناء الرسم — واللوحُ وحدَه
+   يعلو على بطاقات الإحصاء والحالات. ويُطوى بضغطةٍ ليُرى ما تحته. */
+.map-route-box.min > *:not(.wt-row){display:none}
+.map-route-box.min{padding:8px 10px}
+.map-route-box{position:fixed;inset-inline:11px;bottom:11px;z-index:2147483001;
+  pointer-events:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:12px 13px;box-shadow:0 -10px 40px rgba(0,0,0,.55);max-width:560px;
+  margin-inline:auto;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
 /* ═══ لوحُ الرسم على الهاتف: شريطٌ لا صفحة (V17.48) ═══
    وُضع اللوحُ ليكون بطاقةً صغيرةً أسفلَ الخريطة، فابتلع الشاشةَ على الهاتف:
    قاعدةُ الشبكة العامة (V17.33) تجعل كلَّ عمودين عمودًا واحدًا، فصارت حقولُه
@@ -365,8 +375,7 @@ input[type="number"]{max-width:140px}
    فصار على الهاتف: حقولٌ في عمودين مضغوطين، وسقفٌ لا يتجاوز ثلث الشاشة مع
    تمريرٍ داخليّ، والأزرارُ العائمةُ تختفي أثناء الرسم فلا تحجب شيئًا. */
 @media (max-width:760px){
-  .map-route-box{inset-inline:8px;bottom:8px;padding:8px 9px;max-height:34vh;overflow-y:auto;
-    -webkit-overflow-scrolling:touch}
+  .map-route-box{inset-inline:8px;bottom:8px;padding:10px;max-height:62vh}
   .map-route-box .grid.cols-2{grid-template-columns:1fr 1fr!important;gap:6px}
   .map-route-box .field{margin:0}
   .map-route-box .field label{font-size:11px;margin:0 0 2px}
@@ -924,7 +933,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.49</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.51</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3771,6 +3780,8 @@ en:{
  'اختر المشعر والنوع':'Choose the site and type', 'مسارٌ بنقاط':'Route of points', 'ارسم نقطتين على الأقل':'Draw at least two points', 'طريق الهجرة · طريق كدانة…':'Hijrah Road · Kudai Road…', 'جارٍ الرسم':'Drawing…', 'نقاطُ الرسم':'Drawn points', 'اسم المسار':'Route name', 'احفظ النقاط':'Save points', 'مسار بنقاط':'Route of points', 'نقطةً أُضيفت على المسار':'points added along the route', 'كلَّ كم مترًا':'Every how many metres',
  'كاميرات الوزارة الذكيّة':'Ministry AI cameras', 'قراءة اللوحات':'Plate reading',
  'المدينة':'Madinah',
+ 'توسيع':'Expand', 'طيّ':'Collapse', 'مساحةٌ بنقاط':'Area of points',
+ 'كل المسارات':'All routes',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6484,6 +6495,8 @@ ur:{
  'اختر المشعر والنوع':'مقام اور قسم منتخب کریں', 'مسارٌ بنقاط':'پوائنٹس کا راستہ', 'ارسم نقطتين على الأقل':'کم از کم دو پوائنٹ کھینچیں', 'طريق الهجرة · طريق كدانة…':'ہجرہ روڈ · کدائی روڈ…', 'جارٍ الرسم':'کھینچا جا رہا ہے…', 'نقاطُ الرسم':'کھینچے گئے پوائنٹس', 'اسم المسار':'راستے کا نام', 'احفظ النقاط':'پوائنٹس محفوظ کریں', 'مسار بنقاط':'پوائنٹس کا راستہ', 'نقطةً أُضيفت على المسار':'پوائنٹس راستے پر شامل', 'كلَّ كم مترًا':'ہر کتنے میٹر',
  'كاميرات الوزارة الذكيّة':'وزارت کے اسمارٹ کیمرے', 'قراءة اللوحات':'پلیٹ ریڈنگ',
  'المدينة':'مدینہ',
+ 'توسيع':'پھیلائیں', 'طيّ':'سمیٹیں', 'مساحةٌ بنقاط':'پوائنٹس کا رقبہ',
+ 'كل المسارات':'تمام راستے',
 }
 };
 
@@ -9967,14 +9980,24 @@ var CAT_DEF = {
   'LPR':    { l:'قراءة اللوحات',   i:'\u{1F694}', c:'#FF6B6B' }
 };
 
-var FILT = { zone:'', type:'', work:'', life:'' };
+/* ═══ الترشيحُ بالمسار (V17.51 · طلبُ الوزارة) ═══
+   النقاطُ المولَّدةُ تحمل اسمَ مسارها (route)، فيُسأل: أرِني «طريق كدانة»
+   وحدَه — كم نقطةً فيه وكم مُسحت. فصار مرشِّحًا كالمشعر والنوع: يُشتقُّ من
+   البيانات فلا يُكتَب بيدٍ، ويظهر متى وُجد مسارٌ واحدٌ على الأقلّ. */
+var FILT = { zone:'', type:'', work:'', life:'', route:'' };
+function routesList(){
+  var r = {};
+  (STATE.sites || []).forEach(function(x){ if (x && x.route) r[x.route] = (r[x.route] || 0) + 1; });
+  return r;
+}
 
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || CO_SEL.length); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.route || CO_SEL.length); }
 
 function filtPass(x){
   if (FILT.zone && x.zone !== FILT.zone) return false;
   if (FILT.type && x.type !== FILT.type) return false;
   if (FILT.work && x.work !== FILT.work) return false;
+  if (FILT.route && x.route !== FILT.route) return false;   /* بالمسار (V17.51) */
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
      كان المرشِّحُ يجيب النقاطَ بلا ما حدث لها، فلا يُعرَف من الخريطة ما تمّ وما بقي */
   if (FILT.life && typeof lifeOf === 'function' && lifeOf(x) !== FILT.life) return false;
@@ -10020,6 +10043,20 @@ function catBar(withWork){
   }).join('');
   h += '</div>';
 
+  /* صفُّ المسارات: يُشتقُّ من النقاط نفسِها فلا يُكتَب بيد، ولا يظهر إن لم يُرسَم مسارٌ بعد */
+  {
+    var RT = routesList(), rks = Object.keys(RT).sort(function(a, b){ return RT[b] - RT[a]; });
+    if (rks.length){
+      h += '<div class="catrow">'
+        + '<button type="button" class="cat' + (FILT.route ? '' : ' on') + '" data-fr="">'
+        +   esc(t('كل المسارات')) + '</button>'
+        + rks.map(function(k){
+            return '<button type="button" class="cat' + (FILT.route === k ? ' on' : '') + '" data-fr="' + esc(k) + '">'
+              + '\u{1F6E3} ' + esc(k) + ' <span class="n">' + nm(RT[k]) + '</span></button>';
+          }).join('')
+        + '</div>';
+    }
+  }
   if (withWork){
     var wks = Object.keys(C.work).sort(function(a,b){ return C.work[b] - C.work[a]; });
     if (wks.length > 1){
@@ -19215,7 +19252,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.49' + '.docx" download>⬇ '
+              +   'V17.51' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -19969,7 +20006,7 @@ function popHtml(){
    يُقال «كلَّ كم مترًا» فتُولَّد النقاطُ على استقامته بالمسافة المطلوبة —
    يُعرَض عددُها قبل الحفظ، ولا تُكتَب إلا بضغطةٍ ثانية. والإحداثياتُ من
    الخريطة لا من تقديرٍ، فما يُرسَم هو ما يُحفَظ. */
-var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'' };
+var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'' }, RT_MIN = false;
 function drawFlag(){
   try { document.body.classList.toggle('drawing', !!(ROUTE && ROUTE.on) || (typeof PIN_ON !== 'undefined' && PIN_ON)); }
   catch (e){ LS_ERR = e; }
@@ -19977,7 +20014,7 @@ function drawFlag(){
 function routeStart(mode){
   if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   ROUTE.on = true; ROUTE.mode = (mode === 'area' ? 'area' : 'line'); ROUTE.pts = []; POP_OPEN = false; PIN_ON = false;
-  drawFlag();
+  RT_MIN = false; drawFlag();
   if (ROUTE.mode === 'area' && ROUTE.every === 250) ROUTE.every = 50;
   toast(t(ROUTE.mode === 'area' ? 'ارسم حدودَ المساحة: اضغط على الخريطة حول الموقف' : 'ارسم المسار: اضغط على الخريطة نقطةً بعد نقطة'));
   render(1);
@@ -23754,16 +23791,20 @@ function mapUIHtml(){
         + '</div></div>' : '')
 
     + (ROUTE.on
-        ? '<div class="map-route-box">'
+        ? '<div class="map-route-box' + (RT_MIN ? ' min' : '') + '">'
           + '<div class="wt-row" style="justify-content:space-between;margin:0 0 6px">'
-          +   '<b>' + esc(t('مسارٌ بنقاط')) + '</b>'
+          +   '<b>' + esc(t(ROUTE.mode === 'area' ? 'مساحةٌ بنقاط' : 'مسارٌ بنقاط')) + '</b>'
+          +   btn(RT_MIN ? '\u25B2 ' + t('توسيع') : '\u25BC ' + t('طيّ'), 'btn-quiet btn-sm', ' data-rtmin="1"')
           +   '<span class="hint" style="margin:0">' + esc(t('نقاطُ الرسم')) + ' <span class="num">' + nm(ROUTE.pts.length) + '</span>'
           +     (ROUTE.pts.length > 1 ? ' \u00b7 ' + nm(routeLen()) + ' ' + esc(t('م')) : '') + '</span></div>'
           + '<div class="grid cols-2" style="gap:6px">'
           +   '<div class="field"><label>' + esc(t('كلَّ كم مترًا')) + '</label>'
           +     '<input type="number" min="25" step="25" value="' + esc(ROUTE.every) + '" data-rt="every"></div>'
           +   '<div class="field"><label>' + esc(t('النوع')) + '</label><select data-rt="type">'
-          +     ['ممر','LPR','AI','كاميرا','محطة','بوابة','مبنى'].map(function(x){
+          /* الأنواعُ من سجلِّ الأنواع الذي تُدار منه الشاشةُ نفسُها — فما يُضاف
+             أو يُحذَف هناك يظهر هنا، ولا تبقى قائمةٌ ثانيةٌ فيها نوعٌ أُلغي
+             (بقي «AI» فيها بعد إلغائه وكاميراتُ الوزارة هي الذكيّة). */
+          +     Object.keys(typesList()).map(function(x){
                   return '<option value="' + esc(x) + '"' + (ROUTE.type === x ? ' selected' : '') + '>' + esc(t(x)) + '</option>'; }).join('')
           +     '</select></div>'
           +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-rt="zone">'
@@ -32907,7 +32948,8 @@ function clickA(e){
   if (e.target.closest('[data-area]')){ if (ROUTE.on && ROUTE.mode === 'area') routeCancel(); else routeStart('area'); return true; }
   if (e.target.closest('[data-rtsave]')){ routeSave(); return true; }
   if (e.target.closest('[data-rtundo]')){ routeUndo(); return true; }
-  if (e.target.closest('[data-rtcancel]')){ routeCancel(); return true; }
+  if (e.target.closest('[data-rtmin]')){ RT_MIN = !RT_MIN; render(1); return true; }
+  if (e.target.closest('[data-rtcancel]')){ RT_MIN = false; routeCancel(); return true; }
   var slg = e.target.closest('[data-sitelog]');
   if (slg){ toast(t('يُجلَب سجلُّ النقطة…')); siteLogFetch(slg.getAttribute('data-sitelog')); return true; }
   var bgf = e.target.closest('[data-bugf]');
@@ -32964,6 +33006,10 @@ function clickA(e){
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fr = e.target.closest('[data-fr]');
+  if (fr){ var rv = fr.getAttribute('data-fr');
+           FILT.route = (FILT.route === rv) ? '' : rv; LIST_SHOWN = LIST_PAGE; render(1);
+           if (CUR === 'map' && MAP) mapPaint(); return true; }
   var fz = e.target.closest('[data-fz]');
   if (fz){ FILT.zone = fz.getAttribute('data-fz'); LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
@@ -33955,7 +34001,9 @@ function onDocClick(e){
   var mf = e.target.closest('[data-mfilt]');
   if (mf){ MAP_FILT_OPEN = mf.getAttribute('data-mfilt') === '1'; render(1); return; }
   if (e.target.closest('[data-mclear]')){
-    FILT = { zone:'', type:'', work:'' }; MAP_FILT_OPEN = false;
+    /* كلُّ المرشِّحات تُمسَح — كان يسقط منها «الحالة» فتبقى الخريطةُ مرشَّحةً
+       بعد «مسح التصفية»، ومعها الآن «المسار» (V17.51) */
+    FILT = { zone:'', type:'', work:'', life:'', route:'' }; MAP_FILT_OPEN = false;
     render(1); if (MAP) mapPaint(); return;
   }
 
