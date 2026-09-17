@@ -933,7 +933,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.53</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.56</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3783,6 +3783,10 @@ en:{
  'توسيع':'Expand', 'طيّ':'Collapse', 'مساحةٌ بنقاط':'Area of points',
  'كل المسارات':'All routes',
  'أُلغي وضعُ النقطة':'Point placement cancelled',
+ 'لا أسماءَ مركَّبة.':'No compound names.', 'مخيماتٌ بلا مربعٍ أو شاخص':'Camps without block or signpost', 'وسمُ الكلِّ «بلا تخصيص»':'Mark all “no allocation”', 'الشاخصُ ما يقرؤه الفنيُّ على الأرض؛ بدونه يبحث بالإحداثية وحدها. تُستكمَل من «تعديل البيانات» في نافذة النقطة قبل إسنادها.':'The signpost is what the technician reads on the ground; without it they search by coordinate alone. Complete it via “Edit data” in the point window before assigning.', 'كلُّ مخيمٍ له مربعٌ وشاخص.':'Every camp has a block and a signpost.', 'أسماءٌ مركَّبة':'Compound names', 'تسقط من تقارير الشركات ولا يصلها إشعارُ مواعيد التركيب. إمّا تُعبَّأ من كشف التخصيص، أو تُوسَم «بلا تخصيص» فتُستثنى صراحةً بدل أن تُحسَب صفرًا صامتًا.':'They drop out of company reports and receive no installation-date notice. Either fill them from the allocation sheet, or mark them “no allocation” so they are excluded explicitly instead of counting as a silent zero.', 'عيوبٌ في البيانات لا في الشيفرة — كلُّ عيبٍ بعدده، وما يُصلَح دفعةً يُسجَّل باسمك ويُزامَن كأيِّ تعديل.':'Data defects, not code defects — each with its count; a bulk fix is recorded under your name and synced like any edit.', 'لا تكرارَ في الإحداثيات.':'No duplicate coordinates.', 'مخيماتٌ بلا شركة':'Camps without a company', 'نقطةً وُسمت «بلا تخصيص»':'points marked “no allocation”', 'اشطر الكلَّ إلى «شركة» و«شركات مشاركة»':'Split all into “Company” and “Partner companies”', 'اسمًا شُطر على':'names split across', 'اسمًا على':'names across', 'نقطتان على إحداثيةٍ واحدة':'Two points on one coordinate', 'الفنيُّ لا يميّزها على الخريطة، والصورةُ قد تُسجَّل على جارتها. تُفصَل إحداثياتُها من «تحريك» في نافذة النقطة — ولا يُصلحها زرٌّ لأن الموضعَ الصحيح ميدانيٌّ لا يُخمَّن.':'The technician cannot tell them apart on the map, and a photo may land on the neighbour. Separate them via “Move” in the point window — no button can fix this, because the correct position is a field fact, not a guess.', 'خانةٌ واحدةٌ تحمل شركتين أو أكثر، فلا تُنسَب نقاطُها لأيٍّ منها في العدّ. الشطرُ يُبقي الأولى في «الشركة» ويضع الباقيَ في «شركات مشاركة» — فتُعَدُّ للأولى ويبقى الباقي مقروءًا.':'One field holding two or more companies, so its points count for none of them. Splitting keeps the first in “Company” and puts the rest in “Partner companies” — counted for the first, the rest still readable.', 'كلُّ مخيمٍ له شركة.':'Every camp has a company.', 'يُعرَض ثلاثون — والباقي في شاشة المواقع بترشيح الشركة.':'Showing thirty — the rest are in Sites, filtered by company.',
+ 'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
+ 'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
+ 'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
 },
 ur:{
  'قارئات أفاقي':'افاقی ریڈرز','حج ١٤٤٨هـ':'حج ١٤٤٨ھ',
@@ -6499,6 +6503,10 @@ ur:{
  'توسيع':'پھیلائیں', 'طيّ':'سمیٹیں', 'مساحةٌ بنقاط':'پوائنٹس کا رقبہ',
  'كل المسارات':'تمام راستے',
  'أُلغي وضعُ النقطة':'پوائنٹ رکھنا منسوخ',
+ 'لا أسماءَ مركَّبة.':'No compound names.', 'مخيماتٌ بلا مربعٍ أو شاخص':'Camps without block or signpost', 'وسمُ الكلِّ «بلا تخصيص»':'Mark all “no allocation”', 'الشاخصُ ما يقرؤه الفنيُّ على الأرض؛ بدونه يبحث بالإحداثية وحدها. تُستكمَل من «تعديل البيانات» في نافذة النقطة قبل إسنادها.':'The signpost is what the technician reads on the ground; without it they search by coordinate alone. Complete it via “Edit data” in the point window before assigning.', 'كلُّ مخيمٍ له مربعٌ وشاخص.':'Every camp has a block and a signpost.', 'أسماءٌ مركَّبة':'Compound names', 'تسقط من تقارير الشركات ولا يصلها إشعارُ مواعيد التركيب. إمّا تُعبَّأ من كشف التخصيص، أو تُوسَم «بلا تخصيص» فتُستثنى صراحةً بدل أن تُحسَب صفرًا صامتًا.':'They drop out of company reports and receive no installation-date notice. Either fill them from the allocation sheet, or mark them “no allocation” so they are excluded explicitly instead of counting as a silent zero.', 'عيوبٌ في البيانات لا في الشيفرة — كلُّ عيبٍ بعدده، وما يُصلَح دفعةً يُسجَّل باسمك ويُزامَن كأيِّ تعديل.':'Data defects, not code defects — each with its count; a bulk fix is recorded under your name and synced like any edit.', 'لا تكرارَ في الإحداثيات.':'No duplicate coordinates.', 'مخيماتٌ بلا شركة':'Camps without a company', 'نقطةً وُسمت «بلا تخصيص»':'points marked “no allocation”', 'اشطر الكلَّ إلى «شركة» و«شركات مشاركة»':'Split all into “Company” and “Partner companies”', 'اسمًا شُطر على':'names split across', 'اسمًا على':'names across', 'نقطتان على إحداثيةٍ واحدة':'Two points on one coordinate', 'الفنيُّ لا يميّزها على الخريطة، والصورةُ قد تُسجَّل على جارتها. تُفصَل إحداثياتُها من «تحريك» في نافذة النقطة — ولا يُصلحها زرٌّ لأن الموضعَ الصحيح ميدانيٌّ لا يُخمَّن.':'The technician cannot tell them apart on the map, and a photo may land on the neighbour. Separate them via “Move” in the point window — no button can fix this, because the correct position is a field fact, not a guess.', 'خانةٌ واحدةٌ تحمل شركتين أو أكثر، فلا تُنسَب نقاطُها لأيٍّ منها في العدّ. الشطرُ يُبقي الأولى في «الشركة» ويضع الباقيَ في «شركات مشاركة» — فتُعَدُّ للأولى ويبقى الباقي مقروءًا.':'One field holding two or more companies, so its points count for none of them. Splitting keeps the first in “Company” and puts the rest in “Partner companies” — counted for the first, the rest still readable.', 'كلُّ مخيمٍ له شركة.':'Every camp has a company.', 'يُعرَض ثلاثون — والباقي في شاشة المواقع بترشيح الشركة.':'Showing thirty — the rest are in Sites, filtered by company.',
+ 'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
+ 'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
+ 'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
 }
 };
 
@@ -9872,6 +9880,60 @@ function siteOvApply(){
   STATE.sites = keep; STATE.hiddenSites = hid;
   SITE_IX = null; SITE_TOK = null;
 }
+/* ═══ تصحيحُ البيانات جماعةً (V17.54) ═══
+   مراجعةُ السجلِّ كشفت أربعةَ عيوبٍ في البيانات لا في الشيفرة: نقاطٌ على
+   إحداثيةٍ واحدة، ونقاطٌ بلا شركة، وأسماءٌ مركَّبةٌ تحمل شركاتٍ عدّة، ومخيماتٌ
+   بلا مربعٍ أو شاخص. تصحيحُها نقطةً نقطةً عملُ أيام، فجُمعت في شاشةٍ واحدةٍ
+   تُظهر كلَّ عيبٍ بعدده وتُصلحه دفعةً — وكلُّ تصحيحٍ يمرُّ بمسار التعديل
+   نفسِه (تجاوزُ الموقع) فيُسجَّل ويُزامَن كأيِّ تعديلٍ يدويّ. */
+function dqDupPos(){
+  var seen = {}, pairs = [];
+  (STATE.sites || []).forEach(function(x){
+    if (!(+x.lat) || !(+x.lng)) return;
+    var k = (+x.lat).toFixed(5) + ',' + (+x.lng).toFixed(5);
+    if (seen[k]) pairs.push([seen[k], x]); else seen[k] = x;
+  });
+  return pairs;
+}
+function dqNoCo(){ return (STATE.sites || []).filter(function(x){ return !String(x.co || '').trim() && x.type === 'مخيم'; }); }
+function dqCompound(){
+  var m = {};
+  (STATE.sites || []).forEach(function(x){
+    var c = String(x.co || '').trim();
+    if (c && /[،,]|\s-\s/.test(c)) (m[c] = m[c] || []).push(x);
+  });
+  return m;
+}
+function dqNoSign(){ return (STATE.sites || []).filter(function(x){ return x.type === 'مخيم' && (!String(x.sq || '').trim() || !String(x.sign || '').trim()); }); }
+/* «بلا تخصيص» وسمٌ صريحٌ يُخرجها من تقارير الشركات بدل أن تُحسَب صفرًا صامتًا */
+function dqMarkNoCo(){
+  if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return; }
+  var L = dqNoCo(), n = 0;
+  L.forEach(function(x){ x.co = 'بلا تخصيص'; siteOvSet(x.id, { co:'بلا تخصيص' }); n++; });
+  SITE_IX = null; statBump();
+  logEvent('تصحيحٌ جماعيّ — وُسمت ' + nm(n) + ' نقطةً «بلا تخصيص»');
+  toast(nm(n) + ' ' + t('نقطةً وُسمت «بلا تخصيص»'));
+  render(1);
+}
+/* الاسمُ المركَّب يُشطَر: أوّلُ شركةٍ تبقى في «الشركة» والباقي في «شركات مشاركة» */
+function dqSplitCo(){
+  if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return; }
+  var M = dqCompound(), n = 0, names = 0;
+  Object.keys(M).forEach(function(c){
+    var parts = c.split(/[،,]|\s-\s/).map(function(p){ return p.trim(); }).filter(Boolean);
+    if (parts.length < 2) return;
+    names++;
+    M[c].forEach(function(x){
+      x.co = parts[0]; x.coAlso = parts.slice(1);
+      siteOvSet(x.id, { co:parts[0], coAlso:parts.slice(1) });
+      n++;
+    });
+  });
+  SITE_IX = null; statBump();
+  logEvent('تصحيحٌ جماعيّ — شُطر ' + nm(names) + ' اسمًا مركَّبًا على ' + nm(n) + ' نقطة');
+  toast(nm(names) + ' ' + t('اسمًا شُطر على') + ' ' + nm(n) + ' ' + t('نقطة'));
+  render(1);
+}
 function siteOvSet(id, patch){
   STATE.siteOv = STATE.siteOv || {};
   STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, patch);
@@ -9967,6 +10029,22 @@ function hiddenSitesCard(){
    شريطان: المشاعرُ ثم الأنواعُ بأيقوناتها وألوانها،
    والضغطُ يُرشِّح الخريطةَ والقائمةَ معًا في اللحظة نفسها. */
 
+/* ═══ شكلُ النقطة على الخريطة (V17.55) ═══
+   كانت كلُّ نقطةٍ دائرةً، والأشكالُ في الأسطورة رموزًا لا تُرى على الخريطة —
+   فنوعان بلونين متقاربين لا يُفرَّق بينهما في الشمس. صار لكلِّ نوعٍ شكلُه:
+   دائرةٌ أو مربّعٌ أو معيّنٌ أو مثلّث، يُرسَم بإزاحةٍ بالبكسل فيثبت حجمُه مع
+   التقريب. والدائرةُ تبقى الأصلَ لأن المخيماتِ ألفٌ وأربعُمئة، ولا يُحسَب
+   المضلَّعُ إلا لما اختير له شكلٌ آخر — وهي عشراتٌ لا آلاف. */
+var SHAPES = [['circle','دائرة'], ['square','مربّع'], ['diamond','معيّن'], ['triangle','مثلّث']];
+function typeShape(ty){ var d = typesList()[ty]; return (d && d.s) || 'circle'; }
+function shapeRing(map, lat, lng, px, shape){
+  var c = map.latLngToContainerPoint([lat, lng]), pts = [];
+  if (shape === 'square') pts = [[-px,-px],[px,-px],[px,px],[-px,px]];
+  else if (shape === 'diamond') pts = [[0,-px*1.25],[px*1.25,0],[0,px*1.25],[-px*1.25,0]];
+  else if (shape === 'triangle') pts = [[0,-px*1.35],[px*1.2,px*0.95],[-px*1.2,px*0.95]];
+  else return null;
+  return pts.map(function(p){ return map.containerPointToLatLng([c.x + p[0], c.y + p[1]]); });
+}
 var CAT_DEF = {
   'مخيم':   { l:'مخيمات',          i:'\u26FA', c:'#3ED598' },
   'ممر':    { l:'ممرات',           i:'\u{1F6E3}', c:'#4FA3FF' },
@@ -15022,6 +15100,16 @@ var BUG_ST_C = { 'جديد':'warn', 'مقبول':'acc', 'مرفوض':'bad', 'م�
    ووقته، ويُرى في سجلِّ البلاغ ولا يُمحى. */
 var BUG_DEC = '', BUG_F = '';
 function bugMayDecide(){ return rankOf(effRole(ROLE)) >= rankOf('admin') || may('settings'); }
+function bugClose(id){
+  if (!bugMayDecide()){ toast(t('قرارُ البلاغات للمدير')); return false; }
+  var b = (STATE.bugs || {})[id]; if (!b) return false;
+  b.status = 'مغلق'; b.closedAt = Date.now(); b.closedBy = STATE.meta.name || ''; b.closeAsk = true;
+  b.log = [{ at:b.closedAt, by:b.closedBy, what:'أُنجز وأُغلق' }].concat(Array.isArray(b.log) ? b.log : []).slice(0, 20);
+  CORE.set('bugs', id, b);
+  logEvent('إغلاقُ بلاغ — ' + String(b.txt || '').slice(0, 50), '', b.closedBy, b.closedAt);
+  toast(t('أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر'));
+  render(1); return true;
+}
 function bugDecide(id, ok, why){
   if (!bugMayDecide()){ toast(t('قرارُ البلاغات للمدير')); return false; }
   var b = (STATE.bugs || {})[id];
@@ -15091,6 +15179,12 @@ function bugsPageHtml(){
                     }).join('') + '</div>'
                   : '')
               /* القرار: يُتَّخذ هنا — وما يُقبَل وحدَه يدخل قائمةَ العمل */
+              /* ما قُبل ونُفِّذ يُغلقه المديرُ من هنا، والجسرُ يغلقه في المستودع (V17.56) */
+              + (bugMayDecide() && (b.status === 'مقبول' || b.status === 'قيد التنفيذ' || b.status === 'مفتوح')
+                  ? '<div class="actions" style="margin:8px 0 0">'
+                    + btn('\u2714 ' + t('أُنجز — أغلق البلاغ'),'btn-secondary btn-sm',' data-bugdone="' + esc(b.id) + '"')
+                    + '</div>'
+                  : '')
               + (bugMayDecide() && (b.status || 'جديد') === 'جديد'
                   ? (BUG_DEC === b.id
                       ? '<div class="field" style="margin:8px 0 0"><label>' + esc(t('سببُ الردّ')) + '</label>'
@@ -19294,7 +19388,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
                  نسخةٍ يقرأ. */
               '<div class="actions">'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-system-'
-              +   'V17.53' + '.docx" download>⬇ '
+              +   'V17.56' + '.docx" download>⬇ '
               +   esc(t('دليل النظام — Word')) + '</a>'
               + '<a class="btn btn-secondary btn-sm" href="docs/nusuk-tech-spec.docx" download>⬇ '
               +   esc(t('المواصفة التقنية')) + '</a>'
@@ -21270,13 +21364,21 @@ function mapPaint(){
          المخيمات»، ولا يُعرَف أين تنتهي واحدةٌ وتبدأ أخرى. فصارت مصمتةً
          بحافّةٍ داكنةٍ رفيعةٍ تفصل كلَّ نقطةٍ عن جارتها — تُرى كنقاطٍ دائمًا،
          ولا تجميعَ ولا إخفاءَ في أيِّ تقريب. */
-      mk = L.circleMarker([x.lat, x.lng], {
-        renderer:MAP_CV,
-        radius: picked ? r + 2.5 : r,
-        color: picked ? '#fff' : (ring || '#0B1220'),
-        weight: picked ? 2 : (ring ? 2 : 0.9),
-        fillColor:col, fillOpacity: picked ? 1 : 0.95
-      });
+      /* شكلُ النوع إن كان غيرَ الدائرة — بإزاحةٍ بالبكسل فيثبت حجمُه (V17.55) */
+      var shp = (typeof typeShape === 'function') ? typeShape(x.type) : 'circle';
+      var poly = (shp !== 'circle') ? shapeRing(MAP, x.lat, x.lng, (picked ? r + 2.5 : r) * 1.15, shp) : null;
+      mk = poly
+        ? L.polygon(poly, { renderer:MAP_CV,
+            color: picked ? '#fff' : (ring || '#0B1220'),
+            weight: picked ? 2 : (ring ? 2 : 0.9),
+            fillColor:col, fillOpacity: picked ? 1 : 0.95 })
+        : L.circleMarker([x.lat, x.lng], {
+            renderer:MAP_CV,
+            radius: picked ? r + 2.5 : r,
+            color: picked ? '#fff' : (ring || '#0B1220'),
+            weight: picked ? 2 : (ring ? 2 : 0.9),
+            fillColor:col, fillOpacity: picked ? 1 : 0.95
+          });
     }
     mk.on('click', (function(id){
       return function(ev){
@@ -22403,10 +22505,25 @@ function unzipKml(buf){
   if (!files.length) return Promise.resolve(null);
   var f2 = files.filter(function(x){ return /doc\.kml$/i.test(x.name); })[0] || files[0];
   if (f2.method === 0) return Promise.resolve(new TextDecoder().decode(f2.bytes));
-  if (typeof DecompressionStream !== 'function') return Promise.resolve(null);
-  var ds = new DecompressionStream('deflate-raw');
-  var st = new Blob([f2.bytes]).stream().pipeThrough(ds);
-  return new Response(st).text();
+  /* ═══ فكُّ الضغط بمسارين (V17.56) ═══
+     الأصلُ DecompressionStream وهو في المتصفّحات الحديثة؛ وما دونها كان
+     يُرَدُّ فارغًا فيُقال «تعذّرت قراءةُ الملف» بلا سبب — والملفُّ سليم.
+     فصار له بديلٌ: مكتبةُ الضغط نفسُها التي يستعملها تصديرُ إكسل. */
+  if (typeof DecompressionStream === 'function'){
+    try {
+      var ds = new DecompressionStream('deflate-raw');
+      var st = new Blob([f2.bytes]).stream().pipeThrough(ds);
+      return new Response(st).text();
+    } catch (e){ LS_ERR = e; }
+  }
+  return jszipLoad().then(function(ok){
+    if (!ok || typeof JSZip === 'undefined') return null;
+    return JSZip.loadAsync(buf).then(function(zip){
+      var name = Object.keys(zip.files).filter(function(k){ return /\.kml$/i.test(k); });
+      var pick = name.filter(function(k){ return /doc\.kml$/i.test(k); })[0] || name[0];
+      return pick ? zip.file(pick).async('string') : null;
+    });
+  }).catch(function(e){ LS_ERR = e; return null; });
 }
 /* قراءةُ الأماكن — Point أوّلًا، وللمضلّع والخطِّ يُؤخَذ مركزُه */
 function kmlPlaces(xml){
@@ -27239,7 +27356,52 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               })))
         : card('', '<p class="hint" style="text-align:center;margin:0">' + esc(t('لا شيءَ بانتظار الرفع — كلُّ ما سُجّل وصل.')) + '</p>'));
   })();
-    if (cur === 'usage') return head + (function(){
+    if (cur === 'dq') return head + (function(){
+    var dup = dqDupPos(), noco = dqNoCo(), comp = dqCompound(), nosign = dqNoSign();
+    var compN = Object.keys(comp).length, compPts = Object.keys(comp).reduce(function(a, k){ return a + comp[k].length; }, 0);
+    var may2 = maySiteEdit();
+    var row = function(x){ return '<button type="button" class="btn btn-quiet btn-sm" data-site="' + esc(x.id) + '" style="width:100%;justify-content:space-between;margin-bottom:4px">'
+      + '<span>' + esc(x.id) + '</span><span class="hint" style="margin:0">' + esc((x.name || '').slice(0, 30)) + '</span></button>'; };
+    return '<p class="lede" style="margin:0 0 12px">' + esc(t('عيوبٌ في البيانات لا في الشيفرة — كلُّ عيبٍ بعدده، وما يُصلَح دفعةً يُسجَّل باسمك ويُزامَن كأيِّ تعديل.')) + '</p>'
+      + stats([['على إحداثيةٍ واحدة', N(dup.length), dup.length ? 'wrn' : 'ok'],
+               ['مخيمٌ بلا شركة', N(noco.length), noco.length ? 'wrn' : 'ok'],
+               ['اسمٌ مركَّب', N(compN), compN ? 'wrn' : 'ok'],
+               ['بلا مربعٍ أو شاخص', N(nosign.length), nosign.length ? 'wrn' : 'ok']])
+
+      + card('\u{1F4CD} ' + t('نقطتان على إحداثيةٍ واحدة') + ' — ' + nm(dup.length),
+          dup.length
+            ? '<p class="hint" style="margin:0 0 8px">' + esc(t('الفنيُّ لا يميّزها على الخريطة، والصورةُ قد تُسجَّل على جارتها. تُفصَل إحداثياتُها من «تحريك» في نافذة النقطة — ولا يُصلحها زرٌّ لأن الموضعَ الصحيح ميدانيٌّ لا يُخمَّن.')) + '</p>'
+              + dup.slice(0, 40).map(function(p){
+                  return '<div class="wt-row" style="justify-content:space-between;margin:0 0 4px">'
+                    + '<span>' + esc(p[0].id) + ' \u2194 ' + esc(p[1].id) + '</span>'
+                    + '<span class="hint num" style="margin:0">' + esc((+p[0].lat).toFixed(5)) + ', ' + esc((+p[0].lng).toFixed(5)) + '</span></div>';
+                }).join('')
+            : '<p class="hint" style="margin:0">' + esc(t('لا تكرارَ في الإحداثيات.')) + '</p>')
+
+      + card('\u{1F3E2} ' + t('مخيماتٌ بلا شركة') + ' — ' + nm(noco.length),
+          (noco.length
+            ? '<p class="hint" style="margin:0 0 8px">' + esc(t('تسقط من تقارير الشركات ولا يصلها إشعارُ مواعيد التركيب. إمّا تُعبَّأ من كشف التخصيص، أو تُوسَم «بلا تخصيص» فتُستثنى صراحةً بدل أن تُحسَب صفرًا صامتًا.')) + '</p>'
+              + noco.slice(0, 30).map(row).join('')
+              + (noco.length > 30 ? '<p class="hint" style="margin:6px 0 0">' + esc(t('يُعرَض ثلاثون — والباقي في شاشة المواقع بترشيح الشركة.')) + '</p>' : '')
+            : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له شركة.')) + '</p>'),
+          (noco.length && may2) ? btn('\u{1F3F7} ' + t('وسمُ الكلِّ «بلا تخصيص»'),'btn-secondary btn-sm',' data-dqnoco="1"') : '')
+
+      + card('\u{1F517} ' + t('أسماءٌ مركَّبة') + ' — ' + nm(compN) + ' ' + t('اسمًا على') + ' ' + nm(compPts) + ' ' + t('نقطة'),
+          (compN
+            ? '<p class="hint" style="margin:0 0 8px">' + esc(t('خانةٌ واحدةٌ تحمل شركتين أو أكثر، فلا تُنسَب نقاطُها لأيٍّ منها في العدّ. الشطرُ يُبقي الأولى في «الشركة» ويضع الباقيَ في «شركات مشاركة» — فتُعَدُّ للأولى ويبقى الباقي مقروءًا.')) + '</p>'
+              + Object.keys(comp).slice(0, 12).map(function(c){
+                  return '<div class="wt-le"><b class="num">' + nm(comp[c].length) + '</b> \u00b7 <span dir="auto">' + esc(c.slice(0, 90)) + '</span></div>';
+                }).join('')
+            : '<p class="hint" style="margin:0">' + esc(t('لا أسماءَ مركَّبة.')) + '</p>'),
+          (compN && may2) ? btn('\u2702 ' + t('اشطر الكلَّ إلى «شركة» و«شركات مشاركة»'),'btn-secondary btn-sm',' data-dqsplit="1"') : '')
+
+      + card('\u{1F3AF} ' + t('مخيماتٌ بلا مربعٍ أو شاخص') + ' — ' + nm(nosign.length),
+          nosign.length
+            ? '<p class="hint" style="margin:0 0 8px">' + esc(t('الشاخصُ ما يقرؤه الفنيُّ على الأرض؛ بدونه يبحث بالإحداثية وحدها. تُستكمَل من «تعديل البيانات» في نافذة النقطة قبل إسنادها.')) + '</p>'
+              + nosign.slice(0, 30).map(row).join('')
+            : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
+  })();
+if (cur === 'usage') return head + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();
@@ -30292,6 +30454,7 @@ var TABS = {
     ['sync','المزامنة والتعارض','🔄','ما يحدث حين يحرّر اثنان نقطةً واحدةً بلا شبكة.'],
     ['vers','نسخ الأجهزة','📱','نسخة التطبيق على كل جهاز — لاكتشاف من علِق على إصدار قديم.'],
     ['usage','الاستهلاك والأداء','📈','كلُّ جهاز: قراءاتُه وطوابيرُه وأعطالُه وزمنُ رسمه وسحبه — ومن سقط منها.'],
+    ['dq','تصحيح البيانات','🧹','أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.'],
     ['retain','عمر البيانات','⏳','ما يبقى وما يُؤرشَف وما يُحذف — وحجم كلٍّ.'],
     ['wipe','تصفير البيانات','🗑','بدايةُ الموسم من صفر — تُمسَح السجلاتُ ويبقى التعريف.'],
     ['hb','صحة الأجهزة','💓','الإنذار المبكر لما رُكّب — يعمل من جهاز المكتب على شبكة الميدان.']],
@@ -30988,7 +31151,7 @@ function typeAdd(){
   var k = g('tyK'), l = g('tyL');
   if (!k){ toast(t('اكتب اسم النوع')); return; }
   if (typesList()[k]){ toast(t('النوعُ موجودٌ بالفعل')); return; }
-  typesList()[k] = { l:l || k, i:g('tyI') || '\u25CF', c:g('tyC') || '#8A939D' };
+  typesList()[k] = { l:l || k, i:g('tyI') || '\u25CF', c:g('tyC') || '#8A939D', s:g('tyS') || 'circle' };
   typesSave();
   logEvent('نوع نقطة جديد — ' + k);
   toast(t('أُضيف النوع'));
@@ -31037,6 +31200,11 @@ function typesCard(){
           +   '<input id="tyL" dir="auto" placeholder="مباني الخدمات"></div>'
           + '<div class="field"><label>' + esc(t('الرمز')) + '</label>'
           +   '<input id="tyI" dir="ltr" placeholder="\u25CF"></div>'
+          + '<div class="field"><label>' + esc(t('اللون')) + '</label>'
+          +   '<input id="tyC" type="color" value="#8A939D"></div>'
+          + '<div class="field"><label>' + esc(t('الشكل على الخريطة')) + '</label><select id="tyS">'
+          +   SHAPES.map(function(sh){ return '<option value="' + esc(sh[0]) + '">' + esc(t(sh[1])) + '</option>'; }).join('')
+          + '</select></div>'
           + '</div>',
           btn('➕ إضافة نوع','btn-primary btn-sm',' data-tyadd="1"'))
       : '')
@@ -32999,6 +33167,8 @@ function clickA(e){
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }
   var trd = e.target.closest('[data-trdel]');
   if (trd){ trialRemove(trd.getAttribute('data-trdel')); return true; }
+  if (e.target.closest('[data-dqnoco]')){ dqMarkNoCo(); return true; }
+  if (e.target.closest('[data-dqsplit]')){ dqSplitCo(); return true; }
   var ulg = e.target.closest('[data-usrlog]');
   if (ulg){ USR_LOG = ulg.getAttribute('data-usrlog'); if (evAll().length < 50) evFetch(false); render(1); return true; }
   if (e.target.closest('[data-ulclose]')){ USR_LOG = ''; render(1); return true; }
@@ -33017,6 +33187,8 @@ function clickA(e){
   if (slg){ toast(t('يُجلَب سجلُّ النقطة…')); siteLogFetch(slg.getAttribute('data-sitelog')); return true; }
   var bgf = e.target.closest('[data-bugf]');
   if (bgf){ BUG_F = bgf.getAttribute('data-bugf'); render(1); return true; }
+  var bdn = e.target.closest('[data-bugdone]');
+  if (bdn){ bugClose(bdn.getAttribute('data-bugdone')); return true; }
   var bok = e.target.closest('[data-bugok]');
   if (bok){ bugDecide(bok.getAttribute('data-bugok'), true, ''); return true; }
   var bdc = e.target.closest('[data-bugdec]');

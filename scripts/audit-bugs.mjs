@@ -125,5 +125,14 @@ T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + 
   T(/if \(!ok && why\.length < 3\)/.test(raw7), 'ولا يُردُّ بلاغٌ بلا سبب');
 }
 
+/* ═══ الإغلاقُ من التطبيق يصل المستودعَ (V17.56) ═══ */
+{
+  const raw = readFileSync('index.html', 'utf8'), sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
+  T(/function bugClose\(id\)/.test(raw) && /b\.closeAsk = true/.test(raw) && /data-bugdone=/.test(raw),
+    'المديرُ يُغلق البلاغَ المنجَز من الشاشة');
+  T(/if \(!b\.gh \|\| !b\.closeAsk\) continue;/.test(sync) && /state:'closed', state_reason:'completed'/.test(sync),
+    'والجسرُ يغلقه في المستودع بمفتاح الخادم ويطفئ الطلب');
+}
+
 console.log(bad ? `\nجردُ البلاغات فشل ✗ (${bad})` : '\nالبلاغُ من داخل النظام — ويفتح نفسَه في المستودع ✅');
 process.exit(bad ? 1 : 0);

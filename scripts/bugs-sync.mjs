@@ -75,6 +75,20 @@ for (const d of snap.docs){
   } catch (e){ console.log('تعذّر فتحُ بلاغ: ' + e.message); }
 }
 
+/* ٣ · ما أغلقه المديرُ في التطبيق — يُغلق في المستودع بمفتاح الخادم (V17.56) */
+for (const d of snap.docs){
+  const b = { id: d.id, ...d.data() };
+  if (!b.gh || !b.closeAsk) continue;
+  try {
+    await gh(`repos/${REPO}/issues/${b.gh}/comments`, { method:'POST',
+      body: JSON.stringify({ body: `أُغلق من التطبيق بواسطة **${b.closedBy || 'المدير'}** — ${new Date(b.closedAt || Date.now()).toISOString()}` }) });
+    await gh(`repos/${REPO}/issues/${b.gh}`, { method:'PATCH', body: JSON.stringify({ state:'closed', state_reason:'completed' }) });
+    await d.ref.update({ closeAsk: false });
+    closed++;
+    console.log(`أُغلق #${b.gh} من التطبيق`);
+  } catch (e){ console.log('تعذّر إغلاقُ بلاغ من التطبيق: ' + e.message); }
+}
+
 /* ٢ · ما أُغلق في المستودع — يُغلق في التطبيق، فالحالةُ واحدة */
 for (const d of snap.docs){
   const b = { id: d.id, ...d.data() };
