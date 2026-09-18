@@ -8,7 +8,7 @@
    — كلَّ ثلاثة أيام، ويُنشَر بلاغًا في المستودع يُقرأ من الهاتف (V17.9).
    يعمل بلا مفتاح القاعدة: يكتب قسمَ الشيفرة ويقول إن الاستعمال غيرُ متاح.
    ═════════════════════════════════════════════════════════════════════════ */
-import { readFileSync, readdirSync, statSync, existsSync } from 'fs';
+import { readFileSync, readdirSync, statSync, existsSync, writeFileSync } from 'fs';
 import { execSync } from 'child_process';
 
 const AR = n => new Intl.NumberFormat('ar-EG').format(Math.round(n || 0));
@@ -164,6 +164,11 @@ console.log(text);
 
 /* ═══ ٥ · النشرُ بلاغًا يُقرأ من الهاتف ═══ */
 const TOKEN = process.env.GITHUB_TOKEN || '', REPO = process.env.GITHUB_REPOSITORY || '';
+/* نصُّ التقرير يُكتَب حيث يُقرأ (V17.65): البلاغُ مكانُه، والبريدُ نسخةٌ منه */
+if (process.env.REPORT_OUT){
+  try { writeFileSync(process.env.REPORT_OUT, title + '\n\n' + text); }
+  catch (e){ console.log('::warning::تعذّر كتابةُ نصِّ التقرير: ' + String(e.message).slice(0, 120)); }
+}
 if (TOKEN && REPO && process.env.PUBLISH === '1'){
   const title = `تقريرُ النظام — ${new Date().toISOString().slice(0, 10)}`;
   const r = await fetch(`https://api.github.com/repos/${REPO}/issues`, {

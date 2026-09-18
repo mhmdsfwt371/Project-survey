@@ -35,4 +35,21 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           PUBLISH: '1'
+          REPORT_OUT: /tmp/report.md
         run: node scripts/report-system.mjs
+
+      # ويصل مَن لا يفتح المستودع: البلاغُ مكانُ التقرير، والبريدُ نسخةٌ منه
+      # لمن يقرأ بريدَه. وما لم تُضبَط أسرارُ البريد لا يُفشَل شيء.
+      - name: التقرير — نسخةٌ بالبريد
+        if: always()
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          [ -s /tmp/report.md ] || { echo "::notice::لا تقريرَ يُرسَل"; exit 0; }
+          npm i nodemailer@^6 --no-save --no-audit --no-fund || exit 0
+          node scripts/mail-send.mjs "نُسُك — تقريرُ النظام $(date -u +%F)" /tmp/report.md

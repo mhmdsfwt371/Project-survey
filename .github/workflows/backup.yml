@@ -94,6 +94,45 @@ jobs:
             echo "encrypted ok — $(du -h backups/latest/backup.enc | cut -f1)"
           fi
 
+      # ═══ بروفةُ الاستعادة — نسخةٌ لا تُفتَح ليست نسخة ═══
+      # تُفَكُّ النسخةُ المشفَّرةُ كلَّ ليلةٍ بالمفتاح نفسِه وتُقرأ أعدادُها: فإن
+      # تبدّل المفتاحُ أو فسد الملفُّ أو خرجت مجموعةٌ فارغةً عُرف الليلةَ لا يومَ
+      # الحاجة. وما يُفَكُّ يبقى في /tmp ولا يقترب من المستودع العام.
+      - name: بروفةُ الاستعادة — تُفَكُّ النسخةُ وتُقرأ
+        env:
+          BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
+        run: |
+          if [ -z "$BACKUP_KEY" ] || [ ! -f backups/latest/backup.enc ]; then
+            echo "::notice::لا نسخةَ مشفَّرةً اليوم — لا بروفةَ استعادة"
+            exit 0
+          fi
+          openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \
+            -in backups/latest/backup.enc -out /tmp/restore-check.json -pass env:BACKUP_KEY
+          node scripts/backup-verify.mjs /tmp/restore-check.json backups/latest/_meta.json | tee -a $GITHUB_STEP_SUMMARY
+          rm -f /tmp/restore-check.json
+
+      # البريدُ لا يُرسَل إلا حين يحتاج الأمرُ يدًا: نسخةٌ لم تُؤخَذ أو بروفةٌ
+      # سقطت. ورسالةٌ يوميةٌ تقول «كلُّ شيءٍ تمام» تُعلِّم صاحبَها ألا يفتحها.
+      - name: بريدٌ إن تعثّرت النسخة
+        if: failure()
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          npm i nodemailer@^6 --no-save --no-audit --no-fund || exit 0
+          printf '%s\n' \
+            "النسخةُ الاحتياطيةُ الليلةَ لم تكتمل." \
+            "" \
+            "الرجاء فتحُ السير ومعرفةُ السبب:" \
+            "https://github.com/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}" \
+            "" \
+            "وما دامت لم تكتمل فآخرُ نسخةٍ صالحةٍ هي نسخةُ الأمس." > /tmp/mail.txt
+          node scripts/mail-send.mjs "نُسُك — النسخةُ الاحتياطيةُ تحتاج نظرة" /tmp/mail.txt
+
       - name: Guard — no plaintext data may be committed
         run: |
           rm -f backups/photos.json
