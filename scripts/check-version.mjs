@@ -28,7 +28,11 @@ function grab(file, re, what){
 }
 
 /* ١ — رقم النسخة في كل ملف */
-const app    = grab('index.html', /نسخة\s*(?:<\/[a-z]+>\s*)?(V\d+\.\d+)/, 'رقم النسخة من الهيدر');
+/* الرقمُ من وسم الرأس نفسِه (V17.64): كان يُلتقَط بأوّل «نسخة V» في الملف،
+   والتعليقاتُ صارت تحمل أرقامَ نسخٍ قبل الرأس — فلو ختم ختّامٌ تعليقًا بدل
+   الوسم قرأ الحارسُ ما لا يراه المستخدم. والوسمُ هو ما تقرؤه appVer() وما
+   يُقارَن به التحديثُ وما يُبنى منه رابطُ دليل النظام. */
+const app    = grab('index.html', /class="ver-tag"[\s\S]{0,240}?>نسخة\s*(V\d+\.\d+)</, 'رقم النسخة من وسم الرأس');
 const cache  = grab('sw.js', /nusuk-survey-v(\d+\.\d+)/, 'سلسلة CACHE');
 const schema = grab('docs/api-schema.json', /"app_version"\s*:\s*"(V\d+\.\d+)"/, 'app_version');
 const sysmd  = grab('docs/system.md', /النسخة\s*`(V\d+\.\d+)`/, 'رقم النسخة');
