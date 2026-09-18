@@ -73,11 +73,17 @@ const NET = ['firestore.googleapis.com', 'identitytoolkit.googleapis.com', 'secu
   'www.gstatic.com', 'cdn.sheetjs.com', 'cdnjs.cloudflare.com',
   /* تجلبها مكتبةُ دخولِ جوجل بنفسها ولا تُذكَر في شيفرتنا — رآها المتصفّحُ
      الحقيقيُّ مرفوضةً في V17.61، فتُكتَب هنا لئلا تُنسى ثانيةً */
-  'apis.google.com', 'content.googleapis.com'];
+  'apis.google.com', 'content.googleapis.com',
+  /* إطارُ إتمام الدخول: يفتحه فايربيز على نطاق المشروع (V17.63) */
+  'project-survey-60600.firebaseapp.com'];
 const noNet = NET.filter(h => !allow('connect-src', h));
 const noScr = ['apis.google.com', 'accounts.google.com', 'www.gstatic.com'].filter(h => !allow('script-src', h));
 T(!noScr.length, 'ومكتباتُ جوجل تُحمَّل: هي تجلب بعضَها بعضًا فالنطاقُ كلُّه مأذون', noScr.join(' · '));
 T(!noNet.length, 'وشبكةُ التطبيق المعروفةُ كلُّها مأذونةٌ بالاسم: ' + NET.length + ' مصدرًا', noNet.join(' · '));
+/* المصادقةُ تفتح إطارَ إتمامِ الدخول على نطاق المشروع — يُفحَص بالاسم (V17.63) */
+const AUTH_DOM = (/authDomain:\s*['"]([^'"]+)['"]/.exec(html) || [])[1] || '';
+T(!!AUTH_DOM && allow('frame-src', AUTH_DOM) && allow('connect-src', AUTH_DOM),
+  'وإطارُ إتمام الدخول مأذونٌ تأطيرًا واتصالًا: ' + AUTH_DOM);
 const TILES = ['tile.openstreetmap.org', 'server.arcgisonline.com'];
 T(TILES.every(h => has('img-src', 'https:') || allow('img-src', h)), 'وبلاطاتُ الخريطة تُرسَم صورًا مأذونةً');
 

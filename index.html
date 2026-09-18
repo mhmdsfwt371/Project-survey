@@ -11,11 +11,14 @@
      سكربتٍ من خارج القائمة لا يعمل ولو وصل إلى الصفحة. والخرائطُ ومحرّكُ
      الثلاثي محليّان في المستودع، وعاملُهما يُبنى من blob فأُذن له وحدَه.
      ويحرسها جردُ سياسة المصادر: كلُّ مصدرٍ في الشيفرة له إذنٌ هنا.
+     والمصادقةُ تُؤطِّر نطاقَ مشروعها (V17.63): فايربيز يفتح إطارًا خفيًّا على
+     project-survey-60600.firebaseapp.com لإتمام الدخول — مصدرٌ ثالثٌ لا
+     تكتبه شيفرتُنا ولا يراه فحصٌ ساكن، وأمسكه المتصفّحُ الحقيقيُّ كذلك.
      ونطاقُ جوجل يُؤذَن له كاملًا (V17.62): مكتبةُ دخولِ جوجل تجلب بنفسها
      apis.google.com — مصدرٌ لا يُذكَر في شيفرتنا فلا يراه فحصٌ ساكن، ورآه
      المتصفّحُ الحقيقيُّ مرفوضًا. فالنطاقُ كلُّه أضيقُ من «أيِّ موقع» وأوسعُ
      من اسمٍ يُنسى. -->
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com https://*.googleapis.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' blob: data: https://*.googleapis.com wss://*.googleapis.com https://*.google.com https://raw.githubusercontent.com https://api.github.com https://tiles.openfreemap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://s3.amazonaws.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com https://*.gstatic.com; frame-src https://*.google.com https://*.googleapis.com; form-action 'self' https://accounts.google.com; base-uri 'self'; object-src 'none'; manifest-src 'self'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com https://*.googleapis.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' blob: data: https://*.googleapis.com wss://*.googleapis.com https://*.google.com https://*.firebaseapp.com https://raw.githubusercontent.com https://api.github.com https://tiles.openfreemap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://s3.amazonaws.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com https://*.gstatic.com; frame-src https://*.google.com https://*.googleapis.com https://*.firebaseapp.com; form-action 'self' https://accounts.google.com; base-uri 'self'; object-src 'none'; manifest-src 'self'">
 <meta name="theme-color" content="#185FA5">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" href="icon-192.png">
@@ -953,7 +956,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.62</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.63</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
