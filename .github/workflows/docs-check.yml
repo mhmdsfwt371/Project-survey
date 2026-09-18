@@ -226,6 +226,8 @@ jobs:
         run: node scripts/audit-site-bleed.mjs
       - name: جرد الإضافة والرسم — من يضيف يقرّر، والمسافةُ بيدك، والمخيمُ بحدوده
         run: node scripts/audit-draw.mjs
+      - name: جرد سياسة المصادر — كلُّ مصدرٍ في الشيفرة له إذنٌ في الوسم
+        run: node scripts/audit-csp.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
