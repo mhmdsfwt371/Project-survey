@@ -1,0 +1,46 @@
+# ═══ نبضُ المشروع — كلَّ صباح ═══
+# سطرٌ قصيرٌ يقول ما ينتظر يدًا اليوم: زيارةٌ تنتظر اعتمادًا، موقعٌ لم يُعتمَد،
+# مهمةٌ أُسندت ولم تتحرّك، بلاغٌ لم يُقرأ. ولا يُرسَل بريدٌ إن لم ينتظر شيء —
+# رسالةٌ يوميةٌ تقول «تمام» تُعلِّم صاحبَها ألا يفتحها.
+name: Project pulse
+on:
+  schedule:
+    - cron: '30 3 * * *'      # ٦:٣٠ صباحًا بتوقيت مكة
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  pulse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: الحزم
+        # التثبيتُ يُعاد ثلاثًا كما في بقية السيور: تعثُّرُ سجلِّ الحزم لحظةً
+        # لا يصحُّ أن يُسقِط نبضًا.
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 nodemailer@^6 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          echo "::warning::تعذّر التثبيتُ — لا نبضَ اليوم"
+          exit 0
+      - name: النبض — يُقرأ من القاعدة
+        id: pulse
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PULSE_OUT: /tmp/pulse.md
+        run: node scripts/pulse.mjs
+      - name: بريدٌ إن كان ثمّة ما ينتظر
+        if: steps.pulse.outputs.hand != '' && steps.pulse.outputs.hand != '0'
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: node scripts/mail-send.mjs "نُسُك — ما ينتظر قرارك اليوم" /tmp/pulse.md
