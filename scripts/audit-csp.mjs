@@ -70,8 +70,13 @@ T(!noFetch.length, 'وكلُّ ما يُطلَب بالشبكة مأذونٌ ل�
 const NET = ['firestore.googleapis.com', 'identitytoolkit.googleapis.com', 'securetoken.googleapis.com',
   'firebaseinstallations.googleapis.com', 'www.googleapis.com', 'drive.google.com', 'accounts.google.com',
   'raw.githubusercontent.com', 'api.github.com', 'tiles.openfreemap.org', 's3.amazonaws.com',
-  'www.gstatic.com', 'cdn.sheetjs.com', 'cdnjs.cloudflare.com'];
+  'www.gstatic.com', 'cdn.sheetjs.com', 'cdnjs.cloudflare.com',
+  /* تجلبها مكتبةُ دخولِ جوجل بنفسها ولا تُذكَر في شيفرتنا — رآها المتصفّحُ
+     الحقيقيُّ مرفوضةً في V17.61، فتُكتَب هنا لئلا تُنسى ثانيةً */
+  'apis.google.com', 'content.googleapis.com'];
 const noNet = NET.filter(h => !allow('connect-src', h));
+const noScr = ['apis.google.com', 'accounts.google.com', 'www.gstatic.com'].filter(h => !allow('script-src', h));
+T(!noScr.length, 'ومكتباتُ جوجل تُحمَّل: هي تجلب بعضَها بعضًا فالنطاقُ كلُّه مأذون', noScr.join(' · '));
 T(!noNet.length, 'وشبكةُ التطبيق المعروفةُ كلُّها مأذونةٌ بالاسم: ' + NET.length + ' مصدرًا', noNet.join(' · '));
 const TILES = ['tile.openstreetmap.org', 'server.arcgisonline.com'];
 T(TILES.every(h => has('img-src', 'https:') || allow('img-src', h)), 'وبلاطاتُ الخريطة تُرسَم صورًا مأذونةً');
