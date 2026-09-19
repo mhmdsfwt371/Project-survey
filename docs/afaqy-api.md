@@ -112,4 +112,22 @@
 
 ---
 
-*آخر تحديث: ٢ أغسطس ٢٠٢٦*
+## ٦. ما تأكّد خارج هذا المشروع — يُبنى عليه (سبتمبر ٢٠٢٦)
+
+> من ربطٍ سابق (بوابةُ العملاء ومساعدُ الواجهات، أغسطس ٢٠٢٦). التفصيلُ والقراراتُ في `docs/integration-myafaqy.md`.
+
+| النظام | البند | القيمة |
+|---|---|---|
+| ماي أفاقي | الواجهة الخلفية | `https://crmbackend.afaqy.sa` — والتدريب `https://trainingbe.icsa.afaqy.sa` |
+| ماي أفاقي | الصيغة والغلاف | `{api}/<Module>/<Action>` · الردُّ `{ data, status, message, success, actualError }` |
+| ماي أفاقي | إنشاءُ مهمة | `POST /Task/AddTask` — `{ title, description, assigneeId, branchId, taskTypeId, customerId, watchList, dueDate, isAssignedToGroup }` |
+| ماي أفاقي | تعليق | `POST /Task/AddComment` |
+| ماي أفاقي | الصيانة | `moduleId = 175` في `ModuleComment/GetComments/{moduleId}/{transactionId}` |
+| أفاقي برو | الواجهة | `https://api.afaqy.sa` — `POST {url}/auth/login` بـ`{"data":{"username","password"}}` → توكن بلا OTP |
+| أفاقي برو | القوائم | `units/lists` بترقيمٍ `{ allCount, filtersCount, resultCount, offset, limit }` |
+
+**قاعدةٌ حاكمة:** لا يُستنتَج مسارٌ من اسم شاشةٍ ولا من مسارٍ يشبهه — المساراتُ الناقصةُ (الأصناف، أوامرُ التركيب، الملفات) تُؤخَذ من `AFAQY-All-APIs.json` عند صاحب المشروع.
+
+---
+
+*آخر تحديث: ١٩ سبتمبر ٢٠٢٦*
