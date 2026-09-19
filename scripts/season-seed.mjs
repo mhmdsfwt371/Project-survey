@@ -64,11 +64,45 @@ for (const k of Object.keys(S)){
   else kept.push(k + ' = ' + cur[k] + ' (مضبوطٌ بيد)');
 }
 
+/* ── التجاربُ: settings/trials — يُضاف ما ليس في السجل بمعرّفه (V17.73) ── */
+let trialsPatch = null, trialsAdded = [];
+try {
+  const TR = JSON.parse(readFileSync(process.env.SEED_TRIALS || 'docs/trials.json', 'utf8'));
+  const rows = Array.isArray(TR.rows) ? TR.rows : [];
+  let curT = {};
+  if (process.env.SEED_DB){ curT = cur.__trials || {}; }
+  else if (process.env.FIREBASE_SERVICE_ACCOUNT){
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin');
+    const d = await admin.firestore().collection('settings').doc('trials').get();
+    curT = d.exists ? (d.data() || {}) : {};
+  }
+  const have = Array.isArray(curT.rows) ? curT.rows : [];
+  const ids = new Set(have.map(r => String(r.id)));
+  const fresh = rows.filter(r => r && r.id && !ids.has(String(r.id))).map(r => ({ ...r, at: r.at || Date.now(), date: r.date || new Date().toISOString().slice(0, 10) }));
+  if (fresh.length){
+    trialsAdded = fresh.map(r => r.id + ' · ' + r.n);
+    trialsPatch = { rows: have.concat(fresh), inCost: !!curT.inCost, at: Date.now(), by: 'season-seed' };
+  }
+} catch (e){ console.log('::warning::ملفُّ التجارب لا يُقرأ: ' + String(e.message).slice(0, 120)); }
+
 console.log('يُملأ (' + filled.length + '):' + (filled.length ? '\n  ' + filled.join('\n  ') : ' لا شيء'));
 console.log('يُترَك كما ضُبط (' + kept.length + '):' + (kept.length ? '\n  ' + kept.join('\n  ') : ' لا شيء'));
-if (!Object.keys(patch).length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
+console.log('تجاربُ تُضاف (' + trialsAdded.length + '):' + (trialsAdded.length ? '\n  ' + trialsAdded.join('\n  ') : ' لا شيء'));
+if (!Object.keys(patch).length && !trialsPatch){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
-patch._by = 'season-seed'; patch._at = Date.now();
-await write(patch);
-console.log('✓ كُتب في settings/points: ' + Object.keys(patch).filter(k => k.charAt(0) !== '_').join(' · '));
+if (Object.keys(patch).length){
+  patch._by = 'season-seed'; patch._at = Date.now();
+  await write(patch);
+  console.log('✓ كُتب في settings/points: ' + Object.keys(patch).filter(k => k.charAt(0) !== '_').join(' · '));
+}
+if (trialsPatch){
+  if (process.env.SEED_DB){ cur.__trials = trialsPatch; writeFileSync(process.env.SEED_DB, JSON.stringify(cur, null, 1)); }
+  else {
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin');
+    await admin.firestore().collection('settings').doc('trials').set(trialsPatch, { merge:true });
+  }
+  console.log('✓ أُضيفت التجاربُ إلى settings/trials: ' + trialsAdded.length);
+}
 process.exit(0);

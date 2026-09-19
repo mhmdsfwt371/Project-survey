@@ -6,7 +6,7 @@ name: Season seed
 on:
   push:
     branches: [main]
-    paths: ['docs/season.json', 'scripts/season-seed.mjs']
+    paths: ['docs/season.json', 'docs/trials.json', 'scripts/season-seed.mjs']
   workflow_dispatch: {}
 permissions:
   contents: read

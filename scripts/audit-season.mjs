@@ -42,10 +42,22 @@ console.log('\n══ قاعدةٌ فارغة ══');
 }
 console.log('\n══ قاعدةٌ ضُبطت بيد ══');
 {
-  const { out, after } = run({ tgtSurvey:20, dueSurvey:1700000000000, warranty:24, avgRooms:{ 'منى':15, 'عرفات':9 }, ph:250 });
+  const { out, after } = run({ tgtSurvey:20, dueSurvey:1700000000000, warranty:24, avgRooms:{ 'منى':15, 'عرفات':9 }, ph:250,
+                               __trials:{ rows:[{ id:'TR-001' }, { id:'TR-002' }, { id:'TR-003' }, { id:'TR-004' }], inCost:false } });
   T(after.tgtSurvey === 20 && after.warranty === 24 && after.dueSurvey === 1700000000000, 'المضبوطُ بيدٍ لا يُمَسّ');
   T(after.avgRooms['منى'] === 15 && after.avgRooms['عرفات'] === 9, 'ولا مفتاحُ الخريطة المضبوط');
   T(after.ph === 250 && /لا شيءَ يُكتَب/.test(out), 'وما ليس في الملف لا يُقرَب — ولا كتابةَ حين لا فراغ');
+}
+console.log('\n══ التجاربُ تُضاف بمعرّفها ولا تتكرّر ══');
+{
+  const { out, after } = run({});
+  const rows = after.__trials && after.__trials.rows || [];
+  T(rows.length === 4 && rows.every(r => r.gw && r.sn && r.snN === 4 && r.date), 'الأربعُ تُضاف بعُدّتها وتاريخٍ لا فراغ');
+  const { after: again } = run(after);
+  T((again.__trials.rows || []).length === 4 && /تجاربُ تُضاف \(0\)/.test(''+run(again).out), 'وتشغيلٌ ثانٍ لا يكرّرها');
+  const { after: kept } = run({ __trials:{ rows:[{ id:'TR-002', n:'مُعدَّلةٌ بيد', gw:'X' }], inCost:true } });
+  const r2 = kept.__trials.rows.filter(r => r.id === 'TR-002')[0];
+  T(r2.n === 'مُعدَّلةٌ بيد' && kept.__trials.rows.length === 4 && kept.__trials.inCost === true, 'والمعدَّلُ بيدٍ لا يُمَسُّ ومفتاحُ التكاليف يبقى');
 }
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);

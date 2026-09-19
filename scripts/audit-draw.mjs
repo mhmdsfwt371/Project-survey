@@ -342,6 +342,28 @@ console.log('\n══ ٧ · مشعرٌ جديدٌ ونوعٌ جديدٌ يظهر
   w.typeDel('عدّاد بشري');
 }
 
+console.log('\n══ ٨ · التجربةُ عُدّةٌ في موضعٍ تنتهي بقرار (V17.73) ══');
+{
+  setRole('engineer');
+  w.goPage('trials'); w.render(1); await wait(80);
+  const g = id => d.getElementById(id);
+  T(!!g('trGw') && !!g('trSn') && !!g('trWhere') && !!g('trOut') && !!g('trRep'), 'النموذجُ يسأل عن البوابة والحساس والموضع والنتيجة والتقرير');
+  g('trN').value = 'تجربةُ اختبار'; g('trGw').value = 'Milesight'; g('trGwN').value = '1'; g('trSn').value = 'EM300'; g('trSnN').value = '4';
+  g('trWhere').value = 'مقرُّ الوزارة'; g('trOut').value = 'ناجحة'; g('trRep').value = 'https://drive.google.com/x';
+  const nT = w.trialRows().length; w.trialAdd(); await wait(60);
+  const r = w.trialRows()[0];
+  T(w.trialRows().length === nT + 1 && r.gw === 'Milesight' && r.snN === 4 && r.out === 'ناجحة' && r.where === 'مقرُّ الوزارة', 'وتُحفَظ التجربةُ بعُدّتها وموضعها ونتيجتها');
+  const h = d.getElementById('content').innerHTML;
+  T(h.indexOf('data-trph="' + r.id + '"') > -1 && h.indexOf('href="https://drive.google.com/x"') > -1, 'وبطاقتُها تحمل زرَّ الصورة ورابطَ التقرير');
+  g('trN').value = 'بلا رابط'; g('trRep').value = 'drive.google.com/y';
+  toasts.length = 0; w.trialAdd();
+  T(/https/.test(lastToast()) && w.trialRows().length === nT + 1, 'ورابطٌ بلا https يُرفَض');
+  const qn = w.PHOTO_Q.length;
+  w.photoQueue('TRIAL-' + r.id, 'trial', 'data:image/jpeg;base64,xx');
+  T(w.PHOTO_Q.length === qn + 1 && w.trialKitHtml(r, true).indexOf('\u{1F4F7} ' + w.nm(1)) > -1, 'وصورةُ التجربة تدخل طابورَ الرفع نفسَه وتُعَدُّ على البطاقة');
+  w.PHOTO_Q.pop(); w.trialRows().shift();
+}
+
 w.toast = realToast;
 console.log('\nأخطاءُ المتصفّح: ' + (errs.length ? errs[0] : 'لا'));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح');
