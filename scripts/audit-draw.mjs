@@ -364,6 +364,14 @@ console.log('\n══ ٨ · التجربةُ عُدّةٌ في موضعٍ تنت
   w.PHOTO_Q.pop(); w.trialRows().shift();
 }
 
+console.log('\n══ ٩ · شرائحُ الميدان بترتيب دورة النقطة (V17.74) ══');
+{
+  const ids = w.TABS.survey.map(x => x[0]);
+  T(ids.slice(0, 7).join(',') === 'survey,svappr,solution,minappr,ready,qa,ncr', 'المسحُ فالاعتمادُ فالحلُّ فالوزارةُ فالجاهزُ فالتدقيقُ فعدمُ المطابقة: ' + ids.slice(0, 7).join(' ← '));
+  T(ids.slice(7).every(k => ['chal', 'chalm', 'stuck', 'idle'].indexOf(k) > -1), 'وما خرج عن الدورة بعدها لا بينها');
+  T(w.tabCur('survey') === 'survey', 'والافتراضيُّ يبقى المسح');
+}
+
 w.toast = realToast;
 console.log('\nأخطاءُ المتصفّح: ' + (errs.length ? errs[0] : 'لا'));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح');
