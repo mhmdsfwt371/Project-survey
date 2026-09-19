@@ -1,0 +1,57 @@
+# ═══ جسرُ ماي أفاقي — كلَّ ربع ساعة ═══
+# ما أُسند في نُسُك يُنشأ هناك، وما أُقفل هناك يُقفَل هنا، والأصنافُ تُملأ.
+# الهاتفُ لا يكلّم الواجهة: الجسرُ هنا بحساب تكاملٍ من الأسرار. وما لم يُضبَط
+# لا يُنفَّذ ولا يُخمَّن — يُكتَب في الملخّص ما ينقص.
+name: myafaqy bridge
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  bridge:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          [ -z "${{ vars.MYAFAQY_BASE }}" ] && { echo "::notice::الجسرُ غيرُ مضبوطٍ بعد — MYAFAQY_BASE فارغ"; exit 0; }
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت"; sleep $((i*15))
+          done
+          exit 1
+      - name: الجسر
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          MYAFAQY_TOKEN: ${{ secrets.MYAFAQY_TOKEN }}
+          MYAFAQY_USER: ${{ secrets.MYAFAQY_USER }}
+          MYAFAQY_PASS: ${{ secrets.MYAFAQY_PASS }}
+          MYAFAQY_BASE: ${{ vars.MYAFAQY_BASE }}
+          MYAFAQY_LOGIN_PATH: ${{ vars.MYAFAQY_LOGIN_PATH }}
+          MYAFAQY_TOKEN_PATH: ${{ vars.MYAFAQY_TOKEN_PATH }}
+          MYAFAQY_TASK_ADD_PATH: ${{ vars.MYAFAQY_TASK_ADD_PATH }}
+          MYAFAQY_COMMENT_PATH: ${{ vars.MYAFAQY_COMMENT_PATH }}
+          MYAFAQY_TASK_ID_PATH: ${{ vars.MYAFAQY_TASK_ID_PATH }}
+          MYAFAQY_TASK_TYPE_ID: ${{ vars.MYAFAQY_TASK_TYPE_ID }}
+          MYAFAQY_CUSTOMER_ID: ${{ vars.MYAFAQY_CUSTOMER_ID }}
+          MYAFAQY_BRANCH_ID: ${{ vars.MYAFAQY_BRANCH_ID }}
+          MYAFAQY_ASSIGNEE_MAP: ${{ vars.MYAFAQY_ASSIGNEE_MAP }}
+          MYAFAQY_ASSIGN_GROUP: ${{ vars.MYAFAQY_ASSIGN_GROUP }}
+          MYAFAQY_TASK_GET_PATH: ${{ vars.MYAFAQY_TASK_GET_PATH }}
+          MYAFAQY_TASK_GET_METHOD: ${{ vars.MYAFAQY_TASK_GET_METHOD }}
+          MYAFAQY_STATUS_PATH: ${{ vars.MYAFAQY_STATUS_PATH }}
+          MYAFAQY_CLOSED_VALUES: ${{ vars.MYAFAQY_CLOSED_VALUES }}
+          MYAFAQY_ITEMS_PATH: ${{ vars.MYAFAQY_ITEMS_PATH }}
+          MYAFAQY_ITEMS_METHOD: ${{ vars.MYAFAQY_ITEMS_METHOD }}
+          MYAFAQY_ITEMS_BODY: ${{ vars.MYAFAQY_ITEMS_BODY }}
+          MYAFAQY_ITEMS_JSON_PATH: ${{ vars.MYAFAQY_ITEMS_JSON_PATH }}
+          MYAFAQY_ITEM_ID: ${{ vars.MYAFAQY_ITEM_ID }}
+          MYAFAQY_ITEM_NAME: ${{ vars.MYAFAQY_ITEM_NAME }}
+          MYAFAQY_ITEM_PRICE: ${{ vars.MYAFAQY_ITEM_PRICE }}
+          MYAFAQY_ITEM_UNIT: ${{ vars.MYAFAQY_ITEM_UNIT }}
+        run: node scripts/myafaqy-bridge.mjs

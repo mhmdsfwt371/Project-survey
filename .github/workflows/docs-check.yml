@@ -234,6 +234,8 @@ jobs:
         run: node scripts/audit-svdash.mjs
       - name: جرد تغذية الموسم — يملأ الفارغَ ولا يمسُّ المضبوط
         run: node scripts/audit-season.mjs
+      - name: جرد جسر ماي أفاقي — يُنشئ مرةً، ويُقفل من هناك، ولا يُخمَّن مسار
+        run: node scripts/audit-bridge.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
