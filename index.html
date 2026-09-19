@@ -956,7 +956,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.71</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.72</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -12955,8 +12955,9 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('هوية الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('المشعر')) + ' <span class="req">*</span></label>'
-          + '<select data-ns="zone">' + ['منى','عرفات','مزدلفة'].map(function(z){
-              return '<option' + (NEWSITE.zone===z?' selected':'') + '>' + esc(z) + '</option>'; }).join('')
+          + '<select data-ns="zone">' + zoneOptions().map(function(z){
+              /* القيمةُ المفتاحُ العربيُّ والمعروضُ ترجمتُه (V17.72) */
+              return '<option value="' + esc(z) + '"' + (NEWSITE.zone===z?' selected':'') + '>' + esc(t(z)) + '</option>'; }).join('')
           + '</select><p class="hint">' + esc(t('اختر المنطقة التي يتبعها الموقع')) + '</p></div>'
 
           + '<div class="field"><label>' + esc(t('نوع الموقع')) + ' <span class="req">*</span></label>'
@@ -17198,7 +17199,7 @@ function nsSave(){
   /* الصورةُ إلزاميةٌ لمن يقف عند النقطة — والمكتبُ لم يقف (V17.57) */
   if (!office && !NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
 
-  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[NEWSITE.zone] || 'NEW';
+  var pre = zoneCode(NEWSITE.zone);
   var tp  = typeCode(NEWSITE.type);
   var n = STATE.sites.filter(function(x){ return x.id.indexOf('NSK-' + pre + '-' + tp + '-N') === 0; }).length + 1;
   var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
@@ -20515,7 +20516,7 @@ function areaCampSave(){
     return x.id;
   }
   var zone = ROUTE.zone || 'منى';
-  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD' }[zone] || 'NEW';
+  var pre = zoneCode(zone);
   var id = 'NSK-' + pre + '-CMP-A' + String(stamp).slice(-6);
   var c = polyCentroid(P);
   var name = String(ROUTE.name || '').trim()
@@ -20544,8 +20545,7 @@ function routeSave(){
   if (ROUTE.mode !== 'area' && pts.length < 2){ toast(t('ارسم نقطتين على الأقل')); return; }
   if (!ROUTE.zone || !ROUTE.type){ toast(t('اختر المشعر والنوع')); return; }
   var base = String(ROUTE.name || '').trim() || (t(ROUTE.type) + ' ' + t(ROUTE.zone));
-  var pre = 'NSK-' + (ROUTE.zone === 'منى' ? 'MIN' : ROUTE.zone === 'عرفات' ? 'ARF' : ROUTE.zone === 'مزدلفة' ? 'MUZ'
-            : ROUTE.zone === 'مكة' ? 'MAK' : 'MAD') + '-' + ({ 'LPR':'LPR', 'كاميرا':'CAM', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' }[ROUTE.type] || 'COR') + '-';
+  var pre = 'NSK-' + zoneCode(ROUTE.zone) + '-' + ({ 'LPR':'LPR', 'كاميرا':'CAM', 'جيت واي':'GTW', 'حساس حرارة ورطوبة':'THS' }[ROUTE.type] || 'COR') + '-';
   var n = 0, stamp = Date.now(), made = [];
   pts.forEach(function(p, i){
     var id = pre + String(stamp).slice(-6) + '-' + String(i + 1);
@@ -22950,7 +22950,7 @@ function kmiApply(){
   if (!KMI || !may('edit')) return;
   var take = KMI.rows.filter(function(r){ return r.take; });
   if (!take.length){ toast(t('لم تُحدَّد نقطةٌ للإضافة')); return; }
-  var pre = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ' }[KMI_ZONE] || 'NEW';
+  var pre = zoneCode(KMI_ZONE);
   var tp  = typeCode(KMI_TYPE);
   var seq = STATE.sites.filter(function(x){ return String(x.id).indexOf('NSK-' + pre + '-' + tp + '-K') === 0; }).length;
   var n = 0;
@@ -22975,7 +22975,7 @@ function kmiApply(){
 }
 function kmiCard(){
   if (!may('edit')) return '';
-  var ZS = ['منى','عرفات','مزدلفة','مكة','المدينة'], TS = Object.keys(typesList());   /* من سجلِّ الأنواع لا قائمةٍ ثانية (V17.60) */
+  var ZS = zoneOptions(), TS = Object.keys(typesList());   /* من سجلَّي المشاعر والأنواع لا قوائمَ ثانية (V17.60/V17.72) */
   var head = card('استيراد KMZ / KML من جوجل إيرث',
       '<p class="hint" style="margin:0 0 10px">'
     + esc(t('يُقرأ الملفُّ ويُعايَن قبل أن يُكتب شيء. النقطةُ التي تبعد خمسةَ عشرَ مترًا فأقلَّ عن نقطةٍ عندنا هي هي — مهما اختلف الاسم — فلا تُضاف. وما تجاوزها يُضاف بمعرِّفٍ من نظامنا وبالتصنيف الذي تختاره.'))
@@ -24325,7 +24325,7 @@ function routePanelHtml(){
     +     Object.keys(T).map(function(x){ return opt(x, typeShort(x), ROUTE.type); }).join('')
     +     '</select></div>'
     +   '<div class="field"><label>' + esc(t('المشعر')) + '</label><select data-rt="zone">'
-    +     ['منى','عرفات','مزدلفة','مكة','المدينة'].map(function(x){ return opt(x, t(x), ROUTE.zone); }).join('')
+    +     zoneOptions().map(function(x){ return opt(x, t(x), ROUTE.zone); }).join('')
     +     '</select></div>'
     +   '<div class="field"><label>' + esc(t(camp ? 'اسم المخيم' : 'اسم المسار')) + '</label>'
     +     '<input dir="auto" value="' + esc(ROUTE.name) + '" data-rt="name" placeholder="'
@@ -32523,6 +32523,27 @@ function zoneList(){
   var out = [];
   (STATE.sites || []).forEach(function(x){ if (x.zone && out.indexOf(x.zone) < 0) out.push(x.zone); });
   return out.sort(function(a, b){ return String(a).localeCompare(b, 'ar'); });
+}
+/* ═══ المشاعرُ من مصدرٍ واحد (V17.72) ═══
+   كانت قوائمُ المشعر مكتوبةً بيد في ثلاثة مواضع — نموذجُ الموقع الجديد
+   (ثلاثة مشاعر) ولوحُ الرسم والاستيرادُ (خمسة) — فمن أعلن مشعرًا جديدًا في
+   مصفوفة الأوزان لم يجده حين يضيف نقطة. فصارت القائمةُ تُشتقُّ من الأساسية
+   ومما أُعلن ومما في المواقع، ورمزُ المعرِّف من دالةٍ واحدة. */
+function zoneOptions(){
+  var out = MX_ZONES.slice();
+  var add = function(z){ z = String(z || '').trim(); if (z && out.indexOf(z) < 0) out.push(z); };
+  ['مكة', 'المدينة'].forEach(add);
+  zoneList().forEach(add);
+  /* المعلَنُ في مصفوفة الأوزان يُخزَّن «مشعر|نوع» */
+  (Array.isArray(CFG.mxExtra) ? CFG.mxExtra : []).forEach(function(x){ add(String(x || '').split('|')[0]); });
+  return out;
+}
+var ZONE_CODE = { 'منى':'MIN', 'عرفات':'ARF', 'مزدلفة':'MUZ', 'مكة':'MAK', 'المدينة':'MAD' };
+function zoneCode(zone){
+  if (ZONE_CODE[zone]) return ZONE_CODE[zone];
+  var en = (D.en && D.en[zone]) || '';
+  var a = String(en).replace(/[^A-Za-z]/g, '').toUpperCase();
+  return a ? a.slice(0, 3) : 'NEW';
 }
 function zoneRename(oldName, newName){
   if (!may('settings')){ toast(t('المشاعرُ للمهندس وحده')); return; }

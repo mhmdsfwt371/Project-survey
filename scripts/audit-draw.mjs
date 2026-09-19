@@ -309,6 +309,39 @@ console.log('\n══ ٦ · القوائمُ بالاسم والرموز وال�
     'والنصوصُ الجديدةُ مترجمةٌ إنجليزيًّا وأرديًّا: ' + en.slice(0, 3).join(' · '));
 }
 
+console.log('\n══ ٧ · مشعرٌ جديدٌ ونوعٌ جديدٌ يظهران حيث تُضاف النقطة (V17.72) ══');
+{
+  setRole('engineer');
+  const before = w.zoneOptions().slice();
+  T(before.indexOf('منى') > -1 && before.indexOf('عرفات') > -1 && before.indexOf('مكة') > -1, 'القائمةُ الواحدةُ تحمل الأساسيةَ والمعروفة: ' + before.length);
+  w.mxDeclare('جدة', 'مخيم');
+  const after = w.zoneOptions();
+  T(after.indexOf('جدة') > -1 && after.length === before.length + 1, 'مشعرٌ يُعلَن في مصفوفة الأوزان يظهر في القائمة');
+  freshNS({ lat:21.5, lng:39.2, zone:'جدة', type:'مخيم' });
+  w.CUR = 'newsite'; w.render(1); await wait(60);
+  const zs = [...d.querySelectorAll('[data-ns="zone"] option')].map(o => o.value || o.textContent);
+  T(zs.indexOf('جدة') > -1, 'وفي نموذج الموقع الجديد');
+  w.goPage('map'); w.render(1); await wait(60); w.routeStart('line'); w.render(1); await wait(40);
+  T(!!d.querySelector('[data-rt="zone"] option[value="جدة"]'), 'وفي لوح الرسم');
+  w.routeCancel();
+  T(w.zoneCode('منى') === 'MIN' && w.zoneCode('مكة') === 'MAK' && /^[A-Z]{3}$/.test(w.zoneCode('جدة')),
+    'ورمزُ المعرِّف من دالةٍ واحدة — وللمجهول رمزٌ صالحٌ لا فراغ: ' + w.zoneCode('جدة'));
+  freshNS({ lat:21.5, lng:39.2, zone:'جدة', type:'جيت واي' }); w.NEWSITE.photos[0] = { size:10, d:'data:image/jpeg;base64,xx' };
+  const nB = w.STATE.sites.length; w.nsSave(); await wait(40);
+  const made = newest();
+  T(w.STATE.sites.length === nB + 1 && made.zone === 'جدة' && made.id.indexOf('NSK-' + w.zoneCode('جدة') + '-') === 0, 'وتُحفَظ النقطةُ في المشعر الجديد بمعرِّفٍ برمزه: ' + made.id);
+  w.ASN_OPEN = false; w.selClear();
+  /* نوعٌ جديدٌ من شاشة الأنواع يصل نموذجَ الإضافة والأسطورةَ والخريطة */
+  const e1 = { tyK:'عدّاد بشري', tyL:'عدّادات بشرية', tyI:'', tyC:'#00AA88', tyS:'triangle' };
+  for (const k of Object.keys(e1)){ const el = d.createElement('input'); el.id = k; el.value = e1[k]; d.body.appendChild(el); }
+  w.typeAdd();
+  for (const k of Object.keys(e1)){ const el = d.getElementById(k); if (el) el.remove(); }
+  freshNS({ lat:21.42, lng:39.88 }); w.CUR = 'newsite'; w.render(1); await wait(60);
+  T(!!d.querySelector('[data-ns="type"] option[value="عدّاد بشري"]'), 'النوعُ المضافُ في نموذج الموقع الجديد');
+  T(w.legendRows().indexOf('عدّاد بشري') > -1 && w.mapShapeOf('عدّاد بشري') === 'triangle', 'وفي الأسطورة بشكله الذي يُرسَم به');
+  w.typeDel('عدّاد بشري');
+}
+
 w.toast = realToast;
 console.log('\nأخطاءُ المتصفّح: ' + (errs.length ? errs[0] : 'لا'));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح');
