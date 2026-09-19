@@ -33,24 +33,40 @@ d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true 
 await wait(1600);
 
 /* ── بياناتٌ معلومةُ الجواب: ثلاثةُ مخيماتٍ وممرٌّ ونقطةٌ لم تُزر ─────────── */
-const camps = w.STATE.sites.filter(x => x.type === 'مخيم').slice(0, 4);
+const mina = w.STATE.sites.filter(x => x.type === 'مخيم' && x.zone === 'منى');
+const araf = w.STATE.sites.filter(x => x.type === 'مخيم' && x.zone === 'عرفات');
+const camps = mina.slice(0, 4);
+const noCnt = mina[4], noCntAr = araf[0];                         /* بلا عدٍّ في منى وفي عرفات */
+[noCnt, noCntAr].forEach(x => { if (x) x.tents = ''; });
 const cor   = w.STATE.sites.filter(x => x.type === 'ممر')[0];
 const rec = (id, o) => { w.STATE.recs[id] = Object.assign({ id, at:Date.now(), by:'أحمد', access:'تم الوصول' }, o); };
 rec(camps[0].id, { chals:['لا توجد تحديات'], tents:'40' });                       /* نظيفٌ · ٤٠ */
 rec(camps[1].id, { chals:['العارضة الحديدية ناقصة أو غير مكتملة'], tents:'25' }); /* عارضة · ٢٥ */
 rec(camps[2].id, { chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا جديدًا', 'ارتفاع صعب الوصول'], tents:'10' });
 if (cor) rec(cor.id, { chals:[] });                                              /* ممرٌّ نظيف */
+rec(noCnt.id, { chals:[] });                                                      /* مخيمُ منى بلا عدد → ١٢ مقدَّرة */
+if (noCntAr) rec(noCntAr.id, { chals:[] });                                       /* مخيمُ عرفات بلا عدد → لا تقدير */
 const unseen = camps[3];                                                          /* لم تُزر */
 
 console.log('\n══ ١ · ما لم يُزَر لا يُعَدّ، و«لا توجد تحديات» ليست تحدّيًا ══');
 {
   const R = w.svdRows();
   const ids = R.map(o => o.x.id);
-  T(ids.length === (cor ? 4 : 3) && ids.indexOf(unseen.id) < 0, 'يُعَدُّ ما سُجِّلت زيارتُه وحدَه: ' + ids.length);
-  T(R.filter(o => !o.ch.length).length === (cor ? 2 : 1), 'و«لا توجد تحديات» تُقرأ نظافةً لا تحدّيًا');
+  const expect = 3 + (cor ? 1 : 0) + 1 + (noCntAr ? 1 : 0);
+  T(ids.length === expect && ids.indexOf(unseen.id) < 0, 'يُعَدُّ ما سُجِّلت زيارتُه وحدَه: ' + ids.length);
+  T(R.filter(o => !o.ch.length).length === expect - 2, 'و«لا توجد تحديات» تُقرأ نظافةً لا تحدّيًا');
   T(R.filter(o => o.ch.length).length === 2, 'وذو التحدي يُفرَز: ٢');
   T(R.filter(o => o.metal).length === 2, 'والهيكلُ والعارضةُ يُجمَعان في بابٍ واحد: ٢');
-  T(R.filter(o => o.camp).reduce((a, o) => a + o.rooms, 0) === 75, 'والغرفُ تُجمَع من عدِّ الميدان: ٧٥');
+  const rmMina = R.filter(o => o.x.id === noCnt.id)[0], rmAr = noCntAr && R.filter(o => o.x.id === noCntAr.id)[0];
+  T(rmMina.rooms === 12 && rmMina.src === 'avg', 'ومخيمُ منى بلا عدٍّ يُقدَّر باثنتي عشرة غرفة');
+  T(!noCntAr || (rmAr.rooms === 0 && rmAr.src === 'none'), 'ومخيمُ عرفات بلا عدٍّ لا يُقدَّر — المتوسطُ لمنى وحدَها');
+  T(R.filter(o => o.x.id === camps[0].id)[0].src === 'field', 'وما عدَّه الميدانُ مصدرُه الميدان');
+  T(R.filter(o => o.camp).reduce((a, o) => a + o.rooms, 0) === 75 + 12, 'والغرفُ تُجمَع: ٧٥ معدودةً + ١٢ مقدَّرة');
+  const NC = w.SVD_CARDS.filter(c => c.k === 'nocount')[0];
+  T(R.filter(NC.f).some(o => o.x.id === noCnt.id) && !R.filter(NC.f).some(o => o.x.id === camps[0].id), 'وبطاقةُ «بلا عدِّ غرف» تفرز المقدَّرَ ليُعَدَّ في الزيارة القادمة');
+  const M = w.svdMina();
+  T(M.length === mina.length && M.every(o => o.rooms > 0) && M.filter(o => o.x.id === camps[1].id)[0].rooms === 25,
+    'وتقديرُ الحساسات يشمل مخيماتِ منى كلَّها: المعدودُ بعدِّه وغيرُه بالمتوسط (' + M.length + ' مخيمًا)');
   T(w.svdRows().filter(o => o.x.id === camps[2].id)[0].ch.length === 2, 'والنقطةُ تحمل تحدّيَيها معًا');
 }
 
@@ -62,7 +78,7 @@ console.log('\n══ ٢ · الشاشةُ تعرض البطاقات وتفتح 
   tab().dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);
   let h = d.getElementById('content').innerHTML;
-  T((h.match(/data-svd="/g) || []).length === 6, 'ستُّ بطاقاتٍ لكلِّ سؤالٍ رقمُه');
+  T((h.match(/data-svd="/g) || []).length === 8, 'ثماني بطاقاتٍ لكلِّ سؤالٍ رقمُه');
   T(h.indexOf('data-fly="') < 0, 'ولا قائمةَ قبل أن تُفتَح بطاقة');
   d.querySelector('[data-svd="metal"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
   await wait(250);
@@ -97,9 +113,10 @@ console.log('\n══ ٣ · السطرُ يطير إلى نقطته، والتص
   w.xlsSheets = realXls;
   const rows = sheet && sheet[0] && sheet[0][1];
   T(!!rows && rows.length === 3, 'التصديرُ يحمل رأسًا وسطرين');
-  T(!!rows && rows[0].indexOf('التحديات') > -1 && rows[0].indexOf('الغرف/الخيام') > -1 && rows[0].indexOf('خط العرض') > -1,
-    'وفيه التحدياتُ والغرفُ والإحداثيات — تُفتَح خارج التطبيق كما هي');
-  T(!!rows && rows.some(r => String(r[8]).indexOf('العارضة الحديدية') > -1), 'وسببُ كلِّ نقطةٍ بنصِّه لا برمز');
+  T(!!rows && rows[0].indexOf('التحديات') > -1 && rows[0].indexOf('الغرف/الخيام') > -1 && rows[0].indexOf('مصدر العدد') > -1 && rows[0].indexOf('الحالة') > -1,
+    'وفيه التحدياتُ والغرفُ ومصدرُ عددها والحالةُ والإحداثيات');
+  T(!!rows && rows.some(r => String(r[10]).indexOf('العارضة الحديدية') > -1), 'وسببُ كلِّ نقطةٍ بنصِّه لا برمز');
+  T(!!rows && rows.slice(1).every(r => r[8] === 'عدُّ الميدان'), 'ومصدرُ العدد يُقال بالاسم');
   w.SVD_PICK = '';
 }
 
