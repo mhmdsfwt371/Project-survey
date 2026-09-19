@@ -1,10 +1,10 @@
 {
-  "at": "2026-09-18T21:13:00.433Z",
+  "at": "2026-09-19T07:29:49.645Z",
   "ok": true,
-  "day": "2026-09-18",
+  "day": "2026-09-19",
   "folder": "1AT8mbFHwWGh_fuwywSiJzewc1_WTvXeY",
   "bytes": {
-    "backup-full.json": 4787633,
+    "backup-full.json": 4787993,
     "photos.json": 1099412
   },
   "keepDays": 0,
