@@ -232,6 +232,8 @@ jobs:
         run: node scripts/audit-pulse.mjs
       - name: جرد تفاصيل المسح — رقمٌ خلفَه قائمتُه، وسطرٌ يطير إلى نقطته
         run: node scripts/audit-svdash.mjs
+      - name: جرد تغذية الموسم — يملأ الفارغَ ولا يمسُّ المضبوط
+        run: node scripts/audit-season.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك

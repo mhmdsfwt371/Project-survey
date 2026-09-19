@@ -1,0 +1,31 @@
+# ═══ تغذيةُ الموسم — بياناتُ المشروع المؤكَّدةُ تصل القاعدةَ من الملف ═══
+# docs/season.json يحمل كلَّ قيمةٍ بمصدرها، وهذا السيرُ يملأ بها settings/points
+# حين يتغيّر الملفُ — ولا يُكتَب إلا الحقلُ الفارغ: ما ضُبط بيدٍ في التطبيق
+# لا يُمَسّ. فالتطبيقُ لا يعرض أصفارًا لأن أحدًا لم يفتح شاشةَ الإعدادات.
+name: Season seed
+on:
+  push:
+    branches: [main]
+    paths: ['docs/season.json', 'scripts/season-seed.mjs']
+  workflow_dispatch: {}
+permissions:
+  contents: read
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت"; sleep $((i*15))
+          done
+          exit 1
+      - name: التغذية — الفارغُ وحدَه
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/season-seed.mjs | tee -a $GITHUB_STEP_SUMMARY
