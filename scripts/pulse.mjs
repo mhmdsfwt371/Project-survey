@@ -41,6 +41,11 @@ async function load(){
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); });
     out[name] = m;
   }
+  /* الثوابتُ وثيقةٌ واحدة (settings/points) — منها تُعرَف بنودُ الجاهزية الناقصة */
+  try {
+    const pts = await fs.collection('settings').doc('points').get();
+    out.points = pts.exists ? (pts.data() || {}) : {};
+  } catch { out.points = {}; }
   return out;
 }
 const db = await load();
@@ -63,7 +68,24 @@ const revisit = recs.filter(r => r && r.review === 'revisit');
 const newWait = news.filter(x => x && x.isNew && !x.approved);
 const bugNew  = bugs.filter(b => b && (b.status === 'جديد' || !b.status));
 
-/* ── ٣ · ما أُسنِد ولم يتحرّك ──────────────────────────────────────────── */
+/* ── ٣ · جاهزيةُ الموسم — ما يُعطِّل حسابًا في صمت ─────────────────────────
+   البطاقةُ في التطبيق تعرضها لمن يفتحها، وهذه تذكّر بها **مرةً في الأسبوع**
+   لا كلَّ يوم: بندٌ مزمنٌ يُذكَر كلَّ صباحٍ يصير خلفيةً لا يراها أحد. */
+const P = (db && db.points && typeof db.points === 'object') ? db.points : {};
+const num = k => { const n = parseFloat(P[k]); return isFinite(n) ? n : 0; };
+const READY = [
+  { ok: Object.keys(P.w || {}).length > 0,     t:'أوزانُ الزيارة — بلا وزنٍ لا تُحتسَب نقطةٌ لأحد' },
+  { ok: !!num('ph'),                           t:'سعرُ النقطة — بلا سعرٍ القيمةُ المكتسبةُ صفرٌ مهما أُنجز' },
+  { ok: !!num('budCap'),                       t:'سقفُ الميزانية — بلا سقفٍ لا انحرافَ كلفةٍ ولا احتياطيّ' },
+  { ok: !!num('tgtSurvey'),                    t:'تارجتُ المسح اليوميّ — بلا تارجتٍ لا جوابَ لـ«هل نلحق؟»' },
+  { ok: !!num('dueSurvey') && !!num('dueInstall'), t:'موعدا المسح والتركيب — بلا موعدٍ لا يُعرَف متأخّرٌ من مُنجِز' },
+  { ok: !!num('insCamp') || !!num('insCor'),   t:'نقاطُ التركيب — بلا نقاطٍ لا يُقاس عملُ فرق التركيب' },
+  { ok: !!num('warranty'),                     t:'شهورُ الضمان — المحضرُ يذكر نهايةَ الضمان' }
+];
+const gaps = READY.filter(r => !r.ok);
+const weekly = new Date(now).getUTCDay() === 6;   /* السبت: أوّلُ أيام الأسبوع هنا */
+
+/* ── ٤ · ما أُسنِد ولم يتحرّك ──────────────────────────────────────────── */
 const DONE = ['معتمد', 'منجز', 'مغلق', 'ملغى'];
 const openT = tasks.filter(t => t && !DONE.includes(String(t.status || '')) && !t.doneAt);
 const stuckT = openT.filter(t => days(t.at) >= 5);
@@ -87,6 +109,14 @@ if (newWait.length) wait.push(`- مواقعُ جديدةٌ بانتظار الا
 if (bugNew.length)  wait.push(`- بلاغاتٌ لم تُقرأ: **${nm(bugNew.length)}**`);
 L.push(wait.length ? wait.join('\n') : 'لا شيءَ ينتظر — كلُّ ما وصل عُولج.');
 L.push('');
+if (gaps.length){
+  L.push('## جاهزيةُ الموسم — ' + nm(gaps.length) + ' بندًا ينقص');
+  L.push(gaps.map(g => '- ' + g.t).join('\n'));
+  L.push('');
+  L.push(weekly ? '_تذكيرُ الأسبوع — والباقي في بطاقة «جاهزيةُ الموسم» أوّلَ «مهامي»._'
+                : '_التفصيلُ في بطاقة «جاهزيةُ الموسم» أوّلَ «مهامي»._');
+  L.push('');
+}
 L.push('## ما أُسنِد ولم يتحرّك');
 const st = Object.keys(byTask).map(k => `${KIND[k] || k}: **${nm(byTask[k])}**`).join(' · ');
 L.push(stuckT.length ? `مهامُّ مفتوحةٌ منذ خمسة أيامٍ فأكثر — ${st}` : 'لا مهمّةَ راكدةً فوق خمسة أيام.');
@@ -102,7 +132,9 @@ if (process.env.GITHUB_STEP_SUMMARY) { try { appendFileSync(process.env.GITHUB_S
 
 /* رقمٌ واحدٌ يقول أيُرسَل البريدُ أم لا: لا شيءَ ينتظر ⇦ لا رسالةَ صباحية،
    فالرسالةُ التي تقول «تمام» كلَّ يومٍ تُعلِّم صاحبَها ألا يفتحها */
-const needHand = pendOld.length + revisit.length + newWait.length + bugNew.length + stuckT.length;
+let needHand = pendOld.length + revisit.length + newWait.length + bugNew.length + stuckT.length;
+/* بنودُ الجاهزيةِ تُوقِظ مرةً في الأسبوع فقط — لا كلَّ صباح */
+if (weekly && gaps.length) needHand += 1;
 if (process.env.GITHUB_OUTPUT){
   try { appendFileSync(process.env.GITHUB_OUTPUT, `hand=${needHand}\n`); } catch {}
 }

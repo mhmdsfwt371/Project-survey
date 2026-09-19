@@ -9,6 +9,7 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: read
+  issues: write
 jobs:
   pulse:
     runs-on: ubuntu-latest
@@ -34,6 +35,14 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           PULSE_OUT: /tmp/pulse.md
         run: node scripts/pulse.mjs
+      # اللوحةُ تصل بلا أسرار: بلاغٌ واحدٌ يُحدَّث، لا رسالةٌ تحتاج بريدًا مضبوطًا
+      - name: لوحةُ النبض في المستودع
+        if: always()
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          [ -s /tmp/pulse.md ] || exit 0
+          node scripts/pulse-issue.mjs /tmp/pulse.md
       - name: بريدٌ إن كان ثمّة ما ينتظر
         if: steps.pulse.outputs.hand != '' && steps.pulse.outputs.hand != '0'
         env:
