@@ -92,6 +92,19 @@ const stuckT = openT.filter(t => days(t.at) >= 5);
 const byTask = {};
 stuckT.forEach(t => { byTask[t.kind] = (byTask[t.kind] || 0) + 1; });
 
+/* ── مواقيتُ تقترب — من docs/deadlines.json (V17.68) ─────────────────────
+   المفتاحُ الذي ينتهي والموعدُ الذي يقترب لا يذكّران بنفسيهما: يُكتَبان مرةً
+   في ملفٍ، ويُقالان هنا قبل ثلاثين يومًا، ويوقظان البريدَ قبل أربعةَ عشر. */
+let dls = [];
+try {
+  const raw = JSON.parse(readFileSync('docs/deadlines.json', 'utf8'));
+  dls = (raw.items || [])
+    .map(x => ({ ...x, left: Math.ceil(((Date.parse(x.at) || 0) - now) / DAY) }))
+    .filter(x => Number.isFinite(x.left) && x.left <= 30)
+    .sort((a, b) => a.left - b.left);
+} catch { dls = []; }
+const dueSoon = dls.filter(x => x.left <= 14);
+
 /* ── النصّ ─────────────────────────────────────────────────────────────── */
 const oldest = a => a.length ? Math.max(...a.map(x => days(x.at))) : 0;
 const L = [];
@@ -121,6 +134,12 @@ L.push('## ما أُسنِد ولم يتحرّك');
 const st = Object.keys(byTask).map(k => `${KIND[k] || k}: **${nm(byTask[k])}**`).join(' · ');
 L.push(stuckT.length ? `مهامُّ مفتوحةٌ منذ خمسة أيامٍ فأكثر — ${st}` : 'لا مهمّةَ راكدةً فوق خمسة أيام.');
 L.push('');
+if (dls.length){
+  L.push('## مواقيتُ تقترب');
+  L.push(dls.map(x => `- **${x.what}** — ${x.left <= 0 ? 'فات موعدُه' : 'بعد ' + nm(x.left) + ' يومًا'} (${x.at})`
+    + (x.do ? `\n  ${x.do}` : '')).join('\n'));
+  L.push('');
+}
 L.push(`_المفتوحُ كلُّه: ${nm(openT.length)} مهمّة · الزياراتُ المسجَّلة: ${nm(recs.length)}_`);
 L.push('');
 L.push('القرارُ والتفصيلُ في التطبيق: «متابعة العمل الميداني» للزيارات، و«الطلبات والتوزيع» للإسناد، و«تصحيح البيانات» لما ينقص في السجل.');
@@ -133,6 +152,7 @@ if (process.env.GITHUB_STEP_SUMMARY) { try { appendFileSync(process.env.GITHUB_S
 /* رقمٌ واحدٌ يقول أيُرسَل البريدُ أم لا: لا شيءَ ينتظر ⇦ لا رسالةَ صباحية،
    فالرسالةُ التي تقول «تمام» كلَّ يومٍ تُعلِّم صاحبَها ألا يفتحها */
 let needHand = pendOld.length + revisit.length + newWait.length + bugNew.length + stuckT.length;
+needHand += dueSoon.length;   /* موعدٌ دون أسبوعين يوقظ البريدَ (V17.68) */
 /* بنودُ الجاهزيةِ تُوقِظ مرةً في الأسبوع فقط — لا كلَّ صباح */
 if (weekly && gaps.length) needHand += 1;
 if (process.env.GITHUB_OUTPUT){

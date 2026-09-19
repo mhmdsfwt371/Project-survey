@@ -230,6 +230,8 @@ jobs:
         run: node scripts/audit-csp.mjs
       - name: جرد النبض — يَعُدُّ ما ينتظر، ويسكت حين لا شيء
         run: node scripts/audit-pulse.mjs
+      - name: جرد تفاصيل المسح — رقمٌ خلفَه قائمتُه، وسطرٌ يطير إلى نقطته
+        run: node scripts/audit-svdash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
