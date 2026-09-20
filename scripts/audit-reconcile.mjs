@@ -136,6 +136,20 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T(new RegExp(w.nm(PENDING) + ' تنتظر الاعتمادَ التقني').test(kk), 'وما ينتظر الاعتمادَ التقني من دورة الحياة: ' + PENDING);
   const zsum = Object.values(w.siteKeyStats().zones).reduce((a, o) => a + o.sv, 0);
   T(zsum === SURVEYED, 'وأشرطةُ المشاعر تُجمَع إلى المسح: ' + zsum);
+  /* «متى نخلّص؟» (V17.83): المشعرُ الذي فيه سجلاتُ آخر أسبوعين له توقّع، والراكدُ يُقال فيه «لا وتيرة» */
+  const zA = w.STATE.sites[0].zone, fA = w.zoneForecast(zA);
+  T(!!fA && fA.rate > 0 && fA.eta > Date.now() && fA.left === w.siteKeyStats().zones[zA].n - w.siteKeyStats().zones[zA].sv, 'التوقّعُ من وتيرة أسبوعين: ' + zA + ' يكتمل نحو ' + w.dayKey(fA.eta));
+  const zQ = Object.keys(w.siteKeyStats().zones).filter(z => z !== zA)[0], fQ = w.zoneForecast(zQ);
+  T(!!fQ && fQ.stalled === true, 'ومشعرٌ بلا حركةٍ يُقال فيه «لا وتيرة»: ' + zQ);
+  T(/يكتمل نحو/.test(kk) && /لا وتيرةَ في أسبوعين/.test(kk), 'وكلاهما على الشاشة');
+  /* خريطةُ المربعات (V17.83): مجموعُ الخلايا = مخيماتُ المشعر ذاتُ المربع */
+  const cells = [...d.querySelectorAll('.kk-cell')];
+  const sum = cells.reduce((a, c) => a + +c.querySelector('i').textContent.replace(/[٠-٩]/g, x => '٠١٢٣٤٥٦٧٨٩'.indexOf(x)).split('/')[1], 0);
+  const camps = w.STATE.sites.filter(x => x.zone === w.KK_ZONE && x.type === 'مخيم').length;
+  T(cells.length > 10 && sum === camps, 'خلايا المربعات تُجمَع إلى مخيمات المشعر: ' + sum + ' / ' + camps);
+  const cell = cells[0]; cell.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
+  T(w.CUR === 'sites' && /^مربع /.test(w.SITE_Q), 'والضغطُ على مربعٍ يفتح مواقعَه: ' + w.SITE_Q);
+  w.SITE_Q = ''; await open('over', 'kiosk');
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
