@@ -16,8 +16,17 @@ if [ "${NUSUK_NO_GATE:-}" = "1" ]; then
   exit 0
 fi
 
+# دفعٌ إلى staging يمرُّ بلا ختم (V17.81): السحابةُ تشغّل القائمةَ كاملةً
+# والمتصفّحَ الحقيقيَّ، ولا ترقّي إلى الأصل إلا ما اخضرّ.
+while read -r _l _ls remote_ref _rs; do
+  case "$remote_ref" in
+    refs/heads/staging) echo "✓ البوابة: فرعُ التجربة — السحابةُ تفحص وترقّي إلى الأصل إن اخضرّ"; exit 0;;
+  esac
+done
+
 GIT_DIR=$(git rev-parse --git-dir)
-tree=$(git rev-parse 'HEAD^{tree}')
+# بصمةُ الالتزام بالاستثناء نفسِه الذي يختم به الحارس (backups/ خارج البصمة — V17.80)
+tree=$(node scripts/seal.mjs HEAD 2>/dev/null || git rev-parse 'HEAD^{tree}')
 if [ -f "$GIT_DIR/nusuk-gate" ] && [ "$(cat "$GIT_DIR/nusuk-gate")" = "$tree" ]; then
   echo "✓ البوابة: الشجرةُ مختومةٌ بحارسٍ كاملٍ أخضر — تمرُّ"
   exit 0

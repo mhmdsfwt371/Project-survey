@@ -1,6 +1,7 @@
 // حارس التوثيق: يفشل إن تخلّف أي ملف عن نسخة التطبيق، أو اختلّ توازن أقسام اللوحة
 import { readFileSync, writeFileSync as writeFileSync2 } from 'fs';
 import { execSync } from 'child_process';
+import { sealHash } from './seal.mjs';
 
 const fail = [];
 const ok   = [];
@@ -416,12 +417,8 @@ export function installHook(){
 /* بصمةُ الشجرة: ما فُحص هو ما يُدفَع — الشجرةُ كما ستُلتزَم (المتعقَّبُ وغيرُ المتعقَّب
    وفق .gitignore)، ويقارنها الخُطّاف بشجرة HEAD وقت الدفع. */
 export function treeHash(){
-  const dir = execSync('git rev-parse --git-dir', { encoding:'utf8' }).trim();
-  const idx = `/tmp/nsk-index-${process.pid}`;
-  try { copyFileSync(`${dir}/index`, idx); } catch {}
-  const env = { ...process.env, GIT_INDEX_FILE: idx };
-  execSync('git add -A .', { stdio:'pipe', env });
-  return execSync('git write-tree', { encoding:'utf8', env }).trim();
+  /* البصمةُ تستثني ما لا يفحصه أيُّ جرد (backups/) — scripts/seal.mjs (V17.80) */
+  return sealHash('');
 }
 installHook();
 {

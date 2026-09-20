@@ -1,10 +1,10 @@
 name: Real browser + rules emulator
 # اختبارٌ في كروميوم حقيقيٍّ بمقاس هاتف، وقواعدُ القاعدة على محاكي Firestore
 # الرسمي — لا يفعلهما المتصفّحُ الصوريّ: لا يرسم ولا يلمس، ولا يعرف القاعدة.
+# يُستدعى من سير الفحص (Docs Version Check) قبل الترقية إلى الأصل — لا بدفعٍ
+# مستقل، فلا يعمل مرتين لالتزامٍ واحد (V17.81).
 on:
-  push:
-    branches: [main]
-    paths: ['index.html', 'sw.js', 'firestore.rules', 'firebase.json', 'vendor/**', 'scripts/browser-test.mjs', 'scripts/rules-test.mjs', '.github/workflows/real-tests.yml']
+  workflow_call: {}
   workflow_dispatch: {}
 permissions:
   contents: read

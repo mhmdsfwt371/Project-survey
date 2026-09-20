@@ -1,12 +1,12 @@
 name: Docs Version Check
+# ═══ البوابةُ في السحابة (V17.81) ═══
+# الدفعُ إلى فرع staging يمرُّ بلا ختمٍ محلّي: تُشغَّل القائمةُ كاملةً هنا، ثم
+# المتصفّحُ الحقيقيُّ ومحاكي القواعد، فإن اخضرّ الكلُّ رُقِّي الالتزامُ نفسُه
+# إلى الأصل تقدُّمًا سريعًا فيُنشَر. والدفعُ المباشرُ إلى الأصل يبقى مشروطًا
+# بالختم المحلّي. فلا تصل الإنتاجَ شجرةٌ لم تمرَّ بالقائمة — من أيِّ طريق.
 on:
   push:
-    branches: [main]
-    paths:
-      - 'index.html'
-      - 'sw.js'
-      - 'docs/**'
-      - 'scripts/**'
+    branches: [main, staging]
   pull_request:
   workflow_dispatch: {}
 permissions:
@@ -238,6 +238,8 @@ jobs:
         run: node scripts/audit-bridge.mjs
       - name: جرد اتساق الأرقام — رقمٌ واحدٌ في كلِّ شاشةٍ أمام الوزارة
         run: node scripts/audit-reconcile.mjs
+      - name: جرد بصمة الختم — النسخُ الاحتياطية خارجها وكلُّ ما يُفحَص داخلها
+        run: node scripts/audit-seal.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
@@ -246,3 +248,27 @@ jobs:
         run: node scripts/audit-guards.mjs
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
         run: node scripts/qa.mjs
+      # ─── نهايةُ قائمة الحارس ───
+  real:
+    needs: check
+    uses: ./.github/workflows/real-tests.yml
+  promote:
+    needs: [check, real]
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.PROMOTE_TOKEN || github.token }}
+      - name: الترقية إلى الأصل — تقدُّمٌ سريعٌ للالتزام الذي فُحص بعينه
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            echo "::error title=الأصلُ تقدّم::نزل على الأصل التزامٌ بعد هذه الدفعة (النسخةُ الاحتياطية غالبًا) — رتّبها فوقه وادفع إلى staging ثانية"
+            exit 1
+          fi
+          git push origin HEAD:main
+          echo "✓ رُقِّي $(git rev-parse --short HEAD) إلى الأصل — النشرُ يبدأ"

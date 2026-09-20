@@ -39,6 +39,8 @@ export function cloudSteps(file = WORKFLOW){
       }
       mode = null;
     }
+    /* ما بعد هذه العلامة (الترقيةُ إلى الأصل ونحوُها) للسحابة وحدَها — لا يُشغَّل محليًّا (V17.81) */
+    if (trimmed === '# ─── نهايةُ قائمة الحارس ───') break;
     if (trimmed.startsWith('#') || trimmed === '') continue;
 
     const m = trimmed.match(/^- name:\s*(.+)$/);
