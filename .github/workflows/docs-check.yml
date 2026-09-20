@@ -246,6 +246,8 @@ jobs:
         run: node scripts/audit-seal.mjs
       - name: جرد تقرير الوزارة — من دوالِّ التطبيق نفسِها، والرمزُ بصمةً
         run: node scripts/audit-ministry.mjs
+      - name: جرد التوأم — المخيمُ المسجَّلُ مرتين لا يُعَدُّ مرتين
+        run: node scripts/audit-twins.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
