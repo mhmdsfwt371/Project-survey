@@ -340,25 +340,55 @@ if (!FAST && !existsSync('node_modules/jsdom')){
   try { execSync('npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3', { stdio:'pipe' }); }
   catch { fail.push('تعذّر تثبيتُ jsdom/docx — لا تُشغَّل الجرودُ بدونهما'); }
 }
+/* ═══ الجرودُ على مساراتٍ متوازية (V17.79) ═══
+   ثلاث عشرةَ دقيقةً لكلِّ دفعةٍ كان أكثرُها انتظارَ متصفّحٍ صوريٍّ يبني الصفحةَ
+   جردًا بعد جرد. الجرودُ المستقلّة — سطرٌ واحدٌ يشغّل audit-*.mjs — تعمل الآن
+   على أربعة مساراتٍ كما في الدورة السريعة، وما سواها (توليدُ الأدلة والخطواتُ
+   المركّبة) يبقى متسلسلًا بترتيبه. القائمةُ هي قائمةُ السحابة نفسُها بالحرف،
+   والنتيجةُ تُقرأ كما كانت. NUSUK_LANES=1 يعيده متسلسلًا. */
 if (!FAST) console.log(`الجرودُ: ${STEPS.length} خطوةً — كما في السحابة بالحرف`);
-STEPS.forEach(({ name, env, run }) => {
+const LANES = Math.max(1, Math.min(8, +(process.env.NUSUK_LANES || 4)));
+/* ما يقيس زمنًا أو يثقل الجهازَ يبقى وحدَه: تحت الازدحام يسقط جردُ سباق
+   النافذة لأن مهلتَه بالساعة، وجردُ الكتابة يتجاوز مهلتَه. فلا يدخلان
+   المساراتِ، وكذلك حارسُ الحرّاس الذي يشغّل جرودًا داخله. */
+const SOLO = /audit-(guards|writes|pop-race|capacity|scale|perf)\.mjs/;
+const isPure = s => /^node scripts\/audit-[a-z0-9-]+\.mjs\s*$/.test(String(s.run || '').trim()) && !(s.env && Object.keys(s.env).length) && !SOLO.test(String(s.run));
+const failOf = (name, run, e) => {
+  /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط */
+  if (e.status === 2 && /jsdom|Cannot find module/.test(String(e.stderr || ''))) return name + ' لم يُشغَّل — المتصفّحُ الصوريُّ غير مثبَّت. شغّل: npm i jsdom';
+  const out = String((e.stdout || '') + (e.stderr || '')).split('\n').filter(l => l.includes('✗')).slice(0, 3).join(' | ');
+  const hint = /role-manuals/.test(run) ? ' — أُعيد توليدُ docs/manuals الآن: أضِفها إلى الدفعة وأعد الحارس' : '';
+  return name + ' فشل — ' + (out || ('شغّل: ' + run.split('\n')[0])) + hint;
+};
+const results = new Map();   /* الاسمُ ← [ok?, نص] بترتيب القائمة الأصلي عند الطباعة */
+const runSerial = s => {
   const t0 = Date.now();
-  try {
-    execSync('set -e\n' + run, { stdio:'pipe', shell:'/bin/bash', env:{ ...process.env, ...env } });
-    ok.push(`${name} ✓ (${Math.round((Date.now() - t0) / 1000)}ث)`);
-  } catch (e) {
-    /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط — والتفريقُ
-       بينهما يوفّر ساعةً من البحث في سجلِّ سير العمل. */
-    if (e.status === 2 && /jsdom|Cannot find module/.test(String(e.stderr || ''))){
-      fail.push(name + ' لم يُشغَّل — المتصفّحُ الصوريُّ غير مثبَّت. شغّل: npm i jsdom');
-      return;
-    }
-    const out = String((e.stdout || '') + (e.stderr || '')).split('\n')
-      .filter(l => l.includes('✗')).slice(0, 3).join(' | ');
-    const hint = /role-manuals/.test(run) ? ' — أُعيد توليدُ docs/manuals الآن: أضِفها إلى الدفعة وأعد الحارس' : '';
-    fail.push(name + ' فشل — ' + (out || ('شغّل: ' + run.split('\n')[0])) + hint);
-  }
-});
+  try { execSync('set -e\n' + s.run, { stdio:'pipe', shell:'/bin/bash', env:{ ...process.env, ...s.env } }); results.set(s.name, [true, `${s.name} ✓ (${Math.round((Date.now() - t0) / 1000)}ث)`]); }
+  catch (e){ results.set(s.name, [false, failOf(s.name, s.run, e)]); }
+};
+/* الخطواتُ المركّبةُ (الأدلةُ ونحوُها) أوّلًا بترتيبها */
+for (const s of STEPS.filter(s => !isPure(s) && !SOLO.test(String(s.run)) || LANES === 1)) runSerial(s);
+if (LANES > 1){
+  const { spawn } = await import('child_process');
+  const queue = STEPS.filter(isPure);
+  const one = s => new Promise(res => {
+    const t0 = Date.now(), file = String(s.run).trim().split(/\s+/)[1];
+    const p = spawn('node', [file], { stdio:['ignore', 'pipe', 'pipe'], env:{ ...process.env } });
+    let out = '', err = '';
+    p.stdout.on('data', d => out += d); p.stderr.on('data', d => err += d);
+    const kill = setTimeout(() => p.kill('SIGKILL'), 600000);
+    p.on('close', code => {
+      clearTimeout(kill);
+      if (code === 0) results.set(s.name, [true, `${s.name} ✓ (${Math.round((Date.now() - t0) / 1000)}ث)`]);
+      else results.set(s.name, [false, failOf(s.name, s.run, { status:code, stdout:out, stderr:err })]);
+      res();
+    });
+  });
+  await Promise.all(Array.from({ length:LANES }, async () => { while (queue.length) await one(queue.shift()); }));
+  /* ثم المنفردةُ واحدةً واحدةً بلا مزاحمة */
+  for (const s of STEPS.filter(s => SOLO.test(String(s.run)))) runSerial(s);
+}
+STEPS.forEach(s => { const r = results.get(s.name); if (!r) return; (r[0] ? ok : fail).push(r[1]); });
 
 /* خطوةُ الأدلة تعيد توليدَ الملفات لتطابق الفهرس — وهي منذ V16.75 ثابتةُ
    البايتات فلا تُغيّر شيئًا؛ وإن اختلف ملفٌّ بلا تغييرٍ في الفهرس (مكتبةٌ
