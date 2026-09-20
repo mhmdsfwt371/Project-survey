@@ -244,6 +244,8 @@ jobs:
         run: node scripts/audit-reconcile.mjs
       - name: جرد بصمة الختم — النسخُ الاحتياطية خارجها وكلُّ ما يُفحَص داخلها
         run: node scripts/audit-seal.mjs
+      - name: جرد تقرير الوزارة — من دوالِّ التطبيق نفسِها، والرمزُ بصمةً
+        run: node scripts/audit-ministry.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

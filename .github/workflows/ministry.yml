@@ -1,0 +1,82 @@
+# ═══ شاشةُ الوزارة خارج التطبيق — لقطةٌ كلَّ ستِّ ساعات، وتقريرٌ كلَّ سبت ═══
+# التقريرُ يُبنى من دوالِّ التطبيق نفسِها في متصفّحٍ صوري ببيانات القاعدة
+# (scripts/ministry-report.mjs) فلا حقيقةَ ثانية. اللقطةُ (أرقامٌ فقط) تُدفَع إلى
+# فرع ministry فتقرؤها الصفحةُ المشتركة docs/ministry/ برمز اليوم. والتقريرُ
+# يُطبَع PDF بكروميوم ويُرسَل بالبريد مع رموز الأسبوع.
+name: Ministry screen
+on:
+  schedule:
+    - cron: '20 */6 * * *'     # لقطةٌ كلَّ ستِّ ساعات
+    - cron: '0 5 * * 6'        # تقريرُ السبت — ٨ صباحًا بمكة
+  workflow_dispatch:
+    inputs:
+      report:
+        description: 'أرسل التقريرَ الأسبوعيَّ الآن'
+        default: 'no'
+permissions:
+  contents: write
+jobs:
+  ministry:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: الحزم
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund jsdom@^24 firebase-admin@^12 nodemailer@^6 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت"; sleep $((i*15))
+          done
+          exit 1
+      - name: التقريرُ واللقطة — من دوالِّ التطبيق نفسِها
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          MINISTRY_SECRET: ${{ secrets.MINISTRY_SECRET }}
+          MINISTRY_OUT: /tmp/ministry
+        run: node scripts/ministry-report.mjs
+      - name: اللقطةُ إلى فرع ministry — أرقامٌ فقط
+        run: |
+          git config user.name nusuk-ministry && git config user.email bot@nusuk
+          rm -rf /tmp/mbranch && mkdir -p /tmp/mbranch && cp /tmp/ministry/snapshot.json /tmp/mbranch/
+          cd /tmp/mbranch && git init -q && git checkout -q -b ministry && git add snapshot.json
+          git -c user.name=nusuk-ministry -c user.email=bot@nusuk commit -q -m "snapshot $(date -u +%FT%H:%M)"
+          git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ministry:ministry
+          echo "✓ اللقطةُ نُشرت"
+      - name: التقريرُ الأسبوعي — PDF بالبريد
+        if: github.event.schedule == '0 5 * * 6' || github.event.inputs.report == 'yes'
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+          MINISTRY_SECRET: ${{ secrets.MINISTRY_SECRET }}
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund playwright@^1 && npx playwright install --with-deps chromium && break
+            echo "::warning::تثبيتُ المتصفّح $i تعثّر"; sleep $((i*15))
+          done
+          node scripts/ministry-pdf.mjs /tmp/ministry/report.html /tmp/ministry/ministry-report.pdf || true
+          {
+            echo "تقريرُ الوزارة الأسبوعي — مرفقٌ PDF بنفس تصميم شاشة الوزارة."
+            echo ""
+            echo "الصفحةُ المشتركة: https://mhmdsfwt371.github.io/Project-survey/docs/ministry/"
+            if [ -n "$MINISTRY_SECRET" ]; then
+              echo "رموزُ الدخول لأيام الأسبوع القادم (كلُّ رمزٍ ليومه بتوقيت غرينتش):"
+              for k in 0 1 2 3 4 5 6; do
+                day=$(date -u -d "+$k day" +%F)
+                code=$(printf '%s|%s' "$MINISTRY_SECRET" "$day" | sha256sum | cut -c1-6 | tr a-f A-F)
+                echo "  $day → $code"
+              done
+            fi
+          } > /tmp/ministry/mail.txt
+          MAIL_ATTACH=/tmp/ministry/ministry-report.pdf node scripts/mail-send.mjs "قارئات أفاقي — تقريرُ الوزارة الأسبوعي $(date -u +%F)" /tmp/ministry/mail.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ministry-${{ github.run_id }}
+          path: /tmp/ministry/
+          retention-days: 30

@@ -1,0 +1,67 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>قارئات أفاقي — شاشة الوزارة</title>
+<style>
+:root{--ink:#14181d;--soft:#5b6673;--line:#e2e6ea;--line2:#eef1f4;--surface:#fff;--bg:#f4f6f8}
+@media (prefers-color-scheme:dark){:root{--ink:#E8EBEE;--soft:#9BA5AF;--line:#232b33;--line2:#1b2229;--surface:#12171c;--bg:#0A0D10}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
+.h{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.t{font-size:24px;font-weight:800}.d{color:var(--soft);font-size:13px}
+.live{display:inline-block;width:9px;height:9px;border-radius:50%;background:#3AD6A0;animation:p 2s infinite}@keyframes p{0%{box-shadow:0 0 0 0 rgba(58,214,160,.55)}70%{box-shadow:0 0 0 9px rgba(58,214,160,0)}100%{box-shadow:0 0 0 0 rgba(58,214,160,0)}}
+.rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px;margin:14px 0}
+.ring{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center}
+.ring svg{width:140px;height:140px;transform:rotate(-90deg)}.tr{fill:none;stroke:var(--line2);stroke-width:11}.arc{fill:none;stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.pct{transform:rotate(90deg);transform-origin:55px 55px;font-size:24px;font-weight:800;fill:var(--ink);text-anchor:middle}
+.lab{font-weight:700;margin-top:6px;font-size:15px}.sub{color:var(--soft);font-size:12.5px}.big{font-size:44px;font-weight:800;line-height:1.05}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}.box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
+.hh{font-weight:800;color:var(--soft);margin:0 0 10px}.zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
+.bar{height:14px;border-radius:8px;background:var(--line2);overflow:hidden;margin-bottom:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#2E75B6,#3AD6A0);border-radius:8px}
+.eta{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600}.ok{background:#e8f5ec;color:#1d7a3d}.bad{background:#fdecea;color:#b3261e}.mute{background:var(--line2);color:var(--soft)}
+.kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}.kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--line2)}
+.gate{max-width:420px;margin:12vh auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center}
+.gate input{font-size:22px;letter-spacing:.3em;text-align:center;width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.gate button{margin-top:10px;padding:10px 18px;border:0;border-radius:10px;background:#185FA5;color:#fff;font-size:15px;cursor:pointer}
+.err{color:#b3261e;font-size:13px;margin-top:8px;min-height:18px}
+</style></head><body>
+<div id="app"><div class="gate"><div class="t">شاشة الوزارة</div><p class="d">أدخل رمز اليوم الذي زوّدك به فريق المشروع.</p>
+<input id="code" inputmode="latin" autocomplete="off" maxlength="6" placeholder="••••••"><button id="go">دخول</button><div class="err" id="err"></div></div></div>
+<script>
+(function(){
+  var SRC = 'https://raw.githubusercontent.com/mhmdsfwt371/Project-survey/ministry/snapshot.json';
+  var nm = function(n){ return Number(n || 0).toLocaleString('ar-EG'); };
+  var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;' }[c]; }); };
+  var ring = function(p, col, lab, sub){ var r = 44, c = 2 * Math.PI * r; p = Math.max(0, Math.min(100, p || 0));
+    return '<div class="ring"><svg viewBox="0 0 110 110"><circle cx="55" cy="55" r="' + r + '" class="tr"/><circle cx="55" cy="55" r="' + r + '" class="arc" style="stroke:' + col + ';stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/><text x="55" y="61" class="pct">' + nm(Math.round(p)) + '٪</text></svg><div class="lab">' + lab + '</div><div class="sub">' + sub + '</div></div>'; };
+  var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
+  function render(s){
+    var zs = Object.keys(s.zones).sort(function(a, b){ return s.zones[b].n - s.zones[a].n; }), zmax = zs.length ? s.zones[zs[0]].n : 1;
+    var h = '<div class="h"><div><div class="t">قارئات أفاقي — حج ١٤٤٨هـ</div><div class="d">' + esc(new Date(s.at).toLocaleString('ar-EG')) + ' · <span class="live"></span> يتجدّد كلَّ ست ساعات · ' + esc(s.version) + '</div></div></div>'
+      + '<div class="rings">' + ring(s.total ? s.surveyed / s.total * 100 : 0, '#2E75B6', 'المسحُ المنجَز', nm(s.surveyed) + ' / ' + nm(s.total) + ' · متبقٍّ ' + nm(s.total - s.surveyed))
+      + ring(s.surveyed ? s.minOk / s.surveyed * 100 : 0, '#C9A227', 'اعتمادُ الوزارة من المُسِح', nm(s.minOk) + ' / ' + nm(s.surveyed))
+      + ring(s.total ? s.installed / s.total * 100 : 0, '#3AD6A0', 'التركيبُ المنجَز', nm(s.installed) + ' / ' + nm(s.total))
+      + '<div class="ring"><div class="big" style="color:#E05252">' + nm(s.stuck) + '</div><div class="lab">متعذّر</div><div class="sub">لم يصل إليه الميدان</div></div></div>'
+      + '<div class="grid"><div class="box"><div class="hh">المشاعرُ — كم أُنجز وكم بقي</div>'
+      + zs.map(function(z){ var o = s.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
+          var eta = o.stalled ? '<span class="eta mute">لا وتيرةَ في أسبوعين</span>' : (o.eta ? '<span class="eta ' + (o.late ? 'bad' : 'ok') + '">يكتمل نحو ' + esc(new Date(o.eta).toISOString().slice(0, 10)) + '</span>' : (o.n - o.sv <= 0 ? '<span class="eta ok">اكتمل</span>' : ''));
+          return '<div class="zl"><b>' + esc(z) + '</b><span>' + nm(o.sv) + ' / ' + nm(o.n) + ' · <b>' + nm(p) + '٪</b></span></div><div class="bar" style="width:' + Math.max(12, Math.round(o.n / zmax * 100)) + '%"><i style="width:' + p + '%"></i></div><div style="margin:-4px 0 10px">' + eta + '</div>'; }).join('')
+      + '</div><div class="box"><div class="hh">نبضُ الميدان — آخر أربعٍ وعشرين ساعة</div><div class="kinds">'
+      + Object.keys(s.day.kinds).map(function(k){ return '<div class="kind"><div class="big">' + nm(s.day.kinds[k]) + '</div><div class="lab">' + esc(KN[k] || k) + '</div></div>'; }).join('')
+      + '<div class="kind"><div class="big">' + nm(s.day.people) + '</div><div class="lab">شخصًا في الميدان</div></div></div></div>'
+      + '<div class="box"><div class="hh">ما ينتظر قرارًا</div><div class="kinds"><div class="kind"><div class="big" style="color:#C9A227">' + nm(s.minwait) + '</div><div class="lab">تنتظر اعتمادَ الوزارة</div></div><div class="kind"><div class="big" style="color:#2E75B6">' + nm(s.visited) + '</div><div class="lab">تنتظر الاعتمادَ التقني</div></div><div class="kind"><div class="big" style="color:#3AD6A0">' + nm(s.ready) + '</div><div class="lab">جاهزةٌ للتركيب</div></div></div></div>'
+      + '<div class="box"><div class="hh">التحدياتُ الأكثرُ تكرارًا</div>' + (s.challenges.length ? s.challenges.map(function(c){ return '<div class="zl"><span>' + esc(c[0]) + '</span><b>' + nm(c[1]) + '</b></div>'; }).join('') : '<p class="d">لا تحدّيَ مسجَّلًا بعد.</p>') + '</div></div>';
+    document.getElementById('app').innerHTML = h;
+  }
+  async function sha(s){ var b = new TextEncoder().encode(s); var h = await crypto.subtle.digest('SHA-256', b); return Array.from(new Uint8Array(h)).map(function(x){ return x.toString(16).padStart(2, '0'); }).join(''); }
+  var SNAP = null;
+  function load(){ return fetch(SNAP ? SRC : SRC + '?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }); }
+  async function enter(){
+    var code = (document.getElementById('code').value || '').trim().toUpperCase(), err = document.getElementById('err');
+    try { SNAP = await load(); } catch (e){ err.textContent = 'تعذّر تحميلُ الأرقام — أعد المحاولة.'; return; }
+    if (SNAP.gate && (await sha(code)) !== SNAP.gate){ err.textContent = 'الرمزُ غيرُ صحيح لهذا اليوم.'; return; }
+    sessionStorage.setItem('kkok', '1'); render(SNAP); setInterval(function(){ load().then(render).catch(function(){}); }, 6 * 3600 * 1000);
+  }
+  document.getElementById('go').addEventListener('click', enter);
+  document.getElementById('code').addEventListener('keydown', function(e){ if (e.key === 'Enter') enter(); });
+  if (sessionStorage.getItem('kkok')) load().then(function(s){ if (!s.gate) render(s); }).catch(function(){});
+  load().then(function(s){ if (!s.gate){ SNAP = s; render(s); } }).catch(function(){});
+})();
+</script></body></html>

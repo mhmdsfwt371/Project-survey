@@ -44,9 +44,12 @@ try {
     host: process.env.SMTP_HOST, port, secure: port === 465,
     auth: { user: process.env.SMTP_USER, pass: process.env.SMTP_PASS }
   });
+  /* مرفقاتٌ إن وُجدت (V17.85): مساراتٌ مفصولةٌ بفاصلة — التقريرُ PDF مثلًا */
+  const attachments = String(process.env.MAIL_ATTACH || '').split(',').map(s => s.trim()).filter(Boolean)
+    .map(path => ({ path, filename: path.split('/').pop() }));
   const info = await tx.sendMail({
     from: process.env.MAIL_FROM || process.env.SMTP_USER,
-    to, subject, text: body, html
+    to, subject, text: body, html, attachments
   });
   console.log('✓ أُرسل البريدُ إلى ' + to.length + ' عنوانًا — ' + (info.messageId || ''));
 } catch (e){
