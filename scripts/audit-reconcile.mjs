@@ -126,6 +126,22 @@ const st = w.siteStats();
 T(Object.values(st.byKey).reduce((a, b) => a + b, 0) === TOTAL && Object.values(st.byCo).reduce((a, b) => a + b, 0) <= TOTAL,
   'وإحصاءُ المواقع بالمشعر والنوع يُجمَع إلى الكلّ، وبالشركة لا يتجاوزه');
 
+console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ نفسَها (V17.82) ══');
+{
+  const kk = await open('over', 'kiosk');
+  const h = d.getElementById('content').innerHTML;
+  T((h.match(/kk-ring/g) || []).length === 4 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ وزرُّ العرض الكامل');
+  T(new RegExp(w.nm(SURVEYED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'المسحُ والتركيبُ من الكلِّ نفسِه: ' + SURVEYED + ' / ' + TOTAL);
+  T(new RegExp(w.nm(N_STUCK) + ' متعذّر').test(kk), 'والمتعذّرُ رقمُ الشاشات الأخرى — رقمًا كبيرًا فوق اسمه: ' + N_STUCK);
+  T(new RegExp(w.nm(PENDING) + ' تنتظر الاعتمادَ التقني').test(kk), 'وما ينتظر الاعتمادَ التقني من دورة الحياة: ' + PENDING);
+  const zsum = Object.values(w.siteKeyStats().zones).reduce((a, o) => a + o.sv, 0);
+  T(zsum === SURVEYED, 'وأشرطةُ المشاعر تُجمَع إلى المسح: ' + zsum);
+  d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
+  T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');
+  d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
+  T(!d.body.classList.contains('kiosk') && w.KIOSK_TIMER === null, 'ويُغلَق فيرجع كلُّ شيء');
+}
+
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs[0] : ''));
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

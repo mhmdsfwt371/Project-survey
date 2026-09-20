@@ -656,6 +656,36 @@ body.nav-open .mapwrap{pointer-events:none}
 .lg-sh.sh-o{border-radius:50%}
 /* الأشكالُ المشتقّةُ من السجل تُرسَم بهندسة الخريطة نفسِها (V17.60) */
 .lg-svg{width:13px;height:13px;flex:0 0 auto;display:inline-block;overflow:visible;vertical-align:middle}
+/* ═══ شاشةُ الوزارة (V17.82) — كبيرةٌ تُقرأ من بعيد، وتتجدّد وحدَها ═══ */
+.kk{--kk-ink:var(--ink);--kk-soft:var(--ink-soft);display:flex;flex-direction:column;gap:14px}
+.kk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.kk-title{font-size:22px;font-weight:800;letter-spacing:-.2px}
+.kk-date{color:var(--kk-soft);font-size:13px;margin-top:2px}
+.kk-live{display:inline-block;width:9px;height:9px;border-radius:50%;background:#3AD6A0;box-shadow:0 0 0 0 rgba(58,214,160,.6);animation:kkPulse 2s infinite}
+@keyframes kkPulse{0%{box-shadow:0 0 0 0 rgba(58,214,160,.55)}70%{box-shadow:0 0 0 9px rgba(58,214,160,0)}100%{box-shadow:0 0 0 0 rgba(58,214,160,0)}}
+.kk-rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kk-ring{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center;box-shadow:var(--shadow)}
+.kk-ring svg{width:130px;height:130px;max-width:100%;transform:rotate(-90deg)}
+.kk-track{fill:none;stroke:var(--line-2);stroke-width:11}
+.kk-arc{fill:none;stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.kk-pct{transform:rotate(90deg);transform-origin:55px 55px;font-size:24px;font-weight:800;fill:var(--kk-ink);text-anchor:middle}
+.kk-lab{font-weight:700;margin-top:6px;font-size:15px}
+.kk-sub{color:var(--kk-soft);font-size:12.5px;margin-top:2px}
+.kk-big{font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kk-plain{display:flex;flex-direction:column;justify-content:center}
+.kk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.kk-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.kk-h{font-weight:800;font-size:15px;margin:0 0 10px;color:var(--kk-soft);text-transform:none}
+.kk-zone{margin:8px 0}
+.kk-zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
+.kk-bar{height:14px;border-radius:8px;background:var(--line-2);overflow:hidden}
+.kk-bar i{display:block;height:100%;background:linear-gradient(90deg,#2E75B6,#3AD6A0);border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.kk-kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--surface-2)}
+body.kiosk .sidebar,body.kiosk .topbar,body.kiosk .tabs,body.kiosk .page-head,body.kiosk .card-head{display:none!important}
+body.kiosk #content{padding:18px!important;max-width:none!important}
+body.kiosk .kk-title{font-size:30px}body.kiosk .kk-big{font-size:58px}body.kiosk .kk-ring svg{width:170px;height:170px}
+body.kiosk .kk-pct{font-size:28px}body.kiosk .kk-lab{font-size:18px}body.kiosk .kk-zl{font-size:17px}body.kiosk .kk-bar{height:18px}
 .lg-shp span{min-width:0;line-height:1.35}
 /* نقاطُ الرسم ورؤوسُ المساحة تُسحَب بالإصبع (V17.58) — هدفُ اللمس أوسعُ من المرئي */
 .rtPt,.rtVx{background:none;border:0;cursor:grab;display:flex;align-items:center;justify-content:center}
@@ -956,7 +986,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.81</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.82</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3810,6 +3840,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'شاشةُ الوزارة':'Ministry screen', 'عرضٌ كبيرٌ يُقرأ من آخر القاعة: نسبةُ الإنجاز حلقاتٍ، وكلُّ مشعرٍ بشريطه، ونبضُ الميدان في أربعٍ وعشرين ساعة، وما ينتظر قرارَ الوزارة — يتجدّد وحدَه كلَّ دقيقة.':'A large display readable from the back of the hall: completion as rings, each zone with its bar, the field pulse over twenty-four hours, and what awaits the Ministry’s decision — refreshes itself every minute.', 'قارئات أفاقي — حج ١٤٤٨هـ':'AFAQY Readers — Hajj 1448H', 'يتجدّد كلَّ دقيقة':'Refreshes every minute', 'خروج من العرض':'Exit presentation', 'عرضٌ كامل':'Full-screen presentation', 'المسحُ المنجَز':'Survey completed', 'اعتمادُ الوزارة من المُسِح':'Ministry-approved of the surveyed', 'التركيبُ المنجَز':'Installation completed', 'لم يصل إليه الميدان':'The field could not reach it', 'المشاعرُ — كم أُنجز وكم بقي':'Zones — done and remaining', 'نبضُ الميدان — آخر أربعٍ وعشرين ساعة':'Field pulse — last twenty-four hours', 'شخصًا في الميدان':'people in the field', 'لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.':'No step uploaded in the last twenty-four hours.', 'ما ينتظر قرارًا':'Awaiting a decision', 'تنتظر اعتمادَ الوزارة':'Awaiting Ministry approval', 'التحدياتُ الأكثرُ تكرارًا':'Most frequent challenges', 'لا تحدّيَ مسجَّلًا بعد.':'No challenge recorded yet.', 'تسليم':'Handover',
  'تعديلٌ متزامن':'Concurrent edit', 'عدّلها':'edited by', 'وفي جهازك تعديلٌ لم يُرفَع بعد: سيُرفَع فوق تعديله — راجع النقطة':'and your device holds an unsynced edit: it will be pushed over theirs — review the point', 'عدّلها غيرُك بينما تعديلُك لم يُرفَع':'Someone else edited it while your edit was not yet synced', 'بعد أن فتحتَ النموذج — اضغط الحفظَ ثانيةً لتكتب فوق تعديله، أو أعد فتح النقطة لتقرأه':'after you opened the form — press Save again to overwrite their edit, or reopen the point to read it',
  'كلُّ المشاعر':'All zones', 'متبقٍّ':'Remaining', 'اختر مشعرًا لتقرأ أرقامَه وحدَه — وبلا اختيارٍ الأرقامُ للكلِّ نسبًا من الكلّ.':'Pick a zone to read its numbers alone — with none picked, the numbers are for everything, as shares of the whole.', 'أُنجز':'Done', 'وبقي':'and remaining', 'المسحُ بالمشعر':'Survey by zone', 'المشاعرُ كلُّها — كم أُنجز وكم بقي':'All zones — how much is done and how much remains',
  'عدد البوابات':'Number of gateways', 'الحساس':'Sensor', 'عدد الحساسات':'Number of sensors', 'الوزارة · مخيمٌ قياسي · معرّفُ نقطة':'Ministry · standard camp · point ID', 'جارية':'Ongoing', 'ناجحة':'Successful', 'تحتاج إعادة':'Needs a rerun', 'لم تنجح':'Failed', 'رابطُ التقرير على الدرايف':'Report link on Drive', 'رابطُ التقرير يبدأ بـ https':'The report link must start with https', 'أضِف صورة':'Add a photo', 'صعدت الصورةُ إلى طابور الرفع':'The photo joined the upload queue',
@@ -6537,6 +6568,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'شاشةُ الوزارة':'وزارت کی اسکرین', 'عرضٌ كبيرٌ يُقرأ من آخر القاعة: نسبةُ الإنجاز حلقاتٍ، وكلُّ مشعرٍ بشريطه، ونبضُ الميدان في أربعٍ وعشرين ساعة، وما ينتظر قرارَ الوزارة — يتجدّد وحدَه كلَّ دقيقة.':'ہال کے آخر سے پڑھی جانے والی بڑی اسکرین: تکمیل حلقوں میں، ہر مشعر اپنی بار کے ساتھ، چوبیس گھنٹوں میں فیلڈ کی نبض، اور وزارت کے فیصلے کے منتظر امور — ہر منٹ خود تازہ ہوتی ہے۔', 'قارئات أفاقي — حج ١٤٤٨هـ':'آفاقی ریڈرز — حج ۱۴۴۸ھ', 'يتجدّد كلَّ دقيقة':'ہر منٹ تازہ ہوتی ہے', 'خروج من العرض':'پریزنٹیشن سے باہر', 'عرضٌ كامل':'مکمل اسکرین پریزنٹیشن', 'المسحُ المنجَز':'مکمل سروے', 'اعتمادُ الوزارة من المُسِح':'سروے شدہ میں سے وزارت کی منظوری', 'التركيبُ المنجَز':'مکمل تنصیب', 'لم يصل إليه الميدان':'فیلڈ ٹیم وہاں نہ پہنچ سکی', 'المشاعرُ — كم أُنجز وكم بقي':'مشاعر — مکمل اور باقی', 'نبضُ الميدان — آخر أربعٍ وعشرين ساعة':'فیلڈ کی نبض — گزشتہ چوبیس گھنٹے', 'شخصًا في الميدان':'افراد فیلڈ میں', 'لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.':'گزشتہ چوبیس گھنٹوں میں کوئی قدم اپ لوڈ نہیں ہوا۔', 'ما ينتظر قرارًا':'فیصلے کے منتظر', 'تنتظر اعتمادَ الوزارة':'وزارت کی منظوری کے منتظر', 'التحدياتُ الأكثرُ تكرارًا':'سب سے زیادہ دہرائی جانے والی رکاوٹیں', 'لا تحدّيَ مسجَّلًا بعد.':'ابھی کوئی رکاوٹ درج نہیں۔', 'تسليم':'حوالگی',
  'تعديلٌ متزامن':'بیک وقت ترمیم', 'عدّلها':'ترمیم کی', 'وفي جهازك تعديلٌ لم يُرفَع بعد: سيُرفَع فوق تعديله — راجع النقطة':'اور آپ کے آلے میں ایک ترمیم ابھی اپ لوڈ نہیں ہوئی: وہ ان کی ترمیم کے اوپر جائے گی — پوائنٹ کا جائزہ لیں', 'عدّلها غيرُك بينما تعديلُك لم يُرفَع':'کسی اور نے اس میں ترمیم کی جبکہ آپ کی ترمیم ابھی اپ لوڈ نہیں ہوئی', 'بعد أن فتحتَ النموذج — اضغط الحفظَ ثانيةً لتكتب فوق تعديله، أو أعد فتح النقطة لتقرأه':'آپ کے فارم کھولنے کے بعد — ان کی ترمیم پر لکھنے کے لیے دوبارہ محفوظ دبائیں، یا پڑھنے کے لیے پوائنٹ دوبارہ کھولیں',
  'كلُّ المشاعر':'تمام مشاعر', 'متبقٍّ':'باقی', 'اختر مشعرًا لتقرأ أرقامَه وحدَه — وبلا اختيارٍ الأرقامُ للكلِّ نسبًا من الكلّ.':'کسی مشعر کو منتخب کریں تاکہ صرف اس کے اعداد پڑھیں — کچھ منتخب نہ ہو تو اعداد سب کے لیے، کل کے تناسب سے۔', 'أُنجز':'مکمل', 'وبقي':'اور باقی', 'المسحُ بالمشعر':'مشعر کے لحاظ سے سروے', 'المشاعرُ كلُّها — كم أُنجز وكم بقي':'تمام مشاعر — کتنا مکمل ہوا اور کتنا باقی',
  'عدد البوابات':'گیٹ ویز کی تعداد', 'الحساس':'سینسر', 'عدد الحساسات':'سینسروں کی تعداد', 'الوزارة · مخيمٌ قياسي · معرّفُ نقطة':'وزارت · معیاری کیمپ · پوائنٹ آئی ڈی', 'جارية':'جاری', 'ناجحة':'کامیاب', 'تحتاج إعادة':'دوبارہ درکار', 'لم تنجح':'ناکام', 'رابطُ التقرير على الدرايف':'ڈرائیو پر رپورٹ کا لنک', 'رابطُ التقرير يبدأ بـ https':'رپورٹ کا لنک https سے شروع ہونا چاہیے', 'أضِف صورة':'تصویر شامل کریں', 'صعدت الصورةُ إلى طابور الرفع':'تصویر اپ لوڈ قطار میں شامل ہو گئی',
@@ -24721,10 +24753,88 @@ function svdashBody(){
         : '');
 }
 
+/* ═══ شاشةُ الوزارة — العرضُ الذي يُقرأ من آخر القاعة (V17.82) ═══
+   الاجتماعُ مع الوزارة لا يُقرأ فيه جدول: يُقرأ رقمٌ كبيرٌ ونسبةٌ وشريطٌ لكلِّ
+   مشعر، ثم نبضُ الميدان في يومٍ، ثم ما ينتظر قرارًا من الحاضرين أنفسِهم.
+   الأرقامُ كلُّها من الدوالِّ التي تقرأ منها الشاشاتُ الأخرى (siteKeyStats
+   وlifeOf وsvdRows) — فلا يخالف العرضُ ما في الجدول. وزرُّ «عرضٌ كامل» يُخفي
+   القوائمَ ويملأ الشاشةَ ويجدّدها كلَّ دقيقة. */
+var KIOSK_ON = false, KIOSK_TIMER = null;
+function kioskRing(pct, col, label, sub){
+  var r = 44, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, pct || 0));
+  return '<div class="kk-ring">'
+    + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"/>'
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" style="stroke:' + esc(col) + ';stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/>'
+    +   '<text x="55" y="61" class="kk-pct">' + nm(Math.round(p)) + '٪</text></svg>'
+    + '<div class="kk-lab">' + esc(t(label)) + '</div>'
+    + (sub ? '<div class="kk-sub">' + sub + '</div>' : '') + '</div>';
+}
+function kioskToggle(){
+  KIOSK_ON = !KIOSK_ON;
+  document.body.classList.toggle('kiosk', KIOSK_ON);
+  try {
+    if (KIOSK_ON && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    else if (!KIOSK_ON && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
+  } catch (e){}
+  if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
+  if (KIOSK_ON) KIOSK_TIMER = setInterval(function(){ if (CUR === 'over' && tabCur('over') === 'kiosk') render(1); else kioskToggle(); }, 60000);
+  render(1);
+}
+function kioskBody(){
+  var K = siteKeyStats(), S = K.total, now = Date.now(), day = now - 864e5;
+  var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
+  var pcSv = S.n ? S.sv / S.n * 100 : 0, pcIns = S.n ? S.ins / S.n * 100 : 0;
+  var minOk = (life.ready || 0) + (life.sched || 0) + (life.installed || 0) + (life.handed || 0);
+  var pcMin = S.sv ? minOk / S.sv * 100 : 0;
+  var steps = (STATE.steps || []).filter(function(x){ return +x.at >= day; });
+  var kinds = {}, people = {};
+  steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
+  var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
+  var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
+  var chTop = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 4);
+  var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
+  var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
+  return '<div class="kk' + (KIOSK_ON ? ' on' : '') + '">'
+    + '<div class="kk-head"><div><div class="kk-title">' + esc(t('قارئات أفاقي — حج ١٤٤٨هـ')) + '</div>'
+    +   '<div class="kk-date">' + esc(fmtDT(now)) + ' \u00b7 <span class="kk-live"></span> ' + esc(t('يتجدّد كلَّ دقيقة')) + '</div></div>'
+    +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"') + '</div>'
+    + '<div class="kk-rings">'
+    +   kioskRing(pcSv, '#2E75B6', 'المسحُ المنجَز', nm(S.sv) + ' / ' + nm(S.n) + ' \u00b7 ' + esc(t('متبقٍّ')) + ' ' + nm(S.n - S.sv))
+    +   kioskRing(pcMin, '#C9A227', 'اعتمادُ الوزارة من المُسِح', nm(minOk) + ' / ' + nm(S.sv))
+    +   kioskRing(pcIns, '#3AD6A0', 'التركيبُ المنجَز', nm(S.ins) + ' / ' + nm(S.n))
+    +   '<div class="kk-ring kk-plain"><div class="kk-big" style="color:#E05252">' + nm(S.stuck) + '</div><div class="kk-lab">' + esc(t('متعذّر')) + '</div>'
+    +     '<div class="kk-sub">' + esc(t('لم يصل إليه الميدان')) + '</div></div>'
+    + '</div>'
+    + '<div class="kk-grid">'
+    +   '<div class="kk-box"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
+    +     zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
+          return '<div class="kk-zone"><div class="kk-zl"><b>' + esc(t(z)) + '</b><span>' + nm(o.sv) + ' / ' + nm(o.n) + ' \u00b7 <b>' + nm(p) + '٪</b></span></div>'
+            + '<div class="kk-bar" style="width:' + Math.max(12, Math.round(o.n / zoneMax * 100)) + '%"><i style="width:' + p + '%"></i></div></div>'; }).join('')
+    +   '</div>'
+    +   '<div class="kk-box"><div class="kk-h">' + esc(t('نبضُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>'
+    +     (steps.length
+          ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind"><div class="kk-big">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + '</div></div>'; }).join('')
+            + '<div class="kk-kind"><div class="kk-big">' + nm(Object.keys(people).length) + '</div><div class="kk-lab">' + esc(t('شخصًا في الميدان')) + '</div></div></div>'
+          : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>')
+    +   '</div>'
+    +   '<div class="kk-box"><div class="kk-h">' + esc(t('ما ينتظر قرارًا')) + '</div>'
+    +     '<div class="kk-kinds">'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:#C9A227">' + nm(life.minwait || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر اعتمادَ الوزارة')) + '</div></div>'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:#2E75B6">' + nm(life.visited || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر الاعتمادَ التقني')) + '</div></div>'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:#3AD6A0">' + nm(life.ready || 0) + '</div><div class="kk-lab">' + esc(t('جاهزةٌ للتركيب')) + '</div></div>'
+    +     '</div></div>'
+    +   '<div class="kk-box"><div class="kk-h">' + esc(t('التحدياتُ الأكثرُ تكرارًا')) + '</div>'
+    +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
+                       : '<p class="hint">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>')
+    +   '</div>'
+    + '</div></div>';
+}
+
 PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
+    if (cur === 'kiosk') return head + kioskBody();
     if (cur === 'svdash') return head + svdashBody();
     if (cur === 'now') return head + (function(){
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
@@ -31120,6 +31230,7 @@ var TABS = {
     ['pace','الوتيرة والهدف','⏱','المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.'],
     ['daily','المعدل اليومي','📅','اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.'],
     ['inst','التركيب والجدولة','🔧','ما جُدول وما نُفّذ وما تعذّر — بحالته ونوعه.'],
+    ['kiosk','شاشةُ الوزارة','🏛','عرضٌ كبيرٌ يُقرأ من آخر القاعة: نسبةُ الإنجاز حلقاتٍ، وكلُّ مشعرٍ بشريطه، ونبضُ الميدان في أربعٍ وعشرين ساعة، وما ينتظر قرارَ الوزارة — يتجدّد وحدَه كلَّ دقيقة.'],
     ['svdash','تفاصيلُ المسح','📐','ما حُصر فعلًا: الغرفُ والخيام، وما لا تحدّيَ فيه، وما فيه تحدٍّ، وما يحتاج هيكلًا — ولكلِّ رقمٍ قائمتُه، تُصدَّر، ويطير كلُّ سطرٍ إلى نقطته على الخريطة.']],
   pts:[
     ['visits','الزيارات','🔍','وزن زيارة كل نوع وتارجت المسح.'],
@@ -34025,6 +34136,7 @@ function clickA(e){
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var ovz = e.target.closest('[data-ovz]');
   if (ovz){ var zk = ovz.getAttribute('data-ovz'); OVER_ZONE = (OVER_ZONE === zk ? '' : zk); render(1); return true; }
+  if (e.target.closest('[data-kiosk]')){ kioskToggle(); return true; }
   var svd = e.target.closest('[data-svd]');
   if (svd){ var sk = svd.getAttribute('data-svd'); SVD_PICK = (SVD_PICK === sk ? '' : sk); render(1); return true; }
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
