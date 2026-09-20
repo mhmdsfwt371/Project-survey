@@ -956,7 +956,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.77</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -14043,7 +14043,13 @@ var SV_PHOTOS = [
              'revisit'  — رُدَّت؛ لا تُعدُّ منجزةً حتى تُزار ثانيةً
    المنجَزُ (svDone) ما حُفظ بوصولٍ ولم يُرَدّ — فالرَّدُّ يُخرجها من العِداد
    ومن طبقة التركيب معًا. والمعتمَدُ (svApproved) وحدَه يُقترَح له حلّ. */
-function svDone(r){ return !!r && (!r.access || r.access === 'تم الوصول') && r.review !== 'revisit'; }
+/* ═══ ثلاثةُ أحوالٍ لا تختلط (V17.77) ═══
+   وصلَ فسُجِّلت الزيارة (svDone) · وصلَ فرُدَّت لزيارةٍ أخرى (revisit) · لم يصل
+   أصلًا (متعذّر). كانت شاشةٌ تعدُّ المتعذّرَ بلا المردود وأخرى تعدُّهما معًا تحت
+   الاسم نفسِه، فتقرأ الوزارةُ رقمين لكلمةٍ واحدة. */
+function svReached(r){ return !!r && (!r.access || r.access === 'تم الوصول'); }
+function svStuck(r){ return !!r && !svReached(r); }
+function svDone(r){ return svReached(r) && r.review !== 'revisit'; }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){
   if (!r) return '';
@@ -20765,7 +20771,7 @@ function siteKeyStats(){
     by[k] = (by[k] || 0) + 1; T.n++;
     if (!r) T.noRec++;
     else if (svDone(r)){ sv[k] = (sv[k] || 0) + 1; T.sv++; }
-    else if (r.review !== 'revisit') T.stuck++;
+    else if (svStuck(r)) T.stuck++;   /* من لم يصل — والمردودُ ليس متعذّرًا (V17.77) */
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; }
   });
@@ -20775,8 +20781,8 @@ function siteKeyStats(){
 /* حالةُ المسح بكلمةٍ واحدةٍ — للقوائم والإكسل، بالتعريف نفسِه */
 function svLabel(r){
   if (!r) return 'لم يُزر';
+  if (svStuck(r)) return 'متعذّر';                        /* من لم يصل — بالتعريف نفسِه (V17.77) */
   if (r.review === 'revisit') return 'تحتاج زيارة أخرى';
-  if (!svDone(r)) return 'متعذّر';
   return r.review === 'approved' ? 'معتمدة' : 'تمت الزيارة';
 }
 function siteStats(){
@@ -21499,6 +21505,11 @@ function lifeOf(x){
   if (insDone(id)) return 'installed';
   if (taskKindOf(id, 'install')) return 'sched';
   var r = STATE.recs[id], rv = (typeof svReview === 'function') ? svReview(r) : '';
+  /* المتعذّرُ يُحكَم به قبل قرار المراجعة (V17.77): سجلٌّ لم يصل صاحبُه إلى
+     النقطة متعذّرٌ مهما كُتب في حقل المراجعة — كان يُعَدُّ «مردودًا» إن رُدَّ
+     أو «زيارةً تمّت» إن بقي معلَّقًا، فيقول الملخّصُ خمسةً وتقول شاشةُ المسح
+     عشرة أمام الوزارة نفسِها */
+  if (svStuck(r)) return 'stuck';
   if (rv === 'approved'){
     var ms = minState(r);
     if (ms === 'returned') return 'minback';
@@ -21507,9 +21518,6 @@ function lifeOf(x){
   }
   if (rv === 'revisit') return 'revisit';
   if (rv === 'pending') return 'visited';
-  /* سجلٌّ بلا وصولٍ: زارها ولم يستطع — كانت تُعَدُّ «لم تُزر» على الخريطة
-     بينما صفحةُ المتابعة تعدُّها «متعذّرة»، فاختلف الرقمان بواحد */
-  if (r && !svDone(r)) return 'stuck';
   var tk = taskKindOf(id, 'visit');
   if (tk) return (tk.when && tk.when > dayKey(Date.now())) ? 'tomorrow' : 'assigned';
   return 'todo';
@@ -25061,21 +25069,24 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var weekAgo = Date.now() - 7 * 86400000;
     var todayN = all.filter(function(x){ return new Date(x.rec.at || 0).toISOString().slice(0,10) === day; }).length;
     var weekN  = all.filter(function(x){ return (x.rec.at || 0) >= weekAgo; }).length;
-    var blocked = all.filter(function(x){ return !x.done; });
+    var blocked = all.filter(function(x){ return svStuck(x.rec); });
+    var revisit = all.filter(function(x){ return svReached(x.rec) && x.rec.review === 'revisit'; });
 
     var rows = all;
     /* شريحةُ الحالة: من أراد «الزياراتِ التي تمّت» وحدها ليصدّرها أو
        يراجعها كان يقرأ الجدولَ كلَّه بعينه — فصارت تُفرَز بضغطة. */
     if (SURV_ST === 'done')  rows = rows.filter(function(x){ return x.done; });
-    if (SURV_ST === 'block') rows = rows.filter(function(x){ return !x.done; });
+    if (SURV_ST === 'block') rows = rows.filter(function(x){ return svStuck(x.rec); });
+    if (SURV_ST === 'revisit') rows = rows.filter(function(x){ return svReached(x.rec) && x.rec.review === 'revisit'; });
     if (SURV_Q) rows = rows.filter(function(x){
       var hay = x.id + ' ' + (x.site.name || '') + ' ' + (x.rec.by || '');
       return hay.indexOf(SURV_Q) > -1;
     });
 
     var views = [['','الكل', all.length],
-                 ['done','تمت الزيارة', all.length - blocked.length],
-                 ['block','متعذّر — يحتاج زيارة', blocked.length]];
+                 ['done','تمت الزيارة', all.length - blocked.length - revisit.length],
+                 ['revisit','تحتاج زيارة أخرى', revisit.length],
+                 ['block','متعذّر', blocked.length]];
     var html = '<div class="chips">' + views.map(function(v){
         return '<button type="button" class="chip' + (SURV_ST===v[0]?' on':'')
           + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
@@ -25084,7 +25095,8 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       + stats([['مُسح', N(S.surveyed), 'acc'],
                        ['لم يُزر', N(siteKeyStats().total.noRec)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
-                       ['متعذّر — يحتاج زيارة', N(blocked.length), blocked.length ? 'wrn' : 'ok']])
+                       ['متعذّر', N(blocked.length), blocked.length ? 'wrn' : 'ok'],
+                      ['تحتاج زيارة أخرى', N(revisit.length), revisit.length ? 'wrn' : '']])
 
       + card('بحث في السجلّ',
           '<input type="search" id="survQ" value="' + esc(SURV_Q)
@@ -26599,9 +26611,11 @@ function stuckList(){
     var r = STATE.recs[id], x = siteFind(id);
     if (!x) return;
     var ins = STATE.inss && STATE.inss[id];
-    if (ins && ins.status === 'مُركّب' && ins.approved) return;
+    /* ما رُكِّب ليس راكدًا بانتظار التركيب ولو لم يُدقَّق بعد (V17.77) — كان
+       المُركَّبُ غيرُ المدقَّق يظهر «راكدًا» بسبب «جاهزةٌ ولم يُسنَد تركيبُها» */
+    if (ins && ins.status === 'مُركّب') return;
     var days = Math.floor((Date.now() - (r.at || 0)) / 86400000);
-    out.push({ id:id, site:x, rec:r, blocked:!svDone(r), accepted:!!(r.stuckOk), days:days });
+    out.push({ id:id, site:x, rec:r, blocked:svStuck(r), accepted:!!(r.stuckOk), days:days });
   });
   return out.sort(function(a,b){ return b.days - a.days; });
 }

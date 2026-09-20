@@ -236,6 +236,8 @@ jobs:
         run: node scripts/audit-season.mjs
       - name: جرد جسر ماي أفاقي — يُنشئ مرةً، ويُقفل من هناك، ولا يُخمَّن مسار
         run: node scripts/audit-bridge.mjs
+      - name: جرد اتساق الأرقام — رقمٌ واحدٌ في كلِّ شاشةٍ أمام الوزارة
+        run: node scripts/audit-reconcile.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
         run: node scripts/parity.mjs
       - name: حارس الحُرّاس — عطلٌ مزروعٌ يجب أن يُمسَك
