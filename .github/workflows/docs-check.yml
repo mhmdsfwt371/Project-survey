@@ -291,6 +291,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -305,3 +306,11 @@ jobs:
           fi
           git push origin HEAD:main
           echo "✓ رُقِّي $(git rev-parse --short HEAD) إلى الأصل — النشرُ يبدأ"
+      # دفعُ توكن السحابة لا يُطلق سيورَ الدفع (قاعدةُ جيت هب)، فتُطلَق بالاسم:
+      # التغذيةُ إن تغيّر ملفٌ من ملفاتها — وهي عاطلةٌ بلا تغيير فلا ضررَ في إطلاقها.
+      - name: إطلاقُ سير التغذية بعد الترقية
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run season.yml --ref main && echo "✓ أُطلقت التغذية" || echo "::warning::تعذّر إطلاقُ التغذية — تعمل مع الدفعة القادمة إلى الأصل"
