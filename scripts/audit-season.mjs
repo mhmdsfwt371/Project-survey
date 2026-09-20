@@ -59,6 +59,27 @@ console.log('\n══ التجاربُ تُضاف بمعرّفها ولا تتك
   const r2 = kept.__trials.rows.filter(r => r.id === 'TR-002')[0];
   T(r2.n === 'مُعدَّلةٌ بيد' && kept.__trials.rows.length === 4 && kept.__trials.inCost === true, 'والمعدَّلُ بيدٍ لا يُمَسُّ ومفتاحُ التكاليف يبقى');
 }
+console.log('\n══ التوأمُ يُدمَج الواضحُ وحدَه ══');
+{
+  const TW = JSON.parse(readFileSync('docs/twins.json', 'utf8'));
+  T(TW.pairs.length === 14 && TW.pairs.every(p => p.length === 2 && p[0] !== p[1]), 'أربعةَ عشرَ زوجًا في الملف');
+  const [p1, p2, p3, p4] = TW.pairs;
+  const db0 = { __trials:{ rows:[{ id:'TR-001' },{ id:'TR-002' },{ id:'TR-003' },{ id:'TR-004' }] }, tgtSurvey:1, dueSurvey:1, warranty:1, avgRooms:{ 'منى':1 },
+    __recs:{ [p1[0]]:{ access:'تم الوصول', review:'pending' }, [p2[1]]:{ access:'تم الوصول', review:'approved' }, [p3[0]]:{ access:'تم الوصول' }, [p3[1]]:{ access:'تم الوصول' }, [p4[0]]:{ access:'لم يُصل' } },
+    __sites:{} };
+  const { out, after } = run(db0);
+  const s = after.__sites || {};
+  T(s[p1[1]] && s[p1[1]].dupOf === p1[0] && s[p1[1]].hidden === true, 'الزوجُ الأولُ: المُسِحُ أصلٌ والآخرُ يُدمَج فيه');
+  T(s[p2[0]] && s[p2[0]].dupOf === p2[1], 'والثاني بالعكس — الأصلُ ما مُسح لا ترتيبُ الكتابة');
+  T(!s[p3[0]] && !s[p3[1]] && /كلاهما مُسح/.test(out), 'وما مُسح فيه كلاهما يُترَك قرارًا بشريًّا');
+  T(!s[p4[0]] && !s[p4[1]] && /لم يُمسَح أحدُهما/.test(out), 'وما لم يُوصَل إليه ليس مسحًا — يُترَك');
+  T(Object.keys(s).length === 2 && /توائمُ تُدمَج \(2\)/.test(out), 'فيُدمَج الواضحُ وحدَه: ٢ من ١٤');
+  const { after: again, out: out2 } = run(after);
+  T(Object.keys(again.__sites || {}).length === 2 && /دُمج من قبل/.test(out2), 'وتشغيلٌ ثانٍ لا يمسُّ ما دُمج');
+  const manual = { ...db0, __sites:{ [p1[0]]:{ hidden:true, dupOf:p1[1], dupBy:'مهندس' } } };
+  const { after: kept } = run(manual);
+  T(kept.__sites[p1[0]].dupBy === 'مهندس' && !kept.__sites[p1[1]], 'وما دمجه المهندسُ بيده — ولو بالعكس — لا يُلمَس');
+}
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ تغذية الموسم نظيف \u2705');
