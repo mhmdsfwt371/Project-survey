@@ -48,7 +48,8 @@ T(/rerun-failed-jobs/.test(rr), 'وتُعيد ما سقط وحدَه لا الس
 const cv = readFileSync('scripts/check-version.mjs', 'utf8');
 T(/from '\.\/cloud-steps\.mjs'/.test(cv) && /localSteps\(\)/.test(cv), 'الحارسُ يقرأ جرودَه من سير السحابة نفسِه (cloud-steps) لا من قائمةٍ بيد');
 const { cloudSteps, localSteps } = await import('./cloud-steps.mjs');
-const dc = wf('docs-check.yml');
+/* ما بعد علامة نهاية القائمة (الشرائحُ والترقية) للسحابة وحدَها — لا يقرؤه الحارس (V17.81/84) */
+const dc = wf('docs-check.yml').split('# ─── نهايةُ قائمة الحارس ───')[0];
 const inCI = [...new Set([...dc.matchAll(/node (scripts\/[\w-]+\.mjs)/g)].map(m => m[1]))];
 const parsed = new Set(cloudSteps().flatMap(s => [...s.run.matchAll(/node (scripts\/[\w-]+\.mjs)/g)].map(m => m[1])));
 const unread = inCI.filter(x => !parsed.has(x));

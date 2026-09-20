@@ -12,7 +12,11 @@ on:
 permissions:
   contents: read
 jobs:
+  # القائمةُ الكاملةُ متسلسلةً — المرجعُ الذي يقرؤه الحارسُ المحلّيُّ والجرود؛
+  # تعمل على الأصل وطلبات الدمج، وعلى فرع التجربة تُشغَّل الخطواتُ نفسُها
+  # شرائحَ متوازية (shards) فتنتهي في ربع الوقت.
   check:
+    if: github.ref != 'refs/heads/staging'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -249,12 +253,35 @@ jobs:
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
         run: node scripts/qa.mjs
       # ─── نهايةُ قائمة الحارس ───
+  shards:
+    if: github.ref == 'refs/heads/staging'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: المتصفّح الصوريّ للشريحة
+        run: |
+          for i in 1 2 3; do
+            npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 && exit 0
+            echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
+            sleep $((i*15))
+          done
+          exit 1
+      - name: الشريحة ${{ matrix.shard }} من ٤ — الخطواتُ نفسُها مقسَّمة
+        run: node scripts/cloud-run.mjs ${{ matrix.shard }} 4
   real:
-    needs: check
+    needs: [check, shards]
+    if: ${{ !failure() && !cancelled() }}
     uses: ./.github/workflows/real-tests.yml
   promote:
-    needs: [check, real]
-    if: github.ref == 'refs/heads/staging'
+    needs: [check, shards, real]
+    if: ${{ github.ref == 'refs/heads/staging' && !failure() && !cancelled() }}
     runs-on: ubuntu-latest
     permissions:
       contents: write
