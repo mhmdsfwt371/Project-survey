@@ -53,7 +53,9 @@ T(/STATE\.evlog = \{\};/.test(wg) && /STATE\.poison = \[\];/.test(wg), 'التص
 T(/CORE\.TOMB\[d\[0\]\]/.test(wg) && /CORE\.dirty\(d\[0\], d\[1\], null\)/.test(wg) && /dels\.push\(\[k\[2\], id\]\)/.test(wg), 'وأمرُ الحذف يُقيَّد باسم النوع في الطابور لا في الحالة');
 
 /* ═══ ٢ · ساكن: لا رقمَ نسخةٍ حرفيًّا غيرَ الحالية، ولا وقتَ رأسٍ حرفيًّا ═══ */
-const lits = [...js.matchAll(/'(V\d+\.\d+)'/g)].map(m => m[1]).filter(v => v !== cur);
+/* سطورُ «ما الجديد» (RELEASE_NOTES) تسمّي نسخًا سابقةً عمدًا — تاريخٌ لا رقمٌ يشيخ (V17.87) */
+const jsNoNotes = js.replace(/var RELEASE_NOTES = \[[\s\S]*?\n\];/, '');
+const lits = [...jsNoNotes.matchAll(/'(V\d+\.\d+)'/g)].map(m => m[1]).filter(v => v !== cur);
 T(!lits.length, 'لا رقمَ نسخةٍ حرفيًّا في الشيفرة غيرَ ' + cur, [...new Set(lits)].join(' · '));
 T(!/syncMeta'\)\.innerHTML\s*=\s*[\s\S]{0,120}<span class="num">[٠-٩0-9:]+<\/span>/.test(js), 'الرأسُ لا يكتب وقتَ مزامنةٍ حرفيًّا');
 T(/cur === 'vers'[\s\S]{0,1200}presenceRows\(\)/.test(js), 'شريحةُ نسخ الأجهزة تُبنى من وثائق الحضور');

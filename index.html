@@ -26511,7 +26511,7 @@ var RELEASE_NOTES = [
       'شاشة الوزارة الجديدة في المتابعة ← نظرة عامة: عرض كبير يُقرأ من آخر القاعة ويتجدّد كل دقيقة.' ] }
 ];
 var WN = null;
-function verNum(v){ var m = /V(\d+)\.(\d+)/.exec(String(v || '')); return m ? (+m[1]) * 1000 + (+m[2]) : 0; }
+/* verNum القائمةُ (رقمُ النسخة عددًا) هي المستعمَلة — لا تعريفَ ثانيًا */
 function releaseNotesFor(v){
   var n = verNum(v), best = null;
   RELEASE_NOTES.forEach(function(r){ var k = verNum(r.v); if (k <= n && (!best || k > verNum(best.v))) best = r; });
@@ -26534,7 +26534,7 @@ function wnHtml(){
     + '<div class="pop" style="width:min(520px,94vw)">'
     + '<div class="pop-head"><div><h3>\u2728 ' + esc(t('ما الجديد في هذا التحديث')) + ' \u2014 ' + esc(WN.v) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">' + esc(WN.r.d) + ' \u00b7 ' + esc(t('تظهر مرةً واحدةً بعد التحديث')) + '</p></div>'
-    +   btn('\u2715','btn-quiet btn-sm',' data-wnx="1" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    +   btn('\u2715','btn-quiet btn-sm',' data-wnx="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
     + '<div class="pop-body"><ul style="margin:0;padding:0 18px 0 0;line-height:1.8">'
     +   WN.r.notes.map(function(x){ return '<li dir="auto">' + esc(x) + '</li>'; }).join('') + '</ul>'
     +   '<div class="actions" style="margin:12px 0 0">' + btn('\u2713 ' + t('فهمت'),'btn-primary',' data-wnx="1"') + '</div></div></div></div>';
