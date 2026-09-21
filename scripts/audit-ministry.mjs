@@ -40,6 +40,8 @@ console.log('\n══ ٣ · التقريرُ هو الشاشة ══');
 T((rep.match(/kk-ring/g) || []).length >= 5 && rep.includes('المشاعرُ — كم أُنجز وكم بقي') && rep.includes('نبضُ الميدان'), 'التقريرُ يحمل حلقاتِ الشاشة وصناديقَها');
 T(rep.includes(':root{') && rep.includes('.kk-ring') && rep.includes('dir="rtl"'), 'وتنسيقَها كاملًا مستقلًّا بالعربية');
 T(/يكتمل نحو/.test(rep), 'والتوقّعَ');
+T(rep.includes('class="cover"') && rep.includes('تقرير المتابعة الأسبوعي') && rep.includes('cover-story') && rep.includes('break-after:page'), 'وغلافًا بالهوية يحمل الأسبوعَ في جملة ثم تبدأ الصفحاتُ (V17.90)');
+T(/qrcode@\^1/.test(readFileSync('.github/workflows/ministry.yml', 'utf8')) && rep.includes('cover-qr') === rep.includes('data:image/png;base64'), 'ورمزُ QR يُولَّد محليًّا ويُضمَّن — أو يُقال إنه غاب');
 T(typeof snap.story === 'string' && /هذا الأسبوع مُسح/.test(snap.story) && rep.includes('--min-green') && rep.includes('kk-story'), 'والأسبوعَ في جملةٍ في اللقطة والتقرير، والألوانَ من طقم الهوية');
 T(page.includes('--min-green') && page.includes('s.story'), 'والصفحةُ المشتركةُ بالطقم نفسِه وتعرض الجملة');
 

@@ -87,6 +87,24 @@ if (process.env.MINISTRY_SECRET){
 }
 writeFileSync(OUT + '/snapshot.json', JSON.stringify(snapshot));
 
+/* ── الغلافُ ورمزُ الوصول (V17.90) ──────────────────────────────────────────
+   صفحةُ غلافٍ بالهوية: العنوانُ والتاريخُ والأسبوعُ في جملة، ورمزُ QR يفتح
+   الصفحةَ المشتركةَ من الهاتف. الرمزُ يُولَّد محليًّا (مكتبةُ qrcode إن وُجدت)
+   ويُضمَّن صورةً في الملف — لا يعتمد على خدمةٍ خارجية. */
+let qrData = '';
+try {
+  const QR = require('qrcode');
+  qrData = await QR.toDataURL('https://mhmdsfwt371.github.io/Project-survey/docs/ministry/', { margin:1, width:220, color:{ dark:'#0B6E4F', light:'#ffffff' } });
+} catch { qrData = ''; }
+const coverHtml = `<section class="cover">
+  <div class="cover-brand">وزارة الحج والعمرة · مشروع قارئات أفاقي</div>
+  <h1>تقرير المتابعة الأسبوعي</h1>
+  <div class="cover-sub">حج ١٤٤٨هـ — ${new Date(now).toLocaleDateString('ar-EG', { year:'numeric', month:'long', day:'numeric' })}</div>
+  <div class="cover-story">${w.esc(w.kioskStory())}</div>
+  ${qrData ? '<div class="cover-qr"><img src="' + qrData + '" alt=""><div>الصفحة المشتركة — تُفتح من الهاتف برمز اليوم</div></div>' : ''}
+  <div class="cover-foot">تقرير آلي من نظام قارئات أفاقي — الأرقام من سجلات الميدان لحظة التوليد، ولا يد بشرية فيها.</div>
+</section>`;
+
 /* ── التقريرُ: شاشةُ الوزارة بدوالِّها وتنسيقها ─────────────────────────── */
 w.KK_ZONE = 'منى';
 const body = w.kioskBody();
@@ -100,10 +118,18 @@ ${rules}
 body{margin:0;background:#fff;color:var(--ink,#14181d);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;padding:18px}
 .btn,[data-kiosk],.chip{display:none!important}
 .rep-foot{margin-top:18px;color:#5b6673;font-size:12px;border-top:1px solid #e2e6ea;padding-top:8px}
-@media print{body{padding:8mm}.kk-box,.kk-ring{break-inside:avoid}}
-</style></head><body>${body}
+.cover{min-height:92vh;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;gap:14px;padding:24px;border:6px solid var(--min-green,#0B6E4F);border-radius:18px;margin-bottom:24px}
+.cover-brand{color:var(--min-gold,#C9A227);font-weight:700;letter-spacing:.3px}
+.cover h1{font-size:34px;margin:0;color:var(--min-green,#0B6E4F)}
+.cover-sub{font-size:16px;color:#5b6673}
+.cover-story{max-width:640px;font-size:17px;line-height:1.9;font-weight:600;background:linear-gradient(135deg,rgba(11,110,79,.10),rgba(201,162,39,.12));border-radius:14px;padding:12px 18px}
+.cover-qr img{width:170px;height:170px}.cover-qr div{font-size:12px;color:#5b6673;margin-top:4px}
+.cover-foot{font-size:11.5px;color:#5b6673;margin-top:10px}
+@media print{body{padding:8mm}.kk-box,.kk-ring{break-inside:avoid}.cover{break-after:page;min-height:auto;padding:40px 24px}}
+</style></head><body>${coverHtml}${body}
 <div class="rep-foot">تقريرٌ آليٌّ من نظام قارئات أفاقي — النسخة ${snapshot.version} — ${new Date(now).toLocaleString('ar-EG')} — الأرقامُ من سجلات الميدان لحظةَ التوليد.</div>
 </body></html>`;
 writeFileSync(OUT + '/report.html', report);
+console.log((qrData ? '✓ رمزُ QR مضمَّن' : '::notice::qrcode غير مثبَّتة — غلافٌ بلا رمز'));
 console.log(`✓ التقرير: ${OUT}/report.html (${Math.round(report.length / 1024)} ك.ب) · اللقطة: ${OUT}/snapshot.json · المسح ${S.sv}/${S.n} · التركيب ${S.ins}`);
 process.exit(0);

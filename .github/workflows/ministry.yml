@@ -26,7 +26,7 @@ jobs:
       - name: الحزم
         run: |
           for i in 1 2 3; do
-            npm i --no-save --no-audit --no-fund jsdom@^24 firebase-admin@^12 nodemailer@^6 && exit 0
+            npm i --no-save --no-audit --no-fund jsdom@^24 firebase-admin@^12 nodemailer@^6 qrcode@^1 && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت"; sleep $((i*15))
           done
           exit 1
