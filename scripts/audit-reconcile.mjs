@@ -135,7 +135,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svDone(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;
   T(new RegExp('هذا الأسبوع مُسح ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
-  T(h.indexOf('kk-story') > -1 && (h.match(/data-n="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
+  T(h.indexOf('kk-story') > -1 && (h.match(/aria-valuenow="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
   T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
   T(new RegExp(w.nm(SURVEYED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'المسحُ والتركيبُ من الكلِّ نفسِه: ' + SURVEYED + ' / ' + TOTAL);
   T(new RegExp(w.nm(N_STUCK) + ' متعذّر').test(kk), 'والمتعذّرُ رقمُ الشاشات الأخرى — رقمًا كبيرًا فوق اسمه: ' + N_STUCK);
