@@ -24960,7 +24960,7 @@ function kioskBody(){
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
   return '<div class="kk' + (KIOSK_ON ? ' on' : '') + '">'
     + '<div class="kk-head"><div><div class="kk-title">' + esc(t('قارئات أفاقي — حج ١٤٤٨هـ')) + '</div>'
-    +   '<div class="kk-brand">' + esc(t('وزارةُ الحج والعمرة \u00b7 مشروعُ قارئات نُسُك \u00b7 تنفيذُ أفاقي')) + '</div>'
+    +   '<div class="kk-brand">' + esc(t('وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي')) + '</div>'
     +   '<div class="kk-date">' + esc(fmtDT(now)) + ' \u00b7 <span class="kk-live"></span> ' + esc(t('يتجدّد كلَّ دقيقة')) + '</div></div>'
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"') + '</div>'
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
