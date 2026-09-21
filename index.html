@@ -658,6 +658,12 @@ body.nav-open .mapwrap{pointer-events:none}
 .lg-svg{width:13px;height:13px;flex:0 0 auto;display:inline-block;overflow:visible;vertical-align:middle}
 /* ═══ شاشةُ الوزارة (V17.82) — كبيرةٌ تُقرأ من بعيد، وتتجدّد وحدَها ═══ */
 .kk{--kk-ink:var(--ink);--kk-soft:var(--ink-soft);display:flex;flex-direction:column;gap:14px}
+/* طقمُ هوية الوزارة (V17.89): كلُّ لونٍ يُرى من الوزارة يُضبَط هنا وحدَه — فحين تصلنا
+   ألوانُها الرسميةُ تُبدَّل في سطر. الأخضرُ السعوديُّ والذهبيُّ والتركوازُ الغامق */
+:root{--min-green:#0B6E4F;--min-gold:#C9A227;--min-teal:#0E5C6E;--min-red:#C0392B}
+.kk-brand{font-size:12.5px;color:var(--kk-soft);letter-spacing:.2px;margin-top:2px}
+.kk-story{background:linear-gradient(135deg,rgba(11,110,79,.10),rgba(201,162,39,.12));border:1px solid rgba(11,110,79,.25);border-radius:14px;padding:12px 16px;font-size:16px;line-height:1.8;font-weight:600}
+body.kiosk .kk-story{font-size:21px}
 .kk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
 .kk-title{font-size:22px;font-weight:800;letter-spacing:-.2px}
 .kk-date{color:var(--kk-soft);font-size:13px;margin-top:2px}
@@ -679,7 +685,7 @@ body.nav-open .mapwrap{pointer-events:none}
 .kk-zone{margin:8px 0}
 .kk-zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
 .kk-bar{height:14px;border-radius:8px;background:var(--line-2);overflow:hidden}
-.kk-bar i{display:block;height:100%;background:linear-gradient(90deg,#2E75B6,#3AD6A0);border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.kk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--min-green),var(--min-gold));border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
 .kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 .kk-kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--surface-2)}
 .kk-fc{margin-top:3px;font-size:12.5px}
@@ -997,7 +1003,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.88</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.89</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3851,6 +3857,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي':'Ministry of Hajj and Umrah · Nusuk Readers project · delivered by AFAQY', 'هذا الأسبوع مُسح':'This week surveyed', 'نقطةً':'points', 'منها في':'of them in', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'No visit recorded this week', 'قبل الموعد بـ':'ahead of the deadline by', 'بعد الموعد بـ':'behind the deadline by', 'يومًا':'days', 'بلا وتيرةٍ منذ أسبوعين':'no pace for two weeks', 'نقطةً تنتظر قرارَ الوزارة':'points await the Ministry’s decision', 'متعذّرةٌ تحتاج قرارًا':'unreachable and need a decision',
  'ما الجديد في هذا التحديث':'What is new in this update', 'تظهر مرةً واحدةً بعد التحديث':'Shown once after the update', 'فهمت':'Got it',
  'ليستا على الإحداثيات نفسِها — لا تُدمَجان':'They are not at the same coordinates — cannot be merged', 'الأصلُ يجب أن يكون ما مُسح — اختر الأخرى أصلًا':'The original must be the surveyed one — choose the other as original', 'دُمجت في':'merged into', 'عادت نقطةً مستقلّة':'is a separate point again', 'أكثرُها المخيمُ الواحدُ مسجَّلًا مرتين بشاخصٍ مكتوبٍ بصفتين — فيُزار أحدُهما ويبقى توأمُه «لم يُزر» ويُعَدُّ في الإجمالي. اختر الأصلَ (ما مُسح إن مُسح أحدُهما) فيُدمَج التوأمُ فيه ويخرج من العدّ — ويُفَكُّ الدمجُ متى شئت. وإن كانا مخيمين حقًّا فافصل إحداثياتِهما من «تحريك».':'Most are one camp registered twice with its signpost written two ways — one gets visited and its twin stays “not visited” and counts in the total. Pick the original (the surveyed one, if either was) and the twin merges into it and leaves the count — undo any time. If they really are two camps, separate their coordinates with “Move”.', 'الأصلُ الأولى — ادمج الثانية':'First is original — merge the second', 'الأصلُ الثانية — ادمج الأولى':'Second is original — merge the first', 'مدمَجةٌ من قبل':'Merged earlier', 'فكّ الدمج':'Unmerge', 'توأمٌ على الإحداثيات نفسِها':'A twin at the same coordinates', 'إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.':'If they are one camp, merge them from “Data correction” so it is not counted twice.',
  'اكتمل':'Complete', 'لا وتيرةَ في أسبوعين':'No pace in two weeks', 'في الأسبوع':'per week', 'يكتمل نحو':'Completes around', 'بعد الموعد':'after the deadline', 'قبل الموعد':'before the deadline', 'لا مربعاتَ مسجَّلةً في هذا المشعر.':'No blocks registered in this zone.', 'مربعٌ مكتمل':'blocks complete', 'لم يُبدأ':'Not started', 'دون النصف':'Under half', 'فوق النصف':'Over half', 'خريطةُ التقدّم بالمربعات':'Progress map by block',
@@ -6582,6 +6589,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي':'وزارتِ حج و عمرہ · نسک ریڈرز منصوبہ · آفاقی کی تنفیذ', 'هذا الأسبوع مُسح':'اس ہفتے سروے ہوا', 'نقطةً':'پوائنٹس', 'منها في':'ان میں سے', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'اس ہفتے کوئی دورہ درج نہیں', 'قبل الموعد بـ':'آخری تاریخ سے پہلے', 'بعد الموعد بـ':'آخری تاریخ کے بعد', 'يومًا':'دن', 'بلا وتيرةٍ منذ أسبوعين':'دو ہفتوں سے کوئی رفتار نہیں', 'نقطةً تنتظر قرارَ الوزارة':'پوائنٹس وزارت کے فیصلے کے منتظر', 'متعذّرةٌ تحتاج قرارًا':'ناقابل رسائی — فیصلہ درکار',
  'ما الجديد في هذا التحديث':'اس اپ ڈیٹ میں نیا کیا ہے', 'تظهر مرةً واحدةً بعد التحديث':'اپ ڈیٹ کے بعد ایک بار دکھائی جاتی ہے', 'فهمت':'سمجھ گیا',
  'ليستا على الإحداثيات نفسِها — لا تُدمَجان':'یہ ایک ہی مقام پر نہیں — ضم نہیں ہو سکتے', 'الأصلُ يجب أن يكون ما مُسح — اختر الأخرى أصلًا':'اصل وہی ہونا چاہیے جس کا سروے ہوا — دوسرے کو اصل چنیں', 'دُمجت في':'میں ضم ہو گئی', 'عادت نقطةً مستقلّة':'دوبارہ الگ پوائنٹ بن گئی', 'أكثرُها المخيمُ الواحدُ مسجَّلًا مرتين بشاخصٍ مكتوبٍ بصفتين — فيُزار أحدُهما ويبقى توأمُه «لم يُزر» ويُعَدُّ في الإجمالي. اختر الأصلَ (ما مُسح إن مُسح أحدُهما) فيُدمَج التوأمُ فيه ويخرج من العدّ — ويُفَكُّ الدمجُ متى شئت. وإن كانا مخيمين حقًّا فافصل إحداثياتِهما من «تحريك».':'زیادہ تر ایک ہی کیمپ دو بار درج ہے جس کا نشان دو طرح لکھا گیا — ایک کا دورہ ہوتا ہے اور اس کا جڑواں «دورہ نہیں ہوا» رہ کر کل میں گنا جاتا ہے۔ اصل چنیں (جس کا سروے ہوا، اگر ہوا ہو) تو جڑواں اس میں ضم ہو کر گنتی سے نکل جاتا ہے — کبھی بھی واپس کیا جا سکتا ہے۔ اگر واقعی دو کیمپ ہیں تو «منتقل کریں» سے ان کے مقامات الگ کریں۔', 'الأصلُ الأولى — ادمج الثانية':'پہلا اصل ہے — دوسرے کو ضم کریں', 'الأصلُ الثانية — ادمج الأولى':'دوسرا اصل ہے — پہلے کو ضم کریں', 'مدمَجةٌ من قبل':'پہلے ضم شدہ', 'فكّ الدمج':'ضم واپس لیں', 'توأمٌ على الإحداثيات نفسِها':'ایک ہی مقام پر جڑواں', 'إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.':'اگر یہ ایک ہی کیمپ ہیں تو «ڈیٹا کی درستی» سے ضم کریں تاکہ دو بار نہ گنا جائے۔',
  'اكتمل':'مکمل', 'لا وتيرةَ في أسبوعين':'دو ہفتوں میں کوئی رفتار نہیں', 'في الأسبوع':'فی ہفتہ', 'يكتمل نحو':'تقریباً مکمل ہو گا', 'بعد الموعد':'آخری تاریخ کے بعد', 'قبل الموعد':'آخری تاریخ سے پہلے', 'لا مربعاتَ مسجَّلةً في هذا المشعر.':'اس مشعر میں کوئی بلاک درج نہیں۔', 'مربعٌ مكتمل':'مکمل بلاک', 'لم يُبدأ':'شروع نہیں ہوا', 'دون النصف':'آدھے سے کم', 'فوق النصف':'آدھے سے زیادہ', 'خريطةُ التقدّم بالمربعات':'بلاک کے لحاظ سے پیش رفت کا نقشہ',
@@ -24882,13 +24890,46 @@ function blockGrid(zone){
     + '<div class="kk-zl" style="margin-top:8px"><span class="hint">' + esc(t('مربعٌ مكتمل')) + ' <b class="num">' + nm(full) + '</b> ' + esc(t('من')) + ' <b class="num">' + nm(keys.length) + '</b></span>'
     + '<span class="kk-legend"><i class="c1"></i>' + esc(t('لم يُبدأ')) + ' <i class="c2"></i>' + esc(t('دون النصف')) + ' <i class="c3"></i>' + esc(t('فوق النصف')) + ' <i class="c4"></i>' + esc(t('اكتمل')) + '</span></div>';
 }
+/* ═══ الأسبوعُ في جملة (V17.89) ═══
+   الرقمُ يُقرأ، والجملةُ تُقال في الاجتماع. تُبنى من الأرقام نفسِها: ما مُسح
+   في سبعة أيام، وأكبرُ مشعرٍ ومتى يكتمل مقارنًا بالموعد، وما ينتظر قرارَ
+   الوزارة — بلا صفةٍ لا رقمَ خلفها. */
+function kioskStory(){
+  var K = siteKeyStats(), now = Date.now(), wk = now - 7 * 864e5, n7 = 0, byZ = {};
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r) && +r.at >= wk){ n7++; byZ[x.zone] = (byZ[x.zone] || 0) + 1; } });
+  var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
+  var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
+  var parts = [];
+  if (n7){ var top = Object.keys(byZ).sort(function(a, b){ return byZ[b] - byZ[a]; })[0];
+    parts.push(t('هذا الأسبوع مُسح') + ' ' + nm(n7) + ' ' + t('نقطةً') + (top ? ' (' + nm(byZ[top]) + ' ' + t('منها في') + ' ' + t(top) + ')' : '')); }
+  else parts.push(t('لم تُسجَّل زيارةٌ هذا الأسبوع'));
+  var z0 = zones[0], f = z0 ? zoneForecast(z0) : null;
+  if (f && f.eta){ var dd = f.due ? Math.round((f.due - f.eta) / 864e5) : 0;
+    parts.push(t(z0) + ' ' + t('يكتمل نحو') + ' ' + dayKey(f.eta) + (f.due ? (dd >= 0 ? ' \u2014 ' + t('قبل الموعد بـ') + ' ' + nm(dd) + ' ' + t('يومًا') : ' \u2014 ' + t('بعد الموعد بـ') + ' ' + nm(-dd) + ' ' + t('يومًا')) : '')); }
+  else if (f && f.stalled) parts.push(t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين'));
+  if (life.minwait) parts.push(nm(life.minwait) + ' ' + t('نقطةً تنتظر قرارَ الوزارة'));
+  if (K.total.stuck) parts.push(nm(K.total.stuck) + ' ' + t('متعذّرةٌ تحتاج قرارًا'));
+  return parts.join(' \u00b7 ') + '.';
+}
+/* العدّاداتُ تتحرّك من الصفر إلى رقمها حين تُفتَح الشاشة — الرقمُ يُرى وهو يُبنى */
+function kioskAnimate(){
+  var els = document.querySelectorAll('[data-n]');
+  if (!els.length) return;
+  var t0 = Date.now(), dur = 900;
+  var tick = function(){
+    var p = Math.min(1, (Date.now() - t0) / dur), e = 1 - Math.pow(1 - p, 3);
+    els.forEach(function(el){ var n = +el.getAttribute('data-n') || 0, sfx = el.getAttribute('data-sfx') || ''; el.textContent = nm(Math.round(n * e)) + sfx; });
+    if (p < 1) requestAnimationFrame(tick);
+  };
+  requestAnimationFrame(tick);
+}
 var KIOSK_ON = false, KIOSK_TIMER = null;
 function kioskRing(pct, col, label, sub){
   var r = 44, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, pct || 0));
   return '<div class="kk-ring">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"/>'
     +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" style="stroke:' + esc(col) + ';stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/>'
-    +   '<text x="55" y="61" class="kk-pct">' + nm(Math.round(p)) + '٪</text></svg>'
+    +   '<text x="55" y="61" class="kk-pct" data-n="' + Math.round(p) + '" data-sfx="٪">' + nm(Math.round(p)) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + '</div>'
     + (sub ? '<div class="kk-sub">' + sub + '</div>' : '') + '</div>';
 }
@@ -24919,13 +24960,15 @@ function kioskBody(){
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
   return '<div class="kk' + (KIOSK_ON ? ' on' : '') + '">'
     + '<div class="kk-head"><div><div class="kk-title">' + esc(t('قارئات أفاقي — حج ١٤٤٨هـ')) + '</div>'
+    +   '<div class="kk-brand">' + esc(t('وزارةُ الحج والعمرة \u00b7 مشروعُ قارئات نُسُك \u00b7 تنفيذُ أفاقي')) + '</div>'
     +   '<div class="kk-date">' + esc(fmtDT(now)) + ' \u00b7 <span class="kk-live"></span> ' + esc(t('يتجدّد كلَّ دقيقة')) + '</div></div>'
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"') + '</div>'
+    + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
     + '<div class="kk-rings">'
-    +   kioskRing(pcSv, '#2E75B6', 'المسحُ المنجَز', nm(S.sv) + ' / ' + nm(S.n) + ' \u00b7 ' + esc(t('متبقٍّ')) + ' ' + nm(S.n - S.sv))
-    +   kioskRing(pcMin, '#C9A227', 'اعتمادُ الوزارة من المُسِح', nm(minOk) + ' / ' + nm(S.sv))
-    +   kioskRing(pcIns, '#3AD6A0', 'التركيبُ المنجَز', nm(S.ins) + ' / ' + nm(S.n))
-    +   '<div class="kk-ring kk-plain"><div class="kk-big" style="color:#E05252">' + nm(S.stuck) + '</div><div class="kk-lab">' + esc(t('متعذّر')) + '</div>'
+    +   kioskRing(pcSv, 'var(--min-green)', 'المسحُ المنجَز', nm(S.sv) + ' / ' + nm(S.n) + ' \u00b7 ' + esc(t('متبقٍّ')) + ' ' + nm(S.n - S.sv))
+    +   kioskRing(pcMin, 'var(--min-gold)', 'اعتمادُ الوزارة من المُسِح', nm(minOk) + ' / ' + nm(S.sv))
+    +   kioskRing(pcIns, 'var(--min-teal)', 'التركيبُ المنجَز', nm(S.ins) + ' / ' + nm(S.n))
+    +   '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-red)" data-n="' + S.stuck + '">' + nm(S.stuck) + '</div><div class="kk-lab">' + esc(t('متعذّر')) + '</div>'
     +     '<div class="kk-sub">' + esc(t('لم يصل إليه الميدان')) + '</div></div>'
     + '</div>'
     + '<div class="kk-grid">'
@@ -24941,15 +24984,15 @@ function kioskBody(){
     +   '</div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('نبضُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>'
     +     (steps.length
-          ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind"><div class="kk-big">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + '</div></div>'; }).join('')
+          ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind"><div class="kk-big" data-n="' + kinds[k] + '">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + '</div></div>'; }).join('')
             + '<div class="kk-kind"><div class="kk-big">' + nm(Object.keys(people).length) + '</div><div class="kk-lab">' + esc(t('شخصًا في الميدان')) + '</div></div></div>'
           : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>')
     +   '</div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('ما ينتظر قرارًا')) + '</div>'
     +     '<div class="kk-kinds">'
-    +       '<div class="kk-kind"><div class="kk-big" style="color:#C9A227">' + nm(life.minwait || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر اعتمادَ الوزارة')) + '</div></div>'
-    +       '<div class="kk-kind"><div class="kk-big" style="color:#2E75B6">' + nm(life.visited || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر الاعتمادَ التقني')) + '</div></div>'
-    +       '<div class="kk-kind"><div class="kk-big" style="color:#3AD6A0">' + nm(life.ready || 0) + '</div><div class="kk-lab">' + esc(t('جاهزةٌ للتركيب')) + '</div></div>'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:var(--min-gold)" data-n="' + (life.minwait || 0) + '">' + nm(life.minwait || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر اعتمادَ الوزارة')) + '</div></div>'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:var(--min-green)" data-n="' + (life.visited || 0) + '">' + nm(life.visited || 0) + '</div><div class="kk-lab">' + esc(t('تنتظر الاعتمادَ التقني')) + '</div></div>'
+    +       '<div class="kk-kind"><div class="kk-big" style="color:var(--min-teal)" data-n="' + (life.ready || 0) + '">' + nm(life.ready || 0) + '</div><div class="kk-lab">' + esc(t('جاهزةٌ للتركيب')) + '</div></div>'
     +     '</div></div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('التحدياتُ الأكثرُ تكرارًا')) + '</div>'
     +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
@@ -24962,7 +25005,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
-    if (cur === 'kiosk') return head + kioskBody();
+    if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); return head + kioskBody(); }
     if (cur === 'svdash') return head + svdashBody();
     if (cur === 'now') return head + (function(){
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
@@ -26492,6 +26535,10 @@ var SESS_PW = '';
    بعد التحديث — لآخر نسخةٍ وحدَها — ثم لا تُعاد. وأوّلُ تثبيتٍ لا يُزعَج بها.
    الجردُ يمنع نشرَ نسخةٍ بلا سطورها. */
 var RELEASE_NOTES = [
+  { v:'V17.89', d:'٢١ سبتمبر ٢٠٢٦', notes:[
+      'شاشة الوزارة بهوية الوزارة: أخضر سعودي وذهبي، واسم الوزارة والمشروع على الرأس — ونفس الألوان في الصفحة المشتركة وتقرير السبت.',
+      '«الأسبوع في جملة» فوق الحلقات: كم مُسح هذا الأسبوع وأين، ومتى يكتمل أكبر مشعر مقارنًا بالموعد، وكم ينتظر قرار الوزارة — تُقال في الاجتماع كما هي.',
+      'الأرقام الكبيرة تتحرك من الصفر إلى قيمتها حين تُفتح الشاشة.' ] },
   { v:'V17.88', d:'٢١ سبتمبر ٢٠٢٦', notes:[
       'المخيمات المسجَّلة مرتين في منى (١٤ زوجًا) دُمجت آليًا حيث كان أحد التوأمين مُسحًا والآخر لا — واحتُفظ بالمُسح. ما لم يُحسم بعد تجده في «تصحيح البيانات» بقرارك.',
       'رقم «لم تُزر» في منى ينزل بذلك بشكل صادق — لا بتعديل يدوي.' ] },

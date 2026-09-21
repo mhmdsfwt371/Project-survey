@@ -2,7 +2,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
 <title>قارئات أفاقي — شاشة الوزارة</title>
 <style>
-:root{--ink:#14181d;--soft:#5b6673;--line:#e2e6ea;--line2:#eef1f4;--surface:#fff;--bg:#f4f6f8}
+:root{--ink:#14181d;--soft:#5b6673;--line:#e2e6ea;--line2:#eef1f4;--surface:#fff;--bg:#f4f6f8;--min-green:#0B6E4F;--min-gold:#C9A227;--min-teal:#0E5C6E;--min-red:#C0392B}
 @media (prefers-color-scheme:dark){:root{--ink:#E8EBEE;--soft:#9BA5AF;--line:#232b33;--line2:#1b2229;--surface:#12171c;--bg:#0A0D10}}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px))}
 .h{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}.t{font-size:24px;font-weight:800}.d{color:var(--soft);font-size:13px}
@@ -14,7 +14,8 @@
 .lab{font-weight:700;margin-top:6px;font-size:15px}.sub{color:var(--soft);font-size:12.5px}.big{font-size:44px;font-weight:800;line-height:1.05}
 .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}.box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px}
 .hh{font-weight:800;color:var(--soft);margin:0 0 10px}.zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
-.bar{height:14px;border-radius:8px;background:var(--line2);overflow:hidden;margin-bottom:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,#2E75B6,#3AD6A0);border-radius:8px}
+.bar{height:14px;border-radius:8px;background:var(--line2);overflow:hidden;margin-bottom:8px}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--min-green),var(--min-gold));border-radius:8px}
+.brand{font-size:12.5px;color:var(--soft)}.story{background:linear-gradient(135deg,rgba(11,110,79,.10),rgba(201,162,39,.12));border:1px solid rgba(11,110,79,.25);border-radius:14px;padding:12px 16px;font-size:16px;line-height:1.8;font-weight:600;margin:12px 0}
 .eta{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600}.ok{background:#e8f5ec;color:#1d7a3d}.bad{background:#fdecea;color:#b3261e}.mute{background:var(--line2);color:var(--soft)}
 .kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}.kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--line2)}
 .gate{max-width:420px;margin:12vh auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;text-align:center}
@@ -34,11 +35,12 @@
   var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
   function render(s){
     var zs = Object.keys(s.zones).sort(function(a, b){ return s.zones[b].n - s.zones[a].n; }), zmax = zs.length ? s.zones[zs[0]].n : 1;
-    var h = '<div class="h"><div><div class="t">قارئات أفاقي — حج ١٤٤٨هـ</div><div class="d">' + esc(new Date(s.at).toLocaleString('ar-EG')) + ' · <span class="live"></span> يتجدّد كلَّ ست ساعات · ' + esc(s.version) + '</div></div></div>'
-      + '<div class="rings">' + ring(s.total ? s.surveyed / s.total * 100 : 0, '#2E75B6', 'المسحُ المنجَز', nm(s.surveyed) + ' / ' + nm(s.total) + ' · متبقٍّ ' + nm(s.total - s.surveyed))
-      + ring(s.surveyed ? s.minOk / s.surveyed * 100 : 0, '#C9A227', 'اعتمادُ الوزارة من المُسِح', nm(s.minOk) + ' / ' + nm(s.surveyed))
-      + ring(s.total ? s.installed / s.total * 100 : 0, '#3AD6A0', 'التركيبُ المنجَز', nm(s.installed) + ' / ' + nm(s.total))
-      + '<div class="ring"><div class="big" style="color:#E05252">' + nm(s.stuck) + '</div><div class="lab">متعذّر</div><div class="sub">لم يصل إليه الميدان</div></div></div>'
+    var h = '<div class="h"><div><div class="t">قارئات أفاقي — حج ١٤٤٨هـ</div><div class="brand">وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي</div><div class="d">' + esc(new Date(s.at).toLocaleString('ar-EG')) + ' · <span class="live"></span> يتجدّد كلَّ ست ساعات · ' + esc(s.version) + '</div></div></div>'
+      + (s.story ? '<div class="story">' + esc(s.story) + '</div>' : '')
+      + '<div class="rings">' + ring(s.total ? s.surveyed / s.total * 100 : 0, 'var(--min-green)', 'المسحُ المنجَز', nm(s.surveyed) + ' / ' + nm(s.total) + ' · متبقٍّ ' + nm(s.total - s.surveyed))
+      + ring(s.surveyed ? s.minOk / s.surveyed * 100 : 0, 'var(--min-gold)', 'اعتمادُ الوزارة من المُسِح', nm(s.minOk) + ' / ' + nm(s.surveyed))
+      + ring(s.total ? s.installed / s.total * 100 : 0, 'var(--min-teal)', 'التركيبُ المنجَز', nm(s.installed) + ' / ' + nm(s.total))
+      + '<div class="ring"><div class="big" style="color:var(--min-red)">' + nm(s.stuck) + '</div><div class="lab">متعذّر</div><div class="sub">لم يصل إليه الميدان</div></div></div>'
       + '<div class="grid"><div class="box"><div class="hh">المشاعرُ — كم أُنجز وكم بقي</div>'
       + zs.map(function(z){ var o = s.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
           var eta = o.stalled ? '<span class="eta mute">لا وتيرةَ في أسبوعين</span>' : (o.eta ? '<span class="eta ' + (o.late ? 'bad' : 'ok') + '">يكتمل نحو ' + esc(new Date(o.eta).toISOString().slice(0, 10)) + '</span>' : (o.n - o.sv <= 0 ? '<span class="eta ok">اكتمل</span>' : ''));

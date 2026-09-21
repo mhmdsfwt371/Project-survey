@@ -35,13 +35,16 @@ const code = readFileSync(join(dir, 'code.txt'), 'utf8');
 T(/^[0-9A-F]{6}$/.test(code) && snap.gate === createHash('sha256').update(code).digest('hex'), 'اللقطةُ تحمل بصمةَ الرمز لا الرمزَ: ' + code.replace(/./g, '•'));
 T(!rep.includes(code) && !JSON.stringify(snap).includes(code), 'والرمزُ لا يظهر في التقرير ولا في اللقطة');
 
+const page = readFileSync('docs/ministry/index.html', 'utf8'), wf = readFileSync('.github/workflows/ministry.yml', 'utf8');
 console.log('\n══ ٣ · التقريرُ هو الشاشة ══');
 T((rep.match(/kk-ring/g) || []).length >= 5 && rep.includes('المشاعرُ — كم أُنجز وكم بقي') && rep.includes('نبضُ الميدان'), 'التقريرُ يحمل حلقاتِ الشاشة وصناديقَها');
 T(rep.includes(':root{') && rep.includes('.kk-ring') && rep.includes('dir="rtl"'), 'وتنسيقَها كاملًا مستقلًّا بالعربية');
 T(/يكتمل نحو/.test(rep), 'والتوقّعَ');
+T(typeof snap.story === 'string' && /هذا الأسبوع مُسح/.test(snap.story) && rep.includes('--min-green') && rep.includes('kk-story'), 'والأسبوعَ في جملةٍ في اللقطة والتقرير، والألوانَ من طقم الهوية');
+T(page.includes('--min-green') && page.includes('s.story'), 'والصفحةُ المشتركةُ بالطقم نفسِه وتعرض الجملة');
 
 console.log('\n══ ٤ · الصفحةُ المشتركةُ والسير ══');
-const page = readFileSync('docs/ministry/index.html', 'utf8'), wf = readFileSync('.github/workflows/ministry.yml', 'utf8');
+
 T(page.includes('raw.githubusercontent.com/mhmdsfwt371/Project-survey/ministry/snapshot.json') && page.includes('crypto.subtle'), 'الصفحةُ تقرأ فرعَ اللقطات وتقارن بصمةَ الرمز في المتصفّح');
 T(!page.includes('firebase') && !page.includes('googleapis'), 'ولا تعرف القاعدةَ — أرقامٌ عامةٌ فقط');
 T(/ministry:ministry/.test(wf) && !/push .*main/.test(wf), 'والسيرُ يدفع إلى فرع ministry وحدَه لا إلى الأصل');

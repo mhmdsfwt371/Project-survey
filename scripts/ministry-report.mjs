@@ -76,7 +76,8 @@ const snapshot = {
   minwait: life.minwait || 0, visited: life.visited || 0, ready: life.ready || 0,
   zones, day: { kinds, people: people.size },
   challenges: Object.keys(byCh).sort((a, b) => byCh[b] - byCh[a]).slice(0, 5).map(c => [c, byCh[c]]),
-  chain: w.chainRows().map(r => [r.n, r.done])
+  chain: w.chainRows().map(r => [r.n, r.done]),
+  story: w.kioskStory()
 };
 if (process.env.MINISTRY_SECRET){
   const dayKey = new Date(now).toISOString().slice(0, 10);
@@ -91,6 +92,7 @@ w.KK_ZONE = 'منى';
 const body = w.kioskBody();
 const css = [...d.querySelectorAll('style')].map(s => s.textContent).join('\n');
 const rules = (css.match(/:root\{[^}]*\}/) || [''])[0] + '\n'
+  + (css.match(/:root\{--min-[^}]*\}/) || [''])[0] + '\n'
   + (css.match(/\.kk[^{]*\{[^}]*\}|@keyframes kkPulse\{[^}]*\}\}?|\.chip[^{]*\{[^}]*\}|\.btn[^{]*\{[^}]*\}|\.hint\{[^}]*\}|\.num\{[^}]*\}/g) || []).join('\n');
 const report = `<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>تقرير الوزارة — قارئات أفاقي</title>
 <meta name="viewport" content="width=device-width,initial-scale=1"><style>

@@ -128,9 +128,15 @@ T(Object.values(st.byKey).reduce((a, b) => a + b, 0) === TOTAL && Object.values(
 
 console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ نفسَها (V17.82) ══');
 {
-  const kk = await open('over', 'kiosk');
-  const h = d.getElementById('content').innerHTML;
+  await open('over', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
+  const kk = txt(), h = d.getElementById('content').innerHTML;
   T((h.match(/kk-ring/g) || []).length === 4 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ وزرُّ العرض الكامل');
+  /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
+  const story = w.kioskStory();
+  const n7 = Object.keys(w.STATE.recs).filter(k => w.svDone(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;
+  T(new RegExp('هذا الأسبوع مُسح ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
+  T(h.indexOf('kk-story') > -1 && (h.match(/data-n="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
+  T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
   T(new RegExp(w.nm(SURVEYED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'المسحُ والتركيبُ من الكلِّ نفسِه: ' + SURVEYED + ' / ' + TOTAL);
   T(new RegExp(w.nm(N_STUCK) + ' متعذّر').test(kk), 'والمتعذّرُ رقمُ الشاشات الأخرى — رقمًا كبيرًا فوق اسمه: ' + N_STUCK);
   T(new RegExp(w.nm(PENDING) + ' تنتظر الاعتمادَ التقني').test(kk), 'وما ينتظر الاعتمادَ التقني من دورة الحياة: ' + PENDING);
@@ -149,7 +155,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T(cells.length > 10 && sum === camps, 'خلايا المربعات تُجمَع إلى مخيمات المشعر: ' + sum + ' / ' + camps);
   const cell = cells[0]; cell.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(w.CUR === 'sites' && /^مربع /.test(w.SITE_Q), 'والضغطُ على مربعٍ يفتح مواقعَه: ' + w.SITE_Q);
-  w.SITE_Q = ''; await open('over', 'kiosk');
+  w.SITE_Q = ''; await open('over', 'kiosk'); await wait(1200);
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
