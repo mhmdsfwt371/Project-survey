@@ -1003,7 +1003,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.90</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.91</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -26554,6 +26554,7 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V17.91', d:'٢١ سبتمبر ٢٠٢٦', notes:[] },   /* بنيةٌ داخلية — لا تغييرَ يراه المستخدم */
   { v:'V17.90', d:'٢١ سبتمبر ٢٠٢٦', notes:[
       'وضع القاعة: عند اختيار «عرض كامل» في شاشة الوزارة تنتقل الشاشة بين أقسامها تلقائيًا كل خمس عشرة ثانية، وتتوقف عند أول لمسة — مناسب لشاشة غرفة العمليات.',
       'التقرير الأسبوعي أصبح له غلاف بهوية الوزارة يحمل ملخص الأسبوع ورمز QR يفتح الصفحة المشتركة من الهاتف.' ] },
@@ -26586,8 +26587,9 @@ var RELEASE_NOTES = [
 var WN = null;
 /* verNum القائمةُ (رقمُ النسخة عددًا) هي المستعمَلة — لا تعريفَ ثانيًا */
 function releaseNotesFor(v){
+  /* آخرُ نسخةٍ لها سطورٌ يراها المستخدم — نسخةُ بنيةٍ بلا سطورٍ لا تُزعج أحدًا (V17.91) */
   var n = verNum(v), best = null;
-  RELEASE_NOTES.forEach(function(r){ var k = verNum(r.v); if (k <= n && (!best || k > verNum(best.v))) best = r; });
+  RELEASE_NOTES.forEach(function(r){ var k = verNum(r.v); if (k <= n && r.notes && r.notes.length && (!best || k > verNum(best.v))) best = r; });
   return best;
 }
 function whatsNewMaybe(){
@@ -26596,7 +26598,8 @@ function whatsNewMaybe(){
   if (!seen){ lsSet('nsk14.seenVer', cur); return false; }     /* أوّلُ تثبيت: لا رسالة */
   if (seen === cur) return false;
   var r = releaseNotesFor(cur);
-  if (!r){ lsSet('nsk14.seenVer', cur); return false; }
+  /* لا سطورَ أحدثَ مما رآه: يُسجَّل بلا رسالة */
+  if (!r || verNum(r.v) <= verNum(seen)){ lsSet('nsk14.seenVer', cur); return false; }
   WN = { v:cur, r:r, seen:seen };
   return true;
 }

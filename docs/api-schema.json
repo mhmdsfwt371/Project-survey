@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V17.90",
+ "app_version": "V17.91",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1745,7 +1745,8 @@
   "V17.87": "«ما الجديد»: RELEASE_NOTES [{v,d,notes[]}] سطورٌ بلسان المستخدم لكلِّ نسخة. whatsNewMaybe() بعد enterShell (وليس مع الجولة): بلا nsk14.seenVer → أوّلُ تثبيتٍ يُسجَّل بلا رسالة؛ seen==cur → لا شيء؛ وإلا WN={v,r} حيث r = releaseNotesFor(cur) (أحدثُ مدخلٍ ≤ النسخة). wnHtml() نافذةٌ على الجسد (wnWrap) كنافذة كلمة المرور ولا تُرسَم معها؛ data-wnx يغلق ويكتب seenVer. audit-whatsnew (٨ فحوص) يمنع نشرَ نسخةٍ بلا مدخلٍ باسمها في RELEASE_NOTES.",
   "V17.88": "دمجُ التوأم آليًّا للواضح: docs/twins.json (١٤ زوجًا) يقرؤه season-seed.mjs — لكلِّ زوجٍ يقرأ recs وsites؛ إن كان أحدُهما مُسِحًا (وصولٌ وليس مردودًا) والآخرُ لا → يكتب sites/{dup} = {hidden:true, dupOf:keep, dupBy:'season-seed', dupAt, _by, _at} بالدمج؛ إن تساويا (كلاهما أو لا أحد) يُترَك للمهندس؛ وما دُمج من قبل (hidden/dupOf) لا يُمَسّ ولو بالعكس. season.yml يعمل عند تغيّر twins.json. audit-season ٢٤ فحصًا.",
   "V17.89": "هويةُ الوزارة والأسبوعُ في جملة: :root{--min-green,--min-gold,--min-teal,--min-red} طقمٌ واحدٌ تقرأ منه حلقاتُ شاشة الوزارة وأشرطتُها والصفحةُ المشتركةُ والتقرير؛ .kk-brand سطرُ «وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي». kioskStory() جملةٌ من الأرقام: ما مُسح في ٧ أيام (وأكثرُ مشعر)، وتوقّعُ أكبر مشعرٍ مقارنًا بالموعد (قبل/بعد بـN يومًا) أو «بلا وتيرة»، وما ينتظر الوزارة، والمتعذّر — تُعرَض في .kk-story وتدخل snapshot.story والتقرير والصفحة المشتركة. kioskAnimate() يحرّك [data-n] من صفرٍ إلى الرقم في ٩٠٠ مللي ثانية بعد الرسم. season.yml يكتب نتيجةَ التغذية تعليقًا على الالتزام (gh api commits/{sha}/comments) بصلاحية contents:write. audit-reconcile ٤٤ وaudit-ministry ١٧.",
-  "V17.90": "وضعُ القاعة وغلافُ التقرير. kioskToggle: مع العرض الكامل KIOSK_CYCLE كلَّ ١٥ ثانية يستدعي kioskCycleTick الذي يتنقّل بـscrollIntoView بين الأقسام الموسومة id=kksec-N (الحلقات، المشاعر، المربعات، القرارات)، ويتوقّف عند أوّل pointerdown/wheel/keydown/touchstart (once). ministry-report.mjs: قسمُ cover قبل الجسم — الهويةُ والعنوانُ والتاريخُ وkioskStory وQR مولَّدٌ محليًّا بمكتبة qrcode (data URL) إلى صفحة docs/ministry/ — وbreak-after:page في الطباعة؛ ministry.yml يثبّت qrcode@^1. audit-ministry ١٩ فحصًا."
+  "V17.90": "وضعُ القاعة وغلافُ التقرير. kioskToggle: مع العرض الكامل KIOSK_CYCLE كلَّ ١٥ ثانية يستدعي kioskCycleTick الذي يتنقّل بـscrollIntoView بين الأقسام الموسومة id=kksec-N (الحلقات، المشاعر، المربعات، القرارات)، ويتوقّف عند أوّل pointerdown/wheel/keydown/touchstart (once). ministry-report.mjs: قسمُ cover قبل الجسم — الهويةُ والعنوانُ والتاريخُ وkioskStory وQR مولَّدٌ محليًّا بمكتبة qrcode (data URL) إلى صفحة docs/ministry/ — وbreak-after:page في الطباعة؛ ministry.yml يثبّت qrcode@^1. audit-ministry ١٩ فحصًا.",
+  "V17.91": "تطابقُ البيئة: scripts/audit-deps.mjs يقرأ قائمةَ ما تثبّته السحابةُ من خطوة npm i في docs-check.yml، ويتحقّق أن الشرائح تثبّت القائمةَ نفسَها حرفًا، ويمسح كلَّ سكربتٍ تشغّله القائمةُ (وما يستورده) فلا يستدعي مكتبةً خارج القائمة إلا داخل try، ويرفض أن يحمل الجهازُ المحلّيُّ في node_modules مكتبةً خارج إغلاق تبعيّات القائمة — فلا ينجح محلّيًّا ما سيسقط في السحابة. rerun.yml يعيد التشغيل على main وحدَه. releaseNotesFor يختار آخر نسخةٍ لها سطور، وwhatsNewMaybe لا يعرض إن كانت ≤ ما رُئي؛ مدخلُ نسخة البنية notes:[]."
  },
  "map_and_geolocation": {
   "tile_layers": {

@@ -18,9 +18,12 @@ permissions:
   contents: read
 jobs:
   rerun:
+    # الإعادةُ للأصل وحدَه: على فرع التجربة يقرأ المساعدُ النتيجةَ ويصلح، والإعادةُ
+    # تضاعف رسائلَ الفشل لصاحب المستودع بلا فائدة (V17.91)
     if: >
       github.event.workflow_run.conclusion == 'failure' &&
-      github.event.workflow_run.run_attempt == 1
+      github.event.workflow_run.run_attempt == 1 &&
+      github.event.workflow_run.head_branch == 'main'
     runs-on: ubuntu-latest
     steps:
       - name: أعِد ما سقط — مرةً واحدة

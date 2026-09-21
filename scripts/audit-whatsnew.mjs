@@ -33,7 +33,7 @@ const boot = async (seenVer) => {
 console.log('\n══ ١ · النسخةُ الحاليةُ لها سطورُها ══');
 T(!!ver, 'نسخةُ الرأس: ' + ver);
 const m = /var RELEASE_NOTES = \[([\s\S]*?)\n\];/.exec(html);
-T(!!m && m[1].includes("v:'" + ver + "'"), 'وفي RELEASE_NOTES مدخلٌ بالنسخة نفسِها — لا تُنشَر نسخةٌ بلا سطورها');
+T(!!m && m[1].includes("v:'" + ver + "'"), 'وفي RELEASE_NOTES مدخلٌ بالنسخة نفسِها — لا تُنشَر نسخةٌ بلا مدخلها (ومدخلُ البنية بلا سطور)');
 
 console.log('\n══ ٢ · أوّلُ تثبيتٍ صامت ══');
 {
@@ -46,7 +46,8 @@ console.log('\n══ ٣ · بعد التحديث مرةٌ واحدة ══');
 {
   const { w, d, wait, dom } = await boot('V17.80');
   const wrap = d.getElementById('wnWrap');
-  T(!!wrap && wrap.innerHTML.includes('ما الجديد في هذا التحديث') && wrap.innerHTML.includes(ver), 'تظهر الرسالةُ بعد تحديثٍ من نسخةٍ أقدم — لآخر نسخة');
+  T(!!wrap && wrap.innerHTML.includes('ما الجديد في هذا التحديث') && wrap.innerHTML.includes(ver), 'تظهر الرسالةُ بعد تحديثٍ من نسخةٍ أقدم — بعنوان آخر نسخة وسطورِ آخر نسخةٍ لها سطور');
+  T(wrap && !/<li >\s*<\/li>/.test(wrap.innerHTML) && (wrap.innerHTML.match(/<li /g) || []).length >= 1, 'وليست فارغة');
   T(wrap && (wrap.innerHTML.match(/<li /g) || []).length >= 1 && !wrap.innerHTML.includes('V17.80'), 'وبسطور آخر نسخةٍ لا القديمة');
   d.querySelector('[data-wnx]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(100);
   T(!d.getElementById('wnWrap') && w.localStorage.getItem('nsk14.seenVer') === ver, 'وبعد الإغلاق تُسجَّل النسخةُ ولا تعود');
@@ -54,7 +55,16 @@ console.log('\n══ ٣ · بعد التحديث مرةٌ واحدة ══');
   dom.window.close();
 }
 
-console.log('\n══ ٤ · النسخةُ نفسُها لا تُعيد ══');
+console.log('\n══ ٤ · نسخةُ بنيةٍ بلا سطورٍ لا تُزعج، والنسخةُ نفسُها لا تُعيد ══');
+{
+  /* من رأى سطورَ آخرِ نسخةٍ لها سطورٌ ثم وصلته نسخةُ بنيةٍ بلا سطور: لا رسالة */
+  const lastNoted = (m[1].match(/v:'(V[\d.]+)'[^\n]*notes:\[\s*'/g) || []).map(x => /v:'(V[\d.]+)'/.exec(x)[1])[0];
+  if (lastNoted && lastNoted !== ver){
+    const { d, w, dom } = await boot(lastNoted);
+    T(!d.getElementById('wnWrap') && w.localStorage.getItem('nsk14.seenVer') === ver, 'نسخةُ بنيةٍ بلا سطورٍ بعد نسخةٍ رُئيت سطورُها: لا رسالة، وتُسجَّل');
+    dom.window.close();
+  }
+}
 {
   const { d, dom } = await boot(ver);
   T(!d.getElementById('wnWrap'), 'من رآها على هذه النسخة لا يراها ثانية');
