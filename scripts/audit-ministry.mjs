@@ -9,6 +9,7 @@
 import { execFileSync } from 'child_process';
 import { readFileSync, writeFileSync, mkdtempSync } from 'fs';
 import { createHash } from 'crypto';
+import { createRequire } from 'module';
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -41,7 +42,9 @@ T((rep.match(/kk-ring/g) || []).length >= 5 && rep.includes('المشاعرُ �
 T(rep.includes(':root{') && rep.includes('.kk-ring') && rep.includes('dir="rtl"'), 'وتنسيقَها كاملًا مستقلًّا بالعربية');
 T(/يكتمل نحو/.test(rep), 'والتوقّعَ');
 T(rep.includes('class="cover"') && rep.includes('تقرير المتابعة الأسبوعي') && rep.includes('cover-story') && rep.includes('break-after:page'), 'وغلافًا بالهوية يحمل الأسبوعَ في جملة ثم تبدأ الصفحاتُ (V17.90)');
-T(/qrcode@\^1/.test(readFileSync('.github/workflows/ministry.yml', 'utf8')) && rep.includes('cover-qr') === rep.includes('data:image/png;base64'), 'ورمزُ QR يُولَّد محليًّا ويُضمَّن — أو يُقال إنه غاب');
+let hasQr = false; try { createRequire(import.meta.url)('qrcode'); hasQr = true; } catch {}
+T(/qrcode@\^1/.test(readFileSync('.github/workflows/ministry.yml', 'utf8')) && rep.includes('class="cover-qr"') === hasQr && (hasQr || /qrcode غير مثبَّتة/.test(out)),
+  'ورمزُ QR يُولَّد محليًّا ويُضمَّن حين تتوفّر مكتبتُه — وإلا يُقال إنه غاب (هنا: ' + (hasQr ? 'مضمَّن' : 'غائب') + ')');
 T(typeof snap.story === 'string' && /هذا الأسبوع مُسح/.test(snap.story) && rep.includes('--min-green') && rep.includes('kk-story'), 'والأسبوعَ في جملةٍ في اللقطة والتقرير، والألوانَ من طقم الهوية');
 T(page.includes('--min-green') && page.includes('s.story'), 'والصفحةُ المشتركةُ بالطقم نفسِه وتعرض الجملة');
 
