@@ -35,7 +35,7 @@
   var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
   function render(s){
     var zs = Object.keys(s.zones).sort(function(a, b){ return s.zones[b].n - s.zones[a].n; }), zmax = zs.length ? s.zones[zs[0]].n : 1;
-    var h = '<div class="h"><div><div class="t">قارئات أفاقي — حج ١٤٤٨هـ</div><div class="brand">وزارةُ الحج والعمرة · مشروعُ قارئات نُسُك · تنفيذُ أفاقي</div><div class="d">' + esc(new Date(s.at).toLocaleString('ar-EG')) + ' · <span class="live"></span> يتجدّد كلَّ ست ساعات · ' + esc(s.version) + '</div></div></div>'
+    var h = '<div class="h"><div><div class="t">قارئات أفاقي — حج ١٤٤٨هـ</div><div class="brand">وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي</div><div class="d">' + esc(new Date(s.at).toLocaleString('ar-EG')) + ' · <span class="live"></span> يتجدّد كلَّ ست ساعات · ' + esc(s.version) + '</div></div></div>'
       + (s.story ? '<div class="story">' + esc(s.story) + '</div>' : '')
       + '<div class="rings">' + ring(s.total ? s.surveyed / s.total * 100 : 0, 'var(--min-green)', 'المسحُ المنجَز', nm(s.surveyed) + ' / ' + nm(s.total) + ' · متبقٍّ ' + nm(s.total - s.surveyed))
       + ring(s.surveyed ? s.minOk / s.surveyed * 100 : 0, 'var(--min-gold)', 'اعتمادُ الوزارة من المُسِح', nm(s.minOk) + ' / ' + nm(s.surveyed))
