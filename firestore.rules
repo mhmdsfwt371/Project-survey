@@ -99,9 +99,16 @@ service cloud.firestore {
     // هو — بالاستعلام `where('by','==',اسمه)` فتُثبَت القاعدةُ على الشرط لا
     // على كلِّ وثيقة (وفي الطلب كلمةُ مرورٍ لا يراها إلا كاتبُها أو المدير).
     function canProv() { return ok() && myRank() >= 70; }
+    // بريدُ الدعوة: اسمُ المستخدم إن كان بريدًا، وإلا بنطاق الدخول
+    function invEmail(u) { return u.matches('.*@.*') ? u : (u + '@nusuk.local'); }
     // مفتاحُ تشغيل السيور: يكتبه مديرُ المشروع وحدَه — ويقرؤه من يُنشئ الحساباتِ
     // ويُعيد الكلماتِ (المشرفُ فما فوق) والإدارةُ العليا، فلا يُرسَل أحدٌ إلى GitHub.
     // المفتاحُ لا يملك إلا تشغيلَ السيور (Actions) — لا الشيفرةَ ولا القاعدة.
+    // رمزُ الدعوة: يكتبه المكتبُ مع الدعوة ولا يقرؤه أحدٌ — القاعدةُ وحدَها تقرؤه عند التفعيل
+    match /pcode/{id} {
+      allow read: if false;
+      allow create, update, delete: if mgr();
+    }
     match /ghcfg/{id} {
       allow read: if ok() && (role() == 'admin' || role() == 'exec' || myRank() >= 70);
       allow write: if ok() && role() == 'admin';
@@ -130,8 +137,11 @@ service cloud.firestore {
       // القراءةُ مفتوحةٌ عمدًا: من يفعّل دعوتَه لم يُسجَّل بعدُ فلا هويةَ له،
       // وليس في الدعوة سرّ — اسمٌ ودورٌ بلا كلمةِ مرور، والكلمةُ يضعها
       // صاحبُها ولا تُخزَّن. ولا يُقرَأ بها شيءٌ من بيانات المشروع.
-      allow read: if resource == null || resource.data.keys().hasOnly(
+      // القراءةُ بالمعرِّف وحدَه لمن يفعّل دعوتَه؛ والقائمةُ للمكتب — فلا تُعَدُّ
+      // الدعواتُ من الخارج
+      allow get: if resource == null || resource.data.keys().hasOnly(
         ['name','user','role','job','sup','dept','active','at','by','pending','jobLog']);
+      allow list: if mgr();
       allow create, update: if mgr();
       // ويمحوها من فعّلها: صار له حسابٌ باسم المستخدم نفسِه
       allow delete: if mgr()
@@ -162,14 +172,21 @@ service cloud.firestore {
         // الحصار ويُرفَع عملُه، ويرقّيه المكتبُ إلى دوره الحقيقي.
         || (request.auth.uid == uid
             && !exists(uPath())
-            && request.resource.data.get('active', true) == true
             && (
-              // إمّا تسجيلٌ ذاتيٌّ فنيًّا (أدنى الأدوار)
-              request.resource.data.role == 'tech'
-              // وإمّا تفعيلُ دعوةٍ: الدورُ من الدعوة نفسِها لا من كاتبها
-              || (exists(/databases/$(db)/documents/pending/$(request.resource.data.get('user', '\u0000')))
+              // إمّا تسجيلٌ ذاتيٌّ: فنيًّا غيرَ فعّالٍ حتى يفعّله المكتب — يعمل على
+              // جهازه ويُرفَع عملُه بعد التفعيل
+              (request.resource.data.role == 'tech'
+               && request.resource.data.get('active', true) == false)
+              // وإمّا تفعيلُ دعوةٍ يثبت صاحبُها أنه هو: رمزُ الدعوة (في وثيقةٍ لا
+              // تُقرأ) وبريدُ الدخول هو بريدُ الدعوة، والدورُ من الدعوة نفسِها
+              || (request.resource.data.get('user', '') != ''
+                  && exists(/databases/$(db)/documents/pending/$(request.resource.data.user))
                   && get(/databases/$(db)/documents/pending/$(request.resource.data.user)).data.get('role', 'tech')
-                     == request.resource.data.role)
+                     == request.resource.data.role
+                  && exists(/databases/$(db)/documents/pcode/$(request.resource.data.user))
+                  && get(/databases/$(db)/documents/pcode/$(request.resource.data.user)).data.get('code', '\u0000')
+                     == request.resource.data.get('code', '')
+                  && request.auth.token.get('email', '') == invEmail(request.resource.data.user))
             ));
       // الحذفُ للمهندس ومدير المشروع: لا نفسَه، ولا من هو أعلى منه رتبة
       allow delete: if pm('users', 'd', mgr()) && request.auth.uid != uid

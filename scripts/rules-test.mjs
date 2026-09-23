@@ -321,6 +321,33 @@ await ok  ('الفنيُّ يرفع mustChange عن نفسه مع pwAt',      up
 await deny('ولا يعيدها مؤقتةً',                             updateDoc(doc(as('tmp1'), 'users/tmp1'), { mustChange:true }));
 await deny('ولا يمسّ معها حقلًا آخر',                        updateDoc(doc(as('tmp1'), 'users/tmp1'), { mustChange:false, role:'admin' }));
 await deny('ولا يرفعها عن غيره',                            updateDoc(doc(as('tec'), 'users/tmp1'), { mustChange:false }));
+console.log('\n══ التسجيلُ الذاتيُّ غيرُ فعّالٍ حتى يفعّله المكتب، والدعوةُ برمزها وبريدها ══');
+/* الحالاتُ التي كانت تمرُّ في القواعد السابقة وصارت تُرَدّ — تُثبَت هنا بالمحاكي نفسِه */
+await deny('غريبٌ مسجَّلٌ بلا وثيقةٍ لا يُنشئ نفسَه فنيًّا فعّالًا',   setDoc(doc(as('str'), 'users/str'), { name:'غريب', role:'tech', active:true, user:'str' }));
+await deny('ولا بدورٍ أعلى',                                          setDoc(doc(as('str'), 'users/str'), { name:'غريب', role:'engineer', active:false, user:'str' }));
+await ok  ('ويُنشئ نفسَه فنيًّا غيرَ فعّالٍ',                          setDoc(doc(as('str'), 'users/str'), { name:'غريب', role:'tech', active:false, user:'str', self:true }));
+await deny('وغيرُ الفعّالِ لا يقرأ الزيارات',                          getDoc(doc(as('str'), 'recs/S1')));
+await deny('ولا المواقعَ الجديدة',                                     getDocs(query(collection(as('str'), 'newsites'), limit(1))));
+await deny('ولا يكتب زيارة',                                           setDoc(doc(as('str'), 'recs/STR1'), { ...rec, id:'STR1' }));
+await deny('ولا يرفع نفسَه فعّالًا',                                   updateDoc(doc(as('str'), 'users/str'), { active:true }));
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const db = ctx.firestore();
+  await setDoc(doc(db, 'pending/m.inv'), { name:'مدعوّ', user:'m.inv', role:'supervisor', at:1, by:'مهندس' });
+  await setDoc(doc(db, 'pcode/m.inv'),   { code:'K7Q2M9', at:1 });
+});
+await deny('الغريبُ لا يعدُّ الدعوات (قائمة)',                        getDocs(query(collection(as('str'), 'pending'), limit(5))));
+await deny('ولا غيرُ المسجَّل',                                         getDocs(query(collection(anon, 'pending'), limit(5))));
+await ok  ('ودعوةٌ بعينها تُقرأ بمعرِّفها لتفعيلها',                    getDoc(doc(anon, 'pending/m.inv')));
+await deny('ورمزُ الدعوة لا يُقرأ أبدًا — ولا من المهندس',              getDoc(doc(as('eng'), 'pcode/m.inv')));
+const inv = env.authenticatedContext('invuid', { email:'m.inv@nusuk.local' }).firestore();
+const notInv = env.authenticatedContext('notinv', { email:'someone@nusuk.local' }).firestore();
+await deny('تفعيلُ الدعوة بلا رمز يُرَدّ',                              setDoc(doc(inv, 'users/invuid'), { name:'مدعوّ', user:'m.inv', role:'supervisor', active:true }));
+await deny('وبرمزٍ خاطئ يُرَدّ',                                        setDoc(doc(inv, 'users/invuid'), { name:'مدعوّ', user:'m.inv', role:'supervisor', active:true, code:'WRONG1' }));
+await deny('وببريدٍ غيرِ بريد الدعوة يُرَدّ ولو صحَّ الرمز',            setDoc(doc(notInv, 'users/notinv'), { name:'دخيل', user:'m.inv', role:'supervisor', active:true, code:'K7Q2M9' }));
+await deny('وبدورٍ غيرِ دور الدعوة يُرَدّ',                             setDoc(doc(inv, 'users/invuid'), { name:'مدعوّ', user:'m.inv', role:'engineer', active:true, code:'K7Q2M9' }));
+await ok  ('والمدعوُّ نفسُه بالرمز والبريد يفعّل بدور دعوته',           setDoc(doc(inv, 'users/invuid'), { name:'مدعوّ', user:'m.inv', role:'supervisor', active:true, code:'K7Q2M9' }));
+await ok  ('والحساباتُ القائمةُ كما هي: المهندسُ يُنشئ حسابًا لغيره',   setDoc(doc(as('eng'), 'users/newtec'), { name:'فني جديد', role:'tech', active:true, user:'newtec' }));
+await ok  ('والفنيُّ الفعّالُ يقرأ زيارتَه كما كان',                    getDoc(doc(as('tec'), 'recs/S1')));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

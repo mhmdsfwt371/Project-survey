@@ -689,6 +689,7 @@ body.kiosk .kk-story{font-size:21px}
 .kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 .kk-kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--surface-2)}
 #idbBanner{position:sticky;top:0;z-index:95;background:#B3261E;color:#fff;font-weight:700;padding:10px 14px;text-align:center;font-size:14px}
+#inactBanner{position:sticky;top:0;z-index:94;background:#B7791F;color:#fff;font-weight:700;padding:9px 14px;text-align:center;font-size:14px}
 .kk-fc{margin-top:3px;font-size:12.5px}
 .kk-eta{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:600}
 .kk-eta.ok{background:var(--ok-bg);color:var(--ok)}.kk-eta.bad{background:var(--danger-bg);color:var(--danger)}.kk-eta.mute{background:var(--surface-2);color:var(--ink-mute)}
@@ -3858,6 +3859,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل':'Your account record was created — it awaits office activation; your work stays on this device and uploads after activation', 'فُعِّل حسابك — يُرفَع عملُك الآن':'Your account is activated — your work uploads now', 'حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.':'Your account awaits office activation — your work stays on this device and uploads after activation.', 'ينتظر التفعيل':'Awaiting activation',
  'الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'Local saving on this device is not working: sync now and do not close the app until your work is uploaded.', 'المخزنُ المحلي':'Local store', 'لا يعمل — الذاكرةُ فقط':'Not working — memory only', 'يُفتَح…':'Opening…', 'مُنح':'Granted', 'لم يُمنَح':'Not granted', 'غيرُ متاح':'Not available', 'لم يُسأل بعد':'Not asked yet', 'قاعدةُ الجهاز':'Device database', 'التخزينُ الدائم':'Persistent storage', 'زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'Sync now and do not close the app until your work is uploaded.',
  'يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية':'Fills the screen and moves between sections by itself every fifteen seconds',
  'وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي':'Ministry of Hajj and Umrah · AFAQY Readers project', 'هذا الأسبوع مُسح':'This week surveyed', 'نقطةً':'points', 'منها في':'of them in', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'No visit recorded this week', 'قبل الموعد بـ':'ahead of the deadline by', 'بعد الموعد بـ':'behind the deadline by', 'يومًا':'days', 'بلا وتيرةٍ منذ أسبوعين':'no pace for two weeks', 'نقطةً تنتظر قرارَ الوزارة':'points await the Ministry’s decision', 'متعذّرةٌ تحتاج قرارًا':'unreachable and need a decision',
@@ -6592,6 +6594,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل':'آپ کا اکاؤنٹ ریکارڈ بن گیا — دفتر کی منظوری کا منتظر ہے؛ آپ کا کام اسی ڈیوائس پر رہے گا اور منظوری کے بعد اپ لوڈ ہو گا', 'فُعِّل حسابك — يُرفَع عملُك الآن':'آپ کا اکاؤنٹ فعال ہو گیا — آپ کا کام اب اپ لوڈ ہو رہا ہے', 'حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.':'آپ کا اکاؤنٹ دفتر کی منظوری کا منتظر ہے — کام اسی ڈیوائس پر رہے گا اور منظوری کے بعد اپ لوڈ ہو گا۔', 'ينتظر التفعيل':'منظوری کا منتظر',
  'الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'اس ڈیوائس پر مقامی محفوظی کام نہیں کر رہی: ابھی سنک کریں اور ایپ بند نہ کریں جب تک آپ کا کام اپ لوڈ نہ ہو جائے۔', 'المخزنُ المحلي':'مقامی اسٹور', 'لا يعمل — الذاكرةُ فقط':'کام نہیں کر رہا — صرف میموری', 'يُفتَح…':'کھل رہا ہے…', 'مُنح':'دے دیا گیا', 'لم يُمنَح':'نہیں دیا گیا', 'غيرُ متاح':'دستیاب نہیں', 'لم يُسأل بعد':'ابھی نہیں پوچھا گیا', 'قاعدةُ الجهاز':'ڈیوائس ڈیٹا بیس', 'التخزينُ الدائم':'مستقل اسٹوریج', 'زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'ابھی سنک کریں اور ایپ بند نہ کریں جب تک کام اپ لوڈ نہ ہو جائے۔',
  'يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية':'اسکرین بھر دیتا ہے اور ہر پندرہ سیکنڈ میں خود حصوں کے درمیان چلتا ہے',
  'وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي':'وزارتِ حج و عمرہ · آفاقی ریڈرز منصوبہ', 'هذا الأسبوع مُسح':'اس ہفتے سروے ہوا', 'نقطةً':'پوائنٹس', 'منها في':'ان میں سے', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'اس ہفتے کوئی دورہ درج نہیں', 'قبل الموعد بـ':'آخری تاریخ سے پہلے', 'بعد الموعد بـ':'آخری تاریخ کے بعد', 'يومًا':'دن', 'بلا وتيرةٍ منذ أسبوعين':'دو ہفتوں سے کوئی رفتار نہیں', 'نقطةً تنتظر قرارَ الوزارة':'پوائنٹس وزارت کے فیصلے کے منتظر', 'متعذّرةٌ تحتاج قرارًا':'ناقابل رسائی — فیصلہ درکار',
@@ -18357,6 +18360,24 @@ function myUid(){
   }
   return '';
 }
+/* ═══ الحسابُ الذي ينتظر التفعيل (V17.93) ═══
+   من سجّل نفسَه — أو عُطِّل — يعمل على جهازه ولا تقبل القاعدةُ رفعَه؛ فما
+   يرفعه يُعزَل برفض صلاحيةٍ لا يُسقَط. تُقال الحالُ في لافتةٍ ثابتة، ويُتحقَّق
+   في كلِّ نبضةٍ هل فعّله المكتب — فإن فُعِّل عاد المعزولُ إلى الطابور وحدَه. */
+function meInactive(){
+  var u = STATE.users && STATE.users[myUid()];
+  return !!(u && u.active === false);
+}
+function meActivatedCheck(){
+  if (!meInactive() || !STATE.meta.online) return Promise.resolve(false);
+  return myDocFetch(true).then(function(has){
+    if (!has || meInactive()) return false;
+    var back = permRelease(true);
+    logEvent('فُعِّل الحساب — ' + (back ? nm(back) + ' وثيقةً عادت للرفع' : 'لا معزول'));
+    toast(t('فُعِّل حسابك — يُرفَع عملُك الآن'));
+    render(1); return true;
+  });
+}
 var MYDOC = { at:0, has:null, err:'' };
 var PZ_ARM = 0;   /* ضغطةُ «أسقط الكل» الأولى — تُؤكَّد بثانية */
 /* ═══ إصلاحُ السبب يُطلِق ما حُبس بسببه ═══
@@ -18434,16 +18455,15 @@ function myDocFix(){
         render(1); return true;
       });
     }
-    /* القاعدةُ لا تقبل إلا «فني» لمن يسجّل نفسَه — والترقيةُ من المكتب */
+    /* القاعدةُ لا تقبل لمن يسجّل نفسَه إلا «فنيًّا غيرَ فعّال» (V17.93): يعمل على
+       جهازه ويُرفَع عملُه حين يفعّله المكتبُ — لا حسابَ فعّالًا لمن لا يعرفه أحد */
     var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
-              role:'tech', active:true, at:Date.now(), self:true };
+              role:'tech', active:false, at:Date.now(), self:true };
     return FB.db.collection('users').doc(myUid()).set(v).then(function(){
       STATE.users[myUid()] = v;
       MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
-      logEvent('إنشاء وثيقة حساب ذاتيًّا — ' + myUid());
-      var back = permRelease(true);
-      toast(t('أُنشئت وثيقةُ حسابك فنيًّا — اطلب من المكتب ترقيةَ دورك')
-            + (back ? ' \u00b7 ' + nm(back) + ' ' + t('وثيقةً عادت للرفع') : ''));
+      logEvent('إنشاء وثيقة حساب ذاتيًّا (ينتظر التفعيل) — ' + myUid());
+      toast(t('أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل'));
       render(1); return true;
     }).catch(function(e){
       softErr('إنشاء وثيقة الحساب', e, 'تعذّر إنشاءُ وثيقة حسابك — راجع المكتب');
@@ -28082,6 +28102,7 @@ var PRES = { at:0, ver:'', fetchAt:0 };
 function presenceBeat(force){
   var u = myUid();
   if (!u) return false;
+  try { if (typeof meActivatedCheck === 'function') meActivatedCheck(); } catch (e){}   /* هل فُعِّل الحسابُ؟ (V17.93) */
   var ver = appVer();
   if (!force && PRES.ver === ver && Date.now() - PRES.at < 10 * 60000) return false;
   PRES.at = Date.now(); PRES.ver = ver;
@@ -32928,7 +32949,7 @@ function usersCard(){
                         /* الجوالُ: كان حقلًا في البيانات (ph) يقرؤه إشعارُ واتساب ولا شاشةَ تكتبه (V16.97) */
                         + '<label class="mini">' + esc(t('الجوال')) + '</label><input data-usrph="' + esc(uid) + '" value="' + esc(u.ph || '') + '" dir="ltr" inputmode="tel" placeholder="05…" style="min-width:130px">'
                         + '</div>',
-                        pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
+                        (on ? pill('نشط', 'ok') : (u.self ? pill(t('ينتظر التفعيل'), 'wrn') : pill('معطل', 'off'))),
                         '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                         btn('احفظ','btn-primary btn-sm',' data-usrsave="' + esc(uid) + '"')
                         + btn('إلغاء','btn-quiet btn-sm',' data-usredit=""')
@@ -32950,7 +32971,7 @@ function usersCard(){
                               + (u.sup ? ' \u00b7 \u2B06 ' + esc(t('مديره')) + ' ' + esc(u.sup) : '')
                               + '</span>' : '')
                         + '<br><span class="hint num" style="margin:0">\u{1F4F1} ' + (u.ph ? esc(u.ph) : '<span style="color:#E05252">' + esc(t('بلا جوال')) + '</span>') + '</span>',
-                      pill(on ? 'نشط' : 'معطل', on ? 'ok' : 'off'),
+                      (on ? pill('نشط', 'ok') : (u.self ? pill(t('ينتظر التفعيل'), 'wrn') : pill('معطل', 'off'))),
                       '<span class="num">' + esc(u.at > 1e11 ? dayKey(u.at) : String(u.at || '').slice(0,10)) + '</span>',
                       /* الوزارةُ تقرأ الجدولَ ولا تُعدّل: التعديلُ والتعطيلُ لمن يُنشئ */
                       btn('\u{1F5D2} ' + t('السجل'),'btn-quiet btn-sm',' data-usrlog="' + esc(uid) + '"')
@@ -33881,6 +33902,12 @@ function render(force){
     if (!ib){ ib = document.createElement('div'); ib.id = 'idbBanner'; ib.setAttribute('role', 'alert'); document.body.insertBefore(ib, document.body.firstChild); }
     ib.innerHTML = '\u26A0 ' + esc(t('الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.'));   /* بلغة اللحظة */
   } else if (ib){ ib.parentNode.removeChild(ib); }
+  /* لافتةُ الحساب الذي ينتظر التفعيل (V17.93) */
+  var ab = document.getElementById('inactBanner'), inact = typeof meInactive === 'function' && meInactive();
+  if (inact){
+    if (!ab){ ab = document.createElement('div'); ab.id = 'inactBanner'; ab.setAttribute('role', 'status'); document.body.insertBefore(ab, document.body.firstChild); }
+    ab.innerHTML = '\u23F3 ' + esc(t('حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.'));
+  } else if (ab){ ab.parentNode.removeChild(ab); }
   /* «ما الجديد» على الجسد كذلك — تحت نافذة الكلمة إن اجتمعتا (V17.87) */
   var wnOld = document.getElementById('wnWrap');
   if (wnOld) wnOld.parentNode.removeChild(wnOld);
