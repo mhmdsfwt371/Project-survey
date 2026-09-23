@@ -148,13 +148,15 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   const zQ = Object.keys(w.siteKeyStats().zones).filter(z => z !== zA)[0], fQ = w.zoneForecast(zQ);
   T(!!fQ && fQ.stalled === true, 'ومشعرٌ بلا حركةٍ يُقال فيه «لا وتيرة»: ' + zQ);
   T(/يكتمل نحو/.test(kk) && /لا وتيرةَ في أسبوعين/.test(kk), 'وكلاهما على الشاشة');
-  /* خريطةُ المربعات (V17.83): مجموعُ الخلايا = مخيماتُ المشعر ذاتُ المربع */
-  const cells = [...d.querySelectorAll('.kk-cell')];
-  const sum = cells.reduce((a, c) => a + +c.querySelector('i').textContent.replace(/[٠-٩]/g, x => '٠١٢٣٤٥٦٧٨٩'.indexOf(x)).split('/')[1], 0);
-  const camps = w.STATE.sites.filter(x => x.zone === w.KK_ZONE && x.type === 'مخيم').length;
-  T(cells.length > 10 && sum === camps, 'خلايا المربعات تُجمَع إلى مخيمات المشعر: ' + sum + ' / ' + camps);
-  const cell = cells[0]; cell.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
-  T(w.CUR === 'sites' && /^مربع /.test(w.SITE_Q), 'والضغطُ على مربعٍ يفتح مواقعَه: ' + w.SITE_Q);
+  /* خريطةُ النقاط (V17.93): دائرةٌ لكلِّ نقطةٍ بإحداثيات، والمفتاحُ يُجمَع إليها */
+  const dots = [...d.querySelectorAll('.kk-pts circle')];
+  const zPts = w.STATE.sites.filter(x => x.zone === w.KK_ZONE && +x.lat && +x.lng).length;
+  const lg = [...d.querySelectorAll('.kk-legend2 .kk-lg b')].reduce((s0, b) => s0 + +b.textContent.replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[٬,]/g, ''), 0);
+  T(dots.length > 100 && dots.length === zPts && lg === zPts, 'دائرةٌ لكلِّ نقطةٍ في المشعر، والمفتاحُ يُجمَع إليها: ' + dots.length + ' / ' + lg);
+  const d0 = dots.find(c => c.getAttribute('data-site')); const id0 = d0.getAttribute('data-site');
+  T(d0.getAttribute('fill') === w.LIFE[w.lifeOf(w.siteFind(id0))].c, 'ولونُ النقطة لونُ حالتها في الخريطة');
+  d0.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
+  T(w.CUR === 'site' && w.DETAIL_ID === id0, 'والضغطُ على نقطةٍ يفتحها: ' + id0);
   w.SITE_Q = ''; await open('over', 'kiosk'); await wait(1200);
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');

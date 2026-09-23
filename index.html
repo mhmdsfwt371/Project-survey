@@ -694,6 +694,12 @@ body.kiosk .kk-story{font-size:21px}
 .kk-eta{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:600}
 .kk-eta.ok{background:var(--ok-bg);color:var(--ok)}.kk-eta.bad{background:var(--danger-bg);color:var(--danger)}.kk-eta.mute{background:var(--surface-2);color:var(--ink-mute)}
 .kk-wide{grid-column:1/-1}
+.kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px}
+.kk-pts circle{cursor:pointer;stroke:rgba(0,0,0,.25);stroke-width:.6}
+.kk-pts circle:hover{stroke:#fff;stroke-width:2}
+.kk-legend2{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px}
+.kk-lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin:0 0 0 5px;vertical-align:middle}
+body.kiosk .kk-pts circle{r:6}
 .kk-cells{display:flex;flex-wrap:wrap;gap:6px}
 .kk-cell{border:0;border-radius:9px;padding:6px 8px;min-width:58px;text-align:center;cursor:pointer;color:#fff;line-height:1.15;font:inherit}
 .kk-cell b{display:block;font-size:13px}.kk-cell i{display:block;font-style:normal;font-size:11px;opacity:.9}
@@ -3859,6 +3865,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'لا نقاطَ بإحداثياتٍ في هذا المشعر.':'No points with coordinates in this zone.', 'بلا إحداثيات':'Without coordinates', 'خريطةُ التقدّم بالنقاط':'Progress map by point',
  'الرقم تحت كل مربع: عدد المخيمات التي مُسحت فيه من إجمالي مخيماته.':'The number under each block: camps surveyed in it out of its total camps.',
  'كُتب الطلب — يُنشئ الخادمُ الحسابَ خلال دقائق':'Request written — the server creates the account within minutes',
  'أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل':'Your account record was created — it awaits office activation; your work stays on this device and uploads after activation', 'فُعِّل حسابك — يُرفَع عملُك الآن':'Your account is activated — your work uploads now', 'حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.':'Your account awaits office activation — your work stays on this device and uploads after activation.', 'ينتظر التفعيل':'Awaiting activation',
@@ -6596,6 +6603,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'لا نقاطَ بإحداثياتٍ في هذا المشعر.':'اس مشعر میں کوئی مقام کوآرڈینیٹس کے ساتھ نہیں۔', 'بلا إحداثيات':'بغیر کوآرڈینیٹس', 'خريطةُ التقدّم بالنقاط':'پوائنٹ کے لحاظ سے پیش رفت کا نقشہ',
  'الرقم تحت كل مربع: عدد المخيمات التي مُسحت فيه من إجمالي مخيماته.':'ہر بلاک کے نیچے عدد: اس میں سروے شدہ کیمپ، کل کیمپوں میں سے۔',
  'كُتب الطلب — يُنشئ الخادمُ الحسابَ خلال دقائق':'درخواست لکھ دی گئی — سرور چند منٹ میں اکاؤنٹ بنا دے گا',
  'أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل':'آپ کا اکاؤنٹ ریکارڈ بن گیا — دفتر کی منظوری کا منتظر ہے؛ آپ کا کام اسی ڈیوائس پر رہے گا اور منظوری کے بعد اپ لوڈ ہو گا', 'فُعِّل حسابك — يُرفَع عملُك الآن':'آپ کا اکاؤنٹ فعال ہو گیا — آپ کا کام اب اپ لوڈ ہو رہا ہے', 'حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.':'آپ کا اکاؤنٹ دفتر کی منظوری کا منتظر ہے — کام اسی ڈیوائس پر رہے گا اور منظوری کے بعد اپ لوڈ ہو گا۔', 'ينتظر التفعيل':'منظوری کا منتظر',
@@ -24958,34 +24966,37 @@ function forecastHtml(zone){
   return '<span class="kk-eta ' + (f.late ? 'bad' : 'ok') + '" title="' + esc(nm(Math.round(f.rate * 7)) + ' ' + t('في الأسبوع')) + '">'
     + esc(t('يكتمل نحو')) + ' ' + esc(dayKey(f.eta)) + (f.due ? ' \u00b7 ' + esc(t(f.late ? 'بعد الموعد' : 'قبل الموعد')) : '') + '</span>';
 }
-/* ═══ خريطةُ التقدّم بالمربعات (V17.83) ═══
-   المشرفُ يسأل «فين الفجوات؟» — فيرى كلَّ مربعٍ خليةً بلونه: رماديٌّ لم
-   يُبدأ، كهرمانيٌّ دون النصف، أزرقُ فوقه، أخضرُ اكتمل. الضغطُ يفتح مواقعَ
-   المربع. */
+/* ═══ خريطةُ التقدّم بالنقاط (V17.93) ═══
+   طلب صاحبُ المشروع أن تُرى النقاطُ لا المربعات: كلُّ نقطةٍ في المشعر دائرةٌ في
+   موضعها الحقيقيِّ (إحداثياتُها) بلون حالتها — ألوانُ الخريطة نفسُها (LIFE) —
+   فتُرى الفجواتُ في أماكنها، والضغطُ على نقطةٍ يفتحها. والمفتاحُ يعدُّ كلَّ
+   حالةٍ فيُجمَع إلى نقاط المشعر. */
 var KK_ZONE = 'منى';
-function blockGrid(zone){
-  var B = {};
-  (STATE.sites || []).forEach(function(x){
-    if (x.zone !== zone || x.type !== 'مخيم') return;
-    var sq = String(x.sq || '').trim() || '—';
-    var b = B[sq] || (B[sq] = { n:0, sv:0 });
-    b.n++; if (svDone(STATE.recs[x.id])) b.sv++;
-  });
-  var keys = Object.keys(B).sort(function(a, b){
-    var pa = a.split('-').map(Number), pb = b.split('-').map(Number);
-    return (pa[0] || 999) - (pb[0] || 999) || (pa[1] || 0) - (pb[1] || 0) || a.localeCompare(b);
-  });
-  if (!keys.length) return '<p class="hint">' + esc(t('لا مربعاتَ مسجَّلةً في هذا المشعر.')) + '</p>';
-  var full = 0;
-  return '<p class="hint" style="margin:0 0 8px">' + esc(t('الرقم تحت كل مربع: عدد المخيمات التي مُسحت فيه من إجمالي مخيماته.')) + '</p>'
-    + '<div class="kk-cells">' + keys.map(function(k){
-      var b = B[k], p = Math.round(b.sv / b.n * 100), cls = p >= 100 ? 'c4' : p >= 50 ? 'c3' : p > 0 ? 'c2' : 'c1';
-      if (p >= 100) full++;
-      return '<button class="kk-cell ' + cls + '" data-blk="' + esc(k) + '" title="' + esc(t('مربع') + ' ' + k + ' \u00b7 ' + nm(b.sv) + ' / ' + nm(b.n)) + '">'
-        + '<b>' + esc(k) + '</b><i>' + nm(b.sv) + '/' + nm(b.n) + '</i></button>';
-    }).join('') + '</div>'
-    + '<div class="kk-zl" style="margin-top:8px"><span class="hint">' + esc(t('مربعٌ مكتمل')) + ' <b class="num">' + nm(full) + '</b> ' + esc(t('من')) + ' <b class="num">' + nm(keys.length) + '</b></span>'
-    + '<span class="kk-legend"><i class="c1"></i>' + esc(t('لم يُبدأ')) + ' <i class="c2"></i>' + esc(t('دون النصف')) + ' <i class="c3"></i>' + esc(t('فوق النصف')) + ' <i class="c4"></i>' + esc(t('اكتمل')) + '</span></div>';
+function pointMap(zone){
+  var all = (STATE.sites || []).filter(function(x){ return x.zone === zone; });
+  var P = all.filter(function(x){ return +x.lat && +x.lng; }), noCo = all.length - P.length;
+  if (!P.length) return '<p class="hint">' + esc(t('لا نقاطَ بإحداثياتٍ في هذا المشعر.')) + '</p>';
+  var la0 = Infinity, la1 = -Infinity, lo0 = Infinity, lo1 = -Infinity;
+  P.forEach(function(x){ var a = +x.lat, o = +x.lng; if (a < la0) la0 = a; if (a > la1) la1 = a; if (o < lo0) lo0 = o; if (o > lo1) lo1 = o; });
+  var kx = Math.cos((la0 + la1) / 2 * Math.PI / 180), W = 1000;
+  var spanX = Math.max(1e-6, (lo1 - lo0) * kx), spanY = Math.max(1e-6, la1 - la0);
+  var H = Math.max(280, Math.min(720, Math.round(W * spanY / spanX))), pad = 14;
+  var sc = Math.min((W - 2 * pad) / spanX, (H - 2 * pad) / spanY);
+  var offX = (W - spanX * sc) / 2, offY = (H - spanY * sc) / 2;
+  var cnt = {};
+  var dots = P.map(function(x){
+    var st = lifeOf(x), L = LIFE[st] || LIFE.todo; cnt[st] = (cnt[st] || 0) + 1;
+    var cx = offX + ((+x.lng) - lo0) * kx * sc, cy = H - (offY + ((+x.lat) - la0) * sc);
+    return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="' + L.c + '" data-site="' + esc(x.id) + '">'
+      + '<title>' + esc(x.id + ' \u00b7 ' + t(L.n)) + '</title></circle>';
+  }).join('');
+  var legend = LIFE_ORDER.filter(function(k){ return cnt[k]; }).map(function(k){
+    return '<span class="kk-lg"><i style="background:' + LIFE[k].c + '"></i>' + esc(t(LIFE[k].n)) + ' <b class="num">' + nm(cnt[k]) + '</b></span>';
+  }).join('');
+  return '<svg class="kk-pts" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('خريطةُ التقدّم بالنقاط') + ' \u2014 ' + t(zone)) + '">' + dots + '</svg>'
+    + '<div class="kk-legend2">' + legend
+    + '<span class="hint" style="margin:0">' + esc(t('الإجمالي')) + ' <b class="num">' + nm(P.length) + '</b>'
+    + (noCo ? ' \u00b7 ' + esc(t('بلا إحداثيات')) + ' <b class="num">' + nm(noCo) + '</b>' : '') + '</span></div>';
 }
 /* ═══ الأسبوعُ في جملة (V17.89) ═══
    الرقمُ يُقرأ، والجملةُ تُقال في الاجتماع. تُبنى من الأرقام نفسِها: ما مُسح
@@ -25090,9 +25101,9 @@ function kioskBody(){
             + '<div class="kk-bar" style="width:' + Math.max(12, Math.round(o.n / zoneMax * 100)) + '%"><i style="width:' + p + '%"></i></div>'
             + '<div class="kk-fc">' + forecastHtml(z) + '</div></div>'; }).join('')
     +   '</div>'
-    +   '<div class="kk-box kk-wide" id="kksec-3"><div class="kk-h" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span>' + esc(t('خريطةُ التقدّم بالمربعات')) + ' \u2014 ' + esc(t(KK_ZONE)) + '</span>'
-    +     '<span>' + ['منى','عرفات'].map(function(z){ return '<button class="chip' + (KK_ZONE === z ? ' on' : '') + '" data-kkz="' + esc(z) + '">' + esc(t(z)) + '</button>'; }).join(' ') + '</span></div>'
-    +     blockGrid(KK_ZONE)
+    +   '<div class="kk-box kk-wide" id="kksec-3"><div class="kk-h" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span>' + esc(t('خريطةُ التقدّم بالنقاط')) + ' \u2014 ' + esc(t(KK_ZONE)) + '</span>'
+    +     '<span>' + zones.map(function(z){ return '<button class="chip' + (KK_ZONE === z ? ' on' : '') + '" data-kkz="' + esc(z) + '">' + esc(t(z)) + '</button>'; }).join(' ') + '</span></div>'
+    +     pointMap(KK_ZONE)
     +   '</div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('نبضُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>'
     +     (steps.length
@@ -26653,7 +26664,7 @@ var RELEASE_NOTES = [
       'إذا تعذّر الحفظ على ذاكرة الجهاز يظهر شريط أحمر يطلب المزامنة وعدم إغلاق التطبيق، ويحاول النظام إصلاح الحفظ تلقائيًا ثم ينقل ما حُفظ مؤقتًا دون فقد.',
       'يطلب التطبيق من المتصفح الاحتفاظ ببيانات الجهاز بشكل دائم، وتظهر النتيجة في صحة النظام.',
       'الحساب الذي يسجّل نفسه بنفسه يبقى بانتظار تفعيل المكتب، ويستمر عمله محفوظًا على الجهاز ثم يُرفع بعد التفعيل.',
-      'خريطة المربعات في شاشة الوزارة توضّح معنى الرقم تحت كل مربع.' ] },
+      'خريطة التقدم في شاشة الوزارة أصبحت بالنقاط: كل نقطة في موقعها الحقيقي بلون حالتها، والضغط عليها يفتحها.' ] },
   { v:'V17.92', d:'٢١ سبتمبر ٢٠٢٦', notes:[] },   /* دستورُ الوكلاء — لا تغييرَ يراه المستخدم */
   { v:'V17.91', d:'٢١ سبتمبر ٢٠٢٦', notes:[] },   /* بنيةٌ داخلية — لا تغييرَ يراه المستخدم */
   { v:'V17.90', d:'٢١ سبتمبر ٢٠٢٦', notes:[
@@ -34571,11 +34582,7 @@ function clickA(e){
   if (du){ if (dupUndo(du.getAttribute('data-dupundo'))) render(1); return true; }
   var kkz = e.target.closest('[data-kkz]');
   if (kkz){ KK_ZONE = kkz.getAttribute('data-kkz'); render(1); return true; }
-  var blk = e.target.closest('[data-blk]');
-  if (blk){
-    /* يُضبَط بعد goPage: الرسمُ يمسح بحثَ الصفحة عند تبديلها (V17.24) */
-    goPage('sites'); PG_Q = 'مربع ' + blk.getAttribute('data-blk'); PG_KEEP = true; SITE_Q = PG_Q; render(1); return true;
-  }
+
   var svd = e.target.closest('[data-svd]');
   if (svd){ var sk = svd.getAttribute('data-svd'); SVD_PICK = (SVD_PICK === sk ? '' : sk); render(1); return true; }
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
