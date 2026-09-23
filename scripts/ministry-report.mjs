@@ -12,7 +12,7 @@
                        ويُكتَب في اللقطة sha256(الرمز) لا الرمزُ نفسُه.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
-import { createHash } from 'crypto';
+import { createHash, pbkdf2Sync, randomBytes, createCipheriv } from 'crypto';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
@@ -79,13 +79,22 @@ const snapshot = {
   chain: w.chainRows().map(r => [r.n, r.done]),
   story: w.kioskStory()
 };
+/* (V17.94) اللقطةُ على فرعٍ عامٍّ لا تُكتَب صريحةً: تُشفَّر AES-256-GCM بمفتاحٍ مشتقٍّ
+   من رمز اليوم (PBKDF2 — الصفحةُ تشتقُّه من الرمز الذي يكتبه ممثّلُ الوزارة)،
+   ويُنشَر معها بصمةُ الرمز لا الرمزُ. بلا سرٍّ (بيئةُ الفحص) تبقى صريحةً كما كانت. */
+export const SNAP_SALT = 'nusuk-ministry-v1', SNAP_ITER = 100000;
 if (process.env.MINISTRY_SECRET){
   const dayKey = new Date(now).toISOString().slice(0, 10);
   const code = createHash('sha256').update(process.env.MINISTRY_SECRET + '|' + dayKey).digest('hex').slice(0, 6).toUpperCase();
-  snapshot.gate = createHash('sha256').update(code).digest('hex');
+  const gate = createHash('sha256').update(code).digest('hex');
+  const key = pbkdf2Sync(code, SNAP_SALT, SNAP_ITER, 32, 'sha256');
+  const iv = randomBytes(12), c = createCipheriv('aes-256-gcm', key, iv);
+  const ct = Buffer.concat([c.update(JSON.stringify(Object.assign({}, snapshot, { gate })), 'utf8'), c.final(), c.getAuthTag()]);
   writeFileSync(OUT + '/code.txt', code);
+  writeFileSync(OUT + '/snapshot.json', JSON.stringify({ v:1, enc:'aes-256-gcm', kdf:'pbkdf2-sha256', iter:SNAP_ITER, at:snapshot.at, day:dayKey, gate, iv:iv.toString('base64'), ct:ct.toString('base64') }));
+} else {
+  writeFileSync(OUT + '/snapshot.json', JSON.stringify(snapshot));
 }
-writeFileSync(OUT + '/snapshot.json', JSON.stringify(snapshot));
 
 /* ── الغلافُ ورمزُ الوصول (V17.90) ──────────────────────────────────────────
    صفحةُ غلافٍ بالهوية: العنوانُ والتاريخُ والأسبوعُ في جملة، ورمزُ QR يفتح

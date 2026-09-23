@@ -1011,7 +1011,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.93</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.94</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3865,6 +3865,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'النبضُ والتقرير':'Pulse and report', 'نبضُ الصباح':'Morning pulse', 'تقريرُ النظام':'System report', 'لم يصل بعد':'Not received yet',
  'لا نقاطَ بإحداثياتٍ في هذا المشعر.':'No points with coordinates in this zone.', 'بلا إحداثيات':'Without coordinates', 'خريطةُ التقدّم بالنقاط':'Progress map by point',
  'الرقم تحت كل مربع: عدد المخيمات التي مُسحت فيه من إجمالي مخيماته.':'The number under each block: camps surveyed in it out of its total camps.',
  'كُتب الطلب — يُنشئ الخادمُ الحسابَ خلال دقائق':'Request written — the server creates the account within minutes',
@@ -6603,6 +6604,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'النبضُ والتقرير':'نبض اور رپورٹ', 'نبضُ الصباح':'صبح کی نبض', 'تقريرُ النظام':'سسٹم رپورٹ', 'لم يصل بعد':'ابھی موصول نہیں ہوا',
  'لا نقاطَ بإحداثياتٍ في هذا المشعر.':'اس مشعر میں کوئی مقام کوآرڈینیٹس کے ساتھ نہیں۔', 'بلا إحداثيات':'بغیر کوآرڈینیٹس', 'خريطةُ التقدّم بالنقاط':'پوائنٹ کے لحاظ سے پیش رفت کا نقشہ',
  'الرقم تحت كل مربع: عدد المخيمات التي مُسحت فيه من إجمالي مخيماته.':'ہر بلاک کے نیچے عدد: اس میں سروے شدہ کیمپ، کل کیمپوں میں سے۔',
  'كُتب الطلب — يُنشئ الخادمُ الحسابَ خلال دقائق':'درخواست لکھ دی گئی — سرور چند منٹ میں اکاؤنٹ بنا دے گا',
@@ -18528,8 +18530,8 @@ function bkCard(){
               : pill('لم يُرفَع', 'off'))
        : '<span class="hint" style="margin:0">' + esc(t('يُقرأ…')) + '</span>',
     dv && !dOk ? esc(dv.why || '') + (dv.fix ? '<br><span class="hint" style="margin:0">' + esc(dv.fix) + '</span>' : '')
-               : (dv && dv.bytes ? esc(t('بيانات')) + ' ' + nm(Math.round((dv.bytes['backup-full.json'] || 0) / 1024)) + ' ' + esc(t('ك.ب'))
-                   + ' \u00b7 ' + esc(t('صور')) + ' ' + nm(Math.round((dv.bytes['photos.json'] || 0) / 1024)) + ' ' + esc(t('ك.ب')) : '')]);
+               : (dv && dv.bytes ? esc(t('بيانات')) + ' ' + nm(Math.round((dv.bytes['backup-full.enc'] || dv.bytes['backup-full.json'] || 0) / 1024)) + ' ' + esc(t('ك.ب'))
+                   + ' \u00b7 ' + esc(t('صور')) + ' ' + nm(Math.round((dv.bytes['photos.enc'] || dv.bytes['photos.json'] || 0) / 1024)) + ' ' + esc(t('ك.ب')) : '')]);
   var bad = (m && !mOk) || (dv && !dOk) || (mAge != null && mAge > 2);
   return card((bad ? '\u26A0 ' : '\u{1F5C4} ') + t('النسخ الاحتياطي والدرايف'),
       table(['ما يُنسَخ','آخر مرة','التفصيل'], rows)
@@ -26660,6 +26662,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V17.94', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'البلاغات ونبض الصباح وتقرير النظام أصبحت تُتابع داخل التطبيق فقط (صحة النظام)، ولم تعد تُنشر في المستودع العام.',
+      'النسخة الاحتياطية اليومية أصبحت تُحفظ مشفّرة على الدرايف فقط، ولا يُحفظ في المستودع إلا أعدادها.',
+      'أرقام الصفحة المشتركة للوزارة أصبحت مشفّرة ولا تُقرأ إلا برمز اليوم.' ] },
   { v:'V17.93', d:'٢٣ سبتمبر ٢٠٢٦', notes:[
       'إذا تعذّر الحفظ على ذاكرة الجهاز يظهر شريط أحمر يطلب المزامنة وعدم إغلاق التطبيق، ويحاول النظام إصلاح الحفظ تلقائيًا ثم ينقل ما حُفظ مؤقتًا دون فقد.',
       'يطلب التطبيق من المتصفح الاحتفاظ ببيانات الجهاز بشكل دائم، وتظهر النتيجة في صحة النظام.',
@@ -28257,6 +28263,34 @@ function localStoreCard(){
     + '<span>' + esc(t('التخزينُ الدائم')) + ': ' + ps + '</span>'
     + (IDB_BAD ? '<span class="hint" style="margin:0">' + esc(t('زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.')) + '</span>' : '') + '</div>');
 }
+/* ═══ النبضُ والتقريرُ في التطبيق (V17.94) ═══
+   كانا بلاغَين عامَّين في المستودع. صارا في settings/sysreport يقرؤهما المكتبُ
+   هنا: نصُّ آخرِ نبضٍ وآخرِ تقريرٍ بتاريخهما — قراءةٌ واحدةٌ كلَّ عشر دقائق. */
+var SYSREP = { at:0, v:null, err:'' };
+function sysReportFetch(force){
+  if (!(may('users') || rankOf(ROLE) >= rankOf('engineer') || effRole(ROLE) === 'exec')) return Promise.resolve(null);
+  if (!force && Date.now() - SYSREP.at < 600000) return Promise.resolve(SYSREP.v);
+  if (!FB.ready || !FB.db) return Promise.resolve(null);
+  SYSREP.at = Date.now();
+  return FB.db.collection('settings').doc('sysreport').get().then(function(doc){
+    FB.readCount = (FB.readCount || 0) + 1;
+    SYSREP.v = (doc && doc.exists) ? doc.data() : {}; SYSREP.err = '';
+    if (CUR === 'sys') render(1);
+    return SYSREP.v;
+  }).catch(function(e){ SYSREP.err = String(e && (e.message || e.code) || e).slice(0, 80); return null; });
+}
+function sysReportCard(){
+  if (!(may('users') || rankOf(ROLE) >= rankOf('engineer') || effRole(ROLE) === 'exec')) return '';
+  if (!SYSREP.v && !SYSREP.err) sysReportFetch();
+  var v = SYSREP.v || {};
+  var one = function(k, title){
+    var x = v[k]; if (!x || !x.text) return '<p class="hint" style="margin:0">' + esc(t(title)) + ': ' + esc(t('لم يصل بعد')) + '</p>';
+    return '<details><summary><b>' + esc(t(title)) + '</b> \u00b7 <span class="num">' + esc(fmtDT(x.at)) + '</span></summary>'
+      + '<pre style="white-space:pre-wrap;font-family:inherit;font-size:13px;line-height:1.7;margin:8px 0 0">' + esc(String(x.text).slice(0, 12000)) + '</pre></details>';
+  };
+  return card('النبضُ والتقرير', one('pulse', 'نبضُ الصباح') + one('report', 'تقريرُ النظام')
+    + (SYSREP.err ? '<p class="hint" style="margin:6px 0 0">' + esc(SYSREP.err) + '</p>' : ''));
+}
 PAGE.sys = { m:'النظام', t:'صحة النظام',
   l:'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.',
   body:function(){
@@ -28373,7 +28407,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
           + '</p>');
   })();
     if (cur === 'bugs') return head + bugsPageHtml();
-    if (cur === 'sys') return head + localStoreCard() + (function(){
+    if (cur === 'sys') return head + localStoreCard() + sysReportCard() + (function(){
     /* ═══ فحوصٌ حقيقيةٌ لا أصفارٌ مكتوبة ═══
        كانت الشاشةُ أربعةَ أصفارٍ بيدٍ — تقول «سليم» ولو كانت القاعدةُ مليئةً
        بالتناقض. صارت كلُّ خانةٍ تُحسَب من البيانات لحظةَ الفتح، وكلُّ رقمٍ فوق

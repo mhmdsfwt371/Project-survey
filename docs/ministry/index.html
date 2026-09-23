@@ -53,13 +53,26 @@
     document.getElementById('app').innerHTML = h;
   }
   async function sha(s){ var b = new TextEncoder().encode(s); var h = await crypto.subtle.digest('SHA-256', b); return Array.from(new Uint8Array(h)).map(function(x){ return x.toString(16).padStart(2, '0'); }).join(''); }
-  var SNAP = null;
+  /* (V17.94) اللقطةُ مشفَّرةٌ على الفرع العام: المفتاحُ يُشتقُّ من الرمز نفسِه (PBKDF2)
+     ويُفَكُّ AES-GCM في المتصفّح — الرمزُ لا يغادر الجهاز ولا تُقرأ الأرقامُ بدونه */
+  var B64 = function(s){ var b = atob(s), u = new Uint8Array(b.length); for (var i = 0; i < b.length; i++) u[i] = b.charCodeAt(i); return u; };
+  async function open(snap, code){
+    if (!snap.ct) return snap;                                     /* لقطةٌ صريحة (بيئةُ الفحص) */
+    var enc = new TextEncoder();
+    var base = await crypto.subtle.importKey('raw', enc.encode(code), 'PBKDF2', false, ['deriveKey']);
+    var key = await crypto.subtle.deriveKey({ name:'PBKDF2', salt:enc.encode('nusuk-ministry-v1'), iterations:snap.iter || 100000, hash:'SHA-256' }, base, { name:'AES-GCM', length:256 }, false, ['decrypt']);
+    var pt = await crypto.subtle.decrypt({ name:'AES-GCM', iv:B64(snap.iv) }, key, B64(snap.ct));
+    return JSON.parse(new TextDecoder().decode(pt));
+  }
+  var SNAP = null, CODE = '';
   function load(){ return fetch(SNAP ? SRC : SRC + '?t=' + Date.now(), { cache:'no-store' }).then(function(r){ return r.json(); }); }
   async function enter(){
-    var code = (document.getElementById('code').value || '').trim().toUpperCase(), err = document.getElementById('err');
-    try { SNAP = await load(); } catch (e){ err.textContent = 'تعذّر تحميلُ الأرقام — أعد المحاولة.'; return; }
-    if (SNAP.gate && (await sha(code)) !== SNAP.gate){ err.textContent = 'الرمزُ غيرُ صحيح لهذا اليوم.'; return; }
-    sessionStorage.setItem('kkok', '1'); render(SNAP); setInterval(function(){ load().then(render).catch(function(){}); }, 6 * 3600 * 1000);
+    var code = (document.getElementById('code').value || '').trim().toUpperCase(), err = document.getElementById('err'), raw;
+    try { raw = await load(); } catch (e){ err.textContent = 'تعذّر تحميلُ الأرقام — أعد المحاولة.'; return; }
+    if (raw.gate && (await sha(code)) !== raw.gate){ err.textContent = 'الرمزُ غيرُ صحيح لهذا اليوم' + (raw.day ? ' — اللقطةُ الحاليةُ بتاريخ ' + raw.day : '') + '.'; return; }
+    try { SNAP = await open(raw, code); } catch (e){ err.textContent = 'تعذّر فتحُ الأرقام بهذا الرمز.'; return; }
+    CODE = code; sessionStorage.setItem('kkok', '1'); render(SNAP);
+    setInterval(function(){ load().then(function(r){ return open(r, CODE); }).then(render).catch(function(){}); }, 6 * 3600 * 1000);
   }
   document.getElementById('go').addEventListener('click', enter);
   document.getElementById('code').addEventListener('keydown', function(e){ if (e.key === 'Enter') enter(); });

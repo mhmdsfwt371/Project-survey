@@ -110,6 +110,7 @@ console.log('\n══ ٤ · بلا ضبطٍ لا شيءَ يُنفَّذ ولا 
   const y = readFileSync('.github/workflows/myafaqy.yml', 'utf8');
   T(/node scripts\/myafaqy-bridge\.mjs/.test(y) && /MYAFAQY_BASE:\s*\$\{\{\s*vars\.MYAFAQY_BASE/.test(y) && /MYAFAQY_TOKEN:\s*\$\{\{\s*secrets\.MYAFAQY_TOKEN/.test(y),
     'والسيرُ يقرأ العنوانَ من المتغيّرات والتوكنَ من الأسرار');
+  T(/bridge:\n(?:[^\n]*\n){0,4}\s*if: \$\{\{ vars\.MYAFAQY_BASE != '' \}\}/.test(y), 'والوظيفةُ تُتخطّى على مستواها ما دام العنوانُ فارغًا — تعمل وحدَها حين يُضبَط (V17.94)');
   const html = readFileSync('index.html', 'utf8');
   T(html.indexOf('MYAFAQY') < 0 && html.indexOf('crmbackend') < 0, 'والتطبيقُ نفسُه لا يعرف الواجهةَ — الهاتفُ لا يكلّمها');
 }

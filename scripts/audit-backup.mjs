@@ -96,5 +96,25 @@ T(!/BACKUP_KEY|GDRIVE_SA/.test(w.riskSignals().map(x=>x[1]).join('|')), 'ويخ�
 /* الفنيُّ لا يرى المؤشرَ (شأنُ المكتب) */
 w.ROLE='tech'; w.STATE.meta.role='tech'; files['_meta.json'].ok=false; w.bkFetch(true); await new Promise(r=>setTimeout(r,200));
 T(!/BACKUP_KEY/.test(w.riskSignals().map(x=>x[1]).join('|')), 'الفنيُّ لا يُشغَل بمؤشر النسخ');
+/* ═══ (V17.94) النسخُ خارج git: لا يُلتزَم إلا الأعداد ═══
+   الملفُّ المشفَّرُ كان يُلتزَم كلَّ ليلةٍ فتتضخّم السجلاتُ العامة بلا حدّ. صار
+   يُشفَّر إلى /tmp ويُرفَع مشفَّرًا إلى الدرايف، وتُفَكُّ نسخةُ الليلة في البروفة. */
+{
+  const wf = readFileSync('.github/workflows/backup.yml', 'utf8');
+  const order = ['- name: Run backup', '- name: Encrypt bundle', '- name: Upload to Google Drive', '- name: بروفةُ الاستعادة'].map(s => wf.indexOf(s));
+  const okOrder = order.every((v, i) => v > -1 && (i === 0 || v > order[i - 1]));
+  console.log((okOrder ? '  \u2713 ' : '  \u2717 ') + 'الترتيب: نسخٌ ← تشفيرٌ ← رفعٌ ← بروفة'); if (!okOrder) bad++;
+  const noCommit = !/git add -A backups\/latest[\s\S]*backup\.enc/.test(wf) && !/-out backups\/latest\/backup\.enc/.test(wf);
+  console.log((noCommit ? '  \u2713 ' : '  \u2717 ') + 'ولا يُكتَب ملفٌّ مشفَّرٌ تحت backups/latest'); if (!noCommit) bad++;
+  const guard = /find backups\/latest -type f ! -name '_meta\.json' ! -name '_drive\.json'/.test(wf);
+  console.log((guard ? '  \u2713 ' : '  \u2717 ') + 'وحارسُ السير يمنع أيَّ ملفٍّ غيرِ ملفَّي الأعداد'); if (!guard) bad++;
+  const du = readFileSync('scripts/drive-upload.mjs', 'utf8');
+  const encOnly = /backup-full\.enc/.test(du) && /photos\.enc/.test(du) && !/put\('backups\/bundle\.json'/.test(du) && !/put\('backups\/photos\.json'/.test(du);
+  console.log((encOnly ? '  \u2713 ' : '  \u2717 ') + 'والدرايفُ يستقبل المشفَّرَ وحدَه'); if (!encOnly) bad++;
+  const reh = /-in \/tmp\/bk\/backup-full\.enc -out \/tmp\/restore-check\.json/.test(wf);
+  console.log((reh ? '  \u2713 ' : '  \u2717 ') + 'والبروفةُ تفكُّ ما أُنتج الليلةَ نفسَه'); if (!reh) bad++;
+  let tracked = true; try { execFileSync('git', ['ls-files', '--error-unmatch', 'backups/latest/backup.enc'], { stdio:'ignore' }); } catch { tracked = false; }
+  console.log((!tracked ? '  \u2713 ' : '  \u2717 ') + 'والملفُّ المشفَّرُ لم يعد متعقَّبًا في المستودع'); if (tracked) bad++;
+}
 console.log(bad?'\nجردُ حالة النسخ فشل ✗ ('+bad+')':'\nحالةُ النسخ تُرى حيث يُرى — لا نجاحَ كاذبًا ✅');
 process.exit(bad?1:0);

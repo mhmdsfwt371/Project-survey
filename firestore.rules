@@ -268,6 +268,8 @@ service cloud.firestore {
     match /settings/pulse    { allow read: if ok(); allow create, update: if ok() && !viewer(); allow delete: if mgr(); }
     // ختمُ آخر تشغيلٍ للجسر (V17.39): يكتبه الخادمُ وحدَه (مفتاحُ الخدمة يتجاوز القواعد) ويقرؤه كلُّ فعّال
     match /settings/bridge   { allow read: if ok(); allow write: if false; }
+    // النبضُ والتقريرُ (V17.94): يكتبهما الخادمُ، ويقرؤهما المكتبُ والإدارةُ العليا — لا بلاغَ عامًّا
+    match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
     match /settings/contacts { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق

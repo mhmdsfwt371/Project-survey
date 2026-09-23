@@ -98,11 +98,18 @@ console.log('\n══ ٤ · السيرُ يربط النبضَ بالبريد ب
   T(/steps\.pulse\.outputs\.hand != '0'/.test(y), 'ولا يُرسِل بريدًا إلا إن كان ثمّة ما ينتظر');
   T(/node scripts\/mail-send\.mjs/.test(y) && /MAIL_TO/.test(y), 'ويرسله بالمُرسِل نفسِه لا بخدمةٍ ثانية');
   T(/cron: '30 3 \* \* \*'/.test(y), 'وموعدُه صباحُ مكة');
-  T(/issues: write/.test(y) && /node scripts\/pulse-issue\.mjs/.test(y),
-    'ويكتب لوحتَه في المستودع فيصل قبل أن تُضبَط أسرارُ البريد');
-  const pi = readFileSync('scripts/pulse-issue.mjs', 'utf8');
-  T(/state=open&labels=/.test(pi) && /method:'PATCH'/.test(pi),
-    'واللوحةُ بلاغٌ واحدٌ يُحدَّث — لا بلاغٌ جديدٌ كلَّ صباحٍ يزاحم بلاغاتِ الميدان');
+  /* (V17.94) اللوحةُ إلى القاعدة لا إلى بلاغٍ عامّ */
+  T(!/issues: write/.test(y) && /node scripts\/sysreport-write\.mjs pulse/.test(y) && !/pulse-issue/.test(y),
+    'ويكتب لوحتَه في القاعدة (settings/sysreport) لا في بلاغٍ عامٍّ — وبلا صلاحية بلاغات');
+  const ry = readFileSync('.github/workflows/report.yml', 'utf8'), rs = readFileSync('scripts/report-system.mjs', 'utf8');
+  T(!/issues: write/.test(ry) && /sysreport-write\.mjs report/.test(ry) && !/PUBLISH/.test(ry) && !/\/issues`/.test(rs),
+    'وتقريرُ النظام كذلك: إلى القاعدة لا إلى بلاغ');
+  const sw = readFileSync('scripts/sysreport-write.mjs', 'utf8');
+  T(/doc\('sysreport'\)\.set\(/.test(sw) && /merge: true/.test(sw) && /\['pulse', 'report'\]/.test(sw), 'والكاتبُ واحدٌ للاثنين بدمجٍ لا كتابةٍ فوق');
+  const rl = readFileSync('firestore.rules', 'utf8');
+  T(/match \/settings\/sysreport \{ allow read: if mgr\(\) \|\| \(ok\(\) && role\(\) == 'exec'\); allow write: if false; \}/.test(rl), 'والقاعدةُ تفتحه للمكتب والإدارة العليا وحدهما');
+  const app = readFileSync('index.html', 'utf8');
+  T(/function sysReportCard\(\)/.test(app) && /localStoreCard\(\) \+ sysReportCard\(\)/.test(app), 'والتطبيقُ يعرضه في صحة النظام');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

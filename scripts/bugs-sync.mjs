@@ -1,11 +1,9 @@
 /* ═══════════════════════════════════════════════════════════════════════════
    جسرُ البلاغات — node scripts/bugs-sync.mjs
    ───────────────────────────────────────────────────────────────────────────
-   البلاغُ يُكتَب في التطبيق من الميدان، ويُرفَع إلى القاعدة. وهذا السكربتُ
-   يفتحه **بلاغًا في مستودع المشروع** ثم يكتب رقمَه في وثيقته — فيصل إلى من
-   يُصلح بلا أن يبعثه أحد، ويبقى مقروءًا من أيِّ مكانٍ بلا دخولٍ إلى القاعدة.
-   يعمل مع سير الخادم كلَّ عشر دقائق. ومن أُغلق بلاغُه في المستودع أُغلق في
-   التطبيق في الدورة التالية — فالحالةُ واحدةٌ في الموضعين لا اثنتان.
+   البلاغُ يُكتَب في التطبيق من الميدان، ويُرفَع إلى القاعدة، ويُدار من التطبيق.
+   كان يُفتَح بلاغًا عامًّا في المستودع؛ ومنذ V17.94 يبقى في القاعدة وحدَها
+   (انظر أدناه). يعمل مع سير الخادم كلَّ عشر دقائق.
    ═════════════════════════════════════════════════════════════════════════ */
 import admin from 'firebase-admin';
 
@@ -28,85 +26,57 @@ const gh = async (path, init = {}) => {
   return r.json();
 };
 
-/* نصُّ البلاغ: ما كتبه المبلِّغُ أوّلًا، ثم ما أُرفق تلقائيًّا — فيُقرأ بلا سؤال */
-function body(b){
-  const c = b.ctx || {};
-  return [
-    b.txt || '',
-    b.want ? '\n**المتوقَّع:** ' + b.want : '',
-    '\n---',
-    '| | |', '|---|---|',
-    `| المبلِّغ | ${b.by || '—'} |`,
-    `| النوع | ${b.kind || '—'} |`,
-    `| النسخة | \`${c.v || '—'}\` |`,
-    `| الشاشة | ${c.page || '—'}${c.tab ? ' / ' + c.tab : ''} |`,
-    `| الدور | ${c.role || '—'} |`,
-    `| اللغة | ${c.lang || '—'} |`,
-    `| الشبكة | ${c.online ? 'متصل' : 'غير متصل'} |`,
-    `| الشاشة/الجهاز | ${c.scr || '—'} · ${(c.ua || '—').slice(0, 120)} |`,
-    c.err ? `| آخرُ خطأٍ في الجلسة | \`${c.err}\` |` : '',
-    `| وقتُ البلاغ | ${new Date(b.at || Date.now()).toISOString()} |`,
-    '', `<!-- bug:${b.id} -->`
-  ].filter(Boolean).join('\n');
-}
 
+/* ═══ (V17.94) لا بلاغَ عامًّا بعد اليوم ═══
+   كان البلاغُ يُفتَح في مستودعٍ عامٍّ بنصِّه ومبلِّغه وجهازه وشاشته — يقرؤه من لا
+   شأنَ له. صار يبقى في القاعدة ويُدار من التطبيق (صحة النظام ← البلاغات):
+   المقبولُ يصير قيدَ التنفيذ هنا، وما طلب المديرُ إغلاقَه يُغلَق هنا. وما فُتح
+   من قبل في المستودع يُغلَق مرةً واحدةً بتعليقٍ يقول أين صار. */
 let opened = 0, closed = 0;
 const snap = await db.collection('bugs').orderBy('at', 'desc').limit(200).get();
 
-/* ١ · ما لم يُفتَح بعدُ — يُفتَح */
+/* ١ · المقبولُ يصير قيدَ التنفيذ — بلا بلاغٍ عامّ */
 for (const d of snap.docs){
   const b = { id: d.id, ...d.data() };
-  if (b.gh) continue;
-  /* ═══ لا يُفتَح إلا ما قُبل (V17.43) ═══
-     كان كلُّ بلاغٍ يُفتَح فورَ وصوله فيبدأ العملُ قبل قرار صاحبه. صار
-     المديرُ يقرّر في التطبيق: «مقبول» يُفتَح هنا ليُعمَل به، و«مرفوض» يبقى
-     في القاعدة بسببه ولا يُفتَح، و«جديد» ينتظر القرار. */
   if (b.status !== 'مقبول') continue;
-  const title = `[${b.kind || 'بلاغ'}] ${String(b.txt || '').replace(/\s+/g, ' ').slice(0, 70)}`;
-    const okBy = b.decBy ? `\n\n> قَبِله **${b.decBy}** — ${new Date(b.decAt || Date.now()).toISOString()}` : '';
-  try {
-    const issue = await gh(`repos/${REPO}/issues`, {
-      method: 'POST',
-      body: JSON.stringify({ title, body: body(b) + okBy, labels: ['بلاغ', b.kind || 'عطل', 'مقبول'] })
-    });
-    await d.ref.update({ gh: issue.number, status: 'قيد التنفيذ', ghAt: Date.now() });
-    opened++;
-    console.log(`فُتح #${issue.number} — ${title}`);
-  } catch (e){ console.log('تعذّر فتحُ بلاغ: ' + e.message); }
+  try { await d.ref.update({ status: 'قيد التنفيذ', ghAt: Date.now() }); opened++; }
+  catch (e){ console.log('تعذّر تحديثُ بلاغ: ' + e.message); }
 }
 
-/* ٣ · ما أغلقه المديرُ في التطبيق — يُغلق في المستودع بمفتاح الخادم (V17.56) */
+/* ٢ · ما طلب المديرُ إغلاقَه يُغلَق في القاعدة مباشرة */
 for (const d of snap.docs){
   const b = { id: d.id, ...d.data() };
-  if (!b.gh || !b.closeAsk) continue;
-  try {
-    await gh(`repos/${REPO}/issues/${b.gh}/comments`, { method:'POST',
-      body: JSON.stringify({ body: `أُغلق من التطبيق بواسطة **${b.closedBy || 'المدير'}** — ${new Date(b.closedAt || Date.now()).toISOString()}` }) });
-    await gh(`repos/${REPO}/issues/${b.gh}`, { method:'PATCH', body: JSON.stringify({ state:'closed', state_reason:'completed' }) });
-    await d.ref.update({ closeAsk: false });
-    closed++;
-    console.log(`أُغلق #${b.gh} من التطبيق`);
-  } catch (e){ console.log('تعذّر إغلاقُ بلاغ من التطبيق: ' + e.message); }
+  if (!b.closeAsk) continue;
+  try { await d.ref.update({ status: 'مغلق', closedAt: b.closedAt || Date.now(), closeAsk: false }); closed++; }
+  catch (e){ console.log('تعذّر إغلاقُ بلاغ: ' + e.message); }
 }
 
-/* ٢ · ما أُغلق في المستودع — يُغلق في التطبيق، فالحالةُ واحدة */
-for (const d of snap.docs){
-  const b = { id: d.id, ...d.data() };
-  if (!b.gh || b.status === 'مغلق') continue;
-  try {
-    const issue = await gh(`repos/${REPO}/issues/${b.gh}`);
-    if (issue.state === 'closed'){
-      await d.ref.update({ status: 'مغلق', closedAt: Date.parse(issue.closed_at || '') || Date.now() });
-      closed++;
+/* ٣ · إغلاقُ ما فُتح من قبل في المستودع — مرةً واحدة، ويُختَم في settings/bridge */
+try {
+  const brd = await db.collection('settings').doc('bridge').get();
+  if (!(brd.exists && brd.data().issuesClosed)){
+    let n = 0;
+    for (const label of ['بلاغ', 'نبض', 'تقرير']){
+      const list = await gh(`repos/${REPO}/issues?state=open&labels=${encodeURIComponent(label)}&per_page=100`);
+      for (const is of (Array.isArray(list) ? list : [])){
+        if (is.pull_request) continue;
+        try {
+          await gh(`repos/${REPO}/issues/${is.number}/comments`, { method:'POST', body: JSON.stringify({ body: 'أُغلق: البلاغاتُ والنبضُ والتقاريرُ تُتابَع داخل التطبيق (صحة النظام) لا في المستودع العام — منذ V17.94.' }) });
+          await gh(`repos/${REPO}/issues/${is.number}`, { method:'PATCH', body: JSON.stringify({ state:'closed', state_reason:'not_planned' }) });
+          n++;
+        } catch (e){ console.log('تعذّر إغلاقُ #' + is.number + ': ' + e.message); }
+      }
     }
-  } catch (e){ /* بلاغٌ حُذف أو لا يُقرأ — يُترَك كما هو */ }
-}
+    await db.collection('settings').doc('bridge').set({ issuesClosed: true, issuesClosedAt: Date.now(), issuesClosedN: n }, { merge: true });
+    console.log(`أُغلق ${n} بلاغًا عامًّا — مرةً واحدة`);
+  }
+} catch (e){ console.log('تعذّر إغلاقُ البلاغات العامة: ' + e.message); }
 
 /* ختمُ آخر تشغيلٍ (V17.39): تقرؤه شاشةُ الاستهلاك فيُعرَف إن وقف الجسرُ قبل أن يضيع بلاغ */
 try { await db.collection('settings').doc('bridge').set({ at: Date.now(), bugs: snap.size, opened, closed, run: process.env.GITHUB_RUN_NUMBER || '' }, { merge: true }); }
 catch (e){ console.log('تعذّر ختمُ التشغيل: ' + e.message); }
 const pend = snap.docs.filter(d => ((d.data() || {}).status || 'جديد') === 'جديد').length;
 const nope = snap.docs.filter(d => (d.data() || {}).status === 'مرفوض').length;
-console.log(`البلاغات: ${snap.size} في القاعدة · فُتح ${opened} · أُغلق ${closed} · ينتظر قرارَ المدير ${pend} · مردودٌ ${nope}`);
+console.log(`البلاغات: ${snap.size} في القاعدة · صار قيدَ التنفيذ ${opened} · أُغلق ${closed} · ينتظر قرارَ المدير ${pend} · مردودٌ ${nope}`);
 if (pend) console.log(`::notice title=بلاغات::${pend} بلاغًا ينتظر قرارَ المدير في التطبيق`);
-if (opened) console.log(`::notice title=بلاغات::فُتح ${opened} بلاغًا جديدًا من التطبيق`);
+if (opened) console.log(`::notice title=بلاغات::${opened} بلاغًا مقبولًا صار قيدَ التنفيذ`);

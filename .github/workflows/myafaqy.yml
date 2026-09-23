@@ -11,6 +11,9 @@ permissions:
   contents: read
 jobs:
   bridge:
+    # (V17.94) الوظيفةُ كلُّها تُتخطّى ما دام العنوانُ فارغًا — لا جهازَ يُحجَز ولا تثبيتَ
+    # يُهدَر كلَّ ربع ساعة؛ وتعمل من تلقاء نفسها حين يُضبَط MYAFAQY_BASE
+    if: ${{ vars.MYAFAQY_BASE != '' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,7 +22,6 @@ jobs:
           node-version: '20'
       - name: الحزم
         run: |
-          [ -z "${{ vars.MYAFAQY_BASE }}" ] && { echo "::notice::الجسرُ غيرُ مضبوطٍ بعد — MYAFAQY_BASE فارغ"; exit 0; }
           for i in 1 2 3; do
             npm i --no-save --no-audit --no-fund firebase-admin@^12 && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت"; sleep $((i*15))

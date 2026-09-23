@@ -8,7 +8,6 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: read
-  issues: write
 jobs:
   report:
     runs-on: ubuntu-latest
@@ -34,9 +33,13 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISH: '1'
           REPORT_OUT: /tmp/report.md
         run: node scripts/report-system.mjs
+      # (V17.94) التقريرُ إلى القاعدة لا إلى بلاغٍ عامّ
+      - name: التقريرُ في القاعدة
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/sysreport-write.mjs report /tmp/report.md
 
       # ويصل مَن لا يفتح المستودع: البلاغُ مكانُ التقرير، والبريدُ نسخةٌ منه
       # لمن يقرأ بريدَه. وما لم تُضبَط أسرارُ البريد لا يُفشَل شيء.

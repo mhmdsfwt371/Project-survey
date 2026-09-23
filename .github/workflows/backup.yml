@@ -38,25 +38,6 @@ jobs:
           fi
           node scripts/backup.mjs
 
-      # رفع النسخة الكاملة إلى درايف المالك — قبل التشفير لأنها تُرفع خامًا
-      # إلى مساحته الخاصة. يتجاوز نفسه بهدوء إن لم تُضبط الأسرار.
-      - name: Upload to Google Drive
-        env:
-          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
-          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
-          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
-          GDRIVE_KEEP_DAYS: '0'      # 0 = لا يُحذف شيء أبدًا — المساحة ٥ تيرا
-          GDRIVE_PHOTO_DAYS: '540'   # الصور: ١٨ شهرًا ≈ ١٫٢ تيرا
-        run: |
-          if [ -z "$GDRIVE_OAUTH" ] && [ -z "$GDRIVE_SA" ]; then
-            echo "::notice::GDRIVE_OAUTH غير مضبوط — تخطّي الرفع للدرايف"
-            mkdir -p backups/latest
-            printf '{\n  "ok": false,\n  "at": "%s",\n  "why": "GDRIVE_SA غير مضبوط — لم يُرفَع شيءٌ إلى درايف",\n  "fix": "Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)"\n}\n' "$(date -u +%FT%TZ)" > backups/latest/_drive.json
-          else
-            npm i googleapis@144 --no-save --no-audit --no-fund
-            node scripts/drive-upload.mjs
-          fi
-
       # المستودع عام — لا تُكتب بيانات خام أبدًا كنص صريح.
       # الحزمة تُشفَّر بمفتاح من الأسرار، وبلا مفتاح تُحذف ولا تُنشر.
       - name: Encrypt bundle
@@ -83,15 +64,42 @@ jobs:
               echo "**وللاسترجاع لاحقًا:**"
               echo '```'
               echo "openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \\"
-              echo "  -in backups/latest/backup.enc -out bundle.json -pass env:BACKUP_KEY"
+              echo "  -in backup-full.enc -out bundle.json -pass env:BACKUP_KEY   # الملفُّ من مجلد اليوم في الدرايف"
               echo '```'
             } >> $GITHUB_STEP_SUMMARY
             echo "::warning title=لا نسخة احتياطية::BACKUP_KEY غير مضبوط — لم تُحفظ أي بيانات. الضبط من Settings ← Secrets ← Actions."
           else
+            # (V17.94) الملفُّ المشفَّرُ لا يدخل المستودع: كان يُلتزَم كلَّ ليلةٍ فتتضخّم
+            # السجلاتُ العامة بلا حدّ. يُشفَّر هنا إلى /tmp، ويُرفَع إلى الدرايف
+            # مشفَّرًا، وتُفَكُّ نسخةُ الليلة نفسُها في البروفة — ولا يُلتزَم إلا الأعداد.
+            mkdir -p /tmp/bk
             openssl enc -aes-256-cbc -pbkdf2 -iter 250000 -salt \
-              -in backups/bundle.json -out backups/latest/backup.enc -pass env:BACKUP_KEY
-            rm -f backups/bundle.json
-            echo "encrypted ok — $(du -h backups/latest/backup.enc | cut -f1)"
+              -in backups/bundle.json -out /tmp/bk/backup-full.enc -pass env:BACKUP_KEY
+            if [ -f backups/photos.json ]; then
+              openssl enc -aes-256-cbc -pbkdf2 -iter 250000 -salt \
+                -in backups/photos.json -out /tmp/bk/photos.enc -pass env:BACKUP_KEY
+            fi
+            rm -f backups/bundle.json backups/photos.json backups/latest/backup.enc
+            echo "encrypted ok — $(du -h /tmp/bk/backup-full.enc | cut -f1)"
+          fi
+
+      # رفعُ النسخة إلى درايف المالك — بعد التشفير: لا بيانةَ خامًا خارج الخادم
+      # (V17.94). يتجاوز نفسه بهدوء إن لم تُضبط الأسرار.
+      - name: Upload to Google Drive
+        env:
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+          GDRIVE_KEEP_DAYS: '0'      # 0 = لا يُحذف شيء أبدًا — المساحة ٥ تيرا
+          GDRIVE_PHOTO_DAYS: '540'   # الصور: ١٨ شهرًا ≈ ١٫٢ تيرا
+        run: |
+          if [ -z "$GDRIVE_OAUTH" ] && [ -z "$GDRIVE_SA" ]; then
+            echo "::notice::GDRIVE_OAUTH غير مضبوط — تخطّي الرفع للدرايف"
+            mkdir -p backups/latest
+            printf '{\n  "ok": false,\n  "at": "%s",\n  "why": "GDRIVE_SA غير مضبوط — لم يُرفَع شيءٌ إلى درايف",\n  "fix": "Settings ← Secrets and variables ← Actions: GDRIVE_SA (JSON حساب الخدمة) وGDRIVE_FOLDER (معرّف المجلد المشارَك مع بريد الحساب)"\n}\n' "$(date -u +%FT%TZ)" > backups/latest/_drive.json
+          else
+            npm i googleapis@144 --no-save --no-audit --no-fund
+            node scripts/drive-upload.mjs
           fi
 
       # ═══ بروفةُ الاستعادة — نسخةٌ لا تُفتَح ليست نسخة ═══
@@ -102,12 +110,12 @@ jobs:
         env:
           BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
         run: |
-          if [ -z "$BACKUP_KEY" ] || [ ! -f backups/latest/backup.enc ]; then
+          if [ -z "$BACKUP_KEY" ] || [ ! -f /tmp/bk/backup-full.enc ]; then
             echo "::notice::لا نسخةَ مشفَّرةً اليوم — لا بروفةَ استعادة"
             exit 0
           fi
           openssl enc -d -aes-256-cbc -pbkdf2 -iter 250000 \
-            -in backups/latest/backup.enc -out /tmp/restore-check.json -pass env:BACKUP_KEY
+            -in /tmp/bk/backup-full.enc -out /tmp/restore-check.json -pass env:BACKUP_KEY
           node scripts/backup-verify.mjs /tmp/restore-check.json backups/latest/_meta.json | tee -a $GITHUB_STEP_SUMMARY
           rm -f /tmp/restore-check.json
 
@@ -135,8 +143,8 @@ jobs:
 
       - name: Guard — no plaintext data may be committed
         run: |
-          rm -f backups/photos.json
-          LEAK=$(find backups/latest -name '*.json' ! -name '_meta.json' ! -name '_drive.json' | head -5)
+          rm -f backups/photos.json backups/bundle.json backups/latest/backup.enc
+          LEAK=$(find backups/latest -type f ! -name '_meta.json' ! -name '_drive.json' | head -5)
           if [ -n "$LEAK" ]; then
             echo "::error::وُجد ملف بيانات صريح: $LEAK — أُلغيت العملية"
             exit 1

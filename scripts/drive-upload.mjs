@@ -1,6 +1,6 @@
-/* رفع النسخة اليومية الكاملة إلى Google Drive — فولدر باسم التاريخ لكل يوم.
-   يعمل داخل سير GitHub قبل خطوة التشفير، لأن نسخة الدرايف تُرفع خامًا
-   إلى درايف المالك الخاص (وليس إلى المستودع العام).
+/* رفع النسخة اليومية إلى Google Drive — فولدر باسم التاريخ لكل يوم.
+   يعمل داخل سير GitHub بعد خطوة التشفير (V17.94): يُرفَع المشفَّرُ بمفتاح
+   BACKUP_KEY وحدَه — لا بيانةَ خامًا في الدرايف ولا في المستودع العام.
    يتجاوز نفسه بهدوء إن لم تُضبط الأسرار — فلا يُفشل النسخ الاحتياطي. */
 import { driveClient, rootFolder, explain, q as qEsc, SETUP_FIX } from './drive-auth.mjs';
 import { readFileSync, existsSync, statSync } from 'fs';
@@ -37,13 +37,13 @@ async function folderFor(name, parent) {
   return made.data.id;
 }
 
-async function put(localPath, name, parent) {
+async function put(localPath, name, parent, mime) {
   if (!existsSync(localPath)) { console.log(`  – ${name}: غير موجود، تخطّي`); return; }
   const size = statSync(localPath).size;
   const body = Readable.from(readFileSync(localPath));
   await drive.files.create({
     requestBody: { name, parents: [parent] },
-    media: { mimeType: 'application/json', body },
+    media: { mimeType: mime || 'application/json', body },
     fields: 'id', supportsAllDrives: true
   });
   console.log(`  ✓ ${name} — ${(size / 1024 / 1024).toFixed(2)} م.ب`);
@@ -74,7 +74,7 @@ async function prune(parent) {
     if (cutPhoto && when < cutPhoto) {
       try {
         const inner = await drive.files.list({
-          q: `'${f.id}' in parents and name='photos.json' and trashed=false`,
+          q: `'${f.id}' in parents and (name='photos.json' or name='photos.enc') and trashed=false`,
           fields: 'files(id)', pageSize: 2,
           supportsAllDrives: true, includeItemsFromAllDrives: true
         });
@@ -98,9 +98,10 @@ try {
   const dayFolder = await folderFor(day, ROOT);
   console.log(`drive-upload: فولدر ${day}`);
   const sz = f => (_ex(f) ? _st(f).size : 0);
-  const files = { 'backup-full.json': sz('backups/bundle.json'), 'photos.json': sz('backups/photos.json') };
-  await put('backups/bundle.json',      'backup-full.json',  dayFolder);
-  await put('backups/photos.json',      'photos.json',       dayFolder);
+  /* (V17.94) يُرفَع المشفَّرُ وحدَه: لا بيانةَ خامًا على الدرايف ولا في المستودع */
+  const files = { 'backup-full.enc': sz('/tmp/bk/backup-full.enc'), 'photos.enc': sz('/tmp/bk/photos.enc') };
+  await put('/tmp/bk/backup-full.enc',  'backup-full.enc',   dayFolder, 'application/octet-stream');
+  await put('/tmp/bk/photos.enc',       'photos.enc',        dayFolder, 'application/octet-stream');
   await put('backups/latest/_meta.json', '_meta.json',       dayFolder);
   await prune(ROOT);
   driveMeta({ ok:true, day, folder:ROOT, bytes:files, keepDays:KEEP_DATA, photoDays:KEEP_PHOTO });

@@ -69,12 +69,14 @@ T(w.BUG_OPEN === false, 'ويُطوى اللوحُ بعد الإرسال');
 
 /* الجسرُ إلى المستودع */
 const src = readFileSync('scripts/bugs-sync.mjs', 'utf8');
-T(/collection\('bugs'\)/.test(src) && /repos\/\$\{REPO\}\/issues/.test(src) && /method: 'POST'/.test(src),
-  'الجسرُ يقرأ البلاغاتِ ويفتحها في المستودع');
-T(/update\(\{ gh: issue\.number/.test(src), 'ويكتب رقمَ البلاغ في وثيقته — فلا يُفتَح مرتين');
-T(/issue\.state === 'closed'/.test(src) && /status: 'مغلق'/.test(src), 'وما أُغلق هناك يُغلق هنا — حالةٌ واحدةٌ لا اثنتان');
+/* (V17.94) لا بلاغَ عامًّا: الجسرُ يقرأ البلاغاتِ ويديرها في القاعدة، ولا يفتح شيئًا في المستودع */
+T(/collection\('bugs'\)/.test(src) && !/repos\/\$\{REPO\}\/issues`,\s*\{\s*method:\s*'POST'/.test(src) && !/labels: \['بلاغ'/.test(src),
+  'الجسرُ يقرأ البلاغاتِ ولا يفتح بلاغًا عامًّا في المستودع');
+T(/status: 'قيد التنفيذ'/.test(src), 'والمقبولُ يصير قيدَ التنفيذ في القاعدة');
+T(/if \(!b\.closeAsk\) continue;/.test(src) && /status: 'مغلق'/.test(src), 'وما طلب المديرُ إغلاقَه يُغلَق في القاعدة مباشرة');
+T(/issuesClosed/.test(src) && /state_reason:'not_planned'/.test(src) && /'نبض', 'تقرير'/.test(src), 'وما فُتح من قبل يُغلَق مرةً واحدةً ويُختَم');
 const wf = readFileSync('.github/workflows/provision.yml', 'utf8');
-T(/issues: write/.test(wf) && /bugs-sync\.mjs/.test(wf), 'ويعمل مع سير الخادم كلَّ عشر دقائق بصلاحية فتح البلاغات');
+T(/issues: write/.test(wf) && /bugs-sync\.mjs/.test(wf), 'ويعمل مع سير الخادم كلَّ عشر دقائق — والصلاحيةُ لإغلاق القديم لا لفتح جديد');
 const rules = readFileSync('firestore.rules', 'utf8');
 T(/match \/bugs\/\{id\}[\s\S]{0,400}allow create: if ok\(\);/.test(rules)
   && /allow read:\s+if ok\(\) && \(myRank\(\) >= 90/.test(rules),
@@ -115,7 +117,7 @@ T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + 
 {
   const sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
   T(/if \(b\.status !== 'مقبول'\) continue;/.test(sync), 'والجسرُ لا يفتح إلا ما قُبل');
-  T(/labels: \['بلاغ', b\.kind \|\| 'عطل', 'مقبول'\]/.test(sync), 'ويَسِمُ المفتوحَ بأنه مقبول');
+  T(!/labels: \['بلاغ'/.test(sync), 'ولا وسمَ ولا بلاغَ عامًّا (V17.94)');
   T(/ينتظر قرارَ المدير/.test(sync), 'ويقول كم ينتظر قرارَ المدير');
   const raw7 = readFileSync('index.html', 'utf8');
   T(/function bugDecide\(id, ok, why\)/.test(raw7) && /b\.decBy = STATE\.meta\.name/.test(raw7),
@@ -130,8 +132,8 @@ T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + 
   const raw = readFileSync('index.html', 'utf8'), sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
   T(/function bugClose\(id\)/.test(raw) && /b\.closeAsk = true/.test(raw) && /data-bugdone=/.test(raw),
     'المديرُ يُغلق البلاغَ المنجَز من الشاشة');
-  T(/if \(!b\.gh \|\| !b\.closeAsk\) continue;/.test(sync) && /state:'closed', state_reason:'completed'/.test(sync),
-    'والجسرُ يغلقه في المستودع بمفتاح الخادم ويطفئ الطلب');
+  T(/if \(!b\.closeAsk\) continue;/.test(sync) && /closeAsk: false/.test(sync),
+    'والجسرُ يغلقه في القاعدة ويطفئ الطلب — بلا مستودعٍ عامّ (V17.94)');
 }
 
 console.log(bad ? `\nجردُ البلاغات فشل ✗ (${bad})` : '\nالبلاغُ من داخل النظام — ويفتح نفسَه في المستودع ✅');
