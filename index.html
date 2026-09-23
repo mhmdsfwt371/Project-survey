@@ -18462,11 +18462,15 @@ function myDocFix(){
     }
     /* القاعدةُ لا تقبل لمن يسجّل نفسَه إلا «فنيًّا غيرَ فعّال» (V17.93): يعمل على
        جهازه ويُرفَع عملُه حين يفعّله المكتبُ — لا حسابَ فعّالًا لمن لا يعرفه أحد */
+    /* صاحبُ المشروع ببريده فوق القاعدة: وثيقتُه مديرًا فعّالًا ويُطلَق ما حُبس — وغيرُه ينتظر التفعيل */
+    var boss = typeof isBossHere === 'function' && isBossHere();
     var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
-              role:'tech', active:false, at:Date.now(), self:true, _by:myUid(), _at:Date.now() };
+              role:boss ? 'admin' : 'tech', active:!!boss, at:Date.now(), self:true, _by:myUid(), _at:Date.now() };
     return FB.db.collection('users').doc(myUid()).set(v).then(function(){
       STATE.users[myUid()] = v;
-      MYDOC.has = true; ROLE = 'tech'; STATE.meta.role = 'tech';
+      MYDOC.has = true;
+      if (boss){ var back1 = permRelease(true); logEvent('إنشاء وثيقة حساب صاحب المشروع — ' + myUid()); toast(t('الوثيقةُ موجودةٌ') + (back1 ? ' \u00b7 ' + nm(back1) + ' ' + t('عادت للرفع') : '')); render(1); return true; }
+      ROLE = 'tech'; STATE.meta.role = 'tech';
       logEvent('إنشاء وثيقة حساب ذاتيًّا (ينتظر التفعيل) — ' + myUid());
       toast(t('أُنشئت وثيقةُ حسابك — تنتظر تفعيلَ المكتب، وعملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل'));
       render(1); return true;

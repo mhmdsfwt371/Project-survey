@@ -46,8 +46,9 @@ T(!!h.querySelector('[data-mydocfix]'), 'وزرُّ الإنشاء ظاهر');
 /* ٢ · الإنشاءُ فنيًّا */
 h.querySelector('[data-mydocfix]').dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 await wait(200);
-T(!!store['users/UID9'] && store['users/UID9'].role==='tech' && store['users/UID9'].active===true,
-  'الإنشاءُ يكتب فنيًّا ونشطًا — '+JSON.stringify(store['users/UID9']||{}).slice(0,70));
+/* منذ V17.93: الإنشاءُ الذاتيُّ فنيٌّ غيرُ فعّالٍ حتى يفعّله المكتب — لا حسابَ فعّالًا لمن لا يعرفه أحد */
+T(!!store['users/UID9'] && store['users/UID9'].role==='tech' && store['users/UID9'].active===false && store['users/UID9'].self===true,
+  'الإنشاءُ يكتب فنيًّا غيرَ فعّالٍ ينتظر المكتب — '+JSON.stringify(store['users/UID9']||{}).slice(0,70));
 T(w.ROLE==='tech' && w.MYDOC.has===true, 'والدورُ في التطبيق يصير فنيًّا — لا يدّعي ما لا تعطيه القاعدة');
 /* ٣ · الوجودُ يُقرأ ويُوضَع في مكانه */
 store['users/UID9']={ name:'مهندس', role:'admin', active:true };

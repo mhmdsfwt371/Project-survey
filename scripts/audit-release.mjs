@@ -43,9 +43,15 @@ w.STATE.poison=[
  {kind:'recs',id:'R9',v:{b:2},err:'Unsupported field value: undefined',at:Date.now()}];
 w.SOFT_SAID['رفع الطابور']=1;
 await w.myDocFix(); await wait(500);
-T(!!store['users/UIDX'], 'أُنشئت وثيقةُ الحساب');
+/* منذ V17.93: الوثيقةُ التي يُنشئها صاحبُها غيرُ فعّالةٍ حتى يفعّلها المكتب — فالمعزولُ
+   يبقى معزولًا (القاعدةُ تردّه)، والسببُ يزول بالتفعيل لا بالإنشاء */
+T(!!store['users/UIDX'] && store['users/UIDX'].active === false, 'أُنشئت وثيقةُ الحساب — غيرَ فعّالةٍ حتى يفعّلها المكتب');
+T((w.STATE.poison||[]).length===3, 'والمعزولُ باقٍ ما دام الحسابُ غيرَ فعّال ('+(w.STATE.poison||[]).length+')');
+store['users/UIDX'] = Object.assign({}, store['users/UIDX'], { active:true });
+w.MYDOC.at = 0;
+await w.meActivatedCheck(); await wait(500);
 T((w.STATE.poison||[]).length===1 && w.STATE.poison[0].id==='R9',
-  'المعزولُ برفضِ صلاحيةٍ عاد للرفع — وما عُزل لسببٍ آخر بقي ('+(w.STATE.poison||[]).length+')');
+  'وبالتفعيل عاد المعزولُ برفضِ صلاحيةٍ للرفع — وما عُزل لسببٍ آخر بقي ('+(w.STATE.poison||[]).length+')');
 T(Object.keys(w.SOFT_SAID).length===0, 'وتكتّمُ الرسائل صُفِّر — فالفشلُ التالي يُقال');
 T(!!store['stats/2026-09-03'] && !!store['events/E1'], 'ودُفعا إلى القاعدة فورًا بلا انتظار دورة');
 T(w.STATE.queue.length===0, 'والطابورُ فرغ');
