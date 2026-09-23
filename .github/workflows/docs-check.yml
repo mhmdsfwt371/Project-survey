@@ -254,6 +254,8 @@ jobs:
         run: node scripts/audit-deps.mjs
       - name: جرد دستور الوكلاء — AGENTS.md وCLAUDE.md يطابقان المستودعَ الحيّ
         run: node scripts/audit-agents.mjs
+      - name: جرد المخزن المحلي — لا يستسلم، والذاكرةُ تُدفَق، واللافتةُ والتخزينُ الدائم
+        run: node scripts/audit-idb.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

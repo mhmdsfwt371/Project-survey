@@ -688,6 +688,7 @@ body.kiosk .kk-story{font-size:21px}
 .kk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--min-green),var(--min-gold));border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
 .kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
 .kk-kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--surface-2)}
+#idbBanner{position:sticky;top:0;z-index:95;background:#B3261E;color:#fff;font-weight:700;padding:10px 14px;text-align:center;font-size:14px}
 .kk-fc{margin-top:3px;font-size:12.5px}
 .kk-eta{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:600}
 .kk-eta.ok{background:var(--ok-bg);color:var(--ok)}.kk-eta.bad{background:var(--danger-bg);color:var(--danger)}.kk-eta.mute{background:var(--surface-2);color:var(--ink-mute)}
@@ -3857,6 +3858,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'Local saving on this device is not working: sync now and do not close the app until your work is uploaded.', 'المخزنُ المحلي':'Local store', 'لا يعمل — الذاكرةُ فقط':'Not working — memory only', 'يُفتَح…':'Opening…', 'مُنح':'Granted', 'لم يُمنَح':'Not granted', 'غيرُ متاح':'Not available', 'لم يُسأل بعد':'Not asked yet', 'قاعدةُ الجهاز':'Device database', 'التخزينُ الدائم':'Persistent storage', 'زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'Sync now and do not close the app until your work is uploaded.',
  'يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية':'Fills the screen and moves between sections by itself every fifteen seconds',
  'وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي':'Ministry of Hajj and Umrah · AFAQY Readers project', 'هذا الأسبوع مُسح':'This week surveyed', 'نقطةً':'points', 'منها في':'of them in', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'No visit recorded this week', 'قبل الموعد بـ':'ahead of the deadline by', 'بعد الموعد بـ':'behind the deadline by', 'يومًا':'days', 'بلا وتيرةٍ منذ أسبوعين':'no pace for two weeks', 'نقطةً تنتظر قرارَ الوزارة':'points await the Ministry’s decision', 'متعذّرةٌ تحتاج قرارًا':'unreachable and need a decision',
  'ما الجديد في هذا التحديث':'What is new in this update', 'تظهر مرةً واحدةً بعد التحديث':'Shown once after the update', 'فهمت':'Got it',
@@ -6590,6 +6592,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'اس ڈیوائس پر مقامی محفوظی کام نہیں کر رہی: ابھی سنک کریں اور ایپ بند نہ کریں جب تک آپ کا کام اپ لوڈ نہ ہو جائے۔', 'المخزنُ المحلي':'مقامی اسٹور', 'لا يعمل — الذاكرةُ فقط':'کام نہیں کر رہا — صرف میموری', 'يُفتَح…':'کھل رہا ہے…', 'مُنح':'دے دیا گیا', 'لم يُمنَح':'نہیں دیا گیا', 'غيرُ متاح':'دستیاب نہیں', 'لم يُسأل بعد':'ابھی نہیں پوچھا گیا', 'قاعدةُ الجهاز':'ڈیوائس ڈیٹا بیس', 'التخزينُ الدائم':'مستقل اسٹوریج', 'زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.':'ابھی سنک کریں اور ایپ بند نہ کریں جب تک کام اپ لوڈ نہ ہو جائے۔',
  'يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية':'اسکرین بھر دیتا ہے اور ہر پندرہ سیکنڈ میں خود حصوں کے درمیان چلتا ہے',
  'وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي':'وزارتِ حج و عمرہ · آفاقی ریڈرز منصوبہ', 'هذا الأسبوع مُسح':'اس ہفتے سروے ہوا', 'نقطةً':'پوائنٹس', 'منها في':'ان میں سے', 'لم تُسجَّل زيارةٌ هذا الأسبوع':'اس ہفتے کوئی دورہ درج نہیں', 'قبل الموعد بـ':'آخری تاریخ سے پہلے', 'بعد الموعد بـ':'آخری تاریخ کے بعد', 'يومًا':'دن', 'بلا وتيرةٍ منذ أسبوعين':'دو ہفتوں سے کوئی رفتار نہیں', 'نقطةً تنتظر قرارَ الوزارة':'پوائنٹس وزارت کے فیصلے کے منتظر', 'متعذّرةٌ تحتاج قرارًا':'ناقابل رسائی — فیصلہ درکار',
  'ما الجديد في هذا التحديث':'اس اپ ڈیٹ میں نیا کیا ہے', 'تظهر مرةً واحدةً بعد التحديث':'اپ ڈیٹ کے بعد ایک بار دکھائی جاتی ہے', 'فهمت':'سمجھ گیا',
@@ -8406,22 +8409,79 @@ var FB_CFG = {
 /* ── المخزن المحلي: IndexedDB وإن تعذّر فذاكرةٌ حيّة ── */
 var IDB_NAME = 'nusuk-v14', IDB_STORE = 'kv', _idb = null, _mem = null;
 
+/* ═══ المخزنُ المحلي لا يستسلم (V17.93) ═══
+   كان الفتحُ إن أبطأ أربعَ ثوانٍ أو أخطأ يقلب الجلسةَ كلَّها إلى ذاكرةٍ لا
+   تُحفَظ — فيعمل الفنيُّ بلا شبكةٍ ثم يغلق التطبيقَ فيضيع يومُه بلا كلمة.
+   صار: الفتحُ البطيءُ يُنتظَر ويُتبنّى إذا نجح لاحقًا، والخطأُ يُعاد بتراجعٍ
+   (١ · ٣ · ١٠ · ٣٠ ثوانٍ ثم كلَّ دقيقة)، وما كُتب في الذاكرة يُدفَق إلى القاعدة
+   حين تُفتَح لأنه الأحدث، وما دام الحفظُ المحليُّ لا يعمل تظهر لافتةٌ حمراءُ
+   لا تُغلَق ويُسأل قبل إغلاق الصفحة. */
+var IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000,
+    IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000],
+    IDB_TRY = 0, IDB_RETRY_T = 0, IDB_BAD = false, IDB_PENDING = null;
+function idbTellBad(on, why){
+  if (IDB_BAD === on) return;
+  IDB_BAD = on;
+  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){}
+  try { if (typeof render === 'function') render(1); } catch (e){}
+}
+function idbAdopt(db){
+  _idb = db;
+  if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
+  IDB_TRY = 0;
+  /* الذاكرةُ أحدثُ مما في القاعدة: تُدفَق كلُّها ثم تُطوى */
+  if (_mem && _mem.size){
+    var pairs = []; _mem.forEach(function(v, k){ pairs.push([k, v]); });
+    try {
+      var tx = db.transaction(IDB_STORE, 'readwrite'), st = tx.objectStore(IDB_STORE);
+      pairs.forEach(function(p){ st.put(p[1], p[0]); });
+      tx.oncomplete = function(){ _mem = null; idbTellBad(false); };
+      tx.onerror = function(){ idbTellBad(true, tx.error && tx.error.message); };
+    } catch (e){ idbTellBad(true, e && e.message); return; }
+  } else { _mem = null; idbTellBad(false); }
+}
+function idbRetryLater(){
+  if (IDB_RETRY_T) return;
+  var wait = IDB_BACKOFF[Math.min(IDB_TRY, IDB_BACKOFF.length - 1)]; IDB_TRY++;
+  IDB_RETRY_T = setTimeout(function(){ IDB_RETRY_T = 0; idbStart().catch(function(){}); }, wait);
+}
+/* طلبُ الفتح نفسُه: يبقى حيًّا حتى ينجح أو يخطئ — لا يُفتَح طلبٌ ثانٍ ما دام هذا معلَّقًا */
+function idbStart(){
+  if (IDB_PENDING) return IDB_PENDING;
+  IDB_PENDING = new Promise(function(res, rej){
+    var q;
+    var fail = function(e){
+      IDB_PENDING = null;
+      if (!_mem) _mem = new Map();
+      idbTellBad(true, e && e.message); idbRetryLater(); rej(e);
+    };
+    /* متصفّحٌ بلا IndexedDB أصلًا (بيئاتُ الفحص): ذاكرةٌ بصمتٍ كما كان — لا إعادةَ ولا لافتة، فلا شيءَ يُنتظَر */
+    if (typeof indexedDB === 'undefined'){ IDB_PENDING = null; if (!_mem) _mem = new Map(); rej(new Error('no-idb')); return; }
+    try { q = indexedDB.open(IDB_NAME, 1); } catch (e){ fail(e); return; }
+    q.onupgradeneeded = function(){ q.result.createObjectStore(IDB_STORE); };
+    q.onsuccess = function(){ IDB_PENDING = null; idbAdopt(q.result); res(_idb); };   /* ولو بعد المهلة: يُتبنّى ويُدفَق */
+    q.onerror = function(){ fail(q.error || new Error('idb-error')); };
+  });
+  return IDB_PENDING;
+}
 function idbOpen(){
   if (_idb) return Promise.resolve(_idb);
-  if (_mem)  return Promise.reject(new Error('mem-mode'));
+  if (typeof indexedDB === 'undefined'){ if (!_mem) _mem = new Map(); return Promise.reject(new Error('no-idb')); }
+  /* سبقت مهلةٌ والطلبُ ما زال معلَّقًا، أو إعادةٌ مجدولةٌ بعد خطأ: نعمل في الذاكرة ولا نفتح طلبًا ثانيًا */
+  if ((IDB_PENDING && _mem) || IDB_RETRY_T) return Promise.reject(new Error('mem-mode'));
+  var p = idbStart();
   return new Promise(function(res, rej){
     var done = false;
     var t = setTimeout(function(){
-      if (!done){ done = true; _mem = new Map(); rej(new Error('idb-timeout')); }
-    }, 4000);
-    var q;
-    try { q = indexedDB.open(IDB_NAME, 1); }
-    catch(e){ clearTimeout(t); done = true; _mem = new Map(); rej(e); return; }
-    q.onupgradeneeded = function(){ q.result.createObjectStore(IDB_STORE); };
-    q.onsuccess = function(){ if (done) return; done = true; clearTimeout(t); _idb = q.result; res(_idb); };
-    q.onerror   = function(){ if (done) return; done = true; clearTimeout(t); _mem = new Map(); rej(q.error); };
+      if (done) return; done = true;
+      if (!_mem) _mem = new Map();
+      idbTellBad(true, 'idb-timeout'); rej(new Error('idb-timeout'));   /* مهلةٌ لا استسلام */
+    }, IDB_TIMEOUT);
+    p.then(function(db){ clearTimeout(t); if (!done){ done = true; res(db); } },
+           function(e){ clearTimeout(t); if (!done){ done = true; rej(e); } });
   });
 }
+function idbUnsynced(){ return !!(_mem && _mem.size) || (STATE && STATE.queue && STATE.queue.length > 0); }
 
 function idbGet(k){
   return idbOpen().then(function(db){
@@ -8441,7 +8501,12 @@ function idbSet(k, v){
       tx.oncomplete = function(){ res(true); };
       tx.onerror    = function(){ rej(tx.error); };
     });
-  }).catch(function(){ if (_mem) _mem.set(k, v); return false; });
+  }).catch(function(e){
+    if (!_mem) _mem = new Map();
+    _mem.set(k, v);
+    if (typeof indexedDB !== 'undefined') idbTellBad(true, e && e.message);   /* حفظٌ فشل: يُقال ولا يُبتلَع */
+    return false;
+  });
 }
 
 /* ── الحالة الحيّة ── */
@@ -28032,6 +28097,7 @@ function presenceBeat(force){
               /* قراءاتُ اليوم لا الجلسة — الجلسةُ قد تمتدّ أيامًا فيبدو الرقمُ فادحًا (V17.36) —
                  وعددُ السحبات الباردة: هي ما يرفع القراءاتِ بالآلاف */
               rd:(typeof readBudget === 'function' ? readBudget() : 0), cp:COLD_N,
+              ps:(typeof PERSIST === 'object' ? PERSIST.st : ''), ib:IDB_BAD ? 1 : 0,   /* التخزينُ الدائمُ والمخزنُ المحلي (V17.93) */
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
@@ -28135,6 +28201,15 @@ function wipeGo(){
   render(1);
 }
 
+/* بطاقةُ المخزن المحلي (V17.93): قاعدةُ الجهاز تعمل أم الذاكرة، والتخزينُ الدائم */
+function localStoreCard(){
+  var idb = IDB_BAD ? pill(t('لا يعمل — الذاكرةُ فقط'), 'bad') : (_idb ? pill(t('يعمل'), 'ok') : pill(t('يُفتَح…'), ''));
+  var ps = PERSIST.st === 'yes' ? pill(t('مُنح'), 'ok') : PERSIST.st === 'no' ? pill(t('لم يُمنَح'), 'wrn') : PERSIST.st === 'na' ? pill(t('غيرُ متاح'), '') : pill(t('لم يُسأل بعد'), '');
+  return card('المخزنُ المحلي', '<div class="wt-row" style="gap:14px;flex-wrap:wrap">'
+    + '<span>' + esc(t('قاعدةُ الجهاز')) + ': ' + idb + '</span>'
+    + '<span>' + esc(t('التخزينُ الدائم')) + ': ' + ps + '</span>'
+    + (IDB_BAD ? '<span class="hint" style="margin:0">' + esc(t('زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.')) + '</span>' : '') + '</div>');
+}
 PAGE.sys = { m:'النظام', t:'صحة النظام',
   l:'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.',
   body:function(){
@@ -28251,7 +28326,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
           + '</p>');
   })();
     if (cur === 'bugs') return head + bugsPageHtml();
-    if (cur === 'sys') return head + (function(){
+    if (cur === 'sys') return head + localStoreCard() + (function(){
     /* ═══ فحوصٌ حقيقيةٌ لا أصفارٌ مكتوبة ═══
        كانت الشاشةُ أربعةَ أصفارٍ بيدٍ — تقول «سليم» ولو كانت القاعدةُ مليئةً
        بالتناقض. صارت كلُّ خانةٍ تُحسَب من البيانات لحظةَ الفتح، وكلُّ رقمٍ فوق
@@ -33800,6 +33875,12 @@ function render(force){
     pwEl.innerHTML = pwHtml();
     document.body.appendChild(pwEl);
   }
+  /* لافتةُ الحفظ المحلي: حمراءُ لا تُغلَق ما دام الحفظُ لا يعمل (V17.93) */
+  var ib = document.getElementById('idbBanner');
+  if (IDB_BAD){
+    if (!ib){ ib = document.createElement('div'); ib.id = 'idbBanner'; ib.setAttribute('role', 'alert'); document.body.insertBefore(ib, document.body.firstChild); }
+    ib.innerHTML = '\u26A0 ' + esc(t('الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.'));   /* بلغة اللحظة */
+  } else if (ib){ ib.parentNode.removeChild(ib); }
   /* «ما الجديد» على الجسد كذلك — تحت نافذة الكلمة إن اجتمعتا (V17.87) */
   var wnOld = document.getElementById('wnWrap');
   if (wnOld) wnOld.parentNode.removeChild(wnOld);
@@ -34003,6 +34084,27 @@ function enterShell(){
   try { tourMaybe(); if (TOUR_OPEN) render(1); } catch (e){ LS_ERR = e; }
   /* أوّلُ فتحٍ بعد تحديث: سطورُ ما تغيّر مرةً واحدة — ولا تزاحم الجولةَ (V17.87) */
   try { if (!TOUR_OPEN && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
+  try { storagePersistMaybe(); } catch (e){ LS_ERR = e; }
+}
+/* الإغلاقُ وعملٌ لم يُحفَظ: يُسأل (V17.93) — المتصفّحُ يعرض نصَّه هو */
+window.addEventListener('beforeunload', function(e){
+  if (IDB_BAD && idbUnsynced()){ e.preventDefault(); e.returnValue = ''; return ''; }
+});
+/* ═══ التخزينُ الدائم (V17.93) ═══
+   المتصفّحُ قد يمحو مخزنَ الموقع حين يضيق — ومعه عملُ يومٍ لم يُرفَع. يُطلَب
+   التخزينُ الدائمُ مرةً واحدةً بعد الدخول إن كانت الواجهةُ موجودةً ولم يُمنَح،
+   وتُسجَّل النتيجةُ فتُرى في صحة النظام وتُحمَل في نبضة الحضور. */
+var PERSIST = { st:'', at:0 };
+function storagePersistMaybe(){
+  var ns = (typeof navigator === 'object') && navigator.storage;
+  if (!ns || typeof ns.persist !== 'function' || typeof ns.persisted !== 'function'){ PERSIST.st = 'na'; return Promise.resolve('na'); }
+  return ns.persisted().then(function(ok){
+    if (ok){ PERSIST.st = 'yes'; PERSIST.at = Date.now(); return 'yes'; }
+    var asked = lsGet('nsk14.persistAsk') || '';
+    if (asked){ PERSIST.st = 'no'; return 'no'; }          /* سُئل من قبل — لا يُكرَّر */
+    lsSet('nsk14.persistAsk', String(Date.now()));
+    return ns.persist().then(function(g){ PERSIST.st = g ? 'yes' : 'no'; PERSIST.at = Date.now(); return PERSIST.st; });
+  }).catch(function(){ PERSIST.st = 'no'; return 'no'; });
 }
 
 /* قائمةُ الخصائص المربوطة، مشتقّةً من نصِّ المعالجات لا مكتوبةً بيد.
