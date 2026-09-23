@@ -120,8 +120,13 @@ const nodoc = env.authenticatedContext('newbie', { email:'newbie@nusuk.test' }).
 await deny('بلا وثيقةٍ لا يقرأ السجلات',            getDoc(doc(nodoc, 'recs/S1')));
 await deny('ولا يكتب حدثًا',                        setDoc(doc(nodoc, 'events/E8'), { what:'x' }));
 await deny('ولا يسجّل نفسَه مهندسًا',                setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'engineer', active:true }));
-await ok  ('ويسجّل نفسَه فنيًّا فيخرج من الحصار',    setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'tech', active:true }));
-await ok  ('ثم يكتب عملَه',                          setDoc(doc(nodoc, 'events/E8'), { what:'x', ts:1 }));
+/* منذ V17.93: يسجّل نفسَه فنيًّا غيرَ فعّالٍ — يعمل على جهازه ولا يُرفَع عملُه حتى يفعّله المكتب */
+await deny('ولا فنيًّا فعّالًا',                       setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'tech', active:true }));
+await ok  ('ويسجّل نفسَه فنيًّا ينتظر التفعيل',       setDoc(doc(nodoc, 'users/newbie'), { name:'ن', role:'tech', active:false, self:true }));
+await deny('ولا يكتب عملَه قبل التفعيل',               setDoc(doc(nodoc, 'events/E8'), { what:'x', ts:1 }));
+await deny('ولا يرفع نفسَه فعّالًا',                    updateDoc(doc(nodoc, 'users/newbie'), { active:true }));
+await env.withSecurityRulesDisabled(async (ctx) => { await updateDoc(doc(ctx.firestore(), 'users/newbie'), { active:true }); });
+await ok  ('وبتفعيل المكتب يكتب عملَه',                setDoc(doc(nodoc, 'events/E8'), { what:'x', ts:1 }));
 await deny('ولا يرفع نفسَه بعد ذلك',                 updateDoc(doc(nodoc, 'users/newbie'), { role:'admin' }));
 console.log('\n══ الصيانةُ وسجلُّ ما تمّ ══');
 await ok  ('الفنيُّ يكتب سجلَّ صيانة',        setDoc(doc(as('tec'), 'maints/S1'), { id:'S1', list:[{ at:1, fault:'x' }] }));
@@ -162,11 +167,13 @@ await ok  ('ويقرؤه',                            getDoc(doc(as('eng'), 'pen
 console.log('\n══ الدعوةُ يفعّلها صاحبُها ══');
 await env.withSecurityRulesDisabled(async (ctx) => {
   await setDoc(doc(ctx.firestore(), 'pending/inv1'), { name:'مدعوّ', user:'inv1', role:'supervisor' });
+  await setDoc(doc(ctx.firestore(), 'pcode/inv1'),   { code:'R4T8W2', at:1 });    /* رمزُ الدعوة — منذ V17.93 */
 });
 const iv = env.authenticatedContext('IVUID', { email:'inv1@nusuk.local' }).firestore();
 await ok  ('يقرأ دعوتَه قبل أن يُسجَّل',        getDoc(doc(iv, 'pending/inv1')));
-await deny('ولا يكتب دورًا غيرَ دوره',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'admin', active:true }));
-await ok  ('ويكتب وثيقتَه بدور دعوته',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'supervisor', active:true }));
+await deny('ولا يكتب دورًا غيرَ دوره',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'admin', active:true, code:'R4T8W2' }));
+await deny('ولا يفعّل بلا رمز الدعوة',          setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'supervisor', active:true }));
+await ok  ('ويكتب وثيقتَه بدور دعوته — بالرمز وبريده', setDoc(doc(iv, 'users/IVUID'), { name:'مدعوّ', user:'inv1', role:'supervisor', active:true, code:'R4T8W2' }));
 await ok  ('ثم يمحو دعوتَه',                     deleteDoc(doc(iv, 'pending/inv1')));
 await deny('ولا يمحو دعوةَ غيره',                deleteDoc(doc(iv, 'pending/p1')));
 console.log('\n══ كلٌّ يُنشئ في مستواه أو دونه ══');
