@@ -37,6 +37,15 @@ for (const f of ['scripts/rules-test.mjs', 'scripts/rules-before-test.mjs']){
   }
   T(blocks > 0 && !dbl, f + ': لا نداءَ ثانيًا لـctx.firestore() داخل كتلةٍ واحدة (' + blocks + ' كتلة)' + (dbl ? ' — مكرّر في ' + dbl : ''));
 }
+/* الكتلُ المتطابقةُ تُجمَع بـ«أو»: وثيقةٌ مفردةٌ تحت settings قاعدتُها أضيقُ من كتلة {id}
+   لا تُحمى إلا إن استُثنيت في الكتلة العامة — يُمسَك هنا قبل أن يكشفه المحاكي */
+{
+  const gen = /match \/settings\/\{id\} \{([\s\S]*?)\}/.exec(rules); const genBody = gen ? gen[1] : '';
+  const singles = [...rules.matchAll(/match \/settings\/(\w+)\s*\{ allow read: if ([^;]+); allow (?:write|create, update)[^}]*\}/g)];
+  const tight = singles.filter(m => !/^ok\(\)$/.test(m[2].trim()) && !/^ok\(\) && !viewer\(\)$/.test(m[2].trim()));
+  const unshielded = tight.filter(m => !new RegExp("id != '" + m[1] + "'").test(genBody));
+  T(tight.length >= 3 && !unshielded.length, 'وكلُّ وثيقةٍ مفردةٍ قراءتُها أضيقُ من الإعدادات العامة مستثناةٌ في كتلتها: ' + tight.map(m => m[1]).join(' · ') + (unshielded.length ? ' — غيرُ مستثنى: ' + unshielded.map(m => m[1]).join(' · ') : ''));
+}
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ الحسابات المعادية نظيف \u2705');

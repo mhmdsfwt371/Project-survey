@@ -281,8 +281,10 @@ service cloud.firestore {
     match /settings/perms    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/roles    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/{id} {
-      allow read: if ok() && id != 'contacts' && id != 'cotel';
-      allow write: if pm('settings', 'w', mgr());
+      // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
+      // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport';
+      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport';
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط
