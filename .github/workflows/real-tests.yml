@@ -3,11 +3,15 @@ name: Real browser + rules emulator
 # الرسمي — لا يفعلهما المتصفّحُ الصوريّ: لا يرسم ولا يلمس، ولا يعرف القاعدة.
 # يُستدعى من سير الفحص (Docs Version Check) قبل الترقية إلى الأصل — لا بدفعٍ
 # مستقل، فلا يعمل مرتين لالتزامٍ واحد (V17.81).
+# ═══ بوابةٌ صامتة (V17.93) ═══
+# الفشلُ هنا لا يُسقِط التشغيلَ (فلا رسالةَ حمراء لصاحب المستودع): يُكتَب علامةَ
+# PASS/FAIL في مصنوعة gate-* يقرؤها promote فلا يرقّي إلا إن مرَّ كلُّ شيء، ويُكتَب
+# ما سقط تعليقًا على الالتزام فيقرؤه المساعدُ ويصلحه.
 on:
   workflow_call: {}
   workflow_dispatch: {}
 permissions:
-  contents: read
+  contents: write
 jobs:
   browser:
     name: كروميوم حقيقي — هاتف
@@ -43,7 +47,23 @@ jobs:
           npx playwright install --with-deps chromium && exit 0
           echo "::error::تعذّر تثبيتُ المتصفّح"; exit 1
       - name: يدخل ويلمس نقطةَ ممرٍّ ويقيس النافذةَ ويرسم كلَّ شاشة
-        run: node scripts/browser-test.mjs
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          RC=0; node scripts/browser-test.mjs 2>&1 | tee /tmp/browser.txt || RC=$?
+          mkdir -p gate
+          if [ "$RC" = "0" ]; then echo PASS > gate/browser.txt; else
+            { echo FAIL; grep -aE '✗|Error' /tmp/browser.txt | tail -30; } > gate/browser.txt
+            gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 المتصفّحُ الحقيقي سقط — لا ترقية\n```\n%s\n```' "$(grep -aE '✗|Error' /tmp/browser.txt | tail -30)")" > /dev/null || true
+            echo "::warning::المتصفّحُ الحقيقي سقط — التفصيلُ تعليقًا على الالتزام، ولا ترقية"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-browser
+          path: gate/
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -74,8 +94,11 @@ jobs:
       - name: كلُّ دورٍ يطرق كلَّ باب — يُفتَح ما يجب ويُغلَق ما يجب
         # المخرَجُ يُحفَظ ويُلخَّص: التنبيهاتُ تحمل اسمَ كلِّ فحصٍ ساقط،
         # والملخَّصُ يُكتَب في صفحة التشغيل فيُقرأ بلا تنزيلِ سجلّ.
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -o pipefail
+          RC=0
           npx firebase emulators:exec --only firestore --project demo-nusuk \
             "node scripts/rules-test.mjs" 2>&1 | tee /tmp/rules.txt || RC=$?
           {
@@ -84,4 +107,15 @@ jobs:
             grep -aE '✓|✗|فحصًا' /tmp/rules.txt | tail -60
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
-          exit ${RC:-0}
+          mkdir -p gate
+          if [ "$RC" = "0" ]; then echo PASS > gate/rules.txt; else
+            { echo FAIL; grep -aE '✗|Error|error' /tmp/rules.txt | tail -40; } > gate/rules.txt
+            gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 محاكي القواعد سقط — لا ترقية\n```\n%s\n```' "$(grep -aE '✗|فحصًا|Error' /tmp/rules.txt | tail -40)")" > /dev/null || true
+            echo "::warning::محاكي القواعد سقط — التفصيلُ تعليقًا على الالتزام، ولا ترقية"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-rules
+          path: gate/
+          retention-days: 7

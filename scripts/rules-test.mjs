@@ -426,7 +426,7 @@ console.log('\n══ ما سُدَّ كان مفتوحًا — الحالاتُ
   });
   const asB = (uid, email) => envB.authenticatedContext(uid, { email: email || (uid + '@nusuk.test') }).firestore();
   await ok('كان مفتوحًا: غريبٌ يُنشئ نفسَه فنيًّا فعّالًا',          setDoc(doc(asB('b_str'), 'users/b_str'), { name:'غريب', role:'tech', active:true, user:'b_str' }));
-  await ok('كان مفتوحًا: غريبٌ يعدُّ الدعوات',                     getDocs(query(collection(asB('b_str2'), 'pending'), limit(5))));
+  await ok('كان مفتوحًا: دعوةٌ تُقرأ بلا هويةٍ بمعرِّفها',           getDoc(doc(envB.unauthenticatedContext().firestore(), 'pending/b.inv')));
   await ok('كان مفتوحًا: المشرفُ يقرأ مفتاحَ السيور',              getDoc(doc(asB('b_sup'), 'ghcfg/gh')));
   await ok('كان مفتوحًا: الفنيُّ يحذف وثيقةَ النبضة',              deleteDoc(doc(asB('b_tec'), 'settings/pulse')));
   await ok('كان مفتوحًا: تفعيلُ دعوةٍ بلا رمزٍ ولا بريد',          setDoc(doc(asB('b_any', 'other@nusuk.local'), 'users/b_any'), { name:'دخيل', user:'b.inv', role:'supervisor', active:true }));

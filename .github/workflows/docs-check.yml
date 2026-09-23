@@ -291,11 +291,31 @@ jobs:
             sleep $((i*15))
           done
           exit 1
+      # بوابةٌ صامتة (V17.93): الفشلُ لا يُسقِط الشريحة — علامةُ FAIL وتعليقٌ على الالتزام،
+      # والترقيةُ تشترط PASS من الشرائح الأربع والمتصفّحِ والمحاكي
       - name: الشريحة ${{ matrix.shard }} من ٤ — الخطواتُ نفسُها مقسَّمة
-        run: node scripts/cloud-run.mjs ${{ matrix.shard }} 4
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -o pipefail
+          RC=0; node scripts/cloud-run.mjs ${{ matrix.shard }} 4 2>&1 | tee /tmp/shard.txt || RC=$?
+          mkdir -p gate
+          if [ "$RC" = "0" ]; then echo PASS > gate/shard-${{ matrix.shard }}.txt; else
+            { echo FAIL; grep -a '✗' /tmp/shard.txt | tail -30; } > gate/shard-${{ matrix.shard }}.txt
+            gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 الشريحة ${{ matrix.shard }} سقطت — لا ترقية\n```\n%s\n```' "$(grep -a '✗' /tmp/shard.txt | tail -30)")" > /dev/null || true
+            echo "::warning::الشريحة ${{ matrix.shard }} سقطت — التفصيلُ تعليقًا على الالتزام، ولا ترقية"
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gate-shard-${{ matrix.shard }}
+          path: gate/
+          retention-days: 7
   real:
     needs: [check, shards]
     if: ${{ !failure() && !cancelled() }}
+    permissions:
+      contents: write
     uses: ./.github/workflows/real-tests.yml
   promote:
     needs: [check, shards, real]
@@ -309,7 +329,27 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.PROMOTE_TOKEN || github.token }}
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: gate-*
+          path: gates
+          merge-multiple: true
+      - name: البوابة — ستُّ علاماتٍ خضراء أو لا ترقية
+        run: |
+          need="shard-1 shard-2 shard-3 shard-4 browser rules"; bad=""
+          for n in $need; do
+            f="gates/$n.txt"
+            if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi
+          done
+          if [ -n "$bad" ]; then
+            echo "::notice title=لا ترقية::سقط:$bad — التفصيلُ في تعليقات الالتزام ${{ github.sha }}"
+            echo "GATE=closed" >> "$GITHUB_ENV"
+          else
+            echo "✓ البوابةُ خضراء: الشرائحُ الأربعُ والمتصفّحُ والمحاكي"
+            echo "GATE=open" >> "$GITHUB_ENV"
+          fi
       - name: الترقية إلى الأصل — تقدُّمٌ سريعٌ للالتزام الذي فُحص بعينه
+        if: env.GATE == 'open'
         run: |
           git fetch origin main
           if ! git merge-base --is-ancestor origin/main HEAD; then
@@ -321,7 +361,7 @@ jobs:
       # دفعُ توكن السحابة لا يُطلق سيورَ الدفع (قاعدةُ جيت هب)، فتُطلَق بالاسم:
       # التغذيةُ إن تغيّر ملفٌ من ملفاتها — وهي عاطلةٌ بلا تغيير فلا ضررَ في إطلاقها.
       - name: إطلاقُ سير التغذية بعد الترقية
-        if: success()
+        if: env.GATE == 'open'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
