@@ -23,7 +23,7 @@ const outsiders = targets.filter(t => { const e = HOSTILE[t.key]; return e && (/
 T(!outsiders.length, 'والغريبُ وغيرُ الفعّال لا يُقبَل لهما شيءٌ إلا قراءةَ الدعوة بمعرِّفها' + (outsiders.length ? ' — ' + outsiders.map(t => t.key).join(' · ') : ''));
 const rt = readFileSync('scripts/rules-test.mjs', 'utf8');
 T(/from '\.\/hostile-expect\.mjs'/.test(rt) && /rulesTargets\(/.test(rt), 'والطقمُ موصولٌ باختبار المحاكي');
-T(existsSync('scripts/fixtures/rules-before-V17.93.rules') && /rules-before-V17\.93\.rules/.test(rt), 'والإثباتُ على القواعد السابقة موصول: ما سُدَّ كان مفتوحًا');
+T(existsSync('scripts/fixtures/rules-before-V17.93.rules') && /rules-before-V17\.93\.rules/.test(readFileSync('scripts/rules-before-test.mjs', 'utf8')) && /rules-before-test\.mjs/.test(readFileSync('.github/workflows/real-tests.yml', 'utf8')), 'والإثباتُ على القواعد السابقة موصول في عمليةٍ مستقلّة: ما سُدَّ كان مفتوحًا');
 T(/match \/settings\/pulse\s*\{ allow read: if ok\(\); allow create, update: if ok\(\) && !viewer\(\); allow delete: if mgr\(\); \}/.test(rules), 'ووثيقةُ النبضة لا يحذفها إلا المكتب');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);

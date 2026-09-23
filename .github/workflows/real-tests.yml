@@ -100,7 +100,7 @@ jobs:
           set -o pipefail
           RC=0
           npx firebase emulators:exec --only firestore --project demo-nusuk \
-            "node scripts/rules-test.mjs" 2>&1 | tee /tmp/rules.txt || RC=$?
+            "node scripts/rules-test.mjs && node scripts/rules-before-test.mjs" 2>&1 | tee /tmp/rules.txt || RC=$?
           {
             echo '### محاكي القواعد'
             echo '```'
