@@ -25,6 +25,13 @@ const rt = readFileSync('scripts/rules-test.mjs', 'utf8');
 T(/from '\.\/hostile-expect\.mjs'/.test(rt) && /rulesTargets\(/.test(rt), 'والطقمُ موصولٌ باختبار المحاكي');
 T(existsSync('scripts/fixtures/rules-before-V17.93.rules') && /rules-before-V17\.93\.rules/.test(readFileSync('scripts/rules-before-test.mjs', 'utf8')) && /rules-before-test\.mjs/.test(readFileSync('.github/workflows/real-tests.yml', 'utf8')), 'والإثباتُ على القواعد السابقة موصول في عمليةٍ مستقلّة: ما سُدَّ كان مفتوحًا');
 T(/match \/settings\/pulse\s*\{ allow read: if ok\(\); allow create, update: if ok\(\) && !viewer\(\); allow delete: if mgr\(\); \}/.test(rules), 'ووثيقةُ النبضة لا يحذفها إلا المكتب');
+/* نداءُ ctx.firestore() مرتين في كتلةٍ واحدةٍ يُسقط المحاكي — يُمسَك هنا قبل السحابة */
+for (const f of ['scripts/rules-test.mjs', 'scripts/rules-before-test.mjs']){
+  const src = readFileSync(f, 'utf8');
+  const blocks = [...src.matchAll(/withSecurityRulesDisabled\(async \((\w+)\) => \{([\s\S]*?)\n\}\);/g)];
+  const dbl = blocks.filter(m => (m[2].match(new RegExp(m[1] + '\\.firestore\\(\\)', 'g')) || []).length > 1);
+  T(!dbl.length, f + ': لا نداءَ ثانيًا لـctx.firestore() داخل كتلةٍ واحدة (' + blocks.length + ' كتلة)' + (dbl.length ? ' — مكرّر في ' + dbl.length : ''));
+}
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ الحسابات المعادية نظيف \u2705');

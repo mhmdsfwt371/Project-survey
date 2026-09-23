@@ -166,8 +166,11 @@ await ok  ('ويقرؤه',                            getDoc(doc(as('eng'), 'pen
 
 console.log('\n══ الدعوةُ يفعّلها صاحبُها ══');
 await env.withSecurityRulesDisabled(async (ctx) => {
-  await setDoc(doc(ctx.firestore(), 'pending/inv1'), { name:'مدعوّ', user:'inv1', role:'supervisor' });
-  await setDoc(doc(ctx.firestore(), 'pcode/inv1'),   { code:'R4T8W2', at:1 });    /* رمزُ الدعوة — منذ V17.93 */
+  /* نسخةٌ واحدةٌ من القاعدة لكلِّ سياق: النداءُ الثاني لـctx.firestore() يعيد ضبطَ
+     المحاكي على نسخةٍ بدأت فيُسقط الاتصالَ («Firestore has already been started») */
+  const f2 = ctx.firestore();
+  await setDoc(doc(f2, 'pending/inv1'), { name:'مدعوّ', user:'inv1', role:'supervisor' });
+  await setDoc(doc(f2, 'pcode/inv1'),   { code:'R4T8W2', at:1 });    /* رمزُ الدعوة — منذ V17.93 */
 });
 const iv = env.authenticatedContext('IVUID', { email:'inv1@nusuk.local' }).firestore();
 await ok  ('يقرأ دعوتَه قبل أن يُسجَّل',        getDoc(doc(iv, 'pending/inv1')));
