@@ -10,13 +10,9 @@ on:
   push:
     branches: [main]
     paths-ignore: ['backups/**']
-  workflow_dispatch:
-    inputs:
-      team:
-        description: 'فريقٌ يُنشَأ فورًا (اختياري): سطرٌ لكلِّ شخص — الاسم,اسم المستخدم,الدور,كلمة المرور,الوظيفة,الفريق'
-        required: false
-        type: string
-        default: ''
+  # التشغيلُ اليدويُّ بلا مدخلات (V17.93): الحساباتُ تُطلَب من التطبيق في provision
+  # حيث تحرسها القواعدُ بالرتبة — لا من نصٍّ حرٍّ يكتبه من يملك مفتاحَ التشغيل
+  workflow_dispatch: {}
 permissions:
   contents: read
   issues: write        # جسرُ البلاغات: يفتح بلاغَ المستودع من بلاغ التطبيق
@@ -40,7 +36,6 @@ jobs:
       - name: إنشاءُ ما طلبه المكتب
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          TEAM: ${{ inputs.team }}
         run: node scripts/provision.mjs
       - name: نقلُ الصور من القاعدة إلى الدرايف
         env:

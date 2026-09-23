@@ -11,6 +11,7 @@
 import { readFileSync } from 'fs';
 import { initializeTestEnvironment, assertSucceeds, assertFails } from '@firebase/rules-unit-testing';
 import { doc, setDoc, getDoc, updateDoc, deleteDoc, getDocs, query, collection, limit } from 'firebase/firestore';
+import { HOSTILE, rulesTargets } from './hostile-expect.mjs';
 
 const env = await initializeTestEnvironment({
   projectId: 'demo-nusuk',
@@ -348,6 +349,82 @@ await deny('وبدورٍ غيرِ دور الدعوة يُرَدّ',            
 await ok  ('والمدعوُّ نفسُه بالرمز والبريد يفعّل بدور دعوته',           setDoc(doc(inv, 'users/invuid'), { name:'مدعوّ', user:'m.inv', role:'supervisor', active:true, code:'K7Q2M9' }));
 await ok  ('والحساباتُ القائمةُ كما هي: المهندسُ يُنشئ حسابًا لغيره',   setDoc(doc(as('eng'), 'users/newtec'), { name:'فني جديد', role:'tech', active:true, user:'newtec' }));
 await ok  ('والفنيُّ الفعّالُ يقرأ زيارتَه كما كان',                    getDoc(doc(as('tec'), 'recs/S1')));
+console.log('\n══ مفتاحُ تشغيل السيور للإدارة والإدارة العليا وحدهما ══');
+await env.withSecurityRulesDisabled(async (ctx) => {
+  const db = ctx.firestore();
+  await setDoc(doc(db, 'ghcfg/gh'), { token:'x', at:1 });
+  await setDoc(doc(db, 'users/adm'), { name:'مدير', role:'admin', active:true });
+  await setDoc(doc(db, 'users/exe'), { name:'عليا', role:'exec', active:true });
+});
+await deny('المشرفُ لا يقرأ المفتاح',                                   getDoc(doc(as('sup'), 'ghcfg/gh')));
+await deny('ولا المهندس',                                               getDoc(doc(as('eng'), 'ghcfg/gh')));
+await deny('ولا الفنيّ',                                                getDoc(doc(as('tec'), 'ghcfg/gh')));
+await ok  ('ومديرُ المشروع يقرؤه',                                      getDoc(doc(as('adm'), 'ghcfg/gh')));
+await ok  ('والإدارةُ العليا تقرؤه',                                    getDoc(doc(as('exe'), 'ghcfg/gh')));
+console.log('\n══ الحساباتُ المعادية على كلِّ مجموعةٍ في القواعد ══');
+{
+  const targets = rulesTargets(readFileSync('firestore.rules', 'utf8'));
+  const miss = targets.filter(x => !HOSTILE[x.key]);
+  if (miss.length) fail('مجموعاتٌ بلا توقّعاتٍ معادية', miss.map(x => x.key).join(' · '));
+  await env.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    /* الافتراضيُّ وحدَه: ما زرعته الأقسامُ السابقة من مصفوفةٍ وأدوارٍ يُزال */
+    await deleteDoc(doc(db, 'settings/perms')); await deleteDoc(doc(db, 'settings/roles'));
+    await setDoc(doc(db, 'users/h_ina'), { name:'غيرُ فعّال', role:'tech', active:false });
+    await setDoc(doc(db, 'users/h_tec'), { name:'فنيٌّ ميداني', role:'tech', active:true });
+    for (const x of targets){
+      const e = HOSTILE[x.key]; if (!e) continue;
+      const seed = e.seed || { seed:1 };
+      if (x.single) await setDoc(doc(db, x.path), seed);
+      else for (const id of ['H1', 'D_str', 'D_ina', 'D_tec']) await setDoc(doc(db, x.path + '/' + id), seed);
+    }
+  });
+  const P = { str: as('h_str'), ina: as('h_ina'), tec: as('h_tec') };
+  const NAMES = { str:'غريب', ina:'غيرُ فعّال', tec:'فنيٌّ فعّال' };
+  const run = (name, ch, fn) => ch === 'A' ? ok(name, fn()) : ch === 'D' ? deny(name, fn()) : null;
+  for (const x of targets){
+    const e = HOSTILE[x.key]; if (!e) continue;
+    for (const p of ['str', 'ina', 'tec']){
+      const exp = e[p], db = P[p], tag = NAMES[p] + ' · ' + x.key;
+      if (x.single){
+        await run(tag + ' · قراءة', exp[0], () => getDoc(doc(db, x.path)));
+        await run(tag + ' · كتابة', exp[1], () => setDoc(doc(db, x.path), { x:2 }, { merge:true }));
+        await run(tag + ' · حذف',   exp[2], () => deleteDoc(doc(db, x.path)));
+      } else {
+        await run(tag + ' · قراءة', exp[0], () => getDoc(doc(db, x.path + '/H1')));
+        await run(tag + ' · قائمة', exp[1], () => getDocs(query(collection(db, x.path), limit(1))));
+        await run(tag + ' · إنشاء', exp[2], () => setDoc(doc(db, x.path + '/N_' + p), e.seed || { x:1 }));
+        await run(tag + ' · تعديل', exp[3], () => updateDoc(doc(db, x.path + '/H1'), { x:2 }));
+        await run(tag + ' · حذف',   exp[4], () => deleteDoc(doc(db, x.path + '/D_' + p)));
+      }
+    }
+  }
+}
+console.log('\n══ ما سُدَّ كان مفتوحًا — الحالاتُ نفسُها على القواعد السابقة ══');
+{
+  /* الاختبارُ يُثبت أنه يكشف: الحالاتُ التي تُرَدُّ الآن تُقبَل على القواعد قبل V17.93 */
+  const envB = await initializeTestEnvironment({
+    projectId: 'demo-before',
+    firestore: { rules: readFileSync('scripts/fixtures/rules-before-V17.93.rules', 'utf8'),
+                 host: process.env.FIRESTORE_EMULATOR_HOST ? process.env.FIRESTORE_EMULATOR_HOST.split(':')[0] : '127.0.0.1',
+                 port: process.env.FIRESTORE_EMULATOR_HOST ? +process.env.FIRESTORE_EMULATOR_HOST.split(':')[1] : 8080 }
+  });
+  await envB.withSecurityRulesDisabled(async (ctx) => {
+    const db = ctx.firestore();
+    await setDoc(doc(db, 'users/b_sup'), { name:'مشرف', role:'supervisor', active:true });
+    await setDoc(doc(db, 'users/b_tec'), { name:'فني', role:'tech', active:true });
+    await setDoc(doc(db, 'ghcfg/gh'), { token:'x' });
+    await setDoc(doc(db, 'settings/pulse'), { at:1 });
+    await setDoc(doc(db, 'pending/b.inv'), { name:'مدعوّ', user:'b.inv', role:'supervisor' });
+  });
+  const asB = (uid, email) => envB.authenticatedContext(uid, { email: email || (uid + '@nusuk.test') }).firestore();
+  await ok('كان مفتوحًا: غريبٌ يُنشئ نفسَه فنيًّا فعّالًا',          setDoc(doc(asB('b_str'), 'users/b_str'), { name:'غريب', role:'tech', active:true, user:'b_str' }));
+  await ok('كان مفتوحًا: غريبٌ يعدُّ الدعوات',                     getDocs(query(collection(asB('b_str2'), 'pending'), limit(5))));
+  await ok('كان مفتوحًا: المشرفُ يقرأ مفتاحَ السيور',              getDoc(doc(asB('b_sup'), 'ghcfg/gh')));
+  await ok('كان مفتوحًا: الفنيُّ يحذف وثيقةَ النبضة',              deleteDoc(doc(asB('b_tec'), 'settings/pulse')));
+  await ok('كان مفتوحًا: تفعيلُ دعوةٍ بلا رمزٍ ولا بريد',          setDoc(doc(asB('b_any', 'other@nusuk.local'), 'users/b_any'), { name:'دخيل', user:'b.inv', role:'supervisor', active:true }));
+  await envB.cleanup();
+}
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

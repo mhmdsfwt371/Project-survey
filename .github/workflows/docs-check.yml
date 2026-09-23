@@ -258,6 +258,10 @@ jobs:
         run: node scripts/audit-idb.mjs
       - name: جرد الحساب الذي ينتظر التفعيل — غيرُ فعّالٍ حتى يفعّله المكتب، ويعود عملُه وحدَه
         run: node scripts/audit-selfreg.mjs
+      - name: جرد ختم الهوية — كلُّ كتابةٍ تحمل معرِّفَ كاتبها في _by
+        run: node scripts/audit-uid.mjs
+      - name: جرد الحسابات المعادية — لكلِّ مجموعةٍ في القواعد توقّعاتٌ لكلِّ شخصية
+        run: node scripts/audit-hostile.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
