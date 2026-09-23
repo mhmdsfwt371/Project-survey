@@ -27,10 +27,15 @@ T(existsSync('scripts/fixtures/rules-before-V17.93.rules') && /rules-before-V17\
 T(/match \/settings\/pulse\s*\{ allow read: if ok\(\); allow create, update: if ok\(\) && !viewer\(\); allow delete: if mgr\(\); \}/.test(rules), 'ووثيقةُ النبضة لا يحذفها إلا المكتب');
 /* نداءُ ctx.firestore() مرتين في كتلةٍ واحدةٍ يُسقط المحاكي — يُمسَك هنا قبل السحابة */
 for (const f of ['scripts/rules-test.mjs', 'scripts/rules-before-test.mjs']){
-  const src = readFileSync(f, 'utf8');
-  const blocks = [...src.matchAll(/withSecurityRulesDisabled\(async \((\w+)\) => \{([\s\S]*?)\n\}\);/g)];
-  const dbl = blocks.filter(m => (m[2].match(new RegExp(m[1] + '\\.firestore\\(\\)', 'g')) || []).length > 1);
-  T(!dbl.length, f + ': لا نداءَ ثانيًا لـctx.firestore() داخل كتلةٍ واحدة (' + blocks.length + ' كتلة)' + (dbl.length ? ' — مكرّر في ' + dbl.length : ''));
+  const src = readFileSync(f, 'utf8').replace(/\/\*[\s\S]*?\*\//g, '');   /* التعليقاتُ لا تُعَدّ */
+  let blocks = 0, dbl = 0;
+  for (const m of src.matchAll(/withSecurityRulesDisabled\(async \((\w+)\) => \{/g)){
+    let i = m.index + m[0].length, depth = 1;
+    while (i < src.length && depth){ if (src[i] === '{') depth++; else if (src[i] === '}') depth--; i++; }
+    const body = src.slice(m.index + m[0].length, i); blocks++;
+    if ((body.match(new RegExp(m[1] + '\\.firestore\\(\\)', 'g')) || []).length > 1) dbl++;
+  }
+  T(blocks > 0 && !dbl, f + ': لا نداءَ ثانيًا لـctx.firestore() داخل كتلةٍ واحدة (' + blocks + ' كتلة)' + (dbl ? ' — مكرّر في ' + dbl : ''));
 }
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
