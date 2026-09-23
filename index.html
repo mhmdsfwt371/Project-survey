@@ -24987,8 +24987,8 @@ function pointMap(zone){
   var dots = P.map(function(x){
     var st = lifeOf(x), L = LIFE[st] || LIFE.todo; cnt[st] = (cnt[st] || 0) + 1;
     var cx = offX + ((+x.lng) - lo0) * kx * sc, cy = H - (offY + ((+x.lat) - la0) * sc);
-    return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="' + L.c + '" data-site="' + esc(x.id) + '">'
-      + '<title>' + esc(x.id + ' \u00b7 ' + t(L.n)) + '</title></circle>';
+    /* الوصفُ خاصيةٌ لا نصّ: ألفُ عنوانٍ نصّيٍّ كانت تُثقل الشاشةَ على قارئها (audit-fit) */
+    return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="' + L.c + '" data-site="' + esc(x.id) + '" aria-label="' + esc(x.id) + '"></circle>';
   }).join('');
   var legend = LIFE_ORDER.filter(function(k){ return cnt[k]; }).map(function(k){
     return '<span class="kk-lg"><i style="background:' + LIFE[k].c + '"></i>' + esc(t(LIFE[k].n)) + ' <b class="num">' + nm(cnt[k]) + '</b></span>';
