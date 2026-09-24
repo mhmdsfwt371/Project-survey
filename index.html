@@ -1011,7 +1011,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.97</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.98</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3865,6 +3865,9 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'نسخ التشخيص':'Copy diagnostics', 'نُسخ التشخيص — أرسله للمهندس':'Diagnostics copied — send it to the engineer', 'آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة':'The last hundred events on this device, without names or texts — send it to the engineer when the network is down', 'التشخيص':'Diagnostics', 'الخطُّ الزمنيُّ للجهاز':'Device timeline',
+ 'ث':'s',
+ 'أداءُ الميدان — ما يشعر به الفني':'Field performance — what the technician feels', 'جهازًا أرسل قياسًا اليوم':'devices reported today', 'أبطأُ الأجهزة':'Slowest devices', 'فتح←خريطة':'Open→map', 'مهامّ طويلة':'Long tasks', 'أبطأُ الصفحات':'Slowest pages', 'رسمٌ p75 (م.ث)':'Render p75 (ms)',
  'تنبيهُ الميزانية مضبوط':'Budget alert set', 'بلا تنبيهٍ في Google Cloud لا يُعلَم بتجاوز الحصة المجانية إلا في الفاتورة — يُضبَط مرةً ويُؤشَّر هنا':'Without a Google Cloud alert, exceeding the free quota is only discovered on the invoice — set once and tick here', 'حارسُ التكلفة':'Cost guard', 'تنبيهُ ميزانية Google Cloud':'Google Cloud budget alert', 'مضبوط':'Set', 'غيرُ مضبوط':'Not set', 'أُلغي الضبط':'Unset', 'ضبطتُه — أشِّر':'I set it — tick', 'خطواتُ الضبط':'Setup steps', 'الحصةُ المجانية ٥٠ ألف قراءةٍ و٢٠ ألف كتابةٍ في اليوم — والتنبيهُ يبلّغك قبل أن تصل الفاتورة. قراءاتُ اليوم في صحة النظام ← الاستهلاك.':'The free quota is 50K reads and 20K writes a day — the alert warns you before the invoice arrives. Today’s reads are in System health → Usage.',
  'التركيبُ التجريبي — الزمنُ بين المراحل':'Pilot installation — time between stages', 'نقاطٌ وُسمت تجريبيةً من نافذتها. الأرقامُ من وثائق المسح والتركيب والتسليم والفكّ نفسِها.':'Points marked as pilot from their window. Figures come from the survey, installation, handover and dismantling records themselves.', 'مُسحت':'Surveyed', 'أُسند التركيب':'Install assigned', 'رُكّبت':'Installed', 'دُقّقت':'QA passed', 'سُلّمت':'Handed over', 'فُكّت':'Dismantled', 'إسناد←تركيب':'Assign→install', 'تركيب←تدقيق':'Install→QA', 'تدقيق←تسليم':'QA→handover', 'نقطةٌ تجريبية — أزل الوسم':'Pilot point — remove the mark', 'وَسِمها تجريبيةً':'Mark as pilot',
  'استعمالُ الصفحات وقراءاتُ اليوم':'Page usage and today’s reads', 'قراءاتُ اليوم تقريبًا':'Approximate reads today', 'جهازًا نبض اليوم':'devices pulsed today', 'الصفحة':'Page', 'فتحاتٌ في ٣٠ يومًا':'Opens in 30 days', 'لا تجميعَ بعد — يكتبه النبضُ الصباحيُّ مرةً في اليوم.':'No aggregate yet — the morning pulse writes it once a day.',
@@ -6608,6 +6611,9 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'نسخ التشخيص':'تشخیص کاپی کریں', 'نُسخ التشخيص — أرسله للمهندس':'تشخیص کاپی ہو گیا — انجینئر کو بھیجیں', 'آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة':'اس ڈیوائس کے آخری سو واقعات، بغیر ناموں اور تحریروں کے — نیٹ ورک نہ ہونے پر انجینئر کو بھیجیں', 'التشخيص':'تشخیص', 'الخطُّ الزمنيُّ للجهاز':'ڈیوائس کی ٹائم لائن',
+ 'ث':'سیکنڈ',
+ 'أداءُ الميدان — ما يشعر به الفني':'فیلڈ کارکردگی — جو ٹیکنیشن محسوس کرتا ہے', 'جهازًا أرسل قياسًا اليوم':'ڈیوائسز نے آج رپورٹ دی', 'أبطأُ الأجهزة':'سست ترین ڈیوائسز', 'فتح←خريطة':'کھولنا←نقشہ', 'مهامّ طويلة':'لمبے کام', 'أبطأُ الصفحات':'سست ترین صفحات', 'رسمٌ p75 (م.ث)':'رینڈر p75 (ملی سیکنڈ)',
  'تنبيهُ الميزانية مضبوط':'بجٹ الرٹ مقرر', 'بلا تنبيهٍ في Google Cloud لا يُعلَم بتجاوز الحصة المجانية إلا في الفاتورة — يُضبَط مرةً ويُؤشَّر هنا':'گوگل کلاؤڈ الرٹ کے بغیر مفت کوٹہ سے تجاوز کا پتہ صرف بل سے چلتا ہے — ایک بار مقرر کریں اور یہاں نشان لگائیں', 'حارسُ التكلفة':'لاگت کا محافظ', 'تنبيهُ ميزانية Google Cloud':'گوگل کلاؤڈ بجٹ الرٹ', 'مضبوط':'مقرر', 'غيرُ مضبوط':'مقرر نہیں', 'أُلغي الضبط':'ختم کریں', 'ضبطتُه — أشِّر':'میں نے مقرر کیا — نشان لگائیں', 'خطواتُ الضبط':'ترتیب کے مراحل', 'الحصةُ المجانية ٥٠ ألف قراءةٍ و٢٠ ألف كتابةٍ في اليوم — والتنبيهُ يبلّغك قبل أن تصل الفاتورة. قراءاتُ اليوم في صحة النظام ← الاستهلاك.':'مفت کوٹہ روزانہ ۵۰ ہزار ریڈز اور ۲۰ ہزار رائٹس ہے — الرٹ بل آنے سے پہلے خبردار کرتا ہے۔ آج کی ریڈز نظام کی صحت ← استعمال میں ہیں۔',
  'التركيبُ التجريبي — الزمنُ بين المراحل':'آزمائشی تنصیب — مراحل کے درمیان وقت', 'نقاطٌ وُسمت تجريبيةً من نافذتها. الأرقامُ من وثائق المسح والتركيب والتسليم والفكّ نفسِها.':'اپنی ونڈو سے آزمائشی نشان زد پوائنٹس۔ اعداد سروے، تنصیب، حوالگی اور اتارنے کے ریکارڈ سے ہیں۔', 'مُسحت':'سروے ہوا', 'أُسند التركيب':'تنصیب سونپی گئی', 'رُكّبت':'نصب ہوئی', 'دُقّقت':'جانچ ہوئی', 'سُلّمت':'حوالے ہوئی', 'فُكّت':'اتاری گئی', 'إسناد←تركيب':'سونپنا←تنصیب', 'تركيب←تدقيق':'تنصیب←جانچ', 'تدقيق←تسليم':'جانچ←حوالگی', 'نقطةٌ تجريبية — أزل الوسم':'آزمائشی پوائنٹ — نشان ہٹائیں', 'وَسِمها تجريبيةً':'آزمائشی نشان لگائیں',
  'استعمالُ الصفحات وقراءاتُ اليوم':'صفحات کا استعمال اور آج کی ریڈز', 'قراءاتُ اليوم تقريبًا':'آج کی تخمینی ریڈز', 'جهازًا نبض اليوم':'ڈیوائسز نے آج نبض بھیجی', 'الصفحة':'صفحہ', 'فتحاتٌ في ٣٠ يومًا':'۳۰ دن میں کھولنے کی تعداد', 'لا تجميعَ بعد — يكتبه النبضُ الصباحيُّ مرةً في اليوم.':'ابھی مجموعہ نہیں — صبح کی نبض دن میں ایک بار لکھتی ہے۔',
@@ -8124,6 +8130,22 @@ var DATA = {
 var PAGE = {};
 
 /* ═══ مساعدات العرض ═══ */
+/* ═══ عزلُ الرموز اللاتينية داخل النصِّ العربي (V17.98) ═══
+   معرِّفٌ مثل NSK-MIN-RDR-0018 أو رقمٌ تسلسليٌّ أو شاخصٌ مثل 12B/B04 داخل جملةٍ
+   عربيةٍ قد يُعاد ترتيبُه بصريًّا. في HTML يُعزَل بـ<bdi>، وفي النصِّ الصريح (واتساب
+   والتقارير) بعلامتَي FSI…PDI. للعرض فقط: القيمُ المخزونةُ والتصديرُ (CSV/JSON/إكسل)
+   تبقى نظيفةً من العلامات. */
+var BDI_TOK = /[A-Za-z0-9][A-Za-z0-9._:\/-]*[A-Za-z0-9]|[A-Za-z0-9]/g;
+function bdiNeed(m){ return /[A-Za-z]/.test(m) || /[\/:.-]/.test(m); }
+function bdi(s){ return '<bdi>' + esc(s) + '</bdi>'; }
+function bdiText(s){
+  /* التهريبُ بعد التقطيع: esc تحوّل الشَّرطةَ المائلة إلى مرجعٍ فيتقطّع الشاخص */
+  s = String(s == null ? '' : s); var out = '', last = 0;
+  s.replace(BDI_TOK, function(m, off){ out += esc(s.slice(last, off)) + (bdiNeed(m) ? '<bdi>' + esc(m) + '</bdi>' : esc(m)); last = off + m.length; return m; });
+  return out + esc(s.slice(last));
+}
+function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
+function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
 function esc(s){ return String(s==null?'':s)
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\//g,'&#47;'); }
@@ -8449,6 +8471,7 @@ var IDB_LOG_ERR = null, IDB_TIMEOUT = (typeof window === 'object' && +window.NSK
 function idbTellBad(on, why){
   if (IDB_BAD === on) return;
   IDB_BAD = on;
+  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){}
   try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ IDB_LOG_ERR = e; }
   try { if (typeof render === 'function') render(1); } catch (e){ IDB_LOG_ERR = e; }
 }
@@ -9906,9 +9929,59 @@ function logEventQuiet(msg){
   SOFT_ERRS.unshift({ at:Date.now(), where:'مصالحة', msg:String(msg).slice(0, 120) });
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
 }
+/* ═══ الصندوقُ الأسود (V17.98) ═══
+   آخرُ مئةِ حدثٍ على الجهاز في حلقةٍ مسقوفة: تنقّلُ الصفحات، ومعرِّفاتُ الأفعال،
+   والمزامنة، والأخطاء، وحالُ المخزن، والنسخةُ والجهاز. يُحفَظ مع حالة التطبيق،
+   ويُرفَق تلقائيًّا بكلِّ بلاغٍ في الكتابة نفسِها (سقفٌ ٢٠ كيلوبايت)، ويُنسَخ نصًّا
+   من الأدوات للإرسال بلا شبكة. لا نصَّ حرًّا ولا اسمًا ولا جوالًا: معرِّفاتٌ
+   وأزمنةٌ ورموزُ أخطاءٍ فقط — كلُّ سطرٍ يمرُّ بالتنقية قبل أن يُحفَظ. */
+var BOX = null, BOX_T = 0, BOX_MAX = 100, BOX_BYTES = 20000;
+function boxRedact(s){
+  return String(s == null ? '' : s)
+    .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')   /* لا حرفَ عربيًّا — النصُّ الحرُّ والأسماء */
+    .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g, '')                                         /* لا بريد */
+    .replace(/\+?\d[\d\s-]{7,}\d/g, '#')                                              /* لا جوالَ ولا رقمًا طويلًا */
+    .replace(/\s+/g, ' ').trim().slice(0, 80);
+}
+function boxLoad(){
+  if (BOX) return BOX;
+  try { BOX = JSON.parse(lsGet('nsk14.box') || 'null'); } catch (e){ BOX = null; }
+  if (!BOX || !Array.isArray(BOX.e)) BOX = { e:[] };
+  return BOX;
+}
+function boxNote(kind, what){
+  var B = boxLoad(), w = boxRedact(what);
+  var last = B.e[B.e.length - 1];
+  if (last && last.k === kind && last.w === w && Date.now() - last.t < 1000) return;   /* لا تكرارَ في الثانية نفسِها */
+  B.e.push({ t:Date.now(), k:kind, w:w });
+  while (B.e.length > BOX_MAX) B.e.shift();
+  var now = Date.now();
+  if (now - BOX_T > 2000){ BOX_T = now; try { lsSet('nsk14.box', JSON.stringify(B)); } catch (e){ B.noStore = 1; } }
+}
+function boxAction(e){
+  var el = e && e.target && e.target.closest ? e.target.closest('button,a,[data-p],[data-goto]') : null;
+  if (!el || !el.attributes) return;
+  for (var i = 0; i < el.attributes.length; i++){ var a = el.attributes[i]; if (a.name.indexOf('data-') === 0){ boxNote('act', a.name.slice(5) + (a.value && a.value.length < 30 ? '=' + a.value : '')); return; } }
+}
+function boxText(){
+  var B = boxLoad(), nav = (typeof navigator === 'object' ? navigator : {});
+  var head = ['nsk-box v1', 'ver ' + appVer(), 'dev ' + (typeof DEV_ID === 'string' ? DEV_ID.slice(0, 12) : ''), 'ua ' + boxRedact(nav.userAgent || '').slice(0, 60),
+              'idb ' + (IDB_BAD ? 'bad' : (_idb ? 'ok' : 'mem')) + ' persist ' + (typeof PERSIST === 'object' ? PERSIST.st : ''), 'q ' + ((STATE.queue || []).length) + ' pz ' + ((STATE.poison || []).length), '---'];
+  var lines = B.e.map(function(x){ return new Date(x.t).toISOString().slice(11, 19) + ' ' + x.k + ' ' + x.w; });
+  var out = head.concat(lines).join('\n');
+  while (out.length > BOX_BYTES && lines.length){ lines.shift(); out = head.concat(lines).join('\n'); }
+  return out;
+}
+function boxCopy(){
+  var txt = boxText();
+  var done = function(){ toast(t('نُسخ التشخيص — أرسله للمهندس')); };
+  try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); return; } } catch (e){}
+  try { var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); } catch (e){ toast(t('تعذّر النسخ')); }
+}
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
+  try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){}
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
   try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){}
   if (tell && !SOFT_SAID[where]){
@@ -10257,7 +10330,7 @@ function hiddenSitesCard(){
   if (!H.length || !maySiteEdit()) return '';
   return cardFlush(t('نقاطٌ مخفية') + ' — ' + nm(H.length),
     table(['النقطة','الاسم','أخفاها','إجراء'], H.slice(0, 100).map(function(x){
-      return ['<strong>' + esc(x.id) + '</strong>', esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
+      return ['<strong>' + bdi(x.id) + '</strong>', esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
               btn('\u21A9 ' + t('استعادة'),'btn-secondary btn-sm',' data-siterestore="' + esc(x.id) + '"')];
     })));
 }
@@ -10492,7 +10565,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
     }
 
     return card(d.i + ' ' + esc(x.name),
-        '<div class="pid" style="margin:0 0 10px">' + esc(x.id) + '</div>'
+        '<div class="pid" style="margin:0 0 10px">' + bdi(x.id) + '</div>'
         + '<div class="chips" style="margin:0 0 12px">'
         +   pill(x.zone,'acc') + ' ' + '<span class="pill" style="background:' + d.c + '22;color:' + d.c + '">'
         +   d.i + ' ' + esc(t(d.l)) + '</span> '
@@ -13261,7 +13334,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               pool.slice(0, 40).map(function(x){
                 var r = STATE.diss[x.id] || {};
                 var d = CAT_DEF[x.type] || { l:x.type, i:'' };
-                return ['<strong>' + esc(x.id) + '</strong>',
+                return ['<strong>' + bdi(x.id) + '</strong>',
                         esc(x.zone), d.i + ' ' + esc(t(d.l)),
                         N(ptsDis(x)),
                         pill(r.status || 'قابل للفك', r.status==='تم الفك'?'ok':(r.status?'warn':'')),
@@ -14846,6 +14919,7 @@ function formReset(){
    وبسقفٍ يمنع إغراقَ السجل إن انفجر شيءٌ في حلقة. */
 var ERR_SEEN = {};
 function errCapture(msg, src, line){
+  try { boxNote('err', String(msg || '').slice(0, 60) + '@' + String(src || '').split('/').pop().slice(0, 20) + ':' + (line || 0)); } catch (e0){}
   try {
     var key = String(msg || '').slice(0, 80) + '@' + (line || 0);
     if (ERR_SEEN[key]) return;
@@ -15388,7 +15462,8 @@ function bugSend(){
   var id = uid36();
   var r = { id:id, kind:BUG_KIND, txt:txt, want:g('bgWant'),
             by:STATE.meta.name || '', uid:myUid(), at:Date.now(),
-            status:'جديد', ctx:bugCtx(), gh:0 };
+            status:'جديد', ctx:bugCtx(), gh:0,
+            box:(function(){ try { return boxText(); } catch (e){ return ''; } })() };   /* الصندوقُ الأسود في الكتابة نفسِها (V17.98) */
   if (!STATE.bugs) STATE.bugs = {};
   STATE.bugs[id] = r;
   CORE.set('bugs', id, r);
@@ -15483,6 +15558,11 @@ function bugsPageHtml(){
               +   (b.gh ? '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://github.com/mhmdsfwt371/Project-survey/issues/' + esc(b.gh) + '">#' + nm(b.gh) + '</a>' : '')
               + '</div></div>'
               + (b.want ? '<div class="hint" style="margin:6px 0 0">' + esc(t('المتوقَّع')) + ': ' + esc(b.want) + '</div>' : '')
+              /* الصندوقُ الأسود خطًّا زمنيًّا — للمهندس فمن فوقه (V17.98) */
+              + (b.box && rankOf(effRole(ROLE)) >= rankOf('engineer')
+                  ? '<details style="margin:6px 0 0"><summary class="hint" style="margin:0;cursor:pointer">' + esc(t('الخطُّ الزمنيُّ للجهاز')) + ' \u00b7 ' + nm(String(b.box).split('\n').length) + ' ' + esc(t('سطر')) + '</summary>'
+                    + '<pre dir="ltr" style="font-size:12px;line-height:1.6;white-space:pre-wrap;margin:6px 0 0">' + esc(String(b.box).slice(0, BOX_BYTES)) + '</pre></details>'
+                  : '')
               /* تاريخُ البلاغ: قرارُه ومن قرّره ومتى، وما جرى بعده */
               + (b.decBy
                   ? '<div class="hint" style="margin:6px 0 0">'
@@ -15593,7 +15673,7 @@ function briefingText(x){
     if (!x.asn[k].length) return;
     L.push('');
     L.push('\u25B6 ' + t(kindLabel(k)) + ' \u2014 ' + nm(x.asn[k].length) + ' ' + t('نقطة') + ':');
-    x.asn[k].slice(0, 15).forEach(function(id){ var st = siteFind(id) || {}; L.push('\u2022 ' + id + (st.name ? ' \u2014 ' + String(st.name).slice(0, 30) : '')); });
+    x.asn[k].slice(0, 15).forEach(function(id){ var st = siteFind(id) || {}; L.push('\u2022 ' + fsi(id) + (st.name ? ' \u2014 ' + fsiText(String(st.name).slice(0, 30)) : '')); });
     if (x.asn[k].length > 15) L.push('\u2026 ' + t('والباقي في التطبيق'));
   });
   if (!x.open) L.push(t('لا إسنادَ عليك اليوم — راجع «مهامي» فقد يصلك خلال النهار.'));
@@ -15710,7 +15790,7 @@ function waText(kind, co, when){
   var S = coStat(co), L = ['السلام عليكم ورحمة الله'];
   L.push('قارئات أفاقي — RFID · موسم ١٤٤٨هـ');
   L.push('');
-  L.push('الشركة: ' + co);
+  L.push('الشركة: ' + fsiText(co));
   if (kind === 'plan'){
     L.push('نُفيدكم بأن فريقَنا سيباشر تركيبَ نقاطكم.');
     L.push('عدد النقاط: ' + S.n);
@@ -20325,8 +20405,8 @@ function popHtml(){
       : (ms3 !== 'approved' ? 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة' : 'اعتُمدت من الوزارة')))));
     return '<div class="pop" id="pkPop">'
       + '<div class="pop-head">'
-      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + esc(s.id) + '</div>'
-      +   '<h3 style="margin-top:3px">' + esc(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
+      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(s.id) + '</div>'
+      +   '<h3 style="margin-top:3px">' + bdiText(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
       +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
       + '</div>'
       + '<div class="pop-body">'
@@ -20399,8 +20479,8 @@ function popHtml(){
   return '<div class="pop" id="pkPop">'
     + '<div class="pop-head">'
     +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">'
-    +     esc(s.id) + '</div>'
-    +   '<h3 style="margin-top:3px">' + esc(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
+    +     bdi(s.id) + '</div>'
+    +   '<h3 style="margin-top:3px">' + bdiText(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
     + '</div>'
@@ -21871,6 +21951,7 @@ function mapInit(){
 
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
          .setView([21.38, 39.92], 12);
+  try { MAP.whenReady(vitMapReady); } catch (e){ vitMapReady(); }   /* أوّلُ خريطةٍ بعد الفتح (V17.98) */
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
   MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
@@ -24769,6 +24850,9 @@ function fieldTools(){
             : '')
         + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
         + '</div>')
+    + card('التشخيص',
+        '<div class="actions">' + btn('\u{1F4CB} ' + t('نسخ التشخيص'),'btn-secondary',' data-boxcopy="1"')
+        + '<span class="hint" style="margin:0">' + esc(t('آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة')) + '</span></div>')
     + card('المزامنة',
         '<div class="actions">' + btn('مزامنة الآن','btn-primary',' data-pull="1"')
         /* كان وقتًا محفورًا «٠٢:٥١» — يُقرأ من آخر مزامنةٍ فعلية */
@@ -25642,7 +25726,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       ? cardFlush(t('السجلّ') + ' — ' + nm(rows.length) + ' ' + t('من') + ' ' + nm(all.length),
           table(['النقطة','الحالة','الفني','التاريخ','ملاحظة',''],
             rows.slice(0, PG_Q ? 5000 : 300).map(function(x){
-              return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
+              return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
                         + esc((x.site.name || '').slice(0, 28)) + '</span>',
                       x.done ? pill('تمت الزيارة','ok') : pill(x.rec.access || 'متعذّر','wrn'),
                       esc(dispName(x.rec.by) || '—'),
@@ -25678,7 +25762,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var out = [];
     rows.slice(0, PG_Q ? 5000 : 150).forEach(function(x){
       var r = x.rec, isOpen = MIN_OPEN === x.id, ms = minState(r);
-      out.push(['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      out.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                 esc(t(x.site.zone || '—')) + (x.site.sq ? ' \u00b7 ' + esc(x.site.sq) : '') + '<br><span class="hint" style="margin:0">' + esc(x.site.co || '—') + '</span>',
                 esc(dispName(r.by) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.at ? dayKey(r.at) : '') + '</span>',
                 esc(dispName(r.reviewBy) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.reviewAt ? dayKey(r.reviewAt) : '') + '</span>',
@@ -25755,7 +25839,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       var r = x.rec, rv = svReview(r);
       var facts = svFacts(r);
       var so = solutionOf(x.id);
-      var head0 = '<strong>' + esc(x.id) + '</strong> \u2014 ' + esc((x.site.name || '').slice(0, 40))
+      var head0 = '<strong>' + bdi(x.id) + '</strong> \u2014 ' + esc((x.site.name || '').slice(0, 40))
         + ' <span class="hint" style="margin:0;display:inline">\u00b7 ' + esc(dispName(r.by) || '\u2014')
         + ' \u00b7 <span class="num">' + esc(fmtDate(r.at || 0)) + '</span>'
         + (r.round > 1 ? ' \u00b7 ' + esc(t('الجولة')) + ' <span class="num">' + nm(r.round) + '</span>' : '') + '</span>';
@@ -25824,7 +25908,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             ? cardFlush(t('جاهز للتركيب') + ' \u2014 ' + nm(L.length),
                 table(['النقطة','الاسم','الحل','اعتُمد','إجراء'], L.slice(0, PG_Q ? 5000 : 200).map(function(x){
                   var so = solutionOf(x.id) || {}, r = STATE.recs[x.id] || {};
-                  return ['<strong>' + esc(x.id) + '</strong>', esc((x.name || '').slice(0, 30)),
+                  return ['<strong>' + bdi(x.id) + '</strong>', esc((x.name || '').slice(0, 30)),
                           '<span class="num">' + nm(Object.keys(so.items || so.lines || {}).length) + '</span> ' + esc(t('سطر')),
                           '<span class="num">' + esc(r.reviewAt ? fmtDate(r.reviewAt) : '—') + '</span>',
                           btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"')];
@@ -25842,7 +25926,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
         ? cardFlush(t('الإفادات') + ' — ' + nm(L.length),
             table(['النقطة','التحديات','الملاحظة','المُفيد','الحالة'],
               L.slice(0, PG_Q ? 5000 : 200).map(function(x){
-                return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
                         esc(x.note || '—'), esc(dispName(x.by) || '—'),
@@ -25887,7 +25971,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
     var rows = [];
     show.slice(0, PG_Q ? 5000 : 200).forEach(function(x){
       var r = x.rec, isOpen = STK_OPEN === x.id;
-      rows.push(['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      rows.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                  x.blocked ? (x.accepted ? pill('متعذّر — مقبول', 'ok') : pill(r.access || 'متعذّر', 'bad')) : pill('راكد بانتظار التركيب', 'wrn'),
                  '<span dir="auto">' + esc((x.blocked ? (r.reason || r.note || '—') : t(idleStep(x.id).why)).slice(0, 60)) + '</span>',
                  nm(x.days) + ' ' + t('يوم'),
@@ -25929,7 +26013,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
             table(['النقطة','النوع','التحديات','منذ','المُفيد'],
               L.map(function(x){
                 var days = Math.floor((Date.now() - x.at) / 86400000);
-                return ['<strong>' + esc(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         typeLabel(x.site && x.site.type),
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
@@ -25971,7 +26055,7 @@ function pilotCard(){
     + '<div style="overflow:auto"><table class="tbl"><thead><tr><th>' + esc(t('النقطة')) + '</th><th>' + esc(t('الحالة')) + '</th>'
     + R[0].st.map(function(p){ return '<th>' + esc(t(p[0])) + '</th>'; }).join('') + '<th>' + esc(t('إسناد←تركيب')) + '</th><th>' + esc(t('تركيب←تدقيق')) + '</th><th>' + esc(t('تدقيق←تسليم')) + '</th></tr></thead><tbody>'
     + R.map(function(o){ var s2 = o.st;
-        return '<tr><td><b>' + esc(o.x.id) + '</b></td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
+        return '<tr><td><b>' + bdi(o.x.id) + '</b></td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
           + s2.map(function(p){ return '<td class="num">' + (p[1] ? esc(fmtDT(p[1])) : '—') + '</td>'; }).join('')
           + '<td class="num">' + span(s2[1][1], s2[2][1]) + '</td><td class="num">' + span(s2[2][1], s2[3][1]) + '</td><td class="num">' + span(s2[3][1], s2[4][1]) + '</td></tr>'; }).join('')
     + '</tbody></table></div>');
@@ -26028,7 +26112,7 @@ PAGE.dis = { m:'المتابعة', t:'الفك والمراحل',
         ? cardFlush(t('سجلّ الفك') + ' — ' + nm(L.length),
             table(['النقطة','الحالة','الحالة الفنية','بواسطة','التاريخ'],
               L.sort(function(a,b){ return (b.at||0)-(a.at||0); }).slice(0,200).map(function(x){
-                return ['<strong>' + esc(x.id) + '</strong>',
+                return ['<strong>' + bdi(x.id) + '</strong>',
                         pill(x.status, x.status === 'تم الفك' ? 'ok' : 'wrn'),
                         x.cond ? pill(x.cond, x.cond === 'تالف' ? 'bad' : 'ok') : '—',
                         esc(dispName(x.by) || '—'),
@@ -26753,6 +26837,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V17.98', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'في الأدوات زر «نسخ التشخيص»: ينسخ آخر مئة حدث على الجهاز (بلا أسماء ولا نصوص) لإرساله للمهندس عند غياب الشبكة، ويُرفق تلقائيًا بكل بلاغ.',
+      'أرقام النقاط والرموز اللاتينية داخل الجمل العربية أصبحت تُعرض بترتيب صحيح في الشاشات ورسائل واتساب.',
+      'صحة النظام ← الاستهلاك: بطاقة أداء الميدان — أبطأ الأجهزة والصفحات ومؤشرات السرعة.' ] },
   { v:'V17.97', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'التحديثات أصبحت تصل الهواتف مرتين في الأسبوع (فجر الأحد والأربعاء) بدل أن تصل مع كل دفعة، إلا الإصلاحات العاجلة فتصل فورًا.',
       'رسالة «ما الجديد» تعرض سطور كل النسخ التي وصلت منذ آخر مرة، لا آخر نسخة فقط.' ] },
@@ -28258,6 +28346,7 @@ function presenceBeat(force){
               rd:(typeof readBudget === 'function' ? readBudget() : 0), cp:COLD_N,
               ps:(typeof PERSIST === 'object' ? PERSIST.st : ''), ib:IDB_BAD ? 1 : 0,   /* التخزينُ الدائمُ والمخزنُ المحلي (V17.93) */
               pg:(typeof pageUse === 'function' ? pageUse().n : {}),                       /* فتحُ الصفحات اليومَ (V17.95) */
+              pf:(typeof perfSummary === 'function' ? perfSummary() : null),               /* مؤشّراتُ الأداء (V17.98) */
               on:(typeof navigator === 'object' && navigator.onLine !== false) };
   STATE.presence = STATE.presence || {};
   STATE.presence[u] = doc;
@@ -28446,6 +28535,43 @@ function costGuardCard(){
     + btn(on ? t('أُلغي الضبط') : '\u2713 ' + t('ضبطتُه — أشِّر'), on ? 'btn-quiet btn-sm' : 'btn-primary btn-sm', ' data-budalert="' + (on ? 0 : 1) + '"')
     + '<a class="btn btn-quiet btn-sm" href="docs/cost-guard.md" target="_blank" rel="noopener">' + esc(t('خطواتُ الضبط')) + '</a></div>'
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('الحصةُ المجانية ٥٠ ألف قراءةٍ و٢٠ ألف كتابةٍ في اليوم — والتنبيهُ يبلّغك قبل أن تصل الفاتورة. قراءاتُ اليوم في صحة النظام ← الاستهلاك.')) + '</p>');
+}
+/* ═══ بطاقةُ أداء الميدان (V17.98) ═══
+   من نبضات الحضور المحمَّلة أصلًا للمكتب: أبطأُ الأجهزة (الطرازُ من وكيل
+   المستخدم، لا اسمٌ)، وأبطأُ الصفحات، والمؤشّراتُ الثلاثةُ على عتبات جوجل
+   عند p75: LCP ≤ ٢٫٥ ث · INP ≤ ٢٠٠ مللي ثانية · CLS ≤ ٠٫١. غيابُ واجهةٍ = «—». */
+function uaModel(ua){
+  ua = String(ua || '');
+  var m = /\(([^)]*)\)/.exec(ua), inner = m ? m[1] : '';
+  if (/iPhone/.test(ua)) return 'iPhone';
+  if (/iPad/.test(ua)) return 'iPad';
+  var a = /Android[^;]*;\s*([^;)]+)/.exec(inner); if (a) return a[1].replace(/\s*Build.*$/, '').trim().slice(0, 24);
+  if (/Windows/.test(ua)) return 'Windows'; if (/Macintosh/.test(ua)) return 'Mac';
+  return 'جهاز';
+}
+function perfRows(){
+  var out = [];
+  Object.keys(STATE.presence || {}).forEach(function(u){ var p = STATE.presence[u]; if (p && p.pf && typeof p.pf === 'object') out.push({ uid:u, model:uaModel(p.ua), ver:p.ver, pf:p.pf }); });
+  return out;
+}
+function perfCard(){
+  if (!(may('users') || may('exportAll'))) return '';
+  var R = perfRows(); if (!R.length) return '';
+  var band = function(v, good, poor){ return v == null ? pill('\u2014', '') : pill(String(v), v <= good ? 'ok' : v <= poor ? 'wrn' : 'bad'); };
+  var lcp = p75(R.map(function(r){ return r.pf.lcp && r.pf.lcp.p75; }).filter(function(x){ return x != null; }));
+  var inp = p75(R.map(function(r){ return r.pf.inp && r.pf.inp.p75; }).filter(function(x){ return x != null; }));
+  var cls = p75(R.map(function(r){ return r.pf.cls; }).filter(function(x){ return x != null; }));
+  var devs = R.filter(function(r){ return r.pf.inp && r.pf.inp.p75 != null; }).sort(function(a, b){ return b.pf.inp.p75 - a.pf.inp.p75; }).slice(0, 5);
+  var pages = {}; R.forEach(function(r){ Object.keys(r.pf.pages || {}).forEach(function(k){ var v = r.pf.pages[k]; if (v && v.p75 != null){ pages[k] = pages[k] || []; pages[k].push(v.p75); } }); });
+  var pg = Object.keys(pages).map(function(k){ return [k, p75(pages[k])]; }).sort(function(a, b){ return b[1] - a[1]; }).slice(0, 6);
+  return card('أداءُ الميدان — ما يشعر به الفني',
+    '<div class="wt-row" style="gap:14px;flex-wrap:wrap"><span>LCP p75: ' + band(lcp == null ? null : Math.round(lcp / 100) / 10, 2.5, 4) + ' ' + esc(t('ث')) + '</span>'
+    + '<span>INP p75: ' + band(inp, 200, 500) + ' ' + esc(t('م.ث')) + '</span><span>CLS p75: ' + band(cls, 0.1, 0.25) + '</span>'
+    + '<span class="hint" style="margin:0">' + nm(R.length) + ' ' + esc(t('جهازًا أرسل قياسًا اليوم')) + '</span></div>'
+    + (devs.length ? '<table class="tbl" style="margin-top:8px"><thead><tr><th>' + esc(t('أبطأُ الأجهزة')) + '</th><th>INP p75</th><th>' + esc(t('فتح←خريطة')) + '</th><th>' + esc(t('مهامّ طويلة')) + '</th></tr></thead><tbody>'
+        + devs.map(function(r){ return '<tr><td>' + esc(r.model) + ' <span class="hint" style="margin:0">' + esc(r.ver || '') + '</span></td><td class="num">' + nm(r.pf.inp.p75) + '</td><td class="num">' + (r.pf.open != null ? nm(r.pf.open) : '\u2014') + '</td><td class="num">' + (r.pf.lt != null ? nm(r.pf.lt) : '\u2014') + '</td></tr>'; }).join('') + '</tbody></table>' : '')
+    + (pg.length ? '<table class="tbl" style="margin-top:8px"><thead><tr><th>' + esc(t('أبطأُ الصفحات')) + '</th><th>' + esc(t('رسمٌ p75 (م.ث)')) + '</th></tr></thead><tbody>'
+        + pg.map(function(x){ return '<tr><td>' + esc(PAGE[x[0]] ? t(PAGE[x[0]].t) : x[0]) + '</td><td class="num">' + nm(x[1]) + '</td></tr>'; }).join('') + '</tbody></table>' : ''));
 }
 PAGE.sys = { m:'النظام', t:'صحة النظام',
   l:'سلامةُ البيانات ومزامنتُها ونسخُ الأجهزة وعمرُها وتصفيرُها — صيانةُ النظام كلُّها.',
@@ -28759,7 +28885,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               + nosign.slice(0, 30).map(row).join('')
             : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
   })();
-if (cur === 'usage') return head + usageCard() + (function(){
+if (cur === 'usage') return head + usageCard() + perfCard() + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();
@@ -32040,6 +32166,7 @@ function goPage(id){
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
+  try { boxNote('pg', id); } catch (e){}
 }
 /* ═══ استعمالُ الصفحات (V17.95) ═══
    كم فُتحت كلُّ صفحةٍ اليومَ على هذا الجهاز — يُعَدُّ محليًّا ويركب نبضةَ
@@ -34077,6 +34204,52 @@ function scrollBack(sameScreen){
 var PERF = { r:[], p:[] }, COLD_N = 0;
 function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); }
 function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
+/* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح (V17.98) ═══
+   ما يشعر به الفنيُّ لا ما نحكيه: أوّلُ رسمٍ للخريطة بعد الفتح، وأكبرُ رسمٍ
+   (LCP)، واستجابةُ اللمس (INP تقريبًا من أحداث الإدخال)، والاهتزازُ (CLS)، وعددُ
+   المهامّ الطويلة، وزمنُ الرسم لكلِّ صفحة. كلُّه بواجهة PerformanceObserver
+   الأصلية — إن غابت فالقيمةُ null بلا خطأ — ويُلخَّص لليوم (عددٌ وp75 وأقصى)
+   ويركب نبضةَ الحضور نفسَها. لا أسماءَ ولا نصوص: أرقامٌ ومعرِّفاتُ صفحات. */
+var VIT = { day:'', open:null, lcp:[], inp:[], cls:0, lt:0, pages:{}, sup:{} };
+function vitDay(){
+  var day = new Date().toISOString().slice(0, 10);
+  if (VIT.day !== day){ VIT.day = day; VIT.lcp = []; VIT.inp = []; VIT.cls = 0; VIT.lt = 0; VIT.pages = {}; }
+  return VIT;
+}
+function vitPush(list, v){ if (typeof v !== 'number' || !isFinite(v)) return; list.push(Math.round(v)); if (list.length > 300) list.shift(); }
+function vitPage(id, ms){ var V = vitDay(); if (!id) return; var L = V.pages[id] = V.pages[id] || []; vitPush(L, ms); }
+function vitObserve(type, opts, fn){
+  if (typeof PerformanceObserver !== 'function') return false;
+  try {
+    var sup = PerformanceObserver.supportedEntryTypes;
+    if (sup && sup.indexOf(type) < 0) return false;
+    var po = new PerformanceObserver(function(l){ try { fn(l.getEntries()); } catch (e){} });
+    po.observe(Object.assign({ type:type, buffered:true }, opts || {}));
+    return true;
+  } catch (e){ return false; }
+}
+function perfVitalsInit(){
+  vitDay();
+  VIT.sup.lcp = vitObserve('largest-contentful-paint', {}, function(es){ es.forEach(function(e){ vitPush(VIT.lcp, e.startTime); }); });
+  VIT.sup.inp = vitObserve('event', { durationThreshold:16 }, function(es){ es.forEach(function(e){ if (e.interactionId) vitPush(VIT.inp, e.duration); }); });
+  VIT.sup.cls = vitObserve('layout-shift', {}, function(es){ es.forEach(function(e){ if (!e.hadRecentInput && typeof e.value === 'number') VIT.cls += e.value; }); });
+  VIT.sup.lt  = vitObserve('longtask', {}, function(es){ VIT.lt += es.length; });
+}
+/* أوّلُ رسمٍ للخريطة بعد الفتح — علامةٌ خاصةٌ بالتطبيق */
+function vitMapReady(){
+  if (VIT.open !== null) return;
+  var t = (typeof performance === 'object' && performance.now) ? performance.now() : (Date.now() - BOOT_AT);
+  VIT.open = Math.round(t);
+  try { if (typeof performance === 'object' && performance.mark) performance.mark('nsk-map-ready'); } catch (e){}
+}
+function p75(list){ if (!list || !list.length) return null; var a = list.slice().sort(function(x, y){ return x - y; }); return a[Math.min(a.length - 1, Math.max(0, Math.ceil(a.length * 0.75) - 1))]; }
+function vitSum(list){ return list && list.length ? { n:list.length, p75:p75(list), max:Math.max.apply(null, list) } : null; }
+function perfSummary(){
+  var V = vitDay(), pages = {};
+  Object.keys(V.pages).forEach(function(k){ pages[k] = vitSum(V.pages[k]); });
+  return { day:V.day, open:V.open, lcp:VIT.sup.lcp ? vitSum(V.lcp) : null, inp:VIT.sup.inp ? vitSum(V.inp) : null,
+           cls:VIT.sup.cls ? Math.round(V.cls * 1000) / 1000 : null, lt:VIT.sup.lt ? V.lt : null, pages:pages };
+}
 /* ═══ البؤرةُ تبقى في الحقل عبر إعادة الرسم (V17.38) ═══
    حقولُ الترشيح تُعيد الرسمَ عند كلِّ حرف، وإعادةُ الرسم تبني الحقلَ من جديدٍ
    فتضيع البؤرةُ وموضعُ المؤشِّر — فيكتب المستخدمُ حرفًا ثم يضغط الحقلَ ليكتب
@@ -34120,7 +34293,9 @@ function render(force){
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
   setTimeout(function(){
     focusBack(FOCUS_G);
-    perfNote('r', ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now()) - T_R0);
+    var T_R1 = ((typeof performance === 'object' && performance.now) ? performance.now() : Date.now()) - T_R0;
+    perfNote('r', T_R1);
+    try { vitPage(CUR, T_R1); } catch (e){ VIT.err = 1; }   /* زمنُ الرسم لكلِّ صفحة (V17.98) */
   }, 0);
   lsSet('nsk14.page', JSON.stringify({ cur:CUR, tab:TABS[CUR] ? PTAB[CUR] : '' }));
   scrollGrab();
@@ -34350,6 +34525,7 @@ function enterShell(){
   /* أوّلُ فتحٍ بعد تحديث: سطورُ ما تغيّر مرةً واحدة — ولا تزاحم الجولةَ (V17.87) */
   try { if (!TOUR_OPEN && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
   try { storagePersistMaybe(); } catch (e){ LS_ERR = e; }
+  try { perfVitalsInit(); } catch (e){ LS_ERR = e; }
 }
 /* الإغلاقُ وعملٌ لم يُحفَظ: يُسأل (V17.93) — المتصفّحُ يعرض نصَّه هو */
 window.addEventListener('beforeunload', function(e){
@@ -34577,6 +34753,7 @@ function clickA(e){
     render(1);
     return true;
   }
+  if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-budalert]')){
     if (!may('users')) return true;
     cfgSet('budgetAlert', null, +e.target.closest('[data-budalert]').getAttribute('data-budalert') ? 1 : 0); render(1); return true;   /* cfgSet تدفع إلى settings/points بنفسها */
@@ -36361,6 +36538,7 @@ if (window.visualViewport){
     bt.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   document.addEventListener('click', function(e){
+    try { boxAction(e); } catch (e0){}   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
     var op = e.target.closest('[data-langmenu]');
     if (op){ langMenu(document.getElementById('langMenu').hidden); return; }
     var pick = e.target.closest('[data-setlang]');

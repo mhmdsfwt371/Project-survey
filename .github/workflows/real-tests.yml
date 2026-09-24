@@ -53,6 +53,9 @@ jobs:
           set -o pipefail
           RC=0; node scripts/browser-test.mjs 2>&1 | tee /tmp/browser.txt || RC=$?
           mkdir -p gate
+          # (V17.98) قياسُ ظروف منى يُكتَب تعليقًا في كلِّ تشغيلٍ — منه يُجمَع خطُّ الأساس
+          M=$(grep -a 'دافئ (٣ محاولات)' /tmp/browser.txt | tail -1 || true)
+          [ -n "$M" ] && gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### ⏱ ظروفُ منى\n%s' "$M")" > /dev/null || true
           if [ "$RC" = "0" ]; then echo PASS > gate/browser.txt; else
             { echo FAIL; grep -aE '✗|Error' /tmp/browser.txt | tail -30; } > gate/browser.txt
             gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 المتصفّحُ الحقيقي سقط — لا ترقية\n```\n%s\n```' "$(grep -aE '✗|Error' /tmp/browser.txt | tail -30)")" > /dev/null || true

@@ -74,5 +74,7 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
 | ما الجديد | `RELEASE_NOTES`، `whatsNewMaybe()` |
 | التحديات | `chalKey()`، `svdChals()`، `chalOtherCard()` |
 | الاستعمال | `pageTick()`، `usageCard()`، `readsToday()` |
+| الأداء والتشخيص | `perfSummary()`، `perfCard()`، `boxNote()`، `boxText()` |
+| عزل النص | `bdi()`، `bdiText()`، `fsi()`، `fsiText()` — للعرض والرسائل لا للبيانات |
 | التوأم | `twinOf()`، `dupMerge()` |
 | السيور | `season.yml` التغذية · `pulse.yml` النبض · `ministry.yml` الوزارة · `myafaqy.yml` الجسر · `backup.yml` النسخ |

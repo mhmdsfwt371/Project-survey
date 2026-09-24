@@ -279,6 +279,14 @@ jobs:
         run: node scripts/audit-docs4.mjs
       - name: جرد القطار — الترقيةُ مجدولةٌ أو طوارئُ أو يدًا، ولا يُرقَّى أحمر
         run: node scripts/audit-train.mjs
+      - name: جرد مؤشّرات الأداء — بالواجهة الأصلية، وp75 صحيح، وnull بلا واجهة، ولا كتابةَ جديدة
+        run: node scripts/audit-vitals.mjs
+      - name: جرد عزل النص — الرموزُ اللاتينيةُ معزولةٌ للعرض والرسائل، والتصديرُ نظيف
+        run: node scripts/audit-bidi.mjs
+      - name: جرد الصندوق الأسود — حلقةٌ مسقوفةٌ منقّاةٌ تُرفَق بالبلاغ وتُنسَخ من الأدوات
+        run: node scripts/audit-box.mjs
+      - name: جرد ظروف منى — الخنقُ ووسيطُ الثلاث والميزانيةُ خطُّ أساسٍ أولًا
+        run: node scripts/audit-mina.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

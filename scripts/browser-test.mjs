@@ -229,6 +229,43 @@ T(sw === true || sw === 'n/a', 'خدمةُ الخلفية مسجَّلة (' + sw
 const s47 = await page.evaluate(async () => { const r = await fetch('season1447.json'); return r.ok ? Object.keys(await r.json()).length : 0; });
 T(s47 > 1000, 'season1447.json يصل ويُقرأ (' + s47 + ')');
 
+console.log('\n══ ٨ · ظروفُ منى: شبكةٌ بطيئةٌ ومعالجٌ أبطأُ أربعَ مرات ══');
+/* (V17.98) القياسُ الذي يهمّ: كم ينتظر الفنيُّ حتى تظهر الخريطةُ تفاعليةً — على
+   شبكةٍ نحو ٤٠٠ كيلوبت/ث وتأخيرٍ ٤٠٠ مللي ثانية، ومعالجٍ أبطأَ أربعَ مرات.
+   (أ) فتحٌ دافئ: الهيكلُ في كاش العامل. (ب) تثبيتٌ أوّلٌ بارد. الميزانيةُ في
+   docs/mina-budget.json: ما دامت null يُبلَّغ ولا يُفرَض (جمعُ خطِّ الأساس)، وحين
+   تُكتَب يُفرَض الدافئُ وحدَه على وسيط ثلاث محاولات. */
+{
+  const budget = JSON.parse(readFileSync('docs/mina-budget.json', 'utf8'));
+  const measure = async (warm) => {
+    const c2 = await browser.newContext({ ...devices['iPhone 13'], locale:'ar', hasTouch:true, isMobile:true });
+    const p2 = await c2.newPage();
+    const cdp = await c2.newCDPSession(p2);
+    await cdp.send('Network.enable');
+    if (warm){ await p2.goto(base + 'index.html', { waitUntil:'load' }); await p2.waitForTimeout(2500); }   /* التثبيتُ الأوّلُ يملأ الكاش */
+    await cdp.send('Network.emulateNetworkConditions', { offline:false, latency:400, downloadThroughput:400 * 1024 / 8, uploadThroughput:200 * 1024 / 8 });
+    await cdp.send('Emulation.setCPUThrottlingRate', { rate:4 });
+    const t0 = Date.now();
+    await p2.goto(base + 'index.html', { waitUntil:'domcontentloaded' });
+    await p2.waitForSelector('#lgGo', { timeout: 60000 });
+    await p2.evaluate(() => { FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' }); FB.legacyDone = () => true; window.pullDelta = () => Promise.resolve(0); window.liveWatch = () => {}; window.liveSmall = () => {};
+      document.getElementById('lgU').value = 'eng.test'; document.getElementById('lgP').value = 'TestPass1234'; });
+    await p2.click('#lgGo'); await p2.waitForSelector('#nav', { timeout: 60000 });
+    await p2.evaluate(() => { goPage('map'); render(1); });
+    await p2.waitForFunction(() => window.VIT && VIT.open !== null, null, { timeout: 60000 }).catch(() => {});
+    const ms = Date.now() - t0;
+    await c2.close();
+    return ms;
+  };
+  const warmRuns = []; for (let i = 0; i < 3; i++) warmRuns.push(await measure(true));
+  const cold = await measure(false);
+  const med = warmRuns.slice().sort((a, b) => a - b)[1];
+  console.log('  · دافئ (٣ محاولات): ' + warmRuns.join(' · ') + ' — الوسيط ' + med + ' م.ث · بارد: ' + cold + ' م.ث');
+  console.log('::notice title=ظروفُ منى::warm=' + med + 'ms cold=' + cold + 'ms');
+  if (budget.warmMs){ T(med <= budget.warmMs, 'الفتحُ الدافئُ ضمن الميزانية: ' + med + ' ≤ ' + budget.warmMs + ' م.ث'); }
+  else T(med > 0, 'جمعُ خطِّ الأساس — لا ميزانيةَ بعد (docs/mina-budget.json)');
+}
+
 console.log('\n══ ٧ · أخطاءُ المتصفّح ══');
 T(errs.length === 0, 'لا أخطاءَ في كروميوم' + (errs.length ? ' — ' + errs.slice(0, 3).join(' | ') : ''));
 
