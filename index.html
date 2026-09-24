@@ -6823,7 +6823,7 @@ function scanSheet(){
   if (!SCAN.on) return '';
   return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:96">'
     + '<div class="pop" style="width:min(520px,94vw)"><div class="pop-head"><div><h3>' + esc(t('امسح الرقمَ بالكاميرا')) + '</h3><p class="hint" style="margin:2px 0 0">' + esc(t('وجّه الكاميرا إلى ملصق الجهاز — يُملأ الحقلُ وحدَه')) + '</p></div>'
-    + btn('\u2715', 'btn-quiet btn-sm', ' data-scanx="1" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + btn('\u2715', 'btn-quiet btn-sm', ' data-scanx="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
     + '<div class="pop-body"><video id="scanVideo" playsinline muted style="width:100%;max-height:60vh;background:#000;border-radius:10px"></video></div></div></div>';
 }
 /* ═══ إبقاءُ الشاشة أثناء النموذج (V17.99) ═══
