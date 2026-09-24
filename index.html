@@ -8439,14 +8439,14 @@ var IDB_NAME = 'nusuk-v14', IDB_STORE = 'kv', _idb = null, _mem = null;
    (١ · ٣ · ١٠ · ٣٠ ثوانٍ ثم كلَّ دقيقة)، وما كُتب في الذاكرة يُدفَق إلى القاعدة
    حين تُفتَح لأنه الأحدث، وما دام الحفظُ المحليُّ لا يعمل تظهر لافتةٌ حمراءُ
    لا تُغلَق ويُسأل قبل إغلاق الصفحة. */
-var IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000,
+var IDB_LOG_ERR = null, IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000,
     IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000],
     IDB_TRY = 0, IDB_RETRY_T = 0, IDB_BAD = false, IDB_PENDING = null;
 function idbTellBad(on, why){
   if (IDB_BAD === on) return;
   IDB_BAD = on;
-  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){}
-  try { if (typeof render === 'function') render(1); } catch (e){}
+  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ IDB_LOG_ERR = e; }
+  try { if (typeof render === 'function') render(1); } catch (e){ IDB_LOG_ERR = e; }
 }
 function idbAdopt(db){
   _idb = db;
@@ -28224,7 +28224,7 @@ var PRES = { at:0, ver:'', fetchAt:0 };
 function presenceBeat(force){
   var u = myUid();
   if (!u) return false;
-  try { if (typeof meActivatedCheck === 'function') meActivatedCheck(); } catch (e){}   /* هل فُعِّل الحسابُ؟ (V17.93) */
+  try { if (typeof meActivatedCheck === 'function') meActivatedCheck(); } catch (e){ if (typeof softErr === 'function') softErr('activatedCheck', e, ''); }   /* هل فُعِّل الحسابُ؟ (V17.93) */
   var ver = appVer();
   if (!force && PRES.ver === ver && Date.now() - PRES.at < 10 * 60000) return false;
   PRES.at = Date.now(); PRES.ver = ver;
@@ -32010,7 +32010,7 @@ function pageIds(){
 function goPage(id){
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
   CUR = id;
-  try { pageTick(id); } catch (e){}
+  try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
 }
 /* ═══ استعمالُ الصفحات (V17.95) ═══
    كم فُتحت كلُّ صفحةٍ اليومَ على هذا الجهاز — يُعَدُّ محليًّا ويركب نبضةَ
@@ -32028,7 +32028,7 @@ function pageTick(id){
   if (!id) return;
   var u = pageUse(); u.n[id] = (u.n[id] || 0) + 1;
   if (Object.keys(u.n).length > 60) return;   /* سقفٌ: لا يتضخّم المفتاحُ بمعرِّفاتٍ غريبة */
-  try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){}
+  try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PG_USE.noStore = 1; }
 }
 function seesRaw(id){
   var n = R().nav;
