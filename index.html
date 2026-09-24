@@ -8471,7 +8471,7 @@ var IDB_LOG_ERR = null, IDB_TIMEOUT = (typeof window === 'object' && +window.NSK
 function idbTellBad(on, why){
   if (IDB_BAD === on) return;
   IDB_BAD = on;
-  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){}
+  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){ BOX_ERR = e; }
   try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ IDB_LOG_ERR = e; }
   try { if (typeof render === 'function') render(1); } catch (e){ IDB_LOG_ERR = e; }
 }
@@ -9935,7 +9935,7 @@ function logEventQuiet(msg){
    ويُرفَق تلقائيًّا بكلِّ بلاغٍ في الكتابة نفسِها (سقفٌ ٢٠ كيلوبايت)، ويُنسَخ نصًّا
    من الأدوات للإرسال بلا شبكة. لا نصَّ حرًّا ولا اسمًا ولا جوالًا: معرِّفاتٌ
    وأزمنةٌ ورموزُ أخطاءٍ فقط — كلُّ سطرٍ يمرُّ بالتنقية قبل أن يُحفَظ. */
-var BOX = null, BOX_T = 0, BOX_MAX = 100, BOX_BYTES = 20000;
+var BOX = null, BOX_T = 0, BOX_MAX = 100, BOX_BYTES = 20000, BOX_ERR = null;
 function boxRedact(s){
   return String(s == null ? '' : s)
     .replace(/[\u0600-\u06FF\u0750-\u077F\uFB50-\uFDFF\uFE70-\uFEFF]+/g, '')   /* لا حرفَ عربيًّا — النصُّ الحرُّ والأسماء */
@@ -9975,13 +9975,13 @@ function boxText(){
 function boxCopy(){
   var txt = boxText();
   var done = function(){ toast(t('نُسخ التشخيص — أرسله للمهندس')); };
-  try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); return; } } catch (e){}
+  try { if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done, function(){ toast(t('تعذّر النسخ')); }); return; } } catch (e){ BOX_ERR = e; }
   try { var ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta); done(); } catch (e){ toast(t('تعذّر النسخ')); }
 }
 function softErr(where, e, tell){
   var msg = String((e && (e.message || e.code)) || e || '').slice(0, 120);
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
-  try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){}
+  try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){ BOX_ERR = e3; }
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
   try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){}
   if (tell && !SOFT_SAID[where]){
@@ -14919,7 +14919,7 @@ function formReset(){
    وبسقفٍ يمنع إغراقَ السجل إن انفجر شيءٌ في حلقة. */
 var ERR_SEEN = {};
 function errCapture(msg, src, line){
-  try { boxNote('err', String(msg || '').slice(0, 60) + '@' + String(src || '').split('/').pop().slice(0, 20) + ':' + (line || 0)); } catch (e0){}
+  try { boxNote('err', String(msg || '').slice(0, 60) + '@' + String(src || '').split('/').pop().slice(0, 20) + ':' + (line || 0)); } catch (e0){ BOX_ERR = e0; }
   try {
     var key = String(msg || '').slice(0, 80) + '@' + (line || 0);
     if (ERR_SEEN[key]) return;
@@ -32166,7 +32166,7 @@ function goPage(id){
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
-  try { boxNote('pg', id); } catch (e){}
+  try { boxNote('pg', id); } catch (e){ BOX_ERR = e; }
 }
 /* ═══ استعمالُ الصفحات (V17.95) ═══
    كم فُتحت كلُّ صفحةٍ اليومَ على هذا الجهاز — يُعَدُّ محليًّا ويركب نبضةَ
@@ -34223,7 +34223,7 @@ function vitObserve(type, opts, fn){
   try {
     var sup = PerformanceObserver.supportedEntryTypes;
     if (sup && sup.indexOf(type) < 0) return false;
-    var po = new PerformanceObserver(function(l){ try { fn(l.getEntries()); } catch (e){} });
+    var po = new PerformanceObserver(function(l){ try { fn(l.getEntries()); } catch (e){ VIT.err = 1; } });
     po.observe(Object.assign({ type:type, buffered:true }, opts || {}));
     return true;
   } catch (e){ return false; }
@@ -34240,7 +34240,7 @@ function vitMapReady(){
   if (VIT.open !== null) return;
   var t = (typeof performance === 'object' && performance.now) ? performance.now() : (Date.now() - BOOT_AT);
   VIT.open = Math.round(t);
-  try { if (typeof performance === 'object' && performance.mark) performance.mark('nsk-map-ready'); } catch (e){}
+  try { if (typeof performance === 'object' && performance.mark) performance.mark('nsk-map-ready'); } catch (e){ VIT.err = 1; }
 }
 function p75(list){ if (!list || !list.length) return null; var a = list.slice().sort(function(x, y){ return x - y; }); return a[Math.min(a.length - 1, Math.max(0, Math.ceil(a.length * 0.75) - 1))]; }
 function vitSum(list){ return list && list.length ? { n:list.length, p75:p75(list), max:Math.max.apply(null, list) } : null; }
@@ -36538,7 +36538,7 @@ if (window.visualViewport){
     bt.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   document.addEventListener('click', function(e){
-    try { boxAction(e); } catch (e0){}   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
+    try { boxAction(e); } catch (e0){ BOX_ERR = e0; }   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
     var op = e.target.closest('[data-langmenu]');
     if (op){ langMenu(document.getElementById('langMenu').hidden); return; }
     var pick = e.target.closest('[data-setlang]');
