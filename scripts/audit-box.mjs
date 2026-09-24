@@ -33,7 +33,7 @@ w.boxNote('act', 'goto=sites'); w.boxNote('act', 'goto=sites');
 T(w.boxLoad().e.filter(x => x.w === 'goto=sites').length === 1, 'ولا تكرارَ في الثانية نفسِها');
 for (let i = 0; i < 100; i++) w.boxNote('err', 'E' + i + ':' + 'x'.repeat(70) + i);
 const txt = w.boxText();
-T(txt.length <= 20000 && /^nsk-box v1/.test(txt) && /\nver V17\./.test(txt), 'والنصُّ تحت عشرين كيلوبايت برأسٍ يقول النسخةَ والجهاز');
+T(txt.length <= 20000 && /^nsk-box v1/.test(txt) && /\nver V\d+\./.test(txt), 'والنصُّ تحت عشرين كيلوبايت برأسٍ يقول النسخةَ والجهاز');
 w.goPage('map');
 T(w.boxLoad().e.some(x => x.k === 'pg' && x.w === 'map'), 'تنقّلُ الصفحات يُسجَّل');
 w.softErr('flush', { code:'permission-denied' }, '');

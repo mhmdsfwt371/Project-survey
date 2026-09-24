@@ -21251,6 +21251,8 @@ function siteKeyStats(){
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; ZZ.ins++; }
   });
+  /* المعلَنُ في «نقاط المراحل» يدخل بصفرٍ — مشعرًا وتركيبةً (V18.0) */
+  declaredKeys().forEach(function(k){ if (by[k] == null) by[k] = 0; var z = k.split('|')[0]; if (!Z[z]) Z[z] = { n:0, sv:0, ins:0, noRec:0, stuck:0 }; });
   var keys = Object.keys(by).sort(function(a, b){ return by[b] - by[a]; });
   return { keys:keys, by:by, sv:sv, ins:ins, total:T, zones:Z };
 }
@@ -21284,6 +21286,22 @@ function svLabel(r){
   if (r.review === 'revisit') return 'تحتاج زيارة أخرى';
   return r.review === 'approved' ? 'معتمدة' : 'تمت الزيارة';
 }
+/* ═══ المشعرُ المعلَنُ مشعرٌ حيث يُعَدّ (V18.0) ═══
+   إعلانُ تركيبةٍ في «نقاط المراحل» (مشعر|نوع) كان يبقى في مصفوفة الأوزان وحدَها:
+   الطلباتُ والتوزيعُ وشاشةُ الوزارة والملخّصُ تشتقّ المشاعرَ من المواقع، فمشعرٌ
+   جديدٌ بلا نقاطٍ بعدُ لا يُرى في شيء. صار المعلَنُ يدخل الإحصاءَ بصفرٍ في كلِّ
+   موضعٍ يعدُّ بالمشعر — فيُرى في الطلبات بمتاحٍ صفر، وفي شاشة الوزارة بصفرٍ من
+   صفر، وفي التصدير — من اليوم الذي يُعلَن فيه لا يومَ تأتي أوّلُ نقطة. */
+function declaredKeys(){
+  return (Array.isArray(CFG.mxExtra) ? CFG.mxExtra : []).map(function(x){ return String(x || ''); }).filter(function(k){ return k.indexOf('|') > 0; });
+}
+function declaredZones(){
+  var out = []; declaredKeys().forEach(function(k){ var z = k.split('|')[0]; if (z && out.indexOf(z) < 0) out.push(z); }); return out;
+}
+/* المشاعرُ الحيّة: ما فيه نقاطٌ وما أُعلن — للقوائم والأشرطة والتصدير */
+function zonesLive(){
+  var out = zoneList(); declaredZones().forEach(function(z){ if (out.indexOf(z) < 0) out.push(z); }); return out;
+}
 function siteStats(){
   if (STAT_CACHE) return STAT_CACHE;
   var s = STATE.sites, by = {}, co = {}, wk = {}, sv = 0, ins = 0, apv = 0, pend = 0, rev = 0;
@@ -21298,6 +21316,7 @@ function siteStats(){
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب') ins++;
   }
+  declaredKeys().forEach(function(k){ if (by[k] == null) by[k] = 0; });   /* المعلَنُ بصفر (V18.0) */
   STAT_CACHE = { total:s.length, byKey:by, byCo:co, byWork:wk, surveyed:sv, installed:ins,
                  approved:apv, pending:pend, revisit:rev };
   return STAT_CACHE;
@@ -27107,7 +27126,8 @@ var RELEASE_NOTES = [
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
   { v:'V18.0', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'في «حسابي» بطاقة لتنزيل خريطة المشاعر على الجهاز مرة واحدة بموافقتك (تظهر حين تُبنى خريطة الموسم) فتعمل الخريطة بلا شبكة — مع وضع الشمس ونسخ التشخيص في المكان نفسه.',
-      'في الأدوات زر GeoJSON يصدّر المواقع بحالتها بصيغة قياسية يفتحها أي نظام خرائط.' ] },
+      'في الأدوات زر GeoJSON يصدّر المواقع بحالتها بصيغة قياسية يفتحها أي نظام خرائط.',
+      'المشعر الذي يُعلن في «نقاط المراحل» يظهر من يومه في الطلبات والتوزيع وشاشة الوزارة والملخص والقوائم بأرقام صفر، حتى تأتي أول نقطة فيه.' ] },
   { v:'V17.99', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'وضع الشمس: زر 🔆 في أعلى الشاشة (وفي الأدوات) يرفع التباين ويكبّر الخط والأزرار وعلامات الخريطة للعمل تحت الشمس — لهذا الجهاز وحده، ويبقى بعد إعادة الفتح.',
       'الشاشة تبقى مضاءة أثناء نماذج المسح والتركيب والصيانة، وتُطلق عند الإغلاق أو بعد عشر دقائق بلا لمس.',

@@ -295,6 +295,8 @@ jobs:
         run: node scripts/audit-adr.mjs
       - name: جرد خريطة المشاعر — موافقةٌ لا تُتخطّى، وحجمٌ مسقوف، وإسنادٌ، وعودةٌ إلى الشبكة
         run: node scripts/audit-basemap.mjs
+      - name: جرد المشعر المعلَن — يظهر في كلِّ ما يعدُّ بالمشعر من يوم إعلانه
+        run: node scripts/audit-zones.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
