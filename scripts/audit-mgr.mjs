@@ -40,6 +40,13 @@ T(JSON.stringify(nm('supervisor'))==='["مدير المشروع أ","مهندس 
 T(JSON.stringify(nm('engineer'))==='["مدير المشروع أ","مهندس أ"]', 'مدير المهندس: مديرُ المشروع أو مهندسٌ مثلُه — '+nm('engineer'));
 w.STATE.users['vw'] = { name:'وزارة أ', user:'vw', role:'viewer', at:Date.now() };
 T(JSON.stringify(nm('viewer'))==='["مدير المشروع أ","مهندس أ"]', 'مدير الوزارة: من المهندس فصاعدًا لا المشرف — '+nm('viewer'));
+/* (V18.1) من يرى حسابَ الوزارة: المهندسُ فما فوق يراه ويديره؛ المشرفُ فما دون لا */
+T(w.canSeeUser(w.STATE.users['vw']) === true, 'المهندسُ يرى حسابَ الوزارة');
+w.ROLE='supervisor'; w.STATE.meta.role='supervisor';
+T(w.canSeeUser(w.STATE.users['vw']) === false, 'والمشرفُ لا يراه');
+w.ROLE='viewer'; w.STATE.meta.role='viewer';
+T(w.canSeeUser(w.STATE.users['vw']) === true && w.canSeeUser(w.STATE.users['en']) === false, 'والوزارةُ ترى نظراءَها وحدَهم');
+w.ROLE='engineer'; w.STATE.meta.role='engineer';
 w.STATE.users['en2'] = { name:'مهندس ب', user:'en2', role:'engineer', sup:'مهندس أ', at:Date.now() };
 T(w.mgrCandidates('engineer','en').every(x=>x.n!=='مهندس ب'), 'من تحتَه لا يُقترَح مديرًا له — لا دورة');
 T(JSON.stringify(w.underNames('مهندس أ'))==='["مهندس ب"]' , 'underNames: الشجرةُ من تحت المهندس — '+JSON.stringify(w.underNames('مهندس أ')));
