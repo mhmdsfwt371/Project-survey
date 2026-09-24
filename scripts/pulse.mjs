@@ -36,7 +36,7 @@ async function load(){
   admin.initializeApp({ credential: admin.credential.cert(JSON.parse(sa)) });
   const fs = admin.firestore();
   const out = {};
-  for (const name of ['recs', 'tasks', 'newsites', 'bugs', 'steps']){
+  for (const name of ['recs', 'tasks', 'newsites', 'bugs', 'steps', 'presence']){
     const snap = await fs.collection(name).limit(6000).get();
     const m = {}; snap.forEach(d => { m[d.id] = d.data(); });
     out[name] = m;
@@ -51,7 +51,7 @@ async function load(){
 const db = await load();
 
 const recs = col(db, 'recs'), tasks = col(db, 'tasks'), news = col(db, 'newsites'),
-      bugs = col(db, 'bugs'), steps = col(db, 'steps');
+      bugs = col(db, 'bugs'), steps = col(db, 'steps'), presence = col(db, 'presence');
 
 /* ── ١ · أمسِ في الميدان — من الخطوات المرفوعة ─────────────────────────── */
 const KIND = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
@@ -143,6 +143,28 @@ if (dls.length){
 L.push(`_المفتوحُ كلُّه: ${nm(openT.length)} مهمّة · الزياراتُ المسجَّلة: ${nm(recs.length)}_`);
 L.push('');
 L.push('القرارُ والتفصيلُ في التطبيق: «متابعة العمل الميداني» للزيارات، و«الطلبات والتوزيع» للإسناد، و«تصحيح البيانات» لما ينقص في السجل.');
+
+/* ── استعمالُ الصفحات وقراءاتُ اليوم (V17.95) — من نبضات الحضور، كتابةٌ واحدةٌ في اليوم ── */
+const today = new Date(now).toISOString().slice(0, 10);
+const usage = { at: now, days: {} };
+let readsToday = 0, devToday = 0;
+presence.forEach(pr => {
+  if (!pr || !pr.day) return;
+  if (pr.pg && typeof pr.pg === 'object'){ const m = usage.days[pr.day] = usage.days[pr.day] || {}; Object.keys(pr.pg).forEach(k => { m[k] = (m[k] || 0) + (+pr.pg[k] || 0); }); }
+  if (pr.day === today){ readsToday += (+pr.rd || 0); devToday++; }
+});
+L.push(`_قراءاتُ القاعدة اليوم ≈ **${nm(readsToday)}** من ٥٠ ألفٍ (${nm(devToday)} جهازًا) — ${readsToday >= 35000 ? 'فوق ٧٠٪: يُنظَر في السحبات الباردة' : 'ضمن الحصة المجانية'}_`);
+export const usageDoc = usage;
+if (!process.env.PULSE_SRC && process.env.FIREBASE_SERVICE_ACCOUNT){
+  try {
+    const { createRequire } = await import('module'); const admin = createRequire(import.meta.url)('firebase-admin');
+    const fsdb = admin.firestore(); const old = await fsdb.collection('settings').doc('usage').get();
+    const days = Object.assign({}, (old.exists && old.data().days) || {}, usage.days);
+    const keep = Object.keys(days).sort().slice(-45); const trimmed = {}; keep.forEach(k => { trimmed[k] = days[k]; });
+    await fsdb.collection('settings').doc('usage').set({ at: now, days: trimmed, readsToday, devToday }, { merge: false });
+    console.log('✓ settings/usage: ' + keep.length + ' يومًا');
+  } catch (e){ console.log('::warning::تعذّر كتابةُ الاستعمال: ' + String(e.message).slice(0, 120)); }
+} else if (process.env.PULSE_USAGE_OUT){ writeFileSync(process.env.PULSE_USAGE_OUT, JSON.stringify(usage)); }
 
 const text = L.join('\n');
 console.log(text);

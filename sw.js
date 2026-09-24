@@ -1,5 +1,5 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v17.94';
+const CACHE = 'nusuk-survey-v17.95';
 const SHELL = [
   './',
   './index.html',
@@ -74,23 +74,26 @@ self.addEventListener('fetch', function (e) {
     return;
   }
 
-  // the app itself (navigations + index.html): NETWORK FIRST with 3.5s timeout,
-  // fall back to cache — so new versions arrive on next open, and offline still works
-  const isShellPage = req.mode === 'navigate'
-    || req.url.indexOf('index.html') !== -1
-    || req.url.indexOf('manifest.webmanifest') !== -1;   /* اسم التطبيق وأيقونته */
+  /* ═══ الهيكلُ من الكاش أوّلًا (V17.95) ═══
+     كان كلُّ فتحٍ وهو متّصلٌ يُنزِّل الصفحةَ كلَّها من الشبكة (نحو ٨٧٥ كيلوبايت
+     مضغوطة) وينتظرها؛ ومهلةُ الثواني الثلاث والنصف تحمي أوّلَ الاستجابة لا
+     التنزيلَ كلَّه، فعلى شبكةٍ رديئةٍ ينتظر الفنيُّ التنزيلَ حتى يكتمل. صار الهيكلُ
+     يُخدَم من كاش النسخة الحالية فورًا، والجديدُ يصل بدورة العامل نفسِها: sw.js
+     شبكةٌ فقط، ورقمُ الكاش يتبدّل، فيُثبَّت الجديدُ ويُنشَّط ويُعاد التحميل
+     (مسارُ التحديث في التطبيق وزرُّ النسخة كما هما). وأوّلُ تثبيتٍ يجلب من الشبكة. */
+  const isNav = req.mode === 'navigate' || req.url.indexOf('index.html') !== -1;
+  const isShellPage = isNav || req.url.indexOf('manifest.webmanifest') !== -1;   /* اسم التطبيق وأيقونته */
   if (isShellPage) {
     e.respondWith(
-      fetchWithTimeout(new Request(req.url, { cache: 'reload', credentials: 'same-origin' }), 3500).then(function (res) {
-        if (res && res.status === 200) {
-          const copy = res.clone();
-          caches.open(CACHE).then(function (c) { c.put(req, copy); });
-        }
-        return res;
-      }).catch(function () {
-        return caches.match(req).then(function (hit) {
-          return hit || caches.match('./index.html');
-        });
+      caches.match(req).then(function (hit) { return hit || (isNav ? caches.match('./index.html') : null); }).then(function (hit) {
+        if (hit) return hit;
+        return fetchWithTimeout(new Request(req.url, { cache: 'reload', credentials: 'same-origin' }), 15000).then(function (res) {
+          if (res && res.status === 200) {
+            const copy = res.clone();
+            caches.open(CACHE).then(function (c) { c.put(req, copy); });
+          }
+          return res;
+        }).catch(function () { return new Response('', { status: 504 }); });
       })
     );
     return;

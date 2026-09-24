@@ -72,5 +72,7 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
 | الصفحاتُ والشرائح | `NAV`، `TABS`، `PAGE.<id>` |
 | الثوابت | `CFG`، `cfgGet()`، `cfgInput()` — `settings/points` |
 | ما الجديد | `RELEASE_NOTES`، `whatsNewMaybe()` |
+| التحديات | `chalKey()`، `svdChals()`، `chalOtherCard()` |
+| الاستعمال | `pageTick()`، `usageCard()`، `readsToday()` |
 | التوأم | `twinOf()`، `dupMerge()` |
 | السيور | `season.yml` التغذية · `pulse.yml` النبض · `ministry.yml` الوزارة · `myafaqy.yml` الجسر · `backup.yml` النسخ |

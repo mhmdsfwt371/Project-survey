@@ -262,6 +262,14 @@ jobs:
         run: node scripts/audit-uid.mjs
       - name: جرد الحسابات المعادية — لكلِّ مجموعةٍ في القواعد توقّعاتٌ لكلِّ شخصية
         run: node scripts/audit-hostile.mjs
+      - name: جرد عامل الخدمة — الهيكلُ من الكاش، والجديدُ بدورة العامل، وdocs شبكةٌ أوّلًا
+        run: node scripts/audit-sw.mjs
+      - name: جرد مفتاح التحدي — الصيغتان تحدٍّ واحدٌ في كلِّ موضع، وبطاقةُ «أخرى» للمهندس
+        run: node scripts/audit-chal.mjs
+      - name: جرد الاستعمال — فتحُ الصفحات في النبضة، والتجميعُ مرةً في اليوم، والقراءاتُ على الحصة
+        run: node scripts/audit-usage.mjs
+      - name: جرد التركيب التجريبي — الوسمُ من النافذة، والزمنُ بين المراحل من الوثائق
+        run: node scripts/audit-pilot.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
