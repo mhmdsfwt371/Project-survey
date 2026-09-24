@@ -721,7 +721,10 @@ body.kiosk .kk-story{font-size:21px}
 .kk-wide{grid-column:1/-1}
 .kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px;touch-action:none;cursor:grab}
 .pm-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
-.kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;touch-action:none}
+.kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;position:relative}
+@media (max-width:640px){ .kk-sat{height:min(50vh,420px)} }
+.kk-lock{position:absolute;z-index:1000;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;min-height:40px}
+.kk-lock.on{background:var(--brand);border-color:transparent}
 body.kiosk .kk-sat{height:min(70vh,760px)}
 .kk-pts circle{cursor:pointer;stroke:rgba(0,0,0,.25);stroke-width:.6}
 .kk-pts circle:hover{stroke:#fff;stroke-width:2}
@@ -1039,7 +1042,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V18.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V18.5</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3894,6 +3897,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'اضغط لتحريك الخريطة':'Tap to move the map', 'إيقاف التحريك':'Stop moving',
  'المشعرُ على القمر الصناعي':'The zone on satellite imagery', 'نقاط':'Points', 'نقاطُ المشعر على القمر الصناعي':'Zone points on satellite imagery', 'الخريطةُ تحتاج تحميلَ المكتبة — تظهر النقاطُ المجرّدةُ بدلًا منها':'The map needs its library — the plain points are shown instead',
  'بعيدةٌ عن مشعرها':'Far from its zone', 'نقاطٌ بعيدةٌ عن مشعرها':'Points far from their zone', 'إحداثياتُها على بُعد كيلومتراتٍ من جسم المشعر — غالبًا نقطةٌ أُضيفت من الميدان والجهازُ في مكانٍ آخر. افتح النقطةَ وصحّح موضعَها من نافذتها (أو اعتمد إحداثيات الزيارة)، أو أخفِها إن كانت خطأً.':'Their coordinates are kilometres away from the zone body — usually a point added from the field while the device was elsewhere. Open the point and fix its position from its window (or adopt the visit coordinates), or hide it if it is an error.',
  'نقطةً بإحداثياتٍ بعيدةٍ عن المشعر لا تدخل الإطار':'points with coordinates far from the zone are kept out of the frame', 'تكبير':'Zoom in', 'تصغير':'Zoom out', 'إعادة الإطار':'Reset view', 'اسحب للتحريك · قرّب بإصبعين أو بالعجلة · اضغط نقطةً لتفتحها':'Drag to pan · pinch or scroll to zoom · tap a point to open it',
@@ -6648,6 +6652,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'اضغط لتحريك الخريطة':'نقشہ ہلانے کے لیے دبائیں', 'إيقاف التحريك':'ہلانا بند کریں',
  'المشعرُ على القمر الصناعي':'مشعر سیٹلائٹ تصویر پر', 'نقاط':'پوائنٹس', 'نقاطُ المشعر على القمر الصناعي':'سیٹلائٹ تصویر پر مشعر کے پوائنٹس', 'الخريطةُ تحتاج تحميلَ المكتبة — تظهر النقاطُ المجرّدةُ بدلًا منها':'نقشے کو اپنی لائبریری چاہیے — اس کی جگہ سادہ پوائنٹس دکھائے گئے',
  'بعيدةٌ عن مشعرها':'اپنے مشعر سے دور', 'نقاطٌ بعيدةٌ عن مشعرها':'اپنے مشعر سے دور مقامات', 'إحداثياتُها على بُعد كيلومتراتٍ من جسم المشعر — غالبًا نقطةٌ أُضيفت من الميدان والجهازُ في مكانٍ آخر. افتح النقطةَ وصحّح موضعَها من نافذتها (أو اعتمد إحداثيات الزيارة)، أو أخفِها إن كانت خطأً.':'ان کے کوآرڈینیٹس مشعر کے جسم سے کلومیٹر دور ہیں — عموماً فیلڈ سے شامل کیا گیا مقام جب ڈیوائس کہیں اور تھی۔ مقام کھولیں اور اس کی ونڈو سے جگہ درست کریں (یا وزٹ کے کوآرڈینیٹس اپنائیں)، یا غلط ہو تو چھپا دیں۔',
  'نقطةً بإحداثياتٍ بعيدةٍ عن المشعر لا تدخل الإطار':'مقامات جن کے کوآرڈینیٹس مشعر سے دور ہیں فریم سے باہر رکھے گئے', 'تكبير':'زوم ان', 'تصغير':'زوم آؤٹ', 'إعادة الإطار':'فریم دوبارہ', 'اسحب للتحريك · قرّب بإصبعين أو بالعجلة · اضغط نقطةً لتفتحها':'گھسیٹ کر منتقل کریں · دو انگلیوں یا وہیل سے زوم · نقطہ دبا کر کھولیں',
@@ -25513,6 +25518,16 @@ function kkSatInit(){
   if (KK_MAP){ try { KK_MAP.remove(); } catch (e){ LS_ERR = e; } KK_MAP = null; }
   var m = L.map(el, { zoomControl:true, attributionControl:true, preferCanvas:true });
   L.tileLayer(TILES.esri, { maxZoom:19, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);
+  /* على اللمس: خريطةٌ طويلةٌ داخل صفحةٍ تُمسك الإصبعَ فلا تُمرَّر الصفحة. يبدأ
+     التحريكُ معطَّلًا وتُقرأ الصفحةُ بإصبعٍ واحد؛ ضغطةٌ على الخريطة تفعّله ويظهر
+     زرُّ إيقافه — والتقريبُ بإصبعين يعمل دائمًا. */
+  if (L.Browser && L.Browser.touch && m.dragging){
+    m.dragging.disable();
+    var lock = document.createElement('button'); lock.type = 'button'; lock.className = 'kk-lock';
+    lock.textContent = t('اضغط لتحريك الخريطة');
+    lock.addEventListener('click', function(){ m.dragging.enable(); lock.textContent = '\u2715 ' + t('إيقاف التحريك'); lock.classList.add('on'); lock.onclick = function(){ m.dragging.disable(); lock.textContent = t('اضغط لتحريك الخريطة'); lock.classList.remove('on'); lock.onclick = null; }; }, { once:true });
+    el.appendChild(lock);
+  }
   var MAP_CV_KK = L.canvas({ padding:0.3 });   /* لوحُ هذه الخريطة وحدَها — لا لوحَ الخريطة الرئيسة */
   core.forEach(function(x){
     var st = lifeOf(x), C = (LIFE[st] || LIFE.todo).c;
@@ -27265,6 +27280,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V18.5', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'خريطة القمر الصناعي في شاشة الوزارة على الهاتف: الصفحة تُمرَّر بإصبع واحد فوق الخريطة، وزر «اضغط لتحريك الخريطة» يفعّل التحريك — والتقريب بإصبعين يعمل دائمًا.' ] },
   { v:'V18.4', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'شاشة الوزارة: نقاط المشعر تظهر الآن على صورة القمر الصناعي افتراضيًا (تكبير وتحريك وضغط على النقطة لفتحها)، وخريطة النقاط المجردة تبقى خيارًا بزر «نقاط».',
       'كلمة «نبض» استُبدلت في الشاشات بما يناسب موضعها: «شغل الميدان» في شاشة الوزارة، و«ملخص الصباح» للتقرير اليومي، و«إشارة» لاتصال الأجهزة، و«المزامنة الحية» لوصول التغييرات.' ] },

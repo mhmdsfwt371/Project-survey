@@ -14,8 +14,8 @@ const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fai
 const html = readFileSync('index.html', 'utf8');
 function fakeL(w){
   const S = { maps:[], tiles:[], markers:[] };
-  const map = el => { const m = { el, layers:[], handlers:{}, view:null, z:0, remove(){ m.removed = true; }, setView(c, z){ m.view = c; m.z = z; return m; }, getCenter(){ return { lat:(m.view||[0,0])[0], lng:(m.view||[0,0])[1] }; }, getZoom(){ return m.z; }, fitBounds(b){ m.fit = b; m.view = [(b.s + b.n) / 2, (b.w + b.e) / 2]; m.z = 15; return m; }, on(k, f){ m.handlers[k] = f; return m; }, fire(k){ if (m.handlers[k]) m.handlers[k](); } }; S.maps.push(m); return m; };
-  w.L = { map, tileLayer: (url, o) => ({ url, o, addTo(m){ S.tiles.push({ url, m }); return this; } }), canvas: () => ({}),
+  const map = el => { const m = { el, layers:[], handlers:{}, view:null, z:0, dragging:{ on:true, enable(){ m.dragging.on = true; }, disable(){ m.dragging.on = false; } }, remove(){ m.removed = true; }, setView(c, z){ m.view = c; m.z = z; return m; }, getCenter(){ return { lat:(m.view||[0,0])[0], lng:(m.view||[0,0])[1] }; }, getZoom(){ return m.z; }, fitBounds(b){ m.fit = b; m.view = [(b.s + b.n) / 2, (b.w + b.e) / 2]; m.z = 15; return m; }, on(k, f){ m.handlers[k] = f; return m; }, fire(k){ if (m.handlers[k]) m.handlers[k](); } }; S.maps.push(m); return m; };
+  w.L = { Browser:{ touch:true }, map, tileLayer: (url, o) => ({ url, o, addTo(m){ S.tiles.push({ url, m }); return this; } }), canvas: () => ({}),
           circleMarker: (ll, o) => { const mk = { ll, o, on(k, f){ mk[k] = f; return mk; }, addTo(m){ S.markers.push(mk); m.layers.push(mk); return mk; } }; return mk; },
           latLngBounds: pts => ({ s:Math.min(...pts.map(p => p[0])), n:Math.max(...pts.map(p => p[0])), w:Math.min(...pts.map(p => p[1])), e:Math.max(...pts.map(p => p[1])) }) };
   return S;
@@ -48,6 +48,12 @@ console.log('\n══ ١ · مع ليفليت: القمرُ الصناعيُّ �
   const mk = S.markers.find(m => m.ll[0] === +x0.lat && m.ll[1] === +x0.lng);
   T(!!mk && mk.o.fillColor === w.LIFE[w.lifeOf(x0)].c, 'وبلون حالتها');
   T(/بعيدةٍ عن المشعر/.test(c.textContent), 'والبعيدةُ تُذكَر تحت الخريطة');
+  const mm = S.maps[S.maps.length - 1], lk = d.querySelector('.kk-lock');
+  T(mm.dragging.on === false && !!lk && /اضغط لتحريك/.test(lk.textContent), 'على اللمس: التحريكُ معطَّلٌ حتى تُضغَط الخريطة (تُمرَّر الصفحةُ بإصبع)');
+  lk.click(); await wait(20);
+  T(mm.dragging.on === true && /إيقاف التحريك/.test(lk.textContent), 'وضغطةٌ تفعّله ويظهر زرُّ الإيقاف');
+  lk.click(); await wait(20);
+  T(mm.dragging.on === false, 'والإيقافُ يعطّله ثانية');
   mk.click(); await wait(50);
   T(w.CUR === 'site' && w.DETAIL_ID === x0.id, 'والضغطُ على الدائرة يفتح النقطة');
   await open('over', 'kiosk'); await wait(300);
