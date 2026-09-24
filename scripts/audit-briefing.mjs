@@ -95,8 +95,9 @@ w.STATE.users = { a1:{ user:'m.safwat', name:'مدير المشروع', role:'ad
 const seenBy = r => { w.ROLE = r; return w.usersList().map(x => x[1].user); };
 T(seenBy('admin').indexOf('aalmalki') > -1 && seenBy('exec').indexOf('abadawi') > -1,
   'مديرُ المشروع والإدارةُ العليا يريان حساباتِ الوزارة');
-T(seenBy('engineer').indexOf('aalmalki') < 0 && seenBy('supervisor').indexOf('aalmalki') < 0,
-  'ولا يراها المهندسُ ولا المشرف');
+/* (V18.1) صارت تُرى من المهندس فما فوق بطلب صاحب المشروع — والمشرفُ فما دون لا */
+T(seenBy('engineer').indexOf('aalmalki') > -1 && seenBy('supervisor').indexOf('aalmalki') < 0,
+  'ويراها المهندسُ ولا يراها المشرف');
 T(seenBy('viewer').indexOf('abadawi') > -1 && seenBy('viewer').indexOf('tech1') < 0,
   'والوزارةُ ترى نظراءَها وحدَهم');
 w.ROLE = 'admin'; w.USR_ROLE = ''; w.USR_Q = '';
