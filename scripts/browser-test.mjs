@@ -260,12 +260,14 @@ console.log('\n══ ٨ · ظروفُ منى: شبكةٌ بطيئةٌ ومعا�
     const p2 = await c2.newPage();
     const cdp = await c2.newCDPSession(p2);
     await cdp.send('Network.enable');
-    if (warm){ await p2.goto(base + 'index.html', { waitUntil:'load' }); await p2.waitForTimeout(2500); }   /* التثبيتُ الأوّلُ يملأ الكاش */
+    if (warm){ await p2.goto(base + 'index.html', { waitUntil:'load', timeout: 60000 }); await p2.waitForTimeout(2500); }   /* التثبيتُ الأوّلُ يملأ الكاش */
     await cdp.send('Network.emulateNetworkConditions', { offline:false, latency:400, downloadThroughput:400 * 1024 / 8, uploadThroughput:200 * 1024 / 8 });
     await cdp.send('Emulation.setCPUThrottlingRate', { rate:4 });
     const t0 = Date.now();
-    await p2.goto(base + 'index.html', { waitUntil:'domcontentloaded' });
-    await p2.waitForSelector('#lgGo', { timeout: 60000 });
+    /* تحت الخنق يطول تحميلُ الملفّ الواحد (٨٧٥ كيلوبايت على ٤٠٠ كيلوبت/ث ≈ ٢٠ ثانية
+       وأكثرُ على جهاز السحابة) — فالمهلةُ ٩٠ ثانية لا الافتراضية */
+    await p2.goto(base + 'index.html', { waitUntil:'domcontentloaded', timeout: 90000 });
+    await p2.waitForSelector('#lgGo', { timeout: 90000 });
     await p2.evaluate(() => { FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' }); FB.legacyDone = () => true; window.pullDelta = () => Promise.resolve(0); window.liveWatch = () => {}; window.liveSmall = () => {};
       document.getElementById('lgU').value = 'eng.test'; document.getElementById('lgP').value = 'TestPass1234'; });
     await p2.click('#lgGo'); await p2.waitForSelector('#nav', { timeout: 60000 });
