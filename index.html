@@ -23592,6 +23592,7 @@ var BASEMAP = { manifest:null, have:null, layer:null, url:'', loading:false };
 var BASEMAP_CACHE = 'nusuk-basemap', BASEMAP_FILE = 'maps/mashaer.pmtiles', BASEMAP_MAX = 30 * 1024 * 1024;
 function basemapManifest(){
   if (BASEMAP.manifest) return Promise.resolve(BASEMAP.manifest);
+  if (typeof fetch !== 'function'){ BASEMAP.manifest = { bytes:0 }; return Promise.resolve(BASEMAP.manifest); }   /* بيئةٌ بلا fetch */
   return fetch('maps/manifest.json', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
     .then(function(m){ BASEMAP.manifest = m || { bytes:0 }; if (CUR === 'tools' || CUR === 'acct') render(1); return BASEMAP.manifest; }).catch(function(){ BASEMAP.manifest = { bytes:0 }; return BASEMAP.manifest; });
 }

@@ -3,5 +3,13 @@
   "bytes": 0,
   "built": "",
   "tool": "",
-  "note": "يُملأ بعد البناء على جهازٍ له شبكة — انظر docs/maps/README.md"
+  "bounds": [
+    39.84,
+    21.33,
+    40.03,
+    21.48
+  ],
+  "maxzoom": 15,
+  "source": "OpenStreetMap contributors (ODbL)",
+  "note": "يُملأ بعد البناء على جهازٍ له شبكة — انظر docs/maps/README.md: bytes حجمُ الملف بالبايت، built تاريخُ البناء، tool الأداةُ وإصدارُها"
 }
