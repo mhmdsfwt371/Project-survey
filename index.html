@@ -26805,14 +26805,9 @@ var RELEASE_NOTES = [
 ];
 var WN = null;
 /* verNum القائمةُ (رقمُ النسخة عددًا) هي المستعمَلة — لا تعريفَ ثانيًا */
-function releaseNotesFor(v){
-  /* آخرُ نسخةٍ لها سطورٌ يراها المستخدم — نسخةُ بنيةٍ بلا سطورٍ لا تُزعج أحدًا (V17.91) */
-  var n = verNum(v), best = null;
-  RELEASE_NOTES.forEach(function(r){ var k = verNum(r.v); if (k <= n && r.notes && r.notes.length && (!best || k > verNum(best.v))) best = r; });
-  return best;
-}
 /* مع القطار (V17.97) تصل الهاتفَ نسخٌ عدّةٌ دفعةً واحدة: تُعرَض سطورُ كلِّ نسخةٍ
-   بين ما رآه الجهازُ وما وصله — الأحدثُ أوّلًا — لا آخرُها وحدَها */
+   بين ما رآه الجهازُ وما وصله — الأحدثُ أوّلًا — لا آخرُها وحدَها. ونسخةُ
+   بنيةٍ بلا سطورٍ لا تُزعج أحدًا (V17.91). */
 function releaseNotesSince(seen, cur){
   var a = verNum(seen), b = verNum(cur);
   return RELEASE_NOTES.filter(function(r){ var k = verNum(r.v); return k > a && k <= b && r.notes && r.notes.length; })
