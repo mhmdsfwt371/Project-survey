@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mhmdsfwt371.github.io/Project-survey/docs/schema/geojson-export.schema.json",
+  "title": "AFAQY Readers — GeoJSON export",
+  "type": "object",
+  "required": [
+    "type",
+    "features"
+  ],
+  "additionalProperties": true,
+  "properties": {
+    "type": {
+      "const": "FeatureCollection"
+    },
+    "name": {
+      "type": "string"
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "version": {
+      "type": "string"
+    },
+    "features": {
+      "type": "array",
+      "items": {
+        "$ref": "geojson-feature.schema.json"
+      }
+    }
+  }
+}

@@ -54,8 +54,8 @@ T(!/[\u0600-\u06FF]/.test(bug[2].box), 'ولا عربيَّ في الصندوق 
 T(wrote.filter(x => x[0] === 'bugs').length === 1, 'وكتابةٌ واحدةٌ لا اثنتان');
 
 console.log('\n══ ٤ · النسخُ من الأدوات، والخطُّ الزمنيُّ للمهندس ══');
-w.goPage('tools'); w.render(1); await wait(80);
-T(!!d.querySelector('[data-boxcopy]'), 'زرُّ «نسخ التشخيص» في الأدوات');
+w.goPage('acct'); w.render(1); await wait(80);
+T(!!d.querySelector('[data-boxcopy]'), 'زرُّ «نسخ التشخيص» في «حسابي» لكلِّ الأدوار');
 let copied = ''; w.navigator.clipboard = { writeText: async s => { copied = s; } };
 w.boxCopy(); await wait(30);
 T(/^nsk-box v1/.test(copied), 'ويُنسَخ النصُّ نفسُه');

@@ -1,0 +1,156 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mhmdsfwt371.github.io/Project-survey/docs/schema/geojson-feature.schema.json",
+  "title": "AFAQY Readers — site feature",
+  "description": "نقطةٌ واحدةٌ في تصدير GeoJSON (RFC 7946). الخصائصُ من docs/api-schema.json — لا تُعدَّل هنا.",
+  "type": "object",
+  "required": [
+    "type",
+    "id",
+    "geometry",
+    "properties"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "const": "Feature"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^NSK-"
+    },
+    "geometry": {
+      "type": "object",
+      "required": [
+        "type",
+        "coordinates"
+      ],
+      "properties": {
+        "type": {
+          "const": "Point"
+        },
+        "coordinates": {
+          "type": "array",
+          "minItems": 2,
+          "maxItems": 2,
+          "prefixItems": [
+            {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180,
+              "description": "longitude"
+            },
+            {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90,
+              "description": "latitude"
+            }
+          ]
+        }
+      }
+    },
+    "properties": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "zone",
+        "type",
+        "status",
+        "status_label",
+        "surveyed_at",
+        "installed_at",
+        "handed_at",
+        "dismantled_at"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "معرّف النقطة NSK-…"
+        },
+        "name": {
+          "type": "string"
+        },
+        "zone": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "block": {
+          "type": "string"
+        },
+        "sign": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "todo",
+            "assigned",
+            "tomorrow",
+            "visited",
+            "revisit",
+            "stuck",
+            "minwait",
+            "minback",
+            "ready",
+            "sched",
+            "installed",
+            "handed",
+            "maint",
+            "dis"
+          ]
+        },
+        "status_label": {
+          "type": "string"
+        },
+        "surveyed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "installed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "handed_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "dismantled_at": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "surveyed_by": {
+          "type": "string"
+        },
+        "challenges": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    }
+  }
+}

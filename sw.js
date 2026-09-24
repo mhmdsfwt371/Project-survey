@@ -1,5 +1,5 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v17.99';
+const CACHE = 'nusuk-survey-v18.0';
 const SHELL = [
   './',
   './index.html',
@@ -14,7 +14,7 @@ const SHELL = [
 ];
 /* محرّكُ العرض الثلاثيّ لا يُخزَّن مع الهيكل: ثمانمئةُ كيلوبايتٍ لا يحتاجها
    الفنيُّ في المشاعر، ومن فتح الصفحةَ مرةً خُزِّن له عند أوّل طلب. */
-const LAZY = ['/vendor/maplibre/'];
+const LAZY = ['/vendor/maplibre/', '/vendor/protomaps/'];   /* وعارضُ خريطة المشاعر بلا شبكة (V18.0) */
 
 self.addEventListener('install', function (e) {
   e.waitUntil(

@@ -289,6 +289,12 @@ jobs:
         run: node scripts/audit-mina.mjs
       - name: جرد ميزات الميدان ٦ب — وضعُ الشمس بتباينه، وقفلُ الشاشة، والمسحُ بالكاميرا
         run: node scripts/audit-field6b.mjs
+      - name: جرد التصدير القياسي — GeoJSON وفق RFC 7946 بحسب الدور، والمخطّطاتُ من مصدرٍ واحد
+        run: node scripts/audit-geojson.mjs
+      - name: جرد سجلات القرار — الأقسامُ الخمسةُ وحالةٌ وربطٌ بـ§١٦، ومخطّطا المعمارية
+        run: node scripts/audit-adr.mjs
+      - name: جرد خريطة المشاعر — موافقةٌ لا تُتخطّى، وحجمٌ مسقوف، وإسنادٌ، وعودةٌ إلى الشبكة
+        run: node scripts/audit-basemap.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

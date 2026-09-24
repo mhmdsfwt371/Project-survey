@@ -1,4 +1,4 @@
-# المعماريةُ في صفحة — قارئات أفاقي (V17.96)
+# المعماريةُ في صفحة — قارئات أفاقي (V18.0)
 
 > هذه الصفحةُ تحلُّ محلَّ `docs/nusuk-tech-spec.docx` (V13.21 — مُلغاة). التفصيلُ في `docs/system.md`.
 
@@ -31,3 +31,50 @@
 
 ## ٥ · ما يُقاس
 قراءاتُ اليوم على حصة ٥٠ ألفًا (كهرمانيٌّ عند ٧٠٪) · وتيرةُ المسح وتوقّعُ اكتماله لكلِّ مشعر · الزمنُ بين مراحل التركيب التجريبي · حضورُ الأجهزة ونسخُها.
+
+## ٦ · مخطّطُ السياق
+```mermaid
+flowchart LR
+  F[الفنيُّ والمشرفُ<br/>هاتفٌ في المشاعر] -->|يمسح ويركّب ويبلّغ| APP[قارئات أفاقي<br/>تطبيقُ ويبٍ بلا شبكة]
+  O[المكتبُ والمهندس<br/>حاسوبٌ] -->|يعتمد ويجدوِل ويصدّر| APP
+  M[ممثّلُ الوزارة] -->|يعتمد ويشاهد| APP
+  M -->|رمزُ اليوم| MP[الصفحةُ المشتركة]
+  APP <-->|مزامنةٌ فارقية| FS[(Firestore)]
+  APP -->|دخول| AU[Firebase Auth]
+  GH[GitHub Actions] -->|نسخٌ ليليٌّ مشفَّر| DR[(Google Drive)]
+  GH -->|نبضٌ وتقريرٌ واستعمال| FS
+  GH -->|لقطةٌ مشفَّرة| MP
+  GH -.->|طلباتُ تركيب| MA[ماي أفاقي]
+  P[GitHub Pages] -->|ينشر| APP
+```
+
+## ٧ · مخطّطُ الحاويات
+```mermaid
+flowchart TB
+  subgraph phone[الهاتف]
+    IDX[index.html<br/>الواجهةُ والمنطقُ والسجلُّ المدمج]
+    SW[sw.js<br/>الهيكلُ من الكاش]
+    IDB[(IndexedDB<br/>الحالةُ والطابور)]
+    IDX --- SW
+    IDX --- IDB
+  end
+  subgraph fb[Firebase]
+    FS[(Firestore)]
+    RULES[firestore.rules<br/>٩٠٠ حالةٍ على المحاكي]
+    AU[Authentication]
+    RULES --- FS
+  end
+  subgraph gh[GitHub]
+    PAGES[Pages من main]
+    GATE[docs-check<br/>البوابةُ الصامتة على staging]
+    TRAIN[train.yml<br/>الأحدُ والأربعاء]
+    JOBS[backup · pulse · report · ministry · season · provision · myafaqy]
+    GATE --> TRAIN --> PAGES
+  end
+  DR[(Google Drive<br/>نسخٌ مشفَّرة)]
+  IDX <-->|طابورٌ بختم الكاتب| FS
+  IDX --> AU
+  PAGES --> IDX
+  JOBS --> FS
+  JOBS --> DR
+```

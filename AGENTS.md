@@ -76,6 +76,7 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
 | الاستعمال | `pageTick()`، `usageCard()`، `readsToday()` |
 | الأداء والتشخيص | `perfSummary()`، `perfCard()`، `boxNote()`، `boxText()` |
 | عزل النص | `bdi()`، `bdiText()`، `fsi()`، `fsiText()` — للعرض والرسائل لا للبيانات |
-| الميدان | `sunSet()`، `wakeSync()`، `scanOpen()`، `serialOwner()` |
+| الميدان | `sunSet()`، `wakeSync()`، `scanOpen()`، `serialOwner()`، `basemapDownload()`، `deviceCards()` |
+| التصدير القياسي | `geoJsonBuild()` — والمخطّطُ من `scripts/schema-gen.mjs` |
 | التوأم | `twinOf()`، `dupMerge()` |
 | السيور | `season.yml` التغذية · `pulse.yml` النبض · `ministry.yml` الوزارة · `myafaqy.yml` الجسر · `backup.yml` النسخ |
