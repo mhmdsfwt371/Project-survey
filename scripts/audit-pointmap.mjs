@@ -57,6 +57,11 @@ d.querySelector('[data-pmz="reset"]').dispatchEvent(new w.MouseEvent('click', { 
 T(w.PM_VIEW.z === 1 && w.PM_VIEW.cx === 0.5, 'وإعادةُ الإطار تعيده');
 svg2.dispatchEvent(new w.WheelEvent('wheel', { bubbles:true, cancelable:true, deltaY:-100, clientX:500, clientY:300 })); await wait(20);
 T(w.PM_VIEW.z > 1, 'والعجلةُ تكبّر');
+console.log('\n══ ٣ · وتصحيحُ البيانات يحصرها ══');
+T(w.dqFar().length === 1 && w.dqFar()[0].id === 'NSK-MIN-CMP-9999', 'dqFar تحصر النقطةَ البعيدةَ لكلِّ مشعر');
+w.goPage('dq'); w.render(1); await wait(150);
+const dq = d.getElementById('content');
+T(/نقاطٌ بعيدةٌ عن مشعرها/.test(dq.textContent) && !!dq.querySelector('[data-site="NSK-MIN-CMP-9999"]'), 'وبطاقةٌ في تصحيح البيانات تفتحها لتُصحَّح');
 w.STATE.sites.pop(); w.SITE_IX = null; w.statBump();
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
