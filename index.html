@@ -25513,10 +25513,10 @@ function kkSatInit(){
   if (KK_MAP){ try { KK_MAP.remove(); } catch (e){ LS_ERR = e; } KK_MAP = null; }
   var m = L.map(el, { zoomControl:true, attributionControl:true, preferCanvas:true });
   L.tileLayer(TILES.esri, { maxZoom:19, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);
-  var cv = L.canvas({ padding:0.3 });
+  var MAP_CV_KK = L.canvas({ padding:0.3 });   /* لوحُ هذه الخريطة وحدَها — لا لوحَ الخريطة الرئيسة */
   core.forEach(function(x){
     var st = lifeOf(x), C = (LIFE[st] || LIFE.todo).c;
-    L.circleMarker([+x.lat, +x.lng], { renderer:cv, radius:5, color:'#fff', weight:1, fillColor:C, fillOpacity:0.95 })
+    L.circleMarker([+x.lat, +x.lng], { renderer:MAP_CV_KK, radius:5, color:'#fff', weight:1, fillColor:C, fillOpacity:0.95 })
       .on('click', function(){ DETAIL_ID = x.id; CUR = 'site'; render(); }).addTo(m);
   });
   var v = KK_MAPV[zone];
