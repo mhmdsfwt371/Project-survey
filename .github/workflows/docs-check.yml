@@ -297,6 +297,8 @@ jobs:
         run: node scripts/audit-basemap.mjs
       - name: جرد المشعر المعلَن — يظهر في كلِّ ما يعدُّ بالمشعر من يوم إعلانه
         run: node scripts/audit-zones.mjs
+      - name: جرد خريطة النقاط — النقطةُ البعيدةُ لا تُصغّر المشعر، والتكبيرُ والسحب
+        run: node scripts/audit-pointmap.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

@@ -719,7 +719,8 @@ body.kiosk .kk-story{font-size:21px}
 .kk-eta{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:600}
 .kk-eta.ok{background:var(--ok-bg);color:var(--ok)}.kk-eta.bad{background:var(--danger-bg);color:var(--danger)}.kk-eta.mute{background:var(--surface-2);color:var(--ink-mute)}
 .kk-wide{grid-column:1/-1}
-.kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px}
+.kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px;touch-action:none;cursor:grab}
+.pm-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
 .kk-pts circle{cursor:pointer;stroke:rgba(0,0,0,.25);stroke-width:.6}
 .kk-pts circle:hover{stroke:#fff;stroke-width:2}
 .kk-legend2{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px}
@@ -1036,7 +1037,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V18.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V18.2</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3891,6 +3892,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'نقطةً بإحداثياتٍ بعيدةٍ عن المشعر لا تدخل الإطار':'points with coordinates far from the zone are kept out of the frame', 'تكبير':'Zoom in', 'تصغير':'Zoom out', 'إعادة الإطار':'Reset view', 'اسحب للتحريك · قرّب بإصبعين أو بالعجلة · اضغط نقطةً لتفتحها':'Drag to pan · pinch or scroll to zoom · tap a point to open it',
  'دورك وصلاحياتك ونسختك — وإعداداتُ هذا الجهاز.':'Your role, permissions and version — and this device’s settings.',
  'نُزِّلت خريطةُ المشاعر — تعمل الآن بلا شبكة':'Holy-sites map downloaded — it now works offline', 'لم تُبنَ خريطةُ المشاعر بعد — انظر docs/maps':'The holy-sites map is not built yet — see docs/maps', 'تعذّر تنزيلُ الخريطة':'Map download failed', 'أُزيلت خريطةُ المشاعر من الجهاز':'Holy-sites map removed from the device', 'خريطةُ المشاعر بلا شبكة':'Holy-sites map offline', 'شوارعُ المشاعر ومناطقُها على جهازك — تظهر الخريطةُ حين تغيب الشبكة. تُنزَّل مرةً بموافقتك (يُفضَّل على واي فاي)، وبياناتُها من OpenStreetMap.':'Streets and areas of the holy sites on your device — the map shows when the network is gone. Downloaded once with your consent (Wi-Fi recommended); data from OpenStreetMap.', 'محفوظةٌ على الجهاز':'Saved on the device', 'أزلها من الجهاز':'Remove from the device', 'نزّل خريطةَ المشاعر':'Download the holy-sites map', 'لم تُبنَ الخريطةُ لهذا الموسم بعد':'The map for this season is not built yet',
  'المواقع بحالتها':'Sites with their status',
@@ -6642,6 +6644,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'نقطةً بإحداثياتٍ بعيدةٍ عن المشعر لا تدخل الإطار':'مقامات جن کے کوآرڈینیٹس مشعر سے دور ہیں فریم سے باہر رکھے گئے', 'تكبير':'زوم ان', 'تصغير':'زوم آؤٹ', 'إعادة الإطار':'فریم دوبارہ', 'اسحب للتحريك · قرّب بإصبعين أو بالعجلة · اضغط نقطةً لتفتحها':'گھسیٹ کر منتقل کریں · دو انگلیوں یا وہیل سے زوم · نقطہ دبا کر کھولیں',
  'دورك وصلاحياتك ونسختك — وإعداداتُ هذا الجهاز.':'آپ کا کردار، اختیارات اور ورژن — اور اس ڈیوائس کی ترتیبات۔',
  'نُزِّلت خريطةُ المشاعر — تعمل الآن بلا شبكة':'مشاعر کا نقشہ ڈاؤن لوڈ ہو گیا — اب آف لائن کام کرتا ہے', 'لم تُبنَ خريطةُ المشاعر بعد — انظر docs/maps':'مشاعر کا نقشہ ابھی بنا نہیں — docs/maps دیکھیں', 'تعذّر تنزيلُ الخريطة':'نقشہ ڈاؤن لوڈ ناکام', 'أُزيلت خريطةُ المشاعر من الجهاز':'مشاعر کا نقشہ ڈیوائس سے ہٹا دیا گیا', 'خريطةُ المشاعر بلا شبكة':'مشاعر کا نقشہ آف لائن', 'شوارعُ المشاعر ومناطقُها على جهازك — تظهر الخريطةُ حين تغيب الشبكة. تُنزَّل مرةً بموافقتك (يُفضَّل على واي فاي)، وبياناتُها من OpenStreetMap.':'مشاعر کی سڑکیں اور علاقے آپ کی ڈیوائس پر — نیٹ ورک نہ ہونے پر نقشہ دکھتا ہے۔ آپ کی رضامندی سے ایک بار ڈاؤن لوڈ (وائی فائی بہتر)؛ ڈیٹا OpenStreetMap سے۔', 'محفوظةٌ على الجهاز':'ڈیوائس پر محفوظ', 'أزلها من الجهاز':'ڈیوائس سے ہٹائیں', 'نزّل خريطةَ المشاعر':'مشاعر کا نقشہ ڈاؤن لوڈ کریں', 'لم تُبنَ الخريطةُ لهذا الموسم بعد':'اس موسم کا نقشہ ابھی بنا نہیں',
  'المواقع بحالتها':'مقامات اپنی حالت کے ساتھ',
@@ -25397,10 +25400,85 @@ function forecastHtml(zone){
    فتُرى الفجواتُ في أماكنها، والضغطُ على نقطةٍ يفتحها. والمفتاحُ يعدُّ كلَّ
    حالةٍ فيُجمَع إلى نقاط المشعر. */
 var KK_ZONE = 'منى';
+/* ═══ نقاطٌ بعيدةٌ عن مشعرها لا تُصغّر الخريطة (V18.2) ═══
+   نقطةٌ واحدةٌ بإحداثياتٍ خاطئةٍ على بُعد كيلومتراتٍ كانت تمدُّ الإطارَ فتنكمش
+   ٩٤٦ نقطةً في زاوية. صار الإطارُ من الجسم الحقيقيِّ للمشعر: ما يبعد عن مركزه
+   أكثرَ من ثلاثة أضعاف الربيع الثالث (أو ثلاثة كيلومترات على الأقل) يُعَدُّ
+   بعيدًا، فلا يدخل الإطارَ ويُقال إنه بعيدٌ ليُصحَّح — لا يُخفى بصمت. */
+function geoOutliers(P){
+  if (P.length < 8) return { core:P, far:[] };
+  var med = function(a){ a = a.slice().sort(function(x, y){ return x - y; }); var m = a.length >> 1; return a.length % 2 ? a[m] : (a[m - 1] + a[m]) / 2; };
+  var mla = med(P.map(function(x){ return +x.lat; })), mlo = med(P.map(function(x){ return +x.lng; }));
+  var kx = Math.cos(mla * Math.PI / 180);
+  var dist = function(x){ return Math.sqrt(Math.pow(((+x.lng) - mlo) * kx, 2) + Math.pow((+x.lat) - mla, 2)) * 111320; };
+  var ds = P.map(dist).sort(function(a, b){ return a - b; }), q3 = ds[Math.floor(ds.length * 0.75)];
+  var limit = Math.max(3000, q3 * 3);
+  var core = [], far = [];
+  P.forEach(function(x){ (dist(x) <= limit ? core : far).push(x); });
+  return { core:core, far:far };
+}
+/* التكبيرُ والسحبُ على خريطة النقاط (V18.2): الإطارُ يُصغَّر حول نقطةٍ فتتباعد
+   النقاطُ التي كانت تتلامس، ونصفُ القطر يصغر مع التكبير فلا تبقى كتلةً واحدة. */
+var PM_VIEW = { zone:'', z:1, cx:0.5, cy:0.5, W:1000, H:600 };
+function pmState(zone, W, H){
+  if (PM_VIEW.zone !== zone){ PM_VIEW = { zone:zone, z:1, cx:0.5, cy:0.5, W:W, H:H }; }
+  PM_VIEW.W = W; PM_VIEW.H = H; return PM_VIEW;
+}
+function pmViewBox(){
+  var V = PM_VIEW, w = V.W / V.z, h = V.H / V.z;
+  var x = Math.min(Math.max(V.cx * V.W - w / 2, 0), V.W - w), y = Math.min(Math.max(V.cy * V.H - h / 2, 0), V.H - h);
+  return [x.toFixed(1), y.toFixed(1), w.toFixed(1), h.toFixed(1)].join(' ');
+}
+function pmApply(){
+  var svg = document.querySelector('.kk-pts'); if (!svg) return;
+  svg.setAttribute('viewBox', pmViewBox());
+  var r = Math.max(1.2, 5 / Math.sqrt(PM_VIEW.z)).toFixed(2), sw = Math.max(0.2, 0.6 / PM_VIEW.z).toFixed(2);
+  var cs = svg.querySelectorAll('circle'); for (var i = 0; i < cs.length; i++){ cs[i].setAttribute('r', r); cs[i].style.strokeWidth = sw; }
+  var lab = document.getElementById('pmZoom'); if (lab) lab.textContent = '\u00d7' + nm(Math.round(PM_VIEW.z * 10) / 10);
+}
+function pmZoomAt(f, fx, fy){
+  var V = PM_VIEW, z0 = V.z, z1 = Math.min(40, Math.max(1, z0 * f));
+  if (fx != null){
+    /* ما تحت الإصبع يثبت: نقطةُ العالم تحت (fx,fy) قبل التكبير تبقى تحتها بعده */
+    var wx = V.cx - 0.5 / z0 + fx / z0, wy = V.cy - 0.5 / z0 + fy / z0;
+    V.cx = wx - fx / z1 + 0.5 / z1; V.cy = wy - fy / z1 + 0.5 / z1;
+  }
+  V.z = z1; V.cx = Math.min(Math.max(V.cx, 0), 1); V.cy = Math.min(Math.max(V.cy, 0), 1);
+  pmApply();
+}
+function pmReset(){ PM_VIEW.z = 1; PM_VIEW.cx = 0.5; PM_VIEW.cy = 0.5; pmApply(); }
+var PM_DRAG = null, PM_PINCH = null;
+function pmFrac(svg, ev){ var b = svg.getBoundingClientRect(); return { x:(ev.clientX - b.left) / (b.width || 1), y:(ev.clientY - b.top) / (b.height || 1) }; }
+if (typeof document === 'object'){
+  document.addEventListener('wheel', function(e){
+    var svg = e.target && e.target.closest ? e.target.closest('.kk-pts') : null; if (!svg) return;
+    e.preventDefault(); var f = pmFrac(svg, e); pmZoomAt(e.deltaY < 0 ? 1.25 : 0.8, f.x, f.y);
+  }, { passive:false });
+  document.addEventListener('pointerdown', function(e){
+    var svg = e.target && e.target.closest ? e.target.closest('.kk-pts') : null; if (!svg) return;
+    if (PM_DRAG && PM_DRAG.id !== e.pointerId){ PM_PINCH = { a:PM_DRAG, b:{ id:e.pointerId, x:e.clientX, y:e.clientY }, z:PM_VIEW.z }; return; }
+    PM_DRAG = { id:e.pointerId, x:e.clientX, y:e.clientY, cx:PM_VIEW.cx, cy:PM_VIEW.cy, moved:false, svg:svg };
+  }, { passive:true });
+  document.addEventListener('pointermove', function(e){
+    if (PM_PINCH){
+      var A = PM_PINCH.a, B = PM_PINCH.b; if (e.pointerId === A.id){ A.x = e.clientX; A.y = e.clientY; } else if (e.pointerId === B.id){ B.x = e.clientX; B.y = e.clientY; } else return;
+      if (!PM_PINCH.d0){ PM_PINCH.d0 = Math.hypot(A.x - B.x, A.y - B.y) || 1; return; }
+      var d = Math.hypot(A.x - B.x, A.y - B.y); var z = Math.min(40, Math.max(1, PM_PINCH.z * d / PM_PINCH.d0)); PM_VIEW.z = z; pmApply(); return;
+    }
+    if (!PM_DRAG || e.pointerId !== PM_DRAG.id) return;
+    var b = PM_DRAG.svg.getBoundingClientRect(), dx = (e.clientX - PM_DRAG.x) / (b.width || 1), dy = (e.clientY - PM_DRAG.y) / (b.height || 1);
+    if (Math.abs(dx) + Math.abs(dy) > 0.01) PM_DRAG.moved = true;
+    PM_VIEW.cx = Math.min(Math.max(PM_DRAG.cx - dx / PM_VIEW.z, 0), 1); PM_VIEW.cy = Math.min(Math.max(PM_DRAG.cy - dy / PM_VIEW.z, 0), 1); pmApply();
+  }, { passive:true });
+  var pmUp = function(e){ if (PM_PINCH && (e.pointerId === PM_PINCH.a.id || e.pointerId === PM_PINCH.b.id)){ PM_PINCH = null; PM_DRAG = null; return; } if (PM_DRAG && e.pointerId === PM_DRAG.id){ if (PM_DRAG.moved) PM_CLICK_SKIP = Date.now(); PM_DRAG = null; } };
+  document.addEventListener('pointerup', pmUp, { passive:true }); document.addEventListener('pointercancel', pmUp, { passive:true });
+}
+var PM_CLICK_SKIP = 0;
 function pointMap(zone){
   var all = (STATE.sites || []).filter(function(x){ return x.zone === zone; });
-  var P = all.filter(function(x){ return +x.lat && +x.lng; }), noCo = all.length - P.length;
-  if (!P.length) return '<p class="hint">' + esc(t('لا نقاطَ بإحداثياتٍ في هذا المشعر.')) + '</p>';
+  var P0 = all.filter(function(x){ return +x.lat && +x.lng; }), noCo = all.length - P0.length;
+  if (!P0.length) return '<p class="hint">' + esc(t('لا نقاطَ بإحداثياتٍ في هذا المشعر.')) + '</p>';
+  var G = geoOutliers(P0), P = G.core;
   var la0 = Infinity, la1 = -Infinity, lo0 = Infinity, lo1 = -Infinity;
   P.forEach(function(x){ var a = +x.lat, o = +x.lng; if (a < la0) la0 = a; if (a > la1) la1 = a; if (o < lo0) lo0 = o; if (o > lo1) lo1 = o; });
   var kx = Math.cos((la0 + la1) / 2 * Math.PI / 180), W = 1000;
@@ -25408,20 +25486,28 @@ function pointMap(zone){
   var H = Math.max(280, Math.min(720, Math.round(W * spanY / spanX))), pad = 14;
   var sc = Math.min((W - 2 * pad) / spanX, (H - 2 * pad) / spanY);
   var offX = (W - spanX * sc) / 2, offY = (H - spanY * sc) / 2;
+  var V = pmState(zone, W, H), r = Math.max(1.2, 5 / Math.sqrt(V.z)).toFixed(2);
   var cnt = {};
   var dots = P.map(function(x){
     var st = lifeOf(x), L = LIFE[st] || LIFE.todo; cnt[st] = (cnt[st] || 0) + 1;
     var cx = offX + ((+x.lng) - lo0) * kx * sc, cy = H - (offY + ((+x.lat) - la0) * sc);
     /* الوصفُ خاصيةٌ لا نصّ: ألفُ عنوانٍ نصّيٍّ كانت تُثقل الشاشةَ على قارئها (audit-fit) */
-    return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="5" fill="' + L.c + '" data-site="' + esc(x.id) + '" aria-label="' + esc(x.id) + '"></circle>';
+    return '<circle cx="' + cx.toFixed(1) + '" cy="' + cy.toFixed(1) + '" r="' + r + '" fill="' + L.c + '" data-site="' + esc(x.id) + '" aria-label="' + esc(x.id) + '"></circle>';
   }).join('');
   var legend = LIFE_ORDER.filter(function(k){ return cnt[k]; }).map(function(k){
     return '<span class="kk-lg"><i style="background:' + LIFE[k].c + '"></i>' + esc(t(LIFE[k].n)) + ' <b class="num">' + nm(cnt[k]) + '</b></span>';
   }).join('');
-  return '<svg class="kk-pts" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="' + esc(t('خريطةُ التقدّم بالنقاط') + ' \u2014 ' + t(zone)) + '">' + dots + '</svg>'
+  var far = G.far.length ? '<p class="hint" style="margin:6px 0 0">\u26A0 ' + nm(G.far.length) + ' ' + esc(t('نقطةً بإحداثياتٍ بعيدةٍ عن المشعر لا تدخل الإطار')) + ': ' + G.far.slice(0, 4).map(function(x){ return bdi(x.id); }).join(' \u00b7 ') + (G.far.length > 4 ? ' \u2026' : '')
+      + (typeof maySiteEdit === 'function' && maySiteEdit() ? ' ' + btn(t('تصحيح البيانات'), 'btn-quiet btn-sm', ' data-goto="dq"') : '') + '</p>' : '';
+  return '<div class="pm-tools"><button type="button" class="btn btn-quiet btn-sm" data-pmz="in" aria-label="' + esc(t('تكبير')) + '">\uFF0B</button>'
+    + '<button type="button" class="btn btn-quiet btn-sm" data-pmz="out" aria-label="' + esc(t('تصغير')) + '">\uFF0D</button>'
+    + '<button type="button" class="btn btn-quiet btn-sm" data-pmz="reset" aria-label="' + esc(t('إعادة الإطار')) + '">\u27F2</button>'
+    + '<span class="hint num" id="pmZoom" style="margin:0">\u00d7' + nm(Math.round(V.z * 10) / 10) + '</span>'
+    + '<span class="hint" style="margin:0">' + esc(t('اسحب للتحريك · قرّب بإصبعين أو بالعجلة · اضغط نقطةً لتفتحها')) + '</span></div>'
+    + '<svg class="kk-pts" viewBox="' + pmViewBox() + '" role="img" aria-label="' + esc(t('خريطةُ التقدّم بالنقاط') + ' \u2014 ' + t(zone)) + '">' + dots + '</svg>'
     + '<div class="kk-legend2">' + legend
-    + '<span class="hint" style="margin:0">' + esc(t('الإجمالي')) + ' <b class="num">' + nm(P.length) + '</b>'
-    + (noCo ? ' \u00b7 ' + esc(t('بلا إحداثيات')) + ' <b class="num">' + nm(noCo) + '</b>' : '') + '</span></div>';
+    + '<span class="hint" style="margin:0">' + esc(t('الإجمالي')) + ' <b class="num">' + nm(P0.length) + '</b>'
+    + (noCo ? ' \u00b7 ' + esc(t('بلا إحداثيات')) + ' <b class="num">' + nm(noCo) + '</b>' : '') + '</span></div>' + far;
 }
 /* ═══ الأسبوعُ في جملة (V17.89) ═══
    الرقمُ يُقرأ، والجملةُ تُقال في الاجتماع. تُبنى من الأرقام نفسِها: ما مُسح
@@ -27124,6 +27210,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V18.2', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'خريطة التقدم بالنقاط في شاشة الوزارة: تكبير وتصغير بالأزرار أو بإصبعين أو بعجلة الفأرة، وسحب للتحريك، فتتباعد النقاط المتلاصقة — والنقطة ذات الإحداثيات البعيدة عن مشعرها لم تعد تصغّر الخريطة إلى زاوية، وتُذكر بمعرّفها لتصحيحها.' ] },
   { v:'V18.1', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'حسابات الوزارة أصبحت تظهر للمهندس في شاشة المستخدمين (كانت لمدير المشروع فقط)، وتبقى مخفية عن المشرف فمن دونه.' ] },
   { v:'V18.0', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
@@ -35072,7 +35160,10 @@ function clickA(e){
     if (!px || !may('users')) return true;
     siteOvSet(pid, { pilot: !px.pilot }); px.pilot = !px.pilot; logEvent((px.pilot ? 'وُسمت تجريبيةً — ' : 'أُزيل الوسمُ التجريبي — ') + pid); render(1); return true;
   }
+  var pmz = e.target.closest('[data-pmz]');
+  if (pmz){ var k = pmz.getAttribute('data-pmz'); if (k === 'in') pmZoomAt(1.6); else if (k === 'out') pmZoomAt(1 / 1.6); else pmReset(); return true; }
   var li = e.target.closest('[data-site]');
+  if (li && li.tagName === 'circle' && Date.now() - PM_CLICK_SKIP < 400) return true;   /* سحبٌ لا ضغطة */
   if (li && !SEL_MODE){ DETAIL_ID = li.getAttribute('data-site'); CUR = 'site'; render(); return true; }
   if (li && SEL_MODE){ var lid = li.getAttribute('data-site');
                        if (!asnOf(lid)) selToggle(lid); render(1); return true; }
