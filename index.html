@@ -1011,7 +1011,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.96</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.97</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -26753,6 +26753,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V17.97', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'التحديثات أصبحت تصل الهواتف مرتين في الأسبوع (فجر الأحد والأربعاء) بدل أن تصل مع كل دفعة، إلا الإصلاحات العاجلة فتصل فورًا.',
+      'رسالة «ما الجديد» تعرض سطور كل النسخ التي وصلت منذ آخر مرة، لا آخر نسخة فقط.' ] },
   { v:'V17.96', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'في ثوابت النظام بطاقة «حارس التكلفة»: بعد ضبط تنبيه الميزانية في Google Cloud يؤشّر المدير عليها فيختفي البند من جاهزية الموسم — والخطوات في دليل مرفق.' ] },
   { v:'V17.95', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
@@ -26808,15 +26811,22 @@ function releaseNotesFor(v){
   RELEASE_NOTES.forEach(function(r){ var k = verNum(r.v); if (k <= n && r.notes && r.notes.length && (!best || k > verNum(best.v))) best = r; });
   return best;
 }
+/* مع القطار (V17.97) تصل الهاتفَ نسخٌ عدّةٌ دفعةً واحدة: تُعرَض سطورُ كلِّ نسخةٍ
+   بين ما رآه الجهازُ وما وصله — الأحدثُ أوّلًا — لا آخرُها وحدَها */
+function releaseNotesSince(seen, cur){
+  var a = verNum(seen), b = verNum(cur);
+  return RELEASE_NOTES.filter(function(r){ var k = verNum(r.v); return k > a && k <= b && r.notes && r.notes.length; })
+    .sort(function(x, y){ return verNum(y.v) - verNum(x.v); });
+}
 function whatsNewMaybe(){
   var cur = appVer(); if (!cur) return false;
   var seen = lsGet('nsk14.seenVer') || '';
   if (!seen){ lsSet('nsk14.seenVer', cur); return false; }     /* أوّلُ تثبيت: لا رسالة */
   if (seen === cur) return false;
-  var r = releaseNotesFor(cur);
+  var list = releaseNotesSince(seen, cur);
   /* لا سطورَ أحدثَ مما رآه: يُسجَّل بلا رسالة */
-  if (!r || verNum(r.v) <= verNum(seen)){ lsSet('nsk14.seenVer', cur); return false; }
-  WN = { v:cur, r:r, seen:seen };
+  if (!list.length){ lsSet('nsk14.seenVer', cur); return false; }
+  WN = { v:cur, r:list[0], list:list, seen:seen };
   return true;
 }
 function wnClose(){ if (WN) lsSet('nsk14.seenVer', WN.v); WN = null; render(1); }
@@ -26827,8 +26837,11 @@ function wnHtml(){
     + '<div class="pop-head"><div><h3>\u2728 ' + esc(t('ما الجديد في هذا التحديث')) + ' \u2014 ' + esc(WN.v) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">' + esc(WN.r.d) + ' \u00b7 ' + esc(t('تظهر مرةً واحدةً بعد التحديث')) + '</p></div>'
     +   btn('\u2715','btn-quiet btn-sm',' data-wnx="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
-    + '<div class="pop-body"><ul style="margin:0;padding:0 18px 0 0;line-height:1.8">'
-    +   WN.r.notes.map(function(x){ return '<li dir="auto">' + esc(x) + '</li>'; }).join('') + '</ul>'
+    + '<div class="pop-body">'
+    +   (WN.list || [WN.r]).map(function(r, i){
+          return (i > 0 || (WN.list || []).length > 1 ? '<div class="hint" style="margin:' + (i ? '10px' : '0') + ' 0 4px;font-weight:700">' + esc(r.v) + ' \u00b7 ' + esc(r.d) + '</div>' : '')
+            + '<ul style="margin:0;padding:0 18px 0 0;line-height:1.8">' + r.notes.map(function(x){ return '<li dir="auto">' + esc(x) + '</li>'; }).join('') + '</ul>';
+        }).join('')
     +   '<div class="actions" style="margin:12px 0 0">' + btn('\u2713 ' + t('فهمت'),'btn-primary',' data-wnx="1"') + '</div></div></div></div>';
 }
 function pwOpen(forced){ PW = { forced:!!forced }; render(1); }

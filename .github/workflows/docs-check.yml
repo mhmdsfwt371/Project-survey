@@ -11,6 +11,11 @@ on:
   workflow_dispatch: {}
 permissions:
   contents: read
+# دفعةٌ جديدةٌ على فرع التجربة تلغي التشغيلَ الجاريَ للتي قبلها — فلا تُفحَص شجرةٌ
+# تجاوزها الدفعُ، ولا يقع تشغيلٌ على شيءٍ لم يعد رأسَ الفرع (V17.97)
+concurrency:
+  group: gate-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref == 'refs/heads/staging' }}
 jobs:
   # القائمةُ الكاملةُ متسلسلةً — المرجعُ الذي يقرؤه الحارسُ المحلّيُّ والجرود؛
   # تعمل على الأصل وطلبات الدمج، وعلى فرع التجربة تُشغَّل الخطواتُ نفسُها
@@ -272,6 +277,8 @@ jobs:
         run: node scripts/audit-pilot.mjs
       - name: جرد وثائق التشغيل — المنتجُ والرجوعُ والمعماريةُ والتسليمُ وحارسُ التكلفة تصف الحيَّ بلا سرّ
         run: node scripts/audit-docs4.mjs
+      - name: جرد القطار — الترقيةُ مجدولةٌ أو طوارئُ أو يدًا، ولا يُرقَّى أحمر
+        run: node scripts/audit-train.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
@@ -334,6 +341,7 @@ jobs:
     permissions:
       contents: write
       actions: write
+      statuses: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -358,20 +366,32 @@ jobs:
             echo "✓ البوابةُ خضراء: الشرائحُ الأربعُ والمتصفّحُ والمحاكي"
             echo "GATE=open" >> "$GITHUB_ENV"
           fi
-      - name: الترقية إلى الأصل — تقدُّمٌ سريعٌ للالتزام الذي فُحص بعينه
-        if: env.GATE == 'open'
+      # ═══ قطاراتُ الإصدار (V17.97) ═══
+      # البوابةُ تكتب حالةَ الالتزام (nusuk/gate) فيراها القطارُ لاحقًا. الترقيةُ
+      # الفوريةُ للطوارئ وحدَها: التزامٌ يحمل الترويسةَ «Release: hotfix». وما عداه
+      # ينتظر قطارَ الأحد أو الأربعاء (train.yml) أو تشغيلًا يدويًّا — الميدانُ
+      # يستقبل التحديثَ مرتين في الأسبوع لا مع كلِّ دفعة.
+      - name: حالةُ الالتزام — يقرؤها القطار
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          git fetch origin main
-          if ! git merge-base --is-ancestor origin/main HEAD; then
-            echo "::error title=الأصلُ تقدّم::نزل على الأصل التزامٌ بعد هذه الدفعة (النسخةُ الاحتياطية غالبًا) — رتّبها فوقه وادفع إلى staging ثانية"
-            exit 1
-          fi
-          git push origin HEAD:main
-          echo "✓ رُقِّي $(git rev-parse --short HEAD) إلى الأصل — النشرُ يبدأ"
-      # دفعُ توكن السحابة لا يُطلق سيورَ الدفع (قاعدةُ جيت هب)، فتُطلَق بالاسم:
-      # التغذيةُ إن تغيّر ملفٌ من ملفاتها — وهي عاطلةٌ بلا تغيير فلا ضررَ في إطلاقها.
-      - name: إطلاقُ سير التغذية بعد الترقية
+          st=failure; [ "$GATE" = "open" ] && st=success
+          gh api "repos/${{ github.repository }}/statuses/${{ github.sha }}" -f state="$st" -f context="nusuk/gate" -f description="البوابةُ: $GATE" > /dev/null && echo "✓ nusuk/gate=$st" || echo "::warning::تعذّر كتابةُ الحالة"
+      - name: الطوارئُ وحدَها تُرقَّى الآن — وما عداه ينتظر القطار
         if: env.GATE == 'open'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git log -1 --format=%B | grep -qE '^Release: hotfix\s*$'; then
+            echo "HOTFIX=1" >> "$GITHUB_ENV"
+            echo "::notice title=طوارئ::الالتزامُ يحمل «Release: hotfix» — يُرقَّى الآن"
+            node scripts/train-promote.mjs "$(git rev-parse HEAD)"
+          else
+            echo "::notice title=ينتظر القطار::البوابةُ خضراء — الترقيةُ مع قطار الأحد أو الأربعاء ٠١:٠٠ UTC، أو تشغيلٌ يدويٌّ لـtrain.yml"
+          fi
+      - name: إطلاقُ سير التغذية بعد الترقية
+        if: env.HOTFIX == '1'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |

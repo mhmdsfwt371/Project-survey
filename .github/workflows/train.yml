@@ -1,0 +1,57 @@
+name: Release train
+# ═══ قطارُ الإصدار (V17.97) ═══
+# الميدانُ يستقبل التحديثَ مرتين في الأسبوع لا مع كلِّ دفعة: الأحدَ والأربعاءَ
+# ٠١:٠٠ UTC (٠٤:٠٠ مكة) يُرقَّى آخرُ التزامٍ على فرع التجربة بوابتُه خضراء
+# (nusuk/gate = success) إلى الأصل تقدُّمًا سريعًا. ويُطلَق يدًا عند الحاجة.
+# الطوارئُ تُرقَّى فورًا من البوابة نفسِها بترويسة «Release: hotfix».
+# المواعيدُ هنا وحدَها — وAGENTS.md يسمّيها.
+on:
+  schedule:
+    - cron: '0 1 * * 0,3'   # الأحد والأربعاء ٠١:٠٠ UTC
+  workflow_dispatch: {}
+permissions:
+  contents: write
+  statuses: read
+  actions: write
+concurrency:
+  group: train
+  cancel-in-progress: false
+jobs:
+  train:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: staging
+          token: ${{ secrets.PROMOTE_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: اختيارُ آخر التزامٍ خضراءَ بوابتُه
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main staging
+          sha=$(node scripts/train-pick.mjs)
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          [ -n "$sha" ] && echo "المرشّح: $sha" || echo "لا مرشّح"
+      - name: الترقيةُ إلى الأصل
+        if: steps.pick.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git merge-base --is-ancestor "${{ steps.pick.outputs.sha }}" origin/main; then
+            echo "::notice title=لا جديد::الأصلُ يحمل هذا الالتزامَ أصلًا"; exit 0
+          fi
+          node scripts/train-promote.mjs "${{ steps.pick.outputs.sha }}"
+      - name: إطلاقُ سير التغذية بعد الترقية
+        if: steps.pick.outputs.sha != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin main
+          if git merge-base --is-ancestor "${{ steps.pick.outputs.sha }}" origin/main; then
+            gh workflow run season.yml --ref main && echo "✓ أُطلقت التغذية" || echo "::warning::تعذّر إطلاقُ التغذية"
+          fi

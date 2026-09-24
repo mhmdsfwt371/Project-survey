@@ -13,4 +13,4 @@
 1. `git pull` ثم اقرأ أحدثَ صفوف `docs/system.md` §١٦.
 2. نفّذ ← جردُ الميزة ← ختمُ النسخة (`AGENTS.md` §٤) ← `NUSUK_SKIP_AUDITS=1 node scripts/check-version.mjs`.
 3. `node scripts/check-version.mjs` كاملًا، ثم `git push origin HEAD:staging`.
-4. تحقّق من الترقية: `git fetch && git log origin/main -1`.
+4. تحقّق من البوابة: تعليقُ الالتزام على `staging` (كلُّ البوابات PASS) وحالةُ `nusuk/gate`. الترقيةُ مع القطار (الأحد/الأربعاء) — لا تضع ترويسةَ الطوارئ إلا لعطلٍ لا يحتمل الانتظار.
