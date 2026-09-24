@@ -229,6 +229,24 @@ T(sw === true || sw === 'n/a', 'خدمةُ الخلفية مسجَّلة (' + sw
 const s47 = await page.evaluate(async () => { const r = await fetch('season1447.json'); return r.ok ? Object.keys(await r.json()).length : 0; });
 T(s47 > 1000, 'season1447.json يصل ويُقرأ (' + s47 + ')');
 
+console.log('\n══ ٩ · وضعُ الشمس على مقاس هاتف: أهدافُ لمسٍ ≥ ٤٨ ولا فيضَ أفقيًّا ══');
+{
+  await page.setViewportSize({ width:390, height:844 });
+  await page.evaluate(() => { sunSet(true); goPage('mywork'); render(1); });
+  await page.waitForTimeout(300);
+  const small = await page.evaluate(() => [...document.querySelectorAll('#content .btn-primary, #content .btn-secondary')].filter(b => b.offsetParent && b.getBoundingClientRect().height < 48).map(b => b.textContent.trim().slice(0, 20)));
+  T(small.length === 0, 'أزرارُ الفعل في وضع الشمس ≥ ٤٨ بكسل' + (small.length ? ' — أقصر: ' + small.slice(0, 3).join(' | ') : ''));
+  const over = [];
+  for (const p of ['mywork', 'sites', 'site', 'forms']){
+    await page.evaluate(i => { goPage(i); render(1); }, p); await page.waitForTimeout(150);
+    const o = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
+    if (o > 2) over.push(p + ':' + o);
+  }
+  T(over.length === 0, 'ولا فيضَ أفقيًّا في صفحات الميدان' + (over.length ? ' — ' + over.join(' · ') : ''));
+  await page.evaluate(() => { sunSet(false); });
+  await page.setViewportSize({ width:1280, height:800 });
+}
+
 console.log('\n══ ٨ · ظروفُ منى: شبكةٌ بطيئةٌ ومعالجٌ أبطأُ أربعَ مرات ══');
 /* (V17.98) القياسُ الذي يهمّ: كم ينتظر الفنيُّ حتى تظهر الخريطةُ تفاعليةً — على
    شبكةٍ نحو ٤٠٠ كيلوبت/ث وتأخيرٍ ٤٠٠ مللي ثانية، ومعالجٍ أبطأَ أربعَ مرات.

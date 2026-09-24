@@ -62,6 +62,31 @@
   --shadow:0 1px 2px rgba(0,0,0,.5);
 }
 
+/* ═══ وضعُ الشمس (V17.99) ═══
+   في المشاعر شمسٌ عمودية: تباينٌ أعلى (النصُّ ≥ ٧:١ والعناصرُ ≥ ٤٫٥:١)، وخطٌّ
+   أكبرُ بخُمسٍ تقريبًا، وأهدافُ لمسٍ ≥ ٤٨ بكسل، وعلاماتٌ أسمكُ على الخريطة، ولا
+   نصَّ رماديًّا باهتًا. تجاوزُ رموزٍ على الجذر لا ترقيعُ عناصر — ولا يمسُّ ألوانَ
+   الوزارة (--min-*) ولا شاشةَ القاعة (تُطفَأ فيها). اختياريٌّ لكلِّ جهاز. */
+html[data-sun="1"]{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f7f7f7; --raise:#ffffff;
+  --ink:#000000; --ink-soft:#1f2a33; --ink-mute:#2f3b45;
+  --line:#5b6673; --line-2:#8a939d;
+  --brand:#0B4A8F; --brand-ink:#ffffff; --brand-soft:#dbe9f7; --brand-deep:#062f5c;
+  --danger:#8a1c14; --danger-bg:#fbe3e0;
+  --ok:#0f5a2a; --ok-bg:#dff3e5;
+  --warn:#5a3600; --warn-bg:#fbebcf;
+  --info:#07485c; --info-bg:#d9eff5;
+  --sidebar:#000000; --sidebar-ink:#ffffff; --sidebar-line:rgba(255,255,255,.3);
+  --sun-fs:17.5px;
+}
+html[data-sun="1"] body{font-size:var(--sun-fs)}
+html[data-sun="1"] .hint{color:var(--ink-soft)}
+html[data-sun="1"] .btn{font-size:15px}
+html[data-sun="1"] .btn-primary,html[data-sun="1"] .btn-secondary,html[data-sun="1"] .chip,html[data-sun="1"] .tb-btn,html[data-sun="1"] #nav a{min-height:48px;padding-top:12px;padding-bottom:12px}
+html[data-sun="1"] input,html[data-sun="1"] select,html[data-sun="1"] textarea{min-height:48px;font-size:17px;border-color:var(--line)}
+html[data-sun="1"] .leaflet-marker-icon{filter:drop-shadow(0 0 2px #000)}
+html[data-sun="1"] .leaflet-container{font-size:15px}
+html[data-sun="1"] .tbl td,html[data-sun="1"] .tbl th{padding:12px 10px}
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;
   /* ما فاض يُمرَّر داخلَ حاويته لا يمدُّ الصفحة: عنصرٌ واحدٌ أعرضُ من الشاشة
@@ -1011,7 +1036,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.98</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V17.99</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -1027,6 +1052,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="جولة البداية" title="جولة البداية" data-i18n-aria="جولة البداية" data-i18n-title="جولة البداية">🎓</button>
         <button type="button" class="tb-btn" data-bugopen="1"
               aria-label="بلّغ عن عطل" title="بلّغ عن عطل" data-i18n-aria="بلّغ عن عطل" data-i18n-title="بلّغ عن عطل">🛠</button>
+      <button type="button" class="tb-btn" id="sunTop" data-sun="1" aria-pressed="false" aria-label="وضع الشمس" title="وضع الشمس" data-i18n-aria="وضع الشمس" data-i18n-title="وضع الشمس">🔆</button>
       <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر" data-i18n-aria="المظهر" data-i18n-title="المظهر">☾</button>
       </div>
     </header>
@@ -3865,6 +3891,8 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'امسح الرقمَ بالكاميرا':'Scan the serial with the camera', 'تعذّر فتحُ الكاميرا — اكتب الرقمَ يدًا':'Camera could not be opened — type the serial', 'الرقمُ لا يطابق صيغةَ هذا الصنف — راجعه':'The serial does not match this item’s format — check it', 'هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى':'This serial is already recorded at another point', 'قُرئ الرقم':'Serial read', 'وجّه الكاميرا إلى ملصق الجهاز — يُملأ الحقلُ وحدَه':'Point the camera at the device label — the field fills itself',
+ 'وضع الشمس':'Sun mode', 'وضعُ الشمس':'Sun mode', 'وضعُ الشمس: يعمل':'Sun mode: on', 'وضعُ الشمس: أُطفئ':'Sun mode: off', 'وضعُ الشمس يعمل — أطفئه':'Sun mode is on — turn it off', 'شغّل وضعَ الشمس':'Turn on sun mode', 'تباينٌ أعلى وخطٌّ أكبرُ وأزرارٌ أكبرُ للعمل تحت الشمس — لهذا الجهاز وحدَه':'Higher contrast, larger text and larger buttons for working in the sun — this device only',
  'نسخ التشخيص':'Copy diagnostics', 'نُسخ التشخيص — أرسله للمهندس':'Diagnostics copied — send it to the engineer', 'آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة':'The last hundred events on this device, without names or texts — send it to the engineer when the network is down', 'التشخيص':'Diagnostics', 'الخطُّ الزمنيُّ للجهاز':'Device timeline',
  'ث':'s',
  'أداءُ الميدان — ما يشعر به الفني':'Field performance — what the technician feels', 'جهازًا أرسل قياسًا اليوم':'devices reported today', 'أبطأُ الأجهزة':'Slowest devices', 'فتح←خريطة':'Open→map', 'مهامّ طويلة':'Long tasks', 'أبطأُ الصفحات':'Slowest pages', 'رسمٌ p75 (م.ث)':'Render p75 (ms)',
@@ -6611,6 +6639,8 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'امسح الرقمَ بالكاميرا':'کیمرے سے سیریل اسکین کریں', 'تعذّر فتحُ الكاميرا — اكتب الرقمَ يدًا':'کیمرا نہ کھل سکا — سیریل خود لکھیں', 'الرقمُ لا يطابق صيغةَ هذا الصنف — راجعه':'سیریل اس آئٹم کے فارمیٹ سے میل نہیں کھاتا — جانچیں', 'هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى':'یہ سیریل پہلے ہی کسی اور پوائنٹ پر درج ہے', 'قُرئ الرقم':'سیریل پڑھ لیا گیا', 'وجّه الكاميرا إلى ملصق الجهاز — يُملأ الحقلُ وحدَه':'کیمرا ڈیوائس لیبل کی طرف کریں — فیلڈ خود بھر جائے گا',
+ 'وضع الشمس':'دھوپ موڈ', 'وضعُ الشمس':'دھوپ موڈ', 'وضعُ الشمس: يعمل':'دھوپ موڈ: آن', 'وضعُ الشمس: أُطفئ':'دھوپ موڈ: بند', 'وضعُ الشمس يعمل — أطفئه':'دھوپ موڈ آن ہے — بند کریں', 'شغّل وضعَ الشمس':'دھوپ موڈ آن کریں', 'تباينٌ أعلى وخطٌّ أكبرُ وأزرارٌ أكبرُ للعمل تحت الشمس — لهذا الجهاز وحدَه':'دھوپ میں کام کے لیے زیادہ کنٹراسٹ، بڑا متن اور بڑے بٹن — صرف اس ڈیوائس پر',
  'نسخ التشخيص':'تشخیص کاپی کریں', 'نُسخ التشخيص — أرسله للمهندس':'تشخیص کاپی ہو گیا — انجینئر کو بھیجیں', 'آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة':'اس ڈیوائس کے آخری سو واقعات، بغیر ناموں اور تحریروں کے — نیٹ ورک نہ ہونے پر انجینئر کو بھیجیں', 'التشخيص':'تشخیص', 'الخطُّ الزمنيُّ للجهاز':'ڈیوائس کی ٹائم لائن',
  'ث':'سیکنڈ',
  'أداءُ الميدان — ما يشعر به الفني':'فیلڈ کارکردگی — جو ٹیکنیشن محسوس کرتا ہے', 'جهازًا أرسل قياسًا اليوم':'ڈیوائسز نے آج رپورٹ دی', 'أبطأُ الأجهزة':'سست ترین ڈیوائسز', 'فتح←خريطة':'کھولنا←نقشہ', 'مهامّ طويلة':'لمبے کام', 'أبطأُ الصفحات':'سست ترین صفحات', 'رسمٌ p75 (م.ث)':'رینڈر p75 (ملی سیکنڈ)',
@@ -6721,6 +6751,123 @@ function setLang(l){
   langSync();
 }
 
+/* ═══ مسحُ الرقم التسلسلي بالكاميرا (V17.99) ═══
+   الرقمُ التسلسليُّ يُكتَب يدًا فيُخطأ فيه حرف — والعُهدةُ كلُّها على الرقم.
+   حين يعرف المتصفّحُ BarcodeDetector (كروم على أندرويد) يظهر زرُّ مسحٍ بجوار
+   الحقل: الكاميرا الخلفيةُ بـgetUserMedia، ويُقرأ الرمزُ ويُملأ الحقلُ ويُغلَق
+   التيّار. الكتابةُ اليدويةُ باقيةٌ دائمًا. وإن كان الرقمُ مسجَّلًا على نقطةٍ أخرى
+   يُنبَّه ولا يُمنَع. والصيغةُ تُفحَص إن عرّفها الكتالوجُ للصنف (sn). */
+var SCAN = { on:false, key:'', stream:null, timer:0, ok:false };
+function scanSupported(){
+  return !!(typeof window === 'object' && window.BarcodeDetector && typeof navigator === 'object' && navigator.mediaDevices && navigator.mediaDevices.getUserMedia);
+}
+function scanFormats(){
+  if (!scanSupported()) return Promise.resolve([]);
+  try { return window.BarcodeDetector.getSupportedFormats().then(function(f){ return (f || []).filter(function(x){ return /qr|code_128|code_39|ean|data_matrix|upc/.test(x); }); }).catch(function(){ return []; }); }
+  catch (e){ return Promise.resolve([]); }
+}
+function scanCheck(){
+  if (SCAN.ok || SCAN.checked) return;
+  SCAN.checked = true;
+  scanFormats().then(function(f){ SCAN.ok = f.length > 0; SCAN.formats = f; if (SCAN.ok && CUR === 'forms') render(1); });
+}
+function scanBtn(key){
+  if (!SCAN.ok) return '';
+  return btn('\u{1F4F7}', 'btn-quiet btn-sm', ' data-scan="' + esc(key) + '" aria-label="' + esc(t('امسح الرقمَ بالكاميرا')) + '" title="' + esc(t('امسح الرقمَ بالكاميرا')) + '"');
+}
+function scanOpen(key){
+  if (!SCAN.ok) return;
+  SCAN.key = key; SCAN.on = true; render(1);
+  var video = document.getElementById('scanVideo'); if (!video) return;
+  navigator.mediaDevices.getUserMedia({ video:{ facingMode:{ ideal:'environment' } }, audio:false }).then(function(st){
+    SCAN.stream = st; video.srcObject = st; try { video.play(); } catch (e){ LS_ERR = e; }
+    var det = new window.BarcodeDetector({ formats: SCAN.formats });
+    var tick = function(){
+      if (!SCAN.on) return;
+      det.detect(video).then(function(codes){
+        var c = codes && codes[0];
+        if (c && c.rawValue){ scanFill(String(c.rawValue).trim()); return; }
+        SCAN.timer = setTimeout(tick, 250);
+      }).catch(function(){ SCAN.timer = setTimeout(tick, 400); });
+    };
+    SCAN.timer = setTimeout(tick, 300);
+  }).catch(function(){ toast(t('تعذّر فتحُ الكاميرا — اكتب الرقمَ يدًا')); scanClose(); });
+}
+function scanClose(){
+  SCAN.on = false;
+  if (SCAN.timer){ clearTimeout(SCAN.timer); SCAN.timer = 0; }
+  if (SCAN.stream){ try { SCAN.stream.getTracks().forEach(function(tr){ tr.stop(); }); } catch (e){ LS_ERR = e; } SCAN.stream = null; }
+  render(1);
+}
+function serialOwner(sn, exceptId){
+  var v = String(sn || '').trim(); if (!v) return '';
+  var I = STATE.inss || {}, hit = '';
+  Object.keys(I).forEach(function(id){ if (hit || id === exceptId) return; var r = I[id]; Object.keys((r && r.serials) || {}).forEach(function(k){ if (String(r.serials[k] || '').trim() === v) hit = id; }); });
+  return hit;
+}
+function serialFormatOk(key, sn){
+  var it = itemsList().filter(function(i){ return i.code === key; })[0];
+  if (!it || !it.sn) return true;
+  try { return new RegExp(it.sn).test(String(sn || '').trim()); } catch (e){ return true; }
+}
+function scanFill(sn){
+  var key = SCAN.key; scanClose();
+  FORM.serials[key] = sn;
+  var el = document.querySelector('[data-serial="' + CSS.escape(key) + '"]'); if (el) el.value = sn;
+  if (!serialFormatOk(key, sn)) toast(t('الرقمُ لا يطابق صيغةَ هذا الصنف — راجعه'));
+  var other = serialOwner(sn, FORM.site);
+  if (other) toast(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + other);
+  else toast(t('قُرئ الرقم') + ': ' + sn);
+}
+function scanSheet(){
+  if (!SCAN.on) return '';
+  return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.7);z-index:96">'
+    + '<div class="pop" style="width:min(520px,94vw)"><div class="pop-head"><div><h3>' + esc(t('امسح الرقمَ بالكاميرا')) + '</h3><p class="hint" style="margin:2px 0 0">' + esc(t('وجّه الكاميرا إلى ملصق الجهاز — يُملأ الحقلُ وحدَه')) + '</p></div>'
+    + btn('\u2715', 'btn-quiet btn-sm', ' data-scanx="1" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + '<div class="pop-body"><video id="scanVideo" playsinline muted style="width:100%;max-height:60vh;background:#000;border-radius:10px"></video></div></div></div>';
+}
+/* ═══ إبقاءُ الشاشة أثناء النموذج (V17.99) ═══
+   الفنيُّ يملأ نموذجَ المسح أو التركيب أو الصيانة وبين يديه الجهازُ والقلم،
+   فتُطفَأ الشاشةُ فيعود إلى الدخول. يُمسَك قفلُ الشاشة ما دام نموذجٌ مفتوحًا،
+   ويُعاد عند الرجوع إلى التبويب، ويُترَك عند الإغلاق أو الإخفاء أو بعد عشر
+   دقائقَ بلا لمس. بكشف الميزة — وبلا صوتٍ حين تغيب. */
+var WAKE = { lock:null, t:0, at:0 }, WAKE_PAGES = { svForm:1, insForm:1, maintForm:1, disForm:1, opsForm:1 };
+function wakeWanted(){ var tab = (typeof TABS === 'object' && TABS[CUR] && typeof tabCur === 'function') ? tabCur(CUR) : ''; return !!WAKE_PAGES[CUR] || !!WAKE_PAGES[tab]; }   /* الصفحةُ أو شريحتُها (نماذجُ التركيب شرائحُ تحت forms) */
+function wakeAcquire(){
+  var nav = (typeof navigator === 'object') ? navigator : null;
+  if (!nav || !nav.wakeLock || typeof nav.wakeLock.request !== 'function') return Promise.resolve(false);
+  if (WAKE.lock && !WAKE.lock.released) return Promise.resolve(true);
+  return nav.wakeLock.request('screen').then(function(l){ WAKE.lock = l; WAKE.at = Date.now(); wakeIdleArm(); return true; }).catch(function(){ return false; });
+}
+function wakeRelease(){
+  if (WAKE.t){ clearTimeout(WAKE.t); WAKE.t = 0; }
+  var l = WAKE.lock; WAKE.lock = null;
+  if (l && typeof l.release === 'function'){ try { var p = l.release(); if (p && p.catch) p.catch(function(){}); } catch (e){ LS_ERR = e; } }
+}
+function wakeIdleArm(){
+  if (WAKE.t) clearTimeout(WAKE.t);
+  WAKE.t = setTimeout(function(){ WAKE.t = 0; wakeRelease(); }, 600000);
+}
+function wakeSync(){
+  if (wakeWanted() && (typeof document !== 'object' || !document.hidden)) wakeAcquire(); else wakeRelease();
+}
+if (typeof document === 'object'){
+  document.addEventListener('visibilitychange', function(){ wakeSync(); }, { passive:true });
+  ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ if (WAKE.lock && !WAKE.lock.released) wakeIdleArm(); else if (wakeWanted()) wakeAcquire(); }, { passive:true }); });
+}
+/* وضعُ الشمس: زرٌّ في الرأس والأدوات، يبقى بعد إعادة التحميل، ويُطفَأ في شاشة القاعة */
+var SUN_ON = false;
+function sunSet(on){
+  SUN_ON = !!on;
+  try { lsSet('nsk14.sun', SUN_ON ? '1' : '0'); } catch (e){ LS_ERR = e; }
+  sunApply();
+}
+function sunApply(){
+  var on = SUN_ON && !(typeof KIOSK_ON !== 'undefined' && KIOSK_ON);
+  if (on) document.documentElement.setAttribute('data-sun', '1'); else document.documentElement.removeAttribute('data-sun');
+  var b = document.getElementById('sunTop'); if (b){ b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.classList.toggle('on', on); }
+  try { if (typeof mapPaint === 'function' && MAP) mapPaint(); } catch (e){ LS_ERR = e; }
+}
 function setTheme(m){
   document.documentElement.setAttribute('data-theme', m);
   lsSet('nsk14.theme', m);
@@ -13170,7 +13317,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                       '<input type="number" min="0" data-part="' + esc(i[1]) + '" value="'
                         + (FORM.parts[i[1]] || 0) + '">',
                       '<input dir="ltr" placeholder="SN-…" data-serial="' + esc(i[1]) + '" value="'
-                        + esc(FORM.serials[i[1]] || '') + '">'];
+                        + esc(FORM.serials[i[1]] || '') + '"> ' + scanBtn(i[1])];
             })),
           '<span class="hint" style="margin:0">' + esc(t('مجموع النقاط'))
           + ' <b>' + nm(formPts()) + '</b></span>')
@@ -22010,6 +22157,7 @@ function mapPaint(){
   var TOUCH = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) ? 1 : 0;
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
   if (TOUCH) r = Math.max(r + 1.5, 4.5);
+  if (typeof SUN_ON !== 'undefined' && SUN_ON && !(typeof KIOSK_ON !== 'undefined' && KIOSK_ON)) r = r * 1.4 + 1;   /* وضعُ الشمس: علاماتٌ أسمك (V17.99) */
   var shown = 0, cap = 4000, inView = 0;
 
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
@@ -22071,7 +22219,7 @@ function mapPaint(){
             renderer:MAP_CV,
             radius: picked ? r + 2.5 : r,
             color: picked ? '#fff' : (ring || '#0B1220'),
-            weight: picked ? 2 : (ring ? 2 : 0.9),
+            weight: (picked ? 2 : (ring ? 2 : 0.9)) * ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1.8 : 1),
             fillColor:col, fillOpacity: picked ? 1 : 0.95
           });
     }
@@ -24850,6 +24998,9 @@ function fieldTools(){
             : '')
         + btn('🖨 PDF — تقرير اليوم','btn-secondary',' data-print="1"')
         + '</div>')
+    + card('وضعُ الشمس',
+        '<div class="actions">' + btn((SUN_ON ? '\u2713 ' : '') + t(SUN_ON ? 'وضعُ الشمس يعمل — أطفئه' : 'شغّل وضعَ الشمس'), SUN_ON ? 'btn-quiet' : 'btn-secondary', ' data-sun="1"')
+        + '<span class="hint" style="margin:0">' + esc(t('تباينٌ أعلى وخطٌّ أكبرُ وأزرارٌ أكبرُ للعمل تحت الشمس — لهذا الجهاز وحدَه')) + '</span></div>')
     + card('التشخيص',
         '<div class="actions">' + btn('\u{1F4CB} ' + t('نسخ التشخيص'),'btn-secondary',' data-boxcopy="1"')
         + '<span class="hint" style="margin:0">' + esc(t('آخر مئة حدثٍ على هذا الجهاز بلا أسماءٍ ولا نصوص — يُرسَل للمهندس حين لا تصل الشبكة')) + '</span></div>')
@@ -25198,6 +25349,7 @@ function kioskToggle(){
   } catch (e){}
   if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
   kioskCycleStop(); KIOSK_STEP = 0;
+  try { sunApply(); } catch (e){ LS_ERR = e; }   /* القاعةُ بلا وضع الشمس (V17.99) */
   if (KIOSK_ON){
     KIOSK_TIMER = setInterval(function(){ if (CUR === 'over' && tabCur('over') === 'kiosk') render(1); else kioskToggle(); }, 60000);
     KIOSK_CYCLE = setInterval(kioskCycleTick, 15000);
@@ -26837,6 +26989,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V17.99', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
+      'وضع الشمس: زر 🔆 في أعلى الشاشة (وفي الأدوات) يرفع التباين ويكبّر الخط والأزرار وعلامات الخريطة للعمل تحت الشمس — لهذا الجهاز وحده، ويبقى بعد إعادة الفتح.',
+      'الشاشة تبقى مضاءة أثناء نماذج المسح والتركيب والصيانة، وتُطلق عند الإغلاق أو بعد عشر دقائق بلا لمس.',
+      'في نموذج التركيب، إن كان الهاتف يدعم قراءة الرموز، يظهر زر كاميرا بجوار الرقم التسلسلي يقرأ ملصق الجهاز ويملأ الحقل — والكتابة اليدوية باقية، ويُنبَّه إن كان الرقم مسجلًا على نقطة أخرى.' ] },
   { v:'V17.98', d:'٢٤ سبتمبر ٢٠٢٦', notes:[
       'في الأدوات زر «نسخ التشخيص»: ينسخ آخر مئة حدث على الجهاز (بلا أسماء ولا نصوص) لإرساله للمهندس عند غياب الشبكة، ويُرفق تلقائيًا بكل بلاغ.',
       'أرقام النقاط والرموز اللاتينية داخل الجمل العربية أصبحت تُعرض بترتيب صحيح في الشاشات ورسائل واتساب.',
@@ -34289,6 +34445,7 @@ function render(force){
      أطولَ يجعل صحّتَه رهينةَ تذكُّرِ كلِّ كاتبٍ أن يُبطِله — وذلك عهدٌ يُنسى.
      فيُبنى مرةً في الرسمة ويُستهلَك آلافَ المرات فيها، ويموت معها. */
   TK_IX = null;
+  try { wakeSync(); } catch (e){ LS_ERR = e; }   /* قفلُ الشاشة يتبع الصفحةَ المرسومة (V17.99) */
   var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
   setTimeout(function(){
@@ -34321,6 +34478,10 @@ function render(force){
     if (!ab){ ab = document.createElement('div'); ab.id = 'inactBanner'; ab.setAttribute('role', 'status'); document.body.insertBefore(ab, document.body.firstChild); }
     ab.innerHTML = '\u23F3 ' + esc(t('حسابك ينتظر تفعيلَ المكتب — عملُك يبقى على هذا الجهاز ويُرفَع بعد التفعيل.'));
   } else if (ab){ ab.parentNode.removeChild(ab); }
+  /* لوحُ المسح بالكاميرا (V17.99) */
+  var scOld = document.getElementById('scanWrap'); if (scOld) scOld.parentNode.removeChild(scOld);
+  if (SCAN.on){ var scEl = document.createElement('div'); scEl.id = 'scanWrap'; scEl.innerHTML = scanSheet(); document.body.appendChild(scEl); }
+  if (CUR === 'forms' && typeof tabCur === 'function' && tabCur('forms') === 'insForm') scanCheck();
   /* «ما الجديد» على الجسد كذلك — تحت نافذة الكلمة إن اجتمعتا (V17.87) */
   var wnOld = document.getElementById('wnWrap');
   if (wnOld) wnOld.parentNode.removeChild(wnOld);
@@ -34526,6 +34687,7 @@ function enterShell(){
   try { if (!TOUR_OPEN && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
   try { storagePersistMaybe(); } catch (e){ LS_ERR = e; }
   try { perfVitalsInit(); } catch (e){ LS_ERR = e; }
+  try { SUN_ON = lsGet('nsk14.sun') === '1'; sunApply(); } catch (e){ LS_ERR = e; }
 }
 /* الإغلاقُ وعملٌ لم يُحفَظ: يُسأل (V17.93) — المتصفّحُ يعرض نصَّه هو */
 window.addEventListener('beforeunload', function(e){
@@ -34754,6 +34916,9 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
+  if (e.target.closest('[data-scan]')){ scanOpen(e.target.closest('[data-scan]').getAttribute('data-scan')); return true; }
+  if (e.target.closest('[data-scanx]')){ scanClose(); return true; }
+  if (e.target.closest('[data-sun]')){ sunSet(!SUN_ON); toast(t(SUN_ON ? 'وضعُ الشمس: يعمل' : 'وضعُ الشمس: أُطفئ')); return true; }
   if (e.target.closest('[data-budalert]')){
     if (!may('users')) return true;
     cfgSet('budgetAlert', null, +e.target.closest('[data-budalert]').getAttribute('data-budalert') ? 1 : 0); render(1); return true;   /* cfgSet تدفع إلى settings/points بنفسها */
@@ -36141,7 +36306,12 @@ document.addEventListener('change', function(e){
     }
     if (el.hasAttribute('data-form')){ FORM[el.getAttribute('data-form')] = el.value; return; }
     if (el.hasAttribute('data-part')){ FORM.parts[el.getAttribute('data-part')] = el.value; render(); return; }
-    if (el.hasAttribute('data-serial')){ FORM.serials[el.getAttribute('data-serial')] = el.value; return; }
+    if (el.hasAttribute('data-serial')){
+      FORM.serials[el.getAttribute('data-serial')] = el.value;
+      var oth = (typeof serialOwner === 'function') ? serialOwner(el.value, FORM.site) : '';
+      if (oth && !el.__saidDup){ el.__saidDup = 1; toast(t('هذا الرقمُ مسجَّلٌ على نقطةٍ أخرى') + ': ' + oth); }
+      return;
+    }
   }
   var f = e.target;
   if (!f || !f.hasAttribute || !f.hasAttribute('data-imp')) return;

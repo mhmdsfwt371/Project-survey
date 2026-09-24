@@ -287,6 +287,8 @@ jobs:
         run: node scripts/audit-box.mjs
       - name: جرد ظروف منى — الخنقُ ووسيطُ الثلاث والميزانيةُ خطُّ أساسٍ أولًا
         run: node scripts/audit-mina.mjs
+      - name: جرد ميزات الميدان ٦ب — وضعُ الشمس بتباينه، وقفلُ الشاشة، والمسحُ بالكاميرا
+        run: node scripts/audit-field6b.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
