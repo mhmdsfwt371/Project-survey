@@ -45,7 +45,7 @@
       + zs.map(function(z){ var o = s.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
           var eta = o.stalled ? '<span class="eta mute">لا وتيرةَ في أسبوعين</span>' : (o.eta ? '<span class="eta ' + (o.late ? 'bad' : 'ok') + '">يكتمل نحو ' + esc(new Date(o.eta).toISOString().slice(0, 10)) + '</span>' : (o.n - o.sv <= 0 ? '<span class="eta ok">اكتمل</span>' : ''));
           return '<div class="zl"><b>' + esc(z) + '</b><span>' + nm(o.sv) + ' / ' + nm(o.n) + ' · <b>' + nm(p) + '٪</b></span></div><div class="bar" style="width:' + Math.max(12, Math.round(o.n / zmax * 100)) + '%"><i style="width:' + p + '%"></i></div><div style="margin:-4px 0 10px">' + eta + '</div>'; }).join('')
-      + '</div><div class="box"><div class="hh">نبضُ الميدان — آخر أربعٍ وعشرين ساعة</div><div class="kinds">'
+      + '</div><div class="box"><div class="hh">شغلُ الميدان — آخر أربعٍ وعشرين ساعة</div><div class="kinds">'
       + Object.keys(s.day.kinds).map(function(k){ return '<div class="kind"><div class="big">' + nm(s.day.kinds[k]) + '</div><div class="lab">' + esc(KN[k] || k) + '</div></div>'; }).join('')
       + '<div class="kind"><div class="big">' + nm(s.day.people) + '</div><div class="lab">شخصًا في الميدان</div></div></div></div>'
       + '<div class="box"><div class="hh">ما ينتظر قرارًا</div><div class="kinds"><div class="kind"><div class="big" style="color:#C9A227">' + nm(s.minwait) + '</div><div class="lab">تنتظر اعتمادَ الوزارة</div></div><div class="kind"><div class="big" style="color:#2E75B6">' + nm(s.visited) + '</div><div class="lab">تنتظر الاعتمادَ التقني</div></div><div class="kind"><div class="big" style="color:#3AD6A0">' + nm(s.ready) + '</div><div class="lab">جاهزةٌ للتركيب</div></div></div></div>'

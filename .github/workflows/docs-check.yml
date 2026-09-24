@@ -299,6 +299,8 @@ jobs:
         run: node scripts/audit-zones.mjs
       - name: جرد خريطة النقاط — النقطةُ البعيدةُ لا تُصغّر المشعر، والتكبيرُ والسحب
         run: node scripts/audit-pointmap.mjs
+      - name: جرد القمر الصناعي في شاشة الوزارة — الافتراضيُّ والطبقةُ والدوائرُ والإطار
+        run: node scripts/audit-kksat.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه

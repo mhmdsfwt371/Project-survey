@@ -44,7 +44,7 @@ T(!rep.includes(code) && !JSON.stringify(snap).includes(code), 'والرمزُ �
 
 const page = readFileSync('docs/ministry/index.html', 'utf8'), wf = readFileSync('.github/workflows/ministry.yml', 'utf8');
 console.log('\n══ ٣ · التقريرُ هو الشاشة ══');
-T((rep.match(/kk-ring/g) || []).length >= 5 && rep.includes('المشاعرُ — كم أُنجز وكم بقي') && rep.includes('نبضُ الميدان'), 'التقريرُ يحمل حلقاتِ الشاشة وصناديقَها');
+T((rep.match(/kk-ring/g) || []).length >= 5 && rep.includes('المشاعرُ — كم أُنجز وكم بقي') && rep.includes('شغلُ الميدان'), 'التقريرُ يحمل حلقاتِ الشاشة وصناديقَها');
 T(rep.includes(':root{') && rep.includes('.kk-ring') && rep.includes('dir="rtl"'), 'وتنسيقَها كاملًا مستقلًّا بالعربية');
 T(/يكتمل نحو/.test(rep), 'والتوقّعَ');
 T(rep.includes('class="cover"') && rep.includes('تقرير المتابعة الأسبوعي') && rep.includes('cover-story') && rep.includes('break-after:page'), 'وغلافًا بالهوية يحمل الأسبوعَ في جملة ثم تبدأ الصفحاتُ (V17.90)');

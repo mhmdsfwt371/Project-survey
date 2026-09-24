@@ -67,7 +67,7 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
 | المشاعر | `zoneOptions()`، `zoneCode()` |
 | دورةُ النقطة | `lifeOf()`، `LIFE`، `stuckList()` |
 | الإحصاء | `siteKeyStats()`، `chainRows()` |
-| شاشةُ الوزارة | `kioskBody()`، `kioskStory()`، `zoneForecast()`، `pointMap()`، `geoOutliers()`، `pmZoomAt()` |
+| شاشةُ الوزارة | `kioskBody()`، `kioskStory()`، `zoneForecast()`، `pointMap()`، `geoOutliers()`، `pmZoomAt()`، `kkSatInit()` |
 | تفاصيلُ المسح | `svdRows()`، `SVD_CARDS` |
 | الصفحاتُ والشرائح | `NAV`، `TABS`، `PAGE.<id>` |
 | الثوابت | `CFG`، `cfgGet()`، `cfgInput()` — `settings/points` |
