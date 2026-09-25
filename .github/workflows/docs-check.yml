@@ -309,6 +309,8 @@ jobs:
         run: node scripts/audit-cams.mjs
       - name: جرد مطابقة المنهجية — ٢٣ بندًا من البيانات، وسجلاتُ الإدارة بتاريخها وصلاحيتها
         run: node scripts/audit-pmi.mjs
+      - name: جرد المزامنة على الهاتف — زرٌّ بشارةٍ حيث يختفي الشريط، وزرٌّ في لافتة الحفظ المحلي
+        run: node scripts/audit-syncm.mjs
       - name: جرد محاكي الأوزان — الحسابُ بلا كتابة، والاعتمادُ لكلِّ مشعر، وإلغاءُ الإضافي
         run: node scripts/audit-sim.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
