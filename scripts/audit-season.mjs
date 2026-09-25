@@ -50,9 +50,23 @@ console.log('\n══ قاعدةٌ ضُبطت بيد ══');
   T(after.avgRooms['منى'] === 15 && after.avgRooms['عرفات'] === 9, 'ولا مفتاحُ الخريطة المضبوط');
   T(after.ph === 1 && /قراراتٌ تُطبَّق \(\d+\)/.test(out), 'وسعرُ النقطة بالقرار (١ حافزًا)');
   /* قرارٌ طُبِّق من قبل لا يُعاد: ما ضُبط بعده بيدٍ يبقى */
-  const { out: o3, after: a3 } = run({ tgtSurvey:20, ph:250, warranty:24, dueSurvey:1700000000000, avgRooms:{ 'منى':15 }, w:{ 'منى|مخيمات':7 }, decisions:{ '2026-09-25-weights-target-no-ot': 1758700000000 },
+  const { out: o3, after: a3 } = run({ tgtSurvey:20, ph:250, warranty:24, dueSurvey:1700000000000, avgRooms:{ 'منى':15 }, w:{ 'منى|مخيمات':7 }, decisions:{ '2026-09-25-weights-target-no-ot': 1758700000000, '2026-09-25-ministry-cameras': 1758700000000 },
                                        __trials:{ rows:[{ id:'TR-001' }, { id:'TR-002' }, { id:'TR-003' }, { id:'TR-004' }], inCost:false } });
-  T(a3.tgtSurvey === 20 && a3.ph === 250 && a3.w['منى|مخيمات'] === 7 && /طُبِّقت من قبل \(1\)/.test(o3) && /لا شيءَ يُكتَب/.test(o3), 'وقرارٌ طُبِّق من قبل لا يُعاد — وما ضُبط بعده بيدٍ يبقى، ولا كتابةَ حين لا فراغ');
+  T(a3.tgtSurvey === 20 && a3.ph === 250 && a3.w['منى|مخيمات'] === 7 && /طُبِّقت من قبل \(2\)/.test(o3) && /لا شيءَ يُكتَب/.test(o3), 'وقرارٌ طُبِّق من قبل لا يُعاد — وما ضُبط بعده بيدٍ يبقى، ولا كتابةَ حين لا فراغ');
+}
+console.log('\n══ قرارُ الأنواع: تسميةٌ ودمجٌ مرةً واحدة (V19.1) ══');
+{
+  const db0 = { __types:{ 'كاميرا':{ l:'كاميرات فالوزارة', i:'x', c:'#000' }, 'كاميرات LPR':{ l:'كاميرات LPR', i:'y', c:'#111' } },
+                __newsites:{ N1:{ type:'كاميرات LPR', zone:'عرفات' }, N2:{ type:'مخيم' } }, __sitesCol:{ S1:{ type:'كاميرات LPR' } },
+                __mxExtra:{ 0:'الترددية|كاميرات LPR', 1:'عرفات|كاميرات LPR', _by:'x' },
+                decisions:{ '2026-09-25-weights-target-no-ot': 1 } };
+  const { out, after } = run(db0);
+  T(after.__types['كاميرا'].l === 'كاميرات الوزارة' && after.__types['LPR'].l === 'كاميرات الوزارة — LPR' && after.__types['كاميرات LPR'].gone === true, 'التسميةُ صُحِّحت والمدموجُ شاهدُ حذف');
+  T(after.__newsites.N1.type === 'LPR' && after.__newsites.N2.type === 'مخيم' && after.__sitesCol.S1.type === 'LPR', 'ونقاطُ المدموج صارت LPR — وغيرُها لم يُمَسّ');
+  T(after.__mxExtra[0] === 'الترددية|LPR' && after.__mxExtra[1] === 'عرفات|LPR' && after.__mxExtra._by === 'x', 'والتركيباتُ المعلَنةُ أُعيد مفتاحُها');
+  T(after.w['منى|كاميرات الوزارة'] === 1 && after.decisions['2026-09-25-ministry-cameras'], 'والأوزانُ بالتسمية الجديدة، والقرارُ مختوم');
+  const { out: o2, after: a2 } = run(after);
+  T(/طُبِّقت من قبل \(2\)/.test(o2) && a2.__newsites.N1.type === 'LPR', 'وتشغيلٌ ثانٍ لا يعيده');
 }
 console.log('\n══ التجاربُ تُضاف بمعرّفها ولا تتكرّر ══');
 {

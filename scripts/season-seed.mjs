@@ -53,8 +53,17 @@ if (process.env.SEED_DB){
 const decisions = Array.isArray(season.decisions) ? season.decisions : [];
 const done = (cur.decisions && typeof cur.decisions === 'object') ? cur.decisions : {};
 const decPatch = {}, decApplied = [], decSkipped = [];
+/* (V19.1) والقرارُ قد يمسُّ سجلَّ الأنواع (types: تسمياتٌ) ويدمج نوعًا في نوع (merge):
+   تُعاد نقاطُ النوع المدموج إلى الباقي في sites وnewsites، وتُعاد مفاتيحُ التركيبات
+   المعلَنة، ويُكتَب للمدموج شاهدُ حذف — مرةً واحدةً كسائر القرار. */
+const decTypes = {}, decMerges = [];
 for (const dcn of decisions){
-  if (!dcn || !dcn.id || !dcn.set || typeof dcn.set !== 'object'){ continue; }
+  if (!dcn || !dcn.id || (!dcn.set && !dcn.types && !dcn.merge)){ continue; }
+  dcn.set = dcn.set || {};
+  if (!done[dcn.id]){
+    if (dcn.types && typeof dcn.types === 'object') for (const k of Object.keys(dcn.types)){ decTypes[k] = { ...(decTypes[k] || {}), ...dcn.types[k] }; decApplied.push(dcn.id + ': types.' + k + ' ← ' + JSON.stringify(dcn.types[k])); }
+    if (Array.isArray(dcn.merge)) for (const m of dcn.merge){ if (m && m.from && m.to && m.from !== m.to){ decMerges.push(m); decApplied.push(dcn.id + ': دمجُ النوع «' + m.from + '» في «' + m.to + '»'); } }
+  }
   if (done[dcn.id]){ decSkipped.push(dcn.id + ' (طُبِّق ' + new Date(done[dcn.id]).toISOString().slice(0, 10) + ')'); continue; }
   for (const k of Object.keys(dcn.set)){
     const want = dcn.set[k];
@@ -150,7 +159,7 @@ console.log('قراراتٌ تُطبَّق (' + decApplied.length + '):' + (decA
 if (decSkipped.length) console.log('قراراتٌ طُبِّقت من قبل (' + decSkipped.length + '):\n  ' + decSkipped.join('\n  '));
 /* القرارُ يغلب الملءَ: ما قرّره صاحبُ المشروع لا يُعيد الملءُ كتابتَه */
 for (const k of Object.keys(decPatch)) patch[k] = decPatch[k];
-if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
+if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
 if (Object.keys(patch).length){
   patch._by = 'season-seed'; patch._at = Date.now();
@@ -166,6 +175,38 @@ if (twinsWrites.length){
     await bt.commit();
   }
   console.log('✓ دُمج التوأم في sites: ' + twinsWrites.length);
+}
+/* ── سجلُّ الأنواع والدمج (V19.1) ── */
+if ((Object.keys(decTypes).length || decMerges.length) && write){
+  const mergedTypes = {}; decMerges.forEach(m => { mergedTypes[m.from] = { gone:true }; });
+  const typesPatch = { ...decTypes, ...mergedTypes };
+  const reKey = s0 => { let v = String(s0); decMerges.forEach(m => { const i = v.indexOf('|'); if (i > -1 && v.slice(i + 1) === m.from) v = v.slice(0, i + 1) + m.to; }); return v; };
+  if (process.env.SEED_DB){
+    cur.__types = { ...(cur.__types || {}) }; Object.keys(typesPatch).forEach(k => { cur.__types[k] = { ...(cur.__types[k] || {}), ...typesPatch[k] }; });
+    let n = 0;
+    for (const col of ['__sitesCol', '__newsites']) for (const id of Object.keys(cur[col] || {})){ const d = cur[col][id]; const m = decMerges.find(x => x.from === d.type); if (m){ d.type = m.to; n++; } }
+    if (cur.__mxExtra){ const arr = Object.keys(cur.__mxExtra).filter(k => /^\d+$/.test(k)).sort((a, b) => a - b).map(k => reKey(cur.__mxExtra[k])); const uniq = [...new Set(arr)]; const keep = {}; Object.keys(cur.__mxExtra).filter(k => !/^\d+$/.test(k)).forEach(k => { keep[k] = cur.__mxExtra[k]; }); uniq.forEach((v, i) => { keep[i] = v; }); cur.__mxExtra = keep; }
+    writeFileSync(process.env.SEED_DB, JSON.stringify(cur, null, 1));
+    console.log('✓ الأنواع: ' + Object.keys(typesPatch).join(' · ') + ' — ونقاطٌ أُعيد نوعُها: ' + n);
+  } else {
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin'); const fs = admin.firestore();
+    await fs.collection('settings').doc('types').set(typesPatch, { merge:true });
+    let n = 0;
+    for (const m of decMerges) for (const col of ['sites', 'newsites']){
+      const q = await fs.collection(col).where('type', '==', m.from).get();
+      let bt = fs.batch(), c = 0;
+      for (const d of q.docs){ bt.set(d.ref, { type:m.to, _by:'season-seed', _at:Date.now() }, { merge:true }); c++; n++; if (c === 400){ await bt.commit(); bt = fs.batch(); c = 0; } }
+      if (c) await bt.commit();
+    }
+    const mx = await fs.collection('settings').doc('mxExtra').get();
+    if (mx.exists){
+      const data = mx.data() || {}; const arr = Object.keys(data).filter(k => /^\d+$/.test(k)).sort((a, b) => a - b).map(k => reKey(data[k]));
+      const uniq = [...new Set(arr)]; const next = {}; Object.keys(data).filter(k => !/^\d+$/.test(k)).forEach(k => { next[k] = data[k]; }); uniq.forEach((v, i) => { next[i] = v; });
+      await fs.collection('settings').doc('mxExtra').set(next);
+    }
+    console.log('✓ الأنواع: ' + Object.keys(typesPatch).join(' · ') + ' — ونقاطٌ أُعيد نوعُها: ' + n);
+  }
 }
 if (trialsPatch){
   if (process.env.SEED_DB){ cur.__trials = trialsPatch; writeFileSync(process.env.SEED_DB, JSON.stringify(cur, null, 1)); }

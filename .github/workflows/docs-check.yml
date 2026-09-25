@@ -305,6 +305,8 @@ jobs:
         run: node scripts/audit-diary.mjs
       - name: جرد تنظيم النسخة ١٩ — الوزنُ بأيِّ لغة، والقوائم، والبحثُ في الشرائح، وكيف يُحسب المستحق
         run: node scripts/audit-v19.mjs
+      - name: جرد كاميرات الوزارة — تسميةٌ مصحَّحة، وLPR من العائلة، والفرعُ ثابتةٌ أو متحرّكة
+        run: node scripts/audit-cams.mjs
       - name: جرد محاكي الأوزان — الحسابُ بلا كتابة، والاعتمادُ لكلِّ مشعر، وإلغاءُ الإضافي
         run: node scripts/audit-sim.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع

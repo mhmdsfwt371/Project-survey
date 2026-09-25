@@ -57,6 +57,7 @@
         "name",
         "zone",
         "type",
+        "camera_kind",
         "status",
         "status_label",
         "surveyed_at",
@@ -78,6 +79,19 @@
         },
         "type": {
           "type": "string"
+        },
+        "camera_kind": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "Bullet",
+            "PTZ",
+            "LPR",
+            null
+          ],
+          "description": "نوعُ كاميرا الوزارة — للكاميرات وحدَها"
         },
         "block": {
           "type": "string"

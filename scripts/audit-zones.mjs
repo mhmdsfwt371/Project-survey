@@ -30,13 +30,13 @@ console.log('\n══ ٢ · الإعلانُ من نقاط المراحل ══
 w.mxDeclare(Z, 'كاميرات LPR'); w.statBump();
 T((w.CFG.mxExtra || []).includes(Z + '|كاميرات LPR'), 'أُعلنت التركيبة');
 const K = w.siteKeyStats();
-T(K.zones[Z] && K.zones[Z].n === 0 && K.by[Z + '|كاميرات LPR'] === 0, 'والمشعرُ في الإحصاء بصفر — والتركيبةُ بصفر');
-T(w.siteStats().byKey[Z + '|كاميرات LPR'] === 0, 'وفي إحصاء المواقع كذلك');
+T(K.zones[Z] && K.zones[Z].n === 0 && K.by[Z + '|LPR'] === 0, 'والمشعرُ في الإحصاء بصفر — والتركيبةُ بصفر بمفتاح نوعها (LPR)');
+T(w.siteStats().byKey[Z + '|LPR'] === 0, 'وفي إحصاء المواقع كذلك');
 T(w.zonesLive().includes(Z) && w.zoneOptions().includes(Z), 'وفي قوائم المشاعر (الموقعُ الجديد وغيرُه)');
 
 console.log('\n══ ٣ · حيث يُرى ══');
 const asn = await open('req', 'assign');
-T(asn.textContent.includes(Z) && /كاميرات LPR/.test(asn.textContent), 'الطلباتُ والتوزيع: صفٌّ للمشعر الجديد بالمتاح صفر');
+T(asn.textContent.includes(Z) && /كاميرات الوزارة — LPR/.test(asn.textContent), 'الطلباتُ والتوزيع: صفٌّ للمشعر الجديد بالمتاح صفر — بتسمية النوع');
 const kk = await open('over', 'kiosk'); await wait(1200);
 T(kk.textContent.includes(Z), 'وشاشةُ الوزارة تسمّيه في المشاعر');
 T(w.zoneForecast(Z) === null, 'ولا توقّعَ يُكسَر لمشعرٍ بلا نقاط');
@@ -48,9 +48,9 @@ T(!g.features.some(f => f.properties.zone === Z), 'وتصديرُ الوزارة
 w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 
 console.log('\n══ ٤ · أوّلُ نقطةٍ في المشعر الجديد تحلُّ محلَّ الإعلان بلا تكرار ══');
-w.STATE.sites.push({ id:'NSK-TRD-LPR-0001', name:'كاميرا اختبار', zone:Z, type:'كاميرات LPR', lat:21.4, lng:39.9 }); w.SITE_IX = null; w.statBump();
+w.STATE.sites.push({ id:'NSK-TRD-LPR-0001', name:'كاميرا اختبار', zone:Z, type:'LPR', lat:21.4, lng:39.9 }); w.SITE_IX = null; w.statBump();
 const K2 = w.siteKeyStats();
-T(K2.zones[Z].n === 1 && K2.by[Z + '|كاميرات LPR'] === 1 && Object.keys(K2.by).filter(k => k.startsWith(Z + '|')).length === 1, 'الصفُّ واحدٌ بعددٍ واحد — لا صفَّ مكرَّرٌ للمعلَن');
+T(K2.zones[Z].n === 1 && K2.by[Z + '|LPR'] === 1 && Object.keys(K2.by).filter(k => k.startsWith(Z + '|')).length === 1, 'الصفُّ واحدٌ بعددٍ واحد — لا صفَّ مكرَّرٌ للمعلَن ولو اختلفت تسميتُه عن مفتاحه');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

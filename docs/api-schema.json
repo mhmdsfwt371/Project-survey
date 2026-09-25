@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V19.0",
+ "app_version": "V19.1",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1359,6 +1359,20 @@
      "type": "string",
      "required": true
     },
+    "camera_kind": {
+     "type": [
+      "string",
+      "null"
+     ],
+     "enum": [
+      "Bullet",
+      "PTZ",
+      "LPR",
+      null
+     ],
+     "required": true,
+     "desc": "نوعُ كاميرا الوزارة — للكاميرات وحدَها"
+    },
     "block": {
      "type": "string"
     },
@@ -1869,7 +1883,8 @@
   "V18.7": "يوميات المشروع: diaryRows() تجمع recs (at/by، reviewAt، minAt) وinss (مُركّب) وdiss (تم الفك) وnewsites يومًا يومًا (UTC) من أوّل يومٍ إلى اليوم بلا فجوة مع التراكمي؛ diaryBody في شريحة exec:diary (للمهندس والمدير والإدارة العليا والوزارة — الوزارةُ بلا أسماء)؛ SHEETS.diary. audit-diary ١٢.",
   "V18.8": "محاكي الأوزان والتارجت (SIM في nsk14.sim): simRows من scores().surveyT × الأوزان المقترحة، إسقاطُ الشهر = نقطة/يوم × أيام العمل، من التارجت، يعدّيه؛ data-simapply يكتب cfg w[zone|type] لكلِّ zonesLive وtgtSurvey؛ data-simot يكتب otRate=1؛ للمدير/المهندس (settings). اليوميات: zones/stuck/hAvg/hSum لكلِّ يوم وأعمدتها في الشاشة وإكسل. audit-sim ٩، audit-diary ١٣.",
   "V18.9": "القراراتُ الصريحة في التغذية: season.decisions[{id,date,by,note,set}] تُكتَب في settings/points ولو كان الحقلُ مضبوطًا، مرةً واحدةً (تُختَم في points.decisions[id])؛ الخرائطُ تُدمَج مفتاحًا مفتاحًا. القرارُ الأوّل 2026-09-25-weights-target-no-ot: أوزانٌ (مخيمات منى ٢/عرفات ٣، ممرات ٣، محطات ١، نمرة ٢، الجمرات ٢، الكاميرات ١)، tgtSurvey 3500، otRate 1، ph 1. يطبَّق بسير season.yml عند وصول docs/season.json إلى الأصل. audit-season ٢٦.",
-  "V19.0": "تنظيم. wKeyNorm: cfgGet/cfgSet لمساري w وdw تردُّ مفتاحَ «مشعر|تصنيف» المترجَم إلى الاسم العربيِّ الخام (خريطةٌ عكسيةٌ من CAT_DEF بذاكرةٍ تُبطَل بتغيّر اللغة أو السجل) — كانت النقاطُ صفرًا على واجهة en/ur. قوائمُ الأدوار: أُزيل 'wtask' المكرَّر (exec وsupervisor). navTabHits/navTabLinks: البحثُ في القائمة يطابق عنوانَ الشريحة ووصفَها (احتواءٌ، حرفان فأكثر) ويفتحها بمعرِّفها (data-navtab)؛ Enter يفتح الأولى و«/» يركّز البحث. moneyHowCard في الأداء. usageCard: صفحاتٌ بلا فتحٍ في ٣٠ يومًا (بعد ٧ أيامٍ من التجميع). audit-v19 ١٣."
+  "V19.0": "تنظيم. wKeyNorm: cfgGet/cfgSet لمساري w وdw تردُّ مفتاحَ «مشعر|تصنيف» المترجَم إلى الاسم العربيِّ الخام (خريطةٌ عكسيةٌ من CAT_DEF بذاكرةٍ تُبطَل بتغيّر اللغة أو السجل) — كانت النقاطُ صفرًا على واجهة en/ur. قوائمُ الأدوار: أُزيل 'wtask' المكرَّر (exec وsupervisor). navTabHits/navTabLinks: البحثُ في القائمة يطابق عنوانَ الشريحة ووصفَها (احتواءٌ، حرفان فأكثر) ويفتحها بمعرِّفها (data-navtab)؛ Enter يفتح الأولى و«/» يركّز البحث. moneyHowCard في الأداء. usageCard: صفحاتٌ بلا فتحٍ في ٣٠ يومًا (بعد ٧ أيامٍ من التجميع). audit-v19 ١٣.",
+  "V19.1": "عائلةُ كاميرات الوزارة: CAT_DEF كاميرا «كاميرات الوزارة» وLPR «كاميرات الوزارة — LPR»؛ TYPES_OLD_L قوائمُ تسمياتٍ قديمة تُردُّ عند التحميل (منها «كاميرات فالوزارة»)؛ W_ALIAS يقرأ الوزنَ المكتوبَ بالتسمية القديمة؛ typeOfLabel/declaredTypeKeys: المعلَنُ بالتسمية يدخل الإحصاءَ بمفتاح النوع. camKind(x): LPR | cam (تجاوز) | PTZ من الاسم | Bullet — في popHtml (مع select للمهندس data-camkind → siteOvSet cam) وجدولِ المتاح وGeoJSON camera_kind. season-seed: القرارُ يحمل types (settings/types دمجًا) وmerge [{from,to}] (sites وnewsites حيث type==from، ومفاتيحُ mxExtra، وشاهدُ حذفٍ للمدموج). القرار 2026-09-25-ministry-cameras. audit-cams ٩، audit-season ٣١."
  },
  "map_and_geolocation": {
   "tile_layers": {
