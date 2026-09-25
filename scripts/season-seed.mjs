@@ -43,6 +43,33 @@ if (process.env.SEED_DB){
   console.log('::notice title=تجربةٌ جافة::لا حسابَ خدمة — يُطبَع ما كان سيُكتَب ولا يُكتَب شيء');
 }
 
+/* ── القراراتُ الصريحة (V18.9): تُكتَب ولو كان الحقلُ مضبوطًا ──────────
+   القاعدةُ العامةُ «لا يُكتَب إلا الفارغ» تحمي ما ضبطه أحدٌ بيده. لكنَّ صاحبَ
+   المشروع يقرّر أحيانًا تغييرَ ما ضُبط (أوزانُ التحديات، تارجتُ الشهر، معاملُ
+   الإضافي) ويريده مسجَّلًا بتاريخه وسببه في المستودع لا ضغطةً في شاشة. فالقرارُ
+   يُكتَب في season.decisions بمعرِّفٍ فريد، ويُطبَّق مرةً واحدةً (يُختَم في
+   settings/points.decisions) ثم لا يُعاد ولو بقي في الملف — وما يضبطه بعدها
+   بيده يبقى له. الخرائطُ تُدمَج مفتاحًا مفتاحًا فلا يُمحى وزنٌ لم يُذكَر. */
+const decisions = Array.isArray(season.decisions) ? season.decisions : [];
+const done = (cur.decisions && typeof cur.decisions === 'object') ? cur.decisions : {};
+const decPatch = {}, decApplied = [], decSkipped = [];
+for (const dcn of decisions){
+  if (!dcn || !dcn.id || !dcn.set || typeof dcn.set !== 'object'){ continue; }
+  if (done[dcn.id]){ decSkipped.push(dcn.id + ' (طُبِّق ' + new Date(done[dcn.id]).toISOString().slice(0, 10) + ')'); continue; }
+  for (const k of Object.keys(dcn.set)){
+    const want = dcn.set[k];
+    if (want && typeof want === 'object' && !Array.isArray(want)){
+      const have = (decPatch[k] && typeof decPatch[k] === 'object') ? decPatch[k] : ((cur[k] && typeof cur[k] === 'object') ? cur[k] : {});
+      decPatch[k] = { ...have, ...want };
+      Object.keys(want).forEach(kk => decApplied.push(dcn.id + ': ' + k + '.' + kk + ' = ' + want[kk] + (have[kk] !== undefined && have[kk] !== want[kk] ? ' (كان ' + have[kk] + ')' : '')));
+    } else {
+      const v = toStore(k, want); if (v === null){ console.log('::warning::قرارٌ بقيمةٍ لا تُقرأ: ' + k); continue; }
+      decPatch[k] = v; decApplied.push(dcn.id + ': ' + k + ' = ' + want + (cur[k] !== undefined && cur[k] !== v ? ' (كان ' + cur[k] + ')' : ''));
+    }
+  }
+  decPatch.decisions = { ...(decPatch.decisions || done), [dcn.id]: Date.now() };
+}
+
 /* ── ما يُكتَب: الفارغُ وحدَه ─────────────────────────────────────────── */
 const patch = {}, kept = [], filled = [];
 for (const k of Object.keys(S)){
@@ -119,6 +146,10 @@ console.log('يُترَك كما ضُبط (' + kept.length + '):' + (kept.length
 console.log('تجاربُ تُضاف (' + trialsAdded.length + '):' + (trialsAdded.length ? '\n  ' + trialsAdded.join('\n  ') : ' لا شيء'));
 console.log('توائمُ تُدمَج (' + twinsMerged.length + '):' + (twinsMerged.length ? '\n  ' + twinsMerged.join('\n  ') : ' لا شيء'));
 if (twinsLeft.length) console.log('توائمُ تُترَك للمهندس (' + twinsLeft.length + '):\n  ' + twinsLeft.join('\n  '));
+console.log('قراراتٌ تُطبَّق (' + decApplied.length + '):' + (decApplied.length ? '\n  ' + decApplied.join('\n  ') : ' لا شيء'));
+if (decSkipped.length) console.log('قراراتٌ طُبِّقت من قبل (' + decSkipped.length + '):\n  ' + decSkipped.join('\n  '));
+/* القرارُ يغلب الملءَ: ما قرّره صاحبُ المشروع لا يُعيد الملءُ كتابتَه */
+for (const k of Object.keys(decPatch)) patch[k] = decPatch[k];
 if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
 if (Object.keys(patch).length){

@@ -35,7 +35,8 @@ const run = db => {
 console.log('\n══ قاعدةٌ فارغة ══');
 {
   const { out, after } = run({});
-  T(after.tgtSurvey === 13 && after.warranty === 12 && after.avgRooms && after.avgRooms['منى'] === 12, 'الفارغُ يُملأ: التارجتُ والضمانُ والمتوسط');
+  /* (V18.9) التارجتُ يحكمه القرارُ الصريح (٣٥٠٠) لا الملءُ (١٣) */
+  T(after.tgtSurvey === 3500 && after.warranty === 12 && after.avgRooms && after.avgRooms['منى'] === 12, 'الفارغُ يُملأ: الضمانُ والمتوسط — والتارجتُ بالقرار');
   T(typeof after.dueSurvey === 'number' && new Date(after.dueSurvey).toISOString().slice(0, 10) === '2026-12-30' || new Date(after.dueSurvey).toISOString().slice(0, 10) === '2026-12-31',
     'والموعدُ يُخزَّن رقمًا بتوقيت مكة');
   T(after._by === 'season-seed' && /يُملأ \(4\)/.test(out), 'ويُختَم باسم السير');
@@ -44,9 +45,14 @@ console.log('\n══ قاعدةٌ ضُبطت بيد ══');
 {
   const { out, after } = run({ tgtSurvey:20, dueSurvey:1700000000000, warranty:24, avgRooms:{ 'منى':15, 'عرفات':9 }, ph:250,
                                __trials:{ rows:[{ id:'TR-001' }, { id:'TR-002' }, { id:'TR-003' }, { id:'TR-004' }], inCost:false } });
-  T(after.tgtSurvey === 20 && after.warranty === 24 && after.dueSurvey === 1700000000000, 'المضبوطُ بيدٍ لا يُمَسّ');
+  T(after.warranty === 24 && after.dueSurvey === 1700000000000, 'المضبوطُ بيدٍ لا يُمَسّ (الضمانُ والموعد)');
+  T(after.tgtSurvey === 3500 && after.otRate === 1 && after.w && after.w['منى|مخيمات'] === 2 && after.w['عرفات|مخيمات'] === 3 && after.decisions && after.decisions['2026-09-25-weights-target-no-ot'], 'والقرارُ الصريحُ يغلب المضبوطَ بيد: التارجتُ والأوزانُ والإضافي، ويُختَم');
   T(after.avgRooms['منى'] === 15 && after.avgRooms['عرفات'] === 9, 'ولا مفتاحُ الخريطة المضبوط');
-  T(after.ph === 250 && /لا شيءَ يُكتَب/.test(out), 'وما ليس في الملف لا يُقرَب — ولا كتابةَ حين لا فراغ');
+  T(after.ph === 1 && /قراراتٌ تُطبَّق \(\d+\)/.test(out), 'وسعرُ النقطة بالقرار (١ حافزًا)');
+  /* قرارٌ طُبِّق من قبل لا يُعاد: ما ضُبط بعده بيدٍ يبقى */
+  const { out: o3, after: a3 } = run({ tgtSurvey:20, ph:250, warranty:24, dueSurvey:1700000000000, avgRooms:{ 'منى':15 }, w:{ 'منى|مخيمات':7 }, decisions:{ '2026-09-25-weights-target-no-ot': 1758700000000 },
+                                       __trials:{ rows:[{ id:'TR-001' }, { id:'TR-002' }, { id:'TR-003' }, { id:'TR-004' }], inCost:false } });
+  T(a3.tgtSurvey === 20 && a3.ph === 250 && a3.w['منى|مخيمات'] === 7 && /طُبِّقت من قبل \(1\)/.test(o3) && /لا شيءَ يُكتَب/.test(o3), 'وقرارٌ طُبِّق من قبل لا يُعاد — وما ضُبط بعده بيدٍ يبقى، ولا كتابةَ حين لا فراغ');
 }
 console.log('\n══ التجاربُ تُضاف بمعرّفها ولا تتكرّر ══');
 {
