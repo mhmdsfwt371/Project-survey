@@ -31,7 +31,11 @@ sh('git add -A && git commit -q -m backup');
 T(sealHash('HEAD', R) === h0, 'ولا التزامُها — فلا يُعاد الحارسُ لأجلها');
 writeFileSync(join(R, 'index.html'), 'b');
 T(sealHash('', R) !== h0, 'وأيُّ ملفٍّ يقرؤه جردٌ يبدّلها');
+/* ثانيةٌ بين الكتابة والقراءة: فهرسُ git يعامل ما تبدّل في ثانية الفهرس نفسِها
+   بحذر (racy git) فتتذبذب البصمةُ بين الحساب والالتزام في الجهاز السريع */
+sh('sleep 1.1');
 writeFileSync(join(R, 'new.mjs'), 'c');
+sh('sleep 1.1');
 const w2 = sealHash('', R);
 sh('git add -A && git commit -q -m two');
 T(sealHash('HEAD', R) === w2, 'وغيرُ المتعقَّب يدخل البصمةَ كما سيُلتزَم');
