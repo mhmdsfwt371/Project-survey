@@ -42,7 +42,7 @@ const tx = c.textContent;
 T(/يوميات المشروع/.test(tx) && /أيامٌ منذ البداية/.test(tx) && tx.indexOf('٦') > -1, 'الشريحةُ في التقارير التنفيذية بإحصائها');
 T(/أيامُ عمل/.test(tx) && /متوسط الزيارات في يوم عمل/.test(tx) && /أعلى يوم/.test(tx), 'أيامُ العمل والمتوسطُ وأعلى يوم');
 T((tx.match(/—/g) || []).length >= 2 && /الجمعة|الخميس|الأربعاء|الثلاثاء|الاثنين|الأحد|السبت/.test(tx), 'ويومُ الصفر بشَرطةٍ واسمُ اليوم بالعربية');
-T(/سالم/.test(tx) && /أحمد/.test(tx), 'والمكتبُ يرى من عمل');
+T(/سالم/.test(tx) && /أحمد/.test(tx) && /ساعات الفرد/.test(tx) && /المشاعر/.test(tx), 'والمكتبُ يرى من عمل والمشاعرَ والساعات');
 T(!!d.querySelector('[data-xls="diary"]'), 'وزرُّ إكسل اليوميات');
 w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
 const cv = await open('exec', 'diary');
@@ -51,7 +51,9 @@ w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 
 console.log('\n══ ٣ · إكسل ══');
 const sheet = w.SHEETS.diary();
-T(Array.isArray(sheet) && sheet.length === 7 && sheet[0].length === 11 && sheet[1][0] === R[5].day && sheet[6][9] === 8, 'ورقةُ اليوميات: عنوانٌ وستةُ أيامٍ بالأحدث أوّلًا والتراكميُّ صحيح');
+T(Array.isArray(sheet) && sheet.length === 7 && sheet[0].length === 15 && sheet[1][0] === R[5].day && sheet[6][13] === 8 && /منى 8/.test(sheet[6][2]), 'ورقةُ اليوميات: عنوانٌ وستةُ أيامٍ بالأحدث أوّلًا والتراكميُّ والمشاعرُ صحيحة');
+/* (V18.8) المشاعرُ والمتعذّرُ والساعات */
+T(R[0].zones[0].z === 'منى' && R[0].zones[0].n === 8 && R[0].stuck === 0 && typeof R[0].hAvg === 'number', 'وصفُّ اليوم يحمل المشاعرَ والمتعذّرَ وساعاتِ الفرد');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
