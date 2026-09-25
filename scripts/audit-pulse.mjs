@@ -108,7 +108,7 @@ console.log('\n══ ٤ · السيرُ يربط النبضَ بالبريد ب
   T(/doc\('sysreport'\)\.set\(/.test(sw) && /merge: true/.test(sw) && /\['pulse', 'report'\]/.test(sw), 'والكاتبُ واحدٌ للاثنين بدمجٍ لا كتابةٍ فوق');
   const rl = readFileSync('firestore.rules', 'utf8');
   T(/match \/settings\/sysreport \{ allow read: if mgr\(\) \|\| \(ok\(\) && role\(\) == 'exec'\); allow write: if false; \}/.test(rl)
-    && /id != 'contacts' && id != 'cotel' && id != 'sysreport';/.test(rl) && /pm\('settings', 'w', mgr\(\)\) && id != 'sysreport'/.test(rl),
+    && /id != 'contacts' && id != 'cotel' && id != 'sysreport'( && id != '\w+')*;/.test(rl) && /pm\('settings', 'w', mgr\(\)\) && id != 'sysreport'/.test(rl),
     'والقاعدةُ تفتحه للمكتب والإدارة العليا وحدهما — ومستثنًى من كتلة الإعدادات العامة (الكتلُ تُجمَع بأو)');
   const app = readFileSync('index.html', 'utf8');
   T(/function sysReportCard\(\)/.test(app) && /localStoreCard\(\) \+ sysReportCard\(\)/.test(app), 'والتطبيقُ يعرضه في صحة النظام');
