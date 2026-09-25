@@ -721,6 +721,7 @@ body.kiosk .kk-story{font-size:21px}
 .kk-wide{grid-column:1/-1}
 .kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px;touch-action:none;cursor:grab}
 .pm-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
+#nav a.nav-tab{opacity:.92;font-size:12.5px;padding-inline-start:26px}
 .kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;position:relative}
 @media (max-width:640px){ .kk-sat{height:min(50vh,420px)} }
 .kk-lock{position:absolute;z-index:1000;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;min-height:40px}
@@ -1042,7 +1043,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V18.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V19.0</button>
       <span class="topbar-meta" id="syncMeta"></span>
       <div class="topbar-tools">
         <div class="lang-pick">
@@ -3897,6 +3898,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'كيف يُحسب المستحقّ':'How the amount due is calculated', 'بلا وزن':'No weight', 'منها إضافيٌّ':'of which overtime', 'المستحقّ = نقاطُ الأعمال المعتمدة × سعرُ النقطة':'Amount due = points of approved work × point price', 'وما زاد في يومٍ عن سقف اليوم':'and anything above the daily cap', 'يُضرَب في':'is multiplied by', 'بلا إضافي':'no overtime', 'التارجتُ الشهريُّ للمسح':'Monthly survey target', 'معاملُ الإضافي':'Overtime factor', 'لا إضافي':'No overtime', 'وزنُ الزيارة':'Visit weight', 'زياراتٌ مسجّلة':'Recorded visits', 'النقاطُ من الأعمال المعتمدة وحدَها (المسحُ المعتمَدُ تقنيًّا، والتركيبُ المعتمَد، والفكّ، والورشة) — ويُعاد الحسابُ فورًا متى تغيّر وزنٌ أو سعر.':'Points come only from approved work (technically approved survey, approved installation, dismantling, workshop) — recalculated at once when a weight or price changes.', 'اضبط الأوزان':'Set weights', 'اضبط السعر والتارجت':'Set price and target', 'صفحاتٌ لم تُفتَح في ثلاثين يومًا':'Pages not opened in 30 days',
  'محاكي الأوزان والتارجت — قبل الضبط':'Weights and target simulator — before applying', 'غيّر الوزنَ لكلِّ نوعٍ والتارجتَ الشهريَّ وانظر أثرَهما على ما سُجّل فعلًا — لا يُغيَّر شيءٌ حتى تضغط «اعتمد».':'Change the weight per type and the monthly target and see their effect on what was actually recorded — nothing changes until you press “Apply”.', 'التارجت الشهري (نقطة)':'Monthly target (points)', 'سقفُ اليوم عند هذا التارجت':'Daily cap at this target', 'نقطة (التارجت ÷ ٣٠)':'points (target ÷ 30)', 'نقاط بالأوزان المقترحة':'Points at proposed weights', 'إسقاطُ الشهر':'Month projection', 'يعدّيه؟':'Exceeds it?', 'اعتمد الأوزانَ والتارجت':'Apply weights and target', 'ألغِ الإضافي الآن (المعامل = ١)':'Cancel overtime now (factor = 1)', '«اعتمد» يكتب الوزنَ لكلِّ مشعرٍ في مصفوفة الأوزان وتارجتَ المسح الشهري في ثوابت النظام — ويُعاد حسابُ المستحقّ لكلِّ ما سُجّل. «ألغِ الإضافي» يجعل ما فوق سقف اليوم يُحتسب بالسعر نفسه.':'“Apply” writes the weight for every zone in the weights matrix and the monthly survey target in system constants — dues are recomputed for everything recorded. “Cancel overtime” makes points above the daily cap count at the same price.', 'الضبطُ للمدير':'Settings are for the manager', 'اعتُمدت الأوزانُ والتارجت — يُعاد حسابُ المستحقّ':'Weights and target applied — dues are being recomputed', 'أُلغي الإضافي — المعامل ١':'Overtime cancelled — factor 1', 'المشاعر':'Zones', 'ساعات الفرد':'Hours per person', '«ساعات الفرد»: من أوّل سجلٍّ إلى آخره في اليوم لكلِّ شخص (متوسطًا) — تقديرٌ من الأثر لا من ساعة حضور.':'“Hours per person”: from the first record to the last in the day per person (average) — an estimate from the trail, not a time clock.',
  'يوميات المشروع':'Project diary', 'كلُّ يومٍ منذ أوّل يومِ عمل: كم مُسح ورُكّب وفُكّ واعتُمد، ومن عمل — والتراكميُّ إلى اليوم.':'Every day since the first working day: how many surveyed, installed, dismantled, approved, and who worked — with the running total.', 'أيامٌ منذ البداية':'Days since start', 'أيامُ عمل':'Working days', 'متوسط الزيارات في يوم عمل':'Average visits per working day', 'أعلى يوم':'Best day', 'الأحدثُ أوّلًا':'Newest first', 'مواقع جديدة':'New sites', 'اعتمادات':'Approvals', 'تراكمي المسح':'Survey running total', 'إكسل — اليوميات':'Excel — diary', 'يومٌ بلا عملٍ يُرى صفرًا لا يُخفى. الزياراتُ بيوم تسجيلها، والاعتماداتُ (تقنيةٌ ووزارية) بيوم قرارها، والتراكميُّ زياراتٌ منذ أوّل يوم.':'A day without work shows as zero, never hidden. Visits are counted on their recorded day, approvals (technical and ministry) on their decision day, and the running total is visits since day one.', 'لا أعمالَ مسجّلةً بعد — تبدأ اليومياتُ من أوّل زيارة.':'No work recorded yet — the diary starts with the first visit.', 'الأحد':'Sunday', 'الاثنين':'Monday', 'الثلاثاء':'Tuesday', 'الأربعاء':'Wednesday', 'الخميس':'Thursday', 'الجمعة':'Friday', 'السبت':'Saturday',
  'المسحُ بنوع الموقع لكلِّ عضو':'Survey by site type per member', 'العدد (النقاط)':'Count (points)', 'زيارات':'Visits', 'نقطة / يوم':'Points / day', '«نقطة / يوم» = نقاطُ المسح ÷ الأيامِ التي عمل فيها. و«متوسط اليوم» في الترتيب العام يشمل كلَّ الأعمال لا المسحَ وحدَه.':'“Points / day” = survey points ÷ days worked. “Daily average” in the general ranking covers all work, not survey alone.',
@@ -6655,6 +6657,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'كيف يُحسب المستحقّ':'واجب الادا رقم کیسے بنتی ہے', 'بلا وزن':'وزن نہیں', 'منها إضافيٌّ':'جن میں اوور ٹائم', 'المستحقّ = نقاطُ الأعمال المعتمدة × سعرُ النقطة':'واجب الادا = منظور شدہ کام کے پوائنٹس × پوائنٹ کی قیمت', 'وما زاد في يومٍ عن سقف اليوم':'اور روزانہ حد سے زیادہ', 'يُضرَب في':'سے ضرب ہوتا ہے', 'بلا إضافي':'اوور ٹائم نہیں', 'التارجتُ الشهريُّ للمسح':'ماہانہ سروے ہدف', 'معاملُ الإضافي':'اوور ٹائم عامل', 'لا إضافي':'اوور ٹائم نہیں', 'وزنُ الزيارة':'دورے کا وزن', 'زياراتٌ مسجّلة':'درج شدہ دورے', 'النقاطُ من الأعمال المعتمدة وحدَها (المسحُ المعتمَدُ تقنيًّا، والتركيبُ المعتمَد، والفكّ، والورشة) — ويُعاد الحسابُ فورًا متى تغيّر وزنٌ أو سعر.':'پوائنٹس صرف منظور شدہ کام سے (تکنیکی طور پر منظور سروے، منظور تنصیب، اتارنا، ورکشاپ) — وزن یا قیمت بدلتے ہی دوبارہ حساب۔', 'اضبط الأوزان':'وزن مقرر کریں', 'اضبط السعر والتارجت':'قیمت اور ہدف مقرر کریں', 'صفحاتٌ لم تُفتَح في ثلاثين يومًا':'۳۰ دن میں نہ کھلے صفحات',
  'محاكي الأوزان والتارجت — قبل الضبط':'وزن اور ٹارگٹ سمولیٹر — لاگو کرنے سے پہلے', 'غيّر الوزنَ لكلِّ نوعٍ والتارجتَ الشهريَّ وانظر أثرَهما على ما سُجّل فعلًا — لا يُغيَّر شيءٌ حتى تضغط «اعتمد».':'ہر قسم کا وزن اور ماہانہ ٹارگٹ بدلیں اور درج شدہ کام پر اثر دیکھیں — «لاگو» دبانے تک کچھ نہیں بدلتا۔', 'التارجت الشهري (نقطة)':'ماہانہ ٹارگٹ (پوائنٹس)', 'سقفُ اليوم عند هذا التارجت':'اس ٹارگٹ پر روزانہ حد', 'نقطة (التارجت ÷ ٣٠)':'پوائنٹس (ٹارگٹ ÷ ۳۰)', 'نقاط بالأوزان المقترحة':'مجوزہ وزن پر پوائنٹس', 'إسقاطُ الشهر':'ماہ کا تخمینہ', 'يعدّيه؟':'تجاوز؟', 'اعتمد الأوزانَ والتارجت':'وزن اور ٹارگٹ لاگو کریں', 'ألغِ الإضافي الآن (المعامل = ١)':'اوور ٹائم ابھی ختم کریں (فیکٹر = ۱)', '«اعتمد» يكتب الوزنَ لكلِّ مشعرٍ في مصفوفة الأوزان وتارجتَ المسح الشهري في ثوابت النظام — ويُعاد حسابُ المستحقّ لكلِّ ما سُجّل. «ألغِ الإضافي» يجعل ما فوق سقف اليوم يُحتسب بالسعر نفسه.':'«لاگو» ہر مشعر کا وزن وزن میٹرکس میں اور ماہانہ سروے ٹارگٹ نظام کے مستقلات میں لکھتا ہے — درج شدہ سب کا واجب دوبارہ حساب ہوتا ہے۔ «اوور ٹائم ختم» روزانہ حد سے اوپر کے پوائنٹس اسی قیمت پر گنتا ہے۔', 'الضبطُ للمدير':'ترتیبات منیجر کے لیے ہیں', 'اعتُمدت الأوزانُ والتارجت — يُعاد حسابُ المستحقّ':'وزن اور ٹارگٹ لاگو — واجب دوبارہ حساب ہو رہا ہے', 'أُلغي الإضافي — المعامل ١':'اوور ٹائم ختم — فیکٹر ۱', 'المشاعر':'مشاعر', 'ساعات الفرد':'فی فرد گھنٹے', '«ساعات الفرد»: من أوّل سجلٍّ إلى آخره في اليوم لكلِّ شخص (متوسطًا) — تقديرٌ من الأثر لا من ساعة حضور.':'«فی فرد گھنٹے»: دن میں ہر شخص کے پہلے سے آخری اندراج تک (اوسط) — نشان سے تخمینہ، حاضری کی گھڑی نہیں۔',
  'يوميات المشروع':'منصوبے کی ڈائری', 'كلُّ يومٍ منذ أوّل يومِ عمل: كم مُسح ورُكّب وفُكّ واعتُمد، ومن عمل — والتراكميُّ إلى اليوم.':'پہلے کام کے دن سے ہر دن: کتنے سروے، تنصیب، اتارے، منظور ہوئے، اور کس نے کام کیا — مجموعی کے ساتھ۔', 'أيامٌ منذ البداية':'آغاز سے دن', 'أيامُ عمل':'کام کے دن', 'متوسط الزيارات في يوم عمل':'فی کام کے دن اوسط دورے', 'أعلى يوم':'بہترین دن', 'الأحدثُ أوّلًا':'تازہ ترین پہلے', 'مواقع جديدة':'نئے مقامات', 'اعتمادات':'منظوریاں', 'تراكمي المسح':'سروے کا مجموعی', 'إكسل — اليوميات':'ایکسل — ڈائری', 'يومٌ بلا عملٍ يُرى صفرًا لا يُخفى. الزياراتُ بيوم تسجيلها، والاعتماداتُ (تقنيةٌ ووزارية) بيوم قرارها، والتراكميُّ زياراتٌ منذ أوّل يوم.':'بغیر کام کا دن صفر دکھتا ہے، چھپایا نہیں جاتا۔ دورے اندراج کے دن، منظوریاں (تکنیکی اور وزارت) فیصلے کے دن، اور مجموعی پہلے دن سے دورے۔', 'لا أعمالَ مسجّلةً بعد — تبدأ اليومياتُ من أوّل زيارة.':'ابھی کوئی کام درج نہیں — ڈائری پہلے دورے سے شروع ہوتی ہے۔', 'الأحد':'اتوار', 'الاثنين':'پیر', 'الثلاثاء':'منگل', 'الأربعاء':'بدھ', 'الخميس':'جمعرات', 'الجمعة':'جمعہ', 'السبت':'ہفتہ',
  'المسحُ بنوع الموقع لكلِّ عضو':'ہر رکن کے لیے مقام کی قسم کے مطابق سروے', 'العدد (النقاط)':'تعداد (پوائنٹس)', 'زيارات':'دورے', 'نقطة / يوم':'پوائنٹس / دن', '«نقطة / يوم» = نقاطُ المسح ÷ الأيامِ التي عمل فيها. و«متوسط اليوم» في الترتيب العام يشمل كلَّ الأعمال لا المسحَ وحدَه.':'«پوائنٹس / دن» = سروے پوائنٹس ÷ کام کے دن۔ عمومی درجہ بندی میں «روزانہ اوسط» تمام کام کو شامل ہے، صرف سروے نہیں۔',
@@ -6878,6 +6881,11 @@ function wakeSync(){
   if (wakeWanted() && (typeof document !== 'object' || !document.hidden)) wakeAcquire(); else wakeRelease();
 }
 if (typeof document === 'object'){
+  document.addEventListener('keydown', function(e){
+    var tg = e.target || {};
+    if (tg.id === 'navQ' && e.key === 'Enter'){ var f = document.querySelector('#nav a[data-p]'); if (f){ e.preventDefault(); f.click(); } return; }
+    if (e.key === '/' && !/^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName || '') && !tg.isContentEditable){ var q = document.getElementById('navQ'); if (q){ e.preventDefault(); document.body.classList.add('nav-open'); q.focus(); } }
+  });
   document.addEventListener('visibilitychange', function(){ wakeSync(); }, { passive:true });
   ['pointerdown', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, function(){ if (WAKE.lock && !WAKE.lock.released) wakeIdleArm(); else if (wakeWanted()) wakeAcquire(); }, { passive:true }); });
 }
@@ -8513,14 +8521,34 @@ var CFG = {
 /* قراءةٌ آمنة: الصفر قيمةٌ صحيحةٌ لا غيابٌ يُستبدل */
 function cfgN(v){ var n = parseFloat(v); return isFinite(n) ? n : 0; }
 function cfgKey(k){ return (k === undefined || k === null || k === '') ? null : String(k); }
+/* ═══ مفتاحُ الوزن بالاسم العربيِّ الخام (V19.0) ═══
+   الأوزانُ تُخزَّن بمفتاح «مشعر|تصنيف»، والتصنيفُ كان يُقرأ بلغة الواجهة (catLabel
+   → t): فجهازٌ بالإنجليزية يسأل عن «منى|Camps» فلا يجد وزنًا فيحسب النقاطَ صفرًا
+   والمستحقَّ صفرًا، ومديرٌ بالإنجليزية يكتب وزنًا بمفتاحٍ إنجليزيٍّ لا يراه غيرُه.
+   صار المفتاحُ يُردُّ إلى الاسم العربيِّ الخام عند كلِّ قراءةٍ وكتابةٍ للأوزان —
+   فالرقمُ واحدٌ على كلِّ جهازٍ بأيِّ لغة. */
+var WKEY_CACHE = { lang:'', n:-1, map:null };
+function wKeyNorm(k){
+  if (LANG === 'ar' || !k) return k;
+  var n = Object.keys(CAT_DEF).length;
+  if (WKEY_CACHE.lang !== LANG || WKEY_CACHE.n !== n || !WKEY_CACHE.map){
+    var m = {}; Object.keys(CAT_DEF).forEach(function(ty){ var d = CAT_DEF[ty]; if (d && d.l){ m[t(d.l)] = d.l; } });
+    WKEY_CACHE = { lang:LANG, n:n, map:m };
+  }
+  var M = WKEY_CACHE.map, i = k.indexOf('|');
+  if (i < 0) return M[k] || k;
+  var lab = k.slice(i + 1); return k.slice(0, i) + '|' + (M[lab] || lab);
+}
 function cfgGet(path, key){
   var k = cfgKey(key), o = CFG[path];
+  if (k !== null && (path === 'w' || path === 'dw')) k = wKeyNorm(k);
   if (k === null) return cfgN(o);
   return cfgN(o && o[k]);
 }
 function cfgSet(path, key, val){
   if (typeof CFG_VER === 'number') CFG_VER++;
   var k = cfgKey(key);
+  if (k !== null && (path === 'w' || path === 'dw')) k = wKeyNorm(k);   /* يُكتَب بالمفتاح العربيِّ الخام (V19.0) */
   if (k === null) CFG[path] = cfgN(val);
   else { if (!CFG[path] || typeof CFG[path] !== 'object') CFG[path] = {}; CFG[path][k] = cfgN(val); }
   cfgPushSoon(path);
@@ -11444,6 +11472,7 @@ function perfRankTable(){
       : card('', alertBox('info','لا أعمال مسجّلةً بعد — تظهر هنا فورَ أول مسحٍ أو تركيب.')))
 
     + simCard()
+    + moneyHowCard(S)
     /* المسحُ بنوع الموقع لكلِّ عضو: كم مخيمًا وكم ممرًّا فعلًا، وبكم نقطة، وكم في اليوم (V18.6) */
     + (function(){
         var L = S.list.filter(function(e){ return e.survey > 0; }); if (!L.length) return '';
@@ -11574,6 +11603,34 @@ function simCard(){
     + '<div class="actions" style="margin-top:8px">' + btn('\u2713 ' + t('اعتمد الأوزانَ والتارجت'), 'btn-primary btn-sm', ' data-simapply="1"')
     + btn(t('ألغِ الإضافي الآن (المعامل = ١)'), 'btn-secondary btn-sm', ' data-simot="1"') + '</div>'
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('«اعتمد» يكتب الوزنَ لكلِّ مشعرٍ في مصفوفة الأوزان وتارجتَ المسح الشهري في ثوابت النظام — ويُعاد حسابُ المستحقّ لكلِّ ما سُجّل. «ألغِ الإضافي» يجعل ما فوق سقف اليوم يُحتسب بالسعر نفسه.')) + '</p>');
+}
+/* ═══ كيف يُحسب المستحقّ (V19.0) ═══
+   سأل صاحبُ المشروع أمام الرقم: «الفلوس دي بتاعت إيه؟». الشاشةُ تجيب الآن بنفسها:
+   المعادلةُ بقيمها الحالية، وأوزانُ ما سُجّل فعلًا، ومثالٌ محسوبٌ على أعلى عضو —
+   وأين يُضبَط كلُّ رقم. لا حسابَ ثانٍ: القيمُ نفسُها التي تحسب بها scores(). */
+function moneyHowCard(S){
+  if (!(may('users') || may('money') || may('settings'))) return '';
+  var ph = cfgGet('ph'), ot = cfgGet('otRate') || 1.5, tg = cfgGet('tgtSurvey'), days = cfgGet('days') || 30;
+  var otOn = ot > 1 && tg > 0;
+  /* مفاتيحُ الإحصاء «مشعر|نوعٌ خام»، ومفاتيحُ الأوزان «مشعر|تصنيفٌ عربيٌّ خام» */
+  var K = siteKeyStats();
+  var rows = K.keys.filter(function(k){ return K.by[k]; }).slice(0, 14).map(function(k){
+    var z = k.split('|')[0], ty = k.split('|')[1], lab = (CAT_DEF[ty] && CAT_DEF[ty].l) || ty;
+    var wv = cfgGet('w', z + '|' + lab) || cfgGet('w', lab);
+    return [esc(t(z)), esc(t(lab)), wv ? N(wv) : '<span class="req">' + esc(t('بلا وزن')) + '</span>', N(K.sv && K.sv[k] || 0)];
+  });
+  var top = S.list[0];
+  var ex = top ? '<p style="margin:8px 0 0">' + esc(t('مثال')) + ': <b>' + esc(dispName(top.name)) + '</b> \u2014 ' + nm(top.total) + ' ' + esc(t('نقطة')) + ' \u00d7 ' + nm(ph) + ' = <b>' + nm(Math.round(top.total * ph)) + '</b> ' + esc(t('ريال'))
+    + (otOn && top.over ? ' <span class="hint" style="margin:0">(' + esc(t('منها إضافيٌّ')) + ' ' + nm(top.over) + ' \u00d7 ' + nm(ot) + ')</span>' : '') + '</p>' : '';
+  return card('كيف يُحسب المستحقّ',
+    '<p style="margin-top:0"><b>' + esc(t('المستحقّ = نقاطُ الأعمال المعتمدة × سعرُ النقطة')) + '</b>'
+    + (otOn ? ' \u2014 ' + esc(t('وما زاد في يومٍ عن سقف اليوم')) + ' (' + nm(tg) + ' \u00f7 ' + nm(days) + ' = ' + nm(Math.round(tg / days)) + ') ' + esc(t('يُضرَب في')) + ' ' + nm(ot) : ' \u2014 ' + esc(t('بلا إضافي')))
+    + '</p>'
+    + stats([['سعرُ النقطة', nm(ph) + ' ' + t('ريال'), ph ? '' : 'wrn'], ['التارجتُ الشهريُّ للمسح', N(tg), tg ? '' : 'wrn'], ['معاملُ الإضافي', otOn ? nm(ot) : t('لا إضافي')]])
+    + (rows.length ? table(['المشعر', 'النوع', 'وزنُ الزيارة', 'زياراتٌ مسجّلة'], rows) : '')
+    + ex
+    + '<p class="hint" style="margin:8px 0 0">' + esc(t('النقاطُ من الأعمال المعتمدة وحدَها (المسحُ المعتمَدُ تقنيًّا، والتركيبُ المعتمَد، والفكّ، والورشة) — ويُعاد الحسابُ فورًا متى تغيّر وزنٌ أو سعر.')) + '</p>'
+    + '<div class="actions">' + btn(t('اضبط الأوزان'), 'btn-quiet btn-sm', ' data-goto="pts"') + btn(t('اضبط السعر والتارجت'), 'btn-quiet btn-sm', ' data-goto="consts"') + '</div>');
 }
 /* ── حسب المرحلة: فريق كل مرحلةٍ على حدة، بتارجتها المستقل ── */
 function perfStageTable(){
@@ -27422,6 +27479,11 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V19.0', d:'٢٥ سبتمبر ٢٠٢٦', notes:[
+      'إصلاح مهم: النقاط والمستحق كانت تُحسب صفرًا على أي جهاز بواجهة إنجليزية أو أردية لأن مفتاح الوزن كان يُقرأ بلغة الواجهة — صارت واحدة على كل جهاز بأي لغة.',
+      'البحث في القائمة الجانبية يصل الآن إلى الشرائح داخل الصفحات (مثلًا «يوميات» يفتح يوميات المشروع مباشرة)، وزر Enter يفتح أول نتيجة، و«/» على الحاسوب يفتح البحث.',
+      'في تقرير الأداء بطاقة «كيف يُحسب المستحق»: المعادلة بالقيم الحالية، وأوزان كل نوع، ومثال محسوب، وأين يُضبط كل رقم.',
+      'في صحة النظام ← الاستهلاك: قائمة بالصفحات التي لم يفتحها أحد في ثلاثين يومًا لتقرر ما يُدمج أو يُخفى.' ] },
   { v:'V18.9', d:'٢٥ سبتمبر ٢٠٢٦', notes:[
       'ضُبطت أوزان النقاط والتارجت الشهري (٣٬٥٠٠) وأُلغي احتساب الإضافي بقرار صاحب المشروع — يُعاد حساب النقاط والمستحق على الأعمال المسجلة كلها بالقيم الجديدة.' ] },
   { v:'V18.8', d:'٢٥ سبتمبر ٢٠٢٦', notes:[
@@ -29129,12 +29191,19 @@ function usageCard(){
   var keys = Object.keys(days).filter(function(k){ return k >= since; }).sort();   /* ثلاثون يومًا تقويميًّا لا آخرُ ثلاثين مفتاحًا */
   var tot = {}; keys.forEach(function(d){ var m = days[d] || {}; Object.keys(m).forEach(function(p){ tot[p] = (tot[p] || 0) + (+m[p] || 0); }); });
   var top = Object.keys(tot).sort(function(a, b){ return tot[b] - tot[a]; }).slice(0, 12);
+  /* ما لم يُفتَح في ثلاثين يومًا من صفحات المكتب — لتقرّر ما يُدمَج أو يُخفى (V19.0) */
+  var unused = '';
+  if (keys.length >= 7){
+    var vis = []; NAV.forEach(function(sct){ (sct.solo ? [[sct.id, sct.label]] : sct.items).forEach(function(i){ if (seesPage(i[0]) && vis.every(function(v){ return v[0] !== i[0]; })) vis.push(i); }); });
+    var zero = vis.filter(function(i){ return !tot[i[0]]; });
+    unused = '<p class="hint" style="margin:8px 0 0">' + esc(t('صفحاتٌ لم تُفتَح في ثلاثين يومًا')) + ' (' + nm(zero.length) + '): ' + (zero.length ? zero.slice(0, 20).map(function(i){ return esc(t(i[1])); }).join(' \u00b7 ') : '\u2014') + '</p>';
+  }
   return card('استعمالُ الصفحات وقراءاتُ اليوم',
     '<div class="wt-row" style="gap:14px;flex-wrap:wrap;align-items:center"><span>' + esc(t('قراءاتُ اليوم تقريبًا')) + ': <b class="num">' + nm(rt.reads) + '</b> / ' + nm(QUOTA)
     + ' ' + pill(nm(pct) + '٪', pct >= 100 ? 'bad' : pct >= 70 ? 'wrn' : 'ok') + ' <span class="hint" style="margin:0">' + nm(rt.devices) + ' ' + esc(t('جهازًا أرسل بياناته اليوم')) + '</span></span></div>'
     + (top.length ? '<table class="tbl" style="margin-top:8px"><thead><tr><th>' + esc(t('الصفحة')) + '</th><th>' + esc(t('فتحاتٌ في ٣٠ يومًا')) + '</th></tr></thead><tbody>'
         + top.map(function(p){ return '<tr><td>' + esc(PAGE[p] ? t(PAGE[p].t) : p) + '</td><td class="num">' + nm(tot[p]) + '</td></tr>'; }).join('') + '</tbody></table>'
-      : '<p class="hint" style="margin:8px 0 0">' + esc(t('لا تجميعَ بعد — يكتبه ملخّصُ الصباح مرةً في اليوم.')) + '</p>'));
+      : '<p class="hint" style="margin:8px 0 0">' + esc(t('لا تجميعَ بعد — يكتبه ملخّصُ الصباح مرةً في اليوم.')) + '</p>') + unused);
 }
 /* ═══ حارسُ التكلفة (V17.96) ═══
    الحصةُ المجانيةُ تكفي الموسمَ — لكنَّ حلقةً خاطئةً على جهازٍ واحدٍ تستهلكها في
@@ -32037,7 +32106,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','over','wbs','wtask','wtask','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','diary','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','over','wbs','wtask','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','diary','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -32062,7 +32131,7 @@ var ROLES = {
     guide:'دليل الفني والمشرف — العمل الميداني',
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
-    nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','wtask','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
+    nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','now','pace','inst','daily','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
     can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
@@ -34740,6 +34809,24 @@ function navMatch(label, key){
       || subseq(a, q) || subseq(b, q) || subseq(k, q);
 }
 
+/* البحثُ في القائمة يصل الشرائح (V19.0): «يوميات» تجد «التقارير التنفيذية ← يوميات
+   المشروع» ولو لم يكن اسمُ الصفحة الأمِّ فيها — بالعنوان أو بالوصف، بالعربية أو
+   بلغة الواجهة، وتُفتَح الشريحةُ مباشرة. مطابقةٌ بالاحتواء لا بالتتابع: الشرائحُ
+   كثيرةٌ والتتابعُ يطابق كلَّ شيءٍ بحرفين. */
+function navTabHits(pid){
+  if (!NAV_Q || !TABS[pid]) return [];
+  var q = arNorm(NAV_Q); if (!q || q.length < 2) return [];
+  return tabsOf(pid).filter(function(tb){
+    if (tb[0] === pid) return false;
+    var hay = [tb[1], t(tb[1]), tb[3] || '', tb[3] ? t(tb[3]) : ''].map(arNorm).join(' ');
+    return hay.indexOf(q) > -1;
+  });
+}
+function navTabLinks(pid){
+  return navTabHits(pid).map(function(tb){
+    return '<a href="#" class="sub nav-tab" data-p="' + esc(pid) + '" data-navtab="' + esc(tb[0]) + '">\u21B3 ' + esc(t(tb[1])) + '</a>';
+  }).join('');
+}
 function navHtml(){
   var box = '<div style="padding:0 2px 8px">'
     + '<input id="navQ" type="search" value="' + esc(NAV_Q) + '" placeholder="'
@@ -34750,11 +34837,11 @@ function navHtml(){
   return box + NAV.map(function(s){
     if (s.solo){
       if (!seesPage(s.id)) return '';
-      if (!navMatch(s.label, s.id)) return '';
+      if (!navMatch(s.label, s.id) && !navTabHits(s.id).length) return '';
       return '<a href="#" class="'+(CUR===s.id?'active':'')+'" data-p="'+s.id+'">'
-        + '<span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.label))+'</a>';
+        + '<span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.label))+'</a>' + navTabLinks(s.id);
     }
-    var items = s.items.filter(function(i){ return seesPage(i[0]) && navMatch(i[1], i[0]); });
+    var items = s.items.filter(function(i){ return seesPage(i[0]) && (navMatch(i[1], i[0]) || navTabHits(i[0]).length); });
     if (!items.length) return '';
     var open = NAV_Q ? true : (items.some(function(i){ return i[0] === CUR; }) || OPEN[s.g]);
     return '<div class="nav-section" data-open="'+(open?'true':'false')+'" data-g="'+esc(s.g)+'">'
@@ -34762,7 +34849,7 @@ function navHtml(){
       + '<span class="group-label"><span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.g))+'</span>'
       + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel">'
       + items.map(function(i){
-          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1]))+'</a>';
+          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1]))+'</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';
   }).join('');
@@ -35278,7 +35365,8 @@ function clickA(e){
   if (a){
     e.preventDefault();
     navPush(CUR);
-    goPage(a.getAttribute('data-p'));
+    /* شريحةٌ من البحث (V19.0): معرِّفُ الشريحة نفسُه — والرسمُ يوصله إلى أمِّه على شريحته */
+    goPage(a.getAttribute('data-navtab') || a.getAttribute('data-p'));
     NAV_Q = '';
     document.body.classList.remove('nav-open');
     render();

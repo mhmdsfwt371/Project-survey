@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V18.9",
+ "app_version": "V19.0",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1868,7 +1868,8 @@
   "V18.6": "scores(): e.surveyT[نوع] = {n, pts} (catLabel) — جدولُ «المسحُ بنوع الموقع لكلِّ عضو» في تقرير الأداء (أعلى ٥ أنواع + زيارات + نقاط المسح + أيام العمل + نقطة/يوم)، وورقةُ إكسل score تحمل نقاط المسح ونقاط المسح/يوم وعمودًا لكلِّ نوعٍ عددًا ونقاطًا. seal.mjs: بصمةُ شجرة العمل من فهرسٍ فارغ (git add -A في GIT_INDEX_FILE جديد) لا من نسخةٍ من فهرس المستودع — النسخُ كان يجدّد طابعَ الفهرس فيفوّت تعديلًا في ثانية الفهرس نفسِها بالحجم نفسِه (racy git)؛ ٠٫٦ ثانية.",
   "V18.7": "يوميات المشروع: diaryRows() تجمع recs (at/by، reviewAt، minAt) وinss (مُركّب) وdiss (تم الفك) وnewsites يومًا يومًا (UTC) من أوّل يومٍ إلى اليوم بلا فجوة مع التراكمي؛ diaryBody في شريحة exec:diary (للمهندس والمدير والإدارة العليا والوزارة — الوزارةُ بلا أسماء)؛ SHEETS.diary. audit-diary ١٢.",
   "V18.8": "محاكي الأوزان والتارجت (SIM في nsk14.sim): simRows من scores().surveyT × الأوزان المقترحة، إسقاطُ الشهر = نقطة/يوم × أيام العمل، من التارجت، يعدّيه؛ data-simapply يكتب cfg w[zone|type] لكلِّ zonesLive وtgtSurvey؛ data-simot يكتب otRate=1؛ للمدير/المهندس (settings). اليوميات: zones/stuck/hAvg/hSum لكلِّ يوم وأعمدتها في الشاشة وإكسل. audit-sim ٩، audit-diary ١٣.",
-  "V18.9": "القراراتُ الصريحة في التغذية: season.decisions[{id,date,by,note,set}] تُكتَب في settings/points ولو كان الحقلُ مضبوطًا، مرةً واحدةً (تُختَم في points.decisions[id])؛ الخرائطُ تُدمَج مفتاحًا مفتاحًا. القرارُ الأوّل 2026-09-25-weights-target-no-ot: أوزانٌ (مخيمات منى ٢/عرفات ٣، ممرات ٣، محطات ١، نمرة ٢، الجمرات ٢، الكاميرات ١)، tgtSurvey 3500، otRate 1، ph 1. يطبَّق بسير season.yml عند وصول docs/season.json إلى الأصل. audit-season ٢٦."
+  "V18.9": "القراراتُ الصريحة في التغذية: season.decisions[{id,date,by,note,set}] تُكتَب في settings/points ولو كان الحقلُ مضبوطًا، مرةً واحدةً (تُختَم في points.decisions[id])؛ الخرائطُ تُدمَج مفتاحًا مفتاحًا. القرارُ الأوّل 2026-09-25-weights-target-no-ot: أوزانٌ (مخيمات منى ٢/عرفات ٣، ممرات ٣، محطات ١، نمرة ٢، الجمرات ٢، الكاميرات ١)، tgtSurvey 3500، otRate 1، ph 1. يطبَّق بسير season.yml عند وصول docs/season.json إلى الأصل. audit-season ٢٦.",
+  "V19.0": "تنظيم. wKeyNorm: cfgGet/cfgSet لمساري w وdw تردُّ مفتاحَ «مشعر|تصنيف» المترجَم إلى الاسم العربيِّ الخام (خريطةٌ عكسيةٌ من CAT_DEF بذاكرةٍ تُبطَل بتغيّر اللغة أو السجل) — كانت النقاطُ صفرًا على واجهة en/ur. قوائمُ الأدوار: أُزيل 'wtask' المكرَّر (exec وsupervisor). navTabHits/navTabLinks: البحثُ في القائمة يطابق عنوانَ الشريحة ووصفَها (احتواءٌ، حرفان فأكثر) ويفتحها بمعرِّفها (data-navtab)؛ Enter يفتح الأولى و«/» يركّز البحث. moneyHowCard في الأداء. usageCard: صفحاتٌ بلا فتحٍ في ٣٠ يومًا (بعد ٧ أيامٍ من التجميع). audit-v19 ١٣."
  },
  "map_and_geolocation": {
   "tile_layers": {
