@@ -10,7 +10,7 @@
      ٤ · المساحة: المخيمُ بحدوده بلا نقاط، يُربَط بالمسجَّل ولا يُكرَّر.
      ٥ · الأنواع: الجيت واي نجمةٌ والحساسُ قطرة، والسجلُّ السحابيُّ يُطبَّع،
          والأسطورةُ تُشتقُّ منه.
-     ٦ · القوائمُ بالاسم: «كاميرات قراءة اللوحات» لا المفتاح ولا الاسمُ القديم.
+     ٦ · القوائمُ بالاسم: «كاميرات الوزارة — LPR» (V19.1) لا المفتاح ولا الاسمُ القديم.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
@@ -247,7 +247,7 @@ console.log('\n══ ٥ · الأنواعُ والأشكال ══');
   const TL = w.typesList();
   T(!TL._by && !TL._at, 'ختمُ الكتابة لا يُقرأ نوعًا');
   T(!!TL['جيت واي'] && TL['جيت واي'].s === 'star' && !!TL['حساس حرارة ورطوبة'], 'والنوعان المدمَجان يُضافان لسجلٍّ سبقهما');
-  T(TL.LPR.l === 'كاميرات قراءة اللوحات', 'والاسمُ الافتراضيُّ القديمُ يُستبدَل بجديده');
+  T(TL.LPR.l === 'كاميرات الوزارة — LPR', 'والاسمُ الافتراضيُّ القديمُ يُستبدَل بجديده');
   T(!TL['مبنى'] && w.STATE.typesGone['مبنى'] === 1, 'وشاهدُ الحذف يمنع عودةَ المحذوف');
   w.typesSave();
   const wT = wrote.filter(x => x.k === 'cfg' && x.id === 'types').pop();
@@ -266,7 +266,7 @@ console.log('\n══ ٥ · الأنواعُ والأشكال ══');
   for (const k of Object.keys(e1)){ const el = d.getElementById(k); if (el) el.remove(); }
   /* الأسطورة */
   const lg = w.legendRows();
-  T(lg.indexOf('lg-svg') > -1 && lg.indexOf('جيت واي') > -1 && lg.indexOf('حساس حرارة ورطوبة') > -1 && lg.indexOf('كاميرات قراءة اللوحات') > -1,
+  T(lg.indexOf('lg-svg') > -1 && lg.indexOf('جيت واي') > -1 && lg.indexOf('حساس حرارة ورطوبة') > -1 && lg.indexOf('كاميرات الوزارة — LPR') > -1,
     'الأسطورةُ تُشتقُّ من السجل: فيها النوعان الجديدان وكاميراتُ قراءة اللوحات');
   T(raw.indexOf("t('ممر · كاميرا')") < 0 && (lg.match(/lg-shp/g) || []).length === new Set(Object.keys(w.typesList()).filter(k => k !== 'مخيم').map(k => w.mapShapeOf(k))).size,
     'سطرٌ لكلِّ شكلٍ مستعمَل — لا نصٌّ مكتوبٌ بيد');
@@ -289,19 +289,19 @@ console.log('\n══ ٦ · القوائمُ بالاسم والرموز وال�
   freshNS({ lat:21.42, lng:39.88 });
   w.CUR = 'newsite'; w.render(1); await wait(60);
   const opts = [...d.querySelectorAll('[data-ns="type"] option')].map(o => o.textContent.trim());
-  T(opts.some(o => o.indexOf('كاميرات قراءة اللوحات') > -1) && !opts.some(o => o.replace(/^\S+\s+/, '') === 'قراءة اللوحات'),
-    'قائمةُ نوع الموقع تقول «كاميرات قراءة اللوحات»');
+  T(opts.some(o => o.indexOf('كاميرات الوزارة — LPR') > -1) && !opts.some(o => o.replace(/^\S+\s+/, '') === 'قراءة اللوحات'),
+    'قائمةُ نوع الموقع تقول «كاميرات الوزارة — LPR»');
   T(opts.some(o => o.indexOf('جيت واي') > -1) && opts.some(o => o.indexOf('حساسات الحرارة والرطوبة') > -1), 'وفيها الجيت واي والحساس');
   setRole('engineer');
   w.goPage('map'); w.render(1); await wait(60);
   w.routeStart('line'); w.render(1); await wait(40);
   const lpr = d.querySelector('[data-rt="type"] option[value="LPR"]');
-  T(!!lpr && lpr.textContent === 'كاميرات قراءة اللوحات', 'وقائمةُ أنواع المسار بالاسم لا بالمفتاح');
+  T(!!lpr && lpr.textContent === 'كاميرات الوزارة — LPR', 'وقائمةُ أنواع المسار بالاسم لا بالمفتاح');
   w.routeCancel();
   T(w.typeCode('جيت واي') === 'GTW' && w.typeCode('حساس حرارة ورطوبة') === 'THS' && w.typeCode('LPR') === 'LPR'
     && w.typeCode('نوعٌ جديد') === 'NEW' && w.typeCode('Kiosk-2') === 'KIOS', 'ورمزُ النوع من جدولٍ واحد');
   w.LANG = 'en';
-  const en = ['جدوِل زيارة', 'احفظ وجدوِل زيارة', 'أعد التوليد', 'مساحةُ مخيم', 'كاميرات قراءة اللوحات', 'نجمة', 'قطرة', 'تحتاج جدولةَ زيارة'].map(k => w.t(k));
+  const en = ['جدوِل زيارة', 'احفظ وجدوِل زيارة', 'أعد التوليد', 'مساحةُ مخيم', 'كاميرات الوزارة — LPR', 'نجمة', 'قطرة', 'تحتاج جدولةَ زيارة'].map(k => w.t(k));
   w.LANG = 'ur';
   const ur = ['جدوِل زيارة', 'أعد التوليد', 'حساسات الحرارة والرطوبة'].map(k => w.t(k));
   w.LANG = 'ar';
