@@ -301,6 +301,8 @@ jobs:
         run: node scripts/audit-pointmap.mjs
       - name: جرد القمر الصناعي في شاشة الوزارة — الافتراضيُّ والطبقةُ والدوائرُ والإطار
         run: node scripts/audit-kksat.mjs
+      - name: جرد يوميات المشروع — كلُّ يومٍ من أوّل يومِ عملٍ بلا فجوة، والتراكميُّ والأسماءُ للمكتب
+        run: node scripts/audit-diary.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
         run: node scripts/audit-clash.mjs
       - name: دفتر المطابقة — القديم كلُّه محكومٌ عليه
