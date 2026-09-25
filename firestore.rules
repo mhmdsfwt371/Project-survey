@@ -270,6 +270,8 @@ service cloud.firestore {
     match /settings/bridge   { allow read: if ok(); allow write: if false; }
     // النبضُ والتقريرُ (V17.94): يكتبهما الخادمُ، ويقرؤهما المكتبُ والإدارةُ العليا — لا بلاغَ عامًّا
     match /settings/sysreport { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if false; }
+    // سجلاتُ الإدارة (V19.3): الدروسُ المستفادة والمراجعاتُ وأصحابُ المصلحة — للمكتب والإدارة العليا قراءةً، والمكتبُ كتابةً
+    match /settings/pmo { allow read: if mgr() || (ok() && role() == 'exec'); allow write: if pm('settings', 'w', mgr()); }
     match /settings/contacts { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     match /settings/cotel    { allow read: if !viewer() && pm('phones', 'r', canW()); allow write: if pm('phones', 'w', mgr()); }
     // المصفوفةُ نفسُها: يقرؤها كلُّ فعّالٍ (التطبيقُ يعرض بها) ويكتبها المهندسُ فما فوق
@@ -283,8 +285,8 @@ service cloud.firestore {
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport';
-      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport';
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo';
+      allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'pmo';
     }
 
     // القائمة الموحّدة للشركات: المدير يضيف ويعتمد — المشرف طلبات فقط

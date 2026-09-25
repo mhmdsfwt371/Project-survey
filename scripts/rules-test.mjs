@@ -276,6 +276,12 @@ await ok  ('والنبضُ والتقريرُ يقرؤهما المهندس (V17
 await deny('ولا الفنيّ',                                     getDoc(doc(as('tec'), 'settings/sysreport')));
 await deny('ولا الوزارة',                                    getDoc(doc(as('vwr'), 'settings/sysreport')));
 await deny('ولا يكتبه أحدٌ من التطبيق',                      setDoc(doc(as('eng'), 'settings/sysreport'), { pulse:{ at:2 } }, { merge:true }));
+/* سجلاتُ الإدارة (V19.3) */
+await ok  ('سجلاتُ الإدارة يكتبها المهندس',                  setDoc(doc(as('eng'), 'settings/pmo'), { lessons:{ L1:{ t:'درس', at:1 } } }, { merge:true }));
+await ok  ('ويقرؤها',                                         getDoc(doc(as('eng'), 'settings/pmo')));
+await deny('ولا يقرؤها الفنيّ',                              getDoc(doc(as('tec'), 'settings/pmo')));
+await deny('ولا الوزارة',                                    getDoc(doc(as('vwr'), 'settings/pmo')));
+await deny('ولا يكتبها الفنيّ',                              setDoc(doc(as('tec'), 'settings/pmo'), { lessons:{ L2:{ t:'x' } } }, { merge:true }));
 await deny('ولا يكتبه إلا الخادم',                          setDoc(doc(as('tec'), 'settings/bridge'), { at:1 }, { merge:true }));
 await ok  ('ويقرؤها المهندسُ ليصلحها',                    getDoc(doc(as('eng'), 'bugs/b1')));
 await ok  ('ويغلقها',                                    setDoc(doc(as('eng'), 'bugs/b1'), Object.assign({}, BUG, { status:'مغلق' })));

@@ -57,6 +57,7 @@ export const HOSTILE = {
   'settings/pulse':    { str:DENY3, ina:DENY3, tec:'AAD' },
   'settings/bridge':   { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/sysreport':{ str:DENY3, ina:DENY3, tec:'DDD' },
+  'settings/pmo':      { str:DENY3, ina:DENY3, tec:'DDD' },
   'settings/contacts': { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/cotel':    { str:DENY3, ina:DENY3, tec:'ADD' },
   'settings/wtask':    { str:DENY3, ina:DENY3, tec:'ADD' },

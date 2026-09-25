@@ -307,6 +307,8 @@ jobs:
         run: node scripts/audit-v19.mjs
       - name: جرد كاميرات الوزارة — تسميةٌ مصحَّحة، وLPR من العائلة، والفرعُ ثابتةٌ أو متحرّكة
         run: node scripts/audit-cams.mjs
+      - name: جرد مطابقة المنهجية — ٢٣ بندًا من البيانات، وسجلاتُ الإدارة بتاريخها وصلاحيتها
+        run: node scripts/audit-pmi.mjs
       - name: جرد محاكي الأوزان — الحسابُ بلا كتابة، والاعتمادُ لكلِّ مشعر، وإلغاءُ الإضافي
         run: node scripts/audit-sim.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
