@@ -50,9 +50,9 @@ console.log('\n══ قاعدةٌ ضُبطت بيد ══');
   T(after.avgRooms['منى'] === 15 && after.avgRooms['عرفات'] === 9, 'ولا مفتاحُ الخريطة المضبوط');
   T(after.ph === 1 && /قراراتٌ تُطبَّق \(\d+\)/.test(out), 'وسعرُ النقطة بالقرار (١ حافزًا)');
   /* قرارٌ طُبِّق من قبل لا يُعاد: ما ضُبط بعده بيدٍ يبقى */
-  const { out: o3, after: a3 } = run({ tgtSurvey:20, ph:250, warranty:24, dueSurvey:1700000000000, avgRooms:{ 'منى':15 }, w:{ 'منى|مخيمات':7 }, decisions:{ '2026-09-25-weights-target-no-ot': 1758700000000, '2026-09-25-ministry-cameras': 1758700000000 },
+  const { out: o3, after: a3 } = run({ tgtSurvey:20, ph:250, warranty:24, dueSurvey:1700000000000, avgRooms:{ 'منى':15 }, w:{ 'منى|مخيمات':7 }, decisions:{ '2026-09-25-weights-target-no-ot': 1758700000000, '2026-09-25-ministry-cameras': 1758700000000, '2026-09-25-ministry-cameras-merge-by-label': 1758700000000 },
                                        __trials:{ rows:[{ id:'TR-001' }, { id:'TR-002' }, { id:'TR-003' }, { id:'TR-004' }], inCost:false } });
-  T(a3.tgtSurvey === 20 && a3.ph === 250 && a3.w['منى|مخيمات'] === 7 && /طُبِّقت من قبل \(2\)/.test(o3) && /لا شيءَ يُكتَب/.test(o3), 'وقرارٌ طُبِّق من قبل لا يُعاد — وما ضُبط بعده بيدٍ يبقى، ولا كتابةَ حين لا فراغ');
+  T(a3.tgtSurvey === 20 && a3.ph === 250 && a3.w['منى|مخيمات'] === 7 && /طُبِّقت من قبل \(3\)/.test(o3) && /لا شيءَ يُكتَب/.test(o3), 'وقرارٌ طُبِّق من قبل لا يُعاد — وما ضُبط بعده بيدٍ يبقى، ولا كتابةَ حين لا فراغ');
 }
 console.log('\n══ قرارُ الأنواع: تسميةٌ ودمجٌ مرةً واحدة (V19.1) ══');
 {
@@ -66,7 +66,16 @@ console.log('\n══ قرارُ الأنواع: تسميةٌ ودمجٌ مرة�
   T(after.__mxExtra[0] === 'الترددية|LPR' && after.__mxExtra[1] === 'عرفات|LPR' && after.__mxExtra._by === 'x', 'والتركيباتُ المعلَنةُ أُعيد مفتاحُها');
   T(after.w['منى|كاميرات الوزارة'] === 1 && after.decisions['2026-09-25-ministry-cameras'], 'والأوزانُ بالتسمية الجديدة، والقرارُ مختوم');
   const { out: o2, after: a2 } = run(after);
-  T(/طُبِّقت من قبل \(2\)/.test(o2) && a2.__newsites.N1.type === 'LPR', 'وتشغيلٌ ثانٍ لا يعيده');
+  T(/طُبِّقت من قبل \(3\)/.test(o2) && a2.__newsites.N1.type === 'LPR', 'وتشغيلٌ ثانٍ لا يعيده');
+}
+console.log('\n══ الدمجُ بالتسمية: المفتاحُ الداخليُّ غيرُ الاسم الظاهر (V19.2) ══');
+{
+  const db1 = { __types:{ 'LPR-2':{ l:'كاميرات LPR ', i:'y', c:'#111' }, 'مخيم':{ l:'مخيمات' } },
+                __newsites:{ N7:{ type:'LPR-2' }, N8:{ type:'مخيم' } }, __sitesCol:{},
+                decisions:{ '2026-09-25-weights-target-no-ot':1, '2026-09-25-ministry-cameras':1 } };
+  const { out, after } = run(db1);
+  T(/إحصاءُ الأنواع \(2\)/.test(out) && /«LPR-2» ← «كاميرات LPR/.test(out) && /نقاطٌ في sites\/newsites: 1/.test(out), 'الإحصاءُ يُطبَع: المفتاحُ وتسميتُه وعددُ نقاطه');
+  T(after.__newsites.N7.type === 'LPR' && after.__newsites.N8.type === 'مخيم' && after.__types['LPR-2'].gone === true && after.decisions['2026-09-25-ministry-cameras-merge-by-label'], 'والمفتاحُ الذي تسميتُه «كاميرات LPR» يُدمَج في LPR ويُختَم');
 }
 console.log('\n══ التجاربُ تُضاف بمعرّفها ولا تتكرّر ══');
 {

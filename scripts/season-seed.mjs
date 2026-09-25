@@ -176,6 +176,32 @@ if (twinsWrites.length){
   }
   console.log('✓ دُمج التوأم في sites: ' + twinsWrites.length);
 }
+/* ── إحصاءُ الأنواع (V19.2): كلُّ مفتاحٍ بتسميته وعددِ نقاطه — المفتاحُ الداخليُّ قد
+   يختلف عن الاسم الظاهر، فيُقرأ هنا قبل أيِّ دمج ويُكتَب في تعليق السير ── */
+const norm = v => String(v == null ? '' : v).replace(/\s+/g, ' ').trim();
+let typesNow = {}, census = {};
+if (process.env.SEED_DB){
+  typesNow = cur.__types || {};
+  for (const col of ['__sitesCol', '__newsites']) for (const id of Object.keys(cur[col] || {})){ const ty = (cur[col][id] || {}).type; if (ty) census[ty] = (census[ty] || 0) + 1; }
+} else if (write){
+  const { createRequire } = await import('module');
+  const admin = createRequire(import.meta.url)('firebase-admin'); const fs0 = admin.firestore();
+  const td = await fs0.collection('settings').doc('types').get(); typesNow = td.exists ? (td.data() || {}) : {};
+  for (const col of ['sites', 'newsites']){ const q = await fs0.collection(col).select('type').get(); q.docs.forEach(d => { const ty = (d.data() || {}).type; if (ty) census[ty] = (census[ty] || 0) + 1; }); }
+}
+{
+  const rows = Object.keys(typesNow).filter(k => k.charAt(0) !== '_').map(k => { const v = typesNow[k] || {}; return '  «' + k + '» ← «' + (v.l || '') + '»' + (v.gone ? ' (محذوف)' : '') + ' — نقاطٌ في sites/newsites: ' + (census[k] || 0); });
+  const orphan = Object.keys(census).filter(k => !typesNow[k]).map(k => '  «' + k + '» (بلا سجلّ) — ' + census[k]);
+  console.log('إحصاءُ الأنواع (' + rows.length + '):' + (rows.length ? '\n' + rows.join('\n') : ' لا سجلّ') + (orphan.length ? '\nأنواعٌ في النقاط بلا سجلّ:\n' + orphan.join('\n') : ''));
+}
+/* الدمجُ بالتسمية (byLabel): كلُّ مفتاحٍ تسميتُه أو اسمُه «from» — غيرُ «to» — يُدمَج */
+for (let i = decMerges.length - 1; i >= 0; i--){
+  const m = decMerges[i]; if (!m.byLabel) continue;
+  const keys = Object.keys(typesNow).filter(k => k.charAt(0) !== '_' && k !== m.to && !(typesNow[k] || {}).gone && (norm((typesNow[k] || {}).l) === norm(m.from) || norm(k) === norm(m.from)));
+  Object.keys(census).forEach(k => { if (k !== m.to && norm(k) === norm(m.from) && keys.indexOf(k) < 0) keys.push(k); });
+  decMerges.splice(i, 1, ...keys.map(k => ({ from:k, to:m.to })));
+  console.log('دمجٌ بالتسمية «' + m.from + '» ← مفاتيحُ: ' + (keys.length ? keys.map(k => '«' + k + '» (' + (census[k] || 0) + ')').join(' · ') : 'لا شيء'));
+}
 /* ── سجلُّ الأنواع والدمج (V19.1) ── */
 if ((Object.keys(decTypes).length || decMerges.length) && write){
   const mergedTypes = {}; decMerges.forEach(m => { mergedTypes[m.from] = { gone:true }; });
