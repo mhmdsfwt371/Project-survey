@@ -9,7 +9,7 @@
    ستُلتزَم؛ مع HEAD (أو أيِّ مرجع): بصمةُ ذلك الالتزام — بالاستثناء نفسِه.
    ═════════════════════════════════════════════════════════════════════════ */
 import { execSync } from 'child_process';
-import { copyFileSync, unlinkSync } from 'fs';
+import { unlinkSync } from 'fs';
 import { resolve } from 'path';
 
 export const SEAL_SKIP = ['backups'];
@@ -17,12 +17,15 @@ export const SEAL_SKIP = ['backups'];
 export function sealHash(ref, cwd){
   const base = cwd || process.cwd();
   const opt = { encoding:'utf8', cwd: base, stdio:['ignore', 'pipe', 'pipe'] };
-  const dir = resolve(base, execSync('git rev-parse --git-dir', opt).trim());
   const idx = `/tmp/nsk-seal-${process.pid}-${Math.random().toString(36).slice(2)}`;
   const o = { ...opt, env: { ...process.env, GIT_INDEX_FILE: idx } };
   try {
+    /* شجرةُ العمل تُبنى في فهرسٍ فارغٍ لا في نسخةٍ من فهرس المستودع: نسخُ الفهرس
+       يجدّد طابعَه الزمنيَّ فيثق git بإحصاء الملفِّ ويفوّت تعديلًا وقع في ثانية
+       الفهرس نفسِها بالحجم نفسِه (racy git) — وقد وقع. الفهرسُ الفارغُ يقرأ كلَّ
+       ملفٍّ بمحتواه، ثوانٍ قليلةٌ مقابل بصمةٍ لا تكذب. */
     if (ref) execSync(`git read-tree ${ref}`, o);
-    else { try { copyFileSync(`${dir}/index`, idx); } catch {} execSync('git add -A .', o); }
+    else execSync('git add -A .', o);
     for (const p of SEAL_SKIP) execSync(`git rm -r -q --cached --ignore-unmatch -- ${p}`, o);
     return execSync('git write-tree', o).trim();
   } finally { try { unlinkSync(idx); } catch {} }
