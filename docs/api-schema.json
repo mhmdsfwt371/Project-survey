@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V19.7",
+ "app_version": "V19.8",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1890,7 +1890,8 @@
   "V19.4": "المزامنةُ على الهاتف: #syncM (tb-btn tb-sync-m، data-pull) بجوار النسخة يظهر تحت ٥٦٠px حيث يُخفى .topbar-meta، بشارة #syncMN = CORE.pending() ويدور (.busy) أثناء السحب؛ #idbBanner يحمل زرَّ .ib-sync (data-pull) وعددَ ما ينتظر (#idbBannerN)؛ syncBadge يحدّثهما بلا إعادة رسم. audit-syncm ٨.",
   "V19.5": "المزامنةُ التلقائية: كلُّ حفظٍ يُرفَع في لحظته (CORE.dirty → CORE.flush، رفعٌ واحدٌ في كلِّ لحظة بقفل _busy)، والدورةُ كلَّ ٦٠ ثانيةً تعيد، والسحبُ بنطاق الدور مع الإنصات الحيّ. أُضيف: CORE._chain — ما كُتب أثناء رفعٍ جارٍ يُرفَع بعد ١٫٥ ثانيةٍ من انتهائه (لا الفاشلُ ولا المؤجَّل)؛ syncOnHide() على pagehide وعلى visibilitychange حين تُخفى الصفحة. اللافتة: IDB_WHY وidbWhyText (انقطاعُ الاتصال بعد الخلفية في آيفون، امتلاءُ المساحة، منعُ المتصفّح، التأخّر، غيرُ المعروف) + «أعد المحاولة» (idbRetryNow)؛ idbSet حين تفشل يُسقِط الاتصالَ (idbDrop: close + null + idbRetryLater) — كان الاتصالُ الميّتُ يُعاد استعمالُه فيبقى الحفظُ معطّلًا حتى إعادة التحميل؛ والرجوعُ من الخلفية والحفظُ معطّلٌ يعيد الفتحَ فورًا. audit-syncm ٢٠.",
   "V19.6": "للمستخدم غير التقني: idbAtRisk() = IDB_BAD و(بلا شبكة أو عملٌ في الطابور أقدمُ من ٨ ثوانٍ) — idbBannerUpdate() يُنشئ اللافتةَ أو يزيلها (من render وsyncBadge)؛ idbWatchStart() كلَّ ١٠ ثوانٍ ما دام الحفظُ معطّلًا يرفع ويحدّث. حثُّ آيفون: iosNudgeDue (آيفون غيرُ مثبَّت، بعد الدخول بدور، لا في القاعة، nsk14.iosNudge) وiosNudgeHtml (ثلاثُ خطواتٍ وسطرُ واتساب، «تم» شهرًا و«ذكّرني غدًا» يومًا)؛ زرُّ التثبيت في الرأس ظاهرٌ على آيفون غير المثبَّت. audit-syncm ٢٥، audit-idb ١٦.",
-  "V19.7": "حثُّ التثبيت على أندرويد: iosNudgeDue يقبل INSTALL_EVT (beforeinstallprompt) إلى جانب آيفون؛ iosNudgeHtml بفرعٍ لأندرويد بزرِّ «ثبّت الآن» (data-iosnudge=install → INSTALL_EVT.prompt، القبولُ شهر)؛ حدثُ التثبيت يعيد الرسم حين يستحقّ الحثّ. audit-syncm ٢٧."
+  "V19.7": "حثُّ التثبيت على أندرويد: iosNudgeDue يقبل INSTALL_EVT (beforeinstallprompt) إلى جانب آيفون؛ iosNudgeHtml بفرعٍ لأندرويد بزرِّ «ثبّت الآن» (data-iosnudge=install → INSTALL_EVT.prompt، القبولُ شهر)؛ حدثُ التثبيت يعيد الرسم حين يستحقّ الحثّ. audit-syncm ٢٧.",
+  "V19.8": "أندرويد كآيفون: pwaAndroid()؛ iosNudgeDue يقبل أندرويد بلا حدث تثبيت؛ لوحُ أندرويد بأربع خطواتٍ مرقّمة (كروم وزرُّ القائمة ⋮ و«تثبيت التطبيق»، وسطرا واتساب وسامسونج) وزرِّ «ثبّت الآن» فوقها حين يوجد INSTALL_EVT؛ زرُّ الرأس ظاهرٌ على أندرويد غير المثبَّت وpwaInstall يعرض الخطوات. audit-syncm ٢٨."
  },
  "map_and_geolocation": {
   "tile_layers": {
