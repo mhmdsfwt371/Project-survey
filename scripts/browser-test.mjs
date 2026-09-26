@@ -89,6 +89,18 @@ if (tourUp){
 await page.waitForTimeout(300);
 const tourGone = await page.evaluate(() => !document.getElementById('tourSheet') && !document.querySelector('.wt-back'));
 T(tourGone, 'وتُغلَق بضغطةٍ فلا تحجب العمل');
+/* حثُّ التثبيت (V19.6): آيفونُ ١٣ هنا غيرُ مثبَّت، فيظهر اللوحُ بعد الدخول فوق الشاشة كلِّها —
+   ولم يكن هذا الاختبارُ يعرفه، فكانت لمسةُ الممرِّ تقع على اللوح منذ V19.6 وتسقط. صار يُثبَت
+   ظهورُه ثم يُغلَق بـ✕ كما يغلقه الفنيّ، ويُثبَت أنه لا يعود في الجلسة نفسِها */
+const nudgeUp = await page.evaluate(() => !!document.getElementById('iosNudge'));
+T(nudgeUp, 'لوحُ تثبيت الآيفون يظهر بعد الدخول على آيفونٍ غيرِ مثبَّت');
+if (nudgeUp){
+  try { await page.click('#iosNudge [data-iosnudge="0"]', { timeout: 5000 }); }
+  catch (e){ await page.evaluate(() => { localStorage.setItem('nsk14.iosNudge', String(Date.now() + 864e5)); render(1); }); }
+}
+await page.waitForTimeout(300);
+const nudgeGone = await page.evaluate(() => { render(1); return !document.getElementById('iosNudge'); });
+T(nudgeGone, 'ويُغلَق بـ✕ فلا يعود ولا يحجب الخريطة');
 /* «لا تعود» تُفحَص بمنطق الإقلاع نفسِه لا بإعادة تحميلٍ تُفقِد الجلسةَ
    الصورية: إعادةُ التحميل تُعيد شاشةَ الدخول فيسقط ما بعدها بلا عطلٍ في
    التطبيق — فيُنادى ما يُنادى عند كلِّ إقلاع، ويُقاس أثرُه. */
