@@ -61,6 +61,7 @@ d.getElementById('mcT').value = 'تأخّر الشحنات'; d.getElementById('m
 d.querySelector('[data-mfuchal]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const wc = wrote.find(r => r[1] === 'mfu' && r[2].chal);
 T(!!wc && Object.values(wc[2].chal)[0].m === 'إعادة الجدولة مع المصنع' && Object.values(wc[2].chal)[0].st === 'مفتوح', 'التحدي بآلية معالجته يُكتَب مفتوحًا');
+d.querySelector('[data-mfuedit^="M:"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const st = d.querySelector('[data-mfuchalst]'); st.value = 'مغلق'; st.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(40);
 T(w.mfuList('chal')[0].st === 'مغلق', 'وحالتُه تتغيّر من الجدول');
 const chc = d.getElementById('content'), tbPos = chc.innerHTML.indexOf('التحديات وآليات المعالجة \u2014'), fmPos = chc.innerHTML.indexOf('class="mfu-add"');
@@ -68,6 +69,7 @@ T(tbPos > -1 && fmPos > tbPos && !chc.querySelector('details.mfu-add').open, 'ا
 await open('mreq');
 d.getElementById('mrT').value = 'تركيب إضاءةٍ إرشادية على أبواب المخيمات'; d.getElementById('mrU').value = 'رُكّبت على ١٠٠ مخيم';
 d.querySelector('[data-mfureq]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+d.querySelector('[data-mfuedit^="R:"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const up = d.querySelector('[data-mfurequ]'); up.value = 'رُكّبت على ١٥٠ مخيم'; up.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(40);
 T(w.mfuList('req')[0].u === 'رُكّبت على ١٥٠ مخيم', 'وطلبُ الوزارة تُحدَّث إفادتُه من مكانها');
 d.querySelector('[data-mfudel^="req|"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
@@ -135,8 +137,10 @@ w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 const cats0 = w.mfuAllChal().filter(c => c.src === 'field');
 T(cats0.length >= 2 && cats0.every(c => c.n > 0 && c.party), 'تحدياتُ المسح الميداني فئاتٌ بعدد نقاطها وجهتها: ' + cats0.map(c => c.t + ' ' + c.n).join(' · '));
 let ch = await open('mchal');
-T(/من المسح الميداني/.test(ch.textContent) && ch.querySelectorAll('[data-fch$="|owner"]').length === cats0.length, 'تظهر في التحديات بشارة مصدرها، ولكلٍّ «من سيحلّه» و«آلية المعالجة» تُعدَّل');
-const fo = ch.querySelector('[data-fch$="|owner"]'), fcat = fo.getAttribute('data-fch').split('|')[0];
+T(/من المسح الميداني/.test(ch.textContent) && ch.querySelectorAll('[data-mfuedit^="F:"]').length === cats0.length && !ch.querySelector('[data-fch$="|owner"]'), 'تظهر في التحديات بشارة مصدرها، ولكلٍّ زرُّ ✎ — والحقولُ لا تُرسَم قبل الضغط (V21.5)');
+ch.querySelector('[data-mfuedit^="F:"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+T(d.querySelectorAll('[data-fch$="|owner"]').length === 1, 'وبعد ✎ تُرسَم حقولُ الصفِّ الواحد وحدَه');
+const fo = d.querySelector('[data-fch$="|owner"]'), fcat = fo.getAttribute('data-fch').split('|')[0];
 fo.value = 'فريق التركيبات'; fo.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
 const fm = d.querySelector('[data-fch="' + fcat + '|m"]'); fm.value = 'تنسيقٌ مع كدانة لاستكمال العارضة'; fm.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
 const c1 = w.mfuAllChal().find(c => c.key === 'F:' + fcat);
