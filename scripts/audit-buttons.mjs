@@ -37,7 +37,8 @@ const click = (/function onDocClick\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]
    العامُّ أيَّ زرٍّ يبتلعه. فلمّا فُصلت أجزاءُ المستمع إلى دوالَّ صارت خصائصُ
    ما فُصل غيرَ مسجّلة — فتُبتلَع نقراتُها بلا أثر. تُقاس هنا: كلُّ دالةٍ من
    دوالِّ النقر مذكورةٌ في `actList`، وعيّنةٌ من خصائصها موجودةٌ فيما تقرؤه. */
-const chg = src.slice(src.indexOf("document.addEventListener('change'"), src.indexOf("document.addEventListener('change'")+9000);
+/* نافذةُ معالج التغيير كبرت مع ما أُضيف إليه (V21.2): ٩٠٠٠ حرفٍ كانت تقطعه قبل data-imp */
+const chg = src.slice(src.indexOf("document.addEventListener('change'"), src.indexOf("document.addEventListener('change'")+30000);
 const inp = src.slice(src.indexOf("document.addEventListener('input'"), src.indexOf("document.addEventListener('input'")+16000);
 const bound = new Set([...(click+chg+inp).matchAll(/data-[\w-]+/g)].map(m=>m[0]));
 /* كلُّ خاصيةٍ تُرسَم فعلًا في أيِّ شاشةٍ بأيِّ دور */

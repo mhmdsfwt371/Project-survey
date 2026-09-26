@@ -317,6 +317,8 @@ jobs:
         run: node scripts/audit-npop.mjs
       - name: جرد احتياطيِّ الطابور — الزيارةُ التي لم تُرفَع تبقى في localStorage وتعود، ونقصُ النموذج صندوقٌ ثابت
         run: node scripts/audit-qbak.mjs
+      - name: جرد خطة الأسبوع — للمهندس وحدَه، بنقاطها وخطواتها ومتطلباتها ونتائجها، ومهمةٌ وترحيلٌ وتصدير
+        run: node scripts/audit-wplan.mjs
       - name: جرد محاكي الأوزان — الحسابُ بلا كتابة، والاعتمادُ لكلِّ مشعر، وإلغاءُ الإضافي
         run: node scripts/audit-sim.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع

@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V21.1",
+ "app_version": "V21.2",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1903,7 +1903,8 @@
   "V20.8": "التحكّمُ في الإشعارات لكلِّ جهاز: npopMuted/nsysMuted (nsk14.npop، nsk14.nsys، nsk14.nmute حتى وقت)؛ notifPop: زرُّ .npop-x (data-npopx يغلق بلا انتقال) ورابطُ «كتم ساعة» (data-nmute)، والدفعةُ (أكثرُ من اثنين في ٣ ثوانٍ، NPOP_BURST) بطاقةٌ واحدةٌ بالعدد تفتح صفحةَ الإشعارات؛ notifSystem يحترم الإيقافَ والكتم؛ notifSettingsCard أوّلَ deviceCards في «حسابي» (data-nset: npop/nsys/tomorrow/unmute) مع طريق الإيقاف من إعدادات النظام. الجرسُ (notifStore) يعدّ كلَّ شيء. audit-npop ١٣.",
   "V20.9": "نضجُ المتابعة: mfuAgePill (من hist.new أو at أو seen؛ ≥١٤ يومًا أحمر، ≥٧ كهرماني) في التحديات والطلبات؛ mfuOwnersLoad/Card (تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ مسؤول)؛ mfuWeeksCard من settings/mfu.snap (آخر ٨ أسابيع بفروقها)؛ mfuMinWait (lifeOf === minwait) مؤشّرًا في الملخّص والتقرير. MFU_SECTIONS ثلاثة عشر (owners، weeks). audit-mfu ٧٠.",
   "V21.0": "احتياطيُّ الطابور: CORE.qbakSave (مع كلِّ saveLocal — الطابورُ بلا photos ولا حقولٍ نصيةٍ أطولَ من ٤٠٠٠ حرف، آخرُ ١٥٠، في nsk14.qbak) وCORE.qbakRestore (في loadLocal سواءٌ وُجد المخزنُ أم لا: يعيد ما ليس في الطابور إلى الطابور وإلى STATE[kind][id] إن لم يكن). svSave: نقصُ الحقول أو الصورتين صندوقُ #svErr ثابتٌ أعلى المحتوى. audit-qbak ٦.",
-  "V21.1": "notifSettingsCard تُعرَض في صفحة السجلات والإشعارات ← الإشعارات بعد الإحصاء (إلى جانب «حسابي»)."
+  "V21.1": "notifSettingsCard تُعرَض في صفحة السجلات والإشعارات ← الإشعارات بعد الإحصاء (إلى جانب «حسابي»).",
+  "V21.2": "خطةُ الأسبوع: شريحةُ plan:wplan (wplanMay: engineer/admin — لا في قوائم غيرهما)؛ البياناتُ في settings/pmo تحت wplan {wk, t, pri, n, steps (سطرٌ لكلِّ خطوة), sdone[], needs, goal, st (مخطط/جارٍ/تم/مؤجَّل), task, hist}؛ WPLAN_WK أسبوعُ العرض (mfuWeekKey/wplanNextWeek)، WPLAN_EDIT للتعديل؛ data-wpsave/wpedit/wpdel/wpnext/wptask/wpwk وdata-wpst/wpstep (اكتمالُ الخطوات يُتمّ النقطة)؛ wtAdd بحقل plan والبطاقةُ تقول «من خطة الأسبوع»؛ SHEETS.wplan. audit-wplan ٩."
  },
  "map_and_geolocation": {
   "tile_layers": {
