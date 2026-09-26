@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V20.9",
+ "app_version": "V21.0",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1901,7 +1901,8 @@
   "V20.6": "الربطُ الموحّد: wtAdd بحقل req؛ data-reqtask يُنشئ مهمةَ تنفيذٍ (مسار «طلبات الوزارة») ويربطها بالطلب (task) ويجعله «قيد التنفيذ»؛ mfuReqView يشتقّ الإفادةَ من آخر ملاحظة المهمة إن كانت أحدث (uSrc) والحالةَ «منجز» من اكتمالها و«متوقفة» من توقّفها. mfuHist سجلٌّ قصيرٌ (١٢) على كلِّ تحدٍّ وطلبٍ وتحدّي مسح (new/owner/m/st/party/u/task). mfuTimeline(days) يجمع سجلَّات المهام والتحديات والطلبات — mfuTimelineCard في الملخّص، وقسمُ upd في التقرير (MFU_SECTIONS عشرة)، وجدولُه أسفل شريحة الملخّص؛ عمودُ «مرتبطة بـ» في المهام، و«مهمة التنفيذ» في الطلبات. audit-mfu ٥٧.",
   "V20.7": "المهامُّ الأسبوعيةُ تُسمَع: wtSet يسجّل تغييرَ due/who/track/n/wbs في السجلّ {f, from, to} (WT_LOGF، wtFieldTxt: «تأجيل الموعد» حين الجديدُ أبعد) — في mfuTimeline وwtSince؛ wtRemove يستدعي mfuTaskGone فيُكتَب على التحدي أو الطلب المربوط ويُفكُّ الربط. mfuWeekBlocks: المنجزُ في ٧ أيام (mfuDoneAt) ومقارنتُه بما قبله، والقادمُ في ٧ أيام، والمتأخر، والمتوقّفُ والمنتظِر، ودعمُ الطلبات، وآخرُ اجتماع (meetAt/meetBy وwtSince) — mfuBlocksCard في الملخّص، وقسمُ blocks في التقرير (MFU_SECTIONS أحد عشر)، وعنوانُ التحديثات «منذ آخر اجتماع» (mfuSecTitle، updTitle)، وشريحةُ «المسار | القارئات» (slide70 في القالب بعد المهام). mfuUnseen (nsk14.mfuSeen) شارةٌ على المتابعة في القائمة و«جديد» في الخط الزمني. audit-mfu ٦٦.",
   "V20.8": "التحكّمُ في الإشعارات لكلِّ جهاز: npopMuted/nsysMuted (nsk14.npop، nsk14.nsys، nsk14.nmute حتى وقت)؛ notifPop: زرُّ .npop-x (data-npopx يغلق بلا انتقال) ورابطُ «كتم ساعة» (data-nmute)، والدفعةُ (أكثرُ من اثنين في ٣ ثوانٍ، NPOP_BURST) بطاقةٌ واحدةٌ بالعدد تفتح صفحةَ الإشعارات؛ notifSystem يحترم الإيقافَ والكتم؛ notifSettingsCard أوّلَ deviceCards في «حسابي» (data-nset: npop/nsys/tomorrow/unmute) مع طريق الإيقاف من إعدادات النظام. الجرسُ (notifStore) يعدّ كلَّ شيء. audit-npop ١٣.",
-  "V20.9": "نضجُ المتابعة: mfuAgePill (من hist.new أو at أو seen؛ ≥١٤ يومًا أحمر، ≥٧ كهرماني) في التحديات والطلبات؛ mfuOwnersLoad/Card (تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ مسؤول)؛ mfuWeeksCard من settings/mfu.snap (آخر ٨ أسابيع بفروقها)؛ mfuMinWait (lifeOf === minwait) مؤشّرًا في الملخّص والتقرير. MFU_SECTIONS ثلاثة عشر (owners، weeks). audit-mfu ٧٠."
+  "V20.9": "نضجُ المتابعة: mfuAgePill (من hist.new أو at أو seen؛ ≥١٤ يومًا أحمر، ≥٧ كهرماني) في التحديات والطلبات؛ mfuOwnersLoad/Card (تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ مسؤول)؛ mfuWeeksCard من settings/mfu.snap (آخر ٨ أسابيع بفروقها)؛ mfuMinWait (lifeOf === minwait) مؤشّرًا في الملخّص والتقرير. MFU_SECTIONS ثلاثة عشر (owners، weeks). audit-mfu ٧٠.",
+  "V21.0": "احتياطيُّ الطابور: CORE.qbakSave (مع كلِّ saveLocal — الطابورُ بلا photos ولا حقولٍ نصيةٍ أطولَ من ٤٠٠٠ حرف، آخرُ ١٥٠، في nsk14.qbak) وCORE.qbakRestore (في loadLocal سواءٌ وُجد المخزنُ أم لا: يعيد ما ليس في الطابور إلى الطابور وإلى STATE[kind][id] إن لم يكن). svSave: نقصُ الحقول أو الصورتين صندوقُ #svErr ثابتٌ أعلى المحتوى. audit-qbak ٦."
  },
  "map_and_geolocation": {
   "tile_layers": {

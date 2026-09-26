@@ -315,6 +315,8 @@ jobs:
         run: node scripts/audit-mfu.mjs
       - name: جرد التحكّم في الإشعارات — ✕ على البطاقة، والدفعةُ بطاقةٌ، والكتم، والإيقافُ لكلِّ جهاز
         run: node scripts/audit-npop.mjs
+      - name: جرد احتياطيِّ الطابور — الزيارةُ التي لم تُرفَع تبقى في localStorage وتعود، ونقصُ النموذج صندوقٌ ثابت
+        run: node scripts/audit-qbak.mjs
       - name: جرد محاكي الأوزان — الحسابُ بلا كتابة، والاعتمادُ لكلِّ مشعر، وإلغاءُ الإضافي
         run: node scripts/audit-sim.mjs
       - name: جرد التعديل المتزامن — يُقال ولا يُبتلَع
