@@ -87,7 +87,7 @@ console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مص�
 await open('mcos');
 T(['docx', 'xlsx', 'pdf'].every(f => !!d.querySelector('[data-mfuexp="' + f + '"]')), 'شريطُ التصدير على العنوان: Word وExcel وPDF');
 const R = w.mfuReport();
-T(w.MFU_SECTIONS.length === 11 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 7 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض وكتلِ المسار وآخرِ التحديثات (١١)، والتاريخُ الهجريُّ والميلادي');
+T(w.MFU_SECTIONS.length === 13 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 8 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض وكتلِ المسار وآخرِ التحديثات والحملِ والأسابيع (١٣)، والتاريخُ الهجريُّ والميلادي');
 let got = null; w.Blob = function(parts, o){ this.parts = parts; this.o = o; }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.mfuDocx();
 const bytes = got && got.b.parts[0];
@@ -98,14 +98,14 @@ const parsed = new w.DOMParser().parseFromString(docXml, 'application/xml');
 T(!parsed.getElementsByTagName('parsererror').length && /w:orient="landscape"/.test(docXml) && /<w:bidi\/>/.test(docXml) && /w:fill="163E35"/.test(docXml) && /C8943E/.test(docXml), 'ونصُّه سليمُ البناء، عرضيٌّ من اليمين بألوان العرض');
 T(w.MFU_SECTIONS.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
 const ph = w.mfuPrintHtml(R);
-T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 11 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وأحد عشر قسمًا وخطِّ العرض');
+T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 13 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وثلاثة عشر قسمًا وخطِّ العرض');
 let printed = 0; w.open = () => ({ document:{ open(){}, write(){}, close(){} }, focus(){}, print(){ printed++; } });
 w.mfuPdf(); await wait(450);
 T(printed === 1, 'وزرُّه يفتح نافذةَ الطباعة (حفظٌ كـ PDF)');
 const sheets = []; w.xlsxLoad = () => Promise.resolve(true);
 w.XLSX = { utils:{ book_new: () => ({}), aoa_to_sheet: rows => ({ rows }), book_append_sheet: (wb, ws, name) => { sheets.push([name, ws.rows[0]]); } }, writeFile: () => {} };
 await w.mfuXlsx();
-T(sheets.length === 11 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — إحدى عشرة ورقة');
+T(sheets.length === 13 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — ثلاث عشرة ورقة');
 
 console.log('\n══ ٧ · باوربوينت من قالب الوزارة (V20.4) ══');
 const tplBuf = readFileSync('templates/weekly-readers.pptx');
@@ -216,6 +216,18 @@ T(R4.blocks.some(r => r[0] === 'أبرز الأعمال المنجزة') && /م�
 await open('mcos'); await wait(1700);   /* مؤقّتُ «رآها» من الملخّص السابق ينقضي أوّلًا */
 w.localStorage.setItem('nsk14.mfuSeen', '0'); w.render(1); await wait(40);
 T(w.mfuUnseen() > 0 && /متابعة الوزارة\s*\S+/.test(d.getElementById('nav').textContent) && !!d.querySelector('#nav a[data-p="mfu"] .tb-badge'), 'والجديدُ منذ آخر زيارةٍ شارةٌ على «متابعة الوزارة» في القائمة');
+
+console.log('\n══ ١١ · نضجُ المتابعة: الأعمارُ والحملُ ومسارُ الأسابيع وقرارُ الوزارة (V20.9) ══');
+w.mfuPut('chal', 'COLD', { t:'تحدٍّ قديم', m:'', o:'المهندس', st:'مفتوح', at:Date.now() - 20 * 864e5, hist:[{ at:Date.now() - 20 * 864e5, by:'x', f:'new', v:'' }] });
+const ch9 = await open('mchal');
+T(/مفتوحٌ منذ/.test(ch9.textContent) && /٢٠|20/.test(ch9.textContent), 'التحدي المفتوحُ عشرين يومًا يُعلَّم بعمره بالأحمر');
+const ol = w.mfuOwnersLoad();
+T(ol.length > 0 && ol.every(o => o.n && o.all >= 0) && ol[0].late >= (ol[ol.length - 1].late), 'حملُ المسؤولين: تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ اسم — المتأخرُ أوّلًا');
+w.MFU.v.snap = { '2026-W37':{ sv:100, campIns:10, corIns:2, obs:50 }, '2026-W38':{ sv:180, campIns:30, corIns:5, obs:40 } };
+const sm9 = await open('mfu');
+T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.test(sm9.textContent) && /الحملُ على المسؤولين/.test(sm9.textContent) && /بانتظار قرار الوزارة/.test(sm9.textContent), 'والملخّصُ: مسارُ الأسابيع بفروقه، والحمل، وما ينتظر قرارَ الوزارة');
+const R9 = w.mfuReport();
+T(R9.weeks.length === 2 && R9.owners.length > 0 && R9.kpis.some(k => k[0] === 'بانتظار قرار الوزارة'), 'والتقريرُ يحملها');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

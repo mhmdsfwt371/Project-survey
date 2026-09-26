@@ -1074,7 +1074,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3931,6 +3931,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'مفتوحٌ منذ':'Open for', 'الحملُ على المسؤولين':'Load per owner', 'مهامٌّ مفتوحة':'Open tasks', 'مسارُ الأسابيع':'Weekly trend', 'الأسبوع':'Week', 'بانتظار قرار الوزارة':'Awaiting ministry decision', 'نقطةً معتمدةً تقنيًّا':'technically approved points',
  'الإشعارات على هذا الجهاز':'Notifications on this device', 'النوافذ المنبثقة تعمل — أوقفها':'Pop-ups are on — turn off', 'شغّل النوافذ المنبثقة':'Turn on pop-ups', 'إشعارات الجهاز تعمل — أوقفها':'Device notifications are on — turn off', 'شغّل إشعارات الجهاز':'Turn on device notifications', 'ألغِ الكتم':'Unmute', 'كتمٌ حتى الغد':'Mute until tomorrow', 'مكتومٌ حتى':'Muted until', 'الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.':'The bell always counts everything — this stops the interruptions, not the notifications. To turn them off in the system itself: iPhone → Settings → Notifications → this app → turn off “Allow Notifications”. Android: long-press the notification → Turn off.', 'إشعاراتٍ جديدة':'new notifications', 'اضغط لرؤيتها في الجرس':'Tap to see them in the bell', 'كتم ساعة':'Mute 1 hour', 'كُتمت الإشعاراتُ ساعةً على هذا الجهاز':'Notifications muted for an hour on this device',
  'مستحقٌّ خلال ٧ أيام':'Due within 7 days', 'متوقفة أو بانتظار قرار':'Stopped or awaiting decision', 'آخر اجتماع':'Last meeting', 'تغييرًا منذه':'changes since', 'أبرز الأعمال المنجزة':'Key work completed', 'أبرز المهام القادمة':'Key upcoming tasks', 'الاعتمادات والدعم المطلوب':'Approvals and support needed', 'المهام المتأخرة':'Late tasks', 'ما تغيّر منذ آخر اجتماع':'Changes since the last meeting', 'تأجيل الموعد':'Due date postponed',
  'آخر التحديثات — هذا الأسبوع':'Latest updates — this week', 'لا تحديثاتٍ في سبعة أيام.':'No updates in seven days.', 'تحدّي مسح':'Survey challenge', 'طلب الوزارة':'Ministry request', 'أُنشئ':'Created', 'أُنشئت':'Created', 'رُبط بمهمة':'Linked to task', 'إفادة':'Response', 'من المهمة':'From task', 'مهمة التنفيذ':'Execution task', 'مهمة تنفيذ':'Execution task', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'Execution task created in weekly tasks', 'نُفِّذ طلبُ الوزارة':'Ministry request fulfilled', 'تنفيذُ طلبٍ للوزارة':'Fulfilling a ministry request', 'مرتبطة بـ':'Linked to',
@@ -6708,6 +6709,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'مفتوحٌ منذ':'کھلا ہوا', 'الحملُ على المسؤولين':'ذمہ داروں پر بوجھ', 'مهامٌّ مفتوحة':'کھلے کام', 'مسارُ الأسابيع':'ہفتہ وار رجحان', 'الأسبوع':'ہفتہ', 'بانتظار قرار الوزارة':'وزارت کے فیصلے کے منتظر', 'نقطةً معتمدةً تقنيًّا':'تکنیکی طور پر منظور پوائنٹس',
  'الإشعارات على هذا الجهاز':'اس آلے پر اطلاعات', 'النوافذ المنبثقة تعمل — أوقفها':'پاپ اپ آن ہیں — بند کریں', 'شغّل النوافذ المنبثقة':'پاپ اپ آن کریں', 'إشعارات الجهاز تعمل — أوقفها':'آلے کی اطلاعات آن ہیں — بند کریں', 'شغّل إشعارات الجهاز':'آلے کی اطلاعات آن کریں', 'ألغِ الكتم':'خاموشی ختم کریں', 'كتمٌ حتى الغد':'کل تک خاموش', 'مكتومٌ حتى':'خاموش تک', 'الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.':'گھنٹی ہمیشہ سب گنتی ہے — یہ خلل روکتا ہے، اطلاعات نہیں۔ سسٹم سے بند کرنے کے لیے: آئی فون ← سیٹنگز ← اطلاعات ← «متابعة المشروع» ← «اطلاعات کی اجازت» بند کریں۔ اینڈرائیڈ: اطلاع پر دیر تک دبائیں ← بند۔', 'إشعاراتٍ جديدة':'نئی اطلاعات', 'اضغط لرؤيتها في الجرس':'گھنٹی میں دیکھنے کے لیے دبائیں', 'كتم ساعة':'ایک گھنٹہ خاموش', 'كُتمت الإشعاراتُ ساعةً على هذا الجهاز':'اس آلے پر اطلاعات ایک گھنٹے کے لیے خاموش',
  'مستحقٌّ خلال ٧ أيام':'۷ دن میں واجب', 'متوقفة أو بانتظار قرار':'رکے ہوئے یا فیصلے کے منتظر', 'آخر اجتماع':'آخری اجلاس', 'تغييرًا منذه':'تبدیلیاں تب سے', 'أبرز الأعمال المنجزة':'اہم مکمل کام', 'أبرز المهام القادمة':'اہم آئندہ کام', 'الاعتمادات والدعم المطلوب':'منظوریاں اور درکار مدد', 'المهام المتأخرة':'تاخیر والے کام', 'ما تغيّر منذ آخر اجتماع':'آخری اجلاس سے تبدیلیاں', 'تأجيل الموعد':'تاریخ مؤخر',
  'آخر التحديثات — هذا الأسبوع':'تازہ ترین — اس ہفتے', 'لا تحديثاتٍ في سبعة أيام.':'سات دنوں میں کوئی تازہ کاری نہیں۔', 'تحدّي مسح':'سروے چیلنج', 'طلب الوزارة':'وزارت کی درخواست', 'أُنشئ':'بنایا گیا', 'أُنشئت':'بنایا گیا', 'رُبط بمهمة':'کام سے منسلک', 'إفادة':'جواب', 'من المهمة':'کام سے', 'مهمة التنفيذ':'عمل درآمد کا کام', 'مهمة تنفيذ':'عمل درآمد کا کام', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'عمل درآمد کا کام ہفتہ وار کاموں میں بن گیا', 'نُفِّذ طلبُ الوزارة':'وزارت کی درخواست پوری', 'تنفيذُ طلبٍ للوزارة':'وزارت کی درخواست پر عمل', 'مرتبطة بـ':'منسلک',
@@ -26413,8 +26415,9 @@ function mfuSummary(){
     + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
     + box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
     + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
+    + box('بانتظار قرار الوزارة', nm(mfuMinWait()), esc(t('نقطةً معتمدةً تقنيًّا')), '')
     + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>')
-    + mfuBlocksCard() + mfuTimelineCard();
+    + mfuBlocksCard() + mfuOwnersCard() + mfuWeeksCard() + mfuTimelineCard();
 }
 function mfuWeekRows(){
   return wtRows().slice().sort(function(a, b){ var o = { 'متوقف':0, 'جاري العمل':1, 'قيد الانتظار':2, 'مكتمل':3 }; return (o[a.st] - o[b.st]) || String(a.due || '9').localeCompare(String(b.due || '9')); }).map(function(r){
@@ -26581,6 +26584,32 @@ function mfuBlocksCard(){
 }
 /* الجديدُ منذ آخر زيارةٍ لمتابعة الوزارة — على هذا الجهاز */
 function mfuUnseen(){ var seen = +lsGet('nsk14.mfuSeen') || 0; return mfuTimeline(14, 200).filter(function(e){ return e.at > seen; }).length; }
+/* ═══ نضجُ المتابعة (V20.9) ═══
+   ما تسأله الوزارةُ بعد الأرقام: منذ متى هذا مفتوح؟ ومن عليه أكثرُ الأحمال؟ وأين كنّا
+   الأسبوعَ الماضيَ والذي قبله؟ وماذا ينتظر قرارَنا نحن؟ — أعمارُ المفتوح بإنذارٍ بعد أربعة
+   عشر يومًا، وحملُ كلِّ مسؤول، ومسارُ الأسابيع من اللقطات، وما ينتظر الوزارةَ نفسَها. */
+function mfuAgeDays(at){ return at ? Math.floor((Date.now() - at) / 864e5) : 0; }
+function mfuAgePill(at, closed){ if (closed || !at) return ''; var dd = mfuAgeDays(at); return dd >= 14 ? pill(t('مفتوحٌ منذ') + ' ' + nm(dd) + ' ' + t('يوم'), 'bad') : dd >= 7 ? pill(nm(dd) + ' ' + t('يوم'), 'wrn') : ''; }
+function mfuOpenedAt(x){ var h = Array.isArray(x.hist) ? x.hist.filter(function(e){ return e.f === 'new'; })[0] : null; return (h && h.at) || x.at || 0; }
+function mfuOwnersLoad(){
+  var by = {};
+  var add = function(n, k){ n = String(n || '').trim(); if (!n) return; var o = by[n] = by[n] || { chal:0, task:0, late:0 }; o[k]++; };
+  mfuAllChal().forEach(function(c){ if (!mfuChalClosed(c) && c.owner) add(c.owner, 'chal'); });
+  wtRows().forEach(function(r){ if (r.st === 'مكتمل') return; add(r.who, 'task'); if (wtLate(r)) add(r.who, 'late'); });
+  return Object.keys(by).map(function(n){ var o = by[n]; o.n = n; o.all = o.chal + o.task; return o; }).sort(function(a, b){ return b.late - a.late || b.all - a.all; });
+}
+function mfuOwnersCard(){
+  var L = mfuOwnersLoad().slice(0, 8); if (!L.length) return '';
+  return cardFlush(t('الحملُ على المسؤولين'), table(['المسؤول', 'تحدياتٌ مفتوحة', 'مهامٌّ مفتوحة', 'متأخرة'], L.map(function(o){ return ['<b>' + esc(dispName(o.n)) + '</b>', N(o.chal), N(o.task), o.late ? '<b class="num" style="color:#C0392B">' + nm(o.late) + '</b>' : N(0)]; })));
+}
+function mfuWeeksCard(){
+  var snap = mfuData().snap || {}, keys = Object.keys(snap).sort().slice(-8); if (keys.length < 2) return '';
+  return cardFlush(t('مسارُ الأسابيع'), table(['الأسبوع', 'المسح', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات'], keys.map(function(k, i){
+    var v = snap[k], p = i ? snap[keys[i - 1]] : null, dv = function(f){ return p && p[f] != null ? ' <span class="hint" style="margin:0">(' + (v[f] - p[f] >= 0 ? '+' : '') + nm(v[f] - p[f]) + ')</span>' : ''; };
+    return ['<span class="num">' + esc(k) + '</span>', N(v.sv || 0) + dv('sv'), N(v.campIns || 0) + dv('campIns'), N(v.corIns || 0) + dv('corIns'), N(v.obs || 0) + dv('obs')];
+  })));
+}
+function mfuMinWait(){ var n = 0; (STATE.sites || []).forEach(function(x){ if (lifeOf(x) === 'minwait') n++; }); return n; }
 function mfuTimelineCard(){
   var W0 = STATE.wtask || {}, sinceMeet = W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5;
   var L = mfuTimeline(sinceMeet ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7, 12), seen = +lsGet('nsk14.mfuSeen') || 0;
@@ -26609,8 +26638,9 @@ function mfuChal(){
       : c.src === 'manual' ? (ed ? sel('data-mchalf="' + esc(c.id) + '|party"', c.party || 'شركة الخدمة', MFU_PARTIES) : esc(t(c.party || '—'))) : '\u2014';
     var owner = (c.src !== 'task' && ed) ? '<input data-' + (c.src === 'field' ? 'fch="' + esc(fk) : 'mchalf="' + esc(c.id)) + '|owner" value="' + esc(c.owner) + '" style="min-width:110px">' : esc(c.owner || '\u2014');
     var mit = (c.src !== 'task' && ed) ? '<textarea data-' + (c.src === 'field' ? 'fch="' + esc(fk) : 'mchalf="' + esc(c.id)) + '|m" rows="2" style="min-width:170px">' + esc(c.m) + '</textarea>' : esc(c.m || '\u2014');
-    var st = done ? pill(t('تم الحل') + (c.at ? ' \u00b7 ' + fmtDate(c.at) : ''), 'ok')
-      : (c.src === 'task' ? pill(t('متوقفة'), 'bad') : (ed ? (c.src === 'field' ? sel('data-fch="' + esc(fk) + '|st"', c.st, ST) : sel('data-mfuchalst="' + esc(c.id) + '"', c.st, ST)) : pill(t(c.st), 'wrn')));
+    var age = c.src === 'manual' ? mfuAgePill(mfuOpenedAt(mfuList('chal').filter(function(x){ return x.id === c.id; })[0] || {}), done) : c.src === 'field' ? mfuAgePill(((mfuData().fch || {})[c.t] || {}).seen || ((mfuData().fch || {})[c.t] || {}).at, done) : '';
+    var st = (age ? age + ' ' : '') + (done ? pill(t('تم الحل') + (c.at ? ' \u00b7 ' + fmtDate(c.at) : ''), 'ok')
+      : (c.src === 'task' ? pill(t('متوقفة'), 'bad') : (ed ? (c.src === 'field' ? sel('data-fch="' + esc(fk) + '|st"', c.st, ST) : sel('data-mfuchalst="' + esc(c.id) + '"', c.st, ST)) : pill(t(c.st), 'wrn'))));
     var task = c.tk ? pill('#' + c.tk.id + ' \u00b7 ' + t(c.tk.st), c.tk.done ? 'ok' : (c.tk.st === 'متوقف' ? 'bad' : 'wrn'))
       : (c.src !== 'task' && !done && wtMay() ? btn('\uFF0B ' + t('مهمة معالجة'), 'btn-quiet btn-sm', ' data-chaltask="' + esc(c.key) + '"') : '\u2014');
     return ['<span class="pill" style="background:' + S0[1] + '22;color:' + S0[1] + ';border:1px solid ' + S0[1] + '55">' + esc(t(S0[0])) + '</span>', what, party, owner, mit, st, task,
@@ -26636,7 +26666,7 @@ function mfuReq(){
           : (ed ? '<textarea data-mfurequ="' + esc(x.id) + '" rows="2" style="min-width:160px">' + esc(x.u || '') + '</textarea>' : esc(x.u || ''));
         var stc = V.tk && V.tk.done ? pill(t('منجز'), 'ok') : (ed ? '<select data-mfureqst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(V.st), V.st === 'منجز' ? 'ok' : 'wrn'));
         var tk = V.tk ? pill('#' + V.tk.id + ' \u00b7 ' + t(V.tk.st), V.tk.done ? 'ok' : (V.blocked ? 'bad' : 'wrn')) : (V.st !== 'منجز' && wtMay() ? btn('\uFF0B ' + t('مهمة تنفيذ'), 'btn-quiet btn-sm', ' data-reqtask="' + esc(x.id) + '"') : '\u2014');
-        return [N(i + 1), '<b>' + esc(x.t || '') + '</b>', up, esc(x.s || ''), stc + (V.blocked ? ' ' + pill(t('متوقفة'), 'bad') : ''), tk,
+        return [N(i + 1), '<b>' + esc(x.t || '') + '</b>' + (V.st !== 'منجز' ? '<div style="margin:3px 0 0">' + mfuAgePill(mfuOpenedAt(x), false) + '</div>' : ''), up, esc(x.s || ''), stc + (V.blocked ? ' ' + pill(t('متوقفة'), 'bad') : ''), tk,
                 ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="req|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
       }))) : '<p class="hint">' + esc(t('لا طلباتٍ مسجّلةٌ بعد.')) + '</p>')
     + (form ? '<details class="mfu-add"' + (L.length ? '' : ' open') + '><summary>\uFF0B ' + esc(t('طلبٌ جديد')) + '</summary>' + form + '</details>' : '');
@@ -26672,6 +26702,7 @@ function mfuReport(){
           ['تركيب الممرات', pc(K.corIns, K.cor) + '٪', K.corIns + ' من ' + K.cor, dlt(K.corIns, 'corIns')],
           ['المعوقات القائمة', String(K.obs), '', dlt(K.obs, 'obs')],
           ['شركات الخدمة (ممتاز · متوسط · ضعيف)', K.ex + ' · ' + K.md + ' · ' + K.wk, '', null],
+          ['بانتظار قرار الوزارة', String(mfuMinWait()), 'نقطةً معتمدةً تقنيًّا', null],
           ['تحدياتٌ مفتوحة', String(K.chal), '', null], ['طلباتٌ قيد المتابعة', String(K.req), '', null]],
     tasks:(wtRows().length ? mfuWeekRows().map(function(x){ var r = x.r;
             var link = r.chal ? (r.st === 'مكتمل' ? '✓ تحدٍّ حُلّ: ' : '⚠ تحدٍّ: ') + String(r.chal).replace(/^[FMT]:/, '') : r.req ? (r.st === 'مكتمل' ? '✓ طلبٌ نُفّذ' : '📨 طلب الوزارة') : '';
@@ -26692,6 +26723,8 @@ function mfuReport(){
       B.late.slice(0, 10).forEach(function(r){ rows.push(['المهام المتأخرة', r.n, (r.who || 'بلا مسؤول') + ' · تأخّر ' + (-wtDue(r)) + ' يوم']); });
       return rows; })(),
     blk:(function(){ var B = mfuWeekBlocks(); return { done:B.done.length, doneLast:B.doneLast, next:B.next.length, late:B.late.length, wait:B.wait.length, meet:B.meet }; })(),
+    weeks:(function(){ var snap = mfuData().snap || {}; return Object.keys(snap).sort().slice(-8).map(function(k){ var v = snap[k]; return [k, v.sv || 0, v.campIns || 0, v.corIns || 0, v.obs || 0]; }); })(),
+    owners:mfuOwnersLoad().slice(0, 10).map(function(o){ return [o.n, o.chal, o.task, o.late]; }),
     updTitle:(function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? 'ما تغيّر منذ آخر اجتماع (' + new Date(W0.meetAt).toISOString().slice(0, 10) + ')' : 'آخر التحديثات — هذا الأسبوع'; })(),
     upd:mfuTimeline((function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7; })(), 30).map(function(e){ return [new Date(e.at).toISOString().slice(0, 10), e.k, String(e.ref).slice(0, 80), String(e.txt).slice(0, 140), e.by]; }),
     daily:diaryRows().slice(-14).reverse().map(function(r){ return [r.day, r.ins, r.sv, r.stuck || 0]; })
@@ -26708,6 +26741,8 @@ var MFU_SECTIONS = [
   ['chal', 'التحديات وآليات المعالجة', ['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'الحالة']],
   ['req', 'طلبات الوزارة', ['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', 'مهمة التنفيذ']],
   ['upd', 'آخر التحديثات — هذا الأسبوع', ['متى', 'النوع', 'البند', 'التحديث', 'بواسطة']],
+  ['owners', 'الحمل على المسؤولين', ['المسؤول', 'تحديات مفتوحة', 'مهام مفتوحة', 'متأخرة']],
+  ['weeks', 'مسار الأسابيع', ['الأسبوع', 'المسح', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات']],
   ['daily', 'ملخص التركيبات اليومي — آخر ١٤ يومًا', ['اليوم', 'التركيب', 'المسح', 'المتعذّر']]];
 function mfuSecTitle(R, sc){ return sc[0] === 'upd' && R.updTitle ? R.updTitle : sc[1]; }
 function mfuRowsOf(R, key){
@@ -28537,6 +28572,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.9', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'متابعة الوزارة: التحدي أو الطلب المفتوح أكثر من أسبوعين يُعلَّم بعمره بالأحمر، و«الحمل على المسؤولين» يقول من عليه كم تحديًا ومهمة ومتأخرًا، و«مسار الأسابيع» يعرض لقطات الأسابيع بفروقها، و«بانتظار قرار الوزارة» في المؤشرات — وكلها في التقرير.' ] },
   { v:'V20.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'الإشعارات العائمة عليها ✕ تغلقها بلا انتقال، و«كتم ساعة» من البطاقة نفسها — وما يصل دفعة واحدة (بعد مزامنة) صار بطاقة واحدة تقول العدد بدل كومة تغطي الشاشة.',
       'في «حسابي» بطاقة «الإشعارات على هذا الجهاز»: إيقاف النوافذ المنبثقة، وإيقاف إشعارات الجهاز، وكتم حتى الغد — والجرس يعدّ كل شيء دائمًا. ومعها طريق الإيقاف من إعدادات الآيفون والأندرويد.' ] },
