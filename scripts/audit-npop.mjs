@@ -63,6 +63,10 @@ T(+w.localStorage.getItem('nsk14.nmute') > Date.now() && !!d.querySelector('[dat
 d.querySelector('[data-nset="unmute"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(30);
 T(+w.localStorage.getItem('nsk14.nmute') === 0, 'و«ألغِ الكتم» يعيدها');
 
+console.log('\n══ ٥ · وفي صفحة الإشعارات نفسِها (V21.1) ══');
+w.goPage('notif'); w.render(1); await wait(80);
+T(/الإشعارات على هذا الجهاز/.test(d.getElementById('content').textContent) && !!d.querySelector('#content [data-nset="npop"]'), 'بطاقةُ الإيقاف والكتم في صفحة الإشعارات حيث يبحث عنها الناس');
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ التحكّم في الإشعارات نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);
