@@ -5,7 +5,7 @@
    سكربتًا حُذف، أو أمرًا تغيّر، أو علامةً لم تعد في السير — عمل الوكيلُ بقاعدةٍ
    ميتة. يُفحَص هنا أن الدستورَ يطابق المستودعَ الحيّ.
    ═════════════════════════════════════════════════════════════════════════ */
-import { readFileSync, existsSync } from 'fs';
+import { readFileSync, existsSync , readdirSync } from 'fs';
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
 
@@ -33,7 +33,8 @@ const dead = fns.filter(f => !new RegExp('function ' + f + '\\(').test(html));
 T(fns.length >= 12 && !dead.length, 'كلُّ دالّةٍ في الخريطة معرَّفةٌ في التطبيق: ' + fns.length + (dead.length ? ' — ميتة: ' + dead.join(' · ') : ''));
 const vars = ['CAT_DEF', 'SHAPES', 'LIFE', 'SVD_CARDS', 'NAV', 'TABS', 'CFG', 'RELEASE_NOTES'].filter(v => A.includes('`' + v + '`'));
 T(vars.every(v => new RegExp('var ' + v + '\\b').test(html)), 'والمتغيّراتُ المسمّاةُ قائمة: ' + vars.join(' · '));
-T(/'اسمٌ مركَّب':'Compound names',/.test(html) && /'اسمٌ مركَّب':'مرکب نام',/.test(html) && A.includes("'اسمٌ مركَّب':'Compound names',"), 'ومرساتا القاموس اللتان يسمّيهما الدستورُ موجودتان');
+const dictTxt = (() => { try { const f = readdirSync('i18n').filter(x => /^dict-[0-9a-f]{10}\.js$/.test(x))[0]; return f ? readFileSync('i18n/' + f, 'utf8') : ''; } catch { return ''; } })();   /* القواميسُ في ملفها منذ V21.6 */
+T(/'اسمٌ مركَّب':'Compound names',/.test(dictTxt) && /'اسمٌ مركَّب':'مرکب نام',/.test(dictTxt) && A.includes("'اسمٌ مركَّب':'Compound names',") && A.includes('i18n/dict-'), 'ومرساتا القاموس اللتان يسمّيهما الدستورُ موجودتان في ملف القاموس');
 T(/class="ver-tag"/.test(html) && A.includes('class="ver-tag"'), 'وموضعُ ختم النسخة هو وسمُ الرأس');
 
 /* الإضافةُ كما نُشرت */
