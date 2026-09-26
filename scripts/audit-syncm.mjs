@@ -89,8 +89,13 @@ d.querySelector('[data-iosnudge="done"]').dispatchEvent(new w.MouseEvent('click'
 T(!d.getElementById('iosNudge') && +w.localStorage.getItem('nsk14.iosNudge') > Date.now() + 29 * 864e5, '«تم» يُخفيها شهرًا');
 w.localStorage.removeItem('nsk14.iosNudge'); w.pwaStandalone = () => true; w.render(1); await wait(40);
 T(!d.getElementById('iosNudge'), 'ولا تظهر في التطبيق المثبَّت');
-w.pwaStandalone = () => false; w.pwaIOS = () => false; w.render(1); await wait(40);
-T(!d.getElementById('iosNudge'), 'ولا على أندرويد أو الحاسوب');
+w.pwaStandalone = () => false; w.pwaIOS = () => false; w.INSTALL_EVT = null; w.render(1); await wait(40);
+T(!d.getElementById('iosNudge'), 'ولا على حاسوبٍ أو أندرويد لم يعرض المتصفّحُ فيه التثبيت');
+let prompted = 0; w.INSTALL_EVT = { prompt(){ prompted++; }, userChoice: Promise.resolve({ outcome:'accepted' }) }; w.localStorage.removeItem('nsk14.iosNudge'); w.render(1); await wait(40);
+const inst = d.querySelector('[data-iosnudge="install"]');
+T(!!inst && /ضغطةٌ واحدة/.test(d.getElementById('iosNudge').textContent), 'وعلى أندرويد حين يعرض المتصفّحُ التثبيت: «ثبّت الآن» بضغطةٍ واحدة (V19.7)');
+inst.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
+T(prompted === 1 && !d.getElementById('iosNudge') && +w.localStorage.getItem('nsk14.iosNudge') > Date.now() + 29 * 864e5, 'والضغطُ يفتح نافذةَ التثبيت، والقبولُ يُخفي الحثَّ شهرًا');
 w.IDB_BAD = false; w.render(1); await wait(40);
 T(!d.getElementById('idbBanner'), 'وحين يعود الحفظُ المحليُّ تزول اللافتة');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
