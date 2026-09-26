@@ -11,6 +11,7 @@
      MINISTRY_SECRET — إن وُجد: رمزُ اليوم = أوّلُ ستةِ أحرفٍ من sha256(secret|YYYY-MM-DD)،
                        ويُكتَب في اللقطة sha256(الرمز) لا الرمزُ نفسُه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { createHash, pbkdf2Sync, randomBytes, createCipheriv } from 'crypto';
 import { createRequire } from 'module';

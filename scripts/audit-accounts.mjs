@@ -9,6 +9,7 @@
    تظهر للفنيِّ في قائمة الناس.
    ═════════════════════════════════════════════════════════════════════════ */
 /* QA بعين المختبِر: سلسلةُ الحساب كاملةً — طلبٌ → خادمٌ → دخولٌ → رتبةٌ → رؤيةٌ → إسناد */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

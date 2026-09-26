@@ -9,6 +9,7 @@
    ويتحقّق الجردُ كذلك من بقايا `TECHS` الفارغة بعد توحيد مصدر الأشخاص:
    منتقي المنفِّذ في دفتر الحركة كان فارغًا لأنه يقرأ البذرةَ المحذوفة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

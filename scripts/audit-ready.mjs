@@ -8,6 +8,7 @@
    ينقص بترتيب الأثر، ولكلِّ سطرٍ سببُه وزرٌّ يذهب إلى موضع ضبطه — ويختفي
    السطرُ فورَ ضبطه. ولا يراها من لا يملك الضبط.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

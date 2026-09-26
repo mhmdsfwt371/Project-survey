@@ -9,6 +9,7 @@
    وكُتب لأن أخطاءَ هذا المشروع أربعًا كانت في المقياس لا في المقيس. والمقياسُ
    الذي لا يُسجَّل يُعاد اختراعُه في كلِّ مرةٍ، ويُخترَع ناقصًا.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -9,6 +9,7 @@
    فهذا الجردُ يعيد بناءَ ما يجب أن يكون من `SITES_RAW` مباشرةً، ويقيس عليه
    ما بناه التطبيقُ فعلًا. الرقمُ الخاطئ في لوحة الوزارة أسوأ من زرٍّ مفقود.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
 import { dictSrc } from './lib/dict-src.mjs';
 import { createRequire } from 'module';

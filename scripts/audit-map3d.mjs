@@ -9,6 +9,7 @@
    في القوائم والأدوار والتصدير. المحرّكُ الحقيقيُّ لا يعمل في المحاكي فيُستبدَل
    بمحرّكٍ زائفٍ يسجّل ما طُلب منه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

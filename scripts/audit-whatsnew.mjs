@@ -6,6 +6,7 @@
    خرجت رسالةُ نسخةٍ قديمة. يُختبَر: أوّلُ تثبيتٍ صامت، وبعد التحديث مرةٌ واحدة،
    ولآخر نسخةٍ وحدَها، والنسخةُ الحاليةُ لها سطورُها.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -5,6 +5,7 @@
    السجلِّ ذاتُ الإحداثيات، وحالةُ كلِّ نقطة من lifeOf نفسِها، وتصديرُ الوزارة بلا
    جوالاتٍ ولا أسماءٍ ولا ملاحظات، والمخطّطاتُ في docs/schema مطابقةٌ لمصدرها.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { createRequire } from 'module';

@@ -5,6 +5,7 @@
    والحكمُ «يعدّيه؟» صحيحان، و«اعتمد» يكتب الوزنَ لكلِّ مشعرٍ حيٍّ والتارجتَ،
    و«ألغِ الإضافي» يجعل المعاملَ ١ — وللمدير وحدَه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

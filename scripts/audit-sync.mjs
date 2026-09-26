@@ -8,6 +8,7 @@
    حقيقيًّا ويفتح السجلات، ويرى العدَّ يتحرّك ويُزامِن عند الصفر ويُعاد، ويحذف
    حسابًا فيذهب طلبُه معه ويمسح المنتهيةَ بزرّها.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

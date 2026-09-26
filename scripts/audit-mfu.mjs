@@ -6,6 +6,7 @@
    والأضعفُ أوّلًا، والسجلّان يُكتَبان في settings/mfu للمكتب وحدَه، والمقارنةُ بلقطة
    الأسبوع الماضي، والمنحنى اليوميّ.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

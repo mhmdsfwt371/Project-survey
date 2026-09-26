@@ -9,6 +9,7 @@
    ويتحقّق أن كلَّ زرِّ انتقالٍ (`data-p`) يبلغ شاشةً موجودةً في مكانها من
    الدورة، فلا يقفز زرٌّ إلى معرِّفٍ حُذف أو أُعيدت تسميتُه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

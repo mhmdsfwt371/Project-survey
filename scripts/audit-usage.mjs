@@ -5,6 +5,7 @@
    عبر الأجهزة في وثيقةٍ واحدةٍ مرةً في اليوم؛ والبطاقةُ تجمع الثلاثين يومًا
    وتقيس قراءاتِ اليوم على الحصة — بلا كتابةٍ جديدةٍ من الجهاز ولا مستمع.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, writeFileSync, mkdtempSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { tmpdir } from 'os';

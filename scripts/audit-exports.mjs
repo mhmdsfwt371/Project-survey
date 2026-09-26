@@ -12,6 +12,7 @@
    يصلها منفذ — فورقةٌ تُبنى ولا تُطلَب شيفرةٌ ميتة، وزرٌّ يطلب ورقةً لا وجودَ
    لها ملفٌّ فارغٌ يخرج بلا شكوى.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

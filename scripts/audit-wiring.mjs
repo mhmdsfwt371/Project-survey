@@ -8,6 +8,7 @@
    الجردُ يومَ كُتب ستَّ فجواتٍ في نموذجَي الفكِّ والصيانة وسجلِّ «آخر ما تمّ»
    — كلُّها تعمل في الشاشة ولا تصل القاعدة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

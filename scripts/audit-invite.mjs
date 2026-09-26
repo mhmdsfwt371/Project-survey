@@ -9,6 +9,7 @@
    الفحصُ قبل الكتابة، وتوليدُ كلمةٍ حين لا تُلصَق، وأن لا كلمةَ تبقى بعد
    المسح، وأن الفنيَّ لا يكتب طلبات.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

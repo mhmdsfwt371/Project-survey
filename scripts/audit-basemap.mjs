@@ -5,6 +5,7 @@
    والإسنادُ ظاهر، والعارضُ مضمَّنٌ بنسخٍ مثبَّتةٍ ورخصٍ لا من شبكةٍ عامة، وبلا
    الملفِّ يبقى كلُّ شيءٍ كما كان (عودةٌ إلى الشبكة)، والوصفةُ موثَّقة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, existsSync, statSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

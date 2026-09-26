@@ -7,6 +7,7 @@
    بأسماء النقاط ورابطِ التطبيق؛ وواتساب يُفتَح على رقمه بالصيغة الدولية؛
    ومن بلا جوالٍ يُقال له ذلك لا يُترَك صامتًا.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

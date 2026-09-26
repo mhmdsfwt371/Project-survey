@@ -12,6 +12,7 @@
          والأسطورةُ تُشتقُّ منه.
      ٦ · القوائمُ بالاسم: «كاميرات الوزارة — LPR» (V19.1) لا المفتاح ولا الاسمُ القديم.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

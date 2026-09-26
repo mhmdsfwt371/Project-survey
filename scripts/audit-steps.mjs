@@ -7,6 +7,7 @@
    يقرؤه المهندسُ في «أمس·الآن·غدًا» والوزارةُ في «نظرة عامة» — بمن فعل وأين
    ومتى وكم نقطةً كسب. والسجلُّ بسقفٍ فلا يتضخّم.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

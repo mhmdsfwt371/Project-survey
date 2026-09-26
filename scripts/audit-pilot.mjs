@@ -5,6 +5,7 @@
    في «الفك والمراحل ← السلسلة» تقرأ أزمنةَ المراحل من الوثائق نفسِها وتحسب ما
    بينها — والوسمُ للمدير وحدَه، ودليلُ التجربة موجود.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, existsSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

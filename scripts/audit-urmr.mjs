@@ -9,6 +9,7 @@
    زيارةً بعد زيارة بعطلها وما عُمل وما استُبدل، فيبقى للنقطة تاريخُ خدمة.
    وكلاهما يُغلِق مهمتَه فلا تبقى مفتوحةً على عملٍ تمّ.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

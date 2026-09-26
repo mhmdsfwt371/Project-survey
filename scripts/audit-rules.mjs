@@ -10,6 +10,7 @@
    أمران معًا — أن يُقال لماذا مُنع، وألّا يُكتَب شيء. فقولٌ بلا منعٍ تزيين،
    ومنعٌ بلا قولٍ يجعل الفنيَّ يظنُّ الجهازَ عاطلًا.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

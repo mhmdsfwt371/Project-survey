@@ -7,6 +7,7 @@
    بلا زرِّ كتابةٍ يتسرّب. وما وُجد يومَ كُتب هذا: بطاقةُ فتح البلاغ وزرُّ إغلاقه
    كانا بلا حراسةٍ لأن الشريحةَ لم تكن تُرى لغير المكتب.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

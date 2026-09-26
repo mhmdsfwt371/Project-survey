@@ -8,6 +8,7 @@
    يُلتقَط قبل الرسم — للنافذة ولكلِّ لوحٍ مفتوح — ويُعاد بعده؛ والصعودُ إلى
    الرأس يبقى حيث يجب: عند تبديل الشاشة أو الشريحة وحدَه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -6,6 +6,7 @@
    يفعّله المكتبُ يعود المعزولُ إلى الطابور من تلقاء نفسه، والمكتبُ يراه
    موسومًا بزرِّ تفعيلٍ واحد.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

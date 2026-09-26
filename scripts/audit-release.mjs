@@ -9,6 +9,7 @@
    كان يُقال مرةً في العمر فلا يُقال الفشلُ التالي. وبلا شبكةٍ تُقال الحالُ
    ولا تبقى «تُقرأ…» إلى الأبد.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -5,6 +5,7 @@
    بريد)، تُرفَق بالبلاغ في الكتابة نفسِها، وتُنسَخ نصًّا من الأدوات، ويقرؤها
    المهندسُ خطًّا زمنيًّا في شاشة البلاغات.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

@@ -13,6 +13,7 @@
      · لا زرَّ فعلٍ يظهر لمن لا يملك فعلَه
      · وقواعدُ القاعدة تحجب ما تحجبه الواجهة
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

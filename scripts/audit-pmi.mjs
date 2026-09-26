@@ -6,6 +6,7 @@
    (الدروس والمراجعات وأصحاب المصلحة) تُكتَب في settings/pmo بتاريخها، والحذفُ شاهد،
    وللمكتب والإدارة العليا وحدَهم — وإكسلُ المصفوفة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

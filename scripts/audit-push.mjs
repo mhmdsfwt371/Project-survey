@@ -9,6 +9,7 @@
    بقي وأين سببُ الباقي. والرقمُ المعلَنُ صادق: دفعتان متزامنتان كانتا
    تجعلان الأولى تقول «رُفع ٠» ثم يُرفَع بعد لحظة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

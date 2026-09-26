@@ -7,6 +7,7 @@
    والمشرفُ يرى صباحًا من بدأ ومن لم يبدأ ومن أنهى وكم ساعة. وثيقةٌ لكلِّ
    شخصٍ في كلِّ يوم يكتبها صاحبُها وحدَه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

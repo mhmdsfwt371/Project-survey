@@ -8,6 +8,7 @@
    يُنشئان شيئًا ولا يريان الشاشة. ومن فوقُ يرى كلَّ ما أُنشئ تحته، ومن
    دونه ما كتبه هو. والقاعدةُ تحرس الرتبةَ على الطلب نفسِه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

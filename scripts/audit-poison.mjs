@@ -9,6 +9,7 @@
    وundefined يُصفّى قبل الإرسال؛ والرفعُ واحدٌ في كلِّ لحظةٍ بقفلٍ يُفَكُّ
    بعد نصف دقيقة؛ والانقطاعُ يبقى انقطاعًا لا يُعزَل بسببه شيء.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

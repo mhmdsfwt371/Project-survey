@@ -13,6 +13,7 @@
      · «الوتيرة والهدف» و«المواعيد والأزمنة» تقرآن CFG لا تاريخًا مكتوبًا
      · كلُّ تعديلٍ في CFG يُقيَّد رفعُه إلى settings/points
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

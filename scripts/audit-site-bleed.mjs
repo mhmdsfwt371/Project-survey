@@ -11,6 +11,7 @@
      ٣ · وصورُ النموذج تُنسَب إلى نقطتها، ولا تتبع من تركها.
      ٤ · وتبديلُ النقطة قبل الحفظ يمسح ما لم يُحفَظ — لا يورّثه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

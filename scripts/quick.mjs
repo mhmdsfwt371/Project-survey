@@ -16,7 +16,6 @@
    وهو لا يغني عن الحارس قبل الدفعات الكبيرة — يغني عن انتظاره في الصغيرة. */
 
 import { execSync, spawn, spawnSync } from 'child_process';
-process.env.NODE_OPTIONS = ((process.env.NODE_OPTIONS || '') + ' --require ./scripts/lib/jsdom-dict.cjs').trim();   /* القاموسُ في نافذة كلِّ جرد (V21.6) */
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { cpus } from 'os';
 

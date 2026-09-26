@@ -9,6 +9,7 @@
    من الحصار ويُرفَع عملُه، ثم يرقّيه المكتبُ إلى دوره الحقيقي. والدورُ في
    التطبيق ينزل معه — فلا يدّعي ما لا تعطيه القاعدة.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

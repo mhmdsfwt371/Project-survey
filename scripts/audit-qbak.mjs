@@ -5,6 +5,7 @@
    صور، وتُستعاد عند الإقلاع إلى الطابور وإلى مكانها، وتُمحى حين يُرفَع كلُّ شيء —
    ونقصُ النموذج صندوقٌ ثابتٌ أعلاه لا رسالةٌ تختفي.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

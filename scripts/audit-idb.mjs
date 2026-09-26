@@ -6,6 +6,7 @@
    يخطئ → إعادةٌ بتراجع ولافتةٌ وسؤالٌ قبل الإغلاق؛ والمسارُ السليمُ كما كان.
    والتخزينُ الدائمُ يُطلَب مرةً واحدةً ويُرى في صحة النظام.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

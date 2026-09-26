@@ -7,6 +7,7 @@
    كشارة الخريطة التي قالت «outside the view Offered» — وشاشةٌ تنفجر أو
    تُطلق خطأً في المتصفّح.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

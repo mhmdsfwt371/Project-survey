@@ -8,6 +8,7 @@
    تضبط — فالإشرافُ لا يعني الإمساك بكلِّ مقبض. ولا يُسنَد إليها عملٌ
    ميدانيّ. وبها صار مديرُ المشروع يُسنَد إلى مديرٍ كما يُسنَد غيرُه.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

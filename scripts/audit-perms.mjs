@@ -9,6 +9,7 @@
    ويقلب خليةً ويحفظ ويقرأ ما خرج إلى الطابور: وثيقةٌ واحدةٌ settings/perms
    بالشكل الذي تقرؤه القاعدة — وnull لإعادة الافتراضي.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

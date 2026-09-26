@@ -10,6 +10,7 @@
    يُقاس أين وقف: إن وقف على غير ما طلب فالزرُّ لا يصل. القاعدةُ واحدة:
    **الزرُّ يُعرَض والشاشةُ تُرى — أو لا يُعرَض.**
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

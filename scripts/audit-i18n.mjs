@@ -11,6 +11,7 @@
    ويُستثنى ما يبقى عربيًّا بحق: أسماءُ المواقع والشركات والأشخاص —
    بياناتٌ لا واجهة، وترجمتُها تكذب. */
 
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 

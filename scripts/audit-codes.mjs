@@ -8,6 +8,7 @@
    منتقي الإسناد على الخريطة: ليست طبقةً لأن نقاطَها نقاطُ التركيب، فتستعير
    طبقتَه ويُضبَط النوعُ صيانةً.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

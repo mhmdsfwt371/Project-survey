@@ -14,6 +14,7 @@
    عليها أشخاص — يجب أن يُمنَع ويُقال لماذا. فالحمايةُ التي لا تُجرَّب تُكسَر
    في صمت، ويُحذَف ما تعلّق به عملُ موسم.
    ═════════════════════════════════════════════════════════════════════════ */
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
