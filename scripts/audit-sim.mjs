@@ -20,7 +20,8 @@ w.localStorage.setItem('nsk14.tour.x', '1'); await wait(900);
 w.FB.signIn = () => Promise.resolve({ ok:true, role:'admin', name:'مدير' }); w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0); w.liveWatch = () => {}; w.liveSmall = () => {}; w.tourMaybe = () => {};
 d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass1234'; d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(1500); w.toast = () => {}; const wrote = []; w.CORE.set = (k, id, v) => { wrote.push([k, id]); };
-const now = Date.now();
+/* منتصفُ نهار أمس بالتوقيت العالمي: الأوقاتُ لا تعبر حدَّ يومٍ مهما كانت ساعةُ التشغيل (كان يسقط بعد منتصف الليل) */
+const now = Date.parse(new Date(Date.now() - 864e5).toISOString().slice(0, 10) + 'T12:00:00Z');
 const camps = w.STATE.sites.filter(x => x.zone === 'منى' && x.type === 'مخيم' && !x.hidden).slice(0, 20), cors = w.STATE.sites.filter(x => x.zone === 'منى' && x.type === 'ممر' && !x.hidden).slice(0, 5);
 camps.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - (i % 2) * 864e5 - i * 6e5, by:'أحمد', access:'تم الوصول' }; });
 cors.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - 864e5 - i * 6e5, by:'أحمد', access:'تم الوصول' }; });
