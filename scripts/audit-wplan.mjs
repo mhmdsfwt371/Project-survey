@@ -23,8 +23,10 @@ const open = async () => { w.goPage('plan'); w.render(1); await wait(40); const 
 
 console.log('\n══ ١ · للمهندس وحدَه ══');
 T(w.tabsOf('plan').some(tb => tb[0] === 'wplan'), 'المهندسُ يرى «خطة الأسبوع» في التخطيط');
-for (const r of ['supervisor', 'viewer', 'exec']){ w.ROLE = r; w.STATE.meta.role = r; if (w.tabsOf('plan').some(tb => tb[0] === 'wplan') || w.wplanMay()) fails.push('يراها ' + r); }
-T(!fails.length, 'ولا يراها المشرفُ ولا الوزارةُ ولا الإدارةُ العليا');
+for (const r of ['supervisor', 'viewer']){ w.ROLE = r; w.STATE.meta.role = r; if (w.tabsOf('plan').some(tb => tb[0] === 'wplan') || w.wplanSees()) fails.push('يراها ' + r); }
+T(!fails.length, 'ولا يراها المشرفُ ولا الوزارة');
+w.ROLE = 'exec'; w.STATE.meta.role = 'exec';
+T(w.wplanSees() && !w.wplanMay() && w.tabsOf('plan').some(tb => tb[0] === 'wplan'), 'والإدارةُ العليا تراها ولا تكتب فيها (V21.3)');
 w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 
 console.log('\n══ ٢ · النقطةُ بتفاصيلها ══');
@@ -40,7 +42,10 @@ T(c.querySelectorAll('[data-wpstep]').length === 3 && /الاحتياجات وا
 
 console.log('\n══ ٣ · الخطواتُ قائمةُ تحقّق ══');
 for (let i = 0; i < 3; i++){ const cb = d.querySelector('[data-wpstep="' + it.id + '|' + i + '"]'); cb.checked = true; cb.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(40); }
-T(w.pmoList('wplan')[0].st === 'تم' && (w.pmoList('wplan')[0].sdone || []).filter(Boolean).length === 3, 'اكتمالُ الخطوات الثلاث يُتمّ النقطةَ وحدَه');
+T(w.pmoList('wplan')[0].st !== 'تم' && (w.pmoList('wplan')[0].sdone || []).filter(Boolean).length === 3 && w.WPLAN_ACT && w.WPLAN_ACT.kind === 'result', 'اكتمالُ الخطوات لا يُتمّ النقطةَ — يطلب النتيجةَ الفعلية (V21.3)');
+c = await open(); d.getElementById('wpAct').value = 'رُكّب ٦٢ ممرًّا بلا عوائق'; d.querySelector('[data-wpact="' + it.id + '|result"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const dn = w.pmoList('wplan').find(x => x.id === it.id);
+T(dn.st === 'تم' && dn.result === 'رُكّب ٦٢ ممرًّا بلا عوائق' && dn.hist[0].f === 'result', 'وتسجيلُ النتيجة يُتمّها بنتيجتها المكتوبة');
 
 console.log('\n══ ٤ · مهمةٌ أسبوعيةٌ وترحيلٌ وتصدير ══');
 d.getElementById('wpT').value = 'اجتماع مع كدانة'; d.getElementById('wpS').value = ''; d.querySelector('[data-wpsave]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
@@ -51,7 +56,22 @@ T(!!tk && tk.track === 'خطة الأسبوع' && w.pmoList('wplan').find(x => x
 c = await open(); d.querySelector('[data-wpnext="' + it2.id + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 T(w.pmoList('wplan').find(x => x.id === it2.id).wk === w.wplanNextWeek(w.mfuWeekKey()), 'و«رحّل للأسبوع القادم» ينقلها');
 const sheet = w.SHEETS.wplan();
-T(sheet.length === 2 && sheet[1][1] === 'تركيب ممرات عرفات — المرحلة الأولى' && sheet[1][6] === '3/3', 'وإكسلُ الأسبوع بنقاطه وخطواته');
+T(sheet.length === 2 && sheet[1][1] === 'تركيب ممرات عرفات — المرحلة الأولى' && sheet[1][6] === '3/3' && sheet[1][9] === 'رُكّب ٦٢ ممرًّا بلا عوائق', 'وإكسلُ الأسبوع بنقاطه وخطواته ونتيجته');
+
+console.log('\n══ ٥ · تحديثٌ وإغلاقٌ ببديل، وأسابيعُ سابقةٌ بلا إغلاق (V21.3) ══');
+d.getElementById('wpT').value = 'تجربة عوارض بديلة'; d.getElementById('wpS').value = ''; d.querySelector('[data-wpsave]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const it3 = w.pmoList('wplan').find(x => x.t === 'تجربة عوارض بديلة');
+c = await open(); d.querySelector('[data-wpdo="' + it3.id + '|upd"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+d.getElementById('wpAct').value = 'جُرّبت عارضتان — ننتظر عيّنةً ثالثة'; d.querySelector('[data-wpact="' + it3.id + '|upd"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const u3 = w.pmoList('wplan').find(x => x.id === it3.id);
+T(u3.st === 'بانتظار تجارب' && u3.hist[0].f === 'upd' && /عيّنةً ثالثة/.test(u3.hist[0].v), '«تحديث» يسجّل ما حدث ويجعلها «بانتظار تجارب»');
+c = await open(); d.querySelector('[data-wpdo="' + it3.id + '|close"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+d.getElementById('wpAct').value = 'العوارضُ البديلةُ لا تناسب الأعمدة'; d.querySelector('[data-wpact="' + it3.id + '|close"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+const c3 = w.pmoList('wplan').find(x => x.id === it3.id);
+T(c3.st === 'مغلق' && /لا تناسب/.test(c3.closeWhy) && !!d.getElementById('wpT') && /بدلًا من: تجربة عوارض بديلة/.test(d.getElementById('wpN').value), '«إغلاق» بسببه — ونموذجُ نقطةٍ جديدةٍ بدلها مُعبَّأ');
+w.pmoPut('wplan', 'OLD1', { wk:'2026-W30', t:'نقطةٌ من أسبوعٍ فات', st:'جارٍ', at:Date.now() - 30 * 864e5 });
+w.WPLAN_WK = ''; c = await open();
+T(/من أسابيع سابقة بلا نتيجةٍ ولا إغلاق/.test(c.textContent) && /نقطةٌ من أسبوعٍ فات/.test(c.textContent) && !!c.querySelector('[data-wpdo="OLD1|result"]'), 'وما بقي من أسبوعٍ سابقٍ بلا نتيجةٍ ولا إغلاقٍ يظهر أوّلَ الأسبوع الحاليِّ بأزراره');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
