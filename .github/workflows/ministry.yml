@@ -74,7 +74,7 @@ jobs:
             fi
           } > /tmp/ministry/mail.txt
           MAIL_ATTACH=/tmp/ministry/ministry-report.pdf node scripts/mail-send.mjs "قارئات أفاقي — تقريرُ الوزارة الأسبوعي $(date -u +%F)" /tmp/ministry/mail.txt
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: ministry-${{ github.run_id }}

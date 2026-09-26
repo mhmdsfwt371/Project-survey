@@ -364,7 +364,7 @@ jobs:
             gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/comments" -f body="$(printf '### 🔴 الشريحة ${{ matrix.shard }} سقطت — لا ترقية\n```\n%s\n```' "$(grep -a '✗' /tmp/shard.txt | tail -30)")" > /dev/null || true
             echo "::warning::الشريحة ${{ matrix.shard }} سقطت — التفصيلُ تعليقًا على الالتزام، ولا ترقية"
           fi
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         if: always()
         with:
           name: gate-shard-${{ matrix.shard }}
@@ -389,7 +389,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.PROMOTE_TOKEN || github.token }}
-      - uses: actions/download-artifact@v5
+      - uses: actions/download-artifact@v7
         with:
           pattern: gate-*
           path: gates

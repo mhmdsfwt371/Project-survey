@@ -85,7 +85,7 @@ jobs:
           cat assetlinks.json
 
       - name: Upload APK
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: nusuk-apk
           path: |
@@ -93,7 +93,7 @@ jobs:
             app-release-bundle.aab
 
       - name: Upload signing + assetlinks (keep these safe)
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: signing-and-assetlinks
           path: |
