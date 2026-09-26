@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V20.1",
+ "app_version": "V20.2",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1893,7 +1893,8 @@
   "V19.7": "حثُّ التثبيت على أندرويد: iosNudgeDue يقبل INSTALL_EVT (beforeinstallprompt) إلى جانب آيفون؛ iosNudgeHtml بفرعٍ لأندرويد بزرِّ «ثبّت الآن» (data-iosnudge=install → INSTALL_EVT.prompt، القبولُ شهر)؛ حدثُ التثبيت يعيد الرسم حين يستحقّ الحثّ. audit-syncm ٢٧.",
   "V19.8": "أندرويد كآيفون: pwaAndroid()؛ iosNudgeDue يقبل أندرويد بلا حدث تثبيت؛ لوحُ أندرويد بأربع خطواتٍ مرقّمة (كروم وزرُّ القائمة ⋮ و«تثبيت التطبيق»، وسطرا واتساب وسامسونج) وزرِّ «ثبّت الآن» فوقها حين يوجد INSTALL_EVT؛ زرُّ الرأس ظاهرٌ على أندرويد غير المثبَّت وpwaInstall يعرض الخطوات. audit-syncm ٢٨.",
   "V20.0": "متابعةُ الوزارة: PAGE.mfu وTABS.mfu (mfu الملخص، mtasks، minst، mcos، mobs، mchal، mreq، mdaily، kiosk — انتقلت من over)؛ settings/mfu {chal، req، own، snap} عبر mfuFetch/mfuPut (الكتلةُ العامة: قراءةُ كلِّ نشطٍ وكتابةُ المكتب — بلا تغيير قواعد)؛ mfuObstacles (غيرُ المركَّب بتحدٍّ أو تعذّرِ وصول) وmfuOwnerOf (MFU_OWN_DEF: العارضةُ وسطحُ التثبيت لكدانة، الاستدلالُ والوصولُ لأفاقي، الباقي لشركة الخدمة)؛ mfuCompanies (مخيماتٌ بشركاتها: مستهدفٌ/رُكّب/عوائق/متبقٍّ/نسبة، mfuLevel ٧٥/٤٠، الأضعفُ أوّلًا ١٢ و«اعرض الكل»)؛ mfuKpis ولقطةُ الأسبوع mfuSnapMaybe (على القاعدة الحقيقية فقط) وmfuDelta؛ mfuDaily من diaryRows. الوزارةُ والإدارةُ العليا في قوائمهما. audit-mfu ١٩.",
-  "V20.1": "typesNormalize يُكمِل i/c/l من CAT_DEF_BASE (أو ● و#8A94A6) لمدخلٍ بتسميةٍ وحدَها — كان قرارُ التسمية يُفقِد LPR رمزَه فتظهر «undefined». season-seed: القرارُ يحمل declare (تُضاف إلى settings/mxExtra بلا تكرار) وrezone [{to, bbox:[latMin,lngMin,latMax,lngMax]}] (newsites وsites: zone وname إن بدأ باسم المشعر القديم). القرار 2026-09-26-nawariya-zone: النوارية بنوعي الكاميرات ووزن ١ والمستطيل 21.54,39.72–21.61,39.79. audit-season ٣٩، audit-cams ١٠."
+  "V20.1": "typesNormalize يُكمِل i/c/l من CAT_DEF_BASE (أو ● و#8A94A6) لمدخلٍ بتسميةٍ وحدَها — كان قرارُ التسمية يُفقِد LPR رمزَه فتظهر «undefined». season-seed: القرارُ يحمل declare (تُضاف إلى settings/mxExtra بلا تكرار) وrezone [{to, bbox:[latMin,lngMin,latMax,lngMax]}] (newsites وsites: zone وname إن بدأ باسم المشعر القديم). القرار 2026-09-26-nawariya-zone: النوارية بنوعي الكاميرات ووزن ١ والمستطيل 21.54,39.72–21.61,39.79. audit-season ٣٩، audit-cams ١٠.",
+  "V20.2": "تصديرُ التحديث الأسبوعي: mfuReport() مصدرٌ واحدٌ (hijriToday، kpis بفروق الأسبوع، tasks، inst، cos، parties، cats، chal، req، daily) وMFU_SECTIONS تسعةُ عناوين؛ mfuXlsx (SheetJS، ورقةٌ لكلِّ عنوان، RTL)، mfuPdf (mfuPrintHtml: A4 عرضي، غلاف، ألوانُ العرض، Alexandria — نافذةُ طباعة أو إطارٌ خفيّ)، mfuDocx (zipMany: ZIP مخزَّنٌ متعدّدُ الملفات بعلَم UTF-8؛ mfuDocxXml: فقراتٌ bidi وجداولُ bidiVisual برأسٍ 163E35 وعناوينَ C8943E، صفحةٌ عرضية — يجتاز مدقّقَ OOXML). شريطُ data-mfuexp على كلِّ عنوان. audit-mfu ٢٧."
  },
  "map_and_geolocation": {
   "tile_layers": {
