@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V21.3",
+ "app_version": "V21.4",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1905,7 +1905,8 @@
   "V21.0": "احتياطيُّ الطابور: CORE.qbakSave (مع كلِّ saveLocal — الطابورُ بلا photos ولا حقولٍ نصيةٍ أطولَ من ٤٠٠٠ حرف، آخرُ ١٥٠، في nsk14.qbak) وCORE.qbakRestore (في loadLocal سواءٌ وُجد المخزنُ أم لا: يعيد ما ليس في الطابور إلى الطابور وإلى STATE[kind][id] إن لم يكن). svSave: نقصُ الحقول أو الصورتين صندوقُ #svErr ثابتٌ أعلى المحتوى. audit-qbak ٦.",
   "V21.1": "notifSettingsCard تُعرَض في صفحة السجلات والإشعارات ← الإشعارات بعد الإحصاء (إلى جانب «حسابي»).",
   "V21.2": "خطةُ الأسبوع: شريحةُ plan:wplan (wplanMay: engineer/admin — لا في قوائم غيرهما)؛ البياناتُ في settings/pmo تحت wplan {wk, t, pri, n, steps (سطرٌ لكلِّ خطوة), sdone[], needs, goal, st (مخطط/جارٍ/تم/مؤجَّل), task, hist}؛ WPLAN_WK أسبوعُ العرض (mfuWeekKey/wplanNextWeek)، WPLAN_EDIT للتعديل؛ data-wpsave/wpedit/wpdel/wpnext/wptask/wpwk وdata-wpst/wpstep (اكتمالُ الخطوات يُتمّ النقطة)؛ wtAdd بحقل plan والبطاقةُ تقول «من خطة الأسبوع»؛ SHEETS.wplan. audit-wplan ٩.",
-  "V21.3": "دورةُ نقطة الخطة: WPLAN_ST مخطط/جارٍ/بانتظار تجارب/تم/مغلق؛ الحالتان النهائيتان بفعلٍ صريحٍ فقط (data-wpdo → WPLAN_ACT → data-wpact): result (st تم + result + hist result)، upd (st بانتظار تجارب + hist upd)، close (st مغلق + closeWhy + hist close، وخيارُ نقطةٍ بدلها WPLAN_PREFILL في الأسبوع الحالي)؛ اكتمالُ الخطوات يفتح نموذجَ النتيجة لا يُتمّ؛ wplanOpenPast (أسابيعُ سابقةٌ غيرُ نهائية) يُعرَض أوّلَ الأسبوع الحاليّ بالبطاقات نفسِها؛ wplanSees (engineer/admin/exec) وwplanMay (engineer/admin)؛ exec في قائمته 'wplan'؛ الإكسل بالنتيجة والإغلاق والتحديثات. audit-wplan ١٤."
+  "V21.3": "دورةُ نقطة الخطة: WPLAN_ST مخطط/جارٍ/بانتظار تجارب/تم/مغلق؛ الحالتان النهائيتان بفعلٍ صريحٍ فقط (data-wpdo → WPLAN_ACT → data-wpact): result (st تم + result + hist result)، upd (st بانتظار تجارب + hist upd)، close (st مغلق + closeWhy + hist close، وخيارُ نقطةٍ بدلها WPLAN_PREFILL في الأسبوع الحالي)؛ اكتمالُ الخطوات يفتح نموذجَ النتيجة لا يُتمّ؛ wplanOpenPast (أسابيعُ سابقةٌ غيرُ نهائية) يُعرَض أوّلَ الأسبوع الحاليّ بالبطاقات نفسِها؛ wplanSees (engineer/admin/exec) وwplanMay (engineer/admin)؛ exec في قائمته 'wplan'؛ الإكسل بالنتيجة والإغلاق والتحديثات. audit-wplan ١٤.",
+  "V21.4": "مراجعةٌ ثالثة: مسحُ ٥٨٠ شاشة (ستةُ أدوارٍ باللغتين، كلُّ شاشةٍ وشريحة) بلا خطأٍ ولا «undefined/NaN»، ونوافذُ النقاط لكلِّ نوعٍ بما فيها الأنواعُ الجديدة، والتصديرُ بنصوصٍ خبيثة (& < > \" ' وعلامةُ اتجاه) سليمُ البناء في الصيغ الأربع. أُصلح: wplanNextWeek بالتاريخ (isoWeekMonday + ٧ أيام) — كان يقفز من ٥٢ إلى ١ ويُسقِط الأسبوعَ ٥٣ (٢٠٢٦ فيها ٥٣)؛ CORE.qbakSave فورَ نجاح الرفع. audit-wplan ١٥، audit-qbak ٨."
  },
  "map_and_geolocation": {
   "tile_layers": {

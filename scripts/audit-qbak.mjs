@@ -49,6 +49,14 @@ console.log('\n══ ٤ · رُفع كلُّ شيءٍ: يُمحى الاحتي�
 w.STATE.queue.length = 0; w.CORE.saveLocal(); await wait(50);
 T(!w.localStorage.getItem('nsk14.qbak'), 'الطابورُ فارغ — لا احتياطيَّ يبقى');
 
+console.log('\n══ ٥ · نجاحُ الرفع يُخرج من الاحتياطيِّ فورًا (V21.4) ══');
+w.STATE.queue.push({ kind:'recs', id:'NSK-Q-1', v:{ id:'NSK-Q-1', at:Date.now() }, at:Date.now() }); w.CORE.qbakSave();
+T(/NSK-Q-1/.test(w.localStorage.getItem('nsk14.qbak') || ''), 'في الاحتياطيِّ قبل الرفع');
+w.STATE.meta.online = true; w.FB.ready = true; w.EPOCH_PENDING = false; w.CORE._busy = false;
+w.FB.init = () => Promise.resolve(true); w.FB.push = batch => Promise.resolve({ ok:batch, failed:[] }); w.FB.pushEach = w.FB.push; w.FB.pulse = () => {};
+await w.CORE.flush(); await wait(20);
+T(!/NSK-Q-1/.test(w.localStorage.getItem('nsk14.qbak') || ''), 'وبعد الرفع خرج منه في اللحظة — لا يُرفَع ثانيةً لو أُغلق التطبيقُ قبل مهلة الحفظ');
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ احتياطيِّ الطابور نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);

@@ -73,6 +73,9 @@ w.pmoPut('wplan', 'OLD1', { wk:'2026-W30', t:'نقطةٌ من أسبوعٍ فا�
 w.WPLAN_WK = ''; c = await open();
 T(/من أسابيع سابقة بلا نتيجةٍ ولا إغلاق/.test(c.textContent) && /نقطةٌ من أسبوعٍ فات/.test(c.textContent) && !!c.querySelector('[data-wpdo="OLD1|result"]'), 'وما بقي من أسبوعٍ سابقٍ بلا نتيجةٍ ولا إغلاقٍ يظهر أوّلَ الأسبوع الحاليِّ بأزراره');
 
+console.log('\n══ ٦ · الأسبوعُ التالي بالتاريخ — سنةٌ بثلاثةٍ وخمسين أسبوعًا (V21.4) ══');
+T([['2026-W52','2026-W53'],['2026-W53','2027-W01'],['2027-W52','2028-W01'],['2020-W53','2021-W01'],['2026-W39','2026-W40']].every(([x, y]) => w.wplanNextWeek(x) === y), 'الترحيلُ من الأسبوع ٥٢ في ٢٠٢٦ إلى ٥٣ لا إلى ٢٠٢٧ — وسائرُ الحدود صحيحة');
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
 console.log('جردُ خطة الأسبوع نظيف \u2705'); try { dom.window.close(); } catch {} process.exit(0);

@@ -1078,7 +1078,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -9217,6 +9217,7 @@ var CORE = {
       var okIds = {};
       r.ok.forEach(function(it){ okIds[it.kind + '|' + it.id] = 1; });
       STATE.queue = STATE.queue.filter(function(it){ return !okIds[it.kind + '|' + it.id]; });
+      CORE.qbakSave();   /* (V21.4) ما رُفع يخرج من الاحتياطيّ في اللحظة — لا بعد مهلة الحفظ */
       /* نبضةٌ واحدةٌ لكلِّ دفعةٍ ناجحة: أيُّ مجموعاتٍ تغيّرت — فتسحب الأجهزةُ
          الأخرى فارقَها في ثوانٍ لا بعد عشر دقائق (V17.26). النبضةُ نفسُها
          لا تُنبِض (settings) وإلا دار الجهازُ على نفسه. */
@@ -18829,7 +18830,10 @@ function wplanFinal(x){ return x.st === 'تم' || x.st === 'مغلق'; }
 function wplanOpenPast(){ var cur = mfuWeekKey(); return pmoList('wplan').filter(function(x){ return x.wk && x.wk < cur && !wplanFinal(x); }); }
 function wplanUpdates(x){ return (Array.isArray(x.hist) ? x.hist : []).filter(function(h){ return h.f === 'upd' || h.f === 'result' || h.f === 'close'; }); }
 function wplanWeek(){ return WPLAN_WK || mfuWeekKey(); }
-function wplanNextWeek(k){ var m = /^(\d{4})-W(\d{2})$/.exec(k || mfuWeekKey()); if (!m) return mfuWeekKey(Date.now() + 7 * 864e5); var y = +m[1], w = +m[2] + 1; if (w > 52){ w = 1; y++; } return y + '-W' + ('0' + w).slice(-2); }
+/* (V21.4) الأسبوعُ التالي يُحسَب بالتاريخ: اثنينُ الأسبوع + سبعة أيام — كان العدُّ يقفز من
+   الأسبوع ٥٢ إلى ١ فيُسقِط الأسبوعَ ٥٣ الذي تعرفه سنواتٌ منها ٢٠٢٦ */
+function isoWeekMonday(k){ var m = /^(\d{4})-W(\d{2})$/.exec(k || ''); if (!m) return null; var j4 = new Date(Date.UTC(+m[1], 0, 4)), mon1 = j4.getTime() - ((j4.getUTCDay() + 6) % 7) * 864e5; return mon1 + (+m[2] - 1) * 7 * 864e5; }
+function wplanNextWeek(k){ var mon = isoWeekMonday(k || mfuWeekKey()); return mfuWeekKey((mon == null ? Date.now() : mon) + 7 * 864e5 + 3 * 864e5); }
 function wplanItems(wk){ return pmoList('wplan').filter(function(x){ return x.wk === wk; }).sort(function(a, b){ return WPLAN_PRI.indexOf(a.pri || 'متوسطة') - WPLAN_PRI.indexOf(b.pri || 'متوسطة') || (a.at || 0) - (b.at || 0); }); }
 function wplanLines(v){ return String(v || '').split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean); }
 function wplanBody(){
@@ -28700,6 +28704,7 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V21.4', d:'٢٧ سبتمبر ٢٠٢٦', notes:[] },   /* نسخةُ مراجعة: الأسبوعُ ٥٣ في الترحيل، والاحتياطيُّ يُحدَّث فورَ الرفع */
   { v:'V21.3', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'خطة الأسبوع: كل نقطة تنتهي بواحدة من ثلاث — «أتممتها» بنتيجة فعلية مكتوبة، أو «تحديث» يسجّل ما حدث وتنتظر تجارب أخرى، أو «إغلاق» بسببه مع نقطة جديدة بدلها. وما بقي من أسبوع سابق بلا نتيجة ولا إغلاق يظهر بالأحمر أول الأسبوع الحالي. اكتمال الخطوات يطلب النتيجة ولا يُتمّ وحده.',
       'الخطة يراها المهندسون ومن فوقهم (المدير والإدارة العليا)، ويكتبها المهندس والمدير.' ] },
