@@ -1,5 +1,6 @@
 // حارس التوثيق: يفشل إن تخلّف أي ملف عن نسخة التطبيق، أو اختلّ توازن أقسام اللوحة
 import { readFileSync, writeFileSync as writeFileSync2 } from 'fs';
+process.env.NODE_OPTIONS = ((process.env.NODE_OPTIONS || '') + ' --require ./scripts/lib/jsdom-dict.cjs').trim();   /* القاموسُ في نافذة كلِّ جرد (V21.6) */
 import { dictSrc } from './lib/dict-src.mjs';
 import { execSync } from 'child_process';
 import { sealHash } from './seal.mjs';

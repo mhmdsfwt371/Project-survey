@@ -16,6 +16,8 @@ permissions:
 concurrency:
   group: gate-${{ github.ref }}
   cancel-in-progress: ${{ github.ref == 'refs/heads/staging' }}
+env:
+  NODE_OPTIONS: --require ./scripts/lib/jsdom-dict.cjs   # القاموسُ في نافذة كلِّ جرد بعد فصله (V21.6)
 jobs:
   # القائمةُ الكاملةُ متسلسلةً — المرجعُ الذي يقرؤه الحارسُ المحلّيُّ والجرود؛
   # تعمل على الأصل وطلبات الدمج، وعلى فرع التجربة تُشغَّل الخطواتُ نفسُها
