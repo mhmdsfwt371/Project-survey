@@ -26,7 +26,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: القاموسُ في نافذة كلِّ جرد — بعد فصله (V21.6)
-        run: echo "NODE_OPTIONS=--require ./scripts/lib/jsdom-dict.cjs" >> "$GITHUB_ENV"
+        run: echo "NODE_OPTIONS=--require ./scripts/lib/jsdom-dict.cjs" >> "${GITHUB_ENV:-/dev/null}"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
@@ -342,7 +342,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: القاموسُ في نافذة كلِّ جرد — بعد فصله (V21.6)
-        run: echo "NODE_OPTIONS=--require ./scripts/lib/jsdom-dict.cjs" >> "$GITHUB_ENV"
+        run: echo "NODE_OPTIONS=--require ./scripts/lib/jsdom-dict.cjs" >> "${GITHUB_ENV:-/dev/null}"
       - uses: actions/setup-node@v4
         with:
           node-version: 20
