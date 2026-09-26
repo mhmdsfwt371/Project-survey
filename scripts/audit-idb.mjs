@@ -59,7 +59,11 @@ console.log('\n══ ٢ · فتحٌ بطيءٌ ينجح بعد المهلة: ي
   const { w, d, wait, dom } = await boot(idb, null, { timeout:100, backoff:[50, 50, 50] });   /* البطءُ يبدأ مع الإقلاع نفسِه */
   await wait(150);
   const r = await w.idbSet('k2', { b:2 });                    /* المهلةُ سبقت النجاح */
+  /* (V19.6) اللافتةُ حين الخطرُ حقيقيّ: بلا شبكةٍ أو عملٌ ينتظر أكثرَ من ثماني ثوانٍ */
+  const calm = !d.getElementById('idbBanner');
+  w.STATE.meta.online = false; w.idbBannerUpdate();
   const ban = d.getElementById('idbBanner');
+  T(calm, 'وبالشبكة ولا شيءَ ينتظر: لا إنذارَ بلا سبب');
   T(r === false && w.IDB_BAD === true && !!ban, 'بعد المهلة: حفظٌ في الذاكرة ولافتةٌ حمراء');
   T(!!ban && ban.textContent.includes('لا تغلق التطبيق'), 'واللافتةُ تقول: زامن ولا تغلق');
   await wait(900);                                             /* الطلبُ البطيءُ ينجح الآن */
@@ -74,6 +78,7 @@ console.log('\n══ ٣ · فتحٌ يخطئ: ذاكرةٌ ولافتةٌ فو�
   const idb = fakeIDB({ mode:'err', delay:5 });
   const { w, d, wait, dom } = await boot(idb, null, { timeout:4000, backoff:[5000] });
   const r = await w.idbSet('k4', { d:4 });
+  w.STATE.queue.push({ kind:'recs', id:'Q1', v:{ id:'Q1' }, at:Date.now() - 9000 }); w.idbBannerUpdate();   /* عملٌ ينتظر أكثرَ من ثماني ثوانٍ */
   T(r === false && w.IDB_BAD === true && !!d.getElementById('idbBanner') && idb.opens === 1 && w.IDB_RETRY_T, 'الخطأُ الأول: ذاكرةٌ ولافتةٌ وإعادةٌ مجدولة (فتحات: ' + idb.opens + ')');
   dom.window.close();
 }
