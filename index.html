@@ -26427,7 +26427,7 @@ function mfuObs(){
 function mfuChal(){
   var L = mfuList('chal'), ed = may('settings'), ST = ['مفتوح', 'قيد المعالجة', 'مغلق'];
   return (ed ? card('تحدٍّ جديد', '<div class="grid2"><label>' + esc(t('التحدي')) + '<textarea id="mcT" rows="2"></textarea></label><label>' + esc(t('آلية المعالجة')) + '<textarea id="mcM" rows="2"></textarea></label></div>'
-        + '<div class="grid2"><label>' + esc(t('المسؤول')) + '<input id="mcO"></label><label>' + esc(t('المسار')) + '<select id="mcR"><option>' + esc(t('التركيبات')) + '</option><option>' + esc(t('التوريدات')) + '</option><option>' + esc(t('المسح')) + '</option><option>' + esc(t('المواءمة مع الشركات')) + '</option></select></label></div>'
+        + '<div class="grid2"><label>' + esc(t('المسؤول')) + '<input id="mcO"></label><label>' + esc(t('المسار')) + '<select id="mcR">' + ['التركيبات', 'التوريدات', 'المسح', 'المواءمة مع الشركات'].map(function(v){ return '<option value="' + esc(v) + '">' + esc(t(v)) + '</option>'; }).join('') + '</select></label></div>'
         + '<div class="actions">' + btn(t('سجّل التحدي'), 'btn-primary btn-sm', ' data-mfuchal="1"') + '</div>') : '')
     + (L.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(L.length), table(['التحدي', 'آلية المعالجة', 'المسار', 'المسؤول', 'الحالة', ''], L.map(function(x){
         return ['<b>' + esc(x.t || '') + '</b>', esc(x.m || ''), esc(t(x.r || '')), esc(x.o || ''),
@@ -26462,6 +26462,7 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
   body:function(){
     mfuFetch();
     var head = tabHead('mfu'), cur = tabCur('mfu');
+    if (!(STATE.sites || []).length) return head + alertBox('warn', 'لا مواقع محمّلة.');
     if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     if (cur === 'mtasks') return head + mfuTasks();
     if (cur === 'minst') return head + mfuInst();
