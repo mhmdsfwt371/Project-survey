@@ -12,7 +12,9 @@ const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole(), beforeParse(win){ win.TextEncoder = TextEncoder; } });
+/* مفكّكُ نصوصٍ آمنٌ بين عالمي الفحص والصفحة */
+class TD { decode(u){ return Buffer.from(Array.from(u)).toString('utf8'); } }
+const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole(), beforeParse(win){ win.TextEncoder = TextEncoder; win.TextDecoder = TD; } });
 const w = dom.window, d = w.document; const wait = ms => new Promise(r => setTimeout(r, ms));
 w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); w.scrollTo = () => {};
@@ -104,6 +106,28 @@ const sheets = []; w.xlsxLoad = () => Promise.resolve(true);
 w.XLSX = { utils:{ book_new: () => ({}), aoa_to_sheet: rows => ({ rows }), book_append_sheet: (wb, ws, name) => { sheets.push([name, ws.rows[0]]); } }, writeFile: () => {} };
 await w.mfuXlsx();
 T(sheets.length === 9 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — تسعُ أوراق');
+
+console.log('\n══ ٧ · باوربوينت من قالب الوزارة (V20.4) ══');
+const tplBuf = readFileSync('templates/weekly-readers.pptx');
+T(!!d.querySelector('[data-mfuexp="pptx"]'), 'زرُّ PowerPoint في شريط التصدير');
+w.fetch = async () => ({ ok:true, arrayBuffer: async () => tplBuf.buffer.slice(tplBuf.byteOffset, tplBuf.byteOffset + tplBuf.byteLength) });
+w.PPTX_TPL = null; got = null;
+w.STATE.mfu = w.MFU.v = Object.assign(w.MFU.v || {}, { chal:{ C9:{ t:'تأخّر الشحنات', m:'إعادة الجدولة', o:'المشتريات', st:'مفتوح', at:Date.now() } }, req:{ Q9:{ t:'إضاءةٌ إرشادية', u:'رُكّبت على ١٠٠ مخيم', st:'قيد التنفيذ', at:Date.now() } } });
+const t0 = Date.now(); await w.mfuPptx(); const ms = Date.now() - t0;
+const out = got && got.b.parts[0];
+T(!!out && /\.pptx$/.test(got.name) && ms < 3000, 'العرضُ يُبنى من القالب في ' + ms + ' م.ث');
+const E0 = w.ooxRead(new Uint8Array(tplBuf)), E1 = w.ooxRead(out);
+T(E1.length === E0.length && E1[0].name === '[Content_Types].xml', 'بأجزاء القالب كلِّها (' + E1.length + ') و[Content_Types] أوّلًا');
+const same = E0.filter(e => e.method === 8).every(e => { const f = E1.find(x => x.name === e.name); return f && f.method === 8 && f.crc === e.crc && f.csize === e.csize; });
+T(same, 'وما لم يتغيّر يُنسَخ بضغطه كما هو — الخطوطُ المضمَّنةُ والصورُ والقوالب');
+const td = new TD(), slides = E1.filter(e => /^ppt\/slides\/slide\d+\.xml$/.test(e.name)).map(e => ({ n:e.name, x:td.decode(e.raw) }));
+T(slides.length === 11 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'إحدى عشرة شريحة بلا عنصرٍ نائبٍ باقٍ');
+T(slides.every(s => !new w.DOMParser().parseFromString(s.x, 'application/xml').getElementsByTagName('parsererror').length), 'وكلُّ شريحةٍ سليمةُ البناء');
+const all = slides.map(s => s.x).join('');
+T(['ملخص مسار القارئات', 'حالة أبرز المهام', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص التركيبات اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
+T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ العرض');
+const cover = slides.find(s => s.n === 'ppt/slides/slide1.xml').x;
+T(cover.includes(new Date().toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
