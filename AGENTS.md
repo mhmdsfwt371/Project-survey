@@ -75,6 +75,7 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
 | التحديات | `chalKey()`، `svdChals()`، `chalOtherCard()` |
 | الاستعمال | `pageTick()`، `usageCard()`، `readsToday()` |
 | الأداء والتشخيص | `perfSummary()`، `perfCard()`، `boxNote()`، `boxText()`، `diaryRows()`، `moneyHowCard()` |
+| متابعة الوزارة | `mfuKpis()`، `mfuObstacles()`، `mfuCompanies()`، `mfuPut()` — settings/mfu |
 | المنهجية والسجلات | `pmiRows()`، `pmiBody()`، `pmoPut()` — settings/pmo للمكتب والإدارة العليا |
 | الأوزان | `wKeyNorm()` — مفتاحُ الوزن بالاسم العربيِّ الخام دائمًا؛ لا تبنِ مفتاحَ `w` من نصٍّ مترجَمٍ دون أن يمرَّ بها |
 | عزل النص | `bdi()`، `bdiText()`، `fsi()`، `fsiText()` — للعرض والرسائل لا للبيانات |

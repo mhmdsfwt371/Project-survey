@@ -128,7 +128,7 @@ T(Object.values(st.byKey).reduce((a, b) => a + b, 0) === TOTAL && Object.values(
 
 console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ نفسَها (V17.82) ══');
 {
-  await open('over', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
+  await open('mfu', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
   const kk = txt(), h = d.getElementById('content').innerHTML;
   T((h.match(/kk-ring/g) || []).length === 4 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ وزرُّ العرض الكامل');
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
@@ -157,7 +157,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T(d0.getAttribute('fill') === w.LIFE[w.lifeOf(w.siteFind(id0))].c, 'ولونُ النقطة لونُ حالتها في الخريطة');
   d0.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(w.CUR === 'site' && w.DETAIL_ID === id0, 'والضغطُ على نقطةٍ يفتحها: ' + id0);
-  w.SITE_Q = ''; await open('over', 'kiosk'); await wait(1200);
+  w.SITE_Q = ''; await open('mfu', 'kiosk'); await wait(1200);
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);

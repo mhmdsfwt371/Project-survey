@@ -39,7 +39,7 @@ w.STATE.recs[camps[0].id].chals = [A, 'ارتفاع صعب الوصول'];
 const rows = w.svdRows(); const byCh = {}; rows.forEach(o => o.ch.forEach(c => { byCh[c] = (byCh[c] || 0) + 1; }));
 T(byCh['لا يوجد سطح تثبيت'] === 50 && byCh[A] === undefined && byCh[B] === undefined, 'لوحةُ المسح: الصيغتان مفتاحٌ واحد = ٣٠ + ٢٠ = ' + byCh['لا يوجد سطح تثبيت']);
 T(byCh['أخرى'] === 20 && byCh['ارتفاع صعب الوصول'] === 1, 'و«أخرى» ٢٠ والارتفاعُ ١');
-await open('over', 'kiosk'); await wait(1300);
+await open('mfu', 'kiosk'); await wait(1300);
 const kk = d.getElementById('content').textContent;
 T(/لا يوجد سطح تثبيت/.test(kk) && !/يحتاج هيكلًا جديدًا/.test(kk) && !/يحتاج عمودًا/.test(kk), 'وشاشةُ الوزارة تعرض المفتاحَ الواحد لا الصيغتين');
 const ch = await open('survey', 'chalm');

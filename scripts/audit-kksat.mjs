@@ -39,7 +39,7 @@ console.log('\n══ ١ · مع ليفليت: القمرُ الصناعيُّ �
 {
   const { w, d, wait, dom, S, open } = await boot(true);
   w.STATE.sites.push({ id:'NSK-MIN-CMP-9999', name:'ضالّة', zone:'منى', type:'مخيم', lat:21.6, lng:39.6 }); w.SITE_IX = null; w.statBump();
-  const c = await open('over', 'kiosk'); await wait(300);
+  const c = await open('mfu', 'kiosk'); await wait(300);
   T(w.KK_VIEW === 'sat' && !!d.getElementById('kkSat') && !d.querySelector('.kk-pts'), 'الافتراضيُّ القمرُ الصناعي لا النقاطُ المجرّدة');
   T(S.tiles.length === 1 && /World_Imagery/.test(S.tiles[0].url) && S.tiles[0].url === w.TILES.esri, 'وطبقةُ Esri نفسُها التي في الخريطة الرئيسة');
   const core = w.STATE.sites.filter(x => x.zone === 'منى' && +x.lat && +x.lng).length - 1;
@@ -56,7 +56,7 @@ console.log('\n══ ١ · مع ليفليت: القمرُ الصناعيُّ �
   T(mm.dragging.on === false, 'والإيقافُ يعطّله ثانية');
   mk.click(); await wait(50);
   T(w.CUR === 'site' && w.DETAIL_ID === x0.id, 'والضغطُ على الدائرة يفتح النقطة');
-  await open('over', 'kiosk'); await wait(300);
+  await open('mfu', 'kiosk'); await wait(300);
   const m1 = S.maps[S.maps.length - 1]; m1.setView([21.41, 39.88], 17); m1.fire('moveend');
   w.render(1); await wait(300);
   const m2 = S.maps[S.maps.length - 1];
@@ -70,7 +70,7 @@ console.log('\n══ ١ · مع ليفليت: القمرُ الصناعيُّ �
 console.log('\n══ ٢ · بلا ليفليت: النقاطُ المجرّدةُ بصمت ══');
 {
   const { w, d, wait, dom, open } = await boot(false);
-  await open('over', 'kiosk'); await wait(300);
+  await open('mfu', 'kiosk'); await wait(300);
   T(w.KK_VIEW === 'sat' && !!d.querySelector('.kk-pts') && !w.LS_ERR, 'الطلبُ قمرٌ صناعيٌّ والمكتبةُ غائبة: تُرسَم النقاطُ بلا خطأ');
   dom.window.close();
 }

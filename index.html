@@ -729,6 +729,19 @@ body.kiosk .kk-story{font-size:21px}
 .kk-wide{grid-column:1/-1}
 .kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px;touch-action:none;cursor:grab}
 .pm-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
+/* متابعةُ الوزارة (V20.0) — بألوان العرض الأسبوعي: ذهبيٌّ وأخضرُ وكهرمانيٌّ وأحمر */
+.mfu-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 12px}
+.mfu-kpi{border:1px solid #D7A56266;border-top:4px solid #C8943E;border-radius:12px;padding:10px 12px;background:var(--surface)}
+.mfu-kpi-l{font-size:12.5px;color:#C8943E;font-weight:700}
+.mfu-kpi-v{font-size:26px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums}
+.mfu-bar{position:relative;height:18px;border-radius:9px;background:var(--surface-2);overflow:hidden;min-width:90px}
+.mfu-bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:9px}
+.mfu-bar b{position:relative;font-size:11.5px;padding-inline-start:8px;line-height:18px}
+.mfu-cos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.mfu-co{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.mfu-co.mfu-ok{border-top:4px solid #27AE60}.mfu-co.mfu-wrn{border-top:4px solid #E2B33C}.mfu-co.mfu-bad{border-top:4px solid #C0392B}
+.mfu-co-h{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:0 0 6px}
+.mfu-co-n{display:flex;justify-content:space-between;gap:6px;margin:6px 0 0;font-size:12px;color:var(--ink-soft)}
 #nav a.nav-tab{opacity:.92;font-size:12.5px;padding-inline-start:26px}
 .kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;position:relative}
 @media (max-width:640px){ .kk-sat{height:min(50vh,420px)} }
@@ -1051,7 +1064,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V19.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3908,6 +3921,8 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'كلُّ الشركات':'All companies', 'الأضعفُ أوّلًا':'Weakest first', 'الأضعفُ فقط':'Weakest only', 'اعرض الكل':'Show all',
+ 'آخر ٣٠ يومًا':'Last 30 days', 'آلية المعالجة':'Mitigation', 'أفاقي':'AFAQY', 'إجمالي المعوقات':'Total obstacles', 'الأرقامُ التي يُفتتح بها الاجتماع — ومقارنتُها بالأسبوع الماضي.':'The figures that open the meeting — and how they compare with last week.', 'الإفادة / آخر تحديث':'Response / latest update', 'التحديات وآليات المعالجة':'Challenges and mitigations', 'التركيبُ والمسحُ يومًا بيوم.':'Installation and survey day by day.', 'التوريدات':'Supplies', 'الجهة المعالجة':'Resolving party', 'الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.':'The office sets the resolving party for each category from this table — by default: beam and mounting surface to Kidana, locating and access to AFAQY, the rest to the service company.', 'العرضُ الأسبوعيُّ للوزارة حيًّا — بعناوينه نفسِها: المهامُّ والتركيباتُ والشركاتُ والمعوقاتُ والتحدياتُ والطلبات.':'The weekly ministry deck, live — with the same headings: tasks, installations, companies, obstacles, challenges and requests.', 'المخيمات':'Camps', 'المخيماتُ والممراتُ وكلُّ نوعٍ بنسبة تركيبه في كلِّ مشعر.':'Camps, corridors and every type with its installation rate in each zone.', 'المستهدف':'Target', 'المعالمُ بموعدها وإنجازها وحالتها.':'Milestones with their due date, progress and status.', 'المعوقات القائمة':'Open obstacles', 'المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.':'Comparison with last week starts next week — this week’s snapshot is saved now.', 'المقترح / الدعم المطلوب':'Proposal / support needed', 'الملخص':'Summary', 'المواءمة مع الشركات':'Alignment with companies', 'بيان المعوقات وتصنيفها':'Obstacle statement and classification', 'تحدياتٌ مفتوحة':'Open challenges', 'تحدٍّ جديد':'New challenge', 'تركيب المخيمات':'Camp installation', 'تركيب المخيمات لشركات الخدمة':'Camp installation by service company', 'تركيب الممرات':'Corridor installation', 'تُعالَج من خلال':'Resolved through', 'جديد':'New', 'حالة أبرز المهام':'Status of key tasks', 'حالة التركيبات':'Installation status', 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪':'Progress guide: excellent 75%+ · medium 40–74% · weak below 40%', 'سجلاتُ المتابعة للمهندس فمن فوقه':'Follow-up registers are for engineers and above', 'سجّل التحدي':'Record challenge', 'سجّل الطلب':'Record request', 'شاشةُ القاعة':'Hall screen', 'شركات الخدمة':'Service companies', 'شركة الخدمة':'Service company', 'ضعيف':'Weak', 'طلبات الوزارة':'Ministry requests', 'طلباتٌ قيد المتابعة':'Requests in follow-up', 'عرضٌ كبيرٌ يُقرأ من آخر القاعة ويتجدّد وحدَه كلَّ دقيقة.':'A large display readable from the back of the hall, refreshing itself every minute.', 'عن الأسبوع الماضي':'vs last week', 'عوائق':'Obstacles', 'فئات المعوقات والجهة المعالجة':'Obstacle categories and resolving party', 'قيد المعالجة':'In progress', 'كالأسبوع الماضي':'Same as last week', 'كدانة':'Kidana', 'كلُّ تحدٍّ بآلية معالجته ومسؤوله وحالته.':'Every challenge with its mitigation, owner and status.', 'كلُّ عائقٍ بفئته والجهةِ التي تعالجه.':'Every obstacle with its category and the party that resolves it.', 'لا أعمالَ مسجّلةٌ بعد.':'No work recorded yet.', 'لا تحدياتٍ مسجّلةٌ بعد.':'No challenges recorded yet.', 'لا طلباتٍ مسجّلةٌ بعد.':'No requests recorded yet.', 'لكلِّ شركةٍ مستهدفُها وما رُكّب وما تعطّله العوائق — ممتازٌ ومتوسطٌ وضعيف.':'Each company’s target, what is installed and what obstacles block — excellent, medium and weak.', 'ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.':'What the ministry requested, the latest response and the support needed.', 'متابعة الوزارة':'Ministry follow-up', 'ملخص التركيبات اليومي':'Daily installation summary', 'ممتاز':'Excellent', 'ممتاز · متوسط · ضعيف':'excellent · medium · weak', 'منجز':'Done', 'نسبة الإنجاز الكلية':'Overall progress', 'نقطةٌ لم تُركَّب وفيها عائق':'points not installed with an obstacle', 'اكتب التحدي':'Write the challenge', 'سُجّل التحدي':'Challenge recorded', 'اكتب الطلب':'Write the request', 'سُجّل الطلب':'Request recorded',
  'أو يدويًّا:':'Or manually:', 'افتح التطبيقَ في متصفّح Chrome — إن فتحتَه من واتساب: اضغط ⋮ ثم «فتح في Chrome».':'Open the app in Chrome — if you opened it from WhatsApp: tap ⋮ then “Open in Chrome”.', 'اضغط زرَّ القائمة':'Tap the menu button', 'أعلى الشاشة.':'at the top of the screen.', 'اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» ثم «تثبيت».':'Choose “Install app” or “Add to Home screen”, then “Install”.', 'في متصفّح سامسونج: القائمة ≡ ثم «إضافة صفحة إلى» ثم «الشاشة الرئيسية».':'In Samsung Internet: menu ≡, then “Add page to”, then “Home screen”.',
  'ضغطةٌ واحدةٌ ويصير التطبيقُ على شاشتك الرئيسية — يحفظ عملَك أثبت ويفتح أسرع.':'One tap and the app is on your home screen — it keeps your work safer and opens faster.', 'ثبّت الآن':'Install now',
  'ثبّت التطبيق على جهازك — مرةً واحدة':'Install the app on your device — once', 'هكذا يحفظ الجهازُ عملَك فلا يضيع، ويفتح أسرع.':'This way the device keeps your work safe and opens faster.', 'اضغط زرَّ المشاركة':'Tap the Share button', 'أسفلَ الشاشة.':'at the bottom of the screen.', 'افتح التطبيقَ من الأيقونة الجديدة دائمًا.':'Always open the app from the new icon.', 'إن فتحتَ الرابطَ من واتساب: اضغط ⋯ ثم «فتح في Safari» أولًا.':'If you opened the link from WhatsApp: tap ⋯ then “Open in Safari” first.', 'ذكّرني غدًا':'Remind me tomorrow',
@@ -6675,6 +6690,8 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'كلُّ الشركات':'تمام کمپنیاں', 'الأضعفُ أوّلًا':'کمزور ترین پہلے', 'الأضعفُ فقط':'صرف کمزور ترین', 'اعرض الكل':'سب دکھائیں',
+ 'آخر ٣٠ يومًا':'آخری ۳۰ دن', 'آلية المعالجة':'حل کا طریقہ', 'أفاقي':'آفاقی', 'إجمالي المعوقات':'کل رکاوٹیں', 'الأرقامُ التي يُفتتح بها الاجتماع — ومقارنتُها بالأسبوع الماضي.':'وہ اعداد جن سے اجلاس شروع ہوتا ہے — اور پچھلے ہفتے سے موازنہ۔', 'الإفادة / آخر تحديث':'جواب / تازہ ترین', 'التحديات وآليات المعالجة':'چیلنجز اور حل', 'التركيبُ والمسحُ يومًا بيوم.':'تنصیب اور سروے روزانہ۔', 'التوريدات':'فراہمی', 'الجهة المعالجة':'حل کرنے والا فریق', 'الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.':'ہر زمرے کا حل کرنے والا فریق دفتر اس جدول سے طے کرتا ہے — بطورِ طے شدہ: بیم اور سطح کدانہ، تلاش اور رسائی آفاقی، باقی سروس کمپنی۔', 'العرضُ الأسبوعيُّ للوزارة حيًّا — بعناوينه نفسِها: المهامُّ والتركيباتُ والشركاتُ والمعوقاتُ والتحدياتُ والطلبات.':'وزارت کی ہفتہ وار پیشکش براہِ راست — انہی عنوانات کے ساتھ: کام، تنصیبات، کمپنیاں، رکاوٹیں، چیلنجز اور درخواستیں۔', 'المخيمات':'کیمپ', 'المخيماتُ والممراتُ وكلُّ نوعٍ بنسبة تركيبه في كلِّ مشعر.':'کیمپ، راہداریاں اور ہر قسم ہر مشعر میں تنصیب کی شرح کے ساتھ۔', 'المستهدف':'ہدف', 'المعالمُ بموعدها وإنجازها وحالتها.':'سنگ میل اپنی تاریخ، پیش رفت اور حالت کے ساتھ۔', 'المعوقات القائمة':'موجودہ رکاوٹیں', 'المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.':'پچھلے ہفتے سے موازنہ اگلے ہفتے سے — اس ہفتے کی جھلک ابھی محفوظ۔', 'المقترح / الدعم المطلوب':'تجویز / درکار مدد', 'الملخص':'خلاصہ', 'المواءمة مع الشركات':'کمپنیوں سے ہم آہنگی', 'بيان المعوقات وتصنيفها':'رکاوٹوں کا بیان اور درجہ بندی', 'تحدياتٌ مفتوحة':'کھلے چیلنجز', 'تحدٍّ جديد':'نیا چیلنج', 'تركيب المخيمات':'کیمپ تنصیب', 'تركيب المخيمات لشركات الخدمة':'سروس کمپنیوں کے لیے کیمپ تنصیب', 'تركيب الممرات':'راہداری تنصیب', 'تُعالَج من خلال':'حل بذریعہ', 'جديد':'نیا', 'حالة أبرز المهام':'اہم کاموں کی حالت', 'حالة التركيبات':'تنصیب کی حالت', 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪':'پیش رفت رہنما: بہترین ۷۵٪+ · درمیانہ ۴۰–۷۴٪ · کمزور ۴۰٪ سے کم', 'سجلاتُ المتابعة للمهندس فمن فوقه':'فالو اپ رجسٹر انجینئر اور اوپر کے لیے', 'سجّل التحدي':'چیلنج درج کریں', 'سجّل الطلب':'درخواست درج کریں', 'شاشةُ القاعة':'ہال اسکرین', 'شركات الخدمة':'سروس کمپنیاں', 'شركة الخدمة':'سروس کمپنی', 'ضعيف':'کمزور', 'طلبات الوزارة':'وزارت کی درخواستیں', 'طلباتٌ قيد المتابعة':'زیرِ پیروی درخواستیں', 'عرضٌ كبيرٌ يُقرأ من آخر القاعة ويتجدّد وحدَه كلَّ دقيقة.':'ہال کے پچھلے حصے سے پڑھی جانے والی بڑی اسکرین، ہر منٹ خود تازہ۔', 'عن الأسبوع الماضي':'پچھلے ہفتے سے', 'عوائق':'رکاوٹیں', 'فئات المعوقات والجهة المعالجة':'رکاوٹوں کے زمرے اور حل کرنے والا فریق', 'قيد المعالجة':'زیرِ حل', 'كالأسبوع الماضي':'پچھلے ہفتے جیسا', 'كدانة':'کدانہ', 'كلُّ تحدٍّ بآلية معالجته ومسؤوله وحالته.':'ہر چیلنج اپنے حل، ذمہ دار اور حالت کے ساتھ۔', 'كلُّ عائقٍ بفئته والجهةِ التي تعالجه.':'ہر رکاوٹ اپنے زمرے اور حل کرنے والے فریق کے ساتھ۔', 'لا أعمالَ مسجّلةٌ بعد.':'ابھی کوئی کام درج نہیں۔', 'لا تحدياتٍ مسجّلةٌ بعد.':'ابھی کوئی چیلنج درج نہیں۔', 'لا طلباتٍ مسجّلةٌ بعد.':'ابھی کوئی درخواست درج نہیں۔', 'لكلِّ شركةٍ مستهدفُها وما رُكّب وما تعطّله العوائق — ممتازٌ ومتوسطٌ وضعيف.':'ہر کمپنی کا ہدف، کیا نصب ہوا اور کیا رکاوٹوں سے رکا — بہترین، درمیانہ اور کمزور۔', 'ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.':'وزارت نے کیا مانگا، تازہ ترین جواب اور درکار مدد۔', 'متابعة الوزارة':'وزارت کی پیروی', 'ملخص التركيبات اليومي':'روزانہ تنصیب کا خلاصہ', 'ممتاز':'بہترین', 'ممتاز · متوسط · ضعيف':'بہترین · درمیانہ · کمزور', 'منجز':'مکمل', 'نسبة الإنجاز الكلية':'کل پیش رفت', 'نقطةٌ لم تُركَّب وفيها عائق':'نصب نہ ہوئے پوائنٹس جن میں رکاوٹ ہے', 'اكتب التحدي':'چیلنج لکھیں', 'سُجّل التحدي':'چیلنج درج ہو گیا', 'اكتب الطلب':'درخواست لکھیں', 'سُجّل الطلب':'درخواست درج ہو گئی',
  'أو يدويًّا:':'یا دستی طور پر:', 'افتح التطبيقَ في متصفّح Chrome — إن فتحتَه من واتساب: اضغط ⋮ ثم «فتح في Chrome».':'ایپ کروم میں کھولیں — اگر واٹس ایپ سے کھولی: ⋮ دبائیں پھر «کروم میں کھولیں»۔', 'اضغط زرَّ القائمة':'مینو بٹن دبائیں', 'أعلى الشاشة.':'اسکرین کے اوپر۔', 'اختر «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية» ثم «تثبيت».':'«ایپ انسٹال کریں» یا «ہوم اسکرین میں شامل کریں» منتخب کریں پھر «انسٹال»۔', 'في متصفّح سامسونج: القائمة ≡ ثم «إضافة صفحة إلى» ثم «الشاشة الرئيسية».':'سام سنگ براؤزر میں: مینو ≡ پھر «صفحہ شامل کریں» پھر «ہوم اسکرین»۔',
  'ضغطةٌ واحدةٌ ويصير التطبيقُ على شاشتك الرئيسية — يحفظ عملَك أثبت ويفتح أسرع.':'ایک ٹیپ اور ایپ آپ کی ہوم اسکرین پر — کام زیادہ محفوظ اور تیز کھلتی ہے۔', 'ثبّت الآن':'ابھی انسٹال کریں',
  'ثبّت التطبيق على جهازك — مرةً واحدة':'ایپ اپنے آلے پر انسٹال کریں — ایک بار', 'هكذا يحفظ الجهازُ عملَك فلا يضيع، ويفتح أسرع.':'اس طرح آلہ آپ کا کام محفوظ رکھتا ہے اور تیزی سے کھلتا ہے۔', 'اضغط زرَّ المشاركة':'شیئر بٹن دبائیں', 'أسفلَ الشاشة.':'اسکرین کے نیچے۔', 'افتح التطبيقَ من الأيقونة الجديدة دائمًا.':'ہمیشہ نئے آئیکن سے ایپ کھولیں۔', 'إن فتحتَ الرابطَ من واتساب: اضغط ⋯ ثم «فتح في Safari» أولًا.':'اگر لنک واٹس ایپ سے کھولا: پہلے ⋯ دبائیں پھر «Safari میں کھولیں»۔', 'ذكّرني غدًا':'کل یاد دلائیں',
@@ -9969,7 +9986,7 @@ function statsHistory(days){
    دقيقتين وعند العودة من الخلفية: كثيرةٌ ولا تحتمل إنصاتًا دائمًا. */
 var LIVE_SMALL = [], LIVE_TICK = null;
 /* الشاشاتُ التي تُعاد رسمُها حين يصل عملٌ جديد */
-var LIVE_WORK_PAGES = ['over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','daily','pace','map','co','plan','perf','ipc'];
+var LIVE_WORK_PAGES = ['mfu','over','exec','now','req','survey','svappr','qa','disp','maintForm','reg','mine','mywork','sites','dis','inst','daily','pace','map','co','plan','perf','ipc'];
 function liveSmallStop(){
   /* إلغاءُ إنصاتٍ مات لا يُبلَّغ عنه — لكنه يُسجَّل كي لا يُبتلَع صامتًا */
   LIVE_SMALL.forEach(function(f){
@@ -26267,11 +26284,198 @@ function kioskBody(){
     + '</div></div>';
 }
 
+/* ═══ متابعةُ الوزارة (V20.0) ═══
+   العرضُ الأسبوعيُّ الذي كان يُعدُّ يدويًّا للاجتماعات صار صفحةً حيّةً بعناوينه نفسِها:
+   حالةُ المهام، والتركيبات، والشركات، والمعوقات وجهاتُها، والتحدياتُ وآلياتُ معالجتها،
+   وطلباتُ الوزارة، والمنحنى اليومي، وشاشةُ القاعة. سجلّا التحديات والطلبات وتصنيفُ
+   الجهات ولقطاتُ الأسابيع في settings/mfu (يقرؤها كلُّ نشطٍ ويكتبها المكتب). */
+var MFU = { at:0, v:null }, MFU_COS_ALL = false;
+var MFU_PARTIES = ['شركة الخدمة', 'كدانة', 'أفاقي'];
+var MFU_OWN_DEF = { 'العارضة الحديدية ناقصة أو غير مكتملة':'كدانة', 'لا يوجد سطح تثبيت':'كدانة', 'المدخل غير واضح — لم يُستدل عليه':'أفاقي', 'تعذّر الوصول':'أفاقي' };
+function mfuFetch(force){
+  if (!force && (MFU.v || Date.now() - MFU.at < 600000)) return;
+  if (!FB.ready || !FB.db){ MFU.v = MFU.v || STATE.mfu || {}; return; }
+  MFU.at = Date.now();
+  FB.db.collection('settings').doc('mfu').get().then(function(doc){
+    FB.readCount = (FB.readCount || 0) + 1;
+    MFU.v = (doc && doc.exists) ? doc.data() : {}; STATE.mfu = MFU.v; if (CUR === 'mfu') render(1);
+  }).catch(function(e){ softErr('mfu', e, ''); });
+}
+function mfuData(){ return MFU.v || STATE.mfu || {}; }
+function mfuList(sec){
+  var o = mfuData()[sec] || {};
+  return Object.keys(o).map(function(k){ return Object.assign({ id:k }, o[k]); }).filter(function(x){ return x && !x.gone; }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
+}
+function mfuPut(sec, id, entry){
+  if (!may('settings')){ toast(t('سجلاتُ المتابعة للمهندس فمن فوقه')); return false; }
+  MFU.v = MFU.v || STATE.mfu || {}; MFU.v[sec] = MFU.v[sec] || {}; MFU.v[sec][id] = entry; STATE.mfu = MFU.v;
+  var w = {}; w[sec] = {}; w[sec][id] = entry; CORE.set('cfg', 'mfu', w);
+  return true;
+}
+function mfuOwnerOf(cat){ return (mfuData().own || {})[cat] || MFU_OWN_DEF[cat] || 'شركة الخدمة'; }
+/* العائقُ: نقطةٌ لم تُركَّب وفي مسحها تحدٍّ حقيقيّ، أو لم يُوصَل إليها */
+function mfuObstacles(){
+  var out = [];
+  (STATE.sites || []).forEach(function(x){
+    var ins = STATE.inss[x.id]; if (ins && ins.status === 'مُركّب') return;
+    var r = STATE.recs[x.id]; if (!r) return;
+    var cats = chalKeys(r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; });
+    if (r.access && r.access !== 'تم الوصول') cats.push('تعذّر الوصول');
+    if (cats.length) out.push({ x:x, cats:cats });
+  });
+  return out;
+}
+function mfuInstalled(x){ var i = STATE.inss[x.id]; return !!(i && i.status === 'مُركّب'); }
+function mfuLevel(p){ return p >= 75 ? ['ممتاز', 'ok'] : p >= 40 ? ['متوسط', 'wrn'] : ['ضعيف', 'bad']; }
+function mfuCompanies(){
+  var obsIds = {}; mfuObstacles().forEach(function(o){ obsIds[o.x.id] = 1; });
+  var by = {};
+  (STATE.sites || []).forEach(function(x){
+    if (x.type !== 'مخيم' || !x.co) return;
+    var c = by[x.co] = by[x.co] || { co:x.co, n:0, ins:0, obs:0 };
+    c.n++; if (mfuInstalled(x)) c.ins++; else if (obsIds[x.id]) c.obs++;
+  });
+  return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
+}
+function mfuKpis(){
+  var S = STATE.sites || [], tot = S.length, sv = 0, ins = 0, camp = 0, campIns = 0, cor = 0, corIns = 0;
+  S.forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r)) sv++; var i = mfuInstalled(x); if (i) ins++;
+    if (x.type === 'مخيم'){ camp++; if (i) campIns++; } else if (x.type === 'ممر'){ cor++; if (i) corIns++; } });
+  var C = mfuCompanies();
+  return { tot:tot, sv:sv, ins:ins, camp:camp, campIns:campIns, cor:cor, corIns:corIns, obs:mfuObstacles().length,
+           ex:C.filter(function(c){ return c.pct >= 75; }).length, md:C.filter(function(c){ return c.pct >= 40 && c.pct < 75; }).length, wk:C.filter(function(c){ return c.pct < 40; }).length,
+           chal:mfuList('chal').filter(function(x){ return x.st !== 'مغلق'; }).length, req:mfuList('req').filter(function(x){ return x.st !== 'منجز'; }).length };
+}
+function mfuWeekKey(t){ var d = new Date(t || Date.now()); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7)); var y = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return d.getUTCFullYear() + '-W' + ('0' + Math.ceil(((d - y) / 864e5 + 1) / 7)).slice(-2); }
+/* لقطةُ الأسبوع: تُكتَب مرةً في الأسبوع حين يفتح المكتبُ الملخّص — ومنها المقارنة */
+function mfuSnapMaybe(K){
+  if (!may('settings') || !FB.ready || !FB.db) return;   /* على القاعدة الحقيقية فقط */
+  var k = mfuWeekKey(), snap = mfuData().snap || {};
+  if (snap[k]) return;
+  mfuPut('snap', k, { sv:K.sv, ins:K.ins, campIns:K.campIns, corIns:K.corIns, obs:K.obs, at:Date.now() });
+}
+function mfuPrev(){
+  var k = mfuWeekKey(), snap = mfuData().snap || {}, keys = Object.keys(snap).filter(function(x){ return x < k; }).sort();
+  return keys.length ? snap[keys[keys.length - 1]] : null;
+}
+function mfuDelta(cur, prev, key, lowerIsBetter){
+  if (!prev || prev[key] == null) return '';
+  var d = cur - prev[key]; if (!d) return '<div class="hint" style="margin:2px 0 0">' + esc(t('كالأسبوع الماضي')) + '</div>';
+  var good = lowerIsBetter ? d < 0 : d > 0;
+  return '<div style="margin:2px 0 0;font-size:12px;font-weight:700;color:' + (good ? '#27AE60' : '#C0392B') + '">' + (d > 0 ? '\u25B2 +' : '\u25BC ') + nm(d) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div>';
+}
+function mfuBar(p){ var c = p >= 75 ? '#27AE60' : p >= 40 ? '#E2B33C' : '#C0392B'; return '<div class="mfu-bar"><i style="width:' + Math.max(0, Math.min(100, p)) + '%;background:' + c + '"></i><b>' + nm(p) + '\u066A</b></div>'; }
+function mfuSummary(){
+  var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
+  var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
+  var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
+  return '<div class="mfu-kpis">'
+    + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
+    + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
+    + box('تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
+    + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
+    + box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
+    + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
+    + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>');
+}
+function mfuTasks(){
+  var L = mileList();
+  return cardFlush(t('حالة أبرز المهام'), table(['المهمة', 'الموعد', 'الإنجاز', 'الحالة'], L.map(function(m){
+    var p = Math.round(mileDone(m) * 100), late = mileLate(m), d = mileDateOf(m);
+    var st = p >= 100 ? ['مكتمل', 'ok'] : late ? ['متأخر', 'bad'] : p > 0 ? ['جارٍ', 'wrn'] : ['لم يبدأ', ''];
+    return ['<b>' + esc(t(m.n)) + '</b>', d ? esc(fmtDate(d)) : '\u2014', mfuBar(p), pill(t(st[0]), st[1])];
+  })));
+}
+function mfuInst(){
+  var Z = {};
+  (STATE.sites || []).forEach(function(x){ var k = x.zone + '|' + x.type; var o = Z[k] = Z[k] || { z:x.zone, ty:x.type, n:0, i:0 }; o.n++; if (mfuInstalled(x)) o.i++; });
+  var rows = Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; });
+  return cardFlush(t('حالة التركيبات'), table(['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة'], rows.map(function(o){
+    var p = o.n ? Math.round(o.i / o.n * 100) : 0, d = CAT_DEF[o.ty] || { l:o.ty, i:'' };
+    return [esc(t(o.z)), (d.i || '') + ' ' + esc(t(d.l)), N(o.n), N(o.i), mfuBar(p)];
+  })));
+}
+function mfuCos(){
+  var C = mfuCompanies(), n = 0, ins = 0, obs = 0; C.forEach(function(c){ n += c.n; ins += c.ins; obs += c.obs; });
+  var tp = n ? Math.round(ins / n * 100) : 0;
+  return '<div class="mfu-kpis">'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('نسبة الإنجاز الكلية')) + '</div><div class="mfu-kpi-v">' + nm(tp) + '\u066A</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('التركيب')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(ins) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('عوائق')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(obs) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متبقٍّ')) + '</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(n - ins - obs) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('المخيمات')) + '</div><div class="mfu-kpi-v">' + nm(n) + '</div></div></div>'
+    + '<p class="hint">' + esc(t('دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU_COS_ALL ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
+    + btn(MFU_COS_ALL ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
+    + '<div class="mfu-cos">' + (MFU_COS_ALL ? C : C.slice().sort(function(a, b){ return a.pct - b.pct || b.n - a.n; }).slice(0, 12)).map(function(c){ var L = mfuLevel(c.pct);
+        return '<div class="mfu-co mfu-' + L[1] + '"><div class="mfu-co-h"><b>' + esc(c.co) + '</b>' + pill(t(L[0]), L[1]) + '</div>'
+          + mfuBar(c.pct) + '<div class="mfu-co-n"><span>' + esc(t('المستهدف')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('رُكّب')) + ' <b>' + nm(c.ins) + '</b></span><span>' + esc(t('عوائق')) + ' <b>' + nm(c.obs) + '</b></span><span>' + esc(t('متبقٍّ')) + ' <b>' + nm(c.rem) + '</b></span></div></div>';
+      }).join('') + '</div>';
+}
+function mfuObs(){
+  var O = mfuObstacles(), byParty = {}, byCat = {}, ed = may('settings');
+  MFU_PARTIES.forEach(function(p){ byParty[p] = 0; });
+  O.forEach(function(o){ var seen = {}; o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; var p = mfuOwnerOf(c); if (!seen[p]){ seen[p] = 1; byParty[p] = (byParty[p] || 0) + 1; } }); });
+  var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
+  return '<div class="mfu-kpis"><div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('إجمالي المعوقات')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(O.length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ لم تُركَّب وفيها عائق')) + '</div></div>'
+    + MFU_PARTIES.map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(p)) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div></div>'; }).join('') + '</div>'
+    + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
+        var own = mfuOwnerOf(c);
+        return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + MFU_PARTIES.map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select>' : esc(t(own))];
+      })))
+    + '<p class="hint">' + esc(t('الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.')) + '</p>';
+}
+function mfuChal(){
+  var L = mfuList('chal'), ed = may('settings'), ST = ['مفتوح', 'قيد المعالجة', 'مغلق'];
+  return (ed ? card('تحدٍّ جديد', '<div class="grid2"><label>' + esc(t('التحدي')) + '<textarea id="mcT" rows="2"></textarea></label><label>' + esc(t('آلية المعالجة')) + '<textarea id="mcM" rows="2"></textarea></label></div>'
+        + '<div class="grid2"><label>' + esc(t('المسؤول')) + '<input id="mcO"></label><label>' + esc(t('المسار')) + '<select id="mcR"><option>' + esc(t('التركيبات')) + '</option><option>' + esc(t('التوريدات')) + '</option><option>' + esc(t('المسح')) + '</option><option>' + esc(t('المواءمة مع الشركات')) + '</option></select></label></div>'
+        + '<div class="actions">' + btn(t('سجّل التحدي'), 'btn-primary btn-sm', ' data-mfuchal="1"') + '</div>') : '')
+    + (L.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(L.length), table(['التحدي', 'آلية المعالجة', 'المسار', 'المسؤول', 'الحالة', ''], L.map(function(x){
+        return ['<b>' + esc(x.t || '') + '</b>', esc(x.m || ''), esc(t(x.r || '')), esc(x.o || ''),
+                ed ? '<select data-mfuchalst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(x.st || 'مفتوح'), x.st === 'مغلق' ? 'ok' : 'wrn'),
+                ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="chal|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
+      }))) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>');
+}
+function mfuReq(){
+  var L = mfuList('req'), ed = may('settings'), ST = ['جديد', 'قيد التنفيذ', 'منجز'];
+  return (ed ? card('طلبٌ جديد', '<label>' + esc(t('الطلب')) + '<textarea id="mrT" rows="2"></textarea></label><div class="grid2"><label>' + esc(t('الإفادة / آخر تحديث')) + '<textarea id="mrU" rows="2"></textarea></label><label>' + esc(t('المقترح / الدعم المطلوب')) + '<textarea id="mrS" rows="2"></textarea></label></div>'
+        + '<div class="actions">' + btn(t('سجّل الطلب'), 'btn-primary btn-sm', ' data-mfureq="1"') + '</div>') : '')
+    + (L.length ? cardFlush(t('طلبات الوزارة') + ' \u2014 ' + nm(L.length), table(['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', ''], L.map(function(x, i){
+        return [N(i + 1), '<b>' + esc(x.t || '') + '</b>',
+                ed ? '<textarea data-mfurequ="' + esc(x.id) + '" rows="2" style="min-width:160px">' + esc(x.u || '') + '</textarea>' : esc(x.u || ''), esc(x.s || ''),
+                ed ? '<select data-mfureqst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(x.st || 'جديد'), x.st === 'منجز' ? 'ok' : 'wrn'),
+                ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="req|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
+      }))) : '<p class="hint">' + esc(t('لا طلباتٍ مسجّلةٌ بعد.')) + '</p>');
+}
+function mfuDaily(){
+  var R = diaryRows().slice(-30); if (!R.length) return '<p class="hint">' + esc(t('لا أعمالَ مسجّلةٌ بعد.')) + '</p>';
+  var W = 900, H = 220, pad = 24, mx = Math.max.apply(null, R.map(function(r){ return Math.max(r.ins, r.sv); })) || 1;
+  var pts = function(k){ return R.map(function(r, i){ return (pad + i * (W - 2 * pad) / Math.max(1, R.length - 1)).toFixed(1) + ',' + (H - pad - r[k] / mx * (H - 2 * pad)).toFixed(1); }).join(' '); };
+  return cardFlush(t('ملخص التركيبات اليومي') + ' \u2014 ' + t('آخر ٣٠ يومًا'),
+    '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:auto;display:block" role="img" aria-label="' + esc(t('ملخص التركيبات اليومي')) + '">'
+    + '<polyline fill="none" stroke="#27AE60" stroke-width="3" points="' + pts('ins') + '"></polyline>'
+    + '<polyline fill="none" stroke="#C8943E" stroke-width="2" stroke-dasharray="6 4" points="' + pts('sv') + '"></polyline></svg>'
+    + '<div class="kk-legend2"><span class="kk-lg"><i style="background:#27AE60"></i>' + esc(t('التركيب')) + '</span><span class="kk-lg"><i style="background:#C8943E"></i>' + esc(t('المسح')) + '</span></div>'
+    + table(['اليوم', 'التركيب', 'المسح', 'المتعذّر'], R.slice().reverse().slice(0, 14).map(function(r){ return [esc(fmtDate(Date.parse(r.day + 'T12:00:00Z'))), N(r.ins), N(r.sv), N(r.stuck || 0)]; })));
+}
+PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
+  l:'العرضُ الأسبوعيُّ للوزارة حيًّا — بعناوينه نفسِها: المهامُّ والتركيباتُ والشركاتُ والمعوقاتُ والتحدياتُ والطلبات.',
+  body:function(){
+    mfuFetch();
+    var head = tabHead('mfu'), cur = tabCur('mfu');
+    if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
+    if (cur === 'mtasks') return head + mfuTasks();
+    if (cur === 'minst') return head + mfuInst();
+    if (cur === 'mcos') return head + mfuCos();
+    if (cur === 'mobs') return head + mfuObs();
+    if (cur === 'mchal') return head + mfuChal();
+    if (cur === 'mreq') return head + mfuReq();
+    if (cur === 'mdaily') return head + mfuDaily();
+    return head + mfuSummary();
+  }};
 PAGE.over = { m:'المتابعة', t:'نظرة عامة',
   l:'تقدّمُ المشروع من كلِّ زاوية — الصورةُ والتوزيعُ والوتيرةُ والمعدلُ اليوميُّ والتركيب.',
   body:function(){
     var head = tabHead('over'), cur = tabCur('over');
-    if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     if (cur === 'svdash') return head + svdashBody();
     if (cur === 'now') return head + (function(){
     /* الوزارةُ تسأل ثلاثةَ أسئلةٍ لا تجيبها لوحةٌ واحدة: ماذا انتهى؟ ماذا يجري
@@ -27841,6 +28045,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.0', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
+      'موديول جديد «متابعة الوزارة» في المتابعة، بعناوين العرض الأسبوعي نفسها: الملخص مع المقارنة بالأسبوع الماضي، وحالة أبرز المهام، وحالة التركيبات، وتركيب المخيمات لشركات الخدمة (ممتاز/متوسط/ضعيف)، وبيان المعوقات وتصنيفها بالجهة المعالجة، والتحديات وآليات المعالجة، وطلبات الوزارة، وملخص التركيبات اليومي — وشاشة القاعة انتقلت إليه.' ] },
   { v:'V19.8', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'على أندرويد كالآيفون: تظهر بعد الدخول خطوات التثبيت مرقمة (كروم وسامسونج، والخروج من متصفح واتساب) ولو لم يعرض المتصفح زر التثبيت — ومعها «ثبّت الآن» بضغطة حين يسمح المتصفح.' ] },
   { v:'V19.7', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
@@ -32486,7 +32692,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','over','wbs','wtask','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','diary','pmi','lessons','stake','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','mfu','mtasks','minst','mcos','mobs','mchal','mreq','mdaily','kiosk','over','wbs','wtask','now','pace','miles','evm','budm','risks','chg','ncr','repcenter','diary','pmi','lessons','stake','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -32526,7 +32732,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','over','wbs','wtask','now','repcenter','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','mfu','mtasks','minst','mcos','mobs','mchal','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
@@ -32999,6 +33205,17 @@ var TABS = {
     ['fleetLog','سجل العُهدة','📒','من كانت معه أيُّ سيارةٍ وفي أيِّ يوم — للمخالفات والمساءلة.'],
     ['fleetCost','التكلفة','💰','ما تكلّفه السياراتُ شهريًّا ومنذ متى تعمل.'],
     ['myveh','سيارتي','🙋','ما أُسنِد إليك من مركبات.']],
+  /* متابعةُ الوزارة (V20.0): عناوينُ العرض الأسبوعي الذي كان يُرسَل للاجتماعات */
+  mfu:[
+    ['mfu','الملخص','📋','الأرقامُ التي يُفتتح بها الاجتماع — ومقارنتُها بالأسبوع الماضي.'],
+    ['mtasks','حالة أبرز المهام','✅','المعالمُ بموعدها وإنجازها وحالتها.'],
+    ['minst','حالة التركيبات','🔧','المخيماتُ والممراتُ وكلُّ نوعٍ بنسبة تركيبه في كلِّ مشعر.'],
+    ['mcos','تركيب المخيمات لشركات الخدمة','🏢','لكلِّ شركةٍ مستهدفُها وما رُكّب وما تعطّله العوائق — ممتازٌ ومتوسطٌ وضعيف.'],
+    ['mobs','بيان المعوقات وتصنيفها','🚧','كلُّ عائقٍ بفئته والجهةِ التي تعالجه.'],
+    ['mchal','التحديات وآليات المعالجة','⚠','كلُّ تحدٍّ بآلية معالجته ومسؤوله وحالته.'],
+    ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.'],
+    ['mdaily','ملخص التركيبات اليومي','📈','التركيبُ والمسحُ يومًا بيوم.'],
+    ['kiosk','شاشةُ القاعة','🏛','عرضٌ كبيرٌ يُقرأ من آخر القاعة ويتجدّد وحدَه كلَّ دقيقة.']],
   over:[
     ['over','الصورة العامة','📊','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.'],
     ['now','أمس · الآن · غدًا','⏱','ما انتهى، وما يجري الآن ومن يفعله وأين، وما هو مجدولٌ لغد.'],
@@ -33006,7 +33223,6 @@ var TABS = {
     ['pace','الوتيرة والهدف','⏱','المطلوب يوميًّا لبلوغ الموعد، وتاريخ الانتهاء المتوقع.'],
     ['daily','المعدل اليومي','📅','اللقطاتُ اليوميةُ كما سُجّلت — لا تُحسَب من جديد.'],
     ['inst','التركيب والجدولة','🔧','ما جُدول وما نُفّذ وما تعذّر — بحالته ونوعه.'],
-    ['kiosk','شاشةُ الوزارة','🏛','عرضٌ كبيرٌ يُقرأ من آخر القاعة: نسبةُ الإنجاز حلقاتٍ، وكلُّ مشعرٍ بشريطه، وشغلُ الميدان في أربعٍ وعشرين ساعة، وما ينتظر قرارَ الوزارة — يتجدّد وحدَه كلَّ دقيقة.'],
     ['svdash','تفاصيلُ المسح','📐','ما حُصر فعلًا: الغرفُ والخيام، وما لا تحدّيَ فيه، وما فيه تحدٍّ، وما يحتاج هيكلًا — ولكلِّ رقمٍ قائمتُه، تُصدَّر، ويطير كلُّ سطرٍ إلى نقطته على الخريطة.']],
   pts:[
     ['visits','الزيارات','🔍','وزن زيارة كل نوع وتارجت المسح.'],
@@ -35148,7 +35364,7 @@ var NAV = [
       ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
-      ['over','نظرة عامة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
+      ['mfu','متابعة الوزارة'],['over','نظرة عامة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
   { g:'التخطيط', icon:'\u25F7', items:[
       ['trials','التجارب'],['pts','نقاط المراحل'],['wbs','متابعة الخطة التفصيلية'],['org','التنظيم والسلامة'],
       ['plan','التخطيط والمخاطر']] },
@@ -35861,6 +36077,22 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
+  if (e.target.closest('[data-mfucosall]')){ MFU_COS_ALL = !MFU_COS_ALL; render(1); return true; }
+  if (e.target.closest('[data-mfuchal]')){
+    var mt = pmoVal('mcT'); if (!mt){ toast(t('اكتب التحدي')); return true; }
+    if (mfuPut('chal', 'C' + Date.now().toString(36), { t:mt, m:pmoVal('mcM'), o:pmoVal('mcO'), r:pmoVal('mcR'), st:'مفتوح', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('تحدٍّ جديد — ' + mt.slice(0, 40), ''); toast(t('سُجّل التحدي')); render(1); }
+    return true;
+  }
+  if (e.target.closest('[data-mfureq]')){
+    var rt = pmoVal('mrT'); if (!rt){ toast(t('اكتب الطلب')); return true; }
+    if (mfuPut('req', 'Q' + Date.now().toString(36), { t:rt, u:pmoVal('mrU'), s:pmoVal('mrS'), st:'جديد', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('طلبُ الوزارة — ' + rt.slice(0, 40), ''); toast(t('سُجّل الطلب')); render(1); }
+    return true;
+  }
+  if (e.target.closest('[data-mfudel]')){
+    var md = e.target.closest('[data-mfudel]').getAttribute('data-mfudel').split('|');
+    if (mfuPut(md[0], md[1], { gone:true, at:Date.now() })){ toast(t('حُذف')); render(1); }
+    return true;
+  }
   if (e.target.closest('[data-iosnudge]')){
     var inv = e.target.closest('[data-iosnudge]').getAttribute('data-iosnudge');
     if (inv === 'install' && INSTALL_EVT){
@@ -37305,6 +37537,14 @@ document.addEventListener('change', function(e){
     if (el.hasAttribute('data-part')){ FORM.parts[el.getAttribute('data-part')] = el.value; render(); return; }
     if (el.hasAttribute('data-simw')){ simState().w[el.getAttribute('data-simw')] = +el.value || 0; simSave(); render(1); return; }
     if (el.hasAttribute('data-simt')){ simState()[el.getAttribute('data-simt')] = +el.value || 0; simSave(); render(1); return; }
+    if (el.hasAttribute('data-mfuown') || el.hasAttribute('data-mfuchalst') || el.hasAttribute('data-mfureqst') || el.hasAttribute('data-mfurequ')){
+      if (el.hasAttribute('data-mfuown')){ var oc = el.getAttribute('data-mfuown'); if (MFU_PARTIES.indexOf(el.value) > -1) mfuPut('own', oc, el.value); render(1); return; }
+      var sec = el.hasAttribute('data-mfuchalst') ? 'chal' : 'req', fid = el.getAttribute(el.hasAttribute('data-mfuchalst') ? 'data-mfuchalst' : (el.hasAttribute('data-mfureqst') ? 'data-mfureqst' : 'data-mfurequ'));
+      var cur0 = mfuList(sec).filter(function(x){ return x.id === fid; })[0]; if (!cur0) return;
+      var nx = Object.assign({}, cur0); delete nx.id; nx.at = Date.now();
+      if (el.hasAttribute('data-mfurequ')) nx.u = String(el.value || '').slice(0, 600); else nx.st = el.value;
+      mfuPut(sec, fid, nx); if (!el.hasAttribute('data-mfurequ')) render(1); return;
+    }
     if (el.hasAttribute('data-stakecur')){
       var sid = el.getAttribute('data-stakecur'), sx = pmoList('stake').filter(function(x){ return x.id === sid; })[0];
       if (sx && PMO_LEVELS.indexOf(el.value) > -1){ var sy = Object.assign({}, sx); delete sy.id; sy.cur = el.value; sy.at = Date.now(); pmoPut('stake', sid, sy); render(1); }

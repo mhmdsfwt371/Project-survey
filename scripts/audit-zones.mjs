@@ -37,7 +37,7 @@ T(w.zonesLive().includes(Z) && w.zoneOptions().includes(Z), 'وفي قوائم �
 console.log('\n══ ٣ · حيث يُرى ══');
 const asn = await open('req', 'assign');
 T(asn.textContent.includes(Z) && /كاميرات الوزارة — LPR/.test(asn.textContent), 'الطلباتُ والتوزيع: صفٌّ للمشعر الجديد بالمتاح صفر — بتسمية النوع');
-const kk = await open('over', 'kiosk'); await wait(1200);
+const kk = await open('mfu', 'kiosk'); await wait(1200);
 T(kk.textContent.includes(Z), 'وشاشةُ الوزارة تسمّيه في المشاعر');
 T(w.zoneForecast(Z) === null, 'ولا توقّعَ يُكسَر لمشعرٍ بلا نقاط');
 const ov = await open('over', 'over');
