@@ -56,13 +56,16 @@ const decPatch = {}, decApplied = [], decSkipped = [];
 /* (V19.1) والقرارُ قد يمسُّ سجلَّ الأنواع (types: تسمياتٌ) ويدمج نوعًا في نوع (merge):
    تُعاد نقاطُ النوع المدموج إلى الباقي في sites وnewsites، وتُعاد مفاتيحُ التركيبات
    المعلَنة، ويُكتَب للمدموج شاهدُ حذف — مرةً واحدةً كسائر القرار. */
-const decTypes = {}, decMerges = [];
+const decTypes = {}, decMerges = [], decDeclare = [], decRezone = [];
 for (const dcn of decisions){
   if (!dcn || !dcn.id || (!dcn.set && !dcn.types && !dcn.merge)){ continue; }
   dcn.set = dcn.set || {};
   if (!done[dcn.id]){
     if (dcn.types && typeof dcn.types === 'object') for (const k of Object.keys(dcn.types)){ decTypes[k] = { ...(decTypes[k] || {}), ...dcn.types[k] }; decApplied.push(dcn.id + ': types.' + k + ' ← ' + JSON.stringify(dcn.types[k])); }
     if (Array.isArray(dcn.merge)) for (const m of dcn.merge){ if (m && m.from && m.to && m.from !== m.to){ decMerges.push(m); decApplied.push(dcn.id + ': دمجُ النوع «' + m.from + '» في «' + m.to + '»'); } }
+    /* (V20.1) إعلانُ تركيباتٍ (مشعر|تسمية) ونقلُ نقاطٍ إلى مشعرٍ بمستطيلٍ جغرافيّ */
+    if (Array.isArray(dcn.declare)) dcn.declare.forEach(k => { if (typeof k === 'string' && k.indexOf('|') > 0){ decDeclare.push(k); decApplied.push(dcn.id + ': إعلانُ «' + k + '»'); } });
+    if (Array.isArray(dcn.rezone)) dcn.rezone.forEach(z => { if (z && z.to && Array.isArray(z.bbox) && z.bbox.length === 4){ decRezone.push(z); decApplied.push(dcn.id + ': نقاطُ المستطيل ' + z.bbox.join(',') + ' ← «' + z.to + '»'); } });
   }
   if (done[dcn.id]){ decSkipped.push(dcn.id + ' (طُبِّق ' + new Date(done[dcn.id]).toISOString().slice(0, 10) + ')'); continue; }
   for (const k of Object.keys(dcn.set)){
@@ -159,7 +162,7 @@ console.log('قراراتٌ تُطبَّق (' + decApplied.length + '):' + (decA
 if (decSkipped.length) console.log('قراراتٌ طُبِّقت من قبل (' + decSkipped.length + '):\n  ' + decSkipped.join('\n  '));
 /* القرارُ يغلب الملءَ: ما قرّره صاحبُ المشروع لا يُعيد الملءُ كتابتَه */
 for (const k of Object.keys(decPatch)) patch[k] = decPatch[k];
-if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
+if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length && !decDeclare.length && !decRezone.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
 if (Object.keys(patch).length){
   patch._by = 'season-seed'; patch._at = Date.now();
@@ -201,6 +204,37 @@ for (let i = decMerges.length - 1; i >= 0; i--){
   Object.keys(census).forEach(k => { if (k !== m.to && norm(k) === norm(m.from) && keys.indexOf(k) < 0) keys.push(k); });
   decMerges.splice(i, 1, ...keys.map(k => ({ from:k, to:m.to })));
   console.log('دمجٌ بالتسمية «' + m.from + '» ← مفاتيحُ: ' + (keys.length ? keys.map(k => '«' + k + '» (' + (census[k] || 0) + ')').join(' · ') : 'لا شيء'));
+}
+/* ── الإعلانُ والنقلُ بين المشاعر (V20.1) ── */
+if ((decDeclare.length || decRezone.length) && write){
+  const inBox = (d, b) => d && +d.lat >= b[0] && +d.lng >= b[1] && +d.lat <= b[2] && +d.lng <= b[3];
+  const renamed = (d, to) => { const nm0 = String(d.name || ''); const z0 = String(d.zone || ''); return z0 && nm0.indexOf(z0) === 0 ? to + nm0.slice(z0.length) : nm0; };
+  if (process.env.SEED_DB){
+    const arr = Object.keys(cur.__mxExtra || {}).filter(k => /^\d+$/.test(k)).sort((a, b) => a - b).map(k => cur.__mxExtra[k]);
+    const next = [...new Set(arr.concat(decDeclare))]; const keep = {}; Object.keys(cur.__mxExtra || {}).filter(k => !/^\d+$/.test(k)).forEach(k => { keep[k] = cur.__mxExtra[k]; }); next.forEach((v, i) => { keep[i] = v; }); cur.__mxExtra = keep;
+    const moved = [];
+    for (const col of ['__sitesCol', '__newsites']) for (const id of Object.keys(cur[col] || {})){ const d = cur[col][id]; for (const z of decRezone){ if (d.zone !== z.to && inBox(d, z.bbox)){ d.name = renamed(d, z.to); d.zone = z.to; moved.push(id); } } }
+    writeFileSync(process.env.SEED_DB, JSON.stringify(cur, null, 1));
+    console.log('✓ إعلان: ' + decDeclare.length + ' — ونقاطٌ نُقلت: ' + (moved.length ? moved.join(' · ') : 'لا شيء'));
+  } else {
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin'); const fs = admin.firestore();
+    if (decDeclare.length){
+      const mx = await fs.collection('settings').doc('mxExtra').get(); const data = mx.exists ? (mx.data() || {}) : {};
+      const arr = Object.keys(data).filter(k => /^\d+$/.test(k)).sort((a, b) => a - b).map(k => data[k]);
+      const next = [...new Set(arr.concat(decDeclare))]; const out = {}; Object.keys(data).filter(k => !/^\d+$/.test(k)).forEach(k => { out[k] = data[k]; }); next.forEach((v, i) => { out[i] = v; });
+      await fs.collection('settings').doc('mxExtra').set(out);
+    }
+    const moved = [];
+    for (const z of decRezone) for (const col of ['newsites', 'sites']){
+      const q = await fs.collection(col).get();
+      let bt = fs.batch(), c = 0;
+      for (const doc of q.docs){ const d = doc.data() || {}; if (d.zone === z.to || !inBox(d, z.bbox)) continue;
+        bt.set(doc.ref, { zone:z.to, name:renamed(d, z.to), _by:'season-seed', _at:Date.now() }, { merge:true }); moved.push(doc.id + ' (' + (d.zone || '') + ')'); c++; if (c === 400){ await bt.commit(); bt = fs.batch(); c = 0; } }
+      if (c) await bt.commit();
+    }
+    console.log('✓ إعلان: ' + decDeclare.length + ' — ونقاطٌ نُقلت إلى مشعرها: ' + (moved.length ? moved.join(' · ') : 'لا شيء'));
+  }
 }
 /* ── سجلُّ الأنواع والدمج (V19.1) ── */
 if ((Object.keys(decTypes).length || decMerges.length) && write){

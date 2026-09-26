@@ -24,6 +24,8 @@ console.log('\n══ ١ · التسميات ══');
 T(w.CAT_DEF['كاميرا'].l === 'كاميرات الوزارة' && w.CAT_DEF['LPR'].l === 'كاميرات الوزارة — LPR', 'العائلةُ: «كاميرات الوزارة» و«كاميرات الوزارة — LPR»');
 w.STATE.types = { 'كاميرا':{ l:'كاميرات فالوزارة', i:'x', c:'#000' }, 'LPR':{ l:'كاميرات قراءة اللوحات', i:'y', c:'#111' } }; w.TYPES_NORM = null; w.typesList();
 T(w.CAT_DEF['كاميرا'].l === 'كاميرات الوزارة' && w.CAT_DEF['LPR'].l === 'كاميرات الوزارة — LPR', 'والخطأُ الإملائيُّ والتسميةُ القديمةُ في السجلِّ السحابيِّ تُردّان عند التحميل');
+w.STATE.types = { 'LPR':{ l:'كاميرات الوزارة — LPR' } }; w.TYPES_NORM = null; w.typesList();
+T(w.CAT_DEF['LPR'].i && w.CAT_DEF['LPR'].i !== 'undefined' && /^#/.test(w.CAT_DEF['LPR'].c), 'ومدخلٌ بتسميةٍ وحدَها يُكمَل رمزُه ولونُه من الأصل — لا «undefined» (V20.1)');
 
 console.log('\n══ ٢ · الفرع ══');
 const cams = w.STATE.sites.filter(x => x.type === 'كاميرا'), ptz = cams.filter(x => w.camKind(x) === 'PTZ'), bul = cams.filter(x => w.camKind(x) === 'Bullet');

@@ -1064,7 +1064,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -28046,6 +28046,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.1', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
+      'مشعر جديد «النوارية» لكاميرات مركز النوارية (كاميرات الوزارة وLPR): النقطة التي سُجّلت تحت منى وهي في النوارية نُقلت إليه، ويظهر في كل الشاشات.',
+      'إصلاح: كانت نافذة نقطة الكاميرا تعرض «undefined» مكان رمز النوع — عاد الرمز واللون.' ] },
   { v:'V20.0', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'موديول جديد «متابعة الوزارة» في المتابعة، بعناوين العرض الأسبوعي نفسها: الملخص مع المقارنة بالأسبوع الماضي، وحالة أبرز المهام، وحالة التركيبات، وتركيب المخيمات لشركات الخدمة (ممتاز/متوسط/ضعيف)، وبيان المعوقات وتصنيفها بالجهة المعالجة، والتحديات وآليات المعالجة، وطلبات الوزارة، وملخص التركيبات اليومي — وشاشة القاعة انتقلت إليه.' ] },
   { v:'V19.8', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
@@ -33972,6 +33975,11 @@ function typesNormalize(T){
     var b = CAT_DEF_BASE[k];
     if (b && TYPES_OLD_L[k] && TYPES_OLD_L[k].indexOf(v.l) > -1) v.l = b.l;
     if (b && !v.s && b.s) v.s = b.s;
+    /* (V20.1) مدخلٌ في السجلِّ بتسميةٍ وحدَها (قرارُ تسمية) كان يُفقِد النوعَ رمزَه ولونَه:
+       «undefined» في نافذة النقطة ودائرةٌ بلا لون — يُكمَل من الأصل أو بافتراضٍ محايد */
+    if (!v.i) v.i = (b && b.i) || '\u25CF';
+    if (!v.c) v.c = (b && b.c) || '#8A94A6';
+    if (!v.l) v.l = (b && b.l) || k;
   });
   Object.keys(CAT_DEF_BASE).forEach(function(k){
     if (!T[k] && !gone[k]) T[k] = typeCopy(CAT_DEF_BASE[k]);
