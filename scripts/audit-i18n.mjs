@@ -50,6 +50,7 @@ if (go) go.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await wait(400);
 
 /* الإنجليزيةُ تُختار كما يختارها المستخدم — لا بتعيين متغيّرٍ من الخارج */
+try { const { dictFile } = await import('./lib/dict-src.mjs'); const df = dictFile(); if (df) w.eval((await import('fs')).readFileSync(df, 'utf8')); } catch (e){ console.log('  · dict inject: ' + e.message); }   /* القاموسُ ملفٌّ مستقلٌّ (V21.6) */
 w.setLang('en');
 await wait(200);
 

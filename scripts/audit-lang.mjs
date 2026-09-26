@@ -12,8 +12,10 @@
        تكتب في القاعدة قيمةً لا يعرفها أحد. */
 
 import { readFileSync } from 'node:fs';
+import { dictSrc } from './lib/dict-src.mjs';
 
 const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const srcD = dictSrc(src);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 */
 const AR = /[\u0600-\u06FF]/;
 let ok = 0, bad = 0;
 const fail = [];
@@ -60,9 +62,9 @@ check(unmarked.length === 0,
 console.log('\n══ ٢ · كلُّ وسمٍ له مقابلٌ في القاموسين ══');
 const KEYS = /'((?:[^'\\]|\\.)*)'\s*:\s*'/g;
 function dict(name){
-  const i = src.indexOf('var ' + name + ' = {');
+  const i = srcD.indexOf('var ' + name + ' = {');
   if (i < 0) return [new Set(), new Set()];
-  const seg = src.slice(i);
+  const seg = srcD.slice(i);
   const mu = /\n\s*ur\s*:\s*\{/.exec(seg);
   if (!mu) return [new Set(), new Set()];
   const end = /\n\}\n\};/.exec(seg.slice(mu.index));
@@ -121,9 +123,9 @@ console.log('\n══ ٥ · الأرديةُ تكافئ الإنجليزية ═
    التكافؤ: كلُّ مفتاحٍ له إنجليزيةٌ له أرديةٌ ولا استثناء — فمن بدّل إلى
    الأردية لا يرى شاشةً نصفُها لغةٌ ونصفُها أخرى. */
 function side(name, L){
-  const i = src.indexOf('var ' + name + ' = {');
+  const i = srcD.indexOf('var ' + name + ' = {');
   if (i < 0) return {};
-  const g = src.slice(i, src.indexOf('\n};', i));
+  const g = srcD.slice(i, srcD.indexOf('\n};', i));
   const mu = /\nur:\s*\{/.exec(g);
   if (!mu) return {};
   const seg = L === 'en' ? g.slice(0, mu.index) : g.slice(mu.index);
@@ -189,9 +191,9 @@ console.log('\n══ ٧ · صياغةُ الترجمة — مراجعةُ كا�
    طرفيٌّ يكسر التنسيقَ حين تُضَمُّ؛ وقيمةٌ تساوي مفتاحَها فلم تُترجَم. */
 const KV = /'((?:[^'\\]|\\.)*)'\s*:\s*'((?:[^'\\]|\\.)*)'/g;
 function enSide(name){
-  const i = src.indexOf('var ' + name + ' = {');
+  const i = srcD.indexOf('var ' + name + ' = {');
   if (i < 0) return {};
-  const g = src.slice(i, src.indexOf('\n};', i));
+  const g = srcD.slice(i, srcD.indexOf('\n};', i));
   const mu = /\nur:\s*\{/.exec(g);
   if (!mu) return {};
   const o = {};

@@ -1,5 +1,6 @@
 // حارس التوثيق: يفشل إن تخلّف أي ملف عن نسخة التطبيق، أو اختلّ توازن أقسام اللوحة
 import { readFileSync, writeFileSync as writeFileSync2 } from 'fs';
+import { dictSrc } from './lib/dict-src.mjs';
 import { execSync } from 'child_process';
 import { sealHash } from './seal.mjs';
 
@@ -257,14 +258,14 @@ try {
    وعشرون. فمن قرأ نصفَ المصدر قاسَ نصفَ الحقيقة.
    والحارسُ سقّاطةٌ لا سدّ: يسجّل الفجوةَ في docs/i18n-baseline.json ويفشل إن كبرت. */
 try {
-  const src = readFileSync('index.html', 'utf8');
+  const src = readFileSync('index.html', 'utf8'), srcD = dictSrc(src);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 — والنداءاتُ في الملف الرئيسي */
   const AR  = /[\u0600-\u06FF]/;
   const KEYS = /'((?:[^'\\]|\\.)*)'\s*:\s*'/g;
 
   const dict = name => {
-    const i = src.indexOf('var ' + name + ' = {');
+    const i = srcD.indexOf('var ' + name + ' = {');
     if (i < 0) return [new Set(), new Set()];
-    const seg = src.slice(i);
+    const seg = srcD.slice(i);
     const mu = /\n\s*ur\s*:\s*\{/.exec(seg);
     if (!mu) return [new Set(), new Set()];
     const end = /\n\}\n\};/.exec(seg.slice(mu.index));

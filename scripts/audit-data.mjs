@@ -10,6 +10,7 @@
    ما بناه التطبيقُ فعلًا. الرقمُ الخاطئ في لوحة الوزارة أسوأ من زرٍّ مفقود.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
+import { dictSrc } from './lib/dict-src.mjs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 let JSDOM;
@@ -258,10 +259,11 @@ const html = readFileSync('index.html', 'utf8');
    باسمٍ واحدٍ في اللغات الثلاث. */
 {
   const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['',''])[1];
+  const jsD = dictSrc(js);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 */
   const pairs = (v, L) => {
-    const i = js.indexOf('var ' + v + ' = {');
+    const i = jsD.indexOf('var ' + v + ' = {');
     if (i < 0) return [];
-    const seg = js.slice(i, js.indexOf('\n};', i));
+    const seg = jsD.slice(i, jsD.indexOf('\n};', i));
     const st = seg.search(new RegExp('\\n' + L + ':\\s*\\{'));
     if (st < 0) return [];
     const e = L === 'en' ? (seg.search(/\nur:\s*\{/) + 1 || seg.length) : seg.length;
@@ -314,10 +316,11 @@ const html = readFileSync('index.html', 'utf8');
   check(dupPg.length === 0, 'لا شاشةَ معرَّفةٌ مرتين'
     + (dupPg.length ? ' — ' + dupPg.join(' · ') : ''));
 
+  const jsD2 = dictSrc(js);
   ['D','D2'].forEach(v => {
-    const i = js.indexOf('var ' + v + ' = {');
+    const i = jsD2.indexOf('var ' + v + ' = {');
     if (i < 0) return;
-    const seg = js.slice(i, js.indexOf('\n};', i));
+    const seg = jsD2.slice(i, jsD2.indexOf('\n};', i));
     ['en','ur'].forEach(L => {
       const st = seg.search(new RegExp('\\n' + L + ':\\s*\\{'));
       if (st < 0) return;
