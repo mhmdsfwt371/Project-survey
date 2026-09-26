@@ -19,14 +19,14 @@ jobs:
   smoke:
     # حدثُ النشر يقع مرتين: عند بدئه وعند نجاحه — ولا يُفحَص إلا الناجح
     if: github.event_name != 'deployment_status' || github.event.deployment_status.state == 'success'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       # النسخةُ المتوقَّعةُ تُقرأ من الشجرة التي نُشرت لا من رأس الفرع:
       # دفعةٌ تالية أثناء النشر كانت تجعل الفحصَ ينتظر نسخةً لم تُنشَر بعد
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.deployment && github.event.deployment.sha || github.sha }}
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v5
         with:
           node-version: 20
       - name: المتصفّح الصوريّ

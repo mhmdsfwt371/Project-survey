@@ -14,10 +14,10 @@ jobs:
     # (V17.94) الوظيفةُ كلُّها تُتخطّى ما دام العنوانُ فارغًا — لا جهازَ يُحجَز ولا تثبيتَ
     # يُهدَر كلَّ ربع ساعة؛ وتعمل من تلقاء نفسها حين يُضبَط MYAFAQY_BASE
     if: ${{ vars.MYAFAQY_BASE != '' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: '20'
       - name: الحزم
