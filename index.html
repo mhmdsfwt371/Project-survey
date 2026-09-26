@@ -1051,7 +1051,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V19.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V19.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -9108,6 +9108,10 @@ var CORE = {
          تقول «بانتظار الرفع ١» وقد فرغ، ويضغط المستخدمُ فيُقال له «فارغ» */
       if (CUR === 'sys' || CUR === 'sync'){ clearTimeout(CORE._dr); CORE._dr = setTimeout(function(){ if (CUR === 'sys' || CUR === 'sync') render(1); }, 200); }
       CORE._busy = false;
+      /* (V19.5) ما كُتب أثناء هذا الرفع وجد القفلَ مغلقًا فانتظر دورةَ الدقيقة — يُرفَع
+         الآن ما صار مستحقًّا منه، مرةً بعد ثانيةٍ ونصف (ولا يدور على مؤجَّلٍ ولا فاشل) */
+      var dueNow = STATE.queue.some(function(it){ return !it.next || it.next <= Date.now(); });
+      if (dueNow && r.ok.length && !r.failed.length){ clearTimeout(CORE._chain); CORE._chain = setTimeout(function(){ try { CORE.flush(); } catch (e2){ LS_ERR = e2; } }, 1500); }
       return r.ok.length;
     }).catch(function(e){
       /* كان يعود صفرًا صامتًا: يبقى «ثلاثةٌ بانتظار الرفع» ولا يُعرَف لماذا،
@@ -10142,7 +10146,10 @@ function liveTick(){
   /* العودةُ إلى التطبيق تسحب الجديدَ فارقيًّا — لا الثوابتَ كلَّها؛ ومرةً كلَّ
      دقيقةٍ على الأكثر، فمن يبدّل بين تطبيقين لا يفتح دورةً مع كلِّ تبديل */
   document.addEventListener('visibilitychange', function(){
-    if (document.hidden || !STATE.meta.online || !FB.ready) return;
+    /* (V19.5) الذهابُ إلى الخلفية هو اللحظةُ التي قد يُسقِط فيها الهاتفُ التطبيق:
+       يُرفَع ما ينتظر فورًا إن وُجد — كتاباتٌ كانت ستُرفَع على أيِّ حال */
+    if (document.hidden){ syncOnHide(); return; }
+    if (!STATE.meta.online || !FB.ready) return;
     if (Date.now() - (VIS_LAST || 0) < 60000) return;
     VIS_LAST = Date.now();
     syncCycle();
@@ -27712,6 +27719,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V19.5', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
+      'المزامنة التلقائية أسرع: ما يُحفظ أثناء رفع جارٍ يُرفع فور انتهائه بدل انتظار الدقيقة التالية، وما ينتظر يُرفع فورًا عند الخروج من التطبيق أو إغلاقه.' ] },
   { v:'V19.4', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'على الهاتف: زر مزامنة 🔄 في أعلى الشاشة بجوار رقم النسخة، عليه عدد ما ينتظر الرفع ويدور أثناء المزامنة — وفي اللافتة الحمراء «الحفظ المحلي لا يعمل» زر «زامن الآن» مباشرة.' ] },
   { v:'V19.3', d:'٢٥ سبتمبر ٢٠٢٦', notes:[
@@ -35490,6 +35499,13 @@ function enterShell(){
   try { perfVitalsInit(); } catch (e){ LS_ERR = e; }
   try { SUN_ON = lsGet('nsk14.sun') === '1'; sunApply(); } catch (e){ LS_ERR = e; }
 }
+/* الصفحةُ تُطوى (إغلاقٌ أو انتقالٌ أو إسقاطٌ من النظام) أو تذهب إلى الخلفية: محاولةُ
+   رفعٍ لما ينتظر (V19.5) — كتاباتٌ كانت ستُرفَع على أيِّ حال */
+function syncOnHide(){
+  try { if (STATE.meta.online && FB.ready && CORE.pending() > 0){ CORE.flush(); return true; } } catch (e){ LS_ERR = e; }
+  return false;
+}
+window.addEventListener('pagehide', syncOnHide);
 /* الإغلاقُ وعملٌ لم يُحفَظ: يُسأل (V17.93) — المتصفّحُ يعرض نصَّه هو */
 window.addEventListener('beforeunload', function(e){
   if (IDB_BAD && idbUnsynced()){ e.preventDefault(); e.returnValue = ''; return ''; }
