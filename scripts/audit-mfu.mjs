@@ -87,7 +87,7 @@ console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مص�
 await open('mcos');
 T(['docx', 'xlsx', 'pdf'].every(f => !!d.querySelector('[data-mfuexp="' + f + '"]')), 'شريطُ التصدير على العنوان: Word وExcel وPDF');
 const R = w.mfuReport();
-T(w.MFU_SECTIONS.length === 9 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 7 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض التسعة، والتاريخُ الهجريُّ والميلادي');
+T(w.MFU_SECTIONS.length === 10 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 7 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض وآخرِ التحديثات (١٠)، والتاريخُ الهجريُّ والميلادي');
 let got = null; w.Blob = function(parts, o){ this.parts = parts; this.o = o; }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.mfuDocx();
 const bytes = got && got.b.parts[0];
@@ -98,14 +98,14 @@ const parsed = new w.DOMParser().parseFromString(docXml, 'application/xml');
 T(!parsed.getElementsByTagName('parsererror').length && /w:orient="landscape"/.test(docXml) && /<w:bidi\/>/.test(docXml) && /w:fill="163E35"/.test(docXml) && /C8943E/.test(docXml), 'ونصُّه سليمُ البناء، عرضيٌّ من اليمين بألوان العرض');
 T(w.MFU_SECTIONS.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
 const ph = w.mfuPrintHtml(R);
-T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 9 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وتسعة أقسام وخطِّ العرض');
+T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 10 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وعشرة أقسام وخطِّ العرض');
 let printed = 0; w.open = () => ({ document:{ open(){}, write(){}, close(){} }, focus(){}, print(){ printed++; } });
 w.mfuPdf(); await wait(450);
 T(printed === 1, 'وزرُّه يفتح نافذةَ الطباعة (حفظٌ كـ PDF)');
 const sheets = []; w.xlsxLoad = () => Promise.resolve(true);
 w.XLSX = { utils:{ book_new: () => ({}), aoa_to_sheet: rows => ({ rows }), book_append_sheet: (wb, ws, name) => { sheets.push([name, ws.rows[0]]); } }, writeFile: () => {} };
 await w.mfuXlsx();
-T(sheets.length === 9 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — تسعُ أوراق');
+T(sheets.length === 10 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — عشرُ أوراق');
 
 console.log('\n══ ٧ · باوربوينت من قالب الوزارة (V20.4) ══');
 const tplBuf = readFileSync('templates/weekly-readers.pptx');
@@ -162,6 +162,32 @@ const mt2 = await open('mtasks');
 T(/المسار/.test(mt2.textContent) && /توريد العوارض/.test(mt2.textContent) && /تم حلُّ التحدي/.test(mt2.textContent), 'وحالةُ أبرز المهام من المهام الأسبوعية بأعمدة العرض، وما عالج تحدّيًا يُعلَّم');
 const R2 = w.mfuReport();
 T(R2.tasks.length === w.wtRows().length && R2.chal.some(r => r[0] === 'من المسح الميداني') && R2.chal.some(r => r[0] === 'من المهام الأسبوعية'), 'والتصديرُ يحمل المهامَّ الأسبوعيةَ والتحدياتِ بمصادرها');
+
+console.log('\n══ ٩ · كلُّ شيءٍ مربوطٌ ويُسمَع في التقرير (V20.6) ══');
+w.MFU.v = w.STATE.mfu = {};
+await open('mreq');
+d.getElementById('mrT').value = 'تركيب إضاءةٍ إرشاديةٍ للتفويج'; d.getElementById('mrS').value = 'دعمُ الشركات بالتصاريح';
+d.querySelector('[data-mfureq]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const rq = w.mfuList('req')[0];
+T(Array.isArray(rq.hist) && rq.hist[0].f === 'new', 'الطلبُ يُنشأ بسجلٍّ قصيرٍ لما تغيّر');
+d.querySelector('[data-reqtask="' + rq.id + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const rt = w.wtRows().find(r => r.req === 'R:' + rq.id), rq2 = w.mfuList('req')[0];
+T(!!rt && /^طلب الوزارة: /.test(rt.n) && rt.track === 'طلبات الوزارة' && rq2.task == rt.id && rq2.st === 'قيد التنفيذ', '«＋ مهمة تنفيذ» تُنشئ مهمةً أسبوعيةً مربوطةً بالطلب ويصير «قيد التنفيذ»');
+await wait(15); w.wtNote(rt.id, 'رُكّبت الإضاءةُ على ١٢٠ مخيمًا');
+const V = w.mfuReqView(w.mfuList('req')[0]);
+T(V.u === 'رُكّبت الإضاءةُ على ١٢٠ مخيمًا' && V.uSrc == rt.id, 'وآخرُ ملاحظةٍ في المهمة تصير إفادةَ الطلب (من المهمة #' + rt.id + ')');
+w.wtStatus(rt.id, 'متوقف');
+T(w.mfuReqView(w.mfuList('req')[0]).blocked && w.mfuAllChal().some(c => c.key === 'T:' + rt.id && !w.mfuChalClosed(c)), 'وتوقّفُها يُعلِّم الطلبَ «متوقفة» ويظهر تحدّيًا قائمًا');
+w.wtStatus(rt.id, 'مكتمل');
+T(w.mfuReqView(w.mfuList('req')[0]).st === 'منجز' && w.mfuAllChal().some(c => c.key === 'T:' + rt.id && c.st === 'تم الحل'), 'واكتمالُها إنجازُ الطلب، والتحدي «تم الحل»');
+const TL = w.mfuTimeline(7, 50);
+T(TL.some(e => e.k === 'مهمة' && /رُكّبت الإضاءة/.test(e.txt)) && TL.some(e => e.k === 'طلب الوزارة' && /رُبط بمهمة/.test(e.txt)) && TL.some(e => e.k === 'مهمة' && /مكتمل/.test(e.txt)), 'آخرُ التحديثات سجلٌّ واحدٌ يجمع المهامَّ والطلباتِ والتحديات');
+const sm2 = await open('mfu');
+T(/آخر التحديثات — هذا الأسبوع/.test(sm2.textContent) && /رُكّبت الإضاءةُ على ١٢٠ مخيمًا/.test(sm2.textContent), 'ويظهر في الملخّص');
+const R3 = w.mfuReport();
+T(R3.upd.length >= 3 && R3.req[0][5].indexOf('#' + rt.id) === 0 && /منجز/.test(R3.req[0][4]) && R3.tasks.some(r => /طلب/.test(r[6])), 'والتقريرُ يحمله: قسمُ آخر التحديثات، ومهمةُ تنفيذ الطلب وحالتُه، وعمودُ «مرتبطة بـ» في المهام');
+const html3 = w.mfuPrintHtml(R3), doc3 = w.mfuDocxXml(R3), sl3 = w.mfuSlides(R3).map(x => x[1]).join('');
+T(/آخر التحديثات — هذا الأسبوع/.test(html3) && /آخر التحديثات — هذا الأسبوع/.test(doc3) && /آخر التحديثات هذا الأسبوع/.test(sl3) && /مرتبطة بـ/.test(sl3), 'في PDF ووورد والعرضِ جميعًا');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
