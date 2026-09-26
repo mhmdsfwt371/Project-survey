@@ -24819,8 +24819,10 @@ function iosNudgeDue(){
 function iosNudgeHtml(){
   var step = function(n, txt){ return '<div style="display:flex;gap:10px;align-items:flex-start;margin:10px 0"><b style="flex:0 0 32px;height:32px;border-radius:50%;background:var(--brand);color:#fff;display:inline-flex;align-items:center;justify-content:center;font-size:17px">' + n + '</b><span style="font-size:16px;line-height:1.7">' + txt + '</span></div>'; };
   return '<div class="pop-wrap" style="position:fixed;inset:0;display:flex;align-items:flex-end;justify-content:center;background:rgba(0,0,0,.55);z-index:97">'
-    + '<div class="pop" style="width:min(520px,100vw);border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)"><div class="pop-body" style="padding:18px 18px 8px">'
-    + '<h3 style="margin:0 0 4px;font-size:19px">\u{1F4F2} ' + esc(t('ثبّت التطبيق على جهازك — مرةً واحدة')) + '</h3>'
+    + '<div class="pop" style="width:min(520px,100vw);border-radius:18px 18px 0 0;padding-bottom:env(safe-area-inset-bottom,0px)">'
+    + '<div class="pop-head"><div><h3 style="margin:0;font-size:19px">\u{1F4F2} ' + esc(t('ثبّت التطبيق على جهازك — مرةً واحدة')) + '</h3></div>'
+    + btn('\u2715', 'btn-quiet btn-sm', ' data-iosnudge="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + '<div class="pop-body" style="padding:14px 18px 8px">'
     + '<p class="hint" style="margin:0 0 6px;font-size:14px">' + esc(t('هكذا يحفظ الجهازُ عملَك فلا يضيع، ويفتح أسرع.')) + '</p>'
     + step('١', esc(t('اضغط زرَّ المشاركة')) + ' <b style="font-size:20px">\u2B06\uFE0E</b> ' + esc(t('أسفلَ الشاشة.')))
     + step('٢', esc(t('اختر «إضافة إلى الشاشة الرئيسية» ثم «إضافة».')))
