@@ -87,7 +87,7 @@ console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مص�
 await open('mcos');
 T(['docx', 'xlsx', 'pdf'].every(f => !!d.querySelector('[data-mfuexp="' + f + '"]')), 'شريطُ التصدير على العنوان: Word وExcel وPDF');
 const R = w.mfuReport();
-T(w.MFU_SECTIONS.length === 10 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 7 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض وآخرِ التحديثات (١٠)، والتاريخُ الهجريُّ والميلادي');
+T(w.MFU_SECTIONS.length === 11 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 7 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض وكتلِ المسار وآخرِ التحديثات (١١)، والتاريخُ الهجريُّ والميلادي');
 let got = null; w.Blob = function(parts, o){ this.parts = parts; this.o = o; }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.mfuDocx();
 const bytes = got && got.b.parts[0];
@@ -98,14 +98,14 @@ const parsed = new w.DOMParser().parseFromString(docXml, 'application/xml');
 T(!parsed.getElementsByTagName('parsererror').length && /w:orient="landscape"/.test(docXml) && /<w:bidi\/>/.test(docXml) && /w:fill="163E35"/.test(docXml) && /C8943E/.test(docXml), 'ونصُّه سليمُ البناء، عرضيٌّ من اليمين بألوان العرض');
 T(w.MFU_SECTIONS.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
 const ph = w.mfuPrintHtml(R);
-T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 10 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وعشرة أقسام وخطِّ العرض');
+T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 11 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وأحد عشر قسمًا وخطِّ العرض');
 let printed = 0; w.open = () => ({ document:{ open(){}, write(){}, close(){} }, focus(){}, print(){ printed++; } });
 w.mfuPdf(); await wait(450);
 T(printed === 1, 'وزرُّه يفتح نافذةَ الطباعة (حفظٌ كـ PDF)');
 const sheets = []; w.xlsxLoad = () => Promise.resolve(true);
 w.XLSX = { utils:{ book_new: () => ({}), aoa_to_sheet: rows => ({ rows }), book_append_sheet: (wb, ws, name) => { sheets.push([name, ws.rows[0]]); } }, writeFile: () => {} };
 await w.mfuXlsx();
-T(sheets.length === 10 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — عشرُ أوراق');
+T(sheets.length === 11 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — إحدى عشرة ورقة');
 
 console.log('\n══ ٧ · باوربوينت من قالب الوزارة (V20.4) ══');
 const tplBuf = readFileSync('templates/weekly-readers.pptx');
@@ -121,7 +121,7 @@ T(E1.length === E0.length && E1[0].name === '[Content_Types].xml', 'بأجزاء
 const same = E0.filter(e => e.method === 8).every(e => { const f = E1.find(x => x.name === e.name); return f && f.method === 8 && f.crc === e.crc && f.csize === e.csize; });
 T(same, 'وما لم يتغيّر يُنسَخ بضغطه كما هو — الخطوطُ المضمَّنةُ والصورُ والقوالب');
 const td = new TD(), slides = E1.filter(e => /^ppt\/slides\/slide\d+\.xml$/.test(e.name)).map(e => ({ n:e.name, x:td.decode(e.raw) }));
-T(slides.length === 11 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'إحدى عشرة شريحة بلا عنصرٍ نائبٍ باقٍ');
+T(slides.length === 12 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'اثنتا عشرة شريحة بلا عنصرٍ نائبٍ باقٍ — ومنها شريحةُ المسار');
 T(slides.every(s => !new w.DOMParser().parseFromString(s.x, 'application/xml').getElementsByTagName('parsererror').length), 'وكلُّ شريحةٍ سليمةُ البناء');
 const all = slides.map(s => s.x).join('');
 T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص التركيبات اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
@@ -188,6 +188,34 @@ const R3 = w.mfuReport();
 T(R3.upd.length >= 3 && R3.req[0][5].indexOf('#' + rt.id) === 0 && /منجز/.test(R3.req[0][4]) && R3.tasks.some(r => /طلب/.test(r[6])), 'والتقريرُ يحمله: قسمُ آخر التحديثات، ومهمةُ تنفيذ الطلب وحالتُه، وعمودُ «مرتبطة بـ» في المهام');
 const html3 = w.mfuPrintHtml(R3), doc3 = w.mfuDocxXml(R3), sl3 = w.mfuSlides(R3).map(x => x[1]).join('');
 T(/آخر التحديثات — هذا الأسبوع/.test(html3) && /آخر التحديثات — هذا الأسبوع/.test(doc3) && /آخر التحديثات هذا الأسبوع/.test(sl3) && /مرتبطة بـ/.test(sl3), 'في PDF ووورد والعرضِ جميعًا');
+
+console.log('\n══ ١٠ · المهامُّ الأسبوعيةُ تُسمَع في المتابعة (V20.7) ══');
+w.wtAdd({ n:'تركيب ممرات عرفات', who:'سالم', track:'التركيبات', due:new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10) });
+const tm = w.wtRows().find(r => r.n === 'تركيب ممرات عرفات');
+const newDue = new Date(Date.now() + 10 * 864e5).toISOString().slice(0, 10);
+w.wtSet(tm.id, { due:newDue }); w.wtSet(tm.id, { who:'ماجد' });
+T(tm.log.some(e => e.f === 'due' && e.to === newDue) && tm.log.some(e => e.f === 'who' && e.from === 'سالم' && e.to === 'ماجد'), 'تأجيلُ الموعد وتغييرُ المسؤول يُسجَّلان بقيمتيهما (كانا صامتين)');
+const TL2 = w.mfuTimeline(7, 100);
+T(TL2.some(e => /تأجيل الموعد/.test(e.txt) && e.txt.indexOf(newDue) > -1) && TL2.some(e => /المسؤول: سالم/.test(e.txt)), 'ويظهران في آخر التحديثات');
+T(w.wtSince().items.some(i => /تأجيل الموعد/.test(i.what)), 'وفي محضر الاجتماع');
+w.wtAdd({ n:'مهمةٌ مربوطةٌ ثم تُحذَف', who:'س', track:'التحديات', chal:'M:ZZ' });
+const q = w.mfuList('req')[0]; w.wtAdd({ n:'تنفيذٌ يُحذَف', track:'طلبات الوزارة', req:'R:' + q.id });
+const td2 = w.wtRows().find(r => r.n === 'تنفيذٌ يُحذَف'); const qn = Object.assign({}, q); delete qn.id; qn.task = td2.id; w.mfuPut('req', q.id, qn);
+w.wtRemove(td2.id);
+const q2 = w.mfuList('req').find(x => x.id === q.id);
+T(!q2.task && q2.hist.some(h => h.f === 'task' && /حُذفت/.test(h.v)), 'وحذفُ مهمةٍ مربوطةٍ يُكتَب على طلبها ويفكّ الربط — فيعود زرُّ «مهمة تنفيذ»');
+const B = w.mfuWeekBlocks();
+T(B.next.some(r => r.n === 'تركيب ممرات عرفات') === false && B.done.length >= 1 && Array.isArray(B.late) && Array.isArray(B.wait), 'كتلُ المسار: المنجزُ في أسبوع، والقادمُ في سبعة أيام (المؤجَّلُ خرج منها)، والمتأخرُ، والمنتظِر');
+const sm3 = await open('mfu');
+T(/أبرز الأعمال المنجزة/.test(sm3.textContent) && /أبرز المهام القادمة/.test(sm3.textContent) && /الاعتمادات والدعم المطلوب/.test(sm3.textContent) && /المهام المتأخرة/.test(sm3.textContent) && /أُنجز هذا الأسبوع/.test(sm3.textContent), 'والملخّصُ يعرضها بكتل العرض الأسبوعي الأربع');
+w.STATE.wtask.meetAt = Date.now() - 2 * 864e5; w.STATE.wtask.meetBy = 'المهندس';
+const sm4 = await open('mfu');
+T(/آخر اجتماع/.test(sm4.textContent) && /ما تغيّر منذ آخر اجتماع/.test(sm4.textContent), 'واجتماعُ الأسبوع مرجعٌ: «ما تغيّر منذ آخر اجتماع»');
+const R4 = w.mfuReport();
+T(R4.blocks.some(r => r[0] === 'أبرز الأعمال المنجزة') && /منذ آخر اجتماع/.test(R4.updTitle) && /منذ آخر اجتماع/.test(w.mfuPrintHtml(R4)) && w.mfuSlides(R4).some(x => x[0] === 'المســـار | القارئات'), 'والتقريرُ بصيغه: كتلُ المسار وعنوانُ «منذ آخر اجتماع» وشريحةُ «المسار | القارئات»');
+await open('mcos'); await wait(1700);   /* مؤقّتُ «رآها» من الملخّص السابق ينقضي أوّلًا */
+w.localStorage.setItem('nsk14.mfuSeen', '0'); w.render(1); await wait(40);
+T(w.mfuUnseen() > 0 && /متابعة الوزارة\s*\S+/.test(d.getElementById('nav').textContent) && !!d.querySelector('#nav a[data-p="mfu"] .tb-badge'), 'والجديدُ منذ آخر زيارةٍ شارةٌ على «متابعة الوزارة» في القائمة');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

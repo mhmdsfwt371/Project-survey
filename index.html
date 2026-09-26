@@ -741,6 +741,10 @@ body.kiosk .kk-story{font-size:21px}
 .mfu-co{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .mfu-co.mfu-ok{border-top:4px solid #27AE60}.mfu-co.mfu-wrn{border-top:4px solid #E2B33C}.mfu-co.mfu-bad{border-top:4px solid #C0392B}
 .mfu-co-h{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:0 0 6px}
+.mfu-blks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:0 0 12px}
+.mfu-blk{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.mfu-blk-h{color:#fff;font-weight:800;padding:8px 12px;font-size:13.5px}
+.mfu-blk ul{margin:0;padding:10px 14px 6px;padding-inline-start:26px}
 .mfu-add{margin:12px 0 0}
 .mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
 .mfu-add > summary::-webkit-details-marker{display:none}
@@ -1068,7 +1072,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3925,6 +3929,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'مستحقٌّ خلال ٧ أيام':'Due within 7 days', 'متوقفة أو بانتظار قرار':'Stopped or awaiting decision', 'آخر اجتماع':'Last meeting', 'تغييرًا منذه':'changes since', 'أبرز الأعمال المنجزة':'Key work completed', 'أبرز المهام القادمة':'Key upcoming tasks', 'الاعتمادات والدعم المطلوب':'Approvals and support needed', 'المهام المتأخرة':'Late tasks', 'ما تغيّر منذ آخر اجتماع':'Changes since the last meeting', 'تأجيل الموعد':'Due date postponed',
  'آخر التحديثات — هذا الأسبوع':'Latest updates — this week', 'لا تحديثاتٍ في سبعة أيام.':'No updates in seven days.', 'تحدّي مسح':'Survey challenge', 'طلب الوزارة':'Ministry request', 'أُنشئ':'Created', 'أُنشئت':'Created', 'رُبط بمهمة':'Linked to task', 'إفادة':'Response', 'من المهمة':'From task', 'مهمة التنفيذ':'Execution task', 'مهمة تنفيذ':'Execution task', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'Execution task created in weekly tasks', 'نُفِّذ طلبُ الوزارة':'Ministry request fulfilled', 'تنفيذُ طلبٍ للوزارة':'Fulfilling a ministry request', 'مرتبطة بـ':'Linked to',
  'من المسح الميداني':'From field survey', 'من المهام الأسبوعية':'From weekly tasks', 'مسجّلٌ يدويًّا':'Recorded manually', 'تم الحل':'Resolved', 'متوقفة':'Stopped', 'على مين':'Responsible party', 'من سيحلّه':'Who resolves it', 'مهمة المعالجة':'Resolution task', 'مهمة معالجة':'Resolution task', 'تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.':'Field-survey challenges are read from uninstalled points and become “resolved” when no point remains; a stopped weekly task is an open challenge; completing a resolution task resolves its challenge.', 'أُنشئت مهمةُ المعالجة في المهام الأسبوعية':'Resolution task created in weekly tasks', 'تم حلُّ التحدي':'Challenge resolved', 'معالجةُ تحدٍّ':'Resolving a challenge', 'تحدٍّ مسجّل':'Recorded challenge', 'المهام الأسبوعية':'Weekly tasks', 'مهامُّ الاجتماع كاملةً — تُحدَّث من هنا، وما يعالج تحدّيًا يُعرَف به.':'Meeting tasks in full — updated from here; tasks resolving a challenge are marked.', 'المهامُّ الأسبوعيةُ بمسارها ومسؤولها وحالتها وآخرِ تحديث — والمعالم.':'Weekly tasks with track, owner, status and latest update — and milestones.', 'لا مهامَّ أسبوعيةٌ بعد — تُضاف من «المهام الأسبوعية».':'No weekly tasks yet — add them from “Weekly tasks”.', 'المعلم':'Milestone', 'التحديث':'Update',
  'يُجهَّز العرضُ من قالب الوزارة…':'Preparing the deck from the ministry template…', 'صُدّر العرض':'Deck exported', 'تعذّر تحميلُ قالب العرض — تحقّق من الشبكة':'Could not load the deck template — check the network',
@@ -6700,6 +6705,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'مستحقٌّ خلال ٧ أيام':'۷ دن میں واجب', 'متوقفة أو بانتظار قرار':'رکے ہوئے یا فیصلے کے منتظر', 'آخر اجتماع':'آخری اجلاس', 'تغييرًا منذه':'تبدیلیاں تب سے', 'أبرز الأعمال المنجزة':'اہم مکمل کام', 'أبرز المهام القادمة':'اہم آئندہ کام', 'الاعتمادات والدعم المطلوب':'منظوریاں اور درکار مدد', 'المهام المتأخرة':'تاخیر والے کام', 'ما تغيّر منذ آخر اجتماع':'آخری اجلاس سے تبدیلیاں', 'تأجيل الموعد':'تاریخ مؤخر',
  'آخر التحديثات — هذا الأسبوع':'تازہ ترین — اس ہفتے', 'لا تحديثاتٍ في سبعة أيام.':'سات دنوں میں کوئی تازہ کاری نہیں۔', 'تحدّي مسح':'سروے چیلنج', 'طلب الوزارة':'وزارت کی درخواست', 'أُنشئ':'بنایا گیا', 'أُنشئت':'بنایا گیا', 'رُبط بمهمة':'کام سے منسلک', 'إفادة':'جواب', 'من المهمة':'کام سے', 'مهمة التنفيذ':'عمل درآمد کا کام', 'مهمة تنفيذ':'عمل درآمد کا کام', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'عمل درآمد کا کام ہفتہ وار کاموں میں بن گیا', 'نُفِّذ طلبُ الوزارة':'وزارت کی درخواست پوری', 'تنفيذُ طلبٍ للوزارة':'وزارت کی درخواست پر عمل', 'مرتبطة بـ':'منسلک',
  'من المسح الميداني':'فیلڈ سروے سے', 'من المهام الأسبوعية':'ہفتہ وار کاموں سے', 'مسجّلٌ يدويًّا':'دستی درج', 'تم الحل':'حل ہو گیا', 'متوقفة':'رکا ہوا', 'على مين':'ذمہ دار فریق', 'من سيحلّه':'کون حل کرے گا', 'مهمة المعالجة':'حل کا کام', 'مهمة معالجة':'حل کا کام', 'تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.':'فیلڈ سروے کے چیلنج غیر نصب پوائنٹس سے پڑھے جاتے ہیں اور کوئی پوائنٹ نہ رہنے پر «حل» ہو جاتے ہیں؛ رکا ہوا ہفتہ وار کام کھلا چیلنج ہے؛ حل کا کام مکمل ہونا چیلنج کا حل ہے۔', 'أُنشئت مهمةُ المعالجة في المهام الأسبوعية':'حل کا کام ہفتہ وار کاموں میں بن گیا', 'تم حلُّ التحدي':'چیلنج حل ہو گیا', 'معالجةُ تحدٍّ':'چیلنج کا حل', 'تحدٍّ مسجّل':'درج چیلنج', 'المهام الأسبوعية':'ہفتہ وار کام', 'مهامُّ الاجتماع كاملةً — تُحدَّث من هنا، وما يعالج تحدّيًا يُعرَف به.':'اجلاس کے مکمل کام — یہیں سے تازہ کریں؛ چیلنج حل کرنے والے کام نشان زد۔', 'المهامُّ الأسبوعيةُ بمسارها ومسؤولها وحالتها وآخرِ تحديث — والمعالم.':'ہفتہ وار کام راستے، ذمہ دار، حالت اور تازہ ترین کے ساتھ — اور سنگ میل۔', 'لا مهامَّ أسبوعيةٌ بعد — تُضاف من «المهام الأسبوعية».':'ابھی کوئی ہفتہ وار کام نہیں — «ہفتہ وار کام» سے شامل کریں۔', 'المعلم':'سنگ میل', 'التحديث':'تازہ کاری',
  'يُجهَّز العرضُ من قالب الوزارة…':'وزارت کے سانچے سے پیشکش تیار ہو رہی ہے…', 'صُدّر العرض':'پیشکش برآمد', 'تعذّر تحميلُ قالب العرض — تحقّق من الشبكة':'پیشکش کا سانچہ لوڈ نہیں ہو سکا — نیٹ ورک چیک کریں',
@@ -17165,12 +17171,16 @@ function wtMine(){
    منذ هذا الختم، من سجل كلِّ مهمة، لا من الذاكرة. */
 var WT_MEET = false, WT_MI = 0, WT_MEND = 0;
 function wtMeetList(){ var G = wtGroups(wtRows()); return G.late.concat(G.week, G.later, G.none); }
+function wtFieldTxt(e){
+  if (e.f === 'due') return (e.from && e.to && e.to > e.from ? t('تأجيل الموعد') : t('الموعد')) + ': ' + (e.from || '\u2014') + ' \u2190 ' + (e.to || '\u2014');
+  return t(WT_LOGF[e.f] || e.f) + ': ' + (e.from || '\u2014') + ' \u2190 ' + (e.to || '\u2014');
+}
 function wtSince(){
   var since = (STATE.wtask && STATE.wtask.meetAt) || 0, out = [];
   wtRows().forEach(function(r){
     (Array.isArray(r.log) ? r.log : []).forEach(function(e){
       if ((e.at || 0) <= since) return;
-      var what = e.note === 'أُنشئت' ? t('مهمةٌ جديدة') : (e.st ? t('الحالة') + ': ' + t(e.st) : String(e.note || ''));
+      var what = e.note === 'أُنشئت' ? t('مهمةٌ جديدة') : (e.st ? t('الحالة') + ': ' + t(e.st) : e.f ? wtFieldTxt(e) : String(e.note || ''));
       if (what) out.push({ r:r, e:e, what:what });
     });
   });
@@ -17362,13 +17372,17 @@ function wtAdd(o){
   if (wtSave()){ logEvent('مهمةٌ أسبوعية — إضافة: ' + o.n); toast(t('أُضيفت المهمة')); WT_NEW = false; render(1); }
   return true;
 }
+var WT_LOGF = { due:'الموعد', who:'المسؤول', track:'المسار', n:'الاسم', wbs:'بند الخطة' };
 function wtSet(id, patch){
   var r = wtRows().filter(function(x){ return String(x.id) === String(id); })[0]; if (!r) return;
+  /* (V20.7) ما يهمُّ الوزارةَ من التعديل يُسجَّل بقيمتيه — التأجيلُ وتغييرُ المسؤول كانا يقعان بصمت */
+  Object.keys(patch).forEach(function(k){ if (WT_LOGF[k] && String(r[k] || '') !== String(patch[k] || '')) wtLogPush(r, { f:k, from:String(r[k] || ''), to:String(patch[k] || '') }); });
   Object.keys(patch).forEach(function(k){ r[k] = patch[k]; });
   if (wtSave()){ logEvent('مهمةٌ أسبوعية — ' + id + ' \u00b7 ' + Object.keys(patch).join(','), id); render(1); }
 }
 function wtRemove(id){
   if (!wtMay()){ toast(t('المهامُّ الأسبوعية للمهندس والوزارة فما فوق')); return; }
+  try { mfuTaskGone(wtRow(id)); } catch (e){ LS_ERR = e; }   /* (V20.7) */
   STATE.wtask.rows = wtRows().filter(function(x){ return String(x.id) !== String(id); });
   if (wtSave()){ logEvent('حذفُ مهمةٍ أسبوعية — ' + id, id); toast(t('حُذفت المهمة')); WT_OPEN = ''; render(1); }
 }
@@ -26396,7 +26410,7 @@ function mfuSummary(){
     + box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
     + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
     + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>')
-    + mfuTimelineCard();
+    + mfuBlocksCard() + mfuTimelineCard();
 }
 function mfuWeekRows(){
   return wtRows().slice().sort(function(a, b){ var o = { 'متوقف':0, 'جاري العمل':1, 'قيد الانتظار':2, 'مكتمل':3 }; return (o[a.st] - o[b.st]) || String(a.due || '9').localeCompare(String(b.due || '9')); }).map(function(r){
@@ -26510,7 +26524,7 @@ function mfuTimeline(days, lim){
   wtRows().forEach(function(r){
     var ctx = r.chal ? ' \u2190 ' + t('تحدٍّ') : r.req ? ' \u2190 ' + t('طلب الوزارة') : '';
     (Array.isArray(r.log) ? r.log : []).forEach(function(e){ if (!e || (e.at || 0) < since) return;
-      out.push({ at:e.at, by:e.by || '', k:'مهمة', ref:'#' + r.id + ' ' + r.n + ctx, txt:e.st ? t('الحالة') + ': ' + t(e.st) : (e.note === 'أُنشئت' ? t('أُنشئت') : e.note) }); });
+      out.push({ at:e.at, by:e.by || '', k:'مهمة', ref:'#' + r.id + ' ' + r.n + ctx, txt:e.st ? t('الحالة') + ': ' + t(e.st) : e.f ? wtFieldTxt(e) : (e.note === 'أُنشئت' ? t('أُنشئت') : e.note) }); });
   });
   var fch = mfuData().fch || {};
   Object.keys(fch).forEach(function(c){ (fch[c].hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'تحدّي مسح', ref:c, txt:t(MFU_F[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
@@ -26518,10 +26532,57 @@ function mfuTimeline(days, lim){
   mfuList('req').forEach(function(x){ (x.hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'طلب الوزارة', ref:x.t || '', txt:t(MFU_F[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
   return out.sort(function(a, b){ return b.at - a.at; }).slice(0, lim || 40);
 }
+/* ═══ المهامُّ الأسبوعيةُ تُسمَع في متابعة الوزارة (V20.7) ═══
+   بعد دراسة أفعال المهام: الإضافةُ والحالةُ والملاحظةُ كانت تُسمَع، أمّا تأجيلُ الموعد
+   وتغييرُ المسؤول والحذفُ فكانت صامتة، ولم تكن الوزارةُ ترى ما يراه عرضُها الأسبوعيُّ
+   لكلِّ مسار: «أبرز الأعمال المنجزة» و«أبرز المهام القادمة» و«الاعتمادات المطلوبة». صار:
+   التعديلُ يُسجَّل بقيمتيه، والحذفُ يُكتَب على ما رُبطت به المهمةُ ويفكّ الربط، والكتلُ
+   الأربعُ تُقرأ من المهام، واجتماعُ الأسبوع مرجعُ «ما تغيّر منذ آخر اجتماع». */
+function mfuTaskGone(r){
+  if (!r || (!r.chal && !r.req)) return;
+  var k = String(r.chal || r.req), tag = '#' + r.id + ' ' + t('حُذفت');
+  if (/^F:/.test(k)){ var c = k.slice(2), f = Object.assign({}, (mfuData().fch || {})[c] || {}); if (String(f.task) === String(r.id)){ f.task = ''; f.hist = mfuHist(f, 'task', tag); f.at = Date.now(); mfuPut('fch', c, f); } }
+  else if (/^M:/.test(k) || /^R:/.test(k)){ var sec = /^M:/.test(k) ? 'chal' : 'req', id = k.slice(2), x = mfuList(sec).filter(function(y){ return y.id === id; })[0];
+    if (x && String(x.task) === String(r.id)){ var nx = Object.assign({}, x); delete nx.id; nx.task = ''; nx.hist = mfuHist(x, 'task', tag); nx.at = Date.now(); mfuPut(sec, id, nx); } }
+}
+function mfuDoneAt(r){ var at = r.doneAt || 0; if (!at && Array.isArray(r.log)) r.log.forEach(function(e){ if (!at && e.st === 'مكتمل') at = e.at; }); return at; }
+function mfuWeekBlocks(){
+  var now = Date.now(), W = wtRows();
+  var done = W.filter(function(r){ return r.st === 'مكتمل' && now - mfuDoneAt(r) < 7 * 864e5; }).sort(function(a, b){ return mfuDoneAt(b) - mfuDoneAt(a); });
+  var doneLast = W.filter(function(r){ var a = r.st === 'مكتمل' ? mfuDoneAt(r) : 0; return a && now - a >= 7 * 864e5 && now - a < 14 * 864e5; }).length;
+  var next = W.filter(function(r){ if (r.st === 'مكتمل') return false; var d = wtDue(r); return (d != null && d >= 0 && d <= 7) || (d == null && r.st === 'جاري العمل'); }).sort(function(a, b){ return String(a.due || '9').localeCompare(String(b.due || '9')); });
+  var late = W.filter(function(r){ return wtLate(r); }).sort(function(a, b){ return wtDue(a) - wtDue(b); });
+  var wait = W.filter(function(r){ return r.st === 'قيد الانتظار' || r.st === 'متوقف'; });
+  var support = mfuList('req').filter(function(x){ return x.s && mfuReqView(x).st !== 'منجز'; });
+  var W0 = STATE.wtask || {}, meet = W0.meetAt ? { at:W0.meetAt, by:W0.meetBy || '', n:wtSince().items.length } : null;
+  return { done:done, doneLast:doneLast, next:next, late:late, wait:wait, support:support, stop:W.filter(function(r){ return r.st === 'متوقف'; }).length, meet:meet };
+}
+function mfuBlocksCard(){
+  var B = mfuWeekBlocks();
+  var li = function(txt, sub, c){ return '<li style="margin:0 0 6px"><b style="color:' + (c || 'inherit') + '">' + esc(txt) + '</b>' + (sub ? '<div class="hint" style="margin:1px 0 0">' + esc(sub) + '</div>' : '') + '</li>'; };
+  var col = function(title, color, items){ return '<div class="mfu-blk"><div class="mfu-blk-h" style="background:' + color + '">' + esc(t(title)) + ' \u00b7 ' + nm(items.length) + '</div><ul>' + (items.length ? items.join('') : '<li class="hint">\u2014</li>') + '</ul></div>'; };
+  var dl = B.done.length - B.doneLast;
+  return '<div class="mfu-kpis">'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('أُنجز هذا الأسبوع')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(B.done.length) + '</div><div style="font-size:12px;font-weight:700;color:' + (dl >= 0 ? '#27AE60' : '#C0392B') + '">' + (dl > 0 ? '\u25B2 +' : dl < 0 ? '\u25BC ' : '') + nm(dl) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('مستحقٌّ خلال ٧ أيام')) + '</div><div class="mfu-kpi-v">' + nm(B.next.length) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متأخرة')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(B.late.length) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متوقفة أو بانتظار قرار')) + '</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(B.wait.length) + '</div></div>'
+    + (B.meet ? '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('آخر اجتماع')) + '</div><div class="mfu-kpi-v" style="font-size:18px">' + esc(fmtDate(B.meet.at)) + '</div><div class="hint" style="margin:2px 0 0">' + esc(dispName(B.meet.by)) + ' \u00b7 ' + nm(B.meet.n) + ' ' + esc(t('تغييرًا منذه')) + '</div></div>' : '')
+    + '</div><div class="mfu-blks">'
+    + col('أبرز الأعمال المنجزة', '#27AE60', B.done.slice(0, 8).map(function(r){ return li(r.n, (r.who ? r.who + ' \u00b7 ' : '') + fmtDate(mfuDoneAt(r))); }))
+    + col('أبرز المهام القادمة', '#C8943E', B.next.slice(0, 8).map(function(r){ return li(r.n, (r.who || t('بلا مسؤول')) + (r.due ? ' \u00b7 ' + r.due : '')); }))
+    + col('الاعتمادات والدعم المطلوب', '#1C3674', B.wait.slice(0, 5).map(function(r){ return li(r.n, t(r.st) + (r.who ? ' \u00b7 ' + r.who : '')); }).concat(B.support.slice(0, 4).map(function(x){ return li(x.s, t('طلب الوزارة') + ': ' + String(x.t || '').slice(0, 60)); })))
+    + col('المهام المتأخرة', '#C0392B', B.late.slice(0, 8).map(function(r){ return li(r.n, (r.who || t('بلا مسؤول')) + ' \u00b7 ' + t('تأخّر') + ' ' + nm(-wtDue(r)) + ' ' + t('يوم'), '#C0392B'); }))
+    + '</div>';
+}
+/* الجديدُ منذ آخر زيارةٍ لمتابعة الوزارة — على هذا الجهاز */
+function mfuUnseen(){ var seen = +lsGet('nsk14.mfuSeen') || 0; return mfuTimeline(14, 200).filter(function(e){ return e.at > seen; }).length; }
 function mfuTimelineCard(){
-  var L = mfuTimeline(7, 12);
-  return cardFlush(t('آخر التحديثات — هذا الأسبوع') + ' \u2014 ' + nm(L.length), L.length ? table(['متى', 'النوع', 'البند', 'التحديث', 'بواسطة'], L.map(function(e){
-    return ['<span class="num">' + esc(fmtDate(e.at)) + '</span>', pill(t(e.k), e.k === 'مهمة' ? '' : e.k === 'طلب الوزارة' ? 'ok' : 'wrn'), esc(String(e.ref).slice(0, 60)), esc(String(e.txt).slice(0, 90)), esc(dispName(e.by))];
+  var W0 = STATE.wtask || {}, sinceMeet = W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5;
+  var L = mfuTimeline(sinceMeet ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7, 12), seen = +lsGet('nsk14.mfuSeen') || 0;
+  if (CUR === 'mfu' && tabCur('mfu') === 'mfu') setTimeout(function(){ lsSet('nsk14.mfuSeen', String(Date.now())); }, 1500);   /* رآها */
+  return cardFlush((sinceMeet ? t('ما تغيّر منذ آخر اجتماع') + ' (' + fmtDate(W0.meetAt) + ')' : t('آخر التحديثات — هذا الأسبوع')) + ' \u2014 ' + nm(L.length), L.length ? table(['متى', 'النوع', 'البند', 'التحديث', 'بواسطة'], L.map(function(e){
+    return ['<span class="num">' + esc(fmtDate(e.at)) + '</span>' + (e.at > seen ? ' ' + pill(t('جديد'), 'ok') : ''), pill(t(e.k), e.k === 'مهمة' ? '' : e.k === 'طلب الوزارة' ? 'ok' : 'wrn'), esc(String(e.ref).slice(0, 60)), esc(String(e.txt).slice(0, 90)), esc(dispName(e.by))];
   })) : '<p class="hint" style="margin:10px 14px">' + esc(t('لا تحديثاتٍ في سبعة أيام.')) + '</p>');
 }
 var MFU_SRC = { field:['من المسح الميداني', '#1C3674'], task:['من المهام الأسبوعية', '#86432B'], manual:['مسجّلٌ يدويًّا', '#7F8C8D'] };
@@ -26619,13 +26680,23 @@ function mfuReport(){
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
     req:mfuList('req').map(function(x, i){ var V = mfuReqView(x); return [i + 1, x.t || '', V.u + (V.uSrc ? ' (من المهمة #' + V.uSrc + ')' : ''), x.s || '', V.st + (V.blocked ? ' — متوقفة' : ''), V.tk ? '#' + V.tk.id + ' ' + V.tk.st : '—']; }),
-    upd:mfuTimeline(7, 30).map(function(e){ return [new Date(e.at).toISOString().slice(0, 10), e.k, String(e.ref).slice(0, 80), String(e.txt).slice(0, 140), e.by]; }),
+    blocks:(function(){ var B = mfuWeekBlocks(), rows = [];
+      B.done.slice(0, 10).forEach(function(r){ rows.push(['أبرز الأعمال المنجزة', r.n, (r.who ? r.who + ' · ' : '') + new Date(mfuDoneAt(r)).toISOString().slice(0, 10)]); });
+      B.next.slice(0, 10).forEach(function(r){ rows.push(['أبرز المهام القادمة', r.n, (r.who || 'بلا مسؤول') + (r.due ? ' · ' + r.due : '')]); });
+      B.wait.slice(0, 6).forEach(function(r){ rows.push(['الاعتمادات والدعم المطلوب', r.n, r.st + (r.who ? ' · ' + r.who : '')]); });
+      B.support.slice(0, 6).forEach(function(x){ rows.push(['الاعتمادات والدعم المطلوب', x.s, 'طلب الوزارة: ' + String(x.t || '').slice(0, 60)]); });
+      B.late.slice(0, 10).forEach(function(r){ rows.push(['المهام المتأخرة', r.n, (r.who || 'بلا مسؤول') + ' · تأخّر ' + (-wtDue(r)) + ' يوم']); });
+      return rows; })(),
+    blk:(function(){ var B = mfuWeekBlocks(); return { done:B.done.length, doneLast:B.doneLast, next:B.next.length, late:B.late.length, wait:B.wait.length, meet:B.meet }; })(),
+    updTitle:(function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? 'ما تغيّر منذ آخر اجتماع (' + new Date(W0.meetAt).toISOString().slice(0, 10) + ')' : 'آخر التحديثات — هذا الأسبوع'; })(),
+    upd:mfuTimeline((function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7; })(), 30).map(function(e){ return [new Date(e.at).toISOString().slice(0, 10), e.k, String(e.ref).slice(0, 80), String(e.txt).slice(0, 140), e.by]; }),
     daily:diaryRows().slice(-14).reverse().map(function(r){ return [r.day, r.ins, r.sv, r.stuck || 0]; })
   };
 }
 var MFU_SECTIONS = [
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
   ['tasks', 'حالة أبرز المهام', ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ']],
+  ['blocks', 'المسار | القارئات — المنجز والقادم والمطلوب', ['الكتلة', 'البند', 'التفصيل']],
   ['inst', 'حالة التركيبات', ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة']],
   ['cos', 'تركيب المخيمات لشركات الخدمة', ['الشركة', 'المستهدف', 'رُكّب', 'عوائق', 'متبقٍّ', 'النسبة', 'المستوى']],
   ['parties', 'بيان المعوقات — الجهة المعالجة', ['الجهة', 'عدد المعوقات']],
@@ -26634,6 +26705,7 @@ var MFU_SECTIONS = [
   ['req', 'طلبات الوزارة', ['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', 'مهمة التنفيذ']],
   ['upd', 'آخر التحديثات — هذا الأسبوع', ['متى', 'النوع', 'البند', 'التحديث', 'بواسطة']],
   ['daily', 'ملخص التركيبات اليومي — آخر ١٤ يومًا', ['اليوم', 'التركيب', 'المسح', 'المتعذّر']]];
+function mfuSecTitle(R, sc){ return sc[0] === 'upd' && R.updTitle ? R.updTitle : sc[1]; }
 function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
   return R[key] || [];
@@ -26670,7 +26742,7 @@ function mfuPrintHtml(R){
     + 'table{width:100%;border-collapse:collapse;font-size:10.5pt}th{background:#163E35;color:#fff;padding:2mm;text-align:right}td{border-bottom:1px solid #E0E0E0;padding:1.6mm 2mm}tr:nth-child(even) td{background:#FAF6F3}'
     + '.foot{color:#7F8C8D;font-size:9pt;margin-top:4mm}</style></head><body>'
     + '<div class="cover"><h1>التحديث الدوري — مسار القارئات</h1><h2>مشروع بطاقة نسك</h2><p>' + e(R.hijri) + '</p><p>' + e(R.greg) + '</p></div>'
-    + MFU_SECTIONS.map(function(sc){ return '<section><h3>' + e(sc[1]) + '</h3>' + tbl(sc[2], mfuRowsOf(R, sc[0])) + '</section>'; }).join('')
+    + MFU_SECTIONS.map(function(sc){ return '<section><h3>' + e(mfuSecTitle(R, sc)) + '</h3>' + tbl(sc[2], mfuRowsOf(R, sc[0])) + '</section>'; }).join('')
     + '<p class="foot">صدر من نظام قارئات أفاقي — ' + e(R.ver) + ' — ' + e(R.greg) + '</p></body></html>';
 }
 function mfuPdf(){
@@ -26717,7 +26789,7 @@ function mfuDocxXml(R){
   var body = para('التحديث الدوري — مسار القارئات', { b:1, sz:48, c:'163E35', jc:'center', after:80 })
     + para('مشروع بطاقة نسك', { sz:30, c:'C8943E', jc:'center', after:60 })
     + para(R.hijri + ' — ' + R.greg, { sz:22, c:'86432B', jc:'center', after:360 })
-    + MFU_SECTIONS.map(function(sc){ return para(sc[1], { b:1, sz:30, c:'C8943E', after:80 }) + table(sc[2], mfuRowsOf(R, sc[0])) + para('', { after:200 }); }).join('')
+    + MFU_SECTIONS.map(function(sc){ return para(mfuSecTitle(R, sc), { b:1, sz:30, c:'C8943E', after:80 }) + table(sc[2], mfuRowsOf(R, sc[0])) + para('', { after:200 }); }).join('')
     + para('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:16, c:'7F8C8D' });
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body
     + '<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="1000" w:right="1000" w:bottom="1000" w:left="1000" w:header="500" w:footer="500" w:gutter="0"/><w:bidi/></w:sectPr></w:body></w:document>';
@@ -26811,11 +26883,17 @@ function mfuSlides(R){
   var K = R.kpis, S = [];
   S.push(['ملخص مسار القارئات', pxCards(K.slice(0, 4).map(function(k){ return [k[0], k[1], [k[2], dl(k[3])].filter(Boolean).join(' · ')]; }), PX.Y0, 2600000)
     + pxCards(K.slice(4).map(function(k){ return [k[0], k[1], '']; }), PX.Y0 + 3000000, 2200000)
-    + (R.upd.length ? pxTable(PX.X0, PX.Y0 + 5450000, PX.W, ['متى', 'النوع', 'البند', 'آخر التحديثات هذا الأسبوع', 'بواسطة'], R.upd.slice(0, 5).map(function(u){ return [u[0], u[1], u[2], u[3], u[4]]; }), { cols:[1, 1.1, 3, 4.2, 1.3], rh:340000, sz:1000, hsz:1100 })
+    + (R.upd.length ? pxTable(PX.X0, PX.Y0 + 5450000, PX.W, ['متى', 'النوع', 'البند', R.updTitle && /اجتماع/.test(R.updTitle) ? 'ما تغيّر منذ آخر اجتماع' : 'آخر التحديثات هذا الأسبوع', 'بواسطة'], R.upd.slice(0, 5).map(function(u){ return [u[0], u[1], u[2], u[3], u[4]]; }), { cols:[1, 1.1, 3, 4.2, 1.3], rh:340000, sz:1000, hsz:1100 })
        : pxBox(PX.X0, PX.Y0 + 5500000, PX.W, 700000, pxP('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:1300, c:'7F8C8D' }), { geom:'rect' }))]);
   var stc = function(v){ return v === 'مكتمل' ? { t:v, c:'1E8449', b:1 } : v === 'متأخر' ? { t:v, c:'A93226', b:1 } : v === 'جارٍ' ? { t:v, c:'8A6D0B', b:1 } : v; };
   var stc2 = function(v){ v = String(v || ''); return /مكتمل/.test(v) ? { t:v, c:'1E8449', b:1 } : /متوقف|متأخر/.test(v) ? { t:v, c:'A93226', b:1 } : /جاري|جارٍ/.test(v) ? { t:v, c:'8A6D0B', b:1 } : v; };
   S.push(['حالة أبرز مهام مسار القارئات', pxTable(PX.X0, PX.Y0, PX.W, ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ'], R.tasks.slice(0, 11).map(function(r){ return [r[0], r[1] || '—', r[2] || '—', stc2(r[3]), r[4] || '—', r[5] || '—', r[6] ? (/^✓/.test(r[6]) ? { t:r[6], c:'1E8449', b:1 } : { t:r[6], c:'A93226' }) : '—']; }), { cols:[3, 1.2, 1.3, 1.3, 1.2, 2.6, 1.8], sz:1100, rh:560000 })]);
+  var B4 = R.blocks, col4 = function(k, color, i){ var L = B4.filter(function(r){ return r[0] === k; }).slice(0, 7), gap = 180000, w = (PX.W - 3 * gap) / 4, x = PX.X0 + PX.W - (i + 1) * w - i * gap, y = PX.Y0 + 1750000;
+      return pxBox(x, y, w, 520000, pxP(k + ' · ' + B4.filter(function(r){ return r[0] === k; }).length, { sz:1500, b:1, c:'FFFFFF', al:'ctr' }), { fill:color })
+        + pxBox(x, y + 560000, w, 5300000, L.length ? L.map(function(r){ return pxP('• ' + r[1], { sz:1200, b:1, c:'163E35' }) + pxP(r[2], { sz:1000, c:'7F8C8D' }); }).join('') : pxP('—', { sz:1200, c:'7F8C8D', al:'ctr' }), { fill:'FAF6F3', line:'D6A561', anchor:'t' }); };
+  var bk = R.blk || {}, dlt = (bk.done || 0) - (bk.doneLast || 0);
+  S.push(['المســـار | القارئات', pxCards([['أُنجز هذا الأسبوع', String(bk.done || 0), (dlt > 0 ? '▲ +' : dlt < 0 ? '▼ ' : '') + dlt + ' عن الأسبوع الماضي', '1E8449'], ['مستحقٌّ خلال ٧ أيام', String(bk.next || 0), ''], ['متأخرة', String(bk.late || 0), '', 'A93226'], ['متوقفة أو بانتظار قرار', String(bk.wait || 0), '', '8A6D0B']].concat(bk.meet ? [['آخر اجتماع', new Date(bk.meet.at).toISOString().slice(0, 10), bk.meet.n + ' تغييرًا منذه', '163E35', 2200]] : []), PX.Y0, 1500000)
+    + col4('أبرز الأعمال المنجزة', '27AE60', 0) + col4('أبرز المهام القادمة', 'C8943E', 1) + col4('الاعتمادات والدعم المطلوب', '1C3674', 2) + col4('المهام المتأخرة', 'C0392B', 3)]);
   S.push(['حالة التركيبات', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة'], R.inst.slice(0, 12).map(function(r){ var L = pxLvl(r[4]); return [r[0], r[1], r[2], r[3], { t:r[4], c:L.c, bg:L.bg, b:1 }]; }), { cols:[1.4, 2.6, 1.2, 1.2, 1.2] })]);
   var n = 0, ins = 0, obs = 0; R.cos.forEach(function(c){ n += c[1]; ins += c[2]; obs += c[3]; });
   var weak = R.cos.slice().sort(function(a, b){ return (parseInt(a[5], 10) || 0) - (parseInt(b[5], 10) || 0); }).slice(0, 10);
@@ -26841,7 +26919,7 @@ function mfuPptx(){
   toast(t('يُجهَّز العرضُ من قالب الوزارة…'));
   return pptxTemplate().then(function(tpl){
     var R = mfuReport(), E = ooxRead(tpl), dec = new TextDecoder(), slides = mfuSlides(R);
-    var order = ['ppt/slides/slide12.xml', 'ppt/slides/slide63.xml', 'ppt/slides/slide64.xml', 'ppt/slides/slide65.xml', 'ppt/slides/slide66.xml', 'ppt/slides/slide67.xml', 'ppt/slides/slide68.xml', 'ppt/slides/slide69.xml'];
+    var order = ['ppt/slides/slide12.xml', 'ppt/slides/slide63.xml', 'ppt/slides/slide70.xml', 'ppt/slides/slide64.xml', 'ppt/slides/slide65.xml', 'ppt/slides/slide66.xml', 'ppt/slides/slide67.xml', 'ppt/slides/slide68.xml', 'ppt/slides/slide69.xml'];
     var out = E.map(function(e){
       if (e.method !== 0 || !/^ppt\/slides\/slide\d+\.xml$/.test(e.name)) return e;
       var x = dec.decode(e.raw);
@@ -28455,6 +28533,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.7', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
+      'المهام الأسبوعية تُسمَع في متابعة الوزارة: تأجيل الموعد وتغيير المسؤول صارا يُسجَّلان ويظهران في آخر التحديثات ومحضر الاجتماع، وحذف مهمة مربوطة يُكتب على طلبها أو تحدّيها.',
+      'الملخص فيه كتل العرض الأسبوعي الأربع من المهام: أبرز الأعمال المنجزة، أبرز المهام القادمة، الاعتمادات والدعم المطلوب، المهام المتأخرة — مع «أُنجز هذا الأسبوع» مقارنةً بالماضي، وآخر اجتماع و«ما تغيّر منذه».',
+      'التقرير بصيغه الأربع فيه الكتل نفسها، والباوربوينت فيه شريحة «المسار | القارئات» بتصميم العرض — وشارة على «متابعة الوزارة» في القائمة بعدد الجديد منذ آخر زيارة.' ] },
   { v:'V20.6', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'كل شيء مربوط: لكل طلب من الوزارة زر «＋ مهمة تنفيذ» يُنشئ مهمة أسبوعية مربوطة به — آخر ملاحظة فيها تصير إفادة الطلب، واكتمالها ينجزه، وتوقفها يظهره متوقفًا وتحديًا قائمًا.',
       'كل تعديل على تحدٍّ أو طلب يُسجَّل بمن غيّره ومتى، و«آخر التحديثات — هذا الأسبوع» سجل واحد يجمع المهام والتحديات والطلبات: في الملخص وفي التقرير بكل صيغه (PowerPoint وWord وExcel وPDF)، ومعه عمود «مرتبطة بـ» في المهام.' ] },
@@ -35884,7 +35966,8 @@ function navHtml(){
       + '<span class="group-label"><span class="item-icon" aria-hidden="true">'+s.icon+'</span>'+esc(t(s.g))+'</span>'
       + '<span class="chevron" aria-hidden="true"></span></button><div class="group-panel">'
       + items.map(function(i){
-          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1]))+'</a>' + navTabLinks(i[0]);
+          var bdg = ''; if (i[0] === 'mfu'){ try { var un = mfuUnseen(); if (un) bdg = ' <span class="tb-badge" style="position:static;display:inline-block">' + nm(un) + '</span>'; } catch (e){ LS_ERR = e; } }   /* (V20.7) */
+          return '<a href="#" class="sub'+(CUR===i[0]?' active':'')+'" data-p="'+i[0]+'">'+esc(t(i[1])) + bdg + '</a>' + navTabLinks(i[0]);
         }).join('')
       + '</div></div>';
   }).join('');
