@@ -745,6 +745,8 @@ body.kiosk .kk-story{font-size:21px}
 .mfu-blk{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
 .mfu-blk-h{color:#fff;font-weight:800;padding:8px 12px;font-size:13.5px}
 .mfu-blk ul{margin:0;padding:10px 14px 6px;padding-inline-start:26px}
+.npop-x{position:absolute;top:6px;inset-inline-end:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(127,127,127,.18);color:inherit;font-size:13px;line-height:28px;cursor:pointer;padding:0}
+.npop-x:active{background:rgba(127,127,127,.35)}
 .mfu-add{margin:12px 0 0}
 .mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
 .mfu-add > summary::-webkit-details-marker{display:none}
@@ -1072,7 +1074,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3929,6 +3931,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'الإشعارات على هذا الجهاز':'Notifications on this device', 'النوافذ المنبثقة تعمل — أوقفها':'Pop-ups are on — turn off', 'شغّل النوافذ المنبثقة':'Turn on pop-ups', 'إشعارات الجهاز تعمل — أوقفها':'Device notifications are on — turn off', 'شغّل إشعارات الجهاز':'Turn on device notifications', 'ألغِ الكتم':'Unmute', 'كتمٌ حتى الغد':'Mute until tomorrow', 'مكتومٌ حتى':'Muted until', 'الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.':'The bell always counts everything — this stops the interruptions, not the notifications. To turn them off in the system itself: iPhone → Settings → Notifications → “متابعة المشروع” → turn off “Allow Notifications”. Android: long-press the notification → Turn off.', 'إشعاراتٍ جديدة':'new notifications', 'اضغط لرؤيتها في الجرس':'Tap to see them in the bell', 'كتم ساعة':'Mute 1 hour', 'كُتمت الإشعاراتُ ساعةً على هذا الجهاز':'Notifications muted for an hour on this device',
  'مستحقٌّ خلال ٧ أيام':'Due within 7 days', 'متوقفة أو بانتظار قرار':'Stopped or awaiting decision', 'آخر اجتماع':'Last meeting', 'تغييرًا منذه':'changes since', 'أبرز الأعمال المنجزة':'Key work completed', 'أبرز المهام القادمة':'Key upcoming tasks', 'الاعتمادات والدعم المطلوب':'Approvals and support needed', 'المهام المتأخرة':'Late tasks', 'ما تغيّر منذ آخر اجتماع':'Changes since the last meeting', 'تأجيل الموعد':'Due date postponed',
  'آخر التحديثات — هذا الأسبوع':'Latest updates — this week', 'لا تحديثاتٍ في سبعة أيام.':'No updates in seven days.', 'تحدّي مسح':'Survey challenge', 'طلب الوزارة':'Ministry request', 'أُنشئ':'Created', 'أُنشئت':'Created', 'رُبط بمهمة':'Linked to task', 'إفادة':'Response', 'من المهمة':'From task', 'مهمة التنفيذ':'Execution task', 'مهمة تنفيذ':'Execution task', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'Execution task created in weekly tasks', 'نُفِّذ طلبُ الوزارة':'Ministry request fulfilled', 'تنفيذُ طلبٍ للوزارة':'Fulfilling a ministry request', 'مرتبطة بـ':'Linked to',
  'من المسح الميداني':'From field survey', 'من المهام الأسبوعية':'From weekly tasks', 'مسجّلٌ يدويًّا':'Recorded manually', 'تم الحل':'Resolved', 'متوقفة':'Stopped', 'على مين':'Responsible party', 'من سيحلّه':'Who resolves it', 'مهمة المعالجة':'Resolution task', 'مهمة معالجة':'Resolution task', 'تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.':'Field-survey challenges are read from uninstalled points and become “resolved” when no point remains; a stopped weekly task is an open challenge; completing a resolution task resolves its challenge.', 'أُنشئت مهمةُ المعالجة في المهام الأسبوعية':'Resolution task created in weekly tasks', 'تم حلُّ التحدي':'Challenge resolved', 'معالجةُ تحدٍّ':'Resolving a challenge', 'تحدٍّ مسجّل':'Recorded challenge', 'المهام الأسبوعية':'Weekly tasks', 'مهامُّ الاجتماع كاملةً — تُحدَّث من هنا، وما يعالج تحدّيًا يُعرَف به.':'Meeting tasks in full — updated from here; tasks resolving a challenge are marked.', 'المهامُّ الأسبوعيةُ بمسارها ومسؤولها وحالتها وآخرِ تحديث — والمعالم.':'Weekly tasks with track, owner, status and latest update — and milestones.', 'لا مهامَّ أسبوعيةٌ بعد — تُضاف من «المهام الأسبوعية».':'No weekly tasks yet — add them from “Weekly tasks”.', 'المعلم':'Milestone', 'التحديث':'Update',
@@ -6705,6 +6708,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'الإشعارات على هذا الجهاز':'اس آلے پر اطلاعات', 'النوافذ المنبثقة تعمل — أوقفها':'پاپ اپ آن ہیں — بند کریں', 'شغّل النوافذ المنبثقة':'پاپ اپ آن کریں', 'إشعارات الجهاز تعمل — أوقفها':'آلے کی اطلاعات آن ہیں — بند کریں', 'شغّل إشعارات الجهاز':'آلے کی اطلاعات آن کریں', 'ألغِ الكتم':'خاموشی ختم کریں', 'كتمٌ حتى الغد':'کل تک خاموش', 'مكتومٌ حتى':'خاموش تک', 'الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.':'گھنٹی ہمیشہ سب گنتی ہے — یہ خلل روکتا ہے، اطلاعات نہیں۔ سسٹم سے بند کرنے کے لیے: آئی فون ← سیٹنگز ← اطلاعات ← «متابعة المشروع» ← «اطلاعات کی اجازت» بند کریں۔ اینڈرائیڈ: اطلاع پر دیر تک دبائیں ← بند۔', 'إشعاراتٍ جديدة':'نئی اطلاعات', 'اضغط لرؤيتها في الجرس':'گھنٹی میں دیکھنے کے لیے دبائیں', 'كتم ساعة':'ایک گھنٹہ خاموش', 'كُتمت الإشعاراتُ ساعةً على هذا الجهاز':'اس آلے پر اطلاعات ایک گھنٹے کے لیے خاموش',
  'مستحقٌّ خلال ٧ أيام':'۷ دن میں واجب', 'متوقفة أو بانتظار قرار':'رکے ہوئے یا فیصلے کے منتظر', 'آخر اجتماع':'آخری اجلاس', 'تغييرًا منذه':'تبدیلیاں تب سے', 'أبرز الأعمال المنجزة':'اہم مکمل کام', 'أبرز المهام القادمة':'اہم آئندہ کام', 'الاعتمادات والدعم المطلوب':'منظوریاں اور درکار مدد', 'المهام المتأخرة':'تاخیر والے کام', 'ما تغيّر منذ آخر اجتماع':'آخری اجلاس سے تبدیلیاں', 'تأجيل الموعد':'تاریخ مؤخر',
  'آخر التحديثات — هذا الأسبوع':'تازہ ترین — اس ہفتے', 'لا تحديثاتٍ في سبعة أيام.':'سات دنوں میں کوئی تازہ کاری نہیں۔', 'تحدّي مسح':'سروے چیلنج', 'طلب الوزارة':'وزارت کی درخواست', 'أُنشئ':'بنایا گیا', 'أُنشئت':'بنایا گیا', 'رُبط بمهمة':'کام سے منسلک', 'إفادة':'جواب', 'من المهمة':'کام سے', 'مهمة التنفيذ':'عمل درآمد کا کام', 'مهمة تنفيذ':'عمل درآمد کا کام', 'أُنشئت مهمةُ التنفيذ في المهام الأسبوعية':'عمل درآمد کا کام ہفتہ وار کاموں میں بن گیا', 'نُفِّذ طلبُ الوزارة':'وزارت کی درخواست پوری', 'تنفيذُ طلبٍ للوزارة':'وزارت کی درخواست پر عمل', 'مرتبطة بـ':'منسلک',
  'من المسح الميداني':'فیلڈ سروے سے', 'من المهام الأسبوعية':'ہفتہ وار کاموں سے', 'مسجّلٌ يدويًّا':'دستی درج', 'تم الحل':'حل ہو گیا', 'متوقفة':'رکا ہوا', 'على مين':'ذمہ دار فریق', 'من سيحلّه':'کون حل کرے گا', 'مهمة المعالجة':'حل کا کام', 'مهمة معالجة':'حل کا کام', 'تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.':'فیلڈ سروے کے چیلنج غیر نصب پوائنٹس سے پڑھے جاتے ہیں اور کوئی پوائنٹ نہ رہنے پر «حل» ہو جاتے ہیں؛ رکا ہوا ہفتہ وار کام کھلا چیلنج ہے؛ حل کا کام مکمل ہونا چیلنج کا حل ہے۔', 'أُنشئت مهمةُ المعالجة في المهام الأسبوعية':'حل کا کام ہفتہ وار کاموں میں بن گیا', 'تم حلُّ التحدي':'چیلنج حل ہو گیا', 'معالجةُ تحدٍّ':'چیلنج کا حل', 'تحدٍّ مسجّل':'درج چیلنج', 'المهام الأسبوعية':'ہفتہ وار کام', 'مهامُّ الاجتماع كاملةً — تُحدَّث من هنا، وما يعالج تحدّيًا يُعرَف به.':'اجلاس کے مکمل کام — یہیں سے تازہ کریں؛ چیلنج حل کرنے والے کام نشان زد۔', 'المهامُّ الأسبوعيةُ بمسارها ومسؤولها وحالتها وآخرِ تحديث — والمعالم.':'ہفتہ وار کام راستے، ذمہ دار، حالت اور تازہ ترین کے ساتھ — اور سنگ میل۔', 'لا مهامَّ أسبوعيةٌ بعد — تُضاف من «المهام الأسبوعية».':'ابھی کوئی ہفتہ وار کام نہیں — «ہفتہ وار کام» سے شامل کریں۔', 'المعلم':'سنگ میل', 'التحديث':'تازہ کاری',
@@ -24242,7 +24246,7 @@ function basemapAttach(){
 /* بطاقاتُ الجهاز — خريطةُ المشاعر ووضعُ الشمس والتشخيص — تظهر في «حسابي» لكلِّ
    الأدوار (الفنيُّ لا يرى الأدوات) وفي الأدوات للمشرف (V18.0) */
 function deviceCards(){
-  return basemapCard()
+  return notifSettingsCard() + basemapCard()
     + card('وضعُ الشمس',
         '<div class="actions">' + btn((SUN_ON ? '\u2713 ' : '') + t(SUN_ON ? 'وضعُ الشمس يعمل — أطفئه' : 'شغّل وضعَ الشمس'), SUN_ON ? 'btn-quiet' : 'btn-secondary', ' data-sun="1"')
         + '<span class="hint" style="margin:0">' + esc(t('تباينٌ أعلى وخطٌّ أكبرُ وأزرارٌ أكبرُ للعمل تحت الشمس — لهذا الجهاز وحدَه')) + '</span></div>')
@@ -28533,6 +28537,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'الإشعارات العائمة عليها ✕ تغلقها بلا انتقال، و«كتم ساعة» من البطاقة نفسها — وما يصل دفعة واحدة (بعد مزامنة) صار بطاقة واحدة تقول العدد بدل كومة تغطي الشاشة.',
+      'في «حسابي» بطاقة «الإشعارات على هذا الجهاز»: إيقاف النوافذ المنبثقة، وإيقاف إشعارات الجهاز، وكتم حتى الغد — والجرس يعدّ كل شيء دائمًا. ومعها طريق الإيقاف من إعدادات الآيفون والأندرويد.' ] },
   { v:'V20.7', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'المهام الأسبوعية تُسمَع في متابعة الوزارة: تأجيل الموعد وتغيير المسؤول صارا يُسجَّلان ويظهران في آخر التحديثات ومحضر الاجتماع، وحذف مهمة مربوطة يُكتب على طلبها أو تحدّيها.',
       'الملخص فيه كتل العرض الأسبوعي الأربع من المهام: أبرز الأعمال المنجزة، أبرز المهام القادمة، الاعتمادات والدعم المطلوب، المهام المتأخرة — مع «أُنجز هذا الأسبوع» مقارنةً بالماضي، وآخر اجتماع و«ما تغيّر منذه».',
@@ -31592,9 +31599,48 @@ function notifPush(kind, text, opt){
   if (CUR === 'notif') render(1);
   return n;
 }
+/* ═══ التحكّمُ في الإشعارات على هذا الجهاز (V20.8) ═══
+   «إزّاي أوقف الإشعارات على الموبايل، أو علامة ✕ للنافذة المنبثقة؟» — كانت البطاقاتُ
+   العائمةُ بلا زرِّ إغلاق، وتتكدّس فوق الشاشة حين تصل دفعةٌ بعد مزامنة. فصار:
+   ✕ على كلِّ بطاقة، وما وصل دفعةً (أكثرُ من اثنين في ثلاث ثوانٍ) بطاقةٌ واحدةٌ تقول
+   العدد، و«كتم ساعة» من البطاقة نفسِها، وفي «حسابي» إيقافُ النوافذ المنبثقة أو إشعاراتِ
+   الجهاز أو كتمُها حتى الغد — لهذا الجهاز وحدَه، والجرسُ يبقى يعدّ كلَّ شيء. */
+function npopMuted(){ return lsGet('nsk14.npop') === '0' || Date.now() < (+lsGet('nsk14.nmute') || 0); }
+function nsysMuted(){ return lsGet('nsk14.nsys') === '0' || Date.now() < (+lsGet('nsk14.nmute') || 0); }
+var NPOP_BURST = { at:0, n:0, el:null };
+function notifSettingsCard(){
+  var pop = lsGet('nsk14.npop') !== '0', sys = lsGet('nsk14.nsys') !== '0', mute = +lsGet('nsk14.nmute') || 0, muted = Date.now() < mute;
+  return card('الإشعارات على هذا الجهاز',
+    '<div class="actions">'
+    + btn((pop ? '\u2713 ' : '') + t(pop ? 'النوافذ المنبثقة تعمل — أوقفها' : 'شغّل النوافذ المنبثقة'), pop ? 'btn-quiet' : 'btn-secondary', ' data-nset="npop"')
+    + btn((sys ? '\u2713 ' : '') + t(sys ? 'إشعارات الجهاز تعمل — أوقفها' : 'شغّل إشعارات الجهاز'), sys ? 'btn-quiet' : 'btn-secondary', ' data-nset="nsys"')
+    + (muted ? btn('\u{1F514} ' + t('ألغِ الكتم'), 'btn-secondary', ' data-nset="unmute"') : btn('\u{1F515} ' + t('كتمٌ حتى الغد'), 'btn-quiet', ' data-nset="tomorrow"'))
+    + '</div>'
+    + (muted ? '<p class="hint">' + esc(t('مكتومٌ حتى')) + ' ' + esc(fmtDT(mute)) + '</p>' : '')
+    + '<p class="hint">' + esc(t('الجرسُ يعدّ كلَّ شيءٍ دائمًا — هذا يوقف الإزعاجَ لا الإشعارات. ولإيقافها من النظام نفسِه: آيفون ← الإعدادات ← الإشعارات ← «متابعة المشروع» ← أوقف «السماح بالإشعارات». أندرويد: اضغط مطوّلًا على الإشعار ← إيقاف.')) + '</p>');
+}
 var POP_T = 0;
 function notifPop(n){
   if (!n || typeof document === 'undefined' || !document.body) return;
+  if (npopMuted()) return;   /* (V20.8) */
+  var wrap0 = document.getElementById('notifPop'), now0 = Date.now();
+  /* دفعةٌ (أكثرُ من اثنين في ثلاث ثوانٍ): بطاقةٌ واحدةٌ بالعدد بدل كومةٍ تغطّي الشاشة */
+  if (now0 - NPOP_BURST.at < 3000){ NPOP_BURST.n++; } else { NPOP_BURST = { at:now0, n:1, el:null }; }
+  NPOP_BURST.at = now0;
+  if (NPOP_BURST.n > 2 && wrap0){
+    if (!NPOP_BURST.el || !NPOP_BURST.el.parentNode){
+      while (wrap0.firstChild) wrap0.removeChild(wrap0.firstChild);
+      NPOP_BURST.el = document.createElement('div'); NPOP_BURST.el.className = 'notif-pop'; NPOP_BURST.el.dir = 'auto';
+      NPOP_BURST.el.style.cssText = 'background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-inline-start:4px solid #E8C34B;border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;position:relative';
+      wrap0.appendChild(NPOP_BURST.el);
+      setTimeout(function(){ if (NPOP_BURST.el && NPOP_BURST.el.parentNode) NPOP_BURST.el.remove(); }, 9000);
+    }
+    NPOP_BURST.el.setAttribute('data-p', 'notif');   /* إلى صفحة الإشعارات — الجرسُ مخفيٌّ على الهاتف */
+    NPOP_BURST.el.innerHTML = '<button type="button" class="npop-x" data-npopx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
+      + '<div style="font-weight:700;font-size:13px">\u{1F514} ' + nm(NPOP_BURST.n) + ' ' + esc(t('إشعاراتٍ جديدة')) + '</div>'
+      + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(t('اضغط لرؤيتها في الجرس')) + ' \u00b7 <a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
+    return;
+  }
   var wrap = document.getElementById('notifPop');
   if (!wrap){
     wrap = document.createElement('div'); wrap.id = 'notifPop';
@@ -31607,8 +31653,11 @@ function notifPop(n){
   el.setAttribute('data-npop', n.id);
   el.style.cssText = 'background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-inline-start:4px solid ' + lv
     + ';border-radius:12px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.45);cursor:pointer;animation:npop .25s ease';
-  el.innerHTML = '<div style="font-weight:700;font-size:13px">' + esc(t(n.kind)) + '</div>'
-    + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(n.text) + '</div>';
+  el.style.position = 'relative';
+  el.innerHTML = '<button type="button" class="npop-x" data-npopx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
+    + '<div style="font-weight:700;font-size:13px;padding-inline-end:26px">' + esc(t(n.kind)) + '</div>'
+    + '<div class="hint" style="margin:2px 0 0;font-size:12.5px">' + esc(n.text) + '</div>'
+    + '<div class="hint" style="margin:4px 0 0;font-size:11.5px"><a href="#" data-nmute="1">' + esc(t('كتم ساعة')) + '</a></div>';
   wrap.appendChild(el);
   clearTimeout(POP_T);
   setTimeout(function(){ if (el.parentNode) el.remove(); }, 9000);
@@ -31672,7 +31721,7 @@ function notifAsk(){
   });
 }
 function notifSystem(n){
-  if (!notifCan()) return;
+  if (!notifCan() || nsysMuted()) return;   /* (V20.8) أوقفه صاحبُ الجهاز أو كتمه */
   var body = n.text + (n.site ? ' · ' + n.site : '');
   try {
     /* عبر عامل الخدمة إن وُجد — فيظهر ولو كان التطبيقُ مغلقًا */
@@ -36433,6 +36482,16 @@ function clickTables(e){
   if (e.target.closest('[data-bellclose]')){ bellToggle(false); /* ثم يكمل إلى data-p */ }
   if (BELL_OPEN && !e.target.closest('#bellPop') && !e.target.closest('[data-bell]')) bellToggle(false);
   if (e.target.closest('[data-nreadall]')){ notifStore().forEach(function(n){ n.read = true; }); CORE.saveSoon(); syncBadge(); bellToggle(false); if (CUR === 'notif') render(1); return true; }
+  if (e.target.closest('[data-npopx]')){ e.preventDefault(); var px = e.target.closest('.notif-pop'); if (px) px.remove(); return true; }   /* (V20.8) إغلاقٌ بلا انتقال */
+  if (e.target.closest('[data-nmute]')){ e.preventDefault(); lsSet('nsk14.nmute', String(Date.now() + 3600000)); var pw = document.getElementById('notifPop'); if (pw) pw.innerHTML = ''; toast(t('كُتمت الإشعاراتُ ساعةً على هذا الجهاز')); return true; }
+  if (e.target.closest('[data-nset]')){
+    var ns = e.target.closest('[data-nset]').getAttribute('data-nset');
+    if (ns === 'npop' || ns === 'nsys'){ var k0 = 'nsk14.' + ns; lsSet(k0, lsGet(k0) === '0' ? '1' : '0'); }
+    else if (ns === 'tomorrow'){ var tm = new Date(); tm.setDate(tm.getDate() + 1); tm.setHours(7, 0, 0, 0); lsSet('nsk14.nmute', String(tm.getTime())); }
+    else if (ns === 'unmute') lsSet('nsk14.nmute', '0');
+    if (ns !== 'npop' || lsGet('nsk14.npop') === '0'){ var pw2 = document.getElementById('notifPop'); if (pw2) pw2.innerHTML = ''; }
+    render(1); return true;
+  }
   var npo = e.target.closest('[data-npop]');
   if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return true; }
   var two = e.target.closest('[data-twopen]');
