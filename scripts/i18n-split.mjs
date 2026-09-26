@@ -20,11 +20,8 @@ if (startD2 < 0 || mergeEnd < startD2) throw new Error('لم يُعثَر على
 let block = s.slice(startD, endD) + '\n' + s.slice(startD2, mergeEnd);
 const isShell = /var D = \{ en:\{\}, ur:\{\} \}/.test(s.slice(startD, endD));
 let dictSrc;
-if (isShell){
-  const cur = readdirSync('i18n').filter(f => /^dict-[0-9a-f]{10}\.js$/.test(f))[0];
-  if (!cur) throw new Error('الهيكلُ قائمٌ ولا ملفَ قاموس');
-  dictSrc = readFileSync('i18n/' + cur, 'utf8');
-} else {
+if (isShell) throw new Error('القواميسُ مفصولةٌ أصلًا — عدِّل i18n/dict-*.js ثم شغّل: node scripts/i18n-rehash.mjs');
+{
   dictSrc = '/* قاموسا الإنجليزية والأردو — يُحمَّل عند اختيار لغةٍ غيرِ العربية (V21.6) */\n' + block + '\nif (typeof i18nReady === "function") i18nReady();\n';
 }
 const hash = createHash('sha256').update(dictSrc).digest('hex').slice(0, 10);
@@ -37,6 +34,7 @@ function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   I18N_STATE = 1;
   var sc = document.createElement('script'); sc.src = I18N_FILE; sc.async = true;
+  sc.onload = function(){ if (I18N_STATE !== 2) i18nReady(); };
   sc.onerror = function(){ I18N_STATE = 3; try { toast(t('تعذّر تحميلُ الترجمة — تحقّق من الشبكة')); } catch (e){} };
   document.head.appendChild(sc);
 }

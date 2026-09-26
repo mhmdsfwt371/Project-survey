@@ -1124,15 +1124,7 @@ function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   I18N_STATE = 1;
   var sc = document.createElement('script'); sc.src = I18N_FILE; sc.async = true;
-  sc.onerror = function(){ I18N_STATE = 3; try { toast(t('تعذّر تحميلُ الترجمة — تحقّق من الشبكة')); } catch (e){} };
-  document.head.appendChild(sc);
-}
-function i18nReady(){ I18N_STATE = 2; try { if (typeof render === 'function') render(1); } catch (e){ LS_ERR = e; } }   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V21.6) */
-var I18N_FILE = 'i18n/dict-52f6ecf903.js', I18N_STATE = 0;   /* ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
-function i18nLoad(){
-  if (I18N_STATE || typeof document === 'undefined') return;
-  I18N_STATE = 1;
-  var sc = document.createElement('script'); sc.src = I18N_FILE; sc.async = true;
+  sc.onload = function(){ if (I18N_STATE !== 2) i18nReady(); };
   sc.onerror = function(){ I18N_STATE = 3; try { toast(t('تعذّر تحميلُ الترجمة — تحقّق من الشبكة')); } catch (e){} };
   document.head.appendChild(sc);
 }
@@ -1357,6 +1349,617 @@ function setTheme(m){
    والأسماء الميدانية (مربع/شاخص/معرّف الموقع) بياناتٌ تبقى عربيةً في كل اللغات. */
 
 var D2 = { en:{}, ur:{} };   /* في ملف القاموس */
+
+/* ═══ البيانات — أرقام المشروع الحقيقية ═══ */
+
+/* المراجعُ الثابتةُ وحدَها: الأصنافُ وفئاتُ المشتريات والمورّدون.
+   وما كان عرضًا — مواقعُ وأحداثٌ ومستخدمون وحركاتٌ وأرصدة — حُذف:
+   العرضُ الذي يبقى بعد التسليم يُقرأ حقيقةً. */
+var DATA = {
+  items:[
+    ['cor','cam_pe','كاميرا ممر 8266',16,2400, 4,0],
+    ['cor','rtr','راوتر صناعي',10,1150, 5,3],
+    ['cor','rdr8','قارئ ٨ منافذ',33,7200, 8,5],
+    ['cor','ant12','هوائي UHF SRRA12',8,520, 0,0],
+    ['cor','sol','لوح سولار ٤٠٠و',26,900, 0,3],
+    ['cor','bat','بطارية ٢٠٠أ',16,1600, 0,3],
+    ['cor','mppt','منظومة طاقة شمسية',13,700, 4,2],
+    ['cor','mcb','بريكر MCB',5,90, 0,1],
+    ['cor','boxb','بوكس بطارية ٨٠×٦٠×٣٠',20,950, 0,4],
+    ['cor','c20','كابل RFID ٢٠م',13,260, 0,0],
+    ['cor','c15c','كابل ١٥م 7D-FB',10,190, 0,0],
+    ['cor','c10c','كابل ١٠م 5D-FB',8,140, 0,0],
+    ['cor','c5c','كابل RFID ٥م',5,80, 0,0],
+    ['cor','boxm','بوكس رئيسي ٦٠×٤٠×٢٠',26,680, 0,5],
+    ['cor','sock','فيش كهرباء',2,45, 0,1],
+    ['camp','cam','كاميرا مخيم 8361',8,2400, 4,0],
+    ['camp','rtr2','راوتر صناعي',5,1150, 5,3],
+    ['camp','rdr4c','قارئ ٤ منافذ',11,5100, 6,4],
+    ['camp','ant9c','هوائي UHF SRRA9',3,420, 0,0],
+    ['camp','ths','حساس حرارة ورطوبة',4,180, 3,0],
+    ['camp','c15','كابل ١٥م 7D-FB',5,190, 0,0],
+    ['camp','c10','كابل ١٠م 5D-FB',4,140, 0,0],
+    ['camp','c5','كابل RFID ٥م',2,80, 0,0],
+    ['camp','box','بوكس رئيسي ٦٠×٤٠×٢٠',13,680, 0,5],
+    ['camp','led','شاشة ليد ٣ نقاط',2,150, 0,2],
+    ['camp','korg','ليد أخضر',2,120, 0,1],
+    ['camp','korr','ليد أحمر',2,120, 0,1],
+    ['camp','rly','ريلاي ١٢ف',2,60, 0,1],
+    ['camp','gwc','جيت واي',6,1900, 5,3],
+    ['camp','sockc','فيش كهرباء',2,45, 0,1]
+  ],
+  buyCats:['كابلات وتوصيلات','أدوات ومعدات','مواد تثبيت','كهرباء','نقل ومواصلات','مستهلكات','عمالة وخدمات','أخرى'],
+  suppliers:['محل النور','مؤسسة الحرم','شركة الأمانة']
+};;
+
+/* سجلُّ الشاشات — يُعرَّف مرةً هنا ويُضاف إليه في كل ملفٍ بعده */
+var PAGE = {};
+
+/* ═══ مساعدات العرض ═══ */
+/* ═══ عزلُ الرموز اللاتينية داخل النصِّ العربي (V17.98) ═══
+   معرِّفٌ مثل NSK-MIN-RDR-0018 أو رقمٌ تسلسليٌّ أو شاخصٌ مثل 12B/B04 داخل جملةٍ
+   عربيةٍ قد يُعاد ترتيبُه بصريًّا. في HTML يُعزَل بـ<bdi>، وفي النصِّ الصريح (واتساب
+   والتقارير) بعلامتَي FSI…PDI. للعرض فقط: القيمُ المخزونةُ والتصديرُ (CSV/JSON/إكسل)
+   تبقى نظيفةً من العلامات. */
+var BDI_TOK = /[A-Za-z0-9][A-Za-z0-9._:\/-]*[A-Za-z0-9]|[A-Za-z0-9]/g;
+function bdiNeed(m){ return /[A-Za-z]/.test(m) || /[\/:.-]/.test(m); }
+function bdi(s){ return '<bdi>' + esc(s) + '</bdi>'; }
+function bdiText(s){
+  /* التهريبُ بعد التقطيع: esc تحوّل الشَّرطةَ المائلة إلى مرجعٍ فيتقطّع الشاخص */
+  s = String(s == null ? '' : s); var out = '', last = 0;
+  s.replace(BDI_TOK, function(m, off){ out += esc(s.slice(last, off)) + (bdiNeed(m) ? '<bdi>' + esc(m) + '</bdi>' : esc(m)); last = off + m.length; return m; });
+  return out + esc(s.slice(last));
+}
+function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
+function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
+function esc(s){ return String(s==null?'':s)
+  .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\//g,'&#47;'); }
+function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
+
+/* القيمةُ رقمٌ مُنسَّقٌ غالبًا (وسمٌ جاهز) فتُترَك، لكنها أحيانًا نصٌّ صرفٌ
+   («متاح» · «مستوفٍ» · «—») فيُترجَم بنفس قاعدة خلايا الجدول. */
+function stat(k,v,cls){
+  return '<div class="stat'+(cls?' '+cls:'')+'"><div class="k">'+esc(t(k))+'</div>'
+       + '<div class="v">'+cellT(v)+'</div></div>';
+}
+function stats(list){
+  return '<div class="stats">'+list.map(function(s){ return stat(s[0],s[1],s[2]); }).join('')+'</div>';
+}
+function meter(label,v,max){
+  var p = max ? Math.min(100, Math.round(v/max*100)) : 0;
+  return '<div class="meter"><div class="meter-l"><span>'+esc(t(label))+'</span>'
+       + '<span>'+nm(v)+' / '+nm(max)+' · '+nm(p)+'٪</span></div>'
+       + '<div class="track"><i style="width:'+p+'%"></i></div></div>';
+}
+function card(title, body, right){
+  return '<div class="card">'
+    + (title ? '<div class="card-head"><h2>'+esc(t(title))+'</h2>'+(right||'')+'</div>' : '')
+    + '<div class="card-body">'+body+'</div></div>';
+}
+/* عنوانٌ مبنيٌّ من أجزاءٍ هُرِّبت كلٌّ منها — لا يُهرَّب ثانيةً فتظهر الوسومُ نصًّا */
+function cardRaw(titleHtml, body, right){
+  return '<div class="card">'
+    + (titleHtml ? '<div class="card-head"><h2>' + titleHtml + '</h2>' + (right || '') + '</div>' : '')
+    + '<div class="card-body">' + body + '</div></div>';
+}
+function cardFlush(title, body, right){
+  return '<div class="card">'
+    + (title ? '<div class="card-head"><h2>'+esc(t(title))+'</h2>'+(right||'')+'</div>' : '')
+    + '<div class="card-body tight">'+body+'</div></div>';
+}
+/* الخليةُ قد تحمل HTML جاهزًا (زرًّا أو شارةً أو رقمًا مُنسَّقًا) فلا تُمرَّر
+   بالمترجم كما هي. لكنّ أكثرَ من أربعمئة خليةٍ نصٌّ عربيٌّ صرفٌ يُكتَب في
+   مصفوفة الصف — «النطاق» و«المدّة» و«الميزانية» — فبقيت عربيةً بعد ترجمة
+   مفاتيحها، لأن الرأسَ وحدَه كان يمرُّ بالمترجم. فصارت الخليةُ النصيةُ
+   الصرفةُ (بلا وسمٍ ولا رقمٍ) تُترجَم، وما فيه وسمٌ يُترك كما بُني. */
+function cellT(c){
+  if (typeof c !== 'string') return c;
+  if (c.indexOf('<') > -1 || c.indexOf('&') > -1) return c;
+  return esc(t(c));
+}
+function table(head, rows, foot, opt){
+  return '<div class="table-wrap' + ((opt && opt.sticky) ? ' sticky-1' : '') + '"><table class="data-table rows"><thead><tr>'
+    + head.map(function(h){ return '<th>'+esc(t(h))+'</th>'; }).join('')
+    + '</tr></thead><tbody>'
+    + rows.map(function(r){
+        if (r && r.raw) return r.raw;                      /* صفٌّ خامٌ يمتدُّ على الأعمدة — لوحاتُ المراجعة */
+        return '<tr>'+r.map(function(c){ return '<td>'+cellT(c)+'</td>'; }).join('')+'</tr>'; }).join('')
+    + '</tbody>'
+    + (foot ? '<tfoot><tr>'+foot.map(function(c){ return '<td>'+cellT(c)+'</td>'; }).join('')+'</tr></tfoot>' : '')
+    + '</table></div>';
+}
+function pill(txt, kind){ return '<span class="pill'+(kind?' '+kind:'')+'">'+esc(t(txt))+'</span>'; }
+function alertBox(kind, txt){ return '<div class="alert '+kind+'"><span>'+esc(t(txt))+'</span></div>'; }
+function pct(v,max){
+  var p = max ? Math.round(v/max*100) : 0;
+  var k = p>=100 ? 'ok' : (p>=70 ? 'warn' : 'off');
+  return '<span class="pill '+k+'">'+nm(p)+'٪</span>';
+}
+function flow(steps, activeIdx){
+  return '<div class="flow">' + steps.map(function(s,i){
+    var cls = i < activeIdx ? ' done' : (i === activeIdx ? ' on' : '');
+    return '<span class="flow-step'+cls+'">'+esc(t(s))+'</span>'
+         + (i < steps.length-1 ? '<span class="flow-arr">\u2190</span>' : '');
+  }).join('') + '</div>';
+}
+function btn(label, kind, extra){
+  return '<button type="button" class="btn '+(kind||'btn-secondary')+'"'+(extra||'')+'>'+esc(t(label))+'</button>';
+}
+/* ═══ بحثٌ في كلِّ شاشة (V17.23) ═══
+   بعضُ الشاشات لها بحثُها وأكثرُها بلا بحث، فيُلجَأ إلى بحث المتصفّح: يجد
+   الكلمةَ ويلوّنها ولا يُخفي ما سواها، ولا يعمل على ما طُوي أو لم يُرسَم.
+   فصار لكلِّ صفحةٍ صندوقٌ واحدٌ في رأسها يُصفّي **ما هو معروضٌ أمامك**:
+   صفوفَ الجداول وبطاقاتِ القوائم — ويقول كم بقي من كم. ولا يُعيد الرسمَ
+   عند كلِّ حرفٍ (فلا تضيع البؤرةُ ولا يُثقَل الجهاز)، بل يُخفي ويُظهر. */
+function pageHead(eyebrow, title, lede, right){
+  var canExp = (typeof SHEETS === 'object') && !!SHEETS[CUR];
+  return '<div class="page-head"><div><span class="eyebrow">'+esc(t(eyebrow))+'</span>'
+    + '<h1>'+esc(t(title))+'</h1>'
+    + (lede ? '<p class="lede">'+esc(t(lede))+'</p>' : '') + '</div>'
+    + '<div class="head-acts">'
+    +   '<div class="pg-find"><input id="pgQ" type="search" dir="auto" value="' + esc(PG_Q) + '"'
+    +     ' placeholder="' + esc(t('ابحث في هذه الصفحة')) + '" aria-label="' + esc(t('ابحث في هذه الصفحة')) + '">'
+    +     '<span class="pg-find-n" id="pgQN"></span></div>'
+    +   '<button type="button" class="btn btn-secondary btn-sm" data-help="1" '
+    +     'aria-label="'+esc(t('ما هذه الصفحة؟'))+'" title="'+esc(t('ما هذه الصفحة؟'))+'">'+esc(t('؟'))+'</button>'
+    +   (right !== undefined ? right
+        : (canExp ? btn('تصدير','btn-secondary',' data-xls="'+CUR+'"') : ''))
+    + '</div></div>';
+}
+/* ═══ صندوقٌ واحدٌ يقود بحثَ الصفحة نفسِه (V17.24) ═══
+   لبعض الشاشات بحثٌ حقيقيٌّ يُرشِّح **بياناتها كلَّها** (شاشةُ اعتماد
+   المهندس مثلًا: بالمعرِّف والشاخص والاسم والمشرف)، ولسبعٍ وخمسين شريحةً
+   لا بحثَ لها فتُقرأ بالعين. فصار صندوقُ الرأس واحدًا في المظهر، مزدوجَ
+   الأثر: إن كان للشاشة بحثُها قاده — فيُرشَّح كلُّ السجل لا المعروضَ منه —
+   وإلا رشَّح ما هو معروضٌ أمامك. فلا شاشةَ بلا بحث، ولا بحثَ ينقص عمّا
+   كان. والحدُّ الأقصى للصفوف يرتفع أثناء البحث فلا يختبئ المطلوبُ خلفه. */
+var PG_Q = '';
+var PG_BIND = {
+  survey:  function(v){ SURV_Q = v; }, svappr: function(v){ SVA_Q = v; },
+  minappr: function(v){ MIN_Q  = v; }, wbs:    function(v){ WBS_Q = v; },
+  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR_Q = v; },
+  co:      function(v){ CO_Q   = v; }, sites:  function(v){ SITE_Q = v; },
+  items:   function(v){ IT_Q   = v; }, jobs:   function(v){ JB_Q  = v; },
+  reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ SHIP_Q = v; },
+  myveh:   function(v){ VEH_Q  = v; }, fleetLog: function(v){ VLOG_Q = v; },
+  ips:     function(v){ IP_Q   = v; }, solution: function(v){ SOL_Q = v; },
+  ev:      function(v){ EVF.q  = v; },
+  chal:    function(v){ CHAL_Q = v; }, notif: function(v){ NTF_Q = v; }
+};
+var PG_LAST_BIND = null, PG_KEEP = false;
+function pgBindOf(){
+  var tab = (typeof TABS === 'object' && TABS[CUR]) ? PTAB[CUR] : '';
+  return PG_BIND[tab] || PG_BIND[CUR] || null;
+}
+var PG_T = 0;
+function pgFind(q){
+  PG_Q = String(q == null ? PG_Q : q);
+  var c = document.getElementById('content'); if (!c) return;
+  var key = PG_Q.trim().toLowerCase();
+  var rows = c.querySelectorAll('table tbody tr, .wt-le, .lg-row');
+  var cards = c.querySelectorAll('#content > .card, .grid > .card, .wt-card');
+  var seen = 0, hit = 0;
+  var test = function(el){
+    seen++;
+    var ok = !key || (el.textContent || '').toLowerCase().indexOf(key) > -1;
+    el.style.display = ok ? '' : 'none';
+    if (ok) hit++;
+    return ok;
+  };
+  for (var i = 0; i < rows.length; i++) test(rows[i]);
+  /* البطاقةُ تُخفى إن لم تطابق هي ولا ما فيها من صفوفٍ ظاهرة */
+  for (var j = 0; j < cards.length; j++){
+    var cd = cards[j];
+    if (!key){ cd.style.display = ''; continue; }
+    var inner = cd.querySelectorAll('table tbody tr, .wt-le');
+    var any = false;
+    for (var k = 0; k < inner.length; k++) if (inner[k].style.display !== 'none'){ any = true; break; }
+    cd.style.display = (any || (cd.textContent || '').toLowerCase().indexOf(key) > -1) ? '' : 'none';
+  }
+  var n = document.getElementById('pgQN');
+  if (n) n.textContent = key ? (nm(hit) + ' ' + t('من') + ' ' + nm(seen)) : '';
+}
+
+/* ═══ مصدر القيم الواحد ═══
+   لا قيمةَ افتراضيةً ولا رماديةً: كلُّ وزنٍ ونقطةٍ وتارجتٍ يبدأ صفرًا
+   ويُضبط بيد المهندس. وما يُكتب هنا يقرؤه كلُّ ما بُني فوقه في اللحظة نفسها. */
+
+var CFG = {
+  /* أوزان الزيارة والفك — مفتاحها «المشعر|النوع» */
+  w:  {},
+  dw: {},
+
+  /* التارجتات */
+  tgtSurvey:0, tgtInsCamp:0, tgtInsCor:0,
+  tgtPrepCamp:0, tgtPrepCor:0, tgtAsmCamp:0, tgtAsmCor:0, tgtDis:0,
+
+  /* نقاط النقطة الكاملة ومعاملا الفك — والوزنُ لكلِّ نوعٍ على حدة */
+  insCamp:0, insCor:0, disOk:0, disBad:0,
+  insType:{},
+  nameEn:{},   /* تصحيحُ نقحرةِ اسمٍ بعينه — يُكتَب مرةً ويثبت */
+
+  /* ثوابت النظام */
+  ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
+  /* حارسُ التكلفة (V17.96): ١ = تنبيهُ ميزانية Google Cloud مضبوطٌ (يؤشّره المدير بعد ضبطه — docs/cost-guard.md) */
+  budgetAlert:0,
+  /* متوسطُ غرف المخيم لكلِّ مشعرٍ — يُقرأ حين لا يُعَدُّ (V17.71): «منى» ١٢ ما لم يُضبَط */
+  avgRooms:{},
+  stgCfg:0, stgVal:0, stgIns:0,
+
+  /* المواعيدُ المستهدفة (مللي ثانية) وزمنُ تركيب النقطة بالدقائق */
+  dueSurvey:0, dueInstall:0, minCamp:0, minCor:0,
+  /* زمنُ تركيبِ كلِّ نوعٍ بالدقائق (V17.14): كانت الكاميراتُ والمحطاتُ
+     والبواباتُ والجسورُ تُحسَب بزمن الممرِّ لأن الجدولَ لم يعرف إلا نوعين */
+  minType:{},
+
+  /* المال */
+  budCap:0, budApp:0, reservePct:0,
+
+  /* الكتالوج — مفتاحها معرّف الصنف */
+  itPts:{}, itPrice:{}, itPrep:{}, itAsm:{},
+
+  /* الطواقم — مفتاحها معرّف الطاقم */
+  crewSup:{}, crewTech:{}, crewGear:{}, crewRate:{}
+};
+
+/* قراءةٌ آمنة: الصفر قيمةٌ صحيحةٌ لا غيابٌ يُستبدل */
+function cfgN(v){ var n = parseFloat(v); return isFinite(n) ? n : 0; }
+function cfgKey(k){ return (k === undefined || k === null || k === '') ? null : String(k); }
+/* ═══ مفتاحُ الوزن بالاسم العربيِّ الخام (V19.0) ═══
+   الأوزانُ تُخزَّن بمفتاح «مشعر|تصنيف»، والتصنيفُ كان يُقرأ بلغة الواجهة (catLabel
+   → t): فجهازٌ بالإنجليزية يسأل عن «منى|Camps» فلا يجد وزنًا فيحسب النقاطَ صفرًا
+   والمستحقَّ صفرًا، ومديرٌ بالإنجليزية يكتب وزنًا بمفتاحٍ إنجليزيٍّ لا يراه غيرُه.
+   صار المفتاحُ يُردُّ إلى الاسم العربيِّ الخام عند كلِّ قراءةٍ وكتابةٍ للأوزان —
+   فالرقمُ واحدٌ على كلِّ جهازٍ بأيِّ لغة. */
+var WKEY_CACHE = { lang:'', n:-1, map:null };
+function wKeyNorm(k){
+  if (LANG === 'ar' || !k) return k;
+  var n = Object.keys(CAT_DEF).length;
+  if (WKEY_CACHE.lang !== LANG || WKEY_CACHE.n !== n || !WKEY_CACHE.map){
+    var m = {}; Object.keys(CAT_DEF).forEach(function(ty){ var d = CAT_DEF[ty]; if (d && d.l){ m[t(d.l)] = d.l; } });
+    WKEY_CACHE = { lang:LANG, n:n, map:m };
+  }
+  var M = WKEY_CACHE.map, i = k.indexOf('|');
+  if (i < 0) return M[k] || k;
+  var lab = k.slice(i + 1); return k.slice(0, i) + '|' + (M[lab] || lab);
+}
+function cfgGet(path, key){
+  var k = cfgKey(key), o = CFG[path];
+  if (k !== null && (path === 'w' || path === 'dw')){
+    k = wKeyNorm(k);
+    if (o && o[k] == null){   /* وزنٌ مكتوبٌ بتسميةٍ قديمة (V19.1) */
+      var bar = k.indexOf('|'), z = bar < 0 ? '' : k.slice(0, bar + 1), lab = bar < 0 ? k : k.slice(bar + 1), al = W_ALIAS[lab] || [];
+      for (var ai = 0; ai < al.length; ai++){ if (o[z + al[ai]] != null) return cfgN(o[z + al[ai]]); }
+    }
+  }
+  if (k === null) return cfgN(o);
+  return cfgN(o && o[k]);
+}
+function cfgSet(path, key, val){
+  if (typeof CFG_VER === 'number') CFG_VER++;
+  var k = cfgKey(key);
+  if (k !== null && (path === 'w' || path === 'dw')) k = wKeyNorm(k);   /* يُكتَب بالمفتاح العربيِّ الخام (V19.0) */
+  if (k === null) CFG[path] = cfgN(val);
+  else { if (!CFG[path] || typeof CFG[path] !== 'object') CFG[path] = {}; CFG[path][k] = cfgN(val); }
+  cfgPushSoon(path);
+}
+
+/* ═══ الإعداداتُ الرقميةُ تُرفَع — كانت تبقى على جهاز من كتبها ═══
+   الأوزانُ والتارجتاتُ ونقاطُ القطع وثوابتُ النظام كلُّها تُقرأ عند الإقلاع من
+   settings/points — ولم يكن شيءٌ يكتبها: cfgSet تُعدِّل الذاكرةَ والمخزنَ
+   المحليَّ وتقف. فالمهندسُ يضبط وزنَ الزيارة على جهازه، وكلُّ جهازٍ آخرَ —
+   وهاتفُه هو — يحسب النقاطَ بأوزانٍ صفر ولا يشكو. (النسخةُ القديمة V14.01
+   كانت تكتبها، وسقط ذلك في إعادة البناء.)
+
+   يُرفَع ما تغيّر لا الوثيقةُ كلُّها: كلُّ مسارٍ لُمس في هذه الجلسة يُكتَب
+   بقيمته الحالية بدمجٍ (merge)، فلا يمحو جهازٌ قديمُ الذاكرة ما ضبطه غيرُه في
+   مسارٍ لم يلمسه. ويُجمَّع بعد سكونٍ قصيرٍ فلا ترتفع كلُّ نقرةٍ وحدَها.
+   ولا يُقيَّد إلا لمن يملك الإعدادات — فالقاعدةُ تردُّ غيرَه. */
+var _cfgT = 0, _cfgTouched = {};
+function cfgPushSoon(path){
+  _cfgTouched[path] = 1;
+  if (typeof may !== 'function' || !may('settings')) return;
+  if (_cfgT) return;
+  _cfgT = setTimeout(function(){ _cfgT = 0; cfgPush(); }, 1200);
+}
+function cfgPush(){
+  var doc = {};
+  Object.keys(_cfgTouched).forEach(function(k){ if (k in CFG) doc[k] = CFG[k]; });
+  if (!Object.keys(doc).length) return;
+  CORE.dirty('cfg', 'points', doc);
+}
+
+/* حقلُ تاريخٍ موصولٌ بالمصدر — يُخزَّن رقمًا (مللي ثانية) لأن CFG رقميّة */
+function cfgDate(path){
+  var v = cfgGet(path);
+  return '<input type="date" value="' + (v ? dayKey(v) : '') + '" data-cfgdate="' + path + '">';
+}
+
+/* الأسبوعي يُشتقّ من الشهري بأيام العمل — وصفرٌ في الأيام يعني صفرًا لا قسمةً على صفر */
+function cfgWk(monthly){
+  var d = cfgGet('days'), w = cfgGet('daysWeek');
+  return d ? Math.round(cfgN(monthly) * (w / d)) : 0;
+}
+
+/* حقلٌ موصولٌ بالمصدر: يكتب فيه عند التحرير فينتشر أثرُه */
+function cfgInput(path, key, opt){
+  opt = opt || {};
+  var v = cfgGet(path, key);
+  return '<input type="number" inputmode="' + (opt.dec ? 'decimal' : 'numeric') + '"'
+    + ' step="' + (opt.step || (opt.dec ? '0.5' : '1')) + '" min="0"'
+    + (opt.max ? ' max="' + opt.max + '"' : '')
+    + ' value="' + v + '"'
+    + ' data-cfg="' + path + '"'
+    + (cfgKey(key) !== null ? ' data-cfgk="' + esc(key) + '"' : '')
+    + (opt.style ? ' style="' + opt.style + '"' : '')
+    + '>';
+}
+
+/* حقلٌ مشتقٌّ لا يُكتب — الأسبوعي من الشهري */
+function cfgDerived(v){
+  return '<input type="number" value="' + v + '" readonly tabindex="-1"'
+    + ' style="background:var(--surface-2);color:var(--ink-soft)">';
+}
+
+/* ما يُشتقّ من المصدر — تقرؤه كل الشاشات فلا رقمان يفترقان */
+function T(){
+  return {
+    survey:   cfgGet('tgtSurvey'),
+    insCamp:  cfgGet('tgtInsCamp'),  insCor:  cfgGet('tgtInsCor'),
+    prepCamp: cfgGet('tgtPrepCamp'), prepCor: cfgGet('tgtPrepCor'),
+    asmCamp:  cfgGet('tgtAsmCamp'),  asmCor:  cfgGet('tgtAsmCor'),
+    dis:      cfgGet('tgtDis'),
+    ins:      cfgGet('tgtInsCamp')  + cfgGet('tgtInsCor'),
+    prep:     cfgGet('tgtPrepCamp') + cfgGet('tgtPrepCor'),
+    asm:      cfgGet('tgtAsmCamp')  + cfgGet('tgtAsmCor')
+  };
+}
+function K(){
+  return {
+    ph:cfgGet('ph'), days:cfgGet('days'), hours:cfgGet('hours'), daysWeek:cfgGet('daysWeek'),
+    insCamp:cfgGet('insCamp'), insCor:cfgGet('insCor'),
+    disOk:cfgGet('disOk'), disBad:cfgGet('disBad'),
+    stgCfg:cfgGet('stgCfg'), stgVal:cfgGet('stgVal'), stgIns:cfgGet('stgIns')
+  };
+}
+
+/* أرقام الكتالوج من المصدر */
+function itPts(id){ return cfgGet('itPts', id); }
+function itPrice(id){ return cfgGet('itPrice', id); }
+function itPrep(id){ return cfgGet('itPrep', id); }
+function itAsm(id){ return cfgGet('itAsm', id); }
+
+/* الطواقم من المصدر */
+function crewVal(k, f){ return cfgGet('crew' + f, k); }
+
+/* ما لم يُضبط بعدُ — تنبيهٌ يظهر حيث يهمّ */
+/* ═══ المحرك — تخزينٌ محليٌّ أولًا ثم مزامنةٌ سحابية ═══
+   الكتابة تنجح على الجهاز دائمًا، والشبكة تفصيلٌ لاحقٌ لا شرطٌ مسبق.
+   وما لم يُرفع يبقى في طابورٍ يُعاد إرساله حين تعود الشبكة. */
+
+var FB_CFG = {
+  apiKey: "AIzaSyAo6s6Btxb7Nl1Eam_UBDNQUfUteNBRhMw",
+  authDomain: "project-survey-60600.firebaseapp.com",
+  projectId: "project-survey-60600",
+  storageBucket: "project-survey-60600.firebasestorage.app",
+  messagingSenderId: "526115444274",
+  appId: "1:526115444274:web:949ec1a0f336bafe09ce2b"
+};
+
+/* ── المخزن المحلي: IndexedDB وإن تعذّر فذاكرةٌ حيّة ── */
+var IDB_NAME = 'nusuk-v14', IDB_STORE = 'kv', _idb = null, _mem = null;
+
+/* ═══ المخزنُ المحلي لا يستسلم (V17.93) ═══
+   كان الفتحُ إن أبطأ أربعَ ثوانٍ أو أخطأ يقلب الجلسةَ كلَّها إلى ذاكرةٍ لا
+   تُحفَظ — فيعمل الفنيُّ بلا شبكةٍ ثم يغلق التطبيقَ فيضيع يومُه بلا كلمة.
+   صار: الفتحُ البطيءُ يُنتظَر ويُتبنّى إذا نجح لاحقًا، والخطأُ يُعاد بتراجعٍ
+   (١ · ٣ · ١٠ · ٣٠ ثوانٍ ثم كلَّ دقيقة)، وما كُتب في الذاكرة يُدفَق إلى القاعدة
+   حين تُفتَح لأنه الأحدث، وما دام الحفظُ المحليُّ لا يعمل تظهر لافتةٌ حمراءُ
+   لا تُغلَق ويُسأل قبل إغلاق الصفحة. */
+var IDB_LOG_ERR = null, IDB_TIMEOUT = (typeof window === 'object' && +window.NSK_IDB_TIMEOUT) || 4000,
+    IDB_BACKOFF = (typeof window === 'object' && Array.isArray(window.NSK_IDB_BACKOFF)) ? window.NSK_IDB_BACKOFF : [1000, 3000, 10000, 30000, 60000],
+    IDB_TRY = 0, IDB_RETRY_T = 0, IDB_BAD = false, IDB_PENDING = null;
+/* (V19.5) سببُ تعطّل الحفظ بلغةٍ يفهمها الفنيّ — وما يفعله */
+var IDB_WHY = '';
+function idbWhyText(w){
+  w = String(w || '');
+  if (/connection to indexed database server lost|connection is closing|closing|InvalidStateError|UnknownError/i.test(w)) return 'انقطع اتصالُ المتصفّح بمخزنه بعد رجوع التطبيق من الخلفية (عيبٌ معروفٌ في آيفون) — يُعاد فتحُه تلقائيًّا.';
+  if (/quota|full|space/i.test(w)) return 'مساحةُ الجهاز أو المتصفّح ممتلئة — فرّغ مساحةً ثم أعد فتح التطبيق.';
+  if (/security|not allowed|denied|private/i.test(w)) return 'المتصفّحُ يمنع الحفظ (تصفّحٌ خاصٌّ أو إعداداتُ خصوصية) — افتح التطبيق في سفاري أو كروم العادي أو من أيقونة الشاشة الرئيسية.';
+  if (/timeout/i.test(w)) return 'المتصفّحُ تأخّر في فتح المخزن — يُعاد المحاولةُ تلقائيًّا؛ وإن بقيت فأعد فتح التطبيق.';
+  return 'السببُ غيرُ معروف — أعد فتح التطبيق، وإن بقيت فأرسل «نسخ التشخيص» من «حسابي».';
+}
+/* ═══ لافتةُ الحفظ المحلي حين الخطرُ حقيقيّ (V19.6) ═══
+   الحفظُ المحليُّ المعطَّلُ لا يعني عملًا ضائعًا: كلُّ حفظٍ يُرفَع في لحظته. الخطرُ أن
+   يُغلَق التطبيقُ وفي الطابور ما لم يُرفَع — فاللافتةُ تظهر حين الجهازُ بلا شبكة أو
+   حين عملٌ ينتظر أكثرَ من ثماني ثوانٍ، وتختفي حين يُرفَع. لا إنذارَ بلا سبب — فمن لا
+   يعرف التقنيةَ لا يُفزَع كلَّ حفظ. وما دام الحفظُ معطّلًا يُعاد الرفعُ كلَّ عشر ثوانٍ. */
+function idbAtRisk(){
+  if (!IDB_BAD) return false;
+  if (!STATE.meta || !STATE.meta.online) return true;
+  var now = Date.now();
+  return (STATE.queue || []).some(function(q){ return now - (q.at || 0) > 8000; });
+}
+function idbBannerUpdate(){
+  if (typeof document !== 'object' || !document.body) return;
+  var ib = document.getElementById('idbBanner');
+  if (idbAtRisk()){
+    if (!ib){ ib = document.createElement('div'); ib.id = 'idbBanner'; ib.setAttribute('role', 'alert'); document.body.insertBefore(ib, document.body.firstChild); }
+
+    if (!ib){ ib = document.createElement('div'); ib.id = 'idbBanner'; ib.setAttribute('role', 'alert'); document.body.insertBefore(ib, document.body.firstChild); }
+    var ibN = (CORE && CORE.pending) ? CORE.pending() : 0;
+    ib.innerHTML = '\u26A0 ' + esc(t('الحفظُ المحليُّ على هذا الجهاز لا يعمل: زامن الآن ولا تغلق التطبيق حتى يُرفَع عملُك.'))   /* بلغة اللحظة */
+      + '<div style="font-weight:600;font-size:13px;margin-top:4px">' + esc(t('السبب')) + ': ' + esc(t(idbWhyText(IDB_WHY))) + ' ' + esc(t('وعملُك يُرفَع تلقائيًّا لحظةَ حفظه ما دامت الشبكة.')) + '</div>'
+      + ' <button type="button" class="ib-sync" data-pull="1">\u{1F504} ' + esc(t('زامن الآن')) + ' <span id="idbBannerN">' + (ibN ? '(' + nm(ibN) + ' ' + esc(t('بانتظار الرفع')) + ')' : '') + '</span></button>'
+      + ' <button type="button" class="ib-sync" data-idbretry="1">\u21BB ' + esc(t('أعد المحاولة')) + '</button>';
+  } else if (ib){ ib.parentNode.removeChild(ib); }
+}
+var IDB_WATCH_T = 0;
+function idbWatchStart(){
+  if (IDB_WATCH_T || typeof setInterval !== 'function') return;
+  IDB_WATCH_T = setInterval(function(){
+    if (!IDB_BAD){ idbBannerUpdate(); return; }
+    try { if (STATE.meta.online && FB.ready && CORE.pending() > 0) CORE.flush(); } catch (e){ LS_ERR = e; }
+    idbBannerUpdate();
+  }, 10000);
+}
+function idbTellBad(on, why){
+  if (on) IDB_WHY = String(why || IDB_WHY || '');
+  if (on) idbWatchStart();
+  if (IDB_BAD === on) return;
+  IDB_BAD = on;
+  try { boxNote('idb', on ? 'bad:' + String(why || '').slice(0, 30) : 'ok'); } catch (e){ BOX_ERR = e; }
+  try { if (typeof logEvent === 'function') logEvent(on ? 'الحفظُ المحليُّ لا يعمل — ' + String(why || '').slice(0, 40) : 'عاد الحفظُ المحلي', ''); } catch (e){ IDB_LOG_ERR = e; }
+  try { if (typeof render === 'function') render(1); } catch (e){ IDB_LOG_ERR = e; }
+}
+function idbAdopt(db){
+  _idb = db;
+  if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
+  IDB_TRY = 0;
+  /* الذاكرةُ أحدثُ مما في القاعدة: تُدفَق كلُّها ثم تُطوى */
+  if (_mem && _mem.size){
+    var pairs = []; _mem.forEach(function(v, k){ pairs.push([k, v]); });
+    try {
+      var tx = db.transaction(IDB_STORE, 'readwrite'), st = tx.objectStore(IDB_STORE);
+      pairs.forEach(function(p){ st.put(p[1], p[0]); });
+      tx.oncomplete = function(){ _mem = null; idbTellBad(false); };
+      tx.onerror = function(){ idbTellBad(true, tx.error && tx.error.message); };
+    } catch (e){ idbTellBad(true, e && e.message); return; }
+  } else { _mem = null; idbTellBad(false); }
+}
+function idbDrop(){
+  if (_idb){ try { _idb.close(); } catch (e){ IDB_LOG_ERR = e; } _idb = null; }
+  idbRetryLater();
+}
+function idbRetryNow(){
+  IDB_TRY = 0;
+  if (IDB_RETRY_T){ clearTimeout(IDB_RETRY_T); IDB_RETRY_T = 0; }
+  if (_idb){ try { _idb.close(); } catch (e){ IDB_LOG_ERR = e; } _idb = null; }
+  return idbStart().catch(function(){ return null; });
+}
+/* الرجوعُ من الخلفية والحفظُ معطّل: محاولةُ فتحٍ فورية (V19.5) */
+if (typeof document === 'object') document.addEventListener('visibilitychange', function(){ if (!document.hidden && IDB_BAD && typeof indexedDB !== 'undefined') idbRetryNow(); });
+function idbRetryLater(){
+  if (IDB_RETRY_T) return;
+  var wait = IDB_BACKOFF[Math.min(IDB_TRY, IDB_BACKOFF.length - 1)]; IDB_TRY++;
+  IDB_RETRY_T = setTimeout(function(){ IDB_RETRY_T = 0; idbStart().catch(function(){}); }, wait);
+}
+/* طلبُ الفتح نفسُه: يبقى حيًّا حتى ينجح أو يخطئ — لا يُفتَح طلبٌ ثانٍ ما دام هذا معلَّقًا */
+function idbStart(){
+  if (IDB_PENDING) return IDB_PENDING;
+  IDB_PENDING = new Promise(function(res, rej){
+    var q;
+    var fail = function(e){
+      IDB_PENDING = null;
+      if (!_mem) _mem = new Map();
+      idbTellBad(true, e && e.message); idbRetryLater(); rej(e);
+    };
+    /* متصفّحٌ بلا IndexedDB أصلًا (بيئاتُ الفحص): ذاكرةٌ بصمتٍ كما كان — لا إعادةَ ولا لافتة، فلا شيءَ يُنتظَر */
+    if (typeof indexedDB === 'undefined'){ IDB_PENDING = null; if (!_mem) _mem = new Map(); rej(new Error('no-idb')); return; }
+    try { q = indexedDB.open(IDB_NAME, 1); } catch (e){ fail(e); return; }
+    q.onupgradeneeded = function(){ q.result.createObjectStore(IDB_STORE); };
+    q.onsuccess = function(){ IDB_PENDING = null; idbAdopt(q.result); res(_idb); };   /* ولو بعد المهلة: يُتبنّى ويُدفَق */
+    q.onerror = function(){ fail(q.error || new Error('idb-error')); };
+  });
+  return IDB_PENDING;
+}
+function idbOpen(){
+  if (_idb) return Promise.resolve(_idb);
+  if (typeof indexedDB === 'undefined'){ if (!_mem) _mem = new Map(); return Promise.reject(new Error('no-idb')); }
+  /* سبقت مهلةٌ والطلبُ ما زال معلَّقًا، أو إعادةٌ مجدولةٌ بعد خطأ: نعمل في الذاكرة ولا نفتح طلبًا ثانيًا */
+  if ((IDB_PENDING && _mem) || IDB_RETRY_T) return Promise.reject(new Error('mem-mode'));
+  var p = idbStart();
+  return new Promise(function(res, rej){
+    var done = false;
+    var t = setTimeout(function(){
+      if (done) return; done = true;
+      if (!_mem) _mem = new Map();
+      idbTellBad(true, 'idb-timeout'); rej(new Error('idb-timeout'));   /* مهلةٌ لا استسلام */
+    }, IDB_TIMEOUT);
+    p.then(function(db){ clearTimeout(t); if (!done){ done = true; res(db); } },
+           function(e){ clearTimeout(t); if (!done){ done = true; rej(e); } });
+  });
+}
+function idbUnsynced(){ return !!(_mem && _mem.size) || (STATE && STATE.queue && STATE.queue.length > 0); }
+
+function idbGet(k){
+  return idbOpen().then(function(db){
+    return new Promise(function(res, rej){
+      var r = db.transaction(IDB_STORE, 'readonly').objectStore(IDB_STORE).get(k);
+      r.onsuccess = function(){ res(r.result); };
+      r.onerror   = function(){ rej(r.error); };
+    });
+  }).catch(function(){ return _mem ? _mem.get(k) : undefined; });
+}
+
+function idbSet(k, v){
+  return idbOpen().then(function(db){
+    return new Promise(function(res, rej){
+      var tx = db.transaction(IDB_STORE, 'readwrite');
+      tx.objectStore(IDB_STORE).put(v, k);
+      tx.oncomplete = function(){ res(true); };
+      tx.onerror    = function(){ rej(tx.error); };
+    });
+  }).catch(function(e){
+    if (!_mem) _mem = new Map();
+    _mem.set(k, v);
+    if (typeof indexedDB !== 'undefined'){
+      idbTellBad(true, e && e.message);   /* حفظٌ فشل: يُقال ولا يُبتلَع */
+      /* (V19.5) الاتصالُ الذي فشلت عليه الكتابةُ قد يكون ميّتًا (آيفون يقطعه بعد
+         الخلفية): كان يُعاد استعمالُه مع كلِّ حفظٍ فيبقى الحفظُ معطّلًا حتى إعادة
+         التحميل. يُترَك ويُعاد الفتحُ — والذاكرةُ تُدفَق فيه حين ينجح */
+      idbDrop();
+    }
+    return false;
+  });
+}
+
+/* ── الحالة الحيّة ── */
+var STATE = {
+  sites:   [],   /* المواقع */
+  recs:    {},   /* سجلات المسح */
+  inss:    {},   /* سجلات التركيب */
+  tasks:   {},   /* المهام بأنواعها الأربعة */
+  moves:   [],   /* دفتر حركة المخزون */
+  buys:    {},   /* المشتريات — بمعرّفٍ لكلٍّ، لا مصفوفة (كان تضاربٌ هنا) */
+  bonus:   {},   /* نقاط الزيادة اليدوية للفنيين */
+  workReqs:{},   /* طلبات التهيئة والتجميع (CR/AR) */
+  diss:{},       /* الفكُّ وإرجاعُ العُهدة (UR) */
+  maints:{},     /* زياراتُ الصيانة (MR) — {id:{id,list:[]}} */
+  steps:[],      /* آخرُ ما تمّ — يُعلَن ويُرفَع فتراه اللوحاتُ في كلِّ جهاز */
+  photos:{},     /* سجلُّ الصور المرفوعة — {site-n:{site,kind,seq,name,driveId}} */
+  pending:{},    /* حساباتٌ سُجِّلت ولم تُنشَأ في المصادقة بعد */
+  provision:{},  /* طلباتُ إنشاءٍ للخادم — {user:{name,pass,role,status}} */
+  att:{},        /* الحضورُ — {uid_day:{in:{at,lat,lng,ok},out,hours}} */
+  presence:{},   /* آخرُ ظهورِ كلِّ جهاز — {uid:{name,role,ver,at,dev}} */
+  events:  [],   /* سجل الأحداث */
+  users:   {},   /* المستخدمون وأدوارهم */
+  cfg:     {},   /* الإعدادات — مرآةُ CFG */
+  queue:   [],   /* طابور الرفع */
+  meta:    { lastSync:0, uid:'', role:'', name:'', online:false }
+};
+
+var QUEUE_CAP = 2000, _saveT = 0;
+
+/* ═══ الاتساعُ إلى مئةٍ وخمسين جهازًا ═══
+   معرّفٌ ثابتٌ لكلِّ جهاز: بلا معرّفٍ يشترك جهازان في معرّفٍ متسلسلٍ واحدٍ
+   فيمحو أحدُهما الآخر، ولا يُعرَف أيُّهما كتب. */
+/* خطةُ القاعدة — يقرؤها جردُ السعة: على Spark السقفُ يوقف الخدمة، وعلى Blaze
+   يُحاسَب ما فوق الحصة نفسِها ولا يوقف. رُفعت إلى Blaze في ٧ سبتمبر ٢٠٢٦ بعد
+   نفاد حصة يومٍ واحد. */
+var FB_PLAN = 'blaze';
+var DEV_ID = (function(){
+  try {
+    var k = 'nsk14.dev';
+    var v = localStorage.getItem(k);
+    if (!v){
+      v = 'd' + Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+      localStorage.setItem(k, v);
+    }
+    return v;
+  } catch(e){ return 'd' + Math.random().toString(36).slice(2, 10); }
+})();
 var _uidSeq = 0;
 function uid36(){ return DEV_ID + '-' + Date.now().toString(36) + '-' + (++_uidSeq).toString(36); }
 
