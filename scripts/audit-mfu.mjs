@@ -124,10 +124,44 @@ const td = new TD(), slides = E1.filter(e => /^ppt\/slides\/slide\d+\.xml$/.test
 T(slides.length === 11 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'إحدى عشرة شريحة بلا عنصرٍ نائبٍ باقٍ');
 T(slides.every(s => !new w.DOMParser().parseFromString(s.x, 'application/xml').getElementsByTagName('parsererror').length), 'وكلُّ شريحةٍ سليمةُ البناء');
 const all = slides.map(s => s.x).join('');
-T(['ملخص مسار القارئات', 'حالة أبرز المهام', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص التركيبات اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
+T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص التركيبات اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
 T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ العرض');
 const cover = slides.find(s => s.n === 'ppt/slides/slide1.xml').x;
 T(cover.includes(new Date().toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
+
+console.log('\n══ ٨ · التحدياتُ بمصادرها والمهامُّ الأسبوعيةُ مربوطة (V20.5) ══');
+w.MFU.v = w.STATE.mfu = {}; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]); };
+w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
+const cats0 = w.mfuAllChal().filter(c => c.src === 'field');
+T(cats0.length >= 2 && cats0.every(c => c.n > 0 && c.party), 'تحدياتُ المسح الميداني فئاتٌ بعدد نقاطها وجهتها: ' + cats0.map(c => c.t + ' ' + c.n).join(' · '));
+let ch = await open('mchal');
+T(/من المسح الميداني/.test(ch.textContent) && ch.querySelectorAll('[data-fch$="|owner"]').length === cats0.length, 'تظهر في التحديات بشارة مصدرها، ولكلٍّ «من سيحلّه» و«آلية المعالجة» تُعدَّل');
+const fo = ch.querySelector('[data-fch$="|owner"]'), fcat = fo.getAttribute('data-fch').split('|')[0];
+fo.value = 'فريق التركيبات'; fo.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
+const fm = d.querySelector('[data-fch="' + fcat + '|m"]'); fm.value = 'تنسيقٌ مع كدانة لاستكمال العارضة'; fm.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
+const c1 = w.mfuAllChal().find(c => c.key === 'F:' + fcat);
+T(c1.owner === 'فريق التركيبات' && c1.m === 'تنسيقٌ مع كدانة لاستكمال العارضة' && wrote.some(r => r[1] === 'mfu' && r[2].fch && r[2].fch[fcat]), 'ومن سيحلّه وآليةُ المعالجة يُحفَظان في settings/mfu');
+ch = await open('mchal');
+d.querySelector('[data-chaltask="F:' + fcat + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
+const tsk = w.wtRows().find(r => r.chal === 'F:' + fcat);
+T(!!tsk && /^معالجة: /.test(tsk.n) && tsk.who === 'فريق التركيبات' && tsk.track === 'التحديات' && w.mfuAllChal().find(c => c.key === 'F:' + fcat).task == tsk.id, '«＋ مهمة معالجة» تُنشئ مهمةً أسبوعيةً مربوطةً بالتحدي ومسؤولِه');
+w.wtStatus(tsk.id, 'مكتمل');
+T(w.mfuAllChal().find(c => c.key === 'F:' + fcat).st === 'تم الحل', 'واكتمالُ المهمة يجعل التحدي «تم الحل»');
+const other = cats0.find(c => c.t !== fcat);
+w.mfuPut('fch', other.t, { owner:'الشركة', at:Date.now() });   /* تحدٍّ تعامل معه المكتب — يبقى بعد حلّه */
+w.mfuObstacles().filter(o => o.cats.includes(other.t)).forEach(o => { w.STATE.inss[o.x.id] = { id:o.x.id, status:'مُركّب', at:Date.now(), by:'سالم' }; });
+T(w.mfuAllChal().find(c => c.key === 'F:' + other.t).st === 'تم الحل', 'وتحدّي المسح يصير «تم الحل» وحدَه حين تُركَّب نقاطُه كلُّها');
+w.wtAdd({ n:'توريد العوارض', who:'المشتريات', track:'التوريدات' }); const t2 = w.wtRows().find(r => r.n === 'توريد العوارض');
+w.wtStatus(t2.id, 'متوقف'); w.wtNote && w.wtNote(t2.id, 'المورّد لم يسلّم');
+T(w.mfuAllChal().some(c => c.key === 'T:' + t2.id && c.src === 'task' && c.st === 'مفتوح'), 'المهمةُ الأسبوعيةُ المتوقّفةُ تظهر تحدّيًا «من المهام الأسبوعية»');
+w.wtStatus(t2.id, 'جاري العمل');
+T(w.mfuAllChal().some(c => c.key === 'T:' + t2.id && c.st === 'تم الحل'), 'وحين تُستأنَف تظهر «تم الحل»');
+const wk = await open('mweek');
+T(/مهمة جديدة/.test(wk.textContent) && /توريد العوارض/.test(wk.textContent), 'المهامُّ الأسبوعيةُ كاملةً داخل متابعة الوزارة — تُضاف وتُحدَّث من هنا');
+const mt2 = await open('mtasks');
+T(/المسار/.test(mt2.textContent) && /توريد العوارض/.test(mt2.textContent) && /تم حلُّ التحدي/.test(mt2.textContent), 'وحالةُ أبرز المهام من المهام الأسبوعية بأعمدة العرض، وما عالج تحدّيًا يُعلَّم');
+const R2 = w.mfuReport();
+T(R2.tasks.length === w.wtRows().length && R2.chal.some(r => r[0] === 'من المسح الميداني') && R2.chal.some(r => r[0] === 'من المهام الأسبوعية'), 'والتصديرُ يحمل المهامَّ الأسبوعيةَ والتحدياتِ بمصادرها');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }
