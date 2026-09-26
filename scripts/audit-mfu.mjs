@@ -61,6 +61,8 @@ const wc = wrote.find(r => r[1] === 'mfu' && r[2].chal);
 T(!!wc && Object.values(wc[2].chal)[0].m === 'إعادة الجدولة مع المصنع' && Object.values(wc[2].chal)[0].st === 'مفتوح', 'التحدي بآلية معالجته يُكتَب مفتوحًا');
 const st = d.querySelector('[data-mfuchalst]'); st.value = 'مغلق'; st.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(40);
 T(w.mfuList('chal')[0].st === 'مغلق', 'وحالتُه تتغيّر من الجدول');
+const chc = d.getElementById('content'), tbPos = chc.innerHTML.indexOf('التحديات وآليات المعالجة \u2014'), fmPos = chc.innerHTML.indexOf('class="mfu-add"');
+T(tbPos > -1 && fmPos > tbPos && !chc.querySelector('details.mfu-add').open, 'القائمةُ أوّلًا والنموذجُ بعدها مطويٌّ خلف «＋ تحدٍّ جديد» (V20.3)');
 await open('mreq');
 d.getElementById('mrT').value = 'تركيب إضاءةٍ إرشادية على أبواب المخيمات'; d.getElementById('mrU').value = 'رُكّبت على ١٠٠ مخيم';
 d.querySelector('[data-mfureq]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);

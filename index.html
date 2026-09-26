@@ -741,6 +741,10 @@ body.kiosk .kk-story{font-size:21px}
 .mfu-co{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
 .mfu-co.mfu-ok{border-top:4px solid #27AE60}.mfu-co.mfu-wrn{border-top:4px solid #E2B33C}.mfu-co.mfu-bad{border-top:4px solid #C0392B}
 .mfu-co-h{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:0 0 6px}
+.mfu-add{margin:12px 0 0}
+.mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
+.mfu-add > summary::-webkit-details-marker{display:none}
+.mfu-add[open] > summary{background:#C8943E22}
 .mfu-co-n{display:flex;justify-content:space-between;gap:6px;margin:6px 0 0;font-size:12px;color:var(--ink-soft)}
 #nav a.nav-tab{opacity:.92;font-size:12.5px;padding-inline-start:26px}
 .kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;position:relative}
@@ -1064,7 +1068,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V20.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3921,6 +3925,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'سُجّل التحدي — تجده أعلى القائمة':'Challenge recorded — it is at the top of the list', 'سُجّل الطلب — تجده أعلى القائمة':'Request recorded — it is at the top of the list',
  'تعذّر تحميل محرّك إكسل — تحقّق من الشبكة':'Could not load the Excel engine — check the network',
  'تصدير التحديث الأسبوعي':'Export weekly update', 'من الجهاز نفسِه — لحظي، بالأرقام الحالية':'From this device — instant, with current figures', 'يُجهَّز ملفُّ إكسل…':'Preparing Excel file…', 'صُدّر ملفُّ إكسل':'Excel file exported', 'صُدّر ملفُّ وورد':'Word file exported', 'اختر «حفظ كـ PDF» في نافذة الطباعة':'Choose “Save as PDF” in the print dialog',
  'كلُّ الشركات':'All companies', 'الأضعفُ أوّلًا':'Weakest first', 'الأضعفُ فقط':'Weakest only', 'اعرض الكل':'Show all',
@@ -6692,6 +6697,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'سُجّل التحدي — تجده أعلى القائمة':'چیلنج درج — فہرست میں سب سے اوپر', 'سُجّل الطلب — تجده أعلى القائمة':'درخواست درج — فہرست میں سب سے اوپر',
  'تعذّر تحميل محرّك إكسل — تحقّق من الشبكة':'ایکسل انجن لوڈ نہیں ہو سکا — نیٹ ورک چیک کریں',
  'تصدير التحديث الأسبوعي':'ہفتہ وار اپڈیٹ برآمد کریں', 'من الجهاز نفسِه — لحظي، بالأرقام الحالية':'اسی آلے سے — فوری، موجودہ اعداد کے ساتھ', 'يُجهَّز ملفُّ إكسل…':'ایکسل فائل تیار ہو رہی ہے…', 'صُدّر ملفُّ إكسل':'ایکسل فائل برآمد', 'صُدّر ملفُّ وورد':'ورڈ فائل برآمد', 'اختر «حفظ كـ PDF» في نافذة الطباعة':'پرنٹ ونڈو میں «PDF کے طور پر محفوظ کریں» منتخب کریں',
  'كلُّ الشركات':'تمام کمپنیاں', 'الأضعفُ أوّلًا':'کمزور ترین پہلے', 'الأضعفُ فقط':'صرف کمزور ترین', 'اعرض الكل':'سب دکھائیں',
@@ -26430,25 +26436,28 @@ function mfuObs(){
 }
 function mfuChal(){
   var L = mfuList('chal'), ed = may('settings'), ST = ['مفتوح', 'قيد المعالجة', 'مغلق'];
-  return (ed ? card('تحدٍّ جديد', '<div class="grid2"><label>' + esc(t('التحدي')) + '<textarea id="mcT" rows="2"></textarea></label><label>' + esc(t('آلية المعالجة')) + '<textarea id="mcM" rows="2"></textarea></label></div>'
+  /* (V20.3) القائمةُ أوّلًا — كانت تحت نموذجٍ طويلٍ على الهاتف فلا يجدها من أضاف */
+  var form = (ed ? card('تحدٍّ جديد', '<div class="grid2"><label>' + esc(t('التحدي')) + '<textarea id="mcT" rows="2"></textarea></label><label>' + esc(t('آلية المعالجة')) + '<textarea id="mcM" rows="2"></textarea></label></div>'
         + '<div class="grid2"><label>' + esc(t('المسؤول')) + '<input id="mcO"></label><label>' + esc(t('المسار')) + '<select id="mcR">' + ['التركيبات', 'التوريدات', 'المسح', 'المواءمة مع الشركات'].map(function(v){ return '<option value="' + esc(v) + '">' + esc(t(v)) + '</option>'; }).join('') + '</select></label></div>'
-        + '<div class="actions">' + btn(t('سجّل التحدي'), 'btn-primary btn-sm', ' data-mfuchal="1"') + '</div>') : '')
-    + (L.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(L.length), table(['التحدي', 'آلية المعالجة', 'المسار', 'المسؤول', 'الحالة', ''], L.map(function(x){
+        + '<div class="actions">' + btn(t('سجّل التحدي'), 'btn-primary btn-sm', ' data-mfuchal="1"') + '</div>') : '');
+  return (L.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(L.length), table(['التحدي', 'آلية المعالجة', 'المسار', 'المسؤول', 'الحالة', ''], L.map(function(x){
         return ['<b>' + esc(x.t || '') + '</b>', esc(x.m || ''), esc(t(x.r || '')), esc(x.o || ''),
                 ed ? '<select data-mfuchalst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(x.st || 'مفتوح'), x.st === 'مغلق' ? 'ok' : 'wrn'),
                 ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="chal|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
-      }))) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>');
+      }))) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>')
+    + (form ? '<details class="mfu-add"' + (L.length ? '' : ' open') + '><summary>\uFF0B ' + esc(t('تحدٍّ جديد')) + '</summary>' + form + '</details>' : '');
 }
 function mfuReq(){
   var L = mfuList('req'), ed = may('settings'), ST = ['جديد', 'قيد التنفيذ', 'منجز'];
-  return (ed ? card('طلبٌ جديد', '<label>' + esc(t('الطلب')) + '<textarea id="mrT" rows="2"></textarea></label><div class="grid2"><label>' + esc(t('الإفادة / آخر تحديث')) + '<textarea id="mrU" rows="2"></textarea></label><label>' + esc(t('المقترح / الدعم المطلوب')) + '<textarea id="mrS" rows="2"></textarea></label></div>'
-        + '<div class="actions">' + btn(t('سجّل الطلب'), 'btn-primary btn-sm', ' data-mfureq="1"') + '</div>') : '')
-    + (L.length ? cardFlush(t('طلبات الوزارة') + ' \u2014 ' + nm(L.length), table(['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', ''], L.map(function(x, i){
+  var form = (ed ? card('طلبٌ جديد', '<label>' + esc(t('الطلب')) + '<textarea id="mrT" rows="2"></textarea></label><div class="grid2"><label>' + esc(t('الإفادة / آخر تحديث')) + '<textarea id="mrU" rows="2"></textarea></label><label>' + esc(t('المقترح / الدعم المطلوب')) + '<textarea id="mrS" rows="2"></textarea></label></div>'
+        + '<div class="actions">' + btn(t('سجّل الطلب'), 'btn-primary btn-sm', ' data-mfureq="1"') + '</div>') : '');
+  return (L.length ? cardFlush(t('طلبات الوزارة') + ' \u2014 ' + nm(L.length), table(['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', ''], L.map(function(x, i){
         return [N(i + 1), '<b>' + esc(x.t || '') + '</b>',
                 ed ? '<textarea data-mfurequ="' + esc(x.id) + '" rows="2" style="min-width:160px">' + esc(x.u || '') + '</textarea>' : esc(x.u || ''), esc(x.s || ''),
                 ed ? '<select data-mfureqst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(x.st || 'جديد'), x.st === 'منجز' ? 'ok' : 'wrn'),
                 ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="req|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
-      }))) : '<p class="hint">' + esc(t('لا طلباتٍ مسجّلةٌ بعد.')) + '</p>');
+      }))) : '<p class="hint">' + esc(t('لا طلباتٍ مسجّلةٌ بعد.')) + '</p>')
+    + (form ? '<details class="mfu-add"' + (L.length ? '' : ' open') + '><summary>\uFF0B ' + esc(t('طلبٌ جديد')) + '</summary>' + form + '</details>' : '');
 }
 function mfuDaily(){
   var R = diaryRows().slice(-30); if (!R.length) return '<p class="hint">' + esc(t('لا أعمالَ مسجّلةٌ بعد.')) + '</p>';
@@ -28197,6 +28206,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V20.3', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
+      'التحديات وطلبات الوزارة: القائمة تظهر أولًا في تبويبها، ونموذج الإضافة تحتها خلف زر «＋ تحدٍّ جديد» أو «＋ طلبٌ جديد» — وما تضيفه يظهر أعلى القائمة فورًا.' ] },
   { v:'V20.2', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
       'متابعة الوزارة: شريط «تصدير التحديث الأسبوعي» أعلى كل عنوان — Word وExcel وPDF بعناوين العرض التسعة وألوانه، يُبنى على جهازك لحظيًا بالأرقام الحالية.' ] },
   { v:'V20.1', d:'٢٦ سبتمبر ٢٠٢٦', notes:[
@@ -36243,12 +36254,12 @@ function clickA(e){
   if (e.target.closest('[data-mfucosall]')){ MFU_COS_ALL = !MFU_COS_ALL; render(1); return true; }
   if (e.target.closest('[data-mfuchal]')){
     var mt = pmoVal('mcT'); if (!mt){ toast(t('اكتب التحدي')); return true; }
-    if (mfuPut('chal', 'C' + Date.now().toString(36), { t:mt, m:pmoVal('mcM'), o:pmoVal('mcO'), r:pmoVal('mcR'), st:'مفتوح', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('تحدٍّ جديد — ' + mt.slice(0, 40), ''); toast(t('سُجّل التحدي')); render(1); }
+    if (mfuPut('chal', 'C' + Date.now().toString(36), { t:mt, m:pmoVal('mcM'), o:pmoVal('mcO'), r:pmoVal('mcR'), st:'مفتوح', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('تحدٍّ جديد — ' + mt.slice(0, 40), ''); toast(t('سُجّل التحدي — تجده أعلى القائمة')); render(1); }
     return true;
   }
   if (e.target.closest('[data-mfureq]')){
     var rt = pmoVal('mrT'); if (!rt){ toast(t('اكتب الطلب')); return true; }
-    if (mfuPut('req', 'Q' + Date.now().toString(36), { t:rt, u:pmoVal('mrU'), s:pmoVal('mrS'), st:'جديد', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('طلبُ الوزارة — ' + rt.slice(0, 40), ''); toast(t('سُجّل الطلب')); render(1); }
+    if (mfuPut('req', 'Q' + Date.now().toString(36), { t:rt, u:pmoVal('mrU'), s:pmoVal('mrS'), st:'جديد', at:Date.now(), by:STATE.meta.name || '' })){ logEvent('طلبُ الوزارة — ' + rt.slice(0, 40), ''); toast(t('سُجّل الطلب — تجده أعلى القائمة')); render(1); }
     return true;
   }
   if (e.target.closest('[data-mfudel]')){
