@@ -181,6 +181,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT && !process.env.SEED_DB){
         if (inNw) nw.push({ col, id:d.id, x }); else if (RX.test(blob)) rows.push({ col, id:d.id, x }); });
     }
     rows.unshift(...nw.sort((a, b) => a.id.localeCompare(b.id)));   /* النواريةُ أوّلًا — فلا يقطعها سقفُ التعليق */
+    globalThis.__NW = nw.map(r => r.id.replace(/^NSK-/, '') + (r.x.hidden ? '(مخفية)' : '') + ':' + String(r.x.name || '').replace(/^.*— /, '').slice(0, 14)).join(' · ');
     const recs = {}, inss = {};
     for (const r of rows){
       const rc = await fs.collection('recs').doc(r.id).get(); if (rc.exists) recs[r.id] = rc.data() || {};
@@ -327,4 +328,5 @@ if (trialsPatch){
   }
   console.log('✓ أُضيفت التجاربُ إلى settings/trials: ' + trialsAdded.length);
 }
+if (globalThis.__NW) console.log('\n── إطارُ النوارية (' + globalThis.__NW.split(' · ').length + '): ' + globalThis.__NW);
 process.exit(0);
