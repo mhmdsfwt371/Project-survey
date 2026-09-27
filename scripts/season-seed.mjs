@@ -56,13 +56,15 @@ const decPatch = {}, decApplied = [], decSkipped = [];
 /* (V19.1) والقرارُ قد يمسُّ سجلَّ الأنواع (types: تسمياتٌ) ويدمج نوعًا في نوع (merge):
    تُعاد نقاطُ النوع المدموج إلى الباقي في sites وnewsites، وتُعاد مفاتيحُ التركيبات
    المعلَنة، ويُكتَب للمدموج شاهدُ حذف — مرةً واحدةً كسائر القرار. */
-const decTypes = {}, decMerges = [], decDeclare = [], decRezone = [];
+const decTypes = {}, decMerges = [], decDeclare = [], decRezone = [], decSites = [];   /* decSites (V22.2) */
 for (const dcn of decisions){
-  if (!dcn || !dcn.id || (!dcn.set && !dcn.types && !dcn.merge)){ continue; }
+  if (!dcn || !dcn.id || (!dcn.set && !dcn.types && !dcn.merge && !dcn.sites)){ continue; }
   dcn.set = dcn.set || {};
   if (!done[dcn.id]){
     if (dcn.types && typeof dcn.types === 'object') for (const k of Object.keys(dcn.types)){ decTypes[k] = { ...(decTypes[k] || {}), ...dcn.types[k] }; decApplied.push(dcn.id + ': types.' + k + ' ← ' + JSON.stringify(dcn.types[k])); }
     if (Array.isArray(dcn.merge)) for (const m of dcn.merge){ if (m && m.from && m.to && m.from !== m.to){ decMerges.push(m); decApplied.push(dcn.id + ': دمجُ النوع «' + m.from + '» في «' + m.to + '»'); } }
+    /* (V22.2) تسميةُ نقاطٍ سحابيةٍ أو إخفاؤها بمعرّفها — والمزارُ أو المركَّبُ لا يُمَسّ (يُفحَص عند الكتابة) */
+    if (Array.isArray(dcn.sites)) dcn.sites.forEach(sx => { if (sx && sx.id && (sx.set || sx.hide)){ decSites.push(sx); decApplied.push(dcn.id + ': ' + sx.id + (sx.hide ? ' ← إخفاء' : ' ← ' + JSON.stringify(sx.set))); } });
     /* (V20.1) إعلانُ تركيباتٍ (مشعر|تسمية) ونقلُ نقاطٍ إلى مشعرٍ بمستطيلٍ جغرافيّ */
     if (Array.isArray(dcn.declare)) dcn.declare.forEach(k => { if (typeof k === 'string' && k.indexOf('|') > 0){ decDeclare.push(k); decApplied.push(dcn.id + ': إعلانُ «' + k + '»'); } });
     if (Array.isArray(dcn.rezone)) dcn.rezone.forEach(z => { if (z && z.to && Array.isArray(z.bbox) && z.bbox.length === 4){ decRezone.push(z); decApplied.push(dcn.id + ': نقاطُ المستطيل ' + z.bbox.join(',') + ' ← «' + z.to + '»'); } });
@@ -190,7 +192,7 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT && !process.env.SEED_DB){
     }
   } catch (e){ console.log('::warning title=جرد الكاميرات::' + String(e && e.message || e).slice(0, 200)); }
 }
-if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length && !decDeclare.length && !decRezone.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
+if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length && !decDeclare.length && !decRezone.length && !decSites.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
 if (Object.keys(patch).length){
   patch._by = 'season-seed'; patch._at = Date.now();
@@ -206,6 +208,23 @@ if (twinsWrites.length){
     await bt.commit();
   }
   console.log('✓ دُمج التوأم في sites: ' + twinsWrites.length);
+}
+if (decSites.length){
+  if (process.env.SEED_DB){ cur.__siteDecs = decSites; writeFileSync(process.env.SEED_DB, JSON.stringify(cur, null, 1)); console.log('✓ قراراتُ نقاط: ' + decSites.length); }
+  else {
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin'); const fs = admin.firestore();
+    let ok = 0; const skip = [];
+    for (const sx of decSites){
+      const [rc, ic] = await Promise.all([fs.collection('recs').doc(sx.id).get(), fs.collection('inss').doc(sx.id).get()]);
+      if (rc.exists || ic.exists){ skip.push(sx.id); continue; }   /* زِيرت أو رُكّبت — عملٌ فعليٌّ لا يُمَسّ */
+      const ns = await fs.collection('newsites').doc(sx.id).get();
+      const ref = fs.collection(ns.exists ? 'newsites' : 'sites').doc(sx.id);
+      await ref.set(Object.assign({}, sx.set || {}, sx.hide ? { hidden:true, hidBy:'season-seed', hidAt:Date.now() } : {}, { _by:'season-seed', _at:Date.now() }), { merge:true });
+      ok++;
+    }
+    console.log('✓ نقاطٌ سُمّيت أو أُخفيت: ' + ok + (skip.length ? ' · لم تُمَسّ لأنها زِيرت أو رُكّبت: ' + skip.join(' ') : ''));
+  }
 }
 /* ── إحصاءُ الأنواع (V19.2): كلُّ مفتاحٍ بتسميته وعددِ نقاطه — المفتاحُ الداخليُّ قد
    يختلف عن الاسم الظاهر، فيُقرأ هنا قبل أيِّ دمج ويُكتَب في تعليق السير ── */

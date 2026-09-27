@@ -92,7 +92,7 @@ check(officeEvery >= 300000 && officeEvery <= 3600000, `ومن يُنصِت يس
    كان يومُ الذروة «كلُّ شخصٍ عشرون مسحًا وثمانيةُ تركيبات» — أي ألفان وخمسمئةُ
    مسحٍ في يومٍ والنطاقُ كلُّه ١٧٨٧ نقطة. فصار: المسحُ كلُّه في يومٍ واحدٍ (أقصى ما
    يمكن)، والتركيبُ سُبعُ النطاق. */
-const SITES = 1787;
+const SITES = (() => { const h = readFileSync('index.html', 'utf8'); const j = h.indexOf('var SITES_RAW = '); const R = JSON.parse(h.slice(j + 16, h.indexOf('\n', j)).trim().replace(/;$/, '')); return R.g.length + R.p.length; })();   /* من السجلّ لا محفورًا (V22.2) */
 const peakDocs = SITES * docsPerSurvey + Math.ceil(SITES / 7) * docsPerInstall;
 const dayDocs = Math.min(workWrites, peakDocs);
 /* من يقرأ الوثيقةَ الواحدة: الإدارةُ كلُّها (مديرٌ وإدارةٌ عليا) + سلسلةُ من فوقها

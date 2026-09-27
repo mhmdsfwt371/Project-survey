@@ -29,10 +29,12 @@ const openSnap = (p, c) => { if (!p.ct) return p; const key = pbkdf2Sync(c, 'nus
   const d = createDecipheriv('aes-256-gcm', key, Buffer.from(p.iv, 'base64')); d.setAuthTag(buf.subarray(buf.length - 16));
   return JSON.parse(Buffer.concat([d.update(buf.subarray(0, buf.length - 16)), d.final()]).toString('utf8')); };
 const snap = openSnap(pub, code0);
+/* العددُ من السجلّ الثابت نفسِه — لا محفورًا (V22.2: أُضيفت كاميراتُ الجمرات) */
+const SITES_N = (() => { const h = readFileSync('index.html', 'utf8'); const j = h.indexOf('var SITES_RAW = '); const R = JSON.parse(h.slice(j + 16, h.indexOf('\n', j)).trim().replace(/;$/, '')); return R.g.length + R.p.length; })();
 
 console.log('\n══ ١ · اللقطةُ من دوالِّ التطبيق ══');
-T(snap.total === 1787 && snap.surveyed === 60 && snap.stuck === 1 && snap.installed === 0, 'الأرقامُ الكبرى كما تحسبها الشاشات: ' + snap.surveyed + '/' + snap.total + ' · متعذّر ' + snap.stuck);
-T(snap.zones['منى'] && snap.zones['منى'].sv === 60 && Object.values(snap.zones).reduce((a, z) => a + z.n, 0) === 1787, 'ومشاعرُها تُجمَع إلى الكلّ');
+T(snap.total === SITES_N && snap.surveyed === 60 && snap.stuck === 1 && snap.installed === 0, 'الأرقامُ الكبرى كما تحسبها الشاشات: ' + snap.surveyed + '/' + snap.total + ' · متعذّر ' + snap.stuck);
+T(snap.zones['منى'] && snap.zones['منى'].sv === 60 && Object.values(snap.zones).reduce((a, z) => a + z.n, 0) === SITES_N, 'ومشاعرُها تُجمَع إلى الكلّ');
 T(snap.zones['منى'].eta > now && snap.day.kinds.visit === 1 && snap.day.people === 2, 'والتوقّعُ ونبضُ اليوم فيها');
 T(snap.visited === 40 && snap.minwait === 20 && snap.challenges[0][0] === 'ارتفاع صعب الوصول' && snap.challenges[0][1] === 12, 'وما ينتظر قرارًا والتحدياتُ من دورة الحياة نفسِها');
 T(!JSON.stringify(snap).includes('NSK-') && !JSON.stringify(snap).includes('أحمد'), 'ولا معرِّفَ ولا اسمًا فيها — أرقامٌ فقط');
@@ -56,7 +58,7 @@ T(page.includes('--min-green') && page.includes('s.story'), 'والصفحةُ ا
 /* (V17.94) اللقطةُ المنشورةُ مشفَّرة: لا رقمَ صريحًا، وتُفَكُّ بالرمز وحدَه */
 {
   T(pub.enc === 'aes-256-gcm' && pub.ct && pub.iv && pub.gate && pub.total === undefined && pub.zones === undefined && !JSON.stringify(pub).includes('story'), 'اللقطةُ المنشورةُ مشفَّرة — لا رقمَ ولا جملةَ صريحةً فيها');
-  T(snap.total === 1787 && Array.isArray(snap.chain) && typeof snap.story === 'string', 'وتُفَكُّ بمفتاحٍ مشتقٍّ من رمز اليوم إلى الأرقام نفسِها');
+  T(snap.total === SITES_N && Array.isArray(snap.chain) && typeof snap.story === 'string', 'وتُفَكُّ بمفتاحٍ مشتقٍّ من رمز اليوم إلى الأرقام نفسِها');
   const buf = Buffer.from(pub.ct, 'base64');
   let wrong = false; try { openSnap(pub, 'WRONG1'); } catch { wrong = true; }
   T(wrong, 'ورمزٌ خاطئٌ لا يفتحها');

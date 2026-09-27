@@ -29,10 +29,10 @@ console.log('\n══ ١ · الوسمُ من نافذة النقطة ══');
 const x = w.STATE.sites.find(s => s.type === 'مخيم');
 w.goPage('map'); w.render(1); await wait(120); w.popOpenAt(x.id, null); await wait(150);
 const btn = d.querySelector('[data-pilot="' + x.id + '"]');
-T(!!btn && /وَسِمها تجريبيةً/.test(btn.textContent), 'المديرُ يرى زرَّ الوسم');
+T(!!btn && /اجعلها نقطةَ تجربة/.test(btn.textContent), 'المديرُ يرى «اجعلها نقطةَ تجربة»');
 btn.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
 T(x.pilot === true && wrote.some(r => r[0] === 'sites' && r[1] === x.id && r[2].pilot === true), 'والضغطُ يَسِم ويكتب تجاوزًا في وثيقة الموقع كغيره');
-T(/أزل الوسم/.test(d.querySelector('[data-pilot="' + x.id + '"]').textContent), 'ويصير الزرُّ إزالةً');
+T(/أعِدها عادية/.test(d.querySelector('[data-pilot="' + x.id + '"]').textContent), 'ويصير الزرُّ «نقطةُ تجربة — أعِدها عادية»');
 
 console.log('\n══ ٢ · البطاقةُ تحسب الزمنَ بين المراحل من الوثائق ══');
 const now = Date.now();
