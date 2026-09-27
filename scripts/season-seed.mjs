@@ -162,6 +162,34 @@ console.log('قراراتٌ تُطبَّق (' + decApplied.length + '):' + (decA
 if (decSkipped.length) console.log('قراراتٌ طُبِّقت من قبل (' + decSkipped.length + '):\n  ' + decSkipped.join('\n  '));
 /* القرارُ يغلب الملءَ: ما قرّره صاحبُ المشروع لا يُعيد الملءُ كتابتَه */
 for (const k of Object.keys(decPatch)) patch[k] = decPatch[k];
+/* ═══ جردُ كاميرات الوزارة والجمرات في السجلّ السحابي — قراءةٌ فقط (V22.2) ═══
+   قبل أيِّ مطابقةٍ مع تقرير الوزارة: ما في السحابة من نقاط الكاميرات وLPR والجمرات والنوارية،
+   ومن زِير منها — فلا تُمسّ نقطةٌ زِيرت. يُطبَع ولا يُكتَب شيء. */
+if (process.env.FIREBASE_SERVICE_ACCOUNT && !process.env.SEED_DB){
+  try {
+    const { createRequire } = await import('module');
+    const admin = createRequire(import.meta.url)('firebase-admin');
+    const fs = admin.firestore();
+    const RX = /كامير|LPR|PTZ|جمر|JAMARAT|نوار|NWAR|Track|ExitAir|EntryLand|ExitLand/i;
+    const rows = [];
+    for (const col of ['sites', 'newsites']){
+      const q = await fs.collection(col).get();
+      q.forEach(d => { const x = d.data() || {}; const blob = [x.type, x.name, x.zone, x.region, d.id].join(' '); if (RX.test(blob)) rows.push({ col, id:d.id, x }); });
+    }
+    const recs = {}, inss = {};
+    for (const r of rows){
+      const rc = await fs.collection('recs').doc(r.id).get(); if (rc.exists) recs[r.id] = rc.data() || {};
+      const ic = await fs.collection('inss').doc(r.id).get(); if (ic.exists) inss[r.id] = ic.data() || {};
+    }
+    console.log('\n── جردُ الكاميرات السحابية (قراءةٌ فقط): ' + rows.length + ' نقطة ──');
+    rows.sort((a, b) => String(a.x.zone || '').localeCompare(String(b.x.zone || '')) || String(a.x.type || '').localeCompare(String(b.x.type || '')) || a.id.localeCompare(b.id));
+    for (const r of rows){
+      const x = r.x, v = recs[r.id], i = inss[r.id];
+      const st = v ? ('زِيرت' + (v.review ? '/' + v.review : '')) : 'لم تُزر';
+      console.log([r.col === 'sites' ? 'S' : 'N', r.id, x.type || '', x.zone || '', String(x.name || '').slice(0, 38), (+x.lat || 0).toFixed(5) + ',' + (+x.lng || 0).toFixed(5), st, i ? ('ركّبت:' + (i.status || '')) : '', (x.hidden || x.gone || x.del) ? 'مخفية' : ''].join(' | '));
+    }
+  } catch (e){ console.log('::warning title=جرد الكاميرات::' + String(e && e.message || e).slice(0, 200)); }
+}
 if (!Object.keys(patch).length && !trialsPatch && !twinsWrites.length && !Object.keys(decTypes).length && !decMerges.length && !decDeclare.length && !decRezone.length){ console.log('لا شيءَ يُكتَب — كلُّ ما في الملف مضبوطٌ من قبل'); process.exit(0); }
 if (process.env.SEED_DRY === '1' || !write){ console.log('(تجربةٌ جافة — لم يُكتَب)'); process.exit(0); }
 if (Object.keys(patch).length){
