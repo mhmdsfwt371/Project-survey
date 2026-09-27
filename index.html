@@ -1086,7 +1086,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1145,7 +1145,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-dd2dabcf12.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-1640f857e3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4098,7 +4098,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
           + row('وجه العمل', esc(t(x.work)), 'work')
           + row('المنطقة', esc(x.region))
           + row('الدور', siteFloor(x) != null ? esc(t(floorName(siteFloor(x)))) : '')   /* (V22.2) */
-          + camInfoRows(x, function(k, v){ return row(k, v); })
+          + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); })
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(t(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout))), 'inout')
       /* بيانةُ الموسم الماضي في التفاصيل كما هي في النموذج: من فتح النقطةَ
@@ -14531,7 +14531,7 @@ function popHtml(){
     +   kv('وجه العمل', esc(t(s.work)))
     +   kv('المنطقة', esc(s.region))
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
-    +   camInfoRows(s, kv)
+    +   camInfoRows(s, kv) + camxRows(s, kv)
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
      تقول تمّت. صار النصُّ والدائرةُ من دورة الحياة واحدةً، ويُقال لونُها. */
@@ -16056,6 +16056,27 @@ function mapInit(){
 
 /* الرسم — نقاطٌ دائمًا، ومضلّعاتٌ عند التقريب وحده */
 var _mapT = 0;
+/* ═══ نقاطٌ على الإحداثية نفسِها تُرى كلُّها (V22.5) ═══
+   «النوارية ١٧ ومش شايف غير ١٦»: نقطتان على الإحداثية نفسِها حتى خمس خانات، فالعليا تغطّي
+   السفلى ولا تُلمَس. تُوزَّع النقاطُ المتطابقةُ على دائرةٍ صغيرةٍ حول موضعها بإزاحةٍ ثابتةٍ
+   بالبكسل (ثلاثة عشر) في كلِّ تقريب — تُرى وتُلمَس كلٌّ منها، والإحداثيةُ المحفوظةُ لا تتغيّر. */
+var MAP_DUP = { v:-1, n:0, k:{} };
+function mapDupIndex(){
+  var sv = (typeof STAT_VER !== 'undefined') ? STAT_VER : 0, n = (STATE.sites || []).length;
+  if (MAP_DUP.v === sv && MAP_DUP.n === n) return MAP_DUP.k;
+  var k = {};
+  (STATE.sites || []).forEach(function(x){ if (!(+x.lat) || !(+x.lng)) return; var key = (+x.lat).toFixed(5) + ',' + (+x.lng).toFixed(5); (k[key] = k[key] || []).push(x.id); });
+  MAP_DUP = { v:sv, n:n, k:k };
+  return k;
+}
+function mapPosOf(x){
+  var lat = +x.lat, lng = +x.lng, L0 = mapDupIndex()[lat.toFixed(5) + ',' + lng.toFixed(5)];
+  if (!L0 || L0.length < 2 || typeof MAP === 'undefined' || !MAP || !MAP.getZoom) return [lat, lng];
+  var i = L0.indexOf(x.id); if (i < 0) return [lat, lng];
+  var cs = Math.cos(lat * Math.PI / 180), mpp = 156543.03 * cs / Math.pow(2, MAP.getZoom());
+  var off = 13 * mpp, ang = 2 * Math.PI * i / L0.length;
+  return [lat + off * Math.sin(ang) / 111320, lng + off * Math.cos(ang) / (111320 * cs)];
+}
 function mapPaintDebounced(){
   clearTimeout(_mapT);
   _mapT = setTimeout(mapPaint, 120);
@@ -16098,7 +16119,7 @@ function mapPaint(){
       var ds = z >= 16 ? 22 : (z >= 14 ? 17 : 12);
       if (TOUCH) ds += 3;
       var hit = Math.max(ds + 20, 44);
-      mk = L.marker([x.lat, x.lng], { keyboard:false, icon:L.divIcon({
+      mk = L.marker(mapPosOf(x), { keyboard:false, icon:L.divIcon({
         className:'mkC', iconSize:[hit, hit], iconAnchor:[hit/2, hit/2], popupAnchor:[0, -ds/2],
         html:'<i style="width:' + ds + 'px;height:' + ds + 'px;background:' + col
              + (picked ? ';outline:2px solid #fff' : (ring ? ';outline:2px solid ' + ring : '')) + '"></i>'
@@ -16126,13 +16147,13 @@ function mapPaint(){
          ولا تجميعَ ولا إخفاءَ في أيِّ تقريب. */
       /* شكلُ النوع إن كان غيرَ الدائرة — بإزاحةٍ بالبكسل فيثبت حجمُه (V17.55) */
       var shp = (typeof typeShape === 'function') ? typeShape(x.type) : 'circle';
-      var poly = (shp !== 'circle') ? shapeRing(MAP, x.lat, x.lng, (picked ? r + 2.5 : r) * 1.15, shp) : null;
+      var poly = (shp !== 'circle') ? shapeRing(MAP, mapPosOf(x)[0], mapPosOf(x)[1], (picked ? r + 2.5 : r) * 1.15, shp) : null;
       mk = poly
         ? L.polygon(poly, { renderer:MAP_CV,
             color: picked ? '#fff' : (ring || '#0B1220'),
             weight: picked ? 2 : (ring ? 2 : 0.9),
             fillColor:col, fillOpacity: picked ? 1 : 0.95 })
-        : L.circleMarker([x.lat, x.lng], {
+        : L.circleMarker(mapPosOf(x), {
             renderer:MAP_CV,
             radius: picked ? r + 2.5 : r,
             color: picked ? '#fff' : (ring || '#0B1220'),
@@ -17657,6 +17678,73 @@ function impTemplate(kind){
 
 var IMP_PREVIEW = null;
 
+/* ═══ تقريرُ كاميرات الوزارة بعناوينه — من داخل التطبيق لا من الشيفرة (V22.5) ═══
+   «الكاميرات ٨٨ في الإكسل وفيهم بيانات الكاميرات والـIP — محتاجها كلها واضحة». الشيفرةُ منشورةٌ
+   للعموم فلا تحمل عنوانَ شبكة؛ فيُرفَع التقريرُ نفسُه (بصيغة الوزارة كما هو) من «الأدوات ← الاستيراد»:
+   يُقرأ على الجهاز، ويُطابَق عمودًا عمودًا بالنقاط (العمودُ والقطاعُ والموقع، وأدوارُ الجمرات)، ويُعرَض
+   قبل الحفظ ما طابق وما لم يطابق ولماذا — ثم يُكتَب في قاعدة البيانات المحمية (تجاوزُ النقطة camx)
+   فيقرؤه من دخل التطبيق وحده. وكلمةُ المرور لا تُقرأ ولا تُكتَب أبدًا. */
+function mohuDms(v){
+  var m = String(v || '').match(/(\d+)°(\d+)'([\d.]+)"?\s*([NS])[^\d]*(\d+)°(\d+)'([\d.]+)"?\s*([EW])/);
+  if (!m) return null;
+  var a = +m[1] + m[2] / 60 + m[3] / 3600, b = +m[5] + m[6] / 60 + m[7] / 3600;
+  return [m[4] === 'S' ? -a : a, m[8] === 'W' ? -b : b];
+}
+function mohuPole(p){ return String(p || '').toUpperCase().replace(/POLE/g, 'P').replace(/[^A-Z0-9]/g, ''); }
+function mohuSec(p){ return String(p || '').toUpperCase().replace(/\s+/g, ''); }
+function mohuSiteKey(x){
+  var m = /كاميرا وزارة\s+(.*?)\s*(\[\d+ cams\])?\s*(\(PTZ\))?\s*-\s*(.+)$/.exec(String(x.name || ''));
+  return m ? [mohuPole(m[1]), mohuSec(m[4])] : null;
+}
+function mohuParse(rows){
+  var clean = function(v){ var s0 = String(v == null ? '' : v).trim(); return /PASS/i.test(s0) ? '' : s0; };   /* كلمةُ المرور لا تمرّ */
+  var start = -1;
+  rows.forEach(function(r, i){ if ((r || []).some(function(c){ return /^\s*SECTOR\s*$/i.test(String(c)); })) start = i; });
+  var cur = { cpe:'', pole:'', ant:'', loc:'', status:'', sector:'', secAnt:'' }, cams = [];
+  for (var i = start + 1; i < rows.length; i++){
+    var r = (rows[i] || []).map(clean);
+    if (!r.some(function(c){ return c; })) continue;
+    if (/^SECTOR$/i.test(r[2])) continue;
+    if (r[2]){ var ln = r[2].split(/\n/); cur.sector = ln[0].replace(/\s*\(\d+\)\s*$/, '').trim(); cur.secAnt = ln.slice(1).join(' ').trim(); }
+    if (r[0] || r[3]){ cur.cpe = r[0]; cur.pole = r[3]; cur.ant = r[4]; cur.loc = r[11]; cur.status = r[12]; }
+    if (!r[1] && !r[6]) continue;
+    cams.push({ row:i + 1, n:r[1], vlan:r[5], ip:r[6], model:r[7], kind:/PTZ/i.test(r[8]) ? 'P' : (/LPR/i.test(r[8]) ? 'L' : 'F'),
+                sector:cur.sector, secAnt:cur.secAnt, cpe:cur.cpe, pole:cur.pole, ant:cur.ant, loc:r[11] || cur.loc, status:r[12] || cur.status });
+  }
+  var cand = (STATE.sites || []).filter(function(x){ return x.type === 'كاميرا'; });
+  var byId = {}, bad = [];
+  cams.forEach(function(c){
+    var id = '', L0 = String(c.loc).toUpperCase(), jam = /JAMARAT/.test(L0 + ' ' + c.sector.toUpperCase() + ' ' + c.pole.toUpperCase());
+    if (jam){
+      var pp = mohuPole(c.pole);
+      if (pp === 'F144') id = 'NSK-JMR-CAM-0006'; else if (pp === 'F143') id = 'NSK-JMR-CAM-0007'; else if (pp === 'F131') id = 'NSK-JMR-CAM-0008';
+      else if (/BACK/.test(L0)) id = 'NSK-JMR-CAM-0009';
+      else { var fm = /\b(G|1ST|2ND|3RD|4TH)\s*F/.exec(L0); if (fm) id = 'NSK-JMR-CAM-000' + ({ G:1, '1ST':2, '2ND':3, '3RD':4, '4TH':5 })[fm[1]]; }
+    } else {
+      var ll = mohuDms(c.loc), kp = mohuPole(c.pole), ks = mohuSec(c.sector), best = null, bd = 9e9;
+      cand.forEach(function(x){ var k = mohuSiteKey(x); if (!k || k[0] !== kp) return; var d = ll ? distKm({ lat:ll[0], lng:ll[1] }, x) * 1000 : (k[1] === ks ? 0 : 9e8); if (k[1] !== ks && d > 30) return; if (d < bd){ bd = d; best = x; } });
+      if (best) id = best.id;
+    }
+    if (!id || !siteFind(id)){ bad.push({ row:c.row, why:(!c.loc || (!jam && !mohuDms(c.loc))) ? 'بلا إحداثيات ولا نقطةٍ تطابقه' : 'لا نقطةَ تطابقه', data:[(c.pole || c.cpe || ('كاميرا ' + c.n)) + ' · ' + c.sector] }); return; }
+    var o = byId[id] = byId[id] || { id:id, camx:{ src:'MOHU 2026', at:Date.now(), by:STATE.meta.name || '', sector:c.sector, secAnt:c.secAnt, cpe:c.cpe, pole:c.pole, ant:c.ant, status:c.status, cams:[] } };
+    o.camx.cams.push({ n:c.n, kind:c.kind, model:c.model, ip:c.ip, vlan:c.vlan });
+  });
+  var ok = Object.keys(byId).map(function(k){ return byId[k]; });
+  IMP_PREVIEW = { kind:'mohu', ok:ok, bad:bad, head:['CPE','CAM','SECTOR','POLE','IP'], missing:start < 0 ? ['SECTOR'] : [], cams:cams.length };
+  return IMP_PREVIEW;
+}
+/* صفوفُ النافذة من تقرير الوزارة المرفوع — لمن دخل التطبيق */
+function camxRows(x, kvf){
+  var c = x && x.camx; if (!c || !Array.isArray(c.cams) || !c.cams.length) return '';
+  var ltr = function(v){ return '<span dir="ltr" class="num">' + esc(v) + '</span>'; };
+  var list = c.cams.map(function(k){
+    return '<div style="padding:3px 0;border-top:1px dashed var(--line)">' + esc(t('كاميرا')) + ' ' + ltr(k.n || '\u2014') + ' \u00b7 ' + esc(t(k.kind === 'P' ? 'متحرّكة (PTZ)' : k.kind === 'L' ? 'قارئة لوحات (LPR)' : 'ثابتة (Bullet)'))
+      + (k.ip ? ' \u00b7 ' + ltr(k.ip) : '') + (k.vlan ? ' \u00b7 VLAN ' + ltr(k.vlan) : '') + (k.model ? '<div class="hint" style="margin:0" dir="ltr">' + esc(k.model) + '</div>' : '') + '</div>';
+  }).join('');
+  return (c.cpe || c.ant ? kvf('المستقبِل على العمود', ltr([c.cpe, c.ant].filter(Boolean).join(' \u00b7 '))) : '')
+    + (c.secAnt ? kvf('هوائي القطاع', ltr(c.secAnt)) : '')
+    + kvf('عناوين الكاميرات', list);
+}
 function impRead(kind, file){
   return xlsxLoad().then(function(ok){
     if (!ok) return null;
@@ -17667,7 +17755,7 @@ function impRead(kind, file){
           var wb = XLSX.read(new Uint8Array(fr.result), { type:'array' });
           var ws = wb.Sheets[wb.SheetNames[0]];
           var rows = XLSX.utils.sheet_to_json(ws, { header:1, defval:'' });
-          res(impValidate(kind, rows));
+          res(kind === 'mohu' ? mohuParse(rows) : impValidate(kind, rows));   /* تقريرُ الوزارة بصيغته (V22.5) */
         }catch(e){ res(null); }
       };
       fr.onerror = function(){ res(null); };
@@ -17707,6 +17795,7 @@ function impApply(){
   if (!p || !p.ok.length) return 0;
   var n = 0;
   p.ok.forEach(function(r){
+    if (p.kind === 'mohu'){ siteOvSet(r.id, { camx:r.camx }); var sx = siteFind(r.id); if (sx) sx.camx = r.camx; n++; return; }   /* (V22.5) */
     if (p.kind === 'items'){
       var id = 'imp_' + (++n);
       cfgSet('itPts', id, r[2]); cfgSet('itPrep', id, r[3]);
@@ -21911,6 +22000,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.5', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'عناوين كاميرات الوزارة: من «الأدوات ← الاستيراد» ارفع ملف الوزارة كما هو؛ يُطابَق بالنقاط عمودًا عمودًا (وأدوار الجمرات)، ويُعرَض قبل الحفظ ما طابق وما لم يطابق ولماذا، ثم تظهر في نافذة كل نقطة عناوين كاميراتها والمستقبِل وهوائي القطاع — لمن دخل التطبيق فقط. كلمة المرور لا تُحفَظ.',
+      'النقاط التي على الإحداثية نفسها صارت تُرى وتُلمَس كلها (كانت العليا تغطّي السفلى — ١٦ من ١٧ في النوارية).' ] },
   { v:'V22.4', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'عربية أوضح في سبع عبارات أخرى بمعناها في مكانها: «تجميع الصفوف» بدل «الطيّ»، و«تبويب التجارب» بدل «شريحة التجارب»، و«الأزرار فوق» بدل «الشرائح فوق»، و«مسجَّل باسم من كتبه» بدل «مختومٌ بكاتبه» — وغيرها.' ] },
   { v:'V22.3', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
@@ -26576,6 +26668,11 @@ function importCard(){
           + '<div class="hint" style="margin:5px 0 0;font-size:11.5px">'+esc(t(im[3]))+'</div>'
           + '</div>';
       }).join('')
+    + '<div style="padding:10px 0;border-top:1px solid var(--line)">'
+    + '<b>' + esc(t('تقرير كاميرات الوزارة')) + '</b>'
+    + '<div class="hint" style="margin:4px 0 8px;font-size:12px">' + esc(t('ارفع ملفَّ الوزارة كما هو (MOHU CPE AND CAMERA REPORT) — يُطابَق بالنقاط عمودًا عمودًا، وتظهر العناوينُ في نافذة كلِّ كاميرا لمن دخل التطبيق فقط. كلمةُ المرور لا تُحفَظ.')) + '</div>'
+    + '<input type="file" accept=".xlsx,.xls" data-imp="mohu">'
+    + '</div>'
     + (IMP_PREVIEW ? impPreviewCard() : '')
     + '<div class="alert info" style="margin:14px 0 0"><span>'
     + esc(t('الرفع يعرض معاينةً قبل الحفظ: كم صفًّا سيُقبل وكم سيُرفض ولماذا — ولا يُكتب شيء قبل موافقتك.'))
@@ -26584,7 +26681,7 @@ function importCard(){
 
 function impPreviewCard(){
   var p = IMP_PREVIEW;
-  var nm2 = (IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
+  var nm2 = p.kind === 'mohu' ? 'تقرير كاميرات الوزارة' : (IMPORTS.filter(function(i){ return i[0] === p.kind; })[0] || ['',''])[1];
   return card(t('معاينة ما رُفع') + ' — ' + t(nm2),
       (p.missing.length
         ? alertBox('error','أعمدةٌ ناقصةٌ في الملف: ' + p.missing.join(' · ') + ' — نزّل القالب واملأه.')
