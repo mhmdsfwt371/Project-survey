@@ -173,11 +173,14 @@ if (process.env.FIREBASE_SERVICE_ACCOUNT && !process.env.SEED_DB){
     const admin = createRequire(import.meta.url)('firebase-admin');
     const fs = admin.firestore();
     const RX = /كامير|LPR|PTZ|جمر|JAMARAT|نوار|NWAR|Track|ExitAir|EntryLand|ExitLand/i;
-    const rows = [];
+    const rows = [], nw = [];
     for (const col of ['sites', 'newsites']){
       const q = await fs.collection(col).get();
-      q.forEach(d => { const x = d.data() || {}; const blob = [x.type, x.name, x.zone, x.region, d.id].join(' '); if (RX.test(blob)) rows.push({ col, id:d.id, x }); });
+      q.forEach(d => { const x = d.data() || {}; const blob = [x.type, x.name, x.zone, x.region, d.id].join(' ');
+        const inNw = +x.lat > 21.565 && +x.lat < 21.590 && +x.lng > 39.745 && +x.lng < 39.770;   /* إطارُ النوارية (V23.0) */
+        if (inNw) nw.push({ col, id:d.id, x }); else if (RX.test(blob)) rows.push({ col, id:d.id, x }); });
     }
+    rows.unshift(...nw.sort((a, b) => a.id.localeCompare(b.id)));   /* النواريةُ أوّلًا — فلا يقطعها سقفُ التعليق */
     const recs = {}, inss = {};
     for (const r of rows){
       const rc = await fs.collection('recs').doc(r.id).get(); if (rc.exists) recs[r.id] = rc.data() || {};
