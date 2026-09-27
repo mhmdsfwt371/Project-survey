@@ -487,8 +487,8 @@ if (typeof w.siteStats === 'function'){
   const raw8 = readFileSync('index.html', 'utf8');
   check(/Object\.keys\(STATE\.newsites\)\.forEach\(function\(k\)\{[\s\S]{0,260}STATE\.sites\.push\(v\)/.test(raw8),
     'المواقعُ الجديدةُ تُدمَج في السجل عند الإقلاع');
-  check(/if \(!v \|\| !v\.id \|\| have\[v\.id\] \|\| !\(\+v\.lat\) \|\| !\(\+v\.lng\)\) return;/.test(raw8),
-    'ولا تُكرَّر ولا تُدمَج بلا إحداثيات');
+  check(/if \(!v \|\| !v\.id \|\| v\.hidden \|\| have\[v\.id\] \|\| !\(\+v\.lat\) \|\| !\(\+v\.lng\)\) return;/.test(raw8),
+    'ولا تُكرَّر ولا تُدمَج بلا إحداثيات — ولا المخفيُّ منها (V22.2)');
   check(/if \(z === 'مكة' \|\| z === 'مكة المكرمة'\) return 'مكة';/.test(raw8)
     && /if \(z === 'المدينة' \|\| z === 'المدينة المنورة'\) return 'المدينة';/.test(raw8),
     'وzoneOf يعرف مكةَ والمدينة — فلا تُحسَبان في منى');
