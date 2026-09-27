@@ -76,6 +76,34 @@ console.log('\n══ ٣ · من لا يعدّل ══');
   T(!d.querySelector('#pkPop [data-svq]') && !w.svqMay(x.id), 'الوزارةُ لا ترى «تعديل المسح»');
   dom.window.close(); }
 
+console.log('\n══ ٤ · لا حبسَ في اللوح، والصورُ تُعدَّل (V22.7) ══');
+{ const { w, d, dom } = await boot('supervisor');
+  const css = d.documentElement.innerHTML;
+  const zv = n => +((css.match(new RegExp(n + '\\s*:\\s*(\\d+)')) || [])[1] || 0);
+  T(/\.svq-back\{[^}]*z-index:calc\(var\(--z-pop\) \+ 10\)/.test(css) && zv('--z-pop') > zv('--z-topbar') && zv('--z-pop') > zv('--z-side'), 'اللوحُ فوق الرأس والقائمة الجانبية — كان الرأسُ يغطّي ✕ فيُحبَس المستخدم');
+  const x = w.STATE.sites.find(s => s.type === 'مخيم'); const r0 = base(x.id); r0.review = 'approved'; w.STATE.recs[x.id] = r0; w.statBump();
+  w.SVQ = { id:x.id, key:'', tmp:null }; w.render(1); await wait(40);
+  const sh = d.getElementById('svqSheet');
+  T(sh.querySelectorAll('[data-svqx]').length >= 2 && sh.querySelectorAll('[data-svqph]').length === w.SV_PHOTOS.length, 'إغلاقٌ في أعلاه وأسفله، وخانةٌ لكلِّ صورة');
+  sh.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
+  T(!d.getElementById('svqSheet'), 'ولمسُ الخلفية يغلقه');
+  w.SVQ = { id:x.id, key:'', tmp:null }; w.render(1); await wait(30); w.goPage('mywork'); w.render(1); await wait(30);
+  T(!d.getElementById('svqSheet'), 'والتنقّلُ إلى صفحةٍ أخرى يغلقه');
+  w.SVQ = { id:x.id, key:'', tmp:null }; w.render(1); await wait(30); w.dispatchEvent(new w.PopStateEvent('popstate', { state:null })); await wait(30);
+  T(!d.getElementById('svqSheet'), 'وزرُّ الرجوع في الجهاز يغلقه لا التطبيق');
+  const q = []; w.photoQueue = (id, k, data) => q.push([id, k, data.length]);
+  w.shrink = () => Promise.resolve({ data:'data:image/jpeg;base64,AAAA', size:2048 });
+  w.SVQ = { id:x.id, key:'', tmp:null }; w.render(1); await wait(30);
+  const inp = d.querySelector('#svqSheet [data-svqph="mount"]');
+  Object.defineProperty(inp, 'files', { value:[{ name:'m.jpg' }] }); inp.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(60);
+  const r = w.STATE.recs[x.id];
+  T(q.length === 1 && q[0][0] === x.id && q[0][1] === 'mount' && r.photos.filter(k => k === 'mount').length === 1 && r.wid_m === 3, 'استبدالُ صورة «نقطة التركيب» يُرفَع وحدَه — والحقولُ كما هي');
+  T(r.edits.slice(-1)[0].k === 'ph:mount' && r.review === 'pending', 'ويُسجَّل تعديلًا، والمعتمَدُ يعود لانتظار الاعتماد');
+  const inp2 = d.querySelector('#svqSheet [data-svqph="power"]');
+  Object.defineProperty(inp2, 'files', { value:[{ name:'p.jpg' }] }); inp2.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(60);
+  T(w.STATE.recs[x.id].photos.includes('power') && w.STATE.recs[x.id].phN === 3, 'وإضافةُ صورةٍ لم تكن تُضاف إلى صور الزيارة');
+  dom.window.close(); }
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ تعديل المسح نظيف \u2705'); process.exit(0);

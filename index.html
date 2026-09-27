@@ -751,9 +751,9 @@ body.kiosk .kk-story{font-size:21px}
 .wp-act{background:var(--surface-2);border-radius:10px;padding:8px 10px;margin:8px 0}
 .wp-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.wp-sec{font-size:12.5px;font-weight:700;color:#C8943E;margin:8px 0 2px}
 .wp-steps{margin:0;padding-inline-start:4px;list-style:none}.wp-steps li{margin:3px 0}.wp-steps label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
-.svq-back{position:fixed;inset:0;z-index:calc(var(--z-map-ui) + 60);background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
-.svq-box{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35)}
-.svq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative}
+.svq-back{position:fixed;inset:0;z-index:calc(var(--z-pop) + 10);background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.svq-box{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:calc(100vh - env(safe-area-inset-top,0px) - 16px);overflow:auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+.svq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:-14px;background:var(--surface);z-index:2;padding:4px 0 8px;margin-top:-4px}
 .svq-h .npop-x{position:static}
 .svq-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .svq-row .svq-k{flex:1 1 40%;color:var(--ink-mute);font-size:13px}.svq-row .svq-v{flex:1 1 40%;font-weight:600}
@@ -1086,7 +1086,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1133,6 +1133,7 @@ var BOOT_GUARD = (function(){
 function bootStage(st){ var p = null; try { p = JSON.parse(lsGet('nsk14.boot') || '{}'); } catch (e){ LS_ERR = e; return; } if (!p || p.ok) return; p.stage = st; p.page = (typeof CUR === 'string') ? CUR : ''; lsSet('nsk14.boot', JSON.stringify(p)); }
 function bootOk(why){ lsSet('nsk14.boot', JSON.stringify({ at:Date.now(), ok:true, n:0, stage:why || 'ok' })); }
 setTimeout(function(){ bootOk('alive'); }, 20000);
+if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('popstate', function(){ if (typeof SVQ !== 'undefined' && SVQ.id){ SVQ = { id:'', key:'', tmp:null }; try { render(1); } catch (e){ LS_ERR = e; } } });   /* (V22.7) */
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', function(){ bootOk('closed'); });
 
 /* ═══ محرك اللغات — عربي · إنجليزي · أردو ═══
@@ -1145,7 +1146,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a3a468d7e8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-870a65bd38.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6153,7 +6154,7 @@ function svqKeys(rec){
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
   return ks;
 }
-function svqLabel(k){ return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
+function svqLabel(k){ if (String(k).indexOf('ph:') === 0){ var q = SV_PHOTOS.filter(function(p){ return p[0] === k.slice(3); })[0]; return 'صورة: ' + (q ? q[1] : k.slice(3)); } return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
 function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
@@ -6188,8 +6189,42 @@ function svqSheet(){
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
+    + svqPhotos(rec)
     + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
+    + '<div class="actions" style="margin:14px 0 0">' + btn('\u2715 ' + t('إغلاق'), 'btn-secondary', ' data-svqx="1" style="width:100%"') + '</div>'
     + '</div></div>';
+}
+/* (V22.3→V22.7) «لا يسمح لي بتعديل الصور»: صارت الصورُ في اللوح نفسِه — كلُّ خانةٍ تُستبدَل صورتُها
+   أو تُضاف وحدَها، وتُضغَط على الجهاز وتُرفَع كصور النموذج، ويُسجَّل التعديلُ كغيره */
+function svqPhotos(rec){
+  var have = Array.isArray(rec.photos) ? rec.photos : [];
+  return '<div class="wp-sec" style="margin-top:12px">' + esc(t('الصور')) + '</div>'
+    + SV_PHOTOS.map(function(p){
+        var has = have.indexOf(p[0]) > -1;
+        return '<div class="svq-row"><div class="svq-k">' + esc(t(p[1])) + '</div><div class="svq-v">' + (has ? '\u2713 ' + esc(t('موجودة')) : '\u2014') + '</div>'
+          + '<label class="btn btn-quiet btn-sm" style="cursor:pointer">' + (has ? '\u{1F4F7} ' + esc(t('استبدل')) : '\u{1F4F7} ' + esc(t('أضف')))
+          + '<input type="file" accept="image/*" capture="environment" data-svqph="' + esc(p[0]) + '" style="display:none" aria-label="' + esc(t(p[1])) + '"></label></div>';
+      }).join('');
+}
+function svqPhoto(id, key, p){
+  var rec = STATE.recs[id]; if (!rec || !svqMay(id) || !p || !p.data) return false;
+  var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
+  var had = Array.isArray(rec.photos) && rec.photos.indexOf(key) > -1;
+  if (typeof photoQueue === 'function') photoQueue(id, key, p.data);
+  var n = Object.assign({}, rec);
+  n.photos = (Array.isArray(rec.photos) ? rec.photos.slice() : []).filter(function(k){ return k !== key; }).concat([key]);
+  n.phN = n.photos.length;
+  n.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ k:'ph:' + key, o:had ? 'صورة سابقة' : '', v:'صورة جديدة', by:who, at:now }]).slice(-30);
+  n.eAt = now; n.eBy = who;
+  var back = rec.review === 'approved' && !boss;
+  if (back){ n.review = 'pending'; n.minReview = ''; }
+  CORE.set('recs', id, n);
+  var lb = (SV_PHOTOS.filter(function(q){ return q[0] === key; })[0] || [key, key])[1];
+  logEvent('تعديلُ صورة — ' + id + ' \u00b7 ' + lb + (had ? ' (استبدال)' : ' (إضافة)'), id);
+  if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', t('صورة') + ': ' + t(lb) + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
+  statBump();
+  toast(t(back ? 'حُفظت الصورة — وعاد المسحُ لانتظار الاعتماد' : 'حُفظت الصورة — وتُرفَع مع المزامنة'));
+  return true;
 }
 function svqSave(id, key, val){
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
@@ -22000,6 +22035,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.7', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'تعديل المسح: الصور صارت تُعدَّل من اللوح نفسه — كل صورة تُستبدَل أو تُضاف وحدها (📷)، وتُرفَع مع المزامنة، والباقي كما هو.',
+      'لوح التعديل لم يعد يحبسك: كان شريط التطبيق العلوي يغطي زر الإغلاق على الهاتف. صار اللوح فوق كل شيء، وفيه «إغلاق» أعلاه وأسفله، ويُغلَق بلمس الخلفية وبزر الرجوع في الجهاز وبالانتقال لأي صفحة.' ] },
   { v:'V22.6', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'عربية أوضح في شاشات الفني (نموذج المسح ومهامي): «البيانات المسجّلة تُراجَع فقط — اكتب ما لا نعرفه عن الموقع» بدل «المعلوم يُراجَع…»، و«نقاطك لا تُحسب إلا بعد اعتماد المهندس… ومعها سبب الإعادة» — وسبع غيرها.' ] },
   { v:'V22.5', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
@@ -27522,6 +27560,7 @@ function pageIds(){
 /* الانتقالُ الصريحُ إلى صفحة: الأمُّ التي هي شريحتُها الأولى تُفتَح عليها —
    فمن نقر «المستخدمين والأدوار» في القائمة يجد الحساباتِ لا آخرَ شريحةٍ فُتحت */
 function goPage(id){
+  if (typeof SVQ !== 'undefined' && SVQ.id) SVQ = { id:'', key:'', tmp:null };   /* التنقّلُ يغلق لوحَ تعديل المسح (V22.7) */
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
@@ -30242,7 +30281,10 @@ function clickA(e){
     }
     return true;
   }
-  if (e.target.closest('[data-svq]')){ SVQ = { id:e.target.closest('[data-svq]').getAttribute('data-svq'), key:'', tmp:null }; POP_OPEN = false; render(1); return true; }   /* (V22.3) */
+  if (e.target && e.target.id === 'svqSheet'){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }   /* لمسُ الخلفية يغلق (V22.7) */
+  if (e.target.closest('[data-svq]')){ SVQ = { id:e.target.closest('[data-svq]').getAttribute('data-svq'), key:'', tmp:null }; POP_OPEN = false;
+    try { if (window.history && history.pushState) history.pushState({ svq:1 }, ''); } catch (e3){ LS_ERR = e3; }   /* زرُّ الرجوع في الجهاز يغلق اللوح لا التطبيق */
+    render(1); return true; }   /* (V22.3) */
   if (e.target.closest('[data-svqx]')){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }
   if (e.target.closest('[data-svqk]')){ SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
   if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; render(1); return true; }
@@ -31700,6 +31742,16 @@ document.addEventListener('change', function(e){
         if (!p2){ toast(t('تعذّرت قراءة الصورة')); return; }
         (isD ? DISF : MNTF).photos[kk] = p2;
         render(1);
+      });
+      return;
+    }
+    if (el.hasAttribute('data-svqph')){   /* (V22.7) صورةٌ من لوح تعديل المسح */
+      var qf = el.files && el.files[0], qk = el.getAttribute('data-svqph'), qid = SVQ.id;
+      if (!qf || !qid) return;
+      toast(t('تُضغط الصورة…'));
+      shrink(qf, 1280, 0.72).then(function(p){
+        if (!p){ toast(t('تعذّرت قراءة الصورة')); return; }
+        if (svqPhoto(qid, qk, p)) render(1);
       });
       return;
     }
