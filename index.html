@@ -26671,7 +26671,7 @@ function importCard(){
     + '<div style="padding:10px 0;border-top:1px solid var(--line)">'
     + '<b>' + esc(t('تقرير كاميرات الوزارة')) + '</b>'
     + '<div class="hint" style="margin:4px 0 8px;font-size:12px">' + esc(t('ارفع ملفَّ الوزارة كما هو (MOHU CPE AND CAMERA REPORT) — يُطابَق بالنقاط عمودًا عمودًا، وتظهر العناوينُ في نافذة كلِّ كاميرا لمن دخل التطبيق فقط. كلمةُ المرور لا تُحفَظ.')) + '</div>'
-    + '<input type="file" accept=".xlsx,.xls" data-imp="mohu">'
+    + '<input type="file" accept=".xlsx,.xls" data-imp="mohu" aria-label="' + esc(t('تقرير كاميرات الوزارة')) + '">'
     + '</div>'
     + (IMP_PREVIEW ? impPreviewCard() : '')
     + '<div class="alert info" style="margin:14px 0 0"><span>'
