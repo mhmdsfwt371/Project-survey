@@ -1089,7 +1089,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -2946,6 +2946,15 @@ var FB = {
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
+          if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
+            var ex = siteFind(v.id);
+            if (ex){
+              if (v.hidden){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }
+              if (+v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
+              if (v.name && ex.name !== v.name){ ex.name = v.name; add++; }
+            }
+            return;
+          }
           if (!v || !v.id || v.hidden || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ لا يُدمَج (V22.2) */
           STATE.sites.push(v); have[v.id] = 1; add++;
         });
@@ -22088,6 +22097,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.9', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'كاميرات النوارية في أماكنها كما في مخطط الوزارة: كاميرا الدخول الرئيسي، وكاميرا الخروج الرئيسي، وتسع كاميرات على مداخل المسارات (مسار ١–٩) تقابلها ست على مخارجها (خروج ١–٦). المواقع تقريبية بمقياس المخطط وتُضبط بـ«تحريك» في أول زيارة.',
+      'تعديلات موقع النقطة واسمها وإخفاؤها من المكتب تصل إلى الأجهزة التي حمّلت النقطة من قبل (كانت تبقى حيث كانت).' ] },
   { v:'V22.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'صور الزيارة من لوح «تعديل المسح»: تظهر بمصغّراتها، وكل صورة تُحذف بزر 🗑 وتأكيد (المهندس أي صورة، ورافعها صورته ما لم تُعتمد الزيارة)، وتُضاف صورة أو أكثر دفعة واحدة باختيار نوعها أو «صورة إضافية». ولاستبدال صورة: احذف القديمة وأضف الجديدة.',
       'ما لم يُرفع بعد من صور جهازك يظهر «في الطابور» ويمكن إلغاؤه قبل الرفع.' ] },
