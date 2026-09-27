@@ -751,6 +751,14 @@ body.kiosk .kk-story{font-size:21px}
 .wp-act{background:var(--surface-2);border-radius:10px;padding:8px 10px;margin:8px 0}
 .wp-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.wp-sec{font-size:12.5px;font-weight:700;color:#C8943E;margin:8px 0 2px}
 .wp-steps{margin:0;padding-inline-start:4px;list-style:none}.wp-steps li{margin:3px 0}.wp-steps label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.svq-back{position:fixed;inset:0;z-index:calc(var(--z-map-ui) + 60);background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.svq-box{background:var(--surface);color:var(--text);width:min(640px,100%);max-height:88vh;overflow:auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+.svq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:relative}
+.svq-h .npop-x{position:static}
+.svq-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.svq-row .svq-k{flex:1 1 40%;color:var(--muted);font-size:13px}.svq-row .svq-v{flex:1 1 40%;font-weight:600}
+.svq-row.on{display:block}.svq-row.on .svq-k{margin:0 0 6px;color:var(--text);font-weight:700}
+.svq-row.on input,.svq-row.on select,.svq-row.on textarea{width:100%}
 .mfu-add{margin:12px 0 0}
 .mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
 .mfu-add > summary::-webkit-details-marker{display:none}
@@ -1078,7 +1086,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1137,7 +1145,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-80b57a2834.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-f1e56bc85d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6128,6 +6136,84 @@ function maintDone(id){ return maintList(id).length > 0; }
 function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 
 /* ═══ التفاصيلُ المختصرة: حالةٌ وسطرٌ على وثيقة الزيارة ═══ */
+/* ═══ تعديلُ المسح بلا إعادته (V22.3) ═══
+   «لو بعدّل عرضَ البوابة أقدر أعدّلها دون تعديل كامل المسح والصور — أضغط الشاخص وأختار
+   تعديلَ المسح وأحطّ اللي بعدّله ويتعدّل على طول». من نافذة النقطة المزارة: قائمةٌ بحقول
+   الزيارة المكتوبة، وكلُّ حقلٍ يُعدَّل وحدَه ويُحفَظ فورًا — الصورُ وبقيةُ الحقول وصاحبُ الزيارة
+   وتاريخُها كما هي. ويُسجَّل التعديلُ في الزيارة نفسِها (من، ومتى، ومن أيِّ قيمةٍ إلى أيّ) وفي
+   سجلّ الأحداث. والمسحُ المعتمدُ إذا عدّله غيرُ المهندس عاد لانتظار الاعتماد — القاعدةُ لا تسمح
+   لغيره بالكتابة على المعتمد، والتغييرُ على المعتمد يراه صاحبُ الاعتماد؛ ويُنبَّه المهندسُ في الحالين. */
+var SVQ = { id:'', key:'', tmp:null };
+var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
+var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };
+var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
+function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
+function svqKeys(rec){
+  var ks = SV_ORDER.filter(function(k){ return k !== 'access' && rec[k] !== undefined && rec[k] !== null && rec[k] !== ''; });
+  if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
+  return ks;
+}
+function svqLabel(k){ return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
+function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
+function svqEditor(k, rec, s){
+  var v = rec[k];
+  if (k === 'chals'){
+    var sel = SVQ.tmp || (rec.chals || []).slice();
+    return '<div class="chips" style="margin:4px 0 0">' + chalsOf(s).map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>';
+  }
+  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
+  if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
+  if (SVQ_NUM[k]) return '<input id="svqIn" type="number" step="0.1" min="0" inputmode="decimal" value="' + esc(v) + '">';
+  if (SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';
+  return '<input id="svqIn" dir="auto" value="' + esc(v) + '">';
+}
+function svqSheet(){
+  if (!SVQ.id) return '';
+  var rec = STATE.recs[SVQ.id], s = siteFind(SVQ.id);
+  if (!rec || !s || !svqMay(SVQ.id)){ SVQ.id = ''; return ''; }
+  var boss = rankOf(ROLE) >= rankOf('engineer'), appr = rec.review === 'approved';
+  var rows = svqKeys(rec).map(function(k){
+    if (SVQ.key === k){
+      return '<div class="svq-row on"><div class="svq-k">' + esc(t(svqLabel(k))) + '</div>' + svqEditor(k, rec, s)
+        + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ هذا الحقل'), 'btn-primary btn-sm', ' data-svqsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqcancel="1"') + '</div></div>';
+    }
+    return '<div class="svq-row"><div class="svq-k">' + esc(t(svqLabel(k))) + '</div><div class="svq-v">' + esc(svqFmt(rec[k])) + '</div>'
+      + btn('\u270E', 'btn-quiet btn-sm', ' data-svqk="' + esc(k) + '" aria-label="' + esc(t('عدّل')) + ' ' + esc(t(svqLabel(k))) + '"') + '</div>';
+  }).join('');
+  var hist = (Array.isArray(rec.edits) ? rec.edits : []).slice(-5).reverse().map(function(e){
+    return '<li><span class="hint" style="margin:0">' + esc(fmtDT(e.at)) + ' \u00b7 ' + esc(dispName(e.by)) + '</span> — ' + esc(t(svqLabel(e.k))) + ': ' + esc(svqFmt(e.o)) + ' \u2190 ' + esc(svqFmt(e.v)) + '</li>';
+  }).join('');
+  return '<div class="svq-back" id="svqSheet" role="dialog" aria-modal="true"><div class="svq-box">'
+    + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(s.id) + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
+    + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
+    + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
+    + (hist ? '<div class="wp-sec" style="margin-top:10px">' + esc(t('آخر التعديلات')) + '</div><ul class="wp-steps">' + hist + '</ul>' : '')
+    + '</div></div>';
+}
+function svqSave(id, key, val){
+  var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
+  var old = key === 'chals' ? (rec.chals || []).slice() : rec[key];
+  if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
+  else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
+  else val = String(val == null ? '' : val).trim();
+  if (JSON.stringify(old) === JSON.stringify(val)){ toast(t('لم يتغيّر شيء')); return false; }
+  var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
+  var n = Object.assign({}, rec);
+  n[key] = val;
+  n.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ k:key, o:old, v:val, by:who, at:now }]).slice(-30);
+  n.eAt = now; n.eBy = who;
+  var back = rec.review === 'approved' && !boss;
+  if (back){ n.review = 'pending'; n.minReview = ''; }
+  CORE.set('recs', id, n);
+  var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
+  logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
+  if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
+  SVQ.key = ''; SVQ.tmp = null;
+  statBump();
+  toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));
+  return true;
+}
 var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];
 /* ═══ ما سجّله الميدانُ يُقرأ بالعين المجرّدة (V16.89) ═══
    الوزارةُ تقيّم النقطةَ من بطاقتها: لا تفتح نموذجَ المسح ولا تملك زرَّه.
@@ -14503,7 +14589,8 @@ function popHtml(){
               ? (((typeof minOk === 'function' && minOk(s.id)) && (STATE.inss[s.id] || {}).solution && (STATE.inss[s.id] || {}).solution.status === 'معتمد') || insDone(s.id) || taskKindOf(s.id, 'install')
                   ? btn('🔧 ' + t('نموذج التركيب'),'btn-secondary btn-sm',' data-insform="' + esc(s.id) + '"')
                   : '')
-              : btn('🔍 ' + t('نموذج المسح'),'btn-secondary btn-sm',' data-form="' + esc(s.id) + '"'))
+              : btn('🔍 ' + t('نموذج المسح'),'btn-secondary btn-sm',' data-form="' + esc(s.id) + '"')
+                + (svqMay(s.id) ? btn('\u270E ' + t('تعديل المسح'),'btn-secondary btn-sm',' data-svq="' + esc(s.id) + '"') : ''))
           : '')
 
     /* ═══ الخطوةُ التالية — أين تقف النقطةُ ومن صاحبُ الدور ═══
@@ -21824,6 +21911,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.3', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'تعديل المسح بلا إعادته: اضغط النقطة المزارة ← «✎ تعديل المسح» ← اختر الحقل (مثل عرض البوابة) ← عدّله ← يُحفَظ فورًا وحده؛ الصور وبقية المسح كما هي، والتعديل مسجّل باسمك في الزيارة وفي السجل.',
+      'المسح المعتمد: إذا عدّله غير المهندس عاد لانتظار الاعتماد (ويُنبَّه المكتب)، والمهندس يعدّل ويبقى معتمدًا.' ] },
   { v:'V22.2', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'منشأة الجمرات بأدوارها: كل نقطة تعرف دورها (الأرضي حتى الرابع)، وفي التصفية صفّ «الأدوار» يعرض دورًا واحدًا على الخريطة والقوائم — بدل نقاط فوق بعضها كأنها موقع واحد. وأُضيفت كاميرات الوزارة في المنشأة (عشرون كاميرا في تسع نقاط: خمسة أدوار وأعمدة مجاورة).',
       'نافذة كاميرا الوزارة تقول عدد كاميراتها ونوعها (ثابتة/متحرّكة) وحالة ربطها وقطاعها من تقرير الوزارة ٢٠٢٦. النقاط القائمة طابقت التقرير موقعًا موقعًا فبقيت بمعرّفاتها وزياراتها.',
@@ -29506,6 +29596,9 @@ function render(force){
     pwEl.innerHTML = pwHtml();
     document.body.appendChild(pwEl);
   }
+  /* لوحُ تعديل المسح (V22.3) — فوق كلِّ شيءٍ ما دام مفتوحًا */
+  var sqOld = document.getElementById('svqSheet'); if (sqOld) sqOld.parentNode.removeChild(sqOld);
+  if (SVQ.id){ var sqW = document.createElement('div'); sqW.innerHTML = svqSheet(); if (sqW.firstChild) document.body.appendChild(sqW.firstChild); }
   /* لافتةُ الحفظ المحلي (V17.93) — حين يوجد خطرٌ حقيقيٌّ فقط (V19.6) */
   idbBannerUpdate();
   /* لافتةُ الحساب الذي ينتظر التفعيل (V17.93) */
@@ -30048,6 +30141,14 @@ function clickA(e){
     }
     return true;
   }
+  if (e.target.closest('[data-svq]')){ SVQ = { id:e.target.closest('[data-svq]').getAttribute('data-svq'), key:'', tmp:null }; POP_OPEN = false; render(1); return true; }   /* (V22.3) */
+  if (e.target.closest('[data-svqx]')){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }
+  if (e.target.closest('[data-svqk]')){ SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
+  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; render(1); return true; }
+  if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'), rq = STATE.recs[SVQ.id] || {}; var cur0 = SVQ.tmp || (rq.chals || []).slice();
+    if (cur0.indexOf(ch) > -1) cur0 = cur0.filter(function(x){ return x !== ch; }); else { if (ch === 'لا توجد تحديات') cur0 = []; else cur0 = cur0.filter(function(x){ return x !== 'لا توجد تحديات'; }); cur0.push(ch); }
+    SVQ.tmp = cur0; render(1); return true; }
+  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, sv0 = sk === 'chals' ? (SVQ.tmp || (STATE.recs[SVQ.id] || {}).chals || []) : ((document.getElementById('svqIn') || {}).value); if (svqSave(SVQ.id, sk, sv0)){ render(1); if (typeof MAP !== 'undefined' && MAP) mapPaint(); } return true; }
   if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = FILT.floor = ''; if (typeof CO_SEL !== 'undefined' && CO_SEL.length) CO_SEL.length = 0; LIST_SHOWN = LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
   if (e.target.closest('[data-mfuedit]')){ MFU_EDIT = e.target.closest('[data-mfuedit]').getAttribute('data-mfuedit') || ''; render(1); return true; }
   if (e.target.closest('[data-mfucosall]')){ MFU_COS_ALL = !MFU_COS_ALL; render(1); return true; }
