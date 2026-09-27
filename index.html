@@ -1089,7 +1089,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1149,7 +1149,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-6e5267cd0e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-fef5e0b154.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2956,6 +2956,7 @@ var FB = {
             return;
           }
           if (!v || !v.id || v.hidden || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ لا يُدمَج (V22.2) */
+          var ovn = (STATE.siteOv || {})[v.id]; if (ovn) v = Object.assign({}, v, ovn);   /* تجاوزُ المكتب (التصنيف…) فوق الوثيقة (V23.0) */
           STATE.sites.push(v); have[v.id] = 1; add++;
         });
         if (add){ SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint(); }
@@ -7757,6 +7758,9 @@ function asnSheet(){
     +   '<input type="date" id="asnWhen" value="' + esc(ASN_WHEN) + '"></div>'
     + '</div>'
 
+    + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap"><select id="selType" aria-label="' + esc(t('التصنيف')) + '" style="flex:1 1 180px">' + Object.keys(typesList()).map(function(k){ return '<option value="' + esc(k) + '">' + esc(typeLabel(k)) + '</option>'; }).join('') + '</select>'
+        + btn(t('انقل') + ' ' + nm(SEL_N) + ' ' + t('نقطة'), 'btn-secondary btn-sm', ' data-seltype="1"') + '</div></div>' : '')   /* (V23.0) */
     + '<div class="actions" style="margin-top:12px">'
     +   btn(ASN_MODE === 'team'
             ? (t('وزّع') + ' ' + nm(SEL_N) + ' ' + t('نقطة على الفريق'))
@@ -22097,6 +22101,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V23.0', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'التصنيفات بيدك: من «المواقع» (أسفل الصفحة) تضيف تصنيفًا باسمه ورمزه ولونه وشكله، وتحذفه — والتصنيف الذي عليه نقاط تنقل نقاطه إلى تصنيف آخر ثم يُحذف («انقل واحذف»).',
+      'نقل النقاط إلى تصنيف: حدّد النقاط على الخريطة ← لوح الإسناد ← «أو انقل المحدَّد إلى تصنيف» ← انقل. الزيارات والتركيبات لا تتأثر، والنقل مسجّل.',
+      'النوارية كما في المخطط: نُقلت نقاطها إلى أماكنها (دخول وخروج رئيسيان، وتسع مقابل ست) مع بقاء زيارات اليوم عليها كما هي.' ] },
   { v:'V22.9', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'كاميرات النوارية في أماكنها كما في مخطط الوزارة: كاميرا الدخول الرئيسي، وكاميرا الخروج الرئيسي، وتسع كاميرات على مداخل المسارات (مسار ١–٩) تقابلها ست على مخارجها (خروج ١–٦). المواقع تقريبية بمقياس المخطط وتُضبط بـ«تحريك» في أول زيارة.',
       'تعديلات موقع النقطة واسمها وإخفاؤها من المكتب تصل إلى الأجهزة التي حمّلت النقطة من قبل (كانت تبقى حيث كانت).' ] },
@@ -28217,6 +28225,36 @@ function typeDel(k){
   render(1);
 }
 
+/* ═══ نقلُ النقاط إلى تصنيف (V23.0) ═══
+   «خليني أعرف أضيف تصنيف وأمسح وأعمل assign للنقاط في التصنيف ده»: الإضافةُ والحذفُ كانا في
+   «التخطيط ← نقاط المراحل» وحدَها، ولا سبيلَ لنقل نقطةٍ من تصنيفٍ إلى آخر إلا بقرارٍ في المستودع،
+   والتصنيفُ الذي عليه نقاطٌ لا يُحذَف أبدًا. صار: النقاطُ المحدَّدةُ على الخريطة تُنقَل إلى أيِّ تصنيفٍ
+   من لوح الإسناد نفسِه، والتصنيفُ المستعمَلُ يُحذَف بعد نقل نقاطه إلى غيره — والبطاقةُ في «المواقع».
+   النقلُ تجاوزٌ في وثيقة النقطة (sites/{id}) كتعديل البيانات: يُزامَن ويُسجَّل، والزياراتُ لا تُمَسّ. */
+function siteSetType(id, to){
+  var x = siteFind(id); if (!x || x.type === to) return false;
+  x.type = to; siteOvSet(id, { type:to });
+  return true;
+}
+function selSetType(to){
+  if (!may('settings')){ toast(t('التصنيفاتُ للمهندس وحده')); return 0; }
+  if (!to || !typesList()[to]){ toast(t('اختر التصنيف')); return 0; }
+  var n = 0;
+  selIds().forEach(function(id){ if (siteSetType(id, to)) n++; });
+  if (n){ logEvent('نقلُ ' + n + ' نقطةٍ إلى التصنيف «' + to + '»'); selClear(); SITE_IX = null; SITE_TOK = null; statBump(); }
+  toast(nm(n) + ' ' + t('نقطة نُقلت إلى التصنيف') + ' «' + t((typesList()[to] || {}).l || to) + '»');
+  return n;
+}
+function typeMoveDel(k, to){
+  if (!may('settings')){ toast(t('التصنيفاتُ للمهندس وحده')); return 0; }
+  if (!to || to === k || !typesList()[to]){ toast(t('اختر تصنيفًا تنتقل إليه نقاطُه')); return 0; }
+  var n = 0;
+  (STATE.sites || []).slice().forEach(function(x){ if (x.type === k && siteSetType(x.id, to)) n++; });
+  logEvent('نقلُ نقاط التصنيف «' + k + '» (' + n + ') إلى «' + to + '» ثم حذفُه');
+  SITE_IX = null; SITE_TOK = null; statBump();
+  typeDel(k);
+  return n;
+}
 /* بطاقةُ إدارة الأنواع — تُعرَض في شاشتَي الزيارات والفك */
 function typesCard(){
   /* نموذجُ الإضافة بطاقةٌ مستقلّةٌ لا وسيطٌ في رأس الجدول: كان يُمرَّر في
@@ -28234,8 +28272,8 @@ function typesCard(){
           /* وسمُ الحقل للقارئ الصوتيِّ باسم النوع المترجَم — كان يُشتقُّ من الخلية
              الأولى فيُقرأ «مخيمCamp» مفتاحًا عربيًّا ملتصقًا بترجمته */
           var al = function(col){ return ' aria-label="' + esc(t(col) + ' \u2014 ' + typeShort(k)) + '"'; };
-          return ['<strong>' + esc(k) + '</strong>'
-                    + (t(k) !== k ? '<br><span class="hint" style="margin:0">' + esc(t(k)) + '</span>' : ''),
+          /* المفتاحُ الداخليُّ يُعرَض بالعربية لمن يقرؤها، وبغيرها تُعرَض ترجمتُه والمفتاحُ في التلميح (V23.0) */
+          return [(LANG === 'ar' ? '<strong>' + esc(k) + '</strong>' : '<strong>' + esc(t(k)) + '</strong>'),
                   '<input value="' + esc(T[k].l) + '" data-tyl="' + esc(k) + '" dir="auto"' + al('الاسم المعروض') + '>',
                   '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr"' + al('الرمز') + '>',
                   '<input type="color" value="' + esc(T[k].c || '#8A939D') + '" data-tyc="' + esc(k) + '" style="width:48px;min-height:34px;padding:2px"' + al('اللون') + '>',
@@ -28246,7 +28284,9 @@ function typesCard(){
                       + '</select>',
                   u ? pill(nm(u), 'acc') : N(0),
                   (may('settings')
-                    ? (u ? '<span class="hint" style="margin:0">' + esc(t('مستعمل')) + '</span>'
+                    ? (u ? '<select id="tyMv_' + esc(k) + '" aria-label="' + esc(t('انقل نقاطه إلى')) + '" style="max-width:150px"><option value="">' + esc(t('انقل نقاطه إلى…')) + '</option>'
+                           + keys.filter(function(o){ return o !== k; }).map(function(o){ return '<option value="' + esc(o) + '">' + esc(t(T[o].l || o)) + '</option>'; }).join('') + '</select> '
+                           + btn('انقل واحذف','btn-quiet btn-sm',' data-tymove="' + esc(k) + '"')
                          : btn('حذف','btn-quiet btn-sm',' data-tydel="' + esc(k) + '"'))
                     : '')];
         })))
@@ -29645,7 +29685,7 @@ function navHtml(){
 var FIELD_PAGES = {
   /* الخريطةُ حاويةٌ ثابتةٌ تُظهَر وتُخفى — واجهتُها في #mapUI لا في المحتوى */
   map:   { m:'الميدان', t:'الخريطة', full:true, body:function(){ return ''; } },
-  sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:function(){ return fieldList() + hiddenSitesCard(); } },
+  sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:function(){ return fieldList() + hiddenSitesCard() + (may('settings') ? typesCard() : ''); } },   /* التصنيفاتُ هنا أيضًا (V23.0) */
   recs:  { m:'الميدان', t:'السجلات', l:'ما جرى في الميدان بالترتيب.', body:fieldRecords },
   tools: { m:'الميدان', t:'الأدوات', l:'التصديرات والمزامنة.', body:fieldTools }
 };
@@ -31304,6 +31344,9 @@ function onDocClick(e){
   var vkd = e.target.closest('[data-vkdel]');
   if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
+  if (e.target.closest('[data-seltype]')){ var stv = (document.getElementById('selType') || {}).value; if (selSetType(stv)){ ASN_OPEN = false; if (typeof mapPaint === 'function' && MAP) mapPaint(); } render(1); return; }   /* (V23.0) */
+  var tym = e.target.closest('[data-tymove]');   /* (V23.0) */
+  if (tym){ var tk0 = tym.getAttribute('data-tymove'), tsel = document.getElementById('tyMv_' + tk0); typeMoveDel(tk0, tsel ? tsel.value : ''); render(1); return; }
   var tyd = e.target.closest('[data-tydel]');
   if (tyd){ typeDel(tyd.getAttribute('data-tydel')); return; }
   var mxd = e.target.closest('[data-mxdel]');

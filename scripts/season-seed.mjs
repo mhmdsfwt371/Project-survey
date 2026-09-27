@@ -217,7 +217,7 @@ if (decSites.length){
     let ok = 0; const skip = [];
     for (const sx of decSites){
       const [rc, ic] = await Promise.all([fs.collection('recs').doc(sx.id).get(), fs.collection('inss').doc(sx.id).get()]);
-      if (rc.exists || ic.exists){ skip.push(sx.id); continue; }   /* زِيرت أو رُكّبت — عملٌ فعليٌّ لا يُمَسّ */
+      if ((rc.exists || ic.exists) && !sx.force){ skip.push(sx.id); continue; }   /* زِيرت أو رُكّبت — عملٌ فعليٌّ لا يُمَسّ، إلا بقرارٍ صريح (force) يحرّك النقطةَ ولا يمسّ زيارتَها (V23.0) */
       const ns = await fs.collection('newsites').doc(sx.id).get();
       const ref = fs.collection(ns.exists ? 'newsites' : 'sites').doc(sx.id);
       await ref.set(Object.assign({}, sx.set || {}, sx.hide ? { hidden:true, hidBy:'season-seed', hidAt:Date.now() } : {}, { _by:'season-seed', _at:Date.now() }), { merge:true });
