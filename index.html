@@ -1089,7 +1089,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1149,7 +1149,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-7923bb6629.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-6fc75e614e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7762,6 +7762,10 @@ function asnSheet(){
     + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
         + '<div style="display:flex;gap:8px;flex-wrap:wrap"><select id="selType" aria-label="' + esc(t('التصنيف')) + '" style="flex:1 1 180px">' + Object.keys(typesList()).map(function(k){ return '<option value="' + esc(k) + '">' + esc(typeLabel(k)) + '</option>'; }).join('') + '</select>'
         + btn(t('انقل') + ' ' + nm(SEL_N) + ' ' + t('نقطة'), 'btn-secondary btn-sm', ' data-seltype="1"') + '</div></div>' : '')   /* (V23.0) */
+    + (maySiteEdit() && SEL_N ? '<div class="field" style="margin:10px 0 0"><label>\u270E ' + esc(t('أو سمِّ المحدَّد: بدايةُ الاسم ثم رقمٌ متتابع')) + '</label>'
+        + '<div style="display:flex;gap:8px;flex-wrap:wrap"><input id="selNamePfx" dir="auto" placeholder="' + esc(t('مثلًا: كاميرا وزارة LPR — عرفات —')) + '" aria-label="' + esc(t('بدايةُ الاسم')) + '" style="flex:1 1 200px">'
+        + '<input id="selNameFrom" type="number" min="1" value="1" inputmode="numeric" aria-label="' + esc(t('يبدأ الترقيم من')) + '" style="width:80px">'
+        + btn(t('سمِّ') + ' ' + nm(SEL_N), 'btn-secondary btn-sm', ' data-selname="1"') + '</div></div>' : '')   /* (V23.1) */
     + '<div class="actions" style="margin-top:12px">'
     +   btn(ASN_MODE === 'team'
             ? (t('وزّع') + ' ' + nm(SEL_N) + ' ' + t('نقطة على الفريق'))
@@ -9071,7 +9075,8 @@ function itemPickerHtml(){
     + '</div>'
     + (lines.length
       ? table(['الصنف','الكمية',''], lines.map(function(c){
-          return [esc(itemName(c)), '<span class="num">' + nm(SOL_LINES[c]) + '</span>',
+          /* (V23.1) «اخترت ١٢ أنتنة — ما أمسحش وأضيف، أعدّل على طول»: الكميةُ حقلٌ يُعدَّل في مكانه */
+          return [esc(itemName(c)), '<input type="number" min="0" inputmode="numeric" value="' + esc(SOL_LINES[c]) + '" data-pkqty="' + esc(c) + '" style="width:88px" aria-label="' + esc(t('الكمية') + ' \u2014 ' + itemName(c)) + '">',
                   btn('\u2715','btn-quiet btn-sm',' data-pkrm="' + esc(c) + '" aria-label="' + esc(t('حذف')) + '"')];
         }))
       : '<p class="hint" style="margin:6px 0 0">' + esc(t('لا أسطرَ بعد — ابحث عن القطعة وأضفها بكمّيتها، أو طبّق نمطًا جاهزًا.')) + '</p>');
@@ -22102,6 +22107,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V23.1', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'الاعتماد التقني: كمية كل جهاز في «اعتمد واختر الأجهزة» صارت حقلًا يُعدَّل في مكانه (مثلًا ١٢ أنتنة ← ١٠) بدل الحذف والإضافة من جديد، والصفر يرفع السطر.',
+      'تسمية النقاط المرفوعة: حدّد النقاط على الخريطة ← لوح الإسناد ← «أو سمِّ المحدَّد» ← بداية الاسم ورقم البداية ← سمِّ (مثلًا «كاميرا وزارة LPR — عرفات —» ١ إلى ١٠). والنقطة الواحدة من «تعديل البيانات»، وتعديلها يبقى بعد إعادة الفتح.' ] },
   { v:'V23.0', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'التصنيفات بيدك: من «المواقع» (أسفل الصفحة) تضيف تصنيفًا باسمه ورمزه ولونه وشكله، وتحذفه — والتصنيف الذي عليه نقاط تنقل نقاطه إلى تصنيف آخر ثم يُحذف («انقل واحذف»).',
       'نقل النقاط إلى تصنيف: حدّد النقاط على الخريطة ← لوح الإسناد ← «أو انقل المحدَّد إلى تصنيف» ← انقل. الزيارات والتركيبات لا تتأثر، والنقل مسجّل.',
@@ -28246,6 +28254,20 @@ function selSetType(to){
   toast(nm(n) + ' ' + t('نقطة نُقلت إلى التصنيف') + ' «' + t((typesList()[to] || {}).l || to) + '»');
   return n;
 }
+/* (V23.1) «عاوز أعدّل الحاجات المرفوعة — مسميات وخلافه»: نقاطُ الميدان تصل بأسماءٍ عامة («عرفات - مربع
+   - شاخص»، «كاميرا - منى - N001»). النقطةُ الواحدةُ تُعدَّل من «تعديل البيانات»، والمحدَّدُ دفعةً باسمٍ
+   ورقمٍ متتابع — بالتجاوز نفسِه، فيبقى بعد الإقلاع للنقاط المسجَّلة والمرفوعة معًا. */
+function selRename(pfx, from){
+  if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return 0; }
+  pfx = String(pfx || '').trim(); from = Math.max(1, Math.round(cfgN(from) || 1));
+  if (!pfx){ toast(t('اكتب بدايةَ الاسم')); return 0; }
+  var ids = selIds().slice().sort(), n = 0, who = STATE.meta.name || '';
+  ids.forEach(function(id, i){ var x = siteFind(id); if (!x) return; var nmv = pfx + ' ' + nm(from + i);
+    if (x.name === nmv) return; x.name = nmv; siteOvSet(id, { name:nmv, edBy:who, edAt:Date.now() }); n++; });
+  if (n){ logEvent('تسميةُ ' + n + ' نقطةٍ دفعةً — «' + pfx + '» من ' + from); selClear(); SITE_IX = null; SITE_TOK = null; statBump(); }
+  toast(nm(n) + ' ' + t('نقطة سُمّيت'));
+  return n;
+}
 function typeMoveDel(k, to){
   if (!may('settings')){ toast(t('التصنيفاتُ للمهندس وحده')); return 0; }
   if (!to || to === k || !typesList()[to]){ toast(t('اختر تصنيفًا تنتقل إليه نقاطُه')); return 0; }
@@ -31346,6 +31368,7 @@ function onDocClick(e){
   if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
   if (e.target.closest('[data-typesopen]')){ TYPES_OPEN = e.target.closest('[data-typesopen]').getAttribute('data-typesopen') === '1'; render(1); return; }
+  if (e.target.closest('[data-selname]')){ if (selRename((document.getElementById('selNamePfx') || {}).value, (document.getElementById('selNameFrom') || {}).value)){ ASN_OPEN = false; if (typeof mapPaint === 'function' && MAP) mapPaint(); } render(1); return; }   /* (V23.1) */
   if (e.target.closest('[data-seltype]')){ var stv = (document.getElementById('selType') || {}).value; if (selSetType(stv)){ ASN_OPEN = false; if (typeof mapPaint === 'function' && MAP) mapPaint(); } render(1); return; }   /* (V23.0) */
   var tym = e.target.closest('[data-tymove]');   /* (V23.0) */
   if (tym){ var tk0 = tym.getAttribute('data-tymove'), tsel = document.getElementById('tyMv_' + tk0); typeMoveDel(tk0, tsel ? tsel.value : ''); render(1); return; }
@@ -31863,6 +31886,11 @@ document.addEventListener('change', function(e){
         render(1);
       });
       return;
+    }
+    if (el.hasAttribute('data-pkqty')){   /* (V23.1) كميةُ سطرٍ في منتقي الأجهزة — صفرٌ يرفع السطر */
+      var pc = el.getAttribute('data-pkqty'), pv = Math.max(0, Math.round(cfgN(el.value) || 0));
+      if (pv > 0) SOL_LINES[pc] = pv; else delete SOL_LINES[pc];
+      render(1); return;
     }
     if (el.hasAttribute('data-svqadd')){   /* (V22.8) صورةٌ أو أكثر بنوعها */
       var fl = el.files ? Array.prototype.slice.call(el.files) : [], ak = (document.getElementById('svqPhKind') || {}).value || 'extra', aid = SVQ.id;

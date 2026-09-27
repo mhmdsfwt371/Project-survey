@@ -52,7 +52,25 @@ console.log('\n══ ١ · إضافةُ تصنيفٍ ونقلُ المحدَّ�
   T(ids.every(id => w.siteFind(id).type === 'كاميرا') && !w.typesList()['كاميرات الجمرات'], 'نقاطُه عادت إلى «كاميرات الوزارة» وحُذف التصنيف');
   dom.window.close(); }
 
-console.log('\n══ ٣ · غيرُ المهندس ══');
+console.log('\n══ ٣ · تسميةُ المحدَّد دفعةً، وكميةُ الجهاز في مكانها (V23.1) ══');
+{ const { w, d, dom } = await boot('engineer');
+  const ids = ['NSK-JMR-CAM-0006', 'NSK-JMR-CAM-0007', 'NSK-JMR-CAM-0008'];
+  w.selClear(); ids.forEach(id => w.selToggle(id));
+  w.goPage('map'); w.ASN_OPEN = true; w.render(1); await wait(60);
+  d.getElementById('selNamePfx').value = 'كاميرا وزارة — عمود'; d.getElementById('selNameFrom').value = '5';
+  await click(w, d, '[data-selname]');
+  T(w.siteFind('NSK-JMR-CAM-0006').name === 'كاميرا وزارة — عمود ٥' && w.siteFind('NSK-JMR-CAM-0008').name === 'كاميرا وزارة — عمود ٧' && w.STATE.siteOv['NSK-JMR-CAM-0007'].name === 'كاميرا وزارة — عمود ٦', 'الثلاثُ سُمّيت ٥ و٦ و٧ بالترتيب — تجاوزًا يبقى بعد الإقلاع');
+  const code = w.itemsList()[0].code; w.SOL_LINES = {}; w.SOL_LINES[code] = 12;
+  const box = d.createElement('div'); box.innerHTML = w.itemPickerHtml(); d.body.appendChild(box);
+  const q = box.querySelector('[data-pkqty="' + code + '"]');
+  T(!!q && q.value === '12', 'سطرُ الجهاز كميتُه حقلٌ فيه ١٢ — لا نصٌّ يُحذَف ويُعاد');
+  q.value = '10'; q.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
+  T(w.SOL_LINES[code] === 10, 'وتعديلُه إلى ١٠ يُحفَظ في مكانه');
+  const q2 = d.querySelector('[data-pkqty="' + code + '"]') || q; q2.value = '0'; q2.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
+  T(!(code in w.SOL_LINES), 'والصفرُ يرفع السطر');
+  dom.window.close(); }
+
+console.log('\n══ ٤ · غيرُ المهندس ══');
 { const { w, d, dom } = await boot('supervisor');
   w.selClear(); w.selToggle('NSK-JMR-CAM-0004'); const was = w.siteFind('NSK-JMR-CAM-0004').type;
   w.goPage('map'); w.ASN_OPEN = true; w.render(1); await wait(60);
