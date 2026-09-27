@@ -1116,16 +1116,14 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
    استعادة آخر صفحة، وبعد توقّفين في صفحةٍ خفيفة) ويسجّل المرحلةَ التي مات عندها. */
 var BOOT_GUARD = (function(){
   var g = { crashes:0, prev:null };
-  try {
-    var p = JSON.parse(localStorage.getItem('nsk14.boot') || 'null');
-    g.prev = p;
-    g.crashes = (p && p.ok === false && Date.now() - (p.at || 0) < 120000) ? (p.n || 0) + 1 : 0;
-    localStorage.setItem('nsk14.boot', JSON.stringify({ at:Date.now(), ok:false, n:g.crashes, stage:'start' }));
-  } catch (e){}
+  try { g.prev = JSON.parse(lsGet('nsk14.boot') || 'null'); } catch (e){ LS_ERR = e; }   /* lsGet محميّةٌ ومرفوعةٌ فتعمل هنا */
+  var p = g.prev;
+  g.crashes = (p && p.ok === false && Date.now() - (p.at || 0) < 120000) ? (p.n || 0) + 1 : 0;
+  lsSet('nsk14.boot', JSON.stringify({ at:Date.now(), ok:false, n:g.crashes, stage:'start' }));
   return g;
 })();
-function bootStage(st){ try { var p = JSON.parse(localStorage.getItem('nsk14.boot') || '{}'); if (p.ok) return; p.stage = st; p.page = (typeof CUR === 'string') ? CUR : ''; localStorage.setItem('nsk14.boot', JSON.stringify(p)); } catch (e){} }
-function bootOk(why){ try { localStorage.setItem('nsk14.boot', JSON.stringify({ at:Date.now(), ok:true, n:0, stage:why || 'ok' })); } catch (e){} }
+function bootStage(st){ var p = null; try { p = JSON.parse(lsGet('nsk14.boot') || '{}'); } catch (e){ LS_ERR = e; return; } if (!p || p.ok) return; p.stage = st; p.page = (typeof CUR === 'string') ? CUR : ''; lsSet('nsk14.boot', JSON.stringify(p)); }
+function bootOk(why){ lsSet('nsk14.boot', JSON.stringify({ at:Date.now(), ok:true, n:0, stage:why || 'ok' })); }
 setTimeout(function(){ bootOk('alive'); }, 20000);
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', function(){ bootOk('closed'); });
 
