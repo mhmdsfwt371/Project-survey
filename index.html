@@ -757,7 +757,10 @@ body.kiosk .kk-story{font-size:21px}
 .svq-h .npop-x{position:static}
 .svq-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
 .svq-row .svq-k{flex:1 1 40%;color:var(--ink-mute);font-size:13px}.svq-row .svq-v{flex:1 1 40%;font-weight:600}
-.svq-row.on{display:block}.svq-row.on .svq-k{margin:0 0 6px;color:var(--ink);font-weight:700}
+.svq-row.on{display:block}
+.svq-ph{width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:0 0 52px}
+.svq-ph img{width:100%;height:100%;object-fit:cover}
+.svq-add{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin:10px 0 0}.svq-add select{width:100%}.svq-row.on .svq-k{margin:0 0 6px;color:var(--ink);font-weight:700}
 .svq-row.on input,.svq-row.on select,.svq-row.on textarea{width:100%}
 .mfu-add{margin:12px 0 0}
 .mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
@@ -1086,7 +1089,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1146,7 +1149,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-870a65bd38.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-6e5267cd0e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6144,7 +6147,7 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
    وتاريخُها كما هي. ويُسجَّل التعديلُ في الزيارة نفسِها (من، ومتى، ومن أيِّ قيمةٍ إلى أيّ) وفي
    سجلّ الأحداث. والمسحُ المعتمدُ إذا عدّله غيرُ المهندس عاد لانتظار الاعتماد — القاعدةُ لا تسمح
    لغيره بالكتابة على المعتمد، والتغييرُ على المعتمد يراه صاحبُ الاعتماد؛ ويُنبَّه المهندسُ في الحالين. */
-var SVQ = { id:'', key:'', tmp:null };
+var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
 var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
@@ -6154,7 +6157,7 @@ function svqKeys(rec){
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
   return ks;
 }
-function svqLabel(k){ if (String(k).indexOf('ph:') === 0){ var q = SV_PHOTOS.filter(function(p){ return p[0] === k.slice(3); })[0]; return 'صورة: ' + (q ? q[1] : k.slice(3)); } return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
+function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
 function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
@@ -6196,15 +6199,65 @@ function svqSheet(){
 }
 /* (V22.3→V22.7) «لا يسمح لي بتعديل الصور»: صارت الصورُ في اللوح نفسِه — كلُّ خانةٍ تُستبدَل صورتُها
    أو تُضاف وحدَها، وتُضغَط على الجهاز وتُرفَع كصور النموذج، ويُسجَّل التعديلُ كغيره */
+function svqPhotoCount(id){
+  var n = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del; }).length;
+  (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).forEach(function(q){ if (q && q.site === id) n++; });
+  return n;
+}
+function svqKindLabel(k){ if (k === 'extra') return 'صورة إضافية'; var q = SV_PHOTOS.filter(function(p){ return p[0] === k; })[0]; return q ? q[1] : (k || 'صورة'); }
+function svqCanDel(p, rec){ if (may('delete')) return true; return !!p && p.by === (STATE.meta.name || '') && (rec || {}).review !== 'approved'; }
+/* (V22.8) «مش عارف أمسح صور وأزوّد صور جديدة»: صورُ الزيارة نفسُها بمصغّراتها — كلُّ صورةٍ تُحذَف
+   (المهندسُ أيَّ صورة، والرافعُ صورتَه ما لم تُعتمَد الزيارة) بتأكيدٍ ثانٍ، وما في طابور الجهاز يُلغى،
+   وتُضاف صورٌ جديدةٌ (واحدةٌ أو أكثر) بنوعها أو «صورة إضافية» — والحذفُ علامةٌ مسجَّلةٌ لا محوٌ صامت */
 function svqPhotos(rec){
-  var have = Array.isArray(rec.photos) ? rec.photos : [];
-  return '<div class="wp-sec" style="margin-top:12px">' + esc(t('الصور')) + '</div>'
-    + SV_PHOTOS.map(function(p){
-        var has = have.indexOf(p[0]) > -1;
-        return '<div class="svq-row"><div class="svq-k">' + esc(t(p[1])) + '</div><div class="svq-v">' + (has ? '\u2713 ' + esc(t('موجودة')) : '\u2014') + '</div>'
-          + '<label class="btn btn-quiet btn-sm" style="cursor:pointer">' + (has ? '\u{1F4F7} ' + esc(t('استبدل')) : '\u{1F4F7} ' + esc(t('أضف')))
-          + '<input type="file" accept="image/*" capture="environment" data-svqph="' + esc(p[0]) + '" style="display:none" aria-label="' + esc(t(p[1])) + '"></label></div>';
-      }).join('');
+  var id = rec.id, list = (typeof photosOf === 'function' ? photosOf(id) : []).filter(function(p){ return !(p[1] || {}).del; });
+  var q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).map(function(x, i){ return [i, x]; }).filter(function(e){ return e[1] && e[1].site === id; });
+  var row = function(thumb, label, sub, act){ return '<div class="svq-row"><div class="svq-ph">' + thumb + '</div><div class="svq-k" style="flex:1 1 50%"><b style="color:var(--ink)">' + esc(t(label)) + '</b><div class="hint" style="margin:0;font-size:11.5px">' + sub + '</div></div>' + act + '</div>'; };
+  var img = function(d){ return d ? '<img src="' + esc(d) + '" alt="" loading="lazy">' : '<span>\u{1F5BC}</span>'; };
+  var h = '<div class="wp-sec" style="margin-top:12px">' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(list.length + q.length) + '</div>';
+  h += list.map(function(p){
+    var ph = p[1] || {}, ask = SVQ.delAsk === p[0];
+    var act = svqCanDel(ph, rec)
+      ? (ask ? btn(t('تأكيد الحذف'), 'btn-sm', ' data-svqdel="' + esc(p[0]) + '" style="background:#C0392B;color:#fff"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqdelx="1"')
+             : btn('\u{1F5D1} ' + t('احذف'), 'btn-quiet btn-sm', ' data-svqdelask="' + esc(p[0]) + '"'))
+      : '<span class="hint" style="margin:0;font-size:11px">' + esc(t('حذفُها للمهندس')) + '</span>';
+    return row(img(ph.data || ph.thumb || ''), svqKindLabel(ph.kind), esc(fmtDT(ph.at)) + (ph.by ? ' \u00b7 ' + esc(dispName(ph.by)) : '') + (ph.link || ph.driveId ? ' \u00b7 ' + esc(t('على الدرايف')) : ''), act);
+  }).join('');
+  h += q.map(function(e){
+    return row(img(e[1].data), svqKindLabel(e[1].kind), esc(t('في طابور جهازك — تُرفَع مع المزامنة')), btn('\u2715 ' + t('ألغِها'), 'btn-quiet btn-sm', ' data-svqqx="' + e[0] + '"'));
+  }).join('');
+  if (!list.length && !q.length) h += '<p class="hint">' + esc(t('لا صورَ لهذه الزيارة بعد.')) + '</p>';
+  h += '<div class="svq-add"><label style="flex:1 1 55%">' + esc(t('نوع الصورة')) + '<select id="svqPhKind">'
+    + SV_PHOTOS.map(function(p){ return '<option value="' + esc(p[0]) + '">' + esc(t(p[1])) + '</option>'; }).join('')
+    + '<option value="extra" selected>' + esc(t('صورة إضافية')) + '</option></select></label>'
+    + '<label class="btn btn-primary btn-sm" style="cursor:pointer;align-self:flex-end">\u{1F4F7} ' + esc(t('أضف صورة'))
+    + '<input type="file" accept="image/*" multiple data-svqadd="1" style="display:none" aria-label="' + esc(t('أضف صورة')) + '"></label></div>'
+    + '<p class="hint" style="margin:6px 0 0">' + esc(t('لاستبدال صورةٍ: احذف القديمةَ وأضف الجديدةَ بنوعها. والحذفُ يُسجَّل باسمك ولا يُمحى أثرُه.')) + '</p>';
+  return h;
+}
+function svqPhotoDel(photoId){
+  var p = (STATE.photos || {})[photoId], rec = p ? STATE.recs[p.site] : null;
+  if (!p || !rec || p.del) return false;
+  if (!svqCanDel(p, rec)){ toast(t('حذفُ هذه الصورة للمهندس')); return false; }
+  var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
+  if (may('delete') && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل المسح');
+  else {
+    var dr = { site:p.site, kind:p.kind, at:p.at, by:p.by || p._by || '', del:{ by:who, at:now, why:'حذفها رافعُها من تعديل المسح' } };
+    STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);
+    logEvent('حذف صورة — ' + photoId + ' · من تعديل المسح', p.site);
+  }
+  var n = Object.assign({}, rec);
+  n.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ k:'ph:' + (p.kind || 'extra'), o:'صورة', v:'حُذفت', by:who, at:now }]).slice(-30);
+  n.eAt = now; n.eBy = who;
+  var left = svqPhotoCount(p.site);
+  n.phN = left;
+  if (p.kind && !(typeof photosOf === 'function' ? photosOf(p.site) : []).some(function(e){ return !(e[1] || {}).del && e[1].kind === p.kind; })) n.photos = (Array.isArray(rec.photos) ? rec.photos : []).filter(function(k){ return k !== p.kind; });
+  var back = rec.review === 'approved' && !boss;
+  if (back){ n.review = 'pending'; n.minReview = ''; }
+  CORE.set('recs', p.site, n);
+  SVQ.delAsk = ''; statBump();
+  toast(t(back ? 'حُذفت الصورة — وعاد المسحُ لانتظار الاعتماد' : 'حُذفت الصورة'));
+  return true;
 }
 function svqPhoto(id, key, p){
   var rec = STATE.recs[id]; if (!rec || !svqMay(id) || !p || !p.data) return false;
@@ -6213,14 +6266,14 @@ function svqPhoto(id, key, p){
   if (typeof photoQueue === 'function') photoQueue(id, key, p.data);
   var n = Object.assign({}, rec);
   n.photos = (Array.isArray(rec.photos) ? rec.photos.slice() : []).filter(function(k){ return k !== key; }).concat([key]);
-  n.phN = n.photos.length;
+  n.phN = svqPhotoCount(id);   /* (V22.8) كلُّ صور الزيارة — في القاعدة وفي طابور الجهاز */
   n.edits = (Array.isArray(rec.edits) ? rec.edits : []).concat([{ k:'ph:' + key, o:had ? 'صورة سابقة' : '', v:'صورة جديدة', by:who, at:now }]).slice(-30);
   n.eAt = now; n.eBy = who;
   var back = rec.review === 'approved' && !boss;
   if (back){ n.review = 'pending'; n.minReview = ''; }
   CORE.set('recs', id, n);
-  var lb = (SV_PHOTOS.filter(function(q){ return q[0] === key; })[0] || [key, key])[1];
-  logEvent('تعديلُ صورة — ' + id + ' \u00b7 ' + lb + (had ? ' (استبدال)' : ' (إضافة)'), id);
+  var lb = svqKindLabel(key);
+  logEvent('تعديلُ صورة — ' + id + ' \u00b7 ' + lb + ' (إضافة)', id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', t('صورة') + ': ' + t(lb) + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
   statBump();
   toast(t(back ? 'حُفظت الصورة — وعاد المسحُ لانتظار الاعتماد' : 'حُفظت الصورة — وتُرفَع مع المزامنة'));
@@ -22035,6 +22088,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'صور الزيارة من لوح «تعديل المسح»: تظهر بمصغّراتها، وكل صورة تُحذف بزر 🗑 وتأكيد (المهندس أي صورة، ورافعها صورته ما لم تُعتمد الزيارة)، وتُضاف صورة أو أكثر دفعة واحدة باختيار نوعها أو «صورة إضافية». ولاستبدال صورة: احذف القديمة وأضف الجديدة.',
+      'ما لم يُرفع بعد من صور جهازك يظهر «في الطابور» ويمكن إلغاؤه قبل الرفع.' ] },
   { v:'V22.7', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'تعديل المسح: الصور صارت تُعدَّل من اللوح نفسه — كل صورة تُستبدَل أو تُضاف وحدها (📷)، وتُرفَع مع المزامنة، والباقي كما هو.',
       'لوح التعديل لم يعد يحبسك: كان شريط التطبيق العلوي يغطي زر الإغلاق على الهاتف. صار اللوح فوق كل شيء، وفيه «إغلاق» أعلاه وأسفله، ويُغلَق بلمس الخلفية وبزر الرجوع في الجهاز وبالانتقال لأي صفحة.' ] },
@@ -30287,6 +30343,12 @@ function clickA(e){
     render(1); return true; }   /* (V22.3) */
   if (e.target.closest('[data-svqx]')){ SVQ = { id:'', key:'', tmp:null }; render(1); return true; }
   if (e.target.closest('[data-svqk]')){ SVQ.key = e.target.closest('[data-svqk]').getAttribute('data-svqk'); SVQ.tmp = null; render(1); setTimeout(function(){ var el = document.getElementById('svqIn'); if (el){ try { el.focus(); } catch (e2){ LS_ERR = e2; } } }, 30); return true; }
+  if (e.target.closest('[data-svqdelask]')){ SVQ.delAsk = e.target.closest('[data-svqdelask]').getAttribute('data-svqdelask'); render(1); return true; }   /* (V22.8) */
+  if (e.target.closest('[data-svqdelx]')){ SVQ.delAsk = ''; render(1); return true; }
+  if (e.target.closest('[data-svqdel]')){ if (svqPhotoDel(e.target.closest('[data-svqdel]').getAttribute('data-svqdel'))) render(1); return true; }
+  if (e.target.closest('[data-svqqx]')){ var qi = +e.target.closest('[data-svqqx]').getAttribute('data-svqqx'), qx = PHOTO_Q[qi];
+    if (qx && qx.site === SVQ.id){ PHOTO_Q.splice(qi, 1); CORE.saveSoon(); var rq2 = STATE.recs[SVQ.id]; if (rq2){ var n2 = Object.assign({}, rq2); n2.phN = svqPhotoCount(SVQ.id); CORE.set('recs', SVQ.id, n2); } logEvent('إلغاءُ صورةٍ من طابور الجهاز — ' + SVQ.id, SVQ.id); toast(t('أُلغيت الصورة')); render(1); }
+    return true; }
   if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; render(1); return true; }
   if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'), rq = STATE.recs[SVQ.id] || {}; var cur0 = SVQ.tmp || (rq.chals || []).slice();
     if (cur0.indexOf(ch) > -1) cur0 = cur0.filter(function(x){ return x !== ch; }); else { if (ch === 'لا توجد تحديات') cur0 = []; else cur0 = cur0.filter(function(x){ return x !== 'لا توجد تحديات'; }); cur0.push(ch); }
@@ -31743,6 +31805,13 @@ document.addEventListener('change', function(e){
         (isD ? DISF : MNTF).photos[kk] = p2;
         render(1);
       });
+      return;
+    }
+    if (el.hasAttribute('data-svqadd')){   /* (V22.8) صورةٌ أو أكثر بنوعها */
+      var fl = el.files ? Array.prototype.slice.call(el.files) : [], ak = (document.getElementById('svqPhKind') || {}).value || 'extra', aid = SVQ.id;
+      if (!fl.length || !aid) return;
+      toast(t('تُضغط الصور…'));
+      fl.reduce(function(pr, f){ return pr.then(function(){ return shrink(f, 1280, 0.72).then(function(p){ if (p) svqPhoto(aid, ak, p); }); }); }, Promise.resolve()).then(function(){ render(1); });
       return;
     }
     if (el.hasAttribute('data-svqph')){   /* (V22.7) صورةٌ من لوح تعديل المسح */
