@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V21.8",
+ "app_version": "V21.9",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1910,7 +1910,8 @@
   "V21.5": "مراجعةُ الأداء (حملُ نهاية الموسم: ١٤٠٠ زيارة، ٦٠٠ تركيب، ٨٠ مهمةً بسجلاتها، ٤٠ تحديًا، ٢٠ طلبًا، ٣٠ نقطة خطة): mfuObstacles ٤٫٥ م.ث، mfuAllChal ٤٫٧، mfuKpis ٩، mfuTimeline ٠٫٨، mfuUnseen في القائمة ٠٫٢، الملخّص ٢١، التقرير ٣٥ — بلا مشكلة. المحرّراتُ الكسولة: MFU_EDIT (data-mfuedit) يفتح حقولَ صفٍّ واحدٍ في التحديات والطلبات (من ~١٢٠ عنصرَ تحكّمٍ إلى ٥). mfuXlsx بـcatch وmfuDocx يلفّ mfuDocx0 بـtry. audit-mfu ٧١.",
   "V21.6": "فصلُ القواميس (تجربةٌ على الفرع التجريبي): scripts/i18n-split.mjs يقصّ D وD2 ودمجَهما إلى i18n/dict-<بصمة>.js ويترك هيكلًا فارغًا ولوّحًا (I18N_FILE، I18N_STATE، i18nLoad، i18nReady)؛ t() يطلب الملفَ أوّلَ حاجةٍ للغةٍ غيرِ العربية ويعرض العربيةَ حتى يصل ثم يعيد الرسم؛ العاملُ يخبّئه كسولًا (LAZY /i18n/) واسمُه يتغيّر بتغيّر محتواه. الأدواتُ تقرأ القاموسَ من ملفه (scripts/lib/dict-src.mjs): audit-lang، audit-data، check-version، parity، وaudit-i18n يحقنه في نافذة الفحص. الملفُ الرئيسي ٦٧١ كيلوبايت مضغوطًا (كان ٩٥٧)، والقاموسُ ٢٩٧ لغير العربية فقط.",
   "V21.7": "رجوعٌ احترازيّ: بلاغُ «A problem repeatedly occurred» على آيفون (Safari) بعد تجربة تغيير اللغة على V21.6. أُعيد index.html إلى محتوى V21.5 (القواميسُ داخله، بلا i18nLoad/i18nReady) وحُذف i18n/؛ الأدواتُ تعود تلقائيًّا لقراءة القاموس من index.html (scripts/lib/dict-src.mjs يرجع إلى الملف الرئيسي حين لا يوجد i18n/). وُجد في الفحص أيضًا أن i18nReady كان يعيد رسمَ التطبيق وهو مخفيٌّ خلف شاشة الدخول ولا يترجم العناصرَ الثابتة (شاشةُ الدخول تبقى عربية) — يُصلَح قبل إعادة الفصل، مع اختبارٍ على آيفون حقيقي.",
-  "V21.8": "الرأس على الهاتف: langMenu ينقل #langMenu إلى body ويثبّته position:fixed تحت #langTop بإحداثيّاته (الرأسُ overflow-x:hidden كان يقصّ القائمةَ فلا تُرى). زرُّ مظهرٍ واحد #themeTop بثلاث حالات (داكن ← فاتح ← الشمس) مع themeIcon (☾ ☀ 🔆)، وحُذف #sunTop. إصلاح: معالجُ [data-sun] صار [data-sun]:not(html) — sunApply يضع data-sun على <html> فكانت أيُّ لمسةٍ غيرِ ملتقَطةٍ تطفئ وضعَ الشمس. audit-field6b ٢٩، audit-lang2 +١."
+  "V21.8": "الرأس على الهاتف: langMenu ينقل #langMenu إلى body ويثبّته position:fixed تحت #langTop بإحداثيّاته (الرأسُ overflow-x:hidden كان يقصّ القائمةَ فلا تُرى). زرُّ مظهرٍ واحد #themeTop بثلاث حالات (داكن ← فاتح ← الشمس) مع themeIcon (☾ ☀ 🔆)، وحُذف #sunTop. إصلاح: معالجُ [data-sun] صار [data-sun]:not(html) — sunApply يضع data-sun على <html> فكانت أيُّ لمسةٍ غيرِ ملتقَطةٍ تطفئ وضعَ الشمس. audit-field6b ٢٩، audit-lang2 +١.",
+  "V21.9": "حادثة التحديث في سفاري الآيفون («A problem repeatedly occurred» لحظةَ التحديث التلقائي، ويعمل بعد إغلاق التطبيق): BOOT_GUARD أوّلَ النصّ (nsk14.boot {at, ok, n, stage, page}؛ يُعلَّم سليمًا بعد ٢٠ ثانية أو عند pagehide أو قبل إعادة تحميل التحديث)؛ إقلاعٌ يجد سابقَه غيرَ سليمٍ خلال دقيقتين = توقّفٌ مفاجئ: لا تُستعاد آخرُ صفحة، وبعد توقّفين CUR='mywork'، ويُسجَّل في SOFT_ERRS وفي logEvent بالمرحلة والصفحة والنسخة؛ bootStage في shell/render/map. swLighten قبل location.reload في swNow: liveStop، M3.remove، MAP.remove، وتفريغ #content و#mapBox. القطار يوميًّا ٠١:٠٠ UTC. audit-boot ١٠."
  },
  "map_and_geolocation": {
   "tile_layers": {

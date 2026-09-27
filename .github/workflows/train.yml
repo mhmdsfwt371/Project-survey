@@ -7,7 +7,7 @@ name: Release train
 # المواعيدُ هنا وحدَها — وAGENTS.md يسمّيها.
 on:
   schedule:
-    - cron: '0 1 * * 0,3'   # الأحد والأربعاء ٠١:٠٠ UTC
+    - cron: '0 1 * * *'   # كلَّ يومٍ ٠١:٠٠ UTC (٤ فجرًا بمكة) — تحديثٌ واحدٌ في اليوم يصل الأجهزةَ أوّلَ فتحٍ صباحيّ، لا في منتصف العمل (V21.9)
   workflow_dispatch: {}
 permissions:
   contents: write

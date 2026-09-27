@@ -1078,7 +1078,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1108,7 +1108,28 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   </main>
 </div>
 
-<script>/* ═══ محرك اللغات — عربي · إنجليزي · أردو ═══
+<script>/* ═══ حارسُ الإقلاع — قاطعُ التوقّف المتكرّر (V21.9) ═══
+   بلاغ: «A problem repeatedly occurred» في سفاري الآيفون لحظةَ التحديث التلقائي، ويعمل
+   بعد إغلاق التطبيق وفتحه. سفاري يعيد المحاولةَ مرّةً ثم يستسلم. فيُسجَّل هنا أوّلَ شيءٍ
+   أن إقلاعًا بدأ، ويُعلَّم سليمًا بعد عشرين ثانيةً أو عند إغلاقٍ طبيعيّ (pagehide) —
+   فإن وجد الإقلاعُ التالي سابقَه لم يُعلَّم خلال دقيقتين فقد مات فجأة: يُقلِع خفيفًا (بلا
+   استعادة آخر صفحة، وبعد توقّفين في صفحةٍ خفيفة) ويسجّل المرحلةَ التي مات عندها. */
+var BOOT_GUARD = (function(){
+  var g = { crashes:0, prev:null };
+  try {
+    var p = JSON.parse(localStorage.getItem('nsk14.boot') || 'null');
+    g.prev = p;
+    g.crashes = (p && p.ok === false && Date.now() - (p.at || 0) < 120000) ? (p.n || 0) + 1 : 0;
+    localStorage.setItem('nsk14.boot', JSON.stringify({ at:Date.now(), ok:false, n:g.crashes, stage:'start' }));
+  } catch (e){}
+  return g;
+})();
+function bootStage(st){ try { var p = JSON.parse(localStorage.getItem('nsk14.boot') || '{}'); if (p.ok) return; p.stage = st; p.page = (typeof CUR === 'string') ? CUR : ''; localStorage.setItem('nsk14.boot', JSON.stringify(p)); } catch (e){} }
+function bootOk(why){ try { localStorage.setItem('nsk14.boot', JSON.stringify({ at:Date.now(), ok:true, n:0, stage:why || 'ok' })); } catch (e){} }
+setTimeout(function(){ bootOk('alive'); }, 20000);
+if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', function(){ bootOk('closed'); });
+
+/* ═══ محرك اللغات — عربي · إنجليزي · أردو ═══
    كل نص واجهة يمر بـ t(). البيانات الميدانية تبقى كما كُتبت في كل اللغات. */
 
 var I18N = {
@@ -3934,6 +3955,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'فُتح التطبيقُ بوضعٍ خفيفٍ بعد توقّفٍ مفاجئ — كلُّ شيءٍ محفوظ':'The app opened in light mode after an unexpected stop — everything is saved',
  'المظهر: داكن ← فاتح ← الشمس':'Appearance: dark → light → sun', 'المظهر: داكن':'Appearance: dark', 'المظهر: فاتح':'Appearance: light', 'المظهر: وضع الشمس — للشاشة تحت الشمس':'Appearance: sun mode — for screens in sunlight',
  'تعذّر التصدير':'Export failed',
  'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها — كلُّ نقطةٍ تُتمّ بنتيجة أو تُحدَّث أو تُغلَق. يراها المهندسون ومن فوقهم.':'The engineer’s weekly plan: items with details, steps, requirements and results — each item is completed with a result, updated, or closed. Seen by engineers and above.', 'خطةُ الأسبوع للمهندسين ومن فوقهم.':'The weekly plan is for engineers and above.', 'بانتظار تجارب':'Awaiting further trials', 'النتيجة الفعلية':'Actual result', 'أُغلقت':'Closed', 'التحديثات':'Updates', 'النتيجة الفعلية — ما الذي تحقّق':'Actual result — what was achieved', 'التحديث — وماذا ننتظر بعده':'Update — and what we wait for next', 'سببُ الإغلاق':'Reason for closing', 'وأضف نقطةً جديدةً بدلها':'And add a new item instead', 'سجّل النتيجة وأتمم':'Record result and complete', 'سجّل التحديث':'Record update', 'أغلق النقطة':'Close item', 'أتممتها — سجّل النتيجة':'Completed — record the result', 'تحديث':'Update', 'من أسابيع سابقة بلا نتيجةٍ ولا إغلاق':'From previous weeks with no result and not closed', 'كلُّ نقطةٍ تُتمّ بنتيجة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطة.':'Every item is completed with a result, or updated and awaits further trials, or closed and replaced by a new item.', 'تمّت بنتيجة':'Completed with result', 'أسابيعُ سابقةٌ بلا إغلاق':'Previous weeks not closed', 'كلُّ نقطةٍ في أسبوعها تنتهي إلى واحدةٍ من ثلاث: تُتمّ بنتيجةٍ مكتوبة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطةٌ جديدة. يكتبها المهندس، ويراها المهندسون ومن فوقهم.':'Every item ends its week in one of three ways: completed with a written result, updated and awaiting further trials, or closed and replaced by a new item. The engineer writes it; engineers and above see it.', 'اكتب النتيجة الفعلية':'Write the actual result', 'اكتب التحديث':'Write the update', 'اكتب سبب الإغلاق':'Write the reason for closing', 'بدلًا من':'Instead of', 'تمّت بنتيجتها':'Completed with its result', 'سُجّل التحديث — بانتظار تجارب أخرى':'Update recorded — awaiting further trials', 'اكتملت الخطوات — سجّل النتيجة الفعلية':'Steps completed — record the actual result',
@@ -6717,6 +6739,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'فُتح التطبيقُ بوضعٍ خفيفٍ بعد توقّفٍ مفاجئ — كلُّ شيءٍ محفوظ':'ایپ اچانک رکنے کے بعد ہلکے موڈ میں کھلی — سب کچھ محفوظ ہے',
  'المظهر: داكن ← فاتح ← الشمس':'ظاہری شکل: گہرا ← ہلکا ← دھوپ', 'المظهر: داكن':'ظاہری شکل: گہرا', 'المظهر: فاتح':'ظاہری شکل: ہلکا', 'المظهر: وضع الشمس — للشاشة تحت الشمس':'ظاہری شکل: دھوپ موڈ — دھوپ میں اسکرین کے لیے',
  'تعذّر التصدير':'برآمد ناکام',
  'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها — كلُّ نقطةٍ تُتمّ بنتيجة أو تُحدَّث أو تُغلَق. يراها المهندسون ومن فوقهم.':'انجینئر کا ہفتہ وار منصوبہ: تفصیلات، اقدامات، ضروریات اور نتائج کے ساتھ نکات — ہر نکتہ نتیجے سے مکمل، یا اپڈیٹ، یا بند۔ انجینئر اور اوپر کے لیے۔', 'خطةُ الأسبوع للمهندسين ومن فوقهم.':'ہفتہ وار منصوبہ انجینئر اور اوپر کے لیے۔', 'بانتظار تجارب':'مزید تجربات کے منتظر', 'النتيجة الفعلية':'حقیقی نتیجہ', 'أُغلقت':'بند ہو گیا', 'التحديثات':'اپڈیٹس', 'النتيجة الفعلية — ما الذي تحقّق':'حقیقی نتیجہ — کیا حاصل ہوا', 'التحديث — وماذا ننتظر بعده':'اپڈیٹ — اور آگے کس کا انتظار', 'سببُ الإغلاق':'بند کرنے کی وجہ', 'وأضف نقطةً جديدةً بدلها':'اور اس کی جگہ نیا نکتہ شامل کریں', 'سجّل النتيجة وأتمم':'نتیجہ درج کریں اور مکمل کریں', 'سجّل التحديث':'اپڈیٹ درج کریں', 'أغلق النقطة':'نکتہ بند کریں', 'أتممتها — سجّل النتيجة':'مکمل — نتیجہ درج کریں', 'تحديث':'اپڈیٹ', 'من أسابيع سابقة بلا نتيجةٍ ولا إغلاق':'پچھلے ہفتوں سے بغیر نتیجہ اور بند نہیں', 'كلُّ نقطةٍ تُتمّ بنتيجة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطة.':'ہر نکتہ نتیجے سے مکمل، یا اپڈیٹ اور مزید تجربات کا انتظار، یا بند اور اس کی جگہ نیا نکتہ۔', 'تمّت بنتيجة':'نتیجے کے ساتھ مکمل', 'أسابيعُ سابقةٌ بلا إغلاق':'پچھلے ہفتے بند نہیں', 'كلُّ نقطةٍ في أسبوعها تنتهي إلى واحدةٍ من ثلاث: تُتمّ بنتيجةٍ مكتوبة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطةٌ جديدة. يكتبها المهندس، ويراها المهندسون ومن فوقهم.':'ہر نکتہ اپنے ہفتے میں تین میں سے ایک انجام پاتا ہے: تحریری نتیجے سے مکمل، یا اپڈیٹ اور مزید تجربات کا انتظار، یا بند اور نئے نکتے سے بدل۔ انجینئر لکھتا ہے؛ انجینئر اور اوپر دیکھتے ہیں۔', 'اكتب النتيجة الفعلية':'حقیقی نتیجہ لکھیں', 'اكتب التحديث':'اپڈیٹ لکھیں', 'اكتب سبب الإغلاق':'بند کرنے کی وجہ لکھیں', 'بدلًا من':'کی جگہ', 'تمّت بنتيجتها':'اپنے نتیجے کے ساتھ مکمل', 'سُجّل التحديث — بانتظار تجارب أخرى':'اپڈیٹ درج — مزید تجربات کے منتظر', 'اكتملت الخطوات — سجّل النتيجة الفعلية':'اقدامات مکمل — حقیقی نتیجہ درج کریں',
@@ -22831,6 +22854,7 @@ function mapInit(){
     return true;
   }
 
+  bootStage('map');
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
          .setView([21.38, 39.92], 12);
   try { MAP.whenReady(vitMapReady); } catch (e){ vitMapReady(); }   /* أوّلُ خريطةٍ بعد الفتح (V17.98) */
@@ -24740,7 +24764,18 @@ function swNow(){
   if (SW_RELOADED) return;
   SW_RELOADED = true; swCancel();
   toast(t('تُحدَّث النسخة…'));
-  setTimeout(function(){ try { location.reload(); } catch (e){} }, 400);
+  swLighten();
+  setTimeout(function(){ try { location.reload(); } catch (e){} }, 600);
+}
+/* (V21.9) الانتقالُ إلى النسخة الجديدة كان يُحمِّل الصفحةَ الجديدةَ فوق القديمة بكلِّ ما فيها
+   (خريطةٌ بألفٍ وثمانمئة نقطة، وشجرةُ الصفحة، والإنصاتُ الحيّ) — فذروةُ الذاكرة في سفاري
+   الآيفون تتجاوز حدَّها فيُسقِطها. يُطفأ الثقيلُ أوّلًا ثم يُعاد التحميل. */
+function swLighten(){
+  bootOk('update');
+  try { if (typeof liveStop === 'function') liveStop(); } catch (e){ LS_ERR = e; }
+  try { if (typeof M3 !== 'undefined' && M3 && M3.remove){ M3.remove(); M3 = null; } } catch (e){ LS_ERR = e; }
+  try { if (typeof MAP !== 'undefined' && MAP && MAP.remove){ MAP.remove(); MAP = null; } } catch (e){ LS_ERR = e; }
+  try { ['content', 'mapBox'].forEach(function(id){ var el = document.getElementById(id); if (el) el.innerHTML = ''; }); } catch (e){ LS_ERR = e; }
 }
 /* ═══ النسخةُ تُعلَن من القاعدة ═══
    كان الجهازُ يعرف بالإصدار الجديد حين يسأل الخادمَ كلَّ ربع ساعة — فتبقى أجهزةٌ
@@ -28719,6 +28754,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V21.9', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'التحديث التلقائي أخف على الآيفون: قبل إعادة التحميل تُطفأ الخريطة والصفحة والإنصات الحي — الانتقال للنسخة الجديدة كان يحمّلها فوق القديمة بكل ما فيها فيتجاوز سفاري حدّ الذاكرة.',
+      'حارس الإقلاع: لو توقّف التطبيق فجأة، الفتح التالي يكون خفيفًا (بلا الرجوع لآخر صفحة، وبعد توقّفين على «مهامي») ويُسجَّل أين توقّف — فلا تحتاج مسح بيانات الموقع.' ] },
   { v:'V21.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'زر اللغة «ع» في الأعلى يعمل على الهاتف: قائمة اللغات كانت تُفتح لكن الشريط العلوي يقصّها فلا يظهر منها شيء — صارت تظهر فوق كل شيء.',
       'زر المظهر صار واحدًا بثلاث حالات بدل زرّين متجاورين: داكن ← فاتح ← وضع الشمس (للشاشة تحت الشمس)، وأيقونته تقول الحالة. وأُصلح أن أي لمسة على الخريطة كانت تطفئ وضع الشمس وحدها.' ] },
@@ -36596,11 +36634,22 @@ function enterShell(){
   lsSet('nsk14.session', '1');
   /* الصفحةُ التي كان عليها قبل إعادة التحميل — لا أوّلُ صفحة */
   var sp = null; try { sp = JSON.parse(lsGet('nsk14.page') || 'null'); } catch (e){ LS_ERR = e; }
+  if (BOOT_GUARD.crashes){   /* (V21.9) الإقلاعُ السابقُ مات فجأة: لا نعود إلى حيث مات */
+    var bp = BOOT_GUARD.prev || {};
+    sp = null;
+    if (BOOT_GUARD.crashes >= 2 && seesPage('mywork')) CUR = 'mywork';
+    var bmsg = 'توقّفٌ مفاجئٌ في الإقلاع السابق — المرحلة: ' + (bp.stage || '؟') + ' · الصفحة: ' + (bp.page || '؟') + ' · المرّات: ' + BOOT_GUARD.crashes + ' · ' + appVer();
+    try { logEventQuiet(bmsg); } catch (e){ LS_ERR = e; }   /* صحةُ النظام على الجهاز */
+    try { setTimeout(function(){ try { logEvent(bmsg, ''); } catch (e2){ LS_ERR = e2; } }, 3000); } catch (e){ LS_ERR = e; }   /* وسجلُّ الأحداث في المكتب — بعد استقرار الدخول */
+    setTimeout(function(){ try { toast(t('فُتح التطبيقُ بوضعٍ خفيفٍ بعد توقّفٍ مفاجئ — كلُّ شيءٍ محفوظ')); } catch (e){} }, 1200);
+  }
   if (sp && sp.cur && sp.cur !== 'site' && ((typeof FIELD_PAGES === 'object' && FIELD_PAGES[sp.cur]) || PAGE[sp.cur]) && seesPage(sp.cur)){
     CUR = sp.cur;
     if (sp.tab && TABS[sp.cur]) PTAB[sp.cur] = sp.tab;
   }
+  bootStage('shell');
   render();
+  bootStage('render');
   syncBadge();
   /* أوّلُ دخولٍ لهذا الحساب: تُفتَح الجولةُ بنفسها — ومن رآها لا تُعاد */
   try { tourMaybe(); if (TOUR_OPEN) render(1); } catch (e){ LS_ERR = e; }
