@@ -1078,7 +1078,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V22.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1137,7 +1137,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-2a44922cd5.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-5560feeb1f.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15084,9 +15084,10 @@ function fieldList(){
   var mineOnly = isCrewRole(ROLE) || (effRole(ROLE) === 'supervisor' && !SITES_ALL);
   var base = mineOnly ? mineFiltered() : filtered();
   var view, total;
+  var outside = 0;   /* (V22.1) نتائجُ البحث التي أخفتها التصفيةُ الحالية */
   if (SITE_Q){
     var hits = siteSearch(SITE_Q, 4000);
-    if (filtOn()) hits = hits.filter(filtPass);
+    if (filtOn()){ var allN = hits.length; hits = hits.filter(filtPass); outside = allN - hits.length; }
     total = hits.length;
     view = hits.slice(0, LIST_SHOWN);
   } else {
@@ -15131,7 +15132,12 @@ function fieldList(){
                   + nm(L.length - view.length) + ' متبقية','btn-secondary btn-sm',' data-more="1"')
             + '</div>'
           : '')
-      : '<p class="hint" style="padding:18px;text-align:center;margin:0">لا نتائج لـ«' + esc(SITE_Q) + '».</p>'),
+      : '<p class="hint" style="padding:18px;text-align:center;margin:0">لا نتائج لـ«' + esc(SITE_Q) + '»'
+        /* (V22.1) «بحثتُ عن 0016 فلم يظهر»: التصفيةُ الباقيةُ من قبل (نوعٌ أو مشعرٌ أو حالة) كانت تُخفي
+           النتيجةَ والرسالةُ لا تقول — فيُظَنّ أن النقطةَ غيرُ موجودة */
+        + (outside ? ' ' + esc(t('ضمن التصفية الحالية')) + ' — ' + esc(t('وخارجها')) + ' <b class="num">' + nm(outside) + '</b>.</p>'
+            + '<div style="text-align:center;padding:0 0 16px">' + btn(t('ابحث في الكل'), 'btn-primary btn-sm', ' data-sqall="1"') + '</div>'
+          : '.</p>')),
     '<form class="inline-form" onsubmit="return false">'
     + '<input type="search" id="siteQ" value="' + esc(SITE_Q) + '" placeholder="'
     +   esc(t('ابحث بالمعرّف أو الشاخص أو المربع')) + '" dir="auto">'
@@ -21773,6 +21779,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V22.1', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'البحث في المواقع: لو التصفية الحالية (نوع أو مشعر أو حالة) أخفت ما تبحث عنه، تقول الرسالة «لا نتائج ضمن التصفية الحالية — وخارجها كذا» ومعها «ابحث في الكل» — بدل «لا نتائج» التي توحي أن النقطة غير موجودة.' ] },
   { v:'V22.0', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'أخف بالثلث: قاموسا الإنجليزية والأردو في ملف مستقل يُحمَّل لغير العربية فقط ومرة واحدة — الملف الرئيسي أصغر، فالتحديث أسرع وذروة الذاكرة وقته أقل. العربية لا تنزّله أبدًا.',
       'شاشة الدخول بالإنجليزية أو الأردو تظهر بلغتها، وتغيير اللغة منها يعيدها بلغتها الجديدة ويُبقي اسم المستخدم.' ] },
@@ -29990,6 +29998,7 @@ function clickA(e){
     }
     return true;
   }
+  if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = ''; if (typeof CO_SEL !== 'undefined' && CO_SEL.length) CO_SEL.length = 0; LIST_SHOWN = LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
   if (e.target.closest('[data-mfuedit]')){ MFU_EDIT = e.target.closest('[data-mfuedit]').getAttribute('data-mfuedit') || ''; render(1); return true; }
   if (e.target.closest('[data-mfucosall]')){ MFU_COS_ALL = !MFU_COS_ALL; render(1); return true; }
   if (e.target.closest('[data-mfuchal]')){
