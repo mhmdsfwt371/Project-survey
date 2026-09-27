@@ -13,7 +13,7 @@ const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fai
 const tr = readFileSync('.github/workflows/train.yml', 'utf8'), gate = readFileSync('.github/workflows/docs-check.yml', 'utf8');
 
 console.log('\n══ ١ · شروطُ الترقية ══');
-T(/cron: '0 1 \* \* 0,3'/.test(tr) && /workflow_dispatch: \{\}/.test(tr), 'القطارُ: الأحدُ والأربعاءُ ٠١:٠٠ UTC، ويُطلَق يدًا');
+T(/cron: '0 1 \* \* \*'/.test(tr) && /workflow_dispatch: \{\}/.test(tr), 'القطارُ: كلَّ يومٍ ٠١:٠٠ UTC (٤ فجرًا بمكة — قبل يوم الميدان، V21.9)، ويُطلَق يدًا');
 T(/node scripts\/train-pick\.mjs/.test(tr) && /node scripts\/train-promote\.mjs/.test(tr), 'ويختار بالسكربت ويرقّي بالسكربت نفسِه الذي تستعمله الطوارئ');
 T(/grep -qE '\^Release: hotfix\\s\*\$'/.test(gate) && /node scripts\/train-promote\.mjs "\$\(git rev-parse HEAD\)"/.test(gate), 'والبوابةُ ترقّي فورًا ما يحمل «Release: hotfix» وحدَه');
 T(/context="nusuk\/gate"/.test(gate) && /statuses: write/.test(gate), 'وتكتب حالةَ الالتزام nusuk/gate ليقرأها القطار');
