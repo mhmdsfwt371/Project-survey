@@ -37,6 +37,7 @@ T(!!sel && !!top, 'المبدّلان موجودان: المنسدلةُ وال�
 /* من فوق → المنسدلةُ تتبع */
 click('[data-langmenu]');
 T(!d.getElementById('langMenu').hidden, 'قائمةُ اللغات تُفتَح من الشريط العلوي');
+T(d.getElementById('langMenu').parentNode === d.body && d.getElementById('langMenu').style.position === 'fixed', 'وتُعرَض على الجسد فوق كلِّ شيء — الرأسُ على الهاتف كان يقصّها (V21.8)');
 click('[data-setlang="en"]');
 T(w.LANG==='en', 'اللغةُ تغيّرت من فوق');
 T(sel.value==='en', 'والمنسدلةُ في القائمة تقول English');

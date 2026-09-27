@@ -1078,7 +1078,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V21.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1096,8 +1096,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="جولة البداية" title="جولة البداية" data-i18n-aria="جولة البداية" data-i18n-title="جولة البداية">🎓</button>
         <button type="button" class="tb-btn" data-bugopen="1"
               aria-label="بلّغ عن عطل" title="بلّغ عن عطل" data-i18n-aria="بلّغ عن عطل" data-i18n-title="بلّغ عن عطل">🛠</button>
-      <button type="button" class="tb-btn" id="sunTop" data-sun="1" aria-pressed="false" aria-label="وضع الشمس" title="وضع الشمس" data-i18n-aria="وضع الشمس" data-i18n-title="وضع الشمس">🔆</button>
-      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر" title="المظهر" data-i18n-aria="المظهر" data-i18n-title="المظهر">☾</button>
+      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر: داكن ← فاتح ← الشمس" title="المظهر: داكن ← فاتح ← الشمس" data-i18n-aria="المظهر: داكن ← فاتح ← الشمس" data-i18n-title="المظهر: داكن ← فاتح ← الشمس">☾</button>
       </div>
     </header>
     <div class="mapwrap" id="mapWrap" hidden>
@@ -3935,6 +3934,7 @@ en:{
  'اللون':'Colour', 'الشكل على الخريطة':'Shape on the map', 'دائرة':'Circle', 'مربّع':'Square', 'معيّن':'Diamond', 'مثلّث':'Triangle',
  'أُنجز — أغلق البلاغ':'Done — close the report', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'Report closed — it closes in the repository on the next bridge run', 'أُنجز وأُغلق':'Done and closed',
  'تصحيح البيانات':'Data cleanup', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'Four registry defects — seen by count and fixed in bulk.', 'على إحداثيةٍ واحدة':'On one coordinate', 'مخيمٌ بلا شركة':'Camps without a company', 'اسمٌ مركَّب':'Compound names',
+ 'المظهر: داكن ← فاتح ← الشمس':'Appearance: dark → light → sun', 'المظهر: داكن':'Appearance: dark', 'المظهر: فاتح':'Appearance: light', 'المظهر: وضع الشمس — للشاشة تحت الشمس':'Appearance: sun mode — for screens in sunlight',
  'تعذّر التصدير':'Export failed',
  'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها — كلُّ نقطةٍ تُتمّ بنتيجة أو تُحدَّث أو تُغلَق. يراها المهندسون ومن فوقهم.':'The engineer’s weekly plan: items with details, steps, requirements and results — each item is completed with a result, updated, or closed. Seen by engineers and above.', 'خطةُ الأسبوع للمهندسين ومن فوقهم.':'The weekly plan is for engineers and above.', 'بانتظار تجارب':'Awaiting further trials', 'النتيجة الفعلية':'Actual result', 'أُغلقت':'Closed', 'التحديثات':'Updates', 'النتيجة الفعلية — ما الذي تحقّق':'Actual result — what was achieved', 'التحديث — وماذا ننتظر بعده':'Update — and what we wait for next', 'سببُ الإغلاق':'Reason for closing', 'وأضف نقطةً جديدةً بدلها':'And add a new item instead', 'سجّل النتيجة وأتمم':'Record result and complete', 'سجّل التحديث':'Record update', 'أغلق النقطة':'Close item', 'أتممتها — سجّل النتيجة':'Completed — record the result', 'تحديث':'Update', 'من أسابيع سابقة بلا نتيجةٍ ولا إغلاق':'From previous weeks with no result and not closed', 'كلُّ نقطةٍ تُتمّ بنتيجة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطة.':'Every item is completed with a result, or updated and awaits further trials, or closed and replaced by a new item.', 'تمّت بنتيجة':'Completed with result', 'أسابيعُ سابقةٌ بلا إغلاق':'Previous weeks not closed', 'كلُّ نقطةٍ في أسبوعها تنتهي إلى واحدةٍ من ثلاث: تُتمّ بنتيجةٍ مكتوبة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطةٌ جديدة. يكتبها المهندس، ويراها المهندسون ومن فوقهم.':'Every item ends its week in one of three ways: completed with a written result, updated and awaiting further trials, or closed and replaced by a new item. The engineer writes it; engineers and above see it.', 'اكتب النتيجة الفعلية':'Write the actual result', 'اكتب التحديث':'Write the update', 'اكتب سبب الإغلاق':'Write the reason for closing', 'بدلًا من':'Instead of', 'تمّت بنتيجتها':'Completed with its result', 'سُجّل التحديث — بانتظار تجارب أخرى':'Update recorded — awaiting further trials', 'اكتملت الخطوات — سجّل النتيجة الفعلية':'Steps completed — record the actual result',
  'خطة الأسبوع':'Weekly plan', 'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها المرجوّة — له وحدَه.':'The engineer’s plan for the week: items with details, steps, requirements and expected results — for the engineer alone.', 'خطةُ الأسبوع للمهندس وحده.':'The weekly plan is for the engineer alone.', 'تعديل النقطة':'Edit item', 'نقطةٌ جديدة في خطة الأسبوع':'New item in the weekly plan', 'الأولوية':'Priority', 'التفاصيل والملاحظات':'Details and notes', 'الخطوات — خطوةٌ في كلِّ سطر':'Steps — one per line', 'الاحتياجات والمتطلبات':'Needs and requirements', 'النتيجة المرجوّة':'Expected result', 'احفظ التعديل':'Save changes', 'أضف إلى الخطة':'Add to plan', 'مهمة أسبوعية':'Weekly task', 'رحّل للأسبوع القادم':'Carry over to next week', 'نقاطُ الخطة':'Plan items', 'تمّت':'Done', 'الخطواتُ المنجزة':'Steps completed', 'إكسل — خطة الأسبوع':'Excel — weekly plan', 'لا نقاطَ في هذا الأسبوع بعد.':'No items in this week yet.', 'الخطةُ دفترُ المهندس: يراها ويكتبها هو وحده. النقطةُ تصير مهمةً أسبوعيةً بضغطة — وما لم يُنجَز يُرحَّل إلى الأسبوع القادم.':'The plan is the engineer’s notebook: only they see and write it. An item becomes a weekly task in one tap — and what is not done carries over to next week.', 'اكتب عنوان النقطة':'Write the item title', 'حُفظ التعديل':'Changes saved', 'أُضيفت إلى الخطة':'Added to the plan', 'رُحّلت إلى':'Carried over to', 'أُنشئت المهمةُ الأسبوعية':'Weekly task created', 'من خطة الأسبوع':'From the weekly plan', 'مخطط':'Planned', 'مؤجَّل':'Postponed', 'متوسطة':'Medium', 'منخفضة':'Low',
@@ -6717,6 +6717,7 @@ ur:{
  'اللون':'رنگ', 'الشكل على الخريطة':'نقشے پر شکل', 'دائرة':'دائرہ', 'مربّع':'مربع', 'معيّن':'ہیرا', 'مثلّث':'مثلث',
  'أُنجز — أغلق البلاغ':'ہو گیا — رپورٹ بند کریں', 'أُغلق البلاغُ — ويُغلَق في المستودع مع دورة الجسر':'رپورٹ بند — اگلے برج رن پر ریپو میں بھی بند', 'أُنجز وأُغلق':'مکمل اور بند',
  'تصحيح البيانات':'ڈیٹا کی صفائی', 'أربعةُ عيوبٍ في السجل — تُرى بعددها وتُصلَح دفعةً.':'رجسٹر کے چار نقائص — گنتی کے ساتھ اور یکمشت درست۔', 'على إحداثيةٍ واحدة':'ایک ہی محلِ وقوع پر', 'مخيمٌ بلا شركة':'بغیر کمپنی کیمپ', 'اسمٌ مركَّب':'مرکب نام',
+ 'المظهر: داكن ← فاتح ← الشمس':'ظاہری شکل: گہرا ← ہلکا ← دھوپ', 'المظهر: داكن':'ظاہری شکل: گہرا', 'المظهر: فاتح':'ظاہری شکل: ہلکا', 'المظهر: وضع الشمس — للشاشة تحت الشمس':'ظاہری شکل: دھوپ موڈ — دھوپ میں اسکرین کے لیے',
  'تعذّر التصدير':'برآمد ناکام',
  'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها — كلُّ نقطةٍ تُتمّ بنتيجة أو تُحدَّث أو تُغلَق. يراها المهندسون ومن فوقهم.':'انجینئر کا ہفتہ وار منصوبہ: تفصیلات، اقدامات، ضروریات اور نتائج کے ساتھ نکات — ہر نکتہ نتیجے سے مکمل، یا اپڈیٹ، یا بند۔ انجینئر اور اوپر کے لیے۔', 'خطةُ الأسبوع للمهندسين ومن فوقهم.':'ہفتہ وار منصوبہ انجینئر اور اوپر کے لیے۔', 'بانتظار تجارب':'مزید تجربات کے منتظر', 'النتيجة الفعلية':'حقیقی نتیجہ', 'أُغلقت':'بند ہو گیا', 'التحديثات':'اپڈیٹس', 'النتيجة الفعلية — ما الذي تحقّق':'حقیقی نتیجہ — کیا حاصل ہوا', 'التحديث — وماذا ننتظر بعده':'اپڈیٹ — اور آگے کس کا انتظار', 'سببُ الإغلاق':'بند کرنے کی وجہ', 'وأضف نقطةً جديدةً بدلها':'اور اس کی جگہ نیا نکتہ شامل کریں', 'سجّل النتيجة وأتمم':'نتیجہ درج کریں اور مکمل کریں', 'سجّل التحديث':'اپڈیٹ درج کریں', 'أغلق النقطة':'نکتہ بند کریں', 'أتممتها — سجّل النتيجة':'مکمل — نتیجہ درج کریں', 'تحديث':'اپڈیٹ', 'من أسابيع سابقة بلا نتيجةٍ ولا إغلاق':'پچھلے ہفتوں سے بغیر نتیجہ اور بند نہیں', 'كلُّ نقطةٍ تُتمّ بنتيجة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطة.':'ہر نکتہ نتیجے سے مکمل، یا اپڈیٹ اور مزید تجربات کا انتظار، یا بند اور اس کی جگہ نیا نکتہ۔', 'تمّت بنتيجة':'نتیجے کے ساتھ مکمل', 'أسابيعُ سابقةٌ بلا إغلاق':'پچھلے ہفتے بند نہیں', 'كلُّ نقطةٍ في أسبوعها تنتهي إلى واحدةٍ من ثلاث: تُتمّ بنتيجةٍ مكتوبة، أو تُحدَّث وتنتظر تجاربَ أخرى، أو تُغلَق وتُضاف بدلها نقطةٌ جديدة. يكتبها المهندس، ويراها المهندسون ومن فوقهم.':'ہر نکتہ اپنے ہفتے میں تین میں سے ایک انجام پاتا ہے: تحریری نتیجے سے مکمل، یا اپڈیٹ اور مزید تجربات کا انتظار، یا بند اور نئے نکتے سے بدل۔ انجینئر لکھتا ہے؛ انجینئر اور اوپر دیکھتے ہیں۔', 'اكتب النتيجة الفعلية':'حقیقی نتیجہ لکھیں', 'اكتب التحديث':'اپڈیٹ لکھیں', 'اكتب سبب الإغلاق':'بند کرنے کی وجہ لکھیں', 'بدلًا من':'کی جگہ', 'تمّت بنتيجتها':'اپنے نتیجے کے ساتھ مکمل', 'سُجّل التحديث — بانتظار تجارب أخرى':'اپڈیٹ درج — مزید تجربات کے منتظر', 'اكتملت الخطوات — سجّل النتيجة الفعلية':'اقدامات مکمل — حقیقی نتیجہ درج کریں',
  'خطة الأسبوع':'ہفتہ وار منصوبہ', 'خطةُ المهندس للأسبوع: نقاطٌ بتفاصيلها وخطواتها ومتطلباتها ونتائجها المرجوّة — له وحدَه.':'ہفتے کے لیے انجینئر کا منصوبہ: تفصیلات، اقدامات، ضروریات اور متوقع نتائج کے ساتھ نکات — صرف انجینئر کے لیے۔', 'خطةُ الأسبوع للمهندس وحده.':'ہفتہ وار منصوبہ صرف انجینئر کے لیے۔', 'تعديل النقطة':'نکتہ ترمیم', 'نقطةٌ جديدة في خطة الأسبوع':'ہفتہ وار منصوبے میں نیا نکتہ', 'الأولوية':'ترجیح', 'التفاصيل والملاحظات':'تفصیلات اور نوٹس', 'الخطوات — خطوةٌ في كلِّ سطر':'اقدامات — ہر سطر میں ایک', 'الاحتياجات والمتطلبات':'ضروریات اور تقاضے', 'النتيجة المرجوّة':'متوقع نتیجہ', 'احفظ التعديل':'ترمیم محفوظ کریں', 'أضف إلى الخطة':'منصوبے میں شامل کریں', 'مهمة أسبوعية':'ہفتہ وار کام', 'رحّل للأسبوع القادم':'اگلے ہفتے منتقل کریں', 'نقاطُ الخطة':'منصوبے کے نکات', 'تمّت':'مکمل', 'الخطواتُ المنجزة':'مکمل اقدامات', 'إكسل — خطة الأسبوع':'ایکسل — ہفتہ وار منصوبہ', 'لا نقاطَ في هذا الأسبوع بعد.':'اس ہفتے ابھی کوئی نکتہ نہیں۔', 'الخطةُ دفترُ المهندس: يراها ويكتبها هو وحده. النقطةُ تصير مهمةً أسبوعيةً بضغطة — وما لم يُنجَز يُرحَّل إلى الأسبوع القادم.':'منصوبہ انجینئر کی ڈائری ہے: صرف وہ دیکھتا اور لکھتا ہے۔ نکتہ ایک ٹیپ سے ہفتہ وار کام بنتا ہے — اور جو مکمل نہ ہو اگلے ہفتے منتقل۔', 'اكتب عنوان النقطة':'نکتے کا عنوان لکھیں', 'حُفظ التعديل':'ترمیم محفوظ', 'أُضيفت إلى الخطة':'منصوبے میں شامل', 'رُحّلت إلى':'منتقل بہ', 'أُنشئت المهمةُ الأسبوعية':'ہفتہ وار کام بن گیا', 'من خطة الأسبوع':'ہفتہ وار منصوبے سے', 'مخطط':'منصوبہ بند', 'مؤجَّل':'مؤخر', 'متوسطة':'درمیانی', 'منخفضة':'کم',
@@ -6982,16 +6983,22 @@ function sunSet(on){
 function sunApply(){
   var on = SUN_ON && !(typeof KIOSK_ON !== 'undefined' && KIOSK_ON);
   if (on) document.documentElement.setAttribute('data-sun', '1'); else document.documentElement.removeAttribute('data-sun');
-  var b = document.getElementById('sunTop'); if (b){ b.setAttribute('aria-pressed', on ? 'true' : 'false'); b.classList.toggle('on', on); }
+  try { themeIcon(); } catch (e){ LS_ERR = e; }   /* زرُّ المظهر الواحد يقول الحالة (V21.8) */
   try { if (typeof mapPaint === 'function' && MAP) mapPaint(); } catch (e){ LS_ERR = e; }
+}
+/* أيقونةُ المظهر الحاليّ على زرِّه الوحيد (V21.8): ☾ داكن · ☀ فاتح · 🔆 الشمس */
+function themeIcon(){
+  var b2 = document.getElementById('themeTop'); if (!b2) return;
+  var sun = typeof SUN_ON !== 'undefined' && SUN_ON, lt = document.documentElement.getAttribute('data-theme') === 'light';
+  b2.textContent = sun ? '\u{1F506}' : (lt ? '\u2600' : '\u263D');
+  b2.classList.toggle('on', !!sun);
 }
 function setTheme(m){
   document.documentElement.setAttribute('data-theme', m);
   lsSet('nsk14.theme', m);
   var b = document.getElementById('themeBtn');
   if (b) b.textContent = (m === 'dark') ? '\u2600' : '\u263D';
-  var b2 = document.getElementById('themeTop');
-  if (b2) b2.textContent = (m === 'dark') ? '\u2600' : '\u263D';
+  themeIcon();
   try{ if (typeof mapTheme === 'function') mapTheme(); }catch(e){}
 }
 
@@ -28712,6 +28719,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V21.8', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
+      'زر اللغة «ع» في الأعلى يعمل على الهاتف: قائمة اللغات كانت تُفتح لكن الشريط العلوي يقصّها فلا يظهر منها شيء — صارت تظهر فوق كل شيء.',
+      'زر المظهر صار واحدًا بثلاث حالات بدل زرّين متجاورين: داكن ← فاتح ← وضع الشمس (للشاشة تحت الشمس)، وأيقونته تقول الحالة. وأُصلح أن أي لمسة على الخريطة كانت تطفئ وضع الشمس وحدها.' ] },
   { v:'V21.7', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
       'رجوع احترازي: القواميس عادت داخل الملف الرئيسي كما كانت في V21.5 — بعد بلاغ توقّف متكرّر للتطبيق على آيفون عقب تجربة تغيير اللغة. ما يتغيّر عليك شيء، والتسريع يعود بعد التحقق على آيفون حقيقي.' ] },
   { v:'V21.5', d:'٢٧ سبتمبر ٢٠٢٦', notes:[
@@ -36973,7 +36983,9 @@ function clickA(e){
   if (e.target.closest('[data-basemaprm]')){ basemapRemove(); return true; }
   if (e.target.closest('[data-scan]')){ scanOpen(e.target.closest('[data-scan]').getAttribute('data-scan')); return true; }
   if (e.target.closest('[data-scanx]')){ scanClose(); return true; }
-  if (e.target.closest('[data-sun]')){ sunSet(!SUN_ON); toast(t(SUN_ON ? 'وضعُ الشمس: يعمل' : 'وضعُ الشمس: أُطفئ')); return true; }
+  /* (V21.8) :not(html) — وضعُ الشمس يضع data-sun على <html> نفسِه، فكانت أيُّ لمسةٍ لم يلتقطها
+     معالجٌ قبله (على الخريطة مثلًا) تجد «[data-sun]» في أعلى الشجرة فتطفئه وحدَها */
+  if (e.target.closest('[data-sun]:not(html)')){ sunSet(!SUN_ON); themeIcon(); toast(t(SUN_ON ? 'وضعُ الشمس: يعمل' : 'وضعُ الشمس: أُطفئ')); return true; }
   if (e.target.closest('[data-budalert]')){
     if (!may('users')) return true;
     cfgSet('budgetAlert', null, +e.target.closest('[data-budalert]').getAttribute('data-budalert') ? 1 : 0); render(1); return true;   /* cfgSet تدفع إلى settings/points بنفسها */
@@ -38802,6 +38814,19 @@ if (window.visualViewport){
     if (open){ langPaint(); langSync(); }
     mn.hidden = !open;
     bt.setAttribute('aria-expanded', open ? 'true' : 'false');
+    /* (V21.8) «ع لا تعمل من فوق»: القائمةُ كانت تُفتَح فعلًا، لكنّ الرأسَ على الهاتف
+       (overflow-x:hidden يجعل الرأسيَّ auto) يقصّ كلَّ ما ينزل تحته — فلا يُرى منها شيء.
+       صارت تُنقَل إلى الجسد وتُثبَّت تحت الحرف بإحداثيّاته، فوق الخريطة وكلِّ شيء. */
+    if (open){
+      try {
+        if (mn.parentNode !== document.body) document.body.appendChild(mn);
+        var r = bt.getBoundingClientRect(), vw = window.innerWidth || document.documentElement.clientWidth || 360;
+        mn.style.position = 'fixed'; mn.style.insetInlineEnd = 'auto'; mn.style.right = 'auto';
+        mn.style.top = Math.round(r.bottom + 6) + 'px';
+        var mw = mn.offsetWidth || 172;
+        mn.style.left = Math.round(Math.max(8, Math.min(r.right - mw, vw - mw - 8))) + 'px';
+      } catch (e){ LS_ERR = e; }
+    }
   }
   document.addEventListener('click', function(e){
     try { boxAction(e); } catch (e0){ BOX_ERR = e0; }   /* الصندوقُ الأسود: معرِّفُ الفعل (V17.98) */
@@ -38813,9 +38838,15 @@ if (window.visualViewport){
   });
   var tt = document.getElementById('themeTop');
   if (tt) tt.onclick = function(){
-    setTheme(document.documentElement.getAttribute('data-theme') === 'light' ? 'dark' : 'light');
+    /* (V21.8) زرٌّ واحدٌ بدل زرّين متجاورين: داكن ← فاتح ← الشمس ← داكن */
+    var cur = document.documentElement.getAttribute('data-theme');
+    if (SUN_ON){ sunSet(false); setTheme('dark'); toast(t('المظهر: داكن')); }
+    else if (cur !== 'light'){ setTheme('light'); toast(t('المظهر: فاتح')); }
+    else { sunSet(true); toast(t('المظهر: وضع الشمس — للشاشة تحت الشمس')); }
+    themeIcon();
     render(1);
   };
+  themeIcon();
 
   document.getElementById('themeBtn').onclick = function(){
     setTheme(document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');

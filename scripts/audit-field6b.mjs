@@ -47,8 +47,11 @@ async function boot(opts){
 console.log('\n══ ٢ · وضعُ الشمس يعمل ويبقى ══');
 {
   const { w, d, wait, dom } = await boot({});
-  T(!!d.getElementById('sunTop') && !d.documentElement.hasAttribute('data-sun'), 'زرٌّ في الرأس، والوضعُ مطفأٌ افتراضًا');
-  d.getElementById('sunTop').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(50);
+  T(!!d.getElementById('themeTop') && !d.getElementById('sunTop') && !d.documentElement.hasAttribute('data-sun'), 'زرُّ مظهرٍ واحدٌ في الرأس (V21.8)، والوضعُ مطفأٌ افتراضًا');
+  for (let i = 0; i < 3 && !d.documentElement.hasAttribute('data-sun'); i++){ d.getElementById('themeTop').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(50); }
+  T(d.getElementById('themeTop').textContent.trim() === '\u{1F506}', 'وأيقونتُه تقول الحالة: 🔆');
+  const map0 = d.getElementById('content') || d.body; map0.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(40);
+  T(d.documentElement.getAttribute('data-sun') === '1', 'ولمسةٌ في أيِّ مكانٍ لا تطفئه — كان <html data-sun> يطابق [data-sun] (V21.8)');
   T(d.documentElement.getAttribute('data-sun') === '1' && w.localStorage.getItem('nsk14.sun') === '1', 'ضغطةٌ تشغّله ويُحفَظ للجهاز');
   w.KIOSK_ON = true; w.sunApply(); T(!d.documentElement.hasAttribute('data-sun'), 'وفي القاعة يُطفَأ'); w.KIOSK_ON = false; w.sunApply();
   dom.window.close();
