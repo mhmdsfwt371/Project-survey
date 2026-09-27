@@ -1149,7 +1149,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-fef5e0b154.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-7923bb6629.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6158,6 +6158,7 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
    سجلّ الأحداث. والمسحُ المعتمدُ إذا عدّله غيرُ المهندس عاد لانتظار الاعتماد — القاعدةُ لا تسمح
    لغيره بالكتابة على المعتمد، والتغييرُ على المعتمد يراه صاحبُ الاعتماد؛ ويُنبَّه المهندسُ في الحالين. */
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
+var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
 var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
 var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
@@ -29685,7 +29686,7 @@ function navHtml(){
 var FIELD_PAGES = {
   /* الخريطةُ حاويةٌ ثابتةٌ تُظهَر وتُخفى — واجهتُها في #mapUI لا في المحتوى */
   map:   { m:'الميدان', t:'الخريطة', full:true, body:function(){ return ''; } },
-  sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:function(){ return fieldList() + hiddenSitesCard() + (may('settings') ? typesCard() : ''); } },   /* التصنيفاتُ هنا أيضًا (V23.0) */
+  sites: { m:'الميدان', t:'المواقع', l:'الأقرب أولًا — وبحث بالشاخص.', body:function(){ return fieldList() + hiddenSitesCard() + (may('settings') ? (TYPES_OPEN ? typesCard() + '<div class="actions">' + btn('\u25B2 ' + t('إخفاء التصنيفات'), 'btn-quiet btn-sm', ' data-typesopen="0"') + '</div>' : card('\u{1F3F7} ' + t('التصنيفات'), '<p class="hint" style="margin:0">' + esc(t('أضف تصنيفًا أو احذفه، وانقل نقاطه إلى غيره. ولنقل نقاطٍ بعينها: حدّدها على الخريطة ثم «أو انقل المحدَّد إلى تصنيف» في لوح الإسناد.')) + '</p>', btn(t('افتح'), 'btn-secondary btn-sm', ' data-typesopen="1"'))) : ''); } },   /* التصنيفاتُ هنا أيضًا — مطويّةً (V23.0) */
   recs:  { m:'الميدان', t:'السجلات', l:'ما جرى في الميدان بالترتيب.', body:fieldRecords },
   tools: { m:'الميدان', t:'الأدوات', l:'التصديرات والمزامنة.', body:fieldTools }
 };
@@ -31344,6 +31345,7 @@ function onDocClick(e){
   var vkd = e.target.closest('[data-vkdel]');
   if (vkd){ vehKindDel(vkd.getAttribute('data-vkdel')); return; }
   if (e.target.closest('[data-tyadd]')){ typeAdd(); return; }
+  if (e.target.closest('[data-typesopen]')){ TYPES_OPEN = e.target.closest('[data-typesopen]').getAttribute('data-typesopen') === '1'; render(1); return; }
   if (e.target.closest('[data-seltype]')){ var stv = (document.getElementById('selType') || {}).value; if (selSetType(stv)){ ASN_OPEN = false; if (typeof mapPaint === 'function' && MAP) mapPaint(); } render(1); return; }   /* (V23.0) */
   var tym = e.target.closest('[data-tymove]');   /* (V23.0) */
   if (tym){ var tk0 = tym.getAttribute('data-tymove'), tsel = document.getElementById('tyMv_' + tk0); typeMoveDel(tk0, tsel ? tsel.value : ''); render(1); return; }

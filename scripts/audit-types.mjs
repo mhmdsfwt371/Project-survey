@@ -28,7 +28,9 @@ console.log('\n══ ١ · إضافةُ تصنيفٍ ونقلُ المحدَّ�
 { const { w, d, dom } = await boot('engineer');
   const wrote = []; const C0 = w.CORE.set; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]); return C0.call(w.CORE, k, id, v); };
   w.goPage('sites'); w.render(1); await wait(60);
-  T(!!d.querySelector('#content [data-tyadd]'), 'بطاقةُ التصنيفات في «المواقع» للمهندس');
+  T(!d.querySelector('#content [data-tyadd]') && !!d.querySelector('#content [data-typesopen="1"]'), 'في «المواقع» بطاقةُ التصنيفات مطويّة — لا تثقل الصفحة');
+  await click(w, d, '#content [data-typesopen="1"]');
+  T(!!d.querySelector('#content [data-tyadd]'), 'و«افتح» تعرضها كاملةً للمهندس');
   d.getElementById('tyK').value = 'كاميرات الجمرات'; d.getElementById('tyL').value = 'كاميرات الوزارة — الجمرات';
   await click(w, d, '#content [data-tyadd]');
   T(!!w.typesList()['كاميرات الجمرات'], 'أُضيف التصنيف');
@@ -43,7 +45,7 @@ console.log('\n══ ١ · إضافةُ تصنيفٍ ونقلُ المحدَّ�
   T(!!w.STATE.recs['NSK-JMR-CAM-0001'] && w.SEL_N === 0, 'والزيارةُ باقيةٌ على نقطتها، والتحديدُ فُرِّغ');
 
   console.log('\n══ ٢ · حذفُ تصنيفٍ عليه نقاطٌ بعد نقلها ══');
-  w.goPage('sites'); w.render(1); await wait(60);
+  w.goPage('sites'); w.TYPES_OPEN = true; w.render(1); await wait(60);
   const mv = d.getElementById('tyMv_كاميرات الجمرات');
   T(!!mv && !!d.querySelector('[data-tymove="كاميرات الجمرات"]'), 'المستعمَلُ يعرض «انقل نقاطه إلى…» و«انقل واحذف» بدل «مستعمل»');
   mv.value = 'كاميرا'; await click(w, d, '[data-tymove="كاميرات الجمرات"]');
