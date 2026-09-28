@@ -31,7 +31,7 @@ T(e14 && Math.abs(e14[0] - 21.420389) > 0.0005 && e18 && n5 && Math.hypot((e18[0
 console.log('\n══ خطوطُ المسار متجهاتٌ على الممرّات (V24.2) ══');
 const RT = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8'));
 const FL = Object.keys(RT.floors || {});
-T(FL.length === 5 && FL.every(k => (RT.floors[k].go || []).length > 10 && (RT.floors[k].back || []).length > 10), 'لكلِّ دورٍ من الخمسة خطوطُ ذهابٍ وعودة: ' + FL.map(k => RT.floors[k].go.length + '/' + RT.floors[k].back.length).join(' · '));
+T(RT.src === 'streets' && FL.length === 5 && FL.every(k => (RT.floors[k].go || []).length >= 3 && (RT.floors[k].back || []).length >= 3), 'لكلِّ دورٍ من الخمسة خطوطُ ذهابٍ وعودةٍ على الشوارع الفعلية: ' + FL.map(k => RT.floors[k].go.length + '/' + RT.floors[k].back.length).join(' · '));
 /* الدقّة: رؤوسُ الخطوط في الممرّات لا داخل المخيمات — عيّنةٌ ثابتةٌ من الرؤوس تُختبَر على مضلّعات poly.json */
 const PL = JSON.parse(readFileSync('poly.json', 'utf8'));
 const polys = Object.values(PL).filter(p => p && p.length > 2).map(p => { let a = 1e9, b = -1e9, c = 1e9, d = -1e9; p.forEach(q => { a = Math.min(a, q[0]); b = Math.max(b, q[0]); c = Math.min(c, q[1]); d = Math.max(d, q[1]); }); return { p, a, b, c, d }; });
@@ -42,6 +42,7 @@ const inside = samp.filter(v => polys.some(o => v[1] >= o.a && v[1] <= o.b && v[
 T(samp.length > 300 && inside / samp.length < 0.03, 'ورؤوسُها في الممرّات بين المخيمات: ' + inside + ' من ' + samp.length + ' داخل مخيم (الحدُّ ٣٪)');
 const tl = fn('tfwLines');
 T(/L\.polyline\(pts, \{ renderer:MAP_CV/.test(tl) && /interactive:false/.test(tl) && /tafweej-routes\.json/.test(tl) && /bringToBack\(\)/.test(tl), 'تُرسَم على لوح النقاط بلا نقر، مرّةَ تحميلٍ واحدة، والمخيماتُ خلفها والنقاطُ فوقها');
+T(/data-tfw="' \+ TFW_ALL/.test(html) && /data-tfwd=/.test(html) && /TFW\.d !== 'both' && TFW\.d !== k\[0\]/.test(tl) && /TFW_COL\[\+fk\]/.test(tl), 'الفلتر: كلُّ الأدوار معًا بلونٍ لكلِّ دور، أو كلُّ دورٍ وحدَه، والذهابُ والعودةُ معًا أو كلٌّ وحدَه');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ خفّة الخريطة نظيف \u2705');

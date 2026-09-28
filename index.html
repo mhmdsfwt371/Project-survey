@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-eda430755e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-9e8ba23f41.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4099,7 +4099,8 @@ function camInfoRows(x, kvf){
    المسجَّلة نفسِها (مقياسٌ وإزاحةٌ ودورانٌ يُنزِل أكبرَ عددٍ من المخيمات على مضلّعاتها)، ثم لكلِّ دورٍ
    صورةٌ شفافةٌ بمخيماته ومسارَي الذهاب (أصفر) والعودة (أحمر)، ولكلِّ مخيمٍ دورُه. تُحمَّل عند الطلب
    من layers/ (لا تثقل الملفَّ الرئيسيّ) وتُخزَّن للعمل بلا شبكة. */
-var TFW = { f:-1, data:null, overlay:null, busy:false };
+var TFW = { f:-1, d:'both', data:null, overlay:null, busy:false };   /* (V24.3) f=5 كلُّ الأدوار معًا، وd اتجاهُ العرض: both | go | back */
+var TFW_ALL = 5, TFW_COL = ['#F5C400', '#FF7A00', '#3AD6A0', '#4BC9F5', '#C77DFF'];
 var TFW_FL = ['الأرضي', 'الأول', 'الثاني', 'الثالث', 'الرابع'];
 function tfwLoad(){
   if (TFW.data || TFW.busy || typeof fetch !== 'function') return;
@@ -4118,7 +4119,7 @@ function tfwPaint(){
      وهي تحت لوح النقاط فتبقى النقاطُ فوقها تُرى وتُنقَر. (V24.2) ولم تعد تحمل خطوطَ المسار: الصورةُ
      مساحاتُ مخيمات الدور وحدَها، والمسارُ متجهاتٌ على خطِّ منتصف الممرّ الفعليّ (tafweej-routes.json) */
   if (!MAP.getPane('tfw')){ MAP.createPane('tfw'); MAP.getPane('tfw').style.zIndex = 350; MAP.getPane('tfw').style.pointerEvents = 'none'; }
-  TFW.overlay = L.imageOverlay('layers/tafweej-' + TFW.f + '.png?v=' + (TFW.data.v || 1), TFW.data.bounds, { opacity:0.55, interactive:false, pane:'tfw' }).addTo(MAP);
+  if (TFW.f < TFW_ALL) TFW.overlay = L.imageOverlay('layers/tafweej-' + TFW.f + '.png?v=' + (TFW.data.v || 1), TFW.data.bounds, { opacity:0.55, interactive:false, pane:'tfw' }).addTo(MAP);
   tfwLines();
 }
 /* خطوطُ المسار متجهاتٌ على اللوح نفسِه (V24.2): حادّةٌ في كلِّ تقريب، ومئةُ كيلوبايتٍ للأدوار الخمسة
@@ -4135,12 +4136,17 @@ function tfwLines(){
   }
   if (!TFW.lines) TFW.lines = L.layerGroup().addTo(MAP);
   TFW.lines.clearLayers();
-  var fl = (TFW.routes.floors || {})[String(TFW.f)] || {}, made = [];
-  [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){
-    (fl[k[0]] || []).forEach(function(pts){
-      if (!pts || pts.length < 2) return;
-      var ln = L.polyline(pts, { renderer:MAP_CV, color:k[1], weight:4, opacity:0.95, lineCap:'round', lineJoin:'round', interactive:false });
-      ln.addTo(TFW.lines); made.push(ln);
+  /* (V24.3) دورٌ واحدٌ: الذهابُ أصفرُ والعودةُ حمراء — وكلُّ الأدوار: لكلِّ دورٍ لونُه والعودةُ متقطّعة */
+  var all = TFW.f === TFW_ALL, floors = all ? ['0', '1', '2', '3', '4'] : [String(TFW.f)], made = [];
+  floors.forEach(function(fk){
+    var fl = (TFW.routes.floors || {})[fk] || {};
+    [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){
+      if (TFW.d !== 'both' && TFW.d !== k[0]) return;
+      (fl[k[0]] || []).forEach(function(pts){
+        if (!pts || pts.length < 2) return;
+        var ln = L.polyline(pts, { renderer:MAP_CV, color: all ? TFW_COL[+fk] : k[1], weight: all ? 3.5 : 4, opacity:0.95, dashArray: all && k[0] === 'back' ? '7 6' : null, lineCap:'round', lineJoin:'round', interactive:false });
+        ln.addTo(TFW.lines); made.push(ln);
+      });
     });
   });
   /* الترتيبُ على اللوح: المخيماتُ في الخلف، ثم الخطوط، ثم النقاط */
@@ -4152,8 +4158,14 @@ function tfwFloorOf(id){ return (TFW.data && TFW.data.assign && TFW.data.assign[
 function tfwRow(){
   var h = '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">\u{1F6B6} ' + esc(t('مسار التفويج')) + '</span>'
     + '<button type="button" class="cat' + (TFW.f < 0 ? ' on' : '') + '" data-tfw="-1">' + esc(t('إخفاء')) + '</button>'
+    + '<button type="button" class="cat' + (TFW.f === TFW_ALL ? ' on' : '') + '" data-tfw="' + TFW_ALL + '">' + esc(t('كل الأدوار')) + '</button>'
     + TFW_FL.map(function(n, i){ return '<button type="button" class="cat' + (TFW.f === i ? ' on' : '') + '" data-tfw="' + i + '">' + esc(t('الدور') + ' ' + t(n)) + '</button>'; }).join('') + '</div>';
-  var F = TFW.f >= 0 && TFW.data ? TFW.data.floors[TFW.f] : null;
+  /* (V24.3) الاتجاه: الذهابُ والعودةُ معًا أو كلٌّ وحدَه — ومع «كل الأدوار» لكلِّ دورٍ لونُه والعودةُ متقطّعة */
+  if (TFW.f >= 0) h += '<div class="catrow">' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب'], ['back', 'العودة']].map(function(o){
+      return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
+  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + '</span>'; }).join('')
+      + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
+  var F = TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data ? TFW.data.floors[TFW.f] : null;
   if (TFW.f >= 0 && !TFW.data) h += '<p class="hint" style="margin:4px 0 0">' + esc(t('تُحمَّل الطبقة…')) + '</p>';
   if (F){
     var by = Object.keys(F.near.by || {}).map(function(k){ return typeLabel(k) + ' ' + nm(F.near.by[k]); }).join(' \u00b7 ');
@@ -22470,6 +22482,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V24.3', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'مسارات التفويج صارت مرسومة على الشوارع الفعلية نفسها بأسمائها، متصلة وطبيعية الشكل؛ وما كان ناقصا في مخطط الوزارة أكمل بأقرب طريق على الشوارع نفسها، ولا يمر مسار داخل مخيم.',
+      'في تصفية الخريطة صار لمسار التفويج «كل الأدوار» معا بلون لكل دور، أو كل دور وحده؛ ومعها اختيار الذهاب والعودة معا أو كل منهما وحده.' ] },
   { v:'V24.2', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'خطوط مسار التفويج صارت خطوطا دقيقة مرسومة على منتصف الممر الفعلي بين المخيمات، لا صورة منسوخة من المخطط: حادة في كل تقريب، ولا تعبر فوق أي مخيم، وتحمل في لحظة.',
       'صورة كل دور صارت تبين مخيماته فقط، والخط الأصفر للذهاب والأحمر للعودة فوقها وتحت نقاطنا، فتبقى النقاط ظاهرة وتفتح بالضغط.' ] },
@@ -31145,6 +31160,8 @@ function clickA(e){
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var tfb = e.target.closest('[data-tfw]');   /* (V23.2) */
   if (tfb){ TFW.f = +tfb.getAttribute('data-tfw'); if (TFW.f >= 0) tfwLoad(); tfwPaint(); render(1); return true; }
+  var tfd = e.target.closest('[data-tfwd]');   /* (V24.3) اتجاهُ المسار: الذهابُ والعودةُ أو كلٌّ وحدَه */
+  if (tfd){ TFW.d = tfd.getAttribute('data-tfwd'); tfwLines(); render(1); return true; }
   var ffl = e.target.closest('[data-ffl]');
   if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.2) */

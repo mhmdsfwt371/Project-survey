@@ -27,7 +27,7 @@ d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass12
 await wait(1400); w.toast = () => {};
 w.goPage('map'); w.FLT_OPEN = true; w.render(1); await wait(60);
 const html2 = w.catBar(false);
-T(/مسار التفويج/.test(html2) && (html2.match(/data-tfw=/g) || []).length === 6, 'في تصفية الخريطة صفُّ «مسار التفويج»: إخفاءٌ وخمسةُ أدوار');
+T(/مسار التفويج/.test(html2) && (html2.match(/data-tfw=/g) || []).length === 7 && /كل الأدوار/.test(html2), 'في تصفية الخريطة صفُّ «مسار التفويج»: إخفاءٌ وكلُّ الأدوار وخمسةُ أدوار');
 T(fetched === 0 && !w.TFW.data, 'ولا تُحمَّل الطبقةُ قبل أن تُطلَب');
 const box = d.createElement('div'); box.innerHTML = html2; d.body.appendChild(box);
 box.querySelector('[data-tfw="1"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
