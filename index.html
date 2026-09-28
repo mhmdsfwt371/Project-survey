@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-9e8ba23f41.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-91024cc1e4.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4131,11 +4131,19 @@ function tfwLines(){
     TFW.rbusy = true;
     fetch('layers/tafweej-routes.json?v=' + (TFW.data.v || 1)).then(function(r){ return r.json(); }).then(function(d){
       TFW.rbusy = false; TFW.routes = d; tfwLines();
+      if (TFW.after){ var fn = TFW.after; TFW.after = null; fn(); }
     }).catch(function(e){ TFW.rbusy = false; LS_ERR = e; });
     return;
   }
   if (!TFW.lines) TFW.lines = L.layerGroup().addTo(MAP);
   TFW.lines.clearLayers();
+  if (TFW.camp){   /* (V24.5) مسارُ المخيم المختار وحدَه — أعرضُ خطًّا */
+    var cm = [];
+    [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){ if (TFW.d !== 'both' && TFW.d !== k[0]) return; var ln = L.polyline(TFW.camp[k[0]].pts, { renderer:MAP_CV, color:k[1], weight:6, opacity:0.97, lineCap:'round', lineJoin:'round', interactive:false }); ln.addTo(TFW.lines); cm.push(ln); });
+    cm.forEach(function(l){ try { l.bringToBack(); } catch (e){ LS_ERR = e; } });
+    Object.keys(MK.by).forEach(function(id){ var e = MK.by[id]; if (e && e.kind === 'poly'){ try { e.l.bringToBack(); } catch (e2){ LS_ERR = e2; } } });
+    return;
+  }
   /* (V24.3) دورٌ واحدٌ: الذهابُ أصفرُ والعودةُ حمراء — وكلُّ الأدوار: لكلِّ دورٍ لونُه والعودةُ متقطّعة */
   var all = TFW.f === TFW_ALL, floors = all ? ['0', '1', '2', '3', '4'] : [String(TFW.f)], made = [];
   floors.forEach(function(fk){
@@ -4154,6 +4162,58 @@ function tfwLines(){
   Object.keys(MK.by).forEach(function(id){ var e = MK.by[id]; if (e && e.kind === 'poly'){ try { e.l.bringToBack(); } catch (e2){ LS_ERR = e2; } } });
 }
 
+/* ═══ مسارُ المخيم (V24.5) ═══
+   «لما أختار مخيم بعينه يطلعلي مسار الذهاب والعودة بتاعه ورايح على أنهي دور». من خطوط الدور نفسِها
+   (شبكةٌ على الشوارع الفعلية) يُحسَب أقصرُ طريق: الذهابُ من المخيم إلى مداخل المنشأة، والعودةُ من مخرج
+   دوره إلى المخيم — ويُرسَمان وحدَهما مع المسافة ووقت المشي (٦٠ م في الدقيقة: سيرُ الزحام). */
+var TFW_JIN = [21.4199, 39.8747], TFW_JEX = ['0014', '0017', '0020', '0023', '0026'];
+function tfwM(a, b){ var dy = (a[0] - b[0]) * 110574, dx = (a[1] - b[1]) * 111320 * Math.cos(a[0] * Math.PI / 180); return Math.sqrt(dx * dx + dy * dy); }
+function tfwNet(lines){
+  var id = {}, P = [], A = [];
+  var node = function(p){ var k = p[0].toFixed(6) + ',' + p[1].toFixed(6); if (id[k] == null){ id[k] = P.length; P.push(p); A.push([]); } return id[k]; };
+  (lines || []).forEach(function(l){ for (var i = 1; i < l.length; i++){ var a = node(l[i - 1]), b = node(l[i]), d = tfwM(l[i - 1], l[i]); A[a].push([b, d]); A[b].push([a, d]); } });
+  return { P:P, A:A };
+}
+function tfwNear(N, p){ var bi = -1, bd = Infinity; for (var i = 0; i < N.P.length; i++){ var d = tfwM(N.P[i], p); if (d < bd){ bd = d; bi = i; } } return [bi, bd]; }
+function tfwPath(N, s, t){
+  var n = N.P.length, D = [], prev = [], H = [[0, s]], i;
+  for (i = 0; i < n; i++){ D.push(Infinity); prev.push(-1); }
+  D[s] = 0;
+  var push = function(x){ H.push(x); var k = H.length - 1; while (k > 0){ var q = (k - 1) >> 1; if (H[q][0] <= H[k][0]) break; var tmp = H[q]; H[q] = H[k]; H[k] = tmp; k = q; } };
+  var pop = function(){ var top = H[0], last = H.pop(); if (H.length){ H[0] = last; var k = 0; for (;;){ var l = 2 * k + 1, r = l + 1, m = k; if (l < H.length && H[l][0] < H[m][0]) m = l; if (r < H.length && H[r][0] < H[m][0]) m = r; if (m === k) break; var tmp = H[m]; H[m] = H[k]; H[k] = tmp; k = m; } } return top; };
+  H = []; push([0, s]);
+  while (H.length){
+    var cur = pop(), u = cur[1];
+    if (cur[0] > D[u]) continue;
+    if (u === t) break;
+    N.A[u].forEach(function(e){ var nd = D[u] + e[1]; if (nd < D[e[0]]){ D[e[0]] = nd; prev[e[0]] = u; push([nd, e[0]]); } });
+  }
+  if (!isFinite(D[t])) return null;
+  var pts = []; for (var v = t; v !== -1; v = prev[v]) pts.push(N.P[v]);
+  return { pts:pts.reverse(), len:D[t] };
+}
+function tfwCampCalc(id){
+  var f = tfwFloorOf(id), x = siteFind(id), R = TFW.routes && TFW.routes.floors ? TFW.routes.floors[String(f)] : null;
+  if (f == null || !x || !R) return null;
+  var c = [x.lat, x.lng], ex = siteFind('NSK-JMR-PNT-' + TFW_JEX[f]), E = ex ? [ex.lat, ex.lng] : TFW_JIN;
+  var G = tfwNet(R.go), B = tfwNet(R.back);
+  var a = tfwNear(G, c), b = tfwNear(G, TFW_JIN), e = tfwNear(B, E), h = tfwNear(B, c);
+  var p1 = a[0] >= 0 && b[0] >= 0 ? tfwPath(G, a[0], b[0]) : null, p2 = e[0] >= 0 && h[0] >= 0 ? tfwPath(B, e[0], h[0]) : null;
+  if (!p1 || !p2) return null;
+  return { id:id, f:f, go:{ pts:[c].concat(p1.pts), len:Math.round(p1.len + a[1]) }, back:{ pts:p2.pts.concat([c]), len:Math.round(p2.len + h[1]) } };
+}
+function tfwCampRoute(id){
+  var f = tfwFloorOf(id); if (f == null) return;
+  TFW.f = f; TFW.camp = null;
+  var show = function(){
+    var r = tfwCampCalc(id);
+    if (!r){ toast(t('تعذر حساب مسار هذا المخيم')); return; }
+    TFW.camp = r; tfwPaint(); render(1);
+    try { MAP.fitBounds(L.latLngBounds(r.go.pts.concat(r.back.pts)), { padding:[40, 40] }); } catch (e){ LS_ERR = e; }
+  };
+  if (TFW.routes && TFW.data) show(); else { TFW.after = show; tfwLoad(); tfwPaint(); }
+}
+
 function tfwFloorOf(id){ return (TFW.data && TFW.data.assign && TFW.data.assign[id] != null) ? TFW.data.assign[id] : null; }
 function tfwRow(){
   var h = '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">\u{1F6B6} ' + esc(t('مسار التفويج')) + '</span>'
@@ -4165,6 +4225,11 @@ function tfwRow(){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
   if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + '</span>'; }).join('')
       + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
+  if (TFW.camp){ var cs = siteFind(TFW.camp.id), mins = function(m){ return nm(Math.max(1, Math.round(m / 60))); };
+    h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[TFW.camp.f]))
+      + '<div style="margin:4px 0 0"><i style="display:inline-block;width:16px;height:4px;border-radius:2px;background:#F5C400;vertical-align:middle"></i> ' + esc(t('الذهاب')) + ' <b class="num">' + nm(TFW.camp.go.len) + '</b> ' + esc(t('م')) + ' \u00b7 ' + mins(TFW.camp.go.len) + ' ' + esc(t('دقيقة مشيا'))
+      + ' \u2003 <i style="display:inline-block;width:16px;height:4px;border-radius:2px;background:#D0021B;vertical-align:middle"></i> ' + esc(t('العودة')) + ' <b class="num">' + nm(TFW.camp.back.len) + '</b> ' + esc(t('م')) + ' \u00b7 ' + mins(TFW.camp.back.len) + ' ' + esc(t('دقيقة مشيا')) + '</div>'
+      + '<div style="margin:6px 0 0">' + btn('إلغاء', 'btn-quiet btn-sm', ' data-tfwcampx="1"') + '</div></div>'; }
   var F = TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data ? TFW.data.floors[TFW.f] : null;
   if (TFW.f >= 0 && !TFW.data) h += '<p class="hint" style="margin:4px 0 0">' + esc(t('تُحمَّل الطبقة…')) + '</p>';
   if (F){
@@ -14869,7 +14934,7 @@ function popHtml(){
     +   kv('وجه العمل', esc(t(s.work)))
     +   kv('المنطقة', esc(s.region))
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
-    +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)]))) : (tfwLoad(), '')) : '')   /* (V23.2) */
+    +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
     +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
@@ -22482,6 +22547,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V24.5', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'في نافذة أي مخيم زر «اعرض مسار المخيم»: يرسم مسار ذهابه إلى منشأة الجمرات ومسار عودته من مخرج دوره على الشوارع الفعلية، ويبين دوره والمسافة ووقت المشي لكل منهما.' ] },
   { v:'V24.4', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'مسارا الدورين الثالث والرابع صارا متصلين بالكامل من المخيمات إلى منشأة الجمرات ذهابا وعودة، مأخوذين من ملف خطة الوزارة الأصلي بدقته الكاملة ومرسومين على الشوارع الفعلية.' ] },
   { v:'V24.3', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
@@ -31161,7 +31228,10 @@ function clickA(e){
   if (fz){ FILT.zone = fz.getAttribute('data-fz'); LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var tfb = e.target.closest('[data-tfw]');   /* (V23.2) */
-  if (tfb){ TFW.f = +tfb.getAttribute('data-tfw'); if (TFW.f >= 0) tfwLoad(); tfwPaint(); render(1); return true; }
+  if (tfb){ TFW.camp = null; TFW.f = +tfb.getAttribute('data-tfw'); if (TFW.f >= 0) tfwLoad(); tfwPaint(); render(1); return true; }
+  var tfc = e.target.closest('[data-tfwcamp]');   /* (V24.5) مسارُ المخيم المختار */
+  if (tfc){ tfwCampRoute(tfc.getAttribute('data-tfwcamp')); return true; }
+  if (e.target.closest('[data-tfwcampx]')){ TFW.camp = null; tfwLines(); render(1); return true; }
   var tfd = e.target.closest('[data-tfwd]');   /* (V24.3) اتجاهُ المسار: الذهابُ والعودةُ أو كلٌّ وحدَه */
   if (tfd){ TFW.d = tfd.getAttribute('data-tfwd'); tfwLines(); render(1); return true; }
   var ffl = e.target.closest('[data-ffl]');

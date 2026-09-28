@@ -40,6 +40,14 @@ T(/مسار التفويج/.test(d.getElementById('pkPop').textContent) && /ال
 const e1 = w.siteFind('NSK-JMR-PNT-0018'), n1 = w.siteFind('NSK-JMR-PNT-0005');
 const dm = Math.hypot((e1.lat - n1.lat) * 111320, (e1.lng - n1.lng) * 103500);
 T(e1 && n1 && dm > 150, 'ومخرجُ الدور الأول على بداية خطِّ العودة — لا حول مدخله (' + Math.round(dm) + ' م)');
+/* (V24.5) مسارُ المخيم: من شبكة دوره على الشوارع — ذهابٌ من المخيم إلى المنشأة وعودةٌ من مخرج دوره إليه */
+w.TFW.routes = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8'));
+const cid = Object.keys(D.assign).find(k => D.assign[k] === 3 && w.siteFind(k));
+const rr = w.tfwCampCalc(cid), s0 = w.siteFind(cid);
+T(rr && rr.f === 3 && rr.go.len > 150 && rr.back.len > 150 && rr.go.pts.length > 3 && rr.back.pts.length > 3, 'مسارُ المخيم: ذهابٌ وعودةٌ على شبكة دوره (' + (rr ? rr.go.len + ' / ' + rr.back.len + ' م' : '—') + ')');
+T(rr && rr.go.pts[0][0] === s0.lat && rr.back.pts[rr.back.pts.length - 1][1] === s0.lng && w.tfwM(rr.go.pts[rr.go.pts.length - 1], w.TFW_JIN) < 700, 'يبدأ الذهابُ من المخيم وينتهي عند المنشأة، وتنتهي العودةُ عنده');
+w.popOpenAt(cid, null); await wait(60);
+T(!!d.querySelector('#pkPop [data-tfwcamp]'), 'وفي نافذة المخيم زرُّ «اعرض مسار المخيم»');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ طبقة مسار التفويج نظيف \u2705'); process.exit(0);
