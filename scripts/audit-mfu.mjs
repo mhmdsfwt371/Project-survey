@@ -82,7 +82,7 @@ w.STATE.mfu = w.MFU.v = Object.assign(w.MFU.v || {}, { snap:{ '2000-W01':{ sv:K.
 const sm = await open('mfu');
 T(/▲ \+[٣3]/.test(sm.textContent) && /▼/.test(sm.textContent) && /عن الأسبوع الماضي/.test(sm.textContent), 'الملخّصُ يقارن بلقطة الأسبوع الماضي: المسحُ ▲ +٣ والمعوقاتُ ▼');
 const dl = await open('mdaily');
-T(!!dl.querySelector('polyline') && /ملخص التركيبات اليومي/.test(dl.textContent), 'والمنحنى اليوميّ للتركيب والمسح');
+T(!!dl.querySelector('polyline') && /ملخص العمل اليومي/.test(dl.textContent), 'والمنحنى اليوميّ للعمل كلِّه: المسح والتركيب والفك والمتعذر');
 const mt = await open('mtasks');
 T(/حالة أبرز المهام/.test(mt.textContent) && mt.querySelectorAll('.mfu-bar').length === w.mileList().length, 'وحالةُ أبرز المهام من المعالم بشريط إنجاز');
 
@@ -127,7 +127,7 @@ const td = new TD(), slides = E1.filter(e => /^ppt\/slides\/slide\d+\.xml$/.test
 T(slides.length === 12 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'اثنتا عشرة شريحة بلا عنصرٍ نائبٍ باقٍ — ومنها شريحةُ المسار');
 T(slides.every(s => !new w.DOMParser().parseFromString(s.x, 'application/xml').getElementsByTagName('parsererror').length), 'وكلُّ شريحةٍ سليمةُ البناء');
 const all = slides.map(s => s.x).join('');
-T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص التركيبات اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
+T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص العمل اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
 T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ العرض');
 const cover = slides.find(s => s.n === 'ppt/slides/slide1.xml').x;
 T(cover.includes(new Date().toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
