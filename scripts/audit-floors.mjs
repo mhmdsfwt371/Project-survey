@@ -28,7 +28,7 @@ T(cams.length === 59 && cams.every(x => w.CAM_INFO[x.id]), 'التسعُ وال�
 const jc = S.filter(x => /^NSK-JMR-CAM-00\d\d$/.test(x.id));
 T(jc.length === 20 && jc.filter(x => w.siteFloor(x) != null).length === 17 && jc.every(x => /CAM \d+/.test(x.name)), 'كاميراتُ الجمرات عشرون نقطةً — لكلِّ كاميرا نقطتُها برقمها في الإكسل: خمسَ عشرةَ بأدوارها، واثنتان خلفيّتان في الثالث، وثلاثةُ أعمدةٍ مجاورة (V23.3)');
 T(jc.reduce((n, x) => n + w.CAM_INFO[x.id][0], 0) === 20, 'وفيها العشرون كاميرا التي في التقرير');
-T(!/10\.24\.\d+\.\d+|EVC123456/.test(html), 'ولا عنوانَ شبكةٍ ولا كلمةَ مرورٍ من التقرير في التطبيق');
+T(!/EVC123456/.test(html) && /10\.24\.20\.236/.test(html), 'عناوينُ الكاميرات من التقرير في التطبيق بقرار صاحب المشروع (V23.4) — وكلمةُ المرور لا');
 w.STATE.recs['NSK-MIN-CAM-0016'] = { id:'NSK-MIN-CAM-0016', at:Date.now(), access:'تم الوصول', review:'pending' };
 w.loadSites(); w.statBump();
 T(!!w.STATE.recs['NSK-MIN-CAM-0016'] && w.siteFind('NSK-MIN-CAM-0016') && w.lifeOf(w.siteFind('NSK-MIN-CAM-0016')) !== 'todo', 'الزيارةُ القائمةُ تبقى على نقطتها بعد إعادة بناء السجلّ');
