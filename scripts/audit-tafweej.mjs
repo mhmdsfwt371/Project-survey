@@ -1,0 +1,45 @@
+import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص */
+/* ═══════════════════════════════════════════════════════════════════════════
+   جردُ طبقة مسار التفويج — node scripts/audit-tafweej.mjs
+   ───────────────────────────────────────────────────────────────────────────
+   ملفّاتُ الطبقة موجودةٌ وصالحة (حدودٌ وخمسةُ أدوارٍ ومخيماتٌ بأدوارها)، وتُحمَّل عند الطلب من
+   صفِّ «مسار التفويج» في تصفية الخريطة، وبطاقةُ الدور تقول بيانات الوزارة ونقاطَنا على مساره،
+   ونافذةُ المخيم تقول دورَه، والمخارجُ على بداية خطِّ العودة لا حول المداخل.
+   ═════════════════════════════════════════════════════════════════════════ */
+import { readFileSync, existsSync } from 'fs';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const { JSDOM, VirtualConsole } = require('jsdom');
+let pass = 0; const fails = [];
+const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
+const D = JSON.parse(readFileSync('layers/tafweej.json', 'utf8'));
+T(D.floors.length === 5 && D.bounds.length === 2 && [0,1,2,3,4].every(f => existsSync('layers/tafweej-' + f + '.png')), 'الطبقةُ: خمسةُ أدوارٍ بصورها وحدودُها');
+T(Object.keys(D.assign).length > 300 && D.floors.every(f => f.len > 0 && f.width === 13), 'ولكلِّ مخيمٍ مطابَقٍ دورُه، ولكلِّ دورٍ بياناتُ الوزارة');
+T(readFileSync('sw.js', 'utf8').includes("'/layers/'"), 'وعاملُ الخدمة يخزّنها عند أوّل تحميل');
+const html = readFileSync('index.html', 'utf8'); const wait = ms => new Promise(r => setTimeout(r, ms));
+const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
+const w = dom.window, d = w.document;
+w.HTMLCanvasElement.prototype.getContext = () => null; w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); w.scrollTo = () => {};
+w.localStorage.setItem('nsk14.tour.x', '1'); await wait(800);
+let fetched = 0; w.fetch = (u) => { if (/tafweej\.json/.test(u)){ fetched++; return Promise.resolve({ ok:true, json:() => Promise.resolve(D) }); } return Promise.reject(new Error('no')); };
+w.FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' }); w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0); w.liveWatch = () => {}; w.liveSmall = () => {}; w.tourMaybe = () => {};
+d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass1234'; d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+await wait(1400); w.toast = () => {};
+w.goPage('map'); w.FLT_OPEN = true; w.render(1); await wait(60);
+const html2 = w.catBar(false);
+T(/مسار التفويج/.test(html2) && (html2.match(/data-tfw=/g) || []).length === 6, 'في تصفية الخريطة صفُّ «مسار التفويج»: إخفاءٌ وخمسةُ أدوار');
+T(fetched === 0 && !w.TFW.data, 'ولا تُحمَّل الطبقةُ قبل أن تُطلَب');
+const box = d.createElement('div'); box.innerHTML = html2; d.body.appendChild(box);
+box.querySelector('[data-tfw="1"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+T(fetched === 1 && w.TFW.f === 1 && !!w.TFW.data, 'اختيارُ «الدور الأول» يحمّلها مرةً واحدة');
+const card = w.tfwRow();
+T(/مخيمًا من مخيماتنا/.test(card) && /١٠٬٥٥٠|10,550|١٠٥٥٠/.test(card) && /مدخل الجمرات غير المغطّى/.test(card) && /نقاطُنا على مسار هذا الدور/.test(card), 'وبطاقتُه: مخيماتُه وطولُ مساره وملاحظةُ الوزارة ومقترحُها ونقاطُنا عليه');
+const camp = Object.keys(D.assign).find(k => D.assign[k] === 3 && w.siteFind(k));
+w.popOpenAt(camp, null); await wait(60);
+T(/مسار التفويج/.test(d.getElementById('pkPop').textContent) && /الدور الثالث/.test(d.getElementById('pkPop').textContent), 'ونافذةُ مخيمٍ من مخيمات الدور الثالث تقول دورَه');
+const e1 = w.siteFind('NSK-JMR-PNT-0018'), n1 = w.siteFind('NSK-JMR-PNT-0005');
+const dm = Math.hypot((e1.lat - n1.lat) * 111320, (e1.lng - n1.lng) * 103500);
+T(e1 && n1 && dm > 150, 'ومخرجُ الدور الأول على بداية خطِّ العودة — لا حول مدخله (' + Math.round(dm) + ' م)');
+console.log(`\nنجح ${pass} · فشل ${fails.length}`);
+if (fails.length) process.exit(1);
+console.log('جردُ طبقة مسار التفويج نظيف \u2705'); process.exit(0);
