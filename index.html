@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4112,12 +4112,42 @@ function tfwLoad(){
 function tfwPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try { if (TFW.overlay){ MAP.removeLayer(TFW.overlay); TFW.overlay = null; } } catch (e){ LS_ERR = e; }
+  try { if (TFW.lines){ TFW.lines.clearLayers(); } } catch (e){ LS_ERR = e; }
   if (TFW.f < 0 || !TFW.data) return;
-  /* (V24.1) الصورُ أُعيدت إلى إطارها الصحيح (كانت مائلةً نحو ثلاث درجات — انظر reg في tafweej.json) فصارت
-     خطوطُ المسار في الممرّات بين المخيمات، والمخطّطُ تحت لوح النقاط فتبقى النقاطُ فوقه تُرى وتُنقَر */
+  /* (V24.1) الصورُ أُعيدت إلى إطارها الصحيح (كانت مائلةً نحو ثلاث درجات — انظر reg في tafweej.json)،
+     وهي تحت لوح النقاط فتبقى النقاطُ فوقها تُرى وتُنقَر. (V24.2) ولم تعد تحمل خطوطَ المسار: الصورةُ
+     مساحاتُ مخيمات الدور وحدَها، والمسارُ متجهاتٌ على خطِّ منتصف الممرّ الفعليّ (tafweej-routes.json) */
   if (!MAP.getPane('tfw')){ MAP.createPane('tfw'); MAP.getPane('tfw').style.zIndex = 350; MAP.getPane('tfw').style.pointerEvents = 'none'; }
-  TFW.overlay = L.imageOverlay('layers/tafweej-' + TFW.f + '.png?v=' + (TFW.data.v || 1), TFW.data.bounds, { opacity:0.85, interactive:false, pane:'tfw' }).addTo(MAP);
+  TFW.overlay = L.imageOverlay('layers/tafweej-' + TFW.f + '.png?v=' + (TFW.data.v || 1), TFW.data.bounds, { opacity:0.55, interactive:false, pane:'tfw' }).addTo(MAP);
+  tfwLines();
 }
+/* خطوطُ المسار متجهاتٌ على اللوح نفسِه (V24.2): حادّةٌ في كلِّ تقريب، ومئةُ كيلوبايتٍ للأدوار الخمسة
+   تُحمَّل مرةً مع الطبقة — والخطُّ فوق المخيمات وتحت النقاط فلا يحجب نقطةً ولا يُنقَر */
+function tfwLines(){
+  if (!MAP || !TFW.data || TFW.f < 0) return;
+  if (!TFW.routes){
+    if (TFW.rbusy || typeof fetch !== 'function') return;
+    TFW.rbusy = true;
+    fetch('layers/tafweej-routes.json?v=' + (TFW.data.v || 1)).then(function(r){ return r.json(); }).then(function(d){
+      TFW.rbusy = false; TFW.routes = d; tfwLines();
+    }).catch(function(e){ TFW.rbusy = false; LS_ERR = e; });
+    return;
+  }
+  if (!TFW.lines) TFW.lines = L.layerGroup().addTo(MAP);
+  TFW.lines.clearLayers();
+  var fl = (TFW.routes.floors || {})[String(TFW.f)] || {}, made = [];
+  [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){
+    (fl[k[0]] || []).forEach(function(pts){
+      if (!pts || pts.length < 2) return;
+      var ln = L.polyline(pts, { renderer:MAP_CV, color:k[1], weight:4, opacity:0.95, lineCap:'round', lineJoin:'round', interactive:false });
+      ln.addTo(TFW.lines); made.push(ln);
+    });
+  });
+  /* الترتيبُ على اللوح: المخيماتُ في الخلف، ثم الخطوط، ثم النقاط */
+  made.forEach(function(l){ try { l.bringToBack(); } catch (e){ LS_ERR = e; } });
+  Object.keys(MK.by).forEach(function(id){ var e = MK.by[id]; if (e && e.kind === 'poly'){ try { e.l.bringToBack(); } catch (e2){ LS_ERR = e2; } } });
+}
+
 function tfwFloorOf(id){ return (TFW.data && TFW.data.assign && TFW.data.assign[id] != null) ? TFW.data.assign[id] : null; }
 function tfwRow(){
   var h = '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">\u{1F6B6} ' + esc(t('مسار التفويج')) + '</span>'
@@ -22440,6 +22470,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V24.2', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'خطوط مسار التفويج صارت خطوطا دقيقة مرسومة على منتصف الممر الفعلي بين المخيمات، لا صورة منسوخة من المخطط: حادة في كل تقريب، ولا تعبر فوق أي مخيم، وتحمل في لحظة.',
+      'صورة كل دور صارت تبين مخيماته فقط، والخط الأصفر للذهاب والأحمر للعودة فوقها وتحت نقاطنا، فتبقى النقاط ظاهرة وتفتح بالضغط.' ] },
   { v:'V24.1', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'الخريطة صارت أسرع بكثير: العلامات لا تعاد من الصفر مع كل تحريك أو تقريب، بل تبقى ويعدل ما تغير منها فقط.',
       'الممرات والكاميرات صارت معينات صغيرة على لوح النقاط نفسه بحجم بقية النقاط، فلا تغطي المخيمات.',
