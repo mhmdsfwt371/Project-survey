@@ -71,8 +71,11 @@ w.liveTick();
 w.syncBadge();
 const cd = d.getElementById('syncCd');
 T(!!cd, 'عدّادٌ بجوار «آخر مزامنة»');
-const v1 = cd && cd.textContent; await wait(1300);
-T(cd && cd.textContent !== v1, 'ويتحرّك كلَّ ثانية', v1 + ' → ' + (cd && cd.textContent));
+/* يُنتظَر حتى ثلاث ثوانٍ ويُقرأ العدّادُ من جديدٍ كلَّ عُشر ثانية: على خادم السحابة المزدحم قد تتأخّر
+   الدقّةُ الأولى عن ١٫٣ ثانية فيسقط الفحصُ والعدّادُ سليم (سقط هكذا مرةً في V24.1) — والشرطُ هو هو: يتحرّك */
+const v1 = cd && cd.textContent; let v2 = v1;
+for (let k = 0; k < 30 && v2 === v1; k++){ await wait(100); const c2 = d.getElementById('syncCd'); v2 = c2 && c2.textContent; }
+T(!!v2 && v2 !== v1, 'ويتحرّك كلَّ ثانية', v1 + ' → ' + v2);
 w.SYNC_LEFT = 1; w.PULL_LAST = 0; const p0 = pulls, f0 = flushes; await wait(1400);
 T(pulls === p0 + 1 && flushes === f0 + 1, 'عند الصفر: دفعٌ وسحبٌ مرةً واحدة', 'pulls +' + (pulls - p0) + ' flushes +' + (flushes - f0));
 T(w.SYNC_LEFT >= w.SYNC_CYCLE - 2, 'ثم يُعاد العدُّ من دقيقة', String(w.SYNC_LEFT));
