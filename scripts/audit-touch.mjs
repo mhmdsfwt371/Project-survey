@@ -55,6 +55,7 @@ const coarse=html.slice(html.indexOf('@media (pointer:coarse)'), html.indexOf('@
 T(/\.btn, \.chip, \.map-chip\{ min-height:44px \}/.test(coarse), 'أهدافُ اللمس أربعةٌ وأربعون بكسلًا');
 T(/font-size:16px/.test(coarse), 'حقولُ الإدخال ستةَ عشرَ — لا تكبيرَ تلقائيًّا في iOS');
 T(html.indexOf('touch-action:manipulation')>-1, 'لا تأخيرَ ثلاثمئةِ جزءٍ ولا تكبيرَ بنقرتين');
-T(/hit = Math\.max\(ds \+ 20, 44\)/.test(html), 'المعيّنُ (ممر · كاميرا) بإطار لمسٍ ٤٤ بكسلًا');
+/* (V24.1) المعيّنُ صار علامةً على اللوح لا عنصرَ DOM — وإطارُ لمسه باقٍ: نصفُ قطر إصابةٍ لا يقلُّ عن ٢٢ */
+T(/hit = Math\.max\(this\._radius \+ this\._clickTolerance\(\), 22\)/.test(html) && /_containsPoint: function\(p\)/.test(html), 'المعيّنُ (ممر · كاميرا) بإطار لمسٍ ٤٤ بكسلًا');
 console.log(bad?'\nجردُ اللمس فشل ✗ ('+bad+')':'\nجردُ اللمس وأرقام الأسطورة نظيف ✅');
 process.exit(bad?1:0);
