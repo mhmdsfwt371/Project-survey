@@ -561,6 +561,26 @@ button, .btn, .chip, .map-chip, .list-item, a[data-p]{
 .flow-step.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
 .flow-arr{color:var(--ink-mute);flex:0 0 auto}
 
+/* ── طيُّ الشريط الجانبي وتحسيناتٌ عامّة (V23.9) ───────────── */
+@media(min-width:901px){
+  .burger{display:block;margin-inline-end:4px;border-radius:10px}
+  .burger:hover{background:var(--surface-2)}
+  .shell{transition:margin-inline-start .22s ease}
+  .sidebar{transition:transform .22s ease}
+  body.side-off .shell{margin-inline-start:0}
+  body.side-off .sidebar{transform:translateX(-100%)}
+  [dir="rtl"] body.side-off .sidebar{transform:translateX(100%)}
+}
+.btn,.chip,.cat,.tb-btn{transition:background-color .15s ease,box-shadow .15s ease,border-color .15s ease,transform .08s ease}
+.btn:active,.chip:active,.cat:active,.tb-btn:active{transform:translateY(1px)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+@media (hover:hover){ .card{transition:box-shadow .2s ease} .card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)} }
+@media (prefers-reduced-motion:reduce){ .shell,.sidebar,.btn,.chip,.cat,.tb-btn,.card{transition:none} }
+
 /* ── الاستجابة ─────────────────────────────────────── */
 @media(max-width:900px){
   .shell{margin-inline-start:0}
@@ -1093,7 +1113,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1140,6 +1160,7 @@ var BOOT_GUARD = (function(){
 function bootStage(st){ var p = null; try { p = JSON.parse(lsGet('nsk14.boot') || '{}'); } catch (e){ LS_ERR = e; return; } if (!p || p.ok) return; p.stage = st; p.page = (typeof CUR === 'string') ? CUR : ''; lsSet('nsk14.boot', JSON.stringify(p)); }
 function bootOk(why){ lsSet('nsk14.boot', JSON.stringify({ at:Date.now(), ok:true, n:0, stage:why || 'ok' })); }
 setTimeout(function(){ bootOk('alive'); }, 20000);
+try { if (lsGet('nsk14.sideoff') === '1' && document.body) document.body.classList.add('side-off'); } catch (e){ LS_ERR = e; }   /* (V23.9) الطيُّ محفوظ */
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('popstate', function(){ if (typeof SVQ !== 'undefined' && SVQ.id){ SVQ = { id:'', key:'', tmp:null }; try { render(1); } catch (e){ LS_ERR = e; } } });   /* (V22.7) */
 if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('pagehide', function(){ bootOk('closed'); });
 
@@ -22207,6 +22228,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V23.9', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'زر ☰ في أعلى الشاشة يطوي القائمة الجانبية (الموديولات) على الكمبيوتر فيتسع المحتوى والخريطة، وضغطة ثانية تعيدها — والاختيار محفوظ. وعلى الهاتف يبقى كما هو: يفتح القائمة وتُغلق.',
+      'لمسات على المظهر العام: انتقالات ناعمة للأزرار والبطاقات، وإطار تركيز واضح لمن يستعمل لوحة المفاتيح، وأشرطة تمرير رفيعة بلون النظام — وتتوقف الحركة لمن طلب تقليلها في جهازه.' ] },
   { v:'V23.8', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'المخيم يُعرف برقم شاخصه: عنوان نافذته وسطره في قائمة المواقع «شاخص ٥٤/٥٣٣»، وتحته المشعر والمربع.',
       'عناوين أجهزة النقطة في نافذتها: الراوتر والقارئ والكاميرا من بادئة شبكة موسم ١٤٤٧ (‎.1 و‎.2 و‎.3) — لكل مخيم مسجّلة شبكته (٥٤٦ مخيمًا).',
@@ -30383,7 +30407,18 @@ function clickA(e){
     g.setAttribute('aria-expanded', open ? 'false' : 'true');
     return true;
   }
-  if (e.target.closest('[data-nav]')) { document.body.classList.toggle('nav-open'); return true; }
+  if (e.target.closest('[data-nav]')){
+    /* (V23.9) «زرار أضغط عليه يعمل collapse للموديولز»: على الشاشة الكبيرة يُطوى الشريطُ الجانبيُّ ويتّسع المحتوى،
+       ويُحفَظ الاختيار؛ وعلى الهاتف يبقى الدرجَ المنزلق كما كان */
+    if (typeof window.matchMedia === 'function' && window.matchMedia('(min-width:901px)').matches){
+      var off = !document.body.classList.contains('side-off');
+      document.body.classList.toggle('side-off', off);
+      lsSet('nsk14.sideoff', off ? '1' : '');
+      var bg = e.target.closest('[data-nav]'); bg.setAttribute('aria-expanded', off ? 'false' : 'true');
+      setTimeout(function(){ try { if (typeof MAP !== 'undefined' && MAP && MAP.invalidateSize) MAP.invalidateSize(); if (typeof M3 !== 'undefined' && M3 && M3.resize) M3.resize(); } catch (e2){ LS_ERR = e2; } }, 260);
+    } else document.body.classList.toggle('nav-open');
+    return true;
+  }
   var m = e.target.closest('[data-mode]');
   if (m){
     FIELD_MODE = m.getAttribute('data-mode');
