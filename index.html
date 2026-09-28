@@ -1093,7 +1093,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V23.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4178,7 +4178,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
           + row('وجه العمل', esc(t(x.work)), 'work')
           + row('المنطقة', esc(x.region))
           + row('الدور', siteFloor(x) != null ? esc(t(floorName(siteFloor(x)))) : '')   /* (V22.2) */
-          + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); })
+          + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); }) + netRows(x, function(k, v){ return row(k, v); })
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(t(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout))), 'inout')
       /* بيانةُ الموسم الماضي في التفاصيل كما هي في النموذج: من فتح النقطةَ
@@ -14521,6 +14521,19 @@ function helpHtml(){
 
 var MOVE_ID = '', MOVE_AT = null;
 
+/* ═══ المخيمُ يُعرَف بشاخصه (V23.8) ═══
+   «خلي كل المخيمات تبان برقم الشاخص يكون هو الحاجة الأساسية»: عنوانُ المخيم في النافذة والقوائم رقمُ
+   شاخصه، وتحته المشعرُ والمربعُ والمعرِّف — وغيرُ المخيم باسمه كما كان. */
+function siteTitle(x){ return (x && x.type === 'مخيم' && x.sign) ? t('شاخص') + ' ' + x.sign : ((x && x.name) || ''); }
+function siteSub(x){ return (x && x.type === 'مخيم' && x.sign) ? [t(x.zone || ''), x.sq ? t('مربع') + ' ' + x.sq : ''].filter(Boolean).join(' \u00b7 ') : ''; }
+/* عناوينُ الأجهزة من بادئة شبكة النقطة (١٤٤٧): ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا */
+function netRows(x, kvf){
+  var n = String((x && x.net) || '').trim().replace(/\/\d+$/, '').replace(/\.0$/, '');
+  if (!/^\d+\.\d+\.\d+$/.test(n)) return '';
+  var L = function(v){ return '<div dir="ltr" class="cx-l">' + v + '</div>'; };
+  return kvf('عناوين الأجهزة', '<div class="cx-box">' + L(esc(t('راوتر')) + ' ' + esc(n) + '.1') + L(esc(t('قارئ')) + ' ' + esc(n) + '.2') + L(esc(t('كاميرا')) + ' ' + esc(n) + '.3')
+    + '<div class="hint" style="margin:2px 0 0;font-size:11px" dir="ltr">' + esc(n) + '.0/24</div></div>');
+}
 function popHtml(){
   var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
   if (!s) return '';
@@ -14581,7 +14594,7 @@ function popHtml(){
     return '<div class="pop" id="pkPop">'
       + '<div class="pop-head">'
       +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(s.id) + '</div>'
-      +   '<h3 style="margin-top:3px">' + bdiText(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
+      +   '<h3 style="margin-top:3px">' + bdiText(siteTitle(s)) + '</h3>' + (siteSub(s) ? '<div class="hint" style="margin:2px 0 0">' + esc(siteSub(s)) + '</div>' : '') + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
       +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
       + '</div>'
       + '<div class="pop-body">'
@@ -14705,7 +14718,7 @@ function popHtml(){
     +   kv('المنطقة', esc(s.region))
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)]))) : (tfwLoad(), '')) : '')   /* (V23.2) */
-    +   camInfoRows(s, kv) + camxRows(s, kv)
+    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
      تقول تمّت. صار النصُّ والدائرةُ من دورة الحياة واحدةً، ويُقال لونُها. */
@@ -15424,7 +15437,7 @@ function fieldList(){
                 + (selHas(x.id)?' checked':'') + (a?' disabled':'')
                 + ' style="width:20px;min-height:20px;flex:0 0 auto">' : '')
             + '<div class="li-main">'
-            + '<div class="li-t">' + esc(x.name) + '</div>'
+            + '<div class="li-t">' + esc(siteTitle(x)) + (siteSub(x) ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(siteSub(x)) + '</span>' : '') + '</div>'   /* المخيمُ بشاخصه (V23.8) */
             + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
             +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(dispName(x.co.slice(0, 26))) : '')
             + '</div></div><div class="li-end">'
@@ -22194,6 +22207,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V23.8', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'المخيم يُعرف برقم شاخصه: عنوان نافذته وسطره في قائمة المواقع «شاخص ٥٤/٥٣٣»، وتحته المشعر والمربع.',
+      'عناوين أجهزة النقطة في نافذتها: الراوتر والقارئ والكاميرا من بادئة شبكة موسم ١٤٤٧ (‎.1 و‎.2 و‎.3) — لكل مخيم مسجّلة شبكته (٥٤٦ مخيمًا).',
+      'مداخل الجمرات تبقى في أماكن تركيبها الفعلية — جُمعت مداخل كل دور في نقطة واحدة ليكون التركيب متجاورًا.' ] },
   { v:'V23.7', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       '«منطقة الجمرات» صارت «منشأة الجمرات» في التصنيف وأسماء النقاط والكاميرات، ووزنها في النقاط كما هو.',
       'مشعر جديد «مواقع التفويج» لمواقع تفويج الحجاج (الحافلات): يظهر في «+ موقع غير مسجّل» بكاميرات الوزارة وقارئات اللوحات، فتُضاف نقاطه يدويًا الآن، ويوضع مقترح الكاميرات عليه حين يصل موقعه.' ] },
