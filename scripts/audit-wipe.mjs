@@ -84,10 +84,12 @@ async function fresh(){
 }
 const { w, d } = await fresh();
 T(w.ROLE === 'engineer', 'دخل مهندسًا', w.ROLE);
-/* الحضورُ بعد الدخول */
+/* الحضورُ بعد الدخول — يُنتظَر حتى يُكتَب (عشرُ ثوانٍ حدًّا) لا زمنًا ثابتًا: تحت حِمل الحارس المتوازي كان
+   يتأخّر عن الثانيتين فيسقط الجردُ باستثناءٍ بلا سبب (V25.0) — وكذلك ٢٤٫٩ تحت الحِمل نفسِه */
+for (let k = 0; k < 40 && !(w.STATE.queue || []).some(q => q.kind === 'presence'); k++) await wait(250);
 const pres = (w.STATE.queue || []).filter(q => q.kind === 'presence');
 T(pres.length === 1 && pres[0].id === 'u-audit' && pres[0].v && pres[0].v.ver === cur && pres[0].v.role === 'engineer',
-  'بعد الدخول: وثيقةُ حضورٍ واحدةٌ بمعرِّفه ونسخةِ الرأس ودوره', JSON.stringify(pres[0] && pres[0].v).slice(0, 120));
+  'بعد الدخول: وثيقةُ حضورٍ واحدةٌ بمعرِّفه ونسخةِ الرأس ودوره', String(JSON.stringify(pres[0] && pres[0].v) || 'لا وثيقة').slice(0, 120));
 T(w.appVer() === cur, 'appVer تقرأ الرأس', w.appVer());
 
 /* التصفير */

@@ -5,7 +5,7 @@
    وُجد الملف، والإسنادُ في خيارات الطبقة ولا يُذكَر المصدرُ في نصوص الواجهة،
    والعارضُ مضمَّنٌ بنسخٍ مثبَّتةٍ ورخصٍ لا من شبكةٍ عامة ويُقرأ الملفُّ مقاطعَ
    (FileSource)، وطبقةُ أساسٍ واحدةٌ مع القمر، وبلا الملفِّ يبقى كلُّ شيءٍ كما كان
-   (عودةٌ إلى الشبكة)، والوصفةُ موثَّقة. (V24.9)
+   (عودةٌ إلى الشبكة)، والوصفةُ موثَّقة. (V24.9) — ومع الشبكة خلفيةُ V24.8 وخريطةُ الجهاز للانقطاع وحدَه (V25.0)
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
 import { readFileSync, existsSync, statSync } from 'fs';
@@ -45,8 +45,10 @@ await wait(1500); w.toast = () => {};
 
 console.log('\n══ ٢ · التنزيلُ من الخريطة وحدَها — والبطاقةُ صادقة ══');
 T(/MK\.by = \{\};\n  basemapKick\(\);/.test(html) && /mapPaint\(\);\n    basemapKick\(\);/.test(html) && !/\n  try \{ basemapAttach\(\); \} catch/.test(html), 'فتحُ الخريطة يطلبها (basemapKick) في الإنشاء وفي كلِّ فتح — ولا إرفاقَ مباشرًا في الإقلاع');
-T(/function basemapKick\(\)\{\n  if \(BASEMAP\.kick \|\| BASEMAP\.layer \|\| MAP_SAT \|\| !MAP \|\| CUR !== 'map' \|\| document\.getElementById\('login'\)\) return;/.test(html) && /requestIdleCallback\(run, \{ timeout:2000 \}\)/.test(html), 'والإرفاقُ بعد الدخول والخريطةُ ظاهرةٌ والصفحةُ خاملة — لا يزاحم الإقلاع');
-T(/else if \(basemapNetOk\(\)\) basemapDownload\(\);/.test(html) && /priority:'low'/.test(html), 'والتنزيلُ التلقائيُّ على اتصالٍ جيدٍ وبأولويةٍ منخفضة — لا يزاحم رفعَ الميدان');
+T(/function basemapKick\(\)\{\n  if \(BASEMAP\.kick \|\| !MAP \|\| CUR !== 'map' \|\| document\.getElementById\('login'\)\) return;/.test(html) && /requestIdleCallback\(run, \{ timeout:2000 \}\)/.test(html), 'والتنزيلُ والإرفاقُ بعد الدخول والخريطةُ ظاهرةٌ والصفحةُ خاملة — لا يزاحمان الإقلاع');
+T(/basemapNetOk\(\)\) basemapDownload\(\);/.test(html) && /priority:'low'/.test(html), 'والتنزيلُ التلقائيُّ على اتصالٍ جيدٍ وبأولويةٍ منخفضة — لا يزاحم رفعَ الميدان');
+{ const a0 = html.indexOf('function basemapAuto(){'), a1 = html.indexOf('\n}', a0), body = html.slice(a0, a1); T(a0 > 0 && body.indexOf('basemapHave()') > -1 && body.indexOf('basemapHave()') < body.indexOf('basemapManifest()'), 'المحفوظُ يُرفَق قبل البيان: من فتح التطبيقَ بلا شبكةٍ تظهر له خريطةُ الجهاز (V25.0)'); }
+T(/BASEMAP\.arc\.getHeader\(\)\.then/.test(html) && /bounds:bb/.test(html), 'والطبقةُ داخل نطاق ملفّها وحدَه — لا بلاطاتٌ فارغةٌ ولا أسماءٌ طافيةٌ خارجه');
 { const c0 = w.navigator.connection; const set = v => Object.defineProperty(w.navigator, 'connection', { value:v, configurable:true });
   set({ effectiveType:'3g' }); const a3 = w.basemapNetOk(); set({ effectiveType:'4g', saveData:true }); const aS = w.basemapNetOk(); set({ effectiveType:'4g' }); const a4 = w.basemapNetOk(); set(undefined); const aU = w.basemapNetOk();
   T(a3 === false && aS === false && a4 === true && aU === true, 'basemapNetOk: ٣ج أو توفيرُ البيانات لا، و٤ج أو غيرُ المعروف نعم'); if (c0 !== undefined) set(c0); }
@@ -64,24 +66,29 @@ T(w.BASEMAP.have === false && !w.__cache.has('maps/mashaer.pmtiles'), 'والإ�
 
 console.log('\n══ ٣ · الإسنادُ والعودةُ إلى الشبكة ══');
 T(/attribution:'\\u00a9 <a href="https:\/\/www\.openstreetmap\.org\/copyright"/.test(html) && /OpenStreetMap<\/a> contributors/.test(html), 'الطبقةُ تحمل إسنادَ OpenStreetMap في خياراتها');
-T(/if \(!MAP \|\| MAP_SAT \|\| BASEMAP\.layer\) return Promise\.resolve\(false\);/.test(html) && /if \(!has\) return false;/.test(html), 'وبلا الملفِّ أو على القمر الصناعي لا يُلحَق شيء — الشبكةُ كما كانت');
+T(/if \(!MAP \|\| MAP_SAT \|\| BASEMAP\.layer \|\| !basemapWant\(\)\) return Promise\.resolve\(false\);/.test(html) && /if \(!has\) return false;/.test(html), 'وبلا الملفِّ أو على القمر أو مع الشبكة لا يُلحَق شيء — خلفيةُ V24.8 كما كانت (V25.0)');
+T(/window\.addEventListener\('offline'/.test(html) && /window\.addEventListener\('online', function\(\)\{ BASEMAP\.netDown = false;/.test(html) && /if \(\+\+tBad >= 12 && !BASEMAP\.netDown\)/.test(html), 'وتُلحَق عند الانقطاع أو تعثّر البلاط الشبكيِّ ١٢ مرةً متتالية، وتُرفَع بعودة الشبكة');
+T(/var BASEMAP_JS = \['vendor\/protomaps\/pmtiles-4\.5\.0\.js', 'vendor\/protomaps\/protomaps-leaflet-5\.1\.0\.js'\];/.test(html) && /\.then\(basemapWarm\)/.test(html), 'والعارضُ يُحفَظ معها في مخزنها الباقي — يعمل بلا شبكةٍ ولو تبدّلت النسخة');
 T(/new pmtiles\.FileSource\(new File\(\[b\]/.test(html) && /leafletLayer\(\{ url:BASEMAP\.arc/.test(html) && !/URL\.createObjectURL\(b\)/.test(html), 'والقراءةُ مقاطعُ من الذاكرة (FileSource) لا رابطُ Blob — الرابطُ بلا امتدادٍ فكان يُقرأ الأرشيفُ بلاطةً واحدة');
 T(/if \(BASEMAP\.busy\) return BASEMAP\.busy\.then\(function\(\)\{ return basemapAttach\(\); \}\);/.test(html), 'ونداءٌ في أثناء آخر ينتظره ثم يُعاد: لا طبقتان، ولا جوابٌ قديمٌ «لا ملف» يسبق التنزيل');
 T(/className:'nskBase'/.test(html), 'والطبقةُ تُقلَب في الوضع الداكن كالبلاط الشبكي');
 
-console.log('\n══ ٤ · طبقةُ أساسٍ واحدةٌ مع القمر الصناعي ══');
+console.log('\n══ ٤ · مع الشبكة خلفيةُ V24.8، وخريطةُ الجهاز للانقطاع وحدَه (V25.0) ══');
 { const on = new Set(), mk = n => ({ n, options:{}, setUrl(){}, addTo(m){ m.add(this); return this; } });
   const fm = { hasLayer: l => on.has(l), removeLayer: l => { on.delete(l); }, add: l => { on.add(l); } };
-  const base = mk('base'), vec = mk('vec');
-  w.MAP = fm; w.MAP_BASE = base; w.BASEMAP.layer = vec; on.add(vec); on.add(base);
-  w.basemapSwap();
-  T(on.has(vec) && !on.has(base), 'خريطةُ الجهاز محمَّلة: يُرفَع البلاطُ الشبكيُّ فلا يُنزَّل ما لا يُرى');
+  const setOn = v => Object.defineProperty(w.navigator, 'onLine', { value:v, configurable:true });
+  const base = mk('base'); w.MAP = fm; w.MAP_BASE = base; w.MAP_SAT = false; w.BASEMAP.have = false; w.BASEMAP.netDown = false;
+  setOn(true); let vec = mk('vec'); w.BASEMAP.layer = vec; on.add(vec); on.add(base); w.basemapSwap();
+  T(!on.has(vec) && on.has(base) && w.BASEMAP.layer === null, 'مع الشبكة: البلاطُ الشبكيُّ كما في V24.8، وخريطةُ الجهاز تُرفَع وتُترَك من الذاكرة');
+  setOn(false); vec = mk('vec2'); w.BASEMAP.layer = vec; w.basemapSwap();
+  T(on.has(vec) && !on.has(base), 'انقطعت الشبكة: خريطةُ الجهاز وحدَها ولا تُطلَب بلاطاتٌ لا تصل');
   w.mapSat(true);
-  T(!on.has(vec) && on.has(base), 'القمرُ يُشغَّل: تُرفَع خريطةُ الجهاز ويظهر القمرُ فوقها لا تحتها');
-  w.mapSat(false);
-  T(on.has(vec) && !on.has(base), 'ويُطفأ: تعود خريطةُ الجهاز وحدَها');
-  w.BASEMAP.layer = null; w.basemapSwap();
-  T(on.has(base), 'وبلا خريطةِ الجهاز: البلاطُ الشبكيُّ كما كان');
+  T(!on.has(vec) && on.has(base) && w.BASEMAP.layer === null, 'القمرُ يُشغَّل: يُرى هو، وتُترَك خريطةُ الجهاز');
+  w.mapSat(false); setOn(true); w.BASEMAP.netDown = true; vec = mk('vec3'); w.BASEMAP.layer = vec; w.basemapSwap();
+  T(on.has(vec) && !on.has(base), 'البلاطُ الشبكيُّ يتعثّر والجهازُ «متصل»: خريطةُ الجهاز بدلَه');
+  w.BASEMAP.netDown = false; w.basemapSwap();
+  T(!on.has(vec) && on.has(base) && w.BASEMAP.layer === null, 'وعادت الشبكة: البلاطُ الشبكيُّ من جديد');
+  setOn(true); delete w.navigator.onLine;
   w.MAP = null; w.MAP_BASE = null; w.MAP_SAT = false; }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
