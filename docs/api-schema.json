@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V24.8",
+ "app_version": "V24.9",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1940,7 +1940,8 @@
   "V24.5": "مسارُ المخيم: tfwCampCalc(id) → {f, go:{pts,len}, back:{pts,len}} من tafweej-routes.json بأقصر طريق (tfwNet/tfwNear/tfwPath، tfwM مسافةٌ بالمتر)؛ الذهابُ إلى TFW_JIN والعودةُ من مخرج الدور TFW_JEX؛ TFW.camp يُرسَم وحدَه، وdata-tfwcamp/data-tfwcampx للعرض والإلغاء.",
   "V24.6": "الأدوار ٠–٢: مصدرُ الخطوط صورةُ الخريطة في ملف الخطة (الصفحات ١٠٣–١٠٥) مع المستخرجة، ووصلُ القطع؛ كلُّ اتجاهٍ مكوِّنٌ واحدٌ أو اثنان؛ التحقّقُ بنسبة خطِّ الملف في ٢٠ م من الخطوط المرسومة.",
   "V24.7": "مراجعةُ نصوص الواجهة: ثلاثُ مفاتيح عامية في مساعد البحث صارت فصحى مع نقل مفاتيح القاموس (en/ur)؛ ونشرٌ عاجلٌ لـV24.3–V24.7 لتأخّر القطار المجدول.",
-  "V24.8": "TYPE_SHAPE_DEF وmapShapeOf؛ SHAPE_UNIT.tridown/hexagon/pentagon/plus؛ tafweej-routes.json.ends {en,ex} لكلِّ دور، والذهابُ ينتهي عند المداخل والعودةُ تبدأ من المخارج؛ tfwCampCalc يختار أنسبَ مدخلٍ ومخرج."
+  "V24.8": "TYPE_SHAPE_DEF وmapShapeOf؛ SHAPE_UNIT.tridown/hexagon/pentagon/plus؛ tafweej-routes.json.ends {en,ex} لكلِّ دور، والذهابُ ينتهي عند المداخل والعودةُ تبدأ من المخارج؛ tfwCampCalc يختار أنسبَ مدخلٍ ومخرج.",
+  "V24.9": "maps/mashaer.pmtiles مكةُ كلُّها (bounds 39.70,21.30,40.05,21.56، maxzoom 15، ٣٬٨٨١٬٨١٥ بايت) وmanifest محدَّث؛ basemapAuto() في mapInit ينزّل الملفَّ مرةً ثم basemapAttach."
  },
  "map_and_geolocation": {
   "tile_layers": {

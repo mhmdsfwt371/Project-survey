@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -16463,6 +16463,7 @@ function mapInit(){
   MAP_LAYER = L.layerGroup().addTo(MAP);
   MAP_TMP   = L.layerGroup().addTo(MAP);   /* (V24.1) المؤقّتاتُ: موضعُك ومسارُ الرسم — تُمسَح وحدَها */
   MK.by = {};
+  basemapAuto();   /* (V24.9) خريطةُ مكة تُنزَّل مرةً تلقائيًّا ثم تُفتح بلا شبكة */
 
   MAP.on('zoomend moveend', mapPaintDebounced);
   MAP.on('click', function(e){
@@ -17996,6 +17997,13 @@ function basemapManifest(){
 function basemapHave(){
   if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
   return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){ var was = BASEMAP.have; BASEMAP.have = !!r; if (was === null && (CUR === 'tools' || CUR === 'acct')) render(1); return !!r; }).catch(function(){ BASEMAP.have = false; return false; });
+}
+/* ═══ خريطةُ مكة تلقائيًّا (V24.9) ═══ ملفٌّ واحدٌ (أقلُّ من ٤ م.ب) بشوارع مكة كلِّها ومبانيها وأسمائها —
+   المشاعرُ والحرمُ والعزيزيةُ والنواريةُ والزايدي: يُنزَّل مرةً عند أوّل فتحٍ للخريطة ويُحفَظ في الجهاز، ثم
+   تُرسَم الخلفيةُ منه فورًا وبلا شبكة؛ ولا طلبَ على سيرفراتٍ خارجية إلا للقمر الصناعي. */
+function basemapAuto(){
+  if (BASEMAP.auto) return; BASEMAP.auto = true;
+  try { basemapManifest().then(function(m){ if (!m || !(m.bytes > 0)) return; basemapHave().then(function(h){ if (h){ try { basemapAttach(); } catch (e){ LS_ERR = e; } } else basemapDownload(); }); }); } catch (e){ LS_ERR = e; }
 }
 function basemapDownload(){
   if (BASEMAP.loading) return Promise.resolve(false);
@@ -22562,6 +22570,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V24.9', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'خريطة مكة كاملة بشوارعها ومبانيها وأسمائها صارت جزءا من التطبيق: تنزل مرة واحدة عند أول فتح للخريطة، ثم تفتح فورا ومن غير شبكة، في المشاعر والحرم والعزيزية والنوارية والزايدي.' ] },
   { v:'V24.8', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'لكل نوع من النقاط شكل يميزه على الخريطة: الممر مربع، وكاميرات الوزارة مثلث، وكاميرات قراءة اللوحات مثلث مقلوب، والبوابة معين، ومحطة القطار سداسي، ومنشأة الجمرات خماسي، والمبنى علامة زائد، والجيت واي نجمة، والحساس قطرة.',
       'خطوط الذهاب تنتهي عند مداخل الدور نفسه في منشأة الجمرات، وخطوط العودة تبدأ من مخارجه، وكذلك مسار كل مخيم.' ] },

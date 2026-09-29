@@ -1,13 +1,13 @@
 {
   "file": "mashaer.pmtiles",
-  "bytes": 0,
-  "built": "",
-  "tool": "",
+  "bytes": 3881815,
+  "built": "2026-09-28",
+  "tool": "go-pmtiles extract — بناء 20260928",
   "bounds": [
-    39.84,
-    21.33,
-    40.03,
-    21.48
+    39.7,
+    21.3,
+    40.05,
+    21.56
   ],
   "maxzoom": 15,
   "source": "OpenStreetMap contributors (ODbL)",
