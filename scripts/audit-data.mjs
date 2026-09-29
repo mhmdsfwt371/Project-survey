@@ -508,6 +508,16 @@ if (typeof w.siteStats === 'function'){
     'ويُبطَل مع كلِّ تغيُّرٍ في المهامّ فلا يُقرأ قديمًا');
 }
 
+console.log('\n══ نقاطُ الجمرات: مدخلٌ أو مخرج مع الدور — في الاسم والنافذة والتعديل (V25.4) ══');
+{ const raw10 = readFileSync('index.html', 'utf8');
+  const jm = raw10.match(/\["NSK-JMR-PNT-00(0[1-9]|10)","([^"]+)"/g) || [];
+  check(jm.length === 10 && jm.every(r => /مدخل (يسار|يمين|وسط)"$/.test(r)), 'مداخلُ الأدوار الأرضي والأول والثالث والرابع (٠٠٠١–٠٠١٠) تحمل «مدخل» في اسمها كمداخل الثاني ومخارجِ الكلّ');
+  const jx = raw10.match(/\["NSK-JMR-PNT-00(1[4-9]|2[0-8])","([^"]+)"/g) || [];
+  check(jx.length === 15 && jx.every(r => /مخرج (يسار|يمين|وسط)"$/.test(r)), 'ومخارجُ الأدوار الخمسة (٠٠١٤–٠٠٢٨) تحمل «مخرج»');
+  check(/function siteGate\(x\)\{/.test(raw10) && /function jmrNameApply\(name, gate, floor\)\{/.test(raw10), 'siteGate يقرأ البوابةَ من الحقل أو الاسم، وjmrNameApply يضيف الدورَ والبوابةَ إلى الاسم');
+  check(/kv\('البوابة', '<b>' \+ esc\(t\(siteGate\(s\)\)\)/.test(raw10), 'والنافذةُ تعرض البوابةَ مع الدور');
+  check(/id="seGate"/.test(raw10) && /id="seFloor"/.test(raw10) && /patch\.name = jmrNameApply\(name, gt, fl === '' \? null : \+fl\);/.test(raw10), 'وتعديلُ البيانات لنقاط الجمرات يختار مدخل/مخرج والدورَ ويضيفهما إلى الاسم عند الحفظ'); }
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
 

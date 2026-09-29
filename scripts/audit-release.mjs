@@ -60,7 +60,7 @@ T(w.STATE.queue.length===0, 'والطابورُ فرغ');
 w.SOFT_SAID['رفع الطابور']=1; w.CORE._busy=false;
 /* تحت حملٍ متوازٍ قد تكون دفعةٌ سابقةٌ ما زالت في الطريق — يُنتظَر فراغُ الطابور لا مدةً ثابتة */
 w.CORE.dirty('recs','R10',{c:3});
-for (let i=0;i<20 && (w.STATE.queue.length || Object.keys(w.SOFT_SAID).length);i++){ w.CORE._busy=false; await w.CORE.flush(); await wait(250); }
+for (let i=0;i<48 && (w.STATE.queue.length || Object.keys(w.SOFT_SAID).length);i++){ w.CORE._busy=false; await w.CORE.flush(); await wait(250); }   /* (V25.4) اثنتا عشرةَ ثانيةً حدًّا: سقط تحت حِمل الحارس بخمسٍ */
 T(Object.keys(w.SOFT_SAID).length===0, 'ونجاحُ أيِّ دفعةٍ يُصفِّره كذلك');
 /* بلا شبكة: الحالةُ تُقال ولا تبقى «تُقرأ…» */
 w.MYDOC={at:0,has:null,err:''}; w.FB.ready=false; w.FB.db=null; w.STATE.meta.online=false;
