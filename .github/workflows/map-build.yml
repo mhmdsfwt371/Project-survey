@@ -1,0 +1,33 @@
+name: Map build — Makkah basemap + layers (data branch only)
+# يبني ملفَّ خريطة مكة (شوارعُها ومبانيها وأسماؤها) من أحدث بناءٍ يوميٍّ للخريطة المفتوحة، وطبقتي
+# مباني وزارة الحج والعمرة والفنادق — على هذا الفرع وحدَه، ثم تُنقَل إلى التطبيق بدورة الإصدار.
+on:
+  push:
+    branches: [osm-fetch]
+    paths: ['.github/workflows/map-build.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: pmtiles CLI
+        run: |
+          U=$(curl -s https://api.github.com/repos/protomaps/go-pmtiles/releases/latest | python3 -c "import json,sys; print([a['browser_download_url'] for a in json.load(sys.stdin)['assets'] if 'Linux_x86_64' in a['name']][0])")
+          curl -sL "$U" -o p.tgz && tar xzf p.tgz pmtiles && ./pmtiles version
+      - name: Extract Makkah (latest daily build)
+        run: |
+          for i in 0 1 2 3 4 5 6 7 8 9; do D=$(date -u -d "-$i day" +%Y%m%d); if curl -sfI "https://build.protomaps.com/$D.pmtiles" >/dev/null; then SRC="https://build.protomaps.com/$D.pmtiles"; break; fi; done
+          echo "SRC=$SRC"
+          ./pmtiles extract "$SRC" maps/makkah.pmtiles --bbox=39.70,21.30,40.05,21.56 --maxzoom=15
+          ls -la maps/makkah.pmtiles; echo "$SRC" > maps/makkah.src
+      - name: Layers (ministry buildings, hotels)
+        run: |
+          Q='[out:json][timeout:170];(nwr["name"~"وزارة الحج|Ministry of Hajj"](21.30,39.70,21.56,40.05);nwr["tourism"="hotel"](21.30,39.70,21.56,40.05););out center tags;'
+          curl -sS --retry 2 -m 200 -X POST --data-urlencode "data=$Q" https://overpass-api.de/api/interpreter -o maps/makkah-poi.json || true
+          python3 -c "import json;d=json.load(open('maps/makkah-poi.json'));print('poi',len(d['elements']))" || true
+      - name: Commit
+        run: |
+          git config user.name "map-build-bot"; git config user.email "map-build-bot@users.noreply.github.com"
+          git add maps/makkah.pmtiles maps/makkah.src maps/makkah-poi.json && git commit -m "خريطة مكة: ملفُّ الخلفية وطبقتا مباني الوزارة والفنادق" && git push
