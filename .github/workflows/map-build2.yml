@@ -1,0 +1,37 @@
+name: Map build 2 — Makkah + Madinah + Hijrah road, layers (data branch only)
+on:
+  push:
+    branches: [osm-fetch]
+    paths: ['.github/workflows/map-build2.yml']
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Tools
+        run: |
+          U=$(curl -s https://api.github.com/repos/protomaps/go-pmtiles/releases/latest | python3 -c "import json,sys; print([a['browser_download_url'] for a in json.load(sys.stdin)['assets'] if 'Linux_x86_64' in a['name']][0])")
+          curl -sL "$U" -o p.tgz && tar xzf p.tgz pmtiles
+          sudo apt-get -qq install -y libsqlite3-dev zlib1g-dev >/dev/null
+          git clone -q --depth 1 https://github.com/felt/tippecanoe && make -s -C tippecanoe -j4 tile-join >/dev/null && ls tippecanoe/tile-join
+      - name: Extract (detail z12-15 for both cities, road corridor z0-11)
+        run: |
+          for i in 0 1 2 3 4 5 6 7 8 9; do D=$(date -u -d "-$i day" +%Y%m%d); if curl -sfI "https://build.protomaps.com/$D.pmtiles" >/dev/null; then SRC="https://build.protomaps.com/$D.pmtiles"; break; fi; done; echo "SRC=$SRC"
+          ./pmtiles extract "$SRC" mk.pmtiles --bbox=39.70,21.30,40.05,21.56 --minzoom=12 --maxzoom=15
+          ./pmtiles extract "$SRC" md.pmtiles --bbox=39.45,24.33,39.78,24.62 --minzoom=12 --maxzoom=15
+          ./pmtiles extract "$SRC" rd.pmtiles --bbox=38.95,21.25,40.10,24.70 --maxzoom=11
+          ./tippecanoe/tile-join -f -q --no-tile-size-limit -o maps/hajj.pmtiles rd.pmtiles mk.pmtiles md.pmtiles
+          ls -la mk.pmtiles md.pmtiles rd.pmtiles maps/hajj.pmtiles; echo "$SRC" > maps/hajj.src
+      - name: Layers
+        run: |
+          q(){ for u in https://overpass-api.de/api/interpreter https://overpass.kumi.systems/api/interpreter https://overpass.private.coffee/api/interpreter; do curl -sS -m 180 -X POST --data-urlencode "data=[out:json][timeout:150];$1;out center tags;" "$u" -o "$2" && python3 -c "import json;d=json.load(open('$2'));print('$2',len(d['elements']))" && return 0; done; echo "FAIL $2"; }
+          q 'nwr["name"~"وزارة الحج|Ministry of Hajj"](21.30,39.70,21.56,40.05)' maps/poi-mk-ministry.json
+          q 'nwr["tourism"="hotel"](around:3000,21.4225,39.8262)' maps/poi-mk-hotels.json
+          q '(nwr["amenity"="parking"]["bus"](24.33,39.45,24.62,39.78);nwr["amenity"="parking"]["name"~"باص|حافلات|bus|Bus"](24.33,39.45,24.62,39.78);nwr["amenity"="bus_station"](24.33,39.45,24.62,39.78);)' maps/poi-md-bus.json
+          q 'nwr["tourism"="hotel"](around:2000,24.4672,39.6111)' maps/poi-md-hotels.json
+      - name: Commit
+        run: |
+          git config user.name "map-build-bot"; git config user.email "map-build-bot@users.noreply.github.com"
+          git add maps/hajj.pmtiles maps/hajj.src maps/poi-*.json 2>/dev/null; git commit -m "خريطة مكة والمدينة والطريق وطبقاتها" && git push
