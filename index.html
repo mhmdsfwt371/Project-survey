@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-38ad5c8f51.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-97485fd17b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -16427,6 +16427,7 @@ function mapInit(){
     try{ MAP.invalidateSize(); }catch(e){}
     setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(); }catch(e){} }, 60);
     mapPaint();
+    basemapKick();   /* (V24.9) خريطةُ الجهاز بعد الدخول وحين تخمل الصفحة */
     return true;
   }
 
@@ -16434,7 +16435,6 @@ function mapInit(){
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
          .setView([21.38, 39.92], 12);
   try { MAP.whenReady(vitMapReady); } catch (e){ vitMapReady(); }   /* أوّلُ خريطةٍ بعد الفتح (V17.98) */
-  try { basemapAttach(); } catch (e){ LS_ERR = e; }                      /* خريطةُ المشاعر بلا شبكة إن نُزِّلت (V18.0) */
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
   MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
@@ -16463,7 +16463,7 @@ function mapInit(){
   MAP_LAYER = L.layerGroup().addTo(MAP);
   MAP_TMP   = L.layerGroup().addTo(MAP);   /* (V24.1) المؤقّتاتُ: موضعُك ومسارُ الرسم — تُمسَح وحدَها */
   MK.by = {};
-  basemapAuto();   /* (V24.9) خريطةُ مكة تُنزَّل مرةً تلقائيًّا ثم تُفتح بلا شبكة */
+  basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
 
   MAP.on('zoomend moveend', mapPaintDebounced);
   MAP.on('click', function(e){
@@ -16733,6 +16733,7 @@ function mapSat(on){
   if (!MAP || !MAP_BASE) return;
   MAP_BASE.setUrl(MAP_SAT ? TILES.esri : TILES.osm);
   MAP_BASE.options.attribution = MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap';
+  basemapSwap();   /* (V24.9) القمرُ يُرى فوق خريطة الجهاز، وتعود هي بإطفائه */
   var el = document.getElementById('mapBox');
   /* القمرُ صورةٌ حقيقية — لا يُقلَب في الوضع الداكن */
   if (el) el.classList.toggle('sat', MAP_SAT);
@@ -17983,10 +17984,10 @@ function geoJsonExport(){
    بلاطاتُ الخريطة شبكةٌ فقط، فتبيض الخريطةُ بلا شبكةٍ وتبقى النقاطُ وحدَها.
    صار ثمّة ملفُّ خريطةٍ متّجهيٍّ واحدٌ (PMTiles من OpenStreetMap — يُبنى كلَّ موسمٍ
    بالوصفة في docs/maps) يُنزِّله الفنيُّ بموافقةٍ صريحةٍ من الأدوات ويُحفَظ في
-   Cache Storage ويُقرأ عبر رابط Blob (لا نطاقاتِ بايتٍ في عامل الخدمة)، ويرسمه
+   Cache Storage ويُقرأ منه مقاطعَ في الذاكرة (FileSource — بلا رابطٍ ولا نطاقاتِ بايت)، ويرسمه
    عارضٌ مضمَّنٌ (vendor/protomaps) يُحمَّل عند الحاجة. الإسنادُ ظاهر. القمرُ
    الصناعيُّ يبقى عبر الشبكة، وبلا الملفِّ يبقى كلُّ شيءٍ كما كان. */
-var BASEMAP = { manifest:null, have:null, layer:null, url:'', loading:false };
+var BASEMAP = { manifest:null, have:null, layer:null, arc:null, busy:null, loading:false };
 var BASEMAP_CACHE = 'nusuk-basemap', BASEMAP_FILE = 'maps/mashaer.pmtiles', BASEMAP_MAX = 30 * 1024 * 1024;
 function basemapManifest(){
   if (BASEMAP.manifest) return Promise.resolve(BASEMAP.manifest);
@@ -18003,12 +18004,32 @@ function basemapHave(){
    تُرسَم الخلفيةُ منه فورًا وبلا شبكة؛ ولا طلبَ على سيرفراتٍ خارجية إلا للقمر الصناعي. */
 function basemapAuto(){
   if (BASEMAP.auto) return; BASEMAP.auto = true;
-  try { basemapManifest().then(function(m){ if (!m || !(m.bytes > 0)) return; basemapHave().then(function(h){ if (h){ try { basemapAttach(); } catch (e){ LS_ERR = e; } } else basemapDownload(); }); }); } catch (e){ LS_ERR = e; }
+  try { basemapManifest().then(function(m){ if (!m || !(m.bytes > 0)) return; basemapHave().then(function(h){ if (h){ try { basemapAttach(); } catch (e){ LS_ERR = e; } } else if (basemapNetOk()) basemapDownload(); }); }); } catch (e){ LS_ERR = e; }
+}
+/* (V24.9) الإقلاعُ أوّلًا: الخريطةُ تُنشأ في الإقلاع خلف شاشة الدخول، وكان إرفاقُ خريطة الجهاز (قراءةُ الملف
+   وتحميلُ العارض ورسمُ البلاطات) وتنزيلُها يجريان معه فأبطآه على المعالج الضعيف والشبكة البطيئة. فصار ذلك
+   بعد الدخول، والخريطةُ ظاهرة، والصفحةُ خاملة — ويُعاد الطلبُ مع كلِّ فتحٍ للخريطة حتى يتمّ. */
+function basemapKick(){
+  if (BASEMAP.kick || BASEMAP.layer || MAP_SAT || !MAP || CUR !== 'map' || document.getElementById('login')) return;
+  BASEMAP.kick = setTimeout(function(){
+    var run = function(){
+      BASEMAP.kick = null;
+      if (!MAP || MAP_SAT || BASEMAP.layer || CUR !== 'map' || document.getElementById('login')) return;
+      try { if (BASEMAP.auto) basemapAttach(); else basemapAuto(); } catch (e){ LS_ERR = e; }
+    };
+    if (typeof requestIdleCallback === 'function') requestIdleCallback(run, { timeout:2000 }); else run();
+  }, 800);
+}
+/* التنزيلُ التلقائيُّ على اتصالٍ جيدٍ فقط: على شبكةٍ مزدحمةٍ يزاحم رفعَ بيانات الميدان — ويبقى زرُّ «نزّل» في «حسابي» */
+function basemapNetOk(){
+  var c = (typeof navigator === 'object' && navigator.connection) || {};
+  if (c.saveData) return false;
+  return !/2g$|^3g$/.test(String(c.effectiveType || ''));
 }
 function basemapDownload(){
   if (BASEMAP.loading) return Promise.resolve(false);
   BASEMAP.loading = true; render(1);
-  return fetch(BASEMAP_FILE, { cache:'no-store' }).then(function(r){
+  return fetch(BASEMAP_FILE, { cache:'no-store', priority:'low' }).then(function(r){
     if (!r.ok) throw new Error('no-file');
     return r.blob();
   }).then(function(b){
@@ -18017,29 +18038,49 @@ function basemapDownload(){
   }).catch(function(e){ BASEMAP.loading = false; toast(t(String(e && e.message) === 'no-file' ? 'لم تُبنَ خريطةُ المشاعر بعد — انظر docs/maps' : 'تعذّر تنزيلُ الخريطة')); render(1); return false; });
 }
 function basemapRemove(){
-  return caches.open(BASEMAP_CACHE).then(function(c){ return c.delete(BASEMAP_FILE); }).then(function(){ BASEMAP.have = false; if (BASEMAP.layer && MAP){ try { MAP.removeLayer(BASEMAP.layer); } catch (e){ LS_ERR = e; } BASEMAP.layer = null; } if (BASEMAP.url){ try { URL.revokeObjectURL(BASEMAP.url); } catch (e){ LS_ERR = e; } BASEMAP.url = ''; } toast(t('أُزيلت خريطةُ المشاعر من الجهاز')); render(1); });
+  return caches.open(BASEMAP_CACHE).then(function(c){ return c.delete(BASEMAP_FILE); }).then(function(){ BASEMAP.have = false; if (BASEMAP.layer && MAP){ try { MAP.removeLayer(BASEMAP.layer); } catch (e){ LS_ERR = e; } BASEMAP.layer = null; } BASEMAP.arc = null; basemapSwap(); toast(t('أُزيلت خريطةُ المشاعر من الجهاز')); render(1); });
 }
 function basemapScripts(){
-  if (window.protomapsL) return Promise.resolve(true);
+  if (window.protomapsL && window.pmtiles) return Promise.resolve(true);
   var one = function(src){ return new Promise(function(res){ var sc = document.createElement('script'); sc.src = src; sc.onload = function(){ res(true); }; sc.onerror = function(){ res(false); }; document.head.appendChild(sc); }); };
-  return one('vendor/protomaps/pmtiles-3.0.7.js').then(function(ok){ return ok ? one('vendor/protomaps/protomaps-leaflet-4.0.1.js') : false; });
+  return one('vendor/protomaps/pmtiles-4.5.0.js').then(function(ok){ return ok ? one('vendor/protomaps/protomaps-leaflet-5.1.0.js') : false; });
 }
-/* يُلحَق بالخريطة حين يوجد الملفُّ: قاعدةٌ بلا شبكة فوق الفاتحة، والقمرُ الصناعيُّ كما هو */
+/* يُلحَق بالخريطة حين يوجد الملفُّ: قاعدةٌ بلا شبكة فوق الفاتحة، والقمرُ الصناعيُّ كما هو.
+   (V24.9) الملفُّ يُقرأ مقاطعَ من الذاكرة (FileSource): رابطُ Blob لا يحمل امتدادَ الملف فكانت
+   المكتبةُ تعدّه عنوانَ بلاطاتٍ وتقرأ الأرشيفَ كلَّه بلاطةً واحدةً فيتعطّل الرسم. ونداءا الفتح
+   والتنزيلِ التلقائي يشتركان في وعدٍ واحدٍ فلا تُلحَق طبقتان. */
 function basemapAttach(){
   if (!MAP || MAP_SAT || BASEMAP.layer) return Promise.resolve(false);
-  return basemapHave().then(function(has){
+  if (BASEMAP.busy) return BASEMAP.busy.then(function(){ return basemapAttach(); });   /* نداءٌ في أثناء آخر يُعاد بعده: لا طبقتان، ولا جوابٌ قديمٌ «لا ملف» يسبق التنزيل */
+  BASEMAP.busy = basemapHave().then(function(has){
     if (!has) return false;
     return basemapScripts().then(function(ok){
-      if (!ok || !window.protomapsL) return false;
-      return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){ return r.blob(); }).then(function(b){
-        BASEMAP.url = URL.createObjectURL(b);
-        BASEMAP.layer = protomapsL.leafletLayer({ url:BASEMAP.url, flavor:'light', lang:'ar', maxDataZoom:15, attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' });
+      if (!ok || !window.protomapsL || !window.pmtiles) return false;
+      return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){
+        if (!r){ BASEMAP.have = false; if (!BASEMAP.redl){ BASEMAP.redl = true; basemapDownload(); } return null; }   /* مُسِح بين الفحص والقراءة: يُعاد مرةً */
+        return r.blob();
+      }).then(function(b){
+        if (!b || !MAP || MAP_SAT || BASEMAP.layer) return false;
+        BASEMAP.arc = new pmtiles.PMTiles(new pmtiles.FileSource(new File([b], 'mashaer.pmtiles')));
+        BASEMAP.layer = protomapsL.leafletLayer({ url:BASEMAP.arc, flavor:'light', lang:'ar', maxDataZoom:15, className:'nskBase', attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' });
         BASEMAP.layer.addTo(MAP);
-        if (MAP_BASE){ try { MAP_BASE.setOpacity(0); } catch (e){ LS_ERR = e; } }
+        basemapSwap();
         return true;
       });
     });
-  }).catch(function(e){ softErr('basemap', e, ''); return false; });
+  }).catch(function(e){ softErr('basemap', e, ''); return false; }).then(function(v){ BASEMAP.busy = null; return v; });
+  return BASEMAP.busy;
+}
+/* (V24.9) طبقةُ أساسٍ واحدةٌ تحت النقاط: خريطةُ الجهاز ما دامت محمَّلةً والقمرُ مطفأ، وإلا البلاطُ
+   الشبكيُّ (القمرُ أو الفاتحة). فلا تُنزَّل بلاطاتٌ لا تُرى، ولا تغطّي خريطةُ الجهاز القمرَ حين يُشغَّل. */
+function basemapSwap(){
+  if (!MAP || !MAP_BASE) return;
+  var vec = !!(BASEMAP.layer && !MAP_SAT);
+  try {
+    if (vec){ if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); if (!MAP.hasLayer(BASEMAP.layer)) BASEMAP.layer.addTo(MAP); }
+    else { if (BASEMAP.layer && MAP.hasLayer(BASEMAP.layer)) MAP.removeLayer(BASEMAP.layer); if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); }
+  } catch (e){ LS_ERR = e; }
+  if (!MAP_SAT && !BASEMAP.layer && BASEMAP.have) basemapAttach();
 }
 /* بطاقاتُ الجهاز — خريطةُ المشاعر ووضعُ الشمس والتشخيص — تظهر في «حسابي» لكلِّ
    الأدوار (الفنيُّ لا يرى الأدوات) وفي الأدوات للمشرف (V18.0) */
@@ -18057,7 +18098,7 @@ function basemapCard(){
   var mb = BASEMAP.manifest && BASEMAP.manifest.bytes ? Math.round(BASEMAP.manifest.bytes / 1048576) : 0;
   var built = !!(BASEMAP.manifest && BASEMAP.manifest.bytes);
   return card('خريطةُ المشاعر بلا شبكة',
-    '<p class="hint" style="margin-top:0">' + esc(t('شوارعُ المشاعر ومناطقُها على جهازك — تظهر الخريطةُ حين تغيب الشبكة. تُنزَّل مرةً بموافقتك (يُفضَّل على واي فاي)، وبياناتُها من OpenStreetMap.')) + '</p>'
+    '<p class="hint" style="margin-top:0">' + esc(t('شوارع مكة ومبانيها وأسماؤها تحفظ على جهازك فتظهر الخريطة فورا حتى من غير شبكة. تنزل مرة واحدة تلقائيا عند فتح الخريطة إذا كان الاتصال جيدا، ويمكن تنزيلها من هنا، ويفضل ذلك على واي فاي.')) + '</p>'
     + '<div class="actions">'
     + (BASEMAP.have
         ? pill('\u2713 ' + t('محفوظةٌ على الجهاز'), 'ok') + btn(t('أزلها من الجهاز'), 'btn-quiet btn-sm', ' data-basemaprm="1"')
@@ -22570,8 +22611,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
-  { v:'V24.9', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
-      'خريطة مكة كاملة بشوارعها ومبانيها وأسمائها صارت جزءا من التطبيق: تنزل مرة واحدة عند أول فتح للخريطة، ثم تفتح فورا ومن غير شبكة، في المشاعر والحرم والعزيزية والنوارية والزايدي.' ] },
+  { v:'V24.9', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
+      'خريطة مكة كاملة بشوارعها ومبانيها وأسمائها صارت جزءا من التطبيق: تنزل مرة واحدة تلقائيا عند فتح الخريطة على اتصال جيد، ثم تفتح فورا ومن غير شبكة، في المشاعر والحرم والعزيزية والنوارية والزايدي.',
+      'تبقى الخريطة المحفوظة على الجهاز بعد كل تحديث للتطبيق، فلا يعاد تنزيلها ولا تختفي عند انقطاع الشبكة.' ] },
   { v:'V24.8', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'لكل نوع من النقاط شكل يميزه على الخريطة: الممر مربع، وكاميرات الوزارة مثلث، وكاميرات قراءة اللوحات مثلث مقلوب، والبوابة معين، ومحطة القطار سداسي، ومنشأة الجمرات خماسي، والمبنى علامة زائد، والجيت واي نجمة، والحساس قطرة.',
       'خطوط الذهاب تنتهي عند مداخل الدور نفسه في منشأة الجمرات، وخطوط العودة تبدأ من مخارجه، وكذلك مسار كل مخيم.' ] },

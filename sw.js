@@ -27,10 +27,15 @@ self.addEventListener('install', function (e) {
   );
 });
 
+/* (V24.9) مخزنُ خريطة الجهاز (nusuk-basemap) يبقى عبر التحديثات: كان التفعيلُ يمسح كلَّ مخزنٍ
+   غيرَ الهيكل فتختفي الخريطةُ بلا شبكة مع كلِّ نسخةٍ ويُعاد تنزيلُها — وقد يمسحها في أوّل تثبيتٍ
+   بعد تنزيلها بلحظة فلا تظهر في الجلسة كلِّها */
+const KEEP = ['nusuk-basemap'];
+
 self.addEventListener('activate', function (e) {
   e.waitUntil(
     caches.keys().then(function (keys) {
-      return Promise.all(keys.filter(function (k) { return k !== CACHE; })
+      return Promise.all(keys.filter(function (k) { return k !== CACHE && KEEP.indexOf(k) === -1; })
                              .map(function (k) { return caches.delete(k); }));
     }).then(function () { return self.clients.claim(); })
   );

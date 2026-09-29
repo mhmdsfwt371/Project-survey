@@ -76,6 +76,9 @@ console.log('\n══ ٤ · العاملُ الجديد: كاشٌ باسمه، �
   const W = world({ 'nusuk-survey-v0.1': { '/app/index.html':'<html>old</html>' } });
   await W.run('install', null); await W.run('activate', null);
   T(!W.stores.has('nusuk-survey-v0.1') && W.stores.has(CACHE) && W.self.claimed === true, 'القديمُ حُذف والجديدُ تولّى الصفحات');
+  { const W3 = world({ 'nusuk-survey-v0.1': { '/app/index.html':'<html>old</html>' }, 'nusuk-basemap': { 'maps/mashaer.pmtiles':'pm' } });
+    await W3.run('install', null); await W3.run('activate', null);
+    T(!W3.stores.has('nusuk-survey-v0.1') && W3.stores.has('nusuk-basemap') && W3.stores.get('nusuk-basemap').has('maps/mashaer.pmtiles'), 'وخريطةُ الجهاز تبقى عبر التحديث — لا تُمسَح مع الهيكل القديم (V24.9)'); }
   const res = await W.run('fetch', new W.Req('/app/', { mode:'navigate' }));
   T(res && res.body === '<html>shell</html>', 'فالفتحُ التالي من الهيكل الجديد');
 }
