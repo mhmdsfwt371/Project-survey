@@ -26,7 +26,14 @@ T(!/cdn\.jsdelivr|unpkg\.com|protomaps\.com\/.*\.js/.test(html), 'ولا يُح�
 T(/\/vendor\/protomaps\//.test(readFileSync('sw.js', 'utf8')), 'وعاملُ الخدمة يخزّنه عند أوّل طلب');
 const rec = readFileSync('docs/maps/README.md', 'utf8');
 T(/pmtiles extract/.test(rec) && /--bbox=39\.70,21\.30,40\.05,21\.56/.test(rec) && /30/.test(rec) && /FileSource/.test(rec), 'والوصفةُ: الأداةُ والنطاقُ والحدُّ وطريقةُ القراءة');
-T(Array.isArray(man.bounds) && man.bounds.join(',') === '39.7,21.3,40.05,21.56', 'والبيانُ يحمل نطاقَ الوصفة نفسَه');
+T(Array.isArray(man.bounds) && man.bounds.join(',') === '38.95,21.25,40.1,24.7' && /tile-join/.test(man.tool || ''), 'والبيانُ يحمل نطاقَ الممرِّ: مكة والمدينة وطريق الهجرة (V25.2)');
+{ const hb = readFileSync('maps/mashaer.pmtiles'); const b4 = [102, 106, 110, 114].map(o => hb.readInt32LE(o) / 1e7);
+  T(hb.slice(0, 7).toString() === 'PMTiles' && b4.join(',') === '38.95,21.25,40.1,24.7', 'وترويسةُ الملفِّ نفسِه بالنطاق نفسِه — لا «العالمَ كلَّه» فلا بلاطاتٌ فارغةٌ خارجه: ' + b4.join(',')); }
+T(/function basemapStale\(\)/.test(html) && /basemapStale\(\)\.then\(function\(st\)\{ if \(st && basemapNetOk\(\)\) basemapDownload\(\); \}\);/.test(html), 'والمحفوظُ الأقدمُ يُستبدَل بالجديد على اتصالٍ جيدٍ ويبقى عاملًا حتى يتمّ (V25.2)');
+{ const P = JSON.parse(readFileSync('layers/poi.json', 'utf8')); const inB = p => p.lng >= 38.9 && p.lng <= 40.2 && p.lat >= 21.2 && p.lat <= 24.8;
+  T(P.ministry && P.ministry.name === 'مباني الوزارة' && P.ministry.items.length >= 2 && P.tafweej && P.tafweej.name === 'أماكن التفويج' && P.tafweej.items.length >= 10, 'طبقتا الخريطة: مباني الوزارة (' + P.ministry.items.length + ') وأماكن التفويج (' + P.tafweej.items.length + ')');
+  T([...P.ministry.items, ...P.tafweej.items].every(p => p.name && !/[A-Za-z]/.test(p.name) && inB(p)), 'وأسماؤها عربيةٌ ومواضعُها داخل النطاق'); }
+T(/data-poil="ministry"/.test(html) && /data-poil="tafweej"/.test(html) && /closest\('\[data-poil\]'\)/.test(html) && !/POIL[^;\n]{0,80}STATE\./.test(html), 'وزرّاها في «تصفية» ولها معالج — خريطةٌ فقط لا تمسّ نقاطَ المسح ولا العدّادات');
 T(/BASEMAP_MAX = 30 \* 1024 \* 1024/.test(html) && /b\.size > BASEMAP_MAX/.test(html), 'والتطبيقُ يرفض ملفًّا فوق الحدّ');
 
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole(), beforeParse(w){

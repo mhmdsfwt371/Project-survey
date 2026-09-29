@@ -82,6 +82,11 @@ console.log('\n══ ٤ · العاملُ الجديد: كاشٌ باسمه، �
   const res = await W.run('fetch', new W.Req('/app/', { mode:'navigate' }));
   T(res && res.body === '<html>shell</html>', 'فالفتحُ التالي من الهيكل الجديد');
 }
+console.log('\n══ ٤ب · ملفُّ خريطة الجهاز وبيانُه من الشبكة وحدَها (V25.2) ══');
+{ const W = world({ 'nusuk-basemap': { '/app/maps/mashaer.pmtiles':'old-map' }, [CACHE]: { '/app/maps/manifest.json':'old-man' } });
+  const r1 = await W.run('fetch', new W.Req('/app/maps/mashaer.pmtiles')); const r2 = await W.run('fetch', new W.Req('/app/maps/manifest.json')); await new Promise(r => setTimeout(r, 5));
+  T(r1 && r1.body !== 'old-map' && r2 && r2.body !== 'old-man' && W.net.includes('/app/maps/mashaer.pmtiles') && W.net.includes('/app/maps/manifest.json'), 'التنزيلُ يصل الجديدَ ولو كان القديمُ محفوظًا — لا يُعاد إليه ما عنده');
+  T(!(W.stores.get(CACHE) && W.stores.get(CACHE).has('/app/maps/mashaer.pmtiles')), 'ولا يُكرَّر الملفُّ في مخزن الهيكل'); }
 console.log('\n══ ٥ · docs شبكةٌ أوّلًا، وsw.js شبكةٌ فقط ══');
 {
   const W = world({ [CACHE]: { '/app/docs/x.md':'old-doc', '/app/sw.js':'old-sw' } });

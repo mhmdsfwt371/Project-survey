@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-97485fd17b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-301f245955.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -16466,6 +16466,7 @@ function mapInit(){
   MAP_TMP   = L.layerGroup().addTo(MAP);   /* (V24.1) المؤقّتاتُ: موضعُك ومسارُ الرسم — تُمسَح وحدَها */
   MK.by = {};
   basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
+  if (POIL.on.ministry || POIL.on.tafweej) poiPaint();   /* (V25.2) */
 
   MAP.on('zoomend moveend', mapPaintDebounced);
   MAP.on('click', function(e){
@@ -18015,7 +18016,9 @@ function basemapAuto(){
   if (BASEMAP.auto) return; BASEMAP.auto = true;
   /* (V25.0) المحفوظُ أوّلًا: من فتح التطبيقَ بلا شبكةٍ لا يصل إلى البيان، فكان الإرفاقُ ينتظره فلا تظهر خريطةُ الجهاز أبدًا */
   try { basemapHave().then(function(h){
-    if (h){ basemapWarm(); if (basemapWant()) try { basemapAttach(); } catch (e){ LS_ERR = e; } return; }
+    if (h){ basemapWarm(); if (basemapWant()) try { basemapAttach(); } catch (e){ LS_ERR = e; }
+      basemapStale().then(function(st){ if (st && basemapNetOk()) basemapDownload(); });   /* (V25.2) ملفٌّ أحدث: مكة والمدينة والطريق */
+      return; }
     basemapManifest().then(function(m){ if (m && m.bytes > 0 && basemapNetOk()) basemapDownload(); });
   }); } catch (e){ LS_ERR = e; }
 }
@@ -18027,6 +18030,41 @@ function basemapAuto(){
 function basemapWant(){
   /* (V25.1) والقمرُ لا يصل بلا شبكةٍ هو الآخر: عند الانقطاع خريطةُ الجهاز أيًّا كان المختار */
   return BASEMAP.netDown === true || (typeof navigator === 'object' && navigator.onLine === false);
+}
+/* (V25.2) المحفوظُ غيرُ ما في البيان (بحجمه): يُستبدَل بالجديد على اتصالٍ جيد، ويبقى القديمُ عاملًا حتى يتمّ */
+function basemapStale(){
+  if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
+  return Promise.all([basemapManifest(), caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); })]).then(function(a){
+    var m = a[0], r = a[1], n = r ? +(r.headers.get('content-length') || 0) : 0;
+    return !!(m && m.bytes > 0 && n > 0 && n !== m.bytes);
+  }).catch(function(){ return false; });
+}
+/* ═══ طبقتا الخريطة (V25.2): مباني الوزارة وأماكن التفويج ═══
+   خريطةٌ فقط بقرار المالك: لا نقاطُ مسحٍ ولا تدخل في عدّادٍ ولا في أرقام الوزارة. تُحمَّل عند أوّل اختيارٍ
+   من «تصفية» (layers/poi.json — يخزّنه العاملُ لما بعد)، وتُرسَم على لوح النقاط، والاسمُ بلمسة. */
+var POIL = { on:{ ministry:false, tafweej:false }, data:null, busy:false, layer:null };
+var POIL_C = { ministry:'#8E44AD', tafweej:'#E67E22' };
+function poiLoad(){
+  if (POIL.data || POIL.busy || typeof fetch !== 'function') return;
+  POIL.busy = true;
+  fetch('layers/poi.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ POIL.busy = false; if (!d) return; POIL.data = d; poiPaint(); }).catch(function(e){ POIL.busy = false; LS_ERR = e; });
+}
+function poiPaint(){
+  if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
+  try {
+    if (POIL.layer && POIL.layer._map !== MAP) POIL.layer = null;
+    if (POIL.layer) POIL.layer.clearLayers(); else POIL.layer = L.layerGroup().addTo(MAP);
+  } catch (e){ LS_ERR = e; return; }
+  if (!POIL.data) return;
+  Object.keys(POIL.on).forEach(function(k){
+    var g = POIL.data[k]; if (!POIL.on[k] || !g || !g.items) return;
+    g.items.forEach(function(p){
+      if (!(+p.lat) || !(+p.lng)) return;
+      L.circleMarker([+p.lat, +p.lng], { renderer:MAP_CV || undefined, radius:7, color:'#fff', weight:2, fillColor:POIL_C[k], fillOpacity:.95, bubblingMouseEvents:false })
+        .bindPopup('<b>' + esc(p.name) + '</b><br><span class="hint">' + esc(t(g.name)) + '</span>')
+        .addTo(POIL.layer);
+    });
+  });
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
 function basemapSatCls(){
@@ -18139,7 +18177,7 @@ function basemapCard(){
   var mb = BASEMAP.manifest && BASEMAP.manifest.bytes ? Math.round(BASEMAP.manifest.bytes / 1048576) : 0;
   var built = !!(BASEMAP.manifest && BASEMAP.manifest.bytes);
   return card('خريطةُ المشاعر بلا شبكة',
-    '<p class="hint" style="margin-top:0">' + esc(t('شوارع مكة ومبانيها وأسماؤها تحفظ على جهازك فتظهر الخريطة فورا حتى من غير شبكة. تنزل مرة واحدة تلقائيا عند فتح الخريطة إذا كان الاتصال جيدا، ويمكن تنزيلها من هنا، ويفضل ذلك على واي فاي.')) + '</p>'
+    '<p class="hint" style="margin-top:0">' + esc(t('شوارع مكة والمدينة وطريق الهجرة ومبانيها وأسماؤها تحفظ على جهازك، فتظهر الخريطة تلقائيا عند انقطاع الشبكة. تنزل مرة واحدة تلقائيا عند فتح الخريطة إذا كان الاتصال جيدا، ويمكن تنزيلها من هنا، ويفضل ذلك على واي فاي.')) + '</p>'
     + '<div class="actions">'
     + (BASEMAP.have
         ? pill('\u2713 ' + t('محفوظةٌ على الجهاز'), 'ok') + btn(t('أزلها من الجهاز'), 'btn-quiet btn-sm', ' data-basemaprm="1"')
@@ -19649,6 +19687,11 @@ function mapUIHtml(){
         +     esc(t('إغلاق')) + '" style="flex:0 0 auto">✕</button>'
         + '</div>'
         + catBar(0)
+        + '<div class="wt-row" style="margin-top:10px;gap:6px;flex-wrap:wrap;align-items:center">'
+        +   '<span class="hint" style="margin:0">' + esc(t('طبقات الخريطة')) + '</span>'
+        +   '<button type="button" class="cat' + (POIL.on.ministry ? ' on' : '') + '" data-poil="ministry">' + esc(t('مباني الوزارة')) + '</button>'
+        +   '<button type="button" class="cat' + (POIL.on.tafweej ? ' on' : '') + '" data-poil="tafweej">' + esc(t('أماكن التفويج')) + '</button>'
+        + '</div>'
         + '<div class="actions" style="margin-top:10px">'
         + btn('عرض','btn-primary btn-sm',' data-mfilt="0"')
         + btn('مسح التصفية','btn-secondary btn-sm',' data-mclear="1"')
@@ -22652,6 +22695,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.2', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
+      'الخريطة المحفوظة على الجهاز تشمل الآن مكة والمدينة المنورة وطريق الهجرة، وتظهر تلقائيا عند انقطاع الشبكة، وتستبدل الأجهزة نسختها السابقة من تلقاء نفسها.',
+      'أضيفت في التصفية طبقتان للعرض على الخريطة فقط: مباني الوزارة، وأماكن التفويج.' ] },
   { v:'V25.1', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
       'أصبحت صور القمر الصناعي هي الخلفية الأساسية للخريطة، ويمكن الانتقال إلى خريطة الشوارع بالزر نفسه. وعند انقطاع الشبكة تظهر الخريطة المحفوظة على الجهاز كما كانت.' ] },
   { v:'V25.0', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
@@ -31353,6 +31399,8 @@ function clickA(e){
   if (e.target.closest('[data-tfwcampx]')){ TFW.camp = null; tfwLines(); render(1); return true; }
   var tfd = e.target.closest('[data-tfwd]');   /* (V24.3) اتجاهُ المسار: الذهابُ والعودةُ أو كلٌّ وحدَه */
   if (tfd){ TFW.d = tfd.getAttribute('data-tfwd'); tfwLines(); render(1); return true; }
+  var pol = e.target.closest('[data-poil]');   /* (V25.2) طبقتا الخريطة — خريطةٌ فقط */
+  if (pol){ var pk = pol.getAttribute('data-poil'); POIL.on[pk] = !POIL.on[pk]; poiLoad(); poiPaint(); render(1); return true; }
   var ffl = e.target.closest('[data-ffl]');
   if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.2) */

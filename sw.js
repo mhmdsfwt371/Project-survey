@@ -1,5 +1,5 @@
 /* Nusuk Survey — offline shell cache */
-const CACHE = 'nusuk-survey-v25.1';
+const CACHE = 'nusuk-survey-v25.2';
 const SHELL = [
   './',
   './index.html',
@@ -125,6 +125,14 @@ self.addEventListener('fetch', function (e) {
   if (req.url.indexOf('sw.js') !== -1) {
     e.respondWith(fetch(new Request(req.url, { cache: 'reload' }))
       .catch(function () { return new Response('', { status: 504 }); }));
+    return;
+  }
+
+  /* (V25.2) ملفُّ خريطة الجهاز وبيانُه من الشبكة وحدَها: التطبيقُ يحفظ الملفَّ بنفسه في nusuk-basemap،
+     وكان «الكاشُ أوّلًا» هنا يعيد إلى التنزيل نسختَه القديمةَ (caches.match يبحث في كلِّ المخازن) فلا
+     يصل الملفُّ الجديدُ أبدًا، ويكرّر الملفَّ كلَّه في مخزن الهيكل، ويُبقي البيانَ قديمًا حتى النسخة التالية */
+  if (req.url.indexOf('/maps/') !== -1) {
+    e.respondWith(fetch(new Request(req.url, { cache: 'reload' })).catch(function () { return new Response('', { status: 504 }); }));
     return;
   }
 

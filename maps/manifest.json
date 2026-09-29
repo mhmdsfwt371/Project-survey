@@ -1,15 +1,15 @@
 {
   "file": "mashaer.pmtiles",
-  "bytes": 3881815,
+  "bytes": 8232087,
   "built": "2026-09-28",
-  "tool": "go-pmtiles extract — بناء 20260928",
+  "tool": "go-pmtiles extract ×3 + tile-join — بناء 20260928",
   "bounds": [
-    39.7,
-    21.3,
-    40.05,
-    21.56
+    38.95,
+    21.25,
+    40.1,
+    24.7
   ],
   "maxzoom": 15,
   "source": "OpenStreetMap contributors (ODbL)",
-  "note": "يُملأ بعد البناء على جهازٍ له شبكة — انظر docs/maps/README.md: bytes حجمُ الملف بالبايت، built تاريخُ البناء، tool الأداةُ وإصدارُها"
+  "note": "بُني بسير map-build2 على فرع البيانات (مكة والمدينة تفصيلًا حتى ١٥، وطريق الهجرة حتى ١١) — انظر docs/maps/README.md"
 }
