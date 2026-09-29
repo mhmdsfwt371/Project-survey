@@ -80,8 +80,8 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  T(w.POP_OPEN===true && w.POP_SITE===anyId, 'النقرةُ في الثلاثيّ تفتح بطاقةَ النقطة: '+w.POP_SITE);
  w.POP_OPEN=false;
  // القمر الصناعي يتبع
- d.querySelector('[data-sat]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,150));
- T(w.MAP_SAT===true && calls.style===2, 'القمرُ الصناعيُّ يبدّل نمطَ الثلاثيّ أيضًا');
+ const sat0=w.MAP_SAT; d.querySelector('[data-sat]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,150));
+ T(w.MAP_SAT===!sat0 && calls.style===2, 'زرُّ القمر الصناعي يبدّل نمطَ الثلاثيّ أيضًا (القمرُ هو الأساسُ منذ V25.1 — الضغطةُ تعيد الشوارع)');
  // العودة
  d.querySelector('[data-m3]').dispatchEvent(new w.MouseEvent('click',{bubbles:true})); await new Promise(r=>setTimeout(r,300));
  T(w.MAP_3D===false && d.getElementById('m3Box').hidden, 'الضغطةُ الثانية تعيد المسطّح');

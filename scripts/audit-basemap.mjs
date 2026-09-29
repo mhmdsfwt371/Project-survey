@@ -66,7 +66,8 @@ T(w.BASEMAP.have === false && !w.__cache.has('maps/mashaer.pmtiles'), 'والإ�
 
 console.log('\n══ ٣ · الإسنادُ والعودةُ إلى الشبكة ══');
 T(/attribution:'\\u00a9 <a href="https:\/\/www\.openstreetmap\.org\/copyright"/.test(html) && /OpenStreetMap<\/a> contributors/.test(html), 'الطبقةُ تحمل إسنادَ OpenStreetMap في خياراتها');
-T(/if \(!MAP \|\| MAP_SAT \|\| BASEMAP\.layer \|\| !basemapWant\(\)\) return Promise\.resolve\(false\);/.test(html) && /if \(!has\) return false;/.test(html), 'وبلا الملفِّ أو على القمر أو مع الشبكة لا يُلحَق شيء — خلفيةُ V24.8 كما كانت (V25.0)');
+T(/var MAP_SAT = true;/.test(html) && /function basemapWant\(\)\{\n[^\n]*\n  return BASEMAP\.netDown === true \|\| \(typeof navigator === 'object' && navigator\.onLine === false\);/.test(html), 'القمرُ الصناعيُّ هو الأساس، وعند الانقطاع خريطةُ الجهاز أيًّا كان المختار (V25.1)');
+T(/if \(!MAP \|\| BASEMAP\.layer \|\| !basemapWant\(\)\) return Promise\.resolve\(false\);/.test(html) && /if \(!has\) return false;/.test(html), 'وبلا الملفِّ أو على القمر أو مع الشبكة لا يُلحَق شيء — خلفيةُ V24.8 كما كانت (V25.0)');
 T(/window\.addEventListener\('offline'/.test(html) && /window\.addEventListener\('online', function\(\)\{ BASEMAP\.netDown = false;/.test(html) && /if \(\+\+tBad >= 12 && !BASEMAP\.netDown\)/.test(html), 'وتُلحَق عند الانقطاع أو تعثّر البلاط الشبكيِّ ١٢ مرةً متتالية، وتُرفَع بعودة الشبكة');
 T(/var BASEMAP_JS = \['vendor\/protomaps\/pmtiles-4\.5\.0\.js', 'vendor\/protomaps\/protomaps-leaflet-5\.1\.0\.js'\];/.test(html) && /\.then\(basemapWarm\)/.test(html), 'والعارضُ يُحفَظ معها في مخزنها الباقي — يعمل بلا شبكةٍ ولو تبدّلت النسخة');
 T(/new pmtiles\.FileSource\(new File\(\[b\]/.test(html) && /leafletLayer\(\{ url:BASEMAP\.arc/.test(html) && !/URL\.createObjectURL\(b\)/.test(html), 'والقراءةُ مقاطعُ من الذاكرة (FileSource) لا رابطُ Blob — الرابطُ بلا امتدادٍ فكان يُقرأ الأرشيفُ بلاطةً واحدة');
@@ -83,7 +84,9 @@ console.log('\n══ ٤ · مع الشبكة خلفيةُ V24.8، وخريطة�
   setOn(false); vec = mk('vec2'); w.BASEMAP.layer = vec; w.basemapSwap();
   T(on.has(vec) && !on.has(base), 'انقطعت الشبكة: خريطةُ الجهاز وحدَها ولا تُطلَب بلاطاتٌ لا تصل');
   w.mapSat(true);
-  T(!on.has(vec) && on.has(base) && w.BASEMAP.layer === null, 'القمرُ يُشغَّل: يُرى هو، وتُترَك خريطةُ الجهاز');
+  T(on.has(vec) && !on.has(base), 'والقمرُ مختارٌ بلا شبكة: لا يصل — فتبقى خريطةُ الجهاز (V25.1)');
+  setOn(true); w.basemapSwap();
+  T(!on.has(vec) && on.has(base) && w.BASEMAP.layer === null, 'وعادت الشبكة والقمرُ مختار: القمرُ هو الخلفية وتُترَك خريطةُ الجهاز');
   w.mapSat(false); setOn(true); w.BASEMAP.netDown = true; vec = mk('vec3'); w.BASEMAP.layer = vec; w.basemapSwap();
   T(on.has(vec) && !on.has(base), 'البلاطُ الشبكيُّ يتعثّر والجهازُ «متصل»: خريطةُ الجهاز بدلَه');
   w.BASEMAP.netDown = false; w.basemapSwap();

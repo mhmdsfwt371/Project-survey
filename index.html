@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -16450,8 +16450,7 @@ function mapInit(){
   MAP_BASE.on('tileerror', function(){
     if (swapped || ++errs < 8) return;
     swapped = true;
-    MAP_BASE.setUrl(TILES.esri);
-    MAP_BASE.options.attribution = '&copy; Esri';
+    mapSat(!MAP_SAT); if (CUR === 'map') render(1);   /* (V25.1) البديلُ هو الطبقةُ الأخرى — القمرُ هو الأساسُ الآن */
     toast('تعذّر المزوّد — تحوّلنا لبديل');
   });
 
@@ -16727,6 +16726,7 @@ function mapTheme(){
   var el = document.getElementById('mapBox');
   if (el) el.classList.toggle('tdark',
     document.documentElement.getAttribute('data-theme') !== 'light');
+  basemapSatCls();   /* (V25.1) القمرُ هو الأساس: لا يُقلَب من أوّل فتح */
 }
 
 
@@ -16739,7 +16739,7 @@ function mapSat(on){
   basemapSwap();   /* (V24.9) القمرُ يُرى فوق خريطة الجهاز، وتعود هي بإطفائه */
   var el = document.getElementById('mapBox');
   /* القمرُ صورةٌ حقيقية — لا يُقلَب في الوضع الداكن */
-  if (el) el.classList.toggle('sat', MAP_SAT);
+  if (el) basemapSatCls();
 }
 
 /* ═══ التصدير والاستيراد — بالبيانات الحقيقية ═══
@@ -18025,7 +18025,13 @@ function basemapAuto(){
    المتصفّحُ بلا كلفة. فصار: مع الشبكة تبقى الخلفيةُ كما في V24.8 تمامًا، وتُلحَق خريطةُ الجهاز
    حين تنقطع الشبكة أو يتعثّر البلاطُ الشبكيُّ مرارًا، وتُرفَع وتُترَك من الذاكرة حين تعود. */
 function basemapWant(){
-  return !MAP_SAT && (BASEMAP.netDown === true || (typeof navigator === 'object' && navigator.onLine === false));
+  /* (V25.1) والقمرُ لا يصل بلا شبكةٍ هو الآخر: عند الانقطاع خريطةُ الجهاز أيًّا كان المختار */
+  return BASEMAP.netDown === true || (typeof navigator === 'object' && navigator.onLine === false);
+}
+/* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
+function basemapSatCls(){
+  var el = document.getElementById('mapBox');
+  if (el) el.classList.toggle('sat', !!(MAP_SAT && !(BASEMAP.layer && MAP && MAP.hasLayer(BASEMAP.layer))));
 }
 if (typeof window === 'object' && window.addEventListener){
   window.addEventListener('offline', function(){ try { basemapSwap(); } catch (e){ LS_ERR = e; } });
@@ -18076,7 +18082,7 @@ function basemapScripts(){
    المكتبةُ تعدّه عنوانَ بلاطاتٍ وتقرأ الأرشيفَ كلَّه بلاطةً واحدةً فيتعطّل الرسم. ونداءا الفتح
    والتنزيلِ التلقائي يشتركان في وعدٍ واحدٍ فلا تُلحَق طبقتان. */
 function basemapAttach(){
-  if (!MAP || MAP_SAT || BASEMAP.layer || !basemapWant()) return Promise.resolve(false);
+  if (!MAP || BASEMAP.layer || !basemapWant()) return Promise.resolve(false);
   if (BASEMAP.busy) return BASEMAP.busy.then(function(){ return basemapAttach(); });   /* نداءٌ في أثناء آخر يُعاد بعده: لا طبقتان، ولا جوابٌ قديمٌ «لا ملف» يسبق التنزيل */
   BASEMAP.busy = basemapHave().then(function(has){
     if (!has) return false;
@@ -18086,10 +18092,10 @@ function basemapAttach(){
         if (!r){ BASEMAP.have = false; if (!BASEMAP.redl){ BASEMAP.redl = true; basemapDownload(); } return null; }   /* مُسِح بين الفحص والقراءة: يُعاد مرةً */
         return r.blob();
       }).then(function(b){
-        if (!b || !MAP || MAP_SAT || BASEMAP.layer || !basemapWant()) return false;
+        if (!b || !MAP || BASEMAP.layer || !basemapWant()) return false;
         BASEMAP.arc = new pmtiles.PMTiles(new pmtiles.FileSource(new File([b], 'mashaer.pmtiles')));
         return BASEMAP.arc.getHeader().then(function(h){
-        if (!MAP || MAP_SAT || BASEMAP.layer || !basemapWant()) return false;
+        if (!MAP || BASEMAP.layer || !basemapWant()) return false;
         /* (V25.0) تُرسَم داخل نطاق الملف وحدَه (ترويستُه تعمل بلا شبكة) — كانت خارجه بلاطاتٌ فارغةٌ بخطوطٍ وأسماءٌ طافية */
         var bb = (h && h.maxLon > h.minLon && h.maxLat > h.minLat && h.maxLon - h.minLon < 300) ? [[h.minLat, h.minLon], [h.maxLat, h.maxLon]] : undefined;
         BASEMAP.layer = protomapsL.leafletLayer({ url:BASEMAP.arc, flavor:'light', lang:'ar', maxDataZoom:15, className:'nskBase', bounds:bb, attribution:'\u00a9 <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' });
@@ -18114,6 +18120,7 @@ function basemapSwap(){
       if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP);
     }
   } catch (e){ LS_ERR = e; }
+  basemapSatCls();
   if (want && !BASEMAP.layer && BASEMAP.have !== false) basemapAttach();
 }
 /* بطاقاتُ الجهاز — خريطةُ المشاعر ووضعُ الشمس والتشخيص — تظهر في «حسابي» لكلِّ
@@ -19177,7 +19184,7 @@ var CO_OPEN = false;
 /* يبقى التلوينُ بعد إغلاق اللوح حتى يُطفأ صراحةً */
 var CO_MODE = false;
 var CO_Q = '', TK_Q = '', IT_Q = '', JB_Q = '';
-var MAP_SAT = false;
+var MAP_SAT = true;   /* (V25.1) القمرُ الصناعيُّ هو الأساس بقرار المالك — والشوارعُ بالزرّ نفسِه */
 var MAP_FILT_OPEN = false;
 var CO_SEL = [];
 /* القائمةُ الموحّدة — تُبنى من بيانات المشروع نفسها لا تُكتَب بيد.
@@ -22645,6 +22652,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.1', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
+      'أصبحت صور القمر الصناعي هي الخلفية الأساسية للخريطة، ويمكن الانتقال إلى خريطة الشوارع بالزر نفسه. وعند انقطاع الشبكة تظهر الخريطة المحفوظة على الجهاز كما كانت.' ] },
   { v:'V25.0', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
       'عادت حركة الخريطة إلى سرعتها المعهودة: مع وجود الشبكة تعرض كما كانت من قبل، وعند انقطاعها تظهر الخريطة المحفوظة على الجهاز تلقائيا.' ] },
   { v:'V24.9', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
