@@ -274,11 +274,12 @@ console.log('\n══ ٥ · الأنواعُ والأشكال ══');
   T(/class="lg-row lg-shp sh-star"[^]*?جيت واي/.test(lg) && /class="lg-row lg-shp sh-drop"[^]*?حساس حرارة ورطوبة/.test(lg), 'وكلُّ نوعٍ تحت شكله');
   /* شاشةُ الأنواع: الشكلُ واللونُ لكلِّ نوعٍ قائم */
   const box = d.createElement('div'); box.innerHTML = w.typesCard(); d.body.appendChild(box);
-  const sel = box.querySelector('[data-tys="LPR"]');
-  T(!!sel && !!box.querySelector('[data-tyc="LPR"]') && !box.querySelector('[data-tys="ممر"]'), 'شاشةُ الأنواع تعدّل الشكلَ واللونَ — والممرُّ معيّنٌ ثابت');
-  sel.value = 'triangle';
-  sel.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
-  T(w.typeShape('LPR') === 'triangle', 'واختيارُ الشكل يُحفَظ للنوع');
+  /* (V24.8) أشكالُ الأنواع المعروفة ثابتةٌ بجدولٍ واحد (TYPE_SHAPE_DEF) — واللونُ يُعدَّل لكلِّ نوع،
+     والشكلُ يُختار لما يُضاف من أنواعٍ جديدة */
+  const sel = box.querySelector('[data-tys]'), selK = sel ? sel.getAttribute('data-tys') : '';
+  T(!!box.querySelector('[data-tyc="LPR"]') && !box.querySelector('[data-tys="ممر"]') && !box.querySelector('[data-tys="LPR"]') && w.mapShapeOf('ممر') === 'square' && w.mapShapeOf('LPR') === 'tridown', 'شاشةُ الأنواع تعدّل اللون — وأشكالُ الأنواع المعروفة ثابتة: الممرُّ مربّعٌ واللوحاتُ مثلثٌ مقلوب');
+  if (sel){ sel.value = 'triangle'; sel.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30); }
+  T(!sel || w.typeShape(selK) === 'triangle', 'واختيارُ الشكل يُحفَظ للنوع المضاف');
   box.remove();
   w.STATE.types = keepTypes && Object.keys(keepTypes).length ? keepTypes : {};
   w.TYPES_NORM = null; w.typesList();

@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V24.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-d5219dd7d5.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-38ad5c8f51.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3965,7 +3965,20 @@ function typeShape(ty){
   return (d && d.s) || (b && b.s) || 'circle';
 }
 /* الشكلُ كما يُرسَم فعلًا: الممرُّ والكاميرا معيّنٌ بعلامةٍ ثابتة، وغيرُهما شكلُ نوعه */
-function mapShapeOf(ty){ return (ty === 'ممر' || ty === 'كاميرا') ? 'diamond' : typeShape(ty); }
+/* ═══ شكلٌ لكلِّ نوع (V24.8) ═══ بطلب صاحب المشروع: كلُّ نوعٍ يُعرَف بشكله قبل لونه، والمخيمُ كما هو.
+   الجدولُ نفسُه تقرؤه الخريطةُ والأسطورةُ وشاشةُ الأنواع — فلا يختلف ثلاثتُها. */
+(function(){
+  var ring = function(n, r, rot){ var o = []; for (var i = 0; i < n; i++){ var a = rot + i * 2 * Math.PI / n; o.push([Math.cos(a) * r, Math.sin(a) * r]); } return o; };
+  SHAPE_UNIT.tridown = [[0, 1.35], [1.2, -0.95], [-1.2, -0.95]];
+  SHAPE_UNIT.hexagon = ring(6, 1.2, 0);
+  SHAPE_UNIT.pentagon = ring(5, 1.3, -Math.PI / 2);
+  var w = 0.42, l = 1.3;
+  SHAPE_UNIT.plus = [[-w,-l],[w,-l],[w,-w],[l,-w],[l,w],[w,w],[w,l],[-w,l],[-w,w],[-l,w],[-l,-w],[-w,-w]];
+})();
+SHAPES.push(['tridown', 'مثلث مقلوب'], ['hexagon', 'سداسي'], ['pentagon', 'خماسي'], ['plus', 'زائد']);
+var TYPE_SHAPE_DEF = { 'ممر':'square', 'كاميرا':'triangle', 'LPR':'tridown', 'جيت واي':'star', 'حساس حرارة ورطوبة':'drop',
+                       'بوابة':'diamond', 'محطة':'hexagon', 'جسر':'pentagon', 'مبنى':'plus' };
+function mapShapeOf(ty){ return TYPE_SHAPE_DEF[ty] || typeShape(ty); }
 function shapeRing(map, lat, lng, px, shape){
   var U = SHAPE_UNIT[shape];
   if (!U) return null;
@@ -4196,9 +4209,11 @@ function tfwCampCalc(id){
   var f = tfwFloorOf(id), x = siteFind(id), R = TFW.routes && TFW.routes.floors ? TFW.routes.floors[String(f)] : null;
   if (f == null || !x || !R) return null;
   var c = [x.lat, x.lng], ex = siteFind('NSK-JMR-PNT-' + TFW_JEX[f]), E = ex ? [ex.lat, ex.lng] : TFW_JIN;
-  var G = tfwNet(R.go), B = tfwNet(R.back);
-  var a = tfwNear(G, c), b = tfwNear(G, TFW_JIN), e = tfwNear(B, E), h = tfwNear(B, c);
-  var p1 = a[0] >= 0 && b[0] >= 0 ? tfwPath(G, a[0], b[0]) : null, p2 = e[0] >= 0 && h[0] >= 0 ? tfwPath(B, e[0], h[0]) : null;
+  var G = tfwNet(R.go), B = tfwNet(R.back), EN = (TFW.routes.ends || {}).en || {}, EX = (TFW.routes.ends || {}).ex || {};
+  var a = tfwNear(G, c), h = tfwNear(B, c), p1 = null, p2 = null;
+  /* (V24.8) الذهابُ ينتهي عند أقرب مدخلٍ من مداخل دوره، والعودةُ تبدأ من أقرب مخرجٍ من مخارجه — لا عند نقطةٍ ثابتة */
+  (EN[f] || []).concat(EN[f] ? [] : ['']).forEach(function(k){ var q = k ? siteFind('NSK-JMR-PNT-' + k) : null, tp = q ? [q.lat, q.lng] : TFW_JIN, b = tfwNear(G, tp), p = a[0] >= 0 && b[0] >= 0 ? tfwPath(G, a[0], b[0]) : null; if (p && (!p1 || p.len < p1.len)) p1 = p; });
+  (EX[f] || []).concat(EX[f] ? [] : ['']).forEach(function(k){ var q = k ? siteFind('NSK-JMR-PNT-' + k) : null, sp = q ? [q.lat, q.lng] : E, e = tfwNear(B, sp), p = e[0] >= 0 && h[0] >= 0 ? tfwPath(B, e[0], h[0]) : null; if (p && (!p2 || p.len < p2.len)) p2 = p; });
   if (!p1 || !p2) return null;
   return { id:id, f:f, go:{ pts:[c].concat(p1.pts), len:Math.round(p1.len + a[1]) }, back:{ pts:p2.pts.concat([c]), len:Math.round(p2.len + h[1]) } };
 }
@@ -22547,6 +22562,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V24.8', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
+      'لكل نوع من النقاط شكل يميزه على الخريطة: الممر مربع، وكاميرات الوزارة مثلث، وكاميرات قراءة اللوحات مثلث مقلوب، والبوابة معين، ومحطة القطار سداسي، ومنشأة الجمرات خماسي، والمبنى علامة زائد، والجيت واي نجمة، والحساس قطرة.',
+      'خطوط الذهاب تنتهي عند مداخل الدور نفسه في منشأة الجمرات، وخطوط العودة تبدأ من مخارجه، وكذلك مسار كل مخيم.' ] },
   { v:'V24.7', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
       'مراجعة لغة الواجهة: لا أخطاء همزات ولا إملاء في نحو ألفين وخمسمئة نص، وتحويل ثلاث عبارات عامية في مساعد البحث إلى عربية فصحى مبسطة.' ] },
   { v:'V24.6', d:'٢٨ سبتمبر ٢٠٢٦', notes:[
@@ -28778,7 +28796,7 @@ function typesCard(){
           var u = typeUsed(k);
           /* اللونُ والشكلُ يُعدَّلان لكلِّ نوعٍ قائم (V17.60) — لا عند إضافته وحدَها؛
              والممرُّ والكاميرا معيّنٌ بعلامةٍ ثابتةٍ لها هدفُ لمسٍ خاصّ */
-          var fixed = (k === 'ممر' || k === 'كاميرا'), sh = typeShape(k);
+          var fixed = TYPE_SHAPE_DEF[k], sh = typeShape(k);
           /* وسمُ الحقل للقارئ الصوتيِّ باسم النوع المترجَم — كان يُشتقُّ من الخلية
              الأولى فيُقرأ «مخيمCamp» مفتاحًا عربيًّا ملتصقًا بترجمته */
           var al = function(col){ return ' aria-label="' + esc(t(col) + ' \u2014 ' + typeShort(k)) + '"'; };
@@ -28788,7 +28806,7 @@ function typesCard(){
                   '<input value="' + esc(T[k].i || '') + '" data-tyi="' + esc(k) + '" style="max-width:70px" dir="ltr"' + al('الرمز') + '>',
                   '<input type="color" value="' + esc(T[k].c || '#8A939D') + '" data-tyc="' + esc(k) + '" style="width:48px;min-height:34px;padding:2px"' + al('اللون') + '>',
                   fixed
-                    ? shapeSvg('diamond', T[k].c) + ' <span class="hint" style="margin:0">' + esc(t('معيّنٌ ثابت')) + '</span>'
+                    ? shapeSvg(mapShapeOf(k), T[k].c) + ' <span class="hint" style="margin:0">' + esc(t('شكلٌ ثابت')) + '</span>'
                     : shapeSvg(sh, T[k].c) + ' <select data-tys="' + esc(k) + '" style="max-width:110px"' + al('الشكل على الخريطة') + '>'
                       + SHAPES.map(function(o){ return '<option value="' + esc(o[0]) + '"' + (sh === o[0] ? ' selected' : '') + '>' + esc(t(o[1])) + '</option>'; }).join('')
                       + '</select>',

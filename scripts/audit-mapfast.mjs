@@ -43,6 +43,14 @@ T(samp.length > 300 && inside / samp.length < 0.03, 'ورؤوسُها في ال�
 const tl = fn('tfwLines');
 T(/L\.polyline\(pts, \{ renderer:MAP_CV/.test(tl) && /interactive:false/.test(tl) && /tafweej-routes\.json/.test(tl) && /bringToBack\(\)/.test(tl), 'تُرسَم على لوح النقاط بلا نقر، مرّةَ تحميلٍ واحدة، والمخيماتُ خلفها والنقاطُ فوقها');
 T(/data-tfw="' \+ TFW_ALL/.test(html) && /data-tfwd=/.test(html) && /TFW\.d !== 'both' && TFW\.d !== k\[0\]/.test(tl) && /TFW_COL\[\+fk\]/.test(tl), 'الفلتر: كلُّ الأدوار معًا بلونٍ لكلِّ دور، أو كلُّ دورٍ وحدَه، والذهابُ والعودةُ معًا أو كلٌّ وحدَه');
+/* (V24.8) الذهابُ ينتهي عند مداخل دوره والعودةُ تبدأ من مخارجه — لكلِّ دورٍ من الخمسة */
+const JP = id => { const m = html.match(new RegExp('\\["NSK-JMR-PNT-' + id + '","[^"]*",\\d+,\\d+,\\d+,([\\d.]+),([\\d.]+)')); return m ? [+m[1], +m[2]] : null; };
+const dM = (a, b) => Math.hypot((a[0] - b[0]) * 110574, (a[1] - b[1]) * 103600);
+const reach = (lines, p) => lines.some(l => l.some(v => dM(v, p) <= 12));
+const miss = [];
+FL.forEach(k => { (RT.ends.en[k] || []).forEach(id => { if (!reach(RT.floors[k].go, JP(id))) miss.push('ذهاب ' + k + ':' + id); }); (RT.ends.ex[k] || []).forEach(id => { if (!reach(RT.floors[k].back, JP(id))) miss.push('عودة ' + k + ':' + id); }); });
+T(RT.ends && miss.length === 0, 'كلُّ مدخلٍ يصله ذهابُ دوره وكلُّ مخرجٍ تبدأ منه عودتُه' + (miss.length ? ' — ناقص: ' + miss.join('، ') : ''));
+T(/TYPE_SHAPE_DEF = \{ 'ممر':'square', 'كاميرا':'triangle', 'LPR':'tridown'/.test(html) && /SHAPE_UNIT\.hexagon/.test(html) && /SHAPE_UNIT\.plus/.test(html), 'شكلٌ لكلِّ نوع من جدولٍ واحدٍ تقرؤه الخريطةُ والأسطورةُ وشاشةُ الأنواع');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ خفّة الخريطة نظيف \u2705');
