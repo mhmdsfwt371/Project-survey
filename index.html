@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-d07b840e9b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-23cfe0aa61.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2164,7 +2164,7 @@ var CORE = {
        القديمُ حالةً قديمةً: نقطةٌ أُسندت في جهازٍ آخرَ تبقى «لم تُزر» هنا
        حتى يُبطِله شيءٌ آخر. وكذلك أيُّ كتابةٍ مباشرةٍ على STATE.tasks. */
     if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
-    if (v && v.deleted){ delete STATE[kind][id]; return false; }
+    if (v && v.deleted){ delete STATE[kind][id]; if (kind === 'newsites' && typeof siteDropLocal === 'function') siteDropLocal(id); return false; }   /* (V25.5) شاهدُ نقطةٍ مضافةٍ يرفعها من السجل */
     /* ═══ التعديلُ المتزامن يُقال ولا يُبتلَع (V17.79) ═══
        كان تعديلُ جهازين على السجلِّ نفسِه يمرُّ صامتًا: آخرُ من رفع كسب، ولا
        يعرف الأوّلُ أن ما كتبه ذهب. فإن وصلت وثيقةٌ كتبها غيري وفي طابوري
@@ -3060,13 +3060,13 @@ var FB = {
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
             if (ex){
-              if (v.hidden){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }
+              if (v.hidden || v.deleted){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }   /* (V25.5) والمحذوفُ نهائيًّا */
               if (+v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
               if (v.name && ex.name !== v.name){ ex.name = v.name; add++; }
             }
             return;
           }
-          if (!v || !v.id || v.hidden || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ لا يُدمَج (V22.2) */
+          if (!v || !v.id || v.hidden || v.deleted || have[v.id] || !(+v.lat) || !(+v.lng)) return;   /* المخفيُّ والمحذوفُ لا يُدمَجان (V22.2، V25.5) */
           var ovn = (STATE.siteOv || {})[v.id]; if (ovn) v = Object.assign({}, v, ovn);   /* تجاوزُ المكتب (التصنيف…) فوق الوثيقة (V23.0) */
           STATE.sites.push(v); have[v.id] = 1; add++;
         });
@@ -3893,6 +3893,45 @@ function siteRestore(id){
   statBump();
   return true;
 }
+/* ═══ حذفُ النقطة المضافة نهائيًّا (V25.5) — قرارُ المالك ═══
+   ما أُضيف من الميدان أو المكتب أو أدوات الرسم (isNew) يحذفه المهندسُ فما فوق أيًّا كانت حالتُه، بتأكيدٍ
+   واحدٍ يعرض ما ارتبط به؛ ونقاطُ السجل الأصلي لا تُحذَف (تُخفى وتُستعاد). والحذفُ شاهدُ قبرٍ في newsites
+   يصل الأجهزةَ كلَّها (المحوُ لا يصلها — انظر CORE.rm)، وسجلاتُه المرتبطةُ ومهامُّه تُشيَّع بشواهدها،
+   ويبقى الأثرُ في سجل الأحداث. */
+var SITE_DEL = '';
+function siteDelLinks(id){
+  var L = [];
+  if (STATE.recs && STATE.recs[id]) L.push(t('سجلُّ زيارة'));
+  if (STATE.inss && STATE.inss[id]) L.push(t('سجلُّ تركيب'));
+  if (STATE.diss && STATE.diss[id]) L.push(t('سجلُّ فك'));
+  if (STATE.maints && STATE.maints[id]) L.push(t('سجلُّ صيانة'));
+  var tk = 0; Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) tk++; });
+  if (tk) L.push(nm(tk) + ' ' + t('مهام'));
+  return L;
+}
+function siteDelete(id){
+  if (!maySiteEdit()){ toast(t('حذفُ النقطة للمهندس فما فوق')); return false; }
+  var x = siteFind(id); if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
+  if (!x.isNew){ toast(t('نقاطُ السجل الأصلي لا تُحذَف — تُخفى وتُستعاد')); return false; }
+  var links = siteDelLinks(id);
+  ['recs', 'inss', 'diss', 'maints'].forEach(function(k){ if (STATE[k] && STATE[k][id]) CORE.rm(k, id); });
+  Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) CORE.rm('tasks', k); });
+  siteDropLocal(id);
+  if (STATE.newsites) delete STATE.newsites[id];
+  if (STATE.siteOv) delete STATE.siteOv[id];
+  CORE.dirty('newsites', id, { id:String(id), deleted:true, at:Date.now(), by:STATE.meta.name || '' });
+  logEvent('حذفُ نقطةٍ مضافةٍ نهائيًّا — ' + id + ' \u00b7 ' + (x.name || '') + (links.length ? ' \u00b7 ' + links.join('، ') : ''), id);
+  toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
+  SITE_DEL = ''; SITE_ED = 0; statBump();
+  return true;
+}
+/* شاهدُ حذفٍ وصل (من هذا الجهاز أو غيرِه): تُرفَع النقطةُ من السجل والمخفيّ وفهارسه */
+function siteDropLocal(id){
+  var n = (STATE.sites || []).length;
+  STATE.sites = (STATE.sites || []).filter(function(y){ return y.id !== id; });
+  if (STATE.hiddenSites) STATE.hiddenSites = STATE.hiddenSites.filter(function(y){ return y.id !== id; });
+  if (STATE.sites.length !== n){ SITE_IX = null; SITE_TOK = null; if (typeof statBump === 'function') statBump(); }
+}
 function siteEditHtml(x){
   var opt = function(list, cur){ return list.map(function(v){ return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(v ? t(v) : '— ' + t('بلا') + ' —') + '</option>'; }).join(''); };
   var cos = []; STATE.sites.forEach(function(y){ if (y.co && cos.indexOf(y.co) < 0) cos.push(y.co); });
@@ -3918,13 +3957,20 @@ function siteEditHtml(x){
     + fld('خط العرض', '<input id="seLat" type="number" step="0.000001" dir="ltr" value="' + x.lat + '">')
     + fld('خط الطول', '<input id="seLng" type="number" step="0.000001" dir="ltr" value="' + x.lng + '">')
     + '</div>'
-    + '<p class="hint" style="margin:0 0 8px">' + esc(t('تُحفَظ طبقةً فوق بيانات الوزارة ولا تُكتَب زيارة — والإخفاءُ بدل المحو ويُستعاد.')) + '</p>'
+    + '<p class="hint" style="margin:0 0 8px">' + esc(t(x.isNew ? 'نقطةٌ مضافة: تُحفَظ في القاعدة، وحذفُها نهائيٌّ لا يُستعاد.' : 'تُحفَظ طبقةً فوق بيانات الوزارة ولا تُكتَب زيارة — والإخفاءُ بدل المحو ويُستعاد.')) + '</p>'
+    + (SITE_DEL === x.id
+        ? '<p class="hint" style="margin:0 0 8px;color:#E05252"><b>' + esc(t('حذفٌ نهائيٌّ لا يُستعاد — يُحذَف معها:')) + '</b> ' + (siteDelLinks(x.id).length ? esc(siteDelLinks(x.id).join('، ')) : esc(t('لا سجلاتٍ مرتبطة'))) + '</p>'
+        : '')
     + '<div class="actions">'
     + btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-sitesave="' + esc(x.id) + '"')
     + btn(t('إلغاء'),'btn-quiet btn-sm',' data-sitecancel="1"')
-    + (SITE_HIDE === x.id
-        ? btn('\u{1F5D1} ' + t('تأكيد الإخفاء'),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
-        : btn('\u{1F5D1} ' + t('إخفاء النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"'))
+    + (x.isNew
+        ? (SITE_DEL === x.id
+            ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
+        : (SITE_HIDE === x.id
+            ? btn('\u{1F5D1} ' + t('تأكيد الإخفاء'),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('إخفاء النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
     + '</div>');
 }
 function hiddenSitesCard(){
@@ -22781,6 +22827,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.5', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
+      'صار للمهندس فمن فوقه حذف النقاط المضافة من الميدان أو المكتب أو أدوات الرسم حذفا نهائيا، أيا كانت حالتها، بتأكيد واحد يعرض ما ارتبط بها، ويسجل في سجل الأحداث. ونقاط السجل الأصلي تخفى ولا تحذف.' ] },
   { v:'V25.4', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
       'نقاط منشأة الجمرات: صار اسم كل نقطة يحمل «مدخل» أو «مخرج» مع الدور، ويظهران في نافذة النقطة، ويمكن اختيارهما عند تعديل بيانات النقاط الميدانية.' ] },
   { v:'V25.3', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
@@ -31527,7 +31575,11 @@ function clickA(e){
     return true; }
   var sts = e.target.closest('[data-sitesave]');
   if (sts){ if (siteEditSave(sts.getAttribute('data-sitesave'))) render(1); return true; }
-  if (e.target.closest('[data-sitecancel]')){ SITE_ED = 0; SITE_HIDE = ''; render(1); return true; }
+  if (e.target.closest('[data-sitecancel]')){ SITE_ED = 0; SITE_HIDE = ''; SITE_DEL = ''; render(1); return true; }
+  var std = e.target.closest('[data-sitedel]');   /* (V25.5) حذفُ المضافة نهائيًّا — بتأكيدٍ واحد */
+  if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
+  var stdg = e.target.closest('[data-sitedelgo]');
+  if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
   var sth = e.target.closest('[data-sitehide]');
   if (sth){ SITE_HIDE = sth.getAttribute('data-sitehide'); render(1); return true; }
   var sthg = e.target.closest('[data-sitehidego]');

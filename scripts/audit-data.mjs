@@ -489,8 +489,8 @@ if (typeof w.siteStats === 'function'){
     'المواقعُ الجديدةُ تُدمَج في السجل عند الإقلاع');
   check(/have\[v\.id\]\)\{[\s\S]{0,700}ex\.lat = \+v\.lat[\s\S]{0,200}ex\.name = v\.name/.test(raw8),
     'وما دُمج من قبل يأخذ تعديلَ السحابة: الموقعَ والاسم (V22.9)');
-  check(/if \(!v \|\| !v\.id \|\| v\.hidden \|\| have\[v\.id\] \|\| !\(\+v\.lat\) \|\| !\(\+v\.lng\)\) return;/.test(raw8),
-    'ولا تُكرَّر ولا تُدمَج بلا إحداثيات — ولا المخفيُّ منها (V22.2)');
+  check(/if \(!v \|\| !v\.id \|\| v\.hidden \|\| v\.deleted \|\| have\[v\.id\] \|\| !\(\+v\.lat\) \|\| !\(\+v\.lng\)\) return;/.test(raw8),
+    'ولا تُكرَّر ولا تُدمَج بلا إحداثيات — ولا المخفيُّ ولا المحذوفُ منها (V22.2، V25.5)');
   check(/if \(z === 'مكة' \|\| z === 'مكة المكرمة'\) return 'مكة';/.test(raw8)
     && /if \(z === 'المدينة' \|\| z === 'المدينة المنورة'\) return 'المدينة';/.test(raw8),
     'وzoneOf يعرف مكةَ والمدينة — فلا تُحسَبان في منى');
@@ -517,6 +517,16 @@ console.log('\n══ نقاطُ الجمرات: مدخلٌ أو مخرج مع �
   check(/function siteGate\(x\)\{/.test(raw10) && /function jmrNameApply\(name, gate, floor\)\{/.test(raw10), 'siteGate يقرأ البوابةَ من الحقل أو الاسم، وjmrNameApply يضيف الدورَ والبوابةَ إلى الاسم');
   check(/kv\('البوابة', '<b>' \+ esc\(t\(siteGate\(s\)\)\)/.test(raw10), 'والنافذةُ تعرض البوابةَ مع الدور');
   check(/id="seGate"/.test(raw10) && /id="seFloor"/.test(raw10) && /patch\.name = jmrNameApply\(name, gt, fl === '' \? null : \+fl\);/.test(raw10), 'وتعديلُ البيانات لنقاط الجمرات يختار مدخل/مخرج والدورَ ويضيفهما إلى الاسم عند الحفظ'); }
+
+console.log('\n══ حذفُ النقطة المضافة نهائيًّا — للمهندس فما فوق، بتأكيدٍ واحدٍ يعرض المرتبط (V25.5) ══');
+{ const raw11 = readFileSync('index.html', 'utf8');
+  const fnb = n => { const i = raw11.indexOf('function ' + n + '('); return i < 0 ? '' : raw11.slice(i, raw11.indexOf('\nfunction ', i + 10)); };
+  const del = fnb('siteDelete');
+  check(/if \(!maySiteEdit\(\)\)/.test(del) && /if \(!x\.isNew\)\{ toast\(t\('نقاطُ السجل الأصلي لا تُحذَف — تُخفى وتُستعاد'\)\); return false; \}/.test(del), 'الحذفُ للمهندس فما فوق، ونقاطُ السجل الأصلي لا تُحذَف');
+  check(/CORE\.dirty\('newsites', id, \{ id:String\(id\), deleted:true/.test(del) && !/CORE\.dirty\('newsites', id, null\)/.test(del), 'والحذفُ شاهدُ قبرٍ يصل الأجهزةَ كلَّها لا محوٌ لا يصلها');
+  check(/\['recs', 'inss', 'diss', 'maints'\]\.forEach/.test(del) && /if \(w && w\.site === id\) CORE\.rm\('tasks', k\)/.test(del) && /logEvent\('حذفُ نقطةٍ مضافةٍ نهائيًّا — '/.test(del), 'وسجلاتُها ومهامُّها تُشيَّع معها ويبقى الأثرُ في سجل الأحداث');
+  check(/if \(kind === 'newsites' && typeof siteDropLocal === 'function'\) siteDropLocal\(id\);/.test(raw11) && /if \(v\.hidden \|\| v\.deleted\)\{ STATE\.sites = STATE\.sites\.filter/.test(raw11) && /v\.hidden \|\| v\.deleted \|\| have\[v\.id\]/.test(raw11), 'والشاهدُ الواردُ يرفعها من السجل عند الوصول وعند الإقلاع');
+  check(/data-sitedelgo="' \+ esc\(x\.id\)/.test(raw11) && /data-sitedel="' \+ esc\(x\.id\)/.test(raw11) && /\(x\.isNew\n\s*\? \(SITE_DEL === x\.id/.test(raw11) && /closest\('\[data-sitedelgo\]'\)/.test(raw11), 'وزرُّ الحذف للمضافة وحدَها بتأكيدٍ واحد، والإخفاءُ للسجل الأصلي كما كان'); }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
