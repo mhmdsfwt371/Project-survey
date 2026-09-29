@@ -1,0 +1,160 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-07-15T15:22:01Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 5900306332,
+  "lat": 24.4636430,
+  "lon": 39.6100641,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Saptco Vip Express",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 5900331631,
+  "lat": 24.4675654,
+  "lon": 39.6036278,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Al Aliyah Bus Station",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 5900385754,
+  "lat": 24.4720305,
+  "lon": 39.6112942,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Al Azhery Bus Station",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 6230943760,
+  "lat": 24.4672055,
+  "lon": 39.6059120,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Al Aliyah Bus Station",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 6279643282,
+  "lat": 24.4655757,
+  "lon": 39.6133202,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Shazah Bus Station",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 11545563957,
+  "lat": 24.4920040,
+  "lon": 39.6243917,
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name:ar": "محطة حافلات المدينة",
+    "name:en": "Madinah Bus Station",
+    "name:fr": "Gare routière de Médine",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "node",
+  "id": 12847369501,
+  "lat": 24.4659559,
+  "lon": 39.6025804,
+  "tags": {
+    "amenity": "bus_station",
+    "contact:twitter": "Madinah_Bus",
+    "name": "حافلات المدينة",
+    "opening_hours": "Mo-Su 06:00-00:00",
+    "website": "https://madinahbus.mda.gov.sa/"
+  }
+},
+{
+  "type": "node",
+  "id": 12895585101,
+  "lat": 24.4572138,
+  "lon": 39.6146902,
+  "tags": {
+    "amenity": "bus_station"
+  }
+},
+{
+  "type": "node",
+  "id": 13626142601,
+  "lat": 24.4672192,
+  "lon": 39.6502901,
+  "tags": {
+    "amenity": "bus_station",
+    "contact:twitter": "Madinah_bus",
+    "name": "النقل الترددي (103) الخالدية",
+    "opening_hours": "Mo-Su 15:00-03:00",
+    "phone": "920000877",
+    "website": "http://madinahbus.mda.gov.sa"
+  }
+},
+{
+  "type": "way",
+  "id": 310568020,
+  "center": {
+    "lat": 24.4815180,
+    "lon": 39.5581758
+  },
+  "tags": {
+    "amenity": "bus_station",
+    "building": "yes"
+  }
+},
+{
+  "type": "way",
+  "id": 357339463,
+  "center": {
+    "lat": 24.4759766,
+    "lon": 39.5462056
+  },
+  "tags": {
+    "amenity": "bus_station",
+    "bus": "yes",
+    "name": "Saptco Bus Station",
+    "public_transport": "station"
+  }
+},
+{
+  "type": "way",
+  "id": 987466224,
+  "center": {
+    "lat": 24.4604706,
+    "lon": 39.7519458
+  },
+  "tags": {
+    "amenity": "parking",
+    "name": "موقف حجز الحافلات"
+  }
+}
+
+  ]
+}

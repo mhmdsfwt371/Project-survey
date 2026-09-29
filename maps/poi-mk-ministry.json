@@ -1,0 +1,37 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62.11 87bfad18",
+  "osm3s": {
+    "timestamp_osm_base": "2026-06-01T08:52:28Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+
+{
+  "type": "node",
+  "id": 4534855978,
+  "lat": 21.3485638,
+  "lon": 39.9755851,
+  "tags": {
+    "name": "وزارة الحج والعمرة بمشعر عرفة",
+    "name:ar": "وزارة الحج والعمرة بمشعر عرفة",
+    "name:en": "Ministry Omra and Hadsch Bmhar Arafa",
+    "office": "government"
+  }
+},
+{
+  "type": "node",
+  "id": 4577484798,
+  "lat": 21.4155844,
+  "lon": 39.7685107,
+  "tags": {
+    "fixme": "name, name:ar mismatch.",
+    "name": "وزارة الحج والعمرة",
+    "name:ar": "وزارة الحج والعمرة",
+    "office": "government",
+    "phone": "+966 125 649 999"
+  }
+}
+
+  ]
+}
