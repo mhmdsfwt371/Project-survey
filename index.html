@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -15963,7 +15963,8 @@ function liveStop(){
 var MAP_ME = null;
 var MAP = null, MAP_LAYER = null, MAP_TMP = null, MAP_BASE = null, MAP_POLY = null, MAP_CV = null, MAP_ME_LL = null;
 var MAP_READY = false, MAP_LOADING = false;
-/* حدُّ رسمِ حدود المخيمات — مصدرٌ واحدٌ يقرؤه الرسمُ والتحميلُ معًا */
+/* حدُّ رسمِ حدود المخيمات — مصدرٌ واحدٌ يقرؤه الرسمُ والتحميلُ معًا (قرارٌ قائم: المخيمُ بحدوده عند ١٢ فتبقى متفرّدةً).
+   (V25.3) قياس: عند ١٢ نحو ١٬٤٠٠ مضلّعٍ تُنشأ وتُقصّ وتُرسَم مع كلِّ حركة — رفعُ الحدِّ إلى ١٤ يُسرّع التبعيدَ كثيرًا، وهو قرارٌ للمالك */
 var POLY_Z = 12;
 var POLY = null, POLY_LOADING = null;
 
@@ -16325,6 +16326,14 @@ function taskIndex(){
 }
 function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
+  /* (V25.3) داخل رسمة الخريطة تُحسَب الحالةُ مرةً لكلِّ نقطة — الحفظُ يُفتَح مع الرسمة ويُغلَق بعدها فلا يُقدِّم قديمًا */
+  var m = MK.lifeMemo;
+  if (!m) return lifeOfRaw(x);
+  var v = m[x.id];
+  if (v === undefined){ v = lifeOfRaw(x); m[x.id] = v; }
+  return v;
+}
+function lifeOfRaw(x){
   var id = x.id;
   if (disDone(id) || taskKindOf(id, 'dis')) return 'dis';
   if (taskKindOf(id, 'maint')) return 'maint';
@@ -16468,7 +16477,7 @@ function mapInit(){
   basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
   if (POIL.on.ministry || POIL.on.tafweej) poiPaint();   /* (V25.2) */
 
-  MAP.on('zoomend moveend', mapPaintDebounced);
+  MAP.on('zoomend moveend', mapPaintMove);   /* (V25.3) التحريكُ رسمةٌ خفيفة، والتقريبُ وسائرُ التغييرات كاملة */
   MAP.on('click', function(e){
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
@@ -16505,6 +16514,11 @@ function mapPosOf(x){
 function mapPaintDebounced(){
   clearTimeout(_mapT);
   _mapT = setTimeout(mapPaint, 120);
+}
+var _mapMoveT = null;
+function mapPaintMove(){
+  clearTimeout(_mapMoveT);
+  _mapMoveT = setTimeout(function(){ mapPaint(true); }, 120);
 }
 
 /* ═══ الخريطةُ لا تُعاد من الصفر (V24.1) ═══
@@ -16552,15 +16566,89 @@ function mapClickFn(id){
     popOpenAt(id, ev);
   };
 }
-function mapPaint(){
+/* (V25.3) جسدٌ واحدٌ لعلامة النقطة: يحسب شكلَها ولونَها ومفتاحَها ثم يُعدِّلها أو يُنشئها — تناديه الرسمةُ
+   الكاملةُ لكلِّ نقطةٍ في الإطار، والرسمةُ الخفيفةُ (تحريكٌ بلا تقريب) للداخل إلى الإطار وحدَه */
+var MK_PAD = 0.4;   /* هامشُ الإطار: كان ٠٫٦ (خمسةَ أضعاف الشاشة مساحةً) فتحمل الخريطةُ ضعفَ ما تراه من مضلّعاتٍ تُقصّ وتُرسَم مع كلِّ سحبة */
+function mkPlace(x, z, r, sun, TOUCH){
+  var picked = (typeof selHas === 'function') && selHas(x.id);
+  var col = mapColorOf(x);
+  /* طبقةُ التفاصيل: حافّةٌ تحمل خبرَ السطر المكتوب فوق لونِ المرحلة */
+  var ring = (FIELD_MODE === 'brief' && !picked) ? briefRing(x.id) : '';
+  var pos = mapPosOf(x), posK = pos[0].toFixed(6) + ',' + pos[1].toFixed(6), FT = null, kind, shp = 'circle';
+  /* المخيمُ مضلّعٌ إن تقرّبت (POLY_Z) وإلا دائرة، والممرُّ والكاميرا معيّنان، وما عداهما شكلُ نوعه */
+  if (x.type === 'مخيم' && z >= POLY_Z && (FT = campFoot(x))) kind = 'poly';
+  else { shp = mapShapeOf(x.type); kind = shp !== 'circle' && SHAPE_UNIT[shp] ? 'shape' : 'circle'; }
+  /* ما لم يُزر يُرى على القمر الصناعي (V17.86): حافّةٌ برتقاليةٌ متقطّعة */
+  var todoSat = kind === 'poly' && !ring && !picked && MAP_SAT && lifeOf(x) === 'todo';
+  var st, rad = picked ? r + 2.5 : r;
+  if (kind === 'poly') st = { color: todoSat ? '#FFB000' : (ring || col), dashArray: todoSat ? '6 4' : null,
+      weight: picked ? 2.4 : (ring ? 2 : (todoSat ? 2 : (z >= 15 ? 1.3 : (z >= 13 ? 1 : 0.8)))),
+      fillColor:col, fillOpacity: picked ? 0.55 : (todoSat ? 0.18 : (z >= 15 ? 0.4 : 0.55)) };
+  else st = { color: picked ? '#fff' : (ring || '#0B1220'), weight: (picked ? 2 : (ring ? 2 : 0.9)) * (sun ? 1.8 : 1),
+      fillColor:col, fillOpacity: picked ? 1 : 0.95 };
+  if (kind === 'shape') rad = rad * (shp === 'diamond' ? 1.18 : 1.05);   /* المعيّنُ أوسعُ قليلًا فيُعرَف بشكله */
+  var key = kind + '|' + shp + '|' + posK + '|' + z + '|' + rad + '|' + st.color + '|' + st.weight + '|' + st.fillColor + '|' + st.fillOpacity + '|' + (st.dashArray || '');
+  var e = MK.by[x.id];
+  if (e && e.key === key) return;
+  if (e && e.kind === kind && e.pos === posK && e.shp === shp){
+    /* الشكلُ نفسُه في موضعه: تُعدَّل خصائصُه ولا يُعاد إنشاؤه — والدائرةُ والشكلُ بحجمٍ ثابتٍ بالبكسل فلا يُعادان مع التقريب */
+    e.l.setStyle(st);
+    if (kind !== 'poly') e.l.setRadius(rad);
+    e.key = key; return;
+  }
+  if (e){ MAP_LAYER.removeLayer(e.l); delete MK.by[x.id]; }
+  var mk = null;
+  if (kind === 'poly') mk = L.polygon(FT.map(function(p){ return [p[1], p[0]]; }), L.extend({ renderer:MAP_CV }, st));
+  else if (kind === 'shape'){ st.radius = rad; mk = shapeMk(pos, L.extend({ renderer:MAP_CV }, st), shp); }
+  if (!mk){ st.radius = rad; mk = L.circleMarker(pos, L.extend({ renderer:MAP_CV }, st)); }
+  mk.on('click', mapClickFn(x.id));
+  mk.addTo(MAP_LAYER);
+  if (kind === 'poly'){ try { mk.bringToBack(); } catch (e2){ LS_ERR = e2; } }
+  MK.by[x.id] = { l:mk, kind:kind, shp:shp, key:key, pos:posK };
+}
+function mkSweep(want){
+  /* ما لم يعد مطلوبًا — بعيدٌ عن الشاشة أو مرشَّحٌ خارجًا أو محذوف — يُطرَح */
+  var ids = Object.keys(MK.by);
+  for (var q = 0; q < ids.length; q++) if (!want[ids[q]]){ MAP_LAYER.removeLayer(MK.by[ids[q]].l); delete MK.by[ids[q]]; }
+}
+function mkCount(LIST, inView){
+  var lb = document.getElementById('mapCount');
+  if (lb && !MAP_3D){
+    var out = LIST.length - inView;
+    lb.textContent = nm(inView) + ' / ' + nm(LIST.length) + ' ' + t('في الإطار')
+      + (out > 0 ? ' · ' + nm(out) + ' ' + t('خارج الإطار') : '');
+  }
+}
+/* (V25.3) تحريكٌ بلا تقريب: العلاماتُ القائمةُ كما هي — يدخل ما اقترب من الإطار ويخرج ما ابتعد؛ كانت الرسمةُ
+   تعيد قراءةَ نحو ستِّمئة نقطةٍ (لونًا وحالةً ومفتاحًا) مع كلِّ سحبةٍ لتجد أن لا شيءَ فيها تغيّر */
+function mapPaintLight(z){
+  var b = MAP.getBounds(), keep = b.pad(MK_PAD), LIST = MK.list, inView = 0, want = {};
+  var bS = b.getSouth(), bN = b.getNorth(), bW = b.getWest(), bE = b.getEast();
+  var kS = keep.getSouth(), kN = keep.getNorth(), kW = keep.getWest(), kE = keep.getEast();
+  MK.lifeMemo = {};
+  for (var i = 0; i < LIST.length; i++){
+    var x = LIST[i];
+    if (!x.lat || !x.lng) continue;
+    if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
+    if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
+    want[x.id] = 1;
+    if (!MK.by[x.id]) mkPlace(x, z, MK.r, MK.sun, MK.touch);
+  }
+  MK.lifeMemo = null;
+  mkSweep(want);
+  mkCount(LIST, inView);
+}
+function mapPaint(light){
   /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
   if (MAP_3D) m3Paint();
   if (!MAP || !MAP_LAYER) return;
+  var z = MAP.getZoom();
+  if (light === true && MK.z === z && MK.list && !MAP_3D){ mapPaintLight(z); return; }
   if (!MAP_TMP) MAP_TMP = L.layerGroup().addTo(MAP);
   MAP_TMP.clearLayers();
   if (MAP_POLY) MAP_POLY.clearLayers();
 
-  var b = MAP.getBounds(), z = MAP.getZoom(), keep = b.pad(0.6);
+  var b = MAP.getBounds(), keep = b.pad(MK_PAD);
   /* على الشاشات اللمسية تكبر النقطةُ قليلًا: البصرُ يقرأ الصغيرَ والإصبعُ لا يصيبه. */
   var TOUCH = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) ? 1 : 0;
   var r = z >= 16 ? 7 : (z >= 14 ? 5 : (z >= 12 ? 3.5 : 2.5));
@@ -16570,51 +16658,20 @@ function mapPaint(){
   var shown = 0, inView = 0, want = {};
 
   var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : STATE.sites;
+  var bS = b.getSouth(), bN = b.getNorth(), bW = b.getWest(), bE = b.getEast();
+  var kS = keep.getSouth(), kN = keep.getNorth(), kW = keep.getWest(), kE = keep.getEast();
+  MK.lifeMemo = {};   /* حالةُ النقطة تُحسَب مرةً في الرسمة لا مرتين (اللونُ ثم القمر) */
   for (var i = 0; i < LIST.length; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
-    if (b.contains([x.lat, x.lng])) inView++;
-    if (!keep.contains([x.lat, x.lng])) continue;
+    if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
+    if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
     want[x.id] = 1; shown++;
-    var picked = (typeof selHas === 'function') && selHas(x.id);
-    var col = mapColorOf(x);
-    /* طبقةُ التفاصيل: حافّةٌ تحمل خبرَ السطر المكتوب فوق لونِ المرحلة */
-    var ring = (FIELD_MODE === 'brief' && !picked) ? briefRing(x.id) : '';
-    var pos = mapPosOf(x), posK = pos[0].toFixed(6) + ',' + pos[1].toFixed(6), FT = null, kind, shp = 'circle';
-    /* المخيمُ مضلّعٌ إن تقرّبت (POLY_Z) وإلا دائرة، والممرُّ والكاميرا معيّنان، وما عداهما شكلُ نوعه */
-    if (x.type === 'مخيم' && z >= POLY_Z && (FT = campFoot(x))) kind = 'poly';
-    else { shp = mapShapeOf(x.type); kind = shp !== 'circle' && SHAPE_UNIT[shp] ? 'shape' : 'circle'; }
-    /* ما لم يُزر يُرى على القمر الصناعي (V17.86): حافّةٌ برتقاليةٌ متقطّعة */
-    var todoSat = kind === 'poly' && !ring && !picked && MAP_SAT && lifeOf(x) === 'todo';
-    var st, rad = picked ? r + 2.5 : r;
-    if (kind === 'poly') st = { color: todoSat ? '#FFB000' : (ring || col), dashArray: todoSat ? '6 4' : null,
-        weight: picked ? 2.4 : (ring ? 2 : (todoSat ? 2 : (z >= 15 ? 1.3 : (z >= 13 ? 1 : 0.8)))),
-        fillColor:col, fillOpacity: picked ? 0.55 : (todoSat ? 0.18 : (z >= 15 ? 0.4 : 0.55)) };
-    else st = { color: picked ? '#fff' : (ring || '#0B1220'), weight: (picked ? 2 : (ring ? 2 : 0.9)) * (sun ? 1.8 : 1),
-        fillColor:col, fillOpacity: picked ? 1 : 0.95 };
-    if (kind === 'shape') rad = rad * (shp === 'diamond' ? 1.18 : 1.05);   /* المعيّنُ أوسعُ قليلًا فيُعرَف بشكله */
-    var key = kind + '|' + shp + '|' + posK + '|' + z + '|' + rad + '|' + st.color + '|' + st.weight + '|' + st.fillColor + '|' + st.fillOpacity + '|' + (st.dashArray || '');
-    var e = MK.by[x.id];
-    if (e && e.key === key) continue;
-    if (e && e.kind === kind && e.pos === posK && e.shp === shp){
-      /* الشكلُ نفسُه في موضعه: تُعدَّل خصائصُه ولا يُعاد إنشاؤه — والدائرةُ والشكلُ بحجمٍ ثابتٍ بالبكسل فلا يُعادان مع التقريب */
-      e.l.setStyle(st);
-      if (kind !== 'poly') e.l.setRadius(rad);
-      e.key = key; continue;
-    }
-    if (e){ MAP_LAYER.removeLayer(e.l); delete MK.by[x.id]; }
-    var mk = null;
-    if (kind === 'poly') mk = L.polygon(FT.map(function(p){ return [p[1], p[0]]; }), L.extend({ renderer:MAP_CV }, st));
-    else if (kind === 'shape'){ st.radius = rad; mk = shapeMk(pos, L.extend({ renderer:MAP_CV }, st), shp); }
-    if (!mk){ st.radius = rad; mk = L.circleMarker(pos, L.extend({ renderer:MAP_CV }, st)); }
-    mk.on('click', mapClickFn(x.id));
-    mk.addTo(MAP_LAYER);
-    if (kind === 'poly'){ try { mk.bringToBack(); } catch (e2){ LS_ERR = e2; } }
-    MK.by[x.id] = { l:mk, kind:kind, shp:shp, key:key, pos:posK };
+    mkPlace(x, z, r, sun, TOUCH);
   }
-  /* ما لم يعد مطلوبًا — بعيدٌ عن الشاشة أو مرشَّحٌ خارجًا أو محذوف — يُطرَح */
-  var ids = Object.keys(MK.by);
-  for (var q = 0; q < ids.length; q++) if (!want[ids[q]]){ MAP_LAYER.removeLayer(MK.by[ids[q]].l); delete MK.by[ids[q]]; }
+  MK.lifeMemo = null;
+  mkSweep(want);
+  MK.z = z; MK.list = LIST; MK.r = r; MK.sun = sun; MK.touch = TOUCH;
 
   /* علامةُ موضعك تُعاد مع كلِّ رسم — فلوحُ المؤقّتات يُمسَح في أوّله */
   if (MAP_ME_LL){
@@ -16677,12 +16734,7 @@ function mapPaint(){
     }
   } catch (e){ LS_ERR = e; }
 
-  var lb = document.getElementById('mapCount');
-  if (lb && !MAP_3D){
-    var out = LIST.length - inView;
-    lb.textContent = nm(inView) + ' / ' + nm(LIST.length) + ' ' + t('في الإطار')
-      + (out > 0 ? ' · ' + nm(out) + ' ' + t('خارج الإطار') : '');
-  }
+  mkCount(LIST, inView);
 }
 
 function mapFly(id){
@@ -22695,6 +22747,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.3', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
+      'صار تحريك الخريطة أخف: مع كل سحبة يرسم ما يدخل الإطار أو يخرج منه فقط، ولا تعاد قراءة النقاط الظاهرة.' ] },
   { v:'V25.2', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
       'الخريطة المحفوظة على الجهاز تشمل الآن مكة والمدينة المنورة وطريق الهجرة، وتظهر تلقائيا عند انقطاع الشبكة، وتستبدل الأجهزة نسختها السابقة من تلقاء نفسها.',
       'أضيفت في التصفية طبقتان للعرض على الخريطة فقط: مباني الوزارة، وأماكن التفويج.' ] },
