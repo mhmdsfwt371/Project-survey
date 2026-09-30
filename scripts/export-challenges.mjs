@@ -56,4 +56,4 @@ const summary = { at:new Date().toISOString(), recs:rows.length, sites:Object.ke
   bySub:Object.values(bySub), byChal, access:acc, otherTop:Object.entries(other).sort((a, b) => b[1] - a[1]).slice(0, 30).map(([t, n]) => ({ t, n })) };
 mkdirSync('/tmp/exp', { recursive:true });
 writeFileSync('/tmp/exp/detail.json', JSON.stringify(rows)); writeFileSync('/tmp/exp/summary.json', JSON.stringify(summary));
-console.log('زيارات', rows.length, '· مواقع', summary.sites, '· بتحدٍّ مفتوح', summary.withChal, '· متعذّر', summary.notReached, '· معوّقات', summary.obst, '· أنواع', Object.keys(byChal).length);
+console.log('اكتمل الاستخراج — الأعدادُ في الملف المرفوع إلى الدرايف وحدَه (المستودعُ عامّ)');
