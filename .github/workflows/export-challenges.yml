@@ -1,0 +1,26 @@
+name: Export Challenges 1448
+# تصديرُ تحديات مسح ١٤٤٨ إلى درايف المالك — لا يُطبَع في السجل إلا أعداد (المستودعُ عامّ)
+on:
+  push:
+    branches: [export-challenges]
+jobs:
+  export:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - run: npm i firebase-admin@12 googleapis@144 --no-save --no-audit --no-fund
+      - run: pip3 install --break-system-packages --quiet openpyxl
+      - name: read
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/export-challenges.mjs
+      - run: python3 scripts/challenges-xlsx.py
+      - name: upload
+        env:
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+        run: node scripts/export-upload.mjs
