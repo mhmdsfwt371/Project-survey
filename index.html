@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-23cfe0aa61.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-408473a128.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4248,6 +4248,14 @@ function tfwLines(){
         ln.addTo(TFW.lines); made.push(ln);
       });
     });
+  });
+  /* (V25.6) «احتمال مخيم»: طرفُ خطٍّ في مخطّط الوزارة بلا مخيمٍ مسجَّلٍ عنده — دائرةٌ متقطّعةٌ بلون دوره، للتحقّق الميداني، وليست نقطةً ولا تُعَدّ */
+  (TFW.routes.maybe || []).forEach(function(m){
+    if (!all && String(m.floor) !== String(TFW.f)) return;
+    if (!(+m.lat) || !(+m.lng)) return;
+    L.circleMarker([+m.lat, +m.lng], { renderer:MAP_CV, radius:7, color:TFW_COL[+m.floor] || '#F5C400', weight:2, dashArray:'3 3', fillColor:'#fff', fillOpacity:0.35, bubblingMouseEvents:false })
+      .bindPopup('<b>' + esc(t('احتمال مخيم')) + '</b><br><span class="hint">' + esc(t('طرفُ مسارٍ في مخطّط الوزارة بلا مخيمٍ مسجَّل — يُتحقَّق ميدانيًّا')) + ' \u00b7 ' + esc(t(floorName(+m.floor))) + '</span>')
+      .addTo(TFW.lines);
   });
   /* الترتيبُ على اللوح: المخيماتُ في الخلف، ثم الخطوط، ثم النقاط */
   made.forEach(function(l){ try { l.bringToBack(); } catch (e){ LS_ERR = e; } });
@@ -22827,6 +22835,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.6', d:'٣٠ سبتمبر ٢٠٢٦', notes:[
+      'أعيد رسم مسارات التفويج على شوارع منى الفعلية: من كل مخيم في ملف الوزارة إلى مداخل دوره، ومن مخارجه إلى المخيم، بلا لفات، مع تفضيل الشوارع التي يمر بها المخطط.',
+      'ظهرت مع المسارات نقاط «احتمال مخيم» حيث انتهت خطوط المخطط بلا مخيم مسجل، للتحقق الميداني، وهي ليست نقاطا ولا تدخل في العدادات.' ] },
   { v:'V25.5', d:'٢٩ سبتمبر ٢٠٢٦', notes:[
       'صار للمهندس فمن فوقه حذف النقاط المضافة من الميدان أو المكتب أو أدوات الرسم حذفا نهائيا، أيا كانت حالتها، بتأكيد واحد يعرض ما ارتبط بها، ويسجل في سجل الأحداث. ونقاط السجل الأصلي تخفى ولا تحذف.' ] },
   { v:'V25.4', d:'٢٩ سبتمبر ٢٠٢٦', notes:[

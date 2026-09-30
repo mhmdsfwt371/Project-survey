@@ -48,6 +48,15 @@ T(rr && rr.f === 3 && rr.go.len > 150 && rr.back.len > 150 && rr.go.pts.length >
 T(rr && rr.go.pts[0][0] === s0.lat && rr.back.pts[rr.back.pts.length - 1][1] === s0.lng && w.tfwM(rr.go.pts[rr.go.pts.length - 1], w.TFW_JIN) < 700, 'يبدأ الذهابُ من المخيم وينتهي عند المنشأة، وتنتهي العودةُ عنده');
 w.popOpenAt(cid, null); await wait(60);
 T(!!d.querySelector('#pkPop [data-tfwcamp]'), 'وفي نافذة المخيم زرُّ «اعرض مسار المخيم»');
+console.log('\n══ المساراتُ مبنيةٌ من مخيمات الوزارة إلى مداخل دورها بلا لفات (V25.6) ══');
+{ const RT = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8')), PL = JSON.parse(readFileSync('layers/tafweej-plan.json', 'utf8')), rawH = readFileSync('index.html', 'utf8');
+  T(RT.v === 3 && /أقصرُ طريقٍ/.test(RT.note) && existsSync('scripts/tafweej-routes-build.mjs') && PL.v === 2, 'ملفُ المسارات من المولّد، وخطوطُ المخطّط القديمة محفوظةٌ دليلًا لا ناتجًا');
+  T(['0', '1', '2', '3', '4'].every(f => RT.floors[f] && RT.floors[f].go.length && RT.floors[f].back.length && RT.floors[f].go.every(pl => pl.length >= 2)), 'ولكلِّ دورٍ ذهابٌ وعودةٌ على الشوارع');
+  const mtr = (a, b) => { const r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos(a[0] * r), y = (b[0] - a[0]) * r; return 6371000 * Math.sqrt(x * x + y * y); };
+  const en = f => (RT.ends.en[f] || []).map(n => { const m = rawH.match(new RegExp('\\["NSK-JMR-PNT-' + n + '","[^"]*",\\d+,\\d+,\\d+,([0-9.]+),([0-9.]+)')); return m ? [+m[1], +m[2]] : null; }).filter(Boolean);
+  const touches = ['0', '1', '3', '4'].every(f => { const E = en(f); return E.length && RT.floors[f].go.some(pl => E.some(e => mtr(pl[pl.length - 1], e) <= 90 || mtr(pl[0], e) <= 90)); });
+  T(touches, 'وشبكةُ الذهاب في كلِّ دورٍ تصل مداخلَه');
+  T(Array.isArray(RT.maybe) && RT.maybe.length > 0 && RT.maybe.length < 60 && RT.maybe.every(m => m.lat > 21.3 && m.lng > 39.8 && m.floor >= 0 && m.floor <= 4) && /احتمال مخيم/.test(rawH) && /TFW\.routes\.maybe \|\| \[\]/.test(rawH), 'ونقاطُ «احتمال مخيم» (' + RT.maybe.length + ') حيث انتهى المخطّطُ بلا مخيمٍ — تُرسَم مع دورها ولا تُعَدّ'); }
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
 console.log('جردُ طبقة مسار التفويج نظيف \u2705'); process.exit(0);
