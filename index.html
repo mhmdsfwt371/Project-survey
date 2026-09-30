@@ -1199,7 +1199,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1260,7 +1260,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-408473a128.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-46022164ca.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15038,6 +15038,7 @@ function popHtml(){
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
     +   (isJmr(s) && siteGate(s) ? kv('البوابة', '<b>' + esc(t(siteGate(s))) + '</b>' + (siteFloor(s) != null ? ' \u2014 ' + esc(t(floorName(siteFloor(s)))) : '')) : '')   /* (V25.4) */
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
+    +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (iotOf(s.id) ? nm(iotOf(s.id).sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + esc(t('جيت واي')) + ' ' : esc(t('طبقة التخطيط لم تُحمَّل')) + ' ') + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"')) : '')   /* (V25.8) */
     +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
@@ -16564,9 +16565,11 @@ function mapInit(){
   MK.by = {};
   basemapKick();   /* (V24.9) خريطةُ مكة: تُلحَق — وتُنزَّل أوّلَ مرة — بعد الدخول وحين تخمل الصفحة، لا في الإقلاع */
   if (POIL.on.ministry || POIL.on.tafweej) poiPaint();   /* (V25.2) */
+  if (IOT.on) iotPaint();   /* (V25.7) */
 
   MAP.on('zoomend moveend', mapPaintMove);   /* (V25.3) التحريكُ رسمةٌ خفيفة، والتقريبُ وسائرُ التغييرات كاملة */
   MAP.on('click', function(e){
+    if (IOT.edit){ iotMapClick(e.latlng); return; }   /* (V25.8) */
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
     else if (typeof ROUTE === 'object' && ROUTE.on) routeAdd(e.latlng.lat, e.latlng.lng);
@@ -16725,6 +16728,7 @@ function mapPaintLight(z){
   MK.lifeMemo = null;
   mkSweep(want);
   mkCount(LIST, inView);
+  if (IOT.on) iotPaint();   /* (V25.7) طبقةُ الحساسات تتبع الإطار */
 }
 function mapPaint(light){
   /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
@@ -16823,6 +16827,7 @@ function mapPaint(light){
   } catch (e){ LS_ERR = e; }
 
   mkCount(LIST, inView);
+  if (IOT.on) iotPaint();   /* (V25.7) */
 }
 
 function mapFly(id){
@@ -18205,6 +18210,106 @@ function poiPaint(){
         .addTo(POIL.layer);
     });
   });
+}
+/* ═══ طبقةُ تخطيط حساسات منى (V25.7) ═══
+   بقرار المالك: ١٢ حساسَ حرارةٍ ورطوبةٍ لكلِّ مخيمٍ في منى (غرفةٌ لكلِّ حساس) وجيت واي واحدٌ يغطّيها بحسب
+   رسمة المخيم — طبقةٌ مبدئيةٌ من layers/mina-sensors.json تُرسَم حين تُطلَب من «تصفية»، على تقريب ١٦ فأعلى،
+   لمخيمات الإطار وحدَها (٦٧٩ مخيمًا × ١٣ شكلًا لا تُرسَم دفعةً). ليست نقاطًا ولا تدخل في العدّادات ولا أرقام
+   الوزارة. التعديلُ الميداني (نقلٌ وزيادةٌ ونقص) في نسخةٍ تالية. */
+var IOT = { on:false, data:null, busy:false, layer:null, Z:16, edit:null };
+var IOT_C = { gw:'#F5A623', sensor:'#2EC4B6' };
+function iotLoad(){
+  if (IOT.data || IOT.busy || typeof fetch !== 'function') return;
+  IOT.busy = true;
+  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
+}
+function iotPaint(){
+  if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
+  try {
+    if (IOT.layer && IOT.layer._map !== MAP) IOT.layer = null;
+    if (IOT.layer) IOT.layer.clearLayers(); else IOT.layer = L.layerGroup().addTo(MAP);
+  } catch (e){ LS_ERR = e; return; }
+  if (IOT.edit){   /* (V25.8) مخيمُ التعديل وحدَه — نقرٌ على الشكل يحدِّده */
+    var E = IOT.edit, xe = siteFind(E.id), ne = xe ? (xe.name || E.id) : E.id;
+    E.sensors.forEach(function(q, i){
+      var on = E.sel && E.sel.k === 's' && E.sel.i === i;
+      shapeMk(q, { renderer:MAP_CV, radius:on ? 8 : 6, color:on ? '#E05252' : '#fff', weight:on ? 3 : 1.2, fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop')
+        .on('click', function(){ E.sel = { k:'s', i:i }; E.add = false; iotPaint(); render(1); }).addTo(IOT.layer);
+    });
+    var ong = E.sel && E.sel.k === 'gw';
+    shapeMk(E.gw, { renderer:MAP_CV, radius:ong ? 11 : 9, color:ong ? '#E05252' : '#fff', weight:ong ? 3 : 1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star')
+      .on('click', function(){ E.sel = { k:'gw' }; E.add = false; iotPaint(); render(1); }).addTo(IOT.layer);
+    return;
+  }
+  if (!IOT.on || !IOT.data || MAP.getZoom() < IOT.Z) return;
+  var b = MAP.getBounds().pad(0.1), C = IOT.data.camps || {};
+  Object.keys(C).forEach(function(id){
+    var c = iotOf(id); if (!c || !c.gw || !c.sensors) return;
+    if (!b.contains(c.gw) && !c.sensors.some(function(q){ return b.contains(q); })) return;
+    var x = siteFind(id), nm0 = x ? (x.name || id) : id;
+    c.sensors.forEach(function(q, i){
+      shapeMk(q, { renderer:MAP_CV, radius:5, color:'#fff', weight:1.2, fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop')
+        .bindPopup('<b>' + esc(t('حساس حرارة ورطوبة')) + ' ' + nm(i + 1) + '</b><br><span class="hint">' + esc(nm0) + ' \u00b7 ' + esc(t('تخطيطٌ مبدئي — يُعدَّل ميدانيًّا')) + '</span>')
+        .addTo(IOT.layer);
+    });
+    shapeMk(c.gw, { renderer:MAP_CV, radius:8, color:'#fff', weight:1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star')
+      .bindPopup('<b>' + esc(t('جيت واي')) + '</b><br><span class="hint">' + esc(nm0) + ' \u00b7 ' + esc(t('يغطي')) + ' ' + nm(c.sensors.length) + ' ' + esc(t('حساسًا، أبعدها')) + ' ' + nm(c.maxM != null ? c.maxM : iotMax(c.gw, c.sensors)) + ' ' + esc(t('م')) + ' \u00b7 ' + esc(t(c.at && c.by !== undefined && STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot ? 'عُدِّلت ميدانيًّا' : 'تخطيطٌ مبدئي — يُعدَّل ميدانيًّا')) + '</span>'
+        + (mayIot() ? '<br>' + btn(t('عدّل الحساسات'), 'btn-quiet btn-sm', ' data-iotedit="' + esc(id) + '"') : ''))
+      .addTo(IOT.layer);
+  });
+}
+/* ═══ تعديلُ الحساسات من الميدان (V25.8) ═══
+   قرارُ المالك: المهندسُ فما فوق والمشرفُ (هو من يمسح الموقع) — يعدّلون خطّةَ المخيم: نقلُ حساسٍ أو
+   الجيت واي، وزيادةٌ ونقص. الحفظُ تعديلٌ فوق الطبقة المبدئية في وثيقة الموقع (siteOv.iot) فيصل الأجهزةَ
+   كلَّها كسائر تعديلات المواقع ولا يحتاج مجموعةً ولا قاعدةً جديدة، ويُسجَّل في الأحداث. ولا جيت واي ثانٍ:
+   إن بعُد حساسٌ عن ١٥٠ م نُبِّه وأُشير إلى مركز الحساسات. */
+function mayIot(){ var b = (typeof effRole === 'function') ? effRole(ROLE) : ROLE; return b === 'engineer' || b === 'admin' || b === 'supervisor'; }
+function iotOf(id){ var ov = STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot; if (ov && ov.gw && Array.isArray(ov.sensors)) return ov; return IOT.data && IOT.data.camps ? IOT.data.camps[id] : null; }
+function iotM(a, b){ var r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos(a[0] * r), y = (b[0] - a[0]) * r; return 6371000 * Math.sqrt(x * x + y * y); }
+function iotMax(gw, S){ var m = 0; S.forEach(function(q){ m = Math.max(m, iotM(gw, q)); }); return Math.round(m); }
+function iotEditStart(id){
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
+  var c = iotOf(id); if (!c){ toast(t('لا خطّةَ حساساتٍ لهذا المخيم')); return false; }
+  IOT.on = true; iotLoad();
+  IOT.edit = { id:id, gw:[+c.gw[0], +c.gw[1]], sensors:c.sensors.map(function(q){ return [+q[0], +q[1]]; }), sel:null, add:false };
+  POP_SITE = ''; POP_OPEN = false;   /* نافذةُ النقطة تُغلَق — وإلا ابتلع إغلاقُها أوّلَ نقرةٍ في لوحة التعديل */
+  if (MAP && MAP.getZoom() < 17) MAP.setView([+c.gw[0], +c.gw[1]], 17, { animate:false });
+  iotPaint(); render(1); toast(t('اضغط على حساسٍ أو الجيت واي ثم على مكانه الجديد')); return true;
+}
+function iotMapClick(ll){
+  var E = IOT.edit; if (!E) return;
+  var p = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)];
+  if (E.add){ E.sensors.push(p); E.add = false; E.sel = { k:'s', i:E.sensors.length - 1 }; }
+  else if (E.sel){ if (E.sel.k === 'gw') E.gw = p; else E.sensors[E.sel.i] = p; }
+  else { toast(t('اختر حساسًا أو الجيت واي أوّلًا')); return; }
+  iotPaint(); render(1);
+}
+function iotDel(){ var E = IOT.edit; if (!E || !E.sel || E.sel.k !== 's') return; E.sensors.splice(E.sel.i, 1); E.sel = null; iotPaint(); render(1); }
+function iotSave(){
+  var E = IOT.edit; if (!E) return false;
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
+  if (!E.sensors.length){ toast(t('لا يُحفَظ مخيمٌ بلا حساسات')); return false; }
+  var maxM = iotMax(E.gw, E.sensors);
+  siteOvSet(E.id, { iot:{ gw:E.gw, sensors:E.sensors, maxM:maxM, at:Date.now(), by:STATE.meta.name || '' } });
+  logEvent('تعديلُ حساسات مخيم — ' + E.id + ' \u00b7 ' + nm(E.sensors.length) + ' حساسًا \u00b7 أبعدُها ' + nm(maxM) + ' م', E.id);
+  if (maxM > 150){ var cx = 0, cy = 0; E.sensors.forEach(function(q){ cx += q[0]; cy += q[1]; }); cx /= E.sensors.length; cy /= E.sensors.length; toast(t('حُفظت — وحساسٌ أبعدُ من ١٥٠ م عن الجيت واي') + ' (' + nm(maxM) + ' ' + t('م') + ') \u2014 ' + t('انقل الجيت واي نحو مركز الحساسات') + ' (' + nm(iotMax([cx, cy], E.sensors)) + ' ' + t('م') + ')'); }
+  else toast(t('حُفظت خطّةُ حساسات المخيم'));
+  IOT.edit = null; iotPaint(); render(1); return true;
+}
+function iotPanelHtml(){
+  var E = IOT.edit; if (!E) return '';
+  var x = siteFind(E.id), nm0 = x ? (x.name || E.id) : E.id, maxM = iotMax(E.gw, E.sensors);
+  var sel = !E.sel ? t('لا شيءَ محدَّد') : (E.sel.k === 'gw' ? t('الجيت واي') : t('حساس') + ' ' + nm(E.sel.i + 1));
+  return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
+    + '<b>' + esc(t('تعديل حساسات')) + ' \u2014 ' + esc(nm0) + '</b>'
+    + '<span class="hint">' + nm(E.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + esc(t('أبعدها')) + ' ' + nm(maxM) + ' ' + esc(t('م')) + (maxM > 150 ? ' \u26a0' : '') + '</span></div>'
+    + '<p class="hint" style="margin:6px 0">' + (E.add ? esc(t('اضغط على الخريطة حيث يُوضَع الحساسُ الجديد')) : esc(t('المحدَّد')) + ': ' + esc(sel) + ' \u2014 ' + esc(t('اضغط على مكانه الجديد'))) + '</p>'
+    + '<div class="actions">'
+    + btn((E.add ? '\u2716 ' : '+ ') + t('أضف حساسًا'), 'btn-quiet btn-sm', ' data-iotadd="1"')
+    + (E.sel && E.sel.k === 's' ? btn('\u{1F5D1} ' + t('احذف المحدد'), 'btn-quiet btn-sm', ' data-iotdel="1"') : '')
+    + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-iotsave="1"')
+    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-iotcancel="1"')
+    + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
 function basemapSatCls(){
@@ -19831,6 +19936,7 @@ function mapUIHtml(){
         +   '<span class="hint" style="margin:0">' + esc(t('طبقات الخريطة')) + '</span>'
         +   '<button type="button" class="cat' + (POIL.on.ministry ? ' on' : '') + '" data-poil="ministry">' + esc(t('مباني الوزارة')) + '</button>'
         +   '<button type="button" class="cat' + (POIL.on.tafweej ? ' on' : '') + '" data-poil="tafweej">' + esc(t('أماكن التفويج')) + '</button>'
+        +   '<button type="button" class="cat' + (IOT.on ? ' on' : '') + '" data-iot="1">' + esc(t('تخطيط حساسات منى')) + '</button>'
         + '</div>'
         + '<div class="actions" style="margin-top:10px">'
         + btn('عرض','btn-primary btn-sm',' data-mfilt="0"')
@@ -19845,6 +19951,7 @@ function mapUIHtml(){
           + '</div></div>'
         : '')
     + (ROUTE.on ? routePanelHtml() : '')
+    + (IOT.edit ? iotPanelHtml() : '')   /* (V25.8) */
     + '<div class="map-fab">'
     +   (may('edit') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')
     +   ((may('newsite') || may('settings'))
@@ -22835,6 +22942,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V25.8', d:'١ أكتوبر ٢٠٢٦', notes:[
+      'صار للمهندس فمن فوقه وللمشرف تعديل حساسات المخيم من الميدان: من نافذة المخيم «عدّل الحساسات»، ثم نقل حساس أو الجيت واي، وإضافة حساس وحذفه، وحفظ يصل كل الأجهزة ويسجل في سجل الأحداث. وإن بعد حساس عن الجيت واي أكثر من ١٥٠ مترا ظهر تنبيه بمكان أفضل.' ] },
+  { v:'V25.7', d:'٣٠ سبتمبر ٢٠٢٦', notes:[
+      'أضيفت في التصفية طبقة «تخطيط حساسات منى»: اثنا عشر حساس حرارة ورطوبة لكل مخيم في منى، وجيت واي واحد يغطيها، تظهر عند التقريب. طبقة مبدئية تعدل من الميدان، وليست نقاطا ولا تدخل في العدادات.' ] },
   { v:'V25.6', d:'٣٠ سبتمبر ٢٠٢٦', notes:[
       'أعيد رسم مسارات التفويج على شوارع منى الفعلية: من كل مخيم في ملف الوزارة إلى مداخل دوره، ومن مخارجه إلى المخيم، بلا لفات، مع تفضيل الشوارع التي يمر بها المخطط.',
       'ظهرت مع المسارات نقاط «احتمال مخيم» حيث انتهت خطوط المخطط بلا مخيم مسجل، للتحقق الميداني، وهي ليست نقاطا ولا تدخل في العدادات.' ] },
@@ -31550,6 +31661,16 @@ function clickA(e){
   if (tfd){ TFW.d = tfd.getAttribute('data-tfwd'); tfwLines(); render(1); return true; }
   var pol = e.target.closest('[data-poil]');   /* (V25.2) طبقتا الخريطة — خريطةٌ فقط */
   if (pol){ var pk = pol.getAttribute('data-poil'); POIL.on[pk] = !POIL.on[pk]; poiLoad(); poiPaint(); render(1); return true; }
+  var ied = e.target.closest('[data-iotedit]');   /* (V25.8) تعديلُ حساسات مخيم */
+  if (ied){ if (MAP) MAP.closePopup(); iotEditStart(ied.getAttribute('data-iotedit')); return true; }
+  if (e.target.closest('[data-iotadd]')){ if (IOT.edit){ IOT.edit.add = !IOT.edit.add; IOT.edit.sel = null; iotPaint(); render(1); } return true; }
+  if (e.target.closest('[data-iotdel]')){ iotDel(); return true; }
+  if (e.target.closest('[data-iotsave]')){ iotSave(); return true; }
+  if (e.target.closest('[data-iotcancel]')){ IOT.edit = null; iotPaint(); render(1); return true; }
+  if (e.target.closest('[data-iot]')){   /* (V25.7) طبقةُ تخطيط الحساسات */
+    IOT.on = !IOT.on; iotLoad(); iotPaint(); render(1);
+    if (IOT.on && MAP && MAP.getZoom() < IOT.Z) toast(t('قرّب أكثر لتظهر الحساسات'));
+    return true; }
   var ffl = e.target.closest('[data-ffl]');
   if (ffl){ var fv = ffl.getAttribute('data-ffl'); FILT.floor = (fv === '' || String(FILT.floor) === fv) ? '' : fv; LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.2) */

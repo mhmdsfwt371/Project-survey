@@ -33,6 +33,12 @@ T(/function basemapStale\(\)/.test(html) && /basemapStale\(\)\.then\(function\(s
 { const P = JSON.parse(readFileSync('layers/poi.json', 'utf8')); const inB = p => p.lng >= 38.9 && p.lng <= 40.2 && p.lat >= 21.2 && p.lat <= 24.8;
   T(P.ministry && P.ministry.name === 'مباني الوزارة' && P.ministry.items.length >= 2 && P.tafweej && P.tafweej.name === 'أماكن التفويج' && P.tafweej.items.length >= 10, 'طبقتا الخريطة: مباني الوزارة (' + P.ministry.items.length + ') وأماكن التفويج (' + P.tafweej.items.length + ')');
   T([...P.ministry.items, ...P.tafweej.items].every(p => p.name && !/[A-Za-z]/.test(p.name) && inB(p)), 'وأسماؤها عربيةٌ ومواضعُها داخل النطاق'); }
+{ const S = JSON.parse(readFileSync('layers/mina-sensors.json', 'utf8')), ids = Object.keys(S.camps || {});
+  T(S.v === 1 && ids.length >= 600 && ids.every(id => /^NSK-MIN-CMP/.test(id)) && ids.every(id => S.camps[id].sensors.length === 12 && S.camps[id].gw && S.camps[id].maxM <= 150) && existsSync('scripts/mina-sensors-build.mjs'), 'طبقةُ تخطيط حساسات منى (V25.7): ' + ids.length + ' مخيمًا × ١٢ حساسًا وجيت واي يغطّيها في ١٥٠ م — من مولّدها');
+  T(Array.isArray(S.decide) && S.decide.length === 0, 'ولا مخيمَ يحتاج جيت واي ثانيًا (قائمةُ القرار فارغة)');
+  T(/data-iot="1"/.test(html) && /closest\('\[data-iot\]'\)/.test(html) && /MAP\.getZoom\(\) < IOT\.Z\) return;/.test(html) && /var IOT = \{ on:false[^}]*Z:16[^}]*\}/.test(html) && (html.match(/if \(IOT\.on\) iotPaint\(\);/g) || []).length >= 3 && !/IOT[^;\n]{0,80}STATE\.sites/.test(html), 'وزرُّها في «تصفية»، تُرسَم من تقريب ١٦ لمخيمات الإطار وتتبع الحركة — ولا تمسّ نقاطَ المسح'); }
+T(/function mayIot\(\)\{[^\n]*return b === 'engineer' \|\| b === 'admin' \|\| b === 'supervisor'; \}/.test(html), 'تعديلُ الحساسات للمهندس فما فوق والمشرف — قرارُ المالك (V25.8)');
+T(/siteOvSet\(E\.id, \{ iot:\{ gw:E\.gw, sensors:E\.sensors/.test(html) && /logEvent\('تعديلُ حساسات مخيم — '/.test(html) && /if \(IOT\.edit\)\{ iotMapClick\(e\.latlng\); return; \}/.test(html) && /STATE\.siteOv\[id\]\.iot; if \(ov && ov\.gw && Array\.isArray\(ov\.sensors\)\) return ov;/.test(html), 'والتعديلُ يُحفَظ فوق المبدئي في وثيقة الموقع ويصل الأجهزة، ويُسجَّل، والنقرُ في وضعه يضع المحدَّد');
 T(/data-poil="ministry"/.test(html) && /data-poil="tafweej"/.test(html) && /closest\('\[data-poil\]'\)/.test(html) && !/POIL[^;\n]{0,80}STATE\./.test(html), 'وزرّاها في «تصفية» ولها معالج — خريطةٌ فقط لا تمسّ نقاطَ المسح ولا العدّادات');
 T(/BASEMAP_MAX = 30 \* 1024 \* 1024/.test(html) && /b\.size > BASEMAP_MAX/.test(html), 'والتطبيقُ يرفض ملفًّا فوق الحدّ');
 

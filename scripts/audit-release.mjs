@@ -50,7 +50,10 @@ T(!!store['users/UIDX'] && store['users/UIDX'].active === false, 'أُنشئت �
 T((w.STATE.poison||[]).length===3, 'والمعزولُ باقٍ ما دام الحسابُ غيرَ فعّال ('+(w.STATE.poison||[]).length+')');
 store['users/UIDX'] = Object.assign({}, store['users/UIDX'], { active:true });
 w.MYDOC.at = 0;
-await w.meActivatedCheck(); await wait(500);
+await w.meActivatedCheck();
+/* (V25.7) يُنتظَر إطلاقُ المعزول حتى يتمّ (عشرُ ثوانٍ حدًّا) لا نصفَ ثانيةٍ ثابتة — تحت حِمل الحارس المتوازي كان يتأخّر فيسقط الجردُ بلا سبب */
+for (let k = 0; k < 40 && (w.STATE.poison||[]).length !== 1; k++) await wait(250);
+await wait(500);   /* ثم مهلةُ الدفع كما كانت */
 T((w.STATE.poison||[]).length===1 && w.STATE.poison[0].id==='R9',
   'وبالتفعيل عاد المعزولُ برفضِ صلاحيةٍ للرفع — وما عُزل لسببٍ آخر بقي ('+(w.STATE.poison||[]).length+')');
 T(Object.keys(w.SOFT_SAID).length===0, 'وتكتّمُ الرسائل صُفِّر — فالفشلُ التالي يُقال');

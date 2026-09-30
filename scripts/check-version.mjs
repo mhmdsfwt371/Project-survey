@@ -353,7 +353,7 @@ const LANES = Math.max(1, Math.min(8, +(process.env.NUSUK_LANES || 4)));
 /* ما يقيس زمنًا أو يثقل الجهازَ يبقى وحدَه: تحت الازدحام يسقط جردُ سباق
    النافذة لأن مهلتَه بالساعة، وجردُ الكتابة يتجاوز مهلتَه. فلا يدخلان
    المساراتِ، وكذلك حارسُ الحرّاس الذي يشغّل جرودًا داخله. */
-const SOLO = /audit-(guards|writes|pop-race|capacity|scale|perf)\.mjs/;
+const SOLO = /audit-(guards|writes|pop-race|capacity|scale|perf|release|wipe|poison)\.mjs/   /* (V25.7) release وwipe يقيسان مهلَ الدفع والحضور فيسقطان تحت الحِمل المتوازي وينجحان وحدَهما */;
 const isPure = s => /^node scripts\/audit-[a-z0-9-]+\.mjs\s*$/.test(String(s.run || '').trim()) && !(s.env && Object.keys(s.env).length) && !SOLO.test(String(s.run));
 const failOf = (name, run, e) => {
   /* الرمز ٢ يعني أن المتصفّح الصوريَّ غائبٌ لا أن الجردَ سقط */
