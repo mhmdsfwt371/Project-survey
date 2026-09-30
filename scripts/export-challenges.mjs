@@ -12,12 +12,13 @@ const [recs, news, ovs, inss] = await Promise.all([all('recs'), all('newsites'),
 const OV = {}; ovs.forEach(o => { OV[o._id] = o; });
 const SITE = {};
 RAW.g.concat(RAW.p).forEach(r => { SITE[r[0]] = { id:r[0], name:r[1], zone:RAW.z[r[2]], type:RAW.t[r[3]], lng:+r[6] }; });
-news.forEach(v => { if (!v || v.deleted || !v.id) return; SITE[v.id] = SITE[v.id] || { id:v.id, name:v.name || v.id, zone:v.zone || '', type:v.type || '', lng:+v.lng || 0, isNew:1 }; });
+news.forEach(v => { if (!v || v.deleted || v.hidden || !v.id) return;   /* كالتطبيق: المخفيُّ والمحذوفُ لا يُدمَجان */ SITE[v.id] = SITE[v.id] || { id:v.id, name:v.name || v.id, zone:v.zone || '', type:v.type || '', lng:+v.lng || 0, isNew:1 }; });
 Object.keys(OV).forEach(id => { const o = OV[id]; if (SITE[id]){ if (o.hidden){ delete SITE[id]; return; } ['name','zone','type'].forEach(k => { if (o[k]) SITE[id][k] = o[k]; }); } });
 const classify = x => {
   const z = x.zone, t = x.type, area = (S47[x.id] && (S47[x.id].team || S47[x.id].iss)) || '';
-  if (z === 'منى') return ['منى', { 'مخيم':'مخيمات', 'ممر':'ممرات', 'جسر':'ممرات', 'كاميرا':'كاميرات الرصد' }[t] || ('أخرى — ' + t)];
-  if (z === 'عرفات') return ['عرفات', { 'مخيم':'مخيمات', 'ممر':'ممرات', 'جسر':'ممرات', 'كاميرا':'كاميرات رصد' }[t] || ('أخرى — ' + t)];
+  if (z === 'منى') return ['منى', { 'مخيم':'مخيمات', 'ممر':'ممرات', 'جسر':'ممرات', 'كاميرا':'كاميرات الرصد', 'LPR':'كاميرات الرصد' }[t] || ('أخرى — ' + t)];
+  if (z === 'عرفات') return ['عرفات', { 'مخيم':'مخيمات', 'ممر':'ممرات', 'جسر':'ممرات', 'كاميرا':'كاميرات رصد', 'LPR':'كاميرات رصد' }[t] || ('أخرى — ' + t)];
+  if (z === 'مواقع التفويج') return ['مراكز التفويج', /النوري|النوار/.test(x.name) ? 'النورية' : /الهجرة/.test(x.name) ? 'طريق الهجرة' : 'مواقع تفويج أخرى'];
   if (z === 'الجمرات') return ['منى', 'منشأة الجمرات'];
   if (z === 'مسجد نمرة') return ['عرفات', 'مسجد نمرة'];
   if (z === 'قطار المشاعر') return (/عرفات/.test(area) || (!area && x.lng >= 39.95)) ? ['عرفات', 'محطات قطار'] : ['منى', 'محطات قطار'];
@@ -35,7 +36,7 @@ recs.forEach(r => {
   const reached = !r.access || r.access === 'تم الوصول';
   const installed = !!(INS[id] && INS[id].status === 'مُركّب');
   const [m, sub] = classify(x);
-  rows.push({ id, name:x.name, main:m, sub, zone:x.zone, type:x.type, chals:ch, note:String(r.chal_note || '').trim().slice(0, 200), access:r.access || 'تم الوصول', reached, installed, review:r.review || '', at:r.at || 0, isNew:!!x.isNew });
+  rows.push({ id, name:x.name, main:m, sub, zone:x.zone, type:x.type, chals:ch, note:String(r.chal_note || r.note || '').trim().slice(0, 200), access:r.access || 'تم الوصول', reached, installed, review:r.review || '', at:r.at || 0, isNew:!!x.isNew });
 });
 const reg = {}; Object.values(SITE).forEach(x => { const k = classify(x).join('|'); reg[k] = (reg[k] || 0) + 1; });
 const bySub = {}; const byChal = {}; const other = {}; const acc = {};
@@ -45,7 +46,8 @@ rows.forEach(r => {
   if (r.chals.length && open) b.withChal++; if (!r.reached && open) b.notReached++; if (open && (r.chals.length || !r.reached)) b.obst++;
   if (open) r.chals.forEach(c => { b.chals[c] = (b.chals[c] || 0) + 1; const t = byChal[c] || (byChal[c] = { total:0, mina:0, arafat:0, other:0 }); t.total++; if (r.main === 'منى') t.mina++; else if (r.main === 'عرفات') t.arafat++; else t.other++; });
   if (!r.reached && open) acc[r.access] = (acc[r.access] || 0) + 1;
-  if (open && r.chals.includes('أخرى') && r.note) other[r.note] = (other[r.note] || 0) + 1;
+  if (!r.reached && open){ const t = byChal['تعذّر الوصول'] || (byChal['تعذّر الوصول'] = { total:0, mina:0, arafat:0, other:0 }); t.total++; if (r.main === 'منى') t.mina++; else if (r.main === 'عرفات') t.arafat++; else t.other++; b.chals['تعذّر الوصول'] = (b.chals['تعذّر الوصول'] || 0) + 1; }
+  if (r.chals.includes('أخرى') && r.note){ const k = r.note.replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/\s+/g, ' ').slice(0, 80); other[k] = (other[k] || 0) + 1; }
 });
 Object.keys(reg).forEach(k => { if (!bySub[k]){ const [m, s] = k.split('|'); bySub[k] = { main:m, sub:s, visited:0, withChal:0, notReached:0, obst:0, chals:{} }; } bySub[k].registry = reg[k]; });
 const summary = { at:new Date().toISOString(), recs:rows.length, sites:Object.keys(SITE).length,
