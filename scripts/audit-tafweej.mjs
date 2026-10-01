@@ -56,6 +56,7 @@ console.log('\n══ المساراتُ مبنيةٌ من مخيمات الوز
   const en = f => (RT.ends.en[f] || []).map(n => { const m = rawH.match(new RegExp('\\["NSK-JMR-PNT-' + n + '","[^"]*",\\d+,\\d+,\\d+,([0-9.]+),([0-9.]+)')); return m ? [+m[1], +m[2]] : null; }).filter(Boolean);
   const touches = ['0', '1', '3', '4'].every(f => { const E = en(f); return E.length && RT.floors[f].go.some(pl => E.some(e => mtr(pl[pl.length - 1], e) <= 90 || mtr(pl[0], e) <= 90)); });
   T(touches, 'وشبكةُ الذهاب في كلِّ دورٍ تصل مداخلَه');
+  T(Array.isArray(RT.floors['4'].train) && RT.floors['4'].train.length >= 1 && RT.floors['4'].train.reduce((s, pl) => s + pl.length, 0) >= 20 && /R\.train \|\| \[\]/.test(rawH) && /fl\.train \|\| \[\]/.test(rawH), 'والدورُ الرابع بالقطار: خطُّ قطار المشاعر في الملف يُرسَم ويدخل شبكةَ مسار المخيم (V26.0)');
   T(Array.isArray(RT.maybe) && RT.maybe.length > 0 && RT.maybe.length < 60 && RT.maybe.every(m => m.lat > 21.3 && m.lng > 39.8 && m.floor >= 0 && m.floor <= 4) && /احتمال مخيم/.test(rawH) && /TFW\.routes\.maybe \|\| \[\]/.test(rawH), 'ونقاطُ «احتمال مخيم» (' + RT.maybe.length + ') حيث انتهى المخطّطُ بلا مخيمٍ — تُرسَم مع دورها ولا تُعَدّ'); }
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);

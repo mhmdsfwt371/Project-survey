@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V25.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4255,6 +4255,12 @@ function tfwLines(){
         ln.addTo(TFW.lines); made.push(ln);
       });
     });
+    /* (V26.0) الدورُ الرابع بالقطار: خطُّ قطار المشاعر (من منى ١ و٢ إلى محطة الجمرات) بلونه ومتقطّعًا — الحجاجُ يركبونه لا يمشونه */
+    (fl.train || []).forEach(function(pts){
+      if (!pts || pts.length < 2) return;
+      var tr = L.polyline(pts, { renderer:MAP_CV, color:'#2F80ED', weight:6, opacity:0.95, dashArray:'14 10', lineCap:'round', lineJoin:'round', interactive:false });
+      tr.addTo(TFW.lines); made.push(tr);
+    });
   });
   /* (V25.6) «احتمال مخيم»: طرفُ خطٍّ في مخطّط الوزارة بلا مخيمٍ مسجَّلٍ عنده — دائرةٌ متقطّعةٌ بلون دوره، للتحقّق الميداني، وليست نقطةً ولا تُعَدّ */
   (TFW.routes.maybe || []).forEach(function(m){
@@ -4303,7 +4309,7 @@ function tfwCampCalc(id){
   var f = tfwFloorOf(id), x = siteFind(id), R = TFW.routes && TFW.routes.floors ? TFW.routes.floors[String(f)] : null;
   if (f == null || !x || !R) return null;
   var c = [x.lat, x.lng], ex = siteFind('NSK-JMR-PNT-' + TFW_JEX[f]), E = ex ? [ex.lat, ex.lng] : TFW_JIN;
-  var G = tfwNet(R.go), B = tfwNet(R.back), EN = (TFW.routes.ends || {}).en || {}, EX = (TFW.routes.ends || {}).ex || {};
+  var G = tfwNet((R.go || []).concat(R.train || [])), B = tfwNet((R.back || []).concat(R.train || [])), EN = (TFW.routes.ends || {}).en || {}, EX = (TFW.routes.ends || {}).ex || {};   /* (V26.0) خطُّ القطار جزءٌ من شبكة الدور الرابع */
   var a = tfwNear(G, c), h = tfwNear(B, c), p1 = null, p2 = null;
   /* (V24.8) الذهابُ ينتهي عند أقرب مدخلٍ من مداخل دوره، والعودةُ تبدأ من أقرب مخرجٍ من مخارجه — لا عند نقطةٍ ثابتة */
   (EN[f] || []).concat(EN[f] ? [] : ['']).forEach(function(k){ var q = k ? siteFind('NSK-JMR-PNT-' + k) : null, tp = q ? [q.lat, q.lng] : TFW_JIN, b = tfwNear(G, tp), p = a[0] >= 0 && b[0] >= 0 ? tfwPath(G, a[0], b[0]) : null; if (p && (!p1 || p.len < p1.len)) p1 = p; });
@@ -23084,6 +23090,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V26.0', d:'١ أكتوبر ٢٠٢٦', notes:[
+      'صحح مسار تفويج الدور الرابع كما في ملف الوزارة: حجاجه يمشون إلى أقرب محطة قطار في منى، ويركبون قطار المشاعر إلى محطة الجمرات، ويمشون منها إلى مداخل الدور. وخط القطار يظهر أزرق متقطعا على الخريطة.' ] },
   { v:'V25.9', d:'١ أكتوبر ٢٠٢٦', notes:[
       'صار المسح لا يضيع إن أغلق الآيفون الصفحة أثناء التصوير: النموذج بصوره يحفظ على الجهاز مع كل صورة وكل حقل، ويعود كما كان تلقائيا عند فتح التطبيق. والصور صارت تقرأ بذاكرة أقل بكثير.',
       'صار للمهندس فمن فوقه تعديل حدود المخيم من نافذته «عدّل الحدود»: تسحب أي زاوية لتنقلها، وتضغط النقطة الصغيرة بين زاويتين لتضيف زاوية، وتحذف الزاوية المحددة، ثم تحفظ. ومعها «رجوع للحدود الأصلية» يعيد حدود السجل. والتعديل يصل كل الأجهزة ويسجل في سجل الأحداث.' ] },
