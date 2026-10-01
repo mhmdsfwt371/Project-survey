@@ -528,6 +528,13 @@ console.log('\n══ حذفُ النقطة المضافة نهائيًّا — 
   check(/if \(kind === 'newsites' && typeof siteDropLocal === 'function'\) siteDropLocal\(id\);/.test(raw11) && /if \(v\.hidden \|\| v\.deleted\)\{ STATE\.sites = STATE\.sites\.filter/.test(raw11) && /v\.hidden \|\| v\.deleted \|\| have\[v\.id\]/.test(raw11), 'والشاهدُ الواردُ يرفعها من السجل عند الوصول وعند الإقلاع');
   check(/data-sitedelgo="' \+ esc\(x\.id\)/.test(raw11) && /data-sitedel="' \+ esc\(x\.id\)/.test(raw11) && /\(x\.isNew\n\s*\? \(SITE_DEL === x\.id/.test(raw11) && /closest\('\[data-sitedelgo\]'\)/.test(raw11), 'وزرُّ الحذف للمضافة وحدَها بتأكيدٍ واحد، والإخفاءُ للسجل الأصلي كما كان'); }
 
+console.log('\n══ المسحُ لا يضيع إن أنهى الآيفونُ الصفحة (V25.9) ══');
+{ const raw12 = readFileSync('index.html', 'utf8');
+  const fnb = n => { const i = raw12.indexOf('function ' + n + '('); return i < 0 ? '' : raw12.slice(i, raw12.indexOf('\nfunction ', i + 10)); };
+  check(/URL\.createObjectURL\(file\)/.test(fnb('shrink')) && /URL\.revokeObjectURL\(url\)/.test(fnb('shrink')) && /cv\.width = 0; cv\.height = 0;/.test(fnb('shrink')), 'الصورةُ تُقرأ برابط ملفٍّ لا نصًّا، ويُحرَّر اللوحُ والرابطُ لحظةَ الانتهاء');
+  check(/idbSet\('svDraft', \{ at:Date\.now\(\), by:/.test(raw12) && /SVD\.dirty = true; svDraftSave\(\);/.test(raw12) && /SVD\.dirty = true; svDraftSoon\(\);/.test(raw12) && /if \(document\.hidden && typeof SVD === 'object' && SVD\.dirty\) svDraftSave\(\);/.test(raw12), 'والنموذجُ يُحفَظ مسودةً مع كلِّ صورةٍ وحقلٍ ولحظةَ تخرج الصفحةُ إلى الكاميرا');
+  check(/if \(typeof SVD === 'object' && !SVD\.checked && document\.getElementById\('nav'\)\)\{ SVD\.checked = true; setTimeout\(svDraftRestore, 1500\); \}/.test(raw12) && /d\.by !== STATE\.meta\.name\) return;/.test(raw12) && /svDraftClear\(\);   \/\* \(V25\.9\) حُفظ المسح/.test(raw12) && !/function formReset\(\)\{\n  if \(typeof svDraftClear/.test(raw12), 'ويُستعاد بعد الدخول (لا مسودةَ حسابٍ آخر)، ويُمسَح عند الحفظ وتبديل النقطة لا عند ضبط النموذج في الإقلاع'); }
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
 
