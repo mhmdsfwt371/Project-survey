@@ -70,7 +70,7 @@ T(/أحمد/.test(c.slice(c.indexOf('كيف يُحسب'), c.indexOf('كيف يُ
 T(!!d.querySelector('[data-goto="pts"]') && !!d.querySelector('[data-goto="consts"]'), 'وأين يُضبَط كلُّ رقم');
 
 console.log('\n══ ٥ · الصفحاتُ غيرُ المفتوحة ══');
-const dK = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+const dK = n => new Date((Date.now() - n * 864e5) + 10800000).toISOString().slice(0, 10);
 const days = {}; for (let i = 1; i <= 8; i++) days[dK(i)] = { map:3, sites:1 };
 w.USAGE.v = { days }; w.USAGE.at = Date.now();
 const uc = w.usageCard();

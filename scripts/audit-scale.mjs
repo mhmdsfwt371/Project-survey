@@ -134,7 +134,7 @@ check(typeof w.DEV_ID === 'string' && w.DEV_ID.length > 6, 'للجهاز معر�
 /* اللقطةُ اليومية والتاريخ */
 {
   const doc = w.rollupToday(true);
-  check(!!doc && doc.day === new Date().toISOString().slice(0,10), 'اللقطةُ تُكتَب بيومها');
+  check(!!doc && doc.day === new Date(Date.now() + 10800000).toISOString().slice(0, 10), 'اللقطةُ تُكتَب بيومها');
   check(doc && typeof doc.total === 'number' && typeof doc.daySurvey === 'number',
     'اللقطةُ تحمل الإجماليَّ وأعمالَ اليوم');
   check(!!(w.STATE.stats || {})[doc.day], 'اللقطةُ محفوظةٌ في الحالة');

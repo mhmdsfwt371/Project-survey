@@ -88,7 +88,7 @@ w.ROLE = 'admin';
 
 /* ═══ جدولُ الخطة: يُقرأ ويقول الحقيقةَ عن البدء (V17.15) ═══ */
 {
-  const day = n => new Date(Date.now() + n * 86400000).toISOString().slice(0, 10);
+  const day = n => new Date((Date.now() + n * 86400000) + 10800000).toISOString().slice(0, 10);
   w.STATE.wbs = { rows:[
     { id:'9',   n:'بندٌ أبٌ', s:day(-20), e:day(20) },
     { id:'9.1', n:'حلَّ بدؤُه ولم يبدأ', s:day(-20), e:day(20), pct:0 },

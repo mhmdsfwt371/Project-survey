@@ -90,7 +90,8 @@ for (const fk of ['0', '1', '2', '3', '4']){
     goE.clear(); backE.clear();
     const gate1 = gatesOf(1), gate2 = gatesOf(2), gate3 = gatesOf(3);
     const gstub = q => { const e = [q.lat, q.lng], n = nearestNode(e, 120); if (!n) return null; addEdge(nodes.get(n), e, { stub: true }); return key(e); };
-    const gN12 = gate1.concat(gate2).map(gstub).filter(Boolean), gN3 = gate3.map(gstub).filter(Boolean); refreshNodes();
+    /* قرارُ المالك من ملف الوزارة: مخيماتُ الرابع كلُّها تتحرّك إلى محطةٍ واحدةٍ هي الأبعدُ عن الجمرات (في الملف «منى ٣»، وفي سجل النقاط «منى ١») — ومنها القطارُ إلى محطة الجمرات */
+    const gN12 = (gate1.length ? gate1 : gate2).map(gstub).filter(Boolean), gN3 = gate3.map(gstub).filter(Boolean); refreshNodes();
     const G1 = dijkstra(gN12, onPlan);
     routed = 0; skipped.length = 0;
     campIds.forEach(id => { const c = campCenter(id); const n = c && nearestNode(c, 220, true); if (!n || !G1.distTo.has(n)){ skipped.push(id); return; } routed++; for (let k = n; G1.prev.has(k); k = G1.prev.get(k)){ const ek = [k, G1.prev.get(k)].sort().join('|'); goE.add(ek); backE.add(ek); } });

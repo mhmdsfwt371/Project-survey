@@ -42,11 +42,11 @@ w.STATE.meta.uid = 'u1'; w.presenceBeat(true);
 T(w.STATE.presence.u1.pg && w.STATE.presence.u1.pg.map === 2, 'والنبضةُ تحمله');
 
 console.log('\n══ ٣ · البطاقة ══');
-const today = new Date().toISOString().slice(0, 10);
+const today = new Date(Date.now() + 10800000).toISOString().slice(0, 10);
 w.STATE.presence = { a:{ day:today, rd:20000 }, b:{ day:today, rd:16000 }, c:{ day:'2020-01-01', rd:99999 } };
 const rt = w.readsToday();
 T(rt.reads === 36000 && rt.devices === 2, 'قراءاتُ اليوم من نبضات اليوم وحدَها: ٣٦٠٠٠ على جهازين');
-const dK = n => new Date(Date.now() - n * 864e5).toISOString().slice(0, 10);
+const dK = n => new Date((Date.now() - n * 864e5) + 10800000).toISOString().slice(0, 10);
 w.USAGE.v = { days:{ [dK(3)]:{ map:5, sites:2 }, [dK(2)]:{ map:3 }, [dK(40)]:{ map:100 } } }; w.USAGE.at = Date.now();
 const card = w.usageCard();
 T(/٧٢٪/.test(card) && /wrn/.test(card), 'ونسبةُ الحصة ٧٢٪ كهرمانية عند ٧٠٪ فأكثر');

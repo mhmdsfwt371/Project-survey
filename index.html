@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-c1ba4278f0.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-5dc6b9b80b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3158,7 +3158,9 @@ var FB = {
    وهي في الوقت نفسه سجلُّ التاريخ: يومٌ يومًا، لا يُعاد حسابُه ولا يُعدَّل. */
 var ROLL_LAST = 0, ROLL_PUSH = 0;
 
-function dayKey(ts){ return new Date(ts || Date.now()).toISOString().slice(0, 10); }
+/* (V26.1) يومُ التقارير يومُ مكة (توقيتٌ عالميٌّ +٣ ثابتًا، لا توقيتَ صيفي) — كان يومَ غرينتش في كلِّ التقارير: الزيارةُ المسجَّلةُ
+   الساعةَ الواحدةَ ليلًا في منى كانت تُحسَب على اليوم السابق، فاختلفت أرقامُ الأمس واليوم بين ما رآه الميدانُ وما قالته التقارير. */
+function dayKey(ts){ return new Date((+ts || Date.now()) + 10800000).toISOString().slice(0, 10); }
 
 function rollupToday(force){
   var now = Date.now();
@@ -4696,7 +4698,7 @@ function scores(){
     var sT = catLabel(x) || x.type || 'أخرى';
     if (!e.surveyT[sT]) e.surveyT[sT] = { n:0, pts:0 };
     e.surveyT[sT].n++; e.surveyT[sT].pts += pS;
-    var day = new Date(r.at || Date.now()).toISOString().slice(0,10);
+    var day = dayKey(r.at || Date.now());
     e.days[day] = (e.days[day] || 0) + 1;
     if ((r.at||0) > e.last) e.last = r.at || 0;
   });
@@ -4712,7 +4714,7 @@ function scores(){
     if (!e.installT[x.type]) e.installT[x.type] = { n:0, pts:0 };
     e.installT[x.type].n++;
     e.installT[x.type].pts += p;
-    var day = new Date(r.at || Date.now()).toISOString().slice(0,10);
+    var day = dayKey(r.at || Date.now());
     e.days[day] = (e.days[day] || 0) + 1;
     if ((r.at||0) > e.last) e.last = r.at || 0;
   });
@@ -4843,7 +4845,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
 
     var e = scoreOf(me);
     var Tg = T(), target = cfgN(Tg.survey) + cfgN(Tg.ins) + cfgN(Tg.dis);
-    var day = new Date().toISOString().slice(0, 10);
+    var day = dayKey();
     var doneToday = (e.days && e.days[day]) || 0;
 
     return attMyCard()
@@ -5220,7 +5222,7 @@ function perfRankTable(){
 function diaryRows(keep){
   var D = {}, ok = typeof keep === 'function' ? keep : null;   /* (V24.0) مرشِّحٌ اختياريٌّ على وقت كلِّ سجلٍّ لملخص العمل اليومي — وبلا مرشِّحٍ لا يتغيّر شيء */
   var blank = function(){ return { sv:0, ins:0, dis:0, nw:0, apr:0, min:0, who:{}, zones:{}, stuck:0, span:{} }; };
-  var dayOf = function(t){ var n = +t; return n > 0 && (!ok || ok(n)) ? new Date(n).toISOString().slice(0, 10) : ''; };
+  var dayOf = function(t){ var n = +t; return n > 0 && (!ok || ok(n)) ? dayKey(n) : ''; };
   var add = function(day, k, who){ if (!day) return; var o = D[day] = D[day] || blank(); o[k]++; if (who){ o.who[who] = (o.who[who] || 0) + 1; } };
   var span = function(day, who, at){ if (!day || !who || !(+at)) return; var o = D[day]; var p = o.span[who] = o.span[who] || { a:+at, b:+at }; if (+at < p.a) p.a = +at; if (+at > p.b) p.b = +at; };
   Object.keys(STATE.recs || {}).forEach(function(id){ var r = STATE.recs[id]; if (!r) return; var dy = dayOf(r.at); add(dy, 'sv', r.by);
@@ -5230,9 +5232,9 @@ function diaryRows(keep){
   Object.keys(STATE.diss || {}).forEach(function(id){ var r = STATE.diss[id]; if (r && r.status === 'تم الفك') add(dayOf(r.at), 'dis', r.by); });
   Object.keys(STATE.newsites || {}).forEach(function(id){ var r = STATE.newsites[id]; if (r) add(dayOf(r.at), 'nw', r.by); });
   var days = Object.keys(D).sort(); if (!days.length) return [];
-  var out = [], cum = 0, cumIns = 0, last = new Date().toISOString().slice(0, 10);
+  var out = [], cum = 0, cumIns = 0, last = dayKey();
   for (var t = Date.parse(days[0] + 'T00:00:00Z'); ; t += 864e5){
-    var k = new Date(t).toISOString().slice(0, 10), o = D[k] || blank();
+    var k = dayKey(t), o = D[k] || blank();
     cum += o.sv; cumIns += o.ins;
     var names = Object.keys(o.who).sort(function(a, b){ return o.who[b] - o.who[a]; });
     /* ساعاتُ العمل: من أوّل سجلٍّ إلى آخره لكلِّ شخصٍ في اليوم — تقديرٌ من الأثر لا من ساعة حضور */
@@ -6335,7 +6337,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
                       j ? pill(t((ROLES[j.role] || {}).n || j.role), 'off') : '—',
                       x.dept ? esc(deptName(x.dept)) : '—',
                       x.sup ? esc(x.sup) : '—',
-                      last ? '<span class="num">' + esc(new Date(last.at).toISOString().slice(0,10)) + '</span>' : '—'];
+                      last ? '<span class="num">' + esc(dayKey(last.at)) + '</span>' : '—'];
             })))
 
       + '<p class="hint">' + esc(t('الوظيفةُ التي عليها أشخاصٌ لا تُحذَف — انقلهم أولًا. وكلُّ نقلةٍ تدخل سجلَّ الأحداث وتصل صاحبَها إشعارًا.')) + '</p>';
@@ -7789,7 +7791,7 @@ function disComplete(id, cond){
   var ins = STATE.inss[id];
   STATE.moves = STATE.moves || [];
   if (ins && ins.parts) Object.keys(ins.parts).forEach(function(k){
-    var mv = { id:uid36(), at:new Date().toISOString().slice(0,10),
+    var mv = { id:uid36(), at:dayKey(),
                kind: cond === 'تالف' ? 'إرجاع تالف' : 'إرجاع سليم',
                item:k, qty:ins.parts[k], by:STATE.meta.name || '—', site:id, cond:cond };
     STATE.moves.push(mv);
@@ -7819,9 +7821,9 @@ function selAll(list){
 
 /* من أُسند إليه هذا الموقع — إن أُسند */
 function asnOf(id){
-  var T = STATE.tasks;
-  for (var k in T) if (T[k] && T[k].site === id && T[k].status !== 'معتمد') return T[k];
-  return null;
+  /* (V26.1) كانت تمرّ على المهامِّ كلِّها لكلِّ نقطة — ألفٌ وثمانمئةُ نقطةٍ × ستُّمئةِ مهمة = مليونُ مقارنةٍ في رسمة
+     مركز التصدير وحدَه (٢٧٠ م.ث). صارت من فهرس المهامِّ نفسِه الذي يُبنى مرةً في الرسمة ويُبطَل في statBump. */
+  return taskIndex()['*|' + id] || null;
 }
 
 /* ما لدى فنيٍّ في هذه الطبقة — يُفتح عليه اللوحُ فيُزاد أو يُنقَص */
@@ -9187,7 +9189,7 @@ function svDraftClear(){ try { SVD.dirty = false; clearTimeout(SVD.t); if (typeo
 function svDraftRestore(){
   SVD.checked = true;
   if (typeof idbGet !== 'function') return;
-  if (typeof IDB_BAD !== 'undefined' && IDB_BAD === true){ setTimeout(svDraftRestore, 5000); return; }   /* القاعدةُ متعثّرةٌ الآن: لا فتحٌ إضافيٌّ يسبق إعادتها المجدولة */
+  if (typeof IDB_BAD !== 'undefined' && IDB_BAD === true){ if ((SVD.bad = (SVD.bad || 0) + 1) <= 6) setTimeout(svDraftRestore, 5000); return; }   /* القاعدةُ متعثّرةٌ الآن: لا فتحٌ إضافيٌّ يسبق إعادتها المجدولة — ستُّ محاولاتٍ ثم يُترَك (مؤقّتٌ دائمٌ يُبقي بيئةَ الفحص حيّةً بلا نهاية) */
   idbGet('svDraft').then(function(d){
     if (!d || !d.form || !d.form.site) return;
     if (Date.now() - (+d.at || 0) > 86400000){ svDraftClear(); return; }
@@ -9330,7 +9332,7 @@ function insSave(draft){
   /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
   if (!draft){
     Object.keys(used).forEach(function(k){
-      STATE.moves.push({ at:new Date().toISOString().slice(0,10), kind:'استهلاك',
+      STATE.moves.push({ at:dayKey(), kind:'استهلاك',
                          item:k, qty:used[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
     });
     CORE.dirty('moves', s.id, used);
@@ -9412,7 +9414,7 @@ function logEvent(what, site, who, when){
   var mine = STATE.meta.name || '';
   var e = { id:uid36(), ts:now,
             at:fmtTime(now, { hour:'2-digit', minute:'2-digit' }),
-            day:new Date(now).toISOString().slice(0,10),
+            day:dayKey(now),
             what:what, by:String(who || mine), dev:DEV_ID };
   if (who && who !== mine) e.rec = mine;
   if (site) e.site = String(site);
@@ -10491,7 +10493,7 @@ function wbsExcel(){
     wb.calcProperties = { fullCalcOnLoad:true };
     wb.xlsx.writeBuffer().then(function(buf){
       dl(new Blob([buf], { type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }),
-         'متابعة-الخطة-التفصيلية-' + new Date().toISOString().slice(0, 10) + '.xlsx');
+         'متابعة-الخطة-التفصيلية-' + dayKey() + '.xlsx');
       logEvent('تصديرُ الخطة التفصيلية — ' + R.length + ' بندًا');
       toast(nm(R.length) + ' ' + t('بندًا صُدِّرت بالمعادلات والطيّ'));
     }).catch(function(e){ softErr('تصدير الخطة', e, 'تعذّر بناءُ الملف'); });
@@ -10729,7 +10731,7 @@ PAGE.trials = { m:'التخطيط', t:'التجارب',
         + (me ? card('تجربةٌ جديدة',
             '<div class="grid cols-2">'
             + '<div class="field" style="grid-column:1/-1"><label>' + esc(t('اسم التجربة')) + '</label><input id="trN" dir="auto" placeholder="' + esc(t('ما الذي جُرِّب؟')) + '"></div>'
-            + '<div class="field"><label>' + esc(t('التاريخ')) + '</label><input id="trD" type="date" value="' + esc(new Date().toISOString().slice(0, 10)) + '"></div>'
+            + '<div class="field"><label>' + esc(t('التاريخ')) + '</label><input id="trD" type="date" value="' + esc(dayKey()) + '"></div>'
             + '<div class="field"><label>' + esc(t('الساعات')) + '</label><input id="trH" type="number" min="0" step="0.5" inputmode="decimal"></div>'
             /* ما جُرِّب وأين وبأيِّ نتيجة (V17.73): التجربةُ عُدّةٌ في موضعٍ تنتهي بقرار */
             + '<div class="field"><label>' + esc(t('البوابة')) + '</label><input id="trGw" dir="auto" list="trGwL" placeholder="TZone · Milesight">'
@@ -12227,7 +12229,7 @@ function photoFlushCloud(){
    فتحةٍ لأغرقت الحصةَ في يوم، ولو لم تُسجَّل لضاع الأثر. */
 var SEEN_TODAY = {};
 function photoSeen(id){
-  var day = new Date().toISOString().slice(0, 10);
+  var day = dayKey();
   var k = day + '|' + (STATE.meta.uid || STATE.meta.name || '?') + '|' + id;
   if (SEEN_TODAY[k]) return;
   SEEN_TODAY[k] = 1;
@@ -13954,7 +13956,7 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
           L.length
             ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
                 L.slice(0, PG_Q ? 5000 : 200).map(function(b){
-                  return ['<span class="num">' + esc(new Date(b.at).toISOString().slice(0,10)) + '</span>',
+                  return ['<span class="num">' + esc(dayKey(b.at)) + '</span>',
                           esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
                           pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn')];
                 }))
@@ -14269,7 +14271,7 @@ function repGen(id){
   if (!keys.length){ toast(t('لا أوراقَ لهذا التقرير')); return; }
   toast(t('يُجهَّز') + ' ' + t(r.n) + '…');
   logEvent('توليد تقرير — ' + r.n + ' → ' + r.to);
-  xlsExport(keys, 'نسك-' + r.id + '-' + new Date().toISOString().slice(0,10) + '.xlsx');
+  xlsExport(keys, 'نسك-' + r.id + '-' + dayKey() + '.xlsx');
 }
 
 function repPack(side){
@@ -14281,7 +14283,7 @@ function repPack(side){
   toast(nm(list.length) + ' ' + t('ورقةً تُجهَّز') + '…');
   logEvent('حزمة تقارير — ' + (side === 'co' ? 'الشركة' : 'الوزارة') + ' · ' + nm(list.length) + ' ورقة');
   xlsExport(list, 'نسك-حزمة-' + (side === 'co' ? 'الشركة' : 'الوزارة') + '-'
-    + new Date().toISOString().slice(0,10) + '.xlsx');
+    + dayKey() + '.xlsx');
 }
 
 /* ═══ دليل العمليات — كلُّ دورةٍ خطوةً خطوة ═══ */
@@ -16464,6 +16466,7 @@ function taskIndex(){
     if (!x || !x.site || x.status === 'معتمد') continue;
     var key = x.site + '|' + x.kind;
     if (!ix[key]) ix[key] = x;
+    if (!ix['*|' + x.site]) ix['*|' + x.site] = x;   /* (V26.1) أوّلُ مهمةٍ مفتوحةٍ على النقطة أيًّا كان نوعُها — لـasnOf */
   }
   TK_IX = ix;
   return ix;
@@ -17135,7 +17138,7 @@ var SHEETS = {
       var r = STATE.inss[k];
       out.push([k, r.by || '', Object.keys(r.parts || {}).length, r.pts || 0,
                 r.status || '', r.approved ? 'معتمد' : 'بانتظار التدقيق',
-                new Date(r.at || Date.now()).toISOString().slice(0,10)]);
+                dayKey(r.at || Date.now())]);
     });
     return out;
   },
@@ -17160,7 +17163,7 @@ var SHEETS = {
   hse: function(){
     var out = [['التاريخ','النوع','الموقع','أيام مفقودة','الإجراء','المسجِّل']];
     HSE.incidents.forEach(function(x){
-      out.push([new Date(x.at).toISOString().slice(0,10), x.kind, x.site || '',
+      out.push([dayKey(x.at), x.kind, x.site || '',
                 x.lost, x.why, x.by]);
     });
     return out;
@@ -17334,7 +17337,7 @@ var SHEETS = {
   },
   wplan: function(){
     var out = [['الأسبوع','العنوان','الأولوية','الحالة','التفاصيل والملاحظات','الخطوات','منجز من الخطوات','الاحتياجات والمتطلبات','النتيجة المرجوّة','النتيجة الفعلية','سبب الإغلاق','التحديثات','مهمة أسبوعية']];
-    wplanItems(wplanWeek()).forEach(function(x){ var st = wplanLines(x.steps); out.push([x.wk, x.t || '', x.pri || '', x.st || '', x.n || '', st.join(' | '), (x.sdone || []).filter(Boolean).length + '/' + st.length, x.needs || '', x.goal || '', x.result || '', x.closeWhy || '', wplanUpdates(x).map(function(h){ return new Date(h.at).toISOString().slice(0, 10) + ': ' + h.v; }).join(' | '), x.task ? '#' + x.task : '']); });
+    wplanItems(wplanWeek()).forEach(function(x){ var st = wplanLines(x.steps); out.push([x.wk, x.t || '', x.pri || '', x.st || '', x.n || '', st.join(' | '), (x.sdone || []).filter(Boolean).length + '/' + st.length, x.needs || '', x.goal || '', x.result || '', x.closeWhy || '', wplanUpdates(x).map(function(h){ return dayKey(h.at) + ': ' + h.v; }).join(' | '), x.task ? '#' + x.task : '']); });
     return out;
   },
   pmi: function(){
@@ -17374,7 +17377,7 @@ var SHEETS = {
   invmv: function(){
     var out = [['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','سجّلها','ملاحظة']];
     movesList().forEach(function(m){
-      out.push([new Date(m.at).toISOString().slice(0,10), m.kind, m.item, m.qty,
+      out.push([dayKey(m.at), m.kind, m.item, m.qty,
                 m.by || '', m.site || '', m.user || '', m.note || '']);
     });
     return out;
@@ -17382,7 +17385,7 @@ var SHEETS = {
   buys: function(){
     var out = [['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة','سجّلها']];
     buysList().forEach(function(b){
-      out.push([new Date(b.at).toISOString().slice(0,10), b.item, b.cat, b.zone || '',
+      out.push([dayKey(b.at), b.item, b.cat, b.zone || '',
                 b.amt, b.sup, b.st, b.by || '']);
     });
     return out;
@@ -17391,17 +17394,17 @@ var SHEETS = {
     var out = [['النوع','التفصيل','مَن اقترح','التاريخ','الحالة','مَن قرّر','السبب']];
     coReqList().forEach(function(x){
       out.push(['شركة مقترحة', x.name, x.by || '',
-                new Date(x.at).toISOString().slice(0,10), x.status || '', x.by2 || '', x.why2 || '']);
+                dayKey(x.at), x.status || '', x.by2 || '', x.why2 || '']);
     });
     fixList().forEach(function(x){
       out.push(['تصويب بيان', x.site + ' · ' + x.field + ': ' + (x.was || '—') + ' → ' + x.val,
-                x.by || '', new Date(x.at).toISOString().slice(0,10),
+                x.by || '', dayKey(x.at),
                 x.status || '', x.by2 || '', x.why2 || x.why || '']);
     });
     buysList().forEach(function(b){
       if (b.st === 'معتمد' && !b.by2) return;
       out.push(['مشترًى فوق الحد', b.item + ' · ' + b.amt, b.by || '',
-                new Date(b.at).toISOString().slice(0,10), b.st || '', b.by2 || '', b.why2 || '']);
+                dayKey(b.at), b.st || '', b.by2 || '', b.why2 || '']);
     });
     return out;
   },
@@ -17529,7 +17532,7 @@ var SHEETS = {
     var out = [['النقطة','الاسم','الحالة','الفني','التاريخ','ملاحظة']];
     surveyList().forEach(function(x){
       out.push([x.id, (x.site && x.site.name) || '', x.done ? 'تمت الزيارة' : (x.rec.access || 'متعذّر'),
-                x.rec.by || '', x.rec.at ? new Date(x.rec.at).toISOString().slice(0,10) : '',
+                x.rec.by || '', x.rec.at ? dayKey(x.rec.at) : '',
                 x.rec.note || x.rec.reopenNote || '']);
     });
     return out;
@@ -17690,7 +17693,7 @@ function xlsPage(){
     });
     if (!n){ toast(t('لا جداولَ في هذه الصفحة')); return false; }
     var tabT = TABS[CUR] ? (tabsOf(CUR).filter(function(x){ return x[0] === tabCur(CUR); })[0] || [])[1] : '';
-    XLSX.writeFile(wb, 'نسك-' + t(p.t) + (tabT ? '-' + t(tabT) : '') + '-' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    XLSX.writeFile(wb, 'نسك-' + t(p.t) + (tabT ? '-' + t(tabT) : '') + '-' + dayKey() + '.xlsx');
     logEvent('إكسل الصفحة — ' + p.t + (tabT ? ' · ' + tabT : '') + ' · ' + nm(n) + ' جدول');
     toast(nm(n) + ' ' + t('جدولًا صُدِّر بكلِّ صفوفه'));
     return true;
@@ -17711,7 +17714,7 @@ function xlsSheets(pairs, fname){
       XLSX.utils.book_append_sheet(wb, ws, String(p[0] || 'ورقة').slice(0, 30)); n++;
     });
     if (!n){ toast(t('لا بيانات للتصدير')); return false; }
-    XLSX.writeFile(wb, (fname || 'نسك') + '-' + new Date().toISOString().slice(0, 10) + '.xlsx');
+    XLSX.writeFile(wb, (fname || 'نسك') + '-' + dayKey() + '.xlsx');
     toast(nm(n) + ' ' + t('ورقةً صُدّرت'));
     return true;
   });
@@ -17841,7 +17844,7 @@ function xlsExport(keys, fname){
       n++;
     });
     if (!n){ toast('لا بيانات للتصدير'); return false; }
-    XLSX.writeFile(wb, fname || ('نسك-' + new Date().toISOString().slice(0,10) + '.xlsx'));
+    XLSX.writeFile(wb, fname || ('نسك-' + dayKey() + '.xlsx'));
     toast(nm(n) + ' ' + t('ورقةً صُدّرت'));
     return true;
   });
@@ -18185,7 +18188,7 @@ function geoJsonBuild(){
 }
 function geoJsonExport(){
   var g = geoJsonBuild();
-  var ok = dl(new Blob([JSON.stringify(g)], { type:'application/geo+json' }), 'afaqy-readers-' + new Date().toISOString().slice(0, 10) + '.geojson');
+  var ok = dl(new Blob([JSON.stringify(g)], { type:'application/geo+json' }), 'afaqy-readers-' + dayKey() + '.geojson');
   toast(ok ? (nm(g.features.length) + ' ' + t('نقطةً في الملف')) : t('تعذّر التنزيل'));
   return ok;
 }
@@ -20873,10 +20876,11 @@ function mfuCos(){
 function mfuObs(){
   var O = mfuObstacles(), byParty = {}, byCat = {}, ed = may('settings');
   MFU_PARTIES.forEach(function(p){ byParty[p] = 0; });
-  O.forEach(function(o){ var seen = {}; o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; var p = mfuOwnerOf(c); if (!seen[p]){ seen[p] = 1; byParty[p] = (byParty[p] || 0) + 1; } }); });
+  /* (V26.1) كانت النقطةُ ذاتُ عائقين من جهتين تُعَدّ عند الجهتين فيزيد مجموعُ الجهات على الإجمالي (٨٤٩ مقابل ٧٣٩) — صارت كلُّ نقطةٍ عند جهةٍ واحدة: جهةُ عائقها الأوّل، فيساوي المجموعُ الإجمالي */
+  O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); var p0 = mfuOwnerOf(o.cats[0]); byParty[p0] = (byParty[p0] || 0) + 1; });
   var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
   return '<div class="mfu-kpis"><div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('إجمالي المعوقات')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(O.length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ لم تُركَّب وفيها عائق')) + '</div></div>'
-    + MFU_PARTIES.map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(p)) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div></div>'; }).join('') + '</div>'
+    + MFU_PARTIES.map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(p)) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
     + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
         var own = mfuOwnerOf(c);
         return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + MFU_PARTIES.map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select>' : esc(t(own))];
@@ -21108,7 +21112,7 @@ function wdyBase(){ var S = STATE.sites || [], n = 0; S.forEach(function(x){ if 
 function wdyCellPct(r, k, B){ return k === 'stuck' ? wdyPct(r.stuck, r.sv) : wdyPct(r[k], B[k]); }
 function wdyNice(v){ if (v <= 5) return 5; var p = Math.pow(10, Math.floor(Math.log(v) / Math.LN10)), m = v / p; return (m <= 1 ? 1 : m <= 2 ? 2 : m <= 5 ? 5 : 10) * p; }
 function wdyHourRow(a, i, keep){
-  var b = a + 36e5, day = new Date(a).toISOString().slice(0, 10);
+  var b = a + 36e5, day = dayKey(a);
   var x = diaryRows(function(ms){ return ms >= a && ms < b && (!keep || keep(ms)); }).filter(function(q){ return q.day === day; })[0] || {};
   return { key:String(i), lbl:wdyHourLbl((i + 3) % 24), sv:x.sv || 0, ins:x.ins || 0, dis:x.dis || 0, stuck:x.stuck || 0 };
 }
@@ -21211,7 +21215,7 @@ function mfuReport(){
   var O = mfuObstacles(), byCat = {}, byParty = {}; MFU_PARTIES.forEach(function(p){ byParty[p] = 0; });
   O.forEach(function(o){ var seen = {}; o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; var p = mfuOwnerOf(c); if (!seen[p]){ seen[p] = 1; byParty[p]++; } }); });
   return {
-    greg:new Date().toISOString().slice(0, 10), hijri:hijriToday(), ver:appVer(),
+    greg:dayKey(), hijri:hijriToday(), ver:appVer(),
     kpis:[['نسبة المسح', pc(K.sv, K.tot) + '٪', K.sv + ' من ' + K.tot, dlt(K.sv, 'sv')],
           ['تركيب المخيمات', pc(K.campIns, K.camp) + '٪', K.campIns + ' من ' + K.camp, dlt(K.campIns, 'campIns')],
           ['تركيب الممرات', pc(K.corIns, K.cor) + '٪', K.corIns + ' من ' + K.cor, dlt(K.corIns, 'corIns')],
@@ -21222,7 +21226,7 @@ function mfuReport(){
     tasks:(wtRows().length ? mfuWeekRows().map(function(x){ var r = x.r;
             var link = r.chal ? (r.st === 'مكتمل' ? '✓ تحدٍّ حُلّ: ' : '⚠ تحدٍّ: ') + String(r.chal).replace(/^[FMT]:/, '') : r.req ? (r.st === 'مكتمل' ? '✓ طلبٌ نُفّذ' : '📨 طلب الوزارة') : '';
             return [r.n, r.track || '', r.who || '', x.late && r.st !== 'مكتمل' ? r.st + ' (متأخرة)' : r.st, r.due || '', String(x.upd).slice(0, 120), link]; })
-          : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? new Date(d).toISOString().slice(0, 10) : '', p + '٪', '']; })),
+          : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? dayKey(d) : '', p + '٪', '']; })),
     inst:Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; })
           .map(function(o){ return [o.z, (CAT_DEF[o.ty] || {}).l || o.ty, o.n, o.i, (o.n ? Math.round(o.i / o.n * 100) : 0) + '٪']; }),
     cos:mfuCompanies().map(function(c){ return [c.co, c.n, c.ins, c.obs, c.rem, c.pct + '٪', mfuLevel(c.pct)[0]]; }),
@@ -21231,7 +21235,7 @@ function mfuReport(){
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
     req:mfuList('req').map(function(x, i){ var V = mfuReqView(x); return [i + 1, x.t || '', V.u + (V.uSrc ? ' (من المهمة #' + V.uSrc + ')' : ''), x.s || '', V.st + (V.blocked ? ' — متوقفة' : ''), V.tk ? '#' + V.tk.id + ' ' + V.tk.st : '—']; }),
     blocks:(function(){ var B = mfuWeekBlocks(), rows = [];
-      B.done.slice(0, 10).forEach(function(r){ rows.push(['أبرز الأعمال المنجزة', r.n, (r.who ? r.who + ' · ' : '') + new Date(mfuDoneAt(r)).toISOString().slice(0, 10)]); });
+      B.done.slice(0, 10).forEach(function(r){ rows.push(['أبرز الأعمال المنجزة', r.n, (r.who ? r.who + ' · ' : '') + dayKey(mfuDoneAt(r))]); });
       B.next.slice(0, 10).forEach(function(r){ rows.push(['أبرز المهام القادمة', r.n, (r.who || 'بلا مسؤول') + (r.due ? ' · ' + r.due : '')]); });
       B.wait.slice(0, 6).forEach(function(r){ rows.push(['الاعتمادات والدعم المطلوب', r.n, r.st + (r.who ? ' · ' + r.who : '')]); });
       B.support.slice(0, 6).forEach(function(x){ rows.push(['الاعتمادات والدعم المطلوب', x.s, 'طلب الوزارة: ' + String(x.t || '').slice(0, 60)]); });
@@ -21240,8 +21244,8 @@ function mfuReport(){
     blk:(function(){ var B = mfuWeekBlocks(); return { done:B.done.length, doneLast:B.doneLast, next:B.next.length, late:B.late.length, wait:B.wait.length, meet:B.meet }; })(),
     weeks:(function(){ var snap = mfuData().snap || {}; return Object.keys(snap).sort().slice(-8).map(function(k){ var v = snap[k]; return [k, v.sv || 0, v.campIns || 0, v.corIns || 0, v.obs || 0]; }); })(),
     owners:mfuOwnersLoad().slice(0, 10).map(function(o){ return [o.n, o.chal, o.task, o.late]; }),
-    updTitle:(function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? 'ما تغيّر منذ آخر اجتماع (' + new Date(W0.meetAt).toISOString().slice(0, 10) + ')' : 'آخر التحديثات — هذا الأسبوع'; })(),
-    upd:mfuTimeline((function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7; })(), 30).map(function(e){ return [new Date(e.at).toISOString().slice(0, 10), e.k, String(e.ref).slice(0, 80), String(e.txt).slice(0, 140), e.by]; }),
+    updTitle:(function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? 'ما تغيّر منذ آخر اجتماع (' + dayKey(W0.meetAt) + ')' : 'آخر التحديثات — هذا الأسبوع'; })(),
+    upd:mfuTimeline((function(){ var W0 = STATE.wtask || {}; return W0.meetAt && Date.now() - W0.meetAt < 14 * 864e5 ? Math.max(1, (Date.now() - W0.meetAt) / 864e5) : 7; })(), 30).map(function(e){ return [dayKey(e.at), e.k, String(e.ref).slice(0, 80), String(e.txt).slice(0, 140), e.by]; }),
     daily:diaryRows().slice(-14).reverse().map(function(r){ return [r.day, r.sv, r.ins, r.dis, r.stuck || 0]; })   /* (V24.0) العملُ كلُّه بترتيب الصفحة */
   };
 }
@@ -21264,7 +21268,7 @@ function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
   return R[key] || [];
 }
-function mfuFileName(ext){ return 'التحديث-الأسبوعي-قارئات-نسك-' + new Date().toISOString().slice(0, 10) + '.' + ext; }
+function mfuFileName(ext){ return 'التحديث-الأسبوعي-قارئات-نسك-' + dayKey() + '.' + ext; }
 /* ── إكسل: ورقةٌ لكلِّ عنوان ── */
 function mfuXlsx(){
   toast(t('يُجهَّز ملفُّ إكسل…'));
@@ -21449,7 +21453,7 @@ function mfuSlides(R){
       return pxBox(x, y, w, 520000, pxP(k + ' · ' + B4.filter(function(r){ return r[0] === k; }).length, { sz:1500, b:1, c:'FFFFFF', al:'ctr' }), { fill:color })
         + pxBox(x, y + 560000, w, 5300000, L.length ? L.map(function(r){ return pxP('• ' + r[1], { sz:1200, b:1, c:'163E35' }) + pxP(r[2], { sz:1000, c:'7F8C8D' }); }).join('') : pxP('—', { sz:1200, c:'7F8C8D', al:'ctr' }), { fill:'FAF6F3', line:'D6A561', anchor:'t' }); };
   var bk = R.blk || {}, dlt = (bk.done || 0) - (bk.doneLast || 0);
-  S.push(['المســـار | القارئات', pxCards([['أُنجز هذا الأسبوع', String(bk.done || 0), (dlt > 0 ? '▲ +' : dlt < 0 ? '▼ ' : '') + dlt + ' عن الأسبوع الماضي', '1E8449'], ['مستحقٌّ خلال ٧ أيام', String(bk.next || 0), ''], ['متأخرة', String(bk.late || 0), '', 'A93226'], ['متوقفة أو بانتظار قرار', String(bk.wait || 0), '', '8A6D0B']].concat(bk.meet ? [['آخر اجتماع', new Date(bk.meet.at).toISOString().slice(0, 10), bk.meet.n + ' تغييرًا منذه', '163E35', 2200]] : []), PX.Y0, 1500000)
+  S.push(['المســـار | القارئات', pxCards([['أُنجز هذا الأسبوع', String(bk.done || 0), (dlt > 0 ? '▲ +' : dlt < 0 ? '▼ ' : '') + dlt + ' عن الأسبوع الماضي', '1E8449'], ['مستحقٌّ خلال ٧ أيام', String(bk.next || 0), ''], ['متأخرة', String(bk.late || 0), '', 'A93226'], ['متوقفة أو بانتظار قرار', String(bk.wait || 0), '', '8A6D0B']].concat(bk.meet ? [['آخر اجتماع', dayKey(bk.meet.at), bk.meet.n + ' تغييرًا منذه', '163E35', 2200]] : []), PX.Y0, 1500000)
     + col4('أبرز الأعمال المنجزة', '27AE60', 0) + col4('أبرز المهام القادمة', 'C8943E', 1) + col4('الاعتمادات والدعم المطلوب', '1C3674', 2) + col4('المهام المتأخرة', 'C0392B', 3)]);
   S.push(['حالة التركيبات', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة'], R.inst.slice(0, 12).map(function(r){ var L = pxLvl(r[4]); return [r[0], r[1], r[2], r[3], { t:r[4], c:L.c, bg:L.bg, b:1 }]; }), { cols:[1.4, 2.6, 1.2, 1.2, 1.2] })]);
   var n = 0, ins = 0, obs = 0; R.cos.forEach(function(c){ n += c[1]; ins += c[2]; obs += c[3]; });
@@ -21923,9 +21927,9 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     if (cur === 'survey') return head + (function(){
     var all = surveyList();
     var S = siteStats();
-    var day = new Date().toISOString().slice(0, 10);
+    var day = dayKey();
     var weekAgo = Date.now() - 7 * 86400000;
-    var todayN = all.filter(function(x){ return new Date(x.rec.at || 0).toISOString().slice(0,10) === day; }).length;
+    var todayN = all.filter(function(x){ return dayKey(x.rec.at || 0) === day; }).length;
     var weekN  = all.filter(function(x){ return (x.rec.at || 0) >= weekAgo; }).length;
     var blocked = all.filter(function(x){ return svStuck(x.rec); });
     var revisit = all.filter(function(x){ return svReached(x.rec) && x.rec.review === 'revisit'; });
@@ -23090,6 +23094,11 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V26.1', d:'١ أكتوبر ٢٠٢٦', notes:[
+      'صار يوم التقارير يوم مكة لا يوم غرينتش: الزيارة المسجلة بعد منتصف الليل كانت تحسب على اليوم السابق في ملخص العمل اليومي وإنجاز اليوم وسجل الأحداث والتصدير، فاختلفت الأرقام عما رآه الميدان.',
+      'بطاقات «تعالج من خلال» في متابعة الوزارة صارت تعد كل نقطة مرة واحدة عند جهة عائقها الأول، فيساوي مجموعها إجمالي المعوقات.',
+      'الدور الرابع في التفويج: مخيماته كلها تتحرك إلى محطة واحدة هي الأبعد عن الجمرات، ومنها القطار إلى محطة الجمرات، كما في ملف الوزارة.',
+      'صارت صفحات المنصة أخف: مركز التصدير يرسم في خمس وقته السابق، وكل الصفحات ما عادت تحسب إسناد كل نقطة بالمرور على كل المهام، ولا تقرأ مواضع التمرير بتكلفة تخطيط كامل قبل كل رسمة.' ] },
   { v:'V26.0', d:'١ أكتوبر ٢٠٢٦', notes:[
       'صحح مسار تفويج الدور الرابع كما في ملف الوزارة: حجاجه يمشون إلى أقرب محطة قطار في منى، ويركبون قطار المشاعر إلى محطة الجمرات، ويمشون منها إلى مداخل الدور. وخط القطار يظهر أزرق متقطعا على الخريطة.' ] },
   { v:'V25.9', d:'١ أكتوبر ٢٠٢٦', notes:[
@@ -24313,7 +24322,7 @@ function trialAdd(){
   var hrs = +g('trH') || 0;
   var rep = g('trRep');
   if (rep && !/^https?:\/\//i.test(rep)){ toast(t('رابطُ التقرير يبدأ بـ https')); return; }
-  trialRows().unshift({ id:uid36(), n:n, date:g('trD') || new Date().toISOString().slice(0, 10),
+  trialRows().unshift({ id:uid36(), n:n, date:g('trD') || dayKey(),
                         hours:hrs, note:g('trNote'), by:STATE.meta.name || '', at:Date.now(),
                         gw:g('trGw'), gwN:+g('trGwN') || 0, sn:g('trSn'), snN:+g('trSnN') || 0,
                         where:g('trWhere'), out:g('trOut') || 'جارية', report:rep });
@@ -24544,12 +24553,12 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
       + '<p class="hint">' + esc(t('كلُّ تنفيذٍ يُسجَّل في دفتر الحركة بنوعه الصحيح فيدخل حساب النقاط — لا تقديرَ ولا تارجت بلا منفَّذ.')) + '</p>';
   })();
     if (cur === 'wday') return head + (function(){
-    var today = new Date().toISOString().slice(0, 10);
+    var today = dayKey();
     var byName = Object.create(null);
     Object.keys(STATE.inss).forEach(function(id){
       var r = STATE.inss[id], x = siteFind(id);
       if (!x || r.status !== 'مُركّب' || !r.by) return;
-      var day = new Date(r.at || 0).toISOString().slice(0, 10);
+      var day = dayKey(r.at || 0);
       if (day !== today) return;
       if (!byName[r.by]) byName[r.by] = { n:0, pts:0 };
       byName[r.by].n++;
@@ -24674,7 +24683,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
             ? table(['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','سجّلها'],
                 L.slice(0, PG_Q ? 5000 : 200).map(function(m){
                   var k = {'توريد':'ok','صرف':'acc','استهلاك':'warn','إرجاع':'info','شطب':'off'}[m.kind] || '';
-                  return ['<span class="num">' + esc(new Date(m.at).toISOString().slice(0,10)) + '</span>',
+                  return ['<span class="num">' + esc(dayKey(m.at)) + '</span>',
                           pill(t(m.kind), k), esc(m.item), N(m.qty),
                           esc(m.by || '—'),
                           '<span class="num">' + esc(m.site || '—') + '</span>',
@@ -24799,7 +24808,7 @@ function presenceBeat(force){
   if (!force && PRES.ver === ver && Date.now() - PRES.at < 10 * 60000) return false;
   PRES.at = Date.now(); PRES.ver = ver;
   var doc = { uid:u, name:STATE.meta.name || '', role:ROLE, ver:ver, at:Date.now(), reads:(typeof FB === 'object' && FB.readCount) || 0,
-              day:new Date().toISOString().slice(0, 10), dev:DEV_ID,
+              day:dayKey(), dev:DEV_ID,
               ua:String((typeof navigator === 'object' && navigator.userAgent) || '').slice(0, 80),
               /* الاستهلاكُ والأداءُ والأعطالُ من الجهاز نفسِه (V17.34) */
               q:(STATE.queue || []).filter(function(it){ return it.kind !== 'presence' && it.kind !== 'stats'; }).length,
@@ -24970,7 +24979,7 @@ function usageFetch(force){
   }).catch(function(){ return null; });
 }
 function readsToday(){
-  var day = new Date().toISOString().slice(0, 10), sum = 0, n = 0;
+  var day = dayKey(), sum = 0, n = 0;
   Object.keys(STATE.presence || {}).forEach(function(u){ var p = STATE.presence[u]; if (p && p.day === day){ sum += (+p.rd || 0); n++; } });
   return { reads:sum, devices:n };
 }
@@ -24978,7 +24987,7 @@ function usageCard(){
   if (!(may('users') || may('exportAll'))) return '';
   if (!USAGE.v) usageFetch();
   var rt = readsToday(), QUOTA = 50000, pct = Math.round(rt.reads / QUOTA * 100);
-  var days = (USAGE.v && USAGE.v.days) || {}, since = new Date(Date.now() - 30 * 864e5).toISOString().slice(0, 10);
+  var days = (USAGE.v && USAGE.v.days) || {}, since = dayKey(Date.now() - 30 * 864e5);
   var keys = Object.keys(days).filter(function(k){ return k >= since; }).sort();   /* ثلاثون يومًا تقويميًّا لا آخرُ ثلاثين مفتاحًا */
   var tot = {}; keys.forEach(function(d){ var m = days[d] || {}; Object.keys(m).forEach(function(p){ tot[p] = (tot[p] || 0) + (+m[p] || 0); }); });
   var top = Object.keys(tot).sort(function(a, b){ return tot[b] - tot[a]; }).slice(0, 12);
@@ -25059,7 +25068,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     var gap = beats.filter(function(k){
       var h = HB[k]; return h.st === 'down' && h.since && Date.now() - Date.parse(h.since) >= 10 * 60000;
     }).length;
-    var day0 = new Date().toISOString().slice(0, 10);
+    var day0 = dayKey();
     var flap = hbk.filter(function(k){
       var h = HB[k]; return h && h.from && h.to && String(h.ts || '').slice(0, 10) === day0;
     }).length;
@@ -25244,8 +25253,8 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       ['active', myDoc ? (myDoc.active === false ? pill('false — معطَّل','off') : pill(myDoc.active === true ? 'true' : 'غير مكتوب (يُعدُّ فعّالًا)', myDoc.active === true ? 'ok' : 'warn')) : '—']
     ];
     var errs = SOFT_ERRS.filter(function(e){ return /رفع|sync|push/i.test(e.where || '') || /رفع/.test(e.msg || ''); });
-    var day = new Date().toISOString().slice(0, 10);
-    var today = SOFT_ERRS.filter(function(e){ return new Date(e.at).toISOString().slice(0, 10) === day; }).length;
+    var day = dayKey();
+    var today = SOFT_ERRS.filter(function(e){ return dayKey(e.at) === day; }).length;
     return rdCard + card('\u{1FAAA} ' + t('بأيِّ هويةٍ يكتب هذا الجهاز'),
         table(['','' ], idRows.map(function(r){ return [esc(t(r[0])), r[1]]; }))
         + '<p class="hint" style="margin:8px 0 0">' + esc(t('«Missing or insufficient permissions» معناه أن القاعدةَ لا تعرف هذا الحساب: وثيقتُه ليست باسم uid، أو دورُها ليس من الأدوار، أو active مكتوبةٌ false.')) + '</p>'
@@ -25443,7 +25452,7 @@ if (cur === 'vers') return head + (function(){
     var stale = rows.filter(function(r){ return r.ver && r.ver !== cur9 && (r.at || 0) > week; });
     /* حصةُ القاعدة تُرى من هنا: كلُّ جهازٍ يرسل عدَّ قراءاته في نبضة حضوره،
        ومجموعُ أجهزة اليوم تقديرٌ لما استُهلك — والرقمُ الحاسمُ في لوحة Firebase */
-    var today = new Date().toISOString().slice(0, 10);
+    var today = dayKey();
     var readsToday = rows.reduce(function(a, r){ return a + ((r.day === today && r.reads) || 0); }, 0);
     return stats([['أجهزة ظهرت', N(rows.length)],
                   ['على النسخة الحالية', N(onCur), 'ok'],
@@ -26751,8 +26760,8 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
 
 /* أسماءُ الأعمال التي تُسنَد — تُقرأ في السيارات والمهامّ معًا */
 var ASN_LABEL = { srv:'زيارة', ins:'تركيب', dis:'فك', buy:'مشتريات', prep:'تهيئة', asm:'تجميع' };
-function todayISO(){ return new Date().toISOString().slice(0, 10); }
-function msDay(ms){ return ms ? new Date(+ms).toISOString().slice(0, 10) : '—'; }
+function todayISO(){ return dayKey(); }
+function msDay(ms){ return ms ? dayKey(+ms) : '—'; }
 
 /* ═══ السياراتُ: عهدةٌ متحرّكةٌ لها سجلٌّ كسجلّ الأجهزة ═══════════════════
    الفريقُ الميدانيُّ لا يعمل بلا سيارتين: واحدةٌ تحمل العدّةَ وأخرى ينتقل
@@ -27267,7 +27276,15 @@ var FUP_ROWS = [
   [154,'*','*','esc']      /* التصعيدُ عند التذبذب المتكرر */
 ];
 
+var FUP_MEMO = null;   /* (V26.1) يُصفَّر مع كلِّ رسمة */
 function fupPct(zone, type, stage, work){
+  var mk = zone + '|' + type + '|' + stage + '|' + (work || '');
+  if (FUP_MEMO && mk in FUP_MEMO) return FUP_MEMO[mk];
+  var v = fupPctRaw(zone, type, stage, work);
+  if (FUP_MEMO) FUP_MEMO[mk] = v;
+  return v;
+}
+function fupPctRaw(zone, type, stage, work){
   /* مقاييسُ لا تخصُّ نطاقًا بعينه — تُقاس على المشروع كلِّه */
   if (stage === 'ipAll'){
     var ins = Object.keys(STATE.inss || {}).filter(function(k){
@@ -28717,7 +28734,7 @@ function goPage(id){
    الحضور نفسَها (لا كتابةَ جديدة)، ويجمعه النبضُ الصباحيُّ عبر الأجهزة. */
 var PG_USE = null;
 function pageUse(){
-  var day = new Date().toISOString().slice(0, 10);
+  var day = dayKey();
   if (!PG_USE || PG_USE.day !== day){
     var raw = null; try { raw = JSON.parse(lsGet('nsk14.pg') || 'null'); } catch (e){}
     PG_USE = (raw && raw.day === day && raw.n) ? raw : { day:day, n:{} };
@@ -30818,12 +30835,31 @@ function navBack(){
      صار الموضعُ يُلتقَط قبل الرسم — للنافذة ولكلِّ لوحٍ أو قائمةٍ مفتوحة —
    ويُعاد بعده. والصعودُ إلى الرأس يبقى حيث يجب: عند تبديل الشاشة وحدَه. */
 var SCROLL_KEEP = null;
+/* (V26.1) كانت الرسمةُ تقرأ scrollTop لكلِّ صندوقٍ قابلٍ للتمرير قبل أن تُبدِّل المحتوى — والقراءةُ تُجبر المتصفّحَ على
+   تخطيط الصفحة كلِّها (٣٠–٨٠ م.ث) ثم يُرمى التخطيطُ مع المحتوى. صارت المواضعُ تُسجَّل لحظةَ التمرير (حدثٌ خفيف)
+   وتُقرأ من السجل عند الرسم بلا تخطيط. */
+var SCROLL_SEEN = [], SCROLL_WIN = 0, SCROLL_SELS = ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body', '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'];
+if (typeof document === 'object'){
+  document.addEventListener('scroll', function(e){
+    var el = e.target;
+    if (!el || el === document || el === window){ SCROLL_WIN = window.pageYOffset || document.documentElement.scrollTop || 0; return; }
+    if (typeof el.scrollTop !== 'number') return;
+    if (SCROLL_SEEN.indexOf(el) < 0){ if (SCROLL_SEEN.length > 40) SCROLL_SEEN.shift(); SCROLL_SEEN.push(el); }
+  }, { capture:true, passive:true });
+}
 function scrollGrab(){
-  var boxes = [];
-  ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body',
-   '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'].forEach(function(sel){
-    var L = document.querySelectorAll(sel);
-    for (var i = 0; i < L.length; i++) if (L[i].scrollTop) boxes.push([sel, i, L[i].scrollTop]);
+  /* الصناديقُ: ما سُجّل تمريرُه بالحدث + الألواحُ والصفائحُ بمحدِّد صنفٍ رخيص — والغالي الذي أُسقط هو محدِّدُ
+     [style*="overflow:auto"] عبر الشجرة كلِّها (يُغطّيه الحدث). والنافذةُ تُقرأ مباشرةً (قراءةٌ واحدةٌ رخيصة). */
+  var boxes = [], seen = [];
+  SCROLL_SEEN = SCROLL_SEEN.filter(function(el){ return el.isConnected; });
+  var cheap = document.querySelectorAll('#content .pop-body, #mapUI .pop-body, #content .sheet-body');
+  for (var c = 0; c < cheap.length; c++) if (SCROLL_SEEN.indexOf(cheap[c]) < 0) seen.push(cheap[c]);
+  SCROLL_SEEN.concat(seen).forEach(function(el){
+    var top = el.scrollTop; if (!top) return;
+    for (var q = 0; q < SCROLL_SELS.length; q++){
+      var L = document.querySelectorAll(SCROLL_SELS[q]), i = Array.prototype.indexOf.call(L, el);
+      if (i > -1){ boxes.push([SCROLL_SELS[q], i, top]); return; }
+    }
   });
   SCROLL_KEEP = { win:(window.pageYOffset || document.documentElement.scrollTop || 0), boxes:boxes };
 }
@@ -30850,7 +30886,7 @@ function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L
    ويركب نبضةَ الحضور نفسَها. لا أسماءَ ولا نصوص: أرقامٌ ومعرِّفاتُ صفحات. */
 var VIT = { day:'', open:null, lcp:[], inp:[], cls:0, lt:0, pages:{}, sup:{} };
 function vitDay(){
-  var day = new Date().toISOString().slice(0, 10);
+  var day = dayKey();
   if (VIT.day !== day){ VIT.day = day; VIT.lcp = []; VIT.inp = []; VIT.cls = 0; VIT.lt = 0; VIT.pages = {}; }
   return VIT;
 }
@@ -30927,7 +30963,7 @@ function render(force){
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
      أطولَ يجعل صحّتَه رهينةَ تذكُّرِ كلِّ كاتبٍ أن يُبطِله — وذلك عهدٌ يُنسى.
      فيُبنى مرةً في الرسمة ويُستهلَك آلافَ المرات فيها، ويموت معها. */
-  TK_IX = null;
+  TK_IX = null; FUP_MEMO = {};
   try { wakeSync(); } catch (e){ LS_ERR = e; }   /* قفلُ الشاشة يتبع الصفحةَ المرسومة (V17.99) */
   var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
@@ -31446,7 +31482,7 @@ function clickA(e){
   if (e.target.closest('[data-chaltask]')){
     var ck = e.target.closest('[data-chaltask]').getAttribute('data-chaltask'), cc = mfuAllChal().filter(function(x){ return x.key === ck; })[0];
     if (!cc) return true;
-    var due = new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10);
+    var due = dayKey(Date.now() + 7 * 864e5);
     if (wtAdd({ n:'معالجة: ' + t(cc.t), who:cc.owner || '', track:'التحديات', due:due, chal:ck, upd:cc.m || '' })){
       var tid = STATE.wtask.lastId;
       if (cc.src === 'field'){ var cf2 = Object.assign({}, (mfuData().fch || {})[cc.t] || {}); cf2.task = tid; cf2.at = Date.now(); cf2.hist = mfuHist(cf2, 'task', '#' + tid); mfuPut('fch', cc.t, cf2); }
@@ -31491,7 +31527,7 @@ function clickA(e){
   if (e.target.closest('[data-wptask]')){
     var pid = e.target.closest('[data-wptask]').getAttribute('data-wptask'), px = pmoList('wplan').filter(function(x){ return x.id === pid; })[0];
     if (!px) return true;
-    if (wtAdd({ n:px.t, track:'خطة الأسبوع', due:new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), plan:'P:' + pid, upd:px.goal || '' })){
+    if (wtAdd({ n:px.t, track:'خطة الأسبوع', due:dayKey(Date.now() + 7 * 864e5), plan:'P:' + pid, upd:px.goal || '' })){
       var pn = Object.assign({}, px); delete pn.id; pn.task = STATE.wtask.lastId; pn.st = pn.st === 'مخطط' ? 'جارٍ' : pn.st; pn.hist = mfuHist(px, 'task', '#' + pn.task);
       pmoPut('wplan', pid, pn); toast(t('أُنشئت المهمةُ الأسبوعية')); render(1);
     }
@@ -31500,7 +31536,7 @@ function clickA(e){
   if (e.target.closest('[data-reqtask]')){
     var rq = mfuList('req').filter(function(x){ return x.id === e.target.closest('[data-reqtask]').getAttribute('data-reqtask'); })[0];
     if (!rq) return true;
-    if (wtAdd({ n:'طلب الوزارة: ' + String(rq.t || '').slice(0, 80), track:'طلبات الوزارة', due:new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), req:'R:' + rq.id, upd:rq.s || '' })){
+    if (wtAdd({ n:'طلب الوزارة: ' + String(rq.t || '').slice(0, 80), track:'طلبات الوزارة', due:dayKey(Date.now() + 7 * 864e5), req:'R:' + rq.id, upd:rq.s || '' })){
       var tid2 = STATE.wtask.lastId, rn = Object.assign({}, rq); delete rn.id; rn.task = tid2; rn.st = rn.st === 'جديد' ? 'قيد التنفيذ' : rn.st; rn.at = Date.now(); rn.hist = mfuHist(rq, 'task', '#' + tid2);
       mfuPut('req', rq.id, rn); toast(t('أُنشئت مهمةُ التنفيذ في المهام الأسبوعية')); render(1);
     }

@@ -130,7 +130,7 @@ const all = slides.map(s => s.x).join('');
 T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص العمل اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
 T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ العرض');
 const cover = slides.find(s => s.n === 'ppt/slides/slide1.xml').x;
-T(cover.includes(new Date().toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
+T(cover.includes(new Date(Date.now() + 10800000).toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
 
 console.log('\n══ ٨ · التحدياتُ بمصادرها والمهامُّ الأسبوعيةُ مربوطة (V20.5) ══');
 w.MFU.v = w.STATE.mfu = {}; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]); };
@@ -195,9 +195,9 @@ const html3 = w.mfuPrintHtml(R3), doc3 = w.mfuDocxXml(R3), sl3 = w.mfuSlides(R3)
 T(/آخر التحديثات — هذا الأسبوع/.test(html3) && /آخر التحديثات — هذا الأسبوع/.test(doc3) && /آخر التحديثات هذا الأسبوع/.test(sl3) && /مرتبطة بـ/.test(sl3), 'في PDF ووورد والعرضِ جميعًا');
 
 console.log('\n══ ١٠ · المهامُّ الأسبوعيةُ تُسمَع في المتابعة (V20.7) ══');
-w.wtAdd({ n:'تركيب ممرات عرفات', who:'سالم', track:'التركيبات', due:new Date(Date.now() + 3 * 864e5).toISOString().slice(0, 10) });
+w.wtAdd({ n:'تركيب ممرات عرفات', who:'سالم', track:'التركيبات', due:new Date((Date.now() + 3 * 864e5) + 10800000).toISOString().slice(0, 10) });
 const tm = w.wtRows().find(r => r.n === 'تركيب ممرات عرفات');
-const newDue = new Date(Date.now() + 10 * 864e5).toISOString().slice(0, 10);
+const newDue = new Date((Date.now() + 10 * 864e5) + 10800000).toISOString().slice(0, 10);
 w.wtSet(tm.id, { due:newDue }); w.wtSet(tm.id, { who:'ماجد' });
 T(tm.log.some(e => e.f === 'due' && e.to === newDue) && tm.log.some(e => e.f === 'who' && e.from === 'سالم' && e.to === 'ماجد'), 'تأجيلُ الموعد وتغييرُ المسؤول يُسجَّلان بقيمتيهما (كانا صامتين)');
 const TL2 = w.mfuTimeline(7, 100);

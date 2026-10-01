@@ -535,6 +535,12 @@ console.log('\n══ المسحُ لا يضيع إن أنهى الآيفونُ 
   check(/idbSet\('svDraft', \{ at:Date\.now\(\), by:/.test(raw12) && /SVD\.dirty = true; svDraftSave\(\);/.test(raw12) && /SVD\.dirty = true; svDraftSoon\(\);/.test(raw12) && /if \(document\.hidden && typeof SVD === 'object' && SVD\.dirty\) svDraftSave\(\);/.test(raw12), 'والنموذجُ يُحفَظ مسودةً مع كلِّ صورةٍ وحقلٍ ولحظةَ تخرج الصفحةُ إلى الكاميرا');
   check(/if \(typeof SVD === 'object' && !SVD\.checked && document\.getElementById\('nav'\)\)\{ SVD\.checked = true; setTimeout\(svDraftRestore, 1500\); \}/.test(raw12) && /d\.by !== STATE\.meta\.name\) return;/.test(raw12) && /svDraftClear\(\);   \/\* \(V25\.9\) حُفظ المسح/.test(raw12) && !/function formReset\(\)\{\n  if \(typeof svDraftClear/.test(raw12), 'ويُستعاد بعد الدخول (لا مسودةَ حسابٍ آخر)، ويُمسَح عند الحفظ وتبديل النقطة لا عند ضبط النموذج في الإقلاع'); }
 
+console.log('\n══ رسمُ الصفحات أخفّ (V26.1) ══');
+{ const raw13 = readFileSync('index.html', 'utf8');
+  check(/function asnOf\(id\)\{[\s\S]{0,400}return taskIndex\(\)\['\*\|' \+ id\] \|\| null;/.test(raw13) && /if \(!ix\['\*\|' \+ x\.site\]\) ix\['\*\|' \+ x\.site\] = x;/.test(raw13), 'الإسنادُ من فهرس المهامِّ لا بالمرور على المهامِّ لكلِّ نقطة');
+  check(/document\.addEventListener\('scroll', function\(e\)\{[\s\S]{0,600}\{ capture:true, passive:true \}\);/.test(raw13) && /SCROLL_SEEN = SCROLL_SEEN\.filter\(function\(el\)\{ return el\.isConnected; \}\);/.test(raw13) && /querySelectorAll\('#content \.pop-body, #mapUI \.pop-body, #content \.sheet-body'\)/.test(raw13) && !/for \(var i = 0; i < L\.length; i\+\+\) if \(L\[i\]\.scrollTop\) boxes\.push/.test(raw13), 'ومواضعُ التمرير من الحدث والألواح بمحدِّدٍ رخيص — لا مسحَ الشجرة كلِّها قبل الرسم');
+  check(/TK_IX = null; FUP_MEMO = \{\};/.test(raw13) && /if \(FUP_MEMO && mk in FUP_MEMO\) return FUP_MEMO\[mk\];/.test(raw13), 'ونسبُ المتابعة تُحسَب مرةً في الرسمة'); }
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ fails.forEach(f => console.error('  ✗ ' + f)); process.exit(1); }
 

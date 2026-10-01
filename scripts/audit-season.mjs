@@ -37,7 +37,7 @@ console.log('\n══ قاعدةٌ فارغة ══');
   const { out, after } = run({});
   /* (V18.9) التارجتُ يحكمه القرارُ الصريح (٣٥٠٠) لا الملءُ (١٣) */
   T(after.tgtSurvey === 3500 && after.warranty === 12 && after.avgRooms && after.avgRooms['منى'] === 12, 'الفارغُ يُملأ: الضمانُ والمتوسط — والتارجتُ بالقرار');
-  T(typeof after.dueSurvey === 'number' && new Date(after.dueSurvey).toISOString().slice(0, 10) === '2026-12-30' || new Date(after.dueSurvey).toISOString().slice(0, 10) === '2026-12-31',
+  T(typeof after.dueSurvey === 'number' && new Date((after.dueSurvey) + 10800000).toISOString().slice(0, 10) === '2026-12-30' || new Date((after.dueSurvey) + 10800000).toISOString().slice(0, 10) === '2026-12-31',
     'والموعدُ يُخزَّن رقمًا بتوقيت مكة');
   T(after._by === 'season-seed' && /يُملأ \(4\)/.test(out), 'ويُختَم باسم السير');
 }
