@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-851c01f7e3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-892d76b555.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -11427,7 +11427,41 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
    يتبع أوّلَ أبٍ فيه تحويلٌ أو تموضع، فكان اللوحُ يظهر في أوّل الصفحة لا
    أسفلَ الشاشة. على الجسد لا أبَ يُفسده. */
 /* ═══ نافذةُ نقاط التحدي (V26.9) — من صفحة التحديات والمعوقات في الميدان ═══ */
-var CHAL_POP = '';
+var CHAL_POP = '', CHUP_OPEN = '';
+/* ═══ شغلُ الميدان والمكتب على التحدي (V27.0) — قرارُ المالك ═══
+   المكتبُ والوزارةُ يكلِّفان (الجهةُ والآليةُ ووصفُ المعالجة وآخرُ تاريخ ومهمةُ المعالجة) فيراه الميدانُ على تحدّيه؛ والميدانُ
+   يعمل ويكتب ما حدث («تحديث»: جرّبنا كذا، كلّمنا كدانة، حُلّت ثلاثةُ مخيمات) فيراه المكتبُ والوزارةُ فورًا، والأرقامُ تنقص
+   وحدَها حين تُركَّب النقاط. القناةُ سجلُّ الأحداث نفسُه (يكتبه الميدانُ بالقاعدة) بمفتاح التحدي — لا مجموعةَ جديدة. */
+function chalUpd(key, note, dir){
+  note = String(note || '').trim().slice(0, 400); if (!key || !note) return false;
+  if (typeof canWriteEvents === 'function' && !canWriteEvents()){ toast(t('هذا الحسابُ يقرأ ولا يكتب')); return false; }
+  var now = Date.now(), e = { id:uid36(), ts:now, at:fmtTime(now, { hour:'2-digit', minute:'2-digit' }), day:dayKey(now), what:(dir === 'office' ? 'تعليماتٌ للميدان — ' : 'تحديثٌ من الميدان — ') + note, by:STATE.meta.name || '', dev:DEV_ID, chal:String(key), dir:dir === 'office' ? 'office' : 'field' };
+  STATE.events.unshift(e); if (STATE.events.length > 500) STATE.events.length = 500;
+  if (!STATE.evlog) STATE.evlog = {}; STATE.evlog[e.id] = e; CORE.dirty('evlog', e.id, e); return true;
+}
+function chalUpds(key){ var L = (STATE.events || []).filter(function(e){ return e && e.chal === String(key); }); var seen = {}; return L.filter(function(e){ if (seen[e.id]) return false; seen[e.id] = 1; return true; }).sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); }); }
+function chalUpdNote(e){ return String(e.what || '').replace(/^(تحديثٌ من الميدان|تعليماتٌ للميدان) — /, ''); }
+function chalUpdBox(key){
+  var U = chalUpds(key), last = U[0], can = (typeof canWriteEvents !== 'function') || canWriteEvents();
+  var h = '<div class="chup" style="margin:4px 0 0">';
+  if (last) h += '<div class="hint" style="margin:0">' + (last.dir === 'office' ? '\u{1F4CB} ' : '\u{1F6E0} ') + esc(chalUpdNote(last)) + ' <span class="num">\u2014 ' + esc(dispName(last.by) || last.by || '') + ' \u00b7 ' + esc(last.day || '') + '</span>' + (U.length > 1 ? ' <details style="display:inline"><summary class="hint" style="display:inline;cursor:pointer">+' + nm(U.length - 1) + '</summary>' + U.slice(1).map(function(e){ return '<div class="hint" style="margin:2px 0 0">' + (e.dir === 'office' ? '\u{1F4CB} ' : '\u{1F6E0} ') + esc(chalUpdNote(e)) + ' <span class="num">\u2014 ' + esc(dispName(e.by) || e.by || '') + ' \u00b7 ' + esc(e.day || '') + '</span></div>'; }).join('') + '</details>' : '') + '</div>';
+  if (can){
+    h += CHUP_OPEN === key
+      ? '<div class="wt-row" style="gap:6px;margin:4px 0 0;flex-wrap:wrap"><textarea data-chupdtxt="' + esc(key) + '" rows="2" style="flex:1;min-width:180px" placeholder="' + esc(t('ما الذي حدث في الميدان؟')) + '"></textarea>' + btn(t('أرسل'), 'btn-primary btn-sm', ' data-chupdgo="' + esc(key) + '"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-chupdx="1"') + '</div>'
+      : '<div style="margin:4px 0 0">' + btn('\uFF0B ' + t('تحديث'), 'btn-quiet btn-sm', ' data-chupd="' + esc(key) + '"') + '</div>';
+  }
+  return h + '</div>';
+}
+/* تكليفُ المكتب على التحدي كما يراه الميدان */
+function chalAssignBox(cat){
+  var f = (mfuData().fch || {})[cat] || {}, parts = [];
+  if (f.owner) parts.push(t('من سيحلّه') + ': ' + f.owner);
+  if (f.m) parts.push(t('آلية المعالجة') + ': ' + f.m);
+  if (f.desc) parts.push(t('وصف المعالجة') + ': ' + f.desc);
+  if (f.due) parts.push(t('آخر تاريخ') + ': ' + f.due);
+  if (f.task) parts.push(t('مهمة المعالجة') + ' #' + f.task);
+  return parts.length ? '<div class="hint" style="margin:2px 0 0">\u{1F4CB} ' + esc(parts.join(' \u00b7 ')) + '</div>' : '';
+}
 function chalPopHtml(){
   var cat = CHAL_POP, O = mfuObstaclesF().filter(function(o){ return cat === '*' || o.cats.indexOf(cat) > -1; });
   var rows = O.map(function(o){ var x = o.x, r = STATE.recs[x.id] || {}, nt = String(r.chal_note || r.note || '').trim();
@@ -21144,7 +21178,8 @@ function mfuChal(){
       : (c.src === 'task' ? pill(t('متوقفة'), 'bad') : (edr ? (c.src === 'field' ? sel('data-fch="' + esc(fk) + '|st"', c.st, ST) : sel('data-mfuchalst="' + esc(c.id) + '"', c.st, ST)) : pill(t(c.st), 'wrn'))));
     var task = c.tk ? pill('#' + c.tk.id + ' \u00b7 ' + t(c.tk.st), c.tk.done ? 'ok' : (c.tk.st === 'متوقف' ? 'bad' : 'wrn'))
       : (c.src !== 'task' && !done && wtMay() ? btn('\uFF0B ' + t('مهمة معالجة'), 'btn-quiet btn-sm', ' data-chaltask="' + esc(c.key) + '"') : '\u2014');
-    return ['<span class="pill" style="background:' + S0[1] + '22;color:' + S0[1] + ';border:1px solid ' + S0[1] + '55">' + esc(t(S0[0])) + '</span>', what, party, owner, mit, dsc, due, st, task,
+    var upd = chalUpdBox(c.src === 'field' ? c.t : (c.src === 'manual' ? 'M:' + c.id : c.key));   /* (V27.0) */
+    return ['<span class="pill" style="background:' + S0[1] + '22;color:' + S0[1] + ';border:1px solid ' + S0[1] + '55">' + esc(t(S0[0])) + '</span>', what, party, owner, mit, dsc, due, st, task, upd,
             (ed && c.src !== 'task' ? (edr ? btn('\u2713 ' + t('تم'), 'btn-secondary btn-sm', ' data-mfuedit=""') : btn('\u270E', 'btn-quiet btn-sm', ' data-mfuedit="' + esc(c.key) + '" aria-label="' + esc(t('تعديل')) + '"')) : '')
             + ((c.src === 'manual' && ed) ? btn('\u2715', 'btn-quiet btn-sm', ' data-mfudel="chal|' + esc(c.id) + '" aria-label="' + esc(t('حذف')) + '"') : '')];
   });
@@ -21155,7 +21190,7 @@ function mfuChal(){
     + ['field', 'task', 'manual'].map(function(k){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(MFU_SRC[k][0])) + '</div><div class="mfu-kpi-v">' + nm(A.filter(function(c){ return c.src === k && !mfuChalClosed(c); }).length) + '</div></div>'; }).join('')
     + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تم الحل')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(A.length - openN) + '</div></div></div>'
     + '<div class="actions" style="margin:6px 0">' + btn('\u2B07 ' + t('تصدير نقاط التحديات') + ((MFU_FLT.z || MFU_FLT.t) ? ' (' + t('بالفلتر') + ')' : ''), 'btn-secondary btn-sm', ' data-xls="chalpts"') + ' <span class="hint">' + esc(t('كلُّ نقطةٍ بتحدّيها ووصفه وموقعها ومشعرها ومعالجته — بالفلتر الحالي إن وُضع')) + '</span></div>'   /* (V26.6) */
-    + (A.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(A.length), table(['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'وصف المعالجة', 'آخر تاريخ', 'الحالة', 'مهمة المعالجة', ''], rows)) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>')
+    + (A.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(A.length), table(['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'وصف المعالجة', 'آخر تاريخ', 'الحالة', 'مهمة المعالجة', 'الميدان ↔ المكتب', ''], rows)) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>')
     + '<p class="hint">' + esc(t('تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.')) + '</p>'
     + (form ? '<details class="mfu-add"' + (A.length ? '' : ' open') + '><summary>\uFF0B ' + esc(t('تحدٍّ جديد')) + '</summary>' + form + '</details>' : '');
 }
@@ -22354,7 +22389,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
       + (cats.length
         ? cardFlush(t('التحديات') + ' \u2014 ' + esc(t('اضغط التحدي ترى نقاطه')),
             table(['التحدي', 'كم نقطة', 'الجهة', ''],
-              cats.map(function(c){ return ['<button type="button" class="btn btn-quiet btn-sm" data-chalpop="' + esc(c) + '" style="white-space:normal;text-align:start">' + esc(t(c)) + '</button>', N(byCat[c]), esc(t(mfuPartyLabel(mfuOwnerOf(c)))), btn('\u25B8 ' + t('النقاط'), 'btn-secondary btn-sm', ' data-chalpop="' + esc(c) + '"')]; }))
+              cats.map(function(c){ return ['<button type="button" class="btn btn-quiet btn-sm" data-chalpop="' + esc(c) + '" style="white-space:normal;text-align:start">' + esc(t(c)) + '</button>' + chalAssignBox(c) + chalUpdBox(c), N(byCat[c]), esc(t(mfuPartyLabel(mfuOwnerOf(c)))), btn('\u25B8 ' + t('النقاط'), 'btn-secondary btn-sm', ' data-chalpop="' + esc(c) + '"')]; }))   /* (V27.0) التكليفُ والتحديثات */
             + '<div style="padding:8px 12px">' + btn(t('كل النقاط') + ' (' + nm(O.length) + ')', 'btn-quiet btn-sm', ' data-chalpop="*"') + '</div>')
         : alertBox('success', 'لا معوقاتٍ في هذا الفلتر.'))
       + (ed ? chalOtherCard() : '')
@@ -23173,6 +23208,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.0', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'الميدان والمكتب على التحدي نفسه: المكتب والوزارة يكلفون (الجهة والآلية ووصف المعالجة وآخر تاريخ ومهمة المعالجة) فيظهر التكليف للميدان تحت كل تحد في صفحته، والميدان يكتب «تحديث» بما حدث (جربنا كذا، كلمنا كدانة، حلت ٣ مخيمات) فيراه المكتب والوزارة فورا باسمه وتاريخه، والمكتب يرد بتعليمات في القناة نفسها. والأرقام تنقص وحدها عند التركيب.' ] },
   { v:'V26.9', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'للميدان: «إفادات الميدان» و«متابعة التحديات» صارتا صفحة واحدة «التحديات والمعوقات» في متابعة العمل الميداني، بفلتر المشعر والنوع وبأرقام متابعة الوزارة نفسها.',
       'اضغط أي تحد تنفتح نافذة بنقاطه: اسم المخيم وشاخصه أو اسم الممر، ومشعره ونوعه، ووصف العائق، وزر «على الخريطة» لكل نقطة، و«كل النقاط» معا.',
@@ -31690,6 +31727,13 @@ function clickA(e){
   var mpe = e.target.closest('[data-mfupren]');
   if (mpe){ MFU_PRN = mpe.getAttribute('data-mfupren'); render(1); var pi = document.querySelector('[data-mfuprn]'); if (pi){ pi.focus(); pi.select(); } return true; }
   if (e.target.closest('[data-mfuprst]')){ MFU_PARTIES.forEach(function(k){ var r = mfuPartyRaw(k); if (r && (r.gone || r.t)) mfuPut('party', k, { at:Date.now() }); }); logEvent('استرجاعُ جهات المعالجة الأصلية'); toast(t('عادت الجهاتُ الأصلية')); render(1); return true; }
+  var cu = e.target.closest('[data-chupd]');   /* (V27.0) تحديثٌ على التحدي */
+  if (cu){ CHUP_OPEN = cu.getAttribute('data-chupd'); render(1); var ta = document.querySelector('[data-chupdtxt]'); if (ta) ta.focus(); return true; }
+  if (e.target.closest('[data-chupdx]')){ CHUP_OPEN = ''; render(1); return true; }
+  var cg = e.target.closest('[data-chupdgo]');
+  if (cg){ var ck2 = cg.getAttribute('data-chupdgo'), ta2 = document.querySelector('[data-chupdtxt="' + ck2.replace(/"/g, '\\"') + '"]'), nt2 = ta2 ? ta2.value : '';
+    if (!String(nt2 || '').trim()){ toast(t('اكتب ما حدث')); return true; }
+    if (chalUpd(ck2, nt2, (CUR === 'mfu') ? 'office' : 'field')){ CHUP_OPEN = ''; toast(t('سُجّل التحديث')); render(1); } return true; }
   var cpo = e.target.closest('[data-chalpop]');   /* (V26.9) نافذةُ نقاط التحدي */
   if (cpo){ CHAL_POP = cpo.getAttribute('data-chalpop') || ''; chalPopSync(); return true; }
   if (e.target.closest('[data-chalpopx]')){ CHAL_POP = ''; chalPopSync(); return true; }
