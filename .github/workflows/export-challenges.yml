@@ -17,6 +17,10 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/export-challenges.mjs
+      - name: usage
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/export-usage.mjs
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
