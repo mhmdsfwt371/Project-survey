@@ -44,10 +44,13 @@ const raddEdge = (a, b) => { const ka = key(a), kb = key(b); if (ka === kb) retu
 if (RAILD) RAILD.elements.filter(e => e.type === 'way' && e.geometry && e.tags && e.tags.railway).forEach(wy => { const g = wy.geometry.map(p => [p.lat, p.lon]); for (let i = 1; i < g.length; i++) raddEdge(g[i - 1], g[i]); });
 const rnearest = (p, maxM) => { let best = null, bd = maxM; for (const [k, q] of rnodes.entries()){ const d = dist(p, q); if (d < bd){ bd = d; best = k; } } return best; };
 const STN = {};   /* ١ ٢ ٣ → عقدةُ القطار عند المحطة (من عقد المحطات في البيانات) */
-if (RAILD) RAILD.elements.filter(e => e.type === 'node' && e.tags && /منى/.test(e.tags.name || '')).forEach(n => { const m = /منى[^0-9١-٣]*([0-9١-٣])/.exec(n.tags.name || ''); const num = m ? m[1].replace(/[١٢٣]/, c => '123'['١٢٣'.indexOf(c)]) : null; if (num) STN[num] = rnearest([n.lat, n.lon], 250); });
-const RAIL = { ok: !!(STN['3'] && (STN['1'] || STN['2'])) };
+/* تسميةُ الوزارة (قرارُ المالك): محطةُ الجمرات «منى ١»، والمحطةُ الشرقيةُ البعيدة «منى ٣» — وبياناتُ الخريطة المفتوحة تعكس الرقمين، فتُؤخَذ عقدُ القطار بالوصف: الجمراتُ بالاسم، والشرقيةُ الأبعدُ عنها */
+const stNodes = RAILD ? RAILD.elements.filter(e => e.type === 'node' && e.tags && /منى/.test(e.tags.name || '')).map(n => ({ k: rnearest([n.lat, n.lon], 250), p: [n.lat, n.lon], name: n.tags.name || '' })).filter(x => x.k) : [];
+const jN = stNodes.find(x => /الجمرات/.test(x.name)); STN.J = jN ? jN.k : null;
+const far = stNodes.filter(x => !/الجمرات/.test(x.name)).sort((a, b) => (jN ? dist(b.p, jN.p) - dist(a.p, jN.p) : 0)); STN.E = far[0] ? far[0].k : null;
+const RAIL = { ok: !!(STN.J && STN.E) };
 const rdijkstra = (src) => { const distTo = new Map(), prev = new Map(), pq = [[0, src]]; distTo.set(src, 0); while (pq.length){ pq.sort((a, b) => a[0] - b[0]); const [d, k] = pq.shift(); if (d > distTo.get(k)) continue; for (const e of radj.get(k) || []){ const c = d + e.w; if (c < (distTo.has(e.to) ? distTo.get(e.to) : Infinity)){ distTo.set(e.to, c); prev.set(e.to, k); pq.push([c, e.to]); } } } return { distTo, prev }; };
-const gatesOf = n => Object.values(pts).filter(q => q.id.indexOf('NSK-TRN-STN') === 0 && q.name.indexOf('محطة منى ' + '١٢٣'[n - 1]) >= 0);
+const gatesOf = n => Object.values(pts).filter(q => q.id.indexOf('NSK-TRN-STN') === 0 && q.name.indexOf('محطة منى ' + '١٢٣'[n - 1]) >= 0);   /* بأسماء السجل: ١ الجمرات، ٣ الشرقية */
 let nodeList = [...nodes.entries()]; const refreshNodes = () => { nodeList = [...nodes.entries()]; };
 /* المخيماتُ مضلّعاتٌ: الطريقُ في الممرّات بينها لا داخلَها — العقدةُ داخل مخيمٍ لا تصلح بدايةً، والحافّةُ داخل مخيمٍ عشرُ كلفتها */
 const inRingLL = (p, ring) => { let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++){ const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > p[0]) !== (yj > p[0])) && (p[1] < (xj - xi) * (p[0] - yi) / ((yj - yi) || 1e-12) + xi)) inside = !inside; } return inside; };
@@ -88,14 +91,14 @@ for (const fk of ['0', '1', '2', '3', '4']){
   if (fk === '4' && RAIL.ok){
     /* قرارُ المالك: الدورُ الرابع بالقطار لا على الأقدام — مشيٌ إلى أقرب محطةٍ (منى ١ أو ٢)، ثم القطارُ إلى محطة الجمرات (منى ٣)، ثم مشيٌ إلى مداخل الدور */
     goE.clear(); backE.clear();
-    const gate1 = gatesOf(1), gate2 = gatesOf(2), gate3 = gatesOf(3);
+    const gateE = gatesOf(3), gate2 = gatesOf(2), gateJ = gatesOf(1);   /* الركوبُ من منى ٣ (الشرقية)، والنزولُ في منى ١ (الجمرات) */
     const gstub = q => { const e = [q.lat, q.lng], n = nearestNode(e, 120); if (!n) return null; addEdge(nodes.get(n), e, { stub: true }); return key(e); };
-    /* قرارُ المالك من ملف الوزارة: مخيماتُ الرابع كلُّها تتحرّك إلى محطةٍ واحدةٍ هي الأبعدُ عن الجمرات (في الملف «منى ٣»، وفي سجل النقاط «منى ١») — ومنها القطارُ إلى محطة الجمرات */
-    const gN12 = (gate1.length ? gate1 : gate2).map(gstub).filter(Boolean), gN3 = gate3.map(gstub).filter(Boolean); refreshNodes();
+    /* قرارُ المالك من ملف الوزارة: مخيماتُ الرابع كلُّها تتحرّك إلى محطةٍ واحدةٍ هي الأبعدُ عن الجمرات «منى ٣» — ومنها القطارُ إلى محطة الجمرات «منى ١» (تسميةُ الوزارة، وهي تسميةُ السجل منذ V26.4) */
+    const gN12 = (gateE.length ? gateE : gate2).map(gstub).filter(Boolean), gN3 = gateJ.map(gstub).filter(Boolean); refreshNodes();
     const G1 = dijkstra(gN12, onPlan);
     routed = 0; skipped.length = 0;
     campIds.forEach(id => { const c = campCenter(id); const n = c && nearestNode(c, 220, true); if (!n || !G1.distTo.has(n)){ skipped.push(id); return; } routed++; for (let k = n; G1.prev.has(k); k = G1.prev.get(k)){ const ek = [k, G1.prev.get(k)].sort().join('|'); goE.add(ek); backE.add(ek); } });
-    const trainE = new Set(), R3 = rdijkstra(STN['3']); ['1', '2'].forEach(nm => { const st = STN[nm]; if (!st || !R3.prev.has(st)) return; for (let k = st; R3.prev.has(k); k = R3.prev.get(k)) trainE.add([k, R3.prev.get(k)].sort().join('|')); });
+    const trainE = new Set(), R3 = rdijkstra(STN.J); if (STN.E && R3.prev.has(STN.E)) for (let k = STN.E; R3.prev.has(k); k = R3.prev.get(k)) trainE.add([k, R3.prev.get(k)].sort().join('|'));
     const GE = dijkstra(enN, onPlan), BE = dijkstra(exN, onPlan);
     const leg = (D, E) => { let best = null, bd = Infinity; gN3.forEach(k => { const d = D.distTo.get(k); if (d != null && d < bd){ bd = d; best = k; } }); if (best == null) return; for (let k = best; D.prev.has(k); k = D.prev.get(k)) E.add([k, D.prev.get(k)].sort().join('|')); };
     leg(GE, goE); leg(BE, backE);
@@ -130,7 +133,7 @@ for (const fk of ['0', '1', '2', '3', '4']){ const fl = OLD.floors[fk] || {}; co
   const terminal = (p, i) => !allPts.some(([q, j]) => j !== i && dist(p, q) <= TERM);
   pls.forEach((pl, i) => { [pl[0], pl[pl.length - 1]].forEach(p => { if (!terminal(p, i)) return; if (nearCamp(p) || nearJmr(p) || onBridgeOrTunnel(p)) return; if (maybe.some(m => dist([m.lat, m.lng], p) <= 40)) return; maybe.push({ lat: +p[0].toFixed(6), lng: +p[1].toFixed(6), floor: +fk }); }); }); }
 NEW.maybe = maybe;
-NEW.note = 'V26.0 — الدورُ الرابع بالقطار (train: خطُّ قطار المشاعر من منى ١ و٢ إلى محطة الجمرات، والمشيُ من المخيم إلى أقرب محطةٍ ومن محطة الجمرات إلى مداخل الدور). وسائرُ الأدوار: لكلِّ مخيمٍ في ملف الوزارة أقصرُ طريقٍ على شوارع منى الفعلية (OpenStreetMap، ODbL) من المخيم إلى مداخل دوره وعودةً من مخارجه، مفضِّلًا شوارعَ المخطّط (ما قرب منه ≤ ٢٥ م أرخصُ ثلاثَ مرات) — فلا لفة؛ وطرقُ مخيمات الدور مدمجةٌ شبكةً بلا تكرار. maybe: أطرافُ خطوط المخطّط القديمة التي لا مخيمَ عندها (وليست على جسرٍ أو نفق) — احتمالُ مخيمٍ يُتحقَّق ميدانيًّا. go: الذهاب · back: العودة.';
+NEW.note = 'V26.0 — الدورُ الرابع بالقطار (train: خطُّ قطار المشاعر من محطة منى ٣ (الشرقية) إلى محطة الجمرات (منى ١ بتسمية الوزارة)، والمشيُ من المخيم إلى أقرب محطةٍ ومن محطة الجمرات إلى مداخل الدور). وسائرُ الأدوار: لكلِّ مخيمٍ في ملف الوزارة أقصرُ طريقٍ على شوارع منى الفعلية (OpenStreetMap، ODbL) من المخيم إلى مداخل دوره وعودةً من مخارجه، مفضِّلًا شوارعَ المخطّط (ما قرب منه ≤ ٢٥ م أرخصُ ثلاثَ مرات) — فلا لفة؛ وطرقُ مخيمات الدور مدمجةٌ شبكةً بلا تكرار. maybe: أطرافُ خطوط المخطّط القديمة التي لا مخيمَ عندها (وليست على جسرٍ أو نفق) — احتمالُ مخيمٍ يُتحقَّق ميدانيًّا. go: الذهاب · back: العودة.';
 writeFileSync('layers/tafweej-routes.json', JSON.stringify(NEW));
 console.table(stats);
 console.log('احتمال مخيم:', maybe.length, '| حجم الملف:', Math.round(JSON.stringify(NEW).length / 1024) + ' ك.ب', '| عقد الشبكة:', nodes.size, '| شوارع:', ways.length);
