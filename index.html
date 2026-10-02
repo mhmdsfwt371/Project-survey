@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-aef89a1c87.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-6373537f3d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4263,6 +4263,21 @@ function tfwPaint(){
   if (TFW.f < TFW_ALL) TFW.overlay = L.imageOverlay('layers/tafweej-' + TFW.f + '.png?v=' + (TFW.data.v || 1), TFW.data.bounds, { opacity:0.55, interactive:false, pane:'tfw' }).addTo(MAP);
   tfwLines();
 }
+/* (V27.8) قرارُ المالك: «لما أختار الدور يظهرلي مخيماته» — مخيماتُ الدور من إسناد المخطط تُظلَّل بحدودها بلون الدور
+   (ومع كلِّ الأدوار كلُّ دورٍ بلونه)، فوق صورة المخطط وتحت النقاط. حدودُ المخيمات تُحمَّل عند الحاجة. */
+function tfwCampsOf(f){ var A = (TFW.data && TFW.data.assign) || {}; return Object.keys(A).filter(function(id){ return f === TFW_ALL ? A[id] != null : +A[id] === f; }); }
+function tfwCampsPaint(){
+  if (!MAP || !TFW.data || TFW.f < 0 || !TFW.lines) return;
+  if (typeof POLY !== 'object' || !POLY){ if (typeof polyLoad === 'function') polyLoad().then(function(ok){ if (ok && TFW.f >= 0) tfwPaint(); }); return; }
+  var A = TFW.data.assign || {}, n = 0;
+  Object.keys(A).forEach(function(id){
+    var f = +A[id]; if (TFW.f !== TFW_ALL && f !== TFW.f) return;
+    var x = siteFind(id), ring = campFoot(x || { id:id, type:'مخيم' }); if (!ring) return;
+    var col = TFW_COL[f] || '#F5C400';
+    L.polygon(ring, { renderer:MAP_CV, color:col, weight:2, opacity:0.95, fillColor:col, fillOpacity:0.28, interactive:false }).addTo(TFW.lines); n++;
+  });
+  TFW.campsN = n;
+}
 /* خطوطُ المسار متجهاتٌ على اللوح نفسِه (V24.2): حادّةٌ في كلِّ تقريب، ومئةُ كيلوبايتٍ للأدوار الخمسة
    تُحمَّل مرةً مع الطبقة — والخطُّ فوق المخيمات وتحت النقاط فلا يحجب نقطةً ولا يُنقَر */
 function tfwLines(){
@@ -4278,6 +4293,7 @@ function tfwLines(){
   }
   if (!TFW.lines) TFW.lines = L.layerGroup().addTo(MAP);
   TFW.lines.clearLayers();
+  tfwCampsPaint();   /* (V27.8) مخيماتُ الدور أوّلًا — تحت الخطوط */
   if (TFW.camp){   /* (V24.5) مسارُ المخيم المختار وحدَه — أعرضُ خطًّا */
     var cm = [];
     [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){ if (TFW.d !== 'both' && TFW.d !== k[0]) return; var ln = L.polyline(TFW.camp[k[0]].pts, { renderer:MAP_CV, color:k[1], weight:6, opacity:0.97, lineCap:'round', lineJoin:'round', interactive:false }); ln.addTo(TFW.lines); cm.push(ln); });
@@ -4381,7 +4397,8 @@ function tfwRow(){
   /* (V24.3) الاتجاه: الذهابُ والعودةُ معًا أو كلٌّ وحدَه — ومع «كل الأدوار» لكلِّ دورٍ لونُه والعودةُ متقطّعة */
   if (TFW.f >= 0) h += '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('الاتجاه')) + '</span>' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب فقط'], ['back', 'العودة فقط']].map(function(o){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
-  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + '</span>'; }).join('')
+  if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
+  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span></span>'; }).join('')
       + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
   if (TFW.camp){ var cs = siteFind(TFW.camp.id), mins = function(m){ return nm(Math.max(1, Math.round(m / 60))); };
     h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[TFW.camp.f]))
@@ -18566,24 +18583,35 @@ function basemapAttach(){
    على امتداد الشارع، بهالةٍ بيضاء، وبلا تداخل. تُركَّب مع القمر على اتصال، وتُرفَع مع خريطة الشوارع (لها أسماؤها) ومع خريطة
    الجهاز بلا شبكة. يُخزَّن الملفُّ في مخزن الخريطة فيعمل لاحقًا بلا شبكة. */
 var NAMES = { data:null, busy:false, layer:null, ok:true };
-var NAMES_FILE = 'maps/mashaer-names.json';
+var NAMES_FILE = 'maps/mashaer-names.json', NAMES_REGION = 'maps/region-names.json';   /* (V27.8) الإقليمُ للتكبير البعيد */
 var NAMES_RANK = { motorway:1, trunk:1, primary:2, secondary:3, tertiary:4, unclassified:5, residential:5, pedestrian:5, living_street:5, service:6, footway:6, path:6, track:6, steps:7 };
-var NAMES_PLACE = { city:1, town:2, suburb:3, village:3, quarter:3, neighbourhood:4, peak:4, hamlet:5, locality:5 };
+var NAMES_PLACE = { city:0, town:1, airport:1, suburb:2, village:2, peak:3, quarter:3, neighbourhood:4, hamlet:4, locality:5, station:6, hospital:6, mosque:6, place_of_worship:6, police:6, bus_station:6 };
+function namesFetch(file){
+  var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(BASEMAP_CACHE).then(function(c){ return c.match(file); }).catch(function(){ return null; }) : Promise.resolve(null);
+  return fromCache.then(function(r){
+    if (r) return r.json();
+    return fetch(file, { cache:'no-store' }).then(function(res){
+      if (!res.ok) throw new Error('names ' + res.status);
+      var copy = res.clone();
+      if (typeof caches === 'object' && caches.open) caches.open(BASEMAP_CACHE).then(function(c){ return c.put(file, copy); }).catch(function(){});
+      return res.json();
+    });
+  }).catch(function(){ return null; });
+}
 function namesLoad(){
   if (NAMES.data || NAMES.busy || !NAMES.ok) return;
   NAMES.busy = true;
-  var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(BASEMAP_CACHE).then(function(c){ return c.match(NAMES_FILE); }).catch(function(){ return null; }) : Promise.resolve(null);
-  fromCache.then(function(r){
-    if (r) return r.json();
-    return fetch(NAMES_FILE, { cache:'no-store' }).then(function(res){
-      if (!res.ok) throw new Error('names ' + res.status);
-      var copy = res.clone();
-      if (typeof caches === 'object' && caches.open) caches.open(BASEMAP_CACHE).then(function(c){ return c.put(NAMES_FILE, copy); }).catch(function(){});
-      return res.json();
-    });
-  }).then(function(d){ if (d && d.lines){ NAMES.data = d; if (NAMES.layer) NAMES.layer.redraw(); } else NAMES.ok = false; })
-    .catch(function(e){ NAMES.ok = false; softErr('names', e, ''); })
-    .then(function(){ NAMES.busy = false; });
+  Promise.all([namesFetch(NAMES_FILE), namesFetch(NAMES_REGION)]).then(function(a){
+    var loc = a[0], reg = a[1];
+    if (!loc && !reg){ NAMES.ok = false; return; }
+    /* الإقليميُّ يُعلَّم ليُرسَم في التكبير البعيد ويُخفى داخل المشاعر عند الاقتراب (فالمحلّيُّ أدقّ) */
+    var lines = (loc && loc.lines ? loc.lines : []).map(function(l){ return [l[0], l[1], l[2], '', 0]; })
+      .concat(reg && reg.lines ? reg.lines.map(function(l){ return [l[0], l[1], l[2], l[3] || '', 1]; }) : []);
+    var points = (loc && loc.points ? loc.points : []).map(function(q){ return [q[0], q[1], q[2], q[3], 0]; })
+      .concat(reg && reg.points ? reg.points.map(function(q){ return [q[0], q[1], q[2], q[3], 1]; }) : []);
+    NAMES.data = { lines:lines, points:points, bbox:(loc && loc.bbox) || [21.30, 39.78, 21.50, 40.02] };
+    if (NAMES.layer) NAMES.layer.redraw();
+  }).catch(function(e){ NAMES.ok = false; softErr('names', e, ''); }).then(function(){ NAMES.busy = false; });
 }
 function namesLayerClass(){   /* ليفلت يُحمَّل بعد هذا الملف — فالصنفُ يُبنى عند أوّل حاجة */
   if (NAMES.cls) return NAMES.cls; if (typeof L !== 'object' || !L.Layer) return null;
@@ -18609,28 +18637,37 @@ function namesLayerClass(){   /* ليفلت يُحمَّل بعد هذا الم�
     var free = function(x, y, w, h){ var x0 = Math.floor((x - w / 2) / cell), x1 = Math.floor((x + w / 2) / cell), y0 = Math.floor((y - h / 2) / cell), y1 = Math.floor((y + h / 2) / cell), i, j;
       for (i = x0; i <= x1; i++) for (j = y0; j <= y1; j++) if (occ[i + ',' + j]) return false;
       for (i = x0; i <= x1; i++) for (j = y0; j <= y1; j++) occ[i + ',' + j] = 1; return true; };
-    var maxRank = z >= 16 ? 7 : z >= 15 ? 6 : z >= 14 ? 5 : z >= 13 ? 4 : z >= 12 ? 3 : 2;
-    var maxPlace = z >= 14 ? 5 : z >= 12 ? 4 : z >= 10 ? 3 : 2;
+    var maxRank = z >= 16 ? 7 : z >= 15 ? 6 : z >= 14 ? 5 : z >= 13 ? 4 : z >= 12 ? 3 : z >= 10 ? 2 : 1;
+    var maxPlace = z >= 14 ? 6 : z >= 12 ? 4 : z >= 11 ? 3 : z >= 10 ? 2 : z >= 8 ? 1 : 0;
+    var inLoc = function(la, lo){ var bx = D.bbox; return la >= bx[0] && la <= bx[2] && lo >= bx[1] && lo <= bx[3]; };
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
     /* الأماكنُ أوّلًا (أكبرُ وأهمّ)، ثم الطرقُ بترتيب أهميتها */
     var pts = D.points || [], k, p, pr, px, f;
-    for (k = 0; k < pts.length; k++){ p = pts[k]; pr = NAMES_PLACE[p[1]] || 6; if (pr > maxPlace) continue; if (!b.contains([p[2], p[3]])) continue;
-      px = map.latLngToContainerPoint([p[2], p[3]]); f = pr <= 2 ? 15 : pr <= 3 ? 13 : 12; ctx.font = 'bold ' + f + 'px system-ui, sans-serif';
+    for (k = 0; k < pts.length; k++){ p = pts[k]; pr = NAMES_PLACE[p[1]]; if (pr == null) pr = 6; if (pr > maxPlace) continue;   /* المدينةُ رتبتُها صفرٌ — لا تسقط بـ|| */ if (!b.contains([p[2], p[3]])) continue;
+      if (p[4] === 1 && z >= 13 && inLoc(p[2], p[3])) continue;   /* الإقليميُّ داخل المشاعر عند الاقتراب: المحلّيُّ يكفي */
+      px = map.latLngToContainerPoint([p[2], p[3]]); f = pr === 0 ? 17 : pr <= 1 ? 15 : pr <= 3 ? 13 : 12; ctx.font = 'bold ' + f + 'px system-ui, sans-serif';
       var w = ctx.measureText(p[0]).width + 8; if (!free(px.x, px.y, w, f + 6)) continue;
       ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.strokeText(p[0], px.x, px.y); ctx.fillStyle = pr <= 3 ? '#1a1a1a' : '#2b2b2b'; ctx.fillText(p[0], px.x, px.y); }
-    var lines = D.lines, order = lines.map(function(l, i){ return [NAMES_RANK[l[1]] || 6, i]; }).filter(function(o){ return o[0] <= maxRank; }).sort(function(a, b2){ return a[0] - b2[0]; });
+    var lines = D.lines, order = lines.map(function(l, i){ return [NAMES_RANK[l[1]] || 6, i]; }).filter(function(o){ var l = lines[o[1]]; if (l[4] === 1){ if (z >= 14) return false; return o[0] <= maxRank; } return z >= 12 && o[0] <= maxRank; }).sort(function(a, b2){ return a[0] - b2[0]; });
     ctx.font = 'bold 12px system-ui, sans-serif';
     for (k = 0; k < order.length; k++){ var ln = lines[order[k][1]], g = ln[2], i, pts2 = [], tot = 0;
+      if (ln[4] === 1 && z >= 13 && g.length && inLoc(g[0][0], g[0][1])) continue;
+      /* (V27.8) درعُ رقم الطريق للإقليم، والاسمُ معه إن اتّسع */
+      var isReg = ln[4] === 1, lab = (isReg && ln[3] && (z < 12 || !ln[0])) ? ln[3] : ln[0]; if (!lab) continue;
       /* الجزءُ الظاهرُ من الشارع بطوله كلِّه (لا قطعةً واحدة — شوارعُ منى مقطّعةٌ قطعًا قصيرة)، والاسمُ في منتصفه بميل قطعته */
       for (i = 0; i < g.length; i++){ if (!b.contains(g[i])) { if (pts2.length) break; continue; } pts2.push(map.latLngToContainerPoint(g[i])); }
       if (pts2.length < 2) continue;
       for (i = 1; i < pts2.length; i++) tot += Math.sqrt(Math.pow(pts2[i].x - pts2[i - 1].x, 2) + Math.pow(pts2[i].y - pts2[i - 1].y, 2));
-      var tw = ctx.measureText(ln[0]).width; if (tot < tw + 10) continue;
+      ctx.font = (isReg && lab === ln[3]) ? 'bold 11px system-ui, sans-serif' : 'bold 12px system-ui, sans-serif';
+      var tw = ctx.measureText(lab).width; if (tot < tw + 10 && !(isReg && lab === ln[3] && tot > 30)) continue;
       var half = tot / 2, acc = 0, seg = null; for (i = 1; i < pts2.length; i++){ var sl = Math.sqrt(Math.pow(pts2[i].x - pts2[i - 1].x, 2) + Math.pow(pts2[i].y - pts2[i - 1].y, 2)); if (acc + sl >= half){ var tt = sl ? (half - acc) / sl : 0; seg = [pts2[i - 1], pts2[i], pts2[i - 1].x + (pts2[i].x - pts2[i - 1].x) * tt, pts2[i - 1].y + (pts2[i].y - pts2[i - 1].y) * tt]; break; } acc += sl; }
       if (!seg) continue;
       var mx = seg[2], my = seg[3], ang = Math.atan2(seg[1].y - seg[0].y, seg[1].x - seg[0].x); if (ang > Math.PI / 2) ang -= Math.PI; if (ang < -Math.PI / 2) ang += Math.PI;
       if (!free(mx, my, Math.abs(Math.cos(ang)) * tw + 14, Math.abs(Math.sin(ang)) * tw + 14)) continue;
-      ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(ln[0], 0, 0); ctx.fillStyle = order[k][0] <= 2 ? '#1f2d3d' : '#333'; ctx.fillText(ln[0], 0, 0); ctx.restore(); }
+      if (isReg && lab === ln[3]){   /* درعٌ: مستطيلٌ أبيضُ بحافةٍ وَرقمُ الطريق */
+        if (!free(mx, my, tw + 16, 20)) continue;
+        ctx.save(); ctx.fillStyle = '#fff'; ctx.strokeStyle = '#8c2d2d'; ctx.lineWidth = 1.5; var rw = tw + 12, rh = 17; ctx.beginPath(); ctx.rect(mx - rw / 2, my - rh / 2, rw, rh); ctx.fill(); ctx.stroke(); ctx.fillStyle = '#8c2d2d'; ctx.fillText(lab, mx, my + 0.5); ctx.restore(); continue; }
+      ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(lab, 0, 0); ctx.fillStyle = order[k][0] <= 2 ? '#1f2d3d' : '#333'; ctx.fillText(lab, 0, 0); ctx.restore(); }
   }
   }); return NAMES.cls;
 }
@@ -23282,6 +23319,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.8', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'مسار التفويج: لما تختار الدور تظهر مخيماته مظللة بحدودها بلون الدور على الخريطة (ومع كل الأدوار كل مخيم بلون دوره)، وعددها في بطاقة الدور.',
+      'الأسماء فوق القمر الصناعي بمستويين: الإقليم (مكة وجدة والطائف: المدن والقرى والمطارات والجبال والطرق الرئيسية بأرقامها كدروع) للتكبير البعيد، والمشاعر بكل شوارعها عند الاقتراب. ملف الإقليم ينزل مع التحديث القادم.' ] },
   { v:'V27.7', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'قرار المالك: الخريطة المفتوحة (بلا مفاتيح ولا فلوس). وصل ملف الأسماء الكامل للمشاعر: ٩٦٨ طريقا باسمه و٦٨ مكانا ومعلما (أحياء وجبال ومساجد ومستشفيات ومحطات) بالعربية، فصارت أسماء الشوارع والأماكن تظهر فوق القمر الصناعي بكثافة خريطة الشوارع بحسب التكبير.' ] },
   { v:'V27.6', d:'٢ أكتوبر ٢٠٢٦', notes:[
