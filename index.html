@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-65acb22cc8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-20e77fd897.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -20900,6 +20900,9 @@ function mfuCos(){
 /* (V26.5) فلترُ المشعر والنوع على التحديات والمعوقات — قرارُ المالك: «منى – مخيمات – العائق – العدد – المعالجة – المسؤول».
    الصفحتان («بيان المعوقات» و«التحديات وآليات المعالجة») كانتا من مصدرٍ واحد فدُمجتا في صفحةٍ واحدة. */
 var MFU_FLT = { z:'', t:'' };
+/* (V27.3) بلاغُ المالك: التصديرُ من صفحة التحديات والمعوقات لم يكن يتبع الفلتر — التحديثُ الأسبوعيُّ (إكسل/وورد/بوربوينت/PDF)
+   كان يقرأ المعوقاتِ كلَّها. صار يقرأ المرشَّحَ حين يُوضَع فلتر، ويكتب الفلترَ في سطر التاريخ واسم الملف والبطاقة؛ وبلا فلتر: الكلّ. */
+function mfuFltLabel(){ return [MFU_FLT.z || '', MFU_FLT.t || ''].filter(Boolean).join(' \u00b7 '); }
 function mfuObstaclesF(){ var O = mfuObstacles(); if (!MFU_FLT.z && !MFU_FLT.t) return O; return O.filter(function(o){ var tx = taxOf(o.x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); }); }   /* (V27.2) تصنيفُ المالك */
 function mfuFilterRow(){
   var O = mfuObstacles(), Z = {}, T = {};
@@ -21268,14 +21271,14 @@ function mfuReport(){
   var dlt = function(cur, key){ return P && P[key] != null ? cur - P[key] : null; };
   var Z = {};
   (STATE.sites || []).forEach(function(x){ var k = x.zone + '|' + x.type; var o = Z[k] = Z[k] || { z:x.zone, ty:x.type, n:0, i:0 }; o.n++; if (mfuInstalled(x)) o.i++; });
-  var O = mfuObstacles(), byCat = {}, byParty = {}; mfuParties().forEach(function(p){ byParty[p] = 0; });
+  var flt = mfuFltLabel(), O = mfuObstaclesF(), byCat = {}, byParty = {}; mfuParties().forEach(function(p){ byParty[p] = 0; });   /* (V27.3) بفلتر الصفحة إن وُضع */
   O.forEach(function(o){ var seen = {}; o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; var p = mfuOwnerOf(c); if (!seen[p]){ seen[p] = 1; byParty[p]++; } }); });
   return {
-    greg:dayKey(), hijri:hijriToday(), ver:appVer(),
+    greg:dayKey() + (flt ? ' \u2014 ' + t('بفلتر') + ': ' + flt : ''), hijri:hijriToday(), ver:appVer(), flt:flt,
     kpis:[['نسبة المسح', pc(K.sv, K.tot) + '٪', K.sv + ' من ' + K.tot, dlt(K.sv, 'sv')],
           ['تركيب المخيمات', pc(K.campIns, K.camp) + '٪', K.campIns + ' من ' + K.camp, dlt(K.campIns, 'campIns')],
           ['تركيب الممرات', pc(K.corIns, K.cor) + '٪', K.corIns + ' من ' + K.cor, dlt(K.corIns, 'corIns')],
-          ['المعوقات القائمة', String(K.obs), '', dlt(K.obs, 'obs')],
+          ['المعوقات القائمة', String(flt ? O.length : K.obs), flt || '', flt ? null : dlt(K.obs, 'obs')],
           ['شركات الخدمة (ممتاز · متوسط · ضعيف)', K.ex + ' · ' + K.md + ' · ' + K.wk, '', null],
           ['بانتظار قرار الوزارة', String(mfuMinWait()), 'نقطةً معتمدةً تقنيًّا', null],
           ['تحدياتٌ مفتوحة', String(K.chal), '', null], ['طلباتٌ قيد المتابعة', String(K.req), '', null]],
@@ -21324,7 +21327,7 @@ function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
   return R[key] || [];
 }
-function mfuFileName(ext){ return 'التحديث-الأسبوعي-قارئات-نسك-' + dayKey() + '.' + ext; }
+function mfuFileName(ext){ var f = (typeof mfuFltLabel === 'function') ? mfuFltLabel() : ''; return 'التحديث-الأسبوعي-قارئات-نسك-' + dayKey() + (f ? '-' + f.replace(/[\\/:*?"<>|\u00b7]+/g, '-').replace(/\s+/g, '-') : '') + '.' + ext; }   /* (V27.3) الفلترُ في اسم الملف */
 /* ── إكسل: ورقةٌ لكلِّ عنوان ── */
 function mfuXlsx(){
   toast(t('يُجهَّز ملفُّ إكسل…'));
@@ -21556,6 +21559,7 @@ function mfuExportBar(){
   return '<div class="card" style="margin:0 0 12px"><div class="actions" style="align-items:center">'
     + '<b style="color:#C8943E">\u2B07 ' + esc(t('تصدير التحديث الأسبوعي')) + '</b>'
     + btn('PowerPoint', 'btn-primary btn-sm', ' data-mfuexp="pptx"') + btn('Word', 'btn-secondary btn-sm', ' data-mfuexp="docx"') + btn('Excel', 'btn-secondary btn-sm', ' data-mfuexp="xlsx"') + btn('PDF', 'btn-secondary btn-sm', ' data-mfuexp="pdf"')
+    + (mfuFltLabel() ? '<span class="pill wrn">' + esc(t('بفلتر')) + ': ' + esc(mfuFltLabel()) + ' \u2014 ' + esc(t('أزل الفلتر لتصدير الكلّ')) + '</span>' : '')   /* (V27.3) */
     + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div></div>';
 }
 PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
@@ -23137,6 +23141,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.3', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'التحديث الأسبوعي (إكسل ووورد وبوربوينت وPDF) من صفحة التحديات والمعوقات صار يتبع الفلتر: لو فلترت منى ← مخيمات يطلع المعوقات دي بس، والفلتر مكتوب في سطر التاريخ وفي اسم الملف وفي الشريط، ولو ما فيش فلتر يطلع الكل.' ] },
   { v:'V27.2', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'تصنيف جديد على الخريطة والتصفية وصفحة التحديات والتصدير: المشعر خمسة (منى، عرفات، المزدلفة، محطات التفويج، كاميرات الرصد) والنوع تسعة (مخيمات، ممرات، محطات قطار، كاميرات رصد، منشأة الجمرات، مسجد نمرة، النورية، محطات طريق الهجرة، الزايدي). محطات التفويج تضم النورية وطريق الهجرة والزايدي، وكاميرات الرصد تضم كاميرات منى ومنشأة الجمرات، وكاميرات عرفات تحت عرفات.',
       'وكل نقطة يعدل مشعرها ونوعها يدويا من «تعديل البيانات» فتنتقل فورا على كل الأجهزة، والأصل محفوظ.' ] },

@@ -77,6 +77,11 @@ console.log('\n══ ١ · المعوقات: الإجماليُّ وجهاتُ�
   const F = w.mfuData().fch || {}; const c0 = full[1] && full[1][5];
   if (c0){ w.mfuPut('fch', c0, Object.assign({}, F[c0] || {}, { desc:'وصفٌ تجريبي', due:'2026-12-01' })); const A = w.mfuAllChal().find(c => c.src === 'field' && c.t === c0); T(!!A && A.desc === 'وصفٌ تجريبي' && A.due === '2026-12-01', 'ووصفُ المعالجة وآخرُ تاريخٍ يُحفَظان مع التحدي ويعودان في السجل'); } }
 
+/* (V27.3) التحديثُ الأسبوعيُّ يتبع فلتر الصفحة */
+{ w.MFU_FLT.z = ''; w.MFU_FLT.t = ''; const R0 = w.mfuReport(); const obsAll = +R0.kpis[3][1];
+  w.MFU_FLT.z = 'منى'; const R1 = w.mfuReport(); const obsMina = w.mfuObstaclesF().length, fn1 = w.mfuFileName('xlsx'); w.MFU_FLT.z = '';
+  T(obsAll === truth.obst && +R1.kpis[3][1] === obsMina && obsMina < obsAll && /بفلتر/.test(R1.greg) && R1.flt === 'منى' && /منى/.test(fn1), 'التحديثُ الأسبوعيُّ: بلا فلترٍ كلُّ المعوقات (' + obsAll + ')، وبفلتر «منى» معوقاتُها وحدَها (' + obsMina + ') والفلترُ في التاريخ واسم الملف'); }
+
 console.log('\n══ ٢ · المسح: تمّ ومعتمدٌ ويحتاج زيارة ══');
 { let done = 0, appr = 0, rev = 0; Object.keys(w.STATE.recs).forEach(id => { const r = w.STATE.recs[id]; if (w.svDone(r)) done++; if (w.svApproved(r)) appr++; if (w.svReview(r) === 'revisit') rev++; });
   T(done === truth.done, 'تمَّ المسحُ = وصل ولا يحتاج زيارة (' + done + ' / ' + truth.done + ')');
