@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4397,8 +4397,8 @@ function tfwRow(){
   /* (V24.3) الاتجاه: الذهابُ والعودةُ معًا أو كلٌّ وحدَه — ومع «كل الأدوار» لكلِّ دورٍ لونُه والعودةُ متقطّعة */
   if (TFW.f >= 0) h += '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('الاتجاه')) + '</span>' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب فقط'], ['back', 'العودة فقط']].map(function(o){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
-  if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
-  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span></span>'; }).join('')
+  if (TFW.f >= 0 && TFW.f < TFW_ALL && TFW.data) h += '<div class="tfw-card"><i style="display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;background:' + (TFW_COL[TFW.f] || '#F5C400') + '55;border:2px solid ' + (TFW_COL[TFW.f] || '#F5C400') + '"></i> ' + esc(t('مخيمات الدور')) + ' ' + esc(t(TFW_FL[TFW.f])) + ': <b>' + nm(tfwCampsOf(TFW.f).length) + '</b> ' + esc(t('مخيمًا')) + ' \u2014 ' + esc(t('مظلّلةٌ على الخريطة بلون الدور')) + '</div>';   /* (V27.8) */
+  if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + ' <span class="num">' + nm(tfwCampsOf(i).length) + '</span> ' + esc(t('مخيمًا')) + '</span>'; }).join('')
       + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
   if (TFW.camp){ var cs = siteFind(TFW.camp.id), mins = function(m){ return nm(Math.max(1, Math.round(m / 60))); };
     h += '<div class="tfw-card"><b>' + esc(t('مسار المخيم')) + ': ' + esc(cs ? siteTitle(cs) : TFW.camp.id) + '</b> \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[TFW.camp.f]))
@@ -4467,7 +4467,7 @@ function catBar(withWork){
       var fon = FILT.floor !== '' && FILT.floor != null;
       h += '<div class="catrow">'
         + '<button type="button" class="cat' + (fon ? '' : ' on') + '" data-ffl="">' + esc(t('كل الأدوار')) + '</button>'
-        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + '</span>' : '') + '</button>'; }).join('')
+        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + ' ' + esc(t('نقطة')) + '</span>' : '') + '</button>'; }).join('')
         + '</div>';
     }
   }
@@ -23319,6 +23319,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.9', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'الدور الأرضي: خط الذهاب صار خط مخطط الوزارة نفسه (الأصفر، ومعه ما لاصقه من الأحمر مبدئيا بقرار المالك) مطابقا على شوارع منى، بدل الطريق المحسوب لكل مخيم. والعودة ما بقي من الأحمر.',
+      'إسناد المخيمات للأدوار أعيد من صفحات الملف بنسبة تداخل مساحة المخيم مع لون الدور: الأرضي ٧٩، الأول ٢٣١، الثاني ١٢، الثالث ٢٠٨، الرابع ١٠٠ (٦٣٠ مخيما بدل ٤١٠). وكلمتا «مخيما» و«نقطة» جانب الأرقام.' ] },
   { v:'V27.8', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'مسار التفويج: لما تختار الدور تظهر مخيماته مظللة بحدودها بلون الدور على الخريطة (ومع كل الأدوار كل مخيم بلون دوره)، وعددها في بطاقة الدور.',
       'الأسماء فوق القمر الصناعي بمستويين: الإقليم (مكة وجدة والطائف: المدن والقرى والمطارات والجبال والطرق الرئيسية بأرقامها كدروع) للتكبير البعيد، والمشاعر بكل شوارعها عند الاقتراب. ملف الإقليم ينزل مع التحديث القادم.' ] },
