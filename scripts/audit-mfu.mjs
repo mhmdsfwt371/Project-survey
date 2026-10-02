@@ -27,11 +27,11 @@ const open = async tab => { w.goPage('mfu'); w.render(1); await wait(40); const 
 
 console.log('\n══ ١ · الصفحةُ وعناوينُها ══');
 const tabs = w.TABS.mfu.map(x => x[0]);
-T(['mfu','mtasks','minst','mcos','mobs','mchal','mreq','mdaily','kiosk'].every(x => tabs.includes(x)), 'عناوينُ العرض الأسبوعي كلُّها: ' + tabs.length);
+T(['mfu','mtasks','minst','mcos','mobs','mreq','mdaily','kiosk'].every(x => tabs.includes(x)) && !tabs.includes('mchal'), 'عناوينُ العرض الأسبوعي كلُّها — والتحدياتُ والمعوقاتُ صفحةٌ واحدة (V26.5): ' + tabs.length);
 T(!w.TABS.over.some(x => x[0] === 'kiosk') && w.PARENT.kiosk === 'mfu', 'وشاشةُ القاعة انتقلت إلى متابعة الوزارة');
 for (const r of ['viewer', 'exec']){ w.ROLE = r; w.STATE.meta.role = r; }
 w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
-T(w.seesPage('mfu') && ['mcos','mobs','mchal','mreq','kiosk'].every(id => w.tabsOf('mfu').some(tb => tb[0] === id)), 'والوزارةُ تراها بتبويباتها');
+T(w.seesPage('mfu') && ['mcos','mobs','mreq','kiosk'].every(id => w.tabsOf('mfu').some(tb => tb[0] === id)), 'والوزارةُ تراها بتبويباتها');
 T(w.mfuPut('chal', 'X', { t:'x' }) === false, 'ولا تكتب فيها');
 w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 
@@ -57,7 +57,7 @@ co.querySelector('[data-mfucosall]').dispatchEvent(new w.MouseEvent('click', { b
 T(d.querySelectorAll('.mfu-co').length === C.length, 'واعرض الكلَّ يعرض ' + C.length);
 
 console.log('\n══ ٤ · السجلّان ══');
-await open('mchal');
+await open('mobs');
 d.getElementById('mcT').value = 'تأخّر الشحنات'; d.getElementById('mcM').value = 'إعادة الجدولة مع المصنع'; d.getElementById('mcO').value = 'المشتريات';
 d.querySelector('[data-mfuchal]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const wc = wrote.find(r => r[1] === 'mfu' && r[2].chal);
@@ -137,7 +137,7 @@ w.MFU.v = w.STATE.mfu = {}; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]);
 w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 const cats0 = w.mfuAllChal().filter(c => c.src === 'field');
 T(cats0.length >= 2 && cats0.every(c => c.n > 0 && c.party), 'تحدياتُ المسح الميداني فئاتٌ بعدد نقاطها وجهتها: ' + cats0.map(c => c.t + ' ' + c.n).join(' · '));
-let ch = await open('mchal');
+let ch = await open('mobs');
 T(/من المسح الميداني/.test(ch.textContent) && ch.querySelectorAll('[data-mfuedit^="F:"]').length === cats0.length && !ch.querySelector('[data-fch$="|owner"]'), 'تظهر في التحديات بشارة مصدرها، ولكلٍّ زرُّ ✎ — والحقولُ لا تُرسَم قبل الضغط (V21.5)');
 ch.querySelector('[data-mfuedit^="F:"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 T(d.querySelectorAll('[data-fch$="|owner"]').length === 1, 'وبعد ✎ تُرسَم حقولُ الصفِّ الواحد وحدَه');
@@ -146,7 +146,7 @@ fo.value = 'فريق التركيبات'; fo.dispatchEvent(new w.Event('change',
 const fm = d.querySelector('[data-fch="' + fcat + '|m"]'); fm.value = 'تنسيقٌ مع كدانة لاستكمال العارضة'; fm.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(30);
 const c1 = w.mfuAllChal().find(c => c.key === 'F:' + fcat);
 T(c1.owner === 'فريق التركيبات' && c1.m === 'تنسيقٌ مع كدانة لاستكمال العارضة' && wrote.some(r => r[1] === 'mfu' && r[2].fch && r[2].fch[fcat]), 'ومن سيحلّه وآليةُ المعالجة يُحفَظان في settings/mfu');
-ch = await open('mchal');
+ch = await open('mobs');
 d.querySelector('[data-chaltask="F:' + fcat + '"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60);
 const tsk = w.wtRows().find(r => r.chal === 'F:' + fcat);
 T(!!tsk && /^معالجة: /.test(tsk.n) && tsk.who === 'فريق التركيبات' && tsk.track === 'التحديات' && w.mfuAllChal().find(c => c.key === 'F:' + fcat).task == tsk.id, '«＋ مهمة معالجة» تُنشئ مهمةً أسبوعيةً مربوطةً بالتحدي ومسؤولِه');
@@ -224,7 +224,7 @@ T(w.mfuUnseen() > 0 && /متابعة الوزارة\s*\S+/.test(d.getElementById
 
 console.log('\n══ ١١ · نضجُ المتابعة: الأعمارُ والحملُ ومسارُ الأسابيع وقرارُ الوزارة (V20.9) ══');
 w.mfuPut('chal', 'COLD', { t:'تحدٍّ قديم', m:'', o:'المهندس', st:'مفتوح', at:Date.now() - 20 * 864e5, hist:[{ at:Date.now() - 20 * 864e5, by:'x', f:'new', v:'' }] });
-const ch9 = await open('mchal');
+const ch9 = await open('mobs');
 T(/مفتوحٌ منذ/.test(ch9.textContent) && /٢٠|20/.test(ch9.textContent), 'التحدي المفتوحُ عشرين يومًا يُعلَّم بعمره بالأحمر');
 const ol = w.mfuOwnersLoad();
 T(ol.length > 0 && ol.every(o => o.n && o.all >= 0) && ol[0].late >= (ol[ol.length - 1].late), 'حملُ المسؤولين: تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ اسم — المتأخرُ أوّلًا');

@@ -44,7 +44,7 @@ const inside = samp.filter(v => polys.some(o => v[1] >= o.a && v[1] <= o.b && v[
 T(samp.length > 300 && inside / samp.length < 0.03, 'ورؤوسُها في الممرّات بين المخيمات: ' + inside + ' من ' + samp.length + ' داخل مخيم (الحدُّ ٣٪)');
 const tl = fn('tfwLines');
 T(/L\.polyline\(pts, \{ renderer:MAP_CV/.test(tl) && /interactive:false/.test(tl) && /tafweej-routes\.json/.test(tl) && /bringToBack\(\)/.test(tl), 'تُرسَم على لوح النقاط بلا نقر، مرّةَ تحميلٍ واحدة، والمخيماتُ خلفها والنقاطُ فوقها');
-T(/data-tfw="' \+ TFW_ALL/.test(html) && /data-tfwd=/.test(html) && /TFW\.d !== 'both' && TFW\.d !== k\[0\]/.test(tl) && /TFW_COL\[\+fk\]/.test(tl), 'الفلتر: كلُّ الأدوار معًا بلونٍ لكلِّ دور، أو كلُّ دورٍ وحدَه، والذهابُ والعودةُ معًا أو كلٌّ وحدَه');
+T(/data-tfw="show"/.test(html) && /TFW\.f = tv === 'show' \? \(\(FILT\.floor !== '' && FILT\.floor != null\) \? \+FILT\.floor : TFW_ALL\)/.test(html) && /data-tfwd=/.test(html) && /TFW\.d !== 'both' && TFW\.d !== k\[0\]/.test(tl) && /TFW_COL\[\+fk\]/.test(tl), 'الفلتر: كلُّ الأدوار معًا بلونٍ لكلِّ دور، أو كلُّ دورٍ وحدَه، والذهابُ والعودةُ معًا أو كلٌّ وحدَه');
 /* (V24.8) الذهابُ ينتهي عند مداخل دوره والعودةُ تبدأ من مخارجه — لكلِّ دورٍ من الخمسة */
 const JP = id => { const m = html.match(new RegExp('\\["NSK-JMR-PNT-' + id + '","[^"]*",\\d+,\\d+,\\d+,([\\d.]+),([\\d.]+)')); return m ? [+m[1], +m[2]] : null; };
 const dM = (a, b) => Math.hypot((a[0] - b[0]) * 110574, (a[1] - b[1]) * 103600);

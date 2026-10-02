@@ -50,7 +50,7 @@ const jN = stNodes.find(x => /الجمرات/.test(x.name)); STN.J = jN ? jN.k :
 const far = stNodes.filter(x => !/الجمرات/.test(x.name)).sort((a, b) => (jN ? dist(b.p, jN.p) - dist(a.p, jN.p) : 0)); STN.E = far[0] ? far[0].k : null;
 const RAIL = { ok: !!(STN.J && STN.E) };
 const rdijkstra = (src) => { const distTo = new Map(), prev = new Map(), pq = [[0, src]]; distTo.set(src, 0); while (pq.length){ pq.sort((a, b) => a[0] - b[0]); const [d, k] = pq.shift(); if (d > distTo.get(k)) continue; for (const e of radj.get(k) || []){ const c = d + e.w; if (c < (distTo.has(e.to) ? distTo.get(e.to) : Infinity)){ distTo.set(e.to, c); prev.set(e.to, k); pq.push([c, e.to]); } } } return { distTo, prev }; };
-const gatesOf = n => Object.values(pts).filter(q => q.id.indexOf('NSK-TRN-STN') === 0 && q.name.indexOf('محطة منى ' + '١٢٣'[n - 1]) >= 0);   /* بأسماء السجل: ١ الجمرات، ٣ الشرقية */
+const gatesOf = n => Object.values(pts).filter(q => q.id.indexOf('NSK-TRN-STN') === 0 && q.name.indexOf('محطة منى ' + '١٢٣'[n - 1]) >= 0);   /* بأسماء السجل (سار): ١ الشرقية، ٣ الجمرات */
 let nodeList = [...nodes.entries()]; const refreshNodes = () => { nodeList = [...nodes.entries()]; };
 /* المخيماتُ مضلّعاتٌ: الطريقُ في الممرّات بينها لا داخلَها — العقدةُ داخل مخيمٍ لا تصلح بدايةً، والحافّةُ داخل مخيمٍ عشرُ كلفتها */
 const inRingLL = (p, ring) => { let inside = false; for (let i = 0, j = ring.length - 1; i < ring.length; j = i++){ const xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1]; if (((yi > p[0]) !== (yj > p[0])) && (p[1] < (xj - xi) * (p[0] - yi) / ((yj - yi) || 1e-12) + xi)) inside = !inside; } return inside; };
@@ -91,7 +91,7 @@ for (const fk of ['0', '1', '2', '3', '4']){
   if (fk === '4' && RAIL.ok){
     /* قرارُ المالك: الدورُ الرابع بالقطار لا على الأقدام — مشيٌ إلى أقرب محطةٍ (منى ١ أو ٢)، ثم القطارُ إلى محطة الجمرات (منى ٣)، ثم مشيٌ إلى مداخل الدور */
     goE.clear(); backE.clear();
-    const gateE = gatesOf(3), gate2 = gatesOf(2), gateJ = gatesOf(1);   /* الركوبُ من منى ٣ (الشرقية)، والنزولُ في منى ١ (الجمرات) */
+    const gateE = gatesOf(1), gate2 = gatesOf(2), gateJ = gatesOf(3);   /* (V26.5) تسميةُ سار الرسمية: الركوبُ من منى ١ (أوّلُ منى، الشرقية)، والنزولُ في منى ٣ (الجمرات) */
     const gstub = q => { const e = [q.lat, q.lng], n = nearestNode(e, 120); if (!n) return null; addEdge(nodes.get(n), e, { stub: true }); return key(e); };
     /* قرارُ المالك من ملف الوزارة: مخيماتُ الرابع كلُّها تتحرّك إلى محطةٍ واحدةٍ هي الأبعدُ عن الجمرات «منى ٣» — ومنها القطارُ إلى محطة الجمرات «منى ١» (تسميةُ الوزارة، وهي تسميةُ السجل منذ V26.4) */
     const gN12 = (gateE.length ? gateE : gate2).map(gstub).filter(Boolean), gN3 = gateJ.map(gstub).filter(Boolean); refreshNodes();

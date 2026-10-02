@@ -27,11 +27,14 @@ d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass12
 await wait(1400); w.toast = () => {};
 w.goPage('map'); w.FLT_OPEN = true; w.render(1); await wait(60);
 const html2 = w.catBar(false);
-T(/مسار التفويج/.test(html2) && (html2.match(/data-tfw=/g) || []).length === 7 && /كل الأدوار/.test(html2), 'في تصفية الخريطة صفُّ «مسار التفويج»: إخفاءٌ وكلُّ الأدوار وخمسةُ أدوار');
+T(/مسار التفويج/.test(html2) && (html2.match(/data-tfw=/g) || []).length === 2 && /data-tfw="show"/.test(html2) && /data-ffl=/.test(html2) && /كل الأدوار/.test(html2), 'في تصفية الخريطة صفُّ «مسار التفويج»: إخفاءٌ وإظهار — والدورُ من صفِّ الأدوار الواحد (V26.5)');
 T(fetched === 0 && !w.TFW.data, 'ولا تُحمَّل الطبقةُ قبل أن تُطلَب');
 const box = d.createElement('div'); box.innerHTML = html2; d.body.appendChild(box);
-box.querySelector('[data-tfw="1"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
-T(fetched === 1 && w.TFW.f === 1 && !!w.TFW.data, 'اختيارُ «الدور الأول» يحمّلها مرةً واحدة');
+box.querySelector('[data-tfw="show"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+T(fetched === 1 && w.TFW.f === w.TFW_ALL && !!w.TFW.data, '«إظهار» يحمّلها مرةً واحدة على كلِّ الأدوار');
+box.innerHTML = w.catBar(false); box.querySelector('[data-ffl="1"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+T(fetched === 1 && w.TFW.f === 1 && String(w.FILT.floor) === '1', 'واختيارُ «الدور الأول» من صفِّ الأدوار الواحد يحكم المسارَ والنقاطَ معًا (V26.5)');
+box.querySelector('[data-ffl="1"]') && w.FILT && (w.FILT.floor = '');
 const card = w.tfwRow();
 T(/مخيمًا من مخيماتنا/.test(card) && /١٠٬٥٥٠|10,550|١٠٥٥٠/.test(card) && /مدخل الجمرات غير المغطّى/.test(card) && /نقاطُنا على مسار هذا الدور/.test(card), 'وبطاقتُه: مخيماتُه وطولُ مساره وملاحظةُ الوزارة ومقترحُها ونقاطُنا عليه');
 const camp = Object.keys(D.assign).find(k => D.assign[k] === 3 && w.siteFind(k));
