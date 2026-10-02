@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a352637552.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-e212b15168.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -20768,7 +20768,17 @@ var MFU = { at:0, v:null }, MFU_COS_ALL = false, MFU_EDIT = '';   /* الصفُ�
 var MFU_PARTIES = ['شركة الخدمة', 'كدانة', 'أفاقي'];
 /* (V26.6) جهاتٌ أخرى يضيفها المكتب من صفحة التحديات والمعوقات (سؤالُ المالك: «لو في حد تاني أضيفه منين؟») — تُحفَظ في
    settings/mfu قسم party فتصل الأجهزةَ كلَّها، وتظهر في قوائم الجهات والبطاقات والتصدير. الثلاثُ الأصليةُ لا تُحذَف. */
-function mfuParties(){ var out = MFU_PARTIES.slice(); mfuList('party').forEach(function(x){ var n = String(x.t || x.id || '').trim(); if (n && out.indexOf(n) < 0) out.push(n); }); return out; }
+/* (V26.8) قرارُ المالك: الجهاتُ كلُّها — الأصليةُ والمضافة — تُعدَّل أسماؤها وتُحذَف. المفتاحُ ثابتٌ (اسمُ الأصلية أو اسمُ
+   المضافة عند إنشائها) وهو ما يُحفَظ في «own» والمعوقات، والاسمُ المعروضُ من سجل party {t} ويتغيّر؛ و{gone} يخفي
+   الجهةَ (الأصليةَ أيضًا). لا تُحذَف آخرُ جهة، و«↺ الأصلية» يُعيد الثلاثَ كما كانت. */
+function mfuPartyRaw(k){ return (mfuData().party || {})[k] || null; }
+function mfuPartyLabel(k){ var r = mfuPartyRaw(k); return (r && r.t) ? String(r.t) : String(k); }
+function mfuParties(){
+  var out = MFU_PARTIES.filter(function(k){ var r = mfuPartyRaw(k); return !(r && r.gone); });
+  mfuList('party').forEach(function(x){ if (MFU_PARTIES.indexOf(x.id) < 0 && out.indexOf(x.id) < 0) out.push(x.id); });
+  return out;
+}
+var MFU_PRN = '';   /* الجهةُ المفتوحةُ لتعديل اسمها */
 var MFU_OWN_DEF = { 'العارضة الحديدية ناقصة أو غير مكتملة':'كدانة', 'لا يوجد سطح تثبيت':'كدانة', 'المدخل غير واضح — لم يُستدل عليه':'أفاقي', 'تعذّر الوصول':'أفاقي' };
 function mfuFetch(force){
   if (!force && (MFU.v || Date.now() - MFU.at < 600000)) return;
@@ -20790,7 +20800,7 @@ function mfuPut(sec, id, entry){
   var w = {}; w[sec] = {}; w[sec][id] = entry; CORE.set('cfg', 'mfu', w);
   return true;
 }
-function mfuOwnerOf(cat){ return (mfuData().own || {})[cat] || MFU_OWN_DEF[cat] || 'شركة الخدمة'; }
+function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || MFU_OWN_DEF[cat] || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
 /* العائقُ: نقطةٌ لم تُركَّب وفي مسحها تحدٍّ حقيقيّ، أو لم يُوصَل إليها */
 function mfuObstacles(){
   var out = [];
@@ -20924,14 +20934,19 @@ function mfuObs(){
   O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); var p0 = mfuOwnerOf(o.cats[0]); byParty[p0] = (byParty[p0] || 0) + 1; });
   var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
   return mfuFilterRow() + ('<div class="mfu-kpis"><div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('إجمالي المعوقات')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(O.length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ لم تُركَّب وفيها عائق')) + '</div></div>'
-    + mfuParties().map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(p)) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
+    + mfuParties().map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(mfuPartyLabel(p))) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
     + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
         var own = mfuOwnerOf(c);
-        return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select>' : esc(t(own))];
+        return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(own))];
       })))
     + '<p class="hint">' + esc(t('الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.')) + '</p>'
-    + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap"><span class="hint">' + esc(t('جهةٌ أخرى')) + '</span><input id="mfuNewParty" placeholder="' + esc(t('اسم الجهة')) + '" style="max-width:220px">' + btn('+ ' + t('أضف جهة'), 'btn-quiet btn-sm', ' data-mfupadd="1"')
-      + mfuList('party').map(function(x){ var nme = String(x.t || x.id); return '<span class="pill">' + esc(nme) + ' <button type="button" class="btn btn-quiet btn-sm" data-mfuprm="' + esc(nme) + '" aria-label="' + esc(t('حذف')) + '" style="padding:0 6px;min-height:22px">\u2715</button></span>'; }).join('') + '</div>' : ''))
+    + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap"><span class="hint">' + esc(t('جهات المعالجة')) + '</span>'
+      + mfuParties().map(function(k){ var lb = mfuPartyLabel(k); return MFU_PRN === k
+          ? '<span class="pill"><input data-mfuprn="' + esc(k) + '" value="' + esc(lb) + '" style="max-width:160px;min-height:26px" aria-label="' + esc(t('اسم الجهة')) + '"></span>'
+          : '<span class="pill">' + esc(t(lb)) + ' <button type="button" class="btn btn-quiet btn-sm" data-mfupren="' + esc(k) + '" aria-label="' + esc(t('تعديل')) + '" style="padding:0 6px;min-height:22px">\u270E</button>' + (mfuParties().length > 1 ? '<button type="button" class="btn btn-quiet btn-sm" data-mfuprm="' + esc(k) + '" aria-label="' + esc(t('حذف')) + '" style="padding:0 6px;min-height:22px">\u2715</button>' : '') + '</span>'; }).join('')
+      + '<input id="mfuNewParty" placeholder="' + esc(t('جهةٌ أخرى')) + '" style="max-width:180px">' + btn('+ ' + t('أضف جهة'), 'btn-quiet btn-sm', ' data-mfupadd="1"')
+      + (MFU_PARTIES.some(function(k){ var r = mfuPartyRaw(k); return r && (r.gone || r.t); }) ? btn('\u21BA ' + t('الأصلية'), 'btn-quiet btn-sm', ' data-mfuprst="1"') : '')
+      + '</div>' : ''))
     + mfuChal();   /* (V26.5) سجلُّ التحديات بآلياته في الصفحة نفسِها */
 }
 /* ═══ التحدياتُ بمصادرها الثلاثة (V20.5) ═══
@@ -21091,7 +21106,7 @@ function mfuChal(){
       + (c.src === 'field' ? '<div class="hint" style="margin:2px 0 0">' + nm(c.n) + ' ' + esc(t('نقطة')) + (Object.keys(c.z).length ? ' \u00b7 ' + Object.keys(c.z).map(function(z){ return esc(t(z)) + ' ' + nm(c.z[z]); }).join(' \u00b7 ') : '') + '</div>' : '')
       + (c.src === 'task' && c.why ? '<div class="hint" style="margin:2px 0 0">' + esc(String(c.why).slice(0, 120)) + '</div>' : '');
     var fk = c.src === 'field' ? c.t : '', edr = ed && MFU_EDIT === c.key;   /* الحقولُ للصفِّ المفتوح وحدَه (V21.5) — أربعون صفًّا بحقولها كانت تُثقل الهاتف */
-    var party = c.src === 'field' ? (edr ? '<select data-mfuown="' + esc(fk) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (c.party === p ? ' selected' : '') + '>' + esc(t(p)) + '</option>'; }).join('') + '</select>' : esc(t(c.party)))
+    var party = c.src === 'field' ? (edr ? '<select data-mfuown="' + esc(fk) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (c.party === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(c.party)))
       : c.src === 'manual' ? (edr ? sel('data-mchalf="' + esc(c.id) + '|party"', c.party || 'شركة الخدمة', mfuParties()) : esc(t(c.party || '—'))) : '\u2014';
     var owner = (c.src !== 'task' && edr) ? '<input data-' + (c.src === 'field' ? 'fch="' + esc(fk) : 'mchalf="' + esc(c.id)) + '|owner" value="' + esc(c.owner) + '" style="min-width:110px">' : esc(c.owner || '\u2014');
     var mit = (c.src !== 'task' && edr) ? '<textarea data-' + (c.src === 'field' ? 'fch="' + esc(fk) : 'mchalf="' + esc(c.id)) + '|m" rows="2" style="min-width:170px">' + esc(c.m) + '</textarea>' : esc(c.m || '\u2014');
@@ -21286,7 +21301,7 @@ function mfuReport(){
     inst:Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; })
           .map(function(o){ return [o.z, (CAT_DEF[o.ty] || {}).l || o.ty, o.n, o.i, (o.n ? Math.round(o.i / o.n * 100) : 0) + '٪']; }),
     cos:mfuCompanies().map(function(c){ return [c.co, c.n, c.ins, c.obs, c.rem, c.pct + '٪', mfuLevel(c.pct)[0]]; }),
-    obsTotal:O.length, parties:mfuParties().map(function(p){ return [p, byParty[p] || 0]; }),
+    obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
     req:mfuList('req').map(function(x, i){ var V = mfuReqView(x); return [i + 1, x.t || '', V.u + (V.uSrc ? ' (من المهمة #' + V.uSrc + ')' : ''), x.s || '', V.st + (V.blocked ? ' — متوقفة' : ''), V.tk ? '#' + V.tk.id + ' ' + V.tk.st : '—']; }),
@@ -23150,6 +23165,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V26.8', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'جهات المعالجة كلها صارت تعدل وتحذف من صفحة التحديات والمعوقات، الأصلية والمضافة: زر تعديل بجانب كل جهة لتغيير اسمها، وزر حذف، ولا تحذف آخر جهة، و«الأصلية» يعيد الثلاث كما كانت. الفئات المسندة لجهة محذوفة تنتقل تلقائيا.' ] },
   { v:'V26.7', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'المساعد داخل التطبيق صار يعرف صفحة «التحديات والمعوقات» بكلماتها: إضافة جهة معالجة، جهة أخرى، وصف المعالجة، آخر تاريخ، مهمة معالجة، تصدير نقاط التحديات، فلتر المشعر — بخطوات مكتوبة.' ] },
   { v:'V26.6', d:'٢ أكتوبر ٢٠٢٦', notes:[
@@ -31653,7 +31670,13 @@ function clickA(e){
   if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = FILT.floor = ''; if (typeof CO_SEL !== 'undefined' && CO_SEL.length) CO_SEL.length = 0; LIST_SHOWN = LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
   if (e.target.closest('[data-mfupadd]')){ var npi = document.getElementById('mfuNewParty'), npv = npi ? String(npi.value || '').trim().slice(0, 40) : ''; if (!npv){ toast(t('اكتب اسمَ الجهة')); return true; } if (mfuParties().indexOf(npv) > -1){ toast(t('الجهةُ موجودة')); return true; } if (mfuPut('party', npv, { t:npv, at:Date.now() }) !== false){ logEvent('إضافةُ جهةٍ معالجة — ' + npv); toast(t('أُضيفت الجهة')); } render(1); return true; }   /* (V26.6) */
   var mpr = e.target.closest('[data-mfuprm]');
-  if (mpr){ var rpn = mpr.getAttribute('data-mfuprm'); if (MFU_PARTIES.indexOf(rpn) > -1) return true; var ownM = mfuData().own || {}; Object.keys(ownM).forEach(function(c){ if (ownM[c] === rpn) mfuPut('own', c, MFU_OWN_DEF[c] || 'شركة الخدمة'); }); mfuPut('party', rpn, { gone:true }); logEvent('حذفُ جهةٍ معالجة — ' + rpn); render(1); return true; }
+  if (mpr){ var rpn = mpr.getAttribute('data-mfuprm'), PL = mfuParties(); if (PL.length <= 1){ toast(t('لا بدّ من جهةٍ واحدةٍ على الأقل')); return true; }
+    var fb = PL.filter(function(k){ return k !== rpn; })[0], ownM = mfuData().own || {};
+    Object.keys(ownM).forEach(function(c){ if (ownM[c] === rpn) mfuPut('own', c, (MFU_OWN_DEF[c] && MFU_OWN_DEF[c] !== rpn && PL.indexOf(MFU_OWN_DEF[c]) > -1) ? MFU_OWN_DEF[c] : fb); });
+    mfuPut('party', rpn, Object.assign({}, mfuPartyRaw(rpn) || {}, { gone:true, at:Date.now() })); logEvent('حذفُ جهةٍ معالجة — ' + mfuPartyLabel(rpn)); render(1); return true; }   /* (V26.8) الأصليةُ تُحذَف أيضًا — لا آخرُ جهة */
+  var mpe = e.target.closest('[data-mfupren]');
+  if (mpe){ MFU_PRN = mpe.getAttribute('data-mfupren'); render(1); var pi = document.querySelector('[data-mfuprn]'); if (pi){ pi.focus(); pi.select(); } return true; }
+  if (e.target.closest('[data-mfuprst]')){ MFU_PARTIES.forEach(function(k){ var r = mfuPartyRaw(k); if (r && (r.gone || r.t)) mfuPut('party', k, { at:Date.now() }); }); logEvent('استرجاعُ جهات المعالجة الأصلية'); toast(t('عادت الجهاتُ الأصلية')); render(1); return true; }
   var mfz = e.target.closest('[data-mfz]'), mft = e.target.closest('[data-mft]');   /* (V26.5) */
   if (mfz){ MFU_FLT.z = mfz.getAttribute('data-mfz') || ''; MFU_FLT.t = ''; render(1); return true; }
   if (mft){ MFU_FLT.t = mft.getAttribute('data-mft') || ''; render(1); return true; }
@@ -33196,6 +33219,7 @@ document.addEventListener('change', function(e){
       else { var mc = mfuList('chal').filter(function(x){ return x.id === fa[0]; })[0]; if (mc){ var mn = Object.assign({}, mc); delete mn.id; mn[fa[1] === 'owner' ? 'o' : fa[1]] = fv; mn.at = Date.now(); mn.hist = mfuHist(mc, fa[1], fv); mfuPut('chal', fa[0], mn); } }
       if (el.tagName === 'SELECT') render(1); return;
     }
+    if (el.hasAttribute('data-mfuprn')){ var pk = el.getAttribute('data-mfuprn'), pv = String(el.value || '').trim().slice(0, 40); MFU_PRN = ''; if (pv && pv !== mfuPartyLabel(pk)){ mfuPut('party', pk, Object.assign({}, mfuPartyRaw(pk) || {}, { t:pv, at:Date.now() })); logEvent('تعديلُ اسم جهةٍ معالجة — ' + pk + ' → ' + pv); } render(1); return; }   /* (V26.8) */
     if (el.hasAttribute('data-mfuown') || el.hasAttribute('data-mfuchalst') || el.hasAttribute('data-mfureqst') || el.hasAttribute('data-mfurequ')){
       if (el.hasAttribute('data-mfuown')){ var oc = el.getAttribute('data-mfuown'); if (mfuParties().indexOf(el.value) > -1) mfuPut('own', oc, el.value); render(1); return; }
       var sec = el.hasAttribute('data-mfuchalst') ? 'chal' : 'req', fid = el.getAttribute(el.hasAttribute('data-mfuchalst') ? 'data-mfuchalst' : (el.hasAttribute('data-mfureqst') ? 'data-mfureqst' : 'data-mfurequ'));
