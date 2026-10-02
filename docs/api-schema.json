@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V27.6",
+ "app_version": "V27.7",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1968,7 +1968,8 @@
   "V27.3": "التصديرُ يتبع فلتر الصفحة (بلاغُ المالك): mfuReport() يقرأ mfuObstaclesF() لا mfuObstacles() للفئات والجهات، وبطاقةُ «المعوقات القائمة» بعدد المرشَّح حين يُوضَع فلتر (بلا دلتا)، وR.flt وسطرُ R.greg يحملان «بفلتر: منى · مخيمات»؛ mfuFileName يضيف الفلتر لاسم الملف؛ mfuExportBar يعرض شريحةَ «بفلتر … — أزل الفلتر لتصدير الكلّ». ورقةُ chalpts كانت تتبع الفلتر أصلًا. جرد: numbers +١.",
   "V27.4": "بطاقةُ بيانات الموقع في صفحة التفاصيل: row(k, v, edit) لكلِّ صف (zone/type/region/lat/floor إضافةً إلى name/sq/sign/work)، ومعالجُ data-edit يفتح نموذجَ التعديل ويركّز على الحقل المقابل (خريطةُ fid) مع scrollIntoView؛ وحقلُ seRegion في siteEditHtml وregion في patch siteEditSave.",
   "V27.5": "الهجينة: basemapLabelsSync() في basemapSwap — على اتصالٍ ومع القمر (MAP_SAT) تُنشأ طبقةُ بروتومابس ثانية (BASEMAP.lab) من ملف الجهاز المخزَّن (flavor light، lang ar، maxDataZoom 15، className nskLabels، zIndex 3) بـpaintRules=[] وbackgroundColor undefined فلا يُرسَم إلا النصّ؛ تُرفَع مع خريطة الشوارع أو بلا شبكة؛ إن لم يكن الملفُّ مخزَّنًا يُطلَب تنزيلُه. التفويج: صفُّ «الاتجاه» بعنوان (الذهاب والعودة/الذهاب فقط/العودة فقط) وdashArray للعودة دائمًا لا مع كلِّ الأدوار فقط. تجربةٌ حقيقية ٤ فحوص بملف الجهاز في المخزن.",
-  "V27.6": "(١) خرائطُ جوجل: CFG.gmaps.key (وثيقةُ cfg/gmaps، تُحفَظ من بطاقة gmapsCard في consts بـdata-gmsave/data-gmclear، للإعدادات)؛ gmapsLoad يحمّل واجهةَ جوجل (language=ar، region=SA) ثم vendor/google/leaflet-googlemutant-0.16.0.js (رخصة Beerware)؛ gmapsSync في basemapSwap: على اتصالٍ ومفتاحٍ صالح طبقةُ googleMutant (roadmap بصنف nskBase للوضع الداكن، أو hybrid) بدل MAP_BASE، وبلا شبكةٍ أو فشلٍ (GMAP.fail، مهلة ١٥ ث) عودةٌ تلقائية للأساس المفتوح. (٢) طبقةُ الأسماء NamesLayer (لوحٌ أوّلَ أبناء overlayPane — طبقاتُ ليفلت هنا كلُّها z=600) من maps/mashaer-names.json (يُجلَب بسير osm-fetch: طرقٌ بأسمائها وأماكنُ ومعالم، بالعربية) بحسب التكبير (NAMES_RANK/NAMES_PLACE) على امتداد الجزء الظاهر من الشارع وبلا تداخل، تُخزَّن في مخزن الخريطة؛ تُستعمل مع القمر المفتوح فقط. تجربةٌ حقيقية ٧ فحوص (الرجوعُ التلقائي) + ٤ (الأسماء)."
+  "V27.6": "(١) خرائطُ جوجل: CFG.gmaps.key (وثيقةُ cfg/gmaps، تُحفَظ من بطاقة gmapsCard في consts بـdata-gmsave/data-gmclear، للإعدادات)؛ gmapsLoad يحمّل واجهةَ جوجل (language=ar، region=SA) ثم vendor/google/leaflet-googlemutant-0.16.0.js (رخصة Beerware)؛ gmapsSync في basemapSwap: على اتصالٍ ومفتاحٍ صالح طبقةُ googleMutant (roadmap بصنف nskBase للوضع الداكن، أو hybrid) بدل MAP_BASE، وبلا شبكةٍ أو فشلٍ (GMAP.fail، مهلة ١٥ ث) عودةٌ تلقائية للأساس المفتوح. (٢) طبقةُ الأسماء NamesLayer (لوحٌ أوّلَ أبناء overlayPane — طبقاتُ ليفلت هنا كلُّها z=600) من maps/mashaer-names.json (يُجلَب بسير osm-fetch: طرقٌ بأسمائها وأماكنُ ومعالم، بالعربية) بحسب التكبير (NAMES_RANK/NAMES_PLACE) على امتداد الجزء الظاهر من الشارع وبلا تداخل، تُخزَّن في مخزن الخريطة؛ تُستعمل مع القمر المفتوح فقط. تجربةٌ حقيقية ٧ فحوص (الرجوعُ التلقائي) + ٤ (الأسماء).",
+  "V27.7": "ملفُّ الأسماء maps/mashaer-names.json (٢٠٩ ك.ب: ٩٦٨ خطًّا و٦٨ نقطة، من سير osm-fetch على أربع رقع: منى/الجمرات، مزدلفة، عرفات، شرق مكة؛ name:ar أوّلًا ثم name) في الشجرة الرئيسية فتعمل طبقةُ NamesLayer على القمر الصناعي المفتوح. قرارُ المالك: الخريطةُ المفتوحة لا جوجل — بطاقةُ المفتاح تبقى نائمة."
  },
  "map_and_geolocation": {
   "tile_layers": {
