@@ -12,6 +12,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Streets network — Muzdalifah + Arafat (V28.1, for the route-drawing tool)
+        run: |
+          mkdir -p /tmp/st
+          for BB in "21.37,39.90,21.41,39.95" "21.35,39.94,21.39,40.01" "21.32,39.95,21.35,40.02" "21.39,39.92,21.43,39.96"; do
+            OUT="/tmp/st/$(echo $BB | tr ',' '_').json"
+            Q="[out:json][timeout:150];way[\"highway\"][\"highway\"!~\"^(motorway|motorway_link|construction|proposed|raceway)$\"]($BB);out skel geom;"
+            for u in https://overpass-api.de/api/interpreter https://overpass.kumi.systems/api/interpreter; do
+              curl -sS -m 170 -X POST --data-urlencode "data=$Q" "$u" -o "$OUT" && python3 -c "import json;d=json.load(open('$OUT'));print('$BB ways',len(d['elements']))" && break || rm -f "$OUT"
+            done
+            sleep 4
+          done
+          python3 scripts/osm-streets.py || true
+          ls -la maps/mashaer-streets.json || true
+          git config user.name "osm-fetch-bot"; git config user.email "osm-fetch-bot@users.noreply.github.com"
+          git add maps/mashaer-streets.json 2>/dev/null && git commit -m "OSM: شبكةُ شوارع مزدلفة وعرفات لأداة رسم المسارات (ODbL)" && git pull -q --rebase origin osm-fetch && git push || true
+          exit 0
       - name: Overpass (highways with names, Mina + Jamarat)
         run: |
           Q='[out:json][timeout:170];(way["highway"](21.393,39.855,21.437,39.925););out tags geom;'
