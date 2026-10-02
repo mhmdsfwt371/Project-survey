@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-f7467e1de3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-aef89a1c87.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -18470,6 +18470,14 @@ function bedPanelHtml(){
     + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
+function gmapsCard(){
+  var k = gmapsKey(), ed = may('settings');
+  return card('\u{1F5FA} ' + t('خرائط جوجل'),
+      '<p class="hint" style="margin:0 0 8px">' + esc(t('بمفتاحٍ من منصة خرائط جوجل تُعرَض خرائطُ جوجل (شوارعُ وقمرٌ هجين بأسمائه) تحت نقاطنا على كلِّ الأجهزة على اتصال؛ وبلا شبكةٍ خريطةُ الجهاز كما هي. قيِّد المفتاحَ بنطاق التطبيق فقط.')) + '</p>'
+    + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;flex-wrap:wrap"><input id="gmKey" dir="ltr" placeholder="AIza…" value="' + esc(k) + '" style="min-width:260px;max-width:420px">' + btn(t('احفظ المفتاح'), 'btn-primary btn-sm', ' data-gmsave="1"') + (k ? btn('\u2715 ' + t('أزل المفتاح'), 'btn-quiet btn-sm', ' data-gmclear="1"') : '') + '</div>'
+         : '<p class="hint">' + esc(k ? t('مفتاحٌ مضبوط') : t('لا مفتاح — تُستعمل الخريطةُ المفتوحة')) + '</p>')
+    + '<p class="hint" style="margin:8px 0 0">' + esc(t(k ? (GMAP.fail ? 'تعذّر تحميلُ خرائط جوجل بهذا المفتاح — تُستعمل الخريطةُ المفتوحة حتى يُصحَّح' : 'الحالة: مضبوط') : 'الحالة: الخريطةُ المفتوحة (شوارعُ المصدر المفتوح وقمرُ إسري)')) + '</p>');
+}
 function basemapSatCls(){
   var el = document.getElementById('mapBox');
   if (el) el.classList.toggle('sat', !!(MAP_SAT && !(BASEMAP.layer && MAP && MAP.hasLayer(BASEMAP.layer))));
@@ -18551,38 +18559,135 @@ function basemapAttach(){
 }
 /* (V24.9) طبقةُ أساسٍ واحدةٌ تحت النقاط، و(V25.0) خريطةُ الجهاز حين تُطلَب وحدَه (basemapWant):
    مع الشبكة البلاطُ الشبكيُّ (الفاتحةُ أو القمر) وتُترَك خريطةُ الجهاز من الذاكرة، وعند الانقطاع هي وحدَها. */
-/* ═══ (V27.5) خريطةٌ هجينة: أسماءُ الشوارع والأماكن فوق القمر الصناعي ═══
-   بلاغُ المالك: «مش لاقي أسماء المناطق والشوارع زي الخريطة الهجينة». القمرُ الصناعيُّ بلا أسماء، فتُرسَم فوقه طبقةُ
-   أسماءٍ وحدَها من خريطة الجهاز (بروتومابس، بالعربية من بيانات الشوارع) — قواعدُ الرسم فارغةٌ وبلا خلفية، فلا يظهر إلا
-   النصّ. تُركَّب مع القمر على اتصال، وتُرفَع مع خريطة الشوارع (لها أسماؤها) ومع خريطة الجهاز بلا شبكة. */
+/* ═══ (V27.6) خريطةٌ هجينة: أسماءُ الشوارع والأماكن فوق القمر الصناعي ═══
+   بلاغُ المالك: الهجينةُ (V27.5 من خريطة الجهاز) أفقرُ كثيرًا من خريطة الشوارع في الأسماء عند التكبير المتوسط، لأن بلاطَ الجهاز
+   يُعمِّم الطرقَ الصغيرة. فصارت الأسماءُ من ملف maps/mashaer-names.json (كلُّ طريقٍ له اسم، والأحياءُ والقرى والجبالُ والمعالم،
+   بالعربية، من بيانات الخرائط المفتوحة — ODbL) تُرسَم على لوحٍ فوق البلاط: بحسب التكبير (الرئيسيةُ أوّلًا ثم كلُّ الشوارع)،
+   على امتداد الشارع، بهالةٍ بيضاء، وبلا تداخل. تُركَّب مع القمر على اتصال، وتُرفَع مع خريطة الشوارع (لها أسماؤها) ومع خريطة
+   الجهاز بلا شبكة. يُخزَّن الملفُّ في مخزن الخريطة فيعمل لاحقًا بلا شبكة. */
+var NAMES = { data:null, busy:false, layer:null, ok:true };
+var NAMES_FILE = 'maps/mashaer-names.json';
+var NAMES_RANK = { motorway:1, trunk:1, primary:2, secondary:3, tertiary:4, unclassified:5, residential:5, pedestrian:5, living_street:5, service:6, footway:6, path:6, track:6, steps:7 };
+var NAMES_PLACE = { city:1, town:2, suburb:3, village:3, quarter:3, neighbourhood:4, peak:4, hamlet:5, locality:5 };
+function namesLoad(){
+  if (NAMES.data || NAMES.busy || !NAMES.ok) return;
+  NAMES.busy = true;
+  var fromCache = (typeof caches === 'object' && caches.open) ? caches.open(BASEMAP_CACHE).then(function(c){ return c.match(NAMES_FILE); }).catch(function(){ return null; }) : Promise.resolve(null);
+  fromCache.then(function(r){
+    if (r) return r.json();
+    return fetch(NAMES_FILE, { cache:'no-store' }).then(function(res){
+      if (!res.ok) throw new Error('names ' + res.status);
+      var copy = res.clone();
+      if (typeof caches === 'object' && caches.open) caches.open(BASEMAP_CACHE).then(function(c){ return c.put(NAMES_FILE, copy); }).catch(function(){});
+      return res.json();
+    });
+  }).then(function(d){ if (d && d.lines){ NAMES.data = d; if (NAMES.layer) NAMES.layer.redraw(); } else NAMES.ok = false; })
+    .catch(function(e){ NAMES.ok = false; softErr('names', e, ''); })
+    .then(function(){ NAMES.busy = false; });
+}
+function namesLayerClass(){   /* ليفلت يُحمَّل بعد هذا الملف — فالصنفُ يُبنى عند أوّل حاجة */
+  if (NAMES.cls) return NAMES.cls; if (typeof L !== 'object' || !L.Layer) return null;
+  NAMES.cls = L.Layer.extend({
+  onAdd:function(map){
+    this._map = map;
+    /* في لوح النقاط نفسِه (overlayPane) وأوّلَ أبنائه: فوق البلاط وتحت النقاط والحدود — طبقاتُ ليفلت هنا كلُّها بترتيبٍ واحد فلا يُعتمَد على zIndex */
+    var c = this._cv = document.createElement('canvas'); c.className = 'nskNamesCv'; c.style.position = 'absolute'; c.style.left = '0'; c.style.top = '0'; c.style.pointerEvents = 'none';
+    var pane = map.getPane('overlayPane'); if (pane.firstChild) pane.insertBefore(c, pane.firstChild); else pane.appendChild(c);
+    map.on('moveend zoomend resize', this.redraw, this); map.on('zoomstart', this._hide, this);
+    this.redraw(); namesLoad();
+  },
+  onRemove:function(map){ map.off('moveend zoomend resize', this.redraw, this); map.off('zoomstart', this._hide, this); if (this._cv && this._cv.parentNode) this._cv.parentNode.removeChild(this._cv); this._cv = null; },
+  _hide:function(){ if (this._cv) this._cv.style.visibility = 'hidden'; },
+  redraw:function(){
+    var map = this._map, c = this._cv; if (!map || !c) return;
+    var sz = map.getSize(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    c.width = Math.round(sz.x * dpr); c.height = Math.round(sz.y * dpr); c.style.width = sz.x + 'px'; c.style.height = sz.y + 'px';
+    var tl = map.containerPointToLayerPoint([0, 0]); L.DomUtil.setPosition(c, tl); c.style.visibility = '';
+    var ctx = c.getContext('2d'); if (!ctx) return; ctx.setTransform(dpr, 0, 0, dpr, 0, 0); ctx.clearRect(0, 0, sz.x, sz.y);
+    var D = NAMES.data; if (!D) return;
+    var z = map.getZoom(), b = map.getBounds().pad(0.05), occ = {}, cell = 14;
+    var free = function(x, y, w, h){ var x0 = Math.floor((x - w / 2) / cell), x1 = Math.floor((x + w / 2) / cell), y0 = Math.floor((y - h / 2) / cell), y1 = Math.floor((y + h / 2) / cell), i, j;
+      for (i = x0; i <= x1; i++) for (j = y0; j <= y1; j++) if (occ[i + ',' + j]) return false;
+      for (i = x0; i <= x1; i++) for (j = y0; j <= y1; j++) occ[i + ',' + j] = 1; return true; };
+    var maxRank = z >= 16 ? 7 : z >= 15 ? 6 : z >= 14 ? 5 : z >= 13 ? 4 : z >= 12 ? 3 : 2;
+    var maxPlace = z >= 14 ? 5 : z >= 12 ? 4 : z >= 10 ? 3 : 2;
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.lineJoin = 'round';
+    /* الأماكنُ أوّلًا (أكبرُ وأهمّ)، ثم الطرقُ بترتيب أهميتها */
+    var pts = D.points || [], k, p, pr, px, f;
+    for (k = 0; k < pts.length; k++){ p = pts[k]; pr = NAMES_PLACE[p[1]] || 6; if (pr > maxPlace) continue; if (!b.contains([p[2], p[3]])) continue;
+      px = map.latLngToContainerPoint([p[2], p[3]]); f = pr <= 2 ? 15 : pr <= 3 ? 13 : 12; ctx.font = 'bold ' + f + 'px system-ui, sans-serif';
+      var w = ctx.measureText(p[0]).width + 8; if (!free(px.x, px.y, w, f + 6)) continue;
+      ctx.lineWidth = 3.5; ctx.strokeStyle = 'rgba(255,255,255,.95)'; ctx.strokeText(p[0], px.x, px.y); ctx.fillStyle = pr <= 3 ? '#1a1a1a' : '#2b2b2b'; ctx.fillText(p[0], px.x, px.y); }
+    var lines = D.lines, order = lines.map(function(l, i){ return [NAMES_RANK[l[1]] || 6, i]; }).filter(function(o){ return o[0] <= maxRank; }).sort(function(a, b2){ return a[0] - b2[0]; });
+    ctx.font = 'bold 12px system-ui, sans-serif';
+    for (k = 0; k < order.length; k++){ var ln = lines[order[k][1]], g = ln[2], i, pts2 = [], tot = 0;
+      /* الجزءُ الظاهرُ من الشارع بطوله كلِّه (لا قطعةً واحدة — شوارعُ منى مقطّعةٌ قطعًا قصيرة)، والاسمُ في منتصفه بميل قطعته */
+      for (i = 0; i < g.length; i++){ if (!b.contains(g[i])) { if (pts2.length) break; continue; } pts2.push(map.latLngToContainerPoint(g[i])); }
+      if (pts2.length < 2) continue;
+      for (i = 1; i < pts2.length; i++) tot += Math.sqrt(Math.pow(pts2[i].x - pts2[i - 1].x, 2) + Math.pow(pts2[i].y - pts2[i - 1].y, 2));
+      var tw = ctx.measureText(ln[0]).width; if (tot < tw + 10) continue;
+      var half = tot / 2, acc = 0, seg = null; for (i = 1; i < pts2.length; i++){ var sl = Math.sqrt(Math.pow(pts2[i].x - pts2[i - 1].x, 2) + Math.pow(pts2[i].y - pts2[i - 1].y, 2)); if (acc + sl >= half){ var tt = sl ? (half - acc) / sl : 0; seg = [pts2[i - 1], pts2[i], pts2[i - 1].x + (pts2[i].x - pts2[i - 1].x) * tt, pts2[i - 1].y + (pts2[i].y - pts2[i - 1].y) * tt]; break; } acc += sl; }
+      if (!seg) continue;
+      var mx = seg[2], my = seg[3], ang = Math.atan2(seg[1].y - seg[0].y, seg[1].x - seg[0].x); if (ang > Math.PI / 2) ang -= Math.PI; if (ang < -Math.PI / 2) ang += Math.PI;
+      if (!free(mx, my, Math.abs(Math.cos(ang)) * tw + 14, Math.abs(Math.sin(ang)) * tw + 14)) continue;
+      ctx.save(); ctx.translate(mx, my); ctx.rotate(ang); ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,.92)'; ctx.strokeText(ln[0], 0, 0); ctx.fillStyle = order[k][0] <= 2 ? '#1f2d3d' : '#333'; ctx.fillText(ln[0], 0, 0); ctx.restore(); }
+  }
+  }); return NAMES.cls;
+}
 function basemapLabelsSync(){
-  if (!MAP) return;
+  var C = namesLayerClass(); if (!MAP || !C) return;
   var want = !basemapWant() && !!MAP_SAT;
   try {
-    if (!want){ if (BASEMAP.lab && MAP.hasLayer(BASEMAP.lab)) MAP.removeLayer(BASEMAP.lab); return; }
-    if (BASEMAP.lab){ if (!MAP.hasLayer(BASEMAP.lab)) BASEMAP.lab.addTo(MAP); return; }
+    if (!want){ if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer); return; }
+    if (!NAMES.layer) NAMES.layer = new C();
+    if (!MAP.hasLayer(NAMES.layer)) NAMES.layer.addTo(MAP);
   } catch (e){ LS_ERR = e; }
-  if (BASEMAP.labBusy || typeof caches !== 'object' || !caches.open) return;
-  BASEMAP.labBusy = true;
-  basemapHave().then(function(has){ return has ? basemapScripts() : false; }).then(function(ok){
-    if (!ok || !window.protomapsL || !window.pmtiles) return null;
-    return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){
-      if (!r){ if (BASEMAP.have !== false && !BASEMAP.redl){ BASEMAP.redl = true; basemapDownload(); } return null; }
-      return r.blob();
-    }).then(function(b){
-      if (!b || !MAP || BASEMAP.lab) return null;
-      var src = new pmtiles.PMTiles(new pmtiles.FileSource(new File([b], 'mashaer.pmtiles')));
-      return src.getHeader().then(function(h){
-        if (!MAP || BASEMAP.lab) return null;
-        var bb = (h && h.maxLon > h.minLon && h.maxLat > h.minLat && h.maxLon - h.minLon < 300) ? [[h.minLat, h.minLon], [h.maxLat, h.maxLon]] : undefined;
-        var lab = protomapsL.leafletLayer({ url:src, flavor:'light', lang:'ar', maxDataZoom:15, className:'nskLabels', bounds:bb, zIndex:3, attribution:'' });
-        lab.paintRules = []; lab.backgroundColor = undefined;   /* أسماءٌ فقط — لا طرقَ ولا خلفية */
-        BASEMAP.lab = lab; BASEMAP.labSrc = src;
-        if (!basemapWant() && MAP_SAT) lab.addTo(MAP);
-        return true;
-      });
-    });
-  }).catch(function(e){ softErr('basemap-labels', e, ''); return null; }).then(function(){ BASEMAP.labBusy = false; });
+}
+/* ═══ (V27.6) خرائطُ جوجل داخل خريطتنا ═══
+   قرارُ المالك: «خريطة سهلة وفيها كل التفاصيل زي جوجل». تُعرَض خرائطُ جوجل (شوارعُ أو قمرٌ هجين بأسمائه) أساسًا تحت نقاطنا
+   وحدودنا ومساراتنا كما هي — عبر واجهة جوجل الرسمية وإضافة ليفلت الرسمية لها (GoogleMutant)، بمفتاحٍ يضعه المدير في
+   ثوابت النظام فيصل الأجهزةَ كلَّها. على اتصالٍ فقط؛ وبلا شبكةٍ خريطةُ الجهاز كما كانت، وإن فشل المفتاحُ أو التحميلُ عاد
+   الأساسُ المفتوح (شوارع/قمر) بلا أثر. التكلفةُ ضمن الحصة المجانية الشهرية لحجم استعمالنا. */
+var GMAP = { lib:null, api:null, fail:false, layer:null, kind:'' };
+function gmapsKey(){ return (CFG.gmaps && typeof CFG.gmaps.key === 'string') ? CFG.gmaps.key.trim() : ''; }
+function gmapsWant(){ return !!gmapsKey() && !GMAP.fail && !basemapWant(); }
+function gmapsScript(src, test, ms){
+  return new Promise(function(res){
+    if (test()) return res(true);
+    var el = document.createElement('script'), done = false, tm = setTimeout(function(){ if (!done){ done = true; res(false); } }, ms || 12000);
+    el.src = src; el.async = true;
+    el.onload = function(){ if (!done){ done = true; clearTimeout(tm); res(test()); } };
+    el.onerror = function(){ if (!done){ done = true; clearTimeout(tm); res(false); } };
+    document.head.appendChild(el);
+  });
+}
+function gmapsLoad(){
+  if (GMAP.api) return GMAP.api;
+  var key = gmapsKey(); if (!key) return Promise.resolve(false);
+  GMAP.api = gmapsScript('https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(key) + '&language=ar&region=SA&v=weekly&loading=async', function(){ return !!(window.google && window.google.maps); }, 15000)
+    .then(function(ok){ if (!ok) return false; return gmapsScript('vendor/google/leaflet-googlemutant-0.16.0.js', function(){ return !!(window.L && L.gridLayer && L.gridLayer.googleMutant); }, 12000); })
+    .then(function(ok){ if (!ok){ GMAP.fail = true; GMAP.api = null; } return ok; });
+  return GMAP.api;
+}
+function gmapsSync(){
+  if (!MAP || !MAP_BASE) return;
+  var want = gmapsWant();
+  if (!want){ if (GMAP.layer){ try { if (MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer); } catch (e){} GMAP.layer = null; GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
+  var kind = MAP_SAT ? 'hybrid' : 'roadmap';
+  if (GMAP.layer && GMAP.kind === kind){ if (!MAP.hasLayer(GMAP.layer)) GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
+  gmapsLoad().then(function(ok){
+    if (!ok || !MAP){ basemapSatCls(); return; }
+    if (!gmapsWant()) return;
+    try {
+      if (GMAP.layer && MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer);
+      GMAP.kind = MAP_SAT ? 'hybrid' : 'roadmap';
+      GMAP.layer = L.gridLayer.googleMutant({ type:GMAP.kind, maxZoom:21, className: GMAP.kind === 'roadmap' ? 'nskBase' : 'nskGsat' });
+      GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE);
+      if (NAMES.layer && MAP.hasLayer(NAMES.layer)) MAP.removeLayer(NAMES.layer);   /* لجوجل أسماؤها */
+      logEvent('خرائطُ جوجل — ' + GMAP.kind, '');
+    } catch (e){ GMAP.fail = true; GMAP.layer = null; if (!MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); softErr('gmaps', e, ''); }
+    basemapSatCls();
+  });
 }
 function basemapSwap(){
   if (!MAP || !MAP_BASE) return;
@@ -18596,7 +18701,8 @@ function basemapSwap(){
   } catch (e){ LS_ERR = e; }
   basemapSatCls();
   if (want && !BASEMAP.layer && BASEMAP.have !== false) basemapAttach();
-  basemapLabelsSync();   /* (V27.5) */
+  gmapsSync();   /* (V27.6) جوجل أوّلًا إن كان لها مفتاح */
+  if (!gmapsWant()) basemapLabelsSync();   /* (V27.5) أسماؤنا فوق القمر المفتوح فقط */
 }
 /* بطاقاتُ الجهاز — خريطةُ المشاعر ووضعُ الشمس والتشخيص — تظهر في «حسابي» لكلِّ
    الأدوار (الفنيُّ لا يرى الأدوات) وفي الأدوات للمشرف (V18.0) */
@@ -23176,6 +23282,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.6', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'خرائط جوجل داخل التطبيق: المدير يضع مفتاح منصة خرائط جوجل في «ثوابت النظام» فتعرض خرائط جوجل (شوارع، أو قمر هجين بأسمائه) تحت النقاط والحدود والمسارات على كل الأجهزة على اتصال، وبلا شبكة خريطة الجهاز كما هي، ولو فشل المفتاح تعود الخريطة المفتوحة تلقائيا.',
+      'والخريطة المفتوحة: أسماء الشوارع والأماكن فوق القمر الصناعي صارت ترسم من ملف أسماء كامل للمشاعر (كل طريق له اسم، والأحياء والجبال والمعالم) بحسب التكبير وبميل الشارع — ينزل الملف مع التحديث القادم.' ] },
   { v:'V27.5', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'الخريطة الهجينة: أسماء الشوارع والأماكن بالعربية فوق القمر الصناعي (من خريطة الجهاز)، وتختفي مع خريطة الشوارع التي لها أسماؤها.',
       'مسار التفويج: صف «الاتجاه» بعد اختيار الدور: الذهاب والعودة معا، أو الذهاب فقط، أو العودة فقط. والعودة متقطعة دائما لأن الجوهرة وسوق العرب يحملان الاتجاهين معا.' ] },
@@ -30687,7 +30796,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
     var head = tabHead('items'), cur = tabCur('items');
-    if (cur === 'consts') return head + ghCard() + hoSetupCard() + costGuardCard() + (function(){
+    if (cur === 'consts') return head + ghCard() + hoSetupCard() + costGuardCard() + gmapsCard() + (function(){
     return card('الثوابت',
         '<div class="grid cols-3">'
         + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
@@ -33157,6 +33266,12 @@ function onDocClick(e){
 
   var sa = e.target.closest('[data-sat]');
   if (sa){ mapSat(!MAP_SAT); render(1); if (MAP) mapPaint(); m3Restyle(); return; }
+  if (e.target.closest('[data-gmsave]') || e.target.closest('[data-gmclear]')){   /* (V27.6) مفتاحُ خرائط جوجل */
+    if (!may('settings')){ toast(t('الإعداداتُ للمهندس فما فوق')); return; }
+    var gi = document.getElementById('gmKey'), gv = e.target.closest('[data-gmclear]') ? '' : String((gi && gi.value) || '').trim().slice(0, 80);
+    CFG.gmaps = { key:gv }; CORE.set('cfg', 'gmaps', { key:gv }); GMAP.fail = false; GMAP.api = null;
+    logEvent(gv ? 'مفتاحُ خرائط جوجل — ضُبط' : 'مفتاحُ خرائط جوجل — أُزيل', ''); toast(t(gv ? 'حُفظ المفتاح — تُعرَض خرائطُ جوجل على الأجهزة كلِّها' : 'أُزيل المفتاح'));
+    if (MAP) basemapSwap(); render(1); return; }
   if (e.target.closest('[data-m3]')){ m3Toggle(); return; }
   var mf = e.target.closest('[data-mfilt]');
   if (mf){ MAP_FILT_OPEN = mf.getAttribute('data-mfilt') === '1'; render(1); return; }
