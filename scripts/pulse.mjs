@@ -108,7 +108,7 @@ const dueSoon = dls.filter(x => x.left <= 14);
 /* ── النصّ ─────────────────────────────────────────────────────────────── */
 const oldest = a => a.length ? Math.max(...a.map(x => days(x.at))) : 0;
 const L = [];
-L.push('# نبضُ نُسُك — ' + new Date(now).toISOString().slice(0, 10));
+L.push('# نبضُ نُسُك — ' + new Date(now + 10800000).toISOString().slice(0, 10));
 L.push('');
 L.push('## أمسِ في الميدان');
 const act = Object.keys(byKind).map(k => `${KIND[k] || k}: **${nm(byKind[k])}**`).join(' · ');
@@ -145,7 +145,7 @@ L.push('');
 L.push('القرارُ والتفصيلُ في التطبيق: «متابعة العمل الميداني» للزيارات، و«الطلبات والتوزيع» للإسناد، و«تصحيح البيانات» لما ينقص في السجل.');
 
 /* ── استعمالُ الصفحات وقراءاتُ اليوم (V17.95) — من نبضات الحضور، كتابةٌ واحدةٌ في اليوم ── */
-const today = new Date(now).toISOString().slice(0, 10);
+const today = new Date(now + 10800000).toISOString().slice(0, 10);
 const usage = { at: now, days: {} };
 let readsToday = 0, devToday = 0;
 presence.forEach(pr => {

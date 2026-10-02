@@ -29,7 +29,7 @@ await wait(1500); w.toast = () => {}; w.CORE.set = () => {};
 const click = async el => { el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60); return d.getElementById('content'); };
 const open = async () => { w.goPage('mfu'); w.render(1); await wait(40); const b = d.querySelector('[data-ptab="mfu:mdaily"]'); if (b) await click(b); return d.getElementById('content'); };
 const pick = async (id, v) => { const s = d.getElementById(id); s.value = String(v); s.dispatchEvent(new w.Event('change', { bubbles:true })); await wait(60); return d.getElementById('content'); };
-const dayKey = ms => new Date(ms).toISOString().slice(0, 10);
+const dayKey = ms => new Date(ms + 10800000).toISOString().slice(0, 10);   /* يومُ مكة كالتطبيق */
 let c;
 const heads = () => [...c.querySelectorAll('thead th')].map(th => th.textContent.trim());
 const body = () => [...c.querySelectorAll('tbody tr')];

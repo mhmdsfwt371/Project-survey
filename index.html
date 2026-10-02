@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-5dc6b9b80b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-ea715e19ac.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1309,14 +1309,17 @@ function fmtDate(v, o){ try { return new Date(v).toLocaleDateString(locOf(), o |
 function fmtTime(v, o){ try { return new Date(v).toLocaleTimeString(locOf(), o || { hour:'2-digit', minute:'2-digit' }); } catch (e){ return String(v); } }
 function fmtDT(v){ try { return new Date(v).toLocaleString(locOf()); } catch (e){ return String(v); } }
 function fmtDT2(v, o){ try { return new Date(v).toLocaleString(locOf(), o || undefined); } catch (e){ return String(v); } }
+var NM_CACHE = {}, NM_N = 0;   /* (V26.2) toLocaleString بطيئةٌ وتُنادى آلافَ المرات في الرسمة — الأعدادُ الصحيحةُ تُحفَظ */
 function nm(v){
+  var cacheable = (typeof v === 'number') && isFinite(v) && Math.floor(v) === v && Math.abs(v) < 1e7, ck = cacheable ? (LANG + ':' + v) : '';
+  if (cacheable){ var hit = NM_CACHE[ck]; if (hit !== undefined) return hit; }
   var s = String(v), dg = (I18N[LANG] || I18N.ar).dig;
   if (LANG === 'ar' || LANG === 'ur'){
     s = Number(v).toLocaleString('ar-EG');
     if (LANG === 'ur') s = s.replace(/[٠-٩]/g, function(c){ return dg['٠١٢٣٤٥٦٧٨٩'.indexOf(c)]; });
-    return s;
-  }
-  return Number(v).toLocaleString('en-US');
+  } else s = Number(v).toLocaleString('en-US');
+  if (cacheable){ if (NM_N > 20000){ NM_CACHE = {}; NM_N = 0; } NM_CACHE[ck] = s; NM_N++; }
+  return s;
 }
 
 /* الهيكلُ الثابت — الشريطُ العلويُّ والقائمة — يُرسَم مرةً في HTML ولا
@@ -7047,7 +7050,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
       + cardFlush('النقاط',
           L.length
             ? table(['المعرّف','الموقع','المشعر','الحالة',''],
-                L.slice(0, PG_Q ? 5000 : 200).map(function(x){
+                capList(L, 200).map(function(x){
                   var r = STATE.inss[x.id];
                   var st2 = (r && r.status) || (svDone(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
                   return ['<span class="num">' + esc(x.id) + '</span>',
@@ -7216,7 +7219,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + (handedL.length
         ? cardFlush(t('ما سُلِّم') + ' — ' + nm(handedL.length),
             table(['النقطة','رقم المحضر','المستلِم','التاريخ','الضمان ينتهي'],
-              handedL.slice(0, PG_Q ? 5000 : 200).map(function(x){
+              capList(handedL, 200).map(function(x){
                 var h = handOf(x.id);
                 var end = new Date(h.at + (h.warranty || 12) * 30 * 86400000);
                 return ['<span class="num">' + esc(x.id) + '</span>',
@@ -7250,7 +7253,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
         ? card('\u{1F9E9} ' + t('تسجيلُ فكّ') + ' (UR)',
             '<div class="field"><label>' + esc(t('النقطة')) + ' <span class="req">*</span></label>'
             + '<select data-dissite="1"><option value="">— ' + esc(t('اختر نقطةً سُلِّمت ولم تُفَكّ')) + ' —</option>'
-            +   ready.slice(0, PG_Q ? 5000 : 300).map(function(x){
+            +   capList(ready, 300).map(function(x){
                   return '<option value="' + esc(x.id) + '"' + (DISF.site === x.id ? ' selected' : '') + '>'
                     + esc(x.id + ' \u00b7 ' + (x.name || '').slice(0, 30)) + '</option>'; }).join('')
             + '</select></div>'
@@ -7305,7 +7308,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
         ? card('\u{1F6E1} ' + t('تسجيلُ صيانة') + ' (MR)',
             '<div class="field"><label>' + esc(t('النقطة')) + ' <span class="req">*</span></label>'
             + '<select data-mntsite="1"><option value="">— ' + esc(t('اختر نقطةً مُركّبةً معتمدة')) + ' —</option>'
-            +   (asn.length ? asn : pool).slice(0, PG_Q ? 5000 : 300).map(function(x){
+            +   capList((asn.length ? asn : pool), 300).map(function(x){
                   return '<option value="' + esc(x.id) + '"' + (MNTF.site === x.id ? ' selected' : '') + '>'
                     + esc(x.id + ' \u00b7 ' + (x.name || '').slice(0, 30)) + '</option>'; }).join('')
             + '</select></div>'
@@ -7460,7 +7463,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + cardFlush(t('العناوين') + ' — ' + nm(L.length),
           L.length
             ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا',''],
-                L.slice(0, PG_Q ? 5000 : 200).map(function(x){
+                capList(L, 200).map(function(x){
                   return ['<span class="num">' + esc(x.id) + '</span>',
                           esc(x.name),
                           '<input value="' + esc(x.net || '') + '" data-ipn="' + esc(x.id) + '" dir="ltr" placeholder="10.20.30">',
@@ -8492,7 +8495,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
       + (L.length
         ? cardFlush(t('السجل') + ' — ' + nm(L.length) + ' ' + t('من') + ' ' + nm(L0.length),
             table(['الطلب','النقطة','المُسنَد إليه','الموعد','الحالة',''],
-              L.slice(0, PG_Q ? 5000 : 200).map(function(x){
+              capList(L, 200).map(function(x){
                 var st = regStatus(x), K = WO_KINDS[x.kind] || { i:'', n:x.kind };
                 var site = siteFind(x.site);
                 var on = REG_EDIT === x.id;
@@ -9507,7 +9510,7 @@ function itemPickerHtml(){
     +   '<input type="search" id="pkQ" data-pkq value="' + esc(SOL_Q) + '" placeholder="' + esc(t('اكتب جزءًا من اسم القطعة')) + '" dir="auto"></div>'
     + '<div class="field"><label>' + esc(t('القطعة')) + ' <span class="num">' + nm(hits.length) + '/' + nm(all.length) + '</span></label>'
     +   '<select id="pkItem">' + (hits.length ? '' : '<option value="">' + esc(t('لا صنفَ يطابق البحث')) + '</option>')
-    +   hits.slice(0, PG_Q ? 5000 : 200).map(function(i){
+    +   capList(hits, 200).map(function(i){
           return '<option value="' + esc(i.code) + '">' + esc(i.name) + ' \u00b7 ' + esc(t(i.z === 'cor' ? 'ممر' : 'مخيم')) + '</option>';
         }).join('') + '</select></div>'
     + '<div class="field"><label>' + esc(t('الكمية')) + '</label>'
@@ -13955,7 +13958,7 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
       + cardFlush(t('العمليات') + ' — ' + nm(L.length),
           L.length
             ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
-                L.slice(0, PG_Q ? 5000 : 200).map(function(b){
+                capList(L, 200).map(function(b){
                   return ['<span class="num">' + esc(dayKey(b.at)) + '</span>',
                           esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
                           pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn')];
@@ -14830,7 +14833,7 @@ function queueHtml(){
             .concat(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; })))
     + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
     + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل'],
-        Q.slice(0, PG_Q ? 5000 : 200).map(function(x){
+        capList(Q, 200).map(function(x){
           var v = x.v || {};
           /* «بواسطة» صاحبُ العمل المسجَّل في السجل نفسه لا حاملُ الجهاز:
              الجهازُ الواحد قد يحمل عملَ أكثرَ من فنيٍّ في يومٍ واحد. */
@@ -14841,7 +14844,7 @@ function queueHtml(){
                   '<span class="num">' + esc(fmtDT(x.at || 0)) + '</span>'];
         })) : '')
     + (Q.length > 200
-        ? '<p class="hint">' + esc(t('يُعرَض مئتان — والباقي في الطابور كاملًا لا يسقط منه شيء.')) + '</p>'
+        ? ''
         : '')
 
     /* ── ما وصل حديثًا: متابعةُ عمل الميدان أوّلًا بأول ──
@@ -18135,7 +18138,7 @@ function kmiCard(){
   var cnt = { same:0, doubt:0, new:0 };
   R.forEach(function(r){ cnt[r.st]++; });
   var take = R.filter(function(r){ return r.take; }).length;
-  var rows = R.slice(0, PG_Q ? 5000 : 300).map(function(r, i){
+  var rows = capList(R, 300).map(function(r, i){
     var p = r.p;
     var badge = r.st === 'same' ? pill('موجودة عندنا','ok') : (r.st === 'doubt' ? pill('مشكوكٌ فيها','wrn') : pill('جديدة','acc'));
     return ['<input type="checkbox" data-kmick="' + i + '"' + (r.take ? ' checked' : '') + ' style="width:18px;min-height:18px">',
@@ -19659,10 +19662,13 @@ function coDash(){
 /* ═══ مخيّماتُ الشركة مصنَّفةً ═══
    من حلقةٍ واحدةٍ بالتعريف نفسِه المستعمَل في «نظرة عامة»: تمَّ المسحُ = وصل
    وسجّل ولم يُردّ؛ المتعذّرُ = وصل ولم يستطع؛ تمَّ التركيبُ = حالةُ التركيب. */
-function coBuckets(co){
-  var out = { all:[], sv:[], stuck:[], ins:[] };
+var CO_BK = null;   /* (V26.2) كانت تُحسَب لكلِّ شركةٍ بحلقةٍ على المواقع كلِّها (٤٢ شركة × ١٬٨٠٠ موقع في الرسمة) — صارت حلقةً واحدةً تُصفَّر مع الرسمة */
+function coBucketsAll(){
+  if (CO_BK) return CO_BK;
+  var M = {};
   (STATE.sites || []).forEach(function(x){
-    if (x.co !== co) return;
+    var co = x.co; if (!co) return;
+    var out = M[co] || (M[co] = { all:[], sv:[], stuck:[], ins:[] });
     out.all.push(x);
     var r = STATE.recs[x.id];
     if (r && svDone(r)) out.sv.push(x);
@@ -19670,8 +19676,9 @@ function coBuckets(co){
     var i2 = STATE.inss[x.id];
     if ((i2 && i2.status === 'مُركّب') || x.fstat === 'مُركّب') out.ins.push(x);
   });
-  return out;
+  CO_BK = M; return M;
 }
+function coBuckets(co){ return coBucketsAll()[co] || { all:[], sv:[], stuck:[], ins:[] }; }
 var CO_POP = null;   /* { co, kind } */
 var CO_POP_LBL = { all:'كلُّ المخيّمات', sv:'تمّ المسح', stuck:'متعذّر — يحتاج قرارًا', ins:'تمّ التركيب' };
 function coPopRows(co, kind){
@@ -21982,7 +21989,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     html += (rows.length
       ? cardFlush(t('السجلّ') + ' — ' + nm(rows.length) + ' ' + t('من') + ' ' + nm(all.length),
           table(['النقطة','الحالة','الفني','التاريخ','ملاحظة',''],
-            rows.slice(0, PG_Q ? 5000 : 300).map(function(x){
+            capList(rows, 300).map(function(x){
               return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
                         + esc((x.site.name || '').slice(0, 28)) + '</span>',
                       x.done ? pill('تمت الزيارة','ok') : pill(x.rec.access || 'متعذّر','wrn'),
@@ -21995,7 +22002,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                         : '—'];
             })))
         + (rows.length > 300
-            ? '<p class="hint">' + esc(t('يُعرَض ثلاثمئةٍ — ضيّق البحث أو صدّر الملف لترى الباقي.')) + '</p>' : '')
+            ? '' : '')
       : card('لا عمليات بعد',
           '<p class="hint" style="text-align:center;margin:0">'
           + esc(t('تظهر هنا فور أول مسحٍ ميداني.')) + '</p>'));
@@ -22017,7 +22024,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var views = [['pending','بانتظار اعتماد الوزارة',lists.pending.length],['returned','أعادتها الوزارة',lists.returned.length],['approved','اعتمدتها الوزارة',lists.approved.length]];
     var canMin = may('minapprove'), canEng = may('approve');
     var out = [];
-    rows.slice(0, PG_Q ? 5000 : 150).forEach(function(x){
+    capList(rows, 150).forEach(function(x){
       var r = x.rec, isOpen = MIN_OPEN === x.id, ms = minState(r);
       out.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                 esc(t(x.site.zone || '—')) + (x.site.sq ? ' \u00b7 ' + esc(x.site.sq) : '') + '<br><span class="hint" style="margin:0">' + esc(x.site.co || '—') + '</span>',
@@ -22163,7 +22170,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
               + btn('\u{1F5FA} ' + t('على الخريطة'),'btn-secondary btn-sm',' data-golayer="install"') + '</div>' : '')
         + (L.length
             ? cardFlush(t('جاهز للتركيب') + ' \u2014 ' + nm(L.length),
-                table(['النقطة','الاسم','الحل','اعتُمد','إجراء'], L.slice(0, PG_Q ? 5000 : 200).map(function(x){
+                table(['النقطة','الاسم','الحل','اعتُمد','إجراء'], capList(L, 200).map(function(x){
                   var so = solutionOf(x.id) || {}, r = STATE.recs[x.id] || {};
                   return ['<strong>' + bdi(x.id) + '</strong>', esc((x.name || '').slice(0, 30)),
                           '<span class="num">' + nm(Object.keys(so.items || so.lines || {}).length) + '</span> ' + esc(t('سطر')),
@@ -22182,7 +22189,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       + (L.length
         ? cardFlush(t('الإفادات') + ' — ' + nm(L.length),
             table(['النقطة','التحديات','الملاحظة','المُفيد','الحالة'],
-              L.slice(0, PG_Q ? 5000 : 200).map(function(x){
+              capList(L, 200).map(function(x){
                 return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
@@ -22226,7 +22233,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
       return true;
     });
     var rows = [];
-    show.slice(0, PG_Q ? 5000 : 200).forEach(function(x){
+    capList(show, 200).forEach(function(x){
       var r = x.rec, isOpen = STK_OPEN === x.id;
       rows.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                  x.blocked ? (x.accepted ? pill('متعذّر — مقبول', 'ok') : pill(r.access || 'متعذّر', 'bad')) : pill('راكد بانتظار التركيب', 'wrn'),
@@ -23046,7 +23053,7 @@ function provCard(){
   return cardFlush('\u{1F5A5} ' + t('طلباتُ الإنشاء') + ' \u2014 ' + nm(L.length),
       stats([['يُنشَأ', N(pend), pend ? 'wrn' : ''], ['تمّ', N(done), 'ok'], ['خطأ', N(err), err ? 'bad' : '']])
       + table(['المستخدم','الاسم','الدور','الحال'],
-          L.slice(0, PG_Q ? 5000 : 200).map(function(r){
+          capList(L, 200).map(function(r){
             return ['<span class="num" dir="ltr">' + esc(r.user) + '</span>', esc(r.name || ''),
                     esc(t((ROLES[r.role] || {}).n || r.role)),
                     (r.status === 'done' ? pill('تمّ','ok')
@@ -23094,6 +23101,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V26.2', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'القوائم الطويلة صارت تعرض مئة صف أولا وزر «اعرض المزيد» أسفل الصفحة يزيد مئتين كل ضغطة، والبحث في الصفحة يفتح الكل كما كان. صفحة المسح صارت ترسم في ربع وقتها.',
+      'صفحة الشركات صارت ترسم في نصف وقتها، وكل الصفحات أخف: ما عاد يحسب تخطيط الصفحة كلها قبل كل رسمة لقراءة مواضع التمرير، وتنسيق الأرقام يحفظ بدل أن يعاد آلاف المرات.',
+      'يوم مكة أيضا في فحص النبضات والنبض الصباحي وتقارير الفحص الليلية.' ] },
   { v:'V26.1', d:'١ أكتوبر ٢٠٢٦', notes:[
       'صار يوم التقارير يوم مكة لا يوم غرينتش: الزيارة المسجلة بعد منتصف الليل كانت تحسب على اليوم السابق في ملخص العمل اليومي وإنجاز اليوم وسجل الأحداث والتصدير، فاختلفت الأرقام عما رآه الميدان.',
       'بطاقات «تعالج من خلال» في متابعة الوزارة صارت تعد كل نقطة مرة واحدة عند جهة عائقها الأول، فيساوي مجموعها إجمالي المعوقات.',
@@ -23562,7 +23573,7 @@ function attTeamCard(){
   rows.sort(function(a, b){ return (a[1].indexOf('لم يبدأ') > -1 ? 1 : 0) - (b[1].indexOf('لم يبدأ') > -1 ? 1 : 0); });
   return cardFlush('\u{1F552} ' + t('الحضورُ اليوم') + ' \u2014 ' + nm(people.length),
       stats([['يعمل', N(inN), 'acc'], ['أنهى', N(outN), 'ok'], ['لم يبدأ', N(offN), offN ? 'wrn' : ''], ['خارج النطاق', N(farN), farN ? 'bad' : '']])
-      + (rows.length ? table(['الشخص','الحال','بدأ','أنهى'], rows.slice(0, PG_Q ? 5000 : 200)) : '')
+      + (rows.length ? table(['الشخص','الحال','بدأ','أنهى'], capList(rows, 200)) : '')
       + '<p class="hint" style="margin:8px 0 0">' + esc(t('يضغط كلٌّ بنفسه عند الوصول والمغادرة — والموقعُ يُلتقَط. «خارج النطاق» تُسجَّل ولا تُرفَض: اسأل صاحبَها.')) + '</p>');
 }
 
@@ -24681,7 +24692,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
       + cardFlush(t('الحركات') + ' — ' + nm(L.length),
           L.length
             ? table(['التاريخ','الحركة','الصنف','الكمية','المنفِّذ','النقطة','سجّلها'],
-                L.slice(0, PG_Q ? 5000 : 200).map(function(m){
+                capList(L, 200).map(function(m){
                   var k = {'توريد':'ok','صرف':'acc','استهلاك':'warn','إرجاع':'info','شطب':'off'}[m.kind] || '';
                   return ['<span class="num">' + esc(dayKey(m.at)) + '</span>',
                           pill(t(m.kind), k), esc(m.item), N(m.qty),
@@ -25070,7 +25081,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
     }).length;
     var day0 = dayKey();
     var flap = hbk.filter(function(k){
-      var h = HB[k]; return h && h.from && h.to && String(h.ts || '').slice(0, 10) === day0;
+      var h = HB[k]; return h && h.from && h.to && dayKey(Date.parse(h.ts) || 0) === day0;   /* (V26.2) يومُ مكة لا نصُّ التاريخ العالمي */
     }).length;
     return (may('settings') ? readyCard() : '')
       + bkCard()
@@ -26613,7 +26624,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
       + cardFlush(t('الأحداث') + ' — ' + nm(L.length) + ' ' + t('من') + ' ' + nm(all.length),
           L.length
             ? table(['الوقت','النوع','الحدث','المستخدم'],
-                L.slice(0, PG_Q ? 5000 : 300).map(function(e){
+                capList(L, 300).map(function(e){
                   return ['<span class="num">' + esc(e.day || '') + ' ' + esc(e.at || '') + '</span>',
                           pill(t(evKind(e.what)), evPillKind(e.what)),
                           esc(e.what || ''),
@@ -26631,7 +26642,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
             : '<p class="hint" style="padding:16px">' + esc(t('لا أحداثَ تطابق التصفية.')) + '</p>')
 
       + (L.length > 300
-          ? '<p class="hint">' + esc(t('يُعرَض ثلاثمئةٍ — ضيّق التصفية أو صدّر الملف لترى الباقي.')) + '</p>'
+          ? ''
           : '')
       + '<p class="hint">' + esc(t('في اليد')) + ' <b class="num">' + nm(evAll().length) + '</b> '
       +   esc(t('حدثًا من سجلِّ القاعدة')) + ' — '
@@ -26733,7 +26744,7 @@ PAGE.ev = { m:'النظام', t:'السجلات والإشعارات',
       + cardFlush('السجل',
           L.length
             ? '<div class="notif-rows">' + table(['الوقت','النوع','الرسالة','إلى','قنوات'],
-                L.slice(0, PG_Q ? 5000 : 200).map(function(n){
+                capList(L, 200).map(function(n){
                   var ph = notifPhone(n.to);
                   return ['<span class="num">' + esc(fmtDT2(n.at, { month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' })) + '</span>',
                           pill(t(n.kind), n.lv === 'عاجل' ? 'bad' : n.lv === 'مهم' ? 'wrn' : 'off'),
@@ -27019,7 +27030,7 @@ PAGE.fleet = { m:'الميدان', t:'السيارات',
       + cardFlush(t('السجل كلُّه') + ' — ' + nm(shown.length),
           shown.length
             ? table(['اللوحة','النوع','إلى','العمل','من','إلى','المدة',''],
-                shown.slice(0, PG_Q ? 5000 : 200).map(function(a){
+                capList(shown, 200).map(function(a){
                   var v = vehOf(a.veh);
                   var days = Math.max(1, Math.round(((a.end || Date.now()) - (a.at || Date.now())) / 86400000));
                   var fit = v && a.kind ? vehFits(v.kind, a.kind) : true;
@@ -29643,7 +29654,7 @@ function userLogHtml(uid){
                 + (KIND[x.kind] || '\u2022') + ' ' + esc(t(x.what))
                 + (x.site ? ' <a href="#" data-ulsite="' + esc(x.site) + '">' + esc(x.site) + '</a>' : '') + '</div>';
             }).join('') + '</div>'
-          + (st.n > 200 ? '<p class="hint" style="margin:6px 0 0">' + esc(t('يُعرَض مئتان — والباقي في السجل.')) + '</p>' : '')
+          + ''
         : '<p class="hint" style="margin:0">' + esc(t('لا أفعالَ مسجَّلةً لهذا الحساب بعد — أو لم يُجلَب سجلُّ الأحداث.')) + '</p>')
     +   '<p class="hint" style="margin:8px 0 0">' + esc(t('مقروءٌ ممّا هو مسجَّلٌ أصلًا: الحضورُ والزياراتُ والتركيباتُ والصورُ والمهامُّ وسجلُّ الأحداث.')) + '</p>'
     + '</div></div>';
@@ -30515,7 +30526,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
       + (L.length
         ? cardFlush('الأسماء — ' + nm(L.length),
             table(['الاسم كما كُتب','كما يُقرأ بالإنجليزية','تصحيحُك'],
-              L.slice(0, PG_Q ? 5000 : 300).map(function(k){
+              capList(L, 300).map(function(k){
                 return ['<strong>' + esc(k) + '</strong>',
                         '<span class="hint" style="margin:0">' + esc(dispName(k)) + '</span>',
                         may('settings')
@@ -30838,30 +30849,30 @@ var SCROLL_KEEP = null;
 /* (V26.1) كانت الرسمةُ تقرأ scrollTop لكلِّ صندوقٍ قابلٍ للتمرير قبل أن تُبدِّل المحتوى — والقراءةُ تُجبر المتصفّحَ على
    تخطيط الصفحة كلِّها (٣٠–٨٠ م.ث) ثم يُرمى التخطيطُ مع المحتوى. صارت المواضعُ تُسجَّل لحظةَ التمرير (حدثٌ خفيف)
    وتُقرأ من السجل عند الرسم بلا تخطيط. */
-var SCROLL_SEEN = [], SCROLL_WIN = 0, SCROLL_SELS = ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body', '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'];
+var SCROLL_SEEN = [], SCROLL_WIN = 0, SCROLL_TOPS = (typeof WeakMap === 'function') ? new WeakMap() : null, SCROLL_SELS = ['#content .pop-body', '#mapUI .pop-body', '#content .sheet-body', '#content [style*="overflow:auto"]', '#mapUI [style*="overflow:auto"]'];
 if (typeof document === 'object'){
   document.addEventListener('scroll', function(e){
     var el = e.target;
     if (!el || el === document || el === window){ SCROLL_WIN = window.pageYOffset || document.documentElement.scrollTop || 0; return; }
     if (typeof el.scrollTop !== 'number') return;
+    var top = el.scrollTop;   /* القراءةُ هنا رخيصة: التخطيطُ نظيفٌ أثناء التمرير — وفي الرسم تُقرأ من السجل بلا تخطيط */
+    if (SCROLL_TOPS) SCROLL_TOPS.set(el, top); else el.__nskTop = top;
     if (SCROLL_SEEN.indexOf(el) < 0){ if (SCROLL_SEEN.length > 40) SCROLL_SEEN.shift(); SCROLL_SEEN.push(el); }
   }, { capture:true, passive:true });
 }
 function scrollGrab(){
-  /* الصناديقُ: ما سُجّل تمريرُه بالحدث + الألواحُ والصفائحُ بمحدِّد صنفٍ رخيص — والغالي الذي أُسقط هو محدِّدُ
-     [style*="overflow:auto"] عبر الشجرة كلِّها (يُغطّيه الحدث). والنافذةُ تُقرأ مباشرةً (قراءةٌ واحدةٌ رخيصة). */
-  var boxes = [], seen = [];
+  /* (V26.2) لا قراءةَ تخطيطٍ هنا البتّة: أيُّ قراءةٍ لـscrollTop أو pageYOffset قبل تبديل المحتوى تُجبر تخطيطَ الصفحة كلِّها
+     (قيس ١٦٦ م.ث في صفحة الشركات) ثم يُرمى. المواضعُ من سجل حدث التمرير وحدَه. */
+  var boxes = [];
   SCROLL_SEEN = SCROLL_SEEN.filter(function(el){ return el.isConnected; });
-  var cheap = document.querySelectorAll('#content .pop-body, #mapUI .pop-body, #content .sheet-body');
-  for (var c = 0; c < cheap.length; c++) if (SCROLL_SEEN.indexOf(cheap[c]) < 0) seen.push(cheap[c]);
-  SCROLL_SEEN.concat(seen).forEach(function(el){
-    var top = el.scrollTop; if (!top) return;
+  SCROLL_SEEN.forEach(function(el){
+    var top = SCROLL_TOPS ? SCROLL_TOPS.get(el) : el.__nskTop; if (!top) return;
     for (var q = 0; q < SCROLL_SELS.length; q++){
       var L = document.querySelectorAll(SCROLL_SELS[q]), i = Array.prototype.indexOf.call(L, el);
       if (i > -1){ boxes.push([SCROLL_SELS[q], i, top]); return; }
     }
   });
-  SCROLL_KEEP = { win:(window.pageYOffset || document.documentElement.scrollTop || 0), boxes:boxes };
+  SCROLL_KEEP = { win:SCROLL_WIN, boxes:boxes };
 }
 function scrollBack(sameScreen){
   var K = SCROLL_KEEP; SCROLL_KEEP = null;
@@ -30957,13 +30968,29 @@ function focusBack(g){
     if (g.pos != null && el.setSelectionRange) el.setSelectionRange(g.pos, g.pos);
   } catch (e){ LS_ERR = e; }
 }
+/* ═══ القوائمُ الطويلة مئةً أوّلًا ثم «اعرض المزيد» (V26.2) — قرارُ المالك ═══
+   صفحةٌ تبني ثلاثَمئة صفٍّ (أربعةُ آلافِ عنصر) تأخذ ربعَ ثانيةٍ على المكتب وثانيةً على الهاتف مع كلِّ ضغطة — وهو أقربُ
+   شيءٍ إلى «التعليق». صارت كلُّ قائمةٍ تبني مئةً، وزرٌّ واحدٌ أسفلَ الصفحة يزيد مئتين كلَّ ضغطة؛ والبحثُ في الصفحة
+   يفتح الكلَّ كما كان (حتى خمسة آلاف). المفتاحُ صفحةٌ وشريحة، فلا يحمل عدُّ صفحةٍ إلى أخرى. */
+var MORE_SHOWN = {}, MORE_FIRST = 100, MORE_STEP = 200, MORE_CUT = 0;
+function moreKey(){ return CUR + ':' + ((typeof PTAB === 'object' && PTAB && PTAB[CUR]) || ''); }
+function capList(L, base){
+  if (PG_Q) return L.slice(0, 5000);
+  var n = Math.min(base || MORE_FIRST, MORE_FIRST) + (MORE_SHOWN[moreKey()] || 0);
+  if (L.length > n){ MORE_CUT += L.length - n; return L.slice(0, n); }
+  return L;
+}
+function moreHtml(){
+  if (!MORE_CUT) return '';
+  return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
+}
 function render(force){
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
      أطولَ يجعل صحّتَه رهينةَ تذكُّرِ كلِّ كاتبٍ أن يُبطِله — وذلك عهدٌ يُنسى.
      فيُبنى مرةً في الرسمة ويُستهلَك آلافَ المرات فيها، ويموت معها. */
-  TK_IX = null; FUP_MEMO = {};
+  TK_IX = null; FUP_MEMO = {}; CO_BK = null; MORE_CUT = 0;
   try { wakeSync(); } catch (e){ LS_ERR = e; }   /* قفلُ الشاشة يتبع الصفحةَ المرسومة (V17.99) */
   var FOCUS_G = focusGrab();
   var T_R0 = (typeof performance === 'object' && performance.now) ? performance.now() : Date.now();
@@ -31129,6 +31156,7 @@ function render(force){
         + btn('\u2B07','btn-secondary',' data-xlspage="1" title="' + esc(t('إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف')) + '" aria-label="' + esc(t('إكسل هذه الصفحة كاملةً — كل الجداول بكل الصفوف')) + '"')
       : '');
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
+    + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
     + (ASSIST_OPEN ? assistHtml() : '')
     + (QUEUE_OPEN ? queueHtml() : '');
@@ -31916,6 +31944,7 @@ function clickA(e){
   if (str){ siteRestore(str.getAttribute('data-siterestore')); render(1); return true; }
 
   if (e.target.closest('[data-more]')){ LIST_SHOWN += LIST_PAGE; render(); return true; }
+  if (e.target.closest('[data-morek]')){ MORE_SHOWN[moreKey()] = (MORE_SHOWN[moreKey()] || 0) + MORE_STEP; render(1); return true; }   /* (V26.2) رسمٌ فوريٌّ فيظهر الأثرُ مع الضغطة */
   if (e.target.closest('[data-sq]')){
     var q = document.getElementById('siteQ');
     if (q && !q.value.trim() && !SITE_Q){ toast(t('اكتب ما تبحث عنه: المعرّف أو الشاخص أو المربع')); try { q.focus(); } catch (e2){ LS_ERR = e2; } return true; }   /* (V22.2) */

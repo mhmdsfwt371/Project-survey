@@ -31,14 +31,14 @@ await new Promise(r => setTimeout(r, 300));
 let bad=0; const T=(c,n,x)=>{ if(!c) bad++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
 w.ROLE='engineer'; w.STATE.meta.role='engineer';
 /* ١ · إعادةُ الرسم في المكان تُبقي الموضع */
-w.goPage('sites'); w.render(1); Y=1200;
+w.goPage('sites'); w.render(1); Y=1200; d.dispatchEvent(new w.Event('scroll'));   /* المتصفّحُ يطلق حدثَ التمرير — وبيئةُ الفحص لا */
 w.render(1);
 T(Y===1200, 'إعادةُ الرسم في الشاشة نفسِها تُبقي الموضع', 'Y='+Y);
 /* ٢ · تبديلُ الشاشة يصعد للرأس */
 w.goPage('over'); w.render(1);
 T(Y===0, 'وتبديلُ الشاشة يصعد للرأس', 'Y='+Y);
 /* ٣ · تبديلُ الشريحة يصعد كذلك */
-Y=800; w.goPage('now'); w.render(1);
+Y=800; d.dispatchEvent(new w.Event('scroll')); w.goPage('now'); w.render(1);
 T(Y===0, 'وتبديلُ الشريحة كذلك');
 /* ٤ · اللوحُ الداخليُّ يُبقي موضعَه */
 w.goPage('map'); w.SEL={}; w.SEL_N=0; w.ASN_OPEN=true; w.render(1);
@@ -46,7 +46,7 @@ const body=d.querySelector('#mapUI .pop-body') || d.querySelector('#content .pop
 T(!!body, 'لوحُ الإسناد مرسوم');
 if (body){
   Object.defineProperty(body,'scrollTop',{ value:0, writable:true, configurable:true });
-  body.scrollTop=640;
+  body.scrollTop=640; body.dispatchEvent(new w.Event('scroll'));
   w.render(1);
   const b2=d.querySelector('#mapUI .pop-body') || d.querySelector('#content .pop-body');
   T(b2 && b2.scrollTop===640, 'وموضعُ اللوح يعود بعد الرسم', b2?('scrollTop='+b2.scrollTop):'—');
