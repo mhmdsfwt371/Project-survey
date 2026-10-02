@@ -39,7 +39,11 @@ w.POP_OPEN = false; w.DETAIL_ID = x.id; w.CUR = 'site'; w.render(1); await wait(
 T(d.getElementById('content').innerHTML.includes('<bdi>' + x.id + '</bdi>'), 'وصفحةُ تفاصيل الموقع كذلك');
 const now = Date.now(); w.STATE.recs[x.id] = { id:x.id, at:now, by:'أحمد', access:'تم الوصول', chals:['عائق إنشائي'] };
 w.goPage('survey'); w.render(1); await wait(60); const tb = d.querySelector('[data-ptab="survey:chalm"]'); if (tb){ tb.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150); }
-T(d.getElementById('content').innerHTML.includes('<bdi>' + x.id + '</bdi>'), 'وجداولُ الميدان تعزل المعرِّف');
+/* (V26.9) صفحةُ التحديات الميدانية تعرض التحدياتِ، ونقاطُها في نافذةٍ تُفتَح بالضغط على التحدي */
+const cp = d.querySelector('[data-chalpop]'); if (cp){ cp.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150); }
+const fieldHtml = d.getElementById('content').innerHTML + ((d.getElementById('chalPopHost') || {}).innerHTML || '');
+T(fieldHtml.includes('<bdi>' + x.id + '</bdi>'), 'وجداولُ الميدان ونافذةُ نقاط التحدي تعزل المعرِّف');
+w.CHAL_POP = ''; if (typeof w.chalPopSync === 'function') w.chalPopSync();
 
 console.log('\n══ ٣ · رسائلُ واتساب بالنصِّ الصريح ══');
 const row = { uid:'u', name:'سالم', ph:'0500000000', asn:{ survey:[x.id], install:[], dis:[] }, open:1, wt:0 };

@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V26.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-e212b15168.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-851c01f7e3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -11426,6 +11426,27 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
 /* المضيفُ ابنٌ مباشرٌ للجسد — لا داخل المحتوى ولا داخل قشرة التطبيق: «الثابتُ»
    يتبع أوّلَ أبٍ فيه تحويلٌ أو تموضع، فكان اللوحُ يظهر في أوّل الصفحة لا
    أسفلَ الشاشة. على الجسد لا أبَ يُفسده. */
+/* ═══ نافذةُ نقاط التحدي (V26.9) — من صفحة التحديات والمعوقات في الميدان ═══ */
+var CHAL_POP = '';
+function chalPopHtml(){
+  var cat = CHAL_POP, O = mfuObstaclesF().filter(function(o){ return cat === '*' || o.cats.indexOf(cat) > -1; });
+  var rows = O.map(function(o){ var x = o.x, r = STATE.recs[x.id] || {}, nt = String(r.chal_note || r.note || '').trim();
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>' + esc(x.name || x.id) + '</b>' + (x.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign) : '') + ' <span class="num hint">' + bdi(x.id) + '</span></div>'
+      + '<div class="hint" style="margin:2px 0">' + esc(t(x.zone || '')) + ' \u00b7 ' + esc(typeLabel(x.type || '')) + (cat === '*' ? ' \u00b7 ' + o.cats.map(function(c){ return esc(t(c)); }).join('، ') : '') + (r.access && r.access !== 'تم الوصول' ? ' \u00b7 ' + esc(t(r.access)) : '') + '</div>'
+      + (nt ? '<div class="hint" style="margin:0 0 4px">' + esc(nt.slice(0, 200)) + '</div>' : '')
+      + '<div class="actions" style="margin:0">' + btn('\u25C8 ' + t('على الخريطة'), 'btn-secondary btn-sm', ' data-fly="' + esc(x.id) + '"') + btn(t('التفاصيل'), 'btn-quiet btn-sm', ' data-site="' + esc(x.id) + '"') + '</div></div>'; }).join('');
+  return '<div class="wt-back" data-chalpopx="0"></div>'
+    + '<div class="pop wt-sheet" id="chalPop" role="dialog" aria-label="' + esc(t('نقاط التحدي')) + '">'
+    + '<div class="pop-head"><div style="min-width:0"><h3 style="margin:0">' + esc(cat === '*' ? t('كل النقاط') : t(cat)) + '</h3><div class="hint" style="margin:2px 0 0">' + nm(O.length) + ' ' + esc(t('نقطة')) + ((MFU_FLT.z || MFU_FLT.t) ? ' \u00b7 ' + esc(t('بالفلتر')) : '') + '</div></div>'
+    + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-chalpopx="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<div class="pop-body">' + (rows || '<p class="hint">' + esc(t('لا نقاط.')) + '</p>') + '</div></div>';
+}
+function chalPopSync(){
+  var host = document.getElementById('chalPopHost');
+  if (!host){ host = document.createElement('div'); host.id = 'chalPopHost'; document.body.appendChild(host); }
+  if (CHAL_POP && CUR !== 'survey') CHAL_POP = '';
+  host.innerHTML = CHAL_POP ? chalPopHtml() : '';
+}
 function wtHostSync(){
   var host = document.getElementById('wtHost');
   if (!host){ host = document.createElement('div'); host.id = 'wtHost'; document.body.appendChild(host); }
@@ -14695,7 +14716,7 @@ var HELP_KEYWORDS = {
   sync:      ['تعارض بيانات','مزامنة يدوية'],
   ev:        ['سجل الاحداث','لوج','سجل التدقيق','مين عدل ايه'],
   budm:      ['المستخلص','الملخص المالي'],
-  chal:      ['تحدي ميداني','عائق في الموقع'],
+  chalm:     ['تحدي ميداني','عائق في الموقع','افادات الميدان','المعوقات','التحديات','نقاط التحدي','فلتر المشعر','فلتر النوع','العوائق'],   /* (V26.9) الإفاداتُ ومتابعةُ التحديات صفحةٌ واحدة */
   stuck:     ['نقاط متعثرة','راكد'],
   mobs:      ['جهة معالجة','اضافة جهة','اضافة جهة معالجة','جهة اخرى','جهات المعالجة','المعوقات','التحديات','العوائق','عائق','وصف المعالجة','اخر تاريخ','مهمة معالجة','تصدير نقاط التحديات','فلتر المشعر','فلتر النوع','نقاط التحدي']   /* (V26.7) الصفحةُ المدمجة كانت بلا كلمات فوجد المساعدُ «الفرق» بدلها */
 };
@@ -22320,37 +22341,24 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
       + '<p class="hint">' + esc(t('المتعذّر: وصل المشرفُ ولم يستطع المسح — يُراجَع بصوره وسببه ويُقرَّر فيه: يعود لزيارةٍ أخرى، أو يُقبَل التعذّرُ بحُجّةٍ مكتوبة. والراكد: زيارةٌ تمّت ولم تُركَّب نقطتُه بعد.')) + '</p>';
   })();
     return head + (function(){
-    var L = chalSites().filter(function(x){ return !x.closed; });
-    var byType = {};
-    L.forEach(function(x){ x.chals.forEach(function(c){ byType[c] = (byType[c] || 0) + 1; }); });
-    var types = Object.keys(byType).sort(function(a,b){ return byType[b] - byType[a]; });
-    var otherCard = chalOtherCard();
-
-    return stats([['نقاطٌ عالقة', N(L.length), L.length ? 'wrn' : 'ok'],
-                  ['أنواع تحدٍّ مختلفة', N(types.length)]])
-
-      + (types.length
-        ? card('الأكثر تكرارًا',
-            table(['التحدي','كم نقطة'],
-              types.slice(0, 8).map(function(c){ return [esc(c), N(byType[c])]; })))
-        : '')
-      + otherCard
-
-      + (L.length
-        ? cardFlush(t('النقاط العالقة') + ' — ' + nm(L.length),
-            table(['النقطة','النوع','التحديات','منذ','المُفيد'],
-              L.map(function(x){
-                var days = Math.floor((Date.now() - x.at) / 86400000);
-                return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
-                        typeLabel(x.site && x.site.type),
-                        x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
-                        days > 0 ? (nm(days) + ' ' + t('يوم')) : t('اليوم'),
-                        esc(dispName(x.by) || '—')];
-              })))
-        : alertBox('success','لا نقاطَ عالقةً الآن — كلُّ ما أُفيد بتحدٍّ فيه إمّا رُكِّب أو لم يبلغ بعد.'))
-
-      + '<p class="hint">' + esc(t('القائمةُ تُشتقّ من تحديات المسح الحقيقية — تختفي النقطةُ منها تلقائيًّا حين تُعتمَد تركيبتُها، لا يدويًّا.')) + '</p>';
+    /* (V26.9) قرارُ المالك: للميدان أيضًا صفحةٌ واحدة «التحديات والمعوقات» بأرقام متابعة الوزارة نفسِها (mfuObstaclesF) وفلترها،
+       واضغط التحدي تنفتح نافذةٌ بنقاطه: المخيمُ بشاخصه أو الممرُّ باسمه، ومشعرُه ونوعُه، ووصفُ العائق، وزرُّ الخريطة. */
+    var O = mfuObstaclesF(), byCat = {}, ed = rankOf(ROLE) >= rankOf('engineer');
+    O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); });
+    var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
+    var nr = O.filter(function(o){ return o.cats.indexOf('تعذّر الوصول') > -1; }).length;
+    return mfuFilterRow()
+      + stats([['نقاطٌ فيها معوقات', N(O.length), O.length ? 'wrn' : 'ok'],
+               ['أنواع التحديات', N(cats.length)],
+               ['متعذّر الوصول', N(nr), nr ? 'wrn' : 'ok']])
+      + (cats.length
+        ? cardFlush(t('التحديات') + ' \u2014 ' + esc(t('اضغط التحدي ترى نقاطه')),
+            table(['التحدي', 'كم نقطة', 'الجهة', ''],
+              cats.map(function(c){ return ['<button type="button" class="btn btn-quiet btn-sm" data-chalpop="' + esc(c) + '" style="white-space:normal;text-align:start">' + esc(t(c)) + '</button>', N(byCat[c]), esc(t(mfuPartyLabel(mfuOwnerOf(c)))), btn('\u25B8 ' + t('النقاط'), 'btn-secondary btn-sm', ' data-chalpop="' + esc(c) + '"')]; }))
+            + '<div style="padding:8px 12px">' + btn(t('كل النقاط') + ' (' + nm(O.length) + ')', 'btn-quiet btn-sm', ' data-chalpop="*"') + '</div>')
+        : alertBox('success', 'لا معوقاتٍ في هذا الفلتر.'))
+      + (ed ? chalOtherCard() : '')
+      + '<p class="hint">' + esc(t('المعوقات تُقرأ من المسح الميداني للنقاط غير المركَّبة وتُغلَق تلقائيًّا عند التركيب — والأرقامُ هنا هي نفسُها في متابعة الوزارة.')) + '</p>';
   })();
   }};
 
@@ -23165,6 +23173,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V26.9', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'للميدان: «إفادات الميدان» و«متابعة التحديات» صارتا صفحة واحدة «التحديات والمعوقات» في متابعة العمل الميداني، بفلتر المشعر والنوع وبأرقام متابعة الوزارة نفسها.',
+      'اضغط أي تحد تنفتح نافذة بنقاطه: اسم المخيم وشاخصه أو اسم الممر، ومشعره ونوعه، ووصف العائق، وزر «على الخريطة» لكل نقطة، و«كل النقاط» معا.',
+      'والعودة من الخريطة إلى أي صفحة ما عادت تبتلع أول ضغطة.' ] },
   { v:'V26.8', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'جهات المعالجة كلها صارت تعدل وتحذف من صفحة التحديات والمعوقات، الأصلية والمضافة: زر تعديل بجانب كل جهة لتغيير اسمها، وزر حذف، ولا تحذف آخر جهة، و«الأصلية» يعيد الثلاث كما كانت. الفئات المسندة لجهة محذوفة تنتقل تلقائيا.' ] },
   { v:'V26.7', d:'٢ أكتوبر ٢٠٢٦', notes:[
@@ -28657,8 +28669,7 @@ var TABS = {
     ['ready','جاهز للتركيب','🟠','ما اعتمدته الوزارةُ وحلُّه معتمدٌ ولم يُسنَد تركيبُه بعد — يُجدوَل من هنا.'],
     ['qa','التدقيق الهندسي','🔎','اعتماد التركيبات والسيريالات قبل الإقفال — ولا نقاطَ قبله.'],
     ['ncr','عدم المطابقة','🚫','ما خالف المواصفة — وإجراؤه التصحيحي حتى الإغلاق.'],
-    ['chal','إفادات الميدان','⚠','ما أفاد به الميدان أثناء المسح — بنوعه وحالته.'],
-    ['chalm','متابعة التحديات','📋','أين هي وما هي وما المطلوب — تُغلق تلقائيًّا عند التركيب.'],
+    ['chalm','التحديات والمعوقات','🚧','كلُّ معوقٍ بفلتر المشعر والنوع — واضغط التحدي ترى نقاطه. تُغلق تلقائيًّا عند التركيب.'],
     ['stuck','المتعذّر','\u26D4','ما لم يصل إليه الميدانُ — بسببه وقراره.'],
     ['idle','الراكد','\u23F8','زيارةٌ تمّت ولم يُركَّب موقعُها — بعمر الركود وسببه.']],
   req:[
@@ -28816,6 +28827,7 @@ function pageIds(){
 function goPage(id){
   if (typeof SVQ !== 'undefined' && SVQ.id) SVQ = { id:'', key:'', tmp:null };   /* التنقّلُ يغلق لوحَ تعديل المسح (V22.7) */
   if (TABS[id] && PARENT[id] === id) PTAB[id] = id;
+  if (id !== 'map' && typeof POP_OPEN !== 'undefined' && POP_OPEN) POP_OPEN = false;   /* (V26.9) نافذةُ نقطة الخريطة لا تبقى «مفتوحةً» في صفحةٍ أخرى — كانت تبتلع أوّلَ نقرةٍ بعد العودة من الخريطة */
   CUR = id;
   try { pageTick(id); } catch (e){ if (typeof softErr === 'function') softErr('pageTick', e, ''); }
   try { boxNote('pg', id); } catch (e){ BOX_ERR = e; }
@@ -31170,6 +31182,7 @@ function render(force){
   if (CUR === 'map' && MAP_3D && M3){ setTimeout(function(){ try { M3.resize(); m3Paint(); } catch (e){ LS_ERR = e; } }, 60); }
   /* لوحةُ المهمة: تُرسَم في مضيفها الثابت خارج المحتوى — أسفلَ الشاشة على الهاتف ووسطَها على المكتب */
   if (typeof wtHostSync === 'function') wtHostSync();
+  if (typeof chalPopSync === 'function') chalPopSync();   /* (V26.9) */
   /* الترشيحُ يُعاد بعد الرسم — وإلا عاد ما أُخفي عند أوّل تحديثٍ حيّ */
   if (typeof pgFind === 'function' && PG_Q && !pgBindOf()) setTimeout(function(){ pgFind(); }, 0);
   /* لوحُ البلاغ على الجسد كلوح المهمة — يُفتَح فوق أيِّ شاشة */
@@ -31677,6 +31690,9 @@ function clickA(e){
   var mpe = e.target.closest('[data-mfupren]');
   if (mpe){ MFU_PRN = mpe.getAttribute('data-mfupren'); render(1); var pi = document.querySelector('[data-mfuprn]'); if (pi){ pi.focus(); pi.select(); } return true; }
   if (e.target.closest('[data-mfuprst]')){ MFU_PARTIES.forEach(function(k){ var r = mfuPartyRaw(k); if (r && (r.gone || r.t)) mfuPut('party', k, { at:Date.now() }); }); logEvent('استرجاعُ جهات المعالجة الأصلية'); toast(t('عادت الجهاتُ الأصلية')); render(1); return true; }
+  var cpo = e.target.closest('[data-chalpop]');   /* (V26.9) نافذةُ نقاط التحدي */
+  if (cpo){ CHAL_POP = cpo.getAttribute('data-chalpop') || ''; chalPopSync(); return true; }
+  if (e.target.closest('[data-chalpopx]')){ CHAL_POP = ''; chalPopSync(); return true; }
   var mfz = e.target.closest('[data-mfz]'), mft = e.target.closest('[data-mft]');   /* (V26.5) */
   if (mfz){ MFU_FLT.z = mfz.getAttribute('data-mfz') || ''; MFU_FLT.t = ''; render(1); return true; }
   if (mft){ MFU_FLT.t = mft.getAttribute('data-mft') || ''; render(1); return true; }
