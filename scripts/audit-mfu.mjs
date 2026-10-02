@@ -56,6 +56,14 @@ T(co.querySelectorAll('.mfu-co').length === Math.min(12, C.length) && !!co.query
 co.querySelector('[data-mfucosall]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
 T(d.querySelectorAll('.mfu-co').length === C.length, 'واعرض الكلَّ يعرض ' + C.length);
 
+console.log('\n══ ٣ب · جهةٌ أخرى تُضاف من الصفحة (V26.6) ══');
+{ const ob = await open('mobs'); const inp = d.getElementById('mfuNewParty'); T(!!inp && !!ob.querySelector('[data-mfupadd]'), 'للمكتب حقلُ «جهةٌ أخرى» وزرُّ الإضافة');
+  inp.value = 'المقاول الكهربائي'; ob.querySelector('[data-mfupadd]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80);
+  T(w.mfuParties().indexOf('المقاول الكهربائي') > -1 && wrote.some(x => x[0] === 'cfg' && x[1] === 'mfu'), 'تُضاف وتُكتب في إعدادات المتابعة فتصل الأجهزة');
+  const sel = [...d.querySelectorAll('[data-mfuown] option')].map(o => o.value); T(sel.indexOf('المقاول الكهربائي') > -1, 'وتظهر في قائمة الجهة لكلِّ فئة');
+  const rm = d.querySelector('[data-mfuprm="المقاول الكهربائي"]'); if (rm){ rm.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(80); }
+  T(w.mfuParties().indexOf('المقاول الكهربائي') < 0 && w.mfuParties().length === 3, 'وتُحذَف، والثلاثُ الأصليةُ باقية'); }
+
 console.log('\n══ ٤ · السجلّان ══');
 await open('mobs');
 d.getElementById('mcT').value = 'تأخّر الشحنات'; d.getElementById('mcM').value = 'إعادة الجدولة مع المصنع'; d.getElementById('mcO').value = 'المشتريات';
