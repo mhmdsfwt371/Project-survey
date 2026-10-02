@@ -55,6 +55,7 @@ console.log('\n══ المساراتُ مبنيةٌ من مخيمات الوز
 { const RT = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8')), PL = JSON.parse(readFileSync('layers/tafweej-plan.json', 'utf8')), rawH = readFileSync('index.html', 'utf8');
   T(RT.v >= 3 && /أقصرُ طريقٍ/.test(RT.note) && existsSync('scripts/tafweej-routes-build.mjs') && PL.v === 2, 'ملفُ المسارات من المولّد (والأرضيُّ من خطِّ المخطّط بقرار المالك — V27.9)، وخطوطُ المخطّط محفوظةٌ دليلًا');
   T(/plan-v2/.test(String(RT.floors['0'].src || '')) && RT.floors['0'].go.length > 30, 'الأرضيُّ: الذهابُ خطُّ مخطّط الوزارة المطابَقُ على الشوارع ومعه ما لاصقه من الأحمر (V27.9)');
+  T(/streets-only/.test(String(RT.floors['0'].src || '')) && existsSync('layers/mina-streets.json'), 'والأرضيُّ على الشوارع وحدَها بشبكة mina-streets.json (V28.0) — شبكةُ الرسم بيد المهندس');
   T(['0', '1', '2', '3', '4'].every(f => RT.floors[f] && RT.floors[f].go.length && RT.floors[f].back.length && RT.floors[f].go.every(pl => pl.length >= 2)), 'ولكلِّ دورٍ ذهابٌ وعودةٌ على الشوارع');
   const mtr = (a, b) => { const r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos(a[0] * r), y = (b[0] - a[0]) * r; return 6371000 * Math.sqrt(x * x + y * y); };
   const en = f => (RT.ends.en[f] || []).map(n => { const m = rawH.match(new RegExp('\\["NSK-JMR-PNT-' + n + '","[^"]*",\\d+,\\d+,\\d+,([0-9.]+),([0-9.]+)')); return m ? [+m[1], +m[2]] : null; }).filter(Boolean);

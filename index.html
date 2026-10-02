@@ -871,6 +871,8 @@ body.kiosk .kk-story{font-size:21px}
 .cx-box{white-space:normal;min-width:0;max-width:100%}
 .cx{padding:6px 0;border-top:1px dashed var(--line);white-space:normal}
 .cx-l{white-space:normal;overflow-wrap:anywhere;word-break:break-all;text-align:left;unicode-bidi:isolate}
+.map-panel{position:absolute;top:56px;inset-inline-start:10px;z-index:1200;max-width:min(92vw,360px);padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:13px;line-height:1.6}
+.map-panel .grid{margin:0 0 6px}
 .tfw-card{margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:13px;line-height:1.7}
 .svq-ph{width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:0 0 52px}
 .svq-ph img{width:100%;height:100%;object-fit:cover}
@@ -1203,7 +1205,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1266,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-6373537f3d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-9908ee36dc.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4294,6 +4296,7 @@ function tfwLines(){
   if (!TFW.lines) TFW.lines = L.layerGroup().addTo(MAP);
   TFW.lines.clearLayers();
   tfwCampsPaint();   /* (V27.8) مخيماتُ الدور أوّلًا — تحت الخطوط */
+  var DRW = tfdDrawn();   /* (V28.0) ما رسمه المهندسُ لدورٍ واتجاهٍ يُعرَض بدل المولَّد */
   if (TFW.camp){   /* (V24.5) مسارُ المخيم المختار وحدَه — أعرضُ خطًّا */
     var cm = [];
     [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){ if (TFW.d !== 'both' && TFW.d !== k[0]) return; var ln = L.polyline(TFW.camp[k[0]].pts, { renderer:MAP_CV, color:k[1], weight:6, opacity:0.97, lineCap:'round', lineJoin:'round', interactive:false }); ln.addTo(TFW.lines); cm.push(ln); });
@@ -4307,9 +4310,10 @@ function tfwLines(){
     var fl = (TFW.routes.floors || {})[fk] || {};
     [['back', '#D0021B'], ['go', '#F5C400']].forEach(function(k){
       if (TFW.d !== 'both' && TFW.d !== k[0]) return;
-      (fl[k[0]] || []).forEach(function(pts){
+      var drawn = DRW[fk] && DRW[fk][k[0]] && DRW[fk][k[0]].length ? DRW[fk][k[0]] : null;   /* (V28.0) */
+      (drawn || fl[k[0]] || []).forEach(function(pts){
         if (!pts || pts.length < 2) return;
-        var ln = L.polyline(pts, { renderer:MAP_CV, color: all ? TFW_COL[+fk] : k[1], weight: all ? 3.5 : 4, opacity:0.95, dashArray: k[0] === 'back' ? '7 6' : null,   /* (V27.5) العودةُ متقطّعةٌ دائمًا: الجوهرةُ وسوقُ العرب يحملان الاتجاهين معًا فيُرى الاثنان */ lineCap:'round', lineJoin:'round', interactive:false });
+        var ln = L.polyline(pts, { renderer:MAP_CV, color: all ? TFW_COL[+fk] : k[1], weight: all ? 3.5 : (drawn ? 5 : 4), opacity:0.95, dashArray: k[0] === 'back' ? '7 6' : null,   /* (V27.5) العودةُ متقطّعةٌ دائمًا: الجوهرةُ وسوقُ العرب يحملان الاتجاهين معًا فيُرى الاثنان */ lineCap:'round', lineJoin:'round', interactive:false });
         ln.addTo(TFW.lines); made.push(ln);
       });
     });
@@ -7084,6 +7088,16 @@ function layerBar(){
 }
 
 /* ── لوحُ الطبقة: يُظهر ما ينقص قبل أن يُجدوَل ── */
+PAGE.tfwdraw = { m:'الميدان', t:'رسم المسارات من وإلى الجمرات', l:'ارسم بيدك على الخريطة مسارَ كلِّ دورٍ ذهابًا وعودة — يلتصق بالشوارع ويُعرَض على الأجهزة كلِّها بدل المولَّد.',
+  body:function(){
+    var D = tfdDrawn(), rows = [], drawnBy = (CFG.tfwdraw && CFG.tfwdraw.by) || '', meta = STATE.meta || {};
+    TFW_FL.forEach(function(n, f){ ['go', 'back'].forEach(function(d){ var pls = (D[f] && D[f][d]) || [], m = Math.round(tfdLen(pls));
+      rows.push([esc(t(floorName(f))), esc(t(d === 'go' ? 'الذهاب' : 'العودة')), pls.length ? pill(nm(pls.length) + ' ' + t('خط') + ' \u00b7 ' + nm(m) + ' ' + t('م'), 'ok') : pill(t('المولَّد من المخطّط'), 'wrn'),
+        (tfdMay() ? btn('\u270F ' + t('ارسم على الخريطة'), 'btn-secondary btn-sm', ' data-tfdgo="' + f + '|' + d + '"') + (pls.length ? ' ' + btn('\u2715 ' + t('احذف المرسوم'), 'btn-quiet btn-sm', ' data-tfdclear="' + f + '|' + d + '"') : '') : '')]); }); });
+    return card('\u{1F6B6} ' + t('كيف أرسم؟'), '<ol class="hint" style="margin:0;padding-inline-start:18px"><li>' + esc(t('اختر الدور والاتجاه ثم «ارسم على الخريطة» — تُفتَح الخريطةُ وعليها مخيماتُ الدور.')) + '</li><li>' + esc(t('اضغط نقطةً بعد نقطة من أوّل المسار إلى آخره؛ كلُّ نقطةٍ تلتصق بأقرب شارع وتُوصَل بما قبلها على الشوارع وحدَها — لا فوق خيمةٍ ولا بيت.')) + '</li><li>' + esc(t('«تراجع» يرفع آخرَ نقطة، و«احفظ المسار» يثبّته ويعرضه على الأجهزة كلِّها بدل المولَّد. ارسم أكثرَ من خطٍّ للدور نفسِه إن تفرّع.')) + '</li></ol>')
+      + cardFlush(t('المسارات'), table(['الدور', 'الاتجاه', 'المرسوم', ''], rows))
+      + '<p class="hint">' + esc(t('المولَّدُ من مخطّط الوزارة يبقى حيث لا رسم؛ وما يُرسَم يحلُّ محلَّه للدور والاتجاه نفسَيهما، ويُحذَف من هنا.')) + '</p>';
+  } };
 PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
   l:'طبقةُ العمل الحالية، وما حدّدته منها لعملٍ جماعيٍّ عليه.',
   body:function(){
@@ -14699,6 +14713,7 @@ var HELP_KEYWORDS = {
   budm:      ['المستخلص','الملخص المالي'],
   chalm:     ['تحدي ميداني','عائق في الموقع','افادات الميدان','المعوقات','التحديات','نقاط التحدي','فلتر المشعر','فلتر النوع','العوائق'],   /* (V26.9) الإفاداتُ ومتابعةُ التحديات صفحةٌ واحدة */
   stuck:     ['نقاط متعثرة','راكد'],
+  tfwdraw:   ['رسم المسار','مسار التفويج','ارسم على الخريطة','الذهاب والعودة','مسار الدور','رسم مسارات الجمرات'],
   mobs:      ['جهة معالجة','اضافة جهة','اضافة جهة معالجة','جهة اخرى','جهات المعالجة','المعوقات','التحديات','العوائق','عائق','وصف المعالجة','اخر تاريخ','مهمة معالجة','تصدير نقاط التحديات','فلتر المشعر','فلتر النوع','نقاط التحدي']   /* (V26.7) الصفحةُ المدمجة كانت بلا كلمات فوجد المساعدُ «الفرق» بدلها */
 };
 
@@ -15246,6 +15261,77 @@ function popHtml(){
    يُقال «كلَّ كم مترًا» فتُولَّد النقاطُ على استقامته بالمسافة المطلوبة —
    يُعرَض عددُها قبل الحفظ، ولا تُكتَب إلا بضغطةٍ ثانية. والإحداثياتُ من
    الخريطة لا من تقديرٍ، فما يُرسَم هو ما يُحفَظ. */
+/* ═══ (V28.0) رسمُ مسارات التفويج من وإلى الجمرات — بيد المهندس، على الشوارع ═══
+   قرارُ المالك: «خليني أرسم على الخريطة أنا بطريقةٍ بدون ما أنط فوق البيوت أو الخيام». يضغط نقاطًا على الخريطة، وكلُّ نقطةٍ
+   تلتصق بأقرب عقدةِ شارعٍ وتُوصَل بما قبلها بأقصر طريقٍ على شبكة شوارع منى وممرّاتها (layers/mina-streets.json من بيانات
+   الخرائط المفتوحة) — فلا يمرُّ الخطُّ إلا في شارع. يُحفَظ لكلِّ دورٍ واتجاهٍ في الإعدادات (settings/tfwdraw) فيصل
+   الأجهزةَ كلَّها، ويُعرَض بدل المسار المولَّد لذلك الدور والاتجاه. للمهندس فما فوق. */
+var TFD = { on:false, f:0, d:'go', nodes:[], paths:[], g:null, busy:false };
+function tfdMay(){ return typeof ROLE !== 'undefined' && typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('engineer'); }
+function tfdGraph(){
+  if (TFD.g) return Promise.resolve(TFD.g);
+  if (TFD.busy) return TFD.busy;
+  TFD.busy = fetch('layers/mina-streets.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+    TFD.busy = null; if (!d || !d.n) return null;
+    var adj = d.n.map(function(){ return []; });
+    d.e.forEach(function(e){ var a = d.n[e[0]], b = d.n[e[1]], len = geoDist(a, b); adj[e[0]].push([e[1], len]); adj[e[1]].push([e[0], len]); });
+    TFD.g = { n:d.n, adj:adj }; return TFD.g;
+  }).catch(function(e){ TFD.busy = null; LS_ERR = e; return null; });
+  return TFD.busy;
+}
+function tfdNearest(lat, lng){ var g = TFD.g, best = -1, bd = 1e12, i, n; if (!g) return -1; for (i = 0; i < g.n.length; i++){ n = g.n[i]; var d = (n[0] - lat) * (n[0] - lat) + (n[1] - lng) * (n[1] - lng) * 0.866; if (d < bd){ bd = d; best = i; } } return (best >= 0 && geoDist(g.n[best], [lat, lng]) <= 150) ? best : -1; }
+function tfdPath(a, b){
+  var g = TFD.g; if (!g || a < 0 || b < 0) return null; if (a === b) return [g.n[a]];
+  var dist = {}, prev = {}, done = {}, heap = [[0, a]]; dist[a] = 0;
+  while (heap.length){
+    var bi = 0, i; for (i = 1; i < heap.length; i++) if (heap[i][0] < heap[bi][0]) bi = i;
+    var cur = heap.splice(bi, 1)[0], u = cur[1]; if (done[u]) continue; done[u] = 1;
+    if (u === b) break; if (cur[0] > 6000) break;
+    var ad = g.adj[u]; for (i = 0; i < ad.length; i++){ var v = ad[i][0], nd = cur[0] + ad[i][1]; if (dist[v] == null || nd < dist[v]){ dist[v] = nd; prev[v] = u; heap.push([nd, v]); } }
+  }
+  if (dist[b] == null) return null;
+  var out = [], k = b; while (k != null){ out.push(g.n[k]); if (k === a) break; k = prev[k]; } return out.reverse();
+}
+function tfdStart(f, d){
+  if (!tfdMay()){ toast(t('رسمُ المسارات للمهندس فما فوق')); return; }
+  TFD.on = true; TFD.f = (f == null ? TFD.f : +f); TFD.d = d || TFD.d; TFD.nodes = []; TFD.paths = []; POP_OPEN = false; PIN_ON = false; if (typeof ROUTE === 'object') ROUTE.on = false;
+  tfdGraph().then(function(g){ toast(t(g ? 'اضغط على الخريطة نقطةً بعد نقطة — الخطُّ يمشي على الشوارع وحدَها' : 'تعذّر تحميلُ شبكة الشوارع — تحقّق من الشبكة')); });
+  if (typeof TFW === 'object' && TFW.f < 0){ TFW.f = TFD.f; tfwLoad(); tfwPaint(); }
+  if (typeof mapPaint === 'function') mapPaint(); render(1);
+}
+function tfdAdd(lat, lng){
+  if (!TFD.g){ tfdGraph().then(function(g){ if (g) tfdAdd(lat, lng); }); return; }
+  var n = tfdNearest(lat, lng); if (n < 0){ toast(t('بعيدٌ عن أيِّ شارع — اضغط أقربَ إلى الطريق')); return; }
+  if (TFD.nodes.length){ var last = TFD.nodes[TFD.nodes.length - 1]; if (last === n) return; var path = tfdPath(last, n); if (!path){ toast(t('لا طريقَ على الشوارع بين النقطتين — قرّبهما')); return; } TFD.paths.push(path); }
+  TFD.nodes.push(n); if (typeof mapPaint === 'function') mapPaint(); render(1);
+}
+function tfdUndo(){ TFD.nodes.pop(); TFD.paths.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdCancel(){ TFD.on = false; TFD.nodes = []; TFD.paths = []; if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdDrawn(){ var o = (CFG.tfwdraw && CFG.tfwdraw.floors) || {}; return o; }
+function tfdLen(pls){ var m = 0; (pls || []).forEach(function(pl){ for (var i = 1; i < pl.length; i++) m += geoDist(pl[i - 1], pl[i]); }); return m; }
+function tfdSave(){
+  if (!tfdMay() || !TFD.paths.length){ toast(t('ارسم نقطتين على الأقل')); return false; }
+  var pl = []; TFD.paths.forEach(function(p, i){ p.forEach(function(pt, j){ if (i && j === 0) return; pl.push([+pt[0].toFixed(6), +pt[1].toFixed(6)]); }); });
+  var all = JSON.parse(JSON.stringify(tfdDrawn())); var fl = all[TFD.f] = all[TFD.f] || {}; var arr = fl[TFD.d] = fl[TFD.d] || []; arr.push(pl);
+  CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw);
+  logEvent('رسمُ مسار تفويج — ' + t('الدور') + ' ' + t(TFW_FL[TFD.f]) + ' · ' + t(TFD.d === 'go' ? 'الذهاب' : 'العودة') + ' · ' + Math.round(tfdLen([pl])) + ' م', '');
+  toast(t('حُفظ المسارُ — يُعرَض على الأجهزة كلِّها بدل المولَّد')); TFD.nodes = []; TFD.paths = [];
+  if (typeof TFW === 'object'){ TFW.f = TFD.f; tfwPaint(); } if (typeof mapPaint === 'function') mapPaint(); render(1); return true;
+}
+function tfdClear(f, d){
+  if (!tfdMay()) return; var all = JSON.parse(JSON.stringify(tfdDrawn())); if (!all[f] || !all[f][d]) return; delete all[f][d]; if (!Object.keys(all[f]).length) delete all[f];
+  CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw); logEvent('حذفُ مسار تفويج مرسوم — ' + t('الدور') + ' ' + t(TFW_FL[f]) + ' · ' + t(d === 'go' ? 'الذهاب' : 'العودة'), '');
+  if (typeof TFW === 'object' && TFW.f >= 0) tfwPaint(); render(1);
+}
+function tfdPanelHtml(){
+  if (!TFD.on) return '';
+  var m = Math.round(tfdLen(TFD.paths));
+  return '<div class="map-panel"><div style="font-weight:700;margin:0 0 6px">\u{1F6B6} ' + esc(t('رسم مسار التفويج')) + '</div>'
+    + '<div class="grid cols-2"><div class="field"><label>' + esc(t('الدور')) + '</label><select data-tfdf="1">' + TFW_FL.map(function(n, i){ return '<option value="' + i + '"' + (TFD.f === i ? ' selected' : '') + '>' + esc(t(n)) + '</option>'; }).join('') + '</select></div>'
+    + '<div class="field"><label>' + esc(t('الاتجاه')) + '</label><select data-tfdd="1"><option value="go"' + (TFD.d === 'go' ? ' selected' : '') + '>' + esc(t('الذهاب')) + '</option><option value="back"' + (TFD.d === 'back' ? ' selected' : '') + '>' + esc(t('العودة')) + '</option></select></div></div>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t('اضغط على الخريطة نقطةً بعد نقطة؛ كلُّ نقطةٍ تلتصق بأقرب شارع وتُوصَل بما قبلها على الشوارع وحدَها.')) + ' ' + nm(TFD.nodes.length) + ' ' + esc(t('نقطة')) + ' \u00b7 ' + nm(m) + ' ' + esc(t('م')) + '</p>'
+    + '<div class="actions" style="margin:0">' + btn('\u{1F4BE} ' + t('احفظ المسار'), 'btn-primary btn-sm', ' data-tfdsave="1"') + btn('\u21A9 ' + t('تراجع'), 'btn-quiet btn-sm', ' data-tfdundo="1"') + btn('\u2716 ' + t('إلغاء'), 'btn-quiet btn-sm', ' data-tfdcancel="1"') + '</div></div>';
+}
 var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'',
               gen:null, moved:0, sq:'', sign:'' }, RT_MIN = false;
 /* المسافةُ بيد الراسم (V17.58): أدناها خمسةُ أمتار لا خمسةٌ وعشرون، والعددُ
@@ -16643,6 +16729,7 @@ function mapInit(){
   MAP.on('click', function(e){
     if (IOT.edit){ iotMapClick(e.latlng); return; }   /* (V25.8) */
     if (BED){ if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
+    if (typeof TFD === 'object' && TFD.on){ tfdAdd(e.latlng.lat, e.latlng.lng); return; }   /* (V28.0) */
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
     else if (typeof ROUTE === 'object' && ROUTE.on) routeAdd(e.latlng.lat, e.latlng.lng);
@@ -16862,6 +16949,10 @@ function mapPaint(light){
      مرقَّمة، والمساحةُ مضلَّعًا مظلَّلًا — وتُعرَض نقاطُ التوليد الناتجةُ
      باهتةً قبل الحفظ، فيُرى ما سيُحفَظ قبل أن يُحفَظ. */
   try {
+    if (typeof TFD === 'object' && TFD.on && MAP_TMP){   /* (V28.0) المسارُ المرسومُ قبل حفظه */
+      TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
+      TFD.nodes.forEach(function(ni){ var n = TFD.g && TFD.g.n[ni]; if (n) L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor:'#FF8C42', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });
+    }
     if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
       var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
@@ -20290,6 +20381,7 @@ function mapUIHtml(){
           + '</div></div>'
         : '')
     + (ROUTE.on ? routePanelHtml() : '')
+    + tfdPanelHtml()   /* (V28.0) */
     + (IOT.edit ? iotPanelHtml() : '')   /* (V25.8) */
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
     + '<div class="map-fab">'
@@ -20297,6 +20389,7 @@ function mapUIHtml(){
     +   ((may('newsite') || may('settings'))
           ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')),
                 PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"')
+            + (tfdMay() ? btn((TFD.on ? '\u270F ' + t('جارٍ رسم المسار') : '\u{1F6B6} ' + t('رسم مسار التفويج')), TFD.on ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-tfd="1"') : '')   /* (V28.0) */
             + btn((ROUTE.on && ROUTE.mode === 'line' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F6E3} ' + t('مسار بنقاط')),
                 (ROUTE.on && ROUTE.mode === 'line') ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-route="1"')
             + btn((ROUTE.on && ROUTE.mode === 'area' ? '\u270F ' + t('جارٍ الرسم') : '\u{1F17F} ' + t('مساحة بنقاط')),
@@ -23319,6 +23412,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.0', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'صفحة جديدة في الميدان للمهندس فما فوق: «رسم المسارات من وإلى الجمرات». اختر الدور والاتجاه ثم اضغط على الخريطة نقطة بعد نقطة؛ كل نقطة تلتصق بأقرب شارع وتوصل بما قبلها على شوارع منى وممراتها وحدها، لا فوق خيمة ولا بيت. «احفظ المسار» يعرضه على الأجهزة كلها بدل المولد، ويحذف من الصفحة نفسها.',
+      'الدور الأرضي: الخط على الشوارع وحدها (كل رأس التصق بأقرب شارع ووصل على الشبكة)، ومتصل بمداخل الدور ومخارجه عبر الساحة.',
+      'رسالة «ما الجديد» بعد التحديث صارت للمهندس فما فوق فقط، لا للوزارة ولا للميدان.' ] },
   { v:'V27.9', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'الدور الأرضي: خط الذهاب صار خط مخطط الوزارة نفسه (الأصفر، ومعه ما لاصقه من الأحمر مبدئيا بقرار المالك) مطابقا على شوارع منى، بدل الطريق المحسوب لكل مخيم. والعودة ما بقي من الأحمر.',
       'إسناد المخيمات للأدوار أعيد من صفحات الملف بنسبة تداخل مساحة المخيم مع لون الدور: الأرضي ٧٩، الأول ٢٣١، الثاني ١٢، الثالث ٢٠٨، الرابع ١٠٠ (٦٣٠ مخيما بدل ٤١٠). وكلمتا «مخيما» و«نقطة» جانب الأرقام.' ] },
@@ -23654,6 +23751,8 @@ function releaseNotesSince(seen, cur){
 }
 function whatsNewMaybe(){
   var cur = appVer(); if (!cur) return false;
+  /* (V28.0) قرارُ المالك: رسالةُ «ما الجديد» للمهندس فما فوق — الوزارةُ والميدانُ لا تُزاحَم بها */
+  if (typeof ROLE === 'undefined' || typeof rankOf !== 'function' || rankOf(ROLE) < rankOf('engineer')){ lsSet('nsk14.seenVer', cur); return false; }
   var seen = lsGet('nsk14.seenVer') || '';
   if (!seen){ lsSet('nsk14.seenVer', cur); return false; }     /* أوّلُ تثبيت: لا رسالة */
   if (seen === cur) return false;
@@ -31072,7 +31171,7 @@ var NAV = [
      عملُ الميدان ومتابعتُه، فتُقرأ من مكانٍ واحد */
   { g:'الميدان', icon:'\u25F1', items:[
       ['sites','المواقع'],['mywork','شغلي'],['survey','متابعة العمل الميداني'],['req','الطلبات والتوزيع'],
-      ['sel','الطبقات والمحدَّد'],['fleet','السيارات'],
+      ['sel','الطبقات والمحدَّد'],['tfwdraw','رسم المسارات من وإلى الجمرات'],['fleet','السيارات'],
       ['forms','النماذج الميدانية'],['recs','السجلات'],['tools','الأدوات']] },
   { g:'المتابعة', icon:'\u25A6', items:[
       ['mfu','متابعة الوزارة'],['over','نظرة عامة'],['wtask','متابعة المهام الأسبوعية'],['exec','التقارير التنفيذية'],['co','الشركات'],['dis','الفك والمراحل']] },
@@ -32197,6 +32296,12 @@ function clickA(e){
   if (vas){ visitAsnOpen(vas.getAttribute('data-visitasn')); return true; }
   if (e.target.closest('[data-pincancel]')){ pinCancel(); return true; }
   if (e.target.closest('[data-pin]')){ pinStart(); return true; }
+  if (e.target.closest('[data-tfd]')){ if (TFD.on) tfdCancel(); else tfdStart(); return true; }   /* (V28.0) */
+  if (e.target.closest('[data-tfdsave]')){ tfdSave(); return true; }
+  if (e.target.closest('[data-tfdundo]')){ tfdUndo(); return true; }
+  if (e.target.closest('[data-tfdcancel]')){ tfdCancel(); return true; }
+  var tfdg = e.target.closest('[data-tfdgo]'); if (tfdg){ var a = tfdg.getAttribute('data-tfdgo').split('|'); goPage('map'); tfdStart(+a[0], a[1]); return true; }
+  var tfdc = e.target.closest('[data-tfdclear]'); if (tfdc){ var c2 = tfdc.getAttribute('data-tfdclear').split('|'); tfdClear(+c2[0], c2[1]); return true; }
   if (e.target.closest('[data-route]')){ if (ROUTE.on && ROUTE.mode === 'line') routeCancel(); else routeStart('line'); return true; }
   if (e.target.closest('[data-area]')){ if (ROUTE.on && ROUTE.mode === 'area') routeCancel(); else routeStart('area'); return true; }
   if (e.target.closest('[data-rtsave]')){ routeSave(); return true; }
@@ -33533,6 +33638,8 @@ document.addEventListener('change', function(e){
       else { var mc = mfuList('chal').filter(function(x){ return x.id === fa[0]; })[0]; if (mc){ var mn = Object.assign({}, mc); delete mn.id; mn[fa[1] === 'owner' ? 'o' : fa[1]] = fv; mn.at = Date.now(); mn.hist = mfuHist(mc, fa[1], fv); mfuPut('chal', fa[0], mn); } }
       if (el.tagName === 'SELECT') render(1); return;
     }
+    if (el.hasAttribute('data-tfdf')){ TFD.f = +el.value || 0; if (typeof TFW === 'object'){ TFW.f = TFD.f; tfwPaint(); } render(1); return; }   /* (V28.0) */
+    if (el.hasAttribute('data-tfdd')){ TFD.d = el.value === 'back' ? 'back' : 'go'; if (typeof mapPaint === 'function') mapPaint(); render(1); return; }
     if (el.hasAttribute('data-mfuprn')){ var pk = el.getAttribute('data-mfuprn'), pv = String(el.value || '').trim().slice(0, 40); MFU_PRN = ''; if (pv && pv !== mfuPartyLabel(pk)){ mfuPut('party', pk, Object.assign({}, mfuPartyRaw(pk) || {}, { t:pv, at:Date.now() })); logEvent('تعديلُ اسم جهةٍ معالجة — ' + pk + ' → ' + pv); } render(1); return; }   /* (V26.8) */
     if (el.hasAttribute('data-mfuown') || el.hasAttribute('data-mfuchalst') || el.hasAttribute('data-mfureqst') || el.hasAttribute('data-mfurequ')){
       if (el.hasAttribute('data-mfuown')){ var oc = el.getAttribute('data-mfuown'); if (mfuParties().indexOf(el.value) > -1) mfuPut('own', oc, el.value); render(1); return; }
