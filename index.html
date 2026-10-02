@@ -1203,7 +1203,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V27.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1264,7 +1264,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-20e77fd897.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-f7467e1de3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3860,7 +3860,7 @@ function siteEditSave(id){
   var name = g('seName'); if (!name){ toast(t('اسمُ النقطة لا يكون فارغًا')); return false; }
   var lat = parseFloat(g('seLat')), lng = parseFloat(g('seLng'));
   if (!(lat > 15 && lat < 32 && lng > 34 && lng < 56)){ toast(t('إحداثياتٌ خارج المملكة — راجعها')); return false; }
-  var patch = { name:name, sq:g('seSq'), sign:g('seSign'), co:g('seCo'), work:g('seWork'), inout:g('seInout'),
+  var patch = { name:name, sq:g('seSq'), sign:g('seSign'), co:g('seCo'), work:g('seWork'), inout:g('seInout'), region:g('seRegion'),   /* (V27.4) */
                 tg:g('seZone') || taxOf(x).g, tt:g('seType') || taxOf(x).t, lat:lat, lng:lng, edBy:STATE.meta.name || '', edAt:Date.now() };   /* (V27.2) المشعرُ والنوعُ المعروضان؛ الأصلُ (zone/type) يبقى */
   if (isJmr(x) && document.getElementById('seGate')){   /* (V25.4) مدخل/مخرج والدور — ويُضافان إلى الاسم */
     var gt = g('seGate'), fl = g('seFloor');
@@ -3958,6 +3958,7 @@ function siteEditHtml(x){
     + fld('المشعر', '<select id="seZone">' + opt(TAX_G, taxOf(x).g) + '</select>')   /* (V27.2) تصنيفُ المالك — يُعدَّل لأيِّ نقطة */
     + fld('التصنيف', '<select id="seType">' + opt(TAX_T, taxOf(x).t) + '</select>')
     + '</div>'
+    + fld('المنطقة', '<input id="seRegion" dir="auto" value="' + esc(x.region || '') + '">')   /* (V27.4) */
     + fld('وجه العمل', '<select id="seWork">' + opt([''].concat(SITES_RAW.w.filter(Boolean)), x.work || '') + '</select>')
     + fld('شركة الخدمة / المشغّل', '<input id="seCo" dir="auto" list="seCoL" value="' + esc(x.co || '') + '"><datalist id="seCoL">' + cos.map(function(c){ return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>')
     + fld('تصنيف الحجاج', '<select id="seInout">' + opt(['', 'داخل', 'خارج'], x.inout || '') + '</select>')
@@ -4292,7 +4293,7 @@ function tfwLines(){
       if (TFW.d !== 'both' && TFW.d !== k[0]) return;
       (fl[k[0]] || []).forEach(function(pts){
         if (!pts || pts.length < 2) return;
-        var ln = L.polyline(pts, { renderer:MAP_CV, color: all ? TFW_COL[+fk] : k[1], weight: all ? 3.5 : 4, opacity:0.95, dashArray: all && k[0] === 'back' ? '7 6' : null, lineCap:'round', lineJoin:'round', interactive:false });
+        var ln = L.polyline(pts, { renderer:MAP_CV, color: all ? TFW_COL[+fk] : k[1], weight: all ? 3.5 : 4, opacity:0.95, dashArray: k[0] === 'back' ? '7 6' : null,   /* (V27.5) العودةُ متقطّعةٌ دائمًا: الجوهرةُ وسوقُ العرب يحملان الاتجاهين معًا فيُرى الاثنان */ lineCap:'round', lineJoin:'round', interactive:false });
         ln.addTo(TFW.lines); made.push(ln);
       });
     });
@@ -4378,7 +4379,7 @@ function tfwRow(){
     + '<button type="button" class="cat' + (TFW.f >= 0 ? ' on' : '') + '" data-tfw="show">' + esc(t('إظهار')) + '</button>'
     + (TFW.f >= 0 ? '<span class="hint" style="margin:0 4px;align-self:center">' + (TFW.f === TFW_ALL ? esc(t('كل الأدوار — اختر الدور من صف الأدوار')) : esc(t('الدور') + ' ' + t(TFW_FL[TFW.f]))) + '</span>' : '') + '</div>';
   /* (V24.3) الاتجاه: الذهابُ والعودةُ معًا أو كلٌّ وحدَه — ومع «كل الأدوار» لكلِّ دورٍ لونُه والعودةُ متقطّعة */
-  if (TFW.f >= 0) h += '<div class="catrow">' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب'], ['back', 'العودة']].map(function(o){
+  if (TFW.f >= 0) h += '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('الاتجاه')) + '</span>' + [['both', 'الذهاب والعودة'], ['go', 'الذهاب فقط'], ['back', 'العودة فقط']].map(function(o){
       return '<button type="button" class="cat' + (TFW.d === o[0] ? ' on' : '') + '" data-tfwd="' + o[0] + '">' + esc(t(o[1])) + '</button>'; }).join('') + '</div>';
   if (TFW.f === TFW_ALL) h += '<div class="tfw-card">' + TFW_FL.map(function(n, i){ return '<span style="display:inline-flex;align-items:center;gap:5px;margin-inline-end:12px"><i style="width:18px;height:4px;border-radius:2px;background:' + TFW_COL[i] + '"></i>' + esc(t('الدور') + ' ' + t(n)) + '</span>'; }).join('')
       + '<div class="hint" style="margin:4px 0 0;font-size:11px">' + esc(t('الخط المتصل: الذهاب · المتقطع: العودة')) + '</div></div>';
@@ -4549,11 +4550,11 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
           + row('اسم الموقع', esc(x.name), 'name')
           + row('رقم المربع', x.sq ? '<span class="num">' + esc(x.sq) + '</span>' : '', 'sq')
           + row('رقم الشاخص', x.sign ? '<span class="num">' + esc(x.sign) + '</span>' : '', 'sign')
-          + row('المشعر', esc(x.zone))
-          + row('التصنيف', d.i + ' ' + esc(t(d.l)))
+          + row('المشعر', esc(x.zone), 'zone')   /* (V27.4) قرارُ المالك: كلُّ صفٍّ في البطاقة له «تعديل» — المشعرُ والتصنيفُ والمنطقةُ والإحداثياتُ والدور */
+          + row('التصنيف', d.i + ' ' + esc(t(d.l)), 'type')
           + row('وجه العمل', esc(t(x.work)), 'work')
-          + row('المنطقة', esc(x.region))
-          + row('الدور', siteFloor(x) != null ? esc(t(floorName(siteFloor(x)))) : '')   /* (V22.2) */
+          + row('المنطقة', esc(x.region || '\u2014'), 'region')
+          + row('الدور', siteFloor(x) != null ? esc(t(floorName(siteFloor(x)))) : '', 'floor')   /* (V22.2) */
           + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); }) + netRows(x, function(k, v){ return row(k, v); })
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(t(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout))), 'inout')
@@ -4582,7 +4583,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
             + row('قارئ',   '<span class="num">' + esc(x.ipRdr || (base + '.2')) + '</span>')
             + row('كاميرا', '<span class="num">' + esc(x.ipCam || (base + '.3')) + '</span>');
         })()
-          + row('الإحداثيات', '<span class="num">' + x.lat.toFixed(6) + ', ' + x.lng.toFixed(6) + '</span>')
+          + row('الإحداثيات', '<span class="num">' + x.lat.toFixed(6) + ', ' + x.lng.toFixed(6) + '</span>', 'lat')
           + '</div>')
 
       + (rec
@@ -18550,6 +18551,39 @@ function basemapAttach(){
 }
 /* (V24.9) طبقةُ أساسٍ واحدةٌ تحت النقاط، و(V25.0) خريطةُ الجهاز حين تُطلَب وحدَه (basemapWant):
    مع الشبكة البلاطُ الشبكيُّ (الفاتحةُ أو القمر) وتُترَك خريطةُ الجهاز من الذاكرة، وعند الانقطاع هي وحدَها. */
+/* ═══ (V27.5) خريطةٌ هجينة: أسماءُ الشوارع والأماكن فوق القمر الصناعي ═══
+   بلاغُ المالك: «مش لاقي أسماء المناطق والشوارع زي الخريطة الهجينة». القمرُ الصناعيُّ بلا أسماء، فتُرسَم فوقه طبقةُ
+   أسماءٍ وحدَها من خريطة الجهاز (بروتومابس، بالعربية من بيانات الشوارع) — قواعدُ الرسم فارغةٌ وبلا خلفية، فلا يظهر إلا
+   النصّ. تُركَّب مع القمر على اتصال، وتُرفَع مع خريطة الشوارع (لها أسماؤها) ومع خريطة الجهاز بلا شبكة. */
+function basemapLabelsSync(){
+  if (!MAP) return;
+  var want = !basemapWant() && !!MAP_SAT;
+  try {
+    if (!want){ if (BASEMAP.lab && MAP.hasLayer(BASEMAP.lab)) MAP.removeLayer(BASEMAP.lab); return; }
+    if (BASEMAP.lab){ if (!MAP.hasLayer(BASEMAP.lab)) BASEMAP.lab.addTo(MAP); return; }
+  } catch (e){ LS_ERR = e; }
+  if (BASEMAP.labBusy || typeof caches !== 'object' || !caches.open) return;
+  BASEMAP.labBusy = true;
+  basemapHave().then(function(has){ return has ? basemapScripts() : false; }).then(function(ok){
+    if (!ok || !window.protomapsL || !window.pmtiles) return null;
+    return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){
+      if (!r){ if (BASEMAP.have !== false && !BASEMAP.redl){ BASEMAP.redl = true; basemapDownload(); } return null; }
+      return r.blob();
+    }).then(function(b){
+      if (!b || !MAP || BASEMAP.lab) return null;
+      var src = new pmtiles.PMTiles(new pmtiles.FileSource(new File([b], 'mashaer.pmtiles')));
+      return src.getHeader().then(function(h){
+        if (!MAP || BASEMAP.lab) return null;
+        var bb = (h && h.maxLon > h.minLon && h.maxLat > h.minLat && h.maxLon - h.minLon < 300) ? [[h.minLat, h.minLon], [h.maxLat, h.maxLon]] : undefined;
+        var lab = protomapsL.leafletLayer({ url:src, flavor:'light', lang:'ar', maxDataZoom:15, className:'nskLabels', bounds:bb, zIndex:3, attribution:'' });
+        lab.paintRules = []; lab.backgroundColor = undefined;   /* أسماءٌ فقط — لا طرقَ ولا خلفية */
+        BASEMAP.lab = lab; BASEMAP.labSrc = src;
+        if (!basemapWant() && MAP_SAT) lab.addTo(MAP);
+        return true;
+      });
+    });
+  }).catch(function(e){ softErr('basemap-labels', e, ''); return null; }).then(function(){ BASEMAP.labBusy = false; });
+}
 function basemapSwap(){
   if (!MAP || !MAP_BASE) return;
   var want = basemapWant();
@@ -18562,6 +18596,7 @@ function basemapSwap(){
   } catch (e){ LS_ERR = e; }
   basemapSatCls();
   if (want && !BASEMAP.layer && BASEMAP.have !== false) basemapAttach();
+  basemapLabelsSync();   /* (V27.5) */
 }
 /* بطاقاتُ الجهاز — خريطةُ المشاعر ووضعُ الشمس والتشخيص — تظهر في «حسابي» لكلِّ
    الأدوار (الفنيُّ لا يرى الأدوات) وفي الأدوات للمشرف (V18.0) */
@@ -23141,6 +23176,11 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V27.5', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'الخريطة الهجينة: أسماء الشوارع والأماكن بالعربية فوق القمر الصناعي (من خريطة الجهاز)، وتختفي مع خريطة الشوارع التي لها أسماؤها.',
+      'مسار التفويج: صف «الاتجاه» بعد اختيار الدور: الذهاب والعودة معا، أو الذهاب فقط، أو العودة فقط. والعودة متقطعة دائما لأن الجوهرة وسوق العرب يحملان الاتجاهين معا.' ] },
+  { v:'V27.4', d:'٢ أكتوبر ٢٠٢٦', notes:[
+      'في «تفاصيل الموقع» صار لكل صف في بطاقة بيانات الموقع زر «تعديل»: المشعر والتصنيف والمنطقة والإحداثيات والدور، لا الاسم ووجه العمل فقط، ويفتح النموذج على الحقل نفسه. وأضيف حقل «المنطقة» للنموذج.' ] },
   { v:'V27.3', d:'٢ أكتوبر ٢٠٢٦', notes:[
       'التحديث الأسبوعي (إكسل ووورد وبوربوينت وPDF) من صفحة التحديات والمعوقات صار يتبع الفلتر: لو فلترت منى ← مخيمات يطلع المعوقات دي بس، والفلتر مكتوب في سطر التاريخ وفي اسم الملف وفي الشريط، ولو ما فيش فلتر يطلع الكل.' ] },
   { v:'V27.2', d:'٢ أكتوبر ٢٠٢٦', notes:[
@@ -32133,7 +32173,7 @@ function clickA(e){
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }
   if (e.target.closest('[data-edit]')){
-    if (maySiteEdit()){ SITE_ED = 1; render(1); var ne = document.getElementById('seName'); if (ne) ne.focus(); }
+    if (maySiteEdit()){ SITE_ED = 1; render(1); var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor' }[fk] || 'seName'; var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
     else toast(t('التعديل يمرّ باعتماد المهندس'));
     return true; }
   var sts = e.target.closest('[data-sitesave]');
