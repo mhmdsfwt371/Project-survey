@@ -25,13 +25,20 @@ jobs:
             curl -sS --retry 2 -m 200 -X POST --data-urlencode "data=$R" "$u" -o maps/mashaer-rail.json && python3 -c "import json;d=json.load(open('maps/mashaer-rail.json'));print('rail elements',len(d['elements']))" && break
           done
           ls -la maps/mashaer-rail.json
-          # (V27.6) أسماءُ الشوارع والأماكن للمشاعر كلِّها (منى، عرفات، مزدلفة، شرق مكة) — طبقةُ الأسماء فوق القمر الصناعي
-          N='[out:json][timeout:170];(way["highway"]["name"](21.30,39.78,21.50,40.02);node["place"]["name"](21.30,39.78,21.50,40.02);node["natural"="peak"]["name"](21.30,39.78,21.50,40.02);nwr["amenity"~"^(hospital|mosque|place_of_worship|police|fire_station|bus_station)$"]["name"](21.30,39.78,21.50,40.02);nwr["railway"="station"]["name"](21.30,39.78,21.50,40.02););out tags center geom;'
-          for u in https://overpass-api.de/api/interpreter https://overpass.kumi.systems/api/interpreter; do
-            curl -sS --retry 2 -m 200 -X POST --data-urlencode "data=$N" "$u" -o /tmp/names-raw.json && python3 scripts/osm-names.py && break
+          # (V27.6) أسماءُ الشوارع والأماكن للمشاعر كلِّها — أربعُ رقعٍ صغيرة (الرقعةُ الواحدةُ الكبيرة كانت تتجاوز مهلة الخادم)، وما فشل منها لا يوقف الباقي
+          mkdir -p /tmp/nm
+          for BB in "21.39,39.85,21.45,39.93" "21.36,39.90,21.42,39.99" "21.33,39.93,21.40,40.02" "21.38,39.78,21.46,39.86"; do
+            N="[out:json][timeout:120];(way[\"highway\"][\"name\"]($BB);node[\"place\"][\"name\"]($BB);node[\"natural\"=\"peak\"][\"name\"]($BB);nwr[\"amenity\"~\"^(hospital|mosque|place_of_worship|police|bus_station)$\"][\"name\"]($BB);nwr[\"railway\"=\"station\"][\"name\"]($BB););out tags center geom;"
+            OUT="/tmp/nm/$(echo $BB | tr ',' '_').json"
+            for u in https://overpass-api.de/api/interpreter https://overpass.kumi.systems/api/interpreter; do
+              curl -sS --retry 1 -m 150 -X POST --data-urlencode "data=$N" "$u" -o "$OUT" && python3 -c "import json;json.load(open('$OUT'))" && break || rm -f "$OUT"
+            done
+            sleep 5
           done
-          ls -la maps/mashaer-names.json
+          ls -la /tmp/nm/ || true
+          python3 scripts/osm-names.py || true
+          ls -la maps/mashaer-names.json || true
       - name: Commit
         run: |
           git config user.name "osm-fetch-bot"; git config user.email "osm-fetch-bot@users.noreply.github.com"
-          git add maps/mina-osm.json maps/mashaer-rail.json maps/mashaer-names.json && git commit -m "OSM: شوارع منى وطرق المشاة بأسمائها، وخطُّ قطار المشاعر ومحطاته، وأسماءُ شوارع المشاعر وأماكنها (ODbL)" && git push
+          git add maps/mina-osm.json maps/mashaer-rail.json; git add maps/mashaer-names.json 2>/dev/null || true; git commit -m "OSM: شوارع منى وطرق المشاة بأسمائها، وخطُّ قطار المشاعر ومحطاته، وأسماءُ شوارع المشاعر وأماكنها (ODbL)" && git push
