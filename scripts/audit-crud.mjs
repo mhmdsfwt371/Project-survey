@@ -169,9 +169,9 @@ cycle('مصفوفة المسؤوليات', 'raci',
   () => lastOf('data-rcdel'));
 
 /* ══ ٧ · سجل الدروس ══════════════════════════════════════════════════════ */
-cycle('سجل الدروس', 'less',
+cycle('سجل الدروس', 'lessons',   /* (V27.1) داخل «الدروس والمراجعات» */
   () => w.lessList().length,
-  () => { set('lsW', 'درسُ اختبار'); set('lsA', 'ما فُعل'); },
+  () => { w.LESS_SHOW = true; w.render(1); set('lqW', 'درسُ اختبار'); set('lqA', 'ما فُعل'); },
   '[data-lsadd]',
   null, null, null,
   () => lastOf('data-lsdel'));

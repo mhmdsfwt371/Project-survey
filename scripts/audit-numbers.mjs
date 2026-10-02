@@ -72,7 +72,7 @@ console.log('\n══ ١ · المعوقات: الإجماليُّ وجهاتُ�
 { w.MFU_FLT.z = ''; w.MFU_FLT.t = ''; const full = w.SHEETS.chalpts();
   T(full.length - 1 === truth.catInst && full[0].length === 19, 'ورقةُ نقاط التحديات: صفٌّ لكلِّ نقطةٍ وتحدٍّ (' + (full.length - 1) + ' / ' + truth.catInst + ') بتسعةَ عشرَ عمودًا');
   w.MFU_FLT.z = 'منى'; const mina = w.SHEETS.chalpts(); w.MFU_FLT.z = '';
-  const minaTruth = w.mfuObstacles().filter(o => o.x.zone === 'منى').reduce((s2, o) => s2 + o.cats.length, 0);
+  const minaTruth = w.mfuObstacles().filter(o => w.taxOf(o.x).g === 'منى').reduce((s2, o) => s2 + o.cats.length, 0);
   T(mina.length - 1 === minaTruth && mina.slice(1).every(r => r[0] === 'منى'), 'وبفلتر «منى» تخرج نقاطُ منى وحدَها (' + (mina.length - 1) + ')');
   const F = w.mfuData().fch || {}; const c0 = full[1] && full[1][5];
   if (c0){ w.mfuPut('fch', c0, Object.assign({}, F[c0] || {}, { desc:'وصفٌ تجريبي', due:'2026-12-01' })); const A = w.mfuAllChal().find(c => c.src === 'field' && c.t === c0); T(!!A && A.desc === 'وصفٌ تجريبي' && A.due === '2026-12-01', 'ووصفُ المعالجة وآخرُ تاريخٍ يُحفَظان مع التحدي ويعودان في السجل'); } }

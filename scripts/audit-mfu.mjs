@@ -27,7 +27,7 @@ const open = async tab => { w.goPage('mfu'); w.render(1); await wait(40); const 
 
 console.log('\n══ ١ · الصفحةُ وعناوينُها ══');
 const tabs = w.TABS.mfu.map(x => x[0]);
-T(['mfu','mtasks','minst','mcos','mobs','mreq','mdaily','kiosk'].every(x => tabs.includes(x)) && !tabs.includes('mchal'), 'عناوينُ العرض الأسبوعي كلُّها — والتحدياتُ والمعوقاتُ صفحةٌ واحدة (V26.5): ' + tabs.length);
+T(['mfu','mweek','minst','mcos','mobs','mreq','mdaily','kiosk'].every(x => tabs.includes(x)) && !tabs.includes('mchal') && !tabs.includes('mtasks'), 'عناوينُ العرض الأسبوعي كلُّها — والتحدياتُ والمعوقاتُ صفحةٌ واحدة (V26.5): ' + tabs.length);
 T(!w.TABS.over.some(x => x[0] === 'kiosk') && w.PARENT.kiosk === 'mfu', 'وشاشةُ القاعة انتقلت إلى متابعة الوزارة');
 for (const r of ['viewer', 'exec']){ w.ROLE = r; w.STATE.meta.role = r; }
 w.ROLE = 'viewer'; w.STATE.meta.role = 'viewer';
@@ -91,8 +91,8 @@ const sm = await open('mfu');
 T(/▲ \+[٣3]/.test(sm.textContent) && /▼/.test(sm.textContent) && /عن الأسبوع الماضي/.test(sm.textContent), 'الملخّصُ يقارن بلقطة الأسبوع الماضي: المسحُ ▲ +٣ والمعوقاتُ ▼');
 const dl = await open('mdaily');
 T(!!dl.querySelector('polyline') && /ملخص العمل اليومي/.test(dl.textContent), 'والمنحنى اليوميّ للعمل كلِّه: المسح والتركيب والفك والمتعذر');
-const mt = await open('mtasks');
-T(/حالة أبرز المهام/.test(mt.textContent) && mt.querySelectorAll('.mfu-bar').length === w.mileList().length, 'وحالةُ أبرز المهام من المعالم بشريط إنجاز');
+const mt = await open('mweek');   /* (V27.1) أبرزُ المهام قسمٌ في المهام الأسبوعية */
+T(/حالة أبرز المهام/.test(mt.textContent) && (mt.querySelector('details.mfu-add') || mt).querySelectorAll('.mfu-bar').length === w.mileList().length, 'وحالةُ أبرز المهام من المعالم بشريط إنجاز');
 
 console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مصدرٍ واحد (V20.2) ══');
 await open('mcos');
@@ -171,7 +171,7 @@ w.wtStatus(t2.id, 'جاري العمل');
 T(w.mfuAllChal().some(c => c.key === 'T:' + t2.id && c.st === 'تم الحل'), 'وحين تُستأنَف تظهر «تم الحل»');
 const wk = await open('mweek');
 T(/مهمة جديدة/.test(wk.textContent) && /توريد العوارض/.test(wk.textContent), 'المهامُّ الأسبوعيةُ كاملةً داخل متابعة الوزارة — تُضاف وتُحدَّث من هنا');
-const mt2 = await open('mtasks');
+const mt2 = await open('mweek');   /* (V27.1) */
 T(/المسار/.test(mt2.textContent) && /توريد العوارض/.test(mt2.textContent) && /تم حلُّ التحدي/.test(mt2.textContent), 'وحالةُ أبرز المهام من المهام الأسبوعية بأعمدة العرض، وما عالج تحدّيًا يُعلَّم');
 const R2 = w.mfuReport();
 T(R2.tasks.length === w.wtRows().length && R2.chal.some(r => r[0] === 'من المسح الميداني') && R2.chal.some(r => r[0] === 'من المهام الأسبوعية'), 'والتصديرُ يحمل المهامَّ الأسبوعيةَ والتحدياتِ بمصادرها');
