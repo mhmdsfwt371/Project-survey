@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-21199618f4.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-49436abe31.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -21269,6 +21269,23 @@ function svStats(){
     detail:Object.keys(by).map(function(k){ return by[k]; }).sort(ord).map(function(o){ var top = Object.keys(o.cats).sort(function(a, b){ return o.cats[b] - o.cats[a]; })[0] || '';
       return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? top + ' (' + o.cats[top] + ')' : '\u2014']; }) };
 }
+/* (V29.2) ملاحظةُ «تحديثات المنصة» #٣: «تأكيدُ نقاط الجمرات حسب المسح الميداني». النقطةُ مؤكَّدةٌ إذا وصلها المسحُ (تم الوصول)،
+   وتُعرَض بالأدوار: كم نقطة، وكم أُكِّد، وكم تعذّر، وكم لم يُزر بعد، وكم فيه تحديات. */
+function jmrConfirm(){
+  var F = {}, tot = { n:0, ok:0, un:0, no:0, ch:0 };
+  (STATE.sites || []).forEach(function(x){
+    if (!isJmr(x)) return;
+    var f = siteFloor(x), k = f == null ? 'بلا دور' : floorName(f), o = F[k] = F[k] || { k:k, i:f == null ? 9 : f, n:0, ok:0, un:0, no:0, ch:0 };
+    var r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
+    o.n++; tot.n++;
+    if (un){ o.un++; tot.un++; } else if (done){ o.ok++; tot.ok++; } else { o.no++; tot.no++; }
+    if (done && chalKeys(r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; })){ o.ch++; tot.ch++; }
+  });
+  var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
+  var rows = Object.keys(F).map(function(k){ return F[k]; }).sort(function(a, b){ return a.i - b.i; }).map(function(o){ return [o.k, o.n, o.ok, o.un, o.no, o.ch, pc(o.ok, o.n) + '٪']; });
+  if (rows.length) rows.push([t('الإجمالي'), tot.n, tot.ok, tot.un, tot.no, tot.ch, pc(tot.ok, tot.n) + '٪']);
+  return { rows:rows, tot:tot };
+}
 function mfuInstalled(x){ var i = STATE.inss[x.id]; return !!(i && i.status === 'مُركّب'); }
 function mfuLevel(p){ return p >= 75 ? ['ممتاز', 'ok'] : p >= 40 ? ['متوسط', 'wrn'] : ['ضعيف', 'bad']; }
 function mfuCompanies(){
@@ -21353,6 +21370,15 @@ function mfuInst(){
     var p = o.n ? Math.round(o.i / o.n * 100) : 0, d = CAT_DEF[o.ty] || { l:o.ty, i:'' };
     return [esc(t(o.z)), (d.i || '') + ' ' + esc(t(d.l)), N(o.n), N(o.i), mfuBar(p)];
   })));
+}
+function mfuSurv(){
+  var SV = svStats(), o = SV.O, JM = jmrConfirm(), jt = JM.tot;
+  var kpi = function(l, v, col){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(l)) + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
+  var tb = function(head, rows){ return table(head, rows.map(function(r){ return r.map(function(c){ return esc(String(c == null ? '' : c)); }); })); };   /* جدولُ التطبيق نفسُه */
+  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تم المسح', nm(o.sv), '#27AE60') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B') + kpi('فيها تحديات', nm(o.chal), '#C0392B') + kpi('تعذّر الوصول', nm(o.unreach), '#C0392B') + '</div>'
+    + card(t('حسب المشعر'), tb(['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'تحديات · تعذّر'], SV.zones.map(function(r){ return [t(r[0]), r[1], r[2], r[3], r[4], r[5] + ' \u00b7 ' + r[6]]; })))   /* ستةُ أعمدةٍ تُقرأ على الجوال */
+    + card(t('المشعر والنوع'), tb(['المشعر · النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'التحديات وأبرزها'], SV.detail.map(function(r){ return [t(r[0]) + ' \u00b7 ' + t(r[1]), r[2], r[3], r[4], r[5], r[6] ? r[6] + ' \u00b7 ' + r[7] : '0']; })))   /* ستةُ أعمدة */
+    + card(t('منشأة الجمرات — تأكيد النقاط بالمسح') + ' \u2014 ' + nm(jt.ok) + ' / ' + nm(jt.n), '<p class="hint" style="margin:0 0 8px">' + esc(t('النقطةُ مؤكَّدةٌ إذا وصلها المسحُ الميدانيّ. ما لم يُزر يحتاج زيارة، وما تعذّر يحتاج تصريحًا أو تصحيحًا في السجل.')) + '</p>' + tb(['الدور', 'النقاط', 'مؤكَّدة (بتحديات)', 'لم تُزر', 'تعذّر الوصول', 'نسبة التأكيد'], JM.rows.map(function(r){ return [t(r[0]), r[1], r[2] + ' (' + r[5] + ')', r[4], r[3], r[6]]; })));   /* ستةُ أعمدة */
 }
 function mfuCos(){
   var C = mfuCompanies(), n = 0, ins = 0, obs = 0, sv = 0, ch = 0; C.forEach(function(c){ n += c.n; ins += c.ins; obs += c.obs; sv += c.sv; ch += c.chal; });
@@ -21795,7 +21821,7 @@ function mfuReport0(){
     cos:(function(){ var C = mfuCompanies(), ph = C.some(function(c){ return c.ins > 0; });   /* (V29.1) المرحلة: لا تركيبَ بعد ⇒ لا تصنيفَ بالتركيب */
       return C.map(function(c){ return [c.co, coLiaisonOf(c.co) || '\u2014', c.n, c.sv, c.n - c.sv, c.chal, c.svp + '٪', c.ins, ph && c.ins ? t('التركيب') + ': ' + mfuLevel(c.pct)[0] + ' (' + c.pct + '٪)' : t('مرحلة المسح — لم يبدأ التواصل والتركيب')]; }); })(),
     phase:mfuCompanies().some(function(c){ return c.ins > 0; }) ? 'install' : 'survey',
-    sv:svStats(), svz:svStats().zones, svd:svStats().detail,
+    sv:svStats(), svz:svStats().zones, svd:svStats().detail, jmr:jmrConfirm().rows,   /* (V29.2) */
     obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
@@ -21819,6 +21845,7 @@ var MFU_SECTIONS = [
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
   ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول']],   /* (V29.1) */
   ['svd', 'المسح الميداني — المشعر والنوع', ['المشعر', 'النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ']],
+  ['jmr', 'منشأة الجمرات — تأكيد النقاط بالمسح', ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تعذّر الوصول', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد']],   /* (V29.2) */
   ['tasks', 'حالة أبرز المهام', ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ']],
   ['blocks', 'المسار | القارئات — المنجز والقادم والمطلوب', ['الكتلة', 'البند', 'التفصيل']],
   ['inst', 'حالة التركيبات', ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة']],
@@ -21974,6 +22001,7 @@ function mfuReportCheck(R){
     if (isFinite(n) && n > 0 && isFinite(p) && Math.abs(p - Math.round(a / n * 100)) > 1) iss.push(t('شركات الخدمة') + ' — ' + r[0] + ': ' + t('نسبة المسح لا تطابق الممسوح'));
   });
   (R.svd || []).forEach(function(r){ var n = +r[2], a = +r[3], b = +r[4]; if ([n, a, b].every(isFinite) && n !== a + b) iss.push(t('المسح الميداني') + ' — ' + r[0] + ' · ' + r[1] + ': ' + t('الإجمالي لا يساوي الممسوح والمتبقي')); });
+  (R.jmr || []).forEach(function(r){ var n = +r[1], a = +r[2], b = +r[3], c = +r[4]; if ([n, a, b, c].every(isFinite) && n !== a + b + c) iss.push(t('منشأة الجمرات') + ' — ' + r[0] + ': ' + t('النقاط لا تساوي المؤكَّدة والمتعذّرة وغير المزورة')); });   /* (V29.2) */
   if (R.sv && R.svz){ var zt = 0; R.svz.forEach(function(r){ zt += +r[1] || 0; }); if (zt !== R.sv.O.tot) iss.push(t('المسح الميداني') + ': ' + t('مجموع المشاعر لا يساوي الإجمالي')); }
   return iss;
 }
@@ -22107,6 +22135,10 @@ function mfuSlides(R){
   S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة المسح', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تم المسح', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تعذّر الوصول', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
     + pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول'], SV.zones.map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], pcv(r[4]), r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', r[6] ? { t:String(r[6]), c:'A93226' } : '0']; }), { cols:[2.2, 1, 1, 1, 1, 1.2, 1.2], rh:600000, sz:1500, hsz:1500 })]);
   S.push(['المسح الميداني — المشعر والنوع', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ'], SV.detail.slice(0, 16).map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], r[4], pcv(r[5]), r[6] ? { t:String(r[6]), c:'A93226', b:1 } : '0', r[7]]; }), { cols:[1.3, 1.6, 0.9, 0.9, 0.9, 0.9, 1, 3.3], rh:470000, sz:1150, hsz:1200 })]);
+  var JM = jmrConfirm(), jt = JM.tot;   /* (V29.2) */
+  S.push(['منشأة الجمرات — تأكيد النقاط بالمسح', pxCards([['نسبة التأكيد', (jt.n ? Math.round(jt.ok / jt.n * 100) : 0) + '٪', jt.ok + ' من ' + jt.n, '1E8449'], ['مؤكَّدة بالمسح', String(jt.ok), 'وصلها المسح', '163E35'], ['لم تُزر', String(jt.no), 'تحتاج زيارة', '8A6D0B'], ['تعذّر الوصول', String(jt.un), 'تحتاج تصريحًا أو تصحيحًا', 'A93226'], ['فيها تحديات', String(jt.ch), 'من المؤكَّدة', 'A93226']], PX.Y0, 1900000)
+    + (JM.rows.length ? pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تعذّر الوصول', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد'], JM.rows.map(function(r, i){ var last = i === JM.rows.length - 1; return [{ t:r[0], b:1 }, r[1], { t:String(r[2]), c:'1E8449', b:1 }, r[3] ? { t:String(r[3]), c:'A93226', b:1 } : '0', r[4] ? { t:String(r[4]), c:'8A6D0B', b:1 } : '0', r[5] ? { t:String(r[5]), c:'A93226' } : '0', last ? { t:r[6], b:1 } : pcv(r[6])]; }), { cols:[1.8, 1, 1.3, 1.2, 1, 1.2, 1.2], rh:560000, sz:1400, hsz:1400 })
+       : pxBox(PX.X0, PX.Y0 + 2400000, PX.W, 700000, pxP('لا نقاطَ لمنشأة الجمرات في النطاق', { sz:1400, c:'7F8C8D' }), { geom:'rect' }))]);
   var stc = function(v){ return v === 'مكتمل' ? { t:v, c:'1E8449', b:1 } : v === 'متأخر' ? { t:v, c:'A93226', b:1 } : v === 'جارٍ' ? { t:v, c:'8A6D0B', b:1 } : v; };
   var stc2 = function(v){ v = String(v || ''); return /مكتمل/.test(v) ? { t:v, c:'1E8449', b:1 } : /متوقف|متأخر/.test(v) ? { t:v, c:'A93226', b:1 } : /جاري|جارٍ/.test(v) ? { t:v, c:'8A6D0B', b:1 } : v; };
   S.push(['حالة أبرز مهام مسار القارئات', pxTable(PX.X0, PX.Y0, PX.W, ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ'], R.tasks.slice(0, 11).map(function(r){ return [r[0], r[1] || '—', r[2] || '—', stc2(r[3]), r[4] || '—', r[5] || '—', r[6] ? (/^✓/.test(r[6]) ? { t:r[6], c:'1E8449', b:1 } : { t:r[6], c:'A93226' }) : '—']; }), { cols:[3, 1.2, 1.3, 1.3, 1.2, 2.6, 1.8], sz:1100, rh:560000 })]);
@@ -22142,7 +22174,7 @@ function mfuPptx(){
   toast(t('يُجهَّز العرضُ من قالب الوزارة…'));
   return pptxTemplate().then(function(tpl){
     var R = mfuReport(), E = ooxRead(tpl), dec = new TextDecoder(), slides = mfuSlides(R), chk = mfuReportCheck(R);   /* (V28.9) */
-    var order = ['2','3','4','5','6','7','8','9','10','11','12'].map(function(k){ return 'ppt/slides/slide' + k + '.xml'; });   /* (V28.8، و٢٩٫١ إحدى عشرة شريحة بالمسح) شرائحُ المحتوى في القالب الموحَّد */
+    var order = ['2','3','4','5','6','7','8','9','10','11','12','13'].map(function(k){ return 'ppt/slides/slide' + k + '.xml'; });   /* (V29.2) اثنتا عشرة شريحة بتأكيد الجمرات */   /* (V28.8، و٢٩٫١ إحدى عشرة شريحة بالمسح) شرائحُ المحتوى في القالب الموحَّد */
     var out = E.map(function(e){
       if (e.method !== 0 || !/^ppt\/slides\/slide\d+\.xml$/.test(e.name)) return e;
       var x = dec.decode(e.raw);
@@ -22190,6 +22222,7 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     head += mfuExportBar();   /* التصديرُ على كلِّ عنوان (V20.2) */
     if (cur === 'mweek') return head + '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body();   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
+    if (cur === 'msurv') return head + mfuSurv();   /* (V29.2) */
     if (cur === 'minst') return head + mfuInst();
     if (cur === 'mcos') return head + mfuCos();
     if (cur === 'mobs') return head + mfuObs();
@@ -23764,6 +23797,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.2', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'تأكيد نقاط منشأة الجمرات بالمسح الميداني (ملاحظة «تحديثات المنصة»): بالأدوار — كم نقطة، وكم أُكد بالمسح، وكم تعذر، وكم لم يُزر، وكم فيه تحديات — في شريحة جديدة بالعرض وقسم في الوورد والإكسل والبي دي إف.',
+      'عنوان «المسح الميداني» في متابعة الوزارة: النظرة العامة وحسب المشعر والمشعر والنوع وتأكيد الجمرات حيًّا على الشاشة.',
+      'مواعيد التحديث: التحديثات العادية تصل الأجهزة مرة في اليوم الساعة ٤ الفجر، والطارئ وحده فورًا.' ] },
   { v:'V29.1', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'المسح الميداني في التقرير: شريحتان جديدتان في الباوربوينت — نظرة عامة بالأرقام والنسب (نسبة المسح، تم، المتبقي، فيها تحديات، تعذر الوصول) وجدول حسب المشعر، ثم تفاصيل المشعر والنوع: اتعمل كام، لسه كام، كام فيها تحديات، وأبرز تحدٍّ. وفي الوورد والإكسل والبي دي إف قسمان بنفس الأرقام.',
       'حالة الشركات بقت حسب المرحلة: في المسح الميداني تظهر نسبة مسح مخيمات كل شركة والمتبقي والتحديات، و«مرحلة المسح — لم يبدأ التواصل والتركيب» بدل تصنيف ممتاز ومتوسط وضعيف اللي كان محسوبا على التركيب.' ] },
@@ -28835,7 +28872,7 @@ var ROLES = {
     n:'الإدارة العليا', d:'الموقفُ التنفيذيُّ والمخاطرُ والقرار — قراءةً',
     guide:'دليل الإدارة العليا — الموقف والقرار',
     /* V16.25: الخريطةُ ولوحةُ الفريق — من فوقُ يرى ما تحته كلَّه، قراءةً */
-    nav:['map','mywork','board','exec','mfu','mweek','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
+    nav:['map','mywork','board','exec','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','wplan','pace','miles','evm','budm','risks','chg','ncr','repcenter','exp','diary','pmi','lessons','stake','reg','guide','acct','notif'],
     can:{ provision:1, edit:0, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0 } },
 
@@ -28875,7 +28912,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','mfu','mweek','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
@@ -29355,9 +29392,10 @@ var TABS = {
   /* متابعةُ الوزارة (V20.0): عناوينُ العرض الأسبوعي الذي كان يُرسَل للاجتماعات */
   mfu:[
     ['mfu','الملخص','📋','الأرقامُ التي يُفتتح بها الاجتماع — ومقارنتُها بالأسبوع الماضي.'],
+    ['msurv','المسح الميداني','🔍','نسبةُ المسح وما تبقّى والتحديات — بالمشعر والنوع، وتأكيدُ نقاط منشأة الجمرات بالأدوار.'],   /* (V29.2) */
     ['mweek','المهام الأسبوعية','🗓','مهامُّ الاجتماع كاملةً — تُحدَّث من هنا، وما يعالج تحدّيًا يُعرَف به.'],
     ['minst','حالة التركيبات','🔧','المخيماتُ والممراتُ وكلُّ نوعٍ بنسبة تركيبه في كلِّ مشعر.'],
-    ['mcos','تركيب المخيمات لشركات الخدمة','🏢','لكلِّ شركةٍ مستهدفُها وما رُكّب وما تعطّله العوائق — ممتازٌ ومتوسطٌ وضعيف.'],
+    ['mcos','شركات الخدمة','🏢','لكلِّ شركةٍ مخيماتُها وما مُسح منها والتحديات — وفي التركيب ما رُكّب ومستواه.'],   /* (V29.1) بحسب المرحلة */
     ['mobs','التحديات والمعوقات','🚧','كلُّ عائقٍ بفئته وجهته وآلية معالجته ومسؤوله وحالته — بفلتر المشعر والنوع.'],
     ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.'],
     ['mdaily','ملخص العمل اليومي','📈','المسح والتركيب والفك والمتعذر يوما بيوم.'],
