@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-9328ba6cea.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-daf8f1dad2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -10335,6 +10335,36 @@ function coTel(){
 function coTelOf(co){ return String(coTel()[co] || '').trim(); }
 /* (V28.5) ملاحظةُ «تحديثات المنصة»: ضابطُ الاتصال لكلِّ شركة — وثيقةٌ يقرؤها الكلُّ (الوزارةُ تراه في متابعتها)، والجوالُ يبقى في دفتره المحجوب */
 var CO_STALL = null;
+/* (V29.0) ملاحظةُ «تحديثات المنصة» #٧: بريدُ الشركة في التواصل، وإشعارُها بالبريد بصيغةٍ رسمية. البريدُ يُحفَظ في دفتر الجوالات
+   نفسِه (وثيقةٌ محجوبةٌ عن الوزارة والإدارة العليا) بمفتاح «e|الشركة»، والإرسالُ يفتح بريدَ الجهاز بالصيغة الرسمية جاهزةً. */
+function coEmailOf(co){ return String(coTel()['e|' + co] || '').trim(); }
+function coEmailSet(co, v){
+  if (!may('approve')){ toast(t('دفترُ الجوالات للمهندس وحده')); return; }
+  v = String(v || '').trim().toLowerCase();
+  if (v && !/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/.test(v)) return;   /* يُحفَظ حين يكتمل العنوان */
+  if (v) coTel()['e|' + co] = v; else delete coTel()['e|' + co];
+  CORE.set('cfg', 'cotel', Object.assign({}, coTel()));
+  clearTimeout(coEmailSet._t); coEmailSet._t = setTimeout(function(){ logEvent('بريد شركة — ' + co + ' \u00b7 ' + (v || 'حُذف')); }, 2500);
+}
+function mailOfficial(kind, co, when){
+  var S = coStat(co), lz = coLiaisonOf(co), kn = WA_KINDS[kind] ? WA_KINDS[kind].n : t('إشعار');
+  var sub = kn + ' \u2014 ' + co + ' \u2014 ' + t('مشروع قارئات نسك') + ' ١٤٤٨هـ';
+  var L = ['السادة / ' + co + '                    المحترمين', '', 'السلام عليكم ورحمة الله وبركاته،', 'تحيةً طيبةً وبعد،', ''];
+  if (kind === 'plan'){ L.push('نُفيدكم بأنّ فريقَ شركة أفاقي سيباشر تركيبَ قارئات بطاقة نسك في نقاطكم ضمن مشروع وزارة الحج والعمرة لموسم ١٤٤٨هـ.'); L.push('عددُ النقاط: ' + S.n + (when ? ' — الموعدُ المتوقّع: ' + when : '') + '.'); L.push(''); L.push('نأمل التكرّمَ بتسهيل دخول الفريق إلى المواقع وتوفيرِ مصدر كهرباءٍ عند كلِّ نقطة.'); }
+  else if (kind === 'hand'){ L.push('نُفيدكم بإتمام تركيب قارئات بطاقة نسك في نقاطكم وتسليمِها.'); L.push('النقاطُ المركّبةُ المعتمدة: ' + S.ins + ' من ' + S.n + '، والمُسلَّمةُ بمحضر: ' + S.hd + (when ? ' — تاريخُ التسليم: ' + when : '') + '.'); L.push(''); L.push('محاضرُ التسليم مرفقةٌ بأرقام الأجهزة وسيرياتها، ومدّةُ الضمان تبدأ من تاريخها.'); }
+  else { L.push('نُفيدكم بأنّ فريقَ شركة أفاقي سيباشر فكَّ الأجهزة من نقاطكم بعد انتهاء الموسم.'); L.push('النقاطُ التي سيُفكّ منها: ' + S.ins + (when ? ' — الموعدُ المتوقّع: ' + when : '') + '.'); L.push(''); L.push('نأمل التكرّمَ بتسهيل دخول الفريق، شاكرين تعاونكم طوال الموسم.'); }
+  if (lz) L.push('ونأمل التنسيقَ مع ضابط الاتصال لديكم: ' + lz + '.');
+  L.push(''); L.push('وتفضّلوا بقبول فائق الاحترام والتقدير،'); L.push(''); L.push(STATE.meta.name || ''); L.push(t('مشروع قارئات نسك — شركة أفاقي'));
+  return { sub:sub, body:L.join('\n') };
+}
+function mailGo(co, kind, when){
+  if (!co){ toast(t('اختر الشركة')); return; }
+  var to = coEmailOf(co); if (!to){ toast(t('لا بريدَ محفوظٌ لهذه الشركة — احفظه في الجدول أوّلًا')); return; }
+  var M = mailOfficial(kind || 'plan', co, when || '');
+  try { window.location.href = 'mailto:' + encodeURIComponent(to) + '?subject=' + encodeURIComponent(M.sub) + '&body=' + encodeURIComponent(M.body); }
+  catch (e){ toast(t('تعذّر الفتح')); return; }
+  logEvent('إشعار بريد رسمي — ' + (WA_KINDS[kind] ? WA_KINDS[kind].n : kind) + ' \u00b7 ' + co);
+}
 function coLiaison(){ if (!CFG.coliaison || typeof CFG.coliaison !== 'object') CFG.coliaison = {}; return CFG.coliaison; }
 function coLiaisonOf(co){ return String(coLiaison()[co] || '').trim(); }
 function coLiaisonSet(co, v){
@@ -11944,11 +11974,12 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
         + '<p class="hint" style="margin:8px 0 0">' + esc(t('النصُّ يُبنى من حالة الشركة نفسِها — عددُ نقاطها وما رُكِّب وما سُلِّم — فلا يُكتَب رقمٌ باليد ولا يُرسَل ما لا يطابق السجل.')) + '</p>',
         '<div class="actions">'
         + btn('\u{1F4AC} ' + t('واتساب'),'btn-primary',' data-wa="co"')
+        + btn('\u2709 ' + t('بريد رسمي'),'btn-secondary',' data-mailco="1"')   /* (V29.0) */
         + btn(t('نسخ النص'),'btn-secondary',' data-wacopy="co"')
         + '</div>')
 
       + cardFlush(t('الشركات') + ' — ' + nm(cos.length),
-          table(['الشركة','ضابط الاتصال','نقاطها','مُسح','المنجز','المتبقي','متعثر','سُلِّم','جوالها',''],   /* (V28.5) */
+          table(['الشركة','ضابط الاتصال','نقاطها','مُسح','المنجز','المتبقي','متعثر','سُلِّم','جوالها','بريدها',''],   /* (V28.5، والبريد V29.0) */
             cos.slice(0, PG_Q ? 5000 : 200).map(function(c){
               var st = coStat(c), ph = coTelOf(c), lz = coLiaisonOf(c), cs = CO_STALL ? (CO_STALL[c] || 0) : 0;
               return [esc(c.length > 30 ? c.slice(0, 29) + '\u2026' : c),
@@ -11957,12 +11988,13 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
                       may('approve')
                         ? '<input value="' + esc(ph) + '" data-cotel="' + esc(c) + '" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx" style="width:132px">'
                         : (ph ? '<span class="num" dir="ltr">' + esc(ph) + '</span>' : '\u2014'),
-                      ph ? '<div class="actions" style="margin:0">'
+                      may('approve') ? '<input value="' + esc(coEmailOf(c)) + '" data-coemail="' + esc(c) + '" dir="ltr" inputmode="email" placeholder="name@company.com" style="width:170px">' : (coEmailOf(c) ? '<span dir="ltr">' + esc(coEmailOf(c)) + '</span>' : '\u2014'),   /* (V29.0) */
+                      (coEmailOf(c) ? btn('\u2709', 'btn-quiet btn-sm', ' data-mailsend="plan|' + esc(c) + '" title="' + esc(t('بريد رسمي')) + '"') : '') + (ph ? '<div class="actions" style="margin:0">'
                            + btn('\u{1F4C5}','btn-quiet btn-sm',' data-wasend="plan|' + esc(c) + '" title="' + esc(t('إشعار تركيب قادم')) + '"')
                            + btn('\u{1F91D}','btn-quiet btn-sm',' data-wasend="hand|' + esc(c) + '" title="' + esc(t('إشعار تسليم')) + '"')
                            + btn('\u{1F9E9}','btn-quiet btn-sm',' data-wasend="dis|' + esc(c) + '" title="' + esc(t('إشعار فك')) + '"')
                            + '</div>'
-                         : '<span class="hint" style="margin:0">' + esc(t('احفظ الجوال أولًا')) + '</span>'];
+                         : '<span class="hint" style="margin:0">' + esc(t('احفظ الجوال أولًا')) + '</span>')];
             })))
       + '<p class="hint">' + esc(t('الرقمُ يُصحَّح تلقائيًّا: صفرُ البداية يصير ٩٦٦ — فلا يُرسَل إلى رقمٍ خاطئ. والجوالُ يُحفَظ مرةً ويُرفَع، فيجده كلُّ جهاز.')) + '</p>';
   })();
@@ -21687,7 +21719,30 @@ function mfuDaily(){
    مصدرٌ واحدٌ للأرقام (mfuReport) فلا تختلف صيغةٌ عن صيغة، والنصُّ عربيٌّ من اليمين
    بألوان العرض: أخضرُ غامق 163E35 وذهبيٌّ C8943E وبيجٌ FAF6F3، وخطُّ Alexandria. */
 function hijriToday(){ try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' }).format(new Date()); } catch (e){ return ''; } }
+/* ═══ (V29.0) ملاحظةُ «تحديثات المنصة» #٥: «اختيارُ النقاط المراد تحميلُها في الملف — لا الملفُّ الشاملُ فقط» ═══
+   نطاقُ التصدير: الكلّ (الافتراضيّ)، أو مشعرٌ ونوعٌ من تصنيف المالك، أو النقاطُ المحدَّدةُ على الخريطة («☑ تحديد»).
+   يُبنى التقريرُ نفسُه على نقاط النطاق وحدَها (المؤشراتُ والتركيباتُ والشركاتُ والمعوقات)، ويُكتب النطاقُ في الغلاف واسمِ الملف. */
+var EXP_SCOPE = { m:'all', g:'', t:'' };
+function expScopeIds(){
+  if (EXP_SCOPE.m === 'sel') return selIds();
+  if (EXP_SCOPE.m === 'tax' && (EXP_SCOPE.g || EXP_SCOPE.t)) return (STATE.sites || []).filter(function(x){ var c = taxOf(x); return (!EXP_SCOPE.g || c.g === EXP_SCOPE.g) && (!EXP_SCOPE.t || c.t === EXP_SCOPE.t); }).map(function(x){ return x.id; });
+  return null;
+}
+function expScopeLabel(){
+  if (EXP_SCOPE.m === 'sel') return t('نقاطٌ محدَّدة') + ' (' + nm(SEL_N) + ')';
+  if (EXP_SCOPE.m === 'tax' && (EXP_SCOPE.g || EXP_SCOPE.t)) return [EXP_SCOPE.g, EXP_SCOPE.t].filter(Boolean).map(function(v){ return t(v); }).join(' \u00b7 ');
+  return '';
+}
 function mfuReport(){
+  var ids = expScopeIds(); if (!ids) return mfuReport0();
+  var keep = {}; ids.forEach(function(id){ keep[id] = 1; });
+  var all = STATE.sites; STATE.sites = (all || []).filter(function(x){ return keep[x.id]; });
+  try { var R = mfuReport0(), sl = expScopeLabel(); R.scope = sl; R.greg += ' \u2014 ' + t('النطاق') + ': ' + sl;
+    (R.kpis || []).forEach(function(k){ k[3] = null; });   /* الفرقُ عن الأسبوع الماضي محسوبٌ للكلّ — لا يُقارَن به نطاقٌ جزئيّ */
+    return R; }
+  finally { STATE.sites = all; }
+}
+function mfuReport0(){
   var K = mfuKpis(), P = mfuPrev(), pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var dlt = function(cur, key){ return P && P[key] != null ? cur - P[key] : null; };
   var Z = {};
@@ -21748,7 +21803,7 @@ function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
   return R[key] || [];
 }
-function mfuFileName(ext){ var f = (typeof mfuFltLabel === 'function') ? mfuFltLabel() : ''; return 'التحديث-الأسبوعي-قارئات-نسك-' + dayKey() + (f ? '-' + f.replace(/[\\/:*?"<>|\u00b7]+/g, '-').replace(/\s+/g, '-') : '') + '.' + ext; }   /* (V27.3) الفلترُ في اسم الملف */
+function mfuFileName(ext){ var f = [(typeof mfuFltLabel === 'function') ? mfuFltLabel() : '', (typeof expScopeLabel === 'function') ? expScopeLabel() : ''].filter(Boolean).join(' \u00b7 ');   /* (V29.0) والنطاقُ في اسم الملف */ return 'التحديث-الأسبوعي-قارئات-نسك-' + dayKey() + (f ? '-' + f.replace(/[\\/:*?"<>|\u00b7]+/g, '-').replace(/\s+/g, '-') : '') + '.' + ext; }   /* (V27.3) الفلترُ في اسم الملف */
 /* ── إكسل: ورقةٌ لكلِّ عنوان ── */
 function mfuXlsx(){
   toast(t('يُجهَّز ملفُّ إكسل…'));
@@ -22063,12 +22118,23 @@ function mfuPptx(){
     return ok;
   }).catch(function(e){ softErr('pptx', e, ''); toast(t('تعذّر تحميلُ قالب العرض — تحقّق من الشبكة')); return false; });
 }
+function expScopeRow(){
+  var ids = expScopeIds(), n = ids ? ids.length : (STATE.sites || []).length;
+  var opt = function(list, cur, blank){ return '<option value="">' + esc(t(blank)) + '</option>' + list.map(function(v){ return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join(''); };
+  var chip = function(m, l){ return '<button type="button" class="chip' + (EXP_SCOPE.m === m ? ' on' : '') + '" data-expscope="' + m + '">' + esc(l) + '</button>'; };
+  return '<div class="chips" style="margin:8px 0 0;align-items:center"><span class="hint" style="margin:0">' + esc(t('نطاقُ الملف')) + ':</span>'
+    + chip('all', t('كلُّ النقاط')) + chip('tax', t('مشعرٌ ونوع')) + chip('sel', t('المحدَّدُ على الخريطة') + ' (' + nm(SEL_N) + ')')
+    + (EXP_SCOPE.m === 'tax' ? '<select data-expsg="1" style="max-width:170px">' + opt(TAX_G, EXP_SCOPE.g, 'كلُّ المشاعر') + '</select><select data-expst="1" style="max-width:170px">' + opt(TAX_T, EXP_SCOPE.t, 'كلُّ الأنواع') + '</select>' : '')
+    + (EXP_SCOPE.m === 'sel' && !SEL_N ? btn('\u2611 ' + t('حدِّد من الخريطة'), 'btn-quiet btn-sm', ' data-expselgo="1"') : '')
+    + '<span class="pill ' + (n ? 'acc' : 'wrn') + '">' + nm(n) + ' ' + esc(t('نقطة في الملف')) + '</span></div>';
+}
 function mfuExportBar(){
   return '<div class="card" style="margin:0 0 12px"><div class="actions" style="align-items:center">'
     + '<b style="color:#C8943E">\u2B07 ' + esc(t('تصدير التحديث الأسبوعي')) + '</b>'
     + btn('PowerPoint', 'btn-primary btn-sm', ' data-mfuexp="pptx"') + btn('Word', 'btn-secondary btn-sm', ' data-mfuexp="docx"') + btn('Excel', 'btn-secondary btn-sm', ' data-mfuexp="xlsx"') + btn('PDF', 'btn-secondary btn-sm', ' data-mfuexp="pdf"')
     + (mfuFltLabel() ? '<span class="pill wrn">' + esc(t('بفلتر')) + ': ' + esc(mfuFltLabel()) + ' \u2014 ' + esc(t('أزل الفلتر لتصدير الكلّ')) + '</span>' : '')   /* (V27.3) */
     + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div>'
+    + expScopeRow()   /* (V29.0) */
     + (EXP_CHK && EXP_CHK.n ? '<div class="alert warn" style="margin:8px 0 0"><b>' + esc(t('أوقف الفحصُ آخرَ تصدير')) + ' (' + esc(EXP_CHK.kind) + ') — ' + nm(EXP_CHK.n) + ' ' + esc(t('خطأ')) + '</b><ul style="margin:4px 0 0;padding-inline-start:18px">' + EXP_CHK.issues.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
        : (EXP_CHK ? '<span class="pill ok" style="margin:8px 0 0">\u2713 ' + esc(t('آخرُ ملفٍّ اجتاز الفحص')) + ' (' + esc(EXP_CHK.kind) + ')</span>' : ''))   /* (V28.9) */
     + '</div>';
@@ -23657,6 +23723,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.0', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'اختيار النقاط في التصدير: فوق أزرار التصدير «نطاق الملف» — كل النقاط، أو مشعر ونوع، أو المحدد على الخريطة — والملف يُبنى على نقاط النطاق وحدها ويُكتب النطاق في الغلاف واسم الملف.',
+      'بريد الشركات: عمود «بريدها» في إشعار الشركات (يحفظه المهندس في دفتر الجوالات المحجوب)، وزر «بريد رسمي» يفتح بريد الجهاز برسالة رسمية جاهزة (تركيب أو تسليم أو فك) فيها الأرقام وضابط الاتصال.' ] },
   { v:'V28.9', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'فحص الملف قبل نزوله (قرار المالك): كل تصدير (باوربوينت ووورد وإكسل وبي دي إف) يفحص الأرقام والحروف قبل التنزيل — لا «NaN» ولا خانات ناقصة ولا نسب خارج المدى، والمستهدف = المنجز + المتبقي + المتعثر، والشرائح سليمة البناء وداخل حدودها. أي خطأ يوقف التنزيل ويظهر فوق أزرار التصدير.',
       'خط الوزارة «Abar Mid» في التقارير: الباوربوينت مضمن فيه الخط من قالب الوزارة نفسه، والبي دي إف يضمنه بعد ما يرفع المدير ملفي العادي والعريض مرة من «ثوابت النظام ← خطوط التقارير».' ] },
@@ -32259,7 +32328,11 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
-  if (e.target.closest('[data-mfuexp]')){ var fx = e.target.closest('[data-mfuexp]').getAttribute('data-mfuexp'); if (fx === 'xlsx') mfuXlsx(); else if (fx === 'pdf') mfuPdf(); else if (fx === 'pptx') mfuPptx(); else mfuDocx(); return true; }
+  var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
+  if (exs){ EXP_SCOPE.m = exs.getAttribute('data-expscope'); render(1); return true; }
+  if (e.target.closest('[data-expselgo]')){ goPage('map'); MAP_SELECT = true; render(1); toast(t('اضغط النقاطَ لتحديدها ثم ارجع إلى التصدير')); return true; }
+  if (e.target.closest('[data-mfuexp]')){ var ids0 = expScopeIds(); if (ids0 && !ids0.length){ toast(t('النطاقُ بلا نقاط — اختر مشعرًا أو حدِّد نقاطًا')); return true; }
+    var fx = e.target.closest('[data-mfuexp]').getAttribute('data-mfuexp'); if (fx === 'xlsx') mfuXlsx(); else if (fx === 'pdf') mfuPdf(); else if (fx === 'pptx') mfuPptx(); else mfuDocx(); return true; }
   if (e.target.closest('[data-chaltask]')){
     var ck = e.target.closest('[data-chaltask]').getAttribute('data-chaltask'), cc = mfuAllChal().filter(function(x){ return x.key === ck; })[0];
     if (!cc) return true;
@@ -33485,6 +33558,9 @@ function onDocClick(e){
   if (wa){ waSend(wa.getAttribute('data-wa'), 0); return; }
   var wc = e.target.closest('[data-wacopy]');
   if (wc){ waSend(wc.getAttribute('data-wacopy'), 1); return; }
+  var msd = e.target.closest('[data-mailsend]');   /* (V29.0) */
+  if (msd){ var mp = msd.getAttribute('data-mailsend').split('|'); mailGo(mp[1], mp[0], ''); return; }
+  if (e.target.closest('[data-mailco]')){ mailGo((document.getElementById('waCo') || {}).value || WA_CO, (document.getElementById('waKind') || {}).value || WA_KIND, (document.getElementById('waWhen') || {}).value || ''); return; }
   var wsd = e.target.closest('[data-wasend]');
   if (wsd){
     var pr = wsd.getAttribute('data-wasend').split('|');
@@ -33794,6 +33870,7 @@ document.addEventListener('wheel', function(e){
 document.addEventListener('change', function(e){
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
+  if (t0 && t0.hasAttribute && (t0.hasAttribute('data-expsg') || t0.hasAttribute('data-expst'))){ EXP_SCOPE[t0.hasAttribute('data-expsg') ? 'g' : 't'] = t0.value; render(1); return; }   /* (V29.0) */
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
@@ -34110,6 +34187,7 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-cotel')){ coTelSet(el2.getAttribute('data-cotel'), el2.value); render(1); return; }
     if (el2.hasAttribute('data-coliaison')){ coLiaisonSet(el2.getAttribute('data-coliaison'), el2.value); return; }   /* (V28.5) بلا إعادة رسم — لا يضيع المؤشر */
+    if (el2.hasAttribute('data-coemail')){ coEmailSet(el2.getAttribute('data-coemail'), el2.value); return; }   /* (V29.0) */
     if (el2.hasAttribute('data-waco')){ WA_CO = el2.value; render(1); return; }
     if (el2.hasAttribute('data-hop')){ hoSetParty(el2.getAttribute('data-hop'), el2.value); return; }
     if (el2.hasAttribute('data-hosn')){ hoSetSigner(+el2.getAttribute('data-hosn'), 'n', el2.value); return; }
