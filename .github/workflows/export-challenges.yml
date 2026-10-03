@@ -21,6 +21,14 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/export-usage.mjs
+      - name: diag lost surveys
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+          BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
+        run: node scripts/diag-lost.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
