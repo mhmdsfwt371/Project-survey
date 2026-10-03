@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-daf8f1dad2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-21199618f4.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -21249,6 +21249,26 @@ function mfuObstacles(){
   });
   return out;
 }
+/* (V29.1) قرارُ المالك: «إحنا حاليًا في المسح الميداني — صفحةٌ مخصوصةٌ للمسح في الباوربوينت: نظرةٌ عامةٌ بالأرقام والنسب،
+   وبعدها التفاصيل: المشعر، النوع، اتعمل كام، لسه كام، وفيه كام تحدٍّ في النوع الفلاني للمشعر الفلاني». بتصنيف المالك (taxOf). */
+function svStats(){
+  var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
+  (STATE.sites || []).forEach(function(x){
+    var c = taxOf(x), r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
+    var ch = done ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
+    var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
+    o.n++; z.n++; O.tot++;
+    if (done){ o.sv++; z.sv++; O.sv++; }
+    if (un){ o.un++; z.un++; O.unreach++; } else if (done) O.reach++;
+    if (ch.length){ o.chal++; z.chal++; O.chal++; ch.forEach(function(k2){ o.cats[k2] = (o.cats[k2] || 0) + 1; }); }
+  });
+  var ord = function(a, b){ var ia = TAX_G.indexOf(a.g), ib = TAX_G.indexOf(b.g); return (ia < 0 ? 99 : ia) - (ib < 0 ? 99 : ib) || b.n - a.n; };
+  var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
+  return { O:O, pct:pc(O.sv, O.tot),
+    zones:Object.keys(zs).map(function(k){ return zs[k]; }).sort(ord).map(function(z){ return [z.g, z.n, z.sv, z.n - z.sv, pc(z.sv, z.n) + '٪', z.chal, z.un]; }),
+    detail:Object.keys(by).map(function(k){ return by[k]; }).sort(ord).map(function(o){ var top = Object.keys(o.cats).sort(function(a, b){ return o.cats[b] - o.cats[a]; })[0] || '';
+      return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? top + ' (' + o.cats[top] + ')' : '\u2014']; }) };
+}
 function mfuInstalled(x){ var i = STATE.inss[x.id]; return !!(i && i.status === 'مُركّب'); }
 function mfuLevel(p){ return p >= 75 ? ['ممتاز', 'ok'] : p >= 40 ? ['متوسط', 'wrn'] : ['ضعيف', 'bad']; }
 function mfuCompanies(){
@@ -21256,10 +21276,11 @@ function mfuCompanies(){
   var by = {};
   (STATE.sites || []).forEach(function(x){
     if (x.type !== 'مخيم' || !x.co) return;
-    var c = by[x.co] = by[x.co] || { co:x.co, n:0, ins:0, obs:0 };
+    var c = by[x.co] = by[x.co] || { co:x.co, n:0, ins:0, obs:0, sv:0, chal:0 };
     c.n++; if (mfuInstalled(x)) c.ins++; else if (obsIds[x.id]) c.obs++;
+    var r1 = STATE.recs[x.id]; if (r1 && svDone(r1)){ c.sv++; if (chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++; }   /* (V29.1) */
   });
-  return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
+  return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; c.svp = c.n ? Math.round(c.sv / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
 }
 function mfuKpis(){
   var S = STATE.sites || [], tot = S.length, sv = 0, ins = 0, camp = 0, campIns = 0, cor = 0, corIns = 0;
@@ -21334,20 +21355,27 @@ function mfuInst(){
   })));
 }
 function mfuCos(){
-  var C = mfuCompanies(), n = 0, ins = 0, obs = 0; C.forEach(function(c){ n += c.n; ins += c.ins; obs += c.obs; });
-  var tp = n ? Math.round(ins / n * 100) : 0;
+  var C = mfuCompanies(), n = 0, ins = 0, obs = 0, sv = 0, ch = 0; C.forEach(function(c){ n += c.n; ins += c.ins; obs += c.obs; sv += c.sv; ch += c.chal; });
+  var surv = !ins;   /* (V29.1) قرارُ المالك: «لسه ما بدأناش التواصل معاهم أو التركيب — فتصنيفُهم مش واقعي». في المسح: نسبةُ المسح والتحديات لا مستوى التركيب */
+  var tp = n ? Math.round((surv ? sv : ins) / n * 100) : 0;
+  var kpi = function(l, v, col){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(l)) + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
   return '<div class="mfu-kpis">'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('نسبة الإنجاز الكلية')) + '</div><div class="mfu-kpi-v">' + nm(tp) + '\u066A</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('التركيب')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(ins) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('عوائق')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(obs) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متبقٍّ')) + '</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(n - ins - obs) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('المخيمات')) + '</div><div class="mfu-kpi-v">' + nm(n) + '</div></div></div>'
-    + '<p class="hint">' + esc(t('دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU_COS_ALL ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
+    + (surv
+      ? kpi('نسبة مسح المخيمات', nm(tp) + '\u066A') + kpi('تم مسحها', nm(sv), '#27AE60') + kpi('المتبقي للمسح', nm(n - sv), '#B7950B') + kpi('فيها تحديات', nm(ch), '#C0392B') + kpi('المخيمات', nm(n))
+      : kpi('نسبة الإنجاز الكلية', nm(tp) + '\u066A') + kpi('التركيب', nm(ins), '#27AE60') + kpi('عوائق', nm(obs), '#C0392B') + kpi('المتبقي', nm(n - ins - obs), '#B7950B') + kpi('المخيمات', nm(n)))
+    + '</div>'
+    + (surv ? alertBox('info', t('المرحلة الحالية: المسح الميداني — التواصلُ مع الشركات والتركيبُ لم يبدآ بعد، فلا تصنيفَ لها بالتركيب. تُرتَّب بالأقلِّ مسحًا.')) : '')
+    + '<p class="hint">' + esc(t(surv ? 'نسبةُ كلِّ شركة = مخيماتُها الممسوحة ÷ مخيماتُها' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU_COS_ALL ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
     + btn(MFU_COS_ALL ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
-    + '<div class="mfu-cos">' + (MFU_COS_ALL ? C : C.slice().sort(function(a, b){ return a.pct - b.pct || b.n - a.n; }).slice(0, 12)).map(function(c){ var L = mfuLevel(c.pct);
+    + '<div class="mfu-cos">' + (MFU_COS_ALL ? C : C.slice().sort(function(a, b){ return (surv ? a.svp - b.svp : a.pct - b.pct) || b.n - a.n; }).slice(0, 12)).map(function(c){
+        var p = surv ? c.svp : c.pct, L = surv ? [p >= 75 ? 'مسحٌ متقدّم' : p > 0 ? 'مسحٌ جارٍ' : 'لم يبدأ المسح', p >= 75 ? 'ok' : p > 0 ? 'wrn' : 'off'] : mfuLevel(c.pct);
         return '<div class="mfu-co mfu-' + L[1] + '"><div class="mfu-co-h"><b>' + esc(c.co) + '</b>' + pill(t(L[0]), L[1]) + '</div>'
           + (coLiaisonOf(c.co) ? '<div class="hint" style="margin:2px 0 4px">' + esc(t('ضابط الاتصال')) + ': <b>' + esc(coLiaisonOf(c.co)) + '</b></div>' : '')
-          + mfuBar(c.pct) + '<div class="mfu-co-n"><span>' + esc(t('المستهدف')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('المنجز')) + ' <b>' + nm(c.ins) + '</b></span><span>' + esc(t('المتبقي')) + ' <b>' + nm(c.rem) + '</b></span><span>' + esc(t('متعثر')) + ' <b>' + nm(c.obs) + '</b></span></div></div>';
+          + mfuBar(p) + '<div class="mfu-co-n">'
+          + (surv
+            ? '<span>' + esc(t('المخيمات')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('تم مسحها')) + ' <b>' + nm(c.sv) + '</b></span><span>' + esc(t('المتبقي')) + ' <b>' + nm(c.n - c.sv) + '</b></span><span>' + esc(t('تحديات')) + ' <b>' + nm(c.chal) + '</b></span>'
+            : '<span>' + esc(t('المستهدف')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('المنجز')) + ' <b>' + nm(c.ins) + '</b></span><span>' + esc(t('المتبقي')) + ' <b>' + nm(c.rem) + '</b></span><span>' + esc(t('متعثر')) + ' <b>' + nm(c.obs) + '</b></span>')
+          + '</div></div>';
       }).join('') + '</div>';
 }
 /* (V26.5) فلترُ المشعر والنوع على التحديات والمعوقات — قرارُ المالك: «منى – مخيمات – العائق – العدد – المعالجة – المسؤول».
@@ -21755,7 +21783,7 @@ function mfuReport0(){
           ['تركيب المخيمات', pc(K.campIns, K.camp) + '٪', K.campIns + ' من ' + K.camp, dlt(K.campIns, 'campIns')],
           ['تركيب الممرات', pc(K.corIns, K.cor) + '٪', K.corIns + ' من ' + K.cor, dlt(K.corIns, 'corIns')],
           ['المعوقات القائمة', String(flt ? O.length : K.obs), flt || '', flt ? null : dlt(K.obs, 'obs')],
-          ['شركات الخدمة (ممتاز · متوسط · ضعيف)', K.ex + ' · ' + K.md + ' · ' + K.wk, '', null],
+          K.ins ? ['شركات الخدمة (ممتاز · متوسط · ضعيف)', K.ex + ' · ' + K.md + ' · ' + K.wk, '', null] : ['شركات الخدمة', String(mfuCompanies().length), 'مرحلة المسح — لم يبدأ التواصل والتركيب', null],   /* (V29.1) */
           ['بانتظار قرار الوزارة', String(mfuMinWait()), 'نقطةً معتمدةً تقنيًّا', null],
           ['تحدياتٌ مفتوحة', String(K.chal), '', null], ['طلباتٌ قيد المتابعة', String(K.req), '', null]],
     tasks:(wtRows().length ? mfuWeekRows().map(function(x){ var r = x.r;
@@ -21764,7 +21792,10 @@ function mfuReport0(){
           : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? dayKey(d) : '', p + '٪', '']; })),
     inst:Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; })
           .map(function(o){ return [o.z, (CAT_DEF[o.ty] || {}).l || o.ty, o.n, o.i, (o.n ? Math.round(o.i / o.n * 100) : 0) + '٪']; }),
-    cos:mfuCompanies().map(function(c){ return [c.co, coLiaisonOf(c.co) || '\u2014', c.n, c.ins, c.rem, c.obs, c.pct + '٪', mfuLevel(c.pct)[0]]; }),
+    cos:(function(){ var C = mfuCompanies(), ph = C.some(function(c){ return c.ins > 0; });   /* (V29.1) المرحلة: لا تركيبَ بعد ⇒ لا تصنيفَ بالتركيب */
+      return C.map(function(c){ return [c.co, coLiaisonOf(c.co) || '\u2014', c.n, c.sv, c.n - c.sv, c.chal, c.svp + '٪', c.ins, ph && c.ins ? t('التركيب') + ': ' + mfuLevel(c.pct)[0] + ' (' + c.pct + '٪)' : t('مرحلة المسح — لم يبدأ التواصل والتركيب')]; }); })(),
+    phase:mfuCompanies().some(function(c){ return c.ins > 0; }) ? 'install' : 'survey',
+    sv:svStats(), svz:svStats().zones, svd:svStats().detail,
     obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
@@ -21786,10 +21817,12 @@ function mfuReport0(){
 }
 var MFU_SECTIONS = [
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
+  ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول']],   /* (V29.1) */
+  ['svd', 'المسح الميداني — المشعر والنوع', ['المشعر', 'النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ']],
   ['tasks', 'حالة أبرز المهام', ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ']],
   ['blocks', 'المسار | القارئات — المنجز والقادم والمطلوب', ['الكتلة', 'البند', 'التفصيل']],
   ['inst', 'حالة التركيبات', ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة']],
-  ['cos', 'تركيب المخيمات لشركات الخدمة', ['الشركة', 'ضابط الاتصال', 'المستهدف', 'المنجز', 'المتبقي', 'متعثر', 'النسبة', 'المستوى']],
+  ['cos', 'شركات الخدمة — المسح والتركيب', ['الشركة', 'ضابط الاتصال', 'مخيماتها', 'تم مسحها', 'متبقٍّ للمسح', 'فيها تحديات', 'نسبة المسح', 'رُكّب', 'الحالة']],   /* (V29.1) */
   ['parties', 'بيان المعوقات — الجهة المعالجة', ['الجهة', 'عدد المعوقات']],
   ['cats', 'فئات المعوقات', ['الفئة', 'العدد', 'الجهة المعالجة']],
   ['chal', 'التحديات وآليات المعالجة', ['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'الحالة']],
@@ -21936,10 +21969,12 @@ function mfuReportCheck(R){
     });
   });
   /* اتّساقُ الأرقام: في كلِّ شركةٍ المستهدفُ = المنجزُ + المتبقي + المتعثر، والنسبةُ = المنجزُ ÷ المستهدف */
-  (R.cos || []).forEach(function(r, i){ var n = +expDigits(r[2]), a = +expDigits(r[3]), b = +expDigits(r[4]), c = +expDigits(r[5]), p = parseFloat(expDigits(r[6]));
-    if ([n, a, b, c].every(isFinite) && n !== a + b + c) iss.push(t('تركيب المخيمات لشركات الخدمة') + ' — ' + r[0] + ': ' + t('المستهدف لا يساوي المنجز والمتبقي والمتعثر'));
-    if (isFinite(n) && n > 0 && isFinite(p) && Math.abs(p - Math.round(a / n * 100)) > 1) iss.push(t('تركيب المخيمات لشركات الخدمة') + ' — ' + r[0] + ': ' + t('النسبة لا تطابق المنجز'));
+  (R.cos || []).forEach(function(r, i){ var n = +expDigits(r[2]), a = +expDigits(r[3]), b = +expDigits(r[4]), p = parseFloat(expDigits(r[6]));   /* (V29.1) مخيماتُها = تم مسحها + المتبقي، والنسبة = الممسوح ÷ المخيمات */
+    if ([n, a, b].every(isFinite) && n !== a + b) iss.push(t('شركات الخدمة') + ' — ' + r[0] + ': ' + t('المخيمات لا تساوي الممسوح والمتبقي'));
+    if (isFinite(n) && n > 0 && isFinite(p) && Math.abs(p - Math.round(a / n * 100)) > 1) iss.push(t('شركات الخدمة') + ' — ' + r[0] + ': ' + t('نسبة المسح لا تطابق الممسوح'));
   });
+  (R.svd || []).forEach(function(r){ var n = +r[2], a = +r[3], b = +r[4]; if ([n, a, b].every(isFinite) && n !== a + b) iss.push(t('المسح الميداني') + ' — ' + r[0] + ' · ' + r[1] + ': ' + t('الإجمالي لا يساوي الممسوح والمتبقي')); });
+  if (R.sv && R.svz){ var zt = 0; R.svz.forEach(function(r){ zt += +r[1] || 0; }); if (zt !== R.sv.O.tot) iss.push(t('المسح الميداني') + ': ' + t('مجموع المشاعر لا يساوي الإجمالي')); }
   return iss;
 }
 function pptxCheck(out){
@@ -22067,6 +22102,11 @@ function mfuSlides(R){
     + pxCards(K.slice(4).map(function(k){ return [k[0], k[1], '']; }), PX.Y0 + 3000000, 2200000)
     + (R.upd.length ? pxTable(PX.X0, PX.Y0 + 5450000, PX.W, ['متى', 'النوع', 'البند', R.updTitle && /اجتماع/.test(R.updTitle) ? 'ما تغيّر منذ آخر اجتماع' : 'آخر التحديثات هذا الأسبوع', 'بواسطة'], R.upd.slice(0, 5).map(function(u){ return [u[0], u[1], u[2], u[3], u[4]]; }), { cols:[1, 1.1, 3, 4.2, 1.3], rh:340000, sz:1000, hsz:1100 })
        : pxBox(PX.X0, PX.Y0 + 5500000, PX.W, 700000, pxP('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:1300, c:'7F8C8D' }), { geom:'rect' }))]);
+  /* (V29.1) المسحُ الميدانيُّ: نظرةٌ عامةٌ ثم المشعرُ والنوع */
+  var SV = R.sv || svStats(), so = SV.O, pcv = function(v){ var n = parseInt(v, 10) || 0; return { t:String(v), c:pxLvl(n).c, bg:pxLvl(n).bg, b:1 }; };
+  S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة المسح', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تم المسح', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تعذّر الوصول', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
+    + pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول'], SV.zones.map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], pcv(r[4]), r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', r[6] ? { t:String(r[6]), c:'A93226' } : '0']; }), { cols:[2.2, 1, 1, 1, 1, 1.2, 1.2], rh:600000, sz:1500, hsz:1500 })]);
+  S.push(['المسح الميداني — المشعر والنوع', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ'], SV.detail.slice(0, 16).map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], r[4], pcv(r[5]), r[6] ? { t:String(r[6]), c:'A93226', b:1 } : '0', r[7]]; }), { cols:[1.3, 1.6, 0.9, 0.9, 0.9, 0.9, 1, 3.3], rh:470000, sz:1150, hsz:1200 })]);
   var stc = function(v){ return v === 'مكتمل' ? { t:v, c:'1E8449', b:1 } : v === 'متأخر' ? { t:v, c:'A93226', b:1 } : v === 'جارٍ' ? { t:v, c:'8A6D0B', b:1 } : v; };
   var stc2 = function(v){ v = String(v || ''); return /مكتمل/.test(v) ? { t:v, c:'1E8449', b:1 } : /متوقف|متأخر/.test(v) ? { t:v, c:'A93226', b:1 } : /جاري|جارٍ/.test(v) ? { t:v, c:'8A6D0B', b:1 } : v; };
   S.push(['حالة أبرز مهام مسار القارئات', pxTable(PX.X0, PX.Y0, PX.W, ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ'], R.tasks.slice(0, 11).map(function(r){ return [r[0], r[1] || '—', r[2] || '—', stc2(r[3]), r[4] || '—', r[5] || '—', r[6] ? (/^✓/.test(r[6]) ? { t:r[6], c:'1E8449', b:1 } : { t:r[6], c:'A93226' }) : '—']; }), { cols:[3, 1.2, 1.3, 1.3, 1.2, 2.6, 1.8], sz:1100, rh:560000 })]);
@@ -22077,11 +22117,12 @@ function mfuSlides(R){
   S.push(['المســـار | القارئات', pxCards([['أُنجز هذا الأسبوع', String(bk.done || 0), (dlt > 0 ? '▲ +' : dlt < 0 ? '▼ ' : '') + dlt + ' عن الأسبوع الماضي', '1E8449'], ['مستحقٌّ خلال ٧ أيام', String(bk.next || 0), ''], ['متأخرة', String(bk.late || 0), '', 'A93226'], ['متوقفة أو بانتظار قرار', String(bk.wait || 0), '', '8A6D0B']].concat(bk.meet ? [['آخر اجتماع', dayKey(bk.meet.at), bk.meet.n + ' تغييرًا منذه', '163E35', 2200]] : []), PX.Y0, 1500000)
     + col4('أبرز الأعمال المنجزة', '27AE60', 0) + col4('أبرز المهام القادمة', 'C8943E', 1) + col4('الاعتمادات والدعم المطلوب', '1C3674', 2) + col4('المهام المتأخرة', 'C0392B', 3)]);
   S.push(['حالة التركيبات', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة'], R.inst.slice(0, 12).map(function(r){ var L = pxLvl(r[4]); return [r[0], r[1], r[2], r[3], { t:r[4], c:L.c, bg:L.bg, b:1 }]; }), { cols:[1.4, 2.6, 1.2, 1.2, 1.2] })]);
-  var n = 0, ins = 0, obs = 0; R.cos.forEach(function(c){ n += +c[2] || 0; ins += +c[3] || 0; obs += +c[5] || 0; });   /* (V28.8) أعمدةُ V28.5: ضابطُ الاتصال ثانيًا */
-  var weak = R.cos.slice().sort(function(a, b){ return (parseInt(a[6], 10) || 0) - (parseInt(b[6], 10) || 0); }).slice(0, 10);
-  S.push(['تركيب مخيمات لشركات الخدمة', pxCards([['نسبة الإنجاز الكلية', (n ? Math.round(ins / n * 100) : 0) + '٪', ''], ['التركيب', String(ins), '', '1E8449'], ['متعثر', String(obs), '', 'A93226'], ['المتبقي', String(n - ins - obs), '', '8A6D0B'], ['المخيمات', String(n), '']], PX.Y0, 1500000)
-    + pxBox(PX.X0, PX.Y0 + 1580000, PX.W, 420000, pxP('دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪ — الأضعفُ أوّلًا، والكلُّ في ملف الإكسل', { sz:1200, c:'7F8C8D' }), { geom:'rect' })
-    + pxTable(PX.X0, PX.Y0 + 2050000, PX.W, ['الشركة', 'ضابط الاتصال', 'المستهدف', 'المنجز', 'المتبقي', 'متعثر', 'النسبة', 'المستوى'], weak.map(function(r){ var L = pxLvl(r[6]); return [r[0], r[1], r[2], r[3], r[4], r[5], { t:r[6], c:L.c, bg:L.bg, b:1 }, { t:r[7], c:L.c, b:1 }]; }), { cols:[3.4, 1.8, 1, 1, 1, 1, 1, 1.2], rh:470000, sz:1300 })]);
+  /* (V29.1) الشركاتُ بحسب المرحلة: في المسح نسبةُ المسح وما تبقّى والتحديات — لا تصنيفَ بالتركيب قبل بدئه */
+  var cn = 0, csv = 0, cch = 0, cins = 0; R.cos.forEach(function(c){ cn += +c[2] || 0; csv += +c[3] || 0; cch += +c[5] || 0; cins += +c[7] || 0; });
+  var weak = R.cos.slice().sort(function(a, b){ return (parseInt(a[6], 10) || 0) - (parseInt(b[6], 10) || 0) || (+b[2] || 0) - (+a[2] || 0); }).slice(0, 10);
+  S.push(['شركات الخدمة — المسح والتركيب', pxCards([['نسبة مسح المخيمات', (cn ? Math.round(csv / cn * 100) : 0) + '٪', csv + ' من ' + cn, '1E8449'], ['المتبقي للمسح', String(cn - csv), 'مخيم', '8A6D0B'], ['فيها تحديات', String(cch), 'مخيم ممسوح', 'A93226'], ['التركيب', String(cins), cins ? 'مخيم' : 'لم يبدأ بعد', '163E35'], ['الشركات', String(R.cos.length), R.phase === 'survey' ? 'مرحلة المسح — لم يبدأ التواصل' : '']], PX.Y0, 1500000)
+    + pxBox(PX.X0, PX.Y0 + 1580000, PX.W, 420000, pxP(R.phase === 'survey' ? 'المرحلة الحالية: المسح الميداني — التواصلُ مع الشركات والتركيبُ لم يبدآ بعد، فلا تصنيفَ لها بالتركيب. الأقلُّ مسحًا أوّلًا، والكلُّ في ملف الإكسل' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪ — الأضعفُ أوّلًا، والكلُّ في ملف الإكسل', { sz:1200, c:'7F8C8D' }), { geom:'rect' })
+    + pxTable(PX.X0, PX.Y0 + 2050000, PX.W, ['الشركة', 'ضابط الاتصال', 'مخيماتها', 'تم مسحها', 'متبقٍّ للمسح', 'فيها تحديات', 'نسبة المسح', 'الحالة'], weak.map(function(r){ var L = pxLvl(r[6]); return [r[0], r[1], r[2], r[3], r[4], r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', { t:r[6], c:L.c, bg:L.bg, b:1 }, { t:r[8], c:'7F8C8D' }]; }), { cols:[3, 1.6, 0.9, 0.9, 1, 1, 1, 2.6], rh:470000, sz:1200 })]);
   S.push(['بيان المعوقات وتصنيفها', pxCards([['إجمالي المعوقات', String(R.obsTotal), 'نقطةٌ لم تُركَّب وفيها عائق', 'A93226']].concat(R.parties.map(function(p){ return ['تُعالَج من خلال ' + p[0], String(p[1]), '']; })), PX.Y0, 1900000)
     + pxTable(PX.X0, PX.Y0 + 2300000, PX.W, ['الفئة', 'العدد', 'الجهة المعالجة'], R.cats.slice(0, 9), { cols:[4, 1, 2] })]);
   S.push(['التحديات / آليات المعالجة', R.chal.length ? pxTable(PX.X0, PX.Y0, PX.W, ['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'الحالة'], R.chal.slice(0, 9).map(function(r){ return [r[0], r[1], r[2], r[3], r[4], /تم الحل|مغلق/.test(r[5]) ? { t:r[5], c:'1E8449', b:1 } : { t:r[5], c:'A93226', b:1 }]; }), { cols:[1.4, 3, 1.3, 1.4, 3, 1.6], hf:'86432B', rh:640000, sz:1200 })
@@ -22101,7 +22142,7 @@ function mfuPptx(){
   toast(t('يُجهَّز العرضُ من قالب الوزارة…'));
   return pptxTemplate().then(function(tpl){
     var R = mfuReport(), E = ooxRead(tpl), dec = new TextDecoder(), slides = mfuSlides(R), chk = mfuReportCheck(R);   /* (V28.9) */
-    var order = ['ppt/slides/slide2.xml', 'ppt/slides/slide3.xml', 'ppt/slides/slide4.xml', 'ppt/slides/slide5.xml', 'ppt/slides/slide6.xml', 'ppt/slides/slide7.xml', 'ppt/slides/slide8.xml', 'ppt/slides/slide9.xml', 'ppt/slides/slide10.xml'];   /* (V28.8) شرائحُ المحتوى في القالب الموحَّد */
+    var order = ['2','3','4','5','6','7','8','9','10','11','12'].map(function(k){ return 'ppt/slides/slide' + k + '.xml'; });   /* (V28.8، و٢٩٫١ إحدى عشرة شريحة بالمسح) شرائحُ المحتوى في القالب الموحَّد */
     var out = E.map(function(e){
       if (e.method !== 0 || !/^ppt\/slides\/slide\d+\.xml$/.test(e.name)) return e;
       var x = dec.decode(e.raw);
@@ -23723,6 +23764,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.1', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'المسح الميداني في التقرير: شريحتان جديدتان في الباوربوينت — نظرة عامة بالأرقام والنسب (نسبة المسح، تم، المتبقي، فيها تحديات، تعذر الوصول) وجدول حسب المشعر، ثم تفاصيل المشعر والنوع: اتعمل كام، لسه كام، كام فيها تحديات، وأبرز تحدٍّ. وفي الوورد والإكسل والبي دي إف قسمان بنفس الأرقام.',
+      'حالة الشركات بقت حسب المرحلة: في المسح الميداني تظهر نسبة مسح مخيمات كل شركة والمتبقي والتحديات، و«مرحلة المسح — لم يبدأ التواصل والتركيب» بدل تصنيف ممتاز ومتوسط وضعيف اللي كان محسوبا على التركيب.' ] },
   { v:'V29.0', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'اختيار النقاط في التصدير: فوق أزرار التصدير «نطاق الملف» — كل النقاط، أو مشعر ونوع، أو المحدد على الخريطة — والملف يُبنى على نقاط النطاق وحدها ويُكتب النطاق في الغلاف واسم الملف.',
       'بريد الشركات: عمود «بريدها» في إشعار الشركات (يحفظه المهندس في دفتر الجوالات المحجوب)، وزر «بريد رسمي» يفتح بريد الجهاز برسالة رسمية جاهزة (تركيب أو تسليم أو فك) فيها الأرقام وضابط الاتصال.' ] },
