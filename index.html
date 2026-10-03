@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-cee5514246.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-0f5158f9f2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6650,6 +6650,17 @@ function maintSave(){
   statBump(); render(1);
 }
 function maintDone(id){ return maintList(id).length > 0; }
+/* (V29.5) قيدُ صيانةٍ يُحذف للمهندس والمدير (قرارُ المالك) — بتأكيد، ويبقى أثرُه في سجل الأحداث؛ والقطعُ المستهلَكةُ تبقى حركةً في المخزون */
+function maintDel(id, at){
+  if (rankOf(ROLE) < rankOf('engineer')){ toast(t('حذفُ الصيانة للمهندس والمدير')); return; }
+  var L = maintList(id), r = L.filter(function(x){ return String(x.at) === String(at); })[0]; if (!r) return;
+  if (!confirm(t('حذفُ قيد الصيانة') + ' ' + id + ' \u2014 «' + String(r.fault || '').slice(0, 40) + '»؟')) return;
+  var L2 = L.filter(function(x){ return x !== r; });
+  STATE.maints = STATE.maints || {};
+  STATE.maints[id] = { id:id, list:L2 }; CORE.set('maints', id, STATE.maints[id]);
+  logEvent('حذف قيد صيانة — ' + id + ' \u00b7 ' + String(r.fault || '').slice(0, 40) + ' \u00b7 ' + (r.by || ''));
+  toast(t('حُذف قيدُ الصيانة')); render(1);
+}
 function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 
 /* ═══ التفاصيلُ المختصرة: حالةٌ وسطرٌ على وثيقة الزيارة ═══ */
@@ -7443,11 +7454,12 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
 
       + (hist.length
         ? cardFlush(t('سجلُّ الصيانة') + ' \u2014 ' + nm(hist.length),
-            table(['النقطة','التاريخ','العطل','ما عُمل','بواسطة'],
+            table(['النقطة','التاريخ','العطل','ما عُمل','بواسطة',''],
               hist.slice(0, 60).map(function(h){
                 return ['<span class="num">' + esc(h.id) + '</span>',
                         '<span class="num">' + esc(fmtDate(h.r.at)) + '</span>',
-                        esc(h.r.fault.slice(0, 40)), esc(h.r.act.slice(0, 40)), esc(dispName(h.r.by))];
+                        esc(h.r.fault.slice(0, 40)), esc(h.r.act.slice(0, 40)), esc(dispName(h.r.by)),
+                        buyMayEdit() || rankOf(ROLE) >= rankOf('engineer') ? btn('\u2715','btn-quiet btn-sm',' data-mntdel="' + esc(h.id + '|' + h.r.at) + '" title="' + esc(t('حذف')) + '"') : ''];   /* (V29.5) */
               })))
         : card('', '<p class="hint" style="text-align:center;margin:0">'
             + esc(t('لا زيارةَ صيانةٍ بعد — تُسجَّل هنا فتُغلَق مهمةُ MR ويبقى للنقطة تاريخُ خدمة.')) + '</p>'));
@@ -14075,16 +14087,17 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
                   + '</select></div>'
                 : '')
             + '</div>'
-            + '<div class="actions">' + btn('سجّل الشراء','btn-primary',' data-byadd="1"') + '</div>'
+            + '<div class="actions">' + btn(BUY_ED ? '\u2714 ' + t('احفظ التعديل') : t('سجّل الشراء'),'btn-primary',' data-byadd="1"') + (BUY_ED ? btn(t('إلغاء التعديل'),'btn-quiet',' data-byedcancel="1"') : '') + '</div>'
             + '<p class="hint">' + esc(t('ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.')) + '</p>')
         : '')
       + cardFlush(t('العمليات') + ' — ' + nm(L.length),
           L.length
-            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة'],
+            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة',''],
                 capList(L, 200).map(function(b){
                   return ['<span class="num">' + esc(dayKey(b.at)) + '</span>',
                           esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
-                          pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn')];
+                          pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn'),
+                          buyMayEdit() ? btn('\u270E','btn-quiet btn-sm',' data-byedit="' + esc(b.id) + '" title="' + esc(t('تعديل')) + '"') + btn('\u2715','btn-quiet btn-sm',' data-bydel="' + esc(b.id) + '" title="' + esc(t('حذف')) + '"') : ''];   /* (V29.5) */
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا مشترياتٍ بعد.')) + '</p>',
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="buys"') : '');
@@ -23818,6 +23831,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.5', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'المشتريات (قرار المالك: الحذف للمهندس والمدير): زر تعديل يملأ النموذج ويحفظ على نفس العملية، وزر حذف بتأكيد — والعملية المعتمدة لا تُحذف إلا بسبب مكتوب يدخل سجل الأحداث.',
+      'سجل الصيانة: حذف القيد للمهندس والمدير بتأكيد، ويبقى أثره في سجل الأحداث. والسيارات والشحنات والكتالوج والوظائف كان لها التعديل والحذف من قبل.' ] },
   { v:'V29.4', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'مساعد الميدان في «شغلي ← مهامي» للفني والمشرف: الأقرب إليّ (أقرب خمس نقاط لم تُمسح من موقعك، مع الخريطة والاتجاهات)، وملخص يومي جاهز للنسخ أو الواتساب، وتجهيز اليوم بلا نت (خريطة الجهاز والمزامنة وما ينتظر الرفع).',
       'وفي نموذج المسح زر «انسخ من آخر زيارتي»: التثبيت والكهرباء والمقاسات من آخر زيارة سجلتها لنفس النوع، والصور والتحديات تؤخذ من الموقع.' ] },
@@ -25269,6 +25285,27 @@ function buysList(){
 function supList(){ return seedOnce('sups', DATA.suppliers); }
 function catList(){ return seedOnce('cats', DATA.buyCats); }
 
+/* (V29.5) قرارُ المالك: «الحذفُ مسموحٌ للمهندس والمدير» في سجلات المكتب. المشترياتُ تُعدَّل وتُحذَف منهما؛ والمعتمدُ منها لا يُحذف
+   إلا بسببٍ مكتوبٍ يدخل سجلَّ الأحداث (الأثرُ لا يُحذف) — فيبقى المنصرفُ مفسَّرًا. */
+var BUY_ED = '';
+function buyMayEdit(){ return may('money') && rankOf(ROLE) >= rankOf('engineer'); }
+function buyEdit(id){
+  var b = (STATE.buys || {})[id]; if (!b || !buyMayEdit()){ toast(t('تعديلُ المشتريات للمهندس والمدير')); return; }
+  BUY_ED = id; render(1);
+  setTimeout(function(){ var set = function(k, v){ var el = document.getElementById(k); if (el) el.value = v == null ? '' : v; };
+    set('byItem', b.item); set('byCat', b.cat); set('bySup', b.sup); set('byAmt', b.amt); set('byZone', b.zone || '\u2014'); set('byTrial', b.trial || '');
+    var f = document.getElementById('byItem'); if (f){ try { f.scrollIntoView({ block:'center' }); f.focus(); } catch (e){ LS_ERR = e; } } }, 30);
+}
+function buyDel(id){
+  var b = (STATE.buys || {})[id]; if (!b) return;
+  if (!buyMayEdit()){ toast(t('حذفُ المشتريات للمهندس والمدير')); return; }
+  var why = '';
+  if (b.st === 'معتمد'){ why = String(window.prompt(t('عمليةٌ معتمدةٌ داخل المنصرف — اكتب سببَ الحذف (يُحفَظ في سجل الأحداث):'), '') || '').trim(); if (!why){ toast(t('لم تُحذف — السببُ مطلوبٌ للمعتمد')); return; } }
+  else if (!confirm(t('حذفُ عملية الشراء') + ' «' + b.item + '» (' + nm(b.amt) + ')؟')) return;
+  logEvent('حذف مشترى — ' + b.item + ' · ' + nm(b.amt) + ' ريال · ' + b.sup + ' · ' + b.st + (why ? ' · السبب: ' + why : ''));
+  CORE.rm('buys', id); if (BUY_ED === id) BUY_ED = '';
+  toast(t('حُذفت العملية')); render(1);
+}
 function buyAdd(){
   if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
@@ -25280,17 +25317,19 @@ function buyAdd(){
   if (amt <= 0){ toast(t('المبلغُ أكبرُ من صفر')); return; }
 
   var cap = cfgGet('budApp') || 0;
-  var id = uid36();
+  var old = BUY_ED ? (STATE.buys || {})[BUY_ED] : null;   /* (V29.5) تعديلٌ لا عمليةٌ جديدة */
+  var id = old ? old.id : uid36();
   var b = { id:id, item:item, cat:cat, sup:sup, amt:amt, zone:zone, trial:trial || '',
-            at:Date.now(), by:STATE.meta.name || '',
+            at:old ? old.at : Date.now(), by:old ? old.by : (STATE.meta.name || ''),
             st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
+  if (old){ b.edAt = Date.now(); b.edBy = STATE.meta.name || ''; BUY_ED = ''; }
   if (!STATE.buys) STATE.buys = {};
   STATE.buys[id] = b;
   CORE.set('buys', id, b);
-  logEvent('مشترى — ' + item + ' · ' + nm(amt) + ' ريال · ' + b.st);
+  logEvent((old ? 'تعديل مشترى — ' : 'مشترى — ') + item + ' · ' + nm(amt) + ' ريال · ' + b.st + (old && (old.amt !== amt || old.item !== item) ? ' (كان ' + old.item + ' · ' + nm(old.amt) + ')' : ''));
   if (b.st !== 'معتمد')
     notifPush('اعتماد شراء', 'مشترًى يتجاوز حدَّ الاعتماد — ' + item + ' · ' + nm(amt), { lv:'مهم' });
-  toast(t(b.st === 'معتمد' ? 'سُجّل المشترى' : 'سُجّل بانتظار اعتماد المهندس — تجاوز حدَّ الاعتماد'));
+  toast(t(old ? 'حُفظ التعديل' : (b.st === 'معتمد' ? 'سُجّل المشترى' : 'سُجّل بانتظار اعتماد المهندس — تجاوز حدَّ الاعتماد')));
   render(1);
 }
 
@@ -33617,6 +33656,10 @@ function onDocClick(e){
   if (izn){ itemZone(izn.getAttribute('data-itzone')); return; }
   if (e.target.closest('[data-mvadd]')){ moveAdd(); return; }
   if (e.target.closest('[data-byadd]')){ buyAdd(); return; }
+  var bye = e.target.closest('[data-byedit]'); if (bye){ buyEdit(bye.getAttribute('data-byedit')); return; }   /* (V29.5) */
+  var mdl = e.target.closest('[data-mntdel]'); if (mdl){ var mp2 = mdl.getAttribute('data-mntdel').split('|'); maintDel(mp2[0], mp2[1]); return; }
+  var byd = e.target.closest('[data-bydel]'); if (byd){ buyDel(byd.getAttribute('data-bydel')); return; }
+  if (e.target.closest('[data-byedcancel]')){ BUY_ED = ''; render(1); toast(t('أُلغي التعديل')); return; }
   if (e.target.closest('[data-supadd]')){ listAdd('sup'); return; }
   if (e.target.closest('[data-catadd]')){ listAdd('cat'); return; }
   var srm2 = e.target.closest('[data-suprm]');
