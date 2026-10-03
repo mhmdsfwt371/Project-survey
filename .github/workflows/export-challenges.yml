@@ -49,7 +49,11 @@ jobs:
       - name: fix Khaled visits (V28.7, owner decision)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/fix-khaled.mjs || true
+        run: echo skip-fix-khaled
+      - name: old devices (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/old-devices.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
