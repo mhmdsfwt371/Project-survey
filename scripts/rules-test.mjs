@@ -63,6 +63,12 @@ await deny('الفنيُّ لا يكتب زيارةً معتمدةً بيده', 
 await deny('المشرفُ لا يعتمد زيارتَه بيده',         updateDoc(doc(as('sup'), 'recs/S1'), { review:'approved' }));
 await ok  ('المهندسُ يعتمد الزيارة',                updateDoc(doc(as('eng'), 'recs/S1'), { review:'approved' }));
 await deny('المطّلعُ لا يكتب شيئًا',                setDoc(doc(as('vwr'), 'recs/S4'), { ...rec, id:'S4' }));
+/* (V29.3) «مفيش أي حاجة تتحذف دلوقتي»: علامةُ الحذف على زيارةٍ لمن يملك الحذف وحدَه — تردّ زرَّ الحذف في الأجهزة القديمة */
+await deny('الفنيُّ لا يضع علامةَ الحذف على زيارة (نسخةٌ قديمة)', setDoc(doc(as('tec'), 'recs/S2'), { id:'S2', deleted:true, at:9 }, { merge:true }));
+await deny('ولا المشرف',                                           setDoc(doc(as('sup'), 'recs/S2'), { id:'S2', deleted:true, at:9 }, { merge:true }));
+await ok  ('والمسحُ من جديد يكتب deleted:false',                   setDoc(doc(as('tec'), 'recs/S2'), { ...rec, id:'S2', review:'pending', deleted:false }, { merge:true }));
+await ok  ('والمهندسُ يملك الحذفَ فيضعها',                         setDoc(doc(as('eng'), 'recs/S2'), { id:'S2', deleted:true, at:10 }, { merge:true }));
+await deny('ولا علامةَ حذفٍ على تركيبٍ من الفني',                 setDoc(doc(as('tec'), 'inss/I-DEL'), { id:'I-DEL', status:'مُركّب', deleted:true }));
 /* V16.66: اعتمادُ الوزارة لإعداد التركيب — حقولُ minReview وحدَها على ما اعتُمد تقنيًّا */
 await setDoc(doc(as('eng'), 'recs/SM'), { ...rec, id:'SM', review:'approved', minReview:'pending' });
 await ok  ('والوزارةُ تعتمد إعدادَ التركيب على ما اعتُمد تقنيًّا', updateDoc(doc(as('vwr'), 'recs/SM'), { minReview:'approved', minBy:'وزارة', minAt:1, minNote:'' }));

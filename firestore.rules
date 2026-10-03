@@ -204,7 +204,10 @@ service cloud.firestore {
       // الكتابةُ (w) لمن يكتب العمل، والاعتمادُ (a) للإدارة — كلٌّ من المصفوفة بافتراضيّه
       allow create, update: if pm('recs', 'w', canW()) && (
         pm('recs', 'a', mgr()) ||
-        (!('review' in request.resource.data) || request.resource.data.review != 'approved'));
+        (!('review' in request.resource.data) || request.resource.data.review != 'approved'))
+        // (V29.3) قرارُ المالك «مفيش أي حاجة تتحذف دلوقتي»: علامةُ الحذف (deleted:true) على زيارةٍ لا يكتبها إلا من يملك حذفَها —
+        // أجهزةٌ على نسخٍ قديمة (قبل V28.3) ما زال فيها زرُّ «تمت الزيارة» الذي يمحو المسحَ بضغطة؛ القاعدةُ تردّها أيًّا كانت النسخة
+        && (request.resource.data.get('deleted', false) != true || pm('recs', 'd', mgr()));
       // ═══ اعتمادُ الوزارة لإعداد التركيب (V16.66) ═══
       // الفعلُ الوحيدُ الذي تكتبه الوزارة: حقولُ minReview وحدَها في وثيقةٍ قائمةٍ
       // اعتُمدت تقنيًّا — لا تُنشئ ولا تمسُّ حقلًا غيرَها، ولا تعتمد ما لم يعتمده المهندس.
@@ -222,8 +225,8 @@ service cloud.firestore {
        العامة، ففُرِّق هنا. */
     match /inss/{id} {
       allow read: if pm('inss', 'r', ok());
-      allow create: if pm('inss', 'w', canW());
-      allow update: if pm('inss', 'w', canW()) && (
+      allow create: if pm('inss', 'w', canW()) && request.resource.data.get('deleted', false) != true;   // (V29.3)
+      allow update: if pm('inss', 'w', canW()) && (request.resource.data.get('deleted', false) != true || pm('inss', 'd', mgr())) && (
         pm('inss', 'a', mgr()) ||
         (request.resource.data.approved != true &&
         (!('solution' in request.resource.data) ||
