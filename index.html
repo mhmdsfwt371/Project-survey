@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-5bbba47d33.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-4e5d5f2c12.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15016,12 +15016,14 @@ function popHtml(){
         + (on ? ';background:' + o[1] : '') + '"'
         + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
     }).join('');
-  } else if (task || may('approve') || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.6) المشرفُ يسجّل زيارةً بلا إسنادٍ مسبق */
+  } else if (may('approve')){   /* (V28.7) قرارُ المالك: «اسمها زيارة — المشرفُ ملزَمٌ بنموذج المسح، والمهندسُ يقدر يعملها من عنده (تمت الزيارة) ويتجاوز النموذج» */
     /* (V28.3) زرٌّ يقول ما يفعل: يسجّل زيارةً سريعةً حين لا زيارة، ويُلغي السريعةَ وحدَها، ولا يظهر على مسحٍ كامل */
     var rq = STATE.recs[s.id];
-    marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('سجّل زيارةً سريعة')) + '</button>'
-      : recIsQuick(rq) ? '<span class="pill info">' + esc(t('زيارةٌ سريعة')) + '</span>'   /* (V28.4) لا زرَّ إلغاء — الحذفُ موقوف */
+    marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('تمت الزيارة')) + '</button>'
+      : recIsQuick(rq) ? '<span class="pill info">' + esc(t('تمت الزيارة — بقرار المهندس')) + '</span>'   /* (V28.4) لا زرَّ إلغاء — الحذفُ موقوف */
       : '';
+  } else if (task || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.7) المشرفُ والفنيُّ: الزيارةُ من نموذج المسح بصوره */
+    marks = STATE.recs[s.id] ? '' : '<span class="hint" style="margin:0;font-size:11.5px">' + esc(t('سجّل الزيارةَ من «نموذج المسح» بصورها')) + '</span>';
   } else {
     marks = '<span class="hint" style="margin:0;font-size:11.5px">'
       + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
@@ -15759,6 +15761,7 @@ function moveBar(){
    حالةٌ لا زرّ. صار: المسحُ الكاملُ لا يُحذف من هنا أبدًا، والزيارةُ السريعةُ وحدَها تُلغى وبتأكيد، والزرُّ يقول ما يفعل. */
 function recIsQuick(rec){ if (!rec) return false; return Object.keys(rec).every(function(k){ return ['id','by','at','quick','_v','_t','_by','_at','upd','v','deleted'].indexOf(k) > -1 || rec[k] == null || rec[k] === '' || (Array.isArray(rec[k]) && !rec[k].length); }); }
 function markSurvey(id){
+  if (!may('approve')){ toast(t('الزيارةُ من «نموذج المسح» — وتسجيلُها مباشرةً للمهندس')); return; }   /* (V28.7) */
   var rec = STATE.recs[id];
   if (rec){
     /* (V28.4) قرارُ المالك: «مفيش أي حاجة تتحذف دلوقتي — المهمُّ الشبابُ في الميدان يسجّلوا الزيارات وتتسجّل فعلًا». لا حذفَ لزيارة. */
@@ -15771,8 +15774,8 @@ function markSurvey(id){
     CORE.set('recs', id, {
       id:id, by:STATE.meta.name || '', at:Date.now(), quick:1
     });
-    logEvent('زيارةٌ سريعة — ' + id, id);
-    toast(t('سُجّلت زيارةٌ سريعة'));
+    logEvent('تمت الزيارة بقرار المهندس — ' + id, id);
+    toast(t('سُجّلت الزيارة — بقرار المهندس'));
   }
   statBump(); render(1);
   if (MAP) mapPaint();
@@ -23527,6 +23530,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.7', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'قرار المالك: اسمها «زيارة». المشرف والفني يسجلون الزيارة من «نموذج المسح» بصورها (ملزم)، والمهندس وحده يقدر يضغط «تمت الزيارة» من نافذة النقطة متجاوزا النموذج.',
+      'رسم مبدئي لحدود ٧٥ مخيما في عرفات كانت مرسومة بعيدا عن علامتها: نقل كل حد لمكان مخيمه وقص ما يتداخل مع جيرانه، فصارت المخيمات جنب بعض من غير مسافات بعيدة. وأربعة مخيمات علامتها داخل حدود جيرانها تبقى علامة لحد المراجعة في الميدان.',
+      'ومخيمات خالد (٠٧١١ و٠٧١٢) نتيجتها صارت «تم الوصول» بتحدياتها.' ] },
   { v:'V28.6', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'صلاحيات المشرف أوسع (قرار المالك): يسجل زيارة سريعة أو نموذج مسح على أي نقطة من غير إسناد مسبق، ويعدل بيانات النقطة الأساسية (الاسم والمربع والشاخص ووجه العمل والشركة والإحداثيات)، ويرد زيارة فريقه للتصحيح بسبب مكتوب. والاعتماد والتصنيف (المشعر والنوع) يبقيان للمهندس.',
       'بلاغ المشرف «المخيم على الخريطة إذا قربت يختفي»: حدود ٧٩ مخيما كانت مرسومة بعيدا عن علامتها، فصارت العلامة تظهر في كل تكبير لحد ما تتعدل الحدود. ودمجت النقاط الثلاث التي أضافها المشرف في عرفات اليوم في مخيمات السجل نفسها (٠٧١١ و٠٧١٢ و٠٧١٣) بزيارته وصوره.' ] },
