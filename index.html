@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-724d1189b8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-5bbba47d33.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3751,6 +3751,10 @@ function loadSites(){
    بدل المحو: النقطةُ من الوزارة، فتُخفى وتُستعاد — ولا تُخفى نقطةٌ لها سجلّ. */
 var SITE_ED = 0, SITE_HIDE = '';
 function maySiteEdit(){ return typeof ROLE !== 'undefined' && rankOf(ROLE) >= rankOf('engineer'); }
+/* (V28.6) قرارُ المالك: «صلاحيةُ المشرف كبّرها — ما يرجعوش في كلِّ كبيرةٍ وصغيرةٍ للمهندس». البياناتُ الأساسيةُ للنقطة (الاسم والمربع
+   والشاخص ووجهُ العمل والشركة والداخل/الخارج والبوابة والدور والإحداثيات) يعدّلها المشرف؛ والتصنيفُ (المشعرُ والنوعُ والمنطقة)
+   والإخفاءُ يبقيان للمهندس. القاعدةُ تقبل (sites: كتابةٌ لمن يعمل). */
+function maySiteEditBasic(){ return typeof ROLE !== 'undefined' && rankOf(ROLE) >= rankOf('supervisor'); }
 function siteOvApply(){
   var ov = STATE.siteOv || {};
   var keep = [], hid = [];
@@ -3870,14 +3874,15 @@ function siteOvSet(id, patch){
   CORE.set('sites', id, patch);
 }
 function siteEditSave(id){
-  if (!maySiteEdit()){ toast(t('تعديلُ بيانات النقطة للمهندس فما فوق')); return false; }
+  if (!maySiteEditBasic()){ toast(t('تعديلُ بيانات النقطة للمشرف فما فوق')); return false; }   /* (V28.6) */
   var x = siteFind(id); if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
   var g = function(n){ var el = document.getElementById(n); return el ? String(el.value || '').trim() : ''; };
   var name = g('seName'); if (!name){ toast(t('اسمُ النقطة لا يكون فارغًا')); return false; }
   var lat = parseFloat(g('seLat')), lng = parseFloat(g('seLng'));
   if (!(lat > 15 && lat < 32 && lng > 34 && lng < 56)){ toast(t('إحداثياتٌ خارج المملكة — راجعها')); return false; }
-  var patch = { name:name, sq:g('seSq'), sign:g('seSign'), co:g('seCo'), work:g('seWork'), inout:g('seInout'), region:g('seRegion'),   /* (V27.4) */
-                tg:g('seZone') || taxOf(x).g, tt:g('seType') || taxOf(x).t, lat:lat, lng:lng, edBy:STATE.meta.name || '', edAt:Date.now() };   /* (V27.2) المشعرُ والنوعُ المعروضان؛ الأصلُ (zone/type) يبقى */
+  var full = maySiteEdit();   /* (V28.6) المشرفُ لا يمسُّ التصنيف — تبقى قيمُه كما هي */
+  var patch = { name:name, sq:g('seSq'), sign:g('seSign'), co:g('seCo'), work:g('seWork'), inout:g('seInout'), region:full ? g('seRegion') : (x.region || ''),   /* (V27.4) */
+                tg:full ? (g('seZone') || taxOf(x).g) : taxOf(x).g, tt:full ? (g('seType') || taxOf(x).t) : taxOf(x).t, lat:lat, lng:lng, edBy:STATE.meta.name || '', edAt:Date.now() };   /* (V27.2) المشعرُ والنوعُ المعروضان؛ الأصلُ (zone/type) يبقى */
   if (isJmr(x) && document.getElementById('seGate')){   /* (V25.4) مدخل/مخرج والدور — ويُضافان إلى الاسم */
     var gt = g('seGate'), fl = g('seFloor');
     patch.gate = gt; patch.floor = fl === '' ? '' : +fl;
@@ -3971,10 +3976,10 @@ function siteEditHtml(x){
     + fld('رقم الشاخص', '<input id="seSign" dir="auto" value="' + esc(x.sign || '') + '">')
     + '</div>'
     + '<div class="grid cols-2">'
-    + fld('المشعر', '<select id="seZone">' + opt(TAX_G, taxOf(x).g) + '</select>')   /* (V27.2) تصنيفُ المالك — يُعدَّل لأيِّ نقطة */
-    + fld('التصنيف', '<select id="seType">' + opt(TAX_T, taxOf(x).t) + '</select>')
+    + (maySiteEdit() ? fld('المشعر', '<select id="seZone">' + opt(TAX_G, taxOf(x).g) + '</select>')   /* (V27.2) تصنيفُ المالك — يُعدَّل لأيِّ نقطة */
+      + fld('التصنيف', '<select id="seType">' + opt(TAX_T, taxOf(x).t) + '</select>') : '')   /* (V28.6) التصنيفُ للمهندس */
     + '</div>'
-    + fld('المنطقة', '<input id="seRegion" dir="auto" value="' + esc(x.region || '') + '">')   /* (V27.4) */
+    + (maySiteEdit() ? fld('المنطقة', '<input id="seRegion" dir="auto" value="' + esc(x.region || '') + '">') : '')   /* (V27.4) */
     + fld('وجه العمل', '<select id="seWork">' + opt([''].concat(SITES_RAW.w.filter(Boolean)), x.work || '') + '</select>')
     + fld('شركة الخدمة / المشغّل', '<input id="seCo" dir="auto" list="seCoL" value="' + esc(x.co || '') + '"><datalist id="seCoL">' + cos.map(function(c){ return '<option value="' + esc(c) + '">'; }).join('') + '</datalist>')
     + fld('تصنيف الحجاج', '<select id="seInout">' + opt(['', 'داخل', 'خارج'], x.inout || '') + '</select>')
@@ -4583,7 +4588,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         + btn('🔍 ' + t('امسح هذا الموقع'),'btn-secondary btn-sm',' data-form="' + esc(x.id) + '"')
         + '</div>')
 
-      + (SITE_ED && maySiteEdit() ? siteEditHtml(x) : '')
+      + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
       + card('بيانات الموقع',
           '<div class="pop-rows" style="margin:0">'
           + row('اسم الموقع', esc(x.name), 'name')
@@ -8935,7 +8940,7 @@ function svApprove(id){
   return true;
 }
 function svRevisit(id, note){
-  if (!may('approve')){ toast(t('ردُّ الزيارة للمهندس وحده')); return false; }
+  if (!may('approve') && rankOf(ROLE) < rankOf('supervisor')){ toast(t('ردُّ الزيارة للمشرف فما فوق'))   /* (V28.6) المشرفُ يردّ زيارةَ فريقه للتصحيح — والاعتمادُ يبقى للمهندس */; return false; }
   var r = STATE.recs[id];
   if (!r){ toast(t('لا سجلَّ مسحٍ لهذه النقطة')); return false; }
   note = String(note || '').trim();
@@ -15011,7 +15016,7 @@ function popHtml(){
         + (on ? ';background:' + o[1] : '') + '"'
         + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
     }).join('');
-  } else if (task || may('approve')){
+  } else if (task || may('approve') || rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.6) المشرفُ يسجّل زيارةً بلا إسنادٍ مسبق */
     /* (V28.3) زرٌّ يقول ما يفعل: يسجّل زيارةً سريعةً حين لا زيارة، ويُلغي السريعةَ وحدَها، ولا يظهر على مسحٍ كامل */
     var rq = STATE.recs[s.id];
     marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('سجّل زيارةً سريعة')) + '</button>'
@@ -15568,7 +15573,21 @@ function campFoot(x){
   if (!x || x.type !== 'مخيم') return null;
   var P = polyOf(x);
   if (P.length >= 3) return P.map(function(p){ return [p[1], p[0]]; });
-  return (typeof POLY === 'object' && POLY && POLY[x.id] && POLY[x.id].length >= 3) ? POLY[x.id] : null;
+  var R = (typeof POLY === 'object' && POLY && POLY[x.id] && POLY[x.id].length >= 3) ? POLY[x.id] : null;
+  /* (V28.6) بلاغُ المشرف: «المخيمُ على الخريطة إذا قرّبت يختفي وإذا صغّرت يظهر». حدودُ ٧٩ مخيمًا في ملف الحدود مرسومةٌ بعيدًا
+     عن علامتها (حتى كيلومترين) — فعند التقريب تُرسَم الحدودُ هناك وتختفي العلامةُ من مكانها. الحدودُ التي يبعد مركزُها عن
+     العلامة أكثرَ من ستين مترًا تُترَك فتبقى العلامةُ في كلِّ تكبير — حتى تُعدَّل الحدودُ بيد المهندس. */
+  if (R && +x.lat && +x.lng){
+    if (!campFoot.bad) campFoot.bad = {};
+    var bk = x.id + '|' + x.lat + '|' + x.lng + '|' + R.length + '|' + R[0][0] + '|' + R[0][1];   /* الحدودُ إن تبدّلت يُعاد الحساب */
+    if (campFoot.bad[bk] == null){
+      var cy = 0, cx = 0; R.forEach(function(q){ cx += q[0]; cy += q[1]; }); cx /= R.length; cy /= R.length;
+      var dy = (cy - x.lat) * 110574, dx = (cx - x.lng) * 111320 * Math.cos(x.lat * Math.PI / 180);
+      campFoot.bad[bk] = Math.sqrt(dx * dx + dy * dy) > 60;
+    }
+    if (campFoot.bad[bk]) return null;
+  }
+  return R;
 }
 function polyCentroid(P){
   var a = 0, cx = 0, cy = 0, m = [0, 0];
@@ -22556,6 +22575,11 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             + '<div class="actions">' + btn(t('تأكيد الردّ'),'btn-danger btn-sm',' data-svrevisitgo="' + esc(x.id) + '"')
             + btn(t('تراجع'),'btn-quiet btn-sm',' data-svrevisitcancel="1"') + '</div>';
         }
+      } else if (rv === 'pending' && rankOf(ROLE) >= rankOf('supervisor')){   /* (V28.6) المشرفُ يردّ الزيارةَ للتصحيح بسببٍ مكتوب — والاعتمادُ يبقى للمهندس */
+        actions = SVA_REV === x.id
+          ? card(t('ردُّ الزيارة'), '<div class="field"><label>' + esc(t('ما الذي ينقص — يصل الفنيَّ في مهامّه')) + '</label><input id="svaNote" dir="auto"></div>'
+              + '<div class="actions">' + btn(t('تأكيد الردّ'),'btn-danger btn-sm',' data-svrevisitgo="' + esc(x.id) + '"') + btn(t('تراجع'),'btn-quiet btn-sm',' data-svrevisitcancel="1"') + '</div>')
+          : '<div class="actions">' + btn('\u21a9 ' + t('تحتاج زيارة أخرى'),'btn-danger btn-sm',' data-svrevisit="' + esc(x.id) + '"') + '<span class="hint" style="margin:0">' + esc(t('الاعتمادُ للمهندس')) + '</span></div>';
       }
       if (rv === 'approved' && !so && may('edit')){
         if (SVA_SOL === x.id){
@@ -23503,6 +23527,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.6', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'صلاحيات المشرف أوسع (قرار المالك): يسجل زيارة سريعة أو نموذج مسح على أي نقطة من غير إسناد مسبق، ويعدل بيانات النقطة الأساسية (الاسم والمربع والشاخص ووجه العمل والشركة والإحداثيات)، ويرد زيارة فريقه للتصحيح بسبب مكتوب. والاعتماد والتصنيف (المشعر والنوع) يبقيان للمهندس.',
+      'بلاغ المشرف «المخيم على الخريطة إذا قربت يختفي»: حدود ٧٩ مخيما كانت مرسومة بعيدا عن علامتها، فصارت العلامة تظهر في كل تكبير لحد ما تتعدل الحدود. ودمجت النقاط الثلاث التي أضافها المشرف في عرفات اليوم في مخيمات السجل نفسها (٠٧١١ و٠٧١٢ و٠٧١٣) بزيارته وصوره.' ] },
   { v:'V28.5', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'من ملاحظات «تحديثات المنصة»: «كاميرات الوزارة» صارت «كاميرات المتابعة» تحت مشعر «المتابعة»، وكاميرات منشأة الجمرات نوعها «منشأة الجمرات» لا «كاميرات المتابعة»، و«كاميرات الوزارة — LPR» صارت «مراكز التفويج». والأوزان والتعديلات المحفوظة بالأسماء القديمة تقرأ بالجديدة.',
       '«التفاصيل المختصرة» تغلق بضغطة ثانية عليها وترجع الطبقة اللي كانت قبلها.',
@@ -28576,7 +28603,7 @@ var ROLES = {
           exportAll:1, importAll:1, delete:1, users:1, phones:1, perms:1 }
   },
   supervisor:{
-    n:'مشرف', d:'الميدان ولوحة المتابعة — بلا أرقام الزملاء — ويُنشئ فنيّيه',
+    n:'مشرف', d:'الميدان ولوحة المتابعة — يسجّل الزيارةَ على أيِّ نقطة، ويعدّل بياناتِ النقطة الأساسية، ويردّ زيارةَ فريقه للتصحيح، ويُنشئ فنيّيه — والاعتمادُ والتصنيفُ للمهندس',   /* (V28.6) */
     guide:'دليل الفني والمشرف — العمل الميداني',
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
@@ -32549,7 +32576,7 @@ function clickA(e){
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }
   if (e.target.closest('[data-edit]')){
-    if (maySiteEdit()){ SITE_ED = 1; render(1); var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor' }[fk] || 'seName'; var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
+    if (maySiteEditBasic()){ SITE_ED = 1; render(1);   /* (V28.6) المشرفُ أيضًا */ var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor' }[fk] || 'seName'; var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
     else toast(t('التعديل يمرّ باعتماد المهندس'));
     return true; }
   var sts = e.target.closest('[data-sitesave]');
