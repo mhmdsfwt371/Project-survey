@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-49436abe31.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-cee5514246.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -5128,7 +5128,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
           btn('⬇ تقرير فريقي','btn-quiet btn-sm disabled', ' disabled title="'+ esc(t('يحتاج قائمةَ مهامٍ فرديةً — غيرُ مبنيةٍ بعد. الإجماليّاتُ أعلاه حقيقيةٌ وتُقرأ الآن.')) + '"'))
       + card('دورة المهمة', flow(['مطلوب','قيد التنفيذ','منفّذ','معتمد'], 0)
         + '<p class="hint">' + esc(t('المهمة لا تُحتسب نقاطًا حتى يعتمدها المهندس — والإعادة تردّها بحالة «مُعاد» مع سبب.')) + '</p>');})();
-    return head + attMyCard() + routeCard()
+    return head + attMyCard() + fieldHelperCard() + routeCard()   /* (V29.4) مساعدُ الميدان على «مهامي» */
       /* مهامُّ الاجتماع التي على اسمي — هنا حيث يبدأ كلٌّ يومَه، لا في قائمة الجميع */
       + (function(){
           var W = wtMine(); if (!W.length) return '';
@@ -7596,6 +7596,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var fresh = done && STATE.recs[s.id].src === 'newsite' && !STATE.recs[s.id].mount;
     return (fresh ? alertBox('info','سُجِّلت الزيارةُ بإضافة النقطة — أكمل بياناتِ المسح؛ فلا تُعتمَد قبل استكمالها.')
             : (done ? alertBox('success','هذا الموقع مُسِح — ما تكتبه الآن تصويبٌ يُسجَّل باسمك.') : ''))
+      + svCopyBar(s)   /* (V29.4) */
       + card('الموقع',
           '<div class="inline-form" style="margin:0 0 12px">'
           + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
@@ -9474,6 +9475,26 @@ function formGo(id, why){
   /* لحظةُ الفتح: ما وصل بعدها من غيري على النقطة نفسِها يُسأل عنه قبل الحفظ (V17.79) */
   FORM.openedAt = Date.now(); FORM.overwrite = false;
   if (why === 'new') formReset();
+}
+/* (V29.4) «انسخ من آخر زيارتي»: الحقولُ الثابتةُ لنفس النوع (التثبيت والكهرباء والمقاسات والملاءمة والمعدّات والتقدير)
+   من آخر زيارةٍ سجّلتُها — والوصولُ والتحدياتُ والملاحظاتُ والصورُ والأعدادُ الخاصةُ بالموقع لا تُنسَخ أبدًا. */
+var SV_COPY_KEYS = ['mount', 'power', 'height', 'cable', 'len_m', 'wid_m', 'hgt_m', 'fit', 'power_yn', 'power_src', 'pdist', 'p24', 'metal', 'civil', 'equip', 'hours', 'crew_n', 'n_ant', 'n_rdr', 'n_cam', 'n_sens', 'corr_w', 'router_sp'];
+function svLastMine(s){
+  var me = STATE.meta.name || '', best = null;
+  Object.keys(STATE.recs || {}).forEach(function(id){ if (id === s.id) return; var r = STATE.recs[id], x = siteFind(id);
+    if (!r || r.by !== me || !x || x.type !== s.type || !r.mount) return; if (!best || (+r.at || 0) > (+best.at || 0)) best = r; });
+  return best;
+}
+function svCopyBar(s){
+  var L = svLastMine(s); if (!L) return '';
+  return '<div class="actions" style="margin:0 0 10px;align-items:center">' + btn('\u21BA ' + t('انسخ من آخر زيارتي'), 'btn-secondary btn-sm', ' data-svcopy="' + esc(L.id) + '"')
+    + '<span class="hint" style="margin:0">' + esc(t('التثبيت والكهرباء والمقاسات من')) + ' ' + esc(L.id) + ' \u00b7 ' + esc(t('الصور والتحديات من الموقع')) + '</span></div>';
+}
+function svCopyFrom(id){
+  var r = STATE.recs[id]; if (!r){ toast(t('لا زيارة')); return; }
+  var n = 0; SV_COPY_KEYS.forEach(function(k){ if (r[k] != null && r[k] !== '' && (FORM[k] == null || FORM[k] === '')){ FORM[k] = r[k]; n++; } });
+  if (typeof SVD === 'object' && SVD) SVD.dirty = true; try { svDraftSoon(); } catch (e){ LS_ERR = e; }
+  toast(n ? t('نُسخ') + ' ' + nm(n) + ' ' + t('حقلًا من') + ' ' + id + ' \u2014 ' + t('راجعها قبل الحفظ') : t('لا حقولَ فارغةً تُنسَخ'));
 }
 function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
@@ -23797,6 +23818,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.4', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'مساعد الميدان في «شغلي ← مهامي» للفني والمشرف: الأقرب إليّ (أقرب خمس نقاط لم تُمسح من موقعك، مع الخريطة والاتجاهات)، وملخص يومي جاهز للنسخ أو الواتساب، وتجهيز اليوم بلا نت (خريطة الجهاز والمزامنة وما ينتظر الرفع).',
+      'وفي نموذج المسح زر «انسخ من آخر زيارتي»: التثبيت والكهرباء والمقاسات من آخر زيارة سجلتها لنفس النوع، والصور والتحديات تؤخذ من الموقع.' ] },
   { v:'V29.3', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'حماية في قاعدة البيانات: علامة الحذف على زيارة مسح أو تركيب لا يكتبها إلا من يملك صلاحية الحذف — فالأجهزة اللي لسه على نسخ قديمة (فيها زر يمحو المسح بضغطة) ما تقدرش تخفي زيارة، أيا كانت نسختها.' ] },
   { v:'V29.2', d:'٣ أكتوبر ٢٠٢٦', notes:[
@@ -24410,6 +24434,58 @@ function mapsUrl(lat, lng, label){
   return ios
     ? 'https://maps.apple.com/?daddr=' + lat + ',' + lng + '&q=' + encodeURIComponent(label || '')
     : 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '&travelmode=walking';
+}
+/* ═══ (V29.4) مساعدُ الميدان — اقتراحاتُ تسهيل العمل الميداني التي وافق عليها المالك («يلا بينا») ═══
+   ١) الأقربُ إليّ: أقربُ النقاط التي لم تُمسح بعد من موقعي — للمشرف وللفني بلا انتظار إسناد.
+   ٢) ملخّصُ اليوم الجاهز: ما سجّلتُه اليوم بنصٍّ يُنسَخ أو يُرسَل للمشرف بضغطة.
+   ٣) تجهيزُ اليوم بلا نت: خريطةُ الجهاز وآخرُ البيانات وما ينتظر الرفع — في قائمةٍ واحدةٍ قبل الخروج.
+   ٤) «انسخ من آخر زيارتي» في نموذج المسح (المسحُ الأسرع): الحقولُ الثابتةُ من آخر زيارةٍ لنفس النوع، والصورُ والتحدياتُ من الموقع. */
+var FH_PREP = 0;
+function fhNearest(n){
+  var P = (typeof MYPOS === 'object' && MYPOS) || (typeof ROUTE_POS === 'object' && ROUTE_POS) || null; if (!P) return null;
+  var out = [];
+  (STATE.sites || []).forEach(function(x){ if (!+x.lat || !+x.lng) return; var r = STATE.recs[x.id]; if (r && svDone(r)) return; out.push({ x:x, d:distKm(P, x) }); });
+  out.sort(function(a, b){ return a.d - b.d; });
+  return out.slice(0, n || 5);
+}
+function fhToday(){
+  var me = STATE.meta.name || '', day = dayKey(), O = { n:0, reach:0, un:0, ch:0, ids:[] };
+  Object.keys(STATE.recs || {}).forEach(function(id){
+    var r = STATE.recs[id]; if (!r || r.by !== me || dayKey(+r.at || 0) !== day) return;
+    O.n++; O.ids.push(id);
+    if (r.access && r.access !== 'تم الوصول') O.un++; else O.reach++;
+    if (chalKeys(r.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) O.ch++;
+  });
+  O.photos = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
+  O.queue = (typeof CORE === 'object' && CORE.pending) ? (+CORE.pending() || 0) : 0;
+  return O;
+}
+function fhTodayText(O){
+  var L = [t('ملخص يوم') + ' ' + dayKey() + ' \u2014 ' + (STATE.meta.name || ''),
+           t('زرتُ') + ' ' + O.n + ' ' + t('نقطة') + ': ' + t('وصلتُ') + ' ' + O.reach + '، ' + t('تعذّر') + ' ' + O.un + '، ' + t('فيها تحديات') + ' ' + O.ch + '.'];
+  if (O.ids.length) L.push(t('النقاط') + ': ' + O.ids.slice(0, 20).join('، ') + (O.ids.length > 20 ? ' …' : ''));
+  L.push(O.queue || O.photos ? t('بانتظار الرفع') + ': ' + O.queue + ' ' + t('تسجيل') + '، ' + O.photos + ' ' + t('صورة') : t('كلُّ عملي مرفوع'));
+  return L.join('\n');
+}
+function fieldHelperCard(){
+  if (!isFieldRole(ROLE)) return '';
+  var near = fhNearest(5), O = fhToday(), bm = (typeof BASEMAP === 'object' && BASEMAP) || {};
+  var ok = function(b, yes, no){ return '<span class="pill ' + (b ? 'ok' : 'wrn') + '">' + (b ? '\u2713 ' : '') + esc(b ? yes : no) + '</span>'; };   /* النصُّ مترجَمٌ عند الطلب */
+  return card('\u{1F9F0} ' + t('مساعد الميدان'),
+      '<h4 style="margin:0 0 6px">\u{1F4CD} ' + esc(t('الأقرب إليّ — لم تُمسح بعد')) + '</h4>'
+    + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return ['<strong>' + esc(o.x.id) + '</strong><br><span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
+          btn('\u25C8 ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(o.x.id) + '"') + ' <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(o.x.lat, o.x.lng, o.x.id)) + '">\u2197 ' + esc(t('اتجاهات')) + '</a>']; }))
+            : '<p class="hint" style="margin:0">' + esc(t('كلُّ النقاط مُسحت')) + '</p>')
+         : '<p class="hint" style="margin:0 0 6px">' + esc(t('حدِّد موقعك لتظهر أقربُ النقاط إليك')) + '</p>' + btn('\u{1F4CD} ' + t('حدِّد موقعي'), 'btn-primary btn-sm', ' data-fhpos="1"'))
+    + '<h4 style="margin:12px 0 6px">\u{1F4CB} ' + esc(t('ملخّص يومي الجاهز')) + '</h4>'
+    + '<pre style="white-space:pre-wrap;margin:0 0 6px;font:inherit;background:var(--card2,#f6f6f6);padding:8px;border-radius:8px">' + esc(fhTodayText(O)) + '</pre>'
+    + '<div class="actions" style="margin:0">' + btn(t('نسخ'), 'btn-secondary btn-sm', ' data-fhcopy="1"') + btn('\u{1F4AC} ' + t('واتساب'), 'btn-secondary btn-sm', ' data-fhwa="1"') + '</div>'
+    + '<h4 style="margin:12px 0 6px">\u{1F4F4} ' + esc(t('تجهيز اليوم بلا نت')) + '</h4>'
+    + '<div class="chips" style="margin:0 0 6px">' + ok(!!bm.have, t('خريطة الجهاز محمّلة'), t(bm.loading ? 'خريطة الجهاز تُنزَّل…' : 'خريطة الجهاز لم تُنزَّل')) + ' '
+    + ok(!O.queue, t('لا تسجيلات معلّقة'), nm(O.queue) + ' ' + t('تسجيل بانتظار الرفع')) + ' ' + ok(!O.photos, t('لا صور معلّقة'), nm(O.photos) + ' ' + t('صورة بانتظار الرفع')) + ' '
+    + ok(!!near, t('موقعي معروف'), t('موقعي غير محدَّد')) + '</div>'
+    + '<div class="actions" style="margin:0">' + btn('\u{1F4E5} ' + t('جهّز يومي'), 'btn-primary btn-sm', ' data-fhprep="1"') + btn('\u{1F504} ' + t('زامن الآن'), 'btn-secondary btn-sm', ' data-pull="1"') + '</div>'
+    + (FH_PREP ? '<p class="hint" style="margin:6px 0 0">' + esc(t('بدأ التجهيز')) + ' \u00b7 ' + esc(agoTxt(FH_PREP)) + '</p>' : ''));
 }
 function routeCard(){
   if (!isFieldRole(ROLE)) return '';
@@ -33642,6 +33718,16 @@ function onDocClick(e){
   if (wa){ waSend(wa.getAttribute('data-wa'), 0); return; }
   var wc = e.target.closest('[data-wacopy]');
   if (wc){ waSend(wc.getAttribute('data-wacopy'), 1); return; }
+  if (e.target.closest('[data-fhpos]')){   /* (V29.4) */
+    try { navigator.geolocation.getCurrentPosition(function(p){ MYPOS = { lat:p.coords.latitude, lng:p.coords.longitude, acc:p.coords.accuracy, at:Date.now() }; render(1); }, function(){ toast(t('تعذّر تحديدُ الموقع — فعِّل الموقع للتطبيق')); }, { enableHighAccuracy:true, timeout:15000, maximumAge:30000 }); } catch (er){ toast(t('تعذّر تحديدُ الموقع')); }
+    return; }
+  if (e.target.closest('[data-fhcopy]')){ var tx1 = fhTodayText(fhToday()); try { navigator.clipboard.writeText(tx1); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return; }
+  if (e.target.closest('[data-fhwa]')){ try { window.open('https://wa.me/?text=' + encodeURIComponent(fhTodayText(fhToday())), '_blank', 'noopener'); toast(t('فُتح واتساب بالملخّص — اختر المشرف')); } catch (er){ toast(t('تعذّر الفتح')); } return; }
+  if (e.target.closest('[data-fhprep]')){ FH_PREP = Date.now();
+    if (typeof basemapDownload === 'function' && typeof BASEMAP === 'object' && BASEMAP && !BASEMAP.have && !BASEMAP.loading) basemapDownload().then(function(){ render(1); });
+    var pb = document.querySelector('[data-pull]'); if (pb && pb.click) pb.click();
+    toast(t('يُجهَّز اليوم: خريطةُ الجهاز وآخرُ البيانات — أبقِ التطبيقَ مفتوحًا على الشبكة دقيقة')); render(1); return; }
+  var svc = e.target.closest('[data-svcopy]'); if (svc){ svCopyFrom(svc.getAttribute('data-svcopy')); render(1); return; }
   var msd = e.target.closest('[data-mailsend]');   /* (V29.0) */
   if (msd){ var mp = msd.getAttribute('data-mailsend').split('|'); mailGo(mp[1], mp[0], ''); return; }
   if (e.target.closest('[data-mailco]')){ mailGo((document.getElementById('waCo') || {}).value || WA_CO, (document.getElementById('waKind') || {}).value || WA_KIND, (document.getElementById('waWhen') || {}).value || ''); return; }
