@@ -109,7 +109,7 @@ const parsed = new w.DOMParser().parseFromString(docXml, 'application/xml');
 T(!parsed.getElementsByTagName('parsererror').length && /w:orient="landscape"/.test(docXml) && /<w:bidi\/>/.test(docXml) && /w:fill="163E35"/.test(docXml) && /C8943E/.test(docXml), 'ونصُّه سليمُ البناء، عرضيٌّ من اليمين بألوان العرض');
 T(w.MFU_SECTIONS.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
 const ph = w.mfuPrintHtml(R);
-T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<section>/g) || []).length === 13 && /class="cover"/.test(ph) && /Alexandria/.test(ph), 'PDF: صفحةُ طباعةٍ عرضيةٌ بغلافٍ وثلاثة عشر قسمًا وخطِّ العرض');
+T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<div class="pg">/g) || []).length === 13 && /class="pg cover"/.test(ph) && /class="pg end"/.test(ph) && /"Abar Mid"/.test(ph) && !/Alexandria/.test(ph) && /data:image\/png;base64,/.test(ph) && /haj\.gov\.sa/.test(ph), 'PDF بالقالب الموحَّد: غلافٌ بشعار الوزارة وثلاثةَ عشرَ قسمًا وختامٌ، بخطِّ «Abar Mid» وتذييل haj.gov.sa (V28.8)');
 let printed = 0; w.open = () => ({ document:{ open(){}, write(){}, close(){} }, focus(){}, print(){ printed++; } });
 w.mfuPdf(); await wait(450);
 T(printed === 1, 'وزرُّه يفتح نافذةَ الطباعة (حفظٌ كـ PDF)');
@@ -118,8 +118,8 @@ w.XLSX = { utils:{ book_new: () => ({}), aoa_to_sheet: rows => ({ rows }), book_
 await w.mfuXlsx();
 T(sheets.length === 13 && sheets[0][0] === 'الملخص' && sheets.some(s => s[0].indexOf('طلبات الوزارة') === 0), 'إكسل: ورقةٌ لكلِّ عنوان — ثلاث عشرة ورقة');
 
-console.log('\n══ ٧ · باوربوينت من قالب الوزارة (V20.4) ══');
-const tplBuf = readFileSync('templates/weekly-readers.pptx');
+console.log('\n══ ٧ · باوربوينت من القالب الموحَّد للوزارة (V28.8) ══');
+const tplBuf = readFileSync('templates/ministry-unified.pptx');
 T(!!d.querySelector('[data-mfuexp="pptx"]'), 'زرُّ PowerPoint في شريط التصدير');
 w.fetch = async () => ({ ok:true, arrayBuffer: async () => tplBuf.buffer.slice(tplBuf.byteOffset, tplBuf.byteOffset + tplBuf.byteLength) });
 w.PPTX_TPL = null; got = null;
@@ -132,11 +132,13 @@ T(E1.length === E0.length && E1[0].name === '[Content_Types].xml', 'بأجزاء
 const same = E0.filter(e => e.method === 8).every(e => { const f = E1.find(x => x.name === e.name); return f && f.method === 8 && f.crc === e.crc && f.csize === e.csize; });
 T(same, 'وما لم يتغيّر يُنسَخ بضغطه كما هو — الخطوطُ المضمَّنةُ والصورُ والقوالب');
 const td = new TD(), slides = E1.filter(e => /^ppt\/slides\/slide\d+\.xml$/.test(e.name)).map(e => ({ n:e.name, x:td.decode(e.raw) }));
-T(slides.length === 12 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'اثنتا عشرة شريحة بلا عنصرٍ نائبٍ باقٍ — ومنها شريحةُ المسار');
+T(slides.length === 11 && slides.every(s => !/\{\{[THG]\}\}/.test(s.x) && !/name="BODY"/.test(s.x)), 'إحدى عشرة شريحة (غلافٌ وتسعُ محتوى وختام) بلا عنصرٍ نائبٍ باقٍ');
 T(slides.every(s => !new w.DOMParser().parseFromString(s.x, 'application/xml').getElementsByTagName('parsererror').length), 'وكلُّ شريحةٍ سليمةُ البناء');
 const all = slides.map(s => s.x).join('');
 T(['ملخص مسار القارئات', 'حالة أبرز مهام مسار القارئات', 'حالة التركيبات', 'تركيب مخيمات لشركات الخدمة', 'بيان المعوقات وتصنيفها', 'التحديات / آليات المعالجة', 'تحديث حالة طلبات الوزارة', 'ملخص العمل اليومي'].every(t0 => all.includes(t0)), 'بعناوين العرض الثمانية');
-T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ العرض');
+T(all.includes('تأخّر الشحنات') && all.includes('إعادة الجدولة') && all.includes('إضاءةٌ إرشادية') && /typeface="Abar Mid"/.test(all) && !/typeface="Alexandria"/.test(all) && /<a:tblPr rtl="1"/.test(all), 'والتحدياتُ والطلباتُ بنصّها، وجداولُ من اليمين بخطِّ الوزارة «Abar Mid» (V28.8)');
+const offs = [...all.matchAll(/<a:off x="(\d+)" y="(\d+)"\/><a:ext cx="(\d+)" cy="(\d+)"/g)].map(m => [+m[1] + +m[3], +m[2] + +m[4]]);
+T(offs.length > 10 && offs.every(o => o[0] <= 12192000 && o[1] <= 6858000), 'وكلُّ عنصرٍ داخل مقاس الشريحة الموحَّد (١٣٫٣٣×٧٫٥) — ' + offs.length + ' عنصرًا');
 const cover = slides.find(s => s.n === 'ppt/slides/slide1.xml').x;
 T(cover.includes(new Date(Date.now() + 10800000).toISOString().slice(0, 10)), 'والغلافُ بتاريخ اليوم الميلاديِّ والهجري');
 
