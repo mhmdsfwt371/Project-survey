@@ -41,7 +41,11 @@ jobs:
       - name: diag new points (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/diag-new3.mjs || true
+        run: echo skip-diag-new3
+      - name: merge the three added points (V28.6, owner decision)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/merge-new3.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
