@@ -18,8 +18,11 @@ for (const t of tombs){
   const lastS = E.filter(e => isSurvey(String(e.what || ''))).pop(), lastD = E.filter(e => isDel(String(e.what || ''))).pop();
   const at = +t.v.at || 0, by = String(t.v.by || '');
   const lastWriteIsSurvey = !!lastS && Math.abs(at - (+lastS.ts || 0)) < 180000 && (!lastS.by || lastS.by === by) && (!lastD || (+lastS.ts || 0) > (+lastD.ts || 0));
-  const row = { id: t.id, by, at: at ? new Date(at).toISOString() : null, lastSurvey: lastS ? new Date(+lastS.ts).toISOString() + ' · ' + lastS.by : null, lastDelete: lastD ? new Date(+lastD.ts).toISOString() + ' · ' + lastD.by + ' · ' + String(lastD.what).slice(0, 40) : null, full: full(t.v), heal: lastWriteIsSurvey };
-  if (lastWriteIsSurvey && APPLY){
+  /* (٢) شاهدُ الحذف يكتب at = لحظةَ الحذف؛ فإن كان at بعد آخر حذفٍ بثوانٍ فآخرُ كتابةٍ حفظٌ لا حذف */
+  const afterDel = !!lastD && at > (+lastD.ts || 0) + 2000 && full(t.v);
+  const healIt = lastWriteIsSurvey || afterDel;
+  const row = { id: t.id, by, at: at ? new Date(at).toISOString() : null, lastSurvey: lastS ? new Date(+lastS.ts).toISOString() + ' · ' + lastS.by : null, lastDelete: lastD ? new Date(+lastD.ts).toISOString() + ' · ' + lastD.by + ' · ' + String(lastD.what).slice(0, 40) : null, full: full(t.v), heal: healIt, why: lastWriteIsSurvey ? 'آخرُ كتابةٍ مسح' : (afterDel ? 'كُتب بعد الحذف' : '') };
+  if (healIt && APPLY){
     const patch = { deleted: false, _at: Date.now(), healedAt: Date.now(), healedBy: 'V28.3' };
     if (full(t.v) && t.v.quick) patch.quick = 0;
     await db.collection('recs').doc(t.id).update(patch); healed++; row.healed = true;
