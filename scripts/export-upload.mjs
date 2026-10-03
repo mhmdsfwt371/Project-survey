@@ -5,7 +5,7 @@ const ROOT = await rootFolder(drive, mode);
 const name = 'تقارير المشروع';
 const f = await drive.files.list({ q:`name='${qEsc(name)}' and '${ROOT}' in parents and mimeType='application/vnd.google-apps.folder' and trashed=false`, fields:'files(id)', pageSize:1, supportsAllDrives:true, includeItemsFromAllDrives:true });
 const folder = f.data.files?.[0]?.id || (await drive.files.create({ requestBody:{ name, mimeType:'application/vnd.google-apps.folder', parents:[ROOT] }, fields:'id', supportsAllDrives:true })).data.id;
-for (const [p, n, mime] of [['/tmp/exp/تحديات-المشاعر-١٤٤٨.xlsx', 'تحديات-المشاعر-١٤٤٨.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'], ['/tmp/exp/summary.json', 'تحديات-١٤٤٨-ملخص.json', 'application/json'], ['/tmp/exp/usage.json', 'استعمال-النظام.json', 'application/json'], ['/tmp/exp/diag-lost.json', 'تشخيص-المسوح-المحذوفة.json', 'application/json']]){
+for (const [p, n, mime] of [['/tmp/exp/تحديات-المشاعر-١٤٤٨.xlsx', 'تحديات-المشاعر-١٤٤٨.xlsx', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'], ['/tmp/exp/summary.json', 'تحديات-١٤٤٨-ملخص.json', 'application/json'], ['/tmp/exp/usage.json', 'استعمال-النظام.json', 'application/json'], ['/tmp/exp/diag-lost.json', 'تشخيص-المسوح-المحذوفة.json', 'application/json'], ['/tmp/exp/heal-tombs.json', 'استعادة-المسوح-المختفية.json', 'application/json']]){
   if (!existsSync(p)) continue;
   const old = await drive.files.list({ q:`name='${qEsc(n)}' and '${folder}' in parents and trashed=false`, fields:'files(id)', supportsAllDrives:true, includeItemsFromAllDrives:true });
   for (const o of old.data.files || []) await drive.files.delete({ fileId:o.id, supportsAllDrives:true }).catch(() => {});

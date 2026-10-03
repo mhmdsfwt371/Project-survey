@@ -29,6 +29,11 @@ jobs:
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
           BACKUP_KEY: ${{ secrets.BACKUP_KEY }}
         run: node scripts/diag-lost.mjs || true
+      - name: heal tombstoned surveys (V28.3)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          HEAL_APPLY: '1'
+        run: node scripts/heal-tombs.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
