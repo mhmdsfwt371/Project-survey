@@ -22,9 +22,9 @@ d.getElementById('lgU').value = 'x'; d.getElementById('lgP').value = 'TestPass12
 await wait(1500); w.toast = () => {}; const wrote = []; w.CORE.set = (k, id, v) => { wrote.push([k, id, v]); };
 
 console.log('\n══ ١ · التسميات ══');
-T(w.CAT_DEF['كاميرا'].l === 'كاميرات الوزارة' && w.CAT_DEF['LPR'].l === 'كاميرات الوزارة — LPR', 'العائلةُ: «كاميرات الوزارة» و«كاميرات الوزارة — LPR»');
+T(w.CAT_DEF['كاميرا'].l === 'كاميرات المتابعة' && w.CAT_DEF['LPR'].l === 'مراكز التفويج', 'العائلةُ: «كاميرات المتابعة» و«مراكز التفويج» (V28.5، كانتا «كاميرات الوزارة» و«— LPR»)');
 w.STATE.types = { 'كاميرا':{ l:'كاميرات فالوزارة', i:'x', c:'#000' }, 'LPR':{ l:'كاميرات قراءة اللوحات', i:'y', c:'#111' } }; w.TYPES_NORM = null; w.typesList();
-T(w.CAT_DEF['كاميرا'].l === 'كاميرات الوزارة' && w.CAT_DEF['LPR'].l === 'كاميرات الوزارة — LPR', 'والخطأُ الإملائيُّ والتسميةُ القديمةُ في السجلِّ السحابيِّ تُردّان عند التحميل');
+T(w.CAT_DEF['كاميرا'].l === 'كاميرات المتابعة' && w.CAT_DEF['LPR'].l === 'مراكز التفويج', 'والخطأُ الإملائيُّ والتسميةُ القديمةُ في السجلِّ السحابيِّ تُردّان عند التحميل');
 w.STATE.types = { 'LPR':{ l:'كاميرات الوزارة — LPR' } }; w.TYPES_NORM = null; w.typesList();
 T(w.CAT_DEF['LPR'].i && w.CAT_DEF['LPR'].i !== 'undefined' && /^#/.test(w.CAT_DEF['LPR'].c), 'ومدخلٌ بتسميةٍ وحدَها يُكمَل رمزُه ولونُه من الأصل — لا «undefined» (V20.1)');
 
@@ -41,10 +41,10 @@ T(w.camKind(w.siteFind(x0.id)) === 'PTZ' && wrote.some(r => r[0] === 'sites' && 
 
 console.log('\n══ ٣ · الوزنُ والإحصاءُ والتصدير ══');
 w.CFG.w = { 'منى|كاميرات فالوزارة':1, 'عرفات|كاميرات LPR':1 };
-T(w.cfgGet('w', 'منى|كاميرات الوزارة') === 1 && w.cfgGet('w', 'عرفات|كاميرات الوزارة — LPR') === 1, 'الوزنُ المكتوبُ بالتسمية القديمة يُقرأ للجديدة');
+T(w.cfgGet('w', 'منى|كاميرات المتابعة') === 1 && w.cfgGet('w', 'عرفات|مراكز التفويج') === 1, 'الوزنُ المكتوبُ بالتسمية القديمة يُقرأ للجديدة');
 w.POP_OPEN = false; w.POP_SITE = null; w.goPage('req'); w.render(1); await wait(60); const b = d.querySelector('[data-ptab="req:assign"]'); if (b){ b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150); }
 const tx = d.getElementById('content').textContent;
-T(/كاميرات الوزارة/.test(tx) && /ثابتة \(Bullet\)/.test(tx) && /متحرّكة \(PTZ\)/.test(tx), 'جدولُ المتاح يعرض الفرعين تحت كاميرات الوزارة');
+T(/كاميرات المتابعة/.test(tx) && /ثابتة \(Bullet\)/.test(tx) && /متحرّكة \(PTZ\)/.test(tx), 'جدولُ المتاح يعرض الفرعين تحت كاميرات المتابعة');
 const g = w.geoJsonBuild(), f = g.features.find(o => o.id === ptz[0].id);
 T(f && f.properties.camera_kind === 'PTZ' && g.features.find(o => o.properties.type === 'مخيم').properties.camera_kind === null, 'والتصديرُ يحمل camera_kind');
 

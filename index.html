@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-85a1608db1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-724d1189b8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2941,6 +2941,7 @@ var FB = {
         if (L.length) STATE.steps = L;
         if (CUR === 'now' || CUR === 'over') render(1);
       }).catch(function(e){ softErr('سحب سجل ما تمّ', e, ''); });
+      FB.db.collection('settings').doc('coliaison').get().then(function(doc){ if (doc && doc.exists) CFG.coliaison = Object.assign({}, doc.data()); }).catch(function(e){ softErr('سحب ضباط اتصال الشركات', e, ''); });   /* (V28.5) */
       FB.db.collection('settings').doc('cotel').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.cotel = Object.assign({}, doc.data());
@@ -4087,19 +4088,22 @@ function shapeSvg(shape, col){
    منشأة الجمرات · مسجد نمرة · النورية · محطات طريق الهجرة · الزايدي. «محطات التفويج» تضمّ النورية وطريق الهجرة والزايدي
    (كلُّها كاميرات لوحات)، و«كاميرات الرصد» تضمّ كاميرات منى ومنشأة الجمرات، وكاميراتُ عرفات (رصدًا ولوحات) تحت عرفات
    بنوع «كاميرات رصد». يُحسَب من بيانات النقطة بقواعد، ويُعدَّل لأيِّ نقطةٍ يدويًّا من «تعديل البيانات» (tg/tt) — كلُّه حركيّ. */
-var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'محطات التفويج', 'كاميرات الرصد'];
-var TAX_T = ['مخيمات', 'ممرات', 'محطات قطار', 'كاميرات رصد', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
-var TAX_V = 1;   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
+/* (V28.5) ملاحظاتُ «تحديثات المنصة»: «كاميراتُ الوزارة» ← «المتابعة» وتُزال منها كاميراتُ الجمرات (لها مسمّاها)، و«كاميراتُ الوزارة LPR» ← «مراكز التفويج».
+   المفاتيحُ القديمةُ المحفوظةُ في تعديلات النقاط تُقرأ بأسمائها الجديدة (TAX_ALIAS). */
+var TAX_ALIAS = { 'كاميرات الرصد':'المتابعة', 'محطات التفويج':'مراكز التفويج', 'كاميرات رصد':'كاميرات المتابعة' };
+var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'مراكز التفويج', 'المتابعة'];
+var TAX_T = ['مخيمات', 'ممرات', 'محطات قطار', 'كاميرات المتابعة', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
+var TAX_V = 2;   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
 function taxCalc(x){
   var z = String(x.zone || ''), ty = String(x.type || ''), nm0 = String(x.name || ''), cam = (ty === 'كاميرا' || ty === 'LPR');
-  var t = { 'مخيم':'مخيمات', 'ممر':'ممرات', 'محطة':'محطات قطار', 'جسر':'منشأة الجمرات', 'بوابة':'مسجد نمرة', 'كاميرا':'كاميرات رصد', 'LPR':'كاميرات رصد', 'مبنى':'مخيمات' }[ty] || (TAX_T.indexOf(ty) > -1 ? ty : 'مخيمات');
+  var t = { 'مخيم':'مخيمات', 'ممر':'ممرات', 'محطة':'محطات قطار', 'جسر':'منشأة الجمرات', 'بوابة':'مسجد نمرة', 'كاميرا':'كاميرات المتابعة', 'LPR':'كاميرات المتابعة', 'مبنى':'مخيمات' }[ty] || (TAX_T.indexOf(ty) > -1 ? ty : 'مخيمات');
   var g;
-  if (/النوري|النوار/.test(z + ' ' + nm0)){ g = 'محطات التفويج'; t = 'النورية'; }
-  else if (/الهجرة/.test(z + ' ' + nm0)){ g = 'محطات التفويج'; t = 'محطات طريق الهجرة'; }
-  else if (/الزايد/.test(z + ' ' + nm0)){ g = 'محطات التفويج'; t = 'الزايدي'; }
-  else if (/التفويج/.test(z)){ g = 'محطات التفويج'; }
-  else if (z === 'الجمرات'){ g = cam ? 'كاميرات الرصد' : 'منى'; if (!cam) t = 'منشأة الجمرات'; }
-  else if (z === 'منى'){ g = cam ? 'كاميرات الرصد' : 'منى'; }
+  if (/النوري|النوار/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'النورية'; }
+  else if (/الهجرة/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'محطات طريق الهجرة'; }
+  else if (/الزايد/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'الزايدي'; }
+  else if (/التفويج/.test(z)){ g = 'مراكز التفويج'; }
+  else if (z === 'الجمرات' || (cam && (/الجمرات/.test(String(x.region || '')) || /^NSK-JMR-/.test(String(x.id || ''))))){ g = cam ? 'المتابعة' : 'منى'; t = 'منشأة الجمرات'; }   /* (V28.5) كاميراتُ الجمرات (مشعرُها منى في السجل ومنطقتُها «منشأة الجمرات») نوعُها «منشأة الجمرات» لا «كاميرات المتابعة» */
+  else if (z === 'منى'){ g = cam ? 'المتابعة' : 'منى'; }
   else if (z === 'عرفات' || z === 'مسجد نمرة'){ g = 'عرفات'; if (z === 'مسجد نمرة') t = 'مسجد نمرة'; }
   else if (/مزدلفة/.test(z)){ g = 'المزدلفة'; }
   else if (/قطار/.test(z)){ t = 'محطات قطار'; g = /مزدلفة/.test(nm0) ? 'المزدلفة' : (/عرفات/.test(nm0) ? 'عرفات' : 'منى'); }
@@ -4110,16 +4114,17 @@ function taxOf(x){
   if (!x) return { g:'', t:'' };
   if (x._tax && x._taxV === TAX_V) return x._tax;
   var r = taxCalc(x);
-  if (x.tg && TAX_G.indexOf(x.tg) > -1) r.g = x.tg;
-  if (x.tt && TAX_T.indexOf(x.tt) > -1) r.t = x.tt;
+  var tg = TAX_ALIAS[x.tg] || x.tg, tt = TAX_ALIAS[x.tt] || x.tt;   /* (V28.5) */
+  if (tg && TAX_G.indexOf(tg) > -1) r.g = tg;
+  if (tt && TAX_T.indexOf(tt) > -1) r.t = tt;
   x._tax = r; x._taxV = TAX_V; return r;
 }
-var TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات رصد':{ l:'كاميرات رصد', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
+var TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات المتابعة':{ l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
 var CAT_DEF = {
   'مخيم':   { l:'مخيمات',          i:'\u26FA', c:'#3ED598' },
   'ممر':    { l:'ممرات',           i:'\u{1F6E3}', c:'#4FA3FF' },
   'جسر':    { l:'منشأة الجمرات',   i:'\u{1F309}', c:'#E8873A' },
-  'كاميرا': { l:'كاميرات الوزارة', i:'\u{1F4F7}', c:'#C77DFF' },   /* Bullet وPTZ — النوعُ الفرعيُّ لكلِّ نقطةٍ في camKind (V19.1) */
+  'كاميرا': { l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' },   /* (V28.5) كان «كاميرات الوزارة» */   /* Bullet وPTZ — النوعُ الفرعيُّ لكلِّ نقطةٍ في camKind (V19.1) */
   'محطة':   { l:'محطات القطار',    i:'\u{1F686}', c:'#F2C960' },
   'بوابة':  { l:'مسجد نمرة',       i:'\u{1F54C}', c:'#38B2AC' },
   'مبنى':   { l:'منشآت التسكين',   i:'\u{1F3E2}', c:'#B8C4BF' },
@@ -4127,7 +4132,7 @@ var CAT_DEF = {
      أما «كاميرا» فهي كاميراتُ الوزارة الذكيّة نفسُها — لا نوعَ ثانٍ لها.
      والاسمُ «كاميراتُ قراءة اللوحات» (V17.60): القائمةُ تسمّي أجهزةً تُركَّب لا
      وظيفةً تُؤدّى — والقيمةُ المخزَّنةُ هي المفتاح فلا يمسُّها تغييرُ الاسم. */
-  'LPR':    { l:'كاميرات الوزارة — LPR', i:'\u{1F694}', c:'#FF6B6B' },   /* كاميراتُ الوزارة التي تقرأ اللوحات (V19.1) */
+  'LPR':    { l:'مراكز التفويج', i:'\u{1F694}', c:'#FF6B6B' },   /* (V28.5) كان «كاميرات الوزارة — LPR» */   /* كاميراتُ الوزارة التي تقرأ اللوحات (V19.1) */
   /* ═══ الجيت واي والحساس — لكلٍّ شكلُه (V17.60) ═══
      يُضافان من «نقطة هنا» كسائر الأنواع، ولكلٍّ شكلٌ لا يشاركه فيه غيرُه:
      النجمةُ للجيت واي (عقدةٌ تتفرّع منها الأجهزة) والقطرةُ للحساس (حرارةٌ
@@ -10323,6 +10328,17 @@ function coTel(){
   return CFG.cotel;
 }
 function coTelOf(co){ return String(coTel()[co] || '').trim(); }
+/* (V28.5) ملاحظةُ «تحديثات المنصة»: ضابطُ الاتصال لكلِّ شركة — وثيقةٌ يقرؤها الكلُّ (الوزارةُ تراه في متابعتها)، والجوالُ يبقى في دفتره المحجوب */
+var CO_STALL = null;
+function coLiaison(){ if (!CFG.coliaison || typeof CFG.coliaison !== 'object') CFG.coliaison = {}; return CFG.coliaison; }
+function coLiaisonOf(co){ return String(coLiaison()[co] || '').trim(); }
+function coLiaisonSet(co, v){
+  if (!may('approve')){ toast(t('دفترُ الشركات للمهندس وحده')); return; }
+  v = String(v || '').trim().slice(0, 60);
+  if (v) coLiaison()[co] = v; else delete coLiaison()[co];
+  CORE.set('cfg', 'coliaison', Object.assign({}, coLiaison()));   /* يُحفَظ مع الكتابة (الطابورُ يجمع) — والأثرُ عند الخروج من الحقل لا مع كلِّ حرف */
+  clearTimeout(coLiaisonSet._t); coLiaisonSet._t = setTimeout(function(){ logEvent('ضابطُ اتصال شركة — ' + co + ' \u00b7 ' + (v || 'حُذف')); }, 2500);
+}
 function coTelSet(co, ph){
   if (!may('approve')){ toast(t('دفترُ الجوالات للمهندس وحده')); return; }
   var v = String(ph || '').replace(/[^\d+]/g, '');
@@ -11891,6 +11907,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
     return head + (function(){
     var S = siteStats();
     var cos = Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b] - S.byCo[a]; });
+    CO_STALL = {}; mfuObstacles().forEach(function(o){ if (o.x.co) CO_STALL[o.x.co] = (CO_STALL[o.x.co] || 0) + 1; });   /* (V28.5) المتعثر: نقاطُها التي عليها عائقٌ ولم تُركَّب — بتعريف متابعة الوزارة */
     var withTel = cos.filter(function(c){ return !!coTelOf(c); }).length;
     var sel = WA_CO && cos.indexOf(WA_CO) > -1 ? WA_CO : (cos[0] || '');
     return stats([['شركات', N(cos.length), 'acc'],
@@ -11926,11 +11943,12 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
         + '</div>')
 
       + cardFlush(t('الشركات') + ' — ' + nm(cos.length),
-          table(['الشركة','نقاطها','مُسح','مُركّب','سُلِّم','جوالها',''],
+          table(['الشركة','ضابط الاتصال','نقاطها','مُسح','المنجز','المتبقي','متعثر','سُلِّم','جوالها',''],   /* (V28.5) */
             cos.slice(0, PG_Q ? 5000 : 200).map(function(c){
-              var st = coStat(c), ph = coTelOf(c);
+              var st = coStat(c), ph = coTelOf(c), lz = coLiaisonOf(c), cs = CO_STALL ? (CO_STALL[c] || 0) : 0;
               return [esc(c.length > 30 ? c.slice(0, 29) + '\u2026' : c),
-                      N(st.n), N(st.sv), N(st.ins), N(st.hd),
+                      may('approve') ? '<input value="' + esc(lz) + '" data-coliaison="' + esc(c) + '" dir="auto" placeholder="' + esc(t('الاسم')) + '" style="width:140px">' : (lz ? esc(lz) : '\u2014'),
+                      N(st.n), N(st.sv), N(st.ins), N(Math.max(0, st.n - st.ins)), cs ? '<span class="pill wrn">' + nm(cs) + '</span>' : N(0), N(st.hd),
                       may('approve')
                         ? '<input value="' + esc(ph) + '" data-cotel="' + esc(c) + '" dir="ltr" inputmode="tel" placeholder="05xxxxxxxx" style="width:132px">'
                         : (ph ? '<span class="num" dir="ltr">' + esc(ph) + '</span>' : '\u2014'),
@@ -19958,7 +19976,7 @@ function loginBg(){
 
 /* ═══ الميدان — الخريطة أولًا ═══ */
 
-var FIELD_MODE = 'survey';
+var FIELD_MODE = 'survey', FIELD_PREV = 'survey';
 var EXP_OPEN = false;
 var POP_SITE = '';
 var CO_OPEN = false;
@@ -21237,7 +21255,8 @@ function mfuCos(){
     + btn(MFU_COS_ALL ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
     + '<div class="mfu-cos">' + (MFU_COS_ALL ? C : C.slice().sort(function(a, b){ return a.pct - b.pct || b.n - a.n; }).slice(0, 12)).map(function(c){ var L = mfuLevel(c.pct);
         return '<div class="mfu-co mfu-' + L[1] + '"><div class="mfu-co-h"><b>' + esc(c.co) + '</b>' + pill(t(L[0]), L[1]) + '</div>'
-          + mfuBar(c.pct) + '<div class="mfu-co-n"><span>' + esc(t('المستهدف')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('رُكّب')) + ' <b>' + nm(c.ins) + '</b></span><span>' + esc(t('عوائق')) + ' <b>' + nm(c.obs) + '</b></span><span>' + esc(t('متبقٍّ')) + ' <b>' + nm(c.rem) + '</b></span></div></div>';
+          + (coLiaisonOf(c.co) ? '<div class="hint" style="margin:2px 0 4px">' + esc(t('ضابط الاتصال')) + ': <b>' + esc(coLiaisonOf(c.co)) + '</b></div>' : '')
+          + mfuBar(c.pct) + '<div class="mfu-co-n"><span>' + esc(t('المستهدف')) + ' <b>' + nm(c.n) + '</b></span><span>' + esc(t('المنجز')) + ' <b>' + nm(c.ins) + '</b></span><span>' + esc(t('المتبقي')) + ' <b>' + nm(c.rem) + '</b></span><span>' + esc(t('متعثر')) + ' <b>' + nm(c.obs) + '</b></span></div></div>';
       }).join('') + '</div>';
 }
 /* (V26.5) فلترُ المشعر والنوع على التحديات والمعوقات — قرارُ المالك: «منى – مخيمات – العائق – العدد – المعالجة – المسؤول».
@@ -21631,7 +21650,7 @@ function mfuReport(){
           : mileList().map(function(m){ var p = Math.round(mileDone(m) * 100), d = mileDateOf(m); return [m.n, 'المعالم', '', p >= 100 ? 'مكتمل' : mileLate(m) ? 'متأخر' : p > 0 ? 'جارٍ' : 'لم يبدأ', d ? dayKey(d) : '', p + '٪', '']; })),
     inst:Object.keys(Z).map(function(k){ return Z[k]; }).sort(function(a, b){ return a.z < b.z ? -1 : a.z > b.z ? 1 : b.n - a.n; })
           .map(function(o){ return [o.z, (CAT_DEF[o.ty] || {}).l || o.ty, o.n, o.i, (o.n ? Math.round(o.i / o.n * 100) : 0) + '٪']; }),
-    cos:mfuCompanies().map(function(c){ return [c.co, c.n, c.ins, c.obs, c.rem, c.pct + '٪', mfuLevel(c.pct)[0]]; }),
+    cos:mfuCompanies().map(function(c){ return [c.co, coLiaisonOf(c.co) || '\u2014', c.n, c.ins, c.rem, c.obs, c.pct + '٪', mfuLevel(c.pct)[0]]; }),
     obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
@@ -21656,7 +21675,7 @@ var MFU_SECTIONS = [
   ['tasks', 'حالة أبرز المهام', ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ']],
   ['blocks', 'المسار | القارئات — المنجز والقادم والمطلوب', ['الكتلة', 'البند', 'التفصيل']],
   ['inst', 'حالة التركيبات', ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة']],
-  ['cos', 'تركيب المخيمات لشركات الخدمة', ['الشركة', 'المستهدف', 'رُكّب', 'عوائق', 'متبقٍّ', 'النسبة', 'المستوى']],
+  ['cos', 'تركيب المخيمات لشركات الخدمة', ['الشركة', 'ضابط الاتصال', 'المستهدف', 'المنجز', 'المتبقي', 'متعثر', 'النسبة', 'المستوى']],
   ['parties', 'بيان المعوقات — الجهة المعالجة', ['الجهة', 'عدد المعوقات']],
   ['cats', 'فئات المعوقات', ['الفئة', 'العدد', 'الجهة المعالجة']],
   ['chal', 'التحديات وآليات المعالجة', ['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'الحالة']],
@@ -23484,6 +23503,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.5', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'من ملاحظات «تحديثات المنصة»: «كاميرات الوزارة» صارت «كاميرات المتابعة» تحت مشعر «المتابعة»، وكاميرات منشأة الجمرات نوعها «منشأة الجمرات» لا «كاميرات المتابعة»، و«كاميرات الوزارة — LPR» صارت «مراكز التفويج». والأوزان والتعديلات المحفوظة بالأسماء القديمة تقرأ بالجديدة.',
+      '«التفاصيل المختصرة» تغلق بضغطة ثانية عليها وترجع الطبقة اللي كانت قبلها.',
+      'الشركات: عمود «ضابط الاتصال» يحفظه المهندس فيراه الكل (والوزارة في متابعتها)، وأعمدة المنجز والمتبقي والمتعثر في إشعار الشركات وفي تقرير متابعة الوزارة.' ] },
   { v:'V28.4', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'قرار المالك: لا حذف لأي زيارة أو تركيب الآن. زر الزيارة في نافذة النقطة يسجل زيارة سريعة فقط، والتصحيح من «تعديل المسح». واستعيدت آخر ثلاث نقاط كانت مخفية، فلم يبق أي سجل مخفي.',
       'وإصلاح: اعتماد الوزارة للمسح كان سيرفض بعد التحديث السابق بسبب حقل إضافي، فصار يُكتب بحقوله وحدها.' ] },
@@ -29796,9 +29819,9 @@ function chainRows(){
 var TYPES_NORM = null;
 /* تسمياتٌ قديمةٌ في سجلِّ الأنواع تُردُّ إلى التسمية الحالية عند كلِّ تحميل — منها
    خطأٌ إملائيٌّ («فالوزارة») وتسمياتُ ما قبل توحيد عائلة كاميرات الوزارة (V19.1) */
-var TYPES_OLD_L = { 'LPR':['قراءة اللوحات', 'كاميرات قراءة اللوحات', 'كاميرات LPR'], 'كاميرا':['كاميرات الوزارة الذكيّة', 'كاميرات فالوزارة'] };
+var TYPES_OLD_L = { 'LPR':['قراءة اللوحات', 'كاميرات قراءة اللوحات', 'كاميرات LPR', 'كاميرات الوزارة — LPR'], 'كاميرا':['كاميرات الوزارة الذكيّة', 'كاميرات فالوزارة', 'كاميرات الوزارة'] };   /* (V28.5) والتسميتان السابقتان تُردّان للجديدتين */
 /* ومفاتيحُ الأوزان المكتوبةُ بالتسمية القديمة تُقرأ للتسمية الجديدة حتى يُنقَل قرارُها */
-var W_ALIAS = { 'كاميرات الوزارة':['كاميرات فالوزارة', 'كاميرات الوزارة الذكيّة'], 'كاميرات الوزارة — LPR':['كاميرات قراءة اللوحات', 'كاميرات LPR'] };
+var W_ALIAS = { 'كاميرات المتابعة':['كاميرات الوزارة', 'كاميرات فالوزارة', 'كاميرات الوزارة الذكيّة'], 'مراكز التفويج':['كاميرات الوزارة — LPR', 'كاميرات قراءة اللوحات', 'كاميرات LPR'] };   /* (V28.5) أوزانُ التسمية السابقة تُقرأ للجديدة */
 function typeCopy(v){
   var o = { l:v.l, i:v.i, c:v.c };
   if (v.s) o.s = v.s;
@@ -31982,7 +32005,11 @@ function clickA(e){
   }
   var m = e.target.closest('[data-mode]');
   if (m){
-    FIELD_MODE = m.getAttribute('data-mode');
+    /* (V28.5) ملاحظةُ «تحديثات المنصة»: «التفاصيل المختصرة» حين تُفعَّل لا تُغلق — صارت الضغطةُ الثانيةُ عليها تُعيد الطبقةَ السابقة */
+    var nmode = m.getAttribute('data-mode');
+    if (nmode === 'brief' && FIELD_MODE === 'brief') nmode = (typeof FIELD_PREV === 'string' && FIELD_PREV && FIELD_PREV !== 'brief') ? FIELD_PREV : 'survey';
+    else if (nmode === 'brief') FIELD_PREV = FIELD_MODE;
+    FIELD_MODE = nmode;
     selClear();
     if (CUR !== 'map' && CUR !== 'layers') CUR = 'map';
     render(1);
@@ -33914,6 +33941,7 @@ document.addEventListener('input', function(e){
     if (el2.hasAttribute('data-tkph')){ techSet(el2.getAttribute('data-tkph'), { ph:el2.value.trim() }); return; }
     if (el2.hasAttribute('data-tkcr')){ techSet(el2.getAttribute('data-tkcr'), { crew:el2.value }); render(1); return; }
     if (el2.hasAttribute('data-cotel')){ coTelSet(el2.getAttribute('data-cotel'), el2.value); render(1); return; }
+    if (el2.hasAttribute('data-coliaison')){ coLiaisonSet(el2.getAttribute('data-coliaison'), el2.value); return; }   /* (V28.5) بلا إعادة رسم — لا يضيع المؤشر */
     if (el2.hasAttribute('data-waco')){ WA_CO = el2.value; render(1); return; }
     if (el2.hasAttribute('data-hop')){ hoSetParty(el2.getAttribute('data-hop'), el2.value); return; }
     if (el2.hasAttribute('data-hosn')){ hoSetSigner(+el2.getAttribute('data-hosn'), 'n', el2.value); return; }
