@@ -45,7 +45,11 @@ jobs:
       - name: merge the three added points (V28.6, owner decision)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/merge-new3.mjs || true
+        run: echo skip-merge-new3
+      - name: fix Khaled visits (V28.7, owner decision)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/fix-khaled.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
