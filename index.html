@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-4e5d5f2c12.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-9328ba6cea.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -18690,6 +18690,43 @@ function bedPanelHtml(){
     + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
+/* ═══ (V28.9) خطوطُ التقارير — «Abar Mid» ═══
+   قرارُ المالك: «دي الخطوط اللي يتكتب بيها التقرير». الباوربوينت يضمّنها من قالب الوزارة نفسِه. والـPDF يطبعه المتصفّح
+   فيحتاج الخطَّ نفسَه: يرفعه المديرُ مرةً (العاديَّ والعريض) فيُحفَظ في وثيقة الإعدادات «fonts» — لا في المستودع العامّ لأن
+   الخطَّ مرخَّص — ويُقرأ عند الطباعة وحدَها، فيُضمَّن في الـPDF ويُقرأ على أيِّ جهاز. */
+var FONTS_MAX = 450 * 1024;
+function fontsCard(){
+  var F = CFG.fonts || {}, ed = may('settings');
+  var st = function(k, l){ return '<span class="pill ' + (F[k] ? 'ok' : 'wrn') + '">' + (F[k] ? '\u2713 ' : '') + esc(t(l)) + (F[k + 'n'] ? ' \u00b7 ' + esc(F[k + 'n']) : '') + '</span>'; };
+  return card('\u{1F524} ' + t('خطوط التقارير'),
+      '<p class="hint" style="margin:0 0 8px">' + esc(t('خطُّ الوزارة «Abar Mid» للـPDF: ارفع ملفَّي العاديّ والعريض مرةً واحدة فيُضمَّنان في كلِّ تقريرٍ مطبوع. الباوربوينت يضمّنه من قالب الوزارة نفسِه.')) + '</p>'
+    + '<div class="chips" style="margin:0 0 8px">' + st('r', 'العادي') + ' ' + st('b', 'العريض') + '</div>'
+    + (ed ? '<div class="grid cols-2"><div class="field"><label>' + esc(t('العادي (Regular)')) + '</label><input type="file" accept=".otf,.ttf,.woff,.woff2" data-fontup="r"></div>'
+          + '<div class="field"><label>' + esc(t('العريض (Bold)')) + '</label><input type="file" accept=".otf,.ttf,.woff,.woff2" data-fontup="b"></div></div>' : ''));
+}
+function fontMime(n){ n = String(n || '').toLowerCase(); return /\.woff2$/.test(n) ? ['font/woff2', 'woff2'] : /\.woff$/.test(n) ? ['font/woff', 'woff'] : /\.ttf$/.test(n) ? ['font/ttf', 'truetype'] : ['font/otf', 'opentype']; }
+function fontUp(kind, file){
+  if (!may('settings')){ toast(t('الإعداداتُ للمهندس فما فوق')); return; }
+  if (!file || file.size > FONTS_MAX){ toast(t('ملفُّ الخط كبير — الحدُّ ٤٥٠ ك.ب')); return; }
+  var fr = new FileReader();
+  fr.onload = function(){ var b64 = String(fr.result || '').split(',')[1] || ''; if (!b64){ toast(t('تعذّرت قراءةُ الملف')); return; }
+    var v = Object.assign({}, CFG.fonts || {}); v[kind] = b64; v[kind + 'n'] = file.name; v.at = Date.now(); v.by = STATE.meta.name || '';
+    CFG.fonts = v; CORE.set('cfg', 'fonts', v); logEvent('خطُّ التقارير — ' + (kind === 'b' ? 'العريض' : 'العادي') + ' · ' + file.name, ''); toast(t('حُفظ الخط — يُضمَّن في الـPDF')); render(1); };
+  fr.readAsDataURL(file);
+}
+function fontsLoad(){
+  if (CFG.fonts && CFG.fonts.r) return Promise.resolve(CFG.fonts);
+  if (!(typeof FB === 'object' && FB.db && FB.db.collection)) return Promise.resolve(null);
+  return Promise.race([
+    FB.db.collection('settings').doc('fonts').get().then(function(d){ if (d && d.exists){ CFG.fonts = Object.assign({}, d.data()); } return CFG.fonts || null; }),
+    new Promise(function(res){ setTimeout(function(){ res(null); }, 3500); })
+  ]).catch(function(){ return null; });
+}
+function fontsFace(F){
+  if (!F || !F.r) return '';
+  var face = function(b64, name, w){ var m = fontMime(name); return '@font-face{font-family:"Abar Mid";font-weight:' + w + ';src:url(data:' + m[0] + ';base64,' + b64 + ') format("' + m[1] + '")}'; };
+  return face(F.r, F.rn, 400) + (F.b ? face(F.b, F.bn, 700) : '');
+}
 function gmapsCard(){
   var k = gmapsKey(), ed = may('settings');
   return card('\u{1F5FA} ' + t('خرائط جوجل'),
@@ -21718,6 +21755,7 @@ function mfuXlsx(){
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
     var R = mfuReport(), wb = XLSX.utils.book_new();
+    if (!expGate('إكسل', mfuReportCheck(R))) return false;   /* (V28.9) */
     MFU_SECTIONS.forEach(function(sc){
       var rows = [sc[2]].concat(mfuRowsOf(R, sc[0]));
       var ws = XLSX.utils.aoa_to_sheet(rows);
@@ -21734,14 +21772,14 @@ function mfuXlsx(){
 /* (V28.8) القالبُ الموحَّدُ للوزارة في الـPDF أيضًا: غلافٌ بلون القالب وشعارِ الوزارة، وعناوينُ ذهبيةٌ يمينًا، وجداولُ بالأخضر
    الداكن، وتذييلُ haj.gov.sa، وختامُ «شكرًا» — والخطُّ «Abar Mid» المعتمد ثم «Readex Pro» بديلًا حيث لا يوجد. */
 var MOH_LOGO = 'data:image/png;base64,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';
-function mfuPrintHtml(R){
+function mfuPrintHtml(R, F){
   var e = function(v){ return esc(v == null ? '' : String(v)); };
   var tbl = function(head, rows){ return '<table><thead><tr>' + head.map(function(h){ return '<th>' + e(h) + '</th>'; }).join('') + '</tr></thead><tbody>'
     + (rows.length ? rows.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + e(c) + '</td>'; }).join('') + '</tr>'; }).join('') : '<tr><td colspan="' + head.length + '">—</td></tr>') + '</tbody></table>'; };
   var F = '"Abar Mid","Readex Pro","Segoe UI",Tahoma,Arial,sans-serif';
   return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>' + e(mfuFileName('pdf')) + '</title>'
     + '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&display=swap">'
-    + '<style>@page{size:A4 landscape;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}'
+    + '<style>' + fontsFace(F) + '@page{size:A4 landscape;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}'
     + 'body{font-family:' + F + ';color:#163E35;background:#FBF7F4;margin:0}'
     + '.pg{position:relative;width:297mm;min-height:210mm;padding:14mm 16mm 18mm;page-break-after:always;background:#FBF7F4}'
     + '.cover{background:#F6EDE3;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}'
@@ -21760,17 +21798,25 @@ function mfuPrintHtml(R){
     + '</body></html>';
 }
 function mfuPdf(){
-  var html = mfuPrintHtml(mfuReport()), win = null;
-  try { win = window.open('', '_blank'); } catch (e){ win = null; }
-  if (win && win.document){ win.document.open(); win.document.write(html); win.document.close(); setTimeout(function(){ try { win.focus(); win.print(); } catch (e){ LS_ERR = e; } }, 350); }
-  else {
-    var fr = document.createElement('iframe'); fr.style.cssText = 'position:fixed;width:0;height:0;border:0;inset-inline-start:-9999px'; document.body.appendChild(fr);
-    fr.srcdoc = html; fr.onload = function(){ try { fr.contentWindow.focus(); fr.contentWindow.print(); } catch (e){ LS_ERR = e; } setTimeout(function(){ fr.remove(); }, 60000); };
-  }
+  var R0 = mfuReport(); if (!expGate('PDF', mfuReportCheck(R0))) return false;   /* (V28.9) */
+  var win = null;
+  try { win = window.open('', '_blank'); } catch (e){ win = null; }   /* تُفتح النافذةُ في الضغطة نفسِها — ثم يُكتب فيها بعد تحميل الخط */
+  var go = function(F){
+    var html = mfuPrintHtml(R0, F);
+    var doPrint = function(w){ var p = function(){ try { w.focus(); w.print(); } catch (e){ LS_ERR = e; } };
+      try { if (w.document && w.document.fonts && w.document.fonts.ready) w.document.fonts.ready.then(function(){ setTimeout(p, 150); }); else setTimeout(p, 350); } catch (e){ setTimeout(p, 350); } };
+    if (win && win.document){ win.document.open(); win.document.write(html); win.document.close(); doPrint(win); }
+    else {
+      var fr = document.createElement('iframe'); fr.style.cssText = 'position:fixed;width:0;height:0;border:0;inset-inline-start:-9999px'; document.body.appendChild(fr);
+      fr.srcdoc = html; fr.onload = function(){ doPrint(fr.contentWindow); setTimeout(function(){ fr.remove(); }, 60000); };
+    }
+    return html.length;
+  };
   logEvent('تصديرُ التحديث الأسبوعي — PDF', ''); toast(t('اختر «حفظ كـ PDF» في نافذة الطباعة'));
-  return html.length;
+  if (CFG.fonts && CFG.fonts.r) return go(CFG.fonts);
+  fontsLoad().then(go);
+  return true;
 }
-/* ── وورد: ملفُّ docx حقيقيٌّ يُبنى بالكود (ZIP مخزَّنٌ بلا ضغط) ── */
 function zipMany(files){
   var enc = new TextEncoder(), parts = [], central = [], off = 0;
   var u32 = function(v){ return [v & 255, (v >>> 8) & 255, (v >>> 16) & 255, (v >>> 24) & 255]; }, u16 = function(v){ return [v & 255, (v >>> 8) & 255]; };
@@ -21811,8 +21857,58 @@ function mfuDocxXml(R){
 function mfuDocx(){
   try { return mfuDocx0(); } catch (e){ softErr('docx', e, ''); toast(t('تعذّر التصدير')); return false; }
 }
+/* ═══ (V28.9) فحصُ الملف قبل نزوله ═══
+   قرارُ المالك: «الأرقامُ والحروفُ اللي جوّه تبقى كلُّها صحيحة — لازم يكون فيه فحصٌ للملف قبل ما ينزل». نزل عرضٌ فيه
+   «NaN» وأعمدةٌ مزاحة (بعد إضافة عمود ضابط الاتصال) ولم يمنعه شيء. صار كلُّ تصديرٍ (باوربوينت ووورد وإكسل وPDF) يُفحَص
+   قبل التنزيل: بياناتُ التقرير نفسُها (لا نصَّ مكسورًا: NaN أو undefined أو [object…] أو نائبٌ باقٍ أو حرفٌ تالف، وعددُ
+   خانات كلِّ صفٍّ = عددُ أعمدته، والنسبُ بين صفرٍ ومئة)، ثم الملفُّ المبنيُّ (شرائحُ سليمةُ البناء وكلُّ عنصرٍ داخل الشريحة).
+   وأيُّ خطأٍ يوقف التنزيلَ ويُعرَض فوق أزرار التصدير ويُسجَّل في الأحداث. */
+var EXP_CHK = null;
+function expDigits(v){ return String(v == null ? '' : v).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 1632); }).replace(/[\u06F0-\u06F9]/g, function(d){ return String(d.charCodeAt(0) - 1776); }); }
+function expBadText(v){ var x = String(v == null ? '' : v); var m = x.match(/\bNaN\b|\bundefined\b|\[object [A-Za-z]+\]|\bInfinity\b|\{\{[A-Z]+\}\}|\uFFFD/); return m ? m[0] : ''; }
+function mfuReportCheck(R){
+  var iss = [];
+  (R.kpis || []).forEach(function(k){ var b = expBadText(k[1]) || expBadText(k[2]); if (b) iss.push(t('المؤشر') + ' «' + k[0] + '»: ' + b); });
+  MFU_SECTIONS.forEach(function(sc){
+    var head = sc[2], rows = mfuRowsOf(R, sc[0]) || [];
+    rows.forEach(function(r, i){
+      if (!Array.isArray(r)){ iss.push(sc[1] + ' — ' + t('صفٌّ غيرُ صالح')); return; }
+      if (r.length !== head.length) iss.push(sc[1] + ' — ' + t('الصفّ') + ' ' + (i + 1) + ': ' + r.length + ' ' + t('خانة والأعمدةُ') + ' ' + head.length);
+      r.forEach(function(c, j){
+        var b = expBadText(c); if (b) iss.push(sc[1] + ' — «' + (head[j] || '?') + '» ' + t('في الصفّ') + ' ' + (i + 1) + ': ' + b);
+        var cs = expDigits(c); if (/^\s*-?[\d.]+\s*[\u066A%]\s*$/.test(cs)){ var n = parseFloat(cs); if (isFinite(n) && (n < 0 || n > 100)) iss.push(sc[1] + ' — «' + (head[j] || '?') + '» ' + t('نسبةٌ خارج المدى') + ': ' + c); }
+      });
+    });
+  });
+  /* اتّساقُ الأرقام: في كلِّ شركةٍ المستهدفُ = المنجزُ + المتبقي + المتعثر، والنسبةُ = المنجزُ ÷ المستهدف */
+  (R.cos || []).forEach(function(r, i){ var n = +expDigits(r[2]), a = +expDigits(r[3]), b = +expDigits(r[4]), c = +expDigits(r[5]), p = parseFloat(expDigits(r[6]));
+    if ([n, a, b, c].every(isFinite) && n !== a + b + c) iss.push(t('تركيب المخيمات لشركات الخدمة') + ' — ' + r[0] + ': ' + t('المستهدف لا يساوي المنجز والمتبقي والمتعثر'));
+    if (isFinite(n) && n > 0 && isFinite(p) && Math.abs(p - Math.round(a / n * 100)) > 1) iss.push(t('تركيب المخيمات لشركات الخدمة') + ' — ' + r[0] + ': ' + t('النسبة لا تطابق المنجز'));
+  });
+  return iss;
+}
+function pptxCheck(out){
+  var iss = [], dec = new TextDecoder(), W = 12192000 + 25000, H = 6858000 + 25000, P = (typeof DOMParser === 'function') ? new DOMParser() : null;
+  out.forEach(function(e){
+    if (!/^ppt\/slides\/slide\d+\.xml$/.test(e.name)) return;
+    var x = e.text != null ? e.text : dec.decode(e.raw), sn = e.name.replace(/^.*slide(\d+)\.xml$/, '$1');
+    if (P && P.parseFromString(x, 'application/xml').getElementsByTagName('parsererror').length) iss.push(t('الشريحة') + ' ' + sn + ': ' + t('بناءٌ غيرُ سليم'));
+    (x.match(/<a:t>[^<]*<\/a:t>/g) || []).forEach(function(tt){ var b = expBadText(tt.slice(5, -6)); if (b) iss.push(t('الشريحة') + ' ' + sn + ': «' + tt.slice(5, -6).slice(0, 40) + '»'); });
+    x.replace(/<a:off x="(\d+)" y="(\d+)"\/><a:ext cx="(\d+)" cy="(\d+)"/g, function(m, a, b, c, d){ if (+a + +c > W || +b + +d > H) iss.push(t('الشريحة') + ' ' + sn + ': ' + t('عنصرٌ خارج حدود الشريحة')); return m; });
+  });
+  return iss;
+}
+function expGate(kind, iss){
+  EXP_CHK = { kind:kind, at:Date.now(), n:iss.length, issues:iss.slice(0, 25) };
+  if (!iss.length) return true;
+  logEvent('تصديرٌ أوقفه فحصُ الملف — ' + kind + ' · ' + iss.length + ' خطأ', '');
+  toast(t('أُوقف التصدير: في الملف') + ' ' + nm(iss.length) + ' ' + t('خطأ — التفاصيلُ فوق أزرار التصدير'));
+  try { render(1); } catch (e){ LS_ERR = e; }
+  return false;
+}
 function mfuDocx0(){
   var R = mfuReport();
+  if (!expGate('وورد', mfuReportCheck(R))) return false;   /* (V28.9) */
   var files = [
     { name:'[Content_Types].xml', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/></Types>' },
     { name:'_rels/.rels', data:'<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/></Relationships>' },
@@ -21949,7 +22045,7 @@ function mfuSlides(R){
 function mfuPptx(){
   toast(t('يُجهَّز العرضُ من قالب الوزارة…'));
   return pptxTemplate().then(function(tpl){
-    var R = mfuReport(), E = ooxRead(tpl), dec = new TextDecoder(), slides = mfuSlides(R);
+    var R = mfuReport(), E = ooxRead(tpl), dec = new TextDecoder(), slides = mfuSlides(R), chk = mfuReportCheck(R);   /* (V28.9) */
     var order = ['ppt/slides/slide2.xml', 'ppt/slides/slide3.xml', 'ppt/slides/slide4.xml', 'ppt/slides/slide5.xml', 'ppt/slides/slide6.xml', 'ppt/slides/slide7.xml', 'ppt/slides/slide8.xml', 'ppt/slides/slide9.xml', 'ppt/slides/slide10.xml'];   /* (V28.8) شرائحُ المحتوى في القالب الموحَّد */
     var out = E.map(function(e){
       if (e.method !== 0 || !/^ppt\/slides\/slide\d+\.xml$/.test(e.name)) return e;
@@ -21961,6 +22057,7 @@ function mfuPptx(){
       x = x.replace('{{T}}', pxE(sl[0])).replace(/<p:sp><p:nvSpPr><p:cNvPr id="990" name="BODY"\/>[\s\S]*?<\/p:sp>/, function(){ return pxScale(sl[1], PX_K); });
       return { name:e.name, text:x };
     });
+    if (!expGate('باوربوينت', chk.concat(pptxCheck(out)))) return false;   /* (V28.9) فحصُ الملف قبل نزوله */
     var ok = dl(new Blob([ooxWrite(out)], { type:'application/vnd.openxmlformats-officedocument.presentationml.presentation' }), mfuFileName('pptx'));
     if (ok){ logEvent('تصديرُ التحديث الأسبوعي — باوربوينت', ''); toast(t('صُدّر العرض')); }
     return ok;
@@ -21971,7 +22068,10 @@ function mfuExportBar(){
     + '<b style="color:#C8943E">\u2B07 ' + esc(t('تصدير التحديث الأسبوعي')) + '</b>'
     + btn('PowerPoint', 'btn-primary btn-sm', ' data-mfuexp="pptx"') + btn('Word', 'btn-secondary btn-sm', ' data-mfuexp="docx"') + btn('Excel', 'btn-secondary btn-sm', ' data-mfuexp="xlsx"') + btn('PDF', 'btn-secondary btn-sm', ' data-mfuexp="pdf"')
     + (mfuFltLabel() ? '<span class="pill wrn">' + esc(t('بفلتر')) + ': ' + esc(mfuFltLabel()) + ' \u2014 ' + esc(t('أزل الفلتر لتصدير الكلّ')) + '</span>' : '')   /* (V27.3) */
-    + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div></div>';
+    + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div>'
+    + (EXP_CHK && EXP_CHK.n ? '<div class="alert warn" style="margin:8px 0 0"><b>' + esc(t('أوقف الفحصُ آخرَ تصدير')) + ' (' + esc(EXP_CHK.kind) + ') — ' + nm(EXP_CHK.n) + ' ' + esc(t('خطأ')) + '</b><ul style="margin:4px 0 0;padding-inline-start:18px">' + EXP_CHK.issues.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
+       : (EXP_CHK ? '<span class="pill ok" style="margin:8px 0 0">\u2713 ' + esc(t('آخرُ ملفٍّ اجتاز الفحص')) + ' (' + esc(EXP_CHK.kind) + ')</span>' : ''))   /* (V28.9) */
+    + '</div>';
 }
 PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
   l:'العرضُ الأسبوعيُّ للوزارة حيًّا — بعناوينه نفسِها: المهامُّ والتركيباتُ والشركاتُ والمعوقاتُ والتحدياتُ والطلبات.',
@@ -23557,6 +23657,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.9', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'فحص الملف قبل نزوله (قرار المالك): كل تصدير (باوربوينت ووورد وإكسل وبي دي إف) يفحص الأرقام والحروف قبل التنزيل — لا «NaN» ولا خانات ناقصة ولا نسب خارج المدى، والمستهدف = المنجز + المتبقي + المتعثر، والشرائح سليمة البناء وداخل حدودها. أي خطأ يوقف التنزيل ويظهر فوق أزرار التصدير.',
+      'خط الوزارة «Abar Mid» في التقارير: الباوربوينت مضمن فيه الخط من قالب الوزارة نفسه، والبي دي إف يضمنه بعد ما يرفع المدير ملفي العادي والعريض مرة من «ثوابت النظام ← خطوط التقارير».' ] },
   { v:'V28.8', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'القالب الموحد لوزارة الحج والعمرة في كل تقارير الباوربوينت والبي دي إف: غلاف بشعار الوزارة وألوانها، وشرائح محتوى بعناوين ذهبية، وختام «شكرا»، وبخط الوزارة المعتمد «Abar Mid» بدل الخط القديم (ملاحظة «تحديثات المنصة»).',
       'وشريحة شركات الخدمة في العرض بأعمدتها الجديدة (ضابط الاتصال والمنجز والمتبقي والمتعثر) وأرقامها صحيحة.' ] },
@@ -31110,7 +31213,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
   l:'ما نشتريه وممّن — والثوابتُ وأسماءُ العرض وأنواعُ السيارات.',
   body:function(){
     var head = tabHead('items'), cur = tabCur('items');
-    if (cur === 'consts') return head + ghCard() + hoSetupCard() + costGuardCard() + gmapsCard() + (function(){
+    if (cur === 'consts') return head + ghCard() + hoSetupCard() + costGuardCard() + fontsCard() + gmapsCard() + (function(){
     return card('الثوابت',
         '<div class="grid cols-3">'
         + '<div class="field"><label>' + esc(t('أيام العمل في الشهر')) + '</label>'
@@ -33690,6 +33793,7 @@ document.addEventListener('wheel', function(e){
 
 document.addEventListener('change', function(e){
   var t0 = e.target;
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
