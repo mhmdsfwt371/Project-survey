@@ -37,7 +37,11 @@ jobs:
       - name: heal three + quarantine check (V28.4)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/heal-list.mjs || true
+        run: echo skip-heal-list
+      - name: diag new points (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/diag-new3.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
