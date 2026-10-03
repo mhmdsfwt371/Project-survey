@@ -1033,6 +1033,8 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 #mapBox .leaflet-top.leaflet-left{inset-block-start:auto;inset-inline-start:auto;
   inset-block-end:calc(150px + env(safe-area-inset-bottom,0px));inset-inline-end:14px}
 #mapBox .leaflet-control-zoom{margin:0}
+@media (pointer:coarse){ #mapBox .leaflet-control-zoom{display:none} }   /* (V28.1) كان يظهر من خلف «جارٍ رسم المسار» كخطٍّ يشطبه */
+@media (pointer:fine){ #mapBox .leaflet-top.leaflet-left{inset-block-end:auto;inset-block-start:42%} }
 [dir="rtl"] #mapBox .leaflet-top.leaflet-left{right:auto;left:14px}
 [dir="ltr"] #mapBox .leaflet-top.leaflet-left{left:auto;right:14px}
 
@@ -1205,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1266,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-9908ee36dc.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-aa22e566ab.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15266,47 +15268,79 @@ function popHtml(){
    تلتصق بأقرب عقدةِ شارعٍ وتُوصَل بما قبلها بأقصر طريقٍ على شبكة شوارع منى وممرّاتها (layers/mina-streets.json من بيانات
    الخرائط المفتوحة) — فلا يمرُّ الخطُّ إلا في شارع. يُحفَظ لكلِّ دورٍ واتجاهٍ في الإعدادات (settings/tfwdraw) فيصل
    الأجهزةَ كلَّها، ويُعرَض بدل المسار المولَّد لذلك الدور والاتجاه. للمهندس فما فوق. */
-var TFD = { on:false, f:0, d:'go', nodes:[], paths:[], g:null, busy:false };
+var TFD = { on:false, f:0, d:'go', nodes:[], paths:[], pts:[], free:false, g:null, busy:false };
+/* (V28.1) بلاغُ المالك «في حاجات غلط في الرسم»: (١) الشبكةُ كانت منى وحدَها فكلُّ ضغطةٍ في مزدلفة وعرفات «بعيدٌ عن أيِّ شارع» — صارت
+   منى ومزدلفة وعرفات؛ (٢) كان الالتصاقُ بأقرب «عقدة» فيبعد على الشوارع الطويلة المستقيمة أو يقفز لطرفها — صار بأقرب نقطةٍ على
+   الشارع نفسِه (يُقسَم الضلعُ عندها) بمسافةٍ تتبع التكبير؛ (٣) «رسمٌ حرّ» للساحات وما لا شارعَ فيه بقرار الراسم؛ (٤) طريقٌ أطولُ
+   بكثيرٍ من المستقيم يُنبَّه إليه؛ (٥) أقصرُ طريقٍ بكومةٍ ثنائيةٍ فلا يثقل على الشبكة الأكبر. */
 function tfdMay(){ return typeof ROLE !== 'undefined' && typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('engineer'); }
 function tfdGraph(){
   if (TFD.g) return Promise.resolve(TFD.g);
   if (TFD.busy) return TFD.busy;
-  TFD.busy = fetch('layers/mina-streets.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){
+  TFD.busy = fetch('layers/mashaer-streets.json').then(function(r){ return r.ok ? r.json() : null; }).catch(function(){ return null; })
+    .then(function(d){ return (d && d.n) ? d : fetch('layers/mina-streets.json').then(function(r){ return r.ok ? r.json() : null; }); })   /* (V28.1) المشاعرُ كلُّها، ومنى احتياطًا */
+    .then(function(d){
     TFD.busy = null; if (!d || !d.n) return null;
     var adj = d.n.map(function(){ return []; });
     d.e.forEach(function(e){ var a = d.n[e[0]], b = d.n[e[1]], len = geoDist(a, b); adj[e[0]].push([e[1], len]); adj[e[1]].push([e[0], len]); });
-    TFD.g = { n:d.n, adj:adj }; return TFD.g;
+    TFD.g = { n:d.n.slice(), adj:adj, e:d.e.map(function(e){ return [e[0], e[1]]; }) }; return TFD.g;
   }).catch(function(e){ TFD.busy = null; LS_ERR = e; return null; });
   return TFD.busy;
 }
-function tfdNearest(lat, lng){ var g = TFD.g, best = -1, bd = 1e12, i, n; if (!g) return -1; for (i = 0; i < g.n.length; i++){ n = g.n[i]; var d = (n[0] - lat) * (n[0] - lat) + (n[1] - lng) * (n[1] - lng) * 0.866; if (d < bd){ bd = d; best = i; } } return (best >= 0 && geoDist(g.n[best], [lat, lng]) <= 150) ? best : -1; }
+function tfdMpp(lat){ var z = (typeof MAP === 'object' && MAP && MAP.getZoom) ? MAP.getZoom() : 16; return 40075016.686 * Math.cos(lat * Math.PI / 180) / Math.pow(2, z + 8); }
+function tfdSnap(lat, lng){
+  var g = TFD.g; if (!g || !g.e) return -1;
+  var tol = Math.min(250, Math.max(20, tfdMpp(lat) * 36)), kx = 111320 * Math.cos(lat * Math.PI / 180), ky = 110574;
+  var px = lng * kx, py = lat * ky, best = -1, bt = 0, bx2 = 0, by2 = 0, bd = 1e18, i;
+  for (i = 0; i < g.e.length; i++){ var A = g.n[g.e[i][0]], B = g.n[g.e[i][1]], ax = A[1] * kx, ay = A[0] * ky, dx = B[1] * kx - ax, dy = B[0] * ky - ay, L2 = dx * dx + dy * dy;
+    var tt = L2 ? Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / L2)) : 0, cx = ax + tt * dx, cy = ay + tt * dy, d2 = (px - cx) * (px - cx) + (py - cy) * (py - cy);
+    if (d2 < bd){ bd = d2; best = i; bt = tt; bx2 = cx; by2 = cy; } }
+  if (best < 0 || Math.sqrt(bd) > tol) return -1;
+  var a = g.e[best][0], b = g.e[best][1], P = [+(by2 / ky).toFixed(6), +(bx2 / kx).toFixed(6)], la = geoDist(g.n[a], P), lb = geoDist(g.n[b], P);
+  if (la < 3) return a; if (lb < 3) return b;
+  var k = g.n.length; g.n.push(P); g.adj.push([[a, la], [b, lb]]); g.adj[a].push([k, la]); g.adj[b].push([k, lb]);
+  g.e[best] = [a, k]; g.e.push([k, b]);   /* يُقسَم الضلعُ عند النقطة فالنقطتان على شارعٍ واحدٍ تُوصَلان مباشرةً */
+  return k;
+}
 function tfdPath(a, b){
   var g = TFD.g; if (!g || a < 0 || b < 0) return null; if (a === b) return [g.n[a]];
-  var dist = {}, prev = {}, done = {}, heap = [[0, a]]; dist[a] = 0;
-  while (heap.length){
-    var bi = 0, i; for (i = 1; i < heap.length; i++) if (heap[i][0] < heap[bi][0]) bi = i;
-    var cur = heap.splice(bi, 1)[0], u = cur[1]; if (done[u]) continue; done[u] = 1;
-    if (u === b) break; if (cur[0] > 6000) break;
-    var ad = g.adj[u]; for (i = 0; i < ad.length; i++){ var v = ad[i][0], nd = cur[0] + ad[i][1]; if (dist[v] == null || nd < dist[v]){ dist[v] = nd; prev[v] = u; heap.push([nd, v]); } }
-  }
-  if (dist[b] == null) return null;
-  var out = [], k = b; while (k != null){ out.push(g.n[k]); if (k === a) break; k = prev[k]; } return out.reverse();
+  var dist = new Map(), prev = new Map(), H = [[0, a]]; dist.set(a, 0);
+  var push = function(x){ H.push(x); var i = H.length - 1; while (i){ var p = (i - 1) >> 1; if (H[p][0] <= H[i][0]) break; var q = H[p]; H[p] = H[i]; H[i] = q; i = p; } };
+  var pop = function(){ var top = H[0], last = H.pop(); if (H.length){ H[0] = last; var i = 0; for (;;){ var l = 2 * i + 1, r = l + 1, m = i; if (l < H.length && H[l][0] < H[m][0]) m = l; if (r < H.length && H[r][0] < H[m][0]) m = r; if (m === i) break; var q = H[m]; H[m] = H[i]; H[i] = q; i = m; } } return top; };
+  while (H.length){ var cur = pop(), u = cur[1]; if (cur[0] > dist.get(u)) continue; if (u === b) break; if (cur[0] > 8000) break;
+    var ad = g.adj[u]; for (var i = 0; i < ad.length; i++){ var v = ad[i][0], nd = cur[0] + ad[i][1]; if (!dist.has(v) || nd < dist.get(v)){ dist.set(v, nd); prev.set(v, u); push([nd, v]); } } }
+  if (!dist.has(b)) return null;
+  var out = [], k = b; while (k != null){ out.push(g.n[k]); if (k === a) break; k = prev.get(k); } return out.reverse();
 }
 function tfdStart(f, d){
   if (!tfdMay()){ toast(t('رسمُ المسارات للمهندس فما فوق')); return; }
-  TFD.on = true; TFD.f = (f == null ? TFD.f : +f); TFD.d = d || TFD.d; TFD.nodes = []; TFD.paths = []; POP_OPEN = false; PIN_ON = false; if (typeof ROUTE === 'object') ROUTE.on = false;
+  TFD.on = true; TFD.f = (f == null ? TFD.f : +f); TFD.d = d || TFD.d; TFD.nodes = []; TFD.paths = []; TFD.pts = []; POP_OPEN = false; PIN_ON = false; if (typeof ROUTE === 'object') ROUTE.on = false;
   tfdGraph().then(function(g){ toast(t(g ? 'اضغط على الخريطة نقطةً بعد نقطة — الخطُّ يمشي على الشوارع وحدَها' : 'تعذّر تحميلُ شبكة الشوارع — تحقّق من الشبكة')); });
   if (typeof TFW === 'object' && TFW.f < 0){ TFW.f = TFD.f; tfwLoad(); tfwPaint(); }
   if (typeof mapPaint === 'function') mapPaint(); render(1);
 }
 function tfdAdd(lat, lng){
   if (!TFD.g){ tfdGraph().then(function(g){ if (g) tfdAdd(lat, lng); }); return; }
-  var n = tfdNearest(lat, lng); if (n < 0){ toast(t('بعيدٌ عن أيِّ شارع — اضغط أقربَ إلى الطريق')); return; }
-  if (TFD.nodes.length){ var last = TFD.nodes[TFD.nodes.length - 1]; if (last === n) return; var path = tfdPath(last, n); if (!path){ toast(t('لا طريقَ على الشوارع بين النقطتين — قرّبهما')); return; } TFD.paths.push(path); }
-  TFD.nodes.push(n); if (typeof mapPaint === 'function') mapPaint(); render(1);
+  TFD.pts = TFD.pts || [];
+  var free = !!TFD.free, n = free ? -1 : tfdSnap(lat, lng);
+  if (!free && n < 0){ toast(t('لا شارعَ قريبًا هنا — قرّب الخريطةَ واضغط على الشارع نفسِه، أو فعّل «رسمٌ حرّ» لهذا المقطع')); return; }
+  var pt = n >= 0 ? TFD.g.n[n] : [+lat.toFixed(6), +lng.toFixed(6)];
+  if (TFD.pts.length){
+    var lastN = TFD.nodes[TFD.nodes.length - 1], lastP = TFD.pts[TFD.pts.length - 1], path;
+    if (n >= 0 && lastN === n) return;
+    if (n >= 0 && lastN >= 0){
+      path = tfdPath(lastN, n);
+      if (!path){ toast(t('لا طريقَ على الشوارع بين النقطتين — أضف نقطةً بينهما أو فعّل «رسمٌ حرّ»')); return; }
+      var str = geoDist(lastP, pt), len = tfdLen([path]);
+      if (str > 60 && len > str * 3.5) toast(t('الطريقُ على الشوارع أطولُ كثيرًا من المستقيم — راجعه، وأضف نقطةً وسطى إن لزم'));
+    } else path = [lastP, pt];
+    TFD.paths.push(path);
+  }
+  TFD.nodes.push(n); TFD.pts.push(pt);
+  if (typeof mapPaint === 'function') mapPaint(); render(1);
 }
-function tfdUndo(){ TFD.nodes.pop(); TFD.paths.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
-function tfdCancel(){ TFD.on = false; TFD.nodes = []; TFD.paths = []; if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdUndo(){ TFD.nodes.pop(); if (TFD.pts) TFD.pts.pop(); if (TFD.paths.length >= TFD.nodes.length && TFD.paths.length) TFD.paths.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
+function tfdCancel(){ TFD.on = false; TFD.nodes = []; TFD.paths = []; TFD.pts = []; TFD.free = false; if (typeof mapPaint === 'function') mapPaint(); render(1); }
 function tfdDrawn(){ var o = (CFG.tfwdraw && CFG.tfwdraw.floors) || {}; return o; }
 function tfdLen(pls){ var m = 0; (pls || []).forEach(function(pl){ for (var i = 1; i < pl.length; i++) m += geoDist(pl[i - 1], pl[i]); }); return m; }
 function tfdSave(){
@@ -15315,7 +15349,7 @@ function tfdSave(){
   var all = JSON.parse(JSON.stringify(tfdDrawn())); var fl = all[TFD.f] = all[TFD.f] || {}; var arr = fl[TFD.d] = fl[TFD.d] || []; arr.push(pl);
   CFG.tfwdraw = { floors:all, at:Date.now(), by:STATE.meta.name || '' }; CORE.set('cfg', 'tfwdraw', CFG.tfwdraw);
   logEvent('رسمُ مسار تفويج — ' + t('الدور') + ' ' + t(TFW_FL[TFD.f]) + ' · ' + t(TFD.d === 'go' ? 'الذهاب' : 'العودة') + ' · ' + Math.round(tfdLen([pl])) + ' م', '');
-  toast(t('حُفظ المسارُ — يُعرَض على الأجهزة كلِّها بدل المولَّد')); TFD.nodes = []; TFD.paths = [];
+  toast(t('حُفظ المسارُ — يُعرَض على الأجهزة كلِّها بدل المولَّد')); TFD.nodes = []; TFD.paths = []; TFD.pts = [];
   if (typeof TFW === 'object'){ TFW.f = TFD.f; tfwPaint(); } if (typeof mapPaint === 'function') mapPaint(); render(1); return true;
 }
 function tfdClear(f, d){
@@ -15330,6 +15364,7 @@ function tfdPanelHtml(){
     + '<div class="grid cols-2"><div class="field"><label>' + esc(t('الدور')) + '</label><select data-tfdf="1">' + TFW_FL.map(function(n, i){ return '<option value="' + i + '"' + (TFD.f === i ? ' selected' : '') + '>' + esc(t(n)) + '</option>'; }).join('') + '</select></div>'
     + '<div class="field"><label>' + esc(t('الاتجاه')) + '</label><select data-tfdd="1"><option value="go"' + (TFD.d === 'go' ? ' selected' : '') + '>' + esc(t('الذهاب')) + '</option><option value="back"' + (TFD.d === 'back' ? ' selected' : '') + '>' + esc(t('العودة')) + '</option></select></div></div>'
     + '<p class="hint" style="margin:6px 0">' + esc(t('اضغط على الخريطة نقطةً بعد نقطة؛ كلُّ نقطةٍ تلتصق بأقرب شارع وتُوصَل بما قبلها على الشوارع وحدَها.')) + ' ' + nm(TFD.nodes.length) + ' ' + esc(t('نقطة')) + ' \u00b7 ' + nm(m) + ' ' + esc(t('م')) + '</p>'
+    + '<div class="actions" style="margin:0 0 6px">' + btn((TFD.free ? '\u2713 ' : '') + t('رسمٌ حرّ (ساحةٌ أو ما لا شارعَ فيه)'), TFD.free ? 'btn-secondary btn-sm' : 'btn-quiet btn-sm', ' data-tfdfree="1"') + '</div>'   /* (V28.1) */
     + '<div class="actions" style="margin:0">' + btn('\u{1F4BE} ' + t('احفظ المسار'), 'btn-primary btn-sm', ' data-tfdsave="1"') + btn('\u21A9 ' + t('تراجع'), 'btn-quiet btn-sm', ' data-tfdundo="1"') + btn('\u2716 ' + t('إلغاء'), 'btn-quiet btn-sm', ' data-tfdcancel="1"') + '</div></div>';
 }
 var ROUTE = { on:false, mode:'line', pts:[], every:250, zone:'منى', type:'ممر', name:'',
@@ -16951,7 +16986,7 @@ function mapPaint(light){
   try {
     if (typeof TFD === 'object' && TFD.on && MAP_TMP){   /* (V28.0) المسارُ المرسومُ قبل حفظه */
       TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
-      TFD.nodes.forEach(function(ni){ var n = TFD.g && TFD.g.n[ni]; if (n) L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor:'#FF8C42', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });
+      (TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
     }
     if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
@@ -23412,6 +23447,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.1', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'رسم المسارات: النقطة تلتصق بأقرب نقطة على الشارع نفسه (لا بطرفه البعيد)، بمسافة تتبع التكبير، ونقطتان على شارع واحد توصلان مباشرة. وشبكة الشوارع صارت منى ومزدلفة وعرفات.',
+      'زر «رسم حر» للساحات وما لا شارع فيه: النقطة حيث تضغط وتوصل بخط مستقيم (بنفسجية). وتنبيه لو الطريق على الشوارع أطول كثيرا من المستقيم. وزر التكبير ما عاد يظهر من خلف أزرار الخريطة.' ] },
   { v:'V28.0', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'صفحة جديدة في الميدان للمهندس فما فوق: «رسم المسارات من وإلى الجمرات». اختر الدور والاتجاه ثم اضغط على الخريطة نقطة بعد نقطة؛ كل نقطة تلتصق بأقرب شارع وتوصل بما قبلها على شوارع منى وممراتها وحدها، لا فوق خيمة ولا بيت. «احفظ المسار» يعرضه على الأجهزة كلها بدل المولد، ويحذف من الصفحة نفسها.',
       'الدور الأرضي: الخط على الشوارع وحدها (كل رأس التصق بأقرب شارع ووصل على الشبكة)، ومتصل بمداخل الدور ومخارجه عبر الساحة.',
@@ -32299,6 +32337,7 @@ function clickA(e){
   if (e.target.closest('[data-tfd]')){ if (TFD.on) tfdCancel(); else tfdStart(); return true; }   /* (V28.0) */
   if (e.target.closest('[data-tfdsave]')){ tfdSave(); return true; }
   if (e.target.closest('[data-tfdundo]')){ tfdUndo(); return true; }
+  if (e.target.closest('[data-tfdfree]')){ TFD.free = !TFD.free; toast(t(TFD.free ? 'رسمٌ حرّ: النقطةُ حيث تضغط وتُوصَل بخطٍّ مستقيم' : 'عاد الالتصاقُ بالشوارع')); render(1); return true; }   /* (V28.1) */
   if (e.target.closest('[data-tfdcancel]')){ tfdCancel(); return true; }
   var tfdg = e.target.closest('[data-tfdgo]'); if (tfdg){ var a = tfdg.getAttribute('data-tfdgo').split('|'); goPage('map'); tfdStart(+a[0], a[1]); return true; }
   var tfdc = e.target.closest('[data-tfdclear]'); if (tfdc){ var c2 = tfdc.getAttribute('data-tfdclear').split('|'); tfdClear(+c2[0], c2[1]); return true; }
