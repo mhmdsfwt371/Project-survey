@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-aa22e566ab.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-892a634cde.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -5433,6 +5433,21 @@ function pmoList(sec){
   var o = ((PMO.v || STATE.pmo || {})[sec]) || {};
   return Object.keys(o).map(function(k){ return Object.assign({ id:k }, o[k]); }).filter(function(x){ return x && !x.gone; }).sort(function(a, b){ return (b.at || 0) - (a.at || 0); });
 }
+/* (V28.2) قرارُ المالك: «كلُّ سجلٍّ من أصغره لأكبره: إضافة وتعديل ومسح». سجلاتُ الإدارة (الدروس، المراجعات الدورية،
+   أصحابُ المصلحة) كانت إضافةً وحذفًا فقط — صار لكلِّ صفٍّ «✎» يملأ نموذجَ الإضافة بقيمه، و«احفظ التعديل» يكتب على السجلِّ نفسِه. */
+var PMO_ED = { sec:'', id:'' };
+var PMO_FORM = { lessons:{ t:'lsT', d:'lsD', w:'lsW', c:'lsC', a:'lsA', o:'lsO' }, retros:{ p:'rtP', g:'rtG', i:'rtI', a:'rtA' }, stake:{ n:'shN', r:'shR', inf:'shI', int:'shT', cur:'shC', want:'shD', s:'shS', o:'shO' } };
+function pmoEdBtn(sec, id){ return btn('\u270E', 'btn-quiet btn-sm', ' data-pmoedit="' + sec + '|' + esc(id) + '" aria-label="' + esc(t('تعديل')) + '"'); }
+function pmoEdLabel(sec, addLabel){ return PMO_ED.sec === sec ? t('احفظ التعديل') : t(addLabel); }
+function pmoEdCancel(sec){ return PMO_ED.sec === sec ? btn(t('إلغاء التعديل'), 'btn-quiet btn-sm', ' data-pmoedcancel="1"') : ''; }
+function pmoEdId(sec, fresh){ return PMO_ED.sec === sec && PMO_ED.id ? PMO_ED.id : fresh; }
+function pmoEdFill(){
+  var f = PMO_FORM[PMO_ED.sec]; if (!f) return;
+  var x = pmoList(PMO_ED.sec).filter(function(r){ return r.id === PMO_ED.id; })[0]; if (!x) return;
+  var first = null;
+  Object.keys(f).forEach(function(k){ var el = document.getElementById(f[k]); if (!el) return; el.value = x[k] == null ? '' : String(x[k]); if (!first) first = el; });
+  if (first){ try { first.scrollIntoView({ block:'center' }); first.focus(); } catch (e){ LS_ERR = e; } }
+}
 function pmoPut(sec, id, entry){
   if (!may('settings')){ toast(t('سجلاتُ الإدارة للمهندس فمن فوقه')); return false; }
   PMO.v = PMO.v || STATE.pmo || {}; PMO.v[sec] = PMO.v[sec] || {}; PMO.v[sec][id] = entry; STATE.pmo = PMO.v;
@@ -5452,21 +5467,21 @@ function lessonsBody(){
         + '<label>' + esc(t('ما الذي حدث')) + '<textarea id="lsW" rows="2"></textarea></label>'
         + '<label>' + esc(t('السبب')) + '<textarea id="lsC" rows="2"></textarea></label>'
         + '<div class="grid2"><label>' + esc(t('الإجراء')) + '<input id="lsA"></label><label>' + esc(t('المسؤول')) + '<input id="lsO"></label></div>'
-        + '<div class="actions">' + btn(t('سجّل الدرس'), 'btn-primary btn-sm', ' data-lessonadd="1"') + '</div>') : '')
+        + '<div class="actions">' + btn(pmoEdLabel('lessons', 'سجّل الدرس'), 'btn-primary btn-sm', ' data-lessonadd="1"') + pmoEdCancel('lessons') + '</div>') : '')
     + (L.length ? cardFlush(t('الدروس المستفادة') + ' \u2014 ' + nm(L.length),
         table(['التاريخ', 'العنوان', 'المجال', 'السبب', 'الإجراء', 'المسؤول', ''], L.map(function(x){
           return [esc(fmtDate(x.at)), '<b>' + esc(x.t || '') + '</b>' + (x.w ? '<div class="hint" style="margin:2px 0 0">' + esc(x.w) + '</div>' : ''), esc(t(x.d || '')), esc(x.c || ''), esc(x.a || ''), esc(x.o || ''),
-                  ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="lessons|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
+                  ed ? pmoEdBtn('lessons', x.id) + btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="lessons|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
         }))) : '')
     + (ed ? card('مراجعةٌ دورية',
         '<label>' + esc(t('الفترة')) + '<input id="rtP" placeholder="' + esc(t('مثال: أسبوع ٢١–٢٧ سبتمبر')) + '"></label>'
         + '<label>' + esc(t('ما نجح')) + '<textarea id="rtG" rows="2"></textarea></label>'
         + '<label>' + esc(t('ما يُحسَّن')) + '<textarea id="rtI" rows="2"></textarea></label>'
         + '<label>' + esc(t('الإجراءات ومن يملكها')) + '<textarea id="rtA" rows="2"></textarea></label>'
-        + '<div class="actions">' + btn(t('سجّل المراجعة'), 'btn-primary btn-sm', ' data-retroadd="1"') + '</div>') : '')
+        + '<div class="actions">' + btn(pmoEdLabel('retros', 'سجّل المراجعة'), 'btn-primary btn-sm', ' data-retroadd="1"') + pmoEdCancel('retros') + '</div>') : '')
     + (R.length ? cardFlush(t('المراجعات الدورية') + ' \u2014 ' + nm(R.length),
         table(['التاريخ', 'الفترة', 'ما نجح', 'ما يُحسَّن', 'الإجراءات', ''], R.map(function(x){
-          return [esc(fmtDate(x.at)), esc(x.p || ''), esc(x.g || ''), esc(x.i || ''), esc(x.a || ''), ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="retros|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
+          return [esc(fmtDate(x.at)), esc(x.p || ''), esc(x.g || ''), esc(x.i || ''), esc(x.a || ''), ed ? pmoEdBtn('retros', x.id) + btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="retros|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
         }))) : '')
     + '<p class="hint">' + esc(t('المراجعةُ كلَّ أسبوعين على الأقل — تقيسها «مطابقة المنهجية». والدرسُ يُكتَب حين يقع لا في آخر الموسم.')) + '</p>'
     + lessLegacyBody()   /* (V27.1) */;
@@ -5483,14 +5498,14 @@ function stakeBody(){
         + '<div class="grid2"><label>' + esc(t('التأثير')) + hl('shI') + '</label><label>' + esc(t('الاهتمام')) + hl('shT') + '</label></div>'
         + '<div class="grid2"><label>' + esc(t('الانخراط الحالي')) + lv('shC', 'محايد') + '</label><label>' + esc(t('الانخراط المطلوب')) + lv('shD', 'داعم') + '</label></div>'
         + '<div class="grid2"><label>' + esc(t('الخطة')) + '<input id="shS"></label><label>' + esc(t('المسؤول')) + '<input id="shO"></label></div>'
-        + '<div class="actions">' + btn(t('أضف'), 'btn-primary btn-sm', ' data-stakeadd="1"') + '</div>') : '')
+        + '<div class="actions">' + btn(pmoEdLabel('stake', 'أضف'), 'btn-primary btn-sm', ' data-stakeadd="1"') + pmoEdCancel('stake') + '</div>') : '')
     + (S.length ? cardFlush(t('سجل أصحاب المصلحة') + ' \u2014 ' + nm(S.length),
         table(['الجهة', 'الدور', 'تأثير/اهتمام', 'الحالي ← المطلوب', 'الخطة', 'المسؤول', 'آخر مراجعة', ''], S.map(function(x){
           var g = PMO_LEVELS.indexOf(x.cur) < PMO_LEVELS.indexOf(x.want);
           return ['<b>' + esc(x.n || '') + '</b>', esc(x.r || ''), nm(x.inf || 0) + ' / ' + nm(x.int || 0),
                   (ed ? '<select data-stakecur="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + PMO_LEVELS.map(function(l){ return '<option value="' + esc(l) + '"' + (x.cur === l ? ' selected' : '') + '>' + esc(t(l)) + '</option>'; }).join('') + '</select>' : esc(t(x.cur || '')))
                     + ' \u2190 ' + pill(t(x.want || ''), g ? 'wrn' : 'ok'),
-                  esc(x.s || ''), esc(x.o || ''), esc(fmtDate(x.at)), ed ? btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="stake|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
+                  esc(x.s || ''), esc(x.o || ''), esc(fmtDate(x.at)), ed ? pmoEdBtn('stake', x.id) + btn('\u2715', 'btn-quiet btn-sm', ' data-pmodel="stake|' + esc(x.id) + '" aria-label="' + esc(t('حذف')) + '"') : ''];
         }))) : '')
     + '<p class="hint">' + esc(t('مصفوفةُ الانخراط: غير مدرك · مقاوم · محايد · داعم · قائد. تغييرُ الحالي يؤرّخ المراجعة.')) + '</p>';
 }
@@ -23447,6 +23462,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.2', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'سجلات الإدارة: الدروس المستفادة والمراجعات الدورية وأصحاب المصلحة صار لكل صف فيها زر تعديل يملأ النموذج بقيمه، و«احفظ التعديل» يكتب على السجل نفسه، و«إلغاء التعديل» يرجع النموذج فاضيا.' ] },
   { v:'V28.1', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'رسم المسارات: النقطة تلتصق بأقرب نقطة على الشارع نفسه (لا بطرفه البعيد)، بمسافة تتبع التكبير، ونقطتان على شارع واحد توصلان مباشرة. وشبكة الشوارع صارت منى ومزدلفة وعرفات.',
       'زر «رسم حر» للساحات وما لا شارع فيه: النقطة حيث تضغط وتوصل بخط مستقيم (بنفسجية). وتنبيه لو الطريق على الشوارع أطول كثيرا من المستقيم. وزر التكبير ما عاد يظهر من خلف أزرار الخريطة.' ] },
@@ -32170,19 +32187,25 @@ function clickA(e){
   if (e.target.closest('[data-geojson]')){ geoJsonExport(); return true; }
   if (e.target.closest('[data-lessonadd]')){
     var lt = pmoVal('lsT'); if (!lt){ toast(t('اكتب عنوان الدرس')); return true; }
-    if (pmoPut('lessons', 'L' + Date.now().toString(36), { t:lt, d:pmoVal('lsD'), w:pmoVal('lsW'), c:pmoVal('lsC'), a:pmoVal('lsA'), o:pmoVal('lsO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t('سُجّل الدرس')); render(1); }
+    var lid = pmoEdId('lessons', 'L' + Date.now().toString(36)), led = PMO_ED.sec === 'lessons'; PMO_ED = { sec:'', id:'' };
+    if (pmoPut('lessons', lid, { t:lt, d:pmoVal('lsD'), w:pmoVal('lsW'), c:pmoVal('lsC'), a:pmoVal('lsA'), o:pmoVal('lsO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(led ? 'حُفظ التعديل' : 'سُجّل الدرس')); render(1); }
     return true;
   }
   if (e.target.closest('[data-retroadd]')){
     var rp = pmoVal('rtP'); if (!rp){ toast(t('اكتب الفترة')); return true; }
-    if (pmoPut('retros', 'R' + Date.now().toString(36), { p:rp, g:pmoVal('rtG'), i:pmoVal('rtI'), a:pmoVal('rtA'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t('سُجّلت المراجعة')); render(1); }
+    var rid = pmoEdId('retros', 'R' + Date.now().toString(36)), red = PMO_ED.sec === 'retros'; PMO_ED = { sec:'', id:'' };
+    if (pmoPut('retros', rid, { p:rp, g:pmoVal('rtG'), i:pmoVal('rtI'), a:pmoVal('rtA'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(red ? 'حُفظ التعديل' : 'سُجّلت المراجعة')); render(1); }
     return true;
   }
   if (e.target.closest('[data-stakeadd]')){
     var sn = pmoVal('shN'); if (!sn){ toast(t('اكتب الجهة أو الشخص')); return true; }
-    if (pmoPut('stake', 'S' + Date.now().toString(36), { n:sn, r:pmoVal('shR'), inf:+pmoVal('shI') || 2, int:+pmoVal('shT') || 2, cur:pmoVal('shC'), want:pmoVal('shD'), s:pmoVal('shS'), o:pmoVal('shO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t('أُضيف')); render(1); }
+    var sid0 = pmoEdId('stake', 'S' + Date.now().toString(36)), sed = PMO_ED.sec === 'stake'; PMO_ED = { sec:'', id:'' };
+    if (pmoPut('stake', sid0, { n:sn, r:pmoVal('shR'), inf:+pmoVal('shI') || 2, int:+pmoVal('shT') || 2, cur:pmoVal('shC'), want:pmoVal('shD'), s:pmoVal('shS'), o:pmoVal('shO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(sed ? 'حُفظ التعديل' : 'أُضيف')); render(1); }
     return true;
   }
+  var pme = e.target.closest('[data-pmoedit]');
+  if (pme){ var pe = pme.getAttribute('data-pmoedit').split('|'); PMO_ED = { sec:pe[0], id:pe[1] }; render(1); pmoEdFill(); toast(t('عدّل ثم اضغط «احفظ التعديل»')); return true; }   /* (V28.2) */
+  if (e.target.closest('[data-pmoedcancel]')){ PMO_ED = { sec:'', id:'' }; render(1); return true; }
   if (e.target.closest('[data-pmodel]')){
     var pd = e.target.closest('[data-pmodel]').getAttribute('data-pmodel').split('|');
     if (pmoPut(pd[0], pd[1], { gone:true, at:Date.now() })){ toast(t('حُذف')); render(1); }
