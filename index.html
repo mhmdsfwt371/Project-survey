@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V28.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-892a634cde.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-b843bf5b07.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2602,10 +2602,20 @@ var FB = {
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
              workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[kind] || 'misc';
   },
+  live: function(kind, v){
+    /* (V28.3) بلاغُ الوزارة «مسحنا المخيم مراتٍ ولم يُضَف»: الحذفُ يكتب شاهدًا {deleted:true} بدمج، والمسحُ التالي يُكتَب بدمجٍ
+       أيضًا فيبقى الشاهدُ في الوثيقة تحت المسح الجديد — فتمحوه كلُّ الأجهزة عند القراءة وكأنه لم يُسجَّل قط. كلُّ كتابةٍ حيّةٍ
+       لنوعٍ له شواهد تمحو الشاهدَ صراحةً، والمسحُ الكاملُ يمحو علَمَ «السريعة» الباقيَ من قبله. */
+
+    var vv = Object.assign({}, v);   /* الختمُ (_by/_at) عند النداء نفسِه — يفحصه جردُ الهوية */
+    if (CORE.TOMB && CORE.TOMB[kind] && vv.deleted !== true) vv.deleted = false;
+    if (kind === 'recs' && vv.deleted !== true && vv.quick && typeof recIsQuick === 'function' && !recIsQuick(v)) vv.quick = 0;
+    return vv;
+  },
   putOne: function(it){
     var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
     if (it.v === null) return ref.delete();
-    return ref.set(FB.clean(Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() })), { merge:true });
+    return ref.set(FB.clean(FB.live(it.kind, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }))), { merge:true });
   },
   /* ═══ الرفضُ يُصالَح قبل أن يُعَدَّ رفضًا ═══
      وثيقةٌ وصلت الخادمَ ثم انقطعت الشبكةُ قبل الجواب تبقى في الطابور وتُعاد
@@ -2685,7 +2695,7 @@ var FB = {
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
       var ref = FB.db.collection(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
-      else w.set(ref, FB.clean(Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() })), { merge:true });
+      else w.set(ref, FB.clean(FB.live(it.kind, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }))), { merge:true });   /* (V28.3) */
     });
     return w.commit();
   },
@@ -14983,11 +14993,11 @@ function popHtml(){
         + ' data-fmark="' + esc(s.id) + '|' + esc(o[0]) + '">' + esc(t(o[0])) + '</button>';
     }).join('');
   } else if (task || may('approve')){
-    var onSv = sv;
-    marks = '<button type="button" class="go' + (onSv?' on':'') + '"'
-      + ' style="border-color:#4BC9F5;color:' + (onSv ? '#0A0B0D' : '#4BC9F5')
-      + (onSv ? ';background:#4BC9F5' : '') + '"'
-      + ' data-smark="' + esc(s.id) + '">' + esc(t('تمت الزيارة')) + '</button>';
+    /* (V28.3) زرٌّ يقول ما يفعل: يسجّل زيارةً سريعةً حين لا زيارة، ويُلغي السريعةَ وحدَها، ولا يظهر على مسحٍ كامل */
+    var rq = STATE.recs[s.id];
+    marks = !rq ? '<button type="button" class="go" style="border-color:#4BC9F5;color:#4BC9F5" data-smark="' + esc(s.id) + '">\u2713 ' + esc(t('سجّل زيارةً سريعة')) + '</button>'
+      : recIsQuick(rq) ? '<span class="pill info">' + esc(t('زيارةٌ سريعة')) + '</span> ' + btn('\u21BA ' + t('ألغِ الزيارة السريعة'), 'btn-quiet btn-sm', ' data-smark="' + esc(s.id) + '"')
+      : '';
   } else {
     marks = '<span class="hint" style="margin:0;font-size:11.5px">'
       + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
@@ -15705,10 +15715,16 @@ function moveBar(){
     + btn('إلغاء','btn-secondary btn-sm',' data-movex="1"') + '</div></div>';
 }
 
-/* ── وسمُ الحالة: يكتب فعلًا ── */
+/* ── وسمُ الحالة: يكتب فعلًا ──
+   (V28.3) بلاغُ الوزارة: «مسحنا المخيم مراتٍ ولم يُضَف». السبب: زرُّ «تمت الزيارة» في نافذة النقطة كان يبدّل — وحين تكون
+   للنقطة زيارةٌ يحذف سجلَّها كلَّه بضغطةٍ بلا تأكيد، حتى لو كان مسحًا كاملًا بصوره وتحدياته؛ وشكلُه المملوءُ يوحي بأنه
+   حالةٌ لا زرّ. صار: المسحُ الكاملُ لا يُحذف من هنا أبدًا، والزيارةُ السريعةُ وحدَها تُلغى وبتأكيد، والزرُّ يقول ما يفعل. */
+function recIsQuick(rec){ if (!rec) return false; return Object.keys(rec).every(function(k){ return ['id','by','at','quick','_v','_t','_by','_at','upd','v','deleted'].indexOf(k) > -1 || rec[k] == null || rec[k] === '' || (Array.isArray(rec[k]) && !rec[k].length); }); }
 function markSurvey(id){
   var rec = STATE.recs[id];
   if (rec){
+    if (!recIsQuick(rec)){ toast(t('هذه زيارةٌ بنموذج مسحٍ كامل — لا تُلغى من هنا؛ للتصحيح افتح «تعديل المسح»')); return; }
+    if (!confirm(t('إلغاءُ الزيارة السريعة لهذه النقطة؟'))) return;
     CORE.rm('recs', id);
     logEvent('إلغاءُ الزيارة السريعة — ' + id, id);
     toast(t('أُلغي التسجيل'));
@@ -15727,6 +15743,10 @@ function markInstall(id, status){
   var s = siteFind(id);
   var cur = STATE.inss[id] || { id:id, parts:{}, serials:{}, pts:0, approved:false };
   if (cur.status === status){
+    /* (V28.3) الضغطُ على الحالة المضاءة كان يحذف سجلَّ التركيب كلَّه (قطعه وسيريالاته واعتماده) بلا تأكيد */
+    var heavy = cur.approved || Object.keys(cur.parts || {}).length || Object.keys(cur.serials || {}).length || (cur.photos && cur.photos.length) || cur.sol || cur.solution;
+    if (heavy){ toast(t('لهذا التركيب قطعٌ أو سيريالاتٌ أو اعتماد — لا يُلغى من هنا؛ للتصحيح افتح «تعديل التركيب»')); return; }
+    if (!confirm(t('إلغاءُ حالة التركيب «') + t(status) + t('» لهذه النقطة؟'))) return;
     CORE.rm('inss', id);
     if (s) s.fstat = 'لم يبدأ';
     logEvent('إلغاءُ حالة التركيب — ' + id, id);
@@ -23462,6 +23482,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V28.3', d:'٣ أكتوبر ٢٠٢٦', notes:[
+      'إصلاح عاجل: مسوح كانت تختفي رغم تسجيلها. الحذف يترك علامة على السجل، والمسح التالي كان يُكتب فوقها فتبقى العلامة فيمحوه كل جهاز. صار كل حفظ يمحو العلامة، واستُعيدت المسوح التي اختفت بهذا السبب.',
+      'وزر «تمت الزيارة» في نافذة النقطة كان يحذف المسح كله بضغطة لو للنقطة زيارة. صار: المسح الكامل لا يحذف من هنا أبدا، والزيارة السريعة وحدها تلغى وبتأكيد، والزر يقول ما يفعل. وكذلك حالة التركيب بقطع وسيريالات لا تحذف بضغطة.' ] },
   { v:'V28.2', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'سجلات الإدارة: الدروس المستفادة والمراجعات الدورية وأصحاب المصلحة صار لكل صف فيها زر تعديل يملأ النموذج بقيمه، و«احفظ التعديل» يكتب على السجل نفسه، و«إلغاء التعديل» يرجع النموذج فاضيا.' ] },
   { v:'V28.1', d:'٣ أكتوبر ٢٠٢٦', notes:[

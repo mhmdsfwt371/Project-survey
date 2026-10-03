@@ -28,7 +28,7 @@ T(varOk, 'وكلُّ كتابةٍ تمرّر متغيّرًا خُتم المت�
 const direct = sites.filter(x => !viaVar.includes(x));
 const bad = direct.filter(x => !/_by\s*:/.test(x.win));
 T(!bad.length, 'وكلُّ كتابةٍ مباشرةٍ تحمل `_by` في جسمها' + (bad.length ? ' — بلا ختم: السطر ' + bad.map(x => x.line).join('، ') : ''));
-T(/putOne: function\(it\)\{[\s\S]{0,300}_by:STATE\.meta\.uid/.test(s) && /w\.set\(ref, FB\.clean\(Object\.assign\(\{\}, it\.v, \{ _by:STATE\.meta\.uid/.test(s), 'والطابورُ يختم في مسارَيه: الواحدةِ والدفعة');
+T(/putOne: function\(it\)\{[\s\S]{0,300}_by:STATE\.meta\.uid/.test(s) && /w\.set\(ref, FB\.clean\((?:FB\.live\(it\.kind, )?Object\.assign\(\{\}, it\.v, \{ _by:STATE\.meta\.uid/.test(s),   /* (V28.3) يقبل غلافَ FB.live الذي يمحو شاهدَ الحذف */ 'والطابورُ يختم في مسارَيه: الواحدةِ والدفعة');
 T(!/_by\s*:\s*STATE\.meta\.name/.test(s), 'ولا يُختَم الاسمُ مكانَ المعرِّف في أيِّ كتابة');
 T(existsSync('docs/rules-matrix.md') && /\| recs \|/.test(readFileSync('docs/rules-matrix.md', 'utf8')), 'ومصفوفةُ القواعد مكتوبةٌ في docs/rules-matrix.md');
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
