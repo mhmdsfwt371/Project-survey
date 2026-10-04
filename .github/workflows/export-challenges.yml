@@ -73,7 +73,11 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
           NODE_OPTIONS: --require ./scripts/lib/jsdom-dict.cjs
-        run: node scripts/study-extract.mjs || true
+        run: echo skip-study
+      - name: newsites reality check (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/newsites-check.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
