@@ -104,7 +104,9 @@ try {
 try {
   const errs = await db.collection('photos').where('status', '==', 'error').limit(200).get();
   let requeued = 0;
-  const DRIVE_ERR = /storage quota|shared drives|storageQuotaExceeded|permission|insufficient|403|404|429|503|quota|GDRIVE_OAUTH|درايف|الدرايف|السعة|الإذن/i;
+  /* (V29.6) والأخطاءُ العابرةُ من جهة جوجل («Internal Error» و«error preparing the response» و500 وانقطاعُ الاتصال) تُعاد أيضًا —
+     كانت تُترَك «خطأً» إلى الأبد: صورتان لخالد بقيتا ٨٥ و٥١٦ ساعةً لم تُرفعا */
+  const DRIVE_ERR = /storage quota|shared drives|storageQuotaExceeded|permission|insufficient|403|404|429|500|502|503|504|quota|internal error|backendError|error preparing|ECONNRESET|ETIMEDOUT|socket hang up|timeout|GDRIVE_OAUTH|درايف|الدرايف|السعة|الإذن/i;
   for (const d of errs.docs){
     const p = d.data();
     if (!DRIVE_ERR.test(String(p.why || ''))) continue;
@@ -218,6 +220,31 @@ try {
     }
   }
 } catch (e){ console.log('ترتيبُ القديم تعذّر: ' + (e && e.message)); }
+
+/* ═══ (V29.6) صورٌ تغيّرت نقطتُها تُنقَل إلى مجلد نقطتها الجديدة ═══
+   بلاغُ المالك: «صورٌ مرفوعةٌ مش عارف أوصلها في الدرايف». حين تُدمَج نقطةٌ مضافةٌ في نقطة السجلّ (V28.6) تتغيّر «site» في وثيقة
+   الصورة ويبقى ملفُّها في مجلد النقطة القديمة — فيُبحَث عنه في مجلد النقطة الصحيحة فلا يوجد. الوثيقةُ المعلَّمة rehome:true
+   يُنقَل ملفُّها إلى مجلد نقطتها (الملفُّ نفسُه بمعرِّفه ورابطه — يتغيّر أبوه فقط) ثم تُرفَع العلامة. */
+try {
+  const mv = await db.collection('photos').where('rehome', '==', true).limit(100).get();
+  let rehomed = 0;
+  for (const d of mv.docs){
+    const p = d.data();
+    if (!p.driveId || !p.site){ await d.ref.set({ rehome: admin.firestore.FieldValue.delete() }, { merge: true }).catch(() => {}); continue; }
+    try {
+      const dest = await siteFolder(p.site);
+      const cur = await drive.files.get({ fileId: p.driveId, fields: 'parents', supportsAllDrives: true });
+      const have = cur.data.parents || [], others = have.filter(x => x !== dest);
+      if (others.length || !have.includes(dest))
+        await drive.files.update({ fileId: p.driveId, addParents: dest, removeParents: others.join(','), fields: 'id', supportsAllDrives: true });
+      await d.ref.set({ folderId: dest, inSite: true, rehome: admin.firestore.FieldValue.delete(), rehomedAt: Date.now() }, { merge: true });
+      rehomed++;
+    } catch (e){
+      await d.ref.set({ rehome: admin.firestore.FieldValue.delete(), rehomeWhy: explain(e).slice(0, 120) }, { merge: true }).catch(() => {});
+    }
+  }
+  if (rehomed) console.log(`::notice title=photos::نُقلت ${rehomed} صورةً إلى مجلد نقطتها الجديدة`);
+} catch (e){ console.log('نقلُ صور النقاط المدموجة تعذّر: ' + (e && e.message)); }
 
 const snap = await db.collection('photos').where('status', '==', 'pending').limit(150).get();
 if (snap.empty){ console.log('لا صورَ منتظرة'); process.exit(0); }

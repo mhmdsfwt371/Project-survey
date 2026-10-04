@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-0f5158f9f2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-b14cd7ee65.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -21405,11 +21405,65 @@ function mfuInst(){
     return [esc(t(o.z)), (d.i || '') + ' ' + esc(t(d.l)), N(o.n), N(o.i), mfuBar(p)];
   })));
 }
+/* ═══ (V29.6) قرارُ المالك: «كارتٌ بالمخيمات اللي ما فيهاش تحديات، وأيُّ كارتٍ أضغطه يطلعلي قائمة أقدر أعملها تصدير — وكارتٌ
+   للنقاط اللي ما فيهاش صور، بالنوع والمشعر، عشان أوجّه الشباب يزوّدوا الصور» ═══ */
+var SV_POP = '';
+function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
+function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
+var SV_LISTS = {
+  sv:      ['تم المسح',               function(x, r){ return !!(r && svDone(r)); }],
+  rem:     ['المتبقي — لم تُمسح',      function(x, r){ return !(r && svDone(r)); }],
+  chal:    ['فيها تحديات',            function(x, r){ return !!(r && svDone(r) && svHasChal(r)); }],
+  unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
+  campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
+  nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }]
+};
+function svListRows(key){
+  var L = SV_LISTS[key]; if (!L) return [];
+  return (STATE.sites || []).filter(function(x){ return L[1](x, STATE.recs[x.id]); }).map(function(x){
+    var r = STATE.recs[x.id], c = taxOf(x);
+    return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
+            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
+  });
+}
+function svListHead(key){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' ? 'الصور' : 'التحديات']; }
+function svListPop(){
+  if (!SV_POP || !SV_LISTS[SV_POP]) return '';
+  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
+  return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
+    + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--card,#fff);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(t(SV_LISTS[SV_POP][0])) + ' \u2014 ' + nm(rows.length) + '</h3>'
+    + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
+    + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
+    + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ return [ '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
+                   + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
+                   : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
+    + '</div>';
+}
+function svListXlsx(key){
+  var L = SV_LISTS[key]; if (!L) return false;
+  toast(t('يُجهَّز ملفُّ إكسل…'));
+  return xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
+    var rows = [svListHead(key).map(function(h){ return t(h); })].concat(svListRows(key)), iss = [];
+    rows.forEach(function(r, i){ r.forEach(function(c){ var b = expBadText(c); if (b) iss.push(t('الصفّ') + ' ' + (i + 1) + ': ' + b); }); });   /* فحصُ الملف قبل نزوله */
+    if (!expGate('إكسل', iss)) return false;
+    var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
+    ws['!cols'] = rows[0].map(function(_, i){ var wd = 10; rows.forEach(function(r){ wd = Math.max(wd, Math.min(50, String(r[i] == null ? '' : r[i]).length + 2)); }); return { wch:wd }; });
+    wb.Workbook = { Views:[{ RTL:true }] }; XLSX.utils.book_append_sheet(wb, ws, t(L[0]).replace(/[\\\/\?\*\[\]:]/g, ' ').slice(0, 30));
+    XLSX.writeFile(wb, t(L[0]).replace(/[\\\/:*?"<>|]/g, ' ') + ' — ' + dayKey() + '.xlsx');
+    logEvent('تصدير قائمة — ' + L[0] + ' · ' + (rows.length - 1), ''); toast(t('نزل الملف')); return true;
+  });
+}
 function mfuSurv(){
   var SV = svStats(), o = SV.O, JM = jmrConfirm(), jt = JM.tot;
-  var kpi = function(l, v, col){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(l)) + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
+  var kpi = function(l, v, col, key){ return '<div class="mfu-kpi"' + (key ? ' data-svlist="' + key + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"' : '') + '><div class="mfu-kpi-l">' + esc(t(l)) + (key ? ' \u203A' : '') + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
   var tb = function(head, rows){ return table(head, rows.map(function(r){ return r.map(function(c){ return esc(String(c == null ? '' : c)); }); })); };   /* جدولُ التطبيق نفسُه */
-  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تم المسح', nm(o.sv), '#27AE60') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B') + kpi('فيها تحديات', nm(o.chal), '#C0392B') + kpi('تعذّر الوصول', nm(o.unreach), '#C0392B') + '</div>'
+  var nCampOk = svListRows('campok').length, nNoPh = svListRows('nophoto').length;   /* (V29.6) */
+  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تم المسح', nm(o.sv), '#27AE60', 'sv') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B', 'rem') + kpi('فيها تحديات', nm(o.chal), '#C0392B', 'chal') + kpi('تعذّر الوصول', nm(o.unreach), '#C0392B', 'unreach') + '</div>'
+    + '<div class="mfu-kpis">' + kpi('مخيمات بلا تحديات', nm(nCampOk), '#1E8449', 'campok') + kpi('زيارات بلا صور', nm(nNoPh), nNoPh ? '#C0392B' : '#1E8449', 'nophoto') + '</div>'
+    + '<p class="hint" style="margin:0 0 8px">' + esc(t('اضغط أيَّ بطاقةٍ عليها «›» لقائمة نقاطها بالمشعر والنوع وتصديرها إكسل.')) + '</p>'
+    + svListPop()
     + card(t('حسب المشعر'), tb(['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'تحديات · تعذّر'], SV.zones.map(function(r){ return [t(r[0]), r[1], r[2], r[3], r[4], r[5] + ' \u00b7 ' + r[6]]; })))   /* ستةُ أعمدةٍ تُقرأ على الجوال */
     + card(t('المشعر والنوع'), tb(['المشعر · النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'التحديات وأبرزها'], SV.detail.map(function(r){ return [t(r[0]) + ' \u00b7 ' + t(r[1]), r[2], r[3], r[4], r[5], r[6] ? r[6] + ' \u00b7 ' + r[7] : '0']; })))   /* ستةُ أعمدة */
     + card(t('منشأة الجمرات — تأكيد النقاط بالمسح') + ' \u2014 ' + nm(jt.ok) + ' / ' + nm(jt.n), '<p class="hint" style="margin:0 0 8px">' + esc(t('النقطةُ مؤكَّدةٌ إذا وصلها المسحُ الميدانيّ. ما لم يُزر يحتاج زيارة، وما تعذّر يحتاج تصريحًا أو تصحيحًا في السجل.')) + '</p>' + tb(['الدور', 'النقاط', 'مؤكَّدة (بتحديات)', 'لم تُزر', 'تعذّر الوصول', 'نسبة التأكيد'], JM.rows.map(function(r){ return [t(r[0]), r[1], r[2] + ' (' + r[5] + ')', r[4], r[3], r[6]]; })));   /* ستةُ أعمدة */
@@ -23831,6 +23885,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.6', d:'٤ أكتوبر ٢٠٢٦', notes:[
+      'متابعة الوزارة ← المسح الميداني: كل بطاقة عليها «›» تُضغط فتفتح نافذة بقائمة نقاطها (النقطة، الاسم، المشعر، النوع، الشركة، آخر زيارة، بواسطة) وزر «تصدير إكسل».',
+      'بطاقتان جديدتان: «مخيمات بلا تحديات»، و«زيارات بلا صور» بسبب غياب الصور (لم تُلتقط، أو التُقطت ولم تُرفع من الجهاز) — لتوجيه الشباب لإضافة الصور.',
+      'الصور في الدرايف: راجعت الـ٣٣٦٠ صورة المرفوعة — كلها موجودة ومشاركة وفي مجلد نقطتها. صورتان عالقتان بخطأ من جوجل بقت بتتعاد تلقائيا، وصور النقطة المدموجة بتتنقل لمجلد النقطة الصحيحة.' ] },
   { v:'V29.5', d:'٣ أكتوبر ٢٠٢٦', notes:[
       'المشتريات (قرار المالك: الحذف للمهندس والمدير): زر تعديل يملأ النموذج ويحفظ على نفس العملية، وزر حذف بتأكيد — والعملية المعتمدة لا تُحذف إلا بسبب مكتوب يدخل سجل الأحداث.',
       'سجل الصيانة: حذف القيد للمهندس والمدير بتأكيد، ويبقى أثره في سجل الأحداث. والسيارات والشحنات والكتالوج والوظائف كان لها التعديل والحذف من قبل.' ] },
@@ -32527,6 +32585,10 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
+  var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); render(1); return true; }
+  if (e.target.closest('[data-svpopclose]')){ SV_POP = ''; render(1); return true; }
+  var svx = e.target.closest('[data-svpopxls]'); if (svx){ svListXlsx(svx.getAttribute('data-svpopxls')); return true; }
   var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
   if (exs){ EXP_SCOPE.m = exs.getAttribute('data-expscope'); render(1); return true; }
   if (e.target.closest('[data-expselgo]')){ goPage('map'); MAP_SELECT = true; render(1); toast(t('اضغط النقاطَ لتحديدها ثم ارجع إلى التصدير')); return true; }
