@@ -57,7 +57,14 @@ jobs:
       - name: orphan documents (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/orphans.mjs || true
+        run: echo skip-orphans
+      - name: photos diag (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+        run: node scripts/photos-diag.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
