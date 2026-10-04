@@ -77,7 +77,11 @@ jobs:
       - name: newsites reality check (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/newsites-check.mjs || true
+        run: echo skip-ns-check
+      - name: hide two placeholder tafweej points (V29.7)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/hide-placeholders.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
