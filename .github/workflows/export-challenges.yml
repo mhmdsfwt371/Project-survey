@@ -64,7 +64,17 @@ jobs:
           GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
           GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
-        run: node scripts/photos-diag.mjs || true
+        run: echo skip-photos-diag
+      - name: app files from main + jsdom
+        run: |
+          git fetch --depth 1 origin main
+          git checkout origin/main -- index.html i18n scripts/lib
+          npm i jsdom@24 --no-save --no-audit --no-fund
+      - name: study numbers from the system (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          NODE_OPTIONS: --require ./scripts/lib/jsdom-dict.cjs
+        run: node scripts/study-extract.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
