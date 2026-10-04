@@ -85,7 +85,11 @@ jobs:
       - name: resolve the two map links (read-only)
         run: echo skip-links
       - name: tafweej sites study from OSM (read-only)
-        run: node scripts/tafweej-osm.mjs || true
+        run: echo skip-osm
+      - name: add proposed tafweej LPR points (V29.7, owner decision)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/add-tafweej-lpr.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
