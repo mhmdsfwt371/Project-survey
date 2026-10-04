@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4160,6 +4160,17 @@ function routesList(){
   return r;
 }
 
+/* (V29.8) شكوى المالك «الزايدي مكتوب ١ ومش على الخريطة»: مواقعُ التفويج بعيدةٌ عن المشاعر (النورية والزايدي والجموم والمدينة)،
+   فاختيارُ مشعرٍ أو نوعٍ لا يظهر شيءٌ من نقاطه في الإطار يقرّب الخريطةَ إليها — وإن ظهر شيءٌ منها بقيت الخريطةُ مكانها */
+function mapFitFiltered(){
+  if (CUR !== 'map' || typeof MAP === 'undefined' || !MAP || !(FILT.zone || FILT.type)) return false;
+  var P = (STATE.sites || []).filter(function(x){ return +x.lat && +x.lng && filtPass(x); }).map(function(x){ return [+x.lat, +x.lng]; });
+  if (!P.length) return false;
+  try {
+    var B = MAP.getBounds(); if (P.some(function(p){ return B.contains(p); })) return false;
+    MAP.fitBounds(L.latLngBounds(P).pad(0.2), { maxZoom:17, animate:false }); return true;
+  } catch (e){ LS_ERR = e; return false; }
+}
 function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
 
 function filtPass(x){
@@ -23910,10 +23921,13 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.8', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'الخريطة بتقرّب لوحدها لنقاط المشعر أو النوع اللي بتختاره من الفلاتر لو مفيش منها حاجة ظاهرة — زي مراكز التفويج البعيدة عن المشاعر (النورية والزايدي والجموم والمدينة).',
+      'مراكز التفويج: ٢٤ كاميرا قراءة لوحات للزايدي وطريق الهجرة (الجموم والمدينة) بمواضع مسودة من صور القمر الصناعي — يؤكدها المالك من المنصة.' ] },
   { v:'V29.7', d:'٤ أكتوبر ٢٠٢٦', notes:[
       'نموذج «موقع جديد»: رقم المربع والشاخص والشركة للمخيمات فقط وبعلامة الإلزام، وباقي النقاط باسمها ومشعرها ونوعها. والسبب والتحديات وأول صورتين إلزامية للكل. والحقول بتتغير على طول لما تختار النوع.',
       'مراكز التفويج: بقى فيه اختيار «المركز» (النورية، طريق الهجرة، الزايدي) والمشعر بيتظبط لوحده.',
-      'نقطتا التفويج المؤقتتان (الزايدي وطريق الهجرة) اللي كانوا بيظهروا في العدد ومش على الخريطة اتخفوا (من غير حذف) لحد ما تيجي المخططات.' ] },
+      'نقطتا التفويج المؤقتتان (الزايدي وطريق الهجرة) اتخفوا ثم رجعوا ظاهرين بقرار المالك: لا إخفاء، والحذف من النظام بيده.' ] },
   { v:'V29.6', d:'٤ أكتوبر ٢٠٢٦', notes:[
       'متابعة الوزارة ← المسح الميداني: كل بطاقة عليها «›» تُضغط فتفتح نافذة بقائمة نقاطها (النقطة، الاسم، المشعر، النوع، الشركة، آخر زيارة، بواسطة) وزر «تصدير إكسل».',
       'بطاقتان جديدتان: «مخيمات بلا تحديات»، و«زيارات بلا صور» بسبب غياب الصور (لم تُلتقط، أو التُقطت ولم تُرفع من الجهاز) — لتوجيه الشباب لإضافة الصور.',
@@ -33020,7 +33034,7 @@ function clickA(e){
            if (CUR === 'map' && MAP) mapPaint(); return true; }
   var fz = e.target.closest('[data-fz]');
   if (fz){ FILT.zone = fz.getAttribute('data-fz'); LIST_SHOWN = LIST_PAGE; render(1);
-           if (CUR === 'map' && MAP) mapPaint(); return true; }
+           if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }   /* (V29.8) */
   var tfb = e.target.closest('[data-tfw]');   /* (V23.2) */
   if (tfb){ TFW.camp = null; var tv = tfb.getAttribute('data-tfw'); TFW.f = tv === 'show' ? ((FILT.floor !== '' && FILT.floor != null) ? +FILT.floor : TFW_ALL) : +tv; if (TFW.f >= 0) tfwLoad(); tfwPaint(); render(1); return true; }   /* (V26.5) الإظهارُ على الدور المختار في صف الأدوار */
   var tfc = e.target.closest('[data-tfwcamp]');   /* (V24.5) مسارُ المخيم المختار */
@@ -33054,7 +33068,7 @@ function clickA(e){
   var ft = e.target.closest('[data-ft]');
   if (ft){ var v = ft.getAttribute('data-ft');
            FILT.type = (FILT.type === v) ? '' : v; LIST_SHOWN = LIST_PAGE; render(1);
-           if (CUR === 'map' && MAP) mapPaint(); return true; }
+           if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }   /* (V29.8) */
   var fw = e.target.closest('[data-fw]');
   if (fw){ FILT.work = fw.getAttribute('data-fw'); LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
