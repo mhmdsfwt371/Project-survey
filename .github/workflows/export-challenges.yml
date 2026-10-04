@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 20
-      - run: npm i firebase-admin@12 googleapis@144 --no-save --no-audit --no-fund
+      - run: npm i firebase-admin@12 googleapis@144 jsdom@24 --no-save --no-audit --no-fund
       - run: pip3 install --break-system-packages --quiet openpyxl
       - name: read
         env:
@@ -69,7 +69,6 @@ jobs:
         run: |
           git fetch --depth 1 origin main
           git checkout origin/main -- index.html i18n scripts/lib
-          npm i jsdom@24 --no-save --no-audit --no-fund
       - name: study numbers from the system (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
