@@ -31,12 +31,8 @@ def grab(key, lat, lng, z, nt):
     im.save(f'sat/{key}.jpg', quality=82)
     return { 'key': key, 'z': z, 'x0': x0, 'y0': y0, 'nt': nt, 'mpp': mpp, 'center': [lat, lng], 'cpx': [round(cx, 1), round(cy, 1)], 'grid_m': 100 }
 meta = []
-meta.append(grab('zaidi_overview_z16', 21.4033, 39.7303, 16, 6))
-meta.append(grab('zaidi_A_z18', 21.412247, 39.744221, 18, 6))
-meta.append(grab('zaidi_B_z18', 21.394362, 39.716499, 18, 6))
-meta.append(grab('hijraM_z17', 21.678187, 39.565172, 17, 5))
-meta.append(grab('hijraM_z18', 21.678187, 39.565172, 18, 6))
-meta.append(grab('hijraD_z17', 24.340387, 39.554609, 17, 5))
-meta.append(grab('hijraD_z18', 24.340387, 39.554609, 18, 6))
-json.dump(meta, open('sat/meta.json', 'w'))
+meta.append(grab('zaidiB_z17', 21.3915, 39.7115, 17, 6))
+meta.append(grab('zaidiB_z19', 21.39425, 39.71630, 19, 5))
+meta.append(grab('hijraD_z19', 24.33980, 39.55470, 19, 6))
+json.dump(meta, open('sat/meta2.json', 'w'))
 print([ (m['key'], round(m['mpp'], 2)) for m in meta ])

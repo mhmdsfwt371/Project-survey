@@ -98,7 +98,7 @@ jobs:
           python3 scripts/sat-tiles.py || true
           git config user.name "github-actions" && git config user.email "actions@users.noreply.github.com"
           git checkout -b sat-imagery
-          git add -f sat/*.jpg sat/meta.json && git commit -q -m "sat imagery (temp)" && git push -f origin sat-imagery || true
+          git add -f sat/*.jpg sat/*.json && git commit -q -m "sat imagery (temp)" && git push -f origin sat-imagery || true
           git checkout -q export-challenges
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
