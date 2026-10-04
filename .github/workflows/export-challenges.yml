@@ -95,7 +95,11 @@ jobs:
       - name: apply satellite draft positions (V29.7, owner decision)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/sat-apply.mjs || true
+        run: echo skip-sat-apply
+      - name: unhide the five points (owner decision — no hiding)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/unhide-five.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
