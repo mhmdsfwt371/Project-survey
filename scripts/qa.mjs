@@ -194,6 +194,16 @@ if (typeof w.helpOf === 'function') {
   check(w.NS_CO_OPEN === false && w.CO_LIST.indexOf(w.NEWSITE.co) > -1, 'الاختيارُ يغلق اللوحَ ويثبّت الشركة');
 
   w.NEWSITE.photos[0] = { size: 40000, d:'x' };
+  /* (V29.7) قرارُ المالك: السببُ والتحدياتُ وأوّلُ صورتين إلزاميةٌ للميدان */
+  T.length = 0; clk('[data-nssave]');
+  check(/سبب/.test(last()), 'السببُ إلزاميٌّ للميدان (V29.7)');
+  w.NEWSITE.reason = 'مخيم جديد لم يكن موجودًا';
+  T.length = 0; clk('[data-nssave]');
+  check(/التحديات/.test(last()), 'والتحدياتُ إلزامية (V29.7)');
+  w.NEWSITE.chals = ['لا توجد تحديات'];
+  T.length = 0; clk('[data-nssave]');
+  check(/صورتين/.test(last()), 'وأوّلُ صورتين إلزاميتان (V29.7)');
+  w.NEWSITE.photos[1] = { size: 40000, d:'y' };
   const before = w.STATE.sites.length;
   T.length = 0; clk('[data-nssave]');
   const rec = w.STATE.sites[w.STATE.sites.length - 1];

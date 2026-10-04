@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-b14cd7ee65.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-ced941fe5c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7769,6 +7769,11 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 + CAT_DEF[k].i + ' ' + esc(t(CAT_DEF[k].l)) + '</option>'; }).join('')
           + '</select></div>'
 
+          /* (V29.7) غيرُ المخيم: اسمُ النقطة إلزاميّ، ومراكزُ التفويج بمركزها */
+          + (!camp ? '<div class="field"><label>' + esc(t('اسم النقطة')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
+              + '<input data-ns="nm" value="' + esc(NEWSITE.nm) + '" dir="auto" placeholder="' + esc(t('مثال: ممر الملك فهد — البوابة ٣')) + '"></div>' : '')
+          + (NEWSITE.type === 'LPR' ? '<div class="field"><label>' + esc(t('المركز')) + ' <span class="req">*</span></label>'
+              + '<select data-ns="center"><option value="">— ' + esc(t('اختر')) + ' —</option>' + NS_CENTERS.map(function(c){ return '<option value="' + esc(c[1]) + '"' + (NEWSITE.center === c[1] ? ' selected' : '') + '>' + esc(t(c[0])) + '</option>'; }).join('') + '</select></div>' : '')
           /* المربعُ والشاخصُ من هويّة المخيمات وحدَها — الممرُّ والكاميرا والمحطةُ
              والجمراتُ ونمرةُ والتسكينُ لا مربعَ لها ولا شاخص، فلا يُطلَبان ولا يُعرَضان */
           + (camp
@@ -7781,8 +7786,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
             : '')
           + '</div>'
 
-          + '<div class="field"><label>' + esc(t('شركة تقديم الخدمة'))
-          +   (camp ? ' <span class="req">*</span>' : '') + '</label>'
+          + (camp ? '<div class="field"><label>' + esc(t('شركة تقديم الخدمة'))   /* (V29.7) الشركةُ للمخيمات وحدَها */
+          +   ' <span class="req">*</span></label>'
           + btn(NEWSITE.co ? NEWSITE.co
                 : (NEWSITE.coReq ? t('بانتظار اعتماد المهندس') + ': ' + NEWSITE.coReq
                                  : '— ' + t('اختر الشركة من القائمة') + ' —'),
@@ -7799,27 +7804,31 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '</div>'
 
           + '<div class="field"><label>' + esc(t('عدد الخيام أو الغرف')) + '</label>'
-          + '<input data-ns="tents" type="number" min="0" value="' + esc(NEWSITE.tents) + '"></div>')
+          + '<input data-ns="tents" type="number" min="0" value="' + esc(NEWSITE.tents) + '"></div>' : '')
+          + (camp ? '<p class="hint" style="margin:6px 0 0">' + esc(t('الاسم')) + ': <b>' + esc(NEWSITE.zone + ' - مربع ' + (NEWSITE.sq || '…') + ' - شاخص ' + (NEWSITE.sign || '…')) + '</b></p>' : ''))
 
       + card('لماذا ليس في السجل؟',
-          '<div class="field"><label>' + esc(t('السبب')) + '</label>'
+          '<div class="field"><label>' + esc(t('السبب')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
-          + NS_REASONS.map(function(r){
+          + (camp ? NS_REASONS : NS_REASONS_PT).map(function(r){
               return '<option value="' + esc(r) + '"' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('شرح مختصر')) + '</label>'
           + '<textarea data-ns="why" rows="2" placeholder="'
           + esc(t('اختياري — اكتبه فقط لو فيه تفصيلةٌ تساعد المكتب')) + '">' + esc(NEWSITE.why) + '</textarea></div>')
 
+      + card(t('التحديات') + (office ? '' : ' *'), '<p class="hint" style="margin-top:0">' + esc(t('اختر ما ينطبق — أو «لا توجد تحديات»')) + '</p><div class="chips">'   /* (V29.7) إلزاميةٌ للكلّ */
+          + chalsOf({ type:NEWSITE.type }).map(function(c){ var on = (NEWSITE.chals || []).indexOf(c) > -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-nschal="' + esc(c) + '">' + (on ? '\u2713 ' : '') + esc(t(c)) + '</button>'; }).join('') + '</div>')
+
       + card('الصور',
           '<p class="hint" style="margin-top:0">' + esc(t(office
               ? 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.'
-              : 'الأولى إلزامية — بها يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
+              : 'الأوليان إلزاميتان — بهما يطابق المكتبُ الموقع. الباقي اختياريٌّ وكلُّ صورةٍ تساعد.')) + '</p>'
           + '<div class="grid cols-2">'
           + NS_PHOTOS.map(function(lbl, i){
               var p = NEWSITE.photos[i];
               return '<div class="field"><label>' + nm(i+1) + ' · ' + esc(t(lbl))
-                + (i === 0 && !office ? ' <span class="req">*</span>' : '') + '</label>'
+                + (i < 2 && !office ? ' <span class="req">*</span>' : '') + '</label>'   /* (V29.7) أوّلُ صورتين */
                 + '<label class="btn ' + (p ? 'btn-secondary' : 'btn-primary')
                 + '" style="cursor:pointer;width:100%">'
                 + (p ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
@@ -12045,7 +12054,11 @@ function waSend(kind, copy){
 var WA_CO = '', WA_KIND = 'plan';
 var WR_EDIT = '';   /* طلبُ الورشة المفتوحُ للتعديل */
 var NEWSITE = { lat:0, lng:0, zone:'منى', type:'مخيم', sq:'', sign:'',
-                co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{} };
+                co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };   /* (V29.7) الاسمُ والمركزُ والتحديات */
+/* (V29.7) قرارُ المالك: المربعُ والشاخصُ والشركةُ للمخيمات وحدَها؛ وغيرُها اسمٌ ومشعرٌ ونوع. والسببُ والتحدياتُ وأوّلُ صورتين إلزاميةٌ للكلّ.
+   ومراكزُ التفويج تُختار بمركزها (النورية، طريق الهجرة، الزايدي) — كان «الزايدي» لا يُوجَد في الاختيار. */
+var NS_CENTERS = [['النورية', 'النورية'], ['طريق الهجرة', 'محطات طريق الهجرة'], ['الزايدي', 'الزايدي']];
+var NS_REASONS_PT = ['نقطة جديدة لم تكن في السجل', 'موقعها في السجل خاطئ', 'سبب آخر'];
 var NS_CO_OPEN = false, NS_CO_Q = '';
 
 /* أسبابُ عدم وجوده في السجل — من الميدان لا من الخيال */
@@ -12054,7 +12067,7 @@ var NS_REASONS = ['مخيم جديد لم يكن موجودًا','مخيم ان�
                   'الشاخص مفقود أو غير واضح','سبب آخر'];
 
 /* الصورُ الخمس — الأولى وحدها إلزامية، بها يطابق المكتبُ الموقع */
-var NS_PHOTOS = ['صورة الشاخص بأرقامه واضحة','لقطة عامة للموقع','المدخل',
+var NS_PHOTOS = ['صورة الشاخص أو اللوحة بأرقامها واضحة','لقطة عامة للموقع','المدخل',
                  'نقطة التركيب المقترحة','أي عائق أو ملاحظة'];
 
 /* صيغةُ الشاخص: اسم الخيمة/رقم الشارع — 57/2 و12أ/8 كلاهما صحيح */
@@ -12181,6 +12194,7 @@ function nsVisitRec(id){
   return CORE.set('recs', id, {
     id:id, by:STATE.meta.name || '', at:Date.now(), access:'تم الوصول', review:'pending',
     src:'newsite', photos:keys.map(function(k){ return 'new_' + k; }), phN:keys.length,
+    chals:(NEWSITE.chals || []).slice(),   /* (V29.7) التحدياتُ من نموذج الموقع الجديد */
     note:String(NEWSITE.why || '').trim()
   });
 }
@@ -12226,8 +12240,17 @@ function nsSave(){
   if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0
       && !siteCos({ co:NEWSITE.co }).every(function(one){ return CO_LIST.indexOf(one) > -1; })){
     toast(t('اسم الشركة يجب أن يكون من القائمة الموحّدة فقط')); return; }
+  /* (V29.7) غيرُ المخيم: اسمُه إلزاميٌّ لمن يقف عندها (والمكتبُ يأخذ الاسمَ المبنيَّ من النوع والمشعر إن تركه)، ومراكزُ التفويج بمركزها؛
+     والسببُ والتحدياتُ وأوّلُ صورتين إلزاميةٌ للميدان — والمكتبُ لم يقف عند النقطة فيجدوِل زيارتَها */
+  NEWSITE.nm = String(NEWSITE.nm || '').trim();
   /* الصورةُ إلزاميةٌ لمن يقف عند النقطة — والمكتبُ لم يقف (V17.57) */
   if (!office && !NEWSITE.photos[0]){ toast(t('صورة الشاخص إلزامية للاعتماد')); return; }
+  if (!camp && !office && !NEWSITE.nm){ toast(t('اسم النقطة مطلوب')); return; }
+  if (NEWSITE.type === 'LPR' && !NEWSITE.center){ toast(t('اختر المركز: النورية أو طريق الهجرة أو الزايدي')); return; }
+  if (!office && !NEWSITE.reason){ toast(t('اختر سببَ عدم وجوده في السجل')); return; }
+  if (!office && !(NEWSITE.chals || []).length){ toast(t('اختر التحديات — أو «لا توجد تحديات»')); return; }
+  if (!office && !NEWSITE.photos[1]){ toast(t('أوّلُ صورتين إلزاميتان: الشاخص أو اللوحة، ولقطةٌ عامةٌ للموقع')); return; }   /* (V29.7) والثانيةُ أيضًا */
+  if (!camp){ NEWSITE.co = ''; NEWSITE.coReq = ''; NEWSITE.tents = ''; }
 
   var pre = zoneCode(NEWSITE.zone);
   var tp  = typeCode(NEWSITE.type);
@@ -12235,8 +12258,10 @@ function nsSave(){
   var id = 'NSK-' + pre + '-' + tp + '-N' + String(n).padStart(3, '0');
 
   var site = {
-    id:id, name:nsName(id),
+    id:id, name:(!camp && NEWSITE.nm) ? NEWSITE.nm : nsName(id),   /* (V29.7) غيرُ المخيم باسمه المكتوب */
     zone:NEWSITE.zone, type:NEWSITE.type, work:'موقع جديد',
+    tg:NEWSITE.type === 'LPR' ? 'مراكز التفويج' : '', tt:NEWSITE.type === 'LPR' ? NEWSITE.center : '',
+    chals:(NEWSITE.chals || []).slice(),
     lat:lat, lng:lng, sq:NEWSITE.sq, sign:NEWSITE.sign,
     co:NEWSITE.co, coReq:NEWSITE.coReq, tents:cfgN(NEWSITE.tents),
     reason:NEWSITE.reason, why:NEWSITE.why,
@@ -12267,7 +12292,7 @@ function nsSave(){
   toast(id + ' \u00b7 ' + t(office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح'));
 
   NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
-              co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{} };
+              co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };
   NS_CO_OPEN = false; NS_CO_Q = '';
 
   /* المكتبُ لم يزرها: لا نموذجَ مسحٍ يُفتَح بل لوحُ الإسناد عليها — فتُجدوَل
@@ -23885,6 +23910,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.7', d:'٤ أكتوبر ٢٠٢٦', notes:[
+      'نموذج «موقع جديد»: رقم المربع والشاخص والشركة للمخيمات فقط وبعلامة الإلزام، وباقي النقاط باسمها ومشعرها ونوعها. والسبب والتحديات وأول صورتين إلزامية للكل. والحقول بتتغير على طول لما تختار النوع.',
+      'مراكز التفويج: بقى فيه اختيار «المركز» (النورية، طريق الهجرة، الزايدي) والمشعر بيتظبط لوحده.',
+      'نقطتا التفويج المؤقتتان (الزايدي وطريق الهجرة) اللي كانوا بيظهروا في العدد ومش على الخريطة اتخفوا (من غير حذف) لحد ما تيجي المخططات.' ] },
   { v:'V29.6', d:'٤ أكتوبر ٢٠٢٦', notes:[
       'متابعة الوزارة ← المسح الميداني: كل بطاقة عليها «›» تُضغط فتفتح نافذة بقائمة نقاطها (النقطة، الاسم، المشعر، النوع، الشركة، آخر زيارة، بواسطة) وزر «تصدير إكسل».',
       'بطاقتان جديدتان: «مخيمات بلا تحديات»، و«زيارات بلا صور» بسبب غياب الصور (لم تُلتقط، أو التُقطت ولم تُرفع من الجهاز) — لتوجيه الشباب لإضافة الصور.',
@@ -31221,7 +31250,7 @@ function zoneList(){
 function zoneOptions(){
   var out = MX_ZONES.slice();
   var add = function(z){ z = String(z || '').trim(); if (z && out.indexOf(z) < 0) out.push(z); };
-  ['مكة', 'المدينة'].forEach(add);
+  ['مكة', 'المدينة', 'مواقع التفويج'].forEach(add);   /* (V29.7) مراكزُ التفويج تُختار دائمًا */
   zoneList().forEach(add);
   /* المعلَنُ في مصفوفة الأوزان يُخزَّن «مشعر|نوع» */
   (Array.isArray(CFG.mxExtra) ? CFG.mxExtra : []).forEach(function(x){ add(String(x || '').split('|')[0]); });
@@ -33833,6 +33862,10 @@ function onDocClick(e){
     var pb = document.querySelector('[data-pull]'); if (pb && pb.click) pb.click();
     toast(t('يُجهَّز اليوم: خريطةُ الجهاز وآخرُ البيانات — أبقِ التطبيقَ مفتوحًا على الشبكة دقيقة')); render(1); return; }
   var svc = e.target.closest('[data-svcopy]'); if (svc){ svCopyFrom(svc.getAttribute('data-svcopy')); render(1); return; }
+  var nsc = e.target.closest('[data-nschal]');   /* (V29.7) تحدياتُ الموقع الجديد */
+  if (nsc){ var cv = nsc.getAttribute('data-nschal'), L = (NEWSITE.chals || []).slice(), ix = L.indexOf(cv);
+    if (ix > -1) L.splice(ix, 1); else if (cv === 'لا توجد تحديات') L = [cv]; else { L = L.filter(function(x){ return x !== 'لا توجد تحديات'; }); L.push(cv); }
+    NEWSITE.chals = L; render(1); return; }
   var msd = e.target.closest('[data-mailsend]');   /* (V29.0) */
   if (msd){ var mp = msd.getAttribute('data-mailsend').split('|'); mailGo(mp[1], mp[0], ''); return; }
   if (e.target.closest('[data-mailco]')){ mailGo((document.getElementById('waCo') || {}).value || WA_CO, (document.getElementById('waKind') || {}).value || WA_KIND, (document.getElementById('waWhen') || {}).value || ''); return; }
@@ -34178,7 +34211,11 @@ document.addEventListener('change', function(e){
     return;
   }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-ns')){
-    NEWSITE[t0.getAttribute('data-ns')] = t0.value;
+    var nsk = t0.getAttribute('data-ns');
+    NEWSITE[nsk] = t0.value;
+    /* (V29.7) تغييرُ المشعر أو النوع أو المركز يعيد رسمَ النموذج — كانت حقولُ المخيم تبقى ظاهرةً بعد اختيار نوعٍ آخر */
+    if (nsk === 'type'){ NEWSITE.chals = []; if (t0.value === 'LPR' && !/التفويج|النوار/.test(NEWSITE.zone)) NEWSITE.zone = 'مواقع التفويج'; }
+    if (nsk === 'zone' || nsk === 'type' || nsk === 'center') render(1);
     return;
   }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-share')){

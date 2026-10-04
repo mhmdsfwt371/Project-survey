@@ -87,11 +87,18 @@ console.log('\n══ ٢ · نقطةُ الميدان: صورةٌ إلزامية
   w.nsSave();
   T(w.STATE.sites.length === before && /صورة/.test(lastToast()), 'بلا صورةٍ لا تُحفَظ');
   w.NEWSITE.photos[0] = { size:1024, d:'data:image/jpeg;base64,xx' };
+  /* (V29.7) قرارُ المالك: الميدانُ يكتب لغير المخيم اسمَه، ويختار السببَ والتحديات، ويصوّر أوّلَ صورتين */
+  wrote.length = 0; toasts.length = 0; w.nsSave();
+  T(w.STATE.sites.length === before && /اسم النقطة/.test(lastToast()), 'وبلا اسمٍ لغير المخيم لا تُحفَظ (V29.7)');
+  w.NEWSITE.nm = 'حساس — مخيم المعالم'; w.NEWSITE.reason = 'نقطة جديدة لم تكن في السجل'; w.NEWSITE.chals = ['لا توجد تحديات'];
+  wrote.length = 0; toasts.length = 0; w.nsSave();
+  T(w.STATE.sites.length === before && /صورتين/.test(lastToast()), 'وبصورةٍ واحدةٍ لا تُحفَظ — أوّلُ صورتين إلزاميتان (V29.7)');
+  w.NEWSITE.photos[1] = { size:1024, d:'data:image/jpeg;base64,yy' };
   w.nsSave(); await wait(60);
   const s = newest(), r = w.STATE.recs[s.id];
-  T(w.STATE.sites.length === before + 1 && s.origin === 'field' && /-THS-N\d{3}$/.test(s.id), 'وبصورتها تُحفَظ ميدانيّةً: ' + s.id);
-  T(!!r && r.src === 'newsite' && r.review === 'pending' && r.access === 'تم الوصول' && r.phN === 1 && r.photos[0] === 'new_0',
-    'ويُكتَب لها سجلُّ زيارةٍ بانتظار الاعتماد يحمل صورتَها');
+  T(w.STATE.sites.length === before + 1 && s.origin === 'field' && /-THS-N\d{3}$/.test(s.id) && s.name === 'حساس — مخيم المعالم', 'وبصورتيها واسمِها تُحفَظ ميدانيّةً: ' + s.id);
+  T(!!r && r.src === 'newsite' && r.review === 'pending' && r.access === 'تم الوصول' && r.phN === 2 && r.photos[0] === 'new_0' && (r.chals || [])[0] === 'لا توجد تحديات',
+    'ويُكتَب لها سجلُّ زيارةٍ بانتظار الاعتماد يحمل صورتيها وتحدياتها');
   T(w.svDone(r) && w.lifeOf(s) === 'visited', 'فتُحتسَب زيارةً: «زيارةٌ تمّت — تنتظر الاعتماد»');
   T(w.CUR === 'svForm' || (w.CUR === 'forms' && w.PTAB && w.PTAB.forms === 'svForm'), 'ويُفتَح نموذجُ المسح لاستكمالها');
   w.render(1); await wait(60);
