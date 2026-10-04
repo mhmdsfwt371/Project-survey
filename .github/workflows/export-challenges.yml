@@ -83,7 +83,9 @@ jobs:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: echo skip-hide
       - name: resolve the two map links (read-only)
-        run: node scripts/resolve-links.mjs || true
+        run: echo skip-links
+      - name: tafweej sites study from OSM (read-only)
+        run: node scripts/tafweej-osm.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
