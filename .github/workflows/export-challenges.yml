@@ -5,6 +5,8 @@ on:
     branches: [export-challenges]
 jobs:
   export:
+    permissions:
+      contents: write
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -89,7 +91,15 @@ jobs:
       - name: add proposed tafweej LPR points (V29.7, owner decision)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/add-tafweej-lpr.mjs || true
+        run: echo skip-add-lpr
+      - name: satellite imagery of the three tafweej sites (public Esri imagery) to a temp branch
+        run: |
+          pip3 install --break-system-packages --quiet pillow
+          python3 scripts/sat-tiles.py || true
+          git config user.name "github-actions" && git config user.email "actions@users.noreply.github.com"
+          git checkout -b sat-imagery
+          git add -f sat/*.jpg sat/meta.json && git commit -q -m "sat imagery (temp)" && git push -f origin sat-imagery || true
+          git checkout -q export-challenges
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
