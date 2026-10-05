@@ -60,6 +60,18 @@ if (!TEST){
 const R = w.mfuReport(); const issues = w.mfuReportCheck(R);
 if (issues.length){ console.log('::error title=weekly::فحصُ الملف رفض التقرير: ' + issues.slice(0, 5).join(' | ')); process.exit(2); }
 writeFileSync(OUT + '/brief.txt', w.mfuBriefText());
+/* (V30.4) فكرةُ المالك #٥: ملفُّ بياناتٍ يوميٌّ للوزارة — إكسل بأوراق التقرير كلِّها، وJSON بالأرقام، وGeoJSON بالمواقع — من دوالِّ التطبيق نفسِها */
+const MODE = process.env.WEEKLY_MODE || 'weekly';
+if (MODE === 'daily'){
+  const day = new Date(Date.now() + 3 * 3600e3).toISOString().slice(0, 10), base = 'بيانات-قارئات-نسك-' + day;
+  let XL = null; try { XL = require('xlsx'); } catch (e){ console.log('::warning::xlsx غير مثبَّت — بلا إكسل'); }
+  if (XL){ w.XLSX = XL; w.XLSX_READY = true; const origWrite = XL.writeFile; XL.writeFile = (wb, name) => origWrite.call(XL, wb, OUT + '/' + base + '.xlsx'); const okx = await w.mfuXlsx(); console.log('daily xlsx', okx); }
+  writeFileSync(OUT + '/' + base + '.json', JSON.stringify({ at:new Date().toISOString(), hijri:R.hijri, greg:R.greg, sections:w.MFU_SECTIONS.map(sc => ({ key:sc[0], title:sc[1], head:sc[2], rows:w.mfuRowsOf(R, sc[0]) })), brief:w.mfuBriefText() }));
+  try { const g = w.geoJsonBuild(); writeFileSync(OUT + '/' + base + '.geojson', JSON.stringify(g)); console.log('daily geojson features', (g.features || []).length); } catch (e){ console.log('::warning::geojson: ' + (e && e.message)); }
+  writeFileSync(OUT + '/base.txt', base);
+  console.log('daily: ', base);
+  process.exit(0);
+}
 w.PPTX_TPL = new Uint8Array(readFileSync('templates/ministry-unified.pptx'));
 let got = null; w.Blob = class { constructor(parts, o){ this.parts = parts; this.type = (o || {}).type || ''; } }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.expGate = (k, iss) => { if (iss && iss.length){ console.log('::error title=weekly::' + k + ': ' + iss.slice(0, 5).join(' | ')); return false; } return true; };

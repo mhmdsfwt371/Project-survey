@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -24086,6 +24086,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.4', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'ملف بيانات يومي للوزارة بيتولد لوحده كل يوم ٥:٣٠ الصبح على الدرايف في مجلد «البيانات اليومية»: إكسل بكل أوراق التقرير (١٧ ورقة)، وملف أرقام (جيسون) لأي نظام عندهم، وملف مواقع جغرافي (جيوجيسون) لخرائطهم، والملخص التنفيذي. كله من دوال التطبيق نفسها وبفحص الملف قبل ما يخرج.' ] },
   { v:'V30.3', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'القوائم بقت تتعدل من ثوابت النظام بدل الكود: تحديات المخيمات، وتحديات الممرات وباقي النقاط، وأسباب إضافة مخيم أو نقطة غير مسجلة. كل سطر بند، والفاضي يرجع القائمة الأصلية، وبتوصل كل الأجهزة مع المزامنة.' ] },
   { v:'V30.2', d:'٥ أكتوبر ٢٠٢٦', notes:[

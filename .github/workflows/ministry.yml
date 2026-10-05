@@ -8,6 +8,7 @@ on:
   schedule:
     - cron: '20 */6 * * *'     # لقطةٌ كلَّ ستِّ ساعات
     - cron: '30 4 * * 0'       # التحديثُ الأسبوعيُّ — الأحد ٧:٣٠ صباحًا بمكة قبل اجتماع الوزارة (V30.0)
+    - cron: '30 2 * * *'       # ملفُّ البيانات اليوميُّ للوزارة — ٥:٣٠ صباحًا بمكة (V30.4)
   workflow_dispatch:
     inputs:
       report:
@@ -16,6 +17,9 @@ on:
       mail:
         description: 'بالبريد؟ (no = توليدٌ ورفعٌ للدرايف بلا بريد)'
         default: 'yes'
+      daily:
+        description: 'ولّد ملفَّ البيانات اليوميَّ الآن'
+        default: 'no'
 permissions:
   contents: write
 jobs:
@@ -93,6 +97,21 @@ jobs:
           ATT=/tmp/ministry/ministry-report.pdf
           if [ -f /tmp/ministry/base.txt ]; then BASE="$(cat /tmp/ministry/base.txt)"; [ -f "/tmp/ministry/${BASE}.pptx" ] && ATT="/tmp/ministry/${BASE}.pptx,$ATT"; [ -f "/tmp/ministry/${BASE}.pdf" ] && ATT="/tmp/ministry/${BASE}.pdf,$ATT"; fi
           if [ "${{ github.event.inputs.mail }}" = "no" ]; then echo "بلا بريد — توليدٌ ورفعٌ فقط"; else MAIL_ATTACH="$ATT" node scripts/mail-send.mjs "قارئات أفاقي — التحديثُ الأسبوعي $(date -u +%F)" /tmp/ministry/mail.txt; fi
+      - name: ملفُّ البيانات اليومي — إكسل وJSON وGeoJSON إلى الدرايف (V30.4)
+        if: github.event.schedule == '30 2 * * *' || github.event.inputs.daily == 'yes'
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+          NODE_OPTIONS: --require ./scripts/lib/jsdom-dict.cjs
+          WEEKLY_MODE: daily
+          WEEKLY_OUT: /tmp/daily
+          WEEKLY_FOLDER: البيانات اليومية
+        run: |
+          npm i --no-save --no-audit --no-fund googleapis@^144 xlsx@0.18.5 || true
+          node scripts/weekly-pack.mjs || true
+          if [ -f /tmp/daily/base.txt ]; then BASE="$(cat /tmp/daily/base.txt)"; node scripts/weekly-drive.mjs "/tmp/daily/${BASE}.xlsx" "/tmp/daily/${BASE}.json" "/tmp/daily/${BASE}.geojson" /tmp/daily/brief.txt || true; fi
       - uses: actions/upload-artifact@v6
         if: always()
         with:
