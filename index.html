@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-113e7a69f1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-f759794ccd.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3484,7 +3484,8 @@ function syncCycle(){
   var pushed = CORE.flush().catch(function(){ return 0; });
   return pushed.then(function(){
     /* الجهازُ الذي تجاوز سقفَ قراءاته يُبطَّأ سحبُه الدوريُّ إلى الربع (V17.26) */
-  var due = PULL_ASK || (Date.now() - PULL_LAST >= pullScope().every * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
+  var kkEvery = (typeof KIOSK_ON !== 'undefined' && KIOSK_ON && CUR === 'mfu') ? 120000 : 0;   /* (V30.5) شاشةُ القاعة حيّة: كلَّ دقيقتين لا كلَّ عشر */
+  var due = PULL_ASK || (Date.now() - PULL_LAST >= (kkEvery || pullScope().every) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
     /* موعدُ السحب يُضبَط عند المحاولة لا عند النجاح — وإلا بقي العدّادُ صفرًا
        بعد سحبةٍ فاشلة وحاول كلَّ ثانية */
     if (due) PULL_LAST = Date.now();
@@ -21317,6 +21318,14 @@ function kioskBody(){
     +       '<button class="chip' + (KK_VIEW === 'pts' ? ' on' : '') + '" data-kkview="pts">\u25CF ' + esc(t('نقاط')) + '</button></span></div>'
     +     (KK_VIEW === 'sat' && typeof L !== 'undefined' && L.map ? kkSatHtml(KK_ZONE) : pointMap(KK_ZONE))
     +   '</div>'
+    +   (function(){   /* (V30.5) فكرةُ المالك #٦: شاشةٌ حيّة — آخرُ ما حدث لحظةً بلحظة، وطزاجةُ البيانات، والتنبيهاتُ */
+          var feed = (STATE.steps || []).slice().sort(function(a, b){ return (+b.at || 0) - (+a.at || 0); }).slice(0, 8);
+          var A = alAll().filter(function(a){ return a.sites.length; }), alTot = A.reduce(function(x, y){ return x + y.sites.length; }, 0);
+          var fresh = STATE.meta.lastSync ? agoTxt(STATE.meta.lastSync) : t('لم تُزامَن بعد');
+          return '<div class="kk-box kk-wide" id="kksec-5"><div class="kk-h" style="display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap"><span>\u{1F534} ' + esc(t('مباشر — آخر ما حدث في الميدان')) + '</span><span class="hint" style="margin:0">' + esc(t('البيانات')) + ': ' + esc(fresh) + (KIOSK_ON ? ' \u00b7 ' + esc(t('تُسحَب كلَّ دقيقتين في وضع القاعة')) : '') + '</span></div>'
+            + (feed.length ? '<div class="kk-feed">' + feed.map(function(x){ return '<div class="kk-zl"><span><b class="num">' + esc(agoTxt(+x.at)) + '</b> \u00b7 ' + esc(t(KN[x.kind] || x.kind || '')) + (x.site ? ' <span class="num">' + esc(x.site) + '</span>' : '') + '</span><span>' + esc(dispName(x.by || '')) + '</span></div>'; }).join('') + '</div>' : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً بعد.')) + '</p>')
+            + (alTot ? '<div class="kk-kinds" style="margin-top:8px">' + A.slice(0, 4).map(function(a){ return '<div class="kk-kind"><div class="kk-big" style="color:var(--min-red)" aria-valuenow="' + a.sites.length + '">' + nm(a.sites.length) + '</div><div class="kk-lab">' + esc(a.label) + '</div></div>'; }).join('') + '</div>' : '<p class="hint" style="margin:8px 0 0">\u2713 ' + esc(t('لا تنبيهاتٍ بقواعد النظام الآن')) + '</p>')
+            + '</div>'; })()
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('شغلُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>'
     +     (steps.length
           ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind"><div class="kk-big" aria-valuenow="' + kinds[k] + '">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + '</div></div>'; }).join('')
@@ -24086,6 +24095,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.5', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'شاشة القاعة بقت حية: قسم «مباشر» فيه آخر ٨ حاجات حصلت في الميدان (مين زار إيه ومن إمتى)، ووقت آخر تحديث للبيانات، والتنبيهات اللي عليها قواعد. وفي وضع العرض الكامل البيانات بتتسحب كل دقيقتين بدل كل عشرة.' ] },
   { v:'V30.4', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'ملف بيانات يومي للوزارة بيتولد لوحده كل يوم ٥:٣٠ الصبح على الدرايف في مجلد «البيانات اليومية»: إكسل بكل أوراق التقرير (١٧ ورقة)، وملف أرقام (جيسون) لأي نظام عندهم، وملف مواقع جغرافي (جيوجيسون) لخرائطهم، والملخص التنفيذي. كله من دوال التطبيق نفسها وبفحص الملف قبل ما يخرج.' ] },
   { v:'V30.3', d:'٥ أكتوبر ٢٠٢٦', notes:[
