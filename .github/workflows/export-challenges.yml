@@ -99,7 +99,11 @@ jobs:
       - name: unhide the five points (owner decision — no hiding)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/unhide-five.mjs || true
+        run: echo skip-unhide
+      - name: upload detailed plan v2.1 to settings/wbs (V30.2, owner decision)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/wbs-upload.mjs || true
       - run: python3 scripts/challenges-xlsx.py
       - name: upload
         env:
