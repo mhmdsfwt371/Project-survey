@@ -30,7 +30,7 @@ codex
 ```bash
 git clone https://github.com/mhmdsfwt371/Project-survey.git
 cd Project-survey
-npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
+npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15
 ```
 صلاحيةُ الدفع: `gh auth login` (GitHub CLI) أو توكنٌ بصلاحية المحتويات.
 

@@ -316,7 +316,7 @@ function apprDecide(kind, id, ok, why){
       if (x){ x[f.field] = f.val; SITE_IX = null; SITE_TOK = null; statBump(); }
     }
     logEvent((ok ? 'اعتماد تصويب — ' : 'رفض تصويب — ') + f.site + ' · ' + f.field
-             + (why ? ' · ' + why : ''), site);
+             + (why ? ' · ' + why : ''), f.site);   /* (V31.1) كان `site` غيرَ معرَّفٍ فيرمي خطأً */
     notifPush(ok ? 'اعتماد' : 'رفض',
               (ok ? 'اعتُمد تصويبُك — ' : 'رُفض تصويبُك — ') + f.site, { to:f.by || '', lv:'مهم' });
   }

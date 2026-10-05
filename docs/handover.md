@@ -12,7 +12,7 @@
 1. استنسخ المستودع وثبّت البيئة (الأمرُ الوحيد المسموح — `AGENTS.md` §٢):
    ```bash
    git clone https://github.com/mhmdsfwt371/Project-survey.git && cd Project-survey
-   npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
+   npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15
    ```
 2. اقرأ `AGENTS.md` كاملًا — هو دستورُ العمل: دورةُ الإصدار، والفروع، وقواعدُ الشيفرة التي تُسقطها الجرود.
 3. أيُّ تغيير = نسخةٌ جديدة (`AGENTS.md` §٤) + جردٌ دائم + `node scripts/check-version.mjs` كاملًا ثم `git push origin HEAD:staging`.

@@ -1110,7 +1110,7 @@ function presenceBeat(force){
               /* الاستهلاكُ والأداءُ والأعطالُ من الجهاز نفسِه (V17.34) */
               q:(STATE.queue || []).filter(function(it){ return it.kind !== 'presence' && it.kind !== 'stats'; }).length,
               pz:(STATE.poison || []).length,
-              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pf:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0,
+              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pfl:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0 /* (V31.1) كان `pf` فيمحوه مفتاحُ الأداء */,
               err:Object.keys(typeof ERR_SEEN === 'object' ? ERR_SEEN : {}).length,
               rms:perfAvg('r'), pms:perfAvg('p'), pulse:!!PULSE_UNSUB, up:Math.round((Date.now() - BOOT_AT) / 60000),
               /* قراءاتُ اليوم لا الجلسة — الجلسةُ قد تمتدّ أيامًا فيبدو الرقمُ فادحًا (V17.36) —
@@ -1680,7 +1680,7 @@ if (cur === 'usage') return head + usageCard() + perfCard() + (function(){
     var brStale = brAge < 0 || brAge > 45 * 60000;
     var T = rows.map(function(p){
       var age = now - (+p.at || 0), isOn = age < 15 * 60000, isStale = age > 2 * H && work;
-      var oldV = p.ver && p.ver !== cur9, hasBack = (+p.q || 0) + (+p.pz || 0) + (+p.pf || 0) > 0;
+      var oldV = p.ver && p.ver !== cur9, hasBack = (+p.q || 0) + (+p.pz || 0) + (+p.pfl || 0) > 0;   /* (V31.1) */
       var reads = (p.rd != null) ? +p.rd : (+p.reads || 0);      /* اليومُ إن رُفع، وإلا الجلسة */
       totReads += reads; if (isOn) online++; if (isStale) stale++; if (oldV) old++; if (hasBack) back++; errs += (+p.err || 0);
       var flags = [];

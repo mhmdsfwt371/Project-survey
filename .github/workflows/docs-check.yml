@@ -35,7 +35,7 @@ jobs:
         # عطلٌ حقيقيٌّ يستحقُّ النظر.
         run: |
           for i in 1 2 3; do
-            npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 && exit 0
+            npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
             sleep $((i*15))
           done
@@ -354,6 +354,8 @@ jobs:
         run: node scripts/qa.mjs
       - name: خطوةُ البناء — index.html هو ناتجُ src/ بايتًا ببايت (V31.0)
         run: node scripts/build.mjs --check
+      - name: فاحصُ النحو — لا متغيرَ غيرَ معلَن ولا مفتاحَ مكرَّرًا (V31.1)
+        run: node scripts/audit-lint.mjs
       # ─── نهايةُ قائمة الحارس ───
   shards:
     if: github.ref == 'refs/heads/staging'
@@ -370,7 +372,7 @@ jobs:
       - name: المتصفّح الصوريّ للشريحة
         run: |
           for i in 1 2 3; do
-            npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 && exit 0
+            npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15 && exit 0
             echo "::warning::محاولةُ التثبيت $i تعثّرت — إعادةٌ بعد $((i*15))ث"
             sleep $((i*15))
           done

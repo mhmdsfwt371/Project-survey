@@ -1,3 +1,4 @@
+'use strict';   /* (V31.1) الوضعُ الصارم: لا متغيراتٍ ضمنيةً عامةً ولا أخطاءً صامتة — يسري على الشيفرة كلِّها */
 /* ═══ حارسُ الإقلاع — قاطعُ التوقّف المتكرّر (V21.9) ═══
    بلاغ: «A problem repeatedly occurred» في سفاري الآيفون لحظةَ التحديث التلقائي، ويعمل
    بعد إغلاق التطبيق وفتحه. سفاري يعيد المحاولةَ مرّةً ثم يستسلم. فيُسجَّل هنا أوّلَ شيءٍ
@@ -1200,7 +1201,7 @@ var CORE = {
           if (!STATE.poison.some(function(p2){ return p2.kind === it.kind && String(p2.id) === String(it.id); }))
             STATE.poison.push({ kind:it.kind, id:it.id, v:it.v, err:f.msg, at:Date.now() });
           STATE.queue = STATE.queue.filter(function(q){ return q !== it; });
-          logEvent('وثيقةٌ عُزلت عن الرفع — ' + it.kind + '/' + it.id + ' \u00b7 ' + f.msg.slice(0, 80), id);
+          logEvent('وثيقةٌ عُزلت عن الرفع — ' + it.kind + '/' + it.id + ' \u00b7 ' + f.msg.slice(0, 80), it.id);   /* (V31.1) كان `id` غيرَ معرَّفٍ هنا فيرمي خطأً */
         }
       });
       if (r.failed.length && !SOFT_SAID['رفع الطابور']){

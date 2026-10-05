@@ -19,7 +19,7 @@
 
 ## ٢. البيئة — إلزامية
 ```bash
-npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3
+npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals@15
 ```
 لا تثبّت حزمةً أخرى داخل المستودع: `audit-deps` يُسقط الحارسَ إن حمل الجهازُ مكتبةً فوق قائمة السحابة. Node 20.
 
