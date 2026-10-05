@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V31.3",
+ "app_version": "V31.4",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2005,7 +2005,8 @@
   "V31.0": "خطوةُ البناء (التوصيةُ المعمارية، المرحلة ١): المصدرُ في src/ (00-head.html، و01..08 أجزاءُ الشيفرة بترتيبها الأصلي، و99-tail.html) وscripts/build.mjs يجمّعها إلى index.html بايتًا ببايت؛ --check يرفض أيَّ فرقٍ وهو خطوةٌ في قائمة الحارس؛ i18n-rehash يكتب في المصدر ثم يبني؛ AGENTS.md/CLAUDE.md: عدِّل src/ لا index.html. لا تغييرَ في سلوك التطبيق.",
   "V31.1": "المعماري/الكتابة: 'use strict' على الشيفرة كلِّها؛ scripts/audit-lint.mjs (eslint@9 بقواعد no-undef/no-redeclare/no-dupe-keys/no-unreachable أخطاءً، وno-unused-vars تحذيرًا) في check-version وشرائح البوابة (تثبيتُ eslint@9 globals@15)؛ إعلانُ TWIN_*/PERM_CACHE؛ إصلاحاتٌ: logEvent بعزل الطابور كان يمرّر `id` غيرَ معرَّف → it.id؛ اعتمادُ التصويب كان يمرّر `site` → f.site؛ مفتاحُ `pf` المكرر في إشارة الجهاز (عدّادُ الصور الفاشلة) صار `pfl` والقارئُ يتبعه.",
   "V31.2": "طبقتا البوابة (خطةُ التسليم): docs-check.yml — وظيفةُ fast على كلِّ دفعةٍ إلى staging تشغّل scripts/fast-run.mjs (البناء --check، audit-lint، node --test scripts/unit-core.mjs بتسع اختباراتِ وحدةٍ للتصنيف والإحصاء والصلاحيات وقواعد التنبيه والخطة وجودة الصور والبحث والوضع الصارم والقوائم، ثم ١٦ جردًا حاسمًا قصيرًا ولجنةُ الفحص) وتكتب gate/fast.txt؛ promote يشترط fast + browser + rules؛ الشرائحُ الأربعُ (الكاملُ ١٤٨ خطوة) على schedule ليلًا ٢٣:٣٠ UTC وworkflow_dispatch. الحارسُ المحلّيُّ check-version.mjs بلا تغيير.",
-  "V31.3": "الوحدة ١ من خطة التسليم: scripts/audit-health.mjs يقيس الشيفرةَ المبنيّة (espree من eslint): globals (مُعلَناتُ المستوى الأعلى)، over300/over150 (أطوالُ الدوال)، lintErrors (صفر)، lintWarnings، maxSrcKB (سقف ٥٢٠) — ولا يسوء شيءٌ عن docs/health-baseline.json؛ وفي السحابة على staging عنوانُ الالتزام «Vس.ص — …». scripts/health-update.mjs يثبّت الخطَّ (و--accept \"السبب\" لزيادةٍ مقصودة) ويُلحِق docs/health-history.csv. docs/definition-of-done.md. خطُّ البداية: globals 632 · over300 3 (onDocClick 985، clickA 665، popHtml 319) · over150 6 · تحذيرات 38 · أكبرُ مصدر 471 ك.ب. في fast-run والقائمة الكاملة."
+  "V31.3": "الوحدة ١ من خطة التسليم: scripts/audit-health.mjs يقيس الشيفرةَ المبنيّة (espree من eslint): globals (مُعلَناتُ المستوى الأعلى)، over300/over150 (أطوالُ الدوال)، lintErrors (صفر)، lintWarnings، maxSrcKB (سقف ٥٢٠) — ولا يسوء شيءٌ عن docs/health-baseline.json؛ وفي السحابة على staging عنوانُ الالتزام «Vس.ص — …». scripts/health-update.mjs يثبّت الخطَّ (و--accept \"السبب\" لزيادةٍ مقصودة) ويُلحِق docs/health-history.csv. docs/definition-of-done.md. خطُّ البداية: globals 632 · over300 3 (onDocClick 985، clickA 665، popHtml 319) · over150 6 · تحذيرات 38 · أكبرُ مصدر 471 ك.ب. في fast-run والقائمة الكاملة.",
+  "V31.4": "الوحدة ٢ (تنظيف الكتابة): تحذيراتُ الفاحص ٣٨ → ٠. خطأٌ حقيقيٌّ: mfuPrintHtml(R, F) كان يُعلن var F (سلسلةَ الخطوط) فيطمس معاملَ الخطوط فيُمرَّر نصٌّ إلى fontsFace — فلا @font-face أبدًا؛ صار FF للسلسلة وfontsFace(F) للمعامل (اختبارُ وحدةٍ يسقط على القديم). وإعادةُ إعلان var داخل onDocClick/clickA (٣٣ موضعًا) صارت إسنادًا (السلوكُ نفسُه: var على مستوى الدالة) مع إعادة var لـnEl وg3؛ D2 المكرر؛ out في legendRows؛ وكودٌ ميتٌ بعد return في toggle الزيارة والتركيب (منذ V28.4). خطُّ الصحة: lintWarnings 0."
  },
  "map_and_geolocation": {
   "tile_layers": {

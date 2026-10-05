@@ -610,11 +610,11 @@ function mfuPrintHtml(R, F){
   var e = function(v){ return esc(v == null ? '' : String(v)); };
   var tbl = function(head, rows){ return '<table><thead><tr>' + head.map(function(h){ return '<th>' + e(h) + '</th>'; }).join('') + '</tr></thead><tbody>'
     + (rows.length ? rows.map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + e(c) + '</td>'; }).join('') + '</tr>'; }).join('') : '<tr><td colspan="' + head.length + '">—</td></tr>') + '</tbody></table>'; };
-  var F = '"Abar Mid","Readex Pro","Segoe UI",Tahoma,Arial,sans-serif';
+  var FF = '"Abar Mid","Readex Pro","Segoe UI",Tahoma,Arial,sans-serif';   /* (V31.4) كان اسمُه F فيطمس معاملَ الخطوط المرفوعة — فلا يُضمَّن خطُّ «أبار» في الـPDF أبدًا */
   return '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8"><title>' + e(mfuFileName('pdf')) + '</title>'
     + '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Readex+Pro:wght@400;600;700&display=swap">'
     + '<style>' + fontsFace(F) + '@page{size:A4 landscape;margin:0}*{-webkit-print-color-adjust:exact;print-color-adjust:exact;box-sizing:border-box}'
-    + 'body{font-family:' + F + ';color:#163E35;background:#FBF7F4;margin:0}'
+    + 'body{font-family:' + FF + ';color:#163E35;background:#FBF7F4;margin:0}'
     + '.pg{position:relative;width:297mm;min-height:210mm;padding:14mm 16mm 18mm;page-break-after:always;background:#FBF7F4}'
     + '.cover{background:#F6EDE3;display:flex;flex-direction:column;justify-content:center;align-items:flex-start}'
     + '.cover .logo{position:absolute;top:12mm;right:16mm;height:22mm}'
@@ -2522,6 +2522,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'إصلاح: بي دي إف تقرير الوزارة ما كانش بيضمّن خط «أبار» المرفوع أبدًا (متغير داخلي كان بيمسح بيانات الخط قبل استعمالها) — بقى بيضمّنه أول ما الخط يترفع.',
+      'تحسين داخلي بلا تغيير في الاستخدام: تنظيف الكود — تحذيرات الفاحص من ٣٨ إلى صفر (إعادة إعلانات مكررة وكود ميت بعد الإرجاع).' ] },
   { v:'V31.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: جرد «صحة الكود» في البوابة بيمنع أي تحديث يزوّد المتغيرات العامة أو الدوال الطويلة أو تحذيرات النحو أو حجم ملفات المصدر عن آخر خط أساس، ووثيقة «تعريف المنجز» لكل تحديث.' ] },
   { v:'V31.2', d:'٦ أكتوبر ٢٠٢٦', notes:[

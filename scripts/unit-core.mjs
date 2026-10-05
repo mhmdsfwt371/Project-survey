@@ -58,3 +58,8 @@ test('القوائمُ من الإعدادات: الفارغةُ تعيد الأ
   w.CFG.lists = {}; assert.ok(w.chalsOf({ type:'مخيم' }).length > 5);
   w.CFG.lists = { chalsCamp:['أ', 'ب'] }; assert.deepEqual(J(w.chalsOf({ type:'مخيم' })), ['لا توجد تحديات', 'أ', 'ب']); w.CFG.lists = {};
 });
+test('طباعةُ الـPDF تضمّن الخطَّ المرفوع (كان متغيرُ الخط يطمس معاملَ الخطوط — V31.4)', () => {
+  const R = w.mfuReport(), F = { r:'AAAA', b:'BBBB', rn:'AbarMid-Regular.woff2', bn:'AbarMid-Bold.woff2' };
+  const h = w.mfuPrintHtml(R, F); assert.ok(/@font-face/.test(h), 'لا @font-face'); assert.ok(h.indexOf('AAAA') > -1, 'الخطُّ غيرُ مضمَّن');
+  assert.ok(/font-family:"Abar Mid"/.test(h) || /"Abar Mid","Readex Pro"/.test(h), 'سلسلةُ الخطوط غائبة');
+});

@@ -3734,7 +3734,7 @@ function legendRows(){
   } else {
     rows = [['#E8C34B','قابل للفك','wait'], ['#FF8C42','مجدول للفك','asn'], [L.c,'تم الفك','done']];
   }
-  var out = rows.map(function(r){
+  out = rows.map(function(r){   /* (V31.4) `out` مُعلَنٌ أعلى الدالة */
     var n = CNT[r[2]] || 0;
     /* الحالةُ الخاليةُ تخفت ولا تختفي — فيُعرَف أنها حالةٌ قائمةٌ لا شيءَ فيها */
     return '<div class="lg-row' + (n ? '' : ' lg-off') + '">'
