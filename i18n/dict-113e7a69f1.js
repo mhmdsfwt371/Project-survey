@@ -1,6 +1,15 @@
 /* قاموسا الإنجليزية والأردو — يُحمَّل عند اختيار لغةٍ غيرِ العربية (V21.6) */
 var D = {
 en:{
+ 'القوائم — تُعدَّل من هنا لا من الشيفرة':'Lists — edited here, not in code',
+ 'كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.':'One item per line. Leave the box empty to restore the original list. Older records keep their old text readable.',
+ 'تحديات المخيمات':'Camp challenges',
+ 'تحديات الممرات وسائر النقاط':'Path and other point challenges',
+ 'أسباب إضافة مخيم غير مسجّل':'Reasons for adding an unregistered camp',
+ 'أسباب إضافة نقطة غير مسجّلة':'Reasons for adding an unregistered point',
+ 'حفظ القوائم':'Save lists',
+ 'القوائمُ للمهندس فما فوق':'Lists are for the engineer and above',
+ 'حُفظت القوائم — تصل كلَّ الأجهزة مع المزامنة':'Lists saved — they reach every device with sync',
  'الخطة مقابل الفعلي':'Plan vs actual',
  'المخطّط من التواريخ، والفعليُّ من النظام حيث يُقاس':'Planned from the dates; actual from the system where measurable',
  'الإنجاز المخطّط':'Planned progress',
@@ -3277,6 +3286,15 @@ en:{
  'كاميرات قراءة اللوحات':'Plate-reading cameras', 'حساسات الحرارة والرطوبة':'Temperature & humidity sensors', 'نجمة':'Star', 'قطرة':'Drop', 'معيّنٌ ثابت':'Fixed diamond', 'جدوِل زيارتَها: اختر من يزورها وموعدَه ثم «أسند»':'Schedule its visit: pick who visits and when, then “Assign”', 'سُجّلت — جدوِل زيارتَها الآن':'Saved — schedule its visit now', 'سُجّلت زيارةً — أكمل بياناتِ المسح':'Recorded as a visit — complete the survey data', 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.':'Photos are optional for the office — upload any you have; they are taken on the visit scheduled after saving.', 'احفظ وجدوِل زيارة':'Save and schedule a visit', 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.':'An office point is not a visit: it is saved as “new, awaiting approval”, then the assignment sheet opens on it to schedule its visit — the field team surveys it.', 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.':'Sending counts as a visit awaiting approval; the site is “new, awaiting approval” and stays out of the statistics until the engineer approves it. After sending, the survey form opens on it to complete its data — the visit is not approved before that.', 'سُجِّلت الزيارةُ بإضافة النقطة — أكمل بياناتِ المسح؛ فلا تُعتمَد قبل استكمالها.':'The visit was recorded when the point was added — complete the survey data; it cannot be approved before that.', 'بياناتُ المسح لم تُستكمَل بعد — تُستكمَل أو تُرَدّ لزيارةٍ أخرى':'Survey data is not complete yet — complete it or return it for another visit', 'تحتاج جدولةَ زيارة':'Needs a visit scheduled', 'المشرفُ أو المهندس':'Supervisor or engineer', 'جدوِل زيارة':'Schedule a visit', 'ارسم حدودَ المخيم: اضغط على الخريطة حول حدوده':'Draw the camp boundary: tap around it on the map', 'النقاطُ مثبَّتةٌ بعد التحريك — «أعد التوليد» لتعديل الرسم':'Points are locked after moving — use “Regenerate” to edit the drawing', 'رُبطت الحدودُ بالمخيم المسجَّل':'Boundary linked to the registered camp', 'مخيماتٍ مسجَّلةٍ داخل الحدود — ارسم حدودَ مخيمٍ واحد':'registered camps inside the boundary — draw a single camp’s boundary', 'مخيمٌ بحدوده — جدوِل زيارتَه الآن':'Camp saved with its boundary — schedule its visit now', 'جدوِل زيارتَها':'schedule their visit', 'الحدودُ تضمُّ مخيمًا مسجَّلًا — تُربَط به ولا يُنشأ غيرُه':'The boundary contains a registered camp — it is linked to it and no new camp is created', 'مخيمٌ واحدٌ بحدوده — بلا نقاطٍ داخله، وتُجدوَل زيارتُه بعد الحفظ.':'One camp with its boundary — no points inside; its visit is scheduled after saving.', 'نقطةً — مثبَّتةٌ بعد التحريك، والمسافةُ لا تغيّرها حتى «أعد التوليد».':'points — locked after moving; the spacing will not change them until “Regenerate”.', 'نقطةً — أكثرُ من أن تُسحَب؛ كبّر المسافةَ لتحريكها.':'points — too many to drag; increase the spacing to move them.', 'نقطةً على المسار — اسحب أيَّ نقطةٍ لتحريكها قبل الحفظ.':'points along the route — drag any point to move it before saving.', 'حُرِّك':'Moved', 'مساحةُ مخيم':'Camp area', 'المسافةُ مثبَّتةٌ بعد التحريك — «أعد التوليد» يعيدها':'Spacing is locked after moving — “Regenerate” restores it', 'اسم المخيم':'Camp name', 'اختياري — يُولَّد من المشعر والمربع':'Optional — generated from the zone and block', 'احفظ المخيم':'Save camp', 'أعد التوليد':'Regenerate',
 },
 ur:{
+ 'القوائم — تُعدَّل من هنا لا من الشيفرة':'فہرستیں — یہاں سے، کوڈ سے نہیں',
+ 'كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.':'ہر سطر ایک آئٹم۔ خالی چھوڑیں تو اصل فہرست واپس۔ پرانے ریکارڈ پڑھے جا سکتے ہیں۔',
+ 'تحديات المخيمات':'کیمپ چیلنجز',
+ 'تحديات الممرات وسائر النقاط':'راستوں اور دیگر پوائنٹس کے چیلنجز',
+ 'أسباب إضافة مخيم غير مسجّل':'غیر رجسٹرڈ کیمپ شامل کرنے کی وجوہات',
+ 'أسباب إضافة نقطة غير مسجّلة':'غیر رجسٹرڈ پوائنٹ شامل کرنے کی وجوہات',
+ 'حفظ القوائم':'فہرستیں محفوظ کریں',
+ 'القوائمُ للمهندس فما فوق':'فہرستیں انجینئر اور اوپر کے لیے',
+ 'حُفظت القوائم — تصل كلَّ الأجهزة مع المزامنة':'فہرستیں محفوظ — سنک کے ساتھ ہر ڈیوائس تک',
  'الخطة مقابل الفعلي':'منصوبہ بمقابلہ حقیقی',
  'المخطّط من التواريخ، والفعليُّ من النظام حيث يُقاس':'منصوبہ تاریخوں سے، حقیقی نظام سے جہاں ماپا جائے',
  'الإنجاز المخطّط':'منصوبہ بند پیش رفت',

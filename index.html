@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-cc5af1cd57.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-113e7a69f1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1769,6 +1769,8 @@ var CFG = {
   budgetAlert:0,
   /* (V30.1) قواعدُ التنبيه بالأيام — تُضبَط من ثوابت النظام لا من الشيفرة (فكرةُ المالك #٢). صفرٌ = القاعدةُ معطَّلة */
   alObsDays:14, alPermitDays:7, alRevisitDays:3, alNoPhotoDays:2, alAssignDays:3, alStaleDays:21,
+  /* (V30.3) القوائمُ تُعدَّل من الإعدادات لا من الشيفرة (فكرةُ المالك #٤): كلُّ مفتاحٍ مصفوفةُ نصوص، والفارغةُ تعني القائمةَ الأصلية */
+  lists:{},
   /* متوسطُ غرف المخيم لكلِّ مشعرٍ — يُقرأ حين لا يُعَدُّ (V17.71): «منى» ١٢ ما لم يُضبَط */
   avgRooms:{},
   stgCfg:0, stgVal:0, stgIns:0,
@@ -7823,7 +7825,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('لماذا ليس في السجل؟',
           '<div class="field"><label>' + esc(t('السبب')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
-          + (camp ? NS_REASONS : NS_REASONS_PT).map(function(r){
+          + (camp ? cfgList('reasonsCamp', NS_REASONS) : cfgList('reasonsPt', NS_REASONS_PT)).map(function(r){   /* (V30.3) من الإعدادات */
               return '<option value="' + esc(r) + '"' + (NEWSITE.reason===r?' selected':'') + '>' + esc(t(r)) + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('شرح مختصر')) + '</label>'
@@ -8838,8 +8840,10 @@ var CH_PATH = ['المسار داخل نفق',
                'لا يوجد مسار كابل',
                'عائق إنشائي',
                'أخرى — اذكرها في وصف التحدي'];
+/* (V30.3) قائمةٌ من الإعدادات إن كُتبت، وإلا الأصلية */
+function cfgList(key, def){ var L = CFG.lists && Array.isArray(CFG.lists[key]) ? CFG.lists[key].map(function(x){ return String(x || '').trim(); }).filter(Boolean) : []; return L.length ? L : def; }
 function chalsOf(x){
-  return ['لا توجد تحديات'].concat((x && x.type === 'مخيم') ? CH_CAMP : CH_PATH);
+  return ['لا توجد تحديات'].concat((x && x.type === 'مخيم') ? cfgList('chalsCamp', CH_CAMP) : cfgList('chalsPath', CH_PATH));
 }
 var CHALS = ['لا توجد تحديات'].concat(CH_CAMP);   /* للتوافق مع ما يقرؤها عامًّا */
 
@@ -24082,6 +24086,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.3', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'القوائم بقت تتعدل من ثوابت النظام بدل الكود: تحديات المخيمات، وتحديات الممرات وباقي النقاط، وأسباب إضافة مخيم أو نقطة غير مسجلة. كل سطر بند، والفاضي يرجع القائمة الأصلية، وبتوصل كل الأجهزة مع المزامنة.' ] },
   { v:'V30.2', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'الخطة مقابل الفعلي: الخطة التفصيلية (الإصدار ٢٫١، ١٨٥ بند) بقت في «متابعة الخطة التفصيلية»، والإنجاز المخطط بيتحسب من التواريخ، والفعلي لبنود المسح والتركيب بيتقاس من النظام لوحده (علامة ⚙)، والانحراف قدام كل بند.',
       'بطاقة «الخطة مقابل الفعلي» في ملخص الوزارة: المخطط والفعلي والانحراف للمشروع كله وأكتر البنود تأخرا، وبتدخل الملخص التنفيذي. واستيراد الإكسل بقى يقرا الإصدار ٢ بأسماء الأعمدة.' ] },
@@ -31770,6 +31776,14 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
+          '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
+          + '<div class="grid cols-2">'
+          + [['chalsCamp', 'تحديات المخيمات', CH_CAMP], ['chalsPath', 'تحديات الممرات وسائر النقاط', CH_PATH], ['reasonsCamp', 'أسباب إضافة مخيم غير مسجّل', NS_REASONS], ['reasonsPt', 'أسباب إضافة نقطة غير مسجّلة', NS_REASONS_PT]].map(function(L){
+              var cur = (CFG.lists && Array.isArray(CFG.lists[L[0]]) && CFG.lists[L[0]].length) ? CFG.lists[L[0]] : [];
+              return '<div class="field"><label>' + esc(t(L[1])) + ' <span class="hint">(' + esc(t('الأصلية')) + ' ' + nm(L[2].length) + ')</span></label><textarea data-lists="' + L[0] + '" rows="6" dir="auto" placeholder="' + esc(L[2].map(function(x){ return t(x); }).join('\n')) + '">' + esc(cur.join('\n')) + '</textarea></div>'; }).join('')
+          + '</div>',
+          btn('حفظ القوائم','btn-primary btn-sm',' data-listsok="1"'))
       + card('قواعد التنبيه (بالأيام)',   /* (V30.1) فكرةُ المالك #٢ — صفرٌ يعطّل القاعدة */
           '<div class="grid cols-3">'
           + '<div class="field"><label>' + esc(t('معوّق مفتوح أكثر من')) + '</label>' + cfgInput('alObsDays') + '</div>'
@@ -33377,6 +33391,13 @@ function onDocClick(e){
       toast(t('من قائمة المتصفّح: «تثبيت التطبيق» أو «إضافة إلى الشاشة الرئيسية»'));
     }
     return;
+  }
+  if (e.target.closest('[data-listsok]')){   /* (V30.3) */
+    if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
+    var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
+    CFG.lists = LS; cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
+    logEvent('تعديل القوائم من الإعدادات — ' + Object.keys(LS).map(function(k){ return k + ':' + LS[k].length; }).join(' · '));
+    toast(t('حُفظت القوائم — تصل كلَّ الأجهزة مع المزامنة')); render(1); return;
   }
   if (e.target.closest('[data-cfgok]')){
     /* حقولُ الإعداد هنا تحفظ حيةً عند التغيير — الزرُّ لا يحفظ شيئًا لم
