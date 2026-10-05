@@ -43,7 +43,7 @@ say(/diss/.test(sl)&&/maints/.test(sl),'وسجلّا الفكِّ والصيان
 /* السحبُ يُفحَص بأثره لا بلفظه: بعضُ السجلّات صارت تُسحَب بـreadDelta
    (فارقيًّا بمؤشِّرٍ وسقف) بدل نداءِ المجموعة مباشرةً — والمطلوبُ أنها
    تُسحَب، لا أن تُسحَب بصيغةٍ بعينها (V17.10). */
-const pulled = c => new RegExp("collection\\('" + c + "'\\)").test(js)
+const pulled = c => new RegExp("(?:collection|DB\\.col)\\('" + c + "'\\)").test(js)
               || new RegExp("readDelta\\('" + c + "'").test(js);
 say(pulled('diss') || pulled('dismantles'), 'الفكُّ يُسحَب من السحابة');
 say(pulled('maints'), 'والصيانةُ كذلك');

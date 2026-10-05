@@ -47,7 +47,7 @@ const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } ca
   check(/where\('_by',\s*'=='/.test(seg), 'الميدانُ مقصورٌ على سجلاته — لا يقرأ كتاباتِ غيره');
   /* اللقطاتُ صارت في ثوابت الدخول (pullStatic) لا في الفارقيّ */
   const stSeg = html.slice(html.indexOf('pullStatic: function'), html.indexOf('pullStatic: function') + 60000);
-  check(/collection\('stats'\)/.test(stSeg) && /limit\(30\)/.test(stSeg),
+  check(/(?:collection|DB\.col)\('stats'\)/.test(stSeg) && /limit\(30\)/.test(stSeg),
     'اللوحةُ تُقرأ من اللقطات لا من السجلات الخام');
   /* القراءةُ الكاملةُ مشروعةٌ مرةً واحدةً: أوّلَ مزامنةٍ لمن يملك الكلَّ.
      والمطلوبُ أن تكون مشروطةً صراحةً لا أن تقع افتراضًا — فالفرقُ بينهما

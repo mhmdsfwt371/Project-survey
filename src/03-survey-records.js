@@ -3094,7 +3094,7 @@ var SITE_LOG_MORE = {}, SITE_LOG_BUSY = '';
 function siteLogFetch(id){
   if (!FB.ready || !FB.db || SITE_LOG_MORE[id] || SITE_LOG_BUSY === id) return;
   SITE_LOG_BUSY = id;
-  FB.db.collection('events').where('site', '==', id).limit(200).get().then(function(sn){
+  DB.col('events').where('site', '==', id).limit(200).get().then(function(sn){
     var L = []; sn.forEach(function(dd){ L.push(dd.data()); });
     FB.readCount = (FB.readCount || 0) + sn.size;
     SITE_LOG_MORE[id] = L; SITE_LOG_BUSY = ''; render(1);

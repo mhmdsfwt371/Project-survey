@@ -2386,7 +2386,7 @@ function provSync(){
   if (!may('users')){ toast(t('للمهندس فما فوق')); return Promise.resolve(false); }
   if (!FB.ready || !FB.db){ toast(t('يحتاج شبكة')); return Promise.resolve(false); }
   toast(t('يُجلَب من القاعدة…'));
-  return FB.db.collection('provision').limit(500).get().then(function(sn){
+  return DB.col('provision').limit(500).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     var cloud = {}; sn.forEach(function(d){ cloud[d.id] = d.data(); });
     FB.readCount = (FB.readCount || 0) + sn.size;
@@ -2394,7 +2394,7 @@ function provSync(){
     Object.keys(local).forEach(function(k){ if (!cloud[k]) dropped++; });
     STATE.provision = cloud;
     /* والحساباتُ كما في القاعدة: صفٌّ لحسابٍ حُذف بقي في الجهاز يزول، ودورٌ تغيّر يصل */
-    return FB.db.collection('users').limit(500).get().then(function(us){
+    return DB.col('users').limit(500).get().then(function(us){
       FB.readCount = (FB.readCount || 0) + us.size;
       var U = STATE.users || {}, keepTemp = {};
       Object.keys(U).forEach(function(k){ if (U[k] && U[k].provisioning && !uidLike(k)) keepTemp[k] = U[k]; });
@@ -2449,7 +2449,7 @@ function provReask(uid){
   pwFlowStart(u, pass);
   if (!FB.ready || !FB.db){ CORE.set('provision', u.user, req); pwFlowSet('nokey', ''); return true; }
   var doc = Object.assign({}, req, { _at:Date.now(), _by:STATE.meta.uid || '' });
-  FB.db.collection('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
+  DB.col('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
     if (!ghToken()){ pwFlowSet('nokey'); return; }
     pwFlowSet('run'); provKick(true);
   }).catch(function(e){ pwFlowSet('error', String(e && (e.code || e.message) || '').slice(0, 80)); });
@@ -2522,6 +2522,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تحسين داخلي بلا تغيير في الاستخدام: كل اتصال بقاعدة البيانات بقى بيعدي من بوابة واحدة في الكود، عشان أي نقل للمنظومة على سيرفرات تانية يتعمل في مكان واحد. واتشالت متغيرات قديمة مش مستعملة.' ] },
   { v:'V31.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'إصلاح: بي دي إف تقرير الوزارة ما كانش بيضمّن خط «أبار» المرفوع أبدًا (متغير داخلي كان بيمسح بيانات الخط قبل استعمالها) — بقى بيضمّنه أول ما الخط يترفع.',
       'تحسين داخلي بلا تغيير في الاستخدام: تنظيف الكود — تحذيرات الفاحص من ٣٨ إلى صفر (إعادة إعلانات مكررة وكود ميت بعد الإرجاع).' ] },

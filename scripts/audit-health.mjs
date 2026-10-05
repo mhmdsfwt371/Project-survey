@@ -25,6 +25,10 @@ if (import.meta.url === 'file://' + process.argv[1]){
   const B = JSON.parse(readFileSync('docs/health-baseline.json', 'utf8')), { m, info } = await measure();
   const fails = [], better = [];
   if (m.lintErrors) fails.push('أخطاءُ النحو ' + m.lintErrors + ' (يجب صفر)');
+  /* (V31.5) بوابةُ البيانات: لا حديثَ مع القاعدة إلا من DB — FB.db.collection/batch خارجها تراجعٌ معماريّ */
+  { const srcAll = readdirSync('src').filter(f => /\.js$/.test(f)).map(f => readFileSync('src/' + f, 'utf8').split('\n').map((l, i) => [f, i + 1, l])).flat();
+    const raw = srcAll.filter(([f, n, l]) => /FB\.db\.(collection|batch|runTransaction|doc)\(/.test(l) && !/^\s*(col|doc|batch):\s+function/.test(l) && !/^\s*(\/\*|\*|\/\/)/.test(l.trim()) && !/—/.test(l.split('FB.db')[0].slice(-3)));
+    if (raw.length) fails.push('وصولٌ مباشرٌ للقاعدة خارج بوابة البيانات (DB): ' + raw.slice(0, 3).map(r => r[0] + ':' + r[1]).join(' · ')); }
   Object.keys(B.m).forEach(k => { if (k === 'lintErrors') return; if (m[k] > B.m[k]) fails.push(`${k}: ${m[k]} > خطّ الأساس ${B.m[k]}`); else if (m[k] < B.m[k]) better.push(`${k}: ${B.m[k]} ← ${m[k]}`); });
   if (m.maxSrcKB > (B.capSrcKB || 520)) fails.push(`أكبرُ ملفِّ مصدر ${m.maxSrcKB} ك.ب فوق السقف ${B.capSrcKB || 520}`);
   if (process.env.GITHUB_ACTIONS && process.env.GITHUB_REF === 'refs/heads/staging'){

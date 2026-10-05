@@ -23,14 +23,14 @@ const html = readFileSync('index.html', 'utf8');
 const js = /<script[^>]*>([\s\S]*?)<\/script>/.exec(html)[1];
 
 /* ١ · قراءةُ المجموعات */
-const gets = [...js.matchAll(/collection\('(\w+)'\)([\s\S]{0,260}?)\.get\(/g)];
+const gets = [...js.matchAll(/(?:collection|DB\.col)\('(\w+)'\)([\s\S]{0,260}?)\.get\(/g)];
 const unbounded = gets.filter(m => !/\.doc\(/.test(m[2]) && !/\.limit\(\d+\)/.test(m[2]));
 T(unbounded.length === 0,
   `كلُّ قراءةِ مجموعةٍ بوثيقةٍ بعينها أو بسقف (${gets.length} قراءة)`
   + (unbounded.length ? ' — بلا سقف: ' + [...new Set(unbounded.map(m => m[1]))].join(' · ') : ''));
 
 /* ٢ · الاستماعُ الحيّ */
-const subs = [...js.matchAll(/collection\('(\w+)'\)([\s\S]{0,260}?)\.onSnapshot\(/g)];
+const subs = [...js.matchAll(/(?:collection|DB\.col)\('(\w+)'\)([\s\S]{0,260}?)\.onSnapshot\(/g)];
 const openSubs = subs.filter(m => !/\.doc\(/.test(m[2]) && !/\.limit\(\d+\)/.test(m[2]) && !/\.where\(/.test(m[2]));
 T(openSubs.length === 0,
   `وكلُّ استماعٍ حيٍّ محدودٌ بوثيقةٍ أو مرشِّحٍ أو سقف (${subs.length} مستمعًا)`
@@ -55,7 +55,7 @@ T(/قراءاتُ هذه الجلسة|قراءات الجلسة/.test(js), 'وع
    ناجحة، ومستمعٌ على وثيقةٍ واحدة، وسحبٌ موجَّهٌ لما تغيّر وحدَه. */
 T(/pulse: function\(kinds\)/.test(js) && /FB\.pulse\(Object\.keys\(kinds\)\)/.test(js),
   'كلُّ دفعةٍ ناجحةٍ تُنبِض بما تغيّر — كتابةٌ واحدة');
-T(/collection\('settings'\)\.doc\('pulse'\)\.onSnapshot/.test(js), 'والأجهزةُ تُنصِت لوثيقةٍ واحدةٍ لا تكلّف وهي ساكنة');
+T(/(?:collection|DB\.col)\('settings'\)\.doc\('pulse'\)\.onSnapshot/.test(js), 'والأجهزةُ تُنصِت لوثيقةٍ واحدةٍ لا تكلّف وهي ساكنة');
 T(/pullDelta\(\{ only:stale, why:'pulse' \}\)/.test(js), 'وتسحب المتغيّرَ وحدَه لا النطاقَ كلَّه');
 T(!/every:60000\b/.test(js), 'ولا استطلاعَ كلَّ دقيقة — الطزاجةُ من النبضة والكلفةُ من التغيير');
 /* ═══ ٧ · سقفُ القراءات لكلِّ جهاز ═══ */
@@ -82,7 +82,7 @@ T((js.match(/actor:\(v\.by \|\| v\._byName \|\| who\), at:at/g) || []).length >=
 
 /* ═══ ١٠ · السجلُّ يُقرأ من القاعدة لا من ذاكرة الجلسة (V17.27) ═══ */
 /* صار الجلبُ على دفعاتٍ وبمدًى (V17.28) — والسقفُ لكلِّ دفعةٍ لا للأثر */
-T(/collection\('events'\)\.orderBy\('ts', 'desc'\)/.test(js) && /q\.limit\(EV_PAGE\)/.test(js) && /EV_PAGE = 500/.test(js),
+T(/(?:collection|DB\.col)\('events'\)\.orderBy\('ts', 'desc'\)/.test(js) && /q\.limit\(EV_PAGE\)/.test(js) && /EV_PAGE = 500/.test(js),
   'وسجلُّ الأحداث يُجلَب من القاعدة بدفعاتٍ سقفُ الواحدة خمسمئة');
 T(/mode === 'older'/.test(js) && /mode === 'range'/.test(js) && /data-evolder/.test(js) && /data-evrange/.test(js),
   'وله «أنزِل أقدمَ خمسمئة» وجلبُ مدًى بالتاريخ — فالأثرُ كلُّه متاحٌ لا آخرُ خمسمئةٍ فقط');

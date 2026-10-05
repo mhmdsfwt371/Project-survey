@@ -1749,7 +1749,7 @@ function pmoFetch(force){
   if (!force && (PMO.v || Date.now() - PMO.at < 600000)) return;
   if (!FB.ready || !FB.db){ PMO.v = PMO.v || STATE.pmo || { lessons:{}, retros:{}, stake:{} }; return; }
   PMO.at = Date.now();
-  FB.db.collection('settings').doc('pmo').get().then(function(doc){
+  DB.col('settings').doc('pmo').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + 1;
     PMO.v = (doc && doc.exists) ? doc.data() : {}; STATE.pmo = PMO.v; if (CUR === 'exec') render(1);
   }).catch(function(e){ PMO.err = String(e && (e.code || e.message) || e).slice(0, 60); });

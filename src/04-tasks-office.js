@@ -1726,7 +1726,7 @@ function myDocFetch(force){
   }
   if (!force && Date.now() - MYDOC.at < 60000) return Promise.resolve(MYDOC.has);
   MYDOC.at = Date.now();
-  return FB.db.collection('users').doc(myUid()).get().then(function(doc){
+  return DB.col('users').doc(myUid()).get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + doc.size;
     MYDOC.has = !!(doc && doc.exists);
     if (MYDOC.has){
@@ -1751,7 +1751,7 @@ function myDocFix(){
       return myDocFix();
     });
   }
-  return FB.db.collection('users').doc(myUid()).get().then(function(doc){
+  return DB.col('users').doc(myUid()).get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + doc.size;
     if (doc && doc.exists){
       STATE.users[myUid()] = Object.assign({}, doc.data());
@@ -1773,7 +1773,7 @@ function myDocFix(){
     var boss = typeof isBossHere === 'function' && isBossHere();
     var v = { name:STATE.meta.name || lgRemembered() || '', user:STATE.meta.name || '',
               role:boss ? 'admin' : 'tech', active:!!boss, at:Date.now(), self:true, _by:myUid(), _at:Date.now() };
-    return FB.db.collection('users').doc(myUid()).set(v).then(function(){
+    return DB.col('users').doc(myUid()).set(v).then(function(){
       STATE.users[myUid()] = v;
       MYDOC.has = true;
       if (boss){ var back1 = permRelease(true); logEvent('إنشاء وثيقة حساب صاحب المشروع — ' + myUid()); toast(t('الوثيقةُ موجودةٌ') + (back1 ? ' \u00b7 ' + nm(back1) + ' ' + t('عادت للرفع') : '')); render(1); return true; }
@@ -4637,9 +4637,9 @@ function pullDelta(opt){
     var qs = [];
     if (tk){
       var tq = treeQuery(c, tk);
-      chunk30(tq.keys).forEach(function(k){ qs.push(FB.db.collection(c).where(tq.fld, 'in', k)); });
+      chunk30(tq.keys).forEach(function(k){ qs.push(DB.col(c).where(tq.fld, 'in', k)); });
     } else {
-      var q = FB.db.collection(c);
+      var q = DB.col(c);
       if (sc.mine && c !== 'stats' && me) q = q.where('_by', '==', me);
       qs.push(q);
     }
@@ -4700,7 +4700,7 @@ function readDelta(col, key, cap){
   if (!STATE[key]) STATE[key] = {};
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
   var since = (at['@' + col] || 0) - 120000, start = Date.now();
-  var q = FB.db.collection(col);
+  var q = DB.col(col);
   q = since > 0 ? q.where('_at', '>', since).limit(cap)
                 : q.orderBy('_at', 'desc').limit(cap);
   q.get().then(function(sn){
@@ -4724,7 +4724,7 @@ var PULSE_UNSUB = null, PULSE_T = 0, PULSE_LAST = 0;
 function pulseWatch(){
   if (!FB.ready || !FB.db || PULSE_UNSUB) return;
   try {
-    PULSE_UNSUB = FB.db.collection('settings').doc('pulse').onSnapshot(function(doc){
+    PULSE_UNSUB = DB.col('settings').doc('pulse').onSnapshot(function(doc){
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
       FB.readCount = (FB.readCount || 0) + 1;
       var p = doc.data() || {}, at = STATE.meta.pullAt || {}, mine = pullScope().cols || [];
@@ -4748,7 +4748,7 @@ var BRIDGE_UNSUB = null;
 function bridgeWatch(){
   if (!FB.ready || !FB.db || BRIDGE_UNSUB) return;
   try {
-    BRIDGE_UNSUB = FB.db.collection('settings').doc('bridge').onSnapshot(function(doc){
+    BRIDGE_UNSUB = DB.col('settings').doc('bridge').onSnapshot(function(doc){
       if (!doc.exists || (doc.metadata && doc.metadata.fromCache)) return;
       FB.readCount = (FB.readCount || 0) + 1;
       STATE.bridge = doc.data() || {};
@@ -4766,7 +4766,7 @@ function liveWatch(){
        يُطابَق شيءٌ قطُّ ولم تصل مهمةٌ ولا حذفٌ حيًّا: يرى الفنيُّ إسنادًا
        مُسح من المكتب أيامًا. */
     var me = STATE.meta.name || '\u0000';
-    LIVE.push(FB.db.collection('tasks').where('assignedTo', '==', me).limit(200)
+    LIVE.push(DB.col('tasks').where('assignedTo', '==', me).limit(200)
       .onSnapshot(function(snap){
         snap.docChanges().forEach(function(ch){
           if (ch.type === 'removed'){ delete STATE.tasks[ch.doc.id]; if (typeof TK_IX !== 'undefined') TK_IX = null; }

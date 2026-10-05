@@ -1174,7 +1174,7 @@ function pwFlowWatch(){
   PW_POLL = setInterval(function(){
     if (!PW_FLOW || !FB.ready || !FB.db){ clearInterval(PW_POLL); PW_POLL = 0; return; }
     tries++;
-    FB.db.collection('provision').doc(PW_FLOW.user).get().then(function(d){
+    DB.col('provision').doc(PW_FLOW.user).get().then(function(d){
       FB.readCount = (FB.readCount || 0) + d.size;
       var v = d && d.exists ? (d.data() || {}) : {};
       if (v.status === 'done'){ clearInterval(PW_POLL); PW_POLL = 0; STATE.provision[PW_FLOW.user] = v; pwFlowSet('done'); logEvent('كلمةٌ جديدةٌ ضُبطت — ' + PW_FLOW.user); }
@@ -1221,7 +1221,7 @@ function usrRename(uid, to){
   pwFlowStart({ user:u.user + ' \u2190 ' + to, name:u.name || '' }, '');
   if (!FB.ready || !FB.db){ CORE.set('provision', u.user, req); pwFlowSet('nokey'); return true; }
   var doc = Object.assign({}, req, { _at:Date.now(), _by:STATE.meta.uid || '' });
-  FB.db.collection('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
+  DB.col('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
     if (!ghToken()){ pwFlowSet('nokey'); return; }
     pwFlowSet('run'); provKick(true);
   }).catch(function(e){ pwFlowSet('error', String(e && (e.code || e.message) || '').slice(0, 80)); });
@@ -1242,7 +1242,7 @@ function usrPwReset(uid){
   if (!FB.ready || !FB.db){ CORE.set('provision', u.user, req); pwFlowSet('nokey', ''); statBump(); return pass; }
   /* مباشرةً إلى القاعدة — لا طابورَ يقف على شبكةٍ بطيئة، والرفضُ يُرى بسببه */
   var doc = Object.assign({}, req, { _at:Date.now(), _by:STATE.meta.uid || '' });
-  FB.db.collection('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
+  DB.col('provision').doc(u.user).set(FB.clean ? FB.clean(doc) : doc, { merge:true }).then(function(){
     if (!ghToken()){ pwFlowSet('nokey'); return; }
     pwFlowSet('run'); provKick(true);
   }).catch(function(e){ pwFlowSet('error', String(e && (e.code || e.message) || '').slice(0, 80)); });
@@ -2733,10 +2733,6 @@ function clickTables(e){
   }
   var npo = e.target.closest('[data-npop]');
   if (npo){ bellToggle(false); notifPopGo(npo.getAttribute('data-npop')); return true; }
-  var two = e.target.closest('[data-twopen]');
-  if (two){ TWIN_OPEN = two.getAttribute('data-twopen') || ''; render(1); return true; }
-  var twf = e.target.closest('[data-twf]');
-  if (twf){ TWIN_F = twf.getAttribute('data-twf') || ''; TWIN_OPEN = ''; render(1); return true; }
   if (e.target.closest('[data-kmix]')){ KMI = null; render(1); return true; }
   if (e.target.closest('[data-kmigo]')){ kmiApply(); return true; }
   var kma = e.target.closest('[data-kmiall]');
@@ -3966,7 +3962,6 @@ function onDocClick(e){
     var pk2 = PM_CAP[p2[1]];
     if (pk2 && !pmLocked(pk2[0], pk2[1], p2[0])) pmSetDirect(pk2[0], pk2[1], p2[0], !!R2.can[p2[1]]);
     logEvent('صلاحية — ' + R2.n + ' · ' + p2[1] + ': ' + (R2.can[p2[1]] ? 'مُنحت' : 'سُحبت') + (pk2 ? ' · ' + t('وفي القاعدة') : ''));
-    PERM_CACHE = null;
     toast(t(R2.can[p2[1]] ? 'مُنحت' : 'سُحبت'));
     render(1); return;
   }
@@ -4682,7 +4677,6 @@ document.addEventListener('input', function(e){
     } else pgFind(PG_Q);
     return;
   }
-  if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-twq')){ TWIN_Q = e.target.value.trim(); clearTimeout(TWIN_T); TWIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-twq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-minq')){ MIN_Q = e.target.value.trim(); clearTimeout(MIN_T); MIN_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-minq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wtq')){ WT_Q = e.target.value.trim(); clearTimeout(WT_T); WT_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-wtq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ var el = document.querySelector('[data-wbsq]'); render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }

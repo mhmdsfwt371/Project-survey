@@ -213,7 +213,7 @@ w.ROLE = 'engineer';
   const raw5 = readFileSync('index.html', 'utf8');
   T((raw5.match(/logEvent\([^;]*?,\s*(?:id|site|x\.id|s\.id|r\.id|it\.site|b\.site)\s*\)/g) || []).length >= 40,
     'وأحداثُ النقاط تُوسَم بنقطتها فتُستعلَم من القاعدة لا بالبحث في النصّ');
-  T(/collection\('events'\)\.where\('site', '==', id\)\.limit\(200\)/.test(raw5),
+  T(/(?:collection|DB\.col)\('events'\)\.where\('site', '==', id\)\.limit\(200\)/.test(raw5),
     'والقديمُ يُجلَب بسقفٍ عند الطلب لا في كلِّ إقلاع');
   w.DETAIL_ID = 'L1'; w.goPage('site'); w.render(1); await wait(250);
   const sp = d.getElementById('main') || d.body;

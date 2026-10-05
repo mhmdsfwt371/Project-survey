@@ -71,7 +71,7 @@ T(w.BUG_OPEN === false, 'ويُطوى اللوحُ بعد الإرسال');
 /* الجسرُ إلى المستودع */
 const src = readFileSync('scripts/bugs-sync.mjs', 'utf8');
 /* (V17.94) لا بلاغَ عامًّا: الجسرُ يقرأ البلاغاتِ ويديرها في القاعدة، ولا يفتح شيئًا في المستودع */
-T(/collection\('bugs'\)/.test(src) && !/repos\/\$\{REPO\}\/issues`,\s*\{\s*method:\s*'POST'/.test(src) && !/labels: \['بلاغ'/.test(src),
+T(/(?:collection|DB\.col)\('bugs'\)/.test(src) && !/repos\/\$\{REPO\}\/issues`,\s*\{\s*method:\s*'POST'/.test(src) && !/labels: \['بلاغ'/.test(src),
   'الجسرُ يقرأ البلاغاتِ ولا يفتح بلاغًا عامًّا في المستودع');
 T(/status: 'قيد التنفيذ'/.test(src), 'والمقبولُ يصير قيدَ التنفيذ في القاعدة');
 T(/if \(!b\.closeAsk\) continue;/.test(src) && /status: 'مغلق'/.test(src), 'وما طلب المديرُ إغلاقَه يُغلَق في القاعدة مباشرة');

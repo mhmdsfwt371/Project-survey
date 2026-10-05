@@ -52,7 +52,7 @@ test('البحثُ في السجل: بلا همزٍ ولا تاءٍ مربوطة
 });
 test('الوضعُ الصارم فعّال، ولا متغيرَ ضمنيًّا يُنشأ بالخطأ', () => {
   assert.throws(() => w.eval('(function(){ "use strict"; zzUndeclared = 1; })()'), /not defined/);
-  assert.equal(typeof w.TWIN_OPEN, 'string');
+  assert.equal(typeof w.DB, 'object'); assert.equal(typeof w.DB.col, 'function');   /* (V31.5) بوابةُ البيانات قائمة */
 });
 test('القوائمُ من الإعدادات: الفارغةُ تعيد الأصلية، والمكتوبةُ تغلب', () => {
   w.CFG.lists = {}; assert.ok(w.chalsOf({ type:'مخيم' }).length > 5);

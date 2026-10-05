@@ -1130,7 +1130,7 @@ function presenceFetch(force){
   if (!FB.ready || !FB.db) return Promise.resolve(0);
   if (!force && Date.now() - PRES.fetchAt < 2 * 60000) return Promise.resolve(0);
   PRES.fetchAt = Date.now();
-  return FB.db.collection('presence').limit(500).get().then(function(sn){
+  return DB.col('presence').limit(500).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     STATE.presence = STATE.presence || {};
     sn.forEach(function(d){ STATE.presence[d.id] = d.data(); });
@@ -1240,7 +1240,7 @@ function sysReportFetch(force){
   if (!force && Date.now() - SYSREP.at < 600000) return Promise.resolve(SYSREP.v);
   if (!FB.ready || !FB.db) return Promise.resolve(null);
   SYSREP.at = Date.now();
-  return FB.db.collection('settings').doc('sysreport').get().then(function(doc){
+  return DB.col('settings').doc('sysreport').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + 1;
     SYSREP.v = (doc && doc.exists) ? doc.data() : {}; SYSREP.err = '';
     if (CUR === 'sys') render(1);
@@ -1270,7 +1270,7 @@ function usageFetch(force){
   if (!force && Date.now() - USAGE.at < 600000) return Promise.resolve(USAGE.v);
   if (!FB.ready || !FB.db) return Promise.resolve(null);
   USAGE.at = Date.now();
-  return FB.db.collection('settings').doc('usage').get().then(function(doc){
+  return DB.col('settings').doc('usage').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + 1;
     USAGE.v = (doc && doc.exists) ? doc.data() : {}; if (CUR === 'sys') render(1); return USAGE.v;
   }).catch(function(){ return null; });
@@ -3844,10 +3844,10 @@ function evFetch(force, mode){
   if (!FB.ready || !FB.db || EV_FETCHING) return;
   if (!force && !mode && EV_FETCHED) return;
   EV_FETCHING = true;
-  var q = FB.db.collection('events').orderBy('ts', 'desc');
+  var q = DB.col('events').orderBy('ts', 'desc');
   var ranged = false;
   if (mode === 'site' && /^NSK-/i.test(String(EVF.q || '').trim())){   /* (V30.8) تاريخُ نقطةٍ كاملًا — حقلٌ واحدٌ بلا ترتيبٍ فلا يحتاج فهرسًا مركّبًا */
-    ranged = true; q = FB.db.collection('events').where('site', '==', String(EVF.q).trim());
+    ranged = true; q = DB.col('events').where('site', '==', String(EVF.q).trim());
   } else if (mode === 'range' && (EVF.from || EVF.to)){
     ranged = true;
     if (EVF.to)   q = q.where('ts', '<=', Date.parse(EVF.to));
@@ -4634,7 +4634,7 @@ function pmRefresh(force){
   if (!FB.ready || !FB.db) return Promise.resolve(false);
   if (!force && Date.now() - PM_AT < 60000) return Promise.resolve(false);
   PM_AT = Date.now();
-  return FB.db.collection('settings').doc('perms').get().then(function(doc){
+  return DB.col('settings').doc('perms').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + doc.size;
     if (doc && doc.exists) CFG.perms = doc.data();
     return true;
@@ -4717,7 +4717,6 @@ function rolesApply(){
   Object.keys(caps).forEach(function(k){
     if (ROLES[k] && caps[k] && typeof caps[k] === 'object') ROLES[k].can = Object.assign({}, ROLES[k].can || {}, caps[k]);
   });
-  PERM_CACHE = null;
 }
 function roleUsers(k){
   return Object.keys(STATE.users || {}).filter(function(uid){ var u = STATE.users[uid]; return u && u.role === k; }).length;

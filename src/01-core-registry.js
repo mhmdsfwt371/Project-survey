@@ -1309,7 +1309,7 @@ var FB = {
       };
       return second.auth().createUserWithEmailAndPassword(email, pass)
         .then(function(c){
-          return FB.db.collection('users').doc(c.user.uid).set({
+          return DB.col('users').doc(c.user.uid).set({
             name:(meta && meta.name) || user, user:user,
             role:(meta && meta.role) || 'tech',
             at:Date.now(), by:STATE.meta.name || '',
@@ -1329,7 +1329,7 @@ var FB = {
         .then(function(c){
           STATE.meta.uid = c.user.uid;
           STATE.meta.online = true;
-          return FB.db.collection('users').doc(c.user.uid).get();
+          return DB.col('users').doc(c.user.uid).get();
         })
         .then(function(doc){
           var u = (doc && doc.exists) ? doc.data() : {};
@@ -1380,7 +1380,7 @@ var FB = {
     return vv;
   },
   putOne: function(it){
-    var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
+    var ref = DB.col(FB.colOf(it.kind)).doc(String(it.id));
     if (it.v === null) return ref.delete();
     return ref.set(FB.clean(FB.live(it.kind, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }))), { merge:true });
   },
@@ -1404,7 +1404,7 @@ var FB = {
   reconcile: function(it, e){
     var msg = String((e && (e.message || e.code)) || e);
     if (!/permission|PERMISSION_DENIED/i.test(msg) || it.v === null) return Promise.resolve(false);
-    var ref = FB.db.collection(FB.colOf(it.kind)).doc(String(it.id));
+    var ref = DB.col(FB.colOf(it.kind)).doc(String(it.id));
     return ref.get().then(function(doc){
       FB.readCount = (FB.readCount || 0) + doc.size;
       return !!(doc && doc.exists && FB.sameDoc(it.v, doc.data() || {}));
@@ -1425,7 +1425,7 @@ var FB = {
     if (!FB.ready || !FB.db || !kinds || !kinds.length) return Promise.resolve();
     var now = Date.now(), doc = { at:now, by:STATE.meta.uid || '', _by:STATE.meta.uid || '', _at:now };
     kinds.forEach(function(k){ doc[FB.colOf(k)] = now; });
-    return FB.db.collection('settings').doc('pulse').set(doc, { merge:true }).catch(function(e){ softErr('إشعار التغيير', e, ''); });
+    return DB.col('settings').doc('pulse').set(doc, { merge:true }).catch(function(e){ softErr('إشعار التغيير', e, ''); });
   },
   pushEach: function(batch){
     var ok = [], failed = [], healed = 0;
@@ -1447,7 +1447,7 @@ var FB = {
   },
   push: function(batch){
     if (!FB.ready) return Promise.reject(new Error('not-ready'));
-    var w = FB.db.batch();
+    var w = DB.batch();
     batch.forEach(function(it){
       /* لكلِّ نوعٍ مجموعتُه: كانت سبعةُ أنواعٍ تسقط في «misc» واحدةٍ فتختلط،
          ولا تُستعلَم بمفردها، ولا تُحكَم بقاعدةِ وصولٍ خاصةٍ بها. */
@@ -1460,7 +1460,7 @@ var FB = {
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
                   workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[it.kind];
       if (!col){ console.warn('نوعٌ بلا مجموعة: ' + it.kind); col = 'misc'; }
-      var ref = FB.db.collection(col).doc(String(it.id));
+      var ref = DB.col(col).doc(String(it.id));
       if (it.v === null) w.delete(ref);
       else w.set(ref, FB.clean(FB.live(it.kind, Object.assign({}, it.v, { _by:STATE.meta.uid, _at:Date.now() }))), { merge:true });   /* (V28.3) */
     });
@@ -1484,7 +1484,7 @@ var FB = {
       hbev:   function(id, v){ STATE.hb = STATE.hb || {}; STATE.hb[id] = v; got++; }
     };
     return Promise.all(Object.keys(MAP).map(function(c){
-      return FB.db.collection(c).limit(2000).get().then(function(snap){
+      return DB.col(c).limit(2000).get().then(function(snap){
         FB.readCount = (FB.readCount || 0) + snap.size;
         snap.forEach(function(doc){
           try { MAP[c](doc.id, doc.data()); }
@@ -1536,7 +1536,7 @@ var FB = {
     EPOCH_PENDING = true;
     /* شبكةٌ بطيئةٌ لا تحبس الطابورَ: ثمانِ ثوانٍ ثم يُرفَع ما عندنا */
     setTimeout(function(){ EPOCH_PENDING = false; }, 8000);
-    var epochRead = FB.db.collection('settings').doc('app').get().then(function(doc){
+    var epochRead = DB.col('settings').doc('app').get().then(function(doc){
       FB.readCount = (FB.readCount || 0) + doc.size;
       var v = doc && doc.exists ? (doc.data() || {}) : {};
       if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; FB._staticAt = 0; }
@@ -1558,14 +1558,14 @@ var FB = {
       /* الحساباتُ والمعلَّقةُ والفرقُ تصل بالإنصات الحيِّ (liveSmall) لمن يحقُّ له —
          فلا تُقرأ هنا ثانيةً: مئتا وثيقةٍ في كلِّ دخولٍ كانت تُدفَع مرتين */
       if (false && rankOf(ROLE) > 30){
-        FB.db.collection('users').limit(300).get().then(function(sn){
+        DB.col('users').limit(300).get().then(function(sn){
           FB.readCount = (FB.readCount || 0) + sn.size;
           if (!STATE.users) STATE.users = {};
           sn.forEach(function(d){ STATE.users[d.id] = d.data(); });
           FB.readCount = (FB.readCount || 0) + sn.size;
         }).catch(function(e){ softErr('سحب المستخدمين', e, 'تعذّر سحبُ الحسابات — الشاشةُ قد تظهر ناقصة'); });
         /* والمعلَّقةُ كذلك: من أُنشئ على جهازٍ ولم يُفعَّل يُرى في كلِّ جهاز */
-        FB.db.collection('pending').limit(200).get().then(function(sn){
+        DB.col('pending').limit(200).get().then(function(sn){
           FB.readCount = (FB.readCount || 0) + sn.size;
           STATE.pending = STATE.pending || {};
           sn.forEach(function(d){
@@ -1578,7 +1578,7 @@ var FB = {
       /* الفرقُ الفرعيةُ (نسب الأنصبة) كانت تُكتب بـ`CORE.dirty('teams',…)` ولا
          تُقرأ هنا أبدًا — فكلُّ فريقٍ يُنشأ يضيع بإعادة الفتح أو على جهازٍ آخر،
          ومن أنشأ فريقًا ظنَّ أنه محفوظ. */
-      false && FB.db.collection('teams').limit(500).get().then(function(sn){
+      false && DB.col('teams').limit(500).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var arr = [];
         sn.forEach(function(d){ arr.push(Object.assign({ id:d.id }, d.data())); });
@@ -1589,7 +1589,7 @@ var FB = {
       /* عدّاد ترقيم الطلبات (SR/IR/UR/MR/DR/CR/AR): وثيقةٌ مفردةٌ بحقولٍ رقمية —
          تُقرأ بنفس الأسلوب الآمن الذي أصلح فرق الأنصبة، لا بمصفوفةٍ تفسدها
          Firestore حين تتحول كائنًا بمفاتيح رقمية. */
-      FB.db.collection('settings').doc('reqSeq').get().then(function(doc){
+      DB.col('settings').doc('reqSeq').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){
           var v = doc.data();
@@ -1611,23 +1611,23 @@ var FB = {
       /* الفكُّ والورشةُ (تهيئة وتجميع) كانا يُكتَبان في 'dismantles' و'inventory'
          ولا يُقرآن هنا قطّ — فنقاطُ الفني في هاتين المرحلتين كانت صحيحةً على
          جهاز من سجّلها فقط، وصفرًا على أي جهازٍ آخر يفتح تقرير الأداء. */
-      FB.db.collection('dismantles').limit(3000).get().then(function(sn){
+      DB.col('dismantles').limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.diss) STATE.diss = {};
         sn.forEach(function(d){ STATE.diss[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب سجلات الفك', e, 'تعذّر سحبُ سجلات الفك — أداءُ الفك قد يظهر ناقصًا'); });
-      office && FB.db.collection('inventory').limit(3000).get().then(function(sn){
+      office && DB.col('inventory').limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         STATE.moves = [];
         sn.forEach(function(d){ STATE.moves.push(d.data()); });
       }).catch(function(e){ softErr('سحب دفتر الحركة', e, 'تعذّر سحبُ دفتر الحركة — أداءُ التهيئة والتجميع قد يظهر ناقصًا'); });
       /* نقاطُ الزيادة اليدوية: سجلٌّ صغيرٌ لا مصفوفةٌ عملاقة — يُقرأ كاملًا كلَّ مرة */
-      FB.db.collection('bonus').limit(2000).get().then(function(sn){
+      DB.col('bonus').limit(2000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         STATE.bonus = {};
         sn.forEach(function(d){ STATE.bonus[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب نقاط الزيادة', e, 'تعذّر سحبُ نقاط الزيادة — قد تظهر ناقصة'); });
-      office && FB.db.collection('workreqs').limit(3000).get().then(function(sn){
+      office && DB.col('workreqs').limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         STATE.workReqs = {};
         sn.forEach(function(d){ STATE.workReqs[d.id] = d.data(); });
@@ -1643,41 +1643,41 @@ var FB = {
         ks.sort(function(a,b){ return (+a) - (+b); });
         return ks.map(function(k){ return v[k]; });
       };
-      FB.db.collection('settings').doc('crews').get().then(function(doc){
+      DB.col('settings').doc('crews').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.crews = arr; }
       }).catch(function(e){ softErr('سحب الفرق', e, 'تعذّر سحبُ الفرق — قد تظهر بذورها الأصلية فقط'); });
       /* V15.35: قائمةُ الفنيين تُشتقُّ من الحسابات — الوثيقةُ القديمةُ لا
          تُقرأ، وتُترَك حتى يمسحها زرُّ التنظيف من شاشة الحسابات. */
-      FB.db.collection('settings').doc('techs').get().then(function(doc){
+      DB.col('settings').doc('techs').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ /* موروثةٌ — تُتجاهَل */ }
       }).catch(function(e){ softErr('سحب الفنيين', e, 'تعذّر سحبُ الفنيين — قد يظهر طاقمٌ ناقص'); });
-      FB.db.collection('settings').doc('items').get().then(function(doc){
+      DB.col('settings').doc('items').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.items = arr; }
       }).catch(function(e){ softErr('سحب الكتالوج', e, 'تعذّر سحبُ الكتالوج — قد تظهر أصنافه الأصلية فقط'); });
-      FB.db.collection('settings').doc('crTime').get().then(function(doc){
+      DB.col('settings').doc('crTime').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.crTime = doc.data();
       }).catch(function(e){ softErr('سحب مواعيد التقارير', e, 'تعذّر سحبُ مواعيد التقارير الدورية'); });
-      FB.db.collection('settings').doc('jobs').get().then(function(doc){
+      DB.col('settings').doc('jobs').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.jobs = arr; }
       }).catch(function(e){ softErr('سحب الوظائف', e, 'تعذّر سحبُ الوظائف — قد تظهر بذورها الأصلية فقط'); });
-      FB.db.collection('settings').doc('vehKinds').get().then(function(doc){
+      DB.col('settings').doc('vehKinds').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.vehKinds = arr; }
       }).catch(function(e){ softErr('سحب أنواع السيارات', e, 'تعذّر سحبُ أنواع السيارات'); });
-      FB.db.collection('settings').doc('lessons').get().then(function(doc){
+      DB.col('settings').doc('lessons').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.lessons = arr; }
       }).catch(function(e){ softErr('سحب سجل الدروس', e, 'تعذّر سحبُ سجل الدروس'); });
-      FB.db.collection('settings').doc('escRules').get().then(function(doc){
+      DB.col('settings').doc('escRules').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.escRules = arr; }
       }).catch(function(e){ softErr('سحب قواعد التصعيد', e, 'تعذّر سحبُ قواعد التصعيد'); });
-      FB.db.collection('settings').doc('raci').get().then(function(doc){
+      DB.col('settings').doc('raci').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.raci = arr; }
       }).catch(function(e){ softErr('سحب مصفوفة المسؤوليات', e, 'تعذّر سحبُ مصفوفة RACI'); });
@@ -1694,32 +1694,32 @@ var FB = {
       /* مفتاحُ التشغيل: يكتبه مديرُ المشروع، ويقرؤه من يُنشئ الحساباتِ ويُعيد
          الكلمات — المشرفُ فما فوق والإدارةُ العليا — فلا يُرسَل أحدٌ إلى GitHub */
       if (may('roles') || may('provision') || effRole(ROLE) === 'exec'){
-        FB.db.collection('ghcfg').doc('gh').get().then(function(doc){
+        DB.col('ghcfg').doc('gh').get().then(function(doc){
           FB.readCount = (FB.readCount || 0) + doc.size;
           if (doc && doc.exists){ CFG.gh = doc.data() || {}; }
         }).catch(function(e){ softErr('سحب مفتاح التشغيل', e, ''); });
       }
       readDelta('maints', 'maints', 1000);
       /* آخرُ مئتَي خطوةٍ تكفي اللوحات — ولا تُثقِل الإقلاع */
-      FB.db.collection('steps').orderBy('at', 'desc').limit(200).get().then(function(sn){
+      DB.col('steps').orderBy('at', 'desc').limit(200).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var L = []; sn.forEach(function(dd){ L.push(dd.data()); });
         if (L.length) STATE.steps = L;
         if (CUR === 'now' || CUR === 'over') render(1);
       }).catch(function(e){ softErr('سحب سجل ما تمّ', e, ''); });
-      FB.db.collection('settings').doc('coliaison').get().then(function(doc){ if (doc && doc.exists) CFG.coliaison = Object.assign({}, doc.data()); }).catch(function(e){ softErr('سحب ضباط اتصال الشركات', e, ''); });   /* (V28.5) */
-      FB.db.collection('settings').doc('cotel').get().then(function(doc){
+      DB.col('settings').doc('coliaison').get().then(function(doc){ if (doc && doc.exists) CFG.coliaison = Object.assign({}, doc.data()); }).catch(function(e){ softErr('سحب ضباط اتصال الشركات', e, ''); });   /* (V28.5) */
+      DB.col('settings').doc('cotel').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.cotel = Object.assign({}, doc.data());
       }).catch(function(e){ softErr('سحب دفتر جوالات الشركات', e, 'تعذّر سحبُ جوالات الشركات — أدخلها أو زامِن'); });
-      FB.db.collection('settings').doc('miles').get().then(function(doc){
+      DB.col('settings').doc('miles').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.mileDates = arr; }
       }).catch(function(e){ softErr('سحب مواعيد المعالم', e, 'تعذّر سحبُ مواعيد المعالم — تُشتقّ من المواعيد'); });
       /* البلاغات: من يُصلح يقرأ الكلَّ — وغيرُه لا يقرأ المجموعةَ (القاعدةُ تمنع)
          فيبقى عنده ما كتبه في جهازه */
       (function(){
-        var col = FB.db.collection('bugs');
+        var col = DB.col('bugs');
         var q = rankOf(effRole(ROLE)) >= rankOf('engineer')
           ? col.orderBy('at', 'desc').limit(200)
           : col.where('uid', '==', myUid()).limit(50);
@@ -1728,54 +1728,54 @@ var FB = {
           var B = {}; sn.forEach(function(dd){ B[dd.id] = dd.data(); }); STATE.bugs = B; render(1);
         }).catch(function(e){ softErr('سحب البلاغات', e, ''); });
       })();
-      FB.db.collection('settings').doc('trials').get().then(function(doc){
+      DB.col('settings').doc('trials').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.trials = { rows:k.rows, inCost:!!k.inCost, at:k.at, by:k.by }; }
       }).catch(function(e){ softErr('سحب دفتر التجارب', e, ''); });
-      FB.db.collection('settings').doc('wtask').get().then(function(doc){
+      DB.col('settings').doc('wtask').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var k = doc.data() || {}; if (Array.isArray(k.rows)) STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; }
       }).catch(function(e){ softErr('سحب المهام الأسبوعية', e, ''); });
-      FB.db.collection('settings').doc('wbs').get().then(function(doc){
+      DB.col('settings').doc('wbs').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var w = doc.data() || {}; if (Array.isArray(w.rows)) STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by }; }
       }).catch(function(e){ softErr('سحب جدول المتابعة', e, ''); });
-      FB.db.collection('settings').doc('risks').get().then(function(doc){
+      DB.col('settings').doc('risks').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.risks = arr; }
       }).catch(function(e){ softErr('سحب سجل المخاطر', e, 'تعذّر سحبُ سجل المخاطر — قد يظهر بالبذرة'); });
-      FB.db.collection('settings').doc('handSeq').get().then(function(doc){
+      DB.col('settings').doc('handSeq').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var v = doc.data();
           if (typeof v.n === 'number' && v.n > HAND_SEQ) HAND_SEQ = v.n; }
       }).catch(function(e){ softErr('سحب ترقيم محاضر التسليم', e, 'تعذّر سحبُ آخر رقم محضر — قد يتكرّر الترقيم'); });
-      FB.db.collection('settings').doc('patterns').get().then(function(doc){
+      DB.col('settings').doc('patterns').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) STATE.patterns = arr; }
       }).catch(function(e){ softErr('سحب أنماط القطع', e, 'تعذّر سحبُ أنماط القطع — قد تظهر ناقصة'); });
-      FB.db.collection('settings').doc('types').get().then(function(doc){
+      DB.col('settings').doc('types').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists && Object.keys(doc.data()).length){ STATE.types = doc.data(); typesList(); }
       }).catch(function(e){ softErr('سحب أنواع المواقع', e, 'تعذّر سحبُ أنواع المواقع'); });
-      FB.db.collection('settings').doc('mxExtra').get().then(function(doc){
+      DB.col('settings').doc('mxExtra').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists){ var arr = arrFromDoc(doc.data()); if (arr.length) CFG.mxExtra = arr; }
       }).catch(function(e){ softErr('سحب التركيبات المُعلَنة', e, 'تعذّر سحبُ التركيبات المُعلَنة قبل وصول الموقع'); });
       /* الصلاحياتُ المخصَّصة: تُطبَّق فوق ROLES الافتراضية لا تستبدلها —
          فدورٌ لم يُخصَّص له شيءٌ يبقى على قيمه الأصلية. */
       /* مصفوفةُ الصلاحيات: ما تقبله القاعدةُ لكلِّ دور — تُعرَض بها الشاشة */
-      FB.db.collection('settings').doc('perms').get().then(function(doc){
+      DB.col('settings').doc('perms').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.perms = doc.data();
         PM_AT = Date.now();
       }).catch(function(e){ softErr('سحب مصفوفة الصلاحيات', e, ''); });
       /* الأدوارُ المخصَّصةُ أوّلًا ثم القدراتُ فوقها — أيًّا كان ترتيبُ وصولهما */
-      FB.db.collection('settings').doc('roles').get().then(function(doc){
+      DB.col('settings').doc('roles').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (doc && doc.exists) CFG.roles = doc.data();
         rolesApply();
       }).catch(function(e){ softErr('سحب الأدوار المخصَّصة', e, ''); });
-      FB.db.collection('settings').doc('roleCaps').get().then(function(doc){
+      DB.col('settings').doc('roleCaps').get().then(function(doc){
         FB.readCount = (FB.readCount || 0) + doc.size;
         if (!doc || !doc.exists) return;
         CFG.roleCaps = doc.data();
@@ -1787,7 +1787,7 @@ var FB = {
          كلٌّ منها وثيقةٌ واحدةٌ لكلِّ سجلٍّ (لا مصفوفةٌ مجمَّعة) فتُقرأ
          مباشرةً بمعرِّفها. */
       var sAt = (STATE.meta.pullAt || (STATE.meta.pullAt = {})), sSince = (sAt.sites || 0) - 120000, sStart = Date.now();
-      var sq = FB.db.collection('sites'); if (sSince > 0) sq = sq.where('_at', '>', sSince);
+      var sq = DB.col('sites'); if (sSince > 0) sq = sq.where('_at', '>', sSince);
       sq.limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         sAt.sites = sStart;
@@ -1799,43 +1799,43 @@ var FB = {
         CORE.saveSoon(); statBump();
       }).catch(function(e){ softErr('سحب تعديلات المواقع', e, 'تعذّر سحبُ تعديلات المواقع (العناوين والتصحيحات)'); });
 
-      office && FB.db.collection('purchases').limit(3000).get().then(function(sn){
+      office && DB.col('purchases').limit(3000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.buys) STATE.buys = {};
         sn.forEach(function(d){ STATE.buys[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب المشتريات', e, 'تعذّر سحبُ دفتر المشتريات'); });
 
-      FB.db.collection('vehicles').limit(1000).get().then(function(sn){
+      DB.col('vehicles').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.vehicles) STATE.vehicles = {};
         sn.forEach(function(d){ STATE.vehicles[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب السيارات', e, 'تعذّر سحبُ سجل السيارات'); });
 
-      FB.db.collection('vehAsn').limit(2000).get().then(function(sn){
+      DB.col('vehAsn').limit(2000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.vehAsn) STATE.vehAsn = {};
         sn.forEach(function(d){ STATE.vehAsn[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب إسناد السيارات', e, 'تعذّر سحبُ عهدة السيارات'); });
 
-      office && FB.db.collection('ships').limit(1000).get().then(function(sn){
+      office && DB.col('ships').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.ships) STATE.ships = {};
         sn.forEach(function(d){ STATE.ships[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب الشحنات', e, 'تعذّر سحبُ سجل الشحنات'); });
 
-      office && FB.db.collection('coreqs').limit(1000).get().then(function(sn){
+      office && DB.col('coreqs').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.coreqs) STATE.coreqs = {};
         sn.forEach(function(d){ STATE.coreqs[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب طلبات الشركات', e, 'تعذّر سحبُ طلبات إضافة الشركات'); });
 
-      office && FB.db.collection('fixreqs').limit(1000).get().then(function(sn){
+      office && DB.col('fixreqs').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.fixreqs) STATE.fixreqs = {};
         sn.forEach(function(d){ STATE.fixreqs[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب طلبات التصويب', e, 'تعذّر سحبُ طلبات تصويب البيانات'); });
 
-      office && FB.db.collection('newsites').limit(1000).get().then(function(sn){
+      office && DB.col('newsites').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.newsites) STATE.newsites = {};
         sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
@@ -1865,7 +1865,7 @@ var FB = {
         if (add){ SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint(); }
       }).catch(function(e){ softErr('سحب المواقع الجديدة', e, 'تعذّر سحبُ طلبات تسجيل مواقع جديدة'); });
 
-      office && FB.db.collection('changes').limit(1000).get().then(function(sn){
+      office && DB.col('changes').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var arr = [];
         sn.forEach(function(d){ arr.push(d.data()); });
@@ -1874,7 +1874,7 @@ var FB = {
         arr.forEach(function(x){ CHANGES.push(x); });
       }).catch(function(e){ softErr('سحب ضبط التغيير', e, 'تعذّر سحبُ سجل طلبات التغيير'); });
 
-      office && FB.db.collection('ncr').limit(1000).get().then(function(sn){
+      office && DB.col('ncr').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var arr = [];
         sn.forEach(function(d){ arr.push(d.data()); });
@@ -1883,7 +1883,7 @@ var FB = {
         arr.forEach(function(x){ NCRS.push(x); });
       }).catch(function(e){ softErr('سحب عدم المطابقة', e, 'تعذّر سحبُ سجل عدم المطابقة'); });
 
-      FB.db.collection('ipc').limit(1000).get().then(function(sn){
+      DB.col('ipc').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var arr = [];
         sn.forEach(function(d){ arr.push(d.data()); });
@@ -1892,7 +1892,7 @@ var FB = {
         arr.forEach(function(x){ IPCS.push(x); });
       }).catch(function(e){ softErr('سحب المستخلصات', e, 'تعذّر سحبُ سجل المستخلصات'); });
 
-      FB.db.collection('hse').limit(1000).get().then(function(sn){
+      DB.col('hse').limit(1000).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var arr = [];
         sn.forEach(function(d){ arr.push(d.data()); });
@@ -1902,7 +1902,7 @@ var FB = {
         arr.forEach(function(x){ HSE.incidents.push(x); HSE.lost += cfgN(x.lost); });
       }).catch(function(e){ softErr('سحب حوادث السلامة', e, 'تعذّر سحبُ سجل حوادث السلامة'); });
 
-      FB.db.collection('baseline').limit(200).get().then(function(sn){
+      DB.col('baseline').limit(200).get().then(function(sn){
         FB.readCount = (FB.readCount || 0) + sn.size;
         var latest = null;
         sn.forEach(function(d){
@@ -1912,14 +1912,14 @@ var FB = {
         if (latest) BASE = latest;
       }).catch(function(e){ softErr('سحب خط الأساس', e, 'تعذّر سحبُ خط الأساس المجمَّد'); });
       /* اللقطاتُ: ثلاثون وثيقةً تكفي اللوحةَ التاريخيةَ كلَّها */
-      return FB.db.collection('stats').orderBy('day', 'desc').limit(30).get()
+      return DB.col('stats').orderBy('day', 'desc').limit(30).get()
         .then(function(sn){
           if (!STATE.stats) STATE.stats = {};
           sn.forEach(function(d){ STATE.stats[d.id] = d.data(); });
           FB.readCount = (FB.readCount || 0) + sn.size;
         }).catch(function(e){ softErr('سحب اللقطات اليومية', e, 'تعذّر سحبُ اللقطات — اللوحةُ التاريخيةُ قد تظهر خاليةً'); });
     }).then(function(){
-      return FB.db.collection('settings').doc('points').get();
+      return DB.col('settings').doc('points').get();
     }).then(function(doc){
       if (doc && doc.exists){
         var v = doc.data();
@@ -1935,6 +1935,17 @@ var FB = {
     });
   }
 };
+/* ═══ بوابةُ البيانات (V31.5 — خطةُ التسليم، الوحدة ٣) ═══
+   كلُّ حديثٍ مع القاعدة يمرّ من هنا — لا FB.db.collection في أيِّ مكانٍ آخر (جردُ الصحة يرفضه).
+   الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى
+   يُكتَب محوِّلٌ واحدٌ هنا يحاكي هذه الواجهة — ولا يُلمَس شيءٌ في الصفحات. */
+var DB = {
+  ready: function(){ return !!(FB.ready && FB.db); },
+  col:   function(name){ return FB.db.collection(name); },
+  doc:   function(name, id){ return FB.db.collection(name).doc(id); },
+  batch: function(){ return FB.db.batch(); }
+};
+
 
 /* ── اللقطةُ اليومية ─────────────────────────────────────────────────────
    لوحةُ الوزارة كانت تُبنى بقراءة كلِّ سجلٍّ في القاعدة. ومئةٌ وخمسون جهازًا
@@ -2053,7 +2064,7 @@ function liveSmall(){
   pulseStop(); setTimeout(function(){ pulseWatch(); bridgeWatch(); }, 0);
   var watch = function(col, apply, cap, filt, filt2){
     try {
-      var q = FB.db.collection(col);
+      var q = DB.col(col);
       /* طلباتُ الإنشاء: غيرُ المدير يُنصِت لما كتبه هو — فتُثبَت القاعدةُ
          على الشرط لا على كلِّ وثيقةٍ، ولا يرى كلماتٍ ليست له */
       if (filt) q = filt.length === 3 ? q.where(filt[0], filt[1], filt[2]) : q.where(filt[0], '==', filt[1]);
@@ -2079,7 +2090,7 @@ function liveSmall(){
      يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   try {
-    LIVE_SMALL.push(FB.db.collection('settings').doc('app').onSnapshot(function(doc){
+    LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
       if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; FB._staticAt = 0; syncCycle(); }
       if (dv.syncAll) syncAllApply(dv.syncAll);
@@ -2089,14 +2100,14 @@ function liveSmall(){
   } catch (e){ softErr('إنصات النسخة', e, ''); }
   /* جدولُ المتابعة: وثيقةٌ واحدةٌ يُنصِت إليها الجميع — فتحديثُ المكتب يصل الوزارةَ في ثوانٍ */
   try {
-    LIVE_SMALL.push(FB.db.collection('settings').doc('wtask').onSnapshot(function(doc){
+    LIVE_SMALL.push(DB.col('settings').doc('wtask').onSnapshot(function(doc){
       if (!doc || !doc.exists) return;
       var k = doc.data() || {}; if (!Array.isArray(k.rows)) return;
       STATE.wtask = { rows:k.rows, at:k.at, by:k.by, meetAt:k.meetAt || 0, meetBy:k.meetBy || '' }; CORE.saveSoon();
       wtRemind();
       if (CUR === 'wtask' && !document.querySelector('#content input:focus')) render(1);
     }, function(e){ softErr('إنصات المهام', e, ''); }));
-    LIVE_SMALL.push(FB.db.collection('settings').doc('wbs').onSnapshot(function(doc){
+    LIVE_SMALL.push(DB.col('settings').doc('wbs').onSnapshot(function(doc){
       if (!doc || !doc.exists) return;
       var w = doc.data() || {}; if (!Array.isArray(w.rows)) return;
       STATE.wbs = { rows:w.rows, keys:w.keys || [], at:w.at, by:w.by };
@@ -2110,7 +2121,7 @@ function liveSmall(){
      الحالات وقوعًا (ترقيةُ فنيٍّ إلى مشرف). ووثيقةٌ واحدةٌ لا تكلّف شيئًا. */
   if (STATE.meta.uid && rankOf(ROLE) <= 30){
     try {
-      LIVE_SMALL.push(FB.db.collection('users').doc(STATE.meta.uid).onSnapshot(function(doc){
+      LIVE_SMALL.push(DB.col('users').doc(STATE.meta.uid).onSnapshot(function(doc){
         if (!doc || !doc.exists) return;
         var mv = doc.data() || {};
         STATE.users = STATE.users || {}; STATE.users[STATE.meta.uid] = mv;

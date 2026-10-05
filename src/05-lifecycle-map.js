@@ -385,8 +385,6 @@ function mapPaintLight(z){
    والحركةُ والتكبيرُ وتصحيحُ القياس كلٌّ يرسمها) — ١٫٤ ثانية من ٢٫٧. فصار ما يأتي خلال ثمانين ملّي ثانية من رسمةٍ
    يُجمَّع في رسمةٍ واحدةٍ تاليةٍ بأثقل ما طُلب (الكاملُ يغلب الخفيف). أولُ نداءٍ في الدفعة يُرسَم في مكانه فورًا. */
 var MP_LAST = 0, MP_TIMER = 0, MP_FULL = false, MAP_SIG = '';
-/* (V31.1) كانت تُكتَب بلا إعلانٍ (متغيراتٌ ضمنيةٌ عامة) — يرفضها الوضعُ الصارم */
-var TWIN_OPEN = '', TWIN_F = '', TWIN_Q = '', TWIN_T = 0, PERM_CACHE = null;
 function mapPaint(light){
   var now = Date.now();
   if (now - MP_LAST < 80 && MP_LAST && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
@@ -2106,7 +2104,7 @@ function fontsLoad(){
   if (CFG.fonts && CFG.fonts.r) return Promise.resolve(CFG.fonts);
   if (!(typeof FB === 'object' && FB.db && FB.db.collection)) return Promise.resolve(null);
   return Promise.race([
-    FB.db.collection('settings').doc('fonts').get().then(function(d){ if (d && d.exists){ CFG.fonts = Object.assign({}, d.data()); } return CFG.fonts || null; }),
+    DB.col('settings').doc('fonts').get().then(function(d){ if (d && d.exists){ CFG.fonts = Object.assign({}, d.data()); } return CFG.fonts || null; }),
     new Promise(function(res){ setTimeout(function(){ res(null); }, 3500); })
   ]).catch(function(){ return null; });
 }
@@ -3239,7 +3237,7 @@ function autoSignIn(){
           if (!u){ res(false); return; }
           STATE.meta.uid = u.uid;
           STATE.meta.online = true;
-          FB.db.collection('users').doc(u.uid).get().then(function(doc){
+          DB.col('users').doc(u.uid).get().then(function(doc){
             FB.readCount = (FB.readCount || 0) + doc.size;
             var v = doc.exists ? (doc.data() || {}) : {};
             /* الوثيقةُ تُحفَظ في مكانها ليُرى وجودُها في بطاقة الهوية —
@@ -4587,7 +4585,7 @@ function mfuFetch(force){
   if (!force && (MFU.v || Date.now() - MFU.at < 600000)) return;
   if (!FB.ready || !FB.db){ MFU.v = MFU.v || STATE.mfu || {}; return; }
   MFU.at = Date.now();
-  FB.db.collection('settings').doc('mfu').get().then(function(doc){
+  DB.col('settings').doc('mfu').get().then(function(doc){
     FB.readCount = (FB.readCount || 0) + 1;
     MFU.v = (doc && doc.exists) ? doc.data() : {}; STATE.mfu = MFU.v; if (CUR === 'mfu') render(1);
   }).catch(function(e){ softErr('mfu', e, ''); });
