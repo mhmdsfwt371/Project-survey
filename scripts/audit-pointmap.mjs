@@ -24,11 +24,11 @@ await wait(1500);
 const open = async (p, tab) => { w.goPage(p); w.render(1); await wait(60); const b = d.querySelector('[data-ptab="' + p + ':' + tab + '"]'); if (b){ b.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150); } return d.getElementById('content'); };
 
 console.log('\n══ ١ · النقطةُ البعيدةُ لا تُصغّر المشعر ══');
-const mina = w.STATE.sites.filter(x => x.zone === 'منى' && +x.lat && +x.lng);
+const mina = w.STATE.sites.filter(x => w.taxOf(x).g === 'منى' && +x.lat && +x.lng);
 const spanBefore = (() => { const la = mina.map(x => +x.lat), lo = mina.map(x => +x.lng); return [Math.max(...la) - Math.min(...la), Math.max(...lo) - Math.min(...lo)]; })();
 w.STATE.sites.push({ id:'NSK-MIN-CMP-9999', name:'نقطةٌ ضالّة', zone:'منى', type:'مخيم', lat:21.6, lng:39.6 });   /* ~٤٠ كم بعيدًا */
 w.SITE_IX = null; w.statBump();
-const G = w.geoOutliers(w.STATE.sites.filter(x => x.zone === 'منى' && +x.lat && +x.lng));
+const G = w.geoOutliers(w.STATE.sites.filter(x => w.taxOf(x).g === 'منى' && +x.lat && +x.lng));
 T(G.far.length === 1 && G.far[0].id === 'NSK-MIN-CMP-9999' && G.core.length === mina.length, 'النقطةُ على بُعد كيلومترات تُعَدُّ بعيدةً وحدَها: ' + G.far.length + ' من ' + (mina.length + 1));
 await open('mfu', 'kiosk'); await wait(1300);
 const svg = d.querySelector('.kk-pts');

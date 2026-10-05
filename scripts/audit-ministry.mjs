@@ -71,7 +71,7 @@ T(page.includes('raw.githubusercontent.com/mhmdsfwt371/Project-survey/ministry/s
 T(!page.includes('firebase') && !page.includes('googleapis'), 'ولا تعرف القاعدةَ — أرقامٌ عامةٌ فقط');
 T(/ministry:ministry/.test(wf) && !/push .*main/.test(wf), 'والسيرُ يدفع إلى فرع ministry وحدَه لا إلى الأصل');
 T((wf.match(/for i in 1 2 3/g) || []).length >= 2 && /MAIL_ATTACH/.test(wf) && /ministry-pdf\.mjs/.test(wf), 'ويُعيد التثبيتَ ويرسل PDF مرفقًا');
-T(/0 5 \* \* 6/.test(wf) && /20 \*\/6 \* \* \*/.test(wf), 'كلَّ ستِّ ساعاتٍ لقطة، وكلَّ سبتٍ تقرير');
+T(/30 4 \* \* 0/.test(wf) && /20 \*\/6 \* \* \*/.test(wf) && /weekly-pack\.mjs/.test(wf) && /weekly-drive\.mjs/.test(wf), 'كلَّ ستِّ ساعاتٍ لقطة، وكلَّ أحدٍ ٧:٣٠ تحديثٌ أسبوعيٌّ من التطبيق إلى البريد والدرايف (V30.0)');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);

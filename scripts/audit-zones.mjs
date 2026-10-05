@@ -31,7 +31,7 @@ console.log('\n══ ٢ · الإعلانُ من نقاط المراحل ══
 w.mxDeclare(Z, 'كاميرات LPR'); w.statBump();
 T((w.CFG.mxExtra || []).includes(Z + '|كاميرات LPR'), 'أُعلنت التركيبة');
 const K = w.siteKeyStats();
-T(K.zones[Z] && K.zones[Z].n === 0 && K.by[Z + '|LPR'] === 0, 'والمشعرُ في الإحصاء بصفر — والتركيبةُ بصفر بمفتاح نوعها (LPR)');
+T(!K.zones[Z] && K.by[Z + '|LPR'] === 0, 'والتركيبةُ بصفر بمفتاح نوعها (LPR) — ولا مشعرَ فارغًا في بطاقات الشاشة (قرارُ المالك V30.0)');
 T(w.siteStats().byKey[Z + '|LPR'] === 0, 'وفي إحصاء المواقع كذلك');
 T(w.zonesLive().includes(Z) && w.zoneOptions().includes(Z), 'وفي قوائم المشاعر (الموقعُ الجديد وغيرُه)');
 
@@ -39,7 +39,7 @@ console.log('\n══ ٣ · حيث يُرى ══');
 const asn = await open('req', 'assign');
 T(asn.textContent.includes(Z) && /مراكز التفويج/.test(asn.textContent), 'الطلباتُ والتوزيع: صفٌّ للمشعر الجديد بالمتاح صفر — بتسمية النوع');
 const kk = await open('mfu', 'kiosk'); await wait(1200);
-T(kk.textContent.includes(Z), 'وشاشةُ الوزارة تسمّيه في المشاعر');
+T(!kk.textContent.includes(Z), 'وشاشةُ الوزارة لا تعرض مشعرًا بلا نقاط (قرارُ المالك V30.0: المشاعرُ الخمسة بتصنيفه)');
 T(w.zoneForecast(Z) === null, 'ولا توقّعَ يُكسَر لمشعرٍ بلا نقاط');
 const ov = await open('over', 'over');
 T(ov.textContent.includes(Z), 'والملخّصُ يسمّيه');
@@ -51,7 +51,8 @@ w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer';
 console.log('\n══ ٤ · أوّلُ نقطةٍ في المشعر الجديد تحلُّ محلَّ الإعلان بلا تكرار ══');
 w.STATE.sites.push({ id:'NSK-TRD-LPR-0001', name:'كاميرا اختبار', zone:Z, type:'LPR', lat:21.4, lng:39.9 }); w.SITE_IX = null; w.statBump();
 const K2 = w.siteKeyStats();
-T(K2.zones[Z].n === 1 && K2.by[Z + '|LPR'] === 1 && Object.keys(K2.by).filter(k => k.startsWith(Z + '|')).length === 1, 'الصفُّ واحدٌ بعددٍ واحد — لا صفَّ مكرَّرٌ للمعلَن ولو اختلفت تسميتُه عن مفتاحه');
+const g2 = w.taxOf(w.siteFind('NSK-TRD-LPR-0001')).g;   /* (V30.0) مشعرُ البطاقات بتصنيف المالك */
+T(K2.zones[g2] && K2.zones[g2].n >= 1 && K2.by[Z + '|LPR'] === 1 && Object.keys(K2.by).filter(k => k.startsWith(Z + '|')).length === 1, 'الصفُّ واحدٌ بعددٍ واحد — لا صفَّ مكرَّرٌ للمعلَن ولو اختلفت تسميتُه عن مفتاحه — ومشعرُه في الشاشة بتصنيف المالك: ' + g2);
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

@@ -131,7 +131,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
 {
   await open('mfu', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
   const kk = txt(), h = d.getElementById('content').innerHTML;
-  T((h.match(/kk-ring/g) || []).length === 4 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ وزرُّ العرض الكامل');
+  T((h.match(/kk-ring/g) || []).length === 5 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ ومخيماتٌ بلا عائق وزرُّ العرض الكامل (V30.0)');
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svDone(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;
@@ -151,7 +151,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T(/يكتمل نحو/.test(kk) && /لا وتيرةَ في أسبوعين/.test(kk), 'وكلاهما على الشاشة');
   /* خريطةُ النقاط (V17.93): دائرةٌ لكلِّ نقطةٍ بإحداثيات، والمفتاحُ يُجمَع إليها */
   const dots = [...d.querySelectorAll('.kk-pts circle')];
-  const zPts = w.STATE.sites.filter(x => x.zone === w.KK_ZONE && +x.lat && +x.lng).length;
+  const zPts = w.STATE.sites.filter(x => w.taxOf(x).g === w.KK_ZONE && +x.lat && +x.lng).length;   /* (V30.0) بتصنيف المالك */
   const lg = [...d.querySelectorAll('.kk-legend2 .kk-lg b')].reduce((s0, b) => s0 + +b.textContent.replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[٬,]/g, ''), 0);
   T(dots.length > 100 && dots.length === zPts && lg === zPts, 'دائرةٌ لكلِّ نقطةٍ في المشعر، والمفتاحُ يُجمَع إليها: ' + dots.length + ' / ' + lg);
   const d0 = dots.find(c => c.getAttribute('data-site')); const id0 = d0.getAttribute('data-site');

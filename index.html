@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-45b3861444.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-8d170e0dde.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4095,8 +4095,8 @@ function shapeSvg(shape, col){
    بنوع «كاميرات رصد». يُحسَب من بيانات النقطة بقواعد، ويُعدَّل لأيِّ نقطةٍ يدويًّا من «تعديل البيانات» (tg/tt) — كلُّه حركيّ. */
 /* (V28.5) ملاحظاتُ «تحديثات المنصة»: «كاميراتُ الوزارة» ← «المتابعة» وتُزال منها كاميراتُ الجمرات (لها مسمّاها)، و«كاميراتُ الوزارة LPR» ← «مراكز التفويج».
    المفاتيحُ القديمةُ المحفوظةُ في تعديلات النقاط تُقرأ بأسمائها الجديدة (TAX_ALIAS). */
-var TAX_ALIAS = { 'كاميرات الرصد':'المتابعة', 'محطات التفويج':'مراكز التفويج', 'كاميرات رصد':'كاميرات المتابعة' };
-var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'مراكز التفويج', 'المتابعة'];
+var TAX_ALIAS = { 'كاميرات الرصد':'كاميرات المتابعة', 'المتابعة':'كاميرات المتابعة', 'محطات التفويج':'مراكز التفويج', 'كاميرات رصد':'كاميرات المتابعة' };   /* (V30.0) المشعرُ «المتابعة» صار «كاميرات المتابعة» */
+var TAX_G = ['منى', 'عرفات', 'المزدلفة', 'مراكز التفويج', 'كاميرات المتابعة'];
 var TAX_T = ['مخيمات', 'ممرات', 'محطات قطار', 'كاميرات المتابعة', 'منشأة الجمرات', 'مسجد نمرة', 'النورية', 'محطات طريق الهجرة', 'الزايدي'];
 var TAX_V = 2;   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُعاد قراءةُ الذاكرة */
 function taxCalc(x){
@@ -4107,8 +4107,8 @@ function taxCalc(x){
   else if (/الهجرة/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'محطات طريق الهجرة'; }
   else if (/الزايد/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'الزايدي'; }
   else if (/التفويج/.test(z)){ g = 'مراكز التفويج'; }
-  else if (z === 'الجمرات' || (cam && (/الجمرات/.test(String(x.region || '')) || /^NSK-JMR-/.test(String(x.id || ''))))){ g = cam ? 'المتابعة' : 'منى'; t = 'منشأة الجمرات'; }   /* (V28.5) كاميراتُ الجمرات (مشعرُها منى في السجل ومنطقتُها «منشأة الجمرات») نوعُها «منشأة الجمرات» لا «كاميرات المتابعة» */
-  else if (z === 'منى'){ g = cam ? 'المتابعة' : 'منى'; }
+  else if (z === 'الجمرات' || (cam && (/الجمرات/.test(String(x.region || '')) || /^NSK-JMR-/.test(String(x.id || ''))))){ g = cam ? 'كاميرات المتابعة' : 'منى'; t = 'منشأة الجمرات'; }   /* (V28.5) كاميراتُ الجمرات (مشعرُها منى في السجل ومنطقتُها «منشأة الجمرات») نوعُها «منشأة الجمرات» لا «كاميرات المتابعة» */
+  else if (z === 'منى'){ g = cam ? 'كاميرات المتابعة' : 'منى'; }
   else if (z === 'عرفات' || z === 'مسجد نمرة'){ g = 'عرفات'; if (z === 'مسجد نمرة') t = 'مسجد نمرة'; }
   else if (/مزدلفة/.test(z)){ g = 'المزدلفة'; }
   else if (/قطار/.test(z)){ t = 'محطات قطار'; g = /مزدلفة/.test(nm0) ? 'المزدلفة' : (/عرفات/.test(nm0) ? 'عرفات' : 'منى'); }
@@ -15979,7 +15979,7 @@ function statBump(){
 function siteKeyStats(){
   var by = {}, sv = {}, ins = {}, T = { n:0, sv:0, ins:0, noRec:0, stuck:0 }, Z = {};
   STATE.sites.forEach(function(x){
-    var k = x.zone + '|' + x.type, r = STATE.recs[x.id], z = x.zone || 'أخرى';
+    var k = x.zone + '|' + x.type, r = STATE.recs[x.id], z = taxOf(x).g || 'أخرى';   /* (V30.0) المشعرُ بتصنيف المالك: مراكزُ التفويج تضمّ النورية والزايدي والهجرة */
     /* المشعرُ بالأعداد نفسِها (V17.78): من الحلقة نفسِها لا من حسابٍ ثانٍ */
     var ZZ = Z[z] || (Z[z] = { n:0, sv:0, ins:0, noRec:0, stuck:0 });
     by[k] = (by[k] || 0) + 1; T.n++; ZZ.n++;
@@ -15990,7 +15990,7 @@ function siteKeyStats(){
     if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; ZZ.ins++; }
   });
   /* المعلَنُ في «نقاط المراحل» يدخل بصفرٍ — مشعرًا وتركيبةً (V18.0) */
-  declaredTypeKeys().forEach(function(k){ if (by[k] == null) by[k] = 0; var z = k.split('|')[0]; if (!Z[z]) Z[z] = { n:0, sv:0, ins:0, noRec:0, stuck:0 }; });
+  declaredTypeKeys().forEach(function(k){ if (by[k] == null) by[k] = 0; });   /* (V30.0) المعلَنُ بلا نقاطٍ لا يصنع مشعرًا فارغًا في الشاشة */
   var keys = Object.keys(by).sort(function(a, b){ return by[b] - by[a]; });
   return { keys:keys, by:by, sv:sv, ins:ins, total:T, zones:Z };
 }
@@ -20953,7 +20953,7 @@ function zoneForecast(zone){
   if (!o || !o.n) return null;
   var now = Date.now(), from = now - 14 * 864e5, done14 = 0;
   (STATE.sites || []).forEach(function(x){
-    if (x.zone !== zone) return;
+    if (taxOf(x).g !== zone) return;   /* (V30.0) بتصنيف المالك */
     var r = STATE.recs[x.id];
     if (r && svDone(r) && +r.at >= from) done14++;
   });
@@ -21059,7 +21059,7 @@ if (typeof document === 'object'){
    تبقى خيارًا. وحيث لا ليفليت (بيئةُ الفحص) تُرسَم النقاطُ المجرّدة. */
 var KK_VIEW = 'sat', KK_MAP = null, KK_MAPV = {}, KK_MAP_ZONE = '';
 function kkSatHtml(zone){
-  var all = (STATE.sites || []).filter(function(x){ return x.zone === zone && +x.lat && +x.lng; });
+  var all = (STATE.sites || []).filter(function(x){ return taxOf(x).g === zone && +x.lat && +x.lng; });   /* (V30.0) */
   if (!all.length) return '<p class="hint">' + esc(t('لا نقاطَ بإحداثياتٍ في هذا المشعر.')) + '</p>';
   var G = geoOutliers(all), cnt = {};
   G.core.forEach(function(x){ var st = lifeOf(x); cnt[st] = (cnt[st] || 0) + 1; });
@@ -21073,7 +21073,7 @@ function kkSatHtml(zone){
 function kkSatInit(){
   var el = document.getElementById('kkSat'); if (!el) return false;
   if (typeof L === 'undefined' || !L.map){ el.innerHTML = '<p class="hint" style="padding:12px">' + esc(t('الخريطةُ تحتاج تحميلَ المكتبة — تظهر النقاطُ المجرّدةُ بدلًا منها')) + '</p>'; return false; }
-  var zone = KK_ZONE, all = (STATE.sites || []).filter(function(x){ return x.zone === zone && +x.lat && +x.lng; }), core = geoOutliers(all).core;
+  var zone = KK_ZONE, all = (STATE.sites || []).filter(function(x){ return taxOf(x).g === zone && +x.lat && +x.lng; }), core = geoOutliers(all).core;
   if (KK_MAP){ try { KK_MAP.remove(); } catch (e){ LS_ERR = e; } KK_MAP = null; }
   var m = L.map(el, { zoomControl:true, attributionControl:true, preferCanvas:true });
   L.tileLayer(TILES.esri, { maxZoom:19, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);
@@ -21102,7 +21102,7 @@ function kkSatInit(){
 }
 var PM_CLICK_SKIP = 0;
 function pointMap(zone){
-  var all = (STATE.sites || []).filter(function(x){ return x.zone === zone; });
+  var all = (STATE.sites || []).filter(function(x){ return taxOf(x).g === zone; });
   var P0 = all.filter(function(x){ return +x.lat && +x.lng; }), noCo = all.length - P0.length;
   if (!P0.length) return '<p class="hint">' + esc(t('لا نقاطَ بإحداثياتٍ في هذا المشعر.')) + '</p>';
   var G = geoOutliers(P0), P = G.core;
@@ -21232,6 +21232,9 @@ function kioskBody(){
     +   kioskRing(pcIns, 'var(--min-teal)', 'التركيبُ المنجَز', nm(S.ins) + ' / ' + nm(S.n))
     +   '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-red)" aria-valuenow="' + S.stuck + '">' + nm(S.stuck) + '</div><div class="kk-lab">' + esc(t('متعذّر')) + '</div>'
     +     '<div class="kk-sub">' + esc(t('لم يصل إليه الميدان')) + '</div></div>'
+    +   (function(){ var ok = svListRows('campok').length, camps = (STATE.sites || []).filter(function(x){ return taxOf(x).t === 'مخيمات'; }).length;   /* (V30.0) طلبُ المالك: كم مخيمًا بلا عائق — بالأخضر */
+          return '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-green)" aria-valuenow="' + ok + '">' + nm(ok) + '</div><div class="kk-lab">' + esc(t('مخيمات بلا عائق')) + '</div>'
+            + '<div class="kk-sub">' + esc(t('مُسحت ووُصل إليها بلا تحديات')) + ' \u00b7 ' + nm(camps ? Math.round(ok / camps * 100) : 0) + '٪ ' + esc(t('من')) + ' ' + nm(camps) + '</div></div>'; })()
     + '</div>'
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
@@ -21440,6 +21443,7 @@ function mfuSummary(){
     + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
     + box('تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
     + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
+    + '<div class="mfu-kpi" data-svlist="campok" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t('مخيمات بلا عائق')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(svListRows('campok').length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('مُسحت ووُصل إليها بلا تحديات')) + '</div></div>'   /* (V30.0) بالأخضر */
     + (K.ins ? box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
              : box('شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))   /* (V29.9) بحسب المرحلة */
     + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
@@ -23985,6 +23989,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.0', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'التحديث الأسبوعي بقى يتبعت لوحده كل يوم أحد ٧:٣٠ الصبح قبل اجتماع الوزارة: باوربوينت بالقالب الموحد وبي دي إف من التطبيق نفسه، على البريد ومجلد «التقارير الأسبوعية» في الدرايف، والملخص التنفيذي في نص الرسالة. ويتفحص الملف قبل ما يخرج.',
+      'شاشة القاعة ونظرة عامة والقمر الصناعي بقوا بتصنيف المالك: منى، عرفات، المزدلفة، مراكز التفويج (فيها النورية والزايدي والهجرة)، وكاميرات المتابعة — بدل المشاعر الخام. و«المتابعة» اسمها بقى «كاميرات المتابعة» في الخريطة ومتابعة الوزارة.',
+      'بطاقة «مخيمات بلا عائق» بالأخضر في شاشة القاعة وفي ملخص الوزارة (تفتح قائمتها وتتصدر).' ] },
   { v:'V29.9', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'متابعة الوزارة ← الملخص: ملخص تنفيذي بيتكتب من الأرقام لوحده كل مرة (ينسخ بضغطة وبيدخل أول الوورد والإكسل والبي دي إف).',
       'بطاقة «ما ينتظر الوزارة»: تصاريح الدخول، ومنع الدخول، والمواقع غير الموجودة ميدانيا، والمخيمات بلا تخصيص، واعتماد الإعداد — كل بطاقة تفتح قائمتها وتتصدر إكسل.',

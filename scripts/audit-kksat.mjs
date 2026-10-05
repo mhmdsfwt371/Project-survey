@@ -43,7 +43,7 @@ console.log('\n══ ١ · مع ليفليت: القمرُ الصناعيُّ �
   const c = await open('mfu', 'kiosk'); await wait(300);
   T(w.KK_VIEW === 'sat' && !!d.getElementById('kkSat') && !d.querySelector('.kk-pts'), 'الافتراضيُّ القمرُ الصناعي لا النقاطُ المجرّدة');
   T(S.tiles.length === 1 && /World_Imagery/.test(S.tiles[0].url) && S.tiles[0].url === w.TILES.esri, 'وطبقةُ Esri نفسُها التي في الخريطة الرئيسة');
-  const core = w.STATE.sites.filter(x => x.zone === 'منى' && +x.lat && +x.lng).length - 1;
+  const core = w.STATE.sites.filter(x => w.taxOf(x).g === 'منى' && +x.lat && +x.lng).length - 1;   /* (V30.0) بتصنيف المالك: كاميراتُ منى في «كاميرات المتابعة» */
   T(S.markers.length === core, 'ودائرةٌ لكلِّ نقطةٍ في جسم المشعر (البعيدةُ خارجَه): ' + S.markers.length);
   const x0 = w.STATE.sites.find(x => x.zone === 'منى' && +x.lat);
   const mk = S.markers.find(m => m.ll[0] === +x0.lat && m.ll[1] === +x0.lng);

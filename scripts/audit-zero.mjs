@@ -60,6 +60,8 @@ const add = n => { if (Number.isFinite(n) && n >= 0) allow.add(Math.round(n)); }
 const sites = w.STATE.sites || [];
 add(sites.length);
 const groups = [['zone'], ['type'], ['work'], ['co'], ['zone','type'], ['zone','work']];
+/* (V30.0) وبتصنيف المالك: المشعرُ والنوعُ من taxOf (مراكزُ التفويج تضمّ النورية والزايدي والهجرة، وكاميراتُ المتابعة مشعرٌ) */
+{ const cg = {}, ct = {}, cgt = {}; sites.forEach(x => { const c = w.taxOf(x); cg[c.g] = (cg[c.g] || 0) + 1; ct[c.t] = (ct[c.t] || 0) + 1; cgt[c.g + '|' + c.t] = (cgt[c.g + '|' + c.t] || 0) + 1; }); [cg, ct, cgt].forEach(o => Object.values(o).forEach(add)); }
 groups.forEach(keys => {
   const c = {};
   sites.forEach(x => { const k = keys.map(f => x[f]).join('|'); c[k] = (c[k] || 0) + 1; });

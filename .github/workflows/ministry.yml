@@ -7,12 +7,15 @@ name: Ministry screen
 on:
   schedule:
     - cron: '20 */6 * * *'     # لقطةٌ كلَّ ستِّ ساعات
-    - cron: '0 5 * * 6'        # تقريرُ السبت — ٨ صباحًا بمكة
+    - cron: '30 4 * * 0'       # التحديثُ الأسبوعيُّ — الأحد ٧:٣٠ صباحًا بمكة قبل اجتماع الوزارة (V30.0)
   workflow_dispatch:
     inputs:
       report:
         description: 'أرسل التقريرَ الأسبوعيَّ الآن'
         default: 'no'
+      mail:
+        description: 'بالبريد؟ (no = توليدٌ ورفعٌ للدرايف بلا بريد)'
+        default: 'yes'
 permissions:
   contents: write
 jobs:
@@ -45,7 +48,7 @@ jobs:
           git push -q --force "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}.git" ministry:ministry
           echo "✓ اللقطةُ نُشرت"
       - name: التقريرُ الأسبوعي — PDF بالبريد
-        if: github.event.schedule == '0 5 * * 6' || github.event.inputs.report == 'yes'
+        if: github.event.schedule == '30 4 * * 0' || github.event.inputs.report == 'yes'
         env:
           SMTP_HOST: ${{ secrets.SMTP_HOST }}
           SMTP_PORT: ${{ secrets.SMTP_PORT }}
@@ -54,13 +57,27 @@ jobs:
           MAIL_FROM: ${{ secrets.MAIL_FROM }}
           MAIL_TO: ${{ secrets.MAIL_TO }}
           MINISTRY_SECRET: ${{ secrets.MINISTRY_SECRET }}
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_SA: ${{ secrets.GDRIVE_SA }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+          NODE_OPTIONS: --require ./scripts/lib/jsdom-dict.cjs
         run: |
+          npm i --no-save --no-audit --no-fund googleapis@^144 || true
           for i in 1 2 3; do
             npm i --no-save --no-audit --no-fund playwright@^1 && npx playwright install --with-deps chromium && break
             echo "::warning::تثبيتُ المتصفّح $i تعثّر"; sleep $((i*15))
           done
           node scripts/ministry-pdf.mjs /tmp/ministry/report.html /tmp/ministry/ministry-report.pdf || true
+          # (V30.0) التحديثُ الأسبوعيُّ من التطبيق نفسِه: باوربوينت بالقالب الموحَّد وPDF بالخطِّ المرفوع — وفحصُ الملف قبل الخروج
+          node scripts/weekly-pack.mjs || true
+          if [ -f /tmp/ministry/weekly.html ]; then
+            BASE="$(cat /tmp/ministry/base.txt)"
+            node scripts/ministry-pdf.mjs /tmp/ministry/weekly.html "/tmp/ministry/${BASE}.pdf" || true
+            node scripts/weekly-drive.mjs "/tmp/ministry/${BASE}.pptx" "/tmp/ministry/${BASE}.pdf" /tmp/ministry/brief.txt || true
+          fi
           {
+            if [ -f /tmp/ministry/brief.txt ]; then cat /tmp/ministry/brief.txt; echo ""; echo "────────"; fi
             echo "تقريرُ الوزارة الأسبوعي — مرفقٌ PDF بنفس تصميم شاشة الوزارة."
             echo ""
             echo "الصفحةُ المشتركة: https://mhmdsfwt371.github.io/Project-survey/docs/ministry/"
@@ -73,7 +90,9 @@ jobs:
               done
             fi
           } > /tmp/ministry/mail.txt
-          MAIL_ATTACH=/tmp/ministry/ministry-report.pdf node scripts/mail-send.mjs "قارئات أفاقي — تقريرُ الوزارة الأسبوعي $(date -u +%F)" /tmp/ministry/mail.txt
+          ATT=/tmp/ministry/ministry-report.pdf
+          if [ -f /tmp/ministry/base.txt ]; then BASE="$(cat /tmp/ministry/base.txt)"; [ -f "/tmp/ministry/${BASE}.pptx" ] && ATT="/tmp/ministry/${BASE}.pptx,$ATT"; [ -f "/tmp/ministry/${BASE}.pdf" ] && ATT="/tmp/ministry/${BASE}.pdf,$ATT"; fi
+          if [ "${{ github.event.inputs.mail }}" = "no" ]; then echo "بلا بريد — توليدٌ ورفعٌ فقط"; else MAIL_ATTACH="$ATT" node scripts/mail-send.mjs "قارئات أفاقي — التحديثُ الأسبوعي $(date -u +%F)" /tmp/ministry/mail.txt; fi
       - uses: actions/upload-artifact@v6
         if: always()
         with:
