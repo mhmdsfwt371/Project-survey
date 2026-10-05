@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V29.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-ced941fe5c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-45b3861444.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -21397,16 +21397,51 @@ function mfuDelta(cur, prev, key, lowerIsBetter){
   return '<div style="margin:2px 0 0;font-size:12px;font-weight:700;color:' + (good ? '#27AE60' : '#C0392B') + '">' + (d > 0 ? '\u25B2 +' : '\u25BC ') + nm(d) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div>';
 }
 function mfuBar(p){ var c = p >= 75 ? '#27AE60' : p >= 40 ? '#E2B33C' : '#C0392B'; return '<div class="mfu-bar"><i style="width:' + Math.max(0, Math.min(100, p)) + '%;background:' + c + '"></i><b>' + nm(p) + '\u066A</b></div>'; }
+/* ═══ (V29.9) متابعةٌ ديناميكيةٌ بالتفكير من جهة الوزارة ═══
+   ١) ملخّصٌ تنفيذيٌّ يُكتَب من الأرقام كلَّ مرة (لا يُكتَب بيد) ويُنسَخ بضغطة ويدخل التقارير.
+   ٢) «ما ينتظر الوزارة»: تصاريحُ الدخول، ومنعُ الدخول، وما لم يوجد ميدانيًّا، والمخيماتُ بلا تخصيص، واعتمادُ الإعداد — كلٌّ بقائمته وتصديره.
+   ٣) المعالمُ القادمة بمواعيدها وما بقي من أيام. */
+function mfuBriefText(){
+  var K = mfuKpis(), P = mfuPrev(), SV = svStats(), o = SV.O, C = mfuCompanies(), n = function(v){ return nm(v); };
+  var d = function(k){ return P && P[k] != null ? (K[k] - P[k]) : null; }, dsv = d('sv'), dobs = d('obs');
+  var L = [];
+  L.push(t('حتى') + ' ' + hijriToday() + ' (' + dayKey() + '): ' + t('مُسح') + ' ' + n(o.sv) + ' ' + t('من') + ' ' + n(o.tot) + ' ' + t('موقعًا') + ' (' + n(SV.pct) + '٪)' + (dsv != null ? '، ' + t('منها') + ' ' + n(Math.max(0, dsv)) + ' ' + t('هذا الأسبوع') : '') + '.');
+  L.push(t('المتبقي') + ' ' + n(o.tot - o.sv) + ' ' + t('موقعًا') + (o.unreach ? '، ' + t('وتعذّر الوصول إلى') + ' ' + n(o.unreach) : '') + (o.chal ? '، ' + t('وفي') + ' ' + n(o.chal) + ' ' + t('موقعًا تحدياتٌ مسجّلة') : '') + '.');
+  L.push(t('المعوقات القائمة') + ' ' + n(K.obs) + (dobs != null ? ' (' + (dobs > 0 ? '+' : '') + n(dobs) + ' ' + t('عن الأسبوع الماضي') + ')' : '') + '. ' + (K.ins ? t('التركيب') + ': ' + n(K.ins) + ' ' + t('نقطة') + '.' : t('التركيبُ لم يبدأ بعد، والشركاتُ') + ' ' + n(C.length) + ' ' + t('في مرحلة المسح') + '.'));
+  var w = ['permit', 'missing', 'noalloc', 'minwait'].map(function(k){ var c = svListRows(k).length; return c ? n(c) + ' ' + t(SV_LISTS[k][0]) : ''; }).filter(Boolean);
+  if (w.length) L.push(t('ينتظر الوزارة') + ': ' + w.join('، ') + '.');
+  return L.join('\n');
+}
+function mfuBriefCard(){
+  var tx = mfuBriefText();
+  return card('\u{1F4DD} ' + t('الملخّص التنفيذي') + ' <span class="hint" style="font-weight:normal">' + esc(t('يُكتَب من الأرقام تلقائيًّا')) + '</span>',
+    '<p style="margin:0 0 8px;white-space:pre-line;line-height:1.7">' + esc(tx) + '</p>' + '<div class="actions" style="margin:0">' + btn(t('نسخ'), 'btn-quiet btn-sm', ' data-briefcopy="1"') + '</div>');
+}
+function mfuMinistryCard(){
+  var keys = ['permit', 'denied', 'missing', 'noalloc', 'minwait'], tot = 0;
+  var boxes = keys.map(function(k){ var c = svListRows(k).length; tot += c; return '<div class="mfu-kpi" data-svlist="' + k + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(SV_LISTS[k][0])) + ' \u203A</div><div class="mfu-kpi-v"' + (c ? ' style="color:#C0392B"' : '') + '>' + nm(c) + '</div></div>'; }).join('');
+  return card('\u{1F3DB} ' + t('ما ينتظر الوزارة') + ' \u2014 ' + nm(tot), '<p class="hint" style="margin:0 0 8px">' + esc(t('نقاطٌ لا تتحرّك إلا بقرارٍ أو ملفٍّ من الوزارة — اضغط البطاقة للقائمة بالمشعر والنوع وتصديرها إكسل.')) + '</p><div class="mfu-kpis">' + boxes + '</div>');
+}
+function mfuMilesCard(){
+  var today = dayKey(), L = mileList().map(function(m){ var d = mileDateOf(m); return { n:m.n, d:d ? dayKey(d) : '', p:Math.round(mileDone(m) * 100), late:mileLate(m) }; });
+  var up = L.filter(function(x){ return x.d && x.p < 100; }).sort(function(a, b){ return a.d < b.d ? -1 : 1; }).slice(0, 4);
+  if (!up.length) return card('\u{1F3C1} ' + t('المعالم القادمة'), '<p class="hint" style="margin:0">' + esc(t('لا مواعيدَ للمعالم بعد — تُحدَّد من «التخطيط ← المعالم»')) + '</p>');
+  return card('\u{1F3C1} ' + t('المعالم القادمة'), table(['المعلَم', 'الموعد', 'بقي', 'الإنجاز'], up.map(function(x){
+    var days = Math.round((new Date(x.d) - new Date(today)) / 864e5);
+    return ['<b>' + esc(x.n) + '</b>', '<span class="num">' + esc(x.d) + '</span>', x.late ? pill(t('متأخر') + ' ' + nm(-days) + ' ' + t('يوم'), 'bad') : '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>', mfuBar(x.p)]; })));
+}
 function mfuSummary(){
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  return '<div class="mfu-kpis">'
+  return mfuBriefCard() + mfuMinistryCard() + mfuMilesCard() + svListPop()   /* (V29.9) */
+    + '<div class="mfu-kpis">'
     + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
     + box('تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
     + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
-    + box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
+    + (K.ins ? box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
+             : box('شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))   /* (V29.9) بحسب المرحلة */
     + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
     + box('بانتظار قرار الوزارة', nm(mfuMinWait()), esc(t('نقطةً معتمدةً تقنيًّا')), '')
     + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>')
@@ -21452,11 +21487,21 @@ var SV_LISTS = {
   chal:    ['فيها تحديات',            function(x, r){ return !!(r && svDone(r) && svHasChal(r)); }],
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
   campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
-  nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }]
+  nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }],
+  /* (V29.9) ما ينتظر الوزارة — بالتفكير من جهتها: ما لا يتحرّك إلا بقرارها أو بملفٍّ منها */
+  permit:  ['تحتاج تصريح دخول',          function(x, r){ return !!(r && r.access === 'يحتاج تصريح'); }],
+  denied:  ['منع دخول — تنسيق',          function(x, r){ return !!(r && r.access === 'منع دخول'); }],
+  missing: ['غير موجودة ميدانيًا — تصحيح السجل', function(x, r){ return !!(r && r.access === 'غير موجود'); }],
+  noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return taxOf(x).t === 'مخيمات' && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
+  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }]
 };
+function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع القوائمُ فلترَ المشعر والنوع */
+  var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU_FLT.z || MFU_FLT.t)) return all;
+  return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
+}
 function svListRows(key){
   var L = SV_LISTS[key]; if (!L) return [];
-  return (STATE.sites || []).filter(function(x){ return L[1](x, STATE.recs[x.id]); }).map(function(x){
+  return svListSites().filter(function(x){ return L[1](x, STATE.recs[x.id]); }).map(function(x){
     var r = STATE.recs[x.id], c = taxOf(x);
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
@@ -21491,7 +21536,21 @@ function svListXlsx(key){
     logEvent('تصدير قائمة — ' + L[0] + ' · ' + (rows.length - 1), ''); toast(t('نزل الملف')); return true;
   });
 }
+function mfuFilterRowAll(){   /* (V29.9) فلترُ المشعر والنوع على كلِّ المواقع (لا المعوقات وحدَها) */
+  var Z = {}, T = {}, all = STATE.sites || [];
+  all.forEach(function(x){ var tx = taxOf(x), z = tx.g || '—'; Z[z] = (Z[z] || 0) + 1; if (!MFU_FLT.z || z === MFU_FLT.z){ var ty = tx.t || '—'; T[ty] = (T[ty] || 0) + 1; } });
+  var chip = function(attr, v, on, label, n){ return '<button type="button" class="cat' + (on ? ' on' : '') + '" ' + attr + '="' + esc(v) + '">' + esc(label) + (n != null ? ' <span class="n">' + nm(n) + '</span>' : '') + '</button>'; };
+  return '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('المشعر')) + '</span>' + chip('data-mfz', '', !MFU_FLT.z, t('الكل'), all.length)
+    + Object.keys(Z).sort(function(a, b){ return Z[b] - Z[a]; }).map(function(z){ return chip('data-mfz', z, MFU_FLT.z === z, t(z), Z[z]); }).join('') + '</div>'
+    + '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('النوع')) + '</span>' + chip('data-mft', '', !MFU_FLT.t, t('الكل'), null)
+    + Object.keys(T).sort(function(a, b){ return T[b] - T[a]; }).map(function(ty){ return chip('data-mft', ty, MFU_FLT.t === ty, t(ty), T[ty]); }).join('') + '</div>';
+}
 function mfuSurv(){
+  var all = STATE.sites;   /* (V29.9) الصفحةُ كلُّها تتبع الفلتر: الأرقامُ والجداولُ والقوائمُ والجمرات */
+  if (MFU_FLT.z || MFU_FLT.t) STATE.sites = all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
+  try { return mfuFilterRowAll() + mfuSurv0(); } finally { STATE.sites = all; }
+}
+function mfuSurv0(){
   var SV = svStats(), o = SV.O, JM = jmrConfirm(), jt = JM.tot;
   var kpi = function(l, v, col, key){ return '<div class="mfu-kpi"' + (key ? ' data-svlist="' + key + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"' : '') + '><div class="mfu-kpi-l">' + esc(t(l)) + (key ? ' \u203A' : '') + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
   var tb = function(head, rows){ return table(head, rows.map(function(r){ return r.map(function(c){ return esc(String(c == null ? '' : c)); }); })); };   /* جدولُ التطبيق نفسُه */
@@ -21551,7 +21610,10 @@ function mfuObs(){
   /* (V26.1) كانت النقطةُ ذاتُ عائقين من جهتين تُعَدّ عند الجهتين فيزيد مجموعُ الجهات على الإجمالي (٨٤٩ مقابل ٧٣٩) — صارت كلُّ نقطةٍ عند جهةٍ واحدة: جهةُ عائقها الأوّل، فيساوي المجموعُ الإجمالي */
   O.forEach(function(o){ o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; }); var p0 = mfuOwnerOf(o.cats[0]); byParty[p0] = (byParty[p0] || 0) + 1; });
   var cats = Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; });
+  var ages = O.map(function(o){ var r = STATE.recs[o.x.id]; return r && r.at ? Math.max(0, Math.round((Date.now() - r.at) / 864e5)) : null; }).filter(function(v){ return v != null; });   /* (V29.9) عمرُ المعوق منذ آخر زيارة */
+  var ageMax = ages.length ? Math.max.apply(null, ages) : 0, ageAvg = ages.length ? Math.round(ages.reduce(function(a, b){ return a + b; }, 0) / ages.length) : 0, ageOld = ages.filter(function(v){ return v > 14; }).length;
   return mfuFilterRow() + ('<div class="mfu-kpis"><div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('إجمالي المعوقات')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(O.length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ لم تُركَّب وفيها عائق')) + '</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('عمر المعوق')) + '</div><div class="mfu-kpi-v">' + nm(ageAvg) + ' <span style="font-size:14px">' + esc(t('يوم')) + '</span></div><div class="hint" style="margin:2px 0 0">' + esc(t('المتوسط منذ تسجيله')) + ' \u00b7 ' + esc(t('الأقدم')) + ' ' + nm(ageMax) + ' \u00b7 ' + esc(t('أكثر من أسبوعين')) + ' ' + nm(ageOld) + '</div></div>'
     + mfuParties().map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(mfuPartyLabel(p))) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
     + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
         var own = mfuOwnerOf(c);
@@ -21946,6 +22008,7 @@ function mfuReport0(){
       return C.map(function(c){ return [c.co, coLiaisonOf(c.co) || '\u2014', c.n, c.sv, c.n - c.sv, c.chal, c.svp + '٪', c.ins, ph && c.ins ? t('التركيب') + ': ' + mfuLevel(c.pct)[0] + ' (' + c.pct + '٪)' : t('مرحلة المسح — لم يبدأ التواصل والتركيب')]; }); })(),
     phase:mfuCompanies().some(function(c){ return c.ins > 0; }) ? 'install' : 'survey',
     sv:svStats(), svz:svStats().zones, svd:svStats().detail, jmr:jmrConfirm().rows,   /* (V29.2) */
+    brief:mfuBriefText().split('\n').map(function(l){ return [l]; }),   /* (V29.9) */
     obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
     chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
@@ -21966,6 +22029,7 @@ function mfuReport0(){
   };
 }
 var MFU_SECTIONS = [
+  ['brief', 'الملخص التنفيذي', ['النص']],   /* (V29.9) يُكتَب من الأرقام */
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
   ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول']],   /* (V29.1) */
   ['svd', 'المسح الميداني — المشعر والنوع', ['المشعر', 'النوع', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ']],
@@ -23921,6 +23985,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V29.9', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'متابعة الوزارة ← الملخص: ملخص تنفيذي بيتكتب من الأرقام لوحده كل مرة (ينسخ بضغطة وبيدخل أول الوورد والإكسل والبي دي إف).',
+      'بطاقة «ما ينتظر الوزارة»: تصاريح الدخول، ومنع الدخول، والمواقع غير الموجودة ميدانيا، والمخيمات بلا تخصيص، واعتماد الإعداد — كل بطاقة تفتح قائمتها وتتصدر إكسل.',
+      'المعالم القادمة بمواعيدها وكام يوم فاضل، وعنوان «المسح الميداني» بقى يتبع فلتر المشعر والنوع، وصفحة المعوقات بتعرض عمر المعوق (المتوسط والأقدم واللي عدى أسبوعين).' ] },
   { v:'V29.8', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'الخريطة بتقرّب لوحدها لنقاط المشعر أو النوع اللي بتختاره من الفلاتر لو مفيش منها حاجة ظاهرة — زي مراكز التفويج البعيدة عن المشاعر (النورية والزايدي والجموم والمدينة).',
       'مراكز التفويج: ٢٤ كاميرا قراءة لوحات للزايدي وطريق الهجرة (الجموم والمدينة) بمواضع مسودة من صور القمر الصناعي — يؤكدها المالك من المنصة.' ] },
@@ -32628,6 +32696,7 @@ function clickA(e){
     return true;
   }
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
+  if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
   if (svl){ SV_POP = svl.getAttribute('data-svlist'); render(1); return true; }
   if (e.target.closest('[data-svpopclose]')){ SV_POP = ''; render(1); return true; }
