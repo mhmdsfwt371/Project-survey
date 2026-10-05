@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-8d170e0dde.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-ea9edc6b0d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1767,6 +1767,8 @@ var CFG = {
   ph:0, otRate:0, warranty:0, days:0, hours:0, daysWeek:0,
   /* حارسُ التكلفة (V17.96): ١ = تنبيهُ ميزانية Google Cloud مضبوطٌ (يؤشّره المدير بعد ضبطه — docs/cost-guard.md) */
   budgetAlert:0,
+  /* (V30.1) قواعدُ التنبيه بالأيام — تُضبَط من ثوابت النظام لا من الشيفرة (فكرةُ المالك #٢). صفرٌ = القاعدةُ معطَّلة */
+  alObsDays:14, alPermitDays:7, alRevisitDays:3, alNoPhotoDays:2, alAssignDays:3, alStaleDays:21,
   /* متوسطُ غرف المخيم لكلِّ مشعرٍ — يُقرأ حين لا يُعَدُّ (V17.71): «منى» ١٢ ما لم يُضبَط */
   avgRooms:{},
   stgCfg:0, stgVal:0, stgIns:0,
@@ -21413,6 +21415,8 @@ function mfuBriefText(){
   L.push(t('المعوقات القائمة') + ' ' + n(K.obs) + (dobs != null ? ' (' + (dobs > 0 ? '+' : '') + n(dobs) + ' ' + t('عن الأسبوع الماضي') + ')' : '') + '. ' + (K.ins ? t('التركيب') + ': ' + n(K.ins) + ' ' + t('نقطة') + '.' : t('التركيبُ لم يبدأ بعد، والشركاتُ') + ' ' + n(C.length) + ' ' + t('في مرحلة المسح') + '.'));
   var w = ['permit', 'missing', 'noalloc', 'minwait'].map(function(k){ var c = svListRows(k).length; return c ? n(c) + ' ' + t(SV_LISTS[k][0]) : ''; }).filter(Boolean);
   if (w.length) L.push(t('ينتظر الوزارة') + ': ' + w.join('، ') + '.');
+  var al = alAll().filter(function(a){ return a.sites.length; }).map(function(a){ return n(a.sites.length) + ' ' + a.label; });   /* (V30.1) */
+  if (al.length) L.push(t('تنبيهات') + ': ' + al.join('، ') + '.');
   return L.join('\n');
 }
 function mfuBriefCard(){
@@ -21437,7 +21441,7 @@ function mfuSummary(){
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  return mfuBriefCard() + mfuMinistryCard() + mfuMilesCard() + svListPop()   /* (V29.9) */
+  return mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + svListPop()   /* (V29.9، و٣٠٫١ التنبيهات) */
     + '<div class="mfu-kpis">'
     + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
@@ -21499,25 +21503,51 @@ var SV_LISTS = {
   noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return taxOf(x).t === 'مخيمات' && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
   minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }]
 };
+/* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
+   كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */
+var AL_RULES = [
+  ['al_obs',     'alObsDays',     'معوّق مفتوح منذ أكثر من',  function(x, r, d){ return !!(r && svDone(r) && svHasChal(r)) && !(STATE.inss[x.id] && STATE.inss[x.id].status === 'مُركّب') && ageDays(r.at) > d; }],
+  ['al_permit',  'alPermitDays',  'تصريح دخول معلّق منذ أكثر من', function(x, r, d){ return !!(r && r.access === 'يحتاج تصريح') && ageDays(r.at) > d; }],
+  ['al_revisit', 'alRevisitDays', 'أُعيدت للزيارة ولم تُزَر منذ أكثر من', function(x, r, d){ return !!(r && r.review === 'revisit') && ageDays(r.revAt || r.at) > d; }],
+  ['al_nophoto', 'alNoPhotoDays', 'ممسوحة بلا صور منذ أكثر من', function(x, r, d){ return !!(r && svDone(r)) && !!svPhotoState(x, r) && ageDays(r.at) > d; }],
+  ['al_assign',  'alAssignDays',  'مُسندة ولم تُزَر منذ أكثر من', function(x, r, d){ if (r) return false; var tk = taskKindOf(x.id, 'visit'); return !!(tk && tk.at && tk.status !== 'منجز' && ageDays(tk.at) > d); }],
+  ['al_stale',   'alStaleDays',   'تعذّر الوصول ولم تُعَد المحاولة منذ أكثر من', function(x, r, d){ return !!(r && r.access && r.access !== 'تم الوصول') && ageDays(r.at) > d; }]
+];
+function ageDays(ts){ return ts ? Math.floor((Date.now() - (+ts || 0)) / 864e5) : 0; }
+function alRuleDays(k){ var d = +cfgGet(k) || 0; return d > 0 ? d : 0; }
+function alRuleList(rule){
+  var d = alRuleDays(rule[1]); if (!d) return [];
+  return svListSites().filter(function(x){ try { return rule[3](x, STATE.recs[x.id], d); } catch (e){ return false; } });
+}
+function alAll(){ return AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; }); }
+function alCard(){
+  var A = alAll(), tot = A.reduce(function(a, b){ return a + b.sites.length; }, 0);
+  return card('\u{1F6A8} ' + t('تنبيهات القواعد') + ' \u2014 ' + nm(tot) + (may('settings') ? ' <span class="hint" style="font-weight:normal">' + esc(t('تُضبَط أيامُها من ثوابت النظام')) + '</span>' : ''),
+    '<div class="mfu-kpis">' + A.map(function(a){ return '<div class="mfu-kpi"' + (a.off ? '' : ' data-svlist="' + a.k + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"') + '><div class="mfu-kpi-l">' + esc(a.label) + (a.off ? '' : ' \u203A') + '</div><div class="mfu-kpi-v"' + (a.sites.length ? ' style="color:#C0392B"' : '') + '>' + (a.off ? '<span class="hint">' + esc(t('معطَّلة')) + '</span>' : nm(a.sites.length)) + '</div></div>'; }).join('') + '</div>');
+}
 function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع القوائمُ فلترَ المشعر والنوع */
   var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU_FLT.z || MFU_FLT.t)) return all;
   return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
 }
 function svListRows(key){
-  var L = SV_LISTS[key]; if (!L) return [];
+  var L = SV_LISTS[key];
+  if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
+    var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
+  if (!L) return [];
   return svListSites().filter(function(x){ return L[1](x, STATE.recs[x.id]); }).map(function(x){
     var r = STATE.recs[x.id], c = taxOf(x);
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
   });
 }
-function svListHead(key){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' ? 'الصور' : 'التحديات']; }
+function svListHead(key){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' ? 'الصور' : 'التحديات']; }
+function svListTitle(key){ if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
-  if (!SV_POP || !SV_LISTS[SV_POP]) return '';
+  if (!SV_POP || !(SV_LISTS[SV_POP] || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--card,#fff);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
-    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(t(SV_LISTS[SV_POP][0])) + ' \u2014 ' + nm(rows.length) + '</h3>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ return [ '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
@@ -21526,7 +21556,7 @@ function svListPop(){
     + '</div>';
 }
 function svListXlsx(key){
-  var L = SV_LISTS[key]; if (!L) return false;
+  var L = SV_LISTS[key] || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
@@ -23989,6 +24019,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.1', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'تنبيهات بقواعد تتظبط من ثوابت النظام (بالأيام): معوق مفتوح أكثر من ١٤ يوم، تصريح دخول معلق أكثر من ٧، أعيدت للزيارة وما اتزارتش أكثر من ٣، ممسوحة بلا صور أكثر من ٢، مسندة وما اتزارتش أكثر من ٣، تعذر الوصول بلا محاولة أكثر من ٢١. الصفر يعطل القاعدة.',
+      'بطاقة «تنبيهات القواعد» في متابعة الوزارة ← الملخص: كل تنبيه بعدده، ويفتح قائمته بالمشعر والنوع ويتصدر إكسل، ويدخل الملخص التنفيذي.' ] },
   { v:'V30.0', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'التحديث الأسبوعي بقى يتبعت لوحده كل يوم أحد ٧:٣٠ الصبح قبل اجتماع الوزارة: باوربوينت بالقالب الموحد وبي دي إف من التطبيق نفسه، على البريد ومجلد «التقارير الأسبوعية» في الدرايف، والملخص التنفيذي في نص الرسالة. ويتفحص الملف قبل ما يخرج.',
       'شاشة القاعة ونظرة عامة والقمر الصناعي بقوا بتصنيف المالك: منى، عرفات، المزدلفة، مراكز التفويج (فيها النورية والزايدي والهجرة)، وكاميرات المتابعة — بدل المشاعر الخام. و«المتابعة» اسمها بقى «كاميرات المتابعة» في الخريطة ومتابعة الوزارة.',
@@ -31671,6 +31704,16 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + card('قواعد التنبيه (بالأيام)',   /* (V30.1) فكرةُ المالك #٢ — صفرٌ يعطّل القاعدة */
+          '<div class="grid cols-3">'
+          + '<div class="field"><label>' + esc(t('معوّق مفتوح أكثر من')) + '</label>' + cfgInput('alObsDays') + '</div>'
+          + '<div class="field"><label>' + esc(t('تصريح دخول معلّق أكثر من')) + '</label>' + cfgInput('alPermitDays') + '</div>'
+          + '<div class="field"><label>' + esc(t('أُعيدت للزيارة ولم تُزَر أكثر من')) + '</label>' + cfgInput('alRevisitDays') + '</div>'
+          + '<div class="field"><label>' + esc(t('ممسوحة بلا صور أكثر من')) + '</label>' + cfgInput('alNoPhotoDays') + '</div>'
+          + '<div class="field"><label>' + esc(t('مُسندة ولم تُزَر أكثر من')) + '</label>' + cfgInput('alAssignDays') + '</div>'
+          + '<div class="field"><label>' + esc(t('تعذّر الوصول بلا محاولة أكثر من')) + '</label>' + cfgInput('alStaleDays') + '</div>'
+          + '</div><p class="hint">' + esc(t('تظهر التنبيهاتُ في متابعة الوزارة ← الملخص وفي الملخّص التنفيذي، وكلُّ تنبيهٍ يفتح قائمتَه ويُصدَّر. صفرٌ يعطّل القاعدة.')) + '</p>',
+          btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + card('سعر النقطة والإضافي',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('سعر النقطة')) + ' (' + t('ريال') + ')</label>'
