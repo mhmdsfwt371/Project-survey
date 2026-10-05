@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -24163,6 +24163,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تحسين داخلي بلا تغيير في الاستخدام: جرد «صحة الكود» في البوابة بيمنع أي تحديث يزوّد المتغيرات العامة أو الدوال الطويلة أو تحذيرات النحو أو حجم ملفات المصدر عن آخر خط أساس، ووثيقة «تعريف المنجز» لكل تحديث.' ] },
   { v:'V31.2', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: بوابة النشر بقت طبقتين — سريعة على كل دفعة (دقائق بدل ربع ساعة) تفحص البناء والنحو واختبارات الوحدة الجديدة والجرود الحاسمة ولجنة الفحص والمتصفح الحقيقي والمحاكي، والجرد الكامل (١٤٨ خطوة) بيشتغل كل ليلة وعند الطلب.' ] },
   { v:'V31.1', d:'٦ أكتوبر ٢٠٢٦', notes:[
