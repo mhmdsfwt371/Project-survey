@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -17004,7 +17004,12 @@ function mapInit(){
   if (!el || !window.L) return false;
   if (MAP){
     try{ MAP.invalidateSize(); }catch(e){}
-    setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(); }catch(e){} }, 60);
+    setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(true); }catch(e){} }, 60);   /* (V30.9) تصحيحُ القياس لا يغيّر الزوم — رسمةٌ خفيفة */
+    /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
+       فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
+    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + (typeof MAP_TAX === 'undefined' ? '' : JSON.stringify(MAP_TAX));
+    if (sig === MAP_SIG && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
+    MAP_SIG = sig;
     mapPaint();
     basemapKick();   /* (V24.9) خريطةُ الجهاز بعد الدخول وحين تخمل الصفحة */
     return true;
@@ -17058,7 +17063,7 @@ function mapInit(){
     else if (typeof ROUTE === 'object' && ROUTE.on) routeAdd(e.latlng.lat, e.latlng.lng);
   });
   mapPaint();
-  setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(); }catch(e){} }, 120);
+  setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(true); }catch(e){} }, 120);   /* (V30.9) */
   return true;
 }
 
@@ -17217,7 +17222,19 @@ function mapPaintLight(z){
   mkCount(LIST, inView);
   if (IOT.on) iotPaint();   /* (V25.7) طبقةُ الحساسات تتبع الإطار */
 }
+/* ═══ (V30.9) فكرةُ المالك #٩ — أولُ فتحٍ أسرع: الرسمُ يُجمَّع ═══
+   قياسُ الإقلاع على الجوال: الخريطةُ تُرسَم ثلاثًا وعشرين مرةً في أول ثانيتين (كلُّ رسمِ صفحةٍ يرسمها مرتين،
+   والحركةُ والتكبيرُ وتصحيحُ القياس كلٌّ يرسمها) — ١٫٤ ثانية من ٢٫٧. فصار ما يأتي خلال ثمانين ملّي ثانية من رسمةٍ
+   يُجمَّع في رسمةٍ واحدةٍ تاليةٍ بأثقل ما طُلب (الكاملُ يغلب الخفيف). أولُ نداءٍ في الدفعة يُرسَم في مكانه فورًا. */
+var MP_LAST = 0, MP_TIMER = 0, MP_FULL = false, MAP_SIG = '';
 function mapPaint(light){
+  var now = Date.now();
+  if (now - MP_LAST < 80 && MP_LAST && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
+    if (light !== true) MP_FULL = true;
+    if (!MP_TIMER) MP_TIMER = setTimeout(function(){ MP_TIMER = 0; var full = MP_FULL; MP_FULL = false; MP_LAST = 0; mapPaint(full ? undefined : true); }, 85 - (now - MP_LAST));
+    return;
+  }
+  MP_LAST = now;
   /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
   if (MAP_3D) m3Paint();
   if (!MAP || !MAP_LAYER) return;
@@ -24143,6 +24160,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'أول فتح أسرع: الخريطة كانت بتترسم ٢٣ مرة في أول ثانيتين (كل رسم صفحة بيرسمها مرتين، والحركة والتكبير وتصحيح القياس كل واحد بيرسمها) — بقى اللي بييجي خلال ٨٠ ملي ثانية يتجمع في رسمة واحدة، ورسم الصفحة من غير ما تتغير النقاط أو الفلاتر بقى رسمة خفيفة.' ] },
   { v:'V30.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'سجل التدقيق: البحث بقى يدور في نص الحدث ورقم النقطة واسم اللي عمله، ومن غير ما يفرق في الهمزة والتاء المربوطة والتشكيل وحالة الحروف.',
       'زر «سجل النقطة» في نافذة أي نقطة (لمن يرى السجل): بيفتح السجل مصفّى على النقطة ويجيب تاريخها كله من القاعدة، مش بس آخر ٥٠٠ حدث.' ] },
