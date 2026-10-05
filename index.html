@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-fd96482393.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-1bfa260bf7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6276,6 +6276,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
       + '</div>'
 
       /* بطاقةُ الإنشاء لمن يُنشئ — والوزارةُ تقرأ الجدولَ ولا تُضيف */
+      + ((CFG.gh && CFG.gh.bad && may('roles')) ? alertBox('warn', t('مفتاحُ تشغيل الحسابات مرفوضٌ من GitHub (منتهٍ أو بلا صلاحية). الطلباتُ تُحفَظ وتُنفَّذ مع دورة الخادم، لكنها قد تتأخر ساعات. جدِّد المفتاح من ثوابت النظام ← مفتاح التشغيل: مفتاحٌ دقيقُ الصلاحيات على هذا المستودع بصلاحية تشغيل السيور.')) : '')   /* (V30.7) */
       + (canProvision() ? card('إنشاء حساب',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('اسم المستخدم')) + ' <span class="req">*</span></label>'
@@ -23926,7 +23927,13 @@ function ghRunNow(quiet){
       toast(t('انطلق الخادم — الحساباتُ خلال دقيقة، وتصلك «تمّ» هنا فورًا'));
       render(1); return true;
     }
-    toast(t('رفض GitHub التشغيل') + ' \u2014 ' + r.status + (r.status === 401 || r.status === 403 ? ' \u00b7 ' + t('المفتاحُ غيرُ صالحٍ أو بلا صلاحية Actions') : ''));
+    if (r.status === 401 || r.status === 403){   /* (V30.7) المفتاحُ منتهٍ: الطلبُ محفوظٌ ويُنفَّذ مع أقرب دورةٍ — ويُقال ذلك بوضوح، ويُعلَّم المفتاحُ ليراه المدير */
+      CFG.gh = Object.assign({}, CFG.gh || {}, { bad:Date.now(), badCode:r.status });
+      toast(t('الخادمُ لم يُشغَّل (مفتاحُ التشغيل منتهٍ). اضغط «أنشئه من هذا الجهاز الآن» بجوار الحساب في القائمة'));
+      logEvent('مفتاحُ تشغيل الحسابات رُفض — ' + r.status);
+      render(1); return false;
+    }
+    toast(t('رفض GitHub التشغيل') + ' \u2014 ' + r.status);
     return false;
   }).catch(function(e){ toast(t('تعذّر الاتصال بـ GitHub') + ' \u2014 ' + String(e && e.message || '').slice(0, 40)); return false; });
 }
@@ -24135,6 +24142,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.7', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'إنشاء الحسابات: لما يرفض مفتاح التشغيل (منتهي أو بلا صلاحية) الرسالة بقت تقول الحقيقة — الطلب محفوظ وهيتنفذ مع دورة الخادم، والمفتاح محتاج تجديد من ثوابت النظام — ولافتة للمدير في صفحة الحسابات.',
+      'والحسابات المطلوبة بقت تتنفذ كمان مع كل نشر، لأن الترقية للأصل وجدولة الخادم ما كانوش بيشغلوها فكانت بتتأخر ساعات.',
+      'وزر «أنشئه من هذا الجهاز الآن» بجوار أي حساب «يُنشَأ» (للمهندس والمدير): بينشئ الحساب فورا من غير ما يستنى الخادم، ويعلم الطلب «تم» ويمسح كلمته من القاعدة.' ] },
   { v:'V30.6', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'فحص الصور تلقائيا على الجهاز لحظة الالتقاط: لو الصورة مظلمة أو محترقة أو مهزوزة يطلع تنبيه «أعد الالتقاط لو أمكن» من غير منع، ولو بتكرر صورة سابقة لنفس النقطة يطلع تنبيه. وفي متابعة الوزارة ← المسح الميداني بطاقة «صور تحتاج إعادة» بقائمتها وتصديرها.',
       'إصلاحان من لقطة المالك: عناوين بطاقات الملخص التنفيذي وتنبيهات القواعد والخطة كانت بتظهر فيها وسوم نصا، ونافذة القوائم كانت بيضا على الوضع الداكن فالنص اختفى — بقت بألوان التطبيق.' ] },
@@ -31308,7 +31319,9 @@ function usersCard(){
                         + (u.provisioning ? '<br>' + pill('يُنشَأ','wrn')
                             + (may('users') && !((STATE.provision || {})[u.user || uid] || {}).status
                                 ? ' ' + pill('بلا طلبٍ في القاعدة','off') + ' ' + btn('\u{1F501} ' + t('أعد الطلب'),'btn-quiet btn-sm',' data-usrreq="' + esc(uid) + '"')
-                                : '') : ''),
+                                : '')
+                            + (may('users') ? ' ' + btn('\u26A1 ' + t('أنشئه من هذا الجهاز الآن'),'btn-primary btn-sm',' data-provlocal="' + esc(u.user || uid) + '"') : '')   /* (V30.7) لا ينتظر الخادم — للمهندس فما فوق: القاعدةُ تسمح لهم بكتابة وثيقة المستخدم */
+                            : ''),
                       esc(t((ROLES[u.role] || {}).n || u.role || '—'))
                         + ((u.job && jobOf(u.job)) || u.dept || u.sup
                             ? '<br><span class="hint" style="margin:0">'
@@ -31416,6 +31429,41 @@ function canProvision(){ return rankOf(ROLE) >= rankOf('supervisor'); }
    العليا) — وهو الاستثناءُ الوحيد؛ المهندسُ ومن دونه في مستواهم فما دون. */
 function canMakeRole(r){ return canProvision() && (may('roles') || rankOf(r) <= rankOf(ROLE)); }
 function rolesICanMake(){ return Object.keys(ROLES).filter(canMakeRole); }
+/* ═══ (V30.7) إنشاءُ الحساب من هذا الجهاز الآن — لا ينتظر الخادم ═══
+   بلاغُ المالك «مش عارف أضيف يوزر»: الطلبُ يُكتَب للخادم، والخادمُ سيرٌ في GitHub — فإن تعطّلت مشغّلاتُه
+   (كما وقع: «لم يلتقطه مشغّل») أو رُفض مفتاحُ تشغيله بقي الحسابُ «يُنشَأ» ساعات. صار من يملك الإنشاءَ يُنشئه
+   من جهازه فورًا بتطبيقٍ ثانٍ لا يمسّ جلسته (FB.createUser)، ثم يُعلَّم الطلبُ «تمّ» وتُمحى كلمتُه من القاعدة
+   فلا يكرّره الخادمُ إن عاد. */
+function provLocal(u){
+  if (!may('users')){ toast(t('الإنشاءُ من الجهاز للمهندس فما فوق — الطلبُ محفوظٌ وينفّذه الخادم')); return; }
+  var req = Object.assign({}, (STATE.provision || {})[u] || {});
+  var tmp = (STATE.users || {})[u] || {};
+  var pass = String(req.pass || '');
+  if (pass.length < 10){
+    pass = String(window.prompt(t('كلمةُ مرورٍ للحساب (عشرةُ أحرفٍ فأكثر):'), '') || '');
+    if (pass.length < 10){ toast(t('كلمةُ المرور عشرةُ أحرفٍ فأكثر')); return; }
+  }
+  var name = req.name || tmp.name || u, role = req.role || tmp.role || 'tech';
+  if (!canMakeRole(role)){ toast(t('لا تُنشئ دورًا أعلى من دورك')); return; }
+  toast(t('يُنشَأ الحسابُ من هذا الجهاز…'));
+  return FB.createUser(u, pass, { name:name, role:role }).then(function(res){
+    if (!res || !res.ok || !res.uid){
+      var why = String(res && res.err || '');
+      toast(/email-already-in-use/.test(why) ? t('الاسمُ موجودٌ في الدخول بالفعل — الحسابُ أُنشئ من قبل أو من الخادم') : (t('تعذّر الإنشاءُ من الجهاز') + ' \u2014 ' + why.slice(0, 60)));
+      return false;
+    }
+    var docv = { name:name, user:u, role:role, active:true, at:Date.now(), by:STATE.meta.name || '', made:'device' };
+    ['job','sup','dept','email'].forEach(function(f){ if (req[f] || tmp[f]) docv[f] = req[f] || tmp[f]; });
+    if (docv.job) docv.jobLog = [{ job:docv.job, at:Date.now(), by:STATE.meta.name || '' }];
+    STATE.users = STATE.users || {}; STATE.users[res.uid] = docv; delete STATE.users[u];
+    CORE.set('users', res.uid, docv);
+    var done = Object.assign({}, req, { status:'done', uid:res.uid, doneAt:Date.now(), doneBy:'device', pass:'' });
+    STATE.provision = STATE.provision || {}; STATE.provision[u] = done; CORE.set('provision', u, done);
+    logEvent('إنشاءُ حسابٍ من الجهاز — ' + name + ' (' + u + ')');
+    toast(u + ' \u00b7 ' + t('أُنشئ الآن — يدخل بكلمته'));
+    statBump(); render(1); return true;
+  });
+}
 function usrAdd(){
   if (!canProvision()){ toast(t('إنشاءُ الحسابات من المشرف فصاعدًا')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };
@@ -33601,6 +33649,7 @@ function onDocClick(e){
     bulkApply(); return;
   }
   if (e.target.closest('[data-ghrun]')){ ghRunNow(); return; }
+  var pvl = e.target.closest('[data-provlocal]'); if (pvl){ provLocal(pvl.getAttribute('data-provlocal')); return; }   /* (V30.7) */
   if (e.target.closest('[data-ghsave]')){ var gt = document.getElementById('ghTok'); ghSetToken(gt ? gt.value : ''); render(1); return; }
   if (e.target.closest('[data-ghclear]')){ ghSetToken(''); render(1); return; }
   if (e.target.closest('[data-waasn]')){ if (WA_LAST) waAsn(WA_LAST.to, WA_LAST.kind, WA_LAST.ids, WA_LAST.when); return; }
