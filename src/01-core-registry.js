@@ -918,7 +918,7 @@ var CORE = {
   all:  function(kind){ return STATE[kind]; },
   set:  function(kind, id, v){
     if (!STATE[kind]) STATE[kind] = {};
-    STATE[kind][id] = v;
+    STATE[kind][id] = v; DB.memoReset();   /* (V31.6) */
     /* كلُّ كتابةٍ محليةٍ للمهامِّ تُبطِل فهرسَها — الفهرسُ سريعٌ لأنه مبنيٌّ
        مرةً، فلا يصحُّ أن يُقرأ قديمًا بعد إسنادٍ أو إنجاز (V17.47) */
     if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
@@ -1943,7 +1943,12 @@ var DB = {
   ready: function(){ return !!(FB.ready && FB.db); },
   col:   function(name){ return FB.db.collection(name); },
   doc:   function(name, id){ return FB.db.collection(name).doc(id); },
-  batch: function(){ return FB.db.batch(); }
+  batch: function(){ return FB.db.batch(); },
+  /* (V31.6) ذاكرةُ الحساب الواحد — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ النقطة…) تُحسَب مرةً في المهمة
+     المتزامنة الواحدة (رسمةٌ أو نقرة) وتُمحى بعدها في الدورة الدقيقة، وعند كلِّ كتابةٍ (CORE.set) أو إحصاءٍ (statBump) أو رسمِ صفحة */
+  memo: null,
+  tick: function(){ if (!DB.memo){ DB.memo = { life:{}, lists:{} }; Promise.resolve().then(function(){ DB.memo = null; }); } return DB.memo; },
+  memoReset: function(){ DB.memo = null; }
 };
 
 

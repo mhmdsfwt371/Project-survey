@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -2157,7 +2157,7 @@ var CORE = {
   all:  function(kind){ return STATE[kind]; },
   set:  function(kind, id, v){
     if (!STATE[kind]) STATE[kind] = {};
-    STATE[kind][id] = v;
+    STATE[kind][id] = v; DB.memoReset();   /* (V31.6) */
     /* كلُّ كتابةٍ محليةٍ للمهامِّ تُبطِل فهرسَها — الفهرسُ سريعٌ لأنه مبنيٌّ
        مرةً، فلا يصحُّ أن يُقرأ قديمًا بعد إسنادٍ أو إنجاز (V17.47) */
     if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
@@ -3182,7 +3182,12 @@ var DB = {
   ready: function(){ return !!(FB.ready && FB.db); },
   col:   function(name){ return FB.db.collection(name); },
   doc:   function(name, id){ return FB.db.collection(name).doc(id); },
-  batch: function(){ return FB.db.batch(); }
+  batch: function(){ return FB.db.batch(); },
+  /* (V31.6) ذاكرةُ الحساب الواحد — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ النقطة…) تُحسَب مرةً في المهمة
+     المتزامنة الواحدة (رسمةٌ أو نقرة) وتُمحى بعدها في الدورة الدقيقة، وعند كلِّ كتابةٍ (CORE.set) أو إحصاءٍ (statBump) أو رسمِ صفحة */
+  memo: null,
+  tick: function(){ if (!DB.memo){ DB.memo = { life:{}, lists:{} }; Promise.resolve().then(function(){ DB.memo = null; }); } return DB.memo; },
+  memoReset: function(){ DB.memo = null; }
 };
 
 
@@ -16083,7 +16088,7 @@ var STAT_CACHE = null, STAT_VER = 0;
 
 /* الفهرسُ يُبطَل مع كلِّ تغيُّرٍ في المهامّ — وstatBump يُستدعى بعد كلِّ تغيير */
 function statBump(){
-  TK_IX = null; STAT_CACHE = null; STAT_VER++; }
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); }
 
 /* ═══ التوزيعُ بالمشعر والنوع — من حلقةٍ واحدة ═══
    كانت صفوفُ الجدول تُحسَب في مكانٍ والإجماليُّ في آخر (كاشٌ قد يكون أقدمَ
@@ -16902,7 +16907,7 @@ function taskIndex(){
 function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
   /* (V25.3) داخل رسمة الخريطة تُحسَب الحالةُ مرةً لكلِّ نقطة — الحفظُ يُفتَح مع الرسمة ويُغلَق بعدها فلا يُقدِّم قديمًا */
-  var m = MK.lifeMemo;
+  var m = MK.lifeMemo || (x && x.id ? DB.tick().life : null);   /* (V31.6) خارج الخريطة أيضًا: مرةً في المهمة الواحدة */
   if (!m) return lifeOfRaw(x);
   var v = m[x.id];
   if (v === undefined){ v = lifeOfRaw(x); m[x.id] = v; }
@@ -21668,7 +21673,12 @@ function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع ا�
   var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU_FLT.z || MFU_FLT.t)) return all;
   return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
 }
-function svListRows(key){
+function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً في المهمة الواحدة — بطاقاتُ الملخّص وحدَها كانت تمرّ على النقاط عشرَ مرات */
+  var mk = key + '|' + CUR + '|' + (MFU_FLT.z || '') + '|' + (MFU_FLT.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.tick().lists;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
+  if (LM[mk]) return LM[mk].slice();
+  return (LM[mk] = svListRows0(key)).slice();
+}
+function svListRows0(key){
   var L = SV_LISTS[key];
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
@@ -24165,6 +24175,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'أسرع من غير أي تغيير في الاستخدام: حالة كل نقطة وقوائم المتابعة بقت بتتحسب مرة واحدة في كل رسمة بدل مرات كتير. رسم الخريطة نزل من ١٤٤ لـ٣٧ جزء من الألف من الثانية، وملخص الوزارة من ٥٣ لـ٣٥ (على كمبيوتر — على الجوال الفرق أكبر).' ] },
   { v:'V31.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: كل اتصال بقاعدة البيانات بقى بيعدي من بوابة واحدة في الكود، عشان أي نقل للمنظومة على سيرفرات تانية يتعمل في مكان واحد. واتشالت متغيرات قديمة مش مستعملة.' ] },
   { v:'V31.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
@@ -32452,6 +32464,7 @@ function moreHtml(){
   return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
 }
 function render(force){
+  DB.memoReset();   /* (V31.6) رسمُ الصفحة يبدأ بحسابٍ طازج */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه

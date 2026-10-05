@@ -55,7 +55,7 @@ function taskIndex(){
 function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
   /* (V25.3) داخل رسمة الخريطة تُحسَب الحالةُ مرةً لكلِّ نقطة — الحفظُ يُفتَح مع الرسمة ويُغلَق بعدها فلا يُقدِّم قديمًا */
-  var m = MK.lifeMemo;
+  var m = MK.lifeMemo || (x && x.id ? DB.tick().life : null);   /* (V31.6) خارج الخريطة أيضًا: مرةً في المهمة الواحدة */
   if (!m) return lifeOfRaw(x);
   var v = m[x.id];
   if (v === undefined){ v = lifeOfRaw(x); m[x.id] = v; }

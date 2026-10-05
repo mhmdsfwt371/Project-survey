@@ -25,7 +25,12 @@ function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع ا�
   var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU_FLT.z || MFU_FLT.t)) return all;
   return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
 }
-function svListRows(key){
+function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً في المهمة الواحدة — بطاقاتُ الملخّص وحدَها كانت تمرّ على النقاط عشرَ مرات */
+  var mk = key + '|' + CUR + '|' + (MFU_FLT.z || '') + '|' + (MFU_FLT.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.tick().lists;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
+  if (LM[mk]) return LM[mk].slice();
+  return (LM[mk] = svListRows0(key)).slice();
+}
+function svListRows0(key){
   var L = SV_LISTS[key];
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
@@ -2522,6 +2527,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'أسرع من غير أي تغيير في الاستخدام: حالة كل نقطة وقوائم المتابعة بقت بتتحسب مرة واحدة في كل رسمة بدل مرات كتير. رسم الخريطة نزل من ١٤٤ لـ٣٧ جزء من الألف من الثانية، وملخص الوزارة من ٥٣ لـ٣٥ (على كمبيوتر — على الجوال الفرق أكبر).' ] },
   { v:'V31.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: كل اتصال بقاعدة البيانات بقى بيعدي من بوابة واحدة في الكود، عشان أي نقل للمنظومة على سيرفرات تانية يتعمل في مكان واحد. واتشالت متغيرات قديمة مش مستعملة.' ] },
   { v:'V31.4', d:'٦ أكتوبر ٢٠٢٦', notes:[

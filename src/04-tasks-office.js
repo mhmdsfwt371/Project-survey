@@ -4343,7 +4343,7 @@ var STAT_CACHE = null, STAT_VER = 0;
 
 /* الفهرسُ يُبطَل مع كلِّ تغيُّرٍ في المهامّ — وstatBump يُستدعى بعد كلِّ تغيير */
 function statBump(){
-  TK_IX = null; STAT_CACHE = null; STAT_VER++; }
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); }
 
 /* ═══ التوزيعُ بالمشعر والنوع — من حلقةٍ واحدة ═══
    كانت صفوفُ الجدول تُحسَب في مكانٍ والإجماليُّ في آخر (كاشٌ قد يكون أقدمَ
