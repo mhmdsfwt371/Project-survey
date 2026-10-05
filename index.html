@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-ea9edc6b0d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-cc5af1cd57.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -10512,10 +10512,57 @@ function wbsDepth(id){ return String(id || '').split('.').length; }
 function wbsChildren(id){ var p = String(id) + '.'; return wbsRows().filter(function(r){ return String(r.id).indexOf(p) === 0 && wbsDepth(r.id) === wbsDepth(id) + 1; }); }
 function wbsPct(r){
   var kids = wbsChildren(r.id);
-  if (!kids.length) return Math.max(0, Math.min(100, +r.pct || 0));
+  if (!kids.length){ var ap = wbsAutoPct(r); return ap != null ? ap : Math.max(0, Math.min(100, +r.pct || 0)); }   /* (V30.2) المقيسُ تلقائيًّا */
   var tot = 0, w = 0;
   kids.forEach(function(k){ var d = Math.max(1, +k.dur || 1); tot += wbsPct(k) * d; w += d; });
   return w ? Math.round(tot / w) : 0;
+}
+/* ═══ (V30.2) الخطةُ مقابلَ الفعلي (فكرةُ المالك #٣) ═══
+   المخطّطُ من التواريخ: نسبةُ ما انقضى من مدة البند حتى اليوم (المعلَمُ صفرٌ قبل موعده ومئةٌ بعده)، والآباءُ بأوزان الأبناء.
+   الفعليُّ التلقائي: البنودُ التي يقيسها النظامُ بنفسه (المسحُ بالمشعر، تأكيدُ الجمرات، مواقعُ التفويج، التركيبُ) تُقرأ من
+   بياناته لا من يد — وغيرُها بما يُكتَب في الملف. والانحرافُ = الفعلي − المخطّط. */
+var WBS_AUTO = [
+  [/^مسح.*(النوارية|النورية)/, function(){ return wbsSvPctT('النورية'); }],
+  [/^مسح.*(الزايدي)/, function(){ return wbsSvPctT('الزايدي'); }],
+  [/^مسح.*(الهجرة)/, function(){ return wbsSvPctT('محطات طريق الهجرة'); }],
+  [/^مسح.*(التفويج)/, function(){ return wbsSvPct('مراكز التفويج'); }],
+  [/^مسح.*(منى)/, function(){ return wbsSvPct('منى'); }],
+  [/^مسح.*(عرفات)/, function(){ return wbsSvPct('عرفات'); }],
+  [/^مسح.*(مزدلفة|المزدلفة)/, function(){ return wbsSvPct('المزدلفة'); }],
+  [/^(مسح|تأكيد).*(الجمرات)/, function(){ var j = jmrConfirm().tot; return j.n ? Math.round(j.ok / j.n * 100) : 0; }],
+  [/^مسح.*(القطار|المحطات)/, function(){ return wbsSvPctT('محطات قطار'); }],
+  [/^مسح.*(كاميرات|الكاميرات)/, function(){ return wbsSvPct('كاميرات المتابعة'); }],
+  [/^(المسح الميداني الشامل|اكتمال المسح الميداني)/, function(){ return svStats().pct; }],
+  [/^تركيب.*(منى)/, function(){ return wbsInsPct('منى'); }],
+  [/^تركيب.*(عرفات)/, function(){ return wbsInsPct('عرفات'); }],
+  [/^تركيب.*(المزدلفة|مزدلفة)/, function(){ return wbsInsPct('المزدلفة'); }],
+  [/^(تركيب النقاط|التركيب الميداني|تركيب المواقع|اكتمال التركيب)/, function(){ var K = siteKeyStats().total; return K.n ? Math.round(K.ins / K.n * 100) : 0; }]
+];
+function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsInsPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; var st = (STATE.inss[x.id] || {}).status; if (st === 'مُركّب' || x.fstat === 'مُركّب') d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsAutoPct(r){ if (wbsChildren(r.id).length || r.manual) return null; var nm0 = String(r.n || ''); for (var i = 0; i < WBS_AUTO.length; i++){ if (WBS_AUTO[i][0].test(nm0)){ try { return Math.max(0, Math.min(100, +WBS_AUTO[i][1]() || 0)); } catch (e){ return null; } } } return null; }
+function wbsPlanPct(r){
+  var kids = wbsChildren(r.id), today = dayKey(Date.now());
+  if (kids.length){ var tot = 0, w = 0; kids.forEach(function(k){ var d = Math.max(1, +k.w || +k.dur || 1); tot += wbsPlanPct(k) * d; w += d; }); return w ? Math.round(tot / w) : 0; }
+  if (!r.s || !r.e) return 0;
+  if (r.type === 'معلم') return r.e <= today ? 100 : 0;
+  if (today <= r.s) return 0; if (today >= r.e) return 100;
+  var a = new Date(r.s).getTime(), b = new Date(r.e).getTime(), n = new Date(today).getTime(); return b > a ? Math.round((n - a) / (b - a) * 100) : 100;
+}
+function wbsVar(r){ return wbsPct(r) - wbsPlanPct(r); }
+function wbsVarPill(v){ return v <= -10 ? pill(t('متأخر') + ' ' + nm(v) + '٪', 'bad') : (v < 0 ? pill(nm(v) + '٪', 'warn') : pill('+' + nm(v) + '٪', 'ok')); }
+function wbsProjectPct(){ var top = wbsRows().filter(function(r){ return wbsDepth(r.id) === 1; }), pw = 0, pa = 0, w = 0; top.forEach(function(r){ var d = Math.max(1, +r.w || +r.dur || 1); pw += wbsPlanPct(r) * d; pa += wbsPct(r) * d; w += d; }); return { plan:w ? Math.round(pw / w) : 0, act:w ? Math.round(pa / w) : 0, rows:top.length }; }
+function wbsPlanCard(){
+  var R = wbsRows(); if (!R.length) return '';
+  var P = wbsProjectPct(), leaves = R.filter(function(r){ return !wbsChildren(r.id).length && r.s && r.e; });
+  var late = leaves.map(function(r){ return { r:r, v:wbsVar(r) }; }).filter(function(o){ return o.v <= -10 && wbsPct(o.r) < 100; }).sort(function(a, b){ return a.v - b.v; }).slice(0, 6);
+  var auto = leaves.filter(function(r){ return wbsAutoPct(r) != null; }).length;
+  return card('\u{1F4C8} ' + t('الخطة مقابل الفعلي') + ' <span class="hint" style="font-weight:normal">' + esc(t('المخطّط من التواريخ، والفعليُّ من النظام حيث يُقاس')) + '</span>',
+    '<div class="mfu-kpis">' + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('الإنجاز المخطّط')) + '</div><div class="mfu-kpi-v">' + nm(P.plan) + '٪</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('الإنجاز الفعلي')) + '</div><div class="mfu-kpi-v" style="color:' + (P.act >= P.plan ? '#27AE60' : '#C0392B') + '">' + nm(P.act) + '٪</div></div>'
+    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('الانحراف')) + '</div><div class="mfu-kpi-v">' + wbsVarPill(P.act - P.plan) + '</div><div class="hint" style="margin:2px 0 0">' + nm(auto) + ' ' + esc(t('بندًا يُقاس تلقائيًّا')) + '</div></div></div>'
+    + (late.length ? '<p class="hint" style="margin:8px 0 4px">' + esc(t('أكثرُ البنود تأخّرًا عن مخطّطها')) + '</p>' + table(['البند', 'المخطّط', 'الفعلي', 'الانحراف'], late.map(function(o){ return ['<span class="num hint" style="margin:0">' + esc(o.r.id) + '</span> ' + esc(o.r.n), nm(wbsPlanPct(o.r)) + '٪', nm(wbsPct(o.r)) + '٪', wbsVarPill(o.v)]; })) : '<p class="hint" style="margin:8px 0 0">' + esc(t('لا بندَ متأخرًا عن مخطّطه بأكثر من ١٠٪')) + '</p>'));
 }
 function wbsStatus(r){ var p = wbsPct(r); return p >= 100 ? 'مكتملة' : (p > 0 ? 'قيد التنفيذ' : 'لم تبدأ'); }
 function wbsTiming(r){
@@ -10882,7 +10929,21 @@ function wbsImport(file){
         var wb = XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true });
         var ws = wb.Sheets[wb.SheetNames[0]];
         var A = XLSX.utils.sheet_to_json(ws, { header:1, raw:true });
-        var hdr = -1, keys = [];
+        var hdr = -1, keys = [], v2 = -1;
+        /* (V30.2) الإصدارُ ٢ من الخطة: ورقةُ «الجدول الزمني الرئيسي» بأعمدةٍ مسمّاة — تُقرأ بأسمائها لا بمواضعها */
+        wb.SheetNames.forEach(function(sn){ if (v2 >= 0) return; var W = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, raw:true });
+          for (var q = 0; q < W.length; q++){ if (String(W[q][0] || '').replace(/[\u200f\u200e\s]/g, '') === 'رقمالبند'){ A = W; v2 = q; break; } } });
+        if (v2 >= 0){
+          var H = A[v2].map(function(h){ return String(h || '').replace(/\s+/g, ' ').trim(); }), col = function(n){ return H.indexOf(n); };
+          var ci = { id:col('رقم البند'), n:col('اسم البند'), type:col('النوع'), resp:col('المسؤول'), party:col('الجهة المعنية'), s:col('البداية المعتمدة'), e:col('النهاية المعتمدة'), dur:col('المدة بأيام العمل'), w:col('الوزن'), ms:col('طريقة القياس'), pct:col('الإنجاز الفعلي') };
+          var rows2 = [];
+          for (var r2 = v2 + 1; r2 < A.length; r2++){ var row2 = A[r2]; if (!row2 || !row2[ci.n]) continue; var id2 = String(row2[ci.id] || '').replace(/[\u200f\u200e\s]/g, ''); if (!id2 || !/^\d/.test(id2)) continue;
+            rows2.push({ id:id2, n:String(row2[ci.n]).trim(), s:wbsDate(row2[ci.s]), e:wbsDate(row2[ci.e]), dur:+row2[ci.dur] || 0, pct:Math.max(0, Math.min(100, +row2[ci.pct] || 0)), type:String(row2[ci.type] || 'مهمة').trim(), resp:String(row2[ci.resp] || '').trim(), party:String(row2[ci.party] || '').trim(), w:+row2[ci.w] || 0, ms:String(row2[ci.ms] || '').trim() }); }
+          if (!rows2.length){ toast(t('لا صفوفَ في الملف')); return; }
+          STATE.wbs = { rows:rows2, keys:(STATE.wbs && STATE.wbs.keys) || [] };
+          if (wbsSave()){ logEvent('استيرادُ الخطة التفصيلية (الإصدار ٢) — ' + rows2.length + ' بندًا'); toast(nm(rows2.length) + ' ' + t('بندًا استُورد من الإصدار ٢')); render(1); }
+          return;
+        }
         for (var i = 0; i < A.length; i++){
           var c0 = String(A[i][0] || '').trim();
           if (c0 === 'المواعيد الحاكمة' && A[i + 1]){
@@ -11050,7 +11111,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
          نسبةٌ لم يقصدها أحدٌ وتُرفَع. صار الإنجازُ يُقرأ في الجدول ويُكتَب
          في وضع التحرير كسائر الحقول — بزرِّ ✎ لا بمرورِ مؤشِّر. */
       var pctTxt = '<span class="num">' + nm(p) + '٪</span>';
-      var pctCell = (may('settings') && !kids)
+      var pctCell = (may('settings') && !kids && wbsAutoPct(r) == null)   /* (V30.2) المقيسُ من النظام لا يُكتَب بيد */
         ? '<input type="number" min="0" max="100" value="' + p + '" data-wbspct="' + esc(r.id) + '" style="width:64px">'
         : pctTxt;
       var tmPill = tm === 'مكتمل' ? pill('مكتمل','ok')
@@ -11069,7 +11130,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
                 kids ? '<span class="num">' + nm(kids) + '</span>' : '<span class="hint">—</span>',
                 '<input type="date" value="' + esc(r.s || '') + '" data-wbse="s" style="width:140px">',
                 '<input type="date" value="' + esc(r.e || '') + '" data-wbse="e" style="width:140px">',
-                pctCell,
+                pctCell, '<span class="num">' + nm(wbsPlanPct(r)) + '٪</span>', wbsVarPill(wbsVar(r)),   /* (V30.2) */
                 pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')),
                 typeSel, tmPill,
                 '<input value="' + esc(r.resp || '') + '" data-wbse="resp" dir="auto" style="width:130px">',
@@ -11080,7 +11141,8 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       return ['<span class="num hint" style="margin:0">' + esc(r.id) + '</span>', name,
               kids ? '<span class="num">' + nm(kids) + '</span>' : '<span class="hint">—</span>',
               '<span class="num">' + esc(r.s || '—') + '</span>', '<span class="num">' + esc(r.e || '—') + '</span>',
-              pctTxt, pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')),
+              pctTxt + (wbsAutoPct(r) != null ? ' <span class="hint" title="' + esc(t('يُقاس من النظام تلقائيًّا')) + '">\u2699</span>' : ''), '<span class="num">' + nm(wbsPlanPct(r)) + '٪</span>', wbsVarPill(wbsVar(r)),   /* (V30.2) */
+              pill(st, st === 'مكتملة' ? 'ok' : (st === 'قيد التنفيذ' ? 'warn' : '')),
               r.type === 'معلم' ? pill('معلم','acc') : '<span class="hint">' + esc(t(r.type || 'مهمة')) + '</span>',
               tmPill,
               esc(r.resp || '—'), esc(r.party || '—'),
@@ -11110,7 +11172,7 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
       + '<div class="chips">' + chips.map(function(x){ return '<button type="button" class="chip' + (WBS_F === x[0] ? ' on' : '') + '" data-wbsf="' + x[0] + '">' + esc(t(x[1])) + ' <span class="num">' + nm(x[2]) + '</span></button>'; }).join('') + '</div>'
       + card('', '<input type="search" data-wbsq value="' + esc(WBS_Q) + '" placeholder="' + esc(t('ابحث بالبند أو المسؤول أو الجهة')) + '" dir="auto">')
       + cardRaw(esc(t('جدول المتابعة')) + ' \u2014 ' + nm(rows.length) + (STATE.wbs && STATE.wbs.by ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wbs.by)) + ' ' + esc(stepAgo(STATE.wbs.at || 0)) + '</span>' : ''),
-          table(['#','البند','فروع','البدء','الانتهاء','الإنجاز','الحالة','النوع','الموقف الزمني','المسؤول','الجهة','المتبقي','الملف',''], rows, null, { sticky:true }),
+          table(['#','البند','فروع','البدء','الانتهاء','الإنجاز','المخطّط','الانحراف','الحالة','النوع','الموقف الزمني','المسؤول','الجهة','المتبقي','الملف',''], rows, null, { sticky:true }),   /* (V30.2) */
           btn('\u2B07 ' + t('إكسل — بالمعادلات وتجميع الصفوف'),'btn-primary btn-sm',' data-wbsxl="1" title="' + esc(t('ملفٌّ كملفِّ المتابعة: صيغٌ تُحدِّث نفسَها ومستوياتُ طيٍّ وألوانٌ شرطية')) + '"')
           + btn('\u2B07 ' + t('إكسل — قيمًا فقط'),'btn-secondary btn-sm',' data-xls="wbs"'))
       + '<p class="hint">' + esc(t('الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.')) + '</p>';
@@ -21415,6 +21477,7 @@ function mfuBriefText(){
   L.push(t('المعوقات القائمة') + ' ' + n(K.obs) + (dobs != null ? ' (' + (dobs > 0 ? '+' : '') + n(dobs) + ' ' + t('عن الأسبوع الماضي') + ')' : '') + '. ' + (K.ins ? t('التركيب') + ': ' + n(K.ins) + ' ' + t('نقطة') + '.' : t('التركيبُ لم يبدأ بعد، والشركاتُ') + ' ' + n(C.length) + ' ' + t('في مرحلة المسح') + '.'));
   var w = ['permit', 'missing', 'noalloc', 'minwait'].map(function(k){ var c = svListRows(k).length; return c ? n(c) + ' ' + t(SV_LISTS[k][0]) : ''; }).filter(Boolean);
   if (w.length) L.push(t('ينتظر الوزارة') + ': ' + w.join('، ') + '.');
+  if (wbsRows().length){ var PP = wbsProjectPct(); L.push(t('الخطة') + ': ' + t('المخطّط') + ' ' + n(PP.plan) + '٪ ' + t('والفعلي') + ' ' + n(PP.act) + '٪ (' + (PP.act - PP.plan >= 0 ? '+' : '') + n(PP.act - PP.plan) + '٪).'); }   /* (V30.2) */
   var al = alAll().filter(function(a){ return a.sites.length; }).map(function(a){ return n(a.sites.length) + ' ' + a.label; });   /* (V30.1) */
   if (al.length) L.push(t('تنبيهات') + ': ' + al.join('، ') + '.');
   return L.join('\n');
@@ -21441,7 +21504,7 @@ function mfuSummary(){
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  return mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + svListPop()   /* (V29.9، و٣٠٫١ التنبيهات) */
+  return mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + wbsPlanCard() + svListPop()   /* (V29.9، و٣٠٫١ التنبيهات، و٣٠٫٢ الخطة مقابل الفعلي) */
     + '<div class="mfu-kpis">'
     + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
@@ -24019,6 +24082,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.2', d:'٥ أكتوبر ٢٠٢٦', notes:[
+      'الخطة مقابل الفعلي: الخطة التفصيلية (الإصدار ٢٫١، ١٨٥ بند) بقت في «متابعة الخطة التفصيلية»، والإنجاز المخطط بيتحسب من التواريخ، والفعلي لبنود المسح والتركيب بيتقاس من النظام لوحده (علامة ⚙)، والانحراف قدام كل بند.',
+      'بطاقة «الخطة مقابل الفعلي» في ملخص الوزارة: المخطط والفعلي والانحراف للمشروع كله وأكتر البنود تأخرا، وبتدخل الملخص التنفيذي. واستيراد الإكسل بقى يقرا الإصدار ٢ بأسماء الأعمدة.' ] },
   { v:'V30.1', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'تنبيهات بقواعد تتظبط من ثوابت النظام (بالأيام): معوق مفتوح أكثر من ١٤ يوم، تصريح دخول معلق أكثر من ٧، أعيدت للزيارة وما اتزارتش أكثر من ٣، ممسوحة بلا صور أكثر من ٢، مسندة وما اتزارتش أكثر من ٣، تعذر الوصول بلا محاولة أكثر من ٢١. الصفر يعطل القاعدة.',
       'بطاقة «تنبيهات القواعد» في متابعة الوزارة ← الملخص: كل تنبيه بعدده، ويفتح قائمته بالمشعر والنوع ويتصدر إكسل، ويدخل الملخص التنفيذي.' ] },
