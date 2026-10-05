@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V30.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1268,7 +1268,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-1bfa260bf7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-e4e795b454.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15439,6 +15439,7 @@ function popHtml(){
     +   '↗ ' + esc(t('اتجاهات')) + '</a>'
     +   (may('edit') ? btn('⇱ ' + t('تحريك'),'btn-secondary btn-sm',' data-move="' + esc(s.id) + '"') : '')
     +   btn(may('edit') ? '✎ ' + t('تعديل البيانات') : '\u25C8 ' + t('التفاصيل'),'btn-secondary btn-sm',' data-site="' + esc(s.id) + '"')
+    +   (seesPage('ev') ? btn('\u{1F4DC} ' + t('سجل النقطة'),'btn-quiet btn-sm',' data-evsite="' + esc(s.id) + '"') : '')   /* (V30.8) */
     /* نموذجُ التركيب لا يُفتَح لنقطةٍ لم تصر جاهزةً — وإلا رُكّبت قبل اعتمادها */
     +   (may('edit')
           ? (FIELD_MODE === 'install'
@@ -24142,6 +24143,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V30.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'سجل التدقيق: البحث بقى يدور في نص الحدث ورقم النقطة واسم اللي عمله، ومن غير ما يفرق في الهمزة والتاء المربوطة والتشكيل وحالة الحروف.',
+      'زر «سجل النقطة» في نافذة أي نقطة (لمن يرى السجل): بيفتح السجل مصفّى على النقطة ويجيب تاريخها كله من القاعدة، مش بس آخر ٥٠٠ حدث.' ] },
   { v:'V30.7', d:'٥ أكتوبر ٢٠٢٦', notes:[
       'إنشاء الحسابات: لما يرفض مفتاح التشغيل (منتهي أو بلا صلاحية) الرسالة بقت تقول الحقيقة — الطلب محفوظ وهيتنفذ مع دورة الخادم، والمفتاح محتاج تجديد من ثوابت النظام — ولافتة للمدير في صفحة الحسابات.',
       'والحسابات المطلوبة بقت تتنفذ كمان مع كل نشر، لأن الترقية للأصل وجدولة الخادم ما كانوش بيشغلوها فكانت بتتأخر ساعات.',
@@ -28813,7 +28817,9 @@ function evFetch(force, mode){
   EV_FETCHING = true;
   var q = FB.db.collection('events').orderBy('ts', 'desc');
   var ranged = false;
-  if (mode === 'range' && (EVF.from || EVF.to)){
+  if (mode === 'site' && /^NSK-/i.test(String(EVF.q || '').trim())){   /* (V30.8) تاريخُ نقطةٍ كاملًا — حقلٌ واحدٌ بلا ترتيبٍ فلا يحتاج فهرسًا مركّبًا */
+    ranged = true; q = FB.db.collection('events').where('site', '==', String(EVF.q).trim());
+  } else if (mode === 'range' && (EVF.from || EVF.to)){
     ranged = true;
     if (EVF.to)   q = q.where('ts', '<=', Date.parse(EVF.to));
     if (EVF.from) q = q.where('ts', '>=', Date.parse(EVF.from));
@@ -28873,13 +28879,17 @@ function evAll(){
   });
   return out.sort(function(a, b){ return (b.ts || 0) - (a.ts || 0); });
 }
+/* (V30.8) فكرةُ المالك #٨: البحثُ في سجلّ التدقيق بلا تشكيلٍ ولا حالةِ حروف، وفي النصِّ والنقطةِ والفاعل —
+   و«سجلُّ النقطة» من نافذتها يجلب تاريخَها كلَّه من القاعدة لا من المحمَّل وحدَه */
+function evNorm(v){ return String(v == null ? '' : v).replace(/[\u064B-\u0652\u0640]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة/g, 'ه').replace(/ى/g, 'ي').toLowerCase(); }
+function evSiteHistory(id){ goPage('ev'); EVF = { kind:'', by:'', from:'', to:'', q:id, cat:'' }; PG_Q = id; PG_KEEP = true; render(1); evFetch(true, 'site'); }   /* صندوقُ رأس الصفحة يقود EVF.q (PG_BIND) — فيُملأ هو أيضًا */
 function evRows(){
   var L = evAll();
   return L.filter(function(e){
     if (EVF.kind && evKind(e.what) !== EVF.kind) return false;
     if (EVF.cat && evCat(e.what) !== EVF.cat) return false;
     if (EVF.by && evActor(e).name !== EVF.by) return false;   /* بالفاعل لا بصاحب الجهاز */
-    if (EVF.q && String(e.what || '').indexOf(EVF.q) < 0) return false;
+    if (EVF.q){ var nq = evNorm(EVF.q); if ((evNorm(e.what) + ' ' + evNorm(e.site) + ' ' + evNorm(e.by) + ' ' + evNorm(evActor(e).name)).indexOf(nq) < 0) return false; }   /* (V30.8) النصُّ والنقطةُ والفاعل */
     /* التاريخُ والوقتُ معًا: `from` و`to` بصيغة datetime-local */
     if (EVF.from && e.ts < Date.parse(EVF.from)) return false;
     if (EVF.to   && e.ts > Date.parse(EVF.to))   return false;
@@ -33649,6 +33659,7 @@ function onDocClick(e){
     bulkApply(); return;
   }
   if (e.target.closest('[data-ghrun]')){ ghRunNow(); return; }
+  var evs = e.target.closest('[data-evsite]'); if (evs){ evSiteHistory(evs.getAttribute('data-evsite')); return; }   /* (V30.8) */
   var pvl = e.target.closest('[data-provlocal]'); if (pvl){ provLocal(pvl.getAttribute('data-provlocal')); return; }   /* (V30.7) */
   if (e.target.closest('[data-ghsave]')){ var gt = document.getElementById('ghTok'); ghSetToken(gt ? gt.value : ''); render(1); return; }
   if (e.target.closest('[data-ghclear]')){ ghSetToken(''); render(1); return; }

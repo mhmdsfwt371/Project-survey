@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V30.7",
+ "app_version": "V30.8",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -1999,7 +1999,8 @@
   "V30.4": "فكرةُ المالك #٥: weekly-pack.mjs بوضع WEEKLY_MODE=daily يخرج بيانات-قارئات-نسك-<اليوم>.xlsx (mfuXlsx بمكتبة xlsx من npm مع تحويل writeFile إلى المجلد) و.json (MFU_SECTIONS بصفوف mfuRowsOf وbrief) و.geojson (geoJsonBuild) وbrief.txt؛ weekly-drive.mjs يقرأ اسمَ المجلد من WEEKLY_FOLDER (البيانات اليومية/<اليوم>)؛ ministry.yml: cron يوميٌّ ٠٢:٣٠ UTC (٥:٣٠ بمكة) ومدخلُ daily=yes للتوليد يدويًّا. دخانٌ محليّ: ١٧ ورقة و١٨٠٧ معالم جغرافية.",
   "V30.5": "فكرةُ المالك #٦: شاشةُ القاعة حيّة — قسم kksec-5 «مباشر»: آخرُ ٨ خطوات من STATE.steps (agoTxt، النوع، النقطة، dispName)، وطزاجةُ البيانات من STATE.meta.lastSync، وتنبيهاتُ القواعد (alAll) أو «لا تنبيهات»؛ وفي syncCycle يصير السحبُ كلَّ ١٢٠ ثانية حين KIOSK_ON وCUR==='mfu' (kkEvery) بدل نطاق الدور. تجربةٌ حقيقية ٤ فحوص.",
   "V30.6": "فكرةُ المالك #٧: photoQuality(cx, W, H) على ١٢٨ بكسل رماديًّا: b متوسطُ السطوع، s انحرافُ لابلاس، h بصمةُ ٨×٨ (٦٤ بت ست عشرية)؛ PQ {dark:35, bright:238, blur:18}؛ photoQualityFlags/photoQualityWarn (تنبيهٌ بلا منع) داخل shrink()، وPHOTO_Q_IX يربط dataUrl بمقاييسه فيحملها photoQueue (q) وتُكتَب في وثيقة الصورة (المسارُ المباشرُ والسحابي)؛ photoDupOf بمسافة هامنغ ≤٣ على طابور الجهاز وSTATE.photos لنفس النقطة؛ SV_LISTS.badphoto (photosOf يعيد [مفتاح، وثيقة]) وبطاقةٌ في مسح الوزارة. وإصلاحان: عناوينُ card() نصٌّ صِرف (التلميحُ في الجسم)، وsvListPop والملخّصُ اليوميُّ بمتغيرات --surface/--ink/--line.",
-  "V30.7": "لقطةُ المالك «رفض التشغيل 401»: ghRunNow عند 401/403 يعلّم CFG.gh.bad/badCode ويقول إن الطلبَ محفوظٌ ويُنفَّذ مع الدورة وإن المفتاحَ يحتاج تجديدًا، وحدثٌ في السجل، ولافتةُ تحذيرٍ للمدير فوق «إنشاء حساب». سيرٌ مستقلٌّ .github/workflows/provision-on-push.yml يشغّل scripts/provision.mjs عند كلِّ دفعٍ إلى staging أو main. وprovLocal(u) زرُّ «أنشئه من هذا الجهاز الآن» (may users) ينشئ الحسابَ بـFB.createUser بتطبيقٍ ثانٍ، ويكتب users/<uid> ويعلّم provision/<u> «done» بلا كلمة مرور."
+  "V30.7": "لقطةُ المالك «رفض التشغيل 401»: ghRunNow عند 401/403 يعلّم CFG.gh.bad/badCode ويقول إن الطلبَ محفوظٌ ويُنفَّذ مع الدورة وإن المفتاحَ يحتاج تجديدًا، وحدثٌ في السجل، ولافتةُ تحذيرٍ للمدير فوق «إنشاء حساب». سيرٌ مستقلٌّ .github/workflows/provision-on-push.yml يشغّل scripts/provision.mjs عند كلِّ دفعٍ إلى staging أو main. وprovLocal(u) زرُّ «أنشئه من هذا الجهاز الآن» (may users) ينشئ الحسابَ بـFB.createUser بتطبيقٍ ثانٍ، ويكتب users/<uid> ويعلّم provision/<u> «done» بلا كلمة مرور.",
+  "V30.8": "فكرةُ المالك #٨: evNorm (بلا تشكيلٍ ولا تطويل، والهمزاتُ ألفًا والتاءُ المربوطةُ هاءً، وحروفٌ صغيرة)، وevRows يبحث في what وsite وby وevActor؛ evFetch بوضع 'site' يجلب where('site','==',id) بلا ترتيبٍ (لا فهرسَ مركّبًا)؛ evSiteHistory(id) يفتح السجلَّ ويملأ EVF.q وPG_Q (صندوقُ رأس الصفحة يقود EVF.q عبر PG_BIND) ويجلب تاريخَ النقطة؛ زرُّ data-evsite في نافذة النقطة لمن يرى السجل (seesPage('ev'))."
  },
  "map_and_geolocation": {
   "tile_layers": {
