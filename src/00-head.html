@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<!-- ═══ سياسةُ مصادر المحتوى (V17.61) ═══
+     الاستضافةُ لا تسمح بترويسات، فالسياسةُ في الصفحة نفسِها: لا يُحمَّل سكربتٌ
+     إلا من هنا أو من المصادر الأربعة المعروفة (فايربيز · الجداول · المكتبات ·
+     دخولُ جوجل)، ولا يُفتَح اتصالٌ إلا لما يستعمله التطبيقُ فعلًا — فحقنُ
+     سكربتٍ من خارج القائمة لا يعمل ولو وصل إلى الصفحة. والخرائطُ ومحرّكُ
+     الثلاثي محليّان في المستودع، وعاملُهما يُبنى من blob فأُذن له وحدَه.
+     ويحرسها جردُ سياسة المصادر: كلُّ مصدرٍ في الشيفرة له إذنٌ هنا.
+     والمصادقةُ تُؤطِّر نطاقَ مشروعها (V17.63): فايربيز يفتح إطارًا خفيًّا على
+     project-survey-60600.firebaseapp.com لإتمام الدخول — مصدرٌ ثالثٌ لا
+     تكتبه شيفرتُنا ولا يراه فحصٌ ساكن، وأمسكه المتصفّحُ الحقيقيُّ كذلك.
+     ونطاقُ جوجل يُؤذَن له كاملًا (V17.62): مكتبةُ دخولِ جوجل تجلب بنفسها
+     apis.google.com — مصدرٌ لا يُذكَر في شيفرتنا فلا يراه فحصٌ ساكن، ورآه
+     المتصفّحُ الحقيقيُّ مرفوضًا. فالنطاقُ كلُّه أضيقُ من «أيِّ موقع» وأوسعُ
+     من اسمٍ يُنسى. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://*.google.com https://*.gstatic.com https://*.googleapis.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob: https:; font-src 'self' data: https:; media-src 'self' data: blob:; worker-src 'self' blob:; child-src 'self' blob:; connect-src 'self' blob: data: https://*.googleapis.com wss://*.googleapis.com https://*.google.com https://*.firebaseapp.com https://raw.githubusercontent.com https://api.github.com https://tiles.openfreemap.org https://tile.openstreetmap.org https://server.arcgisonline.com https://s3.amazonaws.com https://cdn.sheetjs.com https://cdnjs.cloudflare.com https://*.gstatic.com; frame-src https://*.google.com https://*.googleapis.com https://*.firebaseapp.com; form-action 'self' https://accounts.google.com; base-uri 'self'; object-src 'none'; manifest-src 'self'">
+<meta name="theme-color" content="#185FA5">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-title" content="قارئات أفاقي">
+<title>قارئات أفاقي — حج ١٤٤٨هـ</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════════
+   أفاقي V14 — نظام التصميم
+   وضعان: فاتح للإدارة على المكتب · داكن للميدان تحت الشمس
+   والاتجاه ينقلب مع dir بالخصائص المنطقية وحدها
+   ═══════════════════════════════════════════════════════════════════ */
+
+:root{
+  --bg:#f4f6f8; --surface:#fff; --surface-2:#f8fafb; --raise:#fff;
+  --ink:#14181d; --ink-soft:#5b6673; --ink-mute:#8a939d;
+  --line:#e2e6ea; --line-2:#eef1f4;
+  --brand:#185FA5; --brand-ink:#fff; --brand-soft:#E6F1FB; --brand-deep:#0C447C;
+  --danger:#b3261e; --danger-bg:#fdecea;
+  --ok:#1d7a3d; --ok-bg:#e8f5ec;
+  --warn:#8a5300; --warn-bg:#fdf1de;
+  --info:#0b5f7a; --info-bg:#e3f4f8;
+  --sidebar:#101a1f; --sidebar-ink:#d7dde2; --sidebar-line:rgba(255,255,255,.1);
+  --radius:10px; --radius-sm:8px;
+  /* سلّم الطبقات — معلنٌ في مكانٍ واحدٍ فلا يتسلّق أحدٌ فوق أحد */
+  --z-map:1;      --z-map-ui:600;  --z-topbar:1200;
+  --z-veil:1300;  --z-side:1400;   --z-pop:1500;  --z-toast:1600;
+  --shadow:0 1px 2px rgba(20,24,29,.06);
+  --sw:264px;
+}
+[data-theme="dark"]{
+  --bg:#0A0D10; --surface:#12171c; --surface-2:#0F1418; --raise:#171D23;
+  --ink:#E8EBEE; --ink-soft:#9BA5AF; --ink-mute:#6C757E;
+  --line:#232B33; --line-2:#1B222A;
+  --brand:#378ADD; --brand-ink:#04121f; --brand-soft:#12263A; --brand-deep:#9CC8F5;
+  --danger:#F0837B; --danger-bg:#2A1512;
+  --ok:#5FD08A; --ok-bg:#0F2418;
+  --warn:#E7B45C; --warn-bg:#2A1F0D;
+  --info:#6FC9E0; --info-bg:#0D2229;
+  --sidebar:#0C1216; --sidebar-ink:#C6CFD7; --sidebar-line:rgba(255,255,255,.08);
+  --shadow:0 1px 2px rgba(0,0,0,.5);
+}
+
+/* ═══ وضعُ الشمس (V17.99) ═══
+   في المشاعر شمسٌ عمودية: تباينٌ أعلى (النصُّ ≥ ٧:١ والعناصرُ ≥ ٤٫٥:١)، وخطٌّ
+   أكبرُ بخُمسٍ تقريبًا، وأهدافُ لمسٍ ≥ ٤٨ بكسل، وعلاماتٌ أسمكُ على الخريطة، ولا
+   نصَّ رماديًّا باهتًا. تجاوزُ رموزٍ على الجذر لا ترقيعُ عناصر — ولا يمسُّ ألوانَ
+   الوزارة (--min-*) ولا شاشةَ القاعة (تُطفَأ فيها). اختياريٌّ لكلِّ جهاز. */
+html[data-sun="1"]{
+  --bg:#ffffff; --surface:#ffffff; --surface-2:#f7f7f7; --raise:#ffffff;
+  --ink:#000000; --ink-soft:#1f2a33; --ink-mute:#2f3b45;
+  --line:#5b6673; --line-2:#8a939d;
+  --brand:#0B4A8F; --brand-ink:#ffffff; --brand-soft:#dbe9f7; --brand-deep:#062f5c;
+  --danger:#8a1c14; --danger-bg:#fbe3e0;
+  --ok:#0f5a2a; --ok-bg:#dff3e5;
+  --warn:#5a3600; --warn-bg:#fbebcf;
+  --info:#07485c; --info-bg:#d9eff5;
+  --sidebar:#000000; --sidebar-ink:#ffffff; --sidebar-line:rgba(255,255,255,.3);
+  --sun-fs:17.5px;
+}
+html[data-sun="1"] body{font-size:var(--sun-fs)}
+html[data-sun="1"] .hint{color:var(--ink-soft)}
+html[data-sun="1"] .btn{font-size:15px}
+html[data-sun="1"] .btn-primary,html[data-sun="1"] .btn-secondary,html[data-sun="1"] .chip,html[data-sun="1"] .tb-btn,html[data-sun="1"] #nav a{min-height:48px;padding-top:12px;padding-bottom:12px}
+html[data-sun="1"] input,html[data-sun="1"] select,html[data-sun="1"] textarea{min-height:48px;font-size:17px;border-color:var(--line)}
+html[data-sun="1"] .leaflet-marker-icon{filter:drop-shadow(0 0 2px #000)}
+html[data-sun="1"] .leaflet-container{font-size:15px}
+html[data-sun="1"] .tbl td,html[data-sun="1"] .tbl th{padding:12px 10px}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;
+  /* ما فاض يُمرَّر داخلَ حاويته لا يمدُّ الصفحة: عنصرٌ واحدٌ أعرضُ من الشاشة
+     كان يسحب الترويسةَ والخريطةَ معه فيظهر شريطُ تمريرٍ أفقيٌّ للصفحة. */
+  overflow-x:hidden;
+  max-width:100%;
+  width:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font:15px/1.55 system-ui,-apple-system,"Segoe UI",Tahoma,"Noto Sans Arabic","Noto Nastaliq Urdu",sans-serif;
+  -webkit-text-size-adjust:100%; -webkit-tap-highlight-color:transparent;
+}
+body[data-lang="ur"]{font-family:"Noto Nastaliq Urdu",system-ui,sans-serif;line-height:1.9}
+a{color:var(--brand)}
+h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
+.num{font-variant-numeric:tabular-nums;direction:ltr;display:inline-block}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+
+/* ── الهيكل ───────────────────────────────────────── */
+.shell{max-width:100%;overflow-x:hidden;
+  margin-inline-start:var(--sw);
+  min-height:100vh;              /* احتياطٌ لمن لا يعرف dvh — والسطرُ ذو الوحدة
+                                    المجهولة يُلغى كلُّه فيضيع الارتفاع */
+  min-height:calc(var(--vh, 1vh) * 100);
+  min-height:100dvh;
+  display:flex;flex-direction:column}
+/* ═══ العرضُ يتبع الشاشةَ لا رقمًا واحدًا (V17.41) ═══
+   كان الحدُّ ألفًا ومئتين لكلِّ شاشة: على شاشة أربعَ عشرةَ بوصةً تُزحَم
+   الجداول، وعلى اثنتين وعشرين يبقى ثلثُ الشاشة فارغًا والجدولُ يُمرَّر.
+   فصار الحدُّ درجاتٍ تتبع عرضَ النافذة الفعليّ: ما دون ١٤٤٠ يأخذ العرضَ
+   كلَّه بحشوٍ أقلَّ، وفوقها يتّسع تدريجيًّا حتى ١٩٢٠. وصفحاتُ الجداول
+   العريضة تُطلَق من الحدِّ أصلًا (wide) فتملأ الشاشةَ مهما كبرت. */
+.content{padding:22px;max-width:1200px;width:100%;flex:1;
+  min-width:0;                     /* وإلا رفض عنصرُ الفلكس أن يضيق */
+  overflow-x:hidden}
+.content.flush{padding:0;max-width:none}
+@media (max-width:1439px){ .content{max-width:none;padding:16px} }
+@media (min-width:1440px){ .content{max-width:1360px} }
+@media (min-width:1680px){ .content{max-width:1560px} }
+@media (min-width:1920px){ .content{max-width:1800px} }
+/* الشاشاتُ الكبيرةُ تُفرَد بطاقاتُها أيضًا — لا عمودان في عرضٍ يتّسع لأربعة */
+@media (min-width:1680px){ .stats{grid-template-columns:repeat(auto-fit,minmax(190px,1fr))} }
+
+.sidebar{position:fixed;inset-block:0;inset-inline-start:0;
+  width:min(var(--sw), 86vw); max-width:340px;
+  background:var(--sidebar);color:var(--sidebar-ink);
+  display:flex;flex-direction:column;
+  /* كان `padding-top` يُكتَب مرتين — والمختصرُ بعده يمحو الأول، فتضيع
+     حمايةُ النوتش ويصطدم الاسمُ بشريط الحالة. */
+  padding:calc(14px + env(safe-area-inset-top,0px)) 12px
+          calc(12px + env(safe-area-inset-bottom,0px));
+  /* الرأسُ والذيلُ ثابتان والقائمةُ وحدَها تُمرَّر: كانت تُمرَّر كلُّها،
+     فيهرب الذيلُ — اللغةُ والمظهرُ والخروج — إلى أسفلَ لا يُبلَغ إلا بالتمرير. */
+  overflow:hidden;
+  z-index:var(--z-side);overscroll-behavior:contain}
+.brand{display:flex;align-items:center;gap:10px;margin-bottom:18px;padding:0 2px}
+/* ═══ العلامةُ صورةٌ لا حروفًا (V16.92) ═══
+   كانت كلمةً مكتوبةً في مربّعٍ ملوّن. صارت علامةَ «أفاقي» نفسَها — تُحفَظ
+   داخل الملفِّ فتعمل بلا شبكةٍ ولا تنتظر طلبًا، وعلى أرضيةٍ بيضاءَ لأن
+   حروفَها داكنةٌ ولا تُقرأ على الداكن. */
+.brand-mark{width:44px;height:38px;border-radius:9px;background:#fff;
+  display:grid;place-items:center;padding:4px 5px;flex:0 0 auto;overflow:hidden}
+.brand-mark img{width:100%;height:auto;display:block}
+.brand-name{font-weight:600;line-height:1.25;min-width:0}
+.brand-sub{font-size:11px;opacity:.6;font-weight:400}
+
+.nav{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;gap:2px;
+  overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;
+  padding-inline-end:2px}
+.nav a,.group-toggle{display:flex;align-items:center;gap:9px;padding:9px 11px;
+  border-radius:var(--radius-sm);color:var(--sidebar-ink);text-decoration:none;font-size:14px;
+  background:transparent;border:0;width:100%;cursor:pointer;text-align:start;font-family:inherit;
+  min-height:40px}
+.nav a:hover,.group-toggle:hover{background:rgba(255,255,255,.07)}
+.nav a:focus-visible,.group-toggle:focus-visible{outline:2px solid var(--brand);outline-offset:-2px}
+.nav a.active{background:var(--brand);color:var(--brand-ink);font-weight:500}
+.item-icon{opacity:.72;font-size:15px;flex:0 0 auto;width:18px;text-align:center}
+.nav a.active .item-icon{opacity:1}
+.group-toggle{justify-content:space-between;text-transform:uppercase;font-size:11px;
+  letter-spacing:.06em;opacity:.82;margin-top:10px}
+.group-label{display:flex;align-items:center;gap:9px;min-width:0}
+.chevron{width:7px;height:7px;border-inline-end:2px solid currentColor;
+  border-block-end:2px solid currentColor;transform:rotate(45deg);transition:transform .15s;flex:0 0 auto}
+.nav-section[data-open="false"] .chevron{transform:rotate(-45deg)}
+.nav-section[data-open="false"] .group-panel{display:none}
+.group-panel{display:flex;flex-direction:column;gap:2px}
+.nav a.sub{padding-inline-start:32px;font-size:13.5px}
+.badge{margin-inline-start:auto;background:rgba(255,255,255,.13);border-radius:99px;
+  padding:1px 7px;font-size:10.5px;font-weight:700;flex:0 0 auto}
+.nav a.active .badge{background:rgba(0,0,0,.18)}
+
+.sidebar-foot{border-top:1px solid var(--sidebar-line);padding-top:11px;margin-top:11px;
+  font-size:13px;flex:0 0 auto}
+.who{font-weight:600}
+.who-role{opacity:.65;font-size:12px;margin-bottom:10px}
+.foot-row{display:flex;gap:6px;margin-bottom:8px}
+.foot-row select{flex:1;min-width:0;background:rgba(255,255,255,.07);
+  border-color:rgba(255,255,255,.14);color:var(--sidebar-ink)}
+.foot-row select option{background:var(--sidebar);color:var(--sidebar-ink)}
+
+/* ── الشريط العلوي ─────────────────────────────────── */
+.topbar{position:sticky;top:0;z-index:var(--z-topbar);background:var(--surface);
+  padding-top:env(safe-area-inset-top,0px);
+  border-bottom:1px solid var(--line);padding:11px 22px;display:flex;align-items:center;gap:12px}
+.burger{display:none;background:none;border:0;cursor:pointer;padding:7px;color:inherit}
+.burger span,.burger::before,.burger::after{content:"";display:block;width:20px;height:2px;
+  background:currentColor;margin:4px 0;border-radius:2px}
+.crumb{font-weight:600;font-size:15px}
+.topbar-meta{margin-inline-start:auto;font-size:12.5px;color:var(--ink-soft);
+  display:flex;align-items:center;gap:12px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--ok);display:inline-block}
+
+/* ── رأس الصفحة ────────────────────────────────────── */
+.page-head{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;
+  flex-wrap:wrap;margin-bottom:18px}
+.page-head h1{font-size:25px;margin:2px 0 4px}
+.eyebrow{text-transform:uppercase;font-size:11px;letter-spacing:.08em;color:var(--ink-soft)}
+.lede{margin:0;color:var(--ink-soft);max-width:62ch}
+
+/* ── البطاقات ──────────────────────────────────────── */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  margin-bottom:16px;box-shadow:var(--shadow)}
+.card-head{display:flex;justify-content:space-between;align-items:center;gap:12px;
+  flex-wrap:wrap;padding:13px 17px;border-bottom:1px solid var(--line)}
+.card-head h2{font-size:15.5px}
+/* الجدولُ يُمرَّر داخلَ بطاقته: كان الطويلُ منه يمدُّ الصفحةَ كلَّها */
+/* الجدولُ يفرد نفسَه على الشاشة العريضة، ويُمرَّر أفقيًّا على الضيّقة:
+   كان `display:block` يقلّصه إلى عرض محتواه فيبقى نصفُ الشاشة فارغًا. */
+.card-body table{width:100%;max-width:100%}
+@media (max-width:760px){
+  .card-body table{display:block;overflow-x:auto;-webkit-overflow-scrolling:touch}
+}
+/* ═══ شريطُ الرأس يسع الهاتفَ فلا يخرج زرٌّ عنه (V17.42) ═══
+   كان صفًّا واحدًا لا يلتفّ: فمع أزرار الأدوات واللغة والنسخة يخرج أوّلُه
+   عن يسار الشاشة ولا يُعرَف أنه هناك، ويُدفَع صندوقُ البحث حتى يُقرأ
+   «ث في هذه الصفحة». صار على الهاتف: يلتفُّ في سطرين، والعنوانُ والقائمةُ
+   في الأوّل، والأدواتُ في الثاني مرتَّبةً من البداية، وأزرارُه أصغرُ قليلًا
+   — بلا تمريرٍ أفقيٍّ البتّة. */
+@media (max-width:760px){
+  .topbar{flex-wrap:wrap;row-gap:8px;padding:9px 12px;overflow-x:hidden}
+  .topbar .crumb{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .topbar-meta{margin-inline-start:0;width:100%;order:9;gap:8px;flex-wrap:wrap;
+    justify-content:flex-start;font-size:11.5px}
+  .tb-btn{width:34px;height:34px;min-height:34px;font-size:13px}
+  /* رأسُ الصفحة: الأزرارُ سطرٌ كاملٌ والبحثُ سطرٌ كامل — لا زحامَ ولا قصّ */
+  .page-head .head-acts{gap:6px}
+  .page-head .head-acts .btn{padding:6px 10px;font-size:12.5px}
+  .pg-find input{width:100%;min-width:0}
+}
+
+/* ═══ البطاقةُ الطويلةُ الضيّقة: نصفان متجاوران على الشاشة العريضة ═══
+   الجدولُ الضيّقُ يترك نصفَ الشاشة فارغًا ويطول نزولًا، فيُمرَّر كثيرًا
+   ليُقرأ قليل. والقسمةُ في الشيفرة لا في النمط: يُشطَر الصفُّ نصفين
+   ويُعرَضان متجاورين، فيبقى الجدولُ جدولًا في كلِّ متصفّح. ولا `subgrid`:
+   لا يعرفها كلُّ متصفّح، والقاعدةُ التي لا تُفهَم تُلغى بصمتٍ كما ألغى iOS
+   وحدةَ `dvh` من قبل. */
+.halves{display:grid;gap:13px;grid-template-columns:1fr}
+@media (min-width:1000px){ .halves{grid-template-columns:1fr 1fr;align-items:start} }
+.card-body{padding:17px}
+.card-body.tight{padding:0}
+.hint{color:var(--ink-soft);font-size:13px;margin:10px 0 0}
+.hint:first-child{margin-top:0}
+
+/* ── الإحصاءات ─────────────────────────────────────── */
+.stats{display:grid;gap:12px;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));margin-bottom:16px}
+/* على الهاتف: عمودان دائمًا، والبطاقةُ الوترُ الأخيرةُ تمتدّ على العرض فلا يبقى
+   نصفُ صفٍّ فارغًا؛ وأزرارُ الرأس تلتفّ ولا تخرج عن الشاشة (V17.33) */
+@media (max-width:760px){
+  .stats{grid-template-columns:1fr 1fr;gap:8px}
+  .stats > .stat:last-child:nth-child(odd){grid-column:1 / -1}
+  .page-head{flex-direction:column;align-items:stretch;gap:10px}
+  .head-acts{flex-wrap:wrap;justify-content:flex-start;width:100%}
+  .pg-find{flex:1 1 100%;order:9}
+  .pg-find input{width:100%}
+  .chips{overflow-x:auto;flex-wrap:nowrap;padding-bottom:4px;-webkit-overflow-scrolling:touch}
+  .chips .chip{flex:0 0 auto}
+  .actions{flex-wrap:wrap}
+  .grid.cols-2,.grid.cols-3{grid-template-columns:1fr}
+}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  padding:14px 16px;box-shadow:var(--shadow)}
+.stat .k{font-size:12.5px;color:var(--ink-soft);line-height:1.45}
+.stat .v{font-size:26px;font-weight:600;line-height:1.25;margin-top:3px;font-variant-numeric:tabular-nums}
+.stat.acc .v{color:var(--brand)} .stat.ok .v{color:var(--ok)}
+.stat.bad .v{color:var(--danger)} .stat.wrn .v{color:var(--warn)}
+
+/* ── المقاييس ──────────────────────────────────────── */
+.meter{margin-bottom:13px}
+.meter:last-child{margin-bottom:0}
+.meter-l{display:flex;justify-content:space-between;gap:12px;font-size:13px;margin-bottom:6px}
+.meter-l span:last-child{color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.track{height:8px;background:var(--line);border-radius:99px;overflow:hidden}
+.track i{display:block;height:100%;border-radius:99px;background:var(--brand);transition:width .3s}
+
+/* ── الجداول ───────────────────────────────────────── */
+/* ═══ جدولٌ عريضٌ يُقرأ (V17.15) ═══
+   ثلاثةَ عشرَ عمودًا في عرض الشاشة تُضغَط حتى تصير الكلماتُ حرفين، ومن مرّر
+   أفقيًّا ضاع عنه اسمُ البند فلا يعرف أيَّ صفٍّ يقرأ. فصار التمريرُ داخل
+   الجدول نفسِه بحدٍّ أدنى لعرض الأعمدة، ورأسُ الجدول وعمودا الرقم والبند
+   يثبتان في مكانهما بينما يتحرّك ما سواهما. */
+/* ═══ عرضٌ يتبع الشاشةَ لا رقمًا ثابتًا (V17.16) ═══
+   كان الجدولُ يُجبَر على ألفِ بكسلٍ ويُحبَس في صندوقٍ بارتفاعٍ ثابت، فعلى
+   شاشةٍ كبيرةٍ يظهر شريطُ تمريرٍ أفقيٌّ والصفحةُ حولها فراغ، وشريطان
+   رأسيّان أحدُهما داخل الآخر. صار الجدولُ يأخذ عرضَ الحاويةِ ولا يُمرَّر إلا
+   إن لم تتّسع، ورأسُه يثبت مع تمرير الصفحة نفسِها بلا صندوقٍ داخليّ.
+   وصفحةُ الخطة تُطلَق من حدِّ العرض فتملأ الشاشةَ مهما كبرت. */
+.table-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;max-width:100%}
+.table-wrap.sticky-1 thead th{position:sticky;top:0;z-index:3;background:var(--surface)}
+.table-wrap.sticky-1 tbody td:nth-child(1),
+.table-wrap.sticky-1 thead th:nth-child(1){position:sticky;inset-inline-start:0;z-index:2;background:var(--surface);min-width:44px}
+.table-wrap.sticky-1 tbody td:nth-child(2),
+.table-wrap.sticky-1 thead th:nth-child(2){position:sticky;inset-inline-start:44px;z-index:2;background:var(--surface);min-width:220px;
+  box-shadow:1px 0 0 var(--line)}
+[dir="rtl"] .table-wrap.sticky-1 tbody td:nth-child(2),
+[dir="rtl"] .table-wrap.sticky-1 thead th:nth-child(2){box-shadow:-1px 0 0 var(--line)}
+.table-wrap.sticky-1 thead th:nth-child(-n+2){z-index:4}
+.table-wrap.sticky-1 td,.table-wrap.sticky-1 th{white-space:nowrap}
+/* الصفحاتُ العريضة: جدولٌ من أربعةَ عشرَ عمودًا لا يُقرأ في ١٢٠٠ بكسل */
+.content.wide{max-width:none}
+/* صفُّ تحرير الحساب: أربعُ قوائمَ بلا عناوين تنكمش على الهاتف إلى أسهمٍ صمّاء */
+.usrEd{min-width:190px}.usrEd label.mini{display:block;font-size:11px;opacity:.7;margin:6px 0 3px}.usrEd select{width:100%}
+.data-table{width:100%;border-collapse:collapse;font-size:14px}
+.data-table th,.data-table td{padding:10px 12px;text-align:start;
+  border-bottom:1px solid var(--line);vertical-align:middle}
+.data-table th{font-size:11.5px;text-transform:uppercase;letter-spacing:.05em;
+  color:var(--ink-soft);font-weight:500;white-space:nowrap;background:var(--surface-2)}
+.data-table tbody tr:last-child td{border-bottom:0}
+.data-table tfoot td{font-weight:600;border-bottom:0;border-top:2px solid var(--line);background:var(--surface-2)}
+.data-table.rows tbody tr:hover{background:var(--surface-2)}
+
+/* ── العلامات ──────────────────────────────────────── */
+.pill{display:inline-block;padding:2px 9px;border-radius:99px;font-size:12px;
+  background:var(--line);color:var(--ink-soft);white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.off{background:var(--danger-bg);color:var(--danger)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+.pill.acc{background:var(--brand-soft);color:var(--brand-deep)}
+
+.alert{padding:11px 15px;border-radius:var(--radius-sm);margin-bottom:15px;font-size:14px;
+  display:flex;gap:9px;align-items:flex-start}
+.alert.success{background:var(--ok-bg);color:var(--ok)}
+.alert.error{background:var(--danger-bg);color:var(--danger)}
+.alert.warn{background:var(--warn-bg);color:var(--warn)}
+.alert.info{background:var(--info-bg);color:var(--info)}
+
+/* ── النماذج ───────────────────────────────────────── */
+.field{margin-bottom:13px}
+.field label{display:block;font-size:13px;font-weight:500;margin-bottom:5px}
+.req{color:var(--danger)}
+input,select,textarea,button{font:inherit;color:inherit}
+input,select,textarea{width:100%;padding:9px 11px;border:1px solid var(--line);
+  border-radius:var(--radius-sm);background:var(--surface);min-height:40px}
+input:focus,select:focus,textarea:focus{outline:2px solid var(--brand);outline-offset:1px;border-color:var(--brand)}
+input[type="number"]{max-width:140px}
+.grid{display:grid;gap:13px}
+.cols-2{grid-template-columns:repeat(auto-fit,minmax(210px,1fr))}
+.cols-3{grid-template-columns:repeat(auto-fit,minmax(160px,1fr))}
+.actions{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+.inline-form{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.inline-form input,.inline-form select{min-width:150px;width:auto}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;
+  padding:9px 16px;border-radius:var(--radius-sm);border:1px solid transparent;
+  font-size:14px;cursor:pointer;text-decoration:none;min-height:40px;white-space:nowrap}
+.btn-primary{background:var(--brand);color:var(--brand-ink)}
+.btn-secondary{background:var(--surface);border-color:var(--line);color:var(--ink)}
+.btn-secondary:hover{background:var(--surface-2)}
+.btn-light{background:#F4F6F8;border-color:#D6DDE4;color:#14181D;font-weight:600}
+.btn-light:hover{background:#E8EDF2}
+[data-theme="dark"] .btn-light{background:#EDF1F5;border-color:#C7D0D8;color:#101418}
+[data-theme="dark"] .btn-light:hover{background:#DDE4EA}
+.btn-danger{background:transparent;border-color:var(--danger);color:var(--danger)}
+.btn-quiet{background:transparent;color:var(--brand);padding:7px 11px;min-height:36px}
+.btn-sm{padding:6px 12px;font-size:13px;min-height:36px}
+.btn-block{width:100%}
+.btn:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.btn:active{transform:scale(.985)}
+
+/* ── الشرائح ───────────────────────────────────────── */
+.chips{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}
+.chip{padding:7px 13px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface);font-size:13px;cursor:pointer;min-height:36px}
+.chip.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:500}
+
+/* ── الخريطة ───────────────────────────────────────── */
+.mapwrap{max-width:100%;overflow-x:hidden;position:relative;
+  height:calc(100vh - 46px);
+  height:calc(var(--vh, 1vh) * 100 - 46px);
+  height:calc(100dvh - 46px);
+  background:#0A0D10;overflow:hidden}
+.mapcanvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+.map-top{position:absolute;inset-inline:11px;display:flex;gap:7px;
+  inset-block-start:calc(11px + env(safe-area-inset-top,0px));
+  max-width:calc(100% - 22px);overflow-x:auto;scrollbar-width:none;
+  flex-wrap:wrap;z-index:var(--z-map-ui);pointer-events:auto}
+/* ═══ الشريطُ على الهاتف يُرى كلُّه بلا تمريرٍ جانبيّ (V17.41) ═══
+   كان يلتفُّ ومعه تمريرٌ أفقيّ، فالأزرارُ الأخيرةُ تقع خارجَ الشاشة ولا
+   يُعرَف أنها هناك. صار على الشاشات الضيّقة: لا تمريرَ أفقيًّا البتّة،
+   يلتفُّ في أسطرٍ كاملة، وأزرارُه أصغرُ قليلًا لتتّسع أربعةٌ في السطر —
+   وإن كثرت تُمرَّر الأسطرُ رأسيًّا بسقفٍ لا يبتلع الخريطة. */
+@media (max-width:760px){
+  .map-top{overflow-x:visible;overflow-y:auto;max-height:42vh;
+    inset-inline:8px;max-width:calc(100% - 16px);gap:6px;
+    justify-content:flex-start;align-content:flex-start}
+  .map-chip{padding:6px 10px;font-size:12px;min-height:34px;flex:0 0 auto}
+}
+/* ═══ لوحُ الرسم فوق كلِّ شيءٍ لا بينه (V17.50) ═══
+   كان بطاقةً في طبقة واجهة الخريطة، فبقيت بطاقاتُ الإحصاء وقائمةُ الحالات
+   وأزرارُ الطبقات فوقه تحجب حقولَه وأزرارَ حفظه — وهي في طبقةٍ واحدةٍ معه.
+   صار لوحًا مستقلًّا كنموذج «موقع غير مسجّل»: خلفيةٌ معتمةٌ تُغلق ما تحتها،
+   واللوحُ فوقها بطبقةٍ أعلى — فلا شيءَ يعلوه ولا يُقرَأ نصفُه. */
+/* لا خلفيةَ حاجبة: الخريطةُ تبقى مكشوفةً للضغط أثناء الرسم — واللوحُ وحدَه
+   يعلو على بطاقات الإحصاء والحالات. ويُطوى بضغطةٍ ليُرى ما تحته. */
+.map-route-box.min > *:not(.wt-row){display:none}
+.map-route-box.min{padding:8px 10px}
+.map-route-box{position:fixed;inset-inline:11px;bottom:11px;z-index:2147483001;
+  pointer-events:auto;background:var(--surface);border:1px solid var(--line);border-radius:16px;
+  padding:12px 13px;box-shadow:0 -10px 40px rgba(0,0,0,.55);max-width:560px;
+  margin-inline:auto;max-height:70vh;overflow-y:auto;-webkit-overflow-scrolling:touch}
+/* (V25.9) مقابضُ تعديل حدود المخيم */
+.bed-v{background:#fff;border:3px solid #F5A623;border-radius:50%;box-sizing:border-box;box-shadow:0 1px 4px rgba(0,0,0,.45)}
+.bed-v.on{border-color:#E05252;background:#FFE3E3}
+.bed-m{background:rgba(245,166,35,.6);border:2px solid #fff;border-radius:50%;box-sizing:border-box}
+/* ═══ لوحُ الرسم على الهاتف: شريطٌ لا صفحة (V17.48) ═══
+   وُضع اللوحُ ليكون بطاقةً صغيرةً أسفلَ الخريطة، فابتلع الشاشةَ على الهاتف:
+   قاعدةُ الشبكة العامة (V17.33) تجعل كلَّ عمودين عمودًا واحدًا، فصارت حقولُه
+   الأربعةُ أربعةَ صفوفٍ طويلة، وعلت عليها أزرارُ الخريطة العائمةُ فتداخلَ
+   النصُّ بالأزرار ولم يبقَ من الخريطة ما يُضغَط عليه — ونقاطُ الرسم صفر.
+   فصار على الهاتف: حقولٌ في عمودين مضغوطين، وسقفٌ لا يتجاوز ثلث الشاشة مع
+   تمريرٍ داخليّ، والأزرارُ العائمةُ تختفي أثناء الرسم فلا تحجب شيئًا. */
+@media (max-width:760px){
+  .map-route-box{inset-inline:8px;bottom:8px;padding:10px;max-height:62vh}
+  .map-route-box .grid.cols-2{grid-template-columns:1fr 1fr!important;gap:6px}
+  .map-route-box .field{margin:0}
+  .map-route-box .field label{font-size:11px;margin:0 0 2px}
+  .map-route-box .field input,.map-route-box .field select{padding:6px 8px;font-size:12.5px;min-height:34px}
+  .map-route-box .hint{font-size:11px}
+  .map-route-box .actions{gap:6px;margin:6px 0 0}
+  .map-route-box .actions .btn{padding:6px 10px;font-size:12.5px}
+  /* الرسمُ يحتاج الخريطةَ مكشوفة: تُخفى الأزرارُ العائمةُ والأسطورةُ حتى ينتهي */
+  body.drawing .map-fab,
+  body.drawing .map-legend,
+  body.drawing .map-stat{display:none!important}
+}
+body.drawing .map-fab{opacity:.35}
+.map-chip{background:rgba(18,23,28,.92);border:1px solid #2A333C;color:#E8EBEE;
+  border-radius:99px;padding:7px 13px;font-size:12.5px;cursor:pointer;
+  backdrop-filter:blur(6px);min-height:36px;display:inline-flex;align-items:center;gap:6px}
+.map-chip.on{background:var(--brand);border-color:var(--brand);color:#fff;font-weight:600}
+.map-fab{position:absolute;inset-block-end:16px;inset-inline-end:14px;display:flex;
+  flex-direction:column;gap:8px;z-index:var(--z-map-ui);align-items:flex-end}
+.map-fab .btn{box-shadow:0 6px 20px rgba(0,0,0,.45)}
+/* الشريطُ والأسطورةُ عمودٌ واحدٌ من الأسفل: كانا موضعين ثابتين بمسافتين
+   مقدَّرتين، والأسطورةُ تطول بعدد صفوفها فتصعد فوق الشريط. والعمودُ لا
+   يحتاج تقديرَ ارتفاعٍ أصلًا — يرتّب نفسَه مهما طال ما فيه. */
+.map-stack{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
+  inset-block-end:calc(16px + env(safe-area-inset-bottom,0px));
+  display:flex;flex-direction:column;gap:8px;align-items:flex-start;
+  max-width:calc(100% - 160px);max-height:calc(100% - 170px);pointer-events:none}
+/* الأسطورةُ تُطوى حين تضيق الشاشة: كانت تطول فتزاحم أزرارَ الفعل */
+/* ═══ الشاشاتُ اللمسية ═══
+   الإصبعُ ليس مؤشِّرًا: أصغرُ هدفٍ يُصاب باطمئنانٍ أربعةٌ وأربعون بكسلًا،
+   ودونَها يُخطئ المرءُ ويُعيد ويظنُّ أن الزرَّ لا يعمل. والأزرارُ هنا كانت
+   ستةً وثلاثين — تكفي الفأرةَ ولا تكفي اليد. وثلاثةُ أعطالٍ لمسيةٍ أخرى
+   تُصلَح معها: التأخيرُ ثلاثُمئةِ جزءٍ من الثانية قبل النقرة، والتكبيرُ
+   المزدوجُ حين تُنقَر النقطتان سريعًا، وإبرازُ اللمسة رماديًّا على أندرويد. */
+/* ═══ النافذةُ على الهاتف: لوحٌ سفليٌّ لا مربّعٌ معلّق ═══
+   كانت تُوسَّط بالحساب: «ابدأ من نصف العرض ثم ارجع بنصف عرضك». والحسابُ
+   يصحُّ إن كانت الحاويةُ بعرض الشاشة — ولوحُ الخريطة أعرضُ منها أحيانًا
+   (شريطُ الطبقات يمتدُّ فيُزاح)، فتنزاح النافذةُ إلى الجانب وتُقطَع.
+   وعرضُها ثلاثمئةٍ وأربعون على شاشةٍ عرضُها ثلاثمئةٌ وثلاثةٌ وتسعون: تكاد
+   تملؤها ولا تُوسَّط.
+     فصارت على الشاشات الصغيرة لوحًا سفليًّا: ملتصقًا بالحافّتين والأسفل،
+   بحوافَّ عليا مستديرة، ومقبضٍ يدلُّ على أنه يُسحَب — وهو النمطُ الذي
+   تعرفه اليدُ في كلِّ تطبيق. ولا حسابَ يُخطئ: لا توسيطَ ولا إزاحة. */
+@media (max-width:760px){
+  .pop{
+    /* اختبارُ المتصفّح الحقيقي كشف أن «الأسفل» كان أسفلَ حاوية الخريطة لا
+       أسفلَ الشاشة — فيبقى شريطٌ فارغٌ تحت اللوح. صار ثابتًا على الشاشة. */
+    position:fixed !important;
+    inset-block-start:auto !important; inset-block-end:0 !important;
+    inset-inline:0 !important; transform:none !important;
+    width:100% !important; max-width:100% !important;
+    border-radius:18px 18px 0 0 !important;
+    border-inline-width:0; border-block-end-width:0;
+    max-height:min(76vh, calc(var(--vh,1vh) * 76)) !important;
+    padding-block-end:env(safe-area-inset-bottom,0px);
+    box-shadow:0 -14px 44px rgba(0,0,0,.5) !important;
+  }
+  [dir="ltr"] .pop{ transform:none !important }
+  /* المقبض: خطٌّ صغيرٌ يقول «هذا لوحٌ من الأسفل» */
+  .pop::before{ content:''; display:block; flex:0 0 auto;
+    width:38px; height:4px; border-radius:99px; background:var(--line);
+    margin:9px auto 3px }
+  .pop > .pop-body{ padding:12px 14px }
+  .pop > .pop-head{ padding:10px 14px 11px }
+  .pop > .pop-foot{ padding:11px 14px calc(12px + env(safe-area-inset-bottom,0px)) }
+}
+@media (pointer:coarse), (max-width:760px){
+  .btn, .chip, .map-chip{ min-height:44px }
+  .btn-sm{ min-height:44px; padding:9px 14px }
+  .chip{ padding:10px 15px }
+  .map-chip{ padding:10px 15px; font-size:13px }
+  select, input, textarea{ min-height:44px; font-size:16px }   /* ١٦ يمنع تكبيرَ iOS التلقائي */
+  .list-item{ min-height:52px }
+  table td, table th{ padding-block:11px }
+  .lg-row{ min-height:26px }
+}
+button, .btn, .chip, .map-chip, .list-item, a[data-p]{
+  touch-action:manipulation;                 /* لا تأخيرَ ولا تكبيرَ بنقرتين */
+  -webkit-tap-highlight-color:transparent;
+}
+.leaflet-container{ touch-action:pan-x pan-y }
+@media(max-width:760px){
+  /* على الهاتف: الأسطورةُ أعرضُ وأطولُ قليلًا — بها أرقامٌ تُقرأ لا ألوانٌ
+     تُلمَح، وصفوفُها هدفُ لمسٍ إن أُضيف إليها فعلٌ يومًا. */
+  .map-legend{max-height:172px;overflow:auto;min-width:184px;font-size:12.5px}
+  .map-stack{max-width:calc(100% - 130px)}
+}
+/* إسنادُ ليفلت لا يظهر في شاشةٍ تُعرَض على الوزارة */
+#mapBox .leaflet-control-attribution{display:none}
+.map-stack > *{pointer-events:auto}
+.map-legend{background:rgba(18,23,28,.92);border:1px solid #2A333C;border-radius:var(--radius);
+  padding:10px 12px;font-size:12px;color:#C6CFD7;backdrop-filter:blur(6px)}
+.lg-row{display:flex;align-items:center;gap:7px;margin:4px 0;min-height:22px}
+.lg-n{flex:1 1 auto}
+.lg-c{flex:0 0 auto;font-weight:800;color:#EAF1F6}
+.lg-row.lg-off{opacity:.42}
+.lg-tot{border-top:1px solid #2A333C;margin-top:6px;padding-top:6px}
+.lg-dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
+
+/* ── نافذة النقطة ──────────────────────────────────── */
+.pop{position:absolute;inset-block-start:50%;inset-inline-start:50%;transform:translate(50%,-50%);
+  width:min(340px,88vw);background:var(--raise);border:1px solid var(--line);
+  border-radius:var(--radius);box-shadow:0 20px 50px rgba(0,0,0,.5);z-index:var(--z-pop);padding:15px}
+[dir="ltr"] .pop{transform:translate(-50%,-50%)}
+.pop h3{font-size:15px;color:var(--brand);margin-bottom:3px}
+.pop .pid{font-size:12px;color:var(--ink-soft);font-family:ui-monospace,monospace;direction:ltr}
+.pop-rows{margin:11px 0;font-size:13.5px}
+/* أزرارُ النافذة تلتفُّ ولا تخرج من حافّتها */
+.pop .actions{flex-wrap:wrap;gap:8px}
+.pop .actions .btn{flex:1 1 auto;min-width:104px}
+.pop-rows div{display:flex;justify-content:space-between;gap:10px;padding:5px 0;
+  border-bottom:1px solid var(--line-2)}
+.pop-rows div:last-child{border-bottom:0}
+.pop-rows .k{color:var(--ink-soft)}
+.pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}
+
+/* ── القوائم والسجلات ──────────────────────────────── */
+.list{display:flex;flex-direction:column}
+.list-item{display:flex;align-items:center;gap:12px;padding:13px 16px;
+  border-bottom:1px solid var(--line);cursor:pointer;min-height:60px}
+.list-item:last-child{border-bottom:0}
+.list-item:hover{background:var(--surface-2)}
+.li-main{flex:1;min-width:0}
+.li-t{font-weight:500;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.li-s{font-size:12.5px;color:var(--ink-soft);margin-top:2px}
+.li-end{flex:0 0 auto;text-align:end;font-size:12px;color:var(--ink-soft)}
+
+.timeline{position:relative;padding-inline-start:22px}
+.timeline::before{content:"";position:absolute;inset-block:6px;inset-inline-start:5px;
+  width:2px;background:var(--line)}
+.tl-item{position:relative;padding-bottom:16px}
+.tl-item::before{content:"";position:absolute;inset-inline-start:-21px;inset-block-start:5px;
+  width:10px;height:10px;border-radius:50%;background:var(--brand);
+  box-shadow:0 0 0 3px var(--surface)}
+.tl-t{font-size:13.5px;font-weight:500}
+.tl-s{font-size:12px;color:var(--ink-soft)}
+
+/* ── دورة الحالات ──────────────────────────────────── */
+.flow{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:12.5px}
+.flow-step{padding:6px 12px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface-2);white-space:nowrap}
+.flow-step.on{background:var(--brand-soft);border-color:var(--brand);color:var(--brand-deep);font-weight:600}
+.flow-step.done{background:var(--ok-bg);border-color:var(--ok);color:var(--ok)}
+.flow-arr{color:var(--ink-mute);flex:0 0 auto}
+
+/* ── طيُّ الشريط الجانبي وتحسيناتٌ عامّة (V23.9) ───────────── */
+@media(min-width:901px){
+  .burger{display:block;margin-inline-end:4px;border-radius:10px}
+  .burger:hover{background:var(--surface-2)}
+  .shell{transition:margin-inline-start .22s ease}
+  .sidebar{transition:transform .22s ease,width .22s ease}
+  body.side-off .shell{margin-inline-start:var(--rail)}   /* (V24.0) الطيُّ شريطُ أيقوناتٍ لا اختفاء — كتلتُه أدناه */
+}
+.btn,.chip,.cat,.tb-btn{transition:background-color .15s ease,box-shadow .15s ease,border-color .15s ease,transform .08s ease}
+.btn:active,.chip:active,.cat:active,.tb-btn:active{transform:translateY(1px)}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+*{scrollbar-width:thin;scrollbar-color:var(--line) transparent}
+::-webkit-scrollbar{width:8px;height:8px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px}
+::-webkit-scrollbar-track{background:transparent}
+@media (hover:hover){ .card{transition:box-shadow .2s ease} .card:hover{box-shadow:0 6px 18px rgba(0,0,0,.08)} }
+@media (prefers-reduced-motion:reduce){ .shell,.sidebar,.btn,.chip,.cat,.tb-btn,.card{transition:none} }
+
+/* ── شريطُ الأيقونات حين تُطوى القائمة (V24.0) ─────────────
+   كانت القائمةُ تختفي كلُّها فلا يُنتقَل إلا بإعادتها. صارت شريطًا ضيّقًا بأيقونات الوحدات:
+   المرورُ على الأيقونة يُظهر اسمَها، وعلى الوحدة يُظهر صفحاتِها في لوحةٍ بجوارها فيُنتقَل
+   بضغطة — ولوحةُ المفاتيح تبلغها بالتنقّل نفسِه. وعلى الهاتف يبقى الدرجُ كما هو. */
+:root{--rail:68px}
+.gp-head{display:none}
+.item-icon svg{display:block;margin-inline:auto}
+@media(min-width:901px){
+  body.side-off .sidebar{width:var(--rail);overflow:visible;padding-inline:12px}
+  body.side-off .sidebar .brand-name,body.side-off .sidebar-foot,body.side-off .nav-q,
+  body.side-off .chevron,body.side-off .nav-tab,body.side-off .nav-x{display:none}
+  body.side-off .sidebar-head{justify-content:center}
+  body.side-off .nav{overflow:visible;gap:6px;padding-inline-end:0}
+  body.side-off .nav>a,body.side-off .group-toggle{position:relative;justify-content:center;width:44px;height:44px;
+    min-height:44px;padding:0;margin:0;border-radius:12px;opacity:1}
+  body.side-off .group-label{justify-content:center}
+  body.side-off .item-icon{width:22px;font-size:19px;opacity:.86}
+  body.side-off .item-icon svg{width:22px;height:22px}
+  body.side-off .nav-t{display:none}
+  body.side-off .nav>a.active,body.side-off .nav-section.has-cur>.group-toggle{background:var(--brand);color:var(--brand-ink)}
+  body.side-off .nav-section.has-cur .item-icon{opacity:1}
+  body.side-off .nav>a>.nav-t{position:absolute;inset-inline-start:calc(100% + 12px);top:50%;transform:translateY(-50%);
+    white-space:nowrap;background:var(--sidebar);color:var(--sidebar-ink);border:1px solid var(--sidebar-line);
+    padding:6px 11px;border-radius:9px;font-size:13px;box-shadow:0 10px 26px rgba(0,0,0,.35);pointer-events:none;z-index:5}
+  body.side-off .nav>a:hover>.nav-t,body.side-off .nav>a:focus-visible>.nav-t{display:block}
+  body.side-off .nav-section{position:relative}
+  body.side-off .nav-section::after{content:"";position:absolute;inset-block:0;inset-inline-start:100%;width:14px}
+  body.side-off .nav-section>.group-panel,body.side-off .nav-section[data-open="false"]>.group-panel{display:none}
+  body.side-off .nav-section:hover>.group-panel,body.side-off .nav-section:focus-within>.group-panel{display:flex;
+    position:absolute;inset-inline-start:calc(100% + 12px);top:-6px;min-width:230px;max-height:78vh;overflow-y:auto;
+    background:var(--sidebar);border:1px solid var(--sidebar-line);border-radius:12px;padding:6px;gap:2px;
+    box-shadow:0 14px 34px rgba(0,0,0,.4);z-index:5}
+  body.side-off .gp-head{display:block;font-size:12px;font-weight:600;opacity:.72;padding:6px 11px 8px;margin-bottom:2px;
+    border-bottom:1px solid var(--sidebar-line);white-space:nowrap}
+  body.side-off .group-panel a.sub{padding-inline-start:12px;min-height:38px}
+  body.side-off .nav-section:has(.tb-badge)>.group-toggle::after{content:"";position:absolute;top:7px;inset-inline-end:7px;
+    width:8px;height:8px;border-radius:50%;background:var(--danger)}
+}
+@media print{ body.side-off .shell{margin:0} }
+
+/* ── ملخصُ العمل اليومي (V24.0) ──────────────────────────── */
+.wd-flt{display:flex;flex-wrap:wrap;align-items:flex-end;gap:10px 14px;margin:0 0 14px}
+.wd-flt label{display:flex;flex-direction:column;gap:4px;font-size:12px;color:var(--ink-soft);min-width:132px;margin:0}
+.wd-flt select{min-height:38px}
+.wd-flt .hint{margin:0 0 9px}
+.wd-lgs{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 10px}
+.wd-lg{display:inline-flex;align-items:center;gap:7px;padding:6px 13px;border-radius:99px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:13px;cursor:pointer;min-height:36px}
+.wd-lg:hover{border-color:var(--c)}
+.wd-lg i{width:12px;height:12px;border-radius:3px;background:var(--c);flex:0 0 auto}
+.wd-lg b{font-weight:600}
+.wd-lg.off{opacity:.5}
+.wd-lg.off i{background:transparent;box-shadow:inset 0 0 0 2px var(--c)}
+.wd-lg.off b{text-decoration:line-through}
+.wd-stats{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:13px;color:var(--ink-soft);margin:0 0 4px}
+.wd-stats b{color:var(--ink);font-weight:600}
+.wd-chart{position:relative;margin:4px 0 12px}
+.wd-plot{position:relative;height:260px}
+@media(max-width:600px){ .wd-plot{height:200px} }
+.wd-plot svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.wd-grid{stroke:var(--line);stroke-width:1;vector-effect:non-scaling-stroke}
+.wd-s polyline{fill:none;stroke:var(--c);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round;vector-effect:non-scaling-stroke}
+.wd-dot{position:absolute;width:7px;height:7px;margin:-3.5px 0 0 -3.5px;border-radius:50%;background:var(--c);box-shadow:0 0 0 2px var(--surface);pointer-events:none}
+.wd-yl{position:absolute;left:4px;transform:translateY(-115%);font-size:11px;line-height:1;color:var(--ink-mute);direction:ltr;pointer-events:none}
+.wd-xax{position:relative;height:20px;margin-top:6px}
+.wd-xax span{position:absolute;top:0;transform:translateX(-50%);font-size:11px;color:var(--ink-mute);white-space:nowrap}
+.wd-xax span.s{transform:none}
+.wd-xax span.e{transform:translateX(-100%)}
+@media(max-width:600px){ .wd-xax span.alt{display:none} }
+[data-theme="dark"] .wd-plot svg,[data-theme="dark"] .wd-dot,[data-theme="dark"] .wd-lg i,[data-theme="dark"] .wd-tip i{filter:brightness(1.35)}
+.wd-hov{position:absolute;inset:0}
+.wd-c{position:absolute;top:0;bottom:0}
+.wd-c:hover{background:rgba(127,127,127,.09);border-radius:6px}
+.wd-tip{display:none;position:absolute;top:8px;min-width:170px;max-width:260px;padding:8px 11px;border-radius:10px;
+  background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:0 10px 26px rgba(0,0,0,.28);
+  font-size:12.5px;line-height:1.75;z-index:3;pointer-events:none}
+.wd-l .wd-tip{left:calc(50% + 10px)}
+.wd-r .wd-tip{right:calc(50% + 10px)}
+.wd-c:hover .wd-tip{display:block}
+.wd-tip>b{display:block;font-size:13px;margin-bottom:2px;white-space:nowrap}
+.wd-tip span{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.wd-tip i{width:9px;height:9px;border-radius:2px;background:var(--c);flex:0 0 auto}
+.wd-tip em{font-style:normal;color:var(--ink-soft)}
+.wd-p{color:var(--ink-soft);font-size:11.5px;margin-inline-start:6px}
+tr.wd-z td{color:var(--ink-mute)}
+.wd-pager{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0 0}
+.wd-pager .hint{margin:0 8px}
+
+/* ── الاستجابة ─────────────────────────────────────── */
+@media(max-width:900px){
+  .shell{margin-inline-start:0}
+  .sidebar{transform:translateX(-100%);transition:transform .22s ease}
+  [dir="rtl"] .sidebar{transform:translateX(100%)}
+  body.nav-open .sidebar{transform:translateX(0)}
+  #navVeil{display:none}
+  body.nav-open #navVeil{display:block;position:fixed;inset:0;
+    background:rgba(0,0,0,.55);z-index:var(--z-veil);
+    -webkit-backdrop-filter:blur(1px);backdrop-filter:blur(1px)}
+  .burger{display:block}
+  .content{padding:15px}
+  .page-head h1{font-size:22px}
+  .mapwrap{height:calc(100vh - 46px);
+    height:calc(var(--vh, 1vh) * 100 - 46px);
+    height:calc(100dvh - 46px)}
+  .content{padding-bottom:calc(15px + env(safe-area-inset-bottom,0px))}
+}
+@media print{
+  .sidebar,.topbar,.btn,.chips,.map-top,.map-fab{display:none!important}
+  .shell{margin:0}
+  .card{break-inside:avoid;box-shadow:none}
+}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ═══ الخريطة الحقيقية ═══ */
+#mapBox{background:#0A0D10}
+#mapBox.tdark .nskBase{filter:invert(1) hue-rotate(180deg) brightness(.86) contrast(1.06) saturate(.7)}
+#mapBox .leaflet-control-zoom a{background:rgba(18,23,28,.94);color:#E8EBEE;border-color:#2A333C}
+#mapBox .leaflet-control-attribution{background:rgba(18,23,28,.8);color:#8A939D;font-size:10px}
+#mapBox .leaflet-control-attribution a{color:#6FA8DC}
+
+.map-badge{position:absolute;inset-inline-start:14px;z-index:var(--z-map-ui);
+  background:rgba(18,23,28,.92);border:1px solid #2A333C;color:#C6CFD7;
+  border-radius:99px;padding:7px 13px;font-size:12px;backdrop-filter:blur(6px);
+  min-height:36px;display:inline-flex;align-items:center;gap:5px}
+
+/* Leaflet يرفع طبقاته إلى ألف — تُحبَس تحت الشل */
+#mapBox .leaflet-pane,#mapBox .leaflet-top,#mapBox .leaflet-bottom{z-index:var(--z-map-ui)}
+#mapBox .leaflet-control-container{z-index:var(--z-map-ui)}
+.mapwrap{isolation:isolate;z-index:var(--z-map)}
+body.nav-open .mapwrap{pointer-events:none}
+
+/* ═══ شرائح التصنيف ═══ */
+.catbar{display:flex;flex-direction:column;gap:8px;margin:0 0 14px}
+.catrow{display:flex;gap:7px;flex-wrap:wrap}
+.cat{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border-radius:99px;
+  border:1.5px solid var(--line);background:var(--surface);font-size:13px;cursor:pointer;
+  min-height:36px;white-space:nowrap;color:var(--ink)}
+.cat .n{font-variant-numeric:tabular-nums;opacity:.75;font-size:12px}
+.cat.on{font-weight:600}
+.cat.zone.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.cat.zone.on .n{opacity:.9}
+
+.map-sheet{position:absolute;inset-block-start:calc(96px + env(safe-area-inset-top,0px));
+  inset-inline:11px;inset-block-end:auto;max-height:60vh;overflow:auto;
+  width:auto;max-width:none;transform:none;inset-block-start:54px;inset-inline:11px;z-index:var(--z-map-ui);
+  max-height:58vh;overflow:auto;background:rgba(14,18,22,.97);border:1px solid #2A333C;
+  border-radius:var(--radius);padding:13px;backdrop-filter:blur(10px);
+  box-shadow:0 14px 40px rgba(0,0,0,.55)}
+.map-sheet .catbar{margin:0}
+.map-sheet .cat{background:#161C22;color:#E8EBEE;border-color:#2A333C;
+  font-size:12.5px;padding:7px 12px;min-height:36px}
+.map-sheet .cat.zone.on{background:var(--brand);border-color:var(--brand);color:#fff}
+#mapBox.sat .nskBase{filter:none}
+
+.map-selbar{position:absolute;inset-inline:11px;z-index:calc(var(--z-map-ui) + 2);
+  inset-block-end:calc(190px + env(safe-area-inset-bottom,0px));
+  display:flex;align-items:center;gap:10px;background:rgba(58,214,160,.95);color:#04120c;
+  border-radius:var(--radius);padding:10px 14px;font-size:12.5px;font-weight:600;
+  box-shadow:0 8px 26px rgba(0,0,0,.4);flex-wrap:wrap}
+.map-selbar .btn{min-height:36px;padding:6px 13px;font-size:12.5px}
+.list-item.sel{background:var(--brand-soft)}
+
+/* علامةُ الممر والكاميرا: معيّنٌ مائلٌ يُميّزها عن دوائر الباقي */
+.mkC{background:none!important;border:0!important}
+.mkC{display:flex;align-items:center;justify-content:center}
+.mkC i{display:block;transform:rotate(45deg);
+  border-radius:3px;box-shadow:0 1px 3px rgba(0,0,0,.5)}
+
+.pst{display:flex;gap:7px;flex-wrap:wrap;margin:11px 0 0}
+.go{display:inline-flex;align-items:center;min-height:36px;padding:7px 14px;
+  border-radius:99px;border:1.5px solid;background:transparent;font:inherit;
+  font-size:12.5px;font-weight:600;cursor:pointer}
+.pop-btns{display:flex;gap:7px;flex-wrap:wrap;margin:13px 0 0}
+.pop-btns .btn,.pop-btns a.btn{min-height:36px}
+/* على الشاشات الصغيرة واللمسية: أزرارُ النافذة أهدافُ لمسٍ كاملة — كشفه
+   المتصفّحُ الحقيقي: القاعدةُ العامةُ أعطت ٤٤ ثم أعادتها هذه إلى ٤٠ لأنها أخصّ */
+@media (pointer:coarse), (max-width:760px){
+  .pop-btns .btn,.pop-btns a.btn,.pop .actions .btn{min-height:44px}
+}
+
+.map-layerbar{display:flex;gap:10px;align-items:center;background:rgba(14,18,22,.94);border:1px solid #2A333C;
+  border-radius:99px;padding:7px 14px;font-size:12px;backdrop-filter:blur(8px);
+  min-height:36px;box-shadow:0 4px 16px rgba(0,0,0,.4);max-width:calc(100% - 28px);
+  /* كان يُمرَّر أفقيًّا فيُقرأ سطرٌ واحدٌ بجرِّ الشريط يمينًا وشمالًا، وينقطع
+     نصُّه عند حافته فلا يُعرَف أن ثمَّ بقية. والالتفافُ يُري السطرَ كلَّه. */
+  flex-wrap:wrap;row-gap:4px;white-space:normal}
+.map-layerbar::-webkit-scrollbar{display:none}
+.map-layerbar .lb-t{font-weight:800}
+.map-layerbar .lb-n{color:#C6CFD7;font-variant-numeric:tabular-nums}
+.map-layerbar .lb-n b{color:#fff}
+@media(max-width:560px){.map-layerbar{font-size:11px;padding:6px 11px;gap:8px}}
+
+/* مبدّلا اللغة والمظهر في الشريط العلوي — في متناول اليد من كل صفحة */
+.topbar-tools{display:flex;gap:6px;align-items:center;flex:0 0 auto;margin-inline-start:6px}
+.tb-btn{width:38px;height:38px;min-height:38px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface-2);color:var(--ink);font:inherit;font-size:14px;font-weight:700;
+  cursor:pointer;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
+.tb-btn:active{background:var(--line)}
+/* زرُّ المزامنة على الهاتف (V19.4): شريطُ المزامنة كلُّه يختفي تحت ٥٦٠ بكسل، فكانت
+   لافتةُ «زامن الآن» تطلب ما لا زرَّ له. يظهر هذا مكانَه، وشارتُه عددُ ما ينتظر الرفع */
+.tb-sync-m{display:none;position:relative}
+.tb-sync-m .tb-badge{position:absolute;top:-4px;inset-inline-end:-4px}
+.tb-sync-m.busy{animation:nskSpin 1s linear infinite}
+@keyframes nskSpin{to{transform:rotate(360deg)}}
+.ib-sync{margin-inline-start:10px;background:#fff;color:#B3261E;border:0;border-radius:99px;padding:6px 14px;font:inherit;font-weight:800;min-height:36px;cursor:pointer;vertical-align:middle}
+@media(max-width:560px){ .tb-sync-m{display:inline-flex} }
+@media(max-width:560px){ .topbar-meta{display:none} .tb-btn{width:36px;height:36px} }
+
+/* أشكالُ الأسطورة — تُطابق ما على الخريطة */
+.lg-sep{height:1px;background:#2A333C;margin:7px 0}
+.lg-sh{width:11px;height:11px;flex:0 0 auto;background:#C6CFD7;display:inline-block}
+.lg-sh.sh-c{border-radius:2px}
+.lg-sh.sh-d{transform:rotate(45deg);border-radius:2px}
+.lg-sh.sh-o{border-radius:50%}
+/* الأشكالُ المشتقّةُ من السجل تُرسَم بهندسة الخريطة نفسِها (V17.60) */
+.lg-svg{width:13px;height:13px;flex:0 0 auto;display:inline-block;overflow:visible;vertical-align:middle}
+/* ═══ شاشةُ الوزارة (V17.82) — كبيرةٌ تُقرأ من بعيد، وتتجدّد وحدَها ═══ */
+.kk{--kk-ink:var(--ink);--kk-soft:var(--ink-soft);display:flex;flex-direction:column;gap:14px}
+/* طقمُ هوية الوزارة (V17.89): كلُّ لونٍ يُرى من الوزارة يُضبَط هنا وحدَه — فحين تصلنا
+   ألوانُها الرسميةُ تُبدَّل في سطر. الأخضرُ السعوديُّ والذهبيُّ والتركوازُ الغامق */
+:root{--min-green:#0B6E4F;--min-gold:#C9A227;--min-teal:#0E5C6E;--min-red:#C0392B}
+.kk-brand{font-size:12.5px;color:var(--kk-soft);letter-spacing:.2px;margin-top:2px}
+.kk-story{background:linear-gradient(135deg,rgba(11,110,79,.10),rgba(201,162,39,.12));border:1px solid rgba(11,110,79,.25);border-radius:14px;padding:12px 16px;font-size:16px;line-height:1.8;font-weight:600}
+body.kiosk .kk-story{font-size:21px}
+.kk-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.kk-title{font-size:22px;font-weight:800;letter-spacing:-.2px}
+.kk-date{color:var(--kk-soft);font-size:13px;margin-top:2px}
+.kk-live{display:inline-block;width:9px;height:9px;border-radius:50%;background:#3AD6A0;box-shadow:0 0 0 0 rgba(58,214,160,.6);animation:kkPulse 2s infinite}
+@keyframes kkPulse{0%{box-shadow:0 0 0 0 rgba(58,214,160,.55)}70%{box-shadow:0 0 0 9px rgba(58,214,160,0)}100%{box-shadow:0 0 0 0 rgba(58,214,160,0)}}
+.kk-rings{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:12px}
+.kk-ring{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 10px;text-align:center;box-shadow:var(--shadow)}
+.kk-ring svg{width:130px;height:130px;max-width:100%;transform:rotate(-90deg)}
+.kk-track{fill:none;stroke:var(--line-2);stroke-width:11}
+.kk-arc{fill:none;stroke-width:11;stroke-linecap:round;transition:stroke-dashoffset 1.2s cubic-bezier(.2,.8,.2,1)}
+.kk-pct{transform:rotate(90deg);transform-origin:55px 55px;font-size:24px;font-weight:800;fill:var(--kk-ink);text-anchor:middle}
+.kk-lab{font-weight:700;margin-top:6px;font-size:15px}
+.kk-sub{color:var(--kk-soft);font-size:12.5px;margin-top:2px}
+.kk-big{font-size:44px;font-weight:800;line-height:1.05;letter-spacing:-.5px;font-variant-numeric:tabular-nums}
+.kk-plain{display:flex;flex-direction:column;justify-content:center}
+.kk-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.kk-box{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--shadow)}
+.kk-h{font-weight:800;font-size:15px;margin:0 0 10px;color:var(--kk-soft);text-transform:none}
+.kk-zone{margin:8px 0}
+.kk-zl{display:flex;justify-content:space-between;gap:10px;font-size:14px;margin:0 0 4px}
+.kk-bar{height:14px;border-radius:8px;background:var(--line-2);overflow:hidden}
+.kk-bar i{display:block;height:100%;background:linear-gradient(90deg,var(--min-green),var(--min-gold));border-radius:8px;transition:width 1.2s cubic-bezier(.2,.8,.2,1)}
+.kk-kinds{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+.kk-kind{text-align:center;padding:8px 4px;border-radius:12px;background:var(--surface-2)}
+#idbBanner{position:sticky;top:0;z-index:95;background:#B3261E;color:#fff;font-weight:700;padding:10px 14px;text-align:center;font-size:14px}
+#inactBanner{position:sticky;top:0;z-index:94;background:#B7791F;color:#fff;font-weight:700;padding:9px 14px;text-align:center;font-size:14px}
+.kk-fc{margin-top:3px;font-size:12.5px}
+.kk-eta{display:inline-block;padding:1px 8px;border-radius:999px;font-weight:600}
+.kk-eta.ok{background:var(--ok-bg);color:var(--ok)}.kk-eta.bad{background:var(--danger-bg);color:var(--danger)}.kk-eta.mute{background:var(--surface-2);color:var(--ink-mute)}
+.kk-wide{grid-column:1/-1}
+.kk-pts{width:100%;height:auto;max-height:70vh;display:block;background:var(--surface-2);border-radius:12px;touch-action:none;cursor:grab}
+.pm-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px}
+/* متابعةُ الوزارة (V20.0) — بألوان العرض الأسبوعي: ذهبيٌّ وأخضرُ وكهرمانيٌّ وأحمر */
+.mfu-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 12px}
+.mfu-kpi{border:1px solid #D7A56266;border-top:4px solid #C8943E;border-radius:12px;padding:10px 12px;background:var(--surface)}
+.mfu-kpi-l{font-size:12.5px;color:#C8943E;font-weight:700}
+.mfu-kpi-v{font-size:26px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums}
+.mfu-bar{position:relative;height:18px;border-radius:9px;background:var(--surface-2);overflow:hidden;min-width:90px}
+.mfu-bar i{position:absolute;inset-block:0;inset-inline-start:0;border-radius:9px}
+.mfu-bar b{position:relative;font-size:11.5px;padding-inline-start:8px;line-height:18px}
+.mfu-cos{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px}
+.mfu-co{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:var(--surface)}
+.mfu-co.mfu-ok{border-top:4px solid #27AE60}.mfu-co.mfu-wrn{border-top:4px solid #E2B33C}.mfu-co.mfu-bad{border-top:4px solid #C0392B}
+.mfu-co-h{display:flex;justify-content:space-between;gap:6px;align-items:center;margin:0 0 6px}
+.mfu-blks{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;margin:0 0 12px}
+.mfu-blk{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--surface)}
+.mfu-blk-h{color:#fff;font-weight:800;padding:8px 12px;font-size:13.5px}
+.mfu-blk ul{margin:0;padding:10px 14px 6px;padding-inline-start:26px}
+.npop-x{position:absolute;top:6px;inset-inline-end:6px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(127,127,127,.18);color:inherit;font-size:13px;line-height:28px;cursor:pointer;padding:0}
+.npop-x:active{background:rgba(127,127,127,.35)}
+.wp-item{border-inline-start:5px solid #C8943E}.wp-item.wp-done{border-inline-start-color:#27AE60;opacity:.85}.wp-item.wp-run{border-inline-start-color:#1C3674}.wp-item.wp-wait{border-inline-start-color:#E2B33C}.wp-item.wp-closed{border-inline-start-color:#7F8C8D;opacity:.75}
+.wp-act{background:var(--surface-2);border-radius:10px;padding:8px 10px;margin:8px 0}
+.wp-h{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.wp-sec{font-size:12.5px;font-weight:700;color:#C8943E;margin:8px 0 2px}
+.wp-steps{margin:0;padding-inline-start:4px;list-style:none}.wp-steps li{margin:3px 0}.wp-steps label{display:flex;gap:8px;align-items:flex-start;cursor:pointer}
+.svq-back{position:fixed;inset:0;z-index:calc(var(--z-pop) + 10);background:rgba(0,0,0,.55);display:flex;align-items:flex-end;justify-content:center}
+.svq-box{background:var(--surface);color:var(--ink);width:min(640px,100%);max-height:calc(100vh - env(safe-area-inset-top,0px) - 16px);overflow:auto;border-radius:18px 18px 0 0;padding:14px 16px calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -10px 30px rgba(0,0,0,.35)}
+.svq-h{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;position:sticky;top:-14px;background:var(--surface);z-index:2;padding:4px 0 8px;margin-top:-4px}
+.svq-h .npop-x{position:static}
+.svq-row{display:flex;align-items:center;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+.svq-row .svq-k{flex:1 1 40%;color:var(--ink-mute);font-size:13px}.svq-row .svq-v{flex:1 1 40%;font-weight:600}
+.svq-row.on{display:block}
+.cx-box{white-space:normal;min-width:0;max-width:100%}
+.cx{padding:6px 0;border-top:1px dashed var(--line);white-space:normal}
+.cx-l{white-space:normal;overflow-wrap:anywhere;word-break:break-all;text-align:left;unicode-bidi:isolate}
+.map-panel{position:absolute;top:56px;inset-inline-start:10px;z-index:1200;max-width:min(92vw,360px);padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);box-shadow:0 6px 24px rgba(0,0,0,.25);font-size:13px;line-height:1.6}
+.map-panel .grid{margin:0 0 6px}
+.tfw-card{margin:8px 0 0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-2);font-size:13px;line-height:1.7}
+.svq-ph{width:52px;height:52px;border-radius:8px;overflow:hidden;background:var(--surface-2);display:flex;align-items:center;justify-content:center;flex:0 0 52px}
+.svq-ph img{width:100%;height:100%;object-fit:cover}
+.svq-add{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin:10px 0 0}.svq-add select{width:100%}.svq-row.on .svq-k{margin:0 0 6px;color:var(--ink);font-weight:700}
+.svq-row.on input,.svq-row.on select,.svq-row.on textarea{width:100%}
+.mfu-add{margin:12px 0 0}
+.mfu-add > summary{display:inline-flex;align-items:center;gap:6px;cursor:pointer;list-style:none;padding:9px 16px;border-radius:999px;border:1px solid #C8943E;color:#C8943E;font-weight:700;min-height:40px;margin:0 0 8px}
+.mfu-add > summary::-webkit-details-marker{display:none}
+.mfu-add[open] > summary{background:#C8943E22}
+.mfu-co-n{display:flex;justify-content:space-between;gap:6px;margin:6px 0 0;font-size:12px;color:var(--ink-soft)}
+#nav a.nav-tab{opacity:.92;font-size:12.5px;padding-inline-start:26px}
+.kk-sat{height:min(62vh,540px);border-radius:12px;overflow:hidden;background:#000;position:relative}
+@media (max-width:640px){ .kk-sat{height:min(50vh,420px)} }
+.kk-lock{position:absolute;z-index:1000;top:8px;left:50%;transform:translateX(-50%);background:rgba(0,0,0,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 14px;font:inherit;font-size:14px;min-height:40px}
+.kk-lock.on{background:var(--brand);border-color:transparent}
+body.kiosk .kk-sat{height:min(70vh,760px)}
+.kk-pts circle{cursor:pointer;stroke:rgba(0,0,0,.25);stroke-width:.6}
+.kk-pts circle:hover{stroke:#fff;stroke-width:2}
+.kk-legend2{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:8px;font-size:13px}
+.kk-lg i{display:inline-block;width:11px;height:11px;border-radius:50%;margin:0 0 0 5px;vertical-align:middle}
+body.kiosk .kk-pts circle{r:6}
+.kk-cells{display:flex;flex-wrap:wrap;gap:6px}
+.kk-cell{border:0;border-radius:9px;padding:6px 8px;min-width:58px;text-align:center;cursor:pointer;color:#fff;line-height:1.15;font:inherit}
+.kk-cell b{display:block;font-size:13px}.kk-cell i{display:block;font-style:normal;font-size:11px;opacity:.9}
+.kk-cell.c1{background:#8a939d}.kk-cell.c2{background:#d08a1e}.kk-cell.c3{background:#2E75B6}.kk-cell.c4{background:#1d7a3d}
+.kk-legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin:0 3px 0 8px;vertical-align:middle}
+.kk-legend i.c1{background:#8a939d}.kk-legend i.c2{background:#d08a1e}.kk-legend i.c3{background:#2E75B6}.kk-legend i.c4{background:#1d7a3d}
+body.kiosk .kk-cell{min-width:72px;padding:8px 10px}body.kiosk .kk-cell b{font-size:16px}
+body.kiosk .sidebar,body.kiosk .topbar,body.kiosk .tabs,body.kiosk .page-head,body.kiosk .card-head{display:none!important}
+body.kiosk #content{padding:18px!important;max-width:none!important}
+body.kiosk .kk-title{font-size:30px}body.kiosk .kk-big{font-size:58px}body.kiosk .kk-ring svg{width:170px;height:170px}
+body.kiosk .kk-pct{font-size:28px}body.kiosk .kk-lab{font-size:18px}body.kiosk .kk-zl{font-size:17px}body.kiosk .kk-bar{height:18px}
+.lg-shp span{min-width:0;line-height:1.35}
+/* نقاطُ الرسم ورؤوسُ المساحة تُسحَب بالإصبع (V17.58) — هدفُ اللمس أوسعُ من المرئي */
+.rtPt,.rtVx{background:none;border:0;cursor:grab;display:flex;align-items:center;justify-content:center}
+.rtPt i{display:block;width:12px;height:12px;border-radius:50%;background:#FFD166;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.rtVx i{display:block;width:14px;height:14px;border-radius:50%;background:#FF8C42;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.45)}
+.leaflet-dragging .rtPt,.leaflet-dragging .rtVx{cursor:grabbing}
+
+/* لمسُ الآيفون: لا تكبيرَ عند التركيز ولا تأخيرَ في الضغط */
+input,select,textarea{font-size:16px}
+@media(min-width:561px){ input,select,textarea{font-size:14px} }
+button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.list-item,.cat,.chip,.map-chip{user-select:none;-webkit-user-select:none}
+.map-top,.map-sheet,.map-legend,.map-layerbar,.map-selbar{-webkit-overflow-scrolling:touch}
+
+/* رأسُ القائمة: العلامةُ وزرُّ الإغلاق — ملتصقٌ فلا يضيع بالتمرير */
+.sidebar .brand{position:sticky;inset-block-start:-16px;z-index:2;
+  background:var(--sidebar);padding-block:6px;margin-inline:-2px;padding-inline:2px}
+.nav-x{display:none;width:38px;height:38px;min-height:38px;flex:0 0 auto;
+  margin-inline-start:auto;border-radius:10px;border:1px solid var(--sidebar-line);
+  background:transparent;color:var(--sidebar-ink);font-size:17px;cursor:pointer;
+  align-items:center;justify-content:center}
+.nav-x:active{background:rgba(255,255,255,.08)}
+@media(max-width:900px){ .nav-x{display:inline-flex} }
+
+/* شريطُ سحبٍ في أعلى القائمة يوحي بأنها تُغلق */
+@media(max-width:900px){
+  .sidebar::before{content:"";position:sticky;inset-block-start:0;
+    display:block;width:38px;height:4px;border-radius:99px;
+    background:rgba(255,255,255,.22);margin:-8px auto 10px}
+}
+
+/* حاويةُ الخريطة ثابتةٌ تحت الشل — وواجهتُها طبقةٌ فوقها */
+#mapWrap[hidden]{display:none}
+#mapWrap{position:relative;flex:1 0 auto;min-height:320px;
+  height:calc(100vh - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  height:calc(var(--vh, 1vh) * 100 - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px));
+  height:calc(100dvh - 46px - env(safe-area-inset-top,0px) - env(safe-area-inset-bottom,0px))}
+@media(min-width:901px){
+  #mapWrap{height:calc(100vh - 62px - env(safe-area-inset-top,0px));
+  height:calc(var(--vh, 1vh) * 100 - 62px - env(safe-area-inset-top,0px));
+  height:calc(100dvh - 62px - env(safe-area-inset-top,0px))}
+}
+#mapBox{position:absolute;inset:0}
+/* ═══ المهامُّ الأسبوعية — بطاقاتٌ ولوحة ═══ */
+.wt-card{display:block;width:100%;text-align:start;cursor:pointer;padding:10px 12px}
+.wt-card.on{outline:1px solid var(--brand)}
+.wt-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:0}
+.wt-n{font-size:14px;line-height:1.35;flex:1 1 60%}
+.wt-last{margin:6px 0 0;font-size:12px}
+.wt-av{display:inline-flex;width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,.1);align-items:center;justify-content:center;font-size:11px;font-weight:700;flex:0 0 auto}
+.wt-group{margin:12px 0 0}
+.wt-gh{margin:0 0 6px;display:flex;align-items:center;gap:6px}
+.wt-grid{margin:0}
+.wt-back{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:calc(var(--z-topbar) + 5)}
+.wt-sheet{position:fixed !important;z-index:calc(var(--z-topbar) + 6) !important;display:flex;flex-direction:column;overflow:hidden}
+.wt-sheet > .pop-body{overflow:auto;-webkit-overflow-scrolling:touch;flex:1 1 auto;min-height:0}
+@media (min-width:761px){
+  .wt-sheet{inset-block-start:50% !important;inset-block-end:auto !important;inset-inline-start:50% !important;
+    transform:translate(50%,-50%) !important;width:min(560px,92vw) !important;max-height:84vh}
+  [dir="ltr"] .wt-sheet{transform:translate(-50%,-50%) !important}
+}
+.wt-log .wt-le{padding:6px 0;border-top:1px solid rgba(255,255,255,.07);font-size:12.5px;line-height:1.5}
+/* نصوصُ النقطة وصورُها في بطاقة التفاصيل */
+.bf-tx{padding:6px 0;border-top:1px solid var(--line-2)}
+.bf-ph{display:grid;grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:6px}
+.bf-ph img{width:100%;height:88px;object-fit:cover;border-radius:8px;display:block;cursor:zoom-in}
+/* مفتاحُ قرارٍ يُقرأ كجملة */
+.sw-row{display:flex;gap:10px;align-items:flex-start;cursor:pointer;margin:0}
+.sw-row.is-off{cursor:default;opacity:.75}
+.sw-row input{width:20px;height:20px;margin-top:2px;flex:0 0 auto;accent-color:var(--brand)}
+/* بندُ الشاشة يُضيء مع خطوتها */
+.tour-spot{outline:2px solid var(--brand);outline-offset:2px;border-radius:10px;
+  background:color-mix(in srgb, var(--brand) 16%, transparent);animation:tourPulse 1.6s ease-in-out infinite}
+@keyframes tourPulse{0%,100%{outline-color:var(--brand)}50%{outline-color:transparent}}
+@media (prefers-reduced-motion:reduce){.tour-spot{animation:none}}
+.wt-meet{padding:12px 14px}
+#mapUI{position:absolute;inset:0;pointer-events:none;z-index:var(--z-map-ui)}
+#m3Box{position:absolute;inset:0;z-index:var(--z-map-ui);background:#0b1220}
+#m3Box[hidden]{display:none}
+#m3Box .maplibregl-ctrl-bottom-right{inset-block-end:calc(150px + env(safe-area-inset-bottom,0px));inset-inline-end:14px}
+#m3Box .maplibregl-ctrl-bottom-left{inset-block-end:calc(110px + env(safe-area-inset-bottom,0px))}
+#m3Box .maplibregl-ctrl-group{background:rgba(18,23,28,.94);border:1px solid #2A333C}
+#m3Box .maplibregl-ctrl-group button+button{border-top-color:#2A333C}
+#m3Box .maplibregl-ctrl-icon{filter:invert(1)}
+#mapUI > *{pointer-events:auto}
+#mapUI .pop{pointer-events:auto}
+.content[hidden]{display:none}
+
+.map-top::-webkit-scrollbar{display:none}
+.map-top .map-chip{flex:0 0 auto}
+
+/* الرسالةُ فوق أزرارِ الزاوية لا تحتها — ولا تحجب موقعي */
+#nskToast{inset-block-end:calc(120px + env(safe-area-inset-bottom,0px))!important}
+.map-fab{inset-block-end:calc(16px + env(safe-area-inset-bottom,0px))}
+.map-stack{inset-block-end:calc(16px + env(safe-area-inset-bottom,0px))}
+.map-badge{inset-block-end:calc(78px + env(safe-area-inset-bottom,0px))}
+
+/* في الوضع المثبَّت لا شريطَ متصفّحٍ يحمي الحواف */
+@media(display-mode:standalone){
+  .topbar{padding-top:calc(env(safe-area-inset-top,0px) + 4px)}
+}
+
+/* وقتَ التحديد أو النقل تُخفى الأسطورةُ والعدّاد — الشاشةُ للعمل لا للشرح */
+.map-busy .map-legend,.map-busy .map-badge{display:none}
+.map-busy .x-was-layerbar{inset-block-end:calc(96px + env(safe-area-inset-bottom,0px))}
+@media(max-width:560px){
+  .map-selbar{inset-block-end:calc(160px + env(safe-area-inset-bottom,0px));font-size:11.5px}
+  .map-layerbar{font-size:11px;padding:6px 12px;gap:8px}
+}
+
+/* صندوقُ بحثِ الصفحة */
+.pg-find{position:relative;display:flex;align-items:center}
+.pg-find input{width:200px;padding:7px 10px;border-radius:9px;border:1px solid var(--line);
+  background:var(--surface-2);color:inherit;font:inherit}
+.pg-find input:focus{outline:2px solid var(--brand);outline-offset:1px}
+.pg-find-n{position:absolute;inset-inline-end:10px;font-size:11px;opacity:.7;pointer-events:none}
+@media (max-width:760px){ .pg-find input{width:130px} }
+.head-acts{display:flex;gap:7px;align-items:flex-start;flex:0 0 auto}
+.help-rows{margin:14px 0 0;display:flex;flex-direction:column;gap:12px}
+.help-rows > div{border-inline-start:3px solid var(--brand);padding-inline-start:11px}
+.help-rows .hk{display:block;font-size:11.5px;font-weight:700;color:var(--brand);margin-bottom:3px}
+.help-rows p{margin:0;font-size:13.5px;line-height:1.75;color:var(--ink-soft)}
+
+/* أزرارُ التقريب أسفلَ اليمين — كانت تحت الشرائح فلا تُضغَط */
+#mapBox .leaflet-top.leaflet-left{inset-block-start:auto;inset-inline-start:auto;
+  inset-block-end:calc(150px + env(safe-area-inset-bottom,0px));inset-inline-end:14px}
+#mapBox .leaflet-control-zoom{margin:0}
+@media (pointer:coarse){ #mapBox .leaflet-control-zoom{display:none} }   /* (V28.1) كان يظهر من خلف «جارٍ رسم المسار» كخطٍّ يشطبه */
+@media (pointer:fine){ #mapBox .leaflet-top.leaflet-left{inset-block-end:auto;inset-block-start:42%} }
+[dir="rtl"] #mapBox .leaflet-top.leaflet-left{right:auto;left:14px}
+[dir="ltr"] #mapBox .leaflet-top.leaflet-left{left:auto;right:14px}
+
+/* العدّادُ يندمج في شريط الطبقة فلا يزاحم الأسطورة */
+.map-badge{display:none}
+.map-layerbar .lb-c{color:#C6CFD7;font-variant-numeric:tabular-nums;
+  border-inline-start:1px solid #2A333C;padding-inline-start:10px}
+
+/* رقمُ النسخة زرُّ فحص تحديثات — لكلِّ الأدوار، وعلى الجوّال أيضًا:
+   كان يختفي تحت خمسمئةٍ وستين بكسل، أي على كلِّ جهازٍ في الميدان. */
+/* زرُّ الرجوع: يظهر حين يكون في السجل مكانٌ يُعاد إليه، ويختفي في الجذر —
+   فزرٌّ ظاهرٌ لا يفعل شيئًا أسوأُ من غيابه. */
+/* شريطُ التحديث: أسفلَ الشاشة فوق كلِّ شيء، ولا يحجب ما يُقرأ */
+.sw-bar{position:fixed;inset-block-end:calc(14px + env(safe-area-inset-bottom,0px));
+  inset-inline:14px;z-index:calc(var(--z-map-ui) + 60);
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 16px 44px rgba(0,0,0,.45);padding:11px 13px;
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:13.5px;
+  max-width:520px;margin-inline:auto}
+.sw-bar > span{flex:1 1 auto;min-width:0}
+
+/* زرُّ التثبيت: يظهر حين يقول المتصفّحُ إن التثبيتَ متاح، ويختفي بعده.
+   وكان المراقبُ يبحث عن زرٍّ لا وجودَ له فيلتقط الحدثَ ولا يعرضه لأحد. */
+.tb-install{border-color:var(--brand);color:var(--brand);font-weight:700}
+.tb-install[hidden]{display:none}
+
+.tb-back{background:transparent;border:1px solid var(--line);border-radius:10px;
+  width:34px;height:34px;min-height:34px;display:inline-flex;align-items:center;
+  justify-content:center;cursor:pointer;font-size:17px;color:var(--ink);
+  margin-inline-end:9px;flex:0 0 auto;line-height:1}
+.tb-back[hidden]{display:none}
+.tb-back:hover{border-color:var(--brand);color:var(--brand)}
+[dir="rtl"] .tb-back{transform:scaleX(-1)}
+
+.tb-sync{background:transparent;border:1px solid var(--line);border-radius:99px;
+  padding:3px 10px;min-height:26px;cursor:pointer;font:inherit;font-size:11.5px;
+  color:var(--ink-soft);font-variant-numeric:tabular-nums;white-space:nowrap}
+.tb-sync:hover{border-color:var(--brand);color:var(--brand)}
+.co-pop-wrap{position:fixed;inset:0;z-index:170;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
+.co-pop{background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.5);width:min(980px,96vw);max-height:88vh;display:flex;flex-direction:column;animation:npop .2s ease}
+.co-pop-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 14px;border-bottom:1px solid var(--line)}
+.co-pop-body{overflow:auto;padding:0 2px 8px}
+.lg-toggle{padding:4px 10px;font-size:12px;min-height:30px;line-height:1.2}
+@media(max-width:640px){ .map-legend{max-height:132px} .lg-toggle{min-height:34px} }
+.bell-pop{position:fixed;top:54px;inset-inline-end:14px;z-index:160;width:min(360px,94vw);background:var(--card,#161b22);border:1px solid var(--line,#2a2f36);border-radius:14px;box-shadow:0 14px 40px rgba(0,0,0,.5);overflow:hidden;animation:npop .2s ease}
+.bell-head{padding:10px 12px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px}
+.bell-list{max-height:min(60vh,420px);overflow:auto}
+.bell-row{padding:9px 12px;border-bottom:1px solid var(--line-2,rgba(255,255,255,.06));cursor:pointer}
+.bell-row.un{background:rgba(232,195,75,.07)}
+.bell-row:hover{background:rgba(255,255,255,.05)}
+.tb-bell{position:relative;background:transparent;border:1px solid var(--line);border-radius:99px;
+  width:30px;height:26px;cursor:pointer;font-size:14px;line-height:1;padding:0;color:var(--ink-soft)}
+.tb-bell.has{border-color:#E8C34B;color:#fff}
+.tb-bell:hover{border-color:var(--brand)}
+.tb-badge{position:absolute;top:-7px;inset-inline-end:-7px;min-width:17px;height:17px;padding:0 4px;
+  border-radius:99px;background:#E05252;color:#fff;font-size:10.5px;font-weight:700;line-height:17px;
+  text-align:center;box-shadow:0 0 0 2px var(--bg,#0d1117)}
+.notif-rows tbody tr{cursor:pointer}.notif-rows tbody tr:hover td{background:rgba(255,255,255,.04)}
+@keyframes npop{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
+
+/* قائمةُ اللغة: الثلاثُ تُرى ويُختار منها. وكان الزرُّ يدور بالضغط — فمن
+   أراد الإنجليزيةَ ضغط مرتين، ومن تجاوزها دار دورةً كاملةً ليعود إليها. */
+/* لوحُ الشركات: رأسٌ وذيلٌ ثابتان، والقائمةُ وحدَها تُمرَّر. */
+/* شريحةٌ بسهم: الضغطُ على الاسم يُشعل طبقةَ الألوان، والسهمُ يفتح الاختيار.
+   وكانت الضغطةُ تفتح اللوحَ مباشرةً — ومن أراد أن يرى الشركاتِ ملوَّنةً وحدَها
+   اضطُرَّ أن يفتح لوحًا يغطّي الخريطةَ ثم يغلقه ليرى ما تحته. */
+.chip-pair{display:inline-flex;align-items:stretch}
+.chip-pair .map-chip:first-child{border-start-end-radius:0;border-end-end-radius:0}
+.chip-pair .chip-caret{border-start-start-radius:0;border-end-start-radius:0;
+  padding-inline:10px;min-width:36px;font-size:12px}
+
+/* ═══ بنيةُ اللوحات كلِّها ═══
+   رأسٌ ثابتٌ فيه العنوانُ والإغلاق، وجسمٌ يُمرَّر وحدَه، وذيلٌ ثابتٌ فيه الفعل.
+   وكان كلُّ لوحٍ يُمرَّر كلُّه — فمن نزل في قائمةٍ طويلةٍ غاب عنه زرُّ الإغلاق
+   في الأعلى وزرُّ الحفظ في الأسفل. والقاعدةُ تُعمَّم بالصنف لا تُكتَب في كلِّ
+   لوحٍ يدًا: ما يُكتَب مرةً في كلِّ مكانٍ يُنسى في مكان. */
+.pop{display:flex;flex-direction:column;overflow:hidden;padding:0;
+  max-height:min(84vh, calc(var(--vh,1vh) * 84))}
+.pop > .pop-head{padding:14px 15px 12px;border-bottom:1px solid var(--line);
+  flex:0 0 auto;background:var(--surface);display:flex;
+  justify-content:space-between;align-items:flex-start;gap:10px}
+.pop > .pop-head h3{margin:0;color:var(--ink)}
+.pop > .pop-body{flex:1 1 auto;overflow-y:auto;overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;padding:13px 15px;min-height:60px}
+.pop > .pop-foot{padding:12px 15px 14px;border-top:1px solid var(--line);
+  flex:0 0 auto;background:var(--surface)}
+
+.copop{width:min(360px,92vw);max-height:min(78vh, calc(var(--vh,1vh) * 78))}
+/* اللوحُ يرث البنيةَ العامة — وله عرضٌ وارتفاعٌ خاصّان فقط */
+.copop > .pop-body{padding:4px 15px;min-height:80px}
+.coRow{display:flex;gap:9px;align-items:center;padding:9px 2px;
+  border-bottom:1px solid var(--line-2);font-size:13.5px;cursor:pointer;min-height:42px}
+.coRow:last-child{border-bottom:0}
+.coRow .coCk{width:19px;min-height:19px;flex:0 0 auto;margin:0}
+.coRow i{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+.coRow span{min-width:0;overflow-wrap:anywhere}
+
+.lang-pick{position:relative;display:inline-flex}
+.lang-menu{position:absolute;inset-block-start:calc(100% + 6px);inset-inline-end:0;
+  z-index:calc(var(--z-map-ui) + 40);  /* فوق واجهة الخريطة: كانت ستين وطبقتُها ستمئة فتُرسَم الشرائحُ فوقها */min-width:172px;
+  /* خلفيةٌ صلبةٌ لا شفافة: كان الاسمُ `--card` وهو متغيّرٌ لا وجودَ له في
+     هذا الملف، والقيمةُ الغائبةُ في CSS تُترَك كأنها لم تُكتَب — فالخلفيةُ
+     شفافةٌ ويُقرأ ما تحتها من شرائح الخريطة. */
+  background:var(--surface);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  border:1px solid var(--line);border-radius:var(--radius);
+  box-shadow:0 16px 44px rgba(0,0,0,.45);padding:6px;
+  display:flex;flex-direction:column;gap:3px}
+.lang-menu[hidden]{display:none}
+.lang-menu button{display:flex;align-items:center;justify-content:space-between;gap:10px;
+  width:100%;background:transparent;border:0;border-radius:9px;padding:9px 11px;
+  font:inherit;font-size:14px;color:var(--ink);cursor:pointer;text-align:start;min-height:40px}
+.lang-menu button:hover{background:var(--bg-soft, rgba(127,127,127,.12))}
+.lang-menu button[aria-selected="true"]{background:var(--brand);color:#fff;font-weight:700}
+.lang-menu .lg-code{font-size:11px;opacity:.7;font-variant-numeric:tabular-nums}
+.lang-menu button[aria-selected="true"] .lg-code{opacity:.9}
+
+/* رأسُ القائمة: الشعارُ والاسمُ والإغلاق في سطرٍ واحدٍ لا يتزاحمون،
+   وثابتٌ لا يُمرَّر مع البنود. */
+.sidebar-head{flex:0 0 auto;display:flex;align-items:center;gap:10px;
+  padding-bottom:11px;margin-bottom:9px;border-bottom:1px solid var(--sidebar-line)}
+.sidebar-head .brand-name{flex:1 1 auto;min-width:0;line-height:1.25}
+.sidebar-head .nav-x{flex:0 0 auto;margin-inline-start:auto}
+
+[data-theme="dark"] 
+.ver-tag{font-style:normal;font-size:10.5px;color:var(--ink-mute);font-weight:400;
+  margin-inline-start:7px;opacity:.75;white-space:nowrap;background:transparent;
+  border:1px solid var(--line);border-radius:99px;padding:3px 9px;cursor:pointer;
+  min-height:26px;font-family:inherit}
+.ver-tag:hover{opacity:1;border-color:var(--brand);color:var(--brand)}
+.ver-tag.upd{border-color:var(--warn,#E8873A);color:var(--warn,#E8873A);opacity:1}
+@media(max-width:560px){ .ver-tag{font-size:10px;padding:3px 7px} }
+
+</style>
+</head>
+<body>
+
+<div id="login"></div>
+
+<div id="app" style="display:none">
+  <div id="navVeil" data-navx aria-hidden="true"></div>
+  <aside class="sidebar">
+    <div class="brand sidebar-head">
+      <div class="brand-mark"><img src="data:image/png;base64,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" alt="AFAQY" width="380" height="133"></div>
+      <div class="brand-name" id="brandName"></div>
+      <button type="button" class="nav-x" data-navx aria-label="إغلاق القائمة" data-i18n-aria="إغلاق القائمة">✕</button>
+    </div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-foot">
+      
+      <div class="who" id="sideWho">محمد صفوت</div>
+      <div class="foot-row">
+        <select id="langSel" aria-label="اللغة" data-i18n-aria="اللغة">
+          <option value="ar">العربية</option>
+          <option value="en">English</option>
+          <option value="ur">اردو</option>
+        </select>
+        <button type="button" class="btn btn-secondary btn-sm" id="themeBtn"
+                aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
+      </div>
+      <button type="button" class="btn btn-quiet btn-block" id="pwBtn" data-pwopen="1" style="margin-bottom:6px"></button>
+      <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
+    </div>
+  </aside>
+
+  <main class="shell">
+    <header class="topbar">
+      <button class="burger" type="button" data-nav aria-label="القائمة" data-i18n-aria="القائمة"><span></span></button>
+      <button type="button" class="tb-back" id="backBtn" data-back="1"
+              aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
+      <strong class="crumb" id="crumb"></strong>
+      <button type="button" class="ver-tag" data-verchk="1"
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.0</button>
+      <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
+              aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
+      <span class="topbar-meta" id="syncMeta"></span>
+      <div class="topbar-tools">
+        <div class="lang-pick">
+          <button type="button" class="tb-btn" id="langTop" data-langmenu="1"
+                  aria-label="اللغة" aria-haspopup="listbox" aria-expanded="false" title="اللغة" data-i18n-aria="اللغة" data-i18n-title="اللغة">ع</button>
+          <div class="lang-menu" id="langMenu" role="listbox" hidden></div>
+        </div>
+        <button type="button" class="tb-btn tb-install" id="pwaBtn" data-pwa="1"
+              aria-label="تثبيت التطبيق" title="تثبيت التطبيق" data-i18n-aria="تثبيت التطبيق" data-i18n-title="تثبيت التطبيق" hidden>⬇</button>
+        <button type="button" class="tb-btn" id="assistBtn" data-assist="1"
+              aria-label="المساعد" title="المساعد" data-i18n-aria="المساعد" data-i18n-title="المساعد">🧭</button>
+        <button type="button" class="tb-btn" data-tour="1"
+              aria-label="جولة البداية" title="جولة البداية" data-i18n-aria="جولة البداية" data-i18n-title="جولة البداية">🎓</button>
+        <button type="button" class="tb-btn" data-bugopen="1"
+              aria-label="بلّغ عن عطل" title="بلّغ عن عطل" data-i18n-aria="بلّغ عن عطل" data-i18n-title="بلّغ عن عطل">🛠</button>
+      <button type="button" class="tb-btn" id="themeTop" aria-label="المظهر: داكن ← فاتح ← الشمس" title="المظهر: داكن ← فاتح ← الشمس" data-i18n-aria="المظهر: داكن ← فاتح ← الشمس" data-i18n-title="المظهر: داكن ← فاتح ← الشمس">☾</button>
+      </div>
+    </header>
+    <div class="mapwrap" id="mapWrap" hidden>
+      <div id="mapBox"></div>
+      <div id="m3Box" hidden></div>
+      <div id="mapUI"></div>
+    </div>
+    <div class="content" id="content"></div>
+  </main>
+</div>
+
+<script>

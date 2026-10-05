@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V30.9",
+ "app_version": "V31.0",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2001,7 +2001,8 @@
   "V30.6": "فكرةُ المالك #٧: photoQuality(cx, W, H) على ١٢٨ بكسل رماديًّا: b متوسطُ السطوع، s انحرافُ لابلاس، h بصمةُ ٨×٨ (٦٤ بت ست عشرية)؛ PQ {dark:35, bright:238, blur:18}؛ photoQualityFlags/photoQualityWarn (تنبيهٌ بلا منع) داخل shrink()، وPHOTO_Q_IX يربط dataUrl بمقاييسه فيحملها photoQueue (q) وتُكتَب في وثيقة الصورة (المسارُ المباشرُ والسحابي)؛ photoDupOf بمسافة هامنغ ≤٣ على طابور الجهاز وSTATE.photos لنفس النقطة؛ SV_LISTS.badphoto (photosOf يعيد [مفتاح، وثيقة]) وبطاقةٌ في مسح الوزارة. وإصلاحان: عناوينُ card() نصٌّ صِرف (التلميحُ في الجسم)، وsvListPop والملخّصُ اليوميُّ بمتغيرات --surface/--ink/--line.",
   "V30.7": "لقطةُ المالك «رفض التشغيل 401»: ghRunNow عند 401/403 يعلّم CFG.gh.bad/badCode ويقول إن الطلبَ محفوظٌ ويُنفَّذ مع الدورة وإن المفتاحَ يحتاج تجديدًا، وحدثٌ في السجل، ولافتةُ تحذيرٍ للمدير فوق «إنشاء حساب». سيرٌ مستقلٌّ .github/workflows/provision-on-push.yml يشغّل scripts/provision.mjs عند كلِّ دفعٍ إلى staging أو main. وprovLocal(u) زرُّ «أنشئه من هذا الجهاز الآن» (may users) ينشئ الحسابَ بـFB.createUser بتطبيقٍ ثانٍ، ويكتب users/<uid> ويعلّم provision/<u> «done» بلا كلمة مرور.",
   "V30.8": "فكرةُ المالك #٨: evNorm (بلا تشكيلٍ ولا تطويل، والهمزاتُ ألفًا والتاءُ المربوطةُ هاءً، وحروفٌ صغيرة)، وevRows يبحث في what وsite وby وevActor؛ evFetch بوضع 'site' يجلب where('site','==',id) بلا ترتيبٍ (لا فهرسَ مركّبًا)؛ evSiteHistory(id) يفتح السجلَّ ويملأ EVF.q وPG_Q (صندوقُ رأس الصفحة يقود EVF.q عبر PG_BIND) ويجلب تاريخَ النقطة؛ زرُّ data-evsite في نافذة النقطة لمن يرى السجل (seesPage('ev')).",
-  "V30.9": "فكرةُ المالك #٩: mapPaint يجمّع النداءات (MP_LAST/MP_TIMER/MP_FULL): ما يأتي خلال ٨٠ ملّي ثانية من رسمةٍ يُرسَم مرةً واحدةً بأثقل ما طُلب (الكاملُ يغلب الخفيف)، والثلاثيُّ مستثنى (يُرسَم فورًا)؛ وفي mapInit عند إعادة الفتح: بصمةُ الحالة MAP_SIG (STAT_VER+FILT+MAP_LAYER+SEL_N+CO_SEL+FIELD_MODE+SUN_ON+KIOSK_ON+MAP_TAX) — إن لم تتغيّر فرسمةٌ خفيفة (mapPaint(true)) وإلا كاملة؛ وتصحيحُ القياس (invalidateSize) يرسم خفيفًا. نمطُ «mapPaint(); basemapKick();» محفوظٌ لجرد الخريطة الأساسية."
+  "V30.9": "فكرةُ المالك #٩: mapPaint يجمّع النداءات (MP_LAST/MP_TIMER/MP_FULL): ما يأتي خلال ٨٠ ملّي ثانية من رسمةٍ يُرسَم مرةً واحدةً بأثقل ما طُلب (الكاملُ يغلب الخفيف)، والثلاثيُّ مستثنى (يُرسَم فورًا)؛ وفي mapInit عند إعادة الفتح: بصمةُ الحالة MAP_SIG (STAT_VER+FILT+MAP_LAYER+SEL_N+CO_SEL+FIELD_MODE+SUN_ON+KIOSK_ON+MAP_TAX) — إن لم تتغيّر فرسمةٌ خفيفة (mapPaint(true)) وإلا كاملة؛ وتصحيحُ القياس (invalidateSize) يرسم خفيفًا. نمطُ «mapPaint(); basemapKick();» محفوظٌ لجرد الخريطة الأساسية.",
+  "V31.0": "خطوةُ البناء (التوصيةُ المعمارية، المرحلة ١): المصدرُ في src/ (00-head.html، و01..08 أجزاءُ الشيفرة بترتيبها الأصلي، و99-tail.html) وscripts/build.mjs يجمّعها إلى index.html بايتًا ببايت؛ --check يرفض أيَّ فرقٍ وهو خطوةٌ في قائمة الحارس؛ i18n-rehash يكتب في المصدر ثم يبني؛ AGENTS.md/CLAUDE.md: عدِّل src/ لا index.html. لا تغييرَ في سلوك التطبيق."
  },
  "map_and_geolocation": {
   "tile_layers": {

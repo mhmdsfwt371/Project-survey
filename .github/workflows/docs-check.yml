@@ -352,6 +352,8 @@ jobs:
         run: node scripts/audit-guards.mjs
       - name: لجنة الفحص — كل شاشة تُفتح وترسم
         run: node scripts/qa.mjs
+      - name: خطوةُ البناء — index.html هو ناتجُ src/ بايتًا ببايت (V31.0)
+        run: node scripts/build.mjs --check
       # ─── نهايةُ قائمة الحارس ───
   shards:
     if: github.ref == 'refs/heads/staging'
