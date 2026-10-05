@@ -23,7 +23,8 @@ jobs:
   # تعمل على الأصل وطلبات الدمج، وعلى فرع التجربة تُشغَّل الخطواتُ نفسُها
   # شرائحَ متوازية (shards) فتنتهي في ربع الوقت.
   check:
-    if: github.ref != 'refs/heads/staging'
+    # (V31.7) لا يُكرَّر ليلًا: الكاملُ الليليُّ تقوم به الشرائحُ الأربعُ متوازية
+    if: github.ref != 'refs/heads/staging' && github.event_name != 'schedule'
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v5
@@ -363,7 +364,8 @@ jobs:
       # ─── نهايةُ قائمة الحارس ───
   shards:
     # (خطةُ التسليم) الكاملُ ليلًا أو عند الطلب — وعلى الدفعة تعمل الطبقةُ السريعة
-    if: github.ref == 'refs/heads/staging' && (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch')
+    # (V31.7) الجدولةُ في GitHub تعمل على الفرع الافتراضيِّ (main) لا التجربة — فالليليُّ يفحص ما على الأجهزة فعلًا
+    if: github.event_name == 'schedule' || (github.ref == 'refs/heads/staging' && github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
@@ -402,6 +404,35 @@ jobs:
           name: gate-shard-${{ matrix.shard }}
           path: gate/
           retention-days: 7
+  nightly-report:
+    # (V31.7) الجردُ الكاملُ الليليُّ يُبلَّغ: إن سقطت شريحةٌ وصل بريدٌ بما سقط — فلا يمرّ عطلٌ ليليٌّ بلا أحدٍ يراه
+    needs: [shards]
+    if: always() && github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 20
+      - uses: actions/download-artifact@v7
+        with:
+          pattern: gate-shard-*
+          path: gates
+          merge-multiple: true
+      - name: بريدُ الجرد الليلي عند السقوط
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          MAIL_FROM: ${{ secrets.MAIL_FROM }}
+          MAIL_TO: ${{ secrets.MAIL_TO }}
+        run: |
+          bad=""; for n in 1 2 3 4; do f="gates/shard-$n.txt"; if [ ! -f "$f" ] || [ "$(head -1 "$f")" != "PASS" ]; then bad="$bad $n"; fi; done
+          if [ -z "$bad" ]; then echo "✓ الجردُ الكاملُ الليليُّ أخضر"; exit 0; fi
+          { echo "الجردُ الكاملُ الليليُّ (١٤٨ خطوة) على ${{ github.sha }} سقطت فيه الشرائح:$bad"; echo ""; for n in $bad; do echo "── الشريحة $n"; tail -n +2 "gates/shard-$n.txt" 2>/dev/null | head -30; done; echo ""; echo "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; } > /tmp/nightly.txt
+          npm i --no-save --no-audit --no-fund nodemailer@^6 || true
+          node scripts/mail-send.mjs "نُسُك — الجردُ الليليُّ سقط ($bad)" /tmp/nightly.txt || true
   fast:
     # الطبقةُ السريعة (خطةُ التسليم): البناءُ والنحوُ واختباراتُ الوحدة والجرودُ الحاسمةُ القصيرة — على كلِّ دفعةٍ إلى التجربة
     if: github.ref == 'refs/heads/staging' && github.event_name == 'push'
