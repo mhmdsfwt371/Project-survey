@@ -2851,14 +2851,6 @@ var LAYERS = {
   }
 };
 
-function insDone(id){
-  var r = STATE.inss[id];
-  return !!(r && r.status === 'مُركّب');
-}
-function disDone(id){
-  var r = STATE.diss ? STATE.diss[id] : null;
-  return !!(r && r.status === 'تم الفك');
-}
 
 
 /* ═══ الفكُّ والصيانة: نموذجان كانا ناقصَين ═══

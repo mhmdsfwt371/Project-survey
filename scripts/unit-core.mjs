@@ -138,3 +138,10 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
   if (multi){ const h = w.siteIdHtml(multi); assert.ok(h.indexOf(multi.co) > -1 && h.indexOf(multi.id) > -1, 'الشركةُ ومعرّفُ النظام تحت الشاخص المشترك'); }
   assert.ok(S.filter(x => x.type === 'مخيم' && x.sign && !/[?]/.test(x.sign)).every(x => w.siteKey(x) === String(x.sign).trim()), 'كلُّ مخيمٍ له شاخصٌ يظهر به');
 });
+test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
+  const { readFileSync, readdirSync } = await import('fs');
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel'];
+  const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
+  NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
+    others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
+});

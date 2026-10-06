@@ -4927,7 +4927,6 @@ function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ مع
   var c = mfuObsMap.c; if (c && c.v === STAT_VER && Date.now() - c.at < 1000) return c.m;
   var m = {}; mfuObstacles().forEach(function(e){ m[e.x.id] = e.cats; }); mfuObsMap.c = { v:STAT_VER, at:Date.now(), m:m }; return m;
 }
-function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
   sv:      ['تمت الزيارة',            function(x, r){ return svVisited(r); }],   /* (V32.6) بأيِّ نتيجة — (V32.7) بمصطلح المالك */

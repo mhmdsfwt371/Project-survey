@@ -3490,36 +3490,6 @@ function helpHtml(){
 
 var MOVE_ID = '', MOVE_AT = null;
 
-/* ═══ المخيمُ يُعرَف بشاخصه (V23.8) ═══
-   «خلي كل المخيمات تبان برقم الشاخص يكون هو الحاجة الأساسية»: عنوانُ المخيم في النافذة والقوائم رقمُ
-   شاخصه، وتحته المشعرُ والمربعُ والمعرِّف — وغيرُ المخيم باسمه كما كان. */
-/* ═══ (V35.0) قرارُ المالك: المعرّفُ الأوّلُ للنقطة ═══
-   المخيمات (منى وعرفات): رقمُ الشاخص «رقمُ المخيم/رقمُ الشارع» — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦.
-   الممرات المركّبةُ في ١٤٤٧: اسمُها المعروف من الموسم الماضي (Path-Shaded-3R…) — يُستخرَج من اسم النقطة.
-   الممراتُ الجديدةُ وباقي النقاط: المعرّفُ المقترح (NSK-…) كما هو حتى إشعارٍ آخر.
-   ومعرّفُ النظام NSK-… يبقى ثانيًا في كلِّ نافذةٍ وجدولٍ وتصدير، وكلاهما يُبحَث به. */
-function siteKey(x){
-  if (!x) return '';
-  /* اسمُ الشاخص أو رقمُه — (V35.1) توضيحُ المالك: «فيه مخيمات فيها أكتر من شركة» — الشاخصُ نفسُه بسطرين أو أكثر في المربع نفسِه
-     ليس خطأً: لكلِّ شركةٍ في المخيم سطرٌ في السجلّ. فالشاخصُ هو المعرّفُ الأوّلُ لكلِّ سطوره، ويُفرَّق بينها بالشركة ومعرّفِ النظام
-     (siteIdHtml)، والبحثُ بالشاخص يُرجعها كلَّها. ولا يبقى NSK أوّلًا إلا لمخيمٍ بلا شاخص. */
-  if (x.type === 'مخيم' && x.sign){
-    var sg = String(x.sign).trim();
-    if (sg && !/[?]|null/i.test(sg)) return sg;
-  }
-  if (x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'){ var m = /ممر\s+([A-Za-z][\w\-.]*)/.exec(String(x.name || '')); if (m) return m[1]; }
-  return x.id;
-}
-/* الخليةُ في الجداول: المعرّفُ الأوّلُ بارزًا ومعرّفُ النظام صغيرًا تحته إن اختلفا */
-function siteOf(o){ if (!o) return o; if (o.type) return o; if (o.site && o.site.id) return o.site; return (typeof siteFind === 'function' && siteFind(o.id)) || o; }   /* (V35.2) */
-function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخصَ في المشعر نفسِه (مخيمٌ لأكثر من شركة) */
-  if (!x || x.type !== 'مخيم' || !x.sign) return 1;
-  var U = siteShared.u; if (!U || U.n !== (STATE.sites || []).length){ U = siteShared.u = { n:(STATE.sites || []).length, c:{} }; (STATE.sites || []).forEach(function(y){ if (y.type === 'مخيم' && y.sign){ var k = y.zone + '|' + String(y.sign).trim(); U.c[k] = (U.c[k] || 0) + 1; } }); }
-  return U.c[x.zone + '|' + String(x.sign).trim()] || 1;
-}
-function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
-  return '<b class="num">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
-function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
 function siteTitle(x){ return (x && x.type === 'مخيم' && x.sign) ? t('شاخص') + ' ' + x.sign : ((x && x.name) || ''); }
 function siteSub(x){ return (x && x.type === 'مخيم' && x.sign) ? [t(x.zone || ''), x.sq ? t('مربع') + ' ' + x.sq : ''].filter(Boolean).join(' \u00b7 ') : ''; }
 /* عناوينُ الأجهزة من بادئة شبكة النقطة (١٤٤٧): ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا */
@@ -3834,7 +3804,7 @@ function popHtml(){
             step = 'رُكّبت واعتُمدت'; who = '—';
           }
           var tw = (!sv && !rec) ? twinOf(s) : null;
-          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(siteKey(tw)) + '</b> '
+          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(siteKey(tw)) + '</b>' + (siteKey(tw) !== tw.id ? ' (' + esc(tw.id) + ')' : '') + ' '
               + '(' + esc((tw.sq || '') + ' / ' + (tw.sign || '')) + ') \u2014 ' + esc(t(svVisited(STATE.recs[tw.id]) ? 'تمت الزيارة' : 'لم تتم زيارتها'))
               + '. ' + esc(t('إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.')) + '</span>'
               + (maySiteEdit() ? '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F9F9} ' + t('تصحيح البيانات'),'btn-quiet btn-sm',' data-goto="dq"') + '</div>' : '') + '</div>' : '';
@@ -4940,15 +4910,10 @@ function handNext(){
   while (n.length < 4) n = '0' + n;
   return 'HO-' + n;
 }
-function handOf(id){
-  var r = STATE.inss[id];
-  return (r && r.hand) || null;
-}
 function handReady(x){
   var r = STATE.inss[x.id];
   return !!(r && r.status === 'مُركّب' && r.approved && !r.hand);
 }
-function handDone(id){ return !!handOf(id); }
 /* بلاغٌ جوهريٌّ مفتوحٌ على النقطة يمنع تسليمَها وحدَها — لا يمنع غيرَها */
 function handBlock(id){
   if (typeof NCRS === 'undefined') return null;
