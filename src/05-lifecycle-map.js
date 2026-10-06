@@ -612,12 +612,36 @@ function exlLoad(){
   });
   return EXLJS_LOADING;
 }
+/* ═══ (V33.7) بلاغُ المالك: «لما بعمل إكسبورت وورد بيطلّعني برّه السيستم ويدخّلني تاني» ═══
+   على الآيفون والتطبيقُ مثبّتٌ على الشاشة الرئيسية، رابطُ التنزيل يفتح الملفَّ في معاينةٍ تحلّ محلَّ التطبيق نفسِه — فإذا رجع
+   المستخدمُ أُعيد تحميلُ التطبيق ودخل بالجلسة المحفوظة. صار الآيفونُ يسلّم الملفَّ بقائمة المشاركة («حفظ في الملفات»، البريد،
+   واتساب) والتطبيقُ في مكانه. وإن بُني الملفُّ بعد انتهاء لمسة المستخدم (القالبُ يُحمَّل) فلا تُفتح القائمةُ إلا بلمسةٍ جديدة —
+   فيظهر زرٌّ «احفظ الملف» يفتحها. وغيرُ الآيفون كما كان. */
+function dlIOS(){ var ua = (typeof navigator === 'object' && navigator.userAgent) || ''; return /iPad|iPhone|iPod/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); }
+function dlSheet(file){
+  var old = document.getElementById('dlSheet'); if (old) old.remove();
+  var d = document.createElement('div'); d.id = 'dlSheet'; d.setAttribute('role', 'dialog');
+  d.style.cssText = 'position:fixed;left:12px;right:12px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:9999;background:var(--surface,#fff);color:var(--ink,#111);border:1px solid var(--line,#ddd);border-radius:14px;padding:14px;box-shadow:0 8px 30px rgba(0,0,0,.25);text-align:center';
+  d.innerHTML = '<div style="font-weight:700;margin:0 0 10px">' + esc(t('الملفُّ جاهز')) + ' \u2014 ' + esc(file.name) + '</div>'
+    + '<button type="button" class="btn btn-primary" id="dlShareGo">\u{1F4E4} ' + esc(t('احفظ الملف أو شاركه')) + '</button> '
+    + '<button type="button" class="btn btn-quiet" id="dlShareX">' + esc(t('إغلاق')) + '</button>';
+  document.body.appendChild(d);
+  document.getElementById('dlShareGo').onclick = function(){ navigator.share({ files:[file], title:file.name }).catch(function(e){ LS_ERR = e; }).then(function(){ d.remove(); }); };
+  document.getElementById('dlShareX').onclick = function(){ d.remove(); };
+}
 function dl(blob, name){
   try{
+    if (dlIOS() && typeof File === 'function' && navigator.canShare && navigator.share){
+      var file = new File([blob], name, { type:blob.type || 'application/octet-stream' });
+      if (navigator.canShare({ files:[file] })){
+        navigator.share({ files:[file], title:name }).catch(function(e){ if (!/abort/i.test(String(e && e.name))) dlSheet(file); });
+        return true;
+      }
+    }
     var u = URL.createObjectURL(blob), a = document.createElement('a');
     a.href = u; a.download = name;
     document.body.appendChild(a); a.click();
-    setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 400);
+    setTimeout(function(){ URL.revokeObjectURL(u); a.remove(); }, 4000);   /* (V33.7) ٤٠٠ م.ث قليلةٌ لبعض المتصفّحات */
     return true;
   }catch(e){ return false; }
 }
@@ -4652,6 +4676,8 @@ function mfuPut(sec, id, entry){
 function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || MFU.ownDef[cat] || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
 /* العائقُ: نقطةٌ لم تُركَّب وفي مسحها تحدٍّ حقيقيّ، أو لم يُوصَل إليها */
 function mfuObstacles(){
+  /* (V33.7) بلاغُ المالك «صفحةُ متابعة الوزارة بطيئةٌ جدًّا»: كانت تُحسَب في الرسمة الواحدة ثلاثَ مرات (المؤشرات والشركات والقائمة) */
+  if (DB.memo && DB.memo.obst) return DB.memo.obst;
   var out = [];
   (STATE.sites || []).forEach(function(x){
     var ins = STATE.inss[x.id]; if (ins && ins.status === 'مُركّب') return;
@@ -4660,6 +4686,7 @@ function mfuObstacles(){
     if (r.access && r.access !== 'تم الوصول') cats.push('تحتاج زيارة أخرى تقنيًا');
     if (cats.length) out.push({ x:x, cats:cats });
   });
+  if (DB.memo) DB.memo.obst = out;
   return out;
 }
 /* (V29.1) قرارُ المالك: «إحنا حاليًا في المسح الميداني — صفحةٌ مخصوصةٌ للمسح في الباوربوينت: نظرةٌ عامةٌ بالأرقام والنسب،
@@ -4702,6 +4729,7 @@ function jmrConfirm(){
 function mfuInstalled(x){ var i = STATE.inss[x.id]; return !!(i && i.status === 'مُركّب'); }
 function mfuLevel(p){ return p >= 75 ? ['ممتاز', 'ok'] : p >= 40 ? ['متوسط', 'wrn'] : ['ضعيف', 'bad']; }
 function mfuCompanies(){
+  if (DB.memo && DB.memo.cos) return DB.memo.cos;   /* (V33.7) مرةً في الرسمة */
   var obsIds = {}; mfuObstacles().forEach(function(o){ obsIds[o.x.id] = 1; });
   var by = {};
   (STATE.sites || []).forEach(function(x){
@@ -4710,16 +4738,18 @@ function mfuCompanies(){
     c.n++; if (mfuInstalled(x)) c.ins++; else if (obsIds[x.id]) c.obs++;
     var r1 = STATE.recs[x.id]; if (svVisited(r1)) c.sv++; if (r1 && svDone(r1) && chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++;   /* (V32.6) */   /* (V29.1) */
   });
-  return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; c.svp = c.n ? Math.round(c.sv / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
+  var res = Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; c.svp = c.n ? Math.round(c.sv / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
+  if (DB.memo) DB.memo.cos = res; return res;
 }
 function mfuKpis(){
+  if (DB.memo && DB.memo.kpis) return DB.memo.kpis;   /* (V33.7) مرةً في الرسمة */
   var S = STATE.sites || [], tot = S.length, sv = 0, ins = 0, camp = 0, campIns = 0, cor = 0, corIns = 0;
   S.forEach(function(x){ var r = STATE.recs[x.id]; if (svVisited(r)) sv++; var i = mfuInstalled(x); if (i) ins++;   /* (V32.6) */
     if (x.type === 'مخيم'){ camp++; if (i) campIns++; } else if (x.type === 'ممر'){ cor++; if (i) corIns++; } });
   var C = mfuCompanies();
-  return { tot:tot, sv:sv, ins:ins, camp:camp, campIns:campIns, cor:cor, corIns:corIns, obs:mfuObstacles().length,
+  var res = { tot:tot, sv:sv, ins:ins, camp:camp, campIns:campIns, cor:cor, corIns:corIns, obs:mfuObstacles().length,
            ex:C.filter(function(c){ return c.pct >= 75; }).length, md:C.filter(function(c){ return c.pct >= 40 && c.pct < 75; }).length, wk:C.filter(function(c){ return c.pct < 40; }).length,
-           chal:mfuAllChal().filter(function(c){ return !mfuChalClosed(c); }).length, req:mfuList('req').filter(function(x){ return mfuReqView(x).st !== 'منجز'; }).length };
+           chal:mfuAllChal().filter(function(c){ return !mfuChalClosed(c); }).length, req:mfuList('req').filter(function(x){ return mfuReqView(x).st !== 'منجز'; }).length }; if (DB.memo) DB.memo.kpis = res; return res;
 }
 function mfuWeekKey(t){ var d = new Date(t || Date.now()); d.setUTCHours(0, 0, 0, 0); d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7)); var y = new Date(Date.UTC(d.getUTCFullYear(), 0, 1)); return d.getUTCFullYear() + '-W' + ('0' + Math.ceil(((d - y) / 864e5 + 1) / 7)).slice(-2); }
 /* لقطةُ الأسبوع: تُكتَب مرةً في الأسبوع حين يفتح المكتبُ الملخّص — ومنها المقارنة */
@@ -4780,14 +4810,14 @@ function mfuSummary(){
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  var nClean = svListRows('clean').length, nChal = svListRows('chal').length;
+  var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
   return svListPop()
     + '<div class="mfu-kpis">'
     + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', esc(t('تمت الزيارة')) + ' ' + nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('clean', 'نقاط بلا عوائق', nm(nClean), esc(t('تمت الزيارة وتم الوصول بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
     + box('chal', 'نقاط بعوائق', nm(nChal), esc(t('تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى تقنيًا')), '', '#C0392B')
     + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
-    + box('campok', 'مخيمات بلا عائق', nm(svListRows('campok').length), esc(t('تمت الزيارة وتم الوصول بلا تحديات')), '', '#27AE60')
+    + box('campok', 'مخيمات بلا عائق', nm(svListCount('campok')), esc(t('تمت الزيارة وتم الوصول بلا تحديات')), '', '#27AE60')
     + box('campins', 'تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
     + box('corins', 'تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
     + (K.ins ? box('cos', 'شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')

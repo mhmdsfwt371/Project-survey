@@ -104,3 +104,17 @@ test('بلاغُ المالك (V33.4): الزيارةُ بقرار المهند�
   assert.equal(w.svClean({ id:'x', at:1, access:'متعذر' }), false, 'ولا ما لم يُوصَل إليه');
   assert.equal(w.svClean({ id:'x', at:1, access:'تم الوصول', chals:['عائق إنشائي'] }), false, 'ولا ما فيه تحدٍّ');
 });
+test('بلاغُ المالك (V33.7): التصديرُ على الآيفون بقائمة المشاركة لا برابطٍ يُخرج من التطبيق', async () => {
+  const nav = w.navigator, saved = { ua:Object.getOwnPropertyDescriptor(nav, 'userAgent'), cs:nav.canShare, sh:nav.share };
+  Object.defineProperty(nav, 'userAgent', { value:'Mozilla/5.0 (iPhone; CPU iPhone OS 17_5 like Mac OS X)', configurable:true });
+  const got = []; nav.canShare = d => !!(d && d.files); nav.share = d => { got.push(d.files[0].name); return Promise.resolve(); };
+  const clicks = []; const oc = w.HTMLAnchorElement.prototype.click; w.HTMLAnchorElement.prototype.click = function(){ clicks.push(this.download); };
+  assert.equal(w.dl(new w.Blob(['x'], { type:'text/plain' }), 'a.docx'), true);
+  w.HTMLAnchorElement.prototype.click = oc;
+  if (saved.ua) Object.defineProperty(nav, 'userAgent', saved.ua); else delete nav.userAgent; nav.canShare = saved.cs; nav.share = saved.sh;
+  assert.deepEqual(got, ['a.docx']); assert.equal(clicks.length, 0, 'لا رابطَ تنزيل على الآيفون');
+});
+test('صفحةُ الوزارة (V33.7): المعوّقاتُ والشركاتُ والمؤشراتُ تُحسَب مرةً في الرسمة', () => {
+  let n = 0; const f = w.chalKeys; w.chalKeys = function(){ n++; return f.apply(this, arguments); };
+  w.DB.open(); try { w.mfuObstacles(); const a = n; w.mfuObstacles(); w.mfuCompanies(); w.mfuKpis(); w.mfuKpis(); assert.ok(n - a <= w.STATE.sites.length + 5, 'المكرَّرُ من الذاكرة'); } finally { w.DB.memoReset(); w.chalKeys = f; }
+});

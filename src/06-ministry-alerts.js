@@ -15,7 +15,10 @@ function alRuleList(rule){
   var d = alRuleDays(rule[1]); if (!d) return [];
   return svListSites().filter(function(x){ try { return rule[3](x, STATE.recs[x.id], d); } catch (e){ return false; } });
 }
-function alAll(){ return AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; }); }
+function alAll(){   /* (V33.7) مرةً في الرسمة — الملخّصُ التنفيذيُّ وبطاقةُ التنبيهات كانا يمرّان على القواعد كلٌّ وحدَه */
+  var mk = AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(','); if (DB.memo && DB.memo.al && DB.memo.al.k === mk) return DB.memo.al.v;
+  var v = AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; });
+  if (DB.memo) DB.memo.al = { k:mk, v:v }; return v; }
 function alCard(){
   /* (V33.0) قرارُ المالك: لا «تصريح» في عرض الوزارة — قاعدةُ التصريح المعلّق تبقى للمكتب ولا تظهر هنا */
   var A = alAll().filter(function(a){ return !(CUR === 'mfu' && a.k === 'al_permit'); }), tot = A.reduce(function(a, b){ return a + b.sites.length; }, 0);
@@ -46,6 +49,14 @@ MFU.lists = {
   wwait: { title:'متوقفة أو بانتظار قرار', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().wait.map(mfuWtRow); } }
 };
 function mfuWtRow(r){ return [String(r.n || ''), String(dispName(r.who || '')), String(r.st || ''), String(r.due || '')]; }
+/* (V33.7) العددُ بلا بناء الصفوف: بطاقاتُ الملخّص كانت تبني ثلاثَ قوائمَ كاملةٍ (تواريخُ وترجمةٌ لكلِّ نقطة) لتعدّها فقط */
+function svListCount(key){
+  if (!SV_LISTS[key]) return svListRows(key).length;
+  var LM = DB.memo ? DB.memo.lists : null, mk = '#' + key + '|' + CUR + '|' + (MFU.flt.z || '') + '|' + (MFU.flt.t || '');
+  if (LM && LM[mk] != null) return LM[mk];
+  var f = SV_LISTS[key][1], n = 0; svListSites().forEach(function(x){ if (f(x, STATE.recs[x.id])) n++; });
+  if (LM) LM[mk] = n; return n;
+}
 /* (V33.3) بطاقاتُ القاعة: قائمةُ نوعٍ بعينه بدون عوائق أو بعوائق — المفتاحُ obok|<النوع> أو obbad|<النوع> */
 function svObKey(key){ var m = /^(obok|obbad)\|(.+)$/.exec(String(key || '')); return m ? { bad:m[1] === 'obbad', ty:m[2] } : null; }
 function svListRows0(key){
@@ -518,7 +529,8 @@ function mfuDaily(){
    من الجهاز نفسِه بلا خادمٍ ولا انتظار (الإكسلُ يحمّل محرّكَه أوّلَ مرةٍ ثم يُخبَّأ).
    مصدرٌ واحدٌ للأرقام (mfuReport) فلا تختلف صيغةٌ عن صيغة، والنصُّ عربيٌّ من اليمين
    بألوان العرض: أخضرُ غامق 163E35 وذهبيٌّ C8943E وبيجٌ FAF6F3، وخطُّ Alexandria. */
-function hijriToday(){ try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' }).format(new Date()); } catch (e){ return ''; } }
+function hijriToday(){ var c = hijriToday.c, k = Math.floor(Date.now() / 60000); if (c && c.k === k) return c.v;   /* (V33.7) منسّقُ التقويم مكلف — مرةً في الدقيقة */
+  var v = ''; try { v = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' }).format(new Date()); } catch (e){ v = ''; } hijriToday.c = { k:k, v:v }; return v; }
 /* ═══ (V29.0) ملاحظةُ «تحديثات المنصة» #٥: «اختيارُ النقاط المراد تحميلُها في الملف — لا الملفُّ الشاملُ فقط» ═══
    نطاقُ التصدير: الكلّ (الافتراضيّ)، أو مشعرٌ ونوعٌ من تصنيف المالك، أو النقاطُ المحدَّدةُ على الخريطة («☑ تحديد»).
    يُبنى التقريرُ نفسُه على نقاط النطاق وحدَها (المؤشراتُ والتركيباتُ والشركاتُ والمعوقات)، ويُكتب النطاقُ في الغلاف واسمِ الملف. */
@@ -2551,6 +2563,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V33.7', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'صفحة متابعة الوزارة بقت تفتح أسرع بحوالي ٤ أضعاف: كانت بتحسب المعوقات والشركات والمؤشرات وقواعد التنبيه أكتر من مرة في نفس الفتحة، وبتبني قوائم كاملة عشان تعدّها بس.',
+      'التصدير على الآيفون (وورد وباوربوينت وإكسل وPDF) ما بقاش بيطلّعك من التطبيق: الملف بيتسلّم بقائمة المشاركة (حفظ في الملفات، البريد، واتساب) وانت فاضل في مكانك. ولو الملف اتبنى متأخر يظهر زرار «احفظ الملف أو شاركه».' ] },
   { v:'V33.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تصحيح أرقام (مراجعة بعد غلطة القطار): في «تفاصيل المسح» بطاقة «بلا تحدٍّ — تُسنَد كما هي» كانت بتعدّ نقاط اتزارت ومحتاجة زيارة تانية، يعني كانت بتقول للمكتب يسندها للتركيب وهي مش جاهزة. بقت بنفس تعريف «بدون عوائق»، والنقاط دي راحت لبطاقة «فيها تحدٍّ أو تحتاج زيارة أخرى» وسببها مكتوب جنبها.' ] },
   { v:'V33.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
