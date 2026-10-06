@@ -158,8 +158,8 @@ console.log('\n══ ٧ · فهرسُ المهامّ: سريعٌ وصادق ═
   w.STATE.tasks = {};
   for (let i = 0; i < 400; i++) w.STATE.tasks['t' + i] = { id:'t'+i, site:w.STATE.sites[i].id, kind:'visit', status:'مُسند', to:'ف' };
   w.TK_IX = null;
-  const t0 = Date.now(); for (let i = 0; i < 2000; i++) w.taskKindOf(w.STATE.sites[i % 400].id, 'visit');
-  const dt = Date.now() - t0;
+  /* (V32.4) أفضلُ ثلاثِ محاولات: الجردُ الكاملُ يشغّل خطواتٍ متوازيةً فيتنازع المعالج — كان يسقط تحت الحمل وحدَه (مراجعةُ الجودة) */
+  let dt = 1e9; for (let r = 0; r < 3; r++){ const t0 = Date.now(); for (let i = 0; i < 2000; i++) w.taskKindOf(w.STATE.sites[i % 400].id, 'visit'); dt = Math.min(dt, Date.now() - t0); }
   T(dt < 60, 'ألفا استعلامٍ في ' + dt + ' م.ث — بلا مسحٍ كامل');
   const site = w.STATE.sites[3];
   w.CORE.set('tasks', 'TK-new', { id:'TK-new', site:site.id, kind:'install', status:'مُسند', to:'ف' });

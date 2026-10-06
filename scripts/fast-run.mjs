@@ -19,6 +19,7 @@ const STEPS = [
   ['الصلاحيات', 'node scripts/audit-perms.mjs'],
   ['الترجمةُ بالرندر', 'node scripts/audit-i18n.mjs'],
   ['سلامةُ البيانات', 'node scripts/audit-data.mjs'],
+  ['ختمُ الهوية في كلِّ كتابة', 'node scripts/audit-uid.mjs'],   /* (V32.4) سقط ستَّ نسخٍ في الكامل وحدَه بعد بوابة البيانات — صار حاسمًا */
   ['الصور', 'node scripts/audit-photos.mjs'],
   ['الملاءمةُ للجوال', 'node scripts/audit-fit.mjs'],
   ['المطابقةُ أمام الوزارة', 'node scripts/audit-reconcile.mjs'],

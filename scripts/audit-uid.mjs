@@ -14,7 +14,8 @@ const s = readFileSync('index.html', 'utf8');
 
 /* كلُّ نداء كتابة: .set( / .update( / .add( بعد collection(...).doc(...) أو على ref أو في دفعة w.set(ref, ... */
 const sites = [];
-for (const m of s.matchAll(/(?:collection\([^)]*\)(?:\.doc\([^)]*\))?|\bref|\bw)\.(set|update|add)\(/g)){
+/* (V32.4) بعد بوابة البيانات (V31.5) صارت الكتابةُ DB.col(…).doc(…).set — كان النمطُ لا يرى إلا collection( فسقط إلى نداءين (مراجعةُ الجودة) */
+for (const m of s.matchAll(/(?:(?:collection|DB\.col)\([^)]*\)(?:\.doc\([^)]*\))?|DB\.doc\([^)]*\)|\bref|\bw)\.(set|update|add)\(/g)){
   const i = m.index, win = s.slice(i, i + 520);
   const line = s.slice(0, i).split('\n').length;
   sites.push({ i, line, op:m[1], win });

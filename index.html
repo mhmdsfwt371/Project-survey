@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3471,7 +3471,7 @@ var BADGE_TICK = null;
    دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
    دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
    العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
-var SYNC = { cycle:60, left:60, busy:false, pullLast:0, pullAsk:false };   /* (V32.1) وحدةُ المزامنة تملك حالتَها — كانت SYNC.cycle/SYNC.left/SYNC.busy/SYNC.pullLast/SYNC.pullAsk */
+var SYNC = { cycle:60, left:60, busy:false, pullLast:0, pullAsk:false, day:'' };   /* (V32.1) وحدةُ المزامنة تملك حالتَها — كانت SYNC.cycle/SYNC.left/SYNC.busy/SYNC.pullLast/SYNC.pullAsk */
 /* ═══ العدّادُ يعدُّ إلى السحب ═══
    كان يعدُّ ستين ثانيةً إلى «دفعة» لا تقرأ شيئًا — والسحبُ الفعليُّ كلَّ ستِّ
    ساعاتٍ للمكتب. فيبلغ الصفرَ ولا يتغيّر شيءٌ على الشاشة، ويظنُّ الناظرُ أنه
@@ -3520,6 +3520,8 @@ function syncCycle(){
     /* (V31.9) خطةُ التسليم، وحدةُ الصفحات: كانت كلُّ دورةٍ (كلَّ دقيقة) تُبطل الإحصاءَ وتعيد رسمَ الخريطة كاملةً ولو لم يُسحَب شيء —
        نحوُ ٤٠٠ م.ث معالجةً على جوالٍ متوسطٍ كلَّ دقيقة بلا فائدة، وبطاريةٌ تذهب. صار ذلك حين يأتي جديدٌ أو تُسحَب الثوابتُ وحدَهما */
     var fresh = !!n || !!FB._staticFresh; FB._staticFresh = false;
+    /* (V32.4) مراجعةُ الجودة: حالةُ النقطة تتبع اليوم («غدًا» تصير «مُسنَدة» بعد منتصف الليل) — فتغيّرُ يومِ مكة جديدٌ وإن لم يُسحَب شيء */
+    var dk0 = dayKey(Date.now()); if (SYNC.day !== dk0){ if (SYNC.day) fresh = true; SYNC.day = dk0; }
     if (!fresh) return n;
     statBump();
     if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
@@ -17043,7 +17045,7 @@ function mapInit(){
     setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(true); }catch(e){} }, 60);   /* (V30.9) تصحيحُ القياس لا يغيّر الزوم — رسمةٌ خفيفة */
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
-    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|';   /* (V31.1) */
+    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + '|' + dayKey(Date.now());   /* (V32.4) يومُ مكة في البصمة: «غدًا» تصير «اليوم» بعد منتصف الليل */   /* (V31.1) */
     if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
     MK.sig = sig;
     mapPaint();
@@ -24221,6 +24223,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'مراجعة جودة شاملة على كل مراحل الخطة: ألوان النقاط المسندة «لبكرة» بقت تتحدث لوحدها بعد نص الليل حتى لو مفيش بيانات جديدة (كانت هتفضل بلون «بكرة» لحد أي تحديث).',
+      'وجرد ختم الهوية على كل كتابة كان بيسقط في الجرد الكامل بس من بعد بوابة البيانات — اتصلح ودخل الطبقة السريعة، وجرد زمني كان بيسقط تحت الحمل بقى ثابت.' ] },
   { v:'V32.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: شاشة المستخدمين وجولة البداية والأدلة بقت ماسكة حالتها في كائنات خاصة بيها (المتغيرات العامة ٦٠٥ ← ٥٩٨).' ] },
   { v:'V32.2', d:'٦ أكتوبر ٢٠٢٦', notes:[

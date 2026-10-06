@@ -165,7 +165,7 @@ function mapInit(){
     setTimeout(function(){ try{ MAP.invalidateSize(); mapPaint(true); }catch(e){} }, 60);   /* (V30.9) تصحيحُ القياس لا يغيّر الزوم — رسمةٌ خفيفة */
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
-    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|';   /* (V31.1) */
+    var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|' + '|' + dayKey(Date.now());   /* (V32.4) يومُ مكة في البصمة: «غدًا» تصير «اليوم» بعد منتصف الليل */   /* (V31.1) */
     if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
     MK.sig = sig;
     mapPaint();
