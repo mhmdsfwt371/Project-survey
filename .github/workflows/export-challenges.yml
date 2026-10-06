@@ -111,7 +111,11 @@ jobs:
       - name: points diag (read-only) — counts, moves-as-visits, Nuwariya geometry
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/points-diag.mjs || true
+        run: echo skip-points-diag
+      - name: Nuwariya ExitAir7-9 (owner decision) + Zaidi override read
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/nuw-exits.mjs || true
       - name: account requests status (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
