@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.5</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1269,7 +1269,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-e4e795b454.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-44ec16291e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -21628,22 +21628,28 @@ function mfuMilesCard(){
     return ['<b>' + esc(x.n) + '</b>', '<span class="num">' + esc(x.d) + '</span>', x.late ? pill(t('متأخر') + ' ' + nm(-days) + ' ' + t('يوم'), 'bad') : '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>', mfuBar(x.p)]; })));
 }
 function mfuSummary(){
+  /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
+     وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
+     والملخّصُ التنفيذيُّ وما ينتظر الوزارة والتنبيهاتُ والمعالمُ والخطةُ تحت الصفحة. */
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
-  var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  return mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + wbsPlanCard() + svListPop()   /* (V29.9، و٣٠٫١ التنبيهات، و٣٠٫٢ الخطة مقابل الفعلي) */
+  var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
+  var nClean = svListRows('clean').length, nChal = svListRows('chal').length;
+  return svListPop()
     + '<div class="mfu-kpis">'
-    + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
-    + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
-    + box('تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
-    + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
-    + '<div class="mfu-kpi" data-svlist="campok" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t('مخيمات بلا عائق')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(svListRows('campok').length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('مُسحت ووُصل إليها بلا تحديات')) + '</div></div>'   /* (V30.0) بالأخضر */
-    + (K.ins ? box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
-             : box('شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))   /* (V29.9) بحسب المرحلة */
-    + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
-    + box('بانتظار قرار الوزارة', nm(mfuMinWait()), esc(t('نقطةً معتمدةً تقنيًّا')), '')
+    + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
+    + box('clean', 'نقاط بلا عوائق ولا تحديات', nm(nClean), esc(t('وُصل إليها بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
+    + box('chal', 'نقاط ذات تحديات', nm(nChal), esc(t('وُصل إليها وفيها تحدٍّ')), '', '#C0392B')
+    + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
+    + box('campok', 'مخيمات بلا عائق', nm(svListRows('campok').length), esc(t('مُسحت ووُصل إليها بلا تحديات')), '', '#27AE60')
+    + box('campins', 'تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
+    + box('corins', 'تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
+    + (K.ins ? box('cos', 'شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
+             : box('cos', 'شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))
+    + box('chalo', 'تحدياتٌ مفتوحة', nm(K.chal), esc(t('مسجّلةٌ في المتابعة')), '') + box('req', 'طلباتٌ قيد المتابعة', nm(K.req), '', '')
     + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>')
-    + mfuBlocksCard() + mfuOwnersCard() + mfuWeeksCard() + mfuTimelineCard();
+    + mfuBlocksCard() + mfuOwnersCard() + mfuWeeksCard() + mfuTimelineCard()
+    + mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + wbsPlanCard();
 }
 function mfuWeekRows(){
   return wtRows().slice().sort(function(a, b){ var o = { 'متوقف':0, 'جاري العمل':1, 'قيد الانتظار':2, 'مكتمل':3 }; return (o[a.st] - o[b.st]) || String(a.due || '9').localeCompare(String(b.due || '9')); }).map(function(r){
@@ -21677,11 +21683,19 @@ function mfuInst(){
 /* ═══ (V29.6) قرارُ المالك: «كارتٌ بالمخيمات اللي ما فيهاش تحديات، وأيُّ كارتٍ أضغطه يطلعلي قائمة أقدر أعملها تصدير — وكارتٌ
    للنقاط اللي ما فيهاش صور، بالنوع والمشعر، عشان أوجّه الشباب يزوّدوا الصور» ═══ */
 var SV_POP = '';
+function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ معوّقاتها — مرةً في الثانية بإصدار الإحصاء نفسِه (لا مرورَ على النقاط لكلِّ صف) */
+  var c = mfuObsMap.c; if (c && c.v === STAT_VER && Date.now() - c.at < 1000) return c.m;
+  var m = {}; mfuObstacles().forEach(function(e){ m[e.x.id] = e.cats; }); mfuObsMap.c = { v:STAT_VER, at:Date.now(), m:m }; return m;
+}
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
   sv:      ['تم المسح',               function(x, r){ return !!(r && svDone(r)); }],
   rem:     ['المتبقي — لم تُمسح',      function(x, r){ return !(r && svDone(r)); }],
+  clean:   ['نقاط بلا عوائق ولا تحديات', function(x, r){ return !!(r && svDone(r)) && r.access === 'تم الوصول' && !svHasChal(r); }],   /* (V32.5) كلُّ الأنواع */
+  obs:     ['نقاط عليها معوّقات',        function(x, r){ return !!mfuObsMap()[x.id]; }],
+  campins: ['المخيمات وحالةُ تركيبها',    function(x, r){ return x.type === 'مخيم'; }],
+  corins:  ['الممرات وحالةُ تركيبها',     function(x, r){ return x.type === 'ممر'; }],
   chal:    ['فيها تحديات',            function(x, r){ return !!(r && svDone(r) && svHasChal(r)); }],
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
   campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
@@ -21726,7 +21740,22 @@ function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً ف
   var res = svListRows0(key); if (LM) LM[mk] = res;
   return res.slice();
 }
+/* (V32.5) طلبُ المالك: «كلُّ كارت يفتح قائمتَه وأقدر أصدّرها» — قوائمُ ليست نقاطًا تُسجَّل هنا بعنوانها ورأسها وصفوفها */
+MFU.lists = {
+  cos:   { title:'شركات الخدمة', head:['الشركة', 'المخيمات', 'زيرت', 'نسبة الزيارة', 'مُركّب', 'معوّقات', 'فيها تحديات'],
+           rows:function(){ return mfuCompanies().map(function(c){ return [c.co, c.n, c.sv, c.svp + '٪', c.ins, c.obs, c.chal]; }); } },
+  chalo: { title:'تحدياتٌ مفتوحة', head:['التحدي', 'آلية المعالجة', 'من سيحلّه', 'الحالة'],
+           rows:function(){ return mfuAllChal().filter(function(c){ return !mfuChalClosed(c); }).map(function(c){ return [String(c.t || ''), String(c.m || ''), String(c.owner || ''), String(c.st || '')]; }); } },
+  req:   { title:'طلباتٌ قيد المتابعة', head:['الطلب', 'الحالة', 'الإفادة'],
+           rows:function(){ return mfuList('req').filter(function(x){ return mfuReqView(x).st !== 'منجز'; }).map(function(x){ var v = mfuReqView(x); return [String(x.t || ''), String(v.st || ''), String(v.u || '')]; }); } },
+  wdone: { title:'أُنجز هذا الأسبوع', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().done.map(mfuWtRow); } },
+  wnext: { title:'مستحقٌّ خلال ٧ أيام', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().next.map(mfuWtRow); } },
+  wlate: { title:'متأخرة', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().late.map(mfuWtRow); } },
+  wwait: { title:'متوقفة أو بانتظار قرار', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().wait.map(mfuWtRow); } }
+};
+function mfuWtRow(r){ return [String(r.n || ''), String(dispName(r.who || '')), String(r.st || ''), String(r.due || '')]; }
 function svListRows0(key){
+  if (MFU.lists[key]) return MFU.lists[key].rows();
   var L = SV_LISTS[key];
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
@@ -21735,13 +21764,15 @@ function svListRows0(key){
     var r = STATE.recs[x.id], c = taxOf(x);
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
+            (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
+            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return t(k); }).join('، ') :
             key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
   });
 }
-function svListHead(key){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : 'التحديات']; }
-function svListTitle(key){ if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
+function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
+function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
-  if (!SV_POP || !(SV_LISTS[SV_POP] || /^al_/.test(SV_POP))) return '';
+  if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
@@ -21754,7 +21785,7 @@ function svListPop(){
     + '</div>';
 }
 function svListXlsx(key){
-  var L = SV_LISTS[key] || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
+  var L = SV_LISTS[key] || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
@@ -21954,10 +21985,10 @@ function mfuBlocksCard(){
   var col = function(title, color, items){ return '<div class="mfu-blk"><div class="mfu-blk-h" style="background:' + color + '">' + esc(t(title)) + ' \u00b7 ' + nm(items.length) + '</div><ul>' + (items.length ? items.join('') : '<li class="hint">\u2014</li>') + '</ul></div>'; };
   var dl = B.done.length - B.doneLast;
   return '<div class="mfu-kpis">'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('أُنجز هذا الأسبوع')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(B.done.length) + '</div><div style="font-size:12px;font-weight:700;color:' + (dl >= 0 ? '#27AE60' : '#C0392B') + '">' + (dl > 0 ? '\u25B2 +' : dl < 0 ? '\u25BC ' : '') + nm(dl) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('مستحقٌّ خلال ٧ أيام')) + '</div><div class="mfu-kpi-v">' + nm(B.next.length) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متأخرة')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(B.late.length) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متوقفة أو بانتظار قرار')) + '</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(B.wait.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wdone" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('أُنجز هذا الأسبوع')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(B.done.length) + '</div><div style="font-size:12px;font-weight:700;color:' + (dl >= 0 ? '#27AE60' : '#C0392B') + '">' + (dl > 0 ? '\u25B2 +' : dl < 0 ? '\u25BC ' : '') + nm(dl) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wnext" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('مستحقٌّ خلال ٧ أيام')) + ' \u203A</div><div class="mfu-kpi-v">' + nm(B.next.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wlate" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('متأخرة')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(B.late.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wwait" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('متوقفة أو بانتظار قرار')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(B.wait.length) + '</div></div>'
     + (B.meet ? '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('آخر اجتماع')) + '</div><div class="mfu-kpi-v" style="font-size:18px">' + esc(fmtDate(B.meet.at)) + '</div><div class="hint" style="margin:2px 0 0">' + esc(dispName(B.meet.by)) + ' \u00b7 ' + nm(B.meet.n) + ' ' + esc(t('تغييرًا منذه')) + '</div></div>' : '')
     + '</div><div class="mfu-blks">'
     + col('أبرز الأعمال المنجزة', '#27AE60', B.done.slice(0, 8).map(function(r){ return li(r.n, (r.who ? r.who + ' \u00b7 ' : '') + fmtDate(mfuDoneAt(r))); }))
@@ -24223,6 +24254,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'ملخص متابعة الوزارة اتعاد ترتيبه بطلب المالك: البطاقات أولا من «نسبة المسح»، وكل بطاقة بتتضغط فتفتح قائمتها بتفاصيلها وتصدير إكسل (النقاط، والمخيمات والممرات وحالة تركيبها، والمعوقات، والشركات، والتحديات المفتوحة، والطلبات، ومهام الأسبوع).',
+      'بطاقتين جداد لكل الأنواع: «نقاط بلا عوائق ولا تحديات» و«نقاط ذات تحديات». وبطاقة «بانتظار قرار الوزارة» اتشالت. والملخص التنفيذي وما ينتظر الوزارة والتنبيهات والمعالم والخطة نزلوا تحت الصفحة.' ] },
   { v:'V32.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'مراجعة جودة شاملة على كل مراحل الخطة: ألوان النقاط المسندة «لبكرة» بقت تتحدث لوحدها بعد نص الليل حتى لو مفيش بيانات جديدة (كانت هتفضل بلون «بكرة» لحد أي تحديث).',
       'وجرد ختم الهوية على كل كتابة كان بيسقط في الجرد الكامل بس من بعد بوابة البيانات — اتصلح ودخل الطبقة السريعة، وجرد زمني كان بيسقط تحت الحمل بقى ثابت.' ] },

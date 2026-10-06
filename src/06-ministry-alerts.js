@@ -31,7 +31,22 @@ function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً ف
   var res = svListRows0(key); if (LM) LM[mk] = res;
   return res.slice();
 }
+/* (V32.5) طلبُ المالك: «كلُّ كارت يفتح قائمتَه وأقدر أصدّرها» — قوائمُ ليست نقاطًا تُسجَّل هنا بعنوانها ورأسها وصفوفها */
+MFU.lists = {
+  cos:   { title:'شركات الخدمة', head:['الشركة', 'المخيمات', 'زيرت', 'نسبة الزيارة', 'مُركّب', 'معوّقات', 'فيها تحديات'],
+           rows:function(){ return mfuCompanies().map(function(c){ return [c.co, c.n, c.sv, c.svp + '٪', c.ins, c.obs, c.chal]; }); } },
+  chalo: { title:'تحدياتٌ مفتوحة', head:['التحدي', 'آلية المعالجة', 'من سيحلّه', 'الحالة'],
+           rows:function(){ return mfuAllChal().filter(function(c){ return !mfuChalClosed(c); }).map(function(c){ return [String(c.t || ''), String(c.m || ''), String(c.owner || ''), String(c.st || '')]; }); } },
+  req:   { title:'طلباتٌ قيد المتابعة', head:['الطلب', 'الحالة', 'الإفادة'],
+           rows:function(){ return mfuList('req').filter(function(x){ return mfuReqView(x).st !== 'منجز'; }).map(function(x){ var v = mfuReqView(x); return [String(x.t || ''), String(v.st || ''), String(v.u || '')]; }); } },
+  wdone: { title:'أُنجز هذا الأسبوع', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().done.map(mfuWtRow); } },
+  wnext: { title:'مستحقٌّ خلال ٧ أيام', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().next.map(mfuWtRow); } },
+  wlate: { title:'متأخرة', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().late.map(mfuWtRow); } },
+  wwait: { title:'متوقفة أو بانتظار قرار', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().wait.map(mfuWtRow); } }
+};
+function mfuWtRow(r){ return [String(r.n || ''), String(dispName(r.who || '')), String(r.st || ''), String(r.due || '')]; }
 function svListRows0(key){
+  if (MFU.lists[key]) return MFU.lists[key].rows();
   var L = SV_LISTS[key];
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
@@ -40,13 +55,15 @@ function svListRows0(key){
     var r = STATE.recs[x.id], c = taxOf(x);
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
+            (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
+            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return t(k); }).join('، ') :
             key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
   });
 }
-function svListHead(key){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : 'التحديات']; }
-function svListTitle(key){ if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
+function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
+function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
-  if (!SV_POP || !(SV_LISTS[SV_POP] || /^al_/.test(SV_POP))) return '';
+  if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
@@ -59,7 +76,7 @@ function svListPop(){
     + '</div>';
 }
 function svListXlsx(key){
-  var L = SV_LISTS[key] || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
+  var L = SV_LISTS[key] || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
@@ -259,10 +276,10 @@ function mfuBlocksCard(){
   var col = function(title, color, items){ return '<div class="mfu-blk"><div class="mfu-blk-h" style="background:' + color + '">' + esc(t(title)) + ' \u00b7 ' + nm(items.length) + '</div><ul>' + (items.length ? items.join('') : '<li class="hint">\u2014</li>') + '</ul></div>'; };
   var dl = B.done.length - B.doneLast;
   return '<div class="mfu-kpis">'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('أُنجز هذا الأسبوع')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(B.done.length) + '</div><div style="font-size:12px;font-weight:700;color:' + (dl >= 0 ? '#27AE60' : '#C0392B') + '">' + (dl > 0 ? '\u25B2 +' : dl < 0 ? '\u25BC ' : '') + nm(dl) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('مستحقٌّ خلال ٧ أيام')) + '</div><div class="mfu-kpi-v">' + nm(B.next.length) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متأخرة')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(B.late.length) + '</div></div>'
-    + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('متوقفة أو بانتظار قرار')) + '</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(B.wait.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wdone" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('أُنجز هذا الأسبوع')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(B.done.length) + '</div><div style="font-size:12px;font-weight:700;color:' + (dl >= 0 ? '#27AE60' : '#C0392B') + '">' + (dl > 0 ? '\u25B2 +' : dl < 0 ? '\u25BC ' : '') + nm(dl) + ' ' + esc(t('عن الأسبوع الماضي')) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wnext" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('مستحقٌّ خلال ٧ أيام')) + ' \u203A</div><div class="mfu-kpi-v">' + nm(B.next.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wlate" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('متأخرة')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(B.late.length) + '</div></div>'
+    + '<div class="mfu-kpi" data-svlist="wwait" role="button" tabindex="0" style="cursor:pointer"><div class="mfu-kpi-l">' + esc(t('متوقفة أو بانتظار قرار')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#E2B33C">' + nm(B.wait.length) + '</div></div>'
     + (B.meet ? '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('آخر اجتماع')) + '</div><div class="mfu-kpi-v" style="font-size:18px">' + esc(fmtDate(B.meet.at)) + '</div><div class="hint" style="margin:2px 0 0">' + esc(dispName(B.meet.by)) + ' \u00b7 ' + nm(B.meet.n) + ' ' + esc(t('تغييرًا منذه')) + '</div></div>' : '')
     + '</div><div class="mfu-blks">'
     + col('أبرز الأعمال المنجزة', '#27AE60', B.done.slice(0, 8).map(function(r){ return li(r.n, (r.who ? r.who + ' \u00b7 ' : '') + fmtDate(mfuDoneAt(r))); }))
@@ -2528,6 +2545,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'ملخص متابعة الوزارة اتعاد ترتيبه بطلب المالك: البطاقات أولا من «نسبة المسح»، وكل بطاقة بتتضغط فتفتح قائمتها بتفاصيلها وتصدير إكسل (النقاط، والمخيمات والممرات وحالة تركيبها، والمعوقات، والشركات، والتحديات المفتوحة، والطلبات، ومهام الأسبوع).',
+      'بطاقتين جداد لكل الأنواع: «نقاط بلا عوائق ولا تحديات» و«نقاط ذات تحديات». وبطاقة «بانتظار قرار الوزارة» اتشالت. والملخص التنفيذي وما ينتظر الوزارة والتنبيهات والمعالم والخطة نزلوا تحت الصفحة.' ] },
   { v:'V32.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'مراجعة جودة شاملة على كل مراحل الخطة: ألوان النقاط المسندة «لبكرة» بقت تتحدث لوحدها بعد نص الليل حتى لو مفيش بيانات جديدة (كانت هتفضل بلون «بكرة» لحد أي تحديث).',
       'وجرد ختم الهوية على كل كتابة كان بيسقط في الجرد الكامل بس من بعد بوابة البيانات — اتصلح ودخل الطبقة السريعة، وجرد زمني كان بيسقط تحت الحمل بقى ثابت.' ] },

@@ -240,7 +240,9 @@ const ol = w.mfuOwnersLoad();
 T(ol.length > 0 && ol.every(o => o.n && o.all >= 0) && ol[0].late >= (ol[ol.length - 1].late), 'حملُ المسؤولين: تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ اسم — المتأخرُ أوّلًا');
 w.MFU.v.snap = { '2026-W37':{ sv:100, campIns:10, corIns:2, obs:50 }, '2026-W38':{ sv:180, campIns:30, corIns:5, obs:40 } };
 const sm9 = await open('mfu');
-T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.test(sm9.textContent) && /الحملُ على المسؤولين/.test(sm9.textContent) && /بانتظار قرار الوزارة/.test(sm9.textContent), 'والملخّصُ: مسارُ الأسابيع بفروقه، والحمل، وما ينتظر قرارَ الوزارة');
+T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.test(sm9.textContent) && /الحملُ على المسؤولين/.test(sm9.textContent) && /ما ينتظر الوزارة/.test(sm9.textContent) && !/بانتظار قرار الوزارة/.test(sm9.textContent)
+  && sm9.textContent.indexOf('نسبة المسح') > -1 && sm9.textContent.indexOf('نسبة المسح') < sm9.textContent.indexOf('الملخّص التنفيذي')
+  && sm9.querySelectorAll('.mfu-kpi[data-svlist]').length >= 13, 'والملخّصُ (V32.5): البطاقاتُ أولًا من «نسبة المسح» وكلُّها تُضغَط، وبطاقةُ «بانتظار قرار الوزارة» شيلت، والبياناتُ تحت');
 const R9 = w.mfuReport();
 T(R9.weeks.length === 2 && R9.owners.length > 0 && R9.kpis.some(k => k[0] === 'بانتظار قرار الوزارة'), 'والتقريرُ يحملها');
 

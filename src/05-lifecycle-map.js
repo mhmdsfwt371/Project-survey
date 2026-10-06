@@ -4748,22 +4748,28 @@ function mfuMilesCard(){
     return ['<b>' + esc(x.n) + '</b>', '<span class="num">' + esc(x.d) + '</span>', x.late ? pill(t('متأخر') + ' ' + nm(-days) + ' ' + t('يوم'), 'bad') : '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>', mfuBar(x.p)]; })));
 }
 function mfuSummary(){
+  /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
+     وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
+     والملخّصُ التنفيذيُّ وما ينتظر الوزارة والتنبيهاتُ والمعالمُ والخطةُ تحت الصفحة. */
   var K = mfuKpis(), P = mfuPrev(); mfuSnapMaybe(K);
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
-  var box = function(lbl, val, sub, dl){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(lbl)) + '</div><div class="mfu-kpi-v">' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
-  return mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + wbsPlanCard() + svListPop()   /* (V29.9، و٣٠٫١ التنبيهات، و٣٠٫٢ الخطة مقابل الفعلي) */
+  var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
+  var nClean = svListRows('clean').length, nChal = svListRows('chal').length;
+  return svListPop()
     + '<div class="mfu-kpis">'
-    + box('نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
-    + box('تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
-    + box('تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
-    + box('المعوقات القائمة', nm(K.obs), '', mfuDelta(K.obs, P, 'obs', true))
-    + '<div class="mfu-kpi" data-svlist="campok" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t('مخيمات بلا عائق')) + ' \u203A</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(svListRows('campok').length) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('مُسحت ووُصل إليها بلا تحديات')) + '</div></div>'   /* (V30.0) بالأخضر */
-    + (K.ins ? box('شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
-             : box('شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))   /* (V29.9) بحسب المرحلة */
-    + box('تحدياتٌ مفتوحة', nm(K.chal), '', '') + box('طلباتٌ قيد المتابعة', nm(K.req), '', '')
-    + box('بانتظار قرار الوزارة', nm(mfuMinWait()), esc(t('نقطةً معتمدةً تقنيًّا')), '')
+    + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
+    + box('clean', 'نقاط بلا عوائق ولا تحديات', nm(nClean), esc(t('وُصل إليها بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
+    + box('chal', 'نقاط ذات تحديات', nm(nChal), esc(t('وُصل إليها وفيها تحدٍّ')), '', '#C0392B')
+    + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
+    + box('campok', 'مخيمات بلا عائق', nm(svListRows('campok').length), esc(t('مُسحت ووُصل إليها بلا تحديات')), '', '#27AE60')
+    + box('campins', 'تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
+    + box('corins', 'تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
+    + (K.ins ? box('cos', 'شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
+             : box('cos', 'شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))
+    + box('chalo', 'تحدياتٌ مفتوحة', nm(K.chal), esc(t('مسجّلةٌ في المتابعة')), '') + box('req', 'طلباتٌ قيد المتابعة', nm(K.req), '', '')
     + '</div>' + (P ? '' : '<p class="hint">' + esc(t('المقارنةُ بالأسبوع الماضي تبدأ من الأسبوع القادم — تُحفَظ لقطةُ هذا الأسبوع الآن.')) + '</p>')
-    + mfuBlocksCard() + mfuOwnersCard() + mfuWeeksCard() + mfuTimelineCard();
+    + mfuBlocksCard() + mfuOwnersCard() + mfuWeeksCard() + mfuTimelineCard()
+    + mfuBriefCard() + mfuMinistryCard() + alCard() + mfuMilesCard() + wbsPlanCard();
 }
 function mfuWeekRows(){
   return wtRows().slice().sort(function(a, b){ var o = { 'متوقف':0, 'جاري العمل':1, 'قيد الانتظار':2, 'مكتمل':3 }; return (o[a.st] - o[b.st]) || String(a.due || '9').localeCompare(String(b.due || '9')); }).map(function(r){
@@ -4797,11 +4803,19 @@ function mfuInst(){
 /* ═══ (V29.6) قرارُ المالك: «كارتٌ بالمخيمات اللي ما فيهاش تحديات، وأيُّ كارتٍ أضغطه يطلعلي قائمة أقدر أعملها تصدير — وكارتٌ
    للنقاط اللي ما فيهاش صور، بالنوع والمشعر، عشان أوجّه الشباب يزوّدوا الصور» ═══ */
 var SV_POP = '';
+function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ معوّقاتها — مرةً في الثانية بإصدار الإحصاء نفسِه (لا مرورَ على النقاط لكلِّ صف) */
+  var c = mfuObsMap.c; if (c && c.v === STAT_VER && Date.now() - c.at < 1000) return c.m;
+  var m = {}; mfuObstacles().forEach(function(e){ m[e.x.id] = e.cats; }); mfuObsMap.c = { v:STAT_VER, at:Date.now(), m:m }; return m;
+}
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
   sv:      ['تم المسح',               function(x, r){ return !!(r && svDone(r)); }],
   rem:     ['المتبقي — لم تُمسح',      function(x, r){ return !(r && svDone(r)); }],
+  clean:   ['نقاط بلا عوائق ولا تحديات', function(x, r){ return !!(r && svDone(r)) && r.access === 'تم الوصول' && !svHasChal(r); }],   /* (V32.5) كلُّ الأنواع */
+  obs:     ['نقاط عليها معوّقات',        function(x, r){ return !!mfuObsMap()[x.id]; }],
+  campins: ['المخيمات وحالةُ تركيبها',    function(x, r){ return x.type === 'مخيم'; }],
+  corins:  ['الممرات وحالةُ تركيبها',     function(x, r){ return x.type === 'ممر'; }],
   chal:    ['فيها تحديات',            function(x, r){ return !!(r && svDone(r) && svHasChal(r)); }],
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
   campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
