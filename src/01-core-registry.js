@@ -2271,9 +2271,15 @@ function syncCycle(){
     /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
        فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
     var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
+    FB._staticFresh = !!(due && ask);   /* (V31.9) سحبُ الثوابت يغيّر العرضَ وإن لم يأتِ سجلٌّ جديد */
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
-    statBump(); syncBadge();
+    syncBadge();
+    /* (V31.9) خطةُ التسليم، وحدةُ الصفحات: كانت كلُّ دورةٍ (كلَّ دقيقة) تُبطل الإحصاءَ وتعيد رسمَ الخريطة كاملةً ولو لم يُسحَب شيء —
+       نحوُ ٤٠٠ م.ث معالجةً على جوالٍ متوسطٍ كلَّ دقيقة بلا فائدة، وبطاريةٌ تذهب. صار ذلك حين يأتي جديدٌ أو تُسحَب الثوابتُ وحدَهما */
+    var fresh = !!n || !!FB._staticFresh; FB._staticFresh = false;
+    if (!fresh) return n;
+    statBump();
     if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
     /* سحبةٌ جلبت جديدًا تُعيد رسمَ شاشات المتابعة — لا النماذجَ ولا الخريطة،
        فمن يكتب لا يُقذَف مما يكتب */

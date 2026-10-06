@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3510,9 +3510,15 @@ function syncCycle(){
     /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
        فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
     var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
+    FB._staticFresh = !!(due && ask);   /* (V31.9) سحبُ الثوابت يغيّر العرضَ وإن لم يأتِ سجلٌّ جديد */
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
-    statBump(); syncBadge();
+    syncBadge();
+    /* (V31.9) خطةُ التسليم، وحدةُ الصفحات: كانت كلُّ دورةٍ (كلَّ دقيقة) تُبطل الإحصاءَ وتعيد رسمَ الخريطة كاملةً ولو لم يُسحَب شيء —
+       نحوُ ٤٠٠ م.ث معالجةً على جوالٍ متوسطٍ كلَّ دقيقة بلا فائدة، وبطاريةٌ تذهب. صار ذلك حين يأتي جديدٌ أو تُسحَب الثوابتُ وحدَهما */
+    var fresh = !!n || !!FB._staticFresh; FB._staticFresh = false;
+    if (!fresh) return n;
+    statBump();
     if (CUR === 'map' && typeof mapPaint === 'function') mapPaint();
     /* سحبةٌ جلبت جديدًا تُعيد رسمَ شاشات المتابعة — لا النماذجَ ولا الخريطة،
        فمن يكتب لا يُقذَف مما يكتب */
@@ -24201,6 +24207,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'بطارية أقل وجوال أهدى على الخريطة: كل دقيقة كان التطبيق بيعيد رسم الخريطة كاملة ويعيد حساب كل الأرقام حتى لو مفيش أي جديد اتسحب (حوالي نص ثانية معالجة كل دقيقة على الجوال). بقى يعمل كده بس لما يوصل جديد أو تتسحب الثوابت.' ] },
   { v:'V31.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'الخريطة أسرع في أول فتح على الجوال: أول ٤٠٠ نقطة بتظهر فورا والباقي بيكمل في اللحظات اللي بعدها، بدل ما الشاشة تتجمد لحد ما ١٨٠٠ نقطة تترسم مرة واحدة (أول رسمة نزلت من ١٫٣ ثانية لـ٠٫٧ على جوال متوسط).',
       'ومراجعة الجودة لقت ثغرة في تحسين ٣١٫٦ واتسدّت: ذاكرة الحساب بقت تعيش جوه رسم الصفحة بس.',
