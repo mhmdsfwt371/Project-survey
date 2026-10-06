@@ -99,7 +99,7 @@ check(ghost.length === 0, 'كلُّ زرِّ تصديرٍ يشير إلى ورق
   + (ghost.length ? ' — الشبح: ' + ghost.join(' · ') : ''));
 
 /* الورقةُ تُطلَب إمّا بزرٍّ أو من لوح الاختيار */
-const picker = new Set((w.EXP_SECS || []).map(x => x[0]));
+const picker = new Set((w.EXP.secs || []).map(x => x[0]));
 check(picker.size > 10, `لوحُ اختيار الأوراق مبنيّ (${picker.size} قسمًا)`);
 const orphan = keys.filter(k => btnKeys.indexOf(k) < 0 && !picker.has(k));
 check(orphan.length === 0, 'كلُّ ورقةٍ يصلها منفذ'

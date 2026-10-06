@@ -69,17 +69,17 @@ console.log('\n══ ١ · المعوقات: الإجماليُّ وجهاتُ�
   T(partySum === O.length, 'ومجموعُ بطاقات الجهات = الإجمالي لا أكثر (' + partySum + ' / ' + O.length + ') — النقطةُ ذاتُ عائقين من جهتين تُعَدّ مرة (' + truth.twoChal + ' نقطةً بعائقين)'); }
 
 /* (V26.6) ورقةُ نقاط التحديات: صفٌّ لكلِّ نقطةٍ وتحدٍّ — وبالفلتر تنقص */
-{ w.MFU_FLT.z = ''; w.MFU_FLT.t = ''; const full = w.SHEETS.chalpts();
+{ w.MFU.flt.z = ''; w.MFU.flt.t = ''; const full = w.SHEETS.chalpts();
   T(full.length - 1 === truth.catInst && full[0].length === 19, 'ورقةُ نقاط التحديات: صفٌّ لكلِّ نقطةٍ وتحدٍّ (' + (full.length - 1) + ' / ' + truth.catInst + ') بتسعةَ عشرَ عمودًا');
-  w.MFU_FLT.z = 'منى'; const mina = w.SHEETS.chalpts(); w.MFU_FLT.z = '';
+  w.MFU.flt.z = 'منى'; const mina = w.SHEETS.chalpts(); w.MFU.flt.z = '';
   const minaTruth = w.mfuObstacles().filter(o => w.taxOf(o.x).g === 'منى').reduce((s2, o) => s2 + o.cats.length, 0);
   T(mina.length - 1 === minaTruth && mina.slice(1).every(r => r[0] === 'منى'), 'وبفلتر «منى» تخرج نقاطُ منى وحدَها (' + (mina.length - 1) + ')');
   const F = w.mfuData().fch || {}; const c0 = full[1] && full[1][5];
   if (c0){ w.mfuPut('fch', c0, Object.assign({}, F[c0] || {}, { desc:'وصفٌ تجريبي', due:'2026-12-01' })); const A = w.mfuAllChal().find(c => c.src === 'field' && c.t === c0); T(!!A && A.desc === 'وصفٌ تجريبي' && A.due === '2026-12-01', 'ووصفُ المعالجة وآخرُ تاريخٍ يُحفَظان مع التحدي ويعودان في السجل'); } }
 
 /* (V27.3) التحديثُ الأسبوعيُّ يتبع فلتر الصفحة */
-{ w.MFU_FLT.z = ''; w.MFU_FLT.t = ''; const R0 = w.mfuReport(); const obsAll = +R0.kpis[3][1];
-  w.MFU_FLT.z = 'منى'; const R1 = w.mfuReport(); const obsMina = w.mfuObstaclesF().length, fn1 = w.mfuFileName('xlsx'); w.MFU_FLT.z = '';
+{ w.MFU.flt.z = ''; w.MFU.flt.t = ''; const R0 = w.mfuReport(); const obsAll = +R0.kpis[3][1];
+  w.MFU.flt.z = 'منى'; const R1 = w.mfuReport(); const obsMina = w.mfuObstaclesF().length, fn1 = w.mfuFileName('xlsx'); w.MFU.flt.z = '';
   T(obsAll === truth.obst && +R1.kpis[3][1] === obsMina && obsMina < obsAll && /بفلتر/.test(R1.greg) && R1.flt === 'منى' && /منى/.test(fn1), 'التحديثُ الأسبوعيُّ: بلا فلترٍ كلُّ المعوقات (' + obsAll + ')، وبفلتر «منى» معوقاتُها وحدَها (' + obsMina + ') والفلترُ في التاريخ واسم الملف'); }
 
 console.log('\n══ ٢ · المسح: تمّ ومعتمدٌ ويحتاج زيارة ══');

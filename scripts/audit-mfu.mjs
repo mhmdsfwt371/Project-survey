@@ -98,7 +98,7 @@ console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مص�
 await open('mcos');
 T(['docx', 'xlsx', 'pdf'].every(f => !!d.querySelector('[data-mfuexp="' + f + '"]')), 'شريطُ التصدير على العنوان: Word وExcel وPDF');
 const R = w.mfuReport();
-T(w.MFU_SECTIONS.length === 17 && R.brief.length >= 3 && w.MFU_SECTIONS.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 8 && R.svz.length > 0 && R.svd.length > 0 && w.mfuReportCheck(R).length === 0 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض والمسح الميداني (حسب المشعر، والمشعر والنوع) وكتلِ المسار وآخرِ التحديثات والحملِ والأسابيع (١٥) ويجتاز فحصَ الملف، والتاريخُ الهجريُّ والميلادي');
+T(w.MFU.sections.length === 17 && R.brief.length >= 3 && w.MFU.sections.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 8 && R.svz.length > 0 && R.svd.length > 0 && w.mfuReportCheck(R).length === 0 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض والمسح الميداني (حسب المشعر، والمشعر والنوع) وكتلِ المسار وآخرِ التحديثات والحملِ والأسابيع (١٥) ويجتاز فحصَ الملف، والتاريخُ الهجريُّ والميلادي');
 let got = null; w.Blob = function(parts, o){ this.parts = parts; this.o = o; }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.mfuDocx();
 const bytes = got && got.b.parts[0];
@@ -107,7 +107,7 @@ T(!!bytes && bytes[0] === 0x50 && bytes[1] === 0x4B && /word\/document\.xml/.tes
 const docXml = w.mfuDocxXml(R);
 const parsed = new w.DOMParser().parseFromString(docXml, 'application/xml');
 T(!parsed.getElementsByTagName('parsererror').length && /w:orient="landscape"/.test(docXml) && /<w:bidi\/>/.test(docXml) && /w:fill="163E35"/.test(docXml) && /C8943E/.test(docXml), 'ونصُّه سليمُ البناء، عرضيٌّ من اليمين بألوان العرض');
-T(w.MFU_SECTIONS.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
+T(w.MFU.sections.every(sc => docXml.includes(sc[1].replace(/&/g, '&amp;'))), 'ويحمل العناوينَ التسعةَ كلَّها');
 const ph = w.mfuPrintHtml(R);
 T(/@page\{size:A4 landscape/.test(ph) && (ph.match(/<div class="pg">/g) || []).length === 17 && /class="pg cover"/.test(ph) && /class="pg end"/.test(ph) && /"Abar Mid"/.test(ph) && !/Alexandria/.test(ph) && /data:image\/png;base64,/.test(ph) && /haj\.gov\.sa/.test(ph), 'PDF بالقالب الموحَّد: غلافٌ بشعار الوزارة وسبعةَ عشرَ قسمًا وختامٌ، بخطِّ «Abar Mid» وتذييل haj.gov.sa (V28.8)');
 let printed = 0; w.open = () => ({ document:{ open(){}, write(){}, close(){} }, focus(){}, print(){ printed++; } });
@@ -122,7 +122,7 @@ console.log('\n══ ٧ · باوربوينت من القالب الموحَّ�
 const tplBuf = readFileSync('templates/ministry-unified.pptx');
 T(!!d.querySelector('[data-mfuexp="pptx"]'), 'زرُّ PowerPoint في شريط التصدير');
 w.fetch = async () => ({ ok:true, arrayBuffer: async () => tplBuf.buffer.slice(tplBuf.byteOffset, tplBuf.byteOffset + tplBuf.byteLength) });
-w.PPTX_TPL = null; got = null;
+w.EXP.pptxTpl = null; got = null;
 w.STATE.mfu = w.MFU.v = Object.assign(w.MFU.v || {}, { chal:{ C9:{ t:'تأخّر الشحنات', m:'إعادة الجدولة', o:'المشتريات', st:'مفتوح', at:Date.now() } }, req:{ Q9:{ t:'إضاءةٌ إرشادية', u:'رُكّبت على ١٠٠ مخيم', st:'قيد التنفيذ', at:Date.now() } } });
 const t0 = Date.now(); await w.mfuPptx(); const ms = Date.now() - t0;
 const out = got && got.b.parts[0];

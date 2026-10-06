@@ -50,7 +50,7 @@ function chalPopHtml(){
       + '<div class="actions" style="margin:0">' + btn('\u25C8 ' + t('على الخريطة'), 'btn-secondary btn-sm', ' data-fly="' + esc(x.id) + '"') + btn(t('التفاصيل'), 'btn-quiet btn-sm', ' data-site="' + esc(x.id) + '"') + '</div></div>'; }).join('');
   return '<div class="wt-back" data-chalpopx="0"></div>'
     + '<div class="pop wt-sheet" id="chalPop" role="dialog" aria-label="' + esc(t('نقاط التحدي')) + '">'
-    + '<div class="pop-head"><div style="min-width:0"><h3 style="margin:0">' + esc(cat === '*' ? t('كل النقاط') : t(cat)) + '</h3><div class="hint" style="margin:2px 0 0">' + nm(O.length) + ' ' + esc(t('نقطة')) + ((MFU_FLT.z || MFU_FLT.t) ? ' \u00b7 ' + esc(t('بالفلتر')) : '') + '</div></div>'
+    + '<div class="pop-head"><div style="min-width:0"><h3 style="margin:0">' + esc(cat === '*' ? t('كل النقاط') : t(cat)) + '</h3><div class="hint" style="margin:2px 0 0">' + nm(O.length) + ' ' + esc(t('نقطة')) + ((MFU.flt.z || MFU.flt.t) ? ' \u00b7 ' + esc(t('بالفلتر')) : '') + '</div></div>'
     + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-chalpopx="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">' + (rows || '<p class="hint">' + esc(t('لا نقاط.')) + '</p>') + '</div></div>';
 }
@@ -2804,7 +2804,7 @@ var REPORTS = [
     when:'الأوّل من الشهر', how:'PDF صفحةٌ واحدة' }
 ];
 
-var REP_SIDE = 'co';
+EXP.repSide = 'co';
 /* شرائحُ مركز التقارير: الشركةُ والوزارةُ والدوريات — الثالثةُ كانت صفحةً
    مستقلةً «التقارير الدورية» في مجموعة الفرق تضبط متى يُرسَل ما يُعرَض هنا. */
 function repChips(){
@@ -2813,7 +2813,7 @@ function repChips(){
   return [['co','\u{1F3E2} ' + t('تقارير الشركة'), co],
           ['cl','\u{1F54B} ' + t('تقارير الوزارة'), cl],
           ['sched','\u23F0 ' + t('الدوريات'), PERIODS.length]].map(function(c){
-    return '<button type="button" class="chip' + (REP_SIDE===c[0]?' on':'') + '" data-repside="' + c[0] + '">'
+    return '<button type="button" class="chip' + (EXP.repSide===c[0]?' on':'') + '" data-repside="' + c[0] + '">'
       + esc(c[1]) + ' <span class="num">' + nm(c[2]) + '</span></button>';
   }).join('');
 }
@@ -4545,7 +4545,7 @@ function renderKey(){
        + '|' + Object.keys(STATE.recs).length + '|' + Object.keys(STATE.inss).length
        + '|' + (ASN_OPEN?1:0) + '|' + SEL_N + '|' + STAGE_TAB + '|' + CTEAM_CUR + '|' + ASN_TO
        + '|' + (BASE?BASE.ver:0) + '|' + CHANGES.length + '|' + NCRS.length
-       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + REP_SIDE + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + (ASSIST_OPEN?1:0) + '|' + (QUEUE_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
+       + '|' + IPCS.length + '|' + HSE.incidents.length + '|' + EXP.repSide + '|' + SOP_CUR + '|' + ASN_MODE + '|' + ASN_TEAM + '|' + (ASN_PICK?1:0) + '|' + (HELP_OPEN?1:0) + '|' + (ASSIST_OPEN?1:0) + '|' + (QUEUE_OPEN?1:0) + '|' + PHOTO_Q.length + '|' + (DRV.ready?1:0) + '|' + (SEL_MODE?1:0) + '|' + (MAP_SELECT?1:0)
        + '|' + (MY_ONLY?1:0) + '|' + Object.keys(STATE.tasks).length
        + '|' + (POP_OPEN?1:0) + '|' + (EXP_OPEN?1:0) + '|' + (CO_OPEN?1:0)
        + '|' + CO_SEL.length + '|' + FIELD_MODE + '|' + NAV_Q + '|' + CREW_VIEW

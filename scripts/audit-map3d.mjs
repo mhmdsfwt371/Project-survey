@@ -32,7 +32,7 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
  T(!w.NAV.some(g=>(g.items||[]).some(it=>it[0]==='twin'||it[0]==='map3d')), 'القائمةُ بلا بنديهما');
  T(!Object.keys(w.ROLES).some(r=>Array.isArray(w.ROLES[r].nav)&&w.ROLES[r].nav.some(x=>x==='twin'||x==='map3d')), 'ولا دورَ يحملهما');
  T(typeof w.twinHealth==='undefined' && typeof w.twinStats==='undefined', 'دوالُّ التوأم أُزيلت');
- T(typeof w.SHEETS.twin==='undefined' && !w.EXP_SECS.some(x=>x[0]==='twin'), 'لا تصديرَ للتوأم');
+ T(typeof w.SHEETS.twin==='undefined' && !w.EXP.secs.some(x=>x[0]==='twin'), 'لا تصديرَ للتوأم');
  // بيانات تجريبية
  w.STATE.sites=[{id:'A1',name:'أ',zone:'منى',type:'مخيم',lat:21.41,lng:39.89},{id:'B2',name:'ب',zone:'منى',type:'ممر',lat:21.412,lng:39.892},{id:'C3',name:'ج',zone:'عرفات',type:'كاميرا',lat:21.35,lng:39.98}];
  w.goPage('map'); w.render(1); await new Promise(r=>setTimeout(r,300));

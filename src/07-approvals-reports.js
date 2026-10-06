@@ -3955,7 +3955,7 @@ function popOpenAt(id, ev){
 
 /* ═══ مركز التصدير — قسمًا قسمًا كالقديم ═══ */
 
-var EXP_SECS = [
+EXP.secs = [
   ['summary','الملخّص التنفيذي — أرقامُ المشروع في ورقة',1],
   ['over','نظرة عامة',1], ['minappr','اعتماد الوزارة لإعداد التركيب',1], ['wbs','متابعة الخطة التفصيلية',1], ['wtask','متابعة المهام الأسبوعية',1], ['wtaskAll','المهام — ورقة العمل',1], ['wtmeet','محضر الاجتماع',1], ['wtsince','ما تغيّر منذ الاجتماع الماضي',1], ['pace','الوتيرة والهدف',1],
   ['chalm','التحديات — أين وما هي وما المطلوب',1], ['chalpts','نقاط التحديات — كلُّ نقطةٍ بتحدّيها ووصفه وموقعها ومعالجته (بفلتر الصفحة إن وُضع)',1], ['inst','التركيب والجدولة',1],
@@ -4002,15 +4002,15 @@ var EXP_SECS = [
    كان الحوارُ يعرض الأقسامَ كلَّها لكلِّ أحد — فترى الوزارةُ «الأدوار والصلاحيات»
    و«عهدة السيارات» و«تكلفة الأسطول» وتختارها وتُصدَّر لها. صار كلُّ قسمٍ
    مربوطًا بشاشته: لا يُعرَض ولا يُصدَّر إلا لمن يرى تلك الشاشة. */
-var EXP_PAGE = { summary:'over', minappr:'survey', wtsince:'wtask', wtaskAll:'wtask', wtmeet:'wtask', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
+EXP.page = { summary:'over', minappr:'survey', wtsince:'wtask', wtaskAll:'wtask', wtmeet:'wtask', setup:'consts', pipe:'over', conote:'co', stock:'inv', wday:'perf', score:'perf', stages:'perf',
                  hb:'sys', vers:'sys', work:'over', items:'items', crews:'org', reps:'exec', appr:'ev', ips:'sys',
                  fleet:'fleet', fleetCost:'fleet', fleetLog:'fleet', ships:'inv', roles:'roles', invb:'inv', invmv:'inv',
                  wos:'inv', buys:'inv', notif:'ev', users:'users', recs:'survey', chal:'survey', stuck:'survey', qa:'survey',
                  chalm:'survey', chalpts:'mfu', assign:'req', inst:'over', daily:'over', pace:'over', reg:'over', dis:'dis', sys:'sys', ev:'ev', survey:'survey', co:'co', over:'over' };
-function expAllowed(k){ var p = EXP_PAGE[k] || k; return typeof seesPage === 'function' ? seesPage(p) : true; }
+function expAllowed(k){ var p = EXP.page[k] || k; return typeof seesPage === 'function' ? seesPage(p) : true; }
 /* ستةَ عشرَ قسمًا في القائمة بلا ورقةٍ تُبنى — كانت تُعرَض رماديةً مطفأةً
    فيظنُّ الناظرُ أن بياناتِه ناقصة، وهي شيفرةٌ لم تُوصَل. لا تُعرَض. */
-function expSecs(){ return EXP_SECS.filter(function(x){ return expAllowed(x[0]) && !!SHEETS[x[0]]; }); }
+function expSecs(){ return EXP.secs.filter(function(x){ return expAllowed(x[0]) && !!SHEETS[x[0]]; }); }
 /* ═══ PDF: ورقةٌ تُبنى وتُطبَع ═══
    الطباعةُ إلى PDF هي ما يملكه المتصفّحُ بلا مكتبة — تُبنى صفحةٌ نظيفةٌ
    بالأقسام المختارة في نافذةٍ مستقلّةٍ فيختار المستخدمُ «حفظ كـPDF». */
@@ -4105,7 +4105,7 @@ function expPdf(keys){
     var fn = SHEETS[k]; if (!fn) return;
     var rows; try { rows = fn(); } catch (e){ return; }
     if (!rows || rows.length < 2) return;
-    var lab = (EXP_SECS.filter(function(x){ return x[0] === k; })[0] || [k, k])[1];
+    var lab = (EXP.secs.filter(function(x){ return x[0] === k; })[0] || [k, k])[1];
     body += '<h2>' + esc(t(lab)) + '</h2><table><thead><tr>'
       + rows[0].map(function(c){ return '<th>' + esc(String(c == null ? '' : c)) + '</th>'; }).join('')
       + '</tr></thead><tbody>'
@@ -4241,7 +4241,7 @@ function impPreviewCard(){
 }
 
 function repcenterBody(){ return (function(){
-    if (REP_SIDE === 'sched'){
+    if (EXP.repSide === 'sched'){
       return '<div class="chips">' + repChips() + '</div>' + (function(){
     return card('الدوريات',
         table(['الدورية','متى تُرسَل','الوقت','تقارير'],
@@ -4278,7 +4278,7 @@ function repcenterBody(){ return (function(){
       + '<p class="hint">' + esc(t('التقرير يُبنى من الأرقام نفسها التي على الشاشة — فلا يفترق تقريرٌ عن لوحة.')) + '</p>';
       })();
     }
-    var list = REPORTS.filter(function(r){ return r.side === REP_SIDE; });
+    var list = REPORTS.filter(function(r){ return r.side === EXP.repSide; });
     var pers = {};
     REPORTS.forEach(function(r){ pers[r.per] = (pers[r.per] || 0) + 1; });
 
@@ -4314,8 +4314,8 @@ function repcenterBody(){ return (function(){
           + esc(t('كلُّ تقارير هذه الجهة في ملفٍّ واحدٍ بأوراقه — للأرشيف أو للمراجعة.'))
           + '</p>',
           may('exportAll')
-            ? btn('📦 حزمة ' + (REP_SIDE==='co' ? t('الشركة') : t('الوزارة')),
-                  'btn-primary',' data-reppack="' + REP_SIDE + '"')
+            ? btn('📦 حزمة ' + (EXP.repSide==='co' ? t('الشركة') : t('الوزارة')),
+                  'btn-primary',' data-reppack="' + EXP.repSide + '"')
             : '');
   })(); }
 PAGE.exp = { m:'الأدوات', t:'التصدير والتقارير', l:'ما يخرج من النظام وما يدخل إليه — ومركزُ التقارير بدورياته.',

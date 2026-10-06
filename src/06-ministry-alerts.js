@@ -22,11 +22,11 @@ function alCard(){
     (may('settings') ? '<p class="hint" style="margin:0 0 6px">' + esc(t('تُضبَط أيامُها من ثوابت النظام')) + '</p>' : '') + '<div class="mfu-kpis">' + A.map(function(a){ return '<div class="mfu-kpi"' + (a.off ? '' : ' data-svlist="' + a.k + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"') + '><div class="mfu-kpi-l">' + esc(a.label) + (a.off ? '' : ' \u203A') + '</div><div class="mfu-kpi-v"' + (a.sites.length ? ' style="color:#C0392B"' : '') + '>' + (a.off ? '<span class="hint">' + esc(t('معطَّلة')) + '</span>' : nm(a.sites.length)) + '</div></div>'; }).join('') + '</div>');
 }
 function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع القوائمُ فلترَ المشعر والنوع */
-  var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU_FLT.z || MFU_FLT.t)) return all;
-  return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
+  var all = STATE.sites || []; if (CUR !== 'mfu' || !(MFU.flt.z || MFU.flt.t)) return all;
+  return all.filter(function(x){ var tx = taxOf(x); return (!MFU.flt.z || tx.g === MFU.flt.z) && (!MFU.flt.t || tx.t === MFU.flt.t); });
 }
 function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً في المهمة الواحدة — بطاقاتُ الملخّص وحدَها كانت تمرّ على النقاط عشرَ مرات */
-  var mk = key + '|' + CUR + '|' + (MFU_FLT.z || '') + '|' + (MFU_FLT.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.memo ? DB.memo.lists : null;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
+  var mk = key + '|' + CUR + '|' + (MFU.flt.z || '') + '|' + (MFU.flt.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.memo ? DB.memo.lists : null;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
   if (LM && LM[mk]) return LM[mk].slice();
   var res = svListRows0(key); if (LM) LM[mk] = res;
   return res.slice();
@@ -75,16 +75,16 @@ function svListXlsx(key){
 }
 function mfuFilterRowAll(){   /* (V29.9) فلترُ المشعر والنوع على كلِّ المواقع (لا المعوقات وحدَها) */
   var Z = {}, T = {}, all = STATE.sites || [];
-  all.forEach(function(x){ var tx = taxOf(x), z = tx.g || '—'; Z[z] = (Z[z] || 0) + 1; if (!MFU_FLT.z || z === MFU_FLT.z){ var ty = tx.t || '—'; T[ty] = (T[ty] || 0) + 1; } });
+  all.forEach(function(x){ var tx = taxOf(x), z = tx.g || '—'; Z[z] = (Z[z] || 0) + 1; if (!MFU.flt.z || z === MFU.flt.z){ var ty = tx.t || '—'; T[ty] = (T[ty] || 0) + 1; } });
   var chip = function(attr, v, on, label, n){ return '<button type="button" class="cat' + (on ? ' on' : '') + '" ' + attr + '="' + esc(v) + '">' + esc(label) + (n != null ? ' <span class="n">' + nm(n) + '</span>' : '') + '</button>'; };
-  return '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('المشعر')) + '</span>' + chip('data-mfz', '', !MFU_FLT.z, t('الكل'), all.length)
-    + Object.keys(Z).sort(function(a, b){ return Z[b] - Z[a]; }).map(function(z){ return chip('data-mfz', z, MFU_FLT.z === z, t(z), Z[z]); }).join('') + '</div>'
-    + '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('النوع')) + '</span>' + chip('data-mft', '', !MFU_FLT.t, t('الكل'), null)
-    + Object.keys(T).sort(function(a, b){ return T[b] - T[a]; }).map(function(ty){ return chip('data-mft', ty, MFU_FLT.t === ty, t(ty), T[ty]); }).join('') + '</div>';
+  return '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('المشعر')) + '</span>' + chip('data-mfz', '', !MFU.flt.z, t('الكل'), all.length)
+    + Object.keys(Z).sort(function(a, b){ return Z[b] - Z[a]; }).map(function(z){ return chip('data-mfz', z, MFU.flt.z === z, t(z), Z[z]); }).join('') + '</div>'
+    + '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('النوع')) + '</span>' + chip('data-mft', '', !MFU.flt.t, t('الكل'), null)
+    + Object.keys(T).sort(function(a, b){ return T[b] - T[a]; }).map(function(ty){ return chip('data-mft', ty, MFU.flt.t === ty, t(ty), T[ty]); }).join('') + '</div>';
 }
 function mfuSurv(){
   var all = STATE.sites;   /* (V29.9) الصفحةُ كلُّها تتبع الفلتر: الأرقامُ والجداولُ والقوائمُ والجمرات */
-  if (MFU_FLT.z || MFU_FLT.t) STATE.sites = all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
+  if (MFU.flt.z || MFU.flt.t) STATE.sites = all.filter(function(x){ var tx = taxOf(x); return (!MFU.flt.z || tx.g === MFU.flt.z) && (!MFU.flt.t || tx.t === MFU.flt.t); });
   try { return mfuFilterRowAll() + mfuSurv0(); } finally { STATE.sites = all; }
 }
 function mfuSurv0(){
@@ -111,9 +111,9 @@ function mfuCos(){
       : kpi('نسبة الإنجاز الكلية', nm(tp) + '\u066A') + kpi('التركيب', nm(ins), '#27AE60') + kpi('عوائق', nm(obs), '#C0392B') + kpi('المتبقي', nm(n - ins - obs), '#B7950B') + kpi('المخيمات', nm(n)))
     + '</div>'
     + (surv ? alertBox('info', t('المرحلة الحالية: المسح الميداني — التواصلُ مع الشركات والتركيبُ لم يبدآ بعد، فلا تصنيفَ لها بالتركيب. تُرتَّب بالأقلِّ مسحًا.')) : '')
-    + '<p class="hint">' + esc(t(surv ? 'نسبةُ كلِّ شركة = مخيماتُها الممسوحة ÷ مخيماتُها' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU_COS_ALL ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
-    + btn(MFU_COS_ALL ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
-    + '<div class="mfu-cos">' + (MFU_COS_ALL ? C : C.slice().sort(function(a, b){ return (surv ? a.svp - b.svp : a.pct - b.pct) || b.n - a.n; }).slice(0, 12)).map(function(c){
+    + '<p class="hint">' + esc(t(surv ? 'نسبةُ كلِّ شركة = مخيماتُها الممسوحة ÷ مخيماتُها' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU.cosAll ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
+    + btn(MFU.cosAll ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
+    + '<div class="mfu-cos">' + (MFU.cosAll ? C : C.slice().sort(function(a, b){ return (surv ? a.svp - b.svp : a.pct - b.pct) || b.n - a.n; }).slice(0, 12)).map(function(c){
         var p = surv ? c.svp : c.pct, L = surv ? [p >= 75 ? 'مسحٌ متقدّم' : p > 0 ? 'مسحٌ جارٍ' : 'لم يبدأ المسح', p >= 75 ? 'ok' : p > 0 ? 'wrn' : 'off'] : mfuLevel(c.pct);
         return '<div class="mfu-co mfu-' + L[1] + '"><div class="mfu-co-h"><b>' + esc(c.co) + '</b>' + pill(t(L[0]), L[1]) + '</div>'
           + (coLiaisonOf(c.co) ? '<div class="hint" style="margin:2px 0 4px">' + esc(t('ضابط الاتصال')) + ': <b>' + esc(coLiaisonOf(c.co)) + '</b></div>' : '')
@@ -126,20 +126,20 @@ function mfuCos(){
 }
 /* (V26.5) فلترُ المشعر والنوع على التحديات والمعوقات — قرارُ المالك: «منى – مخيمات – العائق – العدد – المعالجة – المسؤول».
    الصفحتان («بيان المعوقات» و«التحديات وآليات المعالجة») كانتا من مصدرٍ واحد فدُمجتا في صفحةٍ واحدة. */
-var MFU_FLT = { z:'', t:'' };
+MFU.flt = { z:'', t:'' };
 /* (V27.3) بلاغُ المالك: التصديرُ من صفحة التحديات والمعوقات لم يكن يتبع الفلتر — التحديثُ الأسبوعيُّ (إكسل/وورد/بوربوينت/PDF)
    كان يقرأ المعوقاتِ كلَّها. صار يقرأ المرشَّحَ حين يُوضَع فلتر، ويكتب الفلترَ في سطر التاريخ واسم الملف والبطاقة؛ وبلا فلتر: الكلّ. */
-function mfuFltLabel(){ return [MFU_FLT.z || '', MFU_FLT.t || ''].filter(Boolean).join(' \u00b7 '); }
-function mfuObstaclesF(){ var O = mfuObstacles(); if (!MFU_FLT.z && !MFU_FLT.t) return O; return O.filter(function(o){ var tx = taxOf(o.x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); }); }   /* (V27.2) تصنيفُ المالك */
+function mfuFltLabel(){ return [MFU.flt.z || '', MFU.flt.t || ''].filter(Boolean).join(' \u00b7 '); }
+function mfuObstaclesF(){ var O = mfuObstacles(); if (!MFU.flt.z && !MFU.flt.t) return O; return O.filter(function(o){ var tx = taxOf(o.x); return (!MFU.flt.z || tx.g === MFU.flt.z) && (!MFU.flt.t || tx.t === MFU.flt.t); }); }   /* (V27.2) تصنيفُ المالك */
 function mfuFilterRow(){
   var O = mfuObstacles(), Z = {}, T = {};
   if (!O.length) return '';   /* لا معوقاتٍ فلا فلتر */
-  O.forEach(function(o){ var tx = taxOf(o.x), z = tx.g || '—'; Z[z] = (Z[z] || 0) + 1; if (!MFU_FLT.z || z === MFU_FLT.z){ var ty = tx.t || '—'; T[ty] = (T[ty] || 0) + 1; } });
+  O.forEach(function(o){ var tx = taxOf(o.x), z = tx.g || '—'; Z[z] = (Z[z] || 0) + 1; if (!MFU.flt.z || z === MFU.flt.z){ var ty = tx.t || '—'; T[ty] = (T[ty] || 0) + 1; } });
   var chip = function(attr, v, on, label, n){ return '<button type="button" class="cat' + (on ? ' on' : '') + '" ' + attr + '="' + esc(v) + '">' + esc(label) + (n != null ? ' <span class="n">' + nm(n) + '</span>' : '') + '</button>'; };
-  return '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('المشعر')) + '</span>' + chip('data-mfz', '', !MFU_FLT.z, t('الكل'), O.length)
-    + Object.keys(Z).sort(function(a, b){ return Z[b] - Z[a]; }).map(function(z){ return chip('data-mfz', z, MFU_FLT.z === z, t(z), Z[z]); }).join('') + '</div>'
-    + '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('النوع')) + '</span>' + chip('data-mft', '', !MFU_FLT.t, t('الكل'), null)
-    + Object.keys(T).sort(function(a, b){ return T[b] - T[a]; }).map(function(ty){ return chip('data-mft', ty, MFU_FLT.t === ty, t(ty), T[ty]); }).join('') + '</div>';
+  return '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('المشعر')) + '</span>' + chip('data-mfz', '', !MFU.flt.z, t('الكل'), O.length)
+    + Object.keys(Z).sort(function(a, b){ return Z[b] - Z[a]; }).map(function(z){ return chip('data-mfz', z, MFU.flt.z === z, t(z), Z[z]); }).join('') + '</div>'
+    + '<div class="catrow"><span class="hint" style="margin:0 4px;align-self:center">' + esc(t('النوع')) + '</span>' + chip('data-mft', '', !MFU.flt.t, t('الكل'), null)
+    + Object.keys(T).sort(function(a, b){ return T[b] - T[a]; }).map(function(ty){ return chip('data-mft', ty, MFU.flt.t === ty, t(ty), T[ty]); }).join('') + '</div>';
 }
 function mfuObs(){
   var O = mfuObstaclesF(), byParty = {}, byCat = {}, ed = may('settings');
@@ -158,11 +158,11 @@ function mfuObs(){
       })))
     + '<p class="hint">' + esc(t('الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.')) + '</p>'
     + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap"><span class="hint">' + esc(t('جهات المعالجة')) + '</span>'
-      + mfuParties().map(function(k){ var lb = mfuPartyLabel(k); return MFU_PRN === k
+      + mfuParties().map(function(k){ var lb = mfuPartyLabel(k); return MFU.prn === k
           ? '<span class="pill"><input data-mfuprn="' + esc(k) + '" value="' + esc(lb) + '" style="max-width:160px;min-height:26px" aria-label="' + esc(t('اسم الجهة')) + '"></span>'
           : '<span class="pill">' + esc(t(lb)) + ' <button type="button" class="btn btn-quiet btn-sm" data-mfupren="' + esc(k) + '" aria-label="' + esc(t('تعديل')) + '" style="padding:0 6px;min-height:22px">\u270E</button>' + (mfuParties().length > 1 ? '<button type="button" class="btn btn-quiet btn-sm" data-mfuprm="' + esc(k) + '" aria-label="' + esc(t('حذف')) + '" style="padding:0 6px;min-height:22px">\u2715</button>' : '') + '</span>'; }).join('')
       + '<input id="mfuNewParty" placeholder="' + esc(t('جهةٌ أخرى')) + '" style="max-width:180px">' + btn('+ ' + t('أضف جهة'), 'btn-quiet btn-sm', ' data-mfupadd="1"')
-      + (MFU_PARTIES.some(function(k){ var r = mfuPartyRaw(k); return r && (r.gone || r.t); }) ? btn('\u21BA ' + t('الأصلية'), 'btn-quiet btn-sm', ' data-mfuprst="1"') : '')
+      + (MFU.parties.some(function(k){ var r = mfuPartyRaw(k); return r && (r.gone || r.t); }) ? btn('\u21BA ' + t('الأصلية'), 'btn-quiet btn-sm', ' data-mfuprst="1"') : '')
       + '</div>' : ''))
     + mfuChal();   /* (V26.5) سجلُّ التحديات بآلياته في الصفحة نفسِها */
 }
@@ -214,7 +214,7 @@ function mfuReqView(x){
   var fromTask = tn && tn.at > uAt;
   return { u:fromTask ? tn.note : (x.u || ''), uSrc:fromTask ? tn.id : 0, st:tk && tk.done ? 'منجز' : (x.st || 'جديد'), tk:tk, blocked:!!(tk && tk.st === 'متوقف') };
 }
-var MFU_F = { 'new':'أُنشئ', owner:'من سيحلّه', m:'آلية المعالجة', st:'الحالة', party:'على مين', u:'إفادة', task:'رُبط بمهمة', o:'المسؤول' };
+MFU.f = { 'new':'أُنشئ', owner:'من سيحلّه', m:'آلية المعالجة', st:'الحالة', party:'على مين', u:'إفادة', task:'رُبط بمهمة', o:'المسؤول' };
 function mfuTimeline(days, lim){
   var since = Date.now() - (days || 7) * 864e5, out = [];
   wtRows().forEach(function(r){
@@ -223,9 +223,9 @@ function mfuTimeline(days, lim){
       out.push({ at:e.at, by:e.by || '', k:'مهمة', ref:'#' + r.id + ' ' + r.n + ctx, txt:e.st ? t('الحالة') + ': ' + t(e.st) : e.f ? wtFieldTxt(e) : (e.note === 'أُنشئت' ? t('أُنشئت') : e.note) }); });
   });
   var fch = mfuData().fch || {};
-  Object.keys(fch).forEach(function(c){ (fch[c].hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'تحدّي مسح', ref:c, txt:t(MFU_F[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
-  mfuList('chal').forEach(function(x){ (x.hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'تحدٍّ', ref:x.t || '', txt:t(MFU_F[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
-  mfuList('req').forEach(function(x){ (x.hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'طلب الوزارة', ref:x.t || '', txt:t(MFU_F[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
+  Object.keys(fch).forEach(function(c){ (fch[c].hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'تحدّي مسح', ref:c, txt:t(MFU.f[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
+  mfuList('chal').forEach(function(x){ (x.hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'تحدٍّ', ref:x.t || '', txt:t(MFU.f[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
+  mfuList('req').forEach(function(x){ (x.hist || []).forEach(function(h){ if ((h.at || 0) < since) return; out.push({ at:h.at, by:h.by || '', k:'طلب الوزارة', ref:x.t || '', txt:t(MFU.f[h.f] || h.f) + (h.v ? ': ' + h.v : '') }); }); });
   return out.sort(function(a, b){ return b.at - a.at; }).slice(0, lim || 40);
 }
 /* ═══ المهامُّ الأسبوعيةُ تُسمَع في متابعة الوزارة (V20.7) ═══
@@ -307,7 +307,7 @@ function mfuTimelineCard(){
     return ['<span class="num">' + esc(fmtDate(e.at)) + '</span>' + (e.at > seen ? ' ' + pill(t('جديد'), 'ok') : ''), pill(t(e.k), e.k === 'مهمة' ? '' : e.k === 'طلب الوزارة' ? 'ok' : 'wrn'), esc(String(e.ref).slice(0, 60)), esc(String(e.txt).slice(0, 90)), esc(dispName(e.by))];
   })) : '<p class="hint" style="margin:10px 14px">' + esc(t('لا تحديثاتٍ في سبعة أيام.')) + '</p>');
 }
-var MFU_SRC = { field:['من المسح الميداني', '#1C3674'], task:['من المهام الأسبوعية', '#86432B'], manual:['مسجّلٌ يدويًّا', '#7F8C8D'] };
+MFU.src = { field:['من المسح الميداني', '#1C3674'], task:['من المهام الأسبوعية', '#86432B'], manual:['مسجّلٌ يدويًّا', '#7F8C8D'] };
 function mfuChalClosed(c){ return c.st === 'تم الحل' || c.st === 'مغلق'; }
 function mfuChal(){
   var A = mfuAllChal(), ed = may('settings'), ST = ['مفتوح', 'قيد المعالجة', 'مغلق'];
@@ -318,11 +318,11 @@ function mfuChal(){
   var openN = A.filter(function(c){ return !mfuChalClosed(c); }).length;
   var sel = function(attr, cur, opts){ return '<select ' + attr + ' style="min-height:30px;font-size:12px;width:auto">' + opts.map(function(v){ return '<option value="' + esc(v) + '"' + (cur === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>'; };
   var rows = A.map(function(c){
-    var S0 = MFU_SRC[c.src], done = mfuChalClosed(c);
+    var S0 = MFU.src[c.src], done = mfuChalClosed(c);
     var what = '<b>' + esc(t(c.t)) + '</b>'
       + (c.src === 'field' ? '<div class="hint" style="margin:2px 0 0">' + nm(c.n) + ' ' + esc(t('نقطة')) + (Object.keys(c.z).length ? ' \u00b7 ' + Object.keys(c.z).map(function(z){ return esc(t(z)) + ' ' + nm(c.z[z]); }).join(' \u00b7 ') : '') + '</div>' : '')
       + (c.src === 'task' && c.why ? '<div class="hint" style="margin:2px 0 0">' + esc(String(c.why).slice(0, 120)) + '</div>' : '');
-    var fk = c.src === 'field' ? c.t : '', edr = ed && MFU_EDIT === c.key;   /* الحقولُ للصفِّ المفتوح وحدَه (V21.5) — أربعون صفًّا بحقولها كانت تُثقل الهاتف */
+    var fk = c.src === 'field' ? c.t : '', edr = ed && MFU.edit === c.key;   /* الحقولُ للصفِّ المفتوح وحدَه (V21.5) — أربعون صفًّا بحقولها كانت تُثقل الهاتف */
     var party = c.src === 'field' ? (edr ? '<select data-mfuown="' + esc(fk) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (c.party === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(c.party)))
       : c.src === 'manual' ? (edr ? sel('data-mchalf="' + esc(c.id) + '|party"', c.party || 'شركة الخدمة', mfuParties()) : esc(t(c.party || '—'))) : '\u2014';
     var owner = (c.src !== 'task' && edr) ? '<input data-' + (c.src === 'field' ? 'fch="' + esc(fk) : 'mchalf="' + esc(c.id)) + '|owner" value="' + esc(c.owner) + '" style="min-width:110px">' : esc(c.owner || '\u2014');
@@ -349,9 +349,9 @@ function mfuChal(){
         + '<div class="grid2"><label>' + esc(t('المسؤول')) + '<input id="mcO"></label><label>' + esc(t('المسار')) + '<select id="mcR">' + ['التركيبات', 'التوريدات', 'المسح', 'المواءمة مع الشركات'].map(function(v){ return '<option value="' + esc(v) + '">' + esc(t(v)) + '</option>'; }).join('') + '</select></label></div>'
         + '<div class="actions">' + btn(t('سجّل التحدي'), 'btn-primary btn-sm', ' data-mfuchal="1"') + '</div>') : '');
   return '<div class="mfu-kpis"><div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تحدياتٌ مفتوحة')) + '</div><div class="mfu-kpi-v" style="color:#C0392B">' + nm(openN) + '</div></div>'
-    + ['field', 'task', 'manual'].map(function(k){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(MFU_SRC[k][0])) + '</div><div class="mfu-kpi-v">' + nm(A.filter(function(c){ return c.src === k && !mfuChalClosed(c); }).length) + '</div></div>'; }).join('')
+    + ['field', 'task', 'manual'].map(function(k){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t(MFU.src[k][0])) + '</div><div class="mfu-kpi-v">' + nm(A.filter(function(c){ return c.src === k && !mfuChalClosed(c); }).length) + '</div></div>'; }).join('')
     + '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تم الحل')) + '</div><div class="mfu-kpi-v" style="color:#27AE60">' + nm(A.length - openN) + '</div></div></div>'
-    + '<div class="actions" style="margin:6px 0">' + btn('\u2B07 ' + t('تصدير نقاط التحديات') + ((MFU_FLT.z || MFU_FLT.t) ? ' (' + t('بالفلتر') + ')' : ''), 'btn-secondary btn-sm', ' data-xls="chalpts"') + ' <span class="hint">' + esc(t('كلُّ نقطةٍ بتحدّيها ووصفه وموقعها ومشعرها ومعالجته — بالفلتر الحالي إن وُضع')) + '</span></div>'   /* (V26.6) */
+    + '<div class="actions" style="margin:6px 0">' + btn('\u2B07 ' + t('تصدير نقاط التحديات') + ((MFU.flt.z || MFU.flt.t) ? ' (' + t('بالفلتر') + ')' : ''), 'btn-secondary btn-sm', ' data-xls="chalpts"') + ' <span class="hint">' + esc(t('كلُّ نقطةٍ بتحدّيها ووصفه وموقعها ومشعرها ومعالجته — بالفلتر الحالي إن وُضع')) + '</span></div>'   /* (V26.6) */
     + (A.length ? cardFlush(t('التحديات وآليات المعالجة') + ' \u2014 ' + nm(A.length), table(['المصدر', 'التحدي', 'على مين', 'من سيحلّه', 'آلية المعالجة', 'وصف المعالجة', 'آخر تاريخ', 'الحالة', 'مهمة المعالجة', 'الميدان ↔ المكتب', ''], rows)) : '<p class="hint">' + esc(t('لا تحدياتٍ مسجّلةٌ بعد.')) + '</p>')
     + '<p class="hint">' + esc(t('تحدياتُ المسح الميداني تُقرأ من النقاط غير المركَّبة وتصير «تم الحل» حين لا تبقى نقطة؛ والمهمةُ الأسبوعيةُ المتوقّفةُ تحدٍّ قائم؛ واكتمالُ مهمة المعالجة حلُّ تحدّيها.')) + '</p>'
     + (form ? '<details class="mfu-add"' + (A.length ? '' : ' open') + '><summary>\uFF0B ' + esc(t('تحدٍّ جديد')) + '</summary>' + form + '</details>' : '');
@@ -362,7 +362,7 @@ function mfuReq(){
         + '<div class="actions">' + btn(t('سجّل الطلب'), 'btn-primary btn-sm', ' data-mfureq="1"') + '</div>') : '');
   return (L.length ? cardFlush(t('طلبات الوزارة') + ' \u2014 ' + nm(L.length), table(['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', 'مهمة التنفيذ', ''], L.map(function(x, i){
         var V = mfuReqView(x);
-        var edr = ed && MFU_EDIT === 'R:' + x.id;
+        var edr = ed && MFU.edit === 'R:' + x.id;
         var up = V.uSrc ? '<div>' + esc(V.u) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('من المهمة')) + ' #' + nm(V.uSrc) + '</div>'
           : (edr ? '<textarea data-mfurequ="' + esc(x.id) + '" rows="2" style="min-width:160px">' + esc(x.u || '') + '</textarea>' : esc(x.u || '\u2014'));
         var stc = V.tk && V.tk.done ? pill(t('منجز'), 'ok') : (edr ? '<select data-mfureqst="' + esc(x.id) + '" style="min-height:30px;font-size:12px;width:auto">' + ST.map(function(v){ return '<option value="' + esc(v) + '"' + (x.st === v ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('') + '</select>' : pill(t(V.st), V.st === 'منجز' ? 'ok' : 'wrn'));
@@ -470,7 +470,7 @@ function mfuDaily(){
       + '<span>' + esc(t('المتوسط')) + ': ' + esc(t(prim[1])) + ' <b>' + nm(Math.round(tot[prim[0]] / work.length)) + '</b></span>' : '') + '</div>';
   var list = hourly ? rows.filter(act) : rows.slice().reverse(), PG = 15, P = Math.max(1, Math.ceil(list.length / PG));
   WDY.pg = Math.min(Math.max(1, +WDY.pg || 1), P);
-  var part = XLS_ALL ? list : list.slice((WDY.pg - 1) * PG, WDY.pg * PG);   /* إكسلُ الصفحة يأخذ الأيامَ كلَّها لا صفحتَها */
+  var part = EXP.xlsAll ? list : list.slice((WDY.pg - 1) * PG, WDY.pg * PG);   /* إكسلُ الصفحة يأخذ الأيامَ كلَّها لا صفحتَها */
   var cell = function(r, k){ var p = wdyCellPct(r, k, B); return N(r[k]) + (p ? ' <small class="wd-p">' + p + '</small>' : ''); };
   var tb = list.length ? table([hourly ? 'الساعة' : 'اليوم'].concat(vis.map(function(s){ return s[1]; })),
       part.map(function(r){ return { raw:'<tr' + (act(r) ? '' : ' class="wd-z"') + '><td>' + esc(hourly ? r.lbl : wdyDayLbl(r.key, { weekday:'long', day:'numeric', month:'long', year:'numeric', timeZone:'UTC' })) + '</td>'
@@ -499,15 +499,15 @@ function hijriToday(){ try { return new Intl.DateTimeFormat('ar-SA-u-ca-islamic-
 /* ═══ (V29.0) ملاحظةُ «تحديثات المنصة» #٥: «اختيارُ النقاط المراد تحميلُها في الملف — لا الملفُّ الشاملُ فقط» ═══
    نطاقُ التصدير: الكلّ (الافتراضيّ)، أو مشعرٌ ونوعٌ من تصنيف المالك، أو النقاطُ المحدَّدةُ على الخريطة («☑ تحديد»).
    يُبنى التقريرُ نفسُه على نقاط النطاق وحدَها (المؤشراتُ والتركيباتُ والشركاتُ والمعوقات)، ويُكتب النطاقُ في الغلاف واسمِ الملف. */
-var EXP_SCOPE = { m:'all', g:'', t:'' };
+EXP.scope = { m:'all', g:'', t:'' };
 function expScopeIds(){
-  if (EXP_SCOPE.m === 'sel') return selIds();
-  if (EXP_SCOPE.m === 'tax' && (EXP_SCOPE.g || EXP_SCOPE.t)) return (STATE.sites || []).filter(function(x){ var c = taxOf(x); return (!EXP_SCOPE.g || c.g === EXP_SCOPE.g) && (!EXP_SCOPE.t || c.t === EXP_SCOPE.t); }).map(function(x){ return x.id; });
+  if (EXP.scope.m === 'sel') return selIds();
+  if (EXP.scope.m === 'tax' && (EXP.scope.g || EXP.scope.t)) return (STATE.sites || []).filter(function(x){ var c = taxOf(x); return (!EXP.scope.g || c.g === EXP.scope.g) && (!EXP.scope.t || c.t === EXP.scope.t); }).map(function(x){ return x.id; });
   return null;
 }
 function expScopeLabel(){
-  if (EXP_SCOPE.m === 'sel') return t('نقاطٌ محدَّدة') + ' (' + nm(SEL_N) + ')';
-  if (EXP_SCOPE.m === 'tax' && (EXP_SCOPE.g || EXP_SCOPE.t)) return [EXP_SCOPE.g, EXP_SCOPE.t].filter(Boolean).map(function(v){ return t(v); }).join(' \u00b7 ');
+  if (EXP.scope.m === 'sel') return t('نقاطٌ محدَّدة') + ' (' + nm(SEL_N) + ')';
+  if (EXP.scope.m === 'tax' && (EXP.scope.g || EXP.scope.t)) return [EXP.scope.g, EXP.scope.t].filter(Boolean).map(function(v){ return t(v); }).join(' \u00b7 ');
   return '';
 }
 function mfuReport(){
@@ -548,7 +548,7 @@ function mfuReport0(){
     brief:mfuBriefText().split('\n').map(function(l){ return [l]; }),   /* (V29.9) */
     obsTotal:O.length, parties:mfuParties().map(function(p){ return [mfuPartyLabel(p), byParty[p] || 0]; }),
     cats:Object.keys(byCat).sort(function(a, b){ return byCat[b] - byCat[a]; }).map(function(c){ return [c, byCat[c], mfuOwnerOf(c)]; }),
-    chal:mfuAllChal().map(function(c){ return [MFU_SRC[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
+    chal:mfuAllChal().map(function(c){ return [MFU.src[c.src][0], c.t + (c.src === 'field' ? ' (' + c.n + ' نقطة)' : ''), c.party || '—', c.owner || '—', c.m || '—', c.st + (c.tk ? ' · مهمة #' + c.tk.id + ' ' + c.tk.st : '')]; }),
     req:mfuList('req').map(function(x, i){ var V = mfuReqView(x); return [i + 1, x.t || '', V.u + (V.uSrc ? ' (من المهمة #' + V.uSrc + ')' : ''), x.s || '', V.st + (V.blocked ? ' — متوقفة' : ''), V.tk ? '#' + V.tk.id + ' ' + V.tk.st : '—']; }),
     blocks:(function(){ var B = mfuWeekBlocks(), rows = [];
       B.done.slice(0, 10).forEach(function(r){ rows.push(['أبرز الأعمال المنجزة', r.n, (r.who ? r.who + ' · ' : '') + dayKey(mfuDoneAt(r))]); });
@@ -565,7 +565,7 @@ function mfuReport0(){
     daily:diaryRows().slice(-14).reverse().map(function(r){ return [r.day, r.sv, r.ins, r.dis, r.stuck || 0]; })   /* (V24.0) العملُ كلُّه بترتيب الصفحة */
   };
 }
-var MFU_SECTIONS = [
+MFU.sections = [
   ['brief', 'الملخص التنفيذي', ['النص']],   /* (V29.9) يُكتَب من الأرقام */
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
   ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تم المسح', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول']],   /* (V29.1) */
@@ -596,7 +596,7 @@ function mfuXlsx(){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
     var R = mfuReport(), wb = XLSX.utils.book_new();
     if (!expGate('إكسل', mfuReportCheck(R))) return false;   /* (V28.9) */
-    MFU_SECTIONS.forEach(function(sc){
+    MFU.sections.forEach(function(sc){
       var rows = [sc[2]].concat(mfuRowsOf(R, sc[0]));
       var ws = XLSX.utils.aoa_to_sheet(rows);
       ws['!cols'] = sc[2].map(function(_, i){ var wd = 10; rows.forEach(function(r){ wd = Math.max(wd, Math.min(50, String(r[i] == null ? '' : r[i]).length + 2)); }); return { wch:wd }; });
@@ -632,7 +632,7 @@ function mfuPrintHtml(R, F){
     + '</style></head><body>'
     + '<div class="pg cover"><img class="logo" src="' + MOH_LOGO + '" alt=""><h1>التقدم في الأعمال — بطاقة نسك</h1><h2>مركز معلومات الحج والعمرة</h2><p>' + e(R.hijri) + ' · ' + e(R.greg) + '</p>'
     + '<div class="ft"><span>' + e(R.greg) + '</span><span>haj.gov.sa</span></div></div>'
-    + MFU_SECTIONS.map(function(sc, i){ return '<div class="pg"><h3>' + e(mfuSecTitle(R, sc)) + '</h3>' + tbl(sc[2], mfuRowsOf(R, sc[0]))
+    + MFU.sections.map(function(sc, i){ return '<div class="pg"><h3>' + e(mfuSecTitle(R, sc)) + '</h3>' + tbl(sc[2], mfuRowsOf(R, sc[0]))
         + '<div class="ft"><span>' + e(R.greg) + ' \u00b7 ' + (i + 2) + '</span><span>haj.gov.sa \u00b7 صدر من نظام قارئات أفاقي ' + e(R.ver) + '</span></div></div>'; }).join('')
     + '<div class="pg end"><img class="logo" src="' + MOH_LOGO + '" alt=""><h1>شكرًا</h1></div>'
     + '</body></html>';
@@ -689,7 +689,7 @@ function mfuDocxXml(R){
   var body = para('التحديث الدوري — مسار القارئات', { b:1, sz:48, c:'163E35', jc:'center', after:80 })
     + para('مشروع بطاقة نسك', { sz:30, c:'C8943E', jc:'center', after:60 })
     + para(R.hijri + ' — ' + R.greg, { sz:22, c:'86432B', jc:'center', after:360 })
-    + MFU_SECTIONS.map(function(sc){ return para(mfuSecTitle(R, sc), { b:1, sz:30, c:'C8943E', after:80 }) + table(sc[2], mfuRowsOf(R, sc[0])) + para('', { after:200 }); }).join('')
+    + MFU.sections.map(function(sc){ return para(mfuSecTitle(R, sc), { b:1, sz:30, c:'C8943E', after:80 }) + table(sc[2], mfuRowsOf(R, sc[0])) + para('', { after:200 }); }).join('')
     + para('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:16, c:'7F8C8D' });
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>' + body
     + '<w:sectPr><w:pgSz w:w="16838" w:h="11906" w:orient="landscape"/><w:pgMar w:top="1000" w:right="1000" w:bottom="1000" w:left="1000" w:header="500" w:footer="500" w:gutter="0"/><w:bidi/></w:sectPr></w:body></w:document>';
@@ -703,13 +703,13 @@ function mfuDocx(){
    قبل التنزيل: بياناتُ التقرير نفسُها (لا نصَّ مكسورًا: NaN أو undefined أو [object…] أو نائبٌ باقٍ أو حرفٌ تالف، وعددُ
    خانات كلِّ صفٍّ = عددُ أعمدته، والنسبُ بين صفرٍ ومئة)، ثم الملفُّ المبنيُّ (شرائحُ سليمةُ البناء وكلُّ عنصرٍ داخل الشريحة).
    وأيُّ خطأٍ يوقف التنزيلَ ويُعرَض فوق أزرار التصدير ويُسجَّل في الأحداث. */
-var EXP_CHK = null;
+EXP.chk = null;
 function expDigits(v){ return String(v == null ? '' : v).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 1632); }).replace(/[\u06F0-\u06F9]/g, function(d){ return String(d.charCodeAt(0) - 1776); }); }
 function expBadText(v){ var x = String(v == null ? '' : v); var m = x.match(/\bNaN\b|\bundefined\b|\[object [A-Za-z]+\]|\bInfinity\b|\{\{[A-Z]+\}\}|\uFFFD/); return m ? m[0] : ''; }
 function mfuReportCheck(R){
   var iss = [];
   (R.kpis || []).forEach(function(k){ var b = expBadText(k[1]) || expBadText(k[2]); if (b) iss.push(t('المؤشر') + ' «' + k[0] + '»: ' + b); });
-  MFU_SECTIONS.forEach(function(sc){
+  MFU.sections.forEach(function(sc){
     var head = sc[2], rows = mfuRowsOf(R, sc[0]) || [];
     rows.forEach(function(r, i){
       if (!Array.isArray(r)){ iss.push(sc[1] + ' — ' + t('صفٌّ غيرُ صالح')); return; }
@@ -742,7 +742,7 @@ function pptxCheck(out){
   return iss;
 }
 function expGate(kind, iss){
-  EXP_CHK = { kind:kind, at:Date.now(), n:iss.length, issues:iss.slice(0, 25) };
+  EXP.chk = { kind:kind, at:Date.now(), n:iss.length, issues:iss.slice(0, 25) };
   if (!iss.length) return true;
   logEvent('تصديرٌ أوقفه فحصُ الملف — ' + kind + ' · ' + iss.length + ' خطأ', '');
   toast(t('أُوقف التصدير: في الملف') + ' ' + nm(iss.length) + ' ' + t('خطأ — التفاصيلُ فوق أزرار التصدير'));
@@ -766,11 +766,11 @@ function mfuDocx0(){
    العرض وشعاره وعنصرٍ نائبٍ للجسم، والشكر — بقوالبه وخلفياته وخطوطه المضمَّنة (Alexandria
    وAbar Mid). الشرائحُ مخزَّنةٌ بلا ضغطٍ في القالب فتُقرأ بلا فكّ، وسائرُ الأجزاء تُنسَخ
    بضغطها كما هي — فالناتجُ بحجم القالب ويُبنى في لحظة. يُحمَّل القالبُ مرةً ويُخبَّأ. */
-var PPTX_TPL = null;
+EXP.pptxTpl = null;
 function pptxTemplate(){
-  if (PPTX_TPL) return Promise.resolve(PPTX_TPL);
+  if (EXP.pptxTpl) return Promise.resolve(EXP.pptxTpl);
   return fetch('templates/ministry-unified.pptx').then(   /* (V28.8) القالبُ الموحَّدُ للوزارة */function(r){ if (!r.ok) throw new Error('tpl ' + r.status); return r.arrayBuffer(); })
-    .then(function(b){ PPTX_TPL = new Uint8Array(b); return PPTX_TPL; });
+    .then(function(b){ EXP.pptxTpl = new Uint8Array(b); return EXP.pptxTpl; });
 }
 function ooxRead(u8){
   /* قراءةُ الأعداد بايتًا بايتًا بلا DataView — يعمل في كلِّ متصفّحٍ وفي بيئة الفحص */
@@ -919,11 +919,11 @@ function mfuPptx(){
 function expScopeRow(){
   var ids = expScopeIds(), n = ids ? ids.length : (STATE.sites || []).length;
   var opt = function(list, cur, blank){ return '<option value="">' + esc(t(blank)) + '</option>' + list.map(function(v){ return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join(''); };
-  var chip = function(m, l){ return '<button type="button" class="chip' + (EXP_SCOPE.m === m ? ' on' : '') + '" data-expscope="' + m + '">' + esc(l) + '</button>'; };
+  var chip = function(m, l){ return '<button type="button" class="chip' + (EXP.scope.m === m ? ' on' : '') + '" data-expscope="' + m + '">' + esc(l) + '</button>'; };
   return '<div class="chips" style="margin:8px 0 0;align-items:center"><span class="hint" style="margin:0">' + esc(t('نطاقُ الملف')) + ':</span>'
     + chip('all', t('كلُّ النقاط')) + chip('tax', t('مشعرٌ ونوع')) + chip('sel', t('المحدَّدُ على الخريطة') + ' (' + nm(SEL_N) + ')')
-    + (EXP_SCOPE.m === 'tax' ? '<select data-expsg="1" style="max-width:170px">' + opt(TAX_G, EXP_SCOPE.g, 'كلُّ المشاعر') + '</select><select data-expst="1" style="max-width:170px">' + opt(TAX_T, EXP_SCOPE.t, 'كلُّ الأنواع') + '</select>' : '')
-    + (EXP_SCOPE.m === 'sel' && !SEL_N ? btn('\u2611 ' + t('حدِّد من الخريطة'), 'btn-quiet btn-sm', ' data-expselgo="1"') : '')
+    + (EXP.scope.m === 'tax' ? '<select data-expsg="1" style="max-width:170px">' + opt(TAX_G, EXP.scope.g, 'كلُّ المشاعر') + '</select><select data-expst="1" style="max-width:170px">' + opt(TAX_T, EXP.scope.t, 'كلُّ الأنواع') + '</select>' : '')
+    + (EXP.scope.m === 'sel' && !SEL_N ? btn('\u2611 ' + t('حدِّد من الخريطة'), 'btn-quiet btn-sm', ' data-expselgo="1"') : '')
     + '<span class="pill ' + (n ? 'acc' : 'wrn') + '">' + nm(n) + ' ' + esc(t('نقطة في الملف')) + '</span></div>';
 }
 function mfuExportBar(){
@@ -933,15 +933,15 @@ function mfuExportBar(){
     + (mfuFltLabel() ? '<span class="pill wrn">' + esc(t('بفلتر')) + ': ' + esc(mfuFltLabel()) + ' \u2014 ' + esc(t('أزل الفلتر لتصدير الكلّ')) + '</span>' : '')   /* (V27.3) */
     + '<span class="hint" style="margin:0">' + esc(t('من الجهاز نفسِه — لحظي، بالأرقام الحالية')) + '</span></div>'
     + expScopeRow()   /* (V29.0) */
-    + (EXP_CHK && EXP_CHK.n ? '<div class="alert warn" style="margin:8px 0 0"><b>' + esc(t('أوقف الفحصُ آخرَ تصدير')) + ' (' + esc(EXP_CHK.kind) + ') — ' + nm(EXP_CHK.n) + ' ' + esc(t('خطأ')) + '</b><ul style="margin:4px 0 0;padding-inline-start:18px">' + EXP_CHK.issues.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
-       : (EXP_CHK ? '<span class="pill ok" style="margin:8px 0 0">\u2713 ' + esc(t('آخرُ ملفٍّ اجتاز الفحص')) + ' (' + esc(EXP_CHK.kind) + ')</span>' : ''))   /* (V28.9) */
+    + (EXP.chk && EXP.chk.n ? '<div class="alert warn" style="margin:8px 0 0"><b>' + esc(t('أوقف الفحصُ آخرَ تصدير')) + ' (' + esc(EXP.chk.kind) + ') — ' + nm(EXP.chk.n) + ' ' + esc(t('خطأ')) + '</b><ul style="margin:4px 0 0;padding-inline-start:18px">' + EXP.chk.issues.map(function(x){ return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></div>'
+       : (EXP.chk ? '<span class="pill ok" style="margin:8px 0 0">\u2713 ' + esc(t('آخرُ ملفٍّ اجتاز الفحص')) + ' (' + esc(EXP.chk.kind) + ')</span>' : ''))   /* (V28.9) */
     + '</div>';
 }
 PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
   l:'العرضُ الأسبوعيُّ للوزارة حيًّا — بعناوينه نفسِها: المهامُّ والتركيباتُ والشركاتُ والمعوقاتُ والتحدياتُ والطلبات.',
   body:function(){
     mfuFetch();
-    if (!PPTX_TPL && !MFU.tplAsk && FB.ready){ MFU.tplAsk = 1; setTimeout(function(){ try { if (!(navigator.connection && navigator.connection.saveData)) pptxTemplate().catch(function(){ MFU.tplAsk = 0; }); } catch (e){ LS_ERR = e; } }, 4000); }
+    if (!EXP.pptxTpl && !MFU.tplAsk && FB.ready){ MFU.tplAsk = 1; setTimeout(function(){ try { if (!(navigator.connection && navigator.connection.saveData)) pptxTemplate().catch(function(){ MFU.tplAsk = 0; }); } catch (e){ LS_ERR = e; } }, 4000); }
     var head = tabHead('mfu'), cur = tabCur('mfu');
     if (!(STATE.sites || []).length) return head + alertBox('warn', 'لا مواقع محمّلة.');
     if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
@@ -2528,6 +2528,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.0', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تحسين داخلي بلا تغيير في الاستخدام: وحدة متابعة الوزارة والتقارير والتصدير بقت ماسكة حالتها في كائنين بدل ١٦ متغير متفرقين في الكود (المتغيرات العامة ٦٢٤ ← ٦٠٩).' ] },
   { v:'V31.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'بطارية أقل وجوال أهدى على الخريطة: كل دقيقة كان التطبيق بيعيد رسم الخريطة كاملة ويعيد حساب كل الأرقام حتى لو مفيش أي جديد اتسحب (حوالي نص ثانية معالجة كل دقيقة على الجوال). بقى يعمل كده بس لما يوصل جديد أو تتسحب الثوابت.' ] },
   { v:'V31.8', d:'٦ أكتوبر ٢٠٢٦', notes:[

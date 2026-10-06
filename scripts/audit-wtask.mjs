@@ -166,7 +166,7 @@ T(w.wtSince().items.length === 0, 'وبعد الختم لا شيءَ «منذ ا
 w.wtNote(3, 'وصل عرضُ السعر'); await wait(100);
 T(w.wtSince().items.length === 1 && /وصل عرضُ السعر/.test(w.wtSince().items[0].what), 'وأوّلُ تغييرٍ بعده يُحسَب');
 const sheet = w.SHEETS.wtsince(); T(sheet.length === 2 && sheet[1][1] === 'شراء الراوترات' && /وصل عرضُ السعر/.test(sheet[1][3]), 'وقسمُ التقرير «ما تغيّر» يقرؤه من السجل نفسِه');
-T(w.EXP_SECS.some(x => x[0] === 'wtsince') && w.EXP_PAGE.wtsince === 'wtask', 'والقسمُ مسجَّلٌ في التصدير وصفحته');
+T(w.EXP.secs.some(x => x[0] === 'wtsince') && w.EXP.page.wtsince === 'wtask', 'والقسمُ مسجَّلٌ في التصدير وصفحته');
 
 /* ٦ · المشرفُ يقرأ ولا يجد زرًّا */
 w.ROLE = 'supervisor'; w.render(1); await wait(150);

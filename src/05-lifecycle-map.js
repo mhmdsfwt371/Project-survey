@@ -1266,9 +1266,9 @@ var SHEET_NAMES = {
 /* ═══ إكسلُ الصفحة الحالية كاملةً ═══
    «صفحةٌ فيها مئةُ سجلٍّ في عشرِ صفحاتٍ — عايز إكسل بكلِّ اللي فيها مرةً واحدة».
    الصفحاتُ تُقصُّ للعرض (slice(0,n) و«عرض المزيد») لا للبيانات؛ فتُعاد
-   بناءُ الصفحة في عنصرٍ منفصلٍ وكلُّ قصٍّ للعرض معطَّلٌ (XLS_ALL)، ثم يُقرأ كلُّ
+   بناءُ الصفحة في عنصرٍ منفصلٍ وكلُّ قصٍّ للعرض معطَّلٌ (EXP.xlsAll)، ثم يُقرأ كلُّ
    جدولٍ فيها ورقةً باسم بطاقته — فيخرج ما في الصفحة كلُّه، لا ما تراه العين. */
-var XLS_ALL = false;
+EXP.xlsAll = false;
 /* التخزينُ المحليُّ قد يكون معطَّلًا (تصفّحٌ خاصّ) — يُلتقَط ويُذكَر مرةً */
 var LS_ERR = null;
 function lsGet(k){ try { return localStorage.getItem(k); } catch (e){ LS_ERR = e; return null; } }
@@ -1279,16 +1279,16 @@ function xlsPage(){
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return false; }
     var html = '', origSlice = Array.prototype.slice;
-    XLS_ALL = true;
+    EXP.xlsAll = true;
     try {
       /* قصُّ العرض slice(0, n≥10) على المصفوفات يُعطَّل أثناء البناء وحدَه */
       Array.prototype.slice = function(a, b){
-        if (XLS_ALL && (a === 0 || a === undefined) && typeof b === 'number' && b >= 10 && this.length > b) return origSlice.call(this, 0);
+        if (EXP.xlsAll && (a === 0 || a === undefined) && typeof b === 'number' && b >= 10 && this.length > b) return origSlice.call(this, 0);
         return origSlice.apply(this, arguments);
       };
       html = p.body();
     } catch (e){ softErr('إكسل الصفحة', e, 'تعذّر بناءُ الصفحة للتصدير'); }
-    finally { Array.prototype.slice = origSlice; XLS_ALL = false; }
+    finally { Array.prototype.slice = origSlice; EXP.xlsAll = false; }
     if (!html) return false;
     var box = document.createElement('div'); box.innerHTML = html;
     var wb = XLSX.utils.book_new(), n = 0, used = {};
@@ -4584,8 +4584,8 @@ function kioskBody(){
    حالةُ المهام، والتركيبات، والشركات، والمعوقات وجهاتُها، والتحدياتُ وآلياتُ معالجتها،
    وطلباتُ الوزارة، والمنحنى اليومي، وشاشةُ القاعة. سجلّا التحديات والطلبات وتصنيفُ
    الجهات ولقطاتُ الأسابيع في settings/mfu (يقرؤها كلُّ نشطٍ ويكتبها المكتب). */
-var MFU = { at:0, v:null }, MFU_COS_ALL = false, MFU_EDIT = '';   /* الصفُّ المفتوحُ للتعديل (V21.5) */
-var MFU_PARTIES = ['شركة الخدمة', 'كدانة', 'أفاقي'];
+var MFU = { at:0, v:null, cosAll:false, edit:'' };   /* (V32.0) وحدةُ المتابعة تملك حالتَها: cosAll/edit/parties/prn/ownDef/flt/f/src/sections */   /* الصفُّ المفتوحُ للتعديل (V21.5) */
+MFU.parties = ['شركة الخدمة', 'كدانة', 'أفاقي'];
 /* (V26.6) جهاتٌ أخرى يضيفها المكتب من صفحة التحديات والمعوقات (سؤالُ المالك: «لو في حد تاني أضيفه منين؟») — تُحفَظ في
    settings/mfu قسم party فتصل الأجهزةَ كلَّها، وتظهر في قوائم الجهات والبطاقات والتصدير. الثلاثُ الأصليةُ لا تُحذَف. */
 /* (V26.8) قرارُ المالك: الجهاتُ كلُّها — الأصليةُ والمضافة — تُعدَّل أسماؤها وتُحذَف. المفتاحُ ثابتٌ (اسمُ الأصلية أو اسمُ
@@ -4594,12 +4594,12 @@ var MFU_PARTIES = ['شركة الخدمة', 'كدانة', 'أفاقي'];
 function mfuPartyRaw(k){ return (mfuData().party || {})[k] || null; }
 function mfuPartyLabel(k){ var r = mfuPartyRaw(k); return (r && r.t) ? String(r.t) : String(k); }
 function mfuParties(){
-  var out = MFU_PARTIES.filter(function(k){ var r = mfuPartyRaw(k); return !(r && r.gone); });
-  mfuList('party').forEach(function(x){ if (MFU_PARTIES.indexOf(x.id) < 0 && out.indexOf(x.id) < 0) out.push(x.id); });
+  var out = MFU.parties.filter(function(k){ var r = mfuPartyRaw(k); return !(r && r.gone); });
+  mfuList('party').forEach(function(x){ if (MFU.parties.indexOf(x.id) < 0 && out.indexOf(x.id) < 0) out.push(x.id); });
   return out;
 }
-var MFU_PRN = '';   /* الجهةُ المفتوحةُ لتعديل اسمها */
-var MFU_OWN_DEF = { 'العارضة الحديدية ناقصة أو غير مكتملة':'كدانة', 'لا يوجد سطح تثبيت':'كدانة', 'المدخل غير واضح — لم يُستدل عليه':'أفاقي', 'تعذّر الوصول':'أفاقي' };
+MFU.prn = '';   /* الجهةُ المفتوحةُ لتعديل اسمها */
+MFU.ownDef = { 'العارضة الحديدية ناقصة أو غير مكتملة':'كدانة', 'لا يوجد سطح تثبيت':'كدانة', 'المدخل غير واضح — لم يُستدل عليه':'أفاقي', 'تعذّر الوصول':'أفاقي' };
 function mfuFetch(force){
   if (!force && (MFU.v || Date.now() - MFU.at < 600000)) return;
   if (!FB.ready || !FB.db){ MFU.v = MFU.v || STATE.mfu || {}; return; }
@@ -4620,7 +4620,7 @@ function mfuPut(sec, id, entry){
   var w = {}; w[sec] = {}; w[sec][id] = entry; CORE.set('cfg', 'mfu', w);
   return true;
 }
-function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || MFU_OWN_DEF[cat] || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
+function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || MFU.ownDef[cat] || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
 /* العائقُ: نقطةٌ لم تُركَّب وفي مسحها تحدٍّ حقيقيّ، أو لم يُوصَل إليها */
 function mfuObstacles(){
   var out = [];

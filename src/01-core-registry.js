@@ -1939,6 +1939,8 @@ var FB = {
    كلُّ حديثٍ مع القاعدة يمرّ من هنا — لا FB.db.collection في أيِّ مكانٍ آخر (جردُ الصحة يرفضه).
    الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى
    يُكتَب محوِّلٌ واحدٌ هنا يحاكي هذه الواجهة — ولا يُلمَس شيءٌ في الصفحات. */
+/* (V32.0) وحدةُ التقارير والتصدير تملك حالتَها: scope/chk/secs/page/xlsAll/pptxTpl/repSide */
+var EXP = {};
 var DB = {
   ready: function(){ return !!(FB.ready && FB.db); },
   col:   function(name){ return FB.db.collection(name); },

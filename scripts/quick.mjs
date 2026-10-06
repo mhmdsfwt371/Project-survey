@@ -52,7 +52,7 @@ const MAP = [
   [/ROLES|ROLE_RANK|nav:|can:|seesPage|may\(/, ['roles', 'crole', 'tabs', 'hier', 'perms']],
   [/PAGE\.|TABS|PTAB|NAV\b/,          ['tabs', 'roles', 'buttons', 'i18n']],
   [/data-[a-z]+=/i,                   ['buttons', 'writes']],
-  [/SHEETS|xlsExport|EXP_SECS|expAllowed/, ['exports', 'xls']],
+  [/SHEETS|xlsExport|EXP.secs|expAllowed/, ['exports', 'xls']],
   [/siteStats|siteKeyStats|lifeOf|LIFE|svDone|svLabel/, ['calc', 'zero', 'invariants']],
   [/mile|MILES|BASE|baseline|evm/i,   ['calc', 'plan', 'zero']],
   [/provision|pwFlow|ghRunNow|ghToken/, ['accounts', 'dupe', 'e2e-accounts', 'invite']],
