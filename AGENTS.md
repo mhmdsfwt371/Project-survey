@@ -86,3 +86,8 @@ npm i --no-save --no-audit --no-fund jsdom@^24 docx@^9 jszip@^3 eslint@9 globals
 | التصدير القياسي | `geoJsonBuild()` — والمخطّطُ من `scripts/schema-gen.mjs` |
 | التوأم | `twinOf()`، `dupMerge()` |
 | السيور | `season.yml` التغذية · `pulse.yml` النبض · `ministry.yml` الوزارة · `myafaqy.yml` الجسر · `backup.yml` النسخ |
+
+## سياسةُ الإصدار (V33.0)
+- غيرُ العاجل يُدفع إلى `staging` بلا ذيل، ويرقّيه قطارُ الإصدار مرةً يوميًّا — تحديثٌ واحدٌ للميدان في اليوم.
+- `Release: hotfix` في ذيل الالتزام للعاجل وحدَه: خطأٌ يوقف عملَ الميدان، أو رقمٌ خاطئٌ أمام الوزارة، أو ثغرةٌ أمنية.
+- المستلِمُ يبدأ بـ`docs/START-HERE.md`.

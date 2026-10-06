@@ -2584,7 +2584,7 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
           + '<div class="field"><label>' + esc(t('كلمة المرور')) + ' <span class="req">*</span></label>'
           +   '<input id="uP" type="password" dir="ltr" minlength="10"></div>'
           + '<div class="field"><label>' + esc(t('البريد')) + '</label>'
-          +   '<input id="uE" dir="ltr" type="email" placeholder="m.ahmed@afaqy.com"></div>'
+          +   '<input id="uE" dir="ltr" type="email" placeholder="name@afaqy.com"></div>'
           + '<div class="field"><label>' + esc(t('الدور')) + '</label>'
           +   '<select id="uR">'
           +   rolesICanMake().map(function(k){

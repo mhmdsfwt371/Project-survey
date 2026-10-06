@@ -7,6 +7,8 @@ import { appendFileSync, mkdirSync, writeFileSync } from 'fs';
 const STEPS = [
   ['البناءُ مطابقٌ للمصدر', 'node scripts/build.mjs --check'],
   ['فاحصُ النحو', 'node scripts/audit-lint.mjs'],
+  ['الأسرارُ والسجلّاتُ العامة', 'node scripts/audit-secrets.mjs'],
+  ['حزمةُ التسليم', 'node scripts/audit-runbooks.mjs'],
   ['صحةُ الكود — لا تراجع', 'node scripts/audit-health.mjs'],
   ['اختباراتُ الوحدة السريعة', 'node --test scripts/unit-core.mjs'],
   ['ما الجديد والنسخة', 'node scripts/audit-whatsnew.mjs'],

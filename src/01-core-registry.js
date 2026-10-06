@@ -1693,7 +1693,8 @@ var FB = {
       readDelta('photos', 'photos', 1500);
       /* مفتاحُ التشغيل: يكتبه مديرُ المشروع، ويقرؤه من يُنشئ الحساباتِ ويُعيد
          الكلمات — المشرفُ فما فوق والإدارةُ العليا — فلا يُرسَل أحدٌ إلى GitHub */
-      if (may('roles') || may('provision') || effRole(ROLE) === 'exec'){
+      /* (V33.0) كما تسمح القواعدُ حرفًا: مديرُ المشروع والإدارةُ العليا — كان المشرفُ والمهندسُ يطلبانه فتُرفَض القراءةُ ويُسجَّل عطل */
+      if (effRole(ROLE) === 'admin' || effRole(ROLE) === 'exec'){
         DB.col('ghcfg').doc('gh').get().then(function(doc){
           FB.readCount = (FB.readCount || 0) + doc.size;
           if (doc && doc.exists){ CFG.gh = doc.data() || {}; }

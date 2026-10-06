@@ -47,6 +47,16 @@ String(process.env.TEAM || '').split(/\r?\n/).forEach((line, i) => {
   direct.push({ id:'direct-' + (i + 1), data:{ name:c[0] || c[1], user:(c[1] || '').replace(/\s+/g, ''), role: role || 'tech', roleExplicit: !!(c[2] && role),
     pass:c[3] || '', job:c[4] || '', crew:c[5] || '', by:'workflow_dispatch', status:'pending' }, direct:true, badRole:!role && roleRaw });
 });
+/* (V33.0) أمن: كلمةُ مرور الحساب الجديد كانت تبقى نصًّا في وثيقة الطلب حتى يمحوها المديرُ يدويًّا بعد تصدير الورقة — فإن نسي بقيت.
+   صارت تُمحى تلقائيًّا بعد ٧٢ ساعةً من الإنشاء (الحسابُ يُجبر صاحبَه على تغييرها عند أوّل دخولٍ أصلًا — mustChange). */
+const WIPE_MS = 72 * 3600e3;
+try {
+  const old = await db.collection('provision').where('status', '==', 'done').limit(500).get();
+  let wiped = 0;
+  for (const d of old.docs){ const x = d.data() || {};
+    if (x.pass && +x.doneAt && Date.now() - +x.doneAt > WIPE_MS){ await d.ref.set({ pass: admin.firestore.FieldValue.delete(), passWipedAt: Date.now() }, { merge: true }); wiped++; } }
+  if (wiped) console.log(`مُحيت ${wiped} كلمةَ مرورٍ لطلباتٍ أُنجزت قبل أكثر من ٧٢ ساعة`);
+} catch (e){ console.log('::warning title=محوُ الكلمات::' + String(e && e.message || e).slice(0, 160)); }
 const snap = await db.collection('provision').where('status', '==', 'pending').limit(300).get();
 const docs = snap.docs.map(d => ({ id:d.id, data:d.data(), ref:d.ref }))
   .concat(direct.map(x => ({ id:x.data.user || x.id, data:x.data, ref:db.collection('provision').doc(x.data.user || x.id), direct:true, badRole:x.badRole })));
@@ -139,7 +149,8 @@ for (const d of docs){
     done++;
     console.log(`  ✓ ${user} → ${u.uid}`);
     /* تنبيهٌ يُقرأ من واجهة GitHub البرمجية: مَن أُنشئ فعلًا لا في السجل وحده */
-    console.log(`::notice title=${user}::أُنشئ — ${p.role || 'tech'} — ${u.uid}` + (d.direct ? ` — كلمةُ الدخول: ${pass}` : ''));
+    /* (V33.0) أمن: كانت الكلمةُ تُطبَع هنا للمسار المباشر — وسجلُّ التشغيل في مستودعٍ عامٍّ مقروءٌ للجميع. الكلمةُ في وثيقة الطلب للمدير وحدَه */
+    console.log(`::notice title=${user}::أُنشئ — ${p.role || 'tech'} — ${u.uid}` + (d.direct ? ' — الكلمةُ في وثيقة الطلب (تُصدَّر من «الحسابات»)' : ''));
   } catch (e){
     failed++;
     const why = String(e && (e.message || e.code) || e).slice(0, 160);
