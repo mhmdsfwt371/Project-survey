@@ -144,7 +144,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
 {
   await open('mfu', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
   const kk = txt(), h = d.getElementById('content').innerHTML;
-  T((h.match(/kk-ring/g) || []).length === 5 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ ومخيماتٌ بلا عائق وزرُّ العرض الكامل (V30.0)');
+  T(d.getElementById('kksec-1') && d.getElementById('kksec-1').querySelectorAll('.kk-ring').length === 5 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ ومخيماتٌ بلا عائق وزرُّ العرض الكامل (V30.0 — تُعَدّ في صفِّها، والبطاقاتُ تحتها V33.3)');
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */
@@ -156,7 +156,14 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   /* (V33.0) طلبُ المالك: صندوقُ «ما ينتظر قرارًا» صار «النقاط بعوائق وبدونها» — الإجماليُّ أوّلًا ثم كلُّ نوع، وبعوائق + بدون + لم تُزَر = الكلّ */
   { const KO = w.kioskObsTally(); const sumBy = Object.values(KO.by).reduce((a, o) => a + o.ok + o.ob + o.todo, 0);
     T(h.indexOf('النقاط بعوائق وبدونها') > -1 && KO.T.ok + KO.T.ob === VISITED && KO.T.todo === TOTAL - VISITED && sumBy === TOTAL, 'وصندوقُ «النقاط بعوائق وبدونها»: بدون ' + KO.T.ok + ' + بعوائق ' + KO.T.ob + ' = تمت الزيارة ' + VISITED + '، وكلُّ نوعٍ يُجمَع إلى الكلّ');
-    T(KO.T.ok === w.svListRows('clean').length && KO.T.ob === w.svListRows('chal').length, 'وأرقامُه نفسُ قائمتَي الملخّص «بلا عوائق» و«بعوائق»'); }
+    T(KO.T.ok === w.svListRows('clean').length && KO.T.ob === w.svListRows('chal').length, 'وأرقامُه نفسُ قائمتَي الملخّص «بلا عوائق» و«بعوائق»');
+    /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات، وكلُّ رقمٍ يفتح قائمتَه — وعددُ صفوفها هو الرقمُ نفسُه */
+    const sec = d.getElementById('kksec-4'), r1 = d.getElementById('kksec-1'), z2 = d.getElementById('kksec-2');
+    const nums = sec ? [...sec.querySelectorAll('[data-svlist]')] : [];
+    const bad = nums.filter(el => +el.querySelector('[aria-valuenow]').getAttribute('aria-valuenow') !== w.svListRows(el.getAttribute('data-svlist')).length).map(el => el.getAttribute('data-svlist'));
+    T(sec && r1 && z2 && (r1.compareDocumentPosition(sec) & 4) && (sec.compareDocumentPosition(z2) & 4) && sec.querySelectorAll('.kk-ring').length === 1 + Object.keys(KO.by).length,
+      'وصارت بطاقاتٍ تحت الحلقات وقبل المشاعر: الإجماليُّ وبطاقةٌ لكلِّ نوع (' + (sec ? sec.querySelectorAll('.kk-ring').length : 0) + ')');
+    T(nums.length === 2 * (1 + Object.keys(KO.by).length) && !bad.length, 'وكلُّ رقمٍ فيها (' + nums.length + ') يفتح قائمتَه بعدده نفسِه' + (bad.length ? ' — يخالف: ' + bad.join('، ') : '')); }
   const zsum = Object.values(w.siteKeyStats().zones).reduce((a, o) => a + o.sv, 0);
   T(zsum === VISITED, 'وأشرطةُ المشاعر تُجمَع إلى ما زير: ' + zsum);
   /* «متى نخلّص؟» (V17.83): المشعرُ الذي فيه سجلاتُ آخر أسبوعين له توقّع، والراكدُ يُقال فيه «لا وتيرة» */

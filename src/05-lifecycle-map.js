@@ -4460,18 +4460,18 @@ function kioskObsTally(){
 }
 function kioskObsHtml(){
   var K = kioskObsTally(), types = TAX_T.filter(function(ty){ return K.by[ty]; });
-  /* كلُّ رقمٍ تحته اسمُه — الأخضرُ بدون عوائق والأحمرُ بعوائق — ثم ما لم تتم زيارتُه والكلّ */
-  var col = function(v, color, lbl, big){ return '<div style="flex:1;min-width:0"><div style="color:' + color + ';font-weight:800;font-size:' + (big ? '34px' : '22px') + ';line-height:1.1">' + nm(v) + '</div>'
-      + '<div class="kk-sub" style="margin-top:2px">' + esc(t(lbl)) + '</div></div>'; };
-  var two = function(o, big){ return '<div style="display:flex;gap:6px;justify-content:center;text-align:center">'
-      + col(o.ok, 'var(--min-green)', 'بدون عوائق', big) + col(o.ob, 'var(--min-red)', 'بعوائق', big) + '</div>'
-      + '<div class="kk-sub" style="margin-top:4px;opacity:.8">' + (o.todo ? esc(t('لم تتم زيارتها')) + ' ' + nm(o.todo) + ' \u00b7 ' : '') + esc(t('من')) + ' ' + nm(o.n) + '</div>'; };
-  return '<div class="kk-box kk-wide" id="kksec-4"><div class="kk-h">' + esc(t('النقاط بعوائق وبدونها')) + '</div>'
-    + '<div class="kk-kind" style="text-align:center;margin:0 0 10px"><div class="kk-lab">' + esc(t('الإجمالي')) + '</div>' + two(K.T, true) + '</div>'
-    + '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px">'
-    + types.map(function(ty){ var d = TAX_DEF[ty] || { l:ty, i:'\u25CF' }, o = K.by[ty];
-        return '<div class="kk-kind" style="text-align:center"><div class="kk-lab">' + d.i + ' ' + esc(t(d.l)) + '</div>' + two(o, false) + '</div>'; }).join('')
-    + '</div></div>';
+  /* رقمٌ كبيرٌ يُضغَط فيفتح قائمتَه (data-svlist) — الأخضرُ بدون عوائق والأحمرُ بعوائق */
+  var num = function(v, color, lbl, key, big){ return '<div role="button" tabindex="0" data-svlist="' + esc(key) + '" title="' + esc(t('اضغط للقائمة والتصدير')) + '" style="flex:1;min-width:0;cursor:pointer;border-radius:12px;padding:4px 2px">'
+      + '<div style="color:' + color + ';font-weight:800;font-size:' + (big ? '44px' : '30px') + ';line-height:1.05;font-variant-numeric:tabular-nums" aria-valuenow="' + v + '">' + nm(v) + '</div>'
+      + '<div class="kk-sub" style="white-space:nowrap">' + esc(t(lbl)) + ' \u203A</div></div>'; };
+  var card = function(title, o, okKey, obKey, big){ return '<div class="kk-ring kk-plain"' + (big ? ' style="grid-column:1/-1"' : '') + '><div class="kk-lab" style="margin:0 0 6px">' + title + '</div>'
+      + '<div style="display:flex;gap:6px;justify-content:center;text-align:center">' + num(o.ok, 'var(--min-green)', 'بدون عوائق', okKey, big) + num(o.ob, 'var(--min-red)', 'بعوائق', obKey, big) + '</div>'
+      + '<div class="kk-sub" style="margin-top:4px">' + (o.todo ? esc(t('لم تتم زيارتها')) + ' ' + nm(o.todo) + ' \u00b7 ' : '') + esc(t('من')) + ' ' + nm(o.n) + '</div></div>'; };
+  return '<div class="kk-h" style="margin:14px 2px 8px">' + esc(t('النقاط بعوائق وبدونها')) + '</div>'
+    + '<div class="kk-rings" id="kksec-4">'
+    +   card(esc(t('الإجمالي')), K.T, 'clean', 'chal', true)
+    +   types.map(function(ty){ var d = TAX_DEF[ty] || { l:ty, i:'\u25CF' }; return card(d.i + ' ' + esc(t(d.l)), K.by[ty], 'obok|' + ty, 'obbad|' + ty, false); }).join('')
+    + '</div>';
 }
 function kioskStory(){
   var K = siteKeyStats(), now = Date.now(), wk = now - 7 * 864e5, n7 = 0, byZ = {};
@@ -4554,7 +4554,7 @@ function kioskBody(){
   var chTop = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 4);
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
-  return '<div class="kk' + (KIOSK_ON ? ' on' : '') + '">'
+  return svListPop() + '<div class="kk' + (KIOSK_ON ? ' on' : '') + '">'
     + '<div class="kk-head"><div><div class="kk-title">' + esc(t('قارئات أفاقي — حج ١٤٤٨هـ')) + '</div>'
     +   '<div class="kk-brand">' + esc(t('وزارةُ الحج والعمرة · مشروعُ قارئات أفاقي')) + '</div>'
     +   '<div class="kk-date">' + esc(fmtDT(now)) + ' \u00b7 <span class="kk-live"></span> ' + esc(t('يتجدّد كلَّ دقيقة')) + '</div></div>'
@@ -4571,6 +4571,7 @@ function kioskBody(){
           return '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-green)" aria-valuenow="' + ok + '">' + nm(ok) + '</div><div class="kk-lab">' + esc(t('مخيمات بلا عائق')) + '</div>'
             + '<div class="kk-sub">' + esc(t('تمت الزيارة وتم الوصول بلا تحديات')) + ' \u00b7 ' + nm(camps ? Math.round(ok / camps * 100) : 0) + '٪ ' + esc(t('من')) + ' ' + nm(camps) + '</div></div>'; })()
     + '</div>'
+    + kioskObsHtml()   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
     +     zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
@@ -4598,7 +4599,6 @@ function kioskBody(){
             + '<div class="kk-kind"><div class="kk-big">' + nm(Object.keys(people).length) + '</div><div class="kk-lab">' + esc(t('شخصًا في الميدان')) + '</div></div></div>'
           : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>')
     +   '</div>'
-    +   kioskObsHtml()   /* (V33.0) طلبُ المالك: بعوائق وبدونها — الإجماليُّ أوّلًا ثم كلُّ نوع */
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('التحدياتُ الأكثرُ تكرارًا')) + '</div>'
     +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
                        : '<p class="hint">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>')

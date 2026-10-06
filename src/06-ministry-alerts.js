@@ -46,8 +46,12 @@ MFU.lists = {
   wwait: { title:'متوقفة أو بانتظار قرار', head:['المهمة', 'المسؤول', 'الحالة', 'الاستحقاق'], rows:function(){ return mfuWeekBlocks().wait.map(mfuWtRow); } }
 };
 function mfuWtRow(r){ return [String(r.n || ''), String(dispName(r.who || '')), String(r.st || ''), String(r.due || '')]; }
+/* (V33.3) بطاقاتُ القاعة: قائمةُ نوعٍ بعينه بدون عوائق أو بعوائق — المفتاحُ obok|<النوع> أو obbad|<النوع> */
+function svObKey(key){ var m = /^(obok|obbad)\|(.+)$/.exec(String(key || '')); return m ? { bad:m[1] === 'obbad', ty:m[2] } : null; }
 function svListRows0(key){
   if (MFU.lists[key]) return MFU.lists[key].rows();
+  var OK = svObKey(key);
+  if (OK) return svListRows0(OK.bad ? 'chal' : 'clean').filter(function(row){ var x = siteFind(row[0]); return x && taxOf(x).t === OK.ty; });
   var L = SV_LISTS[key];
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
@@ -63,9 +67,9 @@ function svListRows0(key){
   });
 }
 function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
-function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
+function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
-  if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || /^al_/.test(SV_POP))) return '';
+  if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
@@ -78,7 +82,7 @@ function svListPop(){
     + '</div>';
 }
 function svListXlsx(key){
-  var L = SV_LISTS[key] || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (/^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
+  var L = SV_LISTS[key] || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (svObKey(key) || /^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
@@ -2547,6 +2551,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V33.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'شاشة القاعة: «النقاط بعوائق وبدونها» بقت بطاقات فوق تحت الحلقات على طول — الإجمالي الأول وبعده بطاقة لكل نوع من المخيمات للزايدي. واضغط أي رقم (الأخضر أو الأحمر) تفتح قائمة نقاطه بالتفاصيل وتصدير إكسل.' ] },
   { v:'V33.2', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'المساعد 🧭 بقى يشرح المصطلحات: لو سألت عن «متعذر» أو «شاشة القاعة» أو «بعوائق» أو «الحفظ المحلي» يرد بالتعريف الأول وبعدين الصفحة وخطواتها. وفيه خطوات جديدة لملخص الوزارة وشاشة القاعة.',
       'دليل المستخدم اتكتب من جديد على الشاشات الحالية، وبيتولّد مع كل نسخة ومعاه المصطلحات و«ما الجديد». وأدلة الأدوار الـ١٤ كمان فيها المصطلحات وآخر التحديثات.' ] },
