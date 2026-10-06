@@ -709,9 +709,9 @@ var SHEETS = {
     return out;
   },
   minappr: function(){
-    var out = [['النقطة','الاسم','المشعر','المربع','الشاخص','الشركة','المشرف','تاريخ الزيارة','الاعتماد التقني','تاريخه','حالة الوزارة','بواسطة','تاريخه','ملاحظة الوزارة','نوع التركيب','مصدر الكهرباء','العرض المتاح','الارتفاع المتاح','التحديات']];
+    var out = [['رقم الشاخص / الاسم','النقطة','الاسم','المشعر','المربع','الشاخص','الشركة','المشرف','تاريخ الزيارة','الاعتماد التقني','تاريخه','حالة الوزارة','بواسطة','تاريخه','ملاحظة الوزارة','نوع التركيب','مصدر الكهرباء','العرض المتاح','الارتفاع المتاح','التحديات']];
     surveyList().filter(function(x){ return x.rec && svReview(x.rec) === 'approved'; }).forEach(function(x){ var r = x.rec, ms = minState(r);
-      out.push([x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
+      out.push([siteKey(x.site), x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
                 ms === 'approved' ? 'اعتمدت الوزارة' : (ms === 'returned' ? 'أعادتها الوزارة' : 'بانتظار الوزارة'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
                 r.mount || '', r.power || '', r.wid_m != null ? r.wid_m : '', r.hgt_m != null ? r.hgt_m : '', (r.chals || []).join(' · ')]); });
     return out;
@@ -768,11 +768,11 @@ var SHEETS = {
     return out;
   },
   sites: function(){
-    var out = [['المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
+    var out = [['رقم الشاخص / الاسم','المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
                 'خط العرض','خط الطول','حالة المسح','حالة التركيب']];
     /* ما رُشِّح على الخريطة والقائمة هو ما يُصدَّر — وبلا ترشيحٍ الكلُّ */
     (typeof filtered === 'function' ? filtered() : STATE.sites).forEach(function(x){
-      out.push([x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
+      out.push([siteKey(x), x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
                 svLabel(STATE.recs[x.id]),
                 (STATE.inss[x.id]||{}).status || x.fstat || 'لم يبدأ']);
     });
@@ -1087,10 +1087,10 @@ var SHEETS = {
     return out;
   },
   ips: function(){
-    var out = [['معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
+    var out = [['رقم الشاخص / الاسم','معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
     (STATE.sites || []).forEach(function(x){
       if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return;
-      out.push([x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
+      out.push([siteKey(x), x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
     });
     return out;
   },
@@ -3563,7 +3563,7 @@ function coPopHtml(){
   var co = CO_POP.co, kind = CO_POP.kind, L = coPopRows(co, kind);
   var rows = L.map(function(o){
     var x = o.x;
-    return ['<strong>' + esc(x.name || x.id) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
+    return ['<strong>' + esc(siteKey(x) !== x.id ? siteKey(x) : (x.name || x.id)) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
             esc(x.sign || '—'),
             esc(t(x.zone || '—')) + (x.sq ? ' \u00b7 ' + esc(x.sq) : ''),
             esc(o.why.slice(0, 90)),
@@ -4220,9 +4220,9 @@ function svdWhy(o){
 function svdXls(){
   var c = SVD_CARDS.filter(function(x){ return x.k === SVD_PICK; })[0];
   if (!c) return;
-  var out = [['المعرّف','الاسم','المشعر','النوع','الشركة','المربع','الشاخص','الغرف/الخيام','مصدر العدد','الحالة','التحديات','مَن زار','متى','خط العرض','خط الطول']];
+  var out = [['رقم الشاخص / الاسم','المعرّف','الاسم','المشعر','النوع','الشركة','المربع','الشاخص','الغرف/الخيام','مصدر العدد','الحالة','التحديات','مَن زار','متى','خط العرض','خط الطول']];
   svdPicked().forEach(function(o){
-    out.push([o.x.id, o.x.name || '', o.x.zone || '', o.x.type || '', o.x.co || '', o.x.sq || '', o.x.sign || '',
+    out.push([siteKey(o.x), o.x.id, o.x.name || '', o.x.zone || '', o.x.type || '', o.x.co || '', o.x.sq || '', o.x.sign || '',
               o.rooms || '', SVD_SRC[o.src] || '', (LIFE[o.life] && LIFE[o.life].n) || '',
               o.ch.join(' | ') || (o.r ? 'لا توجد تحديات' : ''), (o.r && o.r.by) || '', o.r ? dayKey(o.r.at || 0) : '',
               o.x.lat || '', o.x.lng || '']);
@@ -4266,7 +4266,7 @@ function svdashBody(){
                 ? table(['المعرّف','المشعر','الغرف','الحالة','ما فيها','مَن زار','متى',''],
                     L.slice(0, 400).map(function(o){
                       var lf = LIFE[o.life];
-                      return ['<strong>' + esc(o.x.id) + '</strong>'
+                      return [siteIdHtml(o.x)
                                 + (o.x.name ? '<br><span class="hint" style="margin:0">' + esc(o.x.name) + '</span>' : ''),
                               esc(t(o.x.zone || '')) + '<br><span class="hint" style="margin:0">' + esc(t(o.x.type || '')) + '</span>',
                               (o.rooms ? N(o.rooms) : '\u2014')
@@ -4528,14 +4528,14 @@ function kioskStory(){
 /* (V34.3) طلبُ المالك: «الحلقةُ ١٠٠٪ أحمر، ولما تعدّ حاجة يقلّ الأحمرُ ويتحوّل أخضرَ بنسبته» — كلُّ حلقةٍ تُرسَم حمراءَ كاملة ثم يزحف
    الأخضرُ إلى نسبتها (انتقالُ ‎.kk-arc‎ ١٫٢ ث على بطاقة الرسوم). تُستدعى بعد كلِّ رسمٍ فيه حلقات — في الملخّص والقاعة. */
 function ringsGrow(){
-  var arcs = document.querySelectorAll('.kk-arc[data-off]'); if (!arcs.length) return;
+  var arcs = document.querySelectorAll('.kk-arc[kkoff]'); if (!arcs.length) return;
   var prev = ringsGrow.prev = ringsGrow.prev || {}, grow = [];
   /* التحديثُ الدوريُّ (كلَّ دقيقةٍ في القاعة) لا يعيد الحركةَ لحلقةٍ لم يتغيّر رقمُها — يزحف الأخضرُ حين يُنجَز شيءٌ فقط */
-  arcs.forEach(function(a){ var ring = a.closest('.kk-ring'), k = (ring && ring.getAttribute('data-svlist')) || '', off = a.getAttribute('data-off');
-    if (k && prev[k] === off){ a.style.transition = 'none'; a.style.strokeDashoffset = off; a.removeAttribute('data-off'); }
+  arcs.forEach(function(a){ var ring = a.closest('.kk-ring'), k = (ring && ring.getAttribute('data-svlist')) || '', off = a.getAttribute('kkoff');
+    if (k && prev[k] === off){ a.style.transition = 'none'; a.style.strokeDashoffset = off; a.removeAttribute('kkoff'); }
     else { prev[k] = off; grow.push(a); } });
   if (!grow.length) return;
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){ grow.forEach(function(a){ a.style.strokeDashoffset = a.getAttribute('data-off'); a.removeAttribute('data-off'); }); }); });
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ grow.forEach(function(a){ a.style.strokeDashoffset = a.getAttribute('kkoff'); a.removeAttribute('kkoff'); }); }); });
 }
 function kioskAnimate(){
   var els = document.querySelectorAll('.kk [aria-valuenow]');
@@ -4570,7 +4570,7 @@ function kioskRing(done, total, label, doneKey, remKey, idle){
   var vis = rem ? Math.min(p, 98) : p, off = (c * (1 - vis / 100)).toFixed(1), same = ringsGrow.prev && ringsGrow.prev[doneKey] === off;
   return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' data-off="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' kkoff="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)

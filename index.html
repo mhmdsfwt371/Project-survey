@@ -1225,7 +1225,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.4</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V35.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1287,7 +1287,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-713e22d6cf.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-0102e4e18d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3831,7 +3831,7 @@ function siteOvApply(){
     if (x.hidden) hid.push(x); else keep.push(x);
   });
   STATE.sites = keep; STATE.hiddenSites = hid;
-  SITE_IX = null; SITE_TOK = null;
+  SITE_IX = null; SITE_TOK = null; if (typeof siteKey === 'function') siteKey.u = null;   /* (V35.0) تفرّدُ الشاخص يُعاد حسابُه */
 }
 /* ═══ تصحيحُ البيانات جماعةً (V17.54) ═══
    مراجعةُ السجلِّ كشفت أربعةَ عيوبٍ في البيانات لا في الشيفرة: نقاطٌ على
@@ -7254,7 +7254,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
                 capList(L, 200).map(function(x){
                   var r = STATE.inss[x.id];
                   var st2 = (r && r.status) || (svVisited(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
-                  return ['<span class="num">' + esc(x.id) + '</span>',
+                  return [siteIdHtml(x),
                           esc(x.name), esc(t(x.zone)),
                           pill(t(st2), st2 === 'مُركّب' ? 'ok' : 'warn'),
                           btn('أزل','btn-quiet btn-sm',' data-selrm="' + esc(x.id) + '"')];
@@ -7357,7 +7357,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               ? '<div class="grid cols-3">'
                 + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
                 +   '<select id="hoSite">' + ready.slice(0, 400).map(function(x){
-                      return '<option value="' + esc(x.id) + '">' + esc(x.id) + ' \u2014 '
+                      return '<option value="' + esc(x.id) + '">' + esc(siteKey(x)) + (siteKey(x) !== x.id ? ' (' + esc(x.id) + ')' : '') + ' \u2014 '
                         + esc((x.name || '').slice(0, 30)) + '</option>'; }).join('') + '</select></div>'
                 + '<div class="field"><label>' + esc(t('المستلِم عن العميل')) + ' <span class="req">*</span></label>'
                 +   '<input id="hoTo" dir="auto" placeholder="' + esc(t('الاسم والصفة')) + '"></div>'
@@ -7423,7 +7423,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               capList(handedL, 200).map(function(x){
                 var h = handOf(x.id);
                 var end = new Date(h.at + (h.warranty || 12) * 30 * 86400000);
-                return ['<span class="num">' + esc(x.id) + '</span>',
+                return [siteIdHtml(x),
                         '<span class="num">' + esc(h.no) + '</span>',
                         esc(h.to), '<span class="num">' + esc(fmtDate(h.at)) + '</span>',
                         '<span class="num">' + esc(fmtDate(end)) + '</span>'];
@@ -7483,7 +7483,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               done.slice(0, 60).map(function(x){
                 var r = STATE.diss[x.id];
                 var bad = Object.keys(r.items || {}).filter(function(k){ return r.items[k].cond !== 'سليم'; }).length;
-                return ['<span class="num">' + esc(x.id) + '</span>',
+                return [siteIdHtml(x),
                         '<span class="num">' + esc(fmtDate(r.at)) + '</span>',
                         esc(dispName(r.by)),
                         N(Object.keys(r.items || {}).length) + (bad ? ' \u00b7 ' + pill(nm(bad) + ' ' + t('غير سليم'), 'off') : '')];
@@ -7666,7 +7666,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           L.length
             ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا',''],
                 capList(L, 200).map(function(x){
-                  return ['<span class="num">' + esc(x.id) + '</span>',
+                  return [siteIdHtml(x),
                           esc(x.name),
                           '<input value="' + esc(x.net || '') + '" data-ipn="' + esc(x.id) + '" dir="ltr" placeholder="10.20.30">',
                           '<input value="' + esc(x.ipRtr || '') + '" data-ipr="' + esc(x.id) + '" dir="ltr" placeholder=".1">',
@@ -7694,7 +7694,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
           + btn('بحث','btn-secondary btn-sm',' data-fsq="1"') + '</div>'
           + '<div class="pop-rows" style="margin:0">'
-          + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
+          + (siteKey(s) !== s.id ? '<div><span class="k">' + esc(t(siteKeyLabel(s))) + '</span><span class="num">' + bdi(siteKey(s)) + '</span></div>' : '') + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
           + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
           + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type)) + '</span></div>'
           + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
@@ -7765,7 +7765,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               return '<button type="button" class="chip' + (FORM.status===c?' on':'')
                 + '" data-fst="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div>'
-          + '<p class="hint">' + esc(s.id) + ' — ' + esc(s.name) + '</p>')
+          + '<p class="hint">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' \u00b7 ' + esc(s.id) : '') + ' — ' + esc(s.name) + '</p>')
 
       + cardFlush(t('القطع المستهلكة') + ' — ' + nm(parts.length),
           table(['القطعة','النقاط','المستهلك','السيريال'],
@@ -15035,6 +15035,8 @@ var GLOSSARY = [
   { t:'بدون عوائق', d:'تمت الزيارة وتم الوصول ولا تحدّيَ مسجّلًا — الأخضر في شاشة القاعة وبطاقة «نقاط بلا عوائق».', k:['بلا عوائق','بلا عائق','مخيمات بلا عائق','نقاط بلا عوائق','سليمة'] },
   { t:'بعوائق', d:'ما تمت زيارتُه وفيه تحدٍّ أو تحتاج زيارةً أخرى تقنيًا — الأحمر في شاشة القاعة وبطاقة «نقاط بعوائق». بدون عوائق + بعوائق = تمت الزيارة.', k:['عوائق','معوقات','تحديات','نقاط ذات تحديات','عائق'] },
   { t:'شاشة القاعة', d:'عرضٌ كبيرٌ للاجتماعات يتجدّد كلَّ دقيقة: نسبةُ الزيارة والتركيب، والمشاعر، والنقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع. من «متابعة الوزارة» ← «شاشة القاعة» ← «عرضٌ كامل».', k:['القاعة','العرض الكامل','الاجتماع','kiosk'] },
+  { t:'رقم الشاخص', d:'المعرّفُ الأوّلُ لكلِّ مخيمٍ في منى وعرفات: رقمُ المخيم/رقمُ الشارع — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦. يظهر أوّلًا في كلِّ نافذةٍ وجدولٍ وتصدير، ومعرّفُ النظام (NSK-…) تحته ثانيًا، وكلاهما يُبحَث به.', k:['الشاخص','شاخص','رقم المخيم','اسم المخيم','25/56'] },
+  { t:'اسم الممر في ١٤٤٧', d:'المعرّفُ الأوّلُ للممرات المركّبة في الموسم الماضي — اسمُها المعروف مثل Path-Shaded-3R. والممراتُ الجديدةُ معرّفُها الأوّلُ المقترح (NSK-MIN-RDR-…) حتى تُسمّى.', k:['ممر','ممرات','path','Path-Shaded'] },
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
@@ -15313,6 +15315,28 @@ var MOVE_ID = '', MOVE_AT = null;
 /* ═══ المخيمُ يُعرَف بشاخصه (V23.8) ═══
    «خلي كل المخيمات تبان برقم الشاخص يكون هو الحاجة الأساسية»: عنوانُ المخيم في النافذة والقوائم رقمُ
    شاخصه، وتحته المشعرُ والمربعُ والمعرِّف — وغيرُ المخيم باسمه كما كان. */
+/* ═══ (V35.0) قرارُ المالك: المعرّفُ الأوّلُ للنقطة ═══
+   المخيمات (منى وعرفات): رقمُ الشاخص «رقمُ المخيم/رقمُ الشارع» — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦.
+   الممرات المركّبةُ في ١٤٤٧: اسمُها المعروف من الموسم الماضي (Path-Shaded-3R…) — يُستخرَج من اسم النقطة.
+   الممراتُ الجديدةُ وباقي النقاط: المعرّفُ المقترح (NSK-…) كما هو حتى إشعارٍ آخر.
+   ومعرّفُ النظام NSK-… يبقى ثانيًا في كلِّ نافذةٍ وجدولٍ وتصدير، وكلاهما يُبحَث به. */
+function siteKey(x){
+  if (!x) return '';
+  /* اسمُ الشاخص أو رقمُه — بشرط أن يكون فريدًا في مشعره: في السجلّ قيمٌ تتكرّر داخل المشعر الواحد (مثل «مواقع الامن العام» لعشرة
+     مخيماتٍ في عرفات، و«1/613» لمخيمَين) — فتلك يبقى معرّفُها NSK حتى يُصحَّح السجلّ، ولا يُعرَض معرّفٌ واحدٌ لنقطتين. */
+  if (x.type === 'مخيم' && x.sign){
+    var sg = String(x.sign).trim();
+    if (sg && !/[?]|null/i.test(sg)){
+      var U = siteKey.u; if (!U || U.n !== (STATE.sites || []).length){ U = siteKey.u = { n:(STATE.sites || []).length, c:{} }; (STATE.sites || []).forEach(function(y){ if (y.type === 'مخيم' && y.sign){ var k = y.zone + '|' + String(y.sign).trim(); U.c[k] = (U.c[k] || 0) + 1; } }); }
+      if (U.c[x.zone + '|' + sg] === 1) return sg;
+    }
+  }
+  if (x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'){ var m = /ممر\s+([A-Za-z][\w\-.]*)/.exec(String(x.name || '')); if (m) return m[1]; }
+  return x.id;
+}
+/* الخليةُ في الجداول: المعرّفُ الأوّلُ بارزًا ومعرّفُ النظام صغيرًا تحته إن اختلفا */
+function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x); return '<b class="num">' + bdi(k) + '</b>' + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
+function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
 function siteTitle(x){ return (x && x.type === 'مخيم' && x.sign) ? t('شاخص') + ' ' + x.sign : ((x && x.name) || ''); }
 function siteSub(x){ return (x && x.type === 'مخيم' && x.sign) ? [t(x.zone || ''), x.sq ? t('مربع') + ' ' + x.sq : ''].filter(Boolean).join(' \u00b7 ') : ''; }
 /* عناوينُ الأجهزة من بادئة شبكة النقطة (١٤٤٧): ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا */
@@ -15384,7 +15408,7 @@ function popHtml(){
       : (ms3 !== 'approved' ? 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة' : 'اعتُمدت من الوزارة')))));
     return '<div class="pop" id="pkPop">'
       + '<div class="pop-head">'
-      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(s.id) + '</div>'
+      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(siteKey(s)) + (siteKey(s) !== s.id ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + bdi(s.id) + '</span>' : '') + '</div>'   /* (V35.0) */
       +   '<h3 style="margin-top:3px">' + bdiText(siteTitle(s)) + '</h3>' + (siteSub(s) ? '<div class="hint" style="margin:2px 0 0">' + esc(siteSub(s)) + '</div>' : '') + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
       +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
       + '</div>'
@@ -15461,7 +15485,7 @@ function popHtml(){
   return '<div class="pop" id="pkPop">'
     + '<div class="pop-head">'
     +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">'
-    +     bdi(s.id) + '</div>'
+    +     bdi(siteKey(s)) + (siteKey(s) !== s.id ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + bdi(s.id) + '</span>' : '') + '</div>'
     +   '<h3 style="margin-top:3px">' + bdiText(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
@@ -16154,7 +16178,7 @@ function siteIndex(){
   STATE.sites.forEach(function(x, i){
     SITE_IX[x.id] = x;
     /* مفاتيحُ البحث: المعرّف والشاخص والمربع وكلماتُ الاسم */
-    var keys = [x.id, x.sign, x.sq];
+    var keys = [x.id, x.sign, x.sq, siteKey(x)];   /* (V35.0) */
     String(x.name || '').split(/[\s\-—·]+/).forEach(function(t){ if (t.length > 1) keys.push(t); });
     keys.forEach(function(k){
       k = String(k || '').trim();
@@ -16956,7 +16980,7 @@ function handDocCo(co){
       ? cardFlush(t('النقاط'), table(['النقطة','الاسم','الشبكة','رقم المحضر','التاريخ'],
           L.slice(0, 400).map(function(x){
             var h = handOf(x.id);
-            return ['<span class="num">' + esc(x.id) + '</span>',
+            return [siteIdHtml(x),
                     esc((x.name || '').slice(0, 34)),
                     x.net ? '<span class="num">' + esc(x.net) + '</span>' : '\u2014',
                     h ? '<span class="num">' + esc(h.no) + '</span>' : pill('لم يُسلَّم','warn'),
@@ -17680,9 +17704,9 @@ var SHEETS = {
     return out;
   },
   minappr: function(){
-    var out = [['النقطة','الاسم','المشعر','المربع','الشاخص','الشركة','المشرف','تاريخ الزيارة','الاعتماد التقني','تاريخه','حالة الوزارة','بواسطة','تاريخه','ملاحظة الوزارة','نوع التركيب','مصدر الكهرباء','العرض المتاح','الارتفاع المتاح','التحديات']];
+    var out = [['رقم الشاخص / الاسم','النقطة','الاسم','المشعر','المربع','الشاخص','الشركة','المشرف','تاريخ الزيارة','الاعتماد التقني','تاريخه','حالة الوزارة','بواسطة','تاريخه','ملاحظة الوزارة','نوع التركيب','مصدر الكهرباء','العرض المتاح','الارتفاع المتاح','التحديات']];
     surveyList().filter(function(x){ return x.rec && svReview(x.rec) === 'approved'; }).forEach(function(x){ var r = x.rec, ms = minState(r);
-      out.push([x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
+      out.push([siteKey(x.site), x.id, x.site.name || '', x.site.zone || '', x.site.sq || '', x.site.sign || '', x.site.co || '', r.by || '', r.at ? dayKey(r.at) : '', r.reviewBy || '', r.reviewAt ? dayKey(r.reviewAt) : '',
                 ms === 'approved' ? 'اعتمدت الوزارة' : (ms === 'returned' ? 'أعادتها الوزارة' : 'بانتظار الوزارة'), r.minBy || '', r.minAt ? dayKey(r.minAt) : '', r.minNote || '',
                 r.mount || '', r.power || '', r.wid_m != null ? r.wid_m : '', r.hgt_m != null ? r.hgt_m : '', (r.chals || []).join(' · ')]); });
     return out;
@@ -17739,11 +17763,11 @@ var SHEETS = {
     return out;
   },
   sites: function(){
-    var out = [['المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
+    var out = [['رقم الشاخص / الاسم','المعرّف','الاسم','المشعر','النوع','وجه العمل','المربع','الشاخص','الشركة',
                 'خط العرض','خط الطول','حالة المسح','حالة التركيب']];
     /* ما رُشِّح على الخريطة والقائمة هو ما يُصدَّر — وبلا ترشيحٍ الكلُّ */
     (typeof filtered === 'function' ? filtered() : STATE.sites).forEach(function(x){
-      out.push([x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
+      out.push([siteKey(x), x.id, x.name, x.zone, x.type, x.work, x.sq, x.sign, x.co, x.lat, x.lng,
                 svLabel(STATE.recs[x.id]),
                 (STATE.inss[x.id]||{}).status || x.fstat || 'لم يبدأ']);
     });
@@ -18058,10 +18082,10 @@ var SHEETS = {
     return out;
   },
   ips: function(){
-    var out = [['معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
+    var out = [['رقم الشاخص / الاسم','معرّف الموقع','الموقع','المشعر','بادئة الشبكة','الراوتر','القارئ','الكاميرا']];
     (STATE.sites || []).forEach(function(x){
       if (!x.net && !x.ipRtr && !x.ipRdr && !x.ipCam) return;
-      out.push([x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
+      out.push([siteKey(x), x.id, x.name, x.zone, x.net || '', x.ipRtr || '', x.ipRdr || '', x.ipCam || '']);
     });
     return out;
   },
@@ -20534,7 +20558,7 @@ function coPopHtml(){
   var co = CO_POP.co, kind = CO_POP.kind, L = coPopRows(co, kind);
   var rows = L.map(function(o){
     var x = o.x;
-    return ['<strong>' + esc(x.name || x.id) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
+    return ['<strong>' + esc(siteKey(x) !== x.id ? siteKey(x) : (x.name || x.id)) + '</strong><br><span class="num hint">' + esc(x.id) + '</span>',
             esc(x.sign || '—'),
             esc(t(x.zone || '—')) + (x.sq ? ' \u00b7 ' + esc(x.sq) : ''),
             esc(o.why.slice(0, 90)),
@@ -21191,9 +21215,9 @@ function svdWhy(o){
 function svdXls(){
   var c = SVD_CARDS.filter(function(x){ return x.k === SVD_PICK; })[0];
   if (!c) return;
-  var out = [['المعرّف','الاسم','المشعر','النوع','الشركة','المربع','الشاخص','الغرف/الخيام','مصدر العدد','الحالة','التحديات','مَن زار','متى','خط العرض','خط الطول']];
+  var out = [['رقم الشاخص / الاسم','المعرّف','الاسم','المشعر','النوع','الشركة','المربع','الشاخص','الغرف/الخيام','مصدر العدد','الحالة','التحديات','مَن زار','متى','خط العرض','خط الطول']];
   svdPicked().forEach(function(o){
-    out.push([o.x.id, o.x.name || '', o.x.zone || '', o.x.type || '', o.x.co || '', o.x.sq || '', o.x.sign || '',
+    out.push([siteKey(o.x), o.x.id, o.x.name || '', o.x.zone || '', o.x.type || '', o.x.co || '', o.x.sq || '', o.x.sign || '',
               o.rooms || '', SVD_SRC[o.src] || '', (LIFE[o.life] && LIFE[o.life].n) || '',
               o.ch.join(' | ') || (o.r ? 'لا توجد تحديات' : ''), (o.r && o.r.by) || '', o.r ? dayKey(o.r.at || 0) : '',
               o.x.lat || '', o.x.lng || '']);
@@ -21237,7 +21261,7 @@ function svdashBody(){
                 ? table(['المعرّف','المشعر','الغرف','الحالة','ما فيها','مَن زار','متى',''],
                     L.slice(0, 400).map(function(o){
                       var lf = LIFE[o.life];
-                      return ['<strong>' + esc(o.x.id) + '</strong>'
+                      return [siteIdHtml(o.x)
                                 + (o.x.name ? '<br><span class="hint" style="margin:0">' + esc(o.x.name) + '</span>' : ''),
                               esc(t(o.x.zone || '')) + '<br><span class="hint" style="margin:0">' + esc(t(o.x.type || '')) + '</span>',
                               (o.rooms ? N(o.rooms) : '\u2014')
@@ -21499,14 +21523,14 @@ function kioskStory(){
 /* (V34.3) طلبُ المالك: «الحلقةُ ١٠٠٪ أحمر، ولما تعدّ حاجة يقلّ الأحمرُ ويتحوّل أخضرَ بنسبته» — كلُّ حلقةٍ تُرسَم حمراءَ كاملة ثم يزحف
    الأخضرُ إلى نسبتها (انتقالُ ‎.kk-arc‎ ١٫٢ ث على بطاقة الرسوم). تُستدعى بعد كلِّ رسمٍ فيه حلقات — في الملخّص والقاعة. */
 function ringsGrow(){
-  var arcs = document.querySelectorAll('.kk-arc[data-off]'); if (!arcs.length) return;
+  var arcs = document.querySelectorAll('.kk-arc[kkoff]'); if (!arcs.length) return;
   var prev = ringsGrow.prev = ringsGrow.prev || {}, grow = [];
   /* التحديثُ الدوريُّ (كلَّ دقيقةٍ في القاعة) لا يعيد الحركةَ لحلقةٍ لم يتغيّر رقمُها — يزحف الأخضرُ حين يُنجَز شيءٌ فقط */
-  arcs.forEach(function(a){ var ring = a.closest('.kk-ring'), k = (ring && ring.getAttribute('data-svlist')) || '', off = a.getAttribute('data-off');
-    if (k && prev[k] === off){ a.style.transition = 'none'; a.style.strokeDashoffset = off; a.removeAttribute('data-off'); }
+  arcs.forEach(function(a){ var ring = a.closest('.kk-ring'), k = (ring && ring.getAttribute('data-svlist')) || '', off = a.getAttribute('kkoff');
+    if (k && prev[k] === off){ a.style.transition = 'none'; a.style.strokeDashoffset = off; a.removeAttribute('kkoff'); }
     else { prev[k] = off; grow.push(a); } });
   if (!grow.length) return;
-  requestAnimationFrame(function(){ requestAnimationFrame(function(){ grow.forEach(function(a){ a.style.strokeDashoffset = a.getAttribute('data-off'); a.removeAttribute('data-off'); }); }); });
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ grow.forEach(function(a){ a.style.strokeDashoffset = a.getAttribute('kkoff'); a.removeAttribute('kkoff'); }); }); });
 }
 function kioskAnimate(){
   var els = document.querySelectorAll('.kk [aria-valuenow]');
@@ -21541,7 +21565,7 @@ function kioskRing(done, total, label, doneKey, remKey, idle){
   var vis = rem ? Math.min(p, 98) : p, off = (c * (1 - vis / 100)).toFixed(1), same = ringsGrow.prev && ringsGrow.prev[doneKey] === off;
   return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' data-off="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' kkoff="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
@@ -22013,7 +22037,7 @@ function svListPop(){
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
-    + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ return [ '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
+    + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ var sx = siteFind(r[0]); return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>';
@@ -22023,7 +22047,8 @@ function svListXlsx(key){
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
-    var rows = [svListHead(key).map(function(h){ return t(h); })].concat(svListRows(key)), iss = [];
+    var body = svListRows(key), pts = body.length && siteFind(body[0][0]);   /* (V35.0) قوائمُ النقاط: عمودٌ أوّلُ بالمعرّف الأوّل */
+    var rows = [(pts ? [t('رقم الشاخص / الاسم')] : []).concat(svListHead(key).map(function(h){ return t(h); }))].concat(body.map(function(r){ var sx = pts && siteFind(r[0]); return pts ? [sx ? siteKey(sx) : r[0]].concat(r) : r; })), iss = [];
     rows.forEach(function(r, i){ r.forEach(function(c){ var b = expBadText(c); if (b) iss.push(t('الصفّ') + ' ' + (i + 1) + ': ' + b); }); });   /* فحصُ الملف قبل نزوله */
     if (!expGate('إكسل', iss)) return false;
     var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
@@ -23312,7 +23337,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             surveyed.length
               ? '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
                 + '<select id="solSite">' + surveyed.map(function(s){
-                    return '<option value="' + esc(s.id) + '">' + esc(s.id)
+                    return '<option value="' + esc(s.id) + '">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' (' + esc(s.id) + ')' : '')
                       + ' — ' + esc((s.name || '').slice(0,30)) + '</option>';
                   }).join('') + '</select></div>'
                 + itemPickerHtml()
@@ -24490,6 +24515,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V35.0', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'المخيمات بقت بتتعرف برقم الشاخص (رقم المخيم/رقم الشارع، زي 25/56) — أول حاجة في أي نافذة أو جدول أو قائمة أو ملف إكسل، والمعرّف NSK بقى تحته تاني. والبحث شغال بالاتنين.',
+      'الممرات اللي اتركّبت في ١٤٤٧ بقت بتتعرف باسمها المعروف من الموسم اللي فات (زي Path-Shaded-3R)، والممرات الجديدة بمعرّفها المقترح NSK لحد ما تتسمّى. وباقي النقاط زي ما هي.' ] },
   { v:'V34.4', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'التشكيل اتشال من كل النصوص اللي بتظهر في السيستم بالعربي — الكلام بقى واضح من السياق.',
       'حلقة المسح ما بقتش بتقلب أحمر وأخضر: كل ما الصفحة تتحدّث كانت الحلقة بتبدأ حمرا لحظة وترجع خضرا. دلوقتي بتفضل ثابتة على نسبتها، والحركة بتحصل لما الرقم يتغيّر بس. والمتبقي (زي الـ١٢ نقطة) بقى باين أحمر في الحلقة حتى لو نسبته صغيرة.' ] },
@@ -25284,7 +25312,7 @@ function fieldHelperCard(){
   var ok = function(b, yes, no){ return '<span class="pill ' + (b ? 'ok' : 'wrn') + '">' + (b ? '\u2713 ' : '') + esc(b ? yes : no) + '</span>'; };   /* النصُّ مترجَمٌ عند الطلب */
   return card('\u{1F9F0} ' + t('مساعد الميدان'),
       '<h4 style="margin:0 0 6px">\u{1F4CD} ' + esc(t('الأقرب إليّ — تحتاج زيارة')) + '</h4>'
-    + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return ['<strong>' + esc(o.x.id) + '</strong><br><span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
+    + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return [siteIdHtml(o.x) + '<span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
           btn('\u25C8 ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(o.x.id) + '"') + ' <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(o.x.lat, o.x.lng, o.x.id)) + '">\u2197 ' + esc(t('اتجاهات')) + '</a>']; }))
             : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تحتاج زيارة')) + '</p>')
          : '<p class="hint" style="margin:0 0 6px">' + esc(t('حدِّد موقعك لتظهر أقربُ النقاط إليك')) + '</p>' + btn('\u{1F4CD} ' + t('حدِّد موقعي'), 'btn-primary btn-sm', ' data-fhpos="1"'))

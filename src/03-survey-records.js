@@ -345,7 +345,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
                 capList(L, 200).map(function(x){
                   var r = STATE.inss[x.id];
                   var st2 = (r && r.status) || (svVisited(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
-                  return ['<span class="num">' + esc(x.id) + '</span>',
+                  return [siteIdHtml(x),
                           esc(x.name), esc(t(x.zone)),
                           pill(t(st2), st2 === 'مُركّب' ? 'ok' : 'warn'),
                           btn('أزل','btn-quiet btn-sm',' data-selrm="' + esc(x.id) + '"')];
@@ -448,7 +448,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               ? '<div class="grid cols-3">'
                 + '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
                 +   '<select id="hoSite">' + ready.slice(0, 400).map(function(x){
-                      return '<option value="' + esc(x.id) + '">' + esc(x.id) + ' \u2014 '
+                      return '<option value="' + esc(x.id) + '">' + esc(siteKey(x)) + (siteKey(x) !== x.id ? ' (' + esc(x.id) + ')' : '') + ' \u2014 '
                         + esc((x.name || '').slice(0, 30)) + '</option>'; }).join('') + '</select></div>'
                 + '<div class="field"><label>' + esc(t('المستلِم عن العميل')) + ' <span class="req">*</span></label>'
                 +   '<input id="hoTo" dir="auto" placeholder="' + esc(t('الاسم والصفة')) + '"></div>'
@@ -514,7 +514,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               capList(handedL, 200).map(function(x){
                 var h = handOf(x.id);
                 var end = new Date(h.at + (h.warranty || 12) * 30 * 86400000);
-                return ['<span class="num">' + esc(x.id) + '</span>',
+                return [siteIdHtml(x),
                         '<span class="num">' + esc(h.no) + '</span>',
                         esc(h.to), '<span class="num">' + esc(fmtDate(h.at)) + '</span>',
                         '<span class="num">' + esc(fmtDate(end)) + '</span>'];
@@ -574,7 +574,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               done.slice(0, 60).map(function(x){
                 var r = STATE.diss[x.id];
                 var bad = Object.keys(r.items || {}).filter(function(k){ return r.items[k].cond !== 'سليم'; }).length;
-                return ['<span class="num">' + esc(x.id) + '</span>',
+                return [siteIdHtml(x),
                         '<span class="num">' + esc(fmtDate(r.at)) + '</span>',
                         esc(dispName(r.by)),
                         N(Object.keys(r.items || {}).length) + (bad ? ' \u00b7 ' + pill(nm(bad) + ' ' + t('غير سليم'), 'off') : '')];
@@ -757,7 +757,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           L.length
             ? table(['المعرّف','الموقع','البادئة','الراوتر','القارئ','الكاميرا',''],
                 capList(L, 200).map(function(x){
-                  return ['<span class="num">' + esc(x.id) + '</span>',
+                  return [siteIdHtml(x),
                           esc(x.name),
                           '<input value="' + esc(x.net || '') + '" data-ipn="' + esc(x.id) + '" dir="ltr" placeholder="10.20.30">',
                           '<input value="' + esc(x.ipRtr || '') + '" data-ipr="' + esc(x.id) + '" dir="ltr" placeholder=".1">',
@@ -785,7 +785,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input type="search" id="fSiteQ" placeholder="' + esc(t('ابحث بالمعرّف أو الشاخص')) + '" dir="auto">'
           + btn('بحث','btn-secondary btn-sm',' data-fsq="1"') + '</div>'
           + '<div class="pop-rows" style="margin:0">'
-          + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
+          + (siteKey(s) !== s.id ? '<div><span class="k">' + esc(t(siteKeyLabel(s))) + '</span><span class="num">' + bdi(siteKey(s)) + '</span></div>' : '') + '<div><span class="k">' + esc(t('المعرّف')) + '</span><span class="num">' + esc(s.id) + '</span></div>'
           + '<div><span class="k">' + esc(t('الاسم')) + '</span><span>' + esc(s.name) + '</span></div>'
           + '<div><span class="k">' + esc(t('المشعر')) + '</span><span>' + esc(t(s.zone)) + ' \u00b7 ' + esc(t(s.type)) + '</span></div>'
           + (s.sign ? '<div><span class="k">' + esc(t('الشاخص')) + '</span><span class="num">' + esc(s.sign) + '</span></div>' : '')
@@ -856,7 +856,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               return '<button type="button" class="chip' + (FORM.status===c?' on':'')
                 + '" data-fst="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div>'
-          + '<p class="hint">' + esc(s.id) + ' — ' + esc(s.name) + '</p>')
+          + '<p class="hint">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' \u00b7 ' + esc(s.id) : '') + ' — ' + esc(s.name) + '</p>')
 
       + cardFlush(t('القطع المستهلكة') + ' — ' + nm(parts.length),
           table(['القطعة','النقاط','المستهلك','السيريال'],

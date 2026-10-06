@@ -87,7 +87,7 @@ function svListPop(){
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
-    + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ return [ '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
+    + (rows.length ? table(head.map(function(h){ return h; }), shown.map(function(r){ var sx = siteFind(r[0]); return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); })); }))
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>';
@@ -97,7 +97,8 @@ function svListXlsx(key){
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
-    var rows = [svListHead(key).map(function(h){ return t(h); })].concat(svListRows(key)), iss = [];
+    var body = svListRows(key), pts = body.length && siteFind(body[0][0]);   /* (V35.0) قوائمُ النقاط: عمودٌ أوّلُ بالمعرّف الأوّل */
+    var rows = [(pts ? [t('رقم الشاخص / الاسم')] : []).concat(svListHead(key).map(function(h){ return t(h); }))].concat(body.map(function(r){ var sx = pts && siteFind(r[0]); return pts ? [sx ? siteKey(sx) : r[0]].concat(r) : r; })), iss = [];
     rows.forEach(function(r, i){ r.forEach(function(c){ var b = expBadText(c); if (b) iss.push(t('الصفّ') + ' ' + (i + 1) + ': ' + b); }); });   /* فحصُ الملف قبل نزوله */
     if (!expGate('إكسل', iss)) return false;
     var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows);
@@ -1386,7 +1387,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             surveyed.length
               ? '<div class="field"><label>' + esc(t('النقطة')) + '</label>'
                 + '<select id="solSite">' + surveyed.map(function(s){
-                    return '<option value="' + esc(s.id) + '">' + esc(s.id)
+                    return '<option value="' + esc(s.id) + '">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' (' + esc(s.id) + ')' : '')
                       + ' — ' + esc((s.name || '').slice(0,30)) + '</option>';
                   }).join('') + '</select></div>'
                 + itemPickerHtml()
@@ -2564,6 +2565,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V35.0', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'المخيمات بقت بتتعرف برقم الشاخص (رقم المخيم/رقم الشارع، زي 25/56) — أول حاجة في أي نافذة أو جدول أو قائمة أو ملف إكسل، والمعرّف NSK بقى تحته تاني. والبحث شغال بالاتنين.',
+      'الممرات اللي اتركّبت في ١٤٤٧ بقت بتتعرف باسمها المعروف من الموسم اللي فات (زي Path-Shaded-3R)، والممرات الجديدة بمعرّفها المقترح NSK لحد ما تتسمّى. وباقي النقاط زي ما هي.' ] },
   { v:'V34.4', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'التشكيل اتشال من كل النصوص اللي بتظهر في السيستم بالعربي — الكلام بقى واضح من السياق.',
       'حلقة المسح ما بقتش بتقلب أحمر وأخضر: كل ما الصفحة تتحدّث كانت الحلقة بتبدأ حمرا لحظة وترجع خضرا. دلوقتي بتفضل ثابتة على نسبتها، والحركة بتحصل لما الرقم يتغيّر بس. والمتبقي (زي الـ١٢ نقطة) بقى باين أحمر في الحلقة حتى لو نسبته صغيرة.' ] },
@@ -3358,7 +3362,7 @@ function fieldHelperCard(){
   var ok = function(b, yes, no){ return '<span class="pill ' + (b ? 'ok' : 'wrn') + '">' + (b ? '\u2713 ' : '') + esc(b ? yes : no) + '</span>'; };   /* النصُّ مترجَمٌ عند الطلب */
   return card('\u{1F9F0} ' + t('مساعد الميدان'),
       '<h4 style="margin:0 0 6px">\u{1F4CD} ' + esc(t('الأقرب إليّ — تحتاج زيارة')) + '</h4>'
-    + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return ['<strong>' + esc(o.x.id) + '</strong><br><span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
+    + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return [siteIdHtml(o.x) + '<span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
           btn('\u25C8 ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(o.x.id) + '"') + ' <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(o.x.lat, o.x.lng, o.x.id)) + '">\u2197 ' + esc(t('اتجاهات')) + '</a>']; }))
             : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تحتاج زيارة')) + '</p>')
          : '<p class="hint" style="margin:0 0 6px">' + esc(t('حدِّد موقعك لتظهر أقربُ النقاط إليك')) + '</p>' + btn('\u{1F4CD} ' + t('حدِّد موقعي'), 'btn-primary btn-sm', ' data-fhpos="1"'))

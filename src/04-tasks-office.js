@@ -3213,6 +3213,8 @@ var GLOSSARY = [
   { t:'بدون عوائق', d:'تمت الزيارة وتم الوصول ولا تحدّيَ مسجّلًا — الأخضر في شاشة القاعة وبطاقة «نقاط بلا عوائق».', k:['بلا عوائق','بلا عائق','مخيمات بلا عائق','نقاط بلا عوائق','سليمة'] },
   { t:'بعوائق', d:'ما تمت زيارتُه وفيه تحدٍّ أو تحتاج زيارةً أخرى تقنيًا — الأحمر في شاشة القاعة وبطاقة «نقاط بعوائق». بدون عوائق + بعوائق = تمت الزيارة.', k:['عوائق','معوقات','تحديات','نقاط ذات تحديات','عائق'] },
   { t:'شاشة القاعة', d:'عرضٌ كبيرٌ للاجتماعات يتجدّد كلَّ دقيقة: نسبةُ الزيارة والتركيب، والمشاعر، والنقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع. من «متابعة الوزارة» ← «شاشة القاعة» ← «عرضٌ كامل».', k:['القاعة','العرض الكامل','الاجتماع','kiosk'] },
+  { t:'رقم الشاخص', d:'المعرّفُ الأوّلُ لكلِّ مخيمٍ في منى وعرفات: رقمُ المخيم/رقمُ الشارع — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦. يظهر أوّلًا في كلِّ نافذةٍ وجدولٍ وتصدير، ومعرّفُ النظام (NSK-…) تحته ثانيًا، وكلاهما يُبحَث به.', k:['الشاخص','شاخص','رقم المخيم','اسم المخيم','25/56'] },
+  { t:'اسم الممر في ١٤٤٧', d:'المعرّفُ الأوّلُ للممرات المركّبة في الموسم الماضي — اسمُها المعروف مثل Path-Shaded-3R. والممراتُ الجديدةُ معرّفُها الأوّلُ المقترح (NSK-MIN-RDR-…) حتى تُسمّى.', k:['ممر','ممرات','path','Path-Shaded'] },
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
@@ -3491,6 +3493,28 @@ var MOVE_ID = '', MOVE_AT = null;
 /* ═══ المخيمُ يُعرَف بشاخصه (V23.8) ═══
    «خلي كل المخيمات تبان برقم الشاخص يكون هو الحاجة الأساسية»: عنوانُ المخيم في النافذة والقوائم رقمُ
    شاخصه، وتحته المشعرُ والمربعُ والمعرِّف — وغيرُ المخيم باسمه كما كان. */
+/* ═══ (V35.0) قرارُ المالك: المعرّفُ الأوّلُ للنقطة ═══
+   المخيمات (منى وعرفات): رقمُ الشاخص «رقمُ المخيم/رقمُ الشارع» — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦.
+   الممرات المركّبةُ في ١٤٤٧: اسمُها المعروف من الموسم الماضي (Path-Shaded-3R…) — يُستخرَج من اسم النقطة.
+   الممراتُ الجديدةُ وباقي النقاط: المعرّفُ المقترح (NSK-…) كما هو حتى إشعارٍ آخر.
+   ومعرّفُ النظام NSK-… يبقى ثانيًا في كلِّ نافذةٍ وجدولٍ وتصدير، وكلاهما يُبحَث به. */
+function siteKey(x){
+  if (!x) return '';
+  /* اسمُ الشاخص أو رقمُه — بشرط أن يكون فريدًا في مشعره: في السجلّ قيمٌ تتكرّر داخل المشعر الواحد (مثل «مواقع الامن العام» لعشرة
+     مخيماتٍ في عرفات، و«1/613» لمخيمَين) — فتلك يبقى معرّفُها NSK حتى يُصحَّح السجلّ، ولا يُعرَض معرّفٌ واحدٌ لنقطتين. */
+  if (x.type === 'مخيم' && x.sign){
+    var sg = String(x.sign).trim();
+    if (sg && !/[?]|null/i.test(sg)){
+      var U = siteKey.u; if (!U || U.n !== (STATE.sites || []).length){ U = siteKey.u = { n:(STATE.sites || []).length, c:{} }; (STATE.sites || []).forEach(function(y){ if (y.type === 'مخيم' && y.sign){ var k = y.zone + '|' + String(y.sign).trim(); U.c[k] = (U.c[k] || 0) + 1; } }); }
+      if (U.c[x.zone + '|' + sg] === 1) return sg;
+    }
+  }
+  if (x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'){ var m = /ممر\s+([A-Za-z][\w\-.]*)/.exec(String(x.name || '')); if (m) return m[1]; }
+  return x.id;
+}
+/* الخليةُ في الجداول: المعرّفُ الأوّلُ بارزًا ومعرّفُ النظام صغيرًا تحته إن اختلفا */
+function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x); return '<b class="num">' + bdi(k) + '</b>' + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
+function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
 function siteTitle(x){ return (x && x.type === 'مخيم' && x.sign) ? t('شاخص') + ' ' + x.sign : ((x && x.name) || ''); }
 function siteSub(x){ return (x && x.type === 'مخيم' && x.sign) ? [t(x.zone || ''), x.sq ? t('مربع') + ' ' + x.sq : ''].filter(Boolean).join(' \u00b7 ') : ''; }
 /* عناوينُ الأجهزة من بادئة شبكة النقطة (١٤٤٧): ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا */
@@ -3562,7 +3586,7 @@ function popHtml(){
       : (ms3 !== 'approved' ? 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة' : 'اعتُمدت من الوزارة')))));
     return '<div class="pop" id="pkPop">'
       + '<div class="pop-head">'
-      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(s.id) + '</div>'
+      +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">' + bdi(siteKey(s)) + (siteKey(s) !== s.id ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + bdi(s.id) + '</span>' : '') + '</div>'   /* (V35.0) */
       +   '<h3 style="margin-top:3px">' + bdiText(siteTitle(s)) + '</h3>' + (siteSub(s) ? '<div class="hint" style="margin:2px 0 0">' + esc(siteSub(s)) + '</div>' : '') + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
       +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>'
       + '</div>'
@@ -3639,7 +3663,7 @@ function popHtml(){
   return '<div class="pop" id="pkPop">'
     + '<div class="pop-head">'
     +   '<div style="min-width:0"><div class="pid" style="color:var(--brand);font-weight:700">'
-    +     bdi(s.id) + '</div>'
+    +     bdi(siteKey(s)) + (siteKey(s) !== s.id ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + bdi(s.id) + '</span>' : '') + '</div>'
     +   '<h3 style="margin-top:3px">' + bdiText(s.name) + '</h3>' + (typeof clashPill === 'function' ? clashPill(s.id) : '') + '</div>'
     +   '<button type="button" class="btn btn-quiet btn-sm" data-pop="0" aria-label="'
     +     esc(t('إغلاق')) + '">✕</button>'
@@ -4332,7 +4356,7 @@ function siteIndex(){
   STATE.sites.forEach(function(x, i){
     SITE_IX[x.id] = x;
     /* مفاتيحُ البحث: المعرّف والشاخص والمربع وكلماتُ الاسم */
-    var keys = [x.id, x.sign, x.sq];
+    var keys = [x.id, x.sign, x.sq, siteKey(x)];   /* (V35.0) */
     String(x.name || '').split(/[\s\-—·]+/).forEach(function(t){ if (t.length > 1) keys.push(t); });
     keys.forEach(function(k){
       k = String(k || '').trim();
@@ -5134,7 +5158,7 @@ function handDocCo(co){
       ? cardFlush(t('النقاط'), table(['النقطة','الاسم','الشبكة','رقم المحضر','التاريخ'],
           L.slice(0, 400).map(function(x){
             var h = handOf(x.id);
-            return ['<span class="num">' + esc(x.id) + '</span>',
+            return [siteIdHtml(x),
                     esc((x.name || '').slice(0, 34)),
                     x.net ? '<span class="num">' + esc(x.net) + '</span>' : '\u2014',
                     h ? '<span class="num">' + esc(h.no) + '</span>' : pill('لم يُسلَّم','warn'),

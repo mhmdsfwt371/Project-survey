@@ -128,3 +128,12 @@ test('طلبُ المالك (V34.4): لا تشكيلَ في أيِّ صفحةٍ 
     assert.deepEqual(bad, [], 'صفحاتٌ فيها تشكيل: ' + bad.join('، '));
   } finally { w.noTashkeel.force = was; }
 });
+test('قرارُ المالك (V35.0): المعرّفُ الأوّل — رقمُ الشاخص للمخيم، واسمُ ١٤٤٧ للممر المركّب، وNSK لغيرهما — فريدٌ داخل المشعر', () => {
+  const S = w.STATE.sites, camp = S.find(x => x.type === 'مخيم' && x.sign && !/[?]/.test(x.sign));
+  assert.equal(w.siteKey(camp), camp.sign.trim());
+  const c47 = S.find(x => x.type === 'ممر' && x.work === 'إعادة تركيب ١٤٤٧'); assert.match(w.siteKey(c47), /^[A-Za-z]/);
+  const cNew = S.find(x => x.type === 'ممر' && x.work !== 'إعادة تركيب ١٤٤٧'); assert.equal(w.siteKey(cNew), cNew.id);
+  /* فريدٌ داخل المشعر الواحد (مكرّرُ منى وعرفات يُفرَّق بالمشعر في كلِّ جدول) */
+  const seen = {}, dup = []; S.forEach(x => { const k = x.zone + '|' + w.siteKey(x); if (seen[k]) dup.push(k); seen[k] = 1; });
+  assert.deepEqual(dup.slice(0, 5), [], 'معرّفٌ أوّلُ مكرّرٌ داخل المشعر: ' + dup.length);
+});

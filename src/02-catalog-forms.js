@@ -56,7 +56,7 @@ function siteOvApply(){
     if (x.hidden) hid.push(x); else keep.push(x);
   });
   STATE.sites = keep; STATE.hiddenSites = hid;
-  SITE_IX = null; SITE_TOK = null;
+  SITE_IX = null; SITE_TOK = null; if (typeof siteKey === 'function') siteKey.u = null;   /* (V35.0) تفرّدُ الشاخص يُعاد حسابُه */
 }
 /* ═══ تصحيحُ البيانات جماعةً (V17.54) ═══
    مراجعةُ السجلِّ كشفت أربعةَ عيوبٍ في البيانات لا في الشيفرة: نقاطٌ على
