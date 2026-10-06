@@ -35,7 +35,7 @@ T(/var SYNC = \{ cycle:60/.test(js) && !/\}, 120000\);/.test(js), 'دورةٌ و
    النطاق لا أن تكون الصيغةُ حرفًا واحدًا. */
 T(/var due = SYNC\.pullAsk \|\| \(Date\.now\(\) - SYNC\.pullLast >= \(kkEvery \|\| pullScope\(\)\.every\)/.test(js) && /KIOSK_ON && CUR === 'mfu'\) \? 120000 : 0/.test(js),
   'الدفعُ كلَّ دقيقةٍ والسحبُ في موعد النطاق — وفي وضع القاعة كلَّ دقيقتين (V30.5)');
-T(/readSlowFactor\(\)/.test(js), 'ويتباطأ موعدُه لجهازٍ تجاوز سقفَ قراءاته');
+T(/readSlowFactor\(\)/.test(js) && /readBudget\(\); return 1;/.test(js), '(V33.1 ق-٠١١) معاملُ الإبطاء موجودٌ ويساوي واحدًا دائمًا — لا إبطاءَ على خطة الاستهلاك');
 
 /* ═══ تشغيل ═══ */
 async function boot(role, name){

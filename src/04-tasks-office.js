@@ -4697,15 +4697,16 @@ function readBudget(){
   var n = (FB.readCount || 0) - READ_DAY_N;
   if (n > READ_CAP_SLOW && READ_WARNED < 2){
     READ_WARNED = 2;
-    logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · أُبطئ سحبُه');
-    toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع'));
+    /* (V33.1) قرارُ المالك ق-٠١١: الخطةُ بالاستهلاك — يُسجَّل للعلم ولا يُبطَّأ سحبُ الجهاز (كان يُضاعَف موعدُه فيتأخّر الميدان) */
+    logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · للعلم، لا إبطاء');
+    toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد اليوم') + ': ' + nm(n));
   } else if (n > READ_CAP_WARN && READ_WARNED < 1){
     READ_WARNED = 1;
     toast(t('قراءاتُ هذا الجهاز اليوم') + ': ' + nm(n) + ' — ' + t('تُراقَب'));
   }
   return n;
 }
-function readSlowFactor(){ return readBudget() > READ_CAP_SLOW ? 2 : 1; }
+function readSlowFactor(){ readBudget(); return 1; }   /* (V33.1) ق-٠١١: لا إبطاءَ — العدُّ والتنبيهُ يبقيان */
 function readDelta(col, key, cap){
   if (!FB.ready || !FB.db) return;
   if (!STATE[key]) STATE[key] = {};

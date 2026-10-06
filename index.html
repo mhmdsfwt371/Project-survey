@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -16488,15 +16488,16 @@ function readBudget(){
   var n = (FB.readCount || 0) - READ_DAY_N;
   if (n > READ_CAP_SLOW && READ_WARNED < 2){
     READ_WARNED = 2;
-    logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · أُبطئ سحبُه');
-    toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد — أُبطئ السحبُ الدوريُّ حفاظًا على حصة المشروع'));
+    /* (V33.1) قرارُ المالك ق-٠١١: الخطةُ بالاستهلاك — يُسجَّل للعلم ولا يُبطَّأ سحبُ الجهاز (كان يُضاعَف موعدُه فيتأخّر الميدان) */
+    logEvent('جهازٌ تجاوز سقفَ القراءات — ' + nm(n) + ' قراءةً اليوم · للعلم، لا إبطاء');
+    toast(t('هذا الجهازُ يقرأ أكثرَ من المعتاد اليوم') + ': ' + nm(n));
   } else if (n > READ_CAP_WARN && READ_WARNED < 1){
     READ_WARNED = 1;
     toast(t('قراءاتُ هذا الجهاز اليوم') + ': ' + nm(n) + ' — ' + t('تُراقَب'));
   }
   return n;
 }
-function readSlowFactor(){ return readBudget() > READ_CAP_SLOW ? 2 : 1; }
+function readSlowFactor(){ readBudget(); return 1; }   /* (V33.1) ق-٠١١: لا إبطاءَ — العدُّ والتنبيهُ يبقيان */
 function readDelta(col, key, cap){
   if (!FB.ready || !FB.db) return;
   if (!STATE[key]) STATE[key] = {};
@@ -24309,6 +24310,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V33.1', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'خطة القاعدة بالاستهلاك (قرار المالك): الجهاز اللي بيقرا أكتر من ١٥ ألف وثيقة في اليوم ما بقاش سحبه بيتبطّأ — كان بيستنى ضعف الوقت بين السحبات. العدّ والتنبيه زي ما هم.' ] },
   { v:'V33.0', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'الأمن: كلمات مرور الحسابات الجديدة ما بقتش تظهر في أي سجل تشغيل، وبتتمسح تلقائيًا من القاعدة بعد ٧٢ ساعة من الإنشاء (الحساب بيجبر صاحبه يغيّرها في أول دخول).',
       'الآيفون: لما مخزن المتصفح بيتقطع بعد الرجوع من الخلفية، التطبيق بيعيد فتحه فورًا — وده كان سبب أغلب الأخطاء المسجّلة والسحبات الكاملة المتكررة. وأعطال المتصفح بقت تتسجّل باسمها بدل «خطأ برمجي».',
