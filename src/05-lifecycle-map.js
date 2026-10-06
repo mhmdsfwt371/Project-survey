@@ -3379,24 +3379,28 @@ function loginBg(){
   var ctx = null;
   try{ ctx = cv.getContext('2d'); }catch(e){}
   if (!ctx) { cv.style.display = 'none'; return; }   /* زينة تُهمَل لا تُسقط الصفحة */
-  var raf = 0, pts = [], lit = 0;
+  var raf = 0, pts = [], lit = 0, lastN = -1, lastT = 0, TOT = siteStats().total;
   var slow = false;
   try{ slow = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
+  /* (V32.9) الوحدة ١٠ — أوّلُ فتحٍ أسرع: الخلفيةُ كانت ترسم ١٬٩٠٠ نقطةٍ في كلِّ إطارٍ بلا توقّف وتكتب العدّادَ في الصفحة كلَّ إطار —
+     نحوُ ثانيةٍ من المعالج على جوالٍ متوسطٍ قبل ظهور نموذج الدخول وأثناء الكتابة فيه. صارت: دورةً واحدةً ثم تقف على الصورة الكاملة،
+     بعشرين إطارًا في الثانية، والعدّادُ يُكتب حين يتغيّر، وتبدأ بعد ظهور النموذج؛ والجهازُ الضعيفُ يرى الصورةَ الكاملةَ ثابتة. */
+  try{ if ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 3)) slow = true; }catch(e){}
 
   function build(){
     var w = cv.width = cv.offsetWidth * (window.devicePixelRatio || 1);
     var h = cv.height = cv.offsetHeight * (window.devicePixelRatio || 1);
     pts = [];
     var cols = Math.max(24, Math.round(w / 26));
-    var rows = Math.ceil(siteStats().total / cols);
+    var rows = Math.ceil(TOT / cols);
     var gx = w / (cols + 1), gy = Math.min(gx, h / (rows + 1));
     var oy = (h - gy * (rows - 1)) / 2;
-    for (var i = 0; i < siteStats().total; i++){
+    for (var i = 0; i < TOT; i++){
       var c = i % cols, r = Math.floor(i / cols);
       pts.push({
         x: gx * (c + 1) + (Math.sin(i * 12.9898) * gx * 0.18),
         y: oy + gy * r + (Math.cos(i * 78.233) * gy * 0.18),
-        d: (i / siteStats().total) + Math.abs(Math.sin(i * 4.1)) * 0.12
+        d: (i / TOT) + Math.abs(Math.sin(i * 4.1)) * 0.12
       });
     }
   }
@@ -3419,20 +3423,23 @@ function loginBg(){
         ctx.fill();
       }
     }
-    var c = document.getElementById('lgCount');
-    if (c) c.innerHTML = nm(n) + ' / ' + nm(siteStats().total) + ' ' + esc(t('نقطة')) + ' · ' + esc(t('المشاعر المقدسة'));
+    if (n !== lastN){ lastN = n; var c = document.getElementById('lgCount');
+      if (c) c.textContent = nm(n) + ' / ' + nm(TOT) + ' ' + t('نقطة') + ' \u00b7 ' + t('المشاعر المقدسة'); }
   }
 
   build();
-  if (slow){ draw(1); return; }
+  if (slow){ draw(1.2); return; }
 
-  function tick(){
-    lit += 0.0055;
-    if (lit > 1.12) lit = 0;
-    draw(Math.min(1, lit));
+  function tick(ts){
+    if (ts && ts - lastT < 48){ raf = requestAnimationFrame(tick); return; }   /* عشرون إطارًا في الثانية تكفي زينة */
+    lastT = ts || 0;
+    lit += 0.0132;
+    if (lit >= 1.13){ draw(1.2); raf = 0; return; }   /* دورةٌ واحدةٌ ثم تقف على الصورة الكاملة — كلُّ النقاط مضاءةٌ والعدّادُ = الكلّ (أقصى عتبةٍ ١٫١٢) */
+    draw(lit);
     raf = requestAnimationFrame(tick);
   }
-  tick();
+  draw(0);
+  setTimeout(function(){ if (document.getElementById('loginCv') === cv) raf = requestAnimationFrame(tick); }, 400);   /* بعد ظهور النموذج */
 
   window.addEventListener('resize', function(){ build(); }, { passive:true });
   cv.__stop = function(){ cancelAnimationFrame(raf); };
