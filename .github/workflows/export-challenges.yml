@@ -107,7 +107,11 @@ jobs:
       - name: Namirah 10 gates — visited, no permits, install on leading corridors (owner decision)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/namirah-visited.mjs || true
+        run: echo skip-namirah
+      - name: points diag (read-only) — counts, moves-as-visits, Nuwariya geometry
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/points-diag.mjs || true
       - name: account requests status (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
