@@ -1225,7 +1225,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V35.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V35.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4083,7 +4083,7 @@ function hiddenSitesCard(){
   if (!H.length || !maySiteEdit()) return '';
   return cardFlush(t('نقاطٌ مخفية') + ' — ' + nm(H.length),
     table(['النقطة','الاسم','أخفاها','إجراء'], H.slice(0, 100).map(function(x){
-      return ['<strong>' + bdi(x.id) + '</strong>', esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
+      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
               btn('\u21A9 ' + t('استعادة'),'btn-secondary btn-sm',' data-siterestore="' + esc(x.id) + '"')];
     })));
 }
@@ -4651,7 +4651,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
     }
 
     return card(d.i + ' ' + esc(x.name),
-        '<div class="pid" style="margin:0 0 10px">' + bdi(x.id) + '</div>'
+        '<div class="pid" style="margin:0 0 10px">' + bdi(siteKey(x)) + (siteKey(x) !== x.id ? ' \u00b7 ' + bdi(x.id) : '') + '</div>'
         + '<div class="chips" style="margin:0 0 12px">'
         +   pill(x.zone,'acc') + ' ' + '<span class="pill" style="background:' + d.c + '22;color:' + d.c + '">'
         +   d.i + ' ' + esc(t(d.l)) + '</span> '
@@ -6793,7 +6793,7 @@ function svqSheet(){
     return '<li><span class="hint" style="margin:0">' + esc(fmtDT(e.at)) + ' \u00b7 ' + esc(dispName(e.by)) + '</span> — ' + esc(t(svqLabel(e.k))) + ': ' + esc(svqFmt(e.o)) + ' \u2190 ' + esc(svqFmt(e.v)) + '</li>';
   }).join('');
   return '<div class="svq-back" id="svqSheet" role="dialog" aria-modal="true"><div class="svq-box">'
-    + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(s.id) + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
+    + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' \u00b7 ' + esc(s.id) : '') + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')
@@ -7378,7 +7378,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                  return r && r.status === 'مُركّب' && r.approved && !handDone(x.id); })))
                 .slice(0, 400).map(function(x){
                   return '<option value="' + esc(x.id) + '"' + (HO_DOC === x.id ? ' selected' : '') + '>'
-                    + esc(x.id) + (handDone(x.id) ? ' \u2705' : '') + '</option>'; }).join('')
+                    + esc(siteKey(x)) + (handDone(x.id) ? ' \u2705' : '') + '</option>'; }).join('')
           +   '</select></div>'
           + '<div class="field"><label>' + esc(t('محضر شركة')) + '</label>'
           +   '<select id="hoDocCo">' + coKeys.map(function(c){
@@ -7816,9 +7816,9 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           ? alertBox('warn','انتبه — يوجد مواقعُ مسجّلةٌ قريبةٌ منك. أغلبُ حالات «غير موجود» وقوفٌ بجانب مسجَّل، فراجعها قبل الإنشاء.')
             + card('الأقربُ إليك الآن',
                 near.map(function(x){
-                  return '<button type="button" class="btn btn-quiet" data-site="' + esc(x.s.id) + '" '
+                  return '<button type="button" class="btn btn-quiet" data-site="' + esc(siteKey(x.s)) + '" '
                     + 'style="width:100%;justify-content:space-between;margin-bottom:6px">'
-                    + '<span>' + esc(x.s.id) + '</span><span class="num">' + nm(Math.round(x.d))
+                    + '<span>' + esc(siteKey(x.s)) + '</span><span class="num">' + nm(Math.round(x.d))
                     + ' ' + esc(t('م')) + '</span></button>';
                 }).join(''))
           : alertBox('success','لا موقعَ مسجَّلًا خلال مئةٍ وأربعين مترًا منك — الأرجحُ أنه غيرُ مسجَّلٍ فعلًا.'));
@@ -7947,7 +7947,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               pool.slice(0, 40).map(function(x){
                 var r = STATE.diss[x.id] || {};
                 var d = CAT_DEF[x.type] || { l:x.type, i:'' };
-                return ['<strong>' + bdi(x.id) + '</strong>',
+                return [siteIdHtml(siteOf(x)),
                         esc(x.zone), d.i + ' ' + esc(t(d.l)),
                         N(ptsDis(x)),
                         pill(r.status || 'قابل للفك', r.status==='تم الفك'?'ok':(r.status?'warn':'')),
@@ -8307,7 +8307,7 @@ function asnSheet(){
             + '<div class="li-main"><div class="li-t">'
             +   (x.sign ? esc(t('شاخص')) + ' <b>' + esc(x.sign) + '</b>' : esc(x.name.slice(0, 40)))
             +   (x.sq ? ' · ' + esc(t('مربع')) + ' ' + esc(x.sq) : '')
-            + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
+            + '</div><div class="li-s">' + siteIdHtml(x) + '</div></div>'
             + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
             + (L.pts(x) ? '<div class="num" style="margin:2px 0 0">' + nm(L.pts(x)) + ' ' + esc(t('نقطة')) + '</div>' : '')
             +   (L.kind === 'dis' && STATE.inss[x.id] && STATE.inss[x.id].parts
@@ -9647,7 +9647,7 @@ function svLastMine(s){
 function svCopyBar(s){
   var L = svLastMine(s); if (!L) return '';
   return '<div class="actions" style="margin:0 0 10px;align-items:center">' + btn('\u21BA ' + t('انسخ من آخر زيارتي'), 'btn-secondary btn-sm', ' data-svcopy="' + esc(L.id) + '"')
-    + '<span class="hint" style="margin:0">' + esc(t('التثبيت والكهرباء والمقاسات من')) + ' ' + esc(L.id) + ' \u00b7 ' + esc(t('الصور والتحديات من الموقع')) + '</span></div>';
+    + '<span class="hint" style="margin:0">' + esc(t('التثبيت والكهرباء والمقاسات من')) + ' ' + esc(siteKey(siteOf(L))) + ' \u00b7 ' + esc(t('الصور والتحديات من الموقع')) + '</span></div>';
 }
 function svCopyFrom(id){
   var r = STATE.recs[id]; if (!r){ toast(t('لا زيارة')); return; }
@@ -11866,7 +11866,7 @@ function chalAssignBox(cat){
 function chalPopHtml(){
   var cat = CHAL_POP, O = mfuObstaclesF().filter(function(o){ return cat === '*' || o.cats.indexOf(cat) > -1; });
   var rows = O.map(function(o){ var x = o.x, r = STATE.recs[x.id] || {}, nt = String(r.chal_note || r.note || '').trim();
-    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>' + esc(x.name || x.id) + '</b>' + (x.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign) : '') + ' <span class="num hint">' + bdi(x.id) + '</span></div>'
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>' + esc(siteKey(x) !== x.id ? siteKey(x) : (x.name || x.id)) + '</b>' + (x.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign) : '') + ' <span class="num hint">' + bdi(x.id) + '</span></div>'
       + '<div class="hint" style="margin:2px 0">' + esc(t(x.zone || '')) + ' \u00b7 ' + esc(typeLabel(x.type || '')) + (cat === '*' ? ' \u00b7 ' + o.cats.map(function(c){ return esc(t(c)); }).join('، ') : '') + (r.access && r.access !== 'تم الوصول' ? ' \u00b7 ' + esc(t(r.access)) : '') + '</div>'
       + (nt ? '<div class="hint" style="margin:0 0 4px">' + esc(nt.slice(0, 200)) + '</div>' : '')
       + '<div class="actions" style="margin:0">' + btn('\u25C8 ' + t('على الخريطة'), 'btn-secondary btn-sm', ' data-fly="' + esc(x.id) + '"') + btn(t('التفاصيل'), 'btn-quiet btn-sm', ' data-site="' + esc(x.id) + '"') + '</div></div>'; }).join('');
@@ -15333,6 +15333,7 @@ function siteKey(x){
   return x.id;
 }
 /* الخليةُ في الجداول: المعرّفُ الأوّلُ بارزًا ومعرّفُ النظام صغيرًا تحته إن اختلفا */
+function siteOf(o){ if (!o) return o; if (o.type) return o; if (o.site && o.site.id) return o.site; return (typeof siteFind === 'function' && siteFind(o.id)) || o; }   /* (V35.2) */
 function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخصَ في المشعر نفسِه (مخيمٌ لأكثر من شركة) */
   if (!x || x.type !== 'مخيم' || !x.sign) return 1;
   var U = siteShared.u; if (!U || U.n !== (STATE.sites || []).length){ U = siteShared.u = { n:(STATE.sites || []).length, c:{} }; (STATE.sites || []).forEach(function(y){ if (y.type === 'مخيم' && y.sign){ var k = y.zone + '|' + String(y.sign).trim(); U.c[k] = (U.c[k] || 0) + 1; } }); }
@@ -15655,7 +15656,7 @@ function popHtml(){
             step = 'رُكّبت واعتُمدت'; who = '—';
           }
           var tw = (!sv && !rec) ? twinOf(s) : null;
-          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(tw.id) + '</b> '
+          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(siteKey(tw)) + '</b> '
               + '(' + esc((tw.sq || '') + ' / ' + (tw.sign || '')) + ') \u2014 ' + esc(t(svVisited(STATE.recs[tw.id]) ? 'تمت الزيارة' : 'لم تتم زيارتها'))
               + '. ' + esc(t('إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.')) + '</span>'
               + (maySiteEdit() ? '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F9F9} ' + t('تصحيح البيانات'),'btn-quiet btn-sm',' data-goto="dq"') + '</div>' : '') + '</div>' : '';
@@ -16395,7 +16396,7 @@ function fieldList(){
                 + ' style="width:20px;min-height:20px;flex:0 0 auto">' : '')
             + '<div class="li-main">'
             + '<div class="li-t">' + esc(siteTitle(x)) + (siteSub(x) ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(siteSub(x)) + '</span>' : '') + '</div>'   /* المخيمُ بشاخصه (V23.8) */
-            + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
+            + '<div class="li-s">' + siteIdHtml(x) + ' · '
             +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(dispName(x.co.slice(0, 26))) : '')
             + '</div></div><div class="li-end">'
             + (typeof distTxt === 'function' && distTxt(x)
@@ -18799,7 +18800,7 @@ function kmiCard(){
               + (p.shape !== 'point' ? '<br><span class="hint" style="margin:0">' + esc(t(p.shape === 'polygon' ? 'مضلّع — أُخذ مركزُه' : 'خط — أُخذ مركزُه')) + '</span>' : ''),
             '<span class="num">' + p.lat.toFixed(5) + ', ' + p.lng.toFixed(5) + '</span>',
             badge,
-            r.near ? ('<span class="num">' + esc(r.near.id) + '</span><br><span class="hint" style="margin:0">' + nm(Math.round(r.d)) + ' ' + esc(t('م')) + '</span>') : '—',
+            r.near ? ('<span class="num">' + esc(siteKey(r.near)) + '</span><br><span class="hint" style="margin:0">' + nm(Math.round(r.d)) + ' ' + esc(t('م')) + '</span>') : '—',
             esc((p.sign || p.sq || p.co || '').slice(0, 30))];
   });
   return head
@@ -23323,7 +23324,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             table(['النقطة','الأجهزة المقترحة','المقترِح','الوقت',''],
               wait.slice(0, 30).map(function(r){
                 var s = siteFind(r.id);
-                return ['<strong>' + esc(r.id) + '</strong><br><span class="hint" style="margin:0">'
+                return [siteIdHtml(siteOf(r)) + '<br><span class="hint" style="margin:0">'
                           + esc(((s && s.name) || '').slice(0,28)) + '</span>',
                         Object.keys(r.solution.items).map(function(c){
                           return esc(itemName(c)) + ' \u00d7' + nm(r.solution.items[c]);
@@ -23410,7 +23411,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       ? cardFlush(t('السجلّ') + ' — ' + nm(rows.length) + ' ' + t('من') + ' ' + nm(all.length),
           table(['النقطة','الحالة','الفني','التاريخ','ملاحظة',''],
             capList(rows, 300).map(function(x){
-              return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
+              return [siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">'
                         + esc((x.site.name || '').slice(0, 28)) + '</span>',
                       x.done ? pill('تمت الزيارة','ok') : pill(x.rec.access || 'متعذّر','wrn'),
                       esc(dispName(x.rec.by) || '—'),
@@ -23446,7 +23447,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var out = [];
     capList(rows, 150).forEach(function(x){
       var r = x.rec, isOpen = MIN_OPEN === x.id, ms = minState(r);
-      out.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      out.push([siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                 esc(t(x.site.zone || '—')) + (x.site.sq ? ' \u00b7 ' + esc(x.site.sq) : '') + '<br><span class="hint" style="margin:0">' + esc(x.site.co || '—') + '</span>',
                 esc(dispName(r.by) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.at ? dayKey(r.at) : '') + '</span>',
                 esc(dispName(r.reviewBy) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.reviewAt ? dayKey(r.reviewAt) : '') + '</span>',
@@ -23523,7 +23524,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       var r = x.rec, rv = svReview(r);
       var facts = svFacts(r);
       var so = solutionOf(x.id);
-      var head0 = '<strong>' + bdi(x.id) + '</strong> \u2014 ' + esc((x.site.name || '').slice(0, 40))
+      var head0 = siteIdHtml(siteOf(x)) + ' \u2014 ' + esc((x.site.name || '').slice(0, 40))
         + ' <span class="hint" style="margin:0;display:inline">\u00b7 ' + esc(dispName(r.by) || '\u2014')
         + ' \u00b7 <span class="num">' + esc(fmtDate(r.at || 0)) + '</span>'
         + (r.round > 1 ? ' \u00b7 ' + esc(t('الجولة')) + ' <span class="num">' + nm(r.round) + '</span>' : '') + '</span>';
@@ -23597,7 +23598,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             ? cardFlush(t('جاهز للتركيب') + ' \u2014 ' + nm(L.length),
                 table(['النقطة','الاسم','الحل','اعتُمد','إجراء'], capList(L, 200).map(function(x){
                   var so = solutionOf(x.id) || {}, r = STATE.recs[x.id] || {};
-                  return ['<strong>' + bdi(x.id) + '</strong>', esc((x.name || '').slice(0, 30)),
+                  return [siteIdHtml(siteOf(x)), esc((x.name || '').slice(0, 30)),
                           '<span class="num">' + nm(Object.keys(so.items || so.lines || {}).length) + '</span> ' + esc(t('سطر')),
                           '<span class="num">' + esc(r.reviewAt ? fmtDate(r.reviewAt) : '—') + '</span>',
                           btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"')];
@@ -23615,7 +23616,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
         ? cardFlush(t('الإفادات') + ' — ' + nm(L.length),
             table(['النقطة','التحديات','الملاحظة','المُفيد','الحالة'],
               capList(L, 200).map(function(x){
-                return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                return [siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
                         esc(x.note || '—'), esc(dispName(x.by) || '—'),
@@ -23660,7 +23661,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
     var rows = [];
     capList(show, 200).forEach(function(x){
       var r = x.rec, isOpen = STK_OPEN === x.id;
-      rows.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      rows.push([siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                  x.blocked ? (x.accepted ? pill('متعذّر — مقبول', 'ok') : pill(r.access || 'متعذّر', 'bad')) : pill('راكد بانتظار التركيب', 'wrn'),
                  '<span dir="auto">' + esc((x.blocked ? (r.reason || r.note || '—') : t(idleStep(x.id).why)).slice(0, 60)) + '</span>',
                  nm(x.days) + ' ' + t('يوم'),
@@ -23731,7 +23732,7 @@ function pilotCard(){
     + '<div style="overflow:auto"><table class="tbl"><thead><tr><th>' + esc(t('النقطة')) + '</th><th>' + esc(t('الحالة')) + '</th>'
     + R[0].st.map(function(p){ return '<th>' + esc(t(p[0])) + '</th>'; }).join('') + '<th>' + esc(t('إسناد←تركيب')) + '</th><th>' + esc(t('تركيب←تدقيق')) + '</th><th>' + esc(t('تدقيق←تسليم')) + '</th></tr></thead><tbody>'
     + R.map(function(o){ var s2 = o.st;
-        return '<tr><td><b>' + bdi(o.x.id) + '</b></td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
+        return '<tr><td>' + siteIdHtml(o.x) + '</td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
           + s2.map(function(p){ return '<td class="num">' + (p[1] ? esc(fmtDT(p[1])) : '—') + '</td>'; }).join('')
           + '<td class="num">' + span(s2[1][1], s2[2][1]) + '</td><td class="num">' + span(s2[2][1], s2[3][1]) + '</td><td class="num">' + span(s2[3][1], s2[4][1]) + '</td></tr>'; }).join('')
     + '</tbody></table></div>');
@@ -23788,7 +23789,7 @@ PAGE.dis = { m:'المتابعة', t:'الفك والمراحل',
         ? cardFlush(t('سجلّ الفك') + ' — ' + nm(L.length),
             table(['النقطة','الحالة','الحالة الفنية','بواسطة','التاريخ'],
               L.sort(function(a,b){ return (b.at||0)-(a.at||0); }).slice(0,200).map(function(x){
-                return ['<strong>' + bdi(x.id) + '</strong>',
+                return [siteIdHtml(siteOf(x)),
                         pill(x.status, x.status === 'تم الفك' ? 'ok' : 'wrn'),
                         x.cond ? pill(x.cond, x.cond === 'تالف' ? 'bad' : 'ok') : '—',
                         esc(dispName(x.by) || '—'),
@@ -24519,6 +24520,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V35.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'رقم الشاخص (واسم ممرات ١٤٤٧) بقى أول حاجة في باقي الشاشات كمان: النقاط المخفية، وتفاصيل النقطة، وتعديل المسح، والقوائم المنسدلة، و«الأقرب»، والإسناد، وقوائم الحقل، وتنبيه التوأم، وملخص العمل اليومي، وجدول التجريبي.' ] },
   { v:'V35.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'المخيم اللي فيه أكتر من شركة بقى بيظهر برقم الشاخص في كل سطوره (سطر لكل شركة)، واسم الشركة تحته، ومعرّف النظام تحتهم. والبحث بالشاخص بيرجّع كل الشركات اللي في المخيم.' ] },
   { v:'V35.0', d:'٧ أكتوبر ٢٠٢٦', notes:[

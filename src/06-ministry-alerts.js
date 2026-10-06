@@ -1369,7 +1369,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             table(['النقطة','الأجهزة المقترحة','المقترِح','الوقت',''],
               wait.slice(0, 30).map(function(r){
                 var s = siteFind(r.id);
-                return ['<strong>' + esc(r.id) + '</strong><br><span class="hint" style="margin:0">'
+                return [siteIdHtml(siteOf(r)) + '<br><span class="hint" style="margin:0">'
                           + esc(((s && s.name) || '').slice(0,28)) + '</span>',
                         Object.keys(r.solution.items).map(function(c){
                           return esc(itemName(c)) + ' \u00d7' + nm(r.solution.items[c]);
@@ -1456,7 +1456,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       ? cardFlush(t('السجلّ') + ' — ' + nm(rows.length) + ' ' + t('من') + ' ' + nm(all.length),
           table(['النقطة','الحالة','الفني','التاريخ','ملاحظة',''],
             capList(rows, 300).map(function(x){
-              return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
+              return [siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">'
                         + esc((x.site.name || '').slice(0, 28)) + '</span>',
                       x.done ? pill('تمت الزيارة','ok') : pill(x.rec.access || 'متعذّر','wrn'),
                       esc(dispName(x.rec.by) || '—'),
@@ -1492,7 +1492,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     var out = [];
     capList(rows, 150).forEach(function(x){
       var r = x.rec, isOpen = MIN_OPEN === x.id, ms = minState(r);
-      out.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      out.push([siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                 esc(t(x.site.zone || '—')) + (x.site.sq ? ' \u00b7 ' + esc(x.site.sq) : '') + '<br><span class="hint" style="margin:0">' + esc(x.site.co || '—') + '</span>',
                 esc(dispName(r.by) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.at ? dayKey(r.at) : '') + '</span>',
                 esc(dispName(r.reviewBy) || '—') + '<br><span class="hint num" style="margin:0">' + esc(r.reviewAt ? dayKey(r.reviewAt) : '') + '</span>',
@@ -1569,7 +1569,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
       var r = x.rec, rv = svReview(r);
       var facts = svFacts(r);
       var so = solutionOf(x.id);
-      var head0 = '<strong>' + bdi(x.id) + '</strong> \u2014 ' + esc((x.site.name || '').slice(0, 40))
+      var head0 = siteIdHtml(siteOf(x)) + ' \u2014 ' + esc((x.site.name || '').slice(0, 40))
         + ' <span class="hint" style="margin:0;display:inline">\u00b7 ' + esc(dispName(r.by) || '\u2014')
         + ' \u00b7 <span class="num">' + esc(fmtDate(r.at || 0)) + '</span>'
         + (r.round > 1 ? ' \u00b7 ' + esc(t('الجولة')) + ' <span class="num">' + nm(r.round) + '</span>' : '') + '</span>';
@@ -1643,7 +1643,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
             ? cardFlush(t('جاهز للتركيب') + ' \u2014 ' + nm(L.length),
                 table(['النقطة','الاسم','الحل','اعتُمد','إجراء'], capList(L, 200).map(function(x){
                   var so = solutionOf(x.id) || {}, r = STATE.recs[x.id] || {};
-                  return ['<strong>' + bdi(x.id) + '</strong>', esc((x.name || '').slice(0, 30)),
+                  return [siteIdHtml(siteOf(x)), esc((x.name || '').slice(0, 30)),
                           '<span class="num">' + nm(Object.keys(so.items || so.lines || {}).length) + '</span> ' + esc(t('سطر')),
                           '<span class="num">' + esc(r.reviewAt ? fmtDate(r.reviewAt) : '—') + '</span>',
                           btn('\u{1F5FA} ' + t('على الخريطة'),'btn-quiet btn-sm',' data-site="' + esc(x.id) + '"')];
@@ -1661,7 +1661,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
         ? cardFlush(t('الإفادات') + ' — ' + nm(L.length),
             table(['النقطة','التحديات','الملاحظة','المُفيد','الحالة'],
               capList(L, 200).map(function(x){
-                return ['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">'
+                return [siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">'
                           + esc(((x.site && x.site.name) || '').slice(0, 28)) + '</span>',
                         x.chals.map(function(c){ return pill(c, 'warn'); }).join(' '),
                         esc(x.note || '—'), esc(dispName(x.by) || '—'),
@@ -1706,7 +1706,7 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
     var rows = [];
     capList(show, 200).forEach(function(x){
       var r = x.rec, isOpen = STK_OPEN === x.id;
-      rows.push(['<strong>' + bdi(x.id) + '</strong><br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
+      rows.push([siteIdHtml(siteOf(x)) + '<br><span class="hint" style="margin:0">' + esc((x.site.name || '').slice(0, 28)) + '</span>',
                  x.blocked ? (x.accepted ? pill('متعذّر — مقبول', 'ok') : pill(r.access || 'متعذّر', 'bad')) : pill('راكد بانتظار التركيب', 'wrn'),
                  '<span dir="auto">' + esc((x.blocked ? (r.reason || r.note || '—') : t(idleStep(x.id).why)).slice(0, 60)) + '</span>',
                  nm(x.days) + ' ' + t('يوم'),
@@ -1777,7 +1777,7 @@ function pilotCard(){
     + '<div style="overflow:auto"><table class="tbl"><thead><tr><th>' + esc(t('النقطة')) + '</th><th>' + esc(t('الحالة')) + '</th>'
     + R[0].st.map(function(p){ return '<th>' + esc(t(p[0])) + '</th>'; }).join('') + '<th>' + esc(t('إسناد←تركيب')) + '</th><th>' + esc(t('تركيب←تدقيق')) + '</th><th>' + esc(t('تدقيق←تسليم')) + '</th></tr></thead><tbody>'
     + R.map(function(o){ var s2 = o.st;
-        return '<tr><td><b>' + bdi(o.x.id) + '</b></td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
+        return '<tr><td>' + siteIdHtml(o.x) + '</td><td>' + pill(t((LIFE[o.life] || LIFE.todo).n), '') + '</td>'
           + s2.map(function(p){ return '<td class="num">' + (p[1] ? esc(fmtDT(p[1])) : '—') + '</td>'; }).join('')
           + '<td class="num">' + span(s2[1][1], s2[2][1]) + '</td><td class="num">' + span(s2[2][1], s2[3][1]) + '</td><td class="num">' + span(s2[3][1], s2[4][1]) + '</td></tr>'; }).join('')
     + '</tbody></table></div>');
@@ -1834,7 +1834,7 @@ PAGE.dis = { m:'المتابعة', t:'الفك والمراحل',
         ? cardFlush(t('سجلّ الفك') + ' — ' + nm(L.length),
             table(['النقطة','الحالة','الحالة الفنية','بواسطة','التاريخ'],
               L.sort(function(a,b){ return (b.at||0)-(a.at||0); }).slice(0,200).map(function(x){
-                return ['<strong>' + bdi(x.id) + '</strong>',
+                return [siteIdHtml(siteOf(x)),
                         pill(x.status, x.status === 'تم الفك' ? 'ok' : 'wrn'),
                         x.cond ? pill(x.cond, x.cond === 'تالف' ? 'bad' : 'ok') : '—',
                         esc(dispName(x.by) || '—'),
@@ -2565,6 +2565,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V35.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'رقم الشاخص (واسم ممرات ١٤٤٧) بقى أول حاجة في باقي الشاشات كمان: النقاط المخفية، وتفاصيل النقطة، وتعديل المسح، والقوائم المنسدلة، و«الأقرب»، والإسناد، وقوائم الحقل، وتنبيه التوأم، وملخص العمل اليومي، وجدول التجريبي.' ] },
   { v:'V35.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'المخيم اللي فيه أكتر من شركة بقى بيظهر برقم الشاخص في كل سطوره (سطر لكل شركة)، واسم الشركة تحته، ومعرّف النظام تحتهم. والبحث بالشاخص بيرجّع كل الشركات اللي في المخيم.' ] },
   { v:'V35.0', d:'٧ أكتوبر ٢٠٢٦', notes:[

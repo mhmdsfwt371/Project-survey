@@ -308,7 +308,7 @@ function hiddenSitesCard(){
   if (!H.length || !maySiteEdit()) return '';
   return cardFlush(t('نقاطٌ مخفية') + ' — ' + nm(H.length),
     table(['النقطة','الاسم','أخفاها','إجراء'], H.slice(0, 100).map(function(x){
-      return ['<strong>' + bdi(x.id) + '</strong>', esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
+      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
               btn('\u21A9 ' + t('استعادة'),'btn-secondary btn-sm',' data-siterestore="' + esc(x.id) + '"')];
     })));
 }
@@ -876,7 +876,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
     }
 
     return card(d.i + ' ' + esc(x.name),
-        '<div class="pid" style="margin:0 0 10px">' + bdi(x.id) + '</div>'
+        '<div class="pid" style="margin:0 0 10px">' + bdi(siteKey(x)) + (siteKey(x) !== x.id ? ' \u00b7 ' + bdi(x.id) : '') + '</div>'
         + '<div class="chips" style="margin:0 0 12px">'
         +   pill(x.zone,'acc') + ' ' + '<span class="pill" style="background:' + d.c + '22;color:' + d.c + '">'
         +   d.i + ' ' + esc(t(d.l)) + '</span> '
@@ -3018,7 +3018,7 @@ function svqSheet(){
     return '<li><span class="hint" style="margin:0">' + esc(fmtDT(e.at)) + ' \u00b7 ' + esc(dispName(e.by)) + '</span> — ' + esc(t(svqLabel(e.k))) + ': ' + esc(svqFmt(e.o)) + ' \u2190 ' + esc(svqFmt(e.v)) + '</li>';
   }).join('');
   return '<div class="svq-back" id="svqSheet" role="dialog" aria-modal="true"><div class="svq-box">'
-    + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(s.id) + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
+    + '<div class="svq-h"><div><b>\u270E ' + esc(t('تعديل المسح')) + '</b><div class="hint" style="margin:2px 0 0"><span class="num">' + esc(siteKey(s)) + (siteKey(s) !== s.id ? ' \u00b7 ' + esc(s.id) : '') + '</span> \u00b7 ' + esc(s.name) + '</div></div>'
     + '<button type="button" class="npop-x" data-svqx="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<p class="hint" style="margin:6px 0 10px">' + esc(t(appr && !boss ? 'هذا المسحُ معتمد — تعديلُ أيِّ حقلٍ يعيده لانتظار اعتماد المهندس.' : 'اختر الحقلَ الذي تعدّله — يُحفَظ وحدَه، وتبقى الصورُ وبقيةُ المسح كما هي، ويُسجَّل التعديلُ باسمك.')) + '</p>'
     + (rows || '<p class="hint">' + esc(t('لا حقولَ مكتوبةً في هذه الزيارة — افتح نموذجَ المسح.')) + '</p>')

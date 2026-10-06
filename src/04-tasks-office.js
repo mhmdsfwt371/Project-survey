@@ -44,7 +44,7 @@ function chalAssignBox(cat){
 function chalPopHtml(){
   var cat = CHAL_POP, O = mfuObstaclesF().filter(function(o){ return cat === '*' || o.cats.indexOf(cat) > -1; });
   var rows = O.map(function(o){ var x = o.x, r = STATE.recs[x.id] || {}, nt = String(r.chal_note || r.note || '').trim();
-    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>' + esc(x.name || x.id) + '</b>' + (x.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign) : '') + ' <span class="num hint">' + bdi(x.id) + '</span></div>'
+    return '<div style="padding:8px 0;border-bottom:1px solid var(--line)"><div><b>' + esc(siteKey(x) !== x.id ? siteKey(x) : (x.name || x.id)) + '</b>' + (x.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(x.sign) : '') + ' <span class="num hint">' + bdi(x.id) + '</span></div>'
       + '<div class="hint" style="margin:2px 0">' + esc(t(x.zone || '')) + ' \u00b7 ' + esc(typeLabel(x.type || '')) + (cat === '*' ? ' \u00b7 ' + o.cats.map(function(c){ return esc(t(c)); }).join('، ') : '') + (r.access && r.access !== 'تم الوصول' ? ' \u00b7 ' + esc(t(r.access)) : '') + '</div>'
       + (nt ? '<div class="hint" style="margin:0 0 4px">' + esc(nt.slice(0, 200)) + '</div>' : '')
       + '<div class="actions" style="margin:0">' + btn('\u25C8 ' + t('على الخريطة'), 'btn-secondary btn-sm', ' data-fly="' + esc(x.id) + '"') + btn(t('التفاصيل'), 'btn-quiet btn-sm', ' data-site="' + esc(x.id) + '"') + '</div></div>'; }).join('');
@@ -3511,6 +3511,7 @@ function siteKey(x){
   return x.id;
 }
 /* الخليةُ في الجداول: المعرّفُ الأوّلُ بارزًا ومعرّفُ النظام صغيرًا تحته إن اختلفا */
+function siteOf(o){ if (!o) return o; if (o.type) return o; if (o.site && o.site.id) return o.site; return (typeof siteFind === 'function' && siteFind(o.id)) || o; }   /* (V35.2) */
 function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخصَ في المشعر نفسِه (مخيمٌ لأكثر من شركة) */
   if (!x || x.type !== 'مخيم' || !x.sign) return 1;
   var U = siteShared.u; if (!U || U.n !== (STATE.sites || []).length){ U = siteShared.u = { n:(STATE.sites || []).length, c:{} }; (STATE.sites || []).forEach(function(y){ if (y.type === 'مخيم' && y.sign){ var k = y.zone + '|' + String(y.sign).trim(); U.c[k] = (U.c[k] || 0) + 1; } }); }
@@ -3833,7 +3834,7 @@ function popHtml(){
             step = 'رُكّبت واعتُمدت'; who = '—';
           }
           var tw = (!sv && !rec) ? twinOf(s) : null;
-          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(tw.id) + '</b> '
+          var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(siteKey(tw)) + '</b> '
               + '(' + esc((tw.sq || '') + ' / ' + (tw.sign || '')) + ') \u2014 ' + esc(t(svVisited(STATE.recs[tw.id]) ? 'تمت الزيارة' : 'لم تتم زيارتها'))
               + '. ' + esc(t('إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.')) + '</span>'
               + (maySiteEdit() ? '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F9F9} ' + t('تصحيح البيانات'),'btn-quiet btn-sm',' data-goto="dq"') + '</div>' : '') + '</div>' : '';
@@ -4573,7 +4574,7 @@ function fieldList(){
                 + ' style="width:20px;min-height:20px;flex:0 0 auto">' : '')
             + '<div class="li-main">'
             + '<div class="li-t">' + esc(siteTitle(x)) + (siteSub(x) ? ' <span class="hint" style="margin:0;font-weight:400">\u00b7 ' + esc(siteSub(x)) + '</span>' : '') + '</div>'   /* المخيمُ بشاخصه (V23.8) */
-            + '<div class="li-s"><span class="num">' + esc(x.id) + '</span> · '
+            + '<div class="li-s">' + siteIdHtml(x) + ' · '
             +   esc(t(x.zone)) + ' · ' + esc(t(x.type)) + (x.co ? ' · ' + esc(dispName(x.co.slice(0, 26))) : '')
             + '</div></div><div class="li-end">'
             + (typeof distTxt === 'function' && distTxt(x)

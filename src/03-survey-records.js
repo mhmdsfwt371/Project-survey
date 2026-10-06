@@ -469,7 +469,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                  return r && r.status === 'مُركّب' && r.approved && !handDone(x.id); })))
                 .slice(0, 400).map(function(x){
                   return '<option value="' + esc(x.id) + '"' + (HO_DOC === x.id ? ' selected' : '') + '>'
-                    + esc(x.id) + (handDone(x.id) ? ' \u2705' : '') + '</option>'; }).join('')
+                    + esc(siteKey(x)) + (handDone(x.id) ? ' \u2705' : '') + '</option>'; }).join('')
           +   '</select></div>'
           + '<div class="field"><label>' + esc(t('محضر شركة')) + '</label>'
           +   '<select id="hoDocCo">' + coKeys.map(function(c){
@@ -907,9 +907,9 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           ? alertBox('warn','انتبه — يوجد مواقعُ مسجّلةٌ قريبةٌ منك. أغلبُ حالات «غير موجود» وقوفٌ بجانب مسجَّل، فراجعها قبل الإنشاء.')
             + card('الأقربُ إليك الآن',
                 near.map(function(x){
-                  return '<button type="button" class="btn btn-quiet" data-site="' + esc(x.s.id) + '" '
+                  return '<button type="button" class="btn btn-quiet" data-site="' + esc(siteKey(x.s)) + '" '
                     + 'style="width:100%;justify-content:space-between;margin-bottom:6px">'
-                    + '<span>' + esc(x.s.id) + '</span><span class="num">' + nm(Math.round(x.d))
+                    + '<span>' + esc(siteKey(x.s)) + '</span><span class="num">' + nm(Math.round(x.d))
                     + ' ' + esc(t('م')) + '</span></button>';
                 }).join(''))
           : alertBox('success','لا موقعَ مسجَّلًا خلال مئةٍ وأربعين مترًا منك — الأرجحُ أنه غيرُ مسجَّلٍ فعلًا.'));
@@ -1038,7 +1038,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               pool.slice(0, 40).map(function(x){
                 var r = STATE.diss[x.id] || {};
                 var d = CAT_DEF[x.type] || { l:x.type, i:'' };
-                return ['<strong>' + bdi(x.id) + '</strong>',
+                return [siteIdHtml(siteOf(x)),
                         esc(x.zone), d.i + ' ' + esc(t(d.l)),
                         N(ptsDis(x)),
                         pill(r.status || 'قابل للفك', r.status==='تم الفك'?'ok':(r.status?'warn':'')),
@@ -1398,7 +1398,7 @@ function asnSheet(){
             + '<div class="li-main"><div class="li-t">'
             +   (x.sign ? esc(t('شاخص')) + ' <b>' + esc(x.sign) + '</b>' : esc(x.name.slice(0, 40)))
             +   (x.sq ? ' · ' + esc(t('مربع')) + ' ' + esc(x.sq) : '')
-            + '</div><div class="li-s"><span class="num">' + esc(x.id) + '</span></div></div>'
+            + '</div><div class="li-s">' + siteIdHtml(x) + '</div></div>'
             + '<div class="li-end" style="color:' + d.c + '">' + d.i + ' ' + esc(t(d.l))
             + (L.pts(x) ? '<div class="num" style="margin:2px 0 0">' + nm(L.pts(x)) + ' ' + esc(t('نقطة')) + '</div>' : '')
             +   (L.kind === 'dis' && STATE.inss[x.id] && STATE.inss[x.id].parts
@@ -2738,7 +2738,7 @@ function svLastMine(s){
 function svCopyBar(s){
   var L = svLastMine(s); if (!L) return '';
   return '<div class="actions" style="margin:0 0 10px;align-items:center">' + btn('\u21BA ' + t('انسخ من آخر زيارتي'), 'btn-secondary btn-sm', ' data-svcopy="' + esc(L.id) + '"')
-    + '<span class="hint" style="margin:0">' + esc(t('التثبيت والكهرباء والمقاسات من')) + ' ' + esc(L.id) + ' \u00b7 ' + esc(t('الصور والتحديات من الموقع')) + '</span></div>';
+    + '<span class="hint" style="margin:0">' + esc(t('التثبيت والكهرباء والمقاسات من')) + ' ' + esc(siteKey(siteOf(L))) + ' \u00b7 ' + esc(t('الصور والتحديات من الموقع')) + '</span></div>';
 }
 function svCopyFrom(id){
   var r = STATE.recs[id]; if (!r){ toast(t('لا زيارة')); return; }

@@ -1800,7 +1800,7 @@ function kmiCard(){
               + (p.shape !== 'point' ? '<br><span class="hint" style="margin:0">' + esc(t(p.shape === 'polygon' ? 'مضلّع — أُخذ مركزُه' : 'خط — أُخذ مركزُه')) + '</span>' : ''),
             '<span class="num">' + p.lat.toFixed(5) + ', ' + p.lng.toFixed(5) + '</span>',
             badge,
-            r.near ? ('<span class="num">' + esc(r.near.id) + '</span><br><span class="hint" style="margin:0">' + nm(Math.round(r.d)) + ' ' + esc(t('م')) + '</span>') : '—',
+            r.near ? ('<span class="num">' + esc(siteKey(r.near)) + '</span><br><span class="hint" style="margin:0">' + nm(Math.round(r.d)) + ' ' + esc(t('م')) + '</span>') : '—',
             esc((p.sign || p.sq || p.co || '').slice(0, 30))];
   });
   return head
