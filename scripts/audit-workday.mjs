@@ -101,7 +101,7 @@ c = await click(c.querySelector('[data-wdyreset]'));
 
 console.log('\n══ ٥ · التحديثُ الأسبوعيُّ المُصدَّر ══');
 const sec = w.MFU.sections.find(s => s[0] === 'daily'), rep = w.mfuReport();
-T(/ملخص العمل اليومي/.test(sec[1]) && JSON.stringify(sec[2]) === JSON.stringify(['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'المتعذر']), 'بالاسم والأعمدة نفسِها');
+T(/ملخص العمل اليومي/.test(sec[1]) && JSON.stringify(sec[2]) === JSON.stringify(['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'تحتاج زيارة أخرى تقنيًا']), 'بالاسم والأعمدة نفسِها');
 T(rep.daily.length && rep.daily.every(r => r.length === 5) && rep.daily[0][1] === 4 && rep.daily[0][3] === 1, 'وصفوفُه: اليوم، المسح، التركيب، الفك، المتعذر');
 
 console.log('\n══ ٦ · شريطُ الأيقونات حين تُطوى القائمة ══');
