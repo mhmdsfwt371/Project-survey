@@ -10,7 +10,8 @@ pres.forEach(d => { const x = d.data() || {}; const ua = String(x.ua || ''); con
   if (x.day >= yday && x.pg && typeof x.pg === 'object') Object.entries(x.pg).forEach(([k, v]) => { pgAll[k] = (pgAll[k] || 0) + (+v || 0); if (/tech|supervisor|helper|cins|cprep|casm|driver/.test(x.role || '')) pgField[k] = (pgField[k] || 0) + (+v || 0); }); });
 const recent = rows.filter(r => r.day >= yday);
 const sum = recent.filter(r => r.day === today).reduce((a, r) => a + r.rd, 0);
-writeFileSync('/tmp/exp/field-reads.json', JSON.stringify({ at:new Date().toISOString(), today, devicesToday:recent.filter(r => r.day === today).length, sumReadsToday:sum,
+const vers = rows.reduce((m, r) => (m[r.ver || '؟'] = (m[r.ver || '؟'] || 0) + 1, m), {});
+writeFileSync('/tmp/exp/field-reads.json', JSON.stringify({ at:new Date().toISOString(), today, versions:vers, lastBeat:rows.map(r => [r.name, r.ver, r.day]).slice(0, 30), devicesToday:recent.filter(r => r.day === today).length, sumReadsToday:sum,
   top:recent.sort((a, b) => b.rd - a.rd).slice(0, 15), byRole:Object.entries(recent.reduce((m, r) => (m[r.role] = m[r.role] || { n:0, rd:0, cp:0 }, m[r.role].n++, m[r.role].rd += r.rd, m[r.role].cp += r.cp, m), {})),
   pagesAll:Object.entries(pgAll).sort((a, b) => b[1] - a[1]).slice(0, 15), pagesField:Object.entries(pgField).sort((a, b) => b[1] - a[1]).slice(0, 15) }));
 console.log('ok', recent.length, sum);

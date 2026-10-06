@@ -4,6 +4,8 @@ import { writeFileSync, mkdirSync } from 'fs';
 const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); admin.initializeApp({ credential: admin.credential.cert(sa) }); const db = admin.firestore();
 mkdirSync('/tmp/exp', { recursive: true });
 const since = Date.now() - 14 * 864e5, ev = await db.collection('events').where('ts', '>=', since).limit(20000).get();
+/* ومنذ نشر V33.0 (٦ أكتوبر ١٤:٤٢ UTC): ما سُجّل بعده بالنوع — عطلُ المنصة الجديد، والخطأُ البرمجيُّ الحقيقي، والسحباتُ الباردة */
+const PUB = Date.parse('2026-10-06T14:42:00Z'); const after = {}; ev.forEach(d => { const x = d.data() || {}; if (+x.ts < PUB) return; const k = String(x.what || '').split(' — ')[0].slice(0, 40); after[k] = (after[k] || 0) + 1; });
 const KINDS = ['خطأ برمجي', 'الحفظُ المحليُّ لا يعمل', 'توقّفٌ مفاجئٌ في الإقلاع السابق', 'جهازٌ تجاوز سقفَ القراءات'];
 const day = ts => new Date(+ts + 3 * 3600e3).toISOString().slice(0, 10);
 const out = {}; KINDS.forEach(k => out[k] = { n:0, byMsg:{}, byDay:{}, devs:{}, byWho:{} });
@@ -18,5 +20,6 @@ KINDS.forEach(k => { const o = out[k];
 /* إصدارُ الجهاز من نبضته الأخيرة — هل الخطأُ على النسخ الحديثة؟ */
 const pres = await db.collection('presence').get(), verOf = {}; pres.forEach(d => { const x = d.data() || {}; if (x.dev) verOf[x.dev] = x.ver || ''; });
 KINDS.forEach(k => { res[k].devVersions = Object.entries(out[k].devs).map(([dv, n]) => [verOf[dv] || '؟', n]).reduce((m, [v, n]) => (m[v] = (m[v] || 0) + n, m), {}); });
-writeFileSync('/tmp/exp/field-errors.json', JSON.stringify({ at:new Date().toISOString(), events:ev.size, res }));
+const KINDS2 = ['عطلٌ في متصفّح الجهاز'];
+writeFileSync('/tmp/exp/field-errors.json', JSON.stringify({ at:new Date().toISOString(), events:ev.size, sincePublish:Object.entries(after).sort((a, b) => b[1] - a[1]).slice(0, 20), res }));
 console.log('done', ev.size);
