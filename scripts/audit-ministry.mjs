@@ -53,7 +53,7 @@ T(rep.includes('class="cover"') && rep.includes('تقرير المتابعة ا�
 let hasQr = false; try { createRequire(import.meta.url)('qrcode'); hasQr = true; } catch {}
 T(/qrcode@\^1/.test(readFileSync('.github/workflows/ministry.yml', 'utf8')) && rep.includes('class="cover-qr"') === hasQr && (hasQr || /qrcode غير مثبَّتة/.test(out)),
   'ورمزُ QR يُولَّد محليًّا ويُضمَّن حين تتوفّر مكتبتُه — وإلا يُقال إنه غاب (هنا: ' + (hasQr ? 'مضمَّن' : 'غائب') + ')');
-T(typeof snap.story === 'string' && /هذا الأسبوع مُسح/.test(snap.story) && rep.includes('--min-green') && rep.includes('kk-story'), 'والأسبوعَ في جملةٍ في اللقطة والتقرير، والألوانَ من طقم الهوية');
+T(typeof snap.story === 'string' && /هذا الأسبوع تمت زيارة/.test(snap.story) && rep.includes('--min-green') && rep.includes('kk-story'), 'والأسبوعَ في جملةٍ في اللقطة والتقرير، والألوانَ من طقم الهوية');
 T(page.includes('--min-green') && page.includes('s.story'), 'والصفحةُ المشتركةُ بالطقم نفسِه وتعرض الجملة');
 /* (V17.94) اللقطةُ المنشورةُ مشفَّرة: لا رقمَ صريحًا، وتُفَكُّ بالرمز وحدَه */
 {

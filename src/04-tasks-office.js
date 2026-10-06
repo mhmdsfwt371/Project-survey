@@ -2340,7 +2340,7 @@ PAGE.exec = { m:'المتابعة', t:'التقارير التنفيذية',
       + card('الأرقام الكبرى',
           table(['البند','القيمة','الملاحظة'], [
             ['نطاق المشروع', N(S.total), 'نقطةٌ في أربعة مشاعر'],
-            ['أُنجز مسحًا', N(S.surveyed), S.total ? nm(Math.round(S.surveyed/S.total*100))+'٪' : ''],
+            ['تمت الزيارة', N(S.surveyed), S.total ? nm(Math.round(S.surveyed/S.total*100))+'٪' : ''],
             ['أُنجز تركيبًا', N(S.installed), S.total ? nm(Math.round(S.installed/S.total*100))+'٪' : ''],
             ['من يعملون', N(SC.n), 'فنيًّا ومهندسًا'],
             ['مستحقُّ العمل', cfgGet('ph') ? N(Math.round(pay)) : '—', 'محسوبٌ من الأوزان'],

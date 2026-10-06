@@ -4067,7 +4067,7 @@ function pdfCover(){
   var pct = S.n ? Math.round(S.sv / S.n * 100) : 0;
   return '<div class="tiles">'
     + pdfTile('إجمالي المواقع', nm(S.n), '', '#1F4E79')
-    + pdfTile('تم المسح', nm(S.sv), nm(pct) + '٪', '#2E75B6')
+    + pdfTile('تمت الزيارة', nm(S.sv), nm(pct) + '٪', '#2E75B6')
     + pdfTile('مُركّب', nm(S.ins), '', '#3AD6A0')
     + pdfTile('لم يُزر', nm(S.noRec), '', '#9FB0AA')
     + pdfTile('متعذّر', nm(S.stuck), '', '#8D6E63')

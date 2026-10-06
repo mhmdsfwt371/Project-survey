@@ -72,9 +72,9 @@ const sv = await open('survey', 'survey');
 const chain = w.chainRows(); const ch = k => (chain.filter(r => r.k === k)[0] || {}).done;
 const svd = await open('over', 'svdash');
 T(kpi(over, 'إجمالي المواقع') === TOTAL && after(sv, 'الكل') === N_REC, 'الإجماليُّ هو الإجمالي — والسجلُّ يعدُّ سجلاتِه: ' + TOTAL + ' / ' + N_REC);
-T(kpi(over, 'تم المسح') === VISITED && ch('sv') === VISITED && after(svd, 'نقاطٌ مُسحت') === VISITED,
+T(kpi(over, 'تمت الزيارة') === VISITED && ch('sv') === VISITED && after(svd, 'نقاطٌ تمت زيارتها') === VISITED,
   'زيرت (بأيِّ نتيجة) رقمٌ واحدٌ في الملخّص والسلسلة وتفاصيل المسح: ' + VISITED);
-T(after(sv, 'زيرت') === VISITED && after(sv, 'وُصل إليها') === SURVEYED && SURVEYED + N_STUCK + N_REV === VISITED, 'وشاشةُ المسح تقسّمها: مُسح ' + SURVEYED + ' + متعذّر ' + N_STUCK + ' + تحتاج زيارة ' + N_REV + ' = ' + VISITED);
+T(after(sv, 'تمت الزيارة') === VISITED && after(sv, 'تم الوصول') === SURVEYED && SURVEYED + N_STUCK + N_REV === VISITED, 'وشاشةُ المسح تقسّمها: مُسح ' + SURVEYED + ' + متعذّر ' + N_STUCK + ' + تحتاج زيارة ' + N_REV + ' = ' + VISITED);
 T(kpi(over, 'متعذّر') === N_STUCK && after(sv, 'متعذّر') === N_STUCK, 'والمتعذّرُ رقمٌ واحدٌ في الملخّص وشاشة المسح: ' + N_STUCK);
 T(after(sv, 'تحتاج زيارة أخرى') === N_REV, 'والمردودُ يُعَدُّ وحدَه في شاشة المسح: ' + N_REV);
 T(kpi(over, 'مُركّب') === N_INS && ch('ins') === N_INS, 'والمُركَّبُ رقمٌ واحدٌ في الملخّص والسلسلة: ' + N_INS);
@@ -91,7 +91,7 @@ T(after(idle, 'الكل') === SURVEYED + N_REV - N_INS, 'الراكدُ = ما �
 const stuckT = await open('survey', 'stuck');
 T(after(stuckT, 'الكل') === N_STUCK, 'وشاشةُ المتعذّر تعدُّ المتعذّرَ نفسَه: ' + N_STUCK);
 const ex = await open('exec', 'exec');
-T(after(ex, 'الإنجاز') === Math.round(VISITED / TOTAL * 100) && after(ex, 'أُنجز مسحًا') === VISITED && after(ex, 'أُنجز تركيبًا') === N_INS,
+T(after(ex, 'الإنجاز') === Math.round(VISITED / TOTAL * 100) && after(ex, 'تمت الزيارة') === VISITED && after(ex, 'أُنجز تركيبًا') === N_INS,
   'والتقريرُ التنفيذيُّ من الأرقام نفسِها: ' + Math.round(VISITED / TOTAL * 100) + '٪');
 
 console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والمتبقّي لكلِّ مشعرٍ وحدَه، والكلُّ بلا اختيار (V17.78) ══');
@@ -108,13 +108,13 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
   T(cards >= Object.keys(Z).length + 1, 'وبطاقةٌ بنسبتها لكلِّ مشعرٍ وواحدةٌ للكلّ');
   d.querySelector('[data-ovz="عرفات"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150);
   const ar1 = txt();
-  T(w.OVER_ZONE === 'عرفات' && kpi(ar1, 'إجمالي المواقع') === arafat.n && kpi(ar1, 'تم المسح') === arafat.sv && kpi(ar1, 'متبقٍّ') === arafat.n - arafat.sv,
+  T(w.OVER_ZONE === 'عرفات' && kpi(ar1, 'إجمالي المواقع') === arafat.n && kpi(ar1, 'تمت الزيارة') === arafat.sv && kpi(ar1, 'متبقٍّ') === arafat.n - arafat.sv,
     'واختيارُ عرفات يقرأ أرقامَها وحدَها: ' + arafat.sv + ' من ' + arafat.n);
   T(after(ar1, 'أُنجز') === Math.round(arafat.sv / arafat.n * 100) && after(ar1, 'وبقي') === 100 - Math.round(arafat.sv / arafat.n * 100),
     'ونسبةُ الإنجاز والمتبقّي بالمئة من المشعر نفسِه');
   d.querySelector('[data-ovz="منى"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150);
   const mina = Z['منى'];
-  T(w.OVER_ZONE === 'منى' && kpi(txt(), 'تم المسح') === mina.sv && kpi(txt(), 'متبقٍّ') === mina.n - mina.sv, 'ومنى بأرقامها: ' + mina.sv + ' من ' + mina.n);
+  T(w.OVER_ZONE === 'منى' && kpi(txt(), 'تمت الزيارة') === mina.sv && kpi(txt(), 'متبقٍّ') === mina.n - mina.sv, 'ومنى بأرقامها: ' + mina.sv + ' من ' + mina.n);
   d.querySelector('[data-ovz="منى"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150);
   T(w.OVER_ZONE === '' && kpi(txt(), 'إجمالي المواقع') === TOTAL, 'وضغطةٌ ثانيةٌ تعود إلى الكلّ');
 }
@@ -138,7 +138,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */
-  T(new RegExp('هذا الأسبوع مُسح ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
+  T(new RegExp('هذا الأسبوع تمت زيارة ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
   T(h.indexOf('kk-story') > -1 && (h.match(/aria-valuenow="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
   T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
   T(new RegExp(w.nm(VISITED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'زيرت والتركيبُ من الكلِّ نفسِه: ' + VISITED + ' / ' + TOTAL);

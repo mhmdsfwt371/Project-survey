@@ -653,7 +653,7 @@ var SHEETS = {
     out.push(['', '', '']);
     out.push(['المؤشر', 'العدد', 'النسبة']);
     out.push(['إجمالي المواقع', S.n, nm(100) + '٪']);
-    out.push(['تم المسح', S.sv, pc(S.sv, S.n)]);
+    out.push(['تمت الزيارة', S.sv, pc(S.sv, S.n)]);
     out.push(['مُركّب', S.ins, pc(S.ins, S.n)]);
     out.push(['لم يُزر', S.noRec, pc(S.noRec, S.n)]);
     out.push(['متعذّر', S.stuck, pc(S.stuck, S.n)]);
@@ -4202,7 +4202,7 @@ function svdashBody(){
       + '<div class="wt-row" style="flex-wrap:wrap;gap:8px;align-items:stretch">'
       +   SVD_CARDS.map(svdCard).join('')
       + '</div>'
-      + '<p class="hint" style="margin:8px 0 0">' + esc(t('نقاطٌ مُسحت')) + ' <b class="num">' + nm(R.length) + '</b>'
+      + '<p class="hint" style="margin:8px 0 0">' + esc(t('نقاطٌ تمت زيارتها')) + ' <b class="num">' + nm(R.length) + '</b>'
       +   ' \u00b7 ' + esc(t('غرفةٌ وخيمةٌ محصورة')) + ' <b class="num">' + nm(rooms) + '</b></p>'
       /* المتوسطُ يُضبَط حيث يُقرأ (V17.71) — لا في شاشةٍ بعيدة */
       + (may('settings')
@@ -4450,7 +4450,7 @@ function kioskStory(){
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
   var parts = [];
   if (n7){ var top = Object.keys(byZ).sort(function(a, b){ return byZ[b] - byZ[a]; })[0];
-    parts.push(t('هذا الأسبوع مُسح') + ' ' + nm(n7) + ' ' + t('نقطةً') + (top ? ' (' + nm(byZ[top]) + ' ' + t('منها في') + ' ' + t(top) + ')' : '')); }
+    parts.push(t('هذا الأسبوع تمت زيارة') + ' ' + nm(n7) + ' ' + t('نقطةً') + (top ? ' (' + nm(byZ[top]) + ' ' + t('منها في') + ' ' + t(top) + ')' : '')); }
   else parts.push(t('لم تُسجَّل زيارةٌ هذا الأسبوع'));
   var z0 = zones[0], f = z0 ? zoneForecast(z0) : null;
   if (f && f.eta){ var dd = f.due ? Math.round((f.due - f.eta) / 864e5) : 0;
@@ -4757,7 +4757,7 @@ function mfuSummary(){
   var nClean = svListRows('clean').length, nChal = svListRows('chal').length;
   return svListPop()
     + '<div class="mfu-kpis">'
-    + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
+    + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', esc(t('تمت الزيارة')) + ' ' + nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('clean', 'نقاط بلا عوائق ولا تحديات', nm(nClean), esc(t('وُصل إليها بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
     + box('chal', 'نقاط ذات تحديات', nm(nChal), esc(t('وُصل إليها وفيها تحدٍّ')), '', '#C0392B')
     + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
@@ -4810,8 +4810,8 @@ function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ مع
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
-  sv:      ['تمت زيارتها',            function(x, r){ return svVisited(r); }],   /* (V32.6) بأيِّ نتيجة */
-  rem:     ['المتبقي — لم تُزَر',       function(x, r){ return !svVisited(r); }],
+  sv:      ['تمت الزيارة',            function(x, r){ return svVisited(r); }],   /* (V32.6) بأيِّ نتيجة — (V32.7) بمصطلح المالك */
+  rem:     ['المتبقي — لم تتم زيارتها', function(x, r){ return !svVisited(r); }],
   clean:   ['نقاط بلا عوائق ولا تحديات', function(x, r){ return !!(r && svDone(r)) && r.access === 'تم الوصول' && !svHasChal(r); }],   /* (V32.5) كلُّ الأنواع */
   obs:     ['نقاط عليها معوّقات',        function(x, r){ return !!mfuObsMap()[x.id]; }],
   campins: ['المخيمات وحالةُ تركيبها',    function(x, r){ return x.type === 'مخيم'; }],
