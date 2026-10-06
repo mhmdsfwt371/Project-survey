@@ -3403,7 +3403,7 @@ function loginBg(){
   var ctx = null;
   try{ ctx = cv.getContext('2d'); }catch(e){}
   if (!ctx) { cv.style.display = 'none'; return; }   /* زينة تُهمَل لا تُسقط الصفحة */
-  var raf = 0, pts = [], lit = 0, lastN = -1, lastT = 0, TOT = siteStats().total;
+  var pts = [], lastN = -1, TOT = siteStats().total;
   var slow = false;
   try{ slow = window.matchMedia('(prefers-reduced-motion: reduce)').matches; }catch(e){}
   /* (V32.9) الوحدة ١٠ — أوّلُ فتحٍ أسرع: الخلفيةُ كانت ترسم ١٬٩٠٠ نقطةٍ في كلِّ إطارٍ بلا توقّف وتكتب العدّادَ في الصفحة كلَّ إطار —
@@ -3456,21 +3456,19 @@ function loginBg(){
   build();
   if (slow){ draw(1.2); return; }
 
-  function visible(){ return document.getElementById('loginCv') === cv && cv.offsetWidth > 0; }   /* الشاشةُ ظاهرة؟ (مخفيّةٌ بعد الدخول = عرضُها صفر) */
-  function tick(ts){
-    if (!visible()){ raf = 0; return; }   /* بعد الدخول تقف وحدَها */
-    if (ts && ts - lastT < 48){ raf = requestAnimationFrame(tick); return; }   /* عشرون إطارًا في الثانية تكفي زينة */
-    lastT = ts || 0;
-    lit += 0.0066;
-    if (lit > 1.3) lit = 0;   /* (V33.9) دورةٌ مستمرة كما كانت: تضيء حتى تكتمل، تثبت لحظة، ثم تعود */
-    draw(Math.min(1.2, lit));
-    raf = requestAnimationFrame(tick);
+  /* ═══ (V34.1) بلاغُ المالك: «A problem repeatedly occurred» على الآيفون بعد V33.9 ═══
+     الحركةُ المستمرةُ كانت ترسم ١٬٩٠٠ نقطةٍ عشرين مرةً في الثانية على لوحةٍ بكثافة شاشة الآيفون (×٣) — وأثناء «يُستأنَف الدخول»
+     نفسِه حين يحمّل التطبيقُ بياناته — فيختنق محرّكُ الصفحة ويُقتَل. والحركةُ الآن بلا رسمٍ متكرّر: الصورةُ تُرسَم مرةً واحدة،
+     وفوقها وهجٌ يتحرّك بـCSS (تتولّاه بطاقةُ الرسوم لا المعالج). وبعد أيِّ إقلاعٍ مات فجأةً (BOOT_GUARD) لا وهجَ ولا حركة. */
+  draw(1.2);
+  var calm = slow || (typeof BOOT_GUARD === 'object' && BOOT_GUARD.crashes > 0);
+  if (!calm && !document.getElementById('lgShine')){
+    var sh = document.createElement('div'); sh.id = 'lgShine'; sh.setAttribute('aria-hidden', 'true');
+    /* بعد الستار المعتِم وقبل بطاقة الدخول — ترتيبُ الصفحة يضعه فوق النقاط وتحت البطاقة */
+    try { var veil = cv.parentNode.querySelector('.veil'); cv.parentNode.insertBefore(sh, (veil || cv).nextSibling); } catch (e){ LS_ERR = e; }
   }
-  draw(0);
-  setTimeout(function(){ if (visible()) raf = requestAnimationFrame(tick); }, 150);
-
-  window.addEventListener('resize', function(){ build(); }, { passive:true });
-  cv.__stop = function(){ cancelAnimationFrame(raf); };
+  window.addEventListener('resize', function(){ build(); draw(1.2); }, { passive:true });
+  cv.__stop = function(){ var e = document.getElementById('lgShine'); if (e) e.remove(); };
 }
 
 /* ═══ الميدان — الخريطة أولًا ═══ */

@@ -843,6 +843,11 @@ body.kiosk .kk-story{font-size:21px}
 .mfu-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 12px}
 .mfu-kpi{border:1px solid #D7A56266;border-top:4px solid #C8943E;border-radius:12px;padding:10px 12px;background:var(--surface)}
 /* (V33.8) موجزُ الموسم في صفحة الوزارة */
+/* (V34.1) وهجُ شاشة الدخول: حركةٌ على بطاقة الرسوم (transform وopacity) — لا رسمَ متكرّرًا على المعالج */
+#lgShine{position:absolute;pointer-events:none;mix-blend-mode:screen;background:radial-gradient(closest-side,rgba(70,150,235,.38),rgba(55,138,221,0) 72%);
+  width:60vmax;height:60vmax;left:20%;top:30%;will-change:transform,opacity;animation:lgShine 9s ease-in-out infinite alternate}
+@keyframes lgShine{0%{transform:translate3d(-35vw,-25vh,0) scale(.9);opacity:.55}50%{transform:translate3d(10vw,5vh,0) scale(1.1);opacity:1}100%{transform:translate3d(30vw,25vh,0) scale(.95);opacity:.6}}
+@media (prefers-reduced-motion: reduce){#lgShine{animation:none;opacity:.6}}
 .mfu-hero{margin:0 0 14px}
 .mfu-hero-band{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#0B6E4F,#0B6E4Fcc 60%,#C9A227);color:#fff;margin:0 0 10px}
 .mfu-hero-band .hint{color:#ffffffcc}
@@ -1220,7 +1225,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
