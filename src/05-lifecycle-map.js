@@ -55,7 +55,7 @@ function taskIndex(){
 function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
   /* (V25.3) داخل رسمة الخريطة تُحسَب الحالةُ مرةً لكلِّ نقطة — الحفظُ يُفتَح مع الرسمة ويُغلَق بعدها فلا يُقدِّم قديمًا */
-  var m = MK.lifeMemo || (x && x.id ? DB.tick().life : null);   /* (V31.6) خارج الخريطة أيضًا: مرةً في المهمة الواحدة */
+  var m = MK.lifeMemo || (DB.memo && x && x.id ? DB.memo.life : null);   /* (V31.6/V31.8) داخل رسم الصفحة أيضًا */
   if (!m) return lifeOfRaw(x);
   var v = m[x.id];
   if (v === undefined){ v = lifeOfRaw(x); m[x.id] = v; }
@@ -166,8 +166,8 @@ function mapInit(){
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
     var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|';   /* (V31.1) */
-    if (sig === MAP_SIG && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
-    MAP_SIG = sig;
+    if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
+    MK.sig = sig;
     mapPaint();
     basemapKick();   /* (V24.9) خريطةُ الجهاز بعد الدخول وحين تخمل الصفحة */
     return true;
@@ -266,7 +266,7 @@ function mapPaintMove(){
    أو التقريب)، وما ابتعد عن الشاشة كثيرًا يُطرَح ويعود حين يقترب. والممرُّ والكاميرا معيّنان
    على لوح النقاط نفسِه بحجمها لا فوق المخيمات. والمؤقّتاتُ (موضعُك، ومسارُ الرسم) في مجموعةٍ
    تُمسَح وحدَها. مضلّعاتُ المخيمات تُدفَع إلى الخلف فتبقى النقاطُ فوقها أيًّا كان ترتيبُ الإنشاء. */
-var MK = { by:{} };
+var MK = { by:{}, pLast:0, pTimer:0, pFull:false, sig:'', gen:0, defer:null };
 /* علامةُ الشكل على اللوح بحجمٍ ثابتٍ بالبكسل (V24.1): المعيّنُ والمربّعُ والمثلّثُ وغيرُها تُرسَم برؤوس
    SHAPE_UNIT حول نقطتها على لوح النقاط نفسِه — فلا تُعاد مع كلِّ تقريبٍ كما كانت مضلّعاتُ shapeRing،
    ولا تكون عناصرَ DOM. النقرُ يُحسَب كالدائرة بنصف قطرها مع هامش اللوح. */
@@ -347,6 +347,17 @@ function mkPlace(x, z, r, sun, TOUCH){
   if (kind === 'poly'){ try { mk.bringToBack(); } catch (e2){ LS_ERR = e2; } }
   MK.by[x.id] = { l:mk, kind:kind, shp:shp, key:key, pos:posK };
 }
+var MK_FIRST = 400;
+function mkDrain(gen, z, r, sun, TOUCH){
+  requestAnimationFrame(function(){
+    if (gen !== MK.gen || !MK.defer) return;   /* رسمةٌ أحدثُ بدأت: هذه الدفعةُ لم تعد مطلوبة */
+    var chunk = MK.defer.splice(0, MK_FIRST);
+    MK.lifeMemo = {};
+    for (var i = 0; i < chunk.length; i++) if (!MK.by[chunk[i].id]) mkPlace(chunk[i], z, r, sun, TOUCH);
+    MK.lifeMemo = null;
+    if (MK.defer.length) mkDrain(gen, z, r, sun, TOUCH); else MK.defer = null;
+  });
+}
 function mkSweep(want){
   /* ما لم يعد مطلوبًا — بعيدٌ عن الشاشة أو مرشَّحٌ خارجًا أو محذوف — يُطرَح */
   var ids = Object.keys(MK.by);
@@ -384,15 +395,15 @@ function mapPaintLight(z){
    قياسُ الإقلاع على الجوال: الخريطةُ تُرسَم ثلاثًا وعشرين مرةً في أول ثانيتين (كلُّ رسمِ صفحةٍ يرسمها مرتين،
    والحركةُ والتكبيرُ وتصحيحُ القياس كلٌّ يرسمها) — ١٫٤ ثانية من ٢٫٧. فصار ما يأتي خلال ثمانين ملّي ثانية من رسمةٍ
    يُجمَّع في رسمةٍ واحدةٍ تاليةٍ بأثقل ما طُلب (الكاملُ يغلب الخفيف). أولُ نداءٍ في الدفعة يُرسَم في مكانه فورًا. */
-var MP_LAST = 0, MP_TIMER = 0, MP_FULL = false, MAP_SIG = '';
+/* (V31.8) متغيراتُ التجميع صارت في MK: pLast/pTimer/pFull/sig — وحدةُ الخريطة تملك حالتَها */
 function mapPaint(light){
   var now = Date.now();
-  if (now - MP_LAST < 80 && MP_LAST && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
-    if (light !== true) MP_FULL = true;
-    if (!MP_TIMER) MP_TIMER = setTimeout(function(){ MP_TIMER = 0; var full = MP_FULL; MP_FULL = false; MP_LAST = 0; mapPaint(full ? undefined : true); }, 85 - (now - MP_LAST));
+  if (now - MK.pLast < 80 && MK.pLast && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
+    if (light !== true) MK.pFull = true;
+    if (!MK.pTimer) MK.pTimer = setTimeout(function(){ MK.pTimer = 0; var full = MK.pFull; MK.pFull = false; MK.pLast = 0; mapPaint(full ? undefined : true); }, 85 - (now - MK.pLast));
     return;
   }
-  MP_LAST = now;
+  MK.pLast = now;
   /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
   if (MAP_3D) m3Paint();
   if (!MAP || !MAP_LAYER) return;
@@ -415,16 +426,24 @@ function mapPaint(light){
   var bS = b.getSouth(), bN = b.getNorth(), bW = b.getWest(), bE = b.getEast();
   var kS = keep.getSouth(), kN = keep.getNorth(), kW = keep.getWest(), kE = keep.getEast();
   MK.lifeMemo = {};   /* حالةُ النقطة تُحسَب مرةً في الرسمة لا مرتين (اللونُ ثم القمر) */
+  /* (V31.8) الرسمُ التدريجي (وحدةُ الخريطة): أوّلُ رسمةٍ على الجوال كانت تُنشئ ١٨٠٠ علامةٍ دفعةً واحدة (٦٢٠ م.ث بمعالجٍ مُبطَّأ)
+     فتتجمّد الواجهة. صارت تُنشئ أوّلَ MK_FIRST علامةٍ في الحال والباقي دفعاتٍ في إطارات الشاشة التالية — والمتصفّحُ الآليُّ
+     (navigator.webdriver) يرسم كلَّه دفعةً واحدةً كما كان، فتبقى الجرودُ تقيس الشيءَ نفسَه. */
+  var made = 0; MK.gen++;
+  MK.defer = (MK.progressive !== false && typeof requestAnimationFrame === 'function' && !(typeof navigator === 'object' && navigator.webdriver)) ? [] : null;
   for (var i = 0; i < LIST.length; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
     if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
     if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
     want[x.id] = 1; shown++;
+    if (MK.defer && !MK.by[x.id] && made >= MK_FIRST){ MK.defer.push(x); continue; }   /* (V31.8) */
+    if (!MK.by[x.id]) made++;
     mkPlace(x, z, r, sun, TOUCH);
   }
   MK.lifeMemo = null;
   mkSweep(want);
+  if (MK.defer && MK.defer.length) mkDrain(MK.gen, z, r, sun, TOUCH); else MK.defer = null;
   MK.z = z; MK.list = LIST; MK.r = r; MK.sun = sun; MK.touch = TOUCH;
 
   /* علامةُ موضعك تُعاد مع كلِّ رسم — فلوحُ المؤقّتات يُمسَح في أوّله */

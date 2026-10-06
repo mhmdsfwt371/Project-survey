@@ -3157,6 +3157,11 @@ function tourMaybe(){
 /* يُضاء بندُ الشاشة في القائمة مع خطوتها — فيُعرَف مكانُها لا اسمُها فقط */
 function tourSpot(){
   try {
+    /* (V31.8) قياسُ الإقلاع على جوالٍ مُبطّأ: هذه الدالةُ أكلت ١٫٨ ثانية في أول دخول — كانت تمسح وتُمرّر في كلِّ رسمة، والتمريرُ
+       (scrollIntoView) يفرض تخطيطَ الصفحة كلِّها. صارت لا تفعل شيئًا إن لم يتغيّر البندُ المضاء وما زال مُضاءً */
+    var P0 = TOUR_OPEN ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR_I, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
+    if (tourSpot.k === id0 && (id0 ? !!lit : !lit)) return;
+    tourSpot.k = id0;
     var old = document.querySelectorAll('.tour-spot');
     for (var i = 0; i < old.length; i++) old[i].classList.remove('tour-spot');
     if (!TOUR_OPEN) return;
@@ -3167,7 +3172,7 @@ function tourSpot(){
       el.classList.add('tour-spot');
       var sec = el.closest('.nav-section');
       if (sec && sec.getAttribute('data-open') === 'false'){ sec.setAttribute('data-open', 'true'); OPEN[sec.getAttribute('data-g')] = true; }
-      if (el.scrollIntoView) el.scrollIntoView({ block:'nearest' });
+      if (el.scrollIntoView) setTimeout(function(){ try { if (el.isConnected) el.scrollIntoView({ block:'nearest' }); } catch (e2){ LS_ERR = e2; } }, 900);   /* (V31.8) التمريرُ بعد ظهور الواجهة لا قبلها — يفرض تخطيطَ الصفحة كلِّها */
     }
   } catch (e){ LS_ERR = e; }
 }

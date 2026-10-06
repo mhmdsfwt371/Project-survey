@@ -1944,10 +1944,11 @@ var DB = {
   col:   function(name){ return FB.db.collection(name); },
   doc:   function(name, id){ return FB.db.collection(name).doc(id); },
   batch: function(){ return FB.db.batch(); },
-  /* (V31.6) ذاكرةُ الحساب الواحد — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ النقطة…) تُحسَب مرةً في المهمة
-     المتزامنة الواحدة (رسمةٌ أو نقرة) وتُمحى بعدها في الدورة الدقيقة، وعند كلِّ كتابةٍ (CORE.set) أو إحصاءٍ (statBump) أو رسمِ صفحة */
+  /* (V31.6، وضُيِّق في V31.8 بعد مراجعة الجودة) ذاكرةُ الرسمة الواحدة — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ
+     النقطة، قوائمُ المتابعة) تُحسَب مرةً داخل رسمِ الصفحة وحدَه — تُفتَح في أوّله وتُغلَق في آخره — ولا ذاكرةَ خارجه أبدًا.
+     كانت تمتدّ إلى آخر المهمة المتزامنة، فمن كتب في الحالة مباشرةً (لا من CORE.set) ثم قرأ في المهمة نفسِها رأى حالةً قديمة. */
   memo: null,
-  tick: function(){ if (!DB.memo){ DB.memo = { life:{}, lists:{} }; Promise.resolve().then(function(){ DB.memo = null; }); } return DB.memo; },
+  open: function(){ DB.memo = { life:{}, lists:{} }; },
   memoReset: function(){ DB.memo = null; }
 };
 

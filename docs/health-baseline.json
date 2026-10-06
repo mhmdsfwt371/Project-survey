@@ -1,13 +1,13 @@
 {
  "m": {
-  "globals": 627,
+  "globals": 624,
   "over300": 3,
   "over150": 6,
   "lintErrors": 0,
   "lintWarnings": 0,
-  "maxSrcKB": 471
+  "maxSrcKB": 472
  },
  "capSrcKB": 520,
- "ver": "V31.4",
- "at": "2026-10-05"
+ "ver": "V31.8",
+ "at": "2026-10-06"
 }

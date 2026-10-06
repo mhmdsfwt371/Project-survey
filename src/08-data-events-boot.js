@@ -2379,8 +2379,11 @@ function moreHtml(){
   if (!MORE_CUT) return '';
   return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
 }
-function render(force){
-  DB.memoReset();   /* (V31.6) رسمُ الصفحة يبدأ بحسابٍ طازج */
+function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح هنا وتُغلَق بعد الرسم مهما كان المخرج */
+  DB.open();
+  try { return render0(force); } finally { DB.memoReset(); }
+}
+function render0(force){
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه

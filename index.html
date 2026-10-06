@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V31.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3183,10 +3183,11 @@ var DB = {
   col:   function(name){ return FB.db.collection(name); },
   doc:   function(name, id){ return FB.db.collection(name).doc(id); },
   batch: function(){ return FB.db.batch(); },
-  /* (V31.6) ذاكرةُ الحساب الواحد — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ النقطة…) تُحسَب مرةً في المهمة
-     المتزامنة الواحدة (رسمةٌ أو نقرة) وتُمحى بعدها في الدورة الدقيقة، وعند كلِّ كتابةٍ (CORE.set) أو إحصاءٍ (statBump) أو رسمِ صفحة */
+  /* (V31.6، وضُيِّق في V31.8 بعد مراجعة الجودة) ذاكرةُ الرسمة الواحدة — وحدةُ البيانات، بندُ الأداء ١: الصفاتُ المشتقّةُ (حالةُ
+     النقطة، قوائمُ المتابعة) تُحسَب مرةً داخل رسمِ الصفحة وحدَه — تُفتَح في أوّله وتُغلَق في آخره — ولا ذاكرةَ خارجه أبدًا.
+     كانت تمتدّ إلى آخر المهمة المتزامنة، فمن كتب في الحالة مباشرةً (لا من CORE.set) ثم قرأ في المهمة نفسِها رأى حالةً قديمة. */
   memo: null,
-  tick: function(){ if (!DB.memo){ DB.memo = { life:{}, lists:{} }; Promise.resolve().then(function(){ DB.memo = null; }); } return DB.memo; },
+  open: function(){ DB.memo = { life:{}, lists:{} }; },
   memoReset: function(){ DB.memo = null; }
 };
 
@@ -10020,6 +10021,11 @@ function tourMaybe(){
 /* يُضاء بندُ الشاشة في القائمة مع خطوتها — فيُعرَف مكانُها لا اسمُها فقط */
 function tourSpot(){
   try {
+    /* (V31.8) قياسُ الإقلاع على جوالٍ مُبطّأ: هذه الدالةُ أكلت ١٫٨ ثانية في أول دخول — كانت تمسح وتُمرّر في كلِّ رسمة، والتمريرُ
+       (scrollIntoView) يفرض تخطيطَ الصفحة كلِّها. صارت لا تفعل شيئًا إن لم يتغيّر البندُ المضاء وما زال مُضاءً */
+    var P0 = TOUR_OPEN ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR_I, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
+    if (tourSpot.k === id0 && (id0 ? !!lit : !lit)) return;
+    tourSpot.k = id0;
     var old = document.querySelectorAll('.tour-spot');
     for (var i = 0; i < old.length; i++) old[i].classList.remove('tour-spot');
     if (!TOUR_OPEN) return;
@@ -10030,7 +10036,7 @@ function tourSpot(){
       el.classList.add('tour-spot');
       var sec = el.closest('.nav-section');
       if (sec && sec.getAttribute('data-open') === 'false'){ sec.setAttribute('data-open', 'true'); OPEN[sec.getAttribute('data-g')] = true; }
-      if (el.scrollIntoView) el.scrollIntoView({ block:'nearest' });
+      if (el.scrollIntoView) setTimeout(function(){ try { if (el.isConnected) el.scrollIntoView({ block:'nearest' }); } catch (e2){ LS_ERR = e2; } }, 900);   /* (V31.8) التمريرُ بعد ظهور الواجهة لا قبلها — يفرض تخطيطَ الصفحة كلِّها */
     }
   } catch (e){ LS_ERR = e; }
 }
@@ -16907,7 +16913,7 @@ function taskIndex(){
 function taskKindOf(id, kind){ return taskIndex()[id + '|' + kind] || null; }
 function lifeOf(x){
   /* (V25.3) داخل رسمة الخريطة تُحسَب الحالةُ مرةً لكلِّ نقطة — الحفظُ يُفتَح مع الرسمة ويُغلَق بعدها فلا يُقدِّم قديمًا */
-  var m = MK.lifeMemo || (x && x.id ? DB.tick().life : null);   /* (V31.6) خارج الخريطة أيضًا: مرةً في المهمة الواحدة */
+  var m = MK.lifeMemo || (DB.memo && x && x.id ? DB.memo.life : null);   /* (V31.6/V31.8) داخل رسم الصفحة أيضًا */
   if (!m) return lifeOfRaw(x);
   var v = m[x.id];
   if (v === undefined){ v = lifeOfRaw(x); m[x.id] = v; }
@@ -17018,8 +17024,8 @@ function mapInit(){
     /* (V30.9) رسمُ الصفحة لا يعني تغيّرَ النقاط: إن لم يتغيّر الإحصاءُ ولا المرشِّحُ ولا الطبقةُ ولا التحديدُ ولا الشركاتُ ولا الوضعُ
        فرسمةٌ خفيفة — وما يغيّر هذه يستدعي mapPaint() بنفسه (المزامنةُ والفلاترُ والطبقاتُ والتحديدُ والوضع) */
     var sig = STAT_VER + '|' + JSON.stringify(FILT) + '|' + (typeof MAP_LAYER === 'undefined' ? '' : MAP_LAYER) + '|' + SEL_N + '|' + CO_SEL.join(',') + '|' + FIELD_MODE + '|' + ((typeof SUN_ON !== 'undefined' && SUN_ON) ? 1 : 0) + '|' + ((typeof KIOSK_ON !== 'undefined' && KIOSK_ON) ? 1 : 0) + '|';   /* (V31.1) */
-    if (sig === MAP_SIG && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
-    MAP_SIG = sig;
+    if (sig === MK.sig && MK.list && !MAP_3D){ mapPaint(true); basemapKick(); return true; }
+    MK.sig = sig;
     mapPaint();
     basemapKick();   /* (V24.9) خريطةُ الجهاز بعد الدخول وحين تخمل الصفحة */
     return true;
@@ -17118,7 +17124,7 @@ function mapPaintMove(){
    أو التقريب)، وما ابتعد عن الشاشة كثيرًا يُطرَح ويعود حين يقترب. والممرُّ والكاميرا معيّنان
    على لوح النقاط نفسِه بحجمها لا فوق المخيمات. والمؤقّتاتُ (موضعُك، ومسارُ الرسم) في مجموعةٍ
    تُمسَح وحدَها. مضلّعاتُ المخيمات تُدفَع إلى الخلف فتبقى النقاطُ فوقها أيًّا كان ترتيبُ الإنشاء. */
-var MK = { by:{} };
+var MK = { by:{}, pLast:0, pTimer:0, pFull:false, sig:'', gen:0, defer:null };
 /* علامةُ الشكل على اللوح بحجمٍ ثابتٍ بالبكسل (V24.1): المعيّنُ والمربّعُ والمثلّثُ وغيرُها تُرسَم برؤوس
    SHAPE_UNIT حول نقطتها على لوح النقاط نفسِه — فلا تُعاد مع كلِّ تقريبٍ كما كانت مضلّعاتُ shapeRing،
    ولا تكون عناصرَ DOM. النقرُ يُحسَب كالدائرة بنصف قطرها مع هامش اللوح. */
@@ -17199,6 +17205,17 @@ function mkPlace(x, z, r, sun, TOUCH){
   if (kind === 'poly'){ try { mk.bringToBack(); } catch (e2){ LS_ERR = e2; } }
   MK.by[x.id] = { l:mk, kind:kind, shp:shp, key:key, pos:posK };
 }
+var MK_FIRST = 400;
+function mkDrain(gen, z, r, sun, TOUCH){
+  requestAnimationFrame(function(){
+    if (gen !== MK.gen || !MK.defer) return;   /* رسمةٌ أحدثُ بدأت: هذه الدفعةُ لم تعد مطلوبة */
+    var chunk = MK.defer.splice(0, MK_FIRST);
+    MK.lifeMemo = {};
+    for (var i = 0; i < chunk.length; i++) if (!MK.by[chunk[i].id]) mkPlace(chunk[i], z, r, sun, TOUCH);
+    MK.lifeMemo = null;
+    if (MK.defer.length) mkDrain(gen, z, r, sun, TOUCH); else MK.defer = null;
+  });
+}
 function mkSweep(want){
   /* ما لم يعد مطلوبًا — بعيدٌ عن الشاشة أو مرشَّحٌ خارجًا أو محذوف — يُطرَح */
   var ids = Object.keys(MK.by);
@@ -17236,15 +17253,15 @@ function mapPaintLight(z){
    قياسُ الإقلاع على الجوال: الخريطةُ تُرسَم ثلاثًا وعشرين مرةً في أول ثانيتين (كلُّ رسمِ صفحةٍ يرسمها مرتين،
    والحركةُ والتكبيرُ وتصحيحُ القياس كلٌّ يرسمها) — ١٫٤ ثانية من ٢٫٧. فصار ما يأتي خلال ثمانين ملّي ثانية من رسمةٍ
    يُجمَّع في رسمةٍ واحدةٍ تاليةٍ بأثقل ما طُلب (الكاملُ يغلب الخفيف). أولُ نداءٍ في الدفعة يُرسَم في مكانه فورًا. */
-var MP_LAST = 0, MP_TIMER = 0, MP_FULL = false, MAP_SIG = '';
+/* (V31.8) متغيراتُ التجميع صارت في MK: pLast/pTimer/pFull/sig — وحدةُ الخريطة تملك حالتَها */
 function mapPaint(light){
   var now = Date.now();
-  if (now - MP_LAST < 80 && MP_LAST && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
-    if (light !== true) MP_FULL = true;
-    if (!MP_TIMER) MP_TIMER = setTimeout(function(){ MP_TIMER = 0; var full = MP_FULL; MP_FULL = false; MP_LAST = 0; mapPaint(full ? undefined : true); }, 85 - (now - MP_LAST));
+  if (now - MK.pLast < 80 && MK.pLast && !MAP_3D){   /* الثلاثيُّ يُرسَم فورًا دائمًا — رسمُه رخيصٌ ومَن يبدّل طبقتَه ينتظر أثرَها في اللحظة */
+    if (light !== true) MK.pFull = true;
+    if (!MK.pTimer) MK.pTimer = setTimeout(function(){ MK.pTimer = 0; var full = MK.pFull; MK.pFull = false; MK.pLast = 0; mapPaint(full ? undefined : true); }, 85 - (now - MK.pLast));
     return;
   }
-  MP_LAST = now;
+  MK.pLast = now;
   /* الثلاثيُّ يُرسَم بالقائمة نفسِها في اللحظة نفسِها — طبقةً ومرشِّحًا وشركةً وتحديدًا */
   if (MAP_3D) m3Paint();
   if (!MAP || !MAP_LAYER) return;
@@ -17267,16 +17284,24 @@ function mapPaint(light){
   var bS = b.getSouth(), bN = b.getNorth(), bW = b.getWest(), bE = b.getEast();
   var kS = keep.getSouth(), kN = keep.getNorth(), kW = keep.getWest(), kE = keep.getEast();
   MK.lifeMemo = {};   /* حالةُ النقطة تُحسَب مرةً في الرسمة لا مرتين (اللونُ ثم القمر) */
+  /* (V31.8) الرسمُ التدريجي (وحدةُ الخريطة): أوّلُ رسمةٍ على الجوال كانت تُنشئ ١٨٠٠ علامةٍ دفعةً واحدة (٦٢٠ م.ث بمعالجٍ مُبطَّأ)
+     فتتجمّد الواجهة. صارت تُنشئ أوّلَ MK_FIRST علامةٍ في الحال والباقي دفعاتٍ في إطارات الشاشة التالية — والمتصفّحُ الآليُّ
+     (navigator.webdriver) يرسم كلَّه دفعةً واحدةً كما كان، فتبقى الجرودُ تقيس الشيءَ نفسَه. */
+  var made = 0; MK.gen++;
+  MK.defer = (MK.progressive !== false && typeof requestAnimationFrame === 'function' && !(typeof navigator === 'object' && navigator.webdriver)) ? [] : null;
   for (var i = 0; i < LIST.length; i++){
     var x = LIST[i];
     if (!x.lat || !x.lng) continue;
     if (x.lat >= bS && x.lat <= bN && x.lng >= bW && x.lng <= bE) inView++;
     if (!(x.lat >= kS && x.lat <= kN && x.lng >= kW && x.lng <= kE)) continue;
     want[x.id] = 1; shown++;
+    if (MK.defer && !MK.by[x.id] && made >= MK_FIRST){ MK.defer.push(x); continue; }   /* (V31.8) */
+    if (!MK.by[x.id]) made++;
     mkPlace(x, z, r, sun, TOUCH);
   }
   MK.lifeMemo = null;
   mkSweep(want);
+  if (MK.defer && MK.defer.length) mkDrain(MK.gen, z, r, sun, TOUCH); else MK.defer = null;
   MK.z = z; MK.list = LIST; MK.r = r; MK.sun = sun; MK.touch = TOUCH;
 
   /* علامةُ موضعك تُعاد مع كلِّ رسم — فلوحُ المؤقّتات يُمسَح في أوّله */
@@ -21674,9 +21699,10 @@ function svListSites(){   /* (V29.9) على صفحة الوزارة تتبع ا�
   return all.filter(function(x){ var tx = taxOf(x); return (!MFU_FLT.z || tx.g === MFU_FLT.z) && (!MFU_FLT.t || tx.t === MFU_FLT.t); });
 }
 function svListRows(key){   /* (V31.6) القائمةُ تُحسَب مرةً في المهمة الواحدة — بطاقاتُ الملخّص وحدَها كانت تمرّ على النقاط عشرَ مرات */
-  var mk = key + '|' + CUR + '|' + (MFU_FLT.z || '') + '|' + (MFU_FLT.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.tick().lists;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
-  if (LM[mk]) return LM[mk].slice();
-  return (LM[mk] = svListRows0(key)).slice();
+  var mk = key + '|' + CUR + '|' + (MFU_FLT.z || '') + '|' + (MFU_FLT.t || '') + (/^al_/.test(key) ? '|' + AL_RULES.map(function(r){ return alRuleDays(r[1]); }).join(',') : ''), LM = DB.memo ? DB.memo.lists : null;   /* أيامُ القواعد في المفتاح: تغييرُها في المهمة نفسِها لا يُرجِع قائمةً قديمة */
+  if (LM && LM[mk]) return LM[mk].slice();
+  var res = svListRows0(key); if (LM) LM[mk] = res;
+  return res.slice();
 }
 function svListRows0(key){
   var L = SV_LISTS[key];
@@ -24175,6 +24201,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V31.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'الخريطة أسرع في أول فتح على الجوال: أول ٤٠٠ نقطة بتظهر فورا والباقي بيكمل في اللحظات اللي بعدها، بدل ما الشاشة تتجمد لحد ما ١٨٠٠ نقطة تترسم مرة واحدة (أول رسمة نزلت من ١٫٣ ثانية لـ٠٫٧ على جوال متوسط).',
+      'ومراجعة الجودة لقت ثغرة في تحسين ٣١٫٦ واتسدّت: ذاكرة الحساب بقت تعيش جوه رسم الصفحة بس.',
+      'وأول دخول لمستخدم جديد أسرع: جولة البداية كانت بتعيد تمرير القائمة مع كل رسمة (ثانية ونص على الجوال) — بقت مرة واحدة وبعد ما الشاشة تظهر.' ] },
   { v:'V31.7', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'مراجعة جودة على شغل الليلة (بلا تغيير في الاستخدام): الجرد الكامل الليلي كان مش هيشتغل أبدا بسبب شرط فرع غلط — اتصلح، وبقى لو سقط حاجة بالليل يوصل بريد بيها. واتفحص الكود كله آليا لأي متغير محلي بيطمس دالة من دوال التطبيق أو مكتبة الخرائط (زي خطأ خط البي دي إف) — مفيش ولا حالة فعلية.' ] },
   { v:'V31.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
@@ -32465,8 +32495,11 @@ function moreHtml(){
   if (!MORE_CUT) return '';
   return '<div style="padding:10px 16px 18px;text-align:center">' + btn('\u2B07 ' + t('اعرض المزيد') + ' (' + nm(Math.min(MORE_STEP, MORE_CUT)) + ' ' + t('من') + ' ' + nm(MORE_CUT) + ')', 'btn-secondary btn-sm', ' data-morek="1"') + '</div>';
 }
-function render(force){
-  DB.memoReset();   /* (V31.6) رسمُ الصفحة يبدأ بحسابٍ طازج */
+function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح هنا وتُغلَق بعد الرسم مهما كان المخرج */
+  DB.open();
+  try { return render0(force); } finally { DB.memoReset(); }
+}
+function render0(force){
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
