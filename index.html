@@ -1220,7 +1220,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.0</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1282,7 +1282,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a4122a61fc.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-b316628d20.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -8953,6 +8953,10 @@ function svVisited(r){ return !!r && !r.deleted; }
    النقطةُ التي زيرت ولم يُوصَل إليها (متعذّر، يحتاج تصريحًا، منع دخول، غير موجودة…) أو رُدَّت لزيارةٍ أخرى تُعرض «تمت الزيارة»
    وتحدّيها «تحتاج زيارة أخرى تقنيًا». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
+/* (V34.0) بلاغُ المالك على «أبرز التحديات»: «المدخل غير واضح — لم يُستدل عليه» تُعرض «تحتاج زيارة تقنية»، و«أخرى» تُعرض
+   «ملاحظات فنية متنوعة» — لا ما يوحي بتصريحٍ أو بتعذّر الوصول. عرضٌ فقط: قيمةُ السجل ونموذجُ الميدان كما هما. */
+var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'تحتاج زيارة تقنية', 'أخرى':'ملاحظات فنية متنوعة' };
+function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
 /* (V33.4) بلاغُ المالك: «محطاتُ القطار ما فيها عوائق نهائيًّا» — وظهرت ١٠٨/١٠٨ بعوائق. سجلّاتُها كلُّها «زيارةٌ بقرار المهندس»
    (quick) بلا حقل وصولٍ ولا تحديات، وكان الشرطُ «تم الوصول» حرفًا فيسقطها. الوصولُ هنا كما في svReached: «تم الوصول» أو لا حقل. */
@@ -15078,7 +15082,7 @@ var HELP_KEYWORDS = {
    المختصر يكفي غالبَها */
 var HELP_STEPS = {
   mfu:   ['افتح «المتابعة» ← «متابعة الوزارة» — شريحة «الملخص» أوّلًا',
-          'في الرأس «موجز الموسم»: اليومُ وأقربُ معلَم، والحلقاتُ الأربع (تُضغَط)، ونبضُ ١٤ يومًا مع توقّع الاكتمال، وأبرزُ التحديات',
+          'في الرأس «موجز الموسم»: اليومُ وأقربُ معلَم، والحلقاتُ الأربع (تُضغَط)، ومسارُ العمل الميداني لآخر ١٤ يومًا مع توقّع الاكتمال، وأبرزُ التحديات',
           'البطاقاتُ فوق تبدأ بـ«نسبة المسح» (تمت الزيارة من الكل)، ثم «نقاط بلا عوائق» و«نقاط بعوائق» والمعوقات والتركيب والشركات',
           'اضغط أيَّ بطاقة: تفتح قائمتَها بالتفاصيل وفيها زرُّ «تصدير إكسل»',
           'لتقرير الاجتماع: «تصدير التحديث الأسبوعي» فوق — باوربوينت أو وورد أو إكسل أو PDF، لكلِّ النقاط أو بمشعرٍ ونوع أو بالمحدَّد على الخريطة'],
@@ -21585,7 +21589,7 @@ function kioskBody(){
           : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>')
     +   '</div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('التحدياتُ الأكثرُ تكرارًا')) + '</div>'
-    +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
+    +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
                        : '<p class="hint">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>')
     +   '</div>'
     + '</div></div>';
@@ -21666,7 +21670,7 @@ function svStats(){
   return { O:O, pct:pc(O.sv, O.tot),
     zones:Object.keys(zs).map(function(k){ return zs[k]; }).sort(ord).map(function(z){ return [z.g, z.n, z.sv, z.n - z.sv, pc(z.sv, z.n) + '٪', z.chal, z.un]; }),
     detail:Object.keys(by).map(function(k){ return by[k]; }).sort(ord).map(function(o){ var top = Object.keys(o.cats).sort(function(a, b){ return o.cats[b] - o.cats[a]; })[0] || '';
-      return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? top + ' (' + o.cats[top] + ')' : '\u2014']; }) };
+      return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? chalShow(top) + ' (' + o.cats[top] + ')' : '\u2014']; }) };   /* (V34.0) بمصطلح المالك — يصل الجداولَ والتقارير */
 }
 /* (V29.2) ملاحظةُ «تحديثات المنصة» #٣: «تأكيدُ نقاط الجمرات حسب المسح الميداني». النقطةُ مؤكَّدةٌ إذا وصلها المسحُ (تم الوصول)،
    وتُعرَض بالأدوار: كم نقطة، وكم أُكِّد، وكم تعذّر، وكم لم يُزر بعد، وكم فيه تحديات. */
@@ -21764,7 +21768,7 @@ function mfuMilesCard(){
 }
 /* ═══ (V33.8) موجزُ الموسم — رأسُ صفحة الوزارة بطلب المالك: «ديزاين مميّز للوزارة» ═══
    أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
-   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم نبضُ الميدان: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
+   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 function mfuHeroHtml(){
   var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
@@ -21775,7 +21779,7 @@ function mfuHeroHtml(){
   var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
   var W = 280, H = 56, bw = W / 14;
   var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');
-  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('زيارات آخر ١٤ يومًا')) + '">' + bars + '</svg>';
+  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('الزيارات الميدانية يومًا بيوم — آخر ١٤ يومًا')) + '">' + bars + '</svg>';
   var trend = prev ? Math.round((wk - prev) / prev * 100) : (wk ? 100 : 0);
   /* توقّعُ اكتمال أكبر مشعر */
   var K = siteKeyStats(), zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), z0 = zones[0], f = z0 ? zoneForecast(z0) : null, fc = '';
@@ -21795,10 +21799,10 @@ function mfuHeroHtml(){
     +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم')
     + '</div></div>'
     + '<div class="mfu-hero-grid">'
-    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('نبض الميدان — ١٤ يومًا')) + '</div>' + spark
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
-    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
     + '</div></div>';
 }
 function mfuSummary(){
@@ -21961,9 +21965,9 @@ function svListRows0(key){
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
             (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
-            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return t(k); }).join('، ') :
-            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '') :
-            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
+            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return chalShow(k); }).join('، ') :
+            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '') :
+            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '')];
   });
 }
 function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
@@ -22077,7 +22081,7 @@ function mfuObs(){
     + mfuParties().map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(mfuPartyLabel(p))) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
     + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
         var own = mfuOwnerOf(c);
-        return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(own))];
+        return ['<b>' + esc(chalShow(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(own))];
       })))
     + '<p class="hint">' + esc(t('الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.')) + '</p>'
     + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap"><span class="hint">' + esc(t('جهات المعالجة')) + '</span>'
@@ -24452,6 +24456,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V34.0', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      '«نبض الميدان» اتغيّر لـ«مسار العمل الميداني — آخر ١٤ يومًا» (الزيارات يومًا بيوم).',
+      'أسماء التحديات اللي بتشوفها الوزارة: «المدخل غير واضح — لم يُستدل عليه» بقت «تحتاج زيارة تقنية»، و«أخرى» بقت «ملاحظات فنية متنوعة» — في موجز الموسم وشاشة القاعة والقوائم وجداول المسح والتقارير. والفريق في الميدان بيختار نفس الاختيارات زي ما هي.' ] },
   { v:'V33.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'شاشة الدخول رجعت تتحرك زي الأول: الخلفية بتضيء وتكتمل وترجع تاني طول ما الشاشة ظاهرة (وأثناء «يُستأنَف الدخول»)، وبتقف لوحدها بعد الدخول عشان ما تاكلش المعالج. والقاعدة اللي كانت بتثبّت الصورة على «الجهاز الضعيف» كانت بتطفّيها على الآيفون — اتشالت.' ] },
   { v:'V33.8', d:'٦ أكتوبر ٢٠٢٦', notes:[

@@ -4630,7 +4630,7 @@ function kioskBody(){
           : '<p class="hint">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>')
     +   '</div>'
     +   '<div class="kk-box"><div class="kk-h">' + esc(t('التحدياتُ الأكثرُ تكرارًا')) + '</div>'
-    +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
+    +     (chTop.length ? chTop.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('')
                        : '<p class="hint">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>')
     +   '</div>'
     + '</div></div>';
@@ -4711,7 +4711,7 @@ function svStats(){
   return { O:O, pct:pc(O.sv, O.tot),
     zones:Object.keys(zs).map(function(k){ return zs[k]; }).sort(ord).map(function(z){ return [z.g, z.n, z.sv, z.n - z.sv, pc(z.sv, z.n) + '٪', z.chal, z.un]; }),
     detail:Object.keys(by).map(function(k){ return by[k]; }).sort(ord).map(function(o){ var top = Object.keys(o.cats).sort(function(a, b){ return o.cats[b] - o.cats[a]; })[0] || '';
-      return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? top + ' (' + o.cats[top] + ')' : '\u2014']; }) };
+      return [o.g, o.t, o.n, o.sv, o.n - o.sv, pc(o.sv, o.n) + '٪', o.chal, top ? chalShow(top) + ' (' + o.cats[top] + ')' : '\u2014']; }) };   /* (V34.0) بمصطلح المالك — يصل الجداولَ والتقارير */
 }
 /* (V29.2) ملاحظةُ «تحديثات المنصة» #٣: «تأكيدُ نقاط الجمرات حسب المسح الميداني». النقطةُ مؤكَّدةٌ إذا وصلها المسحُ (تم الوصول)،
    وتُعرَض بالأدوار: كم نقطة، وكم أُكِّد، وكم تعذّر، وكم لم يُزر بعد، وكم فيه تحديات. */
@@ -4809,7 +4809,7 @@ function mfuMilesCard(){
 }
 /* ═══ (V33.8) موجزُ الموسم — رأسُ صفحة الوزارة بطلب المالك: «ديزاين مميّز للوزارة» ═══
    أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
-   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم نبضُ الميدان: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
+   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 function mfuHeroHtml(){
   var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
@@ -4820,7 +4820,7 @@ function mfuHeroHtml(){
   var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
   var W = 280, H = 56, bw = W / 14;
   var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');
-  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('زيارات آخر ١٤ يومًا')) + '">' + bars + '</svg>';
+  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('الزيارات الميدانية يومًا بيوم — آخر ١٤ يومًا')) + '">' + bars + '</svg>';
   var trend = prev ? Math.round((wk - prev) / prev * 100) : (wk ? 100 : 0);
   /* توقّعُ اكتمال أكبر مشعر */
   var K = siteKeyStats(), zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), z0 = zones[0], f = z0 ? zoneForecast(z0) : null, fc = '';
@@ -4840,10 +4840,10 @@ function mfuHeroHtml(){
     +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم')
     + '</div></div>'
     + '<div class="mfu-hero-grid">'
-    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('نبض الميدان — ١٤ يومًا')) + '</div>' + spark
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
-    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
     + '</div></div>';
 }
 function mfuSummary(){

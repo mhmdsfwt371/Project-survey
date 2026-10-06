@@ -72,9 +72,9 @@ function svListRows0(key){
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
             (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
-            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return t(k); }).join('، ') :
-            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '') :
-            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
+            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return chalShow(k); }).join('، ') :
+            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '') :
+            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '')];
   });
 }
 function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
@@ -188,7 +188,7 @@ function mfuObs(){
     + mfuParties().map(function(p){ return '<div class="mfu-kpi"><div class="mfu-kpi-l">' + esc(t('تُعالَج من خلال')) + ' ' + esc(t(mfuPartyLabel(p))) + '</div><div class="mfu-kpi-v">' + nm(byParty[p] || 0) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t('نقطةٌ بجهة عائقها الأوّل')) + '</div></div>'; }).join('') + '</div>'
     + cardFlush(t('فئات المعوقات والجهة المعالجة'), table(['الفئة', 'العدد', 'الجهة المعالجة'], cats.map(function(c){
         var own = mfuOwnerOf(c);
-        return ['<b>' + esc(t(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(own))];
+        return ['<b>' + esc(chalShow(c)) + '</b>', N(byCat[c]), ed ? '<select data-mfuown="' + esc(c) + '" style="min-height:30px;font-size:12px;width:auto">' + mfuParties().map(function(p){ return '<option value="' + esc(p) + '"' + (own === p ? ' selected' : '') + '>' + esc(t(mfuPartyLabel(p))) + '</option>'; }).join('') + '</select>' : esc(t(own))];
       })))
     + '<p class="hint">' + esc(t('الجهةُ المعالجةُ لكلِّ فئةٍ يضبطها المكتبُ من هذا الجدول — والافتراضيُّ: العارضةُ وسطحُ التثبيت لكدانة، والاستدلالُ والوصولُ لأفاقي، والباقي لشركة الخدمة.')) + '</p>'
     + (ed ? '<div class="wt-row" style="gap:8px;align-items:center;margin:8px 0 0;flex-wrap:wrap"><span class="hint">' + esc(t('جهات المعالجة')) + '</span>'
@@ -2563,6 +2563,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V34.0', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      '«نبض الميدان» اتغيّر لـ«مسار العمل الميداني — آخر ١٤ يومًا» (الزيارات يومًا بيوم).',
+      'أسماء التحديات اللي بتشوفها الوزارة: «المدخل غير واضح — لم يُستدل عليه» بقت «تحتاج زيارة تقنية»، و«أخرى» بقت «ملاحظات فنية متنوعة» — في موجز الموسم وشاشة القاعة والقوائم وجداول المسح والتقارير. والفريق في الميدان بيختار نفس الاختيارات زي ما هي.' ] },
   { v:'V33.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'شاشة الدخول رجعت تتحرك زي الأول: الخلفية بتضيء وتكتمل وترجع تاني طول ما الشاشة ظاهرة (وأثناء «يُستأنَف الدخول»)، وبتقف لوحدها بعد الدخول عشان ما تاكلش المعالج. والقاعدة اللي كانت بتثبّت الصورة على «الجهاز الضعيف» كانت بتطفّيها على الآيفون — اتشالت.' ] },
   { v:'V33.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
