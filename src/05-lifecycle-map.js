@@ -4150,8 +4150,10 @@ var SVD_CARDS = [
     of:function(){ return (STATE.sites || []).filter(function(x){ return x.type === 'مخيم'; }).length; } },
   { k:'rooms',   t:'غرفٌ — لكلِّ غرفةٍ حساس',   w:'من عدِّ الميدان، وإلا سجلُّ الوزارة، وإلا متوسطُ منى',  f:function(o){ return o.camp && o.rooms > 0; }, sum:true },
   { k:'nocount', t:'مخيماتٌ بلا عدِّ غرف',      w:'عُدَّت بالمتوسط — تُعَدُّ في الزيارة القادمة',         f:function(o){ return o.camp && o.src !== 'field' && o.src !== 'registry'; } },
-  { k:'clean',   t:'بلا تحدٍّ — تُسنَد كما هي', w:'لا شيءَ يمنع التركيب',                               f:function(o){ return !o.ch.length; } },
-  { k:'chal',    t:'فيها تحدٍّ',                w:'لا تُجدوَل قبل قرارٍ أو تجهيز',                       f:function(o){ return o.ch.length > 0; } },
+  /* (V33.6) مراجعةُ الأرقام بعد بلاغ القطار: «بلا تحدٍّ — تُسنَد كما هي» كان يعدّ ما زير ولم يُوصَل إليه (لا تحدّيَ مكتوبًا فيه) فيقول
+     للمكتب «أسنِده للتركيب» وهو يحتاج زيارةً أخرى. صار بالتعريف الواحد: svClean وsvObstacle — ومجموعُهما «تمت الزيارة». */
+  { k:'clean',   t:'بلا تحدٍّ — تُسنَد كما هي', w:'لا شيءَ يمنع التركيب',                               f:function(o){ return svClean(o.r); } },
+  { k:'chal',    t:'فيها تحدٍّ أو تحتاج زيارة أخرى', w:'لا تُجدوَل قبل قرارٍ أو تجهيزٍ أو زيارةٍ أخرى',        f:function(o){ return svObstacle(o.r); } },
   { k:'metal',   t:'تحتاج هيكلًا أو عارضة',     w:'حديدٌ يُشترى ويُجهَّز — يُخطَّط له مبكّرًا',          f:function(o){ return o.metal; } },
   { k:'other',   t:'ممراتٌ ونقاطٌ أخرى',        w:'ما ليس مخيمًا مما مُسح',                             f:function(o){ return !o.camp; } },
   /* التقديرُ للموسم لا ما حُصر: منى كلُّها، المعدودُ بعدِّه وما لم يُعَدَّ بالمتوسط */
@@ -4181,7 +4183,8 @@ function svdPicked(){
   return c ? svdPool(c).filter(c.f) : [];
 }
 function svdWhy(o){
-  return o.ch.length ? o.ch.map(function(c){ return t(c); }).join(' \u00b7 ') : t('لا توجد تحديات');
+  var rv = svNeedsRevisit(o.r) ? [t('تحتاج زيارة أخرى تقنيًا')] : [];   /* (V33.6) السببُ يُقال لا «لا توجد تحديات» */
+  return (rv.length || o.ch.length) ? rv.concat(o.ch.map(function(c){ return t(c); })).join(' \u00b7 ') : t('لا توجد تحديات');
 }
 function svdXls(){
   var c = SVD_CARDS.filter(function(x){ return x.k === SVD_PICK; })[0];

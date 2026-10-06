@@ -110,7 +110,11 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     const vals = { 'الملخّص':SS.surveyed, 'الإحصاءُ المشترك':KS.total.sv, 'بطاقةُ الوزارة':MK.sv, 'تبويبُ المسح':SV.O.sv, 'قائمةُ تمت الزيارة':L };
     T(Object.values(vals).every(v => v === VISITED), 'نفسُ آلية الحسبة في كلِّ الصفحات — «تمت الزيارة» = ' + VISITED + ': ' + JSON.stringify(vals));
     T(Math.abs(wbsZ - VISITED) <= Object.keys(KS.zones).length, 'وقياسُ الخطة على المشاعر من الرقم نفسِه: ' + wbsZ);
-    T(w.svListRows('rem').length === TOTAL - VISITED, 'والمتبقي = ما لم تتم زيارتُه أصلًا: ' + (TOTAL - VISITED)); }
+    T(w.svListRows('rem').length === TOTAL - VISITED, 'والمتبقي = ما لم تتم زيارتُه أصلًا: ' + (TOTAL - VISITED));
+    /* (V33.6) «تفاصيل المسح» بالتعريف الواحد: «بلا تحدٍّ — تُسنَد كما هي» = «نقاط بلا عوائق»، و«فيها تحدٍّ أو تحتاج زيارة أخرى» = «نقاط بعوائق» */
+    w.SVD_MEMO = null; const pool = w.svdRows(), cardOf = k => w.SVD_CARDS.filter(c => c.k === k)[0];
+    T(pool.filter(cardOf('clean').f).length === w.svListRows('clean').length && pool.filter(cardOf('chal').f).length === w.svListRows('chal').length,
+      'وتفاصيلُ المسح: «تُسنَد كما هي» ' + pool.filter(cardOf('clean').f).length + ' = «بلا عوائق»، و«فيها تحدٍّ» = «بعوائق» — لا يُسنَد ما يحتاج زيارةً أخرى'); }
   const all = await open('over', 'over');
   T(all.indexOf('كلُّ المشاعر') > -1 && kpi(all, 'إجمالي المواقع') === TOTAL && kpi(all, 'متبقٍّ') === TOTAL - VISITED,
     'بلا اختيارٍ: الأرقامُ للكلّ والمتبقّي = الكلُّ − ما زير: ' + (TOTAL - VISITED));
