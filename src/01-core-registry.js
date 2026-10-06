@@ -840,7 +840,12 @@ function idbGet(k){
       r.onsuccess = function(){ res(r.result); };
       r.onerror   = function(){ rej(r.error); };
     });
-  }).catch(function(){ return _mem ? _mem.get(k) : undefined; });
+  }).catch(function(e){
+    /* (V33.0) القراءةُ على اتصالٍ ميّت (آيفون يقطعه بعد الخلفية) كانت تُرجِع الذاكرةَ وتُبقي الاتصالَ الميّت حتى تفشل كتابة —
+       فيُترَك ويُعاد الفتحُ من القراءة أيضًا، لا من الكتابة وحدَها */
+    if (e && /closing|closed|lost|InvalidStateError|UnknownError|internal error/i.test(String(e.name || '') + ' ' + String(e.message || '')) && _idb) idbDrop();
+    return _mem ? _mem.get(k) : undefined;
+  });
 }
 
 function idbSet(k, v){
@@ -1942,6 +1947,9 @@ var FB = {
    الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى
    يُكتَب محوِّلٌ واحدٌ هنا يحاكي هذه الواجهة — ولا يُلمَس شيءٌ في الصفحات. */
 /* (V32.0) وحدةُ التقارير والتصدير تملك حالتَها: scope/chk/secs/page/xlsAll/pptxTpl/repSide */
+/* (V33.0) الترتيبُ العربيُّ بمرتّبٍ واحدٍ مخزَّن: localeCompare(…, 'ar') يبني مرتّبًا في كلِّ مقارنة — ترتيبُ ٢٢٠ اسمَ شركةٍ أخذ ٢٠٤ م.ث
+   على جوالٍ مُبطّأ مقابل ٢ م.ث بالمرتّب المخزَّن، والنتيجةُ نفسُها حرفًا. ثلاثَ عشرةَ نقطةَ ترتيبٍ تستعمله (والقائمةُ عند الإقلاع منها). */
+function arCmp(a, b){ return (arCmp.c || (arCmp.c = new Intl.Collator('ar'))).compare(String(a == null ? '' : a), String(b == null ? '' : b)); }
 var EXP = {};
 var DB = {
   ready: function(){ return !!(FB.ready && FB.db); },

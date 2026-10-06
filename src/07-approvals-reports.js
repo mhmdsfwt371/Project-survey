@@ -1903,7 +1903,7 @@ function techsList(all){
     out.push({ n:u.name, u:uid, ph:u.ph || '', job:u.job || '', sup:u.sup || '', dept:u.dept || '',
                crew:u.crew || '', jobLog:u.jobLog || [], has:u.has || 0 });
   });
-  return out.sort(function(a, b){ return a.n.localeCompare(b.n, 'ar'); });
+  return out.sort(function(a, b){ return arCmp(a.n, b.n); });
 }
 function techUid(name){
   var U = STATE.users || {};
@@ -3123,7 +3123,7 @@ function vehKindName(id){
 function vehList(){
   var V = STATE.vehicles || {};
   return Object.keys(V).map(function(k){ return V[k]; }).filter(Boolean)
-    .sort(function(a, b){ return String(a.plate || '').localeCompare(String(b.plate || ''), 'ar'); });
+    .sort(function(a, b){ return arCmp(a.plate || '', b.plate || ''); });
 }
 function vehOf(id){ return (STATE.vehicles || {})[id] || null; }
 
@@ -4814,7 +4814,7 @@ function mgrCandidates(role, exceptUid){
     if (below.indexOf(u.name) > -1 || (me && u.name === me)) return;
     out.push({ uid:uid, n:u.name, role:roleOfUser(u) });
   });
-  return out.sort(function(a, b){ return rankOf(b.role) - rankOf(a.role) || a.n.localeCompare(b.n, 'ar'); });
+  return out.sort(function(a, b){ return rankOf(b.role) - rankOf(a.role) || arCmp(a.n, b.n); });
 }
 function mgrOptions(role, cur, exceptUid){
   var L = mgrCandidates(role, exceptUid);

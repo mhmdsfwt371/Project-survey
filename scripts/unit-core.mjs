@@ -90,3 +90,10 @@ test('المزامنة: دورةٌ بلا جديدٍ لا تُبطل الإحص�
   v0 = w.STAT_VER; await w.syncCycle(); assert.ok(w.STAT_VER > v0, 'الدورةُ بجديدٍ تُبطل');
   w.pullDelta = saved.pd; w.FB.pullStatic = saved.ps; w.CORE.flush = saved.fl; S.meta.online = saved.on; w.FB.ready = saved.ready; w.FB.db = saved.db; w.FB._staticAt = saved.sat;
 });
+test('قياسُ الميدان: عطلُ مخزن الآيفون يُسجَّل باسمه لا «خطأ برمجي»، والخطأُ الحقيقيُّ يبقى خطأً برمجيًّا', () => {
+  const got = []; const lg = w.logEvent; w.logEvent = (what) => got.push(String(what)); const rn = w.idbRetryNow, hadIdb = 'indexedDB' in w; let retried = 0; w.idbRetryNow = () => { retried++; return Promise.resolve(null); }; if (!hadIdb) w.indexedDB = {};   /* المتصفّحُ الصوريُّ بلا مخزن — نمثّل وجودَه */
+  w.errCapture('promise: Connection to Indexed Database server lost. Refresh the page to try again', '', 0);
+  w.errCapture('Uncaught TypeError: Cannot read properties of undefined (reading x)', 'index.html', 4242);
+  w.logEvent = lg; w.idbRetryNow = rn; if (!hadIdb) delete w.indexedDB;
+  assert.ok(got.some(x => x.startsWith('عطلٌ في متصفّح الجهاز')), 'عطلُ المنصة باسمه'); assert.ok(got.some(x => x.startsWith('خطأ برمجي')), 'والخطأُ الحقيقيُّ خطأ'); assert.ok(retried >= 1, 'والمخزنُ يُعاد فتحُه');
+});

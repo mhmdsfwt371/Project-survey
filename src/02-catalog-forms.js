@@ -1396,7 +1396,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         var ago = seen[n] ? Math.round((Date.now() - seen[n]) / 60000) : -1;
         var kinds = Object.keys(byKind).map(function(k){ return nm(byKind[k]) + ' ' + t((WO_KINDS[k] || { n:k }).n); }).join(' · ');
         return { n:n, role:roleOf[n] || '', open:open, kinds:kinds, done:doneToday, visits:visits, pend:pend, inst:inst, dis:dis, mnt:mnt, appr:appr, ago:ago };
-      }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || a.n.localeCompare(b.n, 'ar'); });
+      }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || arCmp(a.n, b.n); });
       var tot = rows.reduce(function(a, r){ a.open += r.open; a.visits += r.visits; a.pend += r.pend; return a; }, { open:0, visits:0, pend:0 });
       return chips
         + stats([['أفراد', N(rows.length), 'acc'], ['مُسند مفتوح', N(tot.open), tot.open ? 'wrn' : ''],

@@ -273,7 +273,7 @@ function coAddDirect(name){
   var who = STATE.meta.name || '', now = Date.now();
   STATE.coreqs[name] = { name:name, by:who, at:now, status:'معتمد', by2:who, at2:now, direct:true };
   CORE.set('coreqs', name, STATE.coreqs[name]);
-  CO_LIST.push(name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); });
+  CO_LIST.push(name); CO_LIST.sort(arCmp);
   logEvent('إضافة شركة — ' + name);
   toast(t('أُضيفت الشركة')); return true;
 }
@@ -299,7 +299,7 @@ function apprDecide(kind, id, ok, why){
     if (!c) return;
     c.status = ok ? 'معتمد' : 'مرفوض'; c.by2 = who; c.at2 = now; c.why2 = why || '';
     CORE.set('coreqs', id, c);
-    if (ok && CO_LIST.indexOf(c.name) < 0){ CO_LIST.push(c.name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); }); }
+    if (ok && CO_LIST.indexOf(c.name) < 0){ CO_LIST.push(c.name); CO_LIST.sort(arCmp); }
     logEvent((ok ? 'اعتماد شركة — ' : 'رفض شركة — ') + c.name + (why ? ' · ' + why : ''));
     notifPush(ok ? 'اعتماد' : 'رفض', (ok ? 'اعتُمدت الشركة: ' : 'رُفضت الشركة: ') + c.name,
               { to:c.by || '', lv:'مهم' });
@@ -830,7 +830,7 @@ function mxRows(){
   /* المشعرُ أولًا ثم العدد: كان الترتيبُ بالعدد وحدَه فتفرّقت صفوفُ المشعر
      الواحد بين غيره، وقارئُ الجدول يقرأ مشعرًا لا صفًّا. */
   return out.sort(function(a, b){
-    return String(a[0]).localeCompare(b[0], 'ar') || b[2] - a[2];
+    return arCmp(a[0], b[0]) || b[2] - a[2];
   });
 }
 
@@ -1009,7 +1009,7 @@ function usersList(){
     if (USR.q && hay.indexOf(USR.q) < 0) return;
     out.push([uid, u]);
   });
-  return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
+  return out.sort(function(a, b){ return arCmp(a[1].name || '', b[1].name || ''); });
 }
 
 /* ═══ حذفُ الحساب ═══
@@ -1514,7 +1514,7 @@ function usrAdd(){
 function zoneList(){
   var out = [];
   (STATE.sites || []).forEach(function(x){ if (x.zone && out.indexOf(x.zone) < 0) out.push(x.zone); });
-  return out.sort(function(a, b){ return String(a).localeCompare(b, 'ar'); });
+  return out.sort(arCmp);
 }
 /* ═══ المشاعرُ من مصدرٍ واحد (V17.72) ═══
    كانت قوائمُ المشعر مكتوبةً بيد في ثلاثة مواضع — نموذجُ الموقع الجديد

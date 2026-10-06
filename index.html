@@ -2079,7 +2079,12 @@ function idbGet(k){
       r.onsuccess = function(){ res(r.result); };
       r.onerror   = function(){ rej(r.error); };
     });
-  }).catch(function(){ return _mem ? _mem.get(k) : undefined; });
+  }).catch(function(e){
+    /* (V33.0) القراءةُ على اتصالٍ ميّت (آيفون يقطعه بعد الخلفية) كانت تُرجِع الذاكرةَ وتُبقي الاتصالَ الميّت حتى تفشل كتابة —
+       فيُترَك ويُعاد الفتحُ من القراءة أيضًا، لا من الكتابة وحدَها */
+    if (e && /closing|closed|lost|InvalidStateError|UnknownError|internal error/i.test(String(e.name || '') + ' ' + String(e.message || '')) && _idb) idbDrop();
+    return _mem ? _mem.get(k) : undefined;
+  });
 }
 
 function idbSet(k, v){
@@ -3181,6 +3186,9 @@ var FB = {
    الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى
    يُكتَب محوِّلٌ واحدٌ هنا يحاكي هذه الواجهة — ولا يُلمَس شيءٌ في الصفحات. */
 /* (V32.0) وحدةُ التقارير والتصدير تملك حالتَها: scope/chk/secs/page/xlsAll/pptxTpl/repSide */
+/* (V33.0) الترتيبُ العربيُّ بمرتّبٍ واحدٍ مخزَّن: localeCompare(…, 'ar') يبني مرتّبًا في كلِّ مقارنة — ترتيبُ ٢٢٠ اسمَ شركةٍ أخذ ٢٠٤ م.ث
+   على جوالٍ مُبطّأ مقابل ٢ م.ث بالمرتّب المخزَّن، والنتيجةُ نفسُها حرفًا. ثلاثَ عشرةَ نقطةَ ترتيبٍ تستعمله (والقائمةُ عند الإقلاع منها). */
+function arCmp(a, b){ return (arCmp.c || (arCmp.c = new Intl.Collator('ar'))).compare(String(a == null ? '' : a), String(b == null ? '' : b)); }
 var EXP = {};
 var DB = {
   ready: function(){ return !!(FB.ready && FB.db); },
@@ -5138,7 +5146,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
         var ago = seen[n] ? Math.round((Date.now() - seen[n]) / 60000) : -1;
         var kinds = Object.keys(byKind).map(function(k){ return nm(byKind[k]) + ' ' + t((WO_KINDS[k] || { n:k }).n); }).join(' · ');
         return { n:n, role:roleOf[n] || '', open:open, kinds:kinds, done:doneToday, visits:visits, pend:pend, inst:inst, dis:dis, mnt:mnt, appr:appr, ago:ago };
-      }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || a.n.localeCompare(b.n, 'ar'); });
+      }).sort(function(a, b){ return (b.open + b.pend) - (a.open + a.pend) || arCmp(a.n, b.n); });
       var tot = rows.reduce(function(a, r){ a.open += r.open; a.visits += r.visits; a.pend += r.pend; return a; }, { open:0, visits:0, pend:0 });
       return chips
         + stats([['أفراد', N(rows.length), 'acc'], ['مُسند مفتوح', N(tot.open), tot.open ? 'wrn' : ''],
@@ -9631,7 +9639,13 @@ function errCapture(msg, src, line){
     if (Object.keys(ERR_SEEN).length >= 20) return;
     ERR_SEEN[key] = 1;
     var ver = (document.querySelector('[data-p="vers"]') || {}).textContent || '';
-    logEvent('خطأ برمجي — ' + String(msg || '').slice(0, 140)
+    /* (V33.0) قياسُ الميدان (١٤ يومًا): ٣٣٥ من ٣٦٨ «خطأ برمجي» كانت أعطالَ مخزن المتصفّح في آيفون («Connection to Indexed Database
+       server lost» و«internal error was encountered in the Indexed Database server») وفشلَ تحديث عامل الخدمة لانقطاع الشبكة — أعطالُ
+       منصّةٍ لا أخطاءُ شيفرة، فكانت تغرق الأخطاءَ الحقيقية. تُسجَّل باسمها، ومخزنُ الجهاز يُعاد فتحُه فورًا لأن انقطاعه يقتل كلَّ
+       اتصالاتِ الموقع ومنها اتصالُنا. */
+    var plat = /Indexed Database server|IndexedDB|IDBDatabase|IDBTransaction|in-progress transaction|Failed to update a ServiceWorker|sw\.js load failed/i.test(String(msg || ''));
+    if (plat && /Indexed Database|IDB|transaction/i.test(String(msg || '')) && typeof idbRetryNow === 'function' && typeof indexedDB !== 'undefined'){ try { idbRetryNow(); } catch (e1){ IDB_LOG_ERR = e1; } }
+    logEvent((plat ? 'عطلٌ في متصفّح الجهاز — ' : 'خطأ برمجي — ') + String(msg || '').slice(0, 140)
              + ' \u00b7 ' + String(src || '').split('/').pop().slice(0, 40) + ':' + (line || 0)
              + (ver ? ' \u00b7 ' + String(ver).replace(/\s+/g, ' ').trim().slice(0, 20) : ''));
   } catch (e) {}
@@ -10374,7 +10388,7 @@ function briefingRows(){
     var wt = (typeof wtRows === 'function' ? wtRows() : []).filter(function(w){ return w.st !== 'مكتمل' && String(w.who || '').trim() === u.name; }).length;
     out.push({ uid:k, name:u.name, role:r, ph:u.ph || '', asn:asn, open:open, done:done, wt:wt });
   });
-  out.sort(function(a, b){ return (b.open - a.open) || (rankOf(b.role) - rankOf(a.role)) || a.name.localeCompare(b.name, 'ar'); });
+  out.sort(function(a, b){ return (b.open - a.open) || (rankOf(b.role) - rankOf(a.role)) || arCmp(a.name, b.name); });
   return out;
 }
 function briefingText(x){
@@ -17724,7 +17738,7 @@ var SHEETS = {
   provsheet: function(){
     var L = provList().filter(function(r){ return r.status === 'done' && r.pass; });
     var out = [['الاسم', 'اسم المستخدم', 'كلمة المرور', 'الدور', 'الوظيفة', 'الفريق', 'البريد']];
-    L.sort(function(a, b){ return String(a.crew || '').localeCompare(String(b.crew || ''), 'ar'); })
+    L.sort(function(a, b){ return arCmp(a.crew || '', b.crew || ''); })
      .forEach(function(r){
        var j = r.job ? jobOf(r.job) : null;
        out.push([r.name || '', r.user, r.pass, (ROLES[r.role] || {}).n || r.role, j ? j.n : '', r.crew || '', r.email || '']);
@@ -17796,7 +17810,7 @@ var SHEETS = {
   attendance: function(){
     var out = [['اليوم','الشخص','الدور','بدأ','أنهى','ساعات','بدأ داخل النطاق','أنهى داخل النطاق']];
     Object.keys(STATE.att || {}).map(function(k){ return STATE.att[k]; })
-      .sort(function(a, b){ return String(b.day).localeCompare(String(a.day)) || String(a.name).localeCompare(String(b.name), 'ar'); })
+      .sort(function(a, b){ return String(b.day).localeCompare(String(a.day)) || arCmp(a.name, b.name); })
       .forEach(function(r){
         out.push([r.day, r.name, (ROLES[r.role] || {}).n || r.role || '', r.in ? hm(r.in.at) : '', r.out ? hm(r.out.at) : '',
                   r.hours || '', r.in ? (r.in.ok === false ? 'لا' : (r.in.ok ? 'نعم' : '—')) : '', r.out ? (r.out.ok === false ? 'لا' : (r.out.ok ? 'نعم' : '—')) : '']);
@@ -20537,7 +20551,7 @@ function coFill(){
       if (one && !seen[one]){ seen[one] = 1; CO_LIST.push(one); }
     });
   });
-  CO_LIST.sort(function(x, y){ return x.localeCompare(y, 'ar'); });
+  CO_LIST.sort(arCmp);
   return CO_LIST.length;
 }
 coFill();   /* بعد التعريف لا قبله — البياناتُ أعلى في الملف والقائمةُ هنا */
@@ -27052,7 +27066,7 @@ function techsList(all){
     out.push({ n:u.name, u:uid, ph:u.ph || '', job:u.job || '', sup:u.sup || '', dept:u.dept || '',
                crew:u.crew || '', jobLog:u.jobLog || [], has:u.has || 0 });
   });
-  return out.sort(function(a, b){ return a.n.localeCompare(b.n, 'ar'); });
+  return out.sort(function(a, b){ return arCmp(a.n, b.n); });
 }
 function techUid(name){
   var U = STATE.users || {};
@@ -28272,7 +28286,7 @@ function vehKindName(id){
 function vehList(){
   var V = STATE.vehicles || {};
   return Object.keys(V).map(function(k){ return V[k]; }).filter(Boolean)
-    .sort(function(a, b){ return String(a.plate || '').localeCompare(String(b.plate || ''), 'ar'); });
+    .sort(function(a, b){ return arCmp(a.plate || '', b.plate || ''); });
 }
 function vehOf(id){ return (STATE.vehicles || {})[id] || null; }
 
@@ -29963,7 +29977,7 @@ function mgrCandidates(role, exceptUid){
     if (below.indexOf(u.name) > -1 || (me && u.name === me)) return;
     out.push({ uid:uid, n:u.name, role:roleOfUser(u) });
   });
-  return out.sort(function(a, b){ return rankOf(b.role) - rankOf(a.role) || a.n.localeCompare(b.n, 'ar'); });
+  return out.sort(function(a, b){ return rankOf(b.role) - rankOf(a.role) || arCmp(a.n, b.n); });
 }
 function mgrOptions(role, cur, exceptUid){
   var L = mgrCandidates(role, exceptUid);
@@ -30485,7 +30499,7 @@ function coAddDirect(name){
   var who = STATE.meta.name || '', now = Date.now();
   STATE.coreqs[name] = { name:name, by:who, at:now, status:'معتمد', by2:who, at2:now, direct:true };
   CORE.set('coreqs', name, STATE.coreqs[name]);
-  CO_LIST.push(name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); });
+  CO_LIST.push(name); CO_LIST.sort(arCmp);
   logEvent('إضافة شركة — ' + name);
   toast(t('أُضيفت الشركة')); return true;
 }
@@ -30511,7 +30525,7 @@ function apprDecide(kind, id, ok, why){
     if (!c) return;
     c.status = ok ? 'معتمد' : 'مرفوض'; c.by2 = who; c.at2 = now; c.why2 = why || '';
     CORE.set('coreqs', id, c);
-    if (ok && CO_LIST.indexOf(c.name) < 0){ CO_LIST.push(c.name); CO_LIST.sort(function(a,b){ return a.localeCompare(b,'ar'); }); }
+    if (ok && CO_LIST.indexOf(c.name) < 0){ CO_LIST.push(c.name); CO_LIST.sort(arCmp); }
     logEvent((ok ? 'اعتماد شركة — ' : 'رفض شركة — ') + c.name + (why ? ' · ' + why : ''));
     notifPush(ok ? 'اعتماد' : 'رفض', (ok ? 'اعتُمدت الشركة: ' : 'رُفضت الشركة: ') + c.name,
               { to:c.by || '', lv:'مهم' });
@@ -31042,7 +31056,7 @@ function mxRows(){
   /* المشعرُ أولًا ثم العدد: كان الترتيبُ بالعدد وحدَه فتفرّقت صفوفُ المشعر
      الواحد بين غيره، وقارئُ الجدول يقرأ مشعرًا لا صفًّا. */
   return out.sort(function(a, b){
-    return String(a[0]).localeCompare(b[0], 'ar') || b[2] - a[2];
+    return arCmp(a[0], b[0]) || b[2] - a[2];
   });
 }
 
@@ -31221,7 +31235,7 @@ function usersList(){
     if (USR.q && hay.indexOf(USR.q) < 0) return;
     out.push([uid, u]);
   });
-  return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
+  return out.sort(function(a, b){ return arCmp(a[1].name || '', b[1].name || ''); });
 }
 
 /* ═══ حذفُ الحساب ═══
@@ -31726,7 +31740,7 @@ function usrAdd(){
 function zoneList(){
   var out = [];
   (STATE.sites || []).forEach(function(x){ if (x.zone && out.indexOf(x.zone) < 0) out.push(x.zone); });
-  return out.sort(function(a, b){ return String(a).localeCompare(b, 'ar'); });
+  return out.sort(arCmp);
 }
 /* ═══ المشاعرُ من مصدرٍ واحد (V17.72) ═══
    كانت قوائمُ المشعر مكتوبةً بيد في ثلاثة مواضع — نموذجُ الموقع الجديد

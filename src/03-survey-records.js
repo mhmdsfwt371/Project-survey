@@ -2755,7 +2755,13 @@ function errCapture(msg, src, line){
     if (Object.keys(ERR_SEEN).length >= 20) return;
     ERR_SEEN[key] = 1;
     var ver = (document.querySelector('[data-p="vers"]') || {}).textContent || '';
-    logEvent('خطأ برمجي — ' + String(msg || '').slice(0, 140)
+    /* (V33.0) قياسُ الميدان (١٤ يومًا): ٣٣٥ من ٣٦٨ «خطأ برمجي» كانت أعطالَ مخزن المتصفّح في آيفون («Connection to Indexed Database
+       server lost» و«internal error was encountered in the Indexed Database server») وفشلَ تحديث عامل الخدمة لانقطاع الشبكة — أعطالُ
+       منصّةٍ لا أخطاءُ شيفرة، فكانت تغرق الأخطاءَ الحقيقية. تُسجَّل باسمها، ومخزنُ الجهاز يُعاد فتحُه فورًا لأن انقطاعه يقتل كلَّ
+       اتصالاتِ الموقع ومنها اتصالُنا. */
+    var plat = /Indexed Database server|IndexedDB|IDBDatabase|IDBTransaction|in-progress transaction|Failed to update a ServiceWorker|sw\.js load failed/i.test(String(msg || ''));
+    if (plat && /Indexed Database|IDB|transaction/i.test(String(msg || '')) && typeof idbRetryNow === 'function' && typeof indexedDB !== 'undefined'){ try { idbRetryNow(); } catch (e1){ IDB_LOG_ERR = e1; } }
+    logEvent((plat ? 'عطلٌ في متصفّح الجهاز — ' : 'خطأ برمجي — ') + String(msg || '').slice(0, 140)
              + ' \u00b7 ' + String(src || '').split('/').pop().slice(0, 40) + ':' + (line || 0)
              + (ver ? ' \u00b7 ' + String(ver).replace(/\s+/g, ' ').trim().slice(0, 20) : ''));
   } catch (e) {}
@@ -3498,7 +3504,7 @@ function briefingRows(){
     var wt = (typeof wtRows === 'function' ? wtRows() : []).filter(function(w){ return w.st !== 'مكتمل' && String(w.who || '').trim() === u.name; }).length;
     out.push({ uid:k, name:u.name, role:r, ph:u.ph || '', asn:asn, open:open, done:done, wt:wt });
   });
-  out.sort(function(a, b){ return (b.open - a.open) || (rankOf(b.role) - rankOf(a.role)) || a.name.localeCompare(b.name, 'ar'); });
+  out.sort(function(a, b){ return (b.open - a.open) || (rankOf(b.role) - rankOf(a.role)) || arCmp(a.name, b.name); });
   return out;
 }
 function briefingText(x){

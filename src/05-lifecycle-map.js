@@ -836,7 +836,7 @@ var SHEETS = {
   provsheet: function(){
     var L = provList().filter(function(r){ return r.status === 'done' && r.pass; });
     var out = [['الاسم', 'اسم المستخدم', 'كلمة المرور', 'الدور', 'الوظيفة', 'الفريق', 'البريد']];
-    L.sort(function(a, b){ return String(a.crew || '').localeCompare(String(b.crew || ''), 'ar'); })
+    L.sort(function(a, b){ return arCmp(a.crew || '', b.crew || ''); })
      .forEach(function(r){
        var j = r.job ? jobOf(r.job) : null;
        out.push([r.name || '', r.user, r.pass, (ROLES[r.role] || {}).n || r.role, j ? j.n : '', r.crew || '', r.email || '']);
@@ -908,7 +908,7 @@ var SHEETS = {
   attendance: function(){
     var out = [['اليوم','الشخص','الدور','بدأ','أنهى','ساعات','بدأ داخل النطاق','أنهى داخل النطاق']];
     Object.keys(STATE.att || {}).map(function(k){ return STATE.att[k]; })
-      .sort(function(a, b){ return String(b.day).localeCompare(String(a.day)) || String(a.name).localeCompare(String(b.name), 'ar'); })
+      .sort(function(a, b){ return String(b.day).localeCompare(String(a.day)) || arCmp(a.name, b.name); })
       .forEach(function(r){
         out.push([r.day, r.name, (ROLES[r.role] || {}).n || r.role || '', r.in ? hm(r.in.at) : '', r.out ? hm(r.out.at) : '',
                   r.hours || '', r.in ? (r.in.ok === false ? 'لا' : (r.in.ok ? 'نعم' : '—')) : '', r.out ? (r.out.ok === false ? 'لا' : (r.out.ok ? 'نعم' : '—')) : '']);
@@ -3649,7 +3649,7 @@ function coFill(){
       if (one && !seen[one]){ seen[one] = 1; CO_LIST.push(one); }
     });
   });
-  CO_LIST.sort(function(x, y){ return x.localeCompare(y, 'ar'); });
+  CO_LIST.sort(arCmp);
   return CO_LIST.length;
 }
 coFill();   /* بعد التعريف لا قبله — البياناتُ أعلى في الملف والقائمةُ هنا */
