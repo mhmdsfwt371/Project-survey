@@ -635,7 +635,7 @@ var SHEETS = {
   },
   over: function(){
     /* الورقةُ والشاشةُ من حلقةٍ واحدةٍ بتعريفٍ واحد — لا يناقض الإجماليُّ صفوفَه */
-    var K = siteKeyStats(), out = [['المشعر','النوع','العدد','مُسح','مُركّب']];
+    var K = siteKeyStats(), out = [['المشعر','النوع','العدد','تمت الزيارة','مُركّب']];
     K.keys.forEach(function(k){ var p = k.split('|'); out.push([p[0], p[1], K.by[k], K.sv[k] || 0, K.ins[k] || 0]); });
     out.push(['الإجمالي','', K.total.n, K.total.sv, K.total.ins]);
     return out;
@@ -662,7 +662,7 @@ var SHEETS = {
     var life = {}; STATE.sites.forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
     LIFE_ORDER.forEach(function(k){ if (life[k]) out.push([LIFE[k].n, life[k], pc(life[k], S.n)]); });
     out.push(['', '', '']);
-    out.push(['المشعر', 'العدد', 'مُسح']);
+    out.push(['المشعر', 'العدد', 'تمت الزيارة']);
     var z = {}; STATE.sites.forEach(function(x){ z[x.zone] = z[x.zone] || { n:0, s:0 }; z[x.zone].n++; if (svVisited(STATE.recs[x.id])) z[x.zone].s++; });
     Object.keys(z).sort(function(a, b){ return z[b].n - z[a].n; }).forEach(function(k){ out.push([k, z[k].n, z[k].s]); });
     if (typeof wtStats === 'function' && wtRows().length){
@@ -1191,7 +1191,7 @@ var SHEETS = {
     return out;
   },
   co: function(){
-    var S = siteStats(), out = [['الشركة','مواقعها','مُسح','مُركّب','٪']];
+    var S = siteStats(), out = [['الشركة','مواقعها','تمت الزيارة','مُركّب','٪']];
     Object.keys(S.byCo).sort(function(a,b){ return S.byCo[b]-S.byCo[a]; }).forEach(function(c){
       out.push([c, S.byCo[c], 0, 0, '0%']);
     });
@@ -4009,7 +4009,7 @@ function fieldRecords(){
 function fieldTools(){
   /* كانت ثلاثةُ أصفارٍ مكتوبةً بيدٍ بجوار رقمٍ حقيقيٍّ واحد */
   var S9 = siteStats(), pend9 = CORE.pending();
-  return stats([['المواقع', N(S9.total)], ['المسح', N(S9.surveyed), 'acc'], ['التركيب', N(S9.installed), 'ok'],
+  return stats([['المواقع', N(S9.total)], ['تمت الزيارة', N(S9.surveyed), 'acc'], ['التركيب', N(S9.installed), 'ok'],
                 ['غير مزامن', N(pend9), pend9 ? 'wrn' : '']])
     + card('التصديرات',
         '<div class="actions">'
@@ -4139,7 +4139,7 @@ function svdMina(){
       return { x:x, r:r, ch:[], camp:true, rooms:rm.n, src:rm.src, metal:false, life:(typeof lifeOf === 'function' ? lifeOf(x) : '') }; });
 }
 var SVD_CARDS = [
-  { k:'camps',   t:'مخيماتٌ مُسحت',            w:'زارها الميدانُ وسُجّلت زيارتُها',                    f:function(o){ return o.camp; },
+  { k:'camps',   t:'مخيماتٌ تمت زيارتها',            w:'زارها الميدانُ وسُجّلت زيارتُها',                    f:function(o){ return o.camp; },
     of:function(){ return (STATE.sites || []).filter(function(x){ return x.type === 'مخيم'; }).length; } },
   { k:'rooms',   t:'غرفٌ — لكلِّ غرفةٍ حساس',   w:'من عدِّ الميدان، وإلا سجلُّ الوزارة، وإلا متوسطُ منى',  f:function(o){ return o.camp && o.rooms > 0; }, sum:true },
   { k:'nocount', t:'مخيماتٌ بلا عدِّ غرف',      w:'عُدَّت بالمتوسط — تُعَدُّ في الزيارة القادمة',         f:function(o){ return o.camp && o.src !== 'field' && o.src !== 'registry'; } },
@@ -4537,7 +4537,7 @@ function kioskBody(){
     +     '<div class="kk-sub">' + esc(t('لم يصل إليه الميدان')) + '</div></div>'
     +   (function(){ var ok = svListRows('campok').length, camps = (STATE.sites || []).filter(function(x){ return taxOf(x).t === 'مخيمات'; }).length;   /* (V30.0) طلبُ المالك: كم مخيمًا بلا عائق — بالأخضر */
           return '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-green)" aria-valuenow="' + ok + '">' + nm(ok) + '</div><div class="kk-lab">' + esc(t('مخيمات بلا عائق')) + '</div>'
-            + '<div class="kk-sub">' + esc(t('مُسحت ووُصل إليها بلا تحديات')) + ' \u00b7 ' + nm(camps ? Math.round(ok / camps * 100) : 0) + '٪ ' + esc(t('من')) + ' ' + nm(camps) + '</div></div>'; })()
+            + '<div class="kk-sub">' + esc(t('تمت الزيارة وتم الوصول بلا تحديات')) + ' \u00b7 ' + nm(camps ? Math.round(ok / camps * 100) : 0) + '٪ ' + esc(t('من')) + ' ' + nm(camps) + '</div></div>'; })()
     + '</div>'
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
@@ -4719,7 +4719,7 @@ function mfuBriefText(){
   var K = mfuKpis(), P = mfuPrev(), SV = svStats(), o = SV.O, C = mfuCompanies(), n = function(v){ return nm(v); };
   var d = function(k){ return P && P[k] != null ? (K[k] - P[k]) : null; }, dsv = d('sv'), dobs = d('obs');
   var L = [];
-  L.push(t('حتى') + ' ' + hijriToday() + ' (' + dayKey() + '): ' + t('مُسح') + ' ' + n(o.sv) + ' ' + t('من') + ' ' + n(o.tot) + ' ' + t('موقعًا') + ' (' + n(SV.pct) + '٪)' + (dsv != null ? '، ' + t('منها') + ' ' + n(Math.max(0, dsv)) + ' ' + t('هذا الأسبوع') : '') + '.');
+  L.push(t('حتى') + ' ' + hijriToday() + ' (' + dayKey() + '): ' + t('تمت زيارة') + ' ' + n(o.sv) + ' ' + t('من') + ' ' + n(o.tot) + ' ' + t('موقعًا') + ' (' + n(SV.pct) + '٪)' + (dsv != null ? '، ' + t('منها') + ' ' + n(Math.max(0, dsv)) + ' ' + t('هذا الأسبوع') : '') + '.');
   L.push(t('المتبقي') + ' ' + n(o.tot - o.sv) + ' ' + t('موقعًا') + (o.unreach ? '، ' + t('وتعذّر الوصول إلى') + ' ' + n(o.unreach) : '') + (o.chal ? '، ' + t('وفي') + ' ' + n(o.chal) + ' ' + t('موقعًا تحدياتٌ مسجّلة') : '') + '.');
   L.push(t('المعوقات القائمة') + ' ' + n(K.obs) + (dobs != null ? ' (' + (dobs > 0 ? '+' : '') + n(dobs) + ' ' + t('عن الأسبوع الماضي') + ')' : '') + '. ' + (K.ins ? t('التركيب') + ': ' + n(K.ins) + ' ' + t('نقطة') + '.' : t('التركيبُ لم يبدأ بعد، والشركاتُ') + ' ' + n(C.length) + ' ' + t('في مرحلة المسح') + '.'));
   var w = ['permit', 'missing', 'noalloc', 'minwait'].map(function(k){ var c = svListRows(k).length; return c ? n(c) + ' ' + t(SV_LISTS[k][0]) : ''; }).filter(Boolean);
@@ -4761,7 +4761,7 @@ function mfuSummary(){
     + box('clean', 'نقاط بلا عوائق ولا تحديات', nm(nClean), esc(t('وُصل إليها بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
     + box('chal', 'نقاط ذات تحديات', nm(nChal), esc(t('وُصل إليها وفيها تحدٍّ')), '', '#C0392B')
     + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
-    + box('campok', 'مخيمات بلا عائق', nm(svListRows('campok').length), esc(t('مُسحت ووُصل إليها بلا تحديات')), '', '#27AE60')
+    + box('campok', 'مخيمات بلا عائق', nm(svListRows('campok').length), esc(t('تمت الزيارة وتم الوصول بلا تحديات')), '', '#27AE60')
     + box('campins', 'تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
     + box('corins', 'تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
     + (K.ins ? box('cos', 'شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')

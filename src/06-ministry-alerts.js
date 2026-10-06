@@ -128,7 +128,7 @@ function mfuCos(){
       : kpi('نسبة الإنجاز الكلية', nm(tp) + '\u066A') + kpi('التركيب', nm(ins), '#27AE60') + kpi('عوائق', nm(obs), '#C0392B') + kpi('المتبقي', nm(n - ins - obs), '#B7950B') + kpi('المخيمات', nm(n)))
     + '</div>'
     + (surv ? alertBox('info', t('المرحلة الحالية: المسح الميداني — التواصلُ مع الشركات والتركيبُ لم يبدآ بعد، فلا تصنيفَ لها بالتركيب. تُرتَّب بالأقلِّ مسحًا.')) : '')
-    + '<p class="hint">' + esc(t(surv ? 'نسبةُ كلِّ شركة = مخيماتُها الممسوحة ÷ مخيماتُها' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU.cosAll ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
+    + '<p class="hint">' + esc(t(surv ? 'نسبةُ كلِّ شركة = مخيماتُها التي تمت زيارتُها ÷ مخيماتُها' : 'دليل نسبة الإنجاز: ممتاز ٧٥٪ فأكثر · متوسط ٤٠–٧٤٪ · ضعيف أقل من ٤٠٪')) + ' \u00b7 ' + esc(t(MFU.cosAll ? 'كلُّ الشركات' : 'الأضعفُ أوّلًا')) + ' '
     + btn(MFU.cosAll ? t('الأضعفُ فقط') : t('اعرض الكل') + ' (' + nm(C.length) + ')', 'btn-quiet btn-sm', ' data-mfucosall="1"') + '</p>'
     + '<div class="mfu-cos">' + (MFU.cosAll ? C : C.slice().sort(function(a, b){ return (surv ? a.svp - b.svp : a.pct - b.pct) || b.n - a.n; }).slice(0, 12)).map(function(c){
         var p = surv ? c.svp : c.pct, L = surv ? [p >= 75 ? 'مسحٌ متقدّم' : p > 0 ? 'مسحٌ جارٍ' : 'لم يبدأ المسح', p >= 75 ? 'ok' : p > 0 ? 'wrn' : 'off'] : mfuLevel(c.pct);
@@ -310,7 +310,7 @@ function mfuOwnersCard(){
 }
 function mfuWeeksCard(){
   var snap = mfuData().snap || {}, keys = Object.keys(snap).sort().slice(-8); if (keys.length < 2) return '';
-  return cardFlush(t('مسارُ الأسابيع'), table(['الأسبوع', 'المسح', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات'], keys.map(function(k, i){
+  return cardFlush(t('مسارُ الأسابيع'), table(['الأسبوع', 'تمت الزيارة', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات'], keys.map(function(k, i){
     var v = snap[k], p = i ? snap[keys[i - 1]] : null, dv = function(f){ return p && p[f] != null ? ' <span class="hint" style="margin:0">(' + (v[f] - p[f] >= 0 ? '+' : '') + nm(v[f] - p[f]) + ')</span>' : ''; };
     return ['<span class="num">' + esc(k) + '</span>', N(v.sv || 0) + dv('sv'), N(v.campIns || 0) + dv('campIns'), N(v.corIns || 0) + dv('corIns'), N(v.obs || 0) + dv('obs')];
   })));
@@ -400,7 +400,7 @@ function mfuReq(){
    المركّبة، والمتعذّرُ من زيارات يومه. واليومُ يومُ غرينتش كسائر النظام — أي يومُ عملٍ يبدأ الثالثةَ
    فجرًا بمكة، فلا تنقسم ورديّةُ الليل على يومين. */
 var WDY = { off:{}, pg:1, mon:'', day:'', h1:0, h2:24 };
-var WDY_SER = [['sv', 'المسح', 'var(--min-gold)'], ['ins', 'التركيب', 'var(--min-green)'], ['dis', 'الفك', 'var(--min-teal)'], ['stuck', 'المتعذر', 'var(--min-red)']];
+var WDY_SER = [['sv', 'تمت الزيارة', 'var(--min-gold)'], ['ins', 'التركيب', 'var(--min-green)'], ['dis', 'الفك', 'var(--min-teal)'], ['stuck', 'المتعذر', 'var(--min-red)']];
 function wdyHour(ms){ return (new Date(+ms).getUTCHours() + 3) % 24; }   /* ساعةُ مكة: +٣ بلا توقيتٍ صيفي */
 function wdyHourLbl(h){ var s = (h < 10 ? '0' : '') + h + ':00'; return LANG === 'en' ? s : s.replace(/\d/g, function(c){ return nm(+c); }); }
 function wdyKeep(){
@@ -598,8 +598,8 @@ MFU.sections = [
   ['req', 'طلبات الوزارة', ['#', 'الطلب', 'الإفادة / آخر تحديث', 'المقترح / الدعم المطلوب', 'الحالة', 'مهمة التنفيذ']],
   ['upd', 'آخر التحديثات — هذا الأسبوع', ['متى', 'النوع', 'البند', 'التحديث', 'بواسطة']],
   ['owners', 'الحمل على المسؤولين', ['المسؤول', 'تحديات مفتوحة', 'مهام مفتوحة', 'متأخرة']],
-  ['weeks', 'مسار الأسابيع', ['الأسبوع', 'المسح', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات']],
-  ['daily', 'ملخص العمل اليومي — آخر ١٤ يومًا', ['اليوم', 'المسح', 'التركيب', 'الفك', 'المتعذر']]];
+  ['weeks', 'مسار الأسابيع', ['الأسبوع', 'تمت الزيارة', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات']],
+  ['daily', 'ملخص العمل اليومي — آخر ١٤ يومًا', ['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'المتعذر']]];
 function mfuSecTitle(R, sc){ return sc[0] === 'upd' && R.updTitle ? R.updTitle : sc[1]; }
 function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
@@ -1193,7 +1193,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
                             +   ' (' + nm(S.n - S.sv) + ' ' + esc(t('نقطة')) + ')</p>')
       + cardFlush('المشاعرُ كلُّها — كم أُنجز وكم بقي',
           /* ستةُ أعمدةٍ لتقرأ على الهاتف: النسبةُ في خلية المسح */
-          table(['المشعر','المواقع','مُسح','متبقٍّ','مُركّب','متعذّر'],
+          table(['المشعر','المواقع','تمت الزيارة','متبقٍّ','مُركّب','متعذّر'],
             Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }).map(function(z){
               var o = K.zones[z];
               return ['<button class="btn btn-quiet btn-sm" data-ovz="' + esc(z) + '">' + esc(t(z)) + '</button>',
@@ -1201,7 +1201,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
             }),
             ['الإجمالي', N(K.total.n), N(K.total.sv) + ' <span class="hint" style="margin:0">' + nm(K.total.n ? Math.round(K.total.sv / K.total.n * 100) : 0) + '٪</span>', N(K.total.n - K.total.sv), N(K.total.ins), N(K.total.stuck)]))
       + cardFlush(t('التوزيع حسب المشعر والنوع') + (OVER_ZONE ? ' \u2014 ' + zl : ''),
-          table(['المشعر','النوع','العدد','مُسح','مُركّب'],
+          table(['المشعر','النوع','العدد','تمت الزيارة','مُركّب'],
             K.keys.filter(function(k){ return !OVER_ZONE || k.split('|')[0] === OVER_ZONE; }).map(function(k){
               var p = k.split('|'), n = K.by[k], v = K.sv[k] || 0;
               return [esc(t(p[0])), esc(t(p[1])), N(n), N(v) + ' <span class="hint" style="margin:0">' + nm(n ? Math.round(v / n * 100) : 0) + '٪</span>', N(K.ins[k] || 0)];
@@ -2545,6 +2545,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'مفهوم «تمت الزيارة» بقى على كل الصفحات بطلب المالك: جدول الشركات، وبطاقات المشاعر، والملفات المصدّرة، والملخص اليومي ومنحنياته، ومسار الأسابيع، وملخص الوزارة المكتوب، وخطوات النقطة في نافذتها («تمت الزيارة — تنتظر الاعتماد التقني»)، وتنبيه التوأم، وعدّ زيارات الفني في يومه، والمتأخر من المهام.',
+      'والكلام اللي بيخص اللي لسه محتاج زيارة بقى واضح: «الأقرب إليّ — تحتاج زيارة» و«المتاح: ما يحتاج زيارة ولم يُسند بعد».' ] },
   { v:'V32.7', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'المصطلح بقى واحد وواضح في كل مكان بطلب المالك: الرقم اسمه «تمت الزيارة» (بدل «تم المسح» و«مُسح» و«زيرت») في الملخص، وشاشة المسح، وشاشة القاعة، ومتابعة الوزارة، والجداول، وملفات إكسل والباوربوينت والبي دي إف. وتقسيمه جوه شاشة المسح بمصطلح نموذج الزيارة نفسه: «تم الوصول»، و«متعذّر»، و«تحتاج زيارة أخرى».' ] },
   { v:'V32.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
@@ -3290,10 +3293,10 @@ function fieldHelperCard(){
   var near = fhNearest(5), O = fhToday(), bm = (typeof BASEMAP === 'object' && BASEMAP) || {};
   var ok = function(b, yes, no){ return '<span class="pill ' + (b ? 'ok' : 'wrn') + '">' + (b ? '\u2713 ' : '') + esc(b ? yes : no) + '</span>'; };   /* النصُّ مترجَمٌ عند الطلب */
   return card('\u{1F9F0} ' + t('مساعد الميدان'),
-      '<h4 style="margin:0 0 6px">\u{1F4CD} ' + esc(t('الأقرب إليّ — لم تُمسح بعد')) + '</h4>'
+      '<h4 style="margin:0 0 6px">\u{1F4CD} ' + esc(t('الأقرب إليّ — تحتاج زيارة')) + '</h4>'
     + (near ? (near.length ? table(['النقطة', 'المسافة', ''], near.map(function(o){ return ['<strong>' + esc(o.x.id) + '</strong><br><span class="hint" style="margin:0">' + esc(String(o.x.name || '').slice(0, 30)) + '</span>', '<span class="num">' + esc(kmTxt(o.d)) + '</span>',
           btn('\u25C8 ' + t('على الخريطة'), 'btn-quiet btn-sm', ' data-fly="' + esc(o.x.id) + '"') + ' <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(mapsUrl(o.x.lat, o.x.lng, o.x.id)) + '">\u2197 ' + esc(t('اتجاهات')) + '</a>']; }))
-            : '<p class="hint" style="margin:0">' + esc(t('كلُّ النقاط مُسحت')) + '</p>')
+            : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تحتاج زيارة')) + '</p>')
          : '<p class="hint" style="margin:0 0 6px">' + esc(t('حدِّد موقعك لتظهر أقربُ النقاط إليك')) + '</p>' + btn('\u{1F4CD} ' + t('حدِّد موقعي'), 'btn-primary btn-sm', ' data-fhpos="1"'))
     + '<h4 style="margin:12px 0 6px">\u{1F4CB} ' + esc(t('ملخّص يومي الجاهز')) + '</h4>'
     + '<pre style="white-space:pre-wrap;margin:0 0 6px;font:inherit;background:var(--surface-2);color:var(--ink);padding:8px;border-radius:8px">' + esc(fhTodayText(O)) + '</pre>'   /* (V30.6) */

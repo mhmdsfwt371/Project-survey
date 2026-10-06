@@ -950,7 +950,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
                 + rec.chals.map(function(c){ return pill(c,'warn'); }).join(' ') + '</div>'
               : '')
             + (rec.note ? '<p class="hint">' + esc(rec.note) + '</p>' : ''))
-        : card('المسح', '<p class="hint" style="margin:0">' + esc(t('لم يُمسح بعد.')) + '</p>',
+        : card('المسح', '<p class="hint" style="margin:0">' + esc(t('لم تتم زيارتها بعد.')) + '</p>',
             btn('امسح الآن','btn-primary btn-sm',' data-form="' + esc(x.id) + '"')))
 
       + (ins
@@ -1493,7 +1493,7 @@ PAGE.mywork = { m:'الميدان', t:'شغلي',
       var x = STATE.tasks[k];
       if (x.to === me && x.status !== 'معتمد') mine.push(x);
     });
-    var done = mine.filter(function(x){ return svDone(STATE.recs[x.site]); }).length;
+    var done = mine.filter(function(x){ return svVisited(STATE.recs[x.site]); }).length;   /* (V32.8) تمت الزيارة بأيِّ نتيجة */
     var back = mine.filter(function(x){ return svReview(STATE.recs[x.site]) === 'revisit'; }).length;
     var myPts = (typeof scoreOf === 'function') ? (scoreOf(me) || {}).total || 0 : 0;
 

@@ -1499,7 +1499,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
                 : alertBox('ok', t('لا تناقضَ في البيانات — كلُّ الفحوص صفر')))
       + cardFlush('فحوص التناقض', table(['الفحص','النتيجة',''], [
           rowOf('نقاط مُركّبة بلا حلٍّ معتمد', q.insNoSol, 'bad', 'qa', 'رُكّبت والحلُّ لم يُعتمَد — لا يُقفَل إقفالٌ ولا يُحسَب استلامٌ'),
-          rowOf('تركيبات مُسندة لنقاطٍ لم تُمسح', q.schedNoSv, 'bad', 'req', 'إسنادُ تركيبٍ قبل المسح — الفنيُّ سيصل بلا حلّ'),
+          rowOf('تركيبات مُسندة لنقاطٍ لم يتم الوصول إليها', q.schedNoSv, 'bad', 'req', 'إسنادُ تركيبٍ قبل المسح — الفنيُّ سيصل بلا حلّ'),
           rowOf('أصناف برصيد سالب', q.negStock, 'bad', 'inv', 'صرفٌ أكثرُ من التوريد — سجلٌّ ناقص'),
           rowOf('مشتريات بلا مورّد', q.buyNoSup, 'wrn', 'inv'),
           rowOf('مهام مُسندة لاسمٍ لا حسابَ له', q.taskGhost, 'bad', 'req', 'كُتب الاسمُ ولم يُطابق حسابًا — لا يصله شيء'),
@@ -1629,9 +1629,9 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
           dup.length
             ? '<p class="hint" style="margin:0 0 8px">' + esc(t('أكثرُها المخيمُ الواحدُ مسجَّلًا مرتين بشاخصٍ مكتوبٍ بصفتين — فيُزار أحدُهما ويبقى توأمُه «لم يُزر» ويُعَدُّ في الإجمالي. اختر الأصلَ (ما مُسح إن مُسح أحدُهما) فيُدمَج التوأمُ فيه ويخرج من العدّ — ويُفَكُّ الدمجُ متى شئت. وإن كانا مخيمين حقًّا فافصل إحداثياتِهما من «تحريك».')) + '</p>'
               + dup.slice(0, 40).map(function(p){
-                  var st = function(x){ var r = STATE.recs[x.id]; return svDone(r) ? '<span class="pill ok">' + esc(t('مُسح')) + '</span>' : '<span class="pill">' + esc(t('لم يُزر')) + '</span>'; };
+                  var st = function(x){ var r = STATE.recs[x.id]; return svVisited(r) ? '<span class="pill ok">' + esc(t('تمت الزيارة')) + '</span>' : '<span class="pill">' + esc(t('لم يُزر')) + '</span>'; };
                   var lab = function(x){ return '<b>' + esc(x.id) + '</b> <span class="hint" style="margin:0">' + esc((x.sq || '') + ' / ' + (x.sign || '')) + '</span> ' + st(x); };
-                  var a = p[0], b = p[1], aS = svDone(STATE.recs[a.id]), bS = svDone(STATE.recs[b.id]);
+                  var a = p[0], b = p[1], aS = svVisited(STATE.recs[a.id]), bS = svVisited(STATE.recs[b.id]);   /* (V32.8) */
                   var btnA = may2 && !(bS && !aS) ? btn(t('الأصلُ الأولى — ادمج الثانية'),'btn-quiet btn-sm',' data-dupkeep="' + esc(a.id) + '|' + esc(b.id) + '"') : '';
                   var btnB = may2 && !(aS && !bS) ? btn(t('الأصلُ الثانية — ادمج الأولى'),'btn-quiet btn-sm',' data-dupkeep="' + esc(b.id) + '|' + esc(a.id) + '"') : '';
                   return '<div class="card" style="margin:0 0 8px;padding:8px 10px"><div class="wt-row" style="justify-content:space-between;flex-wrap:wrap;gap:6px">'

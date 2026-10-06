@@ -55,7 +55,7 @@ w.POP_SITE = B.id; const pop = w.popHtml();
 T(pop.indexOf('توأمٌ على الإحداثيات نفسِها') > -1 && pop.indexOf(A.id) > -1 && pop.indexOf('data-goto="dq"') > -1, 'نافذةُ النقطة تسمّي توأمَها وتفتح شاشةَ التصحيح');
 w.STATE.recs[A.id] = { id:A.id, at:Date.now(), by:'أحمد', access:'تم الوصول', chals:[], review:'pending' }; w.statBump();
 w.POP_SITE = A.id; T(w.popHtml().indexOf('توأمٌ على الإحداثيات') < 0, 'ولا تنبيهَ على المُسِح نفسِه');
-w.POP_SITE = B.id; T(w.popHtml().indexOf('مُسح') > -1, 'وعلى التوأم يُقال إن نظيرَه مُسح');
+w.POP_SITE = B.id; T(w.popHtml().indexOf('تمت الزيارة') > -1, 'وعلى التوأم يُقال إن نظيرَه «تمت الزيارة» (V32.8)');
 const src = w.mapPaint.toString() + (typeof w.mkPlace === 'function' ? w.mkPlace.toString() : '');   /* (V25.3) جسدُ العلامة في mkPlace */
 T(/todoSat/.test(src) && /#FFB000/.test(src) && /dashArray/.test(src), 'وما لم يُزر يُرسَم بحافّةٍ متقطّعةٍ على القمر الصناعي');
 delete w.STATE.recs[A.id];

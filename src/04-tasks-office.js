@@ -410,7 +410,7 @@ PAGE.co = { m:'المتابعة', t:'الشركات',
         + '</div>')
 
       + cardFlush(t('الشركات') + ' — ' + nm(cos.length),
-          table(['الشركة','ضابط الاتصال','نقاطها','مُسح','المنجز','المتبقي','متعثر','سُلِّم','جوالها','بريدها',''],   /* (V28.5، والبريد V29.0) */
+          table(['الشركة','ضابط الاتصال','نقاطها','تمت الزيارة','المنجز','المتبقي','متعثر','سُلِّم','جوالها','بريدها',''],   /* (V28.5، والبريد V29.0) */
             cos.slice(0, PG_Q ? 5000 : 200).map(function(c){
               var st = coStat(c), ph = coTelOf(c), lz = coLiaisonOf(c), cs = CO_STALL ? (CO_STALL[c] || 0) : 0;
               return [esc(c.length > 30 ? c.slice(0, 29) + '\u2026' : c),
@@ -1911,7 +1911,7 @@ function riskSignals(){
   var late = 0, today = dayKey(Date.now());
   Object.keys(STATE.tasks).forEach(function(k){
     var x = STATE.tasks[k];
-    if (x && x.status !== 'معتمد' && x.when && x.when < today && !svDone(STATE.recs[x.site])) late++;
+    if (x && x.status !== 'معتمد' && x.when && x.when < today && !svVisited(STATE.recs[x.site])) late++;   /* (V32.8) */
   });
   if (late) out.push([late > 10 ? 'bad' : 'wrn', nm(late) + ' ' + t('مهمةً تجاوزت موعدَها'), 'req']);
   var resPct = cfgGet('reservePct') || 0, reserve = Math.round((cfgGet('budCap') || 0) * resPct / 100);
@@ -3527,7 +3527,7 @@ function popHtml(){
     var stateLine = !bHas ? 'لم تُزر بعد'
       : (bStage === 'blocked' ? 'نزل الميدانُ ولم يصل'
       : (rv3 === 'revisit' ? 'رُدّت لزيارةٍ أخرى'
-      : (rv3 !== 'approved' ? 'مُسحت — تنتظر الاعتمادَ التقني'
+      : (rv3 !== 'approved' ? 'تمت الزيارة — تنتظر الاعتمادَ التقني'
       : (ms3 === 'returned' ? 'أعادتها الوزارةُ بملاحظة'
       : (ms3 !== 'approved' ? 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة' : 'اعتُمدت من الوزارة')))));
     return '<div class="pop" id="pkPop">'
@@ -3752,7 +3752,7 @@ function popHtml(){
             step = 'رُدّت لزيارةٍ أخرى'; who = 'المشرفُ الذي زارها';
             if (may('edit')) go = btn('🔍 ' + t('امسحها الآن'),'btn-primary btn-sm',' data-form="' + esc(s.id) + '"');
           } else if (rv2 !== 'approved'){
-            step = 'مُسحت — تنتظر الاعتمادَ التقني'; who = 'المهندس';
+            step = 'تمت الزيارة — تنتظر الاعتمادَ التقني'; who = 'المهندس';
             if (may('approve')) go = btn('✅ ' + t('افتح الاعتماد التقني'),'btn-primary btn-sm',' data-goto="svappr" data-gotosite="' + esc(s.id) + '"');
           } else if (ms2 === 'returned'){
             step = 'أعادتها الوزارةُ بملاحظة — تنتظر المعالجة'; who = 'المهندس';
@@ -3761,7 +3761,7 @@ function popHtml(){
             step = 'اعتُمدت تقنيًّا — تنتظر اعتمادَ الوزارة لإعداد التركيب'; who = 'الوزارة';
             if (may('minapprove')) go = btn('🏛 ' + t('افتح اعتماد الوزارة'),'btn-primary btn-sm',' data-goto="minappr" data-gotosite="' + esc(s.id) + '"');
           } else if (!so){
-            step = 'مُسحت — تنتظر تحديدَ ما سيُركَّب'; who = 'المهندس';
+            step = 'تمت الزيارة — تنتظر تحديدَ ما سيُركَّب'; who = 'المهندس';
             if (may('edit')) go = btn('🧩 ' + t('حدّد القطع'),'btn-primary btn-sm',' data-goto="solution"');
           } else if (so.status !== 'معتمد'){
             step = 'حلُّها مقترحٌ — ينتظر الاعتماد'; who = 'المهندس';
@@ -3776,7 +3776,7 @@ function popHtml(){
           }
           var tw = (!sv && !rec) ? twinOf(s) : null;
           var twinNote = tw ? '<div class="alert warn" style="margin:10px 0 0"><span>' + esc(t('توأمٌ على الإحداثيات نفسِها')) + ': <b>' + esc(tw.id) + '</b> '
-              + '(' + esc((tw.sq || '') + ' / ' + (tw.sign || '')) + ') \u2014 ' + esc(t(svDone(STATE.recs[tw.id]) ? 'مُسح' : 'لم يُزر'))
+              + '(' + esc((tw.sq || '') + ' / ' + (tw.sign || '')) + ') \u2014 ' + esc(t(svVisited(STATE.recs[tw.id]) ? 'تمت الزيارة' : 'لم تتم زيارتها'))
               + '. ' + esc(t('إن كانا مخيمًا واحدًا فادمجهما من «تصحيح البيانات» فلا يُعَدُّ مرتين.')) + '</span>'
               + (maySiteEdit() ? '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F9F9} ' + t('تصحيح البيانات'),'btn-quiet btn-sm',' data-goto="dq"') + '</div>' : '') + '</div>' : '';
           return twinNote + '<div class="alert info" style="margin:10px 0 0"><span>'
@@ -4393,7 +4393,7 @@ function overZoneCards(K){
       + ' style="flex:1 1 150px;min-width:150px;display:flex;flex-direction:column;align-items:flex-start;gap:2px;padding:10px 12px;text-align:start">'
       + '<span class="num" style="font-size:22px;line-height:1.1">' + nm(pct(o.sv, o.n)) + '٪</span>'
       + '<span>' + esc(label) + '</span>'
-      + '<span class="hint" style="margin:0">' + esc(t('مُسح')) + ' <b class="num">' + nm(o.sv) + '</b> ' + esc(t('من')) + ' <b class="num">' + nm(o.n) + '</b>'
+      + '<span class="hint" style="margin:0">' + esc(t('تمت الزيارة')) + ' <b class="num">' + nm(o.sv) + '</b> ' + esc(t('من')) + ' <b class="num">' + nm(o.n) + '</b>'
       +   ' \u00b7 ' + esc(t('متبقٍّ')) + ' <b class="num">' + nm(o.n - o.sv) + '</b></span></button>';
   };
   return '<div class="wt-row" style="flex-wrap:wrap;gap:8px;align-items:stretch">'

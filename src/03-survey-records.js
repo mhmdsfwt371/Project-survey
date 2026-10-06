@@ -849,7 +849,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     if (!parts.length) parts = itemsList().filter(function(i){ return i.z === zone; }).slice(0, 8);
     var rec = STATE.recs[s.id];
 
-    return (!rec ? alertBox('warn','هذا الموقع لم يُمسح بعد — التركيب قبل المسح يُخلّ بالترتيب.') : '')
+    return (!rec ? alertBox('warn','هذا الموقع لم تتم زيارتُه بعد — التركيبُ قبل الزيارة يُخلّ بالترتيب.') : '')
       + card('حالة التركيب',
           '<div class="chips" style="margin:0">'
           + ['قيد التركيب','مُركّب','متعذّر'].map(function(c){
@@ -1873,7 +1873,7 @@ PAGE.req = { m:'الميدان', t:'الطلبات والتوزيع',
           + btn('➕ إنشاء طلب','btn-primary btn-sm',' data-asn="1"')
           + btn('🗺 تحديد من الخريطة','btn-secondary btn-sm',' data-asnmap="1"')
           + '</div>')
-      + '<p class="hint">' + esc(t('«المتاح» ما لم يُمسح ولم يُسند بعد. والأوزانُ والتارجت في شاشة الإعدادات.')) + '</p>';
+      + '<p class="hint">' + esc(t('«المتاح» ما يحتاج زيارةً ولم يُسند بعد. والأوزانُ والتارجت في شاشة الإعدادات.')) + '</p>';
   })();
     return head + (function(){
     var T = STATE.tasks, by = {};

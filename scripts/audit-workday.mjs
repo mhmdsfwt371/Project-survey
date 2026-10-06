@@ -59,8 +59,8 @@ T(R0.length === 25 && R0[0].day === dayKey(d0) && R0[24].day === dayKey(today0),
 console.log('\n══ ٢ · الصفحة ══');
 c = await open();
 T(/ملخص العمل اليومي/.test(c.textContent), 'العنوانُ «ملخص العمل اليومي»');
-T(c.querySelectorAll('.wd-s polyline').length === 4, 'أربعةُ منحنيات: المسح والتركيب والفك والمتعذر');
-T(JSON.stringify(heads()) === JSON.stringify(['اليوم', 'المسح', 'التركيب', 'الفك', 'المتعذر']), 'والجدولُ بأعمدتها: ' + heads().join('، '));
+T(c.querySelectorAll('.wd-s polyline').length === 4, 'أربعةُ منحنيات: تمت الزيارة والتركيب والفك والمتعذر');
+T(JSON.stringify(heads()) === JSON.stringify(['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'المتعذر']), 'والجدولُ بأعمدتها: ' + heads().join('، '));
 T(body().length === 15, 'الصفحةُ الأولى خمسةَ عشرَ يومًا لا أكثر: ' + body().length);
 const tot = w.STATE.sites.length, r1 = body()[0];
 T(r1.cells[1].textContent.startsWith(w.nm(4)) && r1.cells[1].textContent.includes(w.wdyPct(4, tot)), 'والأحدثُ أوّلًا، ولكلِّ رقمٍ نسبتُه من إجمالي النقاط: ' + r1.cells[1].textContent);
@@ -75,9 +75,9 @@ T(body().some(tr => tr.classList.contains('wd-z')), 'والأيامُ بلا ع�
 
 console.log('\n══ ٣ · الإخفاءُ والإظهار ══');
 c = await click(c.querySelector('[data-wdyser="sv"]'));
-T(c.querySelectorAll('.wd-s polyline').length === 3 && !heads().includes('المسح') && c.querySelector('[data-wdyser="sv"]').getAttribute('aria-pressed') === 'false', 'ضغطةٌ على «المسح» تُخفي منحناه وعموده');
+T(c.querySelectorAll('.wd-s polyline').length === 3 && !heads().includes('تمت الزيارة') && c.querySelector('[data-wdyser="sv"]').getAttribute('aria-pressed') === 'false', 'ضغطةٌ على «تمت الزيارة» تُخفي منحناه وعموده');
 c = await click(c.querySelector('[data-wdyser="sv"]'));
-T(c.querySelectorAll('.wd-s polyline').length === 4 && heads().includes('المسح'), 'وضغطةٌ ثانيةٌ تُعيده');
+T(c.querySelectorAll('.wd-s polyline').length === 4 && heads().includes('تمت الزيارة'), 'وضغطةٌ ثانيةٌ تُعيده');
 
 console.log('\n══ ٤ · المرشّحات ══');
 const mon = dayKey(d0).slice(0, 7), inMon = R0.filter(r => r.day.slice(0, 7) === mon).length;
@@ -101,7 +101,7 @@ c = await click(c.querySelector('[data-wdyreset]'));
 
 console.log('\n══ ٥ · التحديثُ الأسبوعيُّ المُصدَّر ══');
 const sec = w.MFU.sections.find(s => s[0] === 'daily'), rep = w.mfuReport();
-T(/ملخص العمل اليومي/.test(sec[1]) && JSON.stringify(sec[2]) === JSON.stringify(['اليوم', 'المسح', 'التركيب', 'الفك', 'المتعذر']), 'بالاسم والأعمدة نفسِها');
+T(/ملخص العمل اليومي/.test(sec[1]) && JSON.stringify(sec[2]) === JSON.stringify(['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'المتعذر']), 'بالاسم والأعمدة نفسِها');
 T(rep.daily.length && rep.daily.every(r => r.length === 5) && rep.daily[0][1] === 4 && rep.daily[0][3] === 1, 'وصفوفُه: اليوم، المسح، التركيب، الفك، المتعذر');
 
 console.log('\n══ ٦ · شريطُ الأيقونات حين تُطوى القائمة ══');

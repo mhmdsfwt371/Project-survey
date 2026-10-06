@@ -101,6 +101,16 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     'مجموعُ المشاعر = الكلُّ في المواقع والمسح والمتعذّر');
   const arafat = Z['عرفات'];
   T(arafat && arafat.sv === VISITED && arafat.stuck === N_STUCK, 'وما زير كلُّه في عرفات يُقرأ على عرفات وحدَها: ' + arafat.sv);
+  /* (V32.8) طلبُ المالك «نفس آلية الحسبة»: كلُّ دالّةٍ تعرض رقمَ «تمت الزيارة» في أيِّ صفحةٍ تعطي الرقمَ نفسَه —
+     الملخّص، والإحصاءُ المشترك (الخريطة والقاعة والمشاعر)، ومتابعةُ الوزارة (البطاقة وتبويبُ المسح وقائمتُه)، ولقطةُ الوزارة،
+     ومجموعُ المشاعر في جدول المسح، وقياسُ الخطة على المشاعر */
+  { const SS = w.siteStats(), KS = w.siteKeyStats(), MK = w.mfuKpis(), SV = w.svStats(), L = w.svListRows('sv').length;
+    const zSum = (SV.zones || []).reduce((a, r) => a + (+r[2] || 0), 0);
+    const wbsZ = Object.keys(KS.zones).reduce((a, g) => a + Math.round(w.wbsSvPct(g) / 100 * KS.zones[g].n), 0);
+    const vals = { 'الملخّص':SS.surveyed, 'الإحصاءُ المشترك':KS.total.sv, 'بطاقةُ الوزارة':MK.sv, 'تبويبُ المسح':SV.O.sv, 'قائمةُ تمت الزيارة':L };
+    T(Object.values(vals).every(v => v === VISITED), 'نفسُ آلية الحسبة في كلِّ الصفحات — «تمت الزيارة» = ' + VISITED + ': ' + JSON.stringify(vals));
+    T(Math.abs(wbsZ - VISITED) <= Object.keys(KS.zones).length, 'وقياسُ الخطة على المشاعر من الرقم نفسِه: ' + wbsZ);
+    T(w.svListRows('rem').length === TOTAL - VISITED, 'والمتبقي = ما لم تتم زيارتُه أصلًا: ' + (TOTAL - VISITED)); }
   const all = await open('over', 'over');
   T(all.indexOf('كلُّ المشاعر') > -1 && kpi(all, 'إجمالي المواقع') === TOTAL && kpi(all, 'متبقٍّ') === TOTAL - VISITED,
     'بلا اختيارٍ: الأرقامُ للكلّ والمتبقّي = الكلُّ − ما زير: ' + (TOTAL - VISITED));

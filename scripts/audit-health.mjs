@@ -18,7 +18,9 @@ export async function measure(){
   let globals = 0; const lens = [];
   for (const n of ast.body){ if (n.type === 'VariableDeclaration') globals += n.declarations.length; if (n.type === 'FunctionDeclaration') lens.push([n.id.name, n.loc.end.line - n.loc.start.line + 1]); }
   lens.sort((a, b) => b[1] - a[1]);
-  writeFileSync('index.html.js', js); const eslint = new ESLint(); const res = await eslint.lintFiles(['index.html.js']); unlinkSync('index.html.js');
+  /* (V32.8) فحصٌ في الذاكرة: كان هذا الجردُ وجردُ النحو يكتبان الملفَّ المؤقتَ نفسَه (index.html.js) ويمحوانه، وعلى مساراتِ الحارس المتوازية
+     يمحو أحدُهما ملفَّ الآخر — فيسقط هذا وحدَه في الحارس الكامل وينجح منفردًا */
+  const eslint = new ESLint(); const res = await eslint.lintText(js, { filePath:'index.html.js' });
   const msgs = res[0] ? res[0].messages : [];
   const src = readdirSync('src').filter(f => /\.js$/.test(f)).map(f => [f, Math.round(statSync('src/' + f).size / 1024)]).sort((a, b) => b[1] - a[1]);
   return { m:{ globals, over300:lens.filter(x => x[1] > 300).length, over150:lens.filter(x => x[1] > 150).length, lintErrors:msgs.filter(x => x.severity === 2).length, lintWarnings:msgs.filter(x => x.severity === 1).length, maxSrcKB:src[0][1] },
