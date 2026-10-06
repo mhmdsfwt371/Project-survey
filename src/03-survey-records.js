@@ -2052,6 +2052,13 @@ function svDone(r){ return svReached(r) && r.review !== 'revisit'; }
    أو يحتاج تصريحًا، أو رُدَّت لزيارةٍ أخرى. «المتبقي» = ما لم يُزَر أصلًا. أمّا سيرُ العمل (الجاهزيةُ للتركيب، والاعتماد، والحلول،
    ومقترحُ أقرب نقطة، والتحدياتُ والقياسات) فيبقى على svDone — المتعذّرُ يحتاج زيارةً أخرى ولا يُركَّب عليه. (سجلُّ القرارات ق-٠٠٧) */
 function svVisited(r){ return !!r && !r.deleted; }
+/* ═══ (V33.0) قرارُ المالك: لا «متعذّر» ولا «بلا تصريح» في العرض ═══
+   النقطةُ التي زيرت ولم يُوصَل إليها (متعذّر، يحتاج تصريحًا، منع دخول، غير موجودة…) أو رُدَّت لزيارةٍ أخرى تُعرض «تمت الزيارة»
+   وتحدّيها «تحتاج زيارة أخرى تقنيًا». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
+   سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
+function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
+function svClean(r){ return svVisited(r) && svDone(r) && r.access === 'تم الوصول' && !svHasChal(r); }
+function svObstacle(r){ return svVisited(r) && !svClean(r); }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){
   if (!r) return '';

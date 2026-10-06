@@ -148,12 +148,15 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */
-  T(new RegExp('هذا الأسبوع تمت زيارة ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
+  T(new RegExp('هذا الأسبوع تمت زيارة ' + w.nm(n7)).test(story) && new RegExp(w.nm(N_STUCK + N_REV) + ' تحتاج زيارة أخرى تقنيًا').test(story) && !/تنتظر قرارَ الوزارة|متعذّر/.test(story), '(V33.0) الأسبوعُ في جملةٍ من الأرقام نفسِها بلا «متعذّر» ولا «قرار الوزارة»: ' + n7 + ' في سبعة أيام');
   T(h.indexOf('kk-story') > -1 && (h.match(/aria-valuenow="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
   T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
   T(new RegExp(w.nm(VISITED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'زيرت والتركيبُ من الكلِّ نفسِه: ' + VISITED + ' / ' + TOTAL);
-  T(new RegExp(w.nm(N_STUCK) + ' متعذّر').test(kk), 'والمتعذّرُ رقمُ الشاشات الأخرى — رقمًا كبيرًا فوق اسمه: ' + N_STUCK);
-  T(new RegExp(w.nm(PENDING) + ' تنتظر الاعتمادَ التقني').test(kk), 'وما ينتظر الاعتمادَ التقني من دورة الحياة: ' + PENDING);
+  T(new RegExp(w.nm(N_STUCK + N_REV) + ' تحتاج زيارة أخرى تقنيًا').test(kk) && !/متعذّر/.test(kk), '(V33.0) وما تحتاج زيارةً أخرى تقنيًا (المتعذّرُ والمردود) رقمًا كبيرًا فوق اسمه، ولا «متعذّر» في الشاشة: ' + (N_STUCK + N_REV));
+  /* (V33.0) طلبُ المالك: صندوقُ «ما ينتظر قرارًا» صار «النقاط بعوائق وبدونها» — الإجماليُّ أوّلًا ثم كلُّ نوع، وبعوائق + بدون + لم تُزَر = الكلّ */
+  { const KO = w.kioskObsTally(); const sumBy = Object.values(KO.by).reduce((a, o) => a + o.ok + o.ob + o.todo, 0);
+    T(h.indexOf('النقاط بعوائق وبدونها') > -1 && KO.T.ok + KO.T.ob === VISITED && KO.T.todo === TOTAL - VISITED && sumBy === TOTAL, 'وصندوقُ «النقاط بعوائق وبدونها»: بدون ' + KO.T.ok + ' + بعوائق ' + KO.T.ob + ' = تمت الزيارة ' + VISITED + '، وكلُّ نوعٍ يُجمَع إلى الكلّ');
+    T(KO.T.ok === w.svListRows('clean').length && KO.T.ob === w.svListRows('chal').length, 'وأرقامُه نفسُ قائمتَي الملخّص «بلا عوائق» و«بعوائق»'); }
   const zsum = Object.values(w.siteKeyStats().zones).reduce((a, o) => a + o.sv, 0);
   T(zsum === VISITED, 'وأشرطةُ المشاعر تُجمَع إلى ما زير: ' + zsum);
   /* «متى نخلّص؟» (V17.83): المشعرُ الذي فيه سجلاتُ آخر أسبوعين له توقّع، والراكدُ يُقال فيه «لا وتيرة» */

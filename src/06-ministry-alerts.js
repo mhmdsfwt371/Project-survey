@@ -7,7 +7,7 @@ var AL_RULES = [
   ['al_revisit', 'alRevisitDays', 'أُعيدت للزيارة ولم تُزَر منذ أكثر من', function(x, r, d){ return !!(r && r.review === 'revisit') && ageDays(r.revAt || r.at) > d; }],
   ['al_nophoto', 'alNoPhotoDays', 'ممسوحة بلا صور منذ أكثر من', function(x, r, d){ return !!(r && svDone(r)) && !!svPhotoState(x, r) && ageDays(r.at) > d; }],
   ['al_assign',  'alAssignDays',  'مُسندة ولم تُزَر منذ أكثر من', function(x, r, d){ if (r) return false; var tk = taskKindOf(x.id, 'visit'); return !!(tk && tk.at && tk.status !== 'منجز' && ageDays(tk.at) > d); }],
-  ['al_stale',   'alStaleDays',   'تعذّر الوصول ولم تُعَد المحاولة منذ أكثر من', function(x, r, d){ return !!(r && r.access && r.access !== 'تم الوصول') && ageDays(r.at) > d; }]
+  ['al_stale',   'alStaleDays',   'تحتاج زيارة أخرى تقنيًا ولم تُعَد منذ أكثر من', function(x, r, d){ return !!(r && r.access && r.access !== 'تم الوصول') && ageDays(r.at) > d; }]
 ];
 function ageDays(ts){ return ts ? Math.floor((Date.now() - (+ts || 0)) / 864e5) : 0; }
 function alRuleDays(k){ var d = +cfgGet(k) || 0; return d > 0 ? d : 0; }
@@ -17,7 +17,8 @@ function alRuleList(rule){
 }
 function alAll(){ return AL_RULES.map(function(rule){ var d = alRuleDays(rule[1]); return { k:rule[0], cfg:rule[1], label:t(rule[2]) + ' ' + nm(d) + ' ' + t('يوم'), days:d, sites:d ? alRuleList(rule) : [], off:!d }; }); }
 function alCard(){
-  var A = alAll(), tot = A.reduce(function(a, b){ return a + b.sites.length; }, 0);
+  /* (V33.0) قرارُ المالك: لا «تصريح» في عرض الوزارة — قاعدةُ التصريح المعلّق تبقى للمكتب ولا تظهر هنا */
+  var A = alAll().filter(function(a){ return !(CUR === 'mfu' && a.k === 'al_permit'); }), tot = A.reduce(function(a, b){ return a + b.sites.length; }, 0);
   return card('\u{1F6A8} ' + t('تنبيهات القواعد') + ' \u2014 ' + nm(tot),   /* (V30.6) */
     (may('settings') ? '<p class="hint" style="margin:0 0 6px">' + esc(t('تُضبَط أيامُها من ثوابت النظام')) + '</p>' : '') + '<div class="mfu-kpis">' + A.map(function(a){ return '<div class="mfu-kpi"' + (a.off ? '' : ' data-svlist="' + a.k + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"') + '><div class="mfu-kpi-l">' + esc(a.label) + (a.off ? '' : ' \u203A') + '</div><div class="mfu-kpi-v"' + (a.sites.length ? ' style="color:#C0392B"' : '') + '>' + (a.off ? '<span class="hint">' + esc(t('معطَّلة')) + '</span>' : nm(a.sites.length)) + '</div></div>'; }).join('') + '</div>');
 }
@@ -57,6 +58,7 @@ function svListRows0(key){
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
             (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
             key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return t(k); }).join('، ') :
+            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '') :
             key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return t(k); }).join('، ') : '')];
   });
 }
@@ -109,13 +111,13 @@ function mfuSurv0(){
   var kpi = function(l, v, col, key){ return '<div class="mfu-kpi"' + (key ? ' data-svlist="' + key + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"' : '') + '><div class="mfu-kpi-l">' + esc(t(l)) + (key ? ' \u203A' : '') + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
   var tb = function(head, rows){ return table(head, rows.map(function(r){ return r.map(function(c){ return esc(String(c == null ? '' : c)); }); })); };   /* جدولُ التطبيق نفسُه */
   var nCampOk = svListRows('campok').length, nNoPh = svListRows('nophoto').length;   /* (V29.6) */
-  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تمت الزيارة', nm(o.sv), '#27AE60', 'sv') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B', 'rem') + kpi('فيها تحديات', nm(o.chal), '#C0392B', 'chal') + kpi('تعذّر الوصول', nm(o.unreach), '#C0392B', 'unreach') + '</div>'
+  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تمت الزيارة', nm(o.sv), '#27AE60', 'sv') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B', 'rem') + kpi('فيها تحديات', nm(o.chal), '#C0392B', 'chal') + kpi('تحتاج زيارة أخرى تقنيًا', nm(o.unreach), '#C0392B', 'unreach') + '</div>'
     + '<div class="mfu-kpis">' + kpi('مخيمات بلا تحديات', nm(nCampOk), '#1E8449', 'campok') + kpi('زيارات بلا صور', nm(nNoPh), nNoPh ? '#C0392B' : '#1E8449', 'nophoto') + (function(){ var nb = svListRows('badphoto').length; return kpi('صور تحتاج إعادة', nm(nb), nb ? '#C0392B' : '#1E8449', 'badphoto'); })() + '</div>'   /* (V30.6) */
     + '<p class="hint" style="margin:0 0 8px">' + esc(t('اضغط أيَّ بطاقةٍ عليها «›» لقائمة نقاطها بالمشعر والنوع وتصديرها إكسل.')) + '</p>'
     + svListPop()
     + card(t('حسب المشعر'), tb(['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'تحديات · تعذّر'], SV.zones.map(function(r){ return [t(r[0]), r[1], r[2], r[3], r[4], r[5] + ' \u00b7 ' + r[6]]; })))   /* ستةُ أعمدةٍ تُقرأ على الجوال */
     + card(t('المشعر والنوع'), tb(['المشعر · النوع', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'التحديات وأبرزها'], SV.detail.map(function(r){ return [t(r[0]) + ' \u00b7 ' + t(r[1]), r[2], r[3], r[4], r[5], r[6] ? r[6] + ' \u00b7 ' + r[7] : '0']; })))   /* ستةُ أعمدة */
-    + card(t('منشأة الجمرات — تأكيد النقاط بالمسح') + ' \u2014 ' + nm(jt.ok) + ' / ' + nm(jt.n), '<p class="hint" style="margin:0 0 8px">' + esc(t('النقطةُ مؤكَّدةٌ إذا وصلها المسحُ الميدانيّ. ما لم يُزر يحتاج زيارة، وما تعذّر يحتاج تصريحًا أو تصحيحًا في السجل.')) + '</p>' + tb(['الدور', 'النقاط', 'مؤكَّدة (بتحديات)', 'لم تُزر', 'تعذّر الوصول', 'نسبة التأكيد'], JM.rows.map(function(r){ return [t(r[0]), r[1], r[2] + ' (' + r[5] + ')', r[4], r[3], r[6]]; })));   /* ستةُ أعمدة */
+    + card(t('منشأة الجمرات — تأكيد النقاط بالمسح') + ' \u2014 ' + nm(jt.ok) + ' / ' + nm(jt.n), '<p class="hint" style="margin:0 0 8px">' + esc(t('النقطةُ مؤكَّدةٌ إذا تمت زيارتُها. ما لم يُزر يحتاج زيارة، وبعضُ ما زير تحتاج زيارةً أخرى تقنيًا.')) + '</p>' + tb(['الدور', 'النقاط', 'مؤكَّدة (بتحديات)', 'لم تُزر', 'تحتاج زيارة أخرى تقنيًا', 'نسبة التأكيد'], JM.rows.map(function(r){ return [t(r[0]), r[1], r[2] + ' (' + r[5] + ')', r[4], r[3], r[6]]; })));   /* ستةُ أعمدة */
 }
 function mfuCos(){
   var C = mfuCompanies(), n = 0, ins = 0, obs = 0, sv = 0, ch = 0; C.forEach(function(c){ n += c.n; ins += c.ins; obs += c.obs; sv += c.sv; ch += c.chal; });
@@ -504,7 +506,7 @@ function mfuDaily(){
     : WDY.mon ? monLbl(WDY.mon)
     : rows.length ? t('من') + ' ' + wdyDayLbl(rows[0].key, { day:'numeric', month:'long', timeZone:'UTC' }) + ' ' + t('إلى') + ' ' + wdyDayLbl(rows[rows.length - 1].key, { day:'numeric', month:'long', timeZone:'UTC' }) : t('كل الأيام');
   if (keep) rng += ' \u00B7 ' + t('من الساعة') + ' ' + wdyHourLbl(+WDY.h1 || 0) + ' ' + t('إلى الساعة') + ' ' + wdyHourLbl(WDY.h2 == null ? 24 : +WDY.h2);
-  var note = '<p class="hint" style="margin:10px 0 0">' + esc(t('النسبة من إجمالي النقاط للمسح والتركيب، ومن النقاط المركبة للفك، ومن زيارات اليوم للمتعذر.')) + ' ' + esc(t('إجمالي النقاط')) + ': ' + nm(B.sv) + '</p>';
+  var note = '<p class="hint" style="margin:10px 0 0">' + esc(t('النسبة من إجمالي النقاط للزيارة والتركيب، ومن النقاط المركبة للفك، ومن زيارات اليوم لما تحتاج زيارة أخرى تقنيًا.')) + ' ' + esc(t('إجمالي النقاط')) + ': ' + nm(B.sv) + '</p>';
   return cardFlush(t('ملخص العمل اليومي') + ' \u2014 ' + rng, flt + lg + st + wdyChart(rows, vis, hourly, B) + tb + pg + note);
 }
 /* ═══ تصديرُ التحديث الأسبوعي (V20.2) ═══
@@ -585,9 +587,9 @@ function mfuReport0(){
 MFU.sections = [
   ['brief', 'الملخص التنفيذي', ['النص']],   /* (V29.9) يُكتَب من الأرقام */
   ['kpis', 'الملخص', ['المؤشر', 'القيمة', 'التفصيل', 'عن الأسبوع الماضي']],
-  ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول']],   /* (V29.1) */
+  ['svz', 'المسح الميداني — حسب المشعر', ['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'تحتاج زيارة أخرى تقنيًا']],   /* (V29.1) */
   ['svd', 'المسح الميداني — المشعر والنوع', ['المشعر', 'النوع', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ']],
-  ['jmr', 'منشأة الجمرات — تأكيد النقاط بالمسح', ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تعذّر الوصول', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد']],   /* (V29.2) */
+  ['jmr', 'منشأة الجمرات — تأكيد النقاط بالمسح', ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تحتاج زيارة أخرى تقنيًا', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد']],   /* (V29.2) */
   ['tasks', 'حالة أبرز المهام', ['المهمة', 'المسار', 'المسؤول', 'الحالة', 'الاستحقاق', 'التحديث', 'مرتبطة بـ']],
   ['blocks', 'المسار | القارئات — المنجز والقادم والمطلوب', ['الكتلة', 'البند', 'التفصيل']],
   ['inst', 'حالة التركيبات', ['المشعر', 'النوع', 'المستهدف', 'رُكّب', 'النسبة']],
@@ -599,7 +601,7 @@ MFU.sections = [
   ['upd', 'آخر التحديثات — هذا الأسبوع', ['متى', 'النوع', 'البند', 'التحديث', 'بواسطة']],
   ['owners', 'الحمل على المسؤولين', ['المسؤول', 'تحديات مفتوحة', 'مهام مفتوحة', 'متأخرة']],
   ['weeks', 'مسار الأسابيع', ['الأسبوع', 'تمت الزيارة', 'تركيب المخيمات', 'تركيب الممرات', 'المعوقات']],
-  ['daily', 'ملخص العمل اليومي — آخر ١٤ يومًا', ['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'المتعذر']]];
+  ['daily', 'ملخص العمل اليومي — آخر ١٤ يومًا', ['اليوم', 'تمت الزيارة', 'التركيب', 'الفك', 'تحتاج زيارة أخرى تقنيًا']]];
 function mfuSecTitle(R, sc){ return sc[0] === 'upd' && R.updTitle ? R.updTitle : sc[1]; }
 function mfuRowsOf(R, key){
   if (key === 'kpis') return R.kpis.map(function(k){ return [k[0], k[1], k[2], k[3] == null ? '' : (k[3] > 0 ? '▲ +' : k[3] < 0 ? '▼ ' : '') + k[3]]; });
@@ -743,7 +745,7 @@ function mfuReportCheck(R){
     if (isFinite(n) && n > 0 && isFinite(p) && Math.abs(p - Math.round(a / n * 100)) > 1) iss.push(t('شركات الخدمة') + ' — ' + r[0] + ': ' + t('نسبة المسح لا تطابق الممسوح'));
   });
   (R.svd || []).forEach(function(r){ var n = +r[2], a = +r[3], b = +r[4]; if ([n, a, b].every(isFinite) && n !== a + b) iss.push(t('المسح الميداني') + ' — ' + r[0] + ' · ' + r[1] + ': ' + t('الإجمالي لا يساوي الممسوح والمتبقي')); });
-  (R.jmr || []).forEach(function(r){ var n = +r[1], a = +r[2], b = +r[3], c = +r[4]; if ([n, a, b, c].every(isFinite) && n !== a + b + c) iss.push(t('منشأة الجمرات') + ' — ' + r[0] + ': ' + t('النقاط لا تساوي المؤكَّدة والمتعذّرة وغير المزورة')); });   /* (V29.2) */
+  (R.jmr || []).forEach(function(r){ var n = +r[1], a = +r[2], b = +r[3], c = +r[4]; if ([n, a, b, c].every(isFinite) && n !== a + b + c) iss.push(t('منشأة الجمرات') + ' — ' + r[0] + ': ' + t('النقاط لا تساوي المؤكَّدة وما تحتاج زيارةً أخرى وغيرَ المزورة')); });   /* (V29.2) */
   if (R.sv && R.svz){ var zt = 0; R.svz.forEach(function(r){ zt += +r[1] || 0; }); if (zt !== R.sv.O.tot) iss.push(t('المسح الميداني') + ': ' + t('مجموع المشاعر لا يساوي الإجمالي')); }
   return iss;
 }
@@ -874,12 +876,12 @@ function mfuSlides(R){
        : pxBox(PX.X0, PX.Y0 + 5500000, PX.W, 700000, pxP('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:1300, c:'7F8C8D' }), { geom:'rect' }))]);
   /* (V29.1) المسحُ الميدانيُّ: نظرةٌ عامةٌ ثم المشعرُ والنوع */
   var SV = R.sv || svStats(), so = SV.O, pcv = function(v){ var n = parseInt(v, 10) || 0; return { t:String(v), c:pxLvl(n).c, bg:pxLvl(n).bg, b:1 }; };
-  S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة المسح', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تمت الزيارة', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تعذّر الوصول', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
-    + pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'تعذّر الوصول'], SV.zones.map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], pcv(r[4]), r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', r[6] ? { t:String(r[6]), c:'A93226' } : '0']; }), { cols:[2.2, 1, 1, 1, 1, 1.2, 1.2], rh:600000, sz:1500, hsz:1500 })]);
+  S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة المسح', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تمت الزيارة', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تحتاج زيارة أخرى تقنيًا', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
+    + pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'تحتاج زيارة أخرى تقنيًا'], SV.zones.map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], pcv(r[4]), r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', r[6] ? { t:String(r[6]), c:'A93226' } : '0']; }), { cols:[2.2, 1, 1, 1, 1, 1.2, 1.2], rh:600000, sz:1500, hsz:1500 })]);
   S.push(['المسح الميداني — المشعر والنوع', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ'], SV.detail.slice(0, 16).map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], r[4], pcv(r[5]), r[6] ? { t:String(r[6]), c:'A93226', b:1 } : '0', r[7]]; }), { cols:[1.3, 1.6, 0.9, 0.9, 0.9, 0.9, 1, 3.3], rh:470000, sz:1150, hsz:1200 })]);
   var JM = jmrConfirm(), jt = JM.tot;   /* (V29.2) */
-  S.push(['منشأة الجمرات — تأكيد النقاط بالمسح', pxCards([['نسبة التأكيد', (jt.n ? Math.round(jt.ok / jt.n * 100) : 0) + '٪', jt.ok + ' من ' + jt.n, '1E8449'], ['مؤكَّدة بالمسح', String(jt.ok), 'وصلها المسح', '163E35'], ['لم تُزر', String(jt.no), 'تحتاج زيارة', '8A6D0B'], ['تعذّر الوصول', String(jt.un), 'تحتاج تصريحًا أو تصحيحًا', 'A93226'], ['فيها تحديات', String(jt.ch), 'من المؤكَّدة', 'A93226']], PX.Y0, 1900000)
-    + (JM.rows.length ? pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تعذّر الوصول', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد'], JM.rows.map(function(r, i){ var last = i === JM.rows.length - 1; return [{ t:r[0], b:1 }, r[1], { t:String(r[2]), c:'1E8449', b:1 }, r[3] ? { t:String(r[3]), c:'A93226', b:1 } : '0', r[4] ? { t:String(r[4]), c:'8A6D0B', b:1 } : '0', r[5] ? { t:String(r[5]), c:'A93226' } : '0', last ? { t:r[6], b:1 } : pcv(r[6])]; }), { cols:[1.8, 1, 1.3, 1.2, 1, 1.2, 1.2], rh:560000, sz:1400, hsz:1400 })
+  S.push(['منشأة الجمرات — تأكيد النقاط بالمسح', pxCards([['نسبة التأكيد', (jt.n ? Math.round(jt.ok / jt.n * 100) : 0) + '٪', jt.ok + ' من ' + jt.n, '1E8449'], ['مؤكَّدة بالمسح', String(jt.ok), 'وصلها المسح', '163E35'], ['لم تُزر', String(jt.no), 'تحتاج زيارة', '8A6D0B'], ['تحتاج زيارة أخرى تقنيًا', String(jt.un), 'تحتاج زيارة أخرى تقنيًا', 'A93226'], ['فيها تحديات', String(jt.ch), 'من المؤكَّدة', 'A93226']], PX.Y0, 1900000)
+    + (JM.rows.length ? pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['الدور', 'النقاط', 'مؤكَّدة بالمسح', 'تحتاج زيارة أخرى تقنيًا', 'لم تُزر', 'فيها تحديات', 'نسبة التأكيد'], JM.rows.map(function(r, i){ var last = i === JM.rows.length - 1; return [{ t:r[0], b:1 }, r[1], { t:String(r[2]), c:'1E8449', b:1 }, r[3] ? { t:String(r[3]), c:'A93226', b:1 } : '0', r[4] ? { t:String(r[4]), c:'8A6D0B', b:1 } : '0', r[5] ? { t:String(r[5]), c:'A93226' } : '0', last ? { t:r[6], b:1 } : pcv(r[6])]; }), { cols:[1.8, 1, 1.3, 1.2, 1, 1.2, 1.2], rh:560000, sz:1400, hsz:1400 })
        : pxBox(PX.X0, PX.Y0 + 2400000, PX.W, 700000, pxP('لا نقاطَ لمنشأة الجمرات في النطاق', { sz:1400, c:'7F8C8D' }), { geom:'rect' }))]);
   var stc = function(v){ return v === 'مكتمل' ? { t:v, c:'1E8449', b:1 } : v === 'متأخر' ? { t:v, c:'A93226', b:1 } : v === 'جارٍ' ? { t:v, c:'8A6D0B', b:1 } : v; };
   var stc2 = function(v){ v = String(v || ''); return /مكتمل/.test(v) ? { t:v, c:'1E8449', b:1 } : /متوقف|متأخر/.test(v) ? { t:v, c:'A93226', b:1 } : /جاري|جارٍ/.test(v) ? { t:v, c:'8A6D0B', b:1 } : v; };

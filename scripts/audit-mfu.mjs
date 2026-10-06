@@ -40,7 +40,7 @@ const camps = w.STATE.sites.filter(x => x.type === 'مخيم' && x.co).slice(0, 
 camps.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at:now, by:'أحمد', access: i === 5 ? 'لم يُصل' : 'تم الوصول', chals: i === 0 ? ['العارضة الحديدية ناقصة أو غير مكتملة'] : i === 1 ? ['المدخل غير واضح — لم يُستدل عليه'] : i === 2 ? ['عائق إنشائي'] : [] }; });
 w.STATE.inss[camps[3].id] = { id:camps[3].id, status:'مُركّب', at:now, by:'سالم' };
 const O = w.mfuObstacles();
-T(O.length === 4 && O.some(o => o.cats.includes('تعذّر الوصول')), 'أربعةُ معوقات: ثلاثةُ تحدياتٍ وتعذّرُ وصول — والمركَّبُ ليس عائقًا');
+T(O.length === 4 && O.some(o => o.cats.includes('تحتاج زيارة أخرى تقنيًا')), '(V33.0) أربعةُ معوقات: ثلاثةُ تحدياتٍ وما تحتاج زيارةً أخرى تقنيًا وصول — والمركَّبُ ليس عائقًا');
 T(w.mfuOwnerOf('العارضة الحديدية ناقصة أو غير مكتملة') === 'كدانة' && w.mfuOwnerOf('المدخل غير واضح — لم يُستدل عليه') === 'أفاقي' && w.mfuOwnerOf('عائق إنشائي') === 'شركة الخدمة', 'الجهاتُ الافتراضية: كدانة وأفاقي وشركة الخدمة');
 const ob = await open('mobs');
 T(/إجمالي المعوقات/.test(ob.textContent) && ob.querySelectorAll('[data-mfuown]').length >= 3, 'بيانُ المعوقات بفئاته والجهةُ تُضبَط من الجدول');
@@ -240,9 +240,9 @@ const ol = w.mfuOwnersLoad();
 T(ol.length > 0 && ol.every(o => o.n && o.all >= 0) && ol[0].late >= (ol[ol.length - 1].late), 'حملُ المسؤولين: تحدياتٌ ومهامٌّ مفتوحةٌ ومتأخرةٌ لكلِّ اسم — المتأخرُ أوّلًا');
 w.MFU.v.snap = { '2026-W37':{ sv:100, campIns:10, corIns:2, obs:50 }, '2026-W38':{ sv:180, campIns:30, corIns:5, obs:40 } };
 const sm9 = await open('mfu');
-T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.test(sm9.textContent) && /الحملُ على المسؤولين/.test(sm9.textContent) && /ما ينتظر الوزارة/.test(sm9.textContent) && !/بانتظار قرار الوزارة/.test(sm9.textContent)
+T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.test(sm9.textContent) && /الحملُ على المسؤولين/.test(sm9.textContent) && !/ما ينتظر الوزارة/.test(sm9.textContent) && !/بانتظار قرار الوزارة/.test(sm9.textContent) && !/متعذّر|تعذّر الوصول|تصريح/.test(sm9.textContent)
   && sm9.textContent.indexOf('نسبة المسح') > -1 && sm9.textContent.indexOf('نسبة المسح') < sm9.textContent.indexOf('الملخّص التنفيذي')
-  && sm9.querySelectorAll('.mfu-kpi[data-svlist]').length >= 13, 'والملخّصُ (V32.5): البطاقاتُ أولًا من «نسبة المسح» وكلُّها تُضغَط، وبطاقةُ «بانتظار قرار الوزارة» شيلت، والبياناتُ تحت');
+  && sm9.querySelectorAll('.mfu-kpi[data-svlist]').length >= 13, 'والملخّصُ (V32.5/V33.0): البطاقاتُ أولًا من «نسبة المسح» وكلُّها تُضغَط، ولا «بانتظار قرار الوزارة» ولا «ما ينتظر الوزارة» ولا «متعذّر» ولا «تصريح»، والبياناتُ تحت');
 const R9 = w.mfuReport();
 T(R9.weeks.length === 2 && R9.owners.length > 0 && R9.kpis.some(k => k[0] === 'بانتظار قرار الوزارة'), 'والتقريرُ يحملها');
 

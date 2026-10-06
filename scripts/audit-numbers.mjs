@@ -58,7 +58,7 @@ console.log('\n══ ١ · المعوقات: الإجماليُّ وجهاتُ�
 { const O = w.mfuObstacles();
   T(O.length === truth.obst, 'عددُ المعوقات = نقاطٌ لم تُركَّب وفي مسحها تحدٍّ أو تعذّرُ وصول (' + O.length + ' / ' + truth.obst + ')');
   T(O.reduce((s, o) => s + o.cats.length, 0) === truth.catInst, 'ومجموعُ الفئات = مجموعُ ما سُجّل على النقاط (' + truth.catInst + ')');
-  T(O.filter(o => o.cats.indexOf('تعذّر الوصول') > -1).length === truth.notReached, 'ومتعذّرُ الوصول يُعَدّ فئةً مرةً لكلِّ نقطة (' + truth.notReached + ')');
+  T(O.filter(o => o.cats.indexOf('تحتاج زيارة أخرى تقنيًا') > -1).length === truth.notReached, '(V33.0 بمصطلح المالك) وما تحتاج زيارةً أخرى تقنيًا يُعَدّ فئةً مرةً لكلِّ نقطة (' + truth.notReached + ')');
   w.goPage('mfu'); w.render(1); await wait(40);
   const tb = d.querySelector('[data-ptab="mfu:mobs"]'); if (tb){ tb.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(60); }
   const toNum = s => +String(s || '').replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[^0-9]/g, '') || 0;
