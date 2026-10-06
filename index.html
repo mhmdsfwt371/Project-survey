@@ -30225,6 +30225,8 @@ function tabCur(pid){
   return PTAB[pid];
 }
 
+/* (V33.0) علامةُ «لم يُعالَج هنا — تابِع» لأجزاء معالجَي النقرات: دالّةٌ فارغةٌ هويتُها فريدة (لا متغيرَ عامًّا جديدًا) */
+function CLICK_NEXT(){}
 /* ═══ البيانات: من أين تأتي وأين تُقرأ ═══
    الشاشةُ التي تعرض أرقامًا بلا نسبٍ تُتَّهم — «الـ٢٠٨ دي جاية منين؟».
    فصار تحت عنوان كلِّ شاشةٍ سطرُ نسبٍ: من أين تأتي بياناتُها (أيُّ شاشةٍ
@@ -30313,7 +30315,7 @@ var PG_USE = null;
 function pageUse(){
   var day = dayKey();
   if (!PG_USE || PG_USE.day !== day){
-    var raw = null; try { raw = JSON.parse(lsGet('nsk14.pg') || 'null'); } catch (e){}
+    var raw = null; try { raw = JSON.parse(lsGet('nsk14.pg') || 'null'); } catch (e){ LS_ERR = e; }
     PG_USE = (raw && raw.day === day && raw.n) ? raw : { day:day, n:{} };
   }
   return PG_USE;
@@ -32857,7 +32859,7 @@ function enterShell(){
     var bmsg = 'توقّفٌ مفاجئٌ في الإقلاع السابق — المرحلة: ' + (bp.stage || '؟') + ' · الصفحة: ' + (bp.page || '؟') + ' · المرّات: ' + BOOT_GUARD.crashes + ' · ' + appVer();
     try { logEventQuiet(bmsg); } catch (e){ LS_ERR = e; }   /* صحةُ النظام على الجهاز */
     try { setTimeout(function(){ try { logEvent(bmsg, ''); } catch (e2){ LS_ERR = e2; } }, 3000); } catch (e){ LS_ERR = e; }   /* وسجلُّ الأحداث في المكتب — بعد استقرار الدخول */
-    setTimeout(function(){ try { toast(t('فُتح التطبيقُ بوضعٍ خفيفٍ بعد توقّفٍ مفاجئ — كلُّ شيءٍ محفوظ')); } catch (e){} }, 1200);
+    setTimeout(function(){ try { toast(t('فُتح التطبيقُ بوضعٍ خفيفٍ بعد توقّفٍ مفاجئ — كلُّ شيءٍ محفوظ')); } catch (e){ LS_ERR = e; } }, 1200);
   }
   if (sp && sp.cur && sp.cur !== 'site' && ((typeof FIELD_PAGES === 'object' && FIELD_PAGES[sp.cur]) || PAGE[sp.cur]) && seesPage(sp.cur)){
     CUR = sp.cur;
@@ -32920,6 +32922,11 @@ function actList(){
     src = String(onDocClick)
         + (typeof clickTables === 'function' ? String(clickTables) : '')
         + (typeof clickA === 'function' ? String(clickA) : '');
+    /* (V33.0) المعالجان صارا أجزاءً: نصُّ الأجزاء يُقرأ كذلك — وإلا ظنَّ الحارسُ كلَّ زرٍّ غيرَ مربوطٍ وابتلعه */
+    for (var pi = 1; pi <= 30; pi++){
+      if (typeof window['onDocClickPart' + pi] === 'function') src += String(window['onDocClickPart' + pi]);
+      if (typeof window['clickAPart' + pi] === 'function') src += String(window['clickAPart' + pi]);
+    }
   } catch (e){ LS_ERR = e; }
   var found = src.match(/data-[\w-]+/g) || [];
   ACTS_CACHE = found.length >= 20 ? found.filter(function(v, i){ return found.indexOf(v) === i; })
@@ -33004,6 +33011,19 @@ function clickTables(e){
 }
 /* ═══ نقراتٌ منقولةٌ من onDocClick لتبقى تحت الحدّ — ترجع true إن التقطت الحدث ═══ */
 function clickA(e){
+  /* (V33.0) كان ٦٦٥ سطرًا؛ صار أجزاءً بالترتيب نفسِه — يُرجَع ما أرجعه الجزءُ الذي عالج النقرة */
+  var r;
+  if ((r = clickAPart1(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart2(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart3(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart4(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart5(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart6(e)) !== CLICK_NEXT) return r;
+  if ((r = clickAPart7(e)) !== CLICK_NEXT) return r;
+}
+/* clickA — الجزء 1 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: assist، p، navtab، gt، g، open، nav، mode، pop، bst، bfsave، pq، help، exp، apick، asn، co، cofilt، comode، mfilt */
+function clickAPart1(e){
   var asb = e.target.closest('[data-assist]');
   if (asb){
     if (asb.hasAttribute('data-p')){ ASSIST_OPEN = false; }
@@ -33102,9 +33122,14 @@ function clickA(e){
       sh.off(); render(); return true;
     }
   }
-  if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return true; }
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 2 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: print، sel، boxcopy، briefcopy، svlist، svpopclose، svpopxls، expscope، expselgo، mfuexp، chaltask، wpwk، wpdo، wpact، wpcancel، wpedit، wpsave، wpdel، wpnext، wptask */
+function clickAPart2(e){
+    if (CUR === 'map' && e.target.closest('.mapcanvas')){ POP_OPEN = true; render(); return true; }
 
-  if (e.target.closest('[data-print]')){ try{ window.print(); }catch(err){} return true; }
+  if (e.target.closest('[data-print]')){ try{ window.print(); }catch (err){ LS_ERR = err; } return true; }
 
   var b = e.target.closest('.btn, .chip');
   if (b && !b.closest('#nav') && !b.hasAttribute('href')){
@@ -33196,7 +33221,12 @@ function clickA(e){
     }
     return true;
   }
-  if (e.target.closest('[data-reqtask]')){
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 3 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: reqtask، svq، svqx، svqk، svqdelask، svqdelx، svqdel، svqqx، svqcancel، svqch، svqsave، sqall، mfupadd، mfuprm، mfupren، mfuprn، mfuprst، chupd، chupdtxt، chupdx، chupdgo، chalpop، chalpopx، mfz، mft، mfuedit، mfucosall، wdyser، wdypg، wdyreset، mfuchal، mfureq، mfudel، iosnudge، idbretry، simapply، simot، geojson */
+function clickAPart3(e){
+    if (e.target.closest('[data-reqtask]')){
     var rq = mfuList('req').filter(function(x){ return x.id === e.target.closest('[data-reqtask]').getAttribute('data-reqtask'); })[0];
     if (!rq) return true;
     if (wtAdd({ n:'طلب الوزارة: ' + String(rq.t || '').slice(0, 80), track:'طلبات الوزارة', due:dayKey(Date.now() + 7 * 864e5), req:'R:' + rq.id, upd:rq.s || '' })){
@@ -33289,7 +33319,13 @@ function clickA(e){
     cfgSet('otRate', null, 1); logEvent('أُلغي معاملُ الإضافي — يُحتسب كلُّ شيءٍ بالسعر نفسه'); toast(t('أُلغي الإضافي — المعامل ١')); render(1); return true;
   }
   if (e.target.closest('[data-geojson]')){ geoJsonExport(); return true; }
-  if (e.target.closest('[data-lessonadd]')){
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 4 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: lessonadd، retroadd، stakeadd، pmoedit، pmoedcancel، pmodel، basemapdl، basemaprm، scan، scanx، sun، budalert، pilot، kkview، pmz، site، wtmeet، wbsxl، minopen، minst، minok، minnote، minback، minre، stkopen، stkf، stkopenback، stknote، stkback، stkok، stkreopen */
+function clickAPart4(e){
+  var sid, pid, px;   /* تُكتب هنا قبل أن تُقرأ */
+    if (e.target.closest('[data-lessonadd]')){
     var lt = pmoVal('lsT'); if (!lt){ toast(t('اكتب عنوان الدرس')); return true; }
     var lid = pmoEdId('lessons', 'L' + Date.now().toString(36)), led = PMO_ED.sec === 'lessons'; PMO_ED = { sec:'', id:'' };
     if (pmoPut('lessons', lid, { t:lt, d:pmoVal('lsD'), w:pmoVal('lsW'), c:pmoVal('lsC'), a:pmoVal('lsA'), o:pmoVal('lsO'), at:Date.now(), by:STATE.meta.name || '' })){ toast(t(led ? 'حُفظ التعديل' : 'سُجّل الدرس')); render(1); }
@@ -33383,7 +33419,15 @@ function clickA(e){
     return true;
   }
   var skr = e.target.closest('[data-stkreopen]');
-  if (skr){ stuckReopen(skr.getAttribute('data-stkreopen')); toast(t('أُعيد فتحُه')); render(1); return true; }
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 5 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: stkreopen، wttab، wttrack، wtf، wtopen، wtclose، wtstat، wtnoteadd، wtsave2، wte2، wttools، wbsdos، dosclose، dossave، dositem، dosdel، dosfile، dosfdel، tour، tourclose، tourstop، tourprev، tournext، tourgo، phbulk، bugopen، bugclose، bugkind، bugsend، brief، briefall، trnew، trcost، trh، tritem، tridel، trdel، dqnoco، dqsplit، usrlog، … */
+function clickAPart5(e){
+  var a = e.target.closest('[data-p]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var skr = e.target.closest('[data-stkreopen]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var pr, sh, ni;   /* تُكتب هنا قبل أن تُقرأ */
+    if (skr){ stuckReopen(skr.getAttribute('data-stkreopen')); toast(t('أُعيد فتحُه')); render(1); return true; }
   var wtb = e.target.closest('[data-wttab]');
   if (wtb){ WT_TAB = wtb.getAttribute('data-wttab'); render(1); return true; }
   var wtk = e.target.closest('[data-wttrack]');
@@ -33478,7 +33522,16 @@ function clickA(e){
   var slg = e.target.closest('[data-sitelog]');
   if (slg){ toast(t('يُجلَب سجلُّ النقطة…')); siteLogFetch(slg.getAttribute('data-sitelog')); return true; }
   var bgf = e.target.closest('[data-bugf]');
-  if (bgf){ BUG_F = bgf.getAttribute('data-bugf'); render(1); return true; }
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 6 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: bugf، bugdone، bugok، bugdec، bugno، wtxl، wtmeetstart، wtmeetprev، wtmeetnext، wtmeetgo، wtmeetend، wtmeetexit، wtgo، wtwbs، wtdone، wtdel، wtnew، wtncancel، wtnsave، wtreset، wbstog، wbsedit، wbscancel، wbssave، wbse، wbsdel، wbsreset، wbsf، fl، fr، fz، tfw، tfwcamp، tfwcampx، tfwd، poil، bedstart، bedsave، bedcancel، beddel، … */
+function clickAPart6(e){
+  var pk = e.target.closest('[data-pop]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var bst = e.target.closest('[data-bst]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var bgf = e.target.closest('[data-bugf]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var wid;   /* تُكتب هنا قبل أن تُقرأ */
+    if (bgf){ BUG_F = bgf.getAttribute('data-bugf'); render(1); return true; }
   var bdn = e.target.closest('[data-bugdone]');
   if (bdn){ bugClose(bdn.getAttribute('data-bugdone')); return true; }
   var bok = e.target.closest('[data-bugok]');
@@ -33573,7 +33626,14 @@ function clickA(e){
   var ft = e.target.closest('[data-ft]');
   if (ft){ v = ft.getAttribute('data-ft');
            FILT.type = (FILT.type === v) ? '' : v; LIST_SHOWN = LIST_PAGE; render(1);
-           if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }   /* (V29.8) */
+           if (CUR === 'map' && MAP){ mapPaint(); mapFitFiltered(); } return true; }
+  return CLICK_NEXT;
+}
+/* clickA — الجزء 7 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: fw، ovz، wnx، kiosk، dupkeep، dupundo، kkz، svd، svdxls، fly، form، edit، sitesave، sitecancel، sitedel، sitedelgo، sitehide، sitehidego، siterestore، more، morek، sq، fsq، evfetch، evrange، evolder، evclr، wradd، wrdone، wrdonecancel، wrdonego، wrcancel، survst، grole */
+function clickAPart7(e){
+  var pr, sk;   /* تُكتب هنا قبل أن تُقرأ */
+     /* (V29.8) */
   var fw = e.target.closest('[data-fw]');
   if (fw){ FILT.work = fw.getAttribute('data-fw'); LIST_SHOWN = LIST_PAGE; render(1);
            if (CUR === 'map' && MAP) mapPaint(); return true; }
@@ -33668,9 +33728,22 @@ function clickA(e){
   if (grl){ GUIDE.role = grl.getAttribute('data-grole'); render(1); return true; }
   return false;
 }
+
 function onDocClick(e){
-  /* نقراتُ الجداول والنوافذ أوّلًا: خصائصُها دقيقةٌ لا تلتبس، وكانت تُقرَأ
-     بعد مئةِ فرعٍ فيخطفها فرعٌ أعمُّ قبلها. */
+  /* (V33.0) كان ٩٨٤ سطرًا؛ صار أجزاءً بالترتيب نفسِه — الجزءُ الذي يعالج النقرةَ يُنهيها */
+  if (onDocClickPart1(e) !== CLICK_NEXT) return;
+  if (onDocClickPart2(e) !== CLICK_NEXT) return;
+  if (onDocClickPart3(e) !== CLICK_NEXT) return;
+  if (onDocClickPart4(e) !== CLICK_NEXT) return;
+  if (onDocClickPart5(e) !== CLICK_NEXT) return;
+  if (onDocClickPart6(e) !== CLICK_NEXT) return;
+  if (onDocClickPart7(e) !== CLICK_NEXT) return;
+  if (onDocClickPart8(e) !== CLICK_NEXT) return;
+  if (onDocClickPart9(e) !== CLICK_NEXT) return;
+}
+/* onDocClick — الجزء 1 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: pq، pwa، listsok، lists، cfgok، crsave، asnrole، usradd، swnow، swlater، back، ipadd، ipclr، coadd، codel، ptab، goto، gotosite، svast، svappr، svrevisit، svrevisitcancel، svrevisitgo، xlspage */
+function onDocClickPart1(e){
   if (clickTables(e)) return;
   var pqb = e.target.closest('[data-pq]');
   if (pqb && pqb.getAttribute('data-pq') === '0'){ QUEUE_OPEN = false; render(1); return; }
@@ -33781,7 +33854,12 @@ function onDocClick(e){
       toast(idR + ' \u00b7 ' + t('رُدَّت — عادت إلى مهام المشرف')); SVA_REV = ''; }
     render(1); return; }
   if (e.target.closest('[data-xlspage]')){ toast(t('يُجهَّز إكسلُ الصفحة كاملةً…')); xlsPage(); return; }
-  var brl = e.target.closest('[data-boardrole]');
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 2 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: boardrole، ngo، site، golayer، nsite، nid، provsync، provcancel، provcancelgo، usrreq، svph، svsol، svsolcancel، svsolgo، ipfill، svmore، pwcopy، pwclose، pnddel، pndgo، bulkchk، bulkgo، ghrun، evsite، provlocal، ghsave، ghclear، waasn، waasnx، watask، routego، attin، attout، pwgo، pwx، pwopen، provwipe، seedgo، dissave، mntsave، … */
+function onDocClickPart2(e){
+    var brl = e.target.closest('[data-boardrole]');
   if (brl){ BOARD_ROLE = brl.getAttribute('data-boardrole') || ''; render(1); return; }
   var nrow = e.target.closest('.notif-rows tbody tr');
   if (nrow && !e.target.closest('button,a,input,select')){
@@ -33893,7 +33971,12 @@ function onDocClick(e){
     }
     go(); return;
   }
-  if (e.target.closest('[data-provclear]')){ provClear(); return; }
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 3 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: provclear، usrpw، usrmerge، roleadd، roledel، pmrole، pmk، pmsave، pmreset، pmrefresh، presfetch، pzall، pzretry، pzdrop */
+function onDocClickPart3(e){
+    if (e.target.closest('[data-provclear]')){ provClear(); return; }
   var upw = e.target.closest('[data-usrpw]');
   if (upw){
     var uu9 = (STATE.users || {})[upw.getAttribute('data-usrpw')] || {};
@@ -33953,7 +34036,13 @@ function onDocClick(e){
     return;
   }
   var pzd = e.target.closest('[data-pzdrop]');
-  if (pzd){
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 4 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: pzdrop، bkref، copick، coren، asnq، hsedel، rkdel، regk، regs، regedit، regsave، regto، regwhen، regdel، wredit، wresave، wreitem، rkadd، hogo، hodoc، pkadd، pkrm، patapply، patsave، patdel، svreopen، svreopencancel، svreopengo، evcat، usredit، usrdel، usract، usrren، usru، usrsave، usrn، usrr، usrj، usrs، usrd، … */
+function onDocClickPart4(e){
+  var pzd = e.target.closest('[data-pzdrop]');   /* بحثٌ صرف — يُعاد حسابُه */
+    if (pzd){
     var pd = (STATE.poison || [])[+pzd.getAttribute('data-pzdrop')];
     if (pd){ STATE.poison.splice(+pzd.getAttribute('data-pzdrop'), 1); logEvent('أُسقطت وثيقةٌ معزولة — ' + pd.kind + '/' + pd.id); CORE.saveLocal(); render(1); }
     return;
@@ -34330,7 +34419,12 @@ function onDocClick(e){
     photoDelete(pid, why);
     return;
   }
-  if (e.target.closest('[data-pretry]')){
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 5 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: pretry، acc، chal، fst */
+function onDocClickPart5(e){
+    if (e.target.closest('[data-pretry]')){
     while (PHOTO_FAIL.length) PHOTO_Q.push(PHOTO_FAIL.shift());
     toast(t('أُعيدت إلى الطابور'));
     photoFlush(); render(1); return;
@@ -34345,13 +34439,26 @@ function onDocClick(e){
     return;
   }
   var fs = e.target.closest('[data-fst]');
-  if (fs){ FORM.status = fs.getAttribute('data-fst'); render(1); return; }
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 6 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: fst، svsave، svnext، inssave، insdraft، fix */
+function onDocClickPart6(e){
+  var fs = e.target.closest('[data-fst]');   /* بحثٌ صرف — يُعاد حسابُه */
+    if (fs){ FORM.status = fs.getAttribute('data-fst'); render(1); return; }
   if (e.target.closest('[data-svsave]')){ svSave(0); return; }
   if (e.target.closest('[data-svnext]')){ svSave(1); return; }
   if (e.target.closest('[data-inssave]')){ insSave(0); return; }
   if (e.target.closest('[data-insdraft]')){ insSave(1); return; }
   var fxb = e.target.closest('[data-fix]');
-  if (fxb){ fixOpen(fxb.getAttribute('data-fix') === '0' ? '' : fxb.getAttribute('data-fix')); return; }
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 7 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: fix، fixsend، apok، apno، appr، rej، solappr، solrej، solgo، pwa، swclear، probe، wa، wacopy، fhpos، fhcopy، fhwa، fhprep، pull، svcopy، nschal، mailsend، mailco، wasend، wapick، xls، expgo، k، kmz */
+function onDocClickPart7(e){
+  var fxb = e.target.closest('[data-fix]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var pr, ix, k, why;   /* تُكتب هنا قبل أن تُقرأ */
+    if (fxb){ fixOpen(fxb.getAttribute('data-fix') === '0' ? '' : fxb.getAttribute('data-fix')); return; }
   var fxs = e.target.closest('[data-fixsend]');
   if (fxs){ fixSend(fxs.getAttribute('data-fixsend')); return; }
   var apk = e.target.closest('[data-apok]'), apn = e.target.closest('[data-apno]');
@@ -34433,8 +34540,13 @@ function onDocClick(e){
   }
   var kz = e.target.closest('[data-kmz]');
   if (kz){ kmzExport(kz.getAttribute('data-kmz')); return; }
-
-  var tp = e.target.closest('[data-tpl]');
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 8 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: tpl، impgo، impx، usrrolef، months، crew، role، kmz، repside، repgo، reppack، sop، hseadd، ncradd، ncrok، ipcadd، ipcok، ipcpay، baseset، chgadd، chgok، chgno، stab، perfview، lasn، dsch، ddone، navx، move، movex، smark، fmark، psel، insform، asn، drvsave، drvtest، help، locate، newsite، … */
+function onDocClickPart8(e){
+  var pid;   /* تُكتب هنا قبل أن تُقرأ */
+    var tp = e.target.closest('[data-tpl]');
   if (tp){ impTemplate(tp.getAttribute('data-tpl')); return; }
   if (e.target.closest('[data-impgo]')){
     var n = impApply();
@@ -34543,7 +34655,15 @@ function onDocClick(e){
   var ncp = e.target.closest('[data-nscopick]');
   if (ncp){ NEWSITE.co = ncp.getAttribute('data-nscopick'); NEWSITE.coReq = '';
             NS_CO_OPEN = false; render(1); return; }
-  if (e.target.closest('[data-nscoreq]')){ nsCoRequest(); return; }
+  return CLICK_NEXT;
+}
+/* onDocClick — الجزء 9 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
+   يعالج: nscoreq، pull، nssave، apick، akind، asnmode، asngo، asnload، asnmap، selmap، selmode، selall، selnone، asnq، sitesall، myonly، mymap، tkok، tkrm، sat، gmsave، gmclear، m3، mfilt، mclear، co، cogo، c، exp، expall */
+function onDocClickPart9(e){
+  var aq = e.target.closest('[data-asnq]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var apk = e.target.closest('[data-apok]');   /* بحثٌ صرف — يُعاد حسابُه */
+  var L;   /* تُكتب هنا قبل أن تُقرأ */
+    if (e.target.closest('[data-nscoreq]')){ nsCoRequest(); return; }
   if (e.target.closest('[data-pull]')){
     /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
        أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
@@ -34651,7 +34771,9 @@ function onDocClick(e){
     Array.prototype.forEach.call(document.querySelectorAll('.expCk'), function(c){ c.checked = on; });
     return;
   }
+  return CLICK_NEXT;
 }
+
 document.addEventListener('click', onDocClick);
 
 /* الحقلُ في خليةٍ وسمُه عنوانُ عموده وصفُّه — يُنسَب إليهما فيقرؤه القارئُ الصوتي */
