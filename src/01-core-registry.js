@@ -1853,7 +1853,8 @@ var FB = {
             var ex = siteFind(v.id);
             if (ex){
               if (v.hidden || v.deleted){ STATE.sites = STATE.sites.filter(function(x){ return x.id !== v.id; }); add++; return; }   /* (V25.5) والمحذوفُ نهائيًّا */
-              if (+v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
+              var ovm = (STATE.siteOv || {})[v.id];   /* (V32.2) موضعٌ حرّكه أحدٌ (تجاوز) يغلب إحداثيةَ الوثيقة */
+              if (!(ovm && +ovm.lat && +ovm.lng) && +v.lat && +v.lng && (+ex.lat !== +v.lat || +ex.lng !== +v.lng)){ ex.lat = +v.lat; ex.lng = +v.lng; add++; }
               if (v.name && ex.name !== v.name){ ex.name = v.name; add++; }
             }
             return;

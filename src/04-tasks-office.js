@@ -4215,11 +4215,16 @@ function moveApply(lat, lng){
   if (!s) { MOVE_ID = ''; return; }
   var old = { lat:s.lat, lng:s.lng };
   s.lat = lat; s.lng = lng;
-  var rec = STATE.recs[s.id] || { id:s.id, at:Date.now(), by:STATE.meta.name || '' };
-  rec.loc = { lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' };
-  /* بياناتٌ جديدةٌ بعد الاعتماد تحتاج نظرةً ثانية */
-  if (rec.review === 'approved' || !rec.review) rec.review = 'pending';
-  CORE.set('recs', s.id, rec);
+  /* (V32.2) بلاغُ المالك: «حرّكت نقاط الزايدي من الآيفون ولم تظهر على الأندرويد ولم تُحفَظ». كان التحريكُ يُكتَب في سجلِّ الزيارة
+     (rec.loc) وحدَه، ولا شيءَ يطبّقه على النقطة في الأجهزة الأخرى ولا بعد إعادة الفتح — وكان يُنشئ «زيارةً» لنقطةٍ لم تُزَر فتُحسَب
+     ممسوحة. صار يُكتَب تجاوزًا للموقع (sites) تطبّقه كلُّ الأجهزة، ويغلب إحداثيةَ الوثيقة الأصلية، ولا يُنشئ زيارة. */
+  siteOvSet(s.id, { lat:lat, lng:lng, movedFrom:old, movedAt:Date.now(), movedBy:STATE.meta.name || '' });
+  var rec = STATE.recs[s.id];
+  if (rec){   /* لها زيارةٌ فعلًا: يبقى الأثرُ فيها وتعود للمراجعة كما كان */
+    rec = Object.assign({}, rec, { loc:{ lat:lat, lng:lng, from:old, at:Date.now(), by:STATE.meta.name || '' } });
+    if (rec.review === 'approved' || !rec.review) rec.review = 'pending';
+    CORE.set('recs', s.id, rec);
+  }
   logEvent('تحريك موقع — ' + s.id, s.id);
   toast(t('حُرِّك الموقع') + ' · ' + nm(Math.round(distKm(old, { lat:lat, lng:lng }) * 1000)) + ' ' + t('م'));
   MOVE_ID = '';
@@ -4343,7 +4348,13 @@ var STAT_CACHE = null, STAT_VER = 0;
 
 /* الفهرسُ يُبطَل مع كلِّ تغيُّرٍ في المهامّ — وstatBump يُستدعى بعد كلِّ تغيير */
 function statBump(){
-  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); }
+  TK_IX = null; STAT_CACHE = null; STAT_VER++; DB.memoReset(); recLocApply(); }
+/* (V32.2) ما حُرِّك قبل V32.2 كُتب في الزيارة (rec.loc) وحدَها — يُطبَّق هنا على النقطة في كلِّ جهازٍ ما لم يكن لها تجاوزُ موضع */
+function recLocApply(){
+  var R = STATE.recs || {}, ov = STATE.siteOv || {};
+  Object.keys(R).forEach(function(id){ var r = R[id], L0 = r && r.loc; if (!L0 || !(+L0.lat) || !(+L0.lng)) return; var o = ov[id]; if (o && +o.lat && +o.lng) return;
+    var x = siteFind(id); if (x && (+x.lat !== +L0.lat || +x.lng !== +L0.lng)){ x.lat = +L0.lat; x.lng = +L0.lng; } });
+}
 
 /* ═══ التوزيعُ بالمشعر والنوع — من حلقةٍ واحدة ═══
    كانت صفوفُ الجدول تُحسَب في مكانٍ والإجماليُّ في آخر (كاشٌ قد يكون أقدمَ
