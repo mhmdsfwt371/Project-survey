@@ -3409,7 +3409,9 @@ function loginBg(){
   /* (V32.9) الوحدة ١٠ — أوّلُ فتحٍ أسرع: الخلفيةُ كانت ترسم ١٬٩٠٠ نقطةٍ في كلِّ إطارٍ بلا توقّف وتكتب العدّادَ في الصفحة كلَّ إطار —
      نحوُ ثانيةٍ من المعالج على جوالٍ متوسطٍ قبل ظهور نموذج الدخول وأثناء الكتابة فيه. صارت: دورةً واحدةً ثم تقف على الصورة الكاملة،
      بعشرين إطارًا في الثانية، والعدّادُ يُكتب حين يتغيّر، وتبدأ بعد ظهور النموذج؛ والجهازُ الضعيفُ يرى الصورةَ الكاملةَ ثابتة. */
-  try{ if ((navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 4) || (navigator.deviceMemory && navigator.deviceMemory <= 3)) slow = true; }catch(e){}
+  /* (V33.9) بلاغُ المالك «كانت ديناميك في الفتحة وبقت ثابتة»: قاعدةُ «المعالجُ ≤ ٤ أنوية = صورةٌ ثابتة» كانت تُطفئ الحركةَ على الآيفون
+     (يُبلّغ أربعةً أو أقل) — أُلغيت؛ ولا تُطفَأ إلا بإعداد «تقليل الحركة». والحركةُ مستمرةٌ ما دامت شاشةُ الدخول ظاهرة (وأثناء «يُستأنَف الدخول»)
+     بعشرين إطارًا، وتقف وحدَها حين تختفي الشاشة — فلا تأكل المعالجَ بعد الدخول كما كان قبل V32.9. */
 
   function build(){
     var w = cv.width = cv.offsetWidth * (window.devicePixelRatio || 1);
@@ -3454,16 +3456,18 @@ function loginBg(){
   build();
   if (slow){ draw(1.2); return; }
 
+  function visible(){ return document.getElementById('loginCv') === cv && cv.offsetWidth > 0; }   /* الشاشةُ ظاهرة؟ (مخفيّةٌ بعد الدخول = عرضُها صفر) */
   function tick(ts){
+    if (!visible()){ raf = 0; return; }   /* بعد الدخول تقف وحدَها */
     if (ts && ts - lastT < 48){ raf = requestAnimationFrame(tick); return; }   /* عشرون إطارًا في الثانية تكفي زينة */
     lastT = ts || 0;
-    lit += 0.0132;
-    if (lit >= 1.13){ draw(1.2); raf = 0; return; }   /* دورةٌ واحدةٌ ثم تقف على الصورة الكاملة — كلُّ النقاط مضاءةٌ والعدّادُ = الكلّ (أقصى عتبةٍ ١٫١٢) */
-    draw(lit);
+    lit += 0.0066;
+    if (lit > 1.3) lit = 0;   /* (V33.9) دورةٌ مستمرة كما كانت: تضيء حتى تكتمل، تثبت لحظة، ثم تعود */
+    draw(Math.min(1.2, lit));
     raf = requestAnimationFrame(tick);
   }
   draw(0);
-  setTimeout(function(){ if (document.getElementById('loginCv') === cv) raf = requestAnimationFrame(tick); }, 400);   /* بعد ظهور النموذج */
+  setTimeout(function(){ if (visible()) raf = requestAnimationFrame(tick); }, 150);
 
   window.addEventListener('resize', function(){ build(); }, { passive:true });
   cv.__stop = function(){ cancelAnimationFrame(raf); };
