@@ -842,6 +842,19 @@ body.kiosk .kk-story{font-size:21px}
 /* متابعةُ الوزارة (V20.0) — بألوان العرض الأسبوعي: ذهبيٌّ وأخضرُ وكهرمانيٌّ وأحمر */
 .mfu-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:0 0 12px}
 .mfu-kpi{border:1px solid #D7A56266;border-top:4px solid #C8943E;border-radius:12px;padding:10px 12px;background:var(--surface)}
+/* (V33.8) موجزُ الموسم في صفحة الوزارة */
+.mfu-hero{margin:0 0 14px}
+.mfu-hero-band{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#0B6E4F,#0B6E4Fcc 60%,#C9A227);color:#fff;margin:0 0 10px}
+.mfu-hero-band .hint{color:#ffffffcc}
+.mfu-hero-t{font-weight:800;font-size:18px}
+.mfu-hero-today{background:#ffffff22;border:1px solid #ffffff44;border-radius:10px;padding:6px 10px;font-size:14px}
+.mfu-hero-today b{font-size:17px;color:#FFE38A}
+.kk-mini .kk-rings{grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px}
+.kk-mini .kk-ring{padding:10px 6px}
+.kk-mini .kk-ring svg{width:110px;height:110px}
+.kk-mini .kk-pct{font-size:22px}
+.kk-mini .kk-lab{font-size:14px}
+.mfu-hero-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px;margin:10px 0 0}
 .mfu-kpi-l{font-size:12.5px;color:#C8943E;font-weight:700}
 .mfu-kpi-v{font-size:26px;font-weight:800;line-height:1.3;font-variant-numeric:tabular-nums}
 .mfu-bar{position:relative;height:18px;border-radius:9px;background:var(--surface-2);overflow:hidden;min-width:90px}
@@ -1207,7 +1220,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1269,7 +1282,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-1bacdbbdaa.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-a4122a61fc.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15065,6 +15078,7 @@ var HELP_KEYWORDS = {
    المختصر يكفي غالبَها */
 var HELP_STEPS = {
   mfu:   ['افتح «المتابعة» ← «متابعة الوزارة» — شريحة «الملخص» أوّلًا',
+          'في الرأس «موجز الموسم»: اليومُ وأقربُ معلَم، والحلقاتُ الأربع (تُضغَط)، ونبضُ ١٤ يومًا مع توقّع الاكتمال، وأبرزُ التحديات',
           'البطاقاتُ فوق تبدأ بـ«نسبة المسح» (تمت الزيارة من الكل)، ثم «نقاط بلا عوائق» و«نقاط بعوائق» والمعوقات والتركيب والشركات',
           'اضغط أيَّ بطاقة: تفتح قائمتَها بالتفاصيل وفيها زرُّ «تصدير إكسل»',
           'لتقرير الاجتماع: «تصدير التحديث الأسبوعي» فوق — باوربوينت أو وورد أو إكسل أو PDF، لكلِّ النقاط أو بمشعرٍ ونوع أو بالمحدَّد على الخريطة'],
@@ -21744,6 +21758,45 @@ function mfuMilesCard(){
     var days = Math.round((new Date(x.d) - new Date(today)) / 864e5);
     return ['<b>' + esc(x.n) + '</b>', '<span class="num">' + esc(x.d) + '</span>', x.late ? pill(t('متأخر') + ' ' + nm(-days) + ' ' + t('يوم'), 'bad') : '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>', mfuBar(x.p)]; })));
 }
+/* ═══ (V33.8) موجزُ الموسم — رأسُ صفحة الوزارة بطلب المالك: «ديزاين مميّز للوزارة» ═══
+   أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
+   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم نبضُ الميدان: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
+   بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
+function mfuHeroHtml(){
+  var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)){ hd++; if (disDone(x.id)) ds++; } });
+  /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
+  var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
+  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
+  var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
+  var W = 280, H = 56, bw = W / 14;
+  var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');
+  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('زيارات آخر ١٤ يومًا')) + '">' + bars + '</svg>';
+  var trend = prev ? Math.round((wk - prev) / prev * 100) : (wk ? 100 : 0);
+  /* توقّعُ اكتمال أكبر مشعر */
+  var K = siteKeyStats(), zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), z0 = zones[0], f = z0 ? zoneForecast(z0) : null, fc = '';
+  if (f && f.eta) fc = t(z0) + ' ' + t('يكتمل نحو') + ' ' + dayKey(f.eta) + (f.due ? ' (' + (f.due >= f.eta ? t('قبل الموعد بـ') + ' ' + nm(Math.round((f.due - f.eta) / 864e5)) : t('بعد الموعد بـ') + ' ' + nm(Math.round((f.eta - f.due) / 864e5))) + ' ' + t('يومًا') + ')' : '');
+  else if (f && f.stalled) fc = t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين');
+  /* أقربُ معلَمٍ قادم */
+  var next = null; try { (mileList() || []).forEach(function(m){ var d = mileDateOf(m); if (d && d >= now && (!next || d < next.d)) next = { d:d, n:m.n || m.name || m.t || '' }; }); } catch (e){ LS_ERR = e; }
+  var dd = dayDone(today);
+  /* أبرزُ ثلاثة تحديات */
+  var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
+  var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
+  return '<div class="mfu-hero">'
+    + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
+    +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span><b>' + nm(dd.sv) + '</b> ' + esc(t('زيارة')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب'))
+    +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
+    + '<div class="kk kk-mini"><div class="kk-rings">'
+    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم')
+    + '</div></div>'
+    + '<div class="mfu-hero-grid">'
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('نبض الميدان — ١٤ يومًا')) + '</div>' + spark
+    +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
+    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    + '</div></div>';
+}
 function mfuSummary(){
   /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
      وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
@@ -21752,7 +21805,7 @@ function mfuSummary(){
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
-  return svListPop()
+  return svListPop() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
     + '<div class="mfu-kpis">'
     + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', esc(t('تمت الزيارة')) + ' ' + nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('clean', 'نقاط بلا عوائق', nm(nClean), esc(t('تمت الزيارة وتم الوصول بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
@@ -22361,8 +22414,8 @@ function mfuDaily(){
    من الجهاز نفسِه بلا خادمٍ ولا انتظار (الإكسلُ يحمّل محرّكَه أوّلَ مرةٍ ثم يُخبَّأ).
    مصدرٌ واحدٌ للأرقام (mfuReport) فلا تختلف صيغةٌ عن صيغة، والنصُّ عربيٌّ من اليمين
    بألوان العرض: أخضرُ غامق 163E35 وذهبيٌّ C8943E وبيجٌ FAF6F3، وخطُّ Alexandria. */
-function hijriToday(){ var c = hijriToday.c, k = Math.floor(Date.now() / 60000); if (c && c.k === k) return c.v;   /* (V33.7) منسّقُ التقويم مكلف — مرةً في الدقيقة */
-  var v = ''; try { v = new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' }).format(new Date()); } catch (e){ v = ''; } hijriToday.c = { k:k, v:v }; return v; }
+function hijriToday(){ var lang = (typeof LANG === 'string' && LANG) || 'ar', c = hijriToday.c, k = lang + '|' + Math.floor(Date.now() / 60000); if (c && c.k === k) return c.v;   /* (V33.7) منسّقُ التقويم مكلف — مرةً في الدقيقة؛ (V33.8) بلغة الواجهة */
+  var v = ''; try { v = new Intl.DateTimeFormat((lang === 'ar' ? 'ar-SA' : lang === 'ur' ? 'ur-PK' : 'en-GB') + '-u-ca-islamic-umalqura', { day:'numeric', month:'long', year:'numeric' }).format(new Date()); } catch (e){ v = ''; } hijriToday.c = { k:k, v:v }; return v; }
 /* ═══ (V29.0) ملاحظةُ «تحديثات المنصة» #٥: «اختيارُ النقاط المراد تحميلُها في الملف — لا الملفُّ الشاملُ فقط» ═══
    نطاقُ التصدير: الكلّ (الافتراضيّ)، أو مشعرٌ ونوعٌ من تصنيف المالك، أو النقاطُ المحدَّدةُ على الخريطة («☑ تحديد»).
    يُبنى التقريرُ نفسُه على نقاط النطاق وحدَها (المؤشراتُ والتركيباتُ والشركاتُ والمعوقات)، ويُكتب النطاقُ في الغلاف واسمِ الملف. */
@@ -24395,6 +24448,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V33.8', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'صفحة الوزارة بقت تفتح بـ«موجز الموسم»: شريط بهوية الوزارة فيه التاريخ الهجري والميلادي وما اتعمل النهارده وأقرب معلَم، وتحته الحلقات الأربع (المسح والتركيب والتسليم والفك) بتتضغط زي القاعة، و«نبض الميدان» (زيارات آخر ١٤ يوم ومقارنة بالأسبوع اللي فات وتوقع اكتمال أكبر مشعر)، و«أبرز التحديات».',
+      'مراجعة التعليق والتحطّم: فتح كل الصفحات والشرائح الـ٢٩ ببيانات كاملة على جوال مبطّأ من غير أي خطأ ولا تحطّم، وأطول مهمة حاجبة أقل من ثانية على الجهاز المبطّأ (ربع ثانية على جوال عادي). وتقارير «توقف مفاجئ» في الميدان كلها من نسخ قديمة، وصفر منذ ٣٣٫٠.' ] },
   { v:'V33.7', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'صفحة متابعة الوزارة بقت تفتح أسرع بحوالي ٤ أضعاف: كانت بتحسب المعوقات والشركات والمؤشرات وقواعد التنبيه أكتر من مرة في نفس الفتحة، وبتبني قوائم كاملة عشان تعدّها بس.',
       'التصدير على الآيفون (وورد وباوربوينت وإكسل وPDF) ما بقاش بيطلّعك من التطبيق: الملف بيتسلّم بقائمة المشاركة (حفظ في الملفات، البريد، واتساب) وانت فاضل في مكانك. ولو الملف اتبنى متأخر يظهر زرار «احفظ الملف أو شاركه».' ] },

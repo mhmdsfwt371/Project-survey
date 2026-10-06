@@ -111,6 +111,10 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     T(Object.values(vals).every(v => v === VISITED), 'نفسُ آلية الحسبة في كلِّ الصفحات — «تمت الزيارة» = ' + VISITED + ': ' + JSON.stringify(vals));
     T(Math.abs(wbsZ - VISITED) <= Object.keys(KS.zones).length, 'وقياسُ الخطة على المشاعر من الرقم نفسِه: ' + wbsZ);
     T(w.svListRows('rem').length === TOTAL - VISITED, 'والمتبقي = ما لم تتم زيارتُه أصلًا: ' + (TOTAL - VISITED));
+    /* (V33.8) موجزُ الموسم في رأس صفحة الوزارة: حلقاتُه الأربع نفسُ حلقات القاعة (المسح بالعدد نفسه)، ونبضُ ١٤ يومًا ١٤ عمودًا */
+    { w.PTAB.mfu = 'mfu'; w.goPage('mfu'); w.render(1); const hero = d.querySelector('.mfu-hero'); const rings = hero ? [...hero.querySelectorAll('.kk-ring')] : [];
+      T(hero && rings.length === 4 && rings[0].getAttribute('data-svlist') === 'sv' && new RegExp(w.nm(VISITED) + ' من ' + w.nm(TOTAL)).test(rings[0].textContent) && hero.querySelectorAll('svg rect').length === 14,
+        'موجزُ الموسم أوّلُ الملخّص: أربعُ حلقاتٍ بأرقام القاعة نفسِها ونبضُ ١٤ يومًا'); }
     /* (V33.6) «تفاصيل المسح» بالتعريف الواحد: «بلا تحدٍّ — تُسنَد كما هي» = «نقاط بلا عوائق»، و«فيها تحدٍّ أو تحتاج زيارة أخرى» = «نقاط بعوائق» */
     w.SVD_MEMO = null; const pool = w.svdRows(), cardOf = k => w.SVD_CARDS.filter(c => c.k === k)[0];
     T(pool.filter(cardOf('clean').f).length === w.svListRows('clean').length && pool.filter(cardOf('chal').f).length === w.svListRows('chal').length,

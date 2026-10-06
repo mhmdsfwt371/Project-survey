@@ -4803,6 +4803,45 @@ function mfuMilesCard(){
     var days = Math.round((new Date(x.d) - new Date(today)) / 864e5);
     return ['<b>' + esc(x.n) + '</b>', '<span class="num">' + esc(x.d) + '</span>', x.late ? pill(t('متأخر') + ' ' + nm(-days) + ' ' + t('يوم'), 'bad') : '<span class="num">' + nm(days) + ' ' + esc(t('يوم')) + '</span>', mfuBar(x.p)]; })));
 }
+/* ═══ (V33.8) موجزُ الموسم — رأسُ صفحة الوزارة بطلب المالك: «ديزاين مميّز للوزارة» ═══
+   أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
+   والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم نبضُ الميدان: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
+   بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
+function mfuHeroHtml(){
+  var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)){ hd++; if (disDone(x.id)) ds++; } });
+  /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
+  var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
+  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
+  var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
+  var W = 280, H = 56, bw = W / 14;
+  var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');
+  var spark = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;height:56px;display:block" aria-label="' + esc(t('زيارات آخر ١٤ يومًا')) + '">' + bars + '</svg>';
+  var trend = prev ? Math.round((wk - prev) / prev * 100) : (wk ? 100 : 0);
+  /* توقّعُ اكتمال أكبر مشعر */
+  var K = siteKeyStats(), zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), z0 = zones[0], f = z0 ? zoneForecast(z0) : null, fc = '';
+  if (f && f.eta) fc = t(z0) + ' ' + t('يكتمل نحو') + ' ' + dayKey(f.eta) + (f.due ? ' (' + (f.due >= f.eta ? t('قبل الموعد بـ') + ' ' + nm(Math.round((f.due - f.eta) / 864e5)) : t('بعد الموعد بـ') + ' ' + nm(Math.round((f.eta - f.due) / 864e5))) + ' ' + t('يومًا') + ')' : '');
+  else if (f && f.stalled) fc = t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين');
+  /* أقربُ معلَمٍ قادم */
+  var next = null; try { (mileList() || []).forEach(function(m){ var d = mileDateOf(m); if (d && d >= now && (!next || d < next.d)) next = { d:d, n:m.n || m.name || m.t || '' }; }); } catch (e){ LS_ERR = e; }
+  var dd = dayDone(today);
+  /* أبرزُ ثلاثة تحديات */
+  var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
+  var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
+  return '<div class="mfu-hero">'
+    + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
+    +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span><b>' + nm(dd.sv) + '</b> ' + esc(t('زيارة')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب'))
+    +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
+    + '<div class="kk kk-mini"><div class="kk-rings">'
+    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم')
+    + '</div></div>'
+    + '<div class="mfu-hero-grid">'
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('نبض الميدان — ١٤ يومًا')) + '</div>' + spark
+    +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
+    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
+    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(t(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    + '</div></div>';
+}
 function mfuSummary(){
   /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
      وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
@@ -4811,7 +4850,7 @@ function mfuSummary(){
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
-  return svListPop()
+  return svListPop() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
     + '<div class="mfu-kpis">'
     + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', esc(t('تمت الزيارة')) + ' ' + nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
     + box('clean', 'نقاط بلا عوائق', nm(nClean), esc(t('تمت الزيارة وتم الوصول بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
