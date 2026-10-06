@@ -180,7 +180,7 @@ function mapInit(){
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
   MAP_BASE = L.tileLayer(MAP_SAT ? TILES.esri : TILES.osm, {
-    maxZoom:19, className:'nskBase', crossOrigin:true,
+    maxZoom:19, className:'nskBase', crossOrigin:true, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false,   /* (V34.2) ذاكرةٌ أقلّ على الآيفون */
     attribution: MAP_SAT ? '&copy; Esri' : '&copy; OpenStreetMap'
   }).addTo(MAP);
 
@@ -1879,6 +1879,10 @@ function basemapHave(){
    تُرسَم الخلفيةُ منه فورًا وبلا شبكة؛ ولا طلبَ على سيرفراتٍ خارجية إلا للقمر الصناعي. */
 function basemapAuto(){
   if (BASEMAP.auto) return; BASEMAP.auto = true;
+  /* (V34.2) الصندوقُ الأسودُ في آيفون المالك: ستُّ إقلاعاتٍ ماتت بعد الرسم الأوّل على «الخريطة» و«متابعة الوزارة» (المرحلة render) — وهي
+     اللحظةُ التي يبدأ فيها التنزيلُ التلقائيُّ لخريطة المشاعر (حتى ٣٠ ميجا) بجوار طبقة القمر الصناعي. على الآيفون ذاكرةُ الصفحة محدودة
+     فيُقتَل محرّكُها. صار التنزيلُ التلقائيُّ لا يعمل على الآيفون؛ وزرُّ «نزّل» في «حسابي» باقٍ لمن يحتاج الخريطةَ بلا شبكة. */
+  if (typeof dlIOS === 'function' && dlIOS()){ bootStage('basemap-skip-ios'); return; }
   /* (V25.0) المحفوظُ أوّلًا: من فتح التطبيقَ بلا شبكةٍ لا يصل إلى البيان، فكان الإرفاقُ ينتظره فلا تظهر خريطةُ الجهاز أبدًا */
   try { basemapHave().then(function(h){
     if (h){ basemapWarm(); if (basemapWant()) try { basemapAttach(); } catch (e){ LS_ERR = e; }
@@ -3321,6 +3325,7 @@ function bootAuto(){
     enterShell();
     /* كانتا تُنادَيان على CORE وهما على FB — فينفجر الوعدُ بعد الدخول التلقائيِّ
        ولا يُنصَت ولا يُسحَب ولا يُدفَع الطابورُ حتى يُضغَط بيد. */
+    bootStage('pull');   /* (V34.2) */
     var first = FB.legacyDone() ? Promise.resolve(0) : FB.pullLegacy();
     first.then(function(){ return FB.pullStatic().catch(function(){ return 0; }); })
          .then(function(){ return pullDelta(); }).then(function(){ liveWatch(); liveSmall(); pulseWatch(); presenceBeat(true); return 0; })
@@ -4415,7 +4420,7 @@ function kkSatInit(){
   var zone = KK_ZONE, all = (STATE.sites || []).filter(function(x){ return taxOf(x).g === zone && +x.lat && +x.lng; }), core = geoOutliers(all).core;
   if (KK_MAP){ try { KK_MAP.remove(); } catch (e){ LS_ERR = e; } KK_MAP = null; }
   var m = L.map(el, { zoomControl:true, attributionControl:true, preferCanvas:true });
-  L.tileLayer(TILES.esri, { maxZoom:19, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);
+  L.tileLayer(TILES.esri, { maxZoom:19, keepBuffer:1, updateWhenIdle:true, updateWhenZooming:false, attribution:'Esri, Maxar, Earthstar Geographics' }).addTo(m);   /* (V34.2) */
   /* على اللمس: خريطةٌ طويلةٌ داخل صفحةٍ تُمسك الإصبعَ فلا تُمرَّر الصفحة. يبدأ
      التحريكُ معطَّلًا وتُقرأ الصفحةُ بإصبعٍ واحد؛ ضغطةٌ على الخريطة تفعّله ويظهر
      زرُّ إيقافه — والتقريبُ بإصبعين يعمل دائمًا. */

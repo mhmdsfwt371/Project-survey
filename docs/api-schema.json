@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V34.1",
+ "app_version": "V34.2",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2033,7 +2033,8 @@
   "V33.8": "mfuHeroHtml (في رأس mfuSummary): الحلقاتُ الأربع بـkioskRing داخل .kk.kk-mini (أنماطٌ مصغّرة)، نبضُ ١٤ يومًا SVG من STATE.recs بمرورٍ واحد (الأسبوعُ الحاليُّ مقابل السابق)، توقّعُ أكبر مشعر zoneForecast، أقربُ معلَم mileList/mileDateOf، اليومُ dayDone، أبرزُ ثلاثة تحديات من svdRows. أنماطُ .mfu-hero*. جردُ المطابقة: حلقاتُ الموجز = حلقاتُ القاعة. اختبارُ إجهاد (scripts في /home/claude/shot/stress.mjs خارج المستودع): ٢٩ صفحةً وشرائحُها بلا خطأ، أطولُ مهمةٍ ٨٤١ م.ث على ٤×.",
   "V33.9": "بلاغُ المالك: loginBg — أُلغيت قاعدةُ hardwareConcurrency/deviceMemory (آيفون يُبلّغ ≤٤)؛ tick مستمرٌّ بعشرين إطارًا (lit تعود بعد ١٫٣) ما دام visible() (العنصرُ في الصفحة وعرضُه > ٠)، ويقف وحدَه بعد enterShell (العنصرُ يُزال). البدءُ بعد ١٥٠ م.ث. جاهزيةُ الدخول على ٤× ٣٫٤–٤٫٠ ث (كما في ٣٣٫x).",
   "V34.0": "بلاغُ المالك: CHAL_SHOW + chalShow(k) — عرضٌ فقط (قيمُ السجل ونموذجُ الميدان كما هي) في mfuHeroHtml وkioskBody وأعمدة svListRows0 (chal/obs) وتبويب المعوّقات وعمود «أبرز تحدٍّ» في svStats.detail (الجداول والتقارير). «نبض الميدان» → «مسار العمل الميداني — آخر ١٤ يومًا». جردُ المطابقة على المصطلحين.",
-  "V34.1": "بلاغُ المالك (تحطّمُ WebContent على الآيفون بعد V33.9): loginBg بلا رسمٍ متكرّر — draw(1.2) مرةً، و#lgShine وهجٌ بـCSS (transform/opacity، mix-blend-mode:screen) بين .veil والبطاقة؛ calm = تقليلُ الحركة أو BOOT_GUARD.crashes > 0. قياسٌ على كثافة ×٣: صفرُ م.ث سكربت في ٥ ثوانٍ على شاشة الدخول."
+  "V34.1": "بلاغُ المالك (تحطّمُ WebContent على الآيفون بعد V33.9): loginBg بلا رسمٍ متكرّر — draw(1.2) مرةً، و#lgShine وهجٌ بـCSS (transform/opacity، mix-blend-mode:screen) بين .veil والبطاقة؛ calm = تقليلُ الحركة أو BOOT_GUARD.crashes > 0. قياسٌ على كثافة ×٣: صفرُ م.ث سكربت في ٥ ثوانٍ على شاشة الدخول.",
+  "V34.2": "الصندوقُ الأسود (nsk14.boot) في آيفون المالك: «توقّفٌ مفاجئٌ — المرحلة render» ستَّ مراتٍ على map وmfu (V33.3–V34.0). basemapAuto لا يعمل على الآيفون (dlIOS)؛ L.tileLayer بـkeepBuffer:1 وupdateWhenIdle وupdateWhenZooming:false (الخريطةُ والقمرُ المصغّر)؛ render0 يحرّر KK_MAP إن غاب #kkSat؛ مراحلُ أدقّ: render:<الصفحة> وpull وbasemap-skip-ios."
  },
  "map_and_geolocation": {
   "tile_layers": {

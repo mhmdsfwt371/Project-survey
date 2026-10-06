@@ -31,7 +31,7 @@ const page = JSON.stringify({ cur:'mfu', tab:'' });
 console.log('\n══ ١ · إقلاعٌ عاديّ ══');
 { const { w, dom } = await boot({ 'nsk14.page':page });
   const b = JSON.parse(w.localStorage.getItem('nsk14.boot'));
-  T(w.BOOT_GUARD.crashes === 0 && b.ok === false && b.stage === 'render', 'يُسجَّل الإقلاعُ ومرحلتُه، ولا توقّفَ سابق');
+  T(w.BOOT_GUARD.crashes === 0 && b.ok === false && /^(render(:\w+)?|pull)$/.test(b.stage), 'يُسجَّل الإقلاعُ ومرحلتُه (V34.2: render:<الصفحة> ثم pull)، ولا توقّفَ سابق: ' + b.stage);
   T(w.CUR === 'mfu', 'وآخرُ صفحةٍ تُستعاد كالعادة');
   w.dispatchEvent(new w.Event('pagehide'));
   T(JSON.parse(w.localStorage.getItem('nsk14.boot')).ok === true, 'والإغلاقُ الطبيعيُّ يُعلِّمه سليمًا — فلا يُعَدّ توقّفًا');

@@ -2386,6 +2386,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
+  try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
   /* فهرسُ المهامِّ عمرُه رسمةٌ واحدة (V17.47): بناؤه جزءان من الألف، وإبقاؤه
@@ -2641,7 +2642,7 @@ function enterShell(){
   }
   bootStage('shell');
   render();
-  bootStage('render');
+  bootStage('render:' + CUR);   /* (V34.2) والصفحةُ في المرحلة نفسِها */
   syncBadge();
   /* أوّلُ دخولٍ لهذا الحساب: تُفتَح الجولةُ بنفسها — ومن رآها لا تُعاد */
   try { tourMaybe(); if (TOUR.open) render(1); } catch (e){ LS_ERR = e; }
