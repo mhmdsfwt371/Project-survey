@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V33.3",
+ "app_version": "V33.4",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2025,7 +2025,8 @@
   "V33.0": "نسخةٌ واحدةٌ تجمع عملًا محليًّا: الأمن (provision.mjs لا يطبع الكلمة؛ محوٌ بعد ٧٢ ساعة؛ ghcfg يُقرأ للمدير والإدارة العليا فقط؛ audit-secrets)، حزمةُ التسليم (START-HERE، runbooks، audit-runbooks، bump.mjs)، اختباراتُ الوحدة ١٠→١٤ (svReached/svStuck يستثنيان الشواهد)، قياسُ الميدان (errCapture يصنّف أعطالَ المنصة «عطلٌ في متصفّح الجهاز» ويستدعي idbRetryNow؛ idbGet يُسقط الاتصالَ الميت)، arCmp مرتّبٌ مخزّن في ١٣ ترتيبًا، loginBg دورةٌ واحدة، معالجا النقرات أجزاءٌ (onDocClickPart1…9، clickAPart1…7، CLICK_NEXT؛ actList وaudit-buttons يقرآن الأجزاء)، ومصطلحُ المالك (svClean/svObstacle/svNeedsRevisit؛ لا «متعذّر» ولا تصاريحَ في عرض الوزارة؛ kioskObsTally/kioskObsHtml في kksec-4؛ mfuMinistryCard حُذفت؛ al_permit لا يُعرض في mfu). القرارات ق-٠٠٨…ق-٠١٠. جردا الصحة والنحو يفحصان في الذاكرة.",
   "V33.1": "ق-٠١١: readSlowFactor() يعيد ١ دائمًا (يستدعي readBudget للعدّ والتنبيه)، وحدثُ تجاوز السقف «للعلم، لا إبطاء». جرودُ القراءات والتسلسل والجلسة على ذلك. دليلُ التسليم: الخطةُ بالاستهلاك.",
   "V33.2": "طلبُ المالك «المساعدُ والدليلُ محدَّثان بكلِّ حاجة»: GLOSSARY (٧ مصطلحات بتعريفاتها ومرادفاتها) مصدرٌ واحد؛ glossaryHits وassistHtml يعرضان المصطلحَ أوّلًا؛ HELP_STEPS/HELP_KEYWORDS لـmfu وkiosk وتصحيحُ خطوة survey (شريحة «تم الوصول»)؛ أوصافُ شرائح الوزارة بالمصطلح الحالي. scripts/user-manual.mjs يولّد nusuk-user-manual.docx من docs/user-manual.md + GLOSSARY + RELEASE_NOTES، وbump.mjs يشغّله؛ role-manuals.mjs يضيف المسرد وما الجديد. audit-manuals يمنع نسخةً لا تحمل الأدلةُ مسردَها وسطورَها أو لا يجيب المساعدُ عن مصطلح.",
-  "V33.3": "طلبُ المالك: kioskObsHtml بطاقاتُ kk-ring في kk-rings#kksec-4 بعد الحلقات وقبل المشاعر؛ كلُّ رقمٍ data-svlist: clean/chal للإجمالي وobok|<النوع>/obbad|<النوع> لكلِّ نوع (svObKey في svListRows0/svListTitle/svListPop/svListXlsx)؛ svListPop داخل kioskBody. جردُ المطابقة: البطاقاتُ في موضعها وكلُّ رقمٍ = صفوفُ قائمته."
+  "V33.3": "طلبُ المالك: kioskObsHtml بطاقاتُ kk-ring في kk-rings#kksec-4 بعد الحلقات وقبل المشاعر؛ كلُّ رقمٍ data-svlist: clean/chal للإجمالي وobok|<النوع>/obbad|<النوع> لكلِّ نوع (svObKey في svListRows0/svListTitle/svListPop/svListXlsx)؛ svListPop داخل kioskBody. جردُ المطابقة: البطاقاتُ في موضعها وكلُّ رقمٍ = صفوفُ قائمته.",
+  "V33.4": "بلاغُ المالك: svClean(r) = svVisited ∧ svDone ∧ ¬svHasChal (أُسقط شرطُ access === 'تم الوصول' حرفًا — الزيارةُ بقرار المهندس quick بلا حقل وصولٍ ولا تحديات؛ ١٠٨ سجلًّا لمحطات القطار كلُّها هكذا في القاعدة). SV_LISTS.campok = مخيمات ∧ svClean. اختبارُ وحدة."
  },
  "map_and_geolocation": {
   "tile_layers": {

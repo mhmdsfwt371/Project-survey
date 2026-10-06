@@ -97,3 +97,10 @@ test('قياسُ الميدان: عطلُ مخزن الآيفون يُسجَّل
   w.logEvent = lg; w.idbRetryNow = rn; if (!hadIdb) delete w.indexedDB;
   assert.ok(got.some(x => x.startsWith('عطلٌ في متصفّح الجهاز')), 'عطلُ المنصة باسمه'); assert.ok(got.some(x => x.startsWith('خطأ برمجي')), 'والخطأُ الحقيقيُّ خطأ'); assert.ok(retried >= 1, 'والمخزنُ يُعاد فتحُه');
 });
+test('بلاغُ المالك (V33.4): الزيارةُ بقرار المهندس بلا حقل وصولٍ ولا تحديات «بدون عوائق» — ومحطاتُ القطار كلُّها كذلك', () => {
+  const quick = { id:'NSK-TRN-STN-0001', by:'م', at:Date.now(), quick:1 };
+  assert.equal(w.svVisited(quick), true); assert.equal(w.svClean(quick), true); assert.equal(w.svObstacle(quick), false);
+  assert.equal(w.svClean({ id:'x', at:1, quick:1, review:'revisit' }), false, 'المردودةُ ليست بلا عوائق');
+  assert.equal(w.svClean({ id:'x', at:1, access:'متعذر' }), false, 'ولا ما لم يُوصَل إليه');
+  assert.equal(w.svClean({ id:'x', at:1, access:'تم الوصول', chals:['عائق إنشائي'] }), false, 'ولا ما فيه تحدٍّ');
+});

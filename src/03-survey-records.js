@@ -2057,7 +2057,9 @@ function svVisited(r){ return !!r && !r.deleted; }
    وتحدّيها «تحتاج زيارة أخرى تقنيًا». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
 function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
-function svClean(r){ return svVisited(r) && svDone(r) && r.access === 'تم الوصول' && !svHasChal(r); }
+/* (V33.4) بلاغُ المالك: «محطاتُ القطار ما فيها عوائق نهائيًّا» — وظهرت ١٠٨/١٠٨ بعوائق. سجلّاتُها كلُّها «زيارةٌ بقرار المهندس»
+   (quick) بلا حقل وصولٍ ولا تحديات، وكان الشرطُ «تم الوصول» حرفًا فيسقطها. الوصولُ هنا كما في svReached: «تم الوصول» أو لا حقل. */
+function svClean(r){ return svVisited(r) && svDone(r) && !svHasChal(r); }
 function svObstacle(r){ return svVisited(r) && !svClean(r); }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){

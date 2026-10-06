@@ -4842,7 +4842,7 @@ var SV_LISTS = {
   corins:  ['الممرات وحالةُ تركيبها',     function(x, r){ return x.type === 'ممر'; }],
   chal:    ['نقاط بعوائق', function(x, r){ return svObstacle(r); }],   /* (V33.0) تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى تقنيًا */
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
-  campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
+  campok:  ['مخيمات بلا تحديات', function(x, r){ return taxOf(x).t === 'مخيمات' && svClean(r); }],   /* (V33.4) بالتعريف الواحد — والزيارةُ بقرار المهندس بلا تحدٍّ بلا عائق */
   nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }],
   badphoto:['صور تحتاج إعادة',          function(x, r){ return photosOf(x.id).some(function(e){ return photoQualityFlags(e[1].q).length > 0; }); }],   /* (V30.6) photosOf يعيد [مفتاح، وثيقة] */
   /* (V29.9) ما ينتظر الوزارة — بالتفكير من جهتها: ما لا يتحرّك إلا بقرارها أو بملفٍّ منها */

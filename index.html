@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V33.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -8941,7 +8941,9 @@ function svVisited(r){ return !!r && !r.deleted; }
    وتحدّيها «تحتاج زيارة أخرى تقنيًا». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
 function svNeedsRevisit(r){ return svVisited(r) && (svStuck(r) || r.review === 'revisit'); }
-function svClean(r){ return svVisited(r) && svDone(r) && r.access === 'تم الوصول' && !svHasChal(r); }
+/* (V33.4) بلاغُ المالك: «محطاتُ القطار ما فيها عوائق نهائيًّا» — وظهرت ١٠٨/١٠٨ بعوائق. سجلّاتُها كلُّها «زيارةٌ بقرار المهندس»
+   (quick) بلا حقل وصولٍ ولا تحديات، وكان الشرطُ «تم الوصول» حرفًا فيسقطها. الوصولُ هنا كما في svReached: «تم الوصول» أو لا حقل. */
+function svClean(r){ return svVisited(r) && svDone(r) && !svHasChal(r); }
 function svObstacle(r){ return svVisited(r) && !svClean(r); }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){
@@ -21780,7 +21782,7 @@ var SV_LISTS = {
   corins:  ['الممرات وحالةُ تركيبها',     function(x, r){ return x.type === 'ممر'; }],
   chal:    ['نقاط بعوائق', function(x, r){ return svObstacle(r); }],   /* (V33.0) تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى تقنيًا */
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
-  campok:  ['مخيمات بلا تحديات',      function(x, r){ return taxOf(x).t === 'مخيمات' && !!(r && svDone(r)) && !svHasChal(r) && r.access === 'تم الوصول'; }],
+  campok:  ['مخيمات بلا تحديات', function(x, r){ return taxOf(x).t === 'مخيمات' && svClean(r); }],   /* (V33.4) بالتعريف الواحد — والزيارةُ بقرار المهندس بلا تحدٍّ بلا عائق */
   nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }],
   badphoto:['صور تحتاج إعادة',          function(x, r){ return photosOf(x.id).some(function(e){ return photoQualityFlags(e[1].q).length > 0; }); }],   /* (V30.6) photosOf يعيد [مفتاح، وثيقة] */
   /* (V29.9) ما ينتظر الوزارة — بالتفكير من جهتها: ما لا يتحرّك إلا بقرارها أو بملفٍّ منها */
@@ -24342,6 +24344,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V33.4', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تصحيح: محطات القطار كانت بتظهر كلها «بعوائق» في شاشة القاعة، لأن زياراتها مسجّلة «بقرار المهندس» من غير نموذج. الزيارة دي بقت تتحسب «بدون عوائق» طالما مفيش فيها تحدي ولا محتاجة زيارة تانية — ونفس الكلام في «مخيمات بلا عائق» وبطاقتَي الملخص.' ] },
   { v:'V33.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'شاشة القاعة: «النقاط بعوائق وبدونها» بقت بطاقات فوق تحت الحلقات على طول — الإجمالي الأول وبعده بطاقة لكل نوع من المخيمات للزايدي. واضغط أي رقم (الأخضر أو الأحمر) تفتح قائمة نقاطه بالتفاصيل وتصدير إكسل.' ] },
   { v:'V33.2', d:'٦ أكتوبر ٢٠٢٦', notes:[
