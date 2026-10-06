@@ -165,7 +165,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
     T(sv && keyOf(sv) === 'sv' && remOf(sv) === 'rem' && w.svListRows('sv').length === VISITED && w.svListRows('rem').length === TOTAL - VISITED && pct === Math.min(99, Math.round(VISITED / TOTAL * 100)),
       'وحلقةُ المسح: الحلقةُ تفتح «تمت الزيارة» (' + VISITED + ') و«متبقٍّ» يفتح ما لم يُزَر (' + (TOTAL - VISITED) + ')، والنسبة ' + pct + '٪');
     T(rings[1] && keyOf(rings[1]) === 'insd' && w.svListRows('insd').length === N_INS && new RegExp(w.nm(N_INS) + ' من ' + w.nm(TOTAL)).test(rings[1].textContent), 'وحلقةُ التركيب من الكلِّ نفسِه: ' + N_INS + ' من ' + TOTAL);
-    T(h.indexOf('stroke:var(--min-red)') > -1 && h.indexOf('stroke:var(--min-green)') > -1, 'الأخضرُ للمنجز والأحمرُ للمتبقي'); }
+    T(/stroke:\s*var\(--min-red\)/.test(h) && /stroke:\s*var\(--min-green\)/.test(h), 'الأخضرُ للمنجز والأحمرُ للمتبقي (الحلقةُ تبدأ حمراءَ ويزحف الأخضر — V34.3)'); }
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */

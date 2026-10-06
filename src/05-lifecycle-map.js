@@ -4525,6 +4525,18 @@ function kioskStory(){
   return parts.join(' \u00b7 ') + '.';
 }
 /* العدّاداتُ تتحرّك من الصفر إلى رقمها حين تُفتَح الشاشة — الرقمُ يُرى وهو يُبنى */
+/* (V34.3) طلبُ المالك: «الحلقةُ ١٠٠٪ أحمر، ولما تعدّ حاجة يقلّ الأحمرُ ويتحوّل أخضرَ بنسبته» — كلُّ حلقةٍ تُرسَم حمراءَ كاملة ثم يزحف
+   الأخضرُ إلى نسبتها (انتقالُ ‎.kk-arc‎ ١٫٢ ث على بطاقة الرسوم). تُستدعى بعد كلِّ رسمٍ فيه حلقات — في الملخّص والقاعة. */
+function ringsGrow(){
+  var arcs = document.querySelectorAll('.kk-arc[data-off]'); if (!arcs.length) return;
+  var prev = ringsGrow.prev = ringsGrow.prev || {}, grow = [];
+  /* التحديثُ الدوريُّ (كلَّ دقيقةٍ في القاعة) لا يعيد الحركةَ لحلقةٍ لم يتغيّر رقمُها — يزحف الأخضرُ حين يُنجَز شيءٌ فقط */
+  arcs.forEach(function(a){ var ring = a.closest('.kk-ring'), k = (ring && ring.getAttribute('data-svlist')) || '', off = a.getAttribute('data-off');
+    if (k && prev[k] === off){ a.style.transition = 'none'; a.style.strokeDashoffset = off; a.removeAttribute('data-off'); }
+    else { prev[k] = off; grow.push(a); } });
+  if (!grow.length) return;
+  requestAnimationFrame(function(){ requestAnimationFrame(function(){ grow.forEach(function(a){ a.style.strokeDashoffset = a.getAttribute('data-off'); a.removeAttribute('data-off'); }); }); });
+}
 function kioskAnimate(){
   var els = document.querySelectorAll('.kk [aria-valuenow]');
   if (!els.length) return;
@@ -4553,7 +4565,7 @@ function kioskRing(done, total, label, doneKey, remKey, idle){
   var pr = Math.round(p); if (pr === 100 && rem) pr = 99; if (pr === 0 && done) pr = 1;   /* لا يُقال ١٠٠٪ وبقي شيء ولا ٠٪ وأُنجز شيء */
   return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" style="stroke:var(--min-green);stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/>'
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" data-off="' + (c * (1 - p / 100)).toFixed(1) + '" style="stroke:var(--min-green);stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + c.toFixed(1) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
@@ -4600,9 +4612,9 @@ function kioskBody(){
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
     + '<div class="kk-rings" id="kksec-1">'   /* (V33.5) طلبُ المالك: المسح والتركيب والتسليم والفك — أربعٌ فقط */
     +   (function(){ var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0;
-          all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)){ hd++; if (disDone(x.id)) ds++; } });
+          all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
           return kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr')
-            + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم — بعد الموسم'); })()
+            + kioskRing(ds, n, 'الفك', 'disd', 'disr'); })()
     + '</div>'
     + kioskObsHtml()   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
@@ -4816,7 +4828,7 @@ function mfuMilesCard(){
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 function mfuHeroHtml(){
   var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
-  all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)){ hd++; if (disDone(x.id)) ds++; } });
+  all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
   Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
@@ -4831,16 +4843,17 @@ function mfuHeroHtml(){
   else if (f && f.stalled) fc = t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين');
   /* أقربُ معلَمٍ قادم */
   var next = null; try { (mileList() || []).forEach(function(m){ var d = mileDateOf(m); if (d && d >= now && (!next || d < next.d)) next = { d:d, n:m.n || m.name || m.t || '' }; }); } catch (e){ LS_ERR = e; }
-  var dd = dayDone(today);
+  var dd = dayDone(today); dd.hand = 0;   /* (V34.3) التسليمُ اليوم من محضر التسليم في سجلّ التركيب */
+  Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
   var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
   var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
-    +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span><b>' + nm(dd.sv) + '</b> ' + esc(t('زيارة')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب'))
+    +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */
     +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
     + '<div class="kk kk-mini"><div class="kk-rings">'
-    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم')
+    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, n, 'الفك', 'disd', 'disr')
     + '</div></div>'
     + '<div class="mfu-hero-grid">'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
@@ -4927,7 +4940,7 @@ var SV_LISTS = {
   hand:    ['تم التسليم',               function(x, r){ return handDone(x.id); }],
   handr:   ['المتبقي — لم يُسلَّم',      function(x, r){ return !handDone(x.id); }],
   disd:    ['تم الفك',                  function(x, r){ return disDone(x.id); }],
-  disr:    ['المتبقي — مُسلَّمٌ لم يُفَك', function(x, r){ return handDone(x.id) && !disDone(x.id); }],
+  disr:    ['المتبقي — لم يُفَك',         function(x, r){ return !disDone(x.id); }],   /* (V34.3) من الكلّ كالثلاثة */
   badphoto:['صور تحتاج إعادة',          function(x, r){ return photosOf(x.id).some(function(e){ return photoQualityFlags(e[1].q).length > 0; }); }],   /* (V30.6) photosOf يعيد [مفتاح، وثيقة] */
   /* (V29.9) ما ينتظر الوزارة — بالتفكير من جهتها: ما لا يتحرّك إلا بقرارها أو بملفٍّ منها */
   permit:  ['تحتاج تصريح دخول',          function(x, r){ return !!(r && r.access === 'يحتاج تصريح'); }],
