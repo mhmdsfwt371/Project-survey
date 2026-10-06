@@ -144,15 +144,24 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
 {
   await open('mfu', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
   const kk = txt(), h = d.getElementById('content').innerHTML;
-  T(d.getElementById('kksec-1') && d.getElementById('kksec-1').querySelectorAll('.kk-ring').length === 5 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ ومخيماتٌ بلا عائق وزرُّ العرض الكامل (V30.0 — تُعَدّ في صفِّها، والبطاقاتُ تحتها V33.3)');
+  /* (V33.5) طلبُ المالك: أربعُ حلقاتٍ فقط — المسح والتركيب والتسليم والفك — الأخضرُ المنجزُ والأحمرُ المتبقي، وكلٌّ تفتح قائمتَها */
+  { const R = d.getElementById('kksec-1'), rings = R ? [...R.querySelectorAll('.kk-ring')] : [];
+    const labs = rings.map(r => (r.querySelector('.kk-lab') || {}).textContent || '');
+    T(rings.length === 4 && ['المسح', 'التركيب', 'التسليم', 'الفك'].every((l, i) => labs[i] && labs[i].indexOf(l) === 0) && h.indexOf('data-kiosk') > -1,
+      'الصفُّ الأوّلُ أربعُ حلقاتٍ فقط بالترتيب: ' + labs.map(x => x.replace(/\s*›/, '')).join('، '));
+    T(!/اعتمادُ الوزارة من المُسِح|مخيمات بلا عائق|تحتاج زيارة أخرى تقنيًا/.test(R ? R.textContent : '') && !/تحتاج زيارة أخرى|متعذّر|تنتظر قرارَ الوزارة/.test(w.kioskStory()), 'ولا «اعتماد الوزارة» ولا «مخيمات بلا عائق» ولا «تحتاج زيارة أخرى» في الصفّ ولا في الجملة');
+    const keyOf = r => r.getAttribute('data-svlist'), remOf = r => { const e = r.querySelector('.kk-sub [data-svlist]'); return e ? e.getAttribute('data-svlist') : ''; };
+    const sv = rings[0], pct = sv ? +sv.querySelector('[aria-valuenow]').getAttribute('aria-valuenow') : -1;
+    T(sv && keyOf(sv) === 'sv' && remOf(sv) === 'rem' && w.svListRows('sv').length === VISITED && w.svListRows('rem').length === TOTAL - VISITED && pct === Math.min(99, Math.round(VISITED / TOTAL * 100)),
+      'وحلقةُ المسح: الحلقةُ تفتح «تمت الزيارة» (' + VISITED + ') و«متبقٍّ» يفتح ما لم يُزَر (' + (TOTAL - VISITED) + ')، والنسبة ' + pct + '٪');
+    T(rings[1] && keyOf(rings[1]) === 'insd' && w.svListRows('insd').length === N_INS && new RegExp(w.nm(N_INS) + ' من ' + w.nm(TOTAL)).test(rings[1].textContent), 'وحلقةُ التركيب من الكلِّ نفسِه: ' + N_INS + ' من ' + TOTAL);
+    T(h.indexOf('stroke:var(--min-red)') > -1 && h.indexOf('stroke:var(--min-green)') > -1, 'الأخضرُ للمنجز والأحمرُ للمتبقي'); }
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
   const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */
-  T(new RegExp('هذا الأسبوع تمت زيارة ' + w.nm(n7)).test(story) && new RegExp(w.nm(N_STUCK + N_REV) + ' تحتاج زيارة أخرى تقنيًا').test(story) && !/تنتظر قرارَ الوزارة|متعذّر/.test(story), '(V33.0) الأسبوعُ في جملةٍ من الأرقام نفسِها بلا «متعذّر» ولا «قرار الوزارة»: ' + n7 + ' في سبعة أيام');
+  T(new RegExp('هذا الأسبوع تمت زيارة ' + w.nm(n7)).test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
   T(h.indexOf('kk-story') > -1 && (h.match(/aria-valuenow="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
-  T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
-  T(new RegExp(w.nm(VISITED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'زيرت والتركيبُ من الكلِّ نفسِه: ' + VISITED + ' / ' + TOTAL);
-  T(new RegExp(w.nm(N_STUCK + N_REV) + ' تحتاج زيارة أخرى تقنيًا').test(kk) && !/متعذّر/.test(kk), '(V33.0) وما تحتاج زيارةً أخرى تقنيًا (المتعذّرُ والمردود) رقمًا كبيرًا فوق اسمه، ولا «متعذّر» في الشاشة: ' + (N_STUCK + N_REV));
+  T(h.indexOf('var(--min-green)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
   /* (V33.0) طلبُ المالك: صندوقُ «ما ينتظر قرارًا» صار «النقاط بعوائق وبدونها» — الإجماليُّ أوّلًا ثم كلُّ نوع، وبعوائق + بدون + لم تُزَر = الكلّ */
   { const KO = w.kioskObsTally(); const sumBy = Object.values(KO.by).reduce((a, o) => a + o.ok + o.ob + o.todo, 0);
     T(h.indexOf('النقاط بعوائق وبدونها') > -1 && KO.T.ok + KO.T.ob === VISITED && KO.T.todo === TOTAL - VISITED && sumBy === TOTAL, 'وصندوقُ «النقاط بعوائق وبدونها»: بدون ' + KO.T.ok + ' + بعوائق ' + KO.T.ob + ' = تمت الزيارة ' + VISITED + '، وكلُّ نوعٍ يُجمَع إلى الكلّ');

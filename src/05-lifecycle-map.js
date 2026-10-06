@@ -4487,8 +4487,7 @@ function kioskStory(){
     parts.push(t(z0) + ' ' + t('يكتمل نحو') + ' ' + dayKey(f.eta) + (f.due ? (dd >= 0 ? ' \u2014 ' + t('قبل الموعد بـ') + ' ' + nm(dd) + ' ' + t('يومًا') : ' \u2014 ' + t('بعد الموعد بـ') + ' ' + nm(-dd) + ' ' + t('يومًا')) : '')); }
   else if (f && f.stalled) parts.push(t(z0) + ' ' + t('بلا وتيرةٍ منذ أسبوعين'));
   /* (V33.0) قرارُ المالك: لا «تنتظر قرار الوزارة» ولا «متعذّرة» — ما زير ولم يُوصَل إليه «تحتاج زيارة أخرى تقنيًا» */
-  var nRv = (STATE.sites || []).filter(function(x){ return svNeedsRevisit(STATE.recs[x.id]); }).length;
-  if (nRv) parts.push(nm(nRv) + ' ' + t('تحتاج زيارة أخرى تقنيًا'));
+  /* (V33.5) طلبُ المالك: لا «تحتاج زيارة أخرى» في القاعة — هي داخل «بعوائق» في البطاقات */
   return parts.join(' \u00b7 ') + '.';
 }
 /* العدّاداتُ تتحرّك من الصفر إلى رقمها حين تُفتَح الشاشة — الرقمُ يُرى وهو يُبنى */
@@ -4513,14 +4512,19 @@ function kioskCycleTick(){
   try { secs[KIOSK_STEP].scrollIntoView({ behavior:'smooth', block:'start' }); } catch (e){ secs[KIOSK_STEP].scrollIntoView(); }
 }
 function kioskCycleStop(){ if (KIOSK_CYCLE){ clearInterval(KIOSK_CYCLE); KIOSK_CYCLE = null; } }
-function kioskRing(pct, col, label, sub){
-  var r = 44, c = 2 * Math.PI * r, p = Math.max(0, Math.min(100, pct || 0));
-  return '<div class="kk-ring">'
-    + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" style="stroke:' + esc(col) + ';stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/>'
-    +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + Math.round(p) + '">' + nm(Math.round(p)) + '٪</text></svg>'
-    + '<div class="kk-lab">' + esc(t(label)) + '</div>'
-    + (sub ? '<div class="kk-sub">' + sub + '</div>' : '') + '</div>';
+/* (V33.5) طلبُ المالك: أربعُ حلقاتٍ فقط — المسح والتركيب والتسليم والفك — الأخضرُ المنجزُ والأحمرُ المتبقي، وتفاعليةٌ كبطاقات «بعوائق
+   وبدونها»: الحلقةُ تفتح قائمةَ المنجز، و«متبقٍّ» تحتها تفتح قائمةَ المتبقي. ولا مقامَ له (الفكُّ قبل التسليم) حلقةٌ رماديةٌ تقول متى تبدأ. */
+function kioskRing(done, total, label, doneKey, remKey, idle){
+  var r = 44, c = 2 * Math.PI * r, p = total ? Math.max(0, Math.min(100, done / total * 100)) : 0, rem = Math.max(0, total - done);
+  var pr = Math.round(p); if (pr === 100 && rem) pr = 99; if (pr === 0 && done) pr = 1;   /* لا يُقال ١٠٠٪ وبقي شيء ولا ٠٪ وأُنجز شيء */
+  return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
+    + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" style="stroke:var(--min-green);stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (c * (1 - p / 100)).toFixed(1) + '"/>'
+    +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
+    + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
+    + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
+        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقٍّ')) + ' ' + nm(rem) + ' \u203A</span>' : '')
+        : esc(t(idle || 'لم يبدأ بعد'))) + '</div></div>';
 }
 function kioskToggle(){
   KIOSK_ON = !KIOSK_ON;
@@ -4560,16 +4564,11 @@ function kioskBody(){
     +   '<div class="kk-date">' + esc(fmtDT(now)) + ' \u00b7 <span class="kk-live"></span> ' + esc(t('يتجدّد كلَّ دقيقة')) + '</div></div>'
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"' + (KIOSK_ON ? '' : ' title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '"')) + '</div>'
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
-    + '<div class="kk-rings" id="kksec-1">'
-    +   kioskRing(pcSv, 'var(--min-green)', 'المسحُ المنجَز', nm(S.sv) + ' / ' + nm(S.n) + ' \u00b7 ' + esc(t('متبقٍّ')) + ' ' + nm(S.n - S.sv))
-    +   kioskRing(pcMin, 'var(--min-gold)', 'اعتمادُ الوزارة من المُسِح', nm(minOk) + ' / ' + nm(S.sv))
-    +   kioskRing(pcIns, 'var(--min-teal)', 'التركيبُ المنجَز', nm(S.ins) + ' / ' + nm(S.n))
-    +   (function(){ var nRv = (STATE.sites || []).filter(function(x){ return svNeedsRevisit(STATE.recs[x.id]); }).length;   /* (V33.0) قرارُ المالك: لا «متعذّر» */
-          return '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-red)" aria-valuenow="' + nRv + '">' + nm(nRv) + '</div><div class="kk-lab">' + esc(t('تحتاج زيارة أخرى تقنيًا')) + '</div>'
-            + '<div class="kk-sub">' + esc(t('تمت الزيارة — وفيها تحدٍّ')) + '</div></div>'; })()
-    +   (function(){ var ok = svListRows('campok').length, camps = (STATE.sites || []).filter(function(x){ return taxOf(x).t === 'مخيمات'; }).length;   /* (V30.0) طلبُ المالك: كم مخيمًا بلا عائق — بالأخضر */
-          return '<div class="kk-ring kk-plain"><div class="kk-big" style="color:var(--min-green)" aria-valuenow="' + ok + '">' + nm(ok) + '</div><div class="kk-lab">' + esc(t('مخيمات بلا عائق')) + '</div>'
-            + '<div class="kk-sub">' + esc(t('تمت الزيارة وتم الوصول بلا تحديات')) + ' \u00b7 ' + nm(camps ? Math.round(ok / camps * 100) : 0) + '٪ ' + esc(t('من')) + ' ' + nm(camps) + '</div></div>'; })()
+    + '<div class="kk-rings" id="kksec-1">'   /* (V33.5) طلبُ المالك: المسح والتركيب والتسليم والفك — أربعٌ فقط */
+    +   (function(){ var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0;
+          all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)){ hd++; if (disDone(x.id)) ds++; } });
+          return kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr')
+            + kioskRing(ds, hd, 'الفك', 'disd', 'disr', 'يبدأ بعد التسليم — بعد الموسم'); })()
     + '</div>'
     + kioskObsHtml()   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
@@ -4843,7 +4842,13 @@ var SV_LISTS = {
   chal:    ['نقاط بعوائق', function(x, r){ return svObstacle(r); }],   /* (V33.0) تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى تقنيًا */
   unreach: ['تعذّر الوصول',            function(x, r){ return !!(r && r.access && r.access !== 'تم الوصول'); }],
   campok:  ['مخيمات بلا تحديات', function(x, r){ return taxOf(x).t === 'مخيمات' && svClean(r); }],   /* (V33.4) بالتعريف الواحد — والزيارةُ بقرار المهندس بلا تحدٍّ بلا عائق */
-  nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !!svPhotoState(x, r); }],
+  nophoto: ['زيارات بلا صور',          function(x, r){ return !!(r && svDone(r)) && !recIsQuick(r) && !!svPhotoState(x, r); }],   /* (V33.5) الزيارةُ بقرار المهندس بلا نموذجٍ ولا صورٍ أصلًا — ليست «بلا صور» */
+  insd:    ['تم التركيب',               function(x, r){ return insDone(x.id); }],   /* (V33.5) حلقاتُ القاعة الأربع */
+  insr:    ['المتبقي — لم يُركَّب',      function(x, r){ return !insDone(x.id); }],
+  hand:    ['تم التسليم',               function(x, r){ return handDone(x.id); }],
+  handr:   ['المتبقي — لم يُسلَّم',      function(x, r){ return !handDone(x.id); }],
+  disd:    ['تم الفك',                  function(x, r){ return disDone(x.id); }],
+  disr:    ['المتبقي — مُسلَّمٌ لم يُفَك', function(x, r){ return handDone(x.id) && !disDone(x.id); }],
   badphoto:['صور تحتاج إعادة',          function(x, r){ return photosOf(x.id).some(function(e){ return photoQualityFlags(e[1].q).length > 0; }); }],   /* (V30.6) photosOf يعيد [مفتاح، وثيقة] */
   /* (V29.9) ما ينتظر الوزارة — بالتفكير من جهتها: ما لا يتحرّك إلا بقرارها أو بملفٍّ منها */
   permit:  ['تحتاج تصريح دخول',          function(x, r){ return !!(r && r.access === 'يحتاج تصريح'); }],
