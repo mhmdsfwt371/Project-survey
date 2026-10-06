@@ -6,7 +6,7 @@
        --note "سطرٌ لما الجديد بلغة المستخدم" [--note "سطرٌ ثانٍ"] \
        --api "وصفٌ تقنيٌّ للمخطط" --row "سطرُ وثيقة النظام"
 
-   ثم يعيد توليدَ أدلة الأدوار وبصمةَ القاموس ويبني index.html. لا يلتزم ولا يدفع. */
+   ثم يعيد توليدَ أدلة الأدوار ودليلِ المستخدم (بالمسرد وما الجديد) وبصمةَ القاموس ويبني index.html. لا يلتزم ولا يدفع. */
 import { readFileSync, writeFileSync, readdirSync, unlinkSync, existsSync } from 'fs';
 import { execSync } from 'child_process';
 import { createRequire } from 'module';
@@ -50,9 +50,9 @@ const docxSwap = async (src, dst) => {
 const sysDocx = readdirSync('docs').filter(f => /^nusuk-system-V[\d.]+\.docx$/.test(f));
 if (sysDocx.length !== 1) die('docs/: المتوقع ملفُّ وثيقة نظامٍ واحد، وُجد ' + sysDocx.length);
 await docxSwap('docs/' + sysDocx[0], 'docs/nusuk-system-' + NEW + '.docx');
-if (existsSync('docs/nusuk-user-manual.docx')) await docxSwap('docs/nusuk-user-manual.docx', 'docs/nusuk-user-manual.docx');
+/* (V33.2) دليلُ المستخدم يُولَّد كاملًا (الفصول + المسرد + ما الجديد) لا يُبدَّل رقمُه فقط — يُشغَّل بعد البناء أدناه */
 
 const run = c => execSync(c, { stdio:'pipe' }).toString().trim().split('\n').pop();
-run('node scripts/build.mjs'); run('node scripts/role-manuals.mjs'); run('node scripts/i18n-rehash.mjs');
+run('node scripts/build.mjs'); run('node scripts/role-manuals.mjs'); run('node scripts/user-manual.mjs'); run('node scripts/i18n-rehash.mjs');
 console.log(run('node scripts/build.mjs'));
 console.log('✓ ' + OLD + ' → ' + NEW + ' في الأماكن الستة — شغّل الآن: node scripts/fast-run.mjs');

@@ -86,6 +86,11 @@ function table(head, rows, widths){
 }
 
 /* ── دليلُ دورٍ واحد ── */
+/* (V33.2) المسردُ و«ما الجديد» من المصدر نفسِه */
+function arrOf(name){ const i = src.indexOf('var ' + name + ' = ['); if (i < 0) throw new Error(name + ' غير موجود');
+  let d = 0, j = src.indexOf('[', i), k = j; for (; k < src.length; k++){ if (src[k] === '[') d++; else if (src[k] === ']'){ d--; if (!d) break; } }
+  return Function('"use strict"; return (' + src.slice(j, k + 1) + ');')(); }
+const GLOSSARY = arrOf('GLOSSARY'), NOTES = arrOf('RELEASE_NOTES').filter(n => n.notes && n.notes.length).slice(0, 5);
 function manualFor(id){
   const x = ROLES[id];
   const caps = Object.keys(x.can || {}).filter(c => x.can[c]);
@@ -142,6 +147,13 @@ function manualFor(id){
       kids.push(rtl(''));
     });
   }
+  /* (V33.2) طلبُ المالك: الدليلُ محدَّثٌ بكلِّ حاجة — المصطلحاتُ نفسُها التي يشرحها المساعد، وما الجديد في آخر النسخ */
+  kids.push(h2('المصطلحات'));
+  GLOSSARY.forEach(g => { kids.push(rtl(g.t, { bold: true, size: 22 })); kids.push(rtl(g.d, { size: 20 })); });
+  kids.push(rtl(''));
+  kids.push(h2('ما الجديد في آخر النسخ'));
+  NOTES.forEach(nv => { kids.push(rtl(nv.v + (nv.d ? '  ·  ' + nv.d : ''), { bold: true, size: 22 })); nv.notes.forEach(x => kids.push(rtl('•  ' + x, { size: 20 }))); });
+  kids.push(rtl(''));
   kids.push(rtl('هذا الدليل مُولَّدٌ آليًّا من تعريف الدور في النظام — من غيّر صلاحيةً ثم أعاد التوليدَ غيّر الدليلَ معها.',
                 { size: 18, color: '888888' }));
   return kids;
