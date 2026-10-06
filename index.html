@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1703,7 +1703,7 @@ var PG_Q = '';
 var PG_BIND = {
   survey:  function(v){ SURV_Q = v; }, svappr: function(v){ SVA_Q = v; },
   minappr: function(v){ MIN_Q  = v; }, wbs:    function(v){ WBS_Q = v; },
-  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR_Q = v; },
+  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR.q = v; },
   co:      function(v){ CO_Q   = v; }, sites:  function(v){ SITE_Q = v; },
   items:   function(v){ IT_Q   = v; }, jobs:   function(v){ JB_Q  = v; },
   reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ SHIP_Q = v; },
@@ -6294,10 +6294,10 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
               })))
 
       + '<div class="chips">'
-      + '<button type="button" class="chip' + (!USR_ROLE ? ' on' : '') + '" data-usrrolef="">'
+      + '<button type="button" class="chip' + (!USR.role ? ' on' : '') + '" data-usrrolef="">'
       +   esc(t('الكل')) + ' <span class="num">' + nm(total) + '</span></button>'
       + Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
-          return '<button type="button" class="chip' + (USR_ROLE===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
+          return '<button type="button" class="chip' + (USR.role===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
             + esc(t(ROLES[k].n)) + ' <span class="num">' + nm(byRole[k]) + '</span></button>';
         }).join('')
       + '</div>'
@@ -9999,47 +9999,47 @@ function siteLogHtml(id){
    جديد: خطوةٌ لكلِّ شاشةٍ **من شاشاته هو** — لا شاشاتِ غيره — بترتيب يومه،
    فيها ما تفعله الشاشةُ بكلمةٍ واحدة، ويُضاء بندُها في القائمة وهو يقرأ،
    وزرٌّ يأخذه إليها. وتُفتَح بعدها متى شاء من زرِّ القبّعة في الشريط. */
-var TOUR_OPEN = false, TOUR_I = 0;
+var TOUR = { open:false, i:0, skip:null, prime:null };   /* (V32.3) جولةُ البداية تملك حالتَها (كانت TOUR.open/TOUR.i/TOUR.skip/TOUR.prime) */
 /* صفحاتٌ تُفتَح من غيرها لا من القائمة — لا تصلح خطوةً في جولة */
-var TOUR_SKIP = { site:1, sel:1, svappr:1, minappr:1 };
+TOUR.skip = { site:1, sel:1, svappr:1, minappr:1 };
 /* أوّلُ ما يُفتَح في اليوم — إن كان من شاشات صاحب الحساب */
-var TOUR_PRIME = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
+TOUR.prime = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
 function tourPages(){
   var r = effRole(ROLE), nav = (ROLES[r] || {}).nav;
   var vis = (nav === '*') ? Object.keys(PAGE).filter(function(k){ return seesRaw(k); })
                           : (nav || []).filter(function(k){ return PAGE[k] && seesRaw(k); });
-  vis = vis.filter(function(k){ return !TOUR_SKIP[k]; });
-  var head = TOUR_PRIME.filter(function(p){ return vis.indexOf(p) > -1; });
+  vis = vis.filter(function(k){ return !TOUR.skip[k]; });
+  var head = TOUR.prime.filter(function(p){ return vis.indexOf(p) > -1; });
   var rest = vis.filter(function(p){ return head.indexOf(p) < 0; });
   return head.concat(rest).slice(0, 8);
 }
-function tourStart(){ TOUR_I = 0; TOUR_OPEN = true; render(1); }
+function tourStart(){ TOUR.i = 0; TOUR.open = true; render(1); }
 function tourEnd(said){
   /* من أغلقها بالزاوية أو بالخلفية فقد رآها — وكانت تُفتَح له مع كلِّ إقلاعٍ
      لأن الختمَ لا يُكتَب إلا بزرِّ «لا تعرضها ثانيةً»، فتصير الجولةُ إزعاجًا
      يوميًّا لا ترحيبًا بأوّل مرة (V17.1). تُختَم بأيِّ إغلاق، ويفتحها 🎓. */
-  TOUR_OPEN = false;
+  TOUR.open = false;
   try { lsSet('nsk14.tour', myUid() || '1'); } catch (e){ LS_ERR = e; }
   render(1);
 }
 function tourMaybe(){
   try { if (lsGet('nsk14.tour') === (myUid() || '1')) return; } catch (e){ return; }
   if (!tourPages().length) return;
-  TOUR_I = 0; TOUR_OPEN = true;
+  TOUR.i = 0; TOUR.open = true;
 }
 /* يُضاء بندُ الشاشة في القائمة مع خطوتها — فيُعرَف مكانُها لا اسمُها فقط */
 function tourSpot(){
   try {
     /* (V31.8) قياسُ الإقلاع على جوالٍ مُبطّأ: هذه الدالةُ أكلت ١٫٨ ثانية في أول دخول — كانت تمسح وتُمرّر في كلِّ رسمة، والتمريرُ
        (scrollIntoView) يفرض تخطيطَ الصفحة كلِّها. صارت لا تفعل شيئًا إن لم يتغيّر البندُ المضاء وما زال مُضاءً */
-    var P0 = TOUR_OPEN ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR_I, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
+    var P0 = TOUR.open ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR.i, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
     if (tourSpot.k === id0 && (id0 ? !!lit : !lit)) return;
     tourSpot.k = id0;
     var old = document.querySelectorAll('.tour-spot');
     for (var i = 0; i < old.length; i++) old[i].classList.remove('tour-spot');
-    if (!TOUR_OPEN) return;
+    if (!TOUR.open) return;
     var P = tourPages(); if (!P.length) return;
-    var id = P[Math.min(TOUR_I, P.length - 1)];
+    var id = P[Math.min(TOUR.i, P.length - 1)];
     var el = document.querySelector('.nav a[data-p="' + id + '"], [data-p="' + id + '"]');
     if (el){
       el.classList.add('tour-spot');
@@ -10050,20 +10050,20 @@ function tourSpot(){
   } catch (e){ LS_ERR = e; }
 }
 function tourHtml(){
-  if (!TOUR_OPEN) return '';
-  var P = tourPages(); if (!P.length){ TOUR_OPEN = false; return ''; }
-  if (TOUR_I >= P.length) TOUR_I = P.length - 1;
-  var id = P[TOUR_I], pg = PAGE[id] || {}, last = TOUR_I === P.length - 1;
+  if (!TOUR.open) return '';
+  var P = tourPages(); if (!P.length){ TOUR.open = false; return ''; }
+  if (TOUR.i >= P.length) TOUR.i = P.length - 1;
+  var id = P[TOUR.i], pg = PAGE[id] || {}, last = TOUR.i === P.length - 1;
   return '<div class="wt-back" data-tourclose="0"></div>'
     + '<div class="pop wt-sheet" id="tourSheet" role="dialog" aria-label="' + esc(t('جولة البداية')) + '">'
     + '<div class="pop-head"><div style="min-width:0">'
-    +   '<div class="pid hint" style="margin:0">\u{1F393} ' + esc(t('جولة البداية')) + ' \u00b7 <span class="num">' + nm(TOUR_I + 1) + ' ' + esc(t('من')) + ' ' + nm(P.length) + '</span></div>'
+    +   '<div class="pid hint" style="margin:0">\u{1F393} ' + esc(t('جولة البداية')) + ' \u00b7 <span class="num">' + nm(TOUR.i + 1) + ' ' + esc(t('من')) + ' ' + nm(P.length) + '</span></div>'
     +   '<h3 style="margin-top:3px">' + esc(t(pg.t || id)) + '</h3></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm pop-x" data-tourclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">'
     +   '<div class="hint" style="margin:0 0 6px">' + esc(t('مكانها')) + ': <b>' + esc(t(pg.m || '')) + '</b> \u2190 ' + esc(t(pg.t || '')) + '</div>'
     +   '<p style="margin:0 0 10px;font-size:14px;line-height:1.7">' + esc(t(pg.l || t('شاشةٌ من شاشاتك — افتحها لترى ما فيها.'))) + '</p>'
-    +   (TOUR_I === 0
+    +   (TOUR.i === 0
         ? '<div class="alert info" style="margin:0 0 10px"><span>' + esc(t('هذه شاشاتُك أنت — لكلِّ دورٍ شاشاتُه. البندُ المضيءُ في القائمة هو مكانُ هذه الشاشة.')) + '</span></div>'
         : '')
     +   (last
@@ -10071,7 +10071,7 @@ function tourHtml(){
         : '')
     +   '<div class="actions" style="margin:0">'
     +     btn('\u2190 ' + t('افتح هذه الشاشة'),'btn-primary btn-sm',' data-tourgo="' + esc(id) + '"')
-    +     btn('\u2039 ' + t('السابق'),'btn-quiet btn-sm',' data-tourprev="1"' + (TOUR_I ? '' : ' disabled'))
+    +     btn('\u2039 ' + t('السابق'),'btn-quiet btn-sm',' data-tourprev="1"' + (TOUR.i ? '' : ' disabled'))
     +     btn(last ? '\u2714 ' + t('تمّت الجولة') : t('التالي') + ' \u203A', last ? 'btn-secondary btn-sm' : 'btn-secondary btn-sm', ' data-tournext="1"')
     +   '</div>'
     +   '<p class="hint" style="margin:10px 0 0"><button type="button" class="btn btn-quiet btn-sm" data-tourstop="1">' + esc(t('لا تعرضها ثانيةً')) + '</button></p>'
@@ -14716,7 +14716,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
     var r = R();
     /* المهندسُ يقرأ دليلَ أيِّ دورٍ ليعرف ما يراه فريقُه؛ وغيرُه يقرأ دليلَه */
     var pick = may('roles') || may('users');
-    var cur = (pick && GUIDE_ROLE && ROLES[GUIDE_ROLE]) ? GUIDE_ROLE : ROLE;
+    var cur = (pick && GUIDE.role && ROLES[GUIDE.role]) ? GUIDE.role : ROLE;
 
     return (pick
       ? '<div class="chips">' + Object.keys(ROLES).map(function(k){
@@ -24221,6 +24221,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.3', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تحسين داخلي بلا تغيير في الاستخدام: شاشة المستخدمين وجولة البداية والأدلة بقت ماسكة حالتها في كائنات خاصة بيها (المتغيرات العامة ٦٠٥ ← ٥٩٨).' ] },
   { v:'V32.2', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'إصلاح مهم: تحريك النقطة على الخريطة ما كانش بيتحفظ — كان بيظهر على الجهاز اللي حرّك بس، ويرجع مكانه بعد فتح التطبيق تاني وعلى أي جهاز تاني. بقى بيتحفظ لكل الأجهزة، والنقاط اللي اتحركت قبل كده (١١١ نقطة) هتظهر في أماكنها الجديدة على كل الأجهزة.',
       'وكمان تعديل الإحداثيات من «تعديل البيانات» للنقاط الجديدة (زي كاميرات الزايدي) كان بيترجع للإحداثية الأصلية مع كل مزامنة — اتصلح.',
@@ -30275,7 +30277,7 @@ var CAP_SAY = {
    والدليلُ المكتوبُ بيدٍ يشيخ: تُضاف شاشةٌ أو تُنقَل قدرةٌ فيبقى الدليلُ
    على حاله يصف نظامًا لم يعد قائمًا. فهذا يُشتقّ من ROLES نفسِها لحظةَ
    فتحه — من غيّر صلاحيةً غيّر الدليلَ معها، ولا سبيلَ لأن يفترقا. */
-var GUIDE_G = '';
+var GUIDE = { g:'', role:'' };   /* (V32.3) الأدلةُ تملك حالتَها (كانت GUIDE.g/GUIDE.role) */
 function roleGuide(k){
   var x = ROLES[k];
   if (!x) return '';
@@ -30311,7 +30313,7 @@ function roleGuide(k){
     /* مئةٌ وخمسُ شاشاتٍ في قائمةٍ واحدةٍ لا تُقرأ — ولا تُقاس على شاشة هاتف.
        فالمجموعاتُ مطويّةٌ بأعدادها، وتُفتَح واحدةً واحدة. */
     + groups.map(function(g){
-        var open = GUIDE_G === g;
+        var open = GUIDE.g === g;
         return card('',
           '<button type="button" class="btn btn-quiet" data-guideg="' + esc(open ? '' : g) + '" style="width:100%;justify-content:space-between;font-weight:700">'
           + '<span>' + (open ? '\u25BE ' : '\u25B8 ') + esc(t(g)) + '</span><span class="num">' + nm(byGroup[g].length) + '</span></button>'
@@ -30331,7 +30333,7 @@ function roleGuide(k){
       : '');
 }
 
-var GUIDE_ROLE = '';
+/* GUIDE.role مُعلَنٌ مع GUIDE أعلاه (V32.3) */
 
 ;
 
@@ -31015,7 +31017,7 @@ function tgtBlock(kCamp, kCor){
 /* ═══ المستخدمون: من القاعدة لا من بيانات العرض ═══
    كانت القائمةُ أربعةَ صفوفٍ ثابتةً وأزرارُها بلا خاصية، فيبتلعها حارسُ
    الأزرار الميتة ويقول نصَّها. فصارت تقرأ `STATE.users` وتكتب فيها. */
-var USR_Q = '', USR_EDIT = '', USR_ROLE = '';
+var USR = { q:'', edit:'', role:'', log:'' };   /* (V32.3) شاشةُ المستخدمين تملك حالتَها (كانت USR.q/USR.edit/USR.role/USR.log) */
 
 /* من يظهر لي: من رتبتُه دوني — ونفسي. ومن يُدير الأدوارَ يرى الجميعَ
    لأنه هو من يرفعهم ويخفضهم. */
@@ -31110,7 +31112,7 @@ function userStats(name){
   L.forEach(function(x){ c[x.kind] = (c[x.kind] || 0) + 1; });
   return { n:L.length, last:L.length ? L[0].at : 0, byKind:c };
 }
-var USR_LOG = '';
+/* USR.log مُعلَنٌ مع USR أعلاه (V32.3) */
 function userLogHtml(uid){
   var u = (STATE.users || {})[uid] || {}, name = u.name || '';
   var p = userPresence(name), st = userStats(name), L = userLog(name, 200);
@@ -31150,9 +31152,9 @@ function usersList(){
   Object.keys(U).forEach(function(uid){
     var u = U[uid] || {};
     if (!canSeeUser(u)) return;
-    if (USR_ROLE && u.role !== USR_ROLE) return;
+    if (USR.role && u.role !== USR.role) return;
     var hay = (u.name || '') + ' ' + (u.user || '') + ' ' + (u.role || '');
-    if (USR_Q && hay.indexOf(USR_Q) < 0) return;
+    if (USR.q && hay.indexOf(USR.q) < 0) return;
     out.push([uid, u]);
   });
   return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
@@ -31403,12 +31405,12 @@ function usersCard(){
       return '<option value="' + esc(k) + '"' + (cur===k?' selected':'') + '>'
         + esc(t(ROLES[k].n)) + '</option>'; }).join('');
   };
-  return cardFlush(t('المستخدمون') + ' — ' + nm(L.length) + (USR_Q ? ' / ' + nm(Object.keys(U).length) : ''),
+  return cardFlush(t('المستخدمون') + ' — ' + nm(L.length) + (USR.q ? ' / ' + nm(Object.keys(U).length) : ''),
       L.length
         ? table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'],
             L.map(function(x){
               var uid = x[0], u = x[1], on = u.active !== false;
-              if (USR_EDIT === uid){
+              if (USR.edit === uid){
                 var jbOpts = '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
                   + jobsList().map(function(j){ return '<option value="' + esc(j.id) + '"'
                       + (u.job === j.id ? ' selected' : '') + '>' + esc(t(j.n)) + '</option>'; }).join('');
@@ -31466,7 +31468,7 @@ function usersCard(){
           + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'
                                         : 'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.')) + '</p>',
       '<form class="inline-form" onsubmit="return false">'
-      + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR_Q) + '" placeholder="'
+      + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR.q) + '" placeholder="'
       +   esc(t('بحث')) + '" dir="auto">'
       + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="users"')
       + (may('users')
@@ -31639,7 +31641,7 @@ function usrAdd(){
   if (sup) STATE.users[u].sup  = sup;
   if (dp)  STATE.users[u].dept = dp;
   if (em)  STATE.users[u].email = String(em).trim();
-  USR_Q = '';
+  USR.q = '';
   logEvent('طلب حساب — ' + n + ' (' + u + ') · ' + t(made.roleAr));
   toast(u + ' \u00b7 ' + t('طُلب من الخادم — يُنشَأ خلال دقائق'));
   ['uU','uN','uP','uE'].forEach(function(id){
@@ -32645,14 +32647,14 @@ function render0(force){
   /* ملفُّ البند: لوحٌ على الجسد كغيره */
   { var uh = document.getElementById('ulHost');
     if (!uh){ uh = document.createElement('div'); uh.id = 'ulHost'; document.body.appendChild(uh); }
-    uh.innerHTML = USR_LOG ? userLogHtml(USR_LOG) : ''; }
+    uh.innerHTML = USR.log ? userLogHtml(USR.log) : ''; }
   { var dh = document.getElementById('dosHost');
     if (!dh){ dh = document.createElement('div'); dh.id = 'dosHost'; document.body.appendChild(dh); }
     dh.innerHTML = (WBS_DOS && CUR === 'wbs') ? wbsDosSheet() : ''; }
   /* جولةُ البداية: لوحٌ على الجسد وإضاءةُ بندِ الشاشة في القائمة */
   { var th = document.getElementById('tourHost');
     if (!th){ th = document.createElement('div'); th.id = 'tourHost'; document.body.appendChild(th); }
-    th.innerHTML = TOUR_OPEN ? tourHtml() : '';
+    th.innerHTML = TOUR.open ? tourHtml() : '';
     if (typeof tourSpot === 'function') tourSpot(); }
   if (CUR === 'map'){
     /* لا يُمَسُّ #mapBox — تُرسَم واجهتُه في طبقةٍ فوقه وحدها */
@@ -32788,9 +32790,9 @@ function enterShell(){
   bootStage('render');
   syncBadge();
   /* أوّلُ دخولٍ لهذا الحساب: تُفتَح الجولةُ بنفسها — ومن رآها لا تُعاد */
-  try { tourMaybe(); if (TOUR_OPEN) render(1); } catch (e){ LS_ERR = e; }
+  try { tourMaybe(); if (TOUR.open) render(1); } catch (e){ LS_ERR = e; }
   /* أوّلُ فتحٍ بعد تحديث: سطورُ ما تغيّر مرةً واحدة — ولا تزاحم الجولةَ (V17.87) */
-  try { if (!TOUR_OPEN && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
+  try { if (!TOUR.open && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
   try { storagePersistMaybe(); } catch (e){ LS_ERR = e; }
   try { perfVitalsInit(); } catch (e){ LS_ERR = e; }
   try { SUN_ON = lsGet('nsk14.sun') === '1'; sunApply(); } catch (e){ LS_ERR = e; }
@@ -32892,7 +32894,7 @@ function clickTables(e){
     render(1); return true;
   }
   var gg = e.target.closest('[data-guideg]');
-  if (gg){ GUIDE_G = gg.getAttribute('data-guideg') || ''; render(1); return true; }
+  if (gg){ GUIDE.g = gg.getAttribute('data-guideg') || ''; render(1); return true; }
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
@@ -33341,11 +33343,11 @@ function clickA(e){
   if (e.target.closest('[data-tour]')){ tourStart(); return true; }
   if (e.target.closest('[data-tourclose]')){ tourEnd(false); return true; }
   if (e.target.closest('[data-tourstop]')){ tourEnd(true); toast(t('لن تُعرَض ثانيةً — زرُّ 🎓 يفتحها متى شئت')); return true; }
-  if (e.target.closest('[data-tourprev]')){ TOUR_I = Math.max(0, TOUR_I - 1); render(1); return true; }
+  if (e.target.closest('[data-tourprev]')){ TOUR.i = Math.max(0, TOUR.i - 1); render(1); return true; }
   if (e.target.closest('[data-tournext]')){
     var TP = tourPages();
-    if (TOUR_I >= TP.length - 1){ tourEnd(true); toast(t('تمّت الجولة — زرُّ 🎓 يفتحها متى شئت')); }
-    else { TOUR_I++; render(1); }
+    if (TOUR.i >= TP.length - 1){ tourEnd(true); toast(t('تمّت الجولة — زرُّ 🎓 يفتحها متى شئت')); }
+    else { TOUR.i++; render(1); }
     return true;
   }
   var tg = e.target.closest('[data-tourgo]');
@@ -33372,10 +33374,10 @@ function clickA(e){
   if (e.target.closest('[data-dqnoco]')){ dqMarkNoCo(); return true; }
   if (e.target.closest('[data-dqsplit]')){ dqSplitCo(); return true; }
   var ulg = e.target.closest('[data-usrlog]');
-  if (ulg){ USR_LOG = ulg.getAttribute('data-usrlog'); if (evAll().length < 50) evFetch(false); render(1); return true; }
-  if (e.target.closest('[data-ulclose]')){ USR_LOG = ''; render(1); return true; }
+  if (ulg){ USR.log = ulg.getAttribute('data-usrlog'); if (evAll().length < 50) evFetch(false); render(1); return true; }
+  if (e.target.closest('[data-ulclose]')){ USR.log = ''; render(1); return true; }
   var uls = e.target.closest('[data-ulsite]');
-  if (uls){ USR_LOG = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
+  if (uls){ USR.log = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
   if (e.target.closest('[data-nspin]')){ goPage('map'); pinStart(); return true; }
   var vas = e.target.closest('[data-visitasn]');
   if (vas){ visitAsnOpen(vas.getAttribute('data-visitasn')); return true; }
@@ -33585,7 +33587,7 @@ function clickA(e){
   var sst = e.target.closest('[data-survst]');
   if (sst){ SURV_ST = sst.getAttribute('data-survst'); render(1); return true; }
   var grl = e.target.closest('[data-grole]');
-  if (grl){ GUIDE_ROLE = grl.getAttribute('data-grole'); render(1); return true; }
+  if (grl){ GUIDE.role = grl.getAttribute('data-grole'); render(1); return true; }
   return false;
 }
 function onDocClick(e){
@@ -33975,7 +33977,7 @@ function onDocClick(e){
   var evc = e.target.closest('[data-evcat]');
   if (evc){ EVF.cat = evc.getAttribute('data-evcat'); render(1); return; }
   var ue = e.target.closest('[data-usredit]');
-  if (ue){ USR_EDIT = ue.getAttribute('data-usredit'); render(1); return; }
+  if (ue){ USR.edit = ue.getAttribute('data-usredit'); render(1); return; }
   var ud = e.target.closest('[data-usrdel]');
   if (ud){ usrDel(ud.getAttribute('data-usrdel')); return; }
   var ua = e.target.closest('[data-usract]');
@@ -33985,7 +33987,7 @@ function onDocClick(e){
   if (urn){
     rid = urn.getAttribute('data-usrren');
     var uEl = document.querySelector('[data-usru="' + rid + '"]');
-    if (usrRename(rid, uEl ? uEl.value : '')){ USR_EDIT = ''; render(1); }
+    if (usrRename(rid, uEl ? uEl.value : '')){ USR.edit = ''; render(1); }
     return;
   }
   var us = e.target.closest('[data-usrsave]');
@@ -34013,7 +34015,7 @@ function onDocClick(e){
     var phEl = document.querySelector('[data-usrph="' + id2 + '"]');
     if (phEl) patch.ph = String(phEl.value || '').replace(/[^\d+]/g, '');
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
-    USR_EDIT = ''; usrSet(id2, patch); return;
+    USR.edit = ''; usrSet(id2, patch); return;
   }
   if (e.target.closest('[data-tkpurge]')){
     if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
@@ -34055,7 +34057,7 @@ function onDocClick(e){
     CORE.dirty('users', idD, null);
     logEvent('حذف حساب — ' + (uD.name || idD));
     toast(t('حُذف الحساب'));
-    USR_EDIT = ''; render(1); return;
+    USR.edit = ''; render(1); return;
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-serrclr]')){
@@ -34365,7 +34367,7 @@ function onDocClick(e){
   if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
 
   var urf = e.target.closest('[data-usrrolef]');
-  if (urf){ USR_ROLE = urf.getAttribute('data-usrrolef'); render(1); return; }
+  if (urf){ USR.role = urf.getAttribute('data-usrrolef'); render(1); return; }
 
   var mo = e.target.closest('[data-months]');
   if (mo){ PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }
@@ -35021,7 +35023,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-usrq')){
-    USR_Q = e.target.value; render(1);
+    USR.q = e.target.value; render(1);
     var uq = document.getElementById('usrQ');
     if (uq){ uq.focus(); uq.setSelectionRange(uq.value.length, uq.value.length); }
     return;

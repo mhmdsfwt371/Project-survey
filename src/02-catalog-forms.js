@@ -2555,10 +2555,10 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
               })))
 
       + '<div class="chips">'
-      + '<button type="button" class="chip' + (!USR_ROLE ? ' on' : '') + '" data-usrrolef="">'
+      + '<button type="button" class="chip' + (!USR.role ? ' on' : '') + '" data-usrrolef="">'
       +   esc(t('الكل')) + ' <span class="num">' + nm(total) + '</span></button>'
       + Object.keys(ROLES).filter(function(k){ return byRole[k]; }).map(function(k){
-          return '<button type="button" class="chip' + (USR_ROLE===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
+          return '<button type="button" class="chip' + (USR.role===k?' on':'') + '" data-usrrolef="' + esc(k) + '">'
             + esc(t(ROLES[k].n)) + ' <span class="num">' + nm(byRole[k]) + '</span></button>';
         }).join('')
       + '</div>'

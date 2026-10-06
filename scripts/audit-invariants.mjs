@@ -47,7 +47,7 @@ w.STATE.tasks['TK-visit-'+S[5].id]={id:'TK-visit-'+S[5].id,no:'SR-0009',site:S[5
 w.statBump();
 w.goPage('users'); w.render(1);
 const btnDel=d.querySelector('[data-usrdel="t1"]');
-if(!btnDel){ w.USR_EDIT='t1'; w.render(1); }
+if(!btnDel){ w.USR.edit='t1'; w.render(1); }
 const b2=d.querySelector('[data-usrdel="t1"]'); if(b2) b2.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 T(!!w.STATE.users.t1, 'حسابٌ عليه مهامُّ مفتوحةٌ لا يُحذَف', w.STATE.users.t1?'مُنع':'حُذف والمهامُّ يتيمة');
 /* ٣ · حذفُ صنفٍ في طلبِ ورشةٍ مفتوح أو حلٍّ معتمد */

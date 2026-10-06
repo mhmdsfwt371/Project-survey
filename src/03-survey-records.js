@@ -3126,47 +3126,47 @@ function siteLogHtml(id){
    جديد: خطوةٌ لكلِّ شاشةٍ **من شاشاته هو** — لا شاشاتِ غيره — بترتيب يومه،
    فيها ما تفعله الشاشةُ بكلمةٍ واحدة، ويُضاء بندُها في القائمة وهو يقرأ،
    وزرٌّ يأخذه إليها. وتُفتَح بعدها متى شاء من زرِّ القبّعة في الشريط. */
-var TOUR_OPEN = false, TOUR_I = 0;
+var TOUR = { open:false, i:0, skip:null, prime:null };   /* (V32.3) جولةُ البداية تملك حالتَها (كانت TOUR.open/TOUR.i/TOUR.skip/TOUR.prime) */
 /* صفحاتٌ تُفتَح من غيرها لا من القائمة — لا تصلح خطوةً في جولة */
-var TOUR_SKIP = { site:1, sel:1, svappr:1, minappr:1 };
+TOUR.skip = { site:1, sel:1, svappr:1, minappr:1 };
 /* أوّلُ ما يُفتَح في اليوم — إن كان من شاشات صاحب الحساب */
-var TOUR_PRIME = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
+TOUR.prime = ['map', 'mywork', 'wtask', 'over', 'perf', 'ipc', 'users', 'sys'];
 function tourPages(){
   var r = effRole(ROLE), nav = (ROLES[r] || {}).nav;
   var vis = (nav === '*') ? Object.keys(PAGE).filter(function(k){ return seesRaw(k); })
                           : (nav || []).filter(function(k){ return PAGE[k] && seesRaw(k); });
-  vis = vis.filter(function(k){ return !TOUR_SKIP[k]; });
-  var head = TOUR_PRIME.filter(function(p){ return vis.indexOf(p) > -1; });
+  vis = vis.filter(function(k){ return !TOUR.skip[k]; });
+  var head = TOUR.prime.filter(function(p){ return vis.indexOf(p) > -1; });
   var rest = vis.filter(function(p){ return head.indexOf(p) < 0; });
   return head.concat(rest).slice(0, 8);
 }
-function tourStart(){ TOUR_I = 0; TOUR_OPEN = true; render(1); }
+function tourStart(){ TOUR.i = 0; TOUR.open = true; render(1); }
 function tourEnd(said){
   /* من أغلقها بالزاوية أو بالخلفية فقد رآها — وكانت تُفتَح له مع كلِّ إقلاعٍ
      لأن الختمَ لا يُكتَب إلا بزرِّ «لا تعرضها ثانيةً»، فتصير الجولةُ إزعاجًا
      يوميًّا لا ترحيبًا بأوّل مرة (V17.1). تُختَم بأيِّ إغلاق، ويفتحها 🎓. */
-  TOUR_OPEN = false;
+  TOUR.open = false;
   try { lsSet('nsk14.tour', myUid() || '1'); } catch (e){ LS_ERR = e; }
   render(1);
 }
 function tourMaybe(){
   try { if (lsGet('nsk14.tour') === (myUid() || '1')) return; } catch (e){ return; }
   if (!tourPages().length) return;
-  TOUR_I = 0; TOUR_OPEN = true;
+  TOUR.i = 0; TOUR.open = true;
 }
 /* يُضاء بندُ الشاشة في القائمة مع خطوتها — فيُعرَف مكانُها لا اسمُها فقط */
 function tourSpot(){
   try {
     /* (V31.8) قياسُ الإقلاع على جوالٍ مُبطّأ: هذه الدالةُ أكلت ١٫٨ ثانية في أول دخول — كانت تمسح وتُمرّر في كلِّ رسمة، والتمريرُ
        (scrollIntoView) يفرض تخطيطَ الصفحة كلِّها. صارت لا تفعل شيئًا إن لم يتغيّر البندُ المضاء وما زال مُضاءً */
-    var P0 = TOUR_OPEN ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR_I, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
+    var P0 = TOUR.open ? tourPages() : [], id0 = P0.length ? P0[Math.min(TOUR.i, P0.length - 1)] : '', lit = document.querySelector('.tour-spot');
     if (tourSpot.k === id0 && (id0 ? !!lit : !lit)) return;
     tourSpot.k = id0;
     var old = document.querySelectorAll('.tour-spot');
     for (var i = 0; i < old.length; i++) old[i].classList.remove('tour-spot');
-    if (!TOUR_OPEN) return;
+    if (!TOUR.open) return;
     var P = tourPages(); if (!P.length) return;
-    var id = P[Math.min(TOUR_I, P.length - 1)];
+    var id = P[Math.min(TOUR.i, P.length - 1)];
     var el = document.querySelector('.nav a[data-p="' + id + '"], [data-p="' + id + '"]');
     if (el){
       el.classList.add('tour-spot');
@@ -3177,20 +3177,20 @@ function tourSpot(){
   } catch (e){ LS_ERR = e; }
 }
 function tourHtml(){
-  if (!TOUR_OPEN) return '';
-  var P = tourPages(); if (!P.length){ TOUR_OPEN = false; return ''; }
-  if (TOUR_I >= P.length) TOUR_I = P.length - 1;
-  var id = P[TOUR_I], pg = PAGE[id] || {}, last = TOUR_I === P.length - 1;
+  if (!TOUR.open) return '';
+  var P = tourPages(); if (!P.length){ TOUR.open = false; return ''; }
+  if (TOUR.i >= P.length) TOUR.i = P.length - 1;
+  var id = P[TOUR.i], pg = PAGE[id] || {}, last = TOUR.i === P.length - 1;
   return '<div class="wt-back" data-tourclose="0"></div>'
     + '<div class="pop wt-sheet" id="tourSheet" role="dialog" aria-label="' + esc(t('جولة البداية')) + '">'
     + '<div class="pop-head"><div style="min-width:0">'
-    +   '<div class="pid hint" style="margin:0">\u{1F393} ' + esc(t('جولة البداية')) + ' \u00b7 <span class="num">' + nm(TOUR_I + 1) + ' ' + esc(t('من')) + ' ' + nm(P.length) + '</span></div>'
+    +   '<div class="pid hint" style="margin:0">\u{1F393} ' + esc(t('جولة البداية')) + ' \u00b7 <span class="num">' + nm(TOUR.i + 1) + ' ' + esc(t('من')) + ' ' + nm(P.length) + '</span></div>'
     +   '<h3 style="margin-top:3px">' + esc(t(pg.t || id)) + '</h3></div>'
     +   '<button type="button" class="btn btn-quiet btn-sm pop-x" data-tourclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">'
     +   '<div class="hint" style="margin:0 0 6px">' + esc(t('مكانها')) + ': <b>' + esc(t(pg.m || '')) + '</b> \u2190 ' + esc(t(pg.t || '')) + '</div>'
     +   '<p style="margin:0 0 10px;font-size:14px;line-height:1.7">' + esc(t(pg.l || t('شاشةٌ من شاشاتك — افتحها لترى ما فيها.'))) + '</p>'
-    +   (TOUR_I === 0
+    +   (TOUR.i === 0
         ? '<div class="alert info" style="margin:0 0 10px"><span>' + esc(t('هذه شاشاتُك أنت — لكلِّ دورٍ شاشاتُه. البندُ المضيءُ في القائمة هو مكانُ هذه الشاشة.')) + '</span></div>'
         : '')
     +   (last
@@ -3198,7 +3198,7 @@ function tourHtml(){
         : '')
     +   '<div class="actions" style="margin:0">'
     +     btn('\u2190 ' + t('افتح هذه الشاشة'),'btn-primary btn-sm',' data-tourgo="' + esc(id) + '"')
-    +     btn('\u2039 ' + t('السابق'),'btn-quiet btn-sm',' data-tourprev="1"' + (TOUR_I ? '' : ' disabled'))
+    +     btn('\u2039 ' + t('السابق'),'btn-quiet btn-sm',' data-tourprev="1"' + (TOUR.i ? '' : ' disabled'))
     +     btn(last ? '\u2714 ' + t('تمّت الجولة') : t('التالي') + ' \u203A', last ? 'btn-secondary btn-sm' : 'btn-secondary btn-sm', ' data-tournext="1"')
     +   '</div>'
     +   '<p class="hint" style="margin:10px 0 0"><button type="button" class="btn btn-quiet btn-sm" data-tourstop="1">' + esc(t('لا تعرضها ثانيةً')) + '</button></p>'

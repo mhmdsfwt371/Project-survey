@@ -35,7 +35,7 @@ await wait(1600);
 const click = sel => { const el = d.querySelector(sel); if (!el) return false; el.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); return true; };
 
 /* ١ · تُفتَح بنفسها أوّلَ دخول */
-T(w.TOUR_OPEN === true && !!d.getElementById('tourSheet'), 'تُفتَح بنفسها أوّلَ دخولٍ لهذا الحساب');
+T(w.TOUR.open === true && !!d.getElementById('tourSheet'), 'تُفتَح بنفسها أوّلَ دخولٍ لهذا الحساب');
 T(!!d.querySelector('#tourSheet .actions [data-tourgo]'), 'ولكلِّ خطوةٍ زرٌّ يأخذه إلى الشاشة');
 
 /* ٢ · خطواتُها شاشاتُه هو */
@@ -56,25 +56,25 @@ T(byRole.store.indexOf('map') < 0 && byRole.driver.length <= byRole.admin.length
 w.ROLE = 'tech';
 
 /* ٤ · الإضاءةُ والتنقّل */
-w.TOUR_I = 0; w.render(1); await wait(150);
+w.TOUR.i = 0; w.render(1); await wait(150);
 const spot = d.querySelector('.tour-spot');
 T(!!spot && spot.getAttribute('data-p') === w.tourPages()[0], 'بندُ الشاشة يُضاء في القائمة مع خطوتها');
 click('[data-tournext]'); await wait(140);
-T(w.TOUR_I === 1 && d.querySelector('.tour-spot').getAttribute('data-p') === w.tourPages()[1], 'و«التالي» ينقل الخطوةَ والإضاءةَ معًا');
+T(w.TOUR.i === 1 && d.querySelector('.tour-spot').getAttribute('data-p') === w.tourPages()[1], 'و«التالي» ينقل الخطوةَ والإضاءةَ معًا');
 click('[data-tourgo="' + w.tourPages()[1] + '"]'); await wait(140);
 T(w.CUR === w.tourPages()[1], 'والزرُّ يفتح الشاشةَ فعلًا');
 
 /* ٥ · لا تُعاد بعد إنهائها */
 /* أيُّ إغلاقٍ يُعدُّ رؤيةً — وإلا عادت مع كلِّ إقلاعٍ لمن أغلقها بالزاوية (V17.1) */
 click('[data-tourclose]'); await wait(140);
-T(w.TOUR_OPEN === false && !d.getElementById('tourSheet'), 'تُغلَق بالزاوية');
+T(w.TOUR.open === false && !d.getElementById('tourSheet'), 'تُغلَق بالزاوية');
 w.tourMaybe();
-T(w.TOUR_OPEN === false, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
+T(w.TOUR.open === false, 'ولا تعود مع الإقلاع التالي — رُئيت مرةً');
 click('[data-tour]'); await wait(140);
 click('[data-tourstop]'); await wait(140);
-T(w.TOUR_OPEN === false, 'و«لا تعرضها ثانيةً» تطويها كذلك');
+T(w.TOUR.open === false, 'و«لا تعرضها ثانيةً» تطويها كذلك');
 click('[data-tour]'); await wait(140);
-T(w.TOUR_OPEN === true, 'وزرُّ 🎓 يفتحها متى شاء');
+T(w.TOUR.open === true, 'وزرُّ 🎓 يفتحها متى شاء');
 const bt = readFileSync('scripts/browser-test.mjs', 'utf8');
 T(/tourclose/.test(bt) && /لا حاجبَ فوق الخريطة قبل اللمس/.test(bt),
   'واختبارُ المتصفّح الحقيقيِّ يُغلقها ويتحقّق ألّا حاجبَ قبل لمس الخريطة');

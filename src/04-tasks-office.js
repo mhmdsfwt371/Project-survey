@@ -2956,7 +2956,7 @@ PAGE.guide = { m:'المساعدة', t:'الأدلة',
     var r = R();
     /* المهندسُ يقرأ دليلَ أيِّ دورٍ ليعرف ما يراه فريقُه؛ وغيرُه يقرأ دليلَه */
     var pick = may('roles') || may('users');
-    var cur = (pick && GUIDE_ROLE && ROLES[GUIDE_ROLE]) ? GUIDE_ROLE : ROLE;
+    var cur = (pick && GUIDE.role && ROLES[GUIDE.role]) ? GUIDE.role : ROLE;
 
     return (pick
       ? '<div class="chips">' + Object.keys(ROLES).map(function(k){

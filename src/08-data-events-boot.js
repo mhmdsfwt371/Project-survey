@@ -129,7 +129,7 @@ var CAP_SAY = {
    والدليلُ المكتوبُ بيدٍ يشيخ: تُضاف شاشةٌ أو تُنقَل قدرةٌ فيبقى الدليلُ
    على حاله يصف نظامًا لم يعد قائمًا. فهذا يُشتقّ من ROLES نفسِها لحظةَ
    فتحه — من غيّر صلاحيةً غيّر الدليلَ معها، ولا سبيلَ لأن يفترقا. */
-var GUIDE_G = '';
+var GUIDE = { g:'', role:'' };   /* (V32.3) الأدلةُ تملك حالتَها (كانت GUIDE.g/GUIDE.role) */
 function roleGuide(k){
   var x = ROLES[k];
   if (!x) return '';
@@ -165,7 +165,7 @@ function roleGuide(k){
     /* مئةٌ وخمسُ شاشاتٍ في قائمةٍ واحدةٍ لا تُقرأ — ولا تُقاس على شاشة هاتف.
        فالمجموعاتُ مطويّةٌ بأعدادها، وتُفتَح واحدةً واحدة. */
     + groups.map(function(g){
-        var open = GUIDE_G === g;
+        var open = GUIDE.g === g;
         return card('',
           '<button type="button" class="btn btn-quiet" data-guideg="' + esc(open ? '' : g) + '" style="width:100%;justify-content:space-between;font-weight:700">'
           + '<span>' + (open ? '\u25BE ' : '\u25B8 ') + esc(t(g)) + '</span><span class="num">' + nm(byGroup[g].length) + '</span></button>'
@@ -185,7 +185,7 @@ function roleGuide(k){
       : '');
 }
 
-var GUIDE_ROLE = '';
+/* GUIDE.role مُعلَنٌ مع GUIDE أعلاه (V32.3) */
 
 ;
 
@@ -869,7 +869,7 @@ function tgtBlock(kCamp, kCor){
 /* ═══ المستخدمون: من القاعدة لا من بيانات العرض ═══
    كانت القائمةُ أربعةَ صفوفٍ ثابتةً وأزرارُها بلا خاصية، فيبتلعها حارسُ
    الأزرار الميتة ويقول نصَّها. فصارت تقرأ `STATE.users` وتكتب فيها. */
-var USR_Q = '', USR_EDIT = '', USR_ROLE = '';
+var USR = { q:'', edit:'', role:'', log:'' };   /* (V32.3) شاشةُ المستخدمين تملك حالتَها (كانت USR.q/USR.edit/USR.role/USR.log) */
 
 /* من يظهر لي: من رتبتُه دوني — ونفسي. ومن يُدير الأدوارَ يرى الجميعَ
    لأنه هو من يرفعهم ويخفضهم. */
@@ -964,7 +964,7 @@ function userStats(name){
   L.forEach(function(x){ c[x.kind] = (c[x.kind] || 0) + 1; });
   return { n:L.length, last:L.length ? L[0].at : 0, byKind:c };
 }
-var USR_LOG = '';
+/* USR.log مُعلَنٌ مع USR أعلاه (V32.3) */
 function userLogHtml(uid){
   var u = (STATE.users || {})[uid] || {}, name = u.name || '';
   var p = userPresence(name), st = userStats(name), L = userLog(name, 200);
@@ -1004,9 +1004,9 @@ function usersList(){
   Object.keys(U).forEach(function(uid){
     var u = U[uid] || {};
     if (!canSeeUser(u)) return;
-    if (USR_ROLE && u.role !== USR_ROLE) return;
+    if (USR.role && u.role !== USR.role) return;
     var hay = (u.name || '') + ' ' + (u.user || '') + ' ' + (u.role || '');
-    if (USR_Q && hay.indexOf(USR_Q) < 0) return;
+    if (USR.q && hay.indexOf(USR.q) < 0) return;
     out.push([uid, u]);
   });
   return out.sort(function(a, b){ return String(a[1].name||'').localeCompare(String(b[1].name||''), 'ar'); });
@@ -1257,12 +1257,12 @@ function usersCard(){
       return '<option value="' + esc(k) + '"' + (cur===k?' selected':'') + '>'
         + esc(t(ROLES[k].n)) + '</option>'; }).join('');
   };
-  return cardFlush(t('المستخدمون') + ' — ' + nm(L.length) + (USR_Q ? ' / ' + nm(Object.keys(U).length) : ''),
+  return cardFlush(t('المستخدمون') + ' — ' + nm(L.length) + (USR.q ? ' / ' + nm(Object.keys(U).length) : ''),
       L.length
         ? table(['الاسم','الدور','الحالة','أُنشئ في','إجراءات'],
             L.map(function(x){
               var uid = x[0], u = x[1], on = u.active !== false;
-              if (USR_EDIT === uid){
+              if (USR.edit === uid){
                 var jbOpts = '<option value="">— ' + esc(t('بلا وظيفة')) + ' —</option>'
                   + jobsList().map(function(j){ return '<option value="' + esc(j.id) + '"'
                       + (u.job === j.id ? ' selected' : '') + '>' + esc(t(j.n)) + '</option>'; }).join('');
@@ -1320,7 +1320,7 @@ function usersCard(){
           + esc(t(Object.keys(U).length ? 'لا مستخدمَ يطابق البحث.'
                                         : 'لا حساباتٍ بعد. هذا الجدولُ هو مكانُ كلِّ حسابٍ في النظام: منه يُعدَّل الاسمُ والوظيفةُ والقسمُ والمدير، ومنه يُعطَّل الحسابُ أو يُحذَف. أنشئ أوّلَ حسابٍ من النموذج أعلاه.')) + '</p>',
       '<form class="inline-form" onsubmit="return false">'
-      + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR_Q) + '" placeholder="'
+      + '<input type="search" id="usrQ" data-usrq="1" value="' + esc(USR.q) + '" placeholder="'
       +   esc(t('بحث')) + '" dir="auto">'
       + btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="users"')
       + (may('users')
@@ -1493,7 +1493,7 @@ function usrAdd(){
   if (sup) STATE.users[u].sup  = sup;
   if (dp)  STATE.users[u].dept = dp;
   if (em)  STATE.users[u].email = String(em).trim();
-  USR_Q = '';
+  USR.q = '';
   logEvent('طلب حساب — ' + n + ' (' + u + ') · ' + t(made.roleAr));
   toast(u + ' \u00b7 ' + t('طُلب من الخادم — يُنشَأ خلال دقائق'));
   ['uU','uN','uP','uE'].forEach(function(id){
@@ -2499,14 +2499,14 @@ function render0(force){
   /* ملفُّ البند: لوحٌ على الجسد كغيره */
   { var uh = document.getElementById('ulHost');
     if (!uh){ uh = document.createElement('div'); uh.id = 'ulHost'; document.body.appendChild(uh); }
-    uh.innerHTML = USR_LOG ? userLogHtml(USR_LOG) : ''; }
+    uh.innerHTML = USR.log ? userLogHtml(USR.log) : ''; }
   { var dh = document.getElementById('dosHost');
     if (!dh){ dh = document.createElement('div'); dh.id = 'dosHost'; document.body.appendChild(dh); }
     dh.innerHTML = (WBS_DOS && CUR === 'wbs') ? wbsDosSheet() : ''; }
   /* جولةُ البداية: لوحٌ على الجسد وإضاءةُ بندِ الشاشة في القائمة */
   { var th = document.getElementById('tourHost');
     if (!th){ th = document.createElement('div'); th.id = 'tourHost'; document.body.appendChild(th); }
-    th.innerHTML = TOUR_OPEN ? tourHtml() : '';
+    th.innerHTML = TOUR.open ? tourHtml() : '';
     if (typeof tourSpot === 'function') tourSpot(); }
   if (CUR === 'map'){
     /* لا يُمَسُّ #mapBox — تُرسَم واجهتُه في طبقةٍ فوقه وحدها */
@@ -2642,9 +2642,9 @@ function enterShell(){
   bootStage('render');
   syncBadge();
   /* أوّلُ دخولٍ لهذا الحساب: تُفتَح الجولةُ بنفسها — ومن رآها لا تُعاد */
-  try { tourMaybe(); if (TOUR_OPEN) render(1); } catch (e){ LS_ERR = e; }
+  try { tourMaybe(); if (TOUR.open) render(1); } catch (e){ LS_ERR = e; }
   /* أوّلُ فتحٍ بعد تحديث: سطورُ ما تغيّر مرةً واحدة — ولا تزاحم الجولةَ (V17.87) */
-  try { if (!TOUR_OPEN && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
+  try { if (!TOUR.open && whatsNewMaybe()) render(1); } catch (e){ LS_ERR = e; }
   try { storagePersistMaybe(); } catch (e){ LS_ERR = e; }
   try { perfVitalsInit(); } catch (e){ LS_ERR = e; }
   try { SUN_ON = lsGet('nsk14.sun') === '1'; sunApply(); } catch (e){ LS_ERR = e; }
@@ -2746,7 +2746,7 @@ function clickTables(e){
     render(1); return true;
   }
   var gg = e.target.closest('[data-guideg]');
-  if (gg){ GUIDE_G = gg.getAttribute('data-guideg') || ''; render(1); return true; }
+  if (gg){ GUIDE.g = gg.getAttribute('data-guideg') || ''; render(1); return true; }
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
@@ -3195,11 +3195,11 @@ function clickA(e){
   if (e.target.closest('[data-tour]')){ tourStart(); return true; }
   if (e.target.closest('[data-tourclose]')){ tourEnd(false); return true; }
   if (e.target.closest('[data-tourstop]')){ tourEnd(true); toast(t('لن تُعرَض ثانيةً — زرُّ 🎓 يفتحها متى شئت')); return true; }
-  if (e.target.closest('[data-tourprev]')){ TOUR_I = Math.max(0, TOUR_I - 1); render(1); return true; }
+  if (e.target.closest('[data-tourprev]')){ TOUR.i = Math.max(0, TOUR.i - 1); render(1); return true; }
   if (e.target.closest('[data-tournext]')){
     var TP = tourPages();
-    if (TOUR_I >= TP.length - 1){ tourEnd(true); toast(t('تمّت الجولة — زرُّ 🎓 يفتحها متى شئت')); }
-    else { TOUR_I++; render(1); }
+    if (TOUR.i >= TP.length - 1){ tourEnd(true); toast(t('تمّت الجولة — زرُّ 🎓 يفتحها متى شئت')); }
+    else { TOUR.i++; render(1); }
     return true;
   }
   var tg = e.target.closest('[data-tourgo]');
@@ -3226,10 +3226,10 @@ function clickA(e){
   if (e.target.closest('[data-dqnoco]')){ dqMarkNoCo(); return true; }
   if (e.target.closest('[data-dqsplit]')){ dqSplitCo(); return true; }
   var ulg = e.target.closest('[data-usrlog]');
-  if (ulg){ USR_LOG = ulg.getAttribute('data-usrlog'); if (evAll().length < 50) evFetch(false); render(1); return true; }
-  if (e.target.closest('[data-ulclose]')){ USR_LOG = ''; render(1); return true; }
+  if (ulg){ USR.log = ulg.getAttribute('data-usrlog'); if (evAll().length < 50) evFetch(false); render(1); return true; }
+  if (e.target.closest('[data-ulclose]')){ USR.log = ''; render(1); return true; }
   var uls = e.target.closest('[data-ulsite]');
-  if (uls){ USR_LOG = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
+  if (uls){ USR.log = ''; DETAIL_ID = uls.getAttribute('data-ulsite'); goPage('site'); render(1); return true; }
   if (e.target.closest('[data-nspin]')){ goPage('map'); pinStart(); return true; }
   var vas = e.target.closest('[data-visitasn]');
   if (vas){ visitAsnOpen(vas.getAttribute('data-visitasn')); return true; }
@@ -3439,7 +3439,7 @@ function clickA(e){
   var sst = e.target.closest('[data-survst]');
   if (sst){ SURV_ST = sst.getAttribute('data-survst'); render(1); return true; }
   var grl = e.target.closest('[data-grole]');
-  if (grl){ GUIDE_ROLE = grl.getAttribute('data-grole'); render(1); return true; }
+  if (grl){ GUIDE.role = grl.getAttribute('data-grole'); render(1); return true; }
   return false;
 }
 function onDocClick(e){
@@ -3829,7 +3829,7 @@ function onDocClick(e){
   var evc = e.target.closest('[data-evcat]');
   if (evc){ EVF.cat = evc.getAttribute('data-evcat'); render(1); return; }
   var ue = e.target.closest('[data-usredit]');
-  if (ue){ USR_EDIT = ue.getAttribute('data-usredit'); render(1); return; }
+  if (ue){ USR.edit = ue.getAttribute('data-usredit'); render(1); return; }
   var ud = e.target.closest('[data-usrdel]');
   if (ud){ usrDel(ud.getAttribute('data-usrdel')); return; }
   var ua = e.target.closest('[data-usract]');
@@ -3839,7 +3839,7 @@ function onDocClick(e){
   if (urn){
     rid = urn.getAttribute('data-usrren');
     var uEl = document.querySelector('[data-usru="' + rid + '"]');
-    if (usrRename(rid, uEl ? uEl.value : '')){ USR_EDIT = ''; render(1); }
+    if (usrRename(rid, uEl ? uEl.value : '')){ USR.edit = ''; render(1); }
     return;
   }
   var us = e.target.closest('[data-usrsave]');
@@ -3867,7 +3867,7 @@ function onDocClick(e){
     var phEl = document.querySelector('[data-usrph="' + id2 + '"]');
     if (phEl) patch.ph = String(phEl.value || '').replace(/[^\d+]/g, '');
     if (!patch.name){ toast(t('الاسم مطلوب')); return; }
-    USR_EDIT = ''; usrSet(id2, patch); return;
+    USR.edit = ''; usrSet(id2, patch); return;
   }
   if (e.target.closest('[data-tkpurge]')){
     if (!may('users')){ toast(t('إدارةُ المستخدمين للمهندس وحده')); return; }
@@ -3909,7 +3909,7 @@ function onDocClick(e){
     CORE.dirty('users', idD, null);
     logEvent('حذف حساب — ' + (uD.name || idD));
     toast(t('حُذف الحساب'));
-    USR_EDIT = ''; render(1); return;
+    USR.edit = ''; render(1); return;
   }
   if (e.target.closest('[data-out]')){ signOut(); return; }
   if (e.target.closest('[data-serrclr]')){
@@ -4219,7 +4219,7 @@ function onDocClick(e){
   if (e.target.closest('[data-impx]')){ IMP_PREVIEW = null; render(); return; }
 
   var urf = e.target.closest('[data-usrrolef]');
-  if (urf){ USR_ROLE = urf.getAttribute('data-usrrolef'); render(1); return; }
+  if (urf){ USR.role = urf.getAttribute('data-usrrolef'); render(1); return; }
 
   var mo = e.target.closest('[data-months]');
   if (mo){ PLAN_MONTHS = +mo.getAttribute('data-months'); render(); return; }
@@ -4875,7 +4875,7 @@ document.addEventListener('input', function(e){
     return;
   }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-usrq')){
-    USR_Q = e.target.value; render(1);
+    USR.q = e.target.value; render(1);
     var uq = document.getElementById('usrQ');
     if (uq){ uq.focus(); uq.setSelectionRange(uq.value.length, uq.value.length); }
     return;

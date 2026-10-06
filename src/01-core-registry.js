@@ -464,7 +464,7 @@ var PG_Q = '';
 var PG_BIND = {
   survey:  function(v){ SURV_Q = v; }, svappr: function(v){ SVA_Q = v; },
   minappr: function(v){ MIN_Q  = v; }, wbs:    function(v){ WBS_Q = v; },
-  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR_Q = v; },
+  wtask:   function(v){ WT_Q   = v; }, users:  function(v){ USR.q = v; },
   co:      function(v){ CO_Q   = v; }, sites:  function(v){ SITE_Q = v; },
   items:   function(v){ IT_Q   = v; }, jobs:   function(v){ JB_Q  = v; },
   reqreg:  function(v){ REG_Q  = v; }, ships:  function(v){ SHIP_Q = v; },

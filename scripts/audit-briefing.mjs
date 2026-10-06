@@ -74,14 +74,14 @@ T(opened.length === 0, 'ومن بلا جوالٍ لا يُفتَح له شيءٌ
 
 /* الجوالُ من صفِّ الحساب */
 w.goPage('users'); w.render(1); await wait(150);
-w.USR_EDIT = 'u2'; w.render(1); await wait(150);
+w.USR.edit = 'u2'; w.render(1); await wait(150);
 const ph = d.querySelector('[data-usrph="u2"]');
 T(!!ph, 'حقلُ الجوال في صفِّ تحرير الحساب');
 ph.value = '05 5987 6543';
 const nEl = d.querySelector('[data-usrn="u2"]'); if (nEl) nEl.value = 'خالد بندر';
 click('[data-usrsave="u2"]'); await wait(150);
 T(w.STATE.users.u2.ph === '0559876543' && wrote['users/u2'] && wrote['users/u2'].ph === '0559876543', 'يُحفَظ على الحساب رقمًا نظيفًا ويُزامَن');
-w.USR_EDIT = ''; w.render(1); await wait(120);
+w.USR.edit = ''; w.render(1); await wait(120);
 T(/0559876543/.test(main.textContent), 'ويُعرَض في الصفِّ بعد الحفظ');
 
 /* ═══ من يرى حساباتِ الوزارة (V17.6) ═══
@@ -101,7 +101,7 @@ T(seenBy('engineer').indexOf('aalmalki') > -1 && seenBy('supervisor').indexOf('a
   'ويراها المهندسُ ولا يراها المشرف');
 T(seenBy('viewer').indexOf('abadawi') > -1 && seenBy('viewer').indexOf('tech1') < 0,
   'والوزارةُ ترى نظراءَها وحدَهم');
-w.ROLE = 'admin'; w.USR_ROLE = ''; w.USR_Q = '';
+w.ROLE = 'admin'; w.USR.role = ''; w.USR.q = '';
 w.goPage('users'); w.render(1); await wait(250);
 const chips = [...d.querySelectorAll('[data-usrrolef]')].map(e => e.textContent.replace(/\s+/g, ' ').trim());
 const rows = d.querySelectorAll('[data-usredit]').length;
