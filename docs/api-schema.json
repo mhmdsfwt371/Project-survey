@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V34.3",
+ "app_version": "V34.4",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2035,7 +2035,8 @@
   "V34.0": "بلاغُ المالك: CHAL_SHOW + chalShow(k) — عرضٌ فقط (قيمُ السجل ونموذجُ الميدان كما هي) في mfuHeroHtml وkioskBody وأعمدة svListRows0 (chal/obs) وتبويب المعوّقات وعمود «أبرز تحدٍّ» في svStats.detail (الجداول والتقارير). «نبض الميدان» → «مسار العمل الميداني — آخر ١٤ يومًا». جردُ المطابقة على المصطلحين.",
   "V34.1": "بلاغُ المالك (تحطّمُ WebContent على الآيفون بعد V33.9): loginBg بلا رسمٍ متكرّر — draw(1.2) مرةً، و#lgShine وهجٌ بـCSS (transform/opacity، mix-blend-mode:screen) بين .veil والبطاقة؛ calm = تقليلُ الحركة أو BOOT_GUARD.crashes > 0. قياسٌ على كثافة ×٣: صفرُ م.ث سكربت في ٥ ثوانٍ على شاشة الدخول.",
   "V34.2": "الصندوقُ الأسود (nsk14.boot) في آيفون المالك: «توقّفٌ مفاجئٌ — المرحلة render» ستَّ مراتٍ على map وmfu (V33.3–V34.0). basemapAuto لا يعمل على الآيفون (dlIOS)؛ L.tileLayer بـkeepBuffer:1 وupdateWhenIdle وupdateWhenZooming:false (الخريطةُ والقمرُ المصغّر)؛ render0 يحرّر KK_MAP إن غاب #kkSat؛ مراحلُ أدقّ: render:<الصفحة> وpull وbasemap-skip-ios.",
-  "V34.3": "طلبُ المالك: mfuHeroHtml «اليوم» = dayDone (sv/ins/dis) + التسليمُ من inss[*].hand.at اليوم؛ الفكُّ من الكلّ (kioskRing(ds, n, …)، disr = ¬disDone)؛ kioskRing يبدأ stroke-dashoffset = المحيط وdata-off = الهدف، وringsGrow بعد كلِّ رسمٍ في mfu يزحف بالأخضر إليه — وبلا إعادة حركةٍ لحلقةٍ لم يتغيّر رقمُها."
+  "V34.3": "طلبُ المالك: mfuHeroHtml «اليوم» = dayDone (sv/ins/dis) + التسليمُ من inss[*].hand.at اليوم؛ الفكُّ من الكلّ (kioskRing(ds, n, …)، disr = ¬disDone)؛ kioskRing يبدأ stroke-dashoffset = المحيط وdata-off = الهدف، وringsGrow بعد كلِّ رسمٍ في mfu يزحف بالأخضر إليه — وبلا إعادة حركةٍ لحلقةٍ لم يتغيّر رقمُها.",
+  "V34.4": "طلبُ المالك: TASHKEEL_RE ونزعُها في t() وesc() بالعربية (noTashkeel: لا في jsdom ولا webdriver حيث تطابق الجرودُ النصوصَ بحركاتها؛ noTashkeel.force للفحص) — المصدرُ والقاموسُ كما هما؛ «متبقٍّ» ← «متبقي». kioskRing: إن كان رقمُ الحلقة كما في الرسم السابق (ringsGrow.prev) تُرسَم على نسبتها مباشرةً بلا data-off (لا وميض)، والمتبقي بحدٍّ أدنى ٢٪ من الدائرة وطرفُ القوس مستقيم. اختبارُ وحدة: لا تشكيلَ في خمس صفحات."
  },
  "map_and_geolocation": {
   "tile_layers": {

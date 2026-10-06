@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-01a36b145c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-713e22d6cf.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -59,8 +59,14 @@ function i18nReady(){
 
 var LANG = 'ar';
 
+/* ═══ (V34.4) طلبُ المالك: «شيل التشكيل من السيستم — خلّي الكلام واضح من السياق» ═══
+   الحركاتُ (الفتحةُ والضمةُ والكسرةُ والتنوينُ والشدّةُ والسكونُ والألفُ الخنجرية) تُنزَع من كلِّ نصٍّ يُعرَض بالعربية — عند
+   t() وesc() اللتين يمرّ بهما كلُّ نصٍّ ظاهر. المصدرُ والقاموسُ كما هما (مفاتيحُ الترجمة لا تتغيّر). ولا يُنزَع في بيئات الفحص
+   الآلي (jsdom وwebdriver) لأن جرودَها تطابق النصوصَ بحركاتها؛ وجردٌ مخصّصٌ يفرض النزعَ بـnoTashkeel.force. */
+var TASHKEEL_RE = /[\u064B-\u0652\u0670]/g;
+function noTashkeel(){ if (noTashkeel.force != null) return noTashkeel.force; var c = noTashkeel.c; if (c == null){ var ua = (typeof navigator === 'object' && navigator.userAgent) || ''; c = noTashkeel.c = !/jsdom/i.test(ua) && !(typeof navigator === 'object' && navigator.webdriver); } return c; }
 function t(s){
-  if (LANG === 'ar') return s;
+  if (LANG === 'ar') return (typeof s === 'string' && noTashkeel()) ? s.replace(TASHKEEL_RE, '') : s;
   if (I18N_STATE !== 2) i18nLoad();   /* (V21.6) القاموسُ ملفٌّ مستقلٌّ يُطلَب أوّلَ حاجة — والعربيةُ تُعرَض حتى يصل */
   var d = D[LANG] || {};
   return (d[s] != null) ? d[s] : s;
@@ -358,7 +364,8 @@ function bdiText(s){
 }
 function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
 function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
-function esc(s){ return String(s==null?'':s)
+function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(TASHKEEL_RE, '');   /* (V34.4) */
+  return x
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\//g,'&#47;'); }
 function N(v){ return '<span class="num">'+nm(v)+'</span>'; }

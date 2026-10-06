@@ -1225,7 +1225,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V34.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1287,7 +1287,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-01a36b145c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-713e22d6cf.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1316,8 +1316,14 @@ function i18nReady(){
 
 var LANG = 'ar';
 
+/* ═══ (V34.4) طلبُ المالك: «شيل التشكيل من السيستم — خلّي الكلام واضح من السياق» ═══
+   الحركاتُ (الفتحةُ والضمةُ والكسرةُ والتنوينُ والشدّةُ والسكونُ والألفُ الخنجرية) تُنزَع من كلِّ نصٍّ يُعرَض بالعربية — عند
+   t() وesc() اللتين يمرّ بهما كلُّ نصٍّ ظاهر. المصدرُ والقاموسُ كما هما (مفاتيحُ الترجمة لا تتغيّر). ولا يُنزَع في بيئات الفحص
+   الآلي (jsdom وwebdriver) لأن جرودَها تطابق النصوصَ بحركاتها؛ وجردٌ مخصّصٌ يفرض النزعَ بـnoTashkeel.force. */
+var TASHKEEL_RE = /[\u064B-\u0652\u0670]/g;
+function noTashkeel(){ if (noTashkeel.force != null) return noTashkeel.force; var c = noTashkeel.c; if (c == null){ var ua = (typeof navigator === 'object' && navigator.userAgent) || ''; c = noTashkeel.c = !/jsdom/i.test(ua) && !(typeof navigator === 'object' && navigator.webdriver); } return c; }
 function t(s){
-  if (LANG === 'ar') return s;
+  if (LANG === 'ar') return (typeof s === 'string' && noTashkeel()) ? s.replace(TASHKEEL_RE, '') : s;
   if (I18N_STATE !== 2) i18nLoad();   /* (V21.6) القاموسُ ملفٌّ مستقلٌّ يُطلَب أوّلَ حاجة — والعربيةُ تُعرَض حتى يصل */
   var d = D[LANG] || {};
   return (d[s] != null) ? d[s] : s;
@@ -1615,7 +1621,8 @@ function bdiText(s){
 }
 function fsi(s){ return '\u2068' + String(s == null ? '' : s) + '\u2069'; }
 function fsiText(s){ return String(s == null ? '' : s).replace(BDI_TOK, function(m){ return bdiNeed(m) ? '\u2068' + m + '\u2069' : m; }); }
-function esc(s){ return String(s==null?'':s)
+function esc(s){ var x = String(s==null?'':s); if (LANG === 'ar' && noTashkeel()) x = x.replace(TASHKEEL_RE, '');   /* (V34.4) */
+  return x
   .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
   .replace(/"/g,'&quot;').replace(/'/g,'&#39;').replace(/\//g,'&#47;'); }
 function N(v){ return '<span class="num">'+nm(v)+'</span>'; }
@@ -21527,13 +21534,18 @@ function kioskCycleStop(){ if (KIOSK_CYCLE){ clearInterval(KIOSK_CYCLE); KIOSK_C
 function kioskRing(done, total, label, doneKey, remKey, idle){
   var r = 44, c = 2 * Math.PI * r, p = total ? Math.max(0, Math.min(100, done / total * 100)) : 0, rem = Math.max(0, total - done);
   var pr = Math.round(p); if (pr === 100 && rem) pr = 99; if (pr === 0 && done) pr = 1;   /* لا يُقال ١٠٠٪ وبقي شيء ولا ٠٪ وأُنجز شيء */
+  /* (V34.4) بلاغُ المالك: «المسح عمّال بيقلب أحمر وأخضر» — كلُّ رسمٍ كان يبدأ الحلقةَ حمراءَ كاملةً ثلاثين جزءًا من الألف ثم يقفز —
+     وصفحةُ الوزارة تُرسَم مع كلِّ وصول بيانات. صارت الحلقةُ التي رقمُها كما كان تُرسَم على نسبتها مباشرة، والحركةُ للتغيّر وحدَه.
+     و«٩٩٪ أخضر والمتبقي ١٪ أحمر»: ١٢ من ١٬٩٤٥ = ٠٫٦٪ — شريطٌ أضيقُ من أن يُرى (وطرفُ القوس المستدير يغطّيه)؛ فالمتبقي يُرى
+     أحمرَ بحدٍّ أدنى ٢٪ من الدائرة ما دام فيه شيء، وطرفُ القوس مستقيم. */
+  var vis = rem ? Math.min(p, 98) : p, off = (c * (1 - vis / 100)).toFixed(1), same = ringsGrow.prev && ringsGrow.prev[doneKey] === off;
   return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" data-off="' + (c * (1 - p / 100)).toFixed(1) + '" style="stroke:var(--min-green);stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + c.toFixed(1) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' data-off="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
-        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقٍّ')) + ' ' + nm(rem) + ' \u203A</span>' : '')
+        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقي')) + ' ' + nm(rem) + ' \u203A</span>' : '')
         : esc(t(idle || 'لم يبدأ بعد'))) + '</div></div>';
 }
 function kioskToggle(){
@@ -24478,6 +24490,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V34.4', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'التشكيل اتشال من كل النصوص اللي بتظهر في السيستم بالعربي — الكلام بقى واضح من السياق.',
+      'حلقة المسح ما بقتش بتقلب أحمر وأخضر: كل ما الصفحة تتحدّث كانت الحلقة بتبدأ حمرا لحظة وترجع خضرا. دلوقتي بتفضل ثابتة على نسبتها، والحركة بتحصل لما الرقم يتغيّر بس. والمتبقي (زي الـ١٢ نقطة) بقى باين أحمر في الحلقة حتى لو نسبته صغيرة.' ] },
   { v:'V34.3', d:'٧ أكتوبر ٢٠٢٦', notes:[
       '«اليوم» في موجز الموسم بقى فيه الأربعة: مسح وتركيب وتسليم وفك — بعدد اليوم نفسه.',
       'الحلقات الأربع (في الملخص وفي القاعة) بتبدأ حمرا كاملة، والأخضر بيزحف لحد نسبة اللي اتعمل. والفك بقى زي التلاتة: من كل النقاط، أحمر كامل لحد ما يبدأ. والحركة بتحصل لما الرقم يتغيّر بس، مش كل دقيقة في القاعة.' ] },

@@ -118,3 +118,13 @@ test('صفحةُ الوزارة (V33.7): المعوّقاتُ والشركاتُ
   let n = 0; const f = w.chalKeys; w.chalKeys = function(){ n++; return f.apply(this, arguments); };
   w.DB.open(); try { w.mfuObstacles(); const a = n; w.mfuObstacles(); w.mfuCompanies(); w.mfuKpis(); w.mfuKpis(); assert.ok(n - a <= w.STATE.sites.length + 5, 'المكرَّرُ من الذاكرة'); } finally { w.DB.memoReset(); w.chalKeys = f; }
 });
+test('طلبُ المالك (V34.4): لا تشكيلَ في أيِّ صفحةٍ تُعرَض بالعربية', () => {
+  const was = w.noTashkeel.force; w.noTashkeel.force = true;
+  try {
+    assert.equal(w.t('شاشةُ القاعة'), 'شاشة القاعة'); assert.equal(w.esc('تحتاج زيارة أخرى تقنيًا'), 'تحتاج زيارة أخرى تقنيا');
+    const bad = [];
+    ['mfu', 'map', 'survey', 'over', 'mywork'].forEach(id => { try { w.goPage(id); w.render(1); } catch (e){ return; }
+      const tx = (w.document.getElementById('content') || {}).textContent || ''; const m = tx.match(/[\u064B-\u0652\u0670]/g); if (m) bad.push(id + ':' + m.length); });
+    assert.deepEqual(bad, [], 'صفحاتٌ فيها تشكيل: ' + bad.join('، '));
+  } finally { w.noTashkeel.force = was; }
+});

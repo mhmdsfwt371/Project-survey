@@ -4563,13 +4563,18 @@ function kioskCycleStop(){ if (KIOSK_CYCLE){ clearInterval(KIOSK_CYCLE); KIOSK_C
 function kioskRing(done, total, label, doneKey, remKey, idle){
   var r = 44, c = 2 * Math.PI * r, p = total ? Math.max(0, Math.min(100, done / total * 100)) : 0, rem = Math.max(0, total - done);
   var pr = Math.round(p); if (pr === 100 && rem) pr = 99; if (pr === 0 && done) pr = 1;   /* لا يُقال ١٠٠٪ وبقي شيء ولا ٠٪ وأُنجز شيء */
+  /* (V34.4) بلاغُ المالك: «المسح عمّال بيقلب أحمر وأخضر» — كلُّ رسمٍ كان يبدأ الحلقةَ حمراءَ كاملةً ثلاثين جزءًا من الألف ثم يقفز —
+     وصفحةُ الوزارة تُرسَم مع كلِّ وصول بيانات. صارت الحلقةُ التي رقمُها كما كان تُرسَم على نسبتها مباشرة، والحركةُ للتغيّر وحدَه.
+     و«٩٩٪ أخضر والمتبقي ١٪ أحمر»: ١٢ من ١٬٩٤٥ = ٠٫٦٪ — شريطٌ أضيقُ من أن يُرى (وطرفُ القوس المستدير يغطّيه)؛ فالمتبقي يُرى
+     أحمرَ بحدٍّ أدنى ٢٪ من الدائرة ما دام فيه شيء، وطرفُ القوس مستقيم. */
+  var vis = rem ? Math.min(p, 98) : p, off = (c * (1 - vis / 100)).toFixed(1), same = ringsGrow.prev && ringsGrow.prev[doneKey] === off;
   return '<div class="kk-ring" role="button" tabindex="0" data-svlist="' + esc(doneKey) + '" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '">'
     + '<svg viewBox="0 0 110 110" aria-hidden="true"><circle cx="55" cy="55" r="' + r + '" class="kk-track"' + (total ? ' style="stroke:var(--min-red)"' : '') + '/>'
-    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc" data-off="' + (c * (1 - p / 100)).toFixed(1) + '" style="stroke:var(--min-green);stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + c.toFixed(1) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
+    +   '<circle cx="55" cy="55" r="' + r + '" class="kk-arc"' + (same ? '' : ' data-off="' + off + '"') + ' style="stroke:var(--min-green);stroke-linecap:butt;stroke-dasharray:' + c.toFixed(1) + ';stroke-dashoffset:' + (same ? off : c.toFixed(1)) + '"/>'   /* (V34.3) تبدأ حمراءَ كاملة ويزحف الأخضرُ إلى نسبته */
     +   '<text x="55" y="61" class="kk-pct" aria-valuenow="' + pr + '">' + nm(pr) + '٪</text></svg>'
     + '<div class="kk-lab">' + esc(t(label)) + ' \u203A</div>'
     + '<div class="kk-sub">' + (total ? nm(done) + ' ' + esc(t('من')) + ' ' + nm(total)
-        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقٍّ')) + ' ' + nm(rem) + ' \u203A</span>' : '')
+        + (rem ? ' \u00b7 <span role="button" tabindex="0" data-svlist="' + esc(remKey) + '" style="color:var(--min-red);font-weight:700;cursor:pointer;white-space:nowrap">' + esc(t('متبقي')) + ' ' + nm(rem) + ' \u203A</span>' : '')
         : esc(t(idle || 'لم يبدأ بعد'))) + '</div></div>';
 }
 function kioskToggle(){
