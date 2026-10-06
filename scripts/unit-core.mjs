@@ -63,3 +63,30 @@ test('طباعةُ الـPDF تضمّن الخطَّ المرفوع (كان مت
   const h = w.mfuPrintHtml(R, F); assert.ok(/@font-face/.test(h), 'لا @font-face'); assert.ok(h.indexOf('AAAA') > -1, 'الخطُّ غيرُ مضمَّن');
   assert.ok(/font-family:"Abar Mid"/.test(h) || /"Abar Mid","Readex Pro"/.test(h), 'سلسلةُ الخطوط غائبة');
 });
+/* ═══ (V33.0) توصيةُ الجودة: اختباراتٌ للطابور والمزامنة والتعريف ═══ */
+test('الطابور: الكتابةُ المحليةُ تُحفَظ في الحالة وتدخل طابورَ الرفع مرةً واحدةً لكلِّ وثيقة، وتُبطل ذاكرةَ الحساب', () => {
+  const q0 = S.queue.length, id = 'ZZ-UNIT-' + Date.now();
+  w.DB.memo = { life:{ x:1 }, lists:{} };
+  w.CORE.set('recs', id, { id, at:Date.now(), access:'تم الوصول' });
+  assert.equal(S.recs[id].access, 'تم الوصول'); assert.equal(w.DB.memo, null);
+  assert.equal(S.queue.length, q0 + 1);
+  w.CORE.set('recs', id, { id, at:Date.now(), access:'متعذر' });
+  assert.equal(S.queue.filter(x => x.kind === 'recs' && x.id === id).length, 1, 'تعديلُ الوثيقة نفسِها لا يكرّرها في الطابور');
+  S.queue = S.queue.filter(x => x.id !== id); delete S.recs[id];
+});
+test('التعريف (ق-٠٠٧): «تمت الزيارة» = تم الوصول + متعذّر + تحتاج زيارة أخرى، وما لا سجلَّ له ليس منها', () => {
+  const recs = [{ access:'تم الوصول' }, { access:'تم الوصول', review:'revisit' }, { access:'متعذر' }, { access:'يحتاج تصريح' }, null, undefined, { deleted:true }];
+  const visited = recs.filter(r => w.svVisited(r)).length, done = recs.filter(r => w.svDone(r)).length;
+  const stuck = recs.filter(r => w.svStuck(r)).length, rev = recs.filter(r => w.svReached(r) && r.review === 'revisit').length;
+  assert.equal(w.svDone({ deleted:true }), false, 'شاهدُ الحذف ليس زيارة');
+  assert.equal(visited, 4); assert.equal(done + stuck + rev, visited);
+});
+test('المزامنة: دورةٌ بلا جديدٍ لا تُبطل الإحصاءَ ولا ترسم، ودورةٌ بجديدٍ تُبطله', async () => {
+  const saved = { pd:w.pullDelta, ps:w.FB.pullStatic, fl:w.CORE.flush, on:S.meta.online, ready:w.FB.ready, db:w.FB.db, sat:w.FB._staticAt };
+  S.meta.online = true; w.FB.ready = true; w.FB.db = w.FB.db || {}; w.FB._staticAt = Date.now(); w.CORE.flush = () => Promise.resolve(0); w.FB.pullStatic = () => Promise.resolve(0);
+  w.pullDelta = () => Promise.resolve(0); w.SYNC.busy = false; w.SYNC.pullLast = 0; w.SYNC.pullAsk = false; w.SYNC.day = w.dayKey();
+  let v0 = w.STAT_VER; await w.syncCycle(); assert.equal(w.STAT_VER, v0, 'الدورةُ الهادئة لا تُبطل');
+  w.pullDelta = () => Promise.resolve(3); w.SYNC.busy = false; w.SYNC.pullLast = 0;
+  v0 = w.STAT_VER; await w.syncCycle(); assert.ok(w.STAT_VER > v0, 'الدورةُ بجديدٍ تُبطل');
+  w.pullDelta = saved.pd; w.FB.pullStatic = saved.ps; w.CORE.flush = saved.fl; S.meta.online = saved.on; w.FB.ready = saved.ready; w.FB.db = saved.db; w.FB._staticAt = saved.sat;
+});
