@@ -4618,7 +4618,7 @@ function pullDelta(opt){
   if (opt && Array.isArray(opt.only) && opt.only.length)
     sc = Object.assign({}, sc, { cols:sc.cols.filter(function(c){ return opt.only.indexOf(c) > -1; }) });
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
-  var wasAsk = PULL_ASK; PULL_ASK = false;
+  var wasAsk = SYNC.pullAsk; SYNC.pullAsk = false;
   if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
   /* ═══ المؤشِّرُ يتبع النطاق ═══
      الفارقيُّ يجلب ما كُتب بعد آخر سحبة. فإن اتّسع النطاقُ — شجرةٌ تغيّرت، أو
@@ -4659,7 +4659,7 @@ function pullDelta(opt){
     });
   })).then(function(){
     STATE.meta.lastSync = Date.now();
-    PULL_LAST = Date.now();
+    SYNC.pullLast = Date.now();
     if (got || wasAsk){ statBump(); CORE.saveSoon(); }
     return _perfDone(got);
   });

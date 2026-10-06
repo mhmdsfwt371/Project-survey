@@ -29,11 +29,11 @@ T(/var since = \(at\[c\] \|\| 0\) - 120000;/.test(js) && !/var since = STATE\.me
 T(/pullAt:STATE\.meta\.pullAt \|\| \{\}/.test(js) && /STATE\.meta\.pullAt = v\.pullAt/.test(js), 'ويُحفَظ ويُستعاد');
 T(/PULL_COL = \{ recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints'/.test(js), 'وكلُّ مجموعةٍ تصل مفتاحَها في الحالة');
 T(/\['recs','inss','tasks','dismantles','maints'\]\.forEach\(function\(col\)\{[\s\S]{0,700}\['_at', '>', t0\]/.test(js), 'إنصاتٌ حيٌّ على العمل لمن فوق المشرف');
-T(/var SYNC_CYCLE = 60/.test(js) && !/\}, 120000\);/.test(js), 'دورةٌ واحدةٌ من دقيقة — لا دورةَ ثانية');
+T(/var SYNC = \{ cycle:60/.test(js) && !/\}, 120000\);/.test(js), 'دورةٌ واحدةٌ من دقيقة — لا دورةَ ثانية');
 /* موعدُ السحب صار يُضرَب في معامل الإبطاء حين يتجاوز الجهازُ سقفَ قراءاته
    (V17.26) — والقاعدةُ المحروسةُ هي أن الدفعَ كلَّ دقيقةٍ والسحبَ في موعد
    النطاق لا أن تكون الصيغةُ حرفًا واحدًا. */
-T(/var due = PULL_ASK \|\| \(Date\.now\(\) - PULL_LAST >= \(kkEvery \|\| pullScope\(\)\.every\)/.test(js) && /KIOSK_ON && CUR === 'mfu'\) \? 120000 : 0/.test(js),
+T(/var due = SYNC\.pullAsk \|\| \(Date\.now\(\) - SYNC\.pullLast >= \(kkEvery \|\| pullScope\(\)\.every\)/.test(js) && /KIOSK_ON && CUR === 'mfu'\) \? 120000 : 0/.test(js),
   'الدفعُ كلَّ دقيقةٍ والسحبُ في موعد النطاق — وفي وضع القاعة كلَّ دقيقتين (V30.5)');
 T(/readSlowFactor\(\)/.test(js), 'ويتباطأ موعدُه لجهازٍ تجاوز سقفَ قراءاته');
 

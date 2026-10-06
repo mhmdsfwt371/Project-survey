@@ -45,7 +45,7 @@ const PICK = ARG.filter(a => !a.startsWith('--'));
 const MAP = [
   [/wbs|WBS_/,                        ['data', 'tabs', 'writes', 'exports']],
   [/notif|بطاقةٌ عائمة|bell/i,        ['notify', 'data', 'writes']],
-  [/pullScope|pullDelta|pullStatic|_staticAt|PULL_ASK|SYNC_|syncCd/,
+  [/pullScope|pullDelta|pullStatic|_staticAt|SYNC\.|syncCd/,
                                       ['capacity', 'cascade', 'sync', 'scale']],
   [/liveSmall|watch\(|onSnapshot/,    ['cascade', 'capacity', 'sync']],
   [/CORE\.(set|rm|dirty|flush)|TOMB|epoch/i, ['tomb', 'wipe', 'sync', 'poison']],

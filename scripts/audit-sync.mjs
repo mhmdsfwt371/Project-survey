@@ -20,7 +20,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 /* ═══ ساكن ═══ */
 T(!/new Date\(e\.at \|\| Date\.now\(\)\)\.toISOString/.test(js), 'وقتُ الحدث لا يُحوَّل تاريخًا من نصٍّ');
-T(/id="syncCd"/.test(js) && /SYNC_CYCLE = 60/.test(js), 'عدّادُ دقيقةٍ في الرأس');
+T(/id="syncCd"/.test(js) && /var SYNC = \{ cycle:60/.test(js), 'عدّادُ دقيقةٍ في الرأس');
 T(!/setInterval\(function\(\)\{\s*\n\s*if \(STATE\.meta\.online && FB\.ready\) FB\.pull\(0\)/.test(js), 'لا سحبَ دوريًّا ثانيًا موازيًا للعدّاد');
 T(/function provClear/.test(js) && /data-provclear/.test(js), 'زرُّ مسح الطلبات المنتهية موصول');
 T(!/\['المسح','٠','acc'\]/.test(js), 'أرقامُ «الأدوات» لا تُكتَب أصفارًا');
@@ -66,7 +66,7 @@ w.FB.pull = () => Promise.resolve(0);
 const realFlush = w.CORE.flush;
 w.CORE.flush = () => { flushes++; return Promise.resolve(0); };
 /* V16.44: العدّادُ يعدُّ إلى السحب التالي — يُضبَط موعدُ آخر سحبٍ ليكون له ما يعدُّه */
-w.PULL_LAST = Date.now();
+w.SYNC.pullLast = Date.now();
 w.liveTick();
 w.syncBadge();
 const cd = d.getElementById('syncCd');
@@ -76,11 +76,11 @@ T(!!cd, 'عدّادٌ بجوار «آخر مزامنة»');
 const v1 = cd && cd.textContent; let v2 = v1;
 for (let k = 0; k < 30 && v2 === v1; k++){ await wait(100); const c2 = d.getElementById('syncCd'); v2 = c2 && c2.textContent; }
 T(!!v2 && v2 !== v1, 'ويتحرّك كلَّ ثانية', v1 + ' → ' + v2);
-w.SYNC_LEFT = 1; w.PULL_LAST = 0; const p0 = pulls, f0 = flushes; await wait(1400);
+w.SYNC.left = 1; w.SYNC.pullLast = 0; const p0 = pulls, f0 = flushes; await wait(1400);
 T(pulls === p0 + 1 && flushes === f0 + 1, 'عند الصفر: دفعٌ وسحبٌ مرةً واحدة', 'pulls +' + (pulls - p0) + ' flushes +' + (flushes - f0));
-T(w.SYNC_LEFT >= w.SYNC_CYCLE - 2, 'ثم يُعاد العدُّ من دقيقة', String(w.SYNC_LEFT));
-w.SYNC_LEFT = 42; d.querySelector('[data-pull]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
-T(w.SYNC_LEFT === w.SYNC_CYCLE, 'والمزامنةُ اليدويةُ تُعيده أيضًا', String(w.SYNC_LEFT));
+T(w.SYNC.left >= w.SYNC.cycle - 2, 'ثم يُعاد العدُّ من دقيقة', String(w.SYNC.left));
+w.SYNC.left = 42; d.querySelector('[data-pull]').dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+T(w.SYNC.left === w.SYNC.cycle, 'والمزامنةُ اليدويةُ تُعيده أيضًا', String(w.SYNC.left));
 w.liveTickStop();
 
 /* ٤ · طلبُ الإنشاء يذهب مع حذف صاحبه — والمنتهيةُ تُمسَح بزرّ */

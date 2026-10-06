@@ -2867,7 +2867,7 @@ function syncAllNow(){
   SYNC_ALL_SEEN = n;
   logEvent('مزامنةٌ فوريةٌ للجميع');
   toast(t('أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح'));
-  PULL_ASK = true; syncCycle();
+  SYNC.pullAsk = true; syncCycle();
   return true;
 }
 function syncAllApply(v){
@@ -2876,7 +2876,7 @@ function syncAllApply(v){
   var first = !SYNC_ALL_SEEN;
   SYNC_ALL_SEEN = n;
   if (first) return false;                      /* أوّلُ قراءةٍ تضبط العلامةَ ولا تسحب */
-  PULL_ASK = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
+  SYNC.pullAsk = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
   toast(t('مزامنةٌ من المكتب — يُسحَب الآن'));
   return true;
 }
@@ -2911,7 +2911,7 @@ function roleWatch(v){
   toast(t('تغيّرت صلاحيتُك إلى') + ' «' + t((ROLES[nr] || {}).n || nr) + '» — ' + t('طُبِّقت الآن'));
   try { liveSmallStop(); } catch (e){ LS_ERR = e; }
   STATE.meta.pullAt = {};
-  liveSmall(); presenceBeat(true); PULL_ASK = true; syncCycle();
+  liveSmall(); presenceBeat(true); SYNC.pullAsk = true; syncCycle();
   /* شاشةٌ (أو شريحةٌ) لم تعد تُرى: نُقلَ إلى أوّلِ ما يراه دورُه الجديد */
   if (PARENT[CUR] && PARENT[CUR] !== CUR && !seesPage(CUR)) CUR = PARENT[CUR];
   if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['over']).filter(seesPage)[0] || 'acct';

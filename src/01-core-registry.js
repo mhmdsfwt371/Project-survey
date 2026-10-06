@@ -1518,7 +1518,7 @@ var FB = {
   /* ═══ الثوابتُ ثمنُها أربعةٌ وثلاثون استعلامًا ═══
      `pullStatic` تقرأ الإعداداتِ والقوائمَ والنقاطَ — أربعةً وثلاثين استعلامًا،
      وكلُّ استعلامٍ يُحاسَب ولو عاد فارغًا. وكانت كلُّ عودةٍ إلى التطبيق (تبديلُ
-     تطبيقٍ على الجوّال، إظهارُ تبويبٍ على الحاسوب) ترفع PULL_ASK فتُجلَب كلُّها
+     تطبيقٍ على الجوّال، إظهارُ تبويبٍ على الحاسوب) ترفع SYNC.pullAsk فتُجلَب كلُّها
      من جديد: فنيٌّ يبدّل التطبيقَ ثلاثين مرةً في اليوم = ألفُ استعلامٍ بلا
      فائدة، وعشرون جهازًا = عشرون ألفًا. فصار لها حدٌّ زمنيٌّ: لا تتكرر قبل
      ربع ساعةٍ إلا بأمرٍ صريح (تصفيرٌ، أو «زامِن الجميع»، أو زرُّ المزامنة). */
@@ -1528,7 +1528,7 @@ var FB = {
     if (!force && FB._staticAt && now - FB._staticAt < 900000) return Promise.resolve(false);
     FB._staticAt = now;
     /* خطأٌ متزامنٌ هنا (قاعدةٌ لم تُهيَّأ) كان يُسقِط سلسلةَ الدورة كلَّها ويترك
-       SYNC_BUSY مرفوعًا — فتتوقف المزامنةُ لبقية الجلسة بلا صوت */
+       SYNC.busy مرفوعًا — فتتوقف المزامنةُ لبقية الجلسة بلا صوت */
     try { return FB._pullStatic(); } catch (e){ softErr('قراءة الثوابت', e, ''); return Promise.resolve(false); }
   },
   _pullStatic: function(){
@@ -1539,7 +1539,7 @@ var FB = {
     var epochRead = DB.col('settings').doc('app').get().then(function(doc){
       FB.readCount = (FB.readCount || 0) + doc.size;
       var v = doc && doc.exists ? (doc.data() || {}) : {};
-      if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; FB._staticAt = 0; }
+      if (v.epoch && epochApply(v.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; }
       if (v.syncAll) SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
       if (v.ver && typeof verChase === 'function') verChase(v.ver);
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
@@ -2100,7 +2100,7 @@ function liveSmall(){
   try {
     LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
-      if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; FB._staticAt = 0; syncCycle(); }
+      if (dv.epoch && epochApply(dv.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; syncCycle(); }
       if (dv.syncAll) syncAllApply(dv.syncAll);
       if (dv.ver) verChase(dv.ver);
       verPublish();
@@ -2231,7 +2231,7 @@ var BADGE_TICK = null;
    دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
    دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
    العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
-var SYNC_CYCLE = 60, SYNC_LEFT = 60, SYNC_BUSY = false;
+var SYNC = { cycle:60, left:60, busy:false, pullLast:0, pullAsk:false };   /* (V32.1) وحدةُ المزامنة تملك حالتَها — كانت SYNC.cycle/SYNC.left/SYNC.busy/SYNC.pullLast/SYNC.pullAsk */
 /* ═══ العدّادُ يعدُّ إلى السحب ═══
    كان يعدُّ ستين ثانيةً إلى «دفعة» لا تقرأ شيئًا — والسحبُ الفعليُّ كلَّ ستِّ
    ساعاتٍ للمكتب. فيبلغ الصفرَ ولا يتغيّر شيءٌ على الشاشة، ويظنُّ الناظرُ أنه
@@ -2246,7 +2246,7 @@ function pulseBadge(){
 }
 function syncCdSecs(){
   var ev = ((typeof pullScope === 'function') ? pullScope().every : 600000) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1);
-  var left = Math.max(0, (PULL_LAST || 0) + ev - Date.now());
+  var left = Math.max(0, (SYNC.pullLast || 0) + ev - Date.now());
   return Math.ceil(left / 1000);
 }
 function syncCdTxt(){
@@ -2256,9 +2256,9 @@ function syncCdTxt(){
     .replace(/\d/g, function(c){ return LANG === 'en' ? c : dg[+c]; });
 }
 function syncCycle(){
-  SYNC_LEFT = SYNC_CYCLE;
-  if (SYNC_BUSY || !STATE.meta.online) return Promise.resolve(0);
-  SYNC_BUSY = true;
+  SYNC.left = SYNC.cycle;
+  if (SYNC.busy || !STATE.meta.online) return Promise.resolve(0);
+  SYNC.busy = true;
   /* الدفعُ كلَّ دقيقة (لا يُقرأ فيه شيء)، والسحبُ حين يحين موعدُه بنطاق الدور —
      فالمكتبُ كلَّ خمسٍ والميدانُ كلَّ ربع ساعة — لأن كلَّ استعلامٍ يُحاسَب ولو
      عاد فارغًا؛ وما بين السحبتين يصل بالإنصات الحيّ. */
@@ -2266,13 +2266,13 @@ function syncCycle(){
   return pushed.then(function(){
     /* الجهازُ الذي تجاوز سقفَ قراءاته يُبطَّأ سحبُه الدوريُّ إلى الربع (V17.26) */
   var kkEvery = (typeof KIOSK_ON !== 'undefined' && KIOSK_ON && CUR === 'mfu') ? 120000 : 0;   /* (V30.5) شاشةُ القاعة حيّة: كلَّ دقيقتين لا كلَّ عشر */
-  var due = PULL_ASK || (Date.now() - PULL_LAST >= (kkEvery || pullScope().every) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
+  var due = SYNC.pullAsk || (Date.now() - SYNC.pullLast >= (kkEvery || pullScope().every) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
     /* موعدُ السحب يُضبَط عند المحاولة لا عند النجاح — وإلا بقي العدّادُ صفرًا
        بعد سحبةٍ فاشلة وحاول كلَّ ثانية */
-    if (due) PULL_LAST = Date.now();
+    if (due) SYNC.pullLast = Date.now();
     /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
        فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
-    var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
+    var ask = SYNC.pullAsk || (Date.now() - (FB._staticAt || 0) >= 21600000);
     FB._staticFresh = !!(due && ask);   /* (V31.9) سحبُ الثوابت يغيّر العرضَ وإن لم يأتِ سجلٌّ جديد */
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
@@ -2288,22 +2288,22 @@ function syncCycle(){
     else if (n && LIVE_WORK_PAGES.indexOf(CUR) > -1 && !document.querySelector('#content input:focus, #content textarea:focus')) render(1);
     return n;
   }).catch(function(e){ softErr('دورة المزامنة', e, ''); return 0; })
-    .then(function(n){ SYNC_BUSY = false; SYNC_LEFT = SYNC_CYCLE; return n; });
+    .then(function(n){ SYNC.busy = false; SYNC.left = SYNC.cycle; return n; });
 }
 function liveTick(){
   /* مؤقّتٌ واحدٌ لا غير — ولو نودي مرتين. وله مُلغٍ صريحٌ يُنادى عند
      الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
   liveTickStop();
-  SYNC_LEFT = SYNC_CYCLE;
+  SYNC.left = SYNC.cycle;
   LIVE_TICK = setInterval(function(){
-    SYNC_LEFT = Math.max(0, SYNC_LEFT - 1);
+    SYNC.left = Math.max(0, SYNC.left - 1);
     var cd = document.getElementById('syncCd');
     if (cd) cd.textContent = syncCdTxt();
     /* الدفعُ كلَّ دقيقة، والسحبُ عند بلوغ عدّاده الصفر — لا انتظارَ لدقيقة الدفع */
-    var pullDue = STATE.meta.online && FB.ready && syncCdSecs() === 0 && !SYNC_BUSY;
-    if (SYNC_LEFT === 0 || pullDue){
+    var pullDue = STATE.meta.online && FB.ready && syncCdSecs() === 0 && !SYNC.busy;
+    if (SYNC.left === 0 || pullDue){
       if (STATE.meta.online && FB.ready) syncCycle();
-      else SYNC_LEFT = SYNC_CYCLE;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
+      else SYNC.left = SYNC.cycle;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
     }
   }, 1000);
   if (!BADGE_TICK) BADGE_TICK = setInterval(function(){

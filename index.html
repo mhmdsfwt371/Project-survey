@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -2757,7 +2757,7 @@ var FB = {
   /* ═══ الثوابتُ ثمنُها أربعةٌ وثلاثون استعلامًا ═══
      `pullStatic` تقرأ الإعداداتِ والقوائمَ والنقاطَ — أربعةً وثلاثين استعلامًا،
      وكلُّ استعلامٍ يُحاسَب ولو عاد فارغًا. وكانت كلُّ عودةٍ إلى التطبيق (تبديلُ
-     تطبيقٍ على الجوّال، إظهارُ تبويبٍ على الحاسوب) ترفع PULL_ASK فتُجلَب كلُّها
+     تطبيقٍ على الجوّال، إظهارُ تبويبٍ على الحاسوب) ترفع SYNC.pullAsk فتُجلَب كلُّها
      من جديد: فنيٌّ يبدّل التطبيقَ ثلاثين مرةً في اليوم = ألفُ استعلامٍ بلا
      فائدة، وعشرون جهازًا = عشرون ألفًا. فصار لها حدٌّ زمنيٌّ: لا تتكرر قبل
      ربع ساعةٍ إلا بأمرٍ صريح (تصفيرٌ، أو «زامِن الجميع»، أو زرُّ المزامنة). */
@@ -2767,7 +2767,7 @@ var FB = {
     if (!force && FB._staticAt && now - FB._staticAt < 900000) return Promise.resolve(false);
     FB._staticAt = now;
     /* خطأٌ متزامنٌ هنا (قاعدةٌ لم تُهيَّأ) كان يُسقِط سلسلةَ الدورة كلَّها ويترك
-       SYNC_BUSY مرفوعًا — فتتوقف المزامنةُ لبقية الجلسة بلا صوت */
+       SYNC.busy مرفوعًا — فتتوقف المزامنةُ لبقية الجلسة بلا صوت */
     try { return FB._pullStatic(); } catch (e){ softErr('قراءة الثوابت', e, ''); return Promise.resolve(false); }
   },
   _pullStatic: function(){
@@ -2778,7 +2778,7 @@ var FB = {
     var epochRead = DB.col('settings').doc('app').get().then(function(doc){
       FB.readCount = (FB.readCount || 0) + doc.size;
       var v = doc && doc.exists ? (doc.data() || {}) : {};
-      if (v.epoch && epochApply(v.epoch)){ PULL_ASK = true; FB._staticAt = 0; }
+      if (v.epoch && epochApply(v.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; }
       if (v.syncAll) SYNC_ALL_SEEN = +v.syncAll || 0;   /* عند الدخول: تُضبَط العلامةُ بلا سحبٍ زائد */
       if (v.ver && typeof verChase === 'function') verChase(v.ver);
     }).catch(function(e){ softErr('قراءة العهد', e, ''); }).then(function(){ EPOCH_PENDING = false; });
@@ -3339,7 +3339,7 @@ function liveSmall(){
   try {
     LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
       var dv = doc && doc.exists ? (doc.data() || {}) : {};
-      if (dv.epoch && epochApply(dv.epoch)){ PULL_ASK = true; FB._staticAt = 0; syncCycle(); }
+      if (dv.epoch && epochApply(dv.epoch)){ SYNC.pullAsk = true; FB._staticAt = 0; syncCycle(); }
       if (dv.syncAll) syncAllApply(dv.syncAll);
       if (dv.ver) verChase(dv.ver);
       verPublish();
@@ -3470,7 +3470,7 @@ var BADGE_TICK = null;
    دقيقتين بلا أثرٍ يُرى — فيُظنُّ أنه واقف. صار في الرأس عدٌّ تنازليٌّ من ثلاث
    دقائق يُرى ثانيةً بثانية: عند الصفر يُدفَع الطابورُ ويُسحَب الفارقُ ثم يُعاد
    العدّ. والمزامنةُ اليدويةُ تُعيده أيضًا — فلا سحبتان متتاليتان. */
-var SYNC_CYCLE = 60, SYNC_LEFT = 60, SYNC_BUSY = false;
+var SYNC = { cycle:60, left:60, busy:false, pullLast:0, pullAsk:false };   /* (V32.1) وحدةُ المزامنة تملك حالتَها — كانت SYNC.cycle/SYNC.left/SYNC.busy/SYNC.pullLast/SYNC.pullAsk */
 /* ═══ العدّادُ يعدُّ إلى السحب ═══
    كان يعدُّ ستين ثانيةً إلى «دفعة» لا تقرأ شيئًا — والسحبُ الفعليُّ كلَّ ستِّ
    ساعاتٍ للمكتب. فيبلغ الصفرَ ولا يتغيّر شيءٌ على الشاشة، ويظنُّ الناظرُ أنه
@@ -3485,7 +3485,7 @@ function pulseBadge(){
 }
 function syncCdSecs(){
   var ev = ((typeof pullScope === 'function') ? pullScope().every : 600000) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1);
-  var left = Math.max(0, (PULL_LAST || 0) + ev - Date.now());
+  var left = Math.max(0, (SYNC.pullLast || 0) + ev - Date.now());
   return Math.ceil(left / 1000);
 }
 function syncCdTxt(){
@@ -3495,9 +3495,9 @@ function syncCdTxt(){
     .replace(/\d/g, function(c){ return LANG === 'en' ? c : dg[+c]; });
 }
 function syncCycle(){
-  SYNC_LEFT = SYNC_CYCLE;
-  if (SYNC_BUSY || !STATE.meta.online) return Promise.resolve(0);
-  SYNC_BUSY = true;
+  SYNC.left = SYNC.cycle;
+  if (SYNC.busy || !STATE.meta.online) return Promise.resolve(0);
+  SYNC.busy = true;
   /* الدفعُ كلَّ دقيقة (لا يُقرأ فيه شيء)، والسحبُ حين يحين موعدُه بنطاق الدور —
      فالمكتبُ كلَّ خمسٍ والميدانُ كلَّ ربع ساعة — لأن كلَّ استعلامٍ يُحاسَب ولو
      عاد فارغًا؛ وما بين السحبتين يصل بالإنصات الحيّ. */
@@ -3505,13 +3505,13 @@ function syncCycle(){
   return pushed.then(function(){
     /* الجهازُ الذي تجاوز سقفَ قراءاته يُبطَّأ سحبُه الدوريُّ إلى الربع (V17.26) */
   var kkEvery = (typeof KIOSK_ON !== 'undefined' && KIOSK_ON && CUR === 'mfu') ? 120000 : 0;   /* (V30.5) شاشةُ القاعة حيّة: كلَّ دقيقتين لا كلَّ عشر */
-  var due = PULL_ASK || (Date.now() - PULL_LAST >= (kkEvery || pullScope().every) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
+  var due = SYNC.pullAsk || (Date.now() - SYNC.pullLast >= (kkEvery || pullScope().every) * (typeof readSlowFactor === 'function' ? readSlowFactor() : 1));
     /* موعدُ السحب يُضبَط عند المحاولة لا عند النجاح — وإلا بقي العدّادُ صفرًا
        بعد سحبةٍ فاشلة وحاول كلَّ ثانية */
-    if (due) PULL_LAST = Date.now();
+    if (due) SYNC.pullLast = Date.now();
     /* الطلبُ اليدويُّ يجلب الثوابتَ، والدورةُ تُنعشها كلَّ ستِّ ساعاتٍ وحدَها —
        فتصل الأوزانُ والأسعارُ والقوائمُ المعدَّلةُ من المكتب بلا سؤال */
-    var ask = PULL_ASK || (Date.now() - (FB._staticAt || 0) >= 21600000);
+    var ask = SYNC.pullAsk || (Date.now() - (FB._staticAt || 0) >= 21600000);
     FB._staticFresh = !!(due && ask);   /* (V31.9) سحبُ الثوابت يغيّر العرضَ وإن لم يأتِ سجلٌّ جديد */
     return due ? (ask ? FB.pullStatic().catch(function(){ return 0; }).then(pullDelta) : pullDelta()) : 0;
   }).then(function(n){
@@ -3527,22 +3527,22 @@ function syncCycle(){
     else if (n && LIVE_WORK_PAGES.indexOf(CUR) > -1 && !document.querySelector('#content input:focus, #content textarea:focus')) render(1);
     return n;
   }).catch(function(e){ softErr('دورة المزامنة', e, ''); return 0; })
-    .then(function(n){ SYNC_BUSY = false; SYNC_LEFT = SYNC_CYCLE; return n; });
+    .then(function(n){ SYNC.busy = false; SYNC.left = SYNC.cycle; return n; });
 }
 function liveTick(){
   /* مؤقّتٌ واحدٌ لا غير — ولو نودي مرتين. وله مُلغٍ صريحٌ يُنادى عند
      الخروج، فلا يبقى نبضٌ يسحب لحسابٍ خرج صاحبُه. */
   liveTickStop();
-  SYNC_LEFT = SYNC_CYCLE;
+  SYNC.left = SYNC.cycle;
   LIVE_TICK = setInterval(function(){
-    SYNC_LEFT = Math.max(0, SYNC_LEFT - 1);
+    SYNC.left = Math.max(0, SYNC.left - 1);
     var cd = document.getElementById('syncCd');
     if (cd) cd.textContent = syncCdTxt();
     /* الدفعُ كلَّ دقيقة، والسحبُ عند بلوغ عدّاده الصفر — لا انتظارَ لدقيقة الدفع */
-    var pullDue = STATE.meta.online && FB.ready && syncCdSecs() === 0 && !SYNC_BUSY;
-    if (SYNC_LEFT === 0 || pullDue){
+    var pullDue = STATE.meta.online && FB.ready && syncCdSecs() === 0 && !SYNC.busy;
+    if (SYNC.left === 0 || pullDue){
       if (STATE.meta.online && FB.ready) syncCycle();
-      else SYNC_LEFT = SYNC_CYCLE;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
+      else SYNC.left = SYNC.cycle;   /* بلا شبكةٍ يُعاد العدُّ ولا يُحاوَل */
     }
   }, 1000);
   if (!BADGE_TICK) BADGE_TICK = setInterval(function(){
@@ -16377,7 +16377,7 @@ function pullDelta(opt){
   if (opt && Array.isArray(opt.only) && opt.only.length)
     sc = Object.assign({}, sc, { cols:sc.cols.filter(function(c){ return opt.only.indexOf(c) > -1; }) });
   var at = STATE.meta.pullAt || (STATE.meta.pullAt = {});
-  var wasAsk = PULL_ASK; PULL_ASK = false;
+  var wasAsk = SYNC.pullAsk; SYNC.pullAsk = false;
   if (!sc.cols.length){ STATE.meta.lastSync = Date.now(); return Promise.resolve(0); }
   /* ═══ المؤشِّرُ يتبع النطاق ═══
      الفارقيُّ يجلب ما كُتب بعد آخر سحبة. فإن اتّسع النطاقُ — شجرةٌ تغيّرت، أو
@@ -16418,7 +16418,7 @@ function pullDelta(opt){
     });
   })).then(function(){
     STATE.meta.lastSync = Date.now();
-    PULL_LAST = Date.now();
+    SYNC.pullLast = Date.now();
     if (got || wasAsk){ statBump(); CORE.saveSoon(); }
     return _perfDone(got);
   });
@@ -19733,7 +19733,7 @@ function syncAllNow(){
   SYNC_ALL_SEEN = n;
   logEvent('مزامنةٌ فوريةٌ للجميع');
   toast(t('أُرسل الأمرُ — كلُّ جهازٍ مفتوحٍ يسحب الآن، والمغلقُ حين يُفتَح'));
-  PULL_ASK = true; syncCycle();
+  SYNC.pullAsk = true; syncCycle();
   return true;
 }
 function syncAllApply(v){
@@ -19742,7 +19742,7 @@ function syncAllApply(v){
   var first = !SYNC_ALL_SEEN;
   SYNC_ALL_SEEN = n;
   if (first) return false;                      /* أوّلُ قراءةٍ تضبط العلامةَ ولا تسحب */
-  PULL_ASK = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
+  SYNC.pullAsk = true; FB._staticAt = 0; syncCycle();   /* أمرُ المكتب يجلب الثوابتَ أيضًا */
   toast(t('مزامنةٌ من المكتب — يُسحَب الآن'));
   return true;
 }
@@ -19777,7 +19777,7 @@ function roleWatch(v){
   toast(t('تغيّرت صلاحيتُك إلى') + ' «' + t((ROLES[nr] || {}).n || nr) + '» — ' + t('طُبِّقت الآن'));
   try { liveSmallStop(); } catch (e){ LS_ERR = e; }
   STATE.meta.pullAt = {};
-  liveSmall(); presenceBeat(true); PULL_ASK = true; syncCycle();
+  liveSmall(); presenceBeat(true); SYNC.pullAsk = true; syncCycle();
   /* شاشةٌ (أو شريحةٌ) لم تعد تُرى: نُقلَ إلى أوّلِ ما يراه دورُه الجديد */
   if (PARENT[CUR] && PARENT[CUR] !== CUR && !seesPage(CUR)) CUR = PARENT[CUR];
   if (!seesPage(CUR)) CUR = (ROLES[nr].nav || ['over']).filter(seesPage)[0] || 'acct';
@@ -24209,6 +24209,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.1', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'تحسين داخلي بلا تغيير في الاستخدام: وحدة المزامنة بقت ماسكة حالتها في كائن واحد (المتغيرات العامة ٦٠٩ ← ٦٠٥)، واتسجّل أول قرار في «سجل القرارات» للفريق اللي هيستلم: ليه الحفظ المحلي فضل زي ما هو في الموسم ده.' ] },
   { v:'V32.0', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي بلا تغيير في الاستخدام: وحدة متابعة الوزارة والتقارير والتصدير بقت ماسكة حالتها في كائنين بدل ١٦ متغير متفرقين في الكود (المتغيرات العامة ٦٢٤ ← ٦٠٩).' ] },
   { v:'V31.9', d:'٦ أكتوبر ٢٠٢٦', notes:[
@@ -34449,7 +34451,7 @@ function onDocClick(e){
   if (e.target.closest('[data-pull]')){
     /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
        أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
-    PULL_ASK = true; PULL_LAST = 0; SYNC_LEFT = SYNC_CYCLE; FB._staticAt = 0;
+    SYNC.pullAsk = true; SYNC.pullLast = 0; SYNC.left = SYNC.cycle; FB._staticAt = 0;
     toast(t('تُزامَن الآن…'));
     var smb = document.getElementById('syncM'); if (smb) smb.classList.add('busy');
     CORE.flush();
@@ -35049,8 +35051,6 @@ document.addEventListener('change', function(e){
 /* الرفعُ كلَّ دقيقتين — رخيصٌ ولا يُقرأ فيه شيء. والسحبُ أندرُ لأنه هو الذي
    يُحاسَب: المكتبُ كلَّ خمسِ دقائق، والميدانُ كلَّ ربعِ ساعةٍ ولا يسحب إلا
    ما كتبه هو. */
-var PULL_LAST = 0;
-var PULL_ASK = false;   /* يرفعه زرُّ «مزامنة الآن» فيسحب الميدانُ مرةً */
 /* كانت هنا دورةٌ ثانيةٌ كلَّ دقيقتين توازي عدّادَ الرأس — صارت الدورةُ واحدةً:
    العدّادُ (syncCycle) يدفع كلَّ دقيقةٍ ويسحب حين يحين موعدُ النطاق */
 

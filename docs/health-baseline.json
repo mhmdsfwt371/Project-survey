@@ -1,6 +1,6 @@
 {
  "m": {
-  "globals": 609,
+  "globals": 605,
   "over300": 3,
   "over150": 6,
   "lintErrors": 0,
@@ -8,6 +8,6 @@
   "maxSrcKB": 473
  },
  "capSrcKB": 520,
- "ver": "V32.0",
+ "ver": "V32.1",
  "at": "2026-10-06"
 }

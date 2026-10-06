@@ -37,7 +37,7 @@ const K = {
   batch:     num(/\.slice\(0,\s*(\d+)\);?\s*\n?\s*if \(!batch\.length\)/, 0) || num(/queue[^\n]{0,80}\.slice\(0,\s*(\d+)\)/, 0),
   pullLimit: num(/limit\((\d+)\)\.get/, 0),
   /* V16.6 بدّل المؤقّتَ بعدّادٍ ثانويّ: SYNC_CYCLE بالثواني لا بالمللي */
-  syncMs:    num(/var SYNC_CYCLE = (\d+)/, 0) * 1000,
+  syncMs:    num(/var SYNC = \{ cycle:(\d+)/, 0) * 1000,   /* (V32.1) */
   rollMs:    num(/now - ROLL_LAST < (\d+)/, 0),
   pushMs:    num(/now - ROLL_PUSH > (\d+)/, 0)
 };
@@ -116,7 +116,7 @@ check(/pullStatic: function\(force\)/.test(src) && /return FB\.pullStatic\(\)\.c
 /* V16.42: أربعةٌ وثلاثون استعلامًا لا تُعاد مع كلِّ عودةٍ إلى التطبيق */
 check(/if \(!force && FB\._staticAt && now - FB\._staticAt < 900000\) return Promise\.resolve\(false\)/.test(src),
   'ولا تُعاد قبل ربع ساعةٍ إلا بأمرٍ صريح — حدٌّ زمنيٌّ على الثوابت');
-check(!/visibilitychange[\s\S]{0,200}PULL_ASK = true/.test(src) && /Date\.now\(\) - \(VIS_LAST \|\| 0\) < 60000/.test(src),
+check(!/visibilitychange[\s\S]{0,200}SYNC\.pullAsk = true/.test(src) && /Date\.now\(\) - \(VIS_LAST \|\| 0\) < 60000/.test(src),
   'والعودةُ إلى التطبيق تسحب فارقيًّا مرةً في الدقيقة — لا الثوابتَ كلَّها');
 check(/office && DB\.col\('inventory'\)/.test(src) && /office && DB\.col\('purchases'\)/.test(src),
   'والمخزونُ والمشترياتُ للمكتب وحده');

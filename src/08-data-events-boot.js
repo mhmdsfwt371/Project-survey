@@ -4321,7 +4321,7 @@ function onDocClick(e){
   if (e.target.closest('[data-pull]')){
     /* لا تُعاد بناءُ الشاشة إن كنّا على الخريطة: `render` يُنشئ الخريطةَ من
        أولها فتعود إلى موضعها الأول — ومن كان يقرأ مربعًا بعينه يفقده. */
-    PULL_ASK = true; PULL_LAST = 0; SYNC_LEFT = SYNC_CYCLE; FB._staticAt = 0;
+    SYNC.pullAsk = true; SYNC.pullLast = 0; SYNC.left = SYNC.cycle; FB._staticAt = 0;
     toast(t('تُزامَن الآن…'));
     var smb = document.getElementById('syncM'); if (smb) smb.classList.add('busy');
     CORE.flush();
@@ -4921,8 +4921,6 @@ document.addEventListener('change', function(e){
 /* الرفعُ كلَّ دقيقتين — رخيصٌ ولا يُقرأ فيه شيء. والسحبُ أندرُ لأنه هو الذي
    يُحاسَب: المكتبُ كلَّ خمسِ دقائق، والميدانُ كلَّ ربعِ ساعةٍ ولا يسحب إلا
    ما كتبه هو. */
-var PULL_LAST = 0;
-var PULL_ASK = false;   /* يرفعه زرُّ «مزامنة الآن» فيسحب الميدانُ مرةً */
 /* كانت هنا دورةٌ ثانيةٌ كلَّ دقيقتين توازي عدّادَ الرأس — صارت الدورةُ واحدةً:
    العدّادُ (syncCycle) يدفع كلَّ دقيقةٍ ويسحب حين يحين موعدُ النطاق */
 
