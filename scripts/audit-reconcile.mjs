@@ -48,6 +48,8 @@ for (let i = 0; i < N_INS; i++){ Object.assign(w.STATE.inss[S[i].id], { status:'
 for (let i = N_REC; i < N_REC + N_ASN; i++) w.STATE.tasks['TK' + i] = { id:'TK' + i, site:S[i].id, kind:'visit', to:'فني', status:'مطلوب', at:now };
 w.TK_IX = null;
 const SURVEYED = N_REC - N_STUCK - N_REV, NOT_VISITED = TOTAL - N_REC, PENDING = SURVEYED - N_APPR;
+/* (V32.6) قرارُ المالك: «زيرت» = زيارةٌ بأيِّ نتيجة — رقمُ التقدّم في كلِّ الشاشات هو السجلاتُ كلُّها؛ و«مُسح» الواصلُ المقبولُ تقسيمٌ داخله */
+const VISITED = N_REC;
 
 /* ── قراءةُ الأرقام كما تُعرَض ───────────────────────────────────────────── */
 const ar = s => String(s).replace(/[٠-٩]/g, c => '٠١٢٣٤٥٦٧٨٩'.indexOf(c)).replace(/[٬,]/g, '');
@@ -70,14 +72,15 @@ const sv = await open('survey', 'survey');
 const chain = w.chainRows(); const ch = k => (chain.filter(r => r.k === k)[0] || {}).done;
 const svd = await open('over', 'svdash');
 T(kpi(over, 'إجمالي المواقع') === TOTAL && after(sv, 'الكل') === N_REC, 'الإجماليُّ هو الإجمالي — والسجلُّ يعدُّ سجلاتِه: ' + TOTAL + ' / ' + N_REC);
-T(kpi(over, 'تم المسح') === SURVEYED && after(sv, 'مُسح') === SURVEYED && ch('sv') === SURVEYED && after(svd, 'نقاطٌ مُسحت') === SURVEYED,
-  'المسحُ رقمٌ واحدٌ في أربع شاشات: ' + SURVEYED);
+T(kpi(over, 'تم المسح') === VISITED && ch('sv') === VISITED && after(svd, 'نقاطٌ مُسحت') === VISITED,
+  'زيرت (بأيِّ نتيجة) رقمٌ واحدٌ في الملخّص والسلسلة وتفاصيل المسح: ' + VISITED);
+T(after(sv, 'زيرت') === VISITED && after(sv, 'وُصل إليها') === SURVEYED && SURVEYED + N_STUCK + N_REV === VISITED, 'وشاشةُ المسح تقسّمها: مُسح ' + SURVEYED + ' + متعذّر ' + N_STUCK + ' + تحتاج زيارة ' + N_REV + ' = ' + VISITED);
 T(kpi(over, 'متعذّر') === N_STUCK && after(sv, 'متعذّر') === N_STUCK, 'والمتعذّرُ رقمٌ واحدٌ في الملخّص وشاشة المسح: ' + N_STUCK);
 T(after(sv, 'تحتاج زيارة أخرى') === N_REV, 'والمردودُ يُعَدُّ وحدَه في شاشة المسح: ' + N_REV);
 T(kpi(over, 'مُركّب') === N_INS && ch('ins') === N_INS, 'والمُركَّبُ رقمٌ واحدٌ في الملخّص والسلسلة: ' + N_INS);
 T(kpi(over, 'لم يُزر') === NOT_VISITED && after(sv, 'لم يُزر') === NOT_VISITED, 'و«لم يُزر» = المواقعُ − السجلات: ' + NOT_VISITED);
 T(ch('ok') === N_QA, 'والاعتمادُ بعد التدقيق = ما دُقِّق: ' + N_QA);
-T(after(over, 'تقدّم المسح من إجمالي المواقع') === SURVEYED, 'وتقدّمُ المسح من الرقم نفسِه');
+T(after(over, 'تقدّم المسح من إجمالي المواقع') === VISITED, 'وتقدّمُ المسح من الرقم نفسِه');
 
 console.log('\n══ ٣ · القرارات والراكد والتنفيذي ══');
 const nowT = await open('over', 'now');
@@ -88,19 +91,19 @@ T(after(idle, 'الكل') === SURVEYED + N_REV - N_INS, 'الراكدُ = ما �
 const stuckT = await open('survey', 'stuck');
 T(after(stuckT, 'الكل') === N_STUCK, 'وشاشةُ المتعذّر تعدُّ المتعذّرَ نفسَه: ' + N_STUCK);
 const ex = await open('exec', 'exec');
-T(after(ex, 'الإنجاز') === Math.round(SURVEYED / TOTAL * 100) && after(ex, 'أُنجز مسحًا') === SURVEYED && after(ex, 'أُنجز تركيبًا') === N_INS,
-  'والتقريرُ التنفيذيُّ من الأرقام نفسِها: ' + Math.round(SURVEYED / TOTAL * 100) + '٪');
+T(after(ex, 'الإنجاز') === Math.round(VISITED / TOTAL * 100) && after(ex, 'أُنجز مسحًا') === VISITED && after(ex, 'أُنجز تركيبًا') === N_INS,
+  'والتقريرُ التنفيذيُّ من الأرقام نفسِها: ' + Math.round(VISITED / TOTAL * 100) + '٪');
 
 console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والمتبقّي لكلِّ مشعرٍ وحدَه، والكلُّ بلا اختيار (V17.78) ══');
 {
   const K = w.siteKeyStats(), Z = K.zones;
-  T(Object.values(Z).reduce((a, o) => a + o.n, 0) === TOTAL && Object.values(Z).reduce((a, o) => a + o.sv, 0) === SURVEYED && Object.values(Z).reduce((a, o) => a + o.stuck, 0) === N_STUCK,
+  T(Object.values(Z).reduce((a, o) => a + o.n, 0) === TOTAL && Object.values(Z).reduce((a, o) => a + o.sv, 0) === VISITED && Object.values(Z).reduce((a, o) => a + o.stuck, 0) === N_STUCK,
     'مجموعُ المشاعر = الكلُّ في المواقع والمسح والمتعذّر');
   const arafat = Z['عرفات'];
-  T(arafat && arafat.sv === SURVEYED && arafat.stuck === N_STUCK, 'وما مُسح كلُّه في عرفات يُقرأ على عرفات وحدَها: ' + arafat.sv);
+  T(arafat && arafat.sv === VISITED && arafat.stuck === N_STUCK, 'وما زير كلُّه في عرفات يُقرأ على عرفات وحدَها: ' + arafat.sv);
   const all = await open('over', 'over');
-  T(all.indexOf('كلُّ المشاعر') > -1 && kpi(all, 'إجمالي المواقع') === TOTAL && kpi(all, 'متبقٍّ') === TOTAL - SURVEYED,
-    'بلا اختيارٍ: الأرقامُ للكلّ والمتبقّي = الكلُّ − المسح: ' + (TOTAL - SURVEYED));
+  T(all.indexOf('كلُّ المشاعر') > -1 && kpi(all, 'إجمالي المواقع') === TOTAL && kpi(all, 'متبقٍّ') === TOTAL - VISITED,
+    'بلا اختيارٍ: الأرقامُ للكلّ والمتبقّي = الكلُّ − ما زير: ' + (TOTAL - VISITED));
   const cards = (all.match(/٪/g) || []).length;
   T(cards >= Object.keys(Z).length + 1, 'وبطاقةٌ بنسبتها لكلِّ مشعرٍ وواحدةٌ للكلّ');
   d.querySelector('[data-ovz="عرفات"]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(150);
@@ -134,15 +137,15 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T((h.match(/kk-ring/g) || []).length === 5 + 1 && h.indexOf('data-kiosk') > -1, 'حلقاتٌ أربعٌ ومخيماتٌ بلا عائق وزرُّ العرض الكامل (V30.0)');
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();
-  const n7 = Object.keys(w.STATE.recs).filter(k => w.svDone(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;
+  const n7 = Object.keys(w.STATE.recs).filter(k => w.svVisited(w.STATE.recs[k]) && +w.STATE.recs[k].at >= Date.now() - 7 * 864e5).length;   /* (V32.6) */
   T(new RegExp('هذا الأسبوع مُسح ' + w.nm(n7)).test(story) && /تنتظر قرارَ الوزارة/.test(story) && /متعذّرةٌ تحتاج قرارًا/.test(story), 'الأسبوعُ في جملةٍ من الأرقام نفسِها: ' + n7 + ' في سبعة أيام');
   T(h.indexOf('kk-story') > -1 && (h.match(/aria-valuenow="/g) || []).length >= 7, 'وتُعرَض تحت الرأس، والعدّاداتُ تحمل أرقامَها للتحريك');
   T(h.indexOf('var(--min-green)') > -1 && h.indexOf('var(--min-gold)') > -1 && h.indexOf('وزارةُ الحج والعمرة') > -1, 'وألوانُها من طقم هوية الوزارة وعليها اسمُها');
-  T(new RegExp(w.nm(SURVEYED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'المسحُ والتركيبُ من الكلِّ نفسِه: ' + SURVEYED + ' / ' + TOTAL);
+  T(new RegExp(w.nm(VISITED) + ' / ' + w.nm(TOTAL)).test(kk) && new RegExp(w.nm(N_INS) + ' / ' + w.nm(TOTAL)).test(kk), 'زيرت والتركيبُ من الكلِّ نفسِه: ' + VISITED + ' / ' + TOTAL);
   T(new RegExp(w.nm(N_STUCK) + ' متعذّر').test(kk), 'والمتعذّرُ رقمُ الشاشات الأخرى — رقمًا كبيرًا فوق اسمه: ' + N_STUCK);
   T(new RegExp(w.nm(PENDING) + ' تنتظر الاعتمادَ التقني').test(kk), 'وما ينتظر الاعتمادَ التقني من دورة الحياة: ' + PENDING);
   const zsum = Object.values(w.siteKeyStats().zones).reduce((a, o) => a + o.sv, 0);
-  T(zsum === SURVEYED, 'وأشرطةُ المشاعر تُجمَع إلى المسح: ' + zsum);
+  T(zsum === VISITED, 'وأشرطةُ المشاعر تُجمَع إلى ما زير: ' + zsum);
   /* «متى نخلّص؟» (V17.83): المشعرُ الذي فيه سجلاتُ آخر أسبوعين له توقّع، والراكدُ يُقال فيه «لا وتيرة» */
   const zA = w.STATE.sites[0].zone, fA = w.zoneForecast(zA);
   T(!!fA && fA.rate > 0 && fA.eta > Date.now() && fA.left === w.siteKeyStats().zones[zA].n - w.siteKeyStats().zones[zA].sv, 'التوقّعُ من وتيرة أسبوعين: ' + zA + ' يكتمل نحو ' + w.dayKey(fA.eta));

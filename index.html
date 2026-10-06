@@ -1207,7 +1207,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V32.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1269,7 +1269,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-44ec16291e.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-5ae68eda70.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3216,7 +3216,7 @@ function rollupToday(force){
   Object.keys(STATE.recs).forEach(function(k){
     var r = STATE.recs[k];
     if (dayKey(r.at || r._at) !== day) return;
-    if (svDone(r)) sv++; else blocked++;
+    if (svVisited(r)) sv++; if (svStuck(r)) blocked++;   /* (V32.6) الزيارةُ بأيِّ نتيجة؛ والمتعذّرُ منها للإيضاح */
   });
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k];
@@ -7204,7 +7204,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
     var L = ids.map(siteFind).filter(Boolean);
     var sv = 0, ins = 0, zones = {};
     L.forEach(function(x){
-      if (svDone(STATE.recs[x.id])) sv++;
+      if (svVisited(STATE.recs[x.id])) sv++;
       var r = STATE.inss[x.id];
       if (r && r.status === 'مُركّب' && r.approved) ins++;
       zones[x.zone] = 1;
@@ -7219,7 +7219,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
             ? table(['المعرّف','الموقع','المشعر','الحالة',''],
                 capList(L, 200).map(function(x){
                   var r = STATE.inss[x.id];
-                  var st2 = (r && r.status) || (svDone(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
+                  var st2 = (r && r.status) || (svVisited(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
                   return ['<span class="num">' + esc(x.id) + '</span>',
                           esc(x.name), esc(t(x.zone)),
                           pill(t(st2), st2 === 'مُركّب' ? 'ok' : 'warn'),
@@ -8920,6 +8920,12 @@ var SV_PHOTOS = [
 function svReached(r){ return !!r && (!r.access || r.access === 'تم الوصول'); }
 function svStuck(r){ return !!r && !svReached(r); }
 function svDone(r){ return svReached(r) && r.review !== 'revisit'; }
+/* ═══ (V32.6) قرارُ المالك: «زيرت» = زيارةٌ ميدانيةٌ بأيِّ نتيجة ═══
+   «رحت للـ٨٨ نقطة زيارةً ميدانية وأخذت الفيدباك» — فأرقامُ تقدّم المسح في كلِّ الشاشات (الملخّص، والقاعة، والخريطة، والوزارة،
+   وسلسلةُ المراحل، واللقطةُ اليومية، وقياسُ الخطة، وملفُّ الوزارة اليومي، والتقارير) تعدّ كلَّ نقطةٍ لها زيارة: وُصل، أو تعذّر،
+   أو يحتاج تصريحًا، أو رُدَّت لزيارةٍ أخرى. «المتبقي» = ما لم يُزَر أصلًا. أمّا سيرُ العمل (الجاهزيةُ للتركيب، والاعتماد، والحلول،
+   ومقترحُ أقرب نقطة، والتحدياتُ والقياسات) فيبقى على svDone — المتعذّرُ يحتاج زيارةً أخرى ولا يُركَّب عليه. (سجلُّ القرارات ق-٠٠٧) */
+function svVisited(r){ return !!r && !r.deleted; }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){
   if (!r) return '';
@@ -10523,7 +10529,7 @@ function coStat(co){
   STATE.sites.forEach(function(x){
     if (x.co !== co) return;
     n++;
-    if (svDone(STATE.recs[x.id])) sv++;
+    if (svVisited(STATE.recs[x.id])) sv++;
     var r = STATE.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) ins++;
     if (typeof handDone === 'function' && handDone(x.id)) hd++;
@@ -10614,8 +10620,8 @@ var WBS_AUTO = [
   [/^تركيب.*(المزدلفة|مزدلفة)/, function(){ return wbsInsPct('المزدلفة'); }],
   [/^(تركيب النقاط|التركيب الميداني|تركيب المواقع|اكتمال التركيب)/, function(){ var K = siteKeyStats().total; return K.n ? Math.round(K.ins / K.n * 100) : 0; }]
 ];
-function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
-function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsInsPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; var st = (STATE.inss[x.id] || {}).status; if (st === 'مُركّب' || x.fstat === 'مُركّب') d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsAutoPct(r){ if (wbsChildren(r.id).length || r.manual) return null; var nm0 = String(r.n || ''); for (var i = 0; i < WBS_AUTO.length; i++){ if (WBS_AUTO[i][0].test(nm0)){ try { return Math.max(0, Math.min(100, +WBS_AUTO[i][1]() || 0)); } catch (e){ return null; } } } return null; }
 function wbsPlanPct(r){
@@ -12929,7 +12935,7 @@ function evm(){
 
   var earned = 0, done = 0;
   STATE.sites.forEach(function(x){
-    if (svDone(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }
+    if (svVisited(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }   /* (V32.6) */
     var r = STATE.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) earned += ptsInstall(x);
   });
@@ -16131,8 +16137,8 @@ function siteKeyStats(){
     var ZZ = Z[z] || (Z[z] = { n:0, sv:0, ins:0, noRec:0, stuck:0 });
     by[k] = (by[k] || 0) + 1; T.n++; ZZ.n++;
     if (!r){ T.noRec++; ZZ.noRec++; }
-    else if (svDone(r)){ sv[k] = (sv[k] || 0) + 1; T.sv++; ZZ.sv++; }
-    else if (svStuck(r)){ T.stuck++; ZZ.stuck++; }   /* من لم يصل — والمردودُ ليس متعذّرًا (V17.77) */
+    else { sv[k] = (sv[k] || 0) + 1; T.sv++; ZZ.sv++;   /* (V32.6) زيرت بأيِّ نتيجة */
+      if (svStuck(r)){ T.stuck++; ZZ.stuck++; } }   /* من لم يصل — والمردودُ ليس متعذّرًا (V17.77) */
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; ZZ.ins++; }
   });
@@ -16222,7 +16228,7 @@ function siteStats(){
     if (x.work) wk[x.work] = (wk[x.work] || 0) + 1;
     var rv = svReview(STATE.recs[x.id]);
     if (rv === 'approved') apv++; else if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
-    if (svDone(STATE.recs[x.id])) sv++;
+    if (svVisited(STATE.recs[x.id])) sv++;   /* (V32.6) */
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب') ins++;
   }
@@ -17543,7 +17549,7 @@ var SHEETS = {
     LIFE_ORDER.forEach(function(k){ if (life[k]) out.push([LIFE[k].n, life[k], pc(life[k], S.n)]); });
     out.push(['', '', '']);
     out.push(['المشعر', 'العدد', 'مُسح']);
-    var z = {}; STATE.sites.forEach(function(x){ z[x.zone] = z[x.zone] || { n:0, s:0 }; z[x.zone].n++; if (svDone(STATE.recs[x.id])) z[x.zone].s++; });
+    var z = {}; STATE.sites.forEach(function(x){ z[x.zone] = z[x.zone] || { n:0, s:0 }; z[x.zone].n++; if (svVisited(STATE.recs[x.id])) z[x.zone].s++; });
     Object.keys(z).sort(function(a, b){ return z[b].n - z[a].n; }).forEach(function(k){ out.push([k, z[k].n, z[k].s]); });
     if (typeof wtStats === 'function' && wtRows().length){
       var c = wtStats();
@@ -18686,7 +18692,7 @@ function geoJsonBuild(){
     var life = lifeOf(x);
     var p = { id:x.id, name:x.name || '', zone:x.zone || '', type:x.type || '', camera_kind:camKind(x) || null, block:x.sq || '', sign:x.sign || '', company:x.co || '',
               status:life, status_label:(LIFE[life] || LIFE.todo).n,
-              surveyed_at: r && svDone(r) ? new Date(+r.at).toISOString() : null,
+              surveyed_at: svVisited(r) ? new Date(+r.at).toISOString() : null,   /* (V32.6) */
               installed_at: ins && ins.status === 'مُركّب' ? new Date(+ins.at).toISOString() : null,
               handed_at: hd && hd.at ? new Date(+hd.at).toISOString() : null,
               dismantled_at: dis && dis.status === 'تم الفك' ? new Date(+dis.at).toISOString() : null };
@@ -20378,7 +20384,7 @@ function coBucketsAll(){
     var out = M[co] || (M[co] = { all:[], sv:[], stuck:[], ins:[] });
     out.all.push(x);
     var r = STATE.recs[x.id];
-    if (r && svDone(r)) out.sv.push(x);
+    if (svVisited(r)) out.sv.push(x);   /* (V32.6) */
     else if (r && r.review !== 'revisit') out.stuck.push(x);
     var i2 = STATE.inss[x.id];
     if ((i2 && i2.status === 'مُركّب') || x.fstat === 'مُركّب') out.ins.push(x);
@@ -20919,7 +20925,7 @@ function dayDone(day){
   if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0, dis: snap.dayDismantle || 0 };
   var sv = 0, ins = 0, dis = 0;
   Object.keys(STATE.recs).forEach(function(k){
-    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svDone(r)) sv++; });
+    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r)) sv++; });
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
   Object.keys(STATE.diss || {}).forEach(function(k){
@@ -21005,7 +21011,7 @@ function svdRows(){
   var out = [];
   (STATE.sites || []).forEach(function(x){
     var r = STATE.recs[x.id];
-    if (!r || !svDone(r)) return;
+    if (!svVisited(r)) return;   /* (V32.6) */
     var ch = svdChals(r), rm = svdRoomsOf(x, r);
     out.push({ x:x, r:r, ch:ch, camp:x.type === 'مخيم', rooms:rm.n, src:rm.src, metal:svdMetal(ch),
                life:(typeof lifeOf === 'function' ? lifeOf(x) : '') });
@@ -21138,7 +21144,7 @@ function zoneForecast(zone){
   (STATE.sites || []).forEach(function(x){
     if (taxOf(x).g !== zone) return;   /* (V30.0) بتصنيف المالك */
     var r = STATE.recs[x.id];
-    if (r && svDone(r) && +r.at >= from) done14++;
+    if (svVisited(r) && +r.at >= from) done14++;   /* (V32.6) */
   });
   var left = o.n - o.sv;
   if (left <= 0) return { done:true, left:0 };
@@ -21325,7 +21331,7 @@ function pointMap(zone){
    الوزارة — بلا صفةٍ لا رقمَ خلفها. */
 function kioskStory(){
   var K = siteKeyStats(), now = Date.now(), wk = now - 7 * 864e5, n7 = 0, byZ = {};
-  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r) && +r.at >= wk){ n7++; byZ[x.zone] = (byZ[x.zone] || 0) + 1; } });
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (svVisited(r) && +r.at >= wk){ n7++; byZ[x.zone] = (byZ[x.zone] || 0) + 1; } });
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
   var parts = [];
@@ -21518,8 +21524,8 @@ function mfuObstacles(){
 function svStats(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
-    var c = taxOf(x), r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
-    var ch = done ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
+    var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
+    var ch = (r && svDone(r)) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
     var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
     o.n++; z.n++; O.tot++;
     if (done){ o.sv++; z.sv++; O.sv++; }
@@ -21540,7 +21546,7 @@ function jmrConfirm(){
   (STATE.sites || []).forEach(function(x){
     if (!isJmr(x)) return;
     var f = siteFloor(x), k = f == null ? 'بلا دور' : floorName(f), o = F[k] = F[k] || { k:k, i:f == null ? 9 : f, n:0, ok:0, un:0, no:0, ch:0 };
-    var r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
+    var r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
     o.n++; tot.n++;
     if (un){ o.un++; tot.un++; } else if (done){ o.ok++; tot.ok++; } else { o.no++; tot.no++; }
     if (done && chalKeys(r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; })){ o.ch++; tot.ch++; }
@@ -21559,13 +21565,13 @@ function mfuCompanies(){
     if (x.type !== 'مخيم' || !x.co) return;
     var c = by[x.co] = by[x.co] || { co:x.co, n:0, ins:0, obs:0, sv:0, chal:0 };
     c.n++; if (mfuInstalled(x)) c.ins++; else if (obsIds[x.id]) c.obs++;
-    var r1 = STATE.recs[x.id]; if (r1 && svDone(r1)){ c.sv++; if (chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++; }   /* (V29.1) */
+    var r1 = STATE.recs[x.id]; if (svVisited(r1)) c.sv++; if (r1 && svDone(r1) && chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++;   /* (V32.6) */   /* (V29.1) */
   });
   return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; c.svp = c.n ? Math.round(c.sv / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
 }
 function mfuKpis(){
   var S = STATE.sites || [], tot = S.length, sv = 0, ins = 0, camp = 0, campIns = 0, cor = 0, corIns = 0;
-  S.forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r)) sv++; var i = mfuInstalled(x); if (i) ins++;
+  S.forEach(function(x){ var r = STATE.recs[x.id]; if (svVisited(r)) sv++; var i = mfuInstalled(x); if (i) ins++;   /* (V32.6) */
     if (x.type === 'مخيم'){ camp++; if (i) campIns++; } else if (x.type === 'ممر'){ cor++; if (i) corIns++; } });
   var C = mfuCompanies();
   return { tot:tot, sv:sv, ins:ins, camp:camp, campIns:campIns, cor:cor, corIns:corIns, obs:mfuObstacles().length,
@@ -21690,8 +21696,8 @@ function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ مع
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
-  sv:      ['تم المسح',               function(x, r){ return !!(r && svDone(r)); }],
-  rem:     ['المتبقي — لم تُمسح',      function(x, r){ return !(r && svDone(r)); }],
+  sv:      ['تمت زيارتها',            function(x, r){ return svVisited(r); }],   /* (V32.6) بأيِّ نتيجة */
+  rem:     ['المتبقي — لم تُزَر',       function(x, r){ return !svVisited(r); }],
   clean:   ['نقاط بلا عوائق ولا تحديات', function(x, r){ return !!(r && svDone(r)) && r.access === 'تم الوصول' && !svHasChal(r); }],   /* (V32.5) كلُّ الأنواع */
   obs:     ['نقاط عليها معوّقات',        function(x, r){ return !!mfuObsMap()[x.id]; }],
   campins: ['المخيمات وحالةُ تركيبها',    function(x, r){ return x.type === 'مخيم'; }],
@@ -22692,7 +22698,7 @@ function overDailyBody(){ return '<details class="mfu-add"><summary>' + esc(t('�
       var S = siteStats(), day = dayKey(Date.now());
       var sv = 0, ins = 0;
       Object.keys(STATE.recs).forEach(function(k){
-        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svDone(STATE.recs[k])) sv++; });
+        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svVisited(STATE.recs[k])) sv++; });
       Object.keys(STATE.inss).forEach(function(k){
         var r = STATE.inss[k];
         if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
@@ -22735,15 +22741,15 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       g.n++;
       var rv = svReview(r);
       if (rv === 'revisit') g.rev++;
-      else if (r && svDone(r)){ if (dayKey(r.at || r._at) === today) g.doneToday++; }
+      else if (svVisited(r)){ if (dayKey(r.at || r._at) === today) g.doneToday++; }   /* (V32.6) */
       else g.wait++;
       if (x.when === tmr){ tmrN++; bySupTmr[who] = (bySupTmr[who] || 0) + 1; if (st) byZoneTmr[st.zone] = (byZoneTmr[st.zone] || 0) + 1; }
-      if (x.when && x.when < today && !(r && svDone(r))) lateN++;
+      if (x.when && x.when < today && !svVisited(r)) lateN++;
     });
     /* أين نحن اليوم: زياراتُ اليوم بالمشعر */
     var zoneToday = {};
     Object.keys(STATE.recs).forEach(function(k){
-      var r = STATE.recs[k]; if (dayKey(r.at || r._at) !== today || !svDone(r)) return;
+      var r = STATE.recs[k]; if (dayKey(r.at || r._at) !== today || !svVisited(r)) return;
       var st = siteFind(k); if (st) zoneToday[st.zone] = (zoneToday[st.zone] || 0) + 1;
     });
     var sups = Object.keys(bySup).sort(function(a, b){ return bySup[b].n - bySup[a].n; });
@@ -23108,7 +23114,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     });
 
     var views = [['','الكل', all.length],
-                 ['done','تمت الزيارة', all.length - blocked.length - revisit.length],
+                 ['done','وُصل إليها', all.length - blocked.length - revisit.length],   /* (V32.6) «زيرت» صار الكلَّ بأيِّ نتيجة — والواصلُ تقسيمٌ داخله */
                  ['revisit','تحتاج زيارة أخرى', revisit.length],
                  ['block','متعذّر', blocked.length]];
     var html = '<div class="chips">' + views.map(function(v){
@@ -23116,7 +23122,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
           + ' <span class="num">' + nm(v[2]) + '</span></button>';
       }).join('') + '</div>'
-      + stats([['مُسح', N(S.surveyed), 'acc'],
+      + stats([['زيرت', N(S.surveyed), 'acc'],   /* (V32.6) بأيِّ نتيجة */
                        ['لم يُزر', N(siteKeyStats().total.noRec)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
                        ['متعذّر', N(blocked.length), blocked.length ? 'wrn' : 'ok'],
@@ -23448,7 +23454,7 @@ function pilotRows(){
     var id = x.id, r = STATE.recs[id], ins = STATE.inss[id], dis = STATE.diss && STATE.diss[id], hd = (typeof handOf === 'function') ? handOf(id) : null;
     var tk = idx[id + '|install'];
     var st = [
-      ['مُسحت',      r && svDone(r) ? +r.at : 0],
+      ['زيرت',      svVisited(r) ? +r.at : 0],   /* (V32.6) */
       ['أُسند التركيب', tk ? +(tk.at || tk._at || 0) : 0],
       ['رُكّبت',      ins && ins.status === 'مُركّب' ? +ins.at : 0],
       ['دُقّقت',      ins && ins.approved ? +(ins.qaAt || ins._at || ins.at) : 0],
@@ -24254,6 +24260,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'قرار المالك: «زيرت» بقت تعني أي نقطة اتعملها زيارة ميدانية بأي نتيجة (وصلنا، أو متعذر، أو محتاجة تصريح، أو محتاجة زيارة تانية). يعني كاميرات المتابعة ٨٨ من ٨٨ مش ٧٨. والمتبقي بقى اللي ما اتزارش خالص بس.',
+      'الرقم ده واحد في كل الشاشات: الملخص، وشاشة القاعة، والخريطة، ومتابعة الوزارة، وسلسلة المراحل، والخطة، والملف اليومي للوزارة، والتقارير. وفي شاشة المسح التقسيم ظاهر جوه «زيرت»: وُصل إليها، ومتعذر، ومحتاجة زيارة تانية. والجاهزية للتركيب والاعتماد زي ما هي.' ] },
   { v:'V32.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'ملخص متابعة الوزارة اتعاد ترتيبه بطلب المالك: البطاقات أولا من «نسبة المسح»، وكل بطاقة بتتضغط فتفتح قائمتها بتفاصيلها وتصدير إكسل (النقاط، والمخيمات والممرات وحالة تركيبها، والمعوقات، والشركات، والتحديات المفتوحة، والطلبات، ومهام الأسبوع).',
       'بطاقتين جداد لكل الأنواع: «نقاط بلا عوائق ولا تحديات» و«نقاط ذات تحديات». وبطاقة «بانتظار قرار الوزارة» اتشالت. والملخص التنفيذي وما ينتظر الوزارة والتنبيهات والمعالم والخطة نزلوا تحت الصفحة.' ] },
@@ -25099,7 +25108,7 @@ function inboxItems(){
   var today = dayKey(Date.now());
   Object.keys(STATE.tasks).forEach(function(k){
     var x = STATE.tasks[k]; if (!x || x.status === 'معتمد') return;
-    if (x.when && x.when < today && !svDone(STATE.recs[x.site])) lateN++;
+    if (x.when && x.when < today && !svVisited(STATE.recs[x.site])) lateN++;   /* (V32.6) زيارةٌ تمّت بأيِّ نتيجة ليست متأخرة */
     if (x.kind === 'visit' && svReview(STATE.recs[x.site]) === 'pending') tkWait++;
   });
   out.push(['زياراتٌ تنتظر اعتمادك', S.pending, 'svappr', S.pending ? 'wrn' : 'ok']);
@@ -28782,7 +28791,7 @@ function fupPctRaw(zone, type, stage, work){
   var n = 0;
   L.forEach(function(x){
     var rec = STATE.recs[x.id], ins = STATE.inss[x.id];
-    if (stage === 'sv'  && rec && svDone(rec)) n++;
+    if (stage === 'sv'  && svVisited(rec)) n++;   /* (V32.6) */
     else if (stage === 'asn' && asnOf(x.id)) n++;
     else if (stage === 'ins' && ins && ins.status === 'مُركّب') n++;
     else if (stage === 'ip'  && x.net && x.ipRtr && x.ipRdr) n++;
@@ -29183,7 +29192,7 @@ function pdfDonut(parts){
 }
 function pdfCover(){
   var K = siteKeyStats(), S = K.total;
-  var zones = {}; STATE.sites.forEach(function(x){ zones[x.zone] = (zones[x.zone] || 0) + (svDone(STATE.recs[x.id]) ? 1 : 0); });
+  var zones = {}; STATE.sites.forEach(function(x){ zones[x.zone] = (zones[x.zone] || 0) + (svVisited(STATE.recs[x.id]) ? 1 : 0); });   /* (V32.6) */
   var zrows = Object.keys(zones).map(function(z){ return [z, zones[z]]; }).sort(function(a, b){ return b[1] - a[1]; });
   var life = {}; STATE.sites.forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
   var parts = LIFE_ORDER.filter(function(k){ return life[k]; }).map(function(k){ return [LIFE[k].n, life[k], LIFE[k].c]; });

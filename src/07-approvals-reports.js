@@ -3658,7 +3658,7 @@ function fupPctRaw(zone, type, stage, work){
   var n = 0;
   L.forEach(function(x){
     var rec = STATE.recs[x.id], ins = STATE.inss[x.id];
-    if (stage === 'sv'  && rec && svDone(rec)) n++;
+    if (stage === 'sv'  && svVisited(rec)) n++;   /* (V32.6) */
     else if (stage === 'asn' && asnOf(x.id)) n++;
     else if (stage === 'ins' && ins && ins.status === 'مُركّب') n++;
     else if (stage === 'ip'  && x.net && x.ipRtr && x.ipRdr) n++;
@@ -4059,7 +4059,7 @@ function pdfDonut(parts){
 }
 function pdfCover(){
   var K = siteKeyStats(), S = K.total;
-  var zones = {}; STATE.sites.forEach(function(x){ zones[x.zone] = (zones[x.zone] || 0) + (svDone(STATE.recs[x.id]) ? 1 : 0); });
+  var zones = {}; STATE.sites.forEach(function(x){ zones[x.zone] = (zones[x.zone] || 0) + (svVisited(STATE.recs[x.id]) ? 1 : 0); });   /* (V32.6) */
   var zrows = Object.keys(zones).map(function(z){ return [z, zones[z]]; }).sort(function(a, b){ return b[1] - a[1]; });
   var life = {}; STATE.sites.forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
   var parts = LIFE_ORDER.filter(function(k){ return life[k]; }).map(function(k){ return [LIFE[k].n, life[k], LIFE[k].c]; });

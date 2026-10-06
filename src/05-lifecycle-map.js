@@ -663,7 +663,7 @@ var SHEETS = {
     LIFE_ORDER.forEach(function(k){ if (life[k]) out.push([LIFE[k].n, life[k], pc(life[k], S.n)]); });
     out.push(['', '', '']);
     out.push(['المشعر', 'العدد', 'مُسح']);
-    var z = {}; STATE.sites.forEach(function(x){ z[x.zone] = z[x.zone] || { n:0, s:0 }; z[x.zone].n++; if (svDone(STATE.recs[x.id])) z[x.zone].s++; });
+    var z = {}; STATE.sites.forEach(function(x){ z[x.zone] = z[x.zone] || { n:0, s:0 }; z[x.zone].n++; if (svVisited(STATE.recs[x.id])) z[x.zone].s++; });
     Object.keys(z).sort(function(a, b){ return z[b].n - z[a].n; }).forEach(function(k){ out.push([k, z[k].n, z[k].s]); });
     if (typeof wtStats === 'function' && wtRows().length){
       var c = wtStats();
@@ -1806,7 +1806,7 @@ function geoJsonBuild(){
     var life = lifeOf(x);
     var p = { id:x.id, name:x.name || '', zone:x.zone || '', type:x.type || '', camera_kind:camKind(x) || null, block:x.sq || '', sign:x.sign || '', company:x.co || '',
               status:life, status_label:(LIFE[life] || LIFE.todo).n,
-              surveyed_at: r && svDone(r) ? new Date(+r.at).toISOString() : null,
+              surveyed_at: svVisited(r) ? new Date(+r.at).toISOString() : null,   /* (V32.6) */
               installed_at: ins && ins.status === 'مُركّب' ? new Date(+ins.at).toISOString() : null,
               handed_at: hd && hd.at ? new Date(+hd.at).toISOString() : null,
               dismantled_at: dis && dis.status === 'تم الفك' ? new Date(+dis.at).toISOString() : null };
@@ -3498,7 +3498,7 @@ function coBucketsAll(){
     var out = M[co] || (M[co] = { all:[], sv:[], stuck:[], ins:[] });
     out.all.push(x);
     var r = STATE.recs[x.id];
-    if (r && svDone(r)) out.sv.push(x);
+    if (svVisited(r)) out.sv.push(x);   /* (V32.6) */
     else if (r && r.review !== 'revisit') out.stuck.push(x);
     var i2 = STATE.inss[x.id];
     if ((i2 && i2.status === 'مُركّب') || x.fstat === 'مُركّب') out.ins.push(x);
@@ -4039,7 +4039,7 @@ function dayDone(day){
   if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0, dis: snap.dayDismantle || 0 };
   var sv = 0, ins = 0, dis = 0;
   Object.keys(STATE.recs).forEach(function(k){
-    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svDone(r)) sv++; });
+    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r)) sv++; });
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
   Object.keys(STATE.diss || {}).forEach(function(k){
@@ -4125,7 +4125,7 @@ function svdRows(){
   var out = [];
   (STATE.sites || []).forEach(function(x){
     var r = STATE.recs[x.id];
-    if (!r || !svDone(r)) return;
+    if (!svVisited(r)) return;   /* (V32.6) */
     var ch = svdChals(r), rm = svdRoomsOf(x, r);
     out.push({ x:x, r:r, ch:ch, camp:x.type === 'مخيم', rooms:rm.n, src:rm.src, metal:svdMetal(ch),
                life:(typeof lifeOf === 'function' ? lifeOf(x) : '') });
@@ -4258,7 +4258,7 @@ function zoneForecast(zone){
   (STATE.sites || []).forEach(function(x){
     if (taxOf(x).g !== zone) return;   /* (V30.0) بتصنيف المالك */
     var r = STATE.recs[x.id];
-    if (r && svDone(r) && +r.at >= from) done14++;
+    if (svVisited(r) && +r.at >= from) done14++;   /* (V32.6) */
   });
   var left = o.n - o.sv;
   if (left <= 0) return { done:true, left:0 };
@@ -4445,7 +4445,7 @@ function pointMap(zone){
    الوزارة — بلا صفةٍ لا رقمَ خلفها. */
 function kioskStory(){
   var K = siteKeyStats(), now = Date.now(), wk = now - 7 * 864e5, n7 = 0, byZ = {};
-  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r) && +r.at >= wk){ n7++; byZ[x.zone] = (byZ[x.zone] || 0) + 1; } });
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (svVisited(r) && +r.at >= wk){ n7++; byZ[x.zone] = (byZ[x.zone] || 0) + 1; } });
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
   var parts = [];
@@ -4638,8 +4638,8 @@ function mfuObstacles(){
 function svStats(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
-    var c = taxOf(x), r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
-    var ch = done ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
+    var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
+    var ch = (r && svDone(r)) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
     var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
     o.n++; z.n++; O.tot++;
     if (done){ o.sv++; z.sv++; O.sv++; }
@@ -4660,7 +4660,7 @@ function jmrConfirm(){
   (STATE.sites || []).forEach(function(x){
     if (!isJmr(x)) return;
     var f = siteFloor(x), k = f == null ? 'بلا دور' : floorName(f), o = F[k] = F[k] || { k:k, i:f == null ? 9 : f, n:0, ok:0, un:0, no:0, ch:0 };
-    var r = STATE.recs[x.id], done = !!(r && svDone(r)), un = !!(r && r.access && r.access !== 'تم الوصول');
+    var r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
     o.n++; tot.n++;
     if (un){ o.un++; tot.un++; } else if (done){ o.ok++; tot.ok++; } else { o.no++; tot.no++; }
     if (done && chalKeys(r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; })){ o.ch++; tot.ch++; }
@@ -4679,13 +4679,13 @@ function mfuCompanies(){
     if (x.type !== 'مخيم' || !x.co) return;
     var c = by[x.co] = by[x.co] || { co:x.co, n:0, ins:0, obs:0, sv:0, chal:0 };
     c.n++; if (mfuInstalled(x)) c.ins++; else if (obsIds[x.id]) c.obs++;
-    var r1 = STATE.recs[x.id]; if (r1 && svDone(r1)){ c.sv++; if (chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++; }   /* (V29.1) */
+    var r1 = STATE.recs[x.id]; if (svVisited(r1)) c.sv++; if (r1 && svDone(r1) && chalKeys(r1.chals || []).some(function(k){ return k && k !== 'لا توجد تحديات'; })) c.chal++;   /* (V32.6) */   /* (V29.1) */
   });
   return Object.keys(by).map(function(k){ var c = by[k]; c.rem = c.n - c.ins - c.obs; c.pct = c.n ? Math.round(c.ins / c.n * 100) : 0; c.svp = c.n ? Math.round(c.sv / c.n * 100) : 0; return c; }).sort(function(a, b){ return b.pct - a.pct || b.n - a.n; });
 }
 function mfuKpis(){
   var S = STATE.sites || [], tot = S.length, sv = 0, ins = 0, camp = 0, campIns = 0, cor = 0, corIns = 0;
-  S.forEach(function(x){ var r = STATE.recs[x.id]; if (r && svDone(r)) sv++; var i = mfuInstalled(x); if (i) ins++;
+  S.forEach(function(x){ var r = STATE.recs[x.id]; if (svVisited(r)) sv++; var i = mfuInstalled(x); if (i) ins++;   /* (V32.6) */
     if (x.type === 'مخيم'){ camp++; if (i) campIns++; } else if (x.type === 'ممر'){ cor++; if (i) corIns++; } });
   var C = mfuCompanies();
   return { tot:tot, sv:sv, ins:ins, camp:camp, campIns:campIns, cor:cor, corIns:corIns, obs:mfuObstacles().length,
@@ -4810,8 +4810,8 @@ function mfuObsMap(){   /* (V32.5) معرّفُ النقطة ← فئاتُ مع
 function svHasChal(r){ return chalKeys((r && r.chals) || []).some(function(k){ return k && k !== 'لا توجد تحديات'; }); }
 function svPhotoState(x, r){ var n = photosOf(x.id).length; if (n) return ''; return (r && Array.isArray(r.photos) && r.photos.length) ? 'التُقطت ولم تُرفع من الجهاز' : 'لم تُلتقط صور'; }
 var SV_LISTS = {
-  sv:      ['تم المسح',               function(x, r){ return !!(r && svDone(r)); }],
-  rem:     ['المتبقي — لم تُمسح',      function(x, r){ return !(r && svDone(r)); }],
+  sv:      ['تمت زيارتها',            function(x, r){ return svVisited(r); }],   /* (V32.6) بأيِّ نتيجة */
+  rem:     ['المتبقي — لم تُزَر',       function(x, r){ return !svVisited(r); }],
   clean:   ['نقاط بلا عوائق ولا تحديات', function(x, r){ return !!(r && svDone(r)) && r.access === 'تم الوصول' && !svHasChal(r); }],   /* (V32.5) كلُّ الأنواع */
   obs:     ['نقاط عليها معوّقات',        function(x, r){ return !!mfuObsMap()[x.id]; }],
   campins: ['المخيمات وحالةُ تركيبها',    function(x, r){ return x.type === 'مخيم'; }],

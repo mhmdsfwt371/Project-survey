@@ -33,8 +33,8 @@ const snap = openSnap(pub, code0);
 const SITES_N = (() => { const h = readFileSync('index.html', 'utf8'); const j = h.indexOf('var SITES_RAW = '); const R = JSON.parse(h.slice(j + 16, h.indexOf('\n', j)).trim().replace(/;$/, '')); return R.g.length + R.p.length; })();
 
 console.log('\n══ ١ · اللقطةُ من دوالِّ التطبيق ══');
-T(snap.total === SITES_N && snap.surveyed === 60 && snap.stuck === 1 && snap.installed === 0, 'الأرقامُ الكبرى كما تحسبها الشاشات: ' + snap.surveyed + '/' + snap.total + ' · متعذّر ' + snap.stuck);
-T(snap.zones['منى'] && snap.zones['منى'].sv === 60 && Object.values(snap.zones).reduce((a, z) => a + z.n, 0) === SITES_N, 'ومشاعرُها تُجمَع إلى الكلّ');
+T(snap.total === SITES_N && snap.surveyed === 61 && snap.stuck === 1 && snap.installed === 0, 'الأرقامُ الكبرى كما تحسبها الشاشات (V32.6: زيرت بأيِّ نتيجة — ٦٠ واصلة + ١ متعذّرة): ' + snap.surveyed + '/' + snap.total + ' · متعذّر ' + snap.stuck);
+T(snap.zones['منى'] && snap.zones['منى'].sv === 61 && Object.values(snap.zones).reduce((a, z) => a + z.n, 0) === SITES_N, 'ومشاعرُها تُجمَع إلى الكلّ');
 T(snap.zones['منى'].eta > now && snap.day.kinds.visit === 1 && snap.day.people === 2, 'والتوقّعُ ونبضُ اليوم فيها');
 T(snap.visited === 40 && snap.minwait === 20 && snap.challenges[0][0] === 'ارتفاع صعب الوصول' && snap.challenges[0][1] === 12, 'وما ينتظر قرارًا والتحدياتُ من دورة الحياة نفسِها');
 T(!JSON.stringify(snap).includes('NSK-') && !JSON.stringify(snap).includes('أحمد'), 'ولا معرِّفَ ولا اسمًا فيها — أرقامٌ فقط');

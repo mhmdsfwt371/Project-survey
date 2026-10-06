@@ -329,7 +329,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
     var L = ids.map(siteFind).filter(Boolean);
     var sv = 0, ins = 0, zones = {};
     L.forEach(function(x){
-      if (svDone(STATE.recs[x.id])) sv++;
+      if (svVisited(STATE.recs[x.id])) sv++;
       var r = STATE.inss[x.id];
       if (r && r.status === 'مُركّب' && r.approved) ins++;
       zones[x.zone] = 1;
@@ -344,7 +344,7 @@ PAGE.sel = { m:'الميدان', t:'الطبقات والمحدَّد',
             ? table(['المعرّف','الموقع','المشعر','الحالة',''],
                 capList(L, 200).map(function(x){
                   var r = STATE.inss[x.id];
-                  var st2 = (r && r.status) || (svDone(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
+                  var st2 = (r && r.status) || (svVisited(STATE.recs[x.id]) ? 'تمت الزيارة' : 'لم يُزر');
                   return ['<span class="num">' + esc(x.id) + '</span>',
                           esc(x.name), esc(t(x.zone)),
                           pill(t(st2), st2 === 'مُركّب' ? 'ok' : 'warn'),
@@ -2045,6 +2045,12 @@ var SV_PHOTOS = [
 function svReached(r){ return !!r && (!r.access || r.access === 'تم الوصول'); }
 function svStuck(r){ return !!r && !svReached(r); }
 function svDone(r){ return svReached(r) && r.review !== 'revisit'; }
+/* ═══ (V32.6) قرارُ المالك: «زيرت» = زيارةٌ ميدانيةٌ بأيِّ نتيجة ═══
+   «رحت للـ٨٨ نقطة زيارةً ميدانية وأخذت الفيدباك» — فأرقامُ تقدّم المسح في كلِّ الشاشات (الملخّص، والقاعة، والخريطة، والوزارة،
+   وسلسلةُ المراحل، واللقطةُ اليومية، وقياسُ الخطة، وملفُّ الوزارة اليومي، والتقارير) تعدّ كلَّ نقطةٍ لها زيارة: وُصل، أو تعذّر،
+   أو يحتاج تصريحًا، أو رُدَّت لزيارةٍ أخرى. «المتبقي» = ما لم يُزَر أصلًا. أمّا سيرُ العمل (الجاهزيةُ للتركيب، والاعتماد، والحلول،
+   ومقترحُ أقرب نقطة، والتحدياتُ والقياسات) فيبقى على svDone — المتعذّرُ يحتاج زيارةً أخرى ولا يُركَّب عليه. (سجلُّ القرارات ق-٠٠٧) */
+function svVisited(r){ return !!r && !r.deleted; }
 function svApproved(r){ return svDone(r) && r.review === 'approved'; }
 function svReview(r){
   if (!r) return '';
@@ -3648,7 +3654,7 @@ function coStat(co){
   STATE.sites.forEach(function(x){
     if (x.co !== co) return;
     n++;
-    if (svDone(STATE.recs[x.id])) sv++;
+    if (svVisited(STATE.recs[x.id])) sv++;
     var r = STATE.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) ins++;
     if (typeof handDone === 'function' && handDone(x.id)) hd++;
@@ -3739,8 +3745,8 @@ var WBS_AUTO = [
   [/^تركيب.*(المزدلفة|مزدلفة)/, function(){ return wbsInsPct('المزدلفة'); }],
   [/^(تركيب النقاط|التركيب الميداني|تركيب المواقع|اكتمال التركيب)/, function(){ var K = siteKeyStats().total; return K.n ? Math.round(K.ins / K.n * 100) : 0; }]
 ];
-function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
-function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svDone(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsSvPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
+function wbsSvPctT(ty){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).t !== ty) return; n++; if (svVisited(STATE.recs[x.id])) d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsInsPct(g){ var n = 0, d = 0; (STATE.sites || []).forEach(function(x){ if (taxOf(x).g !== g) return; n++; var st = (STATE.inss[x.id] || {}).status; if (st === 'مُركّب' || x.fstat === 'مُركّب') d++; }); return n ? Math.round(d / n * 100) : 0; }
 function wbsAutoPct(r){ if (wbsChildren(r.id).length || r.manual) return null; var nm0 = String(r.n || ''); for (var i = 0; i < WBS_AUTO.length; i++){ if (WBS_AUTO[i][0].test(nm0)){ try { return Math.max(0, Math.min(100, +WBS_AUTO[i][1]() || 0)); } catch (e){ return null; } } } return null; }
 function wbsPlanPct(r){

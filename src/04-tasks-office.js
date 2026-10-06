@@ -1167,7 +1167,7 @@ function evm(){
 
   var earned = 0, done = 0;
   STATE.sites.forEach(function(x){
-    if (svDone(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }
+    if (svVisited(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }   /* (V32.6) */
     var r = STATE.inss[x.id];
     if (r && r.status === 'مُركّب' && r.approved) earned += ptsInstall(x);
   });
@@ -4369,8 +4369,8 @@ function siteKeyStats(){
     var ZZ = Z[z] || (Z[z] = { n:0, sv:0, ins:0, noRec:0, stuck:0 });
     by[k] = (by[k] || 0) + 1; T.n++; ZZ.n++;
     if (!r){ T.noRec++; ZZ.noRec++; }
-    else if (svDone(r)){ sv[k] = (sv[k] || 0) + 1; T.sv++; ZZ.sv++; }
-    else if (svStuck(r)){ T.stuck++; ZZ.stuck++; }   /* من لم يصل — والمردودُ ليس متعذّرًا (V17.77) */
+    else { sv[k] = (sv[k] || 0) + 1; T.sv++; ZZ.sv++;   /* (V32.6) زيرت بأيِّ نتيجة */
+      if (svStuck(r)){ T.stuck++; ZZ.stuck++; } }   /* من لم يصل — والمردودُ ليس متعذّرًا (V17.77) */
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب'){ ins[k] = (ins[k] || 0) + 1; T.ins++; ZZ.ins++; }
   });
@@ -4460,7 +4460,7 @@ function siteStats(){
     if (x.work) wk[x.work] = (wk[x.work] || 0) + 1;
     var rv = svReview(STATE.recs[x.id]);
     if (rv === 'approved') apv++; else if (rv === 'pending') pend++; else if (rv === 'revisit') rev++;
-    if (svDone(STATE.recs[x.id])) sv++;
+    if (svVisited(STATE.recs[x.id])) sv++;   /* (V32.6) */
     var st = (STATE.inss[x.id] || {}).status;
     if (st === 'مُركّب' || x.fstat === 'مُركّب') ins++;
   }

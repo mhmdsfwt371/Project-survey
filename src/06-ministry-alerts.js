@@ -983,7 +983,7 @@ function overDailyBody(){ return '<details class="mfu-add"><summary>' + esc(t('�
       var S = siteStats(), day = dayKey(Date.now());
       var sv = 0, ins = 0;
       Object.keys(STATE.recs).forEach(function(k){
-        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svDone(STATE.recs[k])) sv++; });
+        if (dayKey(STATE.recs[k].at || STATE.recs[k]._at) === day && svVisited(STATE.recs[k])) sv++; });
       Object.keys(STATE.inss).forEach(function(k){
         var r = STATE.inss[k];
         if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
@@ -1026,15 +1026,15 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
       g.n++;
       var rv = svReview(r);
       if (rv === 'revisit') g.rev++;
-      else if (r && svDone(r)){ if (dayKey(r.at || r._at) === today) g.doneToday++; }
+      else if (svVisited(r)){ if (dayKey(r.at || r._at) === today) g.doneToday++; }   /* (V32.6) */
       else g.wait++;
       if (x.when === tmr){ tmrN++; bySupTmr[who] = (bySupTmr[who] || 0) + 1; if (st) byZoneTmr[st.zone] = (byZoneTmr[st.zone] || 0) + 1; }
-      if (x.when && x.when < today && !(r && svDone(r))) lateN++;
+      if (x.when && x.when < today && !svVisited(r)) lateN++;
     });
     /* أين نحن اليوم: زياراتُ اليوم بالمشعر */
     var zoneToday = {};
     Object.keys(STATE.recs).forEach(function(k){
-      var r = STATE.recs[k]; if (dayKey(r.at || r._at) !== today || !svDone(r)) return;
+      var r = STATE.recs[k]; if (dayKey(r.at || r._at) !== today || !svVisited(r)) return;
       var st = siteFind(k); if (st) zoneToday[st.zone] = (zoneToday[st.zone] || 0) + 1;
     });
     var sups = Object.keys(bySup).sort(function(a, b){ return bySup[b].n - bySup[a].n; });
@@ -1399,7 +1399,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
     });
 
     var views = [['','الكل', all.length],
-                 ['done','تمت الزيارة', all.length - blocked.length - revisit.length],
+                 ['done','وُصل إليها', all.length - blocked.length - revisit.length],   /* (V32.6) «زيرت» صار الكلَّ بأيِّ نتيجة — والواصلُ تقسيمٌ داخله */
                  ['revisit','تحتاج زيارة أخرى', revisit.length],
                  ['block','متعذّر', blocked.length]];
     var html = '<div class="chips">' + views.map(function(v){
@@ -1407,7 +1407,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           + '" data-survst="' + v[0] + '">' + esc(t(v[1]))
           + ' <span class="num">' + nm(v[2]) + '</span></button>';
       }).join('') + '</div>'
-      + stats([['مُسح', N(S.surveyed), 'acc'],
+      + stats([['زيرت', N(S.surveyed), 'acc'],   /* (V32.6) بأيِّ نتيجة */
                        ['لم يُزر', N(siteKeyStats().total.noRec)],
                        ['اليوم', N(todayN)], ['هذا الأسبوع', N(weekN)],
                        ['متعذّر', N(blocked.length), blocked.length ? 'wrn' : 'ok'],
@@ -1739,7 +1739,7 @@ function pilotRows(){
     var id = x.id, r = STATE.recs[id], ins = STATE.inss[id], dis = STATE.diss && STATE.diss[id], hd = (typeof handOf === 'function') ? handOf(id) : null;
     var tk = idx[id + '|install'];
     var st = [
-      ['مُسحت',      r && svDone(r) ? +r.at : 0],
+      ['زيرت',      svVisited(r) ? +r.at : 0],   /* (V32.6) */
       ['أُسند التركيب', tk ? +(tk.at || tk._at || 0) : 0],
       ['رُكّبت',      ins && ins.status === 'مُركّب' ? +ins.at : 0],
       ['دُقّقت',      ins && ins.approved ? +(ins.qaAt || ins._at || ins.at) : 0],
@@ -2545,6 +2545,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V32.6', d:'٦ أكتوبر ٢٠٢٦', notes:[
+      'قرار المالك: «زيرت» بقت تعني أي نقطة اتعملها زيارة ميدانية بأي نتيجة (وصلنا، أو متعذر، أو محتاجة تصريح، أو محتاجة زيارة تانية). يعني كاميرات المتابعة ٨٨ من ٨٨ مش ٧٨. والمتبقي بقى اللي ما اتزارش خالص بس.',
+      'الرقم ده واحد في كل الشاشات: الملخص، وشاشة القاعة، والخريطة، ومتابعة الوزارة، وسلسلة المراحل، والخطة، والملف اليومي للوزارة، والتقارير. وفي شاشة المسح التقسيم ظاهر جوه «زيرت»: وُصل إليها، ومتعذر، ومحتاجة زيارة تانية. والجاهزية للتركيب والاعتماد زي ما هي.' ] },
   { v:'V32.5', d:'٦ أكتوبر ٢٠٢٦', notes:[
       'ملخص متابعة الوزارة اتعاد ترتيبه بطلب المالك: البطاقات أولا من «نسبة المسح»، وكل بطاقة بتتضغط فتفتح قائمتها بتفاصيلها وتصدير إكسل (النقاط، والمخيمات والممرات وحالة تركيبها، والمعوقات، والشركات، والتحديات المفتوحة، والطلبات، ومهام الأسبوع).',
       'بطاقتين جداد لكل الأنواع: «نقاط بلا عوائق ولا تحديات» و«نقاط ذات تحديات». وبطاقة «بانتظار قرار الوزارة» اتشالت. والملخص التنفيذي وما ينتظر الوزارة والتنبيهات والمعالم والخطة نزلوا تحت الصفحة.' ] },
@@ -3390,7 +3393,7 @@ function inboxItems(){
   var today = dayKey(Date.now());
   Object.keys(STATE.tasks).forEach(function(k){
     var x = STATE.tasks[k]; if (!x || x.status === 'معتمد') return;
-    if (x.when && x.when < today && !svDone(STATE.recs[x.site])) lateN++;
+    if (x.when && x.when < today && !svVisited(STATE.recs[x.site])) lateN++;   /* (V32.6) زيارةٌ تمّت بأيِّ نتيجة ليست متأخرة */
     if (x.kind === 'visit' && svReview(STATE.recs[x.site]) === 'pending') tkWait++;
   });
   out.push(['زياراتٌ تنتظر اعتمادك', S.pending, 'svappr', S.pending ? 'wrn' : 'ok']);

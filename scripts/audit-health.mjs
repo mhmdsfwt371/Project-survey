@@ -10,7 +10,10 @@ import { createRequire } from 'module';
 /* espree يأتي مع eslint نفسِه (لا تثبيتَ زائد) — يُحلّ من موضع eslint */
 const espree = createRequire(createRequire(import.meta.url).resolve('eslint'))('espree');
 export async function measure(){
-  const s = readFileSync('index.html', 'utf8'), js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
+  /* (V32.6) من المصدر في الذاكرة لا من index.html: الحارسُ يشغّل الجرودَ على مساراتٍ متوازية، وجردُ الختم (audit-seal) يغيّر index.html
+     مؤقتًا ليختبر الحرّاس — فكان هذا الجردُ يقرأ نسخةً معدَّلةً أحيانًا ويسقط في الحارس الكامل وحده (وينجح منفردًا). والمطابقةُ بين
+     الملفِّ والمصدر يفرضها build --check على حدة. */
+  const s = readdirSync('src').filter(f => /^\d\d-.*\.(html|js)$/.test(f)).sort().map(f => readFileSync('src/' + f, 'utf8')).join(''), js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
   const ast = espree.parse(js, { ecmaVersion:2020, sourceType:'script', loc:true });
   let globals = 0; const lens = [];
   for (const n of ast.body){ if (n.type === 'VariableDeclaration') globals += n.declarations.length; if (n.type === 'FunctionDeclaration') lens.push([n.id.name, n.loc.end.line - n.loc.start.line + 1]); }
