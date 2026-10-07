@@ -214,3 +214,20 @@ function chalsToCats(chals, note){
 /* محاولاتُ الوصول وعمرُ التوقف: نقطةٌ لم تُمسح بعد ثلاث زياراتٍ أو عشرة أيامٍ تُصعَّد */
 function stuckAge(r){ return r && svStuck(r) ? Math.floor((Date.now() - (+r.stuckSince || +r.at || Date.now())) / 864e5) : 0; }
 function stuckEsc(r){ return !!(r && svStuck(r) && ((+r.tries || 1) >= 3 || stuckAge(r) >= 10)); }
+
+/* ── (V37.3) بلاغُ المالك: «ملاحظات فنية متنوعة مش واضحة — تتشال ويتحط مكانها الحاجة الواضحة»، و«اللي زرته وما مسحتوش مفيش سبب» ──
+   ما يُعرض للتحدي في كلِّ قائمةٍ وتقرير: اسمُ الفئة من الثماني؛ وما لم تقطع فيه القاعدة يُعرض نصُّه الأصليُّ كما كتبه الميدان (أوضحُ
+   من اسمٍ عام)، أو «تحدٍّ بلا وصف — يراجعه المهندس» إن لم يُكتب شيء. وخانةُ القائمة تقول الحالة أوّلًا: لم تُزر، أو لم يُمسح وسببُه. */
+function chalCatNames(r){
+  var note = String((r && (r.chal_note || r.chalNote || r.note)) || '').replace(/\s+/g, ' ').trim();
+  return chalCats(r).map(function(k){
+    if (k !== 'review') return t(ccOf(k).n);
+    return note ? (note.length > 70 ? note.slice(0, 70) + '…' : note) : t('تحدٍّ بلا وصف — يراجعه المهندس');
+  });
+}
+function svStateText(r){
+  if (!svVisited(r)) return t('لم تُزر بعد');
+  if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
+  var cc = chalCatNames(r), pre = r.review === 'revisit' ? t('تحتاج زيارة تقنية — أعادها المهندس') : '';
+  return [pre, cc.length ? cc.join('، ') : (pre ? '' : t('لا توجد تحديات'))].filter(Boolean).join(' \u00b7 ');
+}

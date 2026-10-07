@@ -72,12 +72,11 @@ function svListRows0(key){
     return [x.id, String(x.name || ''), t(c.g), t(c.t), String(x.co || ''), r && r.at ? dayKey(+r.at) : '', r ? (r.by || '') : '',
             key === 'badphoto' ? photosOf(x.id).filter(function(e){ return photoQualityFlags(e[1].q).length; }).map(function(e){ return (e[1].kind || '') + ': ' + photoQualityFlags(e[1].q).map(function(f){ return t(f); }).join('/'); }).join('، ') :
             (key === 'campins' || key === 'corins') ? (mfuInstalled(x) ? t('مُركّب') : t((STATE.inss[x.id] || {}).status || 'لم يبدأ')) :
-            key === 'obs' ? (mfuObsMap()[x.id] || []).map(function(k){ return chalShow(k); }).join('، ') :
-            key === 'chal' && svNeedsRevisit(r) ? t('تحتاج زيارة أخرى تقنيًا') + (svHasChal(r) ? ' \u00b7 ' + chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '') :
-            key === 'nophoto' ? t(svPhotoState(x, r)) : (r && svHasChal(r) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }).map(function(k){ return chalShow(k); }).join('، ') : '')];
+            key === 'obs' ? (mfuObsMap()[x.id] || []).join('، ') :
+            key === 'nophoto' ? t(svPhotoState(x, r)) : svStateText(r)];   /* (V37.3) الحالةُ وسببُها أو الفئاتُ الواضحة */
   });
 }
-function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'التحديات']; }
+function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'الحالة — سبب عدم المسح أو التحديات']; }
 function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
@@ -2565,6 +2564,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.3', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      '«ملاحظات فنية متنوعة» اتشالت من كل القوائم والتقارير: مكانها اسم التحدي الواضح من التمانية، واللي ما يتصنّفش بيظهر بالنص اللي كتبه الميدان نفسه (زي «التصوير ممنوع يحتاج تواصل رسمي»).',
+      'عمود القوائم بقى اسمه «الحالة — سبب عدم المسح أو التحديات»: اللي اتزار وما اتمسحش مكتوب «لم يُمسح: السبب» (زي «الطريق أو البوابة مغلقة»)، واللي ما اتزارش «لم تُزر بعد». ونفس الكلام في المعوّقات والإكسل.' ] },
   { v:'V37.2', d:'٨ أكتوبر ٢٠٢٦', notes:[
       'بطاقة «نسبة المسح» في ملخص الوزارة بقت بتحسب المسح الفعلي (كانت بتعرض الزيارات تحت اسم المسح)، والزيارات مكتوبة جنبها. واتضافت بطاقة «زيارة بلا مسح» وبتفتح أسبابها.' ] },
   { v:'V37.1', d:'٧ أكتوبر ٢٠٢٦', notes:[

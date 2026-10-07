@@ -4115,8 +4115,8 @@ function chalKeys(list){
   (Array.isArray(list) ? list : []).forEach(function(c){ if (!c || c === 'لا توجد تحديات') return; var k = chalKey(c); if (!seen[k]){ seen[k] = 1; out.push(k); } });
   return out;
 }
-function svdChals(r){
-  return chalKeys(r && r.chals);
+function svdChals(r){   /* (V37.3) الفئاتُ الثماني في تفصيل المسح أيضًا — وما لم يُصنَّف «يراجع المهندس تصنيفه» */
+  return chalCats(r).map(function(k){ return k === 'review' ? 'يراجع المهندسُ تصنيفَه' : ccOf(k).n; });
 }
 /* النصوصُ الحرّةُ تحت «أخرى» — تُطبَّع (مسافاتٌ وتشكيلٌ وهمزات) وتُعَدّ، ليقرّر المهندسُ ما يصير خيارًا */
 function chalOtherTexts(){
@@ -4139,7 +4139,7 @@ function chalOtherCard(){
 }
 /* الهيكلُ والعارضة: حديدٌ يُشترى ويُجهَّز — يُفرَز وحدَه ليُخطَّط له مبكّرًا */
 function svdMetal(ch){
-  return ch.some(function(c){ return /^لا يوجد سطح تثبيت/.test(c) || /^العارضة الحديدية/.test(c); });
+  return ch.some(function(c){ return /^لا يوجد سطح تثبيت/.test(c) || /^العارضة/.test(c); });   /* (V37.3) واسمُ الفئة «العارضة ناقصة…» */
 }
 /* ═══ الغرفُ — لكلِّ غرفةٍ حساسُ حرارةٍ ورطوبة (V17.70) ═══
    عددُ الغرف ليس رقمًا للعلم: منه تُشترى الحساسات. فيُقرأ من عدِّ الميدان في
@@ -4606,7 +4606,7 @@ function kioskBody(){
   var kinds = {}, people = {};
   steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
   var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
-  var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var chTop = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 4);
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
@@ -4696,7 +4696,14 @@ function mfuPut(sec, id, entry){
   var w = {}; w[sec] = {}; w[sec][id] = entry; CORE.set('cfg', 'mfu', w);
   return true;
 }
-function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || MFU.ownDef[cat] || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
+/* (V37.3) الفئاتُ الثماني وأسبابُ عدم المسح تأخذ جهةَ صيغتها القديمة افتراضًا — فلا تسقط كلُّها إلى «شركة الخدمة» */
+function mfuOwnDefOf(cat){
+  if (MFU.ownDef[cat]) return MFU.ownDef[cat];
+  var cc = CHAL_CATS.filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
+  if (cc){ var old = Object.keys(CHAL_FROM).filter(function(o){ return CHAL_FROM[o] === cc.k && MFU.ownDef[o]; })[0]; if (old) return MFU.ownDef[old]; if (cc.k === 'mount') return MFU.ownDef['لا يوجد سطح تثبيت']; }
+  return '';
+}
+function mfuOwnerOf(cat){ var k = (mfuData().own || {})[cat] || mfuOwnDefOf(cat) || 'شركة الخدمة', P = mfuParties(); return P.indexOf(k) > -1 ? k : (P[0] || k); }   /* (V26.8) الجهةُ المحذوفةُ تسقط إلى أوّل جهةٍ قائمة */
 /* العائقُ: نقطةٌ لم تُركَّب وفي مسحها تحدٍّ حقيقيّ، أو لم يُوصَل إليها */
 function mfuObstacles(){
   /* (V33.7) بلاغُ المالك «صفحةُ متابعة الوزارة بطيئةٌ جدًّا»: كانت تُحسَب في الرسمة الواحدة ثلاثَ مرات (المؤشرات والشركات والقائمة) */
@@ -4705,8 +4712,8 @@ function mfuObstacles(){
   (STATE.sites || []).forEach(function(x){
     var ins = STATE.inss[x.id]; if (ins && ins.status === 'مُركّب') return;
     var r = STATE.recs[x.id]; if (!r) return;
-    var cats = chalKeys(r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; });
-    if (r.access && r.access !== 'تم الوصول') cats.push('تحتاج زيارة أخرى تقنيًا');
+    var cats = chalCatNames(r);   /* (V37.3) الفئاتُ الثماني أو النصُّ الأصليُّ الواضح */
+    if (svStuck(r)){ var w0 = visitWhy(r); cats.push(t('لم يُمسح') + ': ' + (w0 ? t(whyOf(w0).n) : t('بلا سبب مسجّل — يصنّفه المهندس'))); }   /* والمعادةُ للزيارة التقنية ليست عائقًا (تعريفُ V33.0) */
     if (cats.length) out.push({ x:x, cats:cats });
   });
   if (DB.memo) DB.memo.obst = out;
@@ -4718,7 +4725,7 @@ function svStats(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
     var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
-    var ch = (r && svDone(r)) ? chalKeys(r.chals || []).filter(function(k){ return k && k !== 'لا توجد تحديات'; }) : [];
+    var ch = (r && svDone(r)) ? chalCats(r).filter(function(k){ return k !== 'review'; }).map(function(k){ return ccOf(k).n; }) : [];   /* (V37.3) الفئاتُ الثماني */
     var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
     o.n++; z.n++; O.tot++;
     if (done){ o.sv++; z.sv++; O.sv++; }
@@ -4889,7 +4896,7 @@ function mfuHeroHtml(){
   var dd = dayDone(today); dd.hand = 0;   /* (V34.3) التسليمُ اليوم من محضر التسليم في سجلّ التركيب */
   Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
-  var byCh = {}; svdRows().forEach(function(o){ o.ch.forEach(function(c){ byCh[c] = (byCh[c] || 0) + 1; }); });
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
