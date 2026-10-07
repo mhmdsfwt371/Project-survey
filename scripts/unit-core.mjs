@@ -140,7 +140,7 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
 });
 test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
   const { readFileSync, readdirSync } = await import('fs');
-  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked'];
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming'];
   const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
   NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
     others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
@@ -157,4 +157,17 @@ test('قرارُ المالك (V36.4): ما رُكّب لا يُحذَف — و�
     assert.equal(w.siteHide(c.id), false, 'وما بعد التركيب (الفك) لا يُحذَف');
     assert.equal(w.siteHide(b.id), true, 'والمزارةُ قبل التركيب تُحذَف'); assert.ok(!w.siteFind(b.id)); w.siteRestore(b.id);
   } finally { w.ROLE = was; delete w.STATE.inss[a.id]; delete w.STATE.recs[b.id]; delete w.STATE.diss[c.id]; }
+});
+test('بلاغُ المالك (V36.7): الحذفُ يصل كلَّ جهاز ولا تعود النقطةُ المحذوفة', async () => {
+  const x = w.STATE.sites[7], id = x.id;
+  /* حذفٌ وصل من جهازٍ آخر: تختفي هنا */
+  w.siteOvIncoming(id, { hidden:true, hidBy:'مهندس', _at:Date.now() });
+  assert.ok(!w.siteFind(id) && (w.STATE.hiddenSites || []).some(h => h.id === id), 'الحذفُ الواردُ يُخفيها');
+  /* واستعادةٌ واردة: تعود */
+  w.siteOvIncoming(id, { hidden:false, _at:Date.now() });
+  assert.ok(!!w.siteFind(id), 'والاستعادةُ الواردةُ تعيدها');
+  /* دمجُ النقاط المضافة لا يعيد محذوفةً بالإخفاء، ومستمعُ التجاوزات حيٌّ في الإنصات */
+  const { readFileSync } = await import('fs'); const core = readFileSync('src/01-core-registry.js', 'utf8');
+  assert.ok(/\(STATE\.hiddenSites \|\| \[\]\)\.forEach\(function\(x\)\{ have\[x\.id\] = 1; \}\);/.test(core) && /if \(ovh && ovh\.hidden\) return;/.test(core), 'الدمجُ يعرف المخفيَّ ولا يعيده');
+  assert.ok(/watch\('sites', function\(id, v\)\{ if \(v\) siteOvIncoming\(id, v\); \}/.test(core), 'ومستمعُ التجاوزات حيّ');
 });

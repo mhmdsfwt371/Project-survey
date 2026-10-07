@@ -1858,10 +1858,14 @@ var FB = {
            STATE.newsites وحدَها — فتختفي النقطةُ من الخريطة والقوائم وهي في
            القاعدة سليمة، ويُظنُّ أنها ضاعت. صارت تُدمَج في السجل عند كلِّ
            إقلاع: ما لم يكن فيه، ولا يُكرَّر ما هو فيه. */
-        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; });
+        /* (V36.7) بلاغُ المالك: «المسح للنقاط لو مسح من عند مهندس بترجع تاني» — النقطةُ المضافةُ المحذوفة تُنقَل إلى «المخفية» فلا تكون
+           في STATE.sites، فكان هذا الدمجُ يراها جديدةً ويعيدها إلى القائمة (والإخفاءُ في تجاوزها لا في وثيقتها). صار المخفيُّ معروفًا هنا،
+           وتجاوزُ hidden يُبقيها مخفية. */
+        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; }); (STATE.hiddenSites || []).forEach(function(x){ have[x.id] = 1; });
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
+          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && ovh.hidden) return;   /* محذوفةٌ بالإخفاء — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
             if (ex){
@@ -2113,6 +2117,9 @@ function liveSmall(){
   /* الإنصاتُ لمن يرى غيرَه: كان للمهندس وحده — فالمشرفُ لا يرى فنيّيه
      ولا يعلم بمن أُضيف إلى فريقه. والقاعدةُ تحرس ما يُقرأ، فالإنصاتُ
      يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
+  /* (V36.7) تجاوزاتُ النقاط حيّة: حذفُ مهندسٍ لنقطة (أو استعادتُها أو تعديلُها) يصل كلَّ جهازٍ في ثوانٍ — كان يصلها مع «سحب الثوابت»
+     الذي لا يتكرّر قبل ربع ساعة، فتبقى النقطةُ المحذوفةُ ظاهرةً عند غيره. يُنصَت لما تغيّر منذ قبيل آخر سحبٍ وحدَه. */
+  watch('sites', function(id, v){ if (v) siteOvIncoming(id, v); }, 500, ['_at', '>', Math.max(0, ((STATE.meta.pullAt || {}).sites || Date.now()) - 600000)]);
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   try {
     LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){

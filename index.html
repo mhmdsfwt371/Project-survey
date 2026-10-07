@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -3118,10 +3118,14 @@ var FB = {
            STATE.newsites وحدَها — فتختفي النقطةُ من الخريطة والقوائم وهي في
            القاعدة سليمة، ويُظنُّ أنها ضاعت. صارت تُدمَج في السجل عند كلِّ
            إقلاع: ما لم يكن فيه، ولا يُكرَّر ما هو فيه. */
-        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; });
+        /* (V36.7) بلاغُ المالك: «المسح للنقاط لو مسح من عند مهندس بترجع تاني» — النقطةُ المضافةُ المحذوفة تُنقَل إلى «المخفية» فلا تكون
+           في STATE.sites، فكان هذا الدمجُ يراها جديدةً ويعيدها إلى القائمة (والإخفاءُ في تجاوزها لا في وثيقتها). صار المخفيُّ معروفًا هنا،
+           وتجاوزُ hidden يُبقيها مخفية. */
+        var have = {}; (STATE.sites || []).forEach(function(x){ have[x.id] = 1; }); (STATE.hiddenSites || []).forEach(function(x){ have[x.id] = 1; });
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
+          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && ovh.hidden) return;   /* محذوفةٌ بالإخفاء — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
             if (ex){
@@ -3373,6 +3377,9 @@ function liveSmall(){
   /* الإنصاتُ لمن يرى غيرَه: كان للمهندس وحده — فالمشرفُ لا يرى فنيّيه
      ولا يعلم بمن أُضيف إلى فريقه. والقاعدةُ تحرس ما يُقرأ، فالإنصاتُ
      يُفتَح لمن فوق أدنى رتبةٍ ولا يُرجِع له إلا ما يحقُّ له. */
+  /* (V36.7) تجاوزاتُ النقاط حيّة: حذفُ مهندسٍ لنقطة (أو استعادتُها أو تعديلُها) يصل كلَّ جهازٍ في ثوانٍ — كان يصلها مع «سحب الثوابت»
+     الذي لا يتكرّر قبل ربع ساعة، فتبقى النقطةُ المحذوفةُ ظاهرةً عند غيره. يُنصَت لما تغيّر منذ قبيل آخر سحبٍ وحدَه. */
+  watch('sites', function(id, v){ if (v) siteOvIncoming(id, v); }, 500, ['_at', '>', Math.max(0, ((STATE.meta.pullAt || {}).sites || Date.now()) - 600000)]);
   var scope = pullScope(), sig0 = scope.tree ? treeKeys().sig : '';
   try {
     LIVE_SMALL.push(DB.col('settings').doc('app').onSnapshot(function(doc){
@@ -7015,6 +7022,19 @@ function siteLocked(id){
   if (STATE.diss && STATE.diss[id]) return 'لها سجلُّ فك';
   if (STATE.maints && STATE.maints[id]) return 'لها سجلُّ صيانة';
   return '';
+}
+
+/* (V36.7) تجاوزٌ وصل من جهازٍ آخر (حيًّا أو بالسحب): يُدمَج في STATE.siteOv، ويُعاد توزيعُ النقطة بين الظاهرة والمخفية —
+   فالحذفُ يُخفيها والاستعادةُ تعيدها، والتعديلُ يُطبَّق، في كلِّ الأجهزة. */
+function siteOvIncoming(id, v){
+  if (!id || !v) return false;
+  STATE.siteOv = STATE.siteOv || {};
+  var before = !!(STATE.siteOv[id] && STATE.siteOv[id].hidden);
+  STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, v);
+  STATE.sites = (STATE.sites || []).concat(STATE.hiddenSites || []);
+  siteOvApply();
+  if (before !== !!STATE.siteOv[id].hidden){ CORE.saveSoon(); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); }
+  return true;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -24701,6 +24721,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.7', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'إصلاح ضروري: النقطة اللي المهندس بيحذفها كانت بترجع تاني أو بتفضل ظاهرة عند غيره. السبب كان حاجتين: النقط المضافة كانت بترجع للقائمة مع كل سحب بيانات، والحذف ما كانش بيوصل للأجهزة التانية إلا كل ربع ساعة أو أكتر. دلوقتي الحذف (والاسترجاع والتعديل) بيوصل كل الأجهزة في ثواني، والمحذوفة ما بترجعش.' ] },
   { v:'V36.6', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'حركة المخزن اللي اتسجّلت غلط بتتحذف في نفس يومها (والرصيد بيتصلّح لوحده)، ماعدا «الاستهلاك» لأنه جزء من التركيب. واللي فات عليها يوم بتتصلّح بحركة عكسية (إرجاع أو شطب) زي المحاسبة. واسم الفريق الفرعي بقى بيتعدّل.' ] },
   { v:'V36.5', d:'٧ أكتوبر ٢٠٢٦', notes:[

@@ -108,3 +108,16 @@ function siteLocked(id){
   if (STATE.maints && STATE.maints[id]) return 'لها سجلُّ صيانة';
   return '';
 }
+
+/* (V36.7) تجاوزٌ وصل من جهازٍ آخر (حيًّا أو بالسحب): يُدمَج في STATE.siteOv، ويُعاد توزيعُ النقطة بين الظاهرة والمخفية —
+   فالحذفُ يُخفيها والاستعادةُ تعيدها، والتعديلُ يُطبَّق، في كلِّ الأجهزة. */
+function siteOvIncoming(id, v){
+  if (!id || !v) return false;
+  STATE.siteOv = STATE.siteOv || {};
+  var before = !!(STATE.siteOv[id] && STATE.siteOv[id].hidden);
+  STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, v);
+  STATE.sites = (STATE.sites || []).concat(STATE.hiddenSites || []);
+  siteOvApply();
+  if (before !== !!STATE.siteOv[id].hidden){ CORE.saveSoon(); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); }
+  return true;
+}
