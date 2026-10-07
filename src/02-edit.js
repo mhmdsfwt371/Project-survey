@@ -32,6 +32,21 @@ var GED_REG = {
   it:  { t:'صنف',            del:'itdel',  list:function(){ return itemsList(); },  key:'code', save:function(id, x){ itemSave(); cfgSet('itPts', id, +x.pts || 0); cfgSet('itPrice', id, +x.price || 0); }, may:'settings',
          f:[['name','اسم الصنف'], ['pts','النقاط','n'], ['price','السعر','n']] }
 };
+/* (V36.6) الدفعةُ الثالثة — ما يُعدَّل بحماية: لا يُغيَّر فيه ما تتعلّق به سجلّاتٌ أخرى (اسمُ الفني تحمله سجلّاتُه فلا يُعدَّل هنا) */
+GED_REG.tr = { t:'تجربة', del:'trdel', list:function(){ return trialRows(); }, key:'id', save:function(){ trialSave(); }, may:'settings',
+  f:[['n','اسم التجربة'], ['date','التاريخ'], ['hours','الساعات','n'], ['rep','رابط التقرير']] };
+GED_REG.hse = { t:'حادث سلامة', del:'hsedel', list:function(){ return HSE.incidents; }, key:'#', may:'approve',
+  save:function(id, x){ CORE.dirty('hse', 'INC-' + (HSE.incidents.length - (+id)), x); if (typeof hseRecount === 'function') hseRecount(); },
+  f:[['why','الوصف والإجراء'], ['kind','النوع'], ['site','النقطة'], ['lost','أيام ضائعة','n']] };
+GED_REG.depmem = { t:'عضو فريق', del:'depmemrm', list:function(){ var tm = teamOf(CTEAM_CUR); return tm ? tm.members : []; }, key:'#', may:'users',
+  save:function(){ var tm = teamOf(CTEAM_CUR); if (tm) CORE.dirty('teams', tm.id, tm); },
+  f:[['role','الدور في الفريق'], ['share','الحصة ٪','n']] };
+GED_REG.tk = { t:'فني', del:'tkdel', list:function(){ return techsList(true); }, key:'n', may:'users', req:false,
+  save:function(id, x){ var u = STATE.users && STATE.users[x.u]; if (!u) return; u.ph = x.ph; u.sup = x.sup; u.dept = x.dept; CORE.set('users', x.u, u); },
+  f:[['ph','الجوال'], ['sup','المشرف'], ['dept','القسم']] };
+GED_REG.role = { t:'دور', del:'roledel', list:function(){ return (CFG.roles && CFG.roles.r) || {}; }, key:'@', may:'roles',
+  save:function(){ CFG.roles.v = (CFG.roles.v || 0) + 1; CFG.roles.at = Date.now(); CORE.set('cfg', 'roles', CFG.roles); },
+  f:[['n','اسم الدور']] };
 /* القائمةُ النصيةُ البسيطة (الموردون والفئات): العنصرُ نصٌّ واحد */
 GED_REG.sup = { t:'مورّد', del:'suprm', list:function(){ return supList(); }, key:'=', save:function(){ CORE.set('cfg', 'sups', supList().slice()); }, may:'money', f:[['=','الاسم']] };
 GED_REG.cat = { t:'فئة مشتريات', del:'catrm', list:function(){ return catList(); }, key:'=', save:function(){ CORE.set('cfg', 'cats', catList().slice()); }, may:'money', f:[['=','الاسم']] };
@@ -72,7 +87,7 @@ function gedSave(){
   if (!R || !F) return false;
   if (!gedPerm(R)){ toast(t('التعديلُ لمن يملك هذه القائمة')); return false; }
   var vals = R.f.map(function(f, n){ var el = document.getElementById('gedF' + n), v = el ? String(el.value || '').trim() : ''; return f[2] === 'n' ? (v === '' ? 0 : +v) : v; });
-  if (!vals[0] && vals[0] !== 0){ toast(t('الحقلُ الأوّلُ مطلوب')); return false; }
+  if (R.req !== false && !vals[0] && vals[0] !== 0){ toast(t('الحقلُ الأوّلُ مطلوب')); return false; }
   var L = R.list(), chg = [];
   if (R.key === '='){ if (vals[0] !== F.x && L.indexOf(vals[0]) > -1){ toast(t('موجودٌ بالفعل')); return false; } L[F.i] = vals[0]; chg.push(R.f[0][1]); }
   else R.f.forEach(function(f, n){ if (String(F.x[f[0]] == null ? '' : F.x[f[0]]) !== String(vals[n])){ F.x[f[0]] = vals[n]; chg.push(f[1]); } });
@@ -82,4 +97,33 @@ function gedSave(){
   logEvent('تعديل ' + R.t + ' — ' + GED.id + ' \u00b7 ' + chg.join('، '));
   toast(t('حُفظ التعديل'));
   GED = null; return true;
+}
+
+/* ═══ الحذفُ الموحّد (V36.5) — بقيةُ «تعديل وحذف وإضافة لكل التفاصيل» ═══
+   سجلّاتٌ كان فيها «أضف» وخطواتُ اعتمادٍ ولا «حذف»: بلاغُ عدم المطابقة المفتوح، والمستخلصُ المقدَّم قبل اعتماده، وطلبُ التغيير قبل قراره،
+   وإسنادُ السيارة القائم. يظهر «🗑 حذف» بجوار زرِّ خطوتها التالية — أي ما دام في الحالة التي يُسمح فيها بالحذف وحدَها: فلا يُحذَف
+   بلاغٌ أُغلق ولا مستخلصٌ اعتُمد أو صُرف ولا طلبٌ قُرّر. والسجلّاتُ الماليةُ والجودية تُلغى (تبقى أثرًا بحالة «ملغى» وتخرج من
+   الحسابات) لا تُمحى؛ والإسنادُ يُمحى. */
+var GDEL_REG = {
+  ncr: { t:'بلاغ عدم مطابقة', anchor:'ncrok', may:'approve', run:function(i){ var x = NCRS[+i]; if (!x) return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ncr', 'NCR-' + (+i + 1), x); return x.cat || ('NCR-' + (+i + 1)); } },
+  ipc: { t:'مستخلص', anchor:'ipcok', may:'money', run:function(i){ var x = IPCS[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ipc', 'IPC-' + (+i + 1), x); return x.period || ('IPC-' + (+i + 1)); } },
+  chg: { t:'طلب تغيير', anchor:'chgok', may:'approve', run:function(i){ var x = CHANGES[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('changes', 'CR-' + (+i + 1), x); return x.kind || ('CR-' + (+i + 1)); } },
+  va:  { t:'إسناد سيارة', anchor:'vaend', may:'fleet', run:function(id){ var a = (STATE.vehAsn || {})[id]; if (!a) return ''; delete STATE.vehAsn[id]; CORE.set('vehAsn', id, null); return a.to || a.who || id; } }
+};
+function gdelInject(){
+  Object.keys(GDEL_REG).forEach(function(k){
+    var R = GDEL_REG[k]; if (!(typeof may === 'function' && (may(R.may) || may('settings')))) return;
+    document.querySelectorAll('[data-' + R.anchor + ']').forEach(function(b){
+      if (b.nextElementSibling && b.nextElementSibling.hasAttribute('data-gdel')) return;
+      var e = document.createElement('button'); e.type = 'button'; e.className = 'btn btn-quiet btn-sm'; e.style.color = '#E05252';
+      e.setAttribute('data-gdel', k + '|' + b.getAttribute('data-' + R.anchor)); e.textContent = '\u{1F5D1} ' + t('حذف');
+      b.parentNode.insertBefore(e, b.nextSibling);
+    });
+  });
+}
+function gdelRun(k, id){
+  var R = GDEL_REG[k]; if (!R) return false;
+  if (!(typeof may === 'function' && (may(R.may) || may('settings')))){ toast(t('الحذفُ لمن يملك هذه القائمة')); return false; }
+  var what = R.run(id); if (!what){ toast(t('لا يُحذَف في حالته الحالية')); return false; }
+  logEvent('حذف ' + R.t + ' — ' + what); toast(t('حُذف')); statBump(); return true;
 }

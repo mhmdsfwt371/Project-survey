@@ -409,7 +409,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var S = siteStats();
     var ready = [];
     var ncrOpen = (typeof NCRS !== 'undefined')
-      ? NCRS.filter(function(x){ return x.st !== 'مغلق' && x.sev === 'جوهري'; }) : [];
+      ? NCRS.filter(function(x){ return x.st !== 'مغلق' && x.st !== 'ملغى' && x.sev === 'جوهري'; }) : [];
     /* «جاهزٌ للتسليم» ما رُكِّب واعتُمد ولم يُسلَّم بعد — لا كلُّ ما رُكِّب */
     var handedL = STATE.sites.filter(function(x){ return handDone(x.id); });
     ready = STATE.sites.filter(handReady);

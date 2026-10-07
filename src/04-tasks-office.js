@@ -1905,7 +1905,7 @@ function riskSignals(){
   if (blocked) out.push([blocked > 20 ? 'bad' : 'wrn', nm(blocked) + ' ' + t('زيارةً متعذّرةً تحتاج قرارًا'), 'stuck']);
   if (rev)     out.push(['wrn', nm(rev) + ' ' + t('زيارةً مردودةً تنتظر إعادة'), 'svappr']);
   if (typeof NCRS !== 'undefined'){
-    var maj = NCRS.filter(function(x){ return x.st !== 'مغلق' && x.sev === 'جوهري'; }).length;
+    var maj = NCRS.filter(function(x){ return x.st !== 'مغلق' && x.st !== 'ملغى' && x.sev === 'جوهري'; }).length;
     if (maj) out.push(['bad', nm(maj) + ' ' + t('بلاغَ عدمِ مطابقةٍ جوهريًّا مفتوحًا'), 'ncr']);
   }
   var late = 0, today = dayKey(Date.now());
@@ -2558,9 +2558,9 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
                         + '</div>'];
               }),
               ['','<b>' + t('الإجمالي') + '</b>',
-               N(IPCS.reduce(function(a,x){ return a + x.amt; }, 0)),
-               N(IPCS.reduce(function(a,x){ return a + Math.round(x.amt*x.retPct/100); }, 0)),
-               '<b>' + nm(IPCS.reduce(function(a,x){ return a + x.amt - Math.round(x.amt*x.retPct/100); }, 0)) + '</b>',
+               N(IPCS.reduce(function(a,x){ if (x.st === 'ملغى') return a; return a + x.amt; }, 0)),
+               N(IPCS.reduce(function(a,x){ if (x.st === 'ملغى') return a; return a + Math.round(x.amt*x.retPct/100); }, 0)),
+               '<b>' + nm(IPCS.reduce(function(a,x){ if (x.st === 'ملغى') return a; return a + x.amt - Math.round(x.amt*x.retPct/100); }, 0)) + '</b>',
                '','']),
             btn('⬇ إكسل — المستخلصات','btn-secondary btn-sm',' data-xls="ipc"'))
         : card('', alertBox('info','لا مستخلصاتٍ بعد — يُبنى المستخلصُ على المكتسَب المعتمَد.')))

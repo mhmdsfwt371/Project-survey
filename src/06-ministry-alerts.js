@@ -1275,7 +1275,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
           + '<p class="hint">' + esc(t('الردُّ يُعيد النقطة لمنفّذها بحالة «مُعاد» مع سبب — ولا تُحتسب نقاطُها حتى تُعتمد.')) + '</p>');
   })();
     if (cur === 'ncr') return head + (function(){
-    var open = NCRS.filter(function(x){ return x.st !== 'مغلق'; });
+    var open = NCRS.filter(function(x){ return x.st !== 'مغلق' && x.st !== 'ملغى'; });
     return stats([['بلاغات', N(NCRS.length)],
                   ['مفتوحة', N(open.length), open.length ? 'wrn' : 'ok'],
                   ['مغلقة', N(NCRS.length - open.length), 'ok'],
@@ -2565,6 +2565,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.5', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      '«🗑 حذف» بقى موجود في السجلات اللي كان فيها إضافة واعتماد من غير حذف: بلاغ عدم المطابقة وهو مفتوح، والمستخلص قبل ما يتعتمد، وطلب التغيير قبل القرار، وإسناد السيارة. المالي والجودة بيتلغوا (يفضلوا أثر بحالة «ملغى» ويخرجوا من الحسابات)، وما يتحذفوش بعد الاعتماد أو الإغلاق.',
+      '«✎ تعديل» اتضاف كمان لـ: التجارب، وحوادث السلامة، وأعضاء الفرق، والفنيين (الجوال والمشرف والقسم — الاسم لأ عشان سجلاتهم بتحمله)، والأدوار. بكده بقوا ١٨ قائمة فيها تعديل موحّد.' ] },
   { v:'V36.4', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'قرار المالك: أي نقطة اتركّبت — أو بعد التركيب اتسلّمت أو اتفكّت أو اتعملها صيانة — ما بتتحذفش بأي طريقة، وبيظهر عليها قفل بدل زرار الحذف. اللي قبل التركيب (الزيارة والجدولة والإسناد) بيتحذف عادي.' ] },
   { v:'V36.3', d:'٧ أكتوبر ٢٠٢٦', notes:[
@@ -3476,7 +3479,7 @@ function inboxItems(){
     if (r && r.status === 'مُركّب' && !r.approved) qaWait++;
   });
   STATE.sites.forEach(function(x){ if (typeof handReady === 'function' && handReady(x)) handReadyN++; });
-  if (typeof NCRS !== 'undefined') ncrOpen = NCRS.filter(function(x){ return x.st !== 'مغلق'; }).length;
+  if (typeof NCRS !== 'undefined') ncrOpen = NCRS.filter(function(x){ return x.st !== 'مغلق' && x.st !== 'ملغى'; }).length;
   if (typeof CHANGES !== 'undefined') chgWait = CHANGES.filter(function(x){ return x.st === 'مقدَّم'; }).length;
   var today = dayKey(Date.now());
   Object.keys(STATE.tasks).forEach(function(k){
