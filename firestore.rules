@@ -333,10 +333,11 @@ service cloud.firestore {
     // عناوينُ الشبكة على السجل الأمّ: يقرؤها الجميعُ ويكتبها من له التحرير
     // (V36.9) حادثة ٧ أكتوبر: إخفاءُ (حذفُ) نقطةٍ لها زيارةٌ أو تركيبٌ لمدير المشروع وحده — في القاعدة نفسها لا في التطبيق وحده،
     // فلا تقدر نسخةٌ قديمةٌ على جوّالٍ لم يُحدَّث أن تحذفها. الانتقالُ من ظاهرةٍ إلى مخفيّةٍ هو المحروس؛ والاستعادةُ وبقيةُ التعديل كما كانت.
+    // (V36.11) متغيّرُ القاعدة في هذا الملف اسمُه db (match /databases/{db}/documents) — كان $(database) فارغًا فرُفض كلُّ إخفاء
     function hidesVisited(id){
       return request.resource.data.get('hidden', false) == true
         && (resource == null || resource.data.get('hidden', false) != true)
-        && (exists(/databases/$(database)/documents/recs/$(id)) || exists(/databases/$(database)/documents/inss/$(id)));
+        && (exists(/databases/$(db)/documents/recs/$(id)) || exists(/databases/$(db)/documents/inss/$(id)));
     }
     match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (!hidesVisited(id) || isBoss()); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
