@@ -198,6 +198,9 @@ function siteHide(id){
      فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
   var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var had = !!(STATE.recs[id] || STATE.inss[id]);
+  /* (V36.8) حادثة ٧ أكتوبر: ستٌّ وعشرون نقطةَ تفويجٍ لها زياراتٌ حذفها ثلاثةُ مهندسين بالخطأ فاختفت من أرقام الجميع. حذفُ نقطةٍ لها زيارةٌ
+     صار لمدير المشروع وحده؛ والمهندسُ يحذف ما لم يُزَر. */
+  if (had && ROLE !== 'admin'){ toast(t('لها زيارة — حذفُها لمدير المشروع وحده')); return false; }
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });
@@ -311,8 +314,10 @@ function hiddenSitesCard(){
   var H = STATE.hiddenSites || [];
   if (!H.length || !maySiteEdit()) return '';
   return cardFlush(t('نقاطٌ مخفية') + ' — ' + nm(H.length),
-    table(['النقطة','الاسم','أخفاها','إجراء'], H.slice(0, 100).map(function(x){
-      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
+    /* (V36.8) متى حُذفت ومَن حذفها، واستعادةُ ما حُذف اليوم دفعةً لمدير المشروع */
+    (ROLE === 'admin' && H.some(function(x){ return dayKey(x.hidAt || 0) === dayKey(Date.now()); }) ? '<div class="actions" style="margin:0 0 8px">' + btn('\u21A9 ' + t('استعِد كلَّ ما حُذف اليوم'),'btn-primary btn-sm',' data-siterestoretoday="1"') + '</div>' : '')
+    + table(['النقطة','الاسم','حذفها','متى','إجراء'], H.slice().sort(function(a, b){ return (+b.hidAt || 0) - (+a.hidAt || 0); }).slice(0, 150).map(function(x){
+      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'), '<span class="num">' + esc(x.hidAt ? fmtDT(x.hidAt) : '—') + '</span>',
               btn('\u21A9 ' + t('استعادة'),'btn-secondary btn-sm',' data-siterestore="' + esc(x.id) + '"')];
     })));
 }

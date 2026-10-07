@@ -171,3 +171,13 @@ test('بلاغُ المالك (V36.7): الحذفُ يصل كلَّ جهاز و�
   assert.ok(/\(STATE\.hiddenSites \|\| \[\]\)\.forEach\(function\(x\)\{ have\[x\.id\] = 1; \}\);/.test(core) && /if \(ovh && ovh\.hidden\) return;/.test(core), 'الدمجُ يعرف المخفيَّ ولا يعيده');
   assert.ok(/watch\('sites', function\(id, v\)\{ if \(v\) siteOvIncoming\(id, v\); \}/.test(core), 'ومستمعُ التجاوزات حيّ');
 });
+test('حادثة ٧ أكتوبر (V36.8): نقطةٌ لها زيارةٌ لا يحذفها إلا مدير المشروع — والمهندسُ يحذف غير المزارة', () => {
+  const S = w.STATE.sites, v = S[11], u = S[12]; w.STATE.recs[v.id] = { id:v.id, at:Date.now(), access:'تم الوصول' };
+  const was = w.ROLE;
+  try {
+    w.ROLE = 'engineer';
+    assert.equal(w.siteHide(v.id), false, 'المهندسُ لا يحذف المزارة'); assert.ok(w.siteFind(v.id));
+    assert.equal(w.siteHide(u.id), true, 'ويحذف غيرَ المزارة'); w.ROLE = 'admin'; w.siteRestore(u.id);
+    assert.equal(w.siteHide(v.id), true, 'ومديرُ المشروع يحذف المزارة'); w.siteRestore(v.id);
+  } finally { w.ROLE = was; delete w.STATE.recs[v.id]; }
+});

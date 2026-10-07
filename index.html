@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-7a2babb75a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-66b4dd5586.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3983,6 +3983,9 @@ function siteHide(id){
      فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
   var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var had = !!(STATE.recs[id] || STATE.inss[id]);
+  /* (V36.8) حادثة ٧ أكتوبر: ستٌّ وعشرون نقطةَ تفويجٍ لها زياراتٌ حذفها ثلاثةُ مهندسين بالخطأ فاختفت من أرقام الجميع. حذفُ نقطةٍ لها زيارةٌ
+     صار لمدير المشروع وحده؛ والمهندسُ يحذف ما لم يُزَر. */
+  if (had && ROLE !== 'admin'){ toast(t('لها زيارة — حذفُها لمدير المشروع وحده')); return false; }
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });
@@ -4096,8 +4099,10 @@ function hiddenSitesCard(){
   var H = STATE.hiddenSites || [];
   if (!H.length || !maySiteEdit()) return '';
   return cardFlush(t('نقاطٌ مخفية') + ' — ' + nm(H.length),
-    table(['النقطة','الاسم','أخفاها','إجراء'], H.slice(0, 100).map(function(x){
-      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'),
+    /* (V36.8) متى حُذفت ومَن حذفها، واستعادةُ ما حُذف اليوم دفعةً لمدير المشروع */
+    (ROLE === 'admin' && H.some(function(x){ return dayKey(x.hidAt || 0) === dayKey(Date.now()); }) ? '<div class="actions" style="margin:0 0 8px">' + btn('\u21A9 ' + t('استعِد كلَّ ما حُذف اليوم'),'btn-primary btn-sm',' data-siterestoretoday="1"') + '</div>' : '')
+    + table(['النقطة','الاسم','حذفها','متى','إجراء'], H.slice().sort(function(a, b){ return (+b.hidAt || 0) - (+a.hidAt || 0); }).slice(0, 150).map(function(x){
+      return [siteIdHtml(siteOf(x)), esc(x.name || ''), esc(dispName(x.hidBy) || '—'), '<span class="num">' + esc(x.hidAt ? fmtDT(x.hidAt) : '—') + '</span>',
               btn('\u21A9 ' + t('استعادة'),'btn-secondary btn-sm',' data-siterestore="' + esc(x.id) + '"')];
     })));
 }
@@ -15596,7 +15601,7 @@ function popHtml(){
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
   /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
      للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (typeof maySiteEdit === 'function' && maySiteEdit()) marks += siteLocked(s.id) ? '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+  if (typeof maySiteEdit === 'function' && maySiteEdit() && (ROLE === 'admin' || !(STATE.recs[s.id] || STATE.inss[s.id]))) marks += siteLocked(s.id) ?   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
     : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
@@ -24721,6 +24726,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.8', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'استعادة: الـ٢٦ نقطة تفويج (الزايدي، وطريق الهجرة، ومواقع التفويج، والمدينة) اللي اتحذفت بالغلط النهارده الصبح رجعت كلها، وزياراتها وصورها ما اتلمستش أصلًا.',
+      'حماية: حذف أي نقطة ليها زيارة أو تركيب بقى لمدير المشروع بس، والمهندس بيحذف اللي ما اتزارتش. و«نقاط مخفية» بقت بتقول مين حذف وإمتى، وفيها زرار «استعِد كل اللي اتحذف النهارده».' ] },
   { v:'V36.7', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'إصلاح ضروري: النقطة اللي المهندس بيحذفها كانت بترجع تاني أو بتفضل ظاهرة عند غيره. السبب كان حاجتين: النقط المضافة كانت بترجع للقائمة مع كل سحب بيانات، والحذف ما كانش بيوصل للأجهزة التانية إلا كل ربع ساعة أو أكتر. دلوقتي الحذف (والاسترجاع والتعديل) بيوصل كل الأجهزة في ثواني، والمحذوفة ما بترجعش.' ] },
   { v:'V36.6', d:'٧ أكتوبر ٢٠٢٦', notes:[
@@ -34188,6 +34196,10 @@ function clickAPart7(e){
   if (ged){ var gp = ged.getAttribute('data-ged').split('|'); GED = { k:gp[0], id:gp.slice(1).join('|') }; render(1); return true; }
   if (e.target.closest('[data-gedsave]')){ if (gedSave()) render(1); return true; }
   if (e.target.closest('[data-gedx]')){ GED = null; render(1); return true; }
+  if (e.target.closest('[data-siterestoretoday]')){   /* (V36.8) استعادةُ ما حُذف اليوم دفعة */
+    var today0 = dayKey(Date.now()), todo = (STATE.hiddenSites || []).filter(function(x){ return dayKey(x.hidAt || 0) === today0; }).map(function(x){ return x.id; });
+    if (todo.length && window.confirm(t('استعادة') + ' ' + nm(todo.length) + ' ' + t('نقطة حُذفت اليوم؟'))){ var nr = 0; todo.forEach(function(id){ if (siteRestore(id)) nr++; }); logEvent('استعادة دفعة — ' + nr + ' نقطة حُذفت اليوم'); toast(nm(nr) + ' ' + t('استُعيدت')); }
+    render(1); return true; }
   var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
   if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
     var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');
