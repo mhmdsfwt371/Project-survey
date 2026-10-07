@@ -140,7 +140,7 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
 });
 test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
   const { readFileSync, readdirSync } = await import('fs');
-  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming'];
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming','visitWhy','chalCats','arKey','whyOf','ccOf'];
   const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
   NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
     others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
@@ -182,4 +182,17 @@ test('حادثة ٧ أكتوبر (V36.8): نقطةٌ لها زيارةٌ لا ي
     assert.equal(w.siteHide(v.id), false, 'ولا الحسابُ بدور «مدير» (V36.10)');
     const ib = w.isBossHere; w.isBossHere = () => true; assert.equal(w.siteHide(v.id), true, 'وصاحبُ المشروع يحذف المزارة'); w.siteRestore(v.id); w.isBossHere = ib;
   } finally { w.ROLE = was; delete w.STATE.recs[v.id]; }
+});
+test('قرارُ المالك (V37.0): الزيارةُ غيرُ المسح، والأسبابُ خمسة، والتحدياتُ ثمانية، والقديمُ يُصنَّف', () => {
+  const deq = (a, b, m) => assert.equal(JSON.stringify(Array.from(a)), JSON.stringify(b), m);   /* مصفوفاتُ نافذة الاختبار من عالمٍ آخر */
+  assert.equal(w.visitWhy({ access:'منع دخول', note:'الطريق المؤدي الى مدخل المخيم مغلق من الجهتين' }), 'closed');
+  assert.equal(w.visitWhy({ access:'منع دخول', note:'منع الدخول من قبل شركة عزام الشريف' }), 'denied');
+  assert.equal(w.visitWhy({ access:'يحتاج تصريح', note:'(التصوير ممنوع يحتاج تواصل رسمي)' }), 'permit');
+  assert.equal(w.visitWhy({ access:'غير موجود', note:'لم يستدل عليه' }), 'missing');
+  assert.equal(w.visitWhy({ access:'تم الوصول' }), null, 'الممسوحُ لا سببَ له');
+  assert.equal(JSON.stringify(w.chalCats({ chals:['لا يوجد سطح تثبيت — يحتاج هيكلا جديدا', 'المدخل غير واضح — لم يستدل عليه'] })), JSON.stringify(['mount', 'entry']), 'الصيغُ المتعددةُ تتوحّد');
+  deq(w.chalCats({ chals:['أخرى — اذكرها في وصف التحدي'], chal_note:'يوجد اكثر من بوابة للمخيم ( 3 )' }), ['multi'], 'و«أخرى» تُصنَّف من نصّها');
+  assert.equal(JSON.stringify(w.chalCats({ chals:['أخرى — اذكرها في وصف التحدي'], chal_note:'يمكن التركيب عليها مباشرة دون الحاجة الى هيكل معدني' })), JSON.stringify([]), 'والملاحظةُ الإيجابيةُ ليست تحدّيًا');
+  assert.equal(w.VISIT_WHY.length, 5); assert.equal(w.CHAL_CATS.length, 8);
+  const c = w.stageCounts(); assert.ok(c.vis >= c.srv && c.gap === Object.values(c.why).reduce((a, b) => a + b, 0) + c.tech + c.none, 'الفرقُ = مجموعُ أسبابه');
 });

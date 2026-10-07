@@ -115,8 +115,8 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     /* (V34.0) بلاغُ المالك: «المدخل غير واضح — لم يُستدل عليه» تُعرض «تحتاج زيارة تقنية» و«أخرى» تُعرض «ملاحظات فنية متنوعة» */
     T(w.chalShow('المدخل غير واضح — لم يُستدل عليه') === 'تحتاج زيارة تقنية' && w.chalShow('أخرى') === 'ملاحظات فنية متنوعة' && w.chalShow('عائق إنشائي') === 'عائق إنشائي', 'وأسماءُ التحديات في عرض الوزارة بمصطلح المالك (والباقي كما هو)');
     { w.PTAB.mfu = 'mfu'; w.goPage('mfu'); w.render(1); const hero = d.querySelector('.mfu-hero'); const rings = hero ? [...hero.querySelectorAll('.kk-ring')] : [];
-      T(hero && rings.length === 4 && rings[0].getAttribute('data-svlist') === 'sv' && new RegExp(w.nm(VISITED) + ' من ' + w.nm(TOTAL)).test(rings[0].textContent) && hero.querySelectorAll('svg rect').length === 14,
-        'موجزُ الموسم أوّلُ الملخّص: أربعُ حلقاتٍ بأرقام القاعة نفسِها ومسارُ العمل الميداني ١٤ يومًا'); }
+      T(hero && rings.length === 5 && rings[0].getAttribute('data-svlist') === 'sv' && rings[1].getAttribute('data-svlist') === 'srv' && new RegExp(w.nm(VISITED) + ' من ' + w.nm(TOTAL)).test(rings[0].textContent) && hero.querySelectorAll('svg rect').length === 14,
+        'موجزُ الموسم أوّلُ الملخّص: خمسُ حلقاتٍ (V37.0: الزيارةُ ثم المسح) بأرقام القاعة نفسِها ومسارُ العمل الميداني ١٤ يومًا'); }
     /* (V33.6) «تفاصيل المسح» بالتعريف الواحد: «بلا تحدٍّ — تُسنَد كما هي» = «نقاط بلا عوائق»، و«فيها تحدٍّ أو تحتاج زيارة أخرى» = «نقاط بعوائق» */
     w.SVD_MEMO = null; const pool = w.svdRows(), cardOf = k => w.SVD_CARDS.filter(c => c.k === k)[0];
     T(pool.filter(cardOf('clean').f).length === w.svListRows('clean').length && pool.filter(cardOf('chal').f).length === w.svListRows('chal').length,
@@ -157,14 +157,17 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   /* (V33.5) طلبُ المالك: أربعُ حلقاتٍ فقط — المسح والتركيب والتسليم والفك — الأخضرُ المنجزُ والأحمرُ المتبقي، وكلٌّ تفتح قائمتَها */
   { const R = d.getElementById('kksec-1'), rings = R ? [...R.querySelectorAll('.kk-ring')] : [];
     const labs = rings.map(r => (r.querySelector('.kk-lab') || {}).textContent || '');
-    T(rings.length === 4 && ['المسح', 'التركيب', 'التسليم', 'الفك'].every((l, i) => labs[i] && labs[i].indexOf(l) === 0) && h.indexOf('data-kiosk') > -1,
-      'الصفُّ الأوّلُ أربعُ حلقاتٍ فقط بالترتيب: ' + labs.map(x => x.replace(/\s*›/, '')).join('، '));
+    T(rings.length === 5 && ['الزيارة', 'المسح', 'التركيب', 'التسليم', 'الفك'].every((l, i) => labs[i] && labs[i].indexOf(l) === 0) && h.indexOf('data-kiosk') > -1,
+      'الصفُّ الأوّلُ خمسُ حلقاتٍ بالترتيب (ق-٠١٥): ' + labs.map(x => x.replace(/\s*›/, '')).join('، '));
     T(!/اعتمادُ الوزارة من المُسِح|مخيمات بلا عائق|تحتاج زيارة أخرى تقنيًا/.test(R ? R.textContent : '') && !/تحتاج زيارة أخرى|متعذّر|تنتظر قرارَ الوزارة/.test(w.kioskStory()), 'ولا «اعتماد الوزارة» ولا «مخيمات بلا عائق» ولا «تحتاج زيارة أخرى» في الصفّ ولا في الجملة');
     const keyOf = r => r.getAttribute('data-svlist'), remOf = r => { const e = r.querySelector('.kk-sub [data-svlist]'); return e ? e.getAttribute('data-svlist') : ''; };
     const sv = rings[0], pct = sv ? +sv.querySelector('[aria-valuenow]').getAttribute('aria-valuenow') : -1;
     T(sv && keyOf(sv) === 'sv' && remOf(sv) === 'rem' && w.svListRows('sv').length === VISITED && w.svListRows('rem').length === TOTAL - VISITED && pct === Math.min(99, Math.round(VISITED / TOTAL * 100)),
       'وحلقةُ المسح: الحلقةُ تفتح «تمت الزيارة» (' + VISITED + ') و«متبقٍّ» يفتح ما لم يُزَر (' + (TOTAL - VISITED) + ')، والنسبة ' + pct + '٪');
-    T(rings[1] && keyOf(rings[1]) === 'insd' && w.svListRows('insd').length === N_INS && new RegExp(w.nm(N_INS) + ' من ' + w.nm(TOTAL)).test(rings[1].textContent), 'وحلقةُ التركيب من الكلِّ نفسِه: ' + N_INS + ' من ' + TOTAL);
+    T(rings[2] && keyOf(rings[2]) === 'insd' && w.svListRows('insd').length === N_INS && new RegExp(w.nm(N_INS) + ' من ' + w.nm(TOTAL)).test(rings[2].textContent), 'وحلقةُ التركيب من الكلِّ نفسِه: ' + N_INS + ' من ' + TOTAL);
+    /* (V37.0) حلقةُ المسح تفتح «تم المسح»، و«زيارة بلا مسح» = مجموعُ أسبابها */
+    { const SC = w.stageCounts(); T(rings[1] && keyOf(rings[1]) === 'srv' && w.svListRows('srv').length === SC.srv && w.svListRows('gap').length === SC.gap && SC.gap === Object.values(SC.why).reduce((a, b) => a + b, 0) + SC.tech + SC.none,
+        'وحلقةُ المسح: «تم المسح» ' + SC.srv + '، و«زيارة بلا مسح» ' + SC.gap + ' = مجموعُ أسبابها'); }
     T(/stroke:\s*var\(--min-red\)/.test(h) && /stroke:\s*var\(--min-green\)/.test(h), 'الأخضرُ للمنجز والأحمرُ للمتبقي (الحلقةُ تبدأ حمراءَ ويزحف الأخضر — V34.3)'); }
   /* الأسبوعُ في جملة، والعدّاداتُ تحمل أرقامَها، والألوانُ من طقم الهوية (V17.89) */
   const story = w.kioskStory();

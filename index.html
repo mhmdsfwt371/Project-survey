@@ -851,6 +851,11 @@ body.kiosk .kk-story{font-size:21px}
 @media (prefers-reduced-motion: reduce){#lgShine{animation:none;opacity:.6}}
 #assistHost{position:fixed;inset:0;z-index:3000;pointer-events:none}
 #assistHost .pop{pointer-events:auto}
+/* (V37.0) قمعُ المراحل */
+.fn-row{display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer}
+.fn-l{min-width:64px;font-weight:700}
+.fn-bar{flex:1;height:12px;border-radius:6px;background:var(--line-2);overflow:hidden}
+.fn-bar i{display:block;height:100%;background:var(--min-green);border-radius:6px}
 .mfu-hero{margin:0 0 14px}
 .mfu-hero-band{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#0B6E4F,#0B6E4Fcc 60%,#C9A227);color:#fff;margin:0 0 10px}
 .mfu-hero-band .hint{color:#ffffffcc}
@@ -1228,7 +1233,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.11</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1295,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-1daa4c4079.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-74950c7495.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7044,6 +7049,99 @@ function siteOvIncoming(id, v){
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
+   (V37.0) قرارُ المالك — الزيارةُ غيرُ المسح، والأسبابُ والتحدياتُ تُعَدّ على الأصابع
+   ───────────────────────────────────────────────────────────────────────────────
+   «رحنا زرنا ٧ ومسحنا ٥»: الزيارةُ ذهابٌ للموقع بأيِّ نتيجة، والمسحُ ما اكتمل فعلًا. والفرقُ له سببٌ واحدٌ من خمسة،
+   وتحدياتُ التركيب ثمانية. كلٌّ منها له «جهةُ الحل». ما كُتب نصًّا حرًّا قبل اليوم يُصنَّف بقواعد كلماتٍ ثابتة (لا يُعاد
+   كتابةُ السجل) — وما لا تقطع فيه القاعدةُ يبقى «يراجعه المهندس». ومن V37.1 يُختار من قائمةٍ في الميدان فلا تتعدّد الصيغ.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+var VISIT_WHY = [   /* لماذا لم يُمسح ما زرناه — اختيارٌ واحد */
+  { k:'closed',  n:'الطريق أو البوابة مغلقة',             who:'الشركة أو الحراسة', photo:true },
+  { k:'denied',  n:'منعتنا جهة (حراسة أو شركة أو أمن)',    who:'الشركة أو الحراسة', photo:true },
+  { k:'permit',  n:'يحتاج تصريحًا أو تواصلًا رسميًّا',      who:'الوزارة' },
+  { k:'missing', n:'الموقع غير موجود أو غير مطابق للسجل',  who:'الوزارة — تصحيح السجل' },
+  { k:'other',   n:'تحت الإنشاء أو منشأة جهة أخرى',        who:'الجهة المالكة' }
+];
+var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكثرُ من اختيار */
+  { k:'mount',  n:'لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا',  who:'أفاقي — تصنيع هيكل' },
+  { k:'beam',   n:'العارضة ناقصة أو عليها ديكور أو لافتات',      who:'أفاقي — تصنيع هيكل' },
+  { k:'entry',  n:'تحتاج زيارة تقنية — المدخل غير واضح',         who:'أفاقي — زيارة تقنية' },
+  { k:'multi',  n:'مداخل متعددة أو مدخل مشترك',                  who:'أفاقي — دراسة الموقع' },
+  { k:'wide',   n:'المسار أو البوابة أعرض من طقم واحد',          who:'أفاقي — طقم إضافي' },
+  { k:'block',  n:'عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)', who:'الشركة أو الجهة المالكة' },
+  { k:'height', n:'ارتفاع صعب أو مبنى متعدد الأدوار',             who:'أفاقي — معدات' },
+  { k:'legacy', n:'منظومة قائمة لجهة أخرى',                       who:'الجهة المالكة' }
+];
+function arKey(s){ return String(s || '').replace(/[\u064B-\u0652\u0640\u200f\u200e]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة(?=\s|$)/g, 'ه').replace(/ى(?=\s|$)/g, 'ي').replace(/\s+/g, ' ').trim(); }
+/* سببُ عدم المسح: المختارُ في الميدان (r.why) أوّلًا، ثم قواعدُ الكلمات على النصّ، ثم حالةُ الوصول؛ وإلا null (يراجعه المهندس) */
+var WHY_RULES = [
+  ['permit',  /تصريح|تواصل رسمي|التصوير ممنوع/],
+  ['denied',  /منعنا|تم منع|منع الدخول من|من قبل شرك|حراس|الامن|امن الدول/],
+  ['closed',  /مغلق|مقفل|اغلاق|مسدود/],
+  ['missing', /غير موجود|لم يستدل|غير صحيح|لا يوجد شاخص|لا يوجد مخيم|ملامح|رصدت مرتين|الرقم/],
+  ['other',   /انشاء|الدفاع المدني|وزاره|قوات|ربوه|خدمات فقط|كدانه/]
+];
+function visitWhy(r){
+  if (!r || r.deleted || !svStuck(r)) return null;
+  if (r.why && VISIT_WHY.some(function(o){ return o.k === r.why; })) return r.why;
+  var txt = arKey([r.note, r.chal_note, r.chalNote].join(' '));
+  for (var i = 0; i < WHY_RULES.length; i++) if (WHY_RULES[i][1].test(txt)) return WHY_RULES[i][0];
+  return { 'منع دخول':'denied', 'غير موجود':'missing', 'يحتاج تصريح':'permit' }[r.access] || null;
+}
+/* تحدياتُ التركيب: الصيغُ القديمةُ الثابتةُ تُترجَم مباشرةً، و«أخرى» تُصنَّف من نصّها، وما لا يُقطع فيه يُعَدّ «يراجعه المهندس» */
+var CHAL_FROM = { 'العارضة الحديدية ناقصة أو غير مكتملة':'beam', 'يوجد ديكور أو لافتات على العارضة':'beam', 'المدخل غير واضح — لم يُستدل عليه':'entry',
+  'المدخل مشترك مع مخيم آخر':'multi', 'المسار أعرض من طقم واحد':'wide', 'عائق إنشائي':'block', 'المسار تحت كوبري':'block', 'المسار داخل نفق':'block',
+  'تصميم المدخل لا يسمح بالتركيب':'block', 'ازدحام دائم يمنع العمل نهارًا':'block', 'لا يوجد مسار كابل':'block', 'ارتفاع صعب الوصول':'height', 'مبنى متعدد الأدوار (أبراج)':'height' };
+var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجلات الحقيقية: ٨٣٣ نقطةً بتحديات، وبقي للمراجعة نحوُ ١٧ نصًّا */
+  ['legacy', /كاميرا (واحده )?متحرك|متحركه|قارئات لشرك|تركيبات قارئ/],
+  ['wide',   /عرض|عرضها|واسع|كاميرتين|اتنين كاميرا|اتني كاميرا|عدد اتن/],
+  ['multi',  /بوابات|بوابتين|مدخلين|مداخل|منفصل|مخيمين|مشترك|بوابه ممر|اكثر من بوابه|اكثر من مدخل|دراسه/],
+  ['entry',  /مختلف|لم يستدل|استدلال|لا يوجد لوحه|شاخص|ملامح|سور|الخريطه|غير صحيح|الرقم|يستدل/],
+  ['beam',   /شاسي|عارضه/],
+  ['block',  /درج|كونتينر|حفر|صبات|مظله|انارات|عائق|مائل|ضيق|المطبخ|مغلق|مقفل/],
+  ['mount',  /قائم|هيكل|عمود|عامود|لوح|سطح|تثبيت/]
+];
+var CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
+function chalCats(r){
+  if (!r || r.deleted) return [];
+  if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
+  var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
+  (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
+    c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
+    var cd = CHAL_CATS.filter(function(o){ return o.n === c; })[0]; if (cd){ add(cd.k); return; }
+    if (/^لا يوجد سطح تثبيت/.test(c)){ add('mount'); return; }
+    if (CHAL_FROM[c]){ add(CHAL_FROM[c]); return; }
+    var nc = arKey(c); if (/^المدخل غير واضح/.test(nc)){ add('entry'); return; }
+    if (/^اخري/.test(nc)){
+      var txt = arKey(r.chal_note || r.chalNote || r.note || '');
+      if (CHAL_NONE_RX.test(txt)) return;
+      for (var i = 0; i < CHAL_RULES.length; i++) if (CHAL_RULES[i][1].test(txt)){ add(CHAL_RULES[i][0]); return; }
+      add('review'); return;
+    }
+    add('review');
+  });
+  return out;
+}
+function whyOf(k){ return VISIT_WHY.filter(function(o){ return o.k === k; })[0] || null; }
+function ccOf(k){ return CHAL_CATS.filter(function(o){ return o.k === k; })[0] || null; }
+
+/* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
+var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
+function chalNames(){ return ['لا توجد تحديات'].concat(CHAL_CATS.map(function(o){ return o.n; })); }
+/* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
+function chalsToCats(chals, note){
+  var L = Array.isArray(chals) ? chals : [], names = chalNames();
+  if (L.every(function(c){ return names.indexOf(c) > -1; })) return L.slice();
+  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review'; });
+  var out = ks.map(function(k){ return ccOf(k).n; });
+  if (!out.length && L.indexOf('لا توجد تحديات') > -1) out.push('لا توجد تحديات');
+  return out;
+}
+/* محاولاتُ الوصول وعمرُ التوقف: نقطةٌ لم تُمسح بعد ثلاث زياراتٍ أو عشرة أيامٍ تُصعَّد */
+function stuckAge(r){ return r && svStuck(r) ? Math.floor((Date.now() - (+r.stuckSince || +r.at || Date.now())) / 864e5) : 0; }
+function stuckEsc(r){ return !!(r && svStuck(r) && ((+r.tries || 1) >= 3 || stuckAge(r) >= 10)); }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
    ───────────────────────────────────────────────────────────────────────────────
    كثيرٌ من سجلّات الإعدادات كان فيها «أضف» و«احذف» ولا «عدّل» — فيُحذَف العنصرُ ويُكتَب من جديد ويضيع تاريخُه.
@@ -7976,14 +8074,15 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + fixCard(s.id)
 
       + card('الوصول',
-          '<div class="chips" style="margin:0">'
-          + SV_ACCESS.map(function(a){
-              return '<button type="button" class="chip' + (FORM.access===a?' on':'')
-                + '" data-acc="' + esc(a) + '">' + esc(t(a)) + '</button>';
-            }).join('') + '</div>'
+          /* (V37.1) قرارُ المالك: «تم الوصول» أو سببٌ واحدٌ من خمسة — من قائمةٍ لا بالكتابة؛ وحالةُ الوصول القديمة تُشتقّ منه */
+          (FORM.access && FORM.access !== 'تم الوصول' && !FORM.why ? (FORM.why = visitWhy({ access:FORM.access, note:FORM.note }) || '', '') : '')
+          + '<div class="chips" style="margin:0">'
+          + '<button type="button" class="chip' + (FORM.access === 'تم الوصول' ? ' on' : '') + '" data-acc="تم الوصول">' + esc(t('تم الوصول — مُسح')) + '</button>'
+          + VISIT_WHY.map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
           + (FORM.access === 'تم الوصول' ? ''
              : '<p class="hint" style="margin:10px 0 0">'
-               + esc(t('لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.'))
+               + esc(t('زيارة بلا مسح — اختر السبب؛ والملاحظةُ تفصيلٌ اختياري. لا تُطلَب القياسات.'))
+               + (FORM.why && whyOf(FORM.why) && whyOf(FORM.why).photo ? ' <b>' + esc(t('صورةُ إثباتٍ مطلوبة (اللقطة العامة).')) + '</b>' : '')
                + '</p>'))
 
       + card('ما يُجمَع في الموقع',
@@ -8003,11 +8102,11 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '</div>'
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
-          + chalsOf(s).map(function(c){
+          + ((FORM.chals = chalsToCats(FORM.chals, FORM.chal_note || FORM.note)), chalNames()).map(function(c){   /* (V37.1) الفئاتُ الثماني — اختيارٌ لا كتابة */
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
                 + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div></div>'
-          + '<div class="field"><label>' + esc(t('ملاحظات')) + '</label>'
+          + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
       + svExtra(s)
@@ -9721,10 +9820,8 @@ function svSave(next){
   /* عددُ الصور المأخوذة يُختَم على الزيارة نفسِها (V17.33): فإذا وصلت الزيارةُ
      ولم تصل صورُها عرف المكتبُ أنها في طابور جهاز الفنيّ لا أنها لم تُؤخَذ. */
   var phN = Object.keys(FORM.photos || {}).filter(function(k){ return FORM.photos[k] && FORM.photos[k].data; }).length;
-  if (!reached && !String(FORM.note || '').trim()){
-    toast(t('اكتب سببَ تعذُّر الوصول في الملاحظات'));
-    return;
-  }
+  if (!reached && !FORM.why){ toast(t('اختر سببَ عدم المسح من القائمة')); return; }   /* (V37.1) */
+  if (!reached && whyOf(FORM.why) && whyOf(FORM.why).photo && !(FORM.photos.site && FORM.photos.site.data)){ toast(t('صورةُ إثباتٍ مطلوبة للسبب — اللقطةُ العامة')); return; }
   if (reached && (!FORM.photos.site || !FORM.photos.mount)){
     toast(t('الصورتان مطلوبتان قبل الحفظ'));
     try { var ct2 = document.getElementById('content'), eb2 = document.getElementById('svErr');
@@ -9759,6 +9856,9 @@ function svSave(next){
     chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
     access:FORM.access
   };
+  /* (V37.1) السببُ والفئاتُ مفاتيحُ ثابتة؛ ومحاولاتُ الوصول وبدايةُ التوقف تُحمَل من الزيارة السابقة */
+  if (!reached){ var pv = STATE.recs[s.id]; rec.why = FORM.why; rec.tries = (pv && svStuck(pv) ? (+pv.tries || 1) : 0) + 1; rec.stuckSince = (pv && svStuck(pv) && (+pv.stuckSince || +pv.at)) || Date.now(); }
+  else rec.chalCats = chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   /* العنوانُ الذي قرأه الفنيُّ من الجهاز يُكتَب على النقطة نفسِها — فتخرج من
      قائمة «بلا عنوان» بعنوانها الحقيقيِّ لا بعنوانٍ مولَّد */
@@ -21803,6 +21903,7 @@ function kioskToggle(){
   }
   render(1);
 }
+var KSC = null;   /* (V37.0) أعدادُ المراحل في رسمة القاعة الواحدة */
 function kioskBody(){
   var K = siteKeyStats(), S = K.total, now = Date.now(), day = now - 864e5;
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
@@ -21824,12 +21925,10 @@ function kioskBody(){
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"' + (KIOSK_ON ? '' : ' title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '"')) + '</div>'
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
     + '<div class="kk-rings" id="kksec-1">'   /* (V33.5) طلبُ المالك: المسح والتركيب والتسليم والفك — أربعٌ فقط */
-    +   (function(){ var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0;
-          all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
-          return kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr')
-            + kioskRing(ds, n, 'الفك', 'disd', 'disr'); })()
+    +   stageRings(KSC = stageCounts())   /* (V37.0) خمسُ مراحل */
     + '</div>'
-    + kioskObsHtml()   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
+    + kioskObsHtml()
+    + '<div class="mfu-hero-grid" id="kksec-stage">' + stageFunnel(KSC) + gapCard(KSC) + ccCard(KSC) + '</div>'   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
     +     zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
@@ -22039,8 +22138,47 @@ function mfuMilesCard(){
    أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
+/* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
+function stageCounts(){
+  var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
+    if (svVisited(r)) c.vis++; if (svDone(r)) c.srv++; if (insDone(x.id)) c.ins++; if (handDone(x.id)) c.hand++; if (disDone(x.id)) c.dis++;
+    if (svNeedsRevisit(r)){ c.gap++; if (svStuck(r)){ var w = visitWhy(r); if (w) c.why[w] = (c.why[w] || 0) + 1; else c.none++; if (stuckEsc(r)) c.esc++; } else c.tech++; }
+    chalCats(r).forEach(function(k){ if (k === 'review') c.review++; else c.cc[k] = (c.cc[k] || 0) + 1; }); });
+  return c;
+}
+function stageRings(c){
+  return kioskRing(c.vis, c.n, 'الزيارة', 'sv', 'rem') + kioskRing(c.srv, c.n, 'المسح', 'srv', 'srvr') + kioskRing(c.ins, c.n, 'التركيب', 'insd', 'insr')
+    + kioskRing(c.hand, c.n, 'التسليم', 'hand', 'handr') + kioskRing(c.dis, c.n, 'الفك', 'disd', 'disr');
+}
+function stageFunnel(c){
+  var S = [['الزيارة', c.vis, 'sv'], ['المسح', c.srv, 'srv'], ['التركيب', c.ins, 'insd'], ['التسليم', c.hand, 'hand'], ['الفك', c.dis, 'disd']];
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('قمع المراحل — من الزيارة إلى الفك')) + '</div>'
+    + S.map(function(s, i){ var p = c.n ? Math.round(s[1] / c.n * 100) : 0, prev = i ? S[i - 1][1] : 0, conv = i && prev ? Math.round(s[1] / prev * 100) : null;
+        return '<div class="fn-row" data-svlist="' + s[2] + '" role="button" tabindex="0"><span class="fn-l">' + esc(t(s[0])) + '</span>'
+          + '<span class="fn-bar"><i style="width:' + Math.max(p ? 2 : 0, p) + '%"></i></span><b class="num">' + nm(s[1]) + '</b>'
+          + '<span class="hint" style="margin:0;min-width:64px;text-align:end">' + (conv == null ? '' : nm(conv) + '٪ ' + esc(t('من السابقة'))) + '</span></div>'; }).join('')
+    + '</div>';
+}
+function gapCard(c){
+  var rows = VISIT_WHY.map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
+  rows.push(['تحتاج زيارة تقنية — أعادها المهندس', 'أفاقي — زيارة تقنية', c.tech, 'why_tech']);
+  if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', 'أفاقي', c.none, 'why_none']);
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b></div>'
+    + rows.filter(function(r){ return r[2]; }).map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
+    + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
+    + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
+}
+function ccCard(c){
+  var rows = CHAL_CATS.map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
+  if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', 'أفاقي', c.review, 'cc_review']);
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + '</div>'
+    + (rows.length ? rows.map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
+      : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
+}
 function mfuHeroHtml(){
   var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  var SC = stageCounts();
   all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
@@ -22066,13 +22204,12 @@ function mfuHeroHtml(){
     +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */
     +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
     + '<div class="kk kk-mini"><div class="kk-rings">'
-    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, n, 'الفك', 'disd', 'disr')
+    +   stageRings(SC)   /* (V37.0) خمسُ مراحل: الزيارة والمسح والتركيب والتسليم والفك */
     + '</div></div>'
     + '<div class="mfu-hero-grid">'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
-    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
-    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    +   stageFunnel(SC) + gapCard(SC) + ccCard(SC)   /* (V37.0) */
     + '</div></div>';
 }
 function mfuSummary(){
@@ -22159,8 +22296,18 @@ var SV_LISTS = {
   denied:  ['منع دخول — تنسيق',          function(x, r){ return !!(r && r.access === 'منع دخول'); }],
   missing: ['غير موجودة ميدانيًا — تصحيح السجل', function(x, r){ return !!(r && r.access === 'غير موجود'); }],
   noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return taxOf(x).t === 'مخيمات' && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
-  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }]
+  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }],
+  /* (V37.0) قرارُ المالك: الزيارةُ غيرُ المسح */
+  srv:     ['تم المسح',                    function(x, r){ return svDone(r); }],
+  srvr:    ['المتبقي — لم يُمسح',          function(x, r){ return !svDone(r); }],
+  gap:     ['زيارة بلا مسح',               function(x, r){ return svNeedsRevisit(r); }],
+  why_tech:['تحتاج زيارة تقنية — أعادها المهندس', function(x, r){ return svVisited(r) && svReached(r) && r.review === 'revisit'; }],
+  why_none:['زيارة بلا مسح — بلا سبب مسجّل',  function(x, r){ return svStuck(r) && !visitWhy(r); }],
+  cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
+  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
 };
+VISIT_WHY.forEach(function(o){ SV_LISTS['why_' + o.k] = [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }]; });
+CHAL_CATS.forEach(function(o){ SV_LISTS['cc_' + o.k] = [o.n, function(x, r){ return chalCats(r).indexOf(o.k) > -1; }]; });
 /* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
    كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */
 var AL_RULES = [
@@ -24727,6 +24874,12 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'المراحل بقت ٥ (الزيارة، والمسح، والتركيب، والتسليم، والفك) في ملخص الوزارة وشاشة القاعة، ومعاها «قمع المراحل»، وكارت «زيارة بلا مسح» بأسبابه الخمسة وجهة الحل، وكارت «تحديات التركيب» التمانية بجهاتها. والقديم اتوحّد لوحده.',
+      'نموذج المسح: «تم الوصول» أو سبب من ٥ من القائمة (من غير كتابة)، والتحديات ٨ من غير «أخرى»، والملاحظة اختيارية. «مقفولة» و«اتمنعنا» محتاجين صورة إثبات. والنقطة اللي تتزار ٣ مرات أو تعدّي ١٠ أيام من غير مسح بتتصعّد بالأحمر.' ] },
+  { v:'V37.0', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'المراحل بقت ٥: الزيارة، والمسح، والتركيب، والتسليم، والفك. في ملخص الوزارة وشاشة القاعة: ٥ حلقات، و«قمع المراحل» بالنسبة بين كل مرحلة واللي بعدها، وكارت «زيارة بلا مسح» بأسبابه الخمسة وجهة الحل لكل سبب، وكارت «تحديات التركيب» التمانية بجهة الحل. وكل رقم بيفتح قائمته.',
+      'التحديات اللي كانت مكتوبة بأكتر من صيغة (١٨ صيغة و٨٤ نص حر) اتوحّدت لوحدها في ٨ تحديات، وأسباب عدم المسح في ٥. القليل اللي ما يتصنّفش بيظهر للمهندس بس يراجعه.' ] },
   { v:'V36.11', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'إصلاح لقاعدة الحماية الجديدة في السحابة: كان فيها اسم متغيّر غلط بيرفض أي حذف حتى المسموح. اتصلحت، ومحاكي القواعد الرسمي بيجرّبها.' ] },
   { v:'V36.10', d:'٧ أكتوبر ٢٠٢٦', notes:[
@@ -34973,6 +35126,8 @@ function onDocClickPart5(e){
     toast(t('أُعيدت إلى الطابور'));
     photoFlush(); render(1); return;
   }
+  var wy = e.target.closest('[data-why]');   /* (V37.1) سببُ عدم المسح — يحدّد حالةَ الوصول القديمة للتوافق */
+  if (wy){ FORM.why = wy.getAttribute('data-why'); FORM.access = WHY_ACCESS[FORM.why] || 'منع دخول'; render(1); return; }
   var ac = e.target.closest('[data-acc]');
   if (ac){ FORM.access = ac.getAttribute('data-acc'); render(1); return; }
   var ch = e.target.closest('[data-chal]');

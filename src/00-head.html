@@ -851,6 +851,11 @@ body.kiosk .kk-story{font-size:21px}
 @media (prefers-reduced-motion: reduce){#lgShine{animation:none;opacity:.6}}
 #assistHost{position:fixed;inset:0;z-index:3000;pointer-events:none}
 #assistHost .pop{pointer-events:auto}
+/* (V37.0) قمعُ المراحل */
+.fn-row{display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer}
+.fn-l{min-width:64px;font-weight:700}
+.fn-bar{flex:1;height:12px;border-radius:6px;background:var(--line-2);overflow:hidden}
+.fn-bar i{display:block;height:100%;background:var(--min-green);border-radius:6px}
 .mfu-hero{margin:0 0 14px}
 .mfu-hero-band{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#0B6E4F,#0B6E4Fcc 60%,#C9A227);color:#fff;margin:0 0 10px}
 .mfu-hero-band .hint{color:#ffffffcc}
@@ -1228,7 +1233,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.11</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

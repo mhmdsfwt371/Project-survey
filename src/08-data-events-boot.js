@@ -4226,6 +4226,8 @@ function onDocClickPart5(e){
     toast(t('أُعيدت إلى الطابور'));
     photoFlush(); render(1); return;
   }
+  var wy = e.target.closest('[data-why]');   /* (V37.1) سببُ عدم المسح — يحدّد حالةَ الوصول القديمة للتوافق */
+  if (wy){ FORM.why = wy.getAttribute('data-why'); FORM.access = WHY_ACCESS[FORM.why] || 'منع دخول'; render(1); return; }
   var ac = e.target.closest('[data-acc]');
   if (ac){ FORM.access = ac.getAttribute('data-acc'); render(1); return; }
   var ch = e.target.closest('[data-chal]');

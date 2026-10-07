@@ -797,14 +797,15 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + fixCard(s.id)
 
       + card('الوصول',
-          '<div class="chips" style="margin:0">'
-          + SV_ACCESS.map(function(a){
-              return '<button type="button" class="chip' + (FORM.access===a?' on':'')
-                + '" data-acc="' + esc(a) + '">' + esc(t(a)) + '</button>';
-            }).join('') + '</div>'
+          /* (V37.1) قرارُ المالك: «تم الوصول» أو سببٌ واحدٌ من خمسة — من قائمةٍ لا بالكتابة؛ وحالةُ الوصول القديمة تُشتقّ منه */
+          (FORM.access && FORM.access !== 'تم الوصول' && !FORM.why ? (FORM.why = visitWhy({ access:FORM.access, note:FORM.note }) || '', '') : '')
+          + '<div class="chips" style="margin:0">'
+          + '<button type="button" class="chip' + (FORM.access === 'تم الوصول' ? ' on' : '') + '" data-acc="تم الوصول">' + esc(t('تم الوصول — مُسح')) + '</button>'
+          + VISIT_WHY.map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
           + (FORM.access === 'تم الوصول' ? ''
              : '<p class="hint" style="margin:10px 0 0">'
-               + esc(t('لم يُوصَل إلى الموقع — يكفي السببُ في الملاحظات، ولا تُطلَب القياساتُ ولا الصور. ولا تُحتسب زيارةً منجزة.'))
+               + esc(t('زيارة بلا مسح — اختر السبب؛ والملاحظةُ تفصيلٌ اختياري. لا تُطلَب القياسات.'))
+               + (FORM.why && whyOf(FORM.why) && whyOf(FORM.why).photo ? ' <b>' + esc(t('صورةُ إثباتٍ مطلوبة (اللقطة العامة).')) + '</b>' : '')
                + '</p>'))
 
       + card('ما يُجمَع في الموقع',
@@ -824,11 +825,11 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '</div>'
           + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
-          + chalsOf(s).map(function(c){
+          + ((FORM.chals = chalsToCats(FORM.chals, FORM.chal_note || FORM.note)), chalNames()).map(function(c){   /* (V37.1) الفئاتُ الثماني — اختيارٌ لا كتابة */
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
                 + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div></div>'
-          + '<div class="field"><label>' + esc(t('ملاحظات')) + '</label>'
+          + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
       + svExtra(s)
@@ -2542,10 +2543,8 @@ function svSave(next){
   /* عددُ الصور المأخوذة يُختَم على الزيارة نفسِها (V17.33): فإذا وصلت الزيارةُ
      ولم تصل صورُها عرف المكتبُ أنها في طابور جهاز الفنيّ لا أنها لم تُؤخَذ. */
   var phN = Object.keys(FORM.photos || {}).filter(function(k){ return FORM.photos[k] && FORM.photos[k].data; }).length;
-  if (!reached && !String(FORM.note || '').trim()){
-    toast(t('اكتب سببَ تعذُّر الوصول في الملاحظات'));
-    return;
-  }
+  if (!reached && !FORM.why){ toast(t('اختر سببَ عدم المسح من القائمة')); return; }   /* (V37.1) */
+  if (!reached && whyOf(FORM.why) && whyOf(FORM.why).photo && !(FORM.photos.site && FORM.photos.site.data)){ toast(t('صورةُ إثباتٍ مطلوبة للسبب — اللقطةُ العامة')); return; }
   if (reached && (!FORM.photos.site || !FORM.photos.mount)){
     toast(t('الصورتان مطلوبتان قبل الحفظ'));
     try { var ct2 = document.getElementById('content'), eb2 = document.getElementById('svErr');
@@ -2580,6 +2579,9 @@ function svSave(next){
     chals:FORM.chals.slice(), note:FORM.note, photos:Object.keys(FORM.photos),
     access:FORM.access
   };
+  /* (V37.1) السببُ والفئاتُ مفاتيحُ ثابتة؛ ومحاولاتُ الوصول وبدايةُ التوقف تُحمَل من الزيارة السابقة */
+  if (!reached){ var pv = STATE.recs[s.id]; rec.why = FORM.why; rec.tries = (pv && svStuck(pv) ? (+pv.tries || 1) : 0) + 1; rec.stuckSince = (pv && svStuck(pv) && (+pv.stuckSince || +pv.at)) || Date.now(); }
+  else rec.chalCats = chalCats({ chals:FORM.chals }).filter(function(k){ return k !== 'review'; });
   SV_EXTRA_KEYS.forEach(function(k){ if (FORM[k] !== '' && FORM[k] != null) rec[k] = FORM[k]; });
   /* العنوانُ الذي قرأه الفنيُّ من الجهاز يُكتَب على النقطة نفسِها — فتخرج من
      قائمة «بلا عنوان» بعنوانها الحقيقيِّ لا بعنوانٍ مولَّد */

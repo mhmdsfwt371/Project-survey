@@ -81,8 +81,15 @@ blocks('المسح بلا صور', 'الصورتان|مطلوب', () => w.svSave
 blocks('تعذُّر الوصول بلا سبب', 'سبب', () => {
   w.FORM.access = 'منع دخول'; w.FORM.note = ''; w.svSave();
 });
-allows('تعذُّر الوصول بسبب مكتوب', () => {
-  w.FORM.access = 'منع دخول'; w.FORM.note = 'البوابة مغلقة'; w.svSave();
+/* (V37.1 ق-٠١٥) السببُ يُختار من القائمة لا يُكتب؛ و«مغلقة»/«منعتنا» تحتاجان صورةَ إثبات */
+blocks('تعذُّر الوصول بسببٍ مكتوبٍ بلا اختيار', 'اختر سبب', () => {
+  w.FORM.access = 'منع دخول'; w.FORM.why = ''; w.FORM.note = 'البوابة مغلقة'; w.svSave();
+});
+blocks('«البوابة مغلقة» بلا صورة إثبات', 'صورة', () => {
+  w.FORM.why = 'closed'; w.FORM.access = 'منع دخول'; w.FORM.photos = {}; w.svSave();
+});
+allows('تعذُّر الوصول بسببٍ من القائمة', () => {
+  w.FORM.why = 'permit'; w.FORM.access = 'يحتاج تصريح'; w.FORM.note = ''; w.svSave();
 });
 check(w.siteStats().surveyed === 0 || !w.svDone(S.recs[cor.id]),
   'زيارةُ المنع لا تُحتسب مسحًا');

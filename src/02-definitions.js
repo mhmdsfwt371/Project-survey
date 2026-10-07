@@ -121,3 +121,96 @@ function siteOvIncoming(id, v){
   if (before !== !!STATE.siteOv[id].hidden){ CORE.saveSoon(); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); }
   return true;
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   (V37.0) قرارُ المالك — الزيارةُ غيرُ المسح، والأسبابُ والتحدياتُ تُعَدّ على الأصابع
+   ───────────────────────────────────────────────────────────────────────────────
+   «رحنا زرنا ٧ ومسحنا ٥»: الزيارةُ ذهابٌ للموقع بأيِّ نتيجة، والمسحُ ما اكتمل فعلًا. والفرقُ له سببٌ واحدٌ من خمسة،
+   وتحدياتُ التركيب ثمانية. كلٌّ منها له «جهةُ الحل». ما كُتب نصًّا حرًّا قبل اليوم يُصنَّف بقواعد كلماتٍ ثابتة (لا يُعاد
+   كتابةُ السجل) — وما لا تقطع فيه القاعدةُ يبقى «يراجعه المهندس». ومن V37.1 يُختار من قائمةٍ في الميدان فلا تتعدّد الصيغ.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+var VISIT_WHY = [   /* لماذا لم يُمسح ما زرناه — اختيارٌ واحد */
+  { k:'closed',  n:'الطريق أو البوابة مغلقة',             who:'الشركة أو الحراسة', photo:true },
+  { k:'denied',  n:'منعتنا جهة (حراسة أو شركة أو أمن)',    who:'الشركة أو الحراسة', photo:true },
+  { k:'permit',  n:'يحتاج تصريحًا أو تواصلًا رسميًّا',      who:'الوزارة' },
+  { k:'missing', n:'الموقع غير موجود أو غير مطابق للسجل',  who:'الوزارة — تصحيح السجل' },
+  { k:'other',   n:'تحت الإنشاء أو منشأة جهة أخرى',        who:'الجهة المالكة' }
+];
+var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكثرُ من اختيار */
+  { k:'mount',  n:'لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا',  who:'أفاقي — تصنيع هيكل' },
+  { k:'beam',   n:'العارضة ناقصة أو عليها ديكور أو لافتات',      who:'أفاقي — تصنيع هيكل' },
+  { k:'entry',  n:'تحتاج زيارة تقنية — المدخل غير واضح',         who:'أفاقي — زيارة تقنية' },
+  { k:'multi',  n:'مداخل متعددة أو مدخل مشترك',                  who:'أفاقي — دراسة الموقع' },
+  { k:'wide',   n:'المسار أو البوابة أعرض من طقم واحد',          who:'أفاقي — طقم إضافي' },
+  { k:'block',  n:'عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)', who:'الشركة أو الجهة المالكة' },
+  { k:'height', n:'ارتفاع صعب أو مبنى متعدد الأدوار',             who:'أفاقي — معدات' },
+  { k:'legacy', n:'منظومة قائمة لجهة أخرى',                       who:'الجهة المالكة' }
+];
+function arKey(s){ return String(s || '').replace(/[\u064B-\u0652\u0640\u200f\u200e]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة(?=\s|$)/g, 'ه').replace(/ى(?=\s|$)/g, 'ي').replace(/\s+/g, ' ').trim(); }
+/* سببُ عدم المسح: المختارُ في الميدان (r.why) أوّلًا، ثم قواعدُ الكلمات على النصّ، ثم حالةُ الوصول؛ وإلا null (يراجعه المهندس) */
+var WHY_RULES = [
+  ['permit',  /تصريح|تواصل رسمي|التصوير ممنوع/],
+  ['denied',  /منعنا|تم منع|منع الدخول من|من قبل شرك|حراس|الامن|امن الدول/],
+  ['closed',  /مغلق|مقفل|اغلاق|مسدود/],
+  ['missing', /غير موجود|لم يستدل|غير صحيح|لا يوجد شاخص|لا يوجد مخيم|ملامح|رصدت مرتين|الرقم/],
+  ['other',   /انشاء|الدفاع المدني|وزاره|قوات|ربوه|خدمات فقط|كدانه/]
+];
+function visitWhy(r){
+  if (!r || r.deleted || !svStuck(r)) return null;
+  if (r.why && VISIT_WHY.some(function(o){ return o.k === r.why; })) return r.why;
+  var txt = arKey([r.note, r.chal_note, r.chalNote].join(' '));
+  for (var i = 0; i < WHY_RULES.length; i++) if (WHY_RULES[i][1].test(txt)) return WHY_RULES[i][0];
+  return { 'منع دخول':'denied', 'غير موجود':'missing', 'يحتاج تصريح':'permit' }[r.access] || null;
+}
+/* تحدياتُ التركيب: الصيغُ القديمةُ الثابتةُ تُترجَم مباشرةً، و«أخرى» تُصنَّف من نصّها، وما لا يُقطع فيه يُعَدّ «يراجعه المهندس» */
+var CHAL_FROM = { 'العارضة الحديدية ناقصة أو غير مكتملة':'beam', 'يوجد ديكور أو لافتات على العارضة':'beam', 'المدخل غير واضح — لم يُستدل عليه':'entry',
+  'المدخل مشترك مع مخيم آخر':'multi', 'المسار أعرض من طقم واحد':'wide', 'عائق إنشائي':'block', 'المسار تحت كوبري':'block', 'المسار داخل نفق':'block',
+  'تصميم المدخل لا يسمح بالتركيب':'block', 'ازدحام دائم يمنع العمل نهارًا':'block', 'لا يوجد مسار كابل':'block', 'ارتفاع صعب الوصول':'height', 'مبنى متعدد الأدوار (أبراج)':'height' };
+var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجلات الحقيقية: ٨٣٣ نقطةً بتحديات، وبقي للمراجعة نحوُ ١٧ نصًّا */
+  ['legacy', /كاميرا (واحده )?متحرك|متحركه|قارئات لشرك|تركيبات قارئ/],
+  ['wide',   /عرض|عرضها|واسع|كاميرتين|اتنين كاميرا|اتني كاميرا|عدد اتن/],
+  ['multi',  /بوابات|بوابتين|مدخلين|مداخل|منفصل|مخيمين|مشترك|بوابه ممر|اكثر من بوابه|اكثر من مدخل|دراسه/],
+  ['entry',  /مختلف|لم يستدل|استدلال|لا يوجد لوحه|شاخص|ملامح|سور|الخريطه|غير صحيح|الرقم|يستدل/],
+  ['beam',   /شاسي|عارضه/],
+  ['block',  /درج|كونتينر|حفر|صبات|مظله|انارات|عائق|مائل|ضيق|المطبخ|مغلق|مقفل/],
+  ['mount',  /قائم|هيكل|عمود|عامود|لوح|سطح|تثبيت/]
+];
+var CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
+function chalCats(r){
+  if (!r || r.deleted) return [];
+  if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
+  var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
+  (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
+    c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
+    var cd = CHAL_CATS.filter(function(o){ return o.n === c; })[0]; if (cd){ add(cd.k); return; }
+    if (/^لا يوجد سطح تثبيت/.test(c)){ add('mount'); return; }
+    if (CHAL_FROM[c]){ add(CHAL_FROM[c]); return; }
+    var nc = arKey(c); if (/^المدخل غير واضح/.test(nc)){ add('entry'); return; }
+    if (/^اخري/.test(nc)){
+      var txt = arKey(r.chal_note || r.chalNote || r.note || '');
+      if (CHAL_NONE_RX.test(txt)) return;
+      for (var i = 0; i < CHAL_RULES.length; i++) if (CHAL_RULES[i][1].test(txt)){ add(CHAL_RULES[i][0]); return; }
+      add('review'); return;
+    }
+    add('review');
+  });
+  return out;
+}
+function whyOf(k){ return VISIT_WHY.filter(function(o){ return o.k === k; })[0] || null; }
+function ccOf(k){ return CHAL_CATS.filter(function(o){ return o.k === k; })[0] || null; }
+
+/* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
+var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
+function chalNames(){ return ['لا توجد تحديات'].concat(CHAL_CATS.map(function(o){ return o.n; })); }
+/* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
+function chalsToCats(chals, note){
+  var L = Array.isArray(chals) ? chals : [], names = chalNames();
+  if (L.every(function(c){ return names.indexOf(c) > -1; })) return L.slice();
+  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review'; });
+  var out = ks.map(function(k){ return ccOf(k).n; });
+  if (!out.length && L.indexOf('لا توجد تحديات') > -1) out.push('لا توجد تحديات');
+  return out;
+}
+/* محاولاتُ الوصول وعمرُ التوقف: نقطةٌ لم تُمسح بعد ثلاث زياراتٍ أو عشرة أيامٍ تُصعَّد */
+function stuckAge(r){ return r && svStuck(r) ? Math.floor((Date.now() - (+r.stuckSince || +r.at || Date.now())) / 864e5) : 0; }
+function stuckEsc(r){ return !!(r && svStuck(r) && ((+r.tries || 1) >= 3 || stuckAge(r) >= 10)); }

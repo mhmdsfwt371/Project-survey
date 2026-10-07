@@ -4595,6 +4595,7 @@ function kioskToggle(){
   }
   render(1);
 }
+var KSC = null;   /* (V37.0) أعدادُ المراحل في رسمة القاعة الواحدة */
 function kioskBody(){
   var K = siteKeyStats(), S = K.total, now = Date.now(), day = now - 864e5;
   var life = {}; (STATE.sites || []).forEach(function(x){ var l = lifeOf(x); life[l] = (life[l] || 0) + 1; });
@@ -4616,12 +4617,10 @@ function kioskBody(){
     +   btn(KIOSK_ON ? '\u2716 ' + t('خروج من العرض') : '\u{1F5A5} ' + t('عرضٌ كامل'), KIOSK_ON ? 'btn-quiet' : 'btn-primary', ' data-kiosk="1"' + (KIOSK_ON ? '' : ' title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '"')) + '</div>'
     + '<div class="kk-story">' + esc(kioskStory()) + '</div>'
     + '<div class="kk-rings" id="kksec-1">'   /* (V33.5) طلبُ المالك: المسح والتركيب والتسليم والفك — أربعٌ فقط */
-    +   (function(){ var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0;
-          all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
-          return kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr')
-            + kioskRing(ds, n, 'الفك', 'disd', 'disr'); })()
+    +   stageRings(KSC = stageCounts())   /* (V37.0) خمسُ مراحل */
     + '</div>'
-    + kioskObsHtml()   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
+    + kioskObsHtml()
+    + '<div class="mfu-hero-grid" id="kksec-stage">' + stageFunnel(KSC) + gapCard(KSC) + ccCard(KSC) + '</div>'   /* (V33.3) طلبُ المالك: بطاقاتٌ فوق تحت الحلقات مباشرةً، وكلُّ رقمٍ يفتح قائمتَه بتصدير */
     + '<div class="kk-grid">'
     +   '<div class="kk-box" id="kksec-2"><div class="kk-h">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>'
     +     zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
@@ -4831,8 +4830,47 @@ function mfuMilesCard(){
    أوّلُ ما يُرى: التاريخُ الهجريُّ والميلادي، وكم بقي لأقرب معلَم، وما جرى اليوم؛ ثم الحلقاتُ الأربعُ نفسُها التي في القاعة (المسح
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
+/* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
+function stageCounts(){
+  var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
+    if (svVisited(r)) c.vis++; if (svDone(r)) c.srv++; if (insDone(x.id)) c.ins++; if (handDone(x.id)) c.hand++; if (disDone(x.id)) c.dis++;
+    if (svNeedsRevisit(r)){ c.gap++; if (svStuck(r)){ var w = visitWhy(r); if (w) c.why[w] = (c.why[w] || 0) + 1; else c.none++; if (stuckEsc(r)) c.esc++; } else c.tech++; }
+    chalCats(r).forEach(function(k){ if (k === 'review') c.review++; else c.cc[k] = (c.cc[k] || 0) + 1; }); });
+  return c;
+}
+function stageRings(c){
+  return kioskRing(c.vis, c.n, 'الزيارة', 'sv', 'rem') + kioskRing(c.srv, c.n, 'المسح', 'srv', 'srvr') + kioskRing(c.ins, c.n, 'التركيب', 'insd', 'insr')
+    + kioskRing(c.hand, c.n, 'التسليم', 'hand', 'handr') + kioskRing(c.dis, c.n, 'الفك', 'disd', 'disr');
+}
+function stageFunnel(c){
+  var S = [['الزيارة', c.vis, 'sv'], ['المسح', c.srv, 'srv'], ['التركيب', c.ins, 'insd'], ['التسليم', c.hand, 'hand'], ['الفك', c.dis, 'disd']];
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('قمع المراحل — من الزيارة إلى الفك')) + '</div>'
+    + S.map(function(s, i){ var p = c.n ? Math.round(s[1] / c.n * 100) : 0, prev = i ? S[i - 1][1] : 0, conv = i && prev ? Math.round(s[1] / prev * 100) : null;
+        return '<div class="fn-row" data-svlist="' + s[2] + '" role="button" tabindex="0"><span class="fn-l">' + esc(t(s[0])) + '</span>'
+          + '<span class="fn-bar"><i style="width:' + Math.max(p ? 2 : 0, p) + '%"></i></span><b class="num">' + nm(s[1]) + '</b>'
+          + '<span class="hint" style="margin:0;min-width:64px;text-align:end">' + (conv == null ? '' : nm(conv) + '٪ ' + esc(t('من السابقة'))) + '</span></div>'; }).join('')
+    + '</div>';
+}
+function gapCard(c){
+  var rows = VISIT_WHY.map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
+  rows.push(['تحتاج زيارة تقنية — أعادها المهندس', 'أفاقي — زيارة تقنية', c.tech, 'why_tech']);
+  if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', 'أفاقي', c.none, 'why_none']);
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b></div>'
+    + rows.filter(function(r){ return r[2]; }).map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
+    + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
+    + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
+}
+function ccCard(c){
+  var rows = CHAL_CATS.map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
+  if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', 'أفاقي', c.review, 'cc_review']);
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + '</div>'
+    + (rows.length ? rows.map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
+      : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
+}
 function mfuHeroHtml(){
   var all = STATE.sites || [], n = all.length, sv = 0, ins = 0, hd = 0, ds = 0, now = Date.now(), today = dayKey(now);
+  var SC = stageCounts();
   all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
@@ -4858,13 +4896,12 @@ function mfuHeroHtml(){
     +   '<div class="mfu-hero-today"><span>' + esc(t('اليوم')) + '</span> <b>' + nm(dd.sv) + '</b> ' + esc(t('مسح')) + ' \u00b7 <b>' + nm(dd.ins) + '</b> ' + esc(t('تركيب')) + ' \u00b7 <b>' + nm(dd.hand) + '</b> ' + esc(t('تسليم')) + ' \u00b7 <b>' + nm(dd.dis) + '</b> ' + esc(t('فك'))   /* (V34.3) الأربعةُ يومًا بيوم */
     +     (next ? ' \u00b7 <span title="' + esc(next.n) + '">' + esc(t('أقرب معلَم')) + ' <b>' + nm(Math.max(0, Math.round((next.d - now) / 864e5))) + '</b> ' + esc(t('يومًا')) + '</span>' : '') + '</div></div>'
     + '<div class="kk kk-mini"><div class="kk-rings">'
-    +   kioskRing(sv, n, 'المسح', 'sv', 'rem') + kioskRing(ins, n, 'التركيب', 'insd', 'insr') + kioskRing(hd, n, 'التسليم', 'hand', 'handr') + kioskRing(ds, n, 'الفك', 'disd', 'disr')
+    +   stageRings(SC)   /* (V37.0) خمسُ مراحل: الزيارة والمسح والتركيب والتسليم والفك */
     + '</div></div>'
     + '<div class="mfu-hero-grid">'
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
-    +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('أبرز التحديات')) + '</div>'
-    +     (top.length ? top.map(function(c){ return '<div class="kk-zl"><span>' + esc(chalShow(c)) + '</span><b>' + nm(byCh[c]) + '</b></div>'; }).join('') : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>'
+    +   stageFunnel(SC) + gapCard(SC) + ccCard(SC)   /* (V37.0) */
     + '</div></div>';
 }
 function mfuSummary(){
@@ -4951,5 +4988,15 @@ var SV_LISTS = {
   denied:  ['منع دخول — تنسيق',          function(x, r){ return !!(r && r.access === 'منع دخول'); }],
   missing: ['غير موجودة ميدانيًا — تصحيح السجل', function(x, r){ return !!(r && r.access === 'غير موجود'); }],
   noalloc: ['مخيمات بلا تخصيص',          function(x, r){ return taxOf(x).t === 'مخيمات' && (x.reason === 'عدم وجود تخصيص' || !String(x.co || '').trim()); }],
-  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }]
+  minwait: ['بانتظار اعتماد الوزارة',     function(x, r){ return lifeOf(x) === 'minwait'; }],
+  /* (V37.0) قرارُ المالك: الزيارةُ غيرُ المسح */
+  srv:     ['تم المسح',                    function(x, r){ return svDone(r); }],
+  srvr:    ['المتبقي — لم يُمسح',          function(x, r){ return !svDone(r); }],
+  gap:     ['زيارة بلا مسح',               function(x, r){ return svNeedsRevisit(r); }],
+  why_tech:['تحتاج زيارة تقنية — أعادها المهندس', function(x, r){ return svVisited(r) && svReached(r) && r.review === 'revisit'; }],
+  why_none:['زيارة بلا مسح — بلا سبب مسجّل',  function(x, r){ return svStuck(r) && !visitWhy(r); }],
+  cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
+  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
 };
+VISIT_WHY.forEach(function(o){ SV_LISTS['why_' + o.k] = [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }]; });
+CHAL_CATS.forEach(function(o){ SV_LISTS['cc_' + o.k] = [o.n, function(x, r){ return chalCats(r).indexOf(o.k) > -1; }]; });
