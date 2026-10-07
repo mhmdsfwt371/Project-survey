@@ -4780,7 +4780,7 @@ function mfuSnapMaybe(K){
   if (!may('settings') || !FB.ready || !FB.db) return;   /* على القاعدة الحقيقية فقط */
   var k = mfuWeekKey(), snap = mfuData().snap || {};
   if (snap[k]) return;
-  mfuPut('snap', k, { sv:K.sv, ins:K.ins, campIns:K.campIns, corIns:K.corIns, obs:K.obs, at:Date.now() });
+  mfuPut('snap', k, { sv:K.sv, srv:stageCounts().srv, ins:K.ins, campIns:K.campIns, corIns:K.corIns, obs:K.obs, at:Date.now() });   /* (V37.2) والمسحُ الفعليُّ يُلتقَط أيضًا */
 }
 function mfuPrev(){
   var k = mfuWeekKey(), snap = mfuData().snap || {}, keys = Object.keys(snap).filter(function(x){ return x < k; }).sort();
@@ -4914,7 +4914,9 @@ function mfuSummary(){
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
   return svListPop() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
     + '<div class="mfu-kpis">'
-    + box('sv', 'نسبة المسح', nm(pc(K.sv, K.tot)) + '\u066A', esc(t('تمت الزيارة')) + ' ' + nm(K.sv) + ' ' + esc(t('من')) + ' ' + nm(K.tot), mfuDelta(K.sv, P, 'sv'))
+    /* (V37.2 ق-٠١٥) «نسبةُ المسح» = ما مُسح فعلًا؛ والزياراتُ بجوارها — كانت تعرض الزياراتِ باسم المسح */
+    + (function(){ var SCk = stageCounts(); return box('srv', 'نسبة المسح', nm(pc(SCk.srv, K.tot)) + '\u066A', esc(t('تم المسح')) + ' ' + nm(SCk.srv) + ' ' + esc(t('من')) + ' ' + nm(K.tot) + ' \u00b7 ' + esc(t('الزيارات')) + ' ' + nm(K.sv), (P && P.srv != null) ? mfuDelta(SCk.srv, P, 'srv') : mfuDelta(K.sv, P, 'sv'))   /* اللقطاتُ القديمةُ بلا مسحٍ فعليّ: تُقارَن الزيارات */
+      + box('gap', 'زيارة بلا مسح', nm(SCk.gap), esc(t('بأسبابها وجهة حلّ كلٍّ منها')), '', SCk.gap ? '#C0392B' : '#27AE60'); })()
     + box('clean', 'نقاط بلا عوائق', nm(nClean), esc(t('تمت الزيارة وتم الوصول بلا تحديات — كلُّ الأنواع')), '', '#27AE60')
     + box('chal', 'نقاط بعوائق', nm(nChal), esc(t('تمت الزيارة وفيها تحدٍّ أو تحتاج زيارة أخرى تقنيًا')), '', '#C0392B')
     + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))

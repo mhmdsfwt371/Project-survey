@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V37.1",
+ "app_version": "V37.2",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2053,7 +2053,8 @@
   "V36.10": "حادثة ٧ أكتوبر — بعد الاستعادتين حذف حسابُ mohamed shokry (دورُه admin، على V36.8) ١٢ نقطةً مزارةً بين ١٣:٠٦ و١٣:١٣ فأُعيدت ثالثةً. siteHide وزرُّ النافذة: المزارةُ لـisBossHere() وحده؛ firestore.rules: hidesVisited يُرفَض إلا لـisBoss(). اختبارا الوحدة والمحاكي محدَّثان (حسابُ «مدير» يُرفَض).",
   "V36.11": "firestore.rules: hidesVisited يستعمل  — متغيّرُ المطابقة في هذا الملف (match /databases/{db}/documents) — بدل  الذي كان فارغًا فأسقط محاكيَ V36.9 (Null value error @ L341) وأغلق البوابة؛ فلم تُرقَّ V36.9 ولا V36.10، وتُرقّيان مع هذه.",
   "V37.0": "قرارُ المالك ق-٠١٥: ملفُّ التعريفات — VISIT_WHY (٥ بجهاتها)، CHAL_CATS (٨ بجهاتها)، visitWhy(r) وchalCats(r) بقواعد كلماتٍ فُحصت على الإنتاج (٧٤/٧٤ سببًا، و٨٣٣ نقطةً بتحدٍّ يبقى منها نحوُ ١٧ للمراجعة)، arKey للتطبيع. SV_LISTS: srv وsrvr وgap وwhy_* وcc_* وwhy_tech وwhy_none وcc_review. stageCounts/stageRings/stageFunnel/gapCard/ccCard في الملخّص والقاعة (#kksec-5). اختبارُ وحدة.",
-  "V37.1": "قرارُ المالك ق-٠١٥ (V37.0 + V37.1 معًا): stageRings/stageFunnel/gapCard/ccCard (#kksec-stage في القاعة)، قوائمُ srv/srvr/gap/why_*/cc_*/esc؛ النموذج: data-why بأسباب VISIT_WHY وWHY_ACCESS للتوافق، chalNames بدل CH_CAMP/CH_PATH، chalsToCats عند فتح القديم، rec.why/rec.chalCats/rec.tries/rec.stuckSince، صورةُ الإثبات لِما photo:true؛ stuckEsc (٣ محاولات أو ١٠ أيام). تجربةٌ حقيقيةٌ بدور فني."
+  "V37.1": "قرارُ المالك ق-٠١٥ (V37.0 + V37.1 معًا): stageRings/stageFunnel/gapCard/ccCard (#kksec-stage في القاعة)، قوائمُ srv/srvr/gap/why_*/cc_*/esc؛ النموذج: data-why بأسباب VISIT_WHY وWHY_ACCESS للتوافق، chalNames بدل CH_CAMP/CH_PATH، chalsToCats عند فتح القديم، rec.why/rec.chalCats/rec.tries/rec.stuckSince، صورةُ الإثبات لِما photo:true؛ stuckEsc (٣ محاولات أو ١٠ أيام). تجربةٌ حقيقيةٌ بدور فني.",
+  "V37.2": "ق-٠١٥: box('srv','نسبة المسح') من stageCounts().srv مع الزيارات بجوارها، وbox('gap','زيارة بلا مسح'). mfuSnapMaybe تحفظ srv؛ والمقارنةُ الأسبوعية بالمسح الفعلي حين تحمله اللقطة، وإلا بالزيارات للّقطات القديمة."
  },
  "map_and_geolocation": {
   "tile_layers": {
