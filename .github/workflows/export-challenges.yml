@@ -136,6 +136,10 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/chal-census.mjs || true
+      - name: Category check (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/cat-check.mjs || true
       - name: Delete audit (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
