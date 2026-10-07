@@ -4077,7 +4077,7 @@ function dayDone(day){
   if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0, dis: snap.dayDismantle || 0 };
   var sv = 0, ins = 0, dis = 0;
   Object.keys(STATE.recs).forEach(function(k){
-    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r)) sv++; });
+    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r) && siteFind(k)) sv++; });   /* (V36.1) لا تُعَدّ زيارةُ نقطةٍ محذوفة */
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
   Object.keys(STATE.diss || {}).forEach(function(k){
@@ -4836,7 +4836,7 @@ function mfuHeroHtml(){
   all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
-  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
+  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r) || !siteFind(id)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
   var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
   var W = 280, H = 56, bw = W / 14;
   var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');

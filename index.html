@@ -468,7 +468,8 @@ body.drawing .map-fab{opacity:.35}
     /* اختبارُ المتصفّح الحقيقي كشف أن «الأسفل» كان أسفلَ حاوية الخريطة لا
        أسفلَ الشاشة — فيبقى شريطٌ فارغٌ تحت اللوح. صار ثابتًا على الشاشة. */
     position:fixed !important;
-    inset-block-start:auto !important; inset-block-end:0 !important;
+    inset-block-start:auto !important; inset-block-end:var(--kb,0px) !important;   /* (V36.1) فوق لوحة المفاتيح */
+    max-height:calc(var(--vh,1vh) * 100 - 12px) !important;
     inset-inline:0 !important; transform:none !important;
     width:100% !important; max-width:100% !important;
     border-radius:18px 18px 0 0 !important;
@@ -848,6 +849,8 @@ body.kiosk .kk-story{font-size:21px}
   width:60vmax;height:60vmax;left:20%;top:30%;will-change:transform,opacity;animation:lgShine 9s ease-in-out infinite alternate}
 @keyframes lgShine{0%{transform:translate3d(-35vw,-25vh,0) scale(.9);opacity:.55}50%{transform:translate3d(10vw,5vh,0) scale(1.1);opacity:1}100%{transform:translate3d(30vw,25vh,0) scale(.95);opacity:.6}}
 @media (prefers-reduced-motion: reduce){#lgShine{animation:none;opacity:.6}}
+#assistHost{position:fixed;inset:0;z-index:3000;pointer-events:none}
+#assistHost .pop{pointer-events:auto}
 .mfu-hero{margin:0 0 14px}
 .mfu-hero-band{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 14px;border-radius:14px;background:linear-gradient(135deg,#0B6E4F,#0B6E4Fcc 60%,#C9A227);color:#fff;margin:0 0 10px}
 .mfu-hero-band .hint{color:#ffffffcc}
@@ -1225,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.0</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.1</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1287,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-0102e4e18d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-b278eae574.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3969,14 +3972,16 @@ function siteEditSave(id){
 function siteHide(id){
   if (!maySiteEdit()){ toast(t('إخفاءُ النقطة للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x) return false;
-  if (STATE.recs[id] || STATE.inss[id]){ toast(t('لها سجلُّ زيارةٍ أو تركيب — لا تُخفى؛ راجع الاعتماد أوّلًا')); return false; }
+  /* (V36.1) طلبُ المالك: «كمهندس حتى لو تمت زيارتها أمسحها عادي» — كان الإخفاءُ يُرفض لنقطةٍ لها زيارةٌ أو تركيب. صار يُسمح للمهندس
+     فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
+  var had = !!(STATE.recs[id] || STATE.inss[id]);
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });
   (STATE.hiddenSites = STATE.hiddenSites || []).push(x);
   SITE_IX = null; SITE_TOK = null;
-  logEvent('إخفاء نقطة — ' + id + ' \u00b7 ' + (x.name || ''), id);
-  toast(id + ' \u00b7 ' + t('أُخفيت — تُستعاد من أسفل قائمة المواقع'));
+  logEvent('حذف نقطة (قابلٌ للاستعادة) — ' + id + ' \u00b7 ' + (x.name || '') + (had ? ' \u00b7 ' + t('لها زيارةٌ أو تركيب') : ''), id);
+  toast(siteKey(x) + ' \u00b7 ' + t('حُذفت — تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع'));
   SITE_HIDE = ''; SITE_ED = 0; statBump();
   return true;
 }
@@ -4074,8 +4079,8 @@ function siteEditHtml(x){
             ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
             : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
         : (SITE_HIDE === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الإخفاء'),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('إخفاء النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
+            ? btn('\u{1F5D1} ' + t('تأكيد الحذف') + ((STATE.recs[x.id] || STATE.inss[x.id]) ? ' — ' + t('لها زيارة') : ''),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('حذف النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
     + '</div>');
 }
 function hiddenSitesCard(){
@@ -15089,6 +15094,7 @@ var GLOSSARY = [
   { t:'شاشة القاعة', d:'عرضٌ كبيرٌ للاجتماعات يتجدّد كلَّ دقيقة: نسبةُ الزيارة والتركيب، والمشاعر، والنقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع. من «متابعة الوزارة» ← «شاشة القاعة» ← «عرضٌ كامل».', k:['القاعة','العرض الكامل','الاجتماع','kiosk'] },
   { t:'رقم الشاخص', d:'المعرّفُ الأوّلُ لكلِّ مخيمٍ في منى وعرفات: رقمُ المخيم/رقمُ الشارع — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦. يظهر أوّلًا في كلِّ نافذةٍ وجدولٍ وتصدير، ومعرّفُ النظام (NSK-…) تحته ثانيًا، وكلاهما يُبحَث به. وقد يكون في المخيم الواحد أكثرُ من شركة، فيظهر الشاخصُ نفسُه بسطرٍ لكلِّ شركةٍ واسمُها تحته.', k:['الشاخص','شاخص','رقم المخيم','اسم المخيم','25/56','اكثر من شركة'] },
   { t:'اسم الممر في ١٤٤٧', d:'المعرّفُ الأوّلُ للممرات المركّبة في الموسم الماضي — اسمُها المعروف مثل Path-Shaded-3R. والممراتُ الجديدةُ معرّفُها الأوّلُ المقترح (NSK-MIN-RDR-…) حتى تُسمّى.', k:['ممر','ممرات','path','Path-Shaded'] },
+  { t:'حذف نقطة', d:'للمهندس فما فوق: افتح النقطةَ على الخريطة ثم «🗑 حذف النقطة» وأكّد — أو من «تعديل بيانات النقطة» في تفاصيلها. تُحذَف ولو تمت زيارتُها: تختفي من كلِّ الأرقام وتبقى سجلّاتُها، وتُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.', k:['حذف','احذف','امسح النقطة','شيل نقطة','شيل النقطة','الغاء نقطة','اخفاء نقطة','نقطة مكررة','حذف موقع'] },
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
@@ -15233,7 +15239,7 @@ function helpSearch(q){
 
 function assistHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];   /* (V33.2) المصطلحُ أوّلًا */
-  return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
+  return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:min(88vh, calc(var(--vh,1vh) * 100 - 16px));overflow:auto">'
     + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">'
@@ -15244,6 +15250,20 @@ function assistHtml(){
     + '<div class="pop-body">'
     + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
     +   esc(t('مثلا: أريد إضافة فني جديد')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
+    + '<div id="assistRes">' + assistResHtml() + '</div>'   /* (V36.1) النتائجُ وحدَها تُستبدَل مع الكتابة */
+    + '</div></div>';
+}
+
+/* ═══ نافذةُ ما ينتظر الرفع ═══ */
+var QUEUE_OPEN = false;
+var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
+              buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
+              teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
+              bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
+
+function assistResHtml(){
+  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
+  return ''
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;padding:20px">'
           + esc(t('اكتب ما تريد فعله بكلماتك، ونرشدك إلى الصفحة المناسبة.')) + '</p>'
@@ -15264,17 +15284,8 @@ function assistHtml(){
                   + '</div>';
               }).join('')
             : (gl.length ? '' : '<p class="hint" style="text-align:center;padding:20px">'
-              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))))
-    + '</div></div>';
+              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))));
 }
-
-/* ═══ نافذةُ ما ينتظر الرفع ═══ */
-var QUEUE_OPEN = false;
-var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
-              buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
-              teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
-              bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
-
 function queueHtml(){
   var Q = (STATE.queue || []).slice().sort(function(a,b){ return (b.at||0) - (a.at||0); });
   var by = {};
@@ -15413,6 +15424,9 @@ function popHtml(){
     marks = '<span class="hint" style="margin:0;font-size:11.5px">'
       + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
   }
+
+  /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
+  if (typeof maySiteEdit === 'function' && maySiteEdit() && !s.isNew) marks += '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){
@@ -21094,7 +21108,7 @@ function dayDone(day){
   if (snap) return { sv: snap.daySurvey || 0, ins: snap.dayInstall || 0, dis: snap.dayDismantle || 0 };
   var sv = 0, ins = 0, dis = 0;
   Object.keys(STATE.recs).forEach(function(k){
-    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r)) sv++; });
+    var r = STATE.recs[k]; if (dayKey(r.at || r._at) === day && svVisited(r) && siteFind(k)) sv++; });   /* (V36.1) لا تُعَدّ زيارةُ نقطةٍ محذوفة */
   Object.keys(STATE.inss).forEach(function(k){
     var r = STATE.inss[k]; if (dayKey(r.at || r._at) === day && r.status === 'مُركّب') ins++; });
   Object.keys(STATE.diss || {}).forEach(function(k){
@@ -21853,7 +21867,7 @@ function mfuHeroHtml(){
   all.forEach(function(x){ if (svVisited(STATE.recs[x.id])) sv++; if (insDone(x.id)) ins++; if (handDone(x.id)) hd++; if (disDone(x.id)) ds++; });
   /* نبضُ ١٤ يومًا من السجلات مباشرةً — مرورٌ واحد */
   var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dayKey(now - i * 864e5); days.push(k); byDay[k] = 0; }
-  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
+  Object.keys(STATE.recs).forEach(function(id){ var r = STATE.recs[id]; if (!svVisited(r) || !siteFind(id)) return; var k = dayKey(r.at || r._at); if (byDay[k] != null) byDay[k]++; });
   var vals = days.map(function(k){ return byDay[k]; }), mx = Math.max(1, Math.max.apply(null, vals)), wk = vals.slice(7).reduce(function(a, b){ return a + b; }, 0), prev = vals.slice(0, 7).reduce(function(a, b){ return a + b; }, 0);
   var W = 280, H = 56, bw = W / 14;
   var bars = vals.map(function(v, i){ var h = Math.max(2, Math.round(v / mx * (H - 14))); return '<rect x="' + (i * bw + 2).toFixed(1) + '" y="' + (H - h) + '" width="' + (bw - 4).toFixed(1) + '" height="' + h + '" rx="2" fill="' + (i === 13 ? 'var(--min-gold)' : 'var(--min-green)') + '" opacity="' + (i < 7 ? '.45' : '.9') + '"><title>' + esc(days[i]) + ': ' + nm(v) + '</title></rect>'; }).join('');
@@ -24536,6 +24550,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'حذف نقطة: المهندس بقى يقدر يحذف أي نقطة حتى لو اتزارت أو اتركّبت — من نافذة النقطة على الخريطة على طول (🗑 حذف النقطة) بتأكيد واحد. النقطة بتختفي من كل الأرقام، وزياراتها ما بتتمسحش، وتترجع كاملة من «نقاط مخفية» تحت قائمة المواقع.',
+      'المساعد ما بقاش بيقفز لفوق وتحت وانت بتكتب: كان أي تحديث في الخلفية بيعيد رسم نافذته كلها وفيها خانة البحث. دلوقتي النافذة ثابتة والنتائج بس اللي بتتغيّر، وبتقعد فوق الكيبورد مش تحته. ولو سألته «حذف نقطة» بيقولّك فين.' ] },
   { v:'V36.0', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'داخلي للفريق (من غير أي تغيير في الشاشات): كل تعريفات حالة النقطة — تمت الزيارة، وبعوائق وبدون، والتركيب والتسليم والفك، ورقم الشاخص — اتجمعت في ملف واحد، عشان أي تعديل في تعريف يحصل في مكان واحد وما يتكررش خطأ زي محطات القطار.' ] },
   { v:'V35.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
@@ -32917,6 +32934,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
+  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
@@ -33053,7 +33071,7 @@ function render0(force){
          فتُفتَح حالتُه ولا يظهر شيء — تُبنى الطبقةُ ولا تجد أين تُلصَق. */
       mu.innerHTML = mapUIHtml()
         + (HELP_OPEN ? helpHtml() : '')
-        + (ASSIST_OPEN ? assistHtml() : '')
+        + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
         + (QUEUE_OPEN ? queueHtml() : '');
       /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
       var busy = MAP_SELECT || MOVE_ID;
@@ -33092,7 +33110,7 @@ function render0(force){
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
-    + (ASSIST_OPEN ? assistHtml() : '')
+    + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
     + (QUEUE_OPEN ? queueHtml() : '');
 
   labelCells(c);
@@ -33974,6 +33992,11 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
+  if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
+    var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');
+    if (window.confirm(msg) && siteHide(pid)){ POP_OPEN = false; POP_SITE = ''; }
+    render(1); return true; }
   var sth = e.target.closest('[data-sitehide]');
   if (sth){ SITE_HIDE = sth.getAttribute('data-sitehide'); render(1); return true; }
   var sthg = e.target.closest('[data-sitehidego]');
@@ -35340,12 +35363,10 @@ document.addEventListener('input', function(e){
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ var el = document.querySelector('[data-wbsq]'); render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
   if (e.target && e.target.id === 'assistQ'){
     ASSIST_Q = e.target.value;
-    var ap = document.getElementById('assistPop');
-    if (ap){
-      ap.outerHTML = assistHtml();
-      var q2 = document.getElementById('assistQ');
-      if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
-    }
+    /* (V36.1) بلاغُ المالك «البحث في المساعد بيسكرول لوحده»: كانت النافذةُ كلُّها تُستبدَل مع كلِّ حرفٍ ويُعاد تركيزُ حقلٍ جديد — فيعيد
+       الآيفون حسابَ لوحة المفاتيح ويقفز بالشاشة. صارت النتائجُ وحدَها تُستبدَل (بعد ١٥٠ م.ث من آخر حرف) والحقلُ نفسُه باقٍ بتركيزه. */
+    clearTimeout(assistResHtml.t);
+    assistResHtml.t = setTimeout(function(){ var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); }, 150);
     return;
   }
   if (e.target && e.target.id === 'navQ'){
@@ -35537,7 +35558,7 @@ document.addEventListener('input', function(e){
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nsq')){
     NS_CO_Q = e.target.value;
     render(1);
-    q2 = document.getElementById('nsCoQ');
+    var q2 = document.getElementById('nsCoQ');   /* (V36.1) كان إعلانُه في كتلة المساعد التي لم تعد تحتاجه */
     if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
     return;
   }
@@ -35630,10 +35651,23 @@ document.addEventListener('keydown', function(e){
    `visualViewport` هو ما يتغيّر فعلًا في iOS لا `window` — فيُستمَع إليه.
    ويُعاد القياسُ عند العودة من الخلفية (`pageshow`) وعند دوران الجهاز،
    وبعد أول رسمةٍ بلحظاتٍ ليستقرَّ الشريط. */
+/* ═══ (V36.1) بلاغُ المالك: «البحث في المساعد بيسكرول لفوق وتحت لوحده» ═══
+   كانت نافذةُ المساعد جزءًا من كلِّ رسمة — فأيُّ رسمٍ في الخلفية (وصولُ بيانات، مزامنة، تنزيل) يستبدلها وفيها الحقلُ الذي يكتب فيه
+   المستخدم: تضيع البؤرة، ويعيد الآيفون حسابَ لوحة المفاتيح فتقفز الشاشة. صارت في حاويةٍ ثابتةٍ خارج الرسم: تُبنى مرةً عند الفتح،
+   وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
+function assistSync(){
+  var host = document.getElementById('assistHost');
+  if (!host){ if (!ASSIST_OPEN) return; host = document.createElement('div'); host.id = 'assistHost'; document.body.appendChild(host); }
+  if (!ASSIST_OPEN){ if (host.innerHTML) host.innerHTML = ''; return; }
+  if (!document.getElementById('assistPop')) host.innerHTML = assistHtml();
+}
 function reflow(){
   try {
     document.documentElement.style.setProperty('--vh',
       ((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01) + 'px');
+    /* (V36.1) ارتفاعُ لوحة المفاتيح على الآيفون: الورقةُ السفلية (المساعد، النوافذ) تجلس فوقها لا تحتها */
+    var vv = window.visualViewport, kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
+    document.documentElement.style.setProperty('--kb', (kb > 60 ? kb : 0) + 'px');
   } catch (e){}
   if (CUR === 'map'){
     if (typeof mapDraw === 'function') mapDraw();

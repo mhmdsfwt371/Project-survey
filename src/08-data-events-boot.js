@@ -2386,6 +2386,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
+  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
@@ -2522,7 +2523,7 @@ function render0(force){
          فتُفتَح حالتُه ولا يظهر شيء — تُبنى الطبقةُ ولا تجد أين تُلصَق. */
       mu.innerHTML = mapUIHtml()
         + (HELP_OPEN ? helpHtml() : '')
-        + (ASSIST_OPEN ? assistHtml() : '')
+        + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
         + (QUEUE_OPEN ? queueHtml() : '');
       /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
       var busy = MAP_SELECT || MOVE_ID;
@@ -2561,7 +2562,7 @@ function render0(force){
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
-    + (ASSIST_OPEN ? assistHtml() : '')
+    + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
     + (QUEUE_OPEN ? queueHtml() : '');
 
   labelCells(c);
@@ -3443,6 +3444,11 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
+  if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
+    var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');
+    if (window.confirm(msg) && siteHide(pid)){ POP_OPEN = false; POP_SITE = ''; }
+    render(1); return true; }
   var sth = e.target.closest('[data-sitehide]');
   if (sth){ SITE_HIDE = sth.getAttribute('data-sitehide'); render(1); return true; }
   var sthg = e.target.closest('[data-sitehidego]');
@@ -4809,12 +4815,10 @@ document.addEventListener('input', function(e){
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ var el = document.querySelector('[data-wbsq]'); render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
   if (e.target && e.target.id === 'assistQ'){
     ASSIST_Q = e.target.value;
-    var ap = document.getElementById('assistPop');
-    if (ap){
-      ap.outerHTML = assistHtml();
-      var q2 = document.getElementById('assistQ');
-      if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
-    }
+    /* (V36.1) بلاغُ المالك «البحث في المساعد بيسكرول لوحده»: كانت النافذةُ كلُّها تُستبدَل مع كلِّ حرفٍ ويُعاد تركيزُ حقلٍ جديد — فيعيد
+       الآيفون حسابَ لوحة المفاتيح ويقفز بالشاشة. صارت النتائجُ وحدَها تُستبدَل (بعد ١٥٠ م.ث من آخر حرف) والحقلُ نفسُه باقٍ بتركيزه. */
+    clearTimeout(assistResHtml.t);
+    assistResHtml.t = setTimeout(function(){ var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); }, 150);
     return;
   }
   if (e.target && e.target.id === 'navQ'){
@@ -5006,7 +5010,7 @@ document.addEventListener('input', function(e){
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-nsq')){
     NS_CO_Q = e.target.value;
     render(1);
-    q2 = document.getElementById('nsCoQ');
+    var q2 = document.getElementById('nsCoQ');   /* (V36.1) كان إعلانُه في كتلة المساعد التي لم تعد تحتاجه */
     if (q2){ q2.focus(); q2.setSelectionRange(q2.value.length, q2.value.length); }
     return;
   }
@@ -5099,10 +5103,23 @@ document.addEventListener('keydown', function(e){
    `visualViewport` هو ما يتغيّر فعلًا في iOS لا `window` — فيُستمَع إليه.
    ويُعاد القياسُ عند العودة من الخلفية (`pageshow`) وعند دوران الجهاز،
    وبعد أول رسمةٍ بلحظاتٍ ليستقرَّ الشريط. */
+/* ═══ (V36.1) بلاغُ المالك: «البحث في المساعد بيسكرول لفوق وتحت لوحده» ═══
+   كانت نافذةُ المساعد جزءًا من كلِّ رسمة — فأيُّ رسمٍ في الخلفية (وصولُ بيانات، مزامنة، تنزيل) يستبدلها وفيها الحقلُ الذي يكتب فيه
+   المستخدم: تضيع البؤرة، ويعيد الآيفون حسابَ لوحة المفاتيح فتقفز الشاشة. صارت في حاويةٍ ثابتةٍ خارج الرسم: تُبنى مرةً عند الفتح،
+   وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
+function assistSync(){
+  var host = document.getElementById('assistHost');
+  if (!host){ if (!ASSIST_OPEN) return; host = document.createElement('div'); host.id = 'assistHost'; document.body.appendChild(host); }
+  if (!ASSIST_OPEN){ if (host.innerHTML) host.innerHTML = ''; return; }
+  if (!document.getElementById('assistPop')) host.innerHTML = assistHtml();
+}
 function reflow(){
   try {
     document.documentElement.style.setProperty('--vh',
       ((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01) + 'px');
+    /* (V36.1) ارتفاعُ لوحة المفاتيح على الآيفون: الورقةُ السفلية (المساعد، النوافذ) تجلس فوقها لا تحتها */
+    var vv = window.visualViewport, kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
+    document.documentElement.style.setProperty('--kb', (kb > 60 ? kb : 0) + 'px');
   } catch (e){}
   if (CUR === 'map'){
     if (typeof mapDraw === 'function') mapDraw();

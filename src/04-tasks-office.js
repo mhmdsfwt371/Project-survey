@@ -3215,6 +3215,7 @@ var GLOSSARY = [
   { t:'شاشة القاعة', d:'عرضٌ كبيرٌ للاجتماعات يتجدّد كلَّ دقيقة: نسبةُ الزيارة والتركيب، والمشاعر، والنقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع. من «متابعة الوزارة» ← «شاشة القاعة» ← «عرضٌ كامل».', k:['القاعة','العرض الكامل','الاجتماع','kiosk'] },
   { t:'رقم الشاخص', d:'المعرّفُ الأوّلُ لكلِّ مخيمٍ في منى وعرفات: رقمُ المخيم/رقمُ الشارع — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦. يظهر أوّلًا في كلِّ نافذةٍ وجدولٍ وتصدير، ومعرّفُ النظام (NSK-…) تحته ثانيًا، وكلاهما يُبحَث به. وقد يكون في المخيم الواحد أكثرُ من شركة، فيظهر الشاخصُ نفسُه بسطرٍ لكلِّ شركةٍ واسمُها تحته.', k:['الشاخص','شاخص','رقم المخيم','اسم المخيم','25/56','اكثر من شركة'] },
   { t:'اسم الممر في ١٤٤٧', d:'المعرّفُ الأوّلُ للممرات المركّبة في الموسم الماضي — اسمُها المعروف مثل Path-Shaded-3R. والممراتُ الجديدةُ معرّفُها الأوّلُ المقترح (NSK-MIN-RDR-…) حتى تُسمّى.', k:['ممر','ممرات','path','Path-Shaded'] },
+  { t:'حذف نقطة', d:'للمهندس فما فوق: افتح النقطةَ على الخريطة ثم «🗑 حذف النقطة» وأكّد — أو من «تعديل بيانات النقطة» في تفاصيلها. تُحذَف ولو تمت زيارتُها: تختفي من كلِّ الأرقام وتبقى سجلّاتُها، وتُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.', k:['حذف','احذف','امسح النقطة','شيل نقطة','شيل النقطة','الغاء نقطة','اخفاء نقطة','نقطة مكررة','حذف موقع'] },
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
@@ -3359,7 +3360,7 @@ function helpSearch(q){
 
 function assistHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];   /* (V33.2) المصطلحُ أوّلًا */
-  return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:88vh;overflow:auto">'
+  return '<div class="pop" id="assistPop" style="width:min(560px,94vw);max-height:min(88vh, calc(var(--vh,1vh) * 100 - 16px));overflow:auto">'
     + '<div class="pop-head">'
     +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">'
@@ -3370,6 +3371,20 @@ function assistHtml(){
     + '<div class="pop-body">'
     + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
     +   esc(t('مثلا: أريد إضافة فني جديد')) + '" dir="auto" style="width:100%;margin:0 0 12px">'
+    + '<div id="assistRes">' + assistResHtml() + '</div>'   /* (V36.1) النتائجُ وحدَها تُستبدَل مع الكتابة */
+    + '</div></div>';
+}
+
+/* ═══ نافذةُ ما ينتظر الرفع ═══ */
+var QUEUE_OPEN = false;
+var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
+              buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
+              teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
+              bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
+
+function assistResHtml(){
+  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
+  return ''
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;padding:20px">'
           + esc(t('اكتب ما تريد فعله بكلماتك، ونرشدك إلى الصفحة المناسبة.')) + '</p>'
@@ -3390,17 +3405,8 @@ function assistHtml(){
                   + '</div>';
               }).join('')
             : (gl.length ? '' : '<p class="hint" style="text-align:center;padding:20px">'
-              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))))
-    + '</div></div>';
+              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))));
 }
-
-/* ═══ نافذةُ ما ينتظر الرفع ═══ */
-var QUEUE_OPEN = false;
-var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد', moves:'حركة مخزون',
-              buys:'مشترى', cfg:'إعداد', sites:'موقع', photos:'صورة', ships:'شحنة',
-              teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
-              bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
-
 function queueHtml(){
   var Q = (STATE.queue || []).slice().sort(function(a,b){ return (b.at||0) - (a.at||0); });
   var by = {};
@@ -3539,6 +3545,9 @@ function popHtml(){
     marks = '<span class="hint" style="margin:0;font-size:11.5px">'
       + esc(t('لم تُجدول زيارة لهذه النقطة بعد')) + '</span>';
   }
+
+  /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
+  if (typeof maySiteEdit === 'function' && maySiteEdit() && !s.isNew) marks += '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){

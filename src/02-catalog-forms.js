@@ -194,14 +194,16 @@ function siteEditSave(id){
 function siteHide(id){
   if (!maySiteEdit()){ toast(t('إخفاءُ النقطة للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x) return false;
-  if (STATE.recs[id] || STATE.inss[id]){ toast(t('لها سجلُّ زيارةٍ أو تركيب — لا تُخفى؛ راجع الاعتماد أوّلًا')); return false; }
+  /* (V36.1) طلبُ المالك: «كمهندس حتى لو تمت زيارتها أمسحها عادي» — كان الإخفاءُ يُرفض لنقطةٍ لها زيارةٌ أو تركيب. صار يُسمح للمهندس
+     فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
+  var had = !!(STATE.recs[id] || STATE.inss[id]);
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });
   (STATE.hiddenSites = STATE.hiddenSites || []).push(x);
   SITE_IX = null; SITE_TOK = null;
-  logEvent('إخفاء نقطة — ' + id + ' \u00b7 ' + (x.name || ''), id);
-  toast(id + ' \u00b7 ' + t('أُخفيت — تُستعاد من أسفل قائمة المواقع'));
+  logEvent('حذف نقطة (قابلٌ للاستعادة) — ' + id + ' \u00b7 ' + (x.name || '') + (had ? ' \u00b7 ' + t('لها زيارةٌ أو تركيب') : ''), id);
+  toast(siteKey(x) + ' \u00b7 ' + t('حُذفت — تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع'));
   SITE_HIDE = ''; SITE_ED = 0; statBump();
   return true;
 }
@@ -299,8 +301,8 @@ function siteEditHtml(x){
             ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
             : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
         : (SITE_HIDE === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الإخفاء'),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('إخفاء النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
+            ? btn('\u{1F5D1} ' + t('تأكيد الحذف') + ((STATE.recs[x.id] || STATE.inss[x.id]) ? ' — ' + t('لها زيارة') : ''),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('حذف النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
     + '</div>');
 }
 function hiddenSitesCard(){
