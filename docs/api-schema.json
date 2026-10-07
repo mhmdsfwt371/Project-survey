@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V37.4",
+ "app_version": "V37.5",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2056,7 +2056,8 @@
   "V37.1": "قرارُ المالك ق-٠١٥ (V37.0 + V37.1 معًا): stageRings/stageFunnel/gapCard/ccCard (#kksec-stage في القاعة)، قوائمُ srv/srvr/gap/why_*/cc_*/esc؛ النموذج: data-why بأسباب VISIT_WHY وWHY_ACCESS للتوافق، chalNames بدل CH_CAMP/CH_PATH، chalsToCats عند فتح القديم، rec.why/rec.chalCats/rec.tries/rec.stuckSince، صورةُ الإثبات لِما photo:true؛ stuckEsc (٣ محاولات أو ١٠ أيام). تجربةٌ حقيقيةٌ بدور فني.",
   "V37.2": "ق-٠١٥: box('srv','نسبة المسح') من stageCounts().srv مع الزيارات بجوارها، وbox('gap','زيارة بلا مسح'). mfuSnapMaybe تحفظ srv؛ والمقارنةُ الأسبوعية بالمسح الفعلي حين تحمله اللقطة، وإلا بالزيارات للّقطات القديمة.",
   "V37.3": "بلاغُ المالك: chalCatNames(r) (اسمُ الفئة أو النصُّ الأصليُّ لما لم يُصنَّف) وsvStateText(r) (لم تُزر / لم يُمسح: السبب / الفئات) في ملف التعريفات؛ svListRows0 وmfuObstacles وsvStats وsvdChals وعدُّ القاعة بها؛ رأسُ العمود «الحالة — سبب عدم المسح أو التحديات»؛ svdMetal يقرأ اسم الفئة؛ mfuOwnDefOf يورث الجهةَ من الصيغة القديمة. تجربةٌ حقيقيةٌ بدور الوزارة.",
-  "V37.4": "طلبُ المالك: CFG.cats {why:[{k,n,who,photo,off}], cc:[{k,n,who,off}]} يُدمَج بالمفتاح (catMerge/whyList/ccList مخزّنةٌ بـCFG_VER)؛ whyOf/ccOf/visitWhy/chalCats/chalNames وقوائمُ why_*/cc_* (svDynList عند الطلب) والبطاقاتُ والنموذجُ منها. catsCard في صفحة الثوابت بمسوّداتٍ تحفظ ما يُكتب من أيِّ إعادة رسم، و«＋» يضيف الصفَّ في مكانه؛ catsSave → cfgPushSoon('cats'). اختبارُ وحدة وتجربةٌ حقيقيةٌ بدور مهندس."
+  "V37.4": "طلبُ المالك: CFG.cats {why:[{k,n,who,photo,off}], cc:[{k,n,who,off}]} يُدمَج بالمفتاح (catMerge/whyList/ccList مخزّنةٌ بـCFG_VER)؛ whyOf/ccOf/visitWhy/chalCats/chalNames وقوائمُ why_*/cc_* (svDynList عند الطلب) والبطاقاتُ والنموذجُ منها. catsCard في صفحة الثوابت بمسوّداتٍ تحفظ ما يُكتب من أيِّ إعادة رسم، و«＋» يضيف الصفَّ في مكانه؛ catsSave → cfgPushSoon('cats'). اختبارُ وحدة وتجربةٌ حقيقيةٌ بدور مهندس.",
+  "V37.5": "التقاطُ مسوّدة المحرّر انتقل إلى مستمعَي الإدخال والتغيير القائمَين بمحدداتٍ صريحة ([data-catn],[data-catw],[data-catp],[data-cato]) — مستمعٌ ثالثٌ أربك اشتقاقَ المعالجات في جرد الأزرار. جردُ الأزرار أخضر."
  },
  "map_and_geolocation": {
   "tile_layers": {

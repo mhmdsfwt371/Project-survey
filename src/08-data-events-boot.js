@@ -4632,6 +4632,7 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
+  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) */
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
   if (t0 && t0.hasAttribute && (t0.hasAttribute('data-expsg') || t0.hasAttribute('data-expst'))){ EXP.scope[t0.hasAttribute('data-expsg') ? 'g' : 't'] = t0.value; render(1); return; }   /* (V29.0) */
@@ -4816,6 +4817,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){
     ROUTE[e.target.getAttribute('data-rt')] = e.target.value;

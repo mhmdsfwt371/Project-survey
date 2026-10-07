@@ -140,7 +140,6 @@ function gdelRun(k, id){
 var CAT_NEW = { why:[], cc:[] };
 /* ما يُكتب يُحفَظ مسودّةً لحظةَ كتابته — فأيُّ إعادة رسمٍ (مزامنةٌ في الخلفية أو زرُّ «＋») لا تمسحه قبل «حفظ التصنيفات» */
 var CAT_DRAFT = {};
-document.addEventListener('input', catDraftCatch, true); document.addEventListener('change', catDraftCatch, true);
 function catDraftCatch(e){ var el = e.target; if (!el || !el.getAttribute) return;
   ['data-catn', 'data-catw', 'data-catp', 'data-cato'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
 function catD(a, id, def){ var v = CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
