@@ -132,10 +132,10 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/crash-now.mjs || true
-      - name: Restore final (owner order, one-off)
+      - name: Challenge census (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/restore-final.mjs || true
+        run: node scripts/chal-census.mjs || true
       - name: Delete audit (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
