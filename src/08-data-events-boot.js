@@ -2762,6 +2762,8 @@ function clickTables(e){
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
+  if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
   var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
   if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); render(1); return true; }
   if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; render(1); return true; }

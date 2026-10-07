@@ -1233,7 +1233,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.6</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.7</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1295,7 +1295,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-8fac5ad8f1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-3d61d22669.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7172,6 +7172,31 @@ function svStateText(r){
   if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w && whyOf(w) ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
   var cc = chalCatNames(r), pre = r.review === 'revisit' ? t('تحتاج زيارة تقنية — أعادها المهندس') : '';
   return [pre, cc.length ? cc.join('، ') : (pre ? '' : t('لا توجد تحديات'))].filter(Boolean).join(' \u00b7 ');
+}
+
+/* ── (V37.7) بلاغُ المالك: «نقاطٌ كتير تبان الصور لم تصل للجهاز بعد — هل الصورُ موجودةٌ في الدرايف؟» ──
+   التحقّق: ٣٬٧٢٠ وثيقةَ صورة في القاعدة (٣٬٦٩٦ بمعرّف درايف)، والجهازُ في سحبته الأولى يحمل أحدثَ ١٬٥٠٠ وحدَها — فالأقدمُ على
+   الدرايف ولا يعرفها الجهاز. فتُجلَب وثائقُ نقطةٍ بعينها حين تُفتَح (استعلامٌ واحدٌ بالموقع)، ويُقال الصدقُ إن لم تكن في القاعدة:
+   «لم تُرفع من جهاز فلان». */
+var PH_FETCH = {};   /* موقع ← 'run' | 'done' | 'none' | 'err' */
+function photosFetchSite(siteId){
+  if (!siteId || PH_FETCH[siteId] === 'run' || PH_FETCH[siteId] === 'done' || PH_FETCH[siteId] === 'none') return;
+  if (!(typeof FB === 'object' && FB.ready && FB.db && typeof DB === 'object')){ PH_FETCH[siteId] = 'err'; return; }
+  PH_FETCH[siteId] = 'run';
+  DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
+    FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
+    sn.forEach(function(d){ STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, d.data()); });
+    PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
+  }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
+}
+/* سطرُ الحالة حين لا تُعرف صورُ النقطة على هذا الجهاز — يطلب جلبَها ويقول ما يعرف */
+function photosMissingLine(siteId, rec){
+  var n = (rec && Array.isArray(rec.photos) ? rec.photos.length : 0) || (rec && +rec.phN) || 0; if (!n) return '';
+  var st = PH_FETCH[siteId]; if (!st) { photosFetchSite(siteId); st = PH_FETCH[siteId]; }
+  var msg = st === 'run' ? t('جارٍ جلبُها من القاعدة…')
+    : st === 'none' ? t('لم تُرفع من جهاز') + ' ' + dispName(rec.by || '') + ' ' + t('بعد — تبقى في طابوره حتى يفتح التطبيق على الشبكة')
+    : st === 'err' ? t('تعذّر الجلبُ الآن — أعد المحاولة على الشبكة') : t('لم تصل هذا الجهاز بعد');
+  return '\u{1F4F7} ' + t('الصور') + ': ' + nm(n) + ' \u00b7 ' + msg;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -15855,9 +15880,9 @@ function popHtml(){
             /* والصورُ تُفتَح من هنا — لا من شاشةٍ أخرى */
             + (function(){
                 var L = photosOf(s.id).filter(function(x){ return !x[1].del; });
-                if (!L.length) return (bR.photos || []).length
-                  ? '<div class="hint" style="margin:8px 0 0">\u{1F4F7} ' + esc(t('الصور')) + ': <b>' + nm(bR.photos.length) + '</b> \u00b7 '
-                    + esc(t('لم تصل هذا الجهاز بعد')) + '</div>'
+                if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
+                  ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
+                    + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
                   : '';
                 var fold = null; L.forEach(function(x){ if (!fold && x[1].folderId) fold = x[1].folderId; });
                 return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'
@@ -22488,7 +22513,7 @@ function svListPop(){
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
-    + (rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = photosOf(r[0]).filter(function(p){ return !p[1].del; }).length;
+    + (rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = photosOf(r[0]).filter(function(p){ return !p[1].del; }).length || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7) */
         return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
@@ -22500,7 +22525,7 @@ function svListPop(){
           + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F4F7} ' + (px ? siteIdHtml(px) + ' <span class="hint" style="margin:0">' + esc(px.name || '') + '</span>' : esc(SV_PHO)) + '</h3>'
           + btn('\u2715 ' + t('رجوع للقائمة'), 'btn-quiet btn-sm', ' data-svphoclose="1"') + '</div>'
           + (px && STATE.recs[px.id] ? '<p class="hint" style="margin:6px 0 0">' + esc(svStateText(STATE.recs[px.id])) + '</p>' : '')
-          + photoGalleryHtml(SV_PHO) + '</div>'; })() : '');
+          + (photosOf(SV_PHO).length ? '' : '<p class="hint">' + esc(photosMissingLine(SV_PHO, STATE.recs[SV_PHO])) + '</p>') + photoGalleryHtml(SV_PHO) + '</div>'; })() : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
 function svListXlsx(key){
@@ -24976,6 +25001,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.7', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      '«الصور لم تصل هذا الجهاز بعد»: الصور كانت على الدرايف فعلًا، لكن الجهاز بيحمل في أول تشغيل أحدث ١٬٥٠٠ صورة بس من ٣٬٧٢٠. دلوقتي لما تفتح أي نقطة، صورها بتتجاب من القاعدة على طول وتظهر. ولو مش موجودة في القاعدة، بيقولك بالظبط: «لم تُرفع من جهاز فلان بعد».' ] },
   { v:'V37.6', d:'٨ أكتوبر ٢٠٢٦', notes:[
       'في كل قائمة بتفتح من الكروت (أسباب عدم المسح، والتحديات، والمعوّقات، وغيرها) فيه عمود «الصور»: زرار «📷 والعدد» بيفتح صور النقطة فوق القائمة، ومكتوب معاها حالتها وسبب عدم مسحها، و«رجوع للقائمة» بيرجّعك لنفس المكان.' ] },
   { v:'V37.5', d:'٨ أكتوبر ٢٠٢٦', notes:[
@@ -33776,6 +33803,8 @@ function clickTables(e){
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
+  if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
   var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
   if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); render(1); return true; }
   if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; render(1); return true; }

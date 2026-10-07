@@ -3624,9 +3624,9 @@ function popHtml(){
             /* والصورُ تُفتَح من هنا — لا من شاشةٍ أخرى */
             + (function(){
                 var L = photosOf(s.id).filter(function(x){ return !x[1].del; });
-                if (!L.length) return (bR.photos || []).length
-                  ? '<div class="hint" style="margin:8px 0 0">\u{1F4F7} ' + esc(t('الصور')) + ': <b>' + nm(bR.photos.length) + '</b> \u00b7 '
-                    + esc(t('لم تصل هذا الجهاز بعد')) + '</div>'
+                if (!L.length) return (bR.photos || []).length   /* (V37.7) تُجلَب من القاعدة حين تُفتَح النقطة، ويُقال الصدق */
+                  ? '<div class="hint" style="margin:8px 0 0">' + esc(photosMissingLine(s.id, bR))
+                    + (PH_FETCH[s.id] === 'err' ? ' ' + btn('\u21BB ' + t('أعد الجلب'), 'btn-quiet btn-sm', ' data-phrefetch="' + esc(s.id) + '"') : '') + '</div>'
                   : '';
                 var fold = null; L.forEach(function(x){ if (!fold && x[1].folderId) fold = x[1].folderId; });
                 return '<div class="hint" style="margin:10px 0 4px;font-weight:700">\u{1F4F7} ' + esc(t('الصور')) + ' <span style="font-weight:400">\u00b7 ' + nm(L.length) + '</span></div>'

@@ -247,3 +247,28 @@ function svStateText(r){
   var cc = chalCatNames(r), pre = r.review === 'revisit' ? t('تحتاج زيارة تقنية — أعادها المهندس') : '';
   return [pre, cc.length ? cc.join('، ') : (pre ? '' : t('لا توجد تحديات'))].filter(Boolean).join(' \u00b7 ');
 }
+
+/* ── (V37.7) بلاغُ المالك: «نقاطٌ كتير تبان الصور لم تصل للجهاز بعد — هل الصورُ موجودةٌ في الدرايف؟» ──
+   التحقّق: ٣٬٧٢٠ وثيقةَ صورة في القاعدة (٣٬٦٩٦ بمعرّف درايف)، والجهازُ في سحبته الأولى يحمل أحدثَ ١٬٥٠٠ وحدَها — فالأقدمُ على
+   الدرايف ولا يعرفها الجهاز. فتُجلَب وثائقُ نقطةٍ بعينها حين تُفتَح (استعلامٌ واحدٌ بالموقع)، ويُقال الصدقُ إن لم تكن في القاعدة:
+   «لم تُرفع من جهاز فلان». */
+var PH_FETCH = {};   /* موقع ← 'run' | 'done' | 'none' | 'err' */
+function photosFetchSite(siteId){
+  if (!siteId || PH_FETCH[siteId] === 'run' || PH_FETCH[siteId] === 'done' || PH_FETCH[siteId] === 'none') return;
+  if (!(typeof FB === 'object' && FB.ready && FB.db && typeof DB === 'object')){ PH_FETCH[siteId] = 'err'; return; }
+  PH_FETCH[siteId] = 'run';
+  DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
+    FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
+    sn.forEach(function(d){ STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, d.data()); });
+    PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
+  }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
+}
+/* سطرُ الحالة حين لا تُعرف صورُ النقطة على هذا الجهاز — يطلب جلبَها ويقول ما يعرف */
+function photosMissingLine(siteId, rec){
+  var n = (rec && Array.isArray(rec.photos) ? rec.photos.length : 0) || (rec && +rec.phN) || 0; if (!n) return '';
+  var st = PH_FETCH[siteId]; if (!st) { photosFetchSite(siteId); st = PH_FETCH[siteId]; }
+  var msg = st === 'run' ? t('جارٍ جلبُها من القاعدة…')
+    : st === 'none' ? t('لم تُرفع من جهاز') + ' ' + dispName(rec.by || '') + ' ' + t('بعد — تبقى في طابوره حتى يفتح التطبيق على الشبكة')
+    : st === 'err' ? t('تعذّر الجلبُ الآن — أعد المحاولة على الشبكة') : t('لم تصل هذا الجهاز بعد');
+  return '\u{1F4F7} ' + t('الصور') + ': ' + nm(n) + ' \u00b7 ' + msg;
+}
