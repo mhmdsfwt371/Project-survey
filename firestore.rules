@@ -339,7 +339,18 @@ service cloud.firestore {
         && (resource == null || resource.data.get('hidden', false) != true)
         && (exists(/databases/$(db)/documents/recs/$(id)) || exists(/databases/$(db)/documents/inss/$(id)));
     }
-    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (!hidesVisited(id) || isBoss()); allow delete: if false; }
+    // (V37.9) قرارُ المالك ق-٠١٦: الحذفُ النهائيُّ (deleted مع hidden) للمهندس فما فوق، لما لم يُركَّب — ولا يُرجَع المحذوفُ من أيِّ جهاز.
+    function deletesSite(id){
+      return request.resource.data.get('deleted', false) == true && (resource == null || resource.data.get('deleted', false) != true);
+    }
+    function installedSite(id){
+      return exists(/databases/$(db)/documents/inss/$(id)) && get(/databases/$(db)/documents/inss/$(id)).data.get('status', '') == 'مُركّب';
+    }
+    function revivesSite(){
+      return resource != null && resource.data.get('deleted', false) == true
+        && (request.resource.data.get('deleted', false) != true || request.resource.data.get('hidden', false) != true);
+    }
+    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (isBoss() || ((!hidesVisited(id) || deletesSite(id)) && (!deletesSite(id) || (mgr() && !installedSite(id))) && !revivesSite())); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
     match /ships/{id} { allow read: if pm('ships', 'r', ok()); allow create, update: if pm('ships', 'w', canW()); allow delete: if pm('ships', 'd', mgr()); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير

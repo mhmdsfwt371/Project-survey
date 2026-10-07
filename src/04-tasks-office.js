@@ -3549,8 +3549,8 @@ function popHtml(){
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
   /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
      للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (typeof maySiteEdit === 'function' && maySiteEdit() && ((typeof isBossHere === 'function' && isBossHere()) || !(STATE.recs[s.id] || STATE.inss[s.id]))) marks += siteLocked(s.id) ?   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
-    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
+  if (mayDeleteFinal()) marks += siteLocked(s.id) ?   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ للمهندس فما فوق */   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-popdel="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف نهائي')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){

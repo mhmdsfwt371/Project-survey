@@ -140,7 +140,7 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
 });
 test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
   const { readFileSync, readdirSync } = await import('fs');
-  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming','visitWhy','chalCats','arKey','whyOf','ccOf','catMerge','whyList','ccList','chalNames','chalsToCats','chalCatNames','svStateText','stuckAge','stuckEsc','catCached'];
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming','visitWhy','chalCats','arKey','whyOf','ccOf','catMerge','whyList','ccList','chalNames','chalsToCats','chalCatNames','svStateText','stuckAge','stuckEsc','catCached','phExpected','phOnDrive','phGap','photosBackfill','phQueueAge','photosFetchSite','photosMissingLine'];
   const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
   NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
     others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
@@ -169,7 +169,7 @@ test('بلاغُ المالك (V36.7): الحذفُ يصل كلَّ جهاز و�
   assert.ok(!!w.siteFind(id), 'والاستعادةُ الواردةُ تعيدها');
   /* دمجُ النقاط المضافة لا يعيد محذوفةً بالإخفاء، ومستمعُ التجاوزات حيٌّ في الإنصات */
   const { readFileSync } = await import('fs'); const core = readFileSync('src/01-core-registry.js', 'utf8');
-  assert.ok(/\(STATE\.hiddenSites \|\| \[\]\)\.forEach\(function\(x\)\{ have\[x\.id\] = 1; \}\);/.test(core) && /if \(ovh && ovh\.hidden\) return;/.test(core), 'الدمجُ يعرف المخفيَّ ولا يعيده');
+  assert.ok(/\(STATE\.hiddenSites \|\| \[\]\)\.forEach\(function\(x\)\{ have\[x\.id\] = 1; \}\);/.test(core) && /if \(ovh && \(ovh\.hidden \|\| ovh\.deleted\)\) return;/.test(core), 'الدمجُ يعرف المخفيَّ ولا يعيده');
   assert.ok(/watch\('sites', function\(id, v\)\{ if \(v\) siteOvIncoming\(id, v\); \}/.test(core), 'ومستمعُ التجاوزات حيّ');
 });
 test('حادثة ٧ أكتوبر (V36.8): نقطةٌ لها زيارةٌ لا يحذفها إلا مدير المشروع — والمهندسُ يحذف غير المزارة', () => {
@@ -207,4 +207,19 @@ test('طلبُ المالك (V37.4): المسمّياتُ والجهاتُ تُ�
     assert.equal(w.visitWhy({ access:'منع دخول', why:'closed' }), 'closed');
     assert.equal(JSON.stringify(Array.from(w.chalCats({ chals:['منظومة قائمة لجهة أخرى'] }))), JSON.stringify(['legacy']), 'والسجلُّ المحفوظُ بالاسم الأصليِّ يبقى مقروءًا');
   } finally { w.CFG.cats = was; w.CFG_VER = (w.CFG_VER || 0) + 1; }
+});
+test('قرارُ المالك ق-٠١٦ (V37.9): الحذفُ النهائيُّ للمهندس فما فوق — مرةً واحدة، من كلِّ مكان، بلا استعادة، وما رُكّب لا يُحذَف', () => {
+  const S = w.STATE.sites, a = S[20], b = S[21], c = S[22]; const was = w.ROLE;
+  w.STATE.recs[a.id] = { id:a.id, at:Date.now(), access:'تم الوصول' }; w.STATE.inss[c.id] = { id:c.id, status:'مُركّب', at:Date.now() };
+  try {
+    w.ROLE = 'supervisor'; assert.equal(w.siteDeleteFinal(a.id), false, 'المشرفُ لا يحذف نهائيًّا'); assert.ok(w.siteFind(a.id));
+    w.ROLE = 'engineer';
+    assert.equal(w.siteDeleteFinal(a.id), true, 'المهندسُ يحذف المزارةَ نهائيًّا');
+    assert.ok(!w.siteFind(a.id) && !(w.STATE.hiddenSites || []).some(h => h.id === a.id), 'ولا تبقى حتى في المخفية');
+    assert.ok(!w.STATE.recs[a.id], 'وتُرفَع زيارتُها');
+    assert.equal(w.siteDeleteFinal(c.id), false, 'وما رُكّب لا يُحذَف'); assert.ok(w.siteFind(c.id));
+    /* وصل الحذفُ من جهازٍ آخر: تُرفَع هنا أيضًا */
+    w.siteOvIncoming(b.id, { deleted:true, hidden:true, _at:Date.now() });
+    assert.ok(!w.siteFind(b.id) && !(w.STATE.hiddenSites || []).some(h => h.id === b.id), 'والحذفُ الواردُ يرفعها من كلِّ مكان');
+  } finally { w.ROLE = was; delete w.STATE.inss[c.id]; }
 });

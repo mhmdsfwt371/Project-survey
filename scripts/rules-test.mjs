@@ -434,6 +434,13 @@ await ok  ('والمهندسُ يحذف نقطةً لم تُزَر',          se
 await deny('ولا حسابٌ بدور «مدير» (حادثة ٧ أكتوبر) — لصاحب المشروع وحده', setDoc(doc(as('adm'), 'sites/S1'), { hidden:true, hidBy:'مدير', hidAt:9 }, { merge:true }));
 await ok  ('والاستعادةُ مفتوحةٌ للمهندس',            setDoc(doc(as('eng'), 'sites/S1'), { hidden:false, hidBy:'', hidAt:0 }, { merge:true }));
 await ok  ('وتعديلُ عنوان الشبكة لنقطةٍ مزارةٍ كما كان', setDoc(doc(as('eng'), 'sites/S1'), { net:'10.1.2' }, { merge:true }));
+/* (V37.9 ق-٠١٦) الحذفُ النهائيُّ: للمهندس فما فوق لما لم يُركَّب، ولا يُرجَع */
+await env.withSecurityRulesDisabled(async (c) => { const db = c.firestore(); await setDoc(doc(db, 'recs/S7'), { id:'S7', access:'تم الوصول', review:'pending', by:'فني' }); await setDoc(doc(db, 'sites/S7'), { net:'10.1.7' }); await setDoc(doc(db, 'sites/S8'), { net:'10.1.8' }); });
+await ok  ('المهندسُ يحذف نهائيًّا نقطةً مزارةً لم تُركَّب', setDoc(doc(as('eng'), 'sites/S7'), { deleted:true, hidden:true, delBy:'مهندس', delAt:9 }, { merge:true }));
+await deny('ولا يحذف نهائيًّا نقطةً مركَّبة (ق-٠١٤)',       setDoc(doc(as('eng'), 'sites/S1'), { deleted:true, hidden:true, delBy:'مهندس', delAt:9 }, { merge:true }));
+await deny('ولا المشرفُ يحذف نهائيًّا',                    setDoc(doc(as('sup'), 'sites/S8'), { deleted:true, hidden:true, delBy:'مشرف', delAt:9 }, { merge:true }));
+await deny('والمحذوفُ نهائيًّا لا يُرجَع (ولو بنسخةٍ قديمة)', setDoc(doc(as('eng'), 'sites/S7'), { hidden:false }, { merge:true }));
+await deny('ولا تُرفَع علامةُ الحذف عنه',                   setDoc(doc(as('adm'), 'sites/S7'), { deleted:false }, { merge:true }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

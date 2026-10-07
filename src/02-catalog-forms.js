@@ -53,6 +53,7 @@ function siteOvApply(){
   var keep = [], hid = [];
   STATE.sites.forEach(function(x){
     var o = ov[x.id]; if (o) Object.assign(x, o);
+    if (x.deleted) return;   /* (V37.9) المحذوفُ نهائيًّا يُرفَع من كلِّ مكان */
     if (x.hidden) hid.push(x); else keep.push(x);
   });
   STATE.sites = keep; STATE.hiddenSites = hid;
@@ -258,6 +259,27 @@ function siteDelete(id){
   toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
   SITE_DEL = ''; SITE_ED = 0; statBump();
   return true;
+}
+/* ═══ (V37.9) قرارُ المالك ق-٠١٦: «عاوزه نهائي كاملًا — أيُّ حدٍّ معه صلاحياتُ مهندسٍ فأعلى يمسح نهائيًّا من مرةٍ واحدة» ═══
+   المهندسُ فما فوق يحذف أيَّ نقطةٍ لم تُركَّب (مزارةً أو لا، أصليةً أو مضافة) بتأكيدٍ واحد، فتُرفَع من كلِّ مكانٍ على كلِّ الأجهزة
+   ولا تُستعاد من التطبيق. يُكتب على تجاوزها deleted مع hidden (فالنسخُ الأقدمُ تُخفيها أيضًا)، وتُرفَع زياراتُها ومهامُّها. وقاعدةُ
+   الأمان في السحابة تشترط الدورَ وعدمَ التركيب، وتمنع إرجاعَ المحذوف من أيِّ جهاز. */
+function mayDeleteFinal(){ return typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('engineer'); }
+function siteDeleteFinal(id){
+  if (!mayDeleteFinal()){ toast(t('الحذفُ النهائيُّ للمهندس فما فوق')); return false; }
+  var x = siteFind(id) || (STATE.hiddenSites || []).filter(function(y){ return y.id === id; })[0]; if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
+  var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }
+  var who = STATE.meta.name || '', now = Date.now(), links = siteDelLinks(id);
+  ['recs', 'inss', 'diss', 'maints'].forEach(function(k){ if (STATE[k] && STATE[k][id]) CORE.rm(k, id); });
+  Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) CORE.rm('tasks', k); });
+  var ov = { deleted:true, hidden:true, delBy:who, delAt:now, hidBy:who, hidAt:now };
+  STATE.siteOv = STATE.siteOv || {}; STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, ov); CORE.set('sites', id, ov);
+  if (x.isNew){ if (STATE.newsites) delete STATE.newsites[id]; CORE.dirty('newsites', id, { id:String(id), deleted:true, at:now, by:who }); }
+  siteDropLocal(id); if (typeof siteKey === 'function') siteKey.u = null;
+  logEvent('حذفٌ نهائيّ — ' + id + ' \u00b7 ' + (x.name || '') + (links.length ? ' \u00b7 ' + links.join('، ') : ''), id);
+  toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
+  if (typeof POP_SITE !== 'undefined' && POP_SITE === id){ POP_SITE = ''; POP_OPEN = false; }
+  SITE_DEL = ''; SITE_ED = 0; statBump(); return true;
 }
 /* شاهدُ حذفٍ وصل (من هذا الجهاز أو غيرِه): تُرفَع النقطةُ من السجل والمخفيّ وفهارسه */
 function siteDropLocal(id){

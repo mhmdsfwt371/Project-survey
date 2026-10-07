@@ -3473,6 +3473,10 @@ function clickAPart7(e){
     var today0 = dayKey(Date.now()), todo = (STATE.hiddenSites || []).filter(function(x){ return dayKey(x.hidAt || 0) === today0; }).map(function(x){ return x.id; });
     if (todo.length && window.confirm(t('استعادة') + ' ' + nm(todo.length) + ' ' + t('نقطة حُذفت اليوم؟'))){ var nr = 0; todo.forEach(function(id){ if (siteRestore(id)) nr++; }); logEvent('استعادة دفعة — ' + nr + ' نقطة حُذفت اليوم'); toast(nm(nr) + ' ' + t('استُعيدت')); }
     render(1); return true; }
+  var pdl = e.target.closest('[data-popdel]');   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ بتأكيدٍ واحد */
+  if (pdl){ var did = pdl.getAttribute('data-popdel'), dx = siteFind(did);
+    if (window.confirm(t('حذف نهائي') + ' — ' + (dx ? siteKey(dx) : did) + '\n' + t('تُرفَع من كلِّ مكانٍ وعند الجميع، ولا تُستعاد. متأكد؟'))){ siteDeleteFinal(did); render(1); }
+    return true; }
   var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
   if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
     var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');

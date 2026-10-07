@@ -1236,7 +1236,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.8</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.9</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1298,7 +1298,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-c26552aaf8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-08a89448e0.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3133,7 +3133,7 @@ var FB = {
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
-          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && ovh.hidden) return;   /* محذوفةٌ بالإخفاء — لا تعود */
+          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
             if (ex){
@@ -3846,6 +3846,7 @@ function siteOvApply(){
   var keep = [], hid = [];
   STATE.sites.forEach(function(x){
     var o = ov[x.id]; if (o) Object.assign(x, o);
+    if (x.deleted) return;   /* (V37.9) المحذوفُ نهائيًّا يُرفَع من كلِّ مكان */
     if (x.hidden) hid.push(x); else keep.push(x);
   });
   STATE.sites = keep; STATE.hiddenSites = hid;
@@ -4051,6 +4052,27 @@ function siteDelete(id){
   toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
   SITE_DEL = ''; SITE_ED = 0; statBump();
   return true;
+}
+/* ═══ (V37.9) قرارُ المالك ق-٠١٦: «عاوزه نهائي كاملًا — أيُّ حدٍّ معه صلاحياتُ مهندسٍ فأعلى يمسح نهائيًّا من مرةٍ واحدة» ═══
+   المهندسُ فما فوق يحذف أيَّ نقطةٍ لم تُركَّب (مزارةً أو لا، أصليةً أو مضافة) بتأكيدٍ واحد، فتُرفَع من كلِّ مكانٍ على كلِّ الأجهزة
+   ولا تُستعاد من التطبيق. يُكتب على تجاوزها deleted مع hidden (فالنسخُ الأقدمُ تُخفيها أيضًا)، وتُرفَع زياراتُها ومهامُّها. وقاعدةُ
+   الأمان في السحابة تشترط الدورَ وعدمَ التركيب، وتمنع إرجاعَ المحذوف من أيِّ جهاز. */
+function mayDeleteFinal(){ return typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('engineer'); }
+function siteDeleteFinal(id){
+  if (!mayDeleteFinal()){ toast(t('الحذفُ النهائيُّ للمهندس فما فوق')); return false; }
+  var x = siteFind(id) || (STATE.hiddenSites || []).filter(function(y){ return y.id === id; })[0]; if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
+  var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }
+  var who = STATE.meta.name || '', now = Date.now(), links = siteDelLinks(id);
+  ['recs', 'inss', 'diss', 'maints'].forEach(function(k){ if (STATE[k] && STATE[k][id]) CORE.rm(k, id); });
+  Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) CORE.rm('tasks', k); });
+  var ov = { deleted:true, hidden:true, delBy:who, delAt:now, hidBy:who, hidAt:now };
+  STATE.siteOv = STATE.siteOv || {}; STATE.siteOv[id] = Object.assign({}, STATE.siteOv[id] || {}, ov); CORE.set('sites', id, ov);
+  if (x.isNew){ if (STATE.newsites) delete STATE.newsites[id]; CORE.dirty('newsites', id, { id:String(id), deleted:true, at:now, by:who }); }
+  siteDropLocal(id); if (typeof siteKey === 'function') siteKey.u = null;
+  logEvent('حذفٌ نهائيّ — ' + id + ' \u00b7 ' + (x.name || '') + (links.length ? ' \u00b7 ' + links.join('، ') : ''), id);
+  toast(id + ' \u00b7 ' + t('حُذفت نهائيًّا'));
+  if (typeof POP_SITE !== 'undefined' && POP_SITE === id){ POP_SITE = ''; POP_OPEN = false; }
+  SITE_DEL = ''; SITE_ED = 0; statBump(); return true;
 }
 /* شاهدُ حذفٍ وصل (من هذا الجهاز أو غيرِه): تُرفَع النقطةُ من السجل والمخفيّ وفهارسه */
 function siteDropLocal(id){
@@ -15836,8 +15858,8 @@ function popHtml(){
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
   /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
      للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (typeof maySiteEdit === 'function' && maySiteEdit() && ((typeof isBossHere === 'function' && isBossHere()) || !(STATE.recs[s.id] || STATE.inss[s.id]))) marks += siteLocked(s.id) ?   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
-    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
+  if (mayDeleteFinal()) marks += siteLocked(s.id) ?   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ للمهندس فما فوق */   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-popdel="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف نهائي')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){
@@ -25046,6 +25068,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.9', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'الحذف بقى نهائي: أي مهندس فأعلى يقدر يحذف أي نقطة ما اتركّبتش (اتزارت أو لأ) بزرار «🗑 حذف نهائي» وتأكيد واحد. النقطة بتتشال من كل مكان وعند كل الناس في ثواني، وما بتظهرش في «نقاط مخفية»، ومفيش استرجاع من التطبيق. والنقطة المركّبة عليها قفل وما بتتحذفش.' ] },
   { v:'V37.8', d:'٨ أكتوبر ٢٠٢٦', notes:[
       'فتح الصور بقى أسلس: لما تفتح صور نقطة من أي قائمة وتقفلها، بترجع لنفس المكان اللي كنت فيه بالظبط. والصورة لما تكبّرها بتظهر فوق كل حاجة.',
       'أي نافذة بتتمرّر: الراس بزرار ✕ ثابت فوق مهما نزلت.',
@@ -34563,6 +34587,10 @@ function clickAPart7(e){
     var today0 = dayKey(Date.now()), todo = (STATE.hiddenSites || []).filter(function(x){ return dayKey(x.hidAt || 0) === today0; }).map(function(x){ return x.id; });
     if (todo.length && window.confirm(t('استعادة') + ' ' + nm(todo.length) + ' ' + t('نقطة حُذفت اليوم؟'))){ var nr = 0; todo.forEach(function(id){ if (siteRestore(id)) nr++; }); logEvent('استعادة دفعة — ' + nr + ' نقطة حُذفت اليوم'); toast(nm(nr) + ' ' + t('استُعيدت')); }
     render(1); return true; }
+  var pdl = e.target.closest('[data-popdel]');   /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ بتأكيدٍ واحد */
+  if (pdl){ var did = pdl.getAttribute('data-popdel'), dx = siteFind(did);
+    if (window.confirm(t('حذف نهائي') + ' — ' + (dx ? siteKey(dx) : did) + '\n' + t('تُرفَع من كلِّ مكانٍ وعند الجميع، ولا تُستعاد. متأكد؟'))){ siteDeleteFinal(did); render(1); }
+    return true; }
   var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
   if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
     var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');

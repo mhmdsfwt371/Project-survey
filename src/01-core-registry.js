@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-c26552aaf8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-08a89448e0.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1865,7 +1865,7 @@ var FB = {
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
-          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && ovh.hidden) return;   /* محذوفةٌ بالإخفاء — لا تعود */
+          var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
             if (ex){
