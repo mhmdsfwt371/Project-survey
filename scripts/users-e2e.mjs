@@ -9,7 +9,7 @@ const P1 = 'Ts' + Math.random().toString(36).slice(2, 10) + '#9A', P2 = 'Tn' + M
 const R = []; const step = (n, ok, d) => { R.push({ step:n, ok:!!ok, detail:String(d || '').slice(0, 200) }); console.log((ok ? '✓ ' : '✗ ') + n + ' ' + (d || '')); };
 const signIn = async (pass) => { const r = await fetch('https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' + KEY, { method:'POST', headers:{ 'content-type':'application/json' }, body:JSON.stringify({ email, password:pass, returnSecureToken:true }) }); const j = await r.json(); return { ok:!!j.idToken, err:(j.error && j.error.message) || '', tok:j.idToken, uid:j.localId }; };
 const readOwn = async (tok, uid) => { const r = await fetch('https://firestore.googleapis.com/v1/projects/' + sa.project_id + '/databases/(default)/documents/users/' + uid, { headers:{ authorization:'Bearer ' + tok } }); const j = await r.json(); return j && j.fields ? j.fields : { error:(j.error && j.error.message) || r.status }; };
-const prov = () => { try { execSync('node /tmp/provision.mjs', { stdio:'pipe', env:process.env, timeout:120000 }); return ''; } catch (e){ return String(e.stdout || e.message).slice(-300); } };
+const prov = () => { try { execSync('node scripts/provision-main.mjs', { stdio:'pipe', env:process.env, timeout:120000 }); return ''; } catch (e){ return (String(e.stderr || '') + ' ' + String(e.stdout || '') + ' ' + e.message).slice(-300); } };
 let uid = '';
 try {
   /* ١ · الإنشاء كما يطلبه المكتب */
