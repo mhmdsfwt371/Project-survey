@@ -427,6 +427,13 @@ console.log('\n══ الحساباتُ المعادية على كلِّ مجم
     }
   }
 }
+/* (V36.9) حادثة ٧ أكتوبر: لا يحذف (يُخفي) نقطةً لها زيارةٌ إلا مدير المشروع — والمهندسُ يحذف ما لم يُزَر، والاستعادةُ مفتوحة */
+await env.withSecurityRulesDisabled(async (c) => { const db = c.firestore(); await setDoc(doc(db, 'users/adm'), { name:'مدير', role:'admin', active:true }); await setDoc(doc(db, 'sites/S1'), { net:'10.1.1' }); await setDoc(doc(db, 'sites/S9'), { net:'10.1.9' }); });
+await deny('المهندسُ لا يحذف نقطةً لها زيارة (ولو بنسخةٍ قديمة)', setDoc(doc(as('eng'), 'sites/S1'), { hidden:true, hidBy:'مهندس', hidAt:9 }, { merge:true }));
+await ok  ('والمهندسُ يحذف نقطةً لم تُزَر',          setDoc(doc(as('eng'), 'sites/S9'), { hidden:true, hidBy:'مهندس', hidAt:9 }, { merge:true }));
+await ok  ('ومديرُ المشروع يحذف المزارة',           setDoc(doc(as('adm'), 'sites/S1'), { hidden:true, hidBy:'مدير', hidAt:9 }, { merge:true }));
+await ok  ('والاستعادةُ مفتوحةٌ للمهندس',            setDoc(doc(as('eng'), 'sites/S1'), { hidden:false, hidBy:'', hidAt:0 }, { merge:true }));
+await ok  ('وتعديلُ عنوان الشبكة لنقطةٍ مزارةٍ كما كان', setDoc(doc(as('eng'), 'sites/S1'), { net:'10.1.2' }, { merge:true }));
 await env.cleanup();
 console.log('\nنجح ' + (n - bad) + ' · فشل ' + bad + (bad ? '\nاختبارُ القواعد على المحاكي فشل ✗' : '\nالقواعدُ على المحاكي تفتح ما يجب وتغلق ما يجب ✅'));
 if (bad) console.log('::error title=محاكي القواعد::سقط ' + bad + ' فحصًا من ' + n + ' — الأسماءُ في التنبيهات أعلاه');

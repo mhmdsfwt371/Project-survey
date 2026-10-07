@@ -331,7 +331,14 @@ service cloud.firestore {
     // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
     match /fixreqs/{id} { allow read: if pm('fixreqs', 'r', ok()); allow create: if pm('fixreqs', 'w', canW()); allow update: if pm('fixreqs', 'a', mgr()); allow delete: if pm('fixreqs', 'd', mgr()); }
     // عناوينُ الشبكة على السجل الأمّ: يقرؤها الجميعُ ويكتبها من له التحرير
-    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()); allow delete: if false; }
+    // (V36.9) حادثة ٧ أكتوبر: إخفاءُ (حذفُ) نقطةٍ لها زيارةٌ أو تركيبٌ لمدير المشروع وحده — في القاعدة نفسها لا في التطبيق وحده،
+    // فلا تقدر نسخةٌ قديمةٌ على جوّالٍ لم يُحدَّث أن تحذفها. الانتقالُ من ظاهرةٍ إلى مخفيّةٍ هو المحروس؛ والاستعادةُ وبقيةُ التعديل كما كانت.
+    function hidesVisited(id){
+      return request.resource.data.get('hidden', false) == true
+        && (resource == null || resource.data.get('hidden', false) != true)
+        && (exists(/databases/$(database)/documents/recs/$(id)) || exists(/databases/$(database)/documents/inss/$(id)));
+    }
+    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (!hidesVisited(id) || isBoss() || (ok() && role() == 'admin')); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
     match /ships/{id} { allow read: if pm('ships', 'r', ok()); allow create, update: if pm('ships', 'w', canW()); allow delete: if pm('ships', 'd', mgr()); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير
