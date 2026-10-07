@@ -1110,7 +1110,7 @@ function presenceBeat(force){
               /* الاستهلاكُ والأداءُ والأعطالُ من الجهاز نفسِه (V17.34) */
               q:(STATE.queue || []).filter(function(it){ return it.kind !== 'presence' && it.kind !== 'stats'; }).length,
               pz:(STATE.poison || []).length,
-              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pfl:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0 /* (V31.1) كان `pf` فيمحوه مفتاحُ الأداء */,
+              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pqAge:phQueueAge() /* (V37.8) دقائقُ أقدمِ صورةٍ معلّقة */, pfl:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0 /* (V31.1) كان `pf` فيمحوه مفتاحُ الأداء */,
               err:Object.keys(typeof ERR_SEEN === 'object' ? ERR_SEEN : {}).length,
               rms:perfAvg('r'), pms:perfAvg('p'), pulse:!!PULSE_UNSUB, up:Math.round((Date.now() - BOOT_AT) / 60000),
               /* قراءاتُ اليوم لا الجلسة — الجلسةُ قد تمتدّ أيامًا فيبدو الرقمُ فادحًا (V17.36) —

@@ -2270,7 +2270,9 @@ function scrollGrab(){
       if (i > -1){ boxes.push([SCROLL_SELS[q], i, top]); return; }
     }
   });
-  SCROLL_KEEP = { win:SCROLL_WIN, boxes:boxes };
+  var keys = {};   /* (V37.8) النوافذُ بمفتاحها: يُعاد موضعُها ولو تغيّر ترتيبُ ما قبلها */
+  SCROLL_SEEN.forEach(function(el){ var k = el.getAttribute && el.getAttribute('data-keepscroll'); if (!k) return; var tp = SCROLL_TOPS ? SCROLL_TOPS.get(el) : el.__nskTop; if (tp) keys[k] = tp; });
+  SCROLL_KEEP = { win:SCROLL_WIN, boxes:boxes, keys:keys };
 }
 function scrollBack(sameScreen){
   var K = SCROLL_KEEP; SCROLL_KEEP = null;
@@ -2279,6 +2281,7 @@ function scrollBack(sameScreen){
     var L = document.querySelectorAll(b[0]);
     if (L[b[1]]) L[b[1]].scrollTop = b[2];
   });
+  Object.keys(K.keys || {}).forEach(function(k){ var e = document.querySelector('[data-keepscroll="' + k.replace(/"/g, '') + '"]'); if (e) e.scrollTop = K.keys[k]; });
   if (K.win) window.scrollTo(0, K.win);
 }
 /* ═══ الأداءُ يُقاس لا يُحكى (V17.34) ═══
@@ -2387,7 +2390,8 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
-  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
+  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
+  try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
@@ -2762,11 +2766,14 @@ function clickTables(e){
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
+  if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
   if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
   var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
-  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); render(1); return true; }
-  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; render(1); return true; }
+  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); var hostP = (svph.closest('.svpop') || {}).parentNode || document.getElementById('content');   /* (V37.8) بلا إعادة رسم */
+    if (hostP){ var tmpP = document.createElement('div'); tmpP.innerHTML = svPhoPanel(SV_PHO); while (tmpP.firstChild) hostP.appendChild(tmpP.firstChild); } else render(1); return true; }
+  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); return true; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return true; }
   var phd = e.target.closest('[data-phdl]');
@@ -5140,6 +5147,17 @@ document.addEventListener('keydown', function(e){
    كانت نافذةُ المساعد جزءًا من كلِّ رسمة — فأيُّ رسمٍ في الخلفية (وصولُ بيانات، مزامنة، تنزيل) يستبدلها وفيها الحقلُ الذي يكتب فيه
    المستخدم: تضيع البؤرة، ويعيد الآيفون حسابَ لوحة المفاتيح فتقفز الشاشة. صارت في حاويةٍ ثابتةٍ خارج الرسم: تُبنى مرةً عند الفتح،
    وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
+/* (V37.8) اقتراحُ المالك: على جهاز الفنيّ — صورٌ معلّقةٌ أكثرَ من ساعة تُقال بشريطٍ ثابتٍ أعلى الشاشة في كلِّ صفحة (والخريطةُ معها)،
+   بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
+function phStaleSync(){
+  var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
+  if (!n || mins < 60){ if (old) old.remove(); return; }
+  var html = '\u26A0 ' + esc(t('عندك')) + ' <b>' + nm(n) + '</b> ' + esc(t('صورة لم تُرفع منذ')) + ' ' + nm(Math.floor(mins / 60)) + ' ' + esc(t('ساعة')) + ' — '
+    + esc(STATE.meta.online ? t('اترك التطبيق مفتوحًا على الشبكة حتى تُرفع') : t('افتح الشبكة الآن — الصورُ على جهازك وحده'))
+    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>';
+  if (!old){ old = document.createElement('div'); old.id = 'phStale'; old.setAttribute('role', 'alert'); old.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:1900;background:#B8860B;color:#fff;border-radius:12px;padding:8px 12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.35)'; document.body.appendChild(old); }
+  if (old.innerHTML !== html) old.innerHTML = html;
+}
 function assistSync(){
   var host = document.getElementById('assistHost');
   if (!host){ if (!ASSIST_OPEN) return; host = document.createElement('div'); host.id = 'assistHost'; document.body.appendChild(host); }

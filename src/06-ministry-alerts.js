@@ -82,7 +82,7 @@ function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
-    + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
+    + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
@@ -93,15 +93,16 @@ function svListPop(){
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>'
-    + (SV_PHO ? (function(){ var px = siteFind(SV_PHO);
-        return '<div data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
-          + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2003;inset:4vh 3vw auto 3vw;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)">'
-          + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F4F7} ' + (px ? siteIdHtml(px) + ' <span class="hint" style="margin:0">' + esc(px.name || '') + '</span>' : esc(SV_PHO)) + '</h3>'
-          + btn('\u2715 ' + t('رجوع للقائمة'), 'btn-quiet btn-sm', ' data-svphoclose="1"') + '</div>'
-          + (px && STATE.recs[px.id] ? '<p class="hint" style="margin:6px 0 0">' + esc(svStateText(STATE.recs[px.id])) + '</p>' : '')
-          + (photosOf(SV_PHO).length ? '' : '<p class="hint">' + esc(photosMissingLine(SV_PHO, STATE.recs[SV_PHO])) + '</p>') + photoGalleryHtml(SV_PHO) + '</div>'; })() : '');
+    + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
+function svPhoPanel(id){ var px = siteFind(id);
+        return '<div id="svPhoVeil" data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
+          + '<div id="svPhoBox" class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpho" style="position:fixed;z-index:2003;inset:4vh 3vw auto 3vw;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F4F7} ' + (px ? siteIdHtml(px) + ' <span class="hint" style="margin:0">' + esc(px.name || '') + '</span>' : esc(id)) + '</h3>'
+          + btn('\u2715 ' + t('رجوع للقائمة'), 'btn-quiet btn-sm', ' data-svphoclose="1"') + '</div>'
+          + (px && STATE.recs[px.id] ? '<p class="hint" style="margin:6px 0 0">' + esc(svStateText(STATE.recs[px.id])) + '</p>' : '')
+          + (photosOf(id).length ? '' : '<p class="hint">' + esc(photosMissingLine(id, STATE.recs[id])) + '</p>') + photoGalleryHtml(id) + '</div>'; }
 function svListXlsx(key){
   var L = SV_LISTS[key] || svDynList(key) || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (svObKey(key) || /^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;   /* (V37.4) والديناميكية */
   toast(t('يُجهَّز ملفُّ إكسل…'));
@@ -2575,6 +2576,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.8', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'فتح الصور بقى أسلس: لما تفتح صور نقطة من أي قائمة وتقفلها، بترجع لنفس المكان اللي كنت فيه بالظبط. والصورة لما تكبّرها بتظهر فوق كل حاجة.',
+      'أي نافذة بتتمرّر: الراس بزرار ✕ ثابت فوق مهما نزلت.',
+      'للمهندس: كارت «صور ليست على الدرايف» في ملخص الوزارة (مش ظاهر للوزارة): عددها حسب كل فني، والصور المعلّقة على موبايل كل واحد ومن إمتى، وكل رقم بيفتح القائمة. وعلى موبايل الفني: شريط أصفر فوق الشاشة لو فيه صور ما اترفعتش من أكتر من ساعة، وفيه زرار «ارفع الآن».' ] },
   { v:'V37.7', d:'٨ أكتوبر ٢٠٢٦', notes:[
       '«الصور لم تصل هذا الجهاز بعد»: الصور كانت على الدرايف فعلًا، لكن الجهاز بيحمل في أول تشغيل أحدث ١٬٥٠٠ صورة بس من ٣٬٧٢٠. دلوقتي لما تفتح أي نقطة، صورها بتتجاب من القاعدة على طول وتظهر. ولو مش موجودة في القاعدة، بيقولك بالظبط: «لم تُرفع من جهاز فلان بعد».' ] },
   { v:'V37.6', d:'٨ أكتوبر ٢٠٢٦', notes:[

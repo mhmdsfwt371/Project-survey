@@ -538,7 +538,7 @@ console.log('\n══ المسحُ لا يضيع إن أنهى الآيفونُ 
 console.log('\n══ رسمُ الصفحات أخفّ (V26.1) ══');
 { const raw13 = readFileSync('index.html', 'utf8');
   check(/function asnOf\(id\)\{[\s\S]{0,400}return taskIndex\(\)\['\*\|' \+ id\] \|\| null;/.test(raw13) && /if \(!ix\['\*\|' \+ x\.site\]\) ix\['\*\|' \+ x\.site\] = x;/.test(raw13), 'الإسنادُ من فهرس المهامِّ لا بالمرور على المهامِّ لكلِّ نقطة');
-  check(/document\.addEventListener\('scroll', function\(e\)\{[\s\S]{0,600}\{ capture:true, passive:true \}\);/.test(raw13) && /SCROLL_SEEN = SCROLL_SEEN\.filter\(function\(el\)\{ return el\.isConnected; \}\);/.test(raw13) && /SCROLL_KEEP = \{ win:SCROLL_WIN, boxes:boxes \};/.test(raw13) && /if \(SCROLL_TOPS\) SCROLL_TOPS\.set\(el, top\); else el\.__nskTop = top;/.test(raw13) && !/for \(var i = 0; i < L\.length; i\+\+\) if \(L\[i\]\.scrollTop\) boxes\.push/.test(raw13), 'ومواضعُ التمرير من سجل الحدث وحدَه — لا قراءةَ تخطيطٍ قبل الرسم (V26.2)');
+  check(/document\.addEventListener\('scroll', function\(e\)\{[\s\S]{0,600}\{ capture:true, passive:true \}\);/.test(raw13) && /SCROLL_SEEN = SCROLL_SEEN\.filter\(function\(el\)\{ return el\.isConnected; \}\);/.test(raw13) && /SCROLL_KEEP = \{ win:SCROLL_WIN, boxes:boxes(, keys:keys)? \};/.test(raw13) && /if \(SCROLL_TOPS\) SCROLL_TOPS\.set\(el, top\); else el\.__nskTop = top;/.test(raw13) && !/for \(var i = 0; i < L\.length; i\+\+\) if \(L\[i\]\.scrollTop\) boxes\.push/.test(raw13), 'ومواضعُ التمرير من سجل الحدث وحدَه — لا قراءةَ تخطيطٍ قبل الرسم (V26.2)');
   check(/TK_IX = null; FUP_MEMO = \{\};/.test(raw13) && /if \(FUP_MEMO && mk in FUP_MEMO\) return FUP_MEMO\[mk\];/.test(raw13), 'ونسبُ المتابعة تُحسَب مرةً في الرسمة'); }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

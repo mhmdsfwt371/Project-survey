@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V37.7",
+ "app_version": "V37.8",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2059,7 +2059,8 @@
   "V37.4": "طلبُ المالك: CFG.cats {why:[{k,n,who,photo,off}], cc:[{k,n,who,off}]} يُدمَج بالمفتاح (catMerge/whyList/ccList مخزّنةٌ بـCFG_VER)؛ whyOf/ccOf/visitWhy/chalCats/chalNames وقوائمُ why_*/cc_* (svDynList عند الطلب) والبطاقاتُ والنموذجُ منها. catsCard في صفحة الثوابت بمسوّداتٍ تحفظ ما يُكتب من أيِّ إعادة رسم، و«＋» يضيف الصفَّ في مكانه؛ catsSave → cfgPushSoon('cats'). اختبارُ وحدة وتجربةٌ حقيقيةٌ بدور مهندس.",
   "V37.5": "التقاطُ مسوّدة المحرّر انتقل إلى مستمعَي الإدخال والتغيير القائمَين بمحدداتٍ صريحة ([data-catn],[data-catw],[data-catp],[data-cato]) — مستمعٌ ثالثٌ أربك اشتقاقَ المعالجات في جرد الأزرار. جردُ الأزرار أخضر.",
   "V37.6": "طلبُ المالك: svListPop — عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) بعدد photosOf غير المحذوفة، وdata-svphotos يفتح طبقةً فوق القائمة (SV_PHO) بـphotoGalleryHtml وsvStateText، وdata-svphoclose يعود إليها؛ إغلاقُ القائمة يغلقها. تجربةٌ حقيقيةٌ بدور الوزارة.",
-  "V37.7": "بلاغُ المالك: photosFetchSite(siteId) — استعلامٌ واحدٌ photos where site == id عند فتح النقطة أو طبقة صور القائمة (PH_FETCH: run/done/none/err)، وphotosMissingLine تقول الحالة بصدق (جارٍ الجلب / لم تُرفع من جهاز فلان / تعذّر — أعد الجلب). سببُ البلاغ: سحبةُ الصور الأولى ١٬٥٠٠ والقاعدةُ ٣٬٧٢٠. تجربةٌ حقيقيةٌ بقاعدةٍ مزيّفة."
+  "V37.7": "بلاغُ المالك: photosFetchSite(siteId) — استعلامٌ واحدٌ photos where site == id عند فتح النقطة أو طبقة صور القائمة (PH_FETCH: run/done/none/err)، وphotosMissingLine تقول الحالة بصدق (جارٍ الجلب / لم تُرفع من جهاز فلان / تعذّر — أعد الجلب). سببُ البلاغ: سحبةُ الصور الأولى ١٬٥٠٠ والقاعدةُ ٣٬٧٢٠. تجربةٌ حقيقيةٌ بقاعدةٍ مزيّفة.",
+  "V37.8": "طلبُ المالك: CSS لرأس كلِّ [role=dialog] متمرّرٍ ثابتًا؛ #phView فوق الكل (z 5000)؛ svPhoPanel يُدرَج ويُزال بلا إعادة رسم؛ data-keepscroll يحفظ موضعَ النافذة بمفتاحها في scrollGrab/scrollBack. photosBackfill: أجهزةُ المكتب تجلب وثائقَ الصور كلَّها (صفحاتٌ من ألفٍ بـ_at) أسبوعيًّا؛ phGap/phGapCard وقائمةُ phgap؛ presence.pqAge؛ phStaleSync: شريطٌ ثابتٌ للصور المعلّقة أكثرَ من ساعة وdata-phflushnow. تجربةٌ حقيقيةٌ شاملة."
  },
  "map_and_geolocation": {
   "tile_layers": {

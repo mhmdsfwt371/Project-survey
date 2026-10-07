@@ -851,6 +851,9 @@ body.kiosk .kk-story{font-size:21px}
 @media (prefers-reduced-motion: reduce){#lgShine{animation:none;opacity:.6}}
 #assistHost{position:fixed;inset:0;z-index:3000;pointer-events:none}
 #assistHost .pop{pointer-events:auto}
+/* (V37.8) طلبُ المالك: «أيُّ نافذةٍ يكون فيها زرُّ ✕ في الرأس مهما عملت تمرير» — رأسُ كلِّ نافذةٍ تتمرّر بنفسها ثابتٌ أعلاها */
+[role="dialog"][style*="overflow:auto"] > :first-child{position:sticky;top:-14px;z-index:3;background:var(--surface);padding:8px 0;margin:-8px 0 0;border-bottom:1px solid var(--line)}
+#phView{z-index:5000 !important}
 /* (V37.0) قمعُ المراحل */
 .fn-row{display:flex;align-items:center;gap:8px;padding:6px 0;cursor:pointer}
 .fn-l{min-width:64px;font-weight:700}
@@ -1233,7 +1236,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1295,7 +1298,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-3d61d22669.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-c26552aaf8.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7198,6 +7201,34 @@ function photosMissingLine(siteId, rec){
     : st === 'err' ? t('تعذّر الجلبُ الآن — أعد المحاولة على الشبكة') : t('لم تصل هذا الجهاز بعد');
   return '\u{1F4F7} ' + t('الصور') + ': ' + nm(n) + ' \u00b7 ' + msg;
 }
+
+/* ── (V37.8) اقتراحا المالك بعد تدقيق الصور: قائمةٌ للمهندس بما ليس على الدرايف، وتنبيهُ الفنيِّ بصورٍ معلّقةٍ أكثرَ من ساعة ──
+   جهازُ المكتب (مشرفٌ فما فوق) يجلب وثائقَ الصور كلَّها مرةً في الأسبوع على صفحاتٍ من ألف — فيُعرَف بدقةٍ ما على الدرايف لكلِّ نقطة
+   (٣٬٧٢٠ وثيقةً اليوم، والسحبةُ العاديةُ أحدثُ ١٬٥٠٠). والقائمةُ تُحسَب منها وتتحدّث مع كلِّ رفعٍ جديد. */
+function phExpected(r){ return r ? Math.max(+r.phN || 0, Array.isArray(r.photos) ? r.photos.length : 0) : 0; }
+function phOnDrive(id){ return photosOf(id).filter(function(p){ return !p[1].del && (p[1].driveId || p[1].link); }).length; }
+function phGap(r, id){ if (!svVisited(r)) return 0; var n = phExpected(r); return n ? Math.max(0, n - phOnDrive(id)) : 0; }
+function photosBackfill(force){
+  if (!(typeof FB === 'object' && FB.ready && FB.db && typeof DB === 'object' && DB.col)) return Promise.resolve(0);
+  if (!(typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'))) return Promise.resolve(0);
+  if (!force && STATE.meta.phFull && Date.now() - STATE.meta.phFull < 7 * 864e5) return Promise.resolve(0);
+  if (photosBackfill.run) return photosBackfill.run;
+  var n = 0, last = null;
+  var step = function(){
+    var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
+    return q.get().then(function(sn){
+      FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, x); if (x._at != null) last = x._at; n++; });
+      if (sn.size === 1000 && last != null) return step();
+      STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
+      if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;
+    });
+  };
+  photosBackfill.run = step().catch(function(e){ photosBackfill.run = null; LS_ERR = e; return 0; });
+  return photosBackfill.run;
+}
+/* أقدمُ صورةٍ معلّقةٍ على هذا الجهاز — بالدقائق */
+function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; if (!Q.length) return 0; var old = Q.reduce(function(m, it){ return Math.min(m, +it.at || Date.now()); }, Date.now()); return Math.floor((Date.now() - old) / 60000); }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
@@ -13237,7 +13268,7 @@ function photoView(key){
   if (!src) return;
   var old = document.getElementById('phView'); if (old) old.remove();
   var box = document.createElement('div'); box.id = 'phView';
-  box.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px';
+  box.style.cssText = 'position:fixed;inset:0;z-index:5000;background:rgba(0,0,0,.92);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:14px';
   box.innerHTML = '<img src="' + esc(src) + '" alt="" style="max-width:100%;max-height:78vh;border-radius:12px;object-fit:contain">'
     + '<div class="actions">'
     + '<button type="button" class="btn btn-primary btn-sm" data-phdl="' + esc(key) + '">\u2B07 ' + esc(t('تنزيل')) + '</button>'
@@ -22250,6 +22281,17 @@ function mfuMilesCard(){
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
 function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
+function phGapCard(){
+  if (!STATE.meta.phFull){ photosBackfill(); return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + '</div><p class="hint" style="margin:0">' + esc(t('جارٍ فحصُ صور الدرايف كلِّها على هذا الجهاز — مرةً في الأسبوع.')) + '</p></div>'; }
+  var by = {}, pts = 0, pics = 0;
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id], g = phGap(r, x.id); if (!g) return; pts++; pics += g; var w = dispName(r.by || '—'); (by[w] = by[w] || { p:0, n:0 }); by[w].p++; by[w].n += g; });
+  var devs = Object.keys(STATE.presence || {}).map(function(k){ return STATE.presence[k]; }).filter(function(d){ return d && +d.pq > 0; });
+  return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + ' — <b class="num" data-svlist="phgap" role="button" tabindex="0">' + nm(pts) + '</b> ' + esc(t('نقطة')) + ' · ' + nm(pics) + ' ' + esc(t('صورة')) + '</div>'
+    + (pts ? Object.keys(by).sort(function(a, b){ return by[b].n - by[a].n; }).map(function(w){ return '<div class="kk-zl" data-svlist="phgap" role="button" tabindex="0"><span>' + esc(w) + '</span><b>' + nm(by[w].n) + ' ' + esc(t('صورة')) + ' · ' + nm(by[w].p) + ' ' + esc(t('نقطة')) + '</b></div>'; }).join('')
+      : '<p class="hint" style="margin:0">' + esc(t('كلُّ صور الزيارات على الدرايف.')) + '</p>')
+    + (devs.length ? '<p class="hint" style="margin:6px 0 0">' + devs.map(function(d){ return esc(dispName(d.name || '')) + ': ' + nm(+d.pq) + ' ' + esc(t('صورة معلّقة على جهازه')) + (d.pqAge ? ' ' + esc(t('منذ')) + ' ' + nm(Math.round(d.pqAge / 60)) + ' ' + esc(t('ساعة')) : ''); }).join(' · ') + '</p>' : '')
+    + '<div class="actions" style="margin:6px 0 0">' + btn('\u21BB ' + t('أعد الفحص الآن'), 'btn-quiet btn-sm', ' data-phfull="1"') + '</div></div>';
+}
 function stageCounts(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
@@ -22321,6 +22363,7 @@ function mfuHeroHtml(){
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
     +   stageFunnel(SC) + gapCard(SC) + ccCard(SC)   /* (V37.0) */
+    +   (ROLE !== 'viewer' ? phGapCard() : '')   /* (V37.8) للمهندس: صورٌ ليست على الدرايف */
     + '</div></div>';
 }
 function mfuSummary(){
@@ -22417,7 +22460,8 @@ var SV_LISTS = {
   why_tech:['تحتاج زيارة تقنية — أعادها المهندس', function(x, r){ return svVisited(r) && svReached(r) && r.review === 'revisit'; }],
   why_none:['زيارة بلا مسح — بلا سبب مسجّل',  function(x, r){ return svStuck(r) && !visitWhy(r); }],
   cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
-  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
+  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }],   /* (V37.1) */
+  phgap:   ['صور ليست على الدرايف', function(x, r){ return !!STATE.meta.phFull && phGap(r, x.id) > 0; }]   /* (V37.8) */
 };
 /* (V37.4) قوائمُ الأسباب والفئات تُبنى عند الطلب — فالمسمّى المعدَّلُ والبندُ المضافُ لهما قائمتُهما أيضًا */
 function svDynList(key){
@@ -22508,7 +22552,7 @@ function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
-    + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
+    + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
@@ -22519,15 +22563,16 @@ function svListPop(){
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>'
-    + (SV_PHO ? (function(){ var px = siteFind(SV_PHO);
-        return '<div data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
-          + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2003;inset:4vh 3vw auto 3vw;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)">'
-          + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F4F7} ' + (px ? siteIdHtml(px) + ' <span class="hint" style="margin:0">' + esc(px.name || '') + '</span>' : esc(SV_PHO)) + '</h3>'
-          + btn('\u2715 ' + t('رجوع للقائمة'), 'btn-quiet btn-sm', ' data-svphoclose="1"') + '</div>'
-          + (px && STATE.recs[px.id] ? '<p class="hint" style="margin:6px 0 0">' + esc(svStateText(STATE.recs[px.id])) + '</p>' : '')
-          + (photosOf(SV_PHO).length ? '' : '<p class="hint">' + esc(photosMissingLine(SV_PHO, STATE.recs[SV_PHO])) + '</p>') + photoGalleryHtml(SV_PHO) + '</div>'; })() : '');
+    + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
+function svPhoPanel(id){ var px = siteFind(id);
+        return '<div id="svPhoVeil" data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
+          + '<div id="svPhoBox" class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpho" style="position:fixed;z-index:2003;inset:4vh 3vw auto 3vw;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)">'
+          + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F4F7} ' + (px ? siteIdHtml(px) + ' <span class="hint" style="margin:0">' + esc(px.name || '') + '</span>' : esc(id)) + '</h3>'
+          + btn('\u2715 ' + t('رجوع للقائمة'), 'btn-quiet btn-sm', ' data-svphoclose="1"') + '</div>'
+          + (px && STATE.recs[px.id] ? '<p class="hint" style="margin:6px 0 0">' + esc(svStateText(STATE.recs[px.id])) + '</p>' : '')
+          + (photosOf(id).length ? '' : '<p class="hint">' + esc(photosMissingLine(id, STATE.recs[id])) + '</p>') + photoGalleryHtml(id) + '</div>'; }
 function svListXlsx(key){
   var L = SV_LISTS[key] || svDynList(key) || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (svObKey(key) || /^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;   /* (V37.4) والديناميكية */
   toast(t('يُجهَّز ملفُّ إكسل…'));
@@ -25001,6 +25046,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.8', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'فتح الصور بقى أسلس: لما تفتح صور نقطة من أي قائمة وتقفلها، بترجع لنفس المكان اللي كنت فيه بالظبط. والصورة لما تكبّرها بتظهر فوق كل حاجة.',
+      'أي نافذة بتتمرّر: الراس بزرار ✕ ثابت فوق مهما نزلت.',
+      'للمهندس: كارت «صور ليست على الدرايف» في ملخص الوزارة (مش ظاهر للوزارة): عددها حسب كل فني، والصور المعلّقة على موبايل كل واحد ومن إمتى، وكل رقم بيفتح القائمة. وعلى موبايل الفني: شريط أصفر فوق الشاشة لو فيه صور ما اترفعتش من أكتر من ساعة، وفيه زرار «ارفع الآن».' ] },
   { v:'V37.7', d:'٨ أكتوبر ٢٠٢٦', notes:[
       '«الصور لم تصل هذا الجهاز بعد»: الصور كانت على الدرايف فعلًا، لكن الجهاز بيحمل في أول تشغيل أحدث ١٬٥٠٠ صورة بس من ٣٬٧٢٠. دلوقتي لما تفتح أي نقطة، صورها بتتجاب من القاعدة على طول وتظهر. ولو مش موجودة في القاعدة، بيقولك بالظبط: «لم تُرفع من جهاز فلان بعد».' ] },
   { v:'V37.6', d:'٨ أكتوبر ٢٠٢٦', notes:[
@@ -27088,7 +27137,7 @@ function presenceBeat(force){
               /* الاستهلاكُ والأداءُ والأعطالُ من الجهاز نفسِه (V17.34) */
               q:(STATE.queue || []).filter(function(it){ return it.kind !== 'presence' && it.kind !== 'stats'; }).length,
               pz:(STATE.poison || []).length,
-              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pfl:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0 /* (V31.1) كان `pf` فيمحوه مفتاحُ الأداء */,
+              pq:(typeof PHOTO_Q === 'object' && PHOTO_Q.length) || 0, pqAge:phQueueAge() /* (V37.8) دقائقُ أقدمِ صورةٍ معلّقة */, pfl:(typeof PHOTO_FAIL === 'object' && PHOTO_FAIL.length) || 0 /* (V31.1) كان `pf` فيمحوه مفتاحُ الأداء */,
               err:Object.keys(typeof ERR_SEEN === 'object' ? ERR_SEEN : {}).length,
               rms:perfAvg('r'), pms:perfAvg('p'), pulse:!!PULSE_UNSUB, up:Math.round((Date.now() - BOOT_AT) / 60000),
               /* قراءاتُ اليوم لا الجلسة — الجلسةُ قد تمتدّ أيامًا فيبدو الرقمُ فادحًا (V17.36) —
@@ -33311,7 +33360,9 @@ function scrollGrab(){
       if (i > -1){ boxes.push([SCROLL_SELS[q], i, top]); return; }
     }
   });
-  SCROLL_KEEP = { win:SCROLL_WIN, boxes:boxes };
+  var keys = {};   /* (V37.8) النوافذُ بمفتاحها: يُعاد موضعُها ولو تغيّر ترتيبُ ما قبلها */
+  SCROLL_SEEN.forEach(function(el){ var k = el.getAttribute && el.getAttribute('data-keepscroll'); if (!k) return; var tp = SCROLL_TOPS ? SCROLL_TOPS.get(el) : el.__nskTop; if (tp) keys[k] = tp; });
+  SCROLL_KEEP = { win:SCROLL_WIN, boxes:boxes, keys:keys };
 }
 function scrollBack(sameScreen){
   var K = SCROLL_KEEP; SCROLL_KEEP = null;
@@ -33320,6 +33371,7 @@ function scrollBack(sameScreen){
     var L = document.querySelectorAll(b[0]);
     if (L[b[1]]) L[b[1]].scrollTop = b[2];
   });
+  Object.keys(K.keys || {}).forEach(function(k){ var e = document.querySelector('[data-keepscroll="' + k.replace(/"/g, '') + '"]'); if (e) e.scrollTop = K.keys[k]; });
   if (K.win) window.scrollTo(0, K.win);
 }
 /* ═══ الأداءُ يُقاس لا يُحكى (V17.34) ═══
@@ -33428,7 +33480,8 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
-  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
+  try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
+  try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
@@ -33803,11 +33856,14 @@ function clickTables(e){
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
+  if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
   if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
   var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
-  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); render(1); return true; }
-  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; render(1); return true; }
+  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); var hostP = (svph.closest('.svpop') || {}).parentNode || document.getElementById('content');   /* (V37.8) بلا إعادة رسم */
+    if (hostP){ var tmpP = document.createElement('div'); tmpP.innerHTML = svPhoPanel(SV_PHO); while (tmpP.firstChild) hostP.appendChild(tmpP.firstChild); } else render(1); return true; }
+  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); return true; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return true; }
   var phd = e.target.closest('[data-phdl]');
@@ -36181,6 +36237,17 @@ document.addEventListener('keydown', function(e){
    كانت نافذةُ المساعد جزءًا من كلِّ رسمة — فأيُّ رسمٍ في الخلفية (وصولُ بيانات، مزامنة، تنزيل) يستبدلها وفيها الحقلُ الذي يكتب فيه
    المستخدم: تضيع البؤرة، ويعيد الآيفون حسابَ لوحة المفاتيح فتقفز الشاشة. صارت في حاويةٍ ثابتةٍ خارج الرسم: تُبنى مرةً عند الفتح،
    وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
+/* (V37.8) اقتراحُ المالك: على جهاز الفنيّ — صورٌ معلّقةٌ أكثرَ من ساعة تُقال بشريطٍ ثابتٍ أعلى الشاشة في كلِّ صفحة (والخريطةُ معها)،
+   بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
+function phStaleSync(){
+  var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
+  if (!n || mins < 60){ if (old) old.remove(); return; }
+  var html = '\u26A0 ' + esc(t('عندك')) + ' <b>' + nm(n) + '</b> ' + esc(t('صورة لم تُرفع منذ')) + ' ' + nm(Math.floor(mins / 60)) + ' ' + esc(t('ساعة')) + ' — '
+    + esc(STATE.meta.online ? t('اترك التطبيق مفتوحًا على الشبكة حتى تُرفع') : t('افتح الشبكة الآن — الصورُ على جهازك وحده'))
+    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>';
+  if (!old){ old = document.createElement('div'); old.id = 'phStale'; old.setAttribute('role', 'alert'); old.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:1900;background:#B8860B;color:#fff;border-radius:12px;padding:8px 12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.35)'; document.body.appendChild(old); }
+  if (old.innerHTML !== html) old.innerHTML = html;
+}
 function assistSync(){
   var host = document.getElementById('assistHost');
   if (!host){ if (!ASSIST_OPEN) return; host = document.createElement('div'); host.id = 'assistHost'; document.body.appendChild(host); }

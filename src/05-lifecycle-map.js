@@ -4839,6 +4839,17 @@ function mfuMilesCard(){
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
 function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
+function phGapCard(){
+  if (!STATE.meta.phFull){ photosBackfill(); return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + '</div><p class="hint" style="margin:0">' + esc(t('جارٍ فحصُ صور الدرايف كلِّها على هذا الجهاز — مرةً في الأسبوع.')) + '</p></div>'; }
+  var by = {}, pts = 0, pics = 0;
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id], g = phGap(r, x.id); if (!g) return; pts++; pics += g; var w = dispName(r.by || '—'); (by[w] = by[w] || { p:0, n:0 }); by[w].p++; by[w].n += g; });
+  var devs = Object.keys(STATE.presence || {}).map(function(k){ return STATE.presence[k]; }).filter(function(d){ return d && +d.pq > 0; });
+  return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + ' — <b class="num" data-svlist="phgap" role="button" tabindex="0">' + nm(pts) + '</b> ' + esc(t('نقطة')) + ' · ' + nm(pics) + ' ' + esc(t('صورة')) + '</div>'
+    + (pts ? Object.keys(by).sort(function(a, b){ return by[b].n - by[a].n; }).map(function(w){ return '<div class="kk-zl" data-svlist="phgap" role="button" tabindex="0"><span>' + esc(w) + '</span><b>' + nm(by[w].n) + ' ' + esc(t('صورة')) + ' · ' + nm(by[w].p) + ' ' + esc(t('نقطة')) + '</b></div>'; }).join('')
+      : '<p class="hint" style="margin:0">' + esc(t('كلُّ صور الزيارات على الدرايف.')) + '</p>')
+    + (devs.length ? '<p class="hint" style="margin:6px 0 0">' + devs.map(function(d){ return esc(dispName(d.name || '')) + ': ' + nm(+d.pq) + ' ' + esc(t('صورة معلّقة على جهازه')) + (d.pqAge ? ' ' + esc(t('منذ')) + ' ' + nm(Math.round(d.pqAge / 60)) + ' ' + esc(t('ساعة')) : ''); }).join(' · ') + '</p>' : '')
+    + '<div class="actions" style="margin:6px 0 0">' + btn('\u21BB ' + t('أعد الفحص الآن'), 'btn-quiet btn-sm', ' data-phfull="1"') + '</div></div>';
+}
 function stageCounts(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
@@ -4910,6 +4921,7 @@ function mfuHeroHtml(){
     +   '<div class="card" style="margin:0"><div class="pid">' + esc(t('مسار العمل الميداني — آخر ١٤ يومًا')) + '</div>' + spark
     +     '<div class="hint" style="margin:6px 0 0">' + esc(t('هذا الأسبوع')) + ' <b>' + nm(wk) + '</b> ' + esc(t('زيارة')) + ' (' + (trend >= 0 ? '+' : '') + nm(trend) + '٪ ' + esc(t('عن الأسبوع الماضي')) + ')' + (fc ? ' \u00b7 ' + esc(fc) : '') + '</div></div>'
     +   stageFunnel(SC) + gapCard(SC) + ccCard(SC)   /* (V37.0) */
+    +   (ROLE !== 'viewer' ? phGapCard() : '')   /* (V37.8) للمهندس: صورٌ ليست على الدرايف */
     + '</div></div>';
 }
 function mfuSummary(){
@@ -5006,7 +5018,8 @@ var SV_LISTS = {
   why_tech:['تحتاج زيارة تقنية — أعادها المهندس', function(x, r){ return svVisited(r) && svReached(r) && r.review === 'revisit'; }],
   why_none:['زيارة بلا مسح — بلا سبب مسجّل',  function(x, r){ return svStuck(r) && !visitWhy(r); }],
   cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
-  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
+  esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }],   /* (V37.1) */
+  phgap:   ['صور ليست على الدرايف', function(x, r){ return !!STATE.meta.phFull && phGap(r, x.id) > 0; }]   /* (V37.8) */
 };
 /* (V37.4) قوائمُ الأسباب والفئات تُبنى عند الطلب — فالمسمّى المعدَّلُ والبندُ المضافُ لهما قائمتُهما أيضًا */
 function svDynList(key){

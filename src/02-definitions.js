@@ -272,3 +272,31 @@ function photosMissingLine(siteId, rec){
     : st === 'err' ? t('تعذّر الجلبُ الآن — أعد المحاولة على الشبكة') : t('لم تصل هذا الجهاز بعد');
   return '\u{1F4F7} ' + t('الصور') + ': ' + nm(n) + ' \u00b7 ' + msg;
 }
+
+/* ── (V37.8) اقتراحا المالك بعد تدقيق الصور: قائمةٌ للمهندس بما ليس على الدرايف، وتنبيهُ الفنيِّ بصورٍ معلّقةٍ أكثرَ من ساعة ──
+   جهازُ المكتب (مشرفٌ فما فوق) يجلب وثائقَ الصور كلَّها مرةً في الأسبوع على صفحاتٍ من ألف — فيُعرَف بدقةٍ ما على الدرايف لكلِّ نقطة
+   (٣٬٧٢٠ وثيقةً اليوم، والسحبةُ العاديةُ أحدثُ ١٬٥٠٠). والقائمةُ تُحسَب منها وتتحدّث مع كلِّ رفعٍ جديد. */
+function phExpected(r){ return r ? Math.max(+r.phN || 0, Array.isArray(r.photos) ? r.photos.length : 0) : 0; }
+function phOnDrive(id){ return photosOf(id).filter(function(p){ return !p[1].del && (p[1].driveId || p[1].link); }).length; }
+function phGap(r, id){ if (!svVisited(r)) return 0; var n = phExpected(r); return n ? Math.max(0, n - phOnDrive(id)) : 0; }
+function photosBackfill(force){
+  if (!(typeof FB === 'object' && FB.ready && FB.db && typeof DB === 'object' && DB.col)) return Promise.resolve(0);
+  if (!(typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'))) return Promise.resolve(0);
+  if (!force && STATE.meta.phFull && Date.now() - STATE.meta.phFull < 7 * 864e5) return Promise.resolve(0);
+  if (photosBackfill.run) return photosBackfill.run;
+  var n = 0, last = null;
+  var step = function(){
+    var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
+    return q.get().then(function(sn){
+      FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, x); if (x._at != null) last = x._at; n++; });
+      if (sn.size === 1000 && last != null) return step();
+      STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
+      if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;
+    });
+  };
+  photosBackfill.run = step().catch(function(e){ photosBackfill.run = null; LS_ERR = e; return 0; });
+  return photosBackfill.run;
+}
+/* أقدمُ صورةٍ معلّقةٍ على هذا الجهاز — بالدقائق */
+function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; if (!Q.length) return 0; var old = Q.reduce(function(m, it){ return Math.min(m, +it.at || Date.now()); }, Date.now()); return Math.floor((Date.now() - old) / 60000); }
