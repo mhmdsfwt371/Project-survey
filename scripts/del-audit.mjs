@@ -22,5 +22,9 @@ for (const c of ['recs', 'inss', 'diss', 'tasks']){ const s = await db.collectio
 const ev = await db.collection('events').where('ts', '>=', Date.now() - 7 * 864e5).limit(20000).get(); const evs = [];
 ev.forEach(d => { const x = d.data() || {}; const w = String(x.what || ''); if (/حذف|إخفاء|أُخفيت|مخفي|حذفُ/.test(w)) evs.push({ t:T(x.ts), by:x.by, what:w.slice(0, 160) }); });
 out.deleteEvents = evs.sort((a, b) => a.t < b.t ? 1 : -1).slice(0, 200);
+/* ٥ · أجهزةُ اليوم ونسخُها — من لم يُحدِّث بعدُ (بلا حماية V36.8) */
+const pr = await db.collection('presence').get(); const dev = [];
+pr.forEach(d => { const x = d.data() || {}; if (+(x.at || 0) > Date.now() - 864e5) dev.push({ name:x.name || '', ver:x.ver || '', at:T(x.at) }); });
+out.devicesToday = dev.sort((a, b) => a.name < b.name ? -1 : 1);
 writeFileSync('/tmp/exp/del-audit.json', JSON.stringify(out));
 console.log('ok hidden', hid.length, 'deleted newsites', del.length, 'events', evs.length);
