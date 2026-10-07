@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-85ab24c532.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-09b8e1151b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3974,6 +3974,7 @@ function siteHide(id){
   var x = siteFind(id); if (!x) return false;
   /* (V36.1) طلبُ المالك: «كمهندس حتى لو تمت زيارتها أمسحها عادي» — كان الإخفاءُ يُرفض لنقطةٍ لها زيارةٌ أو تركيب. صار يُسمح للمهندس
      فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
+  var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var had = !!(STATE.recs[id] || STATE.inss[id]);
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
@@ -4019,6 +4020,7 @@ function siteDelete(id){
   if (!maySiteEdit()){ toast(t('حذفُ النقطة للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
   if (!x.isNew){ toast(t('نقاطُ السجل الأصلي لا تُحذَف — تُخفى وتُستعاد')); return false; }
+  var lk2 = siteLocked(id); if (lk2){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk2) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var links = siteDelLinks(id);
   ['recs', 'inss', 'diss', 'maints'].forEach(function(k){ if (STATE[k] && STATE[k][id]) CORE.rm(k, id); });
   Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) CORE.rm('tasks', k); });
@@ -4074,7 +4076,7 @@ function siteEditHtml(x){
     + '<div class="actions">'
     + btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-sitesave="' + esc(x.id) + '"')
     + btn(t('إلغاء'),'btn-quiet btn-sm',' data-sitecancel="1"')
-    + (x.isNew
+    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>' : x.isNew
         ? (SITE_DEL === x.id
             ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
             : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
@@ -7003,6 +7005,17 @@ function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخ�
 function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
   return '<b class="num">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
 function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
+
+/* ── قرارُ المالك (V36.4): ما رُكّب لا يُحذَف ── */
+/* «أيُّ حاجةٍ اتركّبت مينفعش تتمسح، ولا أيُّ خطوةٍ بعد التركيب — الجدولةُ ينفع تتمسح». فالنقطةُ التي رُكّبت أو بعدها خطوةٌ (تسليمٌ أو فكٌّ
+   أو صيانة) لا تُحذَف بأيِّ طريق، ولا سجلّاتُ تلك الخطوات. وما قبل التركيب (الزيارةُ والجدولةُ والإسناد) يُحذَف. */
+function siteLocked(id){
+  if (insDone(id)) return 'رُكّبت';
+  if (handDone(id)) return 'سُلّمت';
+  if (STATE.diss && STATE.diss[id]) return 'لها سجلُّ فك';
+  if (STATE.maints && STATE.maints[id]) return 'لها سجلُّ صيانة';
+  return '';
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
@@ -15179,7 +15192,7 @@ var GLOSSARY = [
   { t:'شاشة القاعة', d:'عرضٌ كبيرٌ للاجتماعات يتجدّد كلَّ دقيقة: نسبةُ الزيارة والتركيب، والمشاعر، والنقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع. من «متابعة الوزارة» ← «شاشة القاعة» ← «عرضٌ كامل».', k:['القاعة','العرض الكامل','الاجتماع','kiosk'] },
   { t:'رقم الشاخص', d:'المعرّفُ الأوّلُ لكلِّ مخيمٍ في منى وعرفات: رقمُ المخيم/رقمُ الشارع — مثل 25/56 = المخيمُ ٢٥ في الشارع ٥٦. يظهر أوّلًا في كلِّ نافذةٍ وجدولٍ وتصدير، ومعرّفُ النظام (NSK-…) تحته ثانيًا، وكلاهما يُبحَث به. وقد يكون في المخيم الواحد أكثرُ من شركة، فيظهر الشاخصُ نفسُه بسطرٍ لكلِّ شركةٍ واسمُها تحته.', k:['الشاخص','شاخص','رقم المخيم','اسم المخيم','25/56','اكثر من شركة'] },
   { t:'اسم الممر في ١٤٤٧', d:'المعرّفُ الأوّلُ للممرات المركّبة في الموسم الماضي — اسمُها المعروف مثل Path-Shaded-3R. والممراتُ الجديدةُ معرّفُها الأوّلُ المقترح (NSK-MIN-RDR-…) حتى تُسمّى.', k:['ممر','ممرات','path','Path-Shaded'] },
-  { t:'حذف نقطة', d:'للمهندس فما فوق: افتح النقطةَ على الخريطة ثم «🗑 حذف النقطة» وأكّد — أو من «تعديل بيانات النقطة» في تفاصيلها. تُحذَف ولو تمت زيارتُها: تختفي من كلِّ الأرقام وتبقى سجلّاتُها، وتُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.', k:['حذف','احذف','امسح النقطة','شيل نقطة','شيل النقطة','الغاء نقطة','اخفاء نقطة','نقطة مكررة','حذف موقع'] },
+  { t:'حذف نقطة', d:'للمهندس فما فوق: افتح النقطةَ على الخريطة ثم «🗑 حذف النقطة» وأكّد — أو من «تعديل بيانات النقطة» في تفاصيلها. تُحذَف ولو تمت زيارتُها: تختفي من كلِّ الأرقام وتبقى سجلّاتُها، وتُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع. أما ما رُكّب أو سُلّم أو فُكّ فلا يُحذَف (قرارُ المالك) ويظهر عليه قفل.', k:['حذف','احذف','امسح النقطة','شيل نقطة','شيل النقطة','الغاء نقطة','اخفاء نقطة','نقطة مكررة','حذف موقع'] },
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
@@ -15513,7 +15526,8 @@ function popHtml(){
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
   /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
      للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (typeof maySiteEdit === 'function' && maySiteEdit()) marks += '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
+  if (typeof maySiteEdit === 'function' && maySiteEdit()) marks += siteLocked(s.id) ? '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+    : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){
@@ -24637,6 +24651,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.4', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'قرار المالك: أي نقطة اتركّبت — أو بعد التركيب اتسلّمت أو اتفكّت أو اتعملها صيانة — ما بتتحذفش بأي طريقة، وبيظهر عليها قفل بدل زرار الحذف. اللي قبل التركيب (الزيارة والجدولة والإسناد) بيتحذف عادي.' ] },
   { v:'V36.3', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'زرار «🗑 حذف النقطة» بقى في نافذة كل نقطة، حتى النقط المضافة (زي كاميرات طريق الهجرة الجديدة) — كانت متستثنية. والحذف منه بيترجع من «نقاط مخفية»، والحذف النهائي للنقطة المضافة لسه موجود في «تعديل البيانات».' ] },
   { v:'V36.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
@@ -35151,7 +35167,9 @@ function onDocClickPart9(e){
                      logEvent('اعتماد مهمة — ' + tk.site); statBump(); toast(t('اعتُمد')); }
             render(1); return; }
   var tkr = e.target.closest('[data-tkrm]');
-  if (tkr){ CORE.rm('tasks', tkr.getAttribute('data-tkrm')); statBump();
+  if (tkr){ var tkx = STATE.tasks[tkr.getAttribute('data-tkrm')];   /* (V36.4) الجدولةُ تُحذَف؛ المنجَزُ لنقطةٍ رُكّبت لا */
+            if (tkx && /تم|معتمد|منجز/.test(String(tkx.status || '')) && siteLocked(tkx.site)){ toast(t('مهمةٌ منجزةٌ لنقطةٍ') + ' ' + t(siteLocked(tkx.site)) + ' — ' + t('لا تُحذَف')); return; }
+            CORE.rm('tasks', tkr.getAttribute('data-tkrm')); statBump();
             toast(t('أُلغيت')); render(1); return; }
 
   var sa = e.target.closest('[data-sat]');

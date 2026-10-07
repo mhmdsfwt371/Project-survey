@@ -97,3 +97,14 @@ function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخ�
 function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
   return '<b class="num">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
 function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
+
+/* ── قرارُ المالك (V36.4): ما رُكّب لا يُحذَف ── */
+/* «أيُّ حاجةٍ اتركّبت مينفعش تتمسح، ولا أيُّ خطوةٍ بعد التركيب — الجدولةُ ينفع تتمسح». فالنقطةُ التي رُكّبت أو بعدها خطوةٌ (تسليمٌ أو فكٌّ
+   أو صيانة) لا تُحذَف بأيِّ طريق، ولا سجلّاتُ تلك الخطوات. وما قبل التركيب (الزيارةُ والجدولةُ والإسناد) يُحذَف. */
+function siteLocked(id){
+  if (insDone(id)) return 'رُكّبت';
+  if (handDone(id)) return 'سُلّمت';
+  if (STATE.diss && STATE.diss[id]) return 'لها سجلُّ فك';
+  if (STATE.maints && STATE.maints[id]) return 'لها سجلُّ صيانة';
+  return '';
+}

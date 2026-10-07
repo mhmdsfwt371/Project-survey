@@ -140,8 +140,21 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
 });
 test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
   const { readFileSync, readdirSync } = await import('fs');
-  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel'];
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked'];
   const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
   NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
     others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
+});
+test('قرارُ المالك (V36.4): ما رُكّب لا يُحذَف — ولا ما بعده — والزيارةُ والجدولةُ تُحذفان', () => {
+  const S = w.STATE.sites, a = S[3], b = S[4], c = S[5];
+  w.STATE.inss[a.id] = { id:a.id, status:'مُركّب', at:Date.now() };
+  w.STATE.recs[b.id] = { id:b.id, at:Date.now(), access:'تم الوصول' };
+  (w.STATE.diss = w.STATE.diss || {})[c.id] = { id:c.id, status:'تم الفك' };
+  const was = w.ROLE; w.ROLE = 'admin';
+  try {
+    assert.ok(w.siteLocked(a.id) && w.siteLocked(c.id) && !w.siteLocked(b.id));
+    assert.equal(w.siteHide(a.id), false, 'المركَّبةُ لا تُحذَف'); assert.ok(w.siteFind(a.id));
+    assert.equal(w.siteHide(c.id), false, 'وما بعد التركيب (الفك) لا يُحذَف');
+    assert.equal(w.siteHide(b.id), true, 'والمزارةُ قبل التركيب تُحذَف'); assert.ok(!w.siteFind(b.id)); w.siteRestore(b.id);
+  } finally { w.ROLE = was; delete w.STATE.inss[a.id]; delete w.STATE.recs[b.id]; delete w.STATE.diss[c.id]; }
 });

@@ -196,6 +196,7 @@ function siteHide(id){
   var x = siteFind(id); if (!x) return false;
   /* (V36.1) طلبُ المالك: «كمهندس حتى لو تمت زيارتها أمسحها عادي» — كان الإخفاءُ يُرفض لنقطةٍ لها زيارةٌ أو تركيب. صار يُسمح للمهندس
      فما فوق؛ وسجلّاتُها لا تُمحى (تختفي من كلِّ الأرقام مع النقطة) فتعود كاملةً إن استُعيدت من «نقاطٌ مخفية». */
+  var lk = siteLocked(id); if (lk){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var had = !!(STATE.recs[id] || STATE.inss[id]);
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
@@ -241,6 +242,7 @@ function siteDelete(id){
   if (!maySiteEdit()){ toast(t('حذفُ النقطة للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x){ toast(t('لا نقطةَ بهذا المعرِّف')); return false; }
   if (!x.isNew){ toast(t('نقاطُ السجل الأصلي لا تُحذَف — تُخفى وتُستعاد')); return false; }
+  var lk2 = siteLocked(id); if (lk2){ toast(t('لا تُحذَف — النقطة') + ' ' + t(lk2) + ' ' + t('(ما رُكّب لا يُحذَف)')); return false; }   /* (V36.4) قرارُ المالك */
   var links = siteDelLinks(id);
   ['recs', 'inss', 'diss', 'maints'].forEach(function(k){ if (STATE[k] && STATE[k][id]) CORE.rm(k, id); });
   Object.keys(STATE.tasks || {}).forEach(function(k){ var w = STATE.tasks[k]; if (w && w.site === id) CORE.rm('tasks', k); });
@@ -296,7 +298,7 @@ function siteEditHtml(x){
     + '<div class="actions">'
     + btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-sitesave="' + esc(x.id) + '"')
     + btn(t('إلغاء'),'btn-quiet btn-sm',' data-sitecancel="1"')
-    + (x.isNew
+    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>' : x.isNew
         ? (SITE_DEL === x.id
             ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
             : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))

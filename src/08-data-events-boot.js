@@ -4512,7 +4512,9 @@ function onDocClickPart9(e){
                      logEvent('اعتماد مهمة — ' + tk.site); statBump(); toast(t('اعتُمد')); }
             render(1); return; }
   var tkr = e.target.closest('[data-tkrm]');
-  if (tkr){ CORE.rm('tasks', tkr.getAttribute('data-tkrm')); statBump();
+  if (tkr){ var tkx = STATE.tasks[tkr.getAttribute('data-tkrm')];   /* (V36.4) الجدولةُ تُحذَف؛ المنجَزُ لنقطةٍ رُكّبت لا */
+            if (tkx && /تم|معتمد|منجز/.test(String(tkx.status || '')) && siteLocked(tkx.site)){ toast(t('مهمةٌ منجزةٌ لنقطةٍ') + ' ' + t(siteLocked(tkx.site)) + ' — ' + t('لا تُحذَف')); return; }
+            CORE.rm('tasks', tkr.getAttribute('data-tkrm')); statBump();
             toast(t('أُلغيت')); render(1); return; }
 
   var sa = e.target.closest('[data-sat]');
