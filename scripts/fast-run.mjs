@@ -10,6 +10,7 @@ const STEPS = [
   ['الأسرارُ والسجلّاتُ العامة', 'node scripts/audit-secrets.mjs'],
   ['حزمةُ التسليم', 'node scripts/audit-runbooks.mjs'],
   ['المساعدُ والأدلة', 'node scripts/audit-manuals.mjs'],
+  ['التعديلُ الموحّد', 'node scripts/audit-edit.mjs'],
   ['صحةُ الكود — لا تراجع', 'node scripts/audit-health.mjs'],
   ['اختباراتُ الوحدة السريعة', 'node --test scripts/unit-core.mjs'],
   ['ما الجديد والنسخة', 'node scripts/audit-whatsnew.mjs'],

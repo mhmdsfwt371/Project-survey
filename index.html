@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.1</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.2</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-b278eae574.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-85ab24c532.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7003,6 +7003,91 @@ function siteShared(x){   /* (V35.1) كم سطرًا يحمل هذا الشاخ�
 function siteIdHtml(x){ if (!x) return ''; var k = siteKey(x), sh = siteShared(x) > 1 && x.co;
   return '<b class="num">' + bdi(k) + '</b>' + (sh ? '<div class="hint" style="margin:0;font-size:11px">' + esc(x.co) + '</div>' : '') + (k !== x.id ? '<div class="num hint" style="margin:0;font-size:11px">' + bdi(x.id) + '</div>' : ''); }
 function siteKeyLabel(x){ return x && x.type === 'مخيم' ? 'رقم الشاخص' : (x && x.type === 'ممر' && siteKey(x) !== x.id ? 'الاسم في ١٤٤٧' : 'المعرّف'); }
+
+/* ═══════════════════════════════════════════════════════════════════════════════
+   التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
+   ───────────────────────────────────────────────────────────────────────────────
+   كثيرٌ من سجلّات الإعدادات كان فيها «أضف» و«احذف» ولا «عدّل» — فيُحذَف العنصرُ ويُكتَب من جديد ويضيع تاريخُه.
+   هنا سجلٌّ واحدٌ يصف كلَّ قائمة: من أين تُقرأ، وبمَ يُعرَف العنصر (معرّفٌ أو موضعٌ في القائمة)، وحقولُه، ودالّةُ حفظها، ومن
+   يملك التعديل. وبعد كلِّ رسمٍ يُلحَق زرُّ «✎ تعديل» بجوار كلِّ زرِّ حذفٍ مسجَّلٍ هنا (gedInject) — فلا تُمسّ شاشاتُها،
+   ونافذةٌ واحدةٌ تعدّل أيَّ عنصر (gedHtml/gedSave). قائمةٌ جديدةٌ تُضاف بسطرٍ هنا، وجردُ الإضافة والتعديل والحذف يمشيها كلَّها.
+   ═══════════════════════════════════════════════════════════════════════════════ */
+var GED = null;   /* العنصرُ المفتوحُ للتعديل: { k:نوعُ القائمة, id:مفتاحُه } */
+var GED_REG = {
+  rk:  { t:'خطر',           del:'rkdel',  list:function(){ return risksList(); },  key:'id',  save:function(){ riskSave(); }, may:'settings',
+         f:[['t','وصف الخطر'], ['cat','الفئة'], ['p','الاحتمال (١–٥)','n'], ['i','الأثر (١–٥)','n'], ['resp','الاستجابة'], ['plan','الخطة'], ['own','المالك'], ['st','الحالة']] },
+  ls:  { t:'درس مستفاد',     del:'lsdel',  list:function(){ return lessList(); },   key:'#',   save:function(){ lessSave(); }, may:'settings',
+         f:[['p','المرحلة'], ['w','ما وقع'], ['a','ما نفعله بعده']] },
+  es:  { t:'قاعدة تصعيد',    del:'esdel',  list:function(){ return escList(); },    key:'#',   save:function(){ escSave(); }, may:'settings',
+         f:[['w','الحالة'], ['days','بعد كم يوم','n'], ['who','المسؤول'], ['to','يُصعَّد إلى'], ['act','الإجراء']] },
+  rc:  { t:'نشاط في المصفوفة', del:'rcdel', list:function(){ return raciList(); },   key:'#',   save:function(){ raciSave(); }, may:'settings',
+         f:[['a','النشاط'], ['R','المنفّذ'], ['A','المحاسَب'], ['C','المستشار'], ['I','المُبلَّغ']] },
+  jb:  { t:'وظيفة',          del:'jbdel',  list:function(){ return jobsList(); },   key:'id',  save:function(){ jobSave(); }, may:'users',
+         f:[['n','اسم الوظيفة'], ['d','الوصف']] },
+  vk:  { t:'نوع سيارة',      del:'vkdel',  list:function(){ return vehKinds(); },   key:'id',  save:function(){ vehKindSave(); }, may:'settings',
+         f:[['n','اسم النوع'], ['d','الوصف'], ['cap','السعة','n']] },
+  ty:  { t:'نوع نقطة',       del:'tydel',  list:function(){ return typesList(); },  key:'@',   save:function(){ typesSave(); }, may:'settings',
+         f:[['l','الاسم المعروض'], ['i','الرمز'], ['c','اللون']] },
+  vh:  { t:'سيارة',          del:'vhdel',  list:function(){ return STATE.vehicles || {}; }, key:'@', save:function(id, x){ vehSave(x); }, may:'fleet',
+         f:[['plate','رقم اللوحة'], ['model','الموديل'], ['year','سنة الصنع'], ['lic','رقم الرخصة'], ['licExp','انتهاء الرخصة'], ['insExp','انتهاء التأمين'], ['own','الملكية'], ['cost','التكلفة الشهرية','n'], ['note','ملاحظة']] },
+  sh:  { t:'شحنة',           del:'shdel',  list:function(){ return STATE.ships || {}; },    key:'@', save:function(id, x){ shipSave(x); }, may:'inventory',
+         f:[['ref','رقم الشحنة'], ['item','الصنف'], ['qty','الكمية','n'], ['sup','المورّد'], ['sent','تاريخ الإرسال'], ['eta','الوصول المتوقع']] },
+  bn:  { t:'نقاط زيادة',     del:'bndel',  list:function(){ return STATE.bonus || {}; },    key:'@', save:function(id, x){ CORE.set('bonus', id, x); statBump(); }, may:'approve',
+         f:[['tech','الفني'], ['pts','النقاط','n'], ['note','السبب']] },
+  it:  { t:'صنف',            del:'itdel',  list:function(){ return itemsList(); },  key:'code', save:function(id, x){ itemSave(); cfgSet('itPts', id, +x.pts || 0); cfgSet('itPrice', id, +x.price || 0); }, may:'settings',
+         f:[['name','اسم الصنف'], ['pts','النقاط','n'], ['price','السعر','n']] }
+};
+/* القائمةُ النصيةُ البسيطة (الموردون والفئات): العنصرُ نصٌّ واحد */
+GED_REG.sup = { t:'مورّد', del:'suprm', list:function(){ return supList(); }, key:'=', save:function(){ CORE.set('cfg', 'sups', supList().slice()); }, may:'money', f:[['=','الاسم']] };
+GED_REG.cat = { t:'فئة مشتريات', del:'catrm', list:function(){ return catList(); }, key:'=', save:function(){ CORE.set('cfg', 'cats', catList().slice()); }, may:'money', f:[['=','الاسم']] };
+
+function gedPerm(R){ return typeof may === 'function' && (may(R.may) || may('settings')); }
+/* العنصرُ وموضعُه من مفتاح زرِّ الحذف: «#» موضعٌ في القائمة، «@» مفتاحُ كائن، «=» النصُّ نفسُه، وغيرُه اسمُ حقلِ المعرّف */
+function gedFind(k, id){
+  var R = GED_REG[k]; if (!R) return null; var L = R.list(); if (!L) return null;
+  if (R.key === '#'){ var i = +id; return L[i] ? { x:L[i], i:i } : null; }
+  if (R.key === '@') return L[id] ? { x:L[id], i:id } : null;
+  if (R.key === '='){ var j = L.indexOf(id); return j > -1 ? { x:L[j], i:j } : null; }
+  for (var n = 0; n < L.length; n++) if (L[n] && String(L[n][R.key]) === String(id)) return { x:L[n], i:n };
+  return null;
+}
+/* بعد كلِّ رسم: «✎ تعديل» بجوار كلِّ زرِّ حذفٍ مسجَّل — لمن يملك التعديل */
+function gedInject(){
+  Object.keys(GED_REG).forEach(function(k){
+    var R = GED_REG[k]; if (!gedPerm(R)) return;
+    document.querySelectorAll('[data-' + R.del + ']').forEach(function(b){
+      if (b.previousElementSibling && b.previousElementSibling.hasAttribute('data-ged')) return;
+      var e = document.createElement('button'); e.type = 'button'; e.className = 'btn btn-quiet btn-sm'; e.setAttribute('data-ged', k + '|' + b.getAttribute('data-' + R.del));
+      e.textContent = '\u270E ' + t('تعديل'); e.style.marginInlineEnd = '4px'; b.parentNode.insertBefore(e, b);
+    });
+  });
+}
+function gedHtml(){
+  if (!GED) return '';
+  var R = GED_REG[GED.k], F = gedFind(GED.k, GED.id); if (!R || !F){ GED = null; return ''; }
+  var val = function(f){ return f[0] === '=' ? F.x : (F.x[f[0]] == null ? '' : F.x[f[0]]); };
+  return '<div class="pop" id="gedPop" style="width:min(460px,94vw)"><div class="pop-head"><div><h3>\u270E ' + esc(t('تعديل')) + ' — ' + esc(t(R.t)) + '</h3></div>'
+    + '<button type="button" class="btn btn-quiet btn-sm" data-gedx="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<div class="pop-body">' + R.f.map(function(f, n){ return '<div class="field"><label class="mini">' + esc(t(f[1])) + '</label><input id="gedF' + n + '" dir="auto"' + (f[2] === 'n' ? ' type="number"' : '') + ' value="' + esc(val(f)) + '"></div>'; }).join('') + '</div>'
+    + '<div class="pop-foot actions"><button type="button" class="btn btn-primary btn-sm" data-gedsave="1">\u{1F4BE} ' + esc(t('احفظ')) + '</button>'
+    + '<button type="button" class="btn btn-quiet btn-sm" data-gedx="0">' + esc(t('إلغاء')) + '</button></div></div>';
+}
+function gedSave(){
+  if (!GED) return false; var R = GED_REG[GED.k], F = gedFind(GED.k, GED.id);
+  if (!R || !F) return false;
+  if (!gedPerm(R)){ toast(t('التعديلُ لمن يملك هذه القائمة')); return false; }
+  var vals = R.f.map(function(f, n){ var el = document.getElementById('gedF' + n), v = el ? String(el.value || '').trim() : ''; return f[2] === 'n' ? (v === '' ? 0 : +v) : v; });
+  if (!vals[0] && vals[0] !== 0){ toast(t('الحقلُ الأوّلُ مطلوب')); return false; }
+  var L = R.list(), chg = [];
+  if (R.key === '='){ if (vals[0] !== F.x && L.indexOf(vals[0]) > -1){ toast(t('موجودٌ بالفعل')); return false; } L[F.i] = vals[0]; chg.push(R.f[0][1]); }
+  else R.f.forEach(function(f, n){ if (String(F.x[f[0]] == null ? '' : F.x[f[0]]) !== String(vals[n])){ F.x[f[0]] = vals[n]; chg.push(f[1]); } });
+  if (!chg.length){ GED = null; toast(t('لا تغيير')); return true; }
+  if (F.x && typeof F.x === 'object'){ F.x.edAt = Date.now(); F.x.edBy = (STATE.meta && STATE.meta.name) || ''; }
+  R.save(GED.id, F.x);
+  logEvent('تعديل ' + R.t + ' — ' + GED.id + ' \u00b7 ' + chg.join('، '));
+  toast(t('حُفظ التعديل'));
+  GED = null; return true;
+}
 
 /* ═══ ما سجّله الميدانُ يُقرأ بالعين المجرّدة (V16.89) ═══
    الوزارةُ تقيّم النقطةَ من بطاقتها: لا تفتح نموذجَ المسح ولا تملك زرَّه.
@@ -24550,6 +24635,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      '«✎ تعديل» بقى موجود جنب «حذف» في ١٣ قائمة كان فيها إضافة وحذف بس: سجل المخاطر، والدروس المستفادة، وقواعد التصعيد، ومصفوفة المسؤوليات، والوظائف، وأنواع السيارات، وأنواع النقاط، والسيارات، والشحنات، ونقاط الزيادة، وأصناف الكتالوج، والموردين، وفئات المشتريات. وكل تعديل بيتسجّل باسم اللي عمله.' ] },
   { v:'V36.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'حذف نقطة: المهندس بقى يقدر يحذف أي نقطة حتى لو اتزارت أو اتركّبت — من نافذة النقطة على الخريطة على طول (🗑 حذف النقطة) بتأكيد واحد. النقطة بتختفي من كل الأرقام، وزياراتها ما بتتمسحش، وتترجع كاملة من «نقاط مخفية» تحت قائمة المواقع.',
       'المساعد ما بقاش بيقفز لفوق وتحت وانت بتكتب: كان أي تحديث في الخلفية بيعيد رسم نافذته كلها وفيها خانة البحث. دلوقتي النافذة ثابتة والنتائج بس اللي بتتغيّر، وبتقعد فوق الكيبورد مش تحته. ولو سألته «حذف نقطة» بيقولّك فين.' ] },
@@ -32935,6 +33022,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
 }
 function render0(force){
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
+  try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
@@ -33071,7 +33159,7 @@ function render0(force){
          فتُفتَح حالتُه ولا يظهر شيء — تُبنى الطبقةُ ولا تجد أين تُلصَق. */
       mu.innerHTML = mapUIHtml()
         + (HELP_OPEN ? helpHtml() : '')
-        + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
+        + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
         + (QUEUE_OPEN ? queueHtml() : '');
       /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
       var busy = MAP_SELECT || MOVE_ID;
@@ -33110,7 +33198,7 @@ function render0(force){
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
-    + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
+    + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
     + (QUEUE_OPEN ? queueHtml() : '');
 
   labelCells(c);
@@ -33992,6 +34080,10 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var ged = e.target.closest('[data-ged]');   /* (V36.2) التعديلُ الموحّد */
+  if (ged){ var gp = ged.getAttribute('data-ged').split('|'); GED = { k:gp[0], id:gp.slice(1).join('|') }; render(1); return true; }
+  if (e.target.closest('[data-gedsave]')){ if (gedSave()) render(1); return true; }
+  if (e.target.closest('[data-gedx]')){ GED = null; render(1); return true; }
   var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
   if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
     var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');

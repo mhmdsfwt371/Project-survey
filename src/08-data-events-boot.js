@@ -2387,6 +2387,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
 }
 function render0(force){
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
+  try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
   if (typeof SVD === 'object' && !SVD.checked && document.getElementById('nav')){ SVD.checked = true; setTimeout(svDraftRestore, 1500); }   /* (V25.9) مسودةُ مسحٍ انقطع — بعد الإقلاع لا في أثنائه */
   var wasCur = RENDER_CUR, wasTab = TABS[CUR] ? tabCur(CUR) : '';
@@ -2523,7 +2524,7 @@ function render0(force){
          فتُفتَح حالتُه ولا يظهر شيء — تُبنى الطبقةُ ولا تجد أين تُلصَق. */
       mu.innerHTML = mapUIHtml()
         + (HELP_OPEN ? helpHtml() : '')
-        + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
+        + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
         + (QUEUE_OPEN ? queueHtml() : '');
       /* وقتَ التحديد أو النقل: الشاشةُ للعمل — تُخفى الأسطورةُ والعدّاد */
       var busy = MAP_SELECT || MOVE_ID;
@@ -2562,7 +2563,7 @@ function render0(force){
   c.innerHTML = (p.full ? p.body() : (head + p.body()))
     + moreHtml()   /* (V26.2) */
     + (HELP_OPEN ? helpHtml() : '')
-    + ''   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync */
+    + '' + gedHtml()   /* (V36.1) المساعدُ في حاويته الثابتة — assistSync؛ (V36.2) ونافذةُ التعديل الموحّد */
     + (QUEUE_OPEN ? queueHtml() : '');
 
   labelCells(c);
@@ -3444,6 +3445,10 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var ged = e.target.closest('[data-ged]');   /* (V36.2) التعديلُ الموحّد */
+  if (ged){ var gp = ged.getAttribute('data-ged').split('|'); GED = { k:gp[0], id:gp.slice(1).join('|') }; render(1); return true; }
+  if (e.target.closest('[data-gedsave]')){ if (gedSave()) render(1); return true; }
+  if (e.target.closest('[data-gedx]')){ GED = null; render(1); return true; }
   var phd = e.target.closest('[data-pophide]');   /* (V36.1) الحذفُ من نافذة النقطة */
   if (phd){ var pid = phd.getAttribute('data-pophide'), px = siteFind(pid), had = !!(STATE.recs[pid] || STATE.inss[pid]);
     var msg = t('حذف النقطة') + ' ' + (px ? siteKey(px) : pid) + '؟\n' + (had ? t('لها زيارةٌ أو تركيب — تختفي من كلِّ الأرقام وتبقى سجلّاتُها.') + '\n' : '') + t('تُستعاد من «نقاطٌ مخفية» أسفل قائمة المواقع.');
