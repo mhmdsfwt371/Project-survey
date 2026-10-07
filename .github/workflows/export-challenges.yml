@@ -144,22 +144,6 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/devices-now.mjs || true
-      - name: Deploy main's Firestore rules (one-off — V37.12 final delete)
-        env:
-          SA: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          git fetch -q origin main
-          mkdir -p /tmp/rules && cd /tmp/rules
-          for f in firestore.rules firestore.indexes.json firebase.json; do git -C "$GITHUB_WORKSPACE" show origin/main:$f > $f; done
-          grep -c 'siteWriteOk' firestore.rules
-          printf '%s' "$SA" > "$RUNNER_TEMP/sa.json"
-          GOOGLE_APPLICATION_CREDENTIALS="$RUNNER_TEMP/sa.json" npx -y firebase-tools@13 deploy --only firestore:rules --project project-survey-60600 --non-interactive
-      - name: Users end-to-end test (owner order)
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: |
-          git fetch -q origin main && git show origin/main:scripts/provision.mjs > scripts/provision-main.mjs
-          node scripts/users-e2e.mjs || true
       - name: Delete audit (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
