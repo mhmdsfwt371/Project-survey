@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.5</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.6</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-2f824b5859.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-7a2babb75a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7062,6 +7062,8 @@ GED_REG.depmem = { t:'عضو فريق', del:'depmemrm', list:function(){ var tm 
 GED_REG.tk = { t:'فني', del:'tkdel', list:function(){ return techsList(true); }, key:'n', may:'users', req:false,
   save:function(id, x){ var u = STATE.users && STATE.users[x.u]; if (!u) return; u.ph = x.ph; u.sup = x.sup; u.dept = x.dept; CORE.set('users', x.u, u); },
   f:[['ph','الجوال'], ['sup','المشرف'], ['dept','القسم']] };
+GED_REG.depteam = { t:'فريق فرعي', del:'depteamdel', list:function(){ return TEAMS; }, key:'id', may:'users',
+  save:function(id, x){ CORE.dirty('teams', id, x); }, f:[['n','اسم الفريق الفرعي']] };
 GED_REG.role = { t:'دور', del:'roledel', list:function(){ return (CFG.roles && CFG.roles.r) || {}; }, key:'@', may:'roles',
   save:function(){ CFG.roles.v = (CFG.roles.v || 0) + 1; CFG.roles.at = Date.now(); CORE.set('cfg', 'roles', CFG.roles); },
   f:[['n','اسم الدور']] };
@@ -7126,11 +7128,15 @@ var GDEL_REG = {
   ncr: { t:'بلاغ عدم مطابقة', anchor:'ncrok', may:'approve', run:function(i){ var x = NCRS[+i]; if (!x) return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ncr', 'NCR-' + (+i + 1), x); return x.cat || ('NCR-' + (+i + 1)); } },
   ipc: { t:'مستخلص', anchor:'ipcok', may:'money', run:function(i){ var x = IPCS[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ipc', 'IPC-' + (+i + 1), x); return x.period || ('IPC-' + (+i + 1)); } },
   chg: { t:'طلب تغيير', anchor:'chgok', may:'approve', run:function(i){ var x = CHANGES[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('changes', 'CR-' + (+i + 1), x); return x.kind || ('CR-' + (+i + 1)); } },
+  /* حركةُ مخزنٍ سُجّلت خطأً: تُحذَف خلال يومٍ من تسجيلها — والرصيدُ يُشتقّ من الحركات فيُصحَّح وحدَه. والاستهلاكُ لا يُحذَف (جزءٌ من التركيب — ق-٠١٤)،
+     وما مضى عليه يومٌ يُصحَّح بحركةٍ عكسية (إرجاعٌ أو شطب) كما في المحاسبة. */
+  mv:  { t:'حركة مخزون', anchor:'mvdel', direct:true, may:'inventory', run:function(id){ var L = STATE.moves || [], i = -1; L.forEach(function(m, k){ if (m && m.id === id) i = k; });
+         if (i < 0) return ''; var m = L[i]; if (m.kind === 'استهلاك' || Date.now() - (+m.at || 0) >= 864e5) return ''; L.splice(i, 1); CORE.set('moves', id, null); return m.kind + ' · ' + m.item + ' × ' + m.qty; } },
   va:  { t:'إسناد سيارة', anchor:'vaend', may:'fleet', run:function(id){ var a = (STATE.vehAsn || {})[id]; if (!a) return ''; delete STATE.vehAsn[id]; CORE.set('vehAsn', id, null); return a.to || a.who || id; } }
 };
 function gdelInject(){
   Object.keys(GDEL_REG).forEach(function(k){
-    var R = GDEL_REG[k]; if (!(typeof may === 'function' && (may(R.may) || may('settings')))) return;
+    var R = GDEL_REG[k]; if (R.direct || !(typeof may === 'function' && (may(R.may) || may('settings')))) return;
     document.querySelectorAll('[data-' + R.anchor + ']').forEach(function(b){
       if (b.nextElementSibling && b.nextElementSibling.hasAttribute('data-gdel')) return;
       var e = document.createElement('button'); e.type = 'button'; e.className = 'btn btn-quiet btn-sm'; e.style.color = '#E05252';
@@ -24695,6 +24701,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.6', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'حركة المخزن اللي اتسجّلت غلط بتتحذف في نفس يومها (والرصيد بيتصلّح لوحده)، ماعدا «الاستهلاك» لأنه جزء من التركيب. واللي فات عليها يوم بتتصلّح بحركة عكسية (إرجاع أو شطب) زي المحاسبة. واسم الفريق الفرعي بقى بيتعدّل.' ] },
   { v:'V36.5', d:'٧ أكتوبر ٢٠٢٦', notes:[
       '«🗑 حذف» بقى موجود في السجلات اللي كان فيها إضافة واعتماد من غير حذف: بلاغ عدم المطابقة وهو مفتوح، والمستخلص قبل ما يتعتمد، وطلب التغيير قبل القرار، وإسناد السيارة. المالي والجودة بيتلغوا (يفضلوا أثر بحالة «ملغى» ويخرجوا من الحسابات)، وما يتحذفوش بعد الاعتماد أو الإغلاق.',
       '«✎ تعديل» اتضاف كمان لـ: التجارب، وحوادث السلامة، وأعضاء الفرق، والفنيين (الجوال والمشرف والقسم — الاسم لأ عشان سجلاتهم بتحمله)، والأدوار. بكده بقوا ١٨ قائمة فيها تعديل موحّد.' ] },
@@ -26623,7 +26631,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
                           pill(t(m.kind), k), esc(m.item), N(m.qty),
                           esc(m.by || '—'),
                           '<span class="num">' + esc(m.site || '—') + '</span>',
-                          esc(m.user || '—')];
+                          esc(m.user || '—') + ((may('inventory') && m.kind !== 'استهلاك' && Date.now() - (+m.at || 0) < 864e5) ? ' <button type="button" class="btn btn-quiet btn-sm" style="color:#E05252" data-mvdel="' + esc(m.id) + '">\u{1F5D1}</button>' : '')];   /* (V36.6) */
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا حركاتٍ بعد.')) + '</p>',
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="invmv"') : '');
@@ -34148,6 +34156,8 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var mvd = e.target.closest('[data-mvdel]');   /* (V36.6) حركةُ مخزنٍ خاطئةٌ خلال يومها */
+  if (mvd){ if (window.confirm(t('حذف') + ' ' + t('حركة مخزون') + '؟')) gdelRun('mv', mvd.getAttribute('data-mvdel')); render(1); return true; }
   var gdl = e.target.closest('[data-gdel]');   /* (V36.5) الحذفُ الموحّد */
   if (gdl){ var dp = gdl.getAttribute('data-gdel').split('|'), dR = GDEL_REG[dp[0]];
     if (dR && window.confirm(t('حذف') + ' ' + t(dR.t) + '؟')) gdelRun(dp[0], dp.slice(1).join('|'));

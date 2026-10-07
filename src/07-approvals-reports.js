@@ -984,7 +984,7 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
                           pill(t(m.kind), k), esc(m.item), N(m.qty),
                           esc(m.by || '—'),
                           '<span class="num">' + esc(m.site || '—') + '</span>',
-                          esc(m.user || '—')];
+                          esc(m.user || '—') + ((may('inventory') && m.kind !== 'استهلاك' && Date.now() - (+m.at || 0) < 864e5) ? ' <button type="button" class="btn btn-quiet btn-sm" style="color:#E05252" data-mvdel="' + esc(m.id) + '">\u{1F5D1}</button>' : '')];   /* (V36.6) */
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا حركاتٍ بعد.')) + '</p>',
           may('exportAll') ? btn('⬇ إكسل','btn-secondary btn-sm',' data-xls="invmv"') : '');

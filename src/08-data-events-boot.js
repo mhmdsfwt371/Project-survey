@@ -3446,6 +3446,8 @@ function clickAPart7(e){
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
   if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  var mvd = e.target.closest('[data-mvdel]');   /* (V36.6) حركةُ مخزنٍ خاطئةٌ خلال يومها */
+  if (mvd){ if (window.confirm(t('حذف') + ' ' + t('حركة مخزون') + '؟')) gdelRun('mv', mvd.getAttribute('data-mvdel')); render(1); return true; }
   var gdl = e.target.closest('[data-gdel]');   /* (V36.5) الحذفُ الموحّد */
   if (gdl){ var dp = gdl.getAttribute('data-gdel').split('|'), dR = GDEL_REG[dp[0]];
     if (dR && window.confirm(t('حذف') + ' ' + t(dR.t) + '؟')) gdelRun(dp[0], dp.slice(1).join('|'));

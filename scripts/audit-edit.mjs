@@ -27,6 +27,7 @@ const SEED = {
   hse:() => { w.HSE.incidents.unshift({ kind:'إصابة', site:'', lost:0, why:'حادثُ تجربة' }); return '0'; },
   depmem:() => { w.TEAMS.push({ id:'tmT', name:'فريقُ تجربة', members:[{ name:'فنيُّ تجربة', role:'tech', share:50 }] }); w.CTEAM_CUR = 'tmT'; return '0'; },
   tk:() => { (w.STATE.users = w.STATE.users || {}).uT = { name:'فنيُّ التجربة', role:'tech', ph:'0500000000' }; return 'فنيُّ التجربة'; },
+  depteam:() => { w.TEAMS.push({ id:'CTT', n:'فريقُ فرعيُّ تجربة', crew:'', kind:'', members:[] }); return 'CTT'; },
   role:() => { w.CFG.roles = w.CFG.roles || { r:{} }; w.CFG.roles.r = w.CFG.roles.r || {}; w.CFG.roles.r.rT = { n:'دورُ تجربة', base:'tech', custom:true }; return 'rT'; }
 };
 const kinds = Object.keys(w.GED_REG);
@@ -56,6 +57,9 @@ for (const k of kinds){
   T(n === 4 && ok && w.NCRS[ni].st === 'ملغى' && w.IPCS[ii].st === 'ملغى' && w.CHANGES[ci].st === 'ملغى' && !w.STATE.vehAsn.vaT && sum1 === sum0 - 1000,
     'الحذفُ الموحّد: «🗑 حذف» بجوار خطوة البلاغ والمستخلص والطلب والإسناد، والملغى يخرج من مجموع المستخلصات');
   T(w.gdelRun('ipc', String(ij)) === false && w.IPCS[ij].st === 'معتمد', 'والمستخلصُ المعتمَدُ لا يُحذَف');
+  (w.STATE.moves = w.STATE.moves || []).push({ id:'mvT', kind:'توريد', item:'قارئ', qty:3, at:Date.now() }, { id:'mvC', kind:'استهلاك', item:'قارئ', qty:1, at:Date.now() }, { id:'mvO', kind:'صرف', item:'قارئ', qty:1, at:Date.now() - 2 * 864e5 });
+  T(w.gdelRun('mv', 'mvT') === true && !w.STATE.moves.some(m => m.id === 'mvT') && w.gdelRun('mv', 'mvC') === false && w.gdelRun('mv', 'mvO') === false,
+    'وحركةُ المخزن الخاطئة تُحذَف في يومها — لا الاستهلاكُ (جزءُ التركيب) ولا القديمة (تُعكَس)');
   host.remove(); }
 const ev = JSON.stringify(w.STATE.evlog || {}) + JSON.stringify(w.STATE.events || []);
 T(/تعديل خطر/.test(ev) || /تعديل/.test(ev), 'والتعديلُ يُسجَّل في الأحداث');

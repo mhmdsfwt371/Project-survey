@@ -44,6 +44,8 @@ GED_REG.depmem = { t:'عضو فريق', del:'depmemrm', list:function(){ var tm 
 GED_REG.tk = { t:'فني', del:'tkdel', list:function(){ return techsList(true); }, key:'n', may:'users', req:false,
   save:function(id, x){ var u = STATE.users && STATE.users[x.u]; if (!u) return; u.ph = x.ph; u.sup = x.sup; u.dept = x.dept; CORE.set('users', x.u, u); },
   f:[['ph','الجوال'], ['sup','المشرف'], ['dept','القسم']] };
+GED_REG.depteam = { t:'فريق فرعي', del:'depteamdel', list:function(){ return TEAMS; }, key:'id', may:'users',
+  save:function(id, x){ CORE.dirty('teams', id, x); }, f:[['n','اسم الفريق الفرعي']] };
 GED_REG.role = { t:'دور', del:'roledel', list:function(){ return (CFG.roles && CFG.roles.r) || {}; }, key:'@', may:'roles',
   save:function(){ CFG.roles.v = (CFG.roles.v || 0) + 1; CFG.roles.at = Date.now(); CORE.set('cfg', 'roles', CFG.roles); },
   f:[['n','اسم الدور']] };
@@ -108,11 +110,15 @@ var GDEL_REG = {
   ncr: { t:'بلاغ عدم مطابقة', anchor:'ncrok', may:'approve', run:function(i){ var x = NCRS[+i]; if (!x) return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ncr', 'NCR-' + (+i + 1), x); return x.cat || ('NCR-' + (+i + 1)); } },
   ipc: { t:'مستخلص', anchor:'ipcok', may:'money', run:function(i){ var x = IPCS[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('ipc', 'IPC-' + (+i + 1), x); return x.period || ('IPC-' + (+i + 1)); } },
   chg: { t:'طلب تغيير', anchor:'chgok', may:'approve', run:function(i){ var x = CHANGES[+i]; if (!x || x.st !== 'مقدَّم') return ''; x.st = 'ملغى'; x.cancelBy = STATE.meta.name || ''; x.cancelAt = Date.now(); CORE.dirty('changes', 'CR-' + (+i + 1), x); return x.kind || ('CR-' + (+i + 1)); } },
+  /* حركةُ مخزنٍ سُجّلت خطأً: تُحذَف خلال يومٍ من تسجيلها — والرصيدُ يُشتقّ من الحركات فيُصحَّح وحدَه. والاستهلاكُ لا يُحذَف (جزءٌ من التركيب — ق-٠١٤)،
+     وما مضى عليه يومٌ يُصحَّح بحركةٍ عكسية (إرجاعٌ أو شطب) كما في المحاسبة. */
+  mv:  { t:'حركة مخزون', anchor:'mvdel', direct:true, may:'inventory', run:function(id){ var L = STATE.moves || [], i = -1; L.forEach(function(m, k){ if (m && m.id === id) i = k; });
+         if (i < 0) return ''; var m = L[i]; if (m.kind === 'استهلاك' || Date.now() - (+m.at || 0) >= 864e5) return ''; L.splice(i, 1); CORE.set('moves', id, null); return m.kind + ' · ' + m.item + ' × ' + m.qty; } },
   va:  { t:'إسناد سيارة', anchor:'vaend', may:'fleet', run:function(id){ var a = (STATE.vehAsn || {})[id]; if (!a) return ''; delete STATE.vehAsn[id]; CORE.set('vehAsn', id, null); return a.to || a.who || id; } }
 };
 function gdelInject(){
   Object.keys(GDEL_REG).forEach(function(k){
-    var R = GDEL_REG[k]; if (!(typeof may === 'function' && (may(R.may) || may('settings')))) return;
+    var R = GDEL_REG[k]; if (R.direct || !(typeof may === 'function' && (may(R.may) || may('settings')))) return;
     document.querySelectorAll('[data-' + R.anchor + ']').forEach(function(b){
       if (b.nextElementSibling && b.nextElementSibling.hasAttribute('data-gdel')) return;
       var e = document.createElement('button'); e.type = 'button'; e.className = 'btn btn-quiet btn-sm'; e.style.color = '#E05252';
