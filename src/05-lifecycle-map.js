@@ -4116,7 +4116,7 @@ function chalKeys(list){
   return out;
 }
 function svdChals(r){   /* (V37.3) الفئاتُ الثماني في تفصيل المسح أيضًا — وما لم يُصنَّف «يراجع المهندس تصنيفه» */
-  return chalCats(r).map(function(k){ return k === 'review' ? 'يراجع المهندسُ تصنيفَه' : ccOf(k).n; });
+  return chalCats(r).map(function(k){ return k === 'review' || !ccOf(k) ? 'يراجع المهندسُ تصنيفَه' : ccOf(k).n; });
 }
 /* النصوصُ الحرّةُ تحت «أخرى» — تُطبَّع (مسافاتٌ وتشكيلٌ وهمزات) وتُعَدّ، ليقرّر المهندسُ ما يصير خيارًا */
 function chalOtherTexts(){
@@ -4606,7 +4606,7 @@ function kioskBody(){
   var kinds = {}, people = {};
   steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
   var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
-  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review' || !ccOf(k)) return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var chTop = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 4);
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
@@ -4699,7 +4699,7 @@ function mfuPut(sec, id, entry){
 /* (V37.3) الفئاتُ الثماني وأسبابُ عدم المسح تأخذ جهةَ صيغتها القديمة افتراضًا — فلا تسقط كلُّها إلى «شركة الخدمة» */
 function mfuOwnDefOf(cat){
   if (MFU.ownDef[cat]) return MFU.ownDef[cat];
-  var cc = CHAL_CATS.filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
+  var cc = ccList().filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
   if (cc){ var old = Object.keys(CHAL_FROM).filter(function(o){ return CHAL_FROM[o] === cc.k && MFU.ownDef[o]; })[0]; if (old) return MFU.ownDef[old]; if (cc.k === 'mount') return MFU.ownDef['لا يوجد سطح تثبيت']; }
   return '';
 }
@@ -4725,7 +4725,7 @@ function svStats(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
     var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
-    var ch = (r && svDone(r)) ? chalCats(r).filter(function(k){ return k !== 'review'; }).map(function(k){ return ccOf(k).n; }) : [];   /* (V37.3) الفئاتُ الثماني */
+    var ch = (r && svDone(r)) ? chalCats(r).filter(function(k){ return k !== 'review' && ccOf(k); }).map(function(k){ return ccOf(k).n; }) : [];   /* (V37.3) الفئاتُ الثماني */
     var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
     o.n++; z.n++; O.tot++;
     if (done){ o.sv++; z.sv++; O.sv++; }
@@ -4838,6 +4838,7 @@ function mfuMilesCard(){
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
+function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
 function stageCounts(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
@@ -4860,18 +4861,18 @@ function stageFunnel(c){
     + '</div>';
 }
 function gapCard(c){
-  var rows = VISIT_WHY.map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
+  var rows = whyList().map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
   rows.push(['تحتاج زيارة تقنية — أعادها المهندس', 'أفاقي — زيارة تقنية', c.tech, 'why_tech']);
   if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', 'أفاقي', c.none, 'why_none']);
-  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b></div>'
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b>' + catEditLink() + '</div>'
     + rows.filter(function(r){ return r[2]; }).map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
     + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
     + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
 }
 function ccCard(c){
-  var rows = CHAL_CATS.map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
+  var rows = ccList().map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
   if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', 'أفاقي', c.review, 'cc_review']);
-  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + '</div>'
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + catEditLink() + '</div>'
     + (rows.length ? rows.map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
       : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
 }
@@ -4896,7 +4897,7 @@ function mfuHeroHtml(){
   var dd = dayDone(today); dd.hand = 0;   /* (V34.3) التسليمُ اليوم من محضر التسليم في سجلّ التركيب */
   Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
-  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review' || !ccOf(k)) return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
@@ -5007,5 +5008,9 @@ var SV_LISTS = {
   cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
   esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
 };
-VISIT_WHY.forEach(function(o){ SV_LISTS['why_' + o.k] = [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }]; });
-CHAL_CATS.forEach(function(o){ SV_LISTS['cc_' + o.k] = [o.n, function(x, r){ return chalCats(r).indexOf(o.k) > -1; }]; });
+/* (V37.4) قوائمُ الأسباب والفئات تُبنى عند الطلب — فالمسمّى المعدَّلُ والبندُ المضافُ لهما قائمتُهما أيضًا */
+function svDynList(key){
+  var m = /^why_(.+)$/.exec(key); if (m && m[1] !== 'tech' && m[1] !== 'none'){ var o = whyOf(m[1]); return o ? [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }] : null; }
+  m = /^cc_(.+)$/.exec(key); if (m && m[1] !== 'review'){ var c = ccOf(m[1]); return c ? [c.n, function(x, r){ return chalCats(r).indexOf(c.k) > -1; }] : null; }
+  return null;
+}

@@ -140,7 +140,7 @@ test('قرارُ المالك (V35.0/V35.1): المعرّفُ الأوّل — �
 });
 test('مراجعةُ الفريق (V36.0): تعريفاتُ النقطة في ملفٍّ واحد — لا تُعرَّف في غيره', async () => {
   const { readFileSync, readdirSync } = await import('fs');
-  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming','visitWhy','chalCats','arKey','whyOf','ccOf'];
+  const NAMES = ['svVisited','svReached','svStuck','svDone','svHasChal','svNeedsRevisit','svClean','svObstacle','chalShow','insDone','handOf','handDone','disDone','siteKey','siteOf','siteShared','siteIdHtml','siteKeyLabel','siteLocked','siteOvIncoming','visitWhy','chalCats','arKey','whyOf','ccOf','catMerge','whyList','ccList','chalNames','chalsToCats','chalCatNames','svStateText','stuckAge','stuckEsc','catCached'];
   const defs = readFileSync('src/02-definitions.js', 'utf8'), others = readdirSync('src').filter(f => /\.js$/.test(f) && f !== '02-definitions.js').map(f => [f, readFileSync('src/' + f, 'utf8')]);
   NAMES.forEach(n => { assert.ok(new RegExp('\\nfunction ' + n + '\\(').test(defs), n + ' في ملف التعريفات');
     others.forEach(([f, s]) => assert.ok(!new RegExp('\\nfunction ' + n + '\\(').test(s), n + ' معرَّفةٌ أيضًا في ' + f)); });
@@ -195,4 +195,16 @@ test('قرارُ المالك (V37.0): الزيارةُ غيرُ المسح، و
   assert.equal(JSON.stringify(w.chalCats({ chals:['أخرى — اذكرها في وصف التحدي'], chal_note:'يمكن التركيب عليها مباشرة دون الحاجة الى هيكل معدني' })), JSON.stringify([]), 'والملاحظةُ الإيجابيةُ ليست تحدّيًا');
   assert.equal(w.VISIT_WHY.length, 5); assert.equal(w.CHAL_CATS.length, 8);
   const c = w.stageCounts(); assert.ok(c.vis >= c.srv && c.gap === Object.values(c.why).reduce((a, b) => a + b, 0) + c.tech + c.none, 'الفرقُ = مجموعُ أسبابه');
+});
+test('طلبُ المالك (V37.4): المسمّياتُ والجهاتُ تُعدَّل من الإعدادات بالمفتاح — والسجلُّ يقرأ أحدثَ اسم', () => {
+  const was = w.CFG.cats;
+  try {
+    w.CFG.cats = { why:[{ k:'closed', n:'البوابة مقفولة', who:'مقاول المخيم', photo:true, off:false }], cc:[{ k:'legacy', n:'', who:'', off:true }, { k:'uX', n:'مظلّة تحجب الرؤية', who:'كدانة' }] };
+    w.CFG_VER = (w.CFG_VER || 0) + 1;
+    assert.equal(w.whyOf('closed').n, 'البوابة مقفولة'); assert.equal(w.whyOf('closed').who, 'مقاول المخيم');
+    assert.equal(w.ccOf('legacy').n, 'منظومة قائمة لجهة أخرى', 'الاسمُ الفارغُ يعود إلى الأصل');
+    assert.ok(w.chalNames().indexOf('منظومة قائمة لجهة أخرى') < 0 && w.chalNames().indexOf('مظلّة تحجب الرؤية') > -1, 'المعطَّلُ يخرج من قائمة الميدان والمضافُ يدخلها');
+    assert.equal(w.visitWhy({ access:'منع دخول', why:'closed' }), 'closed');
+    assert.equal(JSON.stringify(Array.from(w.chalCats({ chals:['منظومة قائمة لجهة أخرى'] }))), JSON.stringify(['legacy']), 'والسجلُّ المحفوظُ بالاسم الأصليِّ يبقى مقروءًا');
+  } finally { w.CFG.cats = was; w.CFG_VER = (w.CFG_VER || 0) + 1; }
 });

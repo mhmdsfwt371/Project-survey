@@ -1233,7 +1233,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.3</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.4</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1295,7 +1295,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-9c2353d0e5.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-069c86a621.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7083,7 +7083,7 @@ var WHY_RULES = [
 ];
 function visitWhy(r){
   if (!r || r.deleted || !svStuck(r)) return null;
-  if (r.why && VISIT_WHY.some(function(o){ return o.k === r.why; })) return r.why;
+  if (r.why && whyList().some(function(o){ return o.k === r.why; })) return r.why;
   var txt = arKey([r.note, r.chal_note, r.chalNote].join(' '));
   for (var i = 0; i < WHY_RULES.length; i++) if (WHY_RULES[i][1].test(txt)) return WHY_RULES[i][0];
   return { 'منع دخول':'denied', 'غير موجود':'missing', 'يحتاج تصريح':'permit' }[r.access] || null;
@@ -7108,7 +7108,7 @@ function chalCats(r){
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
     c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
-    var cd = CHAL_CATS.filter(function(o){ return o.n === c; })[0]; if (cd){ add(cd.k); return; }
+    var cd = ccList().filter(function(o){ return o.n === c || o.base === c; })[0]; if (cd){ add(cd.k); return; }
     if (/^لا يوجد سطح تثبيت/.test(c)){ add('mount'); return; }
     if (CHAL_FROM[c]){ add(CHAL_FROM[c]); return; }
     var nc = arKey(c); if (/^المدخل غير واضح/.test(nc)){ add('entry'); return; }
@@ -7122,17 +7122,33 @@ function chalCats(r){
   });
   return out;
 }
-function whyOf(k){ return VISIT_WHY.filter(function(o){ return o.k === k; })[0] || null; }
-function ccOf(k){ return CHAL_CATS.filter(function(o){ return o.k === k; })[0] || null; }
+/* (V37.4) طلبُ المالك: «أقدر أغيّر وأعدّل المسميات والجهات اللي تحل» — الأصلُ في الشيفرة، وما يُعدَّل في الإعدادات (CFG.cats) يُدمَج
+   بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
+   فالسجلّاتُ (r.why وr.chalCats) تبقى مقروءةً بأحدث اسم. */
+if (!('cats' in CFG)) CFG.cats = null;
+function catMerge(base, ov){
+  var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n }; });
+  (Array.isArray(ov) ? ov : []).forEach(function(o){
+    if (!o || !o.k) return; var e = L.filter(function(x){ return x.k === o.k; })[0];
+    if (e){ if (o.n) e.n = String(o.n); if (o.who != null) e.who = String(o.who); if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off; }
+    else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true });
+  });
+  return L;
+}
+function catCached(name, base, ov){ var c = catCached[name]; if (c && c.ref === ov && c.v === CFG_VER) return c.L; var L = catMerge(base, ov); catCached[name] = { ref:ov, v:CFG_VER, L:L }; return L; }
+function whyList(){ return catCached('why', VISIT_WHY, CFG.cats && CFG.cats.why); }
+function ccList(){ return catCached('cc', CHAL_CATS, CFG.cats && CFG.cats.cc); }
+function whyOf(k){ return whyList().filter(function(o){ return o.k === k; })[0] || null; }
+function ccOf(k){ return ccList().filter(function(o){ return o.k === k; })[0] || null; }
 
 /* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
 var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
-function chalNames(){ return ['لا توجد تحديات'].concat(CHAL_CATS.map(function(o){ return o.n; })); }
+function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
   var L = Array.isArray(chals) ? chals : [], names = chalNames();
   if (L.every(function(c){ return names.indexOf(c) > -1; })) return L.slice();
-  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review'; });
+  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review' && ccOf(k); });
   var out = ks.map(function(k){ return ccOf(k).n; });
   if (!out.length && L.indexOf('لا توجد تحديات') > -1) out.push('لا توجد تحديات');
   return out;
@@ -7147,13 +7163,13 @@ function stuckEsc(r){ return !!(r && svStuck(r) && ((+r.tries || 1) >= 3 || stuc
 function chalCatNames(r){
   var note = String((r && (r.chal_note || r.chalNote || r.note)) || '').replace(/\s+/g, ' ').trim();
   return chalCats(r).map(function(k){
-    if (k !== 'review') return t(ccOf(k).n);
+    if (k !== 'review') return ccOf(k) ? t(ccOf(k).n) : k;
     return note ? (note.length > 70 ? note.slice(0, 70) + '…' : note) : t('تحدٍّ بلا وصف — يراجعه المهندس');
   });
 }
 function svStateText(r){
   if (!svVisited(r)) return t('لم تُزر بعد');
-  if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
+  if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w && whyOf(w) ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
   var cc = chalCatNames(r), pre = r.review === 'revisit' ? t('تحتاج زيارة تقنية — أعادها المهندس') : '';
   return [pre, cc.length ? cc.join('، ') : (pre ? '' : t('لا توجد تحديات'))].filter(Boolean).join(' \u00b7 ');
 }
@@ -7291,6 +7307,52 @@ function gdelRun(k, id){
   if (!(typeof may === 'function' && (may(R.may) || may('settings')))){ toast(t('الحذفُ لمن يملك هذه القائمة')); return false; }
   var what = R.run(id); if (!what){ toast(t('لا يُحذَف في حالته الحالية')); return false; }
   logEvent('حذف ' + R.t + ' — ' + what); toast(t('حُذف')); statBump(); return true;
+}
+
+/* ═══ (V37.4) محرّرُ تصنيفات الزيارة والمسح — المسمّياتُ وجهاتُ الحل وصورةُ الإثبات والظهورُ في قائمة الميدان ═══
+   طلبُ المالك: «أقدر أغيّر وأعدّل كل الحاجات دي — المسميات والجهات اللي تحل». يُحفَظ في CFG.cats ويصل كلَّ الأجهزة مع المزامنة.
+   المفتاحُ ثابت؛ فتغييرُ الاسم لا يمسّ سجلًّا، وتعطيلُ البند يُخفيه من قائمة الميدان ويُبقي عدَّ ما سُجّل به. */
+var CAT_NEW = { why:[], cc:[] };
+/* ما يُكتب يُحفَظ مسودّةً لحظةَ كتابته — فأيُّ إعادة رسمٍ (مزامنةٌ في الخلفية أو زرُّ «＋») لا تمسحه قبل «حفظ التصنيفات» */
+var CAT_DRAFT = {};
+document.addEventListener('input', catDraftCatch, true); document.addEventListener('change', catDraftCatch, true);
+function catDraftCatch(e){ var el = e.target; if (!el || !el.getAttribute) return;
+  ['data-catn', 'data-catw', 'data-catp', 'data-cato'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
+function catD(a, id, def){ var v = CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
+function catRow(kind, o){ var id = kind + '|' + o.k;
+    o = { k:o.k, base:o.base, n:catD('data-catn', id, o.n || ''), who:catD('data-catw', id, o.who || ''), photo:catD('data-catp', id, !!o.photo), off:!catD('data-cato', id, !o.off) };
+    return '<tr><td><input data-catn="' + esc(id) + '" value="' + esc(o.n || '') + '" dir="auto" placeholder="' + esc(t(o.base || 'المسمّى')) + '" style="width:100%;min-width:180px"></td>'
+      + '<td><input data-catw="' + esc(id) + '" value="' + esc(o.who || '') + '" dir="auto" style="width:100%;min-width:120px"></td>'
+      + (kind === 'why' ? '<td style="text-align:center"><input type="checkbox" data-catp="' + esc(id) + '"' + (o.photo ? ' checked' : '') + ' aria-label="' + esc(t('صورة إثبات')) + '"></td>' : '')
+      + '<td style="text-align:center"><input type="checkbox" data-cato="' + esc(id) + '"' + (o.off ? '' : ' checked') + ' aria-label="' + esc(t('في قائمة الميدان')) + '"></td></tr>'; }
+function catsCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  var row = catRow;
+  var tbl = function(kind, L, head){
+    var news = CAT_NEW[kind].map(function(k){ return row(kind, { k:k, n:'', who:'', photo:false }); }).join('');
+    return '<div class="tablewrap"><table class="tbl"><thead><tr>' + head.map(function(h){ return '<th>' + esc(t(h)) + '</th>'; }).join('') + '</tr></thead><tbody id="catBody-' + kind + '">'
+      + L.map(function(o){ return row(kind, o); }).join('') + news + '</tbody></table></div>'
+      + '<div class="actions" style="margin:6px 0 14px">' + btn('\uFF0B ' + t(kind === 'why' ? 'سبب جديد' : 'تحدٍّ جديد'), 'btn-quiet btn-sm', ' data-catadd="' + kind + '"') + '</div>'; };
+  return '<div id="catsCard">' + card('تصنيفات الزيارة والمسح — المسميات وجهات الحل',
+    '<p class="hint" style="margin-top:0">' + esc(t('غيّر المسمّى أو جهةَ الحل كما تريد أن تراها الوزارةُ والقاعة. البندُ غيرُ المعلَّم يختفي من قائمة الميدان ويبقى عدُّ ما سُجّل به. والاسمُ الفارغ يعود إلى الأصل.')) + '</p>'
+    + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهة الحل', 'صورة إثبات', 'في قائمة الميدان'])
+    + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهة الحل', 'في قائمة الميدان']),
+    btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-catsok="1"')) + '</div>';
+}
+function catsSave(){
+  if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
+  var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };
+  document.querySelectorAll('[data-catn]').forEach(function(inp){
+    var id = inp.getAttribute('data-catn'), p = id.split('|'), kind = p[0], k = p.slice(1).join('|'), n = String(inp.value || '').trim();
+    var isNew = CAT_NEW[kind].indexOf(k) > -1; if (isNew && !n) return;
+    var o = { k:k, n:n, who:val('data-catw', id) || '', off:val('data-cato', id) === false };
+    if (kind === 'why') o.photo = val('data-catp', id) === true;
+    out[kind].push(o);
+  });
+  CFG.cats = out; CAT_NEW = { why:[], cc:[] }; CAT_DRAFT = {}; catCached.why = catCached.cc = null;
+  cfgPushSoon('cats'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
+  logEvent('تعديل تصنيفات الزيارة والمسح — ' + out.why.length + ' سببًا · ' + out.cc.length + ' تحدّيًا');
+  toast(t('حُفظت التصنيفات — تصل كلَّ الأجهزة مع المزامنة')); statBump(); return true;
 }
 
 /* ═══ ما سجّله الميدانُ يُقرأ بالعين المجرّدة (V16.89) ═══
@@ -8095,7 +8157,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           (FORM.access && FORM.access !== 'تم الوصول' && !FORM.why ? (FORM.why = visitWhy({ access:FORM.access, note:FORM.note }) || '', '') : '')
           + '<div class="chips" style="margin:0">'
           + '<button type="button" class="chip' + (FORM.access === 'تم الوصول' ? ' on' : '') + '" data-acc="تم الوصول">' + esc(t('تم الوصول — مُسح')) + '</button>'
-          + VISIT_WHY.map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
+          + whyList().filter(function(o){ return !o.off || FORM.why === o.k; }).map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
           + (FORM.access === 'تم الوصول' ? ''
              : '<p class="hint" style="margin:10px 0 0">'
                + esc(t('زيارة بلا مسح — اختر السبب؛ والملاحظةُ تفصيلٌ اختياري. لا تُطلَب القياسات.'))
@@ -21441,7 +21503,7 @@ function chalKeys(list){
   return out;
 }
 function svdChals(r){   /* (V37.3) الفئاتُ الثماني في تفصيل المسح أيضًا — وما لم يُصنَّف «يراجع المهندس تصنيفه» */
-  return chalCats(r).map(function(k){ return k === 'review' ? 'يراجع المهندسُ تصنيفَه' : ccOf(k).n; });
+  return chalCats(r).map(function(k){ return k === 'review' || !ccOf(k) ? 'يراجع المهندسُ تصنيفَه' : ccOf(k).n; });
 }
 /* النصوصُ الحرّةُ تحت «أخرى» — تُطبَّع (مسافاتٌ وتشكيلٌ وهمزات) وتُعَدّ، ليقرّر المهندسُ ما يصير خيارًا */
 function chalOtherTexts(){
@@ -21931,7 +21993,7 @@ function kioskBody(){
   var kinds = {}, people = {};
   steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
   var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' };
-  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review' || !ccOf(k)) return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var chTop = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 4);
   var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; });
   var zoneMax = zones.length ? K.zones[zones[0]].n : 1;
@@ -22024,7 +22086,7 @@ function mfuPut(sec, id, entry){
 /* (V37.3) الفئاتُ الثماني وأسبابُ عدم المسح تأخذ جهةَ صيغتها القديمة افتراضًا — فلا تسقط كلُّها إلى «شركة الخدمة» */
 function mfuOwnDefOf(cat){
   if (MFU.ownDef[cat]) return MFU.ownDef[cat];
-  var cc = CHAL_CATS.filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
+  var cc = ccList().filter(function(o){ return t(o.n) === cat || o.n === cat; })[0];
   if (cc){ var old = Object.keys(CHAL_FROM).filter(function(o){ return CHAL_FROM[o] === cc.k && MFU.ownDef[o]; })[0]; if (old) return MFU.ownDef[old]; if (cc.k === 'mount') return MFU.ownDef['لا يوجد سطح تثبيت']; }
   return '';
 }
@@ -22050,7 +22112,7 @@ function svStats(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
     var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
-    var ch = (r && svDone(r)) ? chalCats(r).filter(function(k){ return k !== 'review'; }).map(function(k){ return ccOf(k).n; }) : [];   /* (V37.3) الفئاتُ الثماني */
+    var ch = (r && svDone(r)) ? chalCats(r).filter(function(k){ return k !== 'review' && ccOf(k); }).map(function(k){ return ccOf(k).n; }) : [];   /* (V37.3) الفئاتُ الثماني */
     var k = c.g + '|' + c.t, o = by[k] = by[k] || { g:c.g, t:c.t, n:0, sv:0, chal:0, un:0, cats:{} }, z = zs[c.g] = zs[c.g] || { g:c.g, n:0, sv:0, chal:0, un:0 };
     o.n++; z.n++; O.tot++;
     if (done){ o.sv++; z.sv++; O.sv++; }
@@ -22163,6 +22225,7 @@ function mfuMilesCard(){
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
+function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
 function stageCounts(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
@@ -22185,18 +22248,18 @@ function stageFunnel(c){
     + '</div>';
 }
 function gapCard(c){
-  var rows = VISIT_WHY.map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
+  var rows = whyList().map(function(o){ return [o.n, o.who, c.why[o.k] || 0, 'why_' + o.k]; });
   rows.push(['تحتاج زيارة تقنية — أعادها المهندس', 'أفاقي — زيارة تقنية', c.tech, 'why_tech']);
   if (ROLE !== 'viewer' && c.none) rows.push(['بلا سبب مسجّل — يصنّفه المهندس', 'أفاقي', c.none, 'why_none']);
-  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b></div>'
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('زيارة بلا مسح')) + ' — <b class="num" data-svlist="gap" role="button" tabindex="0">' + nm(c.gap) + '</b>' + catEditLink() + '</div>'
     + rows.filter(function(r){ return r[2]; }).map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
     + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
     + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
 }
 function ccCard(c){
-  var rows = CHAL_CATS.map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
+  var rows = ccList().map(function(o){ return [o.n, o.who, c.cc[o.k] || 0, 'cc_' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
   if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', 'أفاقي', c.review, 'cc_review']);
-  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + '</div>'
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + catEditLink() + '</div>'
     + (rows.length ? rows.map(function(r){ return '<div class="kk-zl" data-svlist="' + r[3] + '" role="button" tabindex="0"><span>' + esc(t(r[0])) + '<br><small class="hint" style="margin:0">' + esc(t('جهة الحل')) + ': ' + esc(t(r[1])) + '</small></span><b>' + nm(r[2]) + '</b></div>'; }).join('')
       : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
 }
@@ -22221,7 +22284,7 @@ function mfuHeroHtml(){
   var dd = dayDone(today); dd.hand = 0;   /* (V34.3) التسليمُ اليوم من محضر التسليم في سجلّ التركيب */
   Object.keys(STATE.inss || {}).forEach(function(k){ var h = STATE.inss[k] && STATE.inss[k].hand; if (h && dayKey(h.at || h.ts || 0) === today) dd.hand++; });
   /* أبرزُ ثلاثة تحديات */
-  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review') return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
+  var byCh = {}; (STATE.sites || []).forEach(function(x){ var r0 = STATE.recs[x.id]; if (!svDone(r0)) return; chalCats(r0).forEach(function(k){ if (k === 'review' || !ccOf(k)) return; var nn = ccOf(k).n; byCh[nn] = (byCh[nn] || 0) + 1; }); });   /* (V37.3) الفئاتُ الثماني */
   var top = Object.keys(byCh).sort(function(a, b){ return byCh[b] - byCh[a]; }).slice(0, 3);
   return '<div class="mfu-hero">'
     + '<div class="mfu-hero-band"><div><div class="mfu-hero-t">' + esc(t('موجز الموسم')) + '</div><div class="hint" style="margin:0">' + esc(hijriToday()) + ' \u00b7 ' + esc(today) + '</div></div>'
@@ -22332,8 +22395,12 @@ var SV_LISTS = {
   cc_review:['تحدٍّ يراجع المهندسُ تصنيفَه', function(x, r){ return chalCats(r).indexOf('review') > -1; }],
   esc:     ['متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح', function(x, r){ return stuckEsc(r); }]   /* (V37.1) */
 };
-VISIT_WHY.forEach(function(o){ SV_LISTS['why_' + o.k] = [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }]; });
-CHAL_CATS.forEach(function(o){ SV_LISTS['cc_' + o.k] = [o.n, function(x, r){ return chalCats(r).indexOf(o.k) > -1; }]; });
+/* (V37.4) قوائمُ الأسباب والفئات تُبنى عند الطلب — فالمسمّى المعدَّلُ والبندُ المضافُ لهما قائمتُهما أيضًا */
+function svDynList(key){
+  var m = /^why_(.+)$/.exec(key); if (m && m[1] !== 'tech' && m[1] !== 'none'){ var o = whyOf(m[1]); return o ? [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }] : null; }
+  m = /^cc_(.+)$/.exec(key); if (m && m[1] !== 'review'){ var c = ccOf(m[1]); return c ? [c.n, function(x, r){ return chalCats(r).indexOf(c.k) > -1; }] : null; }
+  return null;
+}
 /* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
    كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */
 var AL_RULES = [
@@ -22398,7 +22465,7 @@ function svListRows0(key){
   if (MFU.lists[key]) return MFU.lists[key].rows();
   var OK = svObKey(key);
   if (OK) return svListRows0(OK.bad ? 'chal' : 'clean').filter(function(row){ var x = siteFind(row[0]); return x && taxOf(x).t === OK.ty; });
-  var L = SV_LISTS[key];
+  var L = SV_LISTS[key] || svDynList(key);   /* (V37.4) */
   if (!L && /^al_/.test(key)){ var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; if (!rule) return [];   /* (V30.1) قوائمُ قواعد التنبيه */
     var ids = {}; alRuleList(rule).forEach(function(x){ ids[x.id] = 1; }); L = [t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم'), function(x){ return !!ids[x.id]; }]; }
   if (!L) return [];
@@ -22412,9 +22479,9 @@ function svListRows0(key){
   });
 }
 function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'آخر زيارة', 'بواسطة', key === 'nophoto' || key === 'al_nophoto' || key === 'badphoto' ? 'الصور' : (key === 'campins' || key === 'corins') ? 'التركيب' : key === 'obs' ? 'المعوّقات' : 'الحالة — سبب عدم المسح أو التحديات']; }
-function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
+function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
-  if (!SV_POP || !(SV_LISTS[SV_POP] || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
+  if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
@@ -22427,7 +22494,7 @@ function svListPop(){
     + '</div>';
 }
 function svListXlsx(key){
-  var L = SV_LISTS[key] || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (svObKey(key) || /^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;
+  var L = SV_LISTS[key] || svDynList(key) || (MFU.lists[key] ? [MFU.lists[key].title] : null) || (svObKey(key) || /^al_/.test(key) ? [svListTitle(key)] : null); if (!L) return false;   /* (V37.4) والديناميكية */
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
@@ -24899,6 +24966,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.4', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'تقدر تعدّل مسميات أسباب عدم المسح وتحديات التركيب، وجهة الحل لكل واحد، وصورة الإثبات، وتشيل أي بند من قائمة الميدان أو تضيف بند جديد. الزرار «✎ تعديل المسميات والجهات» موجود جنب عنوان الكارتين في ملخص الوزارة (للمهندس وما فوق)، أو من الإعدادات.',
+      'التعديل بيوصل كل الأجهزة مع المزامنة، والسجلات القديمة بتتقري بالاسم الجديد على طول. ولو مسحت الاسم بيرجع للأصلي.' ] },
   { v:'V37.3', d:'٨ أكتوبر ٢٠٢٦', notes:[
       '«ملاحظات فنية متنوعة» اتشالت من كل القوائم والتقارير: مكانها اسم التحدي الواضح من التمانية، واللي ما يتصنّفش بيظهر بالنص اللي كتبه الميدان نفسه (زي «التصوير ممنوع يحتاج تواصل رسمي»).',
       'عمود القوائم بقى اسمه «الحالة — سبب عدم المسح أو التحديات»: اللي اتزار وما اتمسحش مكتوب «لم يُمسح: السبب» (زي «الطريق أو البوابة مغلقة»)، واللي ما اتزارش «لم تُزر بعد». ونفس الكلام في المعوّقات والإكسل.' ] },
@@ -32787,6 +32857,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
+      + catsCard()   /* (V37.4) طلبُ المالك: المسمّياتُ وجهاتُ الحل */
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
           + '<div class="grid cols-2">'
@@ -34497,6 +34568,11 @@ function onDocClickPart1(e){
     }
     return;
   }
+  if (e.target.closest('[data-catsok]')){ if (catsSave()) render(1); return; }   /* (V37.4) */
+  var cad = e.target.closest('[data-catadd]');
+  if (cad){ var kd = cad.getAttribute('data-catadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
+    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-catn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
+  if (e.target.closest('[data-catedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
   if (e.target.closest('[data-listsok]')){   /* (V30.3) */
     if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
     var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });

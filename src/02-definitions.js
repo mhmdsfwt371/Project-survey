@@ -157,7 +157,7 @@ var WHY_RULES = [
 ];
 function visitWhy(r){
   if (!r || r.deleted || !svStuck(r)) return null;
-  if (r.why && VISIT_WHY.some(function(o){ return o.k === r.why; })) return r.why;
+  if (r.why && whyList().some(function(o){ return o.k === r.why; })) return r.why;
   var txt = arKey([r.note, r.chal_note, r.chalNote].join(' '));
   for (var i = 0; i < WHY_RULES.length; i++) if (WHY_RULES[i][1].test(txt)) return WHY_RULES[i][0];
   return { 'منع دخول':'denied', 'غير موجود':'missing', 'يحتاج تصريح':'permit' }[r.access] || null;
@@ -182,7 +182,7 @@ function chalCats(r){
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
     c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
-    var cd = CHAL_CATS.filter(function(o){ return o.n === c; })[0]; if (cd){ add(cd.k); return; }
+    var cd = ccList().filter(function(o){ return o.n === c || o.base === c; })[0]; if (cd){ add(cd.k); return; }
     if (/^لا يوجد سطح تثبيت/.test(c)){ add('mount'); return; }
     if (CHAL_FROM[c]){ add(CHAL_FROM[c]); return; }
     var nc = arKey(c); if (/^المدخل غير واضح/.test(nc)){ add('entry'); return; }
@@ -196,17 +196,33 @@ function chalCats(r){
   });
   return out;
 }
-function whyOf(k){ return VISIT_WHY.filter(function(o){ return o.k === k; })[0] || null; }
-function ccOf(k){ return CHAL_CATS.filter(function(o){ return o.k === k; })[0] || null; }
+/* (V37.4) طلبُ المالك: «أقدر أغيّر وأعدّل المسميات والجهات اللي تحل» — الأصلُ في الشيفرة، وما يُعدَّل في الإعدادات (CFG.cats) يُدمَج
+   بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
+   فالسجلّاتُ (r.why وr.chalCats) تبقى مقروءةً بأحدث اسم. */
+if (!('cats' in CFG)) CFG.cats = null;
+function catMerge(base, ov){
+  var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n }; });
+  (Array.isArray(ov) ? ov : []).forEach(function(o){
+    if (!o || !o.k) return; var e = L.filter(function(x){ return x.k === o.k; })[0];
+    if (e){ if (o.n) e.n = String(o.n); if (o.who != null) e.who = String(o.who); if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off; }
+    else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true });
+  });
+  return L;
+}
+function catCached(name, base, ov){ var c = catCached[name]; if (c && c.ref === ov && c.v === CFG_VER) return c.L; var L = catMerge(base, ov); catCached[name] = { ref:ov, v:CFG_VER, L:L }; return L; }
+function whyList(){ return catCached('why', VISIT_WHY, CFG.cats && CFG.cats.why); }
+function ccList(){ return catCached('cc', CHAL_CATS, CFG.cats && CFG.cats.cc); }
+function whyOf(k){ return whyList().filter(function(o){ return o.k === k; })[0] || null; }
+function ccOf(k){ return ccList().filter(function(o){ return o.k === k; })[0] || null; }
 
 /* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
 var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
-function chalNames(){ return ['لا توجد تحديات'].concat(CHAL_CATS.map(function(o){ return o.n; })); }
+function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
   var L = Array.isArray(chals) ? chals : [], names = chalNames();
   if (L.every(function(c){ return names.indexOf(c) > -1; })) return L.slice();
-  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review'; });
+  var ks = chalCats({ chals:L, chal_note:note, note:note }).filter(function(k){ return k !== 'review' && ccOf(k); });
   var out = ks.map(function(k){ return ccOf(k).n; });
   if (!out.length && L.indexOf('لا توجد تحديات') > -1) out.push('لا توجد تحديات');
   return out;
@@ -221,13 +237,13 @@ function stuckEsc(r){ return !!(r && svStuck(r) && ((+r.tries || 1) >= 3 || stuc
 function chalCatNames(r){
   var note = String((r && (r.chal_note || r.chalNote || r.note)) || '').replace(/\s+/g, ' ').trim();
   return chalCats(r).map(function(k){
-    if (k !== 'review') return t(ccOf(k).n);
+    if (k !== 'review') return ccOf(k) ? t(ccOf(k).n) : k;
     return note ? (note.length > 70 ? note.slice(0, 70) + '…' : note) : t('تحدٍّ بلا وصف — يراجعه المهندس');
   });
 }
 function svStateText(r){
   if (!svVisited(r)) return t('لم تُزر بعد');
-  if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
+  if (svStuck(r)){ var w = visitWhy(r); return t('لم يُمسح') + ': ' + (w && whyOf(w) ? t(whyOf(w).n) : t('بلا سبب مسجّل — يصنّفه المهندس')); }
   var cc = chalCatNames(r), pre = r.review === 'revisit' ? t('تحتاج زيارة تقنية — أعادها المهندس') : '';
   return [pre, cc.length ? cc.join('، ') : (pre ? '' : t('لا توجد تحديات'))].filter(Boolean).join(' \u00b7 ');
 }

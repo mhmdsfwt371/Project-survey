@@ -801,7 +801,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           (FORM.access && FORM.access !== 'تم الوصول' && !FORM.why ? (FORM.why = visitWhy({ access:FORM.access, note:FORM.note }) || '', '') : '')
           + '<div class="chips" style="margin:0">'
           + '<button type="button" class="chip' + (FORM.access === 'تم الوصول' ? ' on' : '') + '" data-acc="تم الوصول">' + esc(t('تم الوصول — مُسح')) + '</button>'
-          + VISIT_WHY.map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
+          + whyList().filter(function(o){ return !o.off || FORM.why === o.k; }).map(function(o){ return '<button type="button" class="chip' + (FORM.access !== 'تم الوصول' && FORM.why === o.k ? ' on' : '') + '" data-why="' + o.k + '">' + esc(t(o.n)) + '</button>'; }).join('') + '</div>'
           + (FORM.access === 'تم الوصول' ? ''
              : '<p class="hint" style="margin:10px 0 0">'
                + esc(t('زيارة بلا مسح — اختر السبب؛ والملاحظةُ تفصيلٌ اختياري. لا تُطلَب القياسات.'))
