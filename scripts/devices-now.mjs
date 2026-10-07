@@ -1,0 +1,10 @@
+import admin from 'firebase-admin';
+import { writeFileSync, mkdirSync } from 'fs';
+const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); admin.initializeApp({ credential: admin.credential.cert(sa) }); const db = admin.firestore();
+mkdirSync('/tmp/exp', { recursive: true });
+const T = ts => ts ? new Date(+ts + 3 * 3600e3).toISOString().slice(0, 16).replace('T', ' ') : '';
+const pr = await db.collection('presence').get(); const dev = [];
+pr.forEach(d => { const x = d.data() || {}; if (+(x.at || 0) > Date.now() - 3 * 864e5) dev.push({ name:x.name || '', ver:x.ver || '', at:T(x.at), q:x.q || 0 }); });
+dev.sort((a, b) => a.name < b.name ? -1 : 1);
+writeFileSync('/tmp/exp/devices-now.json', JSON.stringify({ at:T(Date.now()), devices:dev }));
+console.log('ok', dev.length);
