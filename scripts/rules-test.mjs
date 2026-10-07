@@ -436,7 +436,7 @@ await ok  ('والاستعادةُ مفتوحةٌ للمهندس',            se
 await ok  ('وتعديلُ عنوان الشبكة لنقطةٍ مزارةٍ كما كان', setDoc(doc(as('eng'), 'sites/S1'), { net:'10.1.2' }, { merge:true }));
 /* (V37.9 ق-٠١٦) الحذفُ النهائيُّ: للمهندس فما فوق لما لم يُركَّب، ولا يُرجَع */
 await env.withSecurityRulesDisabled(async (c) => { const db = c.firestore(); await setDoc(doc(db, 'recs/S7'), { id:'S7', access:'تم الوصول', review:'pending', by:'فني' }); await setDoc(doc(db, 'sites/S7'), { net:'10.1.7' }); await setDoc(doc(db, 'sites/S8'), { net:'10.1.8' }); });
-/* تشخيص: كلُّ مسارٍ على حدة — لمعرفة أيّ جزءٍ يُحدث خطأَ التقييم */
+/* مساراتٌ منفصلة (أبقيتُ تشخيصَ V37.10 حارسًا) */
 await env.withSecurityRulesDisabled(async (c) => { const db = c.firestore(); await setDoc(doc(db, 'sites/S6'), { net:'10.1.6' }); await setDoc(doc(db, 'sites/S5'), { net:'10.1.5' }); });
 await ok  ('تشخيص ١: حذفٌ نهائيٌّ بلا إخفاء لنقطةٍ غير مزارة', setDoc(doc(as('eng'), 'sites/S6'), { deleted:true }, { merge:true }));
 await ok  ('تشخيص ٢: حذفٌ نهائيٌّ مع إخفاء لنقطةٍ غير مزارة', setDoc(doc(as('eng'), 'sites/S5'), { deleted:true, hidden:true }, { merge:true }));

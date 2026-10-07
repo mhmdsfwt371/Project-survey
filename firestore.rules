@@ -331,26 +331,21 @@ service cloud.firestore {
     // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
     match /fixreqs/{id} { allow read: if pm('fixreqs', 'r', ok()); allow create: if pm('fixreqs', 'w', canW()); allow update: if pm('fixreqs', 'a', mgr()); allow delete: if pm('fixreqs', 'd', mgr()); }
     // عناوينُ الشبكة على السجل الأمّ: يقرؤها الجميعُ ويكتبها من له التحرير
-    // (V36.9) حادثة ٧ أكتوبر: إخفاءُ (حذفُ) نقطةٍ لها زيارةٌ أو تركيبٌ لمدير المشروع وحده — في القاعدة نفسها لا في التطبيق وحده،
-    // فلا تقدر نسخةٌ قديمةٌ على جوّالٍ لم يُحدَّث أن تحذفها. الانتقالُ من ظاهرةٍ إلى مخفيّةٍ هو المحروس؛ والاستعادةُ وبقيةُ التعديل كما كانت.
-    // (V36.11) متغيّرُ القاعدة في هذا الملف اسمُه db (match /databases/{db}/documents) — كان $(database) فارغًا فرُفض كلُّ إخفاء
-    function hidesVisited(id){
-      return request.resource.data.get('hidden', false) == true
-        && (resource == null || resource.data.get('hidden', false) != true)
-        && (exists(/databases/$(db)/documents/recs/$(id)) || exists(/databases/$(db)/documents/inss/$(id)));
+    // (V36.9 → V37.10) كتابةُ تجاوز النقطة — دالّةٌ واحدةٌ خفيفة (role() مرةً واحدة، والقراءاتُ حين تلزم وحدَها):
+    //   • المحذوفُ نهائيًّا لا يُرجَع: لا تُرفَع عنه علامةُ الحذف ولا الإخفاء (إلا صاحبَ المشروع).
+    //   • الحذفُ النهائيُّ (ق-٠١٦): للمهندس فما فوق، ولما لم يُركَّب (ق-٠١٤).
+    //   • الإخفاءُ بلا حذفٍ لنقطةٍ لها زيارةٌ أو تركيبٌ ممنوعٌ (حادثة ٧ أكتوبر).
+    // كانت أربعُ دوالٍّ تستدعي الصلاحياتِ مرارًا فتجاوز التقييمُ حدَّه في مسار المزارة (خطأُ تقييمٍ على المحاكي).
+    function siteWriteOk(id){
+      let del = request.resource.data.get('deleted', false) == true;
+      let wasDel = resource != null && resource.data.get('deleted', false) == true;
+      let hid = request.resource.data.get('hidden', false) == true;
+      let wasHid = resource != null && resource.data.get('hidden', false) == true;
+      return wasDel ? (del && hid)
+           : del ? (role() in ['engineer', 'admin'] && !(exists(/databases/$(db)/documents/inss/$(id)) && get(/databases/$(db)/documents/inss/$(id)).data.get('status', '') == 'مُركّب'))
+           : !(hid && !wasHid && (exists(/databases/$(db)/documents/recs/$(id)) || exists(/databases/$(db)/documents/inss/$(id))));
     }
-    // (V37.9) قرارُ المالك ق-٠١٦: الحذفُ النهائيُّ (deleted مع hidden) للمهندس فما فوق، لما لم يُركَّب — ولا يُرجَع المحذوفُ من أيِّ جهاز.
-    function deletesSite(id){
-      return request.resource.data.get('deleted', false) == true && (resource == null || resource.data.get('deleted', false) != true);
-    }
-    function installedSite(id){
-      return exists(/databases/$(db)/documents/inss/$(id)) && get(/databases/$(db)/documents/inss/$(id)).data.get('status', '') == 'مُركّب';
-    }
-    function revivesSite(){
-      return resource != null && resource.data.get('deleted', false) == true
-        && (request.resource.data.get('deleted', false) != true || request.resource.data.get('hidden', false) != true);
-    }
-    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (isBoss() || ((!hidesVisited(id) || deletesSite(id)) && (!deletesSite(id) || (mgr() && !installedSite(id))) && !revivesSite())); allow delete: if false; }
+    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (isBoss() || siteWriteOk(id)); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
     match /ships/{id} { allow read: if pm('ships', 'r', ok()); allow create, update: if pm('ships', 'w', canW()); allow delete: if pm('ships', 'd', mgr()); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير

@@ -1,6 +1,6 @@
 {
  "schema": "nusuk-docs/1",
- "app_version": "V37.10",
+ "app_version": "V37.11",
  "generated_at": "2026-08-05",
  "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
  "app": {
@@ -2062,7 +2062,8 @@
   "V37.7": "بلاغُ المالك: photosFetchSite(siteId) — استعلامٌ واحدٌ photos where site == id عند فتح النقطة أو طبقة صور القائمة (PH_FETCH: run/done/none/err)، وphotosMissingLine تقول الحالة بصدق (جارٍ الجلب / لم تُرفع من جهاز فلان / تعذّر — أعد الجلب). سببُ البلاغ: سحبةُ الصور الأولى ١٬٥٠٠ والقاعدةُ ٣٬٧٢٠. تجربةٌ حقيقيةٌ بقاعدةٍ مزيّفة.",
   "V37.8": "طلبُ المالك: CSS لرأس كلِّ [role=dialog] متمرّرٍ ثابتًا؛ #phView فوق الكل (z 5000)؛ svPhoPanel يُدرَج ويُزال بلا إعادة رسم؛ data-keepscroll يحفظ موضعَ النافذة بمفتاحها في scrollGrab/scrollBack. photosBackfill: أجهزةُ المكتب تجلب وثائقَ الصور كلَّها (صفحاتٌ من ألفٍ بـ_at) أسبوعيًّا؛ phGap/phGapCard وقائمةُ phgap؛ presence.pqAge؛ phStaleSync: شريطٌ ثابتٌ للصور المعلّقة أكثرَ من ساعة وdata-phflushnow. تجربةٌ حقيقيةٌ شاملة.",
   "V37.9": "قرارُ المالك ق-٠١٦: siteDeleteFinal (mgr، تأكيدٌ واحد، siteLocked يمنع): sites ← {deleted, hidden, delBy, delAt}، رفعُ recs/inss/diss/maints والمهام، newsites ← deleted للمضافة؛ siteOvApply يُسقط deleted؛ دمجُ newsites يتخطّاه. firestore.rules: deletesSite يشترط mgr() وغيرَ مركَّب (get inss)، وrevivesSite يمنع الإرجاع لغير صاحب المشروع. خمسةُ اختباراتٍ على المحاكي واختبارُ وحدة وتجربةٌ حقيقية.",
-  "V37.10": "تشخيصُ خطأ التقييم في قاعدة الحذف النهائي على المحاكي: ثلاثةُ مساراتٍ منفصلة."
+  "V37.10": "تشخيصُ خطأ التقييم في قاعدة الحذف النهائي على المحاكي: ثلاثةُ مساراتٍ منفصلة.",
+  "V37.11": "firestore.rules: siteWriteOk(id) دالّةٌ واحدة بـlet (role() مرةً واحدة، وexists/get حين تلزم وحدَها) بدل hidesVisited/deletesSite/installedSite/revivesSite — كان مسارُ حذف المزارة يُحدث خطأَ تقييمٍ على المحاكي (V37.9) فأُغلقت البوابة. السلوكُ نفسُه: لا إرجاعَ للمحذوف، والحذفُ النهائيُّ لـengineer/admin وغير المركَّب، والإخفاءُ بلا حذفٍ للمزارة ممنوع."
  },
  "map_and_geolocation": {
   "tile_layers": {
