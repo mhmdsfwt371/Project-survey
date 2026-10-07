@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.2</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.3</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -15511,7 +15511,9 @@ function popHtml(){
   }
 
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
-  if (typeof maySiteEdit === 'function' && maySiteEdit() && !s.isNew) marks += '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
+  /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
+     للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
+  if (typeof maySiteEdit === 'function' && maySiteEdit()) marks += '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
   if (FIELD_MODE === 'brief'){
@@ -24635,6 +24637,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.3', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'زرار «🗑 حذف النقطة» بقى في نافذة كل نقطة، حتى النقط المضافة (زي كاميرات طريق الهجرة الجديدة) — كانت متستثنية. والحذف منه بيترجع من «نقاط مخفية»، والحذف النهائي للنقطة المضافة لسه موجود في «تعديل البيانات».' ] },
   { v:'V36.2', d:'٧ أكتوبر ٢٠٢٦', notes:[
       '«✎ تعديل» بقى موجود جنب «حذف» في ١٣ قائمة كان فيها إضافة وحذف بس: سجل المخاطر، والدروس المستفادة، وقواعد التصعيد، ومصفوفة المسؤوليات، والوظائف، وأنواع السيارات، وأنواع النقاط، والسيارات، والشحنات، ونقاط الزيادة، وأصناف الكتالوج، والموردين، وفئات المشتريات. وكل تعديل بيتسجّل باسم اللي عمله.' ] },
   { v:'V36.1', d:'٧ أكتوبر ٢٠٢٦', notes:[
