@@ -338,7 +338,7 @@ service cloud.firestore {
         && (resource == null || resource.data.get('hidden', false) != true)
         && (exists(/databases/$(database)/documents/recs/$(id)) || exists(/databases/$(database)/documents/inss/$(id)));
     }
-    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (!hidesVisited(id) || isBoss() || (ok() && role() == 'admin')); allow delete: if false; }
+    match /sites/{id} { allow read: if pm('sites', 'r', ok()); allow create, update: if pm('sites', 'w', canW()) && (!hidesVisited(id) || isBoss()); allow delete: if false; }
     // الشحنات: يقرؤها الجميعُ ويكتبها من له التحرير — وما وصل لا يُحذَف
     match /ships/{id} { allow read: if pm('ships', 'r', ok()); allow create, update: if pm('ships', 'w', canW()); allow delete: if pm('ships', 'd', mgr()); }
     // الأسطول: يقرؤه الجميعُ ليعرف كلٌّ سيارتَه، ويكتبه من له التحرير

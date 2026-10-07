@@ -1228,7 +1228,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.9</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V36.10</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1290,7 +1290,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-66b4dd5586.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-1daa4c4079.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -3985,7 +3985,8 @@ function siteHide(id){
   var had = !!(STATE.recs[id] || STATE.inss[id]);
   /* (V36.8) حادثة ٧ أكتوبر: ستٌّ وعشرون نقطةَ تفويجٍ لها زياراتٌ حذفها ثلاثةُ مهندسين بالخطأ فاختفت من أرقام الجميع. حذفُ نقطةٍ لها زيارةٌ
      صار لمدير المشروع وحده؛ والمهندسُ يحذف ما لم يُزَر. */
-  if (had && ROLE !== 'admin'){ toast(t('لها زيارة — حذفُها لمدير المشروع وحده')); return false; }
+  /* (V36.10) استمرّ حسابٌ بدور «مدير» في حذفها بعد الاستعادة — فصار حذفُ المزارة لصاحب المشروع وحده (بريدُه) */
+  if (had && !(typeof isBossHere === 'function' && isBossHere())){ toast(t('لها زيارة — حذفُها لصاحب المشروع وحده')); return false; }
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });
@@ -15601,7 +15602,7 @@ function popHtml(){
   /* (V36.1) «مش لاقي حذف نقطة منين»: الزرُّ كان داخل «تعديل بيانات النقطة» وحدَه — صار في النافذة نفسِها للمهندس فما فوق */
   /* (V36.3) بلاغُ المالك «دي مفيهاش حذف» — نقطةٌ مضافة (NSK-HJM-LPR-N006) كانت مستثناة: صار الزرُّ لكلِّ نقطة، والحذفُ منه قابلٌ للاستعادة
      للمضافة وللأصلية سواء؛ والحذفُ النهائيُّ للمضافة باقٍ في «تعديل البيانات» لمن أراد محوها بسجلّاتها. */
-  if (typeof maySiteEdit === 'function' && maySiteEdit() && (ROLE === 'admin' || !(STATE.recs[s.id] || STATE.inss[s.id]))) marks += siteLocked(s.id) ?   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
+  if (typeof maySiteEdit === 'function' && maySiteEdit() && ((typeof isBossHere === 'function' && isBossHere()) || !(STATE.recs[s.id] || STATE.inss[s.id]))) marks += siteLocked(s.id) ?   /* (V36.8) المزارةُ لمدير المشروع */ '<span class="pill" title="' + esc(t('ما رُكّب لا يُحذَف')) + '">\u{1F512} ' + esc(t(siteLocked(s.id))) + '</span>'   /* (V36.4) */
     : '<button type="button" class="go" style="border-color:#E05252;color:#E05252" data-pophide="' + esc(s.id) + '">\u{1F5D1} ' + esc(t('حذف النقطة')) + '</button>';
 
   /* ═══ بطاقةُ «تفاصيل مختصرة»: تقييمٌ بالعين لا تنقّلٌ بين شاشات ═══ */
@@ -24726,6 +24727,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V36.10', d:'٧ أكتوبر ٢٠٢٦', notes:[
+      'حذف نقطة ليها زيارة أو تركيب بقى لصاحب المشروع بس (بريده)، في التطبيق وفي السحابة نفسها، لأن حساب تاني بدور «مدير» فضل يحذف نقاط التفويج بعد ما رجعناها. واترجعت تالت مرة.' ] },
   { v:'V36.9', d:'٧ أكتوبر ٢٠٢٦', notes:[
       'حماية في السحابة نفسها: حذف نقطة ليها زيارة أو تركيب بقى ممنوع على غير مدير المشروع حتى من الأجهزة اللي لسه على نسخ قديمة (زي اللي حذف نقطتين تاني بعد الاستعادة).' ] },
   { v:'V36.8', d:'٧ أكتوبر ٢٠٢٦', notes:[

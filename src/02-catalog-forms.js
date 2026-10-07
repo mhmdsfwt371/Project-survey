@@ -200,7 +200,8 @@ function siteHide(id){
   var had = !!(STATE.recs[id] || STATE.inss[id]);
   /* (V36.8) حادثة ٧ أكتوبر: ستٌّ وعشرون نقطةَ تفويجٍ لها زياراتٌ حذفها ثلاثةُ مهندسين بالخطأ فاختفت من أرقام الجميع. حذفُ نقطةٍ لها زيارةٌ
      صار لمدير المشروع وحده؛ والمهندسُ يحذف ما لم يُزَر. */
-  if (had && ROLE !== 'admin'){ toast(t('لها زيارة — حذفُها لمدير المشروع وحده')); return false; }
+  /* (V36.10) استمرّ حسابٌ بدور «مدير» في حذفها بعد الاستعادة — فصار حذفُ المزارة لصاحب المشروع وحده (بريدُه) */
+  if (had && !(typeof isBossHere === 'function' && isBossHere())){ toast(t('لها زيارة — حذفُها لصاحب المشروع وحده')); return false; }
   x.hidden = true;
   siteOvSet(id, { hidden:true, hidBy:STATE.meta.name || '', hidAt:Date.now() });
   STATE.sites = STATE.sites.filter(function(y){ return y.id !== id; });

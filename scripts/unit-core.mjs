@@ -155,7 +155,8 @@ test('قرارُ المالك (V36.4): ما رُكّب لا يُحذَف — و�
     assert.ok(w.siteLocked(a.id) && w.siteLocked(c.id) && !w.siteLocked(b.id));
     assert.equal(w.siteHide(a.id), false, 'المركَّبةُ لا تُحذَف'); assert.ok(w.siteFind(a.id));
     assert.equal(w.siteHide(c.id), false, 'وما بعد التركيب (الفك) لا يُحذَف');
-    assert.equal(w.siteHide(b.id), true, 'والمزارةُ قبل التركيب تُحذَف'); assert.ok(!w.siteFind(b.id)); w.siteRestore(b.id);
+    const ib0 = w.isBossHere; w.isBossHere = () => true;   /* (V36.10) المزارةُ يحذفها صاحبُ المشروع */
+    assert.equal(w.siteHide(b.id), true, 'والمزارةُ قبل التركيب تُحذَف (لصاحب المشروع)'); assert.ok(!w.siteFind(b.id)); w.siteRestore(b.id); w.isBossHere = ib0;
   } finally { w.ROLE = was; delete w.STATE.inss[a.id]; delete w.STATE.recs[b.id]; delete w.STATE.diss[c.id]; }
 });
 test('بلاغُ المالك (V36.7): الحذفُ يصل كلَّ جهاز ولا تعود النقطةُ المحذوفة', async () => {
@@ -178,6 +179,7 @@ test('حادثة ٧ أكتوبر (V36.8): نقطةٌ لها زيارةٌ لا ي
     w.ROLE = 'engineer';
     assert.equal(w.siteHide(v.id), false, 'المهندسُ لا يحذف المزارة'); assert.ok(w.siteFind(v.id));
     assert.equal(w.siteHide(u.id), true, 'ويحذف غيرَ المزارة'); w.ROLE = 'admin'; w.siteRestore(u.id);
-    assert.equal(w.siteHide(v.id), true, 'ومديرُ المشروع يحذف المزارة'); w.siteRestore(v.id);
+    assert.equal(w.siteHide(v.id), false, 'ولا الحسابُ بدور «مدير» (V36.10)');
+    const ib = w.isBossHere; w.isBossHere = () => true; assert.equal(w.siteHide(v.id), true, 'وصاحبُ المشروع يحذف المزارة'); w.siteRestore(v.id); w.isBossHere = ib;
   } finally { w.ROLE = was; delete w.STATE.recs[v.id]; }
 });
