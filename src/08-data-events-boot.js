@@ -2762,6 +2762,9 @@ function clickTables(e){
   var lg = e.target.closest('[data-legend]');
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
+  var svph = e.target.closest('[data-svphotos]');   /* (V37.6) صورُ النقطة من صفّ القائمة */
+  if (svph){ SV_PHO = svph.getAttribute('data-svphotos'); render(1); return true; }
+  if (e.target.closest('[data-svphoclose]')){ SV_PHO = ''; render(1); return true; }
   var phv = e.target.closest('[data-phview]');
   if (phv && phv.getAttribute('data-phview')){ photoView(phv.getAttribute('data-phview')); return true; }
   var phd = e.target.closest('[data-phdl]');
@@ -2939,7 +2942,7 @@ function clickAPart2(e){
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
   if (svl){ SV_POP = svl.getAttribute('data-svlist'); render(1); return true; }
-  if (e.target.closest('[data-svpopclose]')){ SV_POP = ''; render(1); return true; }
+  if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; render(1); return true; }
   var svx = e.target.closest('[data-svpopxls]'); if (svx){ svListXlsx(svx.getAttribute('data-svpopxls')); return true; }
   var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
   if (exs){ EXP.scope.m = exs.getAttribute('data-expscope'); render(1); return true; }
