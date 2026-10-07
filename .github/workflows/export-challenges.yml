@@ -144,17 +144,10 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/devices-now.mjs || true
-      - name: Tokens check (read-only, values never printed)
+      - name: QA stats (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-          PT: ${{ secrets.PROMOTE_TOKEN }}
-          GO: ${{ secrets.GDRIVE_OAUTH }}
-          GS: ${{ secrets.GDRIVE_SA }}
-          GF: ${{ secrets.GDRIVE_FOLDER }}
-          SM: ${{ secrets.SMTP_HOST }}
-          DV: ${{ secrets.DEVICES_API_TOKEN }}
-          MY: ${{ secrets.MYAFAQY_TOKEN }}
-        run: node scripts/tokens-check.mjs || true
+        run: node scripts/qa-stats.mjs || true
       - name: Delete audit (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
