@@ -2951,8 +2951,11 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); render(1); return true; }
-  if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; render(1); return true; }
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = '';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+    var hostL = svl.closest('#content') || document.getElementById('content');
+    if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
+    return true; }
+  if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
   var svx = e.target.closest('[data-svpopxls]'); if (svx){ svListXlsx(svx.getAttribute('data-svpopxls')); return true; }
   var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
   if (exs){ EXP.scope.m = exs.getAttribute('data-expscope'); render(1); return true; }
@@ -3545,6 +3548,10 @@ function clickAPart7(e){
 }
 
 function onDocClick(e){
+  /* (V37.14) جهةُ الدعم المطلوب أوّلًا — معالجٌ سابقٌ عند المهندس كان يبتلع الضغطَ قبل وصوله */
+  var supq = e.target.closest('[data-supq]');   /* (V37.14) جهةُ الدعم المطلوب — قبل القائمة */
+  if (supq){ if (e.preventDefault) e.preventDefault(); supRemove(); SUP_POP = supq.getAttribute('data-supq'); var hostS = supq.closest('#content') || document.getElementById('content') || document.body; var tmpS = document.createElement('div'); tmpS.innerHTML = supPanel(supq.getAttribute('data-supq')); while (tmpS.firstChild) hostS.appendChild(tmpS.firstChild); return; }
+  if (e.target.closest('[data-supclose]')){ SUP_POP = ''; supRemove(); return; }
   /* (V33.0) كان ٩٨٤ سطرًا؛ صار أجزاءً بالترتيب نفسِه — الجزءُ الذي يعالج النقرةَ يُنهيها */
   if (onDocClickPart1(e) !== CLICK_NEXT) return;
   if (onDocClickPart2(e) !== CLICK_NEXT) return;
@@ -3589,7 +3596,7 @@ function onDocClickPart1(e){
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
-  if (e.target.closest('[data-vcedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
+  if (e.target.closest('[data-vcedit]')){ SUP_POP = ''; supRemove(); svPopRemove(); goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
   if (e.target.closest('[data-listsok]')){   /* (V30.3) */
     if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
     var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
@@ -5154,6 +5161,9 @@ document.addEventListener('keydown', function(e){
    وتُزال عند الإغلاق، ولا يمسّها رسمٌ آخر؛ والكتابةُ تستبدل النتائجَ وحدَها. */
 /* (V37.8) اقتراحُ المالك: على جهاز الفنيّ — صورٌ معلّقةٌ أكثرَ من ساعة تُقال بشريطٍ ثابتٍ أعلى الشاشة في كلِّ صفحة (والخريطةُ معها)،
    بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
+/* (V37.14) نوافذُ القوائم وصورُها تُزال من مكانها — بلا رسم الصفحة */
+function supRemove(){ ['supVeil', 'supBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); }
+function svPopRemove(){ ['.svpop-veil', '.svpop', '#svPhoVeil', '#svPhoBox'].forEach(function(q){ document.querySelectorAll(q).forEach(function(el){ el.remove(); }); }); }
 function phStaleSync(){
   var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
   if (!n || mins < 60 || Date.now() < (phStaleSync.snooze || 0)){ if (old) old.remove(); return; }

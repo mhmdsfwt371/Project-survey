@@ -144,9 +144,10 @@ function catDraftCatch(e){ var el = e.target; if (!el || !el.getAttribute) retur
   ['data-vcn', 'data-vcw', 'data-vcp', 'data-vco'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
 function catD(a, id, def){ var v = CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
 function catRow(kind, o){ var id = kind + '|' + o.k;
-    o = { k:o.k, base:o.base, n:catD('data-vcn', id, o.n || ''), who:catD('data-vcw', id, o.who || ''), photo:catD('data-vcp', id, !!o.photo), off:!catD('data-vco', id, !o.off) };
+    var supTxt = (typeof supOf === 'function' ? supOf(o) : []).map(function(x){ return x.p + (x.s ? ': ' + x.s : ''); }).join('\n');   /* (V37.14) */
+    o = { k:o.k, base:o.base, n:catD('data-vcn', id, o.n || ''), who:catD('data-vcw', id, supTxt), photo:catD('data-vcp', id, !!o.photo), off:!catD('data-vco', id, !o.off) };
     return '<tr><td><input data-vcn="' + esc(id) + '" aria-label="' + esc(t('المسمّى')) + '" value="' + esc(o.n || '') + '" dir="auto" placeholder="' + esc(t(o.base || 'المسمّى')) + '" style="width:100%;min-width:180px"></td>'
-      + '<td><input data-vcw="' + esc(id) + '" aria-label="' + esc(t('جهة الحل')) + '" value="' + esc(o.who || '') + '" dir="auto" style="width:100%;min-width:120px"></td>'
+      + '<td><textarea data-vcw="' + esc(id) + '" aria-label="' + esc(t('جهات الدعم المطلوب')) + '" rows="' + Math.max(2, (o.who || '').split('\n').length) + '" dir="auto" placeholder="' + esc(t('الجهة: نوع الدعم — سطرٌ لكلِّ جهة')) + '" style="width:100%;min-width:220px">' + esc(o.who || '') + '</textarea></td>'   /* (V37.14) */
       + (kind === 'why' ? '<td style="text-align:center"><input type="checkbox" data-vcp="' + esc(id) + '"' + (o.photo ? ' checked' : '') + ' aria-label="' + esc(t('صورة إثبات')) + '"></td>' : '')
       + '<td style="text-align:center"><input type="checkbox" data-vco="' + esc(id) + '"' + (o.off ? '' : ' checked') + ' aria-label="' + esc(t('في قائمة الميدان')) + '"></td></tr>'; }
 function catsCard(){
@@ -157,10 +158,10 @@ function catsCard(){
     return '<div class="tablewrap"><table class="tbl"><thead><tr>' + head.map(function(h){ return '<th>' + esc(t(h)) + '</th>'; }).join('') + '</tr></thead><tbody id="catBody-' + kind + '">'
       + L.map(function(o){ return row(kind, o); }).join('') + news + '</tbody></table></div>'
       + '<div class="actions" style="margin:6px 0 14px">' + btn('\uFF0B ' + t(kind === 'why' ? 'سبب جديد' : 'تحدٍّ جديد'), 'btn-quiet btn-sm', ' data-vcadd="' + kind + '"') + '</div>'; };
-  return '<div id="catsCard">' + card('تصنيفات الزيارة والمسح — المسميات وجهات الحل',
-    '<p class="hint" style="margin-top:0">' + esc(t('غيّر المسمّى أو جهةَ الحل كما تريد أن تراها الوزارةُ والقاعة. البندُ غيرُ المعلَّم يختفي من قائمة الميدان ويبقى عدُّ ما سُجّل به. والاسمُ الفارغ يعود إلى الأصل.')) + '</p>'
-    + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهة الحل', 'صورة إثبات', 'في قائمة الميدان'])
-    + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهة الحل', 'في قائمة الميدان']),
+  return '<div id="catsCard">' + card('تصنيفات الزيارة والمسح — المسميات وجهات الدعم',
+    '<p class="hint" style="margin-top:0">' + esc(t('غيّر المسمّى أو جهاتِ الدعم كما تريد أن تراها الوزارةُ والقاعة. في خانة الجهات: سطرٌ لكلِّ جهة بصيغة «الجهة: نوع الدعم». البندُ غيرُ المعلَّم يختفي من قائمة الميدان ويبقى عدُّ ما سُجّل به، والاسمُ الفارغ يعود إلى الأصل.')) + '</p>'
+    + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'صورة إثبات', 'في قائمة الميدان'])
+    + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
 }
 function catsSave(){
@@ -169,7 +170,8 @@ function catsSave(){
   document.querySelectorAll('[data-vcn]').forEach(function(inp){
     var id = inp.getAttribute('data-vcn'), p = id.split('|'), kind = p[0], k = p.slice(1).join('|'), n = String(inp.value || '').trim();
     var isNew = CAT_NEW[kind].indexOf(k) > -1; if (isNew && !n) return;
-    var o = { k:k, n:n, who:val('data-vcw', id) || '', off:val('data-vco', id) === false };
+    var supL = String(val('data-vcw', id) || '').split(/\n+/).map(function(l){ l = l.trim(); if (!l) return null; var m = /^(.+?)\s*(?::|：| — | - )\s*(.+)$/.exec(l); return m ? { p:m[1].trim(), s:m[2].trim() } : { p:l, s:'' }; }).filter(Boolean);   /* (V37.14) سطرٌ لكلِّ جهة */
+    var o = { k:k, n:n, sup:supL, who:supL.length === 1 && supL[0].s ? supL[0].p + ' — ' + supL[0].s : supL.map(function(x){ return x.p; }).join('، '), off:val('data-vco', id) === false };
     if (kind === 'why') o.photo = val('data-vcp', id) === true;
     out[kind].push(o);
   });

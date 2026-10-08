@@ -125,6 +125,7 @@ function arabicIn(root){
   const walk = d.createTreeWalker(root, w.NodeFilter.SHOW_TEXT);
   let n;
   while ((n = walk.nextNode())){
+    if (n.parentNode && n.parentNode.nodeName === 'TEXTAREA') continue;   /* (V37.14) محتوى مربّعِ الكتابة بياناتٌ يكتبها المستخدم — كقيمة الحقل */
     const s = (n.textContent || '').trim();
     if (s && AR.test(s) && !isData(s)) out.add(s.slice(0, 60));
   }

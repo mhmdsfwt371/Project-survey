@@ -159,7 +159,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
     const labs = rings.map(r => (r.querySelector('.kk-lab') || {}).textContent || '');
     T(rings.length === 5 && ['الزيارة', 'المسح', 'التركيب', 'التسليم', 'الفك'].every((l, i) => labs[i] && labs[i].indexOf(l) === 0) && h.indexOf('data-kiosk') > -1,
       'الصفُّ الأوّلُ خمسُ حلقاتٍ بالترتيب (ق-٠١٥): ' + labs.map(x => x.replace(/\s*›/, '')).join('، '));
-    T(!/اعتمادُ الوزارة من المُسِح|مخيمات بلا عائق|تحتاج زيارة أخرى تقنيًا/.test(R ? R.textContent : '') && !/تحتاج زيارة أخرى|متعذّر|تنتظر قرارَ الوزارة/.test(w.kioskStory()), 'ولا «اعتماد الوزارة» ولا «مخيمات بلا عائق» ولا «تحتاج زيارة أخرى» في الصفّ ولا في الجملة');
+    T(!/اعتمادُ الوزارة من المُسِح|مخيمات بلا عائق|تحتاج زيارة أخرى/.test(R ? R.textContent : '') && !/تحتاج زيارة أخرى|متعذّر|تنتظر قرارَ الوزارة/.test(w.kioskStory()), 'ولا «اعتماد الوزارة» ولا «مخيمات بلا عائق» ولا «تحتاج زيارة أخرى» في الصفّ ولا في الجملة');
     const keyOf = r => r.getAttribute('data-svlist'), remOf = r => { const e = r.querySelector('.kk-sub [data-svlist]'); return e ? e.getAttribute('data-svlist') : ''; };
     const sv = rings[0], pct = sv ? +sv.querySelector('[aria-valuenow]').getAttribute('aria-valuenow') : -1;
     T(sv && keyOf(sv) === 'sv' && remOf(sv) === 'rem' && w.svListRows('sv').length === VISITED && w.svListRows('rem').length === TOTAL - VISITED && pct === Math.min(99, Math.round(VISITED / TOTAL * 100)),

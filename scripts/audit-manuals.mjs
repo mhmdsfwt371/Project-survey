@@ -27,7 +27,7 @@ const w = dom.window; w.HTMLCanvasElement.prototype.getContext = () => null; awa
 const miss = []; G.forEach(g => [g.t].concat(g.k || []).forEach(q => { if (!w.glossaryHits(q).some(h => h.t === g.t)) miss.push(q); }));
 T(!miss.length, 'كلُّ مصطلحٍ ومرادفاته يُجاب بتعريفه' + (miss.length ? ' — لا يجيب: ' + miss.join('، ') : ''));
 w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.ASSIST_Q = 'متعذر'; const h1 = w.assistHtml();
-T(h1.indexOf('تحتاج زيارة أخرى تقنيًا') > -1, 'سؤالُ «متعذر» يُجاب بالمصطلح الحالي «تحتاج زيارة أخرى تقنيًا»');
+T(h1.indexOf('تحتاج زيارة أخرى') > -1, 'سؤالُ «متعذر» يُجاب بالمصطلح الحالي «تحتاج زيارة أخرى»');
 w.ASSIST_Q = 'شاشة القاعة'; const h2 = w.assistHtml();
 T(h2.indexOf('بعوائق وبدونها') > -1 && h2.indexOf('data-p="kiosk"') > -1, 'وسؤالُ «شاشة القاعة» يُجاب بخطواتها ويدلّ على شريحتها');
 const steps = Object.values(w.HELP_STEPS).flat().join('\n');

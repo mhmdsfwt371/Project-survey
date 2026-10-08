@@ -121,7 +121,7 @@ test('صفحةُ الوزارة (V33.7): المعوّقاتُ والشركاتُ
 test('طلبُ المالك (V34.4): لا تشكيلَ في أيِّ صفحةٍ تُعرَض بالعربية', () => {
   const was = w.noTashkeel.force; w.noTashkeel.force = true;
   try {
-    assert.equal(w.t('شاشةُ القاعة'), 'شاشة القاعة'); assert.equal(w.esc('تحتاج زيارة أخرى تقنيًا'), 'تحتاج زيارة أخرى تقنيا');
+    assert.equal(w.t('شاشةُ القاعة'), 'شاشة القاعة'); assert.equal(w.esc('تحتاج زيارة أخرى'), 'تحتاج زيارة أخرى');
     const bad = [];
     ['mfu', 'map', 'survey', 'over', 'mywork'].forEach(id => { try { w.goPage(id); w.render(1); } catch (e){ return; }
       const tx = (w.document.getElementById('content') || {}).textContent || ''; const m = tx.match(/[\u064B-\u0652\u0670]/g); if (m) bad.push(id + ':' + m.length); });

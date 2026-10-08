@@ -44,7 +44,7 @@ function svObstacle(r){ return svVisited(r) && !svClean(r); }
 /* ── عرضُ التحديات للوزارة ── */
 /* ═══ (V33.0) قرارُ المالك: لا «متعذّر» ولا «بلا تصريح» في العرض ═══
    النقطةُ التي زيرت ولم يُوصَل إليها (متعذّر، يحتاج تصريحًا، منع دخول، غير موجودة…) أو رُدَّت لزيارةٍ أخرى تُعرض «تمت الزيارة»
-   وتحدّيها «تحتاج زيارة أخرى تقنيًا». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
+   وتحدّيها «تحتاج زيارة أخرى». فالمزارُ قسمان لا ثالثَ لهما: بلا عوائق (وُصل إليها بلا تحدٍّ) وبعوائق (ما سواها).
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
 /* (V34.0) بلاغُ المالك على «أبرز التحديات»: «المدخل غير واضح — لم يُستدل عليه» تُعرض «تحتاج زيارة تقنية»، و«أخرى» تُعرض
    «ملاحظات فنية متنوعة» — لا ما يوحي بتصريحٍ أو بتعذّر الوصول. عرضٌ فقط: قيمةُ السجل ونموذجُ الميدان كما هما. */
@@ -130,11 +130,11 @@ function siteOvIncoming(id, v){
    كتابةُ السجل) — وما لا تقطع فيه القاعدةُ يبقى «يراجعه المهندس». ومن V37.1 يُختار من قائمةٍ في الميدان فلا تتعدّد الصيغ.
    ═══════════════════════════════════════════════════════════════════════════════ */
 var VISIT_WHY = [   /* لماذا لم يُمسح ما زرناه — اختيارٌ واحد */
-  { k:'closed',  n:'الطريق أو البوابة مغلقة',             who:'الشركة أو الحراسة', photo:true },
-  { k:'denied',  n:'منعتنا جهة (حراسة أو شركة أو أمن)',    who:'الشركة أو الحراسة', photo:true },
-  { k:'permit',  n:'يحتاج تصريحًا أو تواصلًا رسميًّا',      who:'الوزارة' },
+  { k:'closed',  n:'الطريق أو البوابة مغلقة',             who:'الشركة أو الحراسة', photo:true, sup:[{ p:'الشركة أو الحراسة', s:'فتح الطريق أو البوابة وتسهيل دخول الفريق' }] },
+  { k:'denied',  n:'منعتنا جهة (حراسة أو شركة أو أمن)',    who:'الشركة أو الحراسة', photo:true, sup:[{ p:'الشركة أو الحراسة', s:'إذنُ دخول الفريق للموقع' }] },
+  { k:'permit',  n:'يحتاج تصريحًا أو تواصلًا رسميًّا',      who:'الوزارة', sup:[{ p:'الوزارة', s:'تصريحٌ أو خطابٌ رسميٌّ للجهة المعنية' }] },
   { k:'missing', n:'الموقع غير موجود أو غير مطابق للسجل',  who:'الوزارة — تصحيح السجل' },
-  { k:'other',   n:'تحت الإنشاء أو منشأة جهة أخرى',        who:'الجهة المالكة' }
+  { k:'other',   n:'تحت الإنشاء أو منشأة جهة أخرى',        who:'الجهة المالكة', sup:[{ p:'الجهة المالكة', s:'التنسيقُ قبل التركيب' }] }
 ];
 var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكثرُ من اختيار */
   { k:'mount',  n:'لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا',  who:'أفاقي — تصنيع هيكل' },
@@ -142,9 +142,9 @@ var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكث�
   { k:'entry',  n:'تحتاج زيارة تقنية — المدخل غير واضح',         who:'أفاقي — زيارة تقنية' },
   { k:'multi',  n:'مداخل متعددة أو مدخل مشترك',                  who:'أفاقي — دراسة الموقع' },
   { k:'wide',   n:'المسار أو البوابة أعرض من طقم واحد',          who:'أفاقي — طقم إضافي' },
-  { k:'block',  n:'عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)', who:'الشركة أو الجهة المالكة' },
+  { k:'block',  n:'عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)', who:'الشركة أو الجهة المالكة', sup:[{ p:'الشركة أو الجهة المالكة', s:'إزالةُ العائق أو الإذنُ بالتركيب' }] },
   { k:'height', n:'ارتفاع صعب أو مبنى متعدد الأدوار',             who:'أفاقي — معدات' },
-  { k:'legacy', n:'منظومة قائمة لجهة أخرى',                       who:'الجهة المالكة' }
+  { k:'legacy', n:'منظومة قائمة لجهة أخرى',                       who:'الجهة المالكة', sup:[{ p:'الجهة المالكة', s:'التنسيقُ مع منظومتها القائمة' }] }
 ];
 function arKey(s){ return String(s || '').replace(/[\u064B-\u0652\u0640\u200f\u200e]/g, '').replace(/[أإآ]/g, 'ا').replace(/ة(?=\s|$)/g, 'ه').replace(/ى(?=\s|$)/g, 'ي').replace(/\s+/g, ' ').trim(); }
 /* سببُ عدم المسح: المختارُ في الميدان (r.why) أوّلًا، ثم قواعدُ الكلمات على النصّ، ثم حالةُ الوصول؛ وإلا null (يراجعه المهندس) */
@@ -206,17 +206,27 @@ function chalCats0(r){
    فالسجلّاتُ (r.why وr.chalCats) تبقى مقروءةً بأحدث اسم. */
 if (!('cats' in CFG)) CFG.cats = null;
 function catMerge(base, ov){
-  var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n }; });
+  var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n, sup:o.sup ? o.sup.slice() : null }; });
   (Array.isArray(ov) ? ov : []).forEach(function(o){
     if (!o || !o.k) return; var e = L.filter(function(x){ return x.k === o.k; })[0];
-    if (e){ if (o.n) e.n = String(o.n); if (o.who != null) e.who = String(o.who); if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off; }
-    else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true });
+    if (e){ if (o.n) e.n = String(o.n); if (o.who != null && String(o.who) !== String(e.who)){ e.who = String(o.who); e.sup = null; } if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off;
+      if (Array.isArray(o.sup) && o.sup.length) e.sup = o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }); }   /* (V37.14) جهاتُ الدعم */
+    else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true, sup:Array.isArray(o.sup) ? o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }) : null });
   });
   return L;
 }
 function catCached(name, base, ov){ var c = catCached[name]; if (c && c.ref === ov && c.v === CFG_VER) return c.L; var L = catMerge(base, ov); catCached[name] = { ref:ov, v:CFG_VER, L:L }; return L; }
 function whyList(){ return catCached('why', VISIT_WHY, CFG.cats && CFG.cats.why); }
 function ccList(){ return catCached('cc', CHAL_CATS, CFG.cats && CFG.cats.cc); }
+/* (V37.14) طلبُ المالك: «جهة الحل خلّيها جهة الدعم المطلوب — ولما أضغط عليها: مين الجهة أو الجهات، وإيه نوع الدعم لكلِّ جهة».
+   جهاتُ البند وما تُطالَب به كلٌّ منها؛ وإن لم تُحدَّد تُشتقّ من «جهة الحل» القديمة (الجهة — نوعُ الدعم). */
+function supOf(o){
+  if (!o) return [];
+  if (Array.isArray(o.sup) && o.sup.length) return o.sup;
+  var w = String(o.who || '').trim(); if (!w) return [];
+  var i = w.indexOf(' — '); return [{ p:i > 0 ? w.slice(0, i).trim() : w, s:i > 0 ? w.slice(i + 3).trim() : '' }];
+}
+function supParties(o){ var seen = {}; return supOf(o).map(function(x){ return x.p; }).filter(function(p){ if (!p || seen[p]) return false; seen[p] = 1; return true; }).join('، '); }
 function whyOf(k){ return whyList().filter(function(o){ return o.k === k; })[0] || null; }
 function ccOf(k){ return ccList().filter(function(o){ return o.k === k; })[0] || null; }
 
@@ -305,3 +315,18 @@ function photosBackfill(force){
 }
 /* أقدمُ صورةٍ معلّقةٍ على هذا الجهاز — بالدقائق */
 function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; if (!Q.length) return 0; var old = Q.reduce(function(m, it){ return Math.min(m, +it.at || Date.now()); }, Date.now()); return Math.floor((Date.now() - old) / 60000); }
+
+/* ── (V37.15) تعريفُ المالك للزيارة التقنية: «الزيارات التقنية للنقاط اللي تحت كوبري أو في بدايات أنفاق، أو النقاط اللي ملهاش
+   سطح تثبيت في الممرات فقط حتى الآن — لأن المخيمات وضعها مختلف». وما زير ولم يُستكمل (مغلقٌ أو بلا تصريح…) «تحتاج زيارة أخرى».
+   تُحسَب لما مُسح ولم يُركَّب: ممرٌّ في فئة «لا يوجد سطح تثبيت»، أو نصُّ تحدّيه أو ملاحظتُه يذكر كوبري أو جسرًا أو نفقًا. */
+/* «تحت كوبري» أو «داخل نفق» من اختيار الفني أو ملاحظته — لا من اسم فئة «عائق في الموقع (… نفق أو كوبري)» نفسِه، ولا «على الجسر» */
+var TECH_BT_RX = /تحت (ال)?(جسر|كوبري|كبري)|كوبري|كبري|نفق|انفاق/;
+function techVisit(x, r){
+  if (!x || !r || r.deleted || !svDone(r)) return false;
+  if (typeof insDone === 'function' && insDone(x.id)) return false;
+  var cc = chalCats(r);
+  if (x.type === 'ممر' && cc.indexOf('mount') > -1) return true;
+  var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
+  var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
+  return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
+}
