@@ -571,7 +571,7 @@ function trialKitHtml(r, me){
     + (r.report ? '<a class="btn btn-quiet btn-sm" href="' + esc(r.report) + '" target="_blank" rel="noopener">\u{1F4C4} ' + esc(t('التقرير')) + '</a>' : '')
     + (ph.length || q.length ? '<span class="hint" style="margin:0">\u{1F4F7} ' + nm(ph.length + q.length) + '</span>' : '')
     + (me ? '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4F7} ' + esc(t('أضِف صورة'))
-              + '<input type="file" accept="image/*" capture="environment" data-trph="' + esc(r.id) + '" style="display:none"></label>' : '')
+              + '<input type="file" accept="image/*" data-trph="' + esc(r.id) + '" style="display:none"></label>' : '')
     + '</div>';
 }
 function trialsDoc(){

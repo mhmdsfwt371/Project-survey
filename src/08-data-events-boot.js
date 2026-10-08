@@ -2951,11 +2951,16 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = '';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
   if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
+  var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */
+  if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
+  var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
+  if (svv){ SV_VIEW = svv.getAttribute('data-svview') === 'list' ? 'list' : 'dash'; var hostV = svv.closest('#content') || document.getElementById('content');
+    if (hostV){ svPopRemove(); var tmpV = document.createElement('div'); tmpV.innerHTML = svListPop(); while (tmpV.firstChild) hostV.appendChild(tmpV.firstChild); } else render(1); return true; }
   var svx = e.target.closest('[data-svpopxls]'); if (svx){ svListXlsx(svx.getAttribute('data-svpopxls')); return true; }
   var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
   if (exs){ EXP.scope.m = exs.getAttribute('data-expscope'); render(1); return true; }

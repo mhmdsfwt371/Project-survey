@@ -1004,7 +1004,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 + '<label class="btn ' + (p ? 'btn-secondary' : 'btn-primary')
                 + '" style="cursor:pointer;width:100%">'
                 + (p ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
-                + '<input type="file" accept="image/*" capture="environment" data-nsphoto="' + i
+                + '<input type="file" accept="image/*" data-nsphoto="' + i
                 + '" style="display:none"></label>'
                 + (p ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(p.size/1024))
                      + ' ' + esc(t('كيلو')) + '</div>' : '')
@@ -2399,7 +2399,7 @@ function photoBox(key, store, tag, label){
     '<div class="field"><label>' + esc(t(label)) + ' <span class="req">*</span></label>'
     + '<label class="btn btn-secondary" style="width:100%;justify-content:center">'
     +   (has ? '\u2713 ' + esc(t('التُقطت')) : '\u{1F4F7} ' + esc(t('صوّر أو اختر')))
-    +   '<input type="file" accept="image/*" capture="environment" data-' + tag + '="' + esc(key) + '" style="display:none">'
+    +   '<input type="file" accept="image/*" data-' + tag + '="' + esc(key) + '" style="display:none">'
     + '</label>'
     + (has ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(store[key].size / 1024))
              + ' ' + esc(t('كيلو')) + '</div>' : '')
@@ -2418,7 +2418,7 @@ function photoCard(){
           + (has ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
           + '<input type="file" accept="image/*" data-photo="' + p[0] + '" style="display:none"></label>'
           + (has ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(FORM.photos[p[0]].size/1024))
-                 + ' ' + esc(t('كيلو')) + '</div>' : '')
+                 + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-phclear="' + p[0] + '" style="color:#E05252">\u{1F5D1} ' + esc(t('احذف الصورة')) + '</button></div>' : '')   /* (V37.16) طلبُ المالك */
           + '</div>';
       }).join('')
     + '</div>'

@@ -81,14 +81,18 @@ function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); v
 function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
+  var asDash = !!SV_DASH_KEYS[SV_POP] && SV_VIEW !== 'list';   /* (V37.16) */
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
     + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
-    + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"') + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
+    + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل — التفاصيل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"')
+      + (SV_DASH_KEYS[SV_POP] ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
+      + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
-    + (rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = PCN[r[0]] || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7 → V37.14: من الفهرس) */
+    + (asDash && rows.length ? svDashHtml(SV_POP, rows) : '')
+    + (!asDash && rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = PCN[r[0]] || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7 → V37.14: من الفهرس) */
         return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
                    + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
@@ -97,6 +101,35 @@ function svListPop(){
     + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
+/* ═══ (V37.16) طلبُ المالك: «البوب أب اللي بتتفتح من صفحة الوزارة لكلِّ كارت (الزيارة والمسح والتركيب والتسليم والفك) — مش عاوزها
+   ليست، عاوزها داشبورد توضّح البيانات، ولما أحتاج تفاصيل أعمل إكسل». اللوحةُ تُبنى من صفوف القائمة نفسِها فلا يختلف رقم. ═══ */
+var SV_DASH_KEYS = { sv:1, rem:1, srv:1, srvr:1, insd:1, insr:1, hand:1, handr:1, disd:1, disr:1 };
+var SV_VIEW = 'dash';
+function svDashHtml(key, rows){
+  var N = (STATE.sites || []).length || 1, n = rows.length, now = Date.now(), dk = function(ms){ return dayKey(ms); };
+  var cnt = function(ix, cap, split, empty){ var m = {}; rows.forEach(function(r){ var raw = String(r[ix] || '').trim(); (split && raw ? raw.split(/،\s*/) : [raw]).forEach(function(v0){ var v = String(v0 || '').trim() || (empty || '\u2014'); m[v] = (m[v] || 0) + 1; }); });
+    var L = Object.keys(m).map(function(k){ return [k, m[k]]; }).sort(function(a, b){ return b[1] - a[1]; });
+    if (cap && L.length > cap){ var rest = L.slice(cap).reduce(function(a, x){ return a + x[1]; }, 0); L = L.slice(0, cap).concat([[t('أخرى'), rest]]); } return L; };
+  var bars = function(title, L, tot){ if (!L.length) return ''; var mx = Math.max.apply(null, L.map(function(x){ return x[1]; }));
+    return '<div class="card" style="margin:0"><div class="pid">' + esc(t(title)) + '</div>' + L.map(function(x){ var w = Math.max(2, Math.round(x[1] / mx * 100));
+      return '<div class="fn-row" style="display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(t(x[0])) + '">' + esc(t(x[0])) + '</span>'
+        + '<span style="background:var(--line);border-radius:6px;height:10px;position:relative;overflow:hidden"><i style="position:absolute;inset-block:0;inset-inline-start:0;width:' + w + '%;background:var(--acc,#2E86DE);border-radius:6px"></i></span>'
+        + '<b class="num">' + nm(x[1]) + (tot ? ' <small class="hint" style="margin:0">' + nm(Math.round(x[1] / tot * 100)) + '\u066A</small>' : '') + '</b></div>'; }).join('') + '</div>'; };
+  /* آخرُ ١٤ يومًا بتاريخ العمود السادس (آخر زيارة) */
+  var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dk(now - i * 864e5); days.push(k); byDay[k] = 0; }
+  rows.forEach(function(r){ var d = String(r[5] || '').slice(0, 10); if (byDay[d] != null) byDay[d]++; });
+  var mxd = Math.max.apply(null, days.map(function(k){ return byDay[k]; }).concat([1])), wk = days.slice(7).reduce(function(a, k){ return a + byDay[k]; }, 0), today = byDay[days[13]] || 0;
+  var trend = days.some(function(k){ return byDay[k]; }) ? '<div class="card" style="margin:0"><div class="pid">' + esc(t('آخر ١٤ يومًا')) + '</div><div style="display:flex;align-items:flex-end;gap:4px;height:90px">'
+    + days.map(function(k){ var h = Math.round(byDay[k] / mxd * 80); return '<div title="' + esc(k) + ' \u00b7 ' + nm(byDay[k]) + '" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end"><small class="num" style="font-size:10px">' + (byDay[k] ? nm(byDay[k]) : '') + '</small><i style="display:block;width:100%;height:' + Math.max(byDay[k] ? 3 : 1, h) + 'px;background:var(--acc,#2E86DE);border-radius:3px 3px 0 0;opacity:' + (byDay[k] ? 1 : .25) + '"></i></div>'; }).join('')
+    + '</div></div>' : '';
+  var tile = function(v, l){ return '<div class="card" style="margin:0;text-align:center"><div class="num" style="font-size:26px;font-weight:700">' + v + '</div><div class="hint" style="margin:0">' + esc(t(l)) + '</div></div>'; };
+  var tiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0">' + tile(nm(n), 'العدد') + tile(nm(Math.round(n / N * 100)) + '\u066A', 'من كلِّ النقاط')
+    + (trend ? tile(nm(wk), 'آخر ٧ أيام') + tile(nm(today), 'اليوم') : '') + '</div>';
+  var st = cnt(7, 8, true).filter(function(x){ return x[0] !== '\u2014'; });   /* كلُّ فئةٍ وحدَها لا تراكيبُها */
+  return tiles + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">'
+    + bars('حسب المشعر', cnt(2), n) + bars('حسب النوع', cnt(3, 8), n) + trend + bars('حسب الشركة', cnt(4, 8, false, t('بلا شركة — غير المخيمات')), n)
+    + (/^(sv|srv|insd|hand|disd)$/.test(key) ? bars('حسب المنفّذ', cnt(6, 8), n) : '') + (st.length > 1 ? bars('الحالة والتحديات', st, n) : '') + '</div>';
+}
 function svPhoPanel(id){ var px = siteFind(id);
         return '<div id="svPhoVeil" data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
           + '<div id="svPhoBox" class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpho" style="position:fixed;z-index:2003;inset:4vh 3vw auto 3vw;max-height:92vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.45)">'
@@ -2577,6 +2610,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.16', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'كروت الزيارة والمسح والتركيب والتسليم والفك في متابعة الوزارة بقت بتفتح «لوحة» بدل القائمة: العدد ونسبته، وآخر ٧ أيام والنهارده، وتوزيعها حسب المشعر والنوع والشركة والمنفّذ، والتحديات، وآخر ١٤ يوم. والتفاصيل من «تصدير إكسل — التفاصيل»، وفيه زرار «القائمة» لو احتجت صور نقطة بعينها.',
+      'صور نموذج المسح: تقدر تختار صورة من المعرض في الموبايل مش من الكاميرا بس، وفيه زرار «🗑 احذف الصورة» تحت أي صورة اتاخدت غلط قبل الحفظ.' ] },
   { v:'V37.15', d:'٨ أكتوبر ٢٠٢٦', notes:[
       '«تحتاج زيارة أخرى تقنيًا» بقت «تحتاج زيارة أخرى»: دي النقط اللي اتزارت وما اتمسحتش (الطريق مقفول، أو مفيش تصريح، أو اتمنعنا، أو الموقع مش مطابق).',
       'حالة جديدة على الخريطة «تحتاج زيارة تقنية»: النقط اللي تحت كوبري أو جوه نفق أو في بدايته (من اختيار الفني أو ملاحظته)، والممرات اللي مفيهاش سطح تثبيت. المخيمات مش داخلة فيها. واللي المهندس رجّعها بقت «أعادها المهندس — زيارة أخرى».' ] },
