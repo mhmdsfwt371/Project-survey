@@ -159,6 +159,7 @@ jobs:
           if [ -n "$PT" ]; then
             if git push --dry-run "https://x-access-token:${PT}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/zz-promote-token-check > /tmp/dry.log 2>&1; then echo "PROMOTE_TOKEN_WRITE=ok" > /tmp/exp/promote-write.txt; else echo "PROMOTE_TOKEN_WRITE=fail $(tail -c 200 /tmp/dry.log | tr -d '\n' | sed 's/x-access-token:[^@]*@/x-access-token:***@/g')" > /tmp/exp/promote-write.txt; fi
           else echo "PROMOTE_TOKEN_WRITE=unset" > /tmp/exp/promote-write.txt; fi
+          if [ -s /tmp/apptok ]; then AT=$(cat /tmp/apptok); rm -f /tmp/apptok; if git push --dry-run "https://x-access-token:${AT}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/zz-app-token-check > /dev/null 2>&1; then echo "APP_TOKEN_CAN_WRITE_CODE=yes" >> /tmp/exp/promote-write.txt; else echo "APP_TOKEN_CAN_WRITE_CODE=no" >> /tmp/exp/promote-write.txt; fi; unset AT; fi
           node -e "const f=require('fs'); const j=JSON.parse(f.readFileSync('/tmp/exp/tokens-check.json','utf8')); j.promoteWrite=f.readFileSync('/tmp/exp/promote-write.txt','utf8').trim(); f.writeFileSync('/tmp/exp/tokens-check.json', JSON.stringify(j));" || true
       - name: QA stats (read-only)
         env:

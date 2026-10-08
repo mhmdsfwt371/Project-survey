@@ -10,6 +10,10 @@ try { const sa = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT); admin.initial
   await db.collection('stats').doc('_tokencheck').delete().catch(() => {});
   /* ٢ · توكينُ جيت هب المخزَّنُ في التطبيق (يُطلق به التطبيقُ الأعمال) */
   const g = (await db.collection('ghcfg').doc('gh').get()).data() || {}; out.appGithubToken = Object.assign(await gh(g.tok), { savedAt:T(g.at) });
+  /* هل مفتاحُ التطبيق هو نفسُه توكينُ الترقية؟ (مقارنةُ بصمتين لا القيمتين) — وتُحفظ القيمةُ مؤقتًا لتجربة كتابةٍ جافّةٍ ثم تُمسح */
+  const { createHash } = await import('crypto'); const hh = v => v ? createHash('sha256').update(String(v)).digest('hex') : '';
+  out.appSameAsPromote = !!(g.tok && process.env.PT && hh(g.tok) === hh(process.env.PT));
+  if (g.tok){ const { writeFileSync: wf } = await import('fs'); wf('/tmp/apptok', String(g.tok), { mode:0o600 }); }
 } catch (e){ out.firebase = { ok:false, why:e.message }; }
 /* ٣ · أسرارُ المستودع */
 out.PROMOTE_TOKEN = await gh(process.env.PT);
