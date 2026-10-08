@@ -526,7 +526,8 @@ console.log('\n══ حذفُ النقطة المضافة نهائيًّا — 
   check(/CORE\.dirty\('newsites', id, \{ id:String\(id\), deleted:true/.test(del) && !/CORE\.dirty\('newsites', id, null\)/.test(del), 'والحذفُ شاهدُ قبرٍ يصل الأجهزةَ كلَّها لا محوٌ لا يصلها');
   check(/\['recs', 'inss', 'diss', 'maints'\]\.forEach/.test(del) && /if \(w && w\.site === id\) CORE\.rm\('tasks', k\)/.test(del) && /logEvent\('حذفُ نقطةٍ مضافةٍ نهائيًّا — '/.test(del), 'وسجلاتُها ومهامُّها تُشيَّع معها ويبقى الأثرُ في سجل الأحداث');
   check(/if \(kind === 'newsites' && typeof siteDropLocal === 'function'\) siteDropLocal\(id\);/.test(raw11) && /if \(v\.hidden \|\| v\.deleted\)\{ STATE\.sites = STATE\.sites\.filter/.test(raw11) && /v\.hidden \|\| v\.deleted \|\| have\[v\.id\]/.test(raw11), 'والشاهدُ الواردُ يرفعها من السجل عند الوصول وعند الإقلاع');
-  check(/data-sitedelgo="' \+ esc\(x\.id\)/.test(raw11) && /data-sitedel="' \+ esc\(x\.id\)/.test(raw11) && /(?:siteLocked\(x\.id\) \? [^\n]*: )?x\.isNew\n\s*\? \(SITE_DEL === x\.id/.test(raw11) && /closest\('\[data-sitedelgo\]'\)/.test(raw11), 'وزرُّ الحذف للمضافة وحدَها بتأكيدٍ واحد، والإخفاءُ للسجل الأصلي كما كان (وقفلٌ بدلهما لما رُكّب — ق-٠١٤)'); }
+  /* (V37.13 — ق-٠١٦) نموذجُ التعديل بالحذف النهائيِّ نفسِه للمهندس فما فوق: زرٌّ ثم تأكيد، والقفلُ لما رُكّب (ق-٠١٤) */
+  check(/data-sitedelgo="' \+ esc\(x\.id\)/.test(raw11) && /data-sitedel="' \+ esc\(x\.id\)/.test(raw11) && /siteLocked\(x\.id\) \? [^\n]*\n\s*: !mayDeleteFinal\(\) \? '' *\n\s*: \(SITE_DEL === x\.id/.test(raw11) && /siteDeleteFinal\(stdg\.getAttribute\('data-sitedelgo'\)\)/.test(raw11), 'وزرُّ الحذف في نموذج التعديل حذفٌ نهائيٌّ للمهندس فما فوق بتأكيد، وقفلٌ لما رُكّب (ق-٠١٤ وق-٠١٦)'); }
 
 console.log('\n══ المسحُ لا يضيع إن أنهى الآيفونُ الصفحة (V25.9) ══');
 { const raw12 = readFileSync('index.html', 'utf8');

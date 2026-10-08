@@ -1236,7 +1236,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.12</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.13</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1298,7 +1298,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-08a89448e0.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-71badbe36b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4117,13 +4117,12 @@ function siteEditHtml(x){
     + '<div class="actions">'
     + btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-sitesave="' + esc(x.id) + '"')
     + btn(t('إلغاء'),'btn-quiet btn-sm',' data-sitecancel="1"')
-    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>' : x.isNew
-        ? (SITE_DEL === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
-        : (SITE_HIDE === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الحذف') + ((STATE.recs[x.id] || STATE.inss[x.id]) ? ' — ' + t('لها زيارة') : ''),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('حذف النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
+    /* (V37.13 مراجعةُ الجودة) نموذجُ التعديل بالحذف النهائيِّ نفسِه (ق-٠١٦) — كان يُخفي الأصليةَ ويحذف المضافةَ بالطريقة القديمة */
+    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>'
+        : !mayDeleteFinal() ? ''
+        : (SITE_DEL === x.id
+            ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي — لا يُستعاد'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('حذف نهائي'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"')))
     + '</div>');
 }
 function hiddenSitesCard(){
@@ -7127,8 +7126,13 @@ var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجل
   ['mount',  /قائم|هيكل|عمود|عامود|لوح|سطح|تثبيت/]
 ];
 var CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
+var CC_MEMO = (typeof WeakMap === 'function') ? new WeakMap() : null;   /* (V37.13) فئاتُ السجلّ تُحسَب مرةً لكلِّ سجلٍّ وإصدارِ إعدادات */
 function chalCats(r){
   if (!r || r.deleted) return [];
+  if (CC_MEMO){ var mm = CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
+  return chalCats0(r);
+}
+function chalCats0(r){
   if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
@@ -7394,14 +7398,14 @@ var CAT_NEW = { why:[], cc:[] };
 /* ما يُكتب يُحفَظ مسودّةً لحظةَ كتابته — فأيُّ إعادة رسمٍ (مزامنةٌ في الخلفية أو زرُّ «＋») لا تمسحه قبل «حفظ التصنيفات» */
 var CAT_DRAFT = {};
 function catDraftCatch(e){ var el = e.target; if (!el || !el.getAttribute) return;
-  ['data-catn', 'data-catw', 'data-catp', 'data-cato'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
+  ['data-vcn', 'data-vcw', 'data-vcp', 'data-vco'].forEach(function(a){ var id = el.getAttribute(a); if (id != null) CAT_DRAFT[a + '|' + id] = el.type === 'checkbox' ? el.checked : el.value; }); }
 function catD(a, id, def){ var v = CAT_DRAFT[a + '|' + id]; return v === undefined ? def : v; }
 function catRow(kind, o){ var id = kind + '|' + o.k;
-    o = { k:o.k, base:o.base, n:catD('data-catn', id, o.n || ''), who:catD('data-catw', id, o.who || ''), photo:catD('data-catp', id, !!o.photo), off:!catD('data-cato', id, !o.off) };
-    return '<tr><td><input data-catn="' + esc(id) + '" value="' + esc(o.n || '') + '" dir="auto" placeholder="' + esc(t(o.base || 'المسمّى')) + '" style="width:100%;min-width:180px"></td>'
-      + '<td><input data-catw="' + esc(id) + '" value="' + esc(o.who || '') + '" dir="auto" style="width:100%;min-width:120px"></td>'
-      + (kind === 'why' ? '<td style="text-align:center"><input type="checkbox" data-catp="' + esc(id) + '"' + (o.photo ? ' checked' : '') + ' aria-label="' + esc(t('صورة إثبات')) + '"></td>' : '')
-      + '<td style="text-align:center"><input type="checkbox" data-cato="' + esc(id) + '"' + (o.off ? '' : ' checked') + ' aria-label="' + esc(t('في قائمة الميدان')) + '"></td></tr>'; }
+    o = { k:o.k, base:o.base, n:catD('data-vcn', id, o.n || ''), who:catD('data-vcw', id, o.who || ''), photo:catD('data-vcp', id, !!o.photo), off:!catD('data-vco', id, !o.off) };
+    return '<tr><td><input data-vcn="' + esc(id) + '" aria-label="' + esc(t('المسمّى')) + '" value="' + esc(o.n || '') + '" dir="auto" placeholder="' + esc(t(o.base || 'المسمّى')) + '" style="width:100%;min-width:180px"></td>'
+      + '<td><input data-vcw="' + esc(id) + '" aria-label="' + esc(t('جهة الحل')) + '" value="' + esc(o.who || '') + '" dir="auto" style="width:100%;min-width:120px"></td>'
+      + (kind === 'why' ? '<td style="text-align:center"><input type="checkbox" data-vcp="' + esc(id) + '"' + (o.photo ? ' checked' : '') + ' aria-label="' + esc(t('صورة إثبات')) + '"></td>' : '')
+      + '<td style="text-align:center"><input type="checkbox" data-vco="' + esc(id) + '"' + (o.off ? '' : ' checked') + ' aria-label="' + esc(t('في قائمة الميدان')) + '"></td></tr>'; }
 function catsCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   var row = catRow;
@@ -7409,21 +7413,21 @@ function catsCard(){
     var news = CAT_NEW[kind].map(function(k){ return row(kind, { k:k, n:'', who:'', photo:false }); }).join('');
     return '<div class="tablewrap"><table class="tbl"><thead><tr>' + head.map(function(h){ return '<th>' + esc(t(h)) + '</th>'; }).join('') + '</tr></thead><tbody id="catBody-' + kind + '">'
       + L.map(function(o){ return row(kind, o); }).join('') + news + '</tbody></table></div>'
-      + '<div class="actions" style="margin:6px 0 14px">' + btn('\uFF0B ' + t(kind === 'why' ? 'سبب جديد' : 'تحدٍّ جديد'), 'btn-quiet btn-sm', ' data-catadd="' + kind + '"') + '</div>'; };
+      + '<div class="actions" style="margin:6px 0 14px">' + btn('\uFF0B ' + t(kind === 'why' ? 'سبب جديد' : 'تحدٍّ جديد'), 'btn-quiet btn-sm', ' data-vcadd="' + kind + '"') + '</div>'; };
   return '<div id="catsCard">' + card('تصنيفات الزيارة والمسح — المسميات وجهات الحل',
     '<p class="hint" style="margin-top:0">' + esc(t('غيّر المسمّى أو جهةَ الحل كما تريد أن تراها الوزارةُ والقاعة. البندُ غيرُ المعلَّم يختفي من قائمة الميدان ويبقى عدُّ ما سُجّل به. والاسمُ الفارغ يعود إلى الأصل.')) + '</p>'
     + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهة الحل', 'صورة إثبات', 'في قائمة الميدان'])
-    + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهة الحل', 'في قائمة الميدان']),
-    btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-catsok="1"')) + '</div>';
+    + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهة الحل', 'في قائمة الميدان']),
+    btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
 }
 function catsSave(){
   if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
   var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };
-  document.querySelectorAll('[data-catn]').forEach(function(inp){
-    var id = inp.getAttribute('data-catn'), p = id.split('|'), kind = p[0], k = p.slice(1).join('|'), n = String(inp.value || '').trim();
+  document.querySelectorAll('[data-vcn]').forEach(function(inp){
+    var id = inp.getAttribute('data-vcn'), p = id.split('|'), kind = p[0], k = p.slice(1).join('|'), n = String(inp.value || '').trim();
     var isNew = CAT_NEW[kind].indexOf(k) > -1; if (isNew && !n) return;
-    var o = { k:k, n:n, who:val('data-catw', id) || '', off:val('data-cato', id) === false };
-    if (kind === 'why') o.photo = val('data-catp', id) === true;
+    var o = { k:k, n:n, who:val('data-vcw', id) || '', off:val('data-vco', id) === false };
+    if (kind === 'why') o.photo = val('data-vcp', id) === true;
     out[kind].push(o);
   });
   CFG.cats = out; CAT_NEW = { why:[], cc:[] }; CAT_DRAFT = {}; catCached.why = catCached.cc = null;
@@ -17067,8 +17071,7 @@ function readDelta(col, key, cap){
                 : q.orderBy('_at', 'desc').limit(cap);
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
-    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });
-    FB.readCount = (FB.readCount || 0) + sn.size;
+    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });   /* (V37.13 مراجعةُ الجودة) كانت القراءةُ تُعَدّ هنا مرةً ثانية */
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */
@@ -22302,7 +22305,7 @@ function mfuMilesCard(){
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
-function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
+function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-vcedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
 function phGapCard(){
   if (!STATE.meta.phFull){ photosBackfill(); return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + '</div><p class="hint" style="margin:0">' + esc(t('جارٍ فحصُ صور الدرايف كلِّها على هذا الجهاز — مرةً في الأسبوع.')) + '</p></div>'; }
   var by = {}, pts = 0, pics = 0;
@@ -22315,6 +22318,11 @@ function phGapCard(){
     + '<div class="actions" style="margin:6px 0 0">' + btn('\u21BB ' + t('أعد الفحص الآن'), 'btn-quiet btn-sm', ' data-phfull="1"') + '</div></div>';
 }
 function stageCounts(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0) + '|' + (STATE.sites || []).length + '|' + Math.floor(Date.now() / 60000);   /* (V37.13) مرةً لكلِّ إصدار */
+  if (stageCounts.c && stageCounts.c.k === mk) return stageCounts.c.v;
+  var v = stageCounts0(); stageCounts.c = { k:mk, v:v }; return v;
+}
+function stageCounts0(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
     if (svVisited(r)) c.vis++; if (svDone(r)) c.srv++; if (insDone(x.id)) c.ins++; if (handDone(x.id)) c.hand++; if (disDone(x.id)) c.dis++;
@@ -25068,6 +25076,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.13', d:'٨ أكتوبر ٢٠٢٦', notes:[
+      'مراجعة شاملة بعين فريق التطوير والجودة: رجع زرار «إضافة فئة» في المشتريات يشتغل (كان محرّر المسميات بيبلعه)، ونموذج «تعديل البيانات» بقى بالحذف النهائي نفسه، وعدّاد استهلاك القراءات بقى مظبوط (كان بيعدّ مرتين)، والشريط الأصفر للصور فيه ✕ يأجّله نص ساعة، والأرقام بقت أسرع.' ] },
   { v:'V37.12', d:'٨ أكتوبر ٢٠٢٦', notes:[
       'الحذف النهائي اتنشر: أي مهندس فأعلى يحذف أي نقطة ما اتركّبتش بزرار «🗑 حذف نهائي» وتأكيد واحد، فتتشال من كل مكان وعند الكل في ثواني ومن غير استرجاع. والسحابة نفسها بتمنع أي حد يرجّعها.' ] },
   { v:'V37.11', d:'٨ أكتوبر ٢٠٢٦', notes:[
@@ -33887,6 +33897,7 @@ function clickTables(e){
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
+  if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
   if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
@@ -34578,7 +34589,7 @@ function clickAPart7(e){
   var std = e.target.closest('[data-sitedel]');   /* (V25.5) حذفُ المضافة نهائيًّا — بتأكيدٍ واحد */
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
-  if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  if (stdg){ if (siteDeleteFinal(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }   /* (V37.13) */
   var mvd = e.target.closest('[data-mvdel]');   /* (V36.6) حركةُ مخزنٍ خاطئةٌ خلال يومها */
   if (mvd){ if (window.confirm(t('حذف') + ' ' + t('حركة مخزون') + '؟')) gdelRun('mv', mvd.getAttribute('data-mvdel')); render(1); return true; }
   var gdl = e.target.closest('[data-gdel]');   /* (V36.5) الحذفُ الموحّد */
@@ -34704,11 +34715,11 @@ function onDocClickPart1(e){
     }
     return;
   }
-  if (e.target.closest('[data-catsok]')){ if (catsSave()) render(1); return; }   /* (V37.4) */
-  var cad = e.target.closest('[data-catadd]');
-  if (cad){ var kd = cad.getAttribute('data-catadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
-    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-catn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
-  if (e.target.closest('[data-catedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
+  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  var cad = e.target.closest('[data-vcadd]');
+  if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
+    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
+  if (e.target.closest('[data-vcedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
   if (e.target.closest('[data-listsok]')){   /* (V30.3) */
     if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
     var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
@@ -35768,7 +35779,7 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
-  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) */
+  if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) */
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
   if (t0 && t0.hasAttribute && (t0.hasAttribute('data-expsg') || t0.hasAttribute('data-expst'))){ EXP.scope[t0.hasAttribute('data-expsg') ? 'g' : 't'] = t0.value; render(1); return; }   /* (V29.0) */
@@ -35953,7 +35964,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
-  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
+  if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){
     ROUTE[e.target.getAttribute('data-rt')] = e.target.value;
@@ -36275,10 +36286,11 @@ document.addEventListener('keydown', function(e){
    بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
 function phStaleSync(){
   var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
-  if (!n || mins < 60){ if (old) old.remove(); return; }
+  if (!n || mins < 60 || Date.now() < (phStaleSync.snooze || 0)){ if (old) old.remove(); return; }
   var html = '\u26A0 ' + esc(t('عندك')) + ' <b>' + nm(n) + '</b> ' + esc(t('صورة لم تُرفع منذ')) + ' ' + nm(Math.floor(mins / 60)) + ' ' + esc(t('ساعة')) + ' — '
     + esc(STATE.meta.online ? t('اترك التطبيق مفتوحًا على الشبكة حتى تُرفع') : t('افتح الشبكة الآن — الصورُ على جهازك وحده'))
-    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>';
+    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>'
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-phstalex="1" aria-label="' + esc(t('إغلاق')) + '" style="color:#fff">\u2715</button>';   /* (V37.13) يُؤجَّل نصفَ ساعة */
   if (!old){ old = document.createElement('div'); old.id = 'phStale'; old.setAttribute('role', 'alert'); old.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:1900;background:#B8860B;color:#fff;border-radius:12px;padding:8px 12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.35)'; document.body.appendChild(old); }
   if (old.innerHTML !== html) old.innerHTML = html;
 }

@@ -324,13 +324,12 @@ function siteEditHtml(x){
     + '<div class="actions">'
     + btn('\u{1F4BE} ' + t('احفظ'),'btn-primary btn-sm',' data-sitesave="' + esc(x.id) + '"')
     + btn(t('إلغاء'),'btn-quiet btn-sm',' data-sitecancel="1"')
-    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>' : x.isNew
-        ? (SITE_DEL === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('حذف النقطة نهائيًا'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"'))
-        : (SITE_HIDE === x.id
-            ? btn('\u{1F5D1} ' + t('تأكيد الحذف') + ((STATE.recs[x.id] || STATE.inss[x.id]) ? ' — ' + t('لها زيارة') : ''),'btn-danger btn-sm',' data-sitehidego="' + esc(x.id) + '"')
-            : btn('\u{1F5D1} ' + t('حذف النقطة'),'btn-quiet btn-sm',' data-sitehide="' + esc(x.id) + '"')))
+    /* (V37.13 مراجعةُ الجودة) نموذجُ التعديل بالحذف النهائيِّ نفسِه (ق-٠١٦) — كان يُخفي الأصليةَ ويحذف المضافةَ بالطريقة القديمة */
+    + (siteLocked(x.id) ? '<span class="hint" style="margin:0">\u{1F512} ' + esc(t('لا تُحذَف — النقطة')) + ' ' + esc(t(siteLocked(x.id))) + '</span>'
+        : !mayDeleteFinal() ? ''
+        : (SITE_DEL === x.id
+            ? btn('\u{1F5D1} ' + t('تأكيد الحذف النهائي — لا يُستعاد'),'btn-danger btn-sm',' data-sitedelgo="' + esc(x.id) + '"')
+            : btn('\u{1F5D1} ' + t('حذف نهائي'),'btn-quiet btn-sm',' data-sitedel="' + esc(x.id) + '"')))
     + '</div>');
 }
 function hiddenSitesCard(){

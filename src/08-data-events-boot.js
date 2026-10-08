@@ -2767,6 +2767,7 @@ function clickTables(e){
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
+  if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
   if (phrf){ var pid0 = phrf.getAttribute('data-phrefetch'); delete PH_FETCH[pid0]; photosFetchSite(pid0); render(1); return true; }
@@ -3458,7 +3459,7 @@ function clickAPart7(e){
   var std = e.target.closest('[data-sitedel]');   /* (V25.5) حذفُ المضافة نهائيًّا — بتأكيدٍ واحد */
   if (std){ SITE_DEL = std.getAttribute('data-sitedel'); render(1); return true; }
   var stdg = e.target.closest('[data-sitedelgo]');
-  if (stdg){ if (siteDelete(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }
+  if (stdg){ if (siteDeleteFinal(stdg.getAttribute('data-sitedelgo'))){ DETAIL_ID = ''; CUR = 'sites'; } render(1); return true; }   /* (V37.13) */
   var mvd = e.target.closest('[data-mvdel]');   /* (V36.6) حركةُ مخزنٍ خاطئةٌ خلال يومها */
   if (mvd){ if (window.confirm(t('حذف') + ' ' + t('حركة مخزون') + '؟')) gdelRun('mv', mvd.getAttribute('data-mvdel')); render(1); return true; }
   var gdl = e.target.closest('[data-gdel]');   /* (V36.5) الحذفُ الموحّد */
@@ -3584,11 +3585,11 @@ function onDocClickPart1(e){
     }
     return;
   }
-  if (e.target.closest('[data-catsok]')){ if (catsSave()) render(1); return; }   /* (V37.4) */
-  var cad = e.target.closest('[data-catadd]');
-  if (cad){ var kd = cad.getAttribute('data-catadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
-    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-catn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
-  if (e.target.closest('[data-catedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
+  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  var cad = e.target.closest('[data-vcadd]');
+  if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
+    var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }
+  if (e.target.closest('[data-vcedit]')){ goPage('consts'); render(1); setTimeout(function(){ var cc = document.getElementById('catsCard'); if (cc && cc.scrollIntoView) cc.scrollIntoView({ block:'start' }); }, 60); return; }
   if (e.target.closest('[data-listsok]')){   /* (V30.3) */
     if (!may('settings')){ toast(t('القوائمُ للمهندس فما فوق')); return; }
     var LS = {}; document.querySelectorAll('[data-lists]').forEach(function(ta){ LS[ta.getAttribute('data-lists')] = String(ta.value || '').split('\n').map(function(x){ return x.trim(); }).filter(Boolean); });
@@ -4648,7 +4649,7 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
-  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) */
+  if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) */
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
   if (t0 && t0.hasAttribute && (t0.hasAttribute('data-expsg') || t0.hasAttribute('data-expst'))){ EXP.scope[t0.hasAttribute('data-expsg') ? 'g' : 't'] = t0.value; render(1); return; }   /* (V29.0) */
@@ -4833,7 +4834,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
-  if (e.target && e.target.closest && e.target.closest('[data-catn],[data-catw],[data-catp],[data-cato]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
+  if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){
     ROUTE[e.target.getAttribute('data-rt')] = e.target.value;
@@ -5155,10 +5156,11 @@ document.addEventListener('keydown', function(e){
    بزرِّ «ارفع الآن». الصورُ التي ضاعت (١١٢ في عرفات) كانت على جهازين ولم تُرفع — والشريطُ يقولها قبل أن تضيع. */
 function phStaleSync(){
   var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
-  if (!n || mins < 60){ if (old) old.remove(); return; }
+  if (!n || mins < 60 || Date.now() < (phStaleSync.snooze || 0)){ if (old) old.remove(); return; }
   var html = '\u26A0 ' + esc(t('عندك')) + ' <b>' + nm(n) + '</b> ' + esc(t('صورة لم تُرفع منذ')) + ' ' + nm(Math.floor(mins / 60)) + ' ' + esc(t('ساعة')) + ' — '
     + esc(STATE.meta.online ? t('اترك التطبيق مفتوحًا على الشبكة حتى تُرفع') : t('افتح الشبكة الآن — الصورُ على جهازك وحده'))
-    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>';
+    + ' <button type="button" class="btn btn-primary btn-sm" data-phflushnow="1">\u2B06 ' + esc(t('ارفع الآن')) + '</button>'
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-phstalex="1" aria-label="' + esc(t('إغلاق')) + '" style="color:#fff">\u2715</button>';   /* (V37.13) يُؤجَّل نصفَ ساعة */
   if (!old){ old = document.createElement('div'); old.id = 'phStale'; old.setAttribute('role', 'alert'); old.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 6px);z-index:1900;background:#B8860B;color:#fff;border-radius:12px;padding:8px 12px;font-size:13.5px;box-shadow:0 6px 20px rgba(0,0,0,.35)'; document.body.appendChild(old); }
   if (old.innerHTML !== html) old.innerHTML = html;
 }

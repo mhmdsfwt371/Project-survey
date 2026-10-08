@@ -176,8 +176,13 @@ var CHAL_RULES = [   /* (V37.0) رُتّبت بعد فحصها على السجل
   ['mount',  /قائم|هيكل|عمود|عامود|لوح|سطح|تثبيت/]
 ];
 var CHAL_NONE_RX = /يمكن التركيب عليها مباشره|دون الحاجه الي هيكل|دون هيكل|^\(? ?ربوه مني ?\)?$/;   /* ملاحظاتٌ لا تحديات: «يمكن التركيب مباشرة»، واسمُ الحيّ */
+var CC_MEMO = (typeof WeakMap === 'function') ? new WeakMap() : null;   /* (V37.13) فئاتُ السجلّ تُحسَب مرةً لكلِّ سجلٍّ وإصدارِ إعدادات */
 function chalCats(r){
   if (!r || r.deleted) return [];
+  if (CC_MEMO){ var mm = CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
+  return chalCats0(r);
+}
+function chalCats0(r){
   if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){

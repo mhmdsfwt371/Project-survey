@@ -4838,7 +4838,7 @@ function mfuMilesCard(){
    والتركيب والتسليم والفك — أخضرُ المنجز وأحمرُ المتبقي، وتفتح قوائمَها)؛ ثم مسارُ العمل الميداني: زياراتُ آخر أربعةَ عشرَ يومًا عمودًا عمودًا
    بوتيرة الأسبوع وتوقّعِ اكتمال أكبر مشعر؛ ثم أبرزُ ثلاثة تحديات. كلُّه من الأرقام نفسِها (لا رقمَ يُخترَع) ويُحسَب مرةً في الرسمة. */
 /* (V37.0) قمعُ المراحل الخمس، وأسبابُ «زيارة بلا مسح» بجهاتها، وتحدياتُ التركيب الثماني بجهاتها — كلُّ رقمٍ يفتح قائمتَه */
-function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-catedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
+function catEditLink(){ return (typeof may === 'function' && may('settings') && !KIOSK_ON) ? ' <button type="button" class="btn btn-quiet btn-sm" data-vcedit="1" style="margin-inline-start:6px">\u270E ' + esc(t('تعديل المسميات والجهات')) + '</button>' : ''; }   /* (V37.4) */
 function phGapCard(){
   if (!STATE.meta.phFull){ photosBackfill(); return '<div class="card" style="margin:0"><div class="pid">\u{1F4F7} ' + esc(t('صور ليست على الدرايف')) + '</div><p class="hint" style="margin:0">' + esc(t('جارٍ فحصُ صور الدرايف كلِّها على هذا الجهاز — مرةً في الأسبوع.')) + '</p></div>'; }
   var by = {}, pts = 0, pics = 0;
@@ -4851,6 +4851,11 @@ function phGapCard(){
     + '<div class="actions" style="margin:6px 0 0">' + btn('\u21BB ' + t('أعد الفحص الآن'), 'btn-quiet btn-sm', ' data-phfull="1"') + '</div></div>';
 }
 function stageCounts(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0) + '|' + (STATE.sites || []).length + '|' + Math.floor(Date.now() / 60000);   /* (V37.13) مرةً لكلِّ إصدار */
+  if (stageCounts.c && stageCounts.c.k === mk) return stageCounts.c.v;
+  var v = stageCounts0(); stageCounts.c = { k:mk, v:v }; return v;
+}
+function stageCounts0(){
   var c = { n:0, vis:0, srv:0, ins:0, hand:0, dis:0, gap:0, why:{}, tech:0, none:0, cc:{}, review:0, esc:0 };
   (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; c.n++;
     if (svVisited(r)) c.vis++; if (svDone(r)) c.srv++; if (insDone(x.id)) c.ins++; if (handDone(x.id)) c.hand++; if (disDone(x.id)) c.dis++;

@@ -4758,8 +4758,7 @@ function readDelta(col, key, cap){
                 : q.orderBy('_at', 'desc').limit(cap);
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
-    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });
-    FB.readCount = (FB.readCount || 0) + sn.size;
+    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });   /* (V37.13 مراجعةُ الجودة) كانت القراءةُ تُعَدّ هنا مرةً ثانية */
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */

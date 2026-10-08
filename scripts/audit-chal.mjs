@@ -38,8 +38,10 @@ camps.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - i * 36e5, by
 paths.forEach((x, i) => { w.STATE.recs[x.id] = { id:x.id, at: now - i * 36e5, by:'أحمد', access:'تم الوصول', chals:[B, 'أخرى — اذكرها في وصف التحدي'], chal_note: i % 2 ? 'المخيم  مقفول بالحديد' : 'المخيم مقفول بالحديد ' }; });
 w.STATE.recs[camps[0].id].chals = [A, 'ارتفاع صعب الوصول'];
 const rows = w.svdRows(); const byCh = {}; rows.forEach(o => o.ch.forEach(c => { byCh[c] = (byCh[c] || 0) + 1; }));
-T(byCh['لا يوجد سطح تثبيت'] === 50 && byCh[A] === undefined && byCh[B] === undefined, 'لوحةُ المسح: الصيغتان مفتاحٌ واحد = ٣٠ + ٢٠ = ' + byCh['لا يوجد سطح تثبيت']);
-T(byCh['أخرى'] === 20 && byCh['ارتفاع صعب الوصول'] === 1, 'و«أخرى» ٢٠ والارتفاعُ ١');
+/* (V37.13) بالفئات الثماني (ق-٠١٥): الصيغتان فئةُ «لا يوجد سطح تثبيت» باسمها المعتمد، و«أخرى» لم تعد فئةً — تُصنَّف من وصفها */
+const MN = w.ccOf('mount').n, HT = w.ccOf('height').n;
+T(byCh[MN] === 50 && byCh[A] === undefined && byCh[B] === undefined, 'لوحةُ المسح: الصيغتان فئةٌ واحدة = ٣٠ + ٢٠ = ' + byCh[MN]);
+T(byCh['أخرى'] === undefined && byCh[HT] === 1, 'و«أخرى» لم تعد فئةً (تُصنَّف من وصفها) والارتفاعُ ١');
 await open('mfu', 'kiosk'); await wait(1300);
 const kk = d.getElementById('content').textContent;
 T(/لا يوجد سطح تثبيت/.test(kk) && !/يحتاج هيكلًا جديدًا/.test(kk) && !/يحتاج عمودًا/.test(kk), 'وشاشةُ الوزارة تعرض المفتاحَ الواحد لا الصيغتين');
