@@ -144,6 +144,13 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/devices-now.mjs || true
+      - name: Points dump for classification (owner request)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: |
+          node scripts/points-dump.mjs
+          git config user.name "nusuk-export"; git config user.email "export@nusuk.local"
+          git add exports/points-full.json && git commit -q -m "تفريغُ النقاط للتصنيف" && git push -q origin HEAD:export-challenges || echo "push failed"
       - name: QA stats (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
