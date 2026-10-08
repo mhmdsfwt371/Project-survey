@@ -144,13 +144,22 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/devices-now.mjs || true
-      - name: Points dump for classification (owner request)
+      - name: Tokens check (read-only, values never printed)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+          PT: ${{ secrets.PROMOTE_TOKEN }}
+          GO: ${{ secrets.GDRIVE_OAUTH }}
+          GS: ${{ secrets.GDRIVE_SA }}
+          GF: ${{ secrets.GDRIVE_FOLDER }}
+          SM: ${{ secrets.SMTP_HOST }}
+          DV: ${{ secrets.DEVICES_API_TOKEN }}
+          MY: ${{ secrets.MYAFAQY_TOKEN }}
         run: |
-          node scripts/points-dump.mjs
-          git config user.name "nusuk-export"; git config user.email "export@nusuk.local"
-          git add exports/points-full.json && git commit -q -m "تفريغُ النقاط للتصنيف" && git push -q origin HEAD:export-challenges || echo "push failed"
+          node scripts/tokens-check.mjs || true
+          if [ -n "$PT" ]; then
+            if git push --dry-run "https://x-access-token:${PT}@github.com/${GITHUB_REPOSITORY}.git" HEAD:refs/heads/zz-promote-token-check > /tmp/dry.log 2>&1; then echo "PROMOTE_TOKEN_WRITE=ok" > /tmp/exp/promote-write.txt; else echo "PROMOTE_TOKEN_WRITE=fail $(tail -c 200 /tmp/dry.log | tr -d '\n' | sed 's/x-access-token:[^@]*@/x-access-token:***@/g')" > /tmp/exp/promote-write.txt; fi
+          else echo "PROMOTE_TOKEN_WRITE=unset" > /tmp/exp/promote-write.txt; fi
+          node -e "const f=require('fs'); const j=JSON.parse(f.readFileSync('/tmp/exp/tokens-check.json','utf8')); j.promoteWrite=f.readFileSync('/tmp/exp/promote-write.txt','utf8').trim(); f.writeFileSync('/tmp/exp/tokens-check.json', JSON.stringify(j));" || true
       - name: QA stats (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
