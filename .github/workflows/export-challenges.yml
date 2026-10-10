@@ -151,7 +151,7 @@ jobs:
           GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
         run: |
           git fetch -q origin main && git show origin/main:scripts/photos-sync.mjs > scripts/photos-sync-main.mjs
-          npm i googleapis@140 --no-save --no-audit --no-fund > /dev/null 2>&1 || true
+          npm i firebase-admin@12 googleapis@140 --no-save --no-audit --no-fund > /dev/null 2>&1 || true
           node scripts/photos-sync-main.mjs 2>&1 | tail -40 | tee /tmp/exp/photos-sync.txt || true
           node scripts/mem-stats.mjs || true
       - name: QA stats (read-only)
