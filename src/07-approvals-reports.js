@@ -1333,6 +1333,32 @@ function perfRows(){
   Object.keys(STATE.presence || {}).forEach(function(u){ var p = STATE.presence[u]; if (p && p.pf && typeof p.pf === 'object') out.push({ uid:u, model:uaModel(p.ua), ver:p.ver, pf:p.pf }); });
   return out;
 }
+/* ═══ (V37.29) البندُ ١ — «أجهزةٌ تحتاج إجراءً» للمكتب: يُعرَف العطلُ قبل أن يُشكى ═══
+   من نبضات الأجهزة (آخرُ سبعة أيام): نسخةٌ أقدمُ من المنشورة، أو كتاباتٌ/صورٌ واقفة، أو مخزنٌ فيه مشكلة، أو أخطاء، أو صفحةٌ بطيئة —
+   ولكلِّ جهازٍ الإجراءُ الذي يُطلَب من صاحبه بالحرف. */
+function devActRows(){
+  var P = STATE.presence || {}, now = Date.now(), mine = verNum(appVer()), cloud = Math.max(mine, verNum(STATE.appVerCloud || ''));
+  return Object.keys(P).map(function(k){ var x = P[k] || {}; return x; }).filter(function(x){ return x && x.name && now - (+x.at || 0) < 7 * 864e5; }).map(function(x){
+    var iss = [], act = [], sev = 0, v = verNum(x.ver), mfu = x.pf && x.pf.pages && x.pf.pages.mfu && x.pf.pages.mfu.p75;
+    if (v && cloud && v < cloud){ iss.push(t('نسخة قديمة') + ' ' + x.ver); act.push(t('يقفل التطبيق ويفتحه على نت')); sev += cloud - v > 5 ? 2 : 1; }
+    if (+x.ib){ iss.push(t('مخزن الجهاز فيه مشكلة')); act.push(t('يفضّي الطابور ثم «إعادة ضبط التطبيق»')); sev += 3; }
+    if (+x.q > 0){ iss.push(nm(+x.q) + ' ' + t('كتابة واقفة')); if (!+x.ib) act.push(t('يفتح على نت ويضغط «زامِن الآن»')); sev += +x.q > 5 ? 2 : 1; }
+    if (+x.pq > 0 || +x.pfl > 0){ iss.push(nm((+x.pq || 0) + (+x.pfl || 0)) + ' ' + t('صورة لم تُرفع')); act.push(t('يفتح على نت ويضغط «ارفع الآن»')); sev += 2; }
+    if (+x.pz > 0){ iss.push(nm(+x.pz) + ' ' + t('كتابة مرفوضة')); act.push(t('يراجعها المهندس من «ما ينتظر الرفع»')); sev += 2; }
+    if (+x.err > 0){ iss.push(nm(+x.err) + ' ' + t('خطأ اليوم')); sev += 1; }
+    if (mfu && mfu > 1500){ iss.push(t('المتابعة بطيئة') + ' ' + nm(Math.round(mfu / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
+    return { name:x.name, role:x.role || '', ver:x.ver || '', at:+x.at || 0, iss:iss, act:act.filter(function(a, i, A){ return A.indexOf(a) === i; }), sev:sev };
+  }).filter(function(r){ return r.iss.length; }).sort(function(a, b){ return b.sev - a.sev || b.at - a.at; });
+}
+function devActCard(){
+  if (!(may('users') || may('exportAll'))) return '';
+  try { presenceFetch(false); } catch (e){ LS_ERR = e; }
+  var R = devActRows();
+  return card('أجهزة تحتاج إجراء', R.length
+    ? '<p class="hint" style="margin-top:0">' + esc(t('من نبضات الأجهزة في آخر ٧ أيام — اطلب من صاحب كل جهاز الإجراء المكتوب أمامه.')) + '</p>'
+      + table(['الجهاز', 'المشكلة', 'المطلوب منه', 'آخر ظهور'], R.map(function(r){ return [esc(r.name) + ' <span class="hint" style="margin:0">' + esc(t(r.role)) + '</span>', esc(r.iss.join(' · ')), '<b>' + esc(r.act.join('، ') || t('متابعة')) + '</b>', '<span class="num">' + esc(r.at ? fmtTime(r.at) : '') + '</span>']; }))
+    : alertBox('ok', 'كلُّ الأجهزة النشطة سليمة: على آخر نسخة، ولا شيءَ واقف.'));
+}
 function perfCard(){
   if (!(may('users') || may('exportAll'))) return '';
   var R = perfRows(); if (!R.length) return '';
@@ -1670,7 +1696,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               + nosign.slice(0, 30).map(row).join('')
             : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
   })();
-if (cur === 'usage') return head + usageCard() + perfCard() + (function(){
+if (cur === 'usage') return head + devActCard() + usageCard() + perfCard() + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();

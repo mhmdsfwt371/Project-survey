@@ -2395,6 +2395,7 @@ function render0(force){
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
   try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
+  try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -2772,6 +2773,7 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
@@ -5195,6 +5197,21 @@ function liteSync(){
   var d = document.createElement('div'); d.id = 'liteBar'; d.setAttribute('role', 'status');
   d.style.cssText = 'position:fixed;inset-inline:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:1900;background:#2C3E50;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
   d.innerHTML = '\u{1FA99} ' + esc(t('الوضعُ الخفيف: التطبيقُ وقع مرتين فعمل بلا خريطةٍ مجسَّمة ولا فهرسِ صور.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-liteoff="1" style="color:#fff">' + esc(t('الوضع الكامل')) + '</button>';
+  document.body.appendChild(d);
+}
+function qStaleSync(){   /* (V37.29) البندُ ١ — الفنيُّ يعرف بنفسه قبل أن يُسأل */
+  var old = document.getElementById('qStaleBar'), now = Date.now();
+  var Q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; });
+  var oldest = Q.reduce(function(a, it){ return Math.min(a, +it.at || now); }, now), bad = typeof IDB_WHY !== 'undefined' && IDB_WHY;
+  var show = STATE.meta.online && ((Q.length && now - oldest > 3600000) || bad) && !(qStaleSync.snooze && now < qStaleSync.snooze);
+  if (!show){ if (old) old.remove(); return; }
+  if (old) return;
+  var d = document.createElement('div'); d.id = 'qStaleBar'; d.setAttribute('role', 'alert');
+  d.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:1950;background:#7A4A00;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
+  d.innerHTML = '\u26A0 ' + esc(bad ? t('مخزن الجهاز فيه مشكلة — ارفع ما عليه ثم أعد ضبط التطبيق.') : nm(Q.length) + ' ' + t('كتابة لم تُرفع من أكثر من ساعة.'))
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-syncall="1" style="color:#fff">' + esc(t('زامِن الآن')) + '</button>'
+    + (bad ? ' <button type="button" class="btn btn-quiet btn-sm" data-appreset="1" style="color:#fff">' + esc(t('إعادة ضبط التطبيق')) + '</button>' : '')
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-qstalex="1" style="color:#fff" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>';
   document.body.appendChild(d);
 }
 function phStaleSync(){

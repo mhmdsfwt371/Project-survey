@@ -29,3 +29,4 @@
 2026-10-10,V37.22,629,2,5,0,478,3160,"LITE_AUTO وoldOS وliteMeasure وliteOn وsvStats0 وassistDiag/ASSIST_INTENTS: المرحلةُ ١ والمساعدُ المشخِّص (V37.23)"
 2026-10-10,V37.25,629,2,5,0,478,3163,"phIdx.len: حارسُ طول فهرس الصور (V37.26)"
 2026-10-10,V37.26,631,2,5,0,478,3168,"BUG_FROM_ASSIST وknownList/knownHits/knownCard وSV_SHOW: الطبقةُ الثانية من المساعد والقوائم على دفعات (V37.27)"
+2026-10-10,V37.28,633,2,5,0,478,3180,"devActRows/devActCard وqStaleSync وKNOWN_DEFAULT/knownNorm وCC_GROUPS/ccGroupCounts/ccGroupsHtml: البنودُ ١–٤ (V37.29)"

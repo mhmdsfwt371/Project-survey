@@ -1238,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.28</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.29</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1300,7 +1300,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-49254a574a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-ac65998b85.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7003,7 +7003,7 @@ function svObstacle(r){ return svVisited(r) && !svClean(r); }
    سببُ التعذّر الحقيقيُّ باقٍ في السجلّ لسير العمل (التصاريح والتصعيد) — لا يُمحى ولا يُغيَّر. */
 /* (V34.0) بلاغُ المالك على «أبرز التحديات»: «المدخل غير واضح — لم يُستدل عليه» تُعرض «تحتاج زيارة تقنية»، و«أخرى» تُعرض
    «ملاحظات فنية متنوعة» — لا ما يوحي بتصريحٍ أو بتعذّر الوصول. عرضٌ فقط: قيمةُ السجل ونموذجُ الميدان كما هما. */
-var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'تحتاج زيارة تقنية', 'أخرى':'ملاحظات فنية متنوعة' };
+var CHAL_SHOW = { 'المدخل غير واضح — لم يُستدل عليه':'المدخل غير واضح — يحتاج تحديد', 'أخرى':'ملاحظات فنية متنوعة' };   /* (V37.29) */
 function chalShow(k){ return t(CHAL_SHOW[k] || k); }
 
 /* ── التركيبُ والتسليمُ والفك ── */
@@ -7094,7 +7094,7 @@ var VISIT_WHY = [   /* لماذا لم يُمسح ما زرناه — اختيا
 var CHAL_CATS = [   /* تحدياتُ التركيب لما مُسح — أكثرُ من اختيار */
   { k:'mount',  n:'لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا',  who:'أفاقي — تصنيع هيكل' },
   { k:'beam',   n:'العارضة ناقصة أو عليها ديكور أو لافتات',      who:'أفاقي — تصنيع هيكل' },
-  { k:'entry',  n:'تحتاج زيارة تقنية — المدخل غير واضح',         who:'أفاقي — زيارة تقنية' },
+  { k:'entry',  n:'المدخل غير واضح — يحتاج تحديد',                who:'أفاقي — زيارة تقنية' },   /* (V37.29) كان «تحتاج زيارة تقنية — …» فيتلبّس بحالة «تحتاج زيارة تقنية» (V37.15) */
   { k:'multi',  n:'مداخل متعددة أو مدخل مشترك',                  who:'أفاقي — دراسة الموقع' },
   { k:'wide',   n:'المسار أو البوابة أعرض من طقم واحد',          who:'أفاقي — طقم إضافي' },
   { k:'block',  n:'عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)', who:'الشركة أو الجهة المالكة', sup:[{ p:'الشركة أو الجهة المالكة', s:'إزالةُ العائق أو الإذنُ بالتركيب' }] },
@@ -7342,13 +7342,28 @@ function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){ 
    ٢) «المشاكلُ المعروفة»: سطرٌ لكلِّ مشكلة «كلماتٌ تدلّ عليها | الحل» يكتبه المهندسُ مرةً في الإعدادات — فلا يتكرّر السؤالُ نفسُه. */
 var BUG_FROM_ASSIST = '';
 if (!('known' in CFG)) CFG.known = null;
+/* (V37.29) البندُ ٤ — قائمةٌ أولى بمصطلحات المشروع (من عدسة مهندس الكهرباء وما تكرّر في الميدان) تعمل حتى يكتب المهندسُ قائمتَه؛
+   ما يكتبه في الإعدادات يحلّ محلَّها كلَّها. */
+var KNOWN_DEFAULT = [
+  'القارئ لا يعمل، القارئ مطفي، القارئ ساقط، القارئ مش شغال | افحص الراوتر أولًا: القارئ بلا راوتر حيّ لا يُرى ولو كان يعمل. لو الراوتر حيّ والقارئ ساقط فالعطل في القارئ أو منفذه: افصل الكابل دقيقة وأعده، وإن لم يقلع فاستبدله من العُهدة وسجّل المنفذ.',
+  'الراوتر ساقط، الراوتر مطفي، مفيش نت في النقطة | تأكد من التيار عند الراوتر نفسه (بالقياس لا بالنظر). لو سقطت نقاط المشعر كلها في الدقيقة نفسها فالعطل في المغذّي أو الراوتر المجمّع: بلاغ واحد للمنبع لا عشرة.',
+  'متذبذب، يفصل ويرجع، بيقطع كتير | غالبًا جهد متردد أو وصلة رخوة أو حرارة الظهيرة: زيارة نهارية لشد الأطراف وقياس الجهد تحت الحمل وتظليل الجهاز.',
+  'الكهرباء بتقطع الفجر، المولد بيطفي | مولّد المخيم يُطفأ فجرًا فهو انقطاع متوقّع — اكتبه في ملاحظة النقطة كي لا يُقرأ عطلًا.',
+  'الكابل مقطوع، الكابل في الممر، كابل على الأرض | الكابل العابر لممر المشاة بلا حماية سيُقطع في الزحام: اطلب تثبيتًا علويًا أو مجرى، ولا تعمل على مغذٍّ حيّ وقت الزحام.',
+  'الكاميرا لا تعمل، الكاميرا ساقطة | تتبع الراوتر نفسه: افحص الراوتر ثم كابل الكاميرا ومنفذها، وأعد تشغيلها بفصل الطاقة دقيقة.',
+  'تم التركيب، اعتماد التركيب، اقفل التركيب | قبل «تم التركيب»: تثبيت محكم، وتيار مقاس، وكابل محمي، والعناوين الثلاثة (الراوتر والقارئ والكاميرا) مسجّلة، ونبضة خضراء في الصحة، وصورة ما بعد التركيب.',
+  'سليم ولا تالف، الفك، الجهاز تالف | سليم: يقلع ولا كسور وأطرافه نظيفة. تالف: كسر أو حرق أو رطوبة داخلية أو منفذ متآكل — واكتب السبب في الملاحظة.',
+  'المخيم مقفول، مفيش تصريح، رفضوا الدخول | سجّل الزيارة بسببها («مغلق» أو «بلا تصريح» أو «رفض») فتصير «تحتاج زيارة أخرى» وتظهر للمكتب لتنسيق التصريح.',
+  'حدود المخيم غلط، الرسمة غلط | المهندس يعدّلها من نافذة المخيم على الخريطة: «عدّل الحدود» (اسحب الزوايا، أو «ارسم من جديد») ثم «احفظ».'
+].join('\n');
 function knownList(){
-  var raw = CFG.known; if (!raw) return [];
+  var raw = CFG.known || KNOWN_DEFAULT; if (!raw) return [];
   return String(raw).split(/\n+/).map(function(l){ var i = l.indexOf('|'); if (i < 1) return null; var kw = l.slice(0, i).trim(), a = l.slice(i + 1).trim(); return kw && a ? { kw:kw, a:a } : null; }).filter(Boolean);
 }
+function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'function' ? arNorm(x) : x; return (' ' + x).replace(/ ال/g, ' ').replace(/ئ|ؤ/g, 'ي').trim(); }   /* «ال» في كلِّ كلمة لا أوّلِ النص وحدَه */
 function knownHits(q){
-  q = (typeof arNorm === 'function' ? arNorm(q) : String(q || '')).trim(); if (q.length < 3) return [];
-  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = (typeof arNorm === 'function' ? arNorm(w) : w).trim(); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+  q = knownNorm(q); if (q.length < 3) return [];
+  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -7520,7 +7535,7 @@ function knownCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
     '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
-    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || '') + '</textarea>',
+    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || KNOWN_DEFAULT) + '</textarea>'   /* (V37.29) القائمةُ الأولى ظاهرةٌ للتعديل */,
     btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
 function catsSave(){
@@ -22600,10 +22615,35 @@ function gapCard(c){
     + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
     + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
 }
+/* ═══ (V37.29) البندُ ٣ — الوزارةُ تقرأ «من عليه الدور» بأربع مجموعات، والفريقُ يبقى بالفئات الثماني تحتها (مقترحُ ملف التصنيف) ═══
+   النقطةُ تُعَدّ مرةً في المجموعة وإن كانت لها فئتان منها. «وصول وتصاريح» من أسباب الزيارة بلا مسح لا من التحديات. */
+var CC_GROUPS = [
+  { g:'make',  n:'تصنيع وتجهيز',            who:'أفاقي — هيكل أو عمود أو طقم إضافي أو معدات', ks:['mount', 'beam', 'wide', 'height'] },
+  { g:'study', n:'دراسة وزيارة تقنية',       who:'أفاقي — زيارة تقنية ودراسة الموقع',          ks:['entry', 'multi'] },
+  { g:'owner', n:'تنسيق مع الجهة المالكة',   who:'الشركة أو الجهة المالكة',                    ks:['block', 'legacy'] },
+  { g:'access', n:'وصول وتصاريح',            who:'الوزارة أو الشركة أو الحراسة',               ks:[] }
+];
+function ccGroupCounts(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0);
+  if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
+  var by = {}, out = { make:0, study:0, owner:0, access:0 };
+  CC_GROUPS.forEach(function(G){ G.ks.forEach(function(k){ by[k] = G.g; }); });
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return;
+    if (svDone(r)){ var seen = {}; chalCats(r).forEach(function(k){ var g = by[k]; if (g && !seen[g]){ seen[g] = 1; out[g]++; } }); }
+    else if (svVisited(r)) out.access++; });
+  ccGroupCounts.c = { k:mk, v:out }; return out;
+}
+function ccGroupsHtml(){
+  var C = ccGroupCounts(), tot = CC_GROUPS.reduce(function(a, G){ return a + (C[G.g] || 0); }, 0); if (!tot) return '';
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 10px">' + CC_GROUPS.map(function(G){
+    return '<div class="card" style="margin:0;padding:10px"><div class="num" style="font-size:22px;font-weight:700">' + nm(C[G.g] || 0) + '</div><div style="font-weight:600">' + esc(t(G.n)) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t(G.who)) + '</div></div>';
+  }).join('') + '</div>';
+}
 function ccCard(c){
   var rows = ccList().map(function(o){ return [o.n, o, c.cc[o.k] || 0, 'cc_' + o.k, 'cc|' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
   if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', SUP_EXTRA.review, c.review, 'cc_review', 'x|review']);
   return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + catEditLink() + '</div>'
+    + '<div class="hint" style="margin:0 0 6px">' + esc(t('من عليه الدور — بالمجموعات الأربع، والتفصيلُ بالفئات تحتها')) + '</div>' + ccGroupsHtml()   /* (V37.29) */
     + (rows.length ? rows.map(supRowHtml).join('')
       : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
 }
@@ -25359,6 +25399,11 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.29', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'للمكتب: كارت «أجهزة تحتاج إجراء» في صحة النظام ← الاستخدام: كل جهاز فيه مشكلة (نسخة قديمة، كتابات أو صور واقفة، مخزن فيه مشكلة، أخطاء، بطء) ومكتوب قدامه المطلوب من صاحبه بالحرف.',
+      'للميدان: لو فيه كتابات ما اترفعتش من أكتر من ساعة والنت شغال، أو مخزن الجهاز فيه مشكلة، بيظهر شريط فوق فيه «زامِن الآن» و«إعادة ضبط التطبيق».',
+      'صفحة الوزارة: التحديات بقت بتتعرض الأول بالمجموعات الأربع (تصنيع وتجهيز، دراسة وزيارة تقنية، تنسيق مع الجهة المالكة، وصول وتصاريح) ومين عليه الدور، والفئات الثماني تفصيل تحتها. وفئة «المدخل غير واضح» بقى اسمها «المدخل غير واضح — يحتاج تحديد» عشان ما تتلخبطش مع «تحتاج زيارة تقنية».',
+      'المساعد: فيه ١٠ مشاكل معروفة جاهزة بمصطلحات المشروع (القارئ، الراوتر، التذبذب، المولّد، الكابل، الكاميرا، اعتماد التركيب، حكم الفك، التصريح، حدود المخيم)، والمهندس يعدّلها من الإعدادات.' ] },
   { v:'V37.28', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'تحسين صغير: زرار «عرض المزيد» بيقولك «عُرضت ٨٠ أخرى».' ] },
   { v:'V37.27', d:'١٠ أكتوبر ٢٠٢٦', notes:[
@@ -27723,6 +27768,32 @@ function perfRows(){
   Object.keys(STATE.presence || {}).forEach(function(u){ var p = STATE.presence[u]; if (p && p.pf && typeof p.pf === 'object') out.push({ uid:u, model:uaModel(p.ua), ver:p.ver, pf:p.pf }); });
   return out;
 }
+/* ═══ (V37.29) البندُ ١ — «أجهزةٌ تحتاج إجراءً» للمكتب: يُعرَف العطلُ قبل أن يُشكى ═══
+   من نبضات الأجهزة (آخرُ سبعة أيام): نسخةٌ أقدمُ من المنشورة، أو كتاباتٌ/صورٌ واقفة، أو مخزنٌ فيه مشكلة، أو أخطاء، أو صفحةٌ بطيئة —
+   ولكلِّ جهازٍ الإجراءُ الذي يُطلَب من صاحبه بالحرف. */
+function devActRows(){
+  var P = STATE.presence || {}, now = Date.now(), mine = verNum(appVer()), cloud = Math.max(mine, verNum(STATE.appVerCloud || ''));
+  return Object.keys(P).map(function(k){ var x = P[k] || {}; return x; }).filter(function(x){ return x && x.name && now - (+x.at || 0) < 7 * 864e5; }).map(function(x){
+    var iss = [], act = [], sev = 0, v = verNum(x.ver), mfu = x.pf && x.pf.pages && x.pf.pages.mfu && x.pf.pages.mfu.p75;
+    if (v && cloud && v < cloud){ iss.push(t('نسخة قديمة') + ' ' + x.ver); act.push(t('يقفل التطبيق ويفتحه على نت')); sev += cloud - v > 5 ? 2 : 1; }
+    if (+x.ib){ iss.push(t('مخزن الجهاز فيه مشكلة')); act.push(t('يفضّي الطابور ثم «إعادة ضبط التطبيق»')); sev += 3; }
+    if (+x.q > 0){ iss.push(nm(+x.q) + ' ' + t('كتابة واقفة')); if (!+x.ib) act.push(t('يفتح على نت ويضغط «زامِن الآن»')); sev += +x.q > 5 ? 2 : 1; }
+    if (+x.pq > 0 || +x.pfl > 0){ iss.push(nm((+x.pq || 0) + (+x.pfl || 0)) + ' ' + t('صورة لم تُرفع')); act.push(t('يفتح على نت ويضغط «ارفع الآن»')); sev += 2; }
+    if (+x.pz > 0){ iss.push(nm(+x.pz) + ' ' + t('كتابة مرفوضة')); act.push(t('يراجعها المهندس من «ما ينتظر الرفع»')); sev += 2; }
+    if (+x.err > 0){ iss.push(nm(+x.err) + ' ' + t('خطأ اليوم')); sev += 1; }
+    if (mfu && mfu > 1500){ iss.push(t('المتابعة بطيئة') + ' ' + nm(Math.round(mfu / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
+    return { name:x.name, role:x.role || '', ver:x.ver || '', at:+x.at || 0, iss:iss, act:act.filter(function(a, i, A){ return A.indexOf(a) === i; }), sev:sev };
+  }).filter(function(r){ return r.iss.length; }).sort(function(a, b){ return b.sev - a.sev || b.at - a.at; });
+}
+function devActCard(){
+  if (!(may('users') || may('exportAll'))) return '';
+  try { presenceFetch(false); } catch (e){ LS_ERR = e; }
+  var R = devActRows();
+  return card('أجهزة تحتاج إجراء', R.length
+    ? '<p class="hint" style="margin-top:0">' + esc(t('من نبضات الأجهزة في آخر ٧ أيام — اطلب من صاحب كل جهاز الإجراء المكتوب أمامه.')) + '</p>'
+      + table(['الجهاز', 'المشكلة', 'المطلوب منه', 'آخر ظهور'], R.map(function(r){ return [esc(r.name) + ' <span class="hint" style="margin:0">' + esc(t(r.role)) + '</span>', esc(r.iss.join(' · ')), '<b>' + esc(r.act.join('، ') || t('متابعة')) + '</b>', '<span class="num">' + esc(r.at ? fmtTime(r.at) : '') + '</span>']; }))
+    : alertBox('ok', 'كلُّ الأجهزة النشطة سليمة: على آخر نسخة، ولا شيءَ واقف.'));
+}
 function perfCard(){
   if (!(may('users') || may('exportAll'))) return '';
   var R = perfRows(); if (!R.length) return '';
@@ -28060,7 +28131,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               + nosign.slice(0, 30).map(row).join('')
             : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
   })();
-if (cur === 'usage') return head + usageCard() + perfCard() + (function(){
+if (cur === 'usage') return head + devActCard() + usageCard() + perfCard() + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();
@@ -33848,6 +33919,7 @@ function render0(force){
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
   try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
+  try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -34225,6 +34297,7 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
@@ -36648,6 +36721,21 @@ function liteSync(){
   var d = document.createElement('div'); d.id = 'liteBar'; d.setAttribute('role', 'status');
   d.style.cssText = 'position:fixed;inset-inline:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:1900;background:#2C3E50;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
   d.innerHTML = '\u{1FA99} ' + esc(t('الوضعُ الخفيف: التطبيقُ وقع مرتين فعمل بلا خريطةٍ مجسَّمة ولا فهرسِ صور.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-liteoff="1" style="color:#fff">' + esc(t('الوضع الكامل')) + '</button>';
+  document.body.appendChild(d);
+}
+function qStaleSync(){   /* (V37.29) البندُ ١ — الفنيُّ يعرف بنفسه قبل أن يُسأل */
+  var old = document.getElementById('qStaleBar'), now = Date.now();
+  var Q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; });
+  var oldest = Q.reduce(function(a, it){ return Math.min(a, +it.at || now); }, now), bad = typeof IDB_WHY !== 'undefined' && IDB_WHY;
+  var show = STATE.meta.online && ((Q.length && now - oldest > 3600000) || bad) && !(qStaleSync.snooze && now < qStaleSync.snooze);
+  if (!show){ if (old) old.remove(); return; }
+  if (old) return;
+  var d = document.createElement('div'); d.id = 'qStaleBar'; d.setAttribute('role', 'alert');
+  d.style.cssText = 'position:fixed;inset-inline:8px;top:calc(env(safe-area-inset-top,0px) + 8px);z-index:1950;background:#7A4A00;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
+  d.innerHTML = '\u26A0 ' + esc(bad ? t('مخزن الجهاز فيه مشكلة — ارفع ما عليه ثم أعد ضبط التطبيق.') : nm(Q.length) + ' ' + t('كتابة لم تُرفع من أكثر من ساعة.'))
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-syncall="1" style="color:#fff">' + esc(t('زامِن الآن')) + '</button>'
+    + (bad ? ' <button type="button" class="btn btn-quiet btn-sm" data-appreset="1" style="color:#fff">' + esc(t('إعادة ضبط التطبيق')) + '</button>' : '')
+    + ' <button type="button" class="btn btn-quiet btn-sm" data-qstalex="1" style="color:#fff" aria-label="' + esc(t('إغلاق')) + '">\u2715</button>';
   document.body.appendChild(d);
 }
 function phStaleSync(){

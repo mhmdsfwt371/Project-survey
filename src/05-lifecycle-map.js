@@ -4946,10 +4946,35 @@ function gapCard(c){
     + (c.esc ? '<div class="kk-zl" data-svlist="esc" role="button" tabindex="0" style="color:#E05252"><span>\u26A0 ' + esc(t('متوقفة — ثلاثُ محاولاتٍ أو عشرةُ أيامٍ بلا مسح')) + '</span><b>' + nm(c.esc) + '</b></div>' : '')
     + (c.gap ? '' : '<p class="hint" style="margin:0">' + esc(t('كلُّ ما زرناه مُسح.')) + '</p>') + '</div>';
 }
+/* ═══ (V37.29) البندُ ٣ — الوزارةُ تقرأ «من عليه الدور» بأربع مجموعات، والفريقُ يبقى بالفئات الثماني تحتها (مقترحُ ملف التصنيف) ═══
+   النقطةُ تُعَدّ مرةً في المجموعة وإن كانت لها فئتان منها. «وصول وتصاريح» من أسباب الزيارة بلا مسح لا من التحديات. */
+var CC_GROUPS = [
+  { g:'make',  n:'تصنيع وتجهيز',            who:'أفاقي — هيكل أو عمود أو طقم إضافي أو معدات', ks:['mount', 'beam', 'wide', 'height'] },
+  { g:'study', n:'دراسة وزيارة تقنية',       who:'أفاقي — زيارة تقنية ودراسة الموقع',          ks:['entry', 'multi'] },
+  { g:'owner', n:'تنسيق مع الجهة المالكة',   who:'الشركة أو الجهة المالكة',                    ks:['block', 'legacy'] },
+  { g:'access', n:'وصول وتصاريح',            who:'الوزارة أو الشركة أو الحراسة',               ks:[] }
+];
+function ccGroupCounts(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0);
+  if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
+  var by = {}, out = { make:0, study:0, owner:0, access:0 };
+  CC_GROUPS.forEach(function(G){ G.ks.forEach(function(k){ by[k] = G.g; }); });
+  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return;
+    if (svDone(r)){ var seen = {}; chalCats(r).forEach(function(k){ var g = by[k]; if (g && !seen[g]){ seen[g] = 1; out[g]++; } }); }
+    else if (svVisited(r)) out.access++; });
+  ccGroupCounts.c = { k:mk, v:out }; return out;
+}
+function ccGroupsHtml(){
+  var C = ccGroupCounts(), tot = CC_GROUPS.reduce(function(a, G){ return a + (C[G.g] || 0); }, 0); if (!tot) return '';
+  return '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin:0 0 10px">' + CC_GROUPS.map(function(G){
+    return '<div class="card" style="margin:0;padding:10px"><div class="num" style="font-size:22px;font-weight:700">' + nm(C[G.g] || 0) + '</div><div style="font-weight:600">' + esc(t(G.n)) + '</div><div class="hint" style="margin:2px 0 0">' + esc(t(G.who)) + '</div></div>';
+  }).join('') + '</div>';
+}
 function ccCard(c){
   var rows = ccList().map(function(o){ return [o.n, o, c.cc[o.k] || 0, 'cc_' + o.k, 'cc|' + o.k]; }).filter(function(r){ return r[2]; }).sort(function(a, b){ return b[2] - a[2]; });
   if (ROLE !== 'viewer' && c.review) rows.push(['يراجع المهندسُ تصنيفَه', SUP_EXTRA.review, c.review, 'cc_review', 'x|review']);
   return '<div class="card" style="margin:0"><div class="pid">' + esc(t('تحديات التركيب بفئاتها')) + catEditLink() + '</div>'
+    + '<div class="hint" style="margin:0 0 6px">' + esc(t('من عليه الدور — بالمجموعات الأربع، والتفصيلُ بالفئات تحتها')) + '</div>' + ccGroupsHtml()   /* (V37.29) */
     + (rows.length ? rows.map(supRowHtml).join('')
       : '<p class="hint" style="margin:0">' + esc(t('لا تحدّيَ مسجَّلًا بعد.')) + '</p>') + '</div>';
 }

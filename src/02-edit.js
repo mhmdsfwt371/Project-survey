@@ -168,7 +168,7 @@ function knownCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
     '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
-    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || '') + '</textarea>',
+    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || KNOWN_DEFAULT) + '</textarea>'   /* (V37.29) القائمةُ الأولى ظاهرةٌ للتعديل */,
     btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
 function catsSave(){
