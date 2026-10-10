@@ -109,6 +109,29 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
     const wbsZ = Object.keys(KS.zones).reduce((a, g) => a + Math.round(w.wbsSvPct(g) / 100 * KS.zones[g].n), 0);
     const vals = { 'الملخّص':SS.surveyed, 'الإحصاءُ المشترك':KS.total.sv, 'بطاقةُ الوزارة':MK.sv, 'تبويبُ المسح':SV.O.sv, 'قائمةُ تمت الزيارة':L };
     T(Object.values(vals).every(v => v === VISITED), 'نفسُ آلية الحسبة في كلِّ الصفحات — «تمت الزيارة» = ' + VISITED + ': ' + JSON.stringify(vals));
+    /* (V37.35) البندُ ٥ من خطة المدير — «أرقامُ التقارير»: كلُّ تقريرٍ يخرج من النظام يحمل الرقمَ نفسَه الذي على الشاشة.
+       تقريرُ التحديث الأسبوعي (مصدرُ الإكسل والباوربوينت والوورد والـPDF معًا: mfuReport)، ولوحاتُ الكروت الخمسة وتصديرُها (svListRows)،
+       والمجموعاتُ الأربع، والمرحلةُ في الحلقات — وأيُّ اختلافٍ يُغلق البوابة. */
+    { const R = w.mfuReport(), kp = (R.kpis || []).find(k => /المسح|الزيارة/.test(String(k[0])));
+      const nums = s => String(s || '').replace(/[٠-٩]/g, d => '٠١٢٣٤٥٦٧٨٩'.indexOf(d)).replace(/[٬,]/g, '').match(/\d+/g) || [];
+      const kn = kp ? nums(kp[2]).map(Number) : [];
+      T(!!kp && kn.length >= 2, 'تقريرُ التحديث الأسبوعي فيه مؤشرُ الزيارة بالعدد والإجمالي: ' + (kp ? kp[0] + ' — ' + kp[2] : 'لا مؤشر'));
+      T(kn[0] === VISITED && kn[1] === TOTAL, 'ورقمُه نفسُ رقم الشاشة — الإكسل والباوربوينت والوورد من المصدر نفسه: ' + kn.join(' من ') + ' ↔ ' + VISITED + ' من ' + TOTAL);
+      const ks = (R.kpis || []).find(k => String(k[0]) === 'نسبة المسح'), ksn = ks ? nums(ks[2]).map(Number) : [];
+      const srvAll = (w.STATE.sites || []).filter(x => w.svDone(w.STATE.recs[x.id])).length;
+      T(!!ks && ksn[0] === srvAll && String(kp[0]) === 'نسبة الزيارة', '«نسبة الزيارة» للزيارة و«نسبة المسح» للممسوح — لا اسمٌ برقمِ غيره: ' + (kp && kp[0]) + ' ' + kn[0] + ' · ' + (ks && ks[0]) + ' ' + ksn[0] + ' ↔ ' + srvAll);
+      const bad = JSON.stringify(R).match(/متعذّر|متعذر|يحتاج تصريح|منع دخول|بانتظار قرار الوزارة/g);
+      T(!bad, 'وتقريرُ الأسبوع الذي يذهب للوزارة بلا ما يوحي بتعذّرٍ أو تصريحٍ أو انتظارِ قرارها (قاعدةُ المالك): ' + (bad ? bad.slice(0, 3).join('، ') : 'نظيف'));
+      T(w.mfuReportCheck(R).length === 0, 'وحارسُ التصدير الداخليُّ لا يجد خللًا (الشركات = الممسوح + المتبقي، والنسبُ في مداها): ' + JSON.stringify(w.mfuReportCheck(R).slice(0, 2)));
+      const ST = w.stageCounts ? w.stageCounts() : null;
+      const lens = { sv:w.svListRows('sv').length, rem:w.svListRows('rem').length, srv:w.svListRows('srv').length, insd:w.svListRows('insd').length };
+      T(lens.sv + lens.rem === TOTAL, 'لوحةُ «تمت الزيارة» + «المتبقي» = كلُّ النقاط (والإكسلُ منهما بالحرف): ' + lens.sv + ' + ' + lens.rem + ' = ' + TOTAL);
+      T(lens.srv <= lens.sv && lens.insd <= lens.srv + 0 + (w.svListRows('insd').filter(r => !w.svDone(w.STATE.recs[r[0]])).length), 'والمسحُ جزءٌ من الزيارة، والتركيبُ لا يسبق المسحَ إلا بقرارٍ مسجّل: ' + JSON.stringify(lens));
+      if (w.ccGroupCounts){ const G = w.ccGroupCounts(), srvN = Object.keys(w.STATE.recs).filter(id => w.siteFind(id) && w.svDone(w.STATE.recs[id])).length;
+        T(G.access === VISITED - srvN, 'و«تحتاج زيارة أخرى» في المجموعات الأربع = الزيارة بلا مسح: ' + G.access + ' = ' + VISITED + ' − ' + srvN);
+        T(['make', 'study', 'owner'].every(k => G[k] <= srvN), 'وكلُّ مجموعةٍ من الثلاث الأخرى لا تتجاوز الممسوح: ' + JSON.stringify(G)); }
+      const dash = w.svDashHtml ? w.svDashHtml('sv', w.svListRows('sv')) : '';
+      T(!dash || dash.indexOf(w.nm(VISITED)) > -1, 'ولوحةُ كارت الزيارة تعرض العددَ نفسَه: ' + w.nm(VISITED)); }
     T(Math.abs(wbsZ - VISITED) <= Object.keys(KS.zones).length, 'وقياسُ الخطة على المشاعر من الرقم نفسِه: ' + wbsZ);
     T(w.svListRows('rem').length === TOTAL - VISITED, 'والمتبقي = ما لم تتم زيارتُه أصلًا: ' + (TOTAL - VISITED));
     /* (V33.8) موجزُ الموسم في رأس صفحة الوزارة: حلقاتُه الأربع نفسُ حلقات القاعة (المسح بالعدد نفسه)، ونبضُ ١٤ يومًا ١٤ عمودًا */

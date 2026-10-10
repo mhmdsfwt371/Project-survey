@@ -4123,7 +4123,7 @@ function pdfCover(){
     + pdfTile('تحتاج زيارة أخرى', nm(S.stuck), '', '#8D6E63')
     + (wt ? pdfTile('مهامُّ متأخرة', nm(wt.late), nm(wt.all) + ' ' + t('مهمة'), wt.late ? '#E05252' : '#3AD6A0') : '')
     + '</div>'
-    + '<div class="box">' + pdfBar('نسبة المسح من إجمالي المشروع', S.sv, S.n, '#2E75B6')
+    + '<div class="box">' + pdfBar('نسبة الزيارة من إجمالي المشروع', S.sv, S.n, '#2E75B6')
     + pdfBar('نسبة التركيب من إجمالي المشروع', S.ins, S.n, '#3AD6A0') + '</div>'
     + (zrows.length ? '<h3>' + esc(t('المسح المنجز حسب المشعر')) + '</h3><div class="box">' + pdfCols(zrows, '#2E75B6') + '</div>' : '')
     + (parts.length ? '<h3>' + esc(t('دورة النقطة — أين هي الآن')) + '</h3><div class="box">' + pdfDonut(parts) + '</div>' : '');

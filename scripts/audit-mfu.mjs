@@ -98,7 +98,7 @@ console.log('\n══ ٦ · التصدير: وورد وإكسل وPDF من مص�
 await open('mcos');
 T(['docx', 'xlsx', 'pdf'].every(f => !!d.querySelector('[data-mfuexp="' + f + '"]')), 'شريطُ التصدير على العنوان: Word وExcel وPDF');
 const R = w.mfuReport();
-T(w.MFU.sections.length === 17 && R.brief.length >= 3 && w.MFU.sections.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 8 && R.svz.length > 0 && R.svd.length > 0 && w.mfuReportCheck(R).length === 0 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض والمسح الميداني (حسب المشعر، والمشعر والنوع) وكتلِ المسار وآخرِ التحديثات والحملِ والأسابيع (١٥) ويجتاز فحصَ الملف، والتاريخُ الهجريُّ والميلادي');
+T(w.MFU.sections.length === 17 && R.brief.length >= 3 && w.MFU.sections.every(sc => Array.isArray(w.mfuRowsOf(R, sc[0]))) && R.kpis.length === 9 && R.svz.length > 0 && R.svd.length > 0 && w.mfuReportCheck(R).length === 0 && /١٤٤٨|1448/.test(R.hijri + '1448'), 'التقريرُ بعناوين العرض والمسح الميداني (حسب المشعر، والمشعر والنوع) وكتلِ المسار وآخرِ التحديثات والحملِ والأسابيع (١٥) ويجتاز فحصَ الملف، والتاريخُ الهجريُّ والميلادي');
 let got = null; w.Blob = function(parts, o){ this.parts = parts; this.o = o; }; w.dl = (b, name) => { got = { b, name }; return true; };
 w.mfuDocx();
 const bytes = got && got.b.parts[0];
@@ -244,7 +244,7 @@ T(/مسارُ الأسابيع/.test(sm9.textContent) && /\(\+٨٠\)|\(\+80\)/.t
   && sm9.textContent.indexOf('نسبة المسح') > -1 && sm9.textContent.indexOf('نسبة المسح') < sm9.textContent.indexOf('الملخّص التنفيذي')
   && sm9.querySelectorAll('.mfu-kpi[data-svlist]').length >= 13, 'والملخّصُ (V32.5/V33.0): البطاقاتُ أولًا من «نسبة المسح» وكلُّها تُضغَط، ولا «بانتظار قرار الوزارة» ولا «ما ينتظر الوزارة» ولا «متعذّر» ولا «تصريح»، والبياناتُ تحت');
 const R9 = w.mfuReport();
-T(R9.weeks.length === 2 && R9.owners.length > 0 && R9.kpis.some(k => k[0] === 'بانتظار قرار الوزارة'), 'والتقريرُ يحملها');
+T(R9.weeks.length === 2 && R9.owners.length > 0 && R9.kpis.some(k => k[0] === 'اعتماد تقني مكتمل') && !R9.kpis.some(k => /بانتظار قرار الوزارة/.test(k[0])), 'والتقريرُ يحملها باسمٍ لا يوحي بانتظار قرار الوزارة (قاعدةُ المالك ٦ أكتوبر — V37.35)');
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length){ try { dom.window.close(); } catch {} process.exit(1); }

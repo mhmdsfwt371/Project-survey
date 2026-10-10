@@ -173,7 +173,7 @@ function mfuSurv0(){
   var kpi = function(l, v, col, key){ return '<div class="mfu-kpi"' + (key ? ' data-svlist="' + key + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"' : '') + '><div class="mfu-kpi-l">' + esc(t(l)) + (key ? ' \u203A' : '') + '</div><div class="mfu-kpi-v"' + (col ? ' style="color:' + col + '"' : '') + '>' + v + '</div></div>'; };
   var tb = function(head, rows){ return table(head, rows.map(function(r){ return r.map(function(c){ return esc(String(c == null ? '' : c)); }); })); };   /* جدولُ التطبيق نفسُه */
   var nCampOk = svListRows('campok').length, nNoPh = svListRows('nophoto').length;   /* (V29.6) */
-  return '<div class="mfu-kpis">' + kpi('نسبة المسح', nm(SV.pct) + '\u066A') + kpi('تمت الزيارة', nm(o.sv), '#27AE60', 'sv') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B', 'rem') + kpi('فيها تحديات', nm(o.chal), '#C0392B', 'chal') + kpi('تحتاج زيارة أخرى', nm(o.unreach), '#C0392B', 'unreach') + '</div>'
+  return '<div class="mfu-kpis">' + kpi('نسبة الزيارة', nm(SV.pct) + '\u066A') + kpi('تمت الزيارة', nm(o.sv), '#27AE60', 'sv') + kpi('المتبقي', nm(o.tot - o.sv), '#B7950B', 'rem') + kpi('فيها تحديات', nm(o.chal), '#C0392B', 'chal') + kpi('تحتاج زيارة أخرى', nm(o.unreach), '#C0392B', 'unreach') + '</div>'
     + '<div class="mfu-kpis">' + kpi('مخيمات بلا تحديات', nm(nCampOk), '#1E8449', 'campok') + kpi('زيارات بلا صور', nm(nNoPh), nNoPh ? '#C0392B' : '#1E8449', 'nophoto') + (function(){ var nb = svListRows('badphoto').length; return kpi('صور تحتاج إعادة', nm(nb), nb ? '#C0392B' : '#1E8449', 'badphoto'); })() + '</div>'   /* (V30.6) */
     + '<p class="hint" style="margin:0 0 8px">' + esc(t('اضغط أيَّ بطاقةٍ عليها «›» لقائمة نقاطها بالمشعر والنوع وتصديرها إكسل.')) + '</p>'
     + (svListPop() + supPopHtml())
@@ -603,6 +603,7 @@ function mfuReport(){
 }
 function mfuReport0(){
   var K = mfuKpis(), P = mfuPrev(), pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
+  K.srvd = (STATE.sites || []).filter(function(x){ return svDone(STATE.recs[x.id]); }).length;   /* (V37.35) الممسوحُ فعلًا — من تعريف حلقة «المسح» نفسِه */
   var dlt = function(cur, key){ return P && P[key] != null ? cur - P[key] : null; };
   var Z = {};
   (STATE.sites || []).forEach(function(x){ var k = x.zone + '|' + x.type; var o = Z[k] = Z[k] || { z:x.zone, ty:x.type, n:0, i:0 }; o.n++; if (mfuInstalled(x)) o.i++; });
@@ -610,12 +611,13 @@ function mfuReport0(){
   O.forEach(function(o){ var seen = {}; o.cats.forEach(function(c){ byCat[c] = (byCat[c] || 0) + 1; var p = mfuOwnerOf(c); if (!seen[p]){ seen[p] = 1; byParty[p]++; } }); });
   return {
     greg:dayKey() + (flt ? ' \u2014 ' + t('بفلتر') + ': ' + flt : ''), hijri:hijriToday(), ver:appVer(), flt:flt,
-    kpis:[['نسبة المسح', pc(K.sv, K.tot) + '٪', K.sv + ' من ' + K.tot, dlt(K.sv, 'sv')],
+    kpis:[['نسبة الزيارة', pc(K.sv, K.tot) + '٪', K.sv + ' من ' + K.tot, dlt(K.sv, 'sv')],   /* (V37.35) البندُ ٥: كان اسمُه «نسبة المسح» ورقمُه الزيارة — مصطلحُ المالك: «تمت الزيارة» أيُّ زيارة، و«المسح» ما وُصل ومُسح */
+          ['نسبة المسح', pc(K.srvd, K.tot) + '٪', K.srvd + ' من ' + K.tot, null],
           ['تركيب المخيمات', pc(K.campIns, K.camp) + '٪', K.campIns + ' من ' + K.camp, dlt(K.campIns, 'campIns')],
           ['تركيب الممرات', pc(K.corIns, K.cor) + '٪', K.corIns + ' من ' + K.cor, dlt(K.corIns, 'corIns')],
           ['المعوقات القائمة', String(flt ? O.length : K.obs), flt || '', flt ? null : dlt(K.obs, 'obs')],
           K.ins ? ['شركات الخدمة (ممتاز · متوسط · ضعيف)', K.ex + ' · ' + K.md + ' · ' + K.wk, '', null] : ['شركات الخدمة', String(mfuCompanies().length), 'مرحلة المسح — لم يبدأ التواصل والتركيب', null],   /* (V29.1) */
-          ['بانتظار قرار الوزارة', String(mfuMinWait()), 'نقطةً معتمدةً تقنيًّا', null],
+          ['اعتماد تقني مكتمل', String(mfuMinWait()), 'نقطةً معتمدةً تقنيًّا', null],   /* (V37.35) قاعدةُ المالك: لا «بانتظار قرار الوزارة» فيما تراه الوزارة */
           ['تحدياتٌ مفتوحة', String(K.chal), '', null], ['طلباتٌ قيد المتابعة', String(K.req), '', null]],
     tasks:(wtRows().length ? mfuWeekRows().map(function(x){ var r = x.r;
             var link = r.chal ? (r.st === 'مكتمل' ? '✓ تحدٍّ حُلّ: ' : '⚠ تحدٍّ: ') + String(r.chal).replace(/^[FMT]:/, '') : r.req ? (r.st === 'مكتمل' ? '✓ طلبٌ نُفّذ' : '📨 طلب الوزارة') : '';
@@ -939,7 +941,7 @@ function mfuSlides(R){
        : pxBox(PX.X0, PX.Y0 + 5500000, PX.W, 700000, pxP('صدر من نظام قارئات أفاقي — ' + R.ver + ' — ' + R.greg, { sz:1300, c:'7F8C8D' }), { geom:'rect' }))]);
   /* (V29.1) المسحُ الميدانيُّ: نظرةٌ عامةٌ ثم المشعرُ والنوع */
   var SV = R.sv || svStats(), so = SV.O, pcv = function(v){ var n = parseInt(v, 10) || 0; return { t:String(v), c:pxLvl(n).c, bg:pxLvl(n).bg, b:1 }; };
-  S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة المسح', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تمت الزيارة', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تحتاج زيارة أخرى', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
+  S.push(['المسح الميداني — نظرة عامة', pxCards([['نسبة الزيارة', SV.pct + '٪', so.sv + ' من ' + so.tot, '1E8449'], ['تمت الزيارة', String(so.sv), 'نقطة', '163E35'], ['المتبقي', String(so.tot - so.sv), 'نقطة لم تُمسح بعد', '8A6D0B'], ['فيها تحديات', String(so.chal), 'من الممسوحة', 'A93226'], ['تحتاج زيارة أخرى', String(so.unreach), 'تحتاج زيارةً أخرى', 'A93226']], PX.Y0, 1900000)
     + pxTable(PX.X0, PX.Y0 + 2350000, PX.W, ['المشعر', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'تحتاج زيارة أخرى'], SV.zones.map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], pcv(r[4]), r[5] ? { t:String(r[5]), c:'A93226', b:1 } : '0', r[6] ? { t:String(r[6]), c:'A93226' } : '0']; }), { cols:[2.2, 1, 1, 1, 1, 1.2, 1.2], rh:600000, sz:1500, hsz:1500 })]);
   S.push(['المسح الميداني — المشعر والنوع', pxTable(PX.X0, PX.Y0, PX.W, ['المشعر', 'النوع', 'الإجمالي', 'تمت الزيارة', 'المتبقي', 'النسبة', 'فيها تحديات', 'أبرز تحدٍّ'], SV.detail.slice(0, 16).map(function(r){ return [{ t:r[0], b:1 }, r[1], r[2], r[3], r[4], pcv(r[5]), r[6] ? { t:String(r[6]), c:'A93226', b:1 } : '0', r[7]]; }), { cols:[1.3, 1.6, 0.9, 0.9, 0.9, 0.9, 1, 3.3], rh:470000, sz:1150, hsz:1200 })]);
   var JM = jmrConfirm(), jt = JM.tot;   /* (V29.2) */
@@ -1118,7 +1120,7 @@ PAGE.over = { m:'المتابعة', t:'نظرة عامة',
               [esc(t('زيارات معتمدة')), N(S.approved), N(S.total)],
               [esc(t('زيارات تمّت')), N(S.surveyed), N(S.total)],
               [esc(t('مُركّب')), N(S.installed), N(S.total)]])
-          + meter('نسبة المسح', S.surveyed, S.total) + meter('نسبة التركيب', S.installed, S.total))
+          + meter('نسبة الزيارة', S.surveyed, S.total) + meter('نسبة التركيب', S.installed, S.total))
       + col('\u26A1 ' + t('الآن — اليوم'),
           stats([['اليوم — مسح', N(T0.sv), T0.sv ? 'acc' : ''], ['اليوم — تركيب', N(T0.ins), T0.ins ? 'acc' : ''],
                  ['تنتظر الاعتماد', N(S.pending), S.pending ? 'wrn' : ''],
@@ -2611,6 +2613,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.35', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'تصحيح في تقرير التحديث الأسبوعي (الإكسل والباوربوينت والوورد والـPDF): مؤشر «نسبة المسح» كان بيعرض رقم الزيارة، بقى فيه «نسبة الزيارة» و«نسبة المسح» الحقيقية جنب بعض. ونفس التصحيح في شريحة «المسح الميداني — نظرة عامة» وتبويب المسح وتقرير الـPDF.',
+      'مؤشر «بانتظار قرار الوزارة» في التقرير بقى اسمه «اعتماد تقني مكتمل» (قاعدة ما تراه الوزارة).' ] },
   { v:'V37.34', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'للمكتب: كارت «سرعة الصفحات لكل جهاز» في صحة النظام ← الاستهلاك والأداء: كل جهاز بنوعه ونسخته، وزمن كل صفحة (الخريطة، المتابعة، النموذج، المسح، شغلي، المواقع) واللمس والفتح — أخضر تحت ٠٫٣ ثانية، وأصفر تحت ثانية، وأحمر فوقها.',
       'زرار «المساعد» بقى ظاهر باسمه كامل على الشاشات الكبيرة كمان (كان الاسم بيتقص)، و«أجهزة تحتاج إجراء» بقت تمسك أي صفحة بطيئة مش المتابعة بس.' ] },
