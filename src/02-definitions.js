@@ -381,3 +381,17 @@ function liteMeasure(ms){
   if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
 }
 function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){ LS_ERR = e; } if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){ LS_ERR = e; } }
+
+/* ── (V37.27) الطبقةُ الثانية من المساعد — رأيُ الاستشاري: «ما يقلّل المشاكلَ والطلبات» قبل أيِّ ذكاءٍ اصطناعيّ ──
+   ١) «اسأل المهندس»: الشكوى تذهب بلاغًا (النظامُ القائم نفسُه: إشعارٌ للمكتب، وقرار، وحالةٌ يراها صاحبها) ومعها لقطةُ حالة الجهاز.
+   ٢) «المشاكلُ المعروفة»: سطرٌ لكلِّ مشكلة «كلماتٌ تدلّ عليها | الحل» يكتبه المهندسُ مرةً في الإعدادات — فلا يتكرّر السؤالُ نفسُه. */
+var BUG_FROM_ASSIST = '';
+if (!('known' in CFG)) CFG.known = null;
+function knownList(){
+  var raw = CFG.known; if (!raw) return [];
+  return String(raw).split(/\n+/).map(function(l){ var i = l.indexOf('|'); if (i < 1) return null; var kw = l.slice(0, i).trim(), a = l.slice(i + 1).trim(); return kw && a ? { kw:kw, a:a } : null; }).filter(Boolean);
+}
+function knownHits(q){
+  q = (typeof arNorm === 'function' ? arNorm(q) : String(q || '')).trim(); if (q.length < 3) return [];
+  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = (typeof arNorm === 'function' ? arNorm(w) : w).trim(); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+}

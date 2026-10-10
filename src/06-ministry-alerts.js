@@ -80,7 +80,7 @@ function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return
 function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
-  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
+  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
   var asDash = !!SV_DASH_KEYS[SV_POP] && SV_VIEW !== 'list';   /* (V37.16) */
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
@@ -95,12 +95,13 @@ function svListPop(){
     + (!asDash && rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = PCN[r[0]] || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7 → V37.14: من الفهرس) */
         return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
-                   + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
+                   + (rows.length > shown.length ? '<div class="actions" style="justify-content:center;margin:10px 0">' + btn('\u2193 ' + t('عرض المزيد') + ' (' + nm(Math.min(80, rows.length - shown.length)) + ' ' + t('من') + ' ' + nm(rows.length - shown.length) + ')', 'btn-secondary btn-sm', ' data-svmore="1"') + '</div><p class="hint" style="text-align:center">' + esc(t('والكلُّ في ملف الإكسل')) + '</p>' : '')   /* (V37.27) */
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>'
     + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
+var SV_SHOW = 80;   /* (V37.27) صفوفُ القائمة المعروضة — تزيد بزرّ «عرض المزيد» */
 /* ═══ (V37.16) طلبُ المالك: «البوب أب اللي بتتفتح من صفحة الوزارة لكلِّ كارت (الزيارة والمسح والتركيب والتسليم والفك) — مش عاوزها
    ليست، عاوزها داشبورد توضّح البيانات، ولما أحتاج تفاصيل أعمل إكسل». اللوحةُ تُبنى من صفوف القائمة نفسِها فلا يختلف رقم. ═══ */
 var SV_DASH_KEYS = { sv:1, rem:1, srv:1, srvr:1, insd:1, insr:1, hand:1, handr:1, disd:1, disr:1 };
@@ -2610,6 +2611,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.27', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'المساعد: لو المشكلة ما اتحلّتش، زرار «🙋 اسأل المهندس» بيبعتها للمكتب بلاغ ومعاها حالة جهازك، وتشوف الرد في «البلاغات».',
+      '«المشاكل المعروفة»: المهندس يكتب في الإعدادات سطر لكل مشكلة (كلمات تدل عليها | الحل) مرة واحدة، فأي حد يكتب كلمة منها في المساعد يلاقي الحل على طول.',
+      'القوائم بقت تعرض ٨٠ صف الأول وزرار «عرض المزيد» من غير ما تفقد مكانك — بدل ٣٠٠ صف مرة واحدة.' ] },
   { v:'V37.26', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي: إصلاح أسباب إيميلات «فحص التوثيق» الفاشل بعد كل ترقية، وتأمين فهرس الصور ضد أي صورة تتضاف من غير ما يحس.' ] },
   { v:'V37.25', d:'١٠ أكتوبر ٢٠٢٦', notes:[

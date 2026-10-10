@@ -1238,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.26</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.27</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1300,7 +1300,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-e88b7d8963.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-7174f28604.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7337,6 +7337,20 @@ function liteMeasure(ms){
 }
 function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){ LS_ERR = e; } if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){ LS_ERR = e; } }
 
+/* ── (V37.27) الطبقةُ الثانية من المساعد — رأيُ الاستشاري: «ما يقلّل المشاكلَ والطلبات» قبل أيِّ ذكاءٍ اصطناعيّ ──
+   ١) «اسأل المهندس»: الشكوى تذهب بلاغًا (النظامُ القائم نفسُه: إشعارٌ للمكتب، وقرار، وحالةٌ يراها صاحبها) ومعها لقطةُ حالة الجهاز.
+   ٢) «المشاكلُ المعروفة»: سطرٌ لكلِّ مشكلة «كلماتٌ تدلّ عليها | الحل» يكتبه المهندسُ مرةً في الإعدادات — فلا يتكرّر السؤالُ نفسُه. */
+var BUG_FROM_ASSIST = '';
+if (!('known' in CFG)) CFG.known = null;
+function knownList(){
+  var raw = CFG.known; if (!raw) return [];
+  return String(raw).split(/\n+/).map(function(l){ var i = l.indexOf('|'); if (i < 1) return null; var kw = l.slice(0, i).trim(), a = l.slice(i + 1).trim(); return kw && a ? { kw:kw, a:a } : null; }).filter(Boolean);
+}
+function knownHits(q){
+  q = (typeof arNorm === 'function' ? arNorm(q) : String(q || '')).trim(); if (q.length < 3) return [];
+  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = (typeof arNorm === 'function' ? arNorm(w) : w).trim(); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
    ───────────────────────────────────────────────────────────────────────────────
@@ -7501,6 +7515,13 @@ function catsCard(){
     + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'صورة إثبات', 'في قائمة الميدان'])
     + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
+}
+function knownCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
+    '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
+    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || '') + '</textarea>',
+    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
 function catsSave(){
   if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
@@ -10799,14 +10820,14 @@ function bugSend(){
   var id = uid36();
   var r = { id:id, kind:BUG_KIND, txt:txt, want:g('bgWant'),
             by:STATE.meta.name || '', uid:myUid(), at:Date.now(),
-            status:'جديد', ctx:bugCtx(), gh:0,
+            status:'جديد', ctx:bugCtx(), gh:0, diag:(typeof assistDiag === 'function' ? assistDiag() : null), viaAssist:!!BUG_FROM_ASSIST,   /* (V37.27) لقطةُ حالة الجهاز */
             box:(function(){ try { return boxText(); } catch (e){ return ''; } })() };   /* الصندوقُ الأسود في الكتابة نفسِها (V17.98) */
   if (!STATE.bugs) STATE.bugs = {};
   STATE.bugs[id] = r;
   CORE.set('bugs', id, r);
   logEvent('بلاغ — ' + BUG_KIND + ': ' + txt.slice(0, 60));
   try { notifPush('بلاغٌ جديد', BUG_KIND + ' — ' + txt.slice(0, 60), { lv:'مهم' }); } catch (e){ LS_ERR = e; }
-  BUG_OPEN = false;
+  BUG_OPEN = false; BUG_FROM_ASSIST = '';
   toast(t('وصل البلاغ — يُفتَح في المستودع خلال دقائق'));
   render(1);
 }
@@ -10949,7 +10970,7 @@ function bugSheet(){
         return '<button type="button" class="chip' + (BUG_KIND === k ? ' on' : '') + '" data-bugkind="' + esc(k) + '">' + esc(t(k)) + '</button>';
       }).join('') + '</div>'
     + '<div class="field"><label>' + esc(t('ما الذي حدث؟')) + '</label>'
-    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '"></textarea></div>'
+    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '">' + esc(BUG_FROM_ASSIST || '') + '</textarea></div>'   /* (V37.27) ما كتبه في المساعد */
     + '<div class="field"><label>' + esc(t('ما الذي كنتَ تتوقّعه؟')) + ' <span class="hint">(' + esc(t('اختياري')) + ')</span></label>'
     +   '<input id="bgWant" dir="auto"></div>'
     + '<div class="alert info" style="margin:8px 0 0"><span>' + esc(t('يُرفَق تلقائيًّا')) + ': '
@@ -15849,8 +15870,10 @@ function assistDiagCard(q){
       + '<p style="margin:0">' + (warn.length ? esc(warn.map(function(w){ return t(w); }).join(' \u00b7 ')) : esc(t('كلُّ شيءٍ سليم: متصل، ولا شيءَ ينتظر الرفع.'))) + '</p>'
       + (warn.length ? assistFixHtml(d.pq || d.pf ? 'photos' : d.q || d.pz ? 'sync' : 'slow', d) : '') + '</div>';
   }
-  if (!hits) return '';
-  return hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('');
+  var kh = knownHits(q), ask = '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ أرسلها للمهندس — تصله بحالة جهازك، وترى ردَّه في «البلاغات».')) + '</p><div class="actions">' + btn('\u{1F64B} ' + t('اسأل المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
+  var known = kh.map(function(k){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #2E7D32"><div class="pid">' + esc(t('مشكلة معروفة — حلّها')) + '</div><p style="margin:0">' + esc(k.a) + '</p></div>'; }).join('');
+  if (!hits) return known + (q.length >= 6 ? ask : '');
+  return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;
 }
 function assistResHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
@@ -22805,7 +22828,7 @@ function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return
 function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
-  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, 300);
+  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
   var asDash = !!SV_DASH_KEYS[SV_POP] && SV_VIEW !== 'list';   /* (V37.16) */
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
@@ -22820,12 +22843,13 @@ function svListPop(){
     + (!asDash && rows.length ? table(head.map(function(h){ return h; }).concat([t('الصور')]), shown.map(function(r){ var sx = siteFind(r[0]), pn = PCN[r[0]] || ((STATE.recs[r[0]] || {}).photos || []).length;   /* (V37.7 → V37.14: من الفهرس) */
         return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
-                   + (rows.length > shown.length ? '<p class="hint">' + esc(t('يُعرض أوّلُ ٣٠٠ — والكلُّ في ملف الإكسل')) + '</p>' : '')
+                   + (rows.length > shown.length ? '<div class="actions" style="justify-content:center;margin:10px 0">' + btn('\u2193 ' + t('عرض المزيد') + ' (' + nm(Math.min(80, rows.length - shown.length)) + ' ' + t('من') + ' ' + nm(rows.length - shown.length) + ')', 'btn-secondary btn-sm', ' data-svmore="1"') + '</div><p class="hint" style="text-align:center">' + esc(t('والكلُّ في ملف الإكسل')) + '</p>' : '')   /* (V37.27) */
                    : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
     + '</div>'
     + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
 var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها فوق القائمة */
+var SV_SHOW = 80;   /* (V37.27) صفوفُ القائمة المعروضة — تزيد بزرّ «عرض المزيد» */
 /* ═══ (V37.16) طلبُ المالك: «البوب أب اللي بتتفتح من صفحة الوزارة لكلِّ كارت (الزيارة والمسح والتركيب والتسليم والفك) — مش عاوزها
    ليست، عاوزها داشبورد توضّح البيانات، ولما أحتاج تفاصيل أعمل إكسل». اللوحةُ تُبنى من صفوف القائمة نفسِها فلا يختلف رقم. ═══ */
 var SV_DASH_KEYS = { sv:1, rem:1, srv:1, srvr:1, insd:1, insr:1, hand:1, handr:1, disd:1, disr:1 };
@@ -25335,6 +25359,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.27', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'المساعد: لو المشكلة ما اتحلّتش، زرار «🙋 اسأل المهندس» بيبعتها للمكتب بلاغ ومعاها حالة جهازك، وتشوف الرد في «البلاغات».',
+      '«المشاكل المعروفة»: المهندس يكتب في الإعدادات سطر لكل مشكلة (كلمات تدل عليها | الحل) مرة واحدة، فأي حد يكتب كلمة منها في المساعد يلاقي الحل على طول.',
+      'القوائم بقت تعرض ٨٠ صف الأول وزرار «عرض المزيد» من غير ما تفقد مكانك — بدل ٣٠٠ صف مرة واحدة.' ] },
   { v:'V37.26', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'تحسين داخلي: إصلاح أسباب إيميلات «فحص التوثيق» الفاشل بعد كل ترقية، وتأمين فهرس الصور ضد أي صورة تتضاف من غير ما يحس.' ] },
   { v:'V37.25', d:'١٠ أكتوبر ٢٠٢٦', notes:[
@@ -33281,6 +33309,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + catsCard()   /* (V37.4) طلبُ المالك: المسمّياتُ وجهاتُ الحل */
+      + knownCard()   /* (V37.27) المشاكلُ المعروفة للمساعد */
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
           + '<div class="grid cols-2">'
@@ -34380,7 +34409,7 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80;   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
@@ -34393,6 +34422,8 @@ function clickAPart2(e){
     return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */
   if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
+  if (e.target.closest('[data-svmore]')){ SV_SHOW += 80; var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
+    if (hostM){ svPopRemove(); var tmpM = document.createElement('div'); tmpM.innerHTML = svListPop(); while (tmpM.firstChild) hostM.appendChild(tmpM.firstChild); var nb = document.querySelector('.svpop[data-keepscroll^="svpop:"]'); if (nb) nb.scrollTop = topM; } else render(1); return true; }
   var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
   if (svv){ SV_VIEW = svv.getAttribute('data-svview') === 'list' ? 'list' : 'dash'; var hostV = svv.closest('#content') || document.getElementById('content');
     if (hostV){ svPopRemove(); var tmpV = document.createElement('div'); tmpV.innerHTML = svListPop(); while (tmpV.firstChild) hostV.appendChild(tmpV.firstChild); } else render(1); return true; }
@@ -35035,7 +35066,9 @@ function onDocClickPart1(e){
     }
     return;
   }
-  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
+  if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
+  if (e.target.closest('[data-askeng]')){ BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }

@@ -3279,14 +3279,14 @@ function bugSend(){
   var id = uid36();
   var r = { id:id, kind:BUG_KIND, txt:txt, want:g('bgWant'),
             by:STATE.meta.name || '', uid:myUid(), at:Date.now(),
-            status:'جديد', ctx:bugCtx(), gh:0,
+            status:'جديد', ctx:bugCtx(), gh:0, diag:(typeof assistDiag === 'function' ? assistDiag() : null), viaAssist:!!BUG_FROM_ASSIST,   /* (V37.27) لقطةُ حالة الجهاز */
             box:(function(){ try { return boxText(); } catch (e){ return ''; } })() };   /* الصندوقُ الأسود في الكتابة نفسِها (V17.98) */
   if (!STATE.bugs) STATE.bugs = {};
   STATE.bugs[id] = r;
   CORE.set('bugs', id, r);
   logEvent('بلاغ — ' + BUG_KIND + ': ' + txt.slice(0, 60));
   try { notifPush('بلاغٌ جديد', BUG_KIND + ' — ' + txt.slice(0, 60), { lv:'مهم' }); } catch (e){ LS_ERR = e; }
-  BUG_OPEN = false;
+  BUG_OPEN = false; BUG_FROM_ASSIST = '';
   toast(t('وصل البلاغ — يُفتَح في المستودع خلال دقائق'));
   render(1);
 }
@@ -3429,7 +3429,7 @@ function bugSheet(){
         return '<button type="button" class="chip' + (BUG_KIND === k ? ' on' : '') + '" data-bugkind="' + esc(k) + '">' + esc(t(k)) + '</button>';
       }).join('') + '</div>'
     + '<div class="field"><label>' + esc(t('ما الذي حدث؟')) + '</label>'
-    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '"></textarea></div>'
+    +   '<textarea id="bgTxt" dir="auto" rows="4" placeholder="' + esc(t('اكتب ما رأيتَه بالضبط: ضغطتُ كذا فحدث كذا.')) + '">' + esc(BUG_FROM_ASSIST || '') + '</textarea></div>'   /* (V37.27) ما كتبه في المساعد */
     + '<div class="field"><label>' + esc(t('ما الذي كنتَ تتوقّعه؟')) + ' <span class="hint">(' + esc(t('اختياري')) + ')</span></label>'
     +   '<input id="bgWant" dir="auto"></div>'
     + '<div class="alert info" style="margin:8px 0 0"><span>' + esc(t('يُرفَق تلقائيًّا')) + ': '

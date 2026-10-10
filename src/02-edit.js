@@ -164,6 +164,13 @@ function catsCard(){
     + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
 }
+function knownCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
+    '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
+    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || '') + '</textarea>',
+    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
+}
 function catsSave(){
   if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
   var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };

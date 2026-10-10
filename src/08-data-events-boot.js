@@ -1858,6 +1858,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + catsCard()   /* (V37.4) طلبُ المالك: المسمّياتُ وجهاتُ الحل */
+      + knownCard()   /* (V37.27) المشاكلُ المعروفة للمساعد */
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
           + '<div class="grid cols-2">'
@@ -2957,7 +2958,7 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80;   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
@@ -2970,6 +2971,8 @@ function clickAPart2(e){
     return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */
   if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
+  if (e.target.closest('[data-svmore]')){ SV_SHOW += 80; var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
+    if (hostM){ svPopRemove(); var tmpM = document.createElement('div'); tmpM.innerHTML = svListPop(); while (tmpM.firstChild) hostM.appendChild(tmpM.firstChild); var nb = document.querySelector('.svpop[data-keepscroll^="svpop:"]'); if (nb) nb.scrollTop = topM; } else render(1); return true; }
   var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
   if (svv){ SV_VIEW = svv.getAttribute('data-svview') === 'list' ? 'list' : 'dash'; var hostV = svv.closest('#content') || document.getElementById('content');
     if (hostV){ svPopRemove(); var tmpV = document.createElement('div'); tmpV.innerHTML = svListPop(); while (tmpV.firstChild) hostV.appendChild(tmpV.firstChild); } else render(1); return true; }
@@ -3612,7 +3615,9 @@ function onDocClickPart1(e){
     }
     return;
   }
-  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
+  if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
+  if (e.target.closest('[data-askeng]')){ BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }

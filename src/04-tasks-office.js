@@ -3453,8 +3453,10 @@ function assistDiagCard(q){
       + '<p style="margin:0">' + (warn.length ? esc(warn.map(function(w){ return t(w); }).join(' \u00b7 ')) : esc(t('كلُّ شيءٍ سليم: متصل، ولا شيءَ ينتظر الرفع.'))) + '</p>'
       + (warn.length ? assistFixHtml(d.pq || d.pf ? 'photos' : d.q || d.pz ? 'sync' : 'slow', d) : '') + '</div>';
   }
-  if (!hits) return '';
-  return hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('');
+  var kh = knownHits(q), ask = '<div class="card" style="margin:0 0 10px"><p style="margin:0 0 6px">' + esc(t('لم يُحلّ؟ أرسلها للمهندس — تصله بحالة جهازك، وترى ردَّه في «البلاغات».')) + '</p><div class="actions">' + btn('\u{1F64B} ' + t('اسأل المهندس'), 'btn-primary btn-sm', ' data-askeng="1"') + '</div></div>';
+  var known = kh.map(function(k){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid #2E7D32"><div class="pid">' + esc(t('مشكلة معروفة — حلّها')) + '</div><p style="margin:0">' + esc(k.a) + '</p></div>'; }).join('');
+  if (!hits) return known + (q.length >= 6 ? ask : '');
+  return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;
 }
 function assistResHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
