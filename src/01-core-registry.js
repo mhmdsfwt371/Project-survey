@@ -1378,7 +1378,7 @@ var FB = {
              buys:'purchases', cfg:'settings', users:'users',
              evlog:'events', diss:'dismantles', newsites:'newsites',
              coreqs:'coreqs', fixreqs:'fixreqs', bugs:'bugs', sites:'sites', ships:'ships',
-             vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
+             vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos', photoblobs:'photoblobs',
              stats:'stats', teams:'teams', baseline:'baseline',
              changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
              workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[kind] || 'misc';
@@ -1470,7 +1470,7 @@ var FB = {
                   buys:'purchases', cfg:'settings', users:'users',
                   evlog:'events', diss:'dismantles', newsites:'newsites',
                   coreqs:'coreqs', fixreqs:'fixreqs', bugs:'bugs', sites:'sites', ships:'ships',
-                  vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos',
+                  vehicles:'vehicles', vehAsn:'vehAsn', accounts:'accounts', photos:'photos', photoblobs:'photoblobs',
                   stats:'stats', teams:'teams', baseline:'baseline',
                   changes:'changes', hse:'hse', ncr:'ncr', ipc:'ipc', bonus:'bonus',
                   workReqs:'workreqs', maints:'maints', steps:'steps', pending:'pending', provision:'provision', att:'att', ghcfg:'ghcfg', presence:'presence' }[it.kind];

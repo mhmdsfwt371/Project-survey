@@ -340,17 +340,8 @@ var PH_DIRTY = false;   /* الصورُ تُحفَظ محليًّا وحدَها
 /* ── (V37.18) الخطوةُ ٤ · حارسُ الانهيار: إقلاعان متتابعان لم يبلغا الاستقرار (٤٥ ثانية) خلال عشر دقائق ← الوضعُ الخفيف ──
    آيفون يقتل الصفحةَ بلا إنذار («حدثت مشكلة بشكل متكرر») حين تضيق الذاكرة. يُعَدّ الإقلاعُ عند بدئه ويُصفَّر حين يستقرّ؛ فإن تكرّر
    السقوطُ قبل الاستقرار عمل التطبيقُ بلا خريطةٍ مجسَّمة ولا فهرسِ صور، وقال ذلك في شريطٍ فيه زرُّ العودة. */
-var LITE = false;
-function bootGuardStart(){
-  try {
-    var k = 'nsk14.boot', raw = lsGet(k), v = raw ? JSON.parse(raw) : null, now = Date.now();
-    v = (v && now - (+v.at || 0) < 10 * 60000) ? { n:(+v.n || 0) + 1, at:now } : { n:1, at:now };
-    lsSet(k, JSON.stringify(v));
-    if (v.n >= 3){ LITE = true; }
-    setTimeout(function(){ try { lsSet(k, JSON.stringify({ n:0, at:Date.now() })); } catch (e){} }, 45000);
-  } catch (e){ LS_ERR = e; }
-}
-function liteOff(){ LITE = false; try { lsSet('nsk14.boot', JSON.stringify({ n:0, at:Date.now() })); } catch (e){} toast(t('عاد الوضعُ الكامل')); try { location.reload(); } catch (e){} }
+var LITE = (typeof BOOT_GUARD === 'object' && BOOT_GUARD && BOOT_GUARD.crashes >= 2);   /* من حارس الإقلاع القائم (V34.2) — إقلاعان ماتا قبل الاستقرار */
+function liteOff(){ LITE = false; try { bootOk('full'); } catch (e){ LS_ERR = e; } toast(t('عاد الوضعُ الكامل')); try { location.reload(); } catch (e2){ LS_ERR = e2; } }
 /* ── الخطوةُ ٥ · إعادةُ ضبط التطبيق على هذا الجهاز: تُرفَع البياناتُ أوّلًا، ثم يُمحى الكاشُ والمخزنُ ويُعاد التحميلُ نظيفًا ──
    بديلُ «امسح بياناتِ المتصفح من إعدادات آيفون» الذي كان يفعله الفنيّون. لا يمسّ السحابةَ ولا يُسقط عملًا لم يُرفَع. */
 function appResetGo(){
@@ -362,12 +353,12 @@ function appResetGo(){
     return false;
   }
   if (!window.confirm(t('إعادةُ ضبط التطبيق على هذا الجهاز: يُمحى الكاشُ والمخزنُ المحليُّ ويُعاد التحميلُ نظيفًا. لا يمسّ السحابة. متأكد؟'))) return false;
-  var dev = lsGet('nsk14.dev'), done = function(){ try { if (dev) lsSet('nsk14.dev', dev); } catch (e){} try { location.reload(); } catch (e){} };
+  var dev = lsGet('nsk14.dev'), done = function(){ try { if (dev) lsSet('nsk14.dev', dev); } catch (e){ LS_ERR = e; } try { location.reload(); } catch (e2){ LS_ERR = e2; } };
   Promise.resolve()
     .then(function(){ return (typeof caches === 'object' && caches.keys) ? caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }) : null; })
     .then(function(){ return (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) ? navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }) : null; })
-    .then(function(){ return new Promise(function(res){ try { var rq = indexedDB.deleteDatabase(IDB_NAME); rq.onsuccess = rq.onerror = rq.onblocked = function(){ res(); }; setTimeout(res, 4000); } catch (e){ res(); } }); })
-    .then(function(){ try { localStorage.clear(); } catch (e){} done(); })
+    .then(function(){ return new Promise(function(res){ try { var rq = indexedDB.deleteDatabase(IDB_NAME); rq.onsuccess = rq.onerror = rq.onblocked = function(){ res(); }; setTimeout(res, 4000); } catch (e){ LS_ERR = e; res(); } }); })
+    .then(function(){ try { localStorage.clear(); } catch (e){ LS_ERR = e; } done(); })
     .catch(function(e){ LS_ERR = e; done(); });
   return true;
 }

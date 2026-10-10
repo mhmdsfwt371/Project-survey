@@ -5329,5 +5329,3 @@ if (window.visualViewport){
 })();
 
 (function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
-/* (V37.18) حارسُ الإقلاع يُعَدّ أوّلَ ما تُحمَّل الشيفرةُ — قبل أيِّ سحبٍ أو خريطة */
-try { bootGuardStart(); } catch (eBG){ LS_ERR = eBG; }
