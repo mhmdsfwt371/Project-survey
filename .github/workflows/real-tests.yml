@@ -53,7 +53,7 @@ jobs:
           set -o pipefail
           RC=0; node scripts/browser-test.mjs 2>&1 | tee /tmp/browser.txt || RC=$?
           # (V37.24 المرحلةُ ١) حدُّ السرعة: بحجم الميدان الحقيقي — ما يتجاوز السقوفَ يُغلق البوابة
-          node scripts/audit-perf.mjs 2>&1 | tee -a /tmp/browser.txt || RC=$?
+          node scripts/perf-gate.mjs 2>&1 | tee -a /tmp/browser.txt || RC=$?
           mkdir -p gate
           # (V17.98) قياسُ ظروف منى يُكتَب تعليقًا في كلِّ تشغيلٍ — منه يُجمَع خطُّ الأساس
           M=$(grep -a 'دافئ (٣ محاولات)' /tmp/browser.txt | tail -1 || true)

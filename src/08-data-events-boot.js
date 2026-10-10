@@ -2390,6 +2390,7 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
   try { return render0(force); } finally { DB.memoReset(); }
 }
 function render0(force){
+  if (PH_IDX && Object.keys(STATE.photos || {}).length !== phIdx.len) PH_IDX = null;   /* (V37.26) صورةٌ أُضيفت مباشرةً بين رسمتين تُرى — والكتابةُ والورودُ يُبطلانه أصلًا */
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
   try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
@@ -2770,7 +2771,7 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
-  if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){} liteOff(); return true; }
+  if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
@@ -5214,11 +5215,11 @@ function reflow(){
     /* (V36.1) ارتفاعُ لوحة المفاتيح على الآيفون: الورقةُ السفلية (المساعد، النوافذ) تجلس فوقها لا تحتها */
     var vv = window.visualViewport, kb = vv ? Math.max(0, Math.round(window.innerHeight - vv.height - vv.offsetTop)) : 0;
     document.documentElement.style.setProperty('--kb', (kb > 60 ? kb : 0) + 'px');
-  } catch (e){}
+  } catch (e){ LS_ERR = e; }
   if (CUR === 'map'){
     if (typeof mapDraw === 'function') mapDraw();
     if (typeof MAP !== 'undefined' && MAP){
-      try { MAP.invalidateSize(); } catch (e){}
+      try { MAP.invalidateSize(); } catch (e){ LS_ERR = e; }
     }
   }
 }
@@ -5241,7 +5242,7 @@ if (window.visualViewport){
   try {
     document.documentElement.style.setProperty('--vh',
       ((window.visualViewport ? window.visualViewport.height : window.innerHeight) * 0.01) + 'px');
-  } catch (e){}
+  } catch (e){ LS_ERR = e; }
 })();
 
 (function boot(){

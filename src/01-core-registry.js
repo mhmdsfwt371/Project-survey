@@ -2410,7 +2410,7 @@ function softErr(where, e, tell){
   SOFT_ERRS.unshift({ at:Date.now(), where:where, msg:msg });
   try { boxNote('err', where + ':' + ((e && e.code) || msg)); } catch (e3){ BOX_ERR = e3; }
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
-  try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){}
+  try { console.warn('[أفاقي] ' + where + ': ' + msg); } catch (e2){ LS_ERR = e2; }
   if (tell && !SOFT_SAID[where]){
     SOFT_SAID[where] = 1;
     toast(t(tell));

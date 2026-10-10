@@ -27,3 +27,4 @@
 2026-10-10,V37.17,624,2,5,0,478,3146,"LITE وPH_DIRTY وphotoSlim وbootGuardStart وappResetGo: حلُّ ذاكرة الموبايل (V37.18)"
 2026-10-10,V37.21,627,2,5,0,478,3148,"PH_IDX وPH_VER وphIdx/phTouch: فهرسُ الصور بالنقطة (V37.22، بلاغُ المالك)"
 2026-10-10,V37.22,629,2,5,0,478,3160,"LITE_AUTO وoldOS وliteMeasure وliteOn وsvStats0 وassistDiag/ASSIST_INTENTS: المرحلةُ ١ والمساعدُ المشخِّص (V37.23)"
+2026-10-10,V37.25,629,2,5,0,478,3163,"phIdx.len: حارسُ طول فهرس الصور (V37.26)"

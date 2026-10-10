@@ -2759,7 +2759,7 @@ function notifSystem(n){
       return;
     }
     new Notification('أفاقي — ' + n.kind, { body:body, dir:'rtl', lang:'ar' });
-  } catch (e){}
+  } catch (e){ LS_ERR = e; }
 }
 
 /* رقمُ المرسَل إليه من سجل الفنيين — ولا يُعرَض لمن مُنع من الهواتف */

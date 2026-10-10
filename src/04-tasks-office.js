@@ -942,7 +942,7 @@ function phIdx(){
   if (PH_IDX && PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
   var M = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.site){ (M[p.site] = M[p.site] || []).push([k, p]); } });
   Object.keys(M).forEach(function(s){ M[s].sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); }); });
-  phIdx.ref = STATE.photos; PH_IDX = M; PH_IDX_KEY = key; return M;
+  phIdx.ref = STATE.photos; phIdx.len = Object.keys(P).length; PH_IDX = M; PH_IDX_KEY = key; return M;
 }
 var PH_VER = 0;
 function phTouch(){ PH_VER++; PH_IDX = null; }
@@ -4874,8 +4874,8 @@ function pulseWatch(){
     }, function(e){ softErr('الإنصاتُ للتغييرات', e, ''); });
   } catch (e){ softErr('الإنصاتُ للتغييرات', e, ''); }
 }
-function pulseStop(){ if (PULSE_UNSUB){ try { PULSE_UNSUB(); } catch (e){} PULSE_UNSUB = null; }
-  if (BRIDGE_UNSUB){ try { BRIDGE_UNSUB(); } catch (e){} BRIDGE_UNSUB = null; } }
+function pulseStop(){ if (PULSE_UNSUB){ try { PULSE_UNSUB(); } catch (e){ LS_ERR = e; } PULSE_UNSUB = null; }
+  if (BRIDGE_UNSUB){ try { BRIDGE_UNSUB(); } catch (e){ LS_ERR = e; } BRIDGE_UNSUB = null; } }
 /* ختمُ الجسر: وثيقةٌ واحدةٌ يكتبها الخادمُ بعد كلِّ تشغيلٍ — تُقرأ عند تغيّرها فقط (V17.39) */
 var BRIDGE_UNSUB = null;
 function bridgeWatch(){

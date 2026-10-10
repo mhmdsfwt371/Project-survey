@@ -374,10 +374,10 @@ function oldOS(){
 }
 function liteMeasure(ms){
   if (LITE || typeof ms !== 'number') return;
-  try { var off = +(lsGet('nsk14.liteoff') || 0); if (off && Date.now() - off < 864e5) return; } catch (e){}
+  try { var off = +(lsGet('nsk14.liteoff') || 0); if (off && Date.now() - off < 864e5) return; } catch (e){ LS_ERR = e; }
   LITE_AUTO.ms.push(ms); if (LITE_AUTO.ms.length > 5) LITE_AUTO.ms.shift();
   var touch = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) || ('ontouchstart' in window);
   var slow = LITE_AUTO.ms.filter(function(x){ return x > 1500; }).length;
   if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
 }
-function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){} if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){} }
+function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){ LS_ERR = e; } if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){ LS_ERR = e; } }

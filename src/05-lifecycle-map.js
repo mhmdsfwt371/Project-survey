@@ -2410,7 +2410,7 @@ function gmapsLoad(){
 function gmapsSync(){
   if (!MAP || !MAP_BASE) return;
   var want = gmapsWant();
-  if (!want){ if (GMAP.layer){ try { if (MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer); } catch (e){} GMAP.layer = null; GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
+  if (!want){ if (GMAP.layer){ try { if (MAP.hasLayer(GMAP.layer)) MAP.removeLayer(GMAP.layer); } catch (e){ LS_ERR = e; } GMAP.layer = null; GMAP.kind = ''; if (!basemapWant() && !MAP.hasLayer(MAP_BASE)) MAP_BASE.addTo(MAP); } return; }
   var kind = MAP_SAT ? 'hybrid' : 'roadmap';
   if (GMAP.layer && GMAP.kind === kind){ if (!MAP.hasLayer(GMAP.layer)) GMAP.layer.addTo(MAP); if (MAP.hasLayer(MAP_BASE)) MAP.removeLayer(MAP_BASE); return; }
   gmapsLoad().then(function(ok){
@@ -2832,7 +2832,7 @@ var SW_RELOADED = false;
 function swBusy(){
   /* نموذجٌ مفتوحٌ فيه إدخال، أو طابورٌ لم يُرفَع بعد */
   if (['svForm','insForm','newsite'].indexOf(CUR) > -1) return true;
-  try { if (document.querySelector('input:focus, textarea:focus, select:focus')) return true; } catch (e){}
+  try { if (document.querySelector('input:focus, textarea:focus, select:focus')) return true; } catch (e){ LS_ERR = e; }
   return false;
 }
 var SW_TICK = null, SW_LEFT = 0;
@@ -2876,7 +2876,7 @@ function swNow(){
   SW_RELOADED = true; swCancel();
   toast(t('تُحدَّث النسخة…'));
   swLighten();
-  setTimeout(function(){ try { location.reload(); } catch (e){} }, 600);
+  setTimeout(function(){ try { location.reload(); } catch (e){ LS_ERR = e; } }, 600);
 }
 /* (V21.9) الانتقالُ إلى النسخة الجديدة كان يُحمِّل الصفحةَ الجديدةَ فوق القديمة بكلِّ ما فيها
    (خريطةٌ بألفٍ وثمانمئة نقطة، وشجرةُ الصفحة، والإنصاتُ الحيّ) — فذروةُ الذاكرة في سفاري
@@ -3000,11 +3000,11 @@ function swLater(){
    العودة إلى التطبيق، فالميدانُ يفتحه ويغلقه طولَ اليوم ولا يُعيد تحميله. */
 function swPoll(){
   if (!SW_STATE.reg || !SW_STATE.reg.update) return;
-  try { SW_STATE.reg.update(); } catch (e){}
+  try { SW_STATE.reg.update(); } catch (e){ LS_ERR = e; }
 }
 setInterval(swPoll, 300000);
 /* الشحناتُ تُراجَع كلَّ ساعة: ما تأخّر يُنبَّه عليه مرةً في اليوم */
-setInterval(function(){ try { shipWatch(); } catch (e){} }, 3600000);
+setInterval(function(){ try { shipWatch(); } catch (e){ LS_ERR = e; } }, 3600000);
 document.addEventListener('visibilitychange', function(){
   if (!document.hidden) swPoll();
 }, { passive:true });
@@ -3037,7 +3037,7 @@ function verCheck(){
       var m = /nusuk-survey-v(\d+\.\d+)/.exec(txt || '');
       var there = m ? ('V' + m[1]) : '';
       var mine = (typeof APP_VER === 'string' && APP_VER) || here || '';
-      if (SW_STATE.reg && SW_STATE.reg.update) { try { SW_STATE.reg.update(); } catch (e){} }
+      if (SW_STATE.reg && SW_STATE.reg.update) { try { SW_STATE.reg.update(); } catch (e){ LS_ERR = e; } }
       if (there && mine && there !== mine){
         var b = document.querySelector('.ver-tag');
         if (b) b.classList.add('upd');
@@ -3098,16 +3098,16 @@ function signOut(){
     if (typeof confirm === 'function' && !confirm(msg)) return;
   }
   logEvent('تسجيل خروج — ' + (STATE.meta.name || ''));
-  try { if (typeof liveStop === 'function') liveStop(); } catch (e){}
-  try { if (FB && FB.auth && FB.auth.signOut) FB.auth.signOut(); } catch (e){}
+  try { if (typeof liveStop === 'function') liveStop(); } catch (e){ LS_ERR = e; }
+  try { if (FB && FB.auth && FB.auth.signOut) FB.auth.signOut(); } catch (e){ LS_ERR = e; }
   /* الجلسةُ وحدها تُمسَح — والبياناتُ المحليةُ تبقى لصاحبها حين يعود،
      ولا يُنصَح بمسح بيانات الموقع أبدًا. */
-  try { localStorage.removeItem('nsk14.session'); } catch (e){}
+  try { localStorage.removeItem('nsk14.session'); } catch (e){ LS_ERR = e; }
   STATE.meta.uid = ''; STATE.meta.online = false;
   toast(t('خرجت — بياناتُك المحليةُ محفوظة'));
   /* عنصرُ الدخول يُحذَف من الهيكل عند الدخول، فلا يُعاد ببنائه بل بإعادة
      التحميل: أنظفُ وأضمن. */
-  setTimeout(function(){ try { location.reload(); } catch (e){} }, 700);
+  setTimeout(function(){ try { location.reload(); } catch (e){ LS_ERR = e; } }, 700);
 }
 
 /* ═══ التثبيت على الشاشة الرئيسية ═══ */
@@ -3343,9 +3343,9 @@ function bootAuto(){
      ثم صفحتَه التي كان عليها. ومن لا جلسةَ له يرى النموذجَ كما كان. */
   var had = lsGet('nsk14.session') === '1';
   if (had){ lg.classList.add('resuming'); note.textContent = t('يُستأنَف الدخول…'); }
-  try { lg.appendChild(note); } catch (e){}
+  try { lg.appendChild(note); } catch (e){ LS_ERR = e; }
   autoSignIn().then(function(ok){
-    try { note.remove(); } catch (e){}
+    try { note.remove(); } catch (e){ LS_ERR = e; }
     if (!ok){ lg.classList.remove('resuming'); return; }
     /* يُظهَر الهيكلُ كما يفعل الدخولُ اليدويّ: `#app` يبدأ `display:none`،
        وكان يُخفى الدخولُ ولا يُظهَر الهيكل — فتبقى الصفحةُ فارغةً تمامًا،
@@ -3410,7 +3410,7 @@ function loginPaint(){
          أبدًا — جهازُ الميدان يُفقَد ويُعار. */
       if (rm && rm.checked) localStorage.setItem('nsk14.user', u);
       else localStorage.removeItem('nsk14.user');
-    } catch (e){}
+    } catch (e){ LS_ERR = e; }
     enterApp(u, p);
   }
   var lastU = lgRemembered();
@@ -3418,7 +3418,7 @@ function loginPaint(){
     var uEl = document.getElementById('lgU');
     if (uEl) uEl.value = lastU;
     var pEl = document.getElementById('lgP');
-    if (pEl) try { pEl.focus(); } catch (e){}
+    if (pEl) try { pEl.focus(); } catch (e){ LS_ERR = e; }
   }
   document.getElementById('lgGo').onclick = go;
 
@@ -4611,7 +4611,7 @@ function kioskToggle(){
   try {
     if (KIOSK_ON && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
     else if (!KIOSK_ON && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
-  } catch (e){}
+  } catch (e){ LS_ERR = e; }
   if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
   kioskCycleStop(); KIOSK_STEP = 0;
   try { sunApply(); } catch (e){ LS_ERR = e; }   /* القاعةُ بلا وضع الشمس (V17.99) */
