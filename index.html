@@ -231,6 +231,7 @@ h1,h2,h3{margin:0;font-weight:600;line-height:1.3}
   .topbar-meta{margin-inline-start:0;width:100%;order:9;gap:8px;flex-wrap:wrap;
     justify-content:flex-start;font-size:11.5px}
   .tb-btn{width:34px;height:34px;min-height:34px;font-size:13px}
+.tb-btn.tb-assist{width:auto;padding:0 10px;gap:4px;display:inline-flex;align-items:center;position:relative;border:1px solid var(--acc,#1A5FA8)}.tb-assist-t{font-size:12px;font-weight:600}.tb-dot{position:absolute;top:2px;inset-inline-end:2px;width:9px;height:9px;border-radius:50%;background:#E05252;box-shadow:0 0 0 2px var(--bg,#fff)}@media (max-width:340px){.tb-assist-t{display:none}.tb-btn.tb-assist{padding:0 6px}}   /* (V37.30) المساعدُ ظاهرٌ باسمه وشارتِه */
   /* رأسُ الصفحة: الأزرارُ سطرٌ كاملٌ والبحثُ سطرٌ كامل — لا زحامَ ولا قصّ */
   .page-head .head-acts{gap:6px}
   .page-head .head-acts .btn{padding:6px 10px;font-size:12.5px}
@@ -1238,7 +1239,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.29</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.30</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1300,7 +1301,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-ac65998b85.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-aecbb99900.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7354,7 +7355,12 @@ var KNOWN_DEFAULT = [
   'تم التركيب، اعتماد التركيب، اقفل التركيب | قبل «تم التركيب»: تثبيت محكم، وتيار مقاس، وكابل محمي، والعناوين الثلاثة (الراوتر والقارئ والكاميرا) مسجّلة، ونبضة خضراء في الصحة، وصورة ما بعد التركيب.',
   'سليم ولا تالف، الفك، الجهاز تالف | سليم: يقلع ولا كسور وأطرافه نظيفة. تالف: كسر أو حرق أو رطوبة داخلية أو منفذ متآكل — واكتب السبب في الملاحظة.',
   'المخيم مقفول، مفيش تصريح، رفضوا الدخول | سجّل الزيارة بسببها («مغلق» أو «بلا تصريح» أو «رفض») فتصير «تحتاج زيارة أخرى» وتظهر للمكتب لتنسيق التصريح.',
-  'حدود المخيم غلط، الرسمة غلط | المهندس يعدّلها من نافذة المخيم على الخريطة: «عدّل الحدود» (اسحب الزوايا، أو «ارسم من جديد») ثم «احفظ».'
+  'حدود المخيم غلط، الرسمة غلط | المهندس يعدّلها من نافذة المخيم على الخريطة: «عدّل الحدود» (اسحب الزوايا، أو «ارسم من جديد») ثم «احفظ».',
+  'المخيم مش لاقيه، لم يستدل عليه، مفيش شاخص، لا يوجد شاخص، مش لاقي المخيم | افتح النقطة على الخريطة واضغط «اذهب» للملاحة، وابحث عن الشاخص أو رقم المربع. لو لم تجده سجّل الزيارة «غير موجود» مع صورة للمكان وملاحظة بما رأيت — المكتب يراجع الإحداثيات.',
+  'التصوير ممنوع، ممنوع التصوير، منعوني اصور | لا تصوّر بالقوة: سجّل الزيارة «يحتاج تصريح» واكتب في الملاحظة «التصوير ممنوع — يحتاج تواصل رسمي»، فتظهر للمكتب في «وصول وتصاريح» للتنسيق.',
+  'مخيمين بمدخل واحد، مدخل مشترك، مخيمين منفصلين | اختر تحدي «مداخل متعددة أو مدخل مشترك» واكتب اسم المخيم الآخر في الملاحظة — تدخل «دراسة وزيارة تقنية».',
+  'الحفظ المحلي لا يعمل، مش بيحفظ، الحفظ واقف، خطأ قاعدة الجهاز | ده من متصفح آيفون: افتح على نت واستنى الطابور يفضى (شارة المزامنة)، وبعدها «إعادة ضبط التطبيق» من القائمة. ما يضيعش حاجة.',
+  'التحديث مش بينزل، فشل التحديث، النسخة مش بتتغير | اقفل التطبيق خالص (اسحبه من التطبيقات المفتوحة) وافتحه على نت. لو فضل قديم: «إعادة ضبط التطبيق».'
 ].join('\n');
 function knownList(){
   var raw = CFG.known || KNOWN_DEFAULT; if (!raw) return [];
@@ -15890,12 +15896,39 @@ function assistDiagCard(q){
   if (!hits) return known + (q.length >= 6 ? ask : '');
   return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;
 }
+/* ═══ (V37.30) ما تقوله البياناتُ عن المساعد — آخرُ ٣٠ يومًا (٢٦٬٥٧٣ حدثًا) ═══
+   أكثرُ ما يقع: الحفظُ المحليُّ يسقط على آيفون (٤٣٣ خطأً في قاعدة الجهاز + ٤٦٦ «الحفظ المحلي لا يعمل» + ٢٠٤ توقّفًا مفاجئًا)، ثم تعذّرُ الوصول
+   (١٣٥: منع دخول ٧٤، غير موجود ٤٦)، ثم فشلُ التحديث (٥٤). وبلاغاتُ التطبيق كلُّها منذ البداية اثنان فقط — والمساعدُ لم يُسجَّل له سؤالٌ واحد:
+   فالمشكلةُ أن لا أحدَ يعرف أن الطريقَ موجود. فصار: أسئلةٌ سريعةٌ بنقرة، وشارةٌ على الزرّ حين يكون في الجهاز ما يحتاج حلًّا، وتعريفٌ بالمساعد
+   مرةً بعد التحديث، وكلُّ سؤالٍ يُسجَّل (ومعه «بلا جواب») ليتعلّم المهندسُ ما يُضاف إلى «المشاكل المعروفة». */
+var ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
+var ASSIST_LOGGED = {};
+function assistLog(q, answered){
+  q = String(q || '').trim(); if (q.length < 6 || ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1;
+  try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
+}
+function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
+function assistBadgeSync(){
+  var b = document.getElementById('assistBtn'); if (!b) return;
+  if (!b.getAttribute('data-lbl')){ b.setAttribute('data-lbl', '1'); b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
+  var n = assistWarnCount(), dot = b.querySelector('.tb-dot'); if (dot) dot.hidden = !n;
+  b.setAttribute('aria-label', t('المساعد') + (n ? ' — ' + t('في جهازك ما يحتاج حلًّا') : ''));
+  /* تعريفٌ بالمساعد مرةً لكلِّ جهاز بعد التحديث — فقاعةٌ صغيرةٌ تختفي بلمسةٍ أو بعد ثماني ثوانٍ */
+  if (!assistBadgeSync.tipped && lsGet('nsk14.assisttip') !== '1' && typeof ROLE !== 'undefined' && ROLE && document.getElementById('nav')){
+    assistBadgeSync.tipped = true; lsSet('nsk14.assisttip', '1');
+    var tip = document.createElement('div'); tip.id = 'assistTip'; tip.setAttribute('role', 'status');
+    var r = b.getBoundingClientRect(); tip.style.cssText = 'position:fixed;top:' + Math.round(r.bottom + 8) + 'px;inset-inline-end:8px;max-width:260px;z-index:1960;background:#1A5FA8;color:#fff;border-radius:12px;padding:10px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
+    tip.innerHTML = '<b>' + esc(t('جديد: المساعد')) + '</b><br>' + esc(t('يشخّص جهازك ويحلّ المشكلة بزرّ، أو يوصّلها للمهندس بحالة جهازك. جرّبه لما يحصل أي حاجة.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-assist="1" style="color:#fff">' + esc(t('افتحه')) + '</button>';
+    document.body.appendChild(tip); setTimeout(function(){ var x = document.getElementById('assistTip'); if (x) x.remove(); }, 8000);
+  }
+}
 function assistResHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
+  if (ASSIST_Q){ assistLog(ASSIST_Q, !!(assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length || results.length || gl.length)); }   /* (V37.30) */
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
-        ? '<p class="hint" style="text-align:center;padding:20px">'
-          + esc(t('اكتب ما تريد فعله بكلماتك، ونرشدك إلى الصفحة المناسبة.')) + '</p>'
+        ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
+          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + ASSIST_QUICK.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){
@@ -25399,6 +25432,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.30', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'المساعد بقى ظاهر: الزرار مكتوب عليه «المساعد»، وعليه نقطة حمرا لما يكون في جهازك حاجة محتاجة حل (كتابات أو صور واقفة، أو المخزن فيه مشكلة)، وبيظهر تعريف بيه مرة واحدة بعد التحديث.',
+      'أول ما تفتح المساعد فيه ٧ أسئلة جاهزة بنقرة (الصور مش بتترفع، التطبيق بيقع أو بطيء، ما اتحفظش، المخيم مش لاقيه، التصوير ممنوع، القارئ ساقط، النسخة قديمة)، ومعاه ٥ مشاكل معروفة جديدة من ملاحظات الميدان وأخطاء الأجهزة.' ] },
   { v:'V37.29', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'للمكتب: كارت «أجهزة تحتاج إجراء» في صحة النظام ← الاستخدام: كل جهاز فيه مشكلة (نسخة قديمة، كتابات أو صور واقفة، مخزن فيه مشكلة، أخطاء، بطء) ومكتوب قدامه المطلوب من صاحبه بالحرف.',
       'للميدان: لو فيه كتابات ما اترفعتش من أكتر من ساعة والنت شغال، أو مخزن الجهاز فيه مشكلة، بيظهر شريط فوق فيه «زامِن الآن» و«إعادة ضبط التطبيق».',
@@ -33920,6 +33956,7 @@ function render0(force){
   try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
   try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
+  try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -34297,6 +34334,8 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
+  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
@@ -34350,7 +34389,7 @@ function clickA(e){
    يعالج: assist، p، navtab، gt، g، open، nav، mode، pop، bst، bfsave، pq، help، exp، apick، asn، co، cofilt، comode، mfilt */
 function clickAPart1(e){
   var asb = e.target.closest('[data-assist]');
-  if (asb){
+  if (asb){ var tpx = document.getElementById('assistTip'); if (tpx) tpx.remove();   /* (V37.30) */
     if (asb.hasAttribute('data-p')){ ASSIST_OPEN = false; }
     else { ASSIST_OPEN = asb.getAttribute('data-assist') === '1'; render(1); return true; }
   }

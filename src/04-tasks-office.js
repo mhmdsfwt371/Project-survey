@@ -3458,12 +3458,39 @@ function assistDiagCard(q){
   if (!hits) return known + (q.length >= 6 ? ask : '');
   return known + hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('') + ask;
 }
+/* ═══ (V37.30) ما تقوله البياناتُ عن المساعد — آخرُ ٣٠ يومًا (٢٦٬٥٧٣ حدثًا) ═══
+   أكثرُ ما يقع: الحفظُ المحليُّ يسقط على آيفون (٤٣٣ خطأً في قاعدة الجهاز + ٤٦٦ «الحفظ المحلي لا يعمل» + ٢٠٤ توقّفًا مفاجئًا)، ثم تعذّرُ الوصول
+   (١٣٥: منع دخول ٧٤، غير موجود ٤٦)، ثم فشلُ التحديث (٥٤). وبلاغاتُ التطبيق كلُّها منذ البداية اثنان فقط — والمساعدُ لم يُسجَّل له سؤالٌ واحد:
+   فالمشكلةُ أن لا أحدَ يعرف أن الطريقَ موجود. فصار: أسئلةٌ سريعةٌ بنقرة، وشارةٌ على الزرّ حين يكون في الجهاز ما يحتاج حلًّا، وتعريفٌ بالمساعد
+   مرةً بعد التحديث، وكلُّ سؤالٍ يُسجَّل (ومعه «بلا جواب») ليتعلّم المهندسُ ما يُضاف إلى «المشاكل المعروفة». */
+var ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
+var ASSIST_LOGGED = {};
+function assistLog(q, answered){
+  q = String(q || '').trim(); if (q.length < 6 || ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1;
+  try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
+}
+function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
+function assistBadgeSync(){
+  var b = document.getElementById('assistBtn'); if (!b) return;
+  if (!b.getAttribute('data-lbl')){ b.setAttribute('data-lbl', '1'); b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
+  var n = assistWarnCount(), dot = b.querySelector('.tb-dot'); if (dot) dot.hidden = !n;
+  b.setAttribute('aria-label', t('المساعد') + (n ? ' — ' + t('في جهازك ما يحتاج حلًّا') : ''));
+  /* تعريفٌ بالمساعد مرةً لكلِّ جهاز بعد التحديث — فقاعةٌ صغيرةٌ تختفي بلمسةٍ أو بعد ثماني ثوانٍ */
+  if (!assistBadgeSync.tipped && lsGet('nsk14.assisttip') !== '1' && typeof ROLE !== 'undefined' && ROLE && document.getElementById('nav')){
+    assistBadgeSync.tipped = true; lsSet('nsk14.assisttip', '1');
+    var tip = document.createElement('div'); tip.id = 'assistTip'; tip.setAttribute('role', 'status');
+    var r = b.getBoundingClientRect(); tip.style.cssText = 'position:fixed;top:' + Math.round(r.bottom + 8) + 'px;inset-inline-end:8px;max-width:260px;z-index:1960;background:#1A5FA8;color:#fff;border-radius:12px;padding:10px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
+    tip.innerHTML = '<b>' + esc(t('جديد: المساعد')) + '</b><br>' + esc(t('يشخّص جهازك ويحلّ المشكلة بزرّ، أو يوصّلها للمهندس بحالة جهازك. جرّبه لما يحصل أي حاجة.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-assist="1" style="color:#fff">' + esc(t('افتحه')) + '</button>';
+    document.body.appendChild(tip); setTimeout(function(){ var x = document.getElementById('assistTip'); if (x) x.remove(); }, 8000);
+  }
+}
 function assistResHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
+  if (ASSIST_Q){ assistLog(ASSIST_Q, !!(assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length || results.length || gl.length)); }   /* (V37.30) */
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
-        ? '<p class="hint" style="text-align:center;padding:20px">'
-          + esc(t('اكتب ما تريد فعله بكلماتك، ونرشدك إلى الصفحة المناسبة.')) + '</p>'
+        ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
+          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + ASSIST_QUICK.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){
