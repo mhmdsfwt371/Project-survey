@@ -241,6 +241,8 @@ service cloud.firestore {
     // الصورةُ تصعد من الهاتف بمحتواها ثم يمحوه الخادمُ بعد النقل؛ الحقلُ
     // `data` لا يُقرأ إلا للمكتب لأنه ثقيلٌ — والرابطُ يكفي الجميع.
     match /photos/{id} { allow read: if pm('photos', 'r', ok()); allow create, update: if pm('photos', 'w', canW()); allow delete: if pm('photos', 'd', mgr()); }
+    // (V37.18) الصورُ الخامُ بمسار الطوارئ: تُكتب من الميدان ولا يقرؤها أيُّ جهاز — الخادمُ ينقلها إلى الدرايف بحساب الخدمة
+    match /photoblobs/{id} { allow read: if false; allow create, update: if pm('photos', 'w', canW()); allow delete: if false; }
 
     // نبضات صحة الأجهزة — تكتبها أداة فحص المكتب ويقرؤها الجميع
     // أوامر المسح: المهندس ينشئ ويقفل، والمشرف يسجّل زياراته

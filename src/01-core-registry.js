@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a1b25c3518.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-601ad3fe2c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -1055,6 +1055,7 @@ var CORE = {
   },
   saveLocal: function(){
     CORE.qbakSave();
+    if (PH_DIRTY){ PH_DIRTY = false; var PHS = {}; Object.keys(STATE.photos || {}).forEach(function(k){ PHS[k] = photoSlim(STATE.photos[k]); }); idbSet('photos', PHS); }   /* (V37.18) */
     return idbSet('state', {
       recs:STATE.recs, inss:STATE.inss, tasks:STATE.tasks,
       moves:STATE.moves, buys:STATE.buys, cfg:CFG, queue:STATE.queue,
@@ -1062,7 +1063,7 @@ var CORE = {
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
       diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
-      photos:STATE.photos || {}, pending:STATE.pending || {}, provision:STATE.provision || {},
+      pending:STATE.pending || {}, provision:STATE.provision || {},   /* (V37.18) الصورُ في مفتاحها photos — لا تُنسَخ مع كلِّ حفظ */
       att:STATE.att || {},
       siteOv:STATE.siteOv || {},
       pullAt:STATE.meta.pullAt || {},
@@ -1086,6 +1087,7 @@ var CORE = {
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
+      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true; }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
       if (v.siteOv && typeof v.siteOv === 'object'){ STATE.siteOv = v.siteOv; STATE.sites = STATE.sites.concat(STATE.hiddenSites || []); siteOvApply(); }
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
@@ -1130,7 +1132,8 @@ var CORE = {
          المحفوظُ فلا تُعاد — فتقول سبعةً والطابورُ أربعةٌ وثلاثون، ويُقرأ
          الرقمان متناقضين وهما لحظتان مختلفتان. */
       if (typeof syncBadge === 'function') syncBadge();
-      return true;
+      /* (V37.18) الصورُ في مفتاحها الخاصّ — تُقرأ بعد الحالة، ولقطةٌ قديمةٌ تحملها تبقى حتى تُحفَظ مرةً */
+      return idbGet('photos').then(function(ph){ if (ph && typeof ph === 'object' && !v.photos) STATE.photos = ph; return true; }).catch(function(){ return true; });
     }).catch(function(e){
       /* إن فشلت القراءةُ المحليةُ ظهر التطبيقُ فارغًا — فيظنُّ صاحبُه أن عملَه
          ضاع فيعيده. والصمتُ هنا يُنتج عملًا مكرَّرًا لا نقصًا فقط. */
@@ -1702,7 +1705,7 @@ var FB = {
          صورة. والسجلُّ محفوظٌ محليًّا أصلًا، فلا يلزم إلا الجديدُ منذ آخر
          سحبة. والسحبةُ الباردةُ (أوّلُ مرةٍ على الجهاز) محدودةٌ بألفٍ
          وخمسمئةٍ مرتَّبةً بالأحدث — وهي التي تحمل أرقامَ اليوم. */
-      readDelta('photos', 'photos', 1500);
+      if (photosPullAllowed()) readDelta('photos', 'photos', 1500);   /* (V37.18) الميدانُ لا يحمل فهرسَ صور الآخرين */
       /* مفتاحُ التشغيل: يكتبه مديرُ المشروع، ويقرؤه من يُنشئ الحساباتِ ويُعيد
          الكلمات — المشرفُ فما فوق والإدارةُ العليا — فلا يُرسَل أحدٌ إلى GitHub */
       /* (V33.0) كما تسمح القواعدُ حرفًا: مديرُ المشروع والإدارةُ العليا — كان المشرفُ والمهندسُ يطلبانه فتُرفَض القراءةُ ويُسجَّل عطل */

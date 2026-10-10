@@ -67,8 +67,10 @@ if (bad) process.exit(1);
   w.PHOTO_Q.length=0; w.STATE.queue=[]; w.STATE.meta.online=true; w.STATE.meta.name='فني';
   const site=w.STATE.sites[3].id;
   w.photoQueue(site,'before','data:image/jpeg;base64,AAAA'); await wait(200);
-  const q=w.STATE.queue.filter(x=>x.kind==='photos');
-  T2(q.length===1 && q[0].v.status==='pending' && q[0].v.data && q[0].v.name===site+'-1.jpg', 'بلا معرِّفِ عميلٍ تصعد الصورةُ للقاعدة بحالة «منتظرة»', q[0]&&q[0].v.name);
+  const q=w.STATE.queue.filter(x=>x.kind==='photos'), qb=w.STATE.queue.filter(x=>x.kind==='photoblobs');
+  /* (V37.18) الخامُ في photoblobs ووثيقةُ الصورة بلا خام — فلا يُسحَب الخامُ إلى أيِّ موبايل */
+  T2(q.length===1 && q[0].v.status==='pending' && !q[0].v.data && q[0].v.blob===true && q[0].v.name===site+'-1.jpg', 'بلا معرِّفِ عميلٍ تصعد الصورةُ للقاعدة بحالة «منتظرة» — بلا خامٍ في وثيقتها', q[0]&&q[0].v.name);
+  T2(qb.length===1 && qb[0].v.data && qb[0].id===q[0].id, 'والخامُ في مجموعته photoblobs بالمعرِّف نفسِه');
   T2(w.PHOTO_Q.length===0, 'ويخلو الطابورُ المحليّ');
   /* الكبيرةُ لا تُدفَع */
   w.photoQueue(site,'after','data:,'+'x'.repeat(950000)); await wait(200);

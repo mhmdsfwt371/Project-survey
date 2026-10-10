@@ -1226,6 +1226,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
                 aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
       </div>
       <button type="button" class="btn btn-quiet btn-block" id="pwBtn" data-pwopen="1" style="margin-bottom:6px"></button>
+      <button type="button" class="btn btn-quiet btn-block" id="resetBtn" data-appreset="1" style="margin-bottom:6px"></button>   <!-- (V37.18) إعادةُ ضبط التطبيق على هذا الجهاز -->
       <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
   </aside>
@@ -1237,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.17</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.18</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1299,7 +1300,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a1b25c3518.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-601ad3fe2c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2324,6 +2325,7 @@ var CORE = {
   },
   saveLocal: function(){
     CORE.qbakSave();
+    if (PH_DIRTY){ PH_DIRTY = false; var PHS = {}; Object.keys(STATE.photos || {}).forEach(function(k){ PHS[k] = photoSlim(STATE.photos[k]); }); idbSet('photos', PHS); }   /* (V37.18) */
     return idbSet('state', {
       recs:STATE.recs, inss:STATE.inss, tasks:STATE.tasks,
       moves:STATE.moves, buys:STATE.buys, cfg:CFG, queue:STATE.queue,
@@ -2331,7 +2333,7 @@ var CORE = {
       /* ما بُني حديثًا كان يضيع مع إعادة التحميل: الفكُّ والصيانةُ وسجلُّ
          ما تمّ — تُحفَظ كما تُحفَظ الزياراتُ والتركيبات. */
       diss:STATE.diss || {}, maints:STATE.maints || {}, steps:STATE.steps || [],
-      photos:STATE.photos || {}, pending:STATE.pending || {}, provision:STATE.provision || {},
+      pending:STATE.pending || {}, provision:STATE.provision || {},   /* (V37.18) الصورُ في مفتاحها photos — لا تُنسَخ مع كلِّ حفظ */
       att:STATE.att || {},
       siteOv:STATE.siteOv || {},
       pullAt:STATE.meta.pullAt || {},
@@ -2355,6 +2357,7 @@ var CORE = {
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
+      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true; }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
       if (v.siteOv && typeof v.siteOv === 'object'){ STATE.siteOv = v.siteOv; STATE.sites = STATE.sites.concat(STATE.hiddenSites || []); siteOvApply(); }
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
@@ -2399,7 +2402,8 @@ var CORE = {
          المحفوظُ فلا تُعاد — فتقول سبعةً والطابورُ أربعةٌ وثلاثون، ويُقرأ
          الرقمان متناقضين وهما لحظتان مختلفتان. */
       if (typeof syncBadge === 'function') syncBadge();
-      return true;
+      /* (V37.18) الصورُ في مفتاحها الخاصّ — تُقرأ بعد الحالة، ولقطةٌ قديمةٌ تحملها تبقى حتى تُحفَظ مرةً */
+      return idbGet('photos').then(function(ph){ if (ph && typeof ph === 'object' && !v.photos) STATE.photos = ph; return true; }).catch(function(){ return true; });
     }).catch(function(e){
       /* إن فشلت القراءةُ المحليةُ ظهر التطبيقُ فارغًا — فيظنُّ صاحبُه أن عملَه
          ضاع فيعيده. والصمتُ هنا يُنتج عملًا مكرَّرًا لا نقصًا فقط. */
@@ -2971,7 +2975,7 @@ var FB = {
          صورة. والسجلُّ محفوظٌ محليًّا أصلًا، فلا يلزم إلا الجديدُ منذ آخر
          سحبة. والسحبةُ الباردةُ (أوّلُ مرةٍ على الجهاز) محدودةٌ بألفٍ
          وخمسمئةٍ مرتَّبةً بالأحدث — وهي التي تحمل أرقامَ اليوم. */
-      readDelta('photos', 'photos', 1500);
+      if (photosPullAllowed()) readDelta('photos', 'photos', 1500);   /* (V37.18) الميدانُ لا يحمل فهرسَ صور الآخرين */
       /* مفتاحُ التشغيل: يكتبه مديرُ المشروع، ويقرؤه من يُنشئ الحساباتِ ويُعيد
          الكلمات — المشرفُ فما فوق والإدارةُ العليا — فلا يُرسَل أحدٌ إلى GitHub */
       /* (V33.0) كما تسمح القواعدُ حرفًا: مديرُ المشروع والإدارةُ العليا — كان المشرفُ والمهندسُ يطلبانه فتُرفَض القراءةُ ويُسجَّل عطل */
@@ -7225,7 +7229,7 @@ function photosFetchSite(siteId){
   PH_FETCH[siteId] = 'run';
   DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-    sn.forEach(function(d){ STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, d.data()); });
+    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
     PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
   }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
 }
@@ -7255,7 +7259,7 @@ function photosBackfill(force){
     var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
     return q.get().then(function(sn){
       FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, x); if (x._at != null) last = x._at; n++; });
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
       if (sn.size === 1000 && last != null) return step();
       STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
       if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;
@@ -7280,6 +7284,47 @@ function techVisit(x, r){
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
   return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
+}
+
+/* ── (V37.18) الذاكرةُ على الموبايل: وثيقةُ صورةٍ واردةٌ لا تحمل خامًا أبدًا — الخامُ في الطابور المحليِّ لمن التقطها، وعلى الدرايف لمن سواه */
+function photoSlim(x){ if (x && typeof x.data === 'string' && x.data.length > 500){ x = Object.assign({}, x); delete x.data; } return x; }
+/* دورُ الميدان لا يسحب فهرسَ الصور (أحدثُ ١٬٥٠٠ = ٩٫٤ م.ب): صورُه في طابوره، وأيُّ نقطةٍ تُفتَح تُجلَب صورُها حينَها */
+function photosPullAllowed(){ return !LITE && typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'); }
+var PH_DIRTY = false;   /* الصورُ تُحفَظ محليًّا وحدَها، وحين تتغيّر فقط */
+
+/* ── (V37.18) الخطوةُ ٤ · حارسُ الانهيار: إقلاعان متتابعان لم يبلغا الاستقرار (٤٥ ثانية) خلال عشر دقائق ← الوضعُ الخفيف ──
+   آيفون يقتل الصفحةَ بلا إنذار («حدثت مشكلة بشكل متكرر») حين تضيق الذاكرة. يُعَدّ الإقلاعُ عند بدئه ويُصفَّر حين يستقرّ؛ فإن تكرّر
+   السقوطُ قبل الاستقرار عمل التطبيقُ بلا خريطةٍ مجسَّمة ولا فهرسِ صور، وقال ذلك في شريطٍ فيه زرُّ العودة. */
+var LITE = false;
+function bootGuardStart(){
+  try {
+    var k = 'nsk14.boot', raw = lsGet(k), v = raw ? JSON.parse(raw) : null, now = Date.now();
+    v = (v && now - (+v.at || 0) < 10 * 60000) ? { n:(+v.n || 0) + 1, at:now } : { n:1, at:now };
+    lsSet(k, JSON.stringify(v));
+    if (v.n >= 3){ LITE = true; }
+    setTimeout(function(){ try { lsSet(k, JSON.stringify({ n:0, at:Date.now() })); } catch (e){} }, 45000);
+  } catch (e){ LS_ERR = e; }
+}
+function liteOff(){ LITE = false; try { lsSet('nsk14.boot', JSON.stringify({ n:0, at:Date.now() })); } catch (e){} toast(t('عاد الوضعُ الكامل')); try { location.reload(); } catch (e){} }
+/* ── الخطوةُ ٥ · إعادةُ ضبط التطبيق على هذا الجهاز: تُرفَع البياناتُ أوّلًا، ثم يُمحى الكاشُ والمخزنُ ويُعاد التحميلُ نظيفًا ──
+   بديلُ «امسح بياناتِ المتصفح من إعدادات آيفون» الذي كان يفعله الفنيّون. لا يمسّ السحابةَ ولا يُسقط عملًا لم يُرفَع. */
+function appResetGo(){
+  var q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length, pq = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
+  if (q || pq){
+    if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا — على الجهاز') + ' ' + nm(q) + ' ' + t('كتابة و') + nm(pq) + ' ' + t('صورة لم تُرفع')); return false; }
+    toast(t('يُرفَع ما على الجهاز أولًا…')); try { if (typeof photoFlush === 'function') photoFlush(); if (CORE.flush) CORE.flush(); } catch (e){ LS_ERR = e; }
+    setTimeout(function(){ var q2 = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length, p2 = (PHOTO_Q || []).length; if (q2 || p2) toast(t('لم يُرفَع كلُّ شيء بعد — أعد المحاولة بعد قليل')); else appResetGo(); }, 6000);
+    return false;
+  }
+  if (!window.confirm(t('إعادةُ ضبط التطبيق على هذا الجهاز: يُمحى الكاشُ والمخزنُ المحليُّ ويُعاد التحميلُ نظيفًا. لا يمسّ السحابة. متأكد؟'))) return false;
+  var dev = lsGet('nsk14.dev'), done = function(){ try { if (dev) lsSet('nsk14.dev', dev); } catch (e){} try { location.reload(); } catch (e){} };
+  Promise.resolve()
+    .then(function(){ return (typeof caches === 'object' && caches.keys) ? caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }) : null; })
+    .then(function(){ return (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) ? navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }) : null; })
+    .then(function(){ return new Promise(function(res){ try { var rq = indexedDB.deleteDatabase(IDB_NAME); rq.onsuccess = rq.onerror = rq.onblocked = function(){ res(); }; setTimeout(res, 4000); } catch (e){ res(); } }); })
+    .then(function(){ try { localStorage.clear(); } catch (e){} done(); })
+    .catch(function(e){ LS_ERR = e; done(); });
+  return true;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -12568,6 +12613,7 @@ function m3Click(id, ev){
   popOpenAt(id, ev);
 }
 function m3Init(){
+  if (LITE){ toast(t('الوضعُ الخفيف: بلا خريطةٍ مجسَّمة')); return false; }   /* (V37.18) */
   var el = document.getElementById('m3Box');
   if (!el || !window.maplibregl) return false;
   if (M3){ try { M3.resize(); } catch (e){ LS_ERR = e; } m3Paint(); return true; }
@@ -13213,9 +13259,11 @@ function photoFlushCloud(){
     return Promise.resolve(0);
   }
   PHOTO_Q.shift();
+  /* (V37.18) الخامُ في مجموعةٍ لا يسحبها أيُّ جهاز (photoblobs)، ووثيقةُ الصورة بياناتٌ وحدَها — كانت الصورُ الخامُ تُسحَب إلى كلِّ موبايل (٣٤ صورة = ٨٫٧ م.ب) فتقتل الصفحةَ على آيفون */
+  CORE.set('photoblobs', it.site + '-' + seq, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
   CORE.set('photos', it.site + '-' + seq, {
     site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
-    status:'pending', data:data, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
+    status:'pending', blob:true, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
   });
   CORE.saveSoon();
   logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2 + ' — ينقلها الخادمُ إلى الدرايف', it.site);
@@ -17100,7 +17148,8 @@ function readDelta(col, key, cap){
                 : q.orderBy('_at', 'desc').limit(cap);
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
-    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });   /* (V37.13 مراجعةُ الجودة) كانت القراءةُ تُعَدّ هنا مرةً ثانية */
+    sn.forEach(function(dd){ STATE[key][dd.id] = key === 'photos' ? photoSlim(dd.data()) : dd.data(); });   /* (V37.13) كانت القراءةُ تُعَدّ مرتين · (V37.18) الصورُ بلا خام */
+    if (key === 'photos' && sn.size) PH_DIRTY = true;
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */
@@ -25195,6 +25244,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.18', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'حل جذري لمشكلة «الكاش» (الصفحة بتقع على آيفون): الصور الخام ما بقتش تتسحب لأي موبايل (كانت ٨٫٧ ميجا بتتسحب لكل جهاز)، وموبايل الفني ما بيحمّلش فهرس صور الآخرين أصلًا، والحفظ على الجهاز بقى مقسّم ويحفظ اللي اتغيّر بس.',
+      'لو التطبيق وقع مرتين ورا بعض، بيفتح في «وضع خفيف» (من غير خريطة مجسّمة ولا فهرس صور) وبيقولك، وفيه زرار يرجّعك للوضع الكامل.',
+      'زرار «🧹 إعادة ضبط التطبيق» في القائمة لكل الأدوار: بيرفع اللي على الجهاز الأول، وبعدها يمسح الكاش والمخزن ويعيد التحميل نضيف — بدل إعدادات آيفون.' ] },
   { v:'V37.17', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'محرر حدود المخيم بقى يدوي بالكامل: مخيم من غير حدود بتضغط «ارسم الحدود» وتدوس على الخريطة عند كل زاوية ثم «تمّ الرسم». ومخيم ليه حدود: مقابض أكبر للمس، وعلامة في النص تنقل الشكل كله، وتراجع خطوة بخطوة، وحذف زاوية، و«ارسم من جديد»، ورجوع للأصل.',
       'تقدر تحذف صورة اترفعت غلط على الدرايف من معرض صور النقطة (المهندس فأعلى أو اللي رفعها): بتختفي من التطبيق والتقارير عند الكل، وملفها بيفضل على الدرايف.' ] },
@@ -33652,7 +33705,9 @@ function render(force){   /* (V31.8) ذاكرةُ الرسمة: تُفتَح ه�
 }
 function render0(force){
   try { assistSync(); setTimeout(assistSync, 0); } catch (eA){ LS_ERR = eA; }
-  try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
+  try { phStaleSync(); } catch (eS){ LS_ERR = eS; }   /* (V37.8) تنبيهُ الصور المعلّقة أكثرَ من ساعة */
+  try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
+  var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
   try { if (typeof KK_MAP !== 'undefined' && KK_MAP && !document.getElementById('kkSat')){ KK_MAP.remove(); KK_MAP = null; } } catch (eK){ LS_ERR = eK; }   /* (V34.2) */
@@ -34028,6 +34083,8 @@ function clickTables(e){
   if (lg){ LEGEND_ON = lg.getAttribute('data-legend') === '1'; lsSet('nsk14.legend', LEGEND_ON ? '1' : '0'); render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
+  if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  if (e.target.closest('[data-liteoff]')){ liteOff(); return true; }
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
@@ -36439,6 +36496,14 @@ document.addEventListener('keydown', function(e){
 /* (V37.14) نوافذُ القوائم وصورُها تُزال من مكانها — بلا رسم الصفحة */
 function supRemove(){ ['supVeil', 'supBox'].forEach(function(i0){ var el0 = document.getElementById(i0); if (el0) el0.remove(); }); }
 function svPopRemove(){ ['.svpop-veil', '.svpop', '#svPhoVeil', '#svPhoBox'].forEach(function(q){ document.querySelectorAll(q).forEach(function(el){ el.remove(); }); }); }
+function liteSync(){
+  var old = document.getElementById('liteBar'); if (!LITE){ if (old) old.remove(); return; }
+  if (old) return;
+  var d = document.createElement('div'); d.id = 'liteBar'; d.setAttribute('role', 'status');
+  d.style.cssText = 'position:fixed;inset-inline:8px;bottom:calc(env(safe-area-inset-bottom,0px) + 8px);z-index:1900;background:#2C3E50;color:#fff;border-radius:12px;padding:8px 12px;font-size:13px;box-shadow:0 6px 20px rgba(0,0,0,.35)';
+  d.innerHTML = '\u{1FA99} ' + esc(t('الوضعُ الخفيف: التطبيقُ وقع مرتين فعمل بلا خريطةٍ مجسَّمة ولا فهرسِ صور.')) + ' <button type="button" class="btn btn-quiet btn-sm" data-liteoff="1" style="color:#fff">' + esc(t('الوضع الكامل')) + '</button>';
+  document.body.appendChild(d);
+}
 function phStaleSync(){
   var old = document.getElementById('phStale'), mins = phQueueAge(), n = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
   if (!n || mins < 60 || Date.now() < (phStaleSync.snooze || 0)){ if (old) old.remove(); return; }
@@ -36578,7 +36643,8 @@ if (window.visualViewport){
 })();
 
 (function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
-
+/* (V37.18) حارسُ الإقلاع يُعَدّ أوّلَ ما تُحمَّل الشيفرةُ — قبل أيِّ سحبٍ أو خريطة */
+try { bootGuardStart(); } catch (eBG){ LS_ERR = eBG; }
 </script>
 </body>
 </html>

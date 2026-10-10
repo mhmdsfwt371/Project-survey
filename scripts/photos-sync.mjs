@@ -253,7 +253,8 @@ let done = 0, failed = 0;
 for (const d of snap.docs){
   const p = d.data(), name = p.name || (d.id + '.jpg');
   try {
-    const data = String(p.data || '');
+    let data = String(p.data || '');
+    if (!data && p.blob){ const bl = await db.collection('photoblobs').doc(d.id).get(); data = String((bl.data() || {}).data || ''); }   /* (V37.18) الخامُ في مجموعته */
     if (!data){ throw new Error('وثيقةٌ بلا صورة'); }
     const b64 = data.replace(/^data:[^;]+;base64,/, '');
     const buf = Buffer.from(b64, 'base64');
@@ -268,6 +269,7 @@ for (const d of snap.docs){
     await drive.permissions.create({ fileId: made.data.id, requestBody: { role: 'reader', type: 'anyone' }, supportsAllDrives: true }).catch(() => {});
     await d.ref.set({ status: 'done', driveId: made.data.id, link: made.data.webViewLink, movedAt: Date.now(),
                       inSite: true, folderId: dirId, data: admin.firestore.FieldValue.delete() }, { merge: true });
+    if (p.blob) await db.collection('photoblobs').doc(d.id).delete().catch(() => {});   /* (V37.18) */
     done++;
     console.log(`  ✓ ${name} (${Math.round(buf.length / 1024)}KB)`);
   } catch (e){

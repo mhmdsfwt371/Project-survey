@@ -227,6 +227,7 @@ function m3Click(id, ev){
   popOpenAt(id, ev);
 }
 function m3Init(){
+  if (LITE){ toast(t('الوضعُ الخفيف: بلا خريطةٍ مجسَّمة')); return false; }   /* (V37.18) */
   var el = document.getElementById('m3Box');
   if (!el || !window.maplibregl) return false;
   if (M3){ try { M3.resize(); } catch (e){ LS_ERR = e; } m3Paint(); return true; }
@@ -872,9 +873,11 @@ function photoFlushCloud(){
     return Promise.resolve(0);
   }
   PHOTO_Q.shift();
+  /* (V37.18) الخامُ في مجموعةٍ لا يسحبها أيُّ جهاز (photoblobs)، ووثيقةُ الصورة بياناتٌ وحدَها — كانت الصورُ الخامُ تُسحَب إلى كلِّ موبايل (٣٤ صورة = ٨٫٧ م.ب) فتقتل الصفحةَ على آيفون */
+  CORE.set('photoblobs', it.site + '-' + seq, { site:it.site, name:nm2, at:it.at, by:STATE.meta.name || '', data:data });
   CORE.set('photos', it.site + '-' + seq, {
     site:it.site, kind:it.kind, seq:seq, name:nm2, at:it.at, by:STATE.meta.name || '',
-    status:'pending', data:data, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
+    status:'pending', blob:true, q:it.q || null   /* (V30.6) مقاييسُ الجودة */
   });
   CORE.saveSoon();
   logEvent('رفع صورة — ' + it.site + ' \u00b7 ' + it.kind + ' \u00b7 ' + nm2 + ' — ينقلها الخادمُ إلى الدرايف', it.site);
@@ -4759,7 +4762,8 @@ function readDelta(col, key, cap){
                 : q.orderBy('_at', 'desc').limit(cap);
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
-    sn.forEach(function(dd){ STATE[key][dd.id] = dd.data(); });   /* (V37.13 مراجعةُ الجودة) كانت القراءةُ تُعَدّ هنا مرةً ثانية */
+    sn.forEach(function(dd){ STATE[key][dd.id] = key === 'photos' ? photoSlim(dd.data()) : dd.data(); });   /* (V37.13) كانت القراءةُ تُعَدّ مرتين · (V37.18) الصورُ بلا خام */
+    if (key === 'photos' && sn.size) PH_DIRTY = true;
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */

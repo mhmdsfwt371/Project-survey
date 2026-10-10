@@ -274,7 +274,7 @@ function photosFetchSite(siteId){
   PH_FETCH[siteId] = 'run';
   DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-    sn.forEach(function(d){ STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, d.data()); });
+    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
     PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
   }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
 }
@@ -304,7 +304,7 @@ function photosBackfill(force){
     var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
     return q.get().then(function(sn){
       FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = Object.assign({}, STATE.photos[d.id] || {}, x); if (x._at != null) last = x._at; n++; });
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
       if (sn.size === 1000 && last != null) return step();
       STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
       if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;
@@ -329,4 +329,45 @@ function techVisit(x, r){
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
   return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
+}
+
+/* ── (V37.18) الذاكرةُ على الموبايل: وثيقةُ صورةٍ واردةٌ لا تحمل خامًا أبدًا — الخامُ في الطابور المحليِّ لمن التقطها، وعلى الدرايف لمن سواه */
+function photoSlim(x){ if (x && typeof x.data === 'string' && x.data.length > 500){ x = Object.assign({}, x); delete x.data; } return x; }
+/* دورُ الميدان لا يسحب فهرسَ الصور (أحدثُ ١٬٥٠٠ = ٩٫٤ م.ب): صورُه في طابوره، وأيُّ نقطةٍ تُفتَح تُجلَب صورُها حينَها */
+function photosPullAllowed(){ return !LITE && typeof rankOf === 'function' && rankOf(ROLE) >= rankOf('supervisor'); }
+var PH_DIRTY = false;   /* الصورُ تُحفَظ محليًّا وحدَها، وحين تتغيّر فقط */
+
+/* ── (V37.18) الخطوةُ ٤ · حارسُ الانهيار: إقلاعان متتابعان لم يبلغا الاستقرار (٤٥ ثانية) خلال عشر دقائق ← الوضعُ الخفيف ──
+   آيفون يقتل الصفحةَ بلا إنذار («حدثت مشكلة بشكل متكرر») حين تضيق الذاكرة. يُعَدّ الإقلاعُ عند بدئه ويُصفَّر حين يستقرّ؛ فإن تكرّر
+   السقوطُ قبل الاستقرار عمل التطبيقُ بلا خريطةٍ مجسَّمة ولا فهرسِ صور، وقال ذلك في شريطٍ فيه زرُّ العودة. */
+var LITE = false;
+function bootGuardStart(){
+  try {
+    var k = 'nsk14.boot', raw = lsGet(k), v = raw ? JSON.parse(raw) : null, now = Date.now();
+    v = (v && now - (+v.at || 0) < 10 * 60000) ? { n:(+v.n || 0) + 1, at:now } : { n:1, at:now };
+    lsSet(k, JSON.stringify(v));
+    if (v.n >= 3){ LITE = true; }
+    setTimeout(function(){ try { lsSet(k, JSON.stringify({ n:0, at:Date.now() })); } catch (e){} }, 45000);
+  } catch (e){ LS_ERR = e; }
+}
+function liteOff(){ LITE = false; try { lsSet('nsk14.boot', JSON.stringify({ n:0, at:Date.now() })); } catch (e){} toast(t('عاد الوضعُ الكامل')); try { location.reload(); } catch (e){} }
+/* ── الخطوةُ ٥ · إعادةُ ضبط التطبيق على هذا الجهاز: تُرفَع البياناتُ أوّلًا، ثم يُمحى الكاشُ والمخزنُ ويُعاد التحميلُ نظيفًا ──
+   بديلُ «امسح بياناتِ المتصفح من إعدادات آيفون» الذي كان يفعله الفنيّون. لا يمسّ السحابةَ ولا يُسقط عملًا لم يُرفَع. */
+function appResetGo(){
+  var q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length, pq = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0;
+  if (q || pq){
+    if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا — على الجهاز') + ' ' + nm(q) + ' ' + t('كتابة و') + nm(pq) + ' ' + t('صورة لم تُرفع')); return false; }
+    toast(t('يُرفَع ما على الجهاز أولًا…')); try { if (typeof photoFlush === 'function') photoFlush(); if (CORE.flush) CORE.flush(); } catch (e){ LS_ERR = e; }
+    setTimeout(function(){ var q2 = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length, p2 = (PHOTO_Q || []).length; if (q2 || p2) toast(t('لم يُرفَع كلُّ شيء بعد — أعد المحاولة بعد قليل')); else appResetGo(); }, 6000);
+    return false;
+  }
+  if (!window.confirm(t('إعادةُ ضبط التطبيق على هذا الجهاز: يُمحى الكاشُ والمخزنُ المحليُّ ويُعاد التحميلُ نظيفًا. لا يمسّ السحابة. متأكد؟'))) return false;
+  var dev = lsGet('nsk14.dev'), done = function(){ try { if (dev) lsSet('nsk14.dev', dev); } catch (e){} try { location.reload(); } catch (e){} };
+  Promise.resolve()
+    .then(function(){ return (typeof caches === 'object' && caches.keys) ? caches.keys().then(function(ks){ return Promise.all(ks.map(function(k){ return caches.delete(k); })); }) : null; })
+    .then(function(){ return (navigator.serviceWorker && navigator.serviceWorker.getRegistrations) ? navigator.serviceWorker.getRegistrations().then(function(rs){ return Promise.all(rs.map(function(r){ return r.unregister(); })); }) : null; })
+    .then(function(){ return new Promise(function(res){ try { var rq = indexedDB.deleteDatabase(IDB_NAME); rq.onsuccess = rq.onerror = rq.onblocked = function(){ res(); }; setTimeout(res, 4000); } catch (e){ res(); } }); })
+    .then(function(){ try { localStorage.clear(); } catch (e){} done(); })
+    .catch(function(e){ LS_ERR = e; done(); });
+  return true;
 }
