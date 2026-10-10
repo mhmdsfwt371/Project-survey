@@ -49,6 +49,36 @@
   --shadow:0 1px 2px rgba(20,24,29,.06);
   --sw:264px;
 }
+/* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
+   «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
+   متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
+html[data-skin="ops"]{
+  --bg:#0B1220; --surface:#111A2E; --surface-2:#0E1628; --raise:#142038;
+  --ink:#E6EDF7; --ink-soft:#9FB0C8; --ink-mute:#6F7F99;
+  --line:#1E2A44; --line-2:#17223A;
+  --brand:#4FD1E8; --brand-ink:#04121f; --brand-soft:#0F2A3A; --brand-deep:#9FE7F3;
+  --ok:#5FD08A; --warn:#E7B45C; --danger:#F0837B; --info:#7FDBEE;
+  --sidebar:#0A101C; --sidebar-ink:#C9D6E8; --sidebar-line:rgba(79,209,232,.12);
+  --radius:14px; --radius-sm:10px; --acc:#4FD1E8;
+  --shadow:0 0 0 1px rgba(79,209,232,.06),0 6px 18px rgba(0,0,0,.35);
+}
+[data-skin="ops"] .card{border-color:#1E2A44}
+[data-skin="ops"] .num{font-variant-numeric:tabular-nums}
+[data-skin="ops"] .kk-big,[data-skin="ops"] .card .num[style*="font-size:2"]{color:#4FD1E8;text-shadow:0 0 18px rgba(79,209,232,.25)}
+html[data-skin="brand"]{
+  --bg:#F2F6FB; --surface:#fff; --surface-2:#F7FAFE; --raise:#fff;
+  --ink:#13233A; --ink-soft:#4A5D78; --ink-mute:#7B8BA3;
+  --line:#E3ECF7; --line-2:#EEF3FA;
+  --brand:#1A5FA8; --brand-ink:#fff; --brand-soft:#E3ECF7; --brand-deep:#0F3F73;
+  --warn:#C46A12; --warn-bg:#FDF0E1;
+  --radius:18px; --radius-sm:12px; --acc:#1A5FA8;
+  --shadow:0 2px 10px rgba(26,95,168,.08);
+}
+[data-skin="brand"] .card{border-color:transparent}
+[data-skin="brand"] .card .pid{color:#F28C28}
+[data-skin="brand"] .btn-primary{background:#1A5FA8;border-color:#1A5FA8}
+[data-skin="brand"] .chip.on{background:#F28C28;border-color:#F28C28;color:#fff}
+.skin-row{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}.skin-row .chip{flex:1;justify-content:center}
 [data-theme="dark"]{
   --bg:#0A0D10; --surface:#12171c; --surface-2:#0F1418; --raise:#171D23;
   --ink:#E8EBEE; --ink-soft:#9BA5AF; --ink-mute:#6C757E;
@@ -1227,6 +1257,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
                 aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
       </div>
       <button type="button" class="btn btn-quiet btn-block" id="pwBtn" data-pwopen="1" style="margin-bottom:6px"></button>
+      <div class="skin-row" id="skinRow"></div>   <!-- (V37.33) المظهر -->
       <button type="button" class="btn btn-quiet btn-block" id="resetBtn" data-appreset="1" style="margin-bottom:6px"></button>   <!-- (V37.18) إعادةُ ضبط التطبيق على هذا الجهاز -->
       <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
@@ -1239,7 +1270,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.32</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.33</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1301,7 +1332,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a50f5c703a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-75a2a3a44c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7371,6 +7402,21 @@ function knownHits(q){
   q = knownNorm(q); if (q.length < 3) return [];
   var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
   return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+}
+
+/* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
+var SKINS = [['', 'الافتراضي'], ['ops', 'غرفة تحكم'], ['brand', 'هوية أفاقي']];
+function skinSet(k){
+  k = (k === 'ops' || k === 'brand') ? k : '';
+  var el = document.documentElement; if (k) el.setAttribute('data-skin', k); else el.removeAttribute('data-skin');
+  lsSet('nsk14.skin', k);
+  if (k === 'ops') setTheme('dark'); else if (k === 'brand') setTheme('light');   /* كلٌّ فوق قاعدته */
+  skinRowSync();
+}
+function skinRowSync(){
+  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || '';
+  var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
+  if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -25442,6 +25488,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.33', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'مظهران إضافيان تختار منهم من القائمة الجانبية (على جهازك بس): «غرفة تحكم» (كحلي وأرقام مضيئة — مناسب لشاشة القاعة والعرض) و«هوية أفاقي» (أزرق وبرتقالي وزوايا ناعمة). والشكل الافتراضي زي ما هو.' ] },
   { v:'V37.32', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'لو التطبيق وقع والفني في نص نموذج المسح، النص اللي كتبه بيرجع حتى لو مخزن آيفون اتعطّل (بقت فيه نسخة احتياطية تانية من المسودة من غير الصور).' ] },
   { v:'V37.31', d:'١١ أكتوبر ٢٠٢٦', notes:[
@@ -33971,6 +34019,7 @@ function render0(force){
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
   try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
+  try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -34348,6 +34397,8 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
+  if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
   if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
@@ -36848,6 +36899,7 @@ if (window.visualViewport){
   var th = 'light', lg = 'ar';
   try{ th = localStorage.getItem('nsk14.theme') || 'light'; lg = localStorage.getItem('nsk14.lang') || 'ar'; }catch(e){}
   setTheme(th);
+  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; if (sk0 === 'ops' || sk0 === 'brand') document.documentElement.setAttribute('data-skin', sk0); } catch (eSk){ LS_ERR = eSk; }   /* (V37.33) */
   LANG = I18N[lg] ? lg : 'ar';
   document.documentElement.lang = LANG;
   try { shellLang(); } catch(e){}

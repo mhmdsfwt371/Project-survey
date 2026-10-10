@@ -2397,6 +2397,7 @@ function render0(force){
   try { liteSync(); } catch (eL){ LS_ERR = eL; }   /* (V37.18) شريطُ الوضع الخفيف */
   try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
+  try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -2774,6 +2775,8 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
+  if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
   if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
@@ -5274,6 +5277,7 @@ if (window.visualViewport){
   var th = 'light', lg = 'ar';
   try{ th = localStorage.getItem('nsk14.theme') || 'light'; lg = localStorage.getItem('nsk14.lang') || 'ar'; }catch(e){}
   setTheme(th);
+  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; if (sk0 === 'ops' || sk0 === 'brand') document.documentElement.setAttribute('data-skin', sk0); } catch (eSk){ LS_ERR = eSk; }   /* (V37.33) */
   LANG = I18N[lg] ? lg : 'ar';
   document.documentElement.lang = LANG;
   try { shellLang(); } catch(e){}

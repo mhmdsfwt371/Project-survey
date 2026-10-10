@@ -416,3 +416,18 @@ function knownHits(q){
   var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
   return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
 }
+
+/* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
+var SKINS = [['', 'الافتراضي'], ['ops', 'غرفة تحكم'], ['brand', 'هوية أفاقي']];
+function skinSet(k){
+  k = (k === 'ops' || k === 'brand') ? k : '';
+  var el = document.documentElement; if (k) el.setAttribute('data-skin', k); else el.removeAttribute('data-skin');
+  lsSet('nsk14.skin', k);
+  if (k === 'ops') setTheme('dark'); else if (k === 'brand') setTheme('light');   /* كلٌّ فوق قاعدته */
+  skinRowSync();
+}
+function skinRowSync(){
+  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || '';
+  var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
+  if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
+}

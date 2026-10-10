@@ -49,6 +49,36 @@
   --shadow:0 1px 2px rgba(20,24,29,.06);
   --sw:264px;
 }
+/* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
+   «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
+   متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
+html[data-skin="ops"]{
+  --bg:#0B1220; --surface:#111A2E; --surface-2:#0E1628; --raise:#142038;
+  --ink:#E6EDF7; --ink-soft:#9FB0C8; --ink-mute:#6F7F99;
+  --line:#1E2A44; --line-2:#17223A;
+  --brand:#4FD1E8; --brand-ink:#04121f; --brand-soft:#0F2A3A; --brand-deep:#9FE7F3;
+  --ok:#5FD08A; --warn:#E7B45C; --danger:#F0837B; --info:#7FDBEE;
+  --sidebar:#0A101C; --sidebar-ink:#C9D6E8; --sidebar-line:rgba(79,209,232,.12);
+  --radius:14px; --radius-sm:10px; --acc:#4FD1E8;
+  --shadow:0 0 0 1px rgba(79,209,232,.06),0 6px 18px rgba(0,0,0,.35);
+}
+[data-skin="ops"] .card{border-color:#1E2A44}
+[data-skin="ops"] .num{font-variant-numeric:tabular-nums}
+[data-skin="ops"] .kk-big,[data-skin="ops"] .card .num[style*="font-size:2"]{color:#4FD1E8;text-shadow:0 0 18px rgba(79,209,232,.25)}
+html[data-skin="brand"]{
+  --bg:#F2F6FB; --surface:#fff; --surface-2:#F7FAFE; --raise:#fff;
+  --ink:#13233A; --ink-soft:#4A5D78; --ink-mute:#7B8BA3;
+  --line:#E3ECF7; --line-2:#EEF3FA;
+  --brand:#1A5FA8; --brand-ink:#fff; --brand-soft:#E3ECF7; --brand-deep:#0F3F73;
+  --warn:#C46A12; --warn-bg:#FDF0E1;
+  --radius:18px; --radius-sm:12px; --acc:#1A5FA8;
+  --shadow:0 2px 10px rgba(26,95,168,.08);
+}
+[data-skin="brand"] .card{border-color:transparent}
+[data-skin="brand"] .card .pid{color:#F28C28}
+[data-skin="brand"] .btn-primary{background:#1A5FA8;border-color:#1A5FA8}
+[data-skin="brand"] .chip.on{background:#F28C28;border-color:#F28C28;color:#fff}
+.skin-row{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}.skin-row .chip{flex:1;justify-content:center}
 [data-theme="dark"]{
   --bg:#0A0D10; --surface:#12171c; --surface-2:#0F1418; --raise:#171D23;
   --ink:#E8EBEE; --ink-soft:#9BA5AF; --ink-mute:#6C757E;
@@ -1227,6 +1257,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
                 aria-label="المظهر" data-i18n-aria="المظهر" style="min-width:44px">☾</button>
       </div>
       <button type="button" class="btn btn-quiet btn-block" id="pwBtn" data-pwopen="1" style="margin-bottom:6px"></button>
+      <div class="skin-row" id="skinRow"></div>   <!-- (V37.33) المظهر -->
       <button type="button" class="btn btn-quiet btn-block" id="resetBtn" data-appreset="1" style="margin-bottom:6px"></button>   <!-- (V37.18) إعادةُ ضبط التطبيق على هذا الجهاز -->
       <button type="button" class="btn btn-secondary btn-block" id="outBtn" data-out="1"></button>
     </div>
@@ -1239,7 +1270,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.32</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.33</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
