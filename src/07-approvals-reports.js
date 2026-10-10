@@ -1346,9 +1346,33 @@ function devActRows(){
     if (+x.pq > 0 || +x.pfl > 0){ iss.push(nm((+x.pq || 0) + (+x.pfl || 0)) + ' ' + t('صورة لم تُرفع')); act.push(t('يفتح على نت ويضغط «ارفع الآن»')); sev += 2; }
     if (+x.pz > 0){ iss.push(nm(+x.pz) + ' ' + t('كتابة مرفوضة')); act.push(t('يراجعها المهندس من «ما ينتظر الرفع»')); sev += 2; }
     if (+x.err > 0){ iss.push(nm(+x.err) + ' ' + t('خطأ اليوم')); sev += 1; }
-    if (mfu && mfu > 1500){ iss.push(t('المتابعة بطيئة') + ' ' + nm(Math.round(mfu / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
+    var slowPg = Object.keys((x.pf && x.pf.pages) || {}).map(function(k){ return [k, x.pf.pages[k] && x.pf.pages[k].p75]; }).filter(function(e){ return e[1] > 1500; }).sort(function(a, b){ return b[1] - a[1]; })[0];   /* (V37.34) أيُّ صفحة */
+    if (slowPg){ var pgName = (SPEED_PAGES.filter(function(p){ return p[0] === slowPg[0]; })[0] || [0, (PAGE[slowPg[0]] && PAGE[slowPg[0]].t) || slowPg[0]])[1]; iss.push(t(pgName) + ' ' + t('بطيئة') + ' ' + nm(Math.round(slowPg[1] / 100) / 10) + t('ث')); if (!(v && v < cloud)) act.push(t('«الوضع الخفيف» من المساعد')); sev += 1; }
     return { name:x.name, role:x.role || '', ver:x.ver || '', at:+x.at || 0, iss:iss, act:act.filter(function(a, i, A){ return A.indexOf(a) === i; }), sev:sev };
   }).filter(function(r){ return r.iss.length; }).sort(function(a, b){ return b.sev - a.sev || b.at - a.at; });
+}
+/* ═══ (V37.34) البندُ ٤ — لوحةُ السرعة لكلِّ جهازٍ ولكلِّ صفحة ═══
+   من قياسات الأجهزة نفسِها (نبضتُها اليومية): زمنُ رسم كلِّ صفحةٍ (الربعُ الأعلى)، واستجابةُ اللمس، وزمنُ الفتح — لكلِّ جهازٍ صفّ،
+   ولكلِّ صفحةٍ رئيسيةٍ عمود؛ أخضرُ دون ٠٫٣ ثانية (الهدف)، وأصفرُ دون ثانية، وأحمرُ فوقها. فيُعرَف الجهازُ البطيءُ والصفحةُ البطيئةُ قبل الشكوى. */
+var SPEED_PAGES = [['map', 'الخريطة'], ['mfu', 'المتابعة'], ['forms', 'النموذج'], ['survey', 'المسح'], ['mywork', 'شغلي'], ['sites', 'المواقع']];
+function speedCell(v){ if (v == null) return '<span class="hint" style="margin:0">\u2014</span>'; var c = v < 300 ? 'ok' : v < 1000 ? 'wrn' : 'bad'; return pill(nm(Math.round(v / 10) / 100) + t('ث'), c); }
+function speedRows(){
+  var P = STATE.presence || {}, now = Date.now();
+  return Object.keys(P).map(function(k){ return P[k] || {}; }).filter(function(x){ return x && x.name && x.pf && x.pf.pages && now - (+x.at || 0) < 7 * 864e5; }).map(function(x){
+    var pg = x.pf.pages || {}, worst = 0;
+    var cells = SPEED_PAGES.map(function(p){ var v = pg[p[0]] && pg[p[0]].p75; if (v != null && v > worst) worst = v; return v == null ? null : +v; });
+    return { name:x.name, model:(typeof uaModel === 'function' ? uaModel(x.ua) : ''), ver:x.ver || '', cells:cells, inp:x.pf.inp && x.pf.inp.p75, open:x.pf.open, worst:worst };
+  }).sort(function(a, b){ return b.worst - a.worst; });
+}
+function speedCard(){
+  if (!(may('users') || may('exportAll'))) return '';
+  var R = speedRows(); if (!R.length) return '';
+  var slow = R.filter(function(r){ return r.worst >= 1000; }).length, ok = R.filter(function(r){ return r.worst < 300; }).length;
+  return card('سرعة الصفحات لكل جهاز',
+    '<p class="hint" style="margin-top:0">' + esc(t('زمن رسم كل صفحة على كل جهاز (من قياس الجهاز نفسه، آخر ٧ أيام). الهدف أقل من ٠٫٣ ثانية.')) + ' '
+    + '<b>' + nm(ok) + '</b> ' + esc(t('جهاز داخل الهدف')) + ' \u00b7 <b>' + nm(slow) + '</b> ' + esc(t('جهاز فيه صفحة أبطأ من ثانية')) + '</p>'
+    + '<div style="overflow-x:auto">' + table(['الجهاز'].concat(SPEED_PAGES.map(function(p){ return p[1]; })).concat(['اللمس', 'الفتح']),
+      R.map(function(r){ return [esc(r.name) + '<div class="hint" style="margin:0">' + esc(r.model) + ' \u00b7 ' + esc(r.ver) + '</div>'].concat(r.cells.map(speedCell)).concat([speedCell(r.inp), speedCell(r.open)]); })) + '</div>');
 }
 function devActCard(){
   if (!(may('users') || may('exportAll'))) return '';
@@ -1696,7 +1720,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
               + nosign.slice(0, 30).map(row).join('')
             : '<p class="hint" style="margin:0">' + esc(t('كلُّ مخيمٍ له مربعٌ وشاخص.')) + '</p>');
   })();
-if (cur === 'usage') return head + devActCard() + usageCard() + perfCard() + (function(){
+if (cur === 'usage') return head + devActCard() + speedCard() + usageCard() + perfCard() + (function(){
     if (may('users') || may('exportAll')) presenceFetch(false);
     var rows = presenceRows(), now = Date.now(), cur9 = appVer();
     var H = 3600000, work = (function(){ var h = new Date().getHours(); return h >= 7 && h <= 23; })();
