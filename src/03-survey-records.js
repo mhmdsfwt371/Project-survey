@@ -2508,24 +2508,33 @@ function svDraftSave(){
   try {
     if (typeof FORM !== 'object' || !FORM || !FORM.site || typeof idbSet !== 'function') return;
     idbSet('svDraft', { at:Date.now(), by:(STATE.meta && STATE.meta.name) || '', form:JSON.parse(JSON.stringify(FORM)) }).catch(function(e){ LS_ERR = e; });
+    /* (V37.32) البندُ ١ — مرآةٌ في التخزين البسيط بلا صور: حين تتعثّر قاعدةُ الجهاز على آيفون يبقى نصُّ المسح المنقطع ويُستعاد */
+    try { var F2 = JSON.parse(JSON.stringify(FORM)); F2.photos = {}; var js = JSON.stringify({ at:Date.now(), by:(STATE.meta && STATE.meta.name) || '', form:F2 }); if (js.length < 200000) lsSet('nsk14.svdraft', js); } catch (eL){ LS_ERR = eL; }
   } catch (e){ LS_ERR = e; }
 }
 function svDraftSoon(){ clearTimeout(SVD.t); SVD.t = setTimeout(svDraftSave, 700); }
-function svDraftClear(){ try { SVD.dirty = false; clearTimeout(SVD.t); if (typeof idbSet === 'function') idbSet('svDraft', null).catch(function(e){ LS_ERR = e; }); } catch (e){ LS_ERR = e; } }
+function svDraftClear(){ try { SVD.dirty = false; clearTimeout(SVD.t); lsSet('nsk14.svdraft', ''); if (typeof idbSet === 'function') idbSet('svDraft', null).catch(function(e){ LS_ERR = e; }); } catch (e){ LS_ERR = e; } }
 function svDraftRestore(){
   SVD.checked = true;
   if (typeof idbGet !== 'function') return;
-  if (typeof IDB_BAD !== 'undefined' && IDB_BAD === true){ if ((SVD.bad = (SVD.bad || 0) + 1) <= 6) setTimeout(svDraftRestore, 5000); return; }   /* القاعدةُ متعثّرةٌ الآن: لا فتحٌ إضافيٌّ يسبق إعادتها المجدولة — ستُّ محاولاتٍ ثم يُترَك (مؤقّتٌ دائمٌ يُبقي بيئةَ الفحص حيّةً بلا نهاية) */
+  var lsDraft = function(){ try { var raw = lsGet('nsk14.svdraft'); return raw ? JSON.parse(raw) : null; } catch (e0){ return null; } };   /* (V37.32) */
+  if (typeof IDB_BAD !== 'undefined' && IDB_BAD === true){ if ((SVD.bad = (SVD.bad || 0) + 1) <= 6){ setTimeout(svDraftRestore, 5000); return; } svDraftApply(lsDraft()); return; }   /* بعد ستِّ محاولاتٍ: المرآةُ البسيطة */   /* القاعدةُ متعثّرةٌ الآن: لا فتحٌ إضافيٌّ يسبق إعادتها المجدولة — ستُّ محاولاتٍ ثم يُترَك (مؤقّتٌ دائمٌ يُبقي بيئةَ الفحص حيّةً بلا نهاية) */
   idbGet('svDraft').then(function(d){
+    if (!d || !d.form || !d.form.site) d = lsDraft();   /* (V37.32) القاعدةُ فارغةٌ أو متعثّرة: المرآة */
+    svDraftApply(d);
+  }).catch(function(e){ LS_ERR = e; svDraftApply(lsDraft()); });
+}
+function svDraftApply(d){   /* (V37.32) الاستعادةُ نفسُها — من القاعدة أو من المرآة */
+  {
     if (!d || !d.form || !d.form.site) return;
     if (Date.now() - (+d.at || 0) > 86400000){ svDraftClear(); return; }
     if (d.by && STATE.meta && STATE.meta.name && d.by !== STATE.meta.name) return;
-    if (!siteFind(d.form.site)){ if ((SVD.tries = (SVD.tries || 0) + 1) < 30) setTimeout(svDraftRestore, 1000); return; }   /* السجلُّ لم يكتمل بعد: يُعاد بعد ثانية */
+    if (!siteFind(d.form.site)){ if ((SVD.tries = (SVD.tries || 0) + 1) < 30) setTimeout(function(){ svDraftApply(d); }, 1000); return; }   /* السجلُّ لم يكتمل بعد: يُعاد بعد ثانية */
     if (FORM.site && SVD.dirty) return;   /* نموذجٌ مفتوحٌ بعملٍ لم يُحفَظ: لا يُكتَب فوقه */
-    Object.keys(d.form).forEach(function(k){ FORM[k] = d.form[k]; });
+    Object.keys(d.form).forEach(function(k){ if (k === 'photos' && d.form.photos && !Object.keys(d.form.photos).length && FORM.photos && Object.keys(FORM.photos).length) return; FORM[k] = d.form[k]; });
     SVD.dirty = true; CUR = 'svForm'; render(1);
     toast(t('استُعيد المسحُ الذي انقطع — أكمله ثم احفظ'));
-  }).catch(function(e){ LS_ERR = e; });
+  }
 }
 
 /* ── الحفظ — يكتب في المحرك ويدخل الطابور ── */
