@@ -4750,6 +4750,11 @@ function mfuObstacles(){
 /* (V29.1) قرارُ المالك: «إحنا حاليًا في المسح الميداني — صفحةٌ مخصوصةٌ للمسح في الباوربوينت: نظرةٌ عامةٌ بالأرقام والنسب،
    وبعدها التفاصيل: المشعر، النوع، اتعمل كام، لسه كام، وفيه كام تحدٍّ في النوع الفلاني للمشعر الفلاني». بتصنيف المالك (taxOf). */
 function svStats(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0) + '|' + (STATE.sites || []).length;   /* (V37.23 المرحلة ١) مرةً لكلِّ إصدار */
+  if (svStats.c && svStats.c.k === mk) return svStats.c.v;
+  var v = svStats0(); svStats.c = { k:mk, v:v }; return v;
+}
+function svStats0(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
     var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */

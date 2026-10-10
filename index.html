@@ -1238,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.22</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.23</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1300,7 +1300,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-601ad3fe2c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-6ea205a269.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7317,6 +7317,25 @@ function appResetGo(){
     .catch(function(e){ LS_ERR = e; done(); });
   return true;
 }
+
+/* ── (V37.23 المرحلة ١) الأجهزةُ القديمة — والميدانُ ليس كلُّه آيفون: الوضعُ الخفيفُ يُفعَّل تلقائيًّا بالقياس.
+   نظامٌ قديمٌ (آيفون قبل ١٥، أندرويد قبل ١٠)، أو ثلاثُ رسماتٍ من آخر خمسٍ تجاوزت ١٬٥٠٠ م.ث على جهازٍ لمسيّ — وللمستخدم إيقافُه يومًا. */
+var LITE_AUTO = { ms:[], told:false };
+function oldOS(){
+  var ua = String((typeof navigator === 'object' && navigator.userAgent) || '');
+  var ios = /OS (\d+)_\d/.exec(ua); if (ios && +ios[1] && +ios[1] < 15) return 'ios' + ios[1];
+  var an = /Android (\d+)/.exec(ua); if (an && +an[1] && +an[1] < 10) return 'android' + an[1];
+  return '';
+}
+function liteMeasure(ms){
+  if (LITE || typeof ms !== 'number') return;
+  try { var off = +(lsGet('nsk14.liteoff') || 0); if (off && Date.now() - off < 864e5) return; } catch (e){}
+  LITE_AUTO.ms.push(ms); if (LITE_AUTO.ms.length > 5) LITE_AUTO.ms.shift();
+  var touch = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) || ('ontouchstart' in window);
+  var slow = LITE_AUTO.ms.filter(function(x){ return x > 1500; }).length;
+  if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
+}
+function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){} if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){} }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
@@ -15771,9 +15790,71 @@ var Q_LBL = { recs:'مسح', inss:'تركيب', diss:'فك', tasks:'إسناد',
               teams:'فريق', evlog:'حدث', notifs:'إشعار', accounts:'حساب',
               bonus:'نقاط زيادة', workReqs:'طلب ورشة', users:'مستخدم' };
 
+/* ═══ (V37.23) طلبُ المالك: «المساعد يقدر الشخص يكلّمه ويحدّدله المشكلة ويحلّهاله لو ممكن أو يقوله حلّها إزاي» ═══
+   الطبقةُ الأولى بلا شبكةٍ وبلا كلفة: يقرأ حالةَ الجهاز نفسِه (الشبكة، النسخة، الطابور، الصور، الوضع الخفيف، المخزن) ويفهم الشكوى
+   بكلماتها، ثم ينفّذ الحلَّ بزرٍّ حيث يملكه، ويشرح الخطواتِ حيث لا يملكه. */
+function assistDiag(){
+  var q = (STATE.queue || []).filter(function(it){ return it && it.kind !== 'presence' && it.kind !== 'stats'; }).length;
+  var pq = (typeof PHOTO_Q === 'object' && PHOTO_Q) ? PHOTO_Q.length : 0, pf = (typeof PHOTO_FAIL === 'object' && PHOTO_FAIL) ? PHOTO_FAIL.length : 0;
+  var pz = (STATE.poison || []).length, on = !!STATE.meta.online, rms = typeof perfAvg === 'function' ? perfAvg('r') : 0, pms = typeof perfAvg === 'function' ? perfAvg('p') : 0;
+  var bad = typeof IDB_WHY !== 'undefined' && IDB_WHY;
+  return { q:q, pq:pq, pf:pf, pz:pz, on:on, rms:rms, pms:pms, lite:!!LITE, idbBad:!!bad, ver:(typeof APP_VER !== 'undefined' ? APP_VER : ''), role:ROLE };
+}
+var ASSIST_INTENTS = [
+  { k:'photos', rx:/صور|صوره|رفع|اترفع|ترفع|الدرايف|photo|upload/i, t:'الصور لا تُرفع أو لا تظهر' },
+  { k:'slow',   rx:/بطي|بطيء|بطيئ|تقيل|تهنيج|هنج|يهنج|بيقع|وقع|يقفل|كاش|الذاكرة|slow|crash|cache/i, t:'التطبيق بطيء أو يقع' },
+  { k:'sync',   rx:/مزامن|يزامن|الطابور|ما اتحفظ|مش بيحفظ|ماتحفظش|ضاع|ضاعت|اتمسح|sync|save/i, t:'بيانات لم تُرفع أو لم تُحفظ' },
+  { k:'update', rx:/نسخة|تحديث|اصدار|إصدار|قديم|version|update/i, t:'النسخة والتحديث' },
+  { k:'login',  rx:/دخول|باسورد|كلمة المرور|كلمة السر|password|login/i, t:'الدخول وكلمة المرور' },
+  { k:'gps',    rx:/مكاني|موقعي|gps|جي بي اس|الاحداثيات|الإحداثيات|location/i, t:'موقعي على الخريطة' },
+  { k:'map',    rx:/الخريطة|خريطه|map|النقط مش ظاهر|العلامات/i, t:'الخريطة' }
+];
+function assistIntent(q){ q = String(q || ''); var hits = ASSIST_INTENTS.filter(function(i){ return i.rx.test(q); }); return hits.length ? hits : null; }
+function assistFixHtml(kind, d){
+  var row = function(lbl, val, okv){ return '<div class="kk-zl" style="margin:3px 0"><span>' + esc(t(lbl)) + '</span><b class="' + (okv ? 'ok' : 'wrn') + '">' + val + '</b></div>'; };
+  var out = '';
+  if (kind === 'photos'){
+    out += row('الشبكة', esc(t(d.on ? 'متصلة' : 'غير متصلة')), d.on) + row('صور في طابور الجهاز', nm(d.pq), !d.pq) + row('صور فشل رفعُها', nm(d.pf), !d.pf);
+    if (!d.on) out += '<p>' + esc(t('الصورُ محفوظةٌ على جهازك، وتُرفَع لوحدها أوّلَ ما تفتح الشبكة. لا تحذف التطبيق ولا بياناتِ المتصفح الآن.')) + '</p>';
+    else if (d.pq || d.pf) out += '<p>' + esc(t('الشبكةُ متصلة وما زالت صورٌ على الجهاز — اضغط «ارفع الآن» واترك التطبيقَ مفتوحًا دقيقة.')) + '</p><div class="actions">' + (d.pq ? btn('\u2B06 ' + t('ارفع الآن'), 'btn-primary btn-sm', ' data-phflushnow="1"') : '') + (d.pf ? btn(t('أعد المحاولة للفاشلة'), 'btn-secondary btn-sm', ' data-pretry="1"') : '') + '</div>';
+    else out += '<p>' + esc(t('لا صورَ عالقةً على هذا الجهاز. صورُ أي نقطة تُجلَب عند فتحها؛ ولو رُفعت من جهازٍ آخر ولم تظهر، فذلك الجهازُ لم يفتح الشبكةَ بعد.')) + '</p>';
+  } else if (kind === 'slow'){
+    out += row('متوسط زمن الرسم', nm(d.rms) + ' ' + esc(t('م.ث')), d.rms < 800) + row('متوسط زمن السحب', nm(d.pms) + ' ' + esc(t('م.ث')), d.pms < 3000) + row('الوضع الخفيف', esc(t(d.lite ? 'يعمل' : 'لا')), true) + row('النسخة', esc(d.ver), true);
+    out += '<p>' + esc(t('الحلُّ بالترتيب: ١) افتح الشبكة واترك التطبيقَ يحدّث نفسه، ٢) «إعادة ضبط التطبيق» تبدأ بمخزنٍ نظيف من غير أن تخسر شيئًا، ٣) الوضعُ الخفيف للأجهزة الضعيفة.')) + '</p>'
+      + '<div class="actions">' + btn('\u{1F9F9} ' + t('إعادة ضبط التطبيق'), 'btn-primary btn-sm', ' data-appreset="1"') + (d.lite ? btn(t('الوضع الكامل'), 'btn-quiet btn-sm', ' data-liteoff="1"') : btn(t('شغّل الوضع الخفيف'), 'btn-secondary btn-sm', ' data-liteon="1"')) + '</div>';
+  } else if (kind === 'sync'){
+    out += row('الشبكة', esc(t(d.on ? 'متصلة' : 'غير متصلة')), d.on) + row('كتابات تنتظر الرفع', nm(d.q), !d.q) + row('كتابات معزولة (مرفوضة)', nm(d.pz), !d.pz) + row('المخزن المحلي', esc(t(d.idbBad ? 'فيه مشكلة' : 'سليم')), !d.idbBad);
+    if (d.pz) out += '<p>' + esc(t('كتاباتٌ رُفضت من السحابة — تُعرَض في «ما ينتظر الرفع» بسببها؛ أبلغ المهندس.')) + '</p>';
+    else if (!d.on) out += '<p>' + esc(t('كلُّ ما سجّلته محفوظٌ على الجهاز ويُرفَع أوّلَ ما تفتح الشبكة.')) + '</p>';
+    else if (d.q) out += '<p>' + esc(t('الشبكةُ متصلة وما زالت كتاباتٌ تنتظر — اضغط «زامِن الآن».')) + '</p><div class="actions">' + btn('\u21BB ' + t('زامِن الآن'), 'btn-primary btn-sm', ' data-syncall="1"') + '</div>';
+    else out += '<p>' + esc(t('لا شيءَ ينتظر الرفع — كلُّ ما سجّلته وصل.')) + '</p>';
+  } else if (kind === 'update'){
+    out += row('نسختك', esc(d.ver), true) + '<p>' + esc(t('التطبيقُ يحدّث نفسه لوحده أوّلَ ما يفتح على الشبكة. لو ظلّ قديمًا: أغلقه تمامًا وافتحه، ولو لم يتغيّر فـ«إعادة ضبط التطبيق».')) + '</p><div class="actions">' + btn('\u{1F9F9} ' + t('إعادة ضبط التطبيق'), 'btn-secondary btn-sm', ' data-appreset="1"') + '</div>';
+  } else if (kind === 'login'){
+    out += '<p>' + esc(t('تغييرُ كلمة المرور من زرّ «تغيير كلمة المرور» أسفلَ القائمة. ولو نسيتها فالمكتب يصدر لك كلمةً جديدةً من شاشة المستخدمين.')) + '</p><div class="actions">' + btn('\u{1F511} ' + t('تغيير كلمة المرور'), 'btn-secondary btn-sm', ' data-pwopen="1"') + '</div>';
+  } else if (kind === 'gps'){
+    out += '<p>' + esc(t('موقعُك يحتاج إذنَ الموقع للمتصفح: في آيفون من الإعدادات ← الخصوصية ← خدمات الموقع ← المتصفح ← «أثناء الاستخدام» و«الموقع الدقيق». وفي أندرويد من إعدادات التطبيق ← الأذونات ← الموقع.')) + '</p>';
+  } else if (kind === 'map'){
+    out += row('الشبكة', esc(t(d.on ? 'متصلة' : 'غير متصلة')), d.on) + row('الوضع الخفيف', esc(t(d.lite ? 'يعمل — بلا خريطة مجسّمة' : 'لا')), true)
+      + '<p>' + esc(t('صورُ الخريطة تحتاج شبكةً أوّلَ مرة ثم تُحفَظ. لو النقاطُ لا تظهر: افحص «تصفية» أعلى الخريطة واضغط «مسح التصفية».')) + '</p>';
+  }
+  return out;
+}
+function assistDiagCard(q){
+  var d = assistDiag(), hits = assistIntent(q);
+  if (!q){   /* بلا سؤال: حالةُ الجهاز في سطر، والعالقُ وحدَه يُفتَح */
+    var warn = [];
+    if (!d.on) warn.push('غير متصل بالشبكة'); if (d.q) warn.push(nm(d.q) + ' ' + t('كتابة تنتظر الرفع')); if (d.pq) warn.push(nm(d.pq) + ' ' + t('صورة تنتظر الرفع')); if (d.pf) warn.push(nm(d.pf) + ' ' + t('صورة فشل رفعها')); if (d.pz) warn.push(nm(d.pz) + ' ' + t('كتابة مرفوضة')); if (d.lite) warn.push(t('الوضع الخفيف يعمل'));
+    return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid ' + (warn.length ? '#B8860B' : '#2E7D32') + '"><div class="pid">' + esc(t('حالة جهازك الآن')) + '</div>'
+      + '<p style="margin:0">' + (warn.length ? esc(warn.map(function(w){ return t(w); }).join(' \u00b7 ')) : esc(t('كلُّ شيءٍ سليم: متصل، ولا شيءَ ينتظر الرفع.'))) + '</p>'
+      + (warn.length ? assistFixHtml(d.pq || d.pf ? 'photos' : d.q || d.pz ? 'sync' : 'slow', d) : '') + '</div>';
+  }
+  if (!hits) return '';
+  return hits.map(function(h){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('تشخيص')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(h.t)) + '</h4>' + assistFixHtml(h.k, d) + '</div>'; }).join('');
+}
 function assistResHtml(){
   var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
-  return ''
+  return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;padding:20px">'
           + esc(t('اكتب ما تريد فعله بكلماتك، ونرشدك إلى الصفحة المناسبة.')) + '</p>'
@@ -22294,6 +22375,11 @@ function mfuObstacles(){
 /* (V29.1) قرارُ المالك: «إحنا حاليًا في المسح الميداني — صفحةٌ مخصوصةٌ للمسح في الباوربوينت: نظرةٌ عامةٌ بالأرقام والنسب،
    وبعدها التفاصيل: المشعر، النوع، اتعمل كام، لسه كام، وفيه كام تحدٍّ في النوع الفلاني للمشعر الفلاني». بتصنيف المالك (taxOf). */
 function svStats(){
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0) + '|' + (STATE.sites || []).length;   /* (V37.23 المرحلة ١) مرةً لكلِّ إصدار */
+  if (svStats.c && svStats.c.k === mk) return svStats.c.v;
+  var v = svStats0(); svStats.c = { k:mk, v:v }; return v;
+}
+function svStats0(){
   var by = {}, zs = {}, O = { tot:0, sv:0, reach:0, unreach:0, chal:0 };
   (STATE.sites || []).forEach(function(x){
     var c = taxOf(x), r = STATE.recs[x.id], done = svVisited(r), un = !!(r && r.access && r.access !== 'تم الوصول');   /* (V32.6) */
@@ -25243,6 +25329,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.23', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'الأجهزة القديمة والبطيئة (مش كلها آيفون): الوضع الخفيف بيشتغل لوحده لو النظام قديم أو لو الرسم بطيء ٣ مرات من ٥، وبيقولك، وتقدر توقفه يوم كامل. والإحصاءات بقت تتحسب مرة لكل تغيير.',
+      'المساعد بقى يشخّص: من غير ما تسأل بيوريك حالة جهازك (شبكة، وطابور، وصور، ومرفوضات، ووضع خفيف)، ولما تكتب مشكلتك بكلماتك (الصور مش بتترفع، التطبيق بطيء، ما اتحفظش، النسخة، كلمة المرور، موقعي، الخريطة) بيفهمها وبيحلّها بزرار لو يقدر، أو يقولك الخطوات.' ] },
   { v:'V37.22', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'صفحة المتابعة رجعت سريعة: كانت بتاخد أكتر من ٥ ثواني لأن كارت «صور ليست على الدرايف» كان بيلف على كل الصور (٣٬٩٠٠) لكل نقطة (١٬٩٤٥) في كل رسمة. بقى فيه فهرس للصور بيتبني مرة واحدة.' ] },
   { v:'V37.21', d:'١٠ أكتوبر ٢٠٢٦', notes:[
@@ -33609,7 +33698,7 @@ function scrollBack(sameScreen){
    زمنُ كلِّ رسمٍ وكلِّ سحبٍ يُقاس على الجهاز ويُرفَع مع نبضة الحضور —
    فيُرى من المكتب أيُّ جهازٍ بطيءٌ وأيُّ سحبٍ طويل، قبل أن يُشكى. */
 var PERF = { r:[], p:[] }, COLD_N = 0;
-function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); }
+function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); if (kind === 'r'){ try { liteMeasure(ms); } catch (eLM){ LS_ERR = eLM; } } }   /* (V37.23) القياسُ يغذّي الوضعَ الخفيف */
 function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
 /* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح (V17.98) ═══
    ما يشعر به الفنيُّ لا ما نحكيه: أوّلُ رسمٍ للخريطة بعد الفتح، وأكبرُ رسمٍ
@@ -34091,7 +34180,8 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
-  if (e.target.closest('[data-liteoff]')){ liteOff(); return true; }
+  if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){} liteOff(); return true; }
+  if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */

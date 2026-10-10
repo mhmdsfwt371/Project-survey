@@ -362,3 +362,22 @@ function appResetGo(){
     .catch(function(e){ LS_ERR = e; done(); });
   return true;
 }
+
+/* ── (V37.23 المرحلة ١) الأجهزةُ القديمة — والميدانُ ليس كلُّه آيفون: الوضعُ الخفيفُ يُفعَّل تلقائيًّا بالقياس.
+   نظامٌ قديمٌ (آيفون قبل ١٥، أندرويد قبل ١٠)، أو ثلاثُ رسماتٍ من آخر خمسٍ تجاوزت ١٬٥٠٠ م.ث على جهازٍ لمسيّ — وللمستخدم إيقافُه يومًا. */
+var LITE_AUTO = { ms:[], told:false };
+function oldOS(){
+  var ua = String((typeof navigator === 'object' && navigator.userAgent) || '');
+  var ios = /OS (\d+)_\d/.exec(ua); if (ios && +ios[1] && +ios[1] < 15) return 'ios' + ios[1];
+  var an = /Android (\d+)/.exec(ua); if (an && +an[1] && +an[1] < 10) return 'android' + an[1];
+  return '';
+}
+function liteMeasure(ms){
+  if (LITE || typeof ms !== 'number') return;
+  try { var off = +(lsGet('nsk14.liteoff') || 0); if (off && Date.now() - off < 864e5) return; } catch (e){}
+  LITE_AUTO.ms.push(ms); if (LITE_AUTO.ms.length > 5) LITE_AUTO.ms.shift();
+  var touch = (typeof L !== 'undefined' && L.Browser && L.Browser.touch) || ('ontouchstart' in window);
+  var slow = LITE_AUTO.ms.filter(function(x){ return x > 1500; }).length;
+  if ((oldOS() && slow >= 1) || (touch && slow >= 3)){ LITE = true; LITE_AUTO.told = true; logEventQuiet && logEventQuiet('الوضعُ الخفيفُ تلقائيًّا — ' + (oldOS() || 'رسمٌ بطيء ' + Math.max.apply(null, LITE_AUTO.ms) + 'م.ث')); if (typeof liteSync === 'function') liteSync(); toast(t('الجهازُ بطيء — شغّلنا الوضعَ الخفيف')); }
+}
+function liteOn(){ LITE = true; try { lsSet('nsk14.liteoff', '0'); } catch (e){} if (typeof liteSync === 'function') liteSync(); toast(t('الوضعُ الخفيف يعمل')); try { location.reload(); } catch (e){} }

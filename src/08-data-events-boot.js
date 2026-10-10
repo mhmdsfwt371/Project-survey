@@ -2288,7 +2288,7 @@ function scrollBack(sameScreen){
    زمنُ كلِّ رسمٍ وكلِّ سحبٍ يُقاس على الجهاز ويُرفَع مع نبضة الحضور —
    فيُرى من المكتب أيُّ جهازٍ بطيءٌ وأيُّ سحبٍ طويل، قبل أن يُشكى. */
 var PERF = { r:[], p:[] }, COLD_N = 0;
-function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); }
+function perfNote(kind, ms){ var L = PERF[kind]; if (!L) return; L.push(Math.round(ms)); if (L.length > 30) L.shift(); if (kind === 'r'){ try { liteMeasure(ms); } catch (eLM){ LS_ERR = eLM; } } }   /* (V37.23) القياسُ يغذّي الوضعَ الخفيف */
 function perfAvg(kind){ var L = PERF[kind] || []; return L.length ? Math.round(L.reduce(function(a, b){ return a + b; }, 0) / L.length) : 0; }
 /* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح (V17.98) ═══
    ما يشعر به الفنيُّ لا ما نحكيه: أوّلُ رسمٍ للخريطة بعد الفتح، وأكبرُ رسمٍ
@@ -2770,7 +2770,8 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
-  if (e.target.closest('[data-liteoff]')){ liteOff(); return true; }
+  if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){} liteOff(); return true; }
+  if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
   if (e.target.closest('[data-phstalex]')){ phStaleSync.snooze = Date.now() + 30 * 60000; var ps0 = document.getElementById('phStale'); if (ps0) ps0.remove(); return true; }   /* (V37.13) */
   if (e.target.closest('[data-phflushnow]')){ if (!STATE.meta.online){ toast(t('افتح الشبكة أولًا')); return true; } photoFlush(); toast(t('جارٍ رفعُ الصور — اترك التطبيق مفتوحًا')); return true; }
   var phrf = e.target.closest('[data-phrefetch]');   /* (V37.7) أعد جلبَ صور النقطة */
