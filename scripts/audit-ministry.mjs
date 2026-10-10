@@ -75,4 +75,6 @@ T(/30 4 \* \* 0/.test(wf) && /20 \*\/6 \* \* \*/.test(wf) && /weekly-pack\.mjs/.
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 if (fails.length) process.exit(1);
+/* (V37.31) قاعدةُ المالك: المجموعاتُ الأربع في صفحة الوزارة بلا ما يوحي بتصريحٍ أو تعذّر */
+{ const src = readFileSync('index.html', 'utf8'); const m = /var CC_GROUPS = \[([\s\S]*?)\];/.exec(src); const bad = m ? /تصريح|تصاريح|منع|متعذ|وصول و/.test(m[1].replace(/\/\*[\s\S]*?\*\//g, '')) : true; if (bad){ console.log('  ✗ المجموعاتُ الأربع للوزارة فيها ما يوحي بتصريحٍ أو تعذّر'); process.exitCode = 1; } else console.log('  ✓ المجموعاتُ الأربع للوزارة بلا ما يوحي بتصريحٍ أو تعذّر'); }
 console.log('جردُ تقرير الوزارة نظيف \u2705');

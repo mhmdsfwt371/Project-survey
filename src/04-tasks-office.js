@@ -3490,7 +3490,7 @@ function assistResHtml(){
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
-          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + ASSIST_QUICK.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
+          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + (typeof ROLE !== 'undefined' && ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){

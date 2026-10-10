@@ -1239,7 +1239,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.30</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.31</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1301,7 +1301,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-aecbb99900.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-a50f5c703a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7369,7 +7369,8 @@ function knownList(){
 function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'function' ? arNorm(x) : x; return (' ' + x).replace(/ ال/g, ' ').replace(/ئ|ؤ/g, 'ي').trim(); }   /* «ال» في كلِّ كلمة لا أوّلِ النص وحدَه */
 function knownHits(q){
   q = knownNorm(q); if (q.length < 3) return [];
-  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+  var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
+  return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════════
@@ -15928,7 +15929,7 @@ function assistResHtml(){
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
-          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + ASSIST_QUICK.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
+          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + (typeof ROLE !== 'undefined' && ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){
@@ -22654,7 +22655,7 @@ var CC_GROUPS = [
   { g:'make',  n:'تصنيع وتجهيز',            who:'أفاقي — هيكل أو عمود أو طقم إضافي أو معدات', ks:['mount', 'beam', 'wide', 'height'] },
   { g:'study', n:'دراسة وزيارة تقنية',       who:'أفاقي — زيارة تقنية ودراسة الموقع',          ks:['entry', 'multi'] },
   { g:'owner', n:'تنسيق مع الجهة المالكة',   who:'الشركة أو الجهة المالكة',                    ks:['block', 'legacy'] },
-  { g:'access', n:'وصول وتصاريح',            who:'الوزارة أو الشركة أو الحراسة',               ks:[] }
+  { g:'access', n:'تحتاج زيارة أخرى',         who:'أفاقي — تنسيق الزيارة',                      ks:[] }   /* (V37.31) قاعدةُ المالك الدائمة: لا ما يوحي بتصريحٍ أو تعذّرٍ فيما تراه الوزارة */
 ];
 function ccGroupCounts(){
   var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0);
@@ -25432,6 +25433,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.31', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'المجموعة الرابعة في تحديات الوزارة بقى اسمها «تحتاج زيارة أخرى» (أفاقي — تنسيق الزيارة)، والمساعد عند الوزارة ما بيعرضش إرشادات الميدان الداخلية.' ] },
   { v:'V37.30', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'المساعد بقى ظاهر: الزرار مكتوب عليه «المساعد»، وعليه نقطة حمرا لما يكون في جهازك حاجة محتاجة حل (كتابات أو صور واقفة، أو المخزن فيه مشكلة)، وبيظهر تعريف بيه مرة واحدة بعد التحديث.',
       'أول ما تفتح المساعد فيه ٧ أسئلة جاهزة بنقرة (الصور مش بتترفع، التطبيق بيقع أو بطيء، ما اتحفظش، المخيم مش لاقيه، التصوير ممنوع، القارئ ساقط، النسخة قديمة)، ومعاه ٥ مشاكل معروفة جديدة من ملاحظات الميدان وأخطاء الأجهزة.' ] },

@@ -413,5 +413,6 @@ function knownList(){
 function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'function' ? arNorm(x) : x; return (' ' + x).replace(/ ال/g, ' ').replace(/ئ|ؤ/g, 'ي').trim(); }   /* «ال» في كلِّ كلمة لا أوّلِ النص وحدَه */
 function knownHits(q){
   q = knownNorm(q); if (q.length < 3) return [];
-  return knownList().filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+  var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
+  return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
 }
