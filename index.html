@@ -80,7 +80,7 @@ html[data-skin="brand"]{
 [data-skin="brand"] .card .pid{color:#F28C28}
 [data-skin="brand"] .btn-primary{background:#1A5FA8;border-color:#1A5FA8}
 [data-skin="brand"] .chip.on{background:#F28C28;border-color:#F28C28;color:#fff}
-.skin-row{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}.skin-row .chip{flex:1;justify-content:center}
+.skin-row{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}.skin-row .chip{flex:1;justify-content:center;background:transparent;color:var(--sidebar-ink);border:1px solid var(--sidebar-line)}.skin-row .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}html[data-skin="brand"] .skin-row .chip.on{background:#F28C28;border-color:#F28C28}   /* (V37.36) القائمةُ الجانبيةُ داكنةٌ في كلِّ المظاهر — كان نصُّ الاختيارين أبيضَ على أبيض */
 [data-theme="dark"]{
   --bg:#0A0D10; --surface:#12171c; --surface-2:#0F1418; --raise:#171D23;
   --ink:#E8EBEE; --ink-soft:#9BA5AF; --ink-mute:#6C757E;
@@ -1271,7 +1271,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.35</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.36</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -15965,6 +15965,16 @@ function assistLog(q, answered){
   try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
 }
 function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
+/* (V37.36) بلاغُ المالك: «صفحةُ المساعد مش بتتحدّث لوحدها بعد ما المزامنة تخلص» — حالةُ الجهاز تُقرأ عند الفتح وحدَه. صارت تُراقَب كلَّ ثانيتين
+   ما دام المساعدُ مفتوحًا، وحين تتغيّر (طابورٌ فرغ، صورةٌ رُفعت، شبكةٌ عادت) تُستبدَل النتائجُ وحدَها والحقلُ باقٍ بما كُتب فيه. */
+function assistDiagSig(){ try { var d = assistDiag(); return [d.q, d.pq, d.pf, d.pz, d.on ? 1 : 0, d.lite ? 1 : 0, d.idbBad ? 1 : 0].join('|'); } catch (e){ return ''; } }
+function assistLiveSync(){
+  if (!ASSIST_OPEN) { assistLiveSync.sig = ''; return; }
+  var rs = document.getElementById('assistRes'); if (!rs) return;
+  var sig = assistDiagSig(); if (!assistLiveSync.sig){ assistLiveSync.sig = sig; return; }
+  if (sig !== assistLiveSync.sig){ assistLiveSync.sig = sig; rs.innerHTML = assistResHtml(); }
+}
+setInterval(function(){ try { assistLiveSync(); } catch (e){ LS_ERR = e; } }, 2000);
 function assistBadgeSync(){
   var b = document.getElementById('assistBtn'); if (!b) return;
   if (!b.getAttribute('data-lbl')){ b.setAttribute('data-lbl', '1'); b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
@@ -25491,6 +25501,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.36', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'المساعد وهو مفتوح بيتحدّث لوحده: لما المزامنة تخلص أو صورة تترفع أو النت يقطع أو يرجع، «حالة جهازك الآن» بتتغير قدامك من غير ما تقفله وتفتحه، واللي كتبته في الخانة بيفضل.',
+      'مظهر «هوية أفاقي»: اختيارات المظهر في القائمة الجانبية كانت بتظهر أبيض على أبيض، بقت واضحة في كل المظاهر.' ] },
   { v:'V37.35', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'تصحيح في تقرير التحديث الأسبوعي (الإكسل والباوربوينت والوورد والـPDF): مؤشر «نسبة المسح» كان بيعرض رقم الزيارة، بقى فيه «نسبة الزيارة» و«نسبة المسح» الحقيقية جنب بعض. ونفس التصحيح في شريحة «المسح الميداني — نظرة عامة» وتبويب المسح وتقرير الـPDF.',
       'مؤشر «بانتظار قرار الوزارة» في التقرير بقى اسمه «اعتماد تقني مكتمل» (قاعدة ما تراه الوزارة).' ] },

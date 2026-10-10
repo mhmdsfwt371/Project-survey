@@ -3470,6 +3470,16 @@ function assistLog(q, answered){
   try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
 }
 function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
+/* (V37.36) بلاغُ المالك: «صفحةُ المساعد مش بتتحدّث لوحدها بعد ما المزامنة تخلص» — حالةُ الجهاز تُقرأ عند الفتح وحدَه. صارت تُراقَب كلَّ ثانيتين
+   ما دام المساعدُ مفتوحًا، وحين تتغيّر (طابورٌ فرغ، صورةٌ رُفعت، شبكةٌ عادت) تُستبدَل النتائجُ وحدَها والحقلُ باقٍ بما كُتب فيه. */
+function assistDiagSig(){ try { var d = assistDiag(); return [d.q, d.pq, d.pf, d.pz, d.on ? 1 : 0, d.lite ? 1 : 0, d.idbBad ? 1 : 0].join('|'); } catch (e){ return ''; } }
+function assistLiveSync(){
+  if (!ASSIST_OPEN) { assistLiveSync.sig = ''; return; }
+  var rs = document.getElementById('assistRes'); if (!rs) return;
+  var sig = assistDiagSig(); if (!assistLiveSync.sig){ assistLiveSync.sig = sig; return; }
+  if (sig !== assistLiveSync.sig){ assistLiveSync.sig = sig; rs.innerHTML = assistResHtml(); }
+}
+setInterval(function(){ try { assistLiveSync(); } catch (e){ LS_ERR = e; } }, 2000);
 function assistBadgeSync(){
   var b = document.getElementById('assistBtn'); if (!b) return;
   if (!b.getAttribute('data-lbl')){ b.setAttribute('data-lbl', '1'); b.classList.add('tb-assist'); b.innerHTML = '\u{1F9ED}<span class="tb-assist-t">' + esc(t('المساعد')) + '</span><i class="tb-dot" hidden></i>'; }
