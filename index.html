@@ -1238,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.21</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.22</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -2357,7 +2357,7 @@ var CORE = {
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
-      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true; }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
+      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true, phTouch(); }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
       if (v.siteOv && typeof v.siteOv === 'object'){ STATE.siteOv = v.siteOv; STATE.sites = STATE.sites.concat(STATE.hiddenSites || []); siteOvApply(); }
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;
@@ -6894,7 +6894,7 @@ function svqPhotoDel(photoId){
   if (may('delete') && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل المسح');
   else {
     var dr = { site:p.site, kind:p.kind, at:p.at, by:p.by || p._by || '', del:{ by:who, at:now, why:'حذفها رافعُها من تعديل المسح' } };
-    STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);
+    STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);  phTouch();   /* (V37.22) */
     logEvent('حذف صورة — ' + photoId + ' · من تعديل المسح', p.site);
   }
   var n = Object.assign({}, rec);
@@ -7229,7 +7229,7 @@ function photosFetchSite(siteId){
   PH_FETCH[siteId] = 'run';
   DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
+    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true, phTouch();   /* (V37.18) */
     PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
   }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
 }
@@ -7259,7 +7259,7 @@ function photosBackfill(force){
     var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
     return q.get().then(function(sn){
       FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true, phTouch();   /* (V37.18) */
       if (sn.size === 1000 && last != null) return step();
       STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
       if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;
@@ -13289,7 +13289,7 @@ function photoDelete(id, why){
   var done = function(){
     var rec = { site:p.site, kind:p.kind, at:p.at, by:p._by || '',
                 del:{ by:STATE.meta.name || '', at:Date.now(), why:String(why || '').trim() } };
-    STATE.photos[id] = rec;
+    STATE.photos[id] = rec;  phTouch();   /* (V37.22) */
     CORE.set('photos', id, rec);
     logEvent('حذف صورة — ' + id + (why ? ' · ' + why : ''), id);
     toast(t('حُذفت الصورة'));
@@ -13311,11 +13311,19 @@ function photoDelete(id, why){
 }
 
 /* صورُ موقعٍ بعينه — تُعرَض حيث يُقرَّر: في تفصيل النقطة وفي التدقيق */
-function photosOf(siteId){
-  var P = STATE.photos || {}, out = [];
-  Object.keys(P).forEach(function(k){ if (P[k] && P[k].site === siteId) out.push([k, P[k]]); });
-  return out.sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); });
+/* (V37.22) بلاغُ المالك «صفحة المتابعة بتاخد أكتر من ٥ ثواني»: كانت كلُّ نداءٍ يمسح الصورَ كلَّها (٣٬٩٠٠)، وبطاقةُ «صور ليست على الدرايف»
+   تنادي لكلِّ نقطة (١٬٩٤٥) — سبعةُ ملايين دورةٍ في الرسمة الواحدة. صار فهرسًا بالنقطة يُبنى مرةً ويُعاد حين تتغيّر الصور. */
+var PH_IDX = null, PH_IDX_KEY = '';
+function phIdx(){
+  var P = STATE.photos || {}, key = (typeof PH_VER === 'number' ? PH_VER : 0);   /* لا عدَّ للمفاتيح في المسار الساخن — التغييرُ يُعلَن بـphTouch أو بكائنٍ جديد */
+  if (PH_IDX && PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
+  var M = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.site){ (M[p.site] = M[p.site] || []).push([k, p]); } });
+  Object.keys(M).forEach(function(s){ M[s].sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); }); });
+  phIdx.ref = STATE.photos; PH_IDX = M; PH_IDX_KEY = key; return M;
 }
+var PH_VER = 0;
+function phTouch(){ PH_VER++; PH_IDX = null; }
+function photosOf(siteId){ var L = phIdx()[siteId]; return L ? L.slice() : []; }
 
 /* ═══ صورُ النقطة — أين هي الآن ═══
    «رفعت نقاطًا وصورًا — فين الصور؟». الصورةُ تمرُّ بثلاث محطات: طابورُ الجهاز
@@ -17140,7 +17148,7 @@ function readDelta(col, key, cap){
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     sn.forEach(function(dd){ STATE[key][dd.id] = key === 'photos' ? photoSlim(dd.data()) : dd.data(); });   /* (V37.13) كانت القراءةُ تُعَدّ مرتين · (V37.18) الصورُ بلا خام */
-    if (key === 'photos' && sn.size) PH_DIRTY = true;
+    if (key === 'photos' && sn.size) PH_DIRTY = true, phTouch();
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */
@@ -25235,6 +25243,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.22', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'صفحة المتابعة رجعت سريعة: كانت بتاخد أكتر من ٥ ثواني لأن كارت «صور ليست على الدرايف» كان بيلف على كل الصور (٣٬٩٠٠) لكل نقطة (١٬٩٤٥) في كل رسمة. بقى فيه فهرس للصور بيتبني مرة واحدة.' ] },
   { v:'V37.21', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'تصليح مهم بعد الجرد الكامل: صور مسار الطوارئ (الخام) كان ممكن تضيع قبل ما توصل الخادم، اتصلّح. والوضع الخفيف بقى جزء من حارس الإقلاع الأصلي بدل نسخة تانية.' ] },
   { v:'V37.20', d:'١٠ أكتوبر ٢٠٢٦', notes:[
@@ -34274,7 +34284,7 @@ function clickAPart2(e){
   var phd = e.target.closest('[data-phdel]');   /* (V37.17) حذفُ صورةٍ مرفوعة: تختفي من التطبيق والتقارير ويبقى ملفُّها على الدرايف */
   if (phd){ var pid1 = phd.getAttribute('data-phdel'), pp = (STATE.photos || {})[pid1];
     if (pp && window.confirm(t('حذف هذه الصورة؟ تختفي من التطبيق والتقارير عند الجميع، ويبقى ملفُّها على الدرايف.'))){
-      var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
+      var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; phTouch(); CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
       var bx1 = document.getElementById('svPhoBox'); if (bx1 && SV_PHO){ var host1 = bx1.parentNode; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var e0 = document.getElementById(i0); if (e0) e0.remove(); }); var tm1 = document.createElement('div'); tm1.innerHTML = svPhoPanel(SV_PHO); while (tm1.firstChild) host1.appendChild(tm1.firstChild); } else render(1); }
     return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */

@@ -2963,7 +2963,7 @@ function clickAPart2(e){
   var phd = e.target.closest('[data-phdel]');   /* (V37.17) حذفُ صورةٍ مرفوعة: تختفي من التطبيق والتقارير ويبقى ملفُّها على الدرايف */
   if (phd){ var pid1 = phd.getAttribute('data-phdel'), pp = (STATE.photos || {})[pid1];
     if (pp && window.confirm(t('حذف هذه الصورة؟ تختفي من التطبيق والتقارير عند الجميع، ويبقى ملفُّها على الدرايف.'))){
-      var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
+      var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; phTouch(); CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
       var bx1 = document.getElementById('svPhoBox'); if (bx1 && SV_PHO){ var host1 = bx1.parentNode; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var e0 = document.getElementById(i0); if (e0) e0.remove(); }); var tm1 = document.createElement('div'); tm1.innerHTML = svPhoPanel(SV_PHO); while (tm1.firstChild) host1.appendChild(tm1.firstChild); } else render(1); }
     return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */

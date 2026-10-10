@@ -274,7 +274,7 @@ function photosFetchSite(siteId){
   PH_FETCH[siteId] = 'run';
   DB.col('photos').where('site', '==', siteId).limit(40).get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
+    sn.forEach(function(d){ STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, d.data())); }); if (sn.size) PH_DIRTY = true, phTouch();   /* (V37.18) */
     PH_FETCH[siteId] = sn.size ? 'done' : 'none'; if (typeof render === 'function') render(1);
   }).catch(function(e){ PH_FETCH[siteId] = 'err'; LS_ERR = e; if (typeof render === 'function') render(1); });
 }
@@ -304,7 +304,7 @@ function photosBackfill(force){
     var q = DB.col('photos').orderBy('_at').limit(1000); if (last != null) q = q.startAfter(last);
     return q.get().then(function(sn){
       FB.readCount = (FB.readCount || 0) + sn.size; STATE.photos = STATE.photos || {};
-      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true;   /* (V37.18) */
+      sn.forEach(function(d){ var x = d.data() || {}; STATE.photos[d.id] = photoSlim(Object.assign({}, STATE.photos[d.id] || {}, x)); if (x._at != null) last = x._at; n++; }); if (sn.size) PH_DIRTY = true, phTouch();   /* (V37.18) */
       if (sn.size === 1000 && last != null) return step();
       STATE.meta.phFull = Date.now(); if (CORE.saveSoon) CORE.saveSoon(); photosBackfill.run = null;
       if (typeof statBump === 'function') statBump(); if (typeof render === 'function') render(1); return n;

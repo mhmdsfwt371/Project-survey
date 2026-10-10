@@ -912,7 +912,7 @@ function photoDelete(id, why){
   var done = function(){
     var rec = { site:p.site, kind:p.kind, at:p.at, by:p._by || '',
                 del:{ by:STATE.meta.name || '', at:Date.now(), why:String(why || '').trim() } };
-    STATE.photos[id] = rec;
+    STATE.photos[id] = rec;  phTouch();   /* (V37.22) */
     CORE.set('photos', id, rec);
     logEvent('حذف صورة — ' + id + (why ? ' · ' + why : ''), id);
     toast(t('حُذفت الصورة'));
@@ -934,11 +934,19 @@ function photoDelete(id, why){
 }
 
 /* صورُ موقعٍ بعينه — تُعرَض حيث يُقرَّر: في تفصيل النقطة وفي التدقيق */
-function photosOf(siteId){
-  var P = STATE.photos || {}, out = [];
-  Object.keys(P).forEach(function(k){ if (P[k] && P[k].site === siteId) out.push([k, P[k]]); });
-  return out.sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); });
+/* (V37.22) بلاغُ المالك «صفحة المتابعة بتاخد أكتر من ٥ ثواني»: كانت كلُّ نداءٍ يمسح الصورَ كلَّها (٣٬٩٠٠)، وبطاقةُ «صور ليست على الدرايف»
+   تنادي لكلِّ نقطة (١٬٩٤٥) — سبعةُ ملايين دورةٍ في الرسمة الواحدة. صار فهرسًا بالنقطة يُبنى مرةً ويُعاد حين تتغيّر الصور. */
+var PH_IDX = null, PH_IDX_KEY = '';
+function phIdx(){
+  var P = STATE.photos || {}, key = (typeof PH_VER === 'number' ? PH_VER : 0);   /* لا عدَّ للمفاتيح في المسار الساخن — التغييرُ يُعلَن بـphTouch أو بكائنٍ جديد */
+  if (PH_IDX && PH_IDX_KEY === key && phIdx.ref === STATE.photos) return PH_IDX;
+  var M = {}; Object.keys(P).forEach(function(k){ var p = P[k]; if (p && p.site){ (M[p.site] = M[p.site] || []).push([k, p]); } });
+  Object.keys(M).forEach(function(s){ M[s].sort(function(a, b){ return (b[1].at || 0) - (a[1].at || 0); }); });
+  phIdx.ref = STATE.photos; PH_IDX = M; PH_IDX_KEY = key; return M;
 }
+var PH_VER = 0;
+function phTouch(){ PH_VER++; PH_IDX = null; }
+function photosOf(siteId){ var L = phIdx()[siteId]; return L ? L.slice() : []; }
 
 /* ═══ صورُ النقطة — أين هي الآن ═══
    «رفعت نقاطًا وصورًا — فين الصور؟». الصورةُ تمرُّ بثلاث محطات: طابورُ الجهاز
@@ -4763,7 +4771,7 @@ function readDelta(col, key, cap){
   q.get().then(function(sn){
     FB.readCount = (FB.readCount || 0) + sn.size;
     sn.forEach(function(dd){ STATE[key][dd.id] = key === 'photos' ? photoSlim(dd.data()) : dd.data(); });   /* (V37.13) كانت القراءةُ تُعَدّ مرتين · (V37.18) الصورُ بلا خام */
-    if (key === 'photos' && sn.size) PH_DIRTY = true;
+    if (key === 'photos' && sn.size) PH_DIRTY = true, phTouch();
     at['@' + col] = start; CORE.saveSoon();
   }).catch(function(e){
     /* لا مؤشِّرَ على وثائقَ قديمةٍ كُتبت قبل المؤشِّر: تُسحَب مرةً بالأحدث */

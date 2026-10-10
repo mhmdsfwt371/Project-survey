@@ -1087,7 +1087,7 @@ var CORE = {
       ['recs','inss','tasks','moves','buys','queue','poison','diss','maints','steps','photos','pending','provision','att'].forEach(function(k){
         if (v[k]) STATE[k] = v[k];
       });
-      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true; }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
+      if (v.photos){ var oldP = {}; Object.keys(v.photos).forEach(function(k){ oldP[k] = photoSlim(v.photos[k]); }); STATE.photos = oldP; PH_DIRTY = true, phTouch(); }   /* (V37.18) لقطةٌ قديمةٌ تحمل الصورَ: تُجرَّد مرةً */
       if (v.siteOv && typeof v.siteOv === 'object'){ STATE.siteOv = v.siteOv; STATE.sites = STATE.sites.concat(STATE.hiddenSites || []); siteOvApply(); }
       if (v.cfg) Object.keys(v.cfg).forEach(function(k){ CFG[k] = v.cfg[k]; });
       if (v.pullAt && typeof v.pullAt === 'object') STATE.meta.pullAt = v.pullAt;

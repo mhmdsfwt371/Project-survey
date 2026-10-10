@@ -3096,7 +3096,7 @@ function svqPhotoDel(photoId){
   if (may('delete') && typeof photoDelete === 'function') photoDelete(photoId, 'من تعديل المسح');
   else {
     var dr = { site:p.site, kind:p.kind, at:p.at, by:p.by || p._by || '', del:{ by:who, at:now, why:'حذفها رافعُها من تعديل المسح' } };
-    STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);
+    STATE.photos[photoId] = dr; CORE.set('photos', photoId, dr);  phTouch();   /* (V37.22) */
     logEvent('حذف صورة — ' + photoId + ' · من تعديل المسح', p.site);
   }
   var n = Object.assign({}, rec);
