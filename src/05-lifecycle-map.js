@@ -216,7 +216,8 @@ function mapInit(){
   MAP.on('zoomend moveend', mapPaintMove);   /* (V25.3) التحريكُ رسمةٌ خفيفة، والتقريبُ وسائرُ التغييرات كاملة */
   MAP.on('click', function(e){
     if (IOT.edit){ iotMapClick(e.latlng); return; }   /* (V25.8) */
-    if (BED){ if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
+    if (BED){ if (BED.draw){ bedSnap(); BED.pts.push([+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)]); bedPaint(); render(1); return; }   /* (V37.17) */
+      if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
     if (typeof TFD === 'object' && TFD.on){ tfdAdd(e.latlng.lat, e.latlng.lng); return; }   /* (V28.0) */
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
@@ -2053,14 +2054,21 @@ function bedStart(id){
   if (!maySiteEdit()){ toast(t('تعديلُ الحدود للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x || x.type !== 'مخيم'){ toast(t('لا مخيمَ بهذا المعرِّف')); return false; }
   if (!polyOf(x).length && !POLY && typeof polyLoad === 'function'){ polyLoad().then(function(){ if (POLY) bedStart(id); }); return false; }
-  var F = campFoot(x); if (!F){ toast(t('لا حدودَ لهذا المخيم — ارسمها بأداة «مساحة بنقاط»')); return false; }
+  var F = campFoot(x);
+  if (!F){   /* (V37.17) طلبُ المالك «حلٌّ جذريٌّ يدويّ»: مخيمٌ بلا حدود يُرسَم هنا مباشرةً — نقرةٌ لكلِّ زاوية */
+    BED = { id:id, pts:[], sel:-1, orig:false, drawn:false, draw:true, hist:[] };
+    POP_SITE = ''; POP_OPEN = false; if (MAP) MAP.closePopup();
+    try { if (MAP && x.lat && x.lng) MAP.setView([+x.lat, +x.lng], Math.max(MAP.getZoom(), 18), { animate:false }); } catch (e){ LS_ERR = e; }
+    bedPaint(); render(1); toast(t('اضغط على الخريطة عند كلِّ زاويةٍ بالترتيب، ثم «تمّ الرسم»')); return true;
+  }
   var P = F.map(function(q){ return [+q[1], +q[0]]; });
   if (P.length > 3 && P[0][0] === P[P.length - 1][0] && P[0][1] === P[P.length - 1][1]) P.pop();   /* الحلقةُ المغلقةُ تُفتَح: الزاويةُ الأولى لا تتكرّر */
-  BED = { id:id, pts:P, sel:-1, orig:!x.isNew && !!(POLY && POLY[id] && POLY[id].length >= 3), drawn:polyOf(x).length >= 3 };
+  BED = { id:id, pts:P, sel:-1, orig:!x.isNew && !!(POLY && POLY[id] && POLY[id].length >= 3), drawn:polyOf(x).length >= 3, draw:false, hist:[] };
   POP_SITE = ''; POP_OPEN = false; if (MAP) MAP.closePopup();
   try { if (MAP) MAP.fitBounds(L.latLngBounds(P).pad(0.35), { animate:false, maxZoom:19 }); } catch (e){ LS_ERR = e; }
   bedPaint(); render(1); toast(t('اسحب الزاوية لنقلها، واضغط النقطة الصغيرة بين زاويتين لإضافة زاوية')); return true;
 }
+function bedSnap(){ if (BED){ BED.hist = BED.hist || []; BED.hist.push(BED.pts.map(function(q){ return [q[0], q[1]]; })); if (BED.hist.length > 60) BED.hist.shift(); } }   /* (V37.17) سجلُّ التراجع */
 function bedPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try {
@@ -2068,24 +2076,35 @@ function bedPaint(){
     if (BED_L) BED_L.clearLayers(); else BED_L = L.layerGroup().addTo(MAP);
   } catch (e){ LS_ERR = e; return; }
   if (!BED) return;
-  var P = BED.pts, poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(BED_L);
+  var P = BED.pts, poly = null;
+  if (P.length >= 3) poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(BED_L);
+  else if (P.length === 2) poly = L.polyline(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, dashArray:'6 4', interactive:false }).addTo(BED_L);
   P.forEach(function(q, i){
-    var mk = L.marker(q, { draggable:true, zIndexOffset:1000, icon:L.divIcon({ className:'bed-v' + (BED.sel === i ? ' on' : ''), iconSize:[22, 22] }) });
-    mk.on('drag', function(e){ var ll = e.target.getLatLng(); BED.pts[i] = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)]; poly.setLatLngs(BED.pts); });
+    var mk = L.marker(q, { draggable:true, zIndexOffset:1000, icon:L.divIcon({ className:'bed-v' + (BED.sel === i ? ' on' : ''), iconSize:[30, 30] }) });
+    mk.on('dragstart', function(){ bedSnap(); });
+    mk.on('drag', function(e){ var ll = e.target.getLatLng(); BED.pts[i] = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)]; if (poly) poly.setLatLngs(BED.pts); });
     mk.on('dragend', function(){ BED.sel = i; bedPaint(); render(1); });
     mk.on('click', function(){ BED.sel = i; bedPaint(); render(1); });
     mk.addTo(BED_L);
   });
+  if (BED.draw || P.length < 3) return;   /* وضعُ الرسم: الزوايا وحدَها حتى «تمّ الرسم» */
   for (var k = 0; k < P.length; k++){
     (function(k){
       var a = P[k], b = P[(k + 1) % P.length], mid = [+((a[0] + b[0]) / 2).toFixed(6), +((a[1] + b[1]) / 2).toFixed(6)];
-      L.marker(mid, { icon:L.divIcon({ className:'bed-m', iconSize:[14, 14] }) })
-        .on('click', function(){ BED.pts.splice(k + 1, 0, mid); BED.sel = k + 1; bedPaint(); render(1); })
+      L.marker(mid, { icon:L.divIcon({ className:'bed-m', iconSize:[18, 18] }) })
+        .on('click', function(){ bedSnap(); BED.pts.splice(k + 1, 0, mid); BED.sel = k + 1; bedPaint(); render(1); })
         .addTo(BED_L);
     })(k);
   }
+  /* مقبضُ الوسط: يُسحَب فينتقل الشكلُ كلُّه كما هو */
+  var cy = P.reduce(function(a, q){ return a + q[0]; }, 0) / P.length, cx = P.reduce(function(a, q){ return a + q[1]; }, 0) / P.length, start = null, base = null;
+  L.marker([cy, cx], { draggable:true, zIndexOffset:1100, icon:L.divIcon({ className:'bed-c', html:'\u2725', iconSize:[34, 34] }) })
+    .on('dragstart', function(e){ bedSnap(); start = e.target.getLatLng(); base = BED.pts.map(function(q){ return [q[0], q[1]]; }); })
+    .on('drag', function(e){ if (!start) return; var ll = e.target.getLatLng(), dy = ll.lat - start.lat, dx = ll.lng - start.lng; BED.pts = base.map(function(q){ return [+(q[0] + dy).toFixed(6), +(q[1] + dx).toFixed(6)]; }); if (poly) poly.setLatLngs(BED.pts); })
+    .on('dragend', function(){ start = null; bedPaint(); render(1); })
+    .addTo(BED_L);
 }
-function bedDel(){ if (!BED || BED.sel < 0 || BED.pts.length <= 3) return; BED.pts.splice(BED.sel, 1); BED.sel = -1; bedPaint(); render(1); }
+function bedDel(){ if (!BED || BED.sel < 0 || BED.pts.length <= 3) return; bedSnap(); BED.pts.splice(BED.sel, 1); BED.sel = -1; bedPaint(); render(1); }
 function bedCommit(x, flat, what){
   var patch = { poly:flat, polyBy:STATE.meta.name || '', polyAt:Date.now() };
   Object.assign(x, patch);
@@ -2112,16 +2131,23 @@ function bedReset(){
 }
 function bedPanelHtml(){
   if (!BED) return '';
-  var x = siteFind(BED.id), nm0 = x ? (x.name || BED.id) : BED.id;
+  var x = siteFind(BED.id), nm0 = x ? (x.name || BED.id) : BED.id, H = (BED.hist || []).length;
+  var undo = H ? btn('\u21B6 ' + t('تراجع'), 'btn-quiet btn-sm', ' data-bedundo="1"') : '';
+  if (BED.draw) return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
+    + '<b>' + esc(t('رسم حدود')) + ' \u2014 ' + esc(nm0) + '</b><span class="hint">' + nm(BED.pts.length) + ' ' + esc(t('زاوية')) + '</span></div>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t('اضغط على الخريطة عند كلِّ زاويةٍ بالترتيب حول المخيم — تُسحَب الزاويةُ لتصحيحها.')) + '</p>'
+    + '<div class="actions">' + (BED.pts.length >= 3 ? btn('\u2713 ' + t('تمّ الرسم'), 'btn-primary btn-sm', ' data-beddone="1"') : '') + undo
+    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"') + '</div></div>';
   return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
     + '<b>' + esc(t('تعديل حدود')) + ' \u2014 ' + esc(nm0) + '</b>'
     + '<span class="hint">' + nm(BED.pts.length) + ' ' + esc(t('زاوية')) + ' \u00b7 ' + nm(Math.round(bedArea(BED.pts))) + ' ' + esc(t('م²')) + '</span></div>'
-    + '<p class="hint" style="margin:6px 0">' + esc(t(BED.sel >= 0 ? 'الزاويةُ المحدَّدة بالأحمر — اسحبها أو احذفها' : 'اسحب الزاوية لنقلها، واضغط النقطة الصغيرة بين زاويتين لإضافة زاوية')) + '</p>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t(BED.sel >= 0 ? 'الزاويةُ المحدَّدة بالأحمر — اسحبها أو احذفها' : 'اسحب الزاوية لنقلها، والنقطةَ الصغيرة بين زاويتين لإضافة زاوية، والعلامةَ في الوسط لنقل الشكل كلِّه')) + '</p>'
     + '<div class="actions">'
-    + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-bedsave="1"')
-    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"')
+    + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-bedsave="1"') + undo
     + (BED.sel >= 0 && BED.pts.length > 3 ? btn('\u{1F5D1} ' + t('احذف الزاوية'), 'btn-quiet btn-sm', ' data-beddel="1"') : '')
+    + btn('\u270F ' + t('ارسم من جديد'), 'btn-quiet btn-sm', ' data-bedredraw="1"')
     + (BED.orig && BED.drawn ? btn('\u21BA ' + t('رجوع للحدود الأصلية'), 'btn-quiet btn-sm', ' data-bedreset="1"') : '')
+    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"')
     + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */

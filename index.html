@@ -411,6 +411,7 @@ input[type="number"]{max-width:140px}
 .bed-v{background:#fff;border:3px solid #F5A623;border-radius:50%;box-sizing:border-box;box-shadow:0 1px 4px rgba(0,0,0,.45)}
 .bed-v.on{border-color:#E05252;background:#FFE3E3}
 .bed-m{background:rgba(245,166,35,.6);border:2px solid #fff;border-radius:50%;box-sizing:border-box}
+.bed-c{background:#F5A623;color:#fff;border:2px solid #fff;border-radius:50%;box-sizing:border-box;display:flex;align-items:center;justify-content:center;font-size:18px;box-shadow:0 1px 6px rgba(0,0,0,.5);cursor:move}   /* (V37.17) نقلُ الشكل كلِّه */
 /* ═══ لوحُ الرسم على الهاتف: شريطٌ لا صفحة (V17.48) ═══
    وُضع اللوحُ ليكون بطاقةً صغيرةً أسفلَ الخريطة، فابتلع الشاشةَ على الهاتف:
    قاعدةُ الشبكة العامة (V17.33) تجعل كلَّ عمودين عمودًا واحدًا، فصارت حقولُه
@@ -1236,7 +1237,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.16</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.17</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1298,7 +1299,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-1c7e5efae4.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-a1b25c3518.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -13377,7 +13378,8 @@ function photoGalleryHtml(siteId){
     if (p.status === 'done' || p.link){
       var th = p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w600' : '';
       html += tile(th ? { src:th } : null, pill('على الدرايف ✓', 'ok'), p.kind,
-        '<a class="btn btn-secondary btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">' + esc(t('افتح على الدرايف')) + '</a>', id);
+        '<a class="btn btn-secondary btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">' + esc(t('افتح على الدرايف')) + '</a>'
+        + (((typeof mayDeleteFinal === 'function' && mayDeleteFinal()) || (p.by && p.by === STATE.meta.name)) ? ' ' + btn('\u{1F5D1} ' + t('احذف الصورة'), 'btn-quiet btn-sm', ' data-phdel="' + esc(id) + '" style="color:#E05252;margin-top:6px"') : ''), id);   /* (V37.17) طلبُ المالك: حذفُ صورةٍ رُفعت خطأً */
     } else if (p.status === 'error'){
       var e1 = phErr(p.why); if (e1.fix) fixes[e1.s] = e1.fix;
       html += tile(p.data ? { src:p.data } : null, pill('خطأ في النقل', 'bad'), p.kind, '<p class="hint" style="margin:4px 0 0">' + esc(t(e1.s)) + '</p>', p.data ? id : '');
@@ -16039,7 +16041,7 @@ function popHtml(){
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
     +   (isJmr(s) && siteGate(s) ? kv('البوابة', '<b>' + esc(t(siteGate(s))) + '</b>' + (siteFloor(s) != null ? ' \u2014 ' + esc(t(floorName(siteFloor(s)))) : '')) : '')   /* (V25.4) */
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
-    +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn('عدّل الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"')) : '')   /* (V25.9) */
+    +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"')) : '')   /* (V25.9) */
     +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (iotOf(s.id) ? nm(iotOf(s.id).sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + esc(t('جيت واي')) + ' ' : esc(t('طبقة التخطيط لم تُحمَّل')) + ' ') + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"')) : '')   /* (V25.8) */
     +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
@@ -17710,7 +17712,8 @@ function mapInit(){
   MAP.on('zoomend moveend', mapPaintMove);   /* (V25.3) التحريكُ رسمةٌ خفيفة، والتقريبُ وسائرُ التغييرات كاملة */
   MAP.on('click', function(e){
     if (IOT.edit){ iotMapClick(e.latlng); return; }   /* (V25.8) */
-    if (BED){ if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
+    if (BED){ if (BED.draw){ bedSnap(); BED.pts.push([+e.latlng.lat.toFixed(6), +e.latlng.lng.toFixed(6)]); bedPaint(); render(1); return; }   /* (V37.17) */
+      if (BED.sel >= 0){ BED.sel = -1; bedPaint(); render(1); } return; }   /* (V25.9) النقرُ خارج المقابض يُلغي التحديد لا غير */
     if (typeof TFD === 'object' && TFD.on){ tfdAdd(e.latlng.lat, e.latlng.lng); return; }   /* (V28.0) */
     if (typeof MOVE_ID !== 'undefined' && MOVE_ID) moveApply(e.latlng.lat, e.latlng.lng);
     else if (typeof PIN_ON !== 'undefined' && PIN_ON) pinApply(e.latlng.lat, e.latlng.lng);
@@ -19547,14 +19550,21 @@ function bedStart(id){
   if (!maySiteEdit()){ toast(t('تعديلُ الحدود للمهندس فما فوق')); return false; }
   var x = siteFind(id); if (!x || x.type !== 'مخيم'){ toast(t('لا مخيمَ بهذا المعرِّف')); return false; }
   if (!polyOf(x).length && !POLY && typeof polyLoad === 'function'){ polyLoad().then(function(){ if (POLY) bedStart(id); }); return false; }
-  var F = campFoot(x); if (!F){ toast(t('لا حدودَ لهذا المخيم — ارسمها بأداة «مساحة بنقاط»')); return false; }
+  var F = campFoot(x);
+  if (!F){   /* (V37.17) طلبُ المالك «حلٌّ جذريٌّ يدويّ»: مخيمٌ بلا حدود يُرسَم هنا مباشرةً — نقرةٌ لكلِّ زاوية */
+    BED = { id:id, pts:[], sel:-1, orig:false, drawn:false, draw:true, hist:[] };
+    POP_SITE = ''; POP_OPEN = false; if (MAP) MAP.closePopup();
+    try { if (MAP && x.lat && x.lng) MAP.setView([+x.lat, +x.lng], Math.max(MAP.getZoom(), 18), { animate:false }); } catch (e){ LS_ERR = e; }
+    bedPaint(); render(1); toast(t('اضغط على الخريطة عند كلِّ زاويةٍ بالترتيب، ثم «تمّ الرسم»')); return true;
+  }
   var P = F.map(function(q){ return [+q[1], +q[0]]; });
   if (P.length > 3 && P[0][0] === P[P.length - 1][0] && P[0][1] === P[P.length - 1][1]) P.pop();   /* الحلقةُ المغلقةُ تُفتَح: الزاويةُ الأولى لا تتكرّر */
-  BED = { id:id, pts:P, sel:-1, orig:!x.isNew && !!(POLY && POLY[id] && POLY[id].length >= 3), drawn:polyOf(x).length >= 3 };
+  BED = { id:id, pts:P, sel:-1, orig:!x.isNew && !!(POLY && POLY[id] && POLY[id].length >= 3), drawn:polyOf(x).length >= 3, draw:false, hist:[] };
   POP_SITE = ''; POP_OPEN = false; if (MAP) MAP.closePopup();
   try { if (MAP) MAP.fitBounds(L.latLngBounds(P).pad(0.35), { animate:false, maxZoom:19 }); } catch (e){ LS_ERR = e; }
   bedPaint(); render(1); toast(t('اسحب الزاوية لنقلها، واضغط النقطة الصغيرة بين زاويتين لإضافة زاوية')); return true;
 }
+function bedSnap(){ if (BED){ BED.hist = BED.hist || []; BED.hist.push(BED.pts.map(function(q){ return [q[0], q[1]]; })); if (BED.hist.length > 60) BED.hist.shift(); } }   /* (V37.17) سجلُّ التراجع */
 function bedPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
   try {
@@ -19562,24 +19572,35 @@ function bedPaint(){
     if (BED_L) BED_L.clearLayers(); else BED_L = L.layerGroup().addTo(MAP);
   } catch (e){ LS_ERR = e; return; }
   if (!BED) return;
-  var P = BED.pts, poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(BED_L);
+  var P = BED.pts, poly = null;
+  if (P.length >= 3) poly = L.polygon(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, fillOpacity:0.18, dashArray:'6 4', interactive:false }).addTo(BED_L);
+  else if (P.length === 2) poly = L.polyline(P, { renderer:MAP_CV, color:'#F5A623', weight:2.5, dashArray:'6 4', interactive:false }).addTo(BED_L);
   P.forEach(function(q, i){
-    var mk = L.marker(q, { draggable:true, zIndexOffset:1000, icon:L.divIcon({ className:'bed-v' + (BED.sel === i ? ' on' : ''), iconSize:[22, 22] }) });
-    mk.on('drag', function(e){ var ll = e.target.getLatLng(); BED.pts[i] = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)]; poly.setLatLngs(BED.pts); });
+    var mk = L.marker(q, { draggable:true, zIndexOffset:1000, icon:L.divIcon({ className:'bed-v' + (BED.sel === i ? ' on' : ''), iconSize:[30, 30] }) });
+    mk.on('dragstart', function(){ bedSnap(); });
+    mk.on('drag', function(e){ var ll = e.target.getLatLng(); BED.pts[i] = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)]; if (poly) poly.setLatLngs(BED.pts); });
     mk.on('dragend', function(){ BED.sel = i; bedPaint(); render(1); });
     mk.on('click', function(){ BED.sel = i; bedPaint(); render(1); });
     mk.addTo(BED_L);
   });
+  if (BED.draw || P.length < 3) return;   /* وضعُ الرسم: الزوايا وحدَها حتى «تمّ الرسم» */
   for (var k = 0; k < P.length; k++){
     (function(k){
       var a = P[k], b = P[(k + 1) % P.length], mid = [+((a[0] + b[0]) / 2).toFixed(6), +((a[1] + b[1]) / 2).toFixed(6)];
-      L.marker(mid, { icon:L.divIcon({ className:'bed-m', iconSize:[14, 14] }) })
-        .on('click', function(){ BED.pts.splice(k + 1, 0, mid); BED.sel = k + 1; bedPaint(); render(1); })
+      L.marker(mid, { icon:L.divIcon({ className:'bed-m', iconSize:[18, 18] }) })
+        .on('click', function(){ bedSnap(); BED.pts.splice(k + 1, 0, mid); BED.sel = k + 1; bedPaint(); render(1); })
         .addTo(BED_L);
     })(k);
   }
+  /* مقبضُ الوسط: يُسحَب فينتقل الشكلُ كلُّه كما هو */
+  var cy = P.reduce(function(a, q){ return a + q[0]; }, 0) / P.length, cx = P.reduce(function(a, q){ return a + q[1]; }, 0) / P.length, start = null, base = null;
+  L.marker([cy, cx], { draggable:true, zIndexOffset:1100, icon:L.divIcon({ className:'bed-c', html:'\u2725', iconSize:[34, 34] }) })
+    .on('dragstart', function(e){ bedSnap(); start = e.target.getLatLng(); base = BED.pts.map(function(q){ return [q[0], q[1]]; }); })
+    .on('drag', function(e){ if (!start) return; var ll = e.target.getLatLng(), dy = ll.lat - start.lat, dx = ll.lng - start.lng; BED.pts = base.map(function(q){ return [+(q[0] + dy).toFixed(6), +(q[1] + dx).toFixed(6)]; }); if (poly) poly.setLatLngs(BED.pts); })
+    .on('dragend', function(){ start = null; bedPaint(); render(1); })
+    .addTo(BED_L);
 }
-function bedDel(){ if (!BED || BED.sel < 0 || BED.pts.length <= 3) return; BED.pts.splice(BED.sel, 1); BED.sel = -1; bedPaint(); render(1); }
+function bedDel(){ if (!BED || BED.sel < 0 || BED.pts.length <= 3) return; bedSnap(); BED.pts.splice(BED.sel, 1); BED.sel = -1; bedPaint(); render(1); }
 function bedCommit(x, flat, what){
   var patch = { poly:flat, polyBy:STATE.meta.name || '', polyAt:Date.now() };
   Object.assign(x, patch);
@@ -19606,16 +19627,23 @@ function bedReset(){
 }
 function bedPanelHtml(){
   if (!BED) return '';
-  var x = siteFind(BED.id), nm0 = x ? (x.name || BED.id) : BED.id;
+  var x = siteFind(BED.id), nm0 = x ? (x.name || BED.id) : BED.id, H = (BED.hist || []).length;
+  var undo = H ? btn('\u21B6 ' + t('تراجع'), 'btn-quiet btn-sm', ' data-bedundo="1"') : '';
+  if (BED.draw) return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
+    + '<b>' + esc(t('رسم حدود')) + ' \u2014 ' + esc(nm0) + '</b><span class="hint">' + nm(BED.pts.length) + ' ' + esc(t('زاوية')) + '</span></div>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t('اضغط على الخريطة عند كلِّ زاويةٍ بالترتيب حول المخيم — تُسحَب الزاويةُ لتصحيحها.')) + '</p>'
+    + '<div class="actions">' + (BED.pts.length >= 3 ? btn('\u2713 ' + t('تمّ الرسم'), 'btn-primary btn-sm', ' data-beddone="1"') : '') + undo
+    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"') + '</div></div>';
   return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
     + '<b>' + esc(t('تعديل حدود')) + ' \u2014 ' + esc(nm0) + '</b>'
     + '<span class="hint">' + nm(BED.pts.length) + ' ' + esc(t('زاوية')) + ' \u00b7 ' + nm(Math.round(bedArea(BED.pts))) + ' ' + esc(t('م²')) + '</span></div>'
-    + '<p class="hint" style="margin:6px 0">' + esc(t(BED.sel >= 0 ? 'الزاويةُ المحدَّدة بالأحمر — اسحبها أو احذفها' : 'اسحب الزاوية لنقلها، واضغط النقطة الصغيرة بين زاويتين لإضافة زاوية')) + '</p>'
+    + '<p class="hint" style="margin:6px 0">' + esc(t(BED.sel >= 0 ? 'الزاويةُ المحدَّدة بالأحمر — اسحبها أو احذفها' : 'اسحب الزاوية لنقلها، والنقطةَ الصغيرة بين زاويتين لإضافة زاوية، والعلامةَ في الوسط لنقل الشكل كلِّه')) + '</p>'
     + '<div class="actions">'
-    + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-bedsave="1"')
-    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"')
+    + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-bedsave="1"') + undo
     + (BED.sel >= 0 && BED.pts.length > 3 ? btn('\u{1F5D1} ' + t('احذف الزاوية'), 'btn-quiet btn-sm', ' data-beddel="1"') : '')
+    + btn('\u270F ' + t('ارسم من جديد'), 'btn-quiet btn-sm', ' data-bedredraw="1"')
     + (BED.orig && BED.drawn ? btn('\u21BA ' + t('رجوع للحدود الأصلية'), 'btn-quiet btn-sm', ' data-bedreset="1"') : '')
+    + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-bedcancel="1"')
     + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
@@ -25167,6 +25195,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.17', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'محرر حدود المخيم بقى يدوي بالكامل: مخيم من غير حدود بتضغط «ارسم الحدود» وتدوس على الخريطة عند كل زاوية ثم «تمّ الرسم». ومخيم ليه حدود: مقابض أكبر للمس، وعلامة في النص تنقل الشكل كله، وتراجع خطوة بخطوة، وحذف زاوية، و«ارسم من جديد»، ورجوع للأصل.',
+      'تقدر تحذف صورة اترفعت غلط على الدرايف من معرض صور النقطة (المهندس فأعلى أو اللي رفعها): بتختفي من التطبيق والتقارير عند الكل، وملفها بيفضل على الدرايف.' ] },
   { v:'V37.16', d:'٨ أكتوبر ٢٠٢٦', notes:[
       'كروت الزيارة والمسح والتركيب والتسليم والفك في متابعة الوزارة بقت بتفتح «لوحة» بدل القائمة: العدد ونسبته، وآخر ٧ أيام والنهارده، وتوزيعها حسب المشعر والنوع والشركة والمنفّذ، والتحديات، وآخر ١٤ يوم. والتفاصيل من «تصدير إكسل — التفاصيل»، وفيه زرار «القائمة» لو احتجت صور نقطة بعينها.',
       'صور نموذج المسح: تقدر تختار صورة من المعرض في الموبايل مش من الكاميرا بس، وفيه زرار «🗑 احذف الصورة» تحت أي صورة اتاخدت غلط قبل الحفظ.' ] },
@@ -34186,6 +34217,12 @@ function clickAPart2(e){
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
   if (e.target.closest('[data-svpopclose]')){ SV_PHO = ''; SV_POP = ''; svPopRemove(); return true; }   /* (V37.14) بلا رسم */
+  var phd = e.target.closest('[data-phdel]');   /* (V37.17) حذفُ صورةٍ مرفوعة: تختفي من التطبيق والتقارير ويبقى ملفُّها على الدرايف */
+  if (phd){ var pid1 = phd.getAttribute('data-phdel'), pp = (STATE.photos || {})[pid1];
+    if (pp && window.confirm(t('حذف هذه الصورة؟ تختفي من التطبيق والتقارير عند الجميع، ويبقى ملفُّها على الدرايف.'))){
+      var dv = { by:STATE.meta.name || '', at:Date.now(), why:t('رُفعت خطأً') }; pp.del = dv; CORE.set('photos', pid1, { del:dv }); logEvent('حذفُ صورة — ' + (pp.site || '') + ' \u00b7 ' + (pp.kind || ''), pp.site || ''); statBump(); toast(t('حُذفت الصورة'));
+      var bx1 = document.getElementById('svPhoBox'); if (bx1 && SV_PHO){ var host1 = bx1.parentNode; ['svPhoVeil', 'svPhoBox'].forEach(function(i0){ var e0 = document.getElementById(i0); if (e0) e0.remove(); }); var tm1 = document.createElement('div'); tm1.innerHTML = svPhoPanel(SV_PHO); while (tm1.firstChild) host1.appendChild(tm1.firstChild); } else render(1); }
+    return true; }
   var phc = e.target.closest('[data-phclear]');   /* (V37.16) طلبُ المالك: حذفُ صورةٍ التُقطت خطأً قبل الحفظ */
   if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
   var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
@@ -34637,6 +34674,9 @@ function clickAPart6(e){
   if (e.target.closest('[data-bedsave]')){ bedSave(); return true; }
   if (e.target.closest('[data-bedcancel]')){ BED = null; bedPaint(); render(1); return true; }
   if (e.target.closest('[data-beddel]')){ bedDel(); return true; }
+  if (e.target.closest('[data-bedundo]')){ if (BED && BED.hist && BED.hist.length){ BED.pts = BED.hist.pop(); BED.sel = -1; bedPaint(); render(1); } return true; }   /* (V37.17) */
+  if (e.target.closest('[data-beddone]')){ if (BED && BED.pts.length >= 3){ BED.draw = false; BED.sel = -1; bedPaint(); render(1); toast(t('عدّل الزوايا إن لزم ثم احفظ')); } return true; }
+  if (e.target.closest('[data-bedredraw]')){ if (BED){ bedSnap(); BED.pts = []; BED.sel = -1; BED.draw = true; bedPaint(); render(1); toast(t('اضغط على الخريطة عند كلِّ زاويةٍ بالترتيب، ثم «تمّ الرسم»')); } return true; }
   if (e.target.closest('[data-bedreset]')){ bedReset(); return true; }
   var ied = e.target.closest('[data-iotedit]');   /* (V25.8) تعديلُ حساسات مخيم */
   if (ied){ if (MAP) MAP.closePopup(); iotEditStart(ied.getAttribute('data-iotedit')); return true; }

@@ -1037,7 +1037,8 @@ function photoGalleryHtml(siteId){
     if (p.status === 'done' || p.link){
       var th = p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w600' : '';
       html += tile(th ? { src:th } : null, pill('على الدرايف ✓', 'ok'), p.kind,
-        '<a class="btn btn-secondary btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">' + esc(t('افتح على الدرايف')) + '</a>', id);
+        '<a class="btn btn-secondary btn-sm" style="margin-top:6px" target="_blank" rel="noopener" href="' + esc(p.link || '#') + '" data-pview="' + esc(id) + '">' + esc(t('افتح على الدرايف')) + '</a>'
+        + (((typeof mayDeleteFinal === 'function' && mayDeleteFinal()) || (p.by && p.by === STATE.meta.name)) ? ' ' + btn('\u{1F5D1} ' + t('احذف الصورة'), 'btn-quiet btn-sm', ' data-phdel="' + esc(id) + '" style="color:#E05252;margin-top:6px"') : ''), id);   /* (V37.17) طلبُ المالك: حذفُ صورةٍ رُفعت خطأً */
     } else if (p.status === 'error'){
       var e1 = phErr(p.why); if (e1.fix) fixes[e1.s] = e1.fix;
       html += tile(p.data ? { src:p.data } : null, pill('خطأ في النقل', 'bad'), p.kind, '<p class="hint" style="margin:4px 0 0">' + esc(t(e1.s)) + '</p>', p.data ? id : '');
@@ -3699,7 +3700,7 @@ function popHtml(){
     +   kv('الدور', siteFloor(s) != null ? esc(t(floorName(siteFloor(s)))) : '')   /* (V22.2) */
     +   (isJmr(s) && siteGate(s) ? kv('البوابة', '<b>' + esc(t(siteGate(s))) + '</b>' + (siteFloor(s) != null ? ' \u2014 ' + esc(t(floorName(siteFloor(s)))) : '')) : '')   /* (V25.4) */
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
-    +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn('عدّل الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"')) : '')   /* (V25.9) */
+    +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"')) : '')   /* (V25.9) */
     +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (iotOf(s.id) ? nm(iotOf(s.id).sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + esc(t('جيت واي')) + ' ' : esc(t('طبقة التخطيط لم تُحمَّل')) + ' ') + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"')) : '')   /* (V25.8) */
     +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
