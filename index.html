@@ -1238,7 +1238,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.23</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.24</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -17151,7 +17151,10 @@ function pullDelta(opt){
   var tk = sc.tree ? treeKeys() : null;
   var sig = effRole(ROLE) + '|' + sc.cols.join(',') + '|' + (sc.mine ? 'mine' : 'all') + '|' + (tk ? tk.sig : '-');
   if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; COLD_N++; }
-  return Promise.all(sc.cols.map(function(c){
+  /* (V37.24 المرحلة ١) السحبةُ على دفعتين: ما تحتاجه الخريطةُ والميدانُ أوّلًا (الزيارات والتركيبات والمهام والمواقع) فتُرسَم،
+     ثم الباقي — فالجهازُ البطيءُ يعمل بعد ثوانٍ لا بعد السحبة كلِّها (كانت جهازٌ واحدٌ ١٠٢ ثانية) */
+  var FIRST = { recs:1, inss:1, tasks:1, sites:1, newsites:1 }, colsA = sc.cols.filter(function(c){ return FIRST[c]; }), colsB = sc.cols.filter(function(c){ return !FIRST[c]; });
+  var pullOne = function(c){
     var key = PULL_COL[c] || c;
     if (!STATE[key]) STATE[key] = {};
     var start = Date.now();
@@ -17171,15 +17174,18 @@ function pullDelta(opt){
       if (since > 0) q = q.where('_at', '>', since);
       return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
         FB.readCount = (FB.readCount || 0) + snap.size;
-        snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });
-        FB.readCount = (FB.readCount || 0) + snap.size;
+        snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });   /* (V37.24) كانت القراءةُ تُعَدّ مرتين */
       });
     })).then(function(){ at[c] = start; }).catch(function(e){
       /* بلا هذا يقف السحبُ صامتًا: المكتبُ يفتح فلا يجد ما رفعه الميدانُ
          ولا يعرف أن السحبَ سقط أصلًا. */
       softErr('سحب ' + c, e, 'تعذّر سحبُ بعض البيانات — جرّب المزامنةَ يدويًّا');
     });
-  })).then(function(){
+  };
+  return Promise.all(colsA.map(pullOne)).then(function(){
+    if (got && colsB.length){ statBump(); if (typeof render === 'function') render(1); }   /* الخريطةُ تُرسَم بما وصل */
+    return Promise.all(colsB.map(pullOne));
+  }).then(function(){
     STATE.meta.lastSync = Date.now();
     SYNC.pullLast = Date.now();
     if (got || wasAsk){ statBump(); CORE.saveSoon(); }
@@ -25329,6 +25335,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.24', d:'١٠ أكتوبر ٢٠٢٦', notes:[
+      'فتح التطبيق على الأجهزة البطيئة بقى أسرع في الإحساس: السحبة بتيجي على دفعتين، الزيارات والتركيبات والمهام والمواقع الأول فالخريطة تترسم، وبعدها الباقي.',
+      'البوابة بقت ترفض أي نسخة تكسر حدود السرعة: بتحمّل التطبيق بحجم الميدان الحقيقي وتقيس رسم المتابعة وفتح القوائم ورسم الخريطة.' ] },
   { v:'V37.23', d:'١٠ أكتوبر ٢٠٢٦', notes:[
       'الأجهزة القديمة والبطيئة (مش كلها آيفون): الوضع الخفيف بيشتغل لوحده لو النظام قديم أو لو الرسم بطيء ٣ مرات من ٥، وبيقولك، وتقدر توقفه يوم كامل. والإحصاءات بقت تتحسب مرة لكل تغيير.',
       'المساعد بقى يشخّص: من غير ما تسأل بيوريك حالة جهازك (شبكة، وطابور، وصور، ومرفوضات، ووضع خفيف)، ولما تكتب مشكلتك بكلماتك (الصور مش بتترفع، التطبيق بطيء، ما اتحفظش، النسخة، كلمة المرور، موقعي، الخريطة) بيفهمها وبيحلّها بزرار لو يقدر، أو يقولك الخطوات.' ] },

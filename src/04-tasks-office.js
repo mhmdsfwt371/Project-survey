@@ -4755,7 +4755,10 @@ function pullDelta(opt){
   var tk = sc.tree ? treeKeys() : null;
   var sig = effRole(ROLE) + '|' + sc.cols.join(',') + '|' + (sc.mine ? 'mine' : 'all') + '|' + (tk ? tk.sig : '-');
   if (at.__sig !== sig){ sc.cols.forEach(function(c){ delete at[c]; }); at.__sig = sig; COLD_N++; }
-  return Promise.all(sc.cols.map(function(c){
+  /* (V37.24 المرحلة ١) السحبةُ على دفعتين: ما تحتاجه الخريطةُ والميدانُ أوّلًا (الزيارات والتركيبات والمهام والمواقع) فتُرسَم،
+     ثم الباقي — فالجهازُ البطيءُ يعمل بعد ثوانٍ لا بعد السحبة كلِّها (كانت جهازٌ واحدٌ ١٠٢ ثانية) */
+  var FIRST = { recs:1, inss:1, tasks:1, sites:1, newsites:1 }, colsA = sc.cols.filter(function(c){ return FIRST[c]; }), colsB = sc.cols.filter(function(c){ return !FIRST[c]; });
+  var pullOne = function(c){
     var key = PULL_COL[c] || c;
     if (!STATE[key]) STATE[key] = {};
     var start = Date.now();
@@ -4775,15 +4778,18 @@ function pullDelta(opt){
       if (since > 0) q = q.where('_at', '>', since);
       return q.limit(since > 0 ? 2000 : 6000).get().then(function(snap){
         FB.readCount = (FB.readCount || 0) + snap.size;
-        snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });
-        FB.readCount = (FB.readCount || 0) + snap.size;
+        snap.forEach(function(doc){ if (CORE.applyDoc(key, doc.id, doc.data())) got++; });   /* (V37.24) كانت القراءةُ تُعَدّ مرتين */
       });
     })).then(function(){ at[c] = start; }).catch(function(e){
       /* بلا هذا يقف السحبُ صامتًا: المكتبُ يفتح فلا يجد ما رفعه الميدانُ
          ولا يعرف أن السحبَ سقط أصلًا. */
       softErr('سحب ' + c, e, 'تعذّر سحبُ بعض البيانات — جرّب المزامنةَ يدويًّا');
     });
-  })).then(function(){
+  };
+  return Promise.all(colsA.map(pullOne)).then(function(){
+    if (got && colsB.length){ statBump(); if (typeof render === 'function') render(1); }   /* الخريطةُ تُرسَم بما وصل */
+    return Promise.all(colsB.map(pullOne));
+  }).then(function(){
     STATE.meta.lastSync = Date.now();
     SYNC.pullLast = Date.now();
     if (got || wasAsk){ statBump(); CORE.saveSoon(); }
