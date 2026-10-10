@@ -144,10 +144,16 @@ jobs:
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
         run: node scripts/devices-now.mjs || true
-      - name: Memory diagnosis (read-only)
+      - name: Photos to Drive now (the 34 raw photos — same script as the nightly job)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
-        run: node scripts/mem-stats.mjs || true
+          GDRIVE_OAUTH: ${{ secrets.GDRIVE_OAUTH }}
+          GDRIVE_FOLDER: ${{ secrets.GDRIVE_FOLDER }}
+        run: |
+          git fetch -q origin main && git show origin/main:scripts/photos-sync.mjs > scripts/photos-sync-main.mjs
+          npm i googleapis@140 --no-save --no-audit --no-fund > /dev/null 2>&1 || true
+          node scripts/photos-sync-main.mjs 2>&1 | tail -40 | tee /tmp/exp/photos-sync.txt || true
+          node scripts/mem-stats.mjs || true
       - name: QA stats (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
