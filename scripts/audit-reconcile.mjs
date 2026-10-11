@@ -124,9 +124,9 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
       T(!bad, 'وتقريرُ الأسبوع الذي يذهب للوزارة بلا ما يوحي بتعذّرٍ أو تصريحٍ أو انتظارِ قرارها (قاعدةُ المالك): ' + (bad ? bad.slice(0, 3).join('، ') : 'نظيف'));
       /* (V37.46→V37.47) التقريرُ التنفيذي بنسخة المالك: كلُّ نقطةٍ في صفٍّ واحد (مجموعُ «العدد» = كلُّ النقاط)، والتصنيفاتُ من قوائم القالب.
          «يحتاج تصريح دخول» صياغةُ المالك نفسِه في نسخته (٢) — مستثناةٌ هنا وحدَها من قاعدة الألفاظ؛ وما سواها ممنوع. */
-      if (w.execRows){ const E = w.execRows(), Tt = E.tot, inL = (L, v) => L.indexOf(v) > -1, sum = E.rows.reduce((a, r) => a + r.n, 0);
+      if (w.execRows){ const E = w.execRows(), Tt = E.tot, inL = (L, v) => L.indexOf(v) > -1, sum = E.rows.reduce((a, r) => a + (r.n || 0), 0);
         T(sum === Tt.all && Tt.all === TOTAL, 'التقريرُ التنفيذيُّ: كلُّ نقطةٍ في صفٍّ واحد — مجموعُ العدد ' + sum + ' = ' + Tt.all + ' ↔ ' + TOTAL);
-        T(Tt.ready + Tt.chal + Tt.revisit === Tt.all, 'وجاهزة ' + Tt.ready + ' + بتحديات ' + Tt.chal + ' + غير مكتملة ' + Tt.revisit + ' = ' + Tt.all);
+        T(Tt.ready + Tt.chal + Tt.revisit + (Tt.pending || 0) === Tt.all, 'وجاهزة ' + Tt.ready + ' + بتحديات ' + Tt.chal + ' + غير مكتملة ' + Tt.revisit + ' + قرارٌ معلّق ' + (Tt.pending || 0) + ' = ' + Tt.all);
         T(E.rows.every(r => inL(w.EXEC_O.c1, r.c1) && inL(w.EXEC_O.c2, r.c2) && inL(w.EXEC_O.c3all, r.c3) && inL(w.EXEC_O.c4, r.c4) && w.EXEC_L[r.b]), 'وكلُّ صفٍّ بتصنيفاتٍ من قوائم القالب وحالٍ معروفة: ' + JSON.stringify(E.rows.filter(r => !(inL(w.EXEC_O.c3all, r.c3) && w.EXEC_L[r.b])).slice(0, 2)));
         T(!/متعذّر|متعذر|منع دخول|بانتظار قرار الوزارة/.test(JSON.stringify(w.EXEC_L)), 'ونصوصُه بلا «متعذّر» ولا «منع دخول» ولا «بانتظار قرار الوزارة»'); }
       T(w.mfuReportCheck(R).length === 0, 'وحارسُ التصدير الداخليُّ لا يجد خللًا (الشركات = الممسوح + المتبقي، والنسبُ في مداها): ' + JSON.stringify(w.mfuReportCheck(R).slice(0, 2)));
