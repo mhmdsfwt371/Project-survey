@@ -1271,7 +1271,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.38</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.39</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -7593,6 +7593,9 @@ function assistQFetch(force){
     FB.readCount = (FB.readCount || 0) + sn.size; var M = {}, wk = Date.now() - 14 * 864e5;
     sn.forEach(function(d){ var x = d.data() || {}; if (+x.ts < wk) return; var w = String(x.what || '').slice(P0.length), no = / · بلا جواب$/.test(w), q = w.replace(/ · بلا جواب$/, '').trim(); if (!q) return;
       var o = M[q] = M[q] || { q:q, n:0, no:false, by:{}, last:0 }; o.n++; if (no) o.no = true; o.by[x.by || '?'] = 1; o.last = Math.max(o.last, +x.ts || 0); });
+    /* (V37.39) من المراجعة: سؤالٌ ناقصٌ («…أو بطي») يُسجَّل حين يتوقّف صاحبُه لحظةً ثم يكمل — فيُضَمُّ إلى سؤاله الأطول الذي يبدأ به */
+    var keys = Object.keys(M).sort(function(a, b){ return b.length - a.length; });
+    keys.forEach(function(k){ if (!M[k]) return; keys.forEach(function(k2){ if (k2 !== k && M[k2] && k.indexOf(k2) === 0 && k.length - k2.length <= 12){ var a = M[k], b = M[k2]; a.n += b.n; a.no = a.no && b.no; Object.keys(b.by).forEach(function(u){ a.by[u] = 1; }); a.last = Math.max(a.last, b.last); delete M[k2]; } }); });
     AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
     AQ.at = Date.now(); AQ.busy = false; render(1);
   }).catch(function(e){ AQ.busy = false; AQ.rows = AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
@@ -25534,6 +25537,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.39', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'كارت «أسئلة الناس للمساعد»: السؤال الناقص (لو حد وقف لحظة وهو بيكتب) بيتضم للسؤال الكامل بدل ما يظهر مرتين.' ] },
   { v:'V37.38', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'للمهندس: كارت «أسئلة الناس للمساعد» في الإعدادات — كل اللي الفريق سأله آخر أسبوعين، واللي ما لقاش جواب فوق، وجنب كل سؤال زرار «أضفها» بيحطه سطر جاهز في المشاكل المعروفة تكتب حله مرة واحدة.',
       'تصحيح: أسئلة المساعد ما كانتش بتوصل المكتب أصلًا، بقت بتتسجّل وتوصل (السؤال الكامل بعد ما تخلص كتابة، مش كل كلمة).' ] },

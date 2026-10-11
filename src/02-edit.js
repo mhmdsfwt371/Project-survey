@@ -172,6 +172,9 @@ function assistQFetch(force){
     FB.readCount = (FB.readCount || 0) + sn.size; var M = {}, wk = Date.now() - 14 * 864e5;
     sn.forEach(function(d){ var x = d.data() || {}; if (+x.ts < wk) return; var w = String(x.what || '').slice(P0.length), no = / · بلا جواب$/.test(w), q = w.replace(/ · بلا جواب$/, '').trim(); if (!q) return;
       var o = M[q] = M[q] || { q:q, n:0, no:false, by:{}, last:0 }; o.n++; if (no) o.no = true; o.by[x.by || '?'] = 1; o.last = Math.max(o.last, +x.ts || 0); });
+    /* (V37.39) من المراجعة: سؤالٌ ناقصٌ («…أو بطي») يُسجَّل حين يتوقّف صاحبُه لحظةً ثم يكمل — فيُضَمُّ إلى سؤاله الأطول الذي يبدأ به */
+    var keys = Object.keys(M).sort(function(a, b){ return b.length - a.length; });
+    keys.forEach(function(k){ if (!M[k]) return; keys.forEach(function(k2){ if (k2 !== k && M[k2] && k.indexOf(k2) === 0 && k.length - k2.length <= 12){ var a = M[k], b = M[k2]; a.n += b.n; a.no = a.no && b.no; Object.keys(b.by).forEach(function(u){ a.by[u] = 1; }); a.last = Math.max(a.last, b.last); delete M[k2]; } }); });
     AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
     AQ.at = Date.now(); AQ.busy = false; render(1);
   }).catch(function(e){ AQ.busy = false; AQ.rows = AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
