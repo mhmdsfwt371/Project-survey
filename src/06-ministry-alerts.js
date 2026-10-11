@@ -1103,9 +1103,49 @@ var EXEC_L = {   /* (V37.48) نسخةُ المالك (٣): صياغاتُه وإ
   WAIT_RAHMA:['في انتظار تحديد مسارات المؤدية لجبل الرحمة ', ''],
   WAIT_NAMIRA:['في انتظار تحديد مسارات المؤدية لمسجد نمرة  ', ''],
   WAIT_TRAIN:['في انتظار تحديد مسارات المستخدمة لتفويج القطار ', ''],
-  ARAFAT_BTH:['اعتماد نقاط الممرات، لضمان عدم تكرار نقاط التغطية', '']
+  ARAFAT_BTH:['اعتماد نقاط الممرات، لضمان عدم تكرار نقاط التغطية', ''],
+  INSTALLED:['تم التركيب', 'تم التركيب واعتماده']   /* (V37.52) */
 };
-var EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP'];
+var EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP', 'INSTALLED'];
+/* ═══ (V37.52) تصنيفُ التقرير التنفيذي طبقةٌ حيّة: تلقائيٌّ من البيانات، ويعلوه قرارُ المهندس (سحابيٌّ، يصل كلَّ الأجهزة)، ويعلوهما ما رُكّب فعلًا ═══ */
+var EXEC_PICK = ['READY', 'MOUNT', 'MOUNT_E', 'TECH', 'BLOCK', 'LOC', 'PERMIT', 'ELEC'];
+function execOvOf(id){ var c = (CFG.execOv || {})[id]; if (c && c.s && EXEC_L[c.s]) return c.s; return EXEC_OV[id] || ''; }
+function execOvSet(id, st){
+  if (!may('settings')){ toast(t('تصنيفُ التقرير للمهندس وحدَه')); return false; }
+  CFG.execOv = CFG.execOv || {}; if (st && EXEC_L[st]) CFG.execOv[id] = { s:st, by:(STATE.meta && STATE.meta.name) || '', at:Date.now() }; else delete CFG.execOv[id];
+  cfgPushSoon('execOv'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; statBump(); return true;
+}
+function execAutoOf(x){ var r = STATE.recs[x.id], pol = execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x));
+  var keep = (CFG.execOv || {})[x.id], kd = EXEC_OV[x.id]; if (keep) delete CFG.execOv[x.id]; if (kd) delete EXEC_OV[x.id];
+  var st = execStatus(r, pol, x); if (keep){ CFG.execOv = CFG.execOv || {}; CFG.execOv[x.id] = keep; } if (kd) EXEC_OV[x.id] = kd; return st; }
+var EXEC_MEMO = { v:'', m:null };
+function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
+function ccGroupsOfSite(x){ var r = STATE.recs[x.id]; if (!r || !svVisited(r)) return []; if (!svDone(r)) return ['access']; var cc = chalCats(r), out = []; CC_GROUPS.forEach(function(g){ if (g.ks.some(function(k){ return cc.indexOf(k) > -1; })) out.push(g.g); }); return out; }
+function execOvRow(s){
+  if (!may('settings') || !s) return '';
+  var r = STATE.recs[s.id], cur = execOvOf(s.id), auto = execAutoOf(s), ins = typeof insDone === 'function' && insDone(s.id);
+  var sel = '<select data-execov="' + esc(s.id) + '" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '"' + (ins ? ' disabled' : '') + '><option value=""' + (cur ? '' : ' selected') + '>' + esc(t('تلقائي')) + ' — ' + esc((EXEC_L[auto] || [''])[0]) + '</option>'
+    + EXEC_PICK.map(function(k){ return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>';
+  var tv = r && typeof techVisit === 'function' && !s.techDone && techVisit(s, r);
+  return '<div class="field" style="margin:10px 0 0"><label>\u{1F4CB} ' + esc(t('تصنيف التقرير التنفيذي')) + (cur ? ' <span class="pill acc">' + esc(t('معدَّل يدويًا')) + '</span>' : '') + (ins ? ' <span class="pill ok">' + esc(t('تم التركيب')) + '</span>' : '') + '</label>' + sel + '</div>'
+    + (tv ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2714 ' + t('تمت الزيارة التقنية'), 'btn-secondary btn-sm', ' data-techdone="' + esc(s.id) + '" title="' + esc(t('تتحوّل من برتقالي إلى أزرق — زيارةٌ تمّت تنتظر الاعتماد')) + '"') + '</div>'
+      : (s.techDone ? '<div class="actions" style="margin:8px 0 0">' + btn('\u21A9 ' + t('أعِدها «تحتاج زيارة تقنية»'), 'btn-quiet btn-sm', ' data-techundo="' + esc(s.id) + '"') + '</div>' : ''));
+}
+function techDoneSet(id, on){
+  var x = siteFind(id); if (!x) return false; if (!may('settings')){ toast(t('الزيارةُ التقنيةُ يقرّها المهندس')); return false; }
+  if (on){ x.techDone = Date.now(); siteOvSet(id, { techDone:x.techDone }); } else { delete x.techDone; siteOvSet(id, { techDone:null }); }
+  statBump(); return true;
+}
+function selTechDone(){ var n = 0; selIds().forEach(function(id){ var x = siteFind(id), r = STATE.recs[id]; if (x && r && !x.techDone && techVisit(x, r) && techDoneSet(id, true)) n++; }); if (n) logEvent('تمت الزيارةُ التقنية لـ' + n + ' نقطة (جماعيًّا)'); return n; }
+function selExecSet(st){ var n = 0; selIds().forEach(function(id){ if (execOvSet(id, st)) n++; }); if (n) logEvent('تصنيفُ التقرير التنفيذي: ' + n + ' نقطة ← ' + (st ? EXEC_L[st][0] : 'تلقائي')); return n; }
+function selExecHtml(){
+  var ids = selIds(), tv = ids.filter(function(id){ var x = siteFind(id), r = STATE.recs[id]; return x && r && !x.techDone && techVisit(x, r); }).length;
+  return '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F4CB} ' + esc(t('المحدَّد في التقرير التنفيذي والزيارة التقنية')) + '</label>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+    + (tv ? btn('\u2714 ' + t('تمت الزيارة التقنية') + ' (' + nm(tv) + ')', 'btn-secondary btn-sm', ' data-seltech="1" title="' + esc(t('من برتقالي إلى أزرق دفعةً واحدة')) + '"') : '')
+    + '<select id="selExec" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '" style="flex:1 1 160px"><option value="">' + esc(t('تلقائي')) + '</option>' + EXEC_PICK.map(function(k){ return '<option value="' + k + '">' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>'
+    + btn(t('صنّف') + ' ' + nm(SEL_N), 'btn-secondary btn-sm', ' data-selexec="1"') + '</div></div>';
+}
 var EXEC_POLICY = {
   'النورية|كاميرات الحافلات':{ all:'READY' }, 'الزايدي|كاميرات الحافلات':{ all:'ELEC' }, 'الهجرة 1|كاميرات الحافلات':{ all:'MOUNT_E' },
   'الهجرة 2|كاميرات الحافلات':{ chal:'MOUNT_E', ready:'READY' }, '*|كاميرات البث@تفويج':{ all:'SCOPE' },
@@ -1146,7 +1186,8 @@ function execT3(x){ var n = String(x.name || ''), ty = String(x.type || '');
 function execT4(x){ if (execT3(x) !== 'ممرات') return ''; var n = String(x.name || ''); return /نمرة/.test(n) ? 'ممرات مسجد نمرة' : /الرحمة|الرحمه/.test(n) ? 'ممرات جبل الرحمه' : /القطار|قطار/.test(n) ? 'ممرات القطار' : 'ممرات الطرق'; }
 function execPolicy(c1, c2, c3, c4){ return EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && EXEC_POLICY['*|' + c3 + '@تفويج']) || EXEC_POLICY[c2 + '|*'] || EXEC_POLICY['*|' + c3] || null; }
 function execStatus(r, pol, x){
-  if (x && EXEC_OV[x.id]) return EXEC_OV[x.id];
+  if (x && typeof insDone === 'function' && insDone(x.id)) return 'INSTALLED';   /* (V37.52) الشغلُ يحدّث التقرير: ما رُكّب انتقل وحدَه */
+  var ov = x && execOvOf(x.id); if (ov) return ov;
   if (pol && pol.all) return pol.all;
   if (!r || !svVisited(r)) return 'PERMIT';
   if (!svDone(r)){ var why = String(r.access || ''); return /غير موجود|غير مطابق/.test(why) ? 'LOC' : 'PERMIT'; }
@@ -1159,10 +1200,10 @@ function execRows(){
   var known = S.filter(function(x){ return execT1(x) === 'مراكز تفويج' && execT2(x) && x.lat; });
   var t2 = function(x){ var v = execT2(x); if (v || execT1(x) !== 'مراكز تفويج' || !x.lat) return v; var best = null, bd = 1e9;
     known.forEach(function(k){ var d = Math.pow(k.lat - x.lat, 2) + Math.pow(k.lng - x.lng, 2); if (d < bd){ bd = d; best = k; } }); return best ? execT2(best) : 'الهجرة 2'; };
-  var agg = {}, tot = { all:0, visited:0, surveyed:0, ready:0, chal:0, revisit:0, pending:0 };
+  var agg = {}, tot = { all:0, visited:0, surveyed:0, ready:0, chal:0, revisit:0, pending:0, installed:0 };
   S.forEach(function(x){ tot.all++; var r = STATE.recs[x.id], c1 = execT1(x), c2 = t2(x), c3 = execT3(x), c4 = execT4(x), st = execStatus(r, execPolicy(c1, c2, c3, c4), x), k = [c1, c2, c3, c4, st].join('|');
     agg[k] = (agg[k] || 0) + 1; if (r && svVisited(r)) tot.visited++; if (r && svDone(r)) tot.surveyed++;
-    if (/^READY/.test(st)) tot.ready++; else if (st === 'PERMIT' || st === 'LOC') tot.revisit++; else if (/^(SCOPE|WAIT_|ARAFAT_BTH|SP_)/.test(st)) tot.pending++; else tot.chal++; });
+    if (st === 'INSTALLED') tot.installed++; else if (/^READY/.test(st)) tot.ready++; else if (st === 'PERMIT' || st === 'LOC') tot.revisit++; else if (/^(SCOPE|WAIT_|ARAFAT_BTH|SP_)/.test(st)) tot.pending++; else tot.chal++; });
   var rows = Object.keys(agg).map(function(k){ var p = k.split('|'); return { c1:p[0], c2:p[1], c3:p[2], c4:p[3], b:p[4], n:agg[k] }; });
   EXEC_STATIC.forEach(function(s0){ if (!rows.some(function(r){ return r.c2 === s0[1] && r.c3 === s0[2] && r.c4 === s0[3]; })) rows.push({ c1:s0[0], c2:s0[1], c3:s0[2], c4:s0[3], b:s0[4], n:null }); });
   var ix = function(L, v){ var i = (L || []).indexOf(v); return i < 0 ? 99 : i; };
@@ -2825,6 +2866,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.52', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'الخريطة: فلتر «تحتاج زيارة تقنية» بقى موجود بعدده (كان بيتلوّن ومش بيتصفّى)، وفلترين جداد: «التقرير التنفيذي» بتصنيفاته و«المجموعات الأربع» بأعدادها.',
+      'نافذة النقطة (للمهندس): «تصنيف التقرير التنفيذي» تلقائي أو بيد المهندس، بيتحفظ في السحابة ويوصل كل الأجهزة ويظهر في الملف. وزرار «تمت الزيارة التقنية» بيحوّل النقطة من برتقالي لأزرق، ويرجّعها لو احتجت.',
+      'من ورقة التحديد: «تمت الزيارة التقنية» للمحدَّد كله دفعة واحدة، و«صنّف» المحدَّد في التقرير التنفيذي. والنقاط اللي اتركّبت بتنتقل لوحدها لصف «تم التركيب» في التقرير.' ] },
   { v:'V37.51', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'تصحيح لفحص التوثيق على الأصل: علامة إخفاء التبويبات كانت في خانة قاعدة الرؤية فوقّعت جرد الشرائح — اتنقلت لخانتها.' ] },
   { v:'V37.50', d:'١١ أكتوبر ٢٠٢٦', notes:[

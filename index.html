@@ -1278,7 +1278,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.51</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.52</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1340,7 +1340,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-896064e0b7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-48f379d81b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4333,7 +4333,7 @@ function mapFitFiltered(){
     MAP.fitBounds(L.latLngBounds(P).pad(0.2), { maxZoom:17, animate:false }); return true;
   } catch (e){ LS_ERR = e; return false; }
 }
-function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
+function filtOn(){ return !!(FILT.zone || FILT.type || FILT.work || FILT.life || FILT.exec || FILT.ccg || FILT.route || (FILT.floor !== '' && FILT.floor != null) || CO_SEL.length); }
 
 function filtPass(x){
   if (FILT.zone && taxOf(x).g !== FILT.zone) return false;   /* (V27.2) بتصنيف المالك */
@@ -4344,6 +4344,8 @@ function filtPass(x){
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
      كان المرشِّحُ يجيب النقاطَ بلا ما حدث لها، فلا يُعرَف من الخريطة ما تمّ وما بقي */
   if (FILT.life && typeof lifeOf === 'function' && lifeOf(x) !== FILT.life) return false;
+  if (FILT.exec && typeof execStatusMemo === 'function' && execStatusMemo(x) !== FILT.exec) return false;   /* (V37.52) */
+  if (FILT.ccg && typeof ccGroupsOfSite === 'function' && ccGroupsOfSite(x).indexOf(FILT.ccg) < 0) return false;
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
   if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
   return true;
@@ -4696,6 +4698,16 @@ function catBar(withWork){
     });
     base.forEach(function(x){ var l = lifeOf(x); lc[l] = (lc[l] || 0) + 1; });
     var lifeKeys = LIFE_ORDER.filter(function(k){ return lc[k]; });
+    /* (V37.52) صفّان: تصنيفُ التقرير التنفيذي، والمجموعاتُ الأربع — بأعدادها على ما مرّ من المرشّحات */
+    if (typeof execStatusMemo === 'function' && typeof CC_GROUPS !== 'undefined'){
+      var ec = {}, gc = {}; base.forEach(function(x){ var es = execStatusMemo(x); ec[es] = (ec[es] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
+      var eKeys = EXEC_ORDER_L.filter(function(k){ return ec[k]; });
+      if (eKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('التقرير التنفيذي')) + '</span><button type="button" class="cat' + (FILT.exec ? '' : ' on') + '" data-fx="">' + esc(t('الكل')) + '</button>'
+        + eKeys.map(function(k){ return '<button type="button" class="cat' + (FILT.exec === k ? ' on' : '') + '" data-fx="' + k + '">' + esc(t(EXEC_L[k][0].split(' — ')[0].trim())) + ' <span class="num">' + nm(ec[k]) + '</span></button>'; }).join('') + '</div>';
+      var gKeys = CC_GROUPS.filter(function(g){ return gc[g.g]; });
+      if (gKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('المجموعات الأربع')) + '</span><button type="button" class="cat' + (FILT.ccg ? '' : ' on') + '" data-fg="">' + esc(t('الكل')) + '</button>'
+        + gKeys.map(function(g){ return '<button type="button" class="cat' + (FILT.ccg === g.g ? ' on' : '') + '" data-fg="' + g.g + '">' + esc(t(g.n)) + ' <span class="num">' + nm(gc[g.g]) + '</span></button>'; }).join('') + '</div>';
+    }
     if (lifeKeys.length){
       h += '<div class="catrow">'
         + '<button type="button" class="cat' + (FILT.life ? '' : ' on') + '" data-fl="">' + esc(t('كل الحالات')) + '</button>'
@@ -7319,6 +7331,7 @@ function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; i
 var TECH_BT_RX = /تحت (ال)?(جسر|كوبري|كبري)|كوبري|كبري|نفق|انفاق/;
 function techVisit(x, r){
   if (!x || !r || r.deleted || !svDone(r)) return false;
+  if (x.techDone) return false;   /* (V37.52) قرارُ المهندس: الزيارةُ التقنيةُ تمّت */
   if (typeof insDone === 'function' && insDone(x.id)) return false;
   var cc = chalCats(r);
   if (x.type === 'ممر' && cc.indexOf('mount') > -1) return true;
@@ -9110,7 +9123,8 @@ function asnSheet(){
     +   '<input type="date" id="asnWhen" value="' + esc(ASN_WHEN) + '"></div>'
     + '</div>'
 
-    + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
+    + (may('settings') && SEL_N && typeof selExecHtml === 'function' ? selExecHtml() : '')   /* (V37.52) الإجراءان الجماعيّان */
+            + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
         + '<div style="display:flex;gap:8px;flex-wrap:wrap"><select id="selType" aria-label="' + esc(t('التصنيف')) + '" style="flex:1 1 180px">' + Object.keys(typesList()).map(function(k){ return '<option value="' + esc(k) + '">' + esc(typeLabel(k)) + '</option>'; }).join('') + '</select>'
         + btn(t('انقل') + ' ' + nm(SEL_N) + ' ' + t('نقطة'), 'btn-secondary btn-sm', ' data-seltype="1"') + '</div></div>' : '')   /* (V23.0) */
     + (maySiteEdit() && SEL_N ? '<div class="field" style="margin:10px 0 0"><label>\u270E ' + esc(t('أو سمِّ المحدَّد: بدايةُ الاسم ثم رقمٌ متتابع')) + '</label>'
@@ -16525,7 +16539,8 @@ function popHtml(){
             + '</span></div>'
             + (go ? '<div class="actions" style="margin:8px 0 0">' + go + '</div>' : '')
             /* وسمُ التركيب التجريبي — للمدير: يقاس الزمنُ بين مراحلها في «الفك والمراحل ← السلسلة» (V17.95) */
-            + (may('users') ? '<div class="actions" style="margin:8px 0 0">' + btn((s.pilot ? '\u2713 ' : '') + t(s.pilot ? 'نقطةُ تجربة — أعِدها عادية' : 'اجعلها نقطةَ تجربة'), 'btn-quiet btn-sm', ' data-pilot="' + esc(s.id) + '"') + '</div>' : '');
+            + (may('users') ? '<div class="actions" style="margin:8px 0 0">' + btn((s.pilot ? '\u2713 ' : '') + t(s.pilot ? 'نقطةُ تجربة — أعِدها عادية' : 'اجعلها نقطةَ تجربة'), 'btn-quiet btn-sm', ' data-pilot="' + esc(s.id) + '"') + '</div>' : '')
+            + (typeof execOvRow === 'function' ? execOvRow(siteFind(s.id) || s) : '');   /* (V37.52) تصنيفُ التقرير التنفيذي وزيارتُها التقنية — بالنقطة الأصلية لا نسخة العرض */
         })()
     + '</div></div>';
 }
@@ -17885,7 +17900,7 @@ var LIFE = {
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
   dis:       { c:'#E01B1B', n:'فكٌّ مُسند أو تمّ',         d:'أُسند فكُّها بعد الموسم أو تمّ فعلًا.' }
 };
-var LIFE_ORDER = ['todo','stuck','assigned','tomorrow','visited','revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
+var LIFE_ORDER = ['todo','stuck','tech','assigned','tomorrow','visited',   /* (V37.52) بلاغُ المالك: «فلتر تحتاج زيارة تقنية مش لاقيه» — الحالةُ كانت تُحسَب وتُلوَّن ولا تُرشَّح */'revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
 /* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
 /* ═══ فهرسُ المهامِّ بالنقطة والنوع (V17.47) ═══
    كانت الدالةُ تمرُّ على المهامِّ كلِّها لكلِّ نقطةٍ ولكلِّ نوع: ألفٌ وسبعُمئةٍ
@@ -24114,9 +24129,49 @@ var EXEC_L = {   /* (V37.48) نسخةُ المالك (٣): صياغاتُه وإ
   WAIT_RAHMA:['في انتظار تحديد مسارات المؤدية لجبل الرحمة ', ''],
   WAIT_NAMIRA:['في انتظار تحديد مسارات المؤدية لمسجد نمرة  ', ''],
   WAIT_TRAIN:['في انتظار تحديد مسارات المستخدمة لتفويج القطار ', ''],
-  ARAFAT_BTH:['اعتماد نقاط الممرات، لضمان عدم تكرار نقاط التغطية', '']
+  ARAFAT_BTH:['اعتماد نقاط الممرات، لضمان عدم تكرار نقاط التغطية', ''],
+  INSTALLED:['تم التركيب', 'تم التركيب واعتماده']   /* (V37.52) */
 };
-var EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP'];
+var EXEC_ORDER_L = ['PERMIT', 'LOC', 'BLOCK', 'TECH', 'ELEC', 'MOUNT', 'MOUNT_SH', 'MOUNT_E', 'SCOPE', 'WAIT_RAHMA', 'WAIT_NAMIRA', 'WAIT_TRAIN', 'ARAFAT_BTH', 'SP_MINA', 'SP_ARAFAT', 'READY', 'READY_COORD', 'READY_OP', 'INSTALLED'];
+/* ═══ (V37.52) تصنيفُ التقرير التنفيذي طبقةٌ حيّة: تلقائيٌّ من البيانات، ويعلوه قرارُ المهندس (سحابيٌّ، يصل كلَّ الأجهزة)، ويعلوهما ما رُكّب فعلًا ═══ */
+var EXEC_PICK = ['READY', 'MOUNT', 'MOUNT_E', 'TECH', 'BLOCK', 'LOC', 'PERMIT', 'ELEC'];
+function execOvOf(id){ var c = (CFG.execOv || {})[id]; if (c && c.s && EXEC_L[c.s]) return c.s; return EXEC_OV[id] || ''; }
+function execOvSet(id, st){
+  if (!may('settings')){ toast(t('تصنيفُ التقرير للمهندس وحدَه')); return false; }
+  CFG.execOv = CFG.execOv || {}; if (st && EXEC_L[st]) CFG.execOv[id] = { s:st, by:(STATE.meta && STATE.meta.name) || '', at:Date.now() }; else delete CFG.execOv[id];
+  cfgPushSoon('execOv'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; statBump(); return true;
+}
+function execAutoOf(x){ var r = STATE.recs[x.id], pol = execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x));
+  var keep = (CFG.execOv || {})[x.id], kd = EXEC_OV[x.id]; if (keep) delete CFG.execOv[x.id]; if (kd) delete EXEC_OV[x.id];
+  var st = execStatus(r, pol, x); if (keep){ CFG.execOv = CFG.execOv || {}; CFG.execOv[x.id] = keep; } if (kd) EXEC_OV[x.id] = kd; return st; }
+var EXEC_MEMO = { v:'', m:null };
+function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
+function ccGroupsOfSite(x){ var r = STATE.recs[x.id]; if (!r || !svVisited(r)) return []; if (!svDone(r)) return ['access']; var cc = chalCats(r), out = []; CC_GROUPS.forEach(function(g){ if (g.ks.some(function(k){ return cc.indexOf(k) > -1; })) out.push(g.g); }); return out; }
+function execOvRow(s){
+  if (!may('settings') || !s) return '';
+  var r = STATE.recs[s.id], cur = execOvOf(s.id), auto = execAutoOf(s), ins = typeof insDone === 'function' && insDone(s.id);
+  var sel = '<select data-execov="' + esc(s.id) + '" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '"' + (ins ? ' disabled' : '') + '><option value=""' + (cur ? '' : ' selected') + '>' + esc(t('تلقائي')) + ' — ' + esc((EXEC_L[auto] || [''])[0]) + '</option>'
+    + EXEC_PICK.map(function(k){ return '<option value="' + k + '"' + (cur === k ? ' selected' : '') + '>' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>';
+  var tv = r && typeof techVisit === 'function' && !s.techDone && techVisit(s, r);
+  return '<div class="field" style="margin:10px 0 0"><label>\u{1F4CB} ' + esc(t('تصنيف التقرير التنفيذي')) + (cur ? ' <span class="pill acc">' + esc(t('معدَّل يدويًا')) + '</span>' : '') + (ins ? ' <span class="pill ok">' + esc(t('تم التركيب')) + '</span>' : '') + '</label>' + sel + '</div>'
+    + (tv ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2714 ' + t('تمت الزيارة التقنية'), 'btn-secondary btn-sm', ' data-techdone="' + esc(s.id) + '" title="' + esc(t('تتحوّل من برتقالي إلى أزرق — زيارةٌ تمّت تنتظر الاعتماد')) + '"') + '</div>'
+      : (s.techDone ? '<div class="actions" style="margin:8px 0 0">' + btn('\u21A9 ' + t('أعِدها «تحتاج زيارة تقنية»'), 'btn-quiet btn-sm', ' data-techundo="' + esc(s.id) + '"') + '</div>' : ''));
+}
+function techDoneSet(id, on){
+  var x = siteFind(id); if (!x) return false; if (!may('settings')){ toast(t('الزيارةُ التقنيةُ يقرّها المهندس')); return false; }
+  if (on){ x.techDone = Date.now(); siteOvSet(id, { techDone:x.techDone }); } else { delete x.techDone; siteOvSet(id, { techDone:null }); }
+  statBump(); return true;
+}
+function selTechDone(){ var n = 0; selIds().forEach(function(id){ var x = siteFind(id), r = STATE.recs[id]; if (x && r && !x.techDone && techVisit(x, r) && techDoneSet(id, true)) n++; }); if (n) logEvent('تمت الزيارةُ التقنية لـ' + n + ' نقطة (جماعيًّا)'); return n; }
+function selExecSet(st){ var n = 0; selIds().forEach(function(id){ if (execOvSet(id, st)) n++; }); if (n) logEvent('تصنيفُ التقرير التنفيذي: ' + n + ' نقطة ← ' + (st ? EXEC_L[st][0] : 'تلقائي')); return n; }
+function selExecHtml(){
+  var ids = selIds(), tv = ids.filter(function(id){ var x = siteFind(id), r = STATE.recs[id]; return x && r && !x.techDone && techVisit(x, r); }).length;
+  return '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F4CB} ' + esc(t('المحدَّد في التقرير التنفيذي والزيارة التقنية')) + '</label>'
+    + '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">'
+    + (tv ? btn('\u2714 ' + t('تمت الزيارة التقنية') + ' (' + nm(tv) + ')', 'btn-secondary btn-sm', ' data-seltech="1" title="' + esc(t('من برتقالي إلى أزرق دفعةً واحدة')) + '"') : '')
+    + '<select id="selExec" aria-label="' + esc(t('تصنيف التقرير التنفيذي')) + '" style="flex:1 1 160px"><option value="">' + esc(t('تلقائي')) + '</option>' + EXEC_PICK.map(function(k){ return '<option value="' + k + '">' + esc(EXEC_L[k][0]) + '</option>'; }).join('') + '</select>'
+    + btn(t('صنّف') + ' ' + nm(SEL_N), 'btn-secondary btn-sm', ' data-selexec="1"') + '</div></div>';
+}
 var EXEC_POLICY = {
   'النورية|كاميرات الحافلات':{ all:'READY' }, 'الزايدي|كاميرات الحافلات':{ all:'ELEC' }, 'الهجرة 1|كاميرات الحافلات':{ all:'MOUNT_E' },
   'الهجرة 2|كاميرات الحافلات':{ chal:'MOUNT_E', ready:'READY' }, '*|كاميرات البث@تفويج':{ all:'SCOPE' },
@@ -24157,7 +24212,8 @@ function execT3(x){ var n = String(x.name || ''), ty = String(x.type || '');
 function execT4(x){ if (execT3(x) !== 'ممرات') return ''; var n = String(x.name || ''); return /نمرة/.test(n) ? 'ممرات مسجد نمرة' : /الرحمة|الرحمه/.test(n) ? 'ممرات جبل الرحمه' : /القطار|قطار/.test(n) ? 'ممرات القطار' : 'ممرات الطرق'; }
 function execPolicy(c1, c2, c3, c4){ return EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && EXEC_POLICY['*|' + c3 + '@تفويج']) || EXEC_POLICY[c2 + '|*'] || EXEC_POLICY['*|' + c3] || null; }
 function execStatus(r, pol, x){
-  if (x && EXEC_OV[x.id]) return EXEC_OV[x.id];
+  if (x && typeof insDone === 'function' && insDone(x.id)) return 'INSTALLED';   /* (V37.52) الشغلُ يحدّث التقرير: ما رُكّب انتقل وحدَه */
+  var ov = x && execOvOf(x.id); if (ov) return ov;
   if (pol && pol.all) return pol.all;
   if (!r || !svVisited(r)) return 'PERMIT';
   if (!svDone(r)){ var why = String(r.access || ''); return /غير موجود|غير مطابق/.test(why) ? 'LOC' : 'PERMIT'; }
@@ -24170,10 +24226,10 @@ function execRows(){
   var known = S.filter(function(x){ return execT1(x) === 'مراكز تفويج' && execT2(x) && x.lat; });
   var t2 = function(x){ var v = execT2(x); if (v || execT1(x) !== 'مراكز تفويج' || !x.lat) return v; var best = null, bd = 1e9;
     known.forEach(function(k){ var d = Math.pow(k.lat - x.lat, 2) + Math.pow(k.lng - x.lng, 2); if (d < bd){ bd = d; best = k; } }); return best ? execT2(best) : 'الهجرة 2'; };
-  var agg = {}, tot = { all:0, visited:0, surveyed:0, ready:0, chal:0, revisit:0, pending:0 };
+  var agg = {}, tot = { all:0, visited:0, surveyed:0, ready:0, chal:0, revisit:0, pending:0, installed:0 };
   S.forEach(function(x){ tot.all++; var r = STATE.recs[x.id], c1 = execT1(x), c2 = t2(x), c3 = execT3(x), c4 = execT4(x), st = execStatus(r, execPolicy(c1, c2, c3, c4), x), k = [c1, c2, c3, c4, st].join('|');
     agg[k] = (agg[k] || 0) + 1; if (r && svVisited(r)) tot.visited++; if (r && svDone(r)) tot.surveyed++;
-    if (/^READY/.test(st)) tot.ready++; else if (st === 'PERMIT' || st === 'LOC') tot.revisit++; else if (/^(SCOPE|WAIT_|ARAFAT_BTH|SP_)/.test(st)) tot.pending++; else tot.chal++; });
+    if (st === 'INSTALLED') tot.installed++; else if (/^READY/.test(st)) tot.ready++; else if (st === 'PERMIT' || st === 'LOC') tot.revisit++; else if (/^(SCOPE|WAIT_|ARAFAT_BTH|SP_)/.test(st)) tot.pending++; else tot.chal++; });
   var rows = Object.keys(agg).map(function(k){ var p = k.split('|'); return { c1:p[0], c2:p[1], c3:p[2], c4:p[3], b:p[4], n:agg[k] }; });
   EXEC_STATIC.forEach(function(s0){ if (!rows.some(function(r){ return r.c2 === s0[1] && r.c3 === s0[2] && r.c4 === s0[3]; })) rows.push({ c1:s0[0], c2:s0[1], c3:s0[2], c4:s0[3], b:s0[4], n:null }); });
   var ix = function(L, v){ var i = (L || []).indexOf(v); return i < 0 ? 99 : i; };
@@ -25836,6 +25892,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.52', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'الخريطة: فلتر «تحتاج زيارة تقنية» بقى موجود بعدده (كان بيتلوّن ومش بيتصفّى)، وفلترين جداد: «التقرير التنفيذي» بتصنيفاته و«المجموعات الأربع» بأعدادها.',
+      'نافذة النقطة (للمهندس): «تصنيف التقرير التنفيذي» تلقائي أو بيد المهندس، بيتحفظ في السحابة ويوصل كل الأجهزة ويظهر في الملف. وزرار «تمت الزيارة التقنية» بيحوّل النقطة من برتقالي لأزرق، ويرجّعها لو احتجت.',
+      'من ورقة التحديد: «تمت الزيارة التقنية» للمحدَّد كله دفعة واحدة، و«صنّف» المحدَّد في التقرير التنفيذي. والنقاط اللي اتركّبت بتنتقل لوحدها لصف «تم التركيب» في التقرير.' ] },
   { v:'V37.51', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'تصحيح لفحص التوثيق على الأصل: علامة إخفاء التبويبات كانت في خانة قاعدة الرؤية فوقّعت جرد الشرائح — اتنقلت لخانتها.' ] },
   { v:'V37.50', d:'١١ أكتوبر ٢٠٢٦', notes:[
@@ -35503,6 +35563,12 @@ function clickAPart6(e){
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fxf = e.target.closest('[data-fx]'); if (fxf){ FILT.exec = fxf.getAttribute('data-fx') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
+  var fgf = e.target.closest('[data-fg]'); if (fgf){ FILT.ccg = fgf.getAttribute('data-fg') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var tdn = e.target.closest('[data-techdone]'); if (tdn){ if (techDoneSet(tdn.getAttribute('data-techdone'), true)){ logEvent('تمت الزيارةُ التقنية — ' + tdn.getAttribute('data-techdone')); toast(t('صارت زيارةً تمّت — تنتظر الاعتماد')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
+  var tdu = e.target.closest('[data-techundo]'); if (tdu){ if (techDoneSet(tdu.getAttribute('data-techundo'), false)){ logEvent('أُعيدت «تحتاج زيارة تقنية» — ' + tdu.getAttribute('data-techundo')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
+  if (e.target.closest('[data-seltech]')){ var nT = selTechDone(); toast(nm(nT) + ' ' + t('نقطة صارت «زيارة تمّت — تنتظر الاعتماد»')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
+  if (e.target.closest('[data-selexec]')){ var sx = (document.getElementById('selExec') || {}).value || ''; var nX = selExecSet(sx); toast(nm(nX) + ' ' + t('نقطة صُنّفت في التقرير التنفيذي')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
   var fr = e.target.closest('[data-fr]');
   if (fr){ var rv = fr.getAttribute('data-fr');
            FILT.route = (FILT.route === rv) ? '' : rv; LIST_SHOWN = LIST_PAGE; render(1);
@@ -36901,6 +36967,7 @@ document.addEventListener('change', function(e){
       });
       return;
     }
+    if (el.hasAttribute('data-execov')){ var xid = el.getAttribute('data-execov'), stv = el.value || ''; if (execOvSet(xid, stv)){ logEvent('تصنيفُ التقرير التنفيذي — ' + xid + ' ← ' + (stv ? EXEC_L[stv][0] : 'تلقائي')); toast(t(stv ? 'حُفظ التصنيف — يصل كلَّ الأجهزة ويظهر في التقرير' : 'عاد التصنيف تلقائيًا')); } return; }   /* (V37.52) */
     if (el.hasAttribute('data-buyphoto')){   /* (V37.43) صورةُ الفاتورة — بلا رسمٍ كي لا تُمحى خاناتُ النموذج المكتوبة */
       var fileB = el.files && el.files[0]; if (!fileB) return;
       toast(t('تُضغط الصورة…'));

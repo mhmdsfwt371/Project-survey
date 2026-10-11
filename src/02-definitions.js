@@ -324,6 +324,7 @@ function phQueueAge(){ var Q = (typeof PHOTO_Q === 'object' && PHOTO_Q) || []; i
 var TECH_BT_RX = /تحت (ال)?(جسر|كوبري|كبري)|كوبري|كبري|نفق|انفاق/;
 function techVisit(x, r){
   if (!x || !r || r.deleted || !svDone(r)) return false;
+  if (x.techDone) return false;   /* (V37.52) قرارُ المهندس: الزيارةُ التقنيةُ تمّت */
   if (typeof insDone === 'function' && insDone(x.id)) return false;
   var cc = chalCats(r);
   if (x.type === 'ممر' && cc.indexOf('mount') > -1) return true;

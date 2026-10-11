@@ -3421,6 +3421,12 @@ function clickAPart6(e){
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fxf = e.target.closest('[data-fx]'); if (fxf){ FILT.exec = fxf.getAttribute('data-fx') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
+  var fgf = e.target.closest('[data-fg]'); if (fgf){ FILT.ccg = fgf.getAttribute('data-fg') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var tdn = e.target.closest('[data-techdone]'); if (tdn){ if (techDoneSet(tdn.getAttribute('data-techdone'), true)){ logEvent('تمت الزيارةُ التقنية — ' + tdn.getAttribute('data-techdone')); toast(t('صارت زيارةً تمّت — تنتظر الاعتماد')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
+  var tdu = e.target.closest('[data-techundo]'); if (tdu){ if (techDoneSet(tdu.getAttribute('data-techundo'), false)){ logEvent('أُعيدت «تحتاج زيارة تقنية» — ' + tdu.getAttribute('data-techundo')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }
+  if (e.target.closest('[data-seltech]')){ var nT = selTechDone(); toast(nm(nT) + ' ' + t('نقطة صارت «زيارة تمّت — تنتظر الاعتماد»')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
+  if (e.target.closest('[data-selexec]')){ var sx = (document.getElementById('selExec') || {}).value || ''; var nX = selExecSet(sx); toast(nm(nX) + ' ' + t('نقطة صُنّفت في التقرير التنفيذي')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); return true; }
   var fr = e.target.closest('[data-fr]');
   if (fr){ var rv = fr.getAttribute('data-fr');
            FILT.route = (FILT.route === rv) ? '' : rv; LIST_SHOWN = LIST_PAGE; render(1);
@@ -4819,6 +4825,7 @@ document.addEventListener('change', function(e){
       });
       return;
     }
+    if (el.hasAttribute('data-execov')){ var xid = el.getAttribute('data-execov'), stv = el.value || ''; if (execOvSet(xid, stv)){ logEvent('تصنيفُ التقرير التنفيذي — ' + xid + ' ← ' + (stv ? EXEC_L[stv][0] : 'تلقائي')); toast(t(stv ? 'حُفظ التصنيف — يصل كلَّ الأجهزة ويظهر في التقرير' : 'عاد التصنيف تلقائيًا')); } return; }   /* (V37.52) */
     if (el.hasAttribute('data-buyphoto')){   /* (V37.43) صورةُ الفاتورة — بلا رسمٍ كي لا تُمحى خاناتُ النموذج المكتوبة */
       var fileB = el.files && el.files[0]; if (!fileB) return;
       toast(t('تُضغط الصورة…'));

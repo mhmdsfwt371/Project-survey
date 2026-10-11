@@ -1466,7 +1466,8 @@ function asnSheet(){
     +   '<input type="date" id="asnWhen" value="' + esc(ASN_WHEN) + '"></div>'
     + '</div>'
 
-    + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
+    + (may('settings') && SEL_N && typeof selExecHtml === 'function' ? selExecHtml() : '')   /* (V37.52) الإجراءان الجماعيّان */
+            + (may('settings') && SEL_N ? '<div class="field" style="margin:12px 0 0;padding:10px 0 0;border-top:1px solid var(--line)"><label>\u{1F3F7} ' + esc(t('أو انقل المحدَّد إلى تصنيف')) + '</label>'
         + '<div style="display:flex;gap:8px;flex-wrap:wrap"><select id="selType" aria-label="' + esc(t('التصنيف')) + '" style="flex:1 1 180px">' + Object.keys(typesList()).map(function(k){ return '<option value="' + esc(k) + '">' + esc(typeLabel(k)) + '</option>'; }).join('') + '</select>'
         + btn(t('انقل') + ' ' + nm(SEL_N) + ' ' + t('نقطة'), 'btn-secondary btn-sm', ' data-seltype="1"') + '</div></div>' : '')   /* (V23.0) */
     + (maySiteEdit() && SEL_N ? '<div class="field" style="margin:10px 0 0"><label>\u270E ' + esc(t('أو سمِّ المحدَّد: بدايةُ الاسم ثم رقمٌ متتابع')) + '</label>'

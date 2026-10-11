@@ -26,7 +26,7 @@ var LIFE = {
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
   dis:       { c:'#E01B1B', n:'فكٌّ مُسند أو تمّ',         d:'أُسند فكُّها بعد الموسم أو تمّ فعلًا.' }
 };
-var LIFE_ORDER = ['todo','stuck','assigned','tomorrow','visited','revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
+var LIFE_ORDER = ['todo','stuck','tech','assigned','tomorrow','visited',   /* (V37.52) بلاغُ المالك: «فلتر تحتاج زيارة تقنية مش لاقيه» — الحالةُ كانت تُحسَب وتُلوَّن ولا تُرشَّح */'revisit','minwait','minback','ready','sched','installed','handed','maint','dis'];
 /* مهمةٌ مفتوحةٌ من نوعٍ بعينه على هذه النقطة */
 /* ═══ فهرسُ المهامِّ بالنقطة والنوع (V17.47) ═══
    كانت الدالةُ تمرُّ على المهامِّ كلِّها لكلِّ نقطةٍ ولكلِّ نوع: ألفٌ وسبعُمئةٍ

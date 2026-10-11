@@ -3996,7 +3996,8 @@ function popHtml(){
             + '</span></div>'
             + (go ? '<div class="actions" style="margin:8px 0 0">' + go + '</div>' : '')
             /* وسمُ التركيب التجريبي — للمدير: يقاس الزمنُ بين مراحلها في «الفك والمراحل ← السلسلة» (V17.95) */
-            + (may('users') ? '<div class="actions" style="margin:8px 0 0">' + btn((s.pilot ? '\u2713 ' : '') + t(s.pilot ? 'نقطةُ تجربة — أعِدها عادية' : 'اجعلها نقطةَ تجربة'), 'btn-quiet btn-sm', ' data-pilot="' + esc(s.id) + '"') + '</div>' : '');
+            + (may('users') ? '<div class="actions" style="margin:8px 0 0">' + btn((s.pilot ? '\u2713 ' : '') + t(s.pilot ? 'نقطةُ تجربة — أعِدها عادية' : 'اجعلها نقطةَ تجربة'), 'btn-quiet btn-sm', ' data-pilot="' + esc(s.id) + '"') + '</div>' : '')
+            + (typeof execOvRow === 'function' ? execOvRow(siteFind(s.id) || s) : '');   /* (V37.52) تصنيفُ التقرير التنفيذي وزيارتُها التقنية — بالنقطة الأصلية لا نسخة العرض */
         })()
     + '</div></div>';
 }
