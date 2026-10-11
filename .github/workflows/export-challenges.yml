@@ -151,6 +151,10 @@ jobs:
           node scripts/points-dump.mjs || true
           git config user.name nusuk-export; git config user.email export@nusuk.local
           git add -f exports/points-full.json && git commit -q -m "تفريغُ النقاط — التقرير التنفيذي" && git push -q origin HEAD:export-challenges || true
+      - name: Review of the six items (read-only)
+        env:
+          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+        run: node scripts/review-6.mjs || true
       - name: QA stats (read-only)
         env:
           FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
