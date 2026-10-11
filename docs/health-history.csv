@@ -49,3 +49,5 @@
 2026-10-11,V37.48,651,2,5,0,478,3299,"mfuModeBar/mfuStoryCard/mfuHallCards: صفحةٌ واحدةٌ بوضعين (V37.49)"
 2026-10-11,V37.51,653,2,5,0,481,3312,"execOvOf/execOvSet/execAutoOf/execStatusMemo/ccGroupsOfSite/execOvRow/techDoneSet/selTechDone/selExecSet/selExecHtml: التصنيفُ الحيّ والزيارةُ التقنية (V37.52)"
 2026-10-11,V37.53,654,2,5,0,483,3319,"fsecOpen/fsecSet/fsec: الترشيحُ أقسامًا مطوية (V37.54)"
+2026-10-11,V37.55,656,2,5,0,486,3321,"SV_ST/SV_WHY/svStOf/svRing وsvDashHtml0 المبسّطة (V37.56)"
+2026-10-11,V37.56,656,2,5,0,485,3321,"حذفُ svInsight الميتة (V37.56)"

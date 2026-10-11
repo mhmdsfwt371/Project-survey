@@ -1283,7 +1283,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.55</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.56</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1345,7 +1345,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-c5669577d2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-3194b8ca6d.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -23161,60 +23161,72 @@ function svMiniMap(rows){
   return '<div class="card" style="margin:0"><div class="pid">' + esc(t('أين هي على الخريطة')) + '</div><svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;border-radius:10px;background:var(--surface-2);color:var(--ink)"><path d="' + svMiniMap.bg + '" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" opacity=".18"/>' + fg + '</svg>'
     + '<div class="hint" style="margin:6px 0 0;display:flex;gap:10px;flex-wrap:wrap">' + Object.keys(zs).map(function(z){ return '<span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + svZoneColor(z) + '"></i> ' + esc(t(z)) + '</span>'; }).join('') + '<span>\u25CF ' + esc(t('الباهت: باقي النقاط')) + '</span></div></div>';
 }
-function svInsight(key, n, base, zones, cats, catName, wk, wkPrev, oldest){
-  if (!n) return ''; var P = [];
-  P.push('<b>' + nm(n) + '</b> ' + t('نقطة') + ' (' + nm(Math.round(n / Math.max(1, base.n) * 100)) + '\u066A ' + t('من') + ' ' + t(base.name) + ')');
-  if (zones.length){ var z = zones[0], sh = Math.round(z[1] / n * 100); P.push((sh >= 70 ? t('أكثر من ثلثيها') : sh >= 50 ? t('أكثر من نصفها') : t('أكبر حصة')) + ' ' + t('في') + ' <b>' + esc(t(z[0])) + '</b> (' + nm(z[1]) + ')'); }
-  if (cats.length && catName){ var c = cats[0], cs = Math.round(c[1] / n * 100); P.push((cs >= 50 ? t('أكثر من نصفها') : t('أكبر فئة')) + ' «<b>' + esc(t(c[0])) + '</b>» (' + nm(c[1]) + ')'); }
-  var tr = wkPrev ? (wk < wkPrev * 0.6 ? t('الوتيرة تتباطأ') : wk > wkPrev * 1.4 ? t('الوتيرة تتسارع') : t('الوتيرة ثابتة')) : (wk ? t('بدأت هذا الأسبوع') : '');
-  if (wk || wkPrev) P.push(nm(wk) + ' ' + t('هذا الأسبوع مقابل') + ' ' + nm(wkPrev) + ' ' + t('في الأسبوع الذي قبله') + (tr ? ' \u2014 <b>' + tr + '</b>' : ''));
-  if (oldest > 0 && /معوّق|معوق|تحدي|تحدّي|زيارة أخرى/.test(catName + ' ' + svListTitle(key))) P.push(t('أقدمُها مفتوحٌ منذ') + ' <b>' + nm(oldest) + '</b> ' + t('يومًا'));
-  return '<div class="card" style="margin:10px 0;border-inline-start:4px solid var(--acc,#2E86DE)"><div class="pid">' + esc(t('الخلاصة')) + '</div><p style="margin:4px 0 0;line-height:1.8">\u{1F50E} ' + P.join(t('،') + ' ') + '.</p></div>';
-}
+/* (V37.56) svInsight (جملةُ الخلاصة الطويلة) حُذفت بقرار المالك — اللوحةُ تُقرأ بالنظر */
 function svDashHtml(key, rows, head){
   var ck = key + '|' + rows.length + '|' + (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + '|' + (typeof SV_ZF !== 'undefined' ? SV_ZF : '') + '|' + LANG;   /* (V37.45) تُحفَظ اللوحةُ: الفتحُ الثاني فوريّ */
   if (svDashHtml.ck === ck && svDashHtml.html) return svDashHtml.html;
   var html = svDashHtml0(key, rows, head); svDashHtml.ck = ck; svDashHtml.html = html; return html;
 }
+/* ═══ (V37.56) لوحةٌ تُقرأ بالنظر — قرارُ المالك: «عاوزها user friendly أوي، أي حد يبص يفهم من غير كلام» ═══
+   لونٌ + أيقونةٌ + رقمٌ + كلمةٌ واحدة: حلقةٌ كبيرةٌ بالنسبة، وشريطُ إشارةٍ واحدٌ لحال النقاط (أخضر جاهزة · برتقالي شغلٌ علينا · أحمر يحتاج طرفًا آخر · رمادي لسه)،
+   و«ليه مش جاهزة؟» مربعاتٌ بأيقونة، والمشاعرُ حلقاتٌ صغيرةٌ تُضغط، والأسبوعُ جملةٌ عادية، ثم الخريطةُ وزرُّ الإكسل. لا وسيطَ ولا «أقدم بند» ولا أسماءَ فئاتٍ بسطرين. */
+var SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في كلِّ اللوحات */
+  { k:'ins', c:'#14B8A6', e:'\u{1F527}', n:'مُركّبة' },
+  { k:'ready', c:'#22C55E', e:'\u2705', n:'جاهزة للتركيب' },
+  { k:'prep', c:'#F59E0B', e:'\u{1F6E0}', n:'تحتاج تجهيز' },
+  { k:'coord', c:'#EF4444', e:'\u26A0\uFE0F', n:'تحتاج تنسيق' },
+  { k:'again', c:'#94A3B8', e:'\u{1F501}', n:'زيارة أخرى' },
+  { k:'todo', c:'#475569', e:'\u23F3', n:'لم تُزر بعد' }
+];
+var SV_WHY = [   /* «ليه مش جاهزة؟» — كلمةٌ واحدةٌ وأيقونة */
+  { ks:['mount'], e:'\u{1F3D7}', n:'يحتاج هيكل' }, { ks:['entry', 'multi'], e:'\u{1F6AA}', n:'المدخل' }, { ks:['beam', 'wide'], e:'\u{1F4CF}', n:'العارضة' },
+  { ks:['block', 'legacy'], e:'\u{1F6A7}', n:'عائق' }, { ks:['height'], e:'\u2B06\uFE0F', n:'ارتفاع' }, { ks:['review'], e:'\u2753', n:'قيد المراجعة' }
+];
+function svStOf(id){
+  if (typeof insDone === 'function' && insDone(id)) return 'ins';
+  var r = STATE.recs[id]; if (!r || !svVisited(r)) return 'todo'; if (!svDone(r)) return 'again';
+  var cc = chalCats(r); if (!cc.length) return 'ready';
+  if (cc.indexOf('block') > -1 || cc.indexOf('legacy') > -1) return 'coord'; return 'prep';
+}
+function svRing(p, size, color, label){
+  var deg = Math.max(0, Math.min(100, p)), inner = Math.round(size * 0.76);
+  return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:conic-gradient(' + color + ' 0 ' + deg + '%,var(--line) 0);display:flex;align-items:center;justify-content:center;flex:0 0 auto">'
+    + '<i style="width:' + inner + 'px;height:' + inner + 'px;border-radius:50%;background:var(--surface,#141B2A);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:' + Math.round(size / 4.6) + 'px">' + label + '</i></div>';
+}
 function svDashHtml0(key, rows, head){
-  var C = svDashCols(head || svListHead(key));
-  var n = rows.length, now = Date.now(), dk = function(ms){ return dayKey(ms); }, base = svBaseOf(key);
-  var cnt = function(ix, cap, split, empty){ var m = {}; rows.forEach(function(r){ var raw = String(r[ix] || '').trim(); (split && raw ? raw.split(/،\s*/) : [raw]).forEach(function(v0){ var v = String(v0 || '').trim() || (empty || '\u2014'); m[v] = (m[v] || 0) + 1; }); });
-    var L = Object.keys(m).map(function(k){ return [k, m[k]]; }).sort(function(a, b){ return b[1] - a[1]; });
-    if (cap && L.length > cap){ var rest = L.slice(cap).reduce(function(a, x){ return a + x[1]; }, 0); L = L.slice(0, cap).concat([[t('أخرى'), rest]]); } return L; };
-  /* شريطٌ: النسبةُ من المجموع، أو من قاعدةٍ لكلِّ بندٍ (نقاطُ المشعر نفسه) */
-  var bars = function(title, L, tot, of){ if (!L.length) return ''; var mx = Math.max.apply(null, L.map(function(x){ return of ? (x[1] / Math.max(1, of[x[0]] || x[1])) : x[1]; }));
-    return '<div class="card" style="margin:0"><div class="pid">' + esc(t(title)) + '</div>' + L.map(function(x){ var v = of ? (x[1] / Math.max(1, of[x[0]] || x[1])) : x[1], w = Math.max(2, Math.round(v / mx * 100));
-      return '<div class="fn-row" style="display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0"><span style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3" title="' + esc(t(x[0])) + '">' + esc(t(x[0])) + '</span>'
-        + '<span style="background:var(--line);border-radius:6px;height:10px;position:relative;overflow:hidden"><i style="position:absolute;inset-block:0;inset-inline-start:0;width:' + w + '%;background:var(--acc,#2E86DE);border-radius:6px"></i></span>'
-        + '<b class="num">' + nm(x[1]) + (of && of[x[0]] ? ' <small class="hint" style="margin:0">' + t('من') + ' ' + nm(of[x[0]]) + ' \u00b7 ' + nm(Math.round(x[1] / of[x[0]] * 100)) + '\u066A</small>' : tot ? ' <small class="hint" style="margin:0">' + nm(Math.round(x[1] / tot * 100)) + '\u066A</small>' : '') + '</b></div>'; }).join('') + '</div>'; };
-  /* التواريخُ من عمود «آخر زيارة» */
-  var dates = []; if (C.date > -1) rows.forEach(function(r){ var d = String(r[C.date] || '').slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(new Date(d + 'T12:00:00').getTime()); }); dates.sort(function(a, b){ return a - b; });
-  var wk = dates.filter(function(d){ return now - d < 7 * 864e5; }).length, wkPrev = dates.filter(function(d){ return now - d >= 7 * 864e5 && now - d < 14 * 864e5; }).length, delta = wk - wkPrev;
-  var oldest = dates.length ? Math.round((now - dates[0]) / 864e5) : 0, med = dates.length ? Math.round((now - dates[Math.floor(dates.length / 2)]) / 864e5) : 0;
-  var cum = [], lab = []; for (var i = 29; i >= 0; i--){ var tt = now - i * 864e5, c = 0; for (var q = 0; q < dates.length && dates[q] <= tt + 432e5; q++) c++; cum.push(c); if (i % 7 === 0 || i === 29) lab.push([29 - i, dk(tt).slice(5)]); }
-  var cmax = cum[cum.length - 1] || 1, CW = 560, CH = 150;
-  var path = cum.map(function(v, k){ return (k ? 'L' : 'M') + (10 + k * (CW - 20) / 29).toFixed(1) + ',' + (CH - 22 - v / cmax * (CH - 40)).toFixed(1); }).join(' ');
-  var trend = dates.length ? '<div class="card" style="margin:0"><div class="pid">' + esc(t('التراكم خلال ٣٠ يومًا')) + '</div><svg viewBox="0 0 ' + CW + ' ' + CH + '" width="100%" style="display:block;color:var(--ink)"><path d="' + path + '" fill="none" stroke="var(--acc,#2E86DE)" stroke-width="2.5"/>'
-    + '<text x="' + (CW - 12) + '" y="14" font-size="12" fill="currentColor" text-anchor="end" opacity=".7">' + nm(cmax) + ' ' + esc(t('الآن')) + '</text>'
-    + lab.map(function(l){ return '<text x="' + (10 + l[0] * (CW - 20) / 29).toFixed(0) + '" y="' + (CH - 4) + '" font-size="10" fill="currentColor" opacity=".6" text-anchor="middle">' + esc(l[1]) + '</text>'; }).join('') + '</svg></div>' : '';
-  var st = C.state > -1 ? cnt(C.state, 8, true).filter(function(x){ return x[0] !== '\u2014'; }) : [], isChal = /معوّق|معوق|تحدي|تحدّي/.test(C.stateName);
-  var zones = C.zone > -1 ? cnt(C.zone) : [];
-  var tile = function(v, l, sub, cls){ return '<div class="card" style="margin:0"><div class="num ' + (cls || '') + '" style="font-size:26px;font-weight:700">' + v + '</div><div class="hint" style="margin:0">' + esc(t(l)) + '</div>' + (sub ? '<div class="hint" style="margin:0;font-size:12px">' + sub + '</div>' : '') + '</div>'; };
-  var tiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0">'
-    + tile(nm(n), 'العدد', nm(Math.round(n / Math.max(1, base.n) * 100)) + '\u066A ' + esc(t('من')) + ' ' + esc(t(base.name)))
-    + (dates.length ? tile((delta > 0 ? '\u25B2 ' : delta < 0 ? '\u25BC ' : '') + nm(Math.abs(delta)), 'عن الأسبوع الماضي', nm(wk) + ' ' + esc(t('هذا الأسبوع')) + ' \u00b7 ' + nm(wkPrev) + ' ' + esc(t('السابق')), delta > 0 ? 'bad' : delta < 0 ? 'ok' : '') : '')
-    + (dates.length && (isChal || /زيارة أخرى|المتبقي/.test(svListTitle(key))) ? tile(nm(oldest) + ' ' + esc(t('يوم')), 'أقدم بند مفتوح', esc(t('الوسيط')) + ' ' + nm(med) + ' ' + esc(t('يومًا'))) : '')
-    + (st.length && isChal ? tile(nm(st[0][1]), 'أكبر فئة', esc(t(st[0][0]))) : '') + '</div>';
-  return svInsight(key, n, base, zones, st, isChal ? C.stateName : '', wk, wkPrev, oldest) + tiles
-    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">'
-    + (st.length > 1 && isChal ? bars(C.stateName, st, n) : '') + svMiniMap(rows)
-    + (zones.length ? bars('حسب المشعر — من نقاطه', zones, n, base.zones) : '') + trend
-    + (C.type > -1 ? bars('حسب النوع', cnt(C.type, 8), n) : '')
-    + (C.comp > -1 ? bars('حسب الشركة', cnt(C.comp, 8, false, t('بلا شركة — غير المخيمات')), n) : '')
-    + (C.by > -1 && /^(sv|srv|insd|hand|disd)$/.test(key) ? bars('حسب المنفّذ', cnt(C.by, 8), n) : '')
-    + (st.length > 1 && !isChal ? bars('الحالة والتحديات', st, n) : '') + '</div>'
-    + '<p class="hint" style="margin:10px 0 0;font-size:12px">' + esc(t('المصدر: وثائق المسح والتركيب نفسها — تُحسب في لحظتها على الجهاز')) + (STATE.meta && STATE.meta.lastSync ? ' \u00b7 ' + esc(t('آخر مزامنة')) + ' ' + esc(agoTxt(STATE.meta.lastSync)) : '') + '</p>';
+  var C = svDashCols(head || svListHead(key)), n = rows.length, now = Date.now(), base = svBaseOf(key);
+  var tile = 'background:var(--surface-2);border-radius:14px;padding:12px';
+  /* ١ · الحلقةُ الكبيرة: كم من كم */
+  var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
+  var ringC = prog ? (pct >= 90 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)';
+  var hero = '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A')
+    + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
+  /* ٢ · حالُها الآن: شريطُ إشارةٍ واحدٌ ومربعاتُه */
+  var stc = {}; rows.forEach(function(r){ var k = svStOf(r[0]); stc[k] = (stc[k] || 0) + 1; });
+  var sts = SV_ST.filter(function(o){ return stc[o.k]; });
+  var bar = sts.length > 1 ? '<div style="display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 10px">' + sts.map(function(o){ return '<i title="' + esc(t(o.n)) + '" style="display:block;width:' + (stc[o.k] / n * 100).toFixed(2) + '%;background:' + o.c + '"></i>'; }).join('') + '</div>' : '';
+  var stTiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">' + sts.map(function(o){
+      return '<div style="' + tile + ';display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border-radius:50%;background:' + o.c + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(stc[o.k]) + '</div><div style="font-size:13px">' + o.e + ' ' + esc(t(o.n)) + '</div></div></div>'; }).join('') + '</div>';
+  var stSec = sts.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('حالها الآن')) + '</div>' + bar + stTiles : '';
+  /* ٣ · ليه مش جاهزة؟ */
+  var wc = {}; rows.forEach(function(r){ var rec = STATE.recs[r[0]]; if (!rec || !svDone(rec)) return; var cc = chalCats(rec); SV_WHY.forEach(function(w, wi){ if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) wc[wi] = (wc[wi] || 0) + 1; }); });
+  var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; });
+  var whySec = why.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('ليه مش جاهزة؟')) + '</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">'
+    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div style="' + tile + ';text-align:center;padding:10px 6px"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + '</div></div>'; }).join('') + '</div>' : '';
+  /* ٤ · المشاعر: حلقةٌ صغيرةٌ لكلٍّ منها تُضغط فتصفّي */
+  var zc = {}; if (C.zone > -1) rows.forEach(function(r){ var z = String(r[C.zone] || ''); if (z) zc[z] = (zc[z] || 0) + 1; });
+  var zks = Object.keys(zc).sort(function(a, b){ return zc[b] - zc[a]; });
+  var zoneSec = zks.length > 1 && !SV_ZF ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('المشاعر')) + '</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:12px">'
+    + zks.map(function(z){ var of = (base.zones || {})[z] || zc[z], zp = Math.round(zc[z] / Math.max(1, of) * 100);
+      return '<div role="button" tabindex="0" data-svzf="' + esc(z) + '" style="' + tile + ';text-align:center;cursor:pointer" title="' + esc(t('اضغط لعرض هذا المشعر وحده')) + '">' + '<div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(zp, 56, prog ? (zp >= 90 ? '#22C55E' : zp >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)', nm(zp) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + '</div><div class="hint num" style="margin:0;font-size:12px">' + nm(zc[z]) + '</div></div>'; }).join('') + '</div>' : '';
+  /* ٥ · الأسبوعُ بجملةٍ عادية */
+  var dates = []; if (C.date > -1) rows.forEach(function(r){ var d = String(r[C.date] || '').slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(new Date(d + 'T12:00:00').getTime()); });
+  var wk = dates.filter(function(d){ return now - d < 7 * 864e5; }).length, wkPrev = dates.filter(function(d){ return now - d >= 7 * 864e5 && now - d < 14 * 864e5; }).length;
+  var weekSec = (wk || wkPrev) ? '<div style="' + tile + ';display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:26px">' + (wk >= wkPrev ? '\u{1F4C8}' : '\u{1F4C9}') + '</span><div><div style="font-size:17px;font-weight:700">' + nm(wk) + ' ' + esc(t('هذا الأسبوع')) + '</div>'
+    + '<div class="hint" style="margin:2px 0 0;font-size:13px">' + esc(t(wk >= wkPrev ? 'أكثر من الأسبوع اللي فات' : 'أقل من الأسبوع اللي فات')) + ' (' + nm(wkPrev) + ')' + (wk < wkPrev && prog && pct >= 95 ? ' \u2014 ' + esc(t('طبيعي، المسح قرّب يخلص')) : '') + '</div></div></div>' : '';
+  /* ٦ · الخريطة، ثم زرُّ التفاصيل */
+  return hero + stSec + whySec + zoneSec + weekSec + svMiniMap(rows)
+    + '<button type="button" class="btn btn-primary" data-svpopxls="1" style="display:block;width:100%;margin-top:12px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>';
 }
 function svPhoPanel(id){ var px = siteFind(id);
         return '<div id="svPhoVeil" data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
@@ -25885,6 +25897,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.56', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'كل نوافذ المتابعة بقت تتفهم بالنظر: حلقة كبيرة بالنسبة والرقم، وشريط ألوان واحد لحال النقاط (🟢 جاهزة · 🟠 تحتاج تجهيز · 🔴 تحتاج تنسيق · ⚪ زيارة أخرى)، و«ليه مش جاهزة؟» بأيقونات وكلمة واحدة، والمشاعر حلقات صغيرة تضغط عليها فتعرض المشعر لوحده، والأسبوع بجملة عادية، وتحتها الخريطة وزرار «نزّل التفاصيل (إكسل)». اتشال الوسيط وأقدم بند والكلام الطويل.' ] },
   { v:'V37.55', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'أسماء أقسام التصفية: «التقرير التنفيذي» بقت «التحديات»، و«المجموعات الأربع» بقت «معالجة التحديات»، و«الأدوار» بقت «أدوار منشأة الجمرات».' ] },
   { v:'V37.54', d:'١٢ أكتوبر ٢٠٢٦', notes:[
