@@ -94,7 +94,7 @@ function svListPop(){
       + (canDash ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
       + (canDash && asDash ? btn('\u{1F5A8} ' + t('طباعة اللوحة'), 'btn-quiet btn-sm', ' data-svprint="1"') : '')   /* (V37.45) */
       + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
-    + (SV_SUB ? '<div class="chips" style="margin:8px 0 0"><button type="button" class="chip on" data-svsub="' + esc(SV_SUB) + '">\u21A9 ' + esc(t('رجوع للكل')) + ' \u00b7 ' + esc(t(svSubLabel())) + ' \u2715</button></div>' : '')   /* (V37.58) */
+    + (SV_STACK.length ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2192 ' + t('رجوع'), 'btn-secondary', ' data-svback="1" title="' + esc(t('للشاشة السابقة')) + '"') + '</div>' : '')   /* (V37.59) رجوعٌ حقيقيٌّ للشاشة السابقة */
     + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
@@ -165,22 +165,30 @@ var SV_WHY = [   /* «ليه مش جاهزة؟» — كلمةٌ واحدةٌ و�
   { ks:['mount'], e:'\u{1F3D7}', n:'يحتاج هيكل' }, { ks:['entry', 'multi'], e:'\u{1F6AA}', n:'المدخل' }, { ks:['beam', 'wide'], e:'\u{1F4CF}', n:'العارضة' },
   { ks:['block', 'legacy'], e:'\u{1F6A7}', n:'عائق' }, { ks:['height'], e:'\u2B06\uFE0F', n:'ارتفاع' }, { ks:['review'], e:'\u2753', n:'قيد المراجعة' }
 ];
+/* (V37.59) بلاغُ المالك: «الداتا دخلت في بعضها» — النقطةُ ذاتُ التحديين كانت تُعَدّ في مربعين، و«هيكل + عائق» تذهب أحمرَ فيختلف «يحتاج هيكل» بين شاشتين.
+   الآن لكلِّ نقطةٍ سببٌ رئيسٌ واحدٌ بالأولوية (عائق ← هيكل ← المدخل ← العارضة ← ارتفاع ← قيد المراجعة)، واللونُ منه: العائقُ أحمر وما سواه برتقالي. */
+var SV_WHY_ORDER = [3, 0, 1, 2, 4, 5];
+function svPrimWhy(rec){
+  if (!rec || !svDone(rec)) return -1; var cc = chalCats(rec); if (!cc.length) return -1;
+  for (var q = 0; q < SV_WHY_ORDER.length; q++){ var w = SV_WHY[SV_WHY_ORDER[q]]; if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) return SV_WHY_ORDER[q]; }
+  return 5;
+}
 function svStOf(id){
   if (typeof insDone === 'function' && insDone(id)) return 'ins';
   var r = STATE.recs[id]; if (!r || !svVisited(r)) return 'todo'; if (!svDone(r)) return 'again';
-  var cc = chalCats(r); if (!cc.length) return 'ready';
-  if (cc.indexOf('block') > -1 || cc.indexOf('legacy') > -1) return 'coord'; return 'prep';
+  var pw = svPrimWhy(r); if (pw < 0) return 'ready'; return pw === 3 ? 'coord' : 'prep';
 }
 function svRing(p, size, color, label){
   var deg = Math.max(0, Math.min(100, p)), inner = Math.round(size * 0.76);
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:conic-gradient(' + color + ' 0 ' + deg + '%,var(--line) 0);display:flex;align-items:center;justify-content:center;flex:0 0 auto">'
     + '<i style="width:' + inner + 'px;height:' + inner + 'px;border-radius:50%;background:var(--surface,#141B2A);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:' + Math.round(size / 4.6) + 'px">' + label + '</i></div>';
 }
+var SV_STACK = [];   /* (V37.59) الشاشاتُ السابقةُ داخل النافذة — للرجوع */
 var SV_SUB = '';   /* (V37.58) المربعُ المضغوطُ داخل النافذة: «st:ready» أو «why:0» */
 function svSubPass(id){
   if (!SV_SUB) return true; var p = SV_SUB.split(':');
   if (p[0] === 'st') return svStOf(id) === p[1];
-  if (p[0] === 'why'){ var w = SV_WHY[+p[1]], rec = STATE.recs[id]; if (!w || !rec || !svDone(rec)) return false; var cc = chalCats(rec); return w.ks.some(function(k){ return cc.indexOf(k) > -1; }); }
+  if (p[0] === 'why') return svStOf(id) !== 'ins' && svPrimWhy(STATE.recs[id]) === +p[1];   /* (V37.59) بالسبب الرئيس — كلُّ نقطةٍ في مربعٍ واحد */
   return true;
 }
 function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':'); if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; } var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
@@ -189,33 +197,37 @@ function svPopFilter(rowsAll, head){
   return rowsAll.filter(function(r){ return (!SV_ZF || dcz.zone < 0 || String(r[dcz.zone] || '') === SV_ZF) && svSubPass(r[0]); });
 }
 function svDashHtml0(key, rows, head){
-  var C = svDashCols(head || svListHead(key)), n = rows.length, base = svBaseOf(key);
+  var C = svDashCols(head || svListHead(key)), n = rows.length, base = svBaseOf(key), sub = !!SV_SUB;
   var tile = 'background:var(--surface-2);border-radius:14px;padding:12px';
-  /* ١ · الحلقةُ الكبيرة: كم من كم */
+  var stc = {}, wc = {}, multi = 0;
+  rows.forEach(function(r){ var k = svStOf(r[0]); stc[k] = (stc[k] || 0) + 1;
+    if (k === 'prep' || k === 'coord'){ var rec = STATE.recs[r[0]], pw = svPrimWhy(rec); if (pw > -1 && pw !== 3){ wc[pw] = (wc[pw] || 0) + 1; var cc = chalCats(rec), kinds = SV_WHY.filter(function(w){ return w.ks.some(function(x){ return cc.indexOf(x) > -1; }); }).length; if (kinds > 1) multi++; } } });
+  /* ١ · العنوان: في اللوحة الأمّ حلقةٌ بالنسبة، وداخلَ مربعٍ جملةٌ واحدةٌ بلا حلقةٍ ولا نسبة */
   var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
   var ringC = prog ? (pct >= 90 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)';
-  var hero = '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A')
-    + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
-  /* ٢ · حالُها الآن: شريطُ إشارةٍ واحدٌ ومربعاتُه */
-  var stc = {}; rows.forEach(function(r){ var k = svStOf(r[0]); stc[k] = (stc[k] || 0) + 1; });
+  var hero = sub
+    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t('نقطة')) + ' \u2014 ' + esc(t(svSubLabel())) + '</div></div></div>'
+    : '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A') + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
+  /* ٢ · حالُها الآن: كلُّ نقطةٍ مرةً واحدة — يختفي إن كانت كلُّها لونًا واحدًا */
   var sts = SV_ST.filter(function(o){ return stc[o.k]; });
-  var bar = sts.length > 1 ? '<div style="display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 10px">' + sts.map(function(o){ return '<i title="' + esc(t(o.n)) + '" style="display:block;width:' + (stc[o.k] / n * 100).toFixed(2) + '%;background:' + o.c + '"></i>'; }).join('') + '</div>' : '';
-  var stTiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">' + sts.map(function(o){
-      return '<div role="button" tabindex="0" data-svsub="st:' + o.k + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';display:flex;align-items:center;gap:10px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:' + o.c + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(stc[o.k]) + '</div><div style="font-size:13px">' + o.e + ' ' + esc(t(o.n)) + ' \u203A</div></div></div>'; }).join('') + '</div>';
-  var stSec = sts.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('حالها الآن')) + '</div>' + bar + stTiles : '';
-  /* ٣ · ليه مش جاهزة؟ */
-  var wc = {}; rows.forEach(function(r){ var rec = STATE.recs[r[0]]; if (!rec || !svDone(rec)) return; var cc = chalCats(rec); SV_WHY.forEach(function(w, wi){ if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) wc[wi] = (wc[wi] || 0) + 1; }); });
-  var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; });
-  var whySec = why.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('ليه مش جاهزة؟')) + '</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">'
-    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div role="button" tabindex="0" data-svsub="why:' + wi + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + ' \u203A</div></div>'; }).join('') + '</div>' : '';
-  /* ٤ · المشاعر: حلقةٌ صغيرةٌ لكلٍّ منها تُضغط فتصفّي */
+  var stSec = sts.length > 1 ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('حالها الآن')) + '</div>'
+    + '<div style="display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 10px">' + sts.map(function(o){ return '<i title="' + esc(t(o.n)) + '" style="display:block;width:' + (stc[o.k] / n * 100).toFixed(2) + '%;background:' + o.c + '"></i>'; }).join('') + '</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">' + sts.map(function(o){
+        return '<div role="button" tabindex="0" data-svsub="st:' + o.k + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';display:flex;align-items:center;gap:10px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:' + o.c + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(stc[o.k]) + '</div><div style="font-size:13px">' + o.e + ' ' + esc(t(o.n)) + ' \u203A</div>' + (o.k === 'coord' ? '<div class="hint" style="margin:0;font-size:11px">' + esc(t('عائق في الموقع')) + '</div>' : '') + '</div></div>'; }).join('') + '</div>' : '';
+  /* ٣ · «تحتاج تجهيز — ليه؟»: بالسبب الرئيس فمجموعُها = البرتقالي بالضبط */
+  var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; }), prepN = why.reduce(function(a, wi){ return a + wc[wi]; }, 0);
+  var whySec = why.length && !(sub && /^why:/.test(SV_SUB)) ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('تحتاج تجهيز — ليه؟')) + ' <span class="num">(' + nm(prepN) + ')</span></div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:6px">'
+    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div role="button" tabindex="0" data-svsub="why:' + wi + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + ' \u203A</div></div>'; }).join('') + '</div>'
+    + (multi ? '<p class="hint" style="margin:0 0 12px;font-size:12px">' + esc(t('كلُّ نقطةٍ محسوبةٌ مرةً بأهمِّ تحدٍّ فيها — و')) + nm(multi) + ' ' + esc(t('منها فيها تحدٍّ آخر كمان')) + '</p>' : '<div style="margin-bottom:12px"></div>') : '';
+  /* ٤ · المشاعر: حلقاتٌ في اللوحة الأمّ، وأعدادٌ فقط داخلَ المربع */
   var zc = {}; if (C.zone > -1) rows.forEach(function(r){ var z = String(r[C.zone] || ''); if (z) zc[z] = (zc[z] || 0) + 1; });
   var zks = Object.keys(zc).sort(function(a, b){ return zc[b] - zc[a]; });
   var zoneSec = zks.length > 1 && !SV_ZF ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('المشاعر')) + '</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:12px">'
     + zks.map(function(z){ var of = (base.zones || {})[z] || zc[z], zp = Math.round(zc[z] / Math.max(1, of) * 100);
-      return '<div role="button" tabindex="0" data-svzf="' + esc(z) + '" style="' + tile + ';text-align:center;cursor:pointer" title="' + esc(t('اضغط لعرض هذا المشعر وحده')) + '">' + '<div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(zp, 56, prog ? (zp >= 90 ? '#22C55E' : zp >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)', nm(zp) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + '</div><div class="hint num" style="margin:0;font-size:12px">' + nm(zc[z]) + '</div></div>'; }).join('') + '</div>' : '';
-  /* ٥ · زرُّ التفاصيل */
-  return hero + stSec + whySec + zoneSec   /* (V37.58) قرارُ المالك: لا سطرَ أسبوعٍ ولا خريطةَ في اللوحة — ما يحتاجه المتابِعُ فقط */
+      return '<div role="button" tabindex="0" data-svzf="' + esc(z) + '" style="' + tile + ';text-align:center;cursor:pointer" title="' + esc(t('اضغط لعرض هذا المشعر وحده')) + '">'
+        + (sub ? '<div class="num" style="font-size:20px;font-weight:800">' + nm(zc[z]) + '</div>' : '<div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(zp, 56, prog ? (zp >= 90 ? '#22C55E' : zp >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)', nm(zp) + '\u066A') + '</div>')
+        + '<div style="font-size:13px">' + esc(t(z)) + ' \u203A</div>' + (sub ? '' : '<div class="hint num" style="margin:0;font-size:12px">' + nm(zc[z]) + '</div>') + '</div>'; }).join('') + '</div>' : '';
+  return hero + stSec + whySec + zoneSec
     + '<button type="button" class="btn btn-primary" data-svpopxls="1" style="display:block;width:100%;margin-top:12px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>';
 }
 function svPhoPanel(id){ var px = siteFind(id);
@@ -2888,6 +2900,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.59', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'اللوحات بقت أرقامها بتجمع على بعض: كل نقطة محسوبة مرة واحدة بأهم تحدي فيها (عائق، ثم هيكل، ثم المدخل، ثم العارضة، ثم ارتفاع)، فـ«تحتاج تجهيز» = هيكل + مدخل + عارضة + ارتفاع بالظبط، و«يحتاج هيكل» نفس الرقم في كل شاشة. و«ليه؟» بقت تحت «تحتاج تجهيز».',
+      'جوه أي مربع: زرار «→ رجوع» للشاشة اللي قبلها (حتى لو دخلت أكتر من مستوى)، والعنوان جملة واحدة «٧٤٢ نقطة — تحتاج تجهيز» من غير حلقة حمرا ولا نسبة، و«حالها الآن» بتختفي لما تبقى لون واحد.' ] },
   { v:'V37.58', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'في كل لوحة: أي مربع بتضغطه (جاهزة، تحتاج تجهيز، تحتاج تنسيق، زيارة أخرى، يحتاج هيكل، المدخل، العارضة، عائق، ارتفاع، قيد المراجعة) بيفتح نافذته بلوحتها وإكسلها، ومعاه «↩ رجوع للكل». والإكسل بقى بينزّل اللي شايفه في النافذة بالظبط (المشعر والمربع)، وكان قبل كده بينزّل الكل.',
       'واتشال من اللوحة سطر الأسبوع والخريطة بطلبك.' ] },

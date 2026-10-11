@@ -52,3 +52,4 @@
 2026-10-11,V37.55,656,2,5,0,486,3321,"SV_ST/SV_WHY/svStOf/svRing وsvDashHtml0 المبسّطة (V37.56)"
 2026-10-11,V37.56,656,2,5,0,485,3321,"حذفُ svInsight الميتة (V37.56)"
 2026-10-11,V37.57,657,2,5,0,486,3322,"SV_SUB/svSubPass/svSubLabel/svPopFilter: المربعُ يفتح نافذتَه والإكسلُ بالمرشّح (V37.58)"
+2026-10-11,V37.58,659,2,5,0,489,3326,"SV_STACK/SV_WHY_ORDER/svPrimWhy وsvDashHtml0 بلا تداخل (V37.59)"
