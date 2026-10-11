@@ -5052,6 +5052,7 @@ function mfuSummary(){
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
   return (svListPop() + supPopHtml()) + mfuModeBar() + mfuStoryCard() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
+    + '<div class="kk mfu-obs" style="margin:0 0 12px">' + kioskObsHtml() + '</div>'   /* (V37.50) «النقاط بعوائق وبدونها» بكلِّ نوع — أوّلُ لقطات المالك، كانت في القاعة وحدَها */
     + mfuHallCards()   /* (V37.49) المشاعرُ والتوقّعُ وآخرُ ٢٤ ساعة — كانت في شاشة القاعة وحدَها */
     + '<div class="mfu-kpis">'
     /* (V37.2 ق-٠١٥) «نسبةُ المسح» = ما مُسح فعلًا؛ والزياراتُ بجوارها — كانت تعرض الزياراتِ باسم المسح */
