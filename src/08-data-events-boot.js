@@ -1858,6 +1858,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + catsCard()   /* (V37.4) طلبُ المالك: المسمّياتُ وجهاتُ الحل */
+      + assistQCard()   /* (V37.38) أسئلةُ الناس للمساعد */
       + knownCard()   /* (V37.27) المشاكلُ المعروفة للمساعد */
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
@@ -2778,7 +2779,7 @@ function clickTables(e){
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
-  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
+  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
@@ -3624,8 +3625,11 @@ function onDocClickPart1(e){
     return;
   }
   if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
+  var kad = e.target.closest('[data-knownadd]');   /* (V37.38) سؤالٌ → سطرٌ جاهزٌ في المشاكل المعروفة، والمؤشّرُ بعد «|» ليُكتب الحل */
+  if (kad){ var kt0 = document.getElementById('knownTxt'); if (kt0){ var line = kad.getAttribute('data-knownadd') + ' | '; kt0.value = (kt0.value.trim() ? kt0.value.replace(/\s+$/, '') + '\n' : '') + line; kt0.focus(); kt0.setSelectionRange(kt0.value.length, kt0.value.length); kt0.scrollIntoView({ block:'center' }); toast(t('اكتب الحل بعد «|» ثم احفظ')); } return; }
+  if (e.target.closest('[data-aqref]')){ assistQFetch(true); toast(t('جارٍ التحديث…')); return; }
   if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
-  if (e.target.closest('[data-askeng]')){ BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  if (e.target.closest('[data-askeng]')){ try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; } BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }

@@ -1271,7 +1271,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.37</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.38</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1333,7 +1333,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-45e53a4697.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-797d4b5692.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7380,7 +7380,7 @@ if (!('known' in CFG)) CFG.known = null;
 var KNOWN_DEFAULT = [
   'القارئ لا يعمل، القارئ مطفي، القارئ ساقط، القارئ مش شغال | افحص الراوتر أولًا: القارئ بلا راوتر حيّ لا يُرى ولو كان يعمل. لو الراوتر حيّ والقارئ ساقط فالعطل في القارئ أو منفذه: افصل الكابل دقيقة وأعده، وإن لم يقلع فاستبدله من العُهدة وسجّل المنفذ.',
   'الراوتر ساقط، الراوتر مطفي، مفيش نت في النقطة | تأكد من التيار عند الراوتر نفسه (بالقياس لا بالنظر). لو سقطت نقاط المشعر كلها في الدقيقة نفسها فالعطل في المغذّي أو الراوتر المجمّع: بلاغ واحد للمنبع لا عشرة.',
-  'متذبذب، يفصل ويرجع، بيقطع كتير | غالبًا جهد متردد أو وصلة رخوة أو حرارة الظهيرة: زيارة نهارية لشد الأطراف وقياس الجهد تحت الحمل وتظليل الجهاز.',
+  'متذبذب، يفصل، بيفصل، يفصل ويرجع، بيقطع كتير، بيقطع | غالبًا جهد متردد أو وصلة رخوة أو حرارة الظهيرة: زيارة نهارية لشد الأطراف وقياس الجهد تحت الحمل وتظليل الجهاز.',
   'الكهرباء بتقطع الفجر، المولد بيطفي | مولّد المخيم يُطفأ فجرًا فهو انقطاع متوقّع — اكتبه في ملاحظة النقطة كي لا يُقرأ عطلًا.',
   'الكابل مقطوع، الكابل في الممر، كابل على الأرض | الكابل العابر لممر المشاة بلا حماية سيُقطع في الزحام: اطلب تثبيتًا علويًا أو مجرى، ولا تعمل على مغذٍّ حيّ وقت الزحام.',
   'الكاميرا لا تعمل، الكاميرا ساقطة | تتبع الراوتر نفسه: افحص الراوتر ثم كابل الكاميرا ومنفذها، وأعد تشغيلها بفصل الطاقة دقيقة.',
@@ -7584,6 +7584,29 @@ function catsCard(){
     + '<h4 style="margin:6px 0">' + esc(t('أسباب عدم المسح')) + '</h4>' + tbl('why', whyList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'صورة إثبات', 'في قائمة الميدان'])
     + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
+}
+var AQ = { at:0, rows:null, busy:false };
+function assistQFetch(force){
+  if (AQ.busy || !FB.ready || !FB.db || (!force && AQ.rows && Date.now() - AQ.at < 10 * 60000)) return;
+  AQ.busy = true; var P0 = 'سؤال المساعد — ';
+  DB.col('events').where('what', '>=', P0).where('what', '<', P0 + '\uf8ff').limit(400).get().then(function(sn){
+    FB.readCount = (FB.readCount || 0) + sn.size; var M = {}, wk = Date.now() - 14 * 864e5;
+    sn.forEach(function(d){ var x = d.data() || {}; if (+x.ts < wk) return; var w = String(x.what || '').slice(P0.length), no = / · بلا جواب$/.test(w), q = w.replace(/ · بلا جواب$/, '').trim(); if (!q) return;
+      var o = M[q] = M[q] || { q:q, n:0, no:false, by:{}, last:0 }; o.n++; if (no) o.no = true; o.by[x.by || '?'] = 1; o.last = Math.max(o.last, +x.ts || 0); });
+    AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
+    AQ.at = Date.now(); AQ.busy = false; render(1);
+  }).catch(function(e){ AQ.busy = false; AQ.rows = AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
+}
+function assistQCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  assistQFetch(false);
+  var R = AQ.rows; if (R === null) return card('أسئلة الناس للمساعد', '<p class="hint" style="margin:0">' + esc(t('جارٍ الجلب…')) + '</p>');
+  var no = R.filter(function(r){ return r.no; }).length;
+  return card('أسئلة الناس للمساعد',
+    '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (r.no ? ' ' + pill('بلا جواب', 'bad') : ''), '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+      : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
+    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
 }
 function knownCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
@@ -15963,10 +15986,16 @@ function assistDiagCard(q){
    مرةً بعد التحديث، وكلُّ سؤالٍ يُسجَّل (ومعه «بلا جواب») ليتعلّم المهندسُ ما يُضاف إلى «المشاكل المعروفة». */
 var ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
 var ASSIST_LOGGED = {};
-function assistLog(q, answered){
-  q = String(q || '').trim(); if (q.length < 6 || ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1;
-  try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
+/* (V37.38) البندُ ٦ — اكتُشف أن logEventQuiet لا يرفع شيئًا (سجلٌّ صامتٌ على الجهاز)، فلم يصل سؤالٌ واحد. صار حدثًا حقيقيًّا يصل المكتب،
+   ويُسجَّل السؤالُ حين يتوقّف صاحبُه عن الكتابة ثانيتين ونصفًا (لا كلُّ حرفٍ وكلمةٍ ناقصة)، أو حين يختار سؤالًا جاهزًا أو يضغط «اسأل المهندس». */
+function assistLog(q, answered, now){
+  q = String(q || '').trim(); if (q.length < 6) return;
+  if (!now && assistLog.pq === q && assistLog.t) return;   /* السؤالُ نفسُه ينتظر — لا يُعاد ضبطُ المؤقّت مع كلِّ تحديثٍ حيّ للنتائج */
+  clearTimeout(assistLog.t); assistLog.pq = q;
+  var go = function(){ if (ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1; try { logEvent('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; } };
+  if (now) go(); else assistLog.t = setTimeout(function(){ assistLog.t = 0; go(); }, 2500);
 }
+
 function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
 /* (V37.36) بلاغُ المالك: «صفحةُ المساعد مش بتتحدّث لوحدها بعد ما المزامنة تخلص» — حالةُ الجهاز تُقرأ عند الفتح وحدَه. صارت تُراقَب كلَّ ثانيتين
    ما دام المساعدُ مفتوحًا، وحين تتغيّر (طابورٌ فرغ، صورةٌ رُفعت، شبكةٌ عادت) تُستبدَل النتائجُ وحدَها والحقلُ باقٍ بما كُتب فيه. */
@@ -25505,6 +25534,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.38', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'للمهندس: كارت «أسئلة الناس للمساعد» في الإعدادات — كل اللي الفريق سأله آخر أسبوعين، واللي ما لقاش جواب فوق، وجنب كل سؤال زرار «أضفها» بيحطه سطر جاهز في المشاكل المعروفة تكتب حله مرة واحدة.',
+      'تصحيح: أسئلة المساعد ما كانتش بتوصل المكتب أصلًا، بقت بتتسجّل وتوصل (السؤال الكامل بعد ما تخلص كتابة، مش كل كلمة).' ] },
   { v:'V37.37', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'المساعد بقى يعرض اللي يخص سؤالك بس: لو لقى تشخيص أو مشكلة معروفة، دي الإجابة ومفيش تحتها صفحات ملهاش علاقة. ولو ما لقاش، بيعرض أقرب ٣ صفحات فعلًا مش ٦ بالعافية.',
       'العناوين الصغيرة فوق الكروت (زي «تشخيص» و«المتابعة · التقارير») كانت حروفها مفككة، بقت مكتوبة عادي.' ] },
@@ -33533,6 +33565,7 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
         btn('حفظ','btn-primary btn-sm',' data-cfgok="1"'))
       + catsCard()   /* (V37.4) طلبُ المالك: المسمّياتُ وجهاتُ الحل */
+      + assistQCard()   /* (V37.38) أسئلةُ الناس للمساعد */
       + knownCard()   /* (V37.27) المشاكلُ المعروفة للمساعد */
       + card('القوائم — تُعدَّل من هنا لا من الشيفرة',   /* (V30.3) فكرةُ المالك #٤ */
           '<p class="hint" style="margin-top:0">' + esc(t('كلُّ سطرٍ بندٌ. اتركِ المربعَ فارغًا لتعود القائمةُ الأصلية. ما سُجّل من قبلُ بنصٍّ قديمٍ يبقى مقروءًا.')) + '</p>'
@@ -34453,7 +34486,7 @@ function clickTables(e){
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
-  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
+  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
@@ -35299,8 +35332,11 @@ function onDocClickPart1(e){
     return;
   }
   if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
+  var kad = e.target.closest('[data-knownadd]');   /* (V37.38) سؤالٌ → سطرٌ جاهزٌ في المشاكل المعروفة، والمؤشّرُ بعد «|» ليُكتب الحل */
+  if (kad){ var kt0 = document.getElementById('knownTxt'); if (kt0){ var line = kad.getAttribute('data-knownadd') + ' | '; kt0.value = (kt0.value.trim() ? kt0.value.replace(/\s+$/, '') + '\n' : '') + line; kt0.focus(); kt0.setSelectionRange(kt0.value.length, kt0.value.length); kt0.scrollIntoView({ block:'center' }); toast(t('اكتب الحل بعد «|» ثم احفظ')); } return; }
+  if (e.target.closest('[data-aqref]')){ assistQFetch(true); toast(t('جارٍ التحديث…')); return; }
   if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
-  if (e.target.closest('[data-askeng]')){ BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
+  if (e.target.closest('[data-askeng]')){ try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; } BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */
     var nk = 'u' + Date.now().toString(36); CAT_NEW[kd].push(nk); tb.insertAdjacentHTML('beforeend', catRow(kd, { k:nk, n:'', who:'', photo:false })); var ni = tb.querySelector('[data-vcn="' + kd + '|' + nk + '"]'); if (ni) ni.focus(); return; }

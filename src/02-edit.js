@@ -164,6 +164,29 @@ function catsCard(){
     + '<h4 style="margin:6px 0">' + esc(t('تحديات التركيب — الفئات')) + '</h4>' + tbl('cc', ccList(), ['المسمّى', 'جهات الدعم المطلوب — سطرٌ لكلِّ جهة', 'في قائمة الميدان']),
     btn('حفظ التصنيفات', 'btn-primary btn-sm', ' data-vcok="1"')) + '</div>';
 }
+var AQ = { at:0, rows:null, busy:false };
+function assistQFetch(force){
+  if (AQ.busy || !FB.ready || !FB.db || (!force && AQ.rows && Date.now() - AQ.at < 10 * 60000)) return;
+  AQ.busy = true; var P0 = 'سؤال المساعد — ';
+  DB.col('events').where('what', '>=', P0).where('what', '<', P0 + '\uf8ff').limit(400).get().then(function(sn){
+    FB.readCount = (FB.readCount || 0) + sn.size; var M = {}, wk = Date.now() - 14 * 864e5;
+    sn.forEach(function(d){ var x = d.data() || {}; if (+x.ts < wk) return; var w = String(x.what || '').slice(P0.length), no = / · بلا جواب$/.test(w), q = w.replace(/ · بلا جواب$/, '').trim(); if (!q) return;
+      var o = M[q] = M[q] || { q:q, n:0, no:false, by:{}, last:0 }; o.n++; if (no) o.no = true; o.by[x.by || '?'] = 1; o.last = Math.max(o.last, +x.ts || 0); });
+    AQ.rows = Object.keys(M).map(function(k){ var o = M[k]; o.who = Object.keys(o.by).length; return o; }).sort(function(a, b){ return (b.no - a.no) || (b.n - a.n) || (b.last - a.last); });
+    AQ.at = Date.now(); AQ.busy = false; render(1);
+  }).catch(function(e){ AQ.busy = false; AQ.rows = AQ.rows || []; softErr('أسئلة المساعد', e, ''); });
+}
+function assistQCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  assistQFetch(false);
+  var R = AQ.rows; if (R === null) return card('أسئلة الناس للمساعد', '<p class="hint" style="margin:0">' + esc(t('جارٍ الجلب…')) + '</p>');
+  var no = R.filter(function(r){ return r.no; }).length;
+  return card('أسئلة الناس للمساعد',
+    '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (r.no ? ' ' + pill('بلا جواب', 'bad') : ''), '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+      : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
+    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
+}
 function knownCard(){
   if (!(typeof may === 'function' && may('settings'))) return '';
   return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',

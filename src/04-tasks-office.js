@@ -3468,10 +3468,16 @@ function assistDiagCard(q){
    مرةً بعد التحديث، وكلُّ سؤالٍ يُسجَّل (ومعه «بلا جواب») ليتعلّم المهندسُ ما يُضاف إلى «المشاكل المعروفة». */
 var ASSIST_QUICK = ['الصور مش بتترفع', 'التطبيق بيقع أو بطيء', 'ما اتحفظش', 'المخيم مش لاقيه', 'التصوير ممنوع', 'القارئ ساقط', 'النسخة قديمة'];
 var ASSIST_LOGGED = {};
-function assistLog(q, answered){
-  q = String(q || '').trim(); if (q.length < 6 || ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1;
-  try { logEventQuiet('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; }
+/* (V37.38) البندُ ٦ — اكتُشف أن logEventQuiet لا يرفع شيئًا (سجلٌّ صامتٌ على الجهاز)، فلم يصل سؤالٌ واحد. صار حدثًا حقيقيًّا يصل المكتب،
+   ويُسجَّل السؤالُ حين يتوقّف صاحبُه عن الكتابة ثانيتين ونصفًا (لا كلُّ حرفٍ وكلمةٍ ناقصة)، أو حين يختار سؤالًا جاهزًا أو يضغط «اسأل المهندس». */
+function assistLog(q, answered, now){
+  q = String(q || '').trim(); if (q.length < 6) return;
+  if (!now && assistLog.pq === q && assistLog.t) return;   /* السؤالُ نفسُه ينتظر — لا يُعاد ضبطُ المؤقّت مع كلِّ تحديثٍ حيّ للنتائج */
+  clearTimeout(assistLog.t); assistLog.pq = q;
+  var go = function(){ if (ASSIST_LOGGED[q]) return; ASSIST_LOGGED[q] = 1; try { logEvent('سؤال المساعد — ' + q.slice(0, 80) + (answered ? '' : ' · بلا جواب')); } catch (e){ LS_ERR = e; } };
+  if (now) go(); else assistLog.t = setTimeout(function(){ assistLog.t = 0; go(); }, 2500);
 }
+
 function assistWarnCount(){ try { var d = assistDiag(); return (d.on ? 0 : 0) + (d.q ? 1 : 0) + (d.pq ? 1 : 0) + (d.pf ? 1 : 0) + (d.pz ? 1 : 0) + (d.idbBad ? 1 : 0); } catch (e){ return 0; } }
 /* (V37.36) بلاغُ المالك: «صفحةُ المساعد مش بتتحدّث لوحدها بعد ما المزامنة تخلص» — حالةُ الجهاز تُقرأ عند الفتح وحدَه. صارت تُراقَب كلَّ ثانيتين
    ما دام المساعدُ مفتوحًا، وحين تتغيّر (طابورٌ فرغ، صورةٌ رُفعت، شبكةٌ عادت) تُستبدَل النتائجُ وحدَها والحقلُ باقٍ بما كُتب فيه. */
