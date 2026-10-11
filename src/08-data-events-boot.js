@@ -43,10 +43,10 @@ function provHtml(id){
     + '<br>\u{1F4E4} ' + esc(t('تُقرأ في')) + ': ' + esc(t(pv[1])) + '</p>';
 }
 function tabHead(pid){
-  var cur = tabCur(pid), vis = tabsOf(pid);
+  var cur = tabCur(pid), all = tabsOf(pid), vis = all.filter(function(tb){ return tb[4] !== 'hidden'; });
   var chips = vis.length < 2 ? '' :        /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
-    '<div class="chips" role="tablist">' + vis.map(function(tb){
-      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"'
+    '<div class="chips" role="tablist">' + all.map(function(tb){
+      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"' + (tb[4] === 'hidden' ? ' hidden' : '')   /* (V37.49) المخفيُّ في الشجرة لا في الشريط — للروابط والجرود */
         + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
         + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
     }).join('') + '</div>';
@@ -2970,7 +2970,8 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = '';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || '';   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
+    if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }

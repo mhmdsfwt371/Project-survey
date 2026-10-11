@@ -129,6 +129,12 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
         T(Tt.ready + Tt.chal + Tt.revisit + (Tt.pending || 0) === Tt.all, 'وجاهزة ' + Tt.ready + ' + بتحديات ' + Tt.chal + ' + غير مكتملة ' + Tt.revisit + ' + قرارٌ معلّق ' + (Tt.pending || 0) + ' = ' + Tt.all);
         T(E.rows.every(r => inL(w.EXEC_O.c1, r.c1) && inL(w.EXEC_O.c2, r.c2) && inL(w.EXEC_O.c3all, r.c3) && inL(w.EXEC_O.c4, r.c4) && w.EXEC_L[r.b]), 'وكلُّ صفٍّ بتصنيفاتٍ من قوائم القالب وحالٍ معروفة: ' + JSON.stringify(E.rows.filter(r => !(inL(w.EXEC_O.c3all, r.c3) && w.EXEC_L[r.b])).slice(0, 2)));
         T(!/متعذّر|متعذر|منع دخول|بانتظار قرار الوزارة/.test(JSON.stringify(w.EXEC_L)), 'ونصوصُه بلا «متعذّر» ولا «منع دخول» ولا «بانتظار قرار الوزارة»'); }
+      /* (V37.49) قاعدةُ المالك: كلُّ رقمٍ في ملخّص الوزارة يُضغط فيفتح لوحةً ثم إكسلًا — ولا تبويبَ قاعةٍ مكرَّر */
+      if (w.mfuSummary){ const host = w.document.createElement('div'); host.innerHTML = w.mfuSummary();
+        const nums = [...host.querySelectorAll('.mfu-kpi-v, .kk-big, .mfu-zone b, .kk-pct')], bad = nums.filter(n => !n.closest('[data-svlist],[data-p],[data-kiosk],button,a'));
+        T(nums.length >= 10 && bad.length === 0, 'كلُّ أرقام ملخّص الوزارة تُضغط (' + nums.length + ' رقمًا): ' + (bad.length ? JSON.stringify(bad.map(b => b.textContent.trim()).slice(0, 4)) : 'بلا استثناء'));
+        T(!!host.querySelector('.mfu-mode [data-kiosk]') && !!host.querySelector('.mfu-story') && host.querySelectorAll('.mfu-zone').length >= 3, 'والملخّصُ فيه زرُّ «عرض القاعة» والخلاصةُ وبطاقاتُ المشاعر');
+        { const hd = w.document.createElement('div'); hd.innerHTML = w.tabHead('mfu'); const kc = hd.querySelector('[data-ptab="mfu:kiosk"]'); T(!!kc && kc.hasAttribute('hidden'), 'وتبويبُ «شاشة القاعة» مخفيٌّ من الشريط (صار زرَّ «عرض القاعة») وباقٍ للروابط'); } }
       T(w.mfuReportCheck(R).length === 0, 'وحارسُ التصدير الداخليُّ لا يجد خللًا (الشركات = الممسوح + المتبقي، والنسبُ في مداها): ' + JSON.stringify(w.mfuReportCheck(R).slice(0, 2)));
       const ST = w.stageCounts ? w.stageCounts() : null;
       const lens = { sv:w.svListRows('sv').length, rem:w.svListRows('rem').length, srv:w.svListRows('srv').length, insd:w.svListRows('insd').length };
@@ -183,7 +189,7 @@ T(Object.values(st.byKey).reduce((a, b) => a + b, 0) === TOTAL && Object.values(
 
 console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ نفسَها (V17.82) ══');
 {
-  await open('mfu', 'kiosk'); await wait(1200);              /* تُكمِل العدّاداتُ حركتَها */
+  w.KIOSK_ON = true; await open('mfu', 'mfu'); await wait(1200);   /* (V37.49) وضعُ العرض على الملخّص — لا تبويبَ منفصلًا */
   const kk = txt(), h = d.getElementById('content').innerHTML;
   /* (V33.5) طلبُ المالك: أربعُ حلقاتٍ فقط — المسح والتركيب والتسليم والفك — الأخضرُ المنجزُ والأحمرُ المتبقي، وكلٌّ تفتح قائمتَها */
   { const R = d.getElementById('kksec-1'), rings = R ? [...R.querySelectorAll('.kk-ring')] : [];
@@ -234,7 +240,7 @@ console.log('\n══ ٥ · شاشةُ الوزارة تقول الأرقامَ 
   T(d0.getAttribute('fill') === w.LIFE[w.lifeOf(w.siteFind(id0))].c, 'ولونُ النقطة لونُ حالتها في الخريطة');
   d0.dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(w.CUR === 'site' && w.DETAIL_ID === id0, 'والضغطُ على نقطةٍ يفتحها: ' + id0);
-  w.SITE_Q = ''; await open('mfu', 'kiosk'); await wait(1200);
+  w.SITE_Q = ''; w.KIOSK_ON = false; await open('mfu', 'mfu'); await wait(300);
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);
   T(d.body.classList.contains('kiosk') && w.KIOSK_ON === true, 'والعرضُ الكاملُ يُخفي القوائم');
   d.querySelector('[data-kiosk]').dispatchEvent(new w.MouseEvent('click', { bubbles:true })); await wait(120);

@@ -4609,14 +4609,14 @@ function kioskToggle(){
   KIOSK_ON = !KIOSK_ON;
   document.body.classList.toggle('kiosk', KIOSK_ON);
   try {
-    if (KIOSK_ON && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    if (KIOSK_ON && document.documentElement.requestFullscreen){ var fsP = document.documentElement.requestFullscreen(); if (fsP && fsP.catch) fsP.catch(function(){}); }
     else if (!KIOSK_ON && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
   } catch (e){ LS_ERR = e; }
   if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
   kioskCycleStop(); KIOSK_STEP = 0;
   try { sunApply(); } catch (e){ LS_ERR = e; }   /* القاعةُ بلا وضع الشمس (V17.99) */
   if (KIOSK_ON){
-    KIOSK_TIMER = setInterval(function(){ if (CUR === 'over' && tabCur('over') === 'kiosk') render(1); else kioskToggle(); }, 60000);
+    KIOSK_TIMER = setInterval(function(){ if ((CUR === 'mfu' || CUR === 'over') && KIOSK_ON) render(1); else kioskToggle(); }, 60000);   /* (V37.49) كان يشترط تبويبَ «over/kiosk» القديم فيُطفئ العرضَ بعد دقيقة */
     KIOSK_CYCLE = setInterval(kioskCycleTick, 15000);
     var stop = function(){ kioskCycleStop(); };
     ['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, stop, { once:true, passive:true }); });
@@ -5015,6 +5015,34 @@ function mfuHeroHtml(){
     +   (ROLE !== 'viewer' ? phGapCard() : '')   /* (V37.8) للمهندس: صورٌ ليست على الدرايف */
     + '</div></div>';
 }
+/* ═══ (V37.49) صفحةٌ واحدةٌ بوضعين — قرارُ المالك: شاشةُ القاعة نسخةٌ ثانيةٌ من المتابعة لا صفحةٌ مكرَّرة ═══
+   «📊 متابعة» للاجتماع والتفاعل، و«🖥 عرض القاعة» الصفحةُ نفسُها بملء الشاشة وخطٍّ كبيرٍ وتنقّلٍ تلقائيّ. وما كان في القاعة وحدَها
+   (الخلاصة، المشاعر، التوقّع، آخر ٢٤ ساعة) صار في الملخّص — وكلُّ رقمٍ يُضغط فيفتح لوحةً ثم إكسلًا بالتفاصيل (قاعدةُ المالك). */
+function mfuModeBar(){
+  return '<div class="card mfu-mode" style="margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
+    + '<div><b>' + esc(t('متابعة الوزارة — الملخّص')) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t('نفسُ الصفحة بوضعين: للاجتماع هنا، وللقاعة بملء الشاشة.')) + '</div></div>'
+    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button></div></div>';
+}
+function mfuStoryCard(){
+  var st = ''; try { st = kioskStory(); } catch (e){ LS_ERR = e; }
+  if (!st) return '';
+  return '<div class="card mfu-story" data-svlist="sv" role="button" tabindex="0" style="margin:0 0 12px;border-inline-start:4px solid var(--acc,#2E86DE);cursor:pointer" title="' + esc(t('اضغط للوحة التفاصيل والتصدير')) + '"><div class="pid">' + esc(t('الخلاصة')) + '</div><p style="margin:4px 0 0;line-height:1.8">\u{1F50E} ' + esc(st) + ' \u203A</p></div>';
+}
+function mfuHallCards(){
+  var K = siteKeyStats(), now = Date.now(), day = now - 864e5;
+  var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), zoneMax = zones.length ? K.zones[zones[0]].n : 1;
+  var zonesHtml = zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
+    return '<div class="kk-zone mfu-zone" data-svlist="sv" data-svzone="' + esc(z) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط: لوحة المشعر وتصديره')) + '"><div class="kk-zl"><b>' + esc(t(z)) + ' \u203A</b><span>' + nm(o.sv) + ' / ' + nm(o.n) + ' \u00b7 <b>' + nm(p) + '\u066A</b></span></div>'
+      + '<div class="kk-bar" style="width:' + Math.max(12, Math.round(o.n / zoneMax * 100)) + '%"><i style="width:' + p + '%"></i></div><div class="kk-fc">' + forecastHtml(z) + '</div></div>'; }).join('');
+  var steps = (STATE.steps || []).filter(function(x){ return +x.at >= day; }), kinds = {}, people = {};
+  steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
+  var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' }, KL = { visit:'sv', ins:'insd', dis:'disd', deliver:'hand', newsite:'sv', maint:'insd' };
+  var dayHtml = steps.length ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind" data-svlist="' + esc(KL[k] || 'sv') + '" role="button" tabindex="0" style="cursor:pointer"><div class="kk-big">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + ' \u203A</div></div>'; }).join('')
+      + '<div class="kk-kind"><div class="kk-big">' + nm(Object.keys(people).length) + '</div><div class="kk-lab">' + esc(t('فنيين')) + '</div></div></div>' : '<p class="hint" style="margin:0">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>';
+  return '<div class="mfu-hall" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 0 12px">'
+    + '<div class="card" style="margin:0"><div class="pid">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>' + zonesHtml + '</div>'
+    + '<div class="card" style="margin:0"><div class="pid">' + esc(t('شغلُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>' + dayHtml + '</div></div>';
+}
 function mfuSummary(){
   /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
      وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
@@ -5023,7 +5051,8 @@ function mfuSummary(){
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
-  return (svListPop() + supPopHtml()) + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
+  return (svListPop() + supPopHtml()) + mfuModeBar() + mfuStoryCard() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
+    + mfuHallCards()   /* (V37.49) المشاعرُ والتوقّعُ وآخرُ ٢٤ ساعة — كانت في شاشة القاعة وحدَها */
     + '<div class="mfu-kpis">'
     /* (V37.2 ق-٠١٥) «نسبةُ المسح» = ما مُسح فعلًا؛ والزياراتُ بجوارها — كانت تعرض الزياراتِ باسم المسح */
     + (function(){ var SCk = stageCounts(); return box('srv', 'نسبة المسح', nm(pc(SCk.srv, K.tot)) + '\u066A', esc(t('تم المسح')) + ' ' + nm(SCk.srv) + ' ' + esc(t('من')) + ' ' + nm(K.tot) + ' \u00b7 ' + esc(t('الزيارات')) + ' ' + nm(K.sv), (P && P.srv != null) ? mfuDelta(SCk.srv, P, 'srv') : mfuDelta(K.sv, P, 'sv'))   /* اللقطاتُ القديمةُ بلا مسحٍ فعليّ: تُقارَن الزيارات */

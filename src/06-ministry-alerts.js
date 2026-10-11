@@ -1240,8 +1240,8 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (!EXP.pptxTpl && !MFU.tplAsk && FB.ready){ MFU.tplAsk = 1; setTimeout(function(){ try { if (!(navigator.connection && navigator.connection.saveData)) pptxTemplate().catch(function(){ MFU.tplAsk = 0; }); } catch (e){ LS_ERR = e; } }, 4000); }
     var head = tabHead('mfu'), cur = tabCur('mfu');
     if (!(STATE.sites || []).length) return head + alertBox('warn', 'لا مواقع محمّلة.');
-    setTimeout(ringsGrow, 30);   /* (V34.3) */
-    if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
+    setTimeout(ringsGrow, 30);   /* (V34.3) */   /* (V37.49) الرابطُ القديمُ لشاشة القاعة = الملخّص في وضع العرض */
+    if (cur === 'kiosk' || (cur === 'mfu' && KIOSK_ON)){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     head += mfuExportBar();   /* التصديرُ على كلِّ عنوان (V20.2) */
     if (cur === 'mweek') return head + '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body();   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
     if (cur === 'msurv') return head + mfuSurv();   /* (V29.2) */
@@ -2825,6 +2825,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.49', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'متابعة الوزارة بقت صفحة واحدة بوضعين: «📊 متابعة» للاجتماع، و«🖥 عرض القاعة» نفس الصفحة بملء الشاشة وبتلف لوحدها كل ١٥ ثانية. تبويب «شاشة القاعة» المنفصل اتشال، واللي كان فيه بس (الخلاصة، والمشاعر كم أُنجز وكم بقي، والتوقّع، وشغل الميدان آخر ٢٤ ساعة) بقى في الملخص.',
+      'كل رقم في الملخص بيتضغط: المشاعر بتفتح لوحة المشعر مصفّاة بالإكسل، وشغل اليوم بيفتح لوحته، والخلاصة بتفتح الزيارة. والضغط في وضع القاعة بيوقّف التنقّل التلقائي. والنوافذ والبطاقات بقت أنعم في الظهور.' ] },
   { v:'V37.48', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'التقرير التنفيذي بقراراتك: ممرات مسجد نمرة اتشالت، والهجرة ٢ = مركز الجموم للتفويج (وأي نقطة تفويج اسمها مش واضح بتتبع أقرب مركز بموقعها)، والمخيم اللي شاخصه «1-3-5/56» بيتعدّ ٣ مخيمات (منى بقت ٦٩٨ زي رقمك، وعرفات بنفس القاعدة).' ] },
   { v:'V37.47', d:'١١ أكتوبر ٢٠٢٦', notes:[

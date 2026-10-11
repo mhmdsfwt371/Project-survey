@@ -53,6 +53,10 @@
 #assistBtn.tb-assist,.tb-btn.tb-assist{width:auto !important;min-width:34px;padding:0 10px;gap:4px;display:inline-flex;align-items:center;position:relative;border:1px solid var(--acc,#1A5FA8);white-space:nowrap;flex:0 0 auto}.tb-assist-t{font-size:12px;font-weight:600}.tb-dot{position:absolute;top:2px;inset-inline-end:2px;width:9px;height:9px;border-radius:50%;background:#E05252;box-shadow:0 0 0 2px var(--bg,#fff)}@media (max-width:340px){.tb-assist-t{display:none}.tb-btn.tb-assist{padding:0 6px}}   /* (V37.30–V37.34) المساعدُ ظاهرٌ باسمه وشارتِه — خارجَ أيِّ وسائط */
 #assistBack[hidden]{display:none !important}   /* (V37.40) الزرُّ يحمل .btn فيغلب display:none الافتراضيّ */
 @media print{ html.print-pop body > *{display:none !important} html.print-pop body > #app, html.print-pop #content, html.print-pop #content > *{display:block !important} html.print-pop #content > :not(.svpop){display:none !important} html.print-pop .svpop{position:static !important;max-height:none !important;overflow:visible !important;box-shadow:none !important;border:none !important;inset:auto !important} html.print-pop .svpop-veil,html.print-pop .svpop .actions,html.print-pop .svpop .chips{display:none !important} }   /* (V37.45) طباعةُ اللوحة وحدَها */
+@keyframes svpop-in{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}.svpop{animation:svpop-in .22s ease-out}
+.mfu-kpi,.mfu-zone,.kk-kind[data-svlist],.mfu-story{transition:transform .18s ease,box-shadow .18s ease}.mfu-kpi:hover,.mfu-zone:hover,.kk-kind[data-svlist]:hover,.mfu-story:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,0,0,.18)}
+.mfu-zone{border-radius:10px;padding:6px 8px;margin:0 -8px}.mfu-zone:hover{background:var(--surface-2)}body.kiosk .mfu-mode,body.kiosk .mfu-hall,body.kiosk .mfu-story{display:none}
+@media (prefers-reduced-motion:reduce){.svpop{animation:none}.mfu-kpi,.mfu-zone,.kk-kind,.mfu-story{transition:none}}   /* (V37.49) */
 /* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
    «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
    متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
@@ -1273,7 +1277,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.48</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.49</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1335,7 +1339,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-89c46645b2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-896064e0b7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -22463,14 +22467,14 @@ function kioskToggle(){
   KIOSK_ON = !KIOSK_ON;
   document.body.classList.toggle('kiosk', KIOSK_ON);
   try {
-    if (KIOSK_ON && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+    if (KIOSK_ON && document.documentElement.requestFullscreen){ var fsP = document.documentElement.requestFullscreen(); if (fsP && fsP.catch) fsP.catch(function(){}); }
     else if (!KIOSK_ON && document.fullscreenElement && document.exitFullscreen) document.exitFullscreen();
   } catch (e){ LS_ERR = e; }
   if (KIOSK_TIMER){ clearInterval(KIOSK_TIMER); KIOSK_TIMER = null; }
   kioskCycleStop(); KIOSK_STEP = 0;
   try { sunApply(); } catch (e){ LS_ERR = e; }   /* القاعةُ بلا وضع الشمس (V17.99) */
   if (KIOSK_ON){
-    KIOSK_TIMER = setInterval(function(){ if (CUR === 'over' && tabCur('over') === 'kiosk') render(1); else kioskToggle(); }, 60000);
+    KIOSK_TIMER = setInterval(function(){ if ((CUR === 'mfu' || CUR === 'over') && KIOSK_ON) render(1); else kioskToggle(); }, 60000);   /* (V37.49) كان يشترط تبويبَ «over/kiosk» القديم فيُطفئ العرضَ بعد دقيقة */
     KIOSK_CYCLE = setInterval(kioskCycleTick, 15000);
     var stop = function(){ kioskCycleStop(); };
     ['pointerdown', 'wheel', 'keydown', 'touchstart'].forEach(function(ev){ document.addEventListener(ev, stop, { once:true, passive:true }); });
@@ -22869,6 +22873,34 @@ function mfuHeroHtml(){
     +   (ROLE !== 'viewer' ? phGapCard() : '')   /* (V37.8) للمهندس: صورٌ ليست على الدرايف */
     + '</div></div>';
 }
+/* ═══ (V37.49) صفحةٌ واحدةٌ بوضعين — قرارُ المالك: شاشةُ القاعة نسخةٌ ثانيةٌ من المتابعة لا صفحةٌ مكرَّرة ═══
+   «📊 متابعة» للاجتماع والتفاعل، و«🖥 عرض القاعة» الصفحةُ نفسُها بملء الشاشة وخطٍّ كبيرٍ وتنقّلٍ تلقائيّ. وما كان في القاعة وحدَها
+   (الخلاصة، المشاعر، التوقّع، آخر ٢٤ ساعة) صار في الملخّص — وكلُّ رقمٍ يُضغط فيفتح لوحةً ثم إكسلًا بالتفاصيل (قاعدةُ المالك). */
+function mfuModeBar(){
+  return '<div class="card mfu-mode" style="margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
+    + '<div><b>' + esc(t('متابعة الوزارة — الملخّص')) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t('نفسُ الصفحة بوضعين: للاجتماع هنا، وللقاعة بملء الشاشة.')) + '</div></div>'
+    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button></div></div>';
+}
+function mfuStoryCard(){
+  var st = ''; try { st = kioskStory(); } catch (e){ LS_ERR = e; }
+  if (!st) return '';
+  return '<div class="card mfu-story" data-svlist="sv" role="button" tabindex="0" style="margin:0 0 12px;border-inline-start:4px solid var(--acc,#2E86DE);cursor:pointer" title="' + esc(t('اضغط للوحة التفاصيل والتصدير')) + '"><div class="pid">' + esc(t('الخلاصة')) + '</div><p style="margin:4px 0 0;line-height:1.8">\u{1F50E} ' + esc(st) + ' \u203A</p></div>';
+}
+function mfuHallCards(){
+  var K = siteKeyStats(), now = Date.now(), day = now - 864e5;
+  var zones = Object.keys(K.zones).sort(function(a, b){ return K.zones[b].n - K.zones[a].n; }), zoneMax = zones.length ? K.zones[zones[0]].n : 1;
+  var zonesHtml = zones.map(function(z){ var o = K.zones[z], p = o.n ? Math.round(o.sv / o.n * 100) : 0;
+    return '<div class="kk-zone mfu-zone" data-svlist="sv" data-svzone="' + esc(z) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط: لوحة المشعر وتصديره')) + '"><div class="kk-zl"><b>' + esc(t(z)) + ' \u203A</b><span>' + nm(o.sv) + ' / ' + nm(o.n) + ' \u00b7 <b>' + nm(p) + '\u066A</b></span></div>'
+      + '<div class="kk-bar" style="width:' + Math.max(12, Math.round(o.n / zoneMax * 100)) + '%"><i style="width:' + p + '%"></i></div><div class="kk-fc">' + forecastHtml(z) + '</div></div>'; }).join('');
+  var steps = (STATE.steps || []).filter(function(x){ return +x.at >= day; }), kinds = {}, people = {};
+  steps.forEach(function(x){ kinds[x.kind] = (kinds[x.kind] || 0) + 1; if (x.by) people[x.by] = 1; });
+  var KN = { visit:'زيارة', ins:'تركيب', dis:'فكّ', newsite:'موقعٌ جديد', maint:'صيانة', deliver:'تسليم' }, KL = { visit:'sv', ins:'insd', dis:'disd', deliver:'hand', newsite:'sv', maint:'insd' };
+  var dayHtml = steps.length ? '<div class="kk-kinds">' + Object.keys(kinds).map(function(k){ return '<div class="kk-kind" data-svlist="' + esc(KL[k] || 'sv') + '" role="button" tabindex="0" style="cursor:pointer"><div class="kk-big">' + nm(kinds[k]) + '</div><div class="kk-lab">' + esc(t(KN[k] || k)) + ' \u203A</div></div>'; }).join('')
+      + '<div class="kk-kind"><div class="kk-big">' + nm(Object.keys(people).length) + '</div><div class="kk-lab">' + esc(t('فنيين')) + '</div></div></div>' : '<p class="hint" style="margin:0">' + esc(t('لا خطوةَ مرفوعةً في آخر أربعٍ وعشرين ساعة.')) + '</p>';
+  return '<div class="mfu-hall" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px;margin:0 0 12px">'
+    + '<div class="card" style="margin:0"><div class="pid">' + esc(t('المشاعرُ — كم أُنجز وكم بقي')) + '</div>' + zonesHtml + '</div>'
+    + '<div class="card" style="margin:0"><div class="pid">' + esc(t('شغلُ الميدان — آخر أربعٍ وعشرين ساعة')) + '</div>' + dayHtml + '</div></div>';
+}
 function mfuSummary(){
   /* (V32.5) طلبُ المالك: «أول حاجة في الملخّص من نسبة المسح» — البطاقاتُ أولًا وكلُّ بطاقةٍ تُضغَط فتفتح قائمتَها وتصديرَها؛
      وبطاقتا «النقاط بلا عوائق ولا تحديات» و«النقاط ذات التحديات» لكلِّ الأنواع؛ و«بانتظار قرار الوزارة» شيلت؛
@@ -22877,7 +22909,8 @@ function mfuSummary(){
   var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
   var box = function(key, lbl, val, sub, dl, color){ return '<div class="mfu-kpi" data-svlist="' + esc(key) + '" role="button" tabindex="0" style="cursor:pointer" title="' + esc(t('اضغط للقائمة والتصدير')) + '"><div class="mfu-kpi-l">' + esc(t(lbl)) + ' \u203A</div><div class="mfu-kpi-v"' + (color ? ' style="color:' + color + '"' : '') + '>' + val + '</div>' + (sub ? '<div class="hint" style="margin:2px 0 0">' + sub + '</div>' : '') + (dl || '') + '</div>'; };
   var nClean = svListCount('clean'), nChal = svListCount('chal');   /* (V33.7) عدٌّ لا بناءُ صفوف */
-  return (svListPop() + supPopHtml()) + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
+  return (svListPop() + supPopHtml()) + mfuModeBar() + mfuStoryCard() + mfuHeroHtml()   /* (V33.8) موجزُ الموسم أوّلًا */
+    + mfuHallCards()   /* (V37.49) المشاعرُ والتوقّعُ وآخرُ ٢٤ ساعة — كانت في شاشة القاعة وحدَها */
     + '<div class="mfu-kpis">'
     /* (V37.2 ق-٠١٥) «نسبةُ المسح» = ما مُسح فعلًا؛ والزياراتُ بجوارها — كانت تعرض الزياراتِ باسم المسح */
     + (function(){ var SCk = stageCounts(); return box('srv', 'نسبة المسح', nm(pc(SCk.srv, K.tot)) + '\u066A', esc(t('تم المسح')) + ' ' + nm(SCk.srv) + ' ' + esc(t('من')) + ' ' + nm(K.tot) + ' \u00b7 ' + esc(t('الزيارات')) + ' ' + nm(K.sv), (P && P.srv != null) ? mfuDelta(SCk.srv, P, 'srv') : mfuDelta(K.sv, P, 'sv'))   /* اللقطاتُ القديمةُ بلا مسحٍ فعليّ: تُقارَن الزيارات */
@@ -24216,8 +24249,8 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     if (!EXP.pptxTpl && !MFU.tplAsk && FB.ready){ MFU.tplAsk = 1; setTimeout(function(){ try { if (!(navigator.connection && navigator.connection.saveData)) pptxTemplate().catch(function(){ MFU.tplAsk = 0; }); } catch (e){ LS_ERR = e; } }, 4000); }
     var head = tabHead('mfu'), cur = tabCur('mfu');
     if (!(STATE.sites || []).length) return head + alertBox('warn', 'لا مواقع محمّلة.');
-    setTimeout(ringsGrow, 30);   /* (V34.3) */
-    if (cur === 'kiosk'){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
+    setTimeout(ringsGrow, 30);   /* (V34.3) */   /* (V37.49) الرابطُ القديمُ لشاشة القاعة = الملخّص في وضع العرض */
+    if (cur === 'kiosk' || (cur === 'mfu' && KIOSK_ON)){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     head += mfuExportBar();   /* التصديرُ على كلِّ عنوان (V20.2) */
     if (cur === 'mweek') return head + '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body();   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
     if (cur === 'msurv') return head + mfuSurv();   /* (V29.2) */
@@ -25801,6 +25834,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.49', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'متابعة الوزارة بقت صفحة واحدة بوضعين: «📊 متابعة» للاجتماع، و«🖥 عرض القاعة» نفس الصفحة بملء الشاشة وبتلف لوحدها كل ١٥ ثانية. تبويب «شاشة القاعة» المنفصل اتشال، واللي كان فيه بس (الخلاصة، والمشاعر كم أُنجز وكم بقي، والتوقّع، وشغل الميدان آخر ٢٤ ساعة) بقى في الملخص.',
+      'كل رقم في الملخص بيتضغط: المشاعر بتفتح لوحة المشعر مصفّاة بالإكسل، وشغل اليوم بيفتح لوحته، والخلاصة بتفتح الزيارة. والضغط في وضع القاعة بيوقّف التنقّل التلقائي. والنوافذ والبطاقات بقت أنعم في الظهور.' ] },
   { v:'V37.48', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'التقرير التنفيذي بقراراتك: ممرات مسجد نمرة اتشالت، والهجرة ٢ = مركز الجموم للتفويج (وأي نقطة تفويج اسمها مش واضح بتتبع أقرب مركز بموقعها)، والمخيم اللي شاخصه «1-3-5/56» بيتعدّ ٣ مخيمات (منى بقت ٦٩٨ زي رقمك، وعرفات بنفس القاعدة).' ] },
   { v:'V37.47', d:'١١ أكتوبر ٢٠٢٦', notes:[
@@ -31880,7 +31916,7 @@ var TABS = {
     ['mobs','التحديات والمعوقات','🚧','كلُّ عائقٍ بفئته وجهته وآلية معالجته ومسؤوله وحالته — بفلتر المشعر والنوع.'],
     ['mreq','طلبات الوزارة','📨','ما طلبته الوزارةُ وآخرُ إفادةٍ فيه والدعمُ المطلوب.'],
     ['mdaily','ملخص العمل اليومي','📈','الزياراتُ والتركيبُ والفكُّ وما تحتاج زيارةً أخرى تقنيًا — يومًا بيوم.'],
-    ['kiosk','شاشةُ القاعة','🏛','عرضٌ كبيرٌ يُقرأ من آخر القاعة ويتجدّد وحدَه كلَّ دقيقة — وفيه النقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع.']],
+    ['kiosk','شاشةُ القاعة','🏛','عرضٌ كبيرٌ يُقرأ من آخر القاعة ويتجدّد وحدَه كلَّ دقيقة — وفيه النقاطُ بعوائق وبدونها للإجمالي ولكلِّ نوع.', 'hidden']],   /* (V37.49) المفتاحُ باقٍ للتوافق (الأدلةُ والمساعدُ والجرود) — والتبويبُ مخفيٌّ من الشريط: صار زرَّ «عرض القاعة» على الملخّص */
   over:[
     ['over','الصورة العامة','📊','الصورة التنفيذية لحظيًّا — تُحدَّث مع كل عملية ميدانية.'],
     ['now','أمس · الآن · غدًا','⏱','ما انتهى، وما يجري الآن ومن يفعله وأين، وما هو مجدولٌ لغد.'],
@@ -32083,10 +32119,10 @@ function provHtml(id){
     + '<br>\u{1F4E4} ' + esc(t('تُقرأ في')) + ': ' + esc(t(pv[1])) + '</p>';
 }
 function tabHead(pid){
-  var cur = tabCur(pid), vis = tabsOf(pid);
+  var cur = tabCur(pid), all = tabsOf(pid), vis = all.filter(function(tb){ return tb[4] !== 'hidden'; });
   var chips = vis.length < 2 ? '' :        /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
-    '<div class="chips" role="tablist">' + vis.map(function(tb){
-      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"'
+    '<div class="chips" role="tablist">' + all.map(function(tb){
+      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"' + (tb[4] === 'hidden' ? ' hidden' : '')   /* (V37.49) المخفيُّ في الشجرة لا في الشريط — للروابط والجرود */
         + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
         + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
     }).join('') + '</div>';
@@ -35010,7 +35046,8 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = '';   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || '';   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
+    if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
     return true; }
