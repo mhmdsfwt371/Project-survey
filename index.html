@@ -1283,7 +1283,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.56</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.57</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -4634,7 +4634,7 @@ function fsecSet(k, on){ var o = fsecOpen(); if (on) o[k] = 1; else delete o[k];
 function fsec(key, label, sel, body, forceOpen){
   if (!body) return '';
   var open = !!(forceOpen || fsecOpen()[key]);
-  return '<div class="fsec' + (open ? ' open' : '') + '" data-fsec="' + key + '"><button type="button" class="fsec-h" data-fsech="' + key + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="fsec-t">' + esc(t(label)) + '</span>'
+  return '<div class="fsec fsec-' + key + (open ? ' open' : '') + '"><button type="button" class="fsec-h" data-fsech="' + key + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="fsec-t">' + esc(t(label)) + '</span>'
     + (sel ? '<span class="fsec-s">' + sel + '</span>' : '<span class="fsec-s hint" style="margin:0">' + esc(t('الكل')) + '</span>') + '<span class="fsec-c" aria-hidden="true">\u276F</span></button><div class="fsec-b"' + (open ? '' : ' hidden') + '>' + body + '</div></div>';
 }
 function catBar(withWork){
@@ -25897,6 +25897,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.57', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'تصحيح لفحص التوثيق على الأصل: سمة داخلية في أقسام التصفية كان جرد الأزرار بيعتبرها زرار من غير معالج.' ] },
   { v:'V37.56', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'كل نوافذ المتابعة بقت تتفهم بالنظر: حلقة كبيرة بالنسبة والرقم، وشريط ألوان واحد لحال النقاط (🟢 جاهزة · 🟠 تحتاج تجهيز · 🔴 تحتاج تنسيق · ⚪ زيارة أخرى)، و«ليه مش جاهزة؟» بأيقونات وكلمة واحدة، والمشاعر حلقات صغيرة تضغط عليها فتعرض المشعر لوحده، والأسبوع بجملة عادية، وتحتها الخريطة وزرار «نزّل التفاصيل (إكسل)». اتشال الوسيط وأقدم بند والكلام الطويل.' ] },
   { v:'V37.55', d:'١٢ أكتوبر ٢٠٢٦', notes:[

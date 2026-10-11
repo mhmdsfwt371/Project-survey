@@ -791,7 +791,7 @@ function fsecSet(k, on){ var o = fsecOpen(); if (on) o[k] = 1; else delete o[k];
 function fsec(key, label, sel, body, forceOpen){
   if (!body) return '';
   var open = !!(forceOpen || fsecOpen()[key]);
-  return '<div class="fsec' + (open ? ' open' : '') + '" data-fsec="' + key + '"><button type="button" class="fsec-h" data-fsech="' + key + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="fsec-t">' + esc(t(label)) + '</span>'
+  return '<div class="fsec fsec-' + key + (open ? ' open' : '') + '"><button type="button" class="fsec-h" data-fsech="' + key + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="fsec-t">' + esc(t(label)) + '</span>'
     + (sel ? '<span class="fsec-s">' + sel + '</span>' : '<span class="fsec-s hint" style="margin:0">' + esc(t('الكل')) + '</span>') + '<span class="fsec-c" aria-hidden="true">\u276F</span></button><div class="fsec-b"' + (open ? '' : ' hidden') + '>' + body + '</div></div>';
 }
 function catBar(withWork){
