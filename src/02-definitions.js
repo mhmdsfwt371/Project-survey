@@ -205,11 +205,12 @@ function chalCats0(r){
    بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
    فالسجلّاتُ (r.why وr.chalCats) تبقى مقروءةً بأحدث اسم. */
 if (!('cats' in CFG)) CFG.cats = null;
+var CAT_LEGACY = { entry:['تحتاج زيارة تقنية — المدخل غير واضح'] };   /* (V37.41) ظهر الاسمُ القديمُ في لقطة المالك — كان محفوظًا في الإعدادات السحابية منذ محرّر V37.4 */
 function catMerge(base, ov){
   var L = base.map(function(o){ return { k:o.k, n:o.n, who:o.who, photo:!!o.photo, base:o.n, sup:o.sup ? o.sup.slice() : null }; });
   (Array.isArray(ov) ? ov : []).forEach(function(o){
     if (!o || !o.k) return; var e = L.filter(function(x){ return x.k === o.k; })[0];
-    if (e){ if (o.n) e.n = String(o.n); if (o.who != null && String(o.who) !== String(e.who)){ e.who = String(o.who); e.sup = null; } if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off;
+    if (e){ if (o.n && !(CAT_LEGACY[o.k] && CAT_LEGACY[o.k].indexOf(String(o.n)) > -1)) e.n = String(o.n);   /* (V37.41) اسمٌ قديمٌ محفوظٌ لا يغلب الجديد */ if (o.who != null && String(o.who) !== String(e.who)){ e.who = String(o.who); e.sup = null; } if (o.photo != null) e.photo = !!o.photo; e.off = !!o.off;
       if (Array.isArray(o.sup) && o.sup.length) e.sup = o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }); }   /* (V37.14) جهاتُ الدعم */
     else if (o.n) L.push({ k:String(o.k), n:String(o.n), who:String(o.who || ''), photo:!!o.photo, off:!!o.off, extra:true, sup:Array.isArray(o.sup) ? o.sup.map(function(x){ return { p:String(x.p || ''), s:String(x.s || '') }; }).filter(function(x){ return x.p; }) : null });
   });
