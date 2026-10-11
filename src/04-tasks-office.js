@@ -3334,7 +3334,7 @@ function helpIndexAll(){
   return pageIds().map(pageMeta).filter(function(p){ return p && p.t; });
 }
 
-function helpSearch(q){
+function helpSearch(q, minScore){   /* (V37.37) minScore: المساعدُ لا يعرض إلا الوثيق */
   q = arNorm(q);
   if (!q) return [];
   var toks = q.split(' ').filter(Boolean);
@@ -3354,8 +3354,10 @@ function helpSearch(q){
        ذلك، لا كلَّ شاشةٍ ذُكرت فيها الكلمةُ في سطر شرحها. فيُوزَن العنوانُ
        أثقلَ، ويُتجاهَل حروفُ الجرِّ التي لا تدلُّ على شيء. */
     var ttl = arNorm(e.t + ' ' + (EN[e.t] || '') + ' ' + kw);
-    var STOP = { 'for':1, 'the':1, 'of':1, 'and':1, 'in':1, 'to':1, 'a':1, 'my':1 };
-    var real = toks.filter(function(tok){ return !STOP[tok] && tok.length > 1; });
+    var STOP = { 'for':1, 'the':1, 'of':1, 'and':1, 'in':1, 'to':1, 'a':1, 'my':1,
+      'مش':1, 'في':1, 'من':1, 'على':1, 'علي':1, 'عن':1, 'لا':1, 'ما':1, 'ده':1, 'دي':1, 'اللي':1, 'عاوز':1, 'عايز':1, 'ازاي':1, 'إزاي':1, 'ليه':1, 'هو':1, 'هي':1, 'انا':1, 'أنا':1,
+      'اريد':1, 'أريد':1, 'كيف':1, 'مع':1, 'او':1, 'أو':1, 'عندي':1, 'بس':1, 'خالص':1, 'لسه':1, 'كده':1, 'جديد':1, 'جديده':1, 'مشكله':1, 'مشكلة':1, 'غريبه':1, 'غريبة':1, 'فاهم':1, 'فاهمها':1, 'حاجه':1, 'حاجة':1 };   /* (V37.37) حشوٌ عربيٌّ وعاميّ */
+    var real = toks.filter(function(tok){ return !STOP[tok] && tok.length > 2; });   /* (V37.37) «مش» كانت تطابق «المشروع» */
     var score = 0;
     if (ttl.indexOf(q) > -1) score += 40;
     if (hay.indexOf(q) > -1) score += 10;
@@ -3367,7 +3369,8 @@ function helpSearch(q){
     if (score) out.push({ e:e, score:score });
   });
   out.sort(function(a,b){ return b.score - a.score; });
-  return out.slice(0, 6).map(function(x){ return x.e; });
+  if (minScore) out = out.filter(function(x){ return x.score >= minScore; });   /* (V37.37) */
+  return out.slice(0, minScore ? 3 : 6).map(function(x){ return x.e; });
 }
 
 function assistHtml(){
@@ -3495,8 +3498,9 @@ function assistBadgeSync(){
   }
 }
 function assistResHtml(){
-  var results = ASSIST_Q ? helpSearch(ASSIST_Q) : [], gl = ASSIST_Q ? glossaryHits(ASSIST_Q) : [];
-  if (ASSIST_Q){ assistLog(ASSIST_Q, !!(assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length || results.length || gl.length)); }   /* (V37.30) */
+  var answered = !!(ASSIST_Q && (assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length));   /* (V37.37) بلاغُ المالك: «الحاجات اللي تحت بتشوّش على اللي بدوّر عليه» */
+  var results = ASSIST_Q && !answered ? helpSearch(ASSIST_Q, 12) : [], gl = ASSIST_Q && !answered ? glossaryHits(ASSIST_Q) : [];
+  if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
         ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
@@ -3517,7 +3521,7 @@ function assistResHtml(){
                   + btn(t(e.t) + ' \u2190','btn-primary btn-sm',' data-p="' + e.id + '" data-assist="0"')
                   + '</div>';
               }).join('')
-            : (gl.length ? '' : '<p class="hint" style="text-align:center;padding:20px">'
+            : (gl.length || answered ? '' : '<p class="hint" style="text-align:center;padding:20px">'   /* (V37.37) التشخيصُ جوابٌ — لا «معنديش نتيجة» تحته */
               + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))));
 }
 function queueHtml(){
