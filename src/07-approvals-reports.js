@@ -567,7 +567,7 @@ function trialKitHtml(r, me){
   return '<div class="wt-row" style="margin:6px 0 0;gap:6px;flex-wrap:wrap">'
     + pill(t(out), TRIAL_OUT[out] || '')
     + (kit.length ? '<span class="hint" style="margin:0">' + kit.join(' \u00b7 ') + '</span>' : '')
-    + (r.where ? '<span class="hint" style="margin:0">\u{1F4CD} ' + esc(r.where) + '</span>' : '')
+    + (r.site && siteFind(r.site) ? btn('\u{1F4CD} ' + (siteFind(r.site).name || r.site) + ' \u2190', 'btn-quiet btn-sm', ' data-site="' + esc(r.site) + '" title="' + esc(t('نقطة التجربة')) + '"') : (r.where ? '<span class="hint" style="margin:0">\u{1F4CD} ' + esc(r.where) + '</span>' : ''))   /* (V37.44) */
     + (r.report ? '<a class="btn btn-quiet btn-sm" href="' + esc(r.report) + '" target="_blank" rel="noopener">\u{1F4C4} ' + esc(t('التقرير')) + '</a>' : '')
     + (ph.length || q.length ? '<span class="hint" style="margin:0">\u{1F4F7} ' + nm(ph.length + q.length) + '</span>' : '')
     + (me ? '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4F7} ' + esc(t('أضِف صورة'))
@@ -606,6 +606,36 @@ function trialHoursAdd(id, h){
   var r = trialOf(id); if (!r) return;
   r.hours = Math.max(0, (+r.hours || 0) + h);
   if (trialSave()){ toast(t('حُدّثت ساعاتُ التجربة')); render(1); }
+}
+/* ═══ (V37.44) قرارُ المالك (الخيارُ أ): «نقطةُ تجربة» على المخيم مربوطةٌ بسطرها في «التجارب» ═══
+   عند التعليم: إن وُجد سطرٌ مربوطٌ بالنقطة فهو هو؛ وإلا فسطرٌ يذكر اسمَ المخيم أو معرّفَه في اسمه أو مكانه (ما أُضيف يدويًّا) يُربَط ولا يُكرَّر؛
+   وإلا يُنشأ «تجربة — اسم المخيم». عند الإلغاء: السطرُ الفارغ (بلا مصروفٍ ولا ساعاتٍ ولا تقريرٍ ولا أصناف) يُحذَف، وما عليه بياناتٌ يبقى. */
+function trialSiteNorm(x){ return (typeof arNorm === 'function' ? arNorm(x) : String(x || '')).replace(/\s+/g, ' ').trim(); }
+function trialForSite(id){
+  var R = trialRows(), x = siteFind(id); var linked = R.filter(function(r){ return r.site === id; })[0]; if (linked) return { row:linked, how:'linked' };
+  if (!x) return null; var nmS = trialSiteNorm(x.name || ''), idS = String(id).toLowerCase();
+  var m = R.filter(function(r){ if (r.site) return false; var hay = trialSiteNorm((r.n || '') + ' ' + (r.where || '')); return (nmS && nmS.length >= 3 && hay.indexOf(nmS) > -1) || hay.toLowerCase().indexOf(idS) > -1; })[0];
+  return m ? { row:m, how:'matched' } : null;
+}
+function trialLinkSite(id, on){
+  if (!trialMay()) return '';
+  var x = siteFind(id), f = trialForSite(id);
+  if (on){
+    if (f && f.how === 'linked') return 'linked';
+    if (f){ f.row.site = id; if (!f.row.where && x) f.row.where = x.name || id; trialSave(); return 'matched'; }   /* ما أضافه المالكُ يدويًّا — يُربَط لا يُكرَّر */
+    trialRows().unshift({ id:uid36(), n:t('تجربة') + ' — ' + ((x && x.name) || id), date:dayKey(), hours:0, note:'', by:STATE.meta.name || '', at:Date.now(), where:(x && x.name) || id, site:id, out:'جارية', report:'' });
+    trialSave(); return 'created';
+  }
+  if (!f || f.how !== 'linked') return '';
+  var r = f.row, empty = !(trialTotal(r) > 0) && !(+r.hours > 0) && !r.report && !(trialItems(r.id) || []).length;
+  if (empty){ trialsDoc().rows = trialRows().filter(function(z){ return z !== r; }); trialSave(); return 'removed'; }
+  return 'kept';
+}
+/* المزامنةُ الهادئة للنقاط المعلَّمة من قبل: تُربَط بسطرها اليدويّ إن وُجد، ولا يُنشأ شيءٌ جديد (طلبُ المالك: «ضفته يدويًّا، ما تضيفهوش تاني») */
+function trialLinkExisting(){
+  if (!trialMay() || trialLinkExisting.done) return; trialLinkExisting.done = true; var ch = 0;
+  (STATE.sites || []).forEach(function(x){ if (!x.pilot) return; var f = trialForSite(x.id); if (f && f.how === 'matched'){ f.row.site = x.id; if (!f.row.where) f.row.where = x.name || x.id; ch++; } });
+  if (ch){ trialSave(); logEvent('رُبطت ' + ch + ' نقطةَ تجربةٍ بسطورها في «التجارب»'); }
 }
 function trialRemove(id){
   if (!trialMay()) return;

@@ -1272,7 +1272,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.43</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.44</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1334,7 +1334,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-9ce092ace1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-df9ef85a04.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -25596,6 +25596,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.44', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      '«اجعلها نقطة تجربة» بقت مربوطة بصفحة «التجارب»: لو المخيم ليه تجربة مكتوب فيها اسمه بيتربط بيها، ولو ملوش بيتعمل له سطر «تجربة — اسم المخيم». ولو رجّعته نقطة عادية: السطر الفاضي بيتشال، واللي عليه بيانات (ساعات، مصروف، تقرير، أصناف) بيفضل. والتجربة اللي إنت ضفتها يدويًا اتربطت من غير ما تتكرر.',
+      'في بطاقة كل تجربة مربوطة بقى فيه زرار باسم المخيم يفتحه.' ] },
   { v:'V37.43', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'دفتر المشتريات: في «تسجيل عملية شراء» بقت فيه خانة «صورة الفاتورة» — صوّر الفاتورة أو اختارها من المعرض، وتقدر تحذفها قبل الحفظ، وبتترفع لوحدها على الدرايف مع حفظ الشراء. وفي جدول «العمليات» عمود «الفاتورة» فيه «افتح» أول ما تترفع.' ] },
   { v:'V37.42', d:'١١ أكتوبر ٢٠٢٦', notes:[
@@ -27235,7 +27238,7 @@ function trialKitHtml(r, me){
   return '<div class="wt-row" style="margin:6px 0 0;gap:6px;flex-wrap:wrap">'
     + pill(t(out), TRIAL_OUT[out] || '')
     + (kit.length ? '<span class="hint" style="margin:0">' + kit.join(' \u00b7 ') + '</span>' : '')
-    + (r.where ? '<span class="hint" style="margin:0">\u{1F4CD} ' + esc(r.where) + '</span>' : '')
+    + (r.site && siteFind(r.site) ? btn('\u{1F4CD} ' + (siteFind(r.site).name || r.site) + ' \u2190', 'btn-quiet btn-sm', ' data-site="' + esc(r.site) + '" title="' + esc(t('نقطة التجربة')) + '"') : (r.where ? '<span class="hint" style="margin:0">\u{1F4CD} ' + esc(r.where) + '</span>' : ''))   /* (V37.44) */
     + (r.report ? '<a class="btn btn-quiet btn-sm" href="' + esc(r.report) + '" target="_blank" rel="noopener">\u{1F4C4} ' + esc(t('التقرير')) + '</a>' : '')
     + (ph.length || q.length ? '<span class="hint" style="margin:0">\u{1F4F7} ' + nm(ph.length + q.length) + '</span>' : '')
     + (me ? '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4F7} ' + esc(t('أضِف صورة'))
@@ -27274,6 +27277,36 @@ function trialHoursAdd(id, h){
   var r = trialOf(id); if (!r) return;
   r.hours = Math.max(0, (+r.hours || 0) + h);
   if (trialSave()){ toast(t('حُدّثت ساعاتُ التجربة')); render(1); }
+}
+/* ═══ (V37.44) قرارُ المالك (الخيارُ أ): «نقطةُ تجربة» على المخيم مربوطةٌ بسطرها في «التجارب» ═══
+   عند التعليم: إن وُجد سطرٌ مربوطٌ بالنقطة فهو هو؛ وإلا فسطرٌ يذكر اسمَ المخيم أو معرّفَه في اسمه أو مكانه (ما أُضيف يدويًّا) يُربَط ولا يُكرَّر؛
+   وإلا يُنشأ «تجربة — اسم المخيم». عند الإلغاء: السطرُ الفارغ (بلا مصروفٍ ولا ساعاتٍ ولا تقريرٍ ولا أصناف) يُحذَف، وما عليه بياناتٌ يبقى. */
+function trialSiteNorm(x){ return (typeof arNorm === 'function' ? arNorm(x) : String(x || '')).replace(/\s+/g, ' ').trim(); }
+function trialForSite(id){
+  var R = trialRows(), x = siteFind(id); var linked = R.filter(function(r){ return r.site === id; })[0]; if (linked) return { row:linked, how:'linked' };
+  if (!x) return null; var nmS = trialSiteNorm(x.name || ''), idS = String(id).toLowerCase();
+  var m = R.filter(function(r){ if (r.site) return false; var hay = trialSiteNorm((r.n || '') + ' ' + (r.where || '')); return (nmS && nmS.length >= 3 && hay.indexOf(nmS) > -1) || hay.toLowerCase().indexOf(idS) > -1; })[0];
+  return m ? { row:m, how:'matched' } : null;
+}
+function trialLinkSite(id, on){
+  if (!trialMay()) return '';
+  var x = siteFind(id), f = trialForSite(id);
+  if (on){
+    if (f && f.how === 'linked') return 'linked';
+    if (f){ f.row.site = id; if (!f.row.where && x) f.row.where = x.name || id; trialSave(); return 'matched'; }   /* ما أضافه المالكُ يدويًّا — يُربَط لا يُكرَّر */
+    trialRows().unshift({ id:uid36(), n:t('تجربة') + ' — ' + ((x && x.name) || id), date:dayKey(), hours:0, note:'', by:STATE.meta.name || '', at:Date.now(), where:(x && x.name) || id, site:id, out:'جارية', report:'' });
+    trialSave(); return 'created';
+  }
+  if (!f || f.how !== 'linked') return '';
+  var r = f.row, empty = !(trialTotal(r) > 0) && !(+r.hours > 0) && !r.report && !(trialItems(r.id) || []).length;
+  if (empty){ trialsDoc().rows = trialRows().filter(function(z){ return z !== r; }); trialSave(); return 'removed'; }
+  return 'kept';
+}
+/* المزامنةُ الهادئة للنقاط المعلَّمة من قبل: تُربَط بسطرها اليدويّ إن وُجد، ولا يُنشأ شيءٌ جديد (طلبُ المالك: «ضفته يدويًّا، ما تضيفهوش تاني») */
+function trialLinkExisting(){
+  if (!trialMay() || trialLinkExisting.done) return; trialLinkExisting.done = true; var ch = 0;
+  (STATE.sites || []).forEach(function(x){ if (!x.pilot) return; var f = trialForSite(x.id); if (f && f.how === 'matched'){ f.row.site = x.id; if (!f.row.where) f.row.where = x.name || x.id; ch++; } });
+  if (ch){ trialSave(); logEvent('رُبطت ' + ch + ' نقطةَ تجربةٍ بسطورها في «التجارب»'); }
 }
 function trialRemove(id){
   if (!trialMay()) return;
@@ -34193,6 +34226,7 @@ function render0(force){
   try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
   try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
+  if (CUR === 'trials' || CUR === 'chain'){ try { trialLinkExisting(); } catch (eT){ LS_ERR = eT; } }   /* (V37.44) ربطُ ما عُلِّم من قبل — بلا إنشاء */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -34985,7 +35019,10 @@ function clickAPart4(e){
   if (e.target.closest('[data-pilot]')){
     pid = e.target.closest('[data-pilot]').getAttribute('data-pilot'), px = siteFind(pid);
     if (!px || !may('users')) return true;
-    siteOvSet(pid, { pilot: !px.pilot }); px.pilot = !px.pilot; logEvent((px.pilot ? 'صارت نقطةَ تجربة — ' : 'عادت نقطةً عادية — ') + pid); render(1); return true;
+    siteOvSet(pid, { pilot: !px.pilot }); px.pilot = !px.pilot; logEvent((px.pilot ? 'صارت نقطةَ تجربة — ' : 'عادت نقطةً عادية — ') + pid);
+    var tl = trialLinkSite(pid, px.pilot);   /* (V37.44) الخيارُ أ */
+    toast(t({ created:'صارت نقطةَ تجربة — وأُضيفت إلى «التجارب»', matched:'صارت نقطةَ تجربة — ورُبطت بتجربتها الموجودة في «التجارب»', linked:'صارت نقطةَ تجربة — تجربتُها في «التجارب»', removed:'عادت نقطةً عادية — وحُذف سطرُها الفارغ من «التجارب»', kept:'عادت نقطةً عادية — وسطرُها في «التجارب» باقٍ لأن عليه بيانات' }[tl] || (px.pilot ? 'صارت نقطةَ تجربة' : 'عادت نقطةً عادية')));
+    render(1); return true;
   }
   var kkv = e.target.closest('[data-kkview]');
   if (kkv){ KK_VIEW = kkv.getAttribute('data-kkview') === 'pts' ? 'pts' : 'sat'; render(1); return true; }

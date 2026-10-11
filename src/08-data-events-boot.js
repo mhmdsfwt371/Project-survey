@@ -2399,6 +2399,7 @@ function render0(force){
   try { qStaleSync(); } catch (eQ){ LS_ERR = eQ; }   /* (V37.29) */
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
   try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
+  if (CUR === 'trials' || CUR === 'chain'){ try { trialLinkExisting(); } catch (eT){ LS_ERR = eT; } }   /* (V37.44) ربطُ ما عُلِّم من قبل — بلا إنشاء */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */
@@ -3191,7 +3192,10 @@ function clickAPart4(e){
   if (e.target.closest('[data-pilot]')){
     pid = e.target.closest('[data-pilot]').getAttribute('data-pilot'), px = siteFind(pid);
     if (!px || !may('users')) return true;
-    siteOvSet(pid, { pilot: !px.pilot }); px.pilot = !px.pilot; logEvent((px.pilot ? 'صارت نقطةَ تجربة — ' : 'عادت نقطةً عادية — ') + pid); render(1); return true;
+    siteOvSet(pid, { pilot: !px.pilot }); px.pilot = !px.pilot; logEvent((px.pilot ? 'صارت نقطةَ تجربة — ' : 'عادت نقطةً عادية — ') + pid);
+    var tl = trialLinkSite(pid, px.pilot);   /* (V37.44) الخيارُ أ */
+    toast(t({ created:'صارت نقطةَ تجربة — وأُضيفت إلى «التجارب»', matched:'صارت نقطةَ تجربة — ورُبطت بتجربتها الموجودة في «التجارب»', linked:'صارت نقطةَ تجربة — تجربتُها في «التجارب»', removed:'عادت نقطةً عادية — وحُذف سطرُها الفارغ من «التجارب»', kept:'عادت نقطةً عادية — وسطرُها في «التجارب» باقٍ لأن عليه بيانات' }[tl] || (px.pilot ? 'صارت نقطةَ تجربة' : 'عادت نقطةً عادية')));
+    render(1); return true;
   }
   var kkv = e.target.closest('[data-kkview]');
   if (kkv){ KK_VIEW = kkv.getAttribute('data-kkview') === 'pts' ? 'pts' : 'sat'; render(1); return true; }
