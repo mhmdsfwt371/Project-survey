@@ -82,18 +82,19 @@ function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
   var rowsAll = svListRows(SV_POP), head = svListHead(SV_POP), dcz = svDashCols(head);
   var zonesAll = []; if (dcz.zone > -1){ var zm = {}; rowsAll.forEach(function(r){ zm[String(r[dcz.zone] || '')] = 1; }); zonesAll = Object.keys(zm).filter(Boolean); }
-  var rows = SV_ZF && dcz.zone > -1 ? rowsAll.filter(function(r){ return String(r[dcz.zone] || '') === SV_ZF; }) : rowsAll;   /* (V37.45) تصفيةُ المشعر داخل النافذة */
+  var rows = svPopFilter(rowsAll, head);   /* (V37.45 المشعر · V37.58 والمربعُ المضغوط) — المرشّحُ نفسُه في الإكسل */
   var shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
   var dc0 = svDashCols(head), canDash = dc0.zone > -1 || dc0.type > -1 || dc0.comp > -1;   /* (V37.41) طلبُ المالك: كلُّ نوافذ متابعة الوزارة لوحة */
   var asDash = canDash && SV_VIEW !== 'list';
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
-    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + (SV_ZF ? ' <small class="hint" style="margin:0">' + esc(t(SV_ZF)) + ' \u00b7 ' + nm(rowsAll.length) + ' ' + esc(t('في الكل')) + '</small>' : '') + '</h3>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + (SV_ZF || SV_SUB ? ' <small class="hint" style="margin:0">' + [SV_ZF ? esc(t(SV_ZF)) : '', SV_SUB ? esc(t(svSubLabel())) : ''].filter(Boolean).join(' \u00b7 ') + ' \u00b7 ' + nm(rowsAll.length) + ' ' + esc(t('في الكل')) + '</small>' : '') + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل — التفاصيل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"')
       + (canDash ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
       + (canDash && asDash ? btn('\u{1F5A8} ' + t('طباعة اللوحة'), 'btn-quiet btn-sm', ' data-svprint="1"') : '')   /* (V37.45) */
       + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
+    + (SV_SUB ? '<div class="chips" style="margin:8px 0 0"><button type="button" class="chip on" data-svsub="' + esc(SV_SUB) + '">\u21A9 ' + esc(t('رجوع للكل')) + ' \u00b7 ' + esc(t(svSubLabel())) + ' \u2715</button></div>' : '')   /* (V37.58) */
     + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
@@ -102,7 +103,7 @@ function svListPop(){
         return [ sx ? siteIdHtml(sx) : '<span class="num">' + esc(r[0]) + '</span>' ].concat(r.slice(1).map(function(c){ return esc(c || '\u2014'); }))
           .concat([pn ? '<button type="button" class="btn btn-secondary btn-sm" data-svphotos="' + esc(r[0]) + '">\u{1F4F7} ' + nm(pn) + '</button>' : '<span class="hint" style="margin:0">' + esc(t('لا صور')) + '</span>']); }))
                    + (rows.length > shown.length ? '<div class="actions" style="justify-content:center;margin:10px 0">' + btn('\u2193 ' + t('عرض المزيد') + ' (' + nm(Math.min(80, rows.length - shown.length)) + ' ' + t('من') + ' ' + nm(rows.length - shown.length) + ')', 'btn-secondary btn-sm', ' data-svmore="1"') + '</div><p class="hint" style="text-align:center">' + esc(t('والكلُّ في ملف الإكسل')) + '</p>' : '')   /* (V37.27) */
-                   : '<p class="hint">' + esc(t('لا نقاط')) + '</p>')
+                   : (asDash ? '' : '<p class="hint">' + esc(t('لا نقاط')) + '</p>'))   /* (V37.58) كانت تظهر تحت اللوحة */
     + '</div>'
     + (SV_PHO ? svPhoPanel(SV_PHO) : '');
 }
@@ -145,7 +146,7 @@ function svMiniMap(rows){
 }
 /* (V37.56) svInsight (جملةُ الخلاصة الطويلة) حُذفت بقرار المالك — اللوحةُ تُقرأ بالنظر */
 function svDashHtml(key, rows, head){
-  var ck = key + '|' + rows.length + '|' + (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + '|' + (typeof SV_ZF !== 'undefined' ? SV_ZF : '') + '|' + LANG;   /* (V37.45) تُحفَظ اللوحةُ: الفتحُ الثاني فوريّ */
+  var ck = key + '|' + rows.length + '|' + (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + '|' + (typeof SV_ZF !== 'undefined' ? SV_ZF : '') + '|' + (typeof SV_SUB !== 'undefined' ? SV_SUB : '') + '|' + LANG;   /* (V37.45) تُحفَظ اللوحةُ: الفتحُ الثاني فوريّ */
   if (svDashHtml.ck === ck && svDashHtml.html) return svDashHtml.html;
   var html = svDashHtml0(key, rows, head); svDashHtml.ck = ck; svDashHtml.html = html; return html;
 }
@@ -175,8 +176,20 @@ function svRing(p, size, color, label){
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:conic-gradient(' + color + ' 0 ' + deg + '%,var(--line) 0);display:flex;align-items:center;justify-content:center;flex:0 0 auto">'
     + '<i style="width:' + inner + 'px;height:' + inner + 'px;border-radius:50%;background:var(--surface,#141B2A);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:' + Math.round(size / 4.6) + 'px">' + label + '</i></div>';
 }
+var SV_SUB = '';   /* (V37.58) المربعُ المضغوطُ داخل النافذة: «st:ready» أو «why:0» */
+function svSubPass(id){
+  if (!SV_SUB) return true; var p = SV_SUB.split(':');
+  if (p[0] === 'st') return svStOf(id) === p[1];
+  if (p[0] === 'why'){ var w = SV_WHY[+p[1]], rec = STATE.recs[id]; if (!w || !rec || !svDone(rec)) return false; var cc = chalCats(rec); return w.ks.some(function(k){ return cc.indexOf(k) > -1; }); }
+  return true;
+}
+function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':'); if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; } var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
+function svPopFilter(rowsAll, head){
+  var dcz = svDashCols(head);
+  return rowsAll.filter(function(r){ return (!SV_ZF || dcz.zone < 0 || String(r[dcz.zone] || '') === SV_ZF) && svSubPass(r[0]); });
+}
 function svDashHtml0(key, rows, head){
-  var C = svDashCols(head || svListHead(key)), n = rows.length, now = Date.now(), base = svBaseOf(key);
+  var C = svDashCols(head || svListHead(key)), n = rows.length, base = svBaseOf(key);
   var tile = 'background:var(--surface-2);border-radius:14px;padding:12px';
   /* ١ · الحلقةُ الكبيرة: كم من كم */
   var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
@@ -188,26 +201,21 @@ function svDashHtml0(key, rows, head){
   var sts = SV_ST.filter(function(o){ return stc[o.k]; });
   var bar = sts.length > 1 ? '<div style="display:flex;height:22px;border-radius:12px;overflow:hidden;margin:4px 0 10px">' + sts.map(function(o){ return '<i title="' + esc(t(o.n)) + '" style="display:block;width:' + (stc[o.k] / n * 100).toFixed(2) + '%;background:' + o.c + '"></i>'; }).join('') + '</div>' : '';
   var stTiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-bottom:12px">' + sts.map(function(o){
-      return '<div style="' + tile + ';display:flex;align-items:center;gap:10px"><span style="width:14px;height:14px;border-radius:50%;background:' + o.c + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(stc[o.k]) + '</div><div style="font-size:13px">' + o.e + ' ' + esc(t(o.n)) + '</div></div></div>'; }).join('') + '</div>';
+      return '<div role="button" tabindex="0" data-svsub="st:' + o.k + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';display:flex;align-items:center;gap:10px;cursor:pointer"><span style="width:14px;height:14px;border-radius:50%;background:' + o.c + ';flex:0 0 auto"></span><div><div class="num" style="font-size:22px;font-weight:800">' + nm(stc[o.k]) + '</div><div style="font-size:13px">' + o.e + ' ' + esc(t(o.n)) + ' \u203A</div></div></div>'; }).join('') + '</div>';
   var stSec = sts.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('حالها الآن')) + '</div>' + bar + stTiles : '';
   /* ٣ · ليه مش جاهزة؟ */
   var wc = {}; rows.forEach(function(r){ var rec = STATE.recs[r[0]]; if (!rec || !svDone(rec)) return; var cc = chalCats(rec); SV_WHY.forEach(function(w, wi){ if (w.ks.some(function(k){ return cc.indexOf(k) > -1; })) wc[wi] = (wc[wi] || 0) + 1; }); });
   var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; });
   var whySec = why.length ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('ليه مش جاهزة؟')) + '</div><div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px">'
-    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div style="' + tile + ';text-align:center;padding:10px 6px"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + '</div></div>'; }).join('') + '</div>' : '';
+    + why.map(function(wi){ var w = SV_WHY[wi]; return '<div role="button" tabindex="0" data-svsub="why:' + wi + '" title="' + esc(t('اضغط للتفاصيل والإكسل')) + '" style="' + tile + ';text-align:center;padding:10px 6px;cursor:pointer"><div style="font-size:24px">' + w.e + '</div><div class="num" style="font-size:18px;font-weight:800;margin-top:2px">' + nm(wc[wi]) + '</div><div style="font-size:12px">' + esc(t(w.n)) + ' \u203A</div></div>'; }).join('') + '</div>' : '';
   /* ٤ · المشاعر: حلقةٌ صغيرةٌ لكلٍّ منها تُضغط فتصفّي */
   var zc = {}; if (C.zone > -1) rows.forEach(function(r){ var z = String(r[C.zone] || ''); if (z) zc[z] = (zc[z] || 0) + 1; });
   var zks = Object.keys(zc).sort(function(a, b){ return zc[b] - zc[a]; });
   var zoneSec = zks.length > 1 && !SV_ZF ? '<div class="hint" style="margin:4px 0 6px;font-size:14px">' + esc(t('المشاعر')) + '</div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px;margin-bottom:12px">'
     + zks.map(function(z){ var of = (base.zones || {})[z] || zc[z], zp = Math.round(zc[z] / Math.max(1, of) * 100);
       return '<div role="button" tabindex="0" data-svzf="' + esc(z) + '" style="' + tile + ';text-align:center;cursor:pointer" title="' + esc(t('اضغط لعرض هذا المشعر وحده')) + '">' + '<div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(zp, 56, prog ? (zp >= 90 ? '#22C55E' : zp >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)', nm(zp) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + '</div><div class="hint num" style="margin:0;font-size:12px">' + nm(zc[z]) + '</div></div>'; }).join('') + '</div>' : '';
-  /* ٥ · الأسبوعُ بجملةٍ عادية */
-  var dates = []; if (C.date > -1) rows.forEach(function(r){ var d = String(r[C.date] || '').slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(new Date(d + 'T12:00:00').getTime()); });
-  var wk = dates.filter(function(d){ return now - d < 7 * 864e5; }).length, wkPrev = dates.filter(function(d){ return now - d >= 7 * 864e5 && now - d < 14 * 864e5; }).length;
-  var weekSec = (wk || wkPrev) ? '<div style="' + tile + ';display:flex;align-items:center;gap:12px;margin-bottom:12px"><span style="font-size:26px">' + (wk >= wkPrev ? '\u{1F4C8}' : '\u{1F4C9}') + '</span><div><div style="font-size:17px;font-weight:700">' + nm(wk) + ' ' + esc(t('هذا الأسبوع')) + '</div>'
-    + '<div class="hint" style="margin:2px 0 0;font-size:13px">' + esc(t(wk >= wkPrev ? 'أكثر من الأسبوع اللي فات' : 'أقل من الأسبوع اللي فات')) + ' (' + nm(wkPrev) + ')' + (wk < wkPrev && prog && pct >= 95 ? ' \u2014 ' + esc(t('طبيعي، المسح قرّب يخلص')) : '') + '</div></div></div>' : '';
-  /* ٦ · الخريطة، ثم زرُّ التفاصيل */
-  return hero + stSec + whySec + zoneSec + weekSec + svMiniMap(rows)
+  /* ٥ · زرُّ التفاصيل */
+  return hero + stSec + whySec + zoneSec   /* (V37.58) قرارُ المالك: لا سطرَ أسبوعٍ ولا خريطةَ في اللوحة — ما يحتاجه المتابِعُ فقط */
     + '<button type="button" class="btn btn-primary" data-svpopxls="1" style="display:block;width:100%;margin-top:12px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>';
 }
 function svPhoPanel(id){ var px = siteFind(id);
@@ -222,7 +230,8 @@ function svListXlsx(key){
   toast(t('يُجهَّز ملفُّ إكسل…'));
   return xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميل محرّك إكسل — تحقّق من الشبكة')); return false; }
-    var body = svListRows(key), pts = body.length && siteFind(body[0][0]);   /* (V35.0) قوائمُ النقاط: عمودٌ أوّلُ بالمعرّف الأوّل */
+    var body = svListRows(key); if (key === SV_POP && (SV_ZF || SV_SUB) && document.querySelector('.svpop')) body = svPopFilter(body, svListHead(key));   /* (V37.58) الإكسلُ بما تراه في النافذة — المشعرُ والمربعُ المضغوط */
+    var pts = body.length && siteFind(body[0][0]);   /* (V35.0) قوائمُ النقاط: عمودٌ أوّلُ بالمعرّف الأوّل */
     var rows = [(pts ? [t('رقم الشاخص / الاسم')] : []).concat(svListHead(key).map(function(h){ return t(h); }))].concat(body.map(function(r){ var sx = pts && siteFind(r[0]); return pts ? [sx ? siteKey(sx) : r[0]].concat(r) : r; })), iss = [];
     rows.forEach(function(r, i){ r.forEach(function(c){ var b = expBadText(c); if (b) iss.push(t('الصفّ') + ' ' + (i + 1) + ': ' + b); }); });   /* فحصُ الملف قبل نزوله */
     if (!expGate('إكسل', iss)) return false;
@@ -2879,6 +2888,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.58', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'في كل لوحة: أي مربع بتضغطه (جاهزة، تحتاج تجهيز، تحتاج تنسيق، زيارة أخرى، يحتاج هيكل، المدخل، العارضة، عائق، ارتفاع، قيد المراجعة) بيفتح نافذته بلوحتها وإكسلها، ومعاه «↩ رجوع للكل». والإكسل بقى بينزّل اللي شايفه في النافذة بالظبط (المشعر والمربع)، وكان قبل كده بينزّل الكل.',
+      'واتشال من اللوحة سطر الأسبوع والخريطة بطلبك.' ] },
   { v:'V37.57', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'تصحيح لفحص التوثيق على الأصل: سمة داخلية في أقسام التصفية كان جرد الأزرار بيعتبرها زرار من غير معالج.' ] },
   { v:'V37.56', d:'١٢ أكتوبر ٢٠٢٦', notes:[
