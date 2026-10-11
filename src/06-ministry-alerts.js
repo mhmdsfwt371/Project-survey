@@ -80,16 +80,21 @@ function svListHead(key){ if (MFU.lists[key]) return MFU.lists[key].head; return
 function svListTitle(key){ if (MFU.lists[key]) return t(MFU.lists[key].title); var OK = svObKey(key); if (OK) return t((TAX_DEF[OK.ty] || { l:OK.ty }).l) + ' \u2014 ' + t(OK.bad ? 'بعوائق' : 'بدون عوائق'); if (SV_LISTS[key]) return t(SV_LISTS[key][0]); var DL = svDynList(key); if (DL) return t(DL[0]); var rule = AL_RULES.filter(function(r){ return r[0] === key; })[0]; return rule ? t(rule[2]) + ' ' + nm(alRuleDays(rule[1])) + ' ' + t('يوم') : key; }   /* (V30.1) */
 function svListPop(){
   if (!SV_POP || !(SV_LISTS[SV_POP] || svDynList(SV_POP) || MFU.lists[SV_POP] || svObKey(SV_POP) || /^al_/.test(SV_POP))) return '';
-  var rows = svListRows(SV_POP), head = svListHead(SV_POP), shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
+  var rowsAll = svListRows(SV_POP), head = svListHead(SV_POP), dcz = svDashCols(head);
+  var zonesAll = []; if (dcz.zone > -1){ var zm = {}; rowsAll.forEach(function(r){ zm[String(r[dcz.zone] || '')] = 1; }); zonesAll = Object.keys(zm).filter(Boolean); }
+  var rows = SV_ZF && dcz.zone > -1 ? rowsAll.filter(function(r){ return String(r[dcz.zone] || '') === SV_ZF; }) : rowsAll;   /* (V37.45) تصفيةُ المشعر داخل النافذة */
+  var shown = rows.slice(0, SV_SHOW);   /* (V37.27 المرحلةُ ٢) دفعاتٌ من ٨٠ — كانت ٣٠٠ صفٍّ دفعةً واحدة */
   var dc0 = svDashCols(head), canDash = dc0.zone > -1 || dc0.type > -1 || dc0.comp > -1;   /* (V37.41) طلبُ المالك: كلُّ نوافذ متابعة الوزارة لوحة */
   var asDash = canDash && SV_VIEW !== 'list';
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
-    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + '</h3>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + (SV_ZF ? ' <small class="hint" style="margin:0">' + esc(t(SV_ZF)) + ' \u00b7 ' + nm(rowsAll.length) + ' ' + esc(t('في الكل')) + '</small>' : '') + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل — التفاصيل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"')
       + (canDash ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
+      + (canDash && asDash ? btn('\u{1F5A8} ' + t('طباعة اللوحة'), 'btn-quiet btn-sm', ' data-svprint="1"') : '')   /* (V37.45) */
       + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-svpopclose="1"') + '</div></div>'
+    + (zonesAll.length > 1 ? '<div class="chips" style="margin:8px 0 0">' + [['', 'كل المشاعر']].concat(zonesAll.map(function(z){ return [z, z]; })).map(function(z){ return '<button type="button" class="chip' + (SV_ZF === z[0] ? ' on' : '') + '" data-svzf="' + esc(z[0]) + '">' + esc(t(z[1])) + '</button>'; }).join('') + '</div>' : '')
     + (SV_POP === 'nophoto' ? '<p class="hint" style="margin:6px 0">' + esc(t('وجِّه الشبابَ لهذه النقاط لإضافة الصور من «تعديل المسح» — «التُقطت ولم تُرفع» تعني أن الصور على جهاز صاحب الزيارة: يفتح التطبيقَ على الشبكة.')) + '</p>' : '')
     /* (V37.6) طلبُ المالك: «عاوز هنا الصور — أقدر أفتح صور المخيم ده في كل التحديات وأسباب عدم المسح». عمودُ «الصور» في النافذة وحدَها (لا في الإكسل) */
     + (asDash && rows.length ? svDashHtml(SV_POP, rows, head) : '')
@@ -113,34 +118,85 @@ function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا 
   var sn = st > -1 ? H[st] : ''; if (/^الحالة/.test(sn)) sn = 'الحالة والتحديات';   /* عنوانٌ قصيرٌ لا رأسُ العمود الطويل */
   return { zone:f(/المشعر/), type:f(/^النوع/), comp:f(/الشركة/), date:f(/آخر زيارة|التاريخ|تاريخ|آخر/), by:f(/بواسطة|المنفّذ|المنفذ|الفني|الفريق/), state:st, stateName:sn };
 }
+/* ═══ (V37.45) لوحةُ الوزارة المعتمدة — تجيب عن أسئلة الاجتماع لا تعرض عددًا فقط ═══
+   خلاصةٌ مكتوبةٌ تُولَّد من الأرقام، ومقارنةُ الأسبوع بالذي قبله، وعمرُ أقدم بندٍ مفتوح، والنسبةُ من نقاط المشعر نفسه،
+   وأين هي على الخريطة، والتراكمُ في ٣٠ يومًا، وتصفيةٌ بالمشعر داخل النافذة، وطباعةٌ، وسطرُ المصدر. كلُّه من الوثائق على الجهاز. */
+var SV_ZF = '';   /* تصفيةُ المشعر داخل النافذة */
+var SV_ZONE_COLORS = { 'منى':'#2E86DE', 'عرفات':'#27AE60', 'المزدلفة':'#8E44AD', 'مزدلفة':'#8E44AD', 'كاميرات المتابعة':'#E67E22', 'مراكز التفويج':'#C0392B', 'الجمرات':'#D4AC0D' };
+function svZoneColor(z){ return SV_ZONE_COLORS[z] || '#E74C3C'; }
+function svBaseOf(key){   /* قاعدةُ النسبة: قوائمُ الزيارة والمتبقي من كلِّ النقاط، وما سواها من المزار */
+  var all = STATE.sites || []; if (/^(sv|rem)$/.test(key)) return { n:all.length, name:'كلِّ النقاط', zones:svZoneTot(all) };
+  var vis = all.filter(function(x){ return svVisited(STATE.recs[x.id]); }); return { n:vis.length, name:'المزار', zones:svZoneTot(vis) };
+}
+function svZoneTot(L){ var m = {}; L.forEach(function(x){ m[x.zone] = (m[x.zone] || 0) + 1; }); return m; }
+function svMiniMap(rows){
+  var all = (STATE.sites || []).filter(function(x){ return x.lat && x.lng; }); if (all.length < 10) return '';
+  var ids = {}; rows.forEach(function(r){ ids[r[0]] = 1; });
+  var la0 = Infinity, la1 = -Infinity, lg0 = Infinity, lg1 = -Infinity;
+  all.forEach(function(x){ if (x.lat < la0) la0 = x.lat; if (x.lat > la1) la1 = x.lat; if (x.lng < lg0) lg0 = x.lng; if (x.lng > lg1) lg1 = x.lng; });
+  if (la1 - la0 < 1e-6 || lg1 - lg0 < 1e-6) return '';
+  var W = 560, H = 300, X = function(x){ return (10 + (x.lng - lg0) / (lg1 - lg0) * (W - 20)).toFixed(1); }, Y = function(x){ return (10 + (la1 - x.lat) / (la1 - la0) * (H - 20)).toFixed(1); };
+  /* مسارٌ واحدٌ لكلِّ لونٍ لا دائرةٌ لكلِّ نقطة: ١٬٨٠٧ عنصرٍ كانت تكلّف الرسمَ نصفَ ثانية */
+  var bgK = all.length + ':' + la0 + ':' + lg1; if (svMiniMap.bgK !== bgK){ var bgP = ''; all.forEach(function(x){ bgP += 'M' + X(x) + ' ' + Y(x) + 'h.01'; }); svMiniMap.bg = bgP; svMiniMap.bgK = bgK; }
+  var fgZ = {}, zs = {}; all.forEach(function(x){ if (ids[x.id]){ zs[x.zone] = 1; fgZ[x.zone] = (fgZ[x.zone] || '') + 'M' + X(x) + ' ' + Y(x) + 'h.01'; } });
+  var fg = Object.keys(fgZ).map(function(z){ return '<path d="' + fgZ[z] + '" stroke="' + svZoneColor(z) + '" stroke-width="6" stroke-linecap="round" fill="none" opacity=".9"/>'; }).join('');
+  return '<div class="card" style="margin:0"><div class="pid">' + esc(t('أين هي على الخريطة')) + '</div><svg viewBox="0 0 ' + W + ' ' + H + '" width="100%" style="display:block;border-radius:10px;background:var(--surface-2);color:var(--ink)"><path d="' + svMiniMap.bg + '" stroke="currentColor" stroke-width="3" stroke-linecap="round" fill="none" opacity=".18"/>' + fg + '</svg>'
+    + '<div class="hint" style="margin:6px 0 0;display:flex;gap:10px;flex-wrap:wrap">' + Object.keys(zs).map(function(z){ return '<span><i style="display:inline-block;width:9px;height:9px;border-radius:50%;background:' + svZoneColor(z) + '"></i> ' + esc(t(z)) + '</span>'; }).join('') + '<span>\u25CF ' + esc(t('الباهت: باقي النقاط')) + '</span></div></div>';
+}
+function svInsight(key, n, base, zones, cats, catName, wk, wkPrev, oldest){
+  if (!n) return ''; var P = [];
+  P.push('<b>' + nm(n) + '</b> ' + t('نقطة') + ' (' + nm(Math.round(n / Math.max(1, base.n) * 100)) + '\u066A ' + t('من') + ' ' + t(base.name) + ')');
+  if (zones.length){ var z = zones[0], sh = Math.round(z[1] / n * 100); P.push((sh >= 70 ? t('أكثر من ثلثيها') : sh >= 50 ? t('أكثر من نصفها') : t('أكبر حصة')) + ' ' + t('في') + ' <b>' + esc(t(z[0])) + '</b> (' + nm(z[1]) + ')'); }
+  if (cats.length && catName){ var c = cats[0], cs = Math.round(c[1] / n * 100); P.push((cs >= 50 ? t('أكثر من نصفها') : t('أكبر فئة')) + ' «<b>' + esc(t(c[0])) + '</b>» (' + nm(c[1]) + ')'); }
+  var tr = wkPrev ? (wk < wkPrev * 0.6 ? t('الوتيرة تتباطأ') : wk > wkPrev * 1.4 ? t('الوتيرة تتسارع') : t('الوتيرة ثابتة')) : (wk ? t('بدأت هذا الأسبوع') : '');
+  if (wk || wkPrev) P.push(nm(wk) + ' ' + t('هذا الأسبوع مقابل') + ' ' + nm(wkPrev) + ' ' + t('في الأسبوع الذي قبله') + (tr ? ' \u2014 <b>' + tr + '</b>' : ''));
+  if (oldest > 0 && /معوّق|معوق|تحدي|تحدّي|زيارة أخرى/.test(catName + ' ' + svListTitle(key))) P.push(t('أقدمُها مفتوحٌ منذ') + ' <b>' + nm(oldest) + '</b> ' + t('يومًا'));
+  return '<div class="card" style="margin:10px 0;border-inline-start:4px solid var(--acc,#2E86DE)"><div class="pid">' + esc(t('الخلاصة')) + '</div><p style="margin:4px 0 0;line-height:1.8">\u{1F50E} ' + P.join(t('،') + ' ') + '.</p></div>';
+}
 function svDashHtml(key, rows, head){
+  var ck = key + '|' + rows.length + '|' + (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + '|' + (typeof SV_ZF !== 'undefined' ? SV_ZF : '') + '|' + LANG;   /* (V37.45) تُحفَظ اللوحةُ: الفتحُ الثاني فوريّ */
+  if (svDashHtml.ck === ck && svDashHtml.html) return svDashHtml.html;
+  var html = svDashHtml0(key, rows, head); svDashHtml.ck = ck; svDashHtml.html = html; return html;
+}
+function svDashHtml0(key, rows, head){
   var C = svDashCols(head || svListHead(key));
-  var N = (STATE.sites || []).length || 1, n = rows.length, now = Date.now(), dk = function(ms){ return dayKey(ms); };
+  var n = rows.length, now = Date.now(), dk = function(ms){ return dayKey(ms); }, base = svBaseOf(key);
   var cnt = function(ix, cap, split, empty){ var m = {}; rows.forEach(function(r){ var raw = String(r[ix] || '').trim(); (split && raw ? raw.split(/،\s*/) : [raw]).forEach(function(v0){ var v = String(v0 || '').trim() || (empty || '\u2014'); m[v] = (m[v] || 0) + 1; }); });
     var L = Object.keys(m).map(function(k){ return [k, m[k]]; }).sort(function(a, b){ return b[1] - a[1]; });
     if (cap && L.length > cap){ var rest = L.slice(cap).reduce(function(a, x){ return a + x[1]; }, 0); L = L.slice(0, cap).concat([[t('أخرى'), rest]]); } return L; };
-  var bars = function(title, L, tot){ if (!L.length) return ''; var mx = Math.max.apply(null, L.map(function(x){ return x[1]; }));
-    return '<div class="card" style="margin:0"><div class="pid">' + esc(t(title)) + '</div>' + L.map(function(x){ var w = Math.max(2, Math.round(x[1] / mx * 100));
+  /* شريطٌ: النسبةُ من المجموع، أو من قاعدةٍ لكلِّ بندٍ (نقاطُ المشعر نفسه) */
+  var bars = function(title, L, tot, of){ if (!L.length) return ''; var mx = Math.max.apply(null, L.map(function(x){ return of ? (x[1] / Math.max(1, of[x[0]] || x[1])) : x[1]; }));
+    return '<div class="card" style="margin:0"><div class="pid">' + esc(t(title)) + '</div>' + L.map(function(x){ var v = of ? (x[1] / Math.max(1, of[x[0]] || x[1])) : x[1], w = Math.max(2, Math.round(v / mx * 100));
       return '<div class="fn-row" style="display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0"><span style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3" title="' + esc(t(x[0])) + '">' + esc(t(x[0])) + '</span>'
         + '<span style="background:var(--line);border-radius:6px;height:10px;position:relative;overflow:hidden"><i style="position:absolute;inset-block:0;inset-inline-start:0;width:' + w + '%;background:var(--acc,#2E86DE);border-radius:6px"></i></span>'
-        + '<b class="num">' + nm(x[1]) + (tot ? ' <small class="hint" style="margin:0">' + nm(Math.round(x[1] / tot * 100)) + '\u066A</small>' : '') + '</b></div>'; }).join('') + '</div>'; };
-  /* آخرُ ١٤ يومًا بتاريخ العمود السادس (آخر زيارة) */
-  var days = [], byDay = {}; for (var i = 13; i >= 0; i--){ var k = dk(now - i * 864e5); days.push(k); byDay[k] = 0; }
-  if (C.date > -1) rows.forEach(function(r){ var d = String(r[C.date] || '').slice(0, 10); if (byDay[d] != null) byDay[d]++; });
-  var mxd = Math.max.apply(null, days.map(function(k){ return byDay[k]; }).concat([1])), wk = days.slice(7).reduce(function(a, k){ return a + byDay[k]; }, 0), today = byDay[days[13]] || 0;
-  var trend = days.some(function(k){ return byDay[k]; }) ? '<div class="card" style="margin:0"><div class="pid">' + esc(t('آخر ١٤ يومًا')) + '</div><div style="display:flex;align-items:flex-end;gap:4px;height:90px">'
-    + days.map(function(k){ var h = Math.round(byDay[k] / mxd * 80); return '<div title="' + esc(k) + ' \u00b7 ' + nm(byDay[k]) + '" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end"><small class="num" style="font-size:10px">' + (byDay[k] ? nm(byDay[k]) : '') + '</small><i style="display:block;width:100%;height:' + Math.max(byDay[k] ? 3 : 1, h) + 'px;background:var(--acc,#2E86DE);border-radius:3px 3px 0 0;opacity:' + (byDay[k] ? 1 : .25) + '"></i></div>'; }).join('')
-    + '</div></div>' : '';
-  var tile = function(v, l){ return '<div class="card" style="margin:0;text-align:center"><div class="num" style="font-size:26px;font-weight:700">' + v + '</div><div class="hint" style="margin:0">' + esc(t(l)) + '</div></div>'; };
-  var tiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin:10px 0">' + tile(nm(n), 'العدد') + tile(nm(Math.round(n / N * 100)) + '\u066A', 'من كلِّ النقاط')
-    + (trend ? tile(nm(wk), 'آخر ٧ أيام') + tile(nm(today), 'اليوم') : '') + '</div>';
-  var st = C.state > -1 ? cnt(C.state, 8, true).filter(function(x){ return x[0] !== '\u2014'; }) : [];   /* كلُّ فئةٍ وحدَها لا تراكيبُها */
-  return tiles + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">'
-    + (st.length > 1 && /معوّق|معوق|تحدي|تحدّي/.test(C.stateName) ? bars(C.stateName, st, n) : '')   /* قوائمُ المعوقات والتحديات: التوزيعُ بالفئة أوّلًا */
-    + (C.zone > -1 ? bars('حسب المشعر', cnt(C.zone), n) : '') + (C.type > -1 ? bars('حسب النوع', cnt(C.type, 8), n) : '') + trend
+        + '<b class="num">' + nm(x[1]) + (of && of[x[0]] ? ' <small class="hint" style="margin:0">' + t('من') + ' ' + nm(of[x[0]]) + ' \u00b7 ' + nm(Math.round(x[1] / of[x[0]] * 100)) + '\u066A</small>' : tot ? ' <small class="hint" style="margin:0">' + nm(Math.round(x[1] / tot * 100)) + '\u066A</small>' : '') + '</b></div>'; }).join('') + '</div>'; };
+  /* التواريخُ من عمود «آخر زيارة» */
+  var dates = []; if (C.date > -1) rows.forEach(function(r){ var d = String(r[C.date] || '').slice(0, 10); if (/^\d{4}-\d{2}-\d{2}$/.test(d)) dates.push(new Date(d + 'T12:00:00').getTime()); }); dates.sort(function(a, b){ return a - b; });
+  var wk = dates.filter(function(d){ return now - d < 7 * 864e5; }).length, wkPrev = dates.filter(function(d){ return now - d >= 7 * 864e5 && now - d < 14 * 864e5; }).length, delta = wk - wkPrev;
+  var oldest = dates.length ? Math.round((now - dates[0]) / 864e5) : 0, med = dates.length ? Math.round((now - dates[Math.floor(dates.length / 2)]) / 864e5) : 0;
+  var cum = [], lab = []; for (var i = 29; i >= 0; i--){ var tt = now - i * 864e5, c = 0; for (var q = 0; q < dates.length && dates[q] <= tt + 432e5; q++) c++; cum.push(c); if (i % 7 === 0 || i === 29) lab.push([29 - i, dk(tt).slice(5)]); }
+  var cmax = cum[cum.length - 1] || 1, CW = 560, CH = 150;
+  var path = cum.map(function(v, k){ return (k ? 'L' : 'M') + (10 + k * (CW - 20) / 29).toFixed(1) + ',' + (CH - 22 - v / cmax * (CH - 40)).toFixed(1); }).join(' ');
+  var trend = dates.length ? '<div class="card" style="margin:0"><div class="pid">' + esc(t('التراكم خلال ٣٠ يومًا')) + '</div><svg viewBox="0 0 ' + CW + ' ' + CH + '" width="100%" style="display:block;color:var(--ink)"><path d="' + path + '" fill="none" stroke="var(--acc,#2E86DE)" stroke-width="2.5"/>'
+    + '<text x="' + (CW - 12) + '" y="14" font-size="12" fill="currentColor" text-anchor="end" opacity=".7">' + nm(cmax) + ' ' + esc(t('الآن')) + '</text>'
+    + lab.map(function(l){ return '<text x="' + (10 + l[0] * (CW - 20) / 29).toFixed(0) + '" y="' + (CH - 4) + '" font-size="10" fill="currentColor" opacity=".6" text-anchor="middle">' + esc(l[1]) + '</text>'; }).join('') + '</svg></div>' : '';
+  var st = C.state > -1 ? cnt(C.state, 8, true).filter(function(x){ return x[0] !== '\u2014'; }) : [], isChal = /معوّق|معوق|تحدي|تحدّي/.test(C.stateName);
+  var zones = C.zone > -1 ? cnt(C.zone) : [];
+  var tile = function(v, l, sub, cls){ return '<div class="card" style="margin:0"><div class="num ' + (cls || '') + '" style="font-size:26px;font-weight:700">' + v + '</div><div class="hint" style="margin:0">' + esc(t(l)) + '</div>' + (sub ? '<div class="hint" style="margin:0;font-size:12px">' + sub + '</div>' : '') + '</div>'; };
+  var tiles = '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:10px 0">'
+    + tile(nm(n), 'العدد', nm(Math.round(n / Math.max(1, base.n) * 100)) + '\u066A ' + esc(t('من')) + ' ' + esc(t(base.name)))
+    + (dates.length ? tile((delta > 0 ? '\u25B2 ' : delta < 0 ? '\u25BC ' : '') + nm(Math.abs(delta)), 'عن الأسبوع الماضي', nm(wk) + ' ' + esc(t('هذا الأسبوع')) + ' \u00b7 ' + nm(wkPrev) + ' ' + esc(t('السابق')), delta > 0 ? 'bad' : delta < 0 ? 'ok' : '') : '')
+    + (dates.length && (isChal || /زيارة أخرى|المتبقي/.test(svListTitle(key))) ? tile(nm(oldest) + ' ' + esc(t('يوم')), 'أقدم بند مفتوح', esc(t('الوسيط')) + ' ' + nm(med) + ' ' + esc(t('يومًا'))) : '')
+    + (st.length && isChal ? tile(nm(st[0][1]), 'أكبر فئة', esc(t(st[0][0]))) : '') + '</div>';
+  return svInsight(key, n, base, zones, st, isChal ? C.stateName : '', wk, wkPrev, oldest) + tiles
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:10px">'
+    + (st.length > 1 && isChal ? bars(C.stateName, st, n) : '') + svMiniMap(rows)
+    + (zones.length ? bars('حسب المشعر — من نقاطه', zones, n, base.zones) : '') + trend
+    + (C.type > -1 ? bars('حسب النوع', cnt(C.type, 8), n) : '')
     + (C.comp > -1 ? bars('حسب الشركة', cnt(C.comp, 8, false, t('بلا شركة — غير المخيمات')), n) : '')
     + (C.by > -1 && /^(sv|srv|insd|hand|disd)$/.test(key) ? bars('حسب المنفّذ', cnt(C.by, 8), n) : '')
-    + (st.length > 1 && !/معوّق|معوق|تحدي|تحدّي/.test(C.stateName) ? bars('الحالة والتحديات', st, n) : '') + '</div>';
+    + (st.length > 1 && !isChal ? bars('الحالة والتحديات', st, n) : '') + '</div>'
+    + '<p class="hint" style="margin:10px 0 0;font-size:12px">' + esc(t('المصدر: وثائق المسح والتركيب نفسها — تُحسب في لحظتها على الجهاز')) + (STATE.meta && STATE.meta.lastSync ? ' \u00b7 ' + esc(t('آخر مزامنة')) + ' ' + esc(agoTxt(STATE.meta.lastSync)) : '') + '</p>';
 }
 function svPhoPanel(id){ var px = siteFind(id);
         return '<div id="svPhoVeil" data-svphoclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:2002"></div>'
@@ -2624,6 +2680,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.45', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'لوحة الوزارة الجديدة في كل نوافذ المتابعة: خلاصة مكتوبة تتولّد من الأرقام، ومقارنة بالأسبوع الماضي (▲▼)، وأقدم بند مفتوح والوسيط، والنسبة من نقاط المشعر نفسه، وخريطة صغيرة فيها النقاط دي ملوّنة وباقي النقاط باهتة، ومنحنى التراكم في ٣٠ يوم، وتصفية بالمشعر جوه النافذة (بتنعكس على اللوحة والقائمة والإكسل)، وزرار «طباعة اللوحة»، وسطر المصدر تحت.' ] },
   { v:'V37.44', d:'١١ أكتوبر ٢٠٢٦', notes:[
       '«اجعلها نقطة تجربة» بقت مربوطة بصفحة «التجارب»: لو المخيم ليه تجربة مكتوب فيها اسمه بيتربط بيها، ولو ملوش بيتعمل له سطر «تجربة — اسم المخيم». ولو رجّعته نقطة عادية: السطر الفاضي بيتشال، واللي عليه بيانات (ساعات، مصروف، تقرير، أصناف) بيفضل. والتجربة اللي إنت ضفتها يدويًا اتربطت من غير ما تتكرر.',
       'في بطاقة كل تجربة مربوطة بقى فيه زرار باسم المخيم يفتحه.' ] },
