@@ -3231,8 +3231,8 @@ var GLOSSARY = [
   { t:'الحفظ المحلي', d:'كلُّ ما تُدخله يُحفَظ على جهازك فورًا ويُرفَع حين تتوفر الشبكة. إن ظهرت لافتةٌ حمراء «الحفظ المحلي لا يعمل» فزامِن الآن ولا تُغلق التطبيقَ حتى يُرفَع عملُك — والتطبيقُ يعيد فتحَ المخزن وحدَه.', k:['المزامنة','لم يرفع','الطابور','الحفظ','ايفون','بدون نت','اوفلاين'] }
 ];
 function glossaryHits(q){
-  var n = arNorm(String(q || '')); if (!n) return [];
-  return GLOSSARY.filter(function(g){ return [g.t].concat(g.k || []).some(function(w){ var a = arNorm(w); return a && (n.indexOf(a) > -1 || a.indexOf(n) > -1); }); });
+  var n = arNorm(String(q || '')); if (!n || n.length < 3) return [];   /* (V37.40) بلاغُ المالك: حرفٌ واحدٌ كان يعرض كلَّ المصطلحات */
+  return GLOSSARY.filter(function(g){ return [g.t].concat(g.k || []).some(function(w){ var a = arNorm(w); return a && (n.indexOf(a) > -1 || (n.length >= 4 && a.indexOf(n) === 0)); }); }).slice(0, 3);
 }
 
 /* كلماتٌ يكتبها الناسُ ولا تظهر في عنوان الصفحة أو وصفها حرفيًّا */
@@ -3380,8 +3380,10 @@ function assistHtml(){
     +   '<div><h3 style="color:var(--ink)">\u{1F9ED} ' + esc(t('المساعد')) + '</h3>'
     +   '<p class="hint" style="margin:2px 0 0">'
     +     esc(t('اسأل عن أي شيء تريد فعله، ونرشدك إلى مكانه وخطواته.')) + '</p></div>'
-    +   '<button type="button" class="btn btn-quiet btn-sm" data-assist="0" aria-label="'
-    +     esc(t('إغلاق')) + '">\u2715</button>'
+    +   '<div style="display:flex;gap:6px;align-items:center;flex:0 0 auto">'   /* (V37.40) بلاغُ المالك: رجوعٌ وإغلاقٌ واضحان */
+    +     '<button type="button" class="btn btn-secondary btn-sm" id="assistBack" data-assistback="1"' + (ASSIST_Q ? '' : ' hidden') + '>\u2192 ' + esc(t('رجوع')) + '</button>'
+    +     '<button type="button" class="btn btn-secondary btn-sm" data-assist="0" aria-label="' + esc(t('إغلاق')) + '">\u2715 ' + esc(t('إغلاق')) + '</button>'
+    +   '</div>'
     + '</div>'
     + '<div class="pop-body">'
     + '<input type="search" id="assistQ" value="' + esc(ASSIST_Q) + '" placeholder="'
@@ -3503,14 +3505,54 @@ function assistBadgeSync(){
     document.body.appendChild(tip); setTimeout(function(){ var x = document.getElementById('assistTip'); if (x) x.remove(); }, 8000);
   }
 }
+/* ═══ (V37.40) «خليه ذكي لأبعد الحدود واستخدم سلوك المستخدمين وبياناتهم» ═══
+   المساعدُ يعرف: من أنت (دورك)، وأين أنت (الصفحة)، وماذا يكثر أن تفعل (صفحاتك اليوم)، وما عليك الآن (من بياناتك وبيانات جهازك) —
+   فتبدأ نافذتُه بما يخصّك لا بقائمةٍ عامة. كلُّه من بياناتٍ على الجهاز: بلا شبكةٍ ولا كلفة ولا قراءاتٍ إضافية. */
+var ASSIST_PAGE_Q = {
+  map:['النقاط مش ظاهرة على الخريطة', 'موقعي مش ظاهر', 'حدود المخيم غلط'],
+  forms:['الصور مش بتترفع', 'ما اتحفظش', 'التصوير ممنوع', 'المخيم مش لاقيه'],
+  svForm:['الصور مش بتترفع', 'ما اتحفظش', 'التصوير ممنوع'],
+  mywork:['المخيم مش لاقيه', 'القارئ ساقط', 'الراوتر بيفصل كل شوية'],
+  mfu:['إزاي أطلّع تقرير الوزارة الأسبوعي', 'إيه الفرق بين الزيارة والمسح', 'النسخة قديمة'],
+  sys:['أجهزة تحتاج إجراء', 'التطبيق بيقع أو بطيء']
+};
+function assistForYou(){
+  var out = [], d = null; try { d = assistDiag(); } catch (e){ d = null; }
+  var me = (STATE.meta && STATE.meta.name) || '', rk = typeof rankOf === 'function' ? rankOf(ROLE) : 0;
+  /* حالةُ الجهاز في بطاقتها فوق — لا تتكرّر هنا */
+  try {   /* ما سجّله صاحبُ الجهاز اليوم — يراه في سطرٍ قبل أن يسأل «هل وصل؟» */
+    var dk = dayKey(), mine = Object.keys(STATE.recs || {}).filter(function(id){ var r = STATE.recs[id]; return r && r.by === me && dayKey(+r.at || 0) === dk; }).length;
+    if (me && mine && rk < (typeof rankOf === 'function' ? rankOf('engineer') : 99)) out.push(['\u2705', t('سجّلت النهارده') + ' ' + nm(mine) + ' ' + t('زيارة'), ' data-p="mywork" data-assist="0"']);
+  } catch (e){ LS_ERR = e; }
+  try {   /* المهندسُ فما فوق: تحدياتٌ تنتظر تصنيفَه */
+    if (typeof rankOf === 'function' && rk >= rankOf('engineer')){
+      var rev = Object.keys(STATE.recs || {}).filter(function(id){ var r = STATE.recs[id]; return r && siteFind(id) && svDone(r) && chalCats(r).indexOf('review') > -1; }).length;
+      if (rev) out.push(['\u{1F3F7}', nm(rev) + ' ' + t('تحدي محتاج تصنيف منك'), ' data-p="mfu" data-assist="0"']);
+    }
+  } catch (e){ LS_ERR = e; }
+  if (ROLE === 'viewer') out.push(['\u{1F4C4}', t('تقرير التحديث الأسبوعي: «متابعة الوزارة» ← تصدير'), ' data-p="mfu" data-assist="0"']);
+  return out.slice(0, 4);
+}
+function assistTopPages(){
+  try { var u = pageUse().n || {}; return Object.keys(u).filter(function(k){ return k !== CUR && PAGE[k] && (typeof seesPage !== 'function' || seesPage(k)); }).sort(function(a, b){ return u[b] - u[a]; }).slice(0, 3); } catch (e){ return []; }
+}
+function assistHomeHtml(){
+  var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];
+  var base = (ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).filter(function(q){ return pq.indexOf(q) < 0; });
+  var chips = function(L){ return '<div class="chips" style="margin:0 0 10px">' + L.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'; };
+  return (fy.length ? '<div class="card" style="margin:0 0 10px"><div class="pid">' + esc(t('لك الآن')) + '</div>' + fy.map(function(x){ return '<button type="button" class="btn btn-quiet btn-block" style="justify-content:flex-start;text-align:start;margin:4px 0"' + x[2] + '>' + x[0] + ' ' + esc(x[1]) + '</button>'; }).join('') + '</div>' : '')
+    + (pq.length ? '<div class="pid" style="margin:4px 0">' + esc(t('في الصفحة دي')) + '</div>' + chips(pq) : '')
+    + '<div class="pid" style="margin:4px 0">' + esc(t('الأكثر تكرارًا')) + '</div>' + chips(base)
+    + (tp.length ? '<div class="pid" style="margin:4px 0">' + esc(t('صفحاتك')) + '</div><div class="chips" style="margin:0 0 10px">' + tp.map(function(k){ return '<button type="button" class="chip" data-p="' + esc(k) + '" data-assist="0">' + esc(t(PAGE[k].t || k)) + ' \u2190</button>'; }).join('') + '</div>' : '');
+}
 function assistResHtml(){
+  if (ASSIST_Q && String(ASSIST_Q).trim().length < 3){ var q0 = ASSIST_Q; ASSIST_Q = ''; var h0 = assistResHtml(); ASSIST_Q = q0; return h0; }   /* (V37.40) حرفٌ أو حرفان: الصفحةُ الرئيسيةُ لا نتائجُ عشوائية */
   var answered = !!(ASSIST_Q && (assistIntent(ASSIST_Q) || knownHits(ASSIST_Q).length));   /* (V37.37) بلاغُ المالك: «الحاجات اللي تحت بتشوّش على اللي بدوّر عليه» */
   var results = ASSIST_Q && !answered ? helpSearch(ASSIST_Q, 12) : [], gl = ASSIST_Q && !answered ? glossaryHits(ASSIST_Q) : [];
   if (ASSIST_Q){ assistLog(ASSIST_Q, !!(answered || results.length || gl.length)); }   /* (V37.30) */
   return assistDiagCard(ASSIST_Q)   /* (V37.23) التشخيصُ أوّلًا */
     + (!ASSIST_Q
-        ? '<p class="hint" style="text-align:center;margin:6px 0 8px">' + esc(t('اكتب مشكلتك بكلماتك، أو اختر من الأكثر تكرارًا:')) + '</p>'
-          + '<div class="chips" style="justify-content:center;margin:0 0 10px">' + (typeof ROLE !== 'undefined' && ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'   /* (V37.30) */
+        ? assistHomeHtml()   /* (V37.40) بما يخصّ صاحبَ الجهاز ودورَه وصفحتَه */
         : (gl.map(function(g){ return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid var(--acc, #1A5FA8)"><div class="pid">' + esc(t('المصطلح')) + '</div><h4 style="margin:2px 0 6px">' + esc(t(g.t)) + '</h4><p style="margin:0">' + esc(t(g.d)) + '</p></div>'; }).join('')
           + (results.length
             ? results.map(function(e){

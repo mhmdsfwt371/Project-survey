@@ -51,6 +51,7 @@
 }
 .pill.bad{background:var(--danger-bg);color:var(--danger)}.pill.wrn{background:var(--warn-bg);color:var(--warn)}   /* (V37.34) شاراتُ «بطيء» و«متوسط» — كانت تُرسَم رماديةً لأن الفئتين لم تُعرَّفا */
 #assistBtn.tb-assist,.tb-btn.tb-assist{width:auto !important;min-width:34px;padding:0 10px;gap:4px;display:inline-flex;align-items:center;position:relative;border:1px solid var(--acc,#1A5FA8);white-space:nowrap;flex:0 0 auto}.tb-assist-t{font-size:12px;font-weight:600}.tb-dot{position:absolute;top:2px;inset-inline-end:2px;width:9px;height:9px;border-radius:50%;background:#E05252;box-shadow:0 0 0 2px var(--bg,#fff)}@media (max-width:340px){.tb-assist-t{display:none}.tb-btn.tb-assist{padding:0 6px}}   /* (V37.30–V37.34) المساعدُ ظاهرٌ باسمه وشارتِه — خارجَ أيِّ وسائط */
+#assistBack[hidden]{display:none !important}   /* (V37.40) الزرُّ يحمل .btn فيغلب display:none الافتراضيّ */
 /* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
    «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
    متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
@@ -1271,7 +1272,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.39</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.40</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

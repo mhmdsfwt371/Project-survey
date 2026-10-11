@@ -2778,8 +2778,9 @@ function clickTables(e){
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
+  if (e.target.closest('[data-assistback]')){ assistGoHome(); return true; }   /* (V37.40) */
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
-  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
+  if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var bkA = document.getElementById('assistBack'); if (bkA) bkA.hidden = false; try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
   if (e.target.closest('[data-qstalex]')){ qStaleSync.snooze = Date.now() + 1800000; var qb = document.getElementById('qStaleBar'); if (qb) qb.remove(); return true; }   /* (V37.29) */
   if (e.target.closest('[data-liteoff]')){ try { lsSet('nsk14.liteoff', String(Date.now())); } catch (e0){ LS_ERR = e0; } liteOff(); return true; }
   if (e.target.closest('[data-liteon]')){ liteOn(); return true; }   /* (V37.23) */
@@ -2833,7 +2834,7 @@ function clickA(e){
    يعالج: assist، p، navtab، gt، g، open، nav، mode، pop، bst، bfsave، pq، help، exp، apick، asn، co، cofilt، comode، mfilt */
 function clickAPart1(e){
   var asb = e.target.closest('[data-assist]');
-  if (asb){ var tpx = document.getElementById('assistTip'); if (tpx) tpx.remove();   /* (V37.30) */
+  if (asb){ try { if (asb.getAttribute('data-assist') === '1') history.pushState({ assist:1 }, ''); } catch (eH){ LS_ERR = eH; }   /* (V37.40) زرُّ رجوع الهاتف يرجع داخل المساعد */ var tpx = document.getElementById('assistTip'); if (tpx) tpx.remove();   /* (V37.30) */
     if (asb.hasAttribute('data-p')){ ASSIST_OPEN = false; }
     else { ASSIST_OPEN = asb.getAttribute('data-assist') === '1'; render(1); return true; }
   }
@@ -4903,7 +4904,7 @@ document.addEventListener('input', function(e){
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wtq')){ WT_Q = e.target.value.trim(); clearTimeout(WT_T); WT_T = setTimeout(function(){ render(1); var el = document.querySelector('[data-wtq]'); if (el){ el.focus(); el.setSelectionRange(el.value.length, el.value.length); } }, 250); return; }
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-wbsq')){ WBS_Q = e.target.value.trim(); clearTimeout(WBS_T); WBS_T = setTimeout(function(){ var el = document.querySelector('[data-wbsq]'); render(1); var el2 = document.querySelector('[data-wbsq]'); if (el2){ el2.focus(); el2.setSelectionRange(el2.value.length, el2.value.length); } }, 250); return; }
   if (e.target && e.target.id === 'assistQ'){
-    ASSIST_Q = e.target.value;
+    ASSIST_Q = e.target.value; var bkI = document.getElementById('assistBack'); if (bkI) bkI.hidden = !ASSIST_Q;   /* (V37.40) */
     /* (V36.1) بلاغُ المالك «البحث في المساعد بيسكرول لوحده»: كانت النافذةُ كلُّها تُستبدَل مع كلِّ حرفٍ ويُعاد تركيزُ حقلٍ جديد — فيعيد
        الآيفون حسابَ لوحة المفاتيح ويقفز بالشاشة. صارت النتائجُ وحدَها تُستبدَل (بعد ١٥٠ م.ث من آخر حرف) والحقلُ نفسُه باقٍ بتركيزه. */
     clearTimeout(assistResHtml.t);
@@ -5364,3 +5365,10 @@ if (window.visualViewport){
 })();
 
 (function(){var s=document.createElement('style');s.textContent=LOGIN_CSS;document.head.appendChild(s);})();
+/* (V37.40) رجوعُ المساعد: الزرُّ وزرُّ الرجوع في الهاتف — من سؤالٍ إلى صفحته الرئيسية، ومنها إلى الإغلاق */
+function assistGoHome(){ ASSIST_Q = ''; var inp = document.getElementById('assistQ'); if (inp){ inp.value = ''; } var rs = document.getElementById('assistRes'); if (rs) rs.innerHTML = assistResHtml(); var bk = document.getElementById('assistBack'); if (bk) bk.hidden = true; }
+if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('popstate', function(){
+  if (typeof ASSIST_OPEN === 'undefined' || !ASSIST_OPEN) return;
+  if (ASSIST_Q){ assistGoHome(); try { history.pushState({ assist:1 }, ''); } catch (e){ LS_ERR = e; } }
+  else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
+});
