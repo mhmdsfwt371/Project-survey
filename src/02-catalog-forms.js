@@ -506,7 +506,7 @@ function filtPass(x){
   /* بالحالة: ما لم يُزَر، ما زير وينتظر الاعتماد، المعتمدُ الجاهز، المُسند، المُركّب… —
      كان المرشِّحُ يجيب النقاطَ بلا ما حدث لها، فلا يُعرَف من الخريطة ما تمّ وما بقي */
   if (FILT.life && typeof lifeOf === 'function' && lifeOf(x) !== FILT.life) return false;
-  if (FILT.exec && typeof execStatusMemo === 'function' && execStatusMemo(x) !== FILT.exec) return false;   /* (V37.52) */
+  if (FILT.exec && typeof execStatusMemo === 'function' && execLabelOf(execStatusMemo(x)) !== FILT.exec) return false;   /* (V37.52→V37.53) بالتسمية الظاهرة */
   if (FILT.ccg && typeof ccGroupsOfSite === 'function' && ccGroupsOfSite(x).indexOf(FILT.ccg) < 0) return false;
   /* الشركةُ ترشيحٌ لا تلوينٌ فحسب: من اختار شركةً أراد نقاطَها وحدها */
   if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
@@ -862,10 +862,11 @@ function catBar(withWork){
     var lifeKeys = LIFE_ORDER.filter(function(k){ return lc[k]; });
     /* (V37.52) صفّان: تصنيفُ التقرير التنفيذي، والمجموعاتُ الأربع — بأعدادها على ما مرّ من المرشّحات */
     if (typeof execStatusMemo === 'function' && typeof CC_GROUPS !== 'undefined'){
-      var ec = {}, gc = {}; base.forEach(function(x){ var es = execStatusMemo(x); ec[es] = (ec[es] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
-      var eKeys = EXEC_ORDER_L.filter(function(k){ return ec[k]; });
+      /* (V37.53) بلاغُ المالك: «لا يوجد سطح تثبيت» كانت ثلاثَ شرائح (هيكل، مظلات، + الكهرباء) — شريحةٌ واحدةٌ لكلِّ تسميةٍ مهما تعدّدت حالاتُها */
+      var ec = {}, gc = {}; base.forEach(function(x){ var el = execLabelOf(execStatusMemo(x)); ec[el] = (ec[el] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
+      var eKeys = []; EXEC_ORDER_L.forEach(function(k){ var el = execLabelOf(k); if (ec[el] && eKeys.indexOf(el) < 0) eKeys.push(el); });
       if (eKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('التقرير التنفيذي')) + '</span><button type="button" class="cat' + (FILT.exec ? '' : ' on') + '" data-fx="">' + esc(t('الكل')) + '</button>'
-        + eKeys.map(function(k){ return '<button type="button" class="cat' + (FILT.exec === k ? ' on' : '') + '" data-fx="' + k + '">' + esc(t(EXEC_L[k][0].split(' — ')[0].trim())) + ' <span class="num">' + nm(ec[k]) + '</span></button>'; }).join('') + '</div>';
+        + eKeys.map(function(el){ return '<button type="button" class="cat' + (FILT.exec === el ? ' on' : '') + '" data-fx="' + esc(el) + '">' + esc(t(el)) + ' <span class="num">' + nm(ec[el]) + '</span></button>'; }).join('') + '</div>';
       var gKeys = CC_GROUPS.filter(function(g){ return gc[g.g]; });
       if (gKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('المجموعات الأربع')) + '</span><button type="button" class="cat' + (FILT.ccg ? '' : ' on') + '" data-fg="">' + esc(t('الكل')) + '</button>'
         + gKeys.map(function(g){ return '<button type="button" class="cat' + (FILT.ccg === g.g ? ' on' : '') + '" data-fg="' + g.g + '">' + esc(t(g.n)) + ' <span class="num">' + nm(gc[g.g]) + '</span></button>'; }).join('') + '</div>';

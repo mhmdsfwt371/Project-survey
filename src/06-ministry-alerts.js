@@ -1118,6 +1118,7 @@ function execOvSet(id, st){
 function execAutoOf(x){ var r = STATE.recs[x.id], pol = execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x));
   var keep = (CFG.execOv || {})[x.id], kd = EXEC_OV[x.id]; if (keep) delete CFG.execOv[x.id]; if (kd) delete EXEC_OV[x.id];
   var st = execStatus(r, pol, x); if (keep){ CFG.execOv = CFG.execOv || {}; CFG.execOv[x.id] = keep; } if (kd) EXEC_OV[x.id] = kd; return st; }
+function execLabelOf(st){ return String((EXEC_L[st] || [''])[0]).split(' — ')[0].trim(); }   /* (V37.53) التسميةُ الظاهرة — الحالاتُ المتعدّدةُ لتسميةٍ واحدةٍ شريحةٌ واحدة */
 var EXEC_MEMO = { v:'', m:null };
 function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
 function ccGroupsOfSite(x){ var r = STATE.recs[x.id]; if (!r || !svVisited(r)) return []; if (!svDone(r)) return ['access']; var cc = chalCats(r), out = []; CC_GROUPS.forEach(function(g){ if (g.ks.some(function(k){ return cc.indexOf(k) > -1; })) out.push(g.g); }); return out; }
@@ -2866,6 +2867,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.53', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'فلتر «التقرير التنفيذي» على الخريطة: كل تسمية شريحة واحدة بمجموعها («لا يوجد سطح تثبيت» واحدة بدل ٣، و«لا توجد تحديات» واحدة بدل ٢).' ] },
   { v:'V37.52', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'الخريطة: فلتر «تحتاج زيارة تقنية» بقى موجود بعدده (كان بيتلوّن ومش بيتصفّى)، وفلترين جداد: «التقرير التنفيذي» بتصنيفاته و«المجموعات الأربع» بأعدادها.',
       'نافذة النقطة (للمهندس): «تصنيف التقرير التنفيذي» تلقائي أو بيد المهندس، بيتحفظ في السحابة ويوصل كل الأجهزة ويظهر في الملف. وزرار «تمت الزيارة التقنية» بيحوّل النقطة من برتقالي لأزرق، ويرجّعها لو احتجت.',
