@@ -2776,6 +2776,7 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  if (e.target.closest('[data-buyphx]')){ BUY_PH = null; var pvx = document.getElementById('byPhPrev'); if (pvx) pvx.innerHTML = buyPhPrevHtml(); return true; }   /* (V37.43) */
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   if (e.target.closest('[data-assistback]')){ assistGoHome(); return true; }   /* (V37.40) */
@@ -4808,6 +4809,12 @@ document.addEventListener('change', function(e){
         if (svqPhoto(qid, qk, p)) render(1);
       });
       return;
+    }
+    if (el.hasAttribute('data-buyphoto')){   /* (V37.43) صورةُ الفاتورة — بلا رسمٍ كي لا تُمحى خاناتُ النموذج المكتوبة */
+      var fileB = el.files && el.files[0]; if (!fileB) return;
+      toast(t('تُضغط الصورة…'));
+      shrink(fileB, 1600, 0.78).then(function(p){ if (!p){ toast(t('تعذّرت قراءة الصورة')); return; } BUY_PH = p; var pv = document.getElementById('byPhPrev'); if (pv) pv.innerHTML = buyPhPrevHtml(); toast(t('اختيرت صورة الفاتورة — تُرفع مع حفظ الشراء')); });
+      el.value = ''; return;
     }
     if (el.hasAttribute('data-photo')){
       var file = el.files && el.files[0];

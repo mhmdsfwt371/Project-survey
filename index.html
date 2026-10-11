@@ -1272,7 +1272,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.42</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.43</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1334,7 +1334,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-2e668c5c92.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-9ce092ace1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -15037,17 +15037,21 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
                   + trialRows().map(function(r){ return '<option value="' + esc(r.id) + '">' + esc(r.n) + '</option>'; }).join('')
                   + '</select></div>'
                 : '')
+            + '<div class="field"><label>' + esc(t('صورة الفاتورة')) + '</label>'   /* (V37.43) طلبُ المالك: رفعُ صورة الفاتورة — من الكاميرا أو المعرض */
+            +   '<label class="btn btn-secondary" style="width:100%;justify-content:center;cursor:pointer">\u{1F9FE} ' + esc(t('صوّر الفاتورة أو اختر صورتها')) + '<input type="file" accept="image/*" data-buyphoto="1" style="display:none"></label>'
+            +   '<div id="byPhPrev" class="hint" style="margin:4px 0 0">' + buyPhPrevHtml() + '</div></div>'
             + '</div>'
             + '<div class="actions">' + btn(BUY_ED ? '\u2714 ' + t('احفظ التعديل') : t('سجّل الشراء'),'btn-primary',' data-byadd="1"') + (BUY_ED ? btn(t('إلغاء التعديل'),'btn-quiet',' data-byedcancel="1"') : '') + '</div>'
             + '<p class="hint">' + esc(t('ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.')) + '</p>')
         : '')
       + cardFlush(t('العمليات') + ' — ' + nm(L.length),
           L.length
-            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة',''],
+            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة','الفاتورة',''],
                 capList(L, 200).map(function(b){
                   return ['<span class="num">' + esc(dayKey(b.at)) + '</span>',
                           esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
                           pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn'),
+                          buyInvCell(b),   /* (V37.43) */
                           buyMayEdit() ? btn('\u270E','btn-quiet btn-sm',' data-byedit="' + esc(b.id) + '" title="' + esc(t('تعديل')) + '"') + btn('\u2715','btn-quiet btn-sm',' data-bydel="' + esc(b.id) + '" title="' + esc(t('حذف')) + '"') : ''];   /* (V29.5) */
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا مشترياتٍ بعد.')) + '</p>',
@@ -25592,6 +25596,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.43', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'دفتر المشتريات: في «تسجيل عملية شراء» بقت فيه خانة «صورة الفاتورة» — صوّر الفاتورة أو اختارها من المعرض، وتقدر تحذفها قبل الحفظ، وبتترفع لوحدها على الدرايف مع حفظ الشراء. وفي جدول «العمليات» عمود «الفاتورة» فيه «افتح» أول ما تترفع.' ] },
   { v:'V37.42', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'اللوحات على الموبايل: أسماء الفئات الطويلة بقت بتظهر على سطرين بدل ما تتقص.' ] },
   { v:'V37.41', d:'١١ أكتوبر ٢٠٢٦', notes:[
@@ -27350,6 +27356,17 @@ function buyDel(id){
   CORE.rm('buys', id); if (BUY_ED === id) BUY_ED = '';
   toast(t('حُذفت العملية')); render(1);
 }
+/* ═══ (V37.43) صورةُ الفاتورة — تُضغَط بدقّةٍ تُقرأ بها الأرقام، وترتفع في طابور الصور نفسِه (الدرايف عبر الخادم)، والمشترى يحمل مفتاحَها ═══ */
+var BUY_PH = null;
+function buyPhPrevHtml(){ return BUY_PH ? '\u2713 ' + esc(t('اختيرت صورة الفاتورة')) + ' \u00b7 ' + nm(Math.round((BUY_PH.size || String(BUY_PH.data || '').length * 0.75) / 1024)) + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-buyphx="1" style="color:#E05252">\u{1F5D1} ' + esc(t('احذفها')) + '</button>' : esc(t('اختيارية — تُرفع مع حفظ الشراء')); }
+function buyInvCell(b){
+  if (!b || !b.inv) return '';
+  var P = photosOf(b.inv).filter(function(x){ return !x[1].del; });
+  var up = P.filter(function(x){ return x[1].link; })[0];
+  if (up) return '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(up[1].link) + '">\u{1F9FE} ' + esc(t('افتح')) + '</a>';
+  var q = (PHOTO_Q || []).some(function(it){ return it.site === b.inv; });
+  return '<span class="hint" style="margin:0">\u{1F9FE} ' + esc(t(q || P.length ? 'تُرفع…' : 'لم تصل')) + '</span>';
+}
 function buyAdd(){
   if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
@@ -27367,6 +27384,8 @@ function buyAdd(){
             at:old ? old.at : Date.now(), by:old ? old.by : (STATE.meta.name || ''),
             st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
   if (old){ b.edAt = Date.now(); b.edBy = STATE.meta.name || ''; BUY_ED = ''; }
+  if (old && old.inv) b.inv = old.inv;
+  if (BUY_PH && BUY_PH.data){ b.inv = 'BUY-' + id; try { photoQueue(b.inv, 'invoice', BUY_PH.data); } catch (eP){ softErr('صورة الفاتورة', eP, 'تعذّر حفظ صورة الفاتورة — أعد اختيارها'); } BUY_PH = null; }   /* (V37.43) */
   if (!STATE.buys) STATE.buys = {};
   STATE.buys[id] = b;
   CORE.set('buys', id, b);
@@ -34551,6 +34570,7 @@ function clickTables(e){
   if (e.target.closest('[data-syncall]')){ syncAllNow(); return true; }
   if (e.target.closest('[data-phfull]')){ STATE.meta.phFull = 0; photosBackfill(true); toast(t('جارٍ فحصُ صور الدرايف…')); render(1); return true; }   /* (V37.8) */
   if (e.target.closest('[data-appreset]')){ appResetGo(); return true; }   /* (V37.18) */
+  if (e.target.closest('[data-buyphx]')){ BUY_PH = null; var pvx = document.getElementById('byPhPrev'); if (pvx) pvx.innerHTML = buyPhPrevHtml(); return true; }   /* (V37.43) */
   var skb = e.target.closest('#skinRow [data-skin]');   /* (V37.33) */
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   if (e.target.closest('[data-assistback]')){ assistGoHome(); return true; }   /* (V37.40) */
@@ -36583,6 +36603,12 @@ document.addEventListener('change', function(e){
         if (svqPhoto(qid, qk, p)) render(1);
       });
       return;
+    }
+    if (el.hasAttribute('data-buyphoto')){   /* (V37.43) صورةُ الفاتورة — بلا رسمٍ كي لا تُمحى خاناتُ النموذج المكتوبة */
+      var fileB = el.files && el.files[0]; if (!fileB) return;
+      toast(t('تُضغط الصورة…'));
+      shrink(fileB, 1600, 0.78).then(function(p){ if (!p){ toast(t('تعذّرت قراءة الصورة')); return; } BUY_PH = p; var pv = document.getElementById('byPhPrev'); if (pv) pv.innerHTML = buyPhPrevHtml(); toast(t('اختيرت صورة الفاتورة — تُرفع مع حفظ الشراء')); });
+      el.value = ''; return;
     }
     if (el.hasAttribute('data-photo')){
       var file = el.files && el.files[0];

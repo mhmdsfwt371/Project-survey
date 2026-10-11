@@ -688,6 +688,17 @@ function buyDel(id){
   CORE.rm('buys', id); if (BUY_ED === id) BUY_ED = '';
   toast(t('حُذفت العملية')); render(1);
 }
+/* ═══ (V37.43) صورةُ الفاتورة — تُضغَط بدقّةٍ تُقرأ بها الأرقام، وترتفع في طابور الصور نفسِه (الدرايف عبر الخادم)، والمشترى يحمل مفتاحَها ═══ */
+var BUY_PH = null;
+function buyPhPrevHtml(){ return BUY_PH ? '\u2713 ' + esc(t('اختيرت صورة الفاتورة')) + ' \u00b7 ' + nm(Math.round((BUY_PH.size || String(BUY_PH.data || '').length * 0.75) / 1024)) + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-buyphx="1" style="color:#E05252">\u{1F5D1} ' + esc(t('احذفها')) + '</button>' : esc(t('اختيارية — تُرفع مع حفظ الشراء')); }
+function buyInvCell(b){
+  if (!b || !b.inv) return '';
+  var P = photosOf(b.inv).filter(function(x){ return !x[1].del; });
+  var up = P.filter(function(x){ return x[1].link; })[0];
+  if (up) return '<a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="' + esc(up[1].link) + '">\u{1F9FE} ' + esc(t('افتح')) + '</a>';
+  var q = (PHOTO_Q || []).some(function(it){ return it.site === b.inv; });
+  return '<span class="hint" style="margin:0">\u{1F9FE} ' + esc(t(q || P.length ? 'تُرفع…' : 'لم تصل')) + '</span>';
+}
 function buyAdd(){
   if (!may('money')){ toast(t('المشترياتُ للمهندس وحده')); return; }
   var g = function(id){ var el = document.getElementById(id); return el ? String(el.value || '').trim() : ''; };
@@ -705,6 +716,8 @@ function buyAdd(){
             at:old ? old.at : Date.now(), by:old ? old.by : (STATE.meta.name || ''),
             st: (cap && amt > cap) ? 'بانتظار الاعتماد' : 'معتمد' };
   if (old){ b.edAt = Date.now(); b.edBy = STATE.meta.name || ''; BUY_ED = ''; }
+  if (old && old.inv) b.inv = old.inv;
+  if (BUY_PH && BUY_PH.data){ b.inv = 'BUY-' + id; try { photoQueue(b.inv, 'invoice', BUY_PH.data); } catch (eP){ softErr('صورة الفاتورة', eP, 'تعذّر حفظ صورة الفاتورة — أعد اختيارها'); } BUY_PH = null; }   /* (V37.43) */
   if (!STATE.buys) STATE.buys = {};
   STATE.buys[id] = b;
   CORE.set('buys', id, b);

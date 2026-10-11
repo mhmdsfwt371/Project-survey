@@ -2514,17 +2514,21 @@ PAGE.ipc = { m:'القسم المالي', t:'الشؤون المالية',
                   + trialRows().map(function(r){ return '<option value="' + esc(r.id) + '">' + esc(r.n) + '</option>'; }).join('')
                   + '</select></div>'
                 : '')
+            + '<div class="field"><label>' + esc(t('صورة الفاتورة')) + '</label>'   /* (V37.43) طلبُ المالك: رفعُ صورة الفاتورة — من الكاميرا أو المعرض */
+            +   '<label class="btn btn-secondary" style="width:100%;justify-content:center;cursor:pointer">\u{1F9FE} ' + esc(t('صوّر الفاتورة أو اختر صورتها')) + '<input type="file" accept="image/*" data-buyphoto="1" style="display:none"></label>'
+            +   '<div id="byPhPrev" class="hint" style="margin:4px 0 0">' + buyPhPrevHtml() + '</div></div>'
             + '</div>'
             + '<div class="actions">' + btn(BUY_ED ? '\u2714 ' + t('احفظ التعديل') : t('سجّل الشراء'),'btn-primary',' data-byadd="1"') + (BUY_ED ? btn(t('إلغاء التعديل'),'btn-quiet',' data-byedcancel="1"') : '') + '</div>'
             + '<p class="hint">' + esc(t('ما تجاوز حدَّ الاعتماد يُسجَّل «بانتظار الاعتماد» ولا يدخل المنصرف.')) + '</p>')
         : '')
       + cardFlush(t('العمليات') + ' — ' + nm(L.length),
           L.length
-            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة',''],
+            ? table(['التاريخ','الصنف','الفئة','المشعر','المبلغ','المورّد','الحالة','الفاتورة',''],
                 capList(L, 200).map(function(b){
                   return ['<span class="num">' + esc(dayKey(b.at)) + '</span>',
                           esc(b.item), esc(b.cat), esc(t(b.zone || '—')), N(b.amt), esc(b.sup),
                           pill(t(b.st), b.st === 'معتمد' ? 'ok' : 'wrn'),
+                          buyInvCell(b),   /* (V37.43) */
                           buyMayEdit() ? btn('\u270E','btn-quiet btn-sm',' data-byedit="' + esc(b.id) + '" title="' + esc(t('تعديل')) + '"') + btn('\u2715','btn-quiet btn-sm',' data-bydel="' + esc(b.id) + '" title="' + esc(t('حذف')) + '"') : ''];   /* (V29.5) */
                 }))
             : '<p class="hint" style="padding:16px">' + esc(t('لا مشترياتٍ بعد.')) + '</p>',
