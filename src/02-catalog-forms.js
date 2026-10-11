@@ -864,9 +864,10 @@ function catBar(withWork){
   return '<div class="catbar">' + sum + zoneRow
     + fsec('type', 'النوع', typeSel, typeRow, !!FILT.type)
     + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
-    + fsec('exec', 'التقرير التنفيذي', execSel, execRow, !!FILT.exec)
-    + fsec('ccg', 'المجموعات الأربع', grpSel, grpRow, !!FILT.ccg)
-    + fsec('floor', 'الأدوار', floorSel, floorRow, FILT.floor !== '' && FILT.floor != null)
+    /* (V37.55) تسمياتُ المالك: «التحديات» و«معالجة التحديات» و«أدوار منشأة الجمرات» */
+    + fsec('exec', 'التحديات', execSel, execRow, !!FILT.exec)
+    + fsec('ccg', 'معالجة التحديات', grpSel, grpRow, !!FILT.ccg)
+    + fsec('floor', 'أدوار منشأة الجمرات', floorSel, floorRow, FILT.floor !== '' && FILT.floor != null)
     + fsec('route', 'المسارات', routeSel, routeRow, !!FILT.route)
     + (tfw ? fsec('tfw', 'مسار التفويج', '', tfw, false) : '')
     + fsec('work', 'وجه العمل', workSel, workRow, !!FILT.work)

@@ -1283,7 +1283,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.54</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.55</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1345,7 +1345,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-989f8b9ad3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-c5669577d2.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4707,9 +4707,10 @@ function catBar(withWork){
   return '<div class="catbar">' + sum + zoneRow
     + fsec('type', 'النوع', typeSel, typeRow, !!FILT.type)
     + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
-    + fsec('exec', 'التقرير التنفيذي', execSel, execRow, !!FILT.exec)
-    + fsec('ccg', 'المجموعات الأربع', grpSel, grpRow, !!FILT.ccg)
-    + fsec('floor', 'الأدوار', floorSel, floorRow, FILT.floor !== '' && FILT.floor != null)
+    /* (V37.55) تسمياتُ المالك: «التحديات» و«معالجة التحديات» و«أدوار منشأة الجمرات» */
+    + fsec('exec', 'التحديات', execSel, execRow, !!FILT.exec)
+    + fsec('ccg', 'معالجة التحديات', grpSel, grpRow, !!FILT.ccg)
+    + fsec('floor', 'أدوار منشأة الجمرات', floorSel, floorRow, FILT.floor !== '' && FILT.floor != null)
     + fsec('route', 'المسارات', routeSel, routeRow, !!FILT.route)
     + (tfw ? fsec('tfw', 'مسار التفويج', '', tfw, false) : '')
     + fsec('work', 'وجه العمل', workSel, workRow, !!FILT.work)
@@ -25884,6 +25885,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.55', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'أسماء أقسام التصفية: «التقرير التنفيذي» بقت «التحديات»، و«المجموعات الأربع» بقت «معالجة التحديات»، و«الأدوار» بقت «أدوار منشأة الجمرات».' ] },
   { v:'V37.54', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'قائمة التصفية بقت أقصر وأسهل: شريط «المختار» فوق بيعرض اللي مفلتر عليه وعدد النقاط، وتشيل أي فلتر بضغطة أو «امسح الكل». المشعر مفتوح دايمًا، والنوع والحالة والتقرير التنفيذي والمجموعات والأدوار والمسارات ووجه العمل أقسام مطوية بتفتح في مكانها وبتفتكر اللي فتحته. ولما تختار مشعر، الأقسام بتعرض اللي يخصه بس.' ] },
   { v:'V37.53', d:'١٢ أكتوبر ٢٠٢٦', notes:[
