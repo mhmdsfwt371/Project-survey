@@ -43,10 +43,10 @@ function provHtml(id){
     + '<br>\u{1F4E4} ' + esc(t('تُقرأ في')) + ': ' + esc(t(pv[1])) + '</p>';
 }
 function tabHead(pid){
-  var cur = tabCur(pid), all = tabsOf(pid), vis = all.filter(function(tb){ return tb[4] !== 'hidden'; });
+  var cur = tabCur(pid), all = tabsOf(pid), vis = all.filter(function(tb){ return tb[5] !== 'hidden'; });
   var chips = vis.length < 2 ? '' :        /* شريحةٌ واحدةٌ لا تحتاج رأسًا */
     '<div class="chips" role="tablist">' + all.map(function(tb){
-      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"' + (tb[4] === 'hidden' ? ' hidden' : '')   /* (V37.49) المخفيُّ في الشجرة لا في الشريط — للروابط والجرود */
+      return '<button type="button" class="chip' + (cur === tb[0] ? ' on' : '') + '" role="tab"' + (tb[5] === 'hidden' ? ' hidden' : '')   /* (V37.49) المخفيُّ في الشجرة لا في الشريط — للروابط والجرود */
         + ' aria-selected="' + (cur === tb[0] ? 'true' : 'false') + '"'
         + ' data-ptab="' + pid + ':' + tb[0] + '">' + tb[2] + ' ' + esc(t(tb[1])) + '</button>';
     }).join('') + '</div>';
