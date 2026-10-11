@@ -1272,7 +1272,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.41</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.42</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -23089,7 +23089,7 @@ function svDashHtml(key, rows, head){
     if (cap && L.length > cap){ var rest = L.slice(cap).reduce(function(a, x){ return a + x[1]; }, 0); L = L.slice(0, cap).concat([[t('أخرى'), rest]]); } return L; };
   var bars = function(title, L, tot){ if (!L.length) return ''; var mx = Math.max.apply(null, L.map(function(x){ return x[1]; }));
     return '<div class="card" style="margin:0"><div class="pid">' + esc(t(title)) + '</div>' + L.map(function(x){ var w = Math.max(2, Math.round(x[1] / mx * 100));
-      return '<div class="fn-row" style="display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="' + esc(t(x[0])) + '">' + esc(t(x[0])) + '</span>'
+      return '<div class="fn-row" style="display:grid;grid-template-columns:minmax(90px,38%) 1fr auto;gap:8px;align-items:center;margin:5px 0"><span style="overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.3" title="' + esc(t(x[0])) + '">' + esc(t(x[0])) + '</span>'
         + '<span style="background:var(--line);border-radius:6px;height:10px;position:relative;overflow:hidden"><i style="position:absolute;inset-block:0;inset-inline-start:0;width:' + w + '%;background:var(--acc,#2E86DE);border-radius:6px"></i></span>'
         + '<b class="num">' + nm(x[1]) + (tot ? ' <small class="hint" style="margin:0">' + nm(Math.round(x[1] / tot * 100)) + '\u066A</small>' : '') + '</b></div>'; }).join('') + '</div>'; };
   /* آخرُ ١٤ يومًا بتاريخ العمود السادس (آخر زيارة) */
@@ -25592,6 +25592,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.42', d:'١١ أكتوبر ٢٠٢٦', notes:[
+      'اللوحات على الموبايل: أسماء الفئات الطويلة بقت بتظهر على سطرين بدل ما تتقص.' ] },
   { v:'V37.41', d:'١١ أكتوبر ٢٠٢٦', notes:[
       'كل نوافذ «متابعة الوزارة» بقت بتفتح لوحة (٤١ نافذة): المعوقات والتحديات بتبدأ بتوزيع فئاتها، وبعدها حسب المشعر والنوع والشركة وآخر ١٤ يوم، والتفاصيل بالإكسل، وزرار «القائمة» لو احتجت نقطة بعينها.',
       'فئة «المدخل غير واضح — يحتاج تحديد» كانت لسه ظاهرة باسمها القديم لأنه كان محفوظ في الإعدادات من المحرّر، اتصلّحت.' ] },
