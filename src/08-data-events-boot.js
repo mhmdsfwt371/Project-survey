@@ -3421,6 +3421,10 @@ function clickAPart6(e){
   if (wf){ WBS_F = wf.getAttribute('data-wbsf') || ''; render(1); return true; }
   var flf = e.target.closest('[data-fl]');
   if (flf){ FILT.life = flf.getAttribute('data-fl') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
+  var fsh = e.target.closest('[data-fsech]');   /* (V37.54) فتحُ القسم في مكانه — بلا إعادة رسم */
+  if (fsh){ var sec = fsh.closest('.fsec'), body = sec && sec.querySelector('.fsec-b'); if (sec && body){ var openNow = sec.classList.toggle('open'); body.hidden = !openNow; fsh.setAttribute('aria-expanded', openNow ? 'true' : 'false'); fsecSet(fsh.getAttribute('data-fsech'), openNow); } return true; }
+  var fcl = e.target.closest('[data-fclr]');
+  if (fcl){ var fk = fcl.getAttribute('data-fclr'); if (fk === 'all'){ FILT.zone = ''; FILT.type = ''; FILT.route = ''; FILT.floor = ''; FILT.work = ''; FILT.life = ''; FILT.exec = ''; FILT.ccg = ''; } else FILT[fk] = ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
   var fxf = e.target.closest('[data-fx]'); if (fxf){ FILT.exec = fxf.getAttribute('data-fx') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }   /* (V37.52) */
   var fgf = e.target.closest('[data-fg]'); if (fgf){ FILT.ccg = fgf.getAttribute('data-fg') || ''; LIST_SHOWN = LIST_PAGE; render(1); if (typeof mapPaint === 'function' && CUR === 'map') mapPaint(); return true; }
   var tdn = e.target.closest('[data-techdone]'); if (tdn){ if (techDoneSet(tdn.getAttribute('data-techdone'), true)){ logEvent('تمت الزيارةُ التقنية — ' + tdn.getAttribute('data-techdone')); toast(t('صارت زيارةً تمّت — تنتظر الاعتماد')); render(1); if (typeof mapPaint === 'function' && MAP) mapPaint(); } return true; }

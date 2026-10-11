@@ -782,110 +782,95 @@ function tfwRow(){
   }
   return h;
 }
+/* ═══ (V37.54) شريطُ الترشيح: «المختار» فوق، والمشعرُ مفتوحٌ دائمًا، وما سواه أقسامٌ مطوية — قرارُ المالك: «القائمة كبرت» ═══
+   كلُّ قسمٍ سطرٌ واحدٌ فيه اسمُه والمختارُ منه، يُفتح بضغطة. والشرائحُ ذاتُ الصفر تحت الاختيار الحالي لا تُرسَم أصلًا، فاختيارُ مشعرٍ يُبقي أنواعَه
+   وتصنيفاتِه وحدَها. حالُ الفتح يُحفَظ على الجهاز (nsk14.fsec). الأرقامُ والفلاترُ وما يحدث على الخريطة والقوائم والتصدير كما كانت. */
+var FSEC_OPEN = null;
+function fsecOpen(){ if (!FSEC_OPEN){ try { FSEC_OPEN = JSON.parse(lsGet('nsk14.fsec') || 'null') || { type:1 }; } catch (e){ FSEC_OPEN = { type:1 }; } } return FSEC_OPEN; }
+function fsecSet(k, on){ var o = fsecOpen(); if (on) o[k] = 1; else delete o[k]; try { lsSet('nsk14.fsec', JSON.stringify(o)); } catch (e){ LS_ERR = e; } }
+function fsec(key, label, sel, body, forceOpen){
+  if (!body) return '';
+  var open = !!(forceOpen || fsecOpen()[key]);
+  return '<div class="fsec' + (open ? ' open' : '') + '" data-fsec="' + key + '"><button type="button" class="fsec-h" data-fsech="' + key + '" aria-expanded="' + (open ? 'true' : 'false') + '"><span class="fsec-t">' + esc(t(label)) + '</span>'
+    + (sel ? '<span class="fsec-s">' + sel + '</span>' : '<span class="fsec-s hint" style="margin:0">' + esc(t('الكل')) + '</span>') + '<span class="fsec-c" aria-hidden="true">\u276F</span></button><div class="fsec-b"' + (open ? '' : ' hidden') + '>' + body + '</div></div>';
+}
 function catBar(withWork){
   var C = catCounts(), S = siteStats();
   var zones = TAX_G.filter(function(g){ return C.zone[g]; });   /* (V27.2) بترتيب المالك */
   var types = TAX_T.filter(function(ty){ return C.type[ty]; });
-
-  var h = '<div class="catbar"><div class="catrow">'
-    + '<button type="button" class="cat zone' + (FILT.zone?'':' on') + '" data-fz="">'
-    +   esc(t('الكل')) + ' <span class="n">' + nm(S.total) + '</span></button>'
-    + zones.map(function(z){
-        return '<button type="button" class="cat zone' + (FILT.zone===z?' on':'') + '" data-fz="' + esc(z) + '">'
-          + esc(z) + ' <span class="n">' + nm(C.zone[z]) + '</span></button>';
-      }).join('')
-    + '</div><div class="catrow">';
-
-  h += types.map(function(ty){
-    var d = TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' };   /* (V27.2) */
-    var on = FILT.type === ty;
-    return '<button type="button" class="cat' + (on?' on':'') + '" data-ft="' + esc(ty) + '"'
-      + ' style="border-color:' + d.c + (on ? ';background:' + d.c + '22;color:' + d.c : '') + '">'
-      + d.i + ' ' + esc(t(d.l)) + ' <span class="n">' + nm(C.type[ty]) + '</span></button>';
-  }).join('');
-  h += '</div>';
-
-  /* صفُّ المسارات: يُشتقُّ من النقاط نفسِها فلا يُكتَب بيد، ولا يظهر إن لم يُرسَم مسارٌ بعد */
-  {
-    var RT = routesList(), rks = Object.keys(RT).sort(function(a, b){ return RT[b] - RT[a]; });
-    if (rks.length){
-      h += '<div class="catrow">'
-        + '<button type="button" class="cat' + (FILT.route ? '' : ' on') + '" data-fr="">'
-        +   esc(t('كل المسارات')) + '</button>'
-        + rks.map(function(k){
-            return '<button type="button" class="cat' + (FILT.route === k ? ' on' : '') + '" data-fr="' + esc(k) + '">'
-              + '\u{1F6E3} ' + esc(k) + ' <span class="n">' + nm(RT[k]) + '</span></button>';
-          }).join('')
-        + '</div>';
-    }
-  }
-  if (CUR === 'map') h += tfwRow();   /* (V23.2) طبقةُ مسار التفويج */
-  /* صفُّ الأدوار (V22.2): يظهر حين تحمل النقاطُ أدوارًا — منشأةُ الجمرات أرضيٌّ وأربعة */
-  {
-    var FC = {};
+  /* ─ المشعر: مفتوحٌ دائمًا ─ */
+  var zoneRow = '<div class="catrow">'
+    + '<button type="button" class="cat zone' + (FILT.zone?'':' on') + '" data-fz="">' + esc(t('الكل')) + ' <span class="n">' + nm(S.total) + '</span></button>'
+    + zones.map(function(z){ return '<button type="button" class="cat zone' + (FILT.zone===z?' on':'') + '" data-fz="' + esc(z) + '">' + esc(z) + ' <span class="n">' + nm(C.zone[z]) + '</span></button>'; }).join('') + '</div>';
+  /* ─ النوع ─ */
+  var typeRow = types.length > 1 || FILT.type ? '<div class="catrow">' + types.map(function(ty){
+      var d = TAX_DEF[ty] || { l:ty, i:'\u25CF', c:'#8A939D' }, on = FILT.type === ty;
+      return '<button type="button" class="cat' + (on?' on':'') + '" data-ft="' + esc(ty) + '" style="border-color:' + d.c + (on ? ';background:' + d.c + '22;color:' + d.c : '') + '">' + d.i + ' ' + esc(t(d.l)) + ' <span class="n">' + nm(C.type[ty]) + '</span></button>'; }).join('') + '</div>' : '';
+  var typeSel = FILT.type ? esc(t((TAX_DEF[FILT.type] || { l:FILT.type }).l)) : '';
+  /* ─ المسارات ─ */
+  var routeRow = '', routeSel = '';
+  { var RT = routesList(), rks = Object.keys(RT).sort(function(a, b){ return RT[b] - RT[a]; });
+    if (rks.length){ routeRow = '<div class="catrow"><button type="button" class="cat' + (FILT.route ? '' : ' on') + '" data-fr="">' + esc(t('كل المسارات')) + '</button>'
+      + rks.map(function(k){ return '<button type="button" class="cat' + (FILT.route === k ? ' on' : '') + '" data-fr="' + esc(k) + '">\u{1F6E3} ' + esc(k) + ' <span class="n">' + nm(RT[k]) + '</span></button>'; }).join('') + '</div>'; routeSel = FILT.route ? esc(FILT.route) : ''; } }
+  var tfw = CUR === 'map' ? tfwRow() : '';   /* (V23.2) طبقةُ مسار التفويج */
+  /* ─ الأدوار (V22.2): حين تحمل النقاطُ المختارةُ أدوارًا ─ */
+  var floorRow = '', floorSel = '';
+  { var FC = {};
     STATE.sites.forEach(function(x){ var f = siteFloor(x); if (f == null) return; if (FILT.zone && taxOf(x).g !== FILT.zone) return; if (FILT.type && taxOf(x).t !== FILT.type) return; FC[f] = (FC[f] || 0) + 1; });
     var fks = Object.keys(FC).map(Number);
-    if (typeof TFW === 'object' && TFW.f >= 0) [0, 1, 2, 3, 4].forEach(function(f){ if (fks.indexOf(f) < 0) fks.push(f); });   /* (V26.5) والمسارُ ظاهرٌ: الأدوارُ كلُّها تُختار ولو بلا نقاط */
+    if (typeof TFW === 'object' && TFW.f >= 0) [0, 1, 2, 3, 4].forEach(function(f){ if (fks.indexOf(f) < 0) fks.push(f); });
     fks.sort(function(a, b){ return a - b; });
-    if (fks.length > 1){
-      var fon = FILT.floor !== '' && FILT.floor != null;
-      h += '<div class="catrow">'
-        + '<button type="button" class="cat' + (fon ? '' : ' on') + '" data-ffl="">' + esc(t('كل الأدوار')) + '</button>'
-        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + ' ' + esc(t('نقطة')) + '</span>' : '') + '</button>'; }).join('')
-        + '</div>';
-    }
-  }
-  if (withWork){
-    var wks = Object.keys(C.work).sort(function(a,b){ return C.work[b] - C.work[a]; });
-    if (wks.length > 1){
-      h += '<div class="catrow">'
-        + '<button type="button" class="cat' + (FILT.work?'':' on') + '" data-fw="">'
-        +   esc(t('كل الأوجه')) + '</button>'
-        + wks.map(function(k){
-            return '<button type="button" class="cat' + (FILT.work===k?' on':'') + '" data-fw="' + esc(k) + '">'
-              + esc(k) + ' <span class="n">' + nm(C.work[k]) + '</span></button>';
-          }).join('')
-        + '</div>';
-    }
-  }
-  /* ═══ صفُّ الحالة: ما حدث للنقطة — لا أين هي وما نوعُها فقط ═══
-     الأعدادُ تُحسَب على ما مرّ من المرشِّحات الأخرى، وكلُّ حالةٍ بلونها في الخريطة */
+    if (fks.length > 1){ var fon = FILT.floor !== '' && FILT.floor != null;
+      floorRow = '<div class="catrow"><button type="button" class="cat' + (fon ? '' : ' on') + '" data-ffl="">' + esc(t('كل الأدوار')) + '</button>'
+        + fks.map(function(f){ return '<button type="button" class="cat' + (fon && +FILT.floor === f ? ' on' : '') + '" data-ffl="' + f + '">\u{1F3E2} ' + esc(t(floorName(f))) + (FC[f] ? ' <span class="n">' + nm(FC[f]) + ' ' + esc(t('نقطة')) + '</span>' : '') + '</button>'; }).join('') + '</div>';
+      floorSel = fon ? esc(t(floorName(+FILT.floor))) : ''; } }
+  /* ─ وجهُ العمل ─ */
+  var workRow = '', workSel = '';
+  if (withWork){ var wks = Object.keys(C.work).sort(function(a,b){ return C.work[b] - C.work[a]; });
+    if (wks.length > 1){ workRow = '<div class="catrow"><button type="button" class="cat' + (FILT.work?'':' on') + '" data-fw="">' + esc(t('كل الأوجه')) + '</button>'
+      + wks.map(function(k){ return '<button type="button" class="cat' + (FILT.work===k?' on':'') + '" data-fw="' + esc(k) + '">' + esc(k) + ' <span class="n">' + nm(C.work[k]) + '</span></button>'; }).join('') + '</div>'; workSel = FILT.work ? esc(FILT.work) : ''; } }
+  /* ─ الحالة، والتقريرُ التنفيذي، والمجموعاتُ الأربع: على ما مرّ من المرشّحات ─ */
+  var lifeRow = '', lifeSel = '', execRow = '', execSel = '', grpRow = '', grpSel = '';
   if (typeof lifeOf === 'function' && typeof LIFE_ORDER !== 'undefined'){
     var lc = {}, base = STATE.sites.filter(function(x){
-      if (FILT.zone && taxOf(x).g !== FILT.zone) return false;
-      if (FILT.type && taxOf(x).t !== FILT.type) return false;
-      if (FILT.work && x.work !== FILT.work) return false;
-      if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false;
-      return true;
-    });
+      if (FILT.zone && taxOf(x).g !== FILT.zone) return false; if (FILT.type && taxOf(x).t !== FILT.type) return false;
+      if (FILT.work && x.work !== FILT.work) return false; if (CO_SEL.length && CO_SEL.indexOf(x.co) < 0) return false; return true; });
     base.forEach(function(x){ var l = lifeOf(x); lc[l] = (lc[l] || 0) + 1; });
     var lifeKeys = LIFE_ORDER.filter(function(k){ return lc[k]; });
-    /* (V37.52) صفّان: تصنيفُ التقرير التنفيذي، والمجموعاتُ الأربع — بأعدادها على ما مرّ من المرشّحات */
     if (typeof execStatusMemo === 'function' && typeof CC_GROUPS !== 'undefined'){
-      /* (V37.53) بلاغُ المالك: «لا يوجد سطح تثبيت» كانت ثلاثَ شرائح (هيكل، مظلات، + الكهرباء) — شريحةٌ واحدةٌ لكلِّ تسميةٍ مهما تعدّدت حالاتُها */
       var ec = {}, gc = {}; base.forEach(function(x){ var el = execLabelOf(execStatusMemo(x)); ec[el] = (ec[el] || 0) + 1; ccGroupsOfSite(x).forEach(function(g){ gc[g] = (gc[g] || 0) + 1; }); });
       var eKeys = []; EXEC_ORDER_L.forEach(function(k){ var el = execLabelOf(k); if (ec[el] && eKeys.indexOf(el) < 0) eKeys.push(el); });
-      if (eKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('التقرير التنفيذي')) + '</span><button type="button" class="cat' + (FILT.exec ? '' : ' on') + '" data-fx="">' + esc(t('الكل')) + '</button>'
-        + eKeys.map(function(el){ return '<button type="button" class="cat' + (FILT.exec === el ? ' on' : '') + '" data-fx="' + esc(el) + '">' + esc(t(el)) + ' <span class="num">' + nm(ec[el]) + '</span></button>'; }).join('') + '</div>';
+      if (eKeys.length){ execRow = '<div class="catrow"><button type="button" class="cat' + (FILT.exec ? '' : ' on') + '" data-fx="">' + esc(t('الكل')) + '</button>'
+        + eKeys.map(function(el){ return '<button type="button" class="cat' + (FILT.exec === el ? ' on' : '') + '" data-fx="' + esc(el) + '">' + esc(t(el)) + ' <span class="num">' + nm(ec[el]) + '</span></button>'; }).join('') + '</div>'; execSel = FILT.exec ? esc(t(FILT.exec)) + (ec[FILT.exec] ? ' <b>' + nm(ec[FILT.exec]) + '</b>' : '') : ''; }
       var gKeys = CC_GROUPS.filter(function(g){ return gc[g.g]; });
-      if (gKeys.length) h += '<div class="catrow"><span class="hint" style="margin:0 6px">' + esc(t('المجموعات الأربع')) + '</span><button type="button" class="cat' + (FILT.ccg ? '' : ' on') + '" data-fg="">' + esc(t('الكل')) + '</button>'
+      if (gKeys.length){ grpRow = '<div class="catrow"><button type="button" class="cat' + (FILT.ccg ? '' : ' on') + '" data-fg="">' + esc(t('الكل')) + '</button>'
         + gKeys.map(function(g){ return '<button type="button" class="cat' + (FILT.ccg === g.g ? ' on' : '') + '" data-fg="' + g.g + '">' + esc(t(g.n)) + ' <span class="num">' + nm(gc[g.g]) + '</span></button>'; }).join('') + '</div>';
+        var gSel = CC_GROUPS.filter(function(g){ return g.g === FILT.ccg; })[0]; grpSel = gSel ? esc(t(gSel.n)) + (gc[gSel.g] ? ' <b>' + nm(gc[gSel.g]) + '</b>' : '') : ''; }
     }
-    if (lifeKeys.length){
-      h += '<div class="catrow">'
-        + '<button type="button" class="cat' + (FILT.life ? '' : ' on') + '" data-fl="">' + esc(t('كل الحالات')) + '</button>'
-        + lifeKeys.map(function(k){
-            var L = LIFE[k], on = FILT.life === k;
-            return '<button type="button" class="cat' + (on ? ' on' : '') + '" data-fl="' + esc(k) + '"'
-              + ' style="border-color:' + L.c + (on ? ';background:' + L.c + '22;color:' + L.c : '') + '">'
-              + '<span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + L.c + ';margin-inline-end:4px"></span>'
-              + esc(t(L.n)) + ' <span class="n">' + nm(lc[k]) + '</span></button>';
-          }).join('')
-        + '</div>';
-    }
+    if (lifeKeys.length){ lifeRow = '<div class="catrow"><button type="button" class="cat' + (FILT.life ? '' : ' on') + '" data-fl="">' + esc(t('كل الحالات')) + '</button>'
+      + lifeKeys.map(function(k){ var L = LIFE[k], on = FILT.life === k;
+        return '<button type="button" class="cat' + (on ? ' on' : '') + '" data-fl="' + esc(k) + '" style="border-color:' + L.c + (on ? ';background:' + L.c + '22;color:' + L.c : '') + '"><span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + L.c + ';margin-inline-end:4px"></span>' + esc(t(L.n)) + ' <span class="n">' + nm(lc[k]) + '</span></button>'; }).join('') + '</div>';
+      lifeSel = FILT.life && LIFE[FILT.life] ? '<span style="display:inline-block;width:8px;height:8px;border-radius:99px;background:' + LIFE[FILT.life].c + ';margin-inline-end:4px"></span>' + esc(t(LIFE[FILT.life].n)) + (lc[FILT.life] ? ' <b>' + nm(lc[FILT.life]) + '</b>' : '') : ''; }
   }
-  h += '</div>';
-  return h;
+  /* ─ «المختار» فوق: كلُّ مرشِّحٍ فعّالٍ بشريحةٍ تُزال بضغطة، وعددُ ما يمرّ ─ */
+  var act = [];
+  if (FILT.zone) act.push(['zone', esc(FILT.zone)]); if (FILT.type) act.push(['type', typeSel]); if (FILT.route) act.push(['route', routeSel]);
+  if (FILT.floor !== '' && FILT.floor != null) act.push(['floor', floorSel]); if (FILT.work) act.push(['work', workSel]);
+  if (FILT.life) act.push(['life', esc(t((LIFE[FILT.life] || { n:FILT.life }).n))]); if (FILT.exec) act.push(['exec', esc(t(FILT.exec))]); if (FILT.ccg) act.push(['ccg', grpSel.replace(/ <b>.*$/, '')]);
+  var passN = act.length ? STATE.sites.filter(function(x){ return filtPass(x); }).length : S.total;
+  var sum = act.length ? '<div class="fsum"><span class="hint" style="margin:0">' + esc(t('المختار')) + '</span>'
+    + act.map(function(a){ return '<button type="button" class="chip on fsum-x" data-fclr="' + a[0] + '" title="' + esc(t('أزل هذا المرشّح')) + '">' + a[1] + ' \u2715</button>'; }).join('')
+    + '<span class="pill acc">' + nm(passN) + ' ' + esc(t('نقطة')) + '</span>' + btn(t('امسح الكل'), 'btn-quiet btn-sm', ' data-fclr="all"') + '</div>' : '';
+  return '<div class="catbar">' + sum + zoneRow
+    + fsec('type', 'النوع', typeSel, typeRow, !!FILT.type)
+    + fsec('life', 'الحالة', lifeSel, lifeRow, !!FILT.life)
+    + fsec('exec', 'التقرير التنفيذي', execSel, execRow, !!FILT.exec)
+    + fsec('ccg', 'المجموعات الأربع', grpSel, grpRow, !!FILT.ccg)
+    + fsec('floor', 'الأدوار', floorSel, floorRow, FILT.floor !== '' && FILT.floor != null)
+    + fsec('route', 'المسارات', routeSel, routeRow, !!FILT.route)
+    + (tfw ? fsec('tfw', 'مسار التفويج', '', tfw, false) : '')
+    + fsec('work', 'وجه العمل', workSel, workRow, !!FILT.work)
+    + '</div>';
 }
 
 /* المرشَّحُ يُبنى مرةً ويُخزَّن حتى يتغيّر الترشيح */
