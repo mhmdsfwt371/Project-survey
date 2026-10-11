@@ -41,3 +41,4 @@
 2026-10-11,V37.42,641,2,5,0,478,3224,"BUY_PH/buyPhPrevHtml/buyInvCell: صورةُ الفاتورة (V37.43)"
 2026-10-11,V37.43,641,2,5,0,478,3228,"trialSiteNorm/trialForSite/trialLinkSite/trialLinkExisting: ربطُ نقطة التجربة بالتجارب (V37.44)"
 2026-10-11,V37.44,643,2,5,0,478,3239,"SV_ZF/svBaseOf/svZoneTot/svMiniMap/svInsight/svDashHtml0: لوحةُ الوزارة المعتمدة (V37.45)"
+2026-10-11,V37.45,647,2,5,0,496,3282,"EXEC_TPL/EXEC_B/EXEC_MAP/EXEC_O/execT1-4/execRows/execSheetXml/execXlsx: التقريرُ التنفيذيُّ بقالب الوزارة (V37.46)"

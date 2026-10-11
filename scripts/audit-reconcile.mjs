@@ -122,6 +122,12 @@ console.log('\n══ ٥ · المسحُ بالمشعر: النسبةُ والم
       T(!!ks && ksn[0] === srvAll && String(kp[0]) === 'نسبة الزيارة', '«نسبة الزيارة» للزيارة و«نسبة المسح» للممسوح — لا اسمٌ برقمِ غيره: ' + (kp && kp[0]) + ' ' + kn[0] + ' · ' + (ks && ks[0]) + ' ' + ksn[0] + ' ↔ ' + srvAll);
       const bad = JSON.stringify(R).match(/متعذّر|متعذر|يحتاج تصريح|منع دخول|بانتظار قرار الوزارة/g);
       T(!bad, 'وتقريرُ الأسبوع الذي يذهب للوزارة بلا ما يوحي بتعذّرٍ أو تصريحٍ أو انتظارِ قرارها (قاعدةُ المالك): ' + (bad ? bad.slice(0, 3).join('، ') : 'نظيف'));
+      /* (V37.46) التقريرُ التنفيذي (قالبُ الوزارة): مجموعُ الجاهز + غير المكتمل + ذي التحديات = كلُّ النقاط، والتصنيفاتُ من قوائم القالب، وبلا لفظٍ ممنوع */
+      if (w.execRows){ const E = w.execRows(), Tt = E.tot, inL = (L, v) => L.indexOf(v) > -1;
+        T(Tt.ready + Tt.chal + Tt.revisit === Tt.all && Tt.all === TOTAL, 'التقريرُ التنفيذيُّ يغطّي كلَّ النقاط: جاهزة ' + Tt.ready + ' + بتحديات ' + Tt.chal + ' + تحتاج زيارة ' + Tt.revisit + ' = ' + Tt.all + ' ↔ ' + TOTAL);
+        T(E.rows.every(r => inL(w.EXEC_O.c1, r.c1) && inL(w.EXEC_O.c2, r.c2) && inL(w.EXEC_O.c3, r.c3) && inL(w.EXEC_O.c4, r.c4)), 'وكلُّ صفٍّ بتصنيفاتٍ من قوائم القالب المنسدلة: ' + JSON.stringify(E.rows.filter(r => !(inL(w.EXEC_O.c1, r.c1) && inL(w.EXEC_O.c2, r.c2) && inL(w.EXEC_O.c3, r.c3) && inL(w.EXEC_O.c4, r.c4))).slice(0, 2)));
+        const rd = E.rows.filter(r => r.b === 'R').reduce((a, r) => a + r.n, 0); T(rd === Tt.ready, 'وصفوفُ «جاهزة للتركيب» = الجاهز: ' + rd + ' = ' + Tt.ready);
+        T(!/متعذّر|متعذر|تصريح|منع دخول|بانتظار قرار الوزارة/.test(JSON.stringify(w.EXEC_B)), 'ونصوصُه على قاعدة الوزارة'); }
       T(w.mfuReportCheck(R).length === 0, 'وحارسُ التصدير الداخليُّ لا يجد خللًا (الشركات = الممسوح + المتبقي، والنسبُ في مداها): ' + JSON.stringify(w.mfuReportCheck(R).slice(0, 2)));
       const ST = w.stageCounts ? w.stageCounts() : null;
       const lens = { sv:w.svListRows('sv').length, rem:w.svListRows('rem').length, srv:w.svListRows('srv').length, insd:w.svListRows('insd').length };

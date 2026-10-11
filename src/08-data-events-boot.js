@@ -2995,6 +2995,7 @@ function clickAPart2(e){
   var exs = e.target.closest('[data-expscope]');   /* (V29.0) */
   if (exs){ EXP.scope.m = exs.getAttribute('data-expscope'); render(1); return true; }
   if (e.target.closest('[data-expselgo]')){ goPage('map'); MAP_SELECT = true; render(1); toast(t('اضغط النقاطَ لتحديدها ثم ارجع إلى التصدير')); return true; }
+  if (e.target.closest('[data-execxls]')){ execXlsx(); return true; }   /* (V37.46) */
   if (e.target.closest('[data-mfuexp]')){ var ids0 = expScopeIds(); if (ids0 && !ids0.length){ toast(t('النطاقُ بلا نقاط — اختر مشعرًا أو حدِّد نقاطًا')); return true; }
     var fx = e.target.closest('[data-mfuexp]').getAttribute('data-mfuexp'); if (fx === 'xlsx') mfuXlsx(); else if (fx === 'pdf') mfuPdf(); else if (fx === 'pptx') mfuPptx(); else mfuDocx(); return true; }
   if (e.target.closest('[data-chaltask]')){
