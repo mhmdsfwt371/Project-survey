@@ -2400,6 +2400,7 @@ function render0(force){
   try { assistBadgeSync(); } catch (eA){ LS_ERR = eA; }   /* (V37.30) */
   try { skinRowSync(); } catch (eS2){ LS_ERR = eS2; }   /* (V37.33) */
   if (CUR === 'trials' || CUR === 'chain'){ try { trialLinkExisting(); } catch (eT){ LS_ERR = eT; } }   /* (V37.44) ربطُ ما عُلِّم من قبل — بلا إنشاء */
+  if (!CFG.execOvSeeded && CFG_PULLED){ try { execOvSeed(); } catch (eXS){ LS_ERR = eXS; } }   /* (V37.61) بذرُ قرارات التقرير مرةً — بعد وصول إعدادات السحابة */
   var rsB = document.getElementById('resetBtn'); if (rsB && !rsB.textContent) rsB.textContent = '\u{1F9F9} ' + t('إعادة ضبط التطبيق');   /* (V36.1) فورًا، ومرةً بعد الرسمة لما تغيّر فيها */
   try { setTimeout(gedInject, 0); } catch (eG){ LS_ERR = eG; }   /* (V36.2) «✎ تعديل» بجوار كلِّ حذفٍ مسجَّل */
   try { setTimeout(gdelInject, 0); } catch (eD){ LS_ERR = eD; }   /* (V36.5) «🗑 حذف» بجوار خطوة السجلّات التي كانت بلا حذف */

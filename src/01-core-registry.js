@@ -518,6 +518,7 @@ function pgFind(q){
    لا قيمةَ افتراضيةً ولا رماديةً: كلُّ وزنٍ ونقطةٍ وتارجتٍ يبدأ صفرًا
    ويُضبط بيد المهندس. وما يُكتب هنا يقرؤه كلُّ ما بُني فوقه في اللحظة نفسها. */
 
+var CFG_PULLED = false;   /* (V37.61) وصلت إعداداتُ السحابة في هذه الجلسة — شرطُ أيِّ بذرٍ يكتب إليها */
 var CFG = {
   /* أوزان الزيارة والفك — مفتاحها «المشعر|النوع» */
   w:  {},
@@ -1946,7 +1947,7 @@ var FB = {
         var v = doc.data();
         Object.keys(v).forEach(function(k){ if (k in CFG) CFG[k] = v[k]; });
       }
-      STATE.meta.lastSync = Date.now();
+      CFG_PULLED = true; STATE.meta.lastSync = Date.now();
       return true;
     }).catch(function(e){
       /* بلا إعداداتٍ يعمل النظامُ بأوزانٍ صفرٍ وحدودِ اعتمادٍ صفر — ويبدو
