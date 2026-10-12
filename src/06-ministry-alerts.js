@@ -89,7 +89,7 @@ function svListPop(){
   var PCN = {}, PP = STATE.photos || {}; Object.keys(PP).forEach(function(k){ var x = PP[k]; if (x && !x.del && x.site) PCN[x.site] = (PCN[x.site] || 0) + 1; });   /* (V37.14) فهرسٌ مرةً للنافذة */
   return '<div class="svpop-veil" data-svpopclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div>'
     + '<div class="svpop" role="dialog" aria-modal="true" data-keepscroll="svpop:' + esc(SV_POP) + '" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'   /* (V30.6) ألوانُ التطبيق لا بياضٌ ثابت */
-    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length) + (SV_ZF || SV_SUB ? ' <small class="hint" style="margin:0">' + [SV_ZF ? esc(t(SV_ZF)) : '', SV_SUB ? esc(t(svSubLabel())) : ''].filter(Boolean).join(' \u00b7 ') + ' \u00b7 ' + nm(rowsAll.length) + ' ' + esc(t('في الكل')) + '</small>' : '') + '</h3>'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + (SV_SUB ? svSubTitle(rows) : esc(svListTitle(SV_POP)) + ' \u2014 ' + nm(rows.length)) + (SV_ZF && !SV_SUB ? ' <small class="hint" style="margin:0">' + [SV_ZF ? esc(t(SV_ZF)) : '', SV_SUB ? esc(t(svSubLabel())) : ''].filter(Boolean).join(' \u00b7 ') + ' \u00b7 ' + nm(rowsAll.length) + ' ' + esc(t('في الكل')) + '</small>' : '') + '</h3>'
     + '<div class="actions" style="margin:0">' + btn('\u2B07 ' + t('تصدير إكسل — التفاصيل'), 'btn-primary btn-sm', ' data-svpopxls="' + esc(SV_POP) + '"')
       + (canDash ? btn(asDash ? '\u2630 ' + t('القائمة') : '\u{1F4CA} ' + t('اللوحة'), 'btn-quiet btn-sm', ' data-svview="' + (asDash ? 'list' : 'dash') + '"') : '')
       + (canDash && asDash ? btn('\u{1F5A8} ' + t('طباعة اللوحة'), 'btn-quiet btn-sm', ' data-svprint="1"') : '')   /* (V37.45) */
@@ -210,6 +210,16 @@ function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
   if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
   if (p[0] === 'day'){ var dd = new Date(p[1] + 'T12:00:00'), WDN = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; return t(WDN[dd.getDay()]) + ' ' + nm(dd.getDate()) + '/' + nm(dd.getMonth() + 1) + (p[2] ? ' \u00b7 ' + t(({ visit:'زيارة', ins:'تركيب', dis:'فك' })[p[2]] || p[2]) : ''); }   /* (V37.62) اليومُ باسمه وتاريخه بالعربية */
   var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
+/* (V37.63) طلبُ المالك: النافذةُ تقول ما فتحتَه — «مخيمات الشركات الجاهزة — ٦٨ مخيم في ٢٤ شركة» لا «تمت الزيارة — ٦٨» */
+var SV_COB_T = { ready:'مخيمات الشركات الجاهزة', prep:'مخيمات الشركات اللي فيها تجهيز', coord:'مخيمات الشركات المحتاجة تنسيق', todo:'مخيمات الشركات اللي لسه' };
+function svSubUnit(){ return /^(co|cob):/.test(SV_SUB) ? 'مخيم' : 'نقطة'; }
+function svSubTitle(rows){
+  var p = SV_SUB.split(':'), n = rows.length, lab = svSubLabel(), extra = '';
+  if (p[0] === 'cob'){ lab = SV_COB_T[p[1]] || lab; var nc = mtCoStats().filter(function(o){ return o.b === p[1]; }).length; extra = ' ' + esc(t('في')) + ' ' + nm(nc) + ' ' + esc(t('شركة')); }
+  if (p[0] === 'co') lab = t('مخيمات') + ' ' + SV_SUB.slice(3);
+  if (p[0] === 'day') lab = t('شغل') + ' ' + lab;
+  return esc(t(lab)) + ' \u2014 ' + nm(n) + ' ' + esc(t(svSubUnit())) + extra + (SV_ZF ? ' <small class="hint" style="margin:0">' + esc(t(SV_ZF)) + '</small>' : '');
+}
 function svPopFilter(rowsAll, head){
   var dcz = svDashCols(head);
   return rowsAll.filter(function(r){ return (!SV_ZF || dcz.zone < 0 || String(r[dcz.zone] || '') === SV_ZF) && svSubPass(r[0]); });
@@ -224,7 +234,7 @@ function svDashHtml0(key, rows, head){
   var prog = /^(sv|srv|insd|hand|disd)$/.test(key), pct = Math.round(n / Math.max(1, base.n) * 100);
   var ringC = prog ? (pct >= 90 ? '#22C55E' : pct >= 50 ? '#F59E0B' : '#EF4444') : 'var(--acc,#2E86DE)';
   var hero = sub
-    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t('نقطة')) + ' \u2014 ' + esc(t(svSubLabel())) + '</div></div></div>'
+    ? '<div style="' + tile + ';margin:10px 0;display:flex;align-items:center;gap:12px"><span style="font-size:30px">' + ((SV_ST.filter(function(o){ return 'st:' + o.k === SV_SUB; })[0] || {}).e || (SV_WHY[+String(SV_SUB).split(':')[1]] || {}).e || '\u25CF') + '</span><div><div class="num" style="font-size:30px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div style="font-size:15px">' + esc(t(svSubUnit())) + ' \u2014 ' + esc(t(/^cob:/.test(SV_SUB) ? (SV_COB_T[SV_SUB.slice(4)] || svSubLabel()) : /^co:/.test(SV_SUB) ? t('مخيمات') + ' ' + SV_SUB.slice(3) : svSubLabel())) + '</div></div></div>'
     : '<div style="display:flex;align-items:center;gap:16px;' + tile + ';margin:10px 0">' + svRing(pct, 108, ringC, nm(pct) + '\u066A') + '<div><div class="num" style="font-size:34px;font-weight:800;line-height:1.1">' + nm(n) + '</div><div class="hint" style="margin:2px 0 0;font-size:14px">' + esc(t('نقطة')) + ' \u00b7 ' + esc(t('من')) + ' ' + nm(base.n) + '</div></div></div>';
   /* ٢ · حالُها الآن: كلُّ نقطةٍ مرةً واحدة — يختفي إن كانت كلُّها لونًا واحدًا */
   var sts = SV_ST.filter(function(o){ return stc[o.k]; });
@@ -2734,6 +2744,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.63', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'التبويبات الخمسة: كل مربع بيفتح نافذة عنوانها بيقول اللي فتحته بالظبط (مثلًا «مخيمات الشركات الجاهزة — ٦٨ مخيم في ٢٣ شركة» أو «يحتاج هيكل — ٤٧٥ نقطة»)، وفيها الإكسل. والمهام الأسبوعية بقت بتفتح نافذة كمان. وفي آخر كل تبويب زرار «نزّل كل تفاصيل التبويب (إكسل)».' ] },
   { v:'V37.62', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'التبويبات الخمسة في متابعة الوزارة بقت بنفس فكرة الملخص: حلقة كبيرة ومربعات بأيقونة ورقم وكلمة، وكل مربع بيفتح لوحته وإكسله، والأرقام بتجمع:',
       'حالة التركيبات (اتركّبت، مجدولة، جاهزة، تحتاج تجهيز… وحسب النوع والمشعر) · التحديات والمعوقات (مين يعالجها، والتحدي، والمشاعر — من غير عمر المعوق) · ملخص العمل اليومي (شغل النهارده وآخر ٧ أيام، وأي يوم بيتضغط) · شركات الخدمة (الأقل جاهزية أولًا، وضغطة الشركة بتفتح مخيماتها) · المهام الأسبوعية (خلصت، متأخرة، شغالين، لسه، وعلى مين — بتتصفّى في مكانها ومعاها إكسل).',
