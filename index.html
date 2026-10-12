@@ -1284,7 +1284,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.67</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.68</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1346,7 +1346,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-30f260a1d7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-bc0ba53829.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -13140,7 +13140,7 @@ function visitAsnOpen(ids, quiet){
 }
 
 function nsSave(){
-  var office = nsOffice();
+  var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
   var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
 
@@ -13191,7 +13191,7 @@ function nsSave(){
     reason:NEWSITE.reason, why:NEWSITE.why,
     region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
     isNew:true, approved:false, by:STATE.meta.name || '', at:Date.now(),
-    origin:office ? 'office' : 'field',
+    origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
   STATE.sites.push(site);
@@ -13201,19 +13201,19 @@ function nsSave(){
   /* الصورُ إلى درايف كسائر صور النظام — لا إلى القاعدة.
      كانت تُكتَب خامًّا هنا وحدها: خمسُ صورٍ بمئتي كيلو تقارب حدَّ الوثيقة
      الواحدة، وتلتهم الجيجابايتَ المتاحَ في أيام. */
-  Object.keys(NEWSITE.photos).forEach(function(i){
+  if (!minProp) Object.keys(NEWSITE.photos).forEach(function(i){
     var p = NEWSITE.photos[i];
     if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
   if (!office) nsVisitRec(id);
-  stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
-  notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
+  if (!minProp) stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
+  if (!minProp) notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
             { site:id, lv:'مهم' });
-  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
+  if (!minProp) logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
     + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''), id);
   statBump();
-  toast(id + ' \u00b7 ' + t(office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح'));
+  toast(id + ' \u00b7 ' + t(minProp ? 'أُرسلت مقترحةً من الوزارة — يعتمدها المهندس' : office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح')); if (minProp) CUR = 'map';
 
   NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
               co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };
@@ -13222,7 +13222,7 @@ function nsSave(){
   /* المكتبُ لم يزرها: لا نموذجَ مسحٍ يُفتَح بل لوحُ الإسناد عليها — فتُجدوَل
      زيارتُها الآن ولا تُنسى (V17.57). والميدانُ زارها فعلًا: يُفتَح نموذجُ
      المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
-  if (office){ visitAsnOpen(id); return; }
+  if (office){ (minProp ? false : visitAsnOpen(id)); return; }
   DETAIL_ID = id;
   formGo(id, 'new');
   CUR = 'svForm';
@@ -16933,7 +16933,7 @@ function pinCancel(){
 }
 function pinStart(){
   if (PIN_ON){ pinCancel(); return; }
-  if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
+  if (!may('newsite') && !may('settings') && ROLE !== 'viewer'){ toast(t('إضافةُ النقاط للمكتب')); return; }
   PIN_ON = true; POP_OPEN = false; drawFlag();
   toast(t('اضغط على الخريطة حيث تريد النقطة'));
   render(1);
@@ -21858,7 +21858,8 @@ function mapUIHtml(){
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
     + (SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
     + '<div class="map-fab">'
-    +   (may('edit') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')
+    +   ((may('edit') || ROLE === 'viewer') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')   /* (V37.68) الوزارةُ تقترح نقطة */
+    +   (ROLE === 'viewer' ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')), PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"') : '')   /* بلا أدوات الرسم */
     +   ((may('newsite') || may('settings'))
           ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')),
                 PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"')
@@ -26115,6 +26116,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.68', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'حساب الوزارة على الخريطة: بيشوف كل النقاط وكل الفلاتر وأدوات العرض، ويقدر يضيف نقطة بـ«📌 نقطة هنا» أو «+ موقع غير مسجّل» من غير صور إلزامية. النقطة بتدخل «مقترحة من الوزارة» والمهندس يعتمدها قبل ما تبقى رسمية في الأرقام والتقارير. وأدوات الرسم والإسناد والتحديد والتعديل تفضل للمهندس.' ] },
   { v:'V37.67', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       '«✂ قسّم المخيم» في نافذة المخيم (للمهندس فما فوق، وللمخيمات بس): تختار عدد الأجزاء من ٢ لـ٦ وتشوف التقسيم على الخريطة قبل الحفظ (أجزاء متساوية المساحة على طول المخيم)، وبعد الحفظ تظبط حدود كل جزء بـ«عدّل الحدود».',
       'الجزء الأول بيفضل برقم المخيم وبياناته ومسحه، والباقي مخيمات جديدة برقمه + B وC (محتاجة مسح) بنفس المشعر والشركة والمربع. وأي زيادة أو نقص في المخيمات بيتغيّر في كل الأرقام والتقارير والإكسل لوحده.' ] },
@@ -31724,14 +31727,14 @@ var ROLES = {
   admin:{
     n:'مدير المشروع', d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات',
     guide:'دليل المهندس — إدارة المشروع', nav:'*',
-    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ propose:1, provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1, roles:1, fleet:1, perms:1, minapprove:1 } },
 
   engineer:{
     n:'مهندس', d:'صلاحية كاملة — يدير الحسابات والاعتمادات',
     guide:'دليل المهندس — إدارة المشروع',
     nav:'*',   /* بما فيه بند «الإعدادات» الذي يفتح الشاشة الكاملة */
-    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ propose:1, provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1, perms:1 }
   },
   supervisor:{
@@ -31740,7 +31743,7 @@ var ROLES = {
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','now','pace','inst','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
-    can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   viewer:{
@@ -31754,9 +31757,9 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
-    can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
   },
   /* الفني يرث «مشرف» ويعمل تحته: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا */
@@ -31764,7 +31767,7 @@ var ROLES = {
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
 
@@ -31773,21 +31776,21 @@ var ROLES = {
     n:'فريق التهيئة', d:'الورشة — تهيئةً وحدها', base:'supervisor', kind:'prep',
     guide:'دليل الورشة — التهيئة',
     nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   casm:{
     n:'فريق التجميع', d:'الورشة — تجميعًا وحده', base:'supervisor', kind:'asm',
     guide:'دليل الورشة — التجميع',
     nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
 
@@ -31796,14 +31799,14 @@ var ROLES = {
     n:'مشتريات', d:'يسجّل المشترياتِ ويتابع المورّدين — ولا يعتمد ولا يصرف عهدة',
     guide:'دليل المهندس — إدارة المشروع',
     nav:['buys','trials','ships','fleet','fleetAsn','fleetCost','over','guide','acct','notif'],
-    can:{ edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:1, delete:0, users:0, phones:1, fleet:1 } },
 
   store:{
     n:'مستودع', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع',
     guide:'دليل الميدان — التركيب',
     nav:['invb','invmv','wos','stock','ships','fleet','over','guide','acct','notif'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:1, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:0, users:0, phones:1 } },
 
   acct:{
@@ -31818,7 +31821,7 @@ var ROLES = {
     n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
     base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
     nav:['map','mywork','sites','svForm','insForm','newsite','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
 
   driver:{
@@ -31843,7 +31846,7 @@ function isBossHere(){
   catch (e){ return false; }
 }
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
-function may(k){
+function may(k){ if (k === 'propose') return may('edit') || !!(R().can || {}).propose;   /* (V37.68) اقتراحُ نقطةٍ جديدة: من يسجّل، والوزارةُ بقدرتها الصريحة */
   /* «provision» تُشتقُّ من الرتبة: المشرفُ فما فوق — لا تُكتَب في كلِّ دور */
   if (k === 'provision') return rankOf(ROLE) >= rankOf('supervisor');
   /* ما لمصفوفة القاعدة قولٌ صريحٌ فيه يَغلب: فلا يظهر زرٌّ تردّه القاعدة */
@@ -32192,7 +32195,7 @@ var PAGE_CAP = {
      (الوزارةُ) لا يراها. صار القيدُ في القائمة (nav) والصفوفُ في canSeeUser،
      والأزرارُ في قدراتها — فتُقرأ بلا أن تُكتَب. */
   perms:'perms', assignRole:'users', roles:'users',
-  svForm:'edit', insForm:'edit', newsite:'edit',
+  svForm:'edit', insForm:'edit', newsite:'propose',
   qa:'approve', appr:'approve', esc:'approve', svappr:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
   disp:'settings', items:'settings', buycat:'settings', sup:'settings', consts:'settings',
@@ -32500,10 +32503,7 @@ function pageTick(id){
   if (Object.keys(u.n).length > 60) return;   /* سقفٌ: لا يتضخّم المفتاحُ بمعرِّفاتٍ غريبة */
   try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PG_USE.noStore = 1; }
 }
-function seesRaw(id){
-  var n = R().nav;
-  var cap = PAGE_CAP[id];
-  if (cap && !may(cap)) return false;
+function seesRaw(id){ var n = R().nav; var cap = PAGE_CAP[id]; if (cap && !may(cap)) return false;
   return n === '*' || n.indexOf(id) > -1;
 }
 function seesPage(id){

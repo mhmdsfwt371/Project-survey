@@ -100,10 +100,7 @@ function pageTick(id){
   if (Object.keys(u.n).length > 60) return;   /* سقفٌ: لا يتضخّم المفتاحُ بمعرِّفاتٍ غريبة */
   try { lsSet('nsk14.pg', JSON.stringify(u)); } catch (e){ /* تخزينٌ ممنوعٌ في التصفّح الخاص — يُعَدُّ في الذاكرة فقط */ PG_USE.noStore = 1; }
 }
-function seesRaw(id){
-  var n = R().nav;
-  var cap = PAGE_CAP[id];
-  if (cap && !may(cap)) return false;
+function seesRaw(id){ var n = R().nav; var cap = PAGE_CAP[id]; if (cap && !may(cap)) return false;
   return n === '*' || n.indexOf(id) > -1;
 }
 function seesPage(id){

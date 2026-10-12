@@ -328,7 +328,8 @@ service cloud.firestore {
 
     // الفكُّ والمواقعُ المقترحةُ وطلباتُ الشركات وحساباتُ الفنيين
     match /dismantles/{id} { allow read: if pm('dismantles', 'r', ok()); allow create, update: if pm('dismantles', 'w', canW()); allow delete: if pm('dismantles', 'd', mgr()); }
-    match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create, update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
+    // (V37.68) الوزارةُ تقترح نقطةً: إنشاءٌ فقط، بمصدر «ministry» وغيرَ معتمدة — والاعتمادُ والتعديلُ للمهندس كما كانا
+    match /newsites/{id} { allow read: if pm('newsites', 'r', ok()); allow create: if pm('newsites', 'w', canW()) || (ok() && role() == 'viewer' && request.resource.data.get('origin', '') == 'ministry' && request.resource.data.get('approved', true) == false); allow update: if pm('newsites', 'w', canW()); allow delete: if pm('newsites', 'd', mgr()); }
     match /coreqs/{id} { allow read: if pm('coreqs', 'r', ok()); allow create: if pm('coreqs', 'w', canW()); allow update: if pm('coreqs', 'a', mgr()); allow delete: if pm('coreqs', 'd', mgr()); }
     // طلباتُ التصويب: يكتبها الميدانُ ولا يعتمدها إلا المهندس
     match /fixreqs/{id} { allow read: if pm('fixreqs', 'r', ok()); allow create: if pm('fixreqs', 'w', canW()); allow update: if pm('fixreqs', 'a', mgr()); allow delete: if pm('fixreqs', 'd', mgr()); }

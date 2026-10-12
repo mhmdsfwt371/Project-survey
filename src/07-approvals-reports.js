@@ -4479,14 +4479,14 @@ var ROLES = {
   admin:{
     n:'مدير المشروع', d:'صلاحيةٌ كاملة — ويُدير الأدوارَ والحسابات',
     guide:'دليل المهندس — إدارة المشروع', nav:'*',
-    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ propose:1, provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1, roles:1, fleet:1, perms:1, minapprove:1 } },
 
   engineer:{
     n:'مهندس', d:'صلاحية كاملة — يدير الحسابات والاعتمادات',
     guide:'دليل المهندس — إدارة المشروع',
     nav:'*',   /* بما فيه بند «الإعدادات» الذي يفتح الشاشة الكاملة */
-    can:{ provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
+    can:{ propose:1, provision:1, edit:1, approve:1, settings:1, money:1, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:1, users:1, phones:1, perms:1 }
   },
   supervisor:{
@@ -4495,7 +4495,7 @@ var ROLES = {
     /* V16.26: المشرفُ يرى الطلباتِ والتوزيع — طلباتِ زيارةِ فريقه وسجلَّ إسناداته
        وتوزيعَه؛ نطاقُ سحبه شجرتُه فلا يرى إلا ما يخصُّه */
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','co','recs','tools','mine','over','wbs','wtask','now','pace','inst','reg','chalm','dis','users','req','reqreg','assign','guide','acct'],
-    can:{ provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, provision:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   viewer:{
@@ -4509,9 +4509,9 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
-    can:{ edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
   },
   /* الفني يرث «مشرف» ويعمل تحته: يرى المُسند إليه وينفّذه ولا يعتمد شيئًا */
@@ -4519,7 +4519,7 @@ var ROLES = {
     n:'فني', d:'ينفّذ ما يُسند إليه تحت مشرفه', base:'supervisor', kind:'*',
     guide:'دليل الفني — العمل الميداني',
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
 
@@ -4528,21 +4528,21 @@ var ROLES = {
     n:'فريق التهيئة', d:'الورشة — تهيئةً وحدها', base:'supervisor', kind:'prep',
     guide:'دليل الورشة — التهيئة',
     nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   casm:{
     n:'فريق التجميع', d:'الورشة — تجميعًا وحده', base:'supervisor', kind:'asm',
     guide:'دليل الورشة — التجميع',
     nav:['mywork','sites','recs','mine','wos','wday','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:1,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
   cins:{
     n:'فريق التركيب', d:'الميدان — تركيبًا وتوثيقًا', base:'supervisor', kind:'install',
     guide:'دليل الميدان — التركيب',
     nav:['map','mywork','sites','sel','svForm','insForm','newsite','recs','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:1 }
   },
 
@@ -4551,14 +4551,14 @@ var ROLES = {
     n:'مشتريات', d:'يسجّل المشترياتِ ويتابع المورّدين — ولا يعتمد ولا يصرف عهدة',
     guide:'دليل المهندس — إدارة المشروع',
     nav:['buys','trials','ships','fleet','fleetAsn','fleetCost','over','guide','acct','notif'],
-    can:{ edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:1, inventory:0, workshop:0,
           exportAll:1, importAll:1, delete:0, users:0, phones:1, fleet:1 } },
 
   store:{
     n:'مستودع', d:'يستلم التوريدَ ويصرف العهدةَ ويستقبل المرتجَع',
     guide:'دليل الميدان — التركيب',
     nav:['invb','invmv','wos','stock','ships','fleet','over','guide','acct','notif'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:1, workshop:1,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:1, workshop:1,
           exportAll:1, importAll:1, delete:0, users:0, phones:1 } },
 
   acct:{
@@ -4573,7 +4573,7 @@ var ROLES = {
     n:'مساعد فني', d:'يعمل مع الفنيّ ولا يُسنَد إليه وحدَه',
     base:'supervisor', kind:'*', guide:'دليل الفني — العمل الميداني',
     nav:['map','mywork','sites','svForm','insForm','newsite','mine','guide','acct'],
-    can:{ edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
+    can:{ propose:1, edit:1, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:0, importAll:0, delete:0, users:0, phones:0 } },
 
   driver:{
@@ -4598,7 +4598,7 @@ function isBossHere(){
   catch (e){ return false; }
 }
 function R(){ return ROLES[ROLE] || ROLES.engineer; }
-function may(k){
+function may(k){ if (k === 'propose') return may('edit') || !!(R().can || {}).propose;   /* (V37.68) اقتراحُ نقطةٍ جديدة: من يسجّل، والوزارةُ بقدرتها الصريحة */
   /* «provision» تُشتقُّ من الرتبة: المشرفُ فما فوق — لا تُكتَب في كلِّ دور */
   if (k === 'provision') return rankOf(ROLE) >= rankOf('supervisor');
   /* ما لمصفوفة القاعدة قولٌ صريحٌ فيه يَغلب: فلا يظهر زرٌّ تردّه القاعدة */
@@ -4947,7 +4947,7 @@ var PAGE_CAP = {
      (الوزارةُ) لا يراها. صار القيدُ في القائمة (nav) والصفوفُ في canSeeUser،
      والأزرارُ في قدراتها — فتُقرأ بلا أن تُكتَب. */
   perms:'perms', assignRole:'users', roles:'users',
-  svForm:'edit', insForm:'edit', newsite:'edit',
+  svForm:'edit', insForm:'edit', newsite:'propose',
   qa:'approve', appr:'approve', esc:'approve', svappr:'approve',
   visits:'settings', prep:'settings', asm:'settings', install:'settings',
   disp:'settings', items:'settings', buycat:'settings', sup:'settings', consts:'settings',

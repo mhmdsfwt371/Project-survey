@@ -81,9 +81,9 @@ for (const [attr, , say] of BTN)
 /* ولا شاشةَ نموذجٍ في قائمة دورٍ لا يملك التسجيل — الباب يُفتَح لمن يكتب */
 const wrong = ROLES.filter(r => {
   const nav = w.ROLES[r].nav;
-  return Array.isArray(nav) && nav.indexOf('newsite') > -1 && !(w.ROLES[r].can || {}).edit;
+  return Array.isArray(nav) && nav.indexOf('newsite') > -1 && !((w.ROLES[r].can || {}).edit || (w.ROLES[r].can || {}).propose);   /* (V37.68) أو يقترح (الوزارة) */
 });
-T(wrong.length === 0, 'ولا «موقع جديد» في قائمة دورٍ لا يُسجّل' + (wrong.length ? ': ' + wrong.join(' · ') : ''));
+T(wrong.length === 0, 'ولا «موقع جديد» في قائمة دورٍ لا يُسجّل ولا يقترح' + (wrong.length ? ': ' + wrong.join(' · ') : ''));
 T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''));
 
 console.log(bad ? `\nجردُ الزرِّ يصل فشل ✗ (${bad})` : '\nكلُّ زرٍّ يُعرَض يصل إلى شاشته ✅');

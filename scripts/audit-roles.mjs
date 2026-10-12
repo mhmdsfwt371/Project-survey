@@ -33,7 +33,8 @@ const GATED = {
   users:     ['data-role','data-assignRole'],
   /* الإنشاءُ صار قدرةً مشتقّةً من الرتبة (المشرف فصاعدًا) — لا من «users» */
   provision: ['data-usradd','data-bulkgo','data-bulkchk','data-provwipe'],
-  edit:      ['data-svsave','data-inssave','data-nssave','data-smark','data-fmark','data-asngo']
+  edit:      ['data-svsave','data-inssave','data-smark','data-fmark','data-asngo'],
+  propose:   ['data-nssave']   /* (V37.68) حفظُ نقطةٍ جديدة: من يسجّل، والوزارةُ مقترحةً */
 };
 /* رقمُ جوّالٍ سعوديٍّ في أيِّ صورة */
 const PHONE = /(?:\+?9665|05)\d{8}\b/;

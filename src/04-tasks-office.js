@@ -606,7 +606,7 @@ function visitAsnOpen(ids, quiet){
 }
 
 function nsSave(){
-  var office = nsOffice();
+  var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.68) قرارُ المالك: نقطةُ الوزارة «مقترحة» يعتمدها المهندس — بلا صورٍ إلزاميةٍ ولا زيارة */
   var lat = NEWSITE.lat || (MYPOS && MYPOS.lat), lng = NEWSITE.lng || (MYPOS && MYPOS.lng);
   if (!lat || !lng){ toast(t('التقط موضعك أولًا')); return; }
 
@@ -657,7 +657,7 @@ function nsSave(){
     reason:NEWSITE.reason, why:NEWSITE.why,
     region:'منطقة ' + NEWSITE.zone, fstat:'لم يبدأ', inout:'',
     isNew:true, approved:false, by:STATE.meta.name || '', at:Date.now(),
-    origin:office ? 'office' : 'field',
+    origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
   STATE.sites.push(site);
@@ -667,19 +667,19 @@ function nsSave(){
   /* الصورُ إلى درايف كسائر صور النظام — لا إلى القاعدة.
      كانت تُكتَب خامًّا هنا وحدها: خمسُ صورٍ بمئتي كيلو تقارب حدَّ الوثيقة
      الواحدة، وتلتهم الجيجابايتَ المتاحَ في أيام. */
-  Object.keys(NEWSITE.photos).forEach(function(i){
+  if (!minProp) Object.keys(NEWSITE.photos).forEach(function(i){
     var p = NEWSITE.photos[i];
     if (typeof photoQueue === 'function') photoQueue(id, 'new_' + i, p && (p.d || p.data));
   });
 
   if (!office) nsVisitRec(id);
-  stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
-  notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
+  if (!minProp) stepDone('newsite', id, office ? 'أضافها المكتب — تُجدوَل زيارتُها' : 'أُضيفت في الموقع — تُحتسَب زيارة', 0);
+  if (!minProp) notifPush('موقع مقترح', 'موقعٌ جديدٌ بانتظار اعتمادك — ' + NEWSITE.zone,
             { site:id, lv:'مهم' });
-  logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
+  if (!minProp) logEvent('موقع جديد — ' + id + ' · ' + NEWSITE.zone
     + (NEWSITE.coReq ? ' · طلب شركة: ' + NEWSITE.coReq : ''), id);
   statBump();
-  toast(id + ' \u00b7 ' + t(office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح'));
+  toast(id + ' \u00b7 ' + t(minProp ? 'أُرسلت مقترحةً من الوزارة — يعتمدها المهندس' : office ? 'سُجّلت — جدوِل زيارتَها الآن' : 'سُجّلت زيارةً — أكمل بياناتِ المسح')); if (minProp) CUR = 'map';
 
   NEWSITE = { lat:0, lng:0, zone:NEWSITE.zone, type:NEWSITE.type, sq:'', sign:'',
               co:'', coReq:'', tents:'', reason:'', why:'', note:'', photos:{}, nm:'', center:'', chals:[] };
@@ -688,7 +688,7 @@ function nsSave(){
   /* المكتبُ لم يزرها: لا نموذجَ مسحٍ يُفتَح بل لوحُ الإسناد عليها — فتُجدوَل
      زيارتُها الآن ولا تُنسى (V17.57). والميدانُ زارها فعلًا: يُفتَح نموذجُ
      المسح عليه فورًا — الشاشةُ تُنشئه، والنموذجُ يُكمله */
-  if (office){ visitAsnOpen(id); return; }
+  if (office){ (minProp ? false : visitAsnOpen(id)); return; }
   DETAIL_ID = id;
   formGo(id, 'new');
   CUR = 'svForm';
@@ -4399,7 +4399,7 @@ function pinCancel(){
 }
 function pinStart(){
   if (PIN_ON){ pinCancel(); return; }
-  if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
+  if (!may('newsite') && !may('settings') && ROLE !== 'viewer'){ toast(t('إضافةُ النقاط للمكتب')); return; }
   PIN_ON = true; POP_OPEN = false; drawFlag();
   toast(t('اضغط على الخريطة حيث تريد النقطة'));
   render(1);
