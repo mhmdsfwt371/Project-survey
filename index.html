@@ -1283,7 +1283,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.59</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.60</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -9652,7 +9652,6 @@ function cfgList(key, def){ var L = CFG.lists && Array.isArray(CFG.lists[key]) ?
 function chalsOf(x){
   return ['لا توجد تحديات'].concat((x && x.type === 'مخيم') ? cfgList('chalsCamp', CH_CAMP) : cfgList('chalsPath', CH_PATH));
 }
-var CHALS = ['لا توجد تحديات'].concat(CH_CAMP);   /* للتوافق مع ما يقرؤها عامًّا */
 
 /* حالةُ الوصول أوّلُ سؤالٍ في الميدان: من مُنع من الدخول لا يُسأل عن المقاسات،
    والموقعُ الذي لم يُوصَل إليه يبقى «لم يبدأ» بلا سببٍ إن لم يُسجَّل المنع. */
@@ -9661,8 +9660,6 @@ var SV_ACCESS = ['تم الوصول','منع دخول','غير موجود','يح
 /* أسبابُ التبليغ من الميدان — كانت في القديم ستًّا وسقطت. والاختيارُ من
    قائمةٍ يُفرَز به البلاغُ ويُوجَّه: نقصُ العهدة للمخزن، وسؤالُ السيريال
    للورشة، والقرارُ للمكتب. والنصُّ الحرُّ يصل الجميعَ فلا يحلّه أحد. */
-var TELL_WHY = ['تحدٍ يمنع التركيب','أحتاج قرار من المكتب','نقص عهدة أو قطع',
-                'سؤال عن السيريال','الموقع مختلف عن السجل','أخرى'];
 
 /* تسعُ صورٍ كما في العامل: أولاها تُطابِق الموقعَ، وبقيتُها يُخطَّط بها. */
 var SV_PHOTOS = [
@@ -13520,7 +13517,6 @@ function photoDownload(key){
   if (p.driveId){ window.open('https://drive.google.com/uc?export=download&id=' + encodeURIComponent(p.driveId), '_blank', 'noopener'); return; }
   toast(t('لا صورة'));
 }
-var PHOTO_VIEW = '';
 function photoView(key){
   var p = photoFind(key); if (!p) return;
   var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w1600' : '');
@@ -13759,7 +13755,7 @@ function evmVerdict(v){
    وعنوانُها وتفاصيلُها وخطواتُها (قائمةُ تحقّق) ومتطلباتُها ونتيجتُها المرجوّة وأولويتُها
    وحالتُها — ومنها مهمةٌ أسبوعيةٌ بضغطة، وما لم يُنجَز يُرحَّل للأسبوع القادم. */
 var WPLAN_WK = '', WPLAN_EDIT = '';
-var WPLAN_ST = ['مخطط', 'جارٍ', 'بانتظار تجارب', 'تم', 'مغلق'], WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
+var WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
 /* (V21.3) تراها المهندسون ومن فوقهم (المدير والإدارة العليا)؛ ويكتبها المهندس والمدير */
 function wplanSees(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin' || r === 'exec'; }
 function wplanMay(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin'; }
@@ -17956,8 +17952,6 @@ function lifeOfRaw(x){
 }
 function lifeColor(x){ return (LIFE[lifeOf(x)] || LIFE.todo).c; }
 /* ألوانُ دورة الزيارة — تبقى لتلوينِ «نقاطي» في طبقة المسح */
-var SV_COL = { todo:'#E8C34B', mine:'#FF8C42', others:'#C9A27E', tomorrow:'#B388FF',
-               revisit:'#FF8FA3', pending:'#4FA3FF', approved:'#3AD6A0' };
 function mapColorOf(x){
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
@@ -20597,65 +20591,6 @@ function impApply(){
    القشرة تُكاش عند التثبيت، والملفات الثقيلة عند أول طلب،
    والصفحاتُ شبكةٌ أولًا فإن تعذّرت فمن الكاش — فلا يُعرض قديمٌ وشبكةٌ حاضرة. */
 
-var SW_SRC = [
-"const V = 'nusuk-v14-1';",
-"const SHELL = ['./', './index.html'];",
-"const HEAVY = ['./poly.json'];",
-"",
-"self.addEventListener('install', e => {",
-"  self.skipWaiting();",
-"  e.waitUntil(caches.open(V).then(c => c.addAll(SHELL).catch(() => null)));",
-"});",
-"",
-"self.addEventListener('activate', e => {",
-"  e.waitUntil(caches.keys().then(ks =>",
-"    Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))",
-"  ).then(() => self.clients.claim()));",
-"});",
-"",
-"function timed(req, ms){",
-"  return new Promise((res, rej) => {",
-"    const t = setTimeout(() => rej(new Error('t')), ms);",
-"    fetch(req).then(r => { clearTimeout(t); res(r); }, e => { clearTimeout(t); rej(e); });",
-"  });",
-"}",
-"",
-"self.addEventListener('fetch', e => {",
-"  const req = e.request;",
-"  if (req.method !== 'GET') return;",
-"  const url = new URL(req.url);",
-"",
-"  /* لا يُكاش ما يخصّ قاعدة البيانات ولا المصادقة */",
-"  if (/firestore|googleapis|identitytoolkit|gstatic/.test(url.host)) return;",
-"",
-"  /* الصفحة: شبكةٌ أولًا بمهلةٍ ثم الكاش */",
-"  if (req.mode === 'navigate'){",
-"    e.respondWith(",
-"      timed(new Request(req.url, { cache:'reload' }), 3500)",
-"        .then(r => { if (r && r.status === 200) caches.open(V).then(c => c.put('./index.html', r.clone())); return r; })",
-"        .catch(() => caches.match('./index.html').then(h => h || caches.match(req)))",
-"    );",
-"    return;",
-"  }",
-"",
-"  /* الثقيل والبلاطات والمكتبات: كاشٌ أولًا ثم شبكةٌ تُخزَّن */",
-"  e.respondWith(",
-"    caches.match(req).then(hit => hit || fetch(req).then(r => {",
-"      if (r && r.status === 200 && (url.origin === location.origin",
-"          || /unpkg|cdn\\.sheetjs|cdnjs\\.cloudflare|tile\\.openstreetmap|arcgisonline/.test(url.host))){",
-"        const cl = r.clone();",
-"        caches.open(V).then(c => c.put(req, cl));",
-"      }",
-"      return r;",
-"    }).catch(() => hit))",
-"  );",
-"});",
-"",
-"self.addEventListener('message', e => {",
-"  if (e.data === 'skip') self.skipWaiting();",
-"  if (e.data === 'clear') caches.keys().then(ks => ks.forEach(k => caches.delete(k)));",
-"});"
-].join('\n');
 
 var SW_STATE = { reg:null, ok:false, waiting:false };
 
@@ -21632,7 +21567,6 @@ function coFiltHtml(){
     +   '</p>'
     + '</div></div>';
 }
-var MAP_SEL = {};
 
 /* الأسطورةُ تتبع الطبقة: لكلٍّ حالاتُها، ولكلِّ نوعٍ شكلُه ولونُه */
 function legendRows(){
@@ -23129,7 +23063,6 @@ var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها ف�
 var SV_SHOW = 80;   /* (V37.27) صفوفُ القائمة المعروضة — تزيد بزرّ «عرض المزيد» */
 /* ═══ (V37.16) طلبُ المالك: «البوب أب اللي بتتفتح من صفحة الوزارة لكلِّ كارت (الزيارة والمسح والتركيب والتسليم والفك) — مش عاوزها
    ليست، عاوزها داشبورد توضّح البيانات، ولما أحتاج تفاصيل أعمل إكسل». اللوحةُ تُبنى من صفوف القائمة نفسِها فلا يختلف رقم. ═══ */
-var SV_DASH_KEYS = { sv:1, rem:1, srv:1, srvr:1, insd:1, insr:1, hand:1, handr:1, disd:1, disr:1 };
 var SV_VIEW = 'dash';
 function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا بمواضعها — فتعمل اللوحةُ على كلِّ قائمةٍ في صفحة الوزارة */
   var H = (head || []).map(function(h){ return String(h || ''); }), f = function(rx){ for (var i = 0; i < H.length; i++) if (rx.test(H[i])) return i; return -1; };
@@ -23200,6 +23133,11 @@ function svRing(p, size, color, label){
   var deg = Math.max(0, Math.min(100, p)), inner = Math.round(size * 0.76);
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:conic-gradient(' + color + ' 0 ' + deg + '%,var(--line) 0);display:flex;align-items:center;justify-content:center;flex:0 0 auto">'
     + '<i style="width:' + inner + 'px;height:' + inner + 'px;border-radius:50%;background:var(--surface,#141B2A);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:' + Math.round(size / 4.6) + 'px">' + label + '</i></div>';
+}
+function svPopRefresh(){   /* (V37.60) نسخةٌ واحدةٌ لإعادة رسم النافذة في مكانها (المشعر، المربع، الرجوع) */
+  SV_SHOW = 80; var host = document.getElementById('content'); if (!host){ render(1); return; }
+  svPopRemove(); var tmp = document.createElement('div'); tmp.innerHTML = svListPop() + supPopHtml(); while (tmp.firstChild) host.appendChild(tmp.firstChild);
+  var pp = document.querySelector('.svpop'); if (pp) pp.scrollTop = 0;
 }
 var SV_STACK = [];   /* (V37.59) الشاشاتُ السابقةُ داخل النافذة — للرجوع */
 var SV_SUB = '';   /* (V37.58) المربعُ المضغوطُ داخل النافذة: «st:ready» أو «why:0» */
@@ -24166,9 +24104,7 @@ function execOvSet(id, st){
   CFG.execOv = CFG.execOv || {}; if (st && EXEC_L[st]) CFG.execOv[id] = { s:st, by:(STATE.meta && STATE.meta.name) || '', at:Date.now() }; else delete CFG.execOv[id];
   cfgPushSoon('execOv'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; statBump(); return true;
 }
-function execAutoOf(x){ var r = STATE.recs[x.id], pol = execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x));
-  var keep = (CFG.execOv || {})[x.id], kd = EXEC_OV[x.id]; if (keep) delete CFG.execOv[x.id]; if (kd) delete EXEC_OV[x.id];
-  var st = execStatus(r, pol, x); if (keep){ CFG.execOv = CFG.execOv || {}; CFG.execOv[x.id] = keep; } if (kd) EXEC_OV[x.id] = kd; return st; }
+function execAutoOf(x){ return execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x, true); }   /* (V37.60) كانت تحذف القرارَ من CFG وتعيده */
 function execLabelOf(st){ return String((EXEC_L[st] || [''])[0]).split(' — ')[0].trim(); }   /* (V37.53) التسميةُ الظاهرة — الحالاتُ المتعدّدةُ لتسميةٍ واحدةٍ شريحةٌ واحدة */
 var EXEC_MEMO = { v:'', m:null };
 function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
@@ -24223,7 +24159,6 @@ var EXEC_STATIC = [
 var EXEC_O = { c1:['مراكز تفويج', 'المشاعر المقدسة'], c2:['النورية', 'الزايدي', 'الهجرة 1', 'الهجرة 2', 'منى', 'عرفه', 'مزدلفه'],
   c3:{ 'منى':['كاميرات مزودين الخدمة', 'كاميرات البث', 'مخيمات', 'ممرات', 'جمرات', 'قطار'], 'عرفه':['مخيمات', 'ممرات', 'كاميرات الحافلات', 'كاميرات البث', 'قطار', 'كاميرات مزودين الخدمة'], '*':['كاميرات الحافلات', 'كاميرات البث', 'مخيمات', 'ممرات', 'جمرات', 'قطار'] },
   c3all:['كاميرات البث', 'كاميرات الحافلات', 'مخيمات', 'ممرات', 'جمرات', 'قطار', 'كاميرات مزودين الخدمة'], c4:['', 'ممرات الطرق', 'ممرات جبل الرحمه', 'ممرات مسجد نمرة', 'ممرات القطار'] };
-var EXEC_B = EXEC_L;
 function execT1(x){ return /^(النوارية|مواقع التفويج|المدينة|الترددية)$/.test(x.zone) ? 'مراكز تفويج' : 'المشاعر المقدسة'; }
 function execT2(x){ var n = String(x.name || '');
   if (execT1(x) === 'مراكز تفويج'){ if (x.zone === 'النوارية' || /النوارية|النورية/.test(n)) return 'النورية'; if (x.zone === 'الترددية' || /الزايدي/.test(n)) return 'الزايدي';
@@ -24237,9 +24172,9 @@ function execT3(x){ var n = String(x.name || ''), ty = String(x.type || '');
   if (ty === 'محطة' || /قطار/.test(n)) return 'قطار'; if (ty === 'جسر' || /الجمرات/.test(n)) return 'جمرات'; return ty; }   /* محطةُ «منى ٣ (الجمرات)» قطار */
 function execT4(x){ if (execT3(x) !== 'ممرات') return ''; var n = String(x.name || ''); return /نمرة/.test(n) ? 'ممرات مسجد نمرة' : /الرحمة|الرحمه/.test(n) ? 'ممرات جبل الرحمه' : /القطار|قطار/.test(n) ? 'ممرات القطار' : 'ممرات الطرق'; }
 function execPolicy(c1, c2, c3, c4){ return EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && EXEC_POLICY['*|' + c3 + '@تفويج']) || EXEC_POLICY[c2 + '|*'] || EXEC_POLICY['*|' + c3] || null; }
-function execStatus(r, pol, x){
+function execStatus(r, pol, x, noOv){   /* (V37.60) noOv: الحسابُ التلقائيُّ دون قرار المهندس — بلا لمسٍ مؤقّتٍ لـCFG */
   if (x && typeof insDone === 'function' && insDone(x.id)) return 'INSTALLED';   /* (V37.52) الشغلُ يحدّث التقرير: ما رُكّب انتقل وحدَه */
-  var ov = x && execOvOf(x.id); if (ov) return ov;
+  var ov = !noOv && x && execOvOf(x.id); if (ov) return ov;
   if (pol && pol.all) return pol.all;
   if (!r || !svVisited(r)) return 'PERMIT';
   if (!svDone(r)){ var why = String(r.access || ''); return /غير موجود|غير مطابق/.test(why) ? 'LOC' : 'PERMIT'; }
@@ -25918,6 +25853,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.60', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'مراجعة الكود: اتشال ١٠ متغيرات عامة ما حدش بيقراها، ودالة حساب التصنيف التلقائي بقت ما بتلمسش الإعدادات السحابية، وثلاث نسخ مكررة لإعادة رسم النافذة بقت دالة واحدة. مفيش تغيير في الشكل ولا الأرقام.' ] },
   { v:'V37.59', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'اللوحات بقت أرقامها بتجمع على بعض: كل نقطة محسوبة مرة واحدة بأهم تحدي فيها (عائق، ثم هيكل، ثم المدخل، ثم العارضة، ثم ارتفاع)، فـ«تحتاج تجهيز» = هيكل + مدخل + عارضة + ارتفاع بالظبط، و«يحتاج هيكل» نفس الرقم في كل شاشة. و«ليه؟» بقت تحت «تحتاج تجهيز».',
       'جوه أي مربع: زرار «→ رجوع» للشاشة اللي قبلها (حتى لو دخلت أكتر من مستوى)، والعنوان جملة واحدة «٧٤٢ نقطة — تحتاج تجهيز» من غير حلقة حمرا ولا نسبة، و«حالها الآن» بتختفي لما تبقى لون واحد.' ] },
@@ -30228,7 +30165,6 @@ var VEH_KINDS_SEED = [
   { id:'van',    n:'فان',             d:'فريقٌ كاملٌ وعدّتُه معًا',        cap:7 },
   { id:'truck',  n:'شاحنة',           d:'نقلُ توريدٍ ثقيلٍ إلى المستودع',  cap:2 }
 ];
-var VEH_STATUS = ['متاحة','مُسندة','في الورشة','خارج الخدمة'];
 var VEH_OWN    = ['ملك','مستأجرة'];
 var VEH_Q = '', VEH_EDIT = '';
 
@@ -35171,10 +35107,10 @@ function clickAPart2(e){
   if (e.target.closest('[data-svmore]')){ SV_SHOW += 80; toast(t('عُرضت ٨٠ أخرى')); var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
     if (hostM){ svPopRemove(); var tmpM = document.createElement('div'); tmpM.innerHTML = svListPop(); while (tmpM.firstChild) hostM.appendChild(tmpM.firstChild); var nb = document.querySelector('.svpop[data-keepscroll^="svpop:"]'); if (nb) nb.scrollTop = topM; } else render(1); return true; }
   var ssb = e.target.closest('[data-svsub]');   /* (V37.58) مربعٌ في اللوحة يُضغط: نافذتُه بلوحتها وإكسلها */
-  if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; SV_SHOW = 80; var hostS = document.getElementById('content'); if (hostS){ svPopRemove(); var tmpS = document.createElement('div'); tmpS.innerHTML = svListPop() + supPopHtml(); while (tmpS.firstChild) hostS.appendChild(tmpS.firstChild); var ppS = document.querySelector('.svpop'); if (ppS) ppS.scrollTop = 0; } else render(1); return true; }
+  if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; svPopRefresh(); return true; }
   var szf = e.target.closest('[data-svzf]');   /* (V37.45) */
-  if (e.target.closest('[data-svback]')){ var prv = SV_STACK.pop(); if (prv){ SV_SUB = prv.sub; SV_ZF = prv.zf; } SV_SHOW = 80; var hostB = document.getElementById('content'); if (hostB){ svPopRemove(); var tmpB = document.createElement('div'); tmpB.innerHTML = svListPop() + supPopHtml(); while (tmpB.firstChild) hostB.appendChild(tmpB.firstChild); var ppB = document.querySelector('.svpop'); if (ppB) ppB.scrollTop = 0; } else render(1); return true; }   /* (V37.59) */
-  if (szf){ if ((szf.getAttribute('data-svzf') || '') !== SV_ZF) SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_ZF = szf.getAttribute('data-svzf') || ''; SV_SHOW = 80; var hostZ = document.getElementById('content'); if (hostZ){ svPopRemove(); var tmpZ = document.createElement('div'); tmpZ.innerHTML = svListPop() + supPopHtml(); while (tmpZ.firstChild) hostZ.appendChild(tmpZ.firstChild); } else render(1); return true; }
+  if (e.target.closest('[data-svback]')){ var prv = SV_STACK.pop(); if (prv){ SV_SUB = prv.sub; SV_ZF = prv.zf; } svPopRefresh(); return true; }   /* (V37.59) */
+  if (szf){ if ((szf.getAttribute('data-svzf') || '') !== SV_ZF) SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_ZF = szf.getAttribute('data-svzf') || ''; svPopRefresh(); return true; }
   if (e.target.closest('[data-svprint]')){ document.documentElement.classList.add('print-pop'); setTimeout(function(){ try { window.print(); } catch (ePr){ LS_ERR = ePr; } setTimeout(function(){ document.documentElement.classList.remove('print-pop'); }, 500); }, 60); return true; }
   var svv = e.target.closest('[data-svview]');   /* (V37.16) اللوحة أو القائمة — في مكانها */
   if (svv){ SV_VIEW = svv.getAttribute('data-svview') === 'list' ? 'list' : 'dash'; var hostV = svv.closest('#content') || document.getElementById('content');

@@ -985,7 +985,6 @@ function photoDownload(key){
   if (p.driveId){ window.open('https://drive.google.com/uc?export=download&id=' + encodeURIComponent(p.driveId), '_blank', 'noopener'); return; }
   toast(t('لا صورة'));
 }
-var PHOTO_VIEW = '';
 function photoView(key){
   var p = photoFind(key); if (!p) return;
   var src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w1600' : '');
@@ -1224,7 +1223,7 @@ function evmVerdict(v){
    وعنوانُها وتفاصيلُها وخطواتُها (قائمةُ تحقّق) ومتطلباتُها ونتيجتُها المرجوّة وأولويتُها
    وحالتُها — ومنها مهمةٌ أسبوعيةٌ بضغطة، وما لم يُنجَز يُرحَّل للأسبوع القادم. */
 var WPLAN_WK = '', WPLAN_EDIT = '';
-var WPLAN_ST = ['مخطط', 'جارٍ', 'بانتظار تجارب', 'تم', 'مغلق'], WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
+var WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
 /* (V21.3) تراها المهندسون ومن فوقهم (المدير والإدارة العليا)؛ ويكتبها المهندس والمدير */
 function wplanSees(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin' || r === 'exec'; }
 function wplanMay(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin'; }

@@ -90,8 +90,6 @@ function lifeOfRaw(x){
 }
 function lifeColor(x){ return (LIFE[lifeOf(x)] || LIFE.todo).c; }
 /* ألوانُ دورة الزيارة — تبقى لتلوينِ «نقاطي» في طبقة المسح */
-var SV_COL = { todo:'#E8C34B', mine:'#FF8C42', others:'#C9A27E', tomorrow:'#B388FF',
-               revisit:'#FF8FA3', pending:'#4FA3FF', approved:'#3AD6A0' };
 function mapColorOf(x){
   /* وضعُ الشركات: ما له شركةٌ يلبس لونَها، وما لا شركةَ له يبقى على لون
      طبقته. وكان كلُّ ما لا شركةَ له يُرمَّد — فتختفي الممراتُ والمحطاتُ
@@ -2731,65 +2729,6 @@ function impApply(){
    القشرة تُكاش عند التثبيت، والملفات الثقيلة عند أول طلب،
    والصفحاتُ شبكةٌ أولًا فإن تعذّرت فمن الكاش — فلا يُعرض قديمٌ وشبكةٌ حاضرة. */
 
-var SW_SRC = [
-"const V = 'nusuk-v14-1';",
-"const SHELL = ['./', './index.html'];",
-"const HEAVY = ['./poly.json'];",
-"",
-"self.addEventListener('install', e => {",
-"  self.skipWaiting();",
-"  e.waitUntil(caches.open(V).then(c => c.addAll(SHELL).catch(() => null)));",
-"});",
-"",
-"self.addEventListener('activate', e => {",
-"  e.waitUntil(caches.keys().then(ks =>",
-"    Promise.all(ks.filter(k => k !== V).map(k => caches.delete(k)))",
-"  ).then(() => self.clients.claim()));",
-"});",
-"",
-"function timed(req, ms){",
-"  return new Promise((res, rej) => {",
-"    const t = setTimeout(() => rej(new Error('t')), ms);",
-"    fetch(req).then(r => { clearTimeout(t); res(r); }, e => { clearTimeout(t); rej(e); });",
-"  });",
-"}",
-"",
-"self.addEventListener('fetch', e => {",
-"  const req = e.request;",
-"  if (req.method !== 'GET') return;",
-"  const url = new URL(req.url);",
-"",
-"  /* لا يُكاش ما يخصّ قاعدة البيانات ولا المصادقة */",
-"  if (/firestore|googleapis|identitytoolkit|gstatic/.test(url.host)) return;",
-"",
-"  /* الصفحة: شبكةٌ أولًا بمهلةٍ ثم الكاش */",
-"  if (req.mode === 'navigate'){",
-"    e.respondWith(",
-"      timed(new Request(req.url, { cache:'reload' }), 3500)",
-"        .then(r => { if (r && r.status === 200) caches.open(V).then(c => c.put('./index.html', r.clone())); return r; })",
-"        .catch(() => caches.match('./index.html').then(h => h || caches.match(req)))",
-"    );",
-"    return;",
-"  }",
-"",
-"  /* الثقيل والبلاطات والمكتبات: كاشٌ أولًا ثم شبكةٌ تُخزَّن */",
-"  e.respondWith(",
-"    caches.match(req).then(hit => hit || fetch(req).then(r => {",
-"      if (r && r.status === 200 && (url.origin === location.origin",
-"          || /unpkg|cdn\\.sheetjs|cdnjs\\.cloudflare|tile\\.openstreetmap|arcgisonline/.test(url.host))){",
-"        const cl = r.clone();",
-"        caches.open(V).then(c => c.put(req, cl));",
-"      }",
-"      return r;",
-"    }).catch(() => hit))",
-"  );",
-"});",
-"",
-"self.addEventListener('message', e => {",
-"  if (e.data === 'skip') self.skipWaiting();",
-"  if (e.data === 'clear') caches.keys().then(ks => ks.forEach(k => caches.delete(k)));",
-"});"
-].join('\n');
 
 var SW_STATE = { reg:null, ok:false, waiting:false };
 
@@ -3766,7 +3705,6 @@ function coFiltHtml(){
     +   '</p>'
     + '</div></div>';
 }
-var MAP_SEL = {};
 
 /* الأسطورةُ تتبع الطبقة: لكلٍّ حالاتُها، ولكلِّ نوعٍ شكلُه ولونُه */
 function legendRows(){

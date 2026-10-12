@@ -111,7 +111,6 @@ var SV_PHO = '';   /* (V37.6) النقطةُ المفتوحةُ صورُها ف�
 var SV_SHOW = 80;   /* (V37.27) صفوفُ القائمة المعروضة — تزيد بزرّ «عرض المزيد» */
 /* ═══ (V37.16) طلبُ المالك: «البوب أب اللي بتتفتح من صفحة الوزارة لكلِّ كارت (الزيارة والمسح والتركيب والتسليم والفك) — مش عاوزها
    ليست، عاوزها داشبورد توضّح البيانات، ولما أحتاج تفاصيل أعمل إكسل». اللوحةُ تُبنى من صفوف القائمة نفسِها فلا يختلف رقم. ═══ */
-var SV_DASH_KEYS = { sv:1, rem:1, srv:1, srvr:1, insd:1, insr:1, hand:1, handr:1, disd:1, disr:1 };
 var SV_VIEW = 'dash';
 function svDashCols(head){   /* (V37.41) الأعمدةُ بأسمائها لا بمواضعها — فتعمل اللوحةُ على كلِّ قائمةٍ في صفحة الوزارة */
   var H = (head || []).map(function(h){ return String(h || ''); }), f = function(rx){ for (var i = 0; i < H.length; i++) if (rx.test(H[i])) return i; return -1; };
@@ -182,6 +181,11 @@ function svRing(p, size, color, label){
   var deg = Math.max(0, Math.min(100, p)), inner = Math.round(size * 0.76);
   return '<div style="width:' + size + 'px;height:' + size + 'px;border-radius:50%;background:conic-gradient(' + color + ' 0 ' + deg + '%,var(--line) 0);display:flex;align-items:center;justify-content:center;flex:0 0 auto">'
     + '<i style="width:' + inner + 'px;height:' + inner + 'px;border-radius:50%;background:var(--surface,#141B2A);display:flex;align-items:center;justify-content:center;font-style:normal;font-weight:800;font-size:' + Math.round(size / 4.6) + 'px">' + label + '</i></div>';
+}
+function svPopRefresh(){   /* (V37.60) نسخةٌ واحدةٌ لإعادة رسم النافذة في مكانها (المشعر، المربع، الرجوع) */
+  SV_SHOW = 80; var host = document.getElementById('content'); if (!host){ render(1); return; }
+  svPopRemove(); var tmp = document.createElement('div'); tmp.innerHTML = svListPop() + supPopHtml(); while (tmp.firstChild) host.appendChild(tmp.firstChild);
+  var pp = document.querySelector('.svpop'); if (pp) pp.scrollTop = 0;
 }
 var SV_STACK = [];   /* (V37.59) الشاشاتُ السابقةُ داخل النافذة — للرجوع */
 var SV_SUB = '';   /* (V37.58) المربعُ المضغوطُ داخل النافذة: «st:ready» أو «why:0» */
@@ -1148,9 +1152,7 @@ function execOvSet(id, st){
   CFG.execOv = CFG.execOv || {}; if (st && EXEC_L[st]) CFG.execOv[id] = { s:st, by:(STATE.meta && STATE.meta.name) || '', at:Date.now() }; else delete CFG.execOv[id];
   cfgPushSoon('execOv'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; statBump(); return true;
 }
-function execAutoOf(x){ var r = STATE.recs[x.id], pol = execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x));
-  var keep = (CFG.execOv || {})[x.id], kd = EXEC_OV[x.id]; if (keep) delete CFG.execOv[x.id]; if (kd) delete EXEC_OV[x.id];
-  var st = execStatus(r, pol, x); if (keep){ CFG.execOv = CFG.execOv || {}; CFG.execOv[x.id] = keep; } if (kd) EXEC_OV[x.id] = kd; return st; }
+function execAutoOf(x){ return execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x, true); }   /* (V37.60) كانت تحذف القرارَ من CFG وتعيده */
 function execLabelOf(st){ return String((EXEC_L[st] || [''])[0]).split(' — ')[0].trim(); }   /* (V37.53) التسميةُ الظاهرة — الحالاتُ المتعدّدةُ لتسميةٍ واحدةٍ شريحةٌ واحدة */
 var EXEC_MEMO = { v:'', m:null };
 function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
@@ -1205,7 +1207,6 @@ var EXEC_STATIC = [
 var EXEC_O = { c1:['مراكز تفويج', 'المشاعر المقدسة'], c2:['النورية', 'الزايدي', 'الهجرة 1', 'الهجرة 2', 'منى', 'عرفه', 'مزدلفه'],
   c3:{ 'منى':['كاميرات مزودين الخدمة', 'كاميرات البث', 'مخيمات', 'ممرات', 'جمرات', 'قطار'], 'عرفه':['مخيمات', 'ممرات', 'كاميرات الحافلات', 'كاميرات البث', 'قطار', 'كاميرات مزودين الخدمة'], '*':['كاميرات الحافلات', 'كاميرات البث', 'مخيمات', 'ممرات', 'جمرات', 'قطار'] },
   c3all:['كاميرات البث', 'كاميرات الحافلات', 'مخيمات', 'ممرات', 'جمرات', 'قطار', 'كاميرات مزودين الخدمة'], c4:['', 'ممرات الطرق', 'ممرات جبل الرحمه', 'ممرات مسجد نمرة', 'ممرات القطار'] };
-var EXEC_B = EXEC_L;
 function execT1(x){ return /^(النوارية|مواقع التفويج|المدينة|الترددية)$/.test(x.zone) ? 'مراكز تفويج' : 'المشاعر المقدسة'; }
 function execT2(x){ var n = String(x.name || '');
   if (execT1(x) === 'مراكز تفويج'){ if (x.zone === 'النوارية' || /النوارية|النورية/.test(n)) return 'النورية'; if (x.zone === 'الترددية' || /الزايدي/.test(n)) return 'الزايدي';
@@ -1219,9 +1220,9 @@ function execT3(x){ var n = String(x.name || ''), ty = String(x.type || '');
   if (ty === 'محطة' || /قطار/.test(n)) return 'قطار'; if (ty === 'جسر' || /الجمرات/.test(n)) return 'جمرات'; return ty; }   /* محطةُ «منى ٣ (الجمرات)» قطار */
 function execT4(x){ if (execT3(x) !== 'ممرات') return ''; var n = String(x.name || ''); return /نمرة/.test(n) ? 'ممرات مسجد نمرة' : /الرحمة|الرحمه/.test(n) ? 'ممرات جبل الرحمه' : /القطار|قطار/.test(n) ? 'ممرات القطار' : 'ممرات الطرق'; }
 function execPolicy(c1, c2, c3, c4){ return EXEC_POLICY[c2 + '|' + c3 + '|' + c4] || EXEC_POLICY[c2 + '|' + c3] || (c1 === 'مراكز تفويج' && EXEC_POLICY['*|' + c3 + '@تفويج']) || EXEC_POLICY[c2 + '|*'] || EXEC_POLICY['*|' + c3] || null; }
-function execStatus(r, pol, x){
+function execStatus(r, pol, x, noOv){   /* (V37.60) noOv: الحسابُ التلقائيُّ دون قرار المهندس — بلا لمسٍ مؤقّتٍ لـCFG */
   if (x && typeof insDone === 'function' && insDone(x.id)) return 'INSTALLED';   /* (V37.52) الشغلُ يحدّث التقرير: ما رُكّب انتقل وحدَه */
-  var ov = x && execOvOf(x.id); if (ov) return ov;
+  var ov = !noOv && x && execOvOf(x.id); if (ov) return ov;
   if (pol && pol.all) return pol.all;
   if (!r || !svVisited(r)) return 'PERMIT';
   if (!svDone(r)){ var why = String(r.access || ''); return /غير موجود|غير مطابق/.test(why) ? 'LOC' : 'PERMIT'; }
@@ -2900,6 +2901,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.60', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'مراجعة الكود: اتشال ١٠ متغيرات عامة ما حدش بيقراها، ودالة حساب التصنيف التلقائي بقت ما بتلمسش الإعدادات السحابية، وثلاث نسخ مكررة لإعادة رسم النافذة بقت دالة واحدة. مفيش تغيير في الشكل ولا الأرقام.' ] },
   { v:'V37.59', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'اللوحات بقت أرقامها بتجمع على بعض: كل نقطة محسوبة مرة واحدة بأهم تحدي فيها (عائق، ثم هيكل، ثم المدخل، ثم العارضة، ثم ارتفاع)، فـ«تحتاج تجهيز» = هيكل + مدخل + عارضة + ارتفاع بالظبط، و«يحتاج هيكل» نفس الرقم في كل شاشة. و«ليه؟» بقت تحت «تحتاج تجهيز».',
       'جوه أي مربع: زرار «→ رجوع» للشاشة اللي قبلها (حتى لو دخلت أكتر من مستوى)، والعنوان جملة واحدة «٧٤٢ نقطة — تحتاج تجهيز» من غير حلقة حمرا ولا نسبة، و«حالها الآن» بتختفي لما تبقى لون واحد.' ] },
