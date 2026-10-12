@@ -624,7 +624,7 @@ function nsSave(){
     if (!NS_SIGN_RE.test(NEWSITE.sign)){
       toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
   } else { NEWSITE.sq = ''; NEWSITE.sign = ''; }
-  if (camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
+  if (!minProp && camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
     toast(t('اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»')); return; }
   /* المركَّبةُ لا تُطابِق القائمةَ نصًّا — يُقبَل ما كانت أجزاؤه كلُّها فيها */
   if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0
@@ -3674,6 +3674,17 @@ function netRows(x, kvf){
   return kvf('عناوين الأجهزة', '<div class="cx-box">' + L(esc(t('راوتر')) + ' ' + esc(n) + '.1') + L(esc(t('قارئ')) + ' ' + esc(n) + '.2') + L(esc(t('كاميرا')) + ' ' + esc(n) + '.3')
     + '<div class="hint" style="margin:2px 0 0;font-size:11px" dir="ltr">' + esc(n) + '.0/24</div></div>');
 }
+/* (V37.72) طلبُ المالك «عاوز الوزارة تقدر تشوف الصور — شيء مهم جدًّا»: كانت صورُ الزيارة في صفحة التفاصيل والنموذج وحدَهما، وصفحةُ التفاصيل محجوبةٌ عن الوزارة
+   فكان زرُّ «التفاصيل» يعود بها إلى الخريطة. الآن تُعرض في نافذة النقطة نفسِها لكلِّ الأدوار: تُجلَب من القاعدة عند الفتح، وتُفتح كلُّ صورةٍ بحجمها بنقرة. */
+function popPhotosHtml(id){
+  if (typeof photosOf !== 'function') return '';
+  var L = photosOf(id).filter(function(x){ return x[1] && !x[1].del; });
+  if (!L.length && typeof photosFetchSite === 'function') photosFetchSite(id);
+  if (!L.length) return (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'run') ? '<div class="hint" style="margin:6px 0 0">\u23F3 ' + esc(t('تُحمَّل صورُ الزيارة…')) + '</div>' : '';
+  var th = L.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">' : ''; }).join('');
+  return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(L.length) + (L.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+}
 function popHtml(){
   var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
   if (!s) return '';
@@ -3869,7 +3880,7 @@ function popHtml(){
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
     +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"') + (campFoot(s) ? btn('\u2702 ' + t('قسّم المخيم'), 'btn-quiet btn-sm', ' data-campsplit="' + esc(s.id) + '"') : ''))   /* (V37.67) */ : '')   /* (V25.9) */
     +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (function(){ var c = iotOf(s.id); if (!c) return (campFoot(s) ? btn('\u2728 ' + t('ولّد خطة حساسات') + ' (' + nm(IOT_N) + ')', 'btn-quiet btn-sm', ' data-iotgen="' + esc(s.id) + '"') : esc(t('ارسم حدودَ المخيم أوّلًا'))); var o = iotOutside(s.id, c).length; return nm(c.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + (c.gws || []).length) + ' ' + esc(t('جيت واي')) + ' ' + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"') + (o ? ' <span style="color:#E05252">\u26A0 ' + nm(o) + ' ' + esc(t('خارج الحدود')) + '</span> ' + btn(t('وزّعها من جديد'), 'btn-quiet btn-sm', ' data-iotredist="' + esc(s.id) + '"') : ''); })()) : '')   /* (V25.8 → V37.70) */
-    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
+    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv) + popPhotosHtml(s.id)   /* (V37.72) صورُ الزيارة للجميع */   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
      تقول تمّت. صار النصُّ والدائرةُ من دورة الحياة واحدةً، ويُقال لونُها. */

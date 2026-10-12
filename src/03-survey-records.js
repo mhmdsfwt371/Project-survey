@@ -897,7 +897,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     if (NS_CO_OPEN) return nsCoCard();
 
     var has  = NEWSITE.lat && NEWSITE.lng;
-    var office = nsOffice();
+    var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.71) نموذجُ الوزارة: مقترحةٌ بلا سببٍ ولا تحدياتٍ ولا صور */
     var near = nsNear();
     var camp = NEWSITE.type === 'مخيم';
 
@@ -979,6 +979,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input data-ns="tents" type="number" min="0" value="' + esc(NEWSITE.tents) + '"></div>' : '')
           + (camp ? '<p class="hint" style="margin:6px 0 0">' + esc(t('الاسم')) + ': <b>' + esc(NEWSITE.zone + ' - مربع ' + (NEWSITE.sq || '…') + ' - شاخص ' + (NEWSITE.sign || '…')) + '</b></p>' : ''))
 
+      + (minProp ? '' : ''
       + card('لماذا ليس في السجل؟',
           '<div class="field"><label>' + esc(t('السبب')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
@@ -992,6 +993,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card(t('التحديات') + (office ? '' : ' *'), '<p class="hint" style="margin-top:0">' + esc(t('اختر ما ينطبق — أو «لا توجد تحديات»')) + '</p><div class="chips">'   /* (V29.7) إلزاميةٌ للكلّ */
           + chalsOf({ type:NEWSITE.type }).map(function(c){ var on = (NEWSITE.chals || []).indexOf(c) > -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-nschal="' + esc(c) + '">' + (on ? '\u2713 ' : '') + esc(t(c)) + '</button>'; }).join('') + '</div>')
 
+      )
+      + (minProp ? '' : ''
       + card('الصور',
           '<p class="hint" style="margin-top:0">' + esc(t(office
               ? 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.'
@@ -1011,16 +1014,17 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 + '</div>';
             }).join('')
           + '</div>')
+      )
 
       + card('', '<div class="actions">'
           + (office
-              ? btn('\u{1F4C5} ' + t('احفظ وجدوِل زيارة'),'btn-primary',' data-nssave="1"')
+              ? (minProp ? btn('\u{1F3DB} ' + t('أرسل المقترحة للمهندس'),'btn-primary',' data-nssave="1"') : btn('\u{1F4C5} ' + t('احفظ وجدوِل زيارة'),'btn-primary',' data-nssave="1"'))
               : btn('إرسال للاعتماد','btn-primary',' data-nssave="1"'))
           + btn('إلغاء','btn-secondary',' data-p="map"')
           + '</div>'
           + '<p class="hint">' + esc(t(office
-              ? 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.'
-              : 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.')) + '</p>');
+              ? (minProp ? 'تُرسَل «مقترحةً من الوزارة» إلى المهندس: لا تدخل الأرقامَ ولا التقاريرَ قبل اعتماده، وتظهر على الخريطة بعلامةٍ بنفسجية حتى ذلك.' : 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.')
+              : 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ يدخل الأرقامَ فورًا موسومًا «جديدًا بانتظار الاعتماد» حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.')) + '</p>');
   })();
     return head + (function(){
     if (!STATE.diss) STATE.diss = {};

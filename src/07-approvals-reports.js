@@ -4509,7 +4509,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','site','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }

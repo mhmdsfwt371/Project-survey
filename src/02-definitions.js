@@ -420,16 +420,17 @@ function knownHits(q){
 }
 
 /* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
-var SKINS = [['', 'الافتراضي'], ['ops', 'غرفة تحكم'], ['brand', 'هوية أفاقي']];
+/* (V37.73) قرارُ المالك: يُلغى الشكلُ القديم، و«غرفة التحكم» هو الافتراضي، و«هوية أفاقي» تُسمّى «النهاري» — زوجٌ كالداكن والفاتح (لا اسمَ المنصّة القديم: العلامةُ البيضاء V16.92) */
+var SKINS = [['ops', 'الافتراضي'], ['brand', 'النهاري']];
 function skinSet(k){
-  k = (k === 'ops' || k === 'brand') ? k : '';
+  k = (k === 'brand') ? 'brand' : 'ops';   /* (V37.73) لا شكلَ بلا مظهر — الافتراضيُّ غرفةُ التحكم */
   var el = document.documentElement; if (k) el.setAttribute('data-skin', k); else el.removeAttribute('data-skin');
   lsSet('nsk14.skin', k);
   if (k === 'ops') setTheme('dark'); else if (k === 'brand') setTheme('light');   /* كلٌّ فوق قاعدته */
   skinRowSync();
 }
 function skinRowSync(){
-  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || '';
+  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || 'ops';
   var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
   if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
 }

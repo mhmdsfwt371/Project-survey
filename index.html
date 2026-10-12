@@ -1284,7 +1284,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.70</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.73</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1346,7 +1346,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-e6212cc7ef.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-8d0efbe518.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7422,16 +7422,17 @@ function knownHits(q){
 }
 
 /* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
-var SKINS = [['', 'الافتراضي'], ['ops', 'غرفة تحكم'], ['brand', 'هوية أفاقي']];
+/* (V37.73) قرارُ المالك: يُلغى الشكلُ القديم، و«غرفة التحكم» هو الافتراضي، و«هوية أفاقي» تُسمّى «النهاري» — زوجٌ كالداكن والفاتح (لا اسمَ المنصّة القديم: العلامةُ البيضاء V16.92) */
+var SKINS = [['ops', 'الافتراضي'], ['brand', 'النهاري']];
 function skinSet(k){
-  k = (k === 'ops' || k === 'brand') ? k : '';
+  k = (k === 'brand') ? 'brand' : 'ops';   /* (V37.73) لا شكلَ بلا مظهر — الافتراضيُّ غرفةُ التحكم */
   var el = document.documentElement; if (k) el.setAttribute('data-skin', k); else el.removeAttribute('data-skin');
   lsSet('nsk14.skin', k);
   if (k === 'ops') setTheme('dark'); else if (k === 'brand') setTheme('light');   /* كلٌّ فوق قاعدته */
   skinRowSync();
 }
 function skinRowSync(){
-  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || '';
+  var row = document.getElementById('skinRow'); if (!row) return; var cur = document.documentElement.getAttribute('data-skin') || 'ops';
   var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
   if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
 }
@@ -8549,7 +8550,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     if (NS_CO_OPEN) return nsCoCard();
 
     var has  = NEWSITE.lat && NEWSITE.lng;
-    var office = nsOffice();
+    var minProp = ROLE === 'viewer', office = nsOffice() || minProp;   /* (V37.71) نموذجُ الوزارة: مقترحةٌ بلا سببٍ ولا تحدياتٍ ولا صور */
     var near = nsNear();
     var camp = NEWSITE.type === 'مخيم';
 
@@ -8631,6 +8632,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<input data-ns="tents" type="number" min="0" value="' + esc(NEWSITE.tents) + '"></div>' : '')
           + (camp ? '<p class="hint" style="margin:6px 0 0">' + esc(t('الاسم')) + ': <b>' + esc(NEWSITE.zone + ' - مربع ' + (NEWSITE.sq || '…') + ' - شاخص ' + (NEWSITE.sign || '…')) + '</b></p>' : ''))
 
+      + (minProp ? '' : ''
       + card('لماذا ليس في السجل؟',
           '<div class="field"><label>' + esc(t('السبب')) + (office ? '' : ' <span class="req">*</span>') + '</label>'
           + '<select data-ns="reason"><option value="">— ' + esc(t('اختر')) + ' —</option>'
@@ -8644,6 +8646,8 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card(t('التحديات') + (office ? '' : ' *'), '<p class="hint" style="margin-top:0">' + esc(t('اختر ما ينطبق — أو «لا توجد تحديات»')) + '</p><div class="chips">'   /* (V29.7) إلزاميةٌ للكلّ */
           + chalsOf({ type:NEWSITE.type }).map(function(c){ var on = (NEWSITE.chals || []).indexOf(c) > -1; return '<button type="button" class="chip' + (on ? ' on' : '') + '" data-nschal="' + esc(c) + '">' + (on ? '\u2713 ' : '') + esc(t(c)) + '</button>'; }).join('') + '</div>')
 
+      )
+      + (minProp ? '' : ''
       + card('الصور',
           '<p class="hint" style="margin-top:0">' + esc(t(office
               ? 'الصورُ اختياريةٌ للمكتب — تُرفَع إن وُجدت، وتُلتقَط في الزيارة التي تُجدوَل بعد الحفظ.'
@@ -8663,16 +8667,17 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                 + '</div>';
             }).join('')
           + '</div>')
+      )
 
       + card('', '<div class="actions">'
           + (office
-              ? btn('\u{1F4C5} ' + t('احفظ وجدوِل زيارة'),'btn-primary',' data-nssave="1"')
+              ? (minProp ? btn('\u{1F3DB} ' + t('أرسل المقترحة للمهندس'),'btn-primary',' data-nssave="1"') : btn('\u{1F4C5} ' + t('احفظ وجدوِل زيارة'),'btn-primary',' data-nssave="1"'))
               : btn('إرسال للاعتماد','btn-primary',' data-nssave="1"'))
           + btn('إلغاء','btn-secondary',' data-p="map"')
           + '</div>'
           + '<p class="hint">' + esc(t(office
-              ? 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.'
-              : 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ «جديدٌ بانتظار الاعتماد» لا يدخل الإحصاءَ حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.')) + '</p>');
+              ? (minProp ? 'تُرسَل «مقترحةً من الوزارة» إلى المهندس: لا تدخل الأرقامَ ولا التقاريرَ قبل اعتماده، وتظهر على الخريطة بعلامةٍ بنفسجية حتى ذلك.' : 'نقطةُ المكتب لا تُحتسَب زيارة: تُحفَظ «جديدةً بانتظار الاعتماد»، ثم يُفتَح لوحُ الإسناد عليها لتُجدوَل زيارتُها — والميدانُ هو من يمسحها.')
+              : 'الإرسالُ يُحتسَب زيارةً بانتظار الاعتماد، والموقعُ يدخل الأرقامَ فورًا موسومًا «جديدًا بانتظار الاعتماد» حتى يعتمده المهندس. وبعد الإرسال يُفتَح نموذجُ المسح عليه فتُستكمَل بياناتُه — ولا تُعتمَد الزيارةُ قبل استكمالها.')) + '</p>');
   })();
     return head + (function(){
     if (!STATE.diss) STATE.diss = {};
@@ -13159,7 +13164,7 @@ function nsSave(){
     if (!NS_SIGN_RE.test(NEWSITE.sign)){
       toast(t('الصيغة: اسم الخيمة/رقم الشارع — مثال 57/2 أو 12أ/8')); return; }
   } else { NEWSITE.sq = ''; NEWSITE.sign = ''; }
-  if (camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
+  if (!minProp && camp && NEWSITE.reason !== 'عدم وجود تخصيص' && !NEWSITE.co && !NEWSITE.coReq){
     toast(t('اختر شركة الخدمة من القائمة — أو اطلب إضافتها، أو اختر السبب «عدم وجود تخصيص»')); return; }
   /* المركَّبةُ لا تُطابِق القائمةَ نصًّا — يُقبَل ما كانت أجزاؤه كلُّها فيها */
   if (NEWSITE.co && CO_LIST.indexOf(NEWSITE.co) < 0
@@ -16209,6 +16214,17 @@ function netRows(x, kvf){
   return kvf('عناوين الأجهزة', '<div class="cx-box">' + L(esc(t('راوتر')) + ' ' + esc(n) + '.1') + L(esc(t('قارئ')) + ' ' + esc(n) + '.2') + L(esc(t('كاميرا')) + ' ' + esc(n) + '.3')
     + '<div class="hint" style="margin:2px 0 0;font-size:11px" dir="ltr">' + esc(n) + '.0/24</div></div>');
 }
+/* (V37.72) طلبُ المالك «عاوز الوزارة تقدر تشوف الصور — شيء مهم جدًّا»: كانت صورُ الزيارة في صفحة التفاصيل والنموذج وحدَهما، وصفحةُ التفاصيل محجوبةٌ عن الوزارة
+   فكان زرُّ «التفاصيل» يعود بها إلى الخريطة. الآن تُعرض في نافذة النقطة نفسِها لكلِّ الأدوار: تُجلَب من القاعدة عند الفتح، وتُفتح كلُّ صورةٍ بحجمها بنقرة. */
+function popPhotosHtml(id){
+  if (typeof photosOf !== 'function') return '';
+  var L = photosOf(id).filter(function(x){ return x[1] && !x[1].del; });
+  if (!L.length && typeof photosFetchSite === 'function') photosFetchSite(id);
+  if (!L.length) return (typeof PH_FETCH === 'object' && PH_FETCH[id] === 'run') ? '<div class="hint" style="margin:6px 0 0">\u23F3 ' + esc(t('تُحمَّل صورُ الزيارة…')) + '</div>' : '';
+  var th = L.slice(0, 6).map(function(x){ var p = x[1], src = p.data || (p.driveId ? 'https://drive.google.com/thumbnail?id=' + encodeURIComponent(p.driveId) + '&sz=w400' : '');
+    return src ? '<img src="' + esc(src) + '" alt="" loading="lazy" data-phview="' + esc(x[0]) + '" title="' + esc(t('اضغط لعرضها كاملة')) + '" style="width:72px;height:72px;object-fit:cover;border-radius:8px;cursor:zoom-in;flex:0 0 auto">' : ''; }).join('');
+  return '<div style="margin:8px 0 0"><div class="hint" style="margin:0 0 4px">\u{1F4F7} ' + esc(t('صور الزيارة')) + ' \u00b7 ' + nm(L.length) + (L.length > 6 ? ' \u2014 ' + esc(t('أوّلُ ستٍّ — والباقي في «التفاصيل»')) : '') + '</div><div style="display:flex;gap:6px;overflow-x:auto;padding-bottom:4px">' + th + '</div></div>';
+}
 function popHtml(){
   var s = (POP_SITE && siteFind(POP_SITE)) || STATE.sites[0];
   if (!s) return '';
@@ -16404,7 +16420,7 @@ function popHtml(){
     +   (s.type === 'مخيم' ? (tfwFloorOf(s.id) != null ? kv('مسار التفويج', esc(t('إلى الجمرات')) + ' \u2014 ' + esc(t('الدور') + ' ' + t(TFW_FL[tfwFloorOf(s.id)])) + ' ' + btn('اعرض مسار المخيم', 'btn-quiet btn-sm', ' data-tfwcamp="' + esc(s.id) + '"')) : (tfwLoad(), '')) : '')   /* (V23.2) */
     +   (s.type === 'مخيم' && maySiteEdit() ? kv('حدود المخيم', btn(campFoot(s) ? 'عدّل الحدود' : 'ارسم الحدود', 'btn-quiet btn-sm', ' data-bedstart="' + esc(s.id) + '"') + (campFoot(s) ? btn('\u2702 ' + t('قسّم المخيم'), 'btn-quiet btn-sm', ' data-campsplit="' + esc(s.id) + '"') : ''))   /* (V37.67) */ : '')   /* (V25.9) */
     +   (s.type === 'مخيم' && s.zone === 'منى' && mayIot() ? kv('حساسات المخيم', (function(){ var c = iotOf(s.id); if (!c) return (campFoot(s) ? btn('\u2728 ' + t('ولّد خطة حساسات') + ' (' + nm(IOT_N) + ')', 'btn-quiet btn-sm', ' data-iotgen="' + esc(s.id) + '"') : esc(t('ارسم حدودَ المخيم أوّلًا'))); var o = iotOutside(s.id, c).length; return nm(c.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + (c.gws || []).length) + ' ' + esc(t('جيت واي')) + ' ' + btn('عدّل الحساسات', 'btn-quiet btn-sm', ' data-iotedit="' + esc(s.id) + '"') + (o ? ' <span style="color:#E05252">\u26A0 ' + nm(o) + ' ' + esc(t('خارج الحدود')) + '</span> ' + btn(t('وزّعها من جديد'), 'btn-quiet btn-sm', ' data-iotredist="' + esc(s.id) + '"') : ''); })()) : '')   /* (V25.8 → V37.70) */
-    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv)   /* (V23.8) */
+    +   camInfoRows(s, kv) + camxRows(s, kv) + netRows(s, kv) + popPhotosHtml(s.id)   /* (V37.72) صورُ الزيارة للجميع */   /* (V23.8) */
     /* الحالةُ من مصدر اللون نفسِه (V17.35): كانت «تمت الزيارة» تُكتَب لكلِّ
      سجلٍّ ولو كان تعذُّرَ وصول — فيبدو المخيمُ بُنيًّا على الخريطة والنافذةُ
      تقول تمّت. صار النصُّ والدائرةُ من دورة الحياة واحدةً، ويُقال لونُها. */
@@ -26230,6 +26246,13 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.73', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'المظهر: الشكل القديم اتشال، و«غرفة التحكم» بقت هي «الافتراضي» لكل الأجهزة، و«هوية أفاقي» اسمها بقى «النهاري» (الفاتح). يعني اختيارين بس: الافتراضي والنهاري.',
+      'تصحيح كلام في نموذج الموقع الجديد للميدان: كان بيقول إن الموقع الجديد «ما بيدخلش الأرقام لحد الاعتماد»، والصح إنه بيدخل الأرقام على طول وعليه علامة «جديد بانتظار الاعتماد».' ] },
+  { v:'V37.72', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'صور الزيارة بقت ظاهرة في نافذة أي نقطة على الخريطة لكل الحسابات، والوزارة أولهم: صور مصغّرة بتتحمّل أول ما تفتح النقطة، وتضغط على أي صورة تتفتح كاملة. وزرار «◈ التفاصيل» بقى بيفتح صفحة التفاصيل للوزارة (كان بيرجّعها للخريطة).' ] },
+  { v:'V37.71', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'نموذج النقطة الجديدة لحساب الوزارة بقى على قدّها: من غير «السبب» ولا «التحديات» ولا الصور (دي شغل المسح الميداني)، والشركة اختيارية، والزرار «🏛 أرسل المقترحة للمهندس»، وتحته: «لا تدخل الأرقام ولا التقارير قبل اعتماده».' ] },
   { v:'V37.70', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'الحساسات والجيت واي في منى بقوا زي باقي النقاط: لكل جهاز رقم خاص وبيانات (الغرفة، السيريال، الحالة: مخطط/مُركّب/معطّل، ملاحظة)، تضغط عليه تفتح نافذته وفيها «✎ عدّل». وتقدر تحرّكه وتضيف وتحذف حساسات، وتضيف جيت واي تاني للمخيم الكبير.',
       'لما تقسم مخيم، حساساته بتتوزّع على الأجزاء حسب مكانها وكل جزء بيتكمّل لـ١٢ لوحده (بيانات الأجهزة بتفضل زي ما هي). ولما تعدّل الحدود، أي حساس برّه بيتعلّم بالأحمر ومعاه «وزّعها من جديد». والمخيم اللي ملوش خطة: «ولّد خطة حساسات (١٢)». وجنب طبقة الحساسات عدّادها وزرار «إكسل الحساسات».' ] },
@@ -31940,7 +31963,7 @@ var ROLES = {
     /* V16.55: الوزارةُ ترى حساباتِ الوزارة وحدَها — قراءةً (can.users = 0) */
     /* V16.65: «المتعذّر والراكد» للوزارة قراءةً — بصوره وسببه وقرار المهندس */
     /* V16.66: اعتمادُ الوزارة لإعداد التركيب — فعلُها الوحيد في النظام */
-    nav:['map','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
+    nav:['map','site','newsite','mfu','mweek','msurv','minst','mcos','mobs','mreq','mdaily','kiosk','over','wbs','wtask','now','repcenter','exp','diary','miles','reg','co','survey','minappr','stuck','chalm','dis','ncr','users','guide','acct'],
     /* minapprove: اعتمادُ إعداد التركيب — الفعلُ الوحيدُ الذي تكتبه الوزارة */
     can:{ propose:1, edit:0, approve:0, settings:0, money:0, inventory:0, workshop:0,
           exportAll:1, importAll:0, delete:0, users:0, phones:0, minapprove:1 }
@@ -37917,7 +37940,7 @@ if (window.visualViewport){
   var th = 'light', lg = 'ar';
   try{ th = localStorage.getItem('nsk14.theme') || 'light'; lg = localStorage.getItem('nsk14.lang') || 'ar'; }catch(e){}
   setTheme(th);
-  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; if (sk0 === 'ops' || sk0 === 'brand') document.documentElement.setAttribute('data-skin', sk0); } catch (eSk){ LS_ERR = eSk; }   /* (V37.33) */
+  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; document.documentElement.setAttribute('data-skin', sk0 === 'brand' ? 'brand' : 'ops'); if (sk0 !== 'brand' && typeof setTheme === 'function' && document.documentElement.getAttribute('data-theme') !== 'dark') setTheme('dark'); } catch (eSk){ LS_ERR = eSk; }   /* (V37.73) الافتراضيُّ غرفةُ التحكم */   /* (V37.33) */
   LANG = I18N[lg] ? lg : 'ar';
   document.documentElement.lang = LANG;
   try { shellLang(); } catch(e){}

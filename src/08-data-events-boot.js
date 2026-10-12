@@ -5331,7 +5331,7 @@ if (window.visualViewport){
   var th = 'light', lg = 'ar';
   try{ th = localStorage.getItem('nsk14.theme') || 'light'; lg = localStorage.getItem('nsk14.lang') || 'ar'; }catch(e){}
   setTheme(th);
-  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; if (sk0 === 'ops' || sk0 === 'brand') document.documentElement.setAttribute('data-skin', sk0); } catch (eSk){ LS_ERR = eSk; }   /* (V37.33) */
+  try { var sk0 = localStorage.getItem('nsk14.skin') || ''; document.documentElement.setAttribute('data-skin', sk0 === 'brand' ? 'brand' : 'ops'); if (sk0 !== 'brand' && typeof setTheme === 'function' && document.documentElement.getAttribute('data-theme') !== 'dark') setTheme('dark'); } catch (eSk){ LS_ERR = eSk; }   /* (V37.73) الافتراضيُّ غرفةُ التحكم */   /* (V37.33) */
   LANG = I18N[lg] ? lg : 'ar';
   document.documentElement.lang = LANG;
   try { shellLang(); } catch(e){}
