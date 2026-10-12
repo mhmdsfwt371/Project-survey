@@ -474,7 +474,7 @@ function mapPaint(light){
       TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
       (TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
     }
-    if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
+    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
       var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
       if (isArea && pts.length > 2){
@@ -2130,6 +2130,53 @@ function bedReset(){
   bedCommit(x, [], 'رجوعٌ لحدود المخيم الأصلية — ' + x.id);
   toast(t('عادت حدودُ المخيم الأصلية')); return true;
 }
+/* ═══ (V37.67) «✂ قسّم المخيم» — قرارُ المالك: «مرونة: أعدّل حدود المخيم أو أقسم مخيمًا كبيرًا لثلاثة، وأيُّ زيادةٍ أو نقصٍ يتغيّر في التقرير»
+   للمخيمات وحدَها وللمهندس فما فوق. يُقسَم المضلّعُ أجزاءً متساويةَ المساحة على محوره الأطول (معاينةٌ على الخريطة قبل الحفظ)، ثم تُضبَط حدودُ كلِّ جزءٍ بـ«عدّل الحدود».
+   الجزءُ الأوّلُ يبقى برقم المخيم وبياناته ومسحه، والأجزاءُ الجديدةُ برقمه + B وC… («لم تُزر» تحتاج مسحًا) بالمشعر والشركة والمربع نفسها والاسمِ والشاخصِ + (٢)، (٣).
+   والأجزاءُ نقاطٌ معتمدةٌ من المهندس، فتدخل كلَّ العدّاداتِ والتقاريرِ والإكسل تلقائيًّا — لا عدَّ يدويًّا. */
+var SPLIT = null;   /* { id, n, parts:[[ [lat,lng]… ]…] } */
+function splitParts(ring, n){   /* ring: [[lng,lat]…] من campFoot → أجزاءٌ [[lat,lng]…] متساويةُ المساحة */
+  var lat0 = ring.reduce(function(a, p){ return a + p[1]; }, 0) / ring.length, kx = 111320 * Math.cos(lat0 * Math.PI / 180), ky = 110540;
+  var P = ring.map(function(p){ return [p[0] * kx, p[1] * ky]; }), cx = 0, cy = 0; P.forEach(function(p){ cx += p[0]; cy += p[1]; }); cx /= P.length; cy /= P.length;
+  var sxx = 0, syy = 0, sxy = 0; P.forEach(function(p){ var dx = p[0] - cx, dy = p[1] - cy; sxx += dx * dx; syy += dy * dy; sxy += dx * dy; });
+  var ang = 0.5 * Math.atan2(2 * sxy, sxx - syy), ux = Math.cos(ang), uy = Math.sin(ang);   /* المحورُ الأطول */
+  var proj = function(p){ return p[0] * ux + p[1] * uy; };
+  var clip = function(poly, c, keepLow){ var out = []; for (var i = 0; i < poly.length; i++){ var a = poly[i], b = poly[(i + 1) % poly.length], da = proj(a) - c, db = proj(b) - c, ina = keepLow ? da <= 0 : da >= 0, inb = keepLow ? db <= 0 : db >= 0;
+      if (ina) out.push(a); if (ina !== inb){ var tt = da / (da - db); out.push([a[0] + (b[0] - a[0]) * tt, a[1] + (b[1] - a[1]) * tt]); } } return out; };
+  var area = function(poly){ var s = 0; for (var i = 0; i < poly.length; i++){ var a = poly[i], b = poly[(i + 1) % poly.length]; s += a[0] * b[1] - b[0] * a[1]; } return Math.abs(s) / 2; };
+  var lo = Math.min.apply(null, P.map(proj)), hi = Math.max.apply(null, P.map(proj)), tot = area(P), cuts = [lo];
+  for (var k = 1; k < n; k++){ var a0 = cuts[cuts.length - 1], b0 = hi, want = tot * k / n; for (var it = 0; it < 50; it++){ var m = (a0 + b0) / 2; if (area(clip(P, m, true)) < want) a0 = m; else b0 = m; } cuts.push((a0 + b0) / 2); }
+  cuts.push(hi);
+  var parts = []; for (var q = 0; q < n; q++){ var pc = clip(clip(P, cuts[q], false), cuts[q + 1], true); if (pc.length >= 3) parts.push(pc.map(function(p){ return [p[1] / ky, p[0] / kx]; })); }
+  return parts;
+}
+function splitStart(id){ var x = siteFind(id), ring = x && campFoot(x); if (!x || x.type !== 'مخيم'){ toast(t('التقسيمُ للمخيمات وحدَها')); return; } if (!maySiteEdit()){ toast(t('تقسيمُ المخيم للمهندس فما فوق')); return; } if (!ring){ toast(t('ارسم حدودَ المخيم أوّلًا')); return; }
+  SPLIT = { id:id, n:3, parts:splitParts(ring, 3) }; POP_OPEN = false; render(1); if (typeof mapPaint === 'function') mapPaint(); }
+function splitN(n){ if (!SPLIT) return; var x = siteFind(SPLIT.id); SPLIT.n = n; SPLIT.parts = splitParts(campFoot(x), n); render(1); if (typeof mapPaint === 'function') mapPaint(); }
+var SPLIT_COL = ['#4FA3FF', '#FF8C42', '#3AD6A0', '#E64980', '#F5C400', '#9B51E0'];
+function splitPaint(){ if (!SPLIT || !MAP_TMP) return; SPLIT.parts.forEach(function(pp, i){ L.polygon(pp, { renderer:MAP_CV, color:SPLIT_COL[i % 6], weight:2.5, dashArray:'6 4', fillColor:SPLIT_COL[i % 6], fillOpacity:0.3, interactive:false }).addTo(MAP_TMP); }); }
+function splitPanelHtml(){ if (!SPLIT) return ''; var x = siteFind(SPLIT.id) || {};
+  return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0"><b>\u2702 ' + esc(t('قسّم المخيم')) + ' \u2014 ' + esc(x.name || SPLIT.id) + '</b><span class="hint">' + nm(SPLIT.parts.length) + ' ' + esc(t('أجزاء')) + '</span></div>'
+    + '<div class="chips" style="margin:8px 0">' + [2, 3, 4, 5, 6].map(function(k){ return '<button type="button" class="chip' + (SPLIT.n === k ? ' on' : '') + '" data-splitn="' + k + '">' + nm(k) + '</button>'; }).join('') + '</div>'
+    + '<p class="hint" style="margin:0 0 8px">' + esc(t('أجزاءٌ متساويةُ المساحة على طول المخيم — الأوّلُ يبقى برقمه ومسحه، والباقي مخيماتٌ جديدةٌ تحتاج مسحًا. بعد الحفظ اضبط حدودَ كلِّ جزءٍ بـ«عدّل الحدود».')) + '</p>'
+    + '<div class="actions">' + btn('\u2713 ' + t('احفظ التقسيم'), 'btn-primary btn-sm', ' data-splitsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-splitcancel="1"') + '</div></div>';
+}
+function splitSuffix(base, k){ var L0 = 'BCDEFGHIJ', id = base + '-' + L0[k - 1]; var g = 0; while (siteFind(id) && g < 30){ g++; id = base + '-' + L0[(k - 1 + g) % L0.length] + (g >= L0.length ? g : ''); } return id; }
+function splitSave(){
+  if (!SPLIT) return false; if (!maySiteEdit()){ toast(t('تقسيمُ المخيم للمهندس فما فوق')); return false; }
+  var x = siteFind(SPLIT.id); if (!x || SPLIT.parts.length < 2){ toast(t('التقسيمُ جزءان على الأقل')); return false; }
+  var flat = function(pp){ var f = []; pp.forEach(function(q){ f.push(+(+q[0]).toFixed(6), +(+q[1]).toFixed(6)); }); return f; };
+  var cen = function(pp){ var a = 0, b = 0; pp.forEach(function(q){ a += q[0]; b += q[1]; }); return [+(a / pp.length).toFixed(6), +(b / pp.length).toFixed(6)]; };
+  var made = [], now = Date.now(), who = (STATE.meta && STATE.meta.name) || '';
+  SPLIT.parts.slice(1).forEach(function(pp, i){ var k = i + 1, id = splitSuffix(x.id, k), c = cen(pp), lab = ' (' + nm(k + 1) + ')';
+    var site = { id:id, name:(x.name || x.id) + lab, zone:x.zone, type:'مخيم', co:x.co || '', sq:x.sq || '', sign:(x.sign || '') + lab, lat:c[0], lng:c[1], region:x.region || ('منطقة ' + (x.zone || '')),
+      poly:flat(pp), polyBy:who, polyAt:now, tents:x.tents || 0, fstat:'لم يبدأ', inout:'', isNew:true, approved:true, appBy:who, appAt:now, by:who, at:now, origin:'office', splitOf:x.id, note:t('من تقسيم المخيم') + ' ' + x.id };
+    STATE.sites.push(site); CORE.set('newsites', id, site); made.push(id); });
+  bedCommit(x, flat(SPLIT.parts[0]), 'تقسيمُ مخيم — ' + x.id + ' إلى ' + SPLIT.parts.length + ' أجزاء: ' + made.join('، '));   /* الجزءُ الأوّلُ بحدوده الجديدة — ويُعيد الرسمَ والعدّ */
+  SPLIT = null; SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint();
+  toast(t('قُسِّم المخيم') + ' — ' + nm(made.length + 1) + ' ' + t('مخيمات')); return made;
+}
+
 function bedPanelHtml(){
   if (!BED) return '';
   var x = siteFind(BED.id), nm0 = x ? (x.name || BED.id) : BED.id, H = (BED.hist || []).length;
@@ -3945,6 +3992,7 @@ function mapUIHtml(){
     + tfdPanelHtml()   /* (V28.0) */
     + (IOT.edit ? iotPanelHtml() : '')   /* (V25.8) */
     + (BED ? bedPanelHtml() : '')   /* (V25.9) */
+    + (SPLIT ? splitPanelHtml() : '')   /* (V37.67) */
     + '<div class="map-fab">'
     +   (may('edit') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')
     +   ((may('newsite') || may('settings'))

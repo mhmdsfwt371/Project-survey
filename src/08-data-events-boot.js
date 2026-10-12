@@ -2993,6 +2993,10 @@ function clickAPart2(e){
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
+  var csp = e.target.closest('[data-campsplit]'); if (csp){ splitStart(csp.getAttribute('data-campsplit')); return true; }   /* (V37.67) قسّم المخيم */
+  var spn = e.target.closest('[data-splitn]'); if (spn){ splitN(+spn.getAttribute('data-splitn')); return true; }
+  if (e.target.closest('[data-splitsave]')){ splitSave(); return true; }
+  if (e.target.closest('[data-splitcancel]')){ SPLIT = null; render(1); if (typeof mapPaint === 'function') mapPaint(); return true; }
   var ssb = e.target.closest('[data-svsub]');   /* (V37.58) مربعٌ في اللوحة يُضغط: نافذتُه بلوحتها وإكسلها */
   if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; svPopRefresh(); return true; }
   var szf = e.target.closest('[data-svzf]');   /* (V37.45) */
