@@ -63,6 +63,7 @@ body.kiosk .mfu-obs{display:none}.mfu-obs .kk-h{margin-top:0 !important}   /* (V
 .fsec-t{font-weight:700;flex:0 0 auto}.fsec-s{flex:1;color:var(--muted,#9FB0C8);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fsec-c{display:inline-block;transition:transform .2s ease;font-size:12px;opacity:.7}.fsec.open .fsec-c{transform:rotate(90deg)}
 .fsec-b{padding:0 0 8px}@keyframes fsec-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}.fsec.open .fsec-b{animation:fsec-in .18s ease-out}
 @media (prefers-reduced-motion:reduce){.fsec-c{transition:none}.fsec.open .fsec-b{animation:none}}   /* (V37.54) الترشيحُ أقسامًا مطوية */
+body.kiosk .mt-alerts{display:none}   /* (V37.65) التنبيهاتُ للاجتماع لا لشاشة القاعة */
 /* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
    «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
    متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
@@ -1283,7 +1284,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.64</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.65</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>

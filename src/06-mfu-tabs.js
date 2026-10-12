@@ -116,12 +116,15 @@ function mtCos(){
 }
 
 /* ── ١ · المهام الأسبوعية — تُصفّى في مكانها، والإكسلُ بما تراه ── */
-var MT_WF = '', MT_WPOP = false;   /* (V37.63) مربعُ المهام يفتح نافذتَه */
+var MT_WF = '', MT_WPOP = false;
+function mtWCard(r){ var COL = { done:'#22C55E', late:'#EF4444', run:'#2E86DE', wait:'#475569' }, s0 = mtWSt(r);
+  return '<div style="' + MT_TILE + ';display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="width:10px;height:10px;border-radius:50%;background:' + COL[s0] + ';flex:0 0 auto"></span><div style="flex:1;min-width:0"><div style="font-size:14px">' + esc(r.n || '\u2014') + '</div><div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(r.who || '\u2014') + (r.due ? ' \u00b7 ' + esc(r.due) : '') + '</div></div><span class="pill">' + esc(t((MT_WST.filter(function(o){ return o.k === s0; })[0] || {}).n || '')) + '</span></div>'; }   /* (V37.63) مربعُ المهام يفتح نافذتَه */
 var MT_WST = [ { k:'done', n:'خلصت', e:'\u2705', c:'#22C55E' }, { k:'late', n:'متأخرة', e:'\u23F0', c:'#EF4444' }, { k:'run', n:'شغالين عليها', e:'\u{1F504}', c:'#2E86DE' }, { k:'wait', n:'لسه', e:'\u23F3', c:'#475569' } ];
 var MT_WWHO = [ { k:'afaqy', n:'أفاقي', e:'\u{1F3E2}' }, { k:'min', n:'الوزارة', e:'\u{1F3DB}' }, { k:'co', n:'شركة الخدمة', e:'\u26FA' }, { k:'other', n:'أخرى', e:'\u{1F465}' } ];
 function mtWSt(r){ if (r.st === 'مكتمل') return 'done'; if (wtLate(r)) return 'late'; if (r.st === 'جاري العمل') return 'run'; return 'wait'; }
 function mtWWho(r){ var w = String(r.who || ''); if (/أفاق|افاق|afaqy/i.test(w)) return 'afaqy'; if (/وزار/.test(w)) return 'min'; if (/شرك|مطوف|خدمة/.test(w)) return 'co'; return 'other'; }
-function mtWRows(){ var R = wtRows(); if (!MT_WF) return R; var p = MT_WF.split(':'); return R.filter(function(r){ return p[0] === 'st' ? mtWSt(r) === p[1] : mtWWho(r) === p[1]; }); }
+function mtSupNeeded(r){ if (mtWWho(r) !== 'min' || r.st === 'مكتمل') return false; var d = wtDue(r); return d != null && d <= 7; }   /* (V37.65) «دعم من الوزارة» — تسميةُ المالك */
+function mtWRows(){ var R = wtRows(); if (!MT_WF) return R; var p = MT_WF.split(':'); return R.filter(function(r){ return p[0] === 'sup' ? mtSupNeeded(r) : p[0] === 'st' ? mtWSt(r) === p[1] : mtWWho(r) === p[1]; }); }
 function mtWeek(){
   var R = wtRows(), N = R.length, sc = {}, wc = {}; R.forEach(function(r){ var s = mtWSt(r), w = mtWWho(r); sc[s] = (sc[s] || 0) + 1; wc[w] = (wc[w] || 0) + 1; });
   var pct = Math.round((sc.done || 0) / Math.max(1, N) * 100);
@@ -130,16 +133,21 @@ function mtWeek(){
   var COL = { done:'#22C55E', late:'#EF4444', run:'#2E86DE', wait:'#475569' };
   var card = function(r){ var s0 = mtWSt(r);
     return '<div style="' + MT_TILE + ';display:flex;align-items:center;gap:10px;margin-bottom:6px"><span style="width:10px;height:10px;border-radius:50%;background:' + COL[s0] + ';flex:0 0 auto"></span><div style="flex:1;min-width:0"><div style="font-size:14px">' + esc(r.n || '\u2014') + '</div><div class="hint" style="margin:2px 0 0;font-size:12px">' + esc(r.who || '\u2014') + (r.due ? ' \u00b7 ' + esc(r.due) : '') + '</div></div><span class="pill">' + esc(t((MT_WST.filter(function(o){ return o.k === s0; })[0] || {}).n || '')) + '</span></div>'; };
-  var pop = '';
-  if (MT_WPOP && MT_WF){ var F = mtWRows(), p = MT_WF.split(':'), lab = p[0] === 'st' ? (MT_WST.filter(function(o){ return o.k === p[1]; })[0] || {}).n : (MT_WWHO.filter(function(o){ return o.k === p[1]; })[0] || {}).n;
-    pop = '<div class="svpop-veil" data-mtwclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div><div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
-      + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + esc(t('مهام')) + ' \u2014 ' + esc(t(lab || '')) + ' \u2014 ' + nm(F.length) + '</h3>' + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-mtwclose="1"') + '</div>'
-      + '<div style="margin-top:10px">' + (F.length ? F.map(card).join('') : '<p class="hint">' + esc(t('لا مهام هنا')) + '</p>') + '</div>'
-      + (F.length ? '<button type="button" class="btn btn-primary" data-mtwx="1" style="display:block;width:100%;margin-top:10px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>' : '') + '</div>'; }
+  var pop = mtWPopHtml(card);
   var list = N ? R.slice(0, 40).map(card).join('') : '<p class="hint">' + esc(t('لا مهامَّ أسبوعيةٌ بعد — تُضاف من «تحديث المهام» تحت.')) + '</p>';
   return pop + mtHero(pct, nm(sc.done || 0) + ' <span style="font-size:18px">' + esc(t('من')) + ' ' + nm(N) + '</span>', esc(t('مهمة خلصت')), '#22C55E')
     + mtGrid(st) + mtSec('على مين؟') + mtGrid(who, 96)
     + mtSec('كل المهام', ' <span class="num">(' + nm(N) + ')</span>') + list + (N ? mtAllBtn('week') : '');   /* (V37.63) بلا مهامٍّ لا زرَّ تصدير */
+}
+function mtWPopHtml(card){
+  card = card || mtWCard;   /* (V37.65) النافذةُ نفسُها من المهام الأسبوعية ومن تنبيه الملخّص */
+  var pop = '';
+  if (MT_WPOP && MT_WF){ var F = mtWRows(), p = MT_WF.split(':'), lab = p[0] === 'sup' ? 'دعم من الوزارة' : p[0] === 'st' ? (MT_WST.filter(function(o){ return o.k === p[1]; })[0] || {}).n : (MT_WWHO.filter(function(o){ return o.k === p[1]; })[0] || {}).n;
+    pop = '<div class="svpop-veil" data-mtwclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000"></div><div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:6vh 4vw auto 4vw;max-height:86vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
+      + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap"><h3 style="margin:0">' + (p[0] === 'sup' ? esc(t(lab)) : esc(t('مهام')) + ' \u2014 ' + esc(t(lab || ''))) + ' \u2014 ' + nm(F.length) + '</h3>' + btn('\u2715 ' + t('إغلاق'), 'btn-quiet btn-sm', ' data-mtwclose="1"') + '</div>'
+      + '<div style="margin-top:10px">' + (F.length ? F.map(card).join('') : '<p class="hint">' + esc(t('لا مهام هنا')) + '</p>') + '</div>'
+      + (F.length ? '<button type="button" class="btn btn-primary" data-mtwx="1" style="display:block;width:100%;margin-top:10px">\u2B07 ' + esc(t('نزّل التفاصيل (إكسل)')) + '</button>' : '') + '</div>'; }
+  return pop;
 }
 function mtWeekXlsx(all){
   var F = all ? wtRows() : mtWRows(); if (!F.length){ toast(t('لا بيانات بعد')); return false; }
@@ -147,4 +155,18 @@ function mtWeekXlsx(all){
     var rows = [[t('المهمة'), t('على مين'), t('موعدها'), t('الحالة'), t('المسار')]].concat(F.map(function(r){ return [r.n || '', r.who || '', r.due || '', t((MT_WST.filter(function(o){ return o.k === mtWSt(r); })[0] || {}).n || ''), r.track || '']; }));
     var wb = XLSX.utils.book_new(), ws = XLSX.utils.aoa_to_sheet(rows); ws['!cols'] = [{ wch:50 }, { wch:20 }, { wch:12 }, { wch:14 }, { wch:16 }]; wb.Workbook = { Views:[{ RTL:true }] };
     XLSX.utils.book_append_sheet(wb, ws, t('المهام')); XLSX.writeFile(wb, t('المهام الأسبوعية') + ' — ' + dayKey() + '.xlsx'); logEvent('تصدير المهام الأسبوعية — ' + F.length); toast(t('نزل الملف')); return true; });
+}
+
+/* ═══ (V37.65) «تنبيهات الأسبوع» فوق متابعة الوزارة — قرارُ المالك على المقترح:
+   ثلاثةُ تنبيهاتٍ بحدٍّ أقصى، كلُّها عن ما تقدر الوزارةُ تحرّكه، ولا تأخيرَ ولا مقارنةَ تدين المشغّل؛ والشريطُ لا يظهر إن خلت. كلُّ تنبيهٍ يفتح نافذتَه وإكسله. ═══ */
+function mtNewWeek(id){ var r = STATE.recs[id]; var a = r ? +(r.at || r._at || 0) : 0; return a > 0 && Date.now() - a < 7 * 864e5; }
+function mtAlertsHtml(){
+  var al = [], sup = wtRows().filter(mtSupNeeded).length;
+  if (sup) al.push(mtDot(sup, 'دعم من الوزارة', '\u{1F3DB}', '#2E86DE', ' data-mtwf="sup:min"'));
+  var own = 0; mtSites().forEach(function(x){ if (mtGrpOf(x.id) === 'owner' && mtNewWeek(x.id)) own++; });
+  if (own) al.push(mtDot(own, 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع', '\u{1F91D}', '#EF4444', mtOpen('sv', 'neww:owner')));
+  var appr = 0; mtSites().forEach(function(x){ if (lifeOf(x) === 'minwait') appr++; });
+  if (appr) al.push(mtDot(appr, 'جاهزة لاعتماد الوزارة', '\u2705', '#22C55E', mtOpen('sv', 'life:minwait')));
+  if (!al.length) return '';
+  return '<div class="card mt-alerts" style="margin:0 0 12px"><div class="card-body"><div style="font-weight:700;margin-bottom:8px">\u{1F514} ' + esc(t('تنبيهات الأسبوع')) + '</div>' + mtGrid(al, 200) + '</div></div>';
 }

@@ -197,6 +197,8 @@ function svSubPass(id){
   if (p[0] === 'why') return svStOf(id) !== 'ins' && svPrimWhy(STATE.recs[id]) === +p[1];   /* (V37.59) بالسبب الرئيس — كلُّ نقطةٍ في مربعٍ واحد */
   var x = siteFind(id);   /* (V37.62) مرشّحاتُ التبويبات الخمسة */
   if (p[0] === 'type') return !!x && taxOf(x).t === p[1];
+  if (p[0] === 'neww') return mtGrpOf(id) === p[1] && mtNewWeek(id);   /* (V37.65) */
+  if (p[0] === 'life') return !!x && lifeOf(x) === p[1];
   if (p[0] === 'co') return !!x && x.co === SV_SUB.slice(3);
   if (p[0] === 'cob'){ if (!x || x.type !== 'مخيم' || !x.co) return false; var cb = mtCoStats().filter(function(o){ return o.co === x.co; })[0]; return !!cb && cb.b === p[1]; }
   if (p[0] === 'grp') return p[1] === 'all' ? /^(prep|coord)$/.test(svStOf(id)) : mtGrpOf(id) === p[1];
@@ -205,6 +207,8 @@ function svSubPass(id){
 }
 function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
   if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; }
+  if (p[0] === 'neww') return 'تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع';
+  if (p[0] === 'life') return p[1] === 'minwait' ? 'جاهزة لاعتماد الوزارة' : ((LIFE[p[1]] || {}).n || p[1]);
   if (p[0] === 'type') return (TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
   if (p[0] === 'cob'){ var b = MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
   if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
@@ -2744,6 +2748,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.65', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      '«تنبيهات الأسبوع» فوق ملخص متابعة الوزارة — ٣ تنبيهات بحد أقصى، وكل واحد بيفتح نافذته وإكسله: «دعم من الوزارة» (مهام جهتها الوزارة وموعدها خلال أسبوع أو فات)، و«تحتاج تنسيق مع الجهة المالكة — جديدة هذا الأسبوع»، و«جاهزة لاعتماد الوزارة». لو مفيش حاجة الشريط مش بيظهر، ومخفي في عرض القاعة.' ] },
   { v:'V37.64', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'توحيد الأسامي والأرقام بين الخريطة واللوحات: «معالجة التحديات» بقت بنفس الأرقام في فلتر الخريطة والملخص وتبويب التحديات (كل نقطة في مجموعة واحدة بأهم تحدي فيها)، وبأسامي المالك نفسها. والحالات اللي معناها واحد بقت بنفس الاسم واللون: مُركّبة، مجدولة للتركيب، تحتاج زيارة أخرى، لم تُزر.' ] },
   { v:'V37.63', d:'١٢ أكتوبر ٢٠٢٦', notes:[
