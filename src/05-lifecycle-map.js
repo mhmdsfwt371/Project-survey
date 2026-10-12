@@ -1946,10 +1946,104 @@ function poiPaint(){
    الوزارة. التعديلُ الميداني (نقلٌ وزيادةٌ ونقص) في نسخةٍ تالية. */
 var IOT = { on:false, data:null, busy:false, layer:null, Z:16, edit:null };
 var IOT_C = { gw:'#F5A623', sensor:'#2EC4B6' };
+
+
+/* ═══ تعديلُ الحساسات من الميدان (V25.8) ═══
+   قرارُ المالك: المهندسُ فما فوق والمشرفُ (هو من يمسح الموقع) — يعدّلون خطّةَ المخيم: نقلُ حساسٍ أو
+   الجيت واي، وزيادةٌ ونقص. الحفظُ تعديلٌ فوق الطبقة المبدئية في وثيقة الموقع (siteOv.iot) فيصل الأجهزةَ
+   كلَّها كسائر تعديلات المواقع ولا يحتاج مجموعةً ولا قاعدةً جديدة، ويُسجَّل في الأحداث. ولا جيت واي ثانٍ:
+   إن بعُد حساسٌ عن ١٥٠ م نُبِّه وأُشير إلى مركز الحساسات. */
+function mayIot(){ var b = (typeof effRole === 'function') ? effRole(ROLE) : ROLE; return b === 'engineer' || b === 'admin' || b === 'supervisor'; }
+
+
+
+
+
+
+
+
+/* ═══ تعديلُ حدود المخيم بسحب الزوايا (V25.9) — قرارُ المالك ═══
+   كان تعديلُ الحدود إعادةَ رسمٍ كاملة بأداة «مساحة بنقاط». صار من نافذة المخيم «عدّل الحدود»: زوايا الحدود
+   الحالية مقابضُ تُسحَب، ونقطةٌ صغيرةٌ بين كلِّ زاويتين تُضيف زاويةً عندها، والزاويةُ المحدَّدةُ تُحذَف (ثلاثٌ حدًّا
+   أدنى)، و«رجوع للحدود الأصلية» يُعيد حدودَ السجل. الحفظُ بصيغة الرسم القائمة نفسِها (poly مسطّحًا في وثيقة
+   الموقع أو المضاف) فتصل الأجهزةَ ويقرؤها المحرّكان والثلاثي، ويُسجَّل في الأحداث. للمهندس فما فوق كتعديل البيانات. */
 function iotLoad(){
   if (IOT.data || IOT.busy || typeof fetch !== 'function') return;
   IOT.busy = true;
   fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
+}
+/* ═══ (V37.70) الحساسُ والجيت واي «زي باقي النقاط» — قرارُ المالك: رقمٌ خاصٌّ وبياناتٌ (الغرفة، السيريال، الحالة، ملاحظة)، ونافذةٌ لكلِّ جهاز،
+   وتحريكٌ وإضافةٌ وحذفٌ للحساسات والجيت واي (أكثرُ من جيت واي للمخيم الكبير)، وخطّةٌ تُولَّد للمخيم الجديد أو الجزء المقسوم (١٢ حساسًا داخل حدوده)،
+   وما خرج عن الحدود بعد تعديلها يُعلَّم بالأحمر ويُوزَّع من جديد، وإكسلٌ للحساسات. وتبقى خارجَ أرقام الوزارة بعدّادها الخاص (قرارُ V25.7).
+   البنيةُ متوافقةٌ مع القديم: gw وsensors إحداثياتٌ كما كانت، ومعها gws (جيت واي إضافي) وsm/gm (بياناتُ الأجهزة بالترتيب نفسِه). */
+var IOT_ST = ['مخطط', 'مُركّب', 'معطّل'];
+var IOT_N = 12;
+function iotOf(id){
+  var ov = STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot;
+  var c = (ov && ov.gw && Array.isArray(ov.sensors)) ? ov : (IOT.data && IOT.data.camps ? IOT.data.camps[id] : null);
+  if (!c) return null;
+  var gws = Array.isArray(c.gws) ? c.gws : [], sm = Array.isArray(c.sm) ? c.sm : [], gm = Array.isArray(c.gm) ? c.gm : [];
+  return { gw:c.gw, gws:gws, sensors:c.sensors, sm:sm, gm:gm, maxM:c.maxM, at:c.at, by:c.by, ov:!!ov };
+}
+function iotCampIds(){   /* المخيماتُ ذاتُ الخطّة: الطبقةُ المبدئيةُ وما عُدِّل أو وُلِّد */
+  var ids = {}; if (IOT.data && IOT.data.camps) Object.keys(IOT.data.camps).forEach(function(k){ ids[k] = 1; });
+  Object.keys(STATE.siteOv || {}).forEach(function(k){ var o = STATE.siteOv[k]; if (o && o.iot && o.iot.gw) ids[k] = 1; });
+  return Object.keys(ids);
+}
+function iotPad(n){ return (n < 10 ? '0' : '') + n; }
+function iotSid(id, c, i){ var m = (c.sm || [])[i]; return (m && m.id) || (id + '-S' + iotPad(i + 1)); }
+function iotGid(id, c, j){ var m = (c.gm || [])[j]; return (m && m.id) || (id + '-GW' + (j + 1)); }
+function iotAllGw(c){ return [c.gw].concat(c.gws || []); }
+function iotM(a, b){ var r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos(a[0] * r), y = (b[0] - a[0]) * r; return 6371000 * Math.sqrt(x * x + y * y); }
+function iotMax(gw, S, gws){ var G = [gw].concat(gws || []), m = 0; S.forEach(function(q){ var d = Infinity; G.forEach(function(g){ d = Math.min(d, iotM(g, q)); }); m = Math.max(m, d); }); return Math.round(m); }   /* أبعدُ حساسٍ عن أقرب جيت واي */
+function iotRing(id){ var x = siteFind(id), F = x && typeof campFoot === 'function' ? campFoot(x) : null; return F ? F.map(function(p){ return [p[1], p[0]]; }) : null; }   /* [[lat,lng]…] */
+function iotOutside(id, c){ var R = iotRing(id); if (!R || !c) return []; var out = []; c.sensors.forEach(function(q, i){ if (!polyIn(q, R)) out.push(i); }); return out; }
+function iotGrid(R, n, avoid){   /* n نقاطٍ متباعدةٍ داخل المضلّع */
+  var la = R.map(function(p){ return p[0]; }), lo = R.map(function(p){ return p[1]; }), a0 = Math.min.apply(null, la), a1 = Math.max.apply(null, la), b0 = Math.min.apply(null, lo), b1 = Math.max.apply(null, lo);
+  avoid = avoid || []; var pts = [];
+  for (var k = 4; k <= 40 && pts.length < n; k += 2){ pts = []; for (var i = 0; i < k; i++) for (var j = 0; j < k; j++){ var p = [a0 + (a1 - a0) * (i + 0.5) / k, b0 + (b1 - b0) * (j + 0.5) / k]; if (polyIn(p, R) && !avoid.some(function(q){ return iotM(p, q) < 4; })) pts.push(p); } }
+  if (pts.length <= n) return pts.map(function(p){ return [+p[0].toFixed(6), +p[1].toFixed(6)]; });
+  var out = [], step = pts.length / n; for (var q = 0; q < n; q++) out.push(pts[Math.floor(q * step)]);
+  return out.map(function(p){ return [+p[0].toFixed(6), +p[1].toFixed(6)]; });
+}
+function iotCentroid(R){ var a = 0, b = 0; R.forEach(function(p){ a += p[0]; b += p[1]; }); return [+(a / R.length).toFixed(6), +(b / R.length).toFixed(6)]; }
+function iotMakePlan(id, R, keep){   /* keep: {sensors, sm} حساساتٌ قائمةٌ داخل الجزء — يُكمَّل إلى IOT_N */
+  keep = keep || { sensors:[], sm:[] }; var S = keep.sensors.slice(), M = keep.sm.slice();
+  if (S.length < IOT_N) iotGrid(R, IOT_N - S.length, S).forEach(function(p){ S.push(p); M.push({}); });
+  var used = {}; M.forEach(function(m){ if (m && m.id) used[m.id] = 1; }); var nx = 1;
+  M = M.map(function(m){ m = Object.assign({}, m || {}); if (!m.id || m.id.indexOf(id + '-S') !== 0){ while (used[id + '-S' + iotPad(nx)]) nx++; m.id = id + '-S' + iotPad(nx); used[m.id] = 1; } if (!m.status) m.status = 'مخطط'; return m; });
+  var gw = keep.gw && polyIn(keep.gw, R) ? keep.gw : iotCentroid(R);
+  return { gw:gw, gws:[], sensors:S, sm:M, gm:[{ id:id + '-GW1', status:(keep.gm0 && keep.gm0.status) || 'مخطط', serial:(keep.gm0 && keep.gm0.serial) || '', note:(keep.gm0 && keep.gm0.note) || '' }], maxM:iotMax(gw, S), at:Date.now(), by:(STATE.meta && STATE.meta.name) || '' };
+}
+function iotGen(id){   /* خطّةٌ لمخيمٍ بلا خطّة — ١٢ حساسًا داخل حدوده وجيت واي في مركزه */
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
+  var R = iotRing(id); if (!R){ toast(t('ارسم حدودَ المخيم أوّلًا')); return false; }
+  var P = iotMakePlan(id, R); siteOvSet(id, { iot:P }); logEvent('خطّةُ حساساتٍ جديدة — ' + id + ' \u00b7 ' + nm(P.sensors.length) + ' حساسًا', id);
+  IOT.on = true; iotLoad(); toast(t('وُلِّدت خطّةُ الحساسات — اضبطها من «عدّل الحساسات»')); iotPaint(); render(1); return true;
+}
+function iotRedistribute(id){   /* ما خرج عن الحدود يُعاد داخلها — بياناتُه كما هي */
+  if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
+  var c = iotOf(id), R = iotRing(id); if (!c || !R) return false; var out = iotOutside(id, c); if (!out.length){ toast(t('كلُّ الحساسات داخل الحدود')); return false; }
+  var inside = c.sensors.filter(function(q, i){ return out.indexOf(i) < 0; }), fresh = iotGrid(R, out.length, inside), S = c.sensors.slice();
+  out.forEach(function(i, k){ if (fresh[k]) S[i] = fresh[k]; });
+  var G = iotAllGw(c).map(function(g){ return polyIn(g, R) ? g : iotCentroid(R); });
+  siteOvSet(id, { iot:{ gw:G[0], gws:G.slice(1), sensors:S, sm:c.sm, gm:c.gm, maxM:iotMax(G[0], S, G.slice(1)), at:Date.now(), by:(STATE.meta && STATE.meta.name) || '' } });
+  logEvent('إعادةُ توزيع حساساتٍ داخل الحدود — ' + id + ' \u00b7 ' + nm(out.length), id); toast(t('أُعيد توزيعُ الحساسات داخل الحدود') + ' \u2014 ' + nm(out.length)); iotPaint(); render(1); return true;
+}
+function iotSplit(orig, parts){   /* (V37.70) تقسيمُ المخيم يوزّع حساساتِه على الأجزاء بمكانها، ويُكمِل كلَّ جزءٍ إلى ١٢ — parts: [{id, ring:[[lat,lng]…]}] */
+  var c = iotOf(orig); var buckets = parts.map(function(){ return { sensors:[], sm:[] }; });
+  if (c) c.sensors.forEach(function(q, i){ var k = -1; parts.some(function(p, pi){ if (polyIn(q, p.ring)){ k = pi; return true; } return false; }); if (k < 0) k = 0; buckets[k].sensors.push(q); buckets[k].sm.push((c.sm || [])[i] || {}); });
+  parts.forEach(function(p, pi){ if (pi === 0 && c){ buckets[0].gw = c.gw; buckets[0].gm0 = (c.gm || [])[0]; } var P = iotMakePlan(p.id, p.ring, buckets[pi]); siteOvSet(p.id, { iot:P }); });
+}
+function iotDevHtml(id, kind, i){   /* نافذةُ الجهاز */
+  var c = iotOf(id); if (!c) return ''; var x = siteFind(id), nm0 = x ? (x.name || id) : id, m = kind === 's' ? (c.sm[i] || {}) : (c.gm[i] || {});
+  var did = kind === 's' ? iotSid(id, c, i) : iotGid(id, c, i), ttl = kind === 's' ? t('حساس حرارة ورطوبة') : t('جيت واي'), out = kind === 's' && iotOutside(id, c).indexOf(i) > -1;
+  var row = function(k, v){ return v ? '<div><span class="hint" style="margin:0">' + esc(t(k)) + ':</span> ' + esc(v) + '</div>' : ''; };
+  var cov = kind !== 's' ? '<div class="hint" style="margin:0">' + esc(t('يغطي')) + ' ' + nm(c.sensors.length) + ' ' + esc(t('حساسًا، أبعدها')) + ' ' + nm(iotMax(c.gw, c.sensors, c.gws)) + ' ' + esc(t('م')) + '</div>' : '';
+  return '<b>' + esc(ttl) + '</b> <span class="num">' + esc(did) + '</span><br><span class="hint">' + esc(nm0) + '</span>'
+    + row('الغرفة', m.room) + row('السيريال', m.serial) + row('الحالة', m.status || 'مخطط') + row('ملاحظة', m.note) + cov
+    + (out ? '<div style="color:#E05252">\u26A0 ' + esc(t('خارج حدود المخيم')) + '</div>' : '')
+    + (mayIot() ? '<div style="margin-top:6px">' + btn('\u270E ' + t('عدّل'), 'btn-quiet btn-sm', ' data-iotdev="' + esc(id) + '|' + kind + '|' + i + '"') + '</div>' : '');
 }
 function iotPaint(){
   if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
@@ -1958,92 +2052,107 @@ function iotPaint(){
     if (IOT.layer) IOT.layer.clearLayers(); else IOT.layer = L.layerGroup().addTo(MAP);
   } catch (e){ LS_ERR = e; return; }
   if (IOT.edit){   /* (V25.8) مخيمُ التعديل وحدَه — نقرٌ على الشكل يحدِّده */
-    var E = IOT.edit, xe = siteFind(E.id), ne = xe ? (xe.name || E.id) : E.id;
+    var E = IOT.edit, R0 = iotRing(E.id);
     E.sensors.forEach(function(q, i){
-      var on = E.sel && E.sel.k === 's' && E.sel.i === i;
-      shapeMk(q, { renderer:MAP_CV, radius:on ? 8 : 6, color:on ? '#E05252' : '#fff', weight:on ? 3 : 1.2, fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop')
-        .on('click', function(){ E.sel = { k:'s', i:i }; E.add = false; iotPaint(); render(1); }).addTo(IOT.layer);
+      var on = E.sel && E.sel.k === 's' && E.sel.i === i, bad = R0 && !polyIn(q, R0);
+      shapeMk(q, { renderer:MAP_CV, radius:on ? 8 : 6, color:on ? '#E05252' : (bad ? '#E05252' : '#fff'), weight:on ? 3 : (bad ? 2.4 : 1.2), fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop')
+        .on('click', function(){ E.sel = { k:'s', i:i }; E.add = false; E.addGw = false; iotPaint(); render(1); }).addTo(IOT.layer);
     });
-    var ong = E.sel && E.sel.k === 'gw';
-    shapeMk(E.gw, { renderer:MAP_CV, radius:ong ? 11 : 9, color:ong ? '#E05252' : '#fff', weight:ong ? 3 : 1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star')
-      .on('click', function(){ E.sel = { k:'gw' }; E.add = false; iotPaint(); render(1); }).addTo(IOT.layer);
+    [E.gw].concat(E.gws).forEach(function(g, j){
+      var ong = E.sel && E.sel.k === 'g' && E.sel.i === j;
+      shapeMk(g, { renderer:MAP_CV, radius:ong ? 11 : 9, color:ong ? '#E05252' : '#fff', weight:ong ? 3 : 1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star')
+        .on('click', function(){ E.sel = { k:'g', i:j }; E.add = false; E.addGw = false; iotPaint(); render(1); }).addTo(IOT.layer);
+    });
     return;
   }
-  if (!IOT.on || !IOT.data || MAP.getZoom() < IOT.Z) return;
-  var b = MAP.getBounds().pad(0.1), C = IOT.data.camps || {};
-  Object.keys(C).forEach(function(id){
-    var c = iotOf(id); if (!c || !c.gw || !c.sensors) return;
-    if (!b.contains(c.gw) && !c.sensors.some(function(q){ return b.contains(q); })) return;
-    var x = siteFind(id), nm0 = x ? (x.name || id) : id;
-    c.sensors.forEach(function(q, i){
-      shapeMk(q, { renderer:MAP_CV, radius:5, color:'#fff', weight:1.2, fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop')
-        .bindPopup('<b>' + esc(t('حساس حرارة ورطوبة')) + ' ' + nm(i + 1) + '</b><br><span class="hint">' + esc(nm0) + ' \u00b7 ' + esc(t('تخطيطٌ مبدئي — يُعدَّل ميدانيًّا')) + '</span>')
-        .addTo(IOT.layer);
-    });
-    shapeMk(c.gw, { renderer:MAP_CV, radius:8, color:'#fff', weight:1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star')
-      .bindPopup('<b>' + esc(t('جيت واي')) + '</b><br><span class="hint">' + esc(nm0) + ' \u00b7 ' + esc(t('يغطي')) + ' ' + nm(c.sensors.length) + ' ' + esc(t('حساسًا، أبعدها')) + ' ' + nm(c.maxM != null ? c.maxM : iotMax(c.gw, c.sensors)) + ' ' + esc(t('م')) + ' \u00b7 ' + esc(t(c.at && c.by !== undefined && STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot ? 'عُدِّلت ميدانيًّا' : 'تخطيطٌ مبدئي — يُعدَّل ميدانيًّا')) + '</span>'
-        + (mayIot() ? '<br>' + btn(t('عدّل الحساسات'), 'btn-quiet btn-sm', ' data-iotedit="' + esc(id) + '"') : ''))
-      .addTo(IOT.layer);
+  if (!IOT.on || MAP.getZoom() < IOT.Z) return;
+  var b = MAP.getBounds().pad(0.1);
+  iotCampIds().forEach(function(id){
+    var c = iotOf(id); if (!c || !c.gw || !c.sensors) return; var G = iotAllGw(c);
+    if (!G.some(function(g){ return b.contains(g); }) && !c.sensors.some(function(q){ return b.contains(q); })) return;
+    var out = iotOutside(id, c);
+    c.sensors.forEach(function(q, i){ var bad = out.indexOf(i) > -1;
+      shapeMk(q, { renderer:MAP_CV, radius:5, color:bad ? '#E05252' : '#fff', weight:bad ? 2.4 : 1.2, fillColor:IOT_C.sensor, fillOpacity:.95, bubblingMouseEvents:false }, 'drop').bindPopup(iotDevHtml(id, 's', i)).addTo(IOT.layer); });
+    G.forEach(function(g, j){ shapeMk(g, { renderer:MAP_CV, radius:8, color:'#fff', weight:1.5, fillColor:IOT_C.gw, fillOpacity:.98, bubblingMouseEvents:false }, 'star').bindPopup(iotDevHtml(id, 'g', j)).addTo(IOT.layer); });
   });
 }
-/* ═══ تعديلُ الحساسات من الميدان (V25.8) ═══
-   قرارُ المالك: المهندسُ فما فوق والمشرفُ (هو من يمسح الموقع) — يعدّلون خطّةَ المخيم: نقلُ حساسٍ أو
-   الجيت واي، وزيادةٌ ونقص. الحفظُ تعديلٌ فوق الطبقة المبدئية في وثيقة الموقع (siteOv.iot) فيصل الأجهزةَ
-   كلَّها كسائر تعديلات المواقع ولا يحتاج مجموعةً ولا قاعدةً جديدة، ويُسجَّل في الأحداث. ولا جيت واي ثانٍ:
-   إن بعُد حساسٌ عن ١٥٠ م نُبِّه وأُشير إلى مركز الحساسات. */
-function mayIot(){ var b = (typeof effRole === 'function') ? effRole(ROLE) : ROLE; return b === 'engineer' || b === 'admin' || b === 'supervisor'; }
-function iotOf(id){ var ov = STATE.siteOv && STATE.siteOv[id] && STATE.siteOv[id].iot; if (ov && ov.gw && Array.isArray(ov.sensors)) return ov; return IOT.data && IOT.data.camps ? IOT.data.camps[id] : null; }
-function iotM(a, b){ var r = Math.PI / 180, x = (b[1] - a[1]) * r * Math.cos(a[0] * r), y = (b[0] - a[0]) * r; return 6371000 * Math.sqrt(x * x + y * y); }
-function iotMax(gw, S){ var m = 0; S.forEach(function(q){ m = Math.max(m, iotM(gw, q)); }); return Math.round(m); }
-function iotEditStart(id){
+function iotEditStart(id, sel){
   if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
   var c = iotOf(id); if (!c){ toast(t('لا خطّةَ حساساتٍ لهذا المخيم')); return false; }
   IOT.on = true; iotLoad();
-  IOT.edit = { id:id, gw:[+c.gw[0], +c.gw[1]], sensors:c.sensors.map(function(q){ return [+q[0], +q[1]]; }), sel:null, add:false };
+  var cp = function(q){ return [+q[0], +q[1]]; };
+  IOT.edit = { id:id, gw:cp(c.gw), gws:(c.gws || []).map(cp), sensors:c.sensors.map(cp), sm:c.sensors.map(function(_, i){ return Object.assign({ id:iotSid(id, c, i), status:'مخطط' }, (c.sm || [])[i] || {}); }),
+    gm:[c.gw].concat(c.gws || []).map(function(_, j){ return Object.assign({ id:iotGid(id, c, j), status:'مخطط' }, (c.gm || [])[j] || {}); }), sel:sel || null, add:false, addGw:false };
   POP_SITE = ''; POP_OPEN = false;   /* نافذةُ النقطة تُغلَق — وإلا ابتلع إغلاقُها أوّلَ نقرةٍ في لوحة التعديل */
   if (MAP && MAP.getZoom() < 17) MAP.setView([+c.gw[0], +c.gw[1]], 17, { animate:false });
   iotPaint(); render(1); toast(t('اضغط على حساسٍ أو الجيت واي ثم على مكانه الجديد')); return true;
 }
+function iotNextId(E, pre){ var used = {}; (pre === 'S' ? E.sm : E.gm).forEach(function(m){ used[m.id] = 1; }); var n = 1; while (used[E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n)]) n++; return E.id + '-' + pre + (pre === 'S' ? iotPad(n) : n); }
 function iotMapClick(ll){
   var E = IOT.edit; if (!E) return;
   var p = [+ll.lat.toFixed(6), +ll.lng.toFixed(6)];
-  if (E.add){ E.sensors.push(p); E.add = false; E.sel = { k:'s', i:E.sensors.length - 1 }; }
-  else if (E.sel){ if (E.sel.k === 'gw') E.gw = p; else E.sensors[E.sel.i] = p; }
+  if (E.add){ E.sensors.push(p); E.sm.push({ id:iotNextId(E, 'S'), status:'مخطط' }); E.add = false; E.sel = { k:'s', i:E.sensors.length - 1 }; }
+  else if (E.addGw){ E.gws.push(p); E.gm.push({ id:iotNextId(E, 'GW'), status:'مخطط' }); E.addGw = false; E.sel = { k:'g', i:E.gws.length }; }
+  else if (E.sel){ if (E.sel.k === 'g'){ if (E.sel.i === 0) E.gw = p; else E.gws[E.sel.i - 1] = p; } else E.sensors[E.sel.i] = p; }
   else { toast(t('اختر حساسًا أو الجيت واي أوّلًا')); return; }
   iotPaint(); render(1);
 }
-function iotDel(){ var E = IOT.edit; if (!E || !E.sel || E.sel.k !== 's') return; E.sensors.splice(E.sel.i, 1); E.sel = null; iotPaint(); render(1); }
+function iotDel(){
+  var E = IOT.edit; if (!E || !E.sel) return;
+  if (E.sel.k === 's'){ E.sensors.splice(E.sel.i, 1); E.sm.splice(E.sel.i, 1); }
+  else { if (!E.gws.length){ toast(t('المخيمُ يحتاج جيت واي واحدًا على الأقل')); return; } if (E.sel.i === 0){ E.gw = E.gws.shift(); E.gm.shift(); } else { E.gws.splice(E.sel.i - 1, 1); E.gm.splice(E.sel.i, 1); } }
+  E.sel = null; iotPaint(); render(1);
+}
+function iotMetaSet(){   /* بياناتُ المحدَّد من اللوحة */
+  var E = IOT.edit; if (!E || !E.sel) return;
+  var m = E.sel.k === 's' ? E.sm[E.sel.i] : E.gm[E.sel.i]; if (!m) return;
+  var v = function(k){ var el = document.getElementById(k); return el ? String(el.value || '').trim() : ''; };
+  if (E.sel.k === 's') m.room = v('iotRoom'); m.serial = v('iotSerial'); m.status = v('iotStatus') || 'مخطط'; m.note = v('iotNote');
+  toast(t('حُفظت بياناتُ الجهاز — اضغط «احفظ» للخطّة كلِّها')); render(1);
+}
 function iotSave(){
   var E = IOT.edit; if (!E) return false;
   if (!mayIot()){ toast(t('تعديلُ الحساسات للمهندس فما فوق والمشرف')); return false; }
   if (!E.sensors.length){ toast(t('لا يُحفَظ مخيمٌ بلا حساسات')); return false; }
-  var maxM = iotMax(E.gw, E.sensors);
-  siteOvSet(E.id, { iot:{ gw:E.gw, sensors:E.sensors, maxM:maxM, at:Date.now(), by:STATE.meta.name || '' } });
-  logEvent('تعديلُ حساسات مخيم — ' + E.id + ' \u00b7 ' + nm(E.sensors.length) + ' حساسًا \u00b7 أبعدُها ' + nm(maxM) + ' م', E.id);
-  if (maxM > 150){ var cx = 0, cy = 0; E.sensors.forEach(function(q){ cx += q[0]; cy += q[1]; }); cx /= E.sensors.length; cy /= E.sensors.length; toast(t('حُفظت — وحساسٌ أبعدُ من ١٥٠ م عن الجيت واي') + ' (' + nm(maxM) + ' ' + t('م') + ') \u2014 ' + t('انقل الجيت واي نحو مركز الحساسات') + ' (' + nm(iotMax([cx, cy], E.sensors)) + ' ' + t('م') + ')'); }
+  var maxM = iotMax(E.gw, E.sensors, E.gws);
+  siteOvSet(E.id, { iot:{ gw:E.gw, gws:E.gws, sensors:E.sensors, sm:E.sm, gm:E.gm, maxM:maxM, at:Date.now(), by:STATE.meta.name || '' } });
+  logEvent('تعديلُ حساسات مخيم — ' + E.id + ' \u00b7 ' + nm(E.sensors.length) + ' حساسًا \u00b7 ' + nm(1 + E.gws.length) + ' جيت واي \u00b7 أبعدُها ' + nm(maxM) + ' م', E.id);
+  if (maxM > 150) toast(t('حُفظت — وحساسٌ أبعدُ من ١٥٠ م عن أقرب جيت واي') + ' (' + nm(maxM) + ' ' + t('م') + ') \u2014 ' + t('أضف جيت واي أو انقله نحو الحساسات'));
   else toast(t('حُفظت خطّةُ حساسات المخيم'));
   IOT.edit = null; iotPaint(); render(1); return true;
 }
 function iotPanelHtml(){
   var E = IOT.edit; if (!E) return '';
-  var x = siteFind(E.id), nm0 = x ? (x.name || E.id) : E.id, maxM = iotMax(E.gw, E.sensors);
-  var sel = !E.sel ? t('لا شيءَ محدَّد') : (E.sel.k === 'gw' ? t('الجيت واي') : t('حساس') + ' ' + nm(E.sel.i + 1));
+  var x = siteFind(E.id), nm0 = x ? (x.name || E.id) : E.id, maxM = iotMax(E.gw, E.sensors, E.gws);
+  var m = E.sel ? (E.sel.k === 's' ? E.sm[E.sel.i] : E.gm[E.sel.i]) : null;
+  var sel = !E.sel ? t('لا شيءَ محدَّد') : (E.sel.k === 'g' ? t('جيت واي') : t('حساس')) + ' ' + ((m && m.id) || '');
+  var fld = function(idx, lab, val){ return '<label style="display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:120px;flex:1">' + esc(t(lab)) + '<input id="' + idx + '" value="' + esc(val || '') + '" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)"></label>'; };
+  var form = m ? '<div class="wt-row" style="gap:6px;flex-wrap:wrap;margin:6px 0">' + (E.sel.k === 's' ? fld('iotRoom', 'الغرفة', m.room) : '') + fld('iotSerial', 'السيريال', m.serial)
+      + '<label style="display:flex;flex-direction:column;gap:2px;font-size:12px;min-width:110px">' + esc(t('الحالة')) + '<select id="iotStatus" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + IOT_ST.map(function(s){ return '<option' + ((m.status || 'مخطط') === s ? ' selected' : '') + ' value="' + esc(s) + '">' + esc(t(s)) + '</option>'; }).join('') + '</select></label>'
+      + fld('iotNote', 'ملاحظة', m.note) + btn('\u2713 ' + t('حفظ البيانات'), 'btn-secondary btn-sm', ' data-iotmeta="1"') + '</div>' : '';
+  var out = iotRing(E.id) ? E.sensors.filter(function(q){ return !polyIn(q, iotRing(E.id)); }).length : 0;
   return '<div class="map-route-box"><div class="wt-row" style="justify-content:space-between;align-items:center;gap:8px;margin:0">'
     + '<b>' + esc(t('تعديل حساسات')) + ' \u2014 ' + esc(nm0) + '</b>'
-    + '<span class="hint">' + nm(E.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + esc(t('أبعدها')) + ' ' + nm(maxM) + ' ' + esc(t('م')) + (maxM > 150 ? ' \u26a0' : '') + '</span></div>'
-    + '<p class="hint" style="margin:6px 0">' + (E.add ? esc(t('اضغط على الخريطة حيث يُوضَع الحساسُ الجديد')) : esc(t('المحدَّد')) + ': ' + esc(sel) + ' \u2014 ' + esc(t('اضغط على مكانه الجديد'))) + '</p>'
+    + '<span class="hint">' + nm(E.sensors.length) + ' ' + esc(t('حساسًا')) + ' \u00b7 ' + nm(1 + E.gws.length) + ' ' + esc(t('جيت واي')) + ' \u00b7 ' + esc(t('أبعدها')) + ' ' + nm(maxM) + ' ' + esc(t('م')) + (maxM > 150 ? ' \u26a0' : '') + (out ? ' \u00b7 <span style="color:#E05252">' + nm(out) + ' ' + esc(t('خارج الحدود')) + '</span>' : '') + '</span></div>'
+    + '<p class="hint" style="margin:6px 0">' + (E.add ? esc(t('اضغط على الخريطة حيث يُوضَع الحساسُ الجديد')) : E.addGw ? esc(t('اضغط على الخريطة حيث يُوضَع الجيت واي الجديد')) : esc(t('المحدَّد')) + ': ' + esc(sel) + (E.sel ? ' \u2014 ' + esc(t('اضغط على مكانه الجديد')) : '')) + '</p>'
+    + form
     + '<div class="actions">'
     + btn((E.add ? '\u2716 ' : '+ ') + t('أضف حساسًا'), 'btn-quiet btn-sm', ' data-iotadd="1"')
-    + (E.sel && E.sel.k === 's' ? btn('\u{1F5D1} ' + t('احذف المحدد'), 'btn-quiet btn-sm', ' data-iotdel="1"') : '')
+    + btn((E.addGw ? '\u2716 ' : '+ ') + t('أضف جيت واي'), 'btn-quiet btn-sm', ' data-iotaddgw="1"')
+    + (E.sel ? btn('\u{1F5D1} ' + t('احذف المحدد'), 'btn-quiet btn-sm', ' data-iotdel="1"') : '')
     + btn('\u{1F4BE} ' + t('احفظ'), 'btn-primary btn-sm', ' data-iotsave="1"')
     + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-iotcancel="1"')
     + '</div></div>';
 }
-/* ═══ تعديلُ حدود المخيم بسحب الزوايا (V25.9) — قرارُ المالك ═══
-   كان تعديلُ الحدود إعادةَ رسمٍ كاملة بأداة «مساحة بنقاط». صار من نافذة المخيم «عدّل الحدود»: زوايا الحدود
-   الحالية مقابضُ تُسحَب، ونقطةٌ صغيرةٌ بين كلِّ زاويتين تُضيف زاويةً عندها، والزاويةُ المحدَّدةُ تُحذَف (ثلاثٌ حدًّا
-   أدنى)، و«رجوع للحدود الأصلية» يُعيد حدودَ السجل. الحفظُ بصيغة الرسم القائمة نفسِها (poly مسطّحًا في وثيقة
-   الموقع أو المضاف) فتصل الأجهزةَ ويقرؤها المحرّكان والثلاثي، ويُسجَّل في الأحداث. للمهندس فما فوق كتعديل البيانات. */
+function iotCount(){ var g = 0, s = 0; iotCampIds().forEach(function(id){ var c = iotOf(id); if (c){ g += 1 + (c.gws || []).length; s += c.sensors.length; } }); return { g:g, s:s }; }
+function iotXlsx(){   /* إكسلُ الحساسات — للمشتريات والتركيب */
+  var rows = []; iotCampIds().forEach(function(id){ var c = iotOf(id); if (!c) return; var x = siteFind(id), nm0 = x ? (x.name || id) : id, out = iotOutside(id, c);
+    iotAllGw(c).forEach(function(g, j){ var m = c.gm[j] || {}; rows.push([nm0, id, iotGid(id, c, j), t('جيت واي'), '', m.serial || '', m.status || 'مخطط', +g[0], +g[1], m.note || '']); });
+    c.sensors.forEach(function(q, i){ var m = c.sm[i] || {}; rows.push([nm0, id, iotSid(id, c, i), t('حساس حرارة ورطوبة'), m.room || '', m.serial || '', m.status || 'مخطط', +q[0], +q[1], (out.indexOf(i) > -1 ? t('خارج حدود المخيم') + ' — ' : '') + (m.note || '')]); }); });
+  if (typeof mtXlsx === 'function') return mtXlsx('حساسات منى', ['المخيم', 'رقم المخيم', 'رقم الجهاز', 'النوع', 'الغرفة', 'السيريال', 'الحالة', 'خط العرض', 'خط الطول', 'ملاحظة'], rows);
+  return false;
+}
+
 var BED = null, BED_L = null;
 function bedArea(P){
   if (!P || P.length < 3) return 0;
@@ -2172,6 +2281,7 @@ function splitSave(){
     var site = { id:id, name:(x.name || x.id) + lab, zone:x.zone, type:'مخيم', co:x.co || '', sq:x.sq || '', sign:(x.sign || '') + lab, lat:c[0], lng:c[1], region:x.region || ('منطقة ' + (x.zone || '')),
       poly:flat(pp), polyBy:who, polyAt:now, tents:x.tents || 0, fstat:'لم يبدأ', inout:'', isNew:true, approved:true, appBy:who, appAt:now, by:who, at:now, origin:'office', splitOf:x.id, note:t('من تقسيم المخيم') + ' ' + x.id };
     STATE.sites.push(site); CORE.set('newsites', id, site); made.push(id); });
+  if (x.zone === 'منى' || iotOf(x.id)){ try { iotSplit(x.id, [x.id].concat(made).map(function(pid, pi){ return { id:pid, ring:SPLIT.parts[pi] }; })); } catch (eI){ LS_ERR = eI; } }   /* (V37.70) حساساتُ المخيم تتوزّع على الأجزاء وتُكمَّل إلى ١٢ */
   bedCommit(x, flat(SPLIT.parts[0]), 'تقسيمُ مخيم — ' + x.id + ' إلى ' + SPLIT.parts.length + ' أجزاء: ' + made.join('، '));   /* الجزءُ الأوّلُ بحدوده الجديدة — ويُعيد الرسمَ والعدّ */
   SPLIT = null; SITE_IX = null; SITE_TOK = null; statBump(); render(1); if (typeof mapPaint === 'function') mapPaint();
   toast(t('قُسِّم المخيم') + ' — ' + nm(made.length + 1) + ' ' + t('مخيمات')); return made;
@@ -3976,6 +4086,7 @@ function mapUIHtml(){
         +   '<button type="button" class="cat' + (POIL.on.ministry ? ' on' : '') + '" data-poil="ministry">' + esc(t('مباني الوزارة')) + '</button>'
         +   '<button type="button" class="cat' + (POIL.on.tafweej ? ' on' : '') + '" data-poil="tafweej">' + esc(t('أماكن التفويج')) + '</button>'
         +   '<button type="button" class="cat' + (IOT.on ? ' on' : '') + '" data-iot="1">' + esc(t('تخطيط حساسات منى')) + '</button>'
+        +   (IOT.on ? (function(){ var k = iotCount(); return '<span class="hint" style="margin:0">' + nm(k.g) + ' ' + esc(t('جيت واي')) + ' \u00b7 ' + nm(k.s) + ' ' + esc(t('حساسًا')) + '</span>' + btn('\u2B07 ' + t('إكسل الحساسات'), 'btn-quiet btn-sm', ' data-iotx="1"'); })() : '')   /* (V37.70) عدّادُها الخاص */
         + '</div>'
         + '<div class="actions" style="margin-top:10px">'
         + btn('عرض','btn-primary btn-sm',' data-mfilt="0"')

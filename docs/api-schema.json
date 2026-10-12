@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.69",
+  "app_version": "V37.70",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2127,7 +2127,8 @@
   "V37.66": "بلاغُ المالك: mkPlace كان يخزّن المضلّعَ بمفتاحٍ من موضع العلامة وحدَه، فإذا تبدّلت الحدودُ (bedCommit) وبقي الموضعُ عدّل setStyle فقط وبقي الشكلُ القديم. صارت بصمةُ الحدود (عددُ الزوايا ومجموعٌ مرجَّحٌ للإحداثيات) جزءًا من posK للمضلّع فيُعاد إنشاؤه. تجربةٌ على الخريطة: حفظُ حدودٍ جديدةٍ لمخيمٍ في منى يُعيد رسمه فورًا بالزوايا الأربع الجديدة.",
   "V37.67": "قرارُ المالك: splitParts يقسم المضلّعَ بمحوره الرئيس (PCA) وقطعٍ نصفيٍّ مع بحثٍ ثنائيٍّ للمساحة المتساوية، ومعاينةٌ متقطّعةٌ في MAP_TMP (splitPaint) ولوحةٌ (splitPanelHtml) بعدد ٢–٦. splitSave: الجزءُ الأوّل bedCommit على الأصل، والباقي newsites معتمدةٌ (approved، origin office، splitOf) بمعرّف الأصل + B/C… والاسمِ والشاخص + (٢)… — فتدخل STATE.sites وكلَّ العدّادات. تجربة: ٣ أجزاءٍ بـ١٤٧١ م² لكلٍّ، والمخيماتُ +٢، والتقريرُ التنفيذيُّ ١٨٠٩ = كلُّ النقاط.",
   "V37.68": "قرارُ المالك: nsSave يعامل الوزارةَ كالمكتب (minProp): origin 'ministry' وapproved:false، بلا صورٍ إلزاميةٍ ولا nsVisitRec ولا stepDone ولا notifPush ولا logEvent ولا visitAsnOpen (القاعدةُ تمنعها على viewer). mapUIHtml: «موقع غير مسجّل» و«نقطة هنا» للوزارة بلا أدوات الرسم، وpinStart يسمح لها، وseesRaw يفتح newsite لها رغم PAGE_CAP، وnewsite في nav. firestore.rules: newsites create لـviewer بشرط origin == 'ministry' وapproved == false، والتعديلُ والاعتمادُ لـcanW كما كانا. تجربةٌ بدور الوزارة: الحفظُ يكتب الوثيقةَ وحدَها ويعود للخريطة.",
-  "V37.69": "تصحيحٌ لما قيل في ٣٧٫٦٨: 06-props.js — STATE.props (propIs: origin ministry وغيرُ معتمدة) خارجَ STATE.sites؛ nsSave للوزارة يضعها هناك؛ تحميلُ newsites للوزارة أيضًا؛ دمجُ الإقلاع والتحديثُ الحيُّ يمسكانها جانبًا (propKeep)؛ propMarkers/propChip/propSheetHtml/propPopHtml على الخريطة؛ propApprove يُدخلها السجلَّ ويكتب approved وappBy ويفتح الجدولة، وpropReject يكتب rejected. audit-props في خط الفحص: العدُّ والتقريرُ ثابتان قبل الاعتماد ويزيدان بعده، والرفضُ بلا أثر."
+  "V37.69": "تصحيحٌ لما قيل في ٣٧٫٦٨: 06-props.js — STATE.props (propIs: origin ministry وغيرُ معتمدة) خارجَ STATE.sites؛ nsSave للوزارة يضعها هناك؛ تحميلُ newsites للوزارة أيضًا؛ دمجُ الإقلاع والتحديثُ الحيُّ يمسكانها جانبًا (propKeep)؛ propMarkers/propChip/propSheetHtml/propPopHtml على الخريطة؛ propApprove يُدخلها السجلَّ ويكتب approved وappBy ويفتح الجدولة، وpropReject يكتب rejected. audit-props في خط الفحص: العدُّ والتقريرُ ثابتان قبل الاعتماد ويزيدان بعده، والرفضُ بلا أثر.",
+  "V37.70": "قرارُ المالك: وحدةُ الحساسات أُعيد بناؤها متوافقةً مع القديم — gw/sensors كما كانا، ومعها gws (جيت واي إضافي) وsm/gm (بياناتٌ ومعرّفاتٌ ثابتة <المخيم>-S01 و-GW1). iotOf يطبّع، iotCampIds يجمع الطبقةَ والمعدَّلَ والمولَّد، iotDevHtml نافذةُ الجهاز (data-iotdev يفتح المحرّرَ عليه)، المحرّرُ يضيف جيت واي (data-iotaddgw) ويحفظ البيانات (data-iotmeta)، iotMax لأقرب جيت واي، iotGen/iotMakePlan/iotGrid ١٢ داخل الحدود، iotSplit من splitSave، iotOutside/iotRedistribute، iotCount/iotXlsx. تجربة: بياناتٌ وجيت واي ثانٍ وحذف، والتقسيمُ ١٢/١٢/١٢ مع بقاء السيريال، وتصغيرُ الحدود ٨ خارجًا ثم صفر."
   },
   "map_and_geolocation": {
     "tile_layers": {

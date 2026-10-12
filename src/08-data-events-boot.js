@@ -3474,7 +3474,13 @@ function clickAPart6(e){
   if (e.target.closest('[data-bedreset]')){ bedReset(); return true; }
   var ied = e.target.closest('[data-iotedit]');   /* (V25.8) تعديلُ حساسات مخيم */
   if (ied){ if (MAP) MAP.closePopup(); iotEditStart(ied.getAttribute('data-iotedit')); return true; }
-  if (e.target.closest('[data-iotadd]')){ if (IOT.edit){ IOT.edit.add = !IOT.edit.add; IOT.edit.sel = null; iotPaint(); render(1); } return true; }
+  if (e.target.closest('[data-iotadd]')){ if (IOT.edit){ IOT.edit.add = !IOT.edit.add; IOT.edit.addGw = false; IOT.edit.sel = null; iotPaint(); render(1); } return true; }
+  if (e.target.closest('[data-iotaddgw]')){ if (IOT.edit){ IOT.edit.addGw = !IOT.edit.addGw; IOT.edit.add = false; IOT.edit.sel = null; iotPaint(); render(1); } return true; }   /* (V37.70) */
+  if (e.target.closest('[data-iotmeta]')){ iotMetaSet(); return true; }
+  var idv = e.target.closest('[data-iotdev]'); if (idv){ var pv = (idv.getAttribute('data-iotdev') || '').split('|'); if (MAP) MAP.closePopup(); iotEditStart(pv[0], { k:pv[1] === 's' ? 's' : 'g', i:+pv[2] || 0 }); return true; }
+  var igen = e.target.closest('[data-iotgen]'); if (igen){ iotGen(igen.getAttribute('data-iotgen')); return true; }
+  var ird = e.target.closest('[data-iotredist]'); if (ird){ iotRedistribute(ird.getAttribute('data-iotredist')); return true; }
+  if (e.target.closest('[data-iotx]')){ iotXlsx(); return true; }
   if (e.target.closest('[data-iotdel]')){ iotDel(); return true; }
   if (e.target.closest('[data-iotsave]')){ iotSave(); return true; }
   if (e.target.closest('[data-iotcancel]')){ IOT.edit = null; iotPaint(); render(1); return true; }
