@@ -660,7 +660,7 @@ function nsSave(){
     origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
-  STATE.sites.push(site);
+  if (minProp) propKeep(site); else STATE.sites.push(site);   /* (V37.69) المقترحةُ خارجَ السجلِّ حتى الاعتماد */
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
 

@@ -485,7 +485,7 @@ if (typeof w.siteStats === 'function'){
    دمجُها عند الإقلاع لاختفت من الخريطة بعد إعادة التحميل وهي في القاعدة. */
 {
   const raw8 = readFileSync('index.html', 'utf8');
-  check(/Object\.keys\(STATE\.newsites\)\.forEach\(function\(k\)\{[\s\S]{0,1400}STATE\.sites\.push\(v\)/.test(raw8),
+  check(/Object\.keys\(STATE\.newsites\)\.forEach\(function\(k\)\{[\s\S]{0,1800}STATE\.sites\.push\(v\)/.test(raw8),   /* (V37.69) اتّسعت النافذةُ بسطر مقترحات الوزارة قبل الدفع */
     'المواقعُ الجديدةُ تُدمَج في السجل عند الإقلاع');
   check(/have\[v\.id\]\)\{[\s\S]{0,700}ex\.lat = \+v\.lat[\s\S]{0,200}ex\.name = v\.name/.test(raw8),
     'وما دُمج من قبل يأخذ تعديلَ السحابة: الموقعَ والاسم (V22.9)');

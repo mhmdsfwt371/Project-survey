@@ -474,7 +474,7 @@ function mapPaint(light){
       TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
       (TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
     }
-    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
+    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof propMarkers === 'function') propMarkers();   /* (V37.69) */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
       var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
       if (isArea && pts.length > 2){
@@ -3960,6 +3960,7 @@ function mapUIHtml(){
     +     '<button type="button" class="map-chip chip-caret'+(CO_OPEN?' on':'')+'" data-co="1"'
     +       ' aria-label="'+esc(t('اختر الشركات'))+'">\u25BE</button>'
     +   '</span>'
+    + propChip()   /* (V37.69) مقترحاتُ الوزارة */
     + '</div>'
 
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
@@ -4019,7 +4020,8 @@ function mapUIHtml(){
     + (CO_OPEN ? coFiltHtml() : '')
     + (ASN_PICK ? asnPickHtml() : '')
     + (ASN_OPEN ? asnSheet() : '')
-    + (POP_OPEN ? popHtml() : '');
+    + (POP_OPEN ? popHtml() : '')
+    + propSheetHtml() + (PROP_POP ? propPopHtml() : '');   /* (V37.69) */
 }
 
 function mapDraw(){

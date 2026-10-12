@@ -2990,6 +2990,11 @@ function clickAPart2(e){
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
+  var pok = e.target.closest('[data-propok]'); if (pok){ propApprove(pok.getAttribute('data-propok')); return true; }   /* (V37.69) مقترحاتُ الوزارة */
+  var pno = e.target.closest('[data-propno]'); if (pno){ propReject(pno.getAttribute('data-propno')); return true; }
+  var pgo = e.target.closest('[data-propgo]'); if (pgo){ propGo(pgo.getAttribute('data-propgo')); return true; }
+  if (e.target.closest('[data-propclose]')){ PROP_POP = ''; render(1); return true; }
+  var psh = e.target.closest('[data-propsheet]'); if (psh){ PROP_SHEET = psh.getAttribute('data-propsheet') === '1'; PROP_POP = ''; render(1); return true; }
   var csp = e.target.closest('[data-campsplit]'); if (csp){ splitStart(csp.getAttribute('data-campsplit')); return true; }   /* (V37.67) قسّم المخيم */
   var spn = e.target.closest('[data-splitn]'); if (spn){ splitN(+spn.getAttribute('data-splitn')); return true; }
   if (e.target.closest('[data-splitsave]')){ splitSave(); return true; }

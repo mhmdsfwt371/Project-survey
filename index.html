@@ -1284,7 +1284,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.68</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.69</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1346,7 +1346,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-bc0ba53829.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-c3749cfd25.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2273,7 +2273,7 @@ var CORE = {
        القديمُ حالةً قديمةً: نقطةٌ أُسندت في جهازٍ آخرَ تبقى «لم تُزر» هنا
        حتى يُبطِله شيءٌ آخر. وكذلك أيُّ كتابةٍ مباشرةٍ على STATE.tasks. */
     if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
-    if (v && v.deleted){ delete STATE[kind][id]; if (kind === 'newsites' && typeof siteDropLocal === 'function') siteDropLocal(id); return false; }   /* (V25.5) شاهدُ نقطةٍ مضافةٍ يرفعها من السجل */
+    if (kind === 'newsites' && typeof propIs === 'function' && (propIs(v) || (v && v.rejected))) propKeep(v);   /* (V37.69) الحيُّ يُحدّث المقترحات */ if (v && v.deleted){ delete STATE[kind][id]; if (kind === 'newsites' && typeof siteDropLocal === 'function') siteDropLocal(id); return false; }   /* (V25.5) شاهدُ نقطةٍ مضافةٍ يرفعها من السجل */
     /* ═══ التعديلُ المتزامن يُقال ولا يُبتلَع (V17.79) ═══
        كان تعديلُ جهازين على السجلِّ نفسِه يمرُّ صامتًا: آخرُ من رفع كسب، ولا
        يعرف الأوّلُ أن ما كتبه ذهب. فإن وصلت وثيقةٌ كتبها غيري وفي طابوري
@@ -3168,7 +3168,7 @@ var FB = {
         sn.forEach(function(d){ STATE.fixreqs[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب طلبات التصويب', e, 'تعذّر سحبُ طلبات تصويب البيانات'); });
 
-      office && DB.col('newsites').limit(1000).get().then(function(sn){
+      (office || ROLE === 'viewer') && DB.col('newsites').limit(1000).get().then(function(sn){   /* (V37.69) والوزارةُ ترى مقترحاتِها */
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.newsites) STATE.newsites = {};
         sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
@@ -3185,6 +3185,7 @@ var FB = {
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
+          if (typeof propIs === 'function' && propIs(v)){ propKeep(v); return; }   /* (V37.69) مقترحةُ الوزارة لا تدخل السجلَّ قبل الاعتماد */
           var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
@@ -13194,7 +13195,7 @@ function nsSave(){
     origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
-  STATE.sites.push(site);
+  if (minProp) propKeep(site); else STATE.sites.push(site);   /* (V37.69) المقترحةُ خارجَ السجلِّ حتى الاعتماد */
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
 
@@ -18338,7 +18339,7 @@ function mapPaint(light){
       TFD.paths.forEach(function(pl){ L.polyline(pl, { renderer:MAP_CV, color: TFD.d === 'go' ? '#F5C400' : '#D0021B', weight:6, opacity:0.95, dashArray: TFD.d === 'back' ? '8 6' : null, interactive:false }).addTo(MAP_TMP); });
       (TFD.pts || []).forEach(function(n, i){ L.circleMarker(n, { renderer:MAP_CV, radius:6, color:'#fff', weight:2, fillColor: TFD.nodes[i] >= 0 ? '#FF8C42' : '#9B51E0', fillOpacity:1, interactive:false }).addTo(MAP_TMP); });   /* (V28.1) الحرّةُ بنفسجية */
     }
-    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
+    if (SPLIT) splitPaint();   /* (V37.67) معاينةُ التقسيم */ if (typeof propMarkers === 'function') propMarkers();   /* (V37.69) */ if (typeof ROUTE === 'object' && ROUTE.on && ROUTE.pts.length && MAP_TMP){
       var pts = ROUTE.pts.map(function(p){ return [p[0], p[1]]; });
       var isArea = ROUTE.mode === 'area', isCamp = isArea && ROUTE.type === 'مخيم';
       if (isArea && pts.length > 2){
@@ -21824,6 +21825,7 @@ function mapUIHtml(){
     +     '<button type="button" class="map-chip chip-caret'+(CO_OPEN?' on':'')+'" data-co="1"'
     +       ' aria-label="'+esc(t('اختر الشركات'))+'">\u25BE</button>'
     +   '</span>'
+    + propChip()   /* (V37.69) مقترحاتُ الوزارة */
     + '</div>'
 
     + (MAP_FILT_OPEN ? '<div class="map-sheet">'
@@ -21883,7 +21885,8 @@ function mapUIHtml(){
     + (CO_OPEN ? coFiltHtml() : '')
     + (ASN_PICK ? asnPickHtml() : '')
     + (ASN_OPEN ? asnSheet() : '')
-    + (POP_OPEN ? popHtml() : '');
+    + (POP_OPEN ? popHtml() : '')
+    + propSheetHtml() + (PROP_POP ? propPopHtml() : '');   /* (V37.69) */
 }
 
 function mapDraw(){
@@ -26116,6 +26119,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.69', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'نقطة الوزارة المقترحة بقت فعلًا برّه الأرقام والتقارير والإكسل لحد ما المهندس يعتمدها (في ٣٧٫٦٨ كانت بتتحسب). بتظهر على الخريطة بعلامة بنفسجية «🏛 مقترحة من الوزارة» للكل، والوزارة بتشوف مقترحاتها حتى بعد ما تقفل التطبيق.',
+      'للمهندس: شريحة «🏛 مقترحات الوزارة» فوق الخريطة بعددها وقائمتها، وفي نافذة أي مقترحة «✅ اعتمدها نقطةً رسمية» (تدخل الأرقام فورًا وتتجدول زيارتها) أو «✕ ارفضها». وللوزارة: «بانتظار اعتماد المهندس». وجرد ثابت بيتأكد من الحساب قبل الاعتماد وبعده.' ] },
   { v:'V37.68', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'حساب الوزارة على الخريطة: بيشوف كل النقاط وكل الفلاتر وأدوات العرض، ويقدر يضيف نقطة بـ«📌 نقطة هنا» أو «+ موقع غير مسجّل» من غير صور إلزامية. النقطة بتدخل «مقترحة من الوزارة» والمهندس يعتمدها قبل ما تبقى رسمية في الأرقام والتقارير. وأدوات الرسم والإسناد والتحديد والتعديل تفضل للمهندس.' ] },
   { v:'V37.67', d:'١٢ أكتوبر ٢٠٢٦', notes:[
@@ -27247,6 +27253,69 @@ function inboxCard(){
       }).join('') + '</div>'
       + '<p class="hint" style="margin:8px 0 0">' + esc(t(total ? 'كلُّ رقمٍ هنا قرارٌ ينتظرك — ويختفي حين تتّخذه.' : 'الطاولةُ نظيفة — لا قرارَ ينتظرك الآن.')) + '</p>');
 }
+/* ═══ (V37.69) مقترحاتُ الوزارة — قرارُ المالك «مقترحة أفضل»: النقطةُ التي تضيفها الوزارةُ تبقى خارجَ السجلِّ والعدِّ والتقارير حتى يعتمدها المهندس ═══
+   تُحفَظ في newsites بمصدر «ministry» وغيرَ معتمدة، وتُمسَك هنا في STATE.props (لا STATE.sites) فلا تدخل ملخّصًا ولا تبويبًا ولا تقريرًا ولا إكسل.
+   تُرسَم على الخريطة بعلامةٍ بنفسجيةٍ متقطّعةٍ للجميع (والوزارةُ ترى مقترحاتِها بعد إعادة الفتح)، وفي نافذتها: المهندسُ يعتمد (فتدخل السجلَّ وتُجدوَل زيارتُها) أو يرفض؛
+   وغيرُه يقرأ «بانتظار اعتماد المهندس». وللمهندس شريحةٌ أعلى الخريطة بعددها تفتح قائمتَها. جردُ audit-props يحرس العدَّ قبل الاعتماد وبعده. */
+function propList(){ if (!STATE.props) STATE.props = []; return STATE.props; }
+function propIs(v){ return !!(v && v.origin === 'ministry' && v.approved !== true); }
+function propKeep(v){
+  if (!v || !v.id) return false;
+  if (v.rejected || v.deleted || v.hidden){ STATE.props = propList().filter(function(p){ return p.id !== v.id; }); return false; }
+  var ex = propList().filter(function(p){ return p.id === v.id; })[0];
+  if (ex) Object.assign(ex, v); else propList().push(Object.assign({}, v));
+  return true;
+}
+function propFind(id){ return propList().filter(function(p){ return p.id === id; })[0] || null; }
+var PROP_POP = '', PROP_SHEET = false;
+function propMay(){ return typeof may === 'function' && may('approve'); }
+function propLine(p){ var tx = (TAX_DEF[p.type] || { l:p.type, i:'\u25CF' }); return tx.i + ' ' + esc(t(tx.l)) + ' \u2014 ' + esc(t(p.zone || '')) + (p.sq ? ' \u00b7 ' + esc(t('مربع')) + ' ' + esc(p.sq) : '') + (p.sign ? ' \u00b7 ' + esc(t('شاخص')) + ' ' + esc(p.sign) : ''); }
+function propPopHtml(){
+  var p = propFind(PROP_POP); if (!p) return '';
+  return '<div class="svpop-veil" data-propclose="1" style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:2000"></div>'
+    + '<div class="svpop" role="dialog" aria-modal="true" style="position:fixed;z-index:2001;inset:auto 4vw 8vh 4vw;max-height:80vh;overflow:auto;background:var(--surface);color:var(--ink);border:1px solid #9B51E0;border-radius:14px;padding:14px;box-shadow:0 10px 40px rgba(0,0,0,.35)">'
+    + '<div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><h3 style="margin:0">\u{1F3DB} ' + esc(t('مقترحة من الوزارة')) + '</h3>' + btn('\u2715', 'btn-quiet btn-sm', ' data-propclose="1" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + '<div style="margin:8px 0 4px;font-weight:700">' + esc(p.name || p.id) + '</div><div class="hint" style="margin:0">' + propLine(p) + '</div>'
+    + (p.note ? '<p style="margin:8px 0 0">' + esc(p.note) + '</p>' : '')
+    + '<div class="hint" style="margin:8px 0 0;font-size:12px">' + esc(t('أضافتها')) + ' ' + esc(p.by || t('الوزارة')) + ' \u00b7 ' + esc(fmtDate(p.at)) + ' \u00b7 <span class="num">' + (+p.lat).toFixed(5) + ', ' + (+p.lng).toFixed(5) + '</span></div>'
+    + '<div class="actions" style="margin-top:12px">'
+    + (propMay() ? btn('\u2705 ' + t('اعتمدها نقطةً رسمية'), 'btn-primary btn-sm', ' data-propok="' + esc(p.id) + '"') + btn('\u2715 ' + t('ارفضها'), 'btn-danger btn-sm', ' data-propno="' + esc(p.id) + '"') : '<span class="pill">\u23F3 ' + esc(t('بانتظار اعتماد المهندس')) + '</span>')
+    + btn('\u2197 ' + t('اتجاهات'), 'btn-quiet btn-sm', ' data-propgo="' + esc(p.id) + '"') + '</div></div>';
+}
+function propApprove(id){
+  if (!propMay()){ toast(t('اعتمادُ المقترحات للمهندس فما فوق')); return false; }
+  var p = propFind(id); if (!p) return false;
+  p.approved = true; p.appBy = (STATE.meta && STATE.meta.name) || ''; p.appAt = Date.now();
+  STATE.props = propList().filter(function(q){ return q.id !== id; });
+  if (!siteFind(id)){ STATE.sites.push(p); SITE_IX = null; SITE_TOK = null; }
+  CORE.set('newsites', id, p); statBump(); logEvent('اعتمادُ مقترحةِ الوزارة — ' + id + ' \u00b7 ' + (p.zone || ''), id);
+  PROP_POP = ''; PROP_SHEET = false; toast(id + ' \u00b7 ' + t('اعتُمدت — صارت نقطةً في السجل، جدوِل زيارتَها'));
+  if (typeof visitAsnOpen === 'function') visitAsnOpen(id, true); else render(1);
+  if (typeof mapPaint === 'function') mapPaint(); return true;
+}
+function propReject(id){
+  if (!propMay()){ toast(t('اعتمادُ المقترحات للمهندس فما فوق')); return false; }
+  var p = propFind(id); if (!p) return false;
+  p.rejected = true; p.rejBy = (STATE.meta && STATE.meta.name) || ''; p.rejAt = Date.now();
+  STATE.props = propList().filter(function(q){ return q.id !== id; });
+  CORE.set('newsites', id, p); logEvent('رفضُ مقترحةِ الوزارة — ' + id, id);
+  PROP_POP = ''; toast(id + ' \u00b7 ' + t('رُفضت المقترحة')); render(1); if (typeof mapPaint === 'function') mapPaint(); return true;
+}
+function propMarkers(){
+  if (typeof MAP === 'undefined' || !MAP || !MAP_TMP) return;
+  propList().forEach(function(p){ if (!(+p.lat && +p.lng)) return;
+    var mk = L.circleMarker([+p.lat, +p.lng], { renderer:MAP_CV, radius:9, color:'#9B51E0', weight:3, dashArray:'4 3', fillColor:'#9B51E0', fillOpacity:0.28 });
+    mk.on('click', function(){ PROP_POP = p.id; POP_OPEN = false; render(1); }); mk.addTo(MAP_TMP); });
+}
+function propChip(){ var n = propList().length; if (!n) return ''; return '<button type="button" class="map-chip' + (PROP_SHEET ? ' on' : '') + '" data-propsheet="' + (PROP_SHEET ? '0' : '1') + '" style="border-color:#9B51E0">\u{1F3DB} ' + esc(t('مقترحات الوزارة')) + ' \u00b7 ' + nm(n) + '</button>'; }
+function propSheetHtml(){
+  if (!PROP_SHEET) return ''; var P = propList().slice().sort(function(a, b){ return (+b.at || 0) - (+a.at || 0); });
+  return '<div class="map-sheet"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><b>\u{1F3DB} ' + esc(t('مقترحات الوزارة')) + ' \u00b7 ' + nm(P.length) + '</b>' + btn('\u2715', 'btn-quiet btn-sm', ' data-propsheet="0" aria-label="' + esc(t('إغلاق')) + '"') + '</div>'
+    + (P.length ? P.map(function(p){ return '<div style="' + 'background:var(--surface-2);border-radius:12px;padding:10px;margin-top:8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap"><div style="flex:1;min-width:160px"><div style="font-weight:700">' + esc(p.name || p.id) + '</div><div class="hint" style="margin:2px 0 0;font-size:12px">' + propLine(p) + ' \u00b7 ' + esc(fmtDate(p.at)) + '</div></div>'
+        + btn('\u{1F4CD}', 'btn-quiet btn-sm', ' data-propgo="' + esc(p.id) + '" title="' + esc(t('على الخريطة')) + '"') + (propMay() ? btn('\u2705 ' + t('اعتمد'), 'btn-primary btn-sm', ' data-propok="' + esc(p.id) + '"') + btn('\u2715', 'btn-danger btn-sm', ' data-propno="' + esc(p.id) + '" title="' + esc(t('ارفضها')) + '"') : '') + '</div>'; }).join('') : '<p class="hint">' + esc(t('لا مقترحات')) + '</p>') + '</div>';
+}
+function propGo(id){ var p = propFind(id); if (!p || !(+p.lat && +p.lng)) return; PROP_SHEET = false; PROP_POP = id; if (typeof MAP !== 'undefined' && MAP){ try { MAP.setView([+p.lat, +p.lng], Math.max(MAP.getZoom(), 17)); } catch (e){ LS_ERR = e; } } render(1); if (typeof mapPaint === 'function') mapPaint(); }
+
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
    الصفحةُ التي تُغلق الدورة: كلُّ زيارةٍ حُفظت تظهر هنا ببياناتها الجديدة —
    أين نُقلت النقطة، وما القياسات، وما التحديات، وكم صورة — فيعتمدها المهندسُ
@@ -35393,6 +35462,11 @@ function clickAPart2(e){
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
+  var pok = e.target.closest('[data-propok]'); if (pok){ propApprove(pok.getAttribute('data-propok')); return true; }   /* (V37.69) مقترحاتُ الوزارة */
+  var pno = e.target.closest('[data-propno]'); if (pno){ propReject(pno.getAttribute('data-propno')); return true; }
+  var pgo = e.target.closest('[data-propgo]'); if (pgo){ propGo(pgo.getAttribute('data-propgo')); return true; }
+  if (e.target.closest('[data-propclose]')){ PROP_POP = ''; render(1); return true; }
+  var psh = e.target.closest('[data-propsheet]'); if (psh){ PROP_SHEET = psh.getAttribute('data-propsheet') === '1'; PROP_POP = ''; render(1); return true; }
   var csp = e.target.closest('[data-campsplit]'); if (csp){ splitStart(csp.getAttribute('data-campsplit')); return true; }   /* (V37.67) قسّم المخيم */
   var spn = e.target.closest('[data-splitn]'); if (spn){ splitN(+spn.getAttribute('data-splitn')); return true; }
   if (e.target.closest('[data-splitsave]')){ splitSave(); return true; }

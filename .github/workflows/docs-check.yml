@@ -210,6 +210,8 @@ jobs:
         run: node scripts/audit-calc.mjs
       - name: جرد الأدوار — كلٌّ يرى ما له ولا يرى ما ليس له
         run: node scripts/audit-roles.mjs
+      - name: جردُ مقترحات الوزارة — خارجَ العدِّ حتى الاعتماد (V37.69)
+        run: node scripts/audit-props.mjs
       - name: جرد الخريطة الثلاثية — الثلاثيُّ هو الخريطةُ نفسُها مرفوعةً
         run: node scripts/audit-map3d.mjs
       - name: جرد مجلدات الصور — لكلِّ نقطةٍ مجلدُها باسمها

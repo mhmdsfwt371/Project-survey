@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-bc0ba53829.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-c3749cfd25.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -957,7 +957,7 @@ var CORE = {
        القديمُ حالةً قديمةً: نقطةٌ أُسندت في جهازٍ آخرَ تبقى «لم تُزر» هنا
        حتى يُبطِله شيءٌ آخر. وكذلك أيُّ كتابةٍ مباشرةٍ على STATE.tasks. */
     if (kind === 'tasks' && typeof TK_IX !== 'undefined') TK_IX = null;
-    if (v && v.deleted){ delete STATE[kind][id]; if (kind === 'newsites' && typeof siteDropLocal === 'function') siteDropLocal(id); return false; }   /* (V25.5) شاهدُ نقطةٍ مضافةٍ يرفعها من السجل */
+    if (kind === 'newsites' && typeof propIs === 'function' && (propIs(v) || (v && v.rejected))) propKeep(v);   /* (V37.69) الحيُّ يُحدّث المقترحات */ if (v && v.deleted){ delete STATE[kind][id]; if (kind === 'newsites' && typeof siteDropLocal === 'function') siteDropLocal(id); return false; }   /* (V25.5) شاهدُ نقطةٍ مضافةٍ يرفعها من السجل */
     /* ═══ التعديلُ المتزامن يُقال ولا يُبتلَع (V17.79) ═══
        كان تعديلُ جهازين على السجلِّ نفسِه يمرُّ صامتًا: آخرُ من رفع كسب، ولا
        يعرف الأوّلُ أن ما كتبه ذهب. فإن وصلت وثيقةٌ كتبها غيري وفي طابوري
@@ -1852,7 +1852,7 @@ var FB = {
         sn.forEach(function(d){ STATE.fixreqs[d.id] = d.data(); });
       }).catch(function(e){ softErr('سحب طلبات التصويب', e, 'تعذّر سحبُ طلبات تصويب البيانات'); });
 
-      office && DB.col('newsites').limit(1000).get().then(function(sn){
+      (office || ROLE === 'viewer') && DB.col('newsites').limit(1000).get().then(function(sn){   /* (V37.69) والوزارةُ ترى مقترحاتِها */
         FB.readCount = (FB.readCount || 0) + sn.size;
         if (!STATE.newsites) STATE.newsites = {};
         sn.forEach(function(d){ STATE.newsites[d.id] = d.data(); });
@@ -1869,6 +1869,7 @@ var FB = {
         var add = 0;
         Object.keys(STATE.newsites).forEach(function(k){
           var v = STATE.newsites[k];
+          if (typeof propIs === 'function' && propIs(v)){ propKeep(v); return; }   /* (V37.69) مقترحةُ الوزارة لا تدخل السجلَّ قبل الاعتماد */
           var ovh = v && v.id && (STATE.siteOv || {})[v.id]; if (ovh && (ovh.hidden || ovh.deleted)) return;   /* محذوفةٌ (إخفاءً أو نهائيًّا) — لا تعود */
           if (v && v.id && have[v.id]){   /* (V22.9) ما دُمج من قبل يأخذ تعديلَ السحابة: الموقعُ والاسمُ والإخفاء — وإلا بقيت النقطةُ حيث كانت */
             var ex = siteFind(v.id);
