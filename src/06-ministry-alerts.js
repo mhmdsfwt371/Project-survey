@@ -154,6 +154,7 @@ function svDashHtml(key, rows, head){
    و«ليه مش جاهزة؟» مربعاتٌ بأيقونة، والمشاعرُ حلقاتٌ صغيرةٌ تُضغط، والأسبوعُ جملةٌ عادية، ثم الخريطةُ وزرُّ الإكسل. لا وسيطَ ولا «أقدم بند» ولا أسماءَ فئاتٍ بسطرين. */
 var SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في كلِّ اللوحات */
   { k:'ins', c:'#14B8A6', e:'\u{1F527}', n:'مُركّبة' },
+  { k:'sched', c:'#7C5CFF', e:'\u{1F4C5}', n:'مجدولة للتركيب' },   /* (V37.62) */
   { k:'ready', c:'#22C55E', e:'\u2705', n:'جاهزة للتركيب' },
   { k:'prep', c:'#F59E0B', e:'\u{1F6E0}', n:'تحتاج تجهيز' },
   { k:'coord', c:'#EF4444', e:'\u26A0\uFE0F', n:'تحتاج تنسيق' },
@@ -174,6 +175,7 @@ function svPrimWhy(rec){
 }
 function svStOf(id){
   if (typeof insDone === 'function' && insDone(id)) return 'ins';
+  if (typeof taskKindOf === 'function' && taskKindOf(id, 'install')) return 'sched';   /* (V37.62) */
   var r = STATE.recs[id]; if (!r || !svVisited(r)) return 'todo'; if (!svDone(r)) return 'again';
   var pw = svPrimWhy(r); if (pw < 0) return 'ready'; return pw === 3 ? 'coord' : 'prep';
 }
@@ -193,9 +195,21 @@ function svSubPass(id){
   if (!SV_SUB) return true; var p = SV_SUB.split(':');
   if (p[0] === 'st') return svStOf(id) === p[1];
   if (p[0] === 'why') return svStOf(id) !== 'ins' && svPrimWhy(STATE.recs[id]) === +p[1];   /* (V37.59) بالسبب الرئيس — كلُّ نقطةٍ في مربعٍ واحد */
+  var x = siteFind(id);   /* (V37.62) مرشّحاتُ التبويبات الخمسة */
+  if (p[0] === 'type') return !!x && taxOf(x).t === p[1];
+  if (p[0] === 'co') return !!x && x.co === SV_SUB.slice(3);
+  if (p[0] === 'cob'){ if (!x || x.type !== 'مخيم' || !x.co) return false; var cb = mtCoStats().filter(function(o){ return o.co === x.co; })[0]; return !!cb && cb.b === p[1]; }
+  if (p[0] === 'grp') return p[1] === 'all' ? /^(prep|coord)$/.test(svStOf(id)) : mtGrpOf(id) === p[1];
+  if (p[0] === 'day'){ var dk = p[1], kd = p[2] || ''; return (STATE.steps || []).some(function(st){ return mtStepSite(st) === id && dayKey(+st.at || 0) === dk && (!kd || st.kind === kd); }); }
   return true;
 }
-function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':'); if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; } var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
+function svSubLabel(){ if (!SV_SUB) return ''; var p = SV_SUB.split(':');
+  if (p[0] === 'st'){ var o = SV_ST.filter(function(x){ return x.k === p[1]; })[0]; return o ? o.n : ''; }
+  if (p[0] === 'type') return (TAX_DEF[p[1]] || { l:p[1] }).l; if (p[0] === 'co') return SV_SUB.slice(3);
+  if (p[0] === 'cob'){ var b = MT_COB.filter(function(x){ return x.k === p[1]; })[0]; return b ? t('شركات') + ' — ' + t(b.n) : ''; }
+  if (p[0] === 'grp'){ if (p[1] === 'all') return t('عليها تحدي'); var g = MT_GRP.filter(function(x){ return x.k === p[1]; })[0]; return g ? g.n : ''; }
+  if (p[0] === 'day'){ var dd = new Date(p[1] + 'T12:00:00'), WDN = ['الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت']; return t(WDN[dd.getDay()]) + ' ' + nm(dd.getDate()) + '/' + nm(dd.getMonth() + 1) + (p[2] ? ' \u00b7 ' + t(({ visit:'زيارة', ins:'تركيب', dis:'فك' })[p[2]] || p[2]) : ''); }   /* (V37.62) اليومُ باسمه وتاريخه بالعربية */
+  var w = SV_WHY[+p[1]]; return w ? w.n : ''; }
 function svPopFilter(rowsAll, head){
   var dcz = svDashCols(head);
   return rowsAll.filter(function(r){ return (!SV_ZF || dcz.zone < 0 || String(r[dcz.zone] || '') === SV_ZF) && svSubPass(r[0]); });
@@ -1138,14 +1152,14 @@ PAGE.mfu = { m:'المتابعة', t:'متابعة الوزارة',
     setTimeout(ringsGrow, 30);   /* (V34.3) */   /* (V37.49) الرابطُ القديمُ لشاشة القاعة = الملخّص في وضع العرض */
     if (cur === 'kiosk' || (cur === 'mfu' && KIOSK_ON)){ setTimeout(kioskAnimate, 30); setTimeout(function(){ try { kkSatInit(); } catch (e){ softErr('kkSat', e, ''); } }, 40); return head + kioskBody(); }
     head += mfuExportBar();   /* التصديرُ على كلِّ عنوان (V20.2) */
-    if (cur === 'mweek') return head + '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body();   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
+    if (cur === 'mweek') return head + mtWeek() + mtDetails('تحديث المهام والمعالم', '<details class="mfu-add" open><summary>' + esc(t('حالة أبرز المهام')) + '</summary>' + mfuTasks() + '</details>' + PAGE.wtask.body(), '\u270E');   /* (V37.62) اللوحةُ أوّلًا، والتحديثُ كما هو في قسمٍ مطويّ */   /* (V27.1) شريحتان من مصدرٍ واحد صارتا واحدة */   /* المهامُّ الأسبوعيةُ كما هي — تُحدَّث من هنا (V20.5) */
     if (cur === 'msurv') return head + mfuSurv();   /* (V29.2) */
-    if (cur === 'minst') return head + mfuInst();
-    if (cur === 'mcos') return head + mfuCos();
-    if (cur === 'mobs') return head + mfuObs();
+    if (cur === 'minst') return (svListPop() + supPopHtml()) + head + mtInst();   /* (V37.62) */
+    if (cur === 'mcos') return (svListPop() + supPopHtml()) + head + mtCos();   /* (V37.62) */
+    if (cur === 'mobs') return (svListPop() + supPopHtml()) + head + mtObs();   /* (V37.62) */
     if (cur === 'mchal') return head + mfuChal();
     if (cur === 'mreq') return head + mfuReq();
-    if (cur === 'mdaily') return head + mfuDaily();
+    if (cur === 'mdaily') return (svListPop() + supPopHtml()) + head + mtDaily();   /* (V37.62) */
     return head + mfuSummary();
   }};
 /* (V27.1) كان «المعدل اليومي» شريحةً وحدَه — صار قسمًا مطويًّا في «أمس · الآن · غدًا» */
@@ -2720,6 +2734,10 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.62', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'التبويبات الخمسة في متابعة الوزارة بقت بنفس فكرة الملخص: حلقة كبيرة ومربعات بأيقونة ورقم وكلمة، وكل مربع بيفتح لوحته وإكسله، والأرقام بتجمع:',
+      'حالة التركيبات (اتركّبت، مجدولة، جاهزة، تحتاج تجهيز… وحسب النوع والمشعر) · التحديات والمعوقات (مين يعالجها، والتحدي، والمشاعر — من غير عمر المعوق) · ملخص العمل اليومي (شغل النهارده وآخر ٧ أيام، وأي يوم بيتضغط) · شركات الخدمة (الأقل جاهزية أولًا، وضغطة الشركة بتفتح مخيماتها) · المهام الأسبوعية (خلصت، متأخرة، شغالين، لسه، وعلى مين — بتتصفّى في مكانها ومعاها إكسل).',
+      'والتفاصيل القديمة كاملة في قسم مطوي تحت كل تبويب، وتحديث المهام زي ما هو.' ] },
   { v:'V37.61', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'تنفيذ توصيات المراجعة: وحدة التقرير التنفيذي اتنقلت لملف لوحدها (ملف المتابعة نزل من ٤٨٩ لـ٤٦٥ ك.ب قبل التبويبات الخمسة). وقرارات كاميرات منى اتنقلت من الكود للسحابة مرة واحدة، فبقى المهندس يغيّرها من نافذة النقطة.',
       'ومسكت خطأ: تصنيف المهندس اليدوي للتقرير التنفيذي ما كانش بيوصل للأجهزة التانية (كان بيفضل على جهازه بس) — اتصلّح.' ] },

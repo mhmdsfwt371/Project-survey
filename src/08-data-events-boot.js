@@ -2971,7 +2971,7 @@ function clickAPart2(e){
   if (e.target.closest('[data-boxcopy]')){ boxCopy(); return true; }
   if (e.target.closest('[data-briefcopy]')){ try { navigator.clipboard.writeText(mfuBriefText()); toast(t('نُسخ الملخّص')); } catch (er){ toast(t('تعذّر النسخ')); } return true; }   /* (V29.9) */
   var svl = e.target.closest('[data-svlist]');   /* (V29.6) */
-  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || ''; SV_SUB = ''; SV_STACK = [];   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
+  if (svl){ SV_POP = svl.getAttribute('data-svlist'); SV_PHO = ''; SV_VIEW = 'dash'; SV_SHOW = 80; SV_ZF = svl.getAttribute('data-svzone') || ''; SV_SUB = svl.getAttribute('data-svsub0') || ''; SV_STACK = [];   /* (V37.62) مربعُ التبويب يفتح لوحتَه مصفّاةً */   /* (V37.49) بطاقةُ المشعر تفتح لوحتَها مصفّاةً */
     if (KIOSK_ON) kioskCycleStop();   /* الضغطةُ توقف التنقّلَ التلقائي */   /* (V37.14) طلبُ المالك «الويندو بطيئة»: تُدرَج النافذةُ وحدَها بلا رسم الصفحة */
     var hostL = svl.closest('#content') || document.getElementById('content');
     if (hostL){ svPopRemove(); var tmpL = document.createElement('div'); tmpL.innerHTML = (svListPop() + supPopHtml()); while (tmpL.firstChild) hostL.appendChild(tmpL.firstChild); } else render(1);
@@ -2987,6 +2987,10 @@ function clickAPart2(e){
   if (phc){ var pk = phc.getAttribute('data-phclear'); if (FORM && FORM.photos && FORM.photos[pk]){ delete FORM.photos[pk]; if (typeof SVD === 'object') SVD.dirty = true; if (typeof svDraftSave === 'function') svDraftSave(); toast(t('حُذفت الصورة — اختر غيرها')); render(1); } return true; }
   if (e.target.closest('[data-svmore]')){ SV_SHOW += 80; toast(t('عُرضت ٨٠ أخرى')); var bxM = document.querySelector('.svpop[data-keepscroll^="svpop:"]'), topM = bxM ? bxM.scrollTop : 0, hostM = (bxM && bxM.parentNode) || document.getElementById('content');   /* (V37.27) دفعةٌ أخرى في مكانها */
     if (hostM){ svPopRemove(); var tmpM = document.createElement('div'); tmpM.innerHTML = svListPop(); while (tmpM.firstChild) hostM.appendChild(tmpM.firstChild); var nb = document.querySelector('.svpop[data-keepscroll^="svpop:"]'); if (nb) nb.scrollTop = topM; } else render(1); return true; }
+  var mwf = e.target.closest('[data-mtwf]');   /* (V37.62) المهامُّ تُصفّى في مكانها */
+  if (mwf){ var wv = mwf.getAttribute('data-mtwf') || ''; MT_WF = MT_WF === wv ? '' : wv; render(1); return true; }
+  if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
+  if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
   var ssb = e.target.closest('[data-svsub]');   /* (V37.58) مربعٌ في اللوحة يُضغط: نافذتُه بلوحتها وإكسلها */
   if (ssb){ var sv0 = ssb.getAttribute('data-svsub') || ''; if (SV_SUB === sv0) return true; SV_STACK.push({ sub:SV_SUB, zf:SV_ZF }); SV_SUB = sv0; svPopRefresh(); return true; }
   var szf = e.target.closest('[data-svzf]');   /* (V37.45) */
