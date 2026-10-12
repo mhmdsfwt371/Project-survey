@@ -139,7 +139,7 @@ function idleStep(id){
   if (ms !== 'approved')          return { why:'بانتظار اعتماد الوزارة', go:'minappr', lbl:'افتح اعتماد الوزارة', cap:'minapprove' };
   if (!so)                        return { why:'لا حلَّ مقترحًا بعد', go:'solution', lbl:'اقترح الحل', cap:'approve' };
   if (so.status !== 'معتمد')      return { why:'الحلُّ مقترحٌ ولم يُعتمَد', go:'solution', lbl:'اعتمد الحل', cap:'approve' };
-  if (tk)                         return { why:'مُسندةٌ للتركيب — تنتظر الفريق', go:'req', lbl:'افتح الطلبات', cap:'approve' };
+  if (tk)                         return { why:'مجدولة للتركيب — تنتظر الفريق', go:'req', lbl:'افتح الطلبات', cap:'approve' };
   return { why:'جاهزةٌ ولم يُسنَد تركيبُها', go:'ready', lbl:'أسنِد تركيبًا', cap:'approve' };
 }
 function stuckPanel(x){

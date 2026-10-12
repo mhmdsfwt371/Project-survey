@@ -1283,7 +1283,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.63</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.64</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1345,7 +1345,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-22d028136f.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-b811df85af.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -17883,7 +17883,7 @@ var LIFE = {
   minwait:   { c:'#F2B134', n:'معتمدةٌ تقنيًّا — بانتظار الوزارة', d:'اعتمدها المهندسُ تقنيًّا، وتنتظر اعتمادَ الوزارة لإعداد التركيب.' },
   minback:   { c:'#D96C6C', n:'ردّتها الوزارة — تحتاج معالجة', d:'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.' },
   ready:     { c:'#FF8C42', n:'معتمدةٌ من الوزارة — بانتظار الجدولة', d:'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.' },
-  sched:     { c:'#7C5CFF', n:'مُسندةٌ للتركيب',           d:'أُسند تركيبُها لفريقٍ بموعد.' },
+  sched:     { c:'#7C5CFF', n:'مجدولة للتركيب',            d:'أُسند تركيبُها لفريقٍ بموعد.' },   /* (V37.64) الاسمُ نفسُه في اللوحات */
   installed: { c:'#3AD6A0', n:'مُركّبة',                  d:'اكتمل تركيبُها واعتُمد — تنتظر التسليم.' },
   handed:    { c:'#12A594', n:'سُلِّمت للعميل',            d:'حُرِّر محضرُ تسليمها وبدأ ضمانُها — ومنها يُتاح الفك.' },
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
@@ -22755,14 +22755,9 @@ var CC_GROUPS = [
   { g:'owner', n:'تنسيق مع الجهة المالكة',   who:'الشركة أو الجهة المالكة',                    ks:['block', 'legacy'] },
   { g:'access', n:'تحتاج زيارة أخرى',         who:'أفاقي — تنسيق الزيارة',                      ks:[] }   /* (V37.31) قاعدةُ المالك الدائمة: لا ما يوحي بتصريحٍ أو تعذّرٍ فيما تراه الوزارة */
 ];
-function ccGroupCounts(){
-  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0);
-  if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
-  var by = {}, out = { make:0, study:0, owner:0, access:0 };
-  CC_GROUPS.forEach(function(G){ G.ks.forEach(function(k){ by[k] = G.g; }); });
-  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return;
-    if (svDone(r)){ var seen = {}; chalCats(r).forEach(function(k){ var g = by[k]; if (g && !seen[g]){ seen[g] = 1; out[g]++; } }); }
-    else if (svVisited(r)) out.access++; });
+function ccGroupCounts(){   /* (V37.64) توحيد: كانت النقطةُ ذاتُ التحديين تُعَدّ في مجموعتين — الآن مرةً بأهمِّ تحدٍّ فيها */
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0); if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
+  var out = { make:0, study:0, owner:0, access:0 }; (STATE.sites || []).forEach(function(x){ var g = mtGrpOf(x.id); if (g) out[g]++; });
   ccGroupCounts.c = { k:mk, v:out }; return out;
 }
 function ccGroupsHtml(){
@@ -23003,7 +22998,7 @@ function execAutoOf(x){ return execStatus(STATE.recs[x.id], execPolicy(execT1(x)
 function execLabelOf(st){ return String((EXEC_L[st] || [''])[0]).split(' — ')[0].trim(); }   /* (V37.53) التسميةُ الظاهرة — الحالاتُ المتعدّدةُ لتسميةٍ واحدةٍ شريحةٌ واحدة */
 var EXEC_MEMO = { v:'', m:null };
 function execStatusMemo(x){ var v = (typeof STAT_VER !== 'undefined' ? STAT_VER : 0) + ':' + (typeof CFG_VER !== 'undefined' ? CFG_VER : 0); if (EXEC_MEMO.v !== v){ EXEC_MEMO.v = v; EXEC_MEMO.m = {}; } var m = EXEC_MEMO.m; if (m[x.id] === undefined){ m[x.id] = execStatus(STATE.recs[x.id], execPolicy(execT1(x), execT2(x) || '', execT3(x), execT4(x)), x); } return m[x.id]; }
-function ccGroupsOfSite(x){ var r = STATE.recs[x.id]; if (!r || !svVisited(r)) return []; if (!svDone(r)) return ['access']; var cc = chalCats(r), out = []; CC_GROUPS.forEach(function(g){ if (g.ks.some(function(k){ return cc.indexOf(k) > -1; })) out.push(g.g); }); return out; }
+function ccGroupsOfSite(x){ var g = typeof mtGrpOf === 'function' ? mtGrpOf(x.id) : ''; return g ? [g] : []; }   /* (V37.64) توحيد: مجموعةٌ واحدةٌ لكلِّ نقطة — كما في تبويب التحديات */
 function execOvRow(s){
   if (!may('settings') || !s) return '';
   var r = STATE.recs[s.id], cur = execOvOf(s.id), auto = execAutoOf(s), ins = typeof insDone === 'function' && insDone(s.id);
@@ -23199,14 +23194,16 @@ function mtInst(){
   var types = TAX_T.filter(function(ty){ return bt[ty]; }).map(function(ty){ var d = TAX_DEF[ty] || { l:ty, i:'\u25CF' }, o = bt[ty]; return mtIcon(nm(Math.round(o.i / o.n * 100)) + '\u066A', d.l, d.i, mtOpen('sv', 'type:' + ty)); });
   var bz = {}; S.forEach(function(x){ var z = taxOf(x).g; var o = bz[z] = bz[z] || { n:0, i:0 }; o.n++; if (svStOf(x.id) === 'ins') o.i++; });
   var zones = TAX_G.filter(function(z){ return bz[z]; }).map(function(z){ var o = bz[z], p = Math.round(o.i / o.n * 100);
-    return '<div role="button" tabindex="0"' + mtOpen('sv', '', z) + ' style="' + MT_TILE + ';text-align:center;cursor:pointer"><div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(p, 54, '#14B8A6', nm(p) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + ' \u203A</div><div class="hint num" style="margin:0;font-size:12px">' + nm(o.i) + ' / ' + nm(o.n) + '</div></div>'; });
-  return mtHero(pct, nm(ins) + ' <span style="font-size:18px">' + esc(t('من')) + ' ' + nm(N) + '</span>', esc(t('نقطة اتركّبت')), '#14B8A6')
+    return '<div role="button" tabindex="0"' + mtOpen('sv', '', z) + ' style="' + MT_TILE + ';text-align:center;cursor:pointer"><div style="display:flex;justify-content:center;margin-bottom:6px">' + svRing(p, 54, '#3AD6A0', nm(p) + '\u066A') + '</div><div style="font-size:13px">' + esc(t(z)) + ' \u203A</div><div class="hint num" style="margin:0;font-size:12px">' + nm(o.i) + ' / ' + nm(o.n) + '</div></div>'; });
+  return mtHero(pct, nm(ins) + ' <span style="font-size:18px">' + esc(t('من')) + ' ' + nm(N) + '</span>', esc(t('نقطة اتركّبت')), '#3AD6A0')
     + mtSec('حالها الآن') + mtGrid(stTiles) + mtSec('حسب النوع') + mtGrid(types, 96) + mtSec('المشاعر') + mtGrid(zones, 96)
     + mtAllBtn('inst') + mtDetails('التفاصيل الكاملة', mfuInst());
 }
 
 /* ── ٤ · التحديات والمعوقات ── */
-var MT_GRP = [ { k:'make', n:'تصنيع وتجهيز', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', n:'زيارة تقنية', e:'\u{1F50E}', c:'#2E86DE', w:[1, 5] }, { k:'owner', n:'تنسيق مع المالك', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', n:'زيارة أخرى', e:'\u{1F501}', c:'#94A3B8', w:[] } ];
+/* (V37.64) توحيد: الأسماءُ من تعريف المالك CC_GROUPS نفسِه، والألوانُ بمعنى واحدٍ في الخريطة واللوحات */
+var MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
+MT_GRP.forEach(function(g){ var G = CC_GROUPS.filter(function(x){ return x.g === g.k; })[0]; g.n = G ? G.n : g.k; });
 function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; if (st !== 'prep' && st !== 'coord') return ''; var pw = svPrimWhy(STATE.recs[id]); for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study'; }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
@@ -23449,13 +23446,13 @@ function svDashHtml(key, rows, head){
    لونٌ + أيقونةٌ + رقمٌ + كلمةٌ واحدة: حلقةٌ كبيرةٌ بالنسبة، وشريطُ إشارةٍ واحدٌ لحال النقاط (أخضر جاهزة · برتقالي شغلٌ علينا · أحمر يحتاج طرفًا آخر · رمادي لسه)،
    و«ليه مش جاهزة؟» مربعاتٌ بأيقونة، والمشاعرُ حلقاتٌ صغيرةٌ تُضغط، والأسبوعُ جملةٌ عادية، ثم الخريطةُ وزرُّ الإكسل. لا وسيطَ ولا «أقدم بند» ولا أسماءَ فئاتٍ بسطرين. */
 var SV_ST = [   /* حالُ النقطة — الألوانُ نفسُها في كلِّ اللوحات */
-  { k:'ins', c:'#14B8A6', e:'\u{1F527}', n:'مُركّبة' },
+  { k:'ins', c:'#3AD6A0', e:'\u{1F527}', n:'مُركّبة' },   /* (V37.64) لونُ الخريطة LIFE.installed */
   { k:'sched', c:'#7C5CFF', e:'\u{1F4C5}', n:'مجدولة للتركيب' },   /* (V37.62) */
   { k:'ready', c:'#22C55E', e:'\u2705', n:'جاهزة للتركيب' },
   { k:'prep', c:'#F59E0B', e:'\u{1F6E0}', n:'تحتاج تجهيز' },
   { k:'coord', c:'#EF4444', e:'\u26A0\uFE0F', n:'تحتاج تنسيق' },
-  { k:'again', c:'#94A3B8', e:'\u{1F501}', n:'زيارة أخرى' },
-  { k:'todo', c:'#475569', e:'\u23F3', n:'لم تُزر بعد' }
+  { k:'again', c:'#8D6E63', e:'\u{1F501}', n:'تحتاج زيارة أخرى' },   /* (V37.64) اسمُ الخريطة ولونُها LIFE.stuck */
+  { k:'todo', c:'#9FB0AA', e:'\u23F3', n:'لم تُزر' }   /* (V37.64) اسمُ الخريطة ولونُها LIFE.todo */
 ];
 var SV_WHY = [   /* «ليه مش جاهزة؟» — كلمةٌ واحدةٌ وأيقونة */
   { ks:['mount'], e:'\u{1F3D7}', n:'يحتاج هيكل' }, { ks:['entry', 'multi'], e:'\u{1F6AA}', n:'المدخل' }, { ks:['beam', 'wide'], e:'\u{1F4CF}', n:'العارضة' },
@@ -26040,6 +26037,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.64', d:'١٢ أكتوبر ٢٠٢٦', notes:[
+      'توحيد الأسامي والأرقام بين الخريطة واللوحات: «معالجة التحديات» بقت بنفس الأرقام في فلتر الخريطة والملخص وتبويب التحديات (كل نقطة في مجموعة واحدة بأهم تحدي فيها)، وبأسامي المالك نفسها. والحالات اللي معناها واحد بقت بنفس الاسم واللون: مُركّبة، مجدولة للتركيب، تحتاج زيارة أخرى، لم تُزر.' ] },
   { v:'V37.63', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'التبويبات الخمسة: كل مربع بيفتح نافذة عنوانها بيقول اللي فتحته بالظبط (مثلًا «مخيمات الشركات الجاهزة — ٦٨ مخيم في ٢٣ شركة» أو «يحتاج هيكل — ٤٧٥ نقطة»)، وفيها الإكسل. والمهام الأسبوعية بقت بتفتح نافذة كمان. وفي آخر كل تبويب زرار «نزّل كل تفاصيل التبويب (إكسل)».' ] },
   { v:'V37.62', d:'١٢ أكتوبر ٢٠٢٦', notes:[
@@ -27300,7 +27299,7 @@ function idleStep(id){
   if (ms !== 'approved')          return { why:'بانتظار اعتماد الوزارة', go:'minappr', lbl:'افتح اعتماد الوزارة', cap:'minapprove' };
   if (!so)                        return { why:'لا حلَّ مقترحًا بعد', go:'solution', lbl:'اقترح الحل', cap:'approve' };
   if (so.status !== 'معتمد')      return { why:'الحلُّ مقترحٌ ولم يُعتمَد', go:'solution', lbl:'اعتمد الحل', cap:'approve' };
-  if (tk)                         return { why:'مُسندةٌ للتركيب — تنتظر الفريق', go:'req', lbl:'افتح الطلبات', cap:'approve' };
+  if (tk)                         return { why:'مجدولة للتركيب — تنتظر الفريق', go:'req', lbl:'افتح الطلبات', cap:'approve' };
   return { why:'جاهزةٌ ولم يُسنَد تركيبُها', go:'ready', lbl:'أسنِد تركيبًا', cap:'approve' };
 }
 function stuckPanel(x){

@@ -20,7 +20,7 @@ var LIFE = {
   minwait:   { c:'#F2B134', n:'معتمدةٌ تقنيًّا — بانتظار الوزارة', d:'اعتمدها المهندسُ تقنيًّا، وتنتظر اعتمادَ الوزارة لإعداد التركيب.' },
   minback:   { c:'#D96C6C', n:'ردّتها الوزارة — تحتاج معالجة', d:'أعادتها الوزارةُ بملاحظةٍ — يعالجها المهندسُ ويرفعها ثانيةً.' },
   ready:     { c:'#FF8C42', n:'معتمدةٌ من الوزارة — بانتظار الجدولة', d:'اعتمدت الوزارةُ إعدادَ تركيبها، وتنتظر إسنادَ تركيب.' },
-  sched:     { c:'#7C5CFF', n:'مُسندةٌ للتركيب',           d:'أُسند تركيبُها لفريقٍ بموعد.' },
+  sched:     { c:'#7C5CFF', n:'مجدولة للتركيب',            d:'أُسند تركيبُها لفريقٍ بموعد.' },   /* (V37.64) الاسمُ نفسُه في اللوحات */
   installed: { c:'#3AD6A0', n:'مُركّبة',                  d:'اكتمل تركيبُها واعتُمد — تنتظر التسليم.' },
   handed:    { c:'#12A594', n:'سُلِّمت للعميل',            d:'حُرِّر محضرُ تسليمها وبدأ ضمانُها — ومنها يُتاح الفك.' },
   maint:     { c:'#F5D547', n:'صيانةٌ مُسندة',            d:'أُسندت لها زيارةُ صيانةٍ في أثناء الموسم.' },
@@ -4892,14 +4892,9 @@ var CC_GROUPS = [
   { g:'owner', n:'تنسيق مع الجهة المالكة',   who:'الشركة أو الجهة المالكة',                    ks:['block', 'legacy'] },
   { g:'access', n:'تحتاج زيارة أخرى',         who:'أفاقي — تنسيق الزيارة',                      ks:[] }   /* (V37.31) قاعدةُ المالك الدائمة: لا ما يوحي بتصريحٍ أو تعذّرٍ فيما تراه الوزارة */
 ];
-function ccGroupCounts(){
-  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0);
-  if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
-  var by = {}, out = { make:0, study:0, owner:0, access:0 };
-  CC_GROUPS.forEach(function(G){ G.ks.forEach(function(k){ by[k] = G.g; }); });
-  (STATE.sites || []).forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return;
-    if (svDone(r)){ var seen = {}; chalCats(r).forEach(function(k){ var g = by[k]; if (g && !seen[g]){ seen[g] = 1; out[g]++; } }); }
-    else if (svVisited(r)) out.access++; });
+function ccGroupCounts(){   /* (V37.64) توحيد: كانت النقطةُ ذاتُ التحديين تُعَدّ في مجموعتين — الآن مرةً بأهمِّ تحدٍّ فيها */
+  var mk = STAT_VER + '|' + (typeof CFG_VER === 'number' ? CFG_VER : 0); if (ccGroupCounts.c && ccGroupCounts.c.k === mk) return ccGroupCounts.c.v;
+  var out = { make:0, study:0, owner:0, access:0 }; (STATE.sites || []).forEach(function(x){ var g = mtGrpOf(x.id); if (g) out[g]++; });
   ccGroupCounts.c = { k:mk, v:out }; return out;
 }
 function ccGroupsHtml(){
