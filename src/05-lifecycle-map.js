@@ -319,6 +319,9 @@ function mkPlace(x, z, r, sun, TOUCH){
   var pos = mapPosOf(x), posK = pos[0].toFixed(6) + ',' + pos[1].toFixed(6), FT = null, kind, shp = 'circle';
   /* المخيمُ مضلّعٌ إن تقرّبت (POLY_Z) وإلا دائرة، والممرُّ والكاميرا معيّنان، وما عداهما شكلُ نوعه */
   if (x.type === 'مخيم' && z >= POLY_Z && (FT = campFoot(x))) kind = 'poly';
+  /* (V37.66) بلاغُ المالك: «غيّرت حدود المخيم والرسمة الزرقا ما اتغيّرتش» — مفتاحُ الشكل كان موضعَ العلامة وحدَه، فإذا تبدّلت الحدودُ وبقي الموضع
+     عُدِّل اللونُ فقط وبقي المضلّعُ القديم حتى إعادة التحميل. الآن بصمةُ الحدود جزءٌ من المفتاح: أيُّ تعديلٍ يُعيد رسمَ المضلّع فورًا. */
+  if (kind === 'poly'){ var sg = 0; FT.forEach(function(q, qi){ sg += (q[0] * 1e6 % 9973) * (qi + 1) + (q[1] * 1e6 % 7919); }); posK += '|' + FT.length + ':' + Math.round(sg); }
   else { shp = mapShapeOf(x.type); kind = shp !== 'circle' && SHAPE_UNIT[shp] ? 'shape' : 'circle'; }
   /* ما لم يُزر يُرى على القمر الصناعي (V17.86): حافّةٌ برتقاليةٌ متقطّعة */
   var todoSat = kind === 'poly' && !ring && !picked && MAP_SAT && lifeOf(x) === 'todo';
