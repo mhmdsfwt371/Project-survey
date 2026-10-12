@@ -186,17 +186,11 @@ function assistQCard(){
   var no = R.filter(function(r){ return r.no; }).length;
   return card('أسئلة الناس للمساعد',
     '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
-    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (r.no ? ' ' + pill('بلا جواب', 'bad') : ''), '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : ''))   /* (V37.74) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
       : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
     + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
 }
-function knownCard(){
-  if (!(typeof may === 'function' && may('settings'))) return '';
-  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
-    '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
-    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || KNOWN_DEFAULT) + '</textarea>'   /* (V37.29) القائمةُ الأولى ظاهرةٌ للتعديل */,
-    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
-}
+
 function catsSave(){
   if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
   var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };

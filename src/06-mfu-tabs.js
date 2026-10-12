@@ -170,3 +170,31 @@ function mtAlertsHtml(){
   if (!al.length) return '';
   return '<div class="card mt-alerts" style="margin:0 0 12px"><div class="card-body"><div style="font-weight:700;margin-bottom:8px">\u{1F514} ' + esc(t('تنبيهات الأسبوع')) + '</div>' + mtGrid(al, 200) + '</div></div>';
 }
+
+/* ═══ (V37.74) «رابط القاعة» — قرارُ المالك (البند ٦): جهازُ القاعة يفتح عرضَ القاعة بنفسه بلا ضغطة ═══
+   الرابطُ ‎?hall=1 بعد الدخول يفتح ملخّصَ المتابعة في وضع القاعة، ويُبقي الشاشةَ مضيئة (قفلُ السكون)، ويسحب الجديدَ كلَّ خمس دقائق،
+   ويعرض ساعةً و«آخر تحديث» في الزاوية، ويُخفي المؤشّرَ بعد ثلاث ثوانٍ بلا حركة، ويطلب ملءَ الشاشة عند أوّل لمسة (المتصفّحُ يشترط لمسة).
+   وفي شريط الوضع زرُّ «🔗 رابط القاعة» ينسخه أو يشاركه. */
+var HALL_URL = (typeof location !== 'undefined') && /[?&#]hall(=1)?\b/.test(String(location.search) + String(location.hash));
+var HALL = { on:false, t:null, pull:null, at:0, idle:null };
+function hallLink(){ return location.origin + location.pathname + '?hall=1'; }
+function hallCopy(){ var u = hallLink();
+  if (navigator.share){ navigator.share({ title:t('عرض القاعة'), url:u }).catch(function(){}); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function(){ toast(t('نُسخ رابط القاعة — افتحه على جهاز القاعة بعد الدخول بحسابه')); }, function(){ toast(u); }); else toast(u); }
+function hallClock(){ var el = document.getElementById('hallClock'); if (!document.body.classList.contains('kiosk')){ if (el) el.remove(); return; }
+  if (!el){ el = document.createElement('div'); el.id = 'hallClock'; el.style.cssText = 'position:fixed;top:10px;inset-inline-start:12px;z-index:3000;background:rgba(0,0,0,.55);color:#fff;border-radius:12px;padding:6px 12px;font-size:15px;pointer-events:none'; document.body.appendChild(el); }
+  var d = new Date(), hh = function(x){ return ('0' + x).slice(-2); }, last = (STATE.meta && STATE.meta.lastSync) || HALL.at;
+  el.innerHTML = '<b class="num">' + nm(hh(d.getHours())) + ':' + nm(hh(d.getMinutes())) + '</b>' + (last ? ' \u00b7 <span style="opacity:.8">' + esc(t('آخر تحديث')) + ' <span class="num">' + nm(hh(new Date(last).getHours())) + ':' + nm(hh(new Date(last).getMinutes())) + '</span></span>' : ''); }
+function hallBoot(){
+  if (!HALL_URL || HALL.on) return; if (!document.getElementById('nav') || typeof ROLE === 'undefined' || !ROLE) return;   /* بعد الدخول */
+  HALL.on = true; try { goPage('mfu'); PTAB.mfu = 'mfu'; } catch (e){ LS_ERR = e; }
+  setTimeout(function(){ if (typeof KIOSK_ON !== 'undefined' && !KIOSK_ON) kioskToggle(); if (typeof wakeAcquire === 'function') wakeAcquire(); hallClock(); }, 400);
+  HALL.t = setInterval(hallClock, 30000);
+  HALL.pull = setInterval(function(){ if (typeof pullDelta === 'function') pullDelta().then(function(){ HALL.at = Date.now(); if (typeof render === 'function') render(1); hallClock(); }).catch(function(){}); }, 300000);
+  var fsOnce = function(){ try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); } catch (e){ LS_ERR = e; } document.removeEventListener('click', fsOnce, true); };
+  document.addEventListener('click', fsOnce, true);
+  var idle = function(){ document.body.classList.remove('hall-idle'); clearTimeout(HALL.idle); HALL.idle = setTimeout(function(){ if (document.body.classList.contains('kiosk')) document.body.classList.add('hall-idle'); }, 3000); };
+  ['mousemove', 'touchstart', 'keydown'].forEach(function(ev){ document.addEventListener(ev, idle, { passive:true }); }); idle();
+  toast(t('عرض القاعة — المس الشاشة مرةً لملئها'));
+}
+if (typeof setInterval === 'function' && HALL_URL) var HALL_BOOT_T = setInterval(function(){ hallBoot(); if (HALL.on) clearInterval(HALL_BOOT_T); }, 1000);

@@ -63,7 +63,8 @@ body.kiosk .mfu-obs{display:none}.mfu-obs .kk-h{margin-top:0 !important}   /* (V
 .fsec-t{font-weight:700;flex:0 0 auto}.fsec-s{flex:1;color:var(--muted,#9FB0C8);font-size:13px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.fsec-c{display:inline-block;transition:transform .2s ease;font-size:12px;opacity:.7}.fsec.open .fsec-c{transform:rotate(90deg)}
 .fsec-b{padding:0 0 8px}@keyframes fsec-in{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}.fsec.open .fsec-b{animation:fsec-in .18s ease-out}
 @media (prefers-reduced-motion:reduce){.fsec-c{transition:none}.fsec.open .fsec-b{animation:none}}   /* (V37.54) الترشيحُ أقسامًا مطوية */
-body.kiosk .mt-alerts{display:none}   /* (V37.65) التنبيهاتُ للاجتماع لا لشاشة القاعة */
+body.kiosk .mt-alerts{display:none}
+body.kiosk.hall-idle, body.kiosk.hall-idle *{cursor:none !important}   /* (V37.74) */   /* (V37.65) التنبيهاتُ للاجتماع لا لشاشة القاعة */
 /* ═══ (V37.33) مظهران إضافيّان باختيار كلِّ جهاز — الافتراضيُّ كما هو ═══
    «غرفة تحكم» فوق الداكن (كحليٌّ وأرقامٌ مضيئة — للقاعة والعرض)، و«هوية أفاقي» فوق الفاتح (أزرقُ أفاقي وبرتقاليٌّ وزوايا ناعمة).
    متغيّراتٌ فقط تُغلِّب الأصلَ — فلا تتغيّر شاشةٌ ولا منطق. */
@@ -1284,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.73</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.74</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1346,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-8d0efbe518.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-8acef139b7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7410,16 +7411,62 @@ var KNOWN_DEFAULT = [
   'الحفظ المحلي لا يعمل، مش بيحفظ، الحفظ واقف، خطأ قاعدة الجهاز | ده من متصفح آيفون: افتح على نت واستنى الطابور يفضى (شارة المزامنة)، وبعدها «إعادة ضبط التطبيق» من القائمة. ما يضيعش حاجة.',
   'التحديث مش بينزل، فشل التحديث، النسخة مش بتتغير | اقفل التطبيق خالص (اسحبه من التطبيقات المفتوحة) وافتحه على نت. لو فضل قديم: «إعادة ضبط التطبيق».'
 ].join('\n');
-function knownList(){
-  var raw = CFG.known || KNOWN_DEFAULT; if (!raw) return [];
-  return String(raw).split(/\n+/).map(function(l){ var i = l.indexOf('|'); if (i < 1) return null; var kw = l.slice(0, i).trim(), a = l.slice(i + 1).trim(); return kw && a ? { kw:kw, a:a } : null; }).filter(Boolean);
-}
+
 function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'function' ? arNorm(x) : x; return (' ' + x).replace(/ ال/g, ' ').replace(/ئ|ؤ/g, 'ي').trim(); }   /* «ال» في كلِّ كلمة لا أوّلِ النص وحدَه */
-function knownHits(q){
-  q = knownNorm(q); if (q.length < 3) return [];
-  var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
-  return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+/* ═══ (V37.74) «المشاكل المعروفة» بأقوى ما يكون — البند ٥ بقرار المالك ═══
+   كانت نصًّا خامًّا (سطرٌ لكلِّ مشكلة). صارت كروتًا: الكلماتُ والحلُّ والحالةُ (قائمة / حُلّت في إصدار) ولمن تظهر (الكل / الميدان / الوزارة)،
+   والمحلولةُ تخرج من المساعد وتبقى للتاريخ. ومعها «جرّب سؤالًا» قبل الحفظ، و«تغطيةُ المساعد» على أسئلة الفريق الفعلية آخر ١٤ يومًا،
+   و«أضفها» من أيِّ سؤالٍ بلا جواب تفتح كرتًا جاهزَ الكلمات. التخزينُ هو هو (CFG.known سطورًا) بحقلٍ ثالثٍ اختياريٍّ: «حُلّت V… · الميدان». */
+var KN_ED = null, KN_ST = ['قائمة', 'حُلّت'], KN_AUD = ['الكل', 'الميدان', 'الوزارة'];
+var KN_STOP = { 'في':1, 'من':1, 'على':1, 'عن':1, 'الى':1, 'إلى':1, 'مش':1, 'ليه':1, 'ازاي':1, 'إزاي':1, 'هل':1, 'لما':1, 'لو':1, 'انا':1, 'أنا':1, 'ده':1, 'دي':1, 'اللي':1, 'مع':1, 'بعد':1, 'قبل':1, 'او':1, 'أو':1, 'و':1, 'يا':1, 'ما':1, 'لا':1, 'عند':1, 'كده':1 };
+function knownParse(l){ var p = String(l || '').split('|'); if (p.length < 2) return null; var kw = p[0].trim(), a = p[1].trim(), m = (p[2] || '').trim(); if (!kw || !a) return null;
+  return { kw:kw, a:a, st:/حُلّت|حلت|حُلت/.test(m) ? 'حُلّت' : 'قائمة', v:(m.match(/V\d+\.\d+/) || [''])[0], aud:/الوزارة/.test(m) ? 'الوزارة' : (/الميدان/.test(m) ? 'الميدان' : 'الكل') }; }
+function knownLine(k){ var m = []; if (k.st === 'حُلّت') m.push('حُلّت' + (k.v ? ' ' + k.v : '')); if (k.aud && k.aud !== 'الكل') m.push(k.aud); return k.kw + ' | ' + k.a + (m.length ? ' | ' + m.join(' · ') : ''); }
+function knownAll(raw){ raw = raw != null ? raw : (CFG.known || KNOWN_DEFAULT); if (!raw) return []; return String(raw).split(/\n+/).map(knownParse).filter(Boolean); }
+function knownList(){ return knownAll().filter(function(k){ return k.st !== 'حُلّت'; }); }   /* المحلولةُ لا تُجيب */
+function knownMatch(L, q){ q = knownNorm(q); if (q.length < 3) return []; var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';
+  return L.filter(function(k){ return k.st !== 'حُلّت' && (minis ? k.aud !== 'الميدان' && !/تصريح|منع|متعذر|متعذّر|رفض/.test(k.a) : k.aud !== 'الوزارة'); })   /* (V37.31) والوزارةُ لا ترى إرشادَ الميدان الداخلي */
+    .filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3); }
+function knownHits(q){ return knownMatch(knownList(), q); }
+function knownKw(q){   /* كلماتٌ مقترحةٌ من السؤال: السؤالُ نفسُه، وكلُّ كلمةٍ دالّةٍ فيه (بلا حروف الجر والأدوات) */
+  var w = String(q || '').replace(/[؟?!.،,«»"()]/g, ' ').split(/\s+/).filter(function(x){ return x && x.length > 2 && !KN_STOP[x]; });
+  var out = [String(q || '').trim()]; w.forEach(function(x){ if (out.indexOf(x) < 0) out.push(x); }); return out.slice(0, 6).join('، '); }
+function knEdInit(){ if (!KN_ED) KN_ED = knownAll().map(function(k){ return Object.assign({}, k); }); return KN_ED; }
+function knEdRead(){   /* الكروتُ من الشاشة إلى الحالة — قبل أيِّ إضافةٍ أو حذفٍ أو حفظ */
+  if (!KN_ED || typeof document === 'undefined') return KN_ED;
+  KN_ED.forEach(function(k, i){ var g = function(p){ var el = document.getElementById('kn-' + p + '-' + i); return el ? String(el.value || '').trim() : null; };
+    var kw = g('kw'), a = g('a'), st = g('st'), aud = g('aud'); if (kw != null) k.kw = kw; if (a != null) k.a = a; if (st != null){ if (st === 'حُلّت' && k.st !== 'حُلّت' && !k.v) k.v = knVer(); k.st = st; } if (aud != null) k.aud = aud; });
+  return KN_ED; }
+function knVer(){ var m = String(document.documentElement.innerHTML.match(/V\d+\.\d+(?=\s*<\/)/) || '').match(/V\d+\.\d+/); var e = document.querySelector('[aria-label="فحص التحديثات"]'); var v = e && (e.textContent.match(/V\d+\.\d+/) || [])[0]; return v || (m ? m[0] : ''); }   /* الإصدارُ المعروضُ في التطبيق */
+function knEdSave(){
+  if (!(typeof may === 'function' && may('settings'))) return false; knEdRead();
+  var L = (KN_ED || []).filter(function(k){ return k.kw && k.a; }); CFG.known = L.map(knownLine).join('\n') || null; cfgPushSoon('known');
+  CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + L.length + ' مشكلة · ' + L.filter(function(k){ return k.st !== 'حُلّت'; }).length + ' قائمة');
+  KN_ED = null; toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); return true; }
+function knEdAdd(q){ knEdRead(); knEdInit(); KN_ED.unshift({ kw:q ? knownKw(q) : '', a:'', st:'قائمة', v:'', aud:'الكل', fresh:1 }); }
+function knCover(L){   /* تغطيةُ المساعد على أسئلة الفريق الفعلية */
+  var R = (typeof AQ === 'object' && AQ.rows) || []; if (!R.length) return null; var ok = 0; R.forEach(function(r){ if (knownMatch(L, r.q).length) ok++; }); return { ok:ok, n:R.length, pc:Math.round(100 * ok / R.length) }; }
+function knownCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  var E = knEdInit(), act = E.filter(function(k){ return k.st !== 'حُلّت'; }).length, cov = knCover(E);
+  var sel = function(id, opts, v){ return '<select id="' + id + '" aria-label="' + esc(t(id.indexOf('kn-st') === 0 ? 'الحالة' : 'لمن تظهر')) + '" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + opts.map(function(o){ return '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>'; };
+  var cards = E.map(function(k, i){ var done = k.st === 'حُلّت';
+    return '<div style="border:1px solid ' + (k.fresh ? '#F5A623' : 'var(--line)') + ';border-radius:12px;padding:10px;margin:8px 0;' + (done ? 'opacity:.6' : '') + '">'
+      + '<div class="wt-row" style="gap:6px;flex-wrap:wrap;align-items:center;margin:0"><b style="flex:1;min-width:120px">' + (done ? '\u2705 ' : '\u{1F527} ') + esc(t(done ? 'حُلّت' : 'قائمة')) + (done && k.v ? ' <span class="hint" style="margin:0">' + esc(k.v) + '</span>' : '') + '</b>'
+      + sel('kn-st-' + i, KN_ST, k.st) + sel('kn-aud-' + i, KN_AUD, k.aud || 'الكل') + btn('\u{1F5D1}', 'btn-quiet btn-sm', ' data-kndel="' + i + '" title="' + esc(t('احذفها')) + '"') + '</div>'
+      + '<label class="hint" for="kn-kw-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الكلمات اللي تدلّ عليها (بفاصلة)')) + '</label><input id="kn-kw-' + i + '" dir="auto" value="' + esc(k.kw) + '" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">'
+      + '<label class="hint" for="kn-a-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الحل')) + '</label><textarea id="kn-a-' + i + '" dir="auto" rows="2" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + esc(k.a) + '</textarea></div>'; }).join('');
+  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
+    '<p class="hint" style="margin-top:0">' + esc(t('كلُّ مشكلةٍ كرت: كلماتٌ تدلّ عليها، وحلُّها، وحالتُها، ولمن تظهر. المحلولةُ تخرج من المساعد وتبقى للتاريخ.')) + ' <b>' + nm(act) + '</b> ' + esc(t('قائمة')) + ' \u00b7 <b>' + nm(E.length - act) + '</b> ' + esc(t('حُلّت')) + '</p>'
+    + (cov ? '<div style="background:var(--surface-2);border-radius:12px;padding:10px;margin:0 0 8px"><b>' + esc(t('تغطية المساعد')) + ': <span class="num" style="color:' + (cov.pc >= 70 ? '#3AD6A0' : cov.pc >= 40 ? '#F5A623' : '#E05252') + '">' + nm(cov.pc) + '٪</span></b> <span class="hint" style="margin:0">\u2014 ' + esc(t('يجاوب على')) + ' ' + nm(cov.ok) + ' ' + esc(t('من')) + ' ' + nm(cov.n) + ' ' + esc(t('سؤالًا سأله الفريق آخر ١٤ يومًا')) + '</span></div>' : '')
+    + '<div class="wt-row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px"><input id="knTry" dir="auto" aria-label="' + esc(t('جرّب سؤالًا')) + '" placeholder="' + esc(t('جرّب سؤالًا كما يكتبه الفني…')) + '" style="flex:1;min-width:180px;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + btn('\u{1F50E} ' + t('جرّب'), 'btn-secondary btn-sm', ' data-kntry="1"') + '</div><div id="knTryOut" class="hint" style="margin:0 0 8px"></div>'
+    + '<div class="actions" style="margin:0">' + btn('\u2795 ' + t('مشكلة جديدة'), 'btn-quiet btn-sm', ' data-knnew="1"') + '</div>'
+    + cards,
+    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
+function knTry(){ knEdRead(); var el = document.getElementById('knTry'), out = document.getElementById('knTryOut'); if (!el || !out) return; var H = knownMatch(KN_ED || knownAll(), el.value);
+  out.innerHTML = H.length ? '\u2705 ' + esc(t('هيرد بـ')) + ' ' + nm(H.length) + ': ' + H.map(function(k){ return '<b>' + esc(k.kw.split(/[،,]/)[0]) + '</b> \u2014 ' + esc(k.a.slice(0, 90)); }).join(' · ') : '\u26A0 ' + esc(t('مفيش مشكلة معروفة بتطابق — أضف كلمةً من السؤال لكرتٍ مناسب أو اعمل كرتًا جديدًا')); }
+
 
 /* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
 /* (V37.73) قرارُ المالك: يُلغى الشكلُ القديم، و«غرفة التحكم» هو الافتراضي، و«هوية أفاقي» تُسمّى «النهاري» — زوجٌ كالداكن والفاتح (لا اسمَ المنصّة القديم: العلامةُ البيضاء V16.92) */
@@ -7624,17 +7671,11 @@ function assistQCard(){
   var no = R.filter(function(r){ return r.no; }).length;
   return card('أسئلة الناس للمساعد',
     '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
-    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (r.no ? ' ' + pill('بلا جواب', 'bad') : ''), '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : ''))   /* (V37.74) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
       : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
     + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
 }
-function knownCard(){
-  if (!(typeof may === 'function' && may('settings'))) return '';
-  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
-    '<p class="hint" style="margin-top:0">' + esc(t('سطرٌ لكلِّ مشكلة: كلماتٌ تدلّ عليها مفصولةٌ بفاصلة، ثم «|»، ثم الحل. يظهر الحلُّ لأيِّ أحدٍ يكتب في المساعد كلمةً منها.')) + '</p>'
-    + '<textarea id="knownTxt" dir="auto" rows="6" style="width:100%" aria-label="' + esc(t('المشاكل المعروفة')) + '" placeholder="' + esc(t('القارئ لا يعمل، القارئ مطفي | تأكد من الكهرباء ثم أعد تشغيله بفصل الكابل دقيقة')) + '">' + esc(CFG.known || KNOWN_DEFAULT) + '</textarea>'   /* (V37.29) القائمةُ الأولى ظاهرةٌ للتعديل */,
-    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
-}
+
 function catsSave(){
   if (!(typeof may === 'function' && may('settings'))){ toast(t('التصنيفاتُ للمهندس فما فوق')); return false; }
   var out = { why:[], cc:[] }, val = function(a, id){ var e = document.querySelector('[' + a + '="' + id + '"]'); return e ? (e.type === 'checkbox' ? e.checked : String(e.value || '').trim()) : null; };
@@ -23000,7 +23041,7 @@ function mfuHeroHtml(){
 function mfuModeBar(){
   return '<div class="card mfu-mode" style="margin:0 0 12px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap">'
     + '<div><b>' + esc(t('متابعة الوزارة — الملخّص')) + '</b><div class="hint" style="margin:2px 0 0">' + esc(t('نفسُ الصفحة بوضعين: للاجتماع هنا، وللقاعة بملء الشاشة.')) + '</div></div>'
-    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button></div></div>';
+    + '<div class="chips" style="margin:0"><button type="button" class="chip on" aria-pressed="true">\u{1F4CA} ' + esc(t('متابعة')) + '</button><button type="button" class="chip" data-kiosk="1" title="' + esc(t('يملأ الشاشةَ ويتنقّل بين الأقسام بنفسه كلَّ خمسَ عشرةَ ثانية')) + '">\u{1F5A5} ' + esc(t('عرض القاعة')) + '</button>' + '<button type="button" class="chip" data-hallcopy="1" title="' + esc(t('رابطٌ يفتح عرضَ القاعة وحدَه على جهاز القاعة')) + '">\u{1F517} ' + esc(t('رابط القاعة')) + '</button></div></div>';
 }
 function mfuStoryCard(){
   var st = ''; try { st = kioskStory(); } catch (e){ LS_ERR = e; }
@@ -23496,6 +23537,34 @@ function mtAlertsHtml(){
   if (!al.length) return '';
   return '<div class="card mt-alerts" style="margin:0 0 12px"><div class="card-body"><div style="font-weight:700;margin-bottom:8px">\u{1F514} ' + esc(t('تنبيهات الأسبوع')) + '</div>' + mtGrid(al, 200) + '</div></div>';
 }
+
+/* ═══ (V37.74) «رابط القاعة» — قرارُ المالك (البند ٦): جهازُ القاعة يفتح عرضَ القاعة بنفسه بلا ضغطة ═══
+   الرابطُ ‎?hall=1 بعد الدخول يفتح ملخّصَ المتابعة في وضع القاعة، ويُبقي الشاشةَ مضيئة (قفلُ السكون)، ويسحب الجديدَ كلَّ خمس دقائق،
+   ويعرض ساعةً و«آخر تحديث» في الزاوية، ويُخفي المؤشّرَ بعد ثلاث ثوانٍ بلا حركة، ويطلب ملءَ الشاشة عند أوّل لمسة (المتصفّحُ يشترط لمسة).
+   وفي شريط الوضع زرُّ «🔗 رابط القاعة» ينسخه أو يشاركه. */
+var HALL_URL = (typeof location !== 'undefined') && /[?&#]hall(=1)?\b/.test(String(location.search) + String(location.hash));
+var HALL = { on:false, t:null, pull:null, at:0, idle:null };
+function hallLink(){ return location.origin + location.pathname + '?hall=1'; }
+function hallCopy(){ var u = hallLink();
+  if (navigator.share){ navigator.share({ title:t('عرض القاعة'), url:u }).catch(function(){}); return; }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(u).then(function(){ toast(t('نُسخ رابط القاعة — افتحه على جهاز القاعة بعد الدخول بحسابه')); }, function(){ toast(u); }); else toast(u); }
+function hallClock(){ var el = document.getElementById('hallClock'); if (!document.body.classList.contains('kiosk')){ if (el) el.remove(); return; }
+  if (!el){ el = document.createElement('div'); el.id = 'hallClock'; el.style.cssText = 'position:fixed;top:10px;inset-inline-start:12px;z-index:3000;background:rgba(0,0,0,.55);color:#fff;border-radius:12px;padding:6px 12px;font-size:15px;pointer-events:none'; document.body.appendChild(el); }
+  var d = new Date(), hh = function(x){ return ('0' + x).slice(-2); }, last = (STATE.meta && STATE.meta.lastSync) || HALL.at;
+  el.innerHTML = '<b class="num">' + nm(hh(d.getHours())) + ':' + nm(hh(d.getMinutes())) + '</b>' + (last ? ' \u00b7 <span style="opacity:.8">' + esc(t('آخر تحديث')) + ' <span class="num">' + nm(hh(new Date(last).getHours())) + ':' + nm(hh(new Date(last).getMinutes())) + '</span></span>' : ''); }
+function hallBoot(){
+  if (!HALL_URL || HALL.on) return; if (!document.getElementById('nav') || typeof ROLE === 'undefined' || !ROLE) return;   /* بعد الدخول */
+  HALL.on = true; try { goPage('mfu'); PTAB.mfu = 'mfu'; } catch (e){ LS_ERR = e; }
+  setTimeout(function(){ if (typeof KIOSK_ON !== 'undefined' && !KIOSK_ON) kioskToggle(); if (typeof wakeAcquire === 'function') wakeAcquire(); hallClock(); }, 400);
+  HALL.t = setInterval(hallClock, 30000);
+  HALL.pull = setInterval(function(){ if (typeof pullDelta === 'function') pullDelta().then(function(){ HALL.at = Date.now(); if (typeof render === 'function') render(1); hallClock(); }).catch(function(){}); }, 300000);
+  var fsOnce = function(){ try { if (!document.fullscreenElement && document.documentElement.requestFullscreen) document.documentElement.requestFullscreen().catch(function(){}); } catch (e){ LS_ERR = e; } document.removeEventListener('click', fsOnce, true); };
+  document.addEventListener('click', fsOnce, true);
+  var idle = function(){ document.body.classList.remove('hall-idle'); clearTimeout(HALL.idle); HALL.idle = setTimeout(function(){ if (document.body.classList.contains('kiosk')) document.body.classList.add('hall-idle'); }, 3000); };
+  ['mousemove', 'touchstart', 'keydown'].forEach(function(ev){ document.addEventListener(ev, idle, { passive:true }); }); idle();
+  toast(t('عرض القاعة — المس الشاشة مرةً لملئها'));
+}
+if (typeof setInterval === 'function' && HALL_URL) var HALL_BOOT_T = setInterval(function(){ hallBoot(); if (HALL.on) clearInterval(HALL_BOOT_T); }, 1000);
 
 /* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
    كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */
@@ -26246,6 +26315,9 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.74', d:'١٣ أكتوبر ٢٠٢٦', notes:[
+      '«🔗 رابط القاعة»: رابط بيفتح عرض القاعة لوحده على جهاز القاعة بعد الدخول، والشاشة ما بتطفيش، والأرقام بتتحدّث كل ٥ دقايق، وساعة و«آخر تحديث» في الزاوية، والمؤشر بيختفي، وأول لمسة بتملا الشاشة. الزرار في شريط «متابعة / عرض القاعة» بينسخ الرابط أو يشاركه.',
+      '«المشاكل المعروفة» في الإعدادات بقت كروت: الكلمات والحل والحالة (قائمة / حُلّت في إصدار كذا) ولمين تظهر (الكل / الميدان / الوزارة). المحلولة بتخرج من المساعد لوحدها. وفيها «جرّب سؤال» قبل الحفظ، و«تغطية المساعد» (نسبة أسئلة الفريق اللي ليها حل)، و«أضفها» من أي سؤال بلا جواب بتفتح كرت بكلماته جاهزة.' ] },
   { v:'V37.73', d:'١٢ أكتوبر ٢٠٢٦', notes:[
       'المظهر: الشكل القديم اتشال، و«غرفة التحكم» بقت هي «الافتراضي» لكل الأجهزة، و«هوية أفاقي» اسمها بقى «النهاري» (الفاتح). يعني اختيارين بس: الافتراضي والنهاري.',
       'تصحيح كلام في نموذج الموقع الجديد للميدان: كان بيقول إن الموقع الجديد «ما بيدخلش الأرقام لحد الاعتماد»، والصح إنه بيدخل الأرقام على طول وعليه علامة «جديد بانتظار الاعتماد».' ] },
@@ -35599,6 +35671,10 @@ function clickAPart2(e){
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
+  if (e.target.closest('[data-knnew]')){ knEdAdd(''); render(1); return true; }   /* (V37.74) المشاكل المعروفة */
+  var kdl = e.target.closest('[data-kndel]'); if (kdl){ knEdRead(); knEdInit().splice(+kdl.getAttribute('data-kndel'), 1); render(1); return true; }
+  if (e.target.closest('[data-kntry]')){ knTry(); return true; }
+  if (e.target.closest('[data-hallcopy]')){ hallCopy(); return true; }   /* (V37.74) رابط القاعة */
   var pok = e.target.closest('[data-propok]'); if (pok){ propApprove(pok.getAttribute('data-propok')); return true; }   /* (V37.69) مقترحاتُ الوزارة */
   var pno = e.target.closest('[data-propno]'); if (pno){ propReject(pno.getAttribute('data-propno')); return true; }
   var pgo = e.target.closest('[data-propgo]'); if (pgo){ propGo(pgo.getAttribute('data-propgo')); return true; }
@@ -36277,10 +36353,9 @@ function onDocClickPart1(e){
     return;
   }
   if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
-  var kad = e.target.closest('[data-knownadd]');   /* (V37.38) سؤالٌ → سطرٌ جاهزٌ في المشاكل المعروفة، والمؤشّرُ بعد «|» ليُكتب الحل */
-  if (kad){ var kt0 = document.getElementById('knownTxt'); if (kt0){ var line = kad.getAttribute('data-knownadd') + ' | '; kt0.value = (kt0.value.trim() ? kt0.value.replace(/\s+$/, '') + '\n' : '') + line; kt0.focus(); kt0.setSelectionRange(kt0.value.length, kt0.value.length); kt0.scrollIntoView({ block:'center' }); toast(t('اكتب الحل بعد «|» ثم احفظ')); } return; }
+  var kad = e.target.closest('[data-knownadd]');   /* (V37.74) سؤالٌ → كرتٌ جاهزُ الكلمات، والمؤشّرُ في الحل */ if (kad){ knEdAdd(kad.getAttribute('data-knownadd')); render(1); setTimeout(function(){ var a0 = document.getElementById('kn-a-0'); if (a0){ a0.focus(); a0.scrollIntoView({ block:'center' }); } }, 60); toast(t('اكتب الحل في الكرت الجديد ثم احفظ')); return; }
   if (e.target.closest('[data-aqref]')){ assistQFetch(true); toast(t('جارٍ التحديث…')); return; }
-  if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
+  if (e.target.closest('[data-knownsave]')){ if (knEdSave()) render(1); return; }   /* (V37.27 → V37.74 كروت) */
   if (e.target.closest('[data-askeng]')){ try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; } BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */

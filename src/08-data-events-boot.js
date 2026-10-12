@@ -2990,6 +2990,10 @@ function clickAPart2(e){
   if (e.target.closest('[data-mtwx]')){ mtWeekXlsx(); return true; }
   var mtx = e.target.closest('[data-mtx]'); if (mtx){ mtTabXlsx(mtx.getAttribute('data-mtx')); return true; }   /* (V37.63) */
   if (e.target.closest('[data-mtcoall]')){ MT_CO_ALL = !MT_CO_ALL; render(1); return true; }
+  if (e.target.closest('[data-knnew]')){ knEdAdd(''); render(1); return true; }   /* (V37.74) المشاكل المعروفة */
+  var kdl = e.target.closest('[data-kndel]'); if (kdl){ knEdRead(); knEdInit().splice(+kdl.getAttribute('data-kndel'), 1); render(1); return true; }
+  if (e.target.closest('[data-kntry]')){ knTry(); return true; }
+  if (e.target.closest('[data-hallcopy]')){ hallCopy(); return true; }   /* (V37.74) رابط القاعة */
   var pok = e.target.closest('[data-propok]'); if (pok){ propApprove(pok.getAttribute('data-propok')); return true; }   /* (V37.69) مقترحاتُ الوزارة */
   var pno = e.target.closest('[data-propno]'); if (pno){ propReject(pno.getAttribute('data-propno')); return true; }
   var pgo = e.target.closest('[data-propgo]'); if (pgo){ propGo(pgo.getAttribute('data-propgo')); return true; }
@@ -3668,10 +3672,9 @@ function onDocClickPart1(e){
     return;
   }
   if (e.target.closest('[data-vcok]')){ if (catsSave()) render(1); return; }
-  var kad = e.target.closest('[data-knownadd]');   /* (V37.38) سؤالٌ → سطرٌ جاهزٌ في المشاكل المعروفة، والمؤشّرُ بعد «|» ليُكتب الحل */
-  if (kad){ var kt0 = document.getElementById('knownTxt'); if (kt0){ var line = kad.getAttribute('data-knownadd') + ' | '; kt0.value = (kt0.value.trim() ? kt0.value.replace(/\s+$/, '') + '\n' : '') + line; kt0.focus(); kt0.setSelectionRange(kt0.value.length, kt0.value.length); kt0.scrollIntoView({ block:'center' }); toast(t('اكتب الحل بعد «|» ثم احفظ')); } return; }
+  var kad = e.target.closest('[data-knownadd]');   /* (V37.74) سؤالٌ → كرتٌ جاهزُ الكلمات، والمؤشّرُ في الحل */ if (kad){ knEdAdd(kad.getAttribute('data-knownadd')); render(1); setTimeout(function(){ var a0 = document.getElementById('kn-a-0'); if (a0){ a0.focus(); a0.scrollIntoView({ block:'center' }); } }, 60); toast(t('اكتب الحل في الكرت الجديد ثم احفظ')); return; }
   if (e.target.closest('[data-aqref]')){ assistQFetch(true); toast(t('جارٍ التحديث…')); return; }
-  if (e.target.closest('[data-knownsave]')){ var kt = document.getElementById('knownTxt'); if (kt && may('settings')){ CFG.known = String(kt.value || '').trim() || null; cfgPushSoon('known'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + knownList().length + ' سطرًا'); toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); } return; }   /* (V37.27) */
+  if (e.target.closest('[data-knownsave]')){ if (knEdSave()) render(1); return; }   /* (V37.27 → V37.74 كروت) */
   if (e.target.closest('[data-askeng]')){ try { assistLog(ASSIST_Q, false, true); } catch (eAL2){ LS_ERR = eAL2; } BUG_FROM_ASSIST = String(ASSIST_Q || ''); BUG_KIND = 'عطل'; BUG_OPEN = true; ASSIST_OPEN = false; render(1); return; }   /* (V37.4 → V37.13: أسماءٌ فريدة) */
   var cad = e.target.closest('[data-vcadd]');
   if (cad){ var kd = cad.getAttribute('data-vcadd'), tb = document.getElementById('catBody-' + kd); if (!CAT_NEW[kd] || !tb) return;   /* صفٌّ يُضاف في مكانه — بلا إعادة رسمٍ تمسح ما كُتب */

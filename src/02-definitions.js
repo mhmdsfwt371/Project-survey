@@ -408,16 +408,62 @@ var KNOWN_DEFAULT = [
   'الحفظ المحلي لا يعمل، مش بيحفظ، الحفظ واقف، خطأ قاعدة الجهاز | ده من متصفح آيفون: افتح على نت واستنى الطابور يفضى (شارة المزامنة)، وبعدها «إعادة ضبط التطبيق» من القائمة. ما يضيعش حاجة.',
   'التحديث مش بينزل، فشل التحديث، النسخة مش بتتغير | اقفل التطبيق خالص (اسحبه من التطبيقات المفتوحة) وافتحه على نت. لو فضل قديم: «إعادة ضبط التطبيق».'
 ].join('\n');
-function knownList(){
-  var raw = CFG.known || KNOWN_DEFAULT; if (!raw) return [];
-  return String(raw).split(/\n+/).map(function(l){ var i = l.indexOf('|'); if (i < 1) return null; var kw = l.slice(0, i).trim(), a = l.slice(i + 1).trim(); return kw && a ? { kw:kw, a:a } : null; }).filter(Boolean);
-}
+
 function knownNorm(x){ x = String(x || '').trim(); x = typeof arNorm === 'function' ? arNorm(x) : x; return (' ' + x).replace(/ ال/g, ' ').replace(/ئ|ؤ/g, 'ي').trim(); }   /* «ال» في كلِّ كلمة لا أوّلِ النص وحدَه */
-function knownHits(q){
-  q = knownNorm(q); if (q.length < 3) return [];
-  var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';   /* (V37.31) الوزارةُ لا ترى إرشادَ الميدان الداخليَّ (تصاريح، منع دخول) */
-  return knownList().filter(function(k){ return !(minis && /تصريح|منع|متعذر|متعذّر|رفض/.test(k.a)); }).filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3);
+/* ═══ (V37.74) «المشاكل المعروفة» بأقوى ما يكون — البند ٥ بقرار المالك ═══
+   كانت نصًّا خامًّا (سطرٌ لكلِّ مشكلة). صارت كروتًا: الكلماتُ والحلُّ والحالةُ (قائمة / حُلّت في إصدار) ولمن تظهر (الكل / الميدان / الوزارة)،
+   والمحلولةُ تخرج من المساعد وتبقى للتاريخ. ومعها «جرّب سؤالًا» قبل الحفظ، و«تغطيةُ المساعد» على أسئلة الفريق الفعلية آخر ١٤ يومًا،
+   و«أضفها» من أيِّ سؤالٍ بلا جواب تفتح كرتًا جاهزَ الكلمات. التخزينُ هو هو (CFG.known سطورًا) بحقلٍ ثالثٍ اختياريٍّ: «حُلّت V… · الميدان». */
+var KN_ED = null, KN_ST = ['قائمة', 'حُلّت'], KN_AUD = ['الكل', 'الميدان', 'الوزارة'];
+var KN_STOP = { 'في':1, 'من':1, 'على':1, 'عن':1, 'الى':1, 'إلى':1, 'مش':1, 'ليه':1, 'ازاي':1, 'إزاي':1, 'هل':1, 'لما':1, 'لو':1, 'انا':1, 'أنا':1, 'ده':1, 'دي':1, 'اللي':1, 'مع':1, 'بعد':1, 'قبل':1, 'او':1, 'أو':1, 'و':1, 'يا':1, 'ما':1, 'لا':1, 'عند':1, 'كده':1 };
+function knownParse(l){ var p = String(l || '').split('|'); if (p.length < 2) return null; var kw = p[0].trim(), a = p[1].trim(), m = (p[2] || '').trim(); if (!kw || !a) return null;
+  return { kw:kw, a:a, st:/حُلّت|حلت|حُلت/.test(m) ? 'حُلّت' : 'قائمة', v:(m.match(/V\d+\.\d+/) || [''])[0], aud:/الوزارة/.test(m) ? 'الوزارة' : (/الميدان/.test(m) ? 'الميدان' : 'الكل') }; }
+function knownLine(k){ var m = []; if (k.st === 'حُلّت') m.push('حُلّت' + (k.v ? ' ' + k.v : '')); if (k.aud && k.aud !== 'الكل') m.push(k.aud); return k.kw + ' | ' + k.a + (m.length ? ' | ' + m.join(' · ') : ''); }
+function knownAll(raw){ raw = raw != null ? raw : (CFG.known || KNOWN_DEFAULT); if (!raw) return []; return String(raw).split(/\n+/).map(knownParse).filter(Boolean); }
+function knownList(){ return knownAll().filter(function(k){ return k.st !== 'حُلّت'; }); }   /* المحلولةُ لا تُجيب */
+function knownMatch(L, q){ q = knownNorm(q); if (q.length < 3) return []; var minis = typeof ROLE !== 'undefined' && ROLE === 'viewer';
+  return L.filter(function(k){ return k.st !== 'حُلّت' && (minis ? k.aud !== 'الميدان' && !/تصريح|منع|متعذر|متعذّر|رفض/.test(k.a) : k.aud !== 'الوزارة'); })   /* (V37.31) والوزارةُ لا ترى إرشادَ الميدان الداخلي */
+    .filter(function(k){ return k.kw.split(/[،,]/).some(function(w){ w = knownNorm(w); return w && q.indexOf(w) > -1; }); }).slice(0, 3); }
+function knownHits(q){ return knownMatch(knownList(), q); }
+function knownKw(q){   /* كلماتٌ مقترحةٌ من السؤال: السؤالُ نفسُه، وكلُّ كلمةٍ دالّةٍ فيه (بلا حروف الجر والأدوات) */
+  var w = String(q || '').replace(/[؟?!.،,«»"()]/g, ' ').split(/\s+/).filter(function(x){ return x && x.length > 2 && !KN_STOP[x]; });
+  var out = [String(q || '').trim()]; w.forEach(function(x){ if (out.indexOf(x) < 0) out.push(x); }); return out.slice(0, 6).join('، '); }
+function knEdInit(){ if (!KN_ED) KN_ED = knownAll().map(function(k){ return Object.assign({}, k); }); return KN_ED; }
+function knEdRead(){   /* الكروتُ من الشاشة إلى الحالة — قبل أيِّ إضافةٍ أو حذفٍ أو حفظ */
+  if (!KN_ED || typeof document === 'undefined') return KN_ED;
+  KN_ED.forEach(function(k, i){ var g = function(p){ var el = document.getElementById('kn-' + p + '-' + i); return el ? String(el.value || '').trim() : null; };
+    var kw = g('kw'), a = g('a'), st = g('st'), aud = g('aud'); if (kw != null) k.kw = kw; if (a != null) k.a = a; if (st != null){ if (st === 'حُلّت' && k.st !== 'حُلّت' && !k.v) k.v = knVer(); k.st = st; } if (aud != null) k.aud = aud; });
+  return KN_ED; }
+function knVer(){ var m = String(document.documentElement.innerHTML.match(/V\d+\.\d+(?=\s*<\/)/) || '').match(/V\d+\.\d+/); var e = document.querySelector('[aria-label="فحص التحديثات"]'); var v = e && (e.textContent.match(/V\d+\.\d+/) || [])[0]; return v || (m ? m[0] : ''); }   /* الإصدارُ المعروضُ في التطبيق */
+function knEdSave(){
+  if (!(typeof may === 'function' && may('settings'))) return false; knEdRead();
+  var L = (KN_ED || []).filter(function(k){ return k.kw && k.a; }); CFG.known = L.map(knownLine).join('\n') || null; cfgPushSoon('known');
+  CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; logEvent('تعديلُ المشاكل المعروفة — ' + L.length + ' مشكلة · ' + L.filter(function(k){ return k.st !== 'حُلّت'; }).length + ' قائمة');
+  KN_ED = null; toast(t('حُفظت — تصل كلَّ الأجهزة مع المزامنة')); return true; }
+function knEdAdd(q){ knEdRead(); knEdInit(); KN_ED.unshift({ kw:q ? knownKw(q) : '', a:'', st:'قائمة', v:'', aud:'الكل', fresh:1 }); }
+function knCover(L){   /* تغطيةُ المساعد على أسئلة الفريق الفعلية */
+  var R = (typeof AQ === 'object' && AQ.rows) || []; if (!R.length) return null; var ok = 0; R.forEach(function(r){ if (knownMatch(L, r.q).length) ok++; }); return { ok:ok, n:R.length, pc:Math.round(100 * ok / R.length) }; }
+function knownCard(){
+  if (!(typeof may === 'function' && may('settings'))) return '';
+  var E = knEdInit(), act = E.filter(function(k){ return k.st !== 'حُلّت'; }).length, cov = knCover(E);
+  var sel = function(id, opts, v){ return '<select id="' + id + '" aria-label="' + esc(t(id.indexOf('kn-st') === 0 ? 'الحالة' : 'لمن تظهر')) + '" style="padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + opts.map(function(o){ return '<option value="' + esc(o) + '"' + (o === v ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>'; };
+  var cards = E.map(function(k, i){ var done = k.st === 'حُلّت';
+    return '<div style="border:1px solid ' + (k.fresh ? '#F5A623' : 'var(--line)') + ';border-radius:12px;padding:10px;margin:8px 0;' + (done ? 'opacity:.6' : '') + '">'
+      + '<div class="wt-row" style="gap:6px;flex-wrap:wrap;align-items:center;margin:0"><b style="flex:1;min-width:120px">' + (done ? '\u2705 ' : '\u{1F527} ') + esc(t(done ? 'حُلّت' : 'قائمة')) + (done && k.v ? ' <span class="hint" style="margin:0">' + esc(k.v) + '</span>' : '') + '</b>'
+      + sel('kn-st-' + i, KN_ST, k.st) + sel('kn-aud-' + i, KN_AUD, k.aud || 'الكل') + btn('\u{1F5D1}', 'btn-quiet btn-sm', ' data-kndel="' + i + '" title="' + esc(t('احذفها')) + '"') + '</div>'
+      + '<label class="hint" for="kn-kw-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الكلمات اللي تدلّ عليها (بفاصلة)')) + '</label><input id="kn-kw-' + i + '" dir="auto" value="' + esc(k.kw) + '" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">'
+      + '<label class="hint" for="kn-a-' + i + '" style="display:block;margin:6px 0 2px">' + esc(t('الحل')) + '</label><textarea id="kn-a-' + i + '" dir="auto" rows="2" style="width:100%;padding:6px 8px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + esc(k.a) + '</textarea></div>'; }).join('');
+  return '<div id="knownCard">' + card('المساعد — المشاكل المعروفة وحلولها',
+    '<p class="hint" style="margin-top:0">' + esc(t('كلُّ مشكلةٍ كرت: كلماتٌ تدلّ عليها، وحلُّها، وحالتُها، ولمن تظهر. المحلولةُ تخرج من المساعد وتبقى للتاريخ.')) + ' <b>' + nm(act) + '</b> ' + esc(t('قائمة')) + ' \u00b7 <b>' + nm(E.length - act) + '</b> ' + esc(t('حُلّت')) + '</p>'
+    + (cov ? '<div style="background:var(--surface-2);border-radius:12px;padding:10px;margin:0 0 8px"><b>' + esc(t('تغطية المساعد')) + ': <span class="num" style="color:' + (cov.pc >= 70 ? '#3AD6A0' : cov.pc >= 40 ? '#F5A623' : '#E05252') + '">' + nm(cov.pc) + '٪</span></b> <span class="hint" style="margin:0">\u2014 ' + esc(t('يجاوب على')) + ' ' + nm(cov.ok) + ' ' + esc(t('من')) + ' ' + nm(cov.n) + ' ' + esc(t('سؤالًا سأله الفريق آخر ١٤ يومًا')) + '</span></div>' : '')
+    + '<div class="wt-row" style="gap:6px;align-items:center;flex-wrap:wrap;margin:0 0 6px"><input id="knTry" dir="auto" aria-label="' + esc(t('جرّب سؤالًا')) + '" placeholder="' + esc(t('جرّب سؤالًا كما يكتبه الفني…')) + '" style="flex:1;min-width:180px;padding:7px 9px;border-radius:8px;border:1px solid var(--line);background:var(--surface);color:var(--ink)">' + btn('\u{1F50E} ' + t('جرّب'), 'btn-secondary btn-sm', ' data-kntry="1"') + '</div><div id="knTryOut" class="hint" style="margin:0 0 8px"></div>'
+    + '<div class="actions" style="margin:0">' + btn('\u2795 ' + t('مشكلة جديدة'), 'btn-quiet btn-sm', ' data-knnew="1"') + '</div>'
+    + cards,
+    btn('حفظ المشاكل المعروفة', 'btn-primary btn-sm', ' data-knownsave="1"')) + '</div>';
 }
+function knTry(){ knEdRead(); var el = document.getElementById('knTry'), out = document.getElementById('knTryOut'); if (!el || !out) return; var H = knownMatch(KN_ED || knownAll(), el.value);
+  out.innerHTML = H.length ? '\u2705 ' + esc(t('هيرد بـ')) + ' ' + nm(H.length) + ': ' + H.map(function(k){ return '<b>' + esc(k.kw.split(/[،,]/)[0]) + '</b> \u2014 ' + esc(k.a.slice(0, 90)); }).join(' · ') : '\u26A0 ' + esc(t('مفيش مشكلة معروفة بتطابق — أضف كلمةً من السؤال لكرتٍ مناسب أو اعمل كرتًا جديدًا')); }
+
 
 /* ── (V37.33) المظهرُ الإضافيّ — طلبُ المالك: «الموجودُ كويسٌ جدًّا، و٢ و٣ حلوين — نعملهم زيادة» ── */
 /* (V37.73) قرارُ المالك: يُلغى الشكلُ القديم، و«غرفة التحكم» هو الافتراضي، و«هوية أفاقي» تُسمّى «النهاري» — زوجٌ كالداكن والفاتح (لا اسمَ المنصّة القديم: العلامةُ البيضاء V16.92) */
