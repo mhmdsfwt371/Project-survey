@@ -988,7 +988,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
             '<div class="pop-rows" style="margin:0">'
             + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':''))
             + row('المنفِّذ', esc(ins.by))
-            + row('النقاط', N(ins.pts || 0))
+            + row('النقاط', N(ptsInstall(x)))   /* (V37.77) */
             + row('بادئة الشبكة', ins.prefix ? '<span class="num" dir="ltr">' + esc(ipsOf(ins.prefix)) + '</span>' : '')
             + row('الاعتماد', ins.approved ? pill('معتمد','ok') : pill('بانتظار التدقيق','warn'))
             + '</div>'

@@ -1439,7 +1439,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                   ['معتمد', N(done.length), 'ok'],
                   ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
                       return STATE.inss[k].status === 'مسودّة'; }).length)],
-                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
+                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + insPtsOf(k); }, 0))]])
       + (wait.length
         ? cardFlush(t('بانتظار قرارك') + ' — ' + nm(wait.length),
             table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
@@ -1447,7 +1447,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                 var r = STATE.inss[k], s = siteFind(k);
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
                           + esc((s && s.name) || '') + '</span>',
-                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
+                        esc(r.by), N(Object.keys(r.parts || {}).length), N(insPtsOf(k)),
                         '<span class="num">' + fmtTime(r.at, { hour:'2-digit', minute:'2-digit' }) + '</span>',
                         '<div class="actions">'
                         + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
@@ -2749,6 +2749,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.77', d:'2026-10-13', notes:[
+      'نقاط التركيب: قراءة موحدة وإعادة احتساب بأثر رجعي معلن' ] },
   { v:'V37.76', d:'2026-10-13', notes:[
       'أصناف التجربة من الكتالوج: مشعر ونوع ثم قائمة قطع النوع' ] },
   { v:'V37.75', d:'2026-10-13', notes:[

@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.76</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.77</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a13d1b4b99.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-bda162d798.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4835,7 +4835,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
             '<div class="pop-rows" style="margin:0">'
             + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':''))
             + row('المنفِّذ', esc(ins.by))
-            + row('النقاط', N(ins.pts || 0))
+            + row('النقاط', N(ptsInstall(x)))   /* (V37.77) */
             + row('بادئة الشبكة', ins.prefix ? '<span class="num" dir="ltr">' + esc(ipsOf(ins.prefix)) + '</span>' : '')
             + row('الاعتماد', ins.approved ? pill('معتمد','ok') : pill('بانتظار التدقيق','warn'))
             + '</div>'
@@ -7940,6 +7940,61 @@ function ptsInstall(x){
   var byType = cfgGet('insType', x.type);
   if (byType) return byType;
   return siteZone(x) === 'cor' ? cfgGet('insCor') : cfgGet('insCamp');
+}
+
+/* ═══ (V37.77) نقاطُ تركيبٍ بعينه تُقرأ من مكانٍ واحد ═══
+   كانت أربعُ شاشاتٍ تقرأ الرقمَ المحفوظ مع التركيب مباشرةً، فتركيبٌ سُجِّل وأوزانُ القطع
+   صفرٌ يبقى صفرًا فيها وإن ضُبطت الأوزانُ بعدُ — بينما ptsInstall تحسبه من قطعه. */
+function insPtsOf(id){ return ptsInstall(siteFind(id) || { id:id, type:'' }); }
+/* إعادةُ احتساب نقاط التركيب بالأوزان الحالية — للمهندس، بمعاينةٍ قبل التنفيذ.
+   كلُّ تركيبٍ يتجمّد على أوزان يوم تسجيله (فلا يتغيّر تقييمُ الفنيِّ من تحته)؛ هذه الأداةُ
+   هي الطريقُ الوحيدُ المعلَنُ لتطبيق وزنٍ جديدٍ بأثرٍ رجعيّ، وكلُّ تنفيذٍ يُسجَّل في سجلِّ التدقيق. */
+function insRecalcPlan(){
+  var ch = [], zero = 0;
+  Object.keys(STATE.inss || {}).forEach(function(id){
+    var r = STATE.inss[id];
+    if (!r || r.deleted || r.status === 'مسودّة' || !r.parts || !Object.keys(r.parts).length) return;
+    var nw = 0; Object.keys(r.parts).forEach(function(k){ nw += cfgN(r.parts[k]) * itPts(k); });
+    nw = Math.round(nw * 100) / 100;
+    var old = cfgN(r.pts);
+    if (!nw){ if (old) zero++; return; }   /* لا يُصفَّر تركيبٌ لأن أوزانَ قطعه لم تُضبط بعد */
+    if (Math.abs(nw - old) > 0.001) ch.push({ id:id, old:old, nw:nw, ok:!!r.approved });
+  });
+  ch.sort(function(a, b){ return Math.abs(b.nw - b.old) - Math.abs(a.nw - a.old); });
+  return { ch:ch, zero:zero,
+           before:ch.reduce(function(a, x){ return a + x.old; }, 0),
+           after:ch.reduce(function(a, x){ return a + x.nw; }, 0),
+           appr:ch.filter(function(x){ return x.ok; }).length };
+}
+function insRecalcCard(){
+  var P = insRecalcPlan();
+  var body = !P.ch.length
+    ? '<p class="hint" style="margin:0">' + esc(t('كلُّ التركيبات المسجّلة متطابقةٌ مع الأوزان الحالية — لا شيءَ يُعاد احتسابه.')) + '</p>'
+    : stats([['تركيباتٌ ستتغيّر', N(P.ch.length), 'wrn'], ['منها معتمد', N(P.appr)],
+             ['النقاط قبل', N(Math.round(P.before * 100) / 100)], ['النقاط بعد', N(Math.round(P.after * 100) / 100), 'ok']])
+      + table(['النقطة','قبل','بعد',''], P.ch.slice(0, 10).map(function(x){
+          var st = siteFind(x.id);
+          return ['<bdi>' + esc(x.id) + '</bdi>' + (st && st.name ? '<br><span class="hint" style="margin:0">' + esc(st.name) + '</span>' : ''),
+                  N(x.old), '<b class="num">' + nm(x.nw) + '</b>', x.ok ? pill('معتمد','ok') : ''];
+        }))
+      + (P.ch.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(P.ch.length - 10) + '</p>' : '')
+      + '<div class="actions" style="margin:8px 0 0">' + btn('\u21BB ' + t('نفّذ إعادة الاحتساب'),'btn-primary btn-sm',' data-insrecalc="1"') + '</div>';
+  return card('إعادة احتساب نقاط التركيب بالأوزان الحالية',
+    '<p class="hint" style="margin:0 0 8px">' + esc(t('كلُّ تركيبٍ يحتفظ بنقاط يوم تسجيله. إذا عدّلتَ وزنَ قطعةٍ وأردتَ تطبيقه على ما سُجِّل قبلُ، فمن هنا — بعد مراجعة الفرق.')) + '</p>'
+    + body
+    + (P.zero ? '<p class="hint" style="margin:6px 0 0">' + esc(t('تركيباتٌ قطعُها كلُّها بوزن صفر لم تُمسّ')) + ': ' + nm(P.zero) + '</p>' : ''));
+}
+function insRecalcRun(){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var P = insRecalcPlan(); if (!P.ch.length){ toast(t('لا شيءَ يُعاد احتسابه')); return; }
+  if (!confirm(t('ستتغيّر نقاطُ') + ' ' + P.ch.length + ' ' + t('تركيبًا') + ' (' + Math.round(P.before) + ' → ' + Math.round(P.after) + '). ' + t('متابعة؟'))) return;
+  var by = STATE.meta.name || '', at = Date.now();
+  P.ch.forEach(function(x){
+    var r = STATE.inss[x.id]; if (!r) return;
+    CORE.set('inss', x.id, Object.assign({}, r, { pts:x.nw, ptsRe:{ at:at, by:by, old:x.old } }));
+  });
+  logEvent('إعادةُ احتساب نقاط التركيب — ' + P.ch.length + ' تركيب · ' + Math.round(P.before * 100) / 100 + ' ← ' + Math.round(P.after * 100) / 100);
+  toast(t('أُعيد احتسابُ نقاط التركيب') + ' (' + nm(P.ch.length) + ')'); render(1);
 }
 
 function ptsDis(x){
@@ -16488,7 +16543,7 @@ function popHtml(){
     + (ins && Object.keys(ins.parts || {}).length
       ? '<div class="hint" style="margin:8px 0 0">' + esc(t('القطع'))
         + ': <b>' + nm(Object.keys(ins.parts).length) + '</b> · ' + esc(t('النقاط'))
-        + ': <b>' + nm(ins.pts || 0) + '</b>'
+        + ': <b>' + nm(ptsInstall(s)) + '</b>'   /* (V37.77) */
         + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
         + '</div>' : '')
 
@@ -25321,7 +25376,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                   ['معتمد', N(done.length), 'ok'],
                   ['مسودّات', N(Object.keys(STATE.inss).filter(function(k){
                       return STATE.inss[k].status === 'مسودّة'; }).length)],
-                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + (STATE.inss[k].pts||0); }, 0))]])
+                  ['نقاط معتمدة', N(done.reduce(function(a,k){ return a + insPtsOf(k); }, 0))]])
       + (wait.length
         ? cardFlush(t('بانتظار قرارك') + ' — ' + nm(wait.length),
             table(['النقطة','المنفِّذ','القطع','النقاط','الوقت',''],
@@ -25329,7 +25384,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
                 var r = STATE.inss[k], s = siteFind(k);
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
                           + esc((s && s.name) || '') + '</span>',
-                        esc(r.by), N(Object.keys(r.parts || {}).length), N(r.pts || 0),
+                        esc(r.by), N(Object.keys(r.parts || {}).length), N(insPtsOf(k)),
                         '<span class="num">' + fmtTime(r.at, { hour:'2-digit', minute:'2-digit' }) + '</span>',
                         '<div class="actions">'
                         + btn('اعتمد','btn-primary btn-sm',' data-appr="' + esc(k) + '"')
@@ -26631,6 +26686,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.77', d:'2026-10-13', notes:[
+      'نقاط التركيب: قراءة موحدة وإعادة احتساب بأثر رجعي معلن' ] },
   { v:'V37.76', d:'2026-10-13', notes:[
       'أصناف التجربة من الكتالوج: مشعر ونوع ثم قائمة قطع النوع' ] },
   { v:'V37.75', d:'2026-10-13', notes:[
@@ -34766,6 +34823,7 @@ PAGE.pts = { m:'التخطيط', t:'نقاط المراحل',
                 + esc(t('لا قطع في هذه المنطقة.')) + '</p>') + '</div>';
         }).join('')
       + '</div>'
+      + (may('settings') ? insRecalcCard() : '')   /* (V37.77) إعادةُ الاحتساب بأثرٍ رجعيٍّ معلَن */
       + (may('settings')
         ? card('أضِف صنفًا جديدًا',
             '<div class="grid cols-3">'
@@ -36418,6 +36476,7 @@ function clickAPart5(e){
   if (trh){ var pr2 = trh.getAttribute('data-trh').split('|'); trialHoursAdd(pr2[0], +pr2[1] || 0); return true; }
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
+  if (e.target.closest('[data-insrecalc]')){ insRecalcRun(); return true; }   /* (V37.77) */
   var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }

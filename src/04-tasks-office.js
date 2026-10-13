@@ -3914,7 +3914,7 @@ function popHtml(){
     + (ins && Object.keys(ins.parts || {}).length
       ? '<div class="hint" style="margin:8px 0 0">' + esc(t('القطع'))
         + ': <b>' + nm(Object.keys(ins.parts).length) + '</b> · ' + esc(t('النقاط'))
-        + ': <b>' + nm(ins.pts || 0) + '</b>'
+        + ': <b>' + nm(ptsInstall(s)) + '</b>'   /* (V37.77) */
         + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
         + '</div>' : '')
 

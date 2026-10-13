@@ -248,6 +248,61 @@ function ptsInstall(x){
   return siteZone(x) === 'cor' ? cfgGet('insCor') : cfgGet('insCamp');
 }
 
+/* ═══ (V37.77) نقاطُ تركيبٍ بعينه تُقرأ من مكانٍ واحد ═══
+   كانت أربعُ شاشاتٍ تقرأ الرقمَ المحفوظ مع التركيب مباشرةً، فتركيبٌ سُجِّل وأوزانُ القطع
+   صفرٌ يبقى صفرًا فيها وإن ضُبطت الأوزانُ بعدُ — بينما ptsInstall تحسبه من قطعه. */
+function insPtsOf(id){ return ptsInstall(siteFind(id) || { id:id, type:'' }); }
+/* إعادةُ احتساب نقاط التركيب بالأوزان الحالية — للمهندس، بمعاينةٍ قبل التنفيذ.
+   كلُّ تركيبٍ يتجمّد على أوزان يوم تسجيله (فلا يتغيّر تقييمُ الفنيِّ من تحته)؛ هذه الأداةُ
+   هي الطريقُ الوحيدُ المعلَنُ لتطبيق وزنٍ جديدٍ بأثرٍ رجعيّ، وكلُّ تنفيذٍ يُسجَّل في سجلِّ التدقيق. */
+function insRecalcPlan(){
+  var ch = [], zero = 0;
+  Object.keys(STATE.inss || {}).forEach(function(id){
+    var r = STATE.inss[id];
+    if (!r || r.deleted || r.status === 'مسودّة' || !r.parts || !Object.keys(r.parts).length) return;
+    var nw = 0; Object.keys(r.parts).forEach(function(k){ nw += cfgN(r.parts[k]) * itPts(k); });
+    nw = Math.round(nw * 100) / 100;
+    var old = cfgN(r.pts);
+    if (!nw){ if (old) zero++; return; }   /* لا يُصفَّر تركيبٌ لأن أوزانَ قطعه لم تُضبط بعد */
+    if (Math.abs(nw - old) > 0.001) ch.push({ id:id, old:old, nw:nw, ok:!!r.approved });
+  });
+  ch.sort(function(a, b){ return Math.abs(b.nw - b.old) - Math.abs(a.nw - a.old); });
+  return { ch:ch, zero:zero,
+           before:ch.reduce(function(a, x){ return a + x.old; }, 0),
+           after:ch.reduce(function(a, x){ return a + x.nw; }, 0),
+           appr:ch.filter(function(x){ return x.ok; }).length };
+}
+function insRecalcCard(){
+  var P = insRecalcPlan();
+  var body = !P.ch.length
+    ? '<p class="hint" style="margin:0">' + esc(t('كلُّ التركيبات المسجّلة متطابقةٌ مع الأوزان الحالية — لا شيءَ يُعاد احتسابه.')) + '</p>'
+    : stats([['تركيباتٌ ستتغيّر', N(P.ch.length), 'wrn'], ['منها معتمد', N(P.appr)],
+             ['النقاط قبل', N(Math.round(P.before * 100) / 100)], ['النقاط بعد', N(Math.round(P.after * 100) / 100), 'ok']])
+      + table(['النقطة','قبل','بعد',''], P.ch.slice(0, 10).map(function(x){
+          var st = siteFind(x.id);
+          return ['<bdi>' + esc(x.id) + '</bdi>' + (st && st.name ? '<br><span class="hint" style="margin:0">' + esc(st.name) + '</span>' : ''),
+                  N(x.old), '<b class="num">' + nm(x.nw) + '</b>', x.ok ? pill('معتمد','ok') : ''];
+        }))
+      + (P.ch.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(P.ch.length - 10) + '</p>' : '')
+      + '<div class="actions" style="margin:8px 0 0">' + btn('\u21BB ' + t('نفّذ إعادة الاحتساب'),'btn-primary btn-sm',' data-insrecalc="1"') + '</div>';
+  return card('إعادة احتساب نقاط التركيب بالأوزان الحالية',
+    '<p class="hint" style="margin:0 0 8px">' + esc(t('كلُّ تركيبٍ يحتفظ بنقاط يوم تسجيله. إذا عدّلتَ وزنَ قطعةٍ وأردتَ تطبيقه على ما سُجِّل قبلُ، فمن هنا — بعد مراجعة الفرق.')) + '</p>'
+    + body
+    + (P.zero ? '<p class="hint" style="margin:6px 0 0">' + esc(t('تركيباتٌ قطعُها كلُّها بوزن صفر لم تُمسّ')) + ': ' + nm(P.zero) + '</p>' : ''));
+}
+function insRecalcRun(){
+  if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
+  var P = insRecalcPlan(); if (!P.ch.length){ toast(t('لا شيءَ يُعاد احتسابه')); return; }
+  if (!confirm(t('ستتغيّر نقاطُ') + ' ' + P.ch.length + ' ' + t('تركيبًا') + ' (' + Math.round(P.before) + ' → ' + Math.round(P.after) + '). ' + t('متابعة؟'))) return;
+  var by = STATE.meta.name || '', at = Date.now();
+  P.ch.forEach(function(x){
+    var r = STATE.inss[x.id]; if (!r) return;
+    CORE.set('inss', x.id, Object.assign({}, r, { pts:x.nw, ptsRe:{ at:at, by:by, old:x.old } }));
+  });
+  logEvent('إعادةُ احتساب نقاط التركيب — ' + P.ch.length + ' تركيب · ' + Math.round(P.before * 100) / 100 + ' ← ' + Math.round(P.after * 100) / 100);
+  toast(t('أُعيد احتسابُ نقاط التركيب') + ' (' + nm(P.ch.length) + ')'); render(1);
+}
+
 function ptsDis(x){
   var base = cfgGet('dw', x.zone + '|' + catLabel(x)) || cfgGet('dw', catLabel(x));
   var r = STATE.diss ? STATE.diss[x.id] : null;

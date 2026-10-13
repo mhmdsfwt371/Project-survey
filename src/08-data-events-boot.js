@@ -1698,6 +1698,7 @@ PAGE.pts = { m:'التخطيط', t:'نقاط المراحل',
                 + esc(t('لا قطع في هذه المنطقة.')) + '</p>') + '</div>';
         }).join('')
       + '</div>'
+      + (may('settings') ? insRecalcCard() : '')   /* (V37.77) إعادةُ الاحتساب بأثرٍ رجعيٍّ معلَن */
       + (may('settings')
         ? card('أضِف صنفًا جديدًا',
             '<div class="grid cols-3">'
@@ -3350,6 +3351,7 @@ function clickAPart5(e){
   if (trh){ var pr2 = trh.getAttribute('data-trh').split('|'); trialHoursAdd(pr2[0], +pr2[1] || 0); return true; }
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
+  if (e.target.closest('[data-insrecalc]')){ insRecalcRun(); return true; }   /* (V37.77) */
   var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }
