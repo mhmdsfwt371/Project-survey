@@ -25,8 +25,9 @@ var EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
 
 /* ── قراءة التوكن من Firestore ── */
 function extTokLoad(){
-  if (!FB.ready || !FB.db) return;
-  DB.col('settings').doc('extApi').get().then(function(doc){
+  if (!may('settings')) return Promise.resolve(null);   /* (V37.80) القاعدةُ لا تُقرئه إلا للمكتب */
+  if (!FB.ready || !FB.db){ EXT._tokAsked = false; return Promise.resolve(null); }   /* يُعاد المحاولةُ حين تجهز القاعدة */
+  return DB.col('settings').doc('extApi').get().then(function(doc){
     if (!doc || !doc.exists) return;
     var d = doc.data();
     EXT.tok = d.tok || null;
@@ -37,7 +38,7 @@ function extTokLoad(){
 
 /* ── حفظ توكن جديد ── */
 function extTokSave(tok){
-  if (!may('mgr')){ toast(t('التوكنُ للمهندس وحدَه')); return; }
+  if (!may('settings')){ toast(t('التوكنُ للمهندس وحدَه')); return; }
   var t0 = String(tok || '').trim();
   if (!t0){ toast(t('لصق التوكن أوّلًا')); return; }
   var expAt = 0;
@@ -53,7 +54,7 @@ function extTokSave(tok){
 
 /* ── مسح التوكن ── */
 function extTokClear(){
-  if (!may('mgr')) return;
+  if (!may('settings')) return;
   EXT.tok = null; EXT.expAt = 0;
   CORE.set('cfg', 'extApi', { tok:'', expAt:0, updAt:Date.now() }); CORE.saveSoon();
   toast(t('مُسح التوكن'));
@@ -62,9 +63,10 @@ function extTokClear(){
 
 /* ── Fetch مساعد (Bearer + CORS headers) ── */
 function extFetch(url, useBearer){
-  var hdrs = { 'Origin':'https://nusukcard.net', 'Referer':'https://nusukcard.net/' };
+  /* (V37.80) Origin وReferer ترويستان محظورتان يُسقطهما المتصفحُ بصمت — المتصفحُ يرسلهما بنفسه */
+  var hdrs = {};
   if (useBearer && EXT.tok) hdrs['Authorization'] = 'Bearer ' + EXT.tok;
-  return fetch(url, { headers:hdrs });
+  return fetch(url, { headers:hdrs, credentials:'omit' });
 }
 
 /* ── قائمة القرّاء (5 دقائق cache) ── */
@@ -74,12 +76,13 @@ function extReadersLoad(){
     if (!r.ok) return extFetch(EXT_STREAM, true).then(function(r2){ return r2.ok ? r2.json() : null; });
     return r.json();
   }).then(function(arr){
-    if (!arr || !Array.isArray(arr)) return null;
+    if (!arr || !Array.isArray(arr)){ EXT.rdErr = 'تعذّر قراءة بثّ القرّاء'; return null; }
+    EXT.rdErr = '';
     var map = {};
     arr.forEach(function(x){ if (x.readerId) map[String(x.readerId)] = x; });
     EXT.readers = map; EXT.readersAt = Date.now();
     return map;
-  }).catch(function(){ return null; });
+  }).catch(function(){ EXT.rdErr = 'تعذّر الوصول إلى بثّ القرّاء'; return null; });
 }
 
 /* ── قائمة الخيام (ساعة cache) ── */
@@ -96,8 +99,11 @@ function extTentsLoad(){
         (Array.isArray(j.data) ? j.data : [j.data]).forEach(function(t){
           if (t.code) all[t.code] = t;
         });
-        var meta = (j.meta || {}).pagination || {};
-        if (meta.currentPage < meta.lastPage){ page++; return fetchPage(); }
+        /* (V37.80) شكلُ الترقيم غيرُ مؤكَّد: نكمل ما دامت الصفحةُ ممتلئة — بسقف ٦٠ صفحة */
+        var got = Array.isArray(j.data) ? j.data.length : 0;
+        var meta = (j.meta || {}).pagination || j.meta || {};
+        var more = (meta.currentPage && meta.lastPage) ? meta.currentPage < meta.lastPage : got >= per;
+        if (more && page < 60){ page++; return fetchPage(); }
       });
   }
   return fetchPage().then(function(){
@@ -126,7 +132,7 @@ function extOurSerials(){
   (STATE.sites || []).forEach(function(x){
     var ins = STATE.inss[x.id];
     if (!ins || ins.status !== 'مُركّب') return;
-    var ser = String(ins.serial || ins.rfid || x.serial || '').trim();
+    var ser = extReaderSerial(ins);   /* (V37.80) السيريالُ في ins.serials بمفتاح قطعة القارئ — كان يُقرأ من حقلٍ لا وجود له */
     if (ser) out.push({ id:x.id, name:x.name || x.n || x.id, zone:x.zone || x.z || '', serial:ser, ins:ins });
   });
   return out;
@@ -225,7 +231,7 @@ var EXT_MATCH_STATE = null;   /* {matched:[{serial,tentCode,tentId,tentMeta,read
 function extMatchLoad(forceRefresh){
   if (!forceRefresh && EXT_MATCH_STATE && Date.now() - EXT_MATCH_STATE.at < 300000)
     return Promise.resolve(EXT_MATCH_STATE);
-  EXT.busy = true; EXT.err = ''; render(1);
+  EXT.busy = true; EXT.err = '';   /* (V37.80) لا رسمَ من داخل الرسم — الشاشةُ تعرض «جارٍ التحميل» بنفسها */
   return Promise.all([extReadersLoad(), extTentsLoad()]).then(function(res){
     var readers = res[0] || {}, tents = res[1] || {};
     /* بناء خريطة tentCode → tentMeta */
@@ -245,7 +251,8 @@ function extMatchLoad(forceRefresh){
       matched.push({ serial:pt.serial, tentCode:code, tentId:meta ? meta.id : '', tentMeta:meta, reader:reader, point:pt });
     });
     EXT_MATCH_STATE = { matched:matched, unmatched:unmatched, at:Date.now() };
-    EXT.busy = false; return EXT_MATCH_STATE;
+    if (EXT.rdErr) EXT.err = EXT.rdErr;
+    EXT.busy = false; render(1); return EXT_MATCH_STATE;
   }).catch(function(e){ EXT.busy = false; EXT.err = String(e); render(1); return null; });
 }
 
@@ -258,10 +265,10 @@ function mtCamps(){
   var h = '';
 
   /* بطاقة الإعداد — للمهندس فقط */
-  if (may('mgr')) h += extTokCard();
+  if (may('settings')) h += extTokCard();
 
   if (!EXT.tok){
-    return h + alertBox('info', t('أضف توكن نظام البطاقات لتشغيل هذه الشاشة.'));
+    return h + alertBox('info', t(may('settings') ? 'أضف توكن نظام البطاقات لتشغيل هذه الشاشة.' : 'بياناتُ الإشغال من نُسُك تُعرَض لحسابات المكتب.'));
   }
 
   /* تحميل المطابقات */
@@ -319,4 +326,79 @@ function mtCamps(){
   }
 
   return h;
+}
+
+/* ═══ (V37.80) سيريالُ القارئ من سجلّ التركيب ═══
+   السيريالاتُ تُحفَظ بمفتاح القطعة (ins.serials[code]) — قطعةُ القارئ رمزُها يبدأ بـ rdr أو اسمُها «قارئ». */
+function extReaderSerial(ins){
+  var S = (ins && ins.serials) || {}, out = '';
+  Object.keys(S).forEach(function(k){
+    if (out) return; var v = String(S[k] || '').trim(); if (!v) return;
+    if (/^rdr/i.test(k) || /قارئ/.test(itemName(k))) out = v;
+  });
+  return out;
+}
+
+/* ═══ (V37.80) كارتُ «التجارب والديمو» في متابعة الوزارة ═══
+   طلبُ المالك: كارتٌ بجوار المسح والزيارة، يُضغط فتظهر نقاطُ التجربة بحالة تركيبها واتصالها
+   (أونلاين/أوفلاين) وبيانات نظام نُسُك. الاتصالُ من نبضات أداة الفحص (hb) ثم فحص المتصفح،
+   ونُسُك من بثّ القرّاء برقم القارئ المسجَّل في التركيب. */
+function pilotSites(){ return (STATE.sites || []).filter(function(x){ return x && x.pilot; }); }
+function pilotNet(x){
+  var HB = STATE.hb || {}, up = 0, n = 0, at = 0;
+  Object.keys(HB).forEach(function(k){
+    var h = HB[k]; if (!h || h.site !== x.id || !h.st) return;
+    n++; if (h.st === 'up') up++;
+    var ts = Date.parse(h.ts || '') || +h.ts || 0; if (ts > at) at = ts;
+  });
+  if (n) return { st: up === n ? 'متصل' : up ? 'متصل جزئيًّا' : 'غير متصل', at:at, src:'أداة الفحص', up:up, n:n };
+  var me = HB[x.id];
+  if (me && typeof me.alive === 'boolean') return { st: me.alive ? 'متصل' : 'غير متصل', at:+me.at || 0, src:'فحص المتصفح', up:me.alive ? 1 : 0, n:1 };
+  var nk = pilotNusuk(x);
+  if (nk.at) return { st: Date.now() - nk.at < 30 * 60000 ? 'متصل' : 'غير متصل', at:nk.at, src:'نُسُك', up:0, n:0 };
+  return { st:'لا إشارة', at:0, src:'', up:0, n:0 };
+}
+function pilotNusuk(x){
+  var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'' };
+  if (!ser || !EXT.readers) return o;
+  var r = EXT.readers[ser]; if (!r) return o;
+  o.loc = r.locationName || ''; o.at = Date.parse(r.timestamp || '') || 0;
+  var m = EXT_MATCH_STATE && EXT_MATCH_STATE.matched.filter(function(z){ return z.serial === ser; })[0];
+  var ov = m && m.tentId && EXT.ov[m.tentId] && EXT.ov[m.tentId].data;
+  if (ov && ov.occupancyStatus){
+    var c = ov.occupancyStatus, tot = (c.currentlyOccupied || 0) + (c.withoutBracelet || 0) + (c.fromOtherCamps || 0);
+    o.occ = (c.totalCapacity ? Math.round(tot / c.totalCapacity * 100) + '٪ · ' : '') + tot + ' / ' + (c.totalCapacity || 0);
+  }
+  return o;
+}
+/* تحميلُ بيانات نُسُك عند فتح القائمة — مرةً في الدقيقة على الأكثر، ثم يُعاد الرسم */
+function pilotKick(){
+  if (EXT._plAt && Date.now() - EXT._plAt < 60000) return;
+  EXT._plAt = Date.now();
+  var tk = (!EXT.tok && !EXT._tokAsked) ? (EXT._tokAsked = true, extTokLoad()) : Promise.resolve(null);
+  tk.then(function(){ return extReadersLoad(); }).then(function(){
+    if (EXT.tok && !EXT.busy) return extMatchLoad().then(function(st){
+      var ids = {}; (st ? st.matched : []).forEach(function(m){
+        var p = siteFind(m.point.id); if (p && p.pilot && m.tentId && !ids[m.tentId]){ ids[m.tentId] = 1; extOvLoad(m.tentId); }
+      });
+    });
+  }).then(function(){ render(1); }).catch(function(e){ softErr('بيانات نُسُك للتجارب', e, ''); });
+}
+function pilotAgo(at){
+  if (!at) return '\u2014';
+  var m = Math.floor((Date.now() - at) / 60000);
+  return m < 2 ? t('الآن') : m < 60 ? m + ' ' + t('د') : m < 2880 ? Math.floor(m / 60) + ' ' + t('س') : Math.floor(m / 1440) + ' ' + t('يوم');
+}
+function pilotRowsList(){
+  pilotKick();
+  return pilotSites().map(function(x){
+    var ins = STATE.inss[x.id], f = (typeof trialForSite === 'function') ? trialForSite(x.id) : null;
+    var nt = pilotNet(x), nk = pilotNusuk(x);
+    var insSt = !ins ? 'لم يُركَّب' : ins.status === 'مسودّة' ? 'مسودّة' : (ins.status || '') + ' · ' + (ins.approved ? 'معتمد' : 'بانتظار التدقيق');
+    return [x.id, x.name || '', t(x.zone || ''), t(x.type || ''), f ? (f.row.n || '') + (f.row.out ? ' · ' + t(f.row.out) : '') : '\u2014',
+            t(insSt), ins && ins.status !== 'مسودّة' ? String(insRevs(ins).length + 1) : '\u2014',
+            t(nt.st) + (nt.n > 1 ? ' (' + nt.up + '/' + nt.n + ')' : '') + (nt.src ? ' \u00b7 ' + t(nt.src) : ''), pilotAgo(nt.at),
+            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), nk.loc || (nk.ser ? (EXT.readers ? t('غير ظاهر في نُسُك') : t('يُحمَّل…')) : '\u2014'),
+            nk.at ? pilotAgo(nk.at) : '\u2014', nk.occ || '\u2014'];
+  });
 }

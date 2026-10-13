@@ -5161,6 +5161,8 @@ function mfuSummary(){
     + box('obs', 'المعوقات القائمة', nm(K.obs), esc(t('تحدياتٌ أو تعذّرُ وصولٍ على نقاطٍ لم تُركَّب')), mfuDelta(K.obs, P, 'obs', true))
     + box('campok', 'مخيمات بلا عائق', nm(svListCount('campok')), esc(t('تمت الزيارة وتم الوصول بلا تحديات')), '', '#27AE60')
     + box('campins', 'تركيب المخيمات', nm(pc(K.campIns, K.camp)) + '\u066A', nm(K.campIns) + ' ' + esc(t('من')) + ' ' + nm(K.camp), mfuDelta(K.campIns, P, 'campIns'))
+    + (function(){ var PS = pilotSites(); if (!PS.length) return ''; var ni = PS.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status && i.status !== 'مسودّة'; }).length, on = PS.filter(function(x){ return pilotNet(x).st === 'متصل'; }).length;   /* (V37.80) كارتُ التجارب */
+        return box('pilot', 'التجارب والديمو', nm(PS.length), esc(t('رُكّب')) + ' ' + nm(ni) + ' \u00b7 ' + esc(t('متصل')) + ' ' + nm(on), '', on < ni ? '#E2B33C' : '#2E86DE'); })()
     + box('corins', 'تركيب الممرات', nm(pc(K.corIns, K.cor)) + '\u066A', nm(K.corIns) + ' ' + esc(t('من')) + ' ' + nm(K.cor), mfuDelta(K.corIns, P, 'corIns'))
     + (K.ins ? box('cos', 'شركات الخدمة', '<span style="color:#27AE60">' + nm(K.ex) + '</span> \u00b7 <span style="color:#E2B33C">' + nm(K.md) + '</span> \u00b7 <span style="color:#C0392B">' + nm(K.wk) + '</span>', esc(t('ممتاز · متوسط · ضعيف')), '')
              : box('cos', 'شركات الخدمة', nm(mfuCompanies().length), esc(t('مرحلة المسح — لم يبدأ التواصل والتركيب')), ''))

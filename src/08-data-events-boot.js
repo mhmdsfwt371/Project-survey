@@ -2375,8 +2375,7 @@ function focusBack(g){
    يفتح الكلَّ كما كان (حتى خمسة آلاف). المفتاحُ صفحةٌ وشريحة، فلا يحمل عدُّ صفحةٍ إلى أخرى. */
 var MORE_SHOWN = {}, MORE_FIRST = 100, MORE_STEP = 200, MORE_CUT = 0;
 function moreKey(){ return CUR + ':' + ((typeof PTAB === 'object' && PTAB && PTAB[CUR]) || ''); }
-/* (V37.75) تحميلُ توكن نظام البطاقات فور الدخول */
-setTimeout(function(){ try { if (typeof extTokLoad === 'function') extTokLoad(); } catch(eX){ LS_ERR=eX; } }, 3000);
+/* (V37.80) توكنُ نظام البطاقات يُحمَّل عند فتح «المخيمات المركزية» أو قائمة التجارب فقط — لا لكلِّ مستخدمٍ عند الدخول */
 function capList(L, base){
   if (PG_Q) return L.slice(0, 5000);
   var n = Math.min(base || MORE_FIRST, MORE_FIRST) + (MORE_SHOWN[moreKey()] || 0);

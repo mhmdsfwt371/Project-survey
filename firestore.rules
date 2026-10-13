@@ -287,10 +287,12 @@ service cloud.firestore {
     match /settings/wtask    { allow read: if ok(); allow write: if ok() && (myRank() >= 90 || role() == 'viewer'); }
     match /settings/perms    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
     match /settings/roles    { allow read: if ok(); allow write: if ok() && myRank() >= 90; }
+    // (V37.80) توكنُ نظام البطاقات (نُسُك كارد) حسابُ صاحب المشروع نفسِه — يقرؤه المكتبُ وحدَه لا كلُّ فعّال
+    match /settings/extApi { allow read: if mgr(); }
     match /settings/{id} {
       // الكتلُ المتطابقةُ تُجمَع بـ«أو»: ما لوثيقةٍ بعينها قاعدةٌ أضيقُ يُستثنى هنا
       // صراحةً وإلا فتحته هذه — كما استُثنيت الجوالات، ويُستثنى التقرير (V17.94)
-      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo';
+      allow read: if ok() && id != 'contacts' && id != 'cotel' && id != 'sysreport' && id != 'pmo' && id != 'extApi';
       allow write: if pm('settings', 'w', mgr()) && id != 'sysreport' && id != 'pmo';
     }
 
