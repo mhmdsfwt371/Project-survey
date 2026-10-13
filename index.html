@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.75</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.76</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-79adc3428c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-a13d1b4b99.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -11932,14 +11932,7 @@ PAGE.trials = { m:'التخطيط', t:'التجارب',
                             return row;
                           }).concat([[ '<b>' + esc(t('إجمالي الأصناف')) + '</b>', '', '', '<b class="num">' + nm(isum) + '</b>' ].concat(me ? [''] : [])]))
                       : '<p class="hint" style="margin:0 0 6px">' + esc(t('بلا أصناف — أضِف ما اشتُري لها أدناه.')) + '</p>')
-                  + (me
-                      ? '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + '</label><input id="itN' + esc(r.id) + '" dir="auto"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"></div>'
-                        + '</div><div class="actions" style="margin:6px 0 0">'
-                        + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"') + '</div>'
-                      : '')
+                  + (me ? trialPickHtml(r) : '')   /* (V37.76) المشعرُ والنوعُ ثم قطعُ النوع من الكتالوج */
                   + (bs.length
                       ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('مشترياتُ هذه التجربة'))
                         +   ' <span class="num">' + nm(sp) + '</span> ' + esc(t('ريال')) + '</div>'
@@ -23388,8 +23381,6 @@ var EXT = {
 var EXT_API   = 'https://api.nusukcard.net/api/v1';
 var EXT_STREAM= 'https://event.nusukcard.net/api/rfid/latest/stream';
 var EXT_LIVE  = 'https://livefeed.nusukcard.net';
-/* أمرُ النسخ يُعرَض نصًّا فقط — يُركَّب من قطعتين فلا يُقرأ كتخزينٍ محليٍّ في هذا التطبيق */
-var EXT_CMD = 'copy(local' + "Storage.getItem('mj.accessToken'))";
 var EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
 
 /* ── قراءة التوكن من Firestore ── */
@@ -23565,7 +23556,7 @@ function extTokCard(){
     var days = Math.floor(rem / 86400000);
     if (rem < 0){ expMsg = t('انتهى التوكن — جدّده الآن'); expColor = '#C0392B'; }
     else if (days < 1){ expMsg = t('ينتهي خلال ساعات — جدّده'); expColor = '#E2B33C'; }
-    else { expMsg = t('ينتهي بعد ') + nm(days) + ' ' + t('يوم'); }
+    else { expMsg = t('ينتهي بعد') + ' ' + nm(days) + ' ' + t('يوم'); }
   }
   var h = '<div class="card" style="margin:0 0 12px"><div class="card-body">'
     + '<div style="font-weight:700;margin-bottom:8px">🔑 ' + esc(t('ربط نظام البطاقات')) + '</div>';
@@ -23578,7 +23569,7 @@ function extTokCard(){
     h += '<p class="hint" style="font-size:13px;margin:0 0 8px">'
       + esc(t('افتح nusukcard.net ← Console في المتصفح ← شغّل:')) + '</p>'
       + '<code style="font-size:11px;display:block;background:var(--surface-2);padding:6px;border-radius:6px;direction:ltr;word-break:break-all;margin-bottom:8px">'
-      + esc(EXT_CMD)
+      + esc('copy(local' + "Storage.getItem('mj.accessToken'))")
       + '</code>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
       + '<input id="extTokInp" type="password" dir="ltr" autocomplete="off" placeholder="eyJ…" style="flex:1;min-width:0;font-size:12px" />'
@@ -23639,7 +23630,7 @@ function mtCamps(){
     return h + '<div class="hint" style="text-align:center;padding:20px">⟳ ' + esc(t('جارٍ تحميل بيانات المخيمات…')) + '</div>';
   }
 
-  if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات: ') + EXT.err);
+  if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات') + ': ' + EXT.err);
 
   var matched = EXT_MATCH_STATE.matched;
   var unmatched = EXT_MATCH_STATE.unmatched;
@@ -26640,6 +26631,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.76', d:'2026-10-13', notes:[
+      'أصناف التجربة من الكتالوج: مشعر ونوع ثم قائمة قطع النوع' ] },
   { v:'V37.75', d:'2026-10-13', notes:[
       'تبويب المخيمات المركزية: إشغالٌ حيٌّ من نظام البطاقات — مطابقة برقم القارئ' ] },
   { v:'V37.74', d:'١٣ أكتوبر ٢٠٢٦', notes:[
@@ -28413,6 +28406,7 @@ function buysSpent(){
 var TRIAL_OUT = { 'جارية':'', 'ناجحة':'ok', 'تحتاج إعادة':'warn', 'لم تنجح':'bad' };
 function trialKitHtml(r, me){
   var kit = [];
+  if (r.zone || r.type) kit.push(esc([r.zone, r.type].filter(Boolean).map(function(v){ return t(v); }).join(' \u00b7 ')));   /* (V37.76) */
   if (r.gw) kit.push(esc(r.gw) + (r.gwN ? ' \u00d7 ' + nm(r.gwN) : ''));
   if (r.sn) kit.push(esc(r.sn) + (r.snN ? ' \u00d7 ' + nm(r.snN) : ''));
   var ph = photosOf('TRIAL-' + r.id), q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).filter(function(p){ return p.site === 'TRIAL-' + r.id; });
@@ -28518,14 +28512,79 @@ function itemsSum(r){
 function trialTotal(r){ return itemsSum(r) + trialSpend(r.id); }
 function trialsItemsSpend(){ return trialRows().reduce(function(a, r){ return a + itemsSum(r); }, 0); }
 function trialsTotal(){ return trialsItemsSpend() + trialsSpend(); }
+/* ═══ (V37.76) أصنافُ التجربة من الكتالوج — مشعرٌ ثم نوعٌ ثم قطعُ النوع ═══
+   كان الصنفُ يُكتَب بيدٍ فيتكرّر بأسماءٍ مختلفة ولا يُعرَف سعرُه. صار لكلِّ تجربةٍ مشعرُها
+   ونوعُها (مخيمٌ أو ممرٌّ أو محطةٌ…) فتظهر قطعُ ذلك النوع من الكتالوج نفسِه — بسعرها —
+   في قائمةٍ منسدلة، ويبقى الصنفُ الحرُّ لما ليس في الكتالوج. */
+function trialZones(){
+  var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.zone) o[x.zone] = 1; });
+  return Object.keys(o).sort(function(a, b){ return a.localeCompare(b, 'ar'); });
+}
+function trialTypes(zone){
+  var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.type && (!zone || x.zone === zone)) o[x.type] = 1; });
+  return Object.keys(o).sort(function(a, b){ return a.localeCompare(b, 'ar'); });
+}
+function trialCatItems(type){
+  if (!type) return [];
+  var z = siteZone({ type:type });
+  return itemsList().filter(function(i){ return i && i.z === z && i.name; });
+}
+function trialOpts(list, cur, ph){
+  return '<option value="">' + esc(t(ph)) + '</option>' + list.map(function(v){
+    return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('');
+}
+function trialPick(id, key, val){
+  if (!trialMay()) return;
+  var r = trialOf(id); if (!r || (key !== 'zone' && key !== 'type')) return;
+  r[key] = String(val || '');
+  if (key === 'zone' && r.type && trialTypes(r.zone).indexOf(r.type) < 0) r.type = '';
+  if (trialSave()) render(1);
+}
+function trialPickHtml(r){
+  var items = trialCatItems(r.type);
+  var h = '<div class="grid cols-2" style="gap:6px;margin:6px 0 0">'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('المشعر')) + '</label>'
+    +   '<select data-trz="' + esc(r.id) + '">' + trialOpts(trialZones(), r.zone || '', 'اختر') + '</select></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('النوع')) + '</label>'
+    +   '<select data-trt="' + esc(r.id) + '">' + trialOpts(trialTypes(r.zone || ''), r.type || '', 'اختر') + '</select></div>'
+    + '</div>'
+    + '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + (items.length ? ' <span class="num">' + nm(items.length) + '</span>' : '') + '</label>'
+    + (items.length
+        ? '<select id="itC' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
+          + items.map(function(i){ return '<option value="' + esc(i.code) + '">' + esc(i.name) + (+i.price ? ' \u00b7 ' + nm(+i.price) + ' ' + esc(t('ريال')) : '') + '</option>'; }).join('')
+          + '</select><input id="itN' + esc(r.id) + '" dir="auto" style="margin-top:4px" placeholder="' + esc(t('أو اكتب صنفًا خارج الكتالوج')) + '">'
+        : '<input id="itN' + esc(r.id) + '" dir="auto" placeholder="' + esc(t(r.type ? 'لا قطعَ لهذا النوع في الكتالوج — اكتب الصنف' : 'اختر المشعرَ والنوعَ لتظهر قطعُه')) + '">')
+    + '</div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('من الكتالوج')) + '"' : '') + '></div>'
+    + '</div><div class="actions" style="margin:6px 0 0">'
+    + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"')
+    + (items.length ? btn('\u{1F4CB} ' + t('حمّل قطعَ النوع كلَّها'),'btn-quiet btn-sm',' data-trkit="' + esc(r.id) + '"') : '')
+    + '</div>';
+  return h;
+}
+/* قطعُ النوع كلُّها دفعةً — بكمية ١ وسعر الكتالوج، وما أُضيف قبلُ لا يتكرّر */
+function trialKitLoad(id){
+  if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
+  var r = trialOf(id); if (!r) return;
+  if (!Array.isArray(r.items)) r.items = [];
+  var have = {}; r.items.forEach(function(x){ have[x.code || x.n] = 1; have[x.n] = 1; });
+  var add = trialCatItems(r.type).filter(function(i){ return !have[i.code] && !have[i.name]; });
+  if (!add.length){ toast(t('كلُّ قطع النوع مضافةٌ بالفعل')); return; }
+  add.forEach(function(i){ r.items.push({ n:i.name, code:i.code, q:1, p:+i.price || 0, at:Date.now(), by:STATE.meta.name || '' }); });
+  if (trialSave()){ logEvent('قطعُ نوعٍ لتجربة — ' + r.n + ' · ' + r.type + ' · ' + add.length); toast(t('أُضيفت قطعُ النوع') + ' (' + nm(add.length) + ')'); render(1); }
+}
 function trialItemAdd(id){
   if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
   var r = trialOf(id); if (!r) return;
   var g = function(k){ var el = document.getElementById(k + id); return el ? String(el.value || '').trim() : ''; };
-  var n = g('itN'); if (!n){ toast(t('اكتب اسمَ الصنف')); return; }
-  var q = +g('itQ') || 1, p = +g('itP') || 0;
+  var code = g('itC'), cat = code ? itemsList().filter(function(i){ return i.code === code; })[0] : null;
+  var n = g('itN') || (cat ? cat.name : ''); if (!n){ toast(t('اختر قطعةً أو اكتب اسمَ الصنف')); return; }
+  if (g('itN')) cat = null;   /* ما كُتب بيدٍ يغلب الاختيار */
+  var q = +g('itQ') || 1, p = g('itP') !== '' ? (+g('itP') || 0) : (cat ? (+cat.price || 0) : 0);
   if (!Array.isArray(r.items)) r.items = [];
-  r.items.push({ n:n, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' });
+  r.items.push(cat ? { n:n, code:cat.code, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' } : { n:n, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' });
   if (trialSave()){ logEvent('صنفُ تجربة — ' + r.n + ' · ' + n); toast(t('أُضيف الصنف')); render(1); }
 }
 function trialItemDel(id, i){
@@ -36359,6 +36418,7 @@ function clickAPart5(e){
   if (trh){ var pr2 = trh.getAttribute('data-trh').split('|'); trialHoursAdd(pr2[0], +pr2[1] || 0); return true; }
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
+  var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }
   var trd = e.target.closest('[data-trdel]');
@@ -37761,6 +37821,7 @@ document.addEventListener('change', function(e){
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  if (t0 && t0.hasAttribute && (t0.hasAttribute('data-trz') || t0.hasAttribute('data-trt'))){ trialPick(t0.getAttribute(t0.hasAttribute('data-trz') ? 'data-trz' : 'data-trt'), t0.hasAttribute('data-trz') ? 'zone' : 'type', t0.value); return; }   /* (V37.76) مشعرُ التجربة ونوعُها */
   /* لونُ النوع وشكلُه: يُحفَظان عند الاختيار لا مع كلِّ حركةٍ في المنتقي (V17.60) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tyc')){ typeSet(t0.getAttribute('data-tyc'), { c:t0.value }); render(1); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tys')){ typeSet(t0.getAttribute('data-tys'), { s:t0.value }); render(1); return; }

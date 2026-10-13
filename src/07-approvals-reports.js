@@ -560,6 +560,7 @@ function buysSpent(){
 var TRIAL_OUT = { 'جارية':'', 'ناجحة':'ok', 'تحتاج إعادة':'warn', 'لم تنجح':'bad' };
 function trialKitHtml(r, me){
   var kit = [];
+  if (r.zone || r.type) kit.push(esc([r.zone, r.type].filter(Boolean).map(function(v){ return t(v); }).join(' \u00b7 ')));   /* (V37.76) */
   if (r.gw) kit.push(esc(r.gw) + (r.gwN ? ' \u00d7 ' + nm(r.gwN) : ''));
   if (r.sn) kit.push(esc(r.sn) + (r.snN ? ' \u00d7 ' + nm(r.snN) : ''));
   var ph = photosOf('TRIAL-' + r.id), q = (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).filter(function(p){ return p.site === 'TRIAL-' + r.id; });
@@ -665,14 +666,79 @@ function itemsSum(r){
 function trialTotal(r){ return itemsSum(r) + trialSpend(r.id); }
 function trialsItemsSpend(){ return trialRows().reduce(function(a, r){ return a + itemsSum(r); }, 0); }
 function trialsTotal(){ return trialsItemsSpend() + trialsSpend(); }
+/* ═══ (V37.76) أصنافُ التجربة من الكتالوج — مشعرٌ ثم نوعٌ ثم قطعُ النوع ═══
+   كان الصنفُ يُكتَب بيدٍ فيتكرّر بأسماءٍ مختلفة ولا يُعرَف سعرُه. صار لكلِّ تجربةٍ مشعرُها
+   ونوعُها (مخيمٌ أو ممرٌّ أو محطةٌ…) فتظهر قطعُ ذلك النوع من الكتالوج نفسِه — بسعرها —
+   في قائمةٍ منسدلة، ويبقى الصنفُ الحرُّ لما ليس في الكتالوج. */
+function trialZones(){
+  var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.zone) o[x.zone] = 1; });
+  return Object.keys(o).sort(function(a, b){ return a.localeCompare(b, 'ar'); });
+}
+function trialTypes(zone){
+  var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.type && (!zone || x.zone === zone)) o[x.type] = 1; });
+  return Object.keys(o).sort(function(a, b){ return a.localeCompare(b, 'ar'); });
+}
+function trialCatItems(type){
+  if (!type) return [];
+  var z = siteZone({ type:type });
+  return itemsList().filter(function(i){ return i && i.z === z && i.name; });
+}
+function trialOpts(list, cur, ph){
+  return '<option value="">' + esc(t(ph)) + '</option>' + list.map(function(v){
+    return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(t(v)) + '</option>'; }).join('');
+}
+function trialPick(id, key, val){
+  if (!trialMay()) return;
+  var r = trialOf(id); if (!r || (key !== 'zone' && key !== 'type')) return;
+  r[key] = String(val || '');
+  if (key === 'zone' && r.type && trialTypes(r.zone).indexOf(r.type) < 0) r.type = '';
+  if (trialSave()) render(1);
+}
+function trialPickHtml(r){
+  var items = trialCatItems(r.type);
+  var h = '<div class="grid cols-2" style="gap:6px;margin:6px 0 0">'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('المشعر')) + '</label>'
+    +   '<select data-trz="' + esc(r.id) + '">' + trialOpts(trialZones(), r.zone || '', 'اختر') + '</select></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('النوع')) + '</label>'
+    +   '<select data-trt="' + esc(r.id) + '">' + trialOpts(trialTypes(r.zone || ''), r.type || '', 'اختر') + '</select></div>'
+    + '</div>'
+    + '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + (items.length ? ' <span class="num">' + nm(items.length) + '</span>' : '') + '</label>'
+    + (items.length
+        ? '<select id="itC' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
+          + items.map(function(i){ return '<option value="' + esc(i.code) + '">' + esc(i.name) + (+i.price ? ' \u00b7 ' + nm(+i.price) + ' ' + esc(t('ريال')) : '') + '</option>'; }).join('')
+          + '</select><input id="itN' + esc(r.id) + '" dir="auto" style="margin-top:4px" placeholder="' + esc(t('أو اكتب صنفًا خارج الكتالوج')) + '">'
+        : '<input id="itN' + esc(r.id) + '" dir="auto" placeholder="' + esc(t(r.type ? 'لا قطعَ لهذا النوع في الكتالوج — اكتب الصنف' : 'اختر المشعرَ والنوعَ لتظهر قطعُه')) + '">')
+    + '</div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('من الكتالوج')) + '"' : '') + '></div>'
+    + '</div><div class="actions" style="margin:6px 0 0">'
+    + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"')
+    + (items.length ? btn('\u{1F4CB} ' + t('حمّل قطعَ النوع كلَّها'),'btn-quiet btn-sm',' data-trkit="' + esc(r.id) + '"') : '')
+    + '</div>';
+  return h;
+}
+/* قطعُ النوع كلُّها دفعةً — بكمية ١ وسعر الكتالوج، وما أُضيف قبلُ لا يتكرّر */
+function trialKitLoad(id){
+  if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
+  var r = trialOf(id); if (!r) return;
+  if (!Array.isArray(r.items)) r.items = [];
+  var have = {}; r.items.forEach(function(x){ have[x.code || x.n] = 1; have[x.n] = 1; });
+  var add = trialCatItems(r.type).filter(function(i){ return !have[i.code] && !have[i.name]; });
+  if (!add.length){ toast(t('كلُّ قطع النوع مضافةٌ بالفعل')); return; }
+  add.forEach(function(i){ r.items.push({ n:i.name, code:i.code, q:1, p:+i.price || 0, at:Date.now(), by:STATE.meta.name || '' }); });
+  if (trialSave()){ logEvent('قطعُ نوعٍ لتجربة — ' + r.n + ' · ' + r.type + ' · ' + add.length); toast(t('أُضيفت قطعُ النوع') + ' (' + nm(add.length) + ')'); render(1); }
+}
 function trialItemAdd(id){
   if (!trialMay()){ toast(t('التجاربُ للمهندس فما فوق')); return; }
   var r = trialOf(id); if (!r) return;
   var g = function(k){ var el = document.getElementById(k + id); return el ? String(el.value || '').trim() : ''; };
-  var n = g('itN'); if (!n){ toast(t('اكتب اسمَ الصنف')); return; }
-  var q = +g('itQ') || 1, p = +g('itP') || 0;
+  var code = g('itC'), cat = code ? itemsList().filter(function(i){ return i.code === code; })[0] : null;
+  var n = g('itN') || (cat ? cat.name : ''); if (!n){ toast(t('اختر قطعةً أو اكتب اسمَ الصنف')); return; }
+  if (g('itN')) cat = null;   /* ما كُتب بيدٍ يغلب الاختيار */
+  var q = +g('itQ') || 1, p = g('itP') !== '' ? (+g('itP') || 0) : (cat ? (+cat.price || 0) : 0);
   if (!Array.isArray(r.items)) r.items = [];
-  r.items.push({ n:n, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' });
+  r.items.push(cat ? { n:n, code:cat.code, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' } : { n:n, q:q, p:p, at:Date.now(), by:STATE.meta.name || '' });
   if (trialSave()){ logEvent('صنفُ تجربة — ' + r.n + ' · ' + n); toast(t('أُضيف الصنف')); render(1); }
 }
 function trialItemDel(id, i){

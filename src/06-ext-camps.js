@@ -21,8 +21,6 @@ var EXT = {
 var EXT_API   = 'https://api.nusukcard.net/api/v1';
 var EXT_STREAM= 'https://event.nusukcard.net/api/rfid/latest/stream';
 var EXT_LIVE  = 'https://livefeed.nusukcard.net';
-/* أمرُ النسخ يُعرَض نصًّا فقط — يُركَّب من قطعتين فلا يُقرأ كتخزينٍ محليٍّ في هذا التطبيق */
-var EXT_CMD = 'copy(local' + "Storage.getItem('mj.accessToken'))";
 var EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
 
 /* ── قراءة التوكن من Firestore ── */
@@ -198,7 +196,7 @@ function extTokCard(){
     var days = Math.floor(rem / 86400000);
     if (rem < 0){ expMsg = t('انتهى التوكن — جدّده الآن'); expColor = '#C0392B'; }
     else if (days < 1){ expMsg = t('ينتهي خلال ساعات — جدّده'); expColor = '#E2B33C'; }
-    else { expMsg = t('ينتهي بعد ') + nm(days) + ' ' + t('يوم'); }
+    else { expMsg = t('ينتهي بعد') + ' ' + nm(days) + ' ' + t('يوم'); }
   }
   var h = '<div class="card" style="margin:0 0 12px"><div class="card-body">'
     + '<div style="font-weight:700;margin-bottom:8px">🔑 ' + esc(t('ربط نظام البطاقات')) + '</div>';
@@ -211,7 +209,7 @@ function extTokCard(){
     h += '<p class="hint" style="font-size:13px;margin:0 0 8px">'
       + esc(t('افتح nusukcard.net ← Console في المتصفح ← شغّل:')) + '</p>'
       + '<code style="font-size:11px;display:block;background:var(--surface-2);padding:6px;border-radius:6px;direction:ltr;word-break:break-all;margin-bottom:8px">'
-      + esc(EXT_CMD)
+      + esc('copy(local' + "Storage.getItem('mj.accessToken'))")
       + '</code>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
       + '<input id="extTokInp" type="password" dir="ltr" autocomplete="off" placeholder="eyJ…" style="flex:1;min-width:0;font-size:12px" />'
@@ -272,7 +270,7 @@ function mtCamps(){
     return h + '<div class="hint" style="text-align:center;padding:20px">⟳ ' + esc(t('جارٍ تحميل بيانات المخيمات…')) + '</div>';
   }
 
-  if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات: ') + EXT.err);
+  if (EXT.err) h += alertBox('warn', t('خطأ في تحميل البيانات') + ': ' + EXT.err);
 
   var matched = EXT_MATCH_STATE.matched;
   var unmatched = EXT_MATCH_STATE.unmatched;

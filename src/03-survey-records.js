@@ -4238,14 +4238,7 @@ PAGE.trials = { m:'التخطيط', t:'التجارب',
                             return row;
                           }).concat([[ '<b>' + esc(t('إجمالي الأصناف')) + '</b>', '', '', '<b class="num">' + nm(isum) + '</b>' ].concat(me ? [''] : [])]))
                       : '<p class="hint" style="margin:0 0 6px">' + esc(t('بلا أصناف — أضِف ما اشتُري لها أدناه.')) + '</p>')
-                  + (me
-                      ? '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + '</label><input id="itN' + esc(r.id) + '" dir="auto"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
-                        + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"></div>'
-                        + '</div><div class="actions" style="margin:6px 0 0">'
-                        + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"') + '</div>'
-                      : '')
+                  + (me ? trialPickHtml(r) : '')   /* (V37.76) المشعرُ والنوعُ ثم قطعُ النوع من الكتالوج */
                   + (bs.length
                       ? '<div class="hint" style="margin:10px 0 4px;font-weight:700">' + esc(t('مشترياتُ هذه التجربة'))
                         +   ' <span class="num">' + nm(sp) + '</span> ' + esc(t('ريال')) + '</div>'

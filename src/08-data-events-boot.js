@@ -3350,6 +3350,7 @@ function clickAPart5(e){
   if (trh){ var pr2 = trh.getAttribute('data-trh').split('|'); trialHoursAdd(pr2[0], +pr2[1] || 0); return true; }
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
+  var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }
   var trd = e.target.closest('[data-trdel]');
@@ -4752,6 +4753,7 @@ document.addEventListener('change', function(e){
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  if (t0 && t0.hasAttribute && (t0.hasAttribute('data-trz') || t0.hasAttribute('data-trt'))){ trialPick(t0.getAttribute(t0.hasAttribute('data-trz') ? 'data-trz' : 'data-trt'), t0.hasAttribute('data-trz') ? 'zone' : 'type', t0.value); return; }   /* (V37.76) مشعرُ التجربة ونوعُها */
   /* لونُ النوع وشكلُه: يُحفَظان عند الاختيار لا مع كلِّ حركةٍ في المنتقي (V17.60) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tyc')){ typeSet(t0.getAttribute('data-tyc'), { c:t0.value }); render(1); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tys')){ typeSet(t0.getAttribute('data-tys'), { s:t0.value }); render(1); return; }
