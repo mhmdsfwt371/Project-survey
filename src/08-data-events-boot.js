@@ -4816,6 +4816,7 @@ document.addEventListener('change', function(e){
       });
       return;
     }
+    if (el.hasAttribute('data-insph')){ insPhotoAdd(el.getAttribute('data-insph'), el.files ? Array.prototype.slice.call(el.files) : []); el.value = ''; return; }   /* (V37.79) صورُ تركيبٍ من المعرض أو اللاب */
     /* صورةُ التجربة تصعد فورًا بالخطِّ نفسِه تحت معرّف التجربة (V17.73) */
     if (el.hasAttribute('data-trph')){
       var tf = el.files && el.files[0], tid = el.getAttribute('data-trph');

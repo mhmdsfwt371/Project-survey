@@ -2470,10 +2470,12 @@ function photoCard(){
         var has = !!FORM.photos[p[0]];
         return '<div class="field"><label>' + esc(t(p[1]))
           + (p[2] ? ' <span class="req">*</span>' : '') + '</label>'
-          + '<label class="btn ' + (has ? 'btn-secondary' : 'btn-primary')
-          + '" style="cursor:pointer;width:100%">'
-          + (has ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر أو اختر')))
-          + '<input type="file" accept="image/*" data-photo="' + p[0] + '" style="display:none"></label>'
+          + '<div class="actions" style="margin:0;gap:6px;flex-wrap:nowrap">'   /* (V37.79) الكاميرا أو المعرض/الجهاز — كان زرًّا واحدًا يفتح الكاميرا وحدها على بعض الهواتف */
+          + '<label class="btn ' + (has ? 'btn-secondary' : 'btn-primary') + '" style="cursor:pointer;flex:1">'
+          + (has ? '✓ ' + esc(t('التُقطت')) : '📷 ' + esc(t('صوّر')))
+          + '<input type="file" accept="image/*" capture="environment" data-photo="' + p[0] + '" style="display:none"></label>'
+          + '<label class="btn btn-quiet" style="cursor:pointer;flex:1">\u{1F5BC} ' + esc(t('من المعرض أو الجهاز'))
+          + '<input type="file" accept="image/*" data-photo="' + p[0] + '" style="display:none"></label></div>'
           + (has ? '<div class="hint" style="margin:4px 0 0">' + nm(Math.round(FORM.photos[p[0]].size/1024))
                  + ' ' + esc(t('كيلو')) + ' <button type="button" class="btn btn-quiet btn-sm" data-phclear="' + p[0] + '" style="color:#E05252">\u{1F5D1} ' + esc(t('احذف الصورة')) + '</button></div>' : '')   /* (V37.16) طلبُ المالك */
           + '</div>';
@@ -2715,11 +2717,11 @@ function demoRevsHtml(x, ins){
     var df = i ? partsDiff(all[i - 1].parts, r.parts) : [];
     return [(i === all.length - 1 ? '<b>' : '') + t('تجهيزة') + ' ' + nm(i + 1) + (i === all.length - 1 ? ' \u00b7 ' + t('الحالية') + '</b>' : ''),
             '<span class="num">' + esc(r.at ? fmtTime(r.at, { day:'2-digit', month:'2-digit' }) : '\u2014') + '</span><br><span class="hint" style="margin:0">' + esc(dispName(r.by || '')) + '</span>',
-            N(r.pts),
+            N(r.pts), N(insRevPhotoN(x.id, i + 1)),
             i ? (df.length ? esc(df.join(' \u00b7 ')) : '<span class="hint" style="margin:0">' + esc(t('بلا تغيير في القطع')) + '</span>') : '<span class="hint" style="margin:0">' + esc(t('أول تركيب')) + '</span>'];
   }).reverse();
   return '<div class="hint" style="margin:12px 0 4px;font-weight:700">\u{1F9EA} ' + esc(t('تجهيزات الديمو')) + ' <span class="num">' + nm(all.length) + '</span></div>'
-    + table(['التجهيزة','التاريخ','النقاط','ما تغيّر'], rows)
+    + table(['التجهيزة','التاريخ','النقاط','الصور','ما تغيّر'], rows)
     + (may('settings') && Object.keys(ins.parts || {}).length
         ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2B50 ' + t('اعتمد التجهيزة الحالية قياسيّة'),'btn-secondary btn-sm',' data-demostd="' + esc(x.id) + '"') + '</div>'
         : '');
@@ -2737,6 +2739,33 @@ function demoStdSave(id){
   STATE.patterns = L; CORE.set('cfg', 'patterns', L.slice());
   logEvent('اعتمادُ تجهيزة ديمو قياسيّة — ' + id + ' · تجهيزة ' + (insRevs(ins).length + 1) + ' · ' + name, id);
   toast(t('اعتُمدت قياسيّة — تظهر في «نمطٌ جاهز»') + ' \u00b7 ' + name); render(1);
+}
+
+/* (V37.79) نوعُ صورة التركيب يحمل رقمَ التجهيزة في نقطة الديمو — فتُفرَز على الدرايف في «تركيب/تجهيزة N» */
+function insKind(site, ins, k){
+  return (site && site.pilot) ? 'ins_r' + (insRevs(ins).length + 1) + '_' + k : 'ins_' + k;
+}
+function insRevPhotoN(id, n){
+  var re = new RegExp('^ins_r' + n + '_'), c = 0;
+  var hit = function(kind){ kind = String(kind || ''); return re.test(kind) || (n === 1 && /^ins_/.test(kind) && !/^ins_r\d+_/.test(kind)); };
+  photosOf(id).forEach(function(e){ var p = e[1]; if (p && !p.del && hit(p.kind)) c++; });
+  (typeof PHOTO_Q !== 'undefined' ? PHOTO_Q : []).forEach(function(q){ if (q.site === id && hit(q.kind)) c++; });
+  return c;
+}
+/* صورٌ تُضاف لتركيبٍ مسجَّلٍ من المعرض أو من اللاب — دون فتح النموذج ودون إعادة التركيب */
+function insPhotoBtn(x, ins){
+  if (!x || !ins || ins.status === 'مسودّة') return '';
+  return '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4CE} ' + esc(t('أضِف صورًا لهذا التركيب'))
+    + (x.pilot ? ' \u00b7 ' + esc(t('تجهيزة')) + ' ' + nm(insRevs(ins).length + 1) : '')
+    + '<input type="file" accept="image/*" multiple data-insph="' + esc(x.id) + '" style="display:none"></label>';
+}
+function insPhotoAdd(id, files){
+  var x = siteFind(id), ins = STATE.inss[id]; if (!x || !ins || !files || !files.length) return;
+  toast(t('تُضغط الصور…') + ' (' + nm(files.length) + ')');
+  var n = 0;
+  files.reduce(function(pr, f){ return pr.then(function(){ return shrink(f, 1280, 0.72).then(function(p){ if (p && p.data){ photoQueue(id, insKind(x, ins, 'extra'), p.data); n++; } }); }); }, Promise.resolve())
+    .then(function(){ logEvent('صورُ تركيب — ' + id + ' · ' + n + (x.pilot ? ' · تجهيزة ' + (insRevs(ins).length + 1) : ''), id);
+      toast(t('صعدت الصورُ إلى طابور الرفع') + ' (' + nm(n) + ')'); render(1); });
 }
 
 function insSave(draft){
@@ -2775,7 +2804,7 @@ function insSave(draft){
   if (keepRev) nIns.revs = insRevs(prevIns).concat([insRevSnap(prevIns)]).slice(-30);
   CORE.set('inss', s.id, nIns);
   Object.keys(FORM.photos).forEach(function(k){
-    if (typeof photoQueue === 'function') photoQueue(s.id, 'ins_' + k, FORM.photos[k].data);
+    if (typeof photoQueue === 'function') photoQueue(s.id, (s.pilot ? 'ins_r' + (insRevs(nIns).length + 1) + '_' + k : 'ins_' + k), FORM.photos[k].data);   /* (V37.79) */
   });
   /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
   if (!draft){

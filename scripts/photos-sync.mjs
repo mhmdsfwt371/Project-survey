@@ -151,6 +151,29 @@ async function siteFolder(siteId){
   return SITE_DIR.get(key);
 }
 
+/* ═══ (V37.79) صورُ التركيب في مجلدٍ لوحدها داخل مجلد النقطة ═══
+   طلبُ المالك: «صور التركيب تتسجل في فولدر لوحدها غير فولدر المسح». ما نوعُه ins_ يذهب إلى
+   «<النقطة>/تركيب»، وصورُ نقطة الديمو (ins_rN_) إلى «<النقطة>/تركيب/تجهيزة N» فيُرى كلُّ تعديلٍ
+   بصوره. وصورُ المسح وغيرُها تبقى في مجلد النقطة كما كانت — لا يُنقَل قديمٌ ولا ينكسر رابط. */
+const SUB_DIR = new Map();
+async function subDir(parent, name){
+  const k = parent + '/' + name;
+  if (!SUB_DIR.has(k)) SUB_DIR.set(k, await folder(name, parent));
+  return SUB_DIR.get(k);
+}
+function subPath(kind){
+  kind = String(kind || '');
+  const m = kind.match(/^ins_r(\d+)_/);
+  if (m) return ['تركيب', 'تجهيزة ' + m[1]];
+  if (/^ins_/.test(kind)) return ['تركيب'];
+  return [];
+}
+async function destFolder(p, fallbackSite){
+  let dir = await siteFolder(p.site || fallbackSite);
+  for (const nm of subPath(p.kind)) dir = await subDir(dir, nm);
+  return dir;
+}
+
 /* ═══ تسميةُ ما أُنشئ بمعرِّفه وحدَه ═══
    الملفُّ لا يُمَسّ — الاسمُ وحدَه يتغيّر، فالروابطُ والمعرِّفاتُ في القاعدة
    وفي التطبيق كما هي. ثلاثمئةٌ في الدورة تكفي: ما بقي يُسمّى في التي تليها،
@@ -188,7 +211,7 @@ try {
       const p = d.data();
       if (!p.driveId || p.inSite) continue;
       try {
-        const dest = await siteFolder(p.site || String(d.id).replace(/-\d+$/, ''));
+        const dest = await destFolder(p, String(d.id).replace(/-\d+$/, ''));
         const cur = await drive.files.get({ fileId: p.driveId, fields: 'parents', supportsAllDrives: true });
         const have = cur.data.parents || [], others = have.filter(x => x !== dest);
         if (others.length || !have.includes(dest))
@@ -232,7 +255,7 @@ try {
     const p = d.data();
     if (!p.driveId || !p.site){ await d.ref.set({ rehome: admin.firestore.FieldValue.delete() }, { merge: true }).catch(() => {}); continue; }
     try {
-      const dest = await siteFolder(p.site);
+      const dest = await destFolder(p);
       const cur = await drive.files.get({ fileId: p.driveId, fields: 'parents', supportsAllDrives: true });
       const have = cur.data.parents || [], others = have.filter(x => x !== dest);
       if (others.length || !have.includes(dest))
@@ -258,7 +281,7 @@ for (const d of snap.docs){
     if (!data){ throw new Error('وثيقةٌ بلا صورة'); }
     const b64 = data.replace(/^data:[^;]+;base64,/, '');
     const buf = Buffer.from(b64, 'base64');
-    const dirId = await siteFolder(p.site || String(d.id).replace(/-\d+$/, ''));
+    const dirId = await destFolder(p, String(d.id).replace(/-\d+$/, ''));
     const made = await drive.files.create({
       requestBody: { name, parents: [dirId], description: `${p.site || ''} · ${p.kind || ''} · ${p.by || ''}` },
       media: { mimeType: 'image/jpeg', body: Readable.from(buf) },

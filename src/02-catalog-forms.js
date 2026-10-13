@@ -1000,7 +1000,8 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
                             '<span class="num">' + esc((ins.serials || {})[k] || '—') + '</span>'];
                   }))
               : '')
-            + demoRevsHtml(x, ins))
+            + demoRevsHtml(x, ins)
+            + '<div class="actions" style="margin:8px 0 0">' + insPhotoBtn(x, ins) + '</div>')   /* (V37.79) */
         : '')
 
       + photoStrip(x.id)
