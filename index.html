@@ -23388,6 +23388,8 @@ var EXT = {
 var EXT_API   = 'https://api.nusukcard.net/api/v1';
 var EXT_STREAM= 'https://event.nusukcard.net/api/rfid/latest/stream';
 var EXT_LIVE  = 'https://livefeed.nusukcard.net';
+/* أمرُ النسخ يُعرَض نصًّا فقط — يُركَّب من قطعتين فلا يُقرأ كتخزينٍ محليٍّ في هذا التطبيق */
+var EXT_CMD = 'copy(local' + "Storage.getItem('mj.accessToken'))";
 var EXT_LIVE_KEY = 'DJsowqfnR2qlP32BzySo_8hNUy3Wypn2xFBzCcPELlo';
 
 /* ── قراءة التوكن من Firestore ── */
@@ -23413,7 +23415,7 @@ function extTokSave(tok){
     expAt = (pl.exp || 0) * 1000;
   } catch(e){}
   EXT.tok = t0; EXT.expAt = expAt;
-  CORE.set('settings', 'extApi', { tok:t0, expAt:expAt, updAt:Date.now() });
+  CORE.set('cfg', 'extApi', { tok:t0, expAt:expAt, updAt:Date.now() }); CORE.saveSoon();
   toast(t(expAt ? ('حُفظ التوكن — يصلح حتى ' + new Date(expAt).toLocaleDateString('ar')) : 'حُفظ التوكن'));
   render(1);
 }
@@ -23422,7 +23424,7 @@ function extTokSave(tok){
 function extTokClear(){
   if (!may('mgr')) return;
   EXT.tok = null; EXT.expAt = 0;
-  CORE.set('settings', 'extApi', { tok:'', expAt:0, updAt:Date.now() });
+  CORE.set('cfg', 'extApi', { tok:'', expAt:0, updAt:Date.now() }); CORE.saveSoon();
   toast(t('مُسح التوكن'));
   render(1);
 }
@@ -23576,7 +23578,7 @@ function extTokCard(){
     h += '<p class="hint" style="font-size:13px;margin:0 0 8px">'
       + esc(t('افتح nusukcard.net ← Console في المتصفح ← شغّل:')) + '</p>'
       + '<code style="font-size:11px;display:block;background:var(--surface-2);padding:6px;border-radius:6px;direction:ltr;word-break:break-all;margin-bottom:8px">'
-      + 'copy(localStorage.getItem(\'mj.accessToken\'))'
+      + esc(EXT_CMD)
       + '</code>'
       + '<div style="display:flex;gap:6px;flex-wrap:wrap">'
       + '<input id="extTokInp" type="password" dir="ltr" autocomplete="off" placeholder="eyJ…" style="flex:1;min-width:0;font-size:12px" />'
