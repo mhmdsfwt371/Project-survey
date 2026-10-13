@@ -2374,6 +2374,8 @@ function focusBack(g){
    يفتح الكلَّ كما كان (حتى خمسة آلاف). المفتاحُ صفحةٌ وشريحة، فلا يحمل عدُّ صفحةٍ إلى أخرى. */
 var MORE_SHOWN = {}, MORE_FIRST = 100, MORE_STEP = 200, MORE_CUT = 0;
 function moreKey(){ return CUR + ':' + ((typeof PTAB === 'object' && PTAB && PTAB[CUR]) || ''); }
+/* (V37.75) تحميلُ توكن نظام البطاقات فور الدخول */
+setTimeout(function(){ try { if (typeof extTokLoad === 'function') extTokLoad(); } catch(eX){ LS_ERR=eX; } }, 3000);
 function capList(L, base){
   if (PG_Q) return L.slice(0, 5000);
   var n = Math.min(base || MORE_FIRST, MORE_FIRST) + (MORE_SHOWN[moreKey()] || 0);
@@ -3148,6 +3150,10 @@ function clickAPart3(e){
     if (mfuPut(md[0], md[1], { gone:true, at:Date.now() })){ toast(t('حُذف')); render(1); }
     return true;
   }
+  /* (V37.75) ربطُ نظام البطاقات الخارجي */
+  if (e.target.closest('[data-exttoksave]')){ var iv=document.getElementById('extTokInp'); extTokSave(iv ? iv.value : ''); return true; }
+  if (e.target.closest('[data-exttokclear]')){ extTokClear(); return true; }
+  if (e.target.closest('[data-extrefresh]')){ EXT_MATCH_STATE=null; EXT_OV_LOADED={}; EXT.ov={}; extMatchLoad(); render(1); return true; }
   if (e.target.closest('[data-iosnudge]')){
     var inv = e.target.closest('[data-iosnudge]').getAttribute('data-iosnudge');
     if (inv === 'install' && INSTALL_EVT){
