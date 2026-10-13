@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.77</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.78</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-bda162d798.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-1f817c9a35.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -4833,7 +4833,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
       + (ins
         ? card('التركيب',
             '<div class="pop-rows" style="margin:0">'
-            + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':''))
+            + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':'') + demoTag(x))   /* (V37.78) */
             + row('المنفِّذ', esc(ins.by))
             + row('النقاط', N(ptsInstall(x)))   /* (V37.77) */
             + row('بادئة الشبكة', ins.prefix ? '<span class="num" dir="ltr">' + esc(ipsOf(ins.prefix)) + '</span>' : '')
@@ -4843,10 +4843,11 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
               ? table(['القطعة','الكمية','السيريال'],
                   Object.keys(ins.parts).map(function(k){
                     var it = itemsList().filter(function(i){ return i.code === k; })[0];
-                    return [esc(it ? it[2] : k), N(ins.parts[k]),
+                    return [esc(it ? it.name : k), N(ins.parts[k]),   /* (V37.78) كان it[2] على كائنٍ فيظهر الاسمُ فارغًا */
                             '<span class="num">' + esc((ins.serials || {})[k] || '—') + '</span>'];
                   }))
-              : ''))
+              : '')
+            + demoRevsHtml(x, ins))
         : '')
 
       + photoStrip(x.id)
@@ -10383,6 +10384,56 @@ function svSave(next){
   render();
 }
 
+/* ═══ (V37.78) تجهيزاتُ نقطة الديمو ═══
+   نقطةُ التجربة تُركَّب ثم تتغيّر: جهازٌ آخر، حساسٌ يُضاف، طريقةُ تثبيتٍ مختلفة — حتى يُتّفَق
+   على القياسيّ. كان كلُّ حفظٍ يمحو ما قبله فيضيع تاريخُ ما جُرِّب. صار التركيبُ على نقطة الديمو
+   يحفظ ما قبله «تجهيزةً» سابقة بقطعها وسيريالاتها ونقاطها ومنفّذها، ويُستهلَك من المخزن الفرقُ
+   الزائدُ وحدَه لا العُدّةُ كلُّها من جديد. ويُعتمَد الأخيرُ قياسيًّا نمطًا يُطبَّق على النقاط كلِّها. */
+function demoTag(x){ return (x && x.pilot) ? ' ' + pill('\u{1F9EA} ' + t('ديمو'), 'warn') : ''; }
+function insRevs(ins){ return (ins && Array.isArray(ins.revs)) ? ins.revs : []; }
+function insRevSnap(ins){
+  return { at:+ins.at || 0, by:ins.by || '', status:ins.status || '', parts:Object.assign({}, ins.parts || {}),
+           serials:Object.assign({}, ins.serials || {}), pts:cfgN(ins.pts), approved:!!ins.approved };
+}
+function partsDiff(a, b){
+  a = a || {}; b = b || {}; var out = [];
+  Object.keys(Object.assign({}, a, b)).forEach(function(k){
+    var d = cfgN(b[k]) - cfgN(a[k]); if (!d) return;
+    out.push((d > 0 ? '+' : '\u2212') + nm(Math.abs(d)) + ' ' + itemName(k));
+  });
+  return out;
+}
+function demoRevsHtml(x, ins){
+  var R = insRevs(ins); if (!x || !x.pilot || !ins) return '';
+  var all = R.concat([insRevSnap(ins)]);
+  var rows = all.map(function(r, i){
+    var df = i ? partsDiff(all[i - 1].parts, r.parts) : [];
+    return [(i === all.length - 1 ? '<b>' : '') + t('تجهيزة') + ' ' + nm(i + 1) + (i === all.length - 1 ? ' \u00b7 ' + t('الحالية') + '</b>' : ''),
+            '<span class="num">' + esc(r.at ? fmtTime(r.at, { day:'2-digit', month:'2-digit' }) : '\u2014') + '</span><br><span class="hint" style="margin:0">' + esc(dispName(r.by || '')) + '</span>',
+            N(r.pts),
+            i ? (df.length ? esc(df.join(' \u00b7 ')) : '<span class="hint" style="margin:0">' + esc(t('بلا تغيير في القطع')) + '</span>') : '<span class="hint" style="margin:0">' + esc(t('أول تركيب')) + '</span>'];
+  }).reverse();
+  return '<div class="hint" style="margin:12px 0 4px;font-weight:700">\u{1F9EA} ' + esc(t('تجهيزات الديمو')) + ' <span class="num">' + nm(all.length) + '</span></div>'
+    + table(['التجهيزة','التاريخ','النقاط','ما تغيّر'], rows)
+    + (may('settings') && Object.keys(ins.parts || {}).length
+        ? '<div class="actions" style="margin:8px 0 0">' + btn('\u2B50 ' + t('اعتمد التجهيزة الحالية قياسيّة'),'btn-secondary btn-sm',' data-demostd="' + esc(x.id) + '"') + '</div>'
+        : '');
+}
+/* الاعتمادُ القياسيُّ = نمطُ قطعٍ باسمٍ يظهر في «نمطٌ جاهز» عند حلِّ التركيب لكلِّ نقطة */
+function demoStdSave(id){
+  if (!may('settings')){ toast(t('حفظُ الأنماط للمهندس وحده')); return; }
+  var x = siteFind(id), ins = STATE.inss[id]; if (!x || !ins || !Object.keys(ins.parts || {}).length) return;
+  var def = t('قياسي') + ' \u2014 ' + t(x.type || '') ;
+  var name = prompt(t('اسمُ النمط القياسيّ'), def); if (name == null) return;
+  name = String(name).trim(); if (!name){ toast(t('اكتب اسمًا للنمط')); return; }
+  var items = {}; Object.keys(ins.parts).forEach(function(k){ if (cfgN(ins.parts[k]) > 0) items[k] = cfgN(ins.parts[k]); });
+  var L = patList().filter(function(p){ return p.n !== name; });
+  L.push({ n:name, items:items, by:STATE.meta.name || '', at:Date.now(), from:id, rev:insRevs(ins).length + 1 });
+  STATE.patterns = L; CORE.set('cfg', 'patterns', L.slice());
+  logEvent('اعتمادُ تجهيزة ديمو قياسيّة — ' + id + ' · تجهيزة ' + (insRevs(ins).length + 1) + ' · ' + name, id);
+  toast(t('اعتُمدت قياسيّة — تظهر في «نمطٌ جاهز»') + ' \u00b7 ' + name); render(1);
+}
+
 function insSave(draft){
   var s = formSite();
   if (!s) return;
@@ -10407,24 +10458,34 @@ function insSave(draft){
   });
   if (!draft && !n){ toast(t('سجّل القطع المستهلكة أولًا')); return; }
 
-  CORE.set('inss', s.id, {
+  /* (V37.78) نقطةُ الديمو: ما رُكِّب قبلُ يُحفَظ تجهيزةً سابقة، ويُستهلَك الفرقُ الزائدُ وحدَه */
+  var prevIns = STATE.inss[s.id], keepRev = !!(s.pilot && prevIns && !prevIns.deleted && prevIns.status && prevIns.status !== 'مسودّة' && !draft);
+  var nIns = {
     id:s.id, status: draft ? 'مسودّة' : FORM.status,
     by:STATE.meta.name || '', at:Date.now(),
     parts:used, serials:FORM.serials, prefix:FORM.prefix, pts:formPts(),
     approved:false, photos:Object.keys(FORM.photos)
-  });
+  };
+  if (s.pilot && prevIns && insRevs(prevIns).length) nIns.revs = insRevs(prevIns).slice(-30);
+  if (keepRev) nIns.revs = insRevs(prevIns).concat([insRevSnap(prevIns)]).slice(-30);
+  CORE.set('inss', s.id, nIns);
   Object.keys(FORM.photos).forEach(function(k){
     if (typeof photoQueue === 'function') photoQueue(s.id, 'ins_' + k, FORM.photos[k].data);
   });
   /* استهلاكُ القطع يدخل دفتر الحركة — فلا يُخصَم المخزونُ مرتين */
   if (!draft){
+    var take = {};
     Object.keys(used).forEach(function(k){
-      STATE.moves.push({ at:dayKey(), kind:'استهلاك',
-                         item:k, qty:used[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
+      var q = keepRev ? used[k] - cfgN((prevIns.parts || {})[k]) : used[k];   /* (V37.78) */
+      if (q > 0) take[k] = q;
     });
-    CORE.dirty('moves', s.id, used);
+    Object.keys(take).forEach(function(k){
+      STATE.moves.push({ at:dayKey(), kind:'استهلاك',
+                         item:k, qty:take[k], by:STATE.meta.name || '—', site:s.id, cond:'' });
+    });
+    if (Object.keys(take).length) CORE.dirty('moves', s.id, take);
   }
-  logEvent((draft ? 'مسودّة تركيب' : 'تركيب') + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
+  logEvent((draft ? 'مسودّة تركيب' : (keepRev ? 'تجهيزةُ ديمو ' + (insRevs(nIns).length + 1) : 'تركيب')) + ' — ' + s.id + ' · ' + nm(formPts()) + ' نقطة');
   if (!draft) stepDone('install', s.id, nm(n) + ' ' + t('قطعة'), formPts());
   toast(draft ? t('حُفظت مسودّة') : (t('تركيبٌ حُفظ — بانتظار التدقيق')));
   formReset();
@@ -16545,6 +16606,7 @@ function popHtml(){
         + ': <b>' + nm(Object.keys(ins.parts).length) + '</b> · ' + esc(t('النقاط'))
         + ': <b>' + nm(ptsInstall(s)) + '</b>'   /* (V37.77) */
         + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
+        + demoTag(s) + (insRevs(ins).length ? ' · ' + esc(t('تجهيزة')) + ' ' + nm(insRevs(ins).length + 1) : '')   /* (V37.78) */
         + '</div>' : '')
 
     /* لكلٍّ ما يملك: التحديدُ لمن يُسنِد (المشرفُ فما فوق)، والتحريكُ والنموذجُ
@@ -25383,7 +25445,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
               wait.slice(0, 30).map(function(k){
                 var r = STATE.inss[k], s = siteFind(k);
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc((s && s.name) || '') + '</span>',
+                          + esc((s && s.name) || '') + '</span>' + demoTag(s),   /* (V37.78) */
                         esc(r.by), N(Object.keys(r.parts || {}).length), N(insPtsOf(k)),
                         '<span class="num">' + fmtTime(r.at, { hour:'2-digit', minute:'2-digit' }) + '</span>',
                         '<div class="actions">'
@@ -26686,6 +26748,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.78', d:'2026-10-14', notes:[
+      'تجهيزات نقطة الديمو: تاريخ كل تركيبة واعتماد القياسي' ] },
   { v:'V37.77', d:'2026-10-13', notes:[
       'نقاط التركيب: قراءة موحدة وإعادة احتساب بأثر رجعي معلن' ] },
   { v:'V37.76', d:'2026-10-13', notes:[
@@ -36477,6 +36541,7 @@ function clickAPart5(e){
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
   if (e.target.closest('[data-insrecalc]')){ insRecalcRun(); return true; }   /* (V37.77) */
+  var dsd = e.target.closest('[data-demostd]'); if (dsd){ demoStdSave(dsd.getAttribute('data-demostd')); return true; }   /* (V37.78) */
   var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }

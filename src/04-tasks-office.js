@@ -3916,6 +3916,7 @@ function popHtml(){
         + ': <b>' + nm(Object.keys(ins.parts).length) + '</b> · ' + esc(t('النقاط'))
         + ': <b>' + nm(ptsInstall(s)) + '</b>'   /* (V37.77) */
         + (ins.approved ? ' · ' + pill('معتمد','ok') : ' · ' + pill('بانتظار التدقيق','warn'))
+        + demoTag(s) + (insRevs(ins).length ? ' · ' + esc(t('تجهيزة')) + ' ' + nm(insRevs(ins).length + 1) : '')   /* (V37.78) */
         + '</div>' : '')
 
     /* لكلٍّ ما يملك: التحديدُ لمن يُسنِد (المشرفُ فما فوق)، والتحريكُ والنموذجُ

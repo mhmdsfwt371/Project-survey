@@ -3352,6 +3352,7 @@ function clickAPart5(e){
   var tri = e.target.closest('[data-tritem]');
   if (tri){ trialItemAdd(tri.getAttribute('data-tritem')); return true; }
   if (e.target.closest('[data-insrecalc]')){ insRecalcRun(); return true; }   /* (V37.77) */
+  var dsd = e.target.closest('[data-demostd]'); if (dsd){ demoStdSave(dsd.getAttribute('data-demostd')); return true; }   /* (V37.78) */
   var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
   var trx = e.target.closest('[data-tridel]');
   if (trx){ var pr3 = trx.getAttribute('data-tridel').split('|'); trialItemDel(pr3[0], +pr3[1] || 0); return true; }

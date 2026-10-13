@@ -1446,7 +1446,7 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
               wait.slice(0, 30).map(function(k){
                 var r = STATE.inss[k], s = siteFind(k);
                 return ['<strong>' + esc(k) + '</strong><br><span class="hint" style="margin:0">'
-                          + esc((s && s.name) || '') + '</span>',
+                          + esc((s && s.name) || '') + '</span>' + demoTag(s),   /* (V37.78) */
                         esc(r.by), N(Object.keys(r.parts || {}).length), N(insPtsOf(k)),
                         '<span class="num">' + fmtTime(r.at, { hour:'2-digit', minute:'2-digit' }) + '</span>',
                         '<div class="actions">'
@@ -2749,6 +2749,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.78', d:'2026-10-14', notes:[
+      'تجهيزات نقطة الديمو: تاريخ كل تركيبة واعتماد القياسي' ] },
   { v:'V37.77', d:'2026-10-13', notes:[
       'نقاط التركيب: قراءة موحدة وإعادة احتساب بأثر رجعي معلن' ] },
   { v:'V37.76', d:'2026-10-13', notes:[

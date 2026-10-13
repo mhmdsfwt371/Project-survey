@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.77",
+  "app_version": "V37.78",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2135,7 +2135,8 @@
   "V37.74": "البند ٦: 06-mfu-tabs.js HALL_URL/hallBoot/hallClock/hallCopy — ‎?hall=1 يفتح mfu في وضع القاعة بعد الدخول مع wakeAcquire وpullDelta كلَّ ٥ دقائق وساعةٍ وإخفاء المؤشر (body.hall-idle) وملء الشاشة عند أوّل لمسة؛ data-hallcopy في mfuModeBar. البند ٥: 02-definitions.js knownParse/knownLine/knownAll/knownMatch/knownKw/knEd*/knCover/knTry وknownCard كروتًا — الصيغةُ متوافقة (حقلٌ ثالثٌ اختياريٌّ للحالة والجمهور)، والمحلولةُ خارج knownHits. وحارسُ عنوان الالتزام (scripts/check-commit-title.mjs + .githooks/commit-msg) بقاعدة audit-health نفسها بعد سقوط بوابة ٣٧٫٧٣ بعنوان المدى.",
   "V37.75": "mtCamps(), extOvCard(), extTokSave(), extTokLoad(), extMatchLoad()",
   "V37.76": "trialPickHtml(), trialPick(), trialKitLoad(), trialCatItems()",
-  "V37.77": "insPtsOf(), insRecalcPlan(), insRecalcCard(), insRecalcRun()"
+  "V37.77": "insPtsOf(), insRecalcPlan(), insRecalcCard(), insRecalcRun()",
+  "V37.78": "demoTag(), demoRevsHtml(), insRevSnap(), partsDiff(), demoStdSave()"
   },
   "map_and_geolocation": {
     "tile_layers": {

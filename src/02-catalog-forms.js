@@ -986,7 +986,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
       + (ins
         ? card('التركيب',
             '<div class="pop-rows" style="margin:0">'
-            + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':''))
+            + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':'') + demoTag(x))   /* (V37.78) */
             + row('المنفِّذ', esc(ins.by))
             + row('النقاط', N(ptsInstall(x)))   /* (V37.77) */
             + row('بادئة الشبكة', ins.prefix ? '<span class="num" dir="ltr">' + esc(ipsOf(ins.prefix)) + '</span>' : '')
@@ -996,10 +996,11 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
               ? table(['القطعة','الكمية','السيريال'],
                   Object.keys(ins.parts).map(function(k){
                     var it = itemsList().filter(function(i){ return i.code === k; })[0];
-                    return [esc(it ? it[2] : k), N(ins.parts[k]),
+                    return [esc(it ? it.name : k), N(ins.parts[k]),   /* (V37.78) كان it[2] على كائنٍ فيظهر الاسمُ فارغًا */
                             '<span class="num">' + esc((ins.serials || {})[k] || '—') + '</span>'];
                   }))
-              : ''))
+              : '')
+            + demoRevsHtml(x, ins))
         : '')
 
       + photoStrip(x.id)
