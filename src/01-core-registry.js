@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-0893cc0b3a.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-08bc7b9573.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2547,7 +2547,7 @@ function regPublish(){
   if (!may('perms')){ toast(t('نشرُ السجلِّ للأدمن وحده')); return; }
   if (regEmpty(SITES_RAW)){ toast(t('لا سجلَّ في هذا الجهاز لنشره')); return; }
   var n = SITES_RAW.g.length + SITES_RAW.p.length;
-  if (!confirm(t('يُنشَر سجلُّ النقاط في القاعدة لحسابات الفريق المسجَّلة') + ' (' + n + '). ' + t('متابعة؟'))) return;
+  if (!confirm(t('يُنشَر سجلُّ النقاط في القاعدة لحسابات الفريق المسجَّلة') + ' (' + n + '). ' + t('متابعة؟'))){ toast(t('لم يُنشَر — أُلغي')); return; }
   var doc = { z:SITES_RAW.z, t:SITES_RAW.t, w:SITES_RAW.w, co:SITES_RAW.co || [], dm:SITES_RAW.dm || [], g:SITES_RAW.g, p:SITES_RAW.p };
   doc.ver = regVer(doc); doc.at = Date.now(); doc.by = STATE.meta.name || '';
   CORE.set('cfg', 'registry', doc); CORE.saveSoon();
