@@ -267,6 +267,7 @@ function mtCamps(){
 
   var matched = EXT_MATCH_STATE.matched;
   var unmatched = EXT_MATCH_STATE.unmatched;
+  h += extBulkCard();   /* (V37.87) الربطُ الجماعيّ — للمهندس */
 
   if (!matched.length){
     return h + alertBox('info', t('لم يُعثَر على مطابقة بين قرّاء نظامهم وسيريالات نقاطنا المُركَّبة.'));
@@ -601,4 +602,54 @@ function extNkCard(x){
       + (sug && extNameKey(sug) !== key ? '<div class="actions" style="margin:6px 0 0">' + btn('\u2728 ' + t('اقتراح') + ': ' + sug, 'btn-secondary btn-sm', ' data-nksug="' + esc(x.id) + '|' + esc(sug) + '"') + '</div>' : '');
   }
   return card('الربط بنظام البطاقات', rows + edit);
+}
+
+/* ═══ (V37.87) الربطُ الجماعيّ — جدولُ غير المربوط بمقترحه، واعتمادٌ بضغطة ═══
+   ١٨٠٠ نقطةٍ لا تُربَط واحدةً واحدة. يُقترح لكلِّ نقطةٍ غيرِ مربوطة اسمُها من الشاخص (المخيمات)
+   أو من موقع قارئها؛ وما تزاحم عليه اقتراحان أو كان مربوطًا بغيرها لا يُعتمَد آليًّا بل يُعرَض
+   تعارضًا يُحسَم بيد. ويُكشف المربوطُ باسمٍ لم يعد في النظام. */
+function extBulkPlan(){
+  var M = extNames(); if (!M) return null;
+  var linked = extLinkedBy(), want = {}, P = { apply:[], conflicts:[], linked:0, unlinked:0, noSug:0, stale:[] };
+  (STATE.sites || []).forEach(function(x){
+    if (!x) return;
+    if (x.nk){ P.linked++; if (!M[extNameKey(x.nk)]) P.stale.push(x.id); return; }
+    P.unlinked++;
+    var sg = extSuggest(x); if (!sg){ P.noSug++; return; }
+    var k = extNameKey(sg);
+    (want[k] = want[k] || []).push({ id:x.id, name:x.name || x.id, type:x.type || '', zone:x.zone || '', sug:sg, src:extTentForSite(x) ? 'الشاخص' : 'القارئ' });
+  });
+  Object.keys(want).forEach(function(k){
+    var L = want[k];
+    if (L.length > 1 || linked[k]) P.conflicts.push({ name:L[0].sug, ids:L.map(function(z){ return z.id; }).concat(linked[k] ? [linked[k] + ' \u2713'] : []) });
+    else P.apply.push(L[0]);
+  });
+  return P;
+}
+function extBulkCard(){
+  if (!may('settings')) return '';
+  var P = extBulkPlan();
+  if (!P) return card('الربط الجماعي بنظام البطاقات', '<p class="hint" style="margin:0">' + esc(t('يُحمَّل…')) + '</p>');
+  var body = stats([['مربوطة', N(P.linked), 'ok'], ['غير مربوطة', N(P.unlinked)], ['لها اقتراح', N(P.apply.length), 'acc'], ['تعارض', N(P.conflicts.length), P.conflicts.length ? 'wrn' : '']]);
+  if (P.apply.length){
+    body += table(['النقطة', 'النوع', 'الاقتراح', 'المصدر'], P.apply.slice(0, 50).map(function(z){
+      return ['<bdi>' + esc(z.id) + '</bdi><br><span class="hint" style="margin:0">' + esc(z.name) + '</span>', esc(t(z.type)), '<b dir="ltr">' + esc(z.sug) + '</b>', esc(t(z.src))];
+    })) + (P.apply.length > 50 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(P.apply.length - 50) + '</p>' : '')
+      + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد المقترحات') + ' (' + nm(P.apply.length) + ')', 'btn-primary btn-sm', ' data-nkbulk="1"') + '</div>';
+  } else body += '<p class="hint" style="margin:6px 0 0">' + esc(t('لا مقترحاتٍ جديدة — كلُّ ما له اقتراحٌ مربوط')) + '</p>';
+  if (P.conflicts.length) body += mtDetails(t('تعارضٌ يُحسَم بيد') + ' (' + nm(P.conflicts.length) + ')',
+    table(['الاسم في النظام', 'النقاط'], P.conflicts.slice(0, 60).map(function(c){ return ['<b dir="ltr">' + esc(c.name) + '</b>', esc(c.ids.join(' \u00b7 '))]; })), '\u26A0');
+  if (P.stale.length) body += mtDetails(t('مربوطةٌ باسمٍ غيرِ موجودٍ في النظام') + ' (' + nm(P.stale.length) + ')',
+    '<div class="hint" style="font-size:12px">' + P.stale.slice(0, 80).map(function(id){ return '<bdi>' + esc(id) + '</bdi>'; }).join(' \u00b7 ') + '</div>', '\u26A0');
+  return card('الربط الجماعي بنظام البطاقات', body);
+}
+function extBulkApply(){
+  if (!may('settings')){ toast(t('الربطُ للمهندس فما فوق')); return; }
+  var P = extBulkPlan(); if (!P || !P.apply.length){ toast(t('لا مقترحاتٍ جديدة — كلُّ ما له اقتراحٌ مربوط')); return; }
+  if (!confirm(t('تُربَط') + ' ' + P.apply.length + ' ' + t('نقطةً بأسمائها المقترحة. متابعة؟'))){ toast(t('لم يُربَط شيء — أُلغي')); return; }
+  var by = STATE.meta.name || '', at = Date.now();
+  P.apply.forEach(function(z){ var x = siteFind(z.id); if (!x) return; x.nk = z.sug; siteOvSet(z.id, { nk:z.sug, nkAt:at, nkBy:by, nkSrc:z.src }); });
+  EXT_MATCH_STATE = null;
+  logEvent('ربطٌ جماعيٌّ بنظام البطاقات — ' + P.apply.length + ' نقطة · تعارض ' + P.conflicts.length);
+  toast(t('رُبطت') + ' ' + nm(P.apply.length) + ' ' + t('نقطة')); render(1);
 }
