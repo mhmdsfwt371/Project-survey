@@ -79,7 +79,7 @@ function extReadersLoad(){
     if (!arr || !Array.isArray(arr)){ EXT.rdErr = 'تعذّر قراءة بثّ القرّاء'; return null; }
     EXT.rdErr = '';
     var map = {};
-    arr.forEach(function(x){ if (x.readerId) map[String(x.readerId)] = x; });
+    arr.forEach(function(x){ if (x.readerId) map[extSerKey(x.readerId)] = x; });   /* (V37.84) مفتاحٌ مطبَّع */
     EXT.readers = map; EXT.readersAt = Date.now();
     return map;
   }).catch(function(){ EXT.rdErr = 'تعذّر الوصول إلى بثّ القرّاء'; return null; });
@@ -238,7 +238,7 @@ function extMatchLoad(forceRefresh){
     var byCode = tents;   /* key = code مثل "38/56" */
     var matched = [], unmatched = [];
     extOurSerials().forEach(function(pt){
-      var reader = readers[pt.serial];
+      var reader = readers[extSerKey(pt.serial)];
       if (!reader){ unmatched.push(pt.serial); return; }
       var code = reader.locationName || '';
       var meta = byCode[code] || null;
@@ -330,6 +330,9 @@ function mtCamps(){
 
 /* ═══ (V37.80) سيريالُ القارئ من سجلّ التركيب ═══
    السيريالاتُ تُحفَظ بمفتاح القطعة (ins.serials[code]) — قطعةُ القارئ رمزُها يبدأ بـ rdr أو اسمُها «قارئ». */
+/* (V37.84) مفتاحُ الربط بنظام البطاقات = رقمُ القارئ. يُطبَّع على الجانبين: أرقامٌ فقط بلا أصفارٍ بادئة —
+   فمسافةٌ أو شرطةٌ أو صفرٌ في أوّل ما كتبه الفنيُّ لا تقطع الربط */
+function extSerKey(v){ var d = String(v == null ? '' : v).replace(/\D/g, ''); return d.replace(/^0+/, '') || d; }
 function extReaderSerial(ins){
   var S = (ins && ins.serials) || {}, out = '';
   Object.keys(S).forEach(function(k){
@@ -361,10 +364,10 @@ function pilotNet(x){
 function pilotNusuk(x){
   var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'' };
   if (!ser) return o;
-  var r = EXT.readers ? EXT.readers[ser] : null;
+  var r = EXT.readers ? EXT.readers[extSerKey(ser)] : null;
   if (!r){   /* (V37.81) بلا بثٍّ حيّ: من لقطة المكتب */
     var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
-    if (!Z || Z.ser !== ser) return o;
+    if (!Z || extSerKey(Z.ser) !== extSerKey(ser)) return o;
     var C = STATE.extSnap.camps && STATE.extSnap.camps[Z.code];
     o.loc = Z.code || ''; o.at = Date.parse(Z.ts || '') || 0; o.snap = true;
     if (C){ var tt = C.w + C.wo + C.ot; o.occ = (C.cap ? Math.round(tt / C.cap * 100) + '٪ · ' : '') + tt + ' / ' + C.cap; }

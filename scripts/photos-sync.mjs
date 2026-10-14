@@ -20,27 +20,14 @@ import admin from 'firebase-admin';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { driveClient, rootFolder, explain, q as qEsc } from './drive-auth.mjs';
+import { regSync, regFromDb } from './lib/registry.mjs';
 
 /* ═══ أسماءُ النقاط — من سجل التطبيق نفسِه ═══
    لا تُنسَخ الأسماءُ إلى ملفٍّ ثانٍ يفترق عن الأول: تُقرأ من `SITES_RAW` في
    index.html كما يقرؤها التطبيق. وإن تعذّرت القراءةُ بقيت المجلداتُ بمعرِّفاتها
    ولم يتوقّف النقل — الصورةُ أهمُّ من اسم مجلدها. */
 const SITE_LABEL = new Map();
-try {
-  const html = readFileSync('index.html', 'utf8');
-  const at = html.indexOf('{', html.indexOf('var SITES_RAW = '));
-  /* نهايةُ الكائن تُحسَب بعدِّ الأقواس لا بنمطٍ نصّيّ: السجلُّ يُغلَق بـ«};»
-     في آخر سطرٍ طويلٍ واحد، فالبحثُ عن «\\n};» يلتقط قوسًا لاحقًا ويأتي
-     بنصٍّ ليس بجيسون — وهذا ما وقع عند أوّل كتابةٍ لهذا الجرد. */
-  let depth = 0, str = false, esc = false, end = -1;
-  for (let i = at; i < html.length; i++){
-    const c = html[i];
-    if (str){ if (esc) esc = false; else if (c === '\\') esc = true; else if (c === '"') str = false; continue; }
-    if (c === '"') str = true;
-    else if (c === '{') depth++;
-    else if (c === '}' && --depth === 0){ end = i + 1; break; }
-  }
-  const RAW = JSON.parse(html.slice(at, end));
+function siteLabels(RAW){
   const ZONES = RAW.z || [], TYPES = RAW.t || [];
   /* اسمُ النقطة يبدأ بمشعرها («منى - ممر …») والمعرِّفُ يحمل المشعرَ أصلًا،
      فيُحذَف المكرَّرُ ويبقى المميِّز — فلا يُقتطَع المميِّزُ في شبكة الدرايف. */
@@ -61,7 +48,11 @@ try {
   (RAW.g || []).forEach(r => put(r, true));
   (RAW.p || []).forEach(r => put(r, false));
   console.log(`أسماءُ النقاط: ${SITE_LABEL.size} — المجلداتُ تحمل الاسمَ لا المعرِّفَ وحدَه`);
-} catch (e){ console.log('تعذّرت قراءةُ أسماء النقاط — تبقى المجلداتُ بمعرِّفاتها: ' + (e && e.message)); }
+}
+/* (V37.84) السجلُّ من مصدره الواحد؛ وإن خرج من ملف التطبيق قُرئ من القاعدة بعد تهيئتها أدناه —
+   فلا تُنشأ مجلداتٌ بالمعرِّف وحدَه بجوار مجلداتٍ بالاسم */
+try { const R0 = regSync(); if (R0) siteLabels(R0); }
+catch (e){ console.log('تعذّرت قراءةُ أسماء النقاط محليًّا: ' + (e && e.message)); }
 const labelOf = (id) => SITE_LABEL.get(String(id || '').trim()) || String(id || '').trim() || 'بلا-نقطة';
 
 const SA = process.env.FIREBASE_SERVICE_ACCOUNT || process.env.GDRIVE_SA || '';
@@ -69,6 +60,10 @@ if (!SA){ console.log('::warning::FIREBASE_SERVICE_ACCOUNT غير مضبوط —
 const key = JSON.parse(SA);
 admin.initializeApp({ credential: admin.credential.cert(key) });
 const db = admin.firestore();
+if (!SITE_LABEL.size){
+  try { const R1 = await regFromDb(db); if (R1) siteLabels(R1); else console.log('لا سجلَّ منشورًا — تبقى المجلداتُ بمعرِّفاتها'); }
+  catch (e){ console.log('تعذّرت قراءةُ السجلّ من القاعدة — تبقى المجلداتُ بمعرِّفاتها: ' + (e && e.message)); }
+}
 const { drive, mode, err: driveErr } = driveClient();
 if (driveErr){ console.log('::warning::' + driveErr + ' — لا نقلَ للصور'); process.exit(0); }
 

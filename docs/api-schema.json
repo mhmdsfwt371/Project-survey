@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.83",
+  "app_version": "V37.84",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2141,7 +2141,8 @@
   "V37.80": "pilotSites(), pilotNet(), pilotNusuk(), pilotRowsList(), extReaderSerial()",
   "V37.81": "extSnapMaybe(), extSnapLoad(), extSnapView()",
   "V37.82": "data-tric (تعبئة سعر الوحدة)",
-  "V37.83": "regEmpty(), regLocal(), regVer(), regEnsure(), regPublish(), regCard()"
+  "V37.83": "regEmpty(), regLocal(), regVer(), regEnsure(), regPublish(), regCard()",
+  "V37.84": "extSerKey() و scripts/lib/registry.mjs و scripts/reg-fetch.mjs"
   },
   "map_and_geolocation": {
     "tile_layers": {

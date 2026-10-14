@@ -11,10 +11,11 @@
    للتحقّق الميداني — قرارُ المالك.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync } from 'fs';
+import { regMust } from './lib/registry.mjs';
 
 const osmPath = process.argv[2] || 'maps/mina-osm.json', railPath = process.argv[3] || 'maps/mashaer-rail.json';
 const html = readFileSync('index.html', 'utf8');
-const RAW = JSON.parse(/var SITES_RAW = (\{.*?\});\n/.exec(html)[1]);
+const RAW = regMust();   /* (V37.84) من مصدر السجلّ الواحد */
 const POLY = JSON.parse(readFileSync('poly.json', 'utf8'));
 const TF = JSON.parse(readFileSync('layers/tafweej.json', 'utf8'));
 const OLD = JSON.parse(readFileSync('layers/tafweej-plan.json', 'utf8'));   /* خطوطُ المخطّط كما طُوبقت أوّلَ مرة (V24.3) — دليلُ الممرّ، لا ناتجُ هذا المولّد */

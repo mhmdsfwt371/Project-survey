@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.83</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.84</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -23650,7 +23650,7 @@ function extReadersLoad(){
     if (!arr || !Array.isArray(arr)){ EXT.rdErr = 'تعذّر قراءة بثّ القرّاء'; return null; }
     EXT.rdErr = '';
     var map = {};
-    arr.forEach(function(x){ if (x.readerId) map[String(x.readerId)] = x; });
+    arr.forEach(function(x){ if (x.readerId) map[extSerKey(x.readerId)] = x; });   /* (V37.84) مفتاحٌ مطبَّع */
     EXT.readers = map; EXT.readersAt = Date.now();
     return map;
   }).catch(function(){ EXT.rdErr = 'تعذّر الوصول إلى بثّ القرّاء'; return null; });
@@ -23809,7 +23809,7 @@ function extMatchLoad(forceRefresh){
     var byCode = tents;   /* key = code مثل "38/56" */
     var matched = [], unmatched = [];
     extOurSerials().forEach(function(pt){
-      var reader = readers[pt.serial];
+      var reader = readers[extSerKey(pt.serial)];
       if (!reader){ unmatched.push(pt.serial); return; }
       var code = reader.locationName || '';
       var meta = byCode[code] || null;
@@ -23901,6 +23901,9 @@ function mtCamps(){
 
 /* ═══ (V37.80) سيريالُ القارئ من سجلّ التركيب ═══
    السيريالاتُ تُحفَظ بمفتاح القطعة (ins.serials[code]) — قطعةُ القارئ رمزُها يبدأ بـ rdr أو اسمُها «قارئ». */
+/* (V37.84) مفتاحُ الربط بنظام البطاقات = رقمُ القارئ. يُطبَّع على الجانبين: أرقامٌ فقط بلا أصفارٍ بادئة —
+   فمسافةٌ أو شرطةٌ أو صفرٌ في أوّل ما كتبه الفنيُّ لا تقطع الربط */
+function extSerKey(v){ var d = String(v == null ? '' : v).replace(/\D/g, ''); return d.replace(/^0+/, '') || d; }
 function extReaderSerial(ins){
   var S = (ins && ins.serials) || {}, out = '';
   Object.keys(S).forEach(function(k){
@@ -23932,10 +23935,10 @@ function pilotNet(x){
 function pilotNusuk(x){
   var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'' };
   if (!ser) return o;
-  var r = EXT.readers ? EXT.readers[ser] : null;
+  var r = EXT.readers ? EXT.readers[extSerKey(ser)] : null;
   if (!r){   /* (V37.81) بلا بثٍّ حيّ: من لقطة المكتب */
     var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
-    if (!Z || Z.ser !== ser) return o;
+    if (!Z || extSerKey(Z.ser) !== extSerKey(ser)) return o;
     var C = STATE.extSnap.camps && STATE.extSnap.camps[Z.code];
     o.loc = Z.code || ''; o.at = Date.parse(Z.ts || '') || 0; o.snap = true;
     if (C){ var tt = C.w + C.wo + C.ot; o.occ = (C.cap ? Math.round(tt / C.cap * 100) + '٪ · ' : '') + tt + ' / ' + C.cap; }
@@ -26984,6 +26987,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.84', d:'2026-10-14', notes:[
+      'ربط البطاقات برقم قارئ مطبع ومصدر واحد لسجل النقاط في الأدوات' ] },
   { v:'V37.83', d:'2026-10-14', notes:[
       'حماية سجل النقاط — الخطوة الأولى: النشر في القاعدة والتخزين على الأجهزة' ] },
   { v:'V37.82', d:'2026-10-14', notes:[

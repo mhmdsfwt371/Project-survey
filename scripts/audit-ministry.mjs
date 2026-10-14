@@ -12,6 +12,7 @@ import { createHash, pbkdf2Sync, createDecipheriv } from 'crypto';
 import { createRequire } from 'module';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { regMust } from './lib/registry.mjs';
 
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
@@ -30,7 +31,7 @@ const openSnap = (p, c) => { if (!p.ct) return p; const key = pbkdf2Sync(c, 'nus
   return JSON.parse(Buffer.concat([d.update(buf.subarray(0, buf.length - 16)), d.final()]).toString('utf8')); };
 const snap = openSnap(pub, code0);
 /* العددُ من السجلّ الثابت نفسِه — لا محفورًا (V22.2: أُضيفت كاميراتُ الجمرات) */
-const SITES_N = (() => { const h = readFileSync('index.html', 'utf8'); const j = h.indexOf('var SITES_RAW = '); const R = JSON.parse(h.slice(j + 16, h.indexOf('\n', j)).trim().replace(/;$/, '')); return R.g.length + R.p.length; })();
+const SITES_N = (() => { const R = regMust(); return R.g.length + R.p.length; })();   /* (V37.84) من مصدر السجلّ الواحد */
 
 console.log('\n══ ١ · اللقطةُ من دوالِّ التطبيق ══');
 T(snap.total === SITES_N && snap.surveyed === 61 && snap.stuck === 1 && snap.installed === 0, 'الأرقامُ الكبرى كما تحسبها الشاشات (V32.6: زيرت بأيِّ نتيجة — ٦٠ واصلة + ١ متعذّرة): ' + snap.surveyed + '/' + snap.total + ' · متعذّر ' + snap.stuck);

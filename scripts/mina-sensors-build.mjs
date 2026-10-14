@@ -9,9 +9,10 @@
    ولا جيت واي ثانٍ: ما تجاوز ١٥٠ م يُدرَج في قائمة القرار بأحسن موضع.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync } from 'fs';
+import { regMust } from './lib/registry.mjs';
 
 const html = readFileSync('index.html', 'utf8');
-const RAW = JSON.parse(/var SITES_RAW = (\{.*?\});\n/.exec(html)[1]);
+const RAW = regMust();   /* (V37.84) من مصدر السجلّ الواحد */
 const POLY = JSON.parse(readFileSync('poly.json', 'utf8'));
 const N = 12, COVER = 150;
 const rad = Math.PI / 180, KX = 111320 * Math.cos(21.41 * rad), KY = 111320, LAT0 = 21.41, LNG0 = 39.88;
