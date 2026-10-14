@@ -340,6 +340,13 @@ function extTentForSite(x){
 function extLink(x){
   var ins = STATE.inss[x.id], ser = extReaderSerial(ins);
   var rd = (ser && EXT.readers) ? EXT.readers[extSerKey(ser)] || null : null;
+  if (x && x.nk){   /* (V37.86) اسمُ الربط الصريح يتقدّم كلَّ مفتاح */
+    var key = extNameKey(x.nk), M = extNames(), hit = M && M[key];
+    var on = { ser:ser, reader:rd, tent:extTentByCode(x.nk), dist:null, by:'name', warn:'', missing:!!(M && !hit) };
+    if (!rd && hit && hit.rd.length) on.reader = EXT.readers[hit.rd[0]] || null;   /* الممرُّ بلا سيريال: قارئُه باسمه */
+    if (rd && rd.locationName && extNameKey(rd.locationName) !== key) on.warn = String(rd.locationName);
+    return on;
+  }
   var ts = extTentForSite(x), exp = ts ? ts.t.code : ((x && x.type === 'مخيم' && x.sign) ? x.sign : '');
   var o = { ser:ser, reader:rd, tent:ts ? ts.t : null, dist:ts ? Math.round(ts.d) : null, by:ts ? 'sign' : (rd ? 'serial' : ''), warn:'' };
   if (rd && exp && rd.locationName && extCodeKey(rd.locationName) !== extCodeKey(exp)) o.warn = String(rd.locationName);
@@ -376,7 +383,7 @@ function pilotNet(x){
 function pilotNusuk(x){
   var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'', by:'', warn:'' };
   if (EXT.readers || EXT.tentsBy){   /* (V37.85) حيٌّ: بالشاخص والسيريال معًا */
-    var L = extLink(x); o.by = L.by; o.warn = L.warn;
+    var L = extLink(x); o.by = L.by; o.warn = L.warn; o.missing = !!L.missing;
     if (L.reader){ o.loc = L.reader.locationName || ''; o.at = Date.parse(L.reader.timestamp || '') || 0; }
     else if (L.tent) o.loc = L.tent.code || '';
     var tn = L.tent || (L.reader ? extTentByCode(L.reader.locationName) : null);
@@ -385,7 +392,7 @@ function pilotNusuk(x){
       var c = ov.occupancyStatus, tot = (c.currentlyOccupied || 0) + (c.withoutBracelet || 0) + (c.fromOtherCamps || 0);
       o.occ = (c.totalCapacity ? Math.round(tot / c.totalCapacity * 100) + '٪ · ' : '') + tot + ' / ' + (c.totalCapacity || 0);
     }
-    if (o.loc || o.by) return o;
+    if (o.loc || o.by || o.missing) return o;
   }
   /* بلا بثٍّ حيّ: من لقطة المكتب (V37.81) */
   var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
@@ -399,6 +406,9 @@ function pilotNusuk(x){
 function extCheckText(o){
   if (!o) return '\u2014';
   if (o.warn) return '\u26A0 ' + t('القارئ على') + ' ' + o.warn;
+  if (o.missing) return '\u26A0 ' + t('اسمُ الربط غيرُ موجودٍ في النظام');
+  if (o.by === 'name' && o.at) return o.ser ? '\u2713 ' + t('مطابق — الاسم والقارئ') : '\u2713 ' + t('بالاسم — بلا سيريالٍ للتحقق');
+  if (o.by === 'name') return '\u2713 ' + t('بالاسم') + (o.ser ? ' \u00b7 ' + t('القارئ لم يظهر بعد') : '');
   if (o.by === 'sign' && o.at) return '\u2713 ' + t('مطابق — الشاخص والقارئ');
   if (o.by === 'sign') return '\u2713 ' + t('بالشاخص') + (o.ser ? ' \u00b7 ' + t('القارئ لم يظهر بعد') : '');
   if (o.by === 'serial') return '\u2713 ' + t('بالسيريال');
@@ -408,7 +418,7 @@ function extCheckPill(x){
   if (!x || !STATE.inss[x.id]) return '';
   pilotKick();
   var o = pilotNusuk(x); if (!o.by && !o.warn && !o.ser) return '';
-  return pill(extCheckText(o), o.warn ? 'bad' : (o.by ? 'ok' : 'warn'));
+  return pill(extCheckText(o), (o.warn || o.missing) ? 'bad' : (o.by ? 'ok' : 'warn'));
 }
 
 function pilotKick(){
@@ -490,4 +500,105 @@ function extSnapView(){
                    z.ts ? { timestamp:z.ts } : null, { tentGroup:c.grp || '' });
   });
   return h;
+}
+
+/* ═══ (V37.86) اسمُ الربط بنظام البطاقات — حقلٌ صريحٌ على كلِّ نقطة ═══
+   الشاخصُ يكفي المخيماتِ وحدَها؛ والممراتُ والبواباتُ والمحطاتُ أسماؤها في النظام أخرى
+   («King-Fahd-Gate3-L»). فلكلِّ نقطةٍ حقلٌ يحمل «اسم الموقع» كما في شاشة أجهزة القراءة عندهم:
+   يُقارَن بعد التطبيع (بلا مسافات ولا فرقِ حروفٍ ولا فرقٍ بين - _ /)، وفريدٌ من الجهتين،
+   ويُختار من قائمة أسمائهم لا يُكتَب حرًّا، ويُقترَح من الشاخص أو من موقع القارئ.
+   ويُتحقَّق منه بثلاثة: وجودُ الاسم عندهم، وموقعُ القارئ بسيرياله، وعنوانُ كاميرا الخيمة ضمن
+   شبكة النقطة — يُقارَن ولا يُخزَّن. */
+function extNameKey(v){
+  /* أرقامٌ وفواصلُ فقط (كودُ خيمة «38/56»): الفاصلُ يبقى — «1/112» غيرُ «11/12».
+     وما فيه حروفٌ (اسمُ موقع): تُحذَف الفواصلُ كلُّها — «King Fahd_Gate3-L» = «kingfahdgate3l». */
+  var s = String(v == null ? '' : v).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); }).trim().toLowerCase();
+  if (/^[\d\s\/\\\-_.]+$/.test(s)) return s.replace(/[\s\/\\\-_.]+/g, '/').replace(/^\/+|\/+$/g, '');
+  return s.replace(/[\s\/\\\-_.]+/g, '');
+}
+function extNames(){
+  if (!EXT.readers && !EXT.tents) return null;
+  var stamp = (EXT.readersAt || 0) + '|' + (EXT.tentsAt || 0);
+  if (EXT._nm && EXT._nmAt === stamp) return EXT._nm;
+  var M = {};
+  Object.keys(EXT.readers || {}).forEach(function(k){
+    var r = EXT.readers[k], n = r && r.locationName; if (!n) return;
+    var key = extNameKey(n); (M[key] = M[key] || { name:String(n), rd:[], tent:false }).rd.push(k);
+  });
+  Object.keys(EXT.tents || {}).forEach(function(c){ var key = extNameKey(c); (M[key] = M[key] || { name:c, rd:[], tent:false }).tent = true; });
+  EXT._nm = M; EXT._nmAt = stamp; return M;
+}
+function extLinkedBy(){
+  var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.nk) o[extNameKey(x.nk)] = x.id; }); return o;
+}
+function extSuggest(x){
+  if (!x) return '';
+  var ts = extTentForSite(x); if (ts) return String(ts.t.code);
+  var ser = extReaderSerial(STATE.inss[x.id]), rd = (ser && EXT.readers) ? EXT.readers[extSerKey(ser)] : null;
+  return (rd && rd.locationName) ? String(rd.locationName) : '';
+}
+function extNkSave(id, val){
+  if (!may('settings')){ toast(t('الربطُ للمهندس فما فوق')); return; }
+  var x = siteFind(id); if (!x) return;
+  var v = String(val == null ? '' : val).trim(), key = extNameKey(v);
+  if (v){
+    var other = extLinkedBy()[key];
+    if (other && other !== id){ toast(t('هذا الاسمُ مربوطٌ بالنقطة') + ' ' + other); return; }
+    var M = extNames();
+    if (M && !M[key] && !confirm(t('الاسمُ غيرُ ظاهرٍ في نظام البطاقات الآن. يُحفَظ على أيِّ حال؟'))){ toast(t('لم يُحفَظ')); return; }
+  }
+  x.nk = v; siteOvSet(id, { nk:v, nkAt:Date.now(), nkBy:STATE.meta.name || '' });
+  EXT_MATCH_STATE = null;
+  logEvent(v ? 'ربطُ نقطةٍ بنظام البطاقات — ' + id + ' ← ' + v : 'فكُّ ربط نقطةٍ بنظام البطاقات — ' + id, id);
+  toast(t(v ? 'رُبطت النقطة' : 'فُكَّ الربط')); render(1);
+}
+/* عنوانُ كاميرا الخيمة من تفاصيلها — في الذاكرة وحدَها، ويُقارَن بأول ثلاثة أجزاءٍ من شبكة النقطة */
+function extCamCheck(x, tent){
+  if (!x || !tent || !tent.id || !EXT.tok) return null;
+  var d = EXT.tdet && EXT.tdet[tent.id];
+  if (!d){
+    EXT._tdq = EXT._tdq || {};
+    if (!EXT._tdq[tent.id]){
+      EXT._tdq[tent.id] = 1;
+      extFetch(EXT_API + '/tents/' + tent.id, true).then(function(r){ return r.ok ? r.json() : null; }).then(function(j){
+        var v = j && (j.data || j); EXT.tdet = EXT.tdet || {};
+        EXT.tdet[tent.id] = { ip:String((v && v.cameraIP) || '') }; render(1);
+      }).catch(function(e){ softErr('تفاصيل الخيمة', e, ''); });
+    }
+    return { st:'wait' };
+  }
+  var pre = String(((STATE.inss[x.id] || {}).prefix) || '').trim();
+  if (!d.ip || !pre) return { st:'na' };
+  var a = d.ip.split('.').slice(0, 3).join('.'), b = pre.split('.').slice(0, 3).join('.');
+  return { st: a === b ? 'ok' : 'bad' };
+}
+function extNkCard(x){
+  if (!x || (!may('settings') && !x.nk)) return '';
+  pilotKick();
+  var M = extNames(), L = extLink(x), sug = may('settings') ? extSuggest(x) : '';
+  var key = x.nk ? extNameKey(x.nk) : '';
+  var nameSt = !x.nk ? '\u2014' : !M ? t('يُحمَّل…') : M[key] ? '\u2713 ' + t('موجودٌ في النظام') : '\u26A0 ' + t('غيرُ موجودٍ في النظام');
+  var rdSt = !L.ser ? t('لا سيريال قارئ') : !EXT.readers ? t('يُحمَّل…') : !L.reader ? t('القارئ لم يظهر بعد')
+           : L.warn ? '\u26A0 ' + t('القارئ على') + ' ' + L.warn : '\u2713 ' + t('على الاسم نفسه');
+  var cam = L.tent ? extCamCheck(x, L.tent) : null;
+  var camSt = !cam ? t('غيرُ متاحٍ لهذه النقطة') : cam.st === 'wait' ? t('يُحمَّل…') : cam.st === 'na' ? t('لا شبكةَ مسجَّلة أو لا عنوان') : cam.st === 'ok' ? '\u2713 ' + t('ضمن شبكة النقطة') : '\u26A0 ' + t('خارج شبكة النقطة');
+  var rows = '<div class="pop-rows" style="margin:0">'
+    + '<div><span class="k">' + esc(t('اسم الربط')) + '</span><span>' + (x.nk ? '<b>' + bdiText(x.nk) + '</b>' : esc(t('غير مربوط'))) + '</span></div>'
+    + (x.nk ? '<div><span class="k">' + esc(t('الاسم في النظام')) + '</span><span>' + esc(nameSt) + '</span></div>' : '')
+    + '<div><span class="k">' + esc(t('القارئ بسيرياله')) + '</span><span>' + esc(rdSt) + '</span></div>'
+    + (L.tent ? '<div><span class="k">' + esc(t('كاميرا الخيمة')) + '</span><span>' + esc(camSt) + '</span></div>' : '')
+    + '</div>';
+  var edit = '';
+  if (may('settings')){
+    var linked = extLinkedBy(), opts = '';
+    if (M) Object.keys(M).sort().forEach(function(k){ if (!linked[k] || linked[k] === x.id) opts += '<option value="' + esc(M[k].name) + '">'; });
+    edit = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 0">'
+      + '<input id="nkIn' + esc(x.id) + '" list="nkList' + esc(x.id) + '" dir="ltr" autocomplete="off" style="flex:1;min-width:160px" value="' + esc(x.nk || '') + '" placeholder="' + esc(t(M ? 'ابحث في أسماء النظام' : 'اسم الموقع كما في النظام')) + '">'
+      + (opts ? '<datalist id="nkList' + esc(x.id) + '">' + opts + '</datalist>' : '')
+      + btn(t('احفظ الربط'), 'btn-primary btn-sm', ' data-nksave="' + esc(x.id) + '"')
+      + (x.nk ? btn(t('فُكَّ الربط'), 'btn-quiet btn-sm', ' data-nkclear="' + esc(x.id) + '"') : '')
+      + '</div>'
+      + (sug && extNameKey(sug) !== key ? '<div class="actions" style="margin:6px 0 0">' + btn('\u2728 ' + t('اقتراح') + ': ' + sug, 'btn-secondary btn-sm', ' data-nksug="' + esc(x.id) + '|' + esc(sug) + '"') + '</div>' : '');
+  }
+  return card('الربط بنظام البطاقات', rows + edit);
 }
