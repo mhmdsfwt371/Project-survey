@@ -952,7 +952,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '</div>'
           + '<p class="hint">' + esc(t('لا تُحسَب النقطة مُركّبةً حتى يعتمد المهندس قطعها وأرقامها التسلسلية في التدقيق الهندسي.')) + '</p>');
   })();
-    if (cur === 'newsite') return head + (function(){
+    if (cur === 'newsite') return head + (NEWSITE.orph ? alertBox('info', t('تُضاف نقطةُ ملف ١٤٤٧') + ': ' + NEWSITE.orph + ' \u2014 ' + t('وتُحمَل إليها بياناتُ أجهزتها')) + '<div class="actions" style="margin:0 0 8px">' + btn('\u2715 ' + t('ليست من الملف'), 'btn-quiet btn-sm', ' data-orcancel="1"') + '</div>' : '') + (function(){   /* (V37.92) */
     if (NS_CO_OPEN) return nsCoCard();
 
     var has  = NEWSITE.lat && NEWSITE.lng;

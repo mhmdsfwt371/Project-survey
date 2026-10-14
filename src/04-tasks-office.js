@@ -660,9 +660,11 @@ function nsSave(){
     origin:minProp ? 'ministry' : (office ? 'office' : 'field'),
     note:NEWSITE.note
   };
+  if (NEWSITE.ex47 && !minProp) site.ex47 = NEWSITE.ex47;   /* (V37.92) نقطةٌ من ملف ١٤٤٧ وُضعت على الخريطة */
   if (minProp) propKeep(site); else STATE.sites.push(site);   /* (V37.69) المقترحةُ خارجَ السجلِّ حتى الاعتماد */
   SITE_IX = null; SITE_TOK = null;
   CORE.set('newsites', id, site);
+  if (NEWSITE.orph && !minProp && typeof ex47OrphDrop === 'function') ex47OrphDrop(NEWSITE.orph);   /* (V37.92) */
 
   /* الصورُ إلى درايف كسائر صور النظام — لا إلى القاعدة.
      كانت تُكتَب خامًّا هنا وحدها: خمسُ صورٍ بمئتي كيلو تقارب حدَّ الوثيقة

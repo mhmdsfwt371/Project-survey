@@ -251,7 +251,7 @@ function mtCamps(){
   var h = '';
 
   /* بطاقة الإعداد — للمهندس فقط */
-  if (may('settings')) h += extTokCard() + ex47Card();   /* (V37.88) */
+  if (may('settings')) h += extTokCard() + ex47Card() + ex47OrphCard();   /* (V37.88) (V37.92) */
 
   if (!EXT.tok){
     return h + (may('settings') ? alertBox('info', t('أضف توكن نظام البطاقات لتشغيل هذه الشاشة.')) : extSnapView());   /* (V37.81) */
@@ -674,7 +674,7 @@ function ex47Plan(wb){
   /* (V37.91) الأعمدةُ تُقرأ بعناوينها لا بمواضعها — ملفُّ التسليمات تغيّر ترتيبُه بين نسختين
      (أُضيف «Provider Name» و«Camera Name» فانزاح القارئُ والكاميرا)، فالموضعُ الثابتُ كان سيقرأ عمودًا آخر */
   var find = function(re){ var n = wb.SheetNames.filter(function(k){ return re.test(k); })[0]; return n ? XLSX.utils.sheet_to_json(wb.Sheets[n], { header:1, raw:true, defval:'' }) : null; };
-  var C = find(/camps/i), Pt = find(/paths/i), plan = { set:{}, campsN:0, pathsN:0, miss:[], out:[], dup:0 };
+  var C = find(/camps/i), Pt = find(/paths/i), plan = { set:{}, campsN:0, pathsN:0, miss:[], out:[], dup:0, orph:[] };
   if (!C && !Pt) return null;
   var S = function(v){ return String(v == null ? '' : v).replace(/\u00a0/g, ' ').trim(); };
   var col = function(row, re, from, to){ for (var i = from || 0; i < Math.min(to == null ? row.length : to, row.length); i++){ if (re.test(S(row[i]))) return i; } return -1; };
@@ -695,6 +695,7 @@ function ex47Plan(wb){
     if (h > -1){
       var H = C[h], Sub = C[h + 1] || [];
       var g = { rtr:col(H, /^router$/i), rdr:col(H, /^reader$/i), cam:col(H, /^camera$/i), eng:col(H, /engineer/i), at:col(H, /config\s*date/i) };
+      var gl = col(H, /latitude/i), gn = col(H, /longitude/i);
       var starts = [g.rtr, g.rdr, g.cam, g.eng].filter(function(z){ return z > -1; }).sort(function(p, q){ return p - q; });
       var end = function(st){ var n = starts.filter(function(z){ return z > st; })[0]; return n == null ? H.length : n; };
       var ix = function(gs, re){ return gs > -1 ? col(Sub, re, gs, end(gs)) : -1; };
@@ -705,9 +706,15 @@ function ex47Plan(wb){
         plan.campsN++;
         var m = /^cam(?:p)?\s*[-_ ]?\s*([0-9a-z][0-9a-z\-]*?)\s*[-_\/. ]+\s*(\d+)\s*(?:\(.*\))?\s*(?:up|down)?$/i.exec(nm0);
         var x = m ? mina[signKey(m[1] + '/' + m[2])] : null;
-        if (!x){ (m ? plan.miss : plan.out).push(nm0); return; }
-        put(x.id, { nm:nm0, rtr:V(r, 'rtr'), rdr:V(r, 'rdr'), cam:V(r, 'cam'), net:ex47Net(V(r, 'rtrIp')) || ex47Net(V(r, 'rdrIp')),
-                    eng:g.eng > -1 ? S(r[g.eng]) : '', at:g.at > -1 ? ex47Date(r[g.at]) : '' }, nm0);
+        var rec = { nm:nm0, rtr:V(r, 'rtr'), rdr:V(r, 'rdr'), cam:V(r, 'cam'), net:ex47Net(V(r, 'rtrIp')) || ex47Net(V(r, 'rdrIp')),
+                    eng:g.eng > -1 ? S(r[g.eng]) : '', at:g.at > -1 ? ex47Date(r[g.at]) : '' };
+        if (!x){
+          (m ? plan.miss : plan.out).push(nm0);
+          plan.orph.push(Object.assign({ kind:'camp', sign:m ? (m[1] + '/' + m[2]).toUpperCase() : '',
+            lat:+(gl > -1 ? r[gl] : 0) || 0, lng:+(gn > -1 ? r[gn] : 0) || 0 }, rec));   /* (V37.92) يُحفَظ بياناتُه لا اسمُه وحدَه */
+          return;
+        }
+        put(x.id, rec, nm0);
       });
     }
   }
@@ -733,7 +740,12 @@ function ex47Plan(wb){
     var flush = function(){
       if (!cur) return; plan.pathsN++;
       var hit = match(cur.nm, cur.lat, cur.lng);
-      if (!hit){ plan.out.push(cur.nm); cur = null; return; }
+      if (!hit){
+        plan.out.push(cur.nm);
+        plan.orph.push({ kind:'point', nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '',
+                         lat:cur.lat || 0, lng:cur.lng || 0, ready:cur.ready || '', crane:cur.crane || '', maint:cur.maint || '' });   /* (V37.92) */
+        cur = null; return;
+      }
       put(hit.x.id, { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '',
                       ready:cur.ready || '', crane:cur.crane || '', maint:cur.maint || '' }, cur.nm);
       cur = null;
@@ -752,6 +764,13 @@ function ex47Plan(wb){
     });
     flush();
   }
+  /* (V37.92) حارسٌ أخير: في الملف صفٌّ لُصقت فيه كلمةُ مرورٍ في خانة سيريال (Camp-17-716) — فكلُّ قيمةٍ تشبه
+     كلمةَ مرورٍ أو اسمَ دخولٍ تُسقَط قبل أن تُحفَظ، ويُعرَض عددُها */
+  plan.scrub = 0;
+  var bad = /[@#$%]|pass(word)?|admin|root/i, F = ['rtr', 'rdr', 'cam', 'net', 'eng', 'ready', 'crane', 'maint'];
+  var clean = function(o){ F.forEach(function(k){ if (o[k] && bad.test(String(o[k]))){ o[k] = ''; plan.scrub++; } }); (o.more || []).forEach(clean); };
+  Object.keys(plan.set).forEach(function(id){ clean(plan.set[id]); });
+  plan.orph.forEach(clean);
   return plan;
 }
 function ex47Import(file){
@@ -773,10 +792,11 @@ function ex47Import(file){
 function ex47Apply(){
   if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
   var P = EXT.ex47, ids = P ? Object.keys(P.set) : []; if (!ids.length){ toast(t('لا شيءَ يُعتمَد')); return; }
-  if (!confirm(t('تُحفَظ بياناتُ ١٤٤٧ لـ') + ' ' + ids.length + ' ' + t('نقطةً. متابعة؟'))){ toast(t('لم يُحفَظ — أُلغي')); return; }
+  if (!confirm(t('تُحفَظ بياناتُ ١٤٤٧ لـ') + ' ' + ids.length + ' ' + t('نقطةً، ويُحفَظ ما خارج السجلّ') + ' (' + (P.orph || []).length + ') ' + t('بعَلَم «ليست على الخريطة». متابعة؟'))){ toast(t('لم يُحفَظ — أُلغي')); return; }
   var at = Date.now(), by = STATE.meta.name || '';
   ids.forEach(function(id){ var x = siteFind(id); if (!x) return; var v = Object.assign({ by:by, imp:at }, P.set[id]); x.ex47 = v; siteOvSet(id, { ex47:v }); });
-  logEvent('استيرادُ بيانات موسم ١٤٤٧ — ' + ids.length + ' نقطة · غيرُ مطابق ' + P.miss.length);
+  ex47OrphMerge(P.orph || [], ids.map(function(id){ return extNameKey(P.set[id].nm); }));   /* (V37.92) ما خارج السجلّ يُحفَظ ببياناته وعَلَمِه */
+  logEvent('استيرادُ بيانات موسم ١٤٤٧ — ' + ids.length + ' نقطة · خارج الخريطة ' + (P.orph || []).length);
   EXT.ex47 = null; toast(t('حُفظت بياناتُ ١٤٤٧') + ' (' + nm(ids.length) + ')'); render(1);
 }
 function ex47Card(){
@@ -789,10 +809,94 @@ function ex47Card(){
     body += stats([['مخيماتٌ في الملف', N(P.campsN)], ['ممراتٌ ونقاطٌ أخرى', N(P.pathsN)], ['طابقت نقاطَنا', N(ids.length), 'ok'], ['لها سيريالُ قارئ', N(wr), 'acc'],
                    ['مخيمٌ رقمُه ليس في سجلّنا', N(P.miss.length), P.miss.length ? 'wrn' : ''], ['خارج سجلّنا', N(P.out.length)]])
       + (P.dup ? '<p class="hint" style="margin:4px 0 0">' + esc(t('صفوفٌ إضافيةٌ لنقاطٍ مكرَّرة تُحفَظ ضمن النقطة نفسِها')) + ': ' + nm(P.dup) + '</p>' : '')
+      + (P.scrub ? '<p class="hint" style="margin:4px 0 0;color:#E2B33C">\u26A0 ' + esc(t('قيمٌ أُسقطت لأنها تشبه كلماتِ مرورٍ في خانات السيريال')) + ': ' + nm(P.scrub) + '</p>' : '')
       + (P.miss.length ? mtDetails(t('مخيمٌ رقمُه ليس في سجلّنا') + ' (' + nm(P.miss.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.miss.slice(0, 200).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u26A0') : '')
       + (P.out.length ? mtDetails(t('خارج سجلّنا — الحرم والجمرات ومزدلفة وما لم يُعرَف') + ' (' + nm(P.out.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.out.slice(0, 200).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u2139') : '')
       + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد بيانات ١٤٤٧') + ' (' + nm(ids.length) + ')', 'btn-primary btn-sm', ' data-ex47ok="1"') + '</div>';
   }
   body += '<label class="btn btn-secondary btn-sm" style="margin-top:8px;display:inline-flex">\u{1F4C2} ' + esc(t(P ? 'اختر ملفًّا آخر' : 'اختر ملف تسليمات الممرات')) + '<input type="file" accept=".xlsx,.xls" data-ex47="1" style="display:none"></label>';
   return card('بيانات موسم ١٤٤٧ — الأجهزةُ نفسُها هذا الموسم', body);
+}
+
+/* ═══ (V37.92) نقاطُ ملف ١٤٤٧ خارج السجلّ — تُحفَظ بعَلَم «ليست على الخريطة» ═══
+   طلبُ المالك: «أيُّ حاجةٍ خارج السجلّ اسمح إنها تتضاف وادِّيها عَلَمًا يعرّفني إنها مش على الخريطة،
+   أو قولّي اربطها بنقطةٍ على الخريطة». فلا تُرمى: تُحفَظ ببيانات أجهزتها في settings/ex47orph، ولكلٍّ منها
+   طريقان: «اربطها بنقطة» (تنتقل بياناتُها إلى نقطةٍ قائمة) أو «ضعها على الخريطة» (نموذجُ نقطةٍ جديدةٍ
+   معبّأٌ يُختار موضعُه بالخريطة، وتُحمَل بياناتُها إليها). ولا تدخل السجلَّ بلا موضعٍ — فلا تشوّه الخريطةَ ولا الأرقام. */
+function ex47OrphLoad(){
+  if (!FB.ready || !FB.db || !may('settings')) return;
+  if (EXT._orAt && Date.now() - EXT._orAt < 60000) return;
+  EXT._orAt = Date.now();
+  DB.col('settings').doc('ex47orph').get().then(function(doc){
+    var d = (doc && doc.exists) ? doc.data() : null;
+    STATE.ex47orph = (d && Array.isArray(d.rows)) ? d.rows : [];
+    if (CUR === 'mfu') render(1);
+  }).catch(function(e){ softErr('نقاط ١٤٤٧ خارج الخريطة', e, ''); });
+}
+function ex47OrphSave(rows){
+  STATE.ex47orph = rows;
+  CORE.set('cfg', 'ex47orph', { rows:rows, at:Date.now(), by:STATE.meta.name || '' }); CORE.saveSoon();
+}
+function ex47OrphMerge(add, matchedKeys){
+  var cur = (STATE.ex47orph || []).slice(), seen = {}, mk = {};
+  (matchedKeys || []).forEach(function(k){ mk[k] = 1; });
+  cur = cur.filter(function(o){ return !mk[extNameKey(o.nm)]; });
+  cur.forEach(function(o){ seen[extNameKey(o.nm)] = 1; });
+  add.forEach(function(o){ var k = extNameKey(o.nm); if (!seen[k]){ seen[k] = 1; cur.push(o); } });
+  ex47OrphSave(cur);
+}
+function ex47OrphFind(nm){ return (STATE.ex47orph || []).filter(function(o){ return extNameKey(o.nm) === extNameKey(nm); })[0] || null; }
+function ex47OrphDrop(nm){ ex47OrphSave((STATE.ex47orph || []).filter(function(o){ return extNameKey(o.nm) !== extNameKey(nm); })); }
+/* اقتراحُ نقطةٍ للربط: المخيمُ بشاخصٍ يشترك في الشارع، والنقطةُ باسمٍ يحتوي اسمَها */
+function ex47OrphGuess(o){
+  if (o.kind === 'camp' && o.sign){
+    var st = o.sign.split('/')[1];
+    var L = (STATE.sites || []).filter(function(x){ return x.type === 'مخيم' && x.zone === 'منى' && x.sign && String(x.sign).split('/')[1] === st && !x.ex47; });
+    return L.length === 1 ? L[0] : null;
+  }
+  var k = extNameKey(o.nm); if (k.length < 5) return null;
+  return (STATE.sites || []).filter(function(x){ return x.type !== 'مخيم' && extNameKey(x.name).indexOf(k) > -1; })[0] || null;
+}
+function ex47OrphLink(nm, siteId){
+  if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+  var o = ex47OrphFind(nm), x = siteFind(String(siteId || '').trim());
+  if (!o){ toast(t('لا شيءَ يُعتمَد')); return; }
+  if (!x){ toast(t('اكتب معرِّفَ نقطةٍ موجودة — مثال NSK-MIN-CMP-0449')); return; }
+  var v = { nm:o.nm, rtr:o.rtr, rdr:o.rdr, cam:o.cam, net:o.net, eng:o.eng, at:o.at, ready:o.ready || '', crane:o.crane || '', maint:o.maint || '', by:STATE.meta.name || '', imp:Date.now(), linked:1 };
+  x.ex47 = v; siteOvSet(x.id, { ex47:v }); ex47OrphDrop(nm);
+  logEvent('ربطُ نقطةٍ من ملف ١٤٤٧ بنقطةٍ على الخريطة — ' + nm + ' ← ' + x.id, x.id);
+  toast(t('رُبطت') + ' ' + nm + ' \u2190 ' + x.id); render(1);
+}
+function ex47OrphPlace(nm){
+  if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+  var o = ex47OrphFind(nm); if (!o){ toast(t('لا شيءَ يُعتمَد')); return; }
+  var camp = o.kind === 'camp';
+  NEWSITE.zone = /arafat|عرفات/i.test(o.nm) ? 'عرفات' : (/jamarat|الجمرات/i.test(o.nm) ? 'الجمرات' : 'منى');
+  NEWSITE.type = camp ? 'مخيم' : 'ممر';
+  NEWSITE.sign = camp ? (o.sign || '') : ''; NEWSITE.nm = camp ? '' : o.nm;
+  NEWSITE.lat = +o.lat || 0; NEWSITE.lng = +o.lng || 0; NEWSITE.byMap = !!(o.lat && o.lng);
+  NEWSITE.note = t('من ملف تسليمات ١٤٤٧') + ': ' + o.nm;
+  NEWSITE.ex47 = { nm:o.nm, rtr:o.rtr, rdr:o.rdr, cam:o.cam, net:o.net, eng:o.eng, at:o.at, ready:o.ready || '', crane:o.crane || '', maint:o.maint || '', by:STATE.meta.name || '', imp:Date.now() };
+  NEWSITE.orph = o.nm;
+  toast(t(o.lat && o.lng ? 'موضعُها من الملف — راجع البيانات واحفظ' : 'اختر موضعَها على الخريطة ثم احفظ'));
+  goPage('newsite');
+}
+function ex47OrphCard(){
+  if (!may('settings')) return '';
+  if (!STATE.ex47orph) { ex47OrphLoad(); return ''; }
+  var L = STATE.ex47orph; if (!L.length) return '';
+  var opts = (STATE.sites || []).map(function(x){ return '<option value="' + esc(x.id) + '">' + esc(x.name || '') + '</option>'; }).join('');
+  var rows = L.slice(0, 60).map(function(o, i){
+    var gs = ex47OrphGuess(o), k = esc(o.nm);
+    return [ '<b dir="ltr">' + esc(o.nm) + '</b><br>' + pill('\u{1F4CD} ' + t('ليست على الخريطة'), 'warn'),
+             '<span class="num" dir="ltr">' + esc(o.rdr || '\u2014') + '</span>',
+             '<input id="orIn' + i + '" list="orList" dir="ltr" autocomplete="off" style="min-width:150px" placeholder="NSK-…" value="' + esc(gs ? gs.id : '') + '">'
+               + (gs ? '<div class="hint" style="margin:2px 0 0;font-size:11px">' + esc(t('اقتراح')) + ': ' + esc(gs.name || gs.id) + '</div>' : ''),
+             btn(t('اربط'), 'btn-secondary btn-sm', ' data-orlink="' + i + '|' + k + '"') + ' ' + btn('\u{1F4CD} ' + t('ضعها على الخريطة'), 'btn-quiet btn-sm', ' data-orplace="' + k + '"') ];
+  });
+  return card('نقاط ملف ١٤٤٧ خارج الخريطة — ' + nm(L.length),
+    '<p class="hint" style="margin:0 0 8px">' + esc(t('محفوظةٌ ببيانات أجهزتها ولا تظهر على الخريطة حتى تُربَط بنقطةٍ قائمة أو يُختار موضعُها.')) + '</p>'
+    + '<datalist id="orList">' + opts + '</datalist>'
+    + table(['من الملف', 'سيريال القارئ', 'النقطة على الخريطة', ''], rows)
+    + (L.length > 60 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(L.length - 60) + '</p>' : ''));
 }
