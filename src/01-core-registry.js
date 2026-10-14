@@ -30,7 +30,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-3a0880d3c1.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-40d24f667b.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2095,6 +2095,7 @@ function liveSmall(){
   if (!FB.ready || !FB.db) return;
   liveSmallStop();
   setTimeout(regEnsure, 6000);   /* (V37.83) السجلُّ المنشورُ يُخزَّن على الجهاز بعد الدخول */
+  setTimeout(function(){ try { if (typeof extBridgePendingApply === 'function') extBridgePendingApply(); } catch (eB){ LS_ERR = eB; } }, 2500);   /* (V37.94) */
   /* النبضةُ تُعاد مع إعادة الإنصات — مستمعٌ واحدٌ لا أكثر (V17.26) */
   pulseStop(); setTimeout(function(){ pulseWatch(); bridgeWatch(); }, 0);
   var watch = function(col, apply, cap, filt, filt2){

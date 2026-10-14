@@ -248,6 +248,7 @@ function extMatchLoad(forceRefresh){
 /* ── الشاشة الرئيسية ── */
 var EXT_OV_LOADED = {};   /* {tentId: true} جُلبت بالفعل */
 function mtCamps(){
+  extBridgePendingApply();   /* (V37.94) ما جاءت به الإشارةُ المرجعية */
   /* أوّل مرة: حمّل التوكن من السحابة */
   if (!EXT.tok && !EXT._tokAsked){ EXT._tokAsked = true; extTokLoad(); }
 
@@ -921,7 +922,12 @@ function extBridgeCodes(){
   });
   return Object.keys(o);
 }
-function extBridgeCmd(){
+function extBridgeCmd(mode){
+  /* (V37.94) mode='go': إشارةٌ مرجعية — تنقل المتصفحَ إلى تطبيقنا والبياناتُ في العنوان بعد # فتُستورَد وحدَها؛
+     mode (افتراضي): نسخُ الناتج للصق */
+  var tail = mode === 'go'
+    ? "location.href=" + JSON.stringify(location.origin + location.pathname) + "+'#bridge='+encodeURIComponent(JSON.stringify(out));"
+    : "copy(JSON.stringify(out));alert('نُسخت بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — الصقها في التطبيق');";
   return [
     "(async()=>{try{",
     "const T=localStorage.getItem('mj.accessToken');if(!T){alert('سجّل الدخول في النظام أوّلًا');return;}",
@@ -934,7 +940,7 @@ function extBridgeCmd(){
     "ov.push([t.id,c.totalCapacity||0,c.currentlyOccupied||0,c.withoutBracelet||0,c.fromOtherCamps||0,a.insideCamp||'',a.transitTime||'']);}catch(e){}}};",
     "await Promise.all([go(),go(),go(),go()]);",
     "const out={v:1,at:Date.now(),rd:rd.map(r=>[r.readerId,r.locationName,r.timestamp]),tn:tn.map(t=>[t.id,t.code,t.latitude,t.longitude,t.tentGroup||'',t.capacity||0]),ov:ov};",
-    "copy(JSON.stringify(out));alert('نُسخت بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — الصقها في التطبيق');",
+    tail,
     "}catch(e){alert('تعذّر: '+e.message);}})()"
   ].join('');
 }
@@ -996,16 +1002,106 @@ function extBridgeCard(){
   var B = EXT.bridge, old = B && Date.now() - B.at > 6 * 3600000;
   var st = B ? alertBox(old ? 'warn' : 'success', t('آخر جسر') + ' ' + pilotAgo(B.at) + ' \u00b7 ' + B.rd + ' ' + t('قارئ') + ' \u00b7 ' + B.tn + ' ' + t('خيمة') + ' \u00b7 ' + B.ov + ' ' + t('إشغال') + (old ? ' \u2014 ' + t('قديم: جدّده') : ''))
              : alertBox('info', t('لا جسرَ بعد'));
+  var n = nm(extBridgeCodes().length);
   return card('\u{1F309} ' + t('جسر نظام البطاقات'),
     st
-    + '<ol class="hint" style="margin:8px 0;padding-inline-start:18px;line-height:1.9">'
-    + '<li>' + esc(t('افتح موقع النظام على اللاب وسجّل الدخول')) + '</li>'
-    + '<li>' + esc(t('اضغط «انسخ أمر الجسر» هنا')) + '</li>'
-    + '<li>' + esc(t('هناك: F12 ← Console ← الصق ← Enter (وإن رفض كروم اللصق اكتب allow pasting)')) + '</li>'
-    + '<li>' + esc(t('انتظر رسالة «نُسخت بيانات الجسر» ثم الصق الناتج هنا واضغط «اعتمد»')) + '</li></ol>'
-    + '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F4CB} ' + t('انسخ أمر الجسر'), 'btn-primary btn-sm', ' data-brcopy="1"')
-    + '<span class="hint" style="margin:0">' + esc(t('يجمع إشغالَ مخيماتنا المربوطة والمركَّبة')) + ' (' + nm(extBridgeCodes().length) + ')</span></div>'
-    + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:11px">' + esc(extBridgeCmd()) + '</textarea>' : '')
-    + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:11px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
-    + '<div class="actions" style="margin:6px 0 0">' + btn('\u2713 ' + t('اعتمد'), 'btn-secondary btn-sm', ' data-brok="1"') + '</div>');
+    /* (V37.94) الطريقةُ الأولى: إشارةٌ مرجعية — ضغطةٌ واحدة على موقع النظام */
+    + '<div style="font-weight:700;margin:10px 0 4px">\u2460 ' + esc(t('بضغطة واحدة — من اللاب')) + '</div>'
+    + '<ol class="hint" style="margin:0 0 8px;padding-inline-start:18px;line-height:1.9">'
+    + '<li>' + esc(t('اسحب هذا الزرَّ إلى شريط الإشارات المرجعية في كروم (مرةً واحدة)')) + ': <a class="btn btn-primary btn-sm" draggable="true" href="' + esc(extBridgeBmk()) + '" title="' + esc(t('اسحبني إلى شريط الإشارات المرجعية')) + '">\u{1F309} ' + esc(t('جسر البطاقات')) + '</a></li>'
+    + '<li>' + esc(t('افتح موقع النظام وسجّل الدخول، ثم اضغط الإشارة المرجعية')) + '</li>'
+    + '<li>' + esc(t('يجمع القرّاءَ والخيامَ والإشغال ويفتح هذا التطبيق وقد اعتُمد كلُّه وحدَه')) + '</li></ol>'
+    + '<p class="hint" style="margin:0 0 10px">' + esc(t('يجمع إشغالَ مخيماتنا المربوطة والمركَّبة')) + ' (' + n + ') \u2014 ' + esc(t('بعد ربط مخيماتٍ جديدة اسحب الزرَّ من جديد ليشملها')) + '</p>'
+    /* الطريقةُ الثانية: ملفُّ تصديرٍ من شاشات النظام */
+    + '<div style="font-weight:700;margin:6px 0 4px">\u2461 ' + esc(t('أو ملف تصدير من شاشات النظام')) + '</div>'
+    + '<p class="hint" style="margin:0 0 6px">' + esc(t('إن كان في شاشة «أجهزة القراءة» أو «إدارة المخيمات» زرُّ تصدير، ارفع ملفه هنا — يُقرأ بعناوين أعمدته')) + '</p>'
+    + '<label class="btn btn-secondary btn-sm" style="display:inline-flex">\u{1F4C4} ' + esc(t('ارفع ملف تصدير')) + '<input type="file" accept=".xlsx,.xls,.csv" data-brfile="1" style="display:none"></label>'
+    /* الطريقةُ الثالثة: الأمرُ واللصق — احتياطًا */
+    + mtDetails(t('أو بالأمر واللصق (احتياطًا)'),
+        '<ol class="hint" style="margin:0 0 8px;padding-inline-start:18px;line-height:1.9">'
+        + '<li>' + esc(t('اضغط «انسخ أمر الجسر» هنا')) + '</li>'
+        + '<li>' + esc(t('هناك: F12 ← Console ← الصق ← Enter (وإن رفض كروم اللصق اكتب allow pasting)')) + '</li>'
+        + '<li>' + esc(t('انتظر رسالة «نُسخت بيانات الجسر» ثم الصق الناتج هنا واضغط «اعتمد»')) + '</li></ol>'
+        + '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F4CB} ' + t('انسخ أمر الجسر'), 'btn-secondary btn-sm', ' data-brcopy="1"') + '</div>'
+        + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:11px">' + esc(extBridgeCmd()) + '</textarea>' : '')
+        + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:11px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
+        + '<div class="actions" style="margin:6px 0 0">' + btn('\u2713 ' + t('اعتمد'), 'btn-secondary btn-sm', ' data-brok="1"') + '</div>', '\u2462'));
 }
+
+/* ═══ (V37.94) بلا كتابة كود: إشارةٌ مرجعيةٌ بضغطة، وملفُّ تصديرٍ من النظام ═══
+   طلبُ المالك: «كله يتم من الواجهة، مش عاوز أكتب كود». ثلاثُ طرقٍ بترتيب السهولة:
+   ١) إشارةٌ مرجعية: تُسحَب مرةً إلى شريط المتصفح، ثم تُضغَط على موقع النظام — تجمع البيانات وتفتح تطبيقَنا
+      والبياناتُ في العنوان بعد #، فيستوردها التطبيقُ ويحفظها وحدَه. لا Console ولا لصق.
+   ٢) ملفُّ تصديرٍ من شاشات النظام (أجهزة القراءة أو المخيمات) يُرفَع هنا — إن كان التصديرُ متاحًا عندهم.
+   ٣) الأمرُ واللصق (V37.93) احتياطًا. */
+function extBridgeBmk(){ return 'javascript:' + encodeURIComponent(extBridgeCmd('go')); }
+function extBridgeHashPick(){
+  try {
+    var h = String(location.hash || ''), i = h.indexOf('#bridge='); if (i < 0) return;
+    var raw = decodeURIComponent(h.slice(i + 8));
+    try { sessionStorage.setItem('nsk.bridgePending', raw); } catch (e0){ EXT._brPend = raw; }
+    if (history && history.replaceState) history.replaceState(null, '', location.pathname + location.search);
+  } catch (e){ LS_ERR = e; }
+}
+function extBridgePendingApply(){
+  if (!FB.ready || !FB.db || !may('settings')) return;
+  var raw = EXT._brPend || '';
+  if (!raw){ try { raw = sessionStorage.getItem('nsk.bridgePending') || ''; } catch (e0){ raw = ''; } }
+  if (!raw) return;
+  EXT._brPend = ''; try { sessionStorage.removeItem('nsk.bridgePending'); } catch (e1){ LS_ERR = e1; }
+  var o = null; try { o = JSON.parse(raw); } catch (e2){ o = null; }
+  if (!o || !extBridgeApply(o, true)){ toast(t('وصلت بياناتٌ من الإشارة المرجعية لكنها غيرُ مقروءة')); return; }
+  toast(t('اعتُمد الجسر') + ' \u00b7 ' + nm(o.rd.length) + ' ' + t('قارئ') + ' \u00b7 ' + nm(o.tn.length) + ' ' + t('خيمة'));
+  if (CUR !== 'mfu') goPage('mfu'); render(1);
+}
+/* ملفُّ تصديرٍ من النظام: أعمدةٌ تُعرَف بعناوينها — قرّاء (رقم القارئ · اسم الموقع · آخر تحديث) أو خيام (الكود · السعة · الإحداثيات) */
+function extArabicDigits(v){ return String(v == null ? '' : v).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); }); }
+function extTsParse(v){
+  if (v && typeof v.getTime === 'function') return isNaN(v.getTime()) ? '' : v.toISOString();
+  var s0 = extArabicDigits(v).trim(); if (!s0) return '';
+  var m = /(\d{4})[\/-](\d{1,2})[\/-](\d{1,2})/.exec(s0), tm = /(\d{1,2}):(\d{2})(?::(\d{2}))?/.exec(s0);   /* الوقتُ قد يسبق التاريخ في تصدير النظام */
+  if (!m){ var d0 = new Date(s0); return isNaN(d0.getTime()) ? '' : d0.toISOString(); }
+  var hh = +(tm ? tm[1] : 0); if (/م/.test(s0) && hh < 12) hh += 12; if (/ص/.test(s0) && hh === 12) hh = 0;
+  var d = new Date(+m[1], +m[2] - 1, +m[3], hh, +(tm ? tm[2] : 0), +(tm && tm[3] ? tm[3] : 0));
+  return isNaN(d.getTime()) ? '' : d.toISOString();
+}
+function extFilePlan(wb){
+  var S = function(v){ return String(v == null ? '' : v).replace(/\u00a0/g, ' ').trim(); };
+  var rd = [], tn = [];
+  wb.SheetNames.forEach(function(sn){
+    var A = XLSX.utils.sheet_to_json(wb.Sheets[sn], { header:1, raw:true, defval:'' }), h = -1, H = null;
+    for (var i = 0; i < Math.min(10, A.length); i++){ if ((A[i] || []).some(function(c){ return /رقم القارئ|reader\s*id|readerid|serial|كود|code|اسم الخيمة|tent/i.test(S(c)); })){ h = i; H = A[i]; break; } }
+    if (h < 0) return;
+    var col = function(re){ for (var k = 0; k < H.length; k++) if (re.test(S(H[k]))) return k; return -1; };
+    var cId = col(/رقم القارئ|reader\s*id|readerid|^serial$|السيريال/i), cLoc = col(/اسم الموقع|location|الموقع/i), cTs = col(/آخر تحديث|updated|timestamp|last/i);
+    var cCode = col(/^(كود|code|الكود|رقم الخيمة|اسم الخيمة|tent code|tent)$/i), cCap = col(/السعة|capacity/i), cLat = col(/latitude|خط العرض/i), cLng = col(/longitude|خط الطول/i), cGrp = col(/المجموعة|group/i);
+    if (cId > -1 && cLoc > -1){
+      A.slice(h + 1).forEach(function(r){ var id = extArabicDigits(S(r[cId])); if (!/^\d{4,}$/.test(id)) return; rd.push([id, S(r[cLoc]), cTs > -1 ? extTsParse(r[cTs]) : '']); });
+    } else if (cCode > -1){
+      A.slice(h + 1).forEach(function(r){ var c = S(r[cCode]); if (!c) return; tn.push(['', c, cLat > -1 ? S(r[cLat]) : '', cLng > -1 ? S(r[cLng]) : '', cGrp > -1 ? S(r[cGrp]) : '', cCap > -1 ? +extArabicDigits(r[cCap]) || 0 : 0]); });
+    }
+  });
+  if (!rd.length && !tn.length) return null;
+  /* يُدمَج مع آخر جسر: ما لم يأتِ في الملف يبقى */
+  var cur = EXT.bridge ? { rd:Object.keys(EXT.readers || {}).map(function(k){ var r = EXT.readers[k]; return [r.readerId, r.locationName, r.timestamp]; }),
+                          tn:Object.keys(EXT.tents || {}).map(function(k){ var x = EXT.tents[k]; return [x.id, x.code, x.latitude, x.longitude, x.tentGroup, x.capacity]; }) } : { rd:[], tn:[] };
+  return { v:1, at:Date.now(), rd:rd.length ? rd : cur.rd, tn:tn.length ? tn : cur.tn, ov:[], src:'file', nRd:rd.length, nTn:tn.length };
+}
+function extFileImport(file){
+  if (!may('settings')){ toast(t('الجسرُ للمهندس فما فوق')); return; }
+  xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var wb = XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true }), o = extFilePlan(wb);
+        if (!o){ toast(t('لم أجد في الملف أعمدةَ القرّاء (رقم القارئ · اسم الموقع) ولا الخيام (الكود)')); return; }
+        extBridgeApply(o, true);
+        toast(t('اعتُمد ملفُّ النظام') + ' \u00b7 ' + nm(o.nRd) + ' ' + t('قارئ') + ' \u00b7 ' + nm(o.nTn) + ' ' + t('خيمة')); render(1);
+      } catch (e){ softErr('ملف النظام', e, ''); toast(t('تعذّرت قراءةُ الملف')); }
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+
+extBridgeHashPick();   /* (V37.94) عند التحميل: بياناتُ الإشارة المرجعية إن وُجدت في العنوان */
