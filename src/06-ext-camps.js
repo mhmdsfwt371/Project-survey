@@ -165,7 +165,7 @@ function extOvCard(tentCode, ov, readerInfo, tentMeta){
   return '<div class="card" style="margin:0 0 10px;border-inline-start:4px solid ' + barC + '">'
     + '<div class="card-body">'
     + '<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;margin-bottom:10px">'
-    +   '<div><b class="num" style="font-size:18px">' + esc(bdiText(tentCode)) + '</b>'
+    +   '<div><b class="num" style="font-size:18px">' + bdiText(tentCode) + '</b>'
     +   (group ? ' <span class="hint" style="font-size:13px">— ' + esc(group) + '</span>' : '')
     +   (op ? '<div class="hint" style="font-size:12px;margin-top:2px">' + esc(op) + '</div>' : '') + '</div>'
     +   '<div style="text-align:end">'
@@ -268,7 +268,7 @@ function mtCamps(){
   if (may('settings')) h += extTokCard();
 
   if (!EXT.tok){
-    return h + alertBox('info', t(may('settings') ? 'أضف توكن نظام البطاقات لتشغيل هذه الشاشة.' : 'بياناتُ الإشغال من نظام البطاقات تُعرَض لحسابات المكتب.'));
+    return h + (may('settings') ? alertBox('info', t('أضف توكن نظام البطاقات لتشغيل هذه الشاشة.')) : extSnapView());   /* (V37.81) */
   }
 
   /* تحميل المطابقات */
@@ -297,22 +297,22 @@ function mtCamps(){
     if (!tentId){
       /* خيمة موجودة في القرّاء لكن ما في مطابقة بالكود في قائمة الخيام */
       h += '<div class="card" style="margin:0 0 10px;opacity:.6"><div class="card-body">'
-        + '<b class="num">' + esc(bdiText(m.tentCode || m.serial)) + '</b>'
+        + '<b class="num">' + bdiText(m.tentCode || m.serial) + '</b>'
         + ' <span class="hint">' + esc(t('رُصد القارئ — خيمته غير موجودة في القائمة')) + '</span></div></div>';
       return;
     }
     var cached = EXT.ov[tentId];
     if (!EXT_OV_LOADED[tentId]){
       EXT_OV_LOADED[tentId] = true;
-      extOvLoad(tentId).then(function(){ render(1); });
+      extOvLoad(tentId).then(function(){ extSnapMaybe(); render(1); });   /* (V37.81) لقطةٌ للوزارة */
       h += '<div class="card" style="margin:0 0 10px"><div class="card-body">'
-        + '<b class="num">' + esc(bdiText(m.tentCode)) + '</b>'
+        + '<b class="num">' + bdiText(m.tentCode) + '</b>'
         + ' <span class="hint">⟳ ' + esc(t('يُحمَّل…')) + '</span></div></div>';
       return;
     }
     if (!cached){
       h += '<div class="card" style="margin:0 0 10px"><div class="card-body">'
-        + '<b class="num">' + esc(bdiText(m.tentCode)) + '</b>'
+        + '<b class="num">' + bdiText(m.tentCode) + '</b>'
         + ' <span class="hint">' + esc(t('تعذّر جلب الإشغال')) + '</span></div></div>';
       return;
     }
@@ -360,8 +360,16 @@ function pilotNet(x){
 }
 function pilotNusuk(x){
   var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'' };
-  if (!ser || !EXT.readers) return o;
-  var r = EXT.readers[ser]; if (!r) return o;
+  if (!ser) return o;
+  var r = EXT.readers ? EXT.readers[ser] : null;
+  if (!r){   /* (V37.81) بلا بثٍّ حيّ: من لقطة المكتب */
+    var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
+    if (!Z || Z.ser !== ser) return o;
+    var C = STATE.extSnap.camps && STATE.extSnap.camps[Z.code];
+    o.loc = Z.code || ''; o.at = Date.parse(Z.ts || '') || 0; o.snap = true;
+    if (C){ var tt = C.w + C.wo + C.ot; o.occ = (C.cap ? Math.round(tt / C.cap * 100) + '٪ · ' : '') + tt + ' / ' + C.cap; }
+    return o;
+  }
   o.loc = r.locationName || ''; o.at = Date.parse(r.timestamp || '') || 0;
   var m = EXT_MATCH_STATE && EXT_MATCH_STATE.matched.filter(function(z){ return z.serial === ser; })[0];
   var ov = m && m.tentId && EXT.ov[m.tentId] && EXT.ov[m.tentId].data;
@@ -376,11 +384,13 @@ function pilotKick(){
   if (EXT._plAt && Date.now() - EXT._plAt < 60000) return;
   EXT._plAt = Date.now();
   var tk = (!EXT.tok && !EXT._tokAsked) ? (EXT._tokAsked = true, extTokLoad()) : Promise.resolve(null);
+  if (!may('settings')){ extSnapLoad(); return; }   /* (V37.81) غيرُ المكتب يقرأ اللقطة */
   tk.then(function(){ return extReadersLoad(); }).then(function(){
     if (EXT.tok && !EXT.busy) return extMatchLoad().then(function(st){
       var ids = {}; (st ? st.matched : []).forEach(function(m){
         var p = siteFind(m.point.id); if (p && p.pilot && m.tentId && !ids[m.tentId]){ ids[m.tentId] = 1; extOvLoad(m.tentId); }
       });
+      setTimeout(extSnapMaybe, 4000);   /* (V37.81) */
     });
   }).then(function(){ render(1); }).catch(function(e){ softErr('بيانات نظام البطاقات للتجارب', e, ''); });
 }
@@ -398,7 +408,55 @@ function pilotRowsList(){
     return [x.id, x.name || '', t(x.zone || ''), t(x.type || ''), f ? (f.row.n || '') + (f.row.out ? ' · ' + t(f.row.out) : '') : '\u2014',
             t(insSt), ins && ins.status !== 'مسودّة' ? String(insRevs(ins).length + 1) : '\u2014',
             t(nt.st) + (nt.n > 1 ? ' (' + nt.up + '/' + nt.n + ')' : '') + (nt.src ? ' \u00b7 ' + t(nt.src) : ''), pilotAgo(nt.at),
-            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), nk.loc || (nk.ser ? (EXT.readers ? t('غير ظاهر في نظام البطاقات') : t('يُحمَّل…')) : '\u2014'),
+            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), (nk.loc ? nk.loc + (nk.snap ? ' \u00b7 ' + t('لقطة') : '') : '') || (nk.ser ? (EXT.readers || (STATE.extSnap && !may('settings')) ? t('غير ظاهر في نظام البطاقات') : may('settings') ? t('يُحمَّل…') : t('لا لقطةَ بعد')) : '\u2014'),
             nk.at ? pilotAgo(nk.at) : '\u2014', nk.occ || '\u2014'];
   });
+}
+
+/* ═══ (V37.81) لقطةُ المكتب — الوزارةُ ترى الإشغالَ بلا توكن ═══
+   الإشغالُ يحتاج توكنَ حساب صاحب المشروع، وخوادمُ نظام البطاقات محجوبةٌ خارج المملكة فلا يجلبها
+   الخادم. فجهازُ المكتب الذي يفتح الشاشة يحفظ «الأرقامَ وحدَها» في settings/extSnap — كلَّ ٥ دقائق
+   على الأكثر — ويقرؤها الباقون مع وقت اللقطة. لا توكنَ ولا عنوانَ كاميرا ولا شيءَ غيرَ الأرقام. */
+function extSnapMaybe(){
+  if (!may('settings') || !EXT.tok || !EXT_MATCH_STATE) return;
+  if (EXT._snapAt && Date.now() - EXT._snapAt < 5 * 60000) return;
+  var sites = {}, camps = {}, nOv = 0;
+  EXT_MATCH_STATE.matched.forEach(function(m){
+    sites[m.point.id] = { ser:m.serial, code:m.tentCode || '', ts:(m.reader && m.reader.timestamp) || '' };
+    var o = m.tentId && EXT.ov[m.tentId]; if (!o || !o.data) return;
+    var c = o.data.occupancyStatus || {}, a = o.data.averageTime || {};
+    camps[m.tentCode] = { cap:+c.totalCapacity || 0, w:+c.currentlyOccupied || 0, wo:+c.withoutBracelet || 0, ot:+c.fromOtherCamps || 0,
+                          inT:String(a.insideCamp || ''), trT:String(a.transitTime || ''), at:o.at, grp:(m.tentMeta && m.tentMeta.tentGroup) || '' };
+    nOv++;
+  });
+  if (!Object.keys(sites).length) return;
+  EXT._snapAt = Date.now();
+  var doc = { at:EXT._snapAt, by:STATE.meta.name || '', sites:sites, camps:camps, un:EXT_MATCH_STATE.unmatched.length };
+  STATE.extSnap = doc;
+  CORE.set('cfg', 'extSnap', doc); CORE.saveSoon();
+}
+function extSnapLoad(){
+  if (!FB.ready || !FB.db) return Promise.resolve(null);
+  if (EXT._snapLd && Date.now() - EXT._snapLd < 60000) return Promise.resolve(STATE.extSnap || null);
+  EXT._snapLd = Date.now();
+  return DB.col('settings').doc('extSnap').get().then(function(doc){
+    if (doc && doc.exists){ STATE.extSnap = doc.data(); render(1); }
+    return STATE.extSnap || null;
+  }).catch(function(e){ softErr('لقطة نظام البطاقات', e, ''); return null; });
+}
+/* عرضُ اللقطة لمن لا يملك التوكن — بالكارت نفسِه */
+function extSnapView(){
+  var S = STATE.extSnap; extSnapLoad();
+  if (!S || !S.sites) return alertBox('info', t('لا لقطةَ بعد — تظهر الأرقامُ هنا بعد أول فتحٍ لهذه الشاشة من جهاز المكتب.'));
+  var age = pilotAgo(S.at), old = Date.now() - (+S.at || 0) > 30 * 60000;
+  var h = alertBox(old ? 'warn' : 'info', t('لقطةٌ من جهاز المكتب') + ' \u00b7 ' + t('آخر تحديث') + ' ' + age + (old ? ' \u2014 ' + t('قديمة: تتجدّد حين يفتح المكتبُ الشاشة') : ''));
+  var seen = {};
+  Object.keys(S.sites).forEach(function(id){
+    var z = S.sites[id], c = S.camps && S.camps[z.code];
+    if (!c || seen[z.code]) return; seen[z.code] = 1;
+    h += extOvCard(z.code, { occupancyStatus:{ totalCapacity:c.cap, currentlyOccupied:c.w, withoutBracelet:c.wo, fromOtherCamps:c.ot },
+                             averageTime:{ insideCamp:c.inT || '\u2014', transitTime:c.trT || '\u2014' } },
+                   z.ts ? { timestamp:z.ts } : null, { tentGroup:c.grp || '' });
+  });
+  return h;
 }
