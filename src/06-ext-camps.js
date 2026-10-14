@@ -71,6 +71,7 @@ function extFetch(url, useBearer){
 
 /* ── قائمة القرّاء (5 دقائق cache) ── */
 function extReadersLoad(){
+  if (EXT.bridge) return Promise.resolve(EXT.readers || null);   /* (V37.93) الجسرُ اليدويّ: لا طلبَ من التطبيق */
   if (EXT.readers && Date.now() - EXT.readersAt < 300000) return Promise.resolve(EXT.readers);
   return extFetch(EXT_STREAM, false).then(function(r){
     if (!r.ok) return extFetch(EXT_STREAM, true).then(function(r2){ return r2.ok ? r2.json() : null; });
@@ -87,6 +88,7 @@ function extReadersLoad(){
 
 /* ── قائمة الخيام (ساعة cache) ── */
 function extTentsLoad(){
+  if (EXT.bridge) return Promise.resolve(EXT.tents || null);   /* (V37.93) */
   if (!EXT.tok) return Promise.resolve(null);
   if (EXT.tents && Date.now() - EXT.tentsAt < 3600000) return Promise.resolve(EXT.tents);
   /* perPage=50, نجمع كل الصفحات */
@@ -116,6 +118,7 @@ function extTentsLoad(){
 
 /* ── نظرة عامة لخيمة واحدة (طلب عند الفتح + cache دقيقة) ── */
 function extOvLoad(tentId, forceRefresh){
+  if (EXT.bridge) return Promise.resolve((tentId && EXT.ov[tentId]) ? EXT.ov[tentId].data : null);   /* (V37.93) */
   if (!EXT.tok || !tentId) return Promise.resolve(null);
   if (!forceRefresh && EXT.ov[tentId] && Date.now() - EXT.ov[tentId].at < 60000)
     return Promise.resolve(EXT.ov[tentId].data);
@@ -251,10 +254,11 @@ function mtCamps(){
   var h = '';
 
   /* بطاقة الإعداد — للمهندس فقط */
-  if (may('settings')) h += extTokCard() + ex47Card() + ex47OrphCard();   /* (V37.88) (V37.92) */
+  extBridgeLoad();   /* (V37.93) آخرُ جسرٍ محفوظ — لكلِّ الحسابات */
+  if (may('settings')) h += extBridgeCard() + mtDetails(t('طريقة التوكن — تعمل من موقع النظام فقط'), extTokCard(), '\u{1F511}') + ex47Card() + ex47OrphCard();   /* (V37.88) (V37.92) (V37.93) */
 
-  if (!EXT.tok){
-    return h + (may('settings') ? alertBox('info', t('أضف توكن نظام البطاقات لتشغيل هذه الشاشة.')) : extSnapView());   /* (V37.81) */
+  if (!EXT.tok && !EXT.bridge){
+    return h + (may('settings') ? alertBox('info', t('شغّل أمر الجسر من البطاقة أعلاه والصق ناتجه — فتعمل هذه الشاشة.')) : extSnapView());   /* (V37.81) (V37.93) */
   }
 
   /* تحميل المطابقات */
@@ -425,10 +429,11 @@ function extCheckPill(x){
 function pilotKick(){
   if (EXT._plAt && Date.now() - EXT._plAt < 60000) return;
   EXT._plAt = Date.now();
+  extBridgeLoad();   /* (V37.93) */
   var tk = (!EXT.tok && !EXT._tokAsked) ? (EXT._tokAsked = true, extTokLoad()) : Promise.resolve(null);
   if (!may('settings')){ extSnapLoad(); return; }   /* (V37.81) غيرُ المكتب يقرأ اللقطة */
   tk.then(function(){ return extReadersLoad(); }).then(function(){
-    if (EXT.tok && !EXT.busy) return extMatchLoad().then(function(st){
+    if ((EXT.tok || EXT.bridge) && !EXT.busy) return extMatchLoad().then(function(st){
       var ids = {}; (st ? st.matched : []).forEach(function(m){
         var p = siteFind(m.point.id); if (p && p.pilot && m.tentId && !ids[m.tentId]){ ids[m.tentId] = 1; extOvLoad(m.tentId); }
       });
@@ -460,7 +465,7 @@ function pilotRowsList(){
    الخادم. فجهازُ المكتب الذي يفتح الشاشة يحفظ «الأرقامَ وحدَها» في settings/extSnap — كلَّ ٥ دقائق
    على الأكثر — ويقرؤها الباقون مع وقت اللقطة. لا توكنَ ولا عنوانَ كاميرا ولا شيءَ غيرَ الأرقام. */
 function extSnapMaybe(){
-  if (!may('settings') || !EXT.tok || !EXT_MATCH_STATE) return;
+  if (!may('settings') || !(EXT.tok || EXT.bridge) || !EXT_MATCH_STATE) return;
   if (EXT._snapAt && Date.now() - EXT._snapAt < 5 * 60000) return;
   var sites = {}, camps = {}, nOv = 0;
   EXT_MATCH_STATE.matched.forEach(function(m){
@@ -899,4 +904,108 @@ function ex47OrphCard(){
     + '<datalist id="orList">' + opts + '</datalist>'
     + table(['من الملف', 'سيريال القارئ', 'النقطة على الخريطة', ''], rows)
     + (L.length > 60 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(L.length - 60) + '</p>' : ''));
+}
+
+/* ═══ (V37.93) الجسرُ اليدويّ — نظامُ البطاقات بلا طلبٍ من التطبيق ═══
+   أوّلُ تجربةٍ حقيقية من جوال المالك: «تعذّر الوصول إلى بثّ القرّاء». خوادمُ النظام لا تقبل طلبًا
+   من غير موقعها، وهذا لا يُصلَح من جهتنا. فصار الطلبُ يخرج من موقعهم نفسِه: أمرٌ يُلصَق في
+   الـConsole على nusukcard.net يجمع القرّاءَ والخيامَ وإشغالَ مخيماتنا وينسخها دفعةً، ويُلصَق
+   ناتجُه هنا فيُحفَظ في settings/extBridge لكلِّ الحسابات. ولا يُحفَظ التوكنُ عندنا أصلًا. */
+function extBridgeCodes(){
+  var o = {};
+  (STATE.sites || []).forEach(function(x){
+    if (!x || x.type !== 'مخيم' || x.zone !== 'منى') return;
+    var i = STATE.inss[x.id];
+    if (!(x.pilot || x.nk || x.ex47 || (i && i.status && i.status !== 'مسودّة'))) return;
+    var c = x.nk || x.sign; if (c) o[String(c)] = 1;
+  });
+  return Object.keys(o);
+}
+function extBridgeCmd(){
+  return [
+    "(async()=>{try{",
+    "const T=localStorage.getItem('mj.accessToken');if(!T){alert('سجّل الدخول في النظام أوّلًا');return;}",
+    "const H={Authorization:'Bearer '+T},A='https://api.nusukcard.net/api/v1',W=", JSON.stringify(extBridgeCodes()), ";",
+    "const j=async u=>{const r=await fetch(u,{headers:H});if(!r.ok)throw new Error(u.split('?')[0].split('/').slice(-2).join('/')+' '+r.status);return r.json();};",
+    "const rs=await j('https://event.nusukcard.net/api/rfid/latest/stream');const rd=Array.isArray(rs)?rs:(rs.data||[]);",
+    "let tn=[];for(let p=1;p<=80;p++){const x=await j(A+'/tents?page='+p+'&perPage=100');const d=Array.isArray(x.data)?x.data:[];tn=tn.concat(d);if(d.length<100)break;}",
+    "const k=v=>String(v||'').replace(/\\s+/g,'').toLowerCase(),want=new Set(W.map(k)),pick=tn.filter(t=>want.has(k(t.code)));",
+    "const ov=[];let i=0;const go=async()=>{while(i<pick.length){const t=pick[i++];try{const o=await j(A+'/dashboards/tents/'+t.id+'/overview'),d=o.data||o,c=d.occupancyStatus||{},a=d.averageTime||{};",
+    "ov.push([t.id,c.totalCapacity||0,c.currentlyOccupied||0,c.withoutBracelet||0,c.fromOtherCamps||0,a.insideCamp||'',a.transitTime||'']);}catch(e){}}};",
+    "await Promise.all([go(),go(),go(),go()]);",
+    "const out={v:1,at:Date.now(),rd:rd.map(r=>[r.readerId,r.locationName,r.timestamp]),tn:tn.map(t=>[t.id,t.code,t.latitude,t.longitude,t.tentGroup||'',t.capacity||0]),ov:ov};",
+    "copy(JSON.stringify(out));alert('نُسخت بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — الصقها في التطبيق');",
+    "}catch(e){alert('تعذّر: '+e.message);}})()"
+  ].join('');
+}
+function extBridgeApply(o, save){
+  if (!o || o.v !== 1 || !Array.isArray(o.rd) || !Array.isArray(o.tn)) return false;
+  var R = {}, T = {}, B = {};
+  o.rd.forEach(function(r){ if (r && r[0]) R[extSerKey(r[0])] = { readerId:r[0], locationName:r[1] || '', timestamp:r[2] || '' }; });
+  o.tn.forEach(function(r){
+    if (!r || !r[1]) return;
+    var tn = { id:String(r[0] || ''), code:String(r[1]), latitude:r[2], longitude:r[3], tentGroup:r[4] || '', capacity:r[5] || 0 };
+    if (!T[tn.code]) T[tn.code] = tn;
+    var ck = extCodeKey(tn.code); (B[ck] = B[ck] || []).push(tn);
+  });
+  var at = +o.at || Date.now();
+  EXT.readers = R; EXT.readersAt = at; EXT.tents = T; EXT.tentsBy = B; EXT.tentsAt = at; EXT.rdErr = ''; EXT.err = '';
+  (o.ov || []).forEach(function(v){
+    if (!v || !v[0]) return;
+    EXT.ov[String(v[0])] = { at:at, data:{ occupancyStatus:{ totalCapacity:+v[1] || 0, currentlyOccupied:+v[2] || 0, withoutBracelet:+v[3] || 0, fromOtherCamps:+v[4] || 0 },
+                                            averageTime:{ insideCamp:v[5] || '\u2014', transitTime:v[6] || '\u2014' } } };
+  });
+  EXT.bridge = { at:at, rd:o.rd.length, tn:o.tn.length, ov:(o.ov || []).length, by:o.by || '' };
+  EXT_MATCH_STATE = null; EXT_OV_LOADED = {};
+  if (save){
+    /* القاعدةُ لا تقبل مصفوفةً داخل مصفوفة — يُحفَظ نصًّا واحدًا */
+    CORE.set('cfg', 'extBridge', { at:at, by:STATE.meta.name || '', json:JSON.stringify(o) }); CORE.saveSoon();
+    logEvent('جسرُ نظام البطاقات — ' + o.rd.length + ' قارئ · ' + o.tn.length + ' خيمة · ' + (o.ov || []).length + ' إشغال');
+  }
+  return true;
+}
+function extBridgePaste(){
+  if (!may('settings')){ toast(t('الجسرُ للمهندس فما فوق')); return; }
+  var el = document.getElementById('brIn'), raw = el ? String(el.value || '').trim() : '';
+  if (!raw){ toast(t('الصق ناتجَ الأمر أوّلًا')); return; }
+  var o = null; try { o = JSON.parse(raw); } catch (e){ o = null; }
+  if (!o || !extBridgeApply(o, true)){ toast(t('هذا ليس ناتجَ أمر الجسر — انسخه كاملًا وأعد اللصق')); return; }
+  o.by = STATE.meta.name || '';
+  toast(t('اعتُمد الجسر') + ' \u00b7 ' + nm(o.rd.length) + ' ' + t('قارئ') + ' \u00b7 ' + nm(o.tn.length) + ' ' + t('خيمة')); render(1);
+}
+function extBridgeLoad(){
+  if (!FB.ready || !FB.db) return;
+  if (EXT._brAt && Date.now() - EXT._brAt < 60000) return;
+  EXT._brAt = Date.now();
+  DB.col('settings').doc('extBridge').get().then(function(doc){
+    var d = (doc && doc.exists) ? doc.data() : null; if (!d || !d.json) return;
+    if (EXT.bridge && EXT.bridge.at >= (+d.at || 0)) return;
+    var o = null; try { o = JSON.parse(d.json); } catch (e){ o = null; }
+    if (o && extBridgeApply(o, false)){ EXT.bridge.by = d.by || ''; render(1); }
+  }).catch(function(e){ softErr('جسر نظام البطاقات', e, ''); });
+}
+function extBridgeCopy(){
+  var cmd = extBridgeCmd(), done = function(){ toast(t('نُسخ أمرُ الجسر — الصقه في الـConsole على موقع النظام')); };
+  try {
+    if (navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(cmd).then(done, function(){ EXT._brShow = 1; render(1); }); return; }
+  } catch (e){ LS_ERR = e; }
+  EXT._brShow = 1; render(1);
+}
+function extBridgeCard(){
+  if (!may('settings')) return '';
+  var B = EXT.bridge, old = B && Date.now() - B.at > 6 * 3600000;
+  var st = B ? alertBox(old ? 'warn' : 'success', t('آخر جسر') + ' ' + pilotAgo(B.at) + ' \u00b7 ' + B.rd + ' ' + t('قارئ') + ' \u00b7 ' + B.tn + ' ' + t('خيمة') + ' \u00b7 ' + B.ov + ' ' + t('إشغال') + (old ? ' \u2014 ' + t('قديم: جدّده') : ''))
+             : alertBox('info', t('لا جسرَ بعد'));
+  return card('\u{1F309} ' + t('جسر نظام البطاقات'),
+    st
+    + '<ol class="hint" style="margin:8px 0;padding-inline-start:18px;line-height:1.9">'
+    + '<li>' + esc(t('افتح موقع النظام على اللاب وسجّل الدخول')) + '</li>'
+    + '<li>' + esc(t('اضغط «انسخ أمر الجسر» هنا')) + '</li>'
+    + '<li>' + esc(t('هناك: F12 ← Console ← الصق ← Enter (وإن رفض كروم اللصق اكتب allow pasting)')) + '</li>'
+    + '<li>' + esc(t('انتظر رسالة «نُسخت بيانات الجسر» ثم الصق الناتج هنا واضغط «اعتمد»')) + '</li></ol>'
+    + '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F4CB} ' + t('انسخ أمر الجسر'), 'btn-primary btn-sm', ' data-brcopy="1"')
+    + '<span class="hint" style="margin:0">' + esc(t('يجمع إشغالَ مخيماتنا المربوطة والمركَّبة')) + ' (' + nm(extBridgeCodes().length) + ')</span></div>'
+    + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:11px">' + esc(extBridgeCmd()) + '</textarea>' : '')
+    + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:11px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
+    + '<div class="actions" style="margin:6px 0 0">' + btn('\u2713 ' + t('اعتمد'), 'btn-secondary btn-sm', ' data-brok="1"') + '</div>');
 }
