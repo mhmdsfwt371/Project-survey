@@ -177,12 +177,25 @@ function siteEditSave(id){
   var full = maySiteEdit();   /* (V28.6) المشرفُ لا يمسُّ التصنيف — تبقى قيمُه كما هي */
   var patch = { name:name, sq:g('seSq'), sign:g('seSign'), co:g('seCo'), work:g('seWork'), inout:g('seInout'), region:full ? g('seRegion') : (x.region || ''),   /* (V27.4) */
                 tg:full ? (g('seZone') || taxOf(x).g) : taxOf(x).g, tt:full ? (g('seType') || taxOf(x).t) : taxOf(x).t, lat:lat, lng:lng, edBy:STATE.meta.name || '', edAt:Date.now() };   /* (V27.2) المشعرُ والنوعُ المعروضان؛ الأصلُ (zone/type) يبقى */
+  /* (V37.89) الشبكةُ وعناوينُ الأجهزة — تُتحقَّق صيغتُها، والفارغُ يُشتقّ من الشبكة */
+  var ipOk = function(v){ return !v || /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.test(v) && v.split('.').every(function(q){ return +q <= 255; }); };
+  var net = g('seNet').replace(/\/\d+$/, '').replace(/\.0$/, '').replace(/\.+$/, '');
+  if (net && !(/^\d{1,3}\.\d{1,3}\.\d{1,3}$/.test(net) && net.split('.').every(function(q){ return +q <= 255; }))){ toast(t('الشبكةُ بصيغة 172.16.230 — ثلاثة أجزاء')); return false; }
+  var ips = { ipRtr:g('seIpRtr'), ipRdr:g('seIpRdr'), ipCam:g('seIpCam') };
+  if (!ipOk(ips.ipRtr) || !ipOk(ips.ipRdr) || !ipOk(ips.ipCam)){ toast(t('عنوانٌ بصيغةٍ غيرِ صحيحة — مثال 172.16.230.2')); return false; }
+  if (document.getElementById('seNet')){ patch.net = net; patch.ipRtr = ips.ipRtr; patch.ipRdr = ips.ipRdr; patch.ipCam = ips.ipCam; }
+  if (document.getElementById('seS47' + s47Fields()[0][0])){
+    var base47 = s47Of(x.id) || {}, o47 = {}, any = false;
+    s47Fields().forEach(function(f){ var v = g('seS47' + f[0]); if (v !== String(base47[f[0]] == null ? '' : base47[f[0]])){ o47[f[0]] = v; any = true; } });
+    var prev = JSON.stringify(x.s47o || {}), nxt = JSON.stringify(any ? o47 : {});
+    if (prev !== nxt) patch.s47o = any ? o47 : {};
+  }
   if (isJmr(x) && document.getElementById('seGate')){   /* (V25.4) مدخل/مخرج والدور — ويُضافان إلى الاسم */
     var gt = g('seGate'), fl = g('seFloor');
     patch.gate = gt; patch.floor = fl === '' ? '' : +fl;
     patch.name = jmrNameApply(name, gt, fl === '' ? null : +fl);
   }
-  var chg = Object.keys(patch).filter(function(k){ return k !== 'edBy' && k !== 'edAt' && String(x[k] == null ? '' : x[k]) !== String(patch[k]); });
+  var chg = Object.keys(patch).filter(function(k){ return k !== 'edBy' && k !== 'edAt' && (k === 's47o' ? JSON.stringify(x.s47o || {}) !== JSON.stringify(patch.s47o) : String(x[k] == null ? '' : x[k]) !== String(patch[k])); });
   if (!chg.length){ toast(t('لا تغيير')); SITE_ED = 0; return true; }
   Object.assign(x, patch);
   siteOvSet(id, patch);
@@ -288,6 +301,18 @@ function siteDropLocal(id){
   if (STATE.hiddenSites) STATE.hiddenSites = STATE.hiddenSites.filter(function(y){ return y.id !== id; });
   if (STATE.sites.length !== n){ SITE_IX = null; SITE_TOK = null; if (typeof statBump === 'function') statBump(); }
 }
+/* (V37.89) شبكةُ النقطة: المعدَّلةُ ثم ما في بيانات ١٤٤٧ — بثلاثة أجزاءٍ بلا ‎.0/24 */
+function siteNetBase(x){
+  var v = (typeof S47 !== 'undefined' && S47) ? s47Of(x.id) : null;
+  return String((x && x.net) || (v && v.sub) || '').trim().replace(/\/\d+$/, '').replace(/\.0$/, '').replace(/\.+$/, '');
+}
+function s47Fields(){ return [['nat','الجنسية'], ['dom','الجهة المصرِّحة'], ['cap','السعة المسجّلة ١٤٤٧'], ['pct','نسبة إنجاز ١٤٤٧'],
+                  ['dj','عدد أجهزة ١٤٤٧'], ['tst','حالة الاختبار'], ['obst','عائقٌ مسجَّل'], ['iss','ملاحظةٌ مسجَّلة'], ['team','الفريق المسجَّل']]; }
+function s47View(x){
+  var v = (typeof S47 !== 'undefined' && S47) ? s47Of(x.id) : null;
+  if (!v && !(x && x.s47o && Object.keys(x.s47o).length)) return null;
+  return Object.assign({}, v || {}, (x && x.s47o) || {});
+}
 function siteEditHtml(x){
   var opt = function(list, cur){ return list.map(function(v){ return '<option value="' + esc(v) + '"' + (v === cur ? ' selected' : '') + '>' + esc(v ? t(v) : '— ' + t('بلا') + ' —') + '</option>'; }).join(''); };
   var cos = []; STATE.sites.forEach(function(y){ if (y.co && cos.indexOf(y.co) < 0) cos.push(y.co); });
@@ -313,6 +338,20 @@ function siteEditHtml(x){
           + '</div>'
           + '<p class="hint" style="margin:0 0 8px">' + esc(t('يُضاف الدورُ والبوابةُ إلى اسم النقطة فيظهران في الخريطة والقوائم.')) + '</p>'
         : '')
+    /* (V37.89) طلبُ المالك: «كلُّ صفٍّ في البطاقة يُعدَّل من هنا» — الشبكةُ وعناوينُ الأجهزة وبياناتُ ١٤٤٧ */
+    + fld('نقطة الاتصال (الشبكة)', '<input id="seNet" dir="ltr" inputmode="decimal" placeholder="172.16.230" value="' + esc(siteNetBase(x)) + '">')
+    + '<div class="grid cols-3">'
+    + fld('عنوان الراوتر', '<input id="seIpRtr" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.1' : '') + '" value="' + esc(x.ipRtr || '') + '">')
+    + fld('عنوان القارئ', '<input id="seIpRdr" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.2' : '') + '" value="' + esc(x.ipRdr || '') + '">')
+    + fld('عنوان الكاميرا', '<input id="seIpCam" dir="ltr" inputmode="decimal" placeholder="' + esc(siteNetBase(x) ? siteNetBase(x) + '.3' : '') + '" value="' + esc(x.ipCam || '') + '">')
+    + '</div>'
+    + '<p class="hint" style="margin:0 0 8px">' + esc(t('عنوانٌ فارغٌ يُشتقّ من الشبكة: ‎.1 راوتر و‎.2 قارئ و‎.3 كاميرا.')) + '</p>'
+    + (function(){
+        var v = s47View(x); if (!v) return '';
+        return '<details class="mfu-add" style="margin:0 0 8px"><summary>' + esc(t('بيانات موسم ١٤٤٧')) + '</summary><div class="grid cols-2" style="margin-top:8px">'
+          + s47Fields().map(function(f){ return fld(f[1], '<input id="seS47' + f[0] + '" dir="auto" value="' + esc(v[f[0]] || '') + '">'); }).join('')
+          + '</div></details>';
+      })()
     + '<div class="grid cols-2">'
     + fld('خط العرض', '<input id="seLat" type="number" step="0.000001" dir="ltr" value="' + x.lat + '">')
     + fld('خط الطول', '<input id="seLng" type="number" step="0.000001" dir="ltr" value="' + x.lng + '">')
@@ -933,7 +972,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
           + row('وجه العمل', esc(t(x.work)), 'work')
           + row('المنطقة', esc(x.region || '\u2014'), 'region')
           + row('الدور', siteFloor(x) != null ? esc(t(floorName(siteFloor(x)))) : '', 'floor')   /* (V22.2) */
-          + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); }) + netRows(x, function(k, v){ return row(k, v); })
+          + camInfoRows(x, function(k, v){ return row(k, v); }) + camxRows(x, function(k, v){ return row(k, v); })   /* (V37.89) «عناوين الأجهزة» المكرَّرةُ هنا رُفعت — الصفوفُ أدناه تحملها وتُعدَّل */
           + row('شركة الخدمة / المشغّل', esc(x.co), 'co')
           + row('تصنيف الحجاج', esc(t(x.inout === 'خارج' ? 'حجاج خارج' : (x.inout === 'داخل' ? 'حجاج داخل' : x.inout))), 'inout')
       /* بيانةُ الموسم الماضي في التفاصيل كما هي في النموذج: من فتح النقطةَ
@@ -942,24 +981,19 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
           if (!S47){ s47Load(); return ''; }
           var v = s47Of(x.id);
           if (!v) return '';
-          return [['nat','الجنسية'], ['dom','الجهة المصرِّحة'],
-                  ['cap','السعة المسجّلة ١٤٤٧'], ['pct','نسبة إنجاز ١٤٤٧'],
-                  ['dj','عدد أجهزة ١٤٤٧'], ['tst','حالة الاختبار'],
-                  ['obst','عائقٌ مسجَّل'], ['iss','ملاحظةٌ مسجَّلة'],
-                  ['team','الفريق المسجَّل']]
+          v = s47View(x);   /* (V37.89) المعدَّلُ يتقدّم الأصل — وكلُّ صفٍّ يُعدَّل */
+          return s47Fields()
             .filter(function(r2){ return v[r2[0]]; })
-            .map(function(r2){ return row(r2[1], esc(v[r2[0]])); }).join('');
+            .map(function(r2){ return row(r2[1], esc(v[r2[0]]), 's47' + r2[0]); }).join('');
         })()
       /* نقطةُ الاتصال والعناوينُ الثلاثةُ المشتقّةُ منها */
       + (function(){
-          var v = S47 ? s47Of(x.id) : null;
-          var base = x.net || (v && v.sub) || '';
-          if (!base) return '';
-          base = String(base).replace(/\.+$/, '');
-          return row('نقطة الاتصال', '<span class="num">' + esc(base) + '.0/24</span>')
-            + row('راوتر',  '<span class="num">' + esc(x.ipRtr || (base + '.1')) + '</span>')
-            + row('قارئ',   '<span class="num">' + esc(x.ipRdr || (base + '.2')) + '</span>')
-            + row('كاميرا', '<span class="num">' + esc(x.ipCam || (base + '.3')) + '</span>');
+          var base = siteNetBase(x);
+          if (!base) return maySiteEditBasic() ? row('نقطة الاتصال', '<span class="hint" style="margin:0">' + esc(t('غير مسجّلة')) + '</span>', 'net') : '';
+          return row('نقطة الاتصال', '<span class="num" dir="ltr">' + esc(base) + '.0/24</span>', 'net')   /* (V37.89) كلُّ عنوانٍ يُعدَّل */
+            + row('راوتر',  '<span class="num" dir="ltr">' + esc(x.ipRtr || (base + '.1')) + '</span>', 'ipRtr')
+            + row('قارئ',   '<span class="num" dir="ltr">' + esc(x.ipRdr || (base + '.2')) + '</span>', 'ipRdr')
+            + row('كاميرا', '<span class="num" dir="ltr">' + esc(x.ipCam || (base + '.3')) + '</span>', 'ipCam');
         })()
           + row('الإحداثيات', '<span class="num">' + x.lat.toFixed(6) + ', ' + x.lng.toFixed(6) + '</span>', 'lat')
           + '</div>')

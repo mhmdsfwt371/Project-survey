@@ -1765,10 +1765,10 @@ PAGE.survey = { m:'الميدان', t:'متابعة العمل الميداني'
         + '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F4F7} ' + t('الصور') + ' (' + nm(nPh) + ')', (SVA_PH === x.id ? 'btn-primary' : 'btn-secondary') + ' btn-sm', ' data-svph="' + esc(x.id) + '"') + '</div>'
         + (SVA_PH === x.id ? photoGalleryHtml(x.id) : '')
         + (rv === 'revisit' && r.revisitNote
-            ? alertBox('warn', t('رُدَّت') + ' \u2014 ' + r.revisitNote + ' \u00b7 ' + esc(dispName(r.revisitBy) || '')) : '')
+            ? alertBox('warn', t('رُدَّت') + ' \u2014 ' + r.revisitNote + ' \u00b7 ' + (dispName(r.revisitBy) || '')) : '')   /* (V37.89) alertBox يهرّب بنفسه */
         + (rv === 'approved'
-            ? alertBox('success', t('اعتمدها') + ' ' + esc(dispName(r.reviewBy) || '\u2014') + ' \u00b7 <span class="num">'
-                + esc(fmtDate(r.reviewAt || 0)) + '</span>'
+            ? alertBox('success', t('اعتمدها') + ' ' + (dispName(r.reviewBy) || '\u2014') + ' \u00b7 '   /* (V37.89) كان وسمُ span يُهرَّب فيظهر نصًّا */
+                + fmtDate(r.reviewAt || 0)
                 + (so ? ' \u00b7 ' + t('الحل') + ': ' + t(so.status) : ' \u00b7 ' + t('بلا حلٍّ بعد'))) : '');
       var actions = '';
       if (rv === 'pending' && may('approve')){
@@ -2751,6 +2751,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.89', d:'2026-10-14', notes:[
+      'تعديل الشبكة وعناوين الأجهزة وبيانات ١٤٤٧ من بطاقة بيانات الموقع، وإصلاح سطر الاعتماد' ] },
   { v:'V37.88', d:'2026-10-14', notes:[
       'استيراد بيانات موسم ١٤٤٧ من ملف تسليمات الممرات واقتراح الربط بقارئ ١٤٤٧' ] },
   { v:'V37.87', d:'2026-10-14', notes:[

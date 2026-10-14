@@ -3547,7 +3547,7 @@ function clickAPart7(e){
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }
   if (e.target.closest('[data-edit]')){
-    if (maySiteEditBasic()){ SITE_ED = 1; render(1);   /* (V28.6) المشرفُ أيضًا */ var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor' }[fk] || 'seName'; var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
+    if (maySiteEditBasic()){ SITE_ED = 1; render(1);   /* (V28.6) المشرفُ أيضًا */ var fk = e.target.closest('[data-edit]').getAttribute('data-edit') || 'name', fid = { name:'seName', sq:'seSq', sign:'seSign', zone:'seZone', type:'seType', work:'seWork', region:'seRegion', lat:'seLat', floor:'seFloor', co:'seCo', inout:'seInout', net:'seNet', ipRtr:'seIpRtr', ipRdr:'seIpRdr', ipCam:'seIpCam' }[fk] || (/^s47/.test(fk) ? 'seS47' + fk.slice(3) : 'seName');   /* (V37.89) */ var ne = document.getElementById(fid) || document.getElementById('seName'); if (ne && ne.closest && ne.closest('details')) ne.closest('details').open = true; if (ne){ ne.focus(); if (ne.scrollIntoView) ne.scrollIntoView({ block:'center' }); } }   /* (V27.4) يفتح النموذجَ على الحقل المطلوب */
     else toast(t('التعديل يمرّ باعتماد المهندس'));
     return true; }
   var sts = e.target.closest('[data-sitesave]');

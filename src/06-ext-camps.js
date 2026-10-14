@@ -575,7 +575,7 @@ function extCamCheck(x, tent){
     }
     return { st:'wait' };
   }
-  var pre = String(((STATE.inss[x.id] || {}).prefix) || '').trim();
+  var pre = String(((STATE.inss[x.id] || {}).prefix) || siteNetBase(x) || '').trim();   /* (V37.89) أو شبكةُ النقطة */
   if (!d.ip || !pre) return { st:'na' };
   var a = d.ip.split('.').slice(0, 3).join('.'), b = pre.split('.').slice(0, 3).join('.');
   return { st: a === b ? 'ok' : 'bad' };
