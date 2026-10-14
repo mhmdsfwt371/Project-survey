@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.81</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.82</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-d1c6de047c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-bac00a5613.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -26924,6 +26924,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.82', d:'2026-10-14', notes:[
+      'أصناف التجربة: السعر في خانته لا بجوار الاسم' ] },
   { v:'V37.81', d:'2026-10-14', notes:[
       'لقطة المكتب: الوزارة ترى إشغال المخيمات بلا توكن' ] },
   { v:'V37.80', d:'2026-10-14', notes:[
@@ -28854,13 +28856,13 @@ function trialPickHtml(r){
     + '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
     + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + (items.length ? ' <span class="num">' + nm(items.length) + '</span>' : '') + '</label>'
     + (items.length
-        ? '<select id="itC' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
-          + items.map(function(i){ return '<option value="' + esc(i.code) + '">' + esc(i.name) + (+i.price ? ' \u00b7 ' + nm(+i.price) + ' ' + esc(t('ريال')) : '') + '</option>'; }).join('')
+        ? '<select id="itC' + esc(r.id) + '" data-tric="' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
+          + items.map(function(i){ return '<option value="' + esc(i.code) + '" data-p="' + (+i.price || 0) + '">' + esc(i.name) + '</option>'; }).join('')   /* (V37.82) السعرُ في خانته لا بجوار الاسم */
           + '</select><input id="itN' + esc(r.id) + '" dir="auto" style="margin-top:4px" placeholder="' + esc(t('أو اكتب صنفًا خارج الكتالوج')) + '">'
         : '<input id="itN' + esc(r.id) + '" dir="auto" placeholder="' + esc(t(r.type ? 'لا قطعَ لهذا النوع في الكتالوج — اكتب الصنف' : 'اختر المشعرَ والنوعَ لتظهر قطعُه')) + '">')
     + '</div>'
     + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
-    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('من الكتالوج')) + '"' : '') + '></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('يُملأ من الكتالوج عند الاختيار')) + '"' : '') + '></div>'
     + '</div><div class="actions" style="margin:6px 0 0">'
     + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"')
     + (items.length ? btn('\u{1F4CB} ' + t('حمّل قطعَ النوع كلَّها'),'btn-quiet btn-sm',' data-trkit="' + esc(r.id) + '"') : '')
@@ -38126,6 +38128,16 @@ document.addEventListener('change', function(e){
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  /* (V37.82) اختيارُ قطعةٍ يملأ «سعر الوحدة» بسعر الكتالوج — ويبقى قابلًا للتعديل؛ وما كتبه المستخدمُ بيده لا يُكتَب فوقه */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-tric')){
+    var tp = document.getElementById('itP' + t0.getAttribute('data-tric')), op = t0.options[t0.selectedIndex];
+    if (tp && (!tp.value || tp.getAttribute('data-auto') === '1')){
+      var catP = op ? +(op.getAttribute('data-p') || 0) : 0;
+      tp.value = catP ? String(catP) : ''; tp.setAttribute('data-auto', catP ? '1' : '0');
+    }
+    return;
+  }
+  if (t0 && t0.id && /^itP/.test(t0.id)) t0.setAttribute('data-auto', '0');   /* كتب بيده — لا يُستبدَل */
   if (t0 && t0.hasAttribute && (t0.hasAttribute('data-trz') || t0.hasAttribute('data-trt'))){ trialPick(t0.getAttribute(t0.hasAttribute('data-trz') ? 'data-trz' : 'data-trt'), t0.hasAttribute('data-trz') ? 'zone' : 'type', t0.value); return; }   /* (V37.76) مشعرُ التجربة ونوعُها */
   /* لونُ النوع وشكلُه: يُحفَظان عند الاختيار لا مع كلِّ حركةٍ في المنتقي (V17.60) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tyc')){ typeSet(t0.getAttribute('data-tyc'), { c:t0.value }); render(1); return; }

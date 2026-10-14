@@ -705,13 +705,13 @@ function trialPickHtml(r){
     + '<div class="grid cols-3" style="gap:6px;margin:6px 0 0">'
     + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الصنف')) + (items.length ? ' <span class="num">' + nm(items.length) + '</span>' : '') + '</label>'
     + (items.length
-        ? '<select id="itC' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
-          + items.map(function(i){ return '<option value="' + esc(i.code) + '">' + esc(i.name) + (+i.price ? ' \u00b7 ' + nm(+i.price) + ' ' + esc(t('ريال')) : '') + '</option>'; }).join('')
+        ? '<select id="itC' + esc(r.id) + '" data-tric="' + esc(r.id) + '"><option value="">' + esc(t('اختر قطعةً من النوع')) + '</option>'
+          + items.map(function(i){ return '<option value="' + esc(i.code) + '" data-p="' + (+i.price || 0) + '">' + esc(i.name) + '</option>'; }).join('')   /* (V37.82) السعرُ في خانته لا بجوار الاسم */
           + '</select><input id="itN' + esc(r.id) + '" dir="auto" style="margin-top:4px" placeholder="' + esc(t('أو اكتب صنفًا خارج الكتالوج')) + '">'
         : '<input id="itN' + esc(r.id) + '" dir="auto" placeholder="' + esc(t(r.type ? 'لا قطعَ لهذا النوع في الكتالوج — اكتب الصنف' : 'اختر المشعرَ والنوعَ لتظهر قطعُه')) + '">')
     + '</div>'
     + '<div class="field" style="margin:0"><label class="mini">' + esc(t('الكمية')) + '</label><input id="itQ' + esc(r.id) + '" type="number" min="0" step="1" inputmode="numeric" value="1"></div>'
-    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('من الكتالوج')) + '"' : '') + '></div>'
+    + '<div class="field" style="margin:0"><label class="mini">' + esc(t('سعر الوحدة')) + '</label><input id="itP' + esc(r.id) + '" type="number" min="0" step="0.01" inputmode="decimal"' + (items.length ? ' placeholder="' + esc(t('يُملأ من الكتالوج عند الاختيار')) + '"' : '') + '></div>'
     + '</div><div class="actions" style="margin:6px 0 0">'
     + btn('\u2795 ' + t('أضِف الصنف'),'btn-secondary btn-sm',' data-tritem="' + esc(r.id) + '"')
     + (items.length ? btn('\u{1F4CB} ' + t('حمّل قطعَ النوع كلَّها'),'btn-quiet btn-sm',' data-trkit="' + esc(r.id) + '"') : '')

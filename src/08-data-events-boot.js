@@ -4755,6 +4755,16 @@ document.addEventListener('change', function(e){
   var wdyF = t0 && t0.id ? ({ 'wdyMon':'mon', 'wdyDay':'day', 'wdyH1':'h1', 'wdyH2':'h2' })[t0.id] : '';   /* (V24.0) مرشّحاتُ ملخص العمل اليومي */
   if (wdyF){ WDY[wdyF] = (wdyF === 'h1' || wdyF === 'h2') ? +t0.value : t0.value; if (wdyF === 'mon') WDY.day = ''; WDY.pg = 1; render(1); return; }
   if (t0 && t0.id === 'asnTo'){ ASN_TO = t0.value; render(1); return; }
+  /* (V37.82) اختيارُ قطعةٍ يملأ «سعر الوحدة» بسعر الكتالوج — ويبقى قابلًا للتعديل؛ وما كتبه المستخدمُ بيده لا يُكتَب فوقه */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-tric')){
+    var tp = document.getElementById('itP' + t0.getAttribute('data-tric')), op = t0.options[t0.selectedIndex];
+    if (tp && (!tp.value || tp.getAttribute('data-auto') === '1')){
+      var catP = op ? +(op.getAttribute('data-p') || 0) : 0;
+      tp.value = catP ? String(catP) : ''; tp.setAttribute('data-auto', catP ? '1' : '0');
+    }
+    return;
+  }
+  if (t0 && t0.id && /^itP/.test(t0.id)) t0.setAttribute('data-auto', '0');   /* كتب بيده — لا يُستبدَل */
   if (t0 && t0.hasAttribute && (t0.hasAttribute('data-trz') || t0.hasAttribute('data-trt'))){ trialPick(t0.getAttribute(t0.hasAttribute('data-trz') ? 'data-trz' : 'data-trt'), t0.hasAttribute('data-trz') ? 'zone' : 'type', t0.value); return; }   /* (V37.76) مشعرُ التجربة ونوعُها */
   /* لونُ النوع وشكلُه: يُحفَظان عند الاختيار لا مع كلِّ حركةٍ في المنتقي (V17.60) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tyc')){ typeSet(t0.getAttribute('data-tyc'), { c:t0.value }); render(1); return; }
