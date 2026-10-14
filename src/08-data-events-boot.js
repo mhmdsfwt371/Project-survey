@@ -3355,6 +3355,7 @@ function clickAPart5(e){
   var nks = e.target.closest('[data-nksave]'); if (nks){ var nid = nks.getAttribute('data-nksave'), nin = document.getElementById('nkIn' + nid); extNkSave(nid, nin ? nin.value : ''); return true; }   /* (V37.86) */
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
+  if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
   var nkg = e.target.closest('[data-nksug]'); if (nkg){ var sp = nkg.getAttribute('data-nksug').split('|'); extNkSave(sp[0], sp.slice(1).join('|')); return true; }
   var dsd = e.target.closest('[data-demostd]'); if (dsd){ demoStdSave(dsd.getAttribute('data-demostd')); return true; }   /* (V37.78) */
   var trk = e.target.closest('[data-trkit]'); if (trk){ trialKitLoad(trk.getAttribute('data-trkit')); return true; }   /* (V37.76) */
@@ -4794,6 +4795,7 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtst')){ wtSet(t0.getAttribute('data-wtst'), { st:t0.value }); toast(t(t0.value)); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtfile')){ if (t0.files && t0.files[0]) wtImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-ex47')){ if (t0.files && t0.files[0]) ex47Import(t0.files[0]); return; }   /* (V37.88) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tname')){
     var tmn = teamOf(CTEAM_CUR);
     if (tmn){ tmn.n = t0.value || tmn.n; CORE.dirty('teams', tmn.id, tmn); render(1); }

@@ -251,7 +251,7 @@ function mtCamps(){
   var h = '';
 
   /* بطاقة الإعداد — للمهندس فقط */
-  if (may('settings')) h += extTokCard();
+  if (may('settings')) h += extTokCard() + ex47Card();   /* (V37.88) */
 
   if (!EXT.tok){
     return h + (may('settings') ? alertBox('info', t('أضف توكن نظام البطاقات لتشغيل هذه الشاشة.')) : extSnapView());   /* (V37.81) */
@@ -532,11 +532,18 @@ function extNames(){
 function extLinkedBy(){
   var o = {}; (STATE.sites || []).forEach(function(x){ if (x && x.nk) o[extNameKey(x.nk)] = x.id; }); return o;
 }
-function extSuggest(x){
-  if (!x) return '';
-  var ts = extTentForSite(x); if (ts) return String(ts.t.code);
+function extSuggest(x){ var g = extSuggestSrc(x); return g ? g.v : ''; }
+/* (V37.88) مصادرُ الاقتراح بالترتيب: الشاخصُ والقرب ← قارئُ التركيب ← قارئُ موسم ١٤٤٧ ← اسمٌ لاتينيٌّ في اسم النقطة */
+function extSuggestSrc(x){
+  if (!x) return null;
+  var ts = extTentForSite(x); if (ts) return { v:String(ts.t.code), src:'الشاخص' };
   var ser = extReaderSerial(STATE.inss[x.id]), rd = (ser && EXT.readers) ? EXT.readers[extSerKey(ser)] : null;
-  return (rd && rd.locationName) ? String(rd.locationName) : '';
+  if (rd && rd.locationName) return { v:String(rd.locationName), src:'القارئ' };
+  var o = x.ex47 && x.ex47.rdr && EXT.readers ? EXT.readers[extSerKey(x.ex47.rdr)] : null;
+  if (o && o.locationName) return { v:String(o.locationName), src:'قارئ ١٤٤٧' };
+  var M = extNames(), m = /[A-Za-z][A-Za-z0-9_\-.\/]{2,}/.exec(String(x.name || ''));
+  if (M && m && M[extNameKey(m[0])]) return { v:M[extNameKey(m[0])].name, src:'اسم النقطة' };
+  return null;
 }
 function extNkSave(id, val){
   if (!may('settings')){ toast(t('الربطُ للمهندس فما فوق')); return; }
@@ -615,9 +622,9 @@ function extBulkPlan(){
     if (!x) return;
     if (x.nk){ P.linked++; if (!M[extNameKey(x.nk)]) P.stale.push(x.id); return; }
     P.unlinked++;
-    var sg = extSuggest(x); if (!sg){ P.noSug++; return; }
-    var k = extNameKey(sg);
-    (want[k] = want[k] || []).push({ id:x.id, name:x.name || x.id, type:x.type || '', zone:x.zone || '', sug:sg, src:extTentForSite(x) ? 'الشاخص' : 'القارئ' });
+    var sgs = extSuggestSrc(x); if (!sgs){ P.noSug++; return; }
+    var sg = sgs.v, k = extNameKey(sg);
+    (want[k] = want[k] || []).push({ id:x.id, name:x.name || x.id, type:x.type || '', zone:x.zone || '', sug:sg, src:sgs.src });
   });
   Object.keys(want).forEach(function(k){
     var L = want[k];
@@ -652,4 +659,100 @@ function extBulkApply(){
   EXT_MATCH_STATE = null;
   logEvent('ربطٌ جماعيٌّ بنظام البطاقات — ' + P.apply.length + ' نقطة · تعارض ' + P.conflicts.length);
   toast(t('رُبطت') + ' ' + nm(P.apply.length) + ' ' + t('نقطة')); render(1);
+}
+
+/* ═══ (V37.88) بياناتُ موسم ١٤٤٧ — تُستورَد من ملف «تسليمات الممرات» كما هو ═══
+   تُركَّب النقاطُ هذا الموسمَ بأجهزة ١٤٤٧ نفسِها. وقارئُ ١٤٤٧ ما زال مسجَّلًا في نظام البطاقات،
+   فسيريالُه يكشف اسمَ موقعه هناك — اقتراحُ ربطٍ لكلِّ نقطةٍ قبل تركيبها.
+   يُقرأ في المتصفح وحدَه، ويُحفَظ لكلِّ نقطةٍ: سيريالُ القارئ والراوتر والكاميرا، وشبكتُها
+   (أولُ ثلاثة أجزاء)، واسمُها في الملف، والمهندسُ والتاريخ. لا تُقرأ أعمدةُ المستخدم وكلمات
+   المرور والواي فاي والشرائح والعناوين الفيزيائية أصلًا. المخيمُ برقمه («Camp4-547» = شاخص 4/547 في منى)،
+   والممرُّ باسمه («SH 56-24» = Path-SH56-24، و«SH1-L» في الممر المظلل = Shaded-1L) ثم بالقرب ٦٠ مترًا. */
+function ex47Net(ip){ var m = /^(\d+\.\d+\.\d+)\.\d+$/.exec(String(ip || '').trim()); return m ? m[1] : ''; }
+function ex47Date(v){ return (v && typeof v.getTime === 'function' && !isNaN(v.getTime())) ? v.toISOString().slice(0, 10) : (/\d{4}-\d{2}-\d{2}/.exec(String(v || '')) || [''])[0]; }
+function ex47Plan(wb){
+  var find = function(re){ var n = wb.SheetNames.filter(function(k){ return re.test(k); })[0]; return n ? XLSX.utils.sheet_to_json(wb.Sheets[n], { header:1, raw:true, defval:'' }) : null; };
+  var C = find(/camps/i), Pt = find(/paths/i), plan = { set:{}, campsN:0, pathsN:0, miss:[] };
+  if (!C && !Pt) return null;
+  var S = function(v){ return String(v == null ? '' : v).replace(/\u00a0/g, ' ').trim(); };
+  var mina = {}, cors = [];
+  (STATE.sites || []).forEach(function(x){
+    if (x.zone !== 'منى') return;
+    if (x.type === 'مخيم' && x.sign) mina[String(x.sign).toUpperCase()] = x;
+    else if (x.type !== 'مخيم'){
+      var m = /Path-([A-Za-z0-9_\-.]+)/i.exec(String(x.name || ''));
+      cors.push({ x:x, k:m ? extNameKey(m[1]) : '' });
+    }
+  });
+  (C || []).forEach(function(r, i){
+    if (i < 2) return; var nm0 = S(r[0]); if (!nm0) return;
+    var m = /^cam(?:p)?\s*[-_ ]?\s*([0-9a-z]+)\s*[-_\/. ]+\s*(\d+)\s*$/i.exec(nm0); plan.campsN++;
+    var x = m ? mina[(m[1] + '/' + m[2]).toUpperCase()] : null;
+    if (!x){ plan.miss.push(nm0); return; }
+    plan.set[x.id] = { nm:nm0, rtr:S(r[8]), rdr:S(r[11]), cam:S(r[16]), net:ex47Net(r[3]) || ex47Net(r[10]), eng:S(r[17]), at:ex47Date(r[18]) };
+  });
+  var cur = null, flush = function(){
+    if (!cur) return; plan.pathsN++;
+    var k = extNameKey(cur.nm), sh = /^(?:path-?)?sh\s*-?\s*([1-7])\s*-?\s*([lr])$/i.exec(cur.nm.replace(/\s+/g, ''));
+    var alias = sh ? extNameKey('shaded' + sh[1] + sh[2]) : '';
+    var hit = cors.filter(function(c){ return c.k && (c.k === k || c.k === k.replace(/^path/, '') || ('path' + c.k) === k || (alias && c.k === alias)); })[0];
+    if (!hit && cur.lat && cur.lng){
+      var best = null; cors.forEach(function(c){ var d = geoDist([cur.lat, cur.lng], [+c.x.lat, +c.x.lng]); if (!best || d < best.d) best = { c:c, d:d }; });
+      if (best && best.d <= 60) hit = best.c;
+    }
+    if (!hit){ plan.miss.push(cur.nm); return; }
+    plan.set[hit.x.id] = { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '' };
+  };
+  (Pt || []).forEach(function(r, i){
+    if (i < 1) return;
+    var nm0 = S(r[0]);
+    if (nm0 && /[A-Za-z]/.test(nm0)){ flush(); cur = { nm:nm0, lat:parseFloat(S(r[1]).replace('°', '')) || 0, lng:parseFloat(S(r[2]).replace('°', '')) || 0, eng:S(r[12]), at:ex47Date(r[13]) }; }
+    else if (nm0){ flush(); cur = null; return; }   /* سطرُ عنوانٍ عربيّ («الممر المظلل …») لا نقطة */
+    if (!cur) return;
+    var kind = S(r[3]).toLowerCase();
+    if (kind === 'router'){ cur.rtr = S(r[9]); cur.net = ex47Net(r[4]); }
+    else if (kind === 'reader') cur.rdr = S(r[9]);
+    else if (kind === 'camera') cur.cam = S(r[9]);
+  });
+  flush();
+  return plan;
+}
+function ex47Import(file){
+  if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+  xlsxLoad().then(function(ok){
+    if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
+    var fr = new FileReader();
+    fr.onload = function(){
+      try {
+        var wb = XLSX.read(new Uint8Array(fr.result), { type:'array', cellDates:true });
+        var P = ex47Plan(wb);
+        if (!P){ toast(t('لم أجد ورقتَي MINA Camps وMINA paths في الملف')); return; }
+        EXT.ex47 = P; render(1);
+      } catch (e){ softErr('استيراد ١٤٤٧', e, ''); toast(t('تعذّرت قراءةُ الملف')); }
+    };
+    fr.readAsArrayBuffer(file);
+  });
+}
+function ex47Apply(){
+  if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+  var P = EXT.ex47, ids = P ? Object.keys(P.set) : []; if (!ids.length){ toast(t('لا شيءَ يُعتمَد')); return; }
+  if (!confirm(t('تُحفَظ بياناتُ ١٤٤٧ لـ') + ' ' + ids.length + ' ' + t('نقطةً. متابعة؟'))){ toast(t('لم يُحفَظ — أُلغي')); return; }
+  var at = Date.now(), by = STATE.meta.name || '';
+  ids.forEach(function(id){ var x = siteFind(id); if (!x) return; var v = Object.assign({ by:by, imp:at }, P.set[id]); x.ex47 = v; siteOvSet(id, { ex47:v }); });
+  logEvent('استيرادُ بيانات موسم ١٤٤٧ — ' + ids.length + ' نقطة · غيرُ مطابق ' + P.miss.length);
+  EXT.ex47 = null; toast(t('حُفظت بياناتُ ١٤٤٧') + ' (' + nm(ids.length) + ')'); render(1);
+}
+function ex47Card(){
+  if (!may('settings')) return '';
+  var have = (STATE.sites || []).filter(function(x){ return x && x.ex47; }).length, P = EXT.ex47, body;
+  body = '<p class="hint" style="margin:0 0 8px">' + esc(t('ملف «تسليمات الممرات» كما هو: يُقرأ على جهازك وحدَه، ويُحفَظ لكلِّ نقطةٍ سيريالاتُها وشبكتُها — بلا كلمات مرورٍ ولا شرائح.')) + '</p>'
+    + '<div class="pop-rows" style="margin:0"><div><span class="k">' + esc(t('نقاطٌ لها بياناتُ ١٤٤٧')) + '</span><span class="num">' + nm(have) + '</span></div></div>';
+  if (P){
+    var ids = Object.keys(P.set), wr = ids.filter(function(id){ return P.set[id].rdr; }).length;
+    body += stats([['مخيماتٌ في الملف', N(P.campsN)], ['ممراتٌ في الملف', N(P.pathsN)], ['طابقت نقاطَنا', N(ids.length), 'ok'], ['لها سيريالُ قارئ', N(wr), 'acc'], ['لم تطابق', N(P.miss.length), P.miss.length ? 'wrn' : '']])
+      + (P.miss.length ? mtDetails(t('لم تطابق نقاطَنا') + ' (' + nm(P.miss.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.miss.slice(0, 120).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u26A0') : '')
+      + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد بيانات ١٤٤٧') + ' (' + nm(ids.length) + ')', 'btn-primary btn-sm', ' data-ex47ok="1"') + '</div>';
+  }
+  body += '<label class="btn btn-secondary btn-sm" style="margin-top:8px;display:inline-flex">\u{1F4C2} ' + esc(t(P ? 'اختر ملفًّا آخر' : 'اختر ملف تسليمات الممرات')) + '<input type="file" accept=".xlsx,.xls" data-ex47="1" style="display:none"></label>';
+  return card('بيانات موسم ١٤٤٧ — الأجهزةُ نفسُها هذا الموسم', body);
 }
