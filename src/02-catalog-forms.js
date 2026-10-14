@@ -1039,6 +1039,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
             + '<div class="actions" style="margin:8px 0 0">' + insPhotoBtn(x, ins) + '</div>')   /* (V37.79) */
         : '')
       + extNkCard(x)   /* (V37.86) اسمُ الربط بنظام البطاقات */
+      + ex47SiteCard(x)   /* (V37.90) أجهزةُ موسم ١٤٤٧ */
 
       + photoStrip(x.id)
       + card('دورة هذه النقطة',

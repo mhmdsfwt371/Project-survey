@@ -701,12 +701,12 @@ function ex47Plan(wb){
       if (best && best.d <= 60) hit = best.c;
     }
     if (!hit){ plan.miss.push(cur.nm); return; }
-    plan.set[hit.x.id] = { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '' };
+    plan.set[hit.x.id] = { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '', ready:cur.ready || '', crane:cur.crane || '' };
   };
   (Pt || []).forEach(function(r, i){
     if (i < 1) return;
     var nm0 = S(r[0]);
-    if (nm0 && /[A-Za-z]/.test(nm0)){ flush(); cur = { nm:nm0, lat:parseFloat(S(r[1]).replace('°', '')) || 0, lng:parseFloat(S(r[2]).replace('°', '')) || 0, eng:S(r[12]), at:ex47Date(r[13]) }; }
+    if (nm0 && /[A-Za-z]/.test(nm0)){ flush(); cur = { nm:nm0, lat:parseFloat(S(r[1]).replace('°', '')) || 0, lng:parseFloat(S(r[2]).replace('°', '')) || 0, eng:S(r[12]), at:ex47Date(r[13]), ready:S(r[16]), crane:S(r[17]) }; }   /* (V37.90) الجاهزيةُ والرافعة */
     else if (nm0){ flush(); cur = null; return; }   /* سطرُ عنوانٍ عربيّ («الممر المظلل …») لا نقطة */
     if (!cur) return;
     var kind = S(r[3]).toLowerCase();

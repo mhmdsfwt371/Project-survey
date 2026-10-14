@@ -901,11 +901,13 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
     var s = formSite();
     if (!s) return alertBox('warn','لا مواقع محمّلة.');
     var zone = siteZone(s);
-    var parts = itemsList().filter(function(i){ return i.z === zone && itPts(i.code) > 0; });
-    if (!parts.length) parts = itemsList().filter(function(i){ return i.z === zone; }).slice(0, 8);
+    /* (V37.90) قطعُ النوع كلُّها — كانت تُعرض ذاتُ الوزن وحدَها، وبلا أوزانٍ أوّلُ ثمانٍ فقط فلا تُسجَّل البقية */
+    var parts = itemsList().filter(function(i){ return i.z === zone && i.name; });
     var rec = STATE.recs[s.id];
+    var pre47 = insPrefill47(s, parts);   /* (V37.90) أجهزةُ ١٤٤٧ نفسُها هذا الموسم */
 
     return (!rec ? alertBox('warn','هذا الموقع لم تتم زيارتُه بعد — التركيبُ قبل الزيارة يُخلّ بالترتيب.') : '')
+      + (pre47 ? alertBox('info', t('عُبّئت من بيانات موسم ١٤٤٧') + ': ' + pre47 + ' \u2014 ' + t('راجعها على الأجهزة قبل الحفظ')) : '')
       + card('حالة التركيب',
           '<div class="chips" style="margin:0">'
           + ['قيد التركيب','مُركّب','متعذّر'].map(function(c){
@@ -917,11 +919,13 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + cardFlush(t('القطع المستهلكة') + ' — ' + nm(parts.length),
           table(['القطعة','النقاط','المستهلك','السيريال'],
             parts.map(function(i){
-              return [esc(i[2]), N(itPts(i[1])),
-                      '<input type="number" min="0" data-part="' + esc(i[1]) + '" value="'
-                        + (FORM.parts[i[1]] || 0) + '">',
-                      '<input dir="ltr" placeholder="SN-…" data-serial="' + esc(i[1]) + '" value="'
-                        + esc(FORM.serials[i[1]] || '') + '"> ' + scanBtn(i[1])];
+              /* (V37.90) القطعةُ كائنٌ {code,name} منذ V14.27 — كانت تُقرأ i[1] وi[2] فتخرج الأسماءُ فارغةً
+                 وكلُّ الكميات والسيريالات بمفتاحٍ واحد «undefined»، فلا قطعةَ تُحفَظ باسمها ولا نقاط */
+              return [esc(i.name), N(itPts(i.code)),
+                      '<input type="number" min="0" data-part="' + esc(i.code) + '" value="'
+                        + (FORM.parts[i.code] || 0) + '">',
+                      '<input dir="ltr" placeholder="SN-…" data-serial="' + esc(i.code) + '" value="'
+                        + esc(FORM.serials[i.code] || '') + '"> ' + scanBtn(i.code)];
             })),
           '<span class="hint" style="margin:0">' + esc(t('مجموع النقاط'))
           + ' <b>' + nm(formPts()) + '</b></span>')
@@ -2696,6 +2700,41 @@ function svSave(next){
    على القياسيّ. كان كلُّ حفظٍ يمحو ما قبله فيضيع تاريخُ ما جُرِّب. صار التركيبُ على نقطة الديمو
    يحفظ ما قبله «تجهيزةً» سابقة بقطعها وسيريالاتها ونقاطها ومنفّذها، ويُستهلَك من المخزن الفرقُ
    الزائدُ وحدَه لا العُدّةُ كلُّها من جديد. ويُعتمَد الأخيرُ قياسيًّا نمطًا يُطبَّق على النقاط كلِّها. */
+/* (V37.90) تعبئةُ نموذج التركيب من بيانات ١٤٤٧ — مرةً لكلِّ نقطة، وفي الخانات الفارغة وحدَها:
+   سيريالُ القارئ والراوتر والكاميرا على قطعها، وبادئةُ الشبكة. يراجعها الفنيُّ على الأجهزة. */
+function insPrefill47(s, parts){
+  var e = s && s.ex47; if (!e) return '';
+  if (FORM._pre47 === s.id) return FORM._pre47msg || '';
+  FORM._pre47 = s.id; FORM._pre47msg = '';
+  if (STATE.inss[s.id] && STATE.inss[s.id].status && STATE.inss[s.id].status !== 'مسودّة') return '';   /* مركَّبةٌ قبلُ: لا تُعبَّأ فوقها */
+  var did = [];
+  var put = function(re, v, lbl){
+    if (!v) return;
+    var it = (parts || []).filter(function(i){ return re.test(i.code) || re.test(i.name || ''); })[0];
+    if (!it || FORM.serials[it.code]) return;
+    FORM.serials[it.code] = v; did.push(t(lbl));
+  };
+  put(/^rdr|قارئ/i, e.rdr, 'القارئ'); put(/راوتر|router|rtr/i, e.rtr, 'الراوتر'); put(/كاميرا|^cam/i, e.cam, 'الكاميرا');
+  if (!FORM.prefix && (e.net || siteNetBase(s))){ FORM.prefix = e.net || siteNetBase(s); did.push(t('الشبكة')); }
+  FORM._pre47msg = did.join('، ');
+  return FORM._pre47msg;
+}
+/* بطاقةُ أجهزة ١٤٤٧ في صفحة النقطة */
+function ex47SiteCard(x){
+  var e = x && x.ex47; if (!e) return '';
+  var r = function(k, v){ return v ? '<div><span class="k">' + esc(t(k)) + '</span><span dir="ltr" class="num">' + esc(v) + '</span></div>' : ''; };
+  var nb = siteNetBase(x), diff = e.net && nb && e.net !== nb;
+  return card('أجهزة موسم ١٤٤٧',
+    '<div class="pop-rows" style="margin:0">'
+    + r('الاسم في الملف', e.nm) + r('سيريال القارئ', e.rdr) + r('سيريال الراوتر', e.rtr) + r('سيريال الكاميرا', e.cam)
+    + r('الشبكة', e.net ? e.net + '.0/24' : '')
+    + (e.ready ? '<div><span class="k">' + esc(t('الجاهزية')) + '</span><span>' + esc(e.ready) + '</span></div>' : '')
+    + (e.crane ? '<div><span class="k">' + esc(t('يحتاج رافعة')) + '</span><span>' + esc(t(/^(y|yes|نعم)/i.test(e.crane) ? 'نعم' : 'لا')) + '</span></div>' : '')
+    + (e.eng ? '<div><span class="k">' + esc(t('المهندس')) + '</span><span>' + esc(e.eng) + '</span></div>' : '')
+    + r('التاريخ', e.at)
+    + '</div>'
+    + (diff ? alertBox('warn', t('شبكةُ الملف') + ' ' + e.net + ' ' + t('تختلف عن شبكة النقطة') + ' ' + nb) : ''));
+}
 function demoTag(x){ return (x && x.pilot) ? ' ' + pill('\u{1F9EA} ' + t('ديمو'), 'warn') : ''; }
 function insRevs(ins){ return (ins && Array.isArray(ins.revs)) ? ins.revs : []; }
 function insRevSnap(ins){
@@ -2869,7 +2908,7 @@ function svCopyFrom(id){
 function formReset(){
   FORM.mount = FORM.power = FORM.height = FORM.cable = FORM.note = FORM.prefix = '';
   FORM.chals = []; FORM.photos = {}; FORM.parts = {}; FORM.serials = {};
-  FORM.status = ''; FORM.access = 'تم الوصول';
+  FORM.status = ''; FORM.access = 'تم الوصول'; FORM._pre47 = ''; FORM._pre47msg = '';   /* (V37.90) */
   SV_EXTRA_KEYS.forEach(function(k){ FORM[k] = ''; });
 }
 
