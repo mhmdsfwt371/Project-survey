@@ -90,14 +90,16 @@ function extTentsLoad(){
   if (!EXT.tok) return Promise.resolve(null);
   if (EXT.tents && Date.now() - EXT.tentsAt < 3600000) return Promise.resolve(EXT.tents);
   /* perPage=50, نجمع كل الصفحات */
-  var all = {}, page = 1, per = 50;
+  var all = {}, by = {}, page = 1, per = 50;
   function fetchPage(){
     return extFetch(EXT_API + '/tents?page=' + page + '&perPage=' + per, true)
       .then(function(r){ return r.ok ? r.json() : null; })
       .then(function(j){
         if (!j || !j.data) return;
         (Array.isArray(j.data) ? j.data : [j.data]).forEach(function(t){
-          if (t.code) all[t.code] = t;
+          if (!t.code) return;
+          if (!all[t.code]) all[t.code] = t;
+          var ck = extCodeKey(t.code); (by[ck] = by[ck] || []).push(t);   /* (V37.85) الرقمُ نفسُه قد يتكرّر في مشعرين */
         });
         /* (V37.80) شكلُ الترقيم غيرُ مؤكَّد: نكمل ما دامت الصفحةُ ممتلئة — بسقف ٦٠ صفحة */
         var got = Array.isArray(j.data) ? j.data.length : 0;
@@ -108,7 +110,7 @@ function extTentsLoad(){
   }
   return fetchPage().then(function(){
     if (!Object.keys(all).length) return null;
-    EXT.tents = all; EXT.tentsAt = Date.now(); return all;
+    EXT.tents = all; EXT.tentsBy = by; EXT.tentsAt = Date.now(); return all;
   }).catch(function(){ return null; });
 }
 
@@ -126,17 +128,6 @@ function extOvLoad(tentId, forceRefresh){
     }).catch(function(){ return null; });
 }
 
-/* ── نقاطنا المركّبة مع سيريالاتها ── */
-function extOurSerials(){
-  var out = [];
-  (STATE.sites || []).forEach(function(x){
-    var ins = STATE.inss[x.id];
-    if (!ins || ins.status !== 'مُركّب') return;
-    var ser = extReaderSerial(ins);   /* (V37.80) السيريالُ في ins.serials بمفتاح قطعة القارئ — كان يُقرأ من حقلٍ لا وجود له */
-    if (ser) out.push({ id:x.id, name:x.name || x.n || x.id, zone:x.zone || x.z || '', serial:ser, ins:ins });
-  });
-  return out;
-}
 
 /* ── كارت الإشغال ── */
 function extOvCard(tentCode, ov, readerInfo, tentMeta){
@@ -234,21 +225,16 @@ function extMatchLoad(forceRefresh){
   EXT.busy = true; EXT.err = '';   /* (V37.80) لا رسمَ من داخل الرسم — الشاشةُ تعرض «جارٍ التحميل» بنفسها */
   return Promise.all([extReadersLoad(), extTentsLoad()]).then(function(res){
     var readers = res[0] || {}, tents = res[1] || {};
-    /* بناء خريطة tentCode → tentMeta */
-    var byCode = tents;   /* key = code مثل "38/56" */
+    /* (V37.85) كلُّ نقطةٍ مركَّبة تُربَط بمفتاحين: المخيمُ بشاخصه وقربِه، والقارئُ بسيريالِه —
+       وما يختلف فيه المفتاحان يُعلَّم تحذيرًا */
     var matched = [], unmatched = [];
-    extOurSerials().forEach(function(pt){
-      var reader = readers[extSerKey(pt.serial)];
-      if (!reader){ unmatched.push(pt.serial); return; }
-      var code = reader.locationName || '';
-      var meta = byCode[code] || null;
-      if (!meta){
-        /* جرّب بحث جزئي كـ "38/56" في مفاتيح byCode */
-        Object.keys(byCode).forEach(function(k){
-          if (k === code || k.replace(/\//g,'_') === code.replace(/\//g,'_')) meta = byCode[k];
-        });
-      }
-      matched.push({ serial:pt.serial, tentCode:code, tentId:meta ? meta.id : '', tentMeta:meta, reader:reader, point:pt });
+    (STATE.sites || []).forEach(function(x){
+      var ins = STATE.inss[x.id]; if (!ins || ins.status !== 'مُركّب') return;
+      var L = extLink(x);
+      var tent = L.tent || (L.reader ? extTentByCode(L.reader.locationName) : null);
+      if (!tent && !L.reader){ if (L.ser) unmatched.push(L.ser); return; }
+      matched.push({ serial:L.ser, tentCode:tent ? tent.code : ((L.reader && L.reader.locationName) || ''), tentId:tent ? tent.id : '', tentMeta:tent,
+                     reader:L.reader, point:{ id:x.id, name:x.name || x.id, zone:x.zone || '' }, by:L.by, warn:L.warn });
     });
     EXT_MATCH_STATE = { matched:matched, unmatched:unmatched, at:Date.now() };
     if (EXT.rdErr) EXT.err = EXT.rdErr;
@@ -316,6 +302,7 @@ function mtCamps(){
         + ' <span class="hint">' + esc(t('تعذّر جلب الإشغال')) + '</span></div></div>';
       return;
     }
+    if (m.warn) h += alertBox('warn', t('القارئ') + ' ' + (m.serial || '') + ' ' + t('مسجَّلٌ في النظام على') + ' ' + m.warn + ' ' + t('لا على مخيم النقطة') + ' ' + (m.point.name || m.point.id) + ' \u2014 ' + t('راجع السيريال'));   /* (V37.85) */
     h += extOvCard(m.tentCode, cached.data, m.reader, m.tentMeta);
   });
 
@@ -333,6 +320,31 @@ function mtCamps(){
 /* (V37.84) مفتاحُ الربط بنظام البطاقات = رقمُ القارئ. يُطبَّع على الجانبين: أرقامٌ فقط بلا أصفارٍ بادئة —
    فمسافةٌ أو شرطةٌ أو صفرٌ في أوّل ما كتبه الفنيُّ لا تقطع الربط */
 function extSerKey(v){ var d = String(v == null ? '' : v).replace(/\D/g, ''); return d.replace(/^0+/, '') || d; }
+/* (V37.85) كودُ الخيمة يُطبَّع: أرقامٌ لاتينية، بلا مسافات، والشرطةُ كالمائلة — «٣٨ / ٥٦» = «38/56» */
+function extCodeKey(c){
+  return String(c == null ? '' : c).replace(/[\u0660-\u0669]/g, function(d){ return String(d.charCodeAt(0) - 0x660); })
+    .replace(/\s+/g, '').replace(/[-_\\]/g, '/').toLowerCase();
+}
+function extTentByCode(code){ var L = EXT.tentsBy && EXT.tentsBy[extCodeKey(code)]; return (L && L[0]) || null; }
+/* المخيمُ بشاخصه — والرقمُ نفسُه في منى وعرفات، فيُشترَط القربُ: أقربُ خيمةٍ بالكود في ٣٠٠ متر وإلا فلا */
+function extTentForSite(x){
+  if (!x || x.type !== 'مخيم' || !x.sign || !EXT.tentsBy || !+x.lat) return null;
+  var L = EXT.tentsBy[extCodeKey(x.sign)] || [], best = null;
+  L.forEach(function(tn){
+    var la = +tn.latitude, ln = +tn.longitude; if (!la || !ln) return;
+    var d = geoDist([+x.lat, +x.lng], [la, ln]); if (!best || d < best.d) best = { t:tn, d:d };
+  });
+  return (best && best.d <= 300) ? best : null;
+}
+/* الربطُ الكامل لنقطة: by = 'sign' | 'serial' | '' ، وwarn = موقعُ القارئ في النظام حين يخالف مخيمَ النقطة */
+function extLink(x){
+  var ins = STATE.inss[x.id], ser = extReaderSerial(ins);
+  var rd = (ser && EXT.readers) ? EXT.readers[extSerKey(ser)] || null : null;
+  var ts = extTentForSite(x), exp = ts ? ts.t.code : ((x && x.type === 'مخيم' && x.sign) ? x.sign : '');
+  var o = { ser:ser, reader:rd, tent:ts ? ts.t : null, dist:ts ? Math.round(ts.d) : null, by:ts ? 'sign' : (rd ? 'serial' : ''), warn:'' };
+  if (rd && exp && rd.locationName && extCodeKey(rd.locationName) !== extCodeKey(exp)) o.warn = String(rd.locationName);
+  return o;
+}
 function extReaderSerial(ins){
   var S = (ins && ins.serials) || {}, out = '';
   Object.keys(S).forEach(function(k){
@@ -362,27 +374,43 @@ function pilotNet(x){
   return { st:'لا إشارة', at:0, src:'', up:0, n:0 };
 }
 function pilotNusuk(x){
-  var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'' };
-  if (!ser) return o;
-  var r = EXT.readers ? EXT.readers[extSerKey(ser)] : null;
-  if (!r){   /* (V37.81) بلا بثٍّ حيّ: من لقطة المكتب */
-    var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
-    if (!Z || extSerKey(Z.ser) !== extSerKey(ser)) return o;
-    var C = STATE.extSnap.camps && STATE.extSnap.camps[Z.code];
-    o.loc = Z.code || ''; o.at = Date.parse(Z.ts || '') || 0; o.snap = true;
-    if (C){ var tt = C.w + C.wo + C.ot; o.occ = (C.cap ? Math.round(tt / C.cap * 100) + '٪ · ' : '') + tt + ' / ' + C.cap; }
-    return o;
+  var ins = STATE.inss[x.id], ser = extReaderSerial(ins), o = { ser:ser, loc:'', at:0, occ:'', by:'', warn:'' };
+  if (EXT.readers || EXT.tentsBy){   /* (V37.85) حيٌّ: بالشاخص والسيريال معًا */
+    var L = extLink(x); o.by = L.by; o.warn = L.warn;
+    if (L.reader){ o.loc = L.reader.locationName || ''; o.at = Date.parse(L.reader.timestamp || '') || 0; }
+    else if (L.tent) o.loc = L.tent.code || '';
+    var tn = L.tent || (L.reader ? extTentByCode(L.reader.locationName) : null);
+    var ov = tn && EXT.ov[tn.id] && EXT.ov[tn.id].data;
+    if (ov && ov.occupancyStatus){
+      var c = ov.occupancyStatus, tot = (c.currentlyOccupied || 0) + (c.withoutBracelet || 0) + (c.fromOtherCamps || 0);
+      o.occ = (c.totalCapacity ? Math.round(tot / c.totalCapacity * 100) + '٪ · ' : '') + tot + ' / ' + (c.totalCapacity || 0);
+    }
+    if (o.loc || o.by) return o;
   }
-  o.loc = r.locationName || ''; o.at = Date.parse(r.timestamp || '') || 0;
-  var m = EXT_MATCH_STATE && EXT_MATCH_STATE.matched.filter(function(z){ return z.serial === ser; })[0];
-  var ov = m && m.tentId && EXT.ov[m.tentId] && EXT.ov[m.tentId].data;
-  if (ov && ov.occupancyStatus){
-    var c = ov.occupancyStatus, tot = (c.currentlyOccupied || 0) + (c.withoutBracelet || 0) + (c.fromOtherCamps || 0);
-    o.occ = (c.totalCapacity ? Math.round(tot / c.totalCapacity * 100) + '٪ · ' : '') + tot + ' / ' + (c.totalCapacity || 0);
-  }
+  /* بلا بثٍّ حيّ: من لقطة المكتب (V37.81) */
+  var Z = STATE.extSnap && STATE.extSnap.sites && STATE.extSnap.sites[x.id];
+  if (!Z || (ser && Z.ser && extSerKey(Z.ser) !== extSerKey(ser))) return o;
+  var C = STATE.extSnap.camps && STATE.extSnap.camps[Z.code];
+  o.loc = Z.code || ''; o.at = Date.parse(Z.ts || '') || 0; o.snap = true; o.by = Z.by || ''; o.warn = Z.warn || '';
+  if (C){ var tt = C.w + C.wo + C.ot; o.occ = (C.cap ? Math.round(tt / C.cap * 100) + '٪ · ' : '') + tt + ' / ' + C.cap; }
   return o;
 }
-/* تحميلُ بيانات نظام البطاقات عند فتح القائمة — مرةً في الدقيقة على الأكثر، ثم يُعاد الرسم */
+/* شارةُ التحقق — تُقرأ في بطاقة التركيب وقائمة التجارب */
+function extCheckText(o){
+  if (!o) return '\u2014';
+  if (o.warn) return '\u26A0 ' + t('القارئ على') + ' ' + o.warn;
+  if (o.by === 'sign' && o.at) return '\u2713 ' + t('مطابق — الشاخص والقارئ');
+  if (o.by === 'sign') return '\u2713 ' + t('بالشاخص') + (o.ser ? ' \u00b7 ' + t('القارئ لم يظهر بعد') : '');
+  if (o.by === 'serial') return '\u2713 ' + t('بالسيريال');
+  return o.ser ? t('القارئ لم يظهر بعد') : '\u2014';
+}
+function extCheckPill(x){
+  if (!x || !STATE.inss[x.id]) return '';
+  pilotKick();
+  var o = pilotNusuk(x); if (!o.by && !o.warn && !o.ser) return '';
+  return pill(extCheckText(o), o.warn ? 'bad' : (o.by ? 'ok' : 'warn'));
+}
+
 function pilotKick(){
   if (EXT._plAt && Date.now() - EXT._plAt < 60000) return;
   EXT._plAt = Date.now();
@@ -411,7 +439,7 @@ function pilotRowsList(){
     return [x.id, x.name || '', t(x.zone || ''), t(x.type || ''), f ? (f.row.n || '') + (f.row.out ? ' · ' + t(f.row.out) : '') : '\u2014',
             t(insSt), ins && ins.status !== 'مسودّة' ? String(insRevs(ins).length + 1) : '\u2014',
             t(nt.st) + (nt.n > 1 ? ' (' + nt.up + '/' + nt.n + ')' : '') + (nt.src ? ' \u00b7 ' + t(nt.src) : ''), pilotAgo(nt.at),
-            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), (nk.loc ? nk.loc + (nk.snap ? ' \u00b7 ' + t('لقطة') : '') : '') || (nk.ser ? (EXT.readers || (STATE.extSnap && !may('settings')) ? t('غير ظاهر في نظام البطاقات') : may('settings') ? t('يُحمَّل…') : t('لا لقطةَ بعد')) : '\u2014'),
+            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), extCheckText(nk),   /* (V37.85) التحقق */ (nk.loc ? nk.loc + (nk.snap ? ' \u00b7 ' + t('لقطة') : '') : '') || (nk.ser ? (EXT.readers || (STATE.extSnap && !may('settings')) ? t('غير ظاهر في نظام البطاقات') : may('settings') ? t('يُحمَّل…') : t('لا لقطةَ بعد')) : '\u2014'),
             nk.at ? pilotAgo(nk.at) : '\u2014', nk.occ || '\u2014'];
   });
 }
@@ -425,7 +453,7 @@ function extSnapMaybe(){
   if (EXT._snapAt && Date.now() - EXT._snapAt < 5 * 60000) return;
   var sites = {}, camps = {}, nOv = 0;
   EXT_MATCH_STATE.matched.forEach(function(m){
-    sites[m.point.id] = { ser:m.serial, code:m.tentCode || '', ts:(m.reader && m.reader.timestamp) || '' };
+    sites[m.point.id] = { ser:m.serial || '', code:m.tentCode || '', ts:(m.reader && m.reader.timestamp) || '', by:m.by || '', warn:m.warn || '' };
     var o = m.tentId && EXT.ov[m.tentId]; if (!o || !o.data) return;
     var c = o.data.occupancyStatus || {}, a = o.data.averageTime || {};
     camps[m.tentCode] = { cap:+c.totalCapacity || 0, w:+c.currentlyOccupied || 0, wo:+c.withoutBracelet || 0, ot:+c.fromOtherCamps || 0,

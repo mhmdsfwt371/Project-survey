@@ -987,6 +987,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         ? card('التركيب',
             '<div class="pop-rows" style="margin:0">'
             + row('الحالة', pill(ins.status, ins.status==='مُركّب'?'ok':'') + demoTag(x))   /* (V37.78) */
+            + (x.type === 'مخيم' || extReaderSerial(ins) ? row('نظام البطاقات', extCheckPill(x) || '\u2014') : '')   /* (V37.85) الشاخصُ والقارئ */
             + row('المنفِّذ', esc(ins.by))
             + row('النقاط', N(ptsInstall(x)))   /* (V37.77) */
             + row('بادئة الشبكة', ins.prefix ? '<span class="num" dir="ltr">' + esc(ipsOf(ins.prefix)) + '</span>' : '')
