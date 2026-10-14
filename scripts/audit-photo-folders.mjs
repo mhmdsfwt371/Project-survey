@@ -28,7 +28,9 @@ T(a > 0 && b > a, 'بانيَ الأسماء موجودٌ في photos-sync (يُ
 if (a < 0 || b < a){ console.log('\nجردُ مجلدات الصور فشل ✗'); process.exit(1); }
 
 const tmp = join(tmpdir(), `nsk-labels-${process.pid}.mjs`);
-writeFileSync(tmp, "import { readFileSync } from 'fs';\n" + src.slice(a, b) + '\nexport { SITE_LABEL };\n');
+/* (V37.84) البانيَ صار يقرأ السجلَّ من مصدره الواحد — فيُستورَد معه بمسارٍ مطلق */
+const regLib = 'file://' + join(process.cwd(), 'scripts', 'lib', 'registry.mjs');
+writeFileSync(tmp, "import { readFileSync } from 'fs';\nimport { regSync } from '" + regLib + "';\n" + src.slice(a, b) + '\nexport { SITE_LABEL };\n');
 let M;
 try { M = (await import('file://' + tmp)).SITE_LABEL; } finally { try { unlinkSync(tmp); } catch {} }
 
