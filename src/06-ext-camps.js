@@ -268,7 +268,7 @@ function mtCamps(){
   if (may('settings')) h += extTokCard();
 
   if (!EXT.tok){
-    return h + alertBox('info', t(may('settings') ? 'أضف توكن نظام البطاقات لتشغيل هذه الشاشة.' : 'بياناتُ الإشغال من نُسُك تُعرَض لحسابات المكتب.'));
+    return h + alertBox('info', t(may('settings') ? 'أضف توكن نظام البطاقات لتشغيل هذه الشاشة.' : 'بياناتُ الإشغال من نظام البطاقات تُعرَض لحسابات المكتب.'));
   }
 
   /* تحميل المطابقات */
@@ -341,8 +341,8 @@ function extReaderSerial(ins){
 
 /* ═══ (V37.80) كارتُ «التجارب والديمو» في متابعة الوزارة ═══
    طلبُ المالك: كارتٌ بجوار المسح والزيارة، يُضغط فتظهر نقاطُ التجربة بحالة تركيبها واتصالها
-   (أونلاين/أوفلاين) وبيانات نظام نُسُك. الاتصالُ من نبضات أداة الفحص (hb) ثم فحص المتصفح،
-   ونُسُك من بثّ القرّاء برقم القارئ المسجَّل في التركيب. */
+   (أونلاين/أوفلاين) وبيانات نظام البطاقات. الاتصالُ من نبضات أداة الفحص (hb) ثم فحص المتصفح،
+   وبياناتُ البطاقات من بثّ القرّاء برقم القارئ المسجَّل في التركيب. */
 function pilotSites(){ return (STATE.sites || []).filter(function(x){ return x && x.pilot; }); }
 function pilotNet(x){
   var HB = STATE.hb || {}, up = 0, n = 0, at = 0;
@@ -355,7 +355,7 @@ function pilotNet(x){
   var me = HB[x.id];
   if (me && typeof me.alive === 'boolean') return { st: me.alive ? 'متصل' : 'غير متصل', at:+me.at || 0, src:'فحص المتصفح', up:me.alive ? 1 : 0, n:1 };
   var nk = pilotNusuk(x);
-  if (nk.at) return { st: Date.now() - nk.at < 30 * 60000 ? 'متصل' : 'غير متصل', at:nk.at, src:'نُسُك', up:0, n:0 };
+  if (nk.at) return { st: Date.now() - nk.at < 30 * 60000 ? 'متصل' : 'غير متصل', at:nk.at, src:'نظام البطاقات', up:0, n:0 };
   return { st:'لا إشارة', at:0, src:'', up:0, n:0 };
 }
 function pilotNusuk(x){
@@ -371,7 +371,7 @@ function pilotNusuk(x){
   }
   return o;
 }
-/* تحميلُ بيانات نُسُك عند فتح القائمة — مرةً في الدقيقة على الأكثر، ثم يُعاد الرسم */
+/* تحميلُ بيانات نظام البطاقات عند فتح القائمة — مرةً في الدقيقة على الأكثر، ثم يُعاد الرسم */
 function pilotKick(){
   if (EXT._plAt && Date.now() - EXT._plAt < 60000) return;
   EXT._plAt = Date.now();
@@ -382,7 +382,7 @@ function pilotKick(){
         var p = siteFind(m.point.id); if (p && p.pilot && m.tentId && !ids[m.tentId]){ ids[m.tentId] = 1; extOvLoad(m.tentId); }
       });
     });
-  }).then(function(){ render(1); }).catch(function(e){ softErr('بيانات نُسُك للتجارب', e, ''); });
+  }).then(function(){ render(1); }).catch(function(e){ softErr('بيانات نظام البطاقات للتجارب', e, ''); });
 }
 function pilotAgo(at){
   if (!at) return '\u2014';
@@ -398,7 +398,7 @@ function pilotRowsList(){
     return [x.id, x.name || '', t(x.zone || ''), t(x.type || ''), f ? (f.row.n || '') + (f.row.out ? ' · ' + t(f.row.out) : '') : '\u2014',
             t(insSt), ins && ins.status !== 'مسودّة' ? String(insRevs(ins).length + 1) : '\u2014',
             t(nt.st) + (nt.n > 1 ? ' (' + nt.up + '/' + nt.n + ')' : '') + (nt.src ? ' \u00b7 ' + t(nt.src) : ''), pilotAgo(nt.at),
-            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), nk.loc || (nk.ser ? (EXT.readers ? t('غير ظاهر في نُسُك') : t('يُحمَّل…')) : '\u2014'),
+            nk.ser || (ins ? t('لا سيريال قارئ') : '\u2014'), nk.loc || (nk.ser ? (EXT.readers ? t('غير ظاهر في نظام البطاقات') : t('يُحمَّل…')) : '\u2014'),
             nk.at ? pilotAgo(nk.at) : '\u2014', nk.occ || '\u2014'];
   });
 }
