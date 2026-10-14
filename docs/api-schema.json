@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.94",
+  "app_version": "V37.95",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2152,7 +2152,8 @@
   "V37.91": "ex47Plan() بالعناوين",
   "V37.92": "ex47OrphLoad(), ex47OrphMerge(), ex47OrphLink(), ex47OrphPlace(), ex47OrphCard(), ex47OrphGuess()",
   "V37.93": "extBridgeCmd(), extBridgeApply(), extBridgePaste(), extBridgeLoad(), extBridgeCopy(), extBridgeCard()",
-  "V37.94": "extBridgeBmk(), extBridgeHashPick(), extBridgePendingApply(), extFilePlan(), extFileImport(), extTsParse()"
+  "V37.94": "extBridgeBmk(), extBridgeHashPick(), extBridgePendingApply(), extFilePlan(), extFileImport(), extTsParse()",
+  "V37.95": "قائمة الفجوات في extBulkCard()"
   },
   "map_and_geolocation": {
     "tile_layers": {

@@ -652,6 +652,12 @@ function extBulkCard(){
   } else body += '<p class="hint" style="margin:6px 0 0">' + esc(t('لا مقترحاتٍ جديدة — كلُّ ما له اقتراحٌ مربوط')) + '</p>';
   if (P.conflicts.length) body += mtDetails(t('تعارضٌ يُحسَم بيد') + ' (' + nm(P.conflicts.length) + ')',
     table(['الاسم في النظام', 'النقاط'], P.conflicts.slice(0, 60).map(function(c){ return ['<b dir="ltr">' + esc(c.name) + '</b>', esc(c.ids.join(' \u00b7 '))]; })), '\u26A0');
+  /* (V37.95) الاكتشافُ العكسيّ: مواقعُ في النظام لا تقابلها نقطةٌ عندنا — نقاطٌ ناقصةٌ من سجلّنا أو ركّبها غيرُنا */
+  var M = extNames(), linked = extLinkedBy(), gaps = [];
+  if (M) Object.keys(M).forEach(function(k){ if (!linked[k] && !(M[k].tent && extTentByCode(M[k].name) && (STATE.sites || []).some(function(x){ return x.type === 'مخيم' && x.sign && extCodeKey(x.sign) === extCodeKey(M[k].name) && extTentForSite(x); }))) gaps.push(M[k]); });
+  if (gaps.length) body += mtDetails(t('مواقعُ في النظام لا تقابلها نقطةٌ عندنا') + ' (' + nm(gaps.length) + ')',
+    '<p class="hint" style="margin:0 0 6px">' + esc(t('قرّاءٌ وخيامٌ مسجَّلةٌ عندهم ولم تُربَط بنقطةٍ في سجلّنا — إمّا ناقصةٌ من السجلّ أو خارج نطاقنا')) + '</p>'
+    + '<div class="hint" style="font-size:12px" dir="ltr">' + gaps.slice(0, 150).map(function(g){ return esc(g.name) + (g.rd.length ? ' (' + g.rd.length + ')' : ''); }).join(' \u00b7 ') + (gaps.length > 150 ? ' \u2026' : '') + '</div>', '\u{1F50D}');
   if (P.stale.length) body += mtDetails(t('مربوطةٌ باسمٍ غيرِ موجودٍ في النظام') + ' (' + nm(P.stale.length) + ')',
     '<div class="hint" style="font-size:12px">' + P.stale.slice(0, 80).map(function(id){ return '<bdi>' + esc(id) + '</bdi>'; }).join(' \u00b7 ') + '</div>', '\u26A0');
   return card('الربط الجماعي بنظام البطاقات', body);
