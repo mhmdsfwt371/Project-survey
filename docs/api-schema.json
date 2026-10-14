@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.90",
+  "app_version": "V37.91",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2148,7 +2148,8 @@
   "V37.87": "extBulkPlan(), extBulkCard(), extBulkApply()",
   "V37.88": "ex47Plan(), ex47Import(), ex47Apply(), ex47Card(), extSuggestSrc()",
   "V37.89": "siteNetBase(), s47Fields(), s47View()",
-  "V37.90": "insPrefill47(), ex47SiteCard()"
+  "V37.90": "insPrefill47(), ex47SiteCard()",
+  "V37.91": "ex47Plan() بالعناوين"
   },
   "map_and_geolocation": {
     "tile_layers": {

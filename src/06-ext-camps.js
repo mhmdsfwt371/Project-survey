@@ -671,50 +671,87 @@ function extBulkApply(){
 function ex47Net(ip){ var m = /^(\d+\.\d+\.\d+)\.\d+$/.exec(String(ip || '').trim()); return m ? m[1] : ''; }
 function ex47Date(v){ return (v && typeof v.getTime === 'function' && !isNaN(v.getTime())) ? v.toISOString().slice(0, 10) : (/\d{4}-\d{2}-\d{2}/.exec(String(v || '')) || [''])[0]; }
 function ex47Plan(wb){
+  /* (V37.91) الأعمدةُ تُقرأ بعناوينها لا بمواضعها — ملفُّ التسليمات تغيّر ترتيبُه بين نسختين
+     (أُضيف «Provider Name» و«Camera Name» فانزاح القارئُ والكاميرا)، فالموضعُ الثابتُ كان سيقرأ عمودًا آخر */
   var find = function(re){ var n = wb.SheetNames.filter(function(k){ return re.test(k); })[0]; return n ? XLSX.utils.sheet_to_json(wb.Sheets[n], { header:1, raw:true, defval:'' }) : null; };
-  var C = find(/camps/i), Pt = find(/paths/i), plan = { set:{}, campsN:0, pathsN:0, miss:[] };
+  var C = find(/camps/i), Pt = find(/paths/i), plan = { set:{}, campsN:0, pathsN:0, miss:[], out:[], dup:0 };
   if (!C && !Pt) return null;
   var S = function(v){ return String(v == null ? '' : v).replace(/\u00a0/g, ' ').trim(); };
-  var mina = {}, cors = [];
+  var col = function(row, re, from, to){ for (var i = from || 0; i < Math.min(to == null ? row.length : to, row.length); i++){ if (re.test(S(row[i]))) return i; } return -1; };
+  var signKey = function(v){ return String(v || '').replace(/\s+/g, '').toUpperCase(); };
+  var mina = {}, others = [];
   (STATE.sites || []).forEach(function(x){
-    if (x.zone !== 'منى') return;
-    if (x.type === 'مخيم' && x.sign) mina[String(x.sign).toUpperCase()] = x;
-    else if (x.type !== 'مخيم'){
-      var m = /Path-([A-Za-z0-9_\-.]+)/i.exec(String(x.name || ''));
-      cors.push({ x:x, k:m ? extNameKey(m[1]) : '' });
-    }
+    if (x.type === 'مخيم'){ if (x.zone === 'منى' && x.sign){ var k0 = signKey(x.sign); if (!mina[k0]) mina[k0] = x; } return; }
+    var m = /Path-([A-Za-z0-9_\-.]+)/i.exec(String(x.name || '')) || /([A-Za-z][A-Za-z0-9_\-. ]{3,})/.exec(String(x.name || ''));
+    others.push({ x:x, k:m ? extNameKey(m[1]) : '' });
   });
-  (C || []).forEach(function(r, i){
-    if (i < 2) return; var nm0 = S(r[0]); if (!nm0) return;
-    var m = /^cam(?:p)?\s*[-_ ]?\s*([0-9a-z]+)\s*[-_\/. ]+\s*(\d+)\s*$/i.exec(nm0); plan.campsN++;
-    var x = m ? mina[(m[1] + '/' + m[2]).toUpperCase()] : null;
-    if (!x){ plan.miss.push(nm0); return; }
-    plan.set[x.id] = { nm:nm0, rtr:S(r[8]), rdr:S(r[11]), cam:S(r[16]), net:ex47Net(r[3]) || ex47Net(r[10]), eng:S(r[17]), at:ex47Date(r[18]) };
-  });
-  var cur = null, flush = function(){
-    if (!cur) return; plan.pathsN++;
-    var k = extNameKey(cur.nm), sh = /^(?:path-?)?sh\s*-?\s*([1-7])\s*-?\s*([lr])$/i.exec(cur.nm.replace(/\s+/g, ''));
-    var alias = sh ? extNameKey('shaded' + sh[1] + sh[2]) : '';
-    var hit = cors.filter(function(c){ return c.k && (c.k === k || c.k === k.replace(/^path/, '') || ('path' + c.k) === k || (alias && c.k === alias)); })[0];
-    if (!hit && cur.lat && cur.lng){
-      var best = null; cors.forEach(function(c){ var d = geoDist([cur.lat, cur.lng], [+c.x.lat, +c.x.lng]); if (!best || d < best.d) best = { c:c, d:d }; });
-      if (best && best.d <= 60) hit = best.c;
-    }
-    if (!hit){ plan.miss.push(cur.nm); return; }
-    plan.set[hit.x.id] = { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '', ready:cur.ready || '', crane:cur.crane || '' };
+  var put = function(id, v, nm0){
+    if (plan.set[id]){ plan.dup++; (plan.set[id].more = plan.set[id].more || []).push({ nm:nm0, rdr:v.rdr, rtr:v.rtr, cam:v.cam }); return; }
+    plan.set[id] = v;
   };
-  (Pt || []).forEach(function(r, i){
-    if (i < 1) return;
-    var nm0 = S(r[0]);
-    if (nm0 && /[A-Za-z]/.test(nm0)){ flush(); cur = { nm:nm0, lat:parseFloat(S(r[1]).replace('°', '')) || 0, lng:parseFloat(S(r[2]).replace('°', '')) || 0, eng:S(r[12]), at:ex47Date(r[13]), ready:S(r[16]), crane:S(r[17]) }; }   /* (V37.90) الجاهزيةُ والرافعة */
-    else if (nm0){ flush(); cur = null; return; }   /* سطرُ عنوانٍ عربيّ («الممر المظلل …») لا نقطة */
-    if (!cur) return;
-    var kind = S(r[3]).toLowerCase();
-    if (kind === 'router'){ cur.rtr = S(r[9]); cur.net = ex47Net(r[4]); }
-    else if (kind === 'reader') cur.rdr = S(r[9]);
-    else if (kind === 'camera') cur.cam = S(r[9]);
-  });
-  flush();
+  /* ── المخيمات ── */
+  if (C){
+    var h = -1; for (var i0 = 0; i0 < Math.min(6, C.length); i0++){ if (col(C[i0], /^router$/i) > -1){ h = i0; break; } }
+    if (h > -1){
+      var H = C[h], Sub = C[h + 1] || [];
+      var g = { rtr:col(H, /^router$/i), rdr:col(H, /^reader$/i), cam:col(H, /^camera$/i), eng:col(H, /engineer/i), at:col(H, /config\s*date/i) };
+      var starts = [g.rtr, g.rdr, g.cam, g.eng].filter(function(z){ return z > -1; }).sort(function(p, q){ return p - q; });
+      var end = function(st){ var n = starts.filter(function(z){ return z > st; })[0]; return n == null ? H.length : n; };
+      var ix = function(gs, re){ return gs > -1 ? col(Sub, re, gs, end(gs)) : -1; };
+      var c = { rtrIp:ix(g.rtr, /^ip$/i), rtr:ix(g.rtr, /^serial$/i), rdrIp:ix(g.rdr, /^ip$/i), rdr:ix(g.rdr, /^serial$/i), camIp:ix(g.cam, /^ip$/i), cam:ix(g.cam, /^serial$/i) };
+      var V = function(r, k){ return c[k] > -1 ? S(r[c[k]]) : ''; };
+      C.slice(h + 2).forEach(function(r){
+        var nm0 = S(r[0]); if (!nm0 || /^column\d*$/i.test(nm0)) return;
+        plan.campsN++;
+        var m = /^cam(?:p)?\s*[-_ ]?\s*([0-9a-z][0-9a-z\-]*?)\s*[-_\/. ]+\s*(\d+)\s*(?:\(.*\))?\s*(?:up|down)?$/i.exec(nm0);
+        var x = m ? mina[signKey(m[1] + '/' + m[2])] : null;
+        if (!x){ (m ? plan.miss : plan.out).push(nm0); return; }
+        put(x.id, { nm:nm0, rtr:V(r, 'rtr'), rdr:V(r, 'rdr'), cam:V(r, 'cam'), net:ex47Net(V(r, 'rtrIp')) || ex47Net(V(r, 'rdrIp')),
+                    eng:g.eng > -1 ? S(r[g.eng]) : '', at:g.at > -1 ? ex47Date(r[g.at]) : '' }, nm0);
+      });
+    }
+  }
+  /* ── الممرات والبوابات والطوابق ── */
+  if (Pt && Pt.length){
+    var P0 = Pt[0], pc = { lat:col(P0, /latitude/i), lng:col(P0, /longitude/i), ip:col(P0, /^ip$/i), ser:col(P0, /^serial$/i), eng:col(P0, /eng/i), at:col(P0, /^date$/i),
+                           ready:col(P0, /الجاهزية/), crane:col(P0, /رافعة/), maint:col(P0, /صيانة/) };
+    pc.kind = pc.ip > 0 ? pc.ip - 1 : 3;
+    var num = function(v){ var f = parseFloat(S(v).replace('°', '')); return isFinite(f) ? f : 0; };
+    var cur = null;
+    var match = function(nm0, la, ln){
+      var k = extNameKey(nm0), k2 = k.replace(/^path/, '');
+      var sh = /^(?:path-?)?sh\s*-?\s*([1-7])\s*-?\s*([lr])$/i.exec(nm0.replace(/\s+/g, ''));
+      var alias = sh ? extNameKey('shaded' + sh[1] + sh[2]) : '';
+      var hit = others.filter(function(o){ return o.k && (o.k === k || o.k === k2 || o.k.replace(/^path/, '') === k2 || (alias && o.k === alias)); })[0];
+      if (!hit && k2.length >= 6) hit = others.filter(function(o){ return o.k && o.k.length >= 6 && (o.k.slice(-k2.length) === k2 || k2.slice(-o.k.length) === o.k); })[0];
+      if (!hit && la && ln){
+        var best = null; others.forEach(function(o){ var d = geoDist([la, ln], [+o.x.lat, +o.x.lng]); if (!best || d < best.d) best = { o:o, d:d }; });
+        if (best && best.d <= 60) hit = best.o;
+      }
+      return hit;
+    };
+    var flush = function(){
+      if (!cur) return; plan.pathsN++;
+      var hit = match(cur.nm, cur.lat, cur.lng);
+      if (!hit){ plan.out.push(cur.nm); cur = null; return; }
+      put(hit.x.id, { nm:cur.nm, rtr:cur.rtr || '', rdr:cur.rdr || '', cam:cur.cam || '', net:cur.net || '', eng:cur.eng || '', at:cur.at || '',
+                      ready:cur.ready || '', crane:cur.crane || '', maint:cur.maint || '' }, cur.nm);
+      cur = null;
+    };
+    Pt.slice(1).forEach(function(r){
+      var nm0 = S(r[0]);
+      if (nm0 && /[A-Za-z]/.test(nm0)){ flush(); cur = { nm:nm0, lat:pc.lat > -1 ? num(r[pc.lat]) : 0, lng:pc.lng > -1 ? num(r[pc.lng]) : 0,
+        eng:pc.eng > -1 ? S(r[pc.eng]) : '', at:pc.at > -1 ? ex47Date(r[pc.at]) : '', ready:pc.ready > -1 ? S(r[pc.ready]) : '',
+        crane:pc.crane > -1 ? S(r[pc.crane]) : '', maint:pc.maint > -1 ? S(r[pc.maint]) : '' }; }
+      else if (nm0){ flush(); return; }   /* سطرُ عنوانٍ عربيّ («الممر المظلل …») لا نقطة */
+      if (!cur) return;
+      var kind = S(r[pc.kind]).toLowerCase(), sv = pc.ser > -1 ? S(r[pc.ser]) : '';
+      if (kind === 'router'){ cur.rtr = sv; cur.net = ex47Net(r[pc.ip]); }
+      else if (kind === 'reader') cur.rdr = sv;
+      else if (kind === 'camera') cur.cam = sv;
+    });
+    flush();
+  }
   return plan;
 }
 function ex47Import(file){
@@ -749,8 +786,11 @@ function ex47Card(){
     + '<div class="pop-rows" style="margin:0"><div><span class="k">' + esc(t('نقاطٌ لها بياناتُ ١٤٤٧')) + '</span><span class="num">' + nm(have) + '</span></div></div>';
   if (P){
     var ids = Object.keys(P.set), wr = ids.filter(function(id){ return P.set[id].rdr; }).length;
-    body += stats([['مخيماتٌ في الملف', N(P.campsN)], ['ممراتٌ في الملف', N(P.pathsN)], ['طابقت نقاطَنا', N(ids.length), 'ok'], ['لها سيريالُ قارئ', N(wr), 'acc'], ['لم تطابق', N(P.miss.length), P.miss.length ? 'wrn' : '']])
-      + (P.miss.length ? mtDetails(t('لم تطابق نقاطَنا') + ' (' + nm(P.miss.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.miss.slice(0, 120).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u26A0') : '')
+    body += stats([['مخيماتٌ في الملف', N(P.campsN)], ['ممراتٌ ونقاطٌ أخرى', N(P.pathsN)], ['طابقت نقاطَنا', N(ids.length), 'ok'], ['لها سيريالُ قارئ', N(wr), 'acc'],
+                   ['مخيمٌ رقمُه ليس في سجلّنا', N(P.miss.length), P.miss.length ? 'wrn' : ''], ['خارج سجلّنا', N(P.out.length)]])
+      + (P.dup ? '<p class="hint" style="margin:4px 0 0">' + esc(t('صفوفٌ إضافيةٌ لنقاطٍ مكرَّرة تُحفَظ ضمن النقطة نفسِها')) + ': ' + nm(P.dup) + '</p>' : '')
+      + (P.miss.length ? mtDetails(t('مخيمٌ رقمُه ليس في سجلّنا') + ' (' + nm(P.miss.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.miss.slice(0, 200).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u26A0') : '')
+      + (P.out.length ? mtDetails(t('خارج سجلّنا — الحرم والجمرات ومزدلفة وما لم يُعرَف') + ' (' + nm(P.out.length) + ')', '<div class="hint" style="font-size:12px" dir="ltr">' + P.out.slice(0, 200).map(function(z){ return esc(z); }).join(' \u00b7 ') + '</div>', '\u2139') : '')
       + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد بيانات ١٤٤٧') + ' (' + nm(ids.length) + ')', 'btn-primary btn-sm', ' data-ex47ok="1"') + '</div>';
   }
   body += '<label class="btn btn-secondary btn-sm" style="margin-top:8px;display:inline-flex">\u{1F4C2} ' + esc(t(P ? 'اختر ملفًّا آخر' : 'اختر ملف تسليمات الممرات')) + '<input type="file" accept=".xlsx,.xls" data-ex47="1" style="display:none"></label>';
