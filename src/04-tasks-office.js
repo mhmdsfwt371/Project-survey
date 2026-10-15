@@ -4136,7 +4136,7 @@ function drawFlag(){
   catch (e){ LS_ERR = e; }
 }
 function routeStart(mode){
-  if (!may('newsite') && !may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
+  if (!may('settings')){ toast(t('إضافةُ النقاط للمكتب')); return; }
   ROUTE.on = true; ROUTE.mode = (mode === 'area' ? 'area' : 'line'); ROUTE.pts = []; POP_OPEN = false; PIN_ON = false;
   ROUTE.gen = null; ROUTE.moved = 0;
   RT_MIN = false; drawFlag();
@@ -4413,7 +4413,7 @@ function pinCancel(){
 }
 function pinStart(){
   if (PIN_ON){ pinCancel(); return; }
-  if (!may('newsite') && !may('settings') && ROLE !== 'viewer'){ toast(t('إضافةُ النقاط للمكتب')); return; }
+  if (!may('settings') && ROLE !== 'viewer'){ toast(t('إضافةُ النقاط للمكتب')); return; }
   PIN_ON = true; POP_OPEN = false; drawFlag();
   toast(t('اضغط على الخريطة حيث تريد النقطة'));
   render(1);

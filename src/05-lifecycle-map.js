@@ -4108,7 +4108,7 @@ function mapUIHtml(){
     + '<div class="map-fab">'
     +   ((may('edit') || ROLE === 'viewer') ? btn('+ '+t('موقع غير مسجّل'),'btn-primary btn-sm',' data-newsite="1"') : '')   /* (V37.68) الوزارةُ تقترح نقطة */
     +   (ROLE === 'viewer' ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')), PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"') : '')   /* بلا أدوات الرسم */
-    +   ((may('newsite') || may('settings'))
+    +   (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
           ? btn((PIN_ON ? '\u23F3 ' + t('اضغط على الخريطة') : '\u{1F4CC} ' + t('نقطة هنا')),
                 PIN_ON ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-pin="1"')
             + (tfdMay() ? btn((TFD.on ? '\u270F ' + t('جارٍ رسم المسار') : '\u{1F6B6} ' + t('رسم مسار التفويج')), TFD.on ? 'btn-danger btn-sm' : 'btn-secondary btn-sm', ' data-tfd="1"') : '')   /* (V28.0) */

@@ -983,7 +983,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
                    : (MYPOS ? (MYPOS.lat.toFixed(6) + ', ' + MYPOS.lng.toFixed(6)) : '—'))
           + '</span></div></div>',
           btn('◎ ' + t('التقط موضعي'),'btn-secondary btn-sm',' data-nsloc="1"')
-          + ((may('newsite') || may('settings'))
+          + (may('settings')   /* (V37.96) كان «newsite» مفتاحًا لا وجودَ له فيُرجع كاذبًا دائمًا */
               ? btn('\u{1F4CC} ' + t('اختر الموضع على الخريطة'),'btn-quiet btn-sm',' data-nspin="1"') : ''))
 
       + card('هوية الموقع',

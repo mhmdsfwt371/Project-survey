@@ -17,7 +17,10 @@ let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
 
 const R = mkdtempSync(join(tmpdir(), 'nsk-seal-'));
-const sh = c => execSync(c, { cwd:R, encoding:'utf8', stdio:['ignore', 'pipe', 'pipe'] });
+/* (V37.96) البيئةُ تُنظَّف من متغيرات جيت التي يورّثها الخُطّاف (GIT_DIR وأخواتُه): من شجرة عملٍ فرعية
+   كانت هذه الأوامرُ تُنفَّذ على المستودع الحقيقي — فتقلبه مجرَّدًا وتغيّر هويّتَه وتُضيف التزاماتٍ تجريبية */
+const ENV = Object.keys(process.env).reduce((o, k) => { if (!/^GIT_/.test(k)) o[k] = process.env[k]; return o; }, {});
+const sh = c => execSync(c, { cwd:R, encoding:'utf8', stdio:['ignore', 'pipe', 'pipe'], env:ENV });
 sh('git init -q'); sh('git config user.email a@b.c'); sh('git config user.name t');
 writeFileSync(join(R, 'index.html'), 'a'); mkdirSync(join(R, 'backups/latest'), { recursive:true });
 writeFileSync(join(R, 'backups/latest/backup.enc'), 'x1'); writeFileSync(join(R, 'backups/latest/_meta.json'), '{"n":1}');

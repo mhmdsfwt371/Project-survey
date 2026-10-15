@@ -10,7 +10,7 @@
    بالشكل الذي تقرؤه القاعدة — وnull لإعادة الافتراضي.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
-import { readFileSync } from 'fs';
+import { readdirSync, readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
@@ -124,5 +124,15 @@ c = d.getElementById('content');
 T(!c.querySelector('[data-pmk="phones|r"]') && /🔒/.test(c.textContent), 'هواتفُ الوزارة تُعرَض مقفولةً بلا زرّ');
 /* المشرفُ لا يرى التبويب */
 w.ROLE = 'supervisor'; T(!w.seesPage('perms'), 'المشرفُ لا يرى التبويب'); w.ROLE = 'admin'; T(w.seesPage('perms'), 'ومديرُ المشروع يراه'); w.ROLE = 'engineer';
+/* (V37.96) كلُّ مفتاحٍ يُسأل عنه may() موجودٌ في جدول الصلاحيات — مفتاحٌ وهميٌّ («mgr»، «newsite») يُرجع كاذبًا
+   دائمًا فيختفي الزرُّ عن الجميع بصمت، كما حدث لبطاقة التوكن في V37.75 */
+{
+  const srcAll = readdirSync('src').filter(f => f.endsWith('.js')).map(f => readFileSync('src/' + f, 'utf8')).join('\n');
+  const known = new Set(['propose', 'provision']);
+  Object.values(w.ROLES || {}).forEach(r => Object.keys((r && r.can) || {}).forEach(k => known.add(k)));
+  const used = [...new Set([...srcAll.matchAll(/\bmay\('(\w+)'\)/g)].map(m => m[1]))];
+  const ghost = used.filter(k => !known.has(k));
+  T(!ghost.length, 'كلُّ مفتاحٍ في may() معرَّفٌ في جدول الصلاحيات' + (ghost.length ? ' — وهميّ: ' + ghost.join(', ') : ' (' + used.length + ')'));
+}
 console.log(bad ? '\nجردُ مصفوفة الصلاحيات فشل ✗ (' + bad + ')' : '\nالشاشةُ تكتب ما تقرؤه القاعدة — والافتراضياتُ مرآةٌ ✅');
 process.exit(bad ? 1 : 0);

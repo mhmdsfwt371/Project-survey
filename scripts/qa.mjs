@@ -126,7 +126,7 @@ check(navIds.length > 0 && ids.length >= navIds.length,
 
 /* كلُّ صفحةٍ تُفتح وترسم محتوًى — والعنوانُ يطابق الصفحةَ المطلوبةَ لا بديلَها */
 const FULL = new Set(['map']);          /* الخريطةُ حاويةٌ ثابتةٌ خارج #content */
-let drew = 0, blank = [], swapped = [];
+let drew = 0, blank = [], swapped = [], leaked = [];
 for (const id of ids) {
   try {
     w.CUR = id;
@@ -134,6 +134,8 @@ for (const id of ids) {
     const body = d.getElementById('content');
     const has = FULL.has(id) || (body && body.innerHTML.trim().length > 40);
     if (has) drew++; else blank.push(id);
+    /* (V37.96) وسمٌ برمجيٌّ يظهر نصًّا = تهريبٌ مزدوج (كما ظهر «<span class="num">» في سطر الاعتماد) */
+    if (body && /<\/?(span|b|bdi|div|a|i|strong)\b[^>]*>/.test(body.textContent || '')) leaked.push(id);
 
     const want = (w.FIELD_PAGES && w.FIELD_PAGES[id]) || (w.PAGE && w.PAGE[id]);
     const crumb = d.getElementById('crumb');
@@ -143,6 +145,20 @@ for (const id of ids) {
 }
 check(blank.length === 0, `كلُّ صفحةٍ ترسم محتوًى (${drew}/${ids.length})` + (blank.length ? ` — الفارغ: ${blank.slice(0, 5).join(' ')}` : ''));
 check(swapped.length === 0, 'لا صفحةَ تُستبدَل بغيرها صامتةً' + (swapped.length ? ` — ${swapped.slice(0, 5).join(' ')}` : ''));
+check(leaked.length === 0, 'لا وسمَ برمجيًّا يظهر نصًّا في أيِّ شاشة' + (leaked.length ? ` — ${leaked.slice(0, 5).join(' ')}` : ''));
+
+/* (V37.96) نموذجُ التركيب يرسم قطعَ النوع كلَّها بمفاتيحها الحقيقية — كان يقرأ القطعةَ كمصفوفةٍ منذ V14.27
+   فتخرج الأسماءُ فارغةً وكلُّ الكميات بمفتاح «undefined»، ولم يرصده جردٌ لأنه لا يفحص المعنى */
+try {
+  const x = w.STATE.sites.find(z => z && z.type === 'مخيم');
+  if (x && typeof w.formReset === 'function'){
+    w.formReset(); w.FORM.site = x.id; w.PTAB = w.PTAB || {}; w.PTAB.forms = 'insForm'; w.CUR = 'forms'; w.render(1);
+    const codes = new Set(w.itemsList().map(i => i.code)), zone = w.siteZone(x);
+    const want = w.itemsList().filter(i => i.z === zone && i.name).length;
+    const got = [...d.querySelectorAll('#content [data-part]')].map(e => e.getAttribute('data-part'));
+    check(got.length === want && got.every(c => codes.has(c)), `نموذجُ التركيب يرسم قطعَ النوع كلَّها بمفاتيحها (${got.length}/${want})`);
+  }
+} catch (e){ fails.push('نموذجُ التركيب لم يُرسَم: ' + e.message); }
 
 /* «ما هذه الصفحة؟» يجيب عن كلِّ شاشةٍ بلا استثناء */
 if (typeof w.helpOf === 'function') {
