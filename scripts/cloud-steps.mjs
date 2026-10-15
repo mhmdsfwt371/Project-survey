@@ -44,6 +44,9 @@ export function cloudSteps(file = WORKFLOW){
     if (trimmed.startsWith('#') || trimmed === '') continue;
 
     const m = trimmed.match(/^- name:\s*(.+)$/);
+    /* (V38.0) «: » داخل اسمٍ بلا اقتباس يكسر YAML في السحابة كلَّه (ملفُّ السير لا يُقرأ فلا يعمل جردٌ واحد)
+       بينما يقبله هذا القارئُ البسيط — فتمرّ البوابةُ المحلية وتسقط السحابة صامتة. وقع في V37.97. */
+    if (m && !/^['"]/.test(m[1]) && /:\s/.test(m[1])) throw new Error('اسمُ خطوةٍ فيه «: » بلا اقتباس يكسر YAML في السحابة: ' + m[1].slice(0, 80));
     if (m){ cur = { name: m[1].trim(), env: {}, run: [] }; steps.push(cur); continue; }
     if (trimmed.startsWith('- ')){ cur = null; continue; }   /* خطوةُ uses بلا اسم */
     if (!cur) continue;

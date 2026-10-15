@@ -8,6 +8,11 @@
 #
 # يُثبَّت تلقائيًّا (core.hooksPath=.githooks) عند أوّل تشغيلٍ للحارس أو
 # للدورة السريعة. مخرجُ الطوارئ الوحيد معلَنٌ لا مخفيّ: NUSUK_NO_GATE=1.
+# (V38.0) بوابةٌ واحدةٌ في الوقت نفسه — اثنتان معًا أسقطتا جردَي الدخول والوزارة بلا خطأٍ حقيقيّ (١٥ أكتوبر ٢٠٢٦)
+if command -v flock >/dev/null 2>&1; then
+  exec 9>"$(git rev-parse --git-dir)/nusuk-gate.lock"
+  if ! flock -n 9; then echo "✗ بوابةٌ أخرى تعمل الآن على هذا المستودع — انتظرها حتى تنتهي ثم ادفع"; exit 1; fi
+fi
 set -u
 cd "$(git rev-parse --show-toplevel)" || exit 1
 
