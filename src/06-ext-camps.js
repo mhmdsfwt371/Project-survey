@@ -935,11 +935,16 @@ function extBridgeCodes(){
 function extBridgeCmd(mode){
   /* (V37.94) mode='go': إشارةٌ مرجعية — تنقل المتصفحَ إلى تطبيقنا والبياناتُ في العنوان بعد # فتُستورَد وحدَها؛
      mode (افتراضي): نسخُ الناتج للصق */
+  /* (V38.5) أوّلُ تشغيلٍ حقيقيّ من لاب المالك: الجلبُ كلُّه نجح، ثم سقط «copy is not defined» — أداةُ النسخ في
+     الـConsole لا تبقى في النطاق بعد أوّل await. تُحفَظ مرجعًا قبل أيِّ انتظار، ويُنزَّل الناتجُ ملفًّا دائمًا
+     (nusuk-bridge.json) يُرفَع في البطاقة نفسِها — فلا يتوقّف الجسرُ على النسخ. */
   var tail = mode === 'go'
     ? "location.href=" + JSON.stringify(location.origin + location.pathname) + "+'#bridge='+encodeURIComponent(JSON.stringify(out));"
-    : "copy(JSON.stringify(out));alert('نُسخت بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — الصقها في التطبيق');";
+    : "const js=JSON.stringify(out);let cp=false;try{if(CP){CP(js);cp=true;}}catch(e){}"
+      + "try{const b=new Blob([js],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nusuk-bridge-'+out.at+'.json';document.body.appendChild(a);a.click();a.remove();}catch(e){}"
+      + "alert('بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — '+(cp?'نُسخت للصق، ':'')+'ونُزّل ملفُّ nusuk-bridge — ارفعه في التطبيق أو الصقه');";
   return [
-    "(async()=>{try{",
+    "(async()=>{const CP=(typeof copy==='function')?copy:null;try{",
     "const T=localStorage.getItem('mj.accessToken');if(!T){alert('سجّل الدخول في النظام أوّلًا');return;}",
     "const H={Authorization:'Bearer '+T},A='https://api.nusukcard.net/api/v1',W=", JSON.stringify(extBridgeCodes()), ";",
     "const j=async u=>{const r=await fetch(u,{headers:H});if(!r.ok)throw new Error(u.split('?')[0].split('/').slice(-2).join('/')+' '+r.status);return r.json();};",
@@ -1025,13 +1030,13 @@ function extBridgeCard(){
     /* الطريقةُ الثانية: ملفُّ تصديرٍ من شاشات النظام */
     + '<div style="font-weight:700;margin:6px 0 4px">\u2461 ' + esc(t('أو ملف تصدير من شاشات النظام')) + '</div>'
     + '<p class="hint" style="margin:0 0 6px">' + esc(t('إن كان في شاشة «أجهزة القراءة» أو «إدارة المخيمات» زرُّ تصدير، ارفع ملفه هنا — يُقرأ بعناوين أعمدته')) + '</p>'
-    + '<label class="btn btn-secondary btn-sm" style="display:inline-flex">\u{1F4C4} ' + esc(t('ارفع ملف تصدير')) + '<input type="file" accept=".xlsx,.xls,.csv" data-brfile="1" style="display:none"></label>'
+    + '<label class="btn btn-secondary btn-sm" style="display:inline-flex">\u{1F4C4} ' + esc(t('ارفع ملف تصدير')) + '<input type="file" accept=".json,.xlsx,.xls,.csv" data-brfile="1" style="display:none"></label>'
     /* الطريقةُ الثالثة: الأمرُ واللصق — احتياطًا */
     + mtDetails(t('أو بالأمر واللصق (احتياطًا)'),
         '<ol class="hint" style="margin:0 0 8px;padding-inline-start:18px;line-height:1.9">'
         + '<li>' + esc(t('اضغط «انسخ أمر الجسر» هنا')) + '</li>'
         + '<li>' + esc(t('هناك: F12 ← Console ← الصق ← Enter (وإن رفض كروم اللصق اكتب allow pasting)')) + '</li>'
-        + '<li>' + esc(t('انتظر رسالة «نُسخت بيانات الجسر» ثم الصق الناتج هنا واضغط «اعتمد»')) + '</li></ol>'
+        + '<li>' + esc(t('ينزل ملفُّ nusuk-bridge — ارفعه بزرِّ «ارفع ملف تصدير» أعلاه، أو الصق الناتجَ هنا واضغط «اعتمد»')) + '</li></ol>'
         + '<div class="actions" style="margin:0 0 8px">' + btn('\u{1F4CB} ' + t('انسخ أمر الجسر'), 'btn-secondary btn-sm', ' data-brcopy="1"') + '</div>'
         + (EXT._brShow ? '<textarea readonly dir="ltr" rows="3" style="width:100%;font-size:11px">' + esc(extBridgeCmd()) + '</textarea>' : '')
         + '<textarea id="brIn" dir="ltr" rows="3" style="width:100%;font-size:11px;margin-top:6px" placeholder="' + esc(t('الصق ناتجَ الأمر هنا')) + '"></textarea>'
@@ -1099,6 +1104,16 @@ function extFilePlan(wb){
 }
 function extFileImport(file){
   if (!may('settings')){ toast(t('الجسرُ للمهندس فما فوق')); return; }
+  /* (V38.5) ملفُّ الجسر (nusuk-bridge-….json) يُعتمَد كما هو */
+  if (/\.json$/i.test(String(file && file.name || ''))){
+    var fj = new FileReader();
+    fj.onload = function(){
+      var o = null; try { o = JSON.parse(String(fj.result || '')); } catch (e){ o = null; }
+      if (!o || !extBridgeApply(o, true)){ toast(t('هذا ليس ملفَّ الجسر')); return; }
+      toast(t('اعتُمد الجسر') + ' \u00b7 ' + nm(o.rd.length) + ' ' + t('قارئ') + ' \u00b7 ' + nm(o.tn.length) + ' ' + t('خيمة')); render(1);
+    };
+    fj.readAsText(file); return;
+  }
   xlsxLoad().then(function(ok){
     if (!ok){ toast(t('تعذّر تحميلُ مكتبة إكسل')); return; }
     var fr = new FileReader();
