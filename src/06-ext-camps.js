@@ -948,7 +948,8 @@ function extBridgeCmd(mode){
   var tail = mode === 'go'
     ? "location.href=" + JSON.stringify(location.origin + location.pathname) + "+'#bridge='+encodeURIComponent(JSON.stringify(out));"
     : "const js=JSON.stringify(out);let cp=false;try{if(CP){CP(js);cp=true;}}catch(e){}"
-      + "try{const b=new Blob([js],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='nusuk-bridge-'+out.at+'.json';document.body.appendChild(a);a.click();a.remove();}catch(e){}"
+      /* (V38.9) اسمُ المتغيّر «jb»: جردُ خريطة المشاعر يمنع رابطَ Blob باسم المتغيّر الحرفيّ «b» في الملف كلِّه (درسُ أرشيف البلاط) فأسقط الإنتاجَ بنصِّ هذا الأمر */
+      + "try{const jb=new Blob([js],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(jb);a.download='nusuk-bridge-'+out.at+'.json';document.body.appendChild(a);a.click();a.remove();}catch(e){}"
       + "alert('بياناتُ الجسر: '+out.rd.length+' قارئ · '+out.tn.length+' خيمة · '+out.ov.length+' إشغال — '+(cp?'نُسخت للصق، ':'')+'ونُزّل ملفُّ nusuk-bridge — ارفعه في التطبيق أو الصقه');";
   return [
     "(async()=>{const CP=(typeof copy==='function')?copy:null;try{",
