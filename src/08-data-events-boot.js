@@ -3356,6 +3356,7 @@ function clickAPart5(e){
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
+  if (e.target.closest('[data-brbmk]')){ if (e.preventDefault) e.preventDefault(); toast(t('هذا الزرُّ يُسحَب إلى شريط الإشارات المرجعية ولا يُضغَط هنا — ثم يُضغَط من الشريط وأنت على موقع نظام البطاقات')); return true; }   /* (V38.6) */
   if (e.target.closest('[data-brcopy]')){ extBridgeCopy(); return true; }   /* (V37.93) */
   if (e.target.closest('[data-brok]')){ extBridgePaste(); return true; }
   var orl = e.target.closest('[data-orlink]'); if (orl){ var op = orl.getAttribute('data-orlink').split('|'), oin = document.getElementById('orIn' + op[0]); ex47OrphLink(op.slice(1).join('|'), oin ? oin.value : ''); return true; }   /* (V37.92) */
