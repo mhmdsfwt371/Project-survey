@@ -118,6 +118,14 @@ console.log('\n══ ٤ · بياناتُ ١٤٤٧ ══');
 /* ── ٥ · جسرُ نظام البطاقات: المطابقةُ والتحقّق والإشغال ── */
 console.log('\n══ ٥ · جسرُ نظام البطاقات ══');
 {
+  /* (V38.1) بلا توكنٍ ولا جسر: لا طلبَ إلى نظام البطاقات من التطبيق — سياسةُ الصفحة ترفضه فيظهر خطأٌ في المتصفح */
+  const asked = []; const realFetch = w.fetch;
+  w.fetch = (u) => { asked.push(String(u)); return Promise.reject(new Error('offline')); };
+  w.EXT.tok = ''; w.EXT.bridge = null; w.EXT._plAt = 0; w.EXT._brAt = Date.now();
+  try { w.CUR = 'mfu'; w.render(1); w.pilotKick(); w.extReadersLoad(); } catch (e){ /* الرسمُ يفحصه جردٌ آخر */ }
+  await new Promise(r => setTimeout(r, 50));
+  w.fetch = realFetch;
+  T(!asked.some(u => /nusukcard\.net/.test(u)), 'بلا توكنٍ ولا جسر: لا طلبَ إلى نظام البطاقات من التطبيق' + (asked.length ? ' (' + asked.filter(u => /nusukcard/.test(u)).length + ')' : ''));
   const lat = +camp.lat + 0.0003, lng = +camp.lng;
   w.EXT.bridge = null;
   const ok = w.extBridgeApply({ v:1, at:Date.now(), rd:[['26127723', '99/99', new Date().toISOString()]],

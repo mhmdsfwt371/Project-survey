@@ -72,6 +72,10 @@ function extFetch(url, useBearer){
 /* ── قائمة القرّاء (5 دقائق cache) ── */
 function extReadersLoad(){
   if (EXT.bridge) return Promise.resolve(EXT.readers || null);   /* (V37.93) الجسرُ اليدويّ: لا طلبَ من التطبيق */
+  /* (V38.1) بلا توكنٍ محفوظٍ لا طلبَ إلى نظام البطاقات من التطبيق أصلًا: سياسةُ أمان الصفحة (CSP) لا تسمح بنطاقاتهم،
+     فالطلبُ يُرفَض في المتصفح قبل أن يخرج — وهو ما أسقط اختبارَ المتصفح الحقيقي في السحابة، وما ظهر في جوال المالك
+     «تعذّر الوصول إلى بثّ القرّاء». الطريقُ هو الجسر. */
+  if (!EXT.tok){ EXT.rdErr = ''; return Promise.resolve(EXT.readers || null); }
   if (EXT.readers && Date.now() - EXT.readersAt < 300000) return Promise.resolve(EXT.readers);
   return extFetch(EXT_STREAM, false).then(function(r){
     if (!r.ok) return extFetch(EXT_STREAM, true).then(function(r2){ return r2.ok ? r2.json() : null; });
