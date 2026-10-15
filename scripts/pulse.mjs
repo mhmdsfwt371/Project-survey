@@ -97,7 +97,7 @@ stuckT.forEach(t => { byTask[t.kind] = (byTask[t.kind] || 0) + 1; });
    في ملفٍ، ويُقالان هنا قبل ثلاثين يومًا، ويوقظان البريدَ قبل أربعةَ عشر. */
 let dls = [];
 try {
-  const raw = JSON.parse(readFileSync('docs/deadlines.json', 'utf8'));
+  const raw = JSON.parse(readFileSync(process.env.PULSE_DEADLINES || 'docs/deadlines.json', 'utf8'));   /* (V37.95) الجردُ يمرّر ملفًّا فارغًا كي لا يتبدّل حكمُه بتقويم اليوم */
   dls = (raw.items || [])
     .map(x => ({ ...x, left: Math.ceil(((Date.parse(x.at) || 0) - now) / DAY) }))
     .filter(x => Number.isFinite(x.left) && x.left <= 30)

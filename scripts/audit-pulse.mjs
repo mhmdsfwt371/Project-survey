@@ -15,10 +15,11 @@ const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); }
 
 const D = 864e5, now = Date.now();
 const run = (db) => {
-  const src = '/tmp/pulse-audit-src.json', out = '/tmp/pulse-audit-out.md';
+  const src = '/tmp/pulse-audit-src.json', out = '/tmp/pulse-audit-out.md', dl = '/tmp/pulse-audit-dl.json';
   writeFileSync(src, JSON.stringify(db));
+  writeFileSync(dl, JSON.stringify({ items:[] }));   /* (V37.95) المواقيتُ الحقيقيةُ تتبدّل بالتقويم فكانت تُسقط الجردَ كلَّما اقترب موعد */
   const log = execFileSync('node', ['scripts/pulse.mjs'],
-    { encoding:'utf8', env: { ...process.env, PULSE_SRC:src, PULSE_OUT:out, GITHUB_OUTPUT:'', GITHUB_STEP_SUMMARY:'' } });
+    { encoding:'utf8', env: { ...process.env, PULSE_SRC:src, PULSE_OUT:out, PULSE_DEADLINES:dl, GITHUB_OUTPUT:'', GITHUB_STEP_SUMMARY:'' } });
   const text = readFileSync(out, 'utf8');
   const hand = +((/يحتاج يدًا:\s*(\d+)/.exec(log) || [])[1] || -1);
   try { unlinkSync(src); unlinkSync(out); } catch {}
