@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V37.96",
+  "app_version": "V37.97",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2154,7 +2154,8 @@
   "V37.93": "extBridgeCmd(), extBridgeApply(), extBridgePaste(), extBridgeLoad(), extBridgeCopy(), extBridgeCard()",
   "V37.94": "extBridgeBmk(), extBridgeHashPick(), extBridgePendingApply(), extFilePlan(), extFileImport(), extTsParse()",
   "V37.95": "قائمة الفجوات في extBulkCard()",
-  "V37.96": "فحوصٌ جديدة في audit-perms وqa"
+  "V37.96": "فحوصٌ جديدة في audit-perms وqa",
+  "V37.97": "scripts/audit-scenarios.mjs و scripts/audit-perf.mjs و docs/perf-baseline.json"
   },
   "map_and_geolocation": {
     "tile_layers": {
