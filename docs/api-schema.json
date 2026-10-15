@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.1",
+  "app_version": "V38.2",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2159,7 +2159,8 @@
   "V37.98": "audit-perf: ms (بناء) و kb (حجم)",
   "V37.99": "itemKey(), itemCode() وعلامة dis في حركات الفك",
   "V38.0": "cloud-steps: رفض «: » في أسماء الخطوات · قفل nusuk-gate.lock في الخطاف",
-  "V38.1": "extReadersLoad: حارس التوكن"
+  "V38.1": "extReadersLoad: حارس التوكن",
+  "V38.2": "browser-test: gzip عند الطلب"
   },
   "map_and_geolocation": {
     "tile_layers": {

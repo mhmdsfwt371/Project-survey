@@ -7,6 +7,7 @@
    حقيقي، ويقيس أين ظهرت النافذةُ وبأيِّ عرض — ويلتقط صورًا للدليل.
    ═════════════════════════════════════════════════════════════════════════ */
 import { createServer } from 'http';
+import { gzipSync } from 'zlib';
 import { readFileSync, existsSync, mkdirSync, statSync } from 'fs';
 import { join, extname } from 'path';
 import { createRequire } from 'module';
@@ -18,8 +19,16 @@ const MIME = { '.html':'text/html; charset=utf-8', '.js':'text/javascript', '.js
 const srv = createServer((req, res) => {
   const p = join(ROOT, decodeURIComponent(req.url.split('?')[0]).replace(/^\/+/, '') || 'index.html');
   if (!existsSync(p) || statSync(p).isDirectory()){ res.writeHead(404); res.end(); return; }
-  res.writeHead(200, { 'content-type': MIME[extname(p)] || 'application/octet-stream' });
-  res.end(readFileSync(p));
+  /* (V38.2) يُضغَط النصُّ كما تضغطه الاستضافةُ الحقيقية — كان يُرسَل خامًا فيقيس «ظروفُ منى» تحميلًا باردًا
+     لـ٣٫٥ ميجا (≈٧٨ ثانية) بينما يصل الجوالَ قرابةُ ميجا واحدة مضغوطة */
+  const buf = readFileSync(p), ext = extname(p), txt = /^\.(html|js|json|css|svg|webmanifest)$/.test(ext);
+  if (txt && /\bgzip\b/.test(String(req.headers['accept-encoding'] || ''))){
+    res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream', 'content-encoding':'gzip', 'vary':'accept-encoding' });
+    res.end(gzipSync(buf, { level:6 }));
+    return;
+  }
+  res.writeHead(200, { 'content-type': MIME[ext] || 'application/octet-stream' });
+  res.end(buf);
 });
 await new Promise(r => srv.listen(0, '127.0.0.1', r));
 const base = 'http://127.0.0.1:' + srv.address().port + '/';
