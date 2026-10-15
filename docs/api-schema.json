@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.10",
+  "app_version": "V38.11",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2168,7 +2168,8 @@
   "V38.7": "extRdState(), extRdStateText(), extSerNewOf(), extReaderKey(), extSerAdopt(), extOvSheet()",
   "V38.8": "contRes(), contLoad(), contSave(), contCard()",
   "V38.9": "extBridgeCmd: متغيّر jb",
-  "V38.10": "docs: handover §7.5 · new-chat-prompt · decisions ق-٠٢٠"
+  "V38.10": "docs: handover §7.5 · new-chat-prompt · decisions ق-٠٢٠",
+  "V38.11": "scripts/release-now.mjs"
   },
   "map_and_geolocation": {
     "tile_layers": {
