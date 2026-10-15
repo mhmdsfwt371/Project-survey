@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.7</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.8</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-98371b5f4c.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-e730d4aa14.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -14681,6 +14681,56 @@ function bkFetch(force){
       .catch(function(e){ BK_STATE.err = String(e && e.message || e); });
   });
 }
+/* ═══ (V38.8) «ما يعتمد على شخص» — الاستمراريةُ بنظرةٍ واحدة ═══
+   من يخلف صاحبَ المشروع يحتاج أن يعرف من أوّل يوم: هل الجسرُ يُشغَّل؟ هل النسخُ يُؤخَذ؟ متى ينتهي مفتاحُ الدفع؟
+   ومن البديلُ المسمّى لكلِّ موردٍ لا يملكه إلا واحد؟ البدائلُ تُكتَب هنا (settings/continuity) فتُرى لكلِّ المكتب. */
+function contRes(){ return [['gh', 'GitHub — المستودع والأسرار'], ['fb', 'Firebase — القاعدة والحسابات'], ['nk', 'حساب نظام البطاقات (الجسر)'],
+                ['bk', 'مفتاح النسخ الاحتياطي'], ['dec', 'قرارات الأوزان والسجلّ والاعتماد']]; }
+function contLoad(){
+  if (!FB.ready || !FB.db || (contLoad.at && Date.now() - contLoad.at < 60000)) return;
+  contLoad.at = Date.now();
+  DB.col('settings').doc('continuity').get().then(function(doc){ contLoad.d = (doc && doc.exists) ? doc.data() : {}; if (CUR === 'sys') render(1); })
+    .catch(function(e){ softErr('الاستمرارية', e, ''); });
+  if (!contLoad.dl && typeof fetch === 'function'){
+    contLoad.dl = { items:[] };
+    fetch('docs/deadlines.json', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
+      .then(function(j){ if (j && j.items) contLoad.dl = j; if (CUR === 'sys') render(1); }).catch(function(e2){ LS_ERR = e2; });
+  }
+}
+function contSave(){
+  if (!may('perms')){ toast(t('تسميةُ البدائل للأدمن')); return; }
+  var d = {}; contRes().forEach(function(r){ var el = document.getElementById('ct_' + r[0]); d[r[0]] = el ? String(el.value || '').trim() : ''; });
+  d.at = Date.now(); d.by = STATE.meta.name || '';
+  contLoad.d = d; contCard.ed = 0;
+  CORE.set('cfg', 'continuity', d); CORE.saveSoon();
+  logEvent('تسميةُ البدائل للموارد المعتمدة على شخص');
+  toast(t('حُفظت البدائل')); render(1);
+}
+function contCard(){
+  if (!may('settings')) return '';
+  contLoad(); if (typeof extBridgeLoad === 'function') extBridgeLoad();
+  var D = contLoad.d || {}, rows = [], now = Date.now();
+  var B = (typeof EXT !== 'undefined') ? EXT.bridge : null, bh = B ? (now - B.at) / 3600000 : null;
+  rows.push([esc(t('آخر جسر لنظام البطاقات')), B ? pill(bh < 12 ? 'حديث' : bh < 48 ? 'قديم' : 'متوقّف', bh < 12 ? 'ok' : bh < 48 ? 'warn' : 'bad') + ' ' + esc(pilotAgo(B.at)) + (B.by ? ' \u00b7 ' + esc(dispName(B.by)) : '') : pill('لم يُشغَّل', 'off')]);
+  var m = BK_STATE.meta, ma = bkAgeDays(m);
+  rows.push([esc(t('آخر نسخة احتياطية')), m ? pill(m.ok && ma <= 1 ? 'اليوم' : 'متأخرة', m.ok && ma <= 1 ? 'ok' : 'warn') + ' <span class="num">' + esc(String(m.at || '').slice(0, 10)) + '</span>' : '<span class="hint" style="margin:0">' + esc(t('يُقرأ…')) + '</span>']);
+  var dl = ((contLoad.dl || {}).items || []).map(function(x){ return { at:x.at, what:x.what, d:Math.ceil((Date.parse(x.at) - now) / 86400000) }; })
+    .filter(function(x){ return isFinite(x.d) && x.d >= 0; }).sort(function(a, b){ return a.d - b.d; });
+  var key = dl.filter(function(x){ return /مفتاح الدفع/.test(x.what); })[0];
+  rows.push([esc(t('انتهاء مفتاح الدفع')), key ? pill(key.d > 30 ? 'سليم' : 'يقترب', key.d > 30 ? 'ok' : 'bad') + ' <span class="num">' + esc(key.at) + '</span> \u00b7 ' + nm(key.d) + ' ' + esc(t('يوم')) : '\u2014']);
+  if (dl[0]) rows.push([esc(t('أقرب موعد')), esc(dl[0].what) + ' \u00b7 <span class="num">' + esc(dl[0].at) + '</span> (' + nm(dl[0].d) + ' ' + esc(t('يوم')) + ')']);
+  var named = contRes().filter(function(r){ return D[r[0]]; }).length;
+  var res = contRes().map(function(r){
+    return [esc(t(r[1])), contCard.ed && may('perms') ? '<input id="ct_' + r[0] + '" dir="auto" value="' + esc(D[r[0]] || '') + '" placeholder="' + esc(t('اسم البديل')) + '">'
+      : (D[r[0]] ? esc(D[r[0]]) : pill('غير مسمّى', 'warn'))];
+  });
+  return card((named < contRes().length ? '\u26A0 ' : '\u{1F91D} ') + t('ما يعتمد على شخص'),
+    table(['البند', 'الحالة'], rows)
+    + '<h4 style="margin:12px 0 6px">' + esc(t('البدائل المسمّاة')) + ' (' + nm(named) + '/' + nm(contRes().length) + ')</h4>'
+    + table(['المورد', 'البديل'], res)
+    + (may('perms') ? '<div class="actions" style="margin:8px 0 0">' + (contCard.ed ? btn('\u2713 ' + t('احفظ البدائل'), 'btn-primary btn-sm', ' data-ctsave="1"') : btn('\u270F ' + t('سمِّ البدائل'), 'btn-secondary btn-sm', ' data-cted="1"')) + '</div>' : '')
+    + '<p class="hint" style="margin:8px 0 0">' + esc(t('التفاصيل في دليل التسليم §٧ وفي دليل العمليات (دورتا الجسر والربط).')) + '</p>');
+}
 function bkAgeDays(o){ return o && o.at ? Math.floor((Date.now() - new Date(o.at).getTime()) / 86400000) : null; }
 function bkCard(){
   bkFetch(false);
@@ -27842,6 +27892,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.8', d:'2026-10-15', notes:[
+      'الاستمرارية: بطاقة «ما يعتمد على شخص» في صحة النظام بالبدائل المسمّاة' ] },
   { v:'V38.7', d:'2026-10-15', notes:[
       'حالة القارئ، واستبداله في نظام البطاقات باعتماد بضغطة، والنظرة العامة بتصميم النظام' ] },
   { v:'V38.6', d:'2026-10-15', notes:[
@@ -30670,6 +30722,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       var h = HB[k]; return h && h.from && h.to && dayKey(Date.parse(h.ts) || 0) === day0;   /* (V26.2) يومُ مكة لا نصُّ التاريخ العالمي */
     }).length;
     return (may('settings') ? readyCard() : '')
+      + contCard()   /* (V38.8) ما يعتمد على شخص */
       + bkCard()
       + (beats.length ? '' : alertBox('error','لم تصل أي إشارة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.'))
       + stats([['متصل', N(up), 'ok'], ['غير متصل', N(down), down ? 'bad' : ''],
@@ -37724,6 +37777,8 @@ function clickAPart5(e){
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
+  if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
+  if (e.target.closest('[data-ctsave]')){ contSave(); return true; }
   var ovo = e.target.closest('[data-ovopen]'); if (ovo){ EXT.ovOpen = ovo.getAttribute('data-ovopen'); render(1); return true; }   /* (V38.7) */
   if (e.target.closest('[data-ovclose]')){ EXT.ovOpen = ''; render(1); return true; }
   var nks2 = e.target.closest('[data-nkser]'); if (nks2){ var sp2 = nks2.getAttribute('data-nkser').split('|'); extSerAdopt(sp2[0], sp2[1]); return true; }

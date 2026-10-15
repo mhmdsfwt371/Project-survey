@@ -3360,6 +3360,8 @@ function clickAPart5(e){
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
+  if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
+  if (e.target.closest('[data-ctsave]')){ contSave(); return true; }
   var ovo = e.target.closest('[data-ovopen]'); if (ovo){ EXT.ovOpen = ovo.getAttribute('data-ovopen'); render(1); return true; }   /* (V38.7) */
   if (e.target.closest('[data-ovclose]')){ EXT.ovOpen = ''; render(1); return true; }
   var nks2 = e.target.closest('[data-nkser]'); if (nks2){ var sp2 = nks2.getAttribute('data-nkser').split('|'); extSerAdopt(sp2[0], sp2[1]); return true; }

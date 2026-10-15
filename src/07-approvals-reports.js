@@ -1551,6 +1551,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
       var h = HB[k]; return h && h.from && h.to && dayKey(Date.parse(h.ts) || 0) === day0;   /* (V26.2) يومُ مكة لا نصُّ التاريخ العالمي */
     }).length;
     return (may('settings') ? readyCard() : '')
+      + contCard()   /* (V38.8) ما يعتمد على شخص */
       + bkCard()
       + (beats.length ? '' : alertBox('error','لم تصل أي إشارة بعد — شغّل أداة الفحص على جهاز المكتب المتصل بشبكة الميدان.'))
       + stats([['متصل', N(up), 'ok'], ['غير متصل', N(down), down ? 'bad' : ''],
