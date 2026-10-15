@@ -278,44 +278,8 @@ function mtCamps(){
   var unmatched = EXT_MATCH_STATE.unmatched;
   h += extBulkCard();   /* (V37.87) الربطُ الجماعيّ — للمهندس */
 
-  if (!matched.length){
-    return h + alertBox('info', t('لم يُعثَر على مطابقة بين قرّاء نظامهم وسيريالات نقاطنا المُركَّبة.'));
-  }
-
-  /* زر تحديث + عداد */
-  h += '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:6px">'
-    + '<div class="hint" style="font-size:13px">' + nm(matched.length) + ' ' + esc(t('مخيم مطابق')) + (unmatched.length ? ' · ' + nm(unmatched.length) + ' ' + esc(t('غير مطابق')) : '') + '</div>'
-    + btn('\u21BB ' + t('تحديث'), 'btn-secondary btn-sm', ' data-extrefresh="1"') + '</div>';
-
-  /* لكل مخيم مطابق */
-  matched.forEach(function(m){
-    var tentId = m.tentId;
-    if (!tentId){
-      /* خيمة موجودة في القرّاء لكن ما في مطابقة بالكود في قائمة الخيام */
-      h += '<div class="card" style="margin:0 0 10px;opacity:.6"><div class="card-body">'
-        + '<b class="num">' + bdiText(m.tentCode || m.serial) + '</b>'
-        + ' <span class="hint">' + esc(t('رُصد القارئ — خيمته غير موجودة في القائمة')) + '</span></div></div>';
-      return;
-    }
-    var cached = EXT.ov[tentId];
-    if (!EXT_OV_LOADED[tentId]){
-      EXT_OV_LOADED[tentId] = true;
-      extOvLoad(tentId).then(function(){ extSnapMaybe(); render(1); });   /* (V37.81) لقطةٌ للوزارة */
-      h += '<div class="card" style="margin:0 0 10px"><div class="card-body">'
-        + '<b class="num">' + bdiText(m.tentCode) + '</b>'
-        + ' <span class="hint">⟳ ' + esc(t('يُحمَّل…')) + '</span></div></div>';
-      return;
-    }
-    if (!cached){
-      h += '<div class="card" style="margin:0 0 10px"><div class="card-body">'
-        + '<b class="num">' + bdiText(m.tentCode) + '</b>'
-        + ' <span class="hint">' + esc(t('تعذّر جلب الإشغال')) + '</span></div></div>';
-      return;
-    }
-    if (m.warn) h += alertBox('warn', t('القارئ') + ' ' + (m.serial || '') + ' ' + t('مسجَّلٌ في النظام على') + ' ' + m.warn + ' ' + t('لا على مخيم النقطة') + ' ' + (m.point.name || m.point.id) + ' \u2014 ' + t('راجع السيريال'));   /* (V37.85) */
-    h += extOvCard(m.tentCode, cached.data, m.reader, m.tentMeta)
-      + '<div class="actions" style="margin:-6px 0 10px">' + btn('\u{1F441} ' + t('عرض النظرة العامة'), 'btn-quiet btn-sm', ' data-ovopen="' + esc(m.point.id) + '"') + '</div>';   /* (V38.7) */
-  });
+  /* (V38.12) جدولُ حالة النقاط المرتبطة بالنظام بدل كرتٍ لكلِّ مخيمٍ مُركَّب — يشمل غيرَ المركَّب (بالاسم والشاخص وقارئ ١٤٤٧) */
+  h += extStatusCard();
 
   /* قسم غير مطابق مطويّ */
   if (unmatched.length){
@@ -1212,4 +1176,66 @@ function extOvSheet(){
     + '<div class="pop-head"><div><h3 style="margin:0">' + esc(t('عرض النظرة العامة')) + ' - <bdi>' + esc(code) + '</bdi></h3><div class="hint" style="margin:2px 0 0">' + esc(x.name || x.id) + '</div></div>'
     + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-ovclose="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">' + body + '</div></div>';
+}
+
+/* ═══ (V38.12) حالةُ النقاط من نظام البطاقات — محدَّثةٌ؟ ترسل إشارة؟ لها أرقامُ النظرة العامة؟ ═══
+   سؤالُ المالك: «النقاط اللي جاية من النظام — أعرف إزاي إنها محدّثة، وبتبعت إشارة، وفيها أرقام زي النظرة
+   العامة ولا لأ؟». كلُّ نقطةٍ مرتبطةٍ بأيِّ مفتاح (اسمُ الربط، الشاخص، سيريالُ التركيب، قارئُ ١٤٤٧) في صفّ:
+   الإشارةُ نسبةً إلى وقت آخر جسر (الجسرُ لقطة)، وأرقامُ النظرة العامة إن جاءت فيه، وما يحتاج مراجعة. */
+function extStatusRows(){
+  if (!EXT.readers && !EXT.tentsBy) return null;
+  var out = [];
+  (STATE.sites || []).forEach(function(x){
+    if (!x) return;
+    var L = extLink(x), rd = L.reader, src = L.by;
+    if (!rd && x.ex47 && x.ex47.rdr && EXT.readers){ rd = EXT.readers[extSerKey(x.ex47.rdr)] || null; if (rd && !src) src = '1447'; }
+    if (!src && !rd && !x.nk) return;
+    var tn = L.tent || (rd ? extTentByCode(rd.locationName) : null), ov = tn && EXT.ov[tn.id] && EXT.ov[tn.id].data;
+    var st = extRdState(rd), c = (ov && ov.occupancyStatus) || {};
+    var tot = (+c.currentlyOccupied || 0) + (+c.withoutBracelet || 0) + (+c.fromOtherCamps || 0), cap = +c.totalCapacity || 0;
+    out.push({ x:x, by:src || (x.nk ? 'name' : ''), code:(tn && tn.code) || x.nk || (rd && rd.locationName) || '', ser:(rd && rd.readerId) || L.ser || (x.ex47 && x.ex47.rdr) || '',
+      sig:!rd ? 'none' : st && st.on ? 'on' : 'off', ts:st ? st.ts : 0, ov:!!ov, pct:cap ? Math.round(tot / cap * 100) : null, tot:tot, cap:cap,
+      chk:L.warn ? 'warn' : L.serNew ? 'ser' : L.missing ? 'miss' : '' });
+  });
+  return out;
+}
+function extStatusCard(){
+  var R = extStatusRows(), B = EXT.bridge;
+  if (!R) return card('حالة النقاط من نظام البطاقات', alertBox('info', t('لا جسرَ بعد — شغّل الجسر من البطاقة أعلاه فتظهر هنا حالةُ كلِّ نقطة')));
+  var n = function(f){ return R.filter(f).length; };
+  var F = EXT.stF || 'all', flt = { all:function(){ return true; }, on:function(r){ return r.sig === 'on'; }, off:function(r){ return r.sig === 'off'; },
+    none:function(r){ return r.sig === 'none'; }, ov:function(r){ return r.ov; }, noov:function(r){ return !r.ov; }, chk:function(r){ return !!r.chk; } };
+  var chips = [['all', 'الكل', R.length], ['on', '🟢 ترسل', n(flt.on)], ['off', '🔴 لا ترسل', n(flt.off)], ['none', '⚪ بلا قارئ ظاهر', n(flt.none)],
+               ['ov', '📊 لها أرقام', n(flt.ov)], ['noov', 'بلا أرقام', n(flt.noov)], ['chk', '⚠ تحتاج مراجعة', n(flt.chk)]];
+  var rows = R.filter(flt[F] || flt.all), N = EXT.stN || 150;
+  var by = { name:'الاسم', sign:'الشاخص', serial:'السيريال', '1447':'قارئ ١٤٤٧' };
+  var sigTxt = function(r){ return r.sig === 'on' ? '\u{1F7E2} ' + t('ترسل') : r.sig === 'off' ? '\u{1F534} ' + t('لا ترسل') + (r.ts ? ' \u00b7 ' + pilotAgo(r.ts) : '') : '\u26AA ' + t('بلا قارئ ظاهر'); };
+  var chkTxt = function(r){ return r.chk === 'warn' ? '\u26A0 ' + t('القارئ على موقعٍ آخر') : r.chk === 'ser' ? '\u26A0 ' + t('سيريالٌ مختلف') : r.chk === 'miss' ? '\u26A0 ' + t('الاسم غير موجود') : '\u2713'; };
+  var tb = table(['النقطة', 'الربط', 'القارئ', 'الإشارة', 'النظرة العامة', 'التحقق', ''],
+    rows.slice(0, N).map(function(r){
+      return ['<bdi>' + esc(r.x.id) + '</bdi><br><span class="hint" style="margin:0">' + esc(r.x.name || '') + '</span>',
+        esc(t(by[r.by] || '\u2014')) + (r.code ? '<br><b dir="ltr">' + esc(r.code) + '</b>' : ''),
+        '<span class="num" dir="ltr">' + esc(r.ser || '\u2014') + '</span>', esc(sigTxt(r)),
+        r.ov ? '\u{1F4CA} ' + (r.pct != null ? nm(r.pct) + '%' : '') + ' <span class="hint" style="margin:0">' + nm(r.tot) + '/' + nm(r.cap) + '</span>' : '<span class="hint" style="margin:0">' + esc(t('بلا أرقام')) + '</span>',
+        esc(chkTxt(r)), btn('\u{1F441}', 'btn-quiet btn-sm', ' data-ovopen="' + esc(r.x.id) + '" title="' + esc(t('عرض النظرة العامة')) + '"')];
+    }));
+  return card('\u{1F4E1} ' + t('حالة النقاط من نظام البطاقات'),
+    '<p class="hint" style="margin:0 0 8px">' + esc(t('«ترسل» = قرأ القارئُ في ربع الساعة قبل آخر جسر · «لها أرقام» = جاءت أرقامُ النظرة العامة في آخر جسر')) + (B ? ' \u00b7 ' + esc(t('آخر جسر')) + ' ' + esc(pilotAgo(B.at)) : '') + '</p>'
+    + '<div class="chips" style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chips.map(function(c){
+        return '<button type="button" class="chip' + (F === c[0] ? ' on' : '') + '" data-stf="' + c[0] + '">' + esc(t(c[1])) + ' <b class="num">' + nm(c[2]) + '</b></button>'; }).join('') + '</div>'
+    + (rows.length ? tb : alertBox('info', t('لا نقاطَ في هذا التصنيف')))
+    + '<div class="actions" style="margin:8px 0 0">'
+    + (rows.length > N ? btn(t('عرض المزيد') + ' (' + nm(rows.length - N) + ')', 'btn-quiet btn-sm', ' data-stmore="1"') : '')
+    + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-stxls="1"') + '</div>');
+}
+function extStatusXls(){
+  var R = extStatusRows(); if (!R || !R.length){ toast(t('لا جسرَ بعد')); return; }
+  var by = { name:'الاسم', sign:'الشاخص', serial:'السيريال', '1447':'قارئ ١٤٤٧' };
+  var rows = [[t('النقطة'), t('الاسم'), t('الربط'), t('الكود في النظام'), t('القارئ'), t('الإشارة'), t('آخر قراءة'), t('السعة'), t('الإشغال'), t('النسبة'), t('التحقق')]];
+  R.forEach(function(r){
+    rows.push([r.x.id, r.x.name || '', t(by[r.by] || ''), r.code, String(r.ser || ''), t(r.sig === 'on' ? 'ترسل' : r.sig === 'off' ? 'لا ترسل' : 'بلا قارئ ظاهر'),
+      r.ts ? new Date(r.ts).toISOString().replace('T', ' ').slice(0, 16) : '', r.ov ? r.cap : '', r.ov ? r.tot : '', r.ov && r.pct != null ? r.pct + '%' : '',
+      r.chk === 'warn' ? t('القارئ على موقعٍ آخر') : r.chk === 'ser' ? t('سيريالٌ مختلف') : r.chk === 'miss' ? t('الاسم غير موجود') : '\u2713']);
+  });
+  xlsSheets([[t('حالة النقاط'), rows]], 'nusuk-points-status.xlsx');
 }

@@ -3157,7 +3157,7 @@ function clickAPart3(e){
   /* (V37.75) ربطُ نظام البطاقات الخارجي */
   if (e.target.closest('[data-exttoksave]')){ var iv=document.getElementById('extTokInp'); extTokSave(iv ? iv.value : ''); return true; }
   if (e.target.closest('[data-exttokclear]')){ extTokClear(); return true; }
-  if (e.target.closest('[data-extrefresh]')){ EXT_MATCH_STATE=null; EXT_OV_LOADED={}; EXT.ov={}; extMatchLoad(); render(1); return true; }
+  /* (V38.12) زرُّ «تحديث» رُفع مع كروت المخيمات: التحديثُ صار بإعادة الجسر */
   if (e.target.closest('[data-iosnudge]')){
     var inv = e.target.closest('[data-iosnudge]').getAttribute('data-iosnudge');
     if (inv === 'install' && INSTALL_EVT){
@@ -3361,6 +3361,9 @@ function clickAPart5(e){
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
   if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
+  var stf = e.target.closest('[data-stf]'); if (stf){ EXT.stF = stf.getAttribute('data-stf'); EXT.stN = 150; render(1); return true; }   /* (V38.12) */
+  if (e.target.closest('[data-stmore]')){ EXT.stN = (EXT.stN || 150) + 150; render(1); return true; }
+  if (e.target.closest('[data-stxls]')){ extStatusXls(); return true; }
   if (e.target.closest('[data-ctsave]')){ contSave(); return true; }
   var ovo = e.target.closest('[data-ovopen]'); if (ovo){ EXT.ovOpen = ovo.getAttribute('data-ovopen'); render(1); return true; }   /* (V38.7) */
   if (e.target.closest('[data-ovclose]')){ EXT.ovOpen = ''; render(1); return true; }
