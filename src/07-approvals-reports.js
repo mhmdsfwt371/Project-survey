@@ -486,19 +486,41 @@ function movesList(){
     .sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
 }
 
+/* ═══ (V37.99) مفتاحُ الصنف واحدٌ في المخزن ═══
+   كان التوريدُ والصرفُ اليدويُّ والفكُّ تُسجِّل الصنفَ باسمه («كاميرا مخيم 8361»)، والتركيبُ يُسجِّله
+   برمزه («cam») — فيقع الصنفُ الواحدُ في صفّين: العهدةُ في صفِّ الاسم لا تنقص أبدًا بالتركيب، وصفُّ
+   الرمز عهدتُه سالبة. صار كلُّ صنفٍ يُقرأ برمزه حين يُعرَف (رمزًا كان أو اسمًا)، ويُعرَض باسمه. لا ترحيلَ
+   للبيانات: الحركاتُ القديمةُ تُدمَج عند القراءة. */
+function itemKey(v){
+  /* المخزنُ ماديّ: الصنفُ باسمه. الرمزُ يتعدّد للاسم الواحد (راوترُ المخيم وراوترُ الممر جهازٌ واحد بوزنين) */
+  var s0 = String(v == null ? '' : v).trim(); if (!s0) return '\u2014';
+  var L = itemsList(), i;
+  for (i = 0; i < L.length; i++) if (L[i].code === s0) return L[i].name || s0;
+  return s0;
+}
+/* ولحساب النقاط يُطلَب الرمز: رمزًا كان أو اسمًا (أوّلُ رمزٍ بهذا الاسم) */
+function itemCode(v){
+  var s0 = String(v == null ? '' : v).trim(), L = itemsList(), i;
+  for (i = 0; i < L.length; i++) if (L[i].code === s0) return s0;
+  for (i = 0; i < L.length; i++) if (L[i].name === s0) return L[i].code;
+  return s0;
+}
 function stockBalance(){
   var bal = {};
   function row(item){
-    if (!bal[item]) bal[item] = { item:item, store:0, custody:0, used:0, scrap:0 };
-    return bal[item];
+    var k = itemKey(item);
+    if (!bal[k]) bal[k] = { item:k, key:k, store:0, custody:0, used:0, scrap:0 };
+    return bal[k];
   }
   movesList().forEach(function(m){
-    var r = row(m.item || '—'), q = +m.qty || 0;
+    var r = row(m.item || '\u2014'), q = +m.qty || 0;
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
     else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
-    else if (m.kind === 'إرجاع'){   r.custody -= q; r.store += q; }
-    else if (m.kind === 'شطب'){     r.custody -= q; r.scrap += q; }
+    /* (V37.99) ما يعود بالفكِّ يخرج من «رُكّب في الميدان» لا من عهدة الفني — كان يُخصَم من العهدة فتصير سالبةً
+       ويبقى «رُكّب» منفوخًا بعد الموسم. يُعرَف بعلامته، والقديمُ بملاحظته «فك …» */
+    else if (m.kind === 'إرجاع'){ if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.store += q; }
+    else if (m.kind === 'شطب'){   if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.scrap += q; }
   });
   return Object.keys(bal).map(function(k){ return bal[k]; })
     .sort(function(a,b){ return (b.store + b.custody) - (a.store + a.custody); });
@@ -512,7 +534,7 @@ function moveAdd(){
   if (!item){ toast(t('اختر الصنف')); return; }
   if (qty <= 0){ toast(t('الكميةُ أكبرُ من صفر')); return; }
   /* الصرفُ وما بعده لا يتجاوز المتاح — والرصيدُ السالب عطلٌ لا حالة */
-  var b = stockBalance().filter(function(x){ return x.item === item; })[0]
+  var b = stockBalance().filter(function(x){ return x.key === itemKey(item); })[0]   /* (V37.99) بالمفتاح الواحد */
        || { store:0, custody:0 };
   if (kind === 'صرف' && qty > b.store){
     toast(t('المتاحُ في المخزن') + ': ' + nm(b.store)); return; }
@@ -868,11 +890,11 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
     itemsList().forEach(function(i){ byItem[i.code] = i; });
     var pp = { camp:0, cor:0 }, pa = { camp:0, cor:0 };
     (STATE.moves || []).forEach(function(m){
-      var it = byItem[m.item];
+      var it = byItem[itemCode(m.item)];   /* (V37.99) اسمًا كان أو رمزًا */
       if (!it) return;
       var zone = it.z === 'cor' ? 'cor' : 'camp';
-      if (m.kind === 'تهيئة') pp[zone] += itPrep(m.item) * cfgN(m.qty);
-      if (m.kind === 'تجميع') pa[zone] += itAsm(m.item) * cfgN(m.qty);
+      if (m.kind === 'تهيئة') pp[zone] += itPrep(it.code) * cfgN(m.qty);
+      if (m.kind === 'تجميع') pa[zone] += itAsm(it.code) * cfgN(m.qty);
     });
 
     return stats([['طلباتُ تهيئةٍ مفتوحة', N(openPrep), openPrep ? 'wrn' : 'ok'],

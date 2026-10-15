@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.98</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V37.99</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -5103,8 +5103,8 @@ function scores(){
   /* الورشة: التهيئةُ والتجميعُ من دفتر الحركة */
   STATE.moves.forEach(function(m){
     if (!m || !m.by) return;
-    if (m.kind === 'تهيئة'){ var e1 = ent(m.by); e1.prep++; e1.pPrep += itPrep(m.item) * (m.qty||1); }
-    if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(m.item)  * (m.qty||1); }
+    if (m.kind === 'تهيئة'){ var e1 = ent(m.by); e1.prep++; e1.pPrep += itPrep(itemCode(m.item)) * (m.qty||1); }   /* (V37.99) */
+    if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(itemCode(m.item))  * (m.qty||1); }
   });
 
   /* نقاطُ الزيادة اليدوية: يضيفها مشرفٌ أو مهندسٌ بسببٍ مكتوب — لا تصنعُ
@@ -6872,7 +6872,7 @@ function disSave(){
     var b = back[k];
     STATE.moves.push({ id:uid36(), at:Date.now(),
       kind: b.cond === 'سليم' ? 'إرجاع' : 'شطب',
-      item:itemName(k), qty:b.qty, by:rec.by, site:id, note:'فك ' + id });
+      item:k, qty:b.qty, by:rec.by, site:id, note:'فك ' + id, dis:1 });   /* (V37.99) بالرمز كالتركيب — فيُقابل استهلاكَه في صفٍّ واحد، ومِن «رُكّب» لا من العهدة */
   });
   CORE.set('moves', 'dis-' + id, { site:id, at:rec.at, by:rec.by });
   /* المهمةُ تُغلَق: لا يبقى فكٌّ مفتوحٌ على نقطةٍ فُكَّت */
@@ -7117,8 +7117,8 @@ var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];
    أو يحتاج تصريحًا، أو رُدَّت لزيارةٍ أخرى. «المتبقي» = ما لم يُزَر أصلًا. أمّا سيرُ العمل (الجاهزيةُ للتركيب، والاعتماد، والحلول،
    ومقترحُ أقرب نقطة، والتحدياتُ والقياسات) فيبقى على svDone — المتعذّرُ يحتاج زيارةً أخرى ولا يُركَّب عليه. (سجلُّ القرارات ق-٠٠٧) */
 function svVisited(r){ return !!r && !r.deleted; }
-/* الزيارةُ التي مُنع فيها الدخولُ ليست مسحًا: تُسجَّل ليُعرَف السببُ ويُتصرَّف،
-   ولا تُحتسب إنجازًا. وإلا صار المنعُ يرفع نسبةَ الإنجاز. */
+/* (V37.99) كان هنا تعليقٌ أقدمُ يقول إن الزيارةَ المتعذّرةَ «لا تُحتسب إنجازًا» — نسخه قرارُ ق-٠٠٧ أعلاه:
+   تُعَدّ زيارةً في تقدّم المسح وتُعرَض «متعذّرة» وحدَها، ولا تُعدّ جاهزةً للتركيب (svDone). جردُ السيناريوهات ٧ يحرسه. */
 /* ═══ اعتمادُ الزيارة — الدورةُ الكاملة ═══
    كانت الزيارةُ تُحتسَب منجزةً لحظةَ حفظها، وتدخل من فورها في حلِّ التركيب
    بلا عينٍ تراجعها. والمطلوبُ: المشرفُ يزور ويحفظ ويقول «تمت الزيارة»، ثم
@@ -27714,6 +27714,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V37.99', d:'2026-10-15', notes:[
+      'المخزن بمفتاح واحد للصنف، والفك من «رُكّب» لا من العهدة، وسيناريوهات المخزن والوزارة والفك' ] },
   { v:'V37.98', d:'2026-10-15', notes:[
       'جرد الأداء يقيس بناء الشاشة وحجمها لا تحليل المحاكي' ] },
   { v:'V37.97', d:'2026-10-15', notes:[
@@ -29459,19 +29461,41 @@ function movesList(){
     .sort(function(a,b){ return (b.at || 0) - (a.at || 0); });
 }
 
+/* ═══ (V37.99) مفتاحُ الصنف واحدٌ في المخزن ═══
+   كان التوريدُ والصرفُ اليدويُّ والفكُّ تُسجِّل الصنفَ باسمه («كاميرا مخيم 8361»)، والتركيبُ يُسجِّله
+   برمزه («cam») — فيقع الصنفُ الواحدُ في صفّين: العهدةُ في صفِّ الاسم لا تنقص أبدًا بالتركيب، وصفُّ
+   الرمز عهدتُه سالبة. صار كلُّ صنفٍ يُقرأ برمزه حين يُعرَف (رمزًا كان أو اسمًا)، ويُعرَض باسمه. لا ترحيلَ
+   للبيانات: الحركاتُ القديمةُ تُدمَج عند القراءة. */
+function itemKey(v){
+  /* المخزنُ ماديّ: الصنفُ باسمه. الرمزُ يتعدّد للاسم الواحد (راوترُ المخيم وراوترُ الممر جهازٌ واحد بوزنين) */
+  var s0 = String(v == null ? '' : v).trim(); if (!s0) return '\u2014';
+  var L = itemsList(), i;
+  for (i = 0; i < L.length; i++) if (L[i].code === s0) return L[i].name || s0;
+  return s0;
+}
+/* ولحساب النقاط يُطلَب الرمز: رمزًا كان أو اسمًا (أوّلُ رمزٍ بهذا الاسم) */
+function itemCode(v){
+  var s0 = String(v == null ? '' : v).trim(), L = itemsList(), i;
+  for (i = 0; i < L.length; i++) if (L[i].code === s0) return s0;
+  for (i = 0; i < L.length; i++) if (L[i].name === s0) return L[i].code;
+  return s0;
+}
 function stockBalance(){
   var bal = {};
   function row(item){
-    if (!bal[item]) bal[item] = { item:item, store:0, custody:0, used:0, scrap:0 };
-    return bal[item];
+    var k = itemKey(item);
+    if (!bal[k]) bal[k] = { item:k, key:k, store:0, custody:0, used:0, scrap:0 };
+    return bal[k];
   }
   movesList().forEach(function(m){
-    var r = row(m.item || '—'), q = +m.qty || 0;
+    var r = row(m.item || '\u2014'), q = +m.qty || 0;
     if (m.kind === 'توريد')      r.store   += q;
     else if (m.kind === 'صرف'){  r.store   -= q; r.custody += q; }
     else if (m.kind === 'استهلاك'){ r.custody -= q; r.used += q; }
-    else if (m.kind === 'إرجاع'){   r.custody -= q; r.store += q; }
-    else if (m.kind === 'شطب'){     r.custody -= q; r.scrap += q; }
+    /* (V37.99) ما يعود بالفكِّ يخرج من «رُكّب في الميدان» لا من عهدة الفني — كان يُخصَم من العهدة فتصير سالبةً
+       ويبقى «رُكّب» منفوخًا بعد الموسم. يُعرَف بعلامته، والقديمُ بملاحظته «فك …» */
+    else if (m.kind === 'إرجاع'){ if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.store += q; }
+    else if (m.kind === 'شطب'){   if (m.dis || /^فك /.test(m.note || '')){ r.used -= q; } else { r.custody -= q; } r.scrap += q; }
   });
   return Object.keys(bal).map(function(k){ return bal[k]; })
     .sort(function(a,b){ return (b.store + b.custody) - (a.store + a.custody); });
@@ -29485,7 +29509,7 @@ function moveAdd(){
   if (!item){ toast(t('اختر الصنف')); return; }
   if (qty <= 0){ toast(t('الكميةُ أكبرُ من صفر')); return; }
   /* الصرفُ وما بعده لا يتجاوز المتاح — والرصيدُ السالب عطلٌ لا حالة */
-  var b = stockBalance().filter(function(x){ return x.item === item; })[0]
+  var b = stockBalance().filter(function(x){ return x.key === itemKey(item); })[0]   /* (V37.99) بالمفتاح الواحد */
        || { store:0, custody:0 };
   if (kind === 'صرف' && qty > b.store){
     toast(t('المتاحُ في المخزن') + ': ' + nm(b.store)); return; }
@@ -29841,11 +29865,11 @@ PAGE.inv = { m:'الورشة والمخزون', t:'المخزون',
     itemsList().forEach(function(i){ byItem[i.code] = i; });
     var pp = { camp:0, cor:0 }, pa = { camp:0, cor:0 };
     (STATE.moves || []).forEach(function(m){
-      var it = byItem[m.item];
+      var it = byItem[itemCode(m.item)];   /* (V37.99) اسمًا كان أو رمزًا */
       if (!it) return;
       var zone = it.z === 'cor' ? 'cor' : 'camp';
-      if (m.kind === 'تهيئة') pp[zone] += itPrep(m.item) * cfgN(m.qty);
-      if (m.kind === 'تجميع') pa[zone] += itAsm(m.item) * cfgN(m.qty);
+      if (m.kind === 'تهيئة') pp[zone] += itPrep(it.code) * cfgN(m.qty);
+      if (m.kind === 'تجميع') pa[zone] += itAsm(it.code) * cfgN(m.qty);
     });
 
     return stats([['طلباتُ تهيئةٍ مفتوحة', N(openPrep), openPrep ? 'wrn' : 'ok'],

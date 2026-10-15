@@ -2,7 +2,8 @@
    الجرودُ تتحقّق أن الشاشةَ تُفتح وأن الزرَّ موصول، لا أن ما يُحفَظ صحيح. فعاش نموذجُ التركيب
    مكسورًا من V14.27 إلى V37.90 (أسماءٌ فارغة وكلُّ القطع بمفتاح «undefined») ولم يرصده جرد.
    هنا خمسةُ مساراتٍ كاملة، تُحرَّك بدوالِّ التطبيق نفسِها ويُتحقَّق مما كُتب في الحالة والطابور:
-   ١ التركيب · ٢ تجهيزةُ الديمو · ٣ المسح والاعتماد · ٤ بياناتُ ١٤٤٧ ← نموذجُ التركيب · ٥ جسرُ نظام البطاقات والتحقق. */
+   ١ التركيب · ٢ تجهيزةُ الديمو · ٣ المسح والاعتماد · ٤ بياناتُ ١٤٤٧ ← نموذجُ التركيب · ٥ جسرُ نظام البطاقات والتحقق ·
+   (V37.99) ٦ المخزن · ٧ أرقامُ المسح للوزارة · ٨ الفكّ. */
 import { readFileSync } from 'fs';
 import { JSDOM, VirtualConsole } from 'jsdom';
 
@@ -131,6 +132,55 @@ console.log('\n══ ٥ · جسرُ نظام البطاقات ══');
   if (far){ far.sign = camp.sign; T(!w.extTentForSite(far), 'والشاخصُ نفسُه في مشعرٍ آخر لا يُربَط (شرطُ القرب)'); }
 }
 
+/* ── ٦ · المخزن: توريدٌ وصرفٌ بالاسم، وتركيبٌ بالرمز — في صفٍّ واحد ── */
+console.log('\n══ ٦ · المخزن ══');
+const IT = parts.find(i => /راوتر/.test(i.name)) || parts[2];
+const bal = () => w.stockBalance().filter(r => r.key === IT.name)[0] || { store:0, custody:0, used:0, scrap:0 };
+let site6;
+{
+  const b0 = bal();
+  w.STATE.moves.push({ id:'sc6a', at:Date.now(), kind:'توريد', item:IT.name, qty:5, by:'مخزن' });
+  w.STATE.moves.push({ id:'sc6b', at:Date.now(), kind:'صرف', item:IT.name, qty:3, by:'فني' });
+  site6 = w.STATE.sites.find(z => z && z.type === 'مخيم' && z.zone === 'منى' && !w.STATE.inss[z.id] && z.id !== camp.id && !z.ex47);
+  w.formReset(); w.FORM.site = site6.id; w.FORM.parts[IT.code] = 2; w.FORM.status = 'مُركّب';
+  w.FORM.photos.before = { data:IMG }; w.FORM.photos.after = { data:IMG }; w.insSave(false);
+  const b1 = bal();
+  const rows = w.stockBalance().filter(r => r.item === IT.name);
+  T(rows.length === 1, 'الصنفُ في صفٍّ واحدٍ اسمًا ورمزًا (' + rows.length + ')');
+  T(b1.store - b0.store === 2 && b1.custody - b0.custody === 1 && b1.used - b0.used === 2, 'توريد ٥ ← صرف ٣ ← تركيب ٢: مخزن +٢ · عهدة +١ · رُكّب +٢');
+}
+
+/* ── ٧ · أرقامُ المسح للوزارة على قرار المالك (ق-٠٠٧) ── */
+console.log('\n══ ٧ · أرقام المسح ══');
+{
+  const st0 = w.svStats();
+  const x = w.STATE.sites.find(z => z && z.type === 'ممر' && !w.STATE.recs[z.id]);
+  w.STATE.recs[x.id] = { id:x.id, access:'لم يتم الوصول', at:Date.now(), by:'فني' };
+  w.statBump();
+  const st1 = w.svStats();
+  T(st1.O.sv === st0.O.sv + 1, 'الزيارةُ المتعذّرةُ تُعَدّ «زيارة» في تقدّم المسح (قرار المالك ق-٠٠٧)');
+  T(st1.O.unreach === st0.O.unreach + 1 && st1.O.reach === st0.O.reach, 'وتُعرَض «متعذّرة» وحدَها ولا تدخل «وُصل»');
+  T(!w.svDone(w.STATE.recs[x.id]), 'ولا تُعدّ جاهزةً للتركيب');
+  const indep = w.STATE.sites.filter(z => w.svVisited(w.STATE.recs[z.id])).length;
+  T(st1.O.sv === indep, 'والعدُّ يطابق عدًّا مستقلًّا من السجلات: ' + indep);
+  const zsum = st1.zones.reduce((a, z) => a + z[2], 0);
+  T(zsum === st1.O.sv, 'ومجموعُ المشاعر = الإجمالي');
+}
+
+/* ── ٨ · الفكّ يعيد ما رُكّب: من «رُكّب» إلى المخزن أو التالف ── */
+console.log('\n══ ٨ · الفكّ ══');
+{
+  const b0 = bal();
+  const r = w.STATE.inss[site6.id]; r.hand = { at:Date.now(), by:'مهندس' };
+  w.DISF = { site:site6.id, items:{}, note:'', photos:{ after:{ data:IMG } } };
+  w.DISF.items[IT.code] = 'سليم';
+  w.disSave();
+  const b1 = bal();
+  T(w.disDone(site6.id), 'يُسجَّل الفكّ');
+  T(b1.used - b0.used === -2 && b1.store - b0.store === 2 && b1.custody === b0.custody, 'السليمُ يعود: رُكّب −٢ · مخزن +٢ · والعهدةُ لا تُمَسّ');
+  T(b1.custody >= 0 && b1.used >= 0, 'ولا رصيدَ سالبًا');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
-console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الخمسة ✅');
+console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثمانية ✅');
 process.exit(fails.length ? 1 : 0);

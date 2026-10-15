@@ -1195,8 +1195,8 @@ function scores(){
   /* الورشة: التهيئةُ والتجميعُ من دفتر الحركة */
   STATE.moves.forEach(function(m){
     if (!m || !m.by) return;
-    if (m.kind === 'تهيئة'){ var e1 = ent(m.by); e1.prep++; e1.pPrep += itPrep(m.item) * (m.qty||1); }
-    if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(m.item)  * (m.qty||1); }
+    if (m.kind === 'تهيئة'){ var e1 = ent(m.by); e1.prep++; e1.pPrep += itPrep(itemCode(m.item)) * (m.qty||1); }   /* (V37.99) */
+    if (m.kind === 'تجميع'){ var e2 = ent(m.by); e2.asm++;  e2.pAsm  += itAsm(itemCode(m.item))  * (m.qty||1); }
   });
 
   /* نقاطُ الزيادة اليدوية: يضيفها مشرفٌ أو مهندسٌ بسببٍ مكتوب — لا تصنعُ
@@ -2964,7 +2964,7 @@ function disSave(){
     var b = back[k];
     STATE.moves.push({ id:uid36(), at:Date.now(),
       kind: b.cond === 'سليم' ? 'إرجاع' : 'شطب',
-      item:itemName(k), qty:b.qty, by:rec.by, site:id, note:'فك ' + id });
+      item:k, qty:b.qty, by:rec.by, site:id, note:'فك ' + id, dis:1 });   /* (V37.99) بالرمز كالتركيب — فيُقابل استهلاكَه في صفٍّ واحد، ومِن «رُكّب» لا من العهدة */
   });
   CORE.set('moves', 'dis-' + id, { site:id, at:rec.at, by:rec.by });
   /* المهمةُ تُغلَق: لا يبقى فكٌّ مفتوحٌ على نقطةٍ فُكَّت */
