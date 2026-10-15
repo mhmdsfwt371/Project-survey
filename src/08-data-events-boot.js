@@ -2516,6 +2516,10 @@ function render0(force){
   { var bh = document.getElementById('bugHost');
     if (!bh){ bh = document.createElement('div'); bh.id = 'bugHost'; document.body.appendChild(bh); }
     bh.innerHTML = BUG_OPEN ? bugSheet() : ''; }
+  /* (V38.7) النظرةُ العامة — لوحٌ على الجسد كغيره */
+  { var ovh = document.getElementById('ovHost');
+    if (!ovh){ ovh = document.createElement('div'); ovh.id = 'ovHost'; document.body.appendChild(ovh); }
+    ovh.innerHTML = (EXT && EXT.ovOpen) ? extOvSheet() : ''; }
   /* ملفُّ البند: لوحٌ على الجسد كغيره */
   { var uh = document.getElementById('ulHost');
     if (!uh){ uh = document.createElement('div'); uh.id = 'ulHost'; document.body.appendChild(uh); }
@@ -3356,6 +3360,9 @@ function clickAPart5(e){
   var nkc = e.target.closest('[data-nkclear]'); if (nkc){ extNkSave(nkc.getAttribute('data-nkclear'), ''); return true; }
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
+  var ovo = e.target.closest('[data-ovopen]'); if (ovo){ EXT.ovOpen = ovo.getAttribute('data-ovopen'); render(1); return true; }   /* (V38.7) */
+  if (e.target.closest('[data-ovclose]')){ EXT.ovOpen = ''; render(1); return true; }
+  var nks2 = e.target.closest('[data-nkser]'); if (nks2){ var sp2 = nks2.getAttribute('data-nkser').split('|'); extSerAdopt(sp2[0], sp2[1]); return true; }
   if (e.target.closest('[data-brbmk]')){ if (e.preventDefault) e.preventDefault(); toast(t('هذا الزرُّ يُسحَب إلى شريط الإشارات المرجعية ولا يُضغَط هنا — ثم يُضغَط من الشريط وأنت على موقع نظام البطاقات')); return true; }   /* (V38.6) */
   if (e.target.closest('[data-brcopy]')){ extBridgeCopy(); return true; }   /* (V37.93) */
   if (e.target.closest('[data-brok]')){ extBridgePaste(); return true; }

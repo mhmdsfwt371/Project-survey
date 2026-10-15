@@ -313,7 +313,8 @@ function mtCamps(){
       return;
     }
     if (m.warn) h += alertBox('warn', t('القارئ') + ' ' + (m.serial || '') + ' ' + t('مسجَّلٌ في النظام على') + ' ' + m.warn + ' ' + t('لا على مخيم النقطة') + ' ' + (m.point.name || m.point.id) + ' \u2014 ' + t('راجع السيريال'));   /* (V37.85) */
-    h += extOvCard(m.tentCode, cached.data, m.reader, m.tentMeta);
+    h += extOvCard(m.tentCode, cached.data, m.reader, m.tentMeta)
+      + '<div class="actions" style="margin:-6px 0 10px">' + btn('\u{1F441} ' + t('عرض النظرة العامة'), 'btn-quiet btn-sm', ' data-ovopen="' + esc(m.point.id) + '"') + '</div>';   /* (V38.7) */
   });
 
   /* قسم غير مطابق مطويّ */
@@ -355,11 +356,13 @@ function extLink(x){
     var on = { ser:ser, reader:rd, tent:extTentByCode(x.nk), dist:null, by:'name', warn:'', missing:!!(M && !hit) };
     if (!rd && hit && hit.rd.length) on.reader = EXT.readers[hit.rd[0]] || null;   /* الممرُّ بلا سيريال: قارئُه باسمه */
     if (rd && rd.locationName && extNameKey(rd.locationName) !== key) on.warn = String(rd.locationName);
+    extSerNewOf(on, ser, x.nk);   /* (V38.7) استُبدل القارئُ في النظام؟ */
     return on;
   }
   var ts = extTentForSite(x), exp = ts ? ts.t.code : ((x && x.type === 'مخيم' && x.sign) ? x.sign : '');
   var o = { ser:ser, reader:rd, tent:ts ? ts.t : null, dist:ts ? Math.round(ts.d) : null, by:ts ? 'sign' : (rd ? 'serial' : ''), warn:'' };
   if (rd && exp && rd.locationName && extCodeKey(rd.locationName) !== extCodeKey(exp)) o.warn = String(rd.locationName);
+  if (ts) extSerNewOf(o, ser, ts.t.code);   /* (V38.7) */
   return o;
 }
 function extReaderSerial(ins){
@@ -605,7 +608,11 @@ function extNkCard(x){
     + (x.nk ? '<div><span class="k">' + esc(t('الاسم في النظام')) + '</span><span>' + esc(nameSt) + '</span></div>' : '')
     + '<div><span class="k">' + esc(t('القارئ بسيرياله')) + '</span><span>' + esc(rdSt) + '</span></div>'
     + (L.tent ? '<div><span class="k">' + esc(t('كاميرا الخيمة')) + '</span><span>' + esc(camSt) + '</span></div>' : '')
-    + '</div>';
+    + (L.reader ? '<div><span class="k">' + esc(t('حالة القارئ')) + '</span><span>' + esc(extRdStateText(L.reader)) + '</span></div>' : '')   /* (V38.7) */
+    + '</div>'
+    + (L.serNew ? alertBox('warn', t('في النظام على هذا الموقع القارئ') + ' ' + L.serNew + ' ' + t('وسيريالُ التركيب عندنا') + ' ' + L.ser + ' \u2014 ' + t('إن استُبدل القارئُ فاعتمد الجديد'))
+        + (may('settings') ? '<div class="actions" style="margin:6px 0 0">' + btn('\u{1F504} ' + t('اعتمد سيريال النظام') + ' ' + L.serNew, 'btn-secondary btn-sm', ' data-nkser="' + esc(x.id) + '|' + esc(L.serNew) + '"') + '</div>' : '') : '')
+    + (L.tent || L.reader ? '<div class="actions" style="margin:8px 0 0">' + btn('\u{1F441} ' + t('عرض النظرة العامة'), 'btn-quiet btn-sm', ' data-ovopen="' + esc(x.id) + '"') + '</div>' : '');
   var edit = '';
   if (may('settings')){
     var linked = extLinkedBy(), opts = '';
@@ -1133,3 +1140,75 @@ function extFileImport(file){
 }
 
 extBridgeHashPick();   /* (V37.94) عند التحميل: بياناتُ الإشارة المرجعية إن وُجدت في العنوان */
+
+/* ═══ (V38.7) حالةُ القارئ، واستبدالُه في النظام، والنظرةُ العامة بتصميم نظام البطاقات ═══
+   أسئلةُ المالك بعد أوّل جسرٍ حقيقيّ: «الجهاز أونلاين ولا أوفلاين؟ ولو اتغيّر الريدر في النظام أعمل إيه؟
+   وأعدّله عندنا يدويًّا؟ وأشوف قراءات النظرة العامة بنفس الديزاين؟» */
+/* القارئُ «متصل» إن قرأ في ربع الساعة السابقة للجسر — فالجسرُ لقطةٌ لا بثٌّ حيّ */
+function extRdState(r){
+  if (!r) return null;
+  var ts = Date.parse(r.timestamp || '') || 0, ref = (EXT.bridge && EXT.bridge.at) || Date.now();
+  return { on:!!ts && ref - ts <= 15 * 60000 && ref - ts >= -5 * 60000, ts:ts };
+}
+function extRdStateText(r){
+  var st = extRdState(r); if (!st) return t('لا قارئ ظاهر');
+  return (st.on ? '\u{1F7E2} ' + t('متصل عند آخر جسر') : '\u{1F534} ' + t('غير متصل')) + (st.ts ? ' \u00b7 ' + t('آخر قراءة') + ' ' + pilotAgo(st.ts) : '');
+}
+/* قرّاءُ الموقع في النظام بالاسم أو الكود — إن لم يكن سيريالُ تركيبنا بينها فالقارئُ استُبدل أو سُجِّل خطأً */
+function extSerNewOf(o, ser, code){
+  var M = extNames(), h = M && code && M[extNameKey(code)];
+  if (!ser || !h || !h.rd.length) return;
+  if (h.rd.indexOf(extSerKey(ser)) > -1) return;
+  o.serNew = String((EXT.readers[h.rd[0]] || {}).readerId || h.rd[0]);
+}
+function extReaderKey(ins){
+  var S = (ins && ins.serials) || {}, out = '';
+  Object.keys(S).forEach(function(k){ if (!out && (/^rdr/i.test(k) || /قارئ/.test(itemName(k)))) out = k; });
+  return out;
+}
+function extSerAdopt(id, ser){
+  if (!may('settings')){ toast(t('الربطُ للمهندس فما فوق')); return; }
+  var ins = STATE.inss[id], k = extReaderKey(ins);
+  if (!ins || !k){ toast(t('لا قارئَ في تركيب هذه النقطة — عدّله من نموذج التركيب')); return; }
+  var old = ins.serials[k];
+  if (!confirm(t('يُستبدَل سيريالُ القارئ في التركيب') + ': ' + old + ' \u2190 ' + ser + '. ' + t('متابعة؟'))){ toast(t('لم يُحفَظ — أُلغي')); return; }
+  var r = Object.assign({}, ins); r.serials = Object.assign({}, ins.serials); r.serials[k] = String(ser);
+  r.serHist = (ins.serHist || []).concat([{ at:Date.now(), by:STATE.meta.name || '', key:k, old:old, nw:String(ser), src:'نظام البطاقات' }]);
+  STATE.inss[id] = r; CORE.set('inss', id, r); CORE.saveSoon();
+  EXT_MATCH_STATE = null;
+  logEvent('استبدالُ سيريال القارئ من نظام البطاقات — ' + id + ' · ' + old + ' ← ' + ser, id);
+  toast(t('حُدِّث سيريالُ القارئ')); render(1);
+}
+/* النظرةُ العامة — بترتيب نافذة «عرض النظرة العامة» في نظام البطاقات */
+function extOvSheet(){
+  var id = EXT.ovOpen; if (!id) return '';
+  var x = siteFind(id); if (!x){ EXT.ovOpen = ''; return ''; }
+  var L = extLink(x), tn = L.tent || (L.reader ? extTentByCode(L.reader.locationName) : null);
+  var ov = tn && EXT.ov[tn.id] && EXT.ov[tn.id].data, c = (ov && ov.occupancyStatus) || {}, a = (ov && ov.averageTime) || {};
+  var tot = (+c.currentlyOccupied || 0) + (+c.withoutBracelet || 0) + (+c.fromOtherCamps || 0), cap = +c.totalCapacity || 0;
+  var pct = cap ? Math.round(tot / cap * 100) : 0;
+  var row = function(k, v){ return '<div style="display:flex;justify-content:space-between;gap:12px;padding:6px 0"><span class="hint" style="margin:0">' + esc(t(k)) + '</span><b class="num">' + v + '</b></div>'; };
+  var pillB = function(k, v){ return '<div style="text-align:center"><div class="hint" style="margin:0 0 6px">' + esc(t(k)) + '</div><span class="pill" style="padding:8px 18px">' + esc(v || t('غير محدد')) + '</span></div>'; };
+  var code = (tn && tn.code) || x.nk || x.sign || x.id;
+  var body = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:8px 0 12px;border-bottom:1px solid var(--line,#333)">'
+      + pillB('مشغل مخيم', (tn && tn.tentGroup) || '') + pillB('مزود خدمة', x.co || '') + '</div>';
+  if (!ov){
+    body += alertBox('info', t('لا إشغالَ لهذا المخيم في آخر جسر — يدخل في الجسر التالي ما دام مربوطًا'));
+  } else {
+    body += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;padding-top:12px">'
+      + '<div><h4 style="margin:0 0 6px">' + esc(t('حالة الإشغال المباشر')) + '</h4>'
+      + row('السعة المخصصة', nm(cap)) + row('حاملو بطاقات', nm(+c.currentlyOccupied || 0)) + row('بدون بطاقات', nm(+c.withoutBracelet || 0)) + row('من خيمات أخرى', nm(+c.fromOtherCamps || 0))
+      + '<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><span class="hint" style="margin:0">' + esc(t('نسبة الإشغال')) + '</span><span class="pill ' + (pct >= 100 ? 'bad' : pct >= 75 ? 'warn' : 'ok') + '">' + nm(pct) + '%</span></div>'
+      + '<div style="height:8px;border-radius:6px;background:var(--line,#333);overflow:hidden"><div style="height:8px;width:' + Math.min(100, pct) + '%;background:var(--acc,#2bb3c0)"></div></div></div>'
+      + '<div><h4 style="margin:0 0 6px">' + esc(t('متوسط الوقت')) + '</h4>' + row('داخل المخيم', esc(a.insideCamp || '\u2014')) + row('وقت العبور', esc(a.transitTime || '\u2014')) + '</div>'
+      + '</div>';
+  }
+  body += '<div class="pop-rows" style="margin:12px 0 0">'
+    + '<div><span class="k">' + esc(t('القارئ')) + '</span><span>' + esc((L.reader && L.reader.readerId) || L.ser || '\u2014') + ' \u00b7 ' + esc(extRdStateText(L.reader)) + '</span></div>'
+    + '<div><span class="k">' + esc(t('آخر جسر')) + '</span><span>' + (EXT.bridge ? esc(pilotAgo(EXT.bridge.at)) : esc(t('لا جسرَ بعد'))) + '</span></div></div>';
+  return '<div class="wt-back" data-ovclose="1"></div>'
+    + '<div class="pop wt-sheet" role="dialog" aria-label="' + esc(t('عرض النظرة العامة')) + '">'
+    + '<div class="pop-head"><div><h3 style="margin:0">' + esc(t('عرض النظرة العامة')) + ' - <bdi>' + esc(code) + '</bdi></h3><div class="hint" style="margin:2px 0 0">' + esc(x.name || x.id) + '</div></div>'
+    + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-ovclose="1" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
+    + '<div class="pop-body">' + body + '</div></div>';
+}
