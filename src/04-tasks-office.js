@@ -3666,7 +3666,7 @@ function aqAnswer(q){
   var sc2 = aqScope(n), scopeTxt = [sc2.zone, sc2.type].filter(Boolean).join(' \u00b7 ');
   var pool = (STATE.sites || []).filter(function(x){ return x && (!sc2.zone || x.zone === sc2.zone) && (!sc2.type || x.type === sc2.type); });
   /* ٢ · إشارةُ القرّاء */
-  if (/ترسل|بترسل|بيبعت|بتبعت|اشاره|اونلاين|اوفلاين|online|offline|مقطوع|شغال|القراء|قارئ/.test(n) && typeof extStatusRows === 'function'){
+  if (/ترسل|بترسل|بيبعت|بتبعت|اشاره|اونلاين|اوفلاين|online|offline|مقطوع|(^|\s)شغال|القراء|قارئ/.test(n) && typeof extStatusRows === 'function'){   /* (V38.15) «شغال» كلمةً لا داخل «إشغال» */
     var R = extStatusRows();
     if (!R) out += aqCard(t('إشارة القرّاء'), '<p class="hint" style="margin:0">' + esc(t('لا جسرَ بعد — شغّل الجسر من المخيمات المركزية')) + '</p>', aqGo('المخيمات المركزية', 'page|mcamps'));
     else {
@@ -3682,13 +3682,18 @@ function aqAnswer(q){
   /* ٣ · رصيدُ صنفٍ في المخزن */
   if (/رصيد|مخزن|مخزون|عهده|متاح|فاضل/.test(n) && typeof stockBalance === 'function'){
     var B = stockBalance(), hit = B.filter(function(b){ var k = aqNorm(b.item); return k.split(/\s+/).some(function(w){ return w.length > 3 && n.indexOf(w) > -1; }); });
+    /* (V38.15) صنفٌ في الكتالوج بلا حركاتٍ بعد يُجاب بأصفاره لا بـ«أكبر الأرصدة» */
+    if (!hit.length){
+      var seen0 = {};
+      itemsList().forEach(function(i){ var k = aqNorm(i.name || ''); if (!i.name || seen0[i.name]) return; if (k.split(/\s+/).some(function(w){ return w.length > 3 && n.indexOf(w) > -1; })){ seen0[i.name] = 1; hit.push({ item:i.name, store:0, custody:0, used:0, scrap:0 }); } });
+    }
     var rows = (hit.length ? hit : B.slice().sort(function(a, b){ return b.store - a.store; })).slice(0, 6);
     out += aqCard(hit.length ? t('رصيد الصنف') : t('أكبر الأرصدة في المخزن'), rows.map(function(b){
       return aqRow(b.item, nm(b.store) + ' ' + esc(t('مخزن')) + ' \u00b7 ' + nm(b.custody) + ' ' + esc(t('عهدة')) + ' \u00b7 ' + nm(b.used) + ' ' + esc(t('رُكّب')));
     }).join('') || '<p class="hint" style="margin:0">' + esc(t('لا حركاتٍ في المخزن بعد')) + '</p>', aqGo('الأرصدة', 'page|invb'));
   }
   /* ٤ · أعدادُ التركيب والمسح */
-  if (/تركيب|اتركب|مركب|ركبنا|اتمسح|مسح|زياره|زيارات|زرنا|اعتماد|معتمد|انجاز|نسبه|كام|كم|عدد|قد ايه|اد ايه/.test(n) && !out){
+  if (/تركيب|اتركب|مركب|ركبنا|اتمسح|مسح|زياره|زيارات|زرنا|اعتماد|معتمد|انجاز|نسبه|كام|كم|عدد|قد ايه|اد ايه/.test(n) && !out && !/الوزاره|تحدي|معوق|اشغال|مهام|متاخر/.test(n)){
     var tot = pool.length, inst = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب'; }).length;
     var appr = pool.filter(function(x){ var i = STATE.inss[x.id]; return i && i.status === 'مُركّب' && i.approved; }).length;
     var vis = pool.filter(function(x){ return svVisited(STATE.recs[x.id]); }).length, reach = pool.filter(function(x){ var r = STATE.recs[x.id]; return svVisited(r) && r.access === 'تم الوصول'; }).length;
@@ -3698,6 +3703,39 @@ function aqAnswer(q){
       aqRow('النقاط', nm(tot)) + aqRow('زيارات المسح', nm(vis) + ' (' + pc(vis) + ')') + aqRow('وُصل إليها', nm(reach)) + aqRow('مسحٌ معتمد', nm(svA))
       + aqRow('مُركّبة', nm(inst) + ' (' + pc(inst) + ')') + aqRow('تركيبٌ معتمد', nm(appr)),
       aqGo('المسح الميداني', 'page|msurv') + ' ' + aqGo('حالة التركيبات', 'page|minst'));
+  }
+  /* ٦ · (V38.15) المهامُّ الأسبوعية المتأخرة */
+  if (/متاخر|تاخير|تأخير|المهام|مهام|مين متاخر/.test(n) && typeof wtRows === 'function'){
+    var W = wtRows().filter(function(r){ return r && r.st !== 'مكتمل'; }), late = W.filter(wtLate).sort(function(a, b){ return wtDue(a) - wtDue(b); });
+    var byWho = {}; late.forEach(function(r){ var k = r.who || t('بلا مسؤول'); byWho[k] = (byWho[k] || 0) + 1; });
+    out += aqCard(t('المهام الأسبوعية'), aqRow('مفتوحة', nm(W.length)) + aqRow('متأخرة', nm(late.length))
+      + late.slice(0, 5).map(function(r){ return aqRow(r.n, esc(r.who || '\u2014') + ' \u00b7 ' + nm(-wtDue(r)) + ' ' + esc(t('يوم'))); }).join('')
+      + (Object.keys(byWho).length ? '<p class="hint" style="margin:6px 0 0">' + Object.keys(byWho).map(function(k){ return esc(k) + ' ' + nm(byWho[k]); }).join(' \u00b7 ') + '</p>' : ''),
+      aqGo('المهام الأسبوعية', 'page|mweek'));
+  }
+  /* ٧ · (V38.15) التحدياتُ والمعوقات من زيارات المسح */
+  if (/تحدي|تحديات|معوق|معوقات|عائق|عوائق|مشاكل|مشكله/.test(n)){
+    var cc = {}, hasC = 0;
+    pool.forEach(function(x){ var r = STATE.recs[x.id]; var L2 = (r && r.chals || []).filter(function(c){ return c && c !== 'لا توجد تحديات'; }); if (L2.length){ hasC++; L2.forEach(function(c){ cc[c] = (cc[c] || 0) + 1; }); } });
+    var top = Object.keys(cc).sort(function(a, b){ return cc[b] - cc[a]; }).slice(0, 6);
+    out += aqCard(t('التحديات والمعوقات') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('نقاطٌ فيها تحدٍّ', nm(hasC)) + top.map(function(c){ return aqRow(c, nm(cc[c])); }).join('')
+      + (!top.length ? '<p class="hint" style="margin:0">' + esc(t('لا تحدياتِ مسجّلة في هذا النطاق')) + '</p>' : ''), aqGo('التحديات والمعوقات', 'page|mobs'));
+  }
+  /* ٨ · (V38.15) اعتمادُ الوزارة */
+  if (/الوزاره|اعتماد الوزاره|مراجعه الوزاره|الوزارة/.test(n) && !/تقرير|ملف/.test(n)){
+    var mp = 0, ma = 0, mr = 0;
+    pool.forEach(function(x){ var r = STATE.recs[x.id]; if (!r) return; if (r.minReview === 'pending') mp++; else if (r.minReview === 'approved') ma++; else if (r.minReview === 'revisit' || r.minReview === 'rejected') mr++; });
+    out += aqCard(t('اعتماد الوزارة') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''), aqRow('بانتظار الوزارة', nm(mp)) + aqRow('اعتمدتها الوزارة', nm(ma)) + aqRow('ردّتها الوزارة', nm(mr)),
+      aqGo('اعتماد الوزارة', 'page|minappr'));
+  }
+  /* ٩ · (V38.15) الإشغالُ الأعلى من آخر جسر */
+  if (/اشغال|زحمه|ازدحام|مليان|ممتلي|ممتلئ|اعلي اشغال/.test(n) && typeof extStatusRows === 'function'){
+    var R3 = (extStatusRows() || []).filter(function(r){ return r.ov && r.pct != null && (!sc2.zone || r.x.zone === sc2.zone); }).sort(function(a, b){ return b.pct - a.pct; });
+    out += aqCard(t('الإشغال') + (scopeTxt ? ' \u00b7 ' + scopeTxt : ''),
+      (R3.length ? R3.slice(0, 6).map(function(r){ return aqRow(r.code || r.x.id, nm(r.pct) + '% \u00b7 ' + nm(r.tot) + '/' + nm(r.cap)); }).join('')
+                 : '<p class="hint" style="margin:0">' + esc(t('لا أرقامَ إشغالٍ في آخر جسر — شغّل الجسر بعد الربط الجماعي')) + '</p>')
+      + (EXT.bridge ? '<p class="hint" style="margin:6px 0 0">' + esc(t('بحسب آخر جسر')) + ' ' + esc(pilotAgo(EXT.bridge.at)) + '</p>' : ''),
+      aqGo('المخيمات المركزية', 'page|mcamps|ov'));
   }
   /* ٥ · ما ينقص للجاهزية */
   if (/ناقص|جاهز|نجهز|معلق|المطلوب|الجاي|اعمل ايه|نعمل ايه/.test(n)){
@@ -3723,7 +3761,7 @@ function aqGoTo(spec){
 }
 function aqExamples(){
   if (ROLE === 'viewer') return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56'];
-  return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'إيه الناقص علشان نجهز؟'];
+  return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
 }
 function assistHomeHtml(){
   var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];
