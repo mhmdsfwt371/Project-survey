@@ -3361,8 +3361,10 @@ function clickAPart5(e){
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
   if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
-  var stf = e.target.closest('[data-stf]'); if (stf){ EXT.stF = stf.getAttribute('data-stf'); EXT.stN = 150; render(1); return true; }   /* (V38.12) */
-  if (e.target.closest('[data-stmore]')){ EXT.stN = (EXT.stN || 150) + 150; render(1); return true; }
+  var stf = e.target.closest('[data-stf]'); if (stf){ EXT.stF = stf.getAttribute('data-stf'); EXT.stN = 30; render(1); return true; }   /* (V38.12) */
+  if (e.target.closest('[data-stmore]')){ EXT.stN = (EXT.stN || 30) + 30; render(1); return true; }
+  var sec = e.target.closest('[data-sec]'); if (sec){ var sv = sec.getAttribute('data-sec'); EXT.sec = (EXT.sec === sv) ? '' : sv; render(1); return true; }   /* (V38.13) */
+  if (e.target.closest('[data-sugopen]')){ EXT.sugOpen = !EXT.sugOpen; render(1); return true; }
   if (e.target.closest('[data-stxls]')){ extStatusXls(); return true; }
   if (e.target.closest('[data-ctsave]')){ contSave(); return true; }
   var ovo = e.target.closest('[data-ovopen]'); if (ovo){ EXT.ovOpen = ovo.getAttribute('data-ovopen'); render(1); return true; }   /* (V38.7) */

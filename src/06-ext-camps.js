@@ -260,10 +260,11 @@ function mtCamps(){
 
   /* بطاقة الإعداد — للمهندس فقط */
   extBridgeLoad();   /* (V37.93) آخرُ جسرٍ محفوظ — لكلِّ الحسابات */
-  if (may('settings')) h += extBridgeCard() + mtDetails(t('طريقة التوكن — تعمل من موقع النظام فقط'), extTokCard(), '\u{1F511}') + ex47Card() + ex47OrphCard();   /* (V37.88) (V37.92) (V37.93) */
-
+  /* (V38.13) «باعمل اسكرول كتير أوي»: الإعدادُ والبياناتُ (الجسر · ١٤٤٧ · خارج الخريطة · التوكن) شريطٌ واحدٌ
+     يُفتَح منه قسمٌ واحدٌ عند الطلب، والحالةُ أوّلًا قائمةً مضغوطة، والمقترحاتُ تُعرَض عند الطلب */
+  var setup = may('settings') ? extSetupBar() : '';
   if (!EXT.tok && !EXT.bridge){
-    return h + (may('settings') ? alertBox('info', t('شغّل أمر الجسر من البطاقة أعلاه والصق ناتجه — فتعمل هذه الشاشة.')) : extSnapView());   /* (V37.81) (V37.93) */
+    return h + setup + (may('settings') ? '' : extSnapView());   /* (V37.81) (V37.93) */
   }
 
   /* تحميل المطابقات */
@@ -276,10 +277,9 @@ function mtCamps(){
 
   var matched = EXT_MATCH_STATE.matched;
   var unmatched = EXT_MATCH_STATE.unmatched;
-  h += extBulkCard();   /* (V37.87) الربطُ الجماعيّ — للمهندس */
 
-  /* (V38.12) جدولُ حالة النقاط المرتبطة بالنظام بدل كرتٍ لكلِّ مخيمٍ مُركَّب — يشمل غيرَ المركَّب (بالاسم والشاخص وقارئ ١٤٤٧) */
-  h += extStatusCard();
+  /* (V38.12) حالةُ النقاط أوّلًا (V38.13)، ثم الربطُ الجماعيّ، ثم شريطُ الإعداد */
+  h += extStatusCard() + extBulkCard() + setup;
 
   /* قسم غير مطابق مطويّ */
   if (unmatched.length){
@@ -620,10 +620,11 @@ function extBulkCard(){
   if (!P) return card('الربط الجماعي بنظام البطاقات', '<p class="hint" style="margin:0">' + esc(t('يُحمَّل…')) + '</p>');
   var body = stats([['مربوطة', N(P.linked), 'ok'], ['غير مربوطة', N(P.unlinked)], ['لها اقتراح', N(P.apply.length), 'acc'], ['تعارض', N(P.conflicts.length), P.conflicts.length ? 'wrn' : '']]);
   if (P.apply.length){
-    body += table(['النقطة', 'النوع', 'الاقتراح', 'المصدر'], P.apply.slice(0, 50).map(function(z){
+    body += '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد المقترحات') + ' (' + nm(P.apply.length) + ')', 'btn-primary btn-sm', ' data-nkbulk="1"')
+      + btn((EXT.sugOpen ? '\u25B2 ' + t('أخفِ المقترحات') : '\u25BC ' + t('اعرض المقترحات')), 'btn-quiet btn-sm', ' data-sugopen="1"') + '</div>';   /* (V38.13) */
+    if (EXT.sugOpen) body += table(['النقطة', 'النوع', 'الاقتراح', 'المصدر'], P.apply.slice(0, 50).map(function(z){
       return ['<bdi>' + esc(z.id) + '</bdi><br><span class="hint" style="margin:0">' + esc(z.name) + '</span>', esc(t(z.type)), '<b dir="ltr">' + esc(z.sug) + '</b>', esc(t(z.src))];
-    })) + (P.apply.length > 50 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(P.apply.length - 50) + '</p>' : '')
-      + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('اعتمد المقترحات') + ' (' + nm(P.apply.length) + ')', 'btn-primary btn-sm', ' data-nkbulk="1"') + '</div>';
+    })) + (P.apply.length > 50 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي')) + ' ' + nm(P.apply.length - 50) + '</p>' : '');
   } else body += '<p class="hint" style="margin:6px 0 0">' + esc(t('لا مقترحاتٍ جديدة — كلُّ ما له اقتراحٌ مربوط')) + '</p>';
   if (P.conflicts.length) body += mtDetails(t('تعارضٌ يُحسَم بيد') + ' (' + nm(P.conflicts.length) + ')',
     table(['الاسم في النظام', 'النقاط'], P.conflicts.slice(0, 60).map(function(c){ return ['<b dir="ltr">' + esc(c.name) + '</b>', esc(c.ids.join(' \u00b7 '))]; })), '\u26A0');
@@ -1207,25 +1208,28 @@ function extStatusCard(){
     none:function(r){ return r.sig === 'none'; }, ov:function(r){ return r.ov; }, noov:function(r){ return !r.ov; }, chk:function(r){ return !!r.chk; } };
   var chips = [['all', 'الكل', R.length], ['on', '🟢 ترسل', n(flt.on)], ['off', '🔴 لا ترسل', n(flt.off)], ['none', '⚪ بلا قارئ ظاهر', n(flt.none)],
                ['ov', '📊 لها أرقام', n(flt.ov)], ['noov', 'بلا أرقام', n(flt.noov)], ['chk', '⚠ تحتاج مراجعة', n(flt.chk)]];
-  var rows = R.filter(flt[F] || flt.all), N = EXT.stN || 150;
+  var rows = R.filter(flt[F] || flt.all), N = EXT.stN || 30;
   var by = { name:'الاسم', sign:'الشاخص', serial:'السيريال', '1447':'قارئ ١٤٤٧' };
   var sigTxt = function(r){ return r.sig === 'on' ? '\u{1F7E2} ' + t('ترسل') : r.sig === 'off' ? '\u{1F534} ' + t('لا ترسل') + (r.ts ? ' \u00b7 ' + pilotAgo(r.ts) : '') : '\u26AA ' + t('بلا قارئ ظاهر'); };
   var chkTxt = function(r){ return r.chk === 'warn' ? '\u26A0 ' + t('القارئ على موقعٍ آخر') : r.chk === 'ser' ? '\u26A0 ' + t('سيريالٌ مختلف') : r.chk === 'miss' ? '\u26A0 ' + t('الاسم غير موجود') : '\u2713'; };
-  var tb = table(['النقطة', 'الربط', 'القارئ', 'الإشارة', 'النظرة العامة', 'التحقق', ''],
-    rows.slice(0, N).map(function(r){
-      return ['<bdi>' + esc(r.x.id) + '</bdi><br><span class="hint" style="margin:0">' + esc(r.x.name || '') + '</span>',
-        esc(t(by[r.by] || '\u2014')) + (r.code ? '<br><b dir="ltr">' + esc(r.code) + '</b>' : ''),
-        '<span class="num" dir="ltr">' + esc(r.ser || '\u2014') + '</span>', esc(sigTxt(r)),
-        r.ov ? '\u{1F4CA} ' + (r.pct != null ? nm(r.pct) + '%' : '') + ' <span class="hint" style="margin:0">' + nm(r.tot) + '/' + nm(r.cap) + '</span>' : '<span class="hint" style="margin:0">' + esc(t('بلا أرقام')) + '</span>',
-        esc(chkTxt(r)), btn('\u{1F441}', 'btn-quiet btn-sm', ' data-ovopen="' + esc(r.x.id) + '" title="' + esc(t('عرض النظرة العامة')) + '"')];
-    }));
+  /* (V38.13) سطران لكلِّ نقطة بدل جدولٍ بسبعة أعمدة — يتّسع للجوال */
+  var tb = '<div class="st-list">' + rows.slice(0, N).map(function(r){
+      var dot = r.sig === 'on' ? '\u{1F7E2}' : r.sig === 'off' ? '\u{1F534}' : '\u26AA';
+      var line2 = [t(by[r.by] || '\u2014'), r.ser ? String(r.ser) : '', r.sig === 'off' && r.ts ? pilotAgo(r.ts) : (r.sig === 'none' ? t('بلا قارئ ظاهر') : ''),
+                   r.ov ? '\u{1F4CA} ' + (r.pct != null ? r.pct + '%' : '') + ' ' + r.tot + '/' + r.cap : t('بلا أرقام'), r.chk ? chkTxt(r) : ''].filter(Boolean).join(' \u00b7 ');
+      return '<div style="display:flex;gap:8px;align-items:center;padding:7px 0;border-bottom:1px solid var(--line,rgba(127,127,127,.2))">'
+        + '<span style="font-size:15px;flex:0 0 auto">' + dot + '</span>'
+        + '<div style="flex:1;min-width:0"><div><b dir="ltr">' + esc(r.code || '\u2014') + '</b> <span class="hint" style="margin:0;font-size:12px"><bdi>' + esc(r.x.id) + '</bdi></span></div>'
+        + '<div class="hint" style="margin:0;font-size:12px;overflow-wrap:anywhere">' + esc(line2) + '</div></div>'
+        + btn('\u{1F441}', 'btn-quiet btn-sm', ' data-ovopen="' + esc(r.x.id) + '" title="' + esc(t('عرض النظرة العامة')) + '"') + '</div>';
+    }).join('') + '</div>';
   return card('\u{1F4E1} ' + t('حالة النقاط من نظام البطاقات'),
     '<p class="hint" style="margin:0 0 8px">' + esc(t('«ترسل» = قرأ القارئُ في ربع الساعة قبل آخر جسر · «لها أرقام» = جاءت أرقامُ النظرة العامة في آخر جسر')) + (B ? ' \u00b7 ' + esc(t('آخر جسر')) + ' ' + esc(pilotAgo(B.at)) : '') + '</p>'
     + '<div class="chips" style="display:flex;flex-wrap:wrap;gap:6px;margin:0 0 8px">' + chips.map(function(c){
         return '<button type="button" class="chip' + (F === c[0] ? ' on' : '') + '" data-stf="' + c[0] + '">' + esc(t(c[1])) + ' <b class="num">' + nm(c[2]) + '</b></button>'; }).join('') + '</div>'
     + (rows.length ? tb : alertBox('info', t('لا نقاطَ في هذا التصنيف')))
     + '<div class="actions" style="margin:8px 0 0">'
-    + (rows.length > N ? btn(t('عرض المزيد') + ' (' + nm(rows.length - N) + ')', 'btn-quiet btn-sm', ' data-stmore="1"') : '')
+    + (rows.length > N ? btn(t('عرض المزيد') + ' (' + nm(rows.length - N) + ')', 'btn-quiet btn-sm', ' data-stmore="1"') : '')   /* ثلاثون في كلِّ مرّة */
     + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-stxls="1"') + '</div>');
 }
 function extStatusXls(){
@@ -1238,4 +1242,19 @@ function extStatusXls(){
       r.chk === 'warn' ? t('القارئ على موقعٍ آخر') : r.chk === 'ser' ? t('سيريالٌ مختلف') : r.chk === 'miss' ? t('الاسم غير موجود') : '\u2713']);
   });
   xlsSheets([[t('حالة النقاط'), rows]], 'nusuk-points-status.xlsx');
+}
+
+/* ═══ (V38.13) شريطُ الإعداد والبيانات — قسمٌ واحدٌ مفتوحٌ عند الطلب ═══ */
+function extSetupBar(){
+  var B = EXT.bridge, S = EXT.sec == null ? (B ? '' : 'br') : EXT.sec, orN = (STATE.ex47orph || []).length;
+  var tabs = [['br', '\u{1F309} ' + t('الجسر')], ['ex', '\u{1F4C2} ' + t('بيانات ١٤٤٧')], ['or', '\u{1F4CD} ' + t('خارج الخريطة') + (orN ? ' (' + nm(orN) + ')' : '')], ['tk', '\u{1F511} ' + t('التوكن')]];
+  var old = B && Date.now() - B.at > 6 * 3600000;
+  var bar = card('\u2699 ' + t('الإعداد والبيانات'),
+    (B ? alertBox(old ? 'warn' : 'success', t('آخر جسر') + ' ' + pilotAgo(B.at) + ' \u00b7 ' + B.rd + ' ' + t('قارئ') + ' \u00b7 ' + B.tn + ' ' + t('خيمة') + ' \u00b7 ' + B.ov + ' ' + t('إشغال') + (old ? ' \u2014 ' + t('قديم: جدّده') : ''))
+       : alertBox('info', t('لا جسرَ بعد')))
+    + '<div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0 0">' + tabs.map(function(x){
+        return '<button type="button" class="chip' + (S === x[0] ? ' on' : '') + '" data-sec="' + x[0] + '">' + esc(x[1]) + '</button>'; }).join('') + '</div>');
+  var body = S === 'br' ? extBridgeCard() : S === 'ex' ? ex47Card() : S === 'or' ? ex47OrphCard() : S === 'tk' ? extTokCard() : '';
+  if (S === 'or' && !body) body = card(t('خارج الخريطة'), '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ خارج الخريطة')) + '</p>');
+  return bar + body;
 }
