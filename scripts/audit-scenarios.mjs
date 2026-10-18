@@ -228,6 +228,18 @@ console.log('\n══ ٩ · مساعد البيانات ══');
   T(/الإشغال/.test(oc) && !/إشارة القرّاء/.test(oc), '«أعلى إشغال» يجيب بالإشغال وحدَه — لا «إشارة القرّاء»');
   /* ما لا يفهمه يتركه لبحث الإرشاد */
   T(ans('عاوز أغيّر لون الخلفية للتطبيق') === '', 'سؤالٌ ليس عن البيانات: لا جوابَ مختلَق — يذهب إلى الإرشاد');
+  /* (V38.17) تقريرٌ بالكلام: الشروطُ تُفهَم، والعددُ = عدٌّ مستقلّ، وما لا يُفهَم يُقال */
+  const D1 = w.aqRepData('إكسل للمخيمات في منى اللي اتركبت');
+  const lab1 = D1.P.conds.map(c => c.label);
+  const ind1 = w.STATE.sites.filter(z => z && z.zone === 'منى' && z.type === 'مخيم' && w.STATE.inss[z.id] && w.STATE.inss[z.id].status === 'مُركّب').length;
+  T(D1.P.isRep && D1.P.fmt === 'xls' && lab1.includes('منى') && lab1.includes('مخيم') && lab1.includes('مُركّبة') && !D1.P.unknown.length, 'تقريرٌ بالكلام: منى · مخيم · مُركّبة — بلا كلمةٍ غيرِ مفهومة');
+  T(D1.rows.length === ind1, 'وعددُه ' + ind1 + ' = عدٌّ مستقلّ من التركيبات');
+  const D2 = w.aqRepData('PDF للنقاط اللي ما اتزارتش في عرفات أو منى');
+  const ind2 = w.STATE.sites.filter(z => z && (z.zone === 'عرفات' || z.zone === 'منى') && !w.svVisited(w.STATE.recs[z.id])).length;
+  T(D2.P.fmt === 'pdf' && D2.rows.length === ind2, '«عرفات أو منى» تُقبَل أيًّا منهما، و«ما اتزارتش» نفيٌ: ' + ind2);
+  const D3 = w.aqRepData('اكسل للنقاط اللي فيها بطيخ في منى');
+  T(D3.P.unknown.some(u => /بطيخ/.test(u)), 'كلمةٌ لا يعرفها تُقال «ما فهمتش» ولا تُتجاهَل صامتة');
+  T(String(w.aqAnswer('إكسل للمخيمات في منى اللي اتركبت')).indexOf('data-aqrep="pdf"') > -1, 'وبطاقةُ التقرير فيها إكسل وPDF');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

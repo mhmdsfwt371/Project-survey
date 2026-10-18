@@ -3655,6 +3655,8 @@ function aqPoint(x){
 }
 function aqAnswer(q){
   var n = aqNorm(q), out = '';
+  /* (V38.17) تقريرٌ بالكلام أوّلًا: «إكسل/PDF للنقاط اللي …» */
+  var RP = aqRepParse(q); if (RP.isRep && RP.conds.length) return aqRepCard(q, aqRepData(q));
   /* ١ · نقطةٌ بمعرِّفها أو شاخصِها */
   var idm = /nsk-[a-z]{3}-[a-z]{3}-\d{3,4}/i.exec(q), sgm = /(\d{1,3})\s*\/\s*(\d{1,4})/.exec(n);
   if (idm){ var x0 = siteFind(idm[0].toUpperCase()); if (x0) return aqPoint(x0); }
@@ -3753,6 +3755,157 @@ function aqAnswer(q){
   }
   return out;
 }
+/* ═══ (V38.17) تقاريرُ بالكلام — «إكسل/PDF للنقاط اللي …» ═══
+   طلبُ المالك: «أكتب الشرط بالكلام فيطلع ملف إكسل للنقاط اللي فيها كذا وكذا، ولو PDF بلوجو أفاقي يبقى حلو» —
+   فيصير المساعدُ أداةَ تحليلٍ من بيانات الجهاز نفسِه بلا رجوعٍ للقاعدة ولا نموذجٍ خارجيّ. يعرض ما فهمه شرطًا شرطًا
+   قبل الملف، وما لم يفهمه يقوله صراحةً بدل أن يخمّن فيُخرج تقريرًا خاطئًا يُظَنّ صحيحًا. «و» تجمع الشروط، والقيمُ
+   المتعدّدةُ للحقل نفسِه (منى أو عرفات) تُقبَل أيًّا منها. */
+function aqRepStop(){
+  return ['اكسل', 'excel', 'xlsx', 'pdf', 'بي', 'دي', 'اف', 'ملف', 'تقرير', 'قائمه', 'قايمه', 'ليست', 'list', 'طلع', 'طلعلي', 'هات', 'هاتلي', 'اعرض', 'عاوز', 'عايز',
+    'محتاج', 'ممكن', 'لو', 'سمحت', 'النقاط', 'النقط', 'نقاط', 'المواقع', 'مواقع', 'اللي', 'الي', 'اللى', 'في', 'فى', 'من', 'على', 'علي', 'مع', 'كل', 'كلها', 'ده',
+    'دي', 'دول', 'بتاعه', 'بتاعت', 'فيها', 'ليها', 'لها', 'عليها', 'التي', 'الذي', 'الخاصه', 'الخاص', 'او', 'أو', 'ولا', 'بس', 'اللي', 'لسه', 'كمان', 'برضه', 'يعني', 'وكمان', 'بيها'];
+}
+function aqRepParse(q){
+  var n = ' ' + aqNorm(q).replace(/[؟?!,،.:;()«»"']/g, ' ').replace(/\s+/g, ' ') + ' ';
+  var used = [], conds = [], add = function(k, label, fn){ conds.push({ k:k, label:label, fn:fn }); };
+  var use = function(re){ var m = n.match(new RegExp(re.source, 'g')); if (m){ m.forEach(function(x){ x.trim().split(/\s+/).forEach(function(w){ used.push(w); }); }); return true; } return false; };
+  var isRep = /اكسل|excel|xlsx|pdf|بي دي اف|ملف|تقرير|قائمه|قايمه|ليست|\blist\b|طلعلي|هاتلي/.test(n) || /^ *(النقاط|النقط|المواقع|المخيمات|الممرات|الكاميرات|البوابات)\s+(اللي|الي|اللى)/.test(n);
+  var fmt = /pdf|بي دي اف/.test(n) ? 'pdf' : (/اكسل|excel|xlsx/.test(n) ? 'xls' : '');
+  /* المكان */
+  var zs = {}; (STATE.sites || []).forEach(function(x){ if (x && x.zone) zs[x.zone] = 1; });
+  var zones = Object.keys(zs).filter(function(z){ var k = aqNorm(z).replace(/^ال/, ''); return k.length > 2 && n.indexOf(k) > -1 && (used.push(k), used.push('ال' + k), true); });
+  if (zones.length) add('zone', zones.join(' أو '), function(x){ return zones.indexOf(x.zone) > -1; });
+  var bm = /مربع\s*([0-9a-z]+)/.exec(n);
+  if (bm){ used.push('مربع', bm[1]); var bk = bm[1]; add('block', 'مربع ' + bk, function(x){ return new RegExp('مربع\\s*' + bk + '(\\b|\\s|-|$)', 'i').test(aqNorm(x.name || '')); }); }
+  /* النوع */
+  var tys = aqTypes().filter(function(p){ return p[1].test(n); });
+  if (tys.length){ tys.forEach(function(p){ use(new RegExp('[^\\s]*(' + p[1].source + ')[^\\s]*')); }); var tn0 = tys.map(function(p){ return p[0]; }); add('type', tn0.join(' أو '), function(x){ return tn0.indexOf(x.type) > -1; }); }
+  var R = function(x){ return STATE.recs[x.id]; }, I = function(x){ return STATE.inss[x.id]; };
+  var NEG = '(ما|مش|لم|غير|بدون|من غير|لسه ما|لسه مش)\\s*';
+  /* الوزارة أولًا — «اعتماد» فيها لا يُحسَب على الاعتماد التقني */
+  if (/الوزاره|وزاره/.test(n)){
+    use(/(بانتظار|منتظره|لسه|اعتمدتها|اعتمدت|معتمده من|ردتها|ردت|مردوده|رفضتها|رفضت)?\s*(اعتماد\s*)?(ال)?وزاره/);
+    if (/(بانتظار|منتظره|لسه)/.test(n)){ use(/بانتظار|منتظره|لسه/); add('min', 'بانتظار الوزارة', function(x){ var r = R(x); return !!r && r.minReview === 'pending'; }); }
+    else if (/(ردت|مردود|رفض)/.test(n)){ use(/ردتها|ردت|مردوده|مردود|رفضتها|رفضت/); add('min', 'ردّتها الوزارة', function(x){ var r = R(x); return !!r && (r.minReview === 'revisit' || r.minReview === 'rejected'); }); }
+    else if (/(اعتمد|معتمد)/.test(n)){ use(/اعتمدتها|اعتمدت|معتمده|معتمد/); add('min', 'اعتمدتها الوزارة', function(x){ var r = R(x); return !!r && r.minReview === 'approved'; }); }
+  }
+  /* المسح */
+  if (new RegExp(NEG + '(اتزار|تزار|اتمسح|تتمسح|زرناها|زيار)').test(n) || /لم تزر|بدون زياره|من غير زياره/.test(n)){
+    use(new RegExp(NEG + '[^\\s]*(اتزار|تزار|اتمسح|تتمسح|زرناها|زيار)[^\\s]*')); use(/لم تزر|بدون زياره|من غير زياره/);
+    add('sv', 'لم تُزَر', function(x){ return !svVisited(R(x)); });
+  } else if (/اتزار|اتمسح|ممسوح|زرناها/.test(n)){ use(/[^\s]*(اتزار|اتمسح|ممسوح|زرناها)[^\s]*/); add('sv', 'زيرت', function(x){ return svVisited(R(x)); }); }
+  if (/متعذر|منع دخول|ماوصلناش|ما وصلناش/.test(n)){ use(/[^\s]*متعذر[^\s]*|منع دخول|ماوصلناش|ما وصلناش/); add('svu', 'زيارةٌ متعذّرة', function(x){ var r = R(x); return svVisited(r) && r.access !== 'تم الوصول'; }); }
+  if (!/الوزاره|وزاره/.test(n)){
+    if (new RegExp(NEG + '(اتعتمد|معتمد)').test(n) || /بانتظار الاعتماد|منتظره اعتماد/.test(n)){ use(new RegExp(NEG + '[^\\s]*(اتعتمد|معتمد)[^\\s]*')); use(/بانتظار الاعتماد|منتظره اعتماد/); add('sva', 'بانتظار الاعتماد التقني', function(x){ var r = R(x); return !!r && svDone(r) && r.review !== 'approved' && r.review !== 'revisit'; }); }
+    else if (/(المسح|مسح)\s*معتمد|اعتماد فني|معتمده فني/.test(n)){ use(/(المسح|مسح)\s*معتمد[^\s]*|اعتماد فني|معتمده فني[^\s]*/); add('sva', 'مسحٌ معتمد', function(x){ var r = R(x); return !!r && r.review === 'approved'; }); }
+    if (/مردود|مرفوض|اعاده زياره|محتاجه زياره/.test(n)){ use(/[^\s]*مردود[^\s]*|[^\s]*مرفوض[^\s]*|اعاده زياره|محتاجه زياره/); add('svr', 'تحتاج زيارةً أخرى', function(x){ var r = R(x); return !!r && r.review === 'revisit'; }); }
+  }
+  /* التركيب */
+  if (new RegExp(NEG + '(اتركب|مركب|ركب)').test(n)){ use(new RegExp(NEG + '[^\\s]*(اتركب|مركب|ركب)[^\\s]*')); add('ins', 'لم تُركَّب', function(x){ var i = I(x); return !i || i.status !== 'مُركّب'; }); }
+  else if (/اتركب|مركب|ركبناها/.test(n)){
+    use(/[^\s]*(اتركب|مركب|ركبناها)[^\s]*/);
+    if (/تركيب معتمد|التركيب معتمد/.test(n)){ use(/[^\s]*تركيب[^\s]*\s*معتمد[^\s]*/); add('ins', 'تركيبٌ معتمد', function(x){ var i = I(x); return !!i && i.status === 'مُركّب' && !!i.approved; }); }
+    else add('ins', 'مُركّبة', function(x){ var i = I(x); return !!i && i.status === 'مُركّب'; });
+  }
+  /* نظامُ البطاقات */
+  var SR = null, sr = function(){ if (!SR){ SR = {}; ((typeof extStatusRows === 'function' && extStatusRows()) || []).forEach(function(r){ SR[r.x.id] = r; }); } return SR; };
+  if (/(مش|غير|بدون|من غير)\s*مربوط/.test(n)){ use(/(مش|غير|بدون|من غير)\s*[^\s]*مربوط[^\s]*/); add('lnk', 'غير مربوطة بنظام البطاقات', function(x){ return !sr()[x.id]; }); }
+  else if (/مربوط/.test(n)){ use(/[^\s]*مربوط[^\s]*/); add('lnk', 'مربوطة بنظام البطاقات', function(x){ return !!sr()[x.id]; }); }
+  if (/(مش|ما|لا)\s*(بترسل|بتبعت|ترسل|بيبعت)|مقطوع|اوفلاين|offline/.test(n)){ use(/(مش|ما|لا)\s*(بترسل|بتبعت|ترسل|بيبعت)|[^\s]*مقطوع[^\s]*|اوفلاين|offline/); add('sig', 'لا ترسل', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'off'; }); }
+  else if (/بترسل|ترسل|بتبعت|اونلاين|online/.test(n)){ use(/بترسل|ترسل|بتبعت|اونلاين|online/); add('sig', 'ترسل', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'on'; }); }
+  if (/(بلا|من غير|مفيش|بدون)\s*قارئ/.test(n)){ use(/(بلا|من غير|مفيش|بدون)\s*قارئ/); add('sig', 'بلا قارئ ظاهر', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'none'; }); }
+  var thr = /اشغال[^0-9]*(فوق|اكتر من|اكثر من|اكبر من|اعلي من|تحت|اقل من)\s*(\d{1,3})/.exec(n);
+  if (thr){ used.push('اشغال', 'الاشغال', thr[1], thr[2]); thr[1].split(/\s+/).forEach(function(w){ used.push(w); }); var hi = !/تحت|اقل/.test(thr[1]), v0 = +thr[2];
+    add('occ', 'الإشغال ' + (hi ? 'فوق ' : 'تحت ') + v0 + '%', function(x){ var r = sr()[x.id]; return !!r && r.ov && r.pct != null && (hi ? r.pct > v0 : r.pct < v0); }); }
+  else if (/(بلا|من غير|مفيش|بدون)\s*ارقام/.test(n)){ use(/(بلا|من غير|مفيش|بدون)\s*ارقام/); add('ov', 'بلا أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && !r.ov; }); }
+  else if (/(لها|ليها|فيها)\s*(ارقام|اشغال)/.test(n)){ use(/(لها|ليها|فيها)\s*(ارقام|اشغال)/); add('ov', 'لها أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && r.ov; }); }
+  /* موسمُ ١٤٤٧ */
+  if (/1447/.test(n)){
+    var no47 = /(من غير|بدون|مش|مفيش|ما)\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/.test(n); use(/(من غير|بدون|مش|مفيش|ما)?\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/);
+    add('e47', no47 ? 'بلا بيانات ١٤٤٧' : 'لها بيانات ١٤٤٧', function(x){ return no47 ? !x.ex47 : !!x.ex47; });
+  }
+  /* التحديات: تحدٍّ بعينه أو أيُّ تحدٍّ */
+  var labels = [], seenL = {};
+  ['مخيم', 'ممر'].forEach(function(ty){ chalsOf({ type:ty }).forEach(function(c){ if (c && c !== 'لا توجد تحديات' && !seenL[c]){ seenL[c] = 1; labels.push(c); } }); });
+  var hitL = labels.filter(function(c){ var ws = aqNorm(c).split(/[\s—\-]+/).filter(function(w){ return w.length > 3; }); return ws.length && ws.filter(function(w){ return n.indexOf(w) > -1; }).length >= Math.min(2, ws.length); });
+  if (hitL.length){ hitL.forEach(function(c){ aqNorm(c).split(/[\s—\-]+/).forEach(function(w){ used.push(w); }); }); add('chal', hitL.join(' أو '), function(x){ var r = R(x); return !!r && (r.chals || []).some(function(c){ return hitL.indexOf(c) > -1; }); }); }
+  else if (/تحدي|تحديات|معوق|معوقات|عائق|مشكله|مشاكل/.test(n)){ use(/[^\s]*(تحدي|معوق|عائق|مشكله|مشاكل)[^\s]*/); add('chal', 'فيها تحدٍّ', function(x){ var r = R(x); return !!r && (r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; }); }); }
+  /* الأشخاص والشركة */
+  var pm = /(الفني|فني|المهندس|مهندس)\s+([^\s]{2,})/.exec(n);
+  if (pm && aqRepStop().indexOf(pm[2]) < 0){ used.push(pm[1], pm[2]); var pn = pm[2]; add('who', pm[1].replace(/^ال/, '') + ' ' + pn, function(x){ var r = R(x), i = I(x); return [r && r.by, i && i.by].some(function(b){ return b && aqNorm(dispName(b)).indexOf(pn) > -1; }); }); }
+  var cm = /(الشركه|شركه)\s+([^\s]{2,})/.exec(n);
+  if (cm){ used.push(cm[1], cm[2]); var cn = cm[2]; add('co', 'الشركة ' + cn, function(x){ return aqNorm(x.co || '').indexOf(cn) > -1; }); }
+  /* ما لم يُفهَم */
+  var stop = aqRepStop(), unknown = n.trim().split(/\s+/).filter(function(w){
+    var w2 = w.replace(/^(وال|بال|لل|و|ب|ل)(?=..)/, '');   /* الأطولُ أوّلًا: «للنقاط» ← «نقاط» */
+    return w.length > 2 && !/^\d+%?$/.test(w) && stop.indexOf(w) < 0 && stop.indexOf(w2) < 0 && used.indexOf(w) < 0 && used.indexOf(w2) < 0 && used.indexOf('ال' + w2) < 0;
+  });
+  return { isRep:isRep, fmt:fmt, conds:conds, unknown:unknown };
+}
+function aqRepData(q){
+  var P = aqRepParse(q), rows = (STATE.sites || []).filter(function(x){
+    if (!x) return false;
+    var by = {}; P.conds.forEach(function(c){ (by[c.k] = by[c.k] || []).push(c.fn); });
+    return Object.keys(by).every(function(k){ return by[k].some(function(f){ return f(x); }); });
+  });
+  return { P:P, rows:rows };
+}
+function aqRepCols(){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشاخص', 'المسح', 'التركيب', 'الوزارة', 'نظام البطاقات', 'القارئ', 'الإشارة', 'الإشغال']; }
+function aqRepRow(x){
+  var r = STATE.recs[x.id], i = STATE.inss[x.id], S = (typeof extStatusRows === 'function' && aqRepRow.sr) || null, s0 = S ? S[x.id] : null;
+  var sv = !r ? t('لم تُزَر') : r.access !== 'تم الوصول' ? t('زيارةٌ متعذّرة') : r.review === 'approved' ? t('معتمدة') : r.review === 'revisit' ? t('تحتاج زيارةً أخرى') : t('بانتظار الاعتماد');
+  var ins = !i ? t('لم تُركَّب') : i.status === 'مُركّب' ? t('مُركّب') + (i.approved ? ' \u00b7 ' + t('معتمد') : '') : t(i.status || 'مسودّة');
+  var mn = !r || !r.minReview ? '' : r.minReview === 'pending' ? t('بانتظار الوزارة') : r.minReview === 'approved' ? t('اعتمدتها الوزارة') : t('ردّتها الوزارة');
+  return [x.id, x.name || '', x.zone || '', x.type || '', x.sign || '', sv, ins, mn, s0 ? (s0.code || t('مربوطة')) : '', s0 ? String(s0.ser || '') : '',
+          s0 ? (s0.sig === 'on' ? t('ترسل') : s0.sig === 'off' ? t('لا ترسل') : t('بلا قارئ ظاهر')) : '', s0 && s0.ov && s0.pct != null ? s0.pct + '%' : ''];
+}
+function aqRepPrep(){ aqRepRow.sr = {}; ((typeof extStatusRows === 'function' && extStatusRows()) || []).forEach(function(r){ aqRepRow.sr[r.x.id] = r; }); }
+function aqRepCard(q, D){
+  var P = D.P;
+  aqRepPrep();
+  var chips = P.conds.map(function(c){ return '<span class="pill ok" style="margin:2px">' + esc(t(c.label)) + '</span>'; }).join(' ');
+  var prev = D.rows.slice(0, 10).map(function(x){ var rw = aqRepRow(x); return '<div class="kk-zl" style="margin:3px 0"><span><bdi>' + esc(x.id) + '</bdi> \u00b7 ' + esc(x.name || '') + '</span><b>' + esc(rw[6]) + '</b></div>'; }).join('');
+  return aqCard(t('تقرير') + ' \u00b7 ' + nm(D.rows.length) + ' ' + t('نقطة'),
+    '<div style="margin:0 0 6px">' + esc(t('فهمت:')) + ' ' + chips + '</div>'
+    + (P.unknown.length ? alertBox('warn', t('ما فهمتش') + ': ' + P.unknown.join(' \u00b7 ') + ' \u2014 ' + t('التقرير بالشروط اللي فوق بس')) : '')
+    + (D.rows.length ? prev + (D.rows.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي في الملف')) + ' (' + nm(D.rows.length - 10) + ')</p>' : '')
+                     : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>'),
+    D.rows.length ? '<button type="button" class="btn btn-primary btn-sm" data-aqrep="xls">\u2B07 ' + esc(t('إكسل')) + '</button> <button type="button" class="btn btn-secondary btn-sm" data-aqrep="pdf">\u2B07 PDF</button>' : '');
+}
+function aqRepExport(fmt){
+  var q = ASSIST_Q || '', D = aqRepData(q); if (!D.rows.length){ toast(t('لا نقاطَ تنطبق عليها الشروط')); return; }
+  aqRepPrep();
+  var cond = D.P.conds.map(function(c){ return t(c.label); }).join(' \u00b7 '), cols = aqRepCols().map(function(c){ return t(c); });
+  var body = D.rows.map(aqRepRow);
+  logEvent('تقرير بالكلام — ' + q.slice(0, 80) + ' · ' + D.rows.length + ' نقطة · ' + fmt);
+  if (fmt === 'xls'){
+    xlsSheets([[t('النقاط'), [cols].concat(body)], [t('الشروط'), [[t('الطلب'), q], [t('ما فُهم'), cond], [t('ما لم يُفهَم'), D.P.unknown.join(' \u00b7 ')], [t('العدد'), D.rows.length], [t('الوقت'), fmtDT()], [t('بواسطة'), dispName(STATE.meta.name || '')]]]],
+      'nusuk-report-' + dayKey(Date.now()) + '.xlsx');
+    return;
+  }
+  var css = 'body{font:11.5px/1.55 system-ui,"Segoe UI",Tahoma;margin:18px;color:#111}h1{font-size:19px;margin:0;color:#1F4E79}'
+    + '.meta{color:#556;font-size:11px;margin:4px 0 10px}.box{border:1px solid #dfe6ee;border-radius:10px;padding:8px 12px;margin:0 0 10px;background:#f8fbff}'
+    + '.pill{display:inline-block;border:1px solid #9cc3e6;border-radius:99px;padding:1px 9px;margin:2px;font-size:11px;background:#eef6ff}'
+    + 'table{width:100%;border-collapse:collapse;font-size:10.5px}th{background:#1F4E79;color:#fff;padding:5px 6px;text-align:start;font-weight:600}'
+    + 'td{border-bottom:1px solid #dde3ea;padding:4px 6px}tr:nth-child(even) td{background:#f6f9fc}.big{font-size:22px;font-weight:800;color:#12203a}'
+    + '.foot{margin-top:10px;color:#889;font-size:10px}@page{size:A4 landscape;margin:12mm}';
+  var html = '<div style="display:flex;align-items:center;gap:12px">' + (LOGO ? '<img src="' + LOGO + '" alt="AFAQY" style="height:36px;width:auto">' : '')
+    + '<h1>' + esc(t('قارئات أفاقي — تقرير')) + '</h1></div>'
+    + '<div class="meta">' + esc(t('حج ١٤٤٨هـ')) + ' \u00b7 ' + esc(fmtDT()) + ' \u00b7 ' + esc(dispName(STATE.meta.name || '')) + '</div>'
+    + '<div class="box"><div><b>' + esc(t('الطلب')) + ':</b> ' + esc(q) + '</div><div style="margin-top:4px"><b>' + esc(t('الشروط')) + ':</b> '
+    + D.P.conds.map(function(c){ return '<span class="pill">' + esc(t(c.label)) + '</span>'; }).join('') + '</div>'
+    + '<div style="margin-top:4px"><span class="big">' + esc(nm(D.rows.length)) + '</span> ' + esc(t('نقطة')) + '</div></div>'
+    + '<table><thead><tr>' + cols.map(function(c){ return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>'
+    + body.slice(0, 1500).map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(String(c == null ? '' : c)) + '</td>'; }).join('') + '</tr>'; }).join('')
+    + '</tbody></table>' + (body.length > 1500 ? '<div class="foot">' + esc(t('عُرض ألفٌ وخمسمئة صفٍّ — والإكسلُ فيه الباقي')) + '</div>' : '')
+    + '<div class="foot">' + esc(t('من بيانات الجهاز وقتَ الإصدار — منظومة نُسُك للمسح والتركيب')) + '</div>';
+  var w2 = window.open('', '_blank');
+  if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير PDF')); return; }
+  w2.document.write('<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>' + esc(t('قارئات أفاقي — تقرير')) + '</title><style>' + css + '</style></head><body>' + html + '</body></html>');
+  w2.document.close();
+  setTimeout(function(){ try { w2.focus(); w2.print(); } catch (e){ softErr('طباعة PDF', e, 'افتح النافذةَ واطبع منها'); } }, 400);
+  toast(t('اختر «حفظ كـPDF» من نافذة الطباعة'));
+}
 function aqGoTo(spec){
   var p = String(spec || '').split('|');
   ASSIST_OPEN = false;
@@ -3761,7 +3914,7 @@ function aqGoTo(spec){
 }
 function aqExamples(){
   if (ROLE === 'viewer') return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56'];
-  return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
+  return ['كام نقطة اتركبت في منى؟', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'PDF للنقاط اللي ليها بيانات 1447 ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
 }
 function assistHomeHtml(){
   var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];
