@@ -233,7 +233,10 @@ function ccOf(k){ return ccList().filter(function(o){ return o.k === k; })[0] ||
 
 /* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
 var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
-function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })); }
+/* (V38.20) «أخرى» تعود خيارًا أخيرًا — تحدٍّ لا تصفه الفئاتُ الثماني يُكتَب وصفُه (الوصفُ مطلوبٌ معها). وتُحفَظ باسمها
+   القديم نفسِه فتبقى زياراتُ «أخرى» السابقةُ مختارةً حين تُفتَح للتعديل ولا تُمحى */
+function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
+function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })).concat([chalOther()]); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
   var L = Array.isArray(chals) ? chals : [], names = chalNames();

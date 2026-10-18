@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.19</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.20</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-11985f7a95.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-83221b2e29.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6954,6 +6954,9 @@ function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('ed
 function svqKeys(rec){
   var ks = SV_ORDER.filter(function(k){ return k !== 'access' && rec[k] !== undefined && rec[k] !== null && rec[k] !== ''; });
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
+  /* (V38.20) وصفُ التحدي يظهر صفًّا للتعديل متى كان في الزيارة تحدٍّ — ولو لم يُكتَب بعد */
+  var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
+  if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
@@ -6961,8 +6964,13 @@ function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); })
 function svqEditor(k, rec, s){
   var v = rec[k];
   if (k === 'chals'){
-    var sel = SVQ.tmp || (rec.chals || []).slice();
-    return '<div class="chips" style="margin:4px 0 0">' + chalsOf(s).map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>';
+    /* (V38.20) قائمةُ التعديل كانت القديمةَ (بـ«أخرى — اذكرها في وصف التحدي») وقائمةُ المسح هي الفئاتُ الثماني — فصارت واحدة،
+       ومعها «وصفُ التحدي بالتفصيل» في الموضع نفسِه: كان لا يظهر في التعديل إلا إن كُتب من قبل */
+    var sel = SVQ.tmp || chalsToCats(rec.chals, rec.chal_note || rec.note);
+    var noteV = SVQ.note != null ? SVQ.note : (rec.chal_note || '');
+    var real = sel.filter(function(c){ return c && c !== 'لا توجد تحديات'; }).length;
+    return '<div class="chips" style="margin:4px 0 0">' + chalNames().map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>'
+      + (real ? '<div class="field" style="margin:8px 0 0"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea id="svqNote" rows="2" dir="auto" placeholder="' + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(noteV) + '</textarea></div>' : '');
   }
   if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
@@ -7078,13 +7086,13 @@ function svqPhoto(id, key, p){
   toast(t(back ? 'حُفظت الصورة — وعاد المسحُ لانتظار الاعتماد' : 'حُفظت الصورة — وتُرفَع مع المزامنة'));
   return true;
 }
-function svqSave(id, key, val){
+function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظٍ مركّب (التحديات + وصفُها) فلا يقول «لم يتغيّر شيء» */
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
   var old = key === 'chals' ? (rec.chals || []).slice() : rec[key];
   if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
   else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
   else val = String(val == null ? '' : val).trim();
-  if (JSON.stringify(old) === JSON.stringify(val)){ toast(t('لم يتغيّر شيء')); return false; }
+  if (JSON.stringify(old) === JSON.stringify(val)){ if (!quiet) toast(t('لم يتغيّر شيء')); return false; }
   var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
   var n = Object.assign({}, rec);
   n[key] = val;
@@ -7096,7 +7104,7 @@ function svqSave(id, key, val){
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null;
+  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null;
   statBump();
   toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));
   return true;
@@ -7336,7 +7344,10 @@ function ccOf(k){ return ccList().filter(function(o){ return o.k === k; })[0] ||
 
 /* ── (V37.1) الميدانُ يختار ولا يكتب: السببُ يحدّد «حالة الوصول» القديمة للتوافق، والتحدياتُ أسماءُ الفئات نفسُها ── */
 var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'يحتاج تصريح', missing:'غير موجود', other:'منع دخول' };
-function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })); }
+/* (V38.20) «أخرى» تعود خيارًا أخيرًا — تحدٍّ لا تصفه الفئاتُ الثماني يُكتَب وصفُه (الوصفُ مطلوبٌ معها). وتُحفَظ باسمها
+   القديم نفسِه فتبقى زياراتُ «أخرى» السابقةُ مختارةً حين تُفتَح للتعديل ولا تُمحى */
+function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
+function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })).concat([chalOther()]); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
   var L = Array.isArray(chals) ? chals : [], names = chalNames();
@@ -8689,6 +8700,10 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
                 + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div></div>'
+          /* (V38.20) وصفُ التحدي تحت التحديات مباشرةً متى اختير تحدٍّ — كان في «تفاصيل إضافية» المطويّة فلا يراه الفنيّ */
+          + (FORM.chals.some(function(c){ return c && c !== 'لا توجد تحديات'; })
+              ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea data-form="chal_note" rows="2" placeholder="'
+                + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
           + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
@@ -10165,11 +10180,8 @@ function svExtra(s){
             'الحديدُ المجاور يشوّش قراءة القارئ ويغيّر مكان التثبيت'));
 
   h += card('تحديات التركيب — التفصيل',
-      '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label>'
-      + '<textarea data-form="chal_note" rows="2" placeholder="'
-      + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">'
-      + esc(FORM.chal_note || '') + '</textarea></div>'
-      + '<div class="grid cols-2">'
+      /* (V38.20) الوصفُ انتقل تحت التحديات في أعلى النموذج — هنا الأعمالُ المدنيةُ والمعداتُ وحدَها */
+      '<div class="grid cols-2">'
       + svSel('civil','هل يحتاج أعمال مدنية؟', SV_CIVIL,
               'الأعمالُ المدنية لها موعدُ إغلاقٍ مبكر — هذا الحقلُ يحدّد المسار الحرج')
       + svSel('equip','المعدات اللازمة للوصول', SV_EQUIP)
@@ -10436,6 +10448,7 @@ function svSave(next){
     if (!FORM.mount) need.push('نوع التركيب');
     if (!FORM.power) need.push('مصدر الكهرباء');
     if (!(FORM.chals || []).length) need.push('تحديات التركيب');
+    if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');   /* (V38.20) «أخرى» بلا وصفٍ لا تفيد المكتب */
     if (!cfgN(FORM.wid_m)) need.push('العرض المتاح (متر)');
     if (!cfgN(FORM.hgt_m)) need.push('الارتفاع المتاح (متر)');
     if (!FORM.fit) need.push('هل الموقع مناسب للتركيب؟');
@@ -18809,8 +18822,9 @@ function mapInit(){
   }
 
   bootStage('map');
+  var fz = mapFlySoon.id ? siteFind(mapFlySoon.id) : null;   /* (V38.20) تُبنى الخريطةُ عند النقطة المطلوبة إن وُجدت */
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
-         .setView([21.38, 39.92], 12);
+         .setView(fz && fz.lat ? [fz.lat, fz.lng] : [21.38, 39.92], fz && fz.lat ? 18 : 12);
   try { MAP.whenReady(vitMapReady); } catch (e){ vitMapReady(); }   /* أوّلُ خريطةٍ بعد الفتح (V17.98) */
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
@@ -19154,6 +19168,17 @@ function mapPaint(light){
   if (IOT.on) iotPaint();   /* (V25.7) */
 }
 
+/* (V38.20) «فتح موقع النقطة على الخريطة لا يعمل للمشرف»: كان الطيرانُ بعد نصف ثانيةٍ ثابتة، والخريطةُ في أوّل فتحٍ
+   (وهي حالُ المشرف غالبًا — لا يفتح الخريطةَ قبل البحث) تُبنى بعد أن تُحمَّل مكتبتُها؛ فيمرّ الموعدُ ولا خريطةَ فلا يطير،
+   وتُفتَح على منظرها الافتراضيّ. صار ينتظر الخريطةَ حتى عشر ثوانٍ، والخريطةُ حين تُبنى تبدأ عند النقطة المطلوبة نفسِها */
+function mapFlySoon(id){
+  clearTimeout(mapFlySoon.t); mapFlySoon.id = id; var n = 0;
+  (function go(){
+    if ((typeof MAP !== 'undefined' && MAP) || (typeof MAP_3D !== 'undefined' && MAP_3D && typeof M3 !== 'undefined' && M3)){ mapFly(id); mapFlySoon.id = ''; return; }
+    if (++n < 40){ mapFlySoon.t = setTimeout(go, 250); return; }
+    mapFlySoon.id = ''; toast(t('تعذّر فتح الخريطة الآن — اضغط «على الخريطة» مرةً أخرى'));
+  })();
+}
 function mapFly(id){
   var x = siteFind(id);
   if (x && MAP) MAP.setView([x.lat, x.lng], 18);
@@ -28293,6 +28318,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.20', d:'2026-10-18', notes:[
+      'فتح النقطة على الخريطة للمشرف، ووصف التحدي في تعديل المسح، و«أخرى» خيار بوصف مطلوب' ] },
   { v:'V38.19', d:'2026-10-18', notes:[
       'تحليل «حسب …» في التقارير بالكلام، والنفي كلمة مستقلة' ] },
   { v:'V38.18', d:'2026-10-18', notes:[
@@ -37586,7 +37613,7 @@ function clickTables(e){
   var cogo = e.target.closest('[data-comap]');
   if (cogo){ var gid = cogo.getAttribute('data-comap'); CO_POP = null;
              POP_SITE = gid; POP_OPEN = true; CUR = 'map'; render();
-             setTimeout(function(){ mapFly(gid); }, 500); return true; }
+             mapFlySoon(gid); return true; }   /* (V38.20) */
   var cst = e.target.closest('[data-copopsite]');
   if (cst){ DETAIL_ID = cst.getAttribute('data-copopsite'); CO_POP = null; goPage('site'); render(1); return true; }
   if (CO_POP && e.target.id === 'coPopWrap'){ CO_POP = null; render(1); return true; }
@@ -37945,11 +37972,17 @@ function clickAPart3(e){
   if (e.target.closest('[data-svqqx]')){ var qi = +e.target.closest('[data-svqqx]').getAttribute('data-svqqx'), qx = PHOTO_Q[qi];
     if (qx && qx.site === SVQ.id){ PHOTO_Q.splice(qi, 1); CORE.saveSoon(); var rq2 = STATE.recs[SVQ.id]; if (rq2){ var n2 = Object.assign({}, rq2); n2.phN = svqPhotoCount(SVQ.id); CORE.set('recs', SVQ.id, n2); } logEvent('إلغاءُ صورةٍ من طابور الجهاز — ' + SVQ.id, SVQ.id); toast(t('أُلغيت الصورة')); render(1); }
     return true; }
-  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; render(1); return true; }
-  if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'); rq = STATE.recs[SVQ.id] || {}; var cur0 = SVQ.tmp || (rq.chals || []).slice();
+  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; render(1); return true; }
+  if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'); rq = STATE.recs[SVQ.id] || {}; var nt1 = document.getElementById('svqNote'); if (nt1) SVQ.note = nt1.value; var cur0 = SVQ.tmp || chalsToCats(rq.chals, rq.chal_note || rq.note);   /* (V38.20) الفئاتُ نفسُها كنموذج المسح، والوصفُ المكتوبُ لا يضيع بإعادة الرسم */
     if (cur0.indexOf(ch) > -1) cur0 = cur0.filter(function(x){ return x !== ch; }); else { if (ch === 'لا توجد تحديات') cur0 = []; else cur0 = cur0.filter(function(x){ return x !== 'لا توجد تحديات'; }); cur0.push(ch); }
     SVQ.tmp = cur0; render(1); return true; }
-  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, sv0 = sk === 'chals' ? (SVQ.tmp || (STATE.recs[SVQ.id] || {}).chals || []) : ((document.getElementById('svqIn') || {}).value); if (svqSave(SVQ.id, sk, sv0)){ render(1); if (typeof MAP !== 'undefined' && MAP) mapPaint(); } return true; }
+  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, rq0 = STATE.recs[SVQ.id] || {}, sv0 = sk === 'chals' ? (SVQ.tmp || chalsToCats(rq0.chals, rq0.chal_note || rq0.note)) : ((document.getElementById('svqIn') || {}).value);
+    /* (V38.20) الوصفُ يُحفَظ مع التحديات في الضغطة نفسِها — كان لا يظهر له حقلٌ في التعديل أصلًا */
+    var nt0 = document.getElementById('svqNote'), ntv = nt0 ? String(nt0.value || '').trim() : null, ntChanged = sk === 'chals' && ntv !== null && ntv !== String(rq0.chal_note || '').trim();
+    if (sk === 'chals' && (sv0 || []).indexOf(chalOther()) > -1 && !(ntv != null ? ntv : String(rq0.chal_note || '').trim())){ toast(t('اكتب وصف التحدي — «أخرى» تحتاج وصفًا')); return true; }   /* (V38.20) */
+    var okc = svqSave(SVQ.id, sk, sv0, ntChanged);
+    if (ntChanged){ okc = svqSave(SVQ.id, 'chal_note', ntv, true) || okc; }
+    if (okc){ render(1); if (typeof MAP !== 'undefined' && MAP) mapPaint(); } return true; }
   if (e.target.closest('[data-sqall]')){ FILT.zone = FILT.type = FILT.work = FILT.life = FILT.route = FILT.floor = ''; if (typeof CO_SEL !== 'undefined' && CO_SEL.length) CO_SEL.length = 0; LIST_SHOWN = LIST_PAGE; render(1); if (CUR === 'map' && MAP) mapPaint(); return true; }   /* (V22.1) البحثُ في الكل: تُرفَع التصفيةُ وتبقى الكلمة */
   if (e.target.closest('[data-mfupadd]')){ var npi = document.getElementById('mfuNewParty'), npv = npi ? String(npi.value || '').trim().slice(0, 40) : ''; if (!npv){ toast(t('اكتب اسمَ الجهة')); return true; } if (mfuParties().indexOf(npv) > -1){ toast(t('الجهةُ موجودة')); return true; } if (mfuPut('party', npv, { t:npv, at:Date.now() }) !== false){ logEvent('إضافةُ جهةٍ معالجة — ' + npv); toast(t('أُضيفت الجهة')); } render(1); return true; }   /* (V26.6) */
   var mpr = e.target.closest('[data-mfuprm]');
@@ -38405,7 +38438,7 @@ function clickAPart7(e){
   if (e.target.closest('[data-svdxls]')){ svdXls(); return true; }
   var fl = e.target.closest('[data-fly]');
   if (fl){ POP_SITE = fl.getAttribute('data-fly'); POP_OPEN = true; CUR = 'map'; render();
-           setTimeout(function(){ mapFly(POP_SITE); }, 500); return true; }
+           mapFlySoon(POP_SITE); return true; }   /* (V38.20) ينتظر الخريطة */
   var fm = e.target.closest('[data-form]');
   if (fm && !/^(INPUT|SELECT|TEXTAREA|OPTION|LABEL)$/.test(fm.tagName)){
     formGo(fm.getAttribute('data-form')); CUR = 'svForm'; render(1); return true; }

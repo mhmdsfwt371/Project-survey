@@ -3046,6 +3046,9 @@ function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('ed
 function svqKeys(rec){
   var ks = SV_ORDER.filter(function(k){ return k !== 'access' && rec[k] !== undefined && rec[k] !== null && rec[k] !== ''; });
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
+  /* (V38.20) وصفُ التحدي يظهر صفًّا للتعديل متى كان في الزيارة تحدٍّ — ولو لم يُكتَب بعد */
+  var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
+  if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   return ks;
 }
 function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + svqKindLabel(k.slice(3)); return k === 'chals' ? 'تحديات التركيب' : (SV_LABELS[k] || k); }
@@ -3053,8 +3056,13 @@ function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); })
 function svqEditor(k, rec, s){
   var v = rec[k];
   if (k === 'chals'){
-    var sel = SVQ.tmp || (rec.chals || []).slice();
-    return '<div class="chips" style="margin:4px 0 0">' + chalsOf(s).map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>';
+    /* (V38.20) قائمةُ التعديل كانت القديمةَ (بـ«أخرى — اذكرها في وصف التحدي») وقائمةُ المسح هي الفئاتُ الثماني — فصارت واحدة،
+       ومعها «وصفُ التحدي بالتفصيل» في الموضع نفسِه: كان لا يظهر في التعديل إلا إن كُتب من قبل */
+    var sel = SVQ.tmp || chalsToCats(rec.chals, rec.chal_note || rec.note);
+    var noteV = SVQ.note != null ? SVQ.note : (rec.chal_note || '');
+    var real = sel.filter(function(c){ return c && c !== 'لا توجد تحديات'; }).length;
+    return '<div class="chips" style="margin:4px 0 0">' + chalNames().map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>'
+      + (real ? '<div class="field" style="margin:8px 0 0"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea id="svqNote" rows="2" dir="auto" placeholder="' + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(noteV) + '</textarea></div>' : '');
   }
   if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
@@ -3170,13 +3178,13 @@ function svqPhoto(id, key, p){
   toast(t(back ? 'حُفظت الصورة — وعاد المسحُ لانتظار الاعتماد' : 'حُفظت الصورة — وتُرفَع مع المزامنة'));
   return true;
 }
-function svqSave(id, key, val){
+function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظٍ مركّب (التحديات + وصفُها) فلا يقول «لم يتغيّر شيء» */
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
   var old = key === 'chals' ? (rec.chals || []).slice() : rec[key];
   if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
   else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
   else val = String(val == null ? '' : val).trim();
-  if (JSON.stringify(old) === JSON.stringify(val)){ toast(t('لم يتغيّر شيء')); return false; }
+  if (JSON.stringify(old) === JSON.stringify(val)){ if (!quiet) toast(t('لم يتغيّر شيء')); return false; }
   var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
   var n = Object.assign({}, rec);
   n[key] = val;
@@ -3188,7 +3196,7 @@ function svqSave(id, key, val){
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null;
+  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null;
   statBump();
   toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));
   return true;

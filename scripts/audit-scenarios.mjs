@@ -252,6 +252,28 @@ console.log('\n══ ٩ · مساعد البيانات ══');
   T(G2 && G2.total[4] === insAll, 'وعمودُ «مُركّبة» في الإجمالي = ' + insAll + ' كما في التركيبات');
 }
 
+/* ── ١٠ · (V38.20) تعديلُ مسحٍ سابق: «أخرى» ووصفُها، وفتحُ النقطة على الخريطة في أوّل فتح ── */
+console.log('\n══ ١٠ · تعديل المسح والخريطة ══');
+{
+  const xs = w.STATE.sites.find(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id]);
+  w.STATE.recs[xs.id] = { id:xs.id, access:'تم الوصول', at:Date.now(), by:'فني', chals:[w.chalOther()] };
+  T(w.svqKeys(w.STATE.recs[xs.id]).includes('chal_note'), 'وصفُ التحدي صفٌّ في التعديل ولو لم يُكتَب بعد');
+  w.SVQ.id = xs.id; w.SVQ.key = 'chals'; w.SVQ.tmp = null; w.SVQ.note = null;
+  const box = w.document.createElement('div'); box.innerHTML = w.svqSheet(); w.document.body.appendChild(box);
+  T(!!w.document.getElementById('svqNote') && !!box.querySelector('.chip.on[data-svqch="' + w.chalOther() + '"]'), '«أخرى» تبقى مختارةً في التعديل ومعها خانةُ الوصف');
+  box.querySelector('[data-svqsave]').click();
+  T(!w.STATE.recs[xs.id].chal_note, '«أخرى» بلا وصفٍ لا تُحفَظ');
+  box.remove(); w.SVQ.key = 'chals';
+  const box2 = w.document.createElement('div'); box2.innerHTML = w.svqSheet(); w.document.body.appendChild(box2);
+  w.document.getElementById('svqNote').value = 'وصفُ سيناريو'; box2.querySelector('[data-svqsave]').click(); box2.remove();
+  T(w.STATE.recs[xs.id].chal_note === 'وصفُ سيناريو', 'ومع الوصف تُحفَظ — والوصفُ مسجَّلٌ في سجلّ التعديل');
+  /* الخريطةُ تُبنى متأخّرةً: الطيرانُ ينتظرها */
+  const flew = []; const mf = w.mapFly; w.mapFly = id => flew.push(id); const keep = w.MAP; w.MAP = null;
+  w.mapFlySoon(xs.id); await new Promise(r => setTimeout(r, 400)); w.MAP = keep || {}; await new Promise(r => setTimeout(r, 400));
+  w.mapFly = mf; if (!keep) w.MAP = keep;
+  T(flew.includes(xs.id), 'فتحُ النقطة على الخريطة ينتظر الخريطةَ حين تُبنى متأخّرة (أوّلُ فتحٍ للمشرف)');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
-console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات التسعة ✅');
+console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات العشرة ✅');
 process.exit(fails.length ? 1 : 0);

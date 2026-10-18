@@ -174,8 +174,9 @@ function mapInit(){
   }
 
   bootStage('map');
+  var fz = mapFlySoon.id ? siteFind(mapFlySoon.id) : null;   /* (V38.20) تُبنى الخريطةُ عند النقطة المطلوبة إن وُجدت */
   MAP = L.map(el, { preferCanvas:true, zoomControl:false, attributionControl:true })
-         .setView([21.38, 39.92], 12);
+         .setView(fz && fz.lat ? [fz.lat, fz.lng] : [21.38, 39.92], fz && fz.lat ? 18 : 12);
   try { MAP.whenReady(vitMapReady); } catch (e){ vitMapReady(); }   /* أوّلُ خريطةٍ بعد الفتح (V17.98) */
   L.control.zoom({ position:'topleft' }).addTo(MAP);
 
@@ -519,6 +520,17 @@ function mapPaint(light){
   if (IOT.on) iotPaint();   /* (V25.7) */
 }
 
+/* (V38.20) «فتح موقع النقطة على الخريطة لا يعمل للمشرف»: كان الطيرانُ بعد نصف ثانيةٍ ثابتة، والخريطةُ في أوّل فتحٍ
+   (وهي حالُ المشرف غالبًا — لا يفتح الخريطةَ قبل البحث) تُبنى بعد أن تُحمَّل مكتبتُها؛ فيمرّ الموعدُ ولا خريطةَ فلا يطير،
+   وتُفتَح على منظرها الافتراضيّ. صار ينتظر الخريطةَ حتى عشر ثوانٍ، والخريطةُ حين تُبنى تبدأ عند النقطة المطلوبة نفسِها */
+function mapFlySoon(id){
+  clearTimeout(mapFlySoon.t); mapFlySoon.id = id; var n = 0;
+  (function go(){
+    if ((typeof MAP !== 'undefined' && MAP) || (typeof MAP_3D !== 'undefined' && MAP_3D && typeof M3 !== 'undefined' && M3)){ mapFly(id); mapFlySoon.id = ''; return; }
+    if (++n < 40){ mapFlySoon.t = setTimeout(go, 250); return; }
+    mapFlySoon.id = ''; toast(t('تعذّر فتح الخريطة الآن — اضغط «على الخريطة» مرةً أخرى'));
+  })();
+}
 function mapFly(id){
   var x = siteFind(id);
   if (x && MAP) MAP.setView([x.lat, x.lng], 18);

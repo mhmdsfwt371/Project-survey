@@ -884,6 +884,10 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
                 + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
             }).join('') + '</div></div>'
+          /* (V38.20) وصفُ التحدي تحت التحديات مباشرةً متى اختير تحدٍّ — كان في «تفاصيل إضافية» المطويّة فلا يراه الفنيّ */
+          + (FORM.chals.some(function(c){ return c && c !== 'لا توجد تحديات'; })
+              ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea data-form="chal_note" rows="2" placeholder="'
+                + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
           + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
@@ -2360,11 +2364,8 @@ function svExtra(s){
             'الحديدُ المجاور يشوّش قراءة القارئ ويغيّر مكان التثبيت'));
 
   h += card('تحديات التركيب — التفصيل',
-      '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label>'
-      + '<textarea data-form="chal_note" rows="2" placeholder="'
-      + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">'
-      + esc(FORM.chal_note || '') + '</textarea></div>'
-      + '<div class="grid cols-2">'
+      /* (V38.20) الوصفُ انتقل تحت التحديات في أعلى النموذج — هنا الأعمالُ المدنيةُ والمعداتُ وحدَها */
+      '<div class="grid cols-2">'
       + svSel('civil','هل يحتاج أعمال مدنية؟', SV_CIVIL,
               'الأعمالُ المدنية لها موعدُ إغلاقٍ مبكر — هذا الحقلُ يحدّد المسار الحرج')
       + svSel('equip','المعدات اللازمة للوصول', SV_EQUIP)
@@ -2631,6 +2632,7 @@ function svSave(next){
     if (!FORM.mount) need.push('نوع التركيب');
     if (!FORM.power) need.push('مصدر الكهرباء');
     if (!(FORM.chals || []).length) need.push('تحديات التركيب');
+    if ((FORM.chals || []).indexOf(chalOther()) > -1 && !String(FORM.chal_note || '').trim()) need.push('وصف التحدي بالتفصيل');   /* (V38.20) «أخرى» بلا وصفٍ لا تفيد المكتب */
     if (!cfgN(FORM.wid_m)) need.push('العرض المتاح (متر)');
     if (!cfgN(FORM.hgt_m)) need.push('الارتفاع المتاح (متر)');
     if (!FORM.fit) need.push('هل الموقع مناسب للتركيب؟');
