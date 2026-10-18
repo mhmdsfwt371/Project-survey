@@ -3898,7 +3898,7 @@ function aqRepExport(fmt){
     + '<table><thead><tr>' + cols.map(function(c){ return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>'
     + body.slice(0, 1500).map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(String(c == null ? '' : c)) + '</td>'; }).join('') + '</tr>'; }).join('')
     + '</tbody></table>' + (body.length > 1500 ? '<div class="foot">' + esc(t('عُرض ألفٌ وخمسمئة صفٍّ — والإكسلُ فيه الباقي')) + '</div>' : '')
-    + '<div class="foot">' + esc(t('من بيانات الجهاز وقتَ الإصدار — منظومة نُسُك للمسح والتركيب')) + '</div>';
+    + '<div class="foot">' + esc(t('من بيانات الجهاز وقتَ الإصدار — قارئات أفاقي للمسح والتركيب'))   /* (V38.18) العلامةُ البيضاء: «أفاقي» لا الاسمُ السابق (V16.92) */ + '</div>';
   var w2 = window.open('', '_blank');
   if (!w2){ toast(t('امنع حجبَ النوافذ لتصدير PDF')); return; }
   w2.document.write('<!doctype html><html dir="rtl" lang="ar"><head><meta charset="utf-8"><title>' + esc(t('قارئات أفاقي — تقرير')) + '</title><style>' + css + '</style></head><body>' + html + '</body></html>');

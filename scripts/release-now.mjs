@@ -61,22 +61,38 @@ const done = await until('اكتمال الشرائح', async () => { const r = 
 const jobs = (await api('/actions/runs/' + run.id + '/jobs?per_page=30')).jobs || [];
 const shards = jobs.filter(j => /^shards/.test(j.name)), badJ = shards.filter(j => j.conclusion !== 'success');
 if (shards.length < 4 || badJ.length || done.conclusion !== 'success') die('القائمةُ الكاملةُ لم تخضرّ: ' + (badJ.map(j => j.name).join(' · ') || done.conclusion) + ' — لا ترقية');
+/* (V38.18) الشريحةُ الساقطةُ لا تُسقِط مهمّتَها — تكتب «FAIL» وتبقى خضراء، وتعليقُها على الالتزام قد لا يُكتَب في
+   التشغيل اليدويّ. فمرّ V38.17 بجردٍ ساقطٍ في الشريحة ٢ (العلامةُ البيضاء). الحكمُ من تعليقات المهمّة نفسِها
+   (annotations): «فحصٌ ساقط» أو «الشريحة N سقطت» = لا ترقية */
+const red = [];
+for (const j of shards){
+  const an = await api('/check-runs/' + j.id + '/annotations');
+  (an || []).forEach(a => { if (a.annotation_level === 'failure' || /الشريحة\s*\d+\s*سقطت/.test(a.message || '')) red.push(j.name + ': ' + String(a.message || '').split('\n')[0].slice(0, 160)); });
+}
+if (red.length) die('القائمةُ الكاملةُ فيها ما سقط — لا ترقية:\n   ' + red.slice(0, 6).join('\n   '));
 say('   ✓ الشرائحُ الأربعُ خضراء');
 
 say('٤ · القطار…');
 const c2 = await api('/actions/workflows/train.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'main' }) });
 if (c2 !== 204) die('تعذّر تشغيلُ القطار (' + c2 + ')');
-await until('ترقية الأصل', async () => (await api('/branches/main')).commit.sha === sha, 10);
-say('   ✓ الأصلُ صار ' + sha.slice(0, 8));
+/* (V38.18) القطارُ يدمج فوق التزام النسخة الاحتياطية اليوميّ فيصنع التزامَ دمج — فالسؤال: هل الأصلُ «يحتوي» الالتزام؟ لا «يساويه» */
+let mainSha = '';
+await until('ترقية الأصل', async () => {
+  const h = (await api('/branches/main')).commit.sha; if (h === sha){ mainSha = h; return true; }
+  const c = await api('/compare/' + sha + '...' + h);
+  if (c && (c.status === 'ahead' || c.status === 'identical')){ mainSha = h; return true; }
+  return false;
+}, 15);
+say('   ✓ الأصلُ يحتوي ' + sha.slice(0, 8) + (mainSha !== sha ? ' (دمجٌ ' + mainSha.slice(0, 8) + ')' : ''));
 
 say('٥ · النشرُ وفحصُ ما بعد النشر…');
 const ok = await until('النشر والفحص', async () => {
   const j = await api('/actions/runs?branch=main&per_page=40');
-  const mine = (j.workflow_runs || []).filter(r => r.head_sha === sha);
+  const mine = (j.workflow_runs || []).filter(r => r.head_sha === mainSha);
   const pick = n => mine.filter(r => r.name === n && r.conclusion !== 'skipped')[0];
   const pg = pick('pages build and deployment'), sm = pick('Post-deploy smoke');
   if (pg && pg.status === 'completed' && sm && sm.status === 'completed') return { pg:pg.conclusion, sm:sm.conclusion };
   return null;
 }, 20);
 if (ok.pg !== 'success' || ok.sm !== 'success') die('النشر ' + ok.pg + ' · فحصُ ما بعد النشر ' + ok.sm);
-say('✓ على الإنتاج: ' + sha.slice(0, 8) + ' — النشرُ وفحصُ ما بعد النشر أخضران');
+say('✓ على الإنتاج: ' + sha.slice(0, 8) + ' — النشرُ وفحصُ ما بعد النشر أخضران (الجردُ الكاملُ على الأصل يكمل وحدَه)');
