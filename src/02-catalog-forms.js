@@ -3061,8 +3061,13 @@ function svqEditor(k, rec, s){
     var sel = SVQ.tmp || chalsToCats(rec.chals, rec.chal_note || rec.note);
     var noteV = SVQ.note != null ? SVQ.note : (rec.chal_note || '');
     var real = sel.filter(function(c){ return c && c !== 'لا توجد تحديات'; }).length;
-    return '<div class="chips" style="margin:4px 0 0">' + chalNames().map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '">' + esc(t(c)) + '</button>'; }).join('') + '</div>'
-      + (real ? '<div class="field" style="margin:8px 0 0"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea id="svqNote" rows="2" dir="auto" placeholder="' + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(noteV) + '</textarea></div>' : '');
+    var oth = sel.indexOf(chalOther()) > -1;
+    return '<p class="hint" style="margin:2px 0 6px">' + esc(t('اختر واحدًا أو أكثر — والتحدي مش في القائمة؟ اختر «أخرى» واكتب وصفه.')) + '</p>'
+      + '<div class="chips" style="margin:4px 0 0">' + chalNames().map(function(c){ return '<button type="button" class="chip' + (sel.indexOf(c) > -1 ? ' on' : '') + '" data-svqch="' + esc(c) + '"' + (c === chalOther() ? ' style="border-style:dashed"' : '') + '>' + esc(t(c)) + '</button>'; }).join('') + '</div>'
+      + (real ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('وصف التحدي بالتفصيل')) + ' '
+          + (oth ? '<span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('مطلوب مع «أخرى»')) + '</span>' : '<span class="hint" style="margin:0;font-weight:400">' + esc(t('اختياري')) + '</span>')
+          + '</label><textarea id="svqNote" rows="3" dir="auto" placeholder="' + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '"' + (SVQ.err ? ' style="border-color:var(--bad,#e05252)"' : '') + '>' + esc(noteV) + '</textarea></div>'
+          + (SVQ.err ? alertBox('bad', t(SVQ.err)) : '') : '');
   }
   if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
@@ -3078,7 +3083,7 @@ function svqSheet(){
   var rows = svqKeys(rec).map(function(k){
     if (SVQ.key === k){
       return '<div class="svq-row on"><div class="svq-k">' + esc(t(svqLabel(k))) + '</div>' + svqEditor(k, rec, s)
-        + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t('احفظ هذا الحقل'), 'btn-primary btn-sm', ' data-svqsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqcancel="1"') + '</div></div>';
+        + '<div class="actions" style="margin:8px 0 0">' + btn('\u2713 ' + t(k === 'chals' ? 'احفظ التحديات والوصف' : 'احفظ هذا الحقل'), 'btn-primary btn-sm', ' data-svqsave="1"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-svqcancel="1"') + '</div></div>';
     }
     return '<div class="svq-row"><div class="svq-k">' + esc(t(svqLabel(k))) + '</div><div class="svq-v">' + esc(svqFmt(rec[k])) + '</div>'
       + btn('\u270E', 'btn-quiet btn-sm', ' data-svqk="' + esc(k) + '" aria-label="' + esc(t('عدّل')) + ' ' + esc(t(svqLabel(k))) + '"') + '</div>';
@@ -3196,9 +3201,9 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null;
+  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; SVQ.err = '';
   statBump();
-  toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));
+  if (!quiet) toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));   /* (V38.21) الحفظُ المركّب يقول جملةً واحدة */
   return true;
 }
 var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];

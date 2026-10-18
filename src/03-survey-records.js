@@ -878,16 +878,20 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
           + '<div class="field"><label>' + esc(t('طول الكابل المطلوب')) + ' (' + t('م') + ')</label>'
           + '<input type="number" min="0" data-form="cable" value="' + esc(FORM.cable) + '"></div>'
           + '</div>'
-          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span></label>'
+          /* (V38.21) «خلّيها أسهل وواضحة وصريحة»: عنوانٌ يقول ماذا يُفعَل، و«أخرى» مميّزة، وسطرٌ يقول متى تُختار */
+          + '<div class="field"><label>' + esc(t('تحديات التركيب')) + ' <span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر واحدًا أو أكثر')) + '</span></label>'
           + '<div class="chips" style="margin:6px 0 0">'
           + ((FORM.chals = chalsToCats(FORM.chals, FORM.chal_note || FORM.note)), chalNames()).map(function(c){   /* (V37.1) الفئاتُ الثماني — اختيارٌ لا كتابة */
               return '<button type="button" class="chip' + (FORM.chals.indexOf(c)>-1?' on':'')
-                + '" data-chal="' + esc(c) + '">' + esc(t(c)) + '</button>';
-            }).join('') + '</div></div>'
+                + '" data-chal="' + esc(c) + '"' + (c === chalOther() ? ' style="border-style:dashed"' : '') + '>' + esc(t(c)) + '</button>';
+            }).join('') + '</div>'
+            + '<p class="hint" style="margin:6px 0 0">' + esc(t('التحدي مش في القائمة؟ اختر «أخرى» واكتب وصفه تحت.')) + '</p></div>'
           /* (V38.20) وصفُ التحدي تحت التحديات مباشرةً متى اختير تحدٍّ — كان في «تفاصيل إضافية» المطويّة فلا يراه الفنيّ */
           + (FORM.chals.some(function(c){ return c && c !== 'لا توجد تحديات'; })
-              ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + '</label><textarea data-form="chal_note" rows="2" placeholder="'
-                + esc(t('ما يحتاجه المكتب ليقرر — مقاسٌ ناقص، جهةٌ تُخاطَب، بديلٌ مقترح')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
+              ? '<div class="field"><label>' + esc(t('وصف التحدي بالتفصيل')) + ' '
+                + (FORM.chals.indexOf(chalOther()) > -1 ? '<span class="req">*</span> <span class="hint" style="margin:0;font-weight:400">' + esc(t('مطلوب مع «أخرى»')) + '</span>' : '<span class="hint" style="margin:0;font-weight:400">' + esc(t('اختياري')) + '</span>')
+                + '</label><textarea data-form="chal_note" rows="2" placeholder="'
+                + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '">' + esc(FORM.chal_note || '') + '</textarea></div>' : '')
           + '<div class="field"><label>' + esc(t('ملاحظات (اختيارية)')) + '</label>'
           + '<textarea rows="3" data-form="note">' + esc(FORM.note) + '</textarea></div>')
 
