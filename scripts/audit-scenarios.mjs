@@ -274,6 +274,25 @@ console.log('\n══ ١٠ · تعديل المسح والخريطة ══');
   T(flew.includes(xs.id), 'فتحُ النقطة على الخريطة ينتظر الخريطةَ حين تُبنى متأخّرة (أوّلُ فتحٍ للمشرف)');
 }
 
+/* ── ١١ · (V38.22) التحدياتُ حسب الموقع: الكوبري والنفقُ واللوحاتُ وبدون هيكل — والفئةُ الجامعةُ لا تُحسَب كوبري ولا نفقًا ── */
+console.log('\n══ ١١ · التحديات حسب الموقع ══');
+{
+  const P = w.STATE.sites.filter(z => z && z.type === 'ممر' && !w.STATE.recs[z.id]).slice(0, 3);
+  const base = { access:'تم الوصول', at:Date.now(), by:'فني' };
+  w.STATE.recs[P[0].id] = Object.assign({ id:P[0].id, chals:['المسار تحت كوبري'] }, base);
+  w.STATE.recs[P[1].id] = Object.assign({ id:P[1].id, chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا'], chal_note:'عند مدخل النفق — على لوحة استرشادية' }, base);
+  w.STATE.recs[P[2].id] = Object.assign({ id:P[2].id, chals:['عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)'] }, base);
+  w.statBump();
+  const g0 = w.obsLocTags(P[0]), g1 = w.obsLocTags(P[1]), g2 = w.obsLocTags(P[2]);
+  T(!!g0.bridge && !g0.tunnel, 'اختيارُ الفني «تحت كوبري» يُحسَب كوبري');
+  T(!!g1.tunnel && !!g1.sign && !!g1.nomount, 'ووصفُ التحدي يُقرأ: نفقٌ ولوحةٌ استرشادية، والفئةُ «بدون هيكل»');
+  T(!g2.bridge && !g2.tunnel, 'واسمُ الفئة الجامعة «… نفق أو كوبري» وحدَه لا يُحسَب كوبري ولا نفقًا');
+  w.obsLocLists();
+  const ids = k => w.MFU.lists[w.obsLocKey(k, 'ممر')].rows().map(r => r[0]);
+  T(ids('bridge').includes(P[0].id) && ids('tunnel').includes(P[1].id) && !ids('tunnel').includes(P[2].id), 'وقوائمُ الممرات تحمل النقاطَ نفسَها — والمخيماتُ قائمةٌ وحدَها');
+  T(String(w.mtObs()).indexOf('حسب الموقع') > -1, 'والقسمُ في تبويب التحديات والمعوقات');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
-console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات العشرة ✅');
+console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الأحد عشر ✅');
 process.exit(fails.length ? 1 : 0);

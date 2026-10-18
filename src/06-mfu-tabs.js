@@ -62,6 +62,69 @@ function mtInst(){
 var MT_GRP = [ { k:'make', e:'\u{1F3ED}', c:'#F59E0B', w:[0, 2, 4] }, { k:'study', e:'\u{1F50E}', c:'#E67E22', w:[1, 5] }, { k:'owner', e:'\u{1F91D}', c:'#EF4444', w:[3] }, { k:'access', e:'\u{1F501}', c:'#8D6E63', w:[] } ];
 MT_GRP.forEach(function(g){ var G = CC_GROUPS.filter(function(x){ return x.g === g.k; })[0]; g.n = G ? G.n : g.k; });
 function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; if (st !== 'prep' && st !== 'coord') return ''; var pw = svPrimWhy(STATE.recs[id]); for (var i = 0; i < MT_GRP.length; i++) if (MT_GRP[i].w.indexOf(pw) > -1) return MT_GRP[i].k; return 'study'; }
+/* ═══ (V38.22) التحدياتُ «حسب الموقع» — في كلِّ منطقة: تحت كوبري · مدخلُ أو مخرجُ نفق · لوحاتٌ استرشادية · بدون هيكل،
+   والممراتُ وحدَها والمخيماتُ وحدَها (طلبُ المالك). الكوبري والنفقُ واللوحاتُ من اختيار الفني القديم أو كلماتِ وصف التحدي
+   والملاحظة — لا من اسم فئة «عائق في الموقع (… نفق أو كوبري)» نفسِه؛ و«بدون هيكل» فئةُ «لا يوجد سطح تثبيت». النقطةُ قد
+   تقع في أكثرَ من فئة. كلُّ رقمٍ يفتح قائمتَه بمنطقتها، وفيها الإكسل. */
+function obsLocCats(){
+  return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tunnel', '\u{1F687}', 'مدخل أو مخرج نفق'], ['sign', '\u{1FAA7}', 'لوحات استرشادية'], ['nomount', '\u{1F3D7}', 'بدون هيكل']];
+}
+function obsLocTags(x){
+  var r = STATE.recs[x.id], out = {};
+  if (!r || r.deleted || !svVisited(r)) return null;
+  var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
+  var chals = Array.isArray(r.chals) ? r.chals : [];
+  var own = chals.filter(function(c){ return c && !nm0[c] && c !== 'لا توجد تحديات'; });
+  var txt = arKey([r.note || '', r.chal_note || ''].join(' ')), tOwn = arKey(own.join(' '));
+  var src = function(byPick){ return byPick ? 'اختيار الفني' : 'وصف التحدي أو الملاحظة'; };
+  var hit = function(rx){ return rx.test(tOwn) ? src(true) : (rx.test(txt) ? src(false) : ''); };
+  var b = chals.indexOf('المسار تحت كوبري') > -1 ? src(true) : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/);
+  var tn = chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
+  var sg = hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
+  var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
+  if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
+  return out;
+}
+function obsLocKey(k, ty){ return 'loc_' + k + '_' + (ty === 'ممر' ? 'p' : 'c'); }
+function obsLocLists(){
+  obsLocCats().forEach(function(c){
+    ['ممر', 'مخيم'].forEach(function(ty){
+      var key = obsLocKey(c[0], ty); if (MFU.lists[key]) return;
+      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات' : 'المخيمات'),
+        head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'وصف التحدي', 'الملاحظة'],
+        rows:function(){
+          return mtSites().filter(function(x){ return x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
+            .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), String(r.chal_note || ''), String(r.note || '')]; });
+        } };
+    });
+  });
+}
+function mtObsLoc(){
+  obsLocLists();
+  var Z = {}, any = 0;
+  mtSites().forEach(function(x){
+    if (x.type !== 'ممر' && x.type !== 'مخيم') return;
+    var g = obsLocTags(x); if (!g) return;
+    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (x.type === 'ممر') c0.p++; else c0.c++; any++; });
+  });
+  if (!any) return '';
+  var cats = obsLocCats();
+  var num = function(n, k, ty, z){
+    return n ? '<button type="button" class="chip"' + mtOpen(obsLocKey(k, ty), '', z) + ' style="margin:2px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' <b class="num">' + nm(n) + '</b></button>'
+             : '<span class="hint" style="margin:2px 6px;font-size:12px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' \u2014</span>';
+  };
+  var blocks = TAX_G.filter(function(z){ return Z[z]; }).map(function(z){
+    var o = Z[z];
+    return '<div style="' + MT_TILE + ';margin:0 0 10px"><div style="font-weight:700;margin:0 0 8px">\u{1F4CD} ' + esc(t(z)) + '</div>'
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'
+      + cats.map(function(c){ var v = o[c[0]] || { p:0, c:0 };
+          return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
+            + num(v.p, c[0], 'ممر', z) + num(v.c, c[0], 'مخيم', z) + '</div>'; }).join('')
+      + '</div></div>';
+  }).join('');
+  return mtSec('حسب الموقع — في كل منطقة') + blocks
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات من اختيار الفني أو كلماتٍ في وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+}
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
   S.forEach(function(x){ var r = STATE.recs[x.id]; if (r && svVisited(r)) vis++; var g = mtGrpOf(x.id); if (!g) return; gc[g] = (gc[g] || 0) + 1;
@@ -71,6 +134,7 @@ function mtObs(){
   var why = Object.keys(wc).map(Number).sort(function(a, b){ return wc[b] - wc[a]; }).map(function(wi){ var w = SV_WHY[wi]; return mtIcon(nm(wc[wi]), w.n, w.e, mtOpen('sv', 'why:' + wi)); });
   var zones = TAX_G.filter(function(z){ return zc[z]; }).map(function(z){ return mtIcon(nm(zc[z]), z, '\u{1F4CD}', mtOpen('sv', 'grp:all', z)); });
   return mtHero(pct, nm(chal), esc(t('نقطة عليها تحدي')) + '<br>' + esc(t('من')) + ' ' + nm(vis) + ' ' + esc(t('اتزارت')), '#F59E0B')
+    + mtObsLoc()   /* (V38.22) حسب الموقع في كلِّ منطقة */
     + mtSec('مين يعالجها؟') + mtGrid(grp) + mtSec('التحدي', ' <span class="num">(' + nm(chal) + ')</span>') + mtGrid(why, 96)
     + '<p class="hint" style="margin:-6px 0 12px;font-size:12px">' + esc(t('كلُّ نقطةٍ محسوبةٌ مرةً بأهمِّ تحدٍّ فيها')) + '</p>'
     + mtSec('المشاعر') + mtGrid(zones, 96) + mtAllBtn('obs') + mtDetails('التفاصيل الكاملة وجهات المعالجة', mfuObs());
