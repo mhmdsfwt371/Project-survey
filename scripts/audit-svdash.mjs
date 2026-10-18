@@ -102,7 +102,10 @@ console.log('\n══ ٣ · السطرُ يطير إلى نقطته، والتص
   const b = d.querySelector('#flyTest [data-fly="' + camps[0].id + '"]');
   T(!!b, 'لكلِّ سطرٍ زرُّ الخريطة');
   b.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
+  /* (V38.20) الطيرانُ ينتظر الخريطةَ حتى تُبنى (أوّلُ فتحٍ للمشرف) — المحاكي بلا خريطة، فتُبنى «خريطةٌ» بعد الضغط */
+  const keepMap = w.MAP; w.MAP = w.MAP || {};
   await wait(700);
+  w.MAP = keepMap;
   T(w.CUR === 'map' && w.POP_SITE === camps[0].id && w.POP_OPEN === true, 'والضغطُ ينقل إلى الخريطة على النقطة نفسِها');
   T(sent === camps[0].id, 'ويطير إليها لا إلى وسط الخريطة');
   w.mapFly = realFly;

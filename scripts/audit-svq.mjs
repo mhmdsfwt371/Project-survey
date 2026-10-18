@@ -43,8 +43,9 @@ console.log('\n══ ١ · من نافذة النقطة — حقلٌ واحدٌ
   T(r.by === 'سالم' && r.at === 1790000000000 && r.eBy === 'أحمد' && r.edits.length === 1 && r.edits[0].k === 'wid_m' && r.edits[0].o === 3 && r.edits[0].v === 4.5, 'صاحبُ الزيارة وتاريخُها باقيان — والتعديلُ مسجَّلٌ باسم من عدّل ومن أيِّ قيمةٍ إلى أيّ');
   T(/تعديلُ مسح/.test(JSON.stringify(w.STATE.evlog || {}) + JSON.stringify(w.STATE.events || []) + JSON.stringify(w.STATE.queue || [])), 'وفي سجلّ الأحداث');
   T(/آخر التعديلات/.test(d.getElementById('svqSheet').textContent), 'واللوحُ يعرض آخرَ التعديلات');
-  await click(w, d, '#svqSheet [data-svqk="chals"]'); await click(w, d, '#svqSheet [data-svqch="العارضة الحديدية ناقصة أو غير مكتملة"]'); await click(w, d, '#svqSheet [data-svqsave]');
-  T(JSON.stringify(w.STATE.recs[x.id].chals) === '["العارضة الحديدية ناقصة أو غير مكتملة"]', 'والتحدياتُ بالشرائح: اختيارُ تحدٍّ يرفع «لا توجد تحديات»');
+  /* (V38.20) قائمةُ التعديل صارت الفئاتِ نفسَها كنموذج المسح (لا القائمةَ القديمة) */
+  await click(w, d, '#svqSheet [data-svqk="chals"]'); await click(w, d, '#svqSheet [data-svqch="العارضة ناقصة أو عليها ديكور أو لافتات"]'); await click(w, d, '#svqSheet [data-svqsave]');
+  T(JSON.stringify(w.STATE.recs[x.id].chals) === '["العارضة ناقصة أو عليها ديكور أو لافتات"]', 'والتحدياتُ بالشرائح (فئاتُ نموذج المسح): اختيارُ تحدٍّ يرفع «لا توجد تحديات»');
   const n0 = w.STATE.recs[x.id].edits.length; await click(w, d, '#svqSheet [data-svqk="hgt_m"]'); d.getElementById('svqIn').value = '4'; await click(w, d, '#svqSheet [data-svqsave]');
   T(w.STATE.recs[x.id].edits.length === n0, 'ولا تُكتَب قيمةٌ لم تتغيّر');
   await click(w, d, '#svqSheet [data-svqx]');
