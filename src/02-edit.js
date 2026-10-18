@@ -186,9 +186,20 @@ function assistQCard(){
   var no = R.filter(function(r){ return r.no; }).length;
   return card('أسئلة الناس للمساعد',
     '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
-    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : ''))   /* (V37.74) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (typeof aqAnswer === 'function' && aqAnswer(r.q) ? ' ' + pill('يُجاب الآن من البيانات', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : '')))   /* (V37.74) (V38.16) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
       : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
-    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
+    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"')
+    + (R.length ? ' ' + btn('\u2B07 ' + t('إكسل — كلُّ الأسئلة'), 'btn-secondary btn-sm', ' data-aqxls="1"') : '') + '</div>');   /* (V38.16) */
+}
+/* (V38.16) كلُّ أسئلة الأيام الأربعة عشر في ملفٍّ يُرسَل للمطوِّر — منه تُضاف أنواعُ الأسئلة التي لم يفهمها المساعد */
+function assistQXls(){
+  var R = AQ.rows || []; if (!R.length){ toast(t('لا أسئلة بعد')); return; }
+  var rows = [[t('السؤال'), t('مرات'), t('أشخاص'), t('آخر مرة'), t('الحالة')]];
+  R.forEach(function(r){
+    var st = knownHits(r.q).length ? t('له حلّ الآن') : (typeof aqAnswer === 'function' && aqAnswer(r.q)) ? t('يُجاب الآن من البيانات') : r.no ? t('بلا جواب') : t('أجاب');
+    rows.push([r.q, r.n, r.who, r.last ? new Date(r.last).toISOString().slice(0, 16).replace('T', ' ') : '', st]);
+  });
+  xlsSheets([[t('أسئلة المساعد'), rows]], 'assistant-questions.xlsx');
 }
 
 function catsSave(){

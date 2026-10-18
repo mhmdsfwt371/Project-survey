@@ -3800,7 +3800,10 @@ function assistResHtml(){
                   + '</div>';
               }).join('')
             : (gl.length || answered ? '' : '<p class="hint" style="text-align:center;padding:20px">'   /* (V37.37) التشخيصُ جوابٌ — لا «معنديش نتيجة» تحته */
-              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))));
+              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'
+              /* (V38.16) لا طريقَ مسدودًا: صيغُ أسئلة البيانات التي يفهمها، بضغطة */
+              + '<div class="pid" style="margin:4px 0">\u{1F4CA} ' + esc(t('جرّب سؤالًا عن البيانات')) + '</div><div class="chips" style="margin:0 0 10px">'
+              + aqExamples().map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'))));
 }
 function queueHtml(){
   var Q = (STATE.queue || []).slice().sort(function(a,b){ return (b.at||0) - (a.at||0); });

@@ -3361,6 +3361,7 @@ function clickAPart5(e){
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
   var aqg = e.target.closest('[data-aqgo]'); if (aqg){ aqGoTo(aqg.getAttribute('data-aqgo')); return true; }   /* (V38.14) مساعدُ البيانات */
+  if (e.target.closest('[data-aqxls]')){ assistQXls(); return true; }   /* (V38.16) */
   if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
   var stf = e.target.closest('[data-stf]'); if (stf){ EXT.stF = stf.getAttribute('data-stf'); EXT.stN = 30; render(1); return true; }   /* (V38.12) */
   if (e.target.closest('[data-stmore]')){ EXT.stN = (EXT.stN || 30) + 30; render(1); return true; }

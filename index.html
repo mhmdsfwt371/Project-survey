@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.15</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.16</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-f012998a89.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-14300fbea3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7771,9 +7771,20 @@ function assistQCard(){
   var no = R.filter(function(r){ return r.no; }).length;
   return card('أسئلة الناس للمساعد',
     '<p class="hint" style="margin-top:0">' + esc(t('آخر ١٤ يومًا — ما سأله الفريق، وما لم يجد له المساعد جوابًا أولًا. اضغط «أضفها» لتكتب حلّها مرة واحدة في المشاكل المعروفة.')) + ' <b>' + nm(R.length) + '</b> ' + esc(t('سؤال')) + ' \u00b7 <b>' + nm(no) + '</b> ' + esc(t('بلا جواب')) + '</p>'
-    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : ''))   /* (V37.74) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
+    + (R.length ? table(['السؤال', 'مرات', 'أشخاص', ''], R.slice(0, 20).map(function(r){ return [esc(r.q) + (knownHits(r.q).length ? ' ' + pill('له حلّ الآن', 'ok') : (typeof aqAnswer === 'function' && aqAnswer(r.q) ? ' ' + pill('يُجاب الآن من البيانات', 'ok') : (r.no ? ' ' + pill('بلا جواب', 'bad') : '')))   /* (V37.74) (V38.16) */, '<span class="num">' + nm(r.n) + '</span>', '<span class="num">' + nm(r.who) + '</span>', btn('\u2795 ' + t('أضفها'), 'btn-quiet btn-sm', ' data-knownadd="' + esc(r.q) + '"')]; }))
       : alertBox('info', 'لا أسئلة بعد — تظهر هنا أول ما يستعمل الفريقُ المساعد.'))
-    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"') + '</div>');
+    + '<div class="actions">' + btn('\u21BB ' + t('حدّث'), 'btn-quiet btn-sm', ' data-aqref="1"')
+    + (R.length ? ' ' + btn('\u2B07 ' + t('إكسل — كلُّ الأسئلة'), 'btn-secondary btn-sm', ' data-aqxls="1"') : '') + '</div>');   /* (V38.16) */
+}
+/* (V38.16) كلُّ أسئلة الأيام الأربعة عشر في ملفٍّ يُرسَل للمطوِّر — منه تُضاف أنواعُ الأسئلة التي لم يفهمها المساعد */
+function assistQXls(){
+  var R = AQ.rows || []; if (!R.length){ toast(t('لا أسئلة بعد')); return; }
+  var rows = [[t('السؤال'), t('مرات'), t('أشخاص'), t('آخر مرة'), t('الحالة')]];
+  R.forEach(function(r){
+    var st = knownHits(r.q).length ? t('له حلّ الآن') : (typeof aqAnswer === 'function' && aqAnswer(r.q)) ? t('يُجاب الآن من البيانات') : r.no ? t('بلا جواب') : t('أجاب');
+    rows.push([r.q, r.n, r.who, r.last ? new Date(r.last).toISOString().slice(0, 16).replace('T', ' ') : '', st]);
+  });
+  xlsSheets([[t('أسئلة المساعد'), rows]], 'assistant-questions.xlsx');
 }
 
 function catsSave(){
@@ -16659,7 +16670,10 @@ function assistResHtml(){
                   + '</div>';
               }).join('')
             : (gl.length || answered ? '' : '<p class="hint" style="text-align:center;padding:20px">'   /* (V37.37) التشخيصُ جوابٌ — لا «معنديش نتيجة» تحته */
-              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'))));
+              + esc(t('معنديش نتيجة قريبة — جرّب كلمة تانية، أو تصفّح القائمة الجانبية.')) + '</p>'
+              /* (V38.16) لا طريقَ مسدودًا: صيغُ أسئلة البيانات التي يفهمها، بضغطة */
+              + '<div class="pid" style="margin:4px 0">\u{1F4CA} ' + esc(t('جرّب سؤالًا عن البيانات')) + '</div><div class="chips" style="margin:0 0 10px">'
+              + aqExamples().map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'))));
 }
 function queueHtml(){
   var Q = (STATE.queue || []).slice().sort(function(a,b){ return (b.at||0) - (a.at||0); });
@@ -28086,6 +28100,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.16', d:'2026-10-16', notes:[
+      'مساعد البيانات: سيناريو في الجرد يحرس أرقامه، وسجل الأسئلة يبين ما يُجاب الآن ويُصدَّر' ] },
   { v:'V38.15', d:'2026-10-16', notes:[
       'مساعد البيانات: المهام المتأخرة والتحديات واعتماد الوزارة والإشغال الأعلى ورصيد صنف بلا حركات' ] },
   { v:'V38.14', d:'2026-10-15', notes:[
@@ -37986,6 +38002,7 @@ function clickAPart5(e){
   if (e.target.closest('[data-nkbulk]')){ extBulkApply(); return true; }   /* (V37.87) */
   if (e.target.closest('[data-ex47ok]')){ ex47Apply(); return true; }   /* (V37.88) */
   var aqg = e.target.closest('[data-aqgo]'); if (aqg){ aqGoTo(aqg.getAttribute('data-aqgo')); return true; }   /* (V38.14) مساعدُ البيانات */
+  if (e.target.closest('[data-aqxls]')){ assistQXls(); return true; }   /* (V38.16) */
   if (e.target.closest('[data-cted]')){ contCard.ed = 1; render(1); return true; }   /* (V38.8) */
   var stf = e.target.closest('[data-stf]'); if (stf){ EXT.stF = stf.getAttribute('data-stf'); EXT.stN = 30; render(1); return true; }   /* (V38.12) */
   if (e.target.closest('[data-stmore]')){ EXT.stN = (EXT.stN || 30) + 30; render(1); return true; }
