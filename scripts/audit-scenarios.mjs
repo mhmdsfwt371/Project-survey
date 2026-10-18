@@ -240,6 +240,16 @@ console.log('\n══ ٩ · مساعد البيانات ══');
   const D3 = w.aqRepData('اكسل للنقاط اللي فيها بطيخ في منى');
   T(D3.P.unknown.some(u => /بطيخ/.test(u)), 'كلمةٌ لا يعرفها تُقال «ما فهمتش» ولا تُتجاهَل صامتة');
   T(String(w.aqAnswer('إكسل للمخيمات في منى اللي اتركبت')).indexOf('data-aqrep="pdf"') > -1, 'وبطاقةُ التقرير فيها إكسل وPDF');
+  /* (V38.19) «المركّبة» ليست «لم ركب»، و«ومش» نفيٌ */
+  const L4 = w.aqRepParse('اكسل للمخيمات المركبة اللي ومش بترسل').conds.map(c => c.label);
+  T(L4.includes('مُركّبة') && !L4.includes('لم تُركَّب') && L4.includes('لا ترسل'), '«المركّبة» إثباتٌ لا نفي، و«ومش بترسل» نفي — ' + L4.join(' · '));
+  /* (V38.19) التحليلُ «حسب …»: مجموعُ المجموعات = الإجمالي، وكلُّ مشعرٍ = عدٌّ مستقلّ */
+  const G1 = w.aqRepGroup(w.aqRepData('تقرير المخيمات حسب المشعر'));
+  const byZ = {}; w.STATE.sites.forEach(z => { if (z && z.type === 'مخيم') byZ[z.zone] = (byZ[z.zone] || 0) + 1; });
+  T(G1 && G1.rows.reduce((a, r) => a + r[1], 0) === G1.total[1] && G1.rows.every(r => byZ[r[0]] === r[1]), 'التحليلُ حسب المشعر: كلُّ مشعرٍ = عدٌّ مستقلّ، والمجموعُ = الإجمالي');
+  const G2 = w.aqRepGroup(w.aqRepData('تحليل التركيب حسب النوع'));
+  const insAll = w.STATE.sites.filter(z => z && w.STATE.inss[z.id] && w.STATE.inss[z.id].status === 'مُركّب').length;
+  T(G2 && G2.total[4] === insAll, 'وعمودُ «مُركّبة» في الإجمالي = ' + insAll + ' كما في التركيبات');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

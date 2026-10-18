@@ -3656,7 +3656,7 @@ function aqPoint(x){
 function aqAnswer(q){
   var n = aqNorm(q), out = '';
   /* (V38.17) تقريرٌ بالكلام أوّلًا: «إكسل/PDF للنقاط اللي …» */
-  var RP = aqRepParse(q); if (RP.isRep && RP.conds.length) return aqRepCard(q, aqRepData(q));
+  var RP = aqRepParse(q); if (RP.isRep && (RP.conds.length || RP.group)) return aqRepCard(q, aqRepData(q));
   /* ١ · نقطةٌ بمعرِّفها أو شاخصِها */
   var idm = /nsk-[a-z]{3}-[a-z]{3}-\d{3,4}/i.exec(q), sgm = /(\d{1,3})\s*\/\s*(\d{1,4})/.exec(n);
   if (idm){ var x0 = siteFind(idm[0].toUpperCase()); if (x0) return aqPoint(x0); }
@@ -3771,6 +3771,12 @@ function aqRepParse(q){
   var use = function(re){ var m = n.match(new RegExp(re.source, 'g')); if (m){ m.forEach(function(x){ x.trim().split(/\s+/).forEach(function(w){ used.push(w); }); }); return true; } return false; };
   var isRep = /اكسل|excel|xlsx|pdf|بي دي اف|ملف|تقرير|قائمه|قايمه|ليست|\blist\b|طلعلي|هاتلي/.test(n) || /^ *(النقاط|النقط|المواقع|المخيمات|الممرات|الكاميرات|البوابات)\s+(اللي|الي|اللى)/.test(n);
   var fmt = /pdf|بي دي اف/.test(n) ? 'pdf' : (/اكسل|excel|xlsx/.test(n) ? 'xls' : '');
+  /* (V38.19) «حسب …» = تحليل: عدٌّ مجمَّعٌ بالبُعد المطلوب مع نسب الزيارة والتركيب والربط والإشارة */
+  var GM = [[/حسب\s+(ال)?(مشعر|مشاعر)/, 'zone', 'المشعر'], [/حسب\s+(ال)?(نوع|انواع)/, 'type', 'النوع'], [/حسب\s+(ال)?(شركه|شركات)/, 'co', 'الشركة'],
+            [/حسب\s+(ال)?(فني|فنيين|زاير|زائر)/, 'tech', 'الفني'], [/حسب\s+(ال)?(مربع|مربعات)/, 'block', 'المربع'],
+            [/حسب\s+(حاله\s+)?(ال)?تركيب/, 'ins', 'حالة التركيب'], [/حسب\s+(حاله\s+)?(ال)?(مسح|زياره)/, 'sv', 'حالة المسح']];
+  var group = null; GM.some(function(g){ var m = g[0].exec(n); if (m){ group = { k:g[1], label:g[2] }; m[0].trim().split(/\s+/).forEach(function(w){ used.push(w); }); return true; } return false; });
+  if (group){ isRep = true; used.push('حسب', 'تقرير', 'تحليل', 'التركيب', 'تركيب', 'المسح', 'مسح', 'الزيارات', 'زيارات'); }
   /* المكان */
   var zs = {}; (STATE.sites || []).forEach(function(x){ if (x && x.zone) zs[x.zone] = 1; });
   var zones = Object.keys(zs).filter(function(z){ var k = aqNorm(z).replace(/^ال/, ''); return k.length > 2 && n.indexOf(k) > -1 && (used.push(k), used.push('ال' + k), true); });
@@ -3781,7 +3787,8 @@ function aqRepParse(q){
   var tys = aqTypes().filter(function(p){ return p[1].test(n); });
   if (tys.length){ tys.forEach(function(p){ use(new RegExp('[^\\s]*(' + p[1].source + ')[^\\s]*')); }); var tn0 = tys.map(function(p){ return p[0]; }); add('type', tn0.join(' أو '), function(x){ return tn0.indexOf(x.type) > -1; }); }
   var R = function(x){ return STATE.recs[x.id]; }, I = function(x){ return STATE.inss[x.id]; };
-  var NEG = '(ما|مش|لم|غير|بدون|من غير|لسه ما|لسه مش)\\s*';
+  /* (V38.19) النفيُ كلمةٌ مستقلّة: «لم» داخل «المركّبة» (ا-ل-م-ر-ك-ب) كانت تُقرأ «لم ركب» فتنقلب الشرطُ نفيًا */
+  var NEG = '\\s(و)?(ما|مش|لم|غير|بدون|من غير|لسه ما|لسه مش)\\s+';   /* و«ومش» */
   /* الوزارة أولًا — «اعتماد» فيها لا يُحسَب على الاعتماد التقني */
   if (/الوزاره|وزاره/.test(n)){
     use(/(بانتظار|منتظره|لسه|اعتمدتها|اعتمدت|معتمده من|ردتها|ردت|مردوده|رفضتها|رفضت)?\s*(اعتماد\s*)?(ال)?وزاره/);
@@ -3809,9 +3816,9 @@ function aqRepParse(q){
   }
   /* نظامُ البطاقات */
   var SR = null, sr = function(){ if (!SR){ SR = {}; ((typeof extStatusRows === 'function' && extStatusRows()) || []).forEach(function(r){ SR[r.x.id] = r; }); } return SR; };
-  if (/(مش|غير|بدون|من غير)\s*مربوط/.test(n)){ use(/(مش|غير|بدون|من غير)\s*[^\s]*مربوط[^\s]*/); add('lnk', 'غير مربوطة بنظام البطاقات', function(x){ return !sr()[x.id]; }); }
+  if (/\s(و)?(مش|غير|بدون|من غير)\s+[^\s]*مربوط/.test(n)){ use(/(و)?(مش|غير|بدون|من غير)\s+[^\s]*مربوط[^\s]*/); add('lnk', 'غير مربوطة بنظام البطاقات', function(x){ return !sr()[x.id]; }); }
   else if (/مربوط/.test(n)){ use(/[^\s]*مربوط[^\s]*/); add('lnk', 'مربوطة بنظام البطاقات', function(x){ return !!sr()[x.id]; }); }
-  if (/(مش|ما|لا)\s*(بترسل|بتبعت|ترسل|بيبعت)|مقطوع|اوفلاين|offline/.test(n)){ use(/(مش|ما|لا)\s*(بترسل|بتبعت|ترسل|بيبعت)|[^\s]*مقطوع[^\s]*|اوفلاين|offline/); add('sig', 'لا ترسل', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'off'; }); }
+  if (/\s(و)?(مش|ما|لا)\s+(بترسل|بتبعت|ترسل|بيبعت)|مقطوع|اوفلاين|offline/.test(n)){ use(/(و)?(مش|ما|لا)\s+(بترسل|بتبعت|ترسل|بيبعت)|[^\s]*مقطوع[^\s]*|اوفلاين|offline/); add('sig', 'لا ترسل', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'off'; }); }
   else if (/بترسل|ترسل|بتبعت|اونلاين|online/.test(n)){ use(/بترسل|ترسل|بتبعت|اونلاين|online/); add('sig', 'ترسل', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'on'; }); }
   if (/(بلا|من غير|مفيش|بدون)\s*قارئ/.test(n)){ use(/(بلا|من غير|مفيش|بدون)\s*قارئ/); add('sig', 'بلا قارئ ظاهر', function(x){ var r = sr()[x.id]; return !!r && r.sig === 'none'; }); }
   var thr = /اشغال[^0-9]*(فوق|اكتر من|اكثر من|اكبر من|اعلي من|تحت|اقل من)\s*(\d{1,3})/.exec(n);
@@ -3840,7 +3847,7 @@ function aqRepParse(q){
     var w2 = w.replace(/^(وال|بال|لل|و|ب|ل)(?=..)/, '');   /* الأطولُ أوّلًا: «للنقاط» ← «نقاط» */
     return w.length > 2 && !/^\d+%?$/.test(w) && stop.indexOf(w) < 0 && stop.indexOf(w2) < 0 && used.indexOf(w) < 0 && used.indexOf(w2) < 0 && used.indexOf('ال' + w2) < 0;
   });
-  return { isRep:isRep, fmt:fmt, conds:conds, unknown:unknown };
+  return { isRep:isRep, fmt:fmt, conds:conds, unknown:unknown, group:group };
 }
 function aqRepData(q){
   var P = aqRepParse(q), rows = (STATE.sites || []).filter(function(x){
@@ -3849,6 +3856,30 @@ function aqRepData(q){
     return Object.keys(by).every(function(k){ return by[k].some(function(f){ return f(x); }); });
   });
   return { P:P, rows:rows };
+}
+function aqRepGroup(D){
+  var g = D.P.group; if (!g) return null;
+  aqRepPrep();
+  var key = function(x){
+    var r = STATE.recs[x.id], i = STATE.inss[x.id];
+    if (g.k === 'zone') return x.zone || '\u2014';
+    if (g.k === 'type') return x.type || '\u2014';
+    if (g.k === 'co') return x.co || t('بلا شركة');
+    if (g.k === 'tech') return r && r.by ? dispName(r.by) : t('لم تُزَر');
+    if (g.k === 'block'){ var m = /مربع\s*([0-9A-Za-z\u0660-\u0669]+)/.exec(x.name || ''); return m ? t('مربع') + ' ' + m[1] : '\u2014'; }
+    if (g.k === 'ins') return aqRepRow(x)[6];
+    return aqRepRow(x)[5];
+  };
+  var G = {};
+  D.rows.forEach(function(x){
+    var k = key(x), o = G[k] = G[k] || { k:k, n:0, sv:0, ins:0, lnk:0, on:0 }, s0 = aqRepRow.sr[x.id], i = STATE.inss[x.id];
+    o.n++; if (svVisited(STATE.recs[x.id])) o.sv++; if (i && i.status === 'مُركّب') o.ins++; if (s0) o.lnk++; if (s0 && s0.sig === 'on') o.on++;
+  });
+  var L = Object.keys(G).map(function(k){ return G[k]; }).sort(function(a, b){ return b.n - a.n; });
+  var T0 = L.reduce(function(a, o){ a.n += o.n; a.sv += o.sv; a.ins += o.ins; a.lnk += o.lnk; a.on += o.on; return a; }, { k:t('الإجمالي'), n:0, sv:0, ins:0, lnk:0, on:0 });
+  var pc = function(a, b){ return b ? Math.round(a / b * 100) : 0; };
+  var row = function(o){ return [o.k, o.n, o.sv, pc(o.sv, o.n) + '%', o.ins, pc(o.ins, o.n) + '%', o.lnk, o.on]; };
+  return { label:g.label, cols:[g.label, 'النقاط', 'زيرت', 'نسبة الزيارة', 'مُركّبة', 'نسبة التركيب', 'مربوطة', 'ترسل'], rows:L.map(row), total:row(T0) };
 }
 function aqRepCols(){ return ['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشاخص', 'المسح', 'التركيب', 'الوزارة', 'نظام البطاقات', 'القارئ', 'الإشارة', 'الإشغال']; }
 function aqRepRow(x){
@@ -3865,21 +3896,27 @@ function aqRepCard(q, D){
   aqRepPrep();
   var chips = P.conds.map(function(c){ return '<span class="pill ok" style="margin:2px">' + esc(t(c.label)) + '</span>'; }).join(' ');
   var prev = D.rows.slice(0, 10).map(function(x){ var rw = aqRepRow(x); return '<div class="kk-zl" style="margin:3px 0"><span><bdi>' + esc(x.id) + '</bdi> \u00b7 ' + esc(x.name || '') + '</span><b>' + esc(rw[6]) + '</b></div>'; }).join('');
+  var GR = aqRepGroup(D);
+  var gtab = GR ? table(GR.cols, GR.rows.slice(0, 15).concat([GR.total]).map(function(r){ return r.map(function(c, ci){ return ci ? '<span class="num">' + esc(String(c)) + '</span>' : esc(String(c)); }); }))
+    + (GR.rows.length > 15 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي في الملف')) + ' (' + nm(GR.rows.length - 15) + ')</p>' : '') : '';
+  if (GR) chips += ' <span class="pill" style="margin:2px">' + esc(t('حسب')) + ' ' + esc(t(GR.label)) + '</span>';
+  if (!P.conds.length) chips = '<span class="pill" style="margin:2px">' + esc(t('كلُّ النقاط')) + '</span> ' + chips;
   return aqCard(t('تقرير') + ' \u00b7 ' + nm(D.rows.length) + ' ' + t('نقطة'),
-    '<div style="margin:0 0 6px">' + esc(t('فهمت:')) + ' ' + chips + '</div>'
+    '<div style="margin:0 0 6px">' + esc(t('فهمت:')) + ' ' + chips + '</div>' + gtab
     + (P.unknown.length ? alertBox('warn', t('ما فهمتش') + ': ' + P.unknown.join(' \u00b7 ') + ' \u2014 ' + t('التقرير بالشروط اللي فوق بس')) : '')
-    + (D.rows.length ? prev + (D.rows.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي في الملف')) + ' (' + nm(D.rows.length - 10) + ')</p>' : '')
-                     : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>'),
+    + (GR ? '' : D.rows.length ? prev + (D.rows.length > 10 ? '<p class="hint" style="margin:4px 0 0">' + esc(t('والباقي في الملف')) + ' (' + nm(D.rows.length - 10) + ')</p>' : '')
+                     : '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>')
+    + (GR && !D.rows.length ? '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ تنطبق عليها الشروط')) + '</p>' : ''),
     D.rows.length ? '<button type="button" class="btn btn-primary btn-sm" data-aqrep="xls">\u2B07 ' + esc(t('إكسل')) + '</button> <button type="button" class="btn btn-secondary btn-sm" data-aqrep="pdf">\u2B07 PDF</button>' : '');
 }
 function aqRepExport(fmt){
   var q = ASSIST_Q || '', D = aqRepData(q); if (!D.rows.length){ toast(t('لا نقاطَ تنطبق عليها الشروط')); return; }
   aqRepPrep();
   var cond = D.P.conds.map(function(c){ return t(c.label); }).join(' \u00b7 '), cols = aqRepCols().map(function(c){ return t(c); });
-  var body = D.rows.map(aqRepRow);
+  var body = D.rows.map(aqRepRow), GR = aqRepGroup(D);
   logEvent('تقرير بالكلام — ' + q.slice(0, 80) + ' · ' + D.rows.length + ' نقطة · ' + fmt);
   if (fmt === 'xls'){
-    xlsSheets([[t('النقاط'), [cols].concat(body)], [t('الشروط'), [[t('الطلب'), q], [t('ما فُهم'), cond], [t('ما لم يُفهَم'), D.P.unknown.join(' \u00b7 ')], [t('العدد'), D.rows.length], [t('الوقت'), fmtDT()], [t('بواسطة'), dispName(STATE.meta.name || '')]]]],
+    xlsSheets((GR ? [[t('التجميع'), [GR.cols.map(function(c){ return t(c); })].concat(GR.rows).concat([GR.total])]] : []).concat([[t('النقاط'), [cols].concat(body)], [t('الشروط'), [[t('الطلب'), q], [t('ما فُهم'), cond], [t('ما لم يُفهَم'), D.P.unknown.join(' \u00b7 ')], [t('العدد'), D.rows.length], [t('الوقت'), fmtDT()], [t('بواسطة'), dispName(STATE.meta.name || '')]]]]),
       'nusuk-report-' + dayKey(Date.now()) + '.xlsx');
     return;
   }
@@ -3895,6 +3932,9 @@ function aqRepExport(fmt){
     + '<div class="box"><div><b>' + esc(t('الطلب')) + ':</b> ' + esc(q) + '</div><div style="margin-top:4px"><b>' + esc(t('الشروط')) + ':</b> '
     + D.P.conds.map(function(c){ return '<span class="pill">' + esc(t(c.label)) + '</span>'; }).join('') + '</div>'
     + '<div style="margin-top:4px"><span class="big">' + esc(nm(D.rows.length)) + '</span> ' + esc(t('نقطة')) + '</div></div>'
+    + (GR ? '<h3 style="margin:10px 0 6px;color:#1F4E79">' + esc(t('التجميع حسب')) + ' ' + esc(t(GR.label)) + '</h3><table><thead><tr>' + GR.cols.map(function(c){ return '<th>' + esc(t(c)) + '</th>'; }).join('') + '</tr></thead><tbody>'
+        + GR.rows.concat([GR.total]).map(function(r, ri){ return '<tr' + (ri === GR.rows.length ? ' style="font-weight:700"' : '') + '>' + r.map(function(c){ return '<td>' + esc(String(c)) + '</td>'; }).join('') + '</tr>'; }).join('') + '</tbody></table>'
+        + '<h3 style="margin:14px 0 6px;color:#1F4E79">' + esc(t('النقاط')) + '</h3>' : '')
     + '<table><thead><tr>' + cols.map(function(c){ return '<th>' + esc(c) + '</th>'; }).join('') + '</tr></thead><tbody>'
     + body.slice(0, 1500).map(function(r){ return '<tr>' + r.map(function(c){ return '<td>' + esc(String(c == null ? '' : c)) + '</td>'; }).join('') + '</tr>'; }).join('')
     + '</tbody></table>' + (body.length > 1500 ? '<div class="foot">' + esc(t('عُرض ألفٌ وخمسمئة صفٍّ — والإكسلُ فيه الباقي')) + '</div>' : '')
@@ -3914,7 +3954,7 @@ function aqGoTo(spec){
 }
 function aqExamples(){
   if (ROLE === 'viewer') return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56'];
-  return ['كام نقطة اتركبت في منى؟', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'PDF للنقاط اللي ليها بيانات 1447 ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
+  return ['كام نقطة اتركبت في منى؟', 'تقرير المخيمات حسب المشعر', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'PDF للنقاط اللي ليها بيانات 1447 ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
 }
 function assistHomeHtml(){
   var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];
