@@ -113,7 +113,7 @@ function mapColorOf(x){
   /* طبقةُ التفاصيل: اللونُ خبرٌ لا تصنيف — تمامٌ أخضرُ وتحدٍّ أحمرُ وملاحظةٌ
      صفراء، وما لم يُكتَب بعدُ رمادٌ يقول «ينتظر سطرًا». */
   if (FIELD_MODE === 'brief') return briefColor(x.id);
-  if (FILT.type && FIELD_MODE !== 'survey' && typeof CAT_DEF === 'object' && CAT_DEF[x.type]) return CAT_DEF[x.type].c;
+  if (FILT.type && FIELD_MODE !== 'survey' && typeof CAT_DEF === 'object' && catDefOf(x)) return catDefOf(x).c;
   /* طبقةُ المسح: دورةُ الزيارة كاملةً بألوانها — لم يُزر · مُسندٌ إليك ·
      مُسندٌ لغيرك · مجدولٌ غدًا · تحتاج زيارةً أخرى · تمت وتنتظر الاعتماد ·
      معتمدة. فالمشرفُ يرى نقاطَه بلونٍ لا يشبه نقاطَ غيره، والوزارةُ ترى ما

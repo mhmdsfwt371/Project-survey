@@ -9,11 +9,12 @@
    إصلاحُ انفجارٍ بعد الدخول التلقائيِّ كان يُعطّل الإنصاتَ والدفعَ الآليّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html','utf8');
+const html = srcConcat();
 async function fresh(){
   const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
   const w = dom.window, d = w.document;

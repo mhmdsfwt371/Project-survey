@@ -211,7 +211,7 @@ function dispName(s){
 }
 
 function catLabel(x){
-  var d = CAT_DEF[x.type];
+  var d = catDefOf(x);
   return d ? t(d.l) : t(x.type);   /* التصنيفُ يُقرأ بلغة الواجهة (V17.45) */
 }
 /* الاسمُ الوصفيُّ بأيقونته لنوعٍ خام: «محطة» تُقرأ «\u{1F686} محطات القطار».

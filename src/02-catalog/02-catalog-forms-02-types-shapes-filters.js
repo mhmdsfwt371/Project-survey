@@ -87,6 +87,8 @@ var TAX_V = 2;   /* يُرفَع عند أيِّ تعديلٍ يدويّ فتُ�
 function taxCalc(x){
   var z = String(x.zone || ''), ty = String(x.type || ''), nm0 = String(x.name || ''), cam = (ty === 'كاميرا' || ty === 'LPR');
   var t = { 'مخيم':'مخيمات', 'ممر':'ممرات', 'محطة':'محطات قطار', 'جسر':'منشأة الجمرات', 'بوابة':'مسجد نمرة', 'كاميرا':'كاميرات المتابعة', 'LPR':'كاميرات المتابعة', 'مبنى':'مخيمات' }[ty] || (TAX_T.indexOf(ty) > -1 ? ty : 'مخيمات');
+  /* (V38.34) a train E-GATE is a gate point of the train zone: owner category "train stations", not the Namirah mosque gates */
+  if (ty === 'بوابة' && /^NSK-TRN-/.test(String(x.id || ''))) t = 'محطات قطار';
   var g;
   if (/النوري|النوار/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'النورية'; }
   else if (/الهجرة/.test(z + ' ' + nm0)){ g = 'مراكز التفويج'; t = 'محطات طريق الهجرة'; }
@@ -110,6 +112,8 @@ function taxOf(x){
   x._tax = r; x._taxV = TAX_V; return r;
 }
 var TAX_DEF = { 'مخيمات':{ l:'مخيمات', i:'\u26FA', c:'#3ED598' }, 'ممرات':{ l:'ممرات', i:'\u{1F6E3}', c:'#4FA3FF' }, 'محطات قطار':{ l:'محطات قطار', i:'\u{1F686}', c:'#F2C960' }, 'كاميرات المتابعة':{ l:'كاميرات المتابعة', i:'\u{1F4F7}', c:'#C77DFF' }, 'منشأة الجمرات':{ l:'منشأة الجمرات', i:'\u{1F309}', c:'#E8873A' }, 'مسجد نمرة':{ l:'مسجد نمرة', i:'\u{1F54C}', c:'#38B2AC' }, 'النورية':{ l:'النورية', i:'\u{1F693}', c:'#FF6B6B' }, 'محطات طريق الهجرة':{ l:'محطات طريق الهجرة', i:'\u{1F693}', c:'#FF8E53' }, 'الزايدي':{ l:'الزايدي', i:'\u{1F693}', c:'#FFB347' } };
+/* (V38.34) the category badge of a point: train E-GATEs are gates of the train, not Namirah mosque gates */
+function catDefOf(x){ var d = CAT_DEF[x && x.type] || { l:(x && x.type) || '', i:'\u25CF', c:'#8A939D' }; return (typeof egIsGate === 'function' && egIsGate(x)) ? { l:'بوابات القطار', i:'\u{1F6AA}', c:'#F2C960' } : d; }
 var CAT_DEF = {
   'مخيم':   { l:'مخيمات',          i:'\u26FA', c:'#3ED598' },
   'ممر':    { l:'ممرات',           i:'\u{1F6E3}', c:'#4FA3FF' },

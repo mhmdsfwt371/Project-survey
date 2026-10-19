@@ -334,19 +334,22 @@ console.log('\n══ ١٢ · ما ينتظر الرفع ══');
   w.CFG.queueTtl = 0; w.STATE.meta.online = true;
 }
 
-/* ── ١٣ · (V38.31) قطار المشاعر: تسعُ محطاتٍ بإحداثياتٍ مرجعية، و٦٢ بوابةً أوّليةً بلا إحداثيات حتى تُحقَّق ── */
+/* ── ١٣ · قطار المشاعر (V38.31 → V38.34): تسعُ محطاتٍ و٦٢ بوابةً نقاطًا عند مرجع محطتها — قرارُ المالك ق-٠٢٣ ── */
 console.log('\n══ ١٣ · قطار المشاعر ══');
 {
-  const st = w.STATE.sites.filter(x => x && x.type === 'محطة');
+  const st = w.STATE.sites.filter(x => x && x.type === 'محطة'), gs = w.STATE.sites.filter(w.egIsGate);
   T(st.length === 9 && st.every(x => +x.lat > 21 && +x.lng > 39) && st.every(x => /\(AR[123]|MZ[123]|MN[123]\)/.test(x.name)), 'تسعُ محطاتٍ بإحداثياتها المرجعية — عرفات ومزدلفة ومنى');
-  T(w.egStations().reduce((a, sid) => a + w.egList(sid).length, 0) === 62 && w.egStations().every(sid => w.egList(sid).every(g => g.lat === null && !g.verified)), 'و٦٢ بوابةً أوّليةً كلُّها بلا إحداثيات وغيرُ محقَّقة');
-  T(w.egMapPoints().length === 0, 'ولا بوابةَ على الخريطة قبل التحقيق — المحطاتُ التسعُ وحدَها');
-  const s1 = st[0]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.DETAIL_ID = s1.id; w.egCard.open = 'AR1-C01'; w.document.body.innerHTML = String(w.PAGE.site.body());
+  const per = {}; gs.forEach(g => { per[g.sq] = (per[g.sq] || 0) + 1; });
+  T(gs.length === 62 && per.AR1 === 10 && per.AR2 === 10 && per.AR3 === 10 && per.MZ1 === 4 && per.MZ2 === 3 && per.MZ3 === 4 && per.MN1 === 8 && per.MN2 === 8 && per.MN3 === 5, 'و٦٢ بوابةً إلكترونيةً نقاطًا بعدد المالك لكلِّ محطة');
+  const near = gs.every(g => { const s = st.find(z => w.egSeed().stations[z.id].code === g.sq); return s && Math.abs(+g.lat - +s.lat) < 0.0001 && Math.abs(+g.lng - +s.lng) < 0.0001; });
+  T(near, 'وكلُّ بوابةٍ عند مرجع محطتها (±٣ م) حتى يحدّد المسحُ موقعَها');
+  T(gs.every(g => w.taxOf(g).t === 'محطات قطار') && w.STATE.sites.filter(x => x.type === 'بوابة' && !w.egIsGate(x)).every(x => w.taxOf(x).t === 'مسجد نمرة'), 'وتصنيفُها «محطات قطار» — وبواباتُ مسجد نمرة كما هي');
+  const s1 = st[0]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.DETAIL_ID = s1.id;
+  T(w.egList(s1.id).length === 10 && String(w.PAGE.site.body()).split('data-egopen=').length - 1 === 10, 'وبطاقةُ المحطة تعدّ بواباتِها العشر');
+  const g1 = w.egList(s1.id)[0].id; w.egCard.open = g1; w.document.body.innerHTML = String(w.PAGE.site.body());
   const keepSet = w.CORE.set; w.CORE.set = () => {};
-  w.document.getElementById('egLat').value = String(s1.lat); w.document.getElementById('egLng').value = String(s1.lng);
-  T(!w.egSave(s1.id, 'AR1-C01'), 'وإحداثياتُ المحطة نفسُها تُرفَض لبوابة (لا تُنسَخ)');
-  w.document.getElementById('egNo').value = 'G-07'; w.document.getElementById('egLat').value = '21.33701'; w.document.getElementById('egLng').value = '39.97560'; w.document.getElementById('egOp').value = 'تعمل';
-  T(w.egSave(s1.id, 'AR1-C01') && w.egOf(s1.id, 'AR1-C01').verified && w.egOf(s1.id, 'AR1-C01').no === 'G-07' && w.egMapPoints().length === 1, 'والتحقيقُ بإحداثياتٍ ورقمٍ رسميٍّ يُحفَظ طبقةً فوق المحطة ويُرسَم على الخريطة');
+  w.document.getElementById('egNo').value = 'G-07'; w.document.getElementById('egOp').value = 'تعمل';
+  T(w.egSave(g1) && w.egOf(g1).no === 'G-07' && w.egOf(g1).op === 'تعمل', 'والتحقيقُ (رقمُ الرسمة والحالة) يُحفَظ طبقةً فوق البوابة نفسِها');
   w.CORE.set = keepSet; w.egCard.open = '';
 }
 

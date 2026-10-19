@@ -7,13 +7,14 @@
    على عتبات جوجل.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = srcConcat();
 
 console.log('\n══ ١ · لا كتابةَ ولا مستمعًا جديدًا ══');
 const blk = /\/\* ═══ مؤشّراتُ الأداء الأصليةُ في المتصفّح \(V17\.98\)[\s\S]*?function perfSummary\(\)\{[\s\S]*?\n\}/.exec(html)[0];

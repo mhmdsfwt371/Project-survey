@@ -15,7 +15,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
   body:function(){
     var x = siteFind(DETAIL_ID) || STATE.sites[0];
     if (!x) return alertBox('warn','لا مواقع محمّلة.');
-    var d = CAT_DEF[x.type] || { l:x.type, i:'\u25CF', c:'#8A939D' };
+    var d = catDefOf(x);
     var rec = STATE.recs[x.id], ins = STATE.inss[x.id];
     var sv = !!rec, st = (ins && ins.status) || x.fstat || 'لم يبدأ';
 

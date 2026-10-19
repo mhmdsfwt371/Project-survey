@@ -14,6 +14,7 @@
    والدفع، ويحسب الحصةَ من مسارها، ويجرّب الفرادةَ ألفَ مرة.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -24,7 +25,7 @@ catch { console.error('✗ jsdom غير مثبَّت:  npm i jsdom'); process.ex
 let pass = 0; const fails = [];
 const check = (c, n) => { if (c) pass++; else fails.push(n); };
 
-const html = readFileSync('index.html','utf8');
+const html = srcConcat();
 const rules = (() => { try { return readFileSync('firestore.rules','utf8'); } catch { return ''; } })();
 
 /* ══ ١ · مسارُ القراءة مقصور ═════════════════════════════════════════════ */

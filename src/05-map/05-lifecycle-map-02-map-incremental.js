@@ -2,7 +2,7 @@
    FILE    : src/05-map/05-lifecycle-map-02-map-incremental.js
    DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
    PURPOSE : Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles.
-   DEFINES : shapeMk, mapClickFn, mkPlace, mkDrain, mkSweep, mkCount, mapPaintLight, mapPaint, egPaint, mapFlySoon, mapFly, mapLocate, mapTheme, mapSat
+   DEFINES : shapeMk, mapClickFn, mkPlace, mkDrain, mkSweep, mkCount, mapPaintLight, mapPaint, mapFlySoon, mapFly, mapLocate, mapTheme, mapSat
    GLOBALS : MK, ShapeMk, MK_PAD, MK_FIRST
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
@@ -265,20 +265,7 @@ function mapPaint(light){
 
   mkCount(LIST, inView);
   if (IOT.on) iotPaint();   /* (V25.7) */
-  egPaint();   /* (V38.31) بواباتُ القطار المحقَّقةُ بإحداثيات — ولا شيءَ قبل التحقيق */
-}
-function egPaint(){
-  if (!MAP || typeof egMapPoints !== 'function') return;
-  try {
-    if (!egPaint.layer) egPaint.layer = L.layerGroup().addTo(MAP); egPaint.layer.clearLayers();
-    egMapPoints().forEach(function(g){
-      var st = siteFind(g.stn);
-      L.circleMarker([g.lat, g.lng], { renderer:MAP_CV, radius:6, color:'#0EA5E9', weight:2, fillColor:'#0EA5E9', fillOpacity:0.85 })   /* على لوح النقاط نفسِه — لا لوحَ ثانٍ يبتلع النقر */
-        .bindTooltip('\u{1F6AA} ' + (g.no || g.id) + (st ? ' \u2014 ' + st.name : ''), { direction:'top' })
-        .on('click', function(){ DETAIL_ID = g.stn; egCard.open = g.id; CUR = 'site'; render(1); })
-        .addTo(egPaint.layer);
-    });
-  } catch (e){ LS_ERR = e; }
+  /* (V38.34) train gates are registry points now — painted like any point */
 }
 
 /* (V38.20) «فتح موقع النقطة على الخريطة لا يعمل للمشرف»: كان الطيرانُ بعد نصف ثانيةٍ ثابتة، والخريطةُ في أوّل فتحٍ

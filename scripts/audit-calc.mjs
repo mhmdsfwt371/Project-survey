@@ -12,6 +12,7 @@
    متطابقاتُه: مجموعُ الأوزان مئة، والميزانُ متوازن، والقسمةُ لا تنفجر.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -28,7 +29,7 @@ const num = (v, n) => check(typeof v === 'number' && isFinite(v), `${n} — رق
 
 const vc = new VirtualConsole(); const boot = [];
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) boot.push(String(e.message)); });
-const dom = new JSDOM(readFileSync('index.html','utf8'),
+const dom = new JSDOM(srcConcat(),
   { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;

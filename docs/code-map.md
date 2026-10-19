@@ -8,7 +8,7 @@
 |---|---:|---:|---|
 | `00-head.html` | 1318 | 0 |  |
 
-## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2798 سطر · 134 دالة)
+## `01-core/` — النواة — اللغة والمحرك والمزامنة والسجل  (8 ملفات · 2783 سطر · 131 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -19,14 +19,14 @@
 | `01-core-registry-05-sync-scale.js` | 1105 | 1 | CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-o |
 | `01-core-registry-06-data-gate-live.js` | 412 | 13 | DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting. |
 | `01-core-registry-07-blackbox-registry.js` | 239 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
-| `01-core-registry-08-egates-seed.js` | 94 | 12 | Al Mashaaer train: the nine station references and the provisional E-GATE inventory (no coordinates until verified), the station E-GATE card, verification edito |
+| `01-core-registry-08-egates-seed.js` | 79 | 9 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (9 ملفات · 4041 سطر · 227 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (9 ملفات · 4045 سطر · 228 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `02-catalog-forms-01-site-edit-twins.js` | 397 | 32 | Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on o |
-| `02-catalog-forms-02-types-shapes-filters.js` | 550 | 36 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
+| `02-catalog-forms-02-types-shapes-filters.js` | 554 | 37 | Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the f |
 | `02-catalog-forms-03-site-details-points.js` | 365 | 11 | Full site details page (PAGE.site) and technician points computed from work. |
 | `02-catalog-forms-04-mywork-diary.js` | 536 | 10 | 'My work' screens, project diary, weight/target simulator and how dues are computed. |
 | `02-catalog-forms-05-management-performance.js` | 522 | 15 | Management records, methodology matching and the single performance page with five levels. |
@@ -71,12 +71,12 @@
 | `04-tasks-office-14-pull-scope-listen-map.js` | 302 | 16 | Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons. |
 | `04-tasks-office-15-handover-minutes.js` | 256 | 14 | Handover and official receipt minutes. |
 
-## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 5405 سطر · 289 دالة)
+## `05-map/` — الخريطة ودورةُ الحياة — الطبقات والتصدير والاستيراد والدخول وشاشةُ الوزارة  (13 ملفات · 5392 سطر · 288 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
 | `05-lifecycle-map-01-lifecycle-task-index.js` | 272 | 13 | Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate. |
-| `05-lifecycle-map-02-map-incremental.js` | 353 | 14 | Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles. |
+| `05-lifecycle-map-02-map-incremental.js` | 340 | 13 | Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles. |
 | `05-lifecycle-map-03-export-import-docx.js` | 724 | 5 | Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app. |
 | `05-lifecycle-map-04-excel-templates-kmz.js` | 539 | 22 | Current page to Excel, the tasks file from a template, and KMZ/KML import. |
 | `05-lifecycle-map-05-geojson-basemap-layers.js` | 162 | 12 | GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing. |
@@ -89,7 +89,7 @@
 | `05-lifecycle-map-12-ministry-screen-progress.js` | 384 | 22 | Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view. |
 | `05-lifecycle-map-13-ministry-followup.js` | 471 | 49 | Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card. |
 
-## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 5941 سطر · 326 دالة)
+## `06-ministry/` — متابعةُ الوزارة — التنبيهات والتقارير ونظامُ البطاقات وما الجديد  (13 ملفات · 5943 سطر · 326 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -103,7 +103,7 @@
 | `06-ministry-alerts-08-pptx-template.js` | 966 | 16 | PowerPoint built from the original ministry template. |
 | `06-ministry-alerts-09-pilot-workflow-readiness.js` | 300 | 7 | Pilot installation timings, the workflow map, today's decisions box and season readiness. |
 | `06-ministry-alerts-10-season-start-invites.js` | 529 | 25 | Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change. |
-| `06-ministry-alerts-11-whats-new.js` | 988 | 8 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
+| `06-ministry-alerts-11-whats-new.js` | 990 | 8 | 'What's new' — the version log shown once per update (also the release notes source for bump.mjs). |
 | `06-ministry-alerts-12-attendance-route-field-assistant.js` | 304 | 24 | Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment. |
 | `06-props-13-props.js` | 73 | 13 | Ministry props helpers. |
 
@@ -123,7 +123,7 @@
 | `07-approvals-reports-10-point-actions-export-pdf.js` | 243 | 10 | Point window actions, click identity, export centre by section, export by role, PDF cover page. |
 | `07-approvals-reports-11-import-roles-perms.js` | 911 | 34 | Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and me |
 
-## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5650 سطر · 155 دالة)
+## `08-events/` — البياناتُ والأحداث — الإعدادات والمستخدمون والنقرات والإقلاع  (13 ملفات · 5649 سطر · 155 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -136,7 +136,7 @@
 | `08-data-events-boot-07-clicks-a-1.js` | 268 | 3 | Delegated click handlers, group A part 1 (return true when the event is consumed). |
 | `08-data-events-boot-08-clicks-a-2.js` | 364 | 3 | Delegated click handlers, group A part 2. |
 | `08-data-events-boot-09-clicks-a-3.js` | 255 | 2 | Delegated click handlers, group A part 3. |
-| `08-data-events-boot-10-clicks-doc-1.js` | 347 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
+| `08-data-events-boot-10-clicks-doc-1.js` | 346 | 4 | Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification. |
 | `08-data-events-boot-11-clicks-doc-2.js` | 515 | 4 | Document-level click handlers part 2 (parts 4–7). |
 | `08-data-events-boot-12-clicks-doc-3.js` | 244 | 2 | Document-level click handlers part 3 (parts 8–9). |
 | `08-data-events-boot-13-toast-wheel-ios-boot.js` | 768 | 11 | Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence. |
@@ -147,4 +147,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 95 ملفًّا · 41632 سطر · 1906 دالة.
+**الإجمالي:** 95 ملفًّا · 41609 سطر · 1903 دالة.

@@ -289,7 +289,7 @@ function asnSheet(){
       : '')
     + (view.length
       ? view.slice(0, 120).map(function(x){
-          var d = CAT_DEF[x.type] || { l:x.type, i:'\u25CF', c:'#8A939D' };
+          var d = catDefOf(x);
           var a = asnOf(x.id);
           return '<label class="list-item" style="cursor:pointer">'
             + '<input type="checkbox" data-sel="' + esc(x.id) + '"' + (selHas(x.id)?' checked':'')

@@ -8,6 +8,7 @@
    ومن بلا جوالٍ يُقال له ذلك لا يُترَك صامتًا.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -20,7 +21,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM(srcConcat(), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);

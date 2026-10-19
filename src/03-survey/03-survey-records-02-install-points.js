@@ -875,7 +875,7 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
             table(['النقطة','المشعر','النوع','نقاط الفك','الحالة',''],
               pool.slice(0, 40).map(function(x){
                 var r = STATE.diss[x.id] || {};
-                var d = CAT_DEF[x.type] || { l:x.type, i:'' };
+                var d = catDefOf(x) || { l:x.type, i:'' };
                 return [siteIdHtml(siteOf(x)),
                         esc(x.zone), d.i + ' ' + esc(t(d.l)),
                         N(ptsDis(x)),
