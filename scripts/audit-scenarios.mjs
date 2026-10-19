@@ -318,6 +318,22 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
   T(DR.P.conds.some(c => c.label === 'تحت كوبري') && !DR.P.unknown.length && DR.rows.some(x => x.id === cB.id) && !DR.rows.some(x => x.id === cC.id), 'و«إكسل للممرات اللي تحت كوبري» يجد نقاطَ الكوبري وحدَها');
 }
 
+/* ── ١٢ · (V38.30) ما ينتظر الرفع: مهلةُ المالك تُتجاهَل به إلى ركنٍ يُرى، وملفُّ الانتظار يخرج ويُستورَد ── */
+console.log('\n══ ١٢ · ما ينتظر الرفع ══');
+{
+  const x = w.STATE.sites.find(z => z && !w.STATE.recs[z.id]), y = w.STATE.sites.find(z => z && z !== x && !w.STATE.recs[z.id]), now = Date.now();
+  w.STATE.meta.online = false; w.STATE.stale = [];
+  w.STATE.queue = [{ kind:'recs', id:x.id, v:{ id:x.id, access:'تم الوصول', at:now - 40 * 86400000 }, at:now - 40 * 86400000 }, { kind:'recs', id:y.id, v:{ id:y.id, access:'تم الوصول', at:now - 1000 }, at:now - 1000 }];
+  w.CFG.queueTtl = 0; T(w.CORE.queueTtlApply() === 0 && w.STATE.queue.length === 2, 'المهلةُ ٠ = لا يُتجاهَل شيء (الأصلُ «لا يُسقَط شيء»)');
+  w.CFG.queueTtl = 30; T(w.CORE.queueTtlApply() === 1 && w.STATE.queue.length === 1 && w.STATE.stale.length === 1 && w.STATE.stale[0].id === x.id, 'المهلةُ ٣٠ يومًا: الأقدمُ يخرج إلى ركن المتجاهَل ويبقى الحديث');
+  const ex = w.CORE.queueExport(); T(ex.kind === 'nsk-pending' && ex.items.length === 1 && ex.stale.length === 1, 'وملفُّ الانتظار يحمل ما ينتظر وما تُجوهل');
+  const keep = w.CORE.set, saved = []; w.CORE.set = (c, i) => saved.push(c + '/' + i); w.STATE.queue = [];
+  const r = w.CORE.queueImport(ex); w.CORE.set = keep;
+  T(r.n === 2 && saved.includes('recs/' + x.id) && saved.includes('recs/' + y.id), 'والمكتبُ يستورده فيعود السجلّان إلى القاعدة');
+  T(!!w.CORE.queueImport({ hello:1 }).bad, 'وما ليس ملفَّ انتظارٍ يُرفَض');
+  w.CFG.queueTtl = 0; w.STATE.meta.online = true;
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
-console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الأحد عشر ✅');
+console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الاثني عشر ✅');
 process.exit(fails.length ? 1 : 0);

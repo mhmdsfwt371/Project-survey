@@ -267,6 +267,9 @@ function queueHtml(){
     +   '<div class="actions" style="margin:0">'
     /* الزرُّ هنا أيضًا: من يرى الطابورَ على الخريطة لا يذهب إلى شاشةٍ أخرى ليدفعه */
     +     (Q.length && STATE.meta.online ? btn('\u2191 ' + t('ادفع الآن'),'btn-primary btn-sm',' data-pushnow="1"') : '')
+    /* (V38.30) ملفُّ انتظار: يخرج من الجهاز (لنقل العنوان أو جهازٍ لا يرفع) ويُستورَد من المكتب */
+    +     ((Q.length || (STATE.stale || []).length) ? btn('\u{1F4E4} ' + t('صدّر ملف انتظار'),'btn-secondary btn-sm',' data-qexport="1"') : '')
+    +     (may('settings') ? '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4E5} ' + esc(t('استورد ملف انتظار')) + '<input type="file" accept=".json" data-qimport="1" style="display:none"></label>' : '')
     +     '<button type="button" class="btn btn-quiet btn-sm" data-pq="0" aria-label="'
     +       esc(t('إغلاق')) + '">\u2715</button>'
     +   '</div>'
@@ -275,6 +278,8 @@ function queueHtml(){
     + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok']]
             .concat(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; })))
     + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
+    /* (V38.30) ما تُجوهل بالمهلة يُرى ويُصدَّر — لا يُمحى صامتًا */
+    + ((STATE.stale || []).length ? alertBox('warn', t('تُجوهل') + ' ' + nm((STATE.stale || []).length) + ' ' + t('مما كان ينتظر الرفع لأنه أقدمُ من المهلة') + ' (' + nm(CORE.queueTtlDays()) + ' ' + t('يوم') + ') — ' + t('محفوظٌ على الجهاز: صدّره ليستورده المكتب، أو امحُه')) + '<div class="actions" style="margin:4px 0 8px">' + btn('\u{1F5D1} ' + t('امحُ المتجاهَل'), 'btn-quiet btn-sm', ' data-qstaleclear="1"') + '</div>' : '')
     + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل'],
         capList(Q, 200).map(function(x){
           var v = x.v || {};

@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.29</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.30</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-0da92e80c3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-c6294aa0d7.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -2357,6 +2357,7 @@ var CORE = {
   },
   qbakRestore: function(){
     try {
+      try { var st0 = lsGet('nsk14.stale'); if (st0 && !(STATE.stale || []).length) STATE.stale = JSON.parse(st0) || []; } catch (e0){ LS_ERR = e0; }   /* (V38.30) ركنُ المتجاهَل يعود مع الجهاز */
       var raw = lsGet('nsk14.qbak'); if (!raw) return 0;
       var q = JSON.parse(raw); if (!Array.isArray(q) || !q.length) return 0;
       var have = {}; (STATE.queue || []).forEach(function(it){ if (it) have[it.kind + '/' + it.id] = 1; });
@@ -2460,6 +2461,42 @@ var CORE = {
     });
   },
 
+  /* (V38.30) مهلةُ ما ينتظر الرفع — بالأيام من الثوابت؛ ٠ أو فارغ = لا تجاهل */
+  queueTtlDays: function(){ var v = typeof cfgGet === 'function' ? cfgGet('queueTtl') : 0; return v > 0 ? Math.round(v) : 0; },
+  queueTtlApply: function(){
+    var d = CORE.queueTtlDays(); if (!d || !Array.isArray(STATE.queue) || !STATE.queue.length) return 0;
+    var cut = Date.now() - d * 86400000, old = STATE.queue.filter(function(q){ return q && (+q.at || 0) && q.at < cut && q.kind !== 'presence' && q.kind !== 'stats'; });
+    if (!old.length) return 0;
+    STATE.stale = STATE.stale || [];
+    old.forEach(function(q){ STATE.stale.push({ kind:q.kind, id:q.id, v:q.v, at:q.at, dropAt:Date.now(), why:'أقدمُ من ' + d + ' يومًا' }); });
+    STATE.queue = STATE.queue.filter(function(q){ return old.indexOf(q) < 0; });
+    try { lsSet('nsk14.stale', JSON.stringify(STATE.stale.slice(-500))); } catch (e){ LS_ERR = e; }
+    if (typeof logEventQuiet === 'function') logEventQuiet('تُجوهل ' + old.length + ' مما ينتظر الرفع لأنه أقدمُ من ' + d + ' يومًا — محفوظٌ على الجهاز للتصدير', '');
+    CORE.saveSoon();
+    return old.length;
+  },
+  /* (V38.30) ملفُّ انتظار: ما لم يُرفَع — وما تُجوهل — يخرج ملفًّا يُنقَل إلى جهازٍ أو عنوانٍ آخر ويُستورَد من المكتب */
+  queueExport: function(){
+    var Q = (STATE.queue || []).filter(function(q){ return q && q.kind !== 'presence' && q.kind !== 'stats'; });
+    return { v:1, kind:'nsk-pending', at:Date.now(), by:STATE.meta.name || '', dev:(STATE.meta.dev || ''), ver:(typeof APP_VER !== 'undefined' ? APP_VER : ''),
+             items:Q.map(function(q){ return { kind:q.kind, id:q.id, v:q.v, at:q.at }; }), stale:(STATE.stale || []).map(function(q){ return { kind:q.kind, id:q.id, v:q.v, at:q.at, dropAt:q.dropAt }; }) };
+  },
+  queueImport: function(o){
+    if (!o || o.kind !== 'nsk-pending' || !Array.isArray(o.items)) return { n:0, bad:1 };
+    var all = o.items.concat(Array.isArray(o.stale) ? o.stale : []), n = 0, skipped = 0, seen = {};
+    all.forEach(function(it){
+      if (!it || !it.kind || !CORE.validId(it.id) || !it.v || typeof it.v !== 'object'){ skipped++; return; }
+      if (it.kind === 'presence' || it.kind === 'stats' || it.kind === 'cfg'){ skipped++; return; }   /* لا إعداداتٍ ولا نبضاتٍ من ملف */
+      var k = it.kind + '/' + it.id; if (seen[k]){ skipped++; return; } seen[k] = 1;
+      var col = STATE[it.kind], cur = col && typeof col === 'object' && !Array.isArray(col) ? col[it.id] : null;
+      if (cur && (+cur.at || +cur.updatedAt || 0) > (+it.v.at || +it.v.updatedAt || +it.at || 0)){ skipped++; return; }   /* الأحدثُ في القاعدة يبقى */
+      if (col && typeof col === 'object' && !Array.isArray(col)) col[it.id] = it.v;
+      CORE.set(it.kind, it.id, it.v); n++;
+    });
+    CORE.saveSoon();
+    if (n && typeof logEvent === 'function') logEvent('استُورد ملفُّ انتظار من جهاز ' + (o.by || '') + ' — ' + n + ' سجلًّا' + (skipped ? ' · تُرك ' + skipped : ''));
+    return { n:n, skipped:skipped };
+  },
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
   _busy: false,
   flush: function(){
@@ -2473,6 +2510,10 @@ var CORE = {
        تهيئةُ Firebase على شبكةٍ رديئةٍ لا يعلق الطابورُ معه إلى الأبد */
     if (CORE._busy && Date.now() - (CORE._busyAt || 0) < 30000) return Promise.resolve(0);
     CORE._busy = true; CORE._busyAt = Date.now();
+    /* (V38.30) قرارُ المالك: ما طال انتظارُه فوق المهلة (الثوابت ← «مهلةُ ما ينتظر الرفع» — أيام، ٠ = لا تجاهل) يُتجاهَل:
+       يخرج من الطابور إلى ركنٍ يُرى ويُصدَّر (STATE.stale) ويُقال في السجلّ — لا يُمحى صامتًا. كان المبدأُ «لا يُسقَط شيء»،
+       والمالكُ قرّر مهلةً حتى لا يحمل جهازٌ هجرَ الشبكةَ شهورًا عملًا قديمًا يعود فجأةً فوق الأحدث. */
+    CORE.queueTtlApply();
     /* ما لا يصلح معرِّفُه يُعزَل باسمه قبل الدفع ولا يُوقف ما بعده */
     var badIds = STATE.queue.filter(function(q){ return !CORE.validId(q.id); });
     if (badIds.length){
@@ -16961,6 +17002,9 @@ function queueHtml(){
     +   '<div class="actions" style="margin:0">'
     /* الزرُّ هنا أيضًا: من يرى الطابورَ على الخريطة لا يذهب إلى شاشةٍ أخرى ليدفعه */
     +     (Q.length && STATE.meta.online ? btn('\u2191 ' + t('ادفع الآن'),'btn-primary btn-sm',' data-pushnow="1"') : '')
+    /* (V38.30) ملفُّ انتظار: يخرج من الجهاز (لنقل العنوان أو جهازٍ لا يرفع) ويُستورَد من المكتب */
+    +     ((Q.length || (STATE.stale || []).length) ? btn('\u{1F4E4} ' + t('صدّر ملف انتظار'),'btn-secondary btn-sm',' data-qexport="1"') : '')
+    +     (may('settings') ? '<label class="btn btn-quiet btn-sm" style="cursor:pointer">\u{1F4E5} ' + esc(t('استورد ملف انتظار')) + '<input type="file" accept=".json" data-qimport="1" style="display:none"></label>' : '')
     +     '<button type="button" class="btn btn-quiet btn-sm" data-pq="0" aria-label="'
     +       esc(t('إغلاق')) + '">\u2715</button>'
     +   '</div>'
@@ -16969,6 +17013,8 @@ function queueHtml(){
     + stats([['بانتظار الرفع', N(Q.length), Q.length ? 'wrn' : 'ok']]
             .concat(Object.keys(by).map(function(k){ return [t(Q_LBL[k] || k), N(by[k])]; })))
     + (Q.length ? '' : alertBox('success','لا شيءَ بانتظار الرفع على هذا الجهاز — كلُّ ما سُجِّل هنا وصل.'))
+    /* (V38.30) ما تُجوهل بالمهلة يُرى ويُصدَّر — لا يُمحى صامتًا */
+    + ((STATE.stale || []).length ? alertBox('warn', t('تُجوهل') + ' ' + nm((STATE.stale || []).length) + ' ' + t('مما كان ينتظر الرفع لأنه أقدمُ من المهلة') + ' (' + nm(CORE.queueTtlDays()) + ' ' + t('يوم') + ') — ' + t('محفوظٌ على الجهاز: صدّره ليستورده المكتب، أو امحُه')) + '<div class="actions" style="margin:4px 0 8px">' + btn('\u{1F5D1} ' + t('امحُ المتجاهَل'), 'btn-quiet btn-sm', ' data-qstaleclear="1"') + '</div>' : '')
     + (Q.length ? table(['النوع','السجل','بواسطة','سُجّل'],
         capList(Q, 200).map(function(x){
           var v = x.v || {};
@@ -28457,6 +28503,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.30', d:'2026-10-19', notes:[
+      'ما ينتظر الرفع: مهلة تجاهل يحددها المالك، وملف انتظار يُصدَّر من الجهاز ويُستورد عند المكتب' ] },
   { v:'V38.29', d:'2026-10-19', notes:[
       'التطبيق لا يكتب عنوانه بيد — تمهيدًا للدومين الخاص' ] },
   { v:'V38.28', d:'2026-10-19', notes:[
@@ -36875,6 +36923,9 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   cfgInput('hours') + '</div>'
         + '<div class="field"><label>' + esc(t('أيام العمل في الأسبوع')) + '</label>'
         +   cfgInput('daysWeek', undefined, { max:7 }) + '</div>'
+        /* (V38.30) قرارُ المالك: ما ينتظر الرفع أكثرَ من هذه الأيام يُتجاهَل (يُحفَظ على الجهاز للتصدير) — ٠ = لا تجاهل */
+        + '<div class="field"><label>' + esc(t('مهلة ما ينتظر الرفع (أيام — ٠ = لا تجاهل)')) + '</label>'
+        +   cfgInput('queueTtl', undefined, { max:365 }) + '</div>'
         + '</div>'
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
@@ -38769,6 +38820,16 @@ function onDocClickPart1(e){
     logEvent('تعديل القوائم من الإعدادات — ' + Object.keys(LS).map(function(k){ return k + ':' + LS[k].length; }).join(' · '));
     toast(t('حُفظت القوائم — تصل كلَّ الأجهزة مع المزامنة')); render(1); return;
   }
+  /* (V38.30) ملفُّ انتظار: تصديرٌ من الجهاز، واستيرادٌ عند المكتب، ومحوُ المتجاهَل */
+  if (e.target.closest('[data-qexport]')){
+    var qx = CORE.queueExport(), qn = 'nsk-pending-' + (STATE.meta.name || 'device').replace(/[^\w\u0600-\u06FF-]+/g, '_') + '-' + dayKey(Date.now()) + '.json';
+    var qb = new Blob([JSON.stringify(qx)], { type:'application/json' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files:[new File([qb], qn, { type:'application/json' })] })){
+      navigator.share({ files:[new File([qb], qn, { type:'application/json' })], title:qn }).catch(function(e2){ LS_ERR = e2; });
+    } else { var qa = document.createElement('a'); qa.href = URL.createObjectURL(qb); qa.download = qn; document.body.appendChild(qa); qa.click(); qa.remove(); }
+    logEvent('صُدِّر ملفُّ انتظار — ' + qx.items.length + ' ينتظر · ' + qx.stale.length + ' متجاهَل'); toast(t('ملفُّ الانتظار جاهز — ابعثه للمكتب')); return;
+  }
+  if (e.target.closest('[data-qstaleclear]')){ if (!confirm(t('يُمحى ما تُجوهل من هذا الجهاز نهائيًّا. متابعة؟'))) return; var sn = (STATE.stale || []).length; STATE.stale = []; try { lsSet('nsk14.stale', '[]'); } catch (e3){ LS_ERR = e3; } logEvent('مُحي ' + sn + ' مما تُجوهل من الطابور'); render(1); return; }
   if (e.target.closest('[data-cfgok]')){
     /* حقولُ الإعداد هنا تحفظ حيةً عند التغيير — الزرُّ لا يحفظ شيئًا لم
        يُحفَظ. وكان بلا خاصيةٍ فيُخشى ألّا يكون التغييرُ وقع؛ فيؤكِّد. */
@@ -39863,7 +39924,18 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtfile')){ if (t0.files && t0.files[0]) wtImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-ex47')){ if (t0.files && t0.files[0]) ex47Import(t0.files[0]); return; }   /* (V37.88) */
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }   /* (V37.94) */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }
+  /* (V38.30) استيرادُ ملفِّ انتظارٍ من جهازٍ آخر — للمهندس فما فوق */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-qimport')){
+    if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+    var qf2 = t0.files && t0.files[0]; if (!qf2) return;
+    var qr = new FileReader();
+    qr.onload = function(){ var o; try { o = JSON.parse(String(qr.result || '')); } catch (e4){ o = null; }
+      var res = CORE.queueImport(o);
+      if (res.bad){ toast(t('هذا ليس ملفَّ انتظار')); return; }
+      toast('\u2713 ' + t('استُورد') + ' ' + nm(res.n) + ' ' + t('سجلًّا') + (res.skipped ? ' \u00b7 ' + t('تُرك') + ' ' + nm(res.skipped) + ' ' + t('(أحدثُ في القاعدة أو غيرُ صالح)') : '')); render(1); };
+    qr.readAsText(qf2); return;
+  }   /* (V37.94) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tname')){
     var tmn = teamOf(CTEAM_CUR);
     if (tmn){ tmn.n = t0.value || tmn.n; CORE.dirty('teams', tmn.id, tmn); render(1); }

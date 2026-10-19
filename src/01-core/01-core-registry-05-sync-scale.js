@@ -133,6 +133,7 @@ var CORE = {
   },
   qbakRestore: function(){
     try {
+      try { var st0 = lsGet('nsk14.stale'); if (st0 && !(STATE.stale || []).length) STATE.stale = JSON.parse(st0) || []; } catch (e0){ LS_ERR = e0; }   /* (V38.30) ركنُ المتجاهَل يعود مع الجهاز */
       var raw = lsGet('nsk14.qbak'); if (!raw) return 0;
       var q = JSON.parse(raw); if (!Array.isArray(q) || !q.length) return 0;
       var have = {}; (STATE.queue || []).forEach(function(it){ if (it) have[it.kind + '/' + it.id] = 1; });
@@ -236,6 +237,42 @@ var CORE = {
     });
   },
 
+  /* (V38.30) مهلةُ ما ينتظر الرفع — بالأيام من الثوابت؛ ٠ أو فارغ = لا تجاهل */
+  queueTtlDays: function(){ var v = typeof cfgGet === 'function' ? cfgGet('queueTtl') : 0; return v > 0 ? Math.round(v) : 0; },
+  queueTtlApply: function(){
+    var d = CORE.queueTtlDays(); if (!d || !Array.isArray(STATE.queue) || !STATE.queue.length) return 0;
+    var cut = Date.now() - d * 86400000, old = STATE.queue.filter(function(q){ return q && (+q.at || 0) && q.at < cut && q.kind !== 'presence' && q.kind !== 'stats'; });
+    if (!old.length) return 0;
+    STATE.stale = STATE.stale || [];
+    old.forEach(function(q){ STATE.stale.push({ kind:q.kind, id:q.id, v:q.v, at:q.at, dropAt:Date.now(), why:'أقدمُ من ' + d + ' يومًا' }); });
+    STATE.queue = STATE.queue.filter(function(q){ return old.indexOf(q) < 0; });
+    try { lsSet('nsk14.stale', JSON.stringify(STATE.stale.slice(-500))); } catch (e){ LS_ERR = e; }
+    if (typeof logEventQuiet === 'function') logEventQuiet('تُجوهل ' + old.length + ' مما ينتظر الرفع لأنه أقدمُ من ' + d + ' يومًا — محفوظٌ على الجهاز للتصدير', '');
+    CORE.saveSoon();
+    return old.length;
+  },
+  /* (V38.30) ملفُّ انتظار: ما لم يُرفَع — وما تُجوهل — يخرج ملفًّا يُنقَل إلى جهازٍ أو عنوانٍ آخر ويُستورَد من المكتب */
+  queueExport: function(){
+    var Q = (STATE.queue || []).filter(function(q){ return q && q.kind !== 'presence' && q.kind !== 'stats'; });
+    return { v:1, kind:'nsk-pending', at:Date.now(), by:STATE.meta.name || '', dev:(STATE.meta.dev || ''), ver:(typeof APP_VER !== 'undefined' ? APP_VER : ''),
+             items:Q.map(function(q){ return { kind:q.kind, id:q.id, v:q.v, at:q.at }; }), stale:(STATE.stale || []).map(function(q){ return { kind:q.kind, id:q.id, v:q.v, at:q.at, dropAt:q.dropAt }; }) };
+  },
+  queueImport: function(o){
+    if (!o || o.kind !== 'nsk-pending' || !Array.isArray(o.items)) return { n:0, bad:1 };
+    var all = o.items.concat(Array.isArray(o.stale) ? o.stale : []), n = 0, skipped = 0, seen = {};
+    all.forEach(function(it){
+      if (!it || !it.kind || !CORE.validId(it.id) || !it.v || typeof it.v !== 'object'){ skipped++; return; }
+      if (it.kind === 'presence' || it.kind === 'stats' || it.kind === 'cfg'){ skipped++; return; }   /* لا إعداداتٍ ولا نبضاتٍ من ملف */
+      var k = it.kind + '/' + it.id; if (seen[k]){ skipped++; return; } seen[k] = 1;
+      var col = STATE[it.kind], cur = col && typeof col === 'object' && !Array.isArray(col) ? col[it.id] : null;
+      if (cur && (+cur.at || +cur.updatedAt || 0) > (+it.v.at || +it.v.updatedAt || +it.at || 0)){ skipped++; return; }   /* الأحدثُ في القاعدة يبقى */
+      if (col && typeof col === 'object' && !Array.isArray(col)) col[it.id] = it.v;
+      CORE.set(it.kind, it.id, it.v); n++;
+    });
+    CORE.saveSoon();
+    if (n && typeof logEvent === 'function') logEvent('استُورد ملفُّ انتظار من جهاز ' + (o.by || '') + ' — ' + n + ' سجلًّا' + (skipped ? ' · تُرك ' + skipped : ''));
+    return { n:n, skipped:skipped };
+  },
   /* الرفع — يُحاوَل ويُترك الطابور إن فشل */
   _busy: false,
   flush: function(){
@@ -249,6 +286,10 @@ var CORE = {
        تهيئةُ Firebase على شبكةٍ رديئةٍ لا يعلق الطابورُ معه إلى الأبد */
     if (CORE._busy && Date.now() - (CORE._busyAt || 0) < 30000) return Promise.resolve(0);
     CORE._busy = true; CORE._busyAt = Date.now();
+    /* (V38.30) قرارُ المالك: ما طال انتظارُه فوق المهلة (الثوابت ← «مهلةُ ما ينتظر الرفع» — أيام، ٠ = لا تجاهل) يُتجاهَل:
+       يخرج من الطابور إلى ركنٍ يُرى ويُصدَّر (STATE.stale) ويُقال في السجلّ — لا يُمحى صامتًا. كان المبدأُ «لا يُسقَط شيء»،
+       والمالكُ قرّر مهلةً حتى لا يحمل جهازٌ هجرَ الشبكةَ شهورًا عملًا قديمًا يعود فجأةً فوق الأحدث. */
+    CORE.queueTtlApply();
     /* ما لا يصلح معرِّفُه يُعزَل باسمه قبل الدفع ولا يُوقف ما بعده */
     var badIds = STATE.queue.filter(function(q){ return !CORE.validId(q.id); });
     if (badIds.length){

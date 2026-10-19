@@ -59,6 +59,16 @@ function onDocClickPart1(e){
     logEvent('تعديل القوائم من الإعدادات — ' + Object.keys(LS).map(function(k){ return k + ':' + LS[k].length; }).join(' · '));
     toast(t('حُفظت القوائم — تصل كلَّ الأجهزة مع المزامنة')); render(1); return;
   }
+  /* (V38.30) ملفُّ انتظار: تصديرٌ من الجهاز، واستيرادٌ عند المكتب، ومحوُ المتجاهَل */
+  if (e.target.closest('[data-qexport]')){
+    var qx = CORE.queueExport(), qn = 'nsk-pending-' + (STATE.meta.name || 'device').replace(/[^\w\u0600-\u06FF-]+/g, '_') + '-' + dayKey(Date.now()) + '.json';
+    var qb = new Blob([JSON.stringify(qx)], { type:'application/json' });
+    if (navigator.share && navigator.canShare && navigator.canShare({ files:[new File([qb], qn, { type:'application/json' })] })){
+      navigator.share({ files:[new File([qb], qn, { type:'application/json' })], title:qn }).catch(function(e2){ LS_ERR = e2; });
+    } else { var qa = document.createElement('a'); qa.href = URL.createObjectURL(qb); qa.download = qn; document.body.appendChild(qa); qa.click(); qa.remove(); }
+    logEvent('صُدِّر ملفُّ انتظار — ' + qx.items.length + ' ينتظر · ' + qx.stale.length + ' متجاهَل'); toast(t('ملفُّ الانتظار جاهز — ابعثه للمكتب')); return;
+  }
+  if (e.target.closest('[data-qstaleclear]')){ if (!confirm(t('يُمحى ما تُجوهل من هذا الجهاز نهائيًّا. متابعة؟'))) return; var sn = (STATE.stale || []).length; STATE.stale = []; try { lsSet('nsk14.stale', '[]'); } catch (e3){ LS_ERR = e3; } logEvent('مُحي ' + sn + ' مما تُجوهل من الطابور'); render(1); return; }
   if (e.target.closest('[data-cfgok]')){
     /* حقولُ الإعداد هنا تحفظ حيةً عند التغيير — الزرُّ لا يحفظ شيئًا لم
        يُحفَظ. وكان بلا خاصيةٍ فيُخشى ألّا يكون التغييرُ وقع؛ فيؤكِّد. */

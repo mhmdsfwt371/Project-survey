@@ -88,7 +88,18 @@ document.addEventListener('change', function(e){
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wtfile')){ if (t0.files && t0.files[0]) wtImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-wbsfile')){ if (t0.files && t0.files[0]) wbsImport(t0.files[0]); return; }
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-ex47')){ if (t0.files && t0.files[0]) ex47Import(t0.files[0]); return; }   /* (V37.88) */
-  if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }   /* (V37.94) */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-brfile')){ if (t0.files && t0.files[0]) extFileImport(t0.files[0]); return; }
+  /* (V38.30) استيرادُ ملفِّ انتظارٍ من جهازٍ آخر — للمهندس فما فوق */
+  if (t0 && t0.hasAttribute && t0.hasAttribute('data-qimport')){
+    if (!may('settings')){ toast(t('الاستيرادُ للمهندس فما فوق')); return; }
+    var qf2 = t0.files && t0.files[0]; if (!qf2) return;
+    var qr = new FileReader();
+    qr.onload = function(){ var o; try { o = JSON.parse(String(qr.result || '')); } catch (e4){ o = null; }
+      var res = CORE.queueImport(o);
+      if (res.bad){ toast(t('هذا ليس ملفَّ انتظار')); return; }
+      toast('\u2713 ' + t('استُورد') + ' ' + nm(res.n) + ' ' + t('سجلًّا') + (res.skipped ? ' \u00b7 ' + t('تُرك') + ' ' + nm(res.skipped) + ' ' + t('(أحدثُ في القاعدة أو غيرُ صالح)') : '')); render(1); };
+    qr.readAsText(qf2); return;
+  }   /* (V37.94) */
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-tname')){
     var tmn = teamOf(CTEAM_CUR);
     if (tmn){ tmn.n = t0.value || tmn.n; CORE.dirty('teams', tmn.id, tmn); render(1); }

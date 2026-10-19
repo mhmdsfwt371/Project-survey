@@ -346,6 +346,9 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
         +   cfgInput('hours') + '</div>'
         + '<div class="field"><label>' + esc(t('أيام العمل في الأسبوع')) + '</label>'
         +   cfgInput('daysWeek', undefined, { max:7 }) + '</div>'
+        /* (V38.30) قرارُ المالك: ما ينتظر الرفع أكثرَ من هذه الأيام يُتجاهَل (يُحفَظ على الجهاز للتصدير) — ٠ = لا تجاهل */
+        + '<div class="field"><label>' + esc(t('مهلة ما ينتظر الرفع (أيام — ٠ = لا تجاهل)')) + '</label>'
+        +   cfgInput('queueTtl', undefined, { max:365 }) + '</div>'
         + '</div>'
         + '<div class="alert info" style="margin:4px 0 0"><span>'
         +   esc(t('ساعات الشهر القياسية')) + ': <b>' + nm(cfgGet('days')*cfgGet('hours')) + '</b> ' + esc(t('ساعة')) + '</span></div>',
