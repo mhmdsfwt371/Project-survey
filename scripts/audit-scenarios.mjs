@@ -341,7 +341,7 @@ console.log('\n══ ١٣ · قطار المشاعر ══');
   const st = w.STATE.sites.filter(x => x && x.type === 'محطة'), gs = w.STATE.sites.filter(w.egIsGate);
   T(st.length === 9 && st.every(x => +x.lat > 21 && +x.lng > 39) && st.every(x => /\(AR[123]|MZ[123]|MN[123]\)/.test(x.name)), 'تسعُ محطاتٍ بإحداثياتها المرجعية — عرفات ومزدلفة ومنى');
   const per = {}; gs.forEach(g => { per[g.sq] = (per[g.sq] || 0) + 1; });
-  T(gs.length === 62 && per.AR1 === 10 && per.AR2 === 10 && per.AR3 === 10 && per.MZ1 === 4 && per.MZ2 === 3 && per.MZ3 === 4 && per.MN1 === 8 && per.MN2 === 8 && per.MN3 === 5, 'و٦٢ بوابةً إلكترونيةً نقاطًا بعدد المالك لكلِّ محطة');
+  T(gs.length === 63 && per.AR1 === 10 && per.AR2 === 10 && per.AR3 === 10 && per.MZ1 === 4 && per.MZ2 === 4 && per.MZ3 === 4 && per.MN1 === 8 && per.MN2 === 8 && per.MN3 === 5, 'و٦٣ بوابةً إلكترونيةً نقاطًا بعدد كلِّ محطة على الرسومات (مزدلفة ٢ أربع)');
   /* (V38.35) spread along the hall, not stacked: every gate within 400 m of its station, and gates of one station ≥ 50 m apart */
   const dm = (a, b) => { const r = Math.PI / 180, dl = (b.lat - a.lat) * r, dg = (b.lng - a.lng) * r, q = Math.sin(dl / 2) ** 2 + Math.cos(a.lat * r) * Math.cos(b.lat * r) * Math.sin(dg / 2) ** 2; return 2 * 6371000 * Math.asin(Math.sqrt(q)); };
   const near = gs.every(g => { const s = st.find(z => w.egSeed().stations[z.id].code === g.sq); return s && dm(g, s) < 500; });   /* (V38.37) read from the drawings — the Jamarat station is ~900 m long */

@@ -167,6 +167,8 @@ if (box){
   T(Math.abs(box.b - vp.height) < 2, 'ملتصقةٌ بالأسفل (لوحٌ سفلي)');
   T(box.h <= vp.height * 0.78, 'لا تتجاوز ٧٦٪ من الارتفاع (' + Math.round(box.h / vp.height * 100) + '٪)');
 }
+/* (V38.41) the sheet slides in; measure once its buttons have laid out (a zero-height snapshot during the transition tripped the gate before) */
+await page.waitForFunction(() => { const L = Array.from(document.querySelectorAll('.pop .btn')); return L.length > 0 && L.every(b => b.getBoundingClientRect().height > 0); }, null, { timeout: 8000 }).catch(() => {});
 const btns = await page.$$eval('.pop .btn', L => L.map(b => Math.round(b.getBoundingClientRect().height)));
 T(btns.length > 0 && btns.every(h => h >= 43), 'أزرارُ النافذة أهدافُ لمسٍ ≥ ٤٤ بكسلًا (' + btns.join(',') + ')');
 
