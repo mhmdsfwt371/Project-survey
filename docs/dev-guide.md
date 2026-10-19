@@ -108,7 +108,7 @@ git commit -m "V38.xx — …" && git push origin HEAD:staging
 GH_TOKEN=… node scripts/release-now.mjs     # gate → full list (4 shards) → train → deploy → smoke
 ```
 
-`release-now.mjs` runs the whole promotion in the right order and **stops on any red step**, reading the job annotations (a failed shard can still look green in the UI). Do not trigger the full list manually while the push gate is running — they share a concurrency group and cancel each other (decision Q-020).
+`release-now.mjs` runs the whole promotion in the right order and **stops on any red step**, reading the job annotations (a failed shard can still look green in the UI). Do not trigger the full list manually while the push gate is running — they share a concurrency group and cancel each other (decision Q-020). It is resumable (V38.42): started again after a crash, it reuses the running or finished full-list run of the same commit and skips the train when the commit is already on `main`.
 
 If the gate blocks you: read the annotation it prints, fix the **code** when the behaviour is wrong, fix the **audit** only when the behaviour changed on purpose (and say so in the commit message).
 

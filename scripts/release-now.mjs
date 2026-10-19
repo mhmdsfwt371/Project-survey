@@ -50,13 +50,21 @@ if (g !== 'success') die('بوابةُ الدفع ' + g + ' — اقرأ تعل�
 say('   ✓ مفتوحة');
 
 say('٣ · القائمةُ الكاملةُ على staging (الشرائحُ الأربع)…');
-const t0 = new Date(Date.now() - 60000).toISOString();
-const c1 = await api('/actions/workflows/docs-check.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'staging' }) });
-if (c1 !== 204) die('تعذّر تشغيلُ القائمة الكاملة (' + c1 + ')');
-const run = await until('بدء القائمة الكاملة', async () => {
-  const j = await api('/actions/workflows/docs-check.yml/runs?branch=staging&event=workflow_dispatch&per_page=5');
-  return (j.workflow_runs || []).find(r => r.head_sha === sha && r.created_at >= t0) || null;
-}, 5);
+/* (V38.42) resumable: if this commit already has a full-list run (from an earlier attempt that died mid-way, or a
+   run still going), reuse it instead of dispatching a second one — the tool can be started again at any point */
+const prior = ((await api('/actions/workflows/docs-check.yml/runs?branch=staging&event=workflow_dispatch&per_page=10')).workflow_runs || [])
+  .filter(r => r.head_sha === sha && (r.status !== 'completed' || r.conclusion === 'success'))[0];
+let run = prior;
+if (prior) say('   ↻ قائمةٌ كاملةٌ موجودةٌ لهذا الالتزام (' + prior.status + ') — تُستكمَل لا تُعاد');
+else {
+  const t0 = new Date(Date.now() - 60000).toISOString();
+  const c1 = await api('/actions/workflows/docs-check.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'staging' }) });
+  if (c1 !== 204) die('تعذّر تشغيلُ القائمة الكاملة (' + c1 + ')');
+  run = await until('بدء القائمة الكاملة', async () => {
+    const j = await api('/actions/workflows/docs-check.yml/runs?branch=staging&event=workflow_dispatch&per_page=5');
+    return (j.workflow_runs || []).find(r => r.head_sha === sha && r.created_at >= t0) || null;
+  }, 5);
+}
 const done = await until('اكتمال الشرائح', async () => { const r = await api('/actions/runs/' + run.id); return r.status === 'completed' ? r : null; }, 40);
 const jobs = (await api('/actions/runs/' + run.id + '/jobs?per_page=30')).jobs || [];
 const shards = jobs.filter(j => /^shards/.test(j.name)), badJ = shards.filter(j => j.conclusion !== 'success');
@@ -73,8 +81,14 @@ if (red.length) die('القائمةُ الكاملةُ فيها ما سقط — 
 say('   ✓ الشرائحُ الأربعُ خضراء');
 
 say('٤ · القطار…');
-const c2 = await api('/actions/workflows/train.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'main' }) });
-if (c2 !== 204) die('تعذّر تشغيلُ القطار (' + c2 + ')');
+/* (V38.42) resumable: skip the train when the commit is already on main */
+const mainHead = (await api('/branches/main')).commit.sha;
+const onMain = mainHead === sha || ((await api('/compare/' + sha + '...' + mainHead)) || {}).status === 'ahead';
+if (onMain) say('   ↻ الأصلُ يحتوي الالتزامَ أصلًا — لا قطارَ ثانيًا');
+else {
+  const c2 = await api('/actions/workflows/train.yml/dispatches', { method:'POST', body:JSON.stringify({ ref:'main' }) });
+  if (c2 !== 204) die('تعذّر تشغيلُ القطار (' + c2 + ')');
+}
 /* (V38.18) القطارُ يدمج فوق التزام النسخة الاحتياطية اليوميّ فيصنع التزامَ دمج — فالسؤال: هل الأصلُ «يحتوي» الالتزام؟ لا «يساويه» */
 let mainSha = '';
 await until('ترقية الأصل', async () => {

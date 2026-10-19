@@ -5,7 +5,7 @@
 ---
 
 أنا محمد صفوت — المطوّر والمحلّل والكاتب التقني الوحيد لمشروع **نُسُك Survey**:
-تطبيق ميداني لتتبّع وتركيب وإدارة **1,787 نقطة قارئ RFID** في المشاعر (منى ·
+تطبيق ميداني لتتبّع وتركيب وإدارة **1,771 نقطة قارئ RFID** (منها ٩ محطات قطار المشاعر و٦٣ بوابةً إلكترونيةً فيها) في المشاعر (منى ·
 عرفات · مزدلفة · الجمرات) لموسم حج 1448هـ.
 
 اشتغل معي مباشرة. **لا تسألني عن أي شيء في هذه الرسالة — كله مكتوب هنا.**
@@ -22,12 +22,12 @@
 - كل القرارات المنتَجية لي، وكل التنفيذ لك. **لا تعمل شات في الخلفية وأنا
   مش موجود** — اشتغل دور بدور لما أرد.
 
-## الوصول (حُدِّث في V38.2 — ١٥ أكتوبر ٢٠٢٦)
+## الوصول (حُدِّث في V38.41 — ٢٠ أكتوبر ٢٠٢٦)
 
 ```
 المستودع : github.com/mhmdsfwt371/Project-survey   (عام)
 الموقع   : mhmdsfwt371.github.io/Project-survey/
-النسخة   : V38.2 على staging — والإنتاجُ يتبعها بقطار الإصدار
+النسخة   : V38.41 على الإنتاج — والجديدُ يُدفَع إلى staging ويصل بقطار الإصدار
 بيئة العمل: /home/claude/app   (استنسخه أول الشات)
 Firebase : project-survey-60600   (Auth + Firestore)
 ```
@@ -38,8 +38,11 @@ Firebase : project-survey-60600   (Auth + Firestore)
 ## الملفات
 
 ```
-src/<مجال>/*.js              المصدر — ٩٤ ملفًّا في ٨ مجلّدات بالمجال (00-shell · 01-core · 02-catalog · 03-survey · 04-office · 05-map · 06-ministry · 07-reports · 08-events · 99-shell)
-                              تُبنى بترتيب المسار إلى index.html بـ scripts/build.mjs (لا يُحرَّر index.html بيد) — خريطتُها docs/code-map.md (node scripts/code-map.mjs) وسقفُ الملف ١٥٠٠ سطر
+src/<مجال>/*.js              المصدر — ١٥٩ ملفًّا في ١١ مجلّدًا بالمجال (00-shell · 01-core · 02-catalog · 03-survey · 03z-shared · 04-office · 05-map · 06-ministry · 07-reports · 08-events · 99-shell)
+                              يُبنى بـ scripts/build.mjs إلى ملفين: index.html (النواة) وapp-office.js (المكتب والوزارة والتقارير، مؤجَّل — V38.39)
+                              لا يُحرَّر index.html بيد — خريطتُها docs/code-map.md (node scripts/code-map.mjs) وسقفُ الملف ١٥٠٠ سطر، ولكلِّ ملفٍ رأسٌ إنجليزيٌّ موحَّد
+                              التعليقاتُ الجديدةُ بالإنجليزية (ق-٠٢٢)؛ العربيةُ القائمةُ سجلُّ قراراتٍ لا يُمَسّ. دليلُ المطوّر: docs/dev-guide.md
+                              03z-shared مجلّدُ نقلٍ لا تطوير: الكودُ المشتركُ الجديدُ في 01-core أو 02-catalog؛ scripts/split-shared.mjs --dry يكشف ما تحتاجه النواةُ من المجالات المؤجَّلة
 i18n/dict-<hash>.js           القاموس: كلُّ نصٍّ عربيٍّ في الواجهة له إنجليزيٌّ وأرديّ — scripts/i18n-rehash.mjs بعد كلِّ إضافة
 sw.js · firestore.rules · .github/workflows/ (١٦ سيرًا) · scripts/ (~٢٠٥ جردًا وأداة)
 docs/START-HERE.md · handover.md (§٧ ما استجدّ) · decisions.md (ق-٠٠١ … ق-٠١٩) · system.md · runbooks.md

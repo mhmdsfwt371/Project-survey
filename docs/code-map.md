@@ -51,7 +51,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9717 سطر · 530 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9719 سطر · 530 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -108,7 +108,7 @@
 | `03z-shared-b-15-from-ext-camps-03-nusuk-card-system.js` | 236 | 9 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
 | `03z-shared-b-16-from-ministry-alerts-06-followup-sources-daily.js` | 21 | 1 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01– |
 | `03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js` | 72 | 3 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-10-season-start-invites.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
-| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 947 | 4 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-11-whats-new.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) refer |
+| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 949 | 4 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-11-whats-new.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) refer |
 | `03z-shared-b-19-from-approvals-reports-02-inventory-workshop.js` | 14 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-02-inventory-workshop.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 | `03z-shared-b-20-from-approvals-reports-03-trials-invoices.js` | 50 | 6 | Definitions moved verbatim from src/07-reports/07-approvals-reports-03-trials-invoices.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08 |
 | `03z-shared-b-21-from-approvals-reports-04-devices-reset-pulse.js` | 21 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
@@ -215,4 +215,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 158 ملفًّا · 42797 سطر · 1905 دالة.
+**الإجمالي:** 158 ملفًّا · 42799 سطر · 1905 دالة.

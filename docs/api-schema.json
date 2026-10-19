@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.41",
+  "app_version": "V38.42",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2199,7 +2199,8 @@
   "V38.38": "scripts/split-shared.mjs (أداة النقل، قابلة للإعادة) · مجلد src/03z-shared",
   "V38.39": "app-office.js · nskChunkReady() · nskChunkState() · nskClick() · appHtml() في scripts/lib/src.mjs · split-shared.mjs pass b",
   "V38.40": "browser-test: waitUntil commit",
-  "V38.41": "NSK-TRN-EGT-0063"
+  "V38.41": "NSK-TRN-EGT-0063",
+  "V38.42": "release-now: reuse run · skip train when merged · docs/onboarding-exercise.md"
   },
   "map_and_geolocation": {
     "tile_layers": {
