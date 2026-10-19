@@ -42,7 +42,7 @@ const h=d.getElementById('content');
 T(!!h.querySelector('[data-waasn]'), 'بطاقةُ «أبلغ فني أ» بزرِّ واتساب');
 /* ٣ · النصُّ فيه النقاطُ والنوعُ والرابط */
 const txt=w.waAsnText('فني أ','visit',[a.id,b.id],'2026-09-10');
-T(txt.indexOf(a.id)>-1 && txt.indexOf(b.id)>-1 && /2026-09-10/.test(txt) && /github\.io/.test(txt), 'الرسالةُ فيها النقطتان والموعدُ والرابط');
+T(txt.indexOf(a.id)>-1 && txt.indexOf(b.id)>-1 && /2026-09-10/.test(txt) && txt.indexOf(w.appUrl())>-1, 'الرسالةُ فيها النقطتان والموعدُ والرابط (عنوانُ التطبيق كما يُفتَح — V38.29)');
 /* ٤ · الضغطُ يفتح واتساب ويُعلِّم */
 h.querySelector('[data-waasn]').dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
 T(opened.length===1 && /wa\.me|whatsapp/.test(opened[0]) && /966501234567|0501234567/.test(opened[0]), 'يفتح واتساب برقم الفنيّ', (opened[0]||'').slice(0,60));

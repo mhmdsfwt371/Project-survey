@@ -55,7 +55,8 @@ T(k.open === 1 && k.done === 0 && k.wt === 1 && k.ph === '', 'ومن لم يبد
 
 /* الرسالة */
 const txt = w.briefingText(a);
-T(/أحمد سعيد/.test(txt) && /S1/.test(txt) && /مخيم ١/.test(txt) && /S2/.test(txt) && /github\.io\/Project-survey/.test(txt),
+/* (V38.29) الرابطُ هو عنوانُ التطبيق كما يُفتَح (appUrl) — لا عنوانٌ مكتوبٌ بيد — تمهيدًا للدومين الخاصّ */
+T(/أحمد سعيد/.test(txt) && /S1/.test(txt) && /مخيم ١/.test(txt) && /S2/.test(txt) && txt.indexOf(w.appUrl()) > -1 && /^https?:\/\//.test(w.appUrl()),
   'الرسالةُ بالاسم والنقاط بأسمائها ورابط التطبيق');
 T(/لا إسنادَ عليك اليوم/.test(w.briefingText({ name:'x', asn:{ survey:[], install:[], dis:[] }, open:0, wt:0 })), 'ومن لا إسنادَ عليه تقول له ذلك بدل الصمت');
 
