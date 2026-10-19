@@ -35,7 +35,14 @@ function aqRepParse(q){
   var bm = /مربع\s*([0-9a-z]+)/.exec(n);
   if (bm){ used.push('مربع', bm[1]); var bk = bm[1]; add('block', 'مربع ' + bk, function(x){ return new RegExp('مربع\\s*' + bk + '(\\b|\\s|-|$)', 'i').test(aqNorm(x.name || '')); }); }
   /* النوع */
-  var tys = aqTypes().filter(function(p){ return p[1].test(n); });
+  /* (V38.43) the owner category (TAX_T: مخيمات · ممرات · محطات قطار · منشأة الجمرات · مسجد نمرة · النورية · …) is a
+     condition of its own; its words are then not type words («محطات قطار» must not add the station type) */
+  var cats = (typeof TAX_T !== 'undefined' ? TAX_T : []).filter(function(c){ var k = aqNorm(c);
+    if (k.split(/\s+/).length === 1 && aqTypes().some(function(p){ return p[1].test(k); })) return false;   /* «مخيمات»/«ممرات» are the type words — not a second condition */
+    return k.length > 3 && n.indexOf(k) > -1; });
+  if (cats.length){ cats.forEach(function(c){ aqNorm(c).split(/\s+/).forEach(function(w){ used.push(w); used.push('ال' + w); }); }); add('cat', cats.join(' أو '), function(x){ return cats.indexOf(taxOf(x).t) > -1; }); }
+  var nT = n; zones.concat(cats).forEach(function(z){ nT = nT.split(aqNorm(z)).join(' '); });
+  var tys = aqTypes().filter(function(p){ return p[1].test(nT); });
   if (tys.length){ tys.forEach(function(p){ use(new RegExp('[^\\s]*(' + p[1].source + ')[^\\s]*')); }); var tn0 = tys.map(function(p){ return p[0]; }); add('type', tn0.join(' أو '), function(x){ return tn0.indexOf(x.type) > -1; }); }
   var R = function(x){ return STATE.recs[x.id]; }, I = function(x){ return STATE.inss[x.id]; };
   /* (V38.19) النفيُ كلمةٌ مستقلّة: «لم» داخل «المركّبة» (ا-ل-م-ر-ك-ب) كانت تُقرأ «لم ركب» فتنقلب الشرطُ نفيًا */

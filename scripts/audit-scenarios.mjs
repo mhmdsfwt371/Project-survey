@@ -357,6 +357,29 @@ console.log('\n══ ١٣ · قطار المشاعر ══');
   w.CORE.set = keepSet; w.egCard.open = '';
 }
 
+/* ── ١٤ · (V38.43) منشئُ التقارير: الجملةُ من القوائم تُفهَم كما اختيرت — بلا كلمةٍ مجهولة — ولها عددٌ وقائمةٌ وملف ── */
+console.log('\n══ ١٤ · منشئُ التقارير ══');
+{
+  w.ROLE = 'admin'; w.STATE.meta.role = 'admin';
+  const cases = [
+    [{ zone:'منى', type:'مخيم', ins:'no' }, ['zone', 'type', 'ins'], null],
+    [{ cat:'محطات قطار', type:'بوابة' }, ['cat', 'type'], null],
+    [{ type:'ممر', loc:'تحت كوبري', group:'zone' }, ['type', 'loc'], 'zone'],
+    [{ ins:'yes', sig:'off', lnk:'yes' }, ['ins', 'lnk', 'sig'], null],
+    [{ ov:'gt', occ:'80', min:'pend' }, ['min', 'occ'], null],
+    [{ sv:'un', e47:'no', chal:'any', group:'co' }, ['sv', 'e47', 'chal'], 'co']
+  ];
+  const got = cases.map(([sel, keys, g]) => { const q = w.rbSentence(sel), P = w.aqRepParse(q); return { ok: P.conds.map(c => c.k).sort().join() === keys.slice().sort().join() && !P.unknown.length && ((P.group && P.group.k) || null) === g, q }; });
+  T(got.every(x => x.ok), 'ستُّ تركيباتٍ من القوائم تُفهَم شرطًا شرطًا بلا كلمةٍ مجهولة' + (got.every(x => x.ok) ? '' : ' — ' + got.filter(x => !x.ok).map(x => x.q).join(' | ')));
+  const q2 = w.rbSentence({ cat:'محطات قطار', type:'بوابة' });
+  T(w.aqRepData(q2).rows.length === 63 && w.aqRepData(w.rbSentence({ cat:'مسجد نمرة', type:'بوابة' })).rows.length === 10, 'والفئةُ تميّز بواباتِ القطار (٦٣) عن بوابات مسجد نمرة (١٠)');
+  w.rbState().sel = { zone:'منى', ins:'no' }; const home = w.assistHomeHtml();
+  T(home.indexOf('منشئ التقارير') > -1 && home.indexOf('data-assistq="' + w.esc(w.rbSentence()) + '"') > -1 && home.indexOf('data-rb="cat"') > -1, 'وبطاقةُ المنشئ في المساعد بجملتها وزرِّ «احسب» وقائمةِ الفئة');
+  T(w.rbFavSave('مخيمات منى الناقصة') && w.rbFavs().some(f => f.name === 'مخيمات منى الناقصة' && f.q === w.rbSentence()) && (w.rbFavDel(0), !w.rbFavs().length), 'والمفضّلةُ تُحفَظ باسمها وتُحذَف');
+  const card = w.aqRepCard(q2, w.aqRepData(q2));
+  T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
 console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);
