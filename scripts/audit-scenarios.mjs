@@ -376,6 +376,12 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
   w.rbState().sel = { zone:'منى', ins:'no' }; const home = w.assistHomeHtml();
   T(home.indexOf('منشئ التقارير') > -1 && home.indexOf('data-assistq="' + w.esc(w.rbSentence()) + '"') > -1 && home.indexOf('data-rb="cat"') > -1, 'وبطاقةُ المنشئ في المساعد بجملتها وزرِّ «احسب» وقائمةِ الفئة');
   T(w.rbFavSave('مخيمات منى الناقصة') && w.rbFavs().some(f => f.name === 'مخيمات منى الناقصة' && f.q === w.rbSentence()) && (w.rbFavDel(0), !w.rbFavs().length), 'والمفضّلةُ تُحفَظ باسمها وتُحذَف');
+  /* (V38.44) time windows on the survey / installation date */
+  { const s1 = w.STATE.sites[0], s2 = w.STATE.sites[1]; const keepR = w.STATE.recs[s1.id], keepR2 = w.STATE.recs[s2.id], keepI = w.STATE.inss[s1.id];
+    w.STATE.recs[s1.id] = { by:'x', at:Date.now() - 2 * 86400000, review:'approved', access:'تم الوصول' }; w.STATE.recs[s2.id] = { by:'x', at:Date.now() - 60 * 86400000, review:'approved', access:'تم الوصول' }; w.STATE.inss[s1.id] = { status:'مُركّب', at:Date.now() - 3 * 86400000, by:'x' };
+    const n = sel => w.aqRepData(w.rbSentence(sel)).rows.map(x => x.id), P7 = w.aqRepParse(w.rbSentence({ when:'sv7' }));
+    T(P7.conds.length === 1 && P7.conds[0].k === 'when' && !P7.unknown.length && n({ when:'sv7' }).includes(s1.id) && !n({ when:'sv7' }).includes(s2.id) && n({ when:'svold' }).includes(s2.id) && !n({ when:'svold' }).includes(s1.id) && n({ when:'in7' }).includes(s1.id), 'والزمنُ شرطٌ: زيارةٌ في آخر ٧ أيام / أقدمُ من ٣٠ يومًا / تركيبٌ في آخر ٧ أيام — على تاريخ السجلِّ نفسِه');
+    w.STATE.recs[s1.id] = keepR; w.STATE.recs[s2.id] = keepR2; w.STATE.inss[s1.id] = keepI; if (!keepR) delete w.STATE.recs[s1.id]; if (!keepR2) delete w.STATE.recs[s2.id]; if (!keepI) delete w.STATE.inss[s1.id]; }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }

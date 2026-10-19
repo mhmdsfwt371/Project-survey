@@ -21,7 +21,7 @@
 | `01-core-registry-07-blackbox-registry.js` | 239 | 17 | Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database. |
 | `01-core-registry-08-egates-seed.js` | 78 | 8 | Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its g |
 
-## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (10 ملفات · 4147 سطر · 238 دالة)
+## `02-catalog/` — الكتالوج والنقطة — التعريفات والتصنيف والصلاحيات وتعديل المسح  (10 ملفات · 4148 سطر · 238 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -32,7 +32,7 @@
 | `02-catalog-forms-05-management-performance.js` | 522 | 15 | Management records, methodology matching and the single performance page with five levels. |
 | `02-catalog-forms-06-teams-accounts-perms.js` | 551 | 12 | Teams and shares, crews and rates, the permissions module (UI + Firebase rules mirror) and role/team assignment to users. |
 | `02-catalog-forms-07-layers-dismantle-svedit.js` | 367 | 19 | Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq |
-| `02-catalog-forms-10-report-builder.js` | 102 | 10 | (V38.43) Report builder — the owner composes any point report from dropdowns (place, owner category, type, survey, |
+| `02-catalog-forms-10-report-builder.js` | 103 | 10 | (V38.43) Report builder — the owner composes any point report from dropdowns (place, owner category, type, survey, |
 | `02-definitions-08-definitions.js` | 523 | 77 | Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicat |
 | `02-edit-09-edit-requests.js` | 230 | 15 | Data-correction requests from the field (fixreqs) and their review. |
 
@@ -52,7 +52,7 @@
 | `03-survey-records-10-wbs-plan-trials.js` | 680 | 44 | Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page. |
 | `03-survey-records-11-weekly-tasks-paths.js` | 517 | 37 | Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status. |
 
-## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9729 سطر · 530 دالة)
+## `03z-shared/` — المشتركُ — تعريفاتٌ تحتاجها النواةُ قبل مجالات المكتب والوزارة والتقارير (نُقلت حرفيًّا، لا كودَ جديدًا هنا)  (63 ملفات · 9740 سطر · 530 دالة)
 
 | الملف | الأسطر | الدوال | الغرض (PURPOSE) |
 |---|---:|---:|---|
@@ -65,7 +65,7 @@
 | `03z-shared-07-from-tasks-office-07-incidents-milestones.js` | 140 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-07-incidents-milestones.js (V38.38, stage A of core + chunks): the core (01–05, 08) references the |
 | `03z-shared-08-from-tasks-office-08-reports-center-sop-help.js` | 200 | 0 | Definitions moved verbatim from src/04-office/04-tasks-office-08-reports-center-sop-help.js (V38.38, stage A of core + chunks): the core (01–05, 08) references  |
 | `03z-shared-09-from-tasks-office-09-assistant.js` | 163 | 9 | Definitions moved verbatim from src/04-office/04-tasks-office-09-assistant.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, s |
-| `03z-shared-10-from-tasks-office-10-assistant-reports.js` | 186 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-10-assistant-reports.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these  |
+| `03z-shared-10-from-tasks-office-10-assistant-reports.js` | 195 | 7 | Definitions moved verbatim from src/04-office/04-tasks-office-10-assistant-reports.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these  |
 | `03z-shared-11-from-tasks-office-11-site-popup.js` | 366 | 5 | Definitions moved verbatim from src/04-office/04-tasks-office-11-site-popup.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these names,  |
 | `03z-shared-12-from-tasks-office-12-draw-paths-areas.js` | 307 | 28 | Definitions moved verbatim from src/04-office/04-tasks-office-12-draw-paths-areas.js (V38.38, stage A of core + chunks): the core (01–05, 08) references these n |
 | `03z-shared-13-from-tasks-office-13-perf-distribution-cameras.js` | 256 | 14 | Definitions moved verbatim from src/04-office/04-tasks-office-13-perf-distribution-cameras.js (V38.38, stage A of core + chunks): the core (01–05, 08) reference |
@@ -109,7 +109,7 @@
 | `03z-shared-b-15-from-ext-camps-03-nusuk-card-system.js` | 236 | 9 | Definitions moved verbatim from src/06-ministry/06-ext-camps-03-nusuk-card-system.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) ref |
 | `03z-shared-b-16-from-ministry-alerts-06-followup-sources-daily.js` | 21 | 1 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01– |
 | `03z-shared-b-17-from-ministry-alerts-10-season-start-invites.js` | 72 | 3 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-10-season-start-invites.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
-| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 951 | 4 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-11-whats-new.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) refer |
+| `03z-shared-b-18-from-ministry-alerts-11-whats-new.js` | 953 | 4 | Definitions moved verbatim from src/06-ministry/06-ministry-alerts-11-whats-new.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08) refer |
 | `03z-shared-b-19-from-approvals-reports-02-inventory-workshop.js` | 14 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-02-inventory-workshop.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, |
 | `03z-shared-b-20-from-approvals-reports-03-trials-invoices.js` | 50 | 6 | Definitions moved verbatim from src/07-reports/07-approvals-reports-03-trials-invoices.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05, 08 |
 | `03z-shared-b-21-from-approvals-reports-04-devices-reset-pulse.js` | 21 | 1 | Definitions moved verbatim from src/07-reports/07-approvals-reports-04-devices-reset-pulse.js (V38.38–V38.39, stage A of core + chunks, pass b): the core (01–05 |
@@ -216,4 +216,4 @@
 |---|---:|---:|---|
 | `99-tail.html` | 4 | 0 |  |
 
-**الإجمالي:** 159 ملفًّا · 42918 سطر · 1915 دالة.
+**الإجمالي:** 159 ملفًّا · 42930 سطر · 1915 دالة.

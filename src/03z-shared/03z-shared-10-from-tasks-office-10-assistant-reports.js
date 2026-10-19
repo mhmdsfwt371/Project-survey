@@ -84,6 +84,15 @@ function aqRepParse(q){
     add('occ', 'الإشغال ' + (hi ? 'فوق ' : 'تحت ') + v0 + '%', function(x){ var r = sr()[x.id]; return !!r && r.ov && r.pct != null && (hi ? r.pct > v0 : r.pct < v0); }); }
   else if (/(بلا|من غير|مفيش|بدون)\s*ارقام/.test(n)){ use(/(بلا|من غير|مفيش|بدون)\s*ارقام/); add('ov', 'بلا أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && !r.ov; }); }
   else if (/(لها|ليها|فيها)\s*(ارقام|اشغال)/.test(n)){ use(/(لها|ليها|فيها)\s*(ارقام|اشغال)/); add('ov', 'لها أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && r.ov; }); }
+  /* (V38.44) time windows: «اتزارت في آخر 7 ايام» / «اتركبت في آخر 30 يوم» / «زيارتها اقدم من 30 يوم» — on the survey or installation date */
+  var tw = /(زيار[^\s]*|اتزار[^\s]*|مسح[^\s]*|تركيب[^\s]*|اتركب[^\s]*)\s*(في\s*)?(اخر|آخر|خلال)\s*(\d{1,3})\s*(يوم|ايام)/.exec(n), to = /(زيار[^\s]*|مسح[^\s]*|تركيب[^\s]*)\s*(اقدم من|من اكتر من|من اكثر من|قبل)\s*(\d{1,3})\s*(يوم|ايام)/.exec(n);
+  var twm = tw || to;
+  if (twm){
+    twm[0].trim().split(/\s+/).forEach(function(w){ used.push(w); });
+    var isIns = /تركيب|اتركب/.test(twm[1]), days = +(tw ? tw[4] : to[3]), within = !!tw, lim = Date.now() - days * 86400000;
+    add('when', (isIns ? 'التركيب' : 'الزيارة') + ' ' + (within ? 'في آخر ' : 'أقدم من ') + days + ' يوم', function(x){
+      var rec = isIns ? I(x) : R(x), at = rec && +(rec.at || rec.briefAt || 0); if (!at) return false; return within ? at >= lim : at < lim; });
+  }
   /* موسمُ ١٤٤٧ */
   if (/1447/.test(n)){
     var no47 = /(من غير|بدون|مش|مفيش|ما)\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/.test(n); use(/(من غير|بدون|مش|مفيش|ما)?\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/);

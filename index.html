@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.43</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.44</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1349,7 +1349,7 @@ function nskChunkReady(){
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
 }
-var I18N_FILE = 'i18n/dict-dfdc126518.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-509996e2f5.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6563,6 +6563,7 @@ function rbOptions(){
     ['e47', 'بيانات ١٤٤٧', [['', '—', ''], ['has', 'لها بيانات ١٤٤٧', 'ليها بيانات 1447'], ['no', 'بلا بيانات ١٤٤٧', 'من غير بيانات 1447']]],
     ['loc', 'موقع النقطة', [['', '—', '']].concat(ll)],
     ['chal', 'التحديات', [['', '—', ''], ['any', 'فيها تحدٍّ', 'فيها تحدي']]],
+    ['when', 'الزمن', [['', '—', ''], ['sv7', 'زيارة في آخر ٧ أيام', 'زيارتها في اخر 7 ايام'], ['sv30', 'زيارة في آخر ٣٠ يوم', 'زيارتها في اخر 30 يوم'], ['svold', 'زيارة أقدم من ٣٠ يوم', 'زيارتها اقدم من 30 يوم'], ['in7', 'تركيب في آخر ٧ أيام', 'تركيبها في اخر 7 ايام'], ['in30', 'تركيب في آخر ٣٠ يوم', 'تركيبها في اخر 30 يوم']]],
     ['group', 'حسب', [['', 'بلا تجميع', ''], ['zone', 'المشعر', 'حسب المشعر'], ['type', 'النوع', 'حسب النوع'], ['co', 'الشركة', 'حسب الشركة'], ['tech', 'الفني', 'حسب الفني'], ['block', 'المربع', 'حسب المربع'], ['ins', 'حالة التركيب', 'حسب حالة التركيب'], ['sv', 'حالة المسح', 'حسب حالة المسح']]]
   ];
 }
@@ -13057,6 +13058,15 @@ function aqRepParse(q){
   else if (/(بلا|من غير|مفيش|بدون)\s*ارقام/.test(n)){ use(/(بلا|من غير|مفيش|بدون)\s*ارقام/); add('ov', 'بلا أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && !r.ov; }); }
   else if (/(لها|ليها|فيها)\s*(ارقام|اشغال)/.test(n)){ use(/(لها|ليها|فيها)\s*(ارقام|اشغال)/); add('ov', 'لها أرقام إشغال', function(x){ var r = sr()[x.id]; return !!r && r.ov; }); }
 
+  var tw = /(زيار[^\s]*|اتزار[^\s]*|مسح[^\s]*|تركيب[^\s]*|اتركب[^\s]*)\s*(في\s*)?(اخر|آخر|خلال)\s*(\d{1,3})\s*(يوم|ايام)/.exec(n), to = /(زيار[^\s]*|مسح[^\s]*|تركيب[^\s]*)\s*(اقدم من|من اكتر من|من اكثر من|قبل)\s*(\d{1,3})\s*(يوم|ايام)/.exec(n);
+  var twm = tw || to;
+  if (twm){
+    twm[0].trim().split(/\s+/).forEach(function(w){ used.push(w); });
+    var isIns = /تركيب|اتركب/.test(twm[1]), days = +(tw ? tw[4] : to[3]), within = !!tw, lim = Date.now() - days * 86400000;
+    add('when', (isIns ? 'التركيب' : 'الزيارة') + ' ' + (within ? 'في آخر ' : 'أقدم من ') + days + ' يوم', function(x){
+      var rec = isIns ? I(x) : R(x), at = rec && +(rec.at || rec.briefAt || 0); if (!at) return false; return within ? at >= lim : at < lim; });
+  }
+
   if (/1447/.test(n)){
     var no47 = /(من غير|بدون|مش|مفيش|ما)\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/.test(n); use(/(من غير|بدون|مش|مفيش|ما)?\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/);
     add('e47', no47 ? 'بلا بيانات ١٤٤٧' : 'لها بيانات ١٤٤٧', function(x){ return no47 ? !x.ex47 : !!x.ex47; });
@@ -18999,6 +19009,8 @@ var SESS_PW = '';
 
 var RELEASE_NOTES = [
 
+  { v:'V38.44', d:'2026-10-20', notes:[
+      'الزمن شرطًا في التقارير: زيارة/تركيب في آخر ٧ أو ٣٠ يومًا، أو زيارة أقدم من ٣٠ يومًا' ] },
   { v:'V38.43', d:'2026-10-20', notes:[
       'منشئ التقارير في المساعد: أي تقرير نقاط من القوائم — يُرى ما فُهم قبل الحساب، وله العدد والقائمة وإكسل/PDF ومفضّلة' ] },
   { v:'V38.42', d:'2026-10-20', notes:[
@@ -30062,6 +30074,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.43"></script>
+<script defer src="app-office.js?v=38.44"></script>
 </body>
 </html>
