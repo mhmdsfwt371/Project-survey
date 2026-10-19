@@ -226,7 +226,7 @@ function waAsnText(to, kind, ids, when){
     + (when ? ' \u00b7 ' + t('الموعد') + ' ' + when : '') + ':\n'
     + L.slice(0, 20).join('\n') + (L.length > 20 ? '\n\u2026 ' + t('والباقي في التطبيق') : '') + '\n\n'
     + t('افتح «مهامي» في التطبيق واضغط «من موقعي» لترتيب الطريق') + ':\n'
-    + 'https://mhmdsfwt371.github.io/Project-survey/\n'
+    + appUrl() + '\n'   /* (V38.29) */
     + '\u2014 ' + (STATE.meta.name || '');
 }
 function waAsn(to, kind, ids, when){

@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.28",
+  "app_version": "V38.29",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2186,7 +2186,8 @@
   "V38.25": "locOpts() · locList() · loc قائمة · data-svloc · data-svqloc",
   "V38.26": "locChalKeys() في chalCats · locApplies() بالاستثناء",
   "V38.27": "aqRepParse: loc (bridge · tin · tout · sign · nomount · canopy · نفق)",
-  "V38.28": "scripts/lib/src.mjs · scripts/code-map.mjs · docs/code-map.md"
+  "V38.28": "scripts/lib/src.mjs · scripts/code-map.mjs · docs/code-map.md",
+  "V38.29": "appUrl()"
   },
   "map_and_geolocation": {
     "tile_layers": {

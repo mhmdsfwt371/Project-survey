@@ -154,7 +154,7 @@ PAGE.sys = { m:'النظام', t:'صحة النظام',
             ['١','افتح console.cloud.google.com وأنشئ مشروعًا أو اختر قائمًا'],
             ['٢','فعّل Google Drive API من مكتبة الواجهات'],
             ['٣','في «بيانات الاعتماد» أنشئ OAuth client ID من نوع تطبيق ويب'],
-            ['٤','أضف mhmdsfwt371.github.io إلى Authorized JavaScript origins'],
+            ['٤','أضف ' + location.host + ' إلى Authorized JavaScript origins'],   /* (V38.29) الدومينُ الحاليّ */
             ['٥','انسخ المعرّفَ والصقه أعلاه'],
             ['٦','أنشئ مجلّدًا في درايفك للمشروع وانسخ معرّفه من رابطه']
           ])
