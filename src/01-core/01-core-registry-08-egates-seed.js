@@ -2,7 +2,7 @@
    FILE    : src/01-core/01-core-registry-08-egates-seed.js
    DOMAIN  : Core — language, engine, sync, registry
    PURPOSE : Al Mashaaer train: the nine stations and their 62 E-GATE points (registry points at the station reference, owner decision Q-023), the station card listing its gates and the per-gate verification editor.
-   DEFINES : egSeed, egStations, egIsStation, egIsGate, egList, egOf, egOps, egCard, egSave
+   DEFINES : egSeed, egIsStation, egIsGate, egList, egOf, egOps, egCard, egSave
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
@@ -17,7 +17,6 @@
    record (sites/<gateId>), never on this file.
    ========================================================================== */
 function egSeed(){ return egSeed.v || (egSeed.v = {"rev": "2026-10-19", "drawing": "CamScanner 05-05-2026 17.07.pdf; 32 pages", "stations": {"NSK-TRN-STN-0101": {"code": "AR1", "pages": [1], "n": 10}, "NSK-TRN-STN-0102": {"code": "AR2", "pages": [2, 3], "n": 10}, "NSK-TRN-STN-0103": {"code": "AR3", "pages": [4, 5, 6], "n": 10}, "NSK-TRN-STN-0104": {"code": "MZ1", "pages": [7, 8], "n": 4}, "NSK-TRN-STN-0105": {"code": "MZ2", "pages": [9, 10, 11], "n": 3}, "NSK-TRN-STN-0106": {"code": "MZ3", "pages": [12, 13, 14, 15], "n": 4}, "NSK-TRN-STN-0107": {"code": "MN1", "pages": [16, 17, 18], "n": 8}, "NSK-TRN-STN-0108": {"code": "MN2", "pages": [19, 20, 21, 22], "n": 8}, "NSK-TRN-STN-0109": {"code": "MN3", "pages": [23, 24, 25, 26, 27, 28, 29], "n": 5}}}); }
-function egStations(){ return Object.keys(egSeed().stations); }
 function egIsStation(x){ return !!x && x.type === 'محطة' && !!egSeed().stations[x.id]; }
 function egIsGate(x){ return !!x && x.type === 'بوابة' && /^NSK-TRN-EGT-/.test(String(x.id || '')); }
 /* gate points of a station: registry points of type gate whose sq is the station code */
