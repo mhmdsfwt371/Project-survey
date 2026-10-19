@@ -73,6 +73,8 @@ groups.forEach(keys => {
   sites.forEach(x => { c[x[f]] = (c[x[f]] || 0) + 1; });
   Object.values(c).forEach(add);
 });
+/* (V38.31) عددُ الشركات المتمايزة في السجلّ يُعرَض رقمًا («الشركات — ١٦٢»): مشتقٌّ من البيانات لا مكتوب */
+['co', 'zone', 'type', 'region', 'work'].forEach(f => add(new Set(sites.map(x => x[f]).filter(Boolean)).size));
 /* المتمِّماتُ تُعرَض كما تُعرَض الأعداد: «كم بلا شبكة» و«كم بلا شركة» */
 ['net','co','sign','sq','work','region'].forEach(f => {
   add(sites.filter(x => x[f]).length);

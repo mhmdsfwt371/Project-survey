@@ -35,6 +35,7 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
         + '</div>')
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
+      + (typeof egCard === 'function' ? egCard(x) : '')   /* (V38.31) بواباتُ محطة القطار */
       + card('بيانات الموقع',
           '<div class="pop-rows" style="margin:0">'
           + row('اسم الموقع', esc(x.name), 'name')

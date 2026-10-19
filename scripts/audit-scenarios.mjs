@@ -334,6 +334,22 @@ console.log('\n══ ١٢ · ما ينتظر الرفع ══');
   w.CFG.queueTtl = 0; w.STATE.meta.online = true;
 }
 
+/* ── ١٣ · (V38.31) قطار المشاعر: تسعُ محطاتٍ بإحداثياتٍ مرجعية، و٦٢ بوابةً أوّليةً بلا إحداثيات حتى تُحقَّق ── */
+console.log('\n══ ١٣ · قطار المشاعر ══');
+{
+  const st = w.STATE.sites.filter(x => x && x.type === 'محطة');
+  T(st.length === 9 && st.every(x => +x.lat > 21 && +x.lng > 39) && st.every(x => /\(AR[123]|MZ[123]|MN[123]\)/.test(x.name)), 'تسعُ محطاتٍ بإحداثياتها المرجعية — عرفات ومزدلفة ومنى');
+  T(w.egStations().reduce((a, sid) => a + w.egList(sid).length, 0) === 62 && w.egStations().every(sid => w.egList(sid).every(g => g.lat === null && !g.verified)), 'و٦٢ بوابةً أوّليةً كلُّها بلا إحداثيات وغيرُ محقَّقة');
+  T(w.egMapPoints().length === 0, 'ولا بوابةَ على الخريطة قبل التحقيق — المحطاتُ التسعُ وحدَها');
+  const s1 = st[0]; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.DETAIL_ID = s1.id; w.egCard.open = 'AR1-C01'; w.document.body.innerHTML = String(w.PAGE.site.body());
+  const keepSet = w.CORE.set; w.CORE.set = () => {};
+  w.document.getElementById('egLat').value = String(s1.lat); w.document.getElementById('egLng').value = String(s1.lng);
+  T(!w.egSave(s1.id, 'AR1-C01'), 'وإحداثياتُ المحطة نفسُها تُرفَض لبوابة (لا تُنسَخ)');
+  w.document.getElementById('egNo').value = 'G-07'; w.document.getElementById('egLat').value = '21.33701'; w.document.getElementById('egLng').value = '39.97560'; w.document.getElementById('egOp').value = 'تعمل';
+  T(w.egSave(s1.id, 'AR1-C01') && w.egOf(s1.id, 'AR1-C01').verified && w.egOf(s1.id, 'AR1-C01').no === 'G-07' && w.egMapPoints().length === 1, 'والتحقيقُ بإحداثياتٍ ورقمٍ رسميٍّ يُحفَظ طبقةً فوق المحطة ويُرسَم على الخريطة');
+  w.CORE.set = keepSet; w.egCard.open = '';
+}
+
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
-console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الاثني عشر ✅');
+console.log(fails.length ? 'جردُ السيناريوهات فشل ✗' : 'جردُ السيناريوهات نظيف — ما يُحفَظ صحيحٌ في المسارات الثلاثة عشر ✅');
 process.exit(fails.length ? 1 : 0);

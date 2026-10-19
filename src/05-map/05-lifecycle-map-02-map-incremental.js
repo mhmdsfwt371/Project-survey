@@ -256,6 +256,20 @@ function mapPaint(light){
 
   mkCount(LIST, inView);
   if (IOT.on) iotPaint();   /* (V25.7) */
+  egPaint();   /* (V38.31) بواباتُ القطار المحقَّقةُ بإحداثيات — ولا شيءَ قبل التحقيق */
+}
+function egPaint(){
+  if (!MAP || typeof egMapPoints !== 'function') return;
+  try {
+    if (!egPaint.layer) egPaint.layer = L.layerGroup().addTo(MAP); egPaint.layer.clearLayers();
+    egMapPoints().forEach(function(g){
+      var st = siteFind(g.stn);
+      L.circleMarker([g.lat, g.lng], { radius:6, color:'#0EA5E9', weight:2, fillColor:'#0EA5E9', fillOpacity:0.85 })
+        .bindTooltip('\u{1F6AA} ' + (g.no || g.id) + (st ? ' \u2014 ' + st.name : ''), { direction:'top' })
+        .on('click', function(){ DETAIL_ID = g.stn; egCard.open = g.id; CUR = 'site'; render(1); })
+        .addTo(egPaint.layer);
+    });
+  } catch (e){ LS_ERR = e; }
 }
 
 /* (V38.20) «فتح موقع النقطة على الخريطة لا يعمل للمشرف»: كان الطيرانُ بعد نصف ثانيةٍ ثابتة، والخريطةُ في أوّل فتحٍ

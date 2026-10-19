@@ -69,6 +69,10 @@ function onDocClickPart1(e){
     logEvent('صُدِّر ملفُّ انتظار — ' + qx.items.length + ' ينتظر · ' + qx.stale.length + ' متجاهَل'); toast(t('ملفُّ الانتظار جاهز — ابعثه للمكتب')); return;
   }
   if (e.target.closest('[data-qstaleclear]')){ if (!confirm(t('يُمحى ما تُجوهل من هذا الجهاز نهائيًّا. متابعة؟'))) return; var sn = (STATE.stale || []).length; STATE.stale = []; try { lsSet('nsk14.stale', '[]'); } catch (e3){ LS_ERR = e3; } logEvent('مُحي ' + sn + ' مما تُجوهل من الطابور'); render(1); return; }
+  /* (V38.31) بواباتُ محطات القطار: فتحُ تحقيقٍ وحفظُه وإضافةُ بوابةٍ لم تكن في الجرد */
+  var ego = e.target.closest('[data-egopen]'); if (ego){ egCard.open = ego.getAttribute('data-egopen') || ''; render(1); return; }
+  var egs = e.target.closest('[data-egsave]'); if (egs){ if (egSave(DETAIL_ID, egs.getAttribute('data-egsave'))) render(1); return; }
+  var ega = e.target.closest('[data-egadd]'); if (ega){ egAdd(ega.getAttribute('data-egadd')); render(1); return; }
   if (e.target.closest('[data-cfgok]')){
     /* حقولُ الإعداد هنا تحفظ حيةً عند التغيير — الزرُّ لا يحفظ شيئًا لم
        يُحفَظ. وكان بلا خاصيةٍ فيُخشى ألّا يكون التغييرُ وقع؛ فيؤكِّد. */
