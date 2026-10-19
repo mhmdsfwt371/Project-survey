@@ -84,6 +84,7 @@ function obsLocTags(x){
   var tn = /نفق/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
   var sg = r.mount === 'لوحة استرشادية' ? src(true) : hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
   var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
+  if (!locApplies(x)){ b = tn = sg = ''; }   /* (V38.24) الكوبري والنفقُ واللوحاتُ للممرات والجمرات وحدَها */
   if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
   return out;
 }
@@ -92,10 +93,10 @@ function obsLocLists(){
   obsLocCats().forEach(function(c){
     ['ممر', 'مخيم'].forEach(function(ty){
       var key = obsLocKey(c[0], ty); if (MFU.lists[key]) return;
-      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات' : 'المخيمات'),
+      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات والجمرات' : 'المخيمات'),
         head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
+          return mtSites().filter(function(x){ return ty === 'ممر' ? locApplies(x) : x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
             .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), String(r.chal_note || ''), String(r.note || '')]; });
         } };
     });
@@ -105,9 +106,9 @@ function mtObsLoc(){
   obsLocLists();
   var Z = {}, any = 0;
   mtSites().forEach(function(x){
-    if (x.type !== 'ممر' && x.type !== 'مخيم') return;
+    if (!locApplies(x) && x.type !== 'مخيم') return;
     var g = obsLocTags(x); if (!g) return;
-    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (x.type === 'ممر') c0.p++; else c0.c++; any++; });
+    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (locApplies(x)) c0.p++; else c0.c++; any++; });
   });
   if (!any) return '';
   var cats = obsLocCats();
@@ -121,11 +122,11 @@ function mtObsLoc(){
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'
       + cats.map(function(c){ var v = o[c[0]] || { p:0, c:0 };
           return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
-            + num(v.p, c[0], 'ممر', z) + num(v.c, c[0], 'مخيم', z) + '</div>'; }).join('')
+            + num(v.p, c[0], 'ممر', z) + (c[0] === 'nomount' ? num(v.c, c[0], 'مخيم', z) : '') + '</div>'; }).join('')   /* (V38.24) المخيماتُ في «بدون هيكل» وحدَها */
       + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها — من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» للممرات والمخيمات · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;

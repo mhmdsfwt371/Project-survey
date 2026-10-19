@@ -3048,7 +3048,7 @@ function svqKeys(rec){
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
   /* (V38.20) وصفُ التحدي يظهر صفًّا للتعديل متى كان في الزيارة تحدٍّ — ولو لم يُكتَب بعد */
   /* (V38.23) «موقع النقطة» صفٌّ في كلِّ زيارةٍ وُصل فيها — تُضاف لزياراتٍ سابقةٍ لم تكن فيها */
-  if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }
+  if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0 && locApplies(siteFind(rec.id))){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }   /* (V38.24) للممرات والجمرات */
   var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   return ks;
@@ -3071,7 +3071,7 @@ function svqEditor(k, rec, s){
           + '</label><textarea id="svqNote" rows="3" dir="auto" placeholder="' + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '"' + (SVQ.err ? ' style="border-color:var(--bad,#e05252)"' : '') + '>' + esc(noteV) + '</textarea></div>'
           + (SVQ.err ? alertBox('bad', t(SVQ.err)) : '') : '');
   }
-  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
+  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].filter(function(o){ return k !== 'mount' || o !== 'لوحة استرشادية' || locApplies(s) || v === o; }).map(function(o){   /* (V38.24) */ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (SVQ_NUM[k]) return '<input id="svqIn" type="number" step="0.1" min="0" inputmode="decimal" value="' + esc(v) + '">';
   if (SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';

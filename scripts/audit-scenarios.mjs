@@ -299,6 +299,14 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
   T(q0.bridge === 'اختيار الفني' && q0.tunnel === 'اختيار الفني' && q0.sign === 'اختيار الفني', '«موقع النقطة» و«لوحة استرشادية» اختيارٌ صريحٌ يُحسَب بمصدره');
   T(!q1.bridge && !q1.tunnel, 'و«لا شيء مما سبق» يغلب كلامَ الملاحظة');
   T(w.svqKeys(w.STATE.recs[Q[1].id]).includes('loc'), 'و«موقع النقطة» صفٌّ في تعديل المسح — ولزياراتٍ قديمةٍ بلا قيمة');
+  /* (V38.24) للممرات ومسار الجمرات وحدها — المخيمُ لا يُحسَب كوبري ولا نفقًا ولا لوحةً ولو كُتب ذلك */
+  const cp = w.STATE.sites.find(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id]), jm = w.STATE.sites.find(z => z && z.type === 'جسر' && !w.STATE.recs[z.id]);
+  w.STATE.recs[cp.id] = Object.assign({ id:cp.id, chals:['لا توجد تحديات'], mount:'لوحة استرشادية', loc:'تحت كوبري', note:'عند مدخل النفق' }, base);
+  w.STATE.recs[jm.id] = Object.assign({ id:jm.id, chals:['لا توجد تحديات'], loc:'مدخل أو مخرج نفق' }, base);
+  const gc = w.obsLocTags(cp), gj = w.obsLocTags(jm);
+  T(!gc.bridge && !gc.tunnel && !gc.sign, 'المخيمُ لا يُحسَب كوبري ولا نفقًا ولا لوحةً استرشادية');
+  T(gj.tunnel === 'اختيار الفني' && w.MFU.lists[w.obsLocKey('tunnel', 'ممر')].rows().some(r => r[0] === jm.id), 'ومسارُ الجمرات يُحسَب مع الممرات');
+  T(!w.svqKeys(Object.assign({}, base, { id:w.STATE.sites.find(z => z && z.type === 'محطة').id })).includes('loc'), 'و«موقع النقطة» لا يظهر في تعديل محطةٍ أو مخيم');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.23</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.24</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-c8848e5cb3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-a5b186aabd.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6956,7 +6956,7 @@ function svqKeys(rec){
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
   /* (V38.20) وصفُ التحدي يظهر صفًّا للتعديل متى كان في الزيارة تحدٍّ — ولو لم يُكتَب بعد */
   /* (V38.23) «موقع النقطة» صفٌّ في كلِّ زيارةٍ وُصل فيها — تُضاف لزياراتٍ سابقةٍ لم تكن فيها */
-  if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }
+  if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0 && locApplies(siteFind(rec.id))){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }   /* (V38.24) للممرات والجمرات */
   var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   return ks;
@@ -6979,7 +6979,7 @@ function svqEditor(k, rec, s){
           + '</label><textarea id="svqNote" rows="3" dir="auto" placeholder="' + esc(t('مثال: الجدار مائل ولا يتحمّل الحامل — نحتاج عمودًا بارتفاع ٣ م')) + '"' + (SVQ.err ? ' style="border-color:var(--bad,#e05252)"' : '') + '>' + esc(noteV) + '</textarea></div>'
           + (SVQ.err ? alertBox('bad', t(SVQ.err)) : '') : '');
   }
-  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].map(function(o){ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
+  if (SVQ_OPT[k]) return '<select id="svqIn">' + SVQ_OPT[k].filter(function(o){ return k !== 'mount' || o !== 'لوحة استرشادية' || locApplies(s) || v === o; }).map(function(o){   /* (V38.24) */ return '<option value="' + esc(o) + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (v === 'نعم' || v === 'لا') return '<select id="svqIn">' + ['نعم','لا'].map(function(o){ return '<option value="' + o + '"' + (v === o ? ' selected' : '') + '>' + esc(t(o)) + '</option>'; }).join('') + '</select>';
   if (SVQ_NUM[k]) return '<input id="svqIn" type="number" step="0.1" min="0" inputmode="decimal" value="' + esc(v) + '">';
   if (SVQ_TEXT[k]) return '<textarea id="svqIn" rows="3" dir="auto">' + esc(v) + '</textarea>';
@@ -7354,6 +7354,9 @@ var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'�
 /* (V38.20) «أخرى» تعود خيارًا أخيرًا — تحدٍّ لا تصفه الفئاتُ الثماني يُكتَب وصفُه (الوصفُ مطلوبٌ معها). وتُحفَظ باسمها
    القديم نفسِه فتبقى زياراتُ «أخرى» السابقةُ مختارةً حين تُفتَح للتعديل ولا تُمحى */
 function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
+/* (V38.24) قرارُ المالك: الكوبري والنفقُ واللوحاتُ الاسترشاديةُ شأنُ الممرات وحدَها — ومسارُ الجمرات (خروجُ الجمرات مثلًا) —
+   لا المخيمات ولا المحطات ولا البوابات ولا الكاميرات. حقلُ «موقع النقطة» وخيارُ «لوحة استرشادية» لا يظهران لغيرها */
+function locApplies(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر'); }
 function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })).concat([chalOther()]); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
@@ -8689,15 +8692,15 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + ' <span class="req">*</span></label>'
-          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم','لوحة استرشادية'].map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح */
+          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].concat(locApplies(s) || FORM.mount === 'لوحة استرشادية' ? ['لوحة استرشادية'] : []).map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح — للممرات والجمرات (V38.24) */
               return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
           /* (V38.23) «موقع النقطة» اختيارٌ صريحٌ بدل أن يُستنتَج من الكلام: تحت كوبري · عند نفق — حقلٌ مستقلٌّ عن «نوع التركيب»
              لأن النقطةَ قد تكون على جدارٍ وتحت كوبري معًا. منه يُبنى «حسب الموقع» في التحديات والمعوقات */
-          + '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
+          + (locApplies(s) ? '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
           + '<select data-form="loc">' + [''].concat(SVQ_OPT.loc).map(function(o){
               return '<option value="' + esc(o) + '"' + ((FORM.loc || '') === o ? ' selected' : '') + '>' + esc(o ? t(o) : '\u2014') + '</option>'; }).join('')
-          + '</select></div>'
+          + '</select></div>' : '')   /* (V38.24) للممرات والجمرات وحدَها */
           + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + ' <span class="req">*</span></label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
               return '<option value="' + esc(o) + '"' + (FORM.power===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
@@ -25468,6 +25471,7 @@ function obsLocTags(x){
   var tn = /نفق/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
   var sg = r.mount === 'لوحة استرشادية' ? src(true) : hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
   var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
+  if (!locApplies(x)){ b = tn = sg = ''; }   /* (V38.24) الكوبري والنفقُ واللوحاتُ للممرات والجمرات وحدَها */
   if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
   return out;
 }
@@ -25476,10 +25480,10 @@ function obsLocLists(){
   obsLocCats().forEach(function(c){
     ['ممر', 'مخيم'].forEach(function(ty){
       var key = obsLocKey(c[0], ty); if (MFU.lists[key]) return;
-      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات' : 'المخيمات'),
+      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات والجمرات' : 'المخيمات'),
         head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
+          return mtSites().filter(function(x){ return ty === 'ممر' ? locApplies(x) : x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
             .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), String(r.chal_note || ''), String(r.note || '')]; });
         } };
     });
@@ -25489,9 +25493,9 @@ function mtObsLoc(){
   obsLocLists();
   var Z = {}, any = 0;
   mtSites().forEach(function(x){
-    if (x.type !== 'ممر' && x.type !== 'مخيم') return;
+    if (!locApplies(x) && x.type !== 'مخيم') return;
     var g = obsLocTags(x); if (!g) return;
-    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (x.type === 'ممر') c0.p++; else c0.c++; any++; });
+    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (locApplies(x)) c0.p++; else c0.c++; any++; });
   });
   if (!any) return '';
   var cats = obsLocCats();
@@ -25505,11 +25509,11 @@ function mtObsLoc(){
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'
       + cats.map(function(c){ var v = o[c[0]] || { p:0, c:0 };
           return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
-            + num(v.p, c[0], 'ممر', z) + num(v.c, c[0], 'مخيم', z) + '</div>'; }).join('')
+            + num(v.p, c[0], 'ممر', z) + (c[0] === 'nomount' ? num(v.c, c[0], 'مخيم', z) : '') + '</div>'; }).join('')   /* (V38.24) المخيماتُ في «بدون هيكل» وحدَها */
       + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها — من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» للممرات والمخيمات · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
@@ -28401,6 +28405,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.24', d:'2026-10-19', notes:[
+      'الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها' ] },
   { v:'V38.23', d:'2026-10-19', notes:[
       'اختيار صريح في المسح: «لوحة استرشادية» في نوع التركيب، وحقل «موقع النقطة» (تحت كوبري · مدخل أو مخرج نفق)' ] },
   { v:'V38.22', d:'2026-10-19', notes:[

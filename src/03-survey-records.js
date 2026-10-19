@@ -866,15 +866,15 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + ' <span class="req">*</span></label>'
-          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم','لوحة استرشادية'].map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح */
+          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].concat(locApplies(s) || FORM.mount === 'لوحة استرشادية' ? ['لوحة استرشادية'] : []).map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح — للممرات والجمرات (V38.24) */
               return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
           /* (V38.23) «موقع النقطة» اختيارٌ صريحٌ بدل أن يُستنتَج من الكلام: تحت كوبري · عند نفق — حقلٌ مستقلٌّ عن «نوع التركيب»
              لأن النقطةَ قد تكون على جدارٍ وتحت كوبري معًا. منه يُبنى «حسب الموقع» في التحديات والمعوقات */
-          + '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
+          + (locApplies(s) ? '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
           + '<select data-form="loc">' + [''].concat(SVQ_OPT.loc).map(function(o){
               return '<option value="' + esc(o) + '"' + ((FORM.loc || '') === o ? ' selected' : '') + '>' + esc(o ? t(o) : '\u2014') + '</option>'; }).join('')
-          + '</select></div>'
+          + '</select></div>' : '')   /* (V38.24) للممرات والجمرات وحدَها */
           + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + ' <span class="req">*</span></label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
               return '<option value="' + esc(o) + '"' + (FORM.power===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
