@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-11-drawing-board-modules.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Drawing board and its modules: survey details, single challenge key, rooms with sensors.
+   DEFINES : routePanelHtml, mapUIHtml, mapDraw, mapFallback, fieldRecords, fieldTools, dayDone, chalKey, chalKeys, svdChals, chalOtherTexts, chalOtherCard, svdMetal, svdAvgRooms … (+9 more)
+   GLOBALS : SITE_Q, SVD_PICK, CHAL_ALIAS, SVD_SRC, SVD_CARDS, SVD_MEMO
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ لوحُ الرسم (V17.58–V17.59) ═══
    المسارُ: المسافةُ بيد الراسم، والنقاطُ تُسحَب ثم تُحفَظ. والمساحةُ: المخيمُ
    بحدوده ومربعه وشاخصه، وغيرُه شبكةُ نقاطٍ بمسافتها. */

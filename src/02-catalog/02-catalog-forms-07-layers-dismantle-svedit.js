@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-07-layers-dismantle-svedit.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq*).
+   DEFINES : disSave, maintList, maintSave, maintDone, maintDel, LAYER, svqMay, svqKeys, svqLabel, svqFmt, svqEditor, svqSheet, svqPhotoCount, svqKindLabel … (+5 more)
+   GLOBALS : LAYERS, DISF, MNTF, DIS_COND, SVQ, TYPES_OPEN, SVQ_NUM, SVQ_OPT, SVQ_TEXT, BRIEF_ST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الطبقات الثلاث — لكلٍّ ما تُظهر وما تُسند ═══
    المسحُ يرى الكلَّ ويُسند زيارة، والتركيبُ لا يرى إلا ما مُسح ويُسند تركيبًا،
    والفكُّ لا يرى إلا ما رُكِّب ويُسند فكًّا. فلا يُجدوَل عملٌ قبل ما يسبقه. */

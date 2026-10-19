@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-04-readiness-conditions.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : What is ready per request type and the condition chain explaining why a point cannot be assigned.
+   DEFINES : asnReadyList, asnQuick, asnReadyCard, gateChain, gateFirst, gateCard, gateSay, asnCommit, mapSelBar, mineFiltered
+   GLOBALS : ASN_READY, ASN_QCAP, MAP_SELECT, MY_ONLY
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الجاهزُ لكلِّ نوعِ طلب ═══
    كان إنشاءُ الطلب يبدأ من الخريطة دائمًا: تُفتَح، وتُبدَّل الطبقةُ إلى
    النوع المطلوب، وتُحدَّد النقاطُ واحدةً واحدةً أو بـ«حدّد الكل»، ثم يُفتَح

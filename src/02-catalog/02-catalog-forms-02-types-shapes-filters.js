@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-02-types-shapes-filters.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the filter bar.
+   DEFINES : typeShape, mapShapeOf, shapeRing, shapeSvg, taxCalc, taxOf, routesList, mapFitFiltered, filtOn, filtPass, catCounts, camNetOf, siteFloor, floorName … (+22 more)
+   GLOBALS : SHAPES, SHAPE_UNIT, TYPE_SHAPE_DEF, TAX_ALIAS, TAX_G, TAX_T, TAX_V, TAX_DEF, CAT_DEF, CAT_DEF_BASE … (+12 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التصنيف والتفاصيل — كما في العامل ═══
    شريطان: المشاعرُ ثم الأنواعُ بأيقوناتها وألوانها،
    والضغطُ يُرشِّح الخريطةَ والقائمةَ معًا في اللحظة نفسها. */

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-11-site-popup.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : The point popup on the map — every button acts.
+   DEFINES : siteTitle, siteSub, netRows, popPhotosHtml, popHtml
+   GLOBALS : MOVE_ID
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */

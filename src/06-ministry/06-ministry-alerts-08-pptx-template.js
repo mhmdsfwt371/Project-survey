@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-08-pptx-template.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : PowerPoint built from the original ministry template.
+   DEFINES : pptxTemplate, ooxRead, ooxWrite, pxE, pxRun, pxP, pxBox, pxTable, pxScale, pxLvl, pxCards, mfuSlides, mfuPptx, expScopeRow … (+2 more)
+   GLOBALS : PX_ID, PX, PX_K
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ باوربوينت من قالب العرض الأصلي (V20.4) ═══
    templates/weekly-readers.pptx: شرائحُ مسار القارئات من «التحديث الدوري لمشروع بطاقة
    نسك» مقصوصةً (٣٫٩ ميجا): الغلاف بتاريخين نائبين، والفاصل، وثماني شرائحِ محتوى بعنوان

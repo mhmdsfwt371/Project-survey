@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-08-parts-history-onboarding.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Parts picker, three items missing from the worker, the point's full history, and the first-run tour.
+   DEFINES : patList, patSave, patDel, patApply, itemPickerHtml, pkAdd, solGo, apprIns, posWatch, distKm, distTxt, probeIp, probeOne, probeRun … (+9 more)
+   GLOBALS : SOL_LINES, MYPOS, PROBE, SITE_LOG_MORE, LOG_KIND, TOUR
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مُنتقي القطع — قائمةٌ واحدةٌ مبحوثةٌ وأنماطٌ جاهزة ═══
    كان اقتراحُ الحلِّ شبكةَ كلِّ أصناف الكتالوج بحقولِ كمّياتٍ فارغة — يبحث
    المهندسُ بعينه بين ثلاثين صنفًا عن أربعةٍ يريدها. صار قائمةً واحدةً تُبحَث

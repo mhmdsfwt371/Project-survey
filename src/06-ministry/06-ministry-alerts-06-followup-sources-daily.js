@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Challenges from three sources, everything linked and heard in the report, weekly tasks in follow-up, follow-up maturity and the daily work summary.
+   DEFINES : mfuTaskState, mfuAllChal, mfuHist, mfuTaskNote, mfuReqView, mfuTimeline, mfuTaskGone, mfuDoneAt, mfuWeekBlocks, mfuBlocksCard, mfuUnseen, mfuAgeDays, mfuAgePill, mfuOpenedAt … (+19 more)
+   GLOBALS : WDY, WDY_SER
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التحدياتُ بمصادرها الثلاثة (V20.5) ═══
    «التحدياتُ تبان إنها جاية من المسح الميداني ونعدّلها: على مين، ومين هيحلّها،
    وآليةُ المعالجة — والمهامُّ الأسبوعيةُ مربوطة: التحدي فيها يبان ولما يتحلّ يبان».

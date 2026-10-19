@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-12-clicks-doc-3.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 3 (parts 8–9).
+   DEFINES : onDocClickPart8, onDocClickPart9
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClickPart8(e){
   var pid;   /* تُكتب هنا قبل أن تُقرأ */
     var tp = e.target.closest('[data-tpl]');

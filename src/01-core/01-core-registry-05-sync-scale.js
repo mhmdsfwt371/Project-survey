@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-05-sync-scale.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-out to 150 concurrent devices.
+   DEFINES : uid36
+   GLOBALS : FB_PLAN, DEV_ID, _uidSeq, CORE, FB
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاتساعُ إلى مئةٍ وخمسين جهازًا ═══
    معرّفٌ ثابتٌ لكلِّ جهاز: بلا معرّفٍ يشترك جهازان في معرّفٍ متسلسلٍ واحدٍ
    فيمحو أحدُهما الآخر، ولا يُعرَف أيُّهما كتب. */

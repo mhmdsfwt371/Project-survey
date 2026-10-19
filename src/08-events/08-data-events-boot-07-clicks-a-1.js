@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-07-clicks-a-1.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 1 (return true when the event is consumed).
+   DEFINES : clickA, clickAPart1, clickAPart2
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نقراتٌ منقولةٌ من onDocClick لتبقى تحت الحدّ — ترجع true إن التقطت الحدث ═══ */
 function clickA(e){
   /* (V33.0) كان ٦٦٥ سطرًا؛ صار أجزاءً بالترتيب نفسِه — يُرجَع ما أرجعه الجزءُ الذي عالج النقرة */

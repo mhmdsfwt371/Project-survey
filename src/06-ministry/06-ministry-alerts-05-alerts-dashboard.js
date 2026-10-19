@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-05-alerts-dashboard.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Alert rules configured from Settings, card popups from the ministry page, and the readable dashboard.
+   DEFINES : ageDays, alRuleDays, alRuleList, alAll, alCard, svListSites, svListRows, mfuWtRow, svListCount, svObKey, svListRows0, svListHead, svListTitle, svListPop … (+26 more)
+   GLOBALS : AL_RULES, SV_PHO, SV_SHOW, SV_VIEW, SV_ZF, SV_ZONE_COLORS, SV_ST, SV_WHY, SV_WHY_ORDER, SV_STACK … (+2 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
    كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-01-labels-colors.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language.
+   DEFINES : svTexts, svFieldRows, briefOf, briefStage, briefColor, briefRing, briefMay, briefSet, translitWord, coName, dispName, catLabel, typeLabel, ptsSurvey … (+1 more)
+   GLOBALS : SV_LABELS, SV_ORDER, BRIEF_C, BRIEF_STAGE, BRIEF_STAGE_ORDER, NAME_FIX, TRANSLIT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ ما سجّله الميدانُ يُقرأ بالعين المجرّدة (V16.89) ═══
    الوزارةُ تقيّم النقطةَ من بطاقتها: لا تفتح نموذجَ المسح ولا تملك زرَّه.

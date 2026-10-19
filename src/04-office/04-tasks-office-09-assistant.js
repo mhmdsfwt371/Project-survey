@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-09-assistant.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : The assistant: local search with no API, glossary, pending-upload window, diagnostics, usage learning, and the data assistant answering with numbers from the device.
+   DEFINES : glossaryHits, helpIndexAll, helpSearch, assistHtml, assistDiag, assistIntent, assistFixHtml, assistDiagCard, assistLog, assistWarnCount, assistDiagSig, assistLiveSync, assistBadgeSync, assistForYou … (+9 more)
+   GLOBALS : ASSIST_OPEN, ASSIST_Q, GLOSSARY, HELP_KEYWORDS, HELP_STEPS, QUEUE_OPEN, Q_LBL, ASSIST_INTENTS, ASSIST_QUICK, ASSIST_LOGGED … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المساعدُ: بحثٌ محليٌّ صرف — بلا API ولا اتصالٍ خارجي ═══
    مئةٌ وصفحةٌ لا يحفظها أحدٌ عن ظهر قلب. يكتب المستخدمُ سؤالَه بكلماته،
    فيُطابَق ضدَّ فهرسٍ مبنيٍّ من عنوان كل صفحةٍ ووصفها (المكتوبَين أصلًا)

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'.
+   DEFINES : mohuDms, mohuPole, mohuSec, mohuSiteKey, mohuParse, camxRows, impRead, impValidate, impApply, swInstall, swBusy, swCancel, swApply, swNow … (+6 more)
+   GLOBALS : SW_STATE, SW_RELOADED, SW_TICK, EPOCH_PENDING, SYNC_ALL_SEEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تقريرُ كاميرات الوزارة بعناوينه — من داخل التطبيق لا من الشيفرة (V22.5) ═══
    «الكاميرات ٨٨ في الإكسل وفيهم بيانات الكاميرات والـIP — محتاجها كلها واضحة». الشيفرةُ منشورةٌ
    للعموم فلا تحمل عنوانَ شبكة؛ فيُرفَع التقريرُ نفسُه (بصيغة الوزارة كما هو) من «الأدوات ← الاستيراد»:

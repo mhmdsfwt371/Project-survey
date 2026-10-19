@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-04-weights-zones.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Weight rows, zones from one source, display-name fixes and the constants card (incl. pending-upload limit).
+   DEFINES : zoneList, zoneOptions, zoneCode, zoneRename, mxTypeMove, mxDeclareGo, mxRowInfo, halves, mxTable, prepAsm
+   GLOBALS : ZONE_CODE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ صفُّ الوزن يُدار كاملًا: المشعرُ والنوعُ والوزنُ والحذف ══════════════
    كان الصفُّ يعرض المشعرَ والنوعَ نصًّا ويُعدَّل وزنُه وحدَه. فمن أراد أن
    يصحّح اسمَ مشعرٍ أو ينقل نوعًا لم يجد أين — والإضافةُ موجودةٌ والتصحيحُ لا.

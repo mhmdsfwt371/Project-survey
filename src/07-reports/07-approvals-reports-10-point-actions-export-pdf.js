@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Point window actions, click identity, export centre by section, export by role, PDF cover page.
+   DEFINES : popOpenAt, expAllowed, expSecs, pdfTile, pdfBar, pdfCols, pdfDonut, pdfCover, expPdf, expHtml
+   GLOBALS : BOOT_AT, POP_OPEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
 

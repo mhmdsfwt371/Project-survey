@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-01-site-edit-twins.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on one coordinate, permanent delete.
+   DEFINES : siteZone, siteRow, loadSites, maySiteEdit, maySiteEditBasic, siteOvApply, dqFar, dqDupPos, siteKeyOf, twinOf, dupMerge, dupUndo, dupMerged, dqNoCo … (+18 more)
+   GLOBALS : SITE_ED, SITE_DEL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ منطقةُ الصنف من نوع الموقع — مسطرةٌ واحدةٌ لا ثلاث ═══
    الكتالوجُ منطقتان فقط: `camp` و`cor`. وكان كلُّ موضعٍ يقرّر بنفسه

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-05-speed-board.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Speed board per device and per page (presence heartbeat: version, pending queue, photos).
+   DEFINES : speedCell, speedRows, speedCard, devActCard, perfCard
+   GLOBALS : SPEED_PAGES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.34) البندُ ٤ — لوحةُ السرعة لكلِّ جهازٍ ولكلِّ صفحة ═══
    من قياسات الأجهزة نفسِها (نبضتُها اليومية): زمنُ رسم كلِّ صفحةٍ (الربعُ الأعلى)، واستجابةُ اللمس، وزمنُ الفتح — لكلِّ جهازٍ صفّ،
    ولكلِّ صفحةٍ رئيسيةٍ عمود؛ أخضرُ دون ٠٫٣ ثانية (الهدف)، وأصفرُ دون ثانية، وأحمرُ فوقها. فيُعرَف الجهازُ البطيءُ والصفحةُ البطيئةُ قبل الشكوى. */

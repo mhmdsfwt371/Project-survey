@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-02-inventory-workshop.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key.
+   DEFINES : seedOnce, itemsList, itemName, regList, regStatus, regSet, regDel, workReqList, workReqAdd, workReqComplete, workReqEdit, workReqCancel, itemSave, itemRename … (+11 more)
+   GLOBALS : REG_KIND, MOVE_KINDS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════
    كانت الأربعُ شاشاتٍ تعرض بذرةً مكتوبةً يومَ بُني الشكل: أربعةَ أصنافٍ
    وأربعَ حركاتٍ وعمليتَي شراء. تبدو عاملةً ولا تقبل إدخالًا — فلا يُسجَّل

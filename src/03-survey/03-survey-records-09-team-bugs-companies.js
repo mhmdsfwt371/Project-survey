@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-09-team-bugs-companies.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename.
+   DEFINES : phoneClean, phonesBulk, phonesCard, bugCtx, bugSend, bugList, bugMayDecide, bugClose, bugDecide, bugsPageHtml, bugSheet, pageTitle, dayStart, briefingRows … (+19 more)
+   GLOBALS : PH_MISS, BUG_OPEN, BUG_KINDS, BUG_ST_C, BUG_DEC, CO_STALL, WA_KINDS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ أرقامُ الفريق دفعةً واحدة (V16.99) ═══
    الرقمُ حقلٌ في الحساب، وإدخالُه واحدًا واحدًا لخمسةَ عشرَ حسابًا يُؤجَّل
    فلا يُعمَل — و«بلاغُ اليوم» بلا أرقامٍ نصفُ شاشة. فصار يُلصَق الجدولُ كما

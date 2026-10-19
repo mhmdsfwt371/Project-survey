@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Long lists (100 first then 'show more'), persistent storage request, table and window clicks.
+   DEFINES : moreKey, capList, moreHtml, render, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, actList, clickTables
+   GLOBALS : MORE_SHOWN, PERSIST, ACTS_CACHE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ القوائمُ الطويلة مئةً أوّلًا ثم «اعرض المزيد» (V26.2) — قرارُ المالك ═══
    صفحةٌ تبني ثلاثَمئة صفٍّ (أربعةُ آلافِ عنصر) تأخذ ربعَ ثانيةٍ على المكتب وثانيةً على الهاتف مع كلِّ ضغطة — وهو أقربُ
    شيءٍ إلى «التعليق». صارت كلُّ قائمةٍ تبني مئةً، وزرٌّ واحدٌ أسفلَ الصفحة يزيد مئتين كلَّ ضغطة؛ والبحثُ في الصفحة

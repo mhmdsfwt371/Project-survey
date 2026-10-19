@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-14-pull-scope-listen-map.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons.
+   DEFINES : pullScope, treeKeys, chunk30, treeQuery, pullDelta, readBudget, readSlowFactor, readDelta, pulseWatch, pulseStop, bridgeWatch, liveWatch, liveStop, s47Of … (+2 more)
+   GLOBALS : ALL_WORK, READ_CAP_WARN, PULSE_UNSUB, BRIDGE_UNSUB, LIVE, MAP_ME, MAP, MAP_READY, POLY_Z, POLY … (+3 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نطاقُ السحب — V16.11 ═══
    كان كلُّ من رتبتُه فوق المشرف يسحب السجلاتِ كلَّها خامًّا كلَّ خمس دقائق، ويُنصِت
    إليها كلِّها فوق ذلك — فتُحسَب القراءةُ مرتين على كلِّ جهازٍ من ثلاثةٍ وعشرين،

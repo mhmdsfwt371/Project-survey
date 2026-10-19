@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-08-egates-seed.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Al Mashaaer train: the nine station references and the provisional E-GATE inventory (no coordinates until verified), the station E-GATE card, verification editor and map points.
+   DEFINES : egSeed, egStations, egSeedOf, egOvOf, egOf, egList, egOps, egIsStation, egCard, egSave, egAdd, egMapPoints
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V38.31) قطار المشاعر — المحطاتُ التسعُ وجردُ البوابات الإلكترونية الأوّليّ ═══
    مصدرُ البيانات: ملفُ المالك Mashair_EGATE_Import_Manifest_PRELIMINARY.json (مراجعة 2026-10-19) وKMZ المحطات.
    المحطاتُ التسعُ بإحداثياتٍ مرجعيةٍ مؤكَّدة (WGS84 من عقد السكة في الخريطة المفتوحة) — وهي في سجلِّ النقاط.

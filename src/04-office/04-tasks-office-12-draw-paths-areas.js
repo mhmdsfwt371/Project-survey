@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-12-draw-paths-areas.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Drawing on the map: paths that generate points, tafweej routes, drag before save, areas filled with grids, camp boundaries, office-placed points, and a visible exit for every mode.
+   DEFINES : tfdMay, tfdGraph, tfdMpp, tfdSnap, tfdPath, tfdStart, tfdAdd, tfdUndo, tfdCancel, tfdDrawn, tfdLen, tfdSave, tfdClear, tfdPanelHtml … (+33 more)
+   GLOBALS : TFD, ROUTE, RT_EVERY_MIN, PIN_ON
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مسارٌ يُرسَم على الخريطة فتُولَّد نقاطُه (V17.45) ═══
    طريقٌ طولُه كيلومترات تُراد فيه نقطةٌ كلَّ مئتين وخمسين مترًا: وضعُها واحدةً
    واحدةً عملُ يومٍ ويُخطئ. فيُرسَم المسارُ نقرةً بعد نقرةٍ على الخريطة، ثم

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-13-perf-distribution-cameras.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Performance for 150 concurrent users, distribution by zone and type, survey progress per zone, ministry cameras (Bullet/PTZ/LPR) and hierarchy views.
+   DEFINES : siteIndex, siteFind, siteSearch, statBump, recLocApply, siteKeyStats, overZoneCards, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys, camKind, camKindLabel, declaredZones … (+4 more)
+   GLOBALS : SITE_IX, STAT_CACHE, OVER_ZONE, CAM_KINDS, LIST_PAGE, RENDER_CUR, RENDER_KEY, CFG_VER, PULL_COL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الأداء — مئةٌ وخمسون مستخدمًا في آنٍ واحد ═══
    ثلاثةُ أعناقٍ قاستها الأرقام: بحثٌ خطيٌّ في ألفٍ وسبعمئة صف،
    وإحصاءٌ يُعاد حسابُه في كل رسمة، وسحبٌ كاملٌ من القاعدة

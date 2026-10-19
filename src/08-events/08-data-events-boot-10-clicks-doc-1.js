@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-10-clicks-doc-1.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification.
+   DEFINES : onDocClick, onDocClickPart1, onDocClickPart2, onDocClickPart3
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClick(e){
   /* (V37.14) جهةُ الدعم المطلوب أوّلًا — معالجٌ سابقٌ عند المهندس كان يبتلع الضغطَ قبل وصوله */
   var supq = e.target.closest('[data-supq]');   /* (V37.14) جهةُ الدعم المطلوب — قبل القائمة */

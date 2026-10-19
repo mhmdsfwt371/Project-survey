@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-09-pilot-workflow-readiness.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Pilot installation timings, the workflow map, today's decisions box and season readiness.
+   DEFINES : pilotRows, pilotCard, svReopen, surveyList, wfStep, wfDiagram, wfBody
+   GLOBALS : SURV_Q
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نقاطُ التركيب التجريبيِّ — الزمنُ بين مراحلها (V17.95) ═══
    قبل موجة التركيب تُركَّب نقاطٌ قليلةٌ أوّلًا لتُقاس: كم بين الإسناد والتركيب،
    وبين التركيب والتدقيق، وبين التدقيق والتسليم، ثم الفكّ. يَسِمُ المديرُ النقطةَ

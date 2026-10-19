@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-15-handover-minutes.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Handover and official receipt minutes.
+   DEFINES : handNext, handReady, handBlock, handSave, hoSetParty, hoSetSigner, hoSetupCard, hoTpl, hoParty, hoSigners, hoLocOf, hoItems, handDocSite, handDocCo
+   GLOBALS : HAND_SEQ, HO_PARTIES, HO_SIGNERS, HO_TPL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ محضرُ التسليم ═══
    «جاهزٌ للتسليم» كان يعدُّ ما رُكِّب واعتُمد، و«سُلِّم» صفرًا مكتوبًا — لأن
    التسليمَ لم يكن فعلًا في النظام أصلًا. وهو حلقةٌ لازمة: ما رُكِّب يُسلَّم

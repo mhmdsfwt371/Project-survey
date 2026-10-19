@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-02-approvals-governance.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Approvals from proposal to decision, ministry financial summary, governance gaps, escalation, responsibility matrix and stage chain.
+   DEFINES : fixList, coReqList, buyPend, fixOpen, fixCard, fixSend, coAddDirect, coRemove, apprDecide, escList, escSave, escSet, escAdd, escDel … (+7 more)
+   GLOBALS : FIX_OPEN, ESC_RULES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاعتمادات: من الاقتراح إلى القرار ═══════════════════════════════════
    كانت الشاشةُ أربعةَ أصفارٍ ثابتةٍ ورسمًا للدورة — «يقترح المشرف ← يراجع
    المهندس ← يُعتمد أو يُردّ» — ودورةٌ مرسومةٌ لا تُنفَّذ أسوأُ من غيابها:

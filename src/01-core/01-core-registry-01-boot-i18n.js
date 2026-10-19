@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-01-boot-i18n.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Boot guard (crash-loop breaker), language engine (Arabic/English/Urdu), number and date formatting per language, barcode scan of serials, screen wake-lock during forms, and the shared dictionary tail.
+   DEFINES : bootStage, bootOk, i18nLoad, i18nThen, i18nFlush, i18nReady, noTashkeel, t, locOf, fmtDate, fmtTime, fmtDT, fmtDT2, nm … (+22 more)
+   GLOBALS : BOOT_GUARD, I18N, D, I18N_FILE, LANG, TASHKEEL_RE, NM_CACHE, SCAN, WAKE, SUN_ON
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 'use strict';   /* (V31.1) الوضعُ الصارم: لا متغيراتٍ ضمنيةً عامةً ولا أخطاءً صامتة — يسري على الشيفرة كلِّها */
 /* ═══ حارسُ الإقلاع — قاطعُ التوقّف المتكرّر (V21.9) ═══
    بلاغ: «A problem repeatedly occurred» في سفاري الآيفون لحظةَ التحديث التلقائي، ويعمل

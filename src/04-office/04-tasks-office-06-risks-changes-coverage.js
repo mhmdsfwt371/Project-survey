@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-06-risks-changes-coverage.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Live risk register, approved changes applied to the baseline, and coverage from company departments to client management.
+   DEFINES : risksList, riskSave, riskSet, riskDel, riskAdd, riskSignals, riskScore, riskLevel, chgAdd, chgApply, chgDecide, hseAdd
+   GLOBALS : RISKS, CHANGES, ORG, HSE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ سجلُّ المخاطر الحيّ ═══
    كان السجلُّ ستةَ مخاطرَ مكتوبةً في الشيفرة، تُعرَض ولا تُمَسّ: لا يُضاف
    خطرٌ ظهر في الميدان، ولا يُغلَق ما زال، ولا يتغيّر مالكٌ. وسجلُّ مخاطرَ لا

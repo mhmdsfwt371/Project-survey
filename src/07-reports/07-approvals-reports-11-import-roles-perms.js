@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-11-import-roles-perms.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and merged pages.
+   DEFINES : importCard, impPreviewCard, repcenterBody, isBossHere, R, may, pmLocked, pmDefault, pmMatrix, pmOverride, pmGet, pmToggle, pmDirty, pmSave … (+20 more)
+   GLOBALS : IMPORTS, ROLES, ROLE, BOSS_EMAILS, PM_OPS, PM_COLS, PM_CAP, PM_DRAFT, ROLE_RANK, BASE_ROLES … (+5 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاستيراد — قالب يُنزَّل ثم يُملأ ثم يُرفع ═══ */
 
 var IMPORTS = [

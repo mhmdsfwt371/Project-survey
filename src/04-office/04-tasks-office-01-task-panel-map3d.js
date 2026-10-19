@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-01-task-panel-map3d.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle.
+   DEFINES : chalUpd, chalUpds, chalUpdNote, chalUpdBox, chalAssignBox, chalPopHtml, chalPopSync, wtHostSync, wtSheet, m3Load, m3Height, m3Points, m3Cols, m3Style … (+10 more)
+   GLOBALS : CHAL_POP, MAP_3D, M3_FOOT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ لوحةُ المهمة — مكانٌ واحدٌ لكلِّ تعديل ═══
    الحالةُ شرائحُ تُضغَط فتُحفَظ وتُسجَّل، و«ما الجديد؟» سطرٌ يُضاف إلى سجلٍّ

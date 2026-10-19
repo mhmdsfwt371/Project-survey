@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-11-whats-new.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : 'What's new' — the version log shown once per update (also the release notes source for bump.mjs).
+   DEFINES : releaseNotesSince, whatsNewMaybe, wnClose, wnHtml, pwOpen, pwNeeded, pwHtml, pwSave
+   GLOBALS : RELEASE_NOTES, WN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ ما الجديد — رسالةٌ واحدةٌ عند أوّل فتحٍ بعد التحديث (V17.87) ═══
    التحديثُ يصل الهاتفَ صامتًا فلا يعرف الميدانُ ما تبدّل. صار لكلِّ نسخةٍ
    سطورٌ بلسان المستخدم لا بلسان الشيفرة، تُعرَض مرةً واحدةً عند أوّل فتحٍ
@@ -6,6 +15,8 @@
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.32', d:'2026-10-19', notes:[
+      'تسليم الكود: رأس إنجليزي لكل ملف، ودليل مطوّر بالإنجليزية، والتعليقات الجديدة بالإنجليزية' ] },
   { v:'V38.31', d:'2026-10-19', notes:[
       'قطار المشاعر: ٩ محطات بإحداثيات مرجعية و٦٢ بوابة إلكترونية أولية بلا إحداثيات حتى تُحقَّق — ومهلة ما ينتظر الرفع ٧ أيام' ] },
   { v:'V38.30', d:'2026-10-19', notes:[

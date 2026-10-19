@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-05-management-performance.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Management records, methodology matching and the single performance page with five levels.
+   DEFINES : pmoSees, pmoFetch, pmoList, pmoEdBtn, pmoEdLabel, pmoEdCancel, pmoEdId, pmoEdFill, pmoPut, pmoVal, lessonsBody, stakeBody, pmiRows, pmiBody … (+1 more)
+   GLOBALS : PMO, PMO_LEVELS, PMO_DOMAINS, PMO_ED, PMO_FORM, PMI_ST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ سجلاتُ الإدارة (V19.3) ═══
    الدروسُ المستفادة، والمراجعاتُ الدورية، وأصحابُ المصلحة — في وثيقةٍ واحدة
    settings/pmo (قاعدتُها: المكتبُ والإدارةُ العليا قراءةً، والمكتبُ كتابةً). كلُّ

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-04-engine-storage.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk.
+   DEFINES : idbWhyText, idbAtRisk, idbBannerUpdate, idbWatchStart, idbTellBad, idbAdopt, idbDrop, idbRetryNow, idbRetryLater, idbStart, idbOpen, idbUnsynced, idbGet, idbSet
+   GLOBALS : FB_CFG, IDB_NAME, IDB_LOG_ERR, IDB_WHY, IDB_WATCH_T, STATE, QUEUE_CAP
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المحرك — تخزينٌ محليٌّ أولًا ثم مزامنةٌ سحابية ═══
    الكتابة تنجح على الجهاز دائمًا، والشبكة تفصيلٌ لاحقٌ لا شرطٌ مسبق.
    وما لم يُرفع يبقى في طابورٍ يُعاد إرساله حين تعود الشبكة. */

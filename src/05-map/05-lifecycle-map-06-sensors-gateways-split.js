@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-06-sensors-gateways-split.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Sensors and gateways as first-class points, and splitting a camp.
+   DEFINES : iotOf, iotCampIds, iotPad, iotSid, iotGid, iotAllGw, iotM, iotMax, iotRing, iotOutside, iotGrid, iotCentroid, iotMakePlan, iotGen … (+29 more)
+   GLOBALS : IOT_ST, IOT_N, BED, SPLIT, SPLIT_COL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.70) الحساسُ والجيت واي «زي باقي النقاط» — قرارُ المالك: رقمٌ خاصٌّ وبياناتٌ (الغرفة، السيريال، الحالة، ملاحظة)، ونافذةٌ لكلِّ جهاز،
    وتحريكٌ وإضافةٌ وحذفٌ للحساسات والجيت واي (أكثرُ من جيت واي للمخيم الكبير)، وخطّةٌ تُولَّد للمخيم الجديد أو الجزء المقسوم (١٢ حساسًا داخل حدوده)،
    وما خرج عن الحدود بعد تعديلها يُعلَّم بالأحمر ويُوزَّع من جديد، وإكسلٌ للحساسات. وتبقى خارجَ أرقام الوزارة بعدّادها الخاص (قرارُ V25.7).

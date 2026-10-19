@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-08-clicks-a-2.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 2.
+   DEFINES : clickAPart3, clickAPart4, clickAPart5
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function clickAPart3(e){
     if (e.target.closest('[data-reqtask]')){
     var rq = mfuList('req').filter(function(x){ return x.id === e.target.closest('[data-reqtask]').getAttribute('data-reqtask'); })[0];

@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-10-assistant-reports.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Reports by words ('Excel/PDF for the points that…'): parser, data, grouping, card, export; plus the pending-upload window HTML.
+   DEFINES : aqRepStop, aqRepParse, aqRepData, aqRepGroup, aqRepCols, aqRepRow, aqRepPrep, aqRepCard, aqRepExport, aqGoTo, aqExamples, assistHomeHtml, assistResHtml, queueHtml … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V38.17) تقاريرُ بالكلام — «إكسل/PDF للنقاط اللي …» ═══
    طلبُ المالك: «أكتب الشرط بالكلام فيطلع ملف إكسل للنقاط اللي فيها كذا وكذا، ولو PDF بلوجو أفاقي يبقى حلو» —
    فيصير المساعدُ أداةَ تحليلٍ من بيانات الجهاز نفسِه بلا رجوعٍ للقاعدة ولا نموذجٍ خارجيّ. يعرض ما فهمه شرطًا شرطًا

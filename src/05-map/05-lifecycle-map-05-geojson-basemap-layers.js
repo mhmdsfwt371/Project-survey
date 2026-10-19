@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-05-geojson-basemap-layers.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing.
+   DEFINES : geoJsonBuild, geoJsonExport, basemapWarm, basemapManifest, basemapHave, basemapAuto, basemapWant, basemapStale, poiLoad, poiPaint, mayIot, iotLoad
+   GLOBALS : BASEMAP, BASEMAP_CACHE, BASEMAP_JS, POIL, POIL_C, IOT, IOT_C
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التصديرُ القياسي GeoJSON (V18.0) ═══
    ملفٌّ يفتحه أيُّ نظامٍ جغرافي: FeatureCollection وفق RFC 7946 (WGS84،
    الترتيبُ خطُّ الطول ثم خطُّ العرض)، ولكلِّ نقطةٍ حالتُها من دورة الحياة نفسِها

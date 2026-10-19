@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-04-devices-reset-pulse.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action.
+   DEFINES : appVer, agoTxt, presenceBeat, presenceFetch, presenceRows, wipeCounts, wipeGo, localStoreCard, sysReportFetch, sysReportCard, usageFetch, readsToday, usageCard, costGuardCard … (+3 more)
+   GLOBALS : PRES, WIPE_KEYS, SYSREP, USAGE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الطاقمُ والفرقُ: قائمةٌ حيةٌ تُحرَّر لا بذرةٌ تُعرَض ═════════════════
    كان `TECHS` ستةَ أسماءٍ مكتوبةً في الشيفرة، وطاقمُ الموسم الماضي اثنان
    وأربعون فنيًّا مستخرجين من أوراق التنفيذ اليومية. ومن أراد إضافةَ فنيٍّ

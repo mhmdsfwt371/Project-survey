@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-definitions-08-definitions.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicates. Define a definition here only.
+   DEFINES : svVisited, svReached, svStuck, svDone, svHasChal, svNeedsRevisit, svClean, svObstacle, chalShow, insDone, handOf, handDone, disDone, siteKey … (+63 more)
+   GLOBALS : CHAL_SHOW, VISIT_WHY, CHAL_CATS, WHY_RULES, CHAL_FROM, CHAL_RULES, CHAL_NONE_RX, CC_MEMO, CAT_LEGACY, WHY_ACCESS … (+10 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    تعريفاتُ النقطة — مصدرٌ واحد (V36.0، توصيةُ مراجعة الفريق)

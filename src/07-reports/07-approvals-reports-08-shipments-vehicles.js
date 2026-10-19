@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-08-shipments-vehicles.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Shipments tracked, vehicles as moving custody with their own log.
+   DEFINES : shipList, shipSave, shipLate, shipAdd, shipSet, shipDel, shipWatch, todayISO, msDay, vehKinds, vehKindName, vehList, vehOf, vehAsnList … (+16 more)
+   GLOBALS : SHIP_ST, SHIP_Q, ASN_LABEL, VEH_KINDS_SEED, VEH_OWN, VEH_Q, VEH_FIT, VLOG_D
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الشحنات: التوريدُ يُتابَع لا يُنتظَر ═══════════════════════════════════
    التصنيعُ والشحنُ والتخليصُ تقع خارجَ النظام — لكنَّ حالتَها تُدخَل فيه.
    وبلا موعدٍ متوقَّعٍ لا يُعرَف المتأخّرُ إلا حين يُسأل عنه، وحينئذٍ يكون قد

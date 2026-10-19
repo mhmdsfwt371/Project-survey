@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-03-site-details-points.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Full site details page (PAGE.site) and technician points computed from work.
+   DEFINES : stageOf, bonusList, bonusFor, mayBonus, bonusAdd, bonusDel, scores, scoreOf, stageList, stageTarget, dayCapOf
+   GLOBALS : DETAIL_ID, STAGE_ROLES, TECH_STAGE, SCORE_CACHE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تفاصيل النقطة الكاملة ═══ */
 var DETAIL_ID = '';
 

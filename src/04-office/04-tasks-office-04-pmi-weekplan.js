@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-04-pmi-weekplan.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Project governance per PMI and the engineer's week plan.
+   DEFINES : baseSet, baseDays, evm, evmVerdict, wplanSees, wplanMay, wplanFinal, wplanOpenPast, wplanUpdates, wplanWeek, isoWeekMonday, wplanNextWeek, wplanItems, wplanLines … (+1 more)
+   GLOBALS : BASE, WPLAN_WK, WPLAN_PRI
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ حوكمةُ المشروع بمعايير PMI ═══
    أربعةٌ يسأل عنها المدقّق ولم تكن: خطُّ أساسٍ يُقاس عليه، وقيمةٌ مكتسبةٌ
    تقول أين نحن، وسجلُّ مخاطرَ بالاحتمال والأثر، وضبطُ تغييرٍ يمنع الانزلاق. */

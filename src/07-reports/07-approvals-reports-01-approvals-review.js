@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-01-approvals-review.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points.
+   DEFINES : svFacts, qMatch, siteParts, chalSitesQ, notifMineQ, chalSites, stuckList, stuckAccept, stuckReopen, idleStep, stuckPanel
+   GLOBALS : SVA_ST, HO_DOC, SV_LABEL, CHAL_Q, STK_OPEN, MIN_ST, WR_DONE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
    الصفحةُ التي تُغلق الدورة: كلُّ زيارةٍ حُفظت تظهر هنا ببياناتها الجديدة —

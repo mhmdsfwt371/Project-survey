@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-06-teams-accounts-perms.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Teams and shares, crews and rates, the permissions module (UI + Firebase rules mirror) and role/team assignment to users.
+   DEFINES : teamOf, teamShare, teamPoints, crewStat, crewOf, crewSet, crewNewCard, crSaveTimes, crewNeed, roleName, assignRows, asnRoleSet
+   GLOBALS : TEAM_ROLE, TEAMS, CTEAM_CUR, WO_KINDS, CREWS, CREW_CUR, PERIODS, CREW_REPORTS, CREW_VIEW, TECHS … (+4 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الفرق ونسبُ الأنصبة ═══
    المجموعةُ تنجز معًا، والنقاطُ تُقسَّم بنسبٍ تُكتب لكلِّ عضو:
    قائدُ الفريق أكبرُ نصيبًا من الفني، والفنيُّ من المساعد. */

@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-03-settings-types-users.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Settings: point types, moving points between categories, users from the database, user log, delete/duplicate accounts, passwords, login-name change and on-device account creation.
+   DEFINES : typeCopy, typesNormalize, typesList, typesSave, typeUsed, typeSet, typeAdd, typeDel, siteSetType, selSetType, selRename, typeMoveDel, typesCard, mxExtra … (+35 more)
+   GLOBALS : TYPES_NORM, TYPES_OLD_L, W_ALIAS, MX_ZONES, USR, PROV_KICK, PW_FLOW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
    نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
 

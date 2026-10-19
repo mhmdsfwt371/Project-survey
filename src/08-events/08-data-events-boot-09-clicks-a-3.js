@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-09-clicks-a-3.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 3.
+   DEFINES : clickAPart6, clickAPart7
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function clickAPart6(e){
   var pk = e.target.closest('[data-pop]');   /* بحثٌ صرف — يُعاد حسابُه */
   var bst = e.target.closest('[data-bst]');   /* بحثٌ صرف — يُعاد حسابُه */

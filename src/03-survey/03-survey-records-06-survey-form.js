@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-06-survey-form.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page.
+   DEFINES : svExtra, ipPreset, ipFillMissing, ipsOf, formPts, photoBox, photoCard, photoQuality, photoQualityFlags, photoQualityWarn, photoHamming, photoDupOf, shrink, svDraftSave … (+5 more)
+   GLOBALS : SV_MORE, IP_OCT2, IP_OCT3, PHOTO_Q_IX, PQ, SVD
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نموذجُ المسح: الأساسيُّ أوّلًا والتفصيليُّ عند الطلب ═══
    كان النموذجُ يعرض سبعةً وعشرين حقلًا دفعةً واحدةً على شاشة هاتفٍ في
    الشمس — فيتوه المشرفُ ويملأ ما لا يلزم ويترك ما يلزم. والحقولُ كلُّها

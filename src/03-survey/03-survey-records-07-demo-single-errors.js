@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-07-demo-single-errors.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Demo-point kits, single-point form, production error capture, events carrying their point and actor.
+   DEFINES : insPrefill47, ex47SiteCard, demoTag, insRevs, insRevSnap, partsDiff, demoRevsHtml, demoStdSave, insKind, insRevPhotoN, insPhotoBtn, insPhotoAdd, insSave, formGo … (+7 more)
+   GLOBALS : SV_COPY_KEYS, ERR_SEEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.78) تجهيزاتُ نقطة الديمو ═══
    نقطةُ التجربة تُركَّب ثم تتغيّر: جهازٌ آخر، حساسٌ يُضاف، طريقةُ تثبيتٍ مختلفة — حتى يُتّفَق
    على القياسيّ. كان كلُّ حفظٍ يمحو ما قبله فيضيع تاريخُ ما جُرِّب. صار التركيبُ على نقطة الديمو

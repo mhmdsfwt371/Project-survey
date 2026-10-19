@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-07-incidents-milestones.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Incidents (correct/delete) and milestones managed, not just read.
+   DEFINES : hseRecount, hseSet, hseDel, ncrAdd, ncrClose, ipcAdd, ipcStep, mileDates, mileOv, mileList, mileUpsert, mileAdd, mileRemove, mileDateOf … (+3 more)
+   GLOBALS : NCRS, IPCS, MILES, MILE_EDIT, RACI_ACTS, LESSONS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الحادثُ يُصحَّح ويُحذَف ═══
    كان الحادثُ يُسجَّل ولا يُمَسّ: من كتب «يومين مفقودين» وتبيّن أنها ثلاثةٌ
    لم يجد أين يصحّح، ومن سجّل حادثًا بالخطأ أبقاه في سجلٍّ يُعرَض على

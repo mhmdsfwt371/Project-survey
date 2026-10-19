@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-06-data-gate-live.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting.
+   DEFINES : arCmp, dayKey, rollupToday, statsHistory, liveSmallStop, liveSmall, liveTickStop, pulseBadge, syncCdSecs, syncCdTxt, syncCycle, liveTick, logEventQuiet
+   GLOBALS : EXP, DB, ROLL_LAST, LIVE_SMALL, LIVE_WORK_PAGES, BADGE_TICK, SYNC, SOFT_ERRS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ بوابةُ البيانات (V31.5 — خطةُ التسليم، الوحدة ٣) ═══
    كلُّ حديثٍ مع القاعدة يمرّ من هنا — لا FB.db.collection في أيِّ مكانٍ آخر (جردُ الصحة يرفضه).
    الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى

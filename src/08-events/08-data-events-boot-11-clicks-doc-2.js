@@ -1,3 +1,11 @@
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-11-clicks-doc-2.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 2 (parts 4–7).
+   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClickPart4(e){
   var pzd = e.target.closest('[data-pzdrop]');   /* بحثٌ صرف — يُعاد حسابُه */
     if (pzd){

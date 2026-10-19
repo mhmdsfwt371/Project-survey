@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-11-weekly-tasks-paths.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status.
+   DEFINES : wtMay, wtLeaves, wtWbsName, wtForWbs, wtWbsBadge, wtMine, wtMeetList, wtFieldTxt, wtSince, wtMeetStart, wtMeetEnd, wtPanelInner, wtMeetHtml, wtCardOf … (+23 more)
+   GLOBALS : WT_F, WT_ST, WT_OPEN, WT_MEET, WT_STC, WT_LOGF, WT_TRACK, WT_TAB
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ متابعةُ المهام الأسبوعية ═══
    شيتُ «المهام» الذي يُدار به الاجتماعُ مرتين في الأسبوع: مهمةٌ ومسارٌ ووصفٌ
    ومسؤولٌ وحالةٌ وتاريخا رصدٍ واستحقاقٍ ومصدرٌ وآخرُ تحديث. كان إكسلًا بدوالٍّ

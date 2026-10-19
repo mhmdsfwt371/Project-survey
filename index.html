@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.31</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.32</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1315,7 +1315,16 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
   </main>
 </div>
 
-<script>'use strict';   /* (V31.1) الوضعُ الصارم: لا متغيراتٍ ضمنيةً عامةً ولا أخطاءً صامتة — يسري على الشيفرة كلِّها */
+<script>/* ============================================================================
+   FILE    : src/01-core/01-core-registry-01-boot-i18n.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Boot guard (crash-loop breaker), language engine (Arabic/English/Urdu), number and date formatting per language, barcode scan of serials, screen wake-lock during forms, and the shared dictionary tail.
+   DEFINES : bootStage, bootOk, i18nLoad, i18nThen, i18nFlush, i18nReady, noTashkeel, t, locOf, fmtDate, fmtTime, fmtDT, fmtDT2, nm … (+22 more)
+   GLOBALS : BOOT_GUARD, I18N, D, I18N_FILE, LANG, TASHKEEL_RE, NM_CACHE, SCAN, WAKE, SUN_ON
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+'use strict';   /* (V31.1) الوضعُ الصارم: لا متغيراتٍ ضمنيةً عامةً ولا أخطاءً صامتة — يسري على الشيفرة كلِّها */
 /* ═══ حارسُ الإقلاع — قاطعُ التوقّف المتكرّر (V21.9) ═══
    بلاغ: «A problem repeatedly occurred» في سفاري الآيفون لحظةَ التحديث التلقائي، ويعمل
    بعد إغلاق التطبيق وفتحه. سفاري يعيد المحاولةَ مرّةً ثم يستسلم. فيُسجَّل هنا أوّلَ شيءٍ
@@ -1619,6 +1628,15 @@ function setTheme(m){
 
 /* D2 مُعلَنٌ فارغًا مع D أعلاه — ويملؤه ملفُّ القاموس (V31.4: كان يُعلَن هنا ثانيةً) */
 
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-02-data-display-search.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Project constants, display helpers (HTML escaping, pills, cards, tables), isolation of Latin tokens inside Arabic text, and the per-page search box.
+   DEFINES : bdiNeed, bdi, bdiText, fsi, fsiText, esc, N, stat, stats, meter, card, cardRaw, cardFlush, cellT … (+9 more)
+   GLOBALS : DATA, PAGE, BDI_TOK, PG_Q, PG_BIND, PG_LAST_BIND, PG_T
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ البيانات — أرقام المشروع الحقيقية ═══ */
 
 /* المراجعُ الثابتةُ وحدَها: الأصنافُ وفئاتُ المشتريات والمورّدون.
@@ -1831,6 +1849,15 @@ function pgFind(q){
   if (n) n.textContent = key ? (nm(hit) + ' ' + t('من') + ' ' + nm(seen)) : '';
 }
 
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-03-config-values.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Single source of configurable values (CFG): rates, weights keyed by zone and type, numeric constants edited from Settings and synced to every device.
+   DEFINES : cfgN, cfgKey, wKeyNorm, cfgGet, cfgSet, cfgPushSoon, cfgPush, cfgDate, cfgWk, cfgInput, cfgDerived, T, K, itPts … (+4 more)
+   GLOBALS : CFG_PULLED, CFG, WKEY_CACHE, _cfgT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مصدر القيم الواحد ═══
    لا قيمةَ افتراضيةً ولا رماديةً: كلُّ وزنٍ ونقطةٍ وتارجتٍ يبدأ صفرًا
    ويُضبط بيد المهندس. وما يُكتب هنا يقرؤه كلُّ ما بُني فوقه في اللحظة نفسها. */
@@ -2010,6 +2037,15 @@ function itAsm(id){ return cfgGet('itAsm', id); }
 function crewVal(k, f){ return cfgGet('crew' + f, k); }
 
 /* ما لم يُضبط بعدُ — تنبيهٌ يظهر حيث يهمّ */
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-04-engine-storage.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Local-first storage engine: IndexedDB/localStorage persistence, resilience when the local store fails, and the save banner when data is at risk.
+   DEFINES : idbWhyText, idbAtRisk, idbBannerUpdate, idbWatchStart, idbTellBad, idbAdopt, idbDrop, idbRetryNow, idbRetryLater, idbStart, idbOpen, idbUnsynced, idbGet, idbSet
+   GLOBALS : FB_CFG, IDB_NAME, IDB_LOG_ERR, IDB_WHY, IDB_WATCH_T, STATE, QUEUE_CAP
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المحرك — تخزينٌ محليٌّ أولًا ثم مزامنةٌ سحابية ═══
    الكتابة تنجح على الجهاز دائمًا، والشبكة تفصيلٌ لاحقٌ لا شرطٌ مسبق.
    وما لم يُرفع يبقى في طابورٍ يُعاد إرساله حين تعود الشبكة. */
@@ -2223,6 +2259,15 @@ var STATE = {
 
 var QUEUE_CAP = 2000, _saveT = 0;
 
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-05-sync-scale.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : CORE: the write queue, deduplication, upload with backoff and poison isolation, pending-upload limit and pending-file export/import, pull scheduling and scale-out to 150 concurrent devices.
+   DEFINES : uid36
+   GLOBALS : FB_PLAN, DEV_ID, _uidSeq, CORE, FB
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاتساعُ إلى مئةٍ وخمسين جهازًا ═══
    معرّفٌ ثابتٌ لكلِّ جهاز: بلا معرّفٍ يشترك جهازان في معرّفٍ متسلسلٍ واحدٍ
    فيمحو أحدُهما الآخر، ولا يُعرَف أيُّهما كتب. */
@@ -3318,6 +3363,15 @@ var FB = {
     });
   }
 };
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-06-data-gate-live.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : DB gate (the only path to Firestore), silent-failure capture, live listeners that mirror other devices' writes, sync counters and pull accounting.
+   DEFINES : arCmp, dayKey, rollupToday, statsHistory, liveSmallStop, liveSmall, liveTickStop, pulseBadge, syncCdSecs, syncCdTxt, syncCycle, liveTick, logEventQuiet
+   GLOBALS : EXP, DB, ROLL_LAST, LIVE_SMALL, LIVE_WORK_PAGES, BADGE_TICK, SYNC, SOFT_ERRS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ بوابةُ البيانات (V31.5 — خطةُ التسليم، الوحدة ٣) ═══
    كلُّ حديثٍ مع القاعدة يمرّ من هنا — لا FB.db.collection في أيِّ مكانٍ آخر (جردُ الصحة يرفضه).
    الواجهةُ بشكل Firestore (collection/doc/where/orderBy/limit/get/set/batch): لنقل المنظومة إلى قاعدةٍ أخرى
@@ -3720,6 +3774,15 @@ function logEventQuiet(msg){
   SOFT_ERRS.unshift({ at:Date.now(), where:'مصالحة', msg:String(msg).slice(0, 120) });
   if (SOFT_ERRS.length > 50) SOFT_ERRS.length = 50;
 }
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-07-blackbox-registry.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Black box (crash forensics) and the embedded site registry SITES_RAW with its publish/cache cycle to the database.
+   DEFINES : boxRedact, boxLoad, boxNote, boxAction, boxText, boxCopy, softErr, softErrCard, syncBadge, watchNet, regEmpty, regLocal, regVer, regEnsure … (+3 more)
+   GLOBALS : BOX, SITES_RAW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الصندوقُ الأسود (V17.98) ═══
    آخرُ مئةِ حدثٍ على الجهاز في حلقةٍ مسقوفة: تنقّلُ الصفحات، ومعرِّفاتُ الأفعال،
    والمزامنة، والأخطاء، وحالُ المخزن، والنسخةُ والجهاز. يُحفَظ مع حالة التطبيق،
@@ -3949,6 +4012,14 @@ function zoneOf(z, name){
   if (String(name).indexOf('المدينة') >= 0) return 'المدينة';
   return 'منى';
 }
+/* ============================================================================
+   FILE    : src/01-core/01-core-registry-08-egates-seed.js
+   DOMAIN  : Core — language, engine, sync, registry
+   PURPOSE : Al Mashaaer train: the nine station references and the provisional E-GATE inventory (no coordinates until verified), the station E-GATE card, verification editor and map points.
+   DEFINES : egSeed, egStations, egSeedOf, egOvOf, egOf, egList, egOps, egIsStation, egCard, egSave, egAdd, egMapPoints
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V38.31) قطار المشاعر — المحطاتُ التسعُ وجردُ البوابات الإلكترونية الأوّليّ ═══
    مصدرُ البيانات: ملفُ المالك Mashair_EGATE_Import_Manifest_PRELIMINARY.json (مراجعة 2026-10-19) وKMZ المحطات.
    المحطاتُ التسعُ بإحداثياتٍ مرجعيةٍ مؤكَّدة (WGS84 من عقد السكة في الخريطة المفتوحة) — وهي في سجلِّ النقاط.
@@ -4034,6 +4105,15 @@ function egMapPoints(){
   egStations().forEach(function(sid){ egList(sid).forEach(function(g){ if (g.verified) out.push(g); }); });
   return out;
 }
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-01-site-edit-twins.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Site rows from the registry (siteRow/loadSites), zone-of-type rules, editing site data without a visit (override layer), bulk data corrections, twin points on one coordinate, permanent delete.
+   DEFINES : siteZone, siteRow, loadSites, maySiteEdit, maySiteEditBasic, siteOvApply, dqFar, dqDupPos, siteKeyOf, twinOf, dupMerge, dupUndo, dupMerged, dqNoCo … (+18 more)
+   GLOBALS : SITE_ED, SITE_DEL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ منطقةُ الصنف من نوع الموقع — مسطرةٌ واحدةٌ لا ثلاث ═══
    الكتالوجُ منطقتان فقط: `camp` و`cor`. وكان كلُّ موضعٍ يقرّر بنفسه
@@ -4421,6 +4501,15 @@ function hiddenSitesCard(){
 
 /* الإحصاءُ والبحثُ والفهرسُ في طبقة الأداء — تُعرَّف بعد هذا الملف */
 
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-02-types-shapes-filters.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Point classification and map shapes per type, owner taxonomy (five zones, nine types), path filters, ministry camera details, tafweej layer, camp path and the filter bar.
+   DEFINES : typeShape, mapShapeOf, shapeRing, shapeSvg, taxCalc, taxOf, routesList, mapFitFiltered, filtOn, filtPass, catCounts, camNetOf, siteFloor, floorName … (+22 more)
+   GLOBALS : SHAPES, SHAPE_UNIT, TYPE_SHAPE_DEF, TAX_ALIAS, TAX_G, TAX_T, TAX_V, TAX_DEF, CAT_DEF, CAT_DEF_BASE … (+12 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التصنيف والتفاصيل — كما في العامل ═══
    شريطان: المشاعرُ ثم الأنواعُ بأيقوناتها وألوانها،
    والضغطُ يُرشِّح الخريطةَ والقائمةَ معًا في اللحظة نفسها. */
@@ -4961,6 +5050,15 @@ function filtered(){
   return FILT_CACHE;
 }
 
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-03-site-details-points.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Full site details page (PAGE.site) and technician points computed from work.
+   DEFINES : stageOf, bonusList, bonusFor, mayBonus, bonusAdd, bonusDel, scores, scoreOf, stageList, stageTarget, dayCapOf
+   GLOBALS : DETAIL_ID, STAGE_ROLES, TECH_STAGE, SCORE_CACHE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تفاصيل النقطة الكاملة ═══ */
 var DETAIL_ID = '';
 
@@ -5316,6 +5414,15 @@ function dayCapOf(e){
 }
 
 /* ── صفحة الفني: ما عمله ورقمُه ── */
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-04-mywork-diary.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : 'My work' screens, project diary, weight/target simulator and how dues are computed.
+   DEFINES : perfRankTable, diaryRows, diaryBody, simState, simSave, simTypes, simW, simRows, simCard, moneyHowCard
+   GLOBALS : STAGE_TAB, PERF_VIEW, SIM
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ «شغلي» — أربعُ شاشاتٍ كانت تجيب سؤالًا واحدًا ═══
    «مهامي» و«أدائي» و«فريقي» و«شغل فريقي»: أربعٌ في القائمة يراها الفنيُّ
    والمشرفُ معًا، وكلُّها تجيب «ما عملتُه وما أُسند إليّ». فكان يفتحها
@@ -5842,6 +5949,15 @@ function moneyHowCard(S){
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('النقاطُ من الأعمال المعتمدة وحدَها (المسحُ المعتمَدُ تقنيًّا، والتركيبُ المعتمَد، والفكّ، والورشة) — ويُعاد الحسابُ فورًا متى تغيّر وزنٌ أو سعر.')) + '</p>'
     + '<div class="actions">' + btn(t('اضبط الأوزان'), 'btn-quiet btn-sm', ' data-goto="pts"') + btn(t('اضبط السعر والتارجت'), 'btn-quiet btn-sm', ' data-goto="consts"') + '</div>');
 }
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-05-management-performance.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Management records, methodology matching and the single performance page with five levels.
+   DEFINES : pmoSees, pmoFetch, pmoList, pmoEdBtn, pmoEdLabel, pmoEdCancel, pmoEdId, pmoEdFill, pmoPut, pmoVal, lessonsBody, stakeBody, pmiRows, pmiBody … (+1 more)
+   GLOBALS : PMO, PMO_LEVELS, PMO_DOMAINS, PMO_ED, PMO_FORM, PMI_ST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ سجلاتُ الإدارة (V19.3) ═══
    الدروسُ المستفادة، والمراجعاتُ الدورية، وأصحابُ المصلحة — في وثيقةٍ واحدة
    settings/pmo (قاعدتُها: المكتبُ والإدارةُ العليا قراءةً، والمكتبُ كتابةً). كلُّ
@@ -6354,6 +6470,15 @@ PAGE.perf = { m:'الفرق', t:'الفرق والأداء',
   }};
 
 
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-06-teams-accounts-perms.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Teams and shares, crews and rates, the permissions module (UI + Firebase rules mirror) and role/team assignment to users.
+   DEFINES : teamOf, teamShare, teamPoints, crewStat, crewOf, crewSet, crewNewCard, crSaveTimes, crewNeed, roleName, assignRows, asnRoleSet
+   GLOBALS : TEAM_ROLE, TEAMS, CTEAM_CUR, WO_KINDS, CREWS, CREW_CUR, PERIODS, CREW_REPORTS, CREW_VIEW, TECHS … (+4 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الفرق ونسبُ الأنصبة ═══
    المجموعةُ تنجز معًا، والنقاطُ تُقسَّم بنسبٍ تُكتب لكلِّ عضو:
    قائدُ الفريق أكبرُ نصيبًا من الفني، والفنيُّ من المساعد. */
@@ -6895,6 +7020,15 @@ PAGE.users = { m:'الإعدادات', t:'المستخدمون والأدوار'
 
 ;
 
+/* ============================================================================
+   FILE    : src/02-catalog/02-catalog-forms-07-layers-dismantle-svedit.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Three map layers (what each shows and assigns), dismantle and maintenance forms, the brief line on visit documents, and editing a survey without redoing it (svq*).
+   DEFINES : disSave, maintList, maintSave, maintDone, maintDel, LAYER, svqMay, svqKeys, svqLabel, svqFmt, svqEditor, svqSheet, svqPhotoCount, svqKindLabel … (+5 more)
+   GLOBALS : LAYERS, DISF, MNTF, DIS_COND, SVQ, TYPES_OPEN, SVQ_NUM, SVQ_OPT, SVQ_TEXT, BRIEF_ST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الطبقات الثلاث — لكلٍّ ما تُظهر وما تُسند ═══
    المسحُ يرى الكلَّ ويُسند زيارة، والتركيبُ لا يرى إلا ما مُسح ويُسند تركيبًا،
    والفكُّ لا يرى إلا ما رُكِّب ويُسند فكًّا. فلا يُجدوَل عملٌ قبل ما يسبقه. */
@@ -7252,7 +7386,16 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   if (!quiet) toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));   /* (V38.21) الحفظُ المركّب يقول جملةً واحدة */
   return true;
 }
-var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];
+var BRIEF_ST = ['تمام', 'تحدٍّ', 'ملاحظة'];/* ============================================================================
+   FILE    : src/02-catalog/02-definitions-08-definitions.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Canonical definitions used everywhere: visit/survey/installation states, challenge categories (chalCats), location choices (locOpts/locApplies), helper predicates. Define a definition here only.
+   DEFINES : svVisited, svReached, svStuck, svDone, svHasChal, svNeedsRevisit, svClean, svObstacle, chalShow, insDone, handOf, handDone, disDone, siteKey … (+63 more)
+   GLOBALS : CHAL_SHOW, VISIT_WHY, CHAL_CATS, WHY_RULES, CHAL_FROM, CHAL_RULES, CHAL_NONE_RX, CC_MEMO, CAT_LEGACY, WHY_ACCESS … (+10 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══════════════════════════════════════════════════════════════════════════════
    تعريفاتُ النقطة — مصدرٌ واحد (V36.0، توصيةُ مراجعة الفريق)
    كلُّ سؤالٍ «ما حالُ هذه النقطة؟» يُجاب من هنا: هل تمت زيارتُها، وهل وُصل إليها، وهل هي بلا عوائق أو بعوائق، وهل رُكّبت
@@ -7765,6 +7908,15 @@ function skinRowSync(){
   var html = SKINS.map(function(x){ return '<button type="button" class="chip' + (x[0] === cur ? ' on' : '') + '" data-skin="' + x[0] + '">' + esc(t(x[1])) + '</button>'; }).join('');
   if (row.getAttribute('data-h') !== cur + '|' + LANG){ row.innerHTML = html; row.setAttribute('data-h', cur + '|' + LANG); row.setAttribute('aria-label', t('المظهر')); }
 }
+/* ============================================================================
+   FILE    : src/02-catalog/02-edit-09-edit-requests.js
+   DOMAIN  : Catalogue & point — definitions, classification, permissions, survey edit
+   PURPOSE : Data-correction requests from the field (fixreqs) and their review.
+   DEFINES : gedPerm, gedFind, gedInject, gedHtml, gedSave, gdelInject, gdelRun, catDraftCatch, catD, catRow, catsCard, assistQFetch, assistQCard, assistQXls … (+1 more)
+   GLOBALS : GED, GED_REG, GDEL_REG, CAT_NEW, CAT_DRAFT, AQ
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══════════════════════════════════════════════════════════════════════════════
    التعديلُ الموحّد (V36.2) — طلبُ المالك: «لازم تعديل وحذف وإضافة لكل التفاصيل في النظام»
@@ -7985,6 +8137,15 @@ function catsSave(){
   logEvent('تعديل تصنيفات الزيارة والمسح — ' + out.why.length + ' سببًا · ' + out.cc.length + ' تحدّيًا');
   toast(t('حُفظت التصنيفات — تصل كلَّ الأجهزة مع المزامنة')); statBump(); return true;
 }
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-01-labels-colors.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Human-readable labels for recorded data, texts written about a point, layer colour by approval stage, field names and company names per UI language.
+   DEFINES : svTexts, svFieldRows, briefOf, briefStage, briefColor, briefRing, briefMay, briefSet, translitWord, coName, dispName, catLabel, typeLabel, ptsSurvey … (+1 more)
+   GLOBALS : SV_LABELS, SV_ORDER, BRIEF_C, BRIEF_STAGE, BRIEF_STAGE_ORDER, NAME_FIX, TRANSLIT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ ما سجّله الميدانُ يُقرأ بالعين المجرّدة (V16.89) ═══
    الوزارةُ تقيّم النقطةَ من بطاقتها: لا تفتح نموذجَ المسح ولا تملك زرَّه.
@@ -8235,6 +8396,14 @@ function ptsInstall(x){
   return siteZone(x) === 'cor' ? cfgGet('insCor') : cfgGet('insCamp');
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-02-install-points.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Installation points for a given type read from one place (what gets installed where).
+   DEFINES : insPtsOf, insRecalcPlan, insRecalcCard, insRecalcRun, ptsDis, selPts, layerStats, layerFiltered, layerBar, disSchedule, disComplete
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.77) نقاطُ تركيبٍ بعينه تُقرأ من مكانٍ واحد ═══
    كانت أربعُ شاشاتٍ تقرأ الرقمَ المحفوظ مع التركيب مباشرةً، فتركيبٌ سُجِّل وأوزانُ القطع
    صفرٌ يبقى صفرًا فيها وإن ضُبطت الأوزانُ بعدُ — بينما ptsInstall تحسبه من قطعه. */
@@ -9174,6 +9343,15 @@ function disComplete(id, cond){
   statBump(); toast(t('تم الفك') + ' · ' + t(cond)); render(1);
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-03-assign-solutions.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Assignment from list or map, request codes, and the proposed device solution for a point before an installation request.
+   DEFINES : selHas, selToggle, selClear, selIds, selAll, asnOf, asnOfTech, asnLoad, kindLabel, reqNext, solutionOf, solutionSave, solutionAppr, asnPickHtml … (+6 more)
+   GLOBALS : ASN_OPEN, SEL, ASN_BASE, ASN_MODE, ASN_PICK, ASN_KIND_DEST, REQ_PREFIX, REQSEQ, ASN_TEAM
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الإسناد — من القائمة أو الخريطة ═══
    يُحدَّد ما يُراد ثم يُسند لفنيٍّ، فيراه في خريطته وحده.
    والمُسنَدُ لا يُسنَد مرةً ثانيةً — فلا يُشتّت فنيّان على نقطةٍ واحدة. */
@@ -9625,6 +9803,15 @@ function asnTeamCommit(){
 }
 
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-04-readiness-conditions.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : What is ready per request type and the condition chain explaining why a point cannot be assigned.
+   DEFINES : asnReadyList, asnQuick, asnReadyCard, gateChain, gateFirst, gateCard, gateSay, asnCommit, mapSelBar, mineFiltered
+   GLOBALS : ASN_READY, ASN_QCAP, MAP_SELECT, MY_ONLY
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الجاهزُ لكلِّ نوعِ طلب ═══
    كان إنشاءُ الطلب يبدأ من الخريطة دائمًا: تُفتَح، وتُبدَّل الطبقةُ إلى
    النوع المطلوب، وتُحدَّد النقاطُ واحدةً واحدةً أو بـ«حدّد الكل»، ثم يُفتَح
@@ -10022,6 +10209,15 @@ function mineFiltered(){
   return STATE.sites.filter(function(x){ return ids[x.id]; });
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-05-forms-approvals.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Field forms that write to the engine, the two approvals, missing survey fields, required-field marking and save blocking.
+   DEFINES : cfgList, chalsOf, svApproved, svReview, visitTaskOf, minState, minOk, minApprove, minReturn, minResubmit, svApprove, svRevisit, formSite, reqStar … (+3 more)
+   GLOBALS : TK_ST, FORM, SV_EXTRA_KEYS, CH_CAMP, CH_PATH, SV_ACCESS, SV_PHOTOS, SV_FIT, SV_CIVIL, SV_EQUIP … (+9 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ النماذج الميدانية — تكتب فعلًا في المحرك ═══
    دورةُ المهمة: مطلوب ← قيد التنفيذ ← منفّذ ← معتمد (أو مُعاد بسبب).
    ولا نقاطَ تُحتسب قبل الاعتماد. */
@@ -10246,6 +10442,15 @@ function svTxt(key, label, hint){
     + (hint ? '<p class="hint">' + esc(t(hint)) + '</p>' : '') + '</div>';
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-06-survey-form.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : The survey form: basic fields first and details on demand, prefix generation, automatic photo checks, and the draft that survives iOS closing the page.
+   DEFINES : svExtra, ipPreset, ipFillMissing, ipsOf, formPts, photoBox, photoCard, photoQuality, photoQualityFlags, photoQualityWarn, photoHamming, photoDupOf, shrink, svDraftSave … (+5 more)
+   GLOBALS : SV_MORE, IP_OCT2, IP_OCT3, PHOTO_Q_IX, PQ, SVD
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نموذجُ المسح: الأساسيُّ أوّلًا والتفصيليُّ عند الطلب ═══
    كان النموذجُ يعرض سبعةً وعشرين حقلًا دفعةً واحدةً على شاشة هاتفٍ في
    الشمس — فيتوه المشرفُ ويملأ ما لا يلزم ويترك ما يلزم. والحقولُ كلُّها
@@ -10696,6 +10901,15 @@ function svSave(next){
   render();
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-07-demo-single-errors.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Demo-point kits, single-point form, production error capture, events carrying their point and actor.
+   DEFINES : insPrefill47, ex47SiteCard, demoTag, insRevs, insRevSnap, partsDiff, demoRevsHtml, demoStdSave, insKind, insRevPhotoN, insPhotoBtn, insPhotoAdd, insSave, formGo … (+7 more)
+   GLOBALS : SV_COPY_KEYS, ERR_SEEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.78) تجهيزاتُ نقطة الديمو ═══
    نقطةُ التجربة تُركَّب ثم تتغيّر: جهازٌ آخر، حساسٌ يُضاف، طريقةُ تثبيتٍ مختلفة — حتى يُتّفَق
    على القياسيّ. كان كلُّ حفظٍ يمحو ما قبله فيضيع تاريخُ ما جُرِّب. صار التركيبُ على نقطة الديمو
@@ -10981,6 +11195,15 @@ function logEvent(what, site, who, when){
 }
 
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-08-parts-history-onboarding.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Parts picker, three items missing from the worker, the point's full history, and the first-run tour.
+   DEFINES : patList, patSave, patDel, patApply, itemPickerHtml, pkAdd, solGo, apprIns, posWatch, distKm, distTxt, probeIp, probeOne, probeRun … (+9 more)
+   GLOBALS : SOL_LINES, MYPOS, PROBE, SITE_LOG_MORE, LOG_KIND, TOUR
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مُنتقي القطع — قائمةٌ واحدةٌ مبحوثةٌ وأنماطٌ جاهزة ═══
    كان اقتراحُ الحلِّ شبكةَ كلِّ أصناف الكتالوج بحقولِ كمّياتٍ فارغة — يبحث
    المهندسُ بعينه بين ثلاثين صنفًا عن أربعةٍ يريدها. صار قائمةً واحدةً تُبحَث
@@ -11391,6 +11614,15 @@ function tourHtml(){
     + '</div></div>';
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-09-team-bugs-companies.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Team numbers in one pass, bug report and bug screen, accepted-only work rule, daily WhatsApp briefing, company phone book and company rename.
+   DEFINES : phoneClean, phonesBulk, phonesCard, bugCtx, bugSend, bugList, bugMayDecide, bugClose, bugDecide, bugsPageHtml, bugSheet, pageTitle, dayStart, briefingRows … (+19 more)
+   GLOBALS : PH_MISS, BUG_OPEN, BUG_KINDS, BUG_ST_C, BUG_DEC, CO_STALL, WA_KINDS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ أرقامُ الفريق دفعةً واحدة (V16.99) ═══
    الرقمُ حقلٌ في الحساب، وإدخالُه واحدًا واحدًا لخمسةَ عشرَ حسابًا يُؤجَّل
    فلا يُعمَل — و«بلاغُ اليوم» بلا أرقامٍ نصفُ شاشة. فصار يُلصَق الجدولُ كما
@@ -11887,6 +12119,15 @@ function waGo(co, kind, when, copy){
   notifPush('إشعار شركة', co + ' \u00b7 ' + t(WA_KINDS[kind] ? WA_KINDS[kind].n : ''), { lv:'عادي' });
 }
 
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-10-wbs-plan-trials.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Work breakdown structure, plan versus actual, plan export with formulas, item file and the trials page.
+   DEFINES : wbsRows, wbsKeys, wbsDepth, wbsChildren, wbsPct, wbsSvPct, wbsSvPctT, wbsInsPct, wbsAutoPct, wbsPlanPct, wbsVar, wbsVarPill, wbsProjectPct, wbsPlanCard … (+30 more)
+   GLOBALS : WBS_AUTO, WBS_DOS, WBS_F
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ جدولُ المتابعة — هيكلُ تقسيم العمل ═══
    الجدولُ الذي يُتابَع به المشروعُ مع الوزارة كان ملفَّ إكسل يُرسَل ويُعدَّل
    باليد: ١٦٣ بندًا بمعرِّف هيكلٍ وبدايةٍ ونهايةٍ وإنجازٍ ومسؤولٍ وجهة. صار في
@@ -12557,6 +12798,15 @@ PAGE.wbs = { m:'التخطيط', t:'متابعة الخطة التفصيلية',
           + btn('\u2B07 ' + t('إكسل — قيمًا فقط'),'btn-secondary btn-sm',' data-xls="wbs"'))
       + '<p class="hint">' + esc(t('الإنجازُ يُكتب للبنود الفرعية، ويُجمَّع للآباء بالمدة. والحالةُ والموقفُ الزمنيُّ يُحسَبان من تاريخ اليوم — لا يُكتبان.')) + '</p>';
   }};
+/* ============================================================================
+   FILE    : src/03-survey/03-survey-records-11-weekly-tasks-paths.js
+   DOMAIN  : Survey & installation — forms, points, assignment, plan
+   PURPOSE : Weekly tasks as sentence cards, meeting mode, the one filter for screen and paper, and path filtering with each path's status.
+   DEFINES : wtMay, wtLeaves, wtWbsName, wtForWbs, wtWbsBadge, wtMine, wtMeetList, wtFieldTxt, wtSince, wtMeetStart, wtMeetEnd, wtPanelInner, wtMeetHtml, wtCardOf … (+23 more)
+   GLOBALS : WT_F, WT_ST, WT_OPEN, WT_MEET, WT_STC, WT_LOGF, WT_TRACK, WT_TAB
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ متابعةُ المهام الأسبوعية ═══
    شيتُ «المهام» الذي يُدار به الاجتماعُ مرتين في الأسبوع: مهمةٌ ومسارٌ ووصفٌ
    ومسؤولٌ وحالةٌ وتاريخا رصدٍ واستحقاقٍ ومصدرٌ وآخرُ تحديث. كان إكسلًا بدوالٍّ
@@ -13064,7 +13314,16 @@ PAGE.wtask = { m:'المتابعة', t:'متابعة المهام الأسبوع
       ? '<p class="hint" style="margin:6px 0 0">' + esc(t('آخر تحديث')) + ' ' + esc(dispName(STATE.wtask.by)) + ' ' + esc(stepAgo(STATE.wtask.at || 0)) + '</p>' : '';
 
     return tabs + strip + acts + newForm + whoList + wbsBar + filt + empty + groups + byLine;
-  }};
+  }};/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-01-task-panel-map3d.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Task panel, challenge-point window, field/office work on a challenge, and the 3D map toggle.
+   DEFINES : chalUpd, chalUpds, chalUpdNote, chalUpdBox, chalAssignBox, chalPopHtml, chalPopSync, wtHostSync, wtSheet, m3Load, m3Height, m3Points, m3Cols, m3Style … (+10 more)
+   GLOBALS : CHAL_POP, MAP_3D, M3_FOOT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══ لوحةُ المهمة — مكانٌ واحدٌ لكلِّ تعديل ═══
    الحالةُ شرائحُ تُضغَط فتُحفَظ وتُسجَّل، و«ما الجديد؟» سطرٌ يُضاف إلى سجلٍّ
    باسم كاتبه ووقته، وبياناتُ المهمة تحت «تعديل البيانات» لمن يريدها. */
@@ -13505,6 +13764,15 @@ function waSend(kind, copy){
   waGo(co, kd, wn, copy);
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-02-newsite-schedule.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Unregistered site added from the field, who decides what it becomes, visit recorded on add, and scheduling visits for office-added points.
+   DEFINES : nsNear, coHit, nsCoRows, nsCoCard, nsCapture, nsCoRequest, nsOffice, typeCode, nsName, nsVisitRec, visitAsnOpen, nsSave
+   GLOBALS : WA_CO, WR_EDIT, NEWSITE, NS_CENTERS, NS_REASONS_PT, NS_CO_OPEN, NS_REASONS, NS_PHOTOS, NS_SIGN_RE, NS_SQ_RE … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ موقعٌ غير مسجّل — يُضاف من الميدان ═══
    ما لم يكن في القاعدة يُسجَّل بموضعه الحقيقي، ويُوسَم جديدًا حتى يعتمده المهندس. */
 var WA_CO = '', WA_KIND = 'plan';
@@ -13763,6 +14031,15 @@ function nsSave(){
   render(1);
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-03-photos-drive.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Photos: Google Drive bridge, naming, upload to the database then server move to Drive, who uploaded/viewed/deleted, open/download in app, and plain-language transfer failures.
+   DEFINES : drvCfg, drvLoad, drvAuth, dataToBlob, drvUpload, photoNext, photoQueue, photoFlush, photoFlushCloud, photoSeen, photoDelete, phIdx, phTouch, photosOf … (+9 more)
+   GLOBALS : DRV, PHOTO_Q, SEEN_TODAY, PH_IDX, PH_VER, PH_ERR
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ جسرُ Google Drive — الصورُ في مساحتك لا في Firestore ═══
    خمسةُ تيرا في درايفك تكفي المشروعَ كلَّه، ووثيقةُ Firestore لا تتجاوز
    ميغابايتًا — فتُرفَع الصورُ هناك ويُحفَظ معرّفُها هنا. */
@@ -14192,6 +14469,15 @@ function drvTest(){
   });
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-04-pmi-weekplan.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Project governance per PMI and the engineer's week plan.
+   DEFINES : baseSet, baseDays, evm, evmVerdict, wplanSees, wplanMay, wplanFinal, wplanOpenPast, wplanUpdates, wplanWeek, isoWeekMonday, wplanNextWeek, wplanItems, wplanLines … (+1 more)
+   GLOBALS : BASE, WPLAN_WK, WPLAN_PRI
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ حوكمةُ المشروع بمعايير PMI ═══
    أربعةٌ يسأل عنها المدقّق ولم تكن: خطُّ أساسٍ يُقاس عليه، وقيمةٌ مكتسبةٌ
    تقول أين نحن، وسجلُّ مخاطرَ بالاحتمال والأثر، وضبطُ تغييرٍ يمنع الانزلاق. */
@@ -14727,6 +15013,15 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
 
 
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-05-account-backup-continuity.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Account document, identity from auth, pending-activation state, cause fixes that release blocked work, backup/Drive status, and the 'what depends on a person' continuity card.
+   DEFINES : myUid, meInactive, meActivatedCheck, permRelease, myDocFetch, myDocFix, bkFetch, contRes, contLoad, contSave, contCard, bkAgeDays, bkCard
+   GLOBALS : MYDOC, PZ_ARM, BK_STATE, BK_RAW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ وثيقةُ حسابي: تُقرأ، وإن غابت تُنشأ ═══
    القاعدةُ تعرف الحسابَ من وثيقةٍ باسم معرِّفه — ومن لا وثيقةَ له يُرفَض كلُّ
    ما يكتب بـ«Missing or insufficient permissions»، ويظهر له دورُه صحيحًا في
@@ -14968,6 +15263,15 @@ function bkCard(){
         ? '<div class="actions" style="margin-top:8px">' + btn('\u21BB ' + t('حدِّث الحالة'),'btn-quiet btn-sm',' data-bkref="1"') + '</div>'
         : ''));
 }
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-06-risks-changes-coverage.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Live risk register, approved changes applied to the baseline, and coverage from company departments to client management.
+   DEFINES : risksList, riskSave, riskSet, riskDel, riskAdd, riskSignals, riskScore, riskLevel, chgAdd, chgApply, chgDecide, hseAdd
+   GLOBALS : RISKS, CHANGES, ORG, HSE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ سجلُّ المخاطر الحيّ ═══
    كان السجلُّ ستةَ مخاطرَ مكتوبةً في الشيفرة، تُعرَض ولا تُمَسّ: لا يُضاف
    خطرٌ ظهر في الميدان، ولا يُغلَق ما زال، ولا يتغيّر مالكٌ. وسجلُّ مخاطرَ لا
@@ -15509,6 +15813,15 @@ function hseAdd(){
   render(1);
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-07-incidents-milestones.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Incidents (correct/delete) and milestones managed, not just read.
+   DEFINES : hseRecount, hseSet, hseDel, ncrAdd, ncrClose, ipcAdd, ipcStep, mileDates, mileOv, mileList, mileUpsert, mileAdd, mileRemove, mileDateOf … (+3 more)
+   GLOBALS : NCRS, IPCS, MILES, MILE_EDIT, RACI_ACTS, LESSONS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الحادثُ يُصحَّح ويُحذَف ═══
    كان الحادثُ يُسجَّل ولا يُمَسّ: من كتب «يومين مفقودين» وتبيّن أنها ثلاثةٌ
    لم يجد أين يصحّح، ومن سجّل حادثًا بالخطأ أبقاه في سجلٍّ يُعرَض على
@@ -15875,6 +16188,15 @@ var LESSONS = [
 ];
 
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-08-reports-center-sop-help.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Reports centre, the operations guide (every cycle step by step) and 'what is this page' help.
+   DEFINES : repChips, repGen, repPack, helpOf
+   GLOBALS : REPORTS, SOPS, SOP_CUR, HELP_OPEN, HELP
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مركزُ التقارير ودليلُ العمليات ═══
    كلُّ ما يحتاجه مديرُ المشروع: تقريرٌ لكلِّ جهةٍ بدوريّته ومحتواه،
    وعمليةٌ موثّقةٌ لكلِّ ما يجري — خطوةً خطوة. */
@@ -16354,6 +16676,15 @@ function helpOf(id){
   };
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-09-assistant.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : The assistant: local search with no API, glossary, pending-upload window, diagnostics, usage learning, and the data assistant answering with numbers from the device.
+   DEFINES : glossaryHits, helpIndexAll, helpSearch, assistHtml, assistDiag, assistIntent, assistFixHtml, assistDiagCard, assistLog, assistWarnCount, assistDiagSig, assistLiveSync, assistBadgeSync, assistForYou … (+9 more)
+   GLOBALS : ASSIST_OPEN, ASSIST_Q, GLOSSARY, HELP_KEYWORDS, HELP_STEPS, QUEUE_OPEN, Q_LBL, ASSIST_INTENTS, ASSIST_QUICK, ASSIST_LOGGED … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المساعدُ: بحثٌ محليٌّ صرف — بلا API ولا اتصالٍ خارجي ═══
    مئةٌ وصفحةٌ لا يحفظها أحدٌ عن ظهر قلب. يكتب المستخدمُ سؤالَه بكلماته،
    فيُطابَق ضدَّ فهرسٍ مبنيٍّ من عنوان كل صفحةٍ ووصفها (المكتوبَين أصلًا)
@@ -16821,6 +17152,14 @@ function aqAnswer(q){
   }
   return out;
 }
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-10-assistant-reports.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Reports by words ('Excel/PDF for the points that…'): parser, data, grouping, card, export; plus the pending-upload window HTML.
+   DEFINES : aqRepStop, aqRepParse, aqRepData, aqRepGroup, aqRepCols, aqRepRow, aqRepPrep, aqRepCard, aqRepExport, aqGoTo, aqExamples, assistHomeHtml, assistResHtml, queueHtml … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V38.17) تقاريرُ بالكلام — «إكسل/PDF للنقاط اللي …» ═══
    طلبُ المالك: «أكتب الشرط بالكلام فيطلع ملف إكسل للنقاط اللي فيها كذا وكذا، ولو PDF بلوجو أفاقي يبقى حلو» —
    فيصير المساعدُ أداةَ تحليلٍ من بيانات الجهاز نفسِه بلا رجوعٍ للقاعدة ولا نموذجٍ خارجيّ. يعرض ما فهمه شرطًا شرطًا
@@ -17164,6 +17503,15 @@ function helpHtml(){
     + '</div></div>';
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-11-site-popup.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : The point popup on the map — every button acts.
+   DEFINES : siteTitle, siteSub, netRows, popPhotosHtml, popHtml
+   GLOBALS : MOVE_ID
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نافذة النقطة — كما في العامل، وكلُّ زرٍّ يفعل ═══
    وسمُ الحالة لا يُتاح إلا لنقطةٍ أُسندت، والتحريكُ يكتب موقعًا معدَّلًا،
    والتفاصيلُ تفتح شاشتها، والاتجاهاتُ تفتح خرائط جوجل. */
@@ -17519,6 +17867,15 @@ function popHtml(){
     + '</div></div>';
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-12-draw-paths-areas.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Drawing on the map: paths that generate points, tafweej routes, drag before save, areas filled with grids, camp boundaries, office-placed points, and a visible exit for every mode.
+   DEFINES : tfdMay, tfdGraph, tfdMpp, tfdSnap, tfdPath, tfdStart, tfdAdd, tfdUndo, tfdCancel, tfdDrawn, tfdLen, tfdSave, tfdClear, tfdPanelHtml … (+33 more)
+   GLOBALS : TFD, ROUTE, RT_EVERY_MIN, PIN_ON
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ مسارٌ يُرسَم على الخريطة فتُولَّد نقاطُه (V17.45) ═══
    طريقٌ طولُه كيلومترات تُراد فيه نقطةٌ كلَّ مئتين وخمسين مترًا: وضعُها واحدةً
    واحدةً عملُ يومٍ ويُخطئ. فيُرسَم المسارُ نقرةً بعد نقرةٍ على الخريطة، ثم
@@ -18015,6 +18372,15 @@ function markInstall(id, status){
   if (MAP) mapPaint();
 }
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-13-perf-distribution-cameras.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Performance for 150 concurrent users, distribution by zone and type, survey progress per zone, ministry cameras (Bullet/PTZ/LPR) and hierarchy views.
+   DEFINES : siteIndex, siteFind, siteSearch, statBump, recLocApply, siteKeyStats, overZoneCards, svLabel, declaredKeys, typeOfLabel, declaredTypeKeys, camKind, camKindLabel, declaredZones … (+4 more)
+   GLOBALS : SITE_IX, STAT_CACHE, OVER_ZONE, CAM_KINDS, LIST_PAGE, RENDER_CUR, RENDER_KEY, CFG_VER, PULL_COL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الأداء — مئةٌ وخمسون مستخدمًا في آنٍ واحد ═══
    ثلاثةُ أعناقٍ قاستها الأرقام: بحثٌ خطيٌّ في ألفٍ وسبعمئة صف،
    وإحصاءٌ يُعاد حسابُه في كل رسمة، وسحبٌ كاملٌ من القاعدة
@@ -18308,6 +18674,15 @@ var CFG_VER = 0;
    ويُحفَظ على الجهاز فلا تُعاد السحبةُ الباردةُ مع كلِّ فتح. */
 var PULL_COL = { recs:'recs', inss:'inss', tasks:'tasks', dismantles:'diss', maints:'maints', stats:'stats',
                  events:'evlog' };   /* الأثرُ: مجموعتُه «events» ومفتاحُه في الحالة «evlog» */
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-14-pull-scope-listen-map.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Pull scope per role, differential pulls, per-device read caps, change-pulse listening, and the Leaflet map with two layers and camp polygons.
+   DEFINES : pullScope, treeKeys, chunk30, treeQuery, pullDelta, readBudget, readSlowFactor, readDelta, pulseWatch, pulseStop, bridgeWatch, liveWatch, liveStop, s47Of … (+2 more)
+   GLOBALS : ALL_WORK, READ_CAP_WARN, PULSE_UNSUB, BRIDGE_UNSUB, LIVE, MAP_ME, MAP, MAP_READY, POLY_Z, POLY … (+3 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نطاقُ السحب — V16.11 ═══
    كان كلُّ من رتبتُه فوق المشرف يسحب السجلاتِ كلَّها خامًّا كلَّ خمس دقائق، ويُنصِت
    إليها كلِّها فوق ذلك — فتُحسَب القراءةُ مرتين على كلِّ جهازٍ من ثلاثةٍ وعشرين،
@@ -18600,6 +18975,15 @@ var MAP_COL = {
 
 
 
+/* ============================================================================
+   FILE    : src/04-office/04-tasks-office-15-handover-minutes.js
+   DOMAIN  : Office — photos, governance, assistant, word reports, drawing
+   PURPOSE : Handover and official receipt minutes.
+   DEFINES : handNext, handReady, handBlock, handSave, hoSetParty, hoSetSigner, hoSetupCard, hoTpl, hoParty, hoSigners, hoLocOf, hoItems, handDocSite, handDocCo
+   GLOBALS : HAND_SEQ, HO_PARTIES, HO_SIGNERS, HO_TPL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ محضرُ التسليم ═══
    «جاهزٌ للتسليم» كان يعدُّ ما رُكِّب واعتُمد، و«سُلِّم» صفرًا مكتوبًا — لأن
    التسليمَ لم يكن فعلًا في النظام أصلًا. وهو حلقةٌ لازمة: ما رُكِّب يُسلَّم
@@ -18846,7 +19230,16 @@ function handDocCo(co){
     + '<div><p class="hint" style="margin:0">' + esc(t('عن العميل — الوزارة')) + '</p>'
     +   '<div style="border-bottom:1px solid var(--line);height:42px"></div></div>'
     + '</div></div>';
-}
+}/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-01-lifecycle-task-index.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Point lifecycle (one state read by all), task index by point and type, and stacked points on one coordinate.
+   DEFINES : tasksTouched, taskIndex, taskKindOf, lifeOf, lifeOfRaw, lifeColor, mapColorOf, mapLoad, mapInit, mapDupIndex, mapPosOf, mapPaintDebounced, mapPaintMove
+   GLOBALS : LIFE, LIFE_ORDER, TK_IX, _mapT, MAP_DUP, _mapMoveT
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══ دورةُ حياة النقطة — حالةٌ واحدةٌ يقرؤها الجميع ═══
    كانت الألوانُ تُقرَّر في ثلاثة مواضع: طبقةُ المسح لها ألوانُها، وطبقةُ
    التركيب حالاتُها، والأسطورةُ تكتب ما تظنّه. فيختلف اللونُ عن معناه ولا
@@ -19108,6 +19501,15 @@ function mapPaintMove(){
   _mapMoveT = setTimeout(function(){ mapPaint(true); }, 120);
 }
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-02-map-incremental.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles.
+   DEFINES : shapeMk, mapClickFn, mkPlace, mkDrain, mkSweep, mkCount, mapPaintLight, mapPaint, egPaint, mapFlySoon, mapFly, mapLocate, mapTheme, mapSat
+   GLOBALS : MK, ShapeMk, MK_PAD, MK_FIRST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الخريطةُ لا تُعاد من الصفر (V24.1) ═══
    كان كلُّ تحريكٍ أو تقريبٍ يمسح العلاماتِ كلَّها ويُنشئها من جديد: نحو ألفِ مضلّعِ مخيمٍ تُبنى
    وتُمسح في كلِّ مرة (نحو ثلاثِمئة ملّي ثانية على الشاشة الكبيرة قبل أن يُرسَم شيء)، ومئتا
@@ -19451,6 +19853,15 @@ function mapSat(on){
   if (el) basemapSatCls();
 }
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-03-export-import-docx.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Export/import with real data, ExcelJS for self-updating files, and Word export that stays inside the app.
+   DEFINES : xlsxLoad, exlLoad, dlIOS, dlSheet, dl
+   GLOBALS : XLSX_READY, EXLJS_READY, SHEETS, SHEET_NAMES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التصدير والاستيراد — بالبيانات الحقيقية ═══
    SheetJS يُحمَّل كسولًا عند أول تصديرٍ فلا يُثقل الإقلاع.
    وKMZ يُبنى بالكود — ضغطُ ZIP مكتوبٌ هنا فلا يحتاج مكتبةً ثالثة. */
@@ -20165,6 +20576,15 @@ var SHEET_NAMES = {
   ev:'سجل الأحداث', perms:'الصلاحيات'
 };
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-04-excel-templates-kmz.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Current page to Excel, the tasks file from a template, and KMZ/KML import.
+   DEFINES : lsGet, lsSet, xlsPage, xlsSheets, jszipLoad, xmlEsc, xlSerial, wtWorkbook, xlsExport, crc32, zipStore, kmzCamTable, kmzBuild, geoM … (+8 more)
+   GLOBALS : LS_ERR, JSZIP_LOADING, KMZ_STY, KMI, KMI_NEAR
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ إكسلُ الصفحة الحالية كاملةً ═══
    «صفحةٌ فيها مئةُ سجلٍّ في عشرِ صفحاتٍ — عايز إكسل بكلِّ اللي فيها مرةً واحدة».
    الصفحاتُ تُقصُّ للعرض (slice(0,n) و«عرض المزيد») لا للبيانات؛ فتُعاد
@@ -20694,6 +21114,15 @@ function kmiCard(){
         + '</div>')
     + '<p class="hint">' + esc(t('«موجودة عندنا» لا تُضاف افتراضًا — وإن أضفتها صارت نقطتين في موضعٍ واحد. و«مشكوكٌ فيها» قرارُك: قريبةٌ واسمُها يشبه، فراجعها على الخريطة قبل أن تقرّر.')) + '</p>';
 }
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-05-geojson-basemap-layers.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : GeoJSON export, offline Makkah basemap, device map for outages, ministry buildings and tafweej places layers, Mina sensor planning and camp-boundary editing.
+   DEFINES : geoJsonBuild, geoJsonExport, basemapWarm, basemapManifest, basemapHave, basemapAuto, basemapWant, basemapStale, poiLoad, poiPaint, mayIot, iotLoad
+   GLOBALS : BASEMAP, BASEMAP_CACHE, BASEMAP_JS, POIL, POIL_C, IOT, IOT_C
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التصديرُ القياسي GeoJSON (V18.0) ═══
    ملفٌّ يفتحه أيُّ نظامٍ جغرافي: FeatureCollection وفق RFC 7946 (WGS84،
    الترتيبُ خطُّ الطول ثم خطُّ العرض)، ولكلِّ نقطةٍ حالتُها من دورة الحياة نفسِها
@@ -20846,6 +21275,15 @@ function iotLoad(){
   IOT.busy = true;
   fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
 }
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-06-sensors-gateways-split.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Sensors and gateways as first-class points, and splitting a camp.
+   DEFINES : iotOf, iotCampIds, iotPad, iotSid, iotGid, iotAllGw, iotM, iotMax, iotRing, iotOutside, iotGrid, iotCentroid, iotMakePlan, iotGen … (+29 more)
+   GLOBALS : IOT_ST, IOT_N, BED, SPLIT, SPLIT_COL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.70) الحساسُ والجيت واي «زي باقي النقاط» — قرارُ المالك: رقمٌ خاصٌّ وبياناتٌ (الغرفة، السيريال، الحالة، ملاحظة)، ونافذةٌ لكلِّ جهاز،
    وتحريكٌ وإضافةٌ وحذفٌ للحساسات والجيت واي (أكثرُ من جيت واي للمخيم الكبير)، وخطّةٌ تُولَّد للمخيم الجديد أو الجزء المقسوم (١٢ حساسًا داخل حدوده)،
    وما خرج عن الحدود بعد تعديلها يُعلَّم بالأحمر ويُوزَّع من جديد، وإكسلٌ للحساسات. وتبقى خارجَ أرقام الوزارة بعدّادها الخاص (قرارُ V25.7).
@@ -21183,6 +21621,15 @@ function bedPanelHtml(){
     + '</div></div>';
 }
 /* صنفُ «القمر» على الإطار يتبع ما يُعرَض فعلًا: القمرُ لا يُقلَب في الوضع الداكن، وخريطةُ الجهاز تُقلَب ولو كان القمرُ مختارًا */
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-07-report-lines-hybrid-google.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Report lines (Abar Mid), hybrid map with street names over satellite, and Google Maps inside our map.
+   DEFINES : fontsCard, fontMime, fontUp, fontsLoad, fontsFace, gmapsCard, basemapSatCls, basemapKick, basemapNetOk, basemapDownload, basemapRemove, basemapScripts, basemapAttach, namesFetch … (+13 more)
+   GLOBALS : FONTS_MAX, NAMES, NAMES_FILE, NAMES_RANK, NAMES_PLACE, GMAP, SEL_IDS, IMP_COLS, IMP_PREVIEW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V28.9) خطوطُ التقارير — «Abar Mid» ═══
    قرارُ المالك: «دي الخطوط اللي يتكتب بيها التقرير». الباوربوينت يضمّنها من قالب الوزارة نفسِه. والـPDF يطبعه المتصفّح
    فيحتاج الخطَّ نفسَه: يرفعه المديرُ مرةً (العاديَّ والعريض) فيُحفَظ في وثيقة الإعدادات «fonts» — لا في المستودع العامّ لأن
@@ -21564,6 +22011,15 @@ function impTemplate(kind){
 
 var IMP_PREVIEW = null;
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-08-cameras-report-sw-update.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Ministry camera report, service worker registration, auto-update, version announcement, the epoch (no uploads from a pre-epoch device) and 'sync everyone now'.
+   DEFINES : mohuDms, mohuPole, mohuSec, mohuSiteKey, mohuParse, camxRows, impRead, impValidate, impApply, swInstall, swBusy, swCancel, swApply, swNow … (+6 more)
+   GLOBALS : SW_STATE, SW_RELOADED, SW_TICK, EPOCH_PENDING, SYNC_ALL_SEEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تقريرُ كاميرات الوزارة بعناوينه — من داخل التطبيق لا من الشيفرة (V22.5) ═══
    «الكاميرات ٨٨ في الإكسل وفيهم بيانات الكاميرات والـIP — محتاجها كلها واضحة». الشيفرةُ منشورةٌ
    للعموم فلا تحمل عنوانَ شبكة؛ فيُرفَع التقريرُ نفسُه (بصيغة الوزارة كما هو) من «الأدوات ← الاستيراد»:
@@ -21925,6 +22381,15 @@ function epochApply(cloud){
   toast(t('بدايةٌ جديدة من المكتب — أُفرغ هذا الجهازُ ويُسحَب من القاعدة'));
   return true;
 }
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-09-role-switch-login-install.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Role switching, logout, add-to-home-screen prompts (incl. iPhone) and the login page.
+   DEFINES : roleWatch, verChase, swLater, swPoll, verCheck, quotaEstimate, swClear, signOut, pwaWatch, pwaStandalone, pwaIOS, pwaAndroid, pwaInstall, iosNudgeDue … (+8 more)
+   GLOBALS : VIS_LAST, LEGEND_ON, VER_CHASE, INSTALL_EVT, POP_HELP, LOGO, MANIFEST, LOGIN_CSS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الدورُ يتبدّل تحت اليد ═══
    الشاشةُ تُبنى من ROLE، والنطاقُ والإنصاتُ منه، والقاعدةُ تحكم بوثيقة الحساب.
    فإن غُيّر الدورُ من المكتب طُبِّق على الفور: الصلاحياتُ تُعاد، والشاشةُ إن
@@ -22477,6 +22942,15 @@ function loginBg(){
   cv.__stop = function(){ var e = document.getElementById('lgShine'); if (e) e.remove(); };
 }
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-10-field-companies.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Field map-first home, composite-name parsing, companies board and company camps classified.
+   DEFINES : coDash, coBucketsAll, coBuckets, coPopRows, coPopHtml, coPopXls, coDashCard, coSplit, siteCos, coCompounds, coPick, coFill, coColor, coFiltHtml … (+3 more)
+   GLOBALS : FIELD_MODE, EXP_OPEN, POP_SITE, CO_OPEN, CO_MODE, CO_Q, MAP_SAT, MAP_FILT_OPEN, CO_SEL, CO_BK … (+7 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الميدان — الخريطة أولًا ═══ */
 
 var FIELD_MODE = 'survey', FIELD_PREV = 'survey';
@@ -22849,6 +23323,15 @@ function legendShapes(){
 
 /* واجهةُ الخريطة تُرسَم في #mapUI فوق الحاوية الثابتة —
    والحاويةُ نفسها لا يمسّها إعادةُ الرسم فلا تُدمَّر Leaflet. */
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-11-drawing-board-modules.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Drawing board and its modules: survey details, single challenge key, rooms with sensors.
+   DEFINES : routePanelHtml, mapUIHtml, mapDraw, mapFallback, fieldRecords, fieldTools, dayDone, chalKey, chalKeys, svdChals, chalOtherTexts, chalOtherCard, svdMetal, svdAvgRooms … (+9 more)
+   GLOBALS : SITE_Q, SVD_PICK, CHAL_ALIAS, SVD_SRC, SVD_CARDS, SVD_MEMO
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ لوحُ الرسم (V17.58–V17.59) ═══
    المسارُ: المسافةُ بيد الراسم، والنقاطُ تُسحَب ثم تُحفَظ. والمساحةُ: المخيمُ
    بحدوده ومربعه وشاخصه، وغيرُه شبكةُ نقاطٍ بمسافتها. */
@@ -23286,6 +23769,15 @@ function svdashBody(){
         : '');
 }
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-12-ministry-screen-progress.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Ministry hall screen, completion forecast, progress map, far points, satellite in the ministry screen, week sentence and the hall view.
+   DEFINES : zoneForecast, forecastHtml, geoOutliers, pmState, pmViewBox, pmApply, pmZoomAt, pmReset, pmFrac, kkSatHtml, kkSatInit, pointMap, kioskObsTally, kioskObsHtml … (+8 more)
+   GLOBALS : KK_ZONE, PM_VIEW, PM_DRAG, KK_VIEW, PM_CLICK_SKIP, KIOSK_ON, KSC
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ شاشةُ الوزارة — العرضُ الذي يُقرأ من آخر القاعة (V17.82) ═══
    الاجتماعُ مع الوزارة لا يُقرأ فيه جدول: يُقرأ رقمٌ كبيرٌ ونسبةٌ وشريطٌ لكلِّ
    مشعر، ثم نبضُ الميدان في يومٍ، ثم ما ينتظر قرارًا من الحاضرين أنفسِهم.
@@ -23660,6 +24152,15 @@ function kioskBody(){
     + '</div></div>';
 }
 
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-13-ministry-followup.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Ministry follow-up page: dynamic follow-up, season brief header, 'whose turn' groups, two modes, and the no-challenge camps card.
+   DEFINES : mfuPartyRaw, mfuPartyLabel, mfuParties, mfuFetch, mfuData, mfuList, mfuPut, mfuOwnDefOf, mfuOwnerOf, mfuObstacles, svStats, svStats0, jmrConfirm, mfuInstalled … (+35 more)
+   GLOBALS : MFU, SUP_EXTRA, SUP_POP, CC_GROUPS, SV_POP, SV_LISTS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ متابعةُ الوزارة (V20.0) ═══
    العرضُ الأسبوعيُّ الذي كان يُعدُّ يدويًّا للاجتماعات صار صفحةً حيّةً بعناوينه نفسِها:
    حالةُ المهام، والتركيبات، والشركات، والمعوقات وجهاتُها، والتحدياتُ وآلياتُ معالجتها،
@@ -24121,7 +24622,16 @@ function svDynList(key){
   var m = /^why_(.+)$/.exec(key); if (m && m[1] !== 'tech' && m[1] !== 'none'){ var o = whyOf(m[1]); return o ? [o.n, function(x, r){ return svStuck(r) && visitWhy(r) === o.k; }] : null; }
   m = /^cc_(.+)$/.exec(key); if (m && m[1] !== 'review'){ var c = ccOf(m[1]); return c ? [c.n, function(x, r){ return chalCats(r).indexOf(c.k) > -1; }] : null; }
   return null;
-}
+}/* ============================================================================
+   FILE    : src/06-ministry/06-exec-report-01-exec-report.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Executive report builder.
+   DEFINES : execOvOf, execOvSeed, execOvSet, execAutoOf, execLabelOf, execStatusMemo, ccGroupsOfSite, execOvRow, techDoneSet, selTechDone, selExecSet, selExecHtml, execT1, execT2 … (+8 more)
+   GLOBALS : EXEC_L, EXEC_ORDER_L, EXEC_PICK, EXEC_MEMO, EXEC_POLICY, EXEC_OV, EXEC_STATIC, EXEC_O
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══ (V37.61) وحدةُ «التقرير التنفيذي» في ملفٍّ مستقل — نُقلت من 06-ministry-alerts.js (كان ٤٨٩ من ٥٢٠ ك.ب) قبل بناء التبويبات الخمسة.
    لا تغييرَ في السلوك: القالبُ في 06-exec-template.js، والقواعدُ والتصنيفُ الحيُّ والتصديرُ هنا. ═══ */
 /* ═══ (V37.46) «التقرير التنفيذي» — قالبُ الوزارة نفسُه حرفيًّا، يُعبَّأ بالأرقام الحية عند كلِّ تصدير ═══
@@ -24316,9 +24826,27 @@ function execXlsx(){
     if (ok !== false){ logEvent('تصديرُ التقرير التنفيذي — ' + R.rows.length + ' صفًّا · ' + R.tot.all + ' نقطة'); toast(t('صُدّر التقرير التنفيذي — بأرقام اللحظة')); }
     return ok;
   }).catch(function(e){ softErr('التقرير التنفيذي', e, String(e && e.message) === 'no-inflate' ? 'متصفحُ هذا الجهاز قديمٌ على فكِّ القالب — صدِّره من الكمبيوتر' : 'تعذّر تجهيز التقرير التنفيذي'); return false; });
-}
+}/* ============================================================================
+   FILE    : src/06-ministry/06-exec-template-02-exec-template.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Executive report template.
+   DEFINES : (no top-level functions)
+   GLOBALS : EXEC_TPL_B64
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══ (V37.48) قالبُ «التقرير التنفيذي» — نسخةُ المالك (٣) كما وصلت، مضغوطةً (xlsx) — تُفَكُّ عند التصدير وحدَه ═══ */
 var EXEC_TPL_B64 = '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';
+/* ============================================================================
+   FILE    : src/06-ministry/06-ext-camps-03-nusuk-card-system.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Nusuk card system bridge: bulk linking, signal status, overview sheet, point status card, setup bar.
+   DEFINES : extTokLoad, extTokSave, extTokClear, extFetch, extReadersLoad, extTentsLoad, extOvLoad, extOvCard, extStatBox, extTokCard, extMatchLoad, mtCamps, extSerKey, extCodeKey … (+65 more)
+   GLOBALS : EXT, EXT_API, EXT_STREAM, EXT_LIVE, EXT_LIVE_KEY, EXT_MATCH_STATE, EXT_OV_LOADED
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.75) المخيماتُ المركزية — إشغالٌ حيٌّ من نظام البطاقات ═══
    المصادر:
    · event.nusukcard.net/api/rfid/latest/stream  — قائمةُ القرّاء (بلا توكن غالبًا)
@@ -25579,6 +26107,15 @@ function extSetupBar(){
   if (S === 'or' && !body) body = card(t('خارج الخريطة'), '<p class="hint" style="margin:0">' + esc(t('لا نقاطَ خارج الخريطة')) + '</p>');
   return bar + body;
 }
+/* ============================================================================
+   FILE    : src/06-ministry/06-mfu-tabs-04-followup-tabs.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Ministry follow-up tabs: installation status, challenges (who handles, which challenge, by location per zone), daily summary.
+   DEFINES : mtHero, mtSec, mtDot, mtIcon, mtGrid, mtDetails, mtOpen, mtAllBtn, mtXlsx, mtTabXlsx, mtSites, mtInst, mtGrpOf, obsLocCats … (+25 more)
+   GLOBALS : MT_TILE, MT_GRP, MT_COB, MT_CO_ALL, MT_WF, MT_WST, MT_WWHO, HALL_URL, HALL
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ (V37.62) تبويباتُ متابعة الوزارة الخمسة بفكرة الملخّص — قرارُ المالك: «الوزارة عاوزة تتابع بأسهل طريقة ممكنة» ═══
    القالبُ الواحد: حلقةٌ كبيرة (كم من كم) ← مربعاتٌ بأيقونةٍ ورقمٍ وكلمة ← كلُّ مربعٍ يفتح لوحتَه وإكسلَه (والمهامُّ تُصفّى في مكانها).
@@ -25852,6 +26389,15 @@ function hallBoot(){
   toast(t('عرض القاعة — المس الشاشة مرةً لملئها'));
 }
 if (typeof setInterval === 'function' && HALL_URL) var HALL_BOOT_T = setInterval(function(){ hallBoot(); if (HALL.on) clearInterval(HALL_BOOT_T); }, 1000);
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-05-alerts-dashboard.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Alert rules configured from Settings, card popups from the ministry page, and the readable dashboard.
+   DEFINES : ageDays, alRuleDays, alRuleList, alAll, alCard, svListSites, svListRows, mfuWtRow, svListCount, svObKey, svListRows0, svListHead, svListTitle, svListPop … (+26 more)
+   GLOBALS : AL_RULES, SV_PHO, SV_SHOW, SV_VIEW, SV_ZF, SV_ZONE_COLORS, SV_ST, SV_WHY, SV_WHY_ORDER, SV_STACK … (+2 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ (V30.1) التنبيهاتُ بقواعدَ تُضبَط من الإعدادات ═══
    كلُّ قاعدةٍ: مفتاحُ الأيام في CFG، وشرطٌ على النقطة وسجلِّها، ونصٌّ يُقرأ. ما تجاوز أيامَ القاعدة يُعَدّ تنبيهًا ويُفتَح قائمةً ويُصدَّر. */
@@ -26235,6 +26781,15 @@ function mfuObs(){
       + '</div>' : ''))
     + mfuChal();   /* (V26.5) سجلُّ التحديات بآلياته في الصفحة نفسِها */
 }
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-06-followup-sources-daily.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Challenges from three sources, everything linked and heard in the report, weekly tasks in follow-up, follow-up maturity and the daily work summary.
+   DEFINES : mfuTaskState, mfuAllChal, mfuHist, mfuTaskNote, mfuReqView, mfuTimeline, mfuTaskGone, mfuDoneAt, mfuWeekBlocks, mfuBlocksCard, mfuUnseen, mfuAgeDays, mfuAgePill, mfuOpenedAt … (+19 more)
+   GLOBALS : WDY, WDY_SER
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التحدياتُ بمصادرها الثلاثة (V20.5) ═══
    «التحدياتُ تبان إنها جاية من المسح الميداني ونعدّلها: على مين، ومين هيحلّها،
    وآليةُ المعالجة — والمهامُّ الأسبوعيةُ مربوطة: التحدي فيها يبان ولما يتحلّ يبان».
@@ -26559,6 +27114,15 @@ function mfuDaily(){
   var note = '<p class="hint" style="margin:10px 0 0">' + esc(t('النسبة من إجمالي النقاط للزيارة والتركيب، ومن النقاط المركبة للفك، ومن زيارات اليوم لما تحتاج زيارة أخرى.')) + ' ' + esc(t('إجمالي النقاط')) + ': ' + nm(B.sv) + '</p>';
   return cardFlush(t('ملخص العمل اليومي') + ' \u2014 ' + rng, flt + lg + st + wdyChart(rows, vis, hourly, B) + tb + pg + note);
 }
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-07-weekly-export-scope.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Weekly update export, scope selection of points for the file, and the pre-download file check.
+   DEFINES : hijriToday, expScopeIds, expScopeLabel, mfuReport, mfuReport0, mfuSecTitle, mfuRowsOf, mfuFileName, mfuXlsx, mfuPrintHtml, mfuPdf, zipMany, mfuDocxXml, mfuDocx … (+6 more)
+   GLOBALS : MOH_LOGO
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تصديرُ التحديث الأسبوعي (V20.2) ═══
    صفحةُ متابعة الوزارة تُصدَّر كما كان العرضُ الأسبوعيُّ يُرسَل: وورد وإكسل وPDF —
    من الجهاز نفسِه بلا خادمٍ ولا انتظار (الإكسلُ يحمّل محرّكَه أوّلَ مرةٍ ثم يُخبَّأ).
@@ -26832,6 +27396,15 @@ function mfuDocx0(){
   if (ok){ logEvent('تصديرُ التحديث الأسبوعي — وورد', ''); toast(t('صُدّر ملفُّ وورد')); }
   return ok;
 }
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-08-pptx-template.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : PowerPoint built from the original ministry template.
+   DEFINES : pptxTemplate, ooxRead, ooxWrite, pxE, pxRun, pxP, pxBox, pxTable, pxScale, pxLvl, pxCards, mfuSlides, mfuPptx, expScopeRow … (+2 more)
+   GLOBALS : PX_ID, PX, PX_K
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ باوربوينت من قالب العرض الأصلي (V20.4) ═══
    templates/weekly-readers.pptx: شرائحُ مسار القارئات من «التحديث الدوري لمشروع بطاقة
    نسك» مقصوصةً (٣٫٩ ميجا): الغلاف بتاريخين نائبين، والفاصل، وثماني شرائحِ محتوى بعنوان
@@ -27788,6 +28361,15 @@ if (cur === 'stuck' || cur === 'idle') return head + (function(){
   })();
   }};
 
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-09-pilot-workflow-readiness.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Pilot installation timings, the workflow map, today's decisions box and season readiness.
+   DEFINES : pilotRows, pilotCard, svReopen, surveyList, wfStep, wfDiagram, wfBody
+   GLOBALS : SURV_Q
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نقاطُ التركيب التجريبيِّ — الزمنُ بين مراحلها (V17.95) ═══
    قبل موجة التركيب تُركَّب نقاطٌ قليلةٌ أوّلًا لتُقاس: كم بين الإسناد والتركيب،
    وبين التركيب والتدقيق، وبين التدقيق والتسليم، ثم الفكّ. يَسِمُ المديرُ النقطةَ
@@ -28078,6 +28660,15 @@ function wfBody(){
    الحسابَ أوّلًا، ثم ما يُعطّل التقرير، ثم ما يُعطّل المحضر. ولكلِّ سطرٍ
    زرٌّ يذهب إلى موضع ضبطه — لا يُقال «اضبطه» ويُترَك البحثُ للناظر. */
 
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-10-season-start-invites.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Season start values, invitations (single and bulk), creation requests, run-server-now, requests when the screen lies, and first-login password change.
+   DEFINES : seedPlan, seedApply, seedCard, readyRows, readyCard, passGen, normAr, roleGuess, jobGuess, bulkParse, bulkApply, bulkCard, ghToken, ghSetToken … (+11 more)
+   GLOBALS : BULK_TXT, ROLE_ALIAS, GH_REPO, GH_RAN, PROV_CANCEL, BOARD_ROLE, PW, SESS_PW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ بدءُ الموسم بقيمٍ مقترحة ═══
    المبدأُ في هذا النظام أن لا قيمةَ افتراضيةً صامتة: كلُّ وزنٍ وتارجتٍ
    يبدأ صفرًا ويُضبط بيد المهندس — لئلّا يُبنى تقريرٌ على رقمٍ لم يقصده أحد.
@@ -28597,6 +29188,15 @@ var PW = null;   /* { forced:true } عند الدخول الأوّل — أو {}
    الهويةُ صامتةً إن طلبت المصادقةُ دخولًا حديثًا عند تبديل المؤقتة، فلا يُقال
    «ادخل من جديد» لمن دخل للتوّ. والجلسةُ المستعادةُ بلا كلمةٍ تسأل عنها. */
 var SESS_PW = '';
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-11-whats-new.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : 'What's new' — the version log shown once per update (also the release notes source for bump.mjs).
+   DEFINES : releaseNotesSince, whatsNewMaybe, wnClose, wnHtml, pwOpen, pwNeeded, pwHtml, pwSave
+   GLOBALS : RELEASE_NOTES, WN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ ما الجديد — رسالةٌ واحدةٌ عند أوّل فتحٍ بعد التحديث (V17.87) ═══
    التحديثُ يصل الهاتفَ صامتًا فلا يعرف الميدانُ ما تبدّل. صار لكلِّ نسخةٍ
    سطورٌ بلسان المستخدم لا بلسان الشيفرة، تُعرَض مرةً واحدةً عند أوّل فتحٍ
@@ -28605,6 +29205,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.32', d:'2026-10-19', notes:[
+      'تسليم الكود: رأس إنجليزي لكل ملف، ودليل مطوّر بالإنجليزية، والتعليقات الجديدة بالإنجليزية' ] },
   { v:'V38.31', d:'2026-10-19', notes:[
       'قطار المشاعر: ٩ محطات بإحداثيات مرجعية و٦٢ بوابة إلكترونية أولية بلا إحداثيات حتى تُحقَّق — ومهلة ما ينتظر الرفع ٧ أيام' ] },
   { v:'V38.30', d:'2026-10-19', notes:[
@@ -29571,6 +30173,15 @@ function pwSave(){
   });
 }
 
+/* ============================================================================
+   FILE    : src/06-ministry/06-ministry-alerts-12-attendance-route-field-assistant.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Attendance (start/end my day), today's route, field assistant suggestions and WhatsApp to the technician on assignment.
+   DEFINES : attKey, attToday, attInZone, attLocate, attMark, hm, attMyCard, attTeamCard, routeLocate, routeTasks, routeOrder, kmTxt, mapsUrl, fhNearest … (+10 more)
+   GLOBALS : ATT_IN, ROUTE_POS, FH_PREP, WA_LAST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الحضور: بدأتُ يومي · أنهيتُ يومي ═══
    النظامُ يعرف ما أُنجز ولا يعرف من كان موجودًا. بمئةٍ وخمسين شخصًا في ستة
    مشاعرَ أوّلُ سؤالِ المدير صباحًا: من بدأ؟ ومن لم يبدأ؟ ومن أنهى ومتى؟
@@ -29865,7 +30476,16 @@ function inboxCard(){
           + '</div></div>';
       }).join('') + '</div>'
       + '<p class="hint" style="margin:8px 0 0">' + esc(t(total ? 'كلُّ رقمٍ هنا قرارٌ ينتظرك — ويختفي حين تتّخذه.' : 'الطاولةُ نظيفة — لا قرارَ ينتظرك الآن.')) + '</p>');
-}
+}/* ============================================================================
+   FILE    : src/06-ministry/06-props-13-props.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Ministry props helpers.
+   DEFINES : propList, propIs, propKeep, propFind, propMay, propLine, propPopHtml, propApprove, propReject, propMarkers, propChip, propSheetHtml, propGo
+   GLOBALS : PROP_POP
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
+
 /* ═══ (V37.69) مقترحاتُ الوزارة — قرارُ المالك «مقترحة أفضل»: النقطةُ التي تضيفها الوزارةُ تبقى خارجَ السجلِّ والعدِّ والتقارير حتى يعتمدها المهندس ═══
    تُحفَظ في newsites بمصدر «ministry» وغيرَ معتمدة، وتُمسَك هنا في STATE.props (لا STATE.sites) فلا تدخل ملخّصًا ولا تبويبًا ولا تقريرًا ولا إكسل.
    تُرسَم على الخريطة بعلامةٍ بنفسجيةٍ متقطّعةٍ للجميع (والوزارةُ ترى مقترحاتِها بعد إعادة الفتح)، وفي نافذتها: المهندسُ يعتمد (فتدخل السجلَّ وتُجدوَل زيارتُها) أو يرفض؛
@@ -29928,6 +30548,15 @@ function propSheetHtml(){
         + btn('\u{1F4CD}', 'btn-quiet btn-sm', ' data-propgo="' + esc(p.id) + '" title="' + esc(t('على الخريطة')) + '"') + (propMay() ? btn('\u2705 ' + t('اعتمد'), 'btn-primary btn-sm', ' data-propok="' + esc(p.id) + '"') + btn('\u2715', 'btn-danger btn-sm', ' data-propno="' + esc(p.id) + '" title="' + esc(t('ارفضها')) + '"') : '') + '</div>'; }).join('') : '<p class="hint">' + esc(t('لا مقترحات')) + '</p>') + '</div>';
 }
 function propGo(id){ var p = propFind(id); if (!p || !(+p.lat && +p.lng)) return; PROP_SHEET = false; PROP_POP = id; if (typeof MAP !== 'undefined' && MAP){ try { MAP.setView([+p.lat, +p.lng], Math.max(MAP.getZoom(), 17)); } catch (e){ LS_ERR = e; } } render(1); if (typeof mapPaint === 'function') mapPaint(); }
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-01-approvals-review.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Visit approvals by the engineer, challenge/notification search, review of unreachable and stalled points.
+   DEFINES : svFacts, qMatch, siteParts, chalSitesQ, notifMineQ, chalSites, stuckList, stuckAccept, stuckReopen, idleStep, stuckPanel
+   GLOBALS : SVA_ST, HO_DOC, SV_LABEL, CHAL_Q, STK_OPEN, MIN_ST, WR_DONE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ اعتمادُ الزيارات — المهندسُ يراجع ما زاره المشرفُ قبل أن يُبنى عليه ═══
    الصفحةُ التي تُغلق الدورة: كلُّ زيارةٍ حُفظت تظهر هنا ببياناتها الجديدة —
@@ -30127,6 +30756,15 @@ var WR_DONE = '';
 
 
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-02-inventory-workshop.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Inventory, purchases and catalogue from movements, workshop requests (CR/AR/IR), request log and the single item key.
+   DEFINES : seedOnce, itemsList, itemName, regList, regStatus, regSet, regDel, workReqList, workReqAdd, workReqComplete, workReqEdit, workReqCancel, itemSave, itemRename … (+11 more)
+   GLOBALS : REG_KIND, MOVE_KINDS
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ المخزنُ والمشترياتُ والكتالوج: من الحركة لا من البذرة ═══════════════
    كانت الأربعُ شاشاتٍ تعرض بذرةً مكتوبةً يومَ بُني الشكل: أربعةَ أصنافٍ
    وأربعَ حركاتٍ وعمليتَي شراء. تبدو عاملةً ولا تقبل إدخالًا — فلا يُسجَّل
@@ -30496,6 +31134,15 @@ function buysSpent(){
   return base + (inC ? trialsItemsSpend() : 0);
 }
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-03-trials-invoices.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Trials with cost and hours, trial kits from the catalogue, trial points on camps, and invoice photos.
+   DEFINES : trialKitHtml, trialsDoc, trialRows, trialOf, trialInCost, trialMay, trialSave, trialAdd, trialHoursAdd, trialSiteNorm, trialForSite, trialLinkSite, trialLinkExisting, trialRemove … (+31 more)
+   GLOBALS : TRIAL_OUT, BUY_ED, BUY_PH
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ التجارب: كلُّ ريالٍ وكلُّ ساعة — وقرارُ دخولها التكاليف (V16.96) ═══
    التجربةُ مصروفٌ ووقتٌ قبل أن تصير عملًا: يُشترى لها ويُجرَّب ثم يُقال هذا
    يصلح أو لا يصلح. وكان مصروفُها يذوب في دفتر المشتريات فلا يُعرَف كم كلّفت
@@ -31128,6 +31775,15 @@ function custodyByWho(){
 /* ── المال ──────────────────────────────────────── */
 
 /* ── الفنيون ────────────────────────────────────── */
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-04-devices-reset-pulse.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Live crew list, device versions, season reset, pulse and in-app report, page usage card, cost guard, field performance card and devices needing action.
+   DEFINES : appVer, agoTxt, presenceBeat, presenceFetch, presenceRows, wipeCounts, wipeGo, localStoreCard, sysReportFetch, sysReportCard, usageFetch, readsToday, usageCard, costGuardCard … (+3 more)
+   GLOBALS : PRES, WIPE_KEYS, SYSREP, USAGE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الطاقمُ والفرقُ: قائمةٌ حيةٌ تُحرَّر لا بذرةٌ تُعرَض ═════════════════
    كان `TECHS` ستةَ أسماءٍ مكتوبةً في الشيفرة، وطاقمُ الموسم الماضي اثنان
    وأربعون فنيًّا مستخرجين من أوراق التنفيذ اليومية. ومن أراد إضافةَ فنيٍّ
@@ -31412,6 +32068,15 @@ function devActRows(){
     return { name:x.name, role:x.role || '', ver:x.ver || '', at:+x.at || 0, iss:iss, act:act.filter(function(a, i, A){ return A.indexOf(a) === i; }), sev:sev };
   }).filter(function(r){ return r.iss.length; }).sort(function(a, b){ return b.sev - a.sev || b.at - a.at; });
 }
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-05-speed-board.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Speed board per device and per page (presence heartbeat: version, pending queue, photos).
+   DEFINES : speedCell, speedRows, speedCard, devActCard, perfCard
+   GLOBALS : SPEED_PAGES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ (V37.34) البندُ ٤ — لوحةُ السرعة لكلِّ جهازٍ ولكلِّ صفحة ═══
    من قياسات الأجهزة نفسِها (نبضتُها اليومية): زمنُ رسم كلِّ صفحةٍ (الربعُ الأعلى)، واستجابةُ اللمس، وزمنُ الفتح — لكلِّ جهازٍ صفّ،
    ولكلِّ صفحةٍ رئيسيةٍ عمود؛ أخضرُ دون ٠٫٣ ثانية (الهدف)، وأصفرُ دون ثانية، وأحمرُ فوقها. فيُعرَف الجهازُ البطيءُ والصفحةُ البطيئةُ قبل الشكوى. */
@@ -31979,6 +32644,15 @@ if (cur === 'vers') return head + (function(){
   })();
   }};
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-06-people-functions.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : People and functions: who gets field work, unified department page, functions from which roles derive.
+   DEFINES : isFieldRole, isCrewRole, techsList, techUid, techSet, techDel, crewsList, crewSave, crewAdd, crewDel, crewTechs, crewTeams, unassignedTechs, depTechAdd … (+21 more)
+   GLOBALS : FIELD_ROLES, SITES_ALL, JOBS_SEED, LESS_SHOW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الفنيون والفرق: يُضافون ويُعدَّلون ويُحذَفون ═══════════════════════
    كان سجلُّ الفنيين قائمةَ عرضٍ: ستةُ أسماءٍ مخترعةٍ لا تُزاد ولا تُنقَص.
    ومن أراد فنيًّا جديدًا لم يجد أين يكتبه، ومن انصرف فنيٌّ لم يجد كيف
@@ -32378,6 +33052,15 @@ function lessDel(i){
   toast(t('حُذف')); render(1);
 }
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-07-network-notifications.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Network addresses, notifications (four channels, one message), generated where read, collision detection, bell window and per-device controls.
+   DEFINES : ipRows, ipSet, ipClear, vehKindSave, vehKindSet, vehKindAdd, vehKindDel, breakCell, rollupBy, rollupTable, techPerfTable, bonusFormHtml, bonusLogHtml, notifStore … (+26 more)
+   GLOBALS : IP_Q, NOTIF_MAX, NOTIF_SEEN, NOTIF_LV, STEP_KINDS, CLASH, NPOP_BURST, POP_T, BELL_OPEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ عناوينُ الشبكة ═══
    لكلِّ نقطةٍ مركَّبةٍ بادئةُ شبكةٍ وثلاثةُ عناوين: الراوترُ والقارئُ
    والكاميرا. تُستورَد من ملفٍ وتُصدَّر إليه — وكانت تُكتَب ولا تُعرَض،
@@ -32921,6 +33604,15 @@ function notifUnread(){
   return notifMine().filter(function(n){ return !n.read; }).length;
 }
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-08-shipments-vehicles.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Shipments tracked, vehicles as moving custody with their own log.
+   DEFINES : shipList, shipSave, shipLate, shipAdd, shipSet, shipDel, shipWatch, todayISO, msDay, vehKinds, vehKindName, vehList, vehOf, vehAsnList … (+16 more)
+   GLOBALS : SHIP_ST, SHIP_Q, ASN_LABEL, VEH_KINDS_SEED, VEH_OWN, VEH_Q, VEH_FIT, VLOG_D
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الشحنات: التوريدُ يُتابَع لا يُنتظَر ═══════════════════════════════════
    التصنيعُ والشحنُ والتخليصُ تقع خارجَ النظام — لكنَّ حالتَها تُدخَل فيه.
    وبلا موعدٍ متوقَّعٍ لا يُعرَف المتأخّرُ إلا حين يُسأل عنه، وحينئذٍ يكون قد
@@ -33672,6 +34364,15 @@ function vehMismatch(){
 
 var VLOG_D = '', VLOG_Q = '';
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-09-followup-export-events.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Follow-up file export from its template, events log, classification by action, and the audit trail read from the database in batches.
+   DEFINES : fupPct, fupPctRaw, zipRead, zipWrite, fupExport, evKind, evCat, evPillKind, evFetch, evNames, evActor, evAll, evNorm, evSiteHistory … (+1 more)
+   GLOBALS : FUP_ROWS, FUP_MEMO, EV_KINDS, EV_CATS, EVF, EV_FETCHED, EV_NAMES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ تصديرُ ملف المتابعة بقالبه ═══════════════════════════════════════════
    الملفُّ يحسب نفسَه بنفسه: الحالةُ والموقفُ الزمنيُّ والمتبقي والزمنُ المنقضي
    كلُّها معادلاتٌ في القالب. والوحيدُ المكتوبُ بيدٍ هو **نسبةُ الإنجاز** في
@@ -34040,6 +34741,15 @@ function evRows(){
 
 
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-10-point-actions-export-pdf.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Point window actions, click identity, export centre by section, export by role, PDF cover page.
+   DEFINES : popOpenAt, expAllowed, expSecs, pdfTile, pdfBar, pdfCols, pdfDonut, pdfCover, expPdf, expHtml
+   GLOBALS : BOOT_AT, POP_OPEN
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نافذة النقطة — كل ما تحمله النقطة من إجراءات ═══
    الخريطة الحقيقية Leaflet: هذه النافذة هي ما يفتح عند النقر على أي نقطة. */
 
@@ -34273,6 +34983,15 @@ function expHtml(){
     + '</p></div>';
 }
 
+/* ============================================================================
+   FILE    : src/07-reports/07-approvals-reports-11-import-roles-perms.js
+   DOMAIN  : Approvals & reports — inventory, workshop, devices, notifications, roles
+   PURPOSE : Import via downloaded template, roles (who sees and does what), the owner is never locked out, database permissions matrix, custom roles, ranks, org tree and merged pages.
+   DEFINES : importCard, impPreviewCard, repcenterBody, isBossHere, R, may, pmLocked, pmDefault, pmMatrix, pmOverride, pmGet, pmToggle, pmDirty, pmSave … (+20 more)
+   GLOBALS : IMPORTS, ROLES, ROLE, BOSS_EMAILS, PM_OPS, PM_COLS, PM_CAP, PM_DRAFT, ROLE_RANK, BASE_ROLES … (+5 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاستيراد — قالب يُنزَّل ثم يُملأ ثم يُرفع ═══ */
 
 var IMPORTS = [
@@ -35174,6 +35893,15 @@ function tabCur(pid){
   if (!vis.some(function(tb){ return tb[0] === PTAB[pid]; })) PTAB[pid] = vis.length ? vis[0][0] : '';
   return PTAB[pid];
 }
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-01-data-sources-role-guide.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Where data comes from and where it is read, page usage, and the role guide generated from permissions.
+   DEFINES : CLICK_NEXT, provHtml, tabHead, pageMeta, pageIds, goPage, pageUse, pageTick, seesRaw, seesPage, roleGuide
+   GLOBALS : PROV, PG_USE, CAP_SAY, GUIDE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* (V33.0) علامةُ «لم يُعالَج هنا — تابِع» لأجزاء معالجَي النقرات: دالّةٌ فارغةٌ هويتُها فريدة (لا متغيرَ عامًّا جديدًا) */
 function CLICK_NEXT(){}
@@ -35365,6 +36093,15 @@ function roleGuide(k){
 ;
 
 /* الاعتمادات — للمهندس وحده */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-02-approvals-governance.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Approvals from proposal to decision, ministry financial summary, governance gaps, escalation, responsibility matrix and stage chain.
+   DEFINES : fixList, coReqList, buyPend, fixOpen, fixCard, fixSend, coAddDirect, coRemove, apprDecide, escList, escSave, escSet, escAdd, escDel … (+7 more)
+   GLOBALS : FIX_OPEN, ESC_RULES
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الاعتمادات: من الاقتراح إلى القرار ═══════════════════════════════════
    كانت الشاشةُ أربعةَ أصفارٍ ثابتةٍ ورسمًا للدورة — «يقترح المشرف ← يراجع
    المهندس ← يُعتمد أو يُردّ» — ودورةٌ مرسومةٌ لا تُنفَّذ أسوأُ من غيابها:
@@ -35730,6 +36467,15 @@ function chainRows(){
    سجل إلحاقي بلا سقف ينمو حتى يخنق الموسم. */
 
 
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-03-settings-types-users.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Settings: point types, moving points between categories, users from the database, user log, delete/duplicate accounts, passwords, login-name change and on-device account creation.
+   DEFINES : typeCopy, typesNormalize, typesList, typesSave, typeUsed, typeSet, typeAdd, typeDel, siteSetType, selSetType, selRename, typeMoveDel, typesCard, mxExtra … (+35 more)
+   GLOBALS : TYPES_NORM, TYPES_OLD_L, W_ALIAS, MX_ZONES, USR, PROV_KICK, PW_FLOW
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الإعدادات — تفاصيل القديم كاملةً بالتصميم الجديد ═══
    نفس النصوص والحقول والجداول والقواعد، مبنيةً ببطاقات التصميم الجديد. */
 
@@ -36679,6 +37425,15 @@ function usrAdd(){
 }
 
 
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-04-weights-zones.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Weight rows, zones from one source, display-name fixes and the constants card (incl. pending-upload limit).
+   DEFINES : zoneList, zoneOptions, zoneCode, zoneRename, mxTypeMove, mxDeclareGo, mxRowInfo, halves, mxTable, prepAsm
+   GLOBALS : ZONE_CODE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ صفُّ الوزن يُدار كاملًا: المشعرُ والنوعُ والوزنُ والحذف ══════════════
    كان الصفُّ يعرض المشعرَ والنوعَ نصًّا ويُعدَّل وزنُه وحدَه. فمن أراد أن
    يصحّح اسمَ مشعرٍ أو ينقل نوعًا لم يجد أين — والإضافةُ موجودةٌ والتصحيحُ لا.
@@ -37265,6 +38020,15 @@ PAGE.items = { m:'الإعدادات', t:'الكتالوج والقوائم',
 
 
 
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-05-menu-shell-perf.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Menu and shell, scroll position kept across renders, measured performance and browser vitals, focus kept in fields.
+   DEFINES : navIco, arNorm, subseq, navMatch, navTabHits, navTabLinks, navHtml, navPush, navBack, scrollGrab, scrollBack, perfNote, perfAvg, vitDay … (+10 more)
+   GLOBALS : NAV, NAV_ICO, CUR, OPEN, NAV_Q, FIELD_PAGES, NAV_HIST, SCROLL_KEEP, SCROLL_SEEN, PERF … (+1 more)
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ القائمة والشل ═══ */
 
 var NAV = [
@@ -37548,6 +38312,15 @@ function focusBack(g){
     if (g.pos != null && el.setSelectionRange) el.setSelectionRange(g.pos, g.pos);
   } catch (e){ LS_ERR = e; }
 }
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-06-long-lists-storage-clicks.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Long lists (100 first then 'show more'), persistent storage request, table and window clicks.
+   DEFINES : moreKey, capList, moreHtml, render, render0, enterApp, enterShell, syncOnHide, storagePersistMaybe, actList, clickTables
+   GLOBALS : MORE_SHOWN, PERSIST, ACTS_CACHE
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ القوائمُ الطويلة مئةً أوّلًا ثم «اعرض المزيد» (V26.2) — قرارُ المالك ═══
    صفحةٌ تبني ثلاثَمئة صفٍّ (أربعةُ آلافِ عنصر) تأخذ ربعَ ثانيةٍ على المكتب وثانيةً على الهاتف مع كلِّ ضغطة — وهو أقربُ
    شيءٍ إلى «التعليق». صارت كلُّ قائمةٍ تبني مئةً، وزرٌّ واحدٌ أسفلَ الصفحة يزيد مئتين كلَّ ضغطة؛ والبحثُ في الصفحة
@@ -38003,6 +38776,14 @@ function clickTables(e){
   }
   return false;
 }
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-07-clicks-a-1.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 1 (return true when the event is consumed).
+   DEFINES : clickA, clickAPart1, clickAPart2
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ نقراتٌ منقولةٌ من onDocClick لتبقى تحت الحدّ — ترجع true إن التقطت الحدث ═══ */
 function clickA(e){
   /* (V33.0) كان ٦٦٥ سطرًا؛ صار أجزاءً بالترتيب نفسِه — يُرجَع ما أرجعه الجزءُ الذي عالج النقرة */
@@ -38262,6 +39043,14 @@ function clickAPart2(e){
 }
 /* clickA — الجزء 3 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
    يعالج: reqtask، svq، svqx، svqk، svqdelask، svqdelx، svqdel، svqqx، svqcancel، svqch، svqsave، sqall، mfupadd، mfuprm، mfupren، mfuprn، mfuprst، chupd، chupdtxt، chupdx، chupdgo، chalpop، chalpopx، mfz، mft، mfuedit، mfucosall، wdyser، wdypg، wdyreset، mfuchal، mfureq، mfudel، iosnudge، idbretry، simapply، simot، geojson */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-08-clicks-a-2.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 2.
+   DEFINES : clickAPart3, clickAPart4, clickAPart5
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function clickAPart3(e){
     if (e.target.closest('[data-reqtask]')){
     var rq = mfuList('req').filter(function(x){ return x.id === e.target.closest('[data-reqtask]').getAttribute('data-reqtask'); })[0];
@@ -38617,6 +39406,14 @@ function clickAPart5(e){
 }
 /* clickA — الجزء 6 من 7 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
    يعالج: bugf، bugdone، bugok، bugdec، bugno، wtxl، wtmeetstart، wtmeetprev، wtmeetnext، wtmeetgo، wtmeetend، wtmeetexit، wtgo، wtwbs، wtdone، wtdel، wtnew، wtncancel، wtnsave، wtreset، wbstog، wbsedit، wbscancel، wbssave، wbse، wbsdel، wbsreset، wbsf، fl، fr، fz، tfw، tfwcamp، tfwcampx، tfwd، poil، bedstart، bedsave، bedcancel، beddel، … */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-09-clicks-a-3.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Delegated click handlers, group A part 3.
+   DEFINES : clickAPart6, clickAPart7
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function clickAPart6(e){
   var pk = e.target.closest('[data-pop]');   /* بحثٌ صرف — يُعاد حسابُه */
   var bst = e.target.closest('[data-bst]');   /* بحثٌ صرف — يُعاد حسابُه */
@@ -38863,6 +39660,14 @@ function clickAPart7(e){
   return false;
 }
 
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-10-clicks-doc-1.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 1 (onDocClick and parts 1–3): settings, constants, survey edit, pending file, E-GATE verification.
+   DEFINES : onDocClick, onDocClickPart1, onDocClickPart2, onDocClickPart3
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClick(e){
   /* (V37.14) جهةُ الدعم المطلوب أوّلًا — معالجٌ سابقٌ عند المهندس كان يبتلع الضغطَ قبل وصوله */
   var supq = e.target.closest('[data-supq]');   /* (V37.14) جهةُ الدعم المطلوب — قبل القائمة */
@@ -39201,6 +40006,14 @@ function onDocClickPart3(e){
 }
 /* onDocClick — الجزء 4 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
    يعالج: pzdrop، bkref، copick، coren، asnq، hsedel، rkdel، regk، regs، regedit، regsave، regto، regwhen، regdel، wredit، wresave، wreitem، rkadd، hogo، hodoc، pkadd، pkrm، patapply، patsave، patdel، svreopen، svreopencancel، svreopengo، evcat، usredit، usrdel، usract، usrren، usru، usrsave، usrn، usrr، usrj، usrs، usrd، … */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-11-clicks-doc-2.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 2 (parts 4–7).
+   DEFINES : onDocClickPart4, onDocClickPart5, onDocClickPart6, onDocClickPart7
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClickPart4(e){
   var pzd = e.target.closest('[data-pzdrop]');   /* بحثٌ صرف — يُعاد حسابُه */
     if (pzd){
@@ -39707,6 +40520,14 @@ function onDocClickPart7(e){
 }
 /* onDocClick — الجزء 8 من 9 (V33.0: قُسِّم المعالجُ للمستلِم؛ الترتيبُ نفسُه والسلوكُ نفسُه).
    يعالج: tpl، impgo، impx، usrrolef، months، crew، role، kmz، repside، repgo، reppack، sop، hseadd، ncradd، ncrok، ipcadd، ipcok، ipcpay، baseset، chgadd، chgok، chgno، stab، perfview، lasn، dsch، ddone، navx، move، movex، smark، fmark، psel، insform، asn، drvsave، drvtest، help، locate، newsite، … */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-12-clicks-doc-3.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Document-level click handlers part 3 (parts 8–9).
+   DEFINES : onDocClickPart8, onDocClickPart9
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function onDocClickPart8(e){
   var pid;   /* تُكتب هنا قبل أن تُقرأ */
     var tp = e.target.closest('[data-tpl]');
@@ -39942,6 +40763,15 @@ function onDocClickPart9(e){
 document.addEventListener('click', onDocClick);
 
 /* الحقلُ في خليةٍ وسمُه عنوانُ عموده وصفُّه — يُنسَب إليهما فيقرؤه القارئُ الصوتي */
+/* ============================================================================
+   FILE    : src/08-events/08-data-events-boot-13-toast-wheel-ios-boot.js
+   DOMAIN  : Data & events — settings, users, click handlers, boot
+   PURPOSE : Toast, label cells, mouse wheel never types numbers, iOS viewport stability, assistant scroll fix, file-input change handlers and the boot sequence.
+   DEFINES : labelCells, toast, supRemove, svPopRemove, liteSync, qStaleSync, phStaleSync, assistSync, reflow, reflowSoon, assistGoHome
+   GLOBALS : REFLOW_T
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 function labelCells(root){
   var tbs = root.querySelectorAll('.data-table');
   for (var i = 0; i < tbs.length; i++){

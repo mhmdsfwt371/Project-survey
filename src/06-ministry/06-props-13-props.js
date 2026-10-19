@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/06-ministry/06-props-13-props.js
+   DOMAIN  : Ministry follow-up — alerts, reports, Nusuk card system, what's new
+   PURPOSE : Ministry props helpers.
+   DEFINES : propList, propIs, propKeep, propFind, propMay, propLine, propPopHtml, propApprove, propReject, propMarkers, propChip, propSheetHtml, propGo
+   GLOBALS : PROP_POP
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 
 /* ═══ (V37.69) مقترحاتُ الوزارة — قرارُ المالك «مقترحة أفضل»: النقطةُ التي تضيفها الوزارةُ تبقى خارجَ السجلِّ والعدِّ والتقارير حتى يعتمدها المهندس ═══
    تُحفَظ في newsites بمصدر «ministry» وغيرَ معتمدة، وتُمسَك هنا في STATE.props (لا STATE.sites) فلا تدخل ملخّصًا ولا تبويبًا ولا تقريرًا ولا إكسل.

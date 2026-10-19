@@ -1,3 +1,12 @@
+/* ============================================================================
+   FILE    : src/05-map/05-lifecycle-map-02-map-incremental.js
+   DOMAIN  : Map & lifecycle — layers, export/import, login, ministry screen
+   PURPOSE : Incremental map painting (never rebuilt from scratch), marker cache MK, faster first paint, flying to a point, locate, theme and satellite toggles.
+   DEFINES : shapeMk, mapClickFn, mkPlace, mkDrain, mkSweep, mkCount, mapPaintLight, mapPaint, egPaint, mapFlySoon, mapFly, mapLocate, mapTheme, mapSat
+   GLOBALS : MK, ShapeMk, MK_PAD, MK_FIRST
+   NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
+             decision log by version (owner decisions); new comments are written in English.
+   ============================================================================ */
 /* ═══ الخريطةُ لا تُعاد من الصفر (V24.1) ═══
    كان كلُّ تحريكٍ أو تقريبٍ يمسح العلاماتِ كلَّها ويُنشئها من جديد: نحو ألفِ مضلّعِ مخيمٍ تُبنى
    وتُمسح في كلِّ مرة (نحو ثلاثِمئة ملّي ثانية على الشاشة الكبيرة قبل أن يُرسَم شيء)، ومئتا
