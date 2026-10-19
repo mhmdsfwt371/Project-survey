@@ -16,7 +16,7 @@ const logPw = files.filter(p => /\.(mjs|js|yml)$/.test(p) && !/scripts\/(audit-[
 T(!logPw.length, 'ولا كلمةَ مرورٍ تُطبَع في سجلِّ تشغيلٍ عام' + (logPw.length ? ': ' + logPw.join('، ') : ''));
 const prov = readFileSync('scripts/provision.mjs', 'utf8');
 T(/WIPE_MS = 72 \* 3600e3/.test(prov) && /pass: admin\.firestore\.FieldValue\.delete\(\)/.test(prov), 'وكلماتُ الحسابات المنجزة تُمحى تلقائيًّا بعد ٧٢ ساعة');
-const app = readdirSync('src').filter(f => f.endsWith('.js')).map(f => readFileSync('src/' + f, 'utf8')).join('\n');
+const app = (await import('./lib/src.mjs')).srcJs().map(f => readFileSync(f, 'utf8')).join('\n');   /* (V38.28) المجلّدات */
 T(/if \(effRole\(ROLE\) === 'admin' \|\| effRole\(ROLE\) === 'exec'\)\{\s*\n\s*DB\.col\('ghcfg'\)/.test(app), 'ومفتاحُ التشغيل لا يطلبه التطبيقُ إلا مديرُ المشروع والإدارةُ العليا — كما تسمح القواعد');
 const rules = readFileSync('firestore.rules', 'utf8');
 T(/match \/ghcfg\/\{id\} \{[\s\S]{0,300}allow read: if ok\(\) && \(role\(\) == 'admin' \|\| role\(\) == 'exec'\);/.test(rules), 'والقواعدُ تقصر قراءتَه عليهما');

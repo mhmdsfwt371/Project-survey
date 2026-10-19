@@ -8,12 +8,13 @@ import { execSync } from 'child_process';
 import { ESLint } from 'eslint';
 import { createRequire } from 'module';
 /* espree يأتي مع eslint نفسِه (لا تثبيتَ زائد) — يُحلّ من موضع eslint */
+import { srcConcat, srcJs } from './lib/src.mjs';
 const espree = createRequire(createRequire(import.meta.url).resolve('eslint'))('espree');
 export async function measure(){
   /* (V32.6) من المصدر في الذاكرة لا من index.html: الحارسُ يشغّل الجرودَ على مساراتٍ متوازية، وجردُ الختم (audit-seal) يغيّر index.html
      مؤقتًا ليختبر الحرّاس — فكان هذا الجردُ يقرأ نسخةً معدَّلةً أحيانًا ويسقط في الحارس الكامل وحده (وينجح منفردًا). والمطابقةُ بين
      الملفِّ والمصدر يفرضها build --check على حدة. */
-  const s = readdirSync('src').filter(f => /^\d\d-.*\.(html|js)$/.test(f)).sort().map(f => readFileSync('src/' + f, 'utf8')).join(''), js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
+  const s = srcConcat(), js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
   const ast = espree.parse(js, { ecmaVersion:2020, sourceType:'script', loc:true });
   let globals = 0; const lens = [];
   for (const n of ast.body){ if (n.type === 'VariableDeclaration') globals += n.declarations.length; if (n.type === 'FunctionDeclaration') lens.push([n.id.name, n.loc.end.line - n.loc.start.line + 1]); }
@@ -22,7 +23,7 @@ export async function measure(){
      يمحو أحدُهما ملفَّ الآخر — فيسقط هذا وحدَه في الحارس الكامل وينجح منفردًا */
   const eslint = new ESLint(); const res = await eslint.lintText(js, { filePath:'index.html.js' });
   const msgs = res[0] ? res[0].messages : [];
-  const src = readdirSync('src').filter(f => /\.js$/.test(f)).map(f => [f, Math.round(statSync('src/' + f).size / 1024)]).sort((a, b) => b[1] - a[1]);
+  const src = srcJs().map(f => [f.replace(/^src\//, ''), Math.round(statSync(f).size / 1024)]).sort((a, b) => b[1] - a[1]);
   return { m:{ globals, over300:lens.filter(x => x[1] > 300).length, over150:lens.filter(x => x[1] > 150).length, lintErrors:msgs.filter(x => x.severity === 2).length, lintWarnings:msgs.filter(x => x.severity === 1).length, maxSrcKB:src[0][1] },
            info:{ functions:lens.length, totalKB:Math.round(Buffer.byteLength(s) / 1024), longest:lens.slice(0, 5), biggestSrc:src.slice(0, 3) } };
 }
@@ -31,7 +32,7 @@ if (import.meta.url === 'file://' + process.argv[1]){
   const fails = [], better = [];
   if (m.lintErrors) fails.push('أخطاءُ النحو ' + m.lintErrors + ' (يجب صفر)');
   /* (V31.5) بوابةُ البيانات: لا حديثَ مع القاعدة إلا من DB — FB.db.collection/batch خارجها تراجعٌ معماريّ */
-  { const srcAll = readdirSync('src').filter(f => /\.js$/.test(f)).map(f => readFileSync('src/' + f, 'utf8').split('\n').map((l, i) => [f, i + 1, l])).flat();
+  { const srcAll = srcJs().map(f => readFileSync(f, 'utf8').split('\n').map((l, i) => [f.replace(/^src\//, ''), i + 1, l])).flat();
     const raw = srcAll.filter(([f, n, l]) => /FB\.db\.(collection|batch|runTransaction|doc)\(/.test(l) && !/^\s*(col|doc|batch):\s+function/.test(l) && !/^\s*(\/\*|\*|\/\/)/.test(l.trim()) && !/—/.test(l.split('FB.db')[0].slice(-3)));
     if (raw.length) fails.push('وصولٌ مباشرٌ للقاعدة خارج بوابة البيانات (DB): ' + raw.slice(0, 3).map(r => r[0] + ':' + r[1]).join(' · ')); }
   Object.keys(B.m).forEach(k => { if (k === 'lintErrors' || k === 'maxSrcKB') return;   /* (V31.6) حجمُ الملف يُحرَس بالسقف لا بالسقّاطة — الميزةُ الجديدةُ تكبّره طبيعيًّا */ if (m[k] > B.m[k]) fails.push(`${k}: ${m[k]} > خطّ الأساس ${B.m[k]}`); else if (m[k] < B.m[k]) better.push(`${k}: ${B.m[k]} ← ${m[k]}`); });

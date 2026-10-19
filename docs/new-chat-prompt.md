@@ -38,7 +38,8 @@ Firebase : project-survey-60600   (Auth + Firestore)
 ## الملفات
 
 ```
-src/*.js + src/00-head.html   المصدر — ١٧ ملفًّا تُبنى إلى index.html بـ scripts/build.mjs (لا يُحرَّر index.html بيد)
+src/<مجال>/*.js              المصدر — ٩٤ ملفًّا في ٨ مجلّدات بالمجال (00-shell · 01-core · 02-catalog · 03-survey · 04-office · 05-map · 06-ministry · 07-reports · 08-events · 99-shell)
+                              تُبنى بترتيب المسار إلى index.html بـ scripts/build.mjs (لا يُحرَّر index.html بيد) — خريطتُها docs/code-map.md (node scripts/code-map.mjs) وسقفُ الملف ١٥٠٠ سطر
 i18n/dict-<hash>.js           القاموس: كلُّ نصٍّ عربيٍّ في الواجهة له إنجليزيٌّ وأرديّ — scripts/i18n-rehash.mjs بعد كلِّ إضافة
 sw.js · firestore.rules · .github/workflows/ (١٦ سيرًا) · scripts/ (~٢٠٥ جردًا وأداة)
 docs/START-HERE.md · handover.md (§٧ ما استجدّ) · decisions.md (ق-٠٠١ … ق-٠١٩) · system.md · runbooks.md

@@ -7,7 +7,7 @@ if (!cur) throw new Error('لا ملفَ قاموس');
 const src = readFileSync('i18n/' + cur, 'utf8'), hash = createHash('sha256').update(src).digest('hex').slice(0, 10), name = 'dict-' + hash + '.js';
 if (name !== cur) renameSync('i18n/' + cur, 'i18n/' + name);
 /* (V31.0) المصدرُ في src/ — يُكتَب في الملف الذي يحمل السطرَ ثم يُبنى index.html */
-const SRC = readdirSync('src').filter(f => /\.js$/.test(f)).sort().map(f => 'src/' + f).find(f => /I18N_FILE = 'i18n\/dict-/.test(readFileSync(f, 'utf8'))) || 'index.html';
+const SRC = (await import('./lib/src.mjs')).srcFind(/I18N_FILE = 'i18n\/dict-/) || 'index.html';   /* (V38.28) */
 let s = readFileSync(SRC, 'utf8'); const n = (s.match(/I18N_FILE = 'i18n\/dict-[0-9a-f]{10}\.js'/g) || []).length;
 if (n !== 1) throw new Error('مواضعُ اسم القاموس في index.html: ' + n);
 s = s.replace(/I18N_FILE = 'i18n\/dict-[0-9a-f]{10}\.js'/, "I18N_FILE = 'i18n/" + name + "'"); writeFileSync(SRC, s); if (SRC !== 'index.html') execSync('node scripts/build.mjs', { stdio:'inherit' });

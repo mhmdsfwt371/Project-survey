@@ -127,7 +127,7 @@ w.ROLE = 'supervisor'; T(!w.seesPage('perms'), 'المشرفُ لا يرى ال�
 /* (V37.96) كلُّ مفتاحٍ يُسأل عنه may() موجودٌ في جدول الصلاحيات — مفتاحٌ وهميٌّ («mgr»، «newsite») يُرجع كاذبًا
    دائمًا فيختفي الزرُّ عن الجميع بصمت، كما حدث لبطاقة التوكن في V37.75 */
 {
-  const srcAll = readdirSync('src').filter(f => f.endsWith('.js')).map(f => readFileSync('src/' + f, 'utf8')).join('\n');
+  const srcAll = (await import('./lib/src.mjs')).srcJs().map(f => readFileSync(f, 'utf8')).join('\n');   /* (V38.28) المجلّدات */
   const known = new Set(['propose', 'provision']);
   Object.values(w.ROLES || {}).forEach(r => Object.keys((r && r.can) || {}).forEach(k => known.add(k)));
   const used = [...new Set([...srcAll.matchAll(/\bmay\('(\w+)'\)/g)].map(m => m[1]))];

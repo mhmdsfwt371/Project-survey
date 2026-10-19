@@ -4,8 +4,10 @@
    القاعدة: يُعدَّل src/ لا index.html — وجردُ audit-build يرفض أيَّ فرقٍ بينهما.
      node scripts/build.mjs            يبني index.html
      node scripts/build.mjs --check    يتحقّق أن index.html هو ناتجُ src/ (لا يكتب) */
-import { readFileSync, writeFileSync, readdirSync } from 'fs';
-const FILES = readdirSync('src').filter(f => /^\d\d-.*\.(html|js)$/.test(f)).sort();
+import { readFileSync, writeFileSync } from 'fs';
+import { srcFiles } from './lib/src.mjs';
+/* (V38.28) المجلّداتُ بالمجال — الترتيبُ بالمسار الكامل، والناتجُ بايتًا ببايت كما كان */
+const FILES = srcFiles();
 const out = FILES.map(f => readFileSync('src/' + f, 'utf8')).join('');
 if (process.argv.includes('--check')){
   const cur = readFileSync('index.html', 'utf8');

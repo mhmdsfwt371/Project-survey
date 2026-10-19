@@ -20,15 +20,15 @@ const die = m => { console.error('✗ ' + m); process.exit(1); };
 if (!/^V\d+\.\d+$/.test(NEW || '')) die('الاستعمال: node scripts/bump.mjs V33.1 --date "…" --note "…" --api "…" --row "…"');
 if (!notes.length || !api || !row || !date) die('الملاحظةُ والمخططُ وسطرُ الوثيقة والتاريخُ كلُّها مطلوبة — لا نسخةَ بلا وصف');
 
-const head = readFileSync('src/00-head.html', 'utf8'), OLD = (head.match(/نسخة (V\d+\.\d+)/) || [])[1];
-if (!OLD) die('لم أجد رقمَ النسخة في src/00-head.html');
+const head = readFileSync('src/00-shell/00-head.html', 'utf8'), OLD = (head.match(/نسخة (V\d+\.\d+)/) || [])[1];   /* (V38.28) */
+if (!OLD) die('لم أجد رقمَ النسخة في src/00-shell/00-head.html');
 if (OLD === NEW) die('النسخةُ ' + NEW + ' هي الحالية');
 const one = (file, a, b) => { const s = readFileSync(file, 'utf8'), n = s.split(a).length - 1; if (n !== 1) die(file + ': «' + a.slice(0, 50) + '» ' + n + ' مرة (المتوقع ١)'); writeFileSync(file, s.replace(a, b)); };
 const q = s => "'" + String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
 const ver = v => v.slice(1);
 
-one('src/00-head.html', 'نسخة ' + OLD, 'نسخة ' + NEW);
-one('src/06-ministry-alerts.js', "  { v:'" + OLD + "', ", "  { v:'" + NEW + "', d:" + q(date) + ", notes:[\n" + notes.map(n => '      ' + q(n)).join(',\n') + ' ] },\n' + "  { v:'" + OLD + "', ");
+one('src/00-shell/00-head.html', 'نسخة ' + OLD, 'نسخة ' + NEW);
+one('src/06-ministry/06-ministry-alerts-11-whats-new.js', "  { v:'" + OLD + "', ", "  { v:'" + NEW + "', d:" + q(date) + ", notes:[\n" + notes.map(n => '      ' + q(n)).join(',\n') + ' ] },\n' + "  { v:'" + OLD + "', ");
 one('sw.js', "const CACHE = 'nusuk-survey-v" + ver(OLD) + "';", "const CACHE = 'nusuk-survey-v" + ver(NEW) + "';");
 { let a = readFileSync('docs/api-schema.json', 'utf8');
   if (a.split('"app_version": "' + OLD + '"').length !== 2) die('docs/api-schema.json: app_version ليس ' + OLD);

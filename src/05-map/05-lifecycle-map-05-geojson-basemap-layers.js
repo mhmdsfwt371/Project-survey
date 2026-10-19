@@ -1,0 +1,152 @@
+/* ═══ التصديرُ القياسي GeoJSON (V18.0) ═══
+   ملفٌّ يفتحه أيُّ نظامٍ جغرافي: FeatureCollection وفق RFC 7946 (WGS84،
+   الترتيبُ خطُّ الطول ثم خطُّ العرض)، ولكلِّ نقطةٍ حالتُها من دورة الحياة نفسِها
+   (lifeOf) وتواريخُها المفصلية. بحسب الدور: ما تصدّره الوزارةُ بلا جوالاتٍ ولا
+   أسماءِ أشخاصٍ ولا ملاحظاتٍ داخلية. المخطّطُ في docs/schema/. */
+function geoJsonBuild(){
+  var viewer = effRole(ROLE) === 'viewer', full = !viewer;
+  var feats = [];
+  (STATE.sites || []).forEach(function(x){
+    if (!(+x.lat) || !(+x.lng)) return;
+    var r = STATE.recs[x.id], ins = STATE.inss[x.id], dis = STATE.diss && STATE.diss[x.id], hd = (typeof handOf === 'function') ? handOf(x.id) : null;
+    var life = lifeOf(x);
+    var p = { id:x.id, name:x.name || '', zone:x.zone || '', type:x.type || '', camera_kind:camKind(x) || null, block:x.sq || '', sign:x.sign || '', company:x.co || '',
+              status:life, status_label:(LIFE[life] || LIFE.todo).n,
+              surveyed_at: svVisited(r) ? new Date(+r.at).toISOString() : null,   /* (V32.6) */
+              installed_at: ins && ins.status === 'مُركّب' ? new Date(+ins.at).toISOString() : null,
+              handed_at: hd && hd.at ? new Date(+hd.at).toISOString() : null,
+              dismantled_at: dis && dis.status === 'تم الفك' ? new Date(+dis.at).toISOString() : null };
+    if (full){
+      p.surveyed_by = r ? (r.by || '') : '';
+      p.challenges = r ? chalKeys(r.chals) : [];
+      p.note = r ? String(r.note || '') : '';
+    }
+    feats.push({ type:'Feature', id:x.id, geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] }, properties:p });
+  });
+  return { type:'FeatureCollection', name:'afaqy-readers-1448', generated_at:new Date().toISOString(), version:appVer(), features:feats };
+}
+function geoJsonExport(){
+  var g = geoJsonBuild();
+  var ok = dl(new Blob([JSON.stringify(g)], { type:'application/geo+json' }), 'afaqy-readers-' + dayKey() + '.geojson');
+  toast(ok ? (nm(g.features.length) + ' ' + t('نقطةً في الملف')) : t('تعذّر التنزيل'));
+  return ok;
+}
+/* ═══ خريطةُ المشاعر بلا شبكة (V18.0) ═══
+   بلاطاتُ الخريطة شبكةٌ فقط، فتبيض الخريطةُ بلا شبكةٍ وتبقى النقاطُ وحدَها.
+   صار ثمّة ملفُّ خريطةٍ متّجهيٍّ واحدٌ (PMTiles من OpenStreetMap — يُبنى كلَّ موسمٍ
+   بالوصفة في docs/maps) يُنزِّله الفنيُّ بموافقةٍ صريحةٍ من الأدوات ويُحفَظ في
+   Cache Storage ويُقرأ منه مقاطعَ في الذاكرة (FileSource — بلا رابطٍ ولا نطاقاتِ بايت)، ويرسمه
+   عارضٌ مضمَّنٌ (vendor/protomaps) يُحمَّل عند الحاجة. الإسنادُ ظاهر. القمرُ
+   الصناعيُّ يبقى عبر الشبكة، وبلا الملفِّ يبقى كلُّ شيءٍ كما كان. */
+var BASEMAP = { manifest:null, have:null, layer:null, arc:null, busy:null, loading:false };
+var BASEMAP_CACHE = 'nusuk-basemap', BASEMAP_FILE = 'maps/mashaer.pmtiles', BASEMAP_MAX = 30 * 1024 * 1024;
+/* (V25.0) عارضُ خريطة الجهاز يُحفَظ معها في مخزنها الباقي: بلا شبكةٍ لا يُحمَّل من مكانٍ آخر، ومخزنُ الهيكل يتبدّل مع كلِّ نسخة */
+var BASEMAP_JS = ['vendor/protomaps/pmtiles-4.5.0.js', 'vendor/protomaps/protomaps-leaflet-5.1.0.js'];
+function basemapWarm(){
+  if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
+  return caches.open(BASEMAP_CACHE).then(function(c){ return Promise.all(BASEMAP_JS.map(function(u){ return c.match(u).then(function(h){ return h || c.add(u); }); })); }).then(function(){ return true; }).catch(function(){ return false; });
+}
+function basemapManifest(){
+  if (BASEMAP.manifest) return Promise.resolve(BASEMAP.manifest);
+  if (typeof fetch !== 'function'){ BASEMAP.manifest = { bytes:0 }; return Promise.resolve(BASEMAP.manifest); }   /* بيئةٌ بلا fetch */
+  return fetch('maps/manifest.json', { cache:'no-store' }).then(function(r){ return r.ok ? r.json() : null; })
+    .then(function(m){ BASEMAP.manifest = m || { bytes:0 }; if (CUR === 'tools' || CUR === 'acct') render(1); return BASEMAP.manifest; }).catch(function(){ BASEMAP.manifest = { bytes:0 }; return BASEMAP.manifest; });
+}
+function basemapHave(){
+  if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
+  return caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); }).then(function(r){ var was = BASEMAP.have; BASEMAP.have = !!r; if (was === null && (CUR === 'tools' || CUR === 'acct')) render(1); return !!r; }).catch(function(){ BASEMAP.have = false; return false; });
+}
+/* ═══ خريطةُ مكة تلقائيًّا (V24.9) ═══ ملفٌّ واحدٌ (أقلُّ من ٤ م.ب) بشوارع مكة كلِّها ومبانيها وأسمائها —
+   المشاعرُ والحرمُ والعزيزيةُ والنواريةُ والزايدي: يُنزَّل مرةً عند أوّل فتحٍ للخريطة ويُحفَظ في الجهاز، ثم
+   تُرسَم الخلفيةُ منه فورًا وبلا شبكة؛ ولا طلبَ على سيرفراتٍ خارجية إلا للقمر الصناعي. */
+function basemapAuto(){
+  if (BASEMAP.auto) return; BASEMAP.auto = true;
+  /* (V34.2) الصندوقُ الأسودُ في آيفون المالك: ستُّ إقلاعاتٍ ماتت بعد الرسم الأوّل على «الخريطة» و«متابعة الوزارة» (المرحلة render) — وهي
+     اللحظةُ التي يبدأ فيها التنزيلُ التلقائيُّ لخريطة المشاعر (حتى ٣٠ ميجا) بجوار طبقة القمر الصناعي. على الآيفون ذاكرةُ الصفحة محدودة
+     فيُقتَل محرّكُها. صار التنزيلُ التلقائيُّ لا يعمل على الآيفون؛ وزرُّ «نزّل» في «حسابي» باقٍ لمن يحتاج الخريطةَ بلا شبكة. */
+  if (typeof dlIOS === 'function' && dlIOS()){ bootStage('basemap-skip-ios'); return; }
+  /* (V25.0) المحفوظُ أوّلًا: من فتح التطبيقَ بلا شبكةٍ لا يصل إلى البيان، فكان الإرفاقُ ينتظره فلا تظهر خريطةُ الجهاز أبدًا */
+  try { basemapHave().then(function(h){
+    if (h){ basemapWarm(); if (basemapWant()) try { basemapAttach(); } catch (e){ LS_ERR = e; }
+      basemapStale().then(function(st){ if (st && basemapNetOk()) basemapDownload(); });   /* (V25.2) ملفٌّ أحدث: مكة والمدينة والطريق */
+      return; }
+    basemapManifest().then(function(m){ if (m && m.bytes > 0 && basemapNetOk()) basemapDownload(); });
+  }); } catch (e){ LS_ERR = e; }
+}
+/* ═══ خريطةُ الجهاز للانقطاع وحدَه (V25.0) ═══
+   في V24.9 صارت خريطةُ الجهاز هي الخلفيةَ دائمًا، ورسمُها يجري على معالج الهاتف نفسِه قطعةً
+   قطعةً مع كلِّ سحبٍ وتقريب — فثقُل تحريكُ الخريطة. والبلاطُ الشبكيُّ صورٌ جاهزةٌ يعرضها
+   المتصفّحُ بلا كلفة. فصار: مع الشبكة تبقى الخلفيةُ كما في V24.8 تمامًا، وتُلحَق خريطةُ الجهاز
+   حين تنقطع الشبكة أو يتعثّر البلاطُ الشبكيُّ مرارًا، وتُرفَع وتُترَك من الذاكرة حين تعود. */
+function basemapWant(){
+  /* (V25.1) والقمرُ لا يصل بلا شبكةٍ هو الآخر: عند الانقطاع خريطةُ الجهاز أيًّا كان المختار */
+  return BASEMAP.netDown === true || (typeof navigator === 'object' && navigator.onLine === false);
+}
+/* (V25.2) المحفوظُ غيرُ ما في البيان (بحجمه): يُستبدَل بالجديد على اتصالٍ جيد، ويبقى القديمُ عاملًا حتى يتمّ */
+function basemapStale(){
+  if (typeof caches !== 'object' || !caches.open) return Promise.resolve(false);
+  return Promise.all([basemapManifest(), caches.open(BASEMAP_CACHE).then(function(c){ return c.match(BASEMAP_FILE); })]).then(function(a){
+    var m = a[0], r = a[1], n = r ? +(r.headers.get('content-length') || 0) : 0;
+    return !!(m && m.bytes > 0 && n > 0 && n !== m.bytes);
+  }).catch(function(){ return false; });
+}
+/* ═══ طبقتا الخريطة (V25.2): مباني الوزارة وأماكن التفويج ═══
+   خريطةٌ فقط بقرار المالك: لا نقاطُ مسحٍ ولا تدخل في عدّادٍ ولا في أرقام الوزارة. تُحمَّل عند أوّل اختيارٍ
+   من «تصفية» (layers/poi.json — يخزّنه العاملُ لما بعد)، وتُرسَم على لوح النقاط، والاسمُ بلمسة. */
+var POIL = { on:{ ministry:false, tafweej:false }, data:null, busy:false, layer:null };
+var POIL_C = { ministry:'#8E44AD', tafweej:'#E67E22' };
+function poiLoad(){
+  if (POIL.data || POIL.busy || typeof fetch !== 'function') return;
+  POIL.busy = true;
+  fetch('layers/poi.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ POIL.busy = false; if (!d) return; POIL.data = d; poiPaint(); }).catch(function(e){ POIL.busy = false; LS_ERR = e; });
+}
+function poiPaint(){
+  if (typeof MAP === 'undefined' || !MAP || typeof L === 'undefined') return;
+  try {
+    if (POIL.layer && POIL.layer._map !== MAP) POIL.layer = null;
+    if (POIL.layer) POIL.layer.clearLayers(); else POIL.layer = L.layerGroup().addTo(MAP);
+  } catch (e){ LS_ERR = e; return; }
+  if (!POIL.data) return;
+  Object.keys(POIL.on).forEach(function(k){
+    var g = POIL.data[k]; if (!POIL.on[k] || !g || !g.items) return;
+    g.items.forEach(function(p){
+      if (!(+p.lat) || !(+p.lng)) return;
+      L.circleMarker([+p.lat, +p.lng], { renderer:MAP_CV || undefined, radius:7, color:'#fff', weight:2, fillColor:POIL_C[k], fillOpacity:.95, bubblingMouseEvents:false })
+        .bindPopup('<b>' + esc(p.name) + '</b><br><span class="hint">' + esc(t(g.name)) + '</span>')
+        .addTo(POIL.layer);
+    });
+  });
+}
+/* ═══ طبقةُ تخطيط حساسات منى (V25.7) ═══
+   بقرار المالك: ١٢ حساسَ حرارةٍ ورطوبةٍ لكلِّ مخيمٍ في منى (غرفةٌ لكلِّ حساس) وجيت واي واحدٌ يغطّيها بحسب
+   رسمة المخيم — طبقةٌ مبدئيةٌ من layers/mina-sensors.json تُرسَم حين تُطلَب من «تصفية»، على تقريب ١٦ فأعلى،
+   لمخيمات الإطار وحدَها (٦٧٩ مخيمًا × ١٣ شكلًا لا تُرسَم دفعةً). ليست نقاطًا ولا تدخل في العدّادات ولا أرقام
+   الوزارة. التعديلُ الميداني (نقلٌ وزيادةٌ ونقص) في نسخةٍ تالية. */
+var IOT = { on:false, data:null, busy:false, layer:null, Z:16, edit:null };
+var IOT_C = { gw:'#F5A623', sensor:'#2EC4B6' };
+
+
+/* ═══ تعديلُ الحساسات من الميدان (V25.8) ═══
+   قرارُ المالك: المهندسُ فما فوق والمشرفُ (هو من يمسح الموقع) — يعدّلون خطّةَ المخيم: نقلُ حساسٍ أو
+   الجيت واي، وزيادةٌ ونقص. الحفظُ تعديلٌ فوق الطبقة المبدئية في وثيقة الموقع (siteOv.iot) فيصل الأجهزةَ
+   كلَّها كسائر تعديلات المواقع ولا يحتاج مجموعةً ولا قاعدةً جديدة، ويُسجَّل في الأحداث. ولا جيت واي ثانٍ:
+   إن بعُد حساسٌ عن ١٥٠ م نُبِّه وأُشير إلى مركز الحساسات. */
+function mayIot(){ var b = (typeof effRole === 'function') ? effRole(ROLE) : ROLE; return b === 'engineer' || b === 'admin' || b === 'supervisor'; }
+
+
+
+
+
+
+
+
+/* ═══ تعديلُ حدود المخيم بسحب الزوايا (V25.9) — قرارُ المالك ═══
+   كان تعديلُ الحدود إعادةَ رسمٍ كاملة بأداة «مساحة بنقاط». صار من نافذة المخيم «عدّل الحدود»: زوايا الحدود
+   الحالية مقابضُ تُسحَب، ونقطةٌ صغيرةٌ بين كلِّ زاويتين تُضيف زاويةً عندها، والزاويةُ المحدَّدةُ تُحذَف (ثلاثٌ حدًّا
+   أدنى)، و«رجوع للحدود الأصلية» يُعيد حدودَ السجل. الحفظُ بصيغة الرسم القائمة نفسِها (poly مسطّحًا في وثيقة
+   الموقع أو المضاف) فتصل الأجهزةَ ويقرؤها المحرّكان والثلاثي، ويُسجَّل في الأحداث. للمهندس فما فوق كتعديل البيانات. */
+function iotLoad(){
+  if (IOT.data || IOT.busy || typeof fetch !== 'function') return;
+  IOT.busy = true;
+  fetch('layers/mina-sensors.json').then(function(r){ return r.ok ? r.json() : null; }).then(function(d){ IOT.busy = false; if (!d) return; IOT.data = d; iotPaint(); }).catch(function(e){ IOT.busy = false; LS_ERR = e; });
+}

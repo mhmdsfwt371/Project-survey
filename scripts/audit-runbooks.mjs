@@ -7,9 +7,9 @@ const T = (c, n) => { if (c){ pass++; console.log('  ✓ ' + n); } else { fails.
 console.log('══ حزمةُ التسليم ══');
 const sh = existsSync('docs/START-HERE.md') ? readFileSync('docs/START-HERE.md', 'utf8') : '';
 T(['## المفاهيمُ العشرة', '## خريطةُ المستودع', '## في عشر دقائق: ابنِ وافحص', '## سياسةُ الإصدار', '## قواعدُ لا تُكسر'].every(h => sh.includes(h)), 'صفحةُ «ابدأ من هنا» بأقسامها الخمسة');
-const srcFiles = readdirSync('src').filter(f => /^\d\d-/.test(f));
-const js = srcFiles.filter(f => f.endsWith('.js')), html = srcFiles.filter(f => f.endsWith('.html'));
-T(html.every(f => sh.includes('`' + f + '`')) && sh.includes('`' + js[0].slice(0, 2) + '`') && sh.includes('`' + js[js.length - 1].slice(0, 2) + '`'), 'وخريطتُها تسمّي ملفاتِ المصدر (' + srcFiles.length + ')');
+/* (V38.28) المصدرُ مجلّداتٌ بالمجال: الخريطةُ تسمّي كلَّ مجلّد */
+const srcFolders = readdirSync('src').filter(f => /^\d\d-/.test(f));
+T(srcFolders.every(f => sh.includes('`' + f + '`')), 'وخريطتُها تسمّي مجلّداتِ المصدر (' + srcFolders.length + ')' + (srcFolders.filter(f => !sh.includes('`' + f + '`')).length ? ' — ناقص: ' + srcFolders.filter(f => !sh.includes('`' + f + '`')).join('، ') : ''));
 const rb = existsSync('docs/runbooks.md') ? readFileSync('docs/runbooks.md', 'utf8') : '';
 const wfs = readdirSync('.github/workflows').filter(f => f.endsWith('.yml'));
 const missing = wfs.filter(f => !rb.includes('`' + f + '`'));
