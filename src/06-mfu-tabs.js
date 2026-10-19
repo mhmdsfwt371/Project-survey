@@ -67,66 +67,71 @@ function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; 
    والملاحظة — لا من اسم فئة «عائق في الموقع (… نفق أو كوبري)» نفسِه؛ و«بدون هيكل» فئةُ «لا يوجد سطح تثبيت». النقطةُ قد
    تقع في أكثرَ من فئة. كلُّ رقمٍ يفتح قائمتَه بمنطقتها، وفيها الإكسل. */
 function obsLocCats(){
-  return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tunnel', '\u{1F687}', 'مدخل أو مخرج نفق'], ['sign', '\u{1FAA7}', 'لوحات استرشادية'], ['nomount', '\u{1F3D7}', 'بدون هيكل']];
+  /* (V38.25) خياراتُ المالك الستّ بترتيبها — و«نفق — غير محدد» لزياراتٍ لم تُحدِّد مدخلًا أو مخرجًا (يظهر إن وُجد) */
+  return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tin', '\u{1F687}', 'مدخل نفق'], ['tout', '\u{1F687}', 'مخرج نفق'], ['tgen', '\u{1F687}', 'نفق — غير محدد'],
+          ['sign', '\u{1FAA7}', 'لوحة استرشادية'], ['nomount', '\u{1F3D7}', 'بدون إطار معدني للتثبيت'], ['canopy', '\u26F1', 'على مظلة']];
 }
+function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة']]; }
 function obsLocTags(x){
   var r = STATE.recs[x.id], out = {};
-  if (!r || r.deleted || !svVisited(r)) return null;
+  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.25) الممراتُ والجمراتُ وكاميراتُ الوزارة وحدَها */
+  var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
+  var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
+  L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
+  if (r.mount === 'لوحة استرشادية') out.sign = pick;   /* ما حُفظ في V38.23 */
+  if (chalCats(r).indexOf('mount') > -1 && !out.nomount) out.nomount = pick;   /* فئةُ «لا يوجد سطح تثبيت» */
+  if (L.length) return out;   /* اختارَ الفنيُّ (ولو «لا شيء مما سبق») — لا استنتاجَ من الكلام */
+  /* زياراتٌ أقدمُ بلا اختيار: من اختيار التحدي القديم أو كلمات الوصف والملاحظة — لا من اسم الفئة الجامعة «… نفق أو كوبري» */
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var chals = Array.isArray(r.chals) ? r.chals : [];
-  var own = chals.filter(function(c){ return c && !nm0[c] && c !== 'لا توجد تحديات'; });
-  var txt = arKey([r.note || '', r.chal_note || ''].join(' ')), tOwn = arKey(own.join(' '));
-  var src = function(byPick){ return byPick ? 'اختيار الفني' : 'وصف التحدي أو الملاحظة'; };
-  var hit = function(rx){ return rx.test(tOwn) ? src(true) : (rx.test(txt) ? src(false) : ''); };
-  /* (V38.23) الاختيارُ الصريحُ أوّلًا: «موقع النقطة» و«نوع التركيب = لوحة استرشادية»؛ و«لا شيء مما سبق» يُسقِط استنتاجَ الكلام للكوبري والنفق */
-  var lc = String(r.loc || ''), none = lc === 'لا شيء مما سبق';
-  var b = /كوبري/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار تحت كوبري') > -1 ? src(true) : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/);
-  var tn = /نفق/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
-  var sg = r.mount === 'لوحة استرشادية' ? src(true) : hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
-  var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
-  if (!locApplies(x)){ b = tn = sg = ''; }   /* (V38.24) الكوبري والنفقُ واللوحاتُ للممرات والجمرات وحدَها */
-  if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
+  var own = arKey(chals.filter(function(c){ return c && !nm0[c] && c !== 'لا توجد تحديات'; }).join(' ')), txt = arKey([r.note || '', r.chal_note || ''].join(' '));
+  var hit = function(rx){ return rx.test(own) ? pick : (rx.test(txt) ? txtSrc : ''); };
+  var b = chals.indexOf('المسار تحت كوبري') > -1 ? pick : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/); if (b) out.bridge = b;
+  var ti = hit(/(مدخل|بدايه|بداية)\s*(ال)?نفق/), to = hit(/(مخرج|نهايه|نهاية)\s*(ال)?نفق/);
+  if (ti) out.tin = ti; if (to) out.tout = to;
+  if (!ti && !to){ var tg = chals.indexOf('المسار داخل نفق') > -1 ? pick : hit(/نفق|انفاق/); if (tg) out.tgen = tg; }
+  var sg = hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/); if (sg) out.sign = sg;
+  var cn = hit(/مظله|مظلات/); if (cn) out.canopy = cn;
   return out;
 }
-function obsLocKey(k, ty){ return 'loc_' + k + '_' + (ty === 'ممر' ? 'p' : 'c'); }
+function obsLocKey(k, g){ return 'loc_' + k + '_' + g; }
 function obsLocLists(){
   obsLocCats().forEach(function(c){
-    ['ممر', 'مخيم'].forEach(function(ty){
-      var key = obsLocKey(c[0], ty); if (MFU.lists[key]) return;
-      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات والجمرات' : 'المخيمات'),
-        head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'وصف التحدي', 'الملاحظة'],
+    obsLocGroups().forEach(function(g){
+      var key = obsLocKey(c[0], g[0]); if (MFU.lists[key]) return;
+      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + g[2],
+        head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'موقع النقطة', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return ty === 'ممر' ? locApplies(x) : x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
-            .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), String(r.chal_note || ''), String(r.note || '')]; });
+          return mtSites().filter(function(x){ return x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
+            .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {};
+              return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), locList(r.loc).map(function(v){ return t(v); }).join(' \u00b7 '), String(r.chal_note || ''), String(r.note || '')]; });
         } };
     });
   });
 }
 function mtObsLoc(){
   obsLocLists();
-  var Z = {}, any = 0;
+  var Z = {}, any = 0, gk = {}; obsLocGroups().forEach(function(g){ gk[g[1]] = g[0]; });
   mtSites().forEach(function(x){
-    if (!locApplies(x) && x.type !== 'مخيم') return;
-    var g = obsLocTags(x); if (!g) return;
-    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (locApplies(x)) c0.p++; else c0.c++; any++; });
+    var tg = obsLocTags(x); if (!tg) return;
+    var z = taxOf(x).g, gg = gk[x.type];
+    Object.keys(tg).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || {}; c0[gg] = (c0[gg] || 0) + 1; any++; });
   });
   if (!any) return '';
-  var cats = obsLocCats();
-  var num = function(n, k, ty, z){
-    return n ? '<button type="button" class="chip"' + mtOpen(obsLocKey(k, ty), '', z) + ' style="margin:2px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' <b class="num">' + nm(n) + '</b></button>'
-             : '<span class="hint" style="margin:2px 6px;font-size:12px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' \u2014</span>';
-  };
+  var groups = obsLocGroups();
   var blocks = TAX_G.filter(function(z){ return Z[z]; }).map(function(z){
     var o = Z[z];
+    var cells = obsLocCats().filter(function(c){ return c[0] !== 'tgen' || o.tgen; }).map(function(c){
+      var v = o[c[0]] || {}, chips = groups.filter(function(g){ return v[g[0]]; }).map(function(g){
+        return '<button type="button" class="chip"' + mtOpen(obsLocKey(c[0], g[0]), '', z) + ' style="margin:2px">' + esc(t(g[2])) + ' <b class="num">' + nm(v[g[0]]) + '</b></button>'; }).join('');
+      return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
+        + (chips || '<span class="hint" style="margin:2px 6px;font-size:12px">\u2014</span>') + '</div>';
+    }).join('');
     return '<div style="' + MT_TILE + ';margin:0 0 10px"><div style="font-weight:700;margin:0 0 8px">\u{1F4CD} ' + esc(t(z)) + '</div>'
-      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'
-      + cats.map(function(c){ var v = o[c[0]] || { p:0, c:0 };
-          return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
-            + num(v.p, c[0], 'ممر', z) + (c[0] === 'nomount' ? num(v.c, c[0], 'مخيم', z) : '') + '</div>'; }).join('')   /* (V38.24) المخيماتُ في «بدون هيكل» وحدَها */
-      + '</div></div>';
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها — من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» للممرات والمخيمات · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('للممرات والجمرات وكاميرات الوزارة — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;

@@ -274,39 +274,36 @@ console.log('\n══ ١٠ · تعديل المسح والخريطة ══');
   T(flew.includes(xs.id), 'فتحُ النقطة على الخريطة ينتظر الخريطةَ حين تُبنى متأخّرة (أوّلُ فتحٍ للمشرف)');
 }
 
-/* ── ١١ · (V38.22) التحدياتُ حسب الموقع: الكوبري والنفقُ واللوحاتُ وبدون هيكل — والفئةُ الجامعةُ لا تُحسَب كوبري ولا نفقًا ── */
+/* ── ١١ · التحدياتُ حسب الموقع (V38.22 → V38.25): خياراتُ المالك الستّ للممرات والجمرات وكاميرات الوزارة ── */
 console.log('\n══ ١١ · التحديات حسب الموقع ══');
 {
-  const P = w.STATE.sites.filter(z => z && z.type === 'ممر' && !w.STATE.recs[z.id]).slice(0, 3);
   const base = { access:'تم الوصول', at:Date.now(), by:'فني' };
-  w.STATE.recs[P[0].id] = Object.assign({ id:P[0].id, chals:['المسار تحت كوبري'] }, base);
-  w.STATE.recs[P[1].id] = Object.assign({ id:P[1].id, chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا'], chal_note:'عند مدخل النفق — على لوحة استرشادية' }, base);
-  w.STATE.recs[P[2].id] = Object.assign({ id:P[2].id, chals:['عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)'] }, base);
+  const pick = ty => w.STATE.sites.find(z => z && z.type === ty && !w.STATE.recs[z.id]);
+  const P0 = pick('ممر'); w.STATE.recs[P0.id] = Object.assign({ id:P0.id, chals:['المسار تحت كوبري'] }, base);
+  const P1 = pick('ممر'); w.STATE.recs[P1.id] = Object.assign({ id:P1.id, chals:['لا يوجد سطح تثبيت — يحتاج هيكلًا أو عمودًا'], chal_note:'عند مخرج النفق — على لوحة استرشادية تحت المظلة' }, base);
+  const P2 = pick('ممر'); w.STATE.recs[P2.id] = Object.assign({ id:P2.id, chals:['عائق في الموقع (إنشائي أو درج أو حواجز أو حفر أو نفق أو كوبري)'] }, base);
   w.statBump();
-  const g0 = w.obsLocTags(P[0]), g1 = w.obsLocTags(P[1]), g2 = w.obsLocTags(P[2]);
-  T(!!g0.bridge && !g0.tunnel, 'اختيارُ الفني «تحت كوبري» يُحسَب كوبري');
-  T(!!g1.tunnel && !!g1.sign && !!g1.nomount, 'ووصفُ التحدي يُقرأ: نفقٌ ولوحةٌ استرشادية، والفئةُ «بدون هيكل»');
-  T(!g2.bridge && !g2.tunnel, 'واسمُ الفئة الجامعة «… نفق أو كوبري» وحدَه لا يُحسَب كوبري ولا نفقًا');
+  const g0 = w.obsLocTags(P0), g1 = w.obsLocTags(P1), g2 = w.obsLocTags(P2);
+  T(!!g0.bridge, 'اختيارُ الفني القديم «تحت كوبري» يُحسَب كوبري');
+  T(!!g1.tout && !!g1.sign && !!g1.canopy && !!g1.nomount, 'زيارةٌ أقدمُ بلا اختيار: يُقرأ من الوصف مخرجُ النفق واللوحةُ والمظلة، و«بدون إطار» من الفئة');
+  T(!g2.bridge && !g2.tin && !g2.tout && !g2.tgen, 'واسمُ الفئة الجامعة «… نفق أو كوبري» وحدَه لا يُحسَب شيئًا');
+  /* الاختيارُ الصريحُ المتعدّد يغلب الكلام، و«لا شيء مما سبق» يُسقط الاستنتاج */
+  const Q0 = pick('ممر'); w.STATE.recs[Q0.id] = Object.assign({ id:Q0.id, chals:['لا توجد تحديات'], loc:['تحت كوبري', 'على مظلة'], note:'عند مدخل النفق' }, base);
+  const Q1 = pick('ممر'); w.STATE.recs[Q1.id] = Object.assign({ id:Q1.id, chals:['لا توجد تحديات'], loc:['لا شيء مما سبق'], note:'قريبٌ من الكوبري والنفق' }, base);
+  const q0 = w.obsLocTags(Q0), q1 = w.obsLocTags(Q1);
+  T(q0.bridge === 'اختيار الفني' && q0.canopy === 'اختيار الفني' && !q0.tin, '«موقع النقطة» اختيارٌ متعدّدٌ صريح — يغلب كلامَ الملاحظة');
+  T(!q1.bridge && !q1.tgen && !q1.tin, 'و«لا شيء مما سبق» يُسقط الاستنتاج');
+  /* لمن ينطبق: الممراتُ والجمراتُ وكاميراتُ الوزارة — لا المخيماتُ ولا المحطات */
+  const cam = pick('كاميرا'), jm = pick('جسر'), cp = pick('مخيم');
+  w.STATE.recs[cam.id] = Object.assign({ id:cam.id, chals:['لا توجد تحديات'], loc:['لوحة استرشادية'] }, base);
+  w.STATE.recs[jm.id] = Object.assign({ id:jm.id, chals:['لا توجد تحديات'], loc:'تحت كوبري وعند نفق' }, base);   /* قيمةٌ من V38.23 تُقرأ بمعناها */
+  w.STATE.recs[cp.id] = Object.assign({ id:cp.id, chals:['لا توجد تحديات'], loc:['تحت كوبري'], note:'عند مدخل النفق' }, base);
+  T(!!w.obsLocTags(cam).sign && !!w.obsLocTags(jm).bridge && !!w.obsLocTags(jm).tgen, 'كاميراتُ الوزارة والجمراتُ تُحسَب — والقيمةُ القديمةُ تُقرأ بمعناها');
+  T(w.obsLocTags(cp) === null, 'والمخيمُ لا يُحسَب ولو كُتب ذلك');
   w.obsLocLists();
-  const ids = k => w.MFU.lists[w.obsLocKey(k, 'ممر')].rows().map(r => r[0]);
-  T(ids('bridge').includes(P[0].id) && ids('tunnel').includes(P[1].id) && !ids('tunnel').includes(P[2].id), 'وقوائمُ الممرات تحمل النقاطَ نفسَها — والمخيماتُ قائمةٌ وحدَها');
+  T(w.MFU.lists[w.obsLocKey('sign', 'c')].rows().some(r => r[0] === cam.id) && w.MFU.lists[w.obsLocKey('bridge', 'p')].rows().some(r => r[0] === Q0.id), 'وقوائمُ كلِّ مجموعةٍ تحمل نقاطَها');
+  T(w.svqKeys(w.STATE.recs[Q1.id]).includes('loc') && !w.svqKeys(Object.assign({}, base, { id:pick('محطة').id })).includes('loc'), '«موقع النقطة» صفٌّ في تعديل الممر — لا في المحطة');
   T(String(w.mtObs()).indexOf('حسب الموقع') > -1, 'والقسمُ في تبويب التحديات والمعوقات');
-  /* (V38.23) الاختيارُ الصريحُ في المسح: «موقع النقطة» و«نوع التركيب = لوحة استرشادية» — و«لا شيء مما سبق» يغلب الكلام */
-  const Q = w.STATE.sites.filter(z => z && z.type === 'ممر' && !w.STATE.recs[z.id]).slice(0, 2);
-  w.STATE.recs[Q[0].id] = Object.assign({ id:Q[0].id, chals:['لا توجد تحديات'], mount:'لوحة استرشادية', loc:'تحت كوبري وعند نفق' }, base);
-  w.STATE.recs[Q[1].id] = Object.assign({ id:Q[1].id, chals:['لا توجد تحديات'], loc:'لا شيء مما سبق', note:'قريبٌ من الكوبري والنفق' }, base);
-  const q0 = w.obsLocTags(Q[0]), q1 = w.obsLocTags(Q[1]);
-  T(q0.bridge === 'اختيار الفني' && q0.tunnel === 'اختيار الفني' && q0.sign === 'اختيار الفني', '«موقع النقطة» و«لوحة استرشادية» اختيارٌ صريحٌ يُحسَب بمصدره');
-  T(!q1.bridge && !q1.tunnel, 'و«لا شيء مما سبق» يغلب كلامَ الملاحظة');
-  T(w.svqKeys(w.STATE.recs[Q[1].id]).includes('loc'), 'و«موقع النقطة» صفٌّ في تعديل المسح — ولزياراتٍ قديمةٍ بلا قيمة');
-  /* (V38.24) للممرات ومسار الجمرات وحدها — المخيمُ لا يُحسَب كوبري ولا نفقًا ولا لوحةً ولو كُتب ذلك */
-  const cp = w.STATE.sites.find(z => z && z.type === 'مخيم' && !w.STATE.recs[z.id]), jm = w.STATE.sites.find(z => z && z.type === 'جسر' && !w.STATE.recs[z.id]);
-  w.STATE.recs[cp.id] = Object.assign({ id:cp.id, chals:['لا توجد تحديات'], mount:'لوحة استرشادية', loc:'تحت كوبري', note:'عند مدخل النفق' }, base);
-  w.STATE.recs[jm.id] = Object.assign({ id:jm.id, chals:['لا توجد تحديات'], loc:'مدخل أو مخرج نفق' }, base);
-  const gc = w.obsLocTags(cp), gj = w.obsLocTags(jm);
-  T(!gc.bridge && !gc.tunnel && !gc.sign, 'المخيمُ لا يُحسَب كوبري ولا نفقًا ولا لوحةً استرشادية');
-  T(gj.tunnel === 'اختيار الفني' && w.MFU.lists[w.obsLocKey('tunnel', 'ممر')].rows().some(r => r[0] === jm.id), 'ومسارُ الجمرات يُحسَب مع الممرات');
-  T(!w.svqKeys(Object.assign({}, base, { id:w.STATE.sites.find(z => z && z.type === 'محطة').id })).includes('loc'), 'و«موقع النقطة» لا يظهر في تعديل محطةٍ أو مخيم');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

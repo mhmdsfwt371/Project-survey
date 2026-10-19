@@ -3105,11 +3105,20 @@ function clickAPart3(e){
   if (e.target.closest('[data-svqqx]')){ var qi = +e.target.closest('[data-svqqx]').getAttribute('data-svqqx'), qx = PHOTO_Q[qi];
     if (qx && qx.site === SVQ.id){ PHOTO_Q.splice(qi, 1); CORE.saveSoon(); var rq2 = STATE.recs[SVQ.id]; if (rq2){ var n2 = Object.assign({}, rq2); n2.phN = svqPhotoCount(SVQ.id); CORE.set('recs', SVQ.id, n2); } logEvent('إلغاءُ صورةٍ من طابور الجهاز — ' + SVQ.id, SVQ.id); toast(t('أُلغيت الصورة')); render(1); }
     return true; }
-  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; SVQ.err = ''; render(1); return true; }
+  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = ''; render(1); return true; }
+  /* (V38.25) «موقع النقطة» شرائح: في النموذج وفي لوح التعديل — «لا شيء مما سبق» يُفرغ الباقي، وغيرُه يرفعه */
+  var lcf = e.target.closest('[data-svloc]');
+  if (lcf){ var lv = lcf.getAttribute('data-svloc'), L0 = locList(FORM.loc);
+    if (L0.indexOf(lv) > -1) L0 = L0.filter(function(z){ return z !== lv; }); else { L0 = lv === 'لا شيء مما سبق' ? [lv] : L0.filter(function(z){ return z !== 'لا شيء مما سبق' && z !== 'نفق — غير محدد'; }).concat([lv]); }
+    FORM.loc = L0; try { svDraftSoon(); } catch (e2){ LS_ERR = e2; } render(1); return true; }
+  var lcq = e.target.closest('[data-svqloc]');
+  if (lcq){ var qv = lcq.getAttribute('data-svqloc'), rqL = STATE.recs[SVQ.id] || {}, L1 = SVQ.tmpL || locList(rqL.loc);
+    if (L1.indexOf(qv) > -1) L1 = L1.filter(function(z){ return z !== qv; }); else { L1 = qv === 'لا شيء مما سبق' ? [qv] : L1.filter(function(z){ return z !== 'لا شيء مما سبق' && z !== 'نفق — غير محدد'; }).concat([qv]); }
+    SVQ.tmpL = L1; render(1); return true; }
   if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'); rq = STATE.recs[SVQ.id] || {}; var nt1 = document.getElementById('svqNote'); if (nt1) SVQ.note = nt1.value; var cur0 = SVQ.tmp || chalsToCats(rq.chals, rq.chal_note || rq.note);   /* (V38.20) الفئاتُ نفسُها كنموذج المسح، والوصفُ المكتوبُ لا يضيع بإعادة الرسم */
     if (cur0.indexOf(ch) > -1) cur0 = cur0.filter(function(x){ return x !== ch; }); else { if (ch === 'لا توجد تحديات') cur0 = []; else cur0 = cur0.filter(function(x){ return x !== 'لا توجد تحديات'; }); cur0.push(ch); }
     SVQ.tmp = cur0; render(1); return true; }
-  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, rq0 = STATE.recs[SVQ.id] || {}, sv0 = sk === 'chals' ? (SVQ.tmp || chalsToCats(rq0.chals, rq0.chal_note || rq0.note)) : ((document.getElementById('svqIn') || {}).value);
+  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, rq0 = STATE.recs[SVQ.id] || {}, sv0 = sk === 'chals' ? (SVQ.tmp || chalsToCats(rq0.chals, rq0.chal_note || rq0.note)) : sk === 'loc' ? (SVQ.tmpL || locList(rq0.loc)) : ((document.getElementById('svqIn') || {}).value);
     /* (V38.20) الوصفُ يُحفَظ مع التحديات في الضغطة نفسِها — كان لا يظهر له حقلٌ في التعديل أصلًا */
     var nt0 = document.getElementById('svqNote'), ntv = nt0 ? String(nt0.value || '').trim() : null, ntChanged = sk === 'chals' && ntv !== null && ntv !== String(rq0.chal_note || '').trim();
     if (sk === 'chals' && (sv0 || []).indexOf(chalOther()) > -1 && !(ntv != null ? ntv : String(rq0.chal_note || '').trim())){

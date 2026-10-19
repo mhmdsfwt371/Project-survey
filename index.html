@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.24</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.25</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-a5b186aabd.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-f186cb6b31.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -6948,7 +6948,7 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
 var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
-var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم','لوحة استرشادية'], loc:['لا شيء مما سبق','تحت كوبري','مدخل أو مخرج نفق','تحت كوبري وعند نفق'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.23) */
+var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
 function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
 function svqKeys(rec){
@@ -6965,6 +6965,12 @@ function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + 
 function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
+  if (k === 'loc'){
+    /* (V38.25) شرائحُ متعدّدةٌ كالتحديات — «لا شيء مما سبق» يُفرغ الباقي */
+    var selL = SVQ.tmpL || locList(rec.loc);
+    return '<p class="hint" style="margin:2px 0 6px">' + esc(t('اختر كل ما ينطبق')) + '</p><div class="chips" style="margin:4px 0 0">'
+      + locOpts().map(function(o){ return '<button type="button" class="chip' + (selL.indexOf(o) > -1 ? ' on' : '') + '" data-svqloc="' + esc(o) + '">' + esc(t(o)) + '</button>'; }).join('') + '</div>';
+  }
   if (k === 'chals'){
     /* (V38.20) قائمةُ التعديل كانت القديمةَ (بـ«أخرى — اذكرها في وصف التحدي») وقائمةُ المسح هي الفئاتُ الثماني — فصارت واحدة،
        ومعها «وصفُ التحدي بالتفصيل» في الموضع نفسِه: كان لا يظهر في التعديل إلا إن كُتب من قبل */
@@ -7095,9 +7101,10 @@ function svqPhoto(id, key, p){
 }
 function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظٍ مركّب (التحديات + وصفُها) فلا يقول «لم يتغيّر شيء» */
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
-  var old = key === 'chals' ? (rec.chals || []).slice() : rec[key];
+  var old = key === 'chals' ? (rec.chals || []).slice() : key === 'loc' ? locList(rec.loc) : rec[key];
   if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
   else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
+  else if (key === 'loc'){ val = Array.isArray(val) ? val.slice() : locList(val); }   /* (V38.25) قائمة */
   else val = String(val == null ? '' : val).trim();
   if (JSON.stringify(old) === JSON.stringify(val)){ if (!quiet) toast(t('لم يتغيّر شيء')); return false; }
   var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
@@ -7111,7 +7118,7 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; SVQ.err = '';
+  SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = '';
   statBump();
   if (!quiet) toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));   /* (V38.21) الحفظُ المركّب يقول جملةً واحدة */
   return true;
@@ -7356,7 +7363,17 @@ var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'�
 function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
 /* (V38.24) قرارُ المالك: الكوبري والنفقُ واللوحاتُ الاسترشاديةُ شأنُ الممرات وحدَها — ومسارُ الجمرات (خروجُ الجمرات مثلًا) —
    لا المخيمات ولا المحطات ولا البوابات ولا الكاميرات. حقلُ «موقع النقطة» وخيارُ «لوحة استرشادية» لا يظهران لغيرها */
-function locApplies(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر'); }
+function locApplies(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر' || x.type === 'كاميرا'); }   /* (V38.25) وكاميراتُ الوزارة — لا المخيمات ولا مراكز التفويج */
+/* (V38.25) خياراتُ «موقع النقطة» بنصّ المالك — اختيارٌ متعدّد (النقطةُ قد تكون تحت كوبري وبلا إطارٍ معدنيٍّ معًا) */
+function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', 'مدخل نفق', 'مخرج نفق', 'لوحة استرشادية', 'بدون إطار معدني للتثبيت', 'على مظلة']; }
+/* القيمةُ قائمةٌ دائمًا عند القراءة — وما حُفظ نصًّا في V38.23–V38.24 يُقرأ بمعناه */
+function locList(v){
+  if (Array.isArray(v)) return v.filter(Boolean);
+  var s0 = String(v || '').trim(); if (!s0) return [];
+  if (s0 === 'مدخل أو مخرج نفق') return ['نفق — غير محدد'];
+  if (s0 === 'تحت كوبري وعند نفق') return ['تحت كوبري', 'نفق — غير محدد'];
+  return [s0];
+}
 function chalNames(){ return ['لا توجد تحديات'].concat(ccList().filter(function(o){ return !o.off; }).map(function(o){ return o.n; })).concat([chalOther()]); }
 /* تحدياتُ سجلٍّ قديمٍ (صيغٌ أو «أخرى» بنصّ) تُحوَّل إلى أسماء الفئات حين يُفتح للتعديل — فتُرى مختارةً ولا يضيع شيء */
 function chalsToCats(chals, note){
@@ -8692,15 +8709,17 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + ' <span class="req">*</span></label>'
-          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].concat(locApplies(s) || FORM.mount === 'لوحة استرشادية' ? ['لوحة استرشادية'] : []).map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح — للممرات والجمرات (V38.24) */
+          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].concat(FORM.mount === 'لوحة استرشادية' ? ['لوحة استرشادية'] : []).map(function(o){   /* (V38.25) اللوحةُ الاسترشاديةُ انتقلت إلى «موقع النقطة» — وما حُفظ بها يبقى ظاهرًا */
               return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
           + '</select></div>'
           /* (V38.23) «موقع النقطة» اختيارٌ صريحٌ بدل أن يُستنتَج من الكلام: تحت كوبري · عند نفق — حقلٌ مستقلٌّ عن «نوع التركيب»
              لأن النقطةَ قد تكون على جدارٍ وتحت كوبري معًا. منه يُبنى «حسب الموقع» في التحديات والمعوقات */
-          + (locApplies(s) ? '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
-          + '<select data-form="loc">' + [''].concat(SVQ_OPT.loc).map(function(o){
-              return '<option value="' + esc(o) + '"' + ((FORM.loc || '') === o ? ' selected' : '') + '>' + esc(o ? t(o) : '\u2014') + '</option>'; }).join('')
-          + '</select></div>' : '')   /* (V38.24) للممرات والجمرات وحدَها */
+          + '</div>'
+          /* (V38.25) «موقع النقطة» شرائحُ تُختار (أكثرُ من واحد) — للممرات والجمرات وكاميرات الوزارة وحدَها */
+          + (locApplies(s) ? '<div class="field" style="margin:10px 0 0"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر كل ما ينطبق')) + '</span></label>'
+              + '<div class="chips" style="margin:6px 0 0">' + locOpts().map(function(o){ var L = locList(FORM.loc);
+                  return '<button type="button" class="chip' + (L.indexOf(o) > -1 ? ' on' : '') + '" data-svloc="' + esc(o) + '">' + esc(t(o)) + '</button>'; }).join('') + '</div></div>' : '')
+          + '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + ' <span class="req">*</span></label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
               return '<option value="' + esc(o) + '"' + (FORM.power===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
@@ -25454,66 +25473,71 @@ function mtGrpOf(id){ var st = svStOf(id); if (st === 'again') return 'access'; 
    والملاحظة — لا من اسم فئة «عائق في الموقع (… نفق أو كوبري)» نفسِه؛ و«بدون هيكل» فئةُ «لا يوجد سطح تثبيت». النقطةُ قد
    تقع في أكثرَ من فئة. كلُّ رقمٍ يفتح قائمتَه بمنطقتها، وفيها الإكسل. */
 function obsLocCats(){
-  return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tunnel', '\u{1F687}', 'مدخل أو مخرج نفق'], ['sign', '\u{1FAA7}', 'لوحات استرشادية'], ['nomount', '\u{1F3D7}', 'بدون هيكل']];
+  /* (V38.25) خياراتُ المالك الستّ بترتيبها — و«نفق — غير محدد» لزياراتٍ لم تُحدِّد مدخلًا أو مخرجًا (يظهر إن وُجد) */
+  return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tin', '\u{1F687}', 'مدخل نفق'], ['tout', '\u{1F687}', 'مخرج نفق'], ['tgen', '\u{1F687}', 'نفق — غير محدد'],
+          ['sign', '\u{1FAA7}', 'لوحة استرشادية'], ['nomount', '\u{1F3D7}', 'بدون إطار معدني للتثبيت'], ['canopy', '\u26F1', 'على مظلة']];
 }
+function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة']]; }
 function obsLocTags(x){
   var r = STATE.recs[x.id], out = {};
-  if (!r || r.deleted || !svVisited(r)) return null;
+  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.25) الممراتُ والجمراتُ وكاميراتُ الوزارة وحدَها */
+  var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
+  var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
+  L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
+  if (r.mount === 'لوحة استرشادية') out.sign = pick;   /* ما حُفظ في V38.23 */
+  if (chalCats(r).indexOf('mount') > -1 && !out.nomount) out.nomount = pick;   /* فئةُ «لا يوجد سطح تثبيت» */
+  if (L.length) return out;   /* اختارَ الفنيُّ (ولو «لا شيء مما سبق») — لا استنتاجَ من الكلام */
+  /* زياراتٌ أقدمُ بلا اختيار: من اختيار التحدي القديم أو كلمات الوصف والملاحظة — لا من اسم الفئة الجامعة «… نفق أو كوبري» */
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var chals = Array.isArray(r.chals) ? r.chals : [];
-  var own = chals.filter(function(c){ return c && !nm0[c] && c !== 'لا توجد تحديات'; });
-  var txt = arKey([r.note || '', r.chal_note || ''].join(' ')), tOwn = arKey(own.join(' '));
-  var src = function(byPick){ return byPick ? 'اختيار الفني' : 'وصف التحدي أو الملاحظة'; };
-  var hit = function(rx){ return rx.test(tOwn) ? src(true) : (rx.test(txt) ? src(false) : ''); };
-  /* (V38.23) الاختيارُ الصريحُ أوّلًا: «موقع النقطة» و«نوع التركيب = لوحة استرشادية»؛ و«لا شيء مما سبق» يُسقِط استنتاجَ الكلام للكوبري والنفق */
-  var lc = String(r.loc || ''), none = lc === 'لا شيء مما سبق';
-  var b = /كوبري/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار تحت كوبري') > -1 ? src(true) : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/);
-  var tn = /نفق/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
-  var sg = r.mount === 'لوحة استرشادية' ? src(true) : hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
-  var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
-  if (!locApplies(x)){ b = tn = sg = ''; }   /* (V38.24) الكوبري والنفقُ واللوحاتُ للممرات والجمرات وحدَها */
-  if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
+  var own = arKey(chals.filter(function(c){ return c && !nm0[c] && c !== 'لا توجد تحديات'; }).join(' ')), txt = arKey([r.note || '', r.chal_note || ''].join(' '));
+  var hit = function(rx){ return rx.test(own) ? pick : (rx.test(txt) ? txtSrc : ''); };
+  var b = chals.indexOf('المسار تحت كوبري') > -1 ? pick : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/); if (b) out.bridge = b;
+  var ti = hit(/(مدخل|بدايه|بداية)\s*(ال)?نفق/), to = hit(/(مخرج|نهايه|نهاية)\s*(ال)?نفق/);
+  if (ti) out.tin = ti; if (to) out.tout = to;
+  if (!ti && !to){ var tg = chals.indexOf('المسار داخل نفق') > -1 ? pick : hit(/نفق|انفاق/); if (tg) out.tgen = tg; }
+  var sg = hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/); if (sg) out.sign = sg;
+  var cn = hit(/مظله|مظلات/); if (cn) out.canopy = cn;
   return out;
 }
-function obsLocKey(k, ty){ return 'loc_' + k + '_' + (ty === 'ممر' ? 'p' : 'c'); }
+function obsLocKey(k, g){ return 'loc_' + k + '_' + g; }
 function obsLocLists(){
   obsLocCats().forEach(function(c){
-    ['ممر', 'مخيم'].forEach(function(ty){
-      var key = obsLocKey(c[0], ty); if (MFU.lists[key]) return;
-      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + (ty === 'ممر' ? 'الممرات والجمرات' : 'المخيمات'),
-        head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'وصف التحدي', 'الملاحظة'],
+    obsLocGroups().forEach(function(g){
+      var key = obsLocKey(c[0], g[0]); if (MFU.lists[key]) return;
+      MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + g[2],
+        head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'موقع النقطة', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return ty === 'ممر' ? locApplies(x) : x.type === ty; }).map(function(x){ var g = obsLocTags(x); return g && g[c[0]] ? [x, g[c[0]]] : null; }).filter(Boolean)
-            .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {}; return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), String(r.chal_note || ''), String(r.note || '')]; });
+          return mtSites().filter(function(x){ return x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
+            .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {};
+              return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), locList(r.loc).map(function(v){ return t(v); }).join(' \u00b7 '), String(r.chal_note || ''), String(r.note || '')]; });
         } };
     });
   });
 }
 function mtObsLoc(){
   obsLocLists();
-  var Z = {}, any = 0;
+  var Z = {}, any = 0, gk = {}; obsLocGroups().forEach(function(g){ gk[g[1]] = g[0]; });
   mtSites().forEach(function(x){
-    if (!locApplies(x) && x.type !== 'مخيم') return;
-    var g = obsLocTags(x); if (!g) return;
-    var z = taxOf(x).g; Object.keys(g).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || { p:0, c:0 }; if (locApplies(x)) c0.p++; else c0.c++; any++; });
+    var tg = obsLocTags(x); if (!tg) return;
+    var z = taxOf(x).g, gg = gk[x.type];
+    Object.keys(tg).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || {}; c0[gg] = (c0[gg] || 0) + 1; any++; });
   });
   if (!any) return '';
-  var cats = obsLocCats();
-  var num = function(n, k, ty, z){
-    return n ? '<button type="button" class="chip"' + mtOpen(obsLocKey(k, ty), '', z) + ' style="margin:2px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' <b class="num">' + nm(n) + '</b></button>'
-             : '<span class="hint" style="margin:2px 6px;font-size:12px">' + esc(t(ty === 'ممر' ? 'ممرات' : 'مخيمات')) + ' \u2014</span>';
-  };
+  var groups = obsLocGroups();
   var blocks = TAX_G.filter(function(z){ return Z[z]; }).map(function(z){
     var o = Z[z];
+    var cells = obsLocCats().filter(function(c){ return c[0] !== 'tgen' || o.tgen; }).map(function(c){
+      var v = o[c[0]] || {}, chips = groups.filter(function(g){ return v[g[0]]; }).map(function(g){
+        return '<button type="button" class="chip"' + mtOpen(obsLocKey(c[0], g[0]), '', z) + ' style="margin:2px">' + esc(t(g[2])) + ' <b class="num">' + nm(v[g[0]]) + '</b></button>'; }).join('');
+      return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
+        + (chips || '<span class="hint" style="margin:2px 6px;font-size:12px">\u2014</span>') + '</div>';
+    }).join('');
     return '<div style="' + MT_TILE + ';margin:0 0 10px"><div style="font-weight:700;margin:0 0 8px">\u{1F4CD} ' + esc(t(z)) + '</div>'
-      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">'
-      + cats.map(function(c){ var v = o[c[0]] || { p:0, c:0 };
-          return '<div style="border:1px solid var(--line);border-radius:12px;padding:8px 10px"><div style="font-size:13px;margin:0 0 4px">' + c[1] + ' ' + esc(t(c[2])) + '</div>'
-            + num(v.p, c[0], 'ممر', z) + (c[0] === 'nomount' ? num(v.c, c[0], 'مخيم', z) : '') + '</div>'; }).join('')   /* (V38.24) المخيماتُ في «بدون هيكل» وحدَها */
-      + '</div></div>';
+      + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها — من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» للممرات والمخيمات · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('للممرات والجمرات وكاميرات الوزارة — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
@@ -28405,6 +28429,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.25', d:'2026-10-19', notes:[
+      'موقع النقطة بخيارات المالك الست، اختيار متعدد، للممرات والجمرات وكاميرات الوزارة' ] },
   { v:'V38.24', d:'2026-10-19', notes:[
       'الكوبري والنفق واللوحات للممرات ومسار الجمرات وحدها' ] },
   { v:'V38.23', d:'2026-10-19', notes:[
@@ -38067,11 +38093,20 @@ function clickAPart3(e){
   if (e.target.closest('[data-svqqx]')){ var qi = +e.target.closest('[data-svqqx]').getAttribute('data-svqqx'), qx = PHOTO_Q[qi];
     if (qx && qx.site === SVQ.id){ PHOTO_Q.splice(qi, 1); CORE.saveSoon(); var rq2 = STATE.recs[SVQ.id]; if (rq2){ var n2 = Object.assign({}, rq2); n2.phN = svqPhotoCount(SVQ.id); CORE.set('recs', SVQ.id, n2); } logEvent('إلغاءُ صورةٍ من طابور الجهاز — ' + SVQ.id, SVQ.id); toast(t('أُلغيت الصورة')); render(1); }
     return true; }
-  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; SVQ.err = ''; render(1); return true; }
+  if (e.target.closest('[data-svqcancel]')){ SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = ''; render(1); return true; }
+  /* (V38.25) «موقع النقطة» شرائح: في النموذج وفي لوح التعديل — «لا شيء مما سبق» يُفرغ الباقي، وغيرُه يرفعه */
+  var lcf = e.target.closest('[data-svloc]');
+  if (lcf){ var lv = lcf.getAttribute('data-svloc'), L0 = locList(FORM.loc);
+    if (L0.indexOf(lv) > -1) L0 = L0.filter(function(z){ return z !== lv; }); else { L0 = lv === 'لا شيء مما سبق' ? [lv] : L0.filter(function(z){ return z !== 'لا شيء مما سبق' && z !== 'نفق — غير محدد'; }).concat([lv]); }
+    FORM.loc = L0; try { svDraftSoon(); } catch (e2){ LS_ERR = e2; } render(1); return true; }
+  var lcq = e.target.closest('[data-svqloc]');
+  if (lcq){ var qv = lcq.getAttribute('data-svqloc'), rqL = STATE.recs[SVQ.id] || {}, L1 = SVQ.tmpL || locList(rqL.loc);
+    if (L1.indexOf(qv) > -1) L1 = L1.filter(function(z){ return z !== qv; }); else { L1 = qv === 'لا شيء مما سبق' ? [qv] : L1.filter(function(z){ return z !== 'لا شيء مما سبق' && z !== 'نفق — غير محدد'; }).concat([qv]); }
+    SVQ.tmpL = L1; render(1); return true; }
   if (e.target.closest('[data-svqch]')){ var ch = e.target.closest('[data-svqch]').getAttribute('data-svqch'); rq = STATE.recs[SVQ.id] || {}; var nt1 = document.getElementById('svqNote'); if (nt1) SVQ.note = nt1.value; var cur0 = SVQ.tmp || chalsToCats(rq.chals, rq.chal_note || rq.note);   /* (V38.20) الفئاتُ نفسُها كنموذج المسح، والوصفُ المكتوبُ لا يضيع بإعادة الرسم */
     if (cur0.indexOf(ch) > -1) cur0 = cur0.filter(function(x){ return x !== ch; }); else { if (ch === 'لا توجد تحديات') cur0 = []; else cur0 = cur0.filter(function(x){ return x !== 'لا توجد تحديات'; }); cur0.push(ch); }
     SVQ.tmp = cur0; render(1); return true; }
-  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, rq0 = STATE.recs[SVQ.id] || {}, sv0 = sk === 'chals' ? (SVQ.tmp || chalsToCats(rq0.chals, rq0.chal_note || rq0.note)) : ((document.getElementById('svqIn') || {}).value);
+  if (e.target.closest('[data-svqsave]')){ var sk = SVQ.key, rq0 = STATE.recs[SVQ.id] || {}, sv0 = sk === 'chals' ? (SVQ.tmp || chalsToCats(rq0.chals, rq0.chal_note || rq0.note)) : sk === 'loc' ? (SVQ.tmpL || locList(rq0.loc)) : ((document.getElementById('svqIn') || {}).value);
     /* (V38.20) الوصفُ يُحفَظ مع التحديات في الضغطة نفسِها — كان لا يظهر له حقلٌ في التعديل أصلًا */
     var nt0 = document.getElementById('svqNote'), ntv = nt0 ? String(nt0.value || '').trim() : null, ntChanged = sk === 'chals' && ntv !== null && ntv !== String(rq0.chal_note || '').trim();
     if (sk === 'chals' && (sv0 || []).indexOf(chalOther()) > -1 && !(ntv != null ? ntv : String(rq0.chal_note || '').trim())){

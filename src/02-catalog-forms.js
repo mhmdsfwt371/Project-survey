@@ -3040,7 +3040,7 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
 var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
-var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم','لوحة استرشادية'], loc:['لا شيء مما سبق','تحت كوبري','مدخل أو مخرج نفق','تحت كوبري وعند نفق'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.23) */
+var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.25) «موقع النقطة» شرائحُ متعدّدةٌ لا قائمة */
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
 function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
 function svqKeys(rec){
@@ -3057,6 +3057,12 @@ function svqLabel(k){ if (String(k).indexOf('ph:') === 0) return 'صورة: ' + 
 function svqFmt(v){ return Array.isArray(v) ? v.map(function(x){ return t(x); }).join(' \u00b7 ') : (v === '' || v == null ? '\u2014' : (typeof v === 'number' ? nm(v) : t(String(v)))); }
 function svqEditor(k, rec, s){
   var v = rec[k];
+  if (k === 'loc'){
+    /* (V38.25) شرائحُ متعدّدةٌ كالتحديات — «لا شيء مما سبق» يُفرغ الباقي */
+    var selL = SVQ.tmpL || locList(rec.loc);
+    return '<p class="hint" style="margin:2px 0 6px">' + esc(t('اختر كل ما ينطبق')) + '</p><div class="chips" style="margin:4px 0 0">'
+      + locOpts().map(function(o){ return '<button type="button" class="chip' + (selL.indexOf(o) > -1 ? ' on' : '') + '" data-svqloc="' + esc(o) + '">' + esc(t(o)) + '</button>'; }).join('') + '</div>';
+  }
   if (k === 'chals'){
     /* (V38.20) قائمةُ التعديل كانت القديمةَ (بـ«أخرى — اذكرها في وصف التحدي») وقائمةُ المسح هي الفئاتُ الثماني — فصارت واحدة،
        ومعها «وصفُ التحدي بالتفصيل» في الموضع نفسِه: كان لا يظهر في التعديل إلا إن كُتب من قبل */
@@ -3187,9 +3193,10 @@ function svqPhoto(id, key, p){
 }
 function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظٍ مركّب (التحديات + وصفُها) فلا يقول «لم يتغيّر شيء» */
   var rec = STATE.recs[id]; if (!rec || !svqMay(id)) return false;
-  var old = key === 'chals' ? (rec.chals || []).slice() : rec[key];
+  var old = key === 'chals' ? (rec.chals || []).slice() : key === 'loc' ? locList(rec.loc) : rec[key];
   if (SVQ_NUM[key]){ var nv = cfgN(val); if (!(nv > 0)){ toast(t('اكتب رقمًا أكبر من صفر')); return false; } val = nv; }
   else if (key === 'chals'){ if (!val || !val.length){ toast(t('اختر تحديًا واحدًا على الأقل — أو «لا توجد تحديات»')); return false; } }
+  else if (key === 'loc'){ val = Array.isArray(val) ? val.slice() : locList(val); }   /* (V38.25) قائمة */
   else val = String(val == null ? '' : val).trim();
   if (JSON.stringify(old) === JSON.stringify(val)){ if (!quiet) toast(t('لم يتغيّر شيء')); return false; }
   var boss = rankOf(ROLE) >= rankOf('engineer'), now = Date.now(), who = STATE.meta.name || '';
@@ -3203,7 +3210,7 @@ function svqSave(id, key, val, quiet){   /* (V38.20) quiet: جزءٌ من حفظ
   var line = t(svqLabel(key)) + ': ' + svqFmt(old) + ' \u2190 ' + svqFmt(val);
   logEvent('تعديلُ مسح — ' + id + ' \u00b7 ' + line, id);
   if (rec.review === 'approved') notifPush('تعديلُ مسحٍ معتمد', line + ' — ' + id + (back ? ' — ' + t('عاد لانتظار الاعتماد') : ''), { site:id, lv:'مهم' });
-  SVQ.key = ''; SVQ.tmp = null; SVQ.note = null; SVQ.err = '';
+  SVQ.key = ''; SVQ.tmp = null; SVQ.tmpL = null; SVQ.note = null; SVQ.err = '';
   statBump();
   if (!quiet) toast(t(back ? 'عُدِّل الحقل — وعاد المسحُ لانتظار الاعتماد' : 'عُدِّل الحقل — والباقي كما هو'));   /* (V38.21) الحفظُ المركّب يقول جملةً واحدة */
   return true;
