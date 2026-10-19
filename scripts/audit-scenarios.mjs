@@ -302,8 +302,17 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
   T(w.obsLocTags(cp) === null, 'والمخيمُ لا يُحسَب ولو كُتب ذلك');
   w.obsLocLists();
   T(w.MFU.lists[w.obsLocKey('sign', 'c')].rows().some(r => r[0] === cam.id) && w.MFU.lists[w.obsLocKey('bridge', 'p')].rows().some(r => r[0] === Q0.id), 'وقوائمُ كلِّ مجموعةٍ تحمل نقاطَها');
-  T(w.svqKeys(w.STATE.recs[Q1.id]).includes('loc') && !w.svqKeys(Object.assign({}, base, { id:pick('محطة').id })).includes('loc'), '«موقع النقطة» صفٌّ في تعديل الممر — لا في المحطة');
+  T(w.svqKeys(w.STATE.recs[Q1.id]).includes('loc') && !w.svqKeys(Object.assign({}, base, { id:pick('مخيم').id })).includes('loc'), '«موقع النقطة» صفٌّ في تعديل الممر — لا في المخيم (V38.26: والمحطاتُ صارت مثل الممرات)');
   T(String(w.mtObs()).indexOf('حسب الموقع') > -1, 'والقسمُ في تبويب التحديات والمعوقات');
+  /* (V38.26) «موقع النقطة» تحدٍّ بنفسه — عدا «على مظلة» واللوحةِ التي عليها مظلة؛ ولكلِّ النقاط عدا المخيمات ومراكز التفويج */
+  const full = Object.assign({}, base, { mount:'عمود', power:'شبكة', wid_m:3, hgt_m:4, fit:'نعم', chals:['لا توجد تحديات'] });
+  const mk = (ty, loc) => { const x = pick(ty); w.STATE.recs[x.id] = Object.assign({ id:x.id, loc }, full); return x; };
+  const cB = mk('ممر', ['تحت كوبري']), cS = mk('ممر', ['لوحة استرشادية']), cSC = mk('ممر', ['لوحة استرشادية', 'على مظلة']), cC = mk('ممر', ['على مظلة']), cSt = mk('محطة', ['مخرج نفق']);
+  w.statBump();
+  T(w.chalCats(w.STATE.recs[cB.id]).includes('block') && w.svStOf(cB.id) === 'coord', 'تحت كوبري: «عائق في الموقع» ويُعَدّ تحدّيًا (تنسيق مع الجهة المالكة)');
+  T(w.chalCats(w.STATE.recs[cS.id]).includes('mount') && w.svStOf(cS.id) === 'prep', 'لوحةٌ استرشاديةٌ بلا مظلة: «يحتاج هيكل» ويُعَدّ تحدّيًا');
+  T(!w.chalCats(w.STATE.recs[cSC.id]).length && !w.chalCats(w.STATE.recs[cC.id]).length, 'و«على مظلة» واللوحةُ التي عليها مظلةٌ ليستا تحدّيًا');
+  T(w.chalCats(w.STATE.recs[cSt.id]).includes('block') && w.locApplies(cSt) && !w.locApplies(pick('مخيم')), 'والمحطةُ تُحسَب كالممر — والمخيمُ لا');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

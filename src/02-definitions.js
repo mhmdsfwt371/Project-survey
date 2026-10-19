@@ -182,8 +182,19 @@ function chalCats(r){
   if (CC_MEMO){ var mm = CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
   return chalCats0(r);
 }
+/* (V38.26) قرارُ المالك: «موقع النقطة» تحدٍّ بنفسه — «أيُّ حاجةٍ مش على مظلة تحدّي»: تحت كوبري ومدخلُ النفق ومخرجُه عائقٌ في الموقع
+   (اسمُ الفئة نفسُه «… نفق أو كوبري» — وجهتُها الجهةُ المالكة)، واللوحةُ الاسترشاديةُ بلا مظلة وبلا إطارٍ معدنيٍّ «يحتاج هيكل».
+   و«على مظلة» وحدَها ليست تحدّيًا، واللوحةُ التي عليها مظلةٌ ليست تحدّيًا. للنقاط عدا المخيمات ومراكز التفويج */
+function locChalKeys(r){
+  var x = r && typeof siteFind === 'function' ? siteFind(r.id) : null; if (!x || !locApplies(x)) return [];
+  var L = locList(r.loc), out = [], can = L.indexOf('على مظلة') > -1;
+  if (L.some(function(v){ return v === 'تحت كوبري' || v === 'مدخل نفق' || v === 'مخرج نفق' || v === 'نفق — غير محدد'; })) out.push('block');
+  if ((L.indexOf('لوحة استرشادية') > -1 && !can) || L.indexOf('بدون إطار معدني للتثبيت') > -1) out.push('mount');
+  return out;
+}
 function chalCats0(r){
-  if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
+  var lk = locChalKeys(r), mg = function(a){ lk.forEach(function(k){ if (a.indexOf(k) < 0) a.push(k); }); return a; };
+  if (Array.isArray(r.chalCats) && r.chalCats.length) return mg(r.chalCats.slice());
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
     c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
@@ -199,7 +210,7 @@ function chalCats0(r){
     }
     add('review');
   });
-  return out;
+  return mg(out);   /* (V38.26) ومعها تحدياتُ «موقع النقطة» */
 }
 /* (V37.4) طلبُ المالك: «أقدر أغيّر وأعدّل المسميات والجهات اللي تحل» — الأصلُ في الشيفرة، وما يُعدَّل في الإعدادات (CFG.cats) يُدمَج
    بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
@@ -238,7 +249,8 @@ var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'�
 function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
 /* (V38.24) قرارُ المالك: الكوبري والنفقُ واللوحاتُ الاسترشاديةُ شأنُ الممرات وحدَها — ومسارُ الجمرات (خروجُ الجمرات مثلًا) —
    لا المخيمات ولا المحطات ولا البوابات ولا الكاميرات. حقلُ «موقع النقطة» وخيارُ «لوحة استرشادية» لا يظهران لغيرها */
-function locApplies(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر' || x.type === 'كاميرا'); }   /* (V38.25) وكاميراتُ الوزارة — لا المخيمات ولا مراكز التفويج */
+/* (V38.26) قرارُ المالك: كلُّ النقاط عدا المخيمات ومراكز التفويج — الممراتُ والجمراتُ وكاميراتُ الوزارة والمحطاتُ والبواباتُ وغيرُها */
+function locApplies(x){ return !!x && x.type !== 'مخيم' && x.type !== 'LPR'; }
 /* (V38.25) خياراتُ «موقع النقطة» بنصّ المالك — اختيارٌ متعدّد (النقطةُ قد تكون تحت كوبري وبلا إطارٍ معدنيٍّ معًا) */
 function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', 'مدخل نفق', 'مخرج نفق', 'لوحة استرشادية', 'بدون إطار معدني للتثبيت', 'على مظلة']; }
 /* القيمةُ قائمةٌ دائمًا عند القراءة — وما حُفظ نصًّا في V38.23–V38.24 يُقرأ بمعناه */
@@ -344,6 +356,7 @@ function techVisit(x, r){
   if (typeof insDone === 'function' && insDone(x.id)) return false;
   var cc = chalCats(r);
   if (x.type === 'ممر' && cc.indexOf('mount') > -1) return true;
+  if (locList(r.loc).some(function(v){ return /كوبري|نفق/.test(v); })) return true;   /* (V38.26) «موقع النقطة» صريحًا */
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
   return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));

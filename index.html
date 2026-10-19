@@ -1285,7 +1285,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.25</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.26</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1347,7 +1347,7 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-f186cb6b31.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-0da92e80c3.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */
@@ -7307,8 +7307,19 @@ function chalCats(r){
   if (CC_MEMO){ var mm = CC_MEMO.get(r), ver = typeof CFG_VER === 'number' ? CFG_VER : 0; if (mm && mm.v === ver) return mm.c.slice(); var cc = chalCats0(r); CC_MEMO.set(r, { v:ver, c:cc }); return cc.slice(); }
   return chalCats0(r);
 }
+/* (V38.26) قرارُ المالك: «موقع النقطة» تحدٍّ بنفسه — «أيُّ حاجةٍ مش على مظلة تحدّي»: تحت كوبري ومدخلُ النفق ومخرجُه عائقٌ في الموقع
+   (اسمُ الفئة نفسُه «… نفق أو كوبري» — وجهتُها الجهةُ المالكة)، واللوحةُ الاسترشاديةُ بلا مظلة وبلا إطارٍ معدنيٍّ «يحتاج هيكل».
+   و«على مظلة» وحدَها ليست تحدّيًا، واللوحةُ التي عليها مظلةٌ ليست تحدّيًا. للنقاط عدا المخيمات ومراكز التفويج */
+function locChalKeys(r){
+  var x = r && typeof siteFind === 'function' ? siteFind(r.id) : null; if (!x || !locApplies(x)) return [];
+  var L = locList(r.loc), out = [], can = L.indexOf('على مظلة') > -1;
+  if (L.some(function(v){ return v === 'تحت كوبري' || v === 'مدخل نفق' || v === 'مخرج نفق' || v === 'نفق — غير محدد'; })) out.push('block');
+  if ((L.indexOf('لوحة استرشادية') > -1 && !can) || L.indexOf('بدون إطار معدني للتثبيت') > -1) out.push('mount');
+  return out;
+}
 function chalCats0(r){
-  if (Array.isArray(r.chalCats) && r.chalCats.length) return r.chalCats.slice();
+  var lk = locChalKeys(r), mg = function(a){ lk.forEach(function(k){ if (a.indexOf(k) < 0) a.push(k); }); return a; };
+  if (Array.isArray(r.chalCats) && r.chalCats.length) return mg(r.chalCats.slice());
   var out = [], add = function(k){ if (out.indexOf(k) < 0) out.push(k); };
   (Array.isArray(r.chals) ? r.chals : []).forEach(function(c){
     c = String(c || '').trim(); if (!c || c === 'لا توجد تحديات') return;
@@ -7324,7 +7335,7 @@ function chalCats0(r){
     }
     add('review');
   });
-  return out;
+  return mg(out);   /* (V38.26) ومعها تحدياتُ «موقع النقطة» */
 }
 /* (V37.4) طلبُ المالك: «أقدر أغيّر وأعدّل المسميات والجهات اللي تحل» — الأصلُ في الشيفرة، وما يُعدَّل في الإعدادات (CFG.cats) يُدمَج
    بالمفتاح: يتغيّر الاسمُ أو الجهةُ أو صورةُ الإثبات، ويُعطَّل البندُ من قائمة الميدان، ويُضاف بندٌ جديد. المفتاحُ لا يتغيّر أبدًا،
@@ -7363,7 +7374,8 @@ var WHY_ACCESS = { closed:'منع دخول', denied:'منع دخول', permit:'�
 function chalOther(){ return 'أخرى — اذكرها في وصف التحدي'; }
 /* (V38.24) قرارُ المالك: الكوبري والنفقُ واللوحاتُ الاسترشاديةُ شأنُ الممرات وحدَها — ومسارُ الجمرات (خروجُ الجمرات مثلًا) —
    لا المخيمات ولا المحطات ولا البوابات ولا الكاميرات. حقلُ «موقع النقطة» وخيارُ «لوحة استرشادية» لا يظهران لغيرها */
-function locApplies(x){ return !!x && (x.type === 'ممر' || x.type === 'جسر' || x.type === 'كاميرا'); }   /* (V38.25) وكاميراتُ الوزارة — لا المخيمات ولا مراكز التفويج */
+/* (V38.26) قرارُ المالك: كلُّ النقاط عدا المخيمات ومراكز التفويج — الممراتُ والجمراتُ وكاميراتُ الوزارة والمحطاتُ والبواباتُ وغيرُها */
+function locApplies(x){ return !!x && x.type !== 'مخيم' && x.type !== 'LPR'; }
 /* (V38.25) خياراتُ «موقع النقطة» بنصّ المالك — اختيارٌ متعدّد (النقطةُ قد تكون تحت كوبري وبلا إطارٍ معدنيٍّ معًا) */
 function locOpts(){ return ['لا شيء مما سبق', 'تحت كوبري', 'مدخل نفق', 'مخرج نفق', 'لوحة استرشادية', 'بدون إطار معدني للتثبيت', 'على مظلة']; }
 /* القيمةُ قائمةٌ دائمًا عند القراءة — وما حُفظ نصًّا في V38.23–V38.24 يُقرأ بمعناه */
@@ -7469,6 +7481,7 @@ function techVisit(x, r){
   if (typeof insDone === 'function' && insDone(x.id)) return false;
   var cc = chalCats(r);
   if (x.type === 'ممر' && cc.indexOf('mount') > -1) return true;
+  if (locList(r.loc).some(function(v){ return /كوبري|نفق/.test(v); })) return true;   /* (V38.26) «موقع النقطة» صريحًا */
   var nm0 = {}; ccList().forEach(function(o){ nm0[o.n] = 1; if (o.base) nm0[o.base] = 1; });
   var parts = (Array.isArray(r.chals) ? r.chals : []).filter(function(c){ return !nm0[c]; });
   return TECH_BT_RX.test(arKey(parts.concat([r.note || '', r.chal_note || '']).join(' ')));
@@ -25477,10 +25490,10 @@ function obsLocCats(){
   return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tin', '\u{1F687}', 'مدخل نفق'], ['tout', '\u{1F687}', 'مخرج نفق'], ['tgen', '\u{1F687}', 'نفق — غير محدد'],
           ['sign', '\u{1FAA7}', 'لوحة استرشادية'], ['nomount', '\u{1F3D7}', 'بدون إطار معدني للتثبيت'], ['canopy', '\u26F1', 'على مظلة']];
 }
-function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة']]; }
+function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة'], ['s', 'محطة', 'المحطات'], ['g', 'بوابة', 'البوابات'], ['o', '*', 'نقاط أخرى']]; }   /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
 function obsLocTags(x){
   var r = STATE.recs[x.id], out = {};
-  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.25) الممراتُ والجمراتُ وكاميراتُ الوزارة وحدَها */
+  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
   var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
   var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
   L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
@@ -25501,6 +25514,7 @@ function obsLocTags(x){
   return out;
 }
 function obsLocKey(k, g){ return 'loc_' + k + '_' + g; }
+function obsLocGrp(x){ var G = obsLocGroups(); for (var i = 0; i < G.length; i++) if (G[i][1] === x.type) return G[i][0]; return 'o'; }
 function obsLocLists(){
   obsLocCats().forEach(function(c){
     obsLocGroups().forEach(function(g){
@@ -25508,7 +25522,7 @@ function obsLocLists(){
       MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + g[2],
         head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'موقع النقطة', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
+          return mtSites().filter(function(x){ return g[1] === '*' ? obsLocGrp(x) === 'o' : x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
             .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {};
               return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), locList(r.loc).map(function(v){ return t(v); }).join(' \u00b7 '), String(r.chal_note || ''), String(r.note || '')]; });
         } };
@@ -25517,10 +25531,10 @@ function obsLocLists(){
 }
 function mtObsLoc(){
   obsLocLists();
-  var Z = {}, any = 0, gk = {}; obsLocGroups().forEach(function(g){ gk[g[1]] = g[0]; });
+  var Z = {}, any = 0;
   mtSites().forEach(function(x){
     var tg = obsLocTags(x); if (!tg) return;
-    var z = taxOf(x).g, gg = gk[x.type];
+    var z = taxOf(x).g, gg = obsLocGrp(x);
     Object.keys(tg).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || {}; c0[gg] = (c0[gg] || 0) + 1; any++; });
   });
   if (!any) return '';
@@ -25537,7 +25551,7 @@ function mtObsLoc(){
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('للممرات والجمرات وكاميرات الوزارة — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('لكل النقاط عدا المخيمات ومراكز التفويج — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
@@ -28429,6 +28443,8 @@ var SESS_PW = '';
 var RELEASE_NOTES = [
   /* سطورُ «ما الجديد» تُكتَب بعربيةٍ فصيحةٍ مبسَّطةٍ بلا تشكيلٍ ولا عامّيةٍ ولا
      مصطلحاتٍ داخلية — يفهمها ممثّلُ الوزارة من أوّل قراءة كما يفهمها الفني (V17.89) */
+  { v:'V38.26', d:'2026-10-19', notes:[
+      '«موقع النقطة» تحدٍّ بنفسه — كل ما ليس على مظلة — لكل النقاط عدا المخيمات ومراكز التفويج' ] },
   { v:'V38.25', d:'2026-10-19', notes:[
       'موقع النقطة بخيارات المالك الست، اختيار متعدد، للممرات والجمرات وكاميرات الوزارة' ] },
   { v:'V38.24', d:'2026-10-19', notes:[

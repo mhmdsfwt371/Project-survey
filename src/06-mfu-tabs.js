@@ -71,10 +71,10 @@ function obsLocCats(){
   return [['bridge', '\u{1F309}', 'تحت كوبري'], ['tin', '\u{1F687}', 'مدخل نفق'], ['tout', '\u{1F687}', 'مخرج نفق'], ['tgen', '\u{1F687}', 'نفق — غير محدد'],
           ['sign', '\u{1FAA7}', 'لوحة استرشادية'], ['nomount', '\u{1F3D7}', 'بدون إطار معدني للتثبيت'], ['canopy', '\u26F1', 'على مظلة']];
 }
-function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة']]; }
+function obsLocGroups(){ return [['p', 'ممر', 'ممرات'], ['j', 'جسر', 'الجمرات'], ['c', 'كاميرا', 'كاميرات الوزارة'], ['s', 'محطة', 'المحطات'], ['g', 'بوابة', 'البوابات'], ['o', '*', 'نقاط أخرى']]; }   /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
 function obsLocTags(x){
   var r = STATE.recs[x.id], out = {};
-  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.25) الممراتُ والجمراتُ وكاميراتُ الوزارة وحدَها */
+  if (!r || r.deleted || !svVisited(r) || !locApplies(x)) return null;   /* (V38.26) كلُّ النقاط عدا المخيمات ومراكز التفويج */
   var L = locList(r.loc), pick = 'اختيار الفني', txtSrc = 'وصف التحدي أو الملاحظة';
   var map = { 'تحت كوبري':'bridge', 'مدخل نفق':'tin', 'مخرج نفق':'tout', 'نفق — غير محدد':'tgen', 'لوحة استرشادية':'sign', 'بدون إطار معدني للتثبيت':'nomount', 'على مظلة':'canopy' };
   L.forEach(function(v){ if (map[v]) out[map[v]] = pick; });
@@ -95,6 +95,7 @@ function obsLocTags(x){
   return out;
 }
 function obsLocKey(k, g){ return 'loc_' + k + '_' + g; }
+function obsLocGrp(x){ var G = obsLocGroups(); for (var i = 0; i < G.length; i++) if (G[i][1] === x.type) return G[i][0]; return 'o'; }
 function obsLocLists(){
   obsLocCats().forEach(function(c){
     obsLocGroups().forEach(function(g){
@@ -102,7 +103,7 @@ function obsLocLists(){
       MFU.lists[key] = { title:c[1] + ' ' + c[2] + ' — ' + g[2],
         head:['النقطة', 'الاسم', 'المشعر', 'النوع', 'الشركة', 'المصدر', 'موقع النقطة', 'وصف التحدي', 'الملاحظة'],
         rows:function(){
-          return mtSites().filter(function(x){ return x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
+          return mtSites().filter(function(x){ return g[1] === '*' ? obsLocGrp(x) === 'o' : x.type === g[1]; }).map(function(x){ var tg = obsLocTags(x); return tg && tg[c[0]] ? [x, tg[c[0]]] : null; }).filter(Boolean)
             .map(function(p){ var x = p[0], r = STATE.recs[x.id] || {};
               return [x.id, x.name || '', taxOf(x).g, x.type, x.co || '', t(p[1]), locList(r.loc).map(function(v){ return t(v); }).join(' \u00b7 '), String(r.chal_note || ''), String(r.note || '')]; });
         } };
@@ -111,10 +112,10 @@ function obsLocLists(){
 }
 function mtObsLoc(){
   obsLocLists();
-  var Z = {}, any = 0, gk = {}; obsLocGroups().forEach(function(g){ gk[g[1]] = g[0]; });
+  var Z = {}, any = 0;
   mtSites().forEach(function(x){
     var tg = obsLocTags(x); if (!tg) return;
-    var z = taxOf(x).g, gg = gk[x.type];
+    var z = taxOf(x).g, gg = obsLocGrp(x);
     Object.keys(tg).forEach(function(k){ var o = Z[z] = Z[z] || {}; var c0 = o[k] = o[k] || {}; c0[gg] = (c0[gg] || 0) + 1; any++; });
   });
   if (!any) return '';
@@ -131,7 +132,7 @@ function mtObsLoc(){
       + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px">' + cells + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('للممرات والجمرات وكاميرات الوزارة — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('لكل النقاط عدا المخيمات ومراكز التفويج — من «موقع النقطة» في المسح (اختيار متعدد)، وللزيارات الأقدم بلا اختيار من كلمات وصف التحدي والملاحظة · كلُّها تحدٍّ عدا «على مظلة» (واللوحة التي عليها مظلة) · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;
