@@ -264,7 +264,7 @@ function egPaint(){
     if (!egPaint.layer) egPaint.layer = L.layerGroup().addTo(MAP); egPaint.layer.clearLayers();
     egMapPoints().forEach(function(g){
       var st = siteFind(g.stn);
-      L.circleMarker([g.lat, g.lng], { radius:6, color:'#0EA5E9', weight:2, fillColor:'#0EA5E9', fillOpacity:0.85 })
+      L.circleMarker([g.lat, g.lng], { renderer:MAP_CV, radius:6, color:'#0EA5E9', weight:2, fillColor:'#0EA5E9', fillOpacity:0.85 })   /* على لوح النقاط نفسِه — لا لوحَ ثانٍ يبتلع النقر */
         .bindTooltip('\u{1F6AA} ' + (g.no || g.id) + (st ? ' \u2014 ' + st.name : ''), { direction:'top' })
         .on('click', function(){ DETAIL_ID = g.stn; egCard.open = g.id; CUR = 'site'; render(1); })
         .addTo(egPaint.layer);

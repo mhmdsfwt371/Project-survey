@@ -289,7 +289,6 @@ var CORE = {
     /* (V38.30) قرارُ المالك: ما طال انتظارُه فوق المهلة (الثوابت ← «مهلةُ ما ينتظر الرفع» — أيام، ٠ = لا تجاهل) يُتجاهَل:
        يخرج من الطابور إلى ركنٍ يُرى ويُصدَّر (STATE.stale) ويُقال في السجلّ — لا يُمحى صامتًا. كان المبدأُ «لا يُسقَط شيء»،
        والمالكُ قرّر مهلةً حتى لا يحمل جهازٌ هجرَ الشبكةَ شهورًا عملًا قديمًا يعود فجأةً فوق الأحدث. */
-    CORE.queueTtlApply();
     /* ما لا يصلح معرِّفُه يُعزَل باسمه قبل الدفع ولا يُوقف ما بعده */
     var badIds = STATE.queue.filter(function(q){ return !CORE.validId(q.id); });
     if (badIds.length){
@@ -302,6 +301,8 @@ var CORE = {
       CORE.saveSoon();
       if (!STATE.queue.length){ CORE._busy = false; return Promise.resolve(0); }
     }
+    CORE.queueTtlApply();   /* (V38.30) بعد عزل المعطوب: المهلةُ على الصالح وحدَه */
+    if (!STATE.queue.length){ CORE._busy = false; return Promise.resolve(0); }
     /* ما أُجِّل لا يُرفَع قبل موعده ولا يعيق ما بعده (V17.40) */
   var nowQ = Date.now();
     var batch = (STATE.queue || []).filter(function(it){ return !it.next || it.next <= nowQ; }).slice(0, 50);
