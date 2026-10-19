@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.22",
+  "app_version": "V38.23",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2180,7 +2180,8 @@
   "V38.19": "aqRepGroup() · group في aqRepParse",
   "V38.20": "mapFlySoon() · chalOther() · svqSave(quiet) · svqNote",
   "V38.21": "SVQ.err · chalOther() في الشرائح",
-  "V38.22": "obsLocTags() · obsLocLists() · mtObsLoc() · MFU.lists loc_*"
+  "V38.22": "obsLocTags() · obsLocLists() · mtObsLoc() · MFU.lists loc_*",
+  "V38.23": "SVQ_OPT.loc · loc في SV_EXTRA_KEYS وSV_ORDER"
   },
   "map_and_geolocation": {
     "tile_layers": {

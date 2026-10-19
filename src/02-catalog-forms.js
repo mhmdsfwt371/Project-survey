@@ -3040,13 +3040,15 @@ function LAYER(){ return LAYERS[FIELD_MODE] || LAYERS.survey; }
 var SVQ = { id:'', key:'', tmp:null, delAsk:'' };
 var TYPES_OPEN = false;   /* بطاقةُ التصنيفات في «المواقع» مطويّةٌ حتى تُفتَح (V23.0) */
 var SVQ_NUM = { len_m:1, wid_m:1, hgt_m:1, height:1, cable:1, tents:1, gates:1, corr_w:1, pdist:1, n_ant:1, n_rdr:1, n_cam:1, n_sens:1, hours:1, crew_n:1, kits:1, kits_done:1 };
-var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };
+var SVQ_OPT = { mount:['عمود','جدار','سور','هيكل قائم','لوحة استرشادية'], loc:['لا شيء مما سبق','تحت كوبري','مدخل أو مخرج نفق','تحت كوبري وعند نفق'], power:['شبكة','مولد','طاقة شمسية','لا يوجد'] };   /* (V38.23) */
 var SVQ_TEXT = { note:1, chal_note:1, power_note:1, civil:1, equip:1 };
 function svqMay(id){ var r = STATE.recs[id]; return !!r && !r.deleted && may('edit'); }
 function svqKeys(rec){
   var ks = SV_ORDER.filter(function(k){ return k !== 'access' && rec[k] !== undefined && rec[k] !== null && rec[k] !== ''; });
   if (Array.isArray(rec.chals)) ks.splice(Math.min(ks.length, 3), 0, 'chals');
   /* (V38.20) وصفُ التحدي يظهر صفًّا للتعديل متى كان في الزيارة تحدٍّ — ولو لم يُكتَب بعد */
+  /* (V38.23) «موقع النقطة» صفٌّ في كلِّ زيارةٍ وُصل فيها — تُضاف لزياراتٍ سابقةٍ لم تكن فيها */
+  if (rec.access === 'تم الوصول' && ks.indexOf('loc') < 0){ var mi = ks.indexOf('mount'); ks.splice(mi > -1 ? mi + 1 : 0, 0, 'loc'); }
   var hasCh = (rec.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; });
   if (hasCh && ks.indexOf('chal_note') < 0){ var ci = ks.indexOf('chals'); ks.splice(ci > -1 ? ci + 1 : ks.length, 0, 'chal_note'); }
   return ks;

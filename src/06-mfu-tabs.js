@@ -78,9 +78,11 @@ function obsLocTags(x){
   var txt = arKey([r.note || '', r.chal_note || ''].join(' ')), tOwn = arKey(own.join(' '));
   var src = function(byPick){ return byPick ? 'اختيار الفني' : 'وصف التحدي أو الملاحظة'; };
   var hit = function(rx){ return rx.test(tOwn) ? src(true) : (rx.test(txt) ? src(false) : ''); };
-  var b = chals.indexOf('المسار تحت كوبري') > -1 ? src(true) : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/);
-  var tn = chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
-  var sg = hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
+  /* (V38.23) الاختيارُ الصريحُ أوّلًا: «موقع النقطة» و«نوع التركيب = لوحة استرشادية»؛ و«لا شيء مما سبق» يُسقِط استنتاجَ الكلام للكوبري والنفق */
+  var lc = String(r.loc || ''), none = lc === 'لا شيء مما سبق';
+  var b = /كوبري/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار تحت كوبري') > -1 ? src(true) : hit(/تحت\s*(ال)?(كوبري|كبري|جسر)|(^|\s)(ال)?(كوبري|كبري)/);
+  var tn = /نفق/.test(lc) ? src(true) : none ? '' : chals.indexOf('المسار داخل نفق') > -1 ? src(true) : hit(/نفق|انفاق/);
+  var sg = r.mount === 'لوحة استرشادية' ? src(true) : hit(/(لوحه|لوحات|لافته|لافتات)\s*(ال)?(استرشاد|ارشاد)|استرشادي|ارشادي/);
   var nmt = chalCats(r).indexOf('mount') > -1 ? src(true) : '';
   if (b) out.bridge = b; if (tn) out.tunnel = tn; if (sg) out.sign = sg; if (nmt) out.nomount = nmt;
   return out;
@@ -123,7 +125,7 @@ function mtObsLoc(){
       + '</div></div>';
   }).join('');
   return mtSec('حسب الموقع — في كل منطقة') + blocks
-    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('الكوبري والنفق واللوحات من اختيار الفني أو كلماتٍ في وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
+    + '<p class="hint" style="margin:-4px 0 12px;font-size:12px">' + esc(t('من «موقع النقطة» و«نوع التركيب» في المسح، وللزيارات الأقدم من كلمات وصف التحدي والملاحظة · بدون هيكل = «لا يوجد سطح تثبيت» · النقطة قد تظهر في أكثر من فئة · اضغط الرقم لقائمته وإكسلها')) + '</p>';
 }
 function mtObs(){
   var S = mtSites(), vis = 0, gc = {}, wc = {}, zc = {}, chal = 0;

@@ -291,6 +291,14 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
   const ids = k => w.MFU.lists[w.obsLocKey(k, 'ممر')].rows().map(r => r[0]);
   T(ids('bridge').includes(P[0].id) && ids('tunnel').includes(P[1].id) && !ids('tunnel').includes(P[2].id), 'وقوائمُ الممرات تحمل النقاطَ نفسَها — والمخيماتُ قائمةٌ وحدَها');
   T(String(w.mtObs()).indexOf('حسب الموقع') > -1, 'والقسمُ في تبويب التحديات والمعوقات');
+  /* (V38.23) الاختيارُ الصريحُ في المسح: «موقع النقطة» و«نوع التركيب = لوحة استرشادية» — و«لا شيء مما سبق» يغلب الكلام */
+  const Q = w.STATE.sites.filter(z => z && z.type === 'ممر' && !w.STATE.recs[z.id]).slice(0, 2);
+  w.STATE.recs[Q[0].id] = Object.assign({ id:Q[0].id, chals:['لا توجد تحديات'], mount:'لوحة استرشادية', loc:'تحت كوبري وعند نفق' }, base);
+  w.STATE.recs[Q[1].id] = Object.assign({ id:Q[1].id, chals:['لا توجد تحديات'], loc:'لا شيء مما سبق', note:'قريبٌ من الكوبري والنفق' }, base);
+  const q0 = w.obsLocTags(Q[0]), q1 = w.obsLocTags(Q[1]);
+  T(q0.bridge === 'اختيار الفني' && q0.tunnel === 'اختيار الفني' && q0.sign === 'اختيار الفني', '«موقع النقطة» و«لوحة استرشادية» اختيارٌ صريحٌ يُحسَب بمصدره');
+  T(!q1.bridge && !q1.tunnel, 'و«لا شيء مما سبق» يغلب كلامَ الملاحظة');
+  T(w.svqKeys(w.STATE.recs[Q[1].id]).includes('loc'), 'و«موقع النقطة» صفٌّ في تعديل المسح — ولزياراتٍ قديمةٍ بلا قيمة');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);

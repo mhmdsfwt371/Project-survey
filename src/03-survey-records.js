@@ -5,7 +5,7 @@
    والتحدياتُ والملاحظة. ولا زرَّ في الطبقة إلا الاعتماد: تقنيٌّ للمهندس
    واعتمادُ الوزارة لها — فلا يُعرَض على أحدٍ زرٌّ ليس من شأنه في هذه الشاشة. */
 var SV_LABELS = {
-  access:'الوصول', mount:'نوع التركيب', power:'مصدر الكهرباء', power_src:'مصدر الطاقة',
+  access:'الوصول', mount:'نوع التركيب', loc:'موقع النقطة', power:'مصدر الكهرباء', power_src:'مصدر الطاقة',
   power_note:'ملاحظةُ الكهرباء', power_yn:'كهرباءُ الموقع', pdist:'بُعدُ مصدر الكهرباء',
   p24:'تيارٌ ٢٤ ساعة', height:'الارتفاع (م)', cable:'الكابل (م)',
   len_m:'الطول المتاح (م)', wid_m:'العرض المتاح (م)', hgt_m:'الارتفاع المتاح (م)',
@@ -17,7 +17,7 @@ var SV_LABELS = {
   civil:'أعمالٌ مدنية', equip:'المعدّات', hours:'ساعاتُ العمل', crew_n:'عددُ الفريق',
   chal_note:'تفصيلُ التحدي', note:'ملاحظةُ الميدان'
 };
-var SV_ORDER = ['access','mount','power','power_src','power_yn','pdist','p24','power_note',
+var SV_ORDER = ['access','mount','loc','power','power_src','power_yn','pdist','p24','power_note',
   'len_m','wid_m','hgt_m','fit','height','cable','tents','gates','corr_w','jam_pos','metal',
   'n_ant','n_rdr','n_cam','n_sens','kits','kits_done','old_base','old_cable','old_net',
   'cam_ok','router_sp','civil','equip','hours','crew_n','chal_note','note'];
@@ -866,8 +866,14 @@ PAGE.forms = { m:'الميدان', t:'النماذج الميدانية',
       + card('ما يُجمَع في الموقع',
           '<div class="grid cols-2">'
           + '<div class="field"><label>' + esc(t('نوع التركيب')) + ' <span class="req">*</span></label>'
-          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم'].map(function(o){
+          + '<select data-form="mount">' + ['','عمود','جدار','سور','هيكل قائم','لوحة استرشادية'].map(function(o){   /* (V38.23) اللوحةُ الاسترشاديةُ سطحُ تركيبٍ صريح */
               return '<option value="' + esc(o) + '"' + (FORM.mount===o?' selected':'') + '>' + esc(t(o)) + '</option>'; }).join('')
+          + '</select></div>'
+          /* (V38.23) «موقع النقطة» اختيارٌ صريحٌ بدل أن يُستنتَج من الكلام: تحت كوبري · عند نفق — حقلٌ مستقلٌّ عن «نوع التركيب»
+             لأن النقطةَ قد تكون على جدارٍ وتحت كوبري معًا. منه يُبنى «حسب الموقع» في التحديات والمعوقات */
+          + '<div class="field"><label>' + esc(t('موقع النقطة')) + ' <span class="hint" style="margin:0;font-weight:400">' + esc(t('اختر لو ينطبق')) + '</span></label>'
+          + '<select data-form="loc">' + [''].concat(SVQ_OPT.loc).map(function(o){
+              return '<option value="' + esc(o) + '"' + ((FORM.loc || '') === o ? ' selected' : '') + '>' + esc(o ? t(o) : '\u2014') + '</option>'; }).join('')
           + '</select></div>'
           + '<div class="field"><label>' + esc(t('مصدر الكهرباء')) + ' <span class="req">*</span></label>'
           + '<select data-form="power">' + ['','شبكة','مولد','طاقة شمسية','لا يوجد'].map(function(o){
@@ -2041,7 +2047,7 @@ var FORM = { site:'', mount:'', power:'', height:'', cable:'', chals:[], note:''
              cam_ok:'', router_sp:'', power_src:'', pdist:'', p24:'', power_note:'',
              n_ant:'', n_rdr:'', n_cam:'', n_sens:'', metal:'',
              chal_note:'', civil:'', equip:'', hours:'', crew_n:'', power_yn:'', kits_done:'' };
-var SV_EXTRA_KEYS = ['len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kits','jam_pos','power_yn','kits_done',
+var SV_EXTRA_KEYS = ['loc','len_m','wid_m','hgt_m','fit','tents','gates','corr_w','kits','jam_pos','power_yn','kits_done',
                      'old_base','old_cable','old_net','cam_ok','router_sp','power_src','pdist','p24',
                      'power_note','n_ant','n_rdr','n_cam','n_sens','metal','chal_note',
                      'civil','equip','hours','crew_n'];
