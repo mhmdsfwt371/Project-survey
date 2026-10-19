@@ -29,14 +29,7 @@ function shipAdd(){
   toast(t('سُجّلت الشحنة'));
   render(1);
 }
-function shipSet(id, patch){
-  if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
-  var x = (STATE.ships || {})[id]; if (!x) return;
-  Object.keys(patch).forEach(function(k){ x[k] = patch[k]; });
-  /* وصلت: يُقفَل التأخّرُ ويُسجَّل اليومُ إن لم يُكتَب */
-  if (patch.st === 'وصلت المستودع' && !x.got) x.got = todayISO();
-  shipSave(x);
-}
+
 function shipDel(id){
   if (!may('inventory') && !may('money')){ toast(t('الشحناتُ للمشتريات والمستودع')); return; }
   var x = (STATE.ships || {})[id]; if (!x) return;
@@ -267,12 +260,6 @@ function vehOfWho(who){
   return vehAsnList().filter(function(a){ return a.to === who; });
 }
 
-function vehSet(id, patch){
-  if (!may('fleet') && !may('settings')){ toast(t('السياراتُ للمهندس والمشتريات')); return; }
-  var v = vehOf(id); if (!v) return;
-  Object.keys(patch).forEach(function(k){ v[k] = patch[k]; });
-  vehSave(v);
-}
 function vehAdd(){
   if (!may('fleet') && !may('settings')){ toast(t('السياراتُ للمهندس والمشتريات')); return; }
   var g = function(id){ var e = document.getElementById(id); return e ? String(e.value || '').trim() : ''; };

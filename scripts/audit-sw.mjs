@@ -7,6 +7,7 @@
    شبكةٌ فقط — لا اعتمادَ على حزمة.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import vm from 'vm';
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
@@ -100,7 +101,7 @@ console.log('\n══ ٥ · docs شبكةٌ أوّلًا، وsw.js شبكةٌ ف
 }
 console.log('\n══ ٦ · مسارُ التحديث في التطبيق كما هو ══');
 {
-  const app = readFileSync('index.html', 'utf8');
+  const app = (await appHtml());
   T(/controllerchange/.test(app) && /function swPoll\(\)/.test(app) && /SW_STATE\.reg\.update\(\)/.test(app) && /function verChase\(/.test(app), 'الصفحةُ تسأل عن العامل الجديد وتُعاد عند تولّيه، وزرُّ النسخة يطارد الجديد');
   T(!/3500\)/.test(src) && /caches\.match\(req\)\.then\(function \(hit\) \{ return hit \|\| \(isNav/.test(src), 'ولم يبقَ في العامل انتظارُ شبكةٍ للهيكل');
 }

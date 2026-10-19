@@ -8,6 +8,7 @@
    بلا مسارِ قراءةٍ لا يُقفَل شيء، ويُقال ما ينقص.
    ═════════════════════════════════════════════════════════════════════════ */
 import http from 'http';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 import { execFile } from 'child_process';
 const exec = (args, env) => new Promise(res => execFile('node', args, { encoding:'utf8', env }, (err, stdout, stderr) => res(String(stdout || '') + String(stderr || ''))));
@@ -111,7 +112,7 @@ console.log('\n══ ٤ · بلا ضبطٍ لا شيءَ يُنفَّذ ولا 
   T(/node scripts\/myafaqy-bridge\.mjs/.test(y) && /MYAFAQY_BASE:\s*\$\{\{\s*vars\.MYAFAQY_BASE/.test(y) && /MYAFAQY_TOKEN:\s*\$\{\{\s*secrets\.MYAFAQY_TOKEN/.test(y),
     'والسيرُ يقرأ العنوانَ من المتغيّرات والتوكنَ من الأسرار');
   T(/bridge:\n(?:[^\n]*\n){0,4}\s*if: \$\{\{ vars\.MYAFAQY_BASE != '' \}\}/.test(y), 'والوظيفةُ تُتخطّى على مستواها ما دام العنوانُ فارغًا — تعمل وحدَها حين يُضبَط (V17.94)');
-  const html = readFileSync('index.html', 'utf8');
+  const html = (await appHtml());
   T(html.indexOf('MYAFAQY') < 0 && html.indexOf('crmbackend') < 0, 'والتطبيقُ نفسُه لا يعرف الواجهةَ — الهاتفُ لا يكلّمها');
 }
 

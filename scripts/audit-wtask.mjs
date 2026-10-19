@@ -11,6 +11,7 @@
      ٥ · الشريطُ الثلاثيُّ يحسب من التواريخ لا من الخانات.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -23,7 +24,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -77,7 +78,7 @@ T(w.WT_OPEN === '2' && !!d.getElementById('wtSheet'), 'تفتح لوحةَ ال�
 /* V16.85: اللوحةُ خارج المحتوى — «الثابتُ» داخل أبٍ فيه تحويلٌ يظهر في أوّل الصفحة لا أسفلَ الشاشة */
 const sh0 = d.getElementById('wtSheet');
 T(sh0.parentElement && sh0.parentElement.id === 'wtHost' && sh0.parentElement.parentElement === d.body && !sh0.closest('#content'), 'واللوحةُ تُرسَم في مضيفٍ على الجسد مباشرةً — لا داخل الصفحة ولا قشرتها');
-const css = readFileSync('index.html', 'utf8');
+const css = (await appHtml());
 T(/\.wt-sheet\{position:fixed !important/.test(css), 'وثابتةٌ على الشاشة في كلِّ عرض');
 const chips = [...d.querySelectorAll('#wtSheet [data-wtstat]')].map(e => e.getAttribute('data-wtstat'));
 T(chips.length === 4 && chips.every(x => x.indexOf('2|') === 0), 'الحالةُ أربعُ شرائحَ تُضغَط: ' + chips.map(x => x.split('|')[1]).join(' · '));
@@ -193,7 +194,7 @@ T(M[0][0] === 'القسم' && secs.length === 3, 'محضرُ الاجتماع ث
 T(/باقٍ/.test(secs[0]) && /جديدة/.test(secs[1]) && /اكتمل/.test(secs[2]), 'ما بقي · ما استُجدّ · ما اكتمل منذ الختم');
 T(!secs.some(x => /اكتملت قديمًا/.test(x)) && M.slice(1).every(r => r[1] !== 'اكتملت قديمًا'), 'وما اكتمل قبل الختم لا يُعاد');
 T(/وصل الكابل/.test(M[1][5]), 'ولكلِّ سطرٍ ما قيل فيه منذ الاجتماع الماضي');
-const raw4 = readFileSync('index.html', 'utf8');
+const raw4 = (await appHtml());
 T(/data-wtmeet[\s\S]{0,120}\n?[\s\S]{0,200}expPdf\(\['wtmeet'\]/.test(raw4) || /expPdf\(\['wtmeet'\]/.test(raw4),
   'وزرُّ المحضر يُصدِر المحضرَ وحدَه — بلا لوحةِ زياراتٍ ولا خطةٍ تفصيلية');
 /* الورقةُ الكاملةُ ودورتُها */
@@ -258,7 +259,7 @@ T(!!bar.querySelector('[data-wtfile]') && !!bar.querySelector('[data-wtxl]') && 
     'وشرائحُ الحالة تُحسَب داخلَه لا على الكلّ: ' + w.wtStats().all + ' منها متأخر ' + w.wtStats().late);
   w.WT_TRACK = '';
   T(w.wtFiltered().length === 4, 'ورفعُه يعيد الكلّ');
-  const raw = readFileSync('index.html', 'utf8');
+  const raw = (await appHtml());
   T(/data-wttrack=/.test(raw), 'وللمسارات شرائحُها في الشاشة');
 }
 

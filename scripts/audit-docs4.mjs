@@ -7,9 +7,10 @@
    التكلفة موجودةٌ وتسمّي ما هو موجودٌ فعلًا، وأن الأدلةَ لا تُسرّب قيمةَ سرّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const ver = (/class="ver-tag"[\s\S]{0,240}?>نسخة\s*(V[\d.]+)</.exec(html) || [])[1];
 const vn = v => { const m = /V(\d+)\.(\d+)/.exec(v || ''); return m ? +m[1] * 1000 + +m[2] : 0; };
 const rd = f => existsSync(f) ? readFileSync(f, 'utf8') : '';

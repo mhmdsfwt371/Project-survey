@@ -138,19 +138,7 @@ function usageCard(){
         + top.map(function(p){ return '<tr><td>' + esc(PAGE[p] ? t(PAGE[p].t) : p) + '</td><td class="num">' + nm(tot[p]) + '</td></tr>'; }).join('') + '</tbody></table>'
       : '<p class="hint" style="margin:8px 0 0">' + esc(t('لا تجميعَ بعد — يكتبه ملخّصُ الصباح مرةً في اليوم.')) + '</p>') + unused);
 }
-/* ═══ حارسُ التكلفة (V17.96) ═══
-   الحصةُ المجانيةُ تكفي الموسمَ — لكنَّ حلقةً خاطئةً على جهازٍ واحدٍ تستهلكها في
-   يوم، ولا يُعلَم إلا بالفاتورة. تنبيهُ الميزانية في Google Cloud يُضبَط يدًا
-   مرةً واحدة (الخطواتُ في docs/cost-guard.md) ويؤشّره المديرُ هنا فيختفي من
-   الجاهزية. */
-function costGuardCard(){
-  var on = !!cfgGet('budgetAlert');
-  return card('حارسُ التكلفة', '<div class="wt-row" style="gap:12px;flex-wrap:wrap;align-items:center">'
-    + '<span>' + esc(t('تنبيهُ ميزانية Google Cloud')) + ': ' + (on ? pill(t('مضبوط'), 'ok') : pill(t('غيرُ مضبوط'), 'wrn')) + '</span>'
-    + btn(on ? t('أُلغي الضبط') : '\u2713 ' + t('ضبطتُه — أشِّر'), on ? 'btn-quiet btn-sm' : 'btn-primary btn-sm', ' data-budalert="' + (on ? 0 : 1) + '"')
-    + '<a class="btn btn-quiet btn-sm" href="docs/cost-guard.md" target="_blank" rel="noopener">' + esc(t('خطواتُ الضبط')) + '</a></div>'
-    + '<p class="hint" style="margin:8px 0 0">' + esc(t('الحصةُ المجانية ٥٠ ألف قراءةٍ و٢٠ ألف كتابةٍ في اليوم — والتنبيهُ يبلّغك قبل أن تصل الفاتورة. قراءاتُ اليوم في صحة النظام ← الاستهلاك.')) + '</p>');
-}
+
 /* ═══ بطاقةُ أداء الميدان (V17.98) ═══
    من نبضات الحضور المحمَّلة أصلًا للمكتب: أبطأُ الأجهزة (الطرازُ من وكيل
    المستخدم، لا اسمٌ)، وأبطأُ الصفحات، والمؤشّراتُ الثلاثةُ على عتبات جوجل

@@ -6,6 +6,7 @@
    والمساحات، ودمجُ الجديد بعد إعادة التحميل، وفهرسُ المهامّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -16,7 +17,7 @@ const T = (cond, msg) => { if (cond){ pass++; console.log('  \u2713 ' + msg); } 
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 160)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'),
+const dom = new JSDOM((await appHtml()),
   { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document; const wait = ms => new Promise(r => setTimeout(r, ms));
 w.HTMLCanvasElement.prototype.getContext = () => null;
@@ -168,7 +169,7 @@ console.log('\n══ ٧ · فهرسُ المهامّ: سريعٌ وصادق ═
 
 console.log('\n══ ٨ · لوحُ الرسم والترشيحُ بالمسار ══');
 {
-  const raw = readFileSync('index.html', 'utf8');
+  const raw = (await appHtml());
   T(/\.map-route-box\{[^}]*z-index:2147483001/.test(raw) && raw.indexOf('.map-route-back{') < 0,
     'لوحُ الرسم فوق بطاقات الخريطة كلِّها وبلا خلفيةٍ تحجب الضغط');
   T(/\.map-route-box\.min > \*:not\(\.wt-row\)\{display:none\}/.test(raw), 'ويُطوى بضغطةٍ فيُرى ما تحته');

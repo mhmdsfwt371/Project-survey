@@ -12,9 +12,10 @@
        تكتب في القاعدة قيمةً لا يعرفها أحد. */
 
 import { readFileSync } from 'node:fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { dictSrc } from './lib/dict-src.mjs';
 
-const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const src = (await appHtml());
 const srcD = dictSrc(src);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 */
 const AR = /[\u0600-\u06FF]/;
 let ok = 0, bad = 0;

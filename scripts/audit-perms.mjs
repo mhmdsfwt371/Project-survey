@@ -10,11 +10,12 @@
    بالشكل الذي تقرؤه القاعدة — وnull لإعادة الافتراضي.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readdirSync, readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(html)[1];
 const rulesRaw = readFileSync('firestore.rules', 'utf8');
 const rules = rulesRaw.replace(/\/\/[^\n]*/g, '');

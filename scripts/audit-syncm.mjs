@@ -7,13 +7,14 @@
    المزامنة بالعدد، والضغطُ يدفع الطابورَ ويسحب ويحدّث العددَ بلا إعادة رسم.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 console.log('\n══ ١ · الزرُّ في الرأس ══');
 T(/<button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"/.test(html), 'زرُّ مزامنةٍ في رأس الشاشة يستدعي المزامنةَ نفسَها (data-pull)');
 T(/\.tb-sync-m\{display:none;position:relative\}/.test(html) && /@media\(max-width:560px\)\{ \.tb-sync-m\{display:inline-flex\} \}/.test(html) && /@media\(max-width:560px\)\{ \.topbar-meta\{display:none\}/.test(html), 'ويظهر حيث يختفي شريطُ المزامنة (تحت ٥٦٠ بكسل) — ومخفيٌّ على الحاسوب');
@@ -44,7 +45,7 @@ T(flushes === 2, 'وزرُّ الرأس يفعل الشيءَ نفسَه');
 console.log('\n══ ٤ · التلقائيّ (V19.5) ══');
 /* المزامنةُ التلقائية: كلُّ حفظٍ يُرفَع في لحظته (CORE.dirty → CORE.flush)، والدورةُ كلَّ دقيقةٍ
    تعيد ما فشل، والعودةُ إلى الشبكة ترفع — ويُضاف هنا: ما كُتب أثناء رفعٍ جارٍ، والخلفية، والطيّ */
-const src = readFileSync('index.html', 'utf8');
+const src = (await appHtml());
 const dirtyBody = src.slice(src.indexOf('  dirty: function(kind, id, v){'), src.indexOf('  dirty: function(kind, id, v){') + 4000);
 T(/CORE\.saveSoon\(\);\s*CORE\.flush\(\);/.test(dirtyBody), 'كلُّ حفظٍ يُرفَع في لحظته — لا ينتظر دورة');
 w.STATE.meta.online = true; w.FB.ready = true; await wait(2500);

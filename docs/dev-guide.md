@@ -11,8 +11,8 @@ Nusuk Survey is an **offline-first Progressive Web App** used by field teams in 
 
 | Fact | Value |
 |---|---|
-| Runtime | One HTML file (`index.html`, ~3 MB, ~1 MB gzipped) — HTML + CSS + JavaScript, **no framework, no bundler, no transpiler** |
-| Source | `src/` — 131 files in 11 domain folders, concatenated by full path into `index.html` (shipped without comments) |
+| Runtime | `index.html` (the core: ~2 MB, ~610 KB gzipped) + `app-office.js` (the office, ministry and reports domains, deferred, ~180 KB gzipped) — HTML + CSS + JavaScript, **no framework, no bundler, no transpiler**; both files are precached by the service worker, so the app still works fully offline |
+| Source | `src/` — 158 files in 11 domain folders, concatenated by full path; `00`–`03z`, `05`, `08`, `99` become `index.html`, `04`/`06`/`07` become `app-office.js` (both shipped without comments) |
 | Backend | Firebase Firestore (data) + Firebase Auth (login) + GitHub Actions (scheduled jobs: backups, photo sync, reports) |
 | Hosting | GitHub Pages from branch `main`; staging is branch `staging` |
 | Languages | UI in Arabic (default), English and Urdu through one dictionary (`i18n/dict-*.js`) |
@@ -49,6 +49,9 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
 **Every `.js` file begins with an English header** (`FILE / DOMAIN / PURPOSE / DEFINES / GLOBALS`). Read the header before reading the code. The gate fails if a file has no header.
 
 ## 4. Runtime model — the six things to know
+
+**Core + chunk (V38.39).** The browser runs the inline core first and paints; `app-office.js` is a deferred script that lands a few seconds later and calls `nskChunkReady()`. Until it lands, a request for one of its screens shows a loading card (`nskChunkState().waiting`) and a click whose handler is still missing is remembered and replayed on arrival (`nskClick`). Rules that keep this safe: nothing in `01–03z/05/08` may reference a name defined in `04/06/07` at boot or outside a click handler — `scripts/split-shared.mjs --dry` reports any such name and moves it into `03z-shared/` when run without `--dry`. The audits load the whole app in production order through `appHtml()` (see `scripts/lib/src.mjs`); only the real-browser test and the post-deploy smoke use the shipped files.
+
 
 1. **`STATE`** — one global object holding everything: `STATE.sites` (the registry as site objects), `STATE.recs` (survey visits keyed by site id), `STATE.inss` (installations), `STATE.tasks`, `STATE.queue` (writes waiting for upload), `STATE.meta` (who/where/online), and many more collections mirrored from Firestore.
 2. **`CORE`** — the write engine. `CORE.set(collection, id, value)` is the only way to persist anything: it updates `STATE`, queues the write locally (`STATE.queue`), and uploads when online with backoff. Never write to Firestore directly.
@@ -97,7 +100,7 @@ An audit is a Node script in `scripts/` that loads `index.html` into jsdom and a
 ## 8. Release cycle — never skip a step
 
 ```
-node scripts/build.mjs                      # src/ → index.html
+node scripts/build.mjs                      # src/ → index.html + app-office.js (deferred chunk)
 node scripts/bump.mjs V38.xx --date … --note … --row …   # version in the six places + release notes
 node scripts/code-map.mjs                   # regenerate the code map
 node scripts/fast-run.mjs                   # the fast layer (must be green)

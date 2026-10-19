@@ -5,11 +5,12 @@
    ٣) RELEASE_NOTES في التطبيق — «ما الجديد» لآخر النسخ بلغة المستخدم.
    يُشغَّل: node scripts/user-manual.mjs  (وتشغّله scripts/bump.mjs مع كلِّ نسخة) */
 import { readFileSync, writeFileSync } from 'node:fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
 const JSZip = require('jszip');
 const { Document, Packer, Paragraph, TextRun, HeadingLevel, AlignmentType, PageBreak } = require('docx');
-const html = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const html = (await appHtml());
 const VER = (/>نسخة (V[\d.]+)<\/button>/.exec(html) || [])[1] || (/نسخة (V\d+\.\d+)/.exec(html) || [])[1];
 if (!VER) throw new Error('لا رقمَ نسخةٍ في index.html');
 const arr = name => { const i = html.indexOf('var ' + name + ' = ['); if (i < 0) throw new Error(name + ' غير موجود');

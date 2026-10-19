@@ -108,7 +108,7 @@ function contCard(){
     + (may('perms') ? '<div class="actions" style="margin:8px 0 0">' + (contCard.ed ? btn('\u2713 ' + t('احفظ البدائل'), 'btn-primary btn-sm', ' data-ctsave="1"') : btn('\u270F ' + t('سمِّ البدائل'), 'btn-secondary btn-sm', ' data-cted="1"')) + '</div>' : '')
     + '<p class="hint" style="margin:8px 0 0">' + esc(t('التفاصيل في دليل التسليم §٧ وفي دليل العمليات (دورتا الجسر والربط).')) + '</p>');
 }
-function bkAgeDays(o){ return o && o.at ? Math.floor((Date.now() - new Date(o.at).getTime()) / 86400000) : null; }
+
 function bkCard(){
   bkFetch(false);
   var m = BK_STATE.meta, dv = BK_STATE.drive;

@@ -12,6 +12,7 @@
    بياناتٌ لا واجهة، وترجمتُها تكذب. */
 
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 
@@ -21,7 +22,7 @@ try { ({ JSDOM, VirtualConsole } = require('jsdom')); }
 catch { console.error('✗ jsdom غير مثبَّت:  npm i jsdom'); process.exit(2); }
 
 const AR = /[\u0600-\u06FF]/;
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 
 const vc = new VirtualConsole();
 vc.on('jsdomError', () => {});

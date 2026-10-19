@@ -18,13 +18,14 @@
      · ما تحجبه الواجهةُ عن الوزارة تحجبه القواعد
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 
 let pass = 0; const fails = [];
 const check = (c, n) => { if (c) pass++; else fails.push(n); };
 
 check(existsSync('firestore.rules'), 'ملفُّ القواعد موجود');
 const R = readFileSync('firestore.rules', 'utf8');
-const A = readFileSync('index.html', 'utf8');
+const A = (await appHtml());
 
 /* ── ١ · سلامةٌ بنيويةٌ لا تحتاج محرّكًا ────────────────────────────────── */
 {

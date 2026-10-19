@@ -1,8 +1,9 @@
 /* ═══ فاحصُ النحو — الشيفرةُ المبنيّةُ تُفحَص بقواعدَ قليلةٍ حاسمة (V31.1) ═══
    يُستخرَج النصُّ من index.html إلى index.html.js مؤقتًا ويُفحَص؛ خطأٌ واحدٌ يسقط. */
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { ESLint } from 'eslint';
-const s = readFileSync('index.html', 'utf8'); const js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
+const s = (await appHtml()); const js = s.slice(s.indexOf('<script>') + 8, s.lastIndexOf('</script>'));
 /* (V32.8) في الذاكرة — لا ملفَّ مؤقتًا يتصادم مع جرد الصحة على المسارات المتوازية */
 const eslint = new ESLint({ overrideConfigFile:'eslint.config.mjs' });
 const res = await eslint.lintText(js, { filePath:'index.html.js' });

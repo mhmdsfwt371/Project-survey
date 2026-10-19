@@ -10,11 +10,12 @@
    ويدخل فنيًّا فيرى المُسنَدَ وحده، ومشرفًا فيرى الكلَّ بمفتاح.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(html)[1];
 const rules = readFileSync('firestore.rules', 'utf8').replace(/\/\/[^\n]*/g, '');
 const prov = readFileSync('scripts/provision.mjs', 'utf8');

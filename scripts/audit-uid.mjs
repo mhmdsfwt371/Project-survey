@@ -8,9 +8,10 @@
    يُمسَح هنا كلُّ نداءِ كتابةٍ في التطبيق: set/update/add على مرجعٍ أو دفعة.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
-const s = readFileSync('index.html', 'utf8');
+const s = (await appHtml());
 
 /* كلُّ نداء كتابة: .set( / .update( / .add( بعد collection(...).doc(...) أو على ref أو في دفعة w.set(ref, ... */
 const sites = [];

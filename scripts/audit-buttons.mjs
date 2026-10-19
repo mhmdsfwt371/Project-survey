@@ -10,11 +10,12 @@
    الدورة، فلا يقفز زرٌّ إلى معرِّفٍ حُذف أو أُعيدت تسميتُه.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const dom = new JSDOM(readFileSync('index.html','utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });
@@ -27,7 +28,7 @@ w.FB.legacyDone = () => true; w.pullDelta = () => Promise.resolve(0);
 { const uE = d.getElementById('lgU'), pE = d.getElementById('lgP'); if (uE) uE.value = 'eng.test'; if (pE) pE.value = 'TestPass1234'; }
 const lg = d.getElementById('lgGo'); if (lg) lg.dispatchEvent(new w.MouseEvent('click', { bubbles:true }));
 await new Promise(r => setTimeout(r, 300));
-const src = readFileSync('index.html','utf8');
+const src = (await appHtml());
 /* الخصائصُ المربوطة: من نصِّ معالجَي النقر والتغيير */
 /* V16.58: نقراتُ الجداول فُصلت إلى `clickTables` — تُقرأ معها لا دونها */
 const click = (/function onDocClick\(e\)\{[\s\S]*?\n\}/.exec(src)||[''])[0]

@@ -10,6 +10,7 @@
    الذي لا يُسجَّل يُعاد اختراعُه في كلِّ مرةٍ، ويُخترَع ناقصًا.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync, existsSync, readdirSync, statSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -17,7 +18,7 @@ let JSDOM, VirtualConsole;
 try { ({ JSDOM, VirtualConsole } = require('jsdom')); }
 catch { console.error('✗ jsdom غير مثبَّت:  npm i jsdom'); process.exit(2); }
 
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['', ''])[1];
 const rules = existsSync('firestore.rules') ? readFileSync('firestore.rules', 'utf8') : '';
 /* الجردُ لا يقيس نفسَه: أنماطُ البحث فيه تطابق ما يبحث عنه، فيُنذر بنفسه. */

@@ -9,6 +9,7 @@
      WEEKLY_OUT (افتراضًا /tmp/ministry) — weekly.pptx · weekly.html · brief.txt · weekly.json
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -29,7 +30,7 @@ if (!TEST){
 
 /* ── التطبيقُ في المحاكاة ── */
 class TD { decode(u){ return Buffer.from(Array.from(u)).toString('utf8'); } }
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole(), beforeParse(win){ win.TextEncoder = TextEncoder; win.TextDecoder = TD; } });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole(), beforeParse(win){ win.TextEncoder = TextEncoder; win.TextDecoder = TD; } });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); w.scrollTo = () => {};

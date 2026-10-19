@@ -20,6 +20,7 @@
    فالخاصيةُ غيرُ المسجَّلة زرٌّ يُنقَر فلا يقع شيء، وقد وقع ذلك مرتين.
    ═════════════════════════════════════════════════════════════════════════ */
 import { execSync, execFile } from 'child_process';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import os from 'os';
 import { readFileSync, writeFileSync, copyFileSync, mkdtempSync, rmSync, readdirSync, existsSync } from 'fs';
 import { tmpdir } from 'os';
@@ -28,7 +29,7 @@ import { join } from 'path';
 let pass = 0; const fails = [];
 const check = (c, n) => { if (c) pass++; else fails.push(n); };
 
-const src = readFileSync('index.html', 'utf8');
+const src = (await appHtml());
 const wf  = readFileSync('.github/workflows/docs-check.yml', 'utf8');
 
 /* ══ ١ · لا جردَ يحرس ما لا يُدفَع ═══════════════════════════════════════ */

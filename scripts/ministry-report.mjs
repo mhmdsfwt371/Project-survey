@@ -12,6 +12,7 @@
                        ويُكتَب في اللقطة sha256(الرمز) لا الرمزُ نفسُه.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync, writeFileSync, mkdirSync } from 'fs';
 import { createHash, pbkdf2Sync, randomBytes, createCipheriv } from 'crypto';
 import { createRequire } from 'module';
@@ -39,7 +40,7 @@ async function loadData(){
 const data = await loadData();
 
 /* ── التطبيقُ نفسُه في متصفّحٍ صوري ────────────────────────────────────── */
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const vc = new VirtualConsole();
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;

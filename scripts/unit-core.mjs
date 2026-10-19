@@ -2,13 +2,14 @@
    تطبيقٌ واحدٌ يُحمَّل مرةً في متصفّحٍ صوري، ثم عشراتُ التأكيدات على الدوالِّ الصِّرفة: التصنيفُ، والإحصاءُ، والصلاحياتُ،
    وقواعدُ التنبيه، والخطةُ، وجودةُ الصور، والبحثُ، والمزامنةُ. لا شبكةَ ولا قاعدة. node --test scripts/unit-core.mjs */
 import './lib/jsdom-dict.cjs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { test, after } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window;
 await new Promise(r => setTimeout(r, 900));
 w.loadSites(); w.STATE.meta.role = 'engineer'; w.ROLE = 'engineer';

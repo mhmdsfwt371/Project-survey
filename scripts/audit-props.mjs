@@ -1,8 +1,9 @@
 /* ═══ جردُ مقترحات الوزارة (V37.69) — قرارُ المالك «مقترحة أفضل»: ما تضيفه الوزارةُ لا يدخل السجلَّ ولا العدَّ ولا التقريرَ حتى يعتمده المهندس، ويدخلها كلَّها فورَ الاعتماد ═══ */
 import './lib/jsdom-dict.cjs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs'; import { createRequire } from 'module';
 const require = createRequire(import.meta.url); const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8'); const vc = new VirtualConsole();
+const html = (await appHtml()); const vc = new VirtualConsole();
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document; w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 { const nodeUtil = require('util'); if (!w.TextEncoder) w.TextEncoder = nodeUtil.TextEncoder; if (!w.TextDecoder) w.TextDecoder = nodeUtil.TextDecoder; if (!w.fetch) w.fetch = () => Promise.reject(new Error('no network in audit'));

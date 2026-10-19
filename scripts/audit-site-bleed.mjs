@@ -12,6 +12,7 @@
      ٤ · وتبديلُ النقطة قبل الحفظ يمسح ما لم يُحفَظ — لا يورّثه.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -23,7 +24,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -91,7 +92,7 @@ w.photoQueue(A.id, 'site', 'data:image/jpeg;base64,DDD');
 T(w.photoNext(B.id) === 2, 'وصورةٌ في نقطةٍ لا تزيد رقمَ الأخرى');
 
 /* ═══ ٥ · القاعدةُ في الشيفرة: لا تبديلَ نقطةٍ بلا مسحٍ ═══ */
-const raw = readFileSync('index.html', 'utf8');
+const raw = (await appHtml());
 const js = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw)[1];
 T((js.match(/FORM\.site = (?!id;)/g) || []).length === 0,
   'ولا موضعَ يكتب نقطةَ النموذج مباشرةً — كلُّها تمرُّ بـformGo');

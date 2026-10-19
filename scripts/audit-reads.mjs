@@ -15,11 +15,12 @@
          يكلّف في شاشة المزامنة قبل أن يُرى في الفاتورة.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 let bad = 0;
 const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
   if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = /<script[^>]*>([\s\S]*?)<\/script>/.exec(html)[1];
 
 /* ١ · قراءةُ المجموعات */

@@ -238,6 +238,19 @@ function onDocClickPart9(e){
   return CLICK_NEXT;
 }
 
-document.addEventListener('click', onDocClick);
+/* (V38.39) core + chunks: a click whose handler lives in app-office.js before it arrived throws ReferenceError;
+   the click is remembered and replayed on the same element the moment the chunk lands — the user sees a toast, not an error */
+function nskClick(e){
+  try { return onDocClick(e); }
+  catch (err){
+    if (!nskChunkState().ready && err && err.name === 'ReferenceError'){
+      nskChunkState().replay = e.target && e.target.closest ? e.target.closest('button, a, [data-page], [data-tab], [data-site], [data-go]') || e.target : e.target;
+      toast('\u23F3 ' + t('يُحمَّل باقي التطبيق — ستُفتَح وحدَها'));
+      return;
+    }
+    throw err;
+  }
+}
+document.addEventListener('click', nskClick);
 
 /* الحقلُ في خليةٍ وسمُه عنوانُ عموده وصفُّه — يُنسَب إليهما فيقرؤه القارئُ الصوتي */

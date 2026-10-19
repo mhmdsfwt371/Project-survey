@@ -8,6 +8,7 @@
    على وثيقة الزيارة نفسِها (فيُزامَن ويُنسَخ بقواعده كما هي).
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -20,7 +21,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -156,7 +157,7 @@ w.ROLE = 'admin'; w.render(1); await wait(120);
 T(!!d.querySelector('#pkPop a[href*="drive.google.com/drive/folders/F1"]'), 'ومجلدُ النقطة يُفتَح لمدير المشروع فما فوق');
 w.ROLE = 'engineer';
 {
-  const raw2 = readFileSync('index.html', 'utf8');
+  const raw2 = (await appHtml());
   T(/fillOpacity: picked \? 1 : 0\.95/.test(raw2) && /color: picked \? '#fff' : \(ring \|\| '#0B1220'\)/.test(raw2),
     'والنقاطُ مصمتةٌ بحافّةٍ داكنةٍ — فلا تذوب المتجاوراتُ في كتلةٍ واحدة');
   /* المخيمُ بحدوده في كلِّ تقريبٍ عمليّ — حدٌّ واحدٌ يقرؤه الرسمُ والتحميل (V16.94) */
@@ -170,7 +171,7 @@ w.ROLE = 'engineer';
 
 /* ═══ العلامةُ البيضاء: «أفاقي» لا «نُسُك» (V16.92) ═══ */
 {
-  const raw = readFileSync('index.html', 'utf8');
+  const raw = (await appHtml());
   T(!/نُسُك/.test(raw), 'لا أثرَ لاسمٍ سابقٍ في الواجهة' + (/نُسُك/.test(raw) ? ' — ' + (raw.match(/نُسُك/g) || []).length : ''));
   T(d.title === 'قارئات أفاقي — حج ١٤٤٨هـ' && w.MANIFEST.name === 'قارئات أفاقي', 'الاسمُ «قارئات أفاقي» في العنوان والبيان');
   /* شارةُ النسخة هي المرجع — لا أوّلُ ظهورٍ لنصِّ نسخةٍ في الملف (تعليقٌ قد يسبقها) */
@@ -210,7 +211,7 @@ w.ROLE = 'engineer';
   T(L.filter(x => x.kind === 'photo').every(x => x.who), 'ولكلِّ صورةٍ رافعُها');
   T(L.every((x, i) => i === 0 || L[i - 1].at >= x.at), 'ومرتَّبٌ من الأحدث إلى الأقدم');
   T(!L.some(x => /نقطةٍ أخرى/.test(x.what)), 'ولا يتسرّب إليه حدثُ نقطةٍ أخرى');
-  const raw5 = readFileSync('index.html', 'utf8');
+  const raw5 = (await appHtml());
   T((raw5.match(/logEvent\([^;]*?,\s*(?:id|site|x\.id|s\.id|r\.id|it\.site|b\.site)\s*\)/g) || []).length >= 40,
     'وأحداثُ النقاط تُوسَم بنقطتها فتُستعلَم من القاعدة لا بالبحث في النصّ');
   T(/(?:collection|DB\.col)\('events'\)\.where\('site', '==', id\)\.limit\(200\)/.test(raw5),
@@ -263,7 +264,7 @@ w.ROLE = 'engineer';
 
 /* ═══ V17.33: الاعتمادُ من كلِّ نافذةٍ يفتح على نقطته، والصورُ التي لم تصل تُقال ═══ */
 {
-  const raw6 = readFileSync('index.html', 'utf8');
+  const raw6 = (await appHtml());
   const js6 = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw6)[1];
   const gotos = js6.match(/data-goto="(?:svappr|minappr)"/g) || [];
   const withSite = js6.match(/data-goto="(?:svappr|minappr)" data-gotosite=/g) || [];

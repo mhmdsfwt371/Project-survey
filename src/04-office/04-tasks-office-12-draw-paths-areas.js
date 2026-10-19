@@ -58,20 +58,10 @@ function routeUndo(){
   if (ROUTE.gen){ routeRegen(); return; }   /* التراجعُ بعد التحريك يرجع إلى المسافة أوّلًا */
   ROUTE.pts.pop(); if (typeof mapPaint === 'function') mapPaint(); render(1);
 }
-function routeCancel(){ ROUTE.on = false; ROUTE.pts = []; ROUTE.gen = null; ROUTE.moved = 0; drawFlag(); if (typeof mapPaint === 'function') mapPaint(); render(1); }
 
 function routeRegen(){
   ROUTE.gen = null; ROUTE.moved = 0;
   render(1);
-}
-
-/* الكتابةُ في حقول اللوح لا تُعيد بناءَه: كان كلُّ رقمٍ يُعيد رسمَ اللوح والخريطة
-   معًا — ثقيلٌ، وعلى الهاتف قد تُغلَق لوحةُ المفاتيح بعد أوّل رقم. فيُحدَّث العددُ
-   والخريطةُ في مكانهما، ويُعاد اللوحُ عند الخروج من الحقل (V17.58). */
-function routeLive(){
-  var el = document.getElementById('rtN');
-  if (el) el.textContent = nm(routeCount());
-  if (typeof mapPaintDebounced === 'function') mapPaintDebounced();
 }
 
 /* ═══ المساحةُ مخيمٌ بحدوده (V17.59) ═══
@@ -178,17 +168,6 @@ function routeSave(){
   if (typeof mapPaint === 'function') mapPaint();
 }
 
-/* ═══ لكلِّ وضعٍ مخرجٌ ظاهر (V17.53) ═══
-   «نقطة هنا» يُسلِّح الضغطةَ التالية، وأزرارُ الخريطة العائمةُ تختفي أثناءه
-   (V17.48) كي لا تحجب موضعَ الضغط — فلم يبقَ زرٌّ يُلغيه، ومن بدأه بالخطأ
-   لا يجد منه مخرجًا إلا أن يضع نقطةً لا يريدها. فصار له شريطٌ ظاهرٌ يقول ما
-   ينتظره ومعه «إلغاء»، ومفتاحُ الهروب يُلغيه، وضغطةُ الزرِّ نفسِه تُطفئه. */
-function pinCancel(){
-  if (!PIN_ON) return;
-  PIN_ON = false; drawFlag();
-  toast(t('أُلغي وضعُ النقطة'));
-  render(1);
-}
 function pinStart(){
   if (PIN_ON){ pinCancel(); return; }
   if (!may('settings') && ROLE !== 'viewer'){ toast(t('إضافةُ النقاط للمكتب')); return; }

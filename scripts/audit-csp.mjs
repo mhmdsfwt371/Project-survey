@@ -7,12 +7,13 @@
    له؟ فلا يُضاف مصدرٌ غدًا ويسقط صامتًا، ولا تُفتَح السياسةُ على مصراعيها.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); }
   else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const sw   = readFileSync('sw.js', 'utf8');
 
 /* ── ١ · الوسمُ قائمٌ ومقروء ───────────────────────────────────────────── */

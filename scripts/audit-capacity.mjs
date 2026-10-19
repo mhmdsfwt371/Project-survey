@@ -14,12 +14,13 @@
    ويمنع كلَّ نمطٍ يفسد عند التوازي.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { regMust } from './lib/registry.mjs';
 
 let pass = 0; const fails = [];
 const check = (c, n) => { if (c) pass++; else fails.push(n); };
 
-const src = readFileSync('index.html', 'utf8');
+const src = (await appHtml());
 const num = (re, dflt) => { const m = re.exec(src); return m ? +m[1] : dflt; };
 
 /* ── حدودُ الخطة المجانية ─────────────────────────────────────────────── */

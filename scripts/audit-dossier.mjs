@@ -8,6 +8,7 @@
    يُركَّب وكيف وأين، وروابطَ ملفاته — ويُحفَظ في صفِّ البند نفسِه.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -19,7 +20,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -108,7 +109,7 @@ w.ROLE = 'admin';
   T(!!main2.querySelector('.table-wrap.sticky-1'), 'ويُمرَّر أفقيًّا بعمودِ بندٍ ثابت');
   /* ═══ عرضٌ يتبع الشاشةَ لا رقمًا ثابتًا (V17.16) ═══ */
   {
-    const css = readFileSync('index.html', 'utf8');
+    const css = (await appHtml());
     T(!/\.table-wrap\.sticky-1 table\{min-width/.test(css), 'ولا عرضَ أدنى مفروضًا يُجبر التمريرَ على الشاشات الكبيرة');
     T(!/\.table-wrap\.sticky-1\{max-height/.test(css), 'ولا صندوقَ داخليًّا بشريطٍ رأسيٍّ ثانٍ');
     T(/\.content\.wide\{max-width:none\}/.test(css), 'وصفحاتُ الجداول العريضة تُطلَق من حدِّ العرض');
@@ -124,7 +125,7 @@ w.ROLE = 'admin';
     w.WBS_EDIT = '9.1'; w.render(1); await wait(200);
     T(d.querySelectorAll('[data-wbspct]').length === 1, 'ويُفتَح بزرِّ التعديل وحدَه');
     w.WBS_EDIT = '';
-    const css2 = readFileSync('index.html', 'utf8');
+    const css2 = (await appHtml());
     T(/addEventListener\('wheel'[\s\S]{0,200}el\.type === 'number'[\s\S]{0,60}blur\(\)/.test(css2),
       'وعجلةُ الفأرة لا تكتب رقمًا في حقلٍ تحتها');
   }

@@ -8,6 +8,7 @@
    وجسرُ المستودع يبني عنوانًا ونصًّا من الوثيقة نفسِها ويكتب رقمَه فيها.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -20,7 +21,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -120,7 +121,7 @@ T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + 
   T(/if \(b\.status !== 'مقبول'\) continue;/.test(sync), 'والجسرُ لا يفتح إلا ما قُبل');
   T(!/labels: \['بلاغ'/.test(sync), 'ولا وسمَ ولا بلاغَ عامًّا (V17.94)');
   T(/ينتظر قرارَ المدير/.test(sync), 'ويقول كم ينتظر قرارَ المدير');
-  const raw7 = readFileSync('index.html', 'utf8');
+  const raw7 = (await appHtml());
   T(/function bugDecide\(id, ok, why\)/.test(raw7) && /b\.decBy = STATE\.meta\.name/.test(raw7),
     'والقرارُ يُختَم باسم صاحبه ووقته');
   T(/data-bugok=/.test(raw7) && /data-bugno=/.test(raw7) && /data-bugf=/.test(raw7),
@@ -130,7 +131,7 @@ T(errs.length === 0, 'بلا أخطاءِ متصفّح' + (errs.length ? ': ' + 
 
 /* ═══ الإغلاقُ من التطبيق يصل المستودعَ (V17.56) ═══ */
 {
-  const raw = readFileSync('index.html', 'utf8'), sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
+  const raw = (await appHtml()), sync = readFileSync('scripts/bugs-sync.mjs', 'utf8');
   T(/function bugClose\(id\)/.test(raw) && /b\.closeAsk = true/.test(raw) && /data-bugdone=/.test(raw),
     'المديرُ يُغلق البلاغَ المنجَز من الشاشة');
   T(/if \(!b\.closeAsk\) continue;/.test(sync) && /closeAsk: false/.test(sync),

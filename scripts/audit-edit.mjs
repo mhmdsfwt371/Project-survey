@@ -2,10 +2,11 @@
    لكلِّ قائمةٍ في GED_REG: يُزرَع عنصرٌ، ويُرسَم زرُّ حذفه، فيجب أن يظهر «✎ تعديل» بجواره، وأن تفتح النافذةُ بقيمه، وأن يغيّر الحفظُ
    الحقلَ الأوّلَ فعلًا ويُسجَّل في الأحداث. ولا تُضاف قائمةٌ إلى السجلّ إلا مرّت من هنا. */
 import './lib/jsdom-dict.cjs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs'; import { createRequire } from 'module';
 const require = createRequire(import.meta.url); const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = []; const T = (c, n) => { if (c){ pass++; console.log('  ✓ ' + n); } else { fails.push(n); console.log('  ✗ ' + n); } };
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window, d = w.document; w.HTMLCanvasElement.prototype.getContext = () => null; w.scrollTo = () => {};
 await new Promise(r => setTimeout(r, 800));
 w.loadSites(); w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.STATE.meta.name = 'مدير'; w.CORE.set = () => {}; w.CORE.dirty = () => {}; w.toast = () => {};

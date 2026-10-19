@@ -14,6 +14,7 @@
      · وقواعدُ القاعدة تحجب ما تحجبه الواجهة
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -39,7 +40,7 @@ const GATED = {
 /* رقمُ جوّالٍ سعوديٍّ في أيِّ صورة */
 const PHONE = /(?:\+?9665|05)\d{8}\b/;
 
-const html = readFileSync('index.html','utf8');
+const html = (await appHtml());
 const vc = new VirtualConsole(); const boot = [];
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) boot.push(String(e.message)); });
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true,

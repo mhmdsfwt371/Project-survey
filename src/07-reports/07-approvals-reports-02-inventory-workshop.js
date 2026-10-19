@@ -136,12 +136,6 @@ function workReqCancel(id){
   render(1);
 }
 
-function itemRename(code, name){
-  var x = itemsList().filter(function(i){ return i.code === code; })[0];
-  if (!x) return;
-  x.name = String(name || '').trim() || x.name;
-  itemSave();
-}
 function itemZone(code){
   if (!may('settings')){ toast(t('الكتالوجُ للمهندس وحده')); return; }
   var x = itemsList().filter(function(i){ return i.code === code; })[0];

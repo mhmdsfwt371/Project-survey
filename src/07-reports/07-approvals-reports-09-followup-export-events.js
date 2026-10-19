@@ -52,7 +52,7 @@ var FUP_ROWS = [
   [154,'*','*','esc']      /* التصعيدُ عند التذبذب المتكرر */
 ];
 
-var FUP_MEMO = null;   /* (V26.1) يُصفَّر مع كلِّ رسمة */
+   /* (V26.1) يُصفَّر مع كلِّ رسمة */
 function fupPct(zone, type, stage, work){
   var mk = zone + '|' + type + '|' + stage + '|' + (work || '');
   if (FUP_MEMO && mk in FUP_MEMO) return FUP_MEMO[mk];

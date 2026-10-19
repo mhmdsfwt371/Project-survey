@@ -10,6 +10,7 @@
    فالتعريفُ وحده لا يثبت أن الشاشة تعمل.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 
@@ -24,7 +25,7 @@ catch {
 let pass = 0; const fails = [];
 const check = (cond, name) => { if (cond) pass++; else fails.push(name); };
 
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 
 /* ── فحوصُ المصدر: لا تحتاج تشغيلًا ─────────────────────────────────────── */
 {

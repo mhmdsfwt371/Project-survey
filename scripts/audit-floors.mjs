@@ -7,12 +7,13 @@ import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص 
    بلا عناوين شبكةٍ ولا كلماتِ مرور — والمعرّفاتُ القائمةُ وزياراتُها لا تُمَسّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window, d = w.document; const wait = ms => new Promise(r => setTimeout(r, ms));
 w.HTMLCanvasElement.prototype.getContext = () => null; w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); w.scrollTo = () => {};

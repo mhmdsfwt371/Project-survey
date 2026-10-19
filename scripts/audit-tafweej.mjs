@@ -7,6 +7,7 @@ import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص 
    ونافذةُ المخيم تقول دورَه، والمخارجُ على بداية خطِّ العودة لا حول المداخل.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
@@ -16,7 +17,7 @@ const D = JSON.parse(readFileSync('layers/tafweej.json', 'utf8'));
 T(D.floors.length === 5 && D.bounds.length === 2 && [0,1,2,3,4].every(f => existsSync('layers/tafweej-' + f + '.png')), 'الطبقةُ: خمسةُ أدوارٍ بصورها وحدودُها');
 T(Object.keys(D.assign).length > 300 && D.floors.every(f => f.len > 0 && f.width === 13), 'ولكلِّ مخيمٍ مطابَقٍ دورُه، ولكلِّ دورٍ بياناتُ الوزارة');
 T(readFileSync('sw.js', 'utf8').includes("'/layers/'"), 'وعاملُ الخدمة يخزّنها عند أوّل تحميل');
-const html = readFileSync('index.html', 'utf8'); const wait = ms => new Promise(r => setTimeout(r, ms));
+const html = (await appHtml()); const wait = ms => new Promise(r => setTimeout(r, ms));
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null; w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} }); w.scrollTo = () => {};
@@ -52,7 +53,7 @@ T(rr && rr.go.pts[0][0] === s0.lat && rr.back.pts[rr.back.pts.length - 1][1] ===
 w.popOpenAt(cid, null); await wait(60);
 T(!!d.querySelector('#pkPop [data-tfwcamp]'), 'وفي نافذة المخيم زرُّ «اعرض مسار المخيم»');
 console.log('\n══ المساراتُ مبنيةٌ من مخيمات الوزارة إلى مداخل دورها بلا لفات (V25.6) ══');
-{ const RT = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8')), PL = JSON.parse(readFileSync('layers/tafweej-plan.json', 'utf8')), rawH = readFileSync('index.html', 'utf8');
+{ const RT = JSON.parse(readFileSync('layers/tafweej-routes.json', 'utf8')), PL = JSON.parse(readFileSync('layers/tafweej-plan.json', 'utf8')), rawH = (await appHtml());
   T(RT.v >= 3 && /أقصرُ طريقٍ/.test(RT.note) && existsSync('scripts/tafweej-routes-build.mjs') && PL.v === 2, 'ملفُ المسارات من المولّد (والأرضيُّ من خطِّ المخطّط بقرار المالك — V27.9)، وخطوطُ المخطّط محفوظةٌ دليلًا');
   T(/plan-v2/.test(String(RT.floors['0'].src || '')) && RT.floors['0'].go.length > 30, 'الأرضيُّ: الذهابُ خطُّ مخطّط الوزارة المطابَقُ على الشوارع ومعه ما لاصقه من الأحمر (V27.9)');
   T(/streets-only/.test(String(RT.floors['0'].src || '')) && existsSync('layers/mina-streets.json'), 'والأرضيُّ على الشوارع وحدَها بشبكة mina-streets.json (V28.0) — شبكةُ الرسم بيد المهندس');

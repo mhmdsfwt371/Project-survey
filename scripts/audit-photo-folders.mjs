@@ -12,6 +12,7 @@
      ٤ · وما لا اسمَ له يبقى بمعرِّفه ولا يصير مجلدًا بلا عنوان.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { tmpdir } from 'os';
 import { join } from 'path';
 
@@ -35,7 +36,7 @@ let M;
 try { M = (await import('file://' + tmp)).SITE_LABEL; } finally { try { unlinkSync(tmp); } catch {} }
 
 /* ١ · السجلُّ يُقرأ كلُّه — يُقارَن بعددِ صفوفه في index.html */
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const rows = (html.match(/"NSK-[A-Z]{3}-[A-Z]{3}-\d{4}"/g) || []);
 const uniq = new Set(rows.map(s => s.slice(1, -1)));
 T(M.size > 1000 && M.size === uniq.size,

@@ -53,6 +53,11 @@ if (live !== want){ console.log('\nفحصُ ما بعد النشر فشل ✗ �
 const html = await get(base + 'index.html?t=' + Date.now());
 T(html.indexOf('نسخة V' + want.slice(1)) > -1, 'index.html الحيُّ يحمل النسخةَ نفسَها في رأسه');
 T(html.length > 500000, 'الملفُّ كاملٌ لا مقطوع (' + Math.round(html.length / 1024) + ' ك.ب)');
+/* (V38.39) core + chunks: the deferred part must be live too, at the version the page asks for */
+const chunkRef = (html.match(/<script defer src="(app-office\.js\?v=[^"]+)"/) || [])[1] || '';
+T(!!chunkRef && chunkRef.indexOf('v=' + want.slice(1)) > -1, 'index.html يطلب app-office.js بالنسخة نفسِها (' + (chunkRef || '—') + ')');
+const chunk = chunkRef ? await get(base + chunkRef + '&t=' + Date.now()) : '';
+T(chunk.length > 200000 && chunk.indexOf('nskChunkReady') > -1, 'app-office.js الحيُّ كاملٌ وينهي بإعلان الجاهزية (' + Math.round(chunk.length / 1024) + ' ك.ب)');
 
 /* ٢ · الملفُّ الحيُّ يُقلع ويدخل ويرسم كلَّ شاشة */
 console.log('\n══ ٢ · الإقلاعُ من الملف الحيّ ══');
@@ -61,6 +66,8 @@ const errs = []; const vc = new VirtualConsole();
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) errs.push(String(e.message).slice(0, 120)); });
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:base, virtualConsole:vc });
 const w = dom.window, d = w.document;
+/* (V38.39) jsdom does not fetch the deferred chunk — inject the live one as the browser would */
+if (chunk){ const sc = d.createElement('script'); sc.textContent = chunk; d.body.appendChild(sc); }
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });

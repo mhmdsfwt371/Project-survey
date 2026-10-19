@@ -10,6 +10,7 @@
    الرسم** — يُعرَف بعينه لا بوقته؛ وأن نقرةً أخرى بعدها تُغلقها كما يجب.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -22,7 +23,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms));
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 140)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;
 if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
@@ -36,7 +37,7 @@ d.getElementById('lgGo').dispatchEvent(new w.MouseEvent('click', { bubbles:true 
 await wait(1500);
 
 T(typeof w.popOpenAt === 'function', 'فتحُ النافذة في موضعٍ واحدٍ (popOpenAt) — للخريطة المسطّحة والثلاثيّ');
-const src = readFileSync('index.html', 'utf8');
+const src = (await appHtml());
 T(/POP_EV && POP_EV === e/.test(src), 'ومعالجُ المستند يقارن الحدثَ بعينه');
 
 w.STATE.sites = [{ id:'C1', name:'مخيمُ فحص', zone:'منى', type:'مخيم', lat:21.41, lng:39.89 }];

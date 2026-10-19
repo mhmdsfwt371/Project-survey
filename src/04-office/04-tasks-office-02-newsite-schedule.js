@@ -7,9 +7,7 @@
    NOTE    : Build order is the full path (see scripts/build.mjs). Inline Arabic comments are the original
              decision log by version (owner decisions); new comments are written in English.
    ============================================================================ */
-/* ═══ موقعٌ غير مسجّل — يُضاف من الميدان ═══
-   ما لم يكن في القاعدة يُسجَّل بموضعه الحقيقي، ويُوسَم جديدًا حتى يعتمده المهندس. */
-var WA_CO = '', WA_KIND = 'plan';
+
 var WR_EDIT = '';      /* (V29.7) الاسمُ والمركزُ والتحديات */
 
 /* صيغةُ الشاخص: اسم الخيمة/رقم الشارع — 57/2 و12أ/8 كلاهما صحيح */

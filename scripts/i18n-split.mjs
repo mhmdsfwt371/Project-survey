@@ -7,8 +7,9 @@
    يُعاد تشغيلُه بأمان: إن كان الفصلُ قائمًا يجدّد الملفَ والاسمَ فقط.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, existsSync, readdirSync, unlinkSync, mkdirSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createHash } from 'crypto';
-let s = readFileSync('index.html', 'utf8');
+let s = (await appHtml());
 const startD = s.indexOf('var D = {');
 if (startD < 0) throw new Error('لا قاموسَ في index.html');
 /* القاموسان غيرُ متجاورين: D ثم كودٌ ثم D2 ودالةُ الدمج — يُقصّان كتلتين */

@@ -7,6 +7,7 @@
    الجواب: الأعدادُ تُطابَق، والسكوتُ يُختبَر كما يُختبَر الكلام.
    ═════════════════════════════════════════════════════════════════════════ */
 import { execFileSync } from 'child_process';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { writeFileSync, readFileSync, unlinkSync } from 'fs';
 
 let pass = 0; const fails = [];
@@ -111,7 +112,7 @@ console.log('\n══ ٤ · السيرُ يربط النبضَ بالبريد ب
   T(/match \/settings\/sysreport \{ allow read: if mgr\(\) \|\| \(ok\(\) && role\(\) == 'exec'\); allow write: if false; \}/.test(rl)
     && /id != 'contacts' && id != 'cotel' && id != 'sysreport'( && id != '\w+')*;/.test(rl) && /pm\('settings', 'w', mgr\(\)\) && id != 'sysreport'/.test(rl),
     'والقاعدةُ تفتحه للمكتب والإدارة العليا وحدهما — ومستثنًى من كتلة الإعدادات العامة (الكتلُ تُجمَع بأو)');
-  const app = readFileSync('index.html', 'utf8');
+  const app = (await appHtml());
   T(/function sysReportCard\(\)/.test(app) && /localStoreCard\(\) \+ sysReportCard\(\)/.test(app), 'والتطبيقُ يعرضه في صحة النظام');
 }
 

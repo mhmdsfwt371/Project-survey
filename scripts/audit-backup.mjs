@@ -8,6 +8,7 @@
    ينقص. وحين تُضبَط الأسرارُ تخضرُّ البطاقةُ ويختفي المؤشر.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { execFileSync } from 'child_process';
 /* ═══ الحارسُ الأول: ما يقرؤه التطبيقُ لا بدّ أن يصل المستودعَ ═══
@@ -16,7 +17,7 @@ import { execFileSync } from 'child_process';
    خانةُ الدرايف في «صحة النظام» تقول «يُقرأ…» شهرًا، ولم يعلم أحدٌ أن
    الرفعَ متوقف. القائمةُ تُشتقُّ من الشيفرة نفسِها لا تُكتَب هنا. */
 {
-  const src = readFileSync('index.html', 'utf8');
+  const src = (await appHtml());
   const m = src.match(/\[([^\]]+)\]\.forEach\(function\(f\)\s*\{\s*fetch\(BK_RAW/);
   const list = m ? (m[1].match(/'[^']+'/g) || []).map(s => s.slice(1, -1)) : [];
   let g = 0;
@@ -60,7 +61,7 @@ import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const dom = new JSDOM(readFileSync('index.html','utf8'), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
+const dom = new JSDOM((await appHtml()), { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null; if (!w.CSS) w.CSS = {}; if (!w.CSS.escape) w.CSS.escape = s => String(s);
 if (!w.matchMedia) w.matchMedia = () => ({ matches:false, addListener(){}, removeListener(){}, addEventListener(){}, removeEventListener(){} });

@@ -12,8 +12,9 @@
    ٥ — الطابورُ والحالةُ يُحفَظان قبل أيِّ عمليةٍ قد تفشل. */
 
 import { readFileSync } from 'node:fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 
-const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const src = (await appHtml());
 const js = (/<script\b[^>]*>([\s\S]*?)<\/script>/.exec(src) || ['', ''])[1];
 let ok = 0, bad = 0;
 const fail = [];

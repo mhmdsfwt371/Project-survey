@@ -1,5 +1,6 @@
 // حارس التوثيق: يفشل إن تخلّف أي ملف عن نسخة التطبيق، أو اختلّ توازن أقسام اللوحة
 import { readFileSync, writeFileSync as writeFileSync2 } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) text checks see the whole app — index.html is the core only */
 import { dictSrc } from './lib/dict-src.mjs';
 import { execSync } from 'child_process';
 import { sealHash } from './seal.mjs';
@@ -77,7 +78,7 @@ if (want) {
    فبندٌ يشير إلى صفحةٍ غيرِ موجودةٍ لا ينفجر — يفتح «نظرة عامة» بهدوء، ولا
    يشكو أحد. وصفحةٌ لا يصلها بندٌ عملٌ مكتوبٌ لا يراه أحد. */
 try {
-  const s = readFileSync('index.html', 'utf8');
+  const s = (await appHtml());
   const a = s.indexOf('var NAV = ['), b = s.indexOf('\n];', a);
   const nav = s.slice(a, b);
   const solo = [...nav.matchAll(/id:'([A-Za-z0-9_]+)'/g)].map(m => m[1]);
@@ -107,7 +108,7 @@ try {
 
 /* ٣ — «ما هذه الصفحة؟»: لكلِّ صفحةٍ جوابٌ مكتوبٌ أو مولَّد */
 try {
-  const s = readFileSync('index.html', 'utf8');
+  const s = (await appHtml());
   const h = s.indexOf('var HELP = {');
   const hend = s.indexOf('\nfunction ', h);
   const hk = [...s.slice(h, hend).matchAll(/^\s{2}([A-Za-z0-9_]+):\s*\{/gm)].map(m => m[1]);
@@ -125,7 +126,7 @@ try {
    مصغّرة في سطر عملاق + كود التطبيق في أسطر عادية.
    والعزل يخصّ type=module وحدها — كتل classic تتشارك النطاق العام. */
 {
-  const src = readFileSync('index.html', 'utf8');
+  const src = (await appHtml());
   const re = /<script\b([^>]*)>([\s\S]*?)<\/script>/g;
   const blocks = []; let m;
   while ((m = re.exec(src))) blocks.push({ a: m.index, b: re.lastIndex, mod: /module/.test(m[1]) });
@@ -207,7 +208,7 @@ try {
 /* الطباعة والخروج في آخر الملف — كانا هنا فبقيت الفحوص الثلاثة التالية بلا أثر */
 /* سلسلة نصية مكسورة بسطر جديد: h+='<div> ثم سطر جديد ثم بقية النص — أشهر سبب لـInvalid token */
 try {
-  const html2 = readFileSync('index.html','utf8');
+  const html2 = (await appHtml());
   const lines = html2.split('\n');
   lines.forEach((ln, ix) => {
     const m = ln.match(/h\s*\+?=\s*'[^']*$/);
@@ -220,7 +221,7 @@ try {
 
 /* دوال محبوسة في نطاق مغلق: تعريفها داخل IIFE واستدعاؤها خارجه ⇒ ReferenceError وقت التشغيل */
 try {
-  const html = readFileSync('index.html','utf8');
+  const html = (await appHtml());
   const CLOSED = ['esc3','esc2b','mnRow'];
   CLOSED.forEach(fn => {
     const defAt = html.indexOf('function ' + fn + '(');
@@ -258,7 +259,7 @@ try {
    وعشرون. فمن قرأ نصفَ المصدر قاسَ نصفَ الحقيقة.
    والحارسُ سقّاطةٌ لا سدّ: يسجّل الفجوةَ في docs/i18n-baseline.json ويفشل إن كبرت. */
 try {
-  const src = readFileSync('index.html', 'utf8'), srcD = dictSrc(src);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 — والنداءاتُ في الملف الرئيسي */
+  const src = (await appHtml()), srcD = dictSrc(src);   /* القواميسُ في ملفها المستقلِّ منذ V21.6 — والنداءاتُ في الملف الرئيسي */
   const AR  = /[\u0600-\u06FF]/;
   const KEYS = /'((?:[^'\\]|\\.)*)'\s*:\s*'/g;
 
@@ -311,7 +312,7 @@ try {
    فعلًا مرتين: زرُّ الإخراج من المرحلة فتح حذفَ القطعة، وزرُّ حذف الفريق
    دهس حذفَ جهة الاتصال. */
 try {
-  const src = readFileSync('index.html', 'utf8');
+  const src = (await appHtml());
   const handlers = new Set();
   for (const m of src.matchAll(/qa\('\.([\w-]+)'\)/g)) handlers.add(m[1]);
   for (const m of src.matchAll(/querySelectorAll\('[^']*\.([\w-]+)'\)/g)) handlers.add(m[1]);
@@ -443,7 +444,7 @@ try {
    تُولَّد، قرأ صاحبُ الدور دليلًا لنسخةٍ غيرِ التي بين يديه. */
 try {
   const mi = JSON.parse(readFileSync('docs/manuals/index.json','utf8'));
-  const html2 = readFileSync('index.html', 'utf8');
+  const html2 = (await appHtml());
   const i0 = html2.indexOf('var ROLES = {');
   const roles = [...html2.slice(i0, html2.indexOf('\n};', i0)).matchAll(/^  (\w+):\{/gm)].map(m => m[1]);
   const have = new Set((mi.manuals || []).map(m => m.id));

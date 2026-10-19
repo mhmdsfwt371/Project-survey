@@ -10,6 +10,7 @@
    بمحرّكٍ زائفٍ يسجّل ما طُلب منه.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -21,7 +22,7 @@ const T = (c, n) => { console.log((c ? '  ✓ ' : '  ✗ ') + n);
   if (!c){ bad++; console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
 (async()=>{
  const vc=new VirtualConsole(); const errs=[]; vc.on('jsdomError',e=>{ const m=String(e.message||e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0,160)); });
- const dom=new JSDOM(fs.readFileSync('index.html','utf8'),{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
+ const dom=new JSDOM((await appHtml()),{runScripts:'dangerously',pretendToBeVisual:true,url:'https://x.test/',virtualConsole:vc});
  const w=dom.window,d=w.document; w.HTMLCanvasElement.prototype.getContext=()=>null; if(!w.CSS)w.CSS={}; if(!w.CSS.escape)w.CSS.escape=s=>String(s); w.matchMedia=()=>({matches:false,addListener(){},removeListener(){},addEventListener(){},removeEventListener(){}}); w.scrollTo=()=>{};
  await new Promise(r=>setTimeout(r,900));
  w.FB.signIn=()=>Promise.resolve({ok:true,role:'admin',name:'مدير'}); w.FB.legacyDone=()=>true; w.pullDelta=()=>Promise.resolve(0); w.liveWatch=()=>{}; w.liveSmall=()=>{};

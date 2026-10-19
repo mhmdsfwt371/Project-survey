@@ -9,11 +9,12 @@
    إعادة إصدارٍ بكلمةٍ من عشرة أحرف؛ والطاقمُ لا يرى زرَّ الإسناد.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(html)[1];
 const prov = readFileSync('scripts/provision.mjs', 'utf8');
 let bad = 0; const T = (c, n, x) => { if (!c) bad++; console.log((c ? '  ✓ ' : '  ✗ ') + n + (x ? ' — ' + x : '')); };

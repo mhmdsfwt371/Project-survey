@@ -6,6 +6,7 @@
    وتقيس قراءاتِ اليوم على الحصة — بلا كتابةٍ جديدةٍ من الجهاز ولا مستمع.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync, writeFileSync, mkdtempSync } from 'fs';
 import { execFileSync } from 'child_process';
 import { tmpdir } from 'os';
@@ -15,7 +16,7 @@ const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 
 console.log('\n══ ١ · لا كتابةَ جديدةً ولا مستمع ══');
 const tick = /function pageTick\(id\)\{([\s\S]*?)\n\}/.exec(html)[1];

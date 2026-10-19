@@ -27,9 +27,12 @@ const one = (file, a, b) => { const s = readFileSync(file, 'utf8'), n = s.split(
 const q = s => "'" + String(s).replace(/\\/g, '\\\\').replace(/'/g, "\\'") + "'";
 const ver = v => v.slice(1);
 
+/* (V38.39) the release-notes log lives wherever `{ v:'V<old>', ` is — it moved into src/03z-shared with the core split */
+const WN_FILE = (await import('./lib/src.mjs')).srcJs().find(f => readFileSync(f, 'utf8').indexOf("  { v:'" + OLD + "', ") > -1) || 'src/06-ministry/06-ministry-alerts-11-whats-new.js';
 one('src/00-shell/00-head.html', 'نسخة ' + OLD, 'نسخة ' + NEW);
-one('src/06-ministry/06-ministry-alerts-11-whats-new.js', "  { v:'" + OLD + "', ", "  { v:'" + NEW + "', d:" + q(date) + ", notes:[\n" + notes.map(n => '      ' + q(n)).join(',\n') + ' ] },\n' + "  { v:'" + OLD + "', ");
+one(WN_FILE, "  { v:'" + OLD + "', ", "  { v:'" + NEW + "', d:" + q(date) + ", notes:[\n" + notes.map(n => '      ' + q(n)).join(',\n') + ' ] },\n' + "  { v:'" + OLD + "', ");
 one('sw.js', "const CACHE = 'nusuk-survey-v" + ver(OLD) + "';", "const CACHE = 'nusuk-survey-v" + ver(NEW) + "';");
+one('sw.js', "'./app-office.js?v=" + ver(OLD) + "'", "'./app-office.js?v=" + ver(NEW) + "'");   /* (V38.39) the deferred chunk is precached by version */
 { let a = readFileSync('docs/api-schema.json', 'utf8');
   if (a.split('"app_version": "' + OLD + '"').length !== 2) die('docs/api-schema.json: app_version ليس ' + OLD);
   a = a.replace('"app_version": "' + OLD + '"', '"app_version": "' + NEW + '"');

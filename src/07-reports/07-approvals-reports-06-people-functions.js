@@ -162,12 +162,7 @@ function jobAdd(){
   toast(t('أُضيفت الوظيفة'));
   render(1);
 }
-function jobSet(id, patch){
-  if (!may('users')){ toast(t('الوظائفُ للمهندس وحده')); return; }
-  var j = jobOf(id); if (!j) return;
-  Object.keys(patch).forEach(function(k){ j[k] = patch[k]; });
-  jobSave();
-}
+
 function jobDel(id){
   if (!may('users')){ toast(t('الوظائفُ للمهندس وحده')); return; }
   var u = jobUsed(id);
@@ -180,22 +175,6 @@ function jobDel(id){
   logEvent('حذف وظيفة — ' + nm2);
   toast(t('حُذفت'));
   render(1);
-}
-
-/* إسنادُ وظيفةٍ لشخص: تُسجَّل النقلةُ ولا تُمحى السابقة */
-function jobAssign(who, jobId){
-  var uid = techUid(who);
-  if (!uid) return;
-  var u = STATE.users[uid];
-  var was = u.job ? (jobOf(u.job) || {}).n : '';
-  if (u.job === jobId) return;
-  u = Object.assign({}, u, { job:jobId,
-    jobLog:(u.jobLog || []).concat([{ job:jobId, at:Date.now(), by:STATE.meta.name || '' }]) });
-  STATE.users[uid] = u;
-  CORE.set('users', uid, u);
-  var now = (jobOf(jobId) || {}).n || '—';
-  logEvent('وظيفة — ' + who + ': ' + (was || 'بلا وظيفة') + ' → ' + now);
-  notifPush('وظيفة', who + ': ' + (was || 'بلا وظيفة') + ' → ' + now, { to:who, lv:'عادي' });
 }
 
 /* سجلُّ الدروس: كان قائمةَ عرضٍ ثابتةً تُقرأ ولا يُكتَب فيها — والدرسُ الذي
@@ -211,12 +190,7 @@ function lessAdd(){
   lessSave(); logEvent('درس مستفاد — ' + w2.slice(0, 50));
   toast(t('سُجّل الدرس')); render(1);
 }
-function lessSet(i, patch){
-  if (!may('settings')) return;
-  var l = lessList()[i]; if (!l) return;
-  Object.keys(patch).forEach(function(k){ l[k] = patch[k]; });
-  lessSave();
-}
+
 function lessDel(i){
   if (!may('settings')){ toast(t('سجلُّ الدروس للمهندس وحده')); return; }
   var L = lessList(); if (!L[i]) return;

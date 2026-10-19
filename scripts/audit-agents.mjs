@@ -6,12 +6,13 @@
    ميتة. يُفحَص هنا أن الدستورَ يطابق المستودعَ الحيّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, existsSync , readdirSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
 
 T(existsSync('AGENTS.md') && existsSync('CLAUDE.md') && existsSync('docs/SETUP-AGENTS.md'), 'الملفّاتُ الثلاثة قائمة: AGENTS.md · CLAUDE.md · docs/SETUP-AGENTS.md');
 const A = readFileSync('AGENTS.md', 'utf8'), C = readFileSync('CLAUDE.md', 'utf8'), S = readFileSync('docs/SETUP-AGENTS.md', 'utf8');
-const wf = readFileSync('.github/workflows/docs-check.yml', 'utf8'), html = readFileSync('index.html', 'utf8');
+const wf = readFileSync('.github/workflows/docs-check.yml', 'utf8'), html = (await appHtml());
 T(/^@AGENTS\.md$/m.test(C), 'CLAUDE.md يستورد AGENTS.md — دستورٌ واحدٌ للوكيلين');
 
 /* كلُّ سكربتٍ يسمّيه الدستورُ موجود */

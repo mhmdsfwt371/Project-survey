@@ -9,11 +9,12 @@
    — كلُّها تعمل في الشاشة ولا تصل القاعدة.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const src = readFileSync('index.html','utf8');
+const src = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(src)[1];
 let bad=0; const say=(ok,n,x)=>{ if(!ok) bad++; console.log((ok?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
 /* ═══ فحصٌ ساكن ═══ */

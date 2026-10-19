@@ -9,6 +9,7 @@
    يعمل بلا مفتاح القاعدة: يكتب قسمَ الشيفرة ويقول إن الاستعمال غيرُ متاح.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, readdirSync, statSync, existsSync, writeFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { execSync } from 'child_process';
 
 const AR = n => new Intl.NumberFormat('ar-EG').format(Math.round(n || 0));
@@ -16,7 +17,7 @@ const sh = c => { try { return execSync(c, { encoding:'utf8' }).trim(); } catch 
 const lines = p => { try { return readFileSync(p, 'utf8').split('\n').length; } catch { return 0; } };
 
 /* ═══ ١ · الشيفرة ═══ */
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = (/<script[^>]*>([\s\S]*?)<\/script>/.exec(html) || ['', ''])[1];
 const css = (/<style>([\s\S]*?)<\/style>/.exec(html) || ['', ''])[1];
 const scripts = readdirSync('scripts').filter(f => f.endsWith('.mjs'));

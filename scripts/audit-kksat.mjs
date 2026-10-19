@@ -6,13 +6,14 @@
    وزرُّ «نقاط» يعيد الخريطةَ المجرّدة، وبلا ليفليت تُرسَم المجرّدةُ بصمت.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 function fakeL(w){
   const S = { maps:[], tiles:[], markers:[] };
   const map = el => { const m = { el, layers:[], handlers:{}, view:null, z:0, dragging:{ on:true, enable(){ m.dragging.on = true; }, disable(){ m.dragging.on = false; } }, remove(){ m.removed = true; }, setView(c, z){ m.view = c; m.z = z; return m; }, getCenter(){ return { lat:(m.view||[0,0])[0], lng:(m.view||[0,0])[1] }; }, getZoom(){ return m.z; }, fitBounds(b){ m.fit = b; m.view = [(b.s + b.n) / 2, (b.w + b.e) / 2]; m.z = 15; return m; }, on(k, f){ m.handlers[k] = f; return m; }, fire(k){ if (m.handlers[k]) m.handlers[k](); } }; S.maps.push(m); return m; };

@@ -8,11 +8,12 @@
    يرى فنيّيه وحدهم. وورقةُ الدخول تُصدَّر من الهاتف الأوّل بكلماتٍ لكلٍّ.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html','utf8');
+const html = (await appHtml());
 async function device(role, name, uid, cloud){
   const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:new VirtualConsole() });
   const w = dom.window, d = w.document;

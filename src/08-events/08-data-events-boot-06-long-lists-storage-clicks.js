@@ -113,6 +113,9 @@ function render0(force){
   }
   RENDER_CUR = CUR;
   var p = FIELD_PAGES[CUR] || PAGE[CUR];
+  /* (V38.39) core + chunks: the office/ministry/reports screens arrive in app-office.js after first paint.
+     Until then a request for one of them shows a loading card; the chunk re-renders when it lands (nskChunkReady). */
+  if (!p && !nskChunkState().ready){ nskChunkState().waiting = CUR; p = { l:'جارٍ التحميل', body:function(){ return alertBox('info', t('يُحمَّل باقي التطبيق — ثوانٍ على شبكةٍ عادية، وأكثرُ قليلًا في المشاعر؛ تُفتَح الشاشةُ وحدَها حين يصل')); } }; }
   if (!p) p = PAGE.over;
   /* الوصفُ تحت العنوان وصفُ الشريحة المفتوحة لا وصفُ الأمِّ وحدها */
   var pl = p.l;

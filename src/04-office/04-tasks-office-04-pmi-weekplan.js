@@ -54,7 +54,7 @@ function evmVerdict(v){
 /* (V21.3) تراها المهندسون ومن فوقهم (المدير والإدارة العليا)؛ ويكتبها المهندس والمدير */
 function wplanSees(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin' || r === 'exec'; }
 function wplanMay(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin'; }
-function wplanFinal(x){ return x.st === 'تم' || x.st === 'مغلق'; }
+
 function wplanOpenPast(){ var cur = mfuWeekKey(); return pmoList('wplan').filter(function(x){ return x.wk && x.wk < cur && !wplanFinal(x); }); }
 
 /* (V21.4) الأسبوعُ التالي يُحسَب بالتاريخ: اثنينُ الأسبوع + سبعة أيام — كان العدُّ يقفز من

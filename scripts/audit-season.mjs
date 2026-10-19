@@ -7,6 +7,7 @@
    المواعيدُ. يُختبَر هنا على قاعدةٍ وهميةٍ معلومةِ الجواب.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, unlinkSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { execFileSync } from 'child_process';
 
 let pass = 0; const fails = [];
@@ -21,7 +22,7 @@ T(/^\d{4}-\d{2}-\d{2}$/.test(S.dueSurvey.value) && !isNaN(Date.parse(S.dueSurvey
 T(S.avgRooms.value['منى'] === 12 && Object.keys(S.avgRooms.value).length === 1, 'ومتوسطُ الغرف لمنى وحدَها: ١٢');
 T(Array.isArray(season.not_confirmed) && season.not_confirmed.indexOf('ph') > -1 && season.not_confirmed.indexOf('budCap') > -1,
   'وما لم يُؤكَّد مسمًّى لا مخمَّن: سعرُ النقطة وسقفُ الميزانية');
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 T(/avgRooms:\{\}/.test(html), 'والتطبيقُ يعرف avgRooms في ثوابته — وإلا أُهملت عند السحب');
 T(Object.keys(S).every(k => new RegExp('\\b' + k + ':').test(html.slice(html.indexOf('var CFG = {'), html.indexOf('var CFG = {') + 3000))),
   'وكلُّ مفتاحٍ في الملف موجودٌ في CFG — ما ليس فيها لا يصل التطبيقَ أبدًا');

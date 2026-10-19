@@ -8,13 +8,15 @@ import { readFileSync, writeFileSync } from 'fs';
 import { srcFiles } from './lib/src.mjs';
 /* (V38.28) المجلّداتُ بالمجال — الترتيبُ بالمسار الكامل، والناتجُ بايتًا ببايت كما كان */
 const FILES = srcFiles();
-/* (V38.33) the shipped file carries no comments: src/ is the readable source of truth, index.html is the download.
-   Deterministic, so `--check` rebuilds and compares the same way. */
-const { stripPage } = await import('./lib/strip.mjs');
-const out = stripPage(FILES.map(f => readFileSync('src/' + f, 'utf8')).join(''));
+/* (V38.39) core + chunks: index.html (core, deferred tag) + app-office.js (office · ministry · reports). Deterministic,
+   so `--check` rebuilds both and compares. The comment stripping of V38.33 applies to both parts. */
+const { buildParts, CHUNK_FILE } = await import('./lib/src.mjs');
+const parts = await buildParts();
+const out = parts.index;
 if (process.argv.includes('--check')){
-  const cur = readFileSync('index.html', 'utf8');
-  if (cur !== out){ console.log('✗ index.html ليس ناتجَ src/ — عدِّل src/ ثم node scripts/build.mjs'); process.exit(1); }
-  console.log('✓ index.html = build(src/) —', FILES.length, 'ملفات'); process.exit(0);
+  const cur = readFileSync('index.html', 'utf8'), curChunk = (() => { try { return readFileSync(CHUNK_FILE, 'utf8'); } catch (e){ return ''; } })();
+  if (cur !== out || curChunk !== parts.chunk){ console.log('✗ index.html / ' + CHUNK_FILE + ' ليسا ناتجَ src/ — عدِّل src/ ثم node scripts/build.mjs'); process.exit(1); }
+  console.log('✓ index.html + ' + CHUNK_FILE + ' = build(src/) —', FILES.length, 'ملفات'); process.exit(0);
 }
-writeFileSync('index.html', out); console.log('built index.html from', FILES.length, 'files —', Math.round(out.length / 1024), 'KB');
+writeFileSync('index.html', out); writeFileSync(CHUNK_FILE, parts.chunk);
+console.log('built index.html (' + Math.round(out.length / 1024) + ' KB) + ' + CHUNK_FILE + ' (' + Math.round(parts.chunk.length / 1024) + ' KB) from', FILES.length, 'files');

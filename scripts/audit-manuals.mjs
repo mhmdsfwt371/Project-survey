@@ -2,10 +2,11 @@
    لا تُنشَر نسخةٌ إلا و: دليلُ المستخدم وكلُّ دليلِ دورٍ بنسختها وفيهما كلُّ مصطلحات المسرد وسطورُ «ما الجديد» لها؛
    والمساعدُ يجيب عن كلِّ مصطلحٍ ومرادفه بتعريفه؛ ولا يقول دليلُ المستخدم ولا المساعدُ «متعذّر» حالةً للعرض. */
 import { readFileSync, readdirSync } from 'fs'; import { createRequire } from 'module';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 const require = createRequire(import.meta.url); require('./lib/jsdom-dict.cjs');
 const JSZip = require('jszip'); const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = []; const T = (c, n) => { if (c){ pass++; console.log('  ✓ ' + n); } else { fails.push(n); console.log('  ✗ ' + n); } };
-const html = readFileSync('index.html', 'utf8'), VER = (/نسخة (V\d+\.\d+)/.exec(html) || [])[1];
+const html = (await appHtml()), VER = (/نسخة (V\d+\.\d+)/.exec(html) || [])[1];
 const arr = name => { const i = html.indexOf('var ' + name + ' = ['); let d = 0, j = html.indexOf('[', i), k = j; for (; k < html.length; k++){ if (html[k] === '[') d++; else if (html[k] === ']'){ d--; if (!d) break; } } return Function('"use strict"; return (' + html.slice(j, k + 1) + ');')(); };
 const G = arr('GLOSSARY'), NOTE = arr('RELEASE_NOTES').find(n => n.notes && n.notes.length);
 const docxText = async f => (await (await JSZip.loadAsync(readFileSync(f))).file('word/document.xml').async('string')).replace(/<[^>]+>/g, '');

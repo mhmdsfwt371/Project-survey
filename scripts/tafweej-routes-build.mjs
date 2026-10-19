@@ -11,10 +11,11 @@
    للتحقّق الميداني — قرارُ المالك.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { regMust } from './lib/registry.mjs';
 
 const osmPath = process.argv[2] || 'maps/mina-osm.json', railPath = process.argv[3] || 'maps/mashaer-rail.json';
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const RAW = regMust();   /* (V37.84) من مصدر السجلّ الواحد */
 const POLY = JSON.parse(readFileSync('poly.json', 'utf8'));
 const TF = JSON.parse(readFileSync('layers/tafweej.json', 'utf8'));

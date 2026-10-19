@@ -13,6 +13,7 @@
    كلُّ عددٍ على مجموعةِ ما يمكن أن يُشتَقَّ منها — وما خرج عنها يُسمَّى.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -22,7 +23,7 @@ catch { console.error('✗ jsdom غير مثبَّت:  npm i jsdom'); process.ex
 
 const vc = new VirtualConsole();
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) console.error('ERR:', String(e.message).slice(0, 80)); });
-const dom = new JSDOM(readFileSync('index.html', 'utf8'),
+const dom = new JSDOM((await appHtml()),
   { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document;
 w.HTMLCanvasElement.prototype.getContext = () => null;

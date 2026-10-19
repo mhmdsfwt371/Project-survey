@@ -7,13 +7,14 @@
    ولآخر نسخةٍ وحدَها، والنسخةُ الحاليةُ لها سطورُها.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + n); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const ver = (/class="ver-tag"[\s\S]{0,240}?>نسخة\s*(V[\d.]+)</.exec(html) || [])[1];
 
 const boot = async (seenVer) => {

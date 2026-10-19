@@ -6,12 +6,13 @@
    شيئًا، وتغييرُ اللغة من شاشة الدخول يعيدها بلغتها ويُبقي اسمَ المستخدم.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, readdirSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const dictFile = readdirSync('i18n').find(f => /^dict-[0-9a-f]{10}\.js$/.test(f));
 const dictSrc = readFileSync('i18n/' + dictFile, 'utf8');
 const wait = ms => new Promise(r => setTimeout(r, ms));

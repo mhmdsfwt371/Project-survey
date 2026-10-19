@@ -12,8 +12,9 @@
    والاستثناءاتُ تُكتَب بأسمائها وسببِها — لا تُبتلَع صمتًا. */
 
 import { readFileSync } from 'node:fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 
-const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const src = (await appHtml());
 let ok = 0, bad = 0;
 const fail = [];
 function check(cond, msg){ if (cond){ ok++; console.log('  ✓ ' + msg); }
@@ -149,7 +150,7 @@ if (bad){ console.log('\nجردُ الصفحات فشل ✗'); fail.forEach(f =>
    بعضُ الشاشات لها بحثُها وأكثرُها بلا بحث، فيُلجَأ إلى بحث المتصفّح — وهو
    يجد ولا يُخفي، ولا يعمل على ما طُوي. فصار لكلِّ صفحةٍ صندوقٌ في رأسها. */
 {
-  const raw = readFileSync('index.html', 'utf8');
+  const raw = (await appHtml());
   const jsx = /<script[^>]*>([\s\S]*?)<\/script>/.exec(raw)[1];
   check(/id="pgQ"/.test(jsx) && /function pageHead\(/.test(jsx) && jsx.indexOf('id="pgQ"') > jsx.indexOf('function pageHead('),
     'صندوقُ البحث في رأس الصفحة المشترك — فيَظهر في كلِّ شاشة');

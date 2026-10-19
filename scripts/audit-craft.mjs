@@ -8,7 +8,8 @@
    يُشغِّله أحد. يُقاس كلُّ ذلك في كلِّ دفعة.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, readdirSync } from 'fs';
-const src = readFileSync('index.html','utf8');
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
+const src = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(src)[1];
 let bad=0; const T=(c,n,x)=>{ if(!c) bad++; console.log((c?'  ✓ ':'  ✗ ')+n+(x?' — '+x:'')); };
 /* ═══ مراجعةُ مبرمجٍ متمرِّس ═══ */

@@ -22,7 +22,7 @@ for (const f of files){
   stmts[f] = ast.body.map((n, i) => {
     const names = n.type === 'FunctionDeclaration' ? [n.id.name] : n.type === 'VariableDeclaration' ? n.declarations.filter(d => d.id.type === 'Identifier').map(d => d.id.name) : [];
     // pull the comment block that sits directly above (only whitespace between)
-    let start = n.start; const above = cm.filter(c => c.end <= n.start && /^\s*$/.test(s.slice(c.end, n.start))).sort((a, b) => a.start - b.start);
+    let start = n.start; const above = cm.filter(c => c.start > 0 && c.end <= n.start && /^\s*$/.test(s.slice(c.end, n.start))).sort((a, b) => a.start - b.start);   /* never the file header at offset 0 */
     if (above.length) start = above[0].start;
     names.forEach(nm => { if (!defs[nm]) defs[nm] = { file:f, idx:i }; });
     return { start, end:n.end, names, kind:n.type, node:n };
@@ -32,7 +32,13 @@ const isChunk = f => CHUNK.some(c => f.startsWith(c));
 const chunkNames = new Set(Object.keys(defs).filter(n => isChunk(defs[n].file)));
 const ident = /[A-Za-z_$][\w$]*/g;
 const need = new Set();
-for (const f of files){ if (isChunk(f) || f.startsWith('08-events')) continue; for (const n of new Set(text[f].match(ident) || [])) if (chunkNames.has(n)) need.add(n); }
+/* (pass B) 08-events counts too — render0 and the boot run before any click — except the delegated click handlers
+   themselves (clickA*, onDocClick*), whose chunk references are replayed by nskClick when the chunk lands */
+const PASS = process.env.SPLIT_PASS || 'b';
+for (const f of files){ if (isChunk(f)) continue;
+  let body = text[f];
+  if (f.startsWith('08-events')) body = stmts[f].filter(st => !(st.kind === 'FunctionDeclaration' && /^(clickA|onDocClick)/.test(st.names[0]))).map(st => text[f].slice(st.start, st.end)).join('\n');
+  for (const n of new Set(body.match(ident) || [])) if (chunkNames.has(n)) need.add(n); }
 const bodyOf = n => { const d = defs[n], st = stmts[d.file][d.idx]; return text[d.file].slice(st.start, st.end); };
 let grew = true; while (grew){ grew = false; for (const n of [...need]) for (const m of new Set(bodyOf(n).match(ident) || [])) if (chunkNames.has(m) && !need.has(m)){ need.add(m); grew = true; } }
 /* order check for vars: names referenced by the initializer that are defined in files after DEST and are vars (functions hoist) */
@@ -64,8 +70,8 @@ for (const f of Object.keys(byFile).sort()){
   out = out.replace(/\n{3,}/g, '\n\n');
   fs.writeFileSync(path.join(SRC, f), out);
   seq++; const base = path.basename(f, '.js').replace(/^\d\d-/, '');
-  const dest = path.join(SRC, DEST, `03z-shared-${String(seq).padStart(2, '0')}-from-${base}.js`);
-  const header = `/* ${'='.repeat(76)}\n   FILE    : src/${DEST}/${path.basename(dest)}\n   DOMAIN  : Shared core — definitions the core needs before the deferrable domains load\n   PURPOSE : Definitions moved verbatim from src/${f} (V38.38, stage A of core + chunks): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.\n   DEFINES : ${idxs.flatMap(i => stmts[f][i].names).slice(0, 14).join(', ')}${idxs.flatMap(i => stmts[f][i].names).length > 14 ? ' … (+' + (idxs.flatMap(i => stmts[f][i].names).length - 14) + ' more)' : ''}\n   NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.\n   ${'='.repeat(76)} */\n`;
+  const dest = path.join(SRC, DEST, `03z-shared-${PASS}-${String(seq).padStart(2, '0')}-from-${base}.js`);
+  const header = `/* ${'='.repeat(76)}\n   FILE    : src/${DEST}/${path.basename(dest)}\n   DOMAIN  : Shared core — definitions the core needs before the deferrable domains load\n   PURPOSE : Definitions moved verbatim from src/${f} (V38.38–V38.39, stage A of core + chunks, pass ${PASS}): the core (01–05, 08) references these names, so they must be in the first payload. Inline comments and version tags travel with each definition.\n   DEFINES : ${idxs.flatMap(i => stmts[f][i].names).slice(0, 14).join(', ')}${idxs.flatMap(i => stmts[f][i].names).length > 14 ? ' … (+' + (idxs.flatMap(i => stmts[f][i].names).length - 14) + ' more)' : ''}\n   NOTE    : Build order is the full path. Do not add new code here: put shared helpers in 01-core or 02-catalog.\n   ${'='.repeat(76)} */\n`;
   fs.writeFileSync(dest, header + moved.join('\n\n') + '\n');
 }
 console.log('moved into src/' + DEST + '/ — ' + seq + ' files');

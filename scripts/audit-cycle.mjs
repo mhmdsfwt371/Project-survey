@@ -10,11 +10,12 @@
    في الزرِّ يُمسَك هنا.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html','utf8');
+const html = (await appHtml());
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) errs.push(String(e.message)); });
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });

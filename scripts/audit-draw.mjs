@@ -13,6 +13,7 @@
      ٦ · القوائمُ بالاسم: «كاميرات الوزارة — LPR» (V19.1) لا المفتاح ولا الاسمُ القديم.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -23,7 +24,7 @@ const T = (cond, msg) => { if (cond){ pass++; console.log('  \u2713 ' + msg); } 
 
 const vc = new VirtualConsole(); const errs = [];
 vc.on('jsdomError', e => { const m = String(e.message || e); if (!/getContext|canvas/i.test(m)) errs.push(m.slice(0, 160)); });
-const raw = readFileSync('index.html', 'utf8');
+const raw = (await appHtml());
 const dom = new JSDOM(raw, { runScripts:'dangerously', pretendToBeVisual:true, url:'https://x.test/', virtualConsole:vc });
 const w = dom.window, d = w.document; const wait = ms => new Promise(r => setTimeout(r, ms));
 w.HTMLCanvasElement.prototype.getContext = () => null;

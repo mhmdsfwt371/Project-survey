@@ -9,11 +9,12 @@
    حسابًا فيذهب طلبُه معه ويمسح المنتهيةَ بزرّها.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const js = /<script>([\s\S]*)<\/script>/.exec(html)[1];
 let bad = 0; const T = (c, n, x) => { if (!c) bad++; console.log((c ? '  ✓ ' : '  ✗ ') + n + (x ? ' — ' + x : '')); };
 const wait = ms => new Promise(r => setTimeout(r, ms));

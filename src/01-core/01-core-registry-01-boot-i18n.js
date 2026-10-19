@@ -39,7 +39,18 @@ var I18N = {
 };
 
 var D = { en:{}, ur:{} }, D2 = { en:{}, ur:{} };   /* القواميسُ في i18n/dict-<بصمة>.js — تُحمَّل عند اختيار لغةٍ غيرِ العربية (V22.0) */
-var I18N_FILE = 'i18n/dict-3adba552cf.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+/* (V38.39) core + chunks: index.html carries the core (01–03z, 05, 08); the office, ministry and reports domains
+   arrive in app-office.js (deferred, precached by the service worker for offline). Nothing in the core needs them at
+   boot (verified by scripts/split-shared.mjs); screens and clicks that need them wait for nskChunkReady(). */
+function nskChunkState(){ return nskChunkReady.s || (nskChunkReady.s = { ready:false, replay:null, at:0 }); }
+function nskChunkReady(){
+  var st = nskChunkState(); st.ready = true; st.at = Date.now();
+  var el = st.replay; st.replay = null;
+  /* re-render only when someone is looking at the loading card — a page the core already drew is left alone */
+  try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
+  if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
+}
+var I18N_FILE = 'i18n/dict-06ec96b1fb.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */

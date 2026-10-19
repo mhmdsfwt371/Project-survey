@@ -6,9 +6,10 @@
    صارت العلاماتُ باقيةً تُعدَّل، والمعيّناتُ على اللوح، والمخطّطُ تحت المخيمات.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const fn = name => { const i = html.indexOf('function ' + name + '('); if (i < 0) return ''; const j = html.indexOf('\nfunction ', i + 10); return html.slice(i, j); };
 /* (V25.3) جسدُ العلامة في mkPlace والطرحُ في mkSweep والسحبةُ الخفيفة في mapPaintLight — الرسمةُ مجموعُها */
 const paint = fn('mapPaint') + fn('mkPlace') + fn('mkSweep') + fn('mapPaintLight'), init = fn('mapInit'), tfw = fn('tfwPaint'), loc = fn('mapLocate');

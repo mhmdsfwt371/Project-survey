@@ -9,9 +9,10 @@
    ولا جيت واي ثانٍ: ما تجاوز ١٥٠ م يُدرَج في قائمة القرار بأحسن موضع.
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync } from 'fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { regMust } from './lib/registry.mjs';
 
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 const RAW = regMust();   /* (V37.84) من مصدر السجلّ الواحد */
 const POLY = JSON.parse(readFileSync('poly.json', 'utf8'));
 const N = 12, COVER = 150;

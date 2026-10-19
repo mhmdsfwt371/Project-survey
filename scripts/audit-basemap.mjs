@@ -8,13 +8,14 @@
    (عودةٌ إلى الشبكة)، والوصفةُ موثَّقة. (V24.9) — ومع الشبكة خلفيةُ V24.8 وخريطةُ الجهاز للانقطاع وحدَه (V25.0)
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync, existsSync, statSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
 let pass = 0; const fails = [];
 const T = (c, n) => { if (c){ pass++; console.log('  \u2713 ' + n); } else { fails.push(n); console.log('  \u2717 ' + n); console.log('::error title=فحصٌ ساقط::' + String(n).replace(/[\r\n]+/g, ' ')); } };
-const html = readFileSync('index.html', 'utf8');
+const html = (await appHtml());
 
 console.log('\n══ ١ · الملفُّ والعارضُ والوصفة ══');
 const man = JSON.parse(readFileSync('maps/manifest.json', 'utf8'));

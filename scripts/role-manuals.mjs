@@ -9,6 +9,7 @@
    يُخرج:   docs/manuals/nusuk-manual-<role>.docx */
 
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import JSZip from 'jszip';
 import { createRequire } from 'node:module';
 const require = createRequire(import.meta.url);
@@ -16,7 +17,7 @@ const { Document, Packer, Paragraph, TextRun, HeadingLevel, Table, TableRow,
         TableCell, WidthType, AlignmentType, BorderStyle, ShadingType,
         PageBreak, LevelFormat } = require('docx');
 
-const src = readFileSync(new URL('../index.html', import.meta.url), 'utf8');
+const src = (await appHtml());
 const VER = (/>نسخة (V[\d.]+)<\/button>/.exec(src) || [])[1] || 'V?';
 
 /* ── قراءةُ الثوابت من المصدر لا من نسخةٍ تُحفَظ ── */

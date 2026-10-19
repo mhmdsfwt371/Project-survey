@@ -11,6 +11,7 @@
    يُراقَب `CORE.set` و`CORE.dirty` و`STATE` معًا، وتُلتقَط التوستات.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { appHtml } from './lib/src.mjs';   /* (V38.39) the whole app in production order — index.html is now the core only */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -37,7 +38,7 @@ const PROMISES = [
 let pass = 0; const fails = [];
 const check = (c, n) => { if (c) pass++; else fails.push(n); };
 
-const html = readFileSync('index.html','utf8');
+const html = (await appHtml());
 const vc = new VirtualConsole(); const boot = [];
 vc.on('jsdomError', e => { if (!/Not implemented/.test(String(e.message))) boot.push(String(e.message)); });
 const dom = new JSDOM(html, { runScripts:'dangerously', pretendToBeVisual:true,

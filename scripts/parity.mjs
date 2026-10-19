@@ -20,6 +20,7 @@
    ═════════════════════════════════════════════════════════════════════════ */
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { dictSrc } from './lib/dict-src.mjs';
+import { appHtml } from './lib/src.mjs';
 
 const OLD = 'legacy/v13.99.html';
 const NEW = 'index.html';
@@ -67,7 +68,7 @@ export function newSurface(src){
 
 /* ── التشغيل ───────────────────────────────────────────────────────────── */
 const src = readFileSync(OLD, 'utf8');
-const dst = readFileSync(NEW, 'utf8') + '\n' + dictSrc('');   /* والقواميسُ في ملفها المستقلِّ (V21.6) — فما كان وسمًا فيها لم يغب */
+const dst = (await appHtml()) + '\n' + dictSrc('');   /* (V38.39) the whole app: index.html is the core, app-office.js the rest */   /* والقواميسُ في ملفها المستقلِّ (V21.6) — فما كان وسمًا فيها لم يغب */
 const caps = oldCaps(src);
 const surf = newSurface(dst);
 const found = k => surf.includes(k);
