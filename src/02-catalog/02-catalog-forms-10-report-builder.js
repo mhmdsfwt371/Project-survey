@@ -96,8 +96,6 @@ function rbOnChange(el){
   var pv = box.querySelector('#rbPrev'); if (pv) pv.innerHTML = rbPreviewHtml();
   var q = rbSentence(); box.querySelectorAll('[data-assistq]').forEach(function(b){ if (b.closest('.chips')) return; b.setAttribute('data-assistq', b.textContent.indexOf(t('إكسل')) > -1 ? 'إكسل ' + q : q); });
 }
-if (typeof document !== 'undefined' && document.addEventListener){
-  document.addEventListener('change', function(e){ var el = e.target && e.target.closest ? e.target.closest('[data-rb]') : null; if (el) rbOnChange(el); });
-  document.addEventListener('input', function(e){ var el = e.target && e.target.closest ? e.target.closest('input[data-rb]') : null; if (el) rbOnChange(el); });
-  document.addEventListener('toggle', function(e){ var d = e.target; if (d && d.getAttribute && d.getAttribute('data-rbopen')) rbState().open = d.open; }, true);
-}
+/* the change/input routing lives in the main listeners (08-events) — one listener per event, as the buttons audit expects;
+   only the <details> open state is tracked here (toggle does not bubble) */
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('toggle', function(e){ var d = e.target; if (d && d.getAttribute && d.getAttribute('data-rbopen')) rbState().open = d.open; }, true);

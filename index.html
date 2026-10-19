@@ -6630,11 +6630,8 @@ function rbOnChange(el){
   var pv = box.querySelector('#rbPrev'); if (pv) pv.innerHTML = rbPreviewHtml();
   var q = rbSentence(); box.querySelectorAll('[data-assistq]').forEach(function(b){ if (b.closest('.chips')) return; b.setAttribute('data-assistq', b.textContent.indexOf(t('إكسل')) > -1 ? 'إكسل ' + q : q); });
 }
-if (typeof document !== 'undefined' && document.addEventListener){
-  document.addEventListener('change', function(e){ var el = e.target && e.target.closest ? e.target.closest('[data-rb]') : null; if (el) rbOnChange(el); });
-  document.addEventListener('input', function(e){ var el = e.target && e.target.closest ? e.target.closest('input[data-rb]') : null; if (el) rbOnChange(el); });
-  document.addEventListener('toggle', function(e){ var d = e.target; if (d && d.getAttribute && d.getAttribute('data-rbopen')) rbState().open = d.open; }, true);
-}
+
+if (typeof document !== 'undefined' && document.addEventListener) document.addEventListener('toggle', function(e){ var d = e.target; if (d && d.getAttribute && d.getAttribute('data-rbopen')) rbState().open = d.open; }, true);
 
 function svVisited(r){ return !!r && !r.deleted; }
 
@@ -29385,6 +29382,8 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
+
+  if (e.target && e.target.closest && e.target.closest('[data-rb]')){ rbOnChange(e.target.closest('[data-rb]')); return; }
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }
@@ -29602,6 +29601,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  if (e.target && e.target.closest && e.target.closest('input[data-rb]')){ rbOnChange(e.target.closest('input[data-rb]')); return; }
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);
 
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){

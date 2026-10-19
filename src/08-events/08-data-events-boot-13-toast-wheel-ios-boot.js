@@ -55,6 +55,8 @@ document.addEventListener('wheel', function(e){
 }, { passive:true });
 
 document.addEventListener('change', function(e){
+  /* (V38.43) report builder: a dropdown changed → preview and buttons follow */
+  if (e.target && e.target.closest && e.target.closest('[data-rb]')){ rbOnChange(e.target.closest('[data-rb]')); return; }
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) */
   var t0 = e.target;
   if (t0 && t0.hasAttribute && t0.hasAttribute('data-fontup')){ fontUp(t0.getAttribute('data-fontup'), t0.files && t0.files[0]); return; }   /* (V28.9) */
@@ -272,6 +274,7 @@ document.addEventListener('change', function(e){
 });
 
 document.addEventListener('input', function(e){
+  if (e.target && e.target.closest && e.target.closest('input[data-rb]')){ rbOnChange(e.target.closest('input[data-rb]')); return; }   /* (V38.43) report builder boxes */
   if (e.target && e.target.closest && e.target.closest('[data-vcn],[data-vcw],[data-vcp],[data-vco]')) catDraftCatch(e);   /* (V37.4) مسوّدةُ محرّر التصنيفات */
   /* بحثُ الصفحة: يُصفّي المعروضَ في اللحظة — لا إعادةَ رسمٍ فلا تضيع البؤرة */
   if (e.target && e.target.hasAttribute && e.target.hasAttribute('data-rt')){
