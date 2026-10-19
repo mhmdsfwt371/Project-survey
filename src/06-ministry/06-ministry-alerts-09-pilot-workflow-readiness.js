@@ -105,10 +105,6 @@ PAGE.dis = { m:'المتابعة', t:'الفك والمراحل',
 
 /* ── التخطيط ────────────────────────────────────── */
 
-
-/* ── الطلبات والمسح ──────────────────────────────── */
-var SURV_Q = '', SURV_REOPEN = '', SURV_ST = '';
-
 /* إعادةُ تصنيف زيارةٍ تمّت كمتعذّرة: لا حذفَ للسجل ولا لصورِه — يبقى
    أثرًا، ويخرج من عِداد المُنجَز بتغيير access وحده حتى يُزار ثانيةً.
    قبولُ الوصولِ لا يعني الصحةَ الأبدية: موقعٌ قد يتغيّر بعد أن يُسجَّل. */
@@ -133,17 +129,6 @@ function svReopen(id, reason, note){
   statBump();
   render(1);
 }
-
-function surveyList(){
-  return Object.keys(STATE.recs).map(function(id){
-    var r = STATE.recs[id], x = siteFind(id);
-    if (!x) return null;
-    return { id:id, site:x, rec:r, done:svDone(r) };
-  }).filter(Boolean).sort(function(a,b){ return (b.rec.at || 0) - (a.rec.at || 0); });
-}
-
-
-
 
 /* ═══ دورةُ العمل — الخريطةُ التي تشرح النظامَ لنفسه ═══
    سؤالُ كلِّ مستخدمٍ جديد: «أعمل إيه، وبعدين أروح فين؟». والجوابُ كان

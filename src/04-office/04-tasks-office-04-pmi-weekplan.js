@@ -11,9 +11,6 @@
    أربعةٌ يسأل عنها المدقّق ولم تكن: خطُّ أساسٍ يُقاس عليه، وقيمةٌ مكتسبةٌ
    تقول أين نحن، وسجلُّ مخاطرَ بالاحتمال والأثر، وضبطُ تغييرٍ يمنع الانزلاق. */
 
-/* ── خط الأساس: يُجمَّد فيصير مرجعًا لا يُعدَّل إلا بطلب تغيير ── */
-var BASE = null;
-
 function baseSet(){
   /* تجميدُ خطِّ أساسٍ ميزانيتُه صفرٌ يُسكِت القيمةَ المكتسبةَ إلى الأبد ولا
      يشكو — ومن جمّده يظنُّ أنه خطّط. يُقال له ما ينقص قبل التجميد. */
@@ -45,51 +42,6 @@ function baseSet(){
   return BASE;
 }
 
-function baseDays(){
-  if (!BASE) return { elapsed:0, total:0, pct:0 };
-  var total = (BASE.months || 4) * (cfgGet('days') || 26);
-  var elapsed = Math.min(total, Math.max(0,
-    Math.round((Date.now() - BASE.at) / 86400000)));
-  return { elapsed:elapsed, total:total, pct: total ? elapsed / total : 0 };
-}
-
-/* ── القيمة المكتسبة — لغةُ المدقّق ── */
-function evm(){
-  if (!BASE) return null;
-  var D = baseDays();
-  var PV = Math.round(BASE.bac * D.pct);          /* المخطَّط حتى اليوم */
-
-  var earned = 0, done = 0;
-  STATE.sites.forEach(function(x){
-    if (svVisited(STATE.recs[x.id])){ earned += ptsSurvey(x); done++; }   /* (V32.6) */
-    var r = STATE.inss[x.id];
-    if (r && r.status === 'مُركّب' && r.approved) earned += ptsInstall(x);
-  });
-  var EV = Math.round(earned * BASE.ph);          /* المكتسَب فعلًا */
-
-  var AC = 0;
-  scores().list.forEach(function(e){ AC += e.money; });
-  buysList().forEach(function(b){ if (b.st === 'معتمد') AC += (+b.amt || 0); });
-  AC = Math.round(AC);                            /* المنصرف الفعلي */
-
-  var SV = EV - PV, CV = EV - AC;
-  var SPI = PV ? (EV / PV) : 0;
-  var CPI = AC ? (EV / AC) : 0;
-  var EAC = CPI ? Math.round(BASE.bac / CPI) : BASE.bac;
-  var ETC = Math.max(0, EAC - AC);
-  var VAC = BASE.bac - EAC;
-  var TCPI = (BASE.bac - AC) ? ((BASE.bac - EV) / (BASE.bac - AC)) : 0;
-
-  /* المؤشراتُ تُعرَض بمنزلتين والتقديراتُ تُحسَب بالدقة الكاملة — فمن أعاد
-     الحسابَ من الرقم المعروض خالفَ التقدير. تُصدَّر الدقةُ الكاملةُ معها
-     باسمٍ صريحٍ فيُعاد الحسابُ عليها ويتطابق التقرير. */
-  return { PV:PV, EV:EV, AC:AC, SV:SV, CV:CV,
-           SPI:Math.round(SPI * 100) / 100, CPI:Math.round(CPI * 100) / 100,
-           SPIx:SPI, CPIx:CPI, TCPIx:TCPI,
-           EAC:EAC, ETC:ETC, VAC:VAC, TCPI:Math.round(TCPI * 100) / 100,
-           BAC:BASE.bac, days:D, doneSites:done };
-}
-
 function evmVerdict(v){
   if (!v) return { t:'—', c:'' };
   if (v.SPI >= 1 && v.CPI >= 1) return { t:'متقدّمٌ وضمن الكلفة', c:'ok' };
@@ -99,27 +51,17 @@ function evmVerdict(v){
   return { t:'متجاوزٌ للكلفة', c:'wrn' };
 }
 
-/* ═══ خطةُ الأسبوع — للمهندس وحدَه (V21.2) ═══
-   «في التخطيط زوّد خطةَ الأسبوع، المهندسُ بس تبان له وهو اللي يحطّها: نقاط، وكلُّ
-   نقطة فيها تفاصيل وملاحظات، وخطوات، واحتياجات، ونتائج مرجوّة». دفترُ المهندس
-   الأسبوعيُّ: في settings/pmo (قراءةُ المهندس والمدير) تحت wplan، لكلِّ نقطةٍ أسبوعُها
-   وعنوانُها وتفاصيلُها وخطواتُها (قائمةُ تحقّق) ومتطلباتُها ونتيجتُها المرجوّة وأولويتُها
-   وحالتُها — ومنها مهمةٌ أسبوعيةٌ بضغطة، وما لم يُنجَز يُرحَّل للأسبوع القادم. */
-var WPLAN_WK = '', WPLAN_EDIT = '';
-var WPLAN_PRI = ['عالية', 'متوسطة', 'منخفضة'], WPLAN_ACT = null, WPLAN_PREFILL = null;
 /* (V21.3) تراها المهندسون ومن فوقهم (المدير والإدارة العليا)؛ ويكتبها المهندس والمدير */
 function wplanSees(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin' || r === 'exec'; }
 function wplanMay(){ var r = effRole(ROLE); return r === 'engineer' || r === 'admin'; }
 function wplanFinal(x){ return x.st === 'تم' || x.st === 'مغلق'; }
 function wplanOpenPast(){ var cur = mfuWeekKey(); return pmoList('wplan').filter(function(x){ return x.wk && x.wk < cur && !wplanFinal(x); }); }
-function wplanUpdates(x){ return (Array.isArray(x.hist) ? x.hist : []).filter(function(h){ return h.f === 'upd' || h.f === 'result' || h.f === 'close'; }); }
-function wplanWeek(){ return WPLAN_WK || mfuWeekKey(); }
+
 /* (V21.4) الأسبوعُ التالي يُحسَب بالتاريخ: اثنينُ الأسبوع + سبعة أيام — كان العدُّ يقفز من
    الأسبوع ٥٢ إلى ١ فيُسقِط الأسبوعَ ٥٣ الذي تعرفه سنواتٌ منها ٢٠٢٦ */
 function isoWeekMonday(k){ var m = /^(\d{4})-W(\d{2})$/.exec(k || ''); if (!m) return null; var j4 = new Date(Date.UTC(+m[1], 0, 4)), mon1 = j4.getTime() - ((j4.getUTCDay() + 6) % 7) * 864e5; return mon1 + (+m[2] - 1) * 7 * 864e5; }
 function wplanNextWeek(k){ var mon = isoWeekMonday(k || mfuWeekKey()); return mfuWeekKey((mon == null ? Date.now() : mon) + 7 * 864e5 + 3 * 864e5); }
-function wplanItems(wk){ return pmoList('wplan').filter(function(x){ return x.wk === wk; }).sort(function(a, b){ return WPLAN_PRI.indexOf(a.pri || 'متوسطة') - WPLAN_PRI.indexOf(b.pri || 'متوسطة') || (a.at || 0) - (b.at || 0); }); }
-function wplanLines(v){ return String(v || '').split(/\n+/).map(function(l){ return l.trim(); }).filter(Boolean); }
+
 function wplanBody(){
   if (!wplanSees()) return alertBox('warn', 'خطةُ الأسبوع للمهندسين ومن فوقهم.');
   pmoFetch();
@@ -539,6 +481,4 @@ PAGE.plan = { m:'التخطيط', t:'التخطيط والمخاطر',
   }};
 
 /* ── سجل المخاطر: احتمال × أثر ── */
-
-
 

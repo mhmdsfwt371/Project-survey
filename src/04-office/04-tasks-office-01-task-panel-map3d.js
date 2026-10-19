@@ -96,16 +96,7 @@ function wtSheet(me){
     + '<button type="button" class="btn btn-quiet btn-sm pop-x" data-wtclose="0" aria-label="' + esc(t('إغلاق')) + '">\u2715</button></div>'
     + '<div class="pop-body">' + wtPanelInner(r, me) + edit + '</div></div>';
 }
-/* ═══ الخريطةُ ثلاثيةً — زرٌّ واحدٌ على الخريطة نفسِها ═══
-   كان العرضُ الثلاثيُّ صفحةً مستقلةً بمرشِّحاتها وألوانها — فتعرض غيرَ ما
-   تعرضه الخريطة، ويُسأل «أيُّهما الصحيح؟». والصحيحُ واحد: الخريطةُ بطبقتها
-   (المسح · التركيب · الفك) ومرشِّحاتها وشركاتها وحالاتها وألوانها. فصار
-   الثلاثيُّ **وضعًا** للخريطة نفسِها: زرُّ «٣د» يرفع المشهدَ نفسَه بتضاريس
-   المشاعر وأعمدةٍ بارتفاع التركيب المسجَّل — النقاطُ نفسُها بالألوان نفسِها
-   والنقرةُ نفسُها تفتح البطاقةَ نفسَها — و«٢د» يعيده حيث كان.
-   المحرّكُ لا يُحمَّل إلا عند أوّل ضغطة (ثمانمئة كيلوبايتٍ لا تُثقل الميدان
-   الذي لا يطلبه)، ويبقى حيًّا بعدها؛ والقمرُ الصناعيُّ يتبعه من الزرِّ نفسِه. */
-var MAP_3D = false, M3 = null, M3_READY = false, M3_LOADING = null, M3_ERR = '';
+
 function m3Load(){
   if (M3_READY || (typeof window !== 'undefined' && window.maplibregl)){ M3_READY = true; return Promise.resolve(true); }
   if (M3_LOADING) return M3_LOADING;
@@ -122,48 +113,10 @@ function m3Load(){
   });
   return M3_LOADING;
 }
-/* ارتفاعُ العمود: ما سجّله المسحُ، وإلا افتراضٌ بحسب النوع */
-function m3Height(x){
-  var r = STATE.recs[x.id] || {}, h = +r.hgt || 0;
-  if (h > 0) return Math.max(2, Math.min(25, h));
-  return x.type === 'مخيم' ? 4 : (x.type === 'كاميرا' ? 8 : 6);
-}
+
 /* النقاطُ هي نقاطُ الخريطة المسطّحة حرفًا: القائمةُ نفسُها بعد الطبقة
    والمرشِّحات والشركات، واللونُ نفسُه — لا قائمةَ ثانيةً ولا لونًا ثانيًا */
-/* حدودُ المخيمات كما حسبها m3Points — يقرؤها m3Cols في الرسمة نفسِها بلا بحثٍ
-   ثانٍ بالمعرِّف (الفهرسُ قد يكون أقدمَ من القائمة لحظةَ الرسم) */
-var M3_FOOT = {};
-function m3Points(){
-  var LIST = (typeof layerFiltered === 'function') ? layerFiltered() : (STATE.sites || []);
-  M3_FOOT = {};
-  return LIST.filter(function(x){ return +x.lat && +x.lng; }).map(function(x){
-    var picked = (typeof selHas === 'function') && selHas(x.id);
-    /* المخيمُ بحدوده الحقيقية كما يُرسَم في المسطّح — لا نقطةً — إن كانت حدودُه محمَّلة */
-    var ring = campFoot(x);   /* المرسومةُ في التطبيق أو poly.json (V17.59) */
-    if (ring) M3_FOOT[x.id] = ring;
-    var foot = ring ? 1 : 0;
-    return { type:'Feature', geometry:{ type:'Point', coordinates:[+x.lng, +x.lat] },
-      properties:{ id:x.id, color:mapColorOf(x), h:m3Height(x), sel:picked ? 1 : 0,
-        ring:picked ? '#ffffff' : ((FIELD_MODE === 'brief' && briefRing(x.id)) || '#0b1220'), foot:foot } };
-  });
-}
-/* المخيمُ يُرفَع بحدوده المرسومة (poly.json — الحدودُ نفسُها التي يرسمها المسطّح
-   عند التقريب)، وما سواه عمودٌ مضلّعٌ صغيرٌ حول نقطته — المحرّكُ لا يرفع نقطةً */
-function m3Cols(P){
-  return P.map(function(f){
-    var p = f.properties, c = f.geometry.coordinates, lng = c[0], lat = c[1];
-    var FR = p.foot ? M3_FOOT[p.id] : null;
-    if (FR && FR.length >= 3){
-      var R = FR.map(function(q){ return [+q[0], +q[1]]; });
-      var a0 = R[0], aN = R[R.length - 1];
-      if (a0[0] !== aN[0] || a0[1] !== aN[1]) R.push([a0[0], a0[1]]);
-      return { type:'Feature', properties:p, geometry:{ type:'Polygon', coordinates:[R] } };
-    }
-    var d = 2.2, dy = d / 111320, dx = d / (111320 * Math.cos(lat * Math.PI / 180));
-    return { type:'Feature', properties:p,
-      geometry:{ type:'Polygon', coordinates:[[[lng - dx, lat - dy], [lng + dx, lat - dy], [lng + dx, lat + dy], [lng - dx, lat + dy], [lng - dx, lat - dy]]] } };
-  });
-}
+
 /* القمرُ الصناعيُّ نفسُه الذي تعرفه الخريطة المسطّحة — وإلا نمطٌ مفتوحٌ بلا مفتاح */
 function m3Style(){
   if (MAP_SAT) return { version:8,
@@ -209,23 +162,7 @@ function m3Layers(){
     if (lyr) M3.setPaintProperty(lyr.id, 'fill-extrusion-opacity', 0.45);
   } catch (e){ LS_ERR = e; }
 }
-function m3Count(P){
-  var lb = document.getElementById('mapCount');
-  if (!lb || !MAP_3D || !M3) return;
-  try {
-    var b = M3.getBounds(), inV = P.filter(function(f){ return b.contains(f.geometry.coordinates); }).length, out = P.length - inV;
-    lb.textContent = nm(inV) + ' / ' + nm(P.length) + ' ' + t('في الإطار') + (out > 0 ? ' \u00b7 ' + nm(out) + ' ' + t('خارج الإطار') : '');
-  } catch (e){ LS_ERR = e; }
-}
-function m3Paint(){
-  if (!M3 || !M3.getSource) return;
-  var P = m3Points();
-  try {
-    var s1 = M3.getSource('nsk');  if (s1) s1.setData({ type:'FeatureCollection', features:P });
-    var s2 = M3.getSource('nskc'); if (s2) s2.setData({ type:'FeatureCollection', features:m3Cols(P) });
-  } catch (e){ LS_ERR = e; }
-  m3Count(P);
-}
+
 /* النقرةُ في الثلاثيِّ هي نقرةُ الخريطة المسطّحة: تحديدٌ في وضع الإسناد، وبطاقةُ النقطة سواه */
 function m3Click(id, ev){
   if (typeof MAP_SELECT !== 'undefined' && MAP_SELECT){

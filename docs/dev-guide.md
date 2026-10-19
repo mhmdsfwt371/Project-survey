@@ -12,7 +12,7 @@ Nusuk Survey is an **offline-first Progressive Web App** used by field teams in 
 | Fact | Value |
 |---|---|
 | Runtime | One HTML file (`index.html`, ~3 MB, ~1 MB gzipped) — HTML + CSS + JavaScript, **no framework, no bundler, no transpiler** |
-| Source | `src/` — 95 files in 10 domain folders, concatenated by full path into `index.html` |
+| Source | `src/` — 131 files in 11 domain folders, concatenated by full path into `index.html` (shipped without comments) |
 | Backend | Firebase Firestore (data) + Firebase Auth (login) + GitHub Actions (scheduled jobs: backups, photo sync, reports) |
 | Hosting | GitHub Pages from branch `main`; staging is branch `staging` |
 | Languages | UI in Arabic (default), English and Urdu through one dictionary (`i18n/dict-*.js`) |
@@ -30,6 +30,7 @@ src/
   01-core/       language, engine, write queue and sync, DB gate, site registry, train E-GATE seed
   02-catalog/    definitions, classification, permissions, site editing, survey edit-without-redo
   03-survey/     survey and installation forms, installation points, assignment, plan (WBS)
+  03z-shared/    definitions the core needs before the office/ministry/reports domains (moved verbatim, V38.38 — stage A of core + chunks; put NEW shared helpers in 01-core or 02-catalog, not here)
   04-office/     photos, governance, the assistant and word-driven reports, drawing on the map
   05-map/        map painting, export/import, login, service worker, ministry screen
   06-ministry/   alerts, follow-up tabs, Nusuk card system, PowerPoint, what's new (release notes)
