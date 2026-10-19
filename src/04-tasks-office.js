@@ -3763,7 +3763,7 @@ function aqAnswer(q){
 function aqRepStop(){
   return ['اكسل', 'excel', 'xlsx', 'pdf', 'بي', 'دي', 'اف', 'ملف', 'تقرير', 'قائمه', 'قايمه', 'ليست', 'list', 'طلع', 'طلعلي', 'هات', 'هاتلي', 'اعرض', 'عاوز', 'عايز',
     'محتاج', 'ممكن', 'لو', 'سمحت', 'النقاط', 'النقط', 'نقاط', 'المواقع', 'مواقع', 'اللي', 'الي', 'اللى', 'في', 'فى', 'من', 'على', 'علي', 'مع', 'كل', 'كلها', 'ده',
-    'دي', 'دول', 'بتاعه', 'بتاعت', 'فيها', 'ليها', 'لها', 'عليها', 'التي', 'الذي', 'الخاصه', 'الخاص', 'او', 'أو', 'ولا', 'بس', 'اللي', 'لسه', 'كمان', 'برضه', 'يعني', 'وكمان', 'بيها'];
+    'دي', 'دول', 'بتاعه', 'بتاعت', 'فيها', 'ليها', 'لها', 'عليها', 'التي', 'الذي', 'الخاصه', 'الخاص', 'او', 'أو', 'ولا', 'بس', 'اللي', 'لسه', 'كمان', 'برضه', 'يعني', 'وكمان', 'بيها', 'عند', 'اللي', 'لستة', 'لسته', 'ليست'];
 }
 function aqRepParse(q){
   var n = ' ' + aqNorm(q).replace(/[؟?!,،.:;()«»"']/g, ' ').replace(/\s+/g, ' ') + ' ';
@@ -3831,12 +3831,24 @@ function aqRepParse(q){
     var no47 = /(من غير|بدون|مش|مفيش|ما)\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/.test(n); use(/(من غير|بدون|مش|مفيش|ما)?\s*(ليها|لها|فيها)?\s*(بيانات)?\s*1447/);
     add('e47', no47 ? 'بلا بيانات ١٤٤٧' : 'لها بيانات ١٤٤٧', function(x){ return no47 ? !x.ex47 : !!x.ex47; });
   }
+  /* (V38.27) «موقع النقطة» — تحت كوبري · مدخل/مخرج نفق · لوحة استرشادية · بدون إطار · على مظلة — من الاختيار الصريح (ومن كلام الزيارات الأقدم) */
+  var LM = [[/تحت\s*(ال)?(كوبري|كبري)/, 'bridge', 'تحت كوبري'], [/مدخل\s*(ال)?نفق/, 'tin', 'مدخل نفق'], [/مخرج\s*(ال)?نفق/, 'tout', 'مخرج نفق'],
+            [/(لوحه|لوحات)\s*(ال)?(استرشاد|ارشاد)[^\s]*/, 'sign', 'لوحة استرشادية'], [/(بدون|بلا|من غير)\s*(ال)?(اطار|هيكل)[^\s]*(\s*معدني)?/, 'nomount', 'بدون إطار معدني للتثبيت'],
+            [/(علي|فوق)\s*(ال)?(مظله|مظلات)/, 'canopy', 'على مظلة']];
+  var locHit = LM.filter(function(m){ return m[0].test(n); });
+  if (!locHit.length && /(^|\s)(ال)?(نفق|انفاق)(\s|$)/.test(n)) locHit = [[/(ال)?(نفق|انفاق)/, 'tany', 'نفق']];
+  if (locHit.length && typeof obsLocTags === 'function'){
+    locHit.forEach(function(m){ use(new RegExp('[^\\s]*(' + m[0].source + ')[^\\s]*')); });
+    var lk = locHit.map(function(m){ return m[1]; });
+    add('loc', locHit.map(function(m){ return m[2]; }).join(' أو '), function(x){ var tg = obsLocTags(x); if (!tg) return false;
+      return lk.some(function(k){ return k === 'tany' ? !!(tg.tin || tg.tout || tg.tgen) : !!tg[k]; }); });
+  }
   /* التحديات: تحدٍّ بعينه أو أيُّ تحدٍّ */
   var labels = [], seenL = {};
   ['مخيم', 'ممر'].forEach(function(ty){ chalsOf({ type:ty }).forEach(function(c){ if (c && c !== 'لا توجد تحديات' && !seenL[c]){ seenL[c] = 1; labels.push(c); } }); });
-  var hitL = labels.filter(function(c){ var ws = aqNorm(c).split(/[\s—\-]+/).filter(function(w){ return w.length > 3; }); return ws.length && ws.filter(function(w){ return n.indexOf(w) > -1; }).length >= Math.min(2, ws.length); });
+  var hitL = locHit.length ? [] : labels.filter(function(c){ var ws = aqNorm(c).split(/[\s—\-]+/).filter(function(w){ return w.length > 3; }); return ws.length && ws.filter(function(w){ return n.indexOf(w) > -1; }).length >= Math.min(2, ws.length); });   /* (V38.27) الموقعُ أوّلًا */
   if (hitL.length){ hitL.forEach(function(c){ aqNorm(c).split(/[\s—\-]+/).forEach(function(w){ used.push(w); }); }); add('chal', hitL.join(' أو '), function(x){ var r = R(x); return !!r && (r.chals || []).some(function(c){ return hitL.indexOf(c) > -1; }); }); }
-  else if (/تحدي|تحديات|معوق|معوقات|عائق|مشكله|مشاكل/.test(n)){ use(/[^\s]*(تحدي|معوق|عائق|مشكله|مشاكل)[^\s]*/); add('chal', 'فيها تحدٍّ', function(x){ var r = R(x); return !!r && (r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; }); }); }
+  else if (!locHit.length && /تحدي|تحديات|معوق|معوقات|عائق|مشكله|مشاكل/.test(n)){ use(/[^\s]*(تحدي|معوق|عائق|مشكله|مشاكل)[^\s]*/); add('chal', 'فيها تحدٍّ', function(x){ var r = R(x); return !!r && (r.chals || []).some(function(c){ return c && c !== 'لا توجد تحديات'; }); }); }
   /* الأشخاص والشركة */
   var pm = /(الفني|فني|المهندس|مهندس)\s+([^\s]{2,})/.exec(n);
   if (pm && aqRepStop().indexOf(pm[2]) < 0){ used.push(pm[1], pm[2]); var pn = pm[2]; add('who', pm[1].replace(/^ال/, '') + ' ' + pn, function(x){ var r = R(x), i = I(x); return [r && r.by, i && i.by].some(function(b){ return b && aqNorm(dispName(b)).indexOf(pn) > -1; }); }); }
@@ -3954,7 +3966,7 @@ function aqGoTo(spec){
 }
 function aqExamples(){
   if (ROLE === 'viewer') return ['كام نقطة اتركبت في منى؟', 'القرّاء اللي مش بترسل', 'المخيم 38/56'];
-  return ['كام نقطة اتركبت في منى؟', 'تقرير المخيمات حسب المشعر', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'PDF للنقاط اللي ليها بيانات 1447 ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
+  return ['كام نقطة اتركبت في منى؟', 'إكسل للممرات في منى اللي تحت كوبري', 'تقرير المخيمات حسب المشعر', 'إكسل للمخيمات في منى اللي اتركبت ومش بترسل', 'PDF للنقاط اللي ليها بيانات 1447 ومش مربوطة', 'القرّاء اللي مش بترسل', 'المخيم 38/56', 'رصيد الراوتر', 'مين متأخر في المهام؟', 'التحديات في منى', 'أعلى إشغال', 'إيه الناقص علشان نجهز؟'];
 }
 function assistHomeHtml(){
   var fy = assistForYou(), tp = assistTopPages(), pq = ASSIST_PAGE_Q[CUR] || [];

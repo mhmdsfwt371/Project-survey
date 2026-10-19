@@ -313,6 +313,9 @@ console.log('\n══ ١١ · التحديات حسب الموقع ══');
   T(w.chalCats(w.STATE.recs[cS.id]).includes('mount') && w.svStOf(cS.id) === 'prep', 'لوحةٌ استرشاديةٌ بلا مظلة: «يحتاج هيكل» ويُعَدّ تحدّيًا');
   T(!w.chalCats(w.STATE.recs[cSC.id]).length && !w.chalCats(w.STATE.recs[cC.id]).length, 'و«على مظلة» واللوحةُ التي عليها مظلةٌ ليستا تحدّيًا');
   T(w.chalCats(w.STATE.recs[cSt.id]).includes('block') && w.locApplies(cSt) && !w.locApplies(pick('مخيم')), 'والمحطةُ تُحسَب كالممر — والمخيمُ لا');
+  /* (V38.27) والتقريرُ بالكلام يفهم «موقع النقطة» */
+  const DR = w.aqRepData('إكسل للممرات اللي تحت كوبري');
+  T(DR.P.conds.some(c => c.label === 'تحت كوبري') && !DR.P.unknown.length && DR.rows.some(x => x.id === cB.id) && !DR.rows.some(x => x.id === cC.id), 'و«إكسل للممرات اللي تحت كوبري» يجد نقاطَ الكوبري وحدَها');
 }
 
 console.log(`\nنجح ${pass} · فشل ${fails.length}`);
