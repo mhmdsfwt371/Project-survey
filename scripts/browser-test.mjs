@@ -287,7 +287,9 @@ console.log('\n══ ٨ · ظروفُ منى: شبكةٌ بطيئةٌ ومعا�
     const t0 = Date.now();
     /* تحت الخنق يطول تحميلُ الملفّ الواحد (٨٧٥ كيلوبايت على ٤٠٠ كيلوبت/ث ≈ ٢٠ ثانية
        وأكثرُ على جهاز السحابة) — فالمهلةُ ٩٠ ثانية لا الافتراضية */
-    await p2.goto(base + 'index.html', { waitUntil:'domcontentloaded', timeout: 90000 });
+    /* (V38.40) core + chunk: 'domcontentloaded' would wait for the deferred app-office.js too; the technician sees the
+       login screen as soon as the core runs — that is the moment to measure. The chunk keeps downloading behind it. */
+    await p2.goto(base + 'index.html', { waitUntil:'commit', timeout: 90000 });
     await p2.waitForSelector('#lgGo', { timeout: 90000 });
     await p2.evaluate(() => { FB.signIn = () => Promise.resolve({ ok:true, role:'engineer', name:'مهندس' }); FB.legacyDone = () => true; window.pullDelta = () => Promise.resolve(0); window.liveWatch = () => {}; window.liveSmall = () => {};
       document.getElementById('lgU').value = 'eng.test'; document.getElementById('lgP').value = 'TestPass1234'; });
