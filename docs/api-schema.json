@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.32",
+  "app_version": "V38.33",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2190,7 +2190,8 @@
   "V38.29": "appUrl()",
   "V38.30": "CORE.queueTtlDays() · CORE.queueTtlApply() · CORE.queueExport() · CORE.queueImport() · ثابت queueTtl · data-qexport · data-qimport · data-qstaleclear",
   "V38.31": "EGATE_SEED · egList() · egOf() · egSave() · egAdd() · egMapPoints() · egPaint() · CFG.queueTtl=7",
-  "V38.32": "docs/dev-guide.md · code-map --check يرفض ملفًا بلا رأس"
+  "V38.32": "docs/dev-guide.md · code-map --check يرفض ملفًا بلا رأس",
+  "V38.33": "scripts/lib/strip.mjs (acorn) · build.mjs يجرّد الشيفرة من التعليقات"
   },
   "map_and_geolocation": {
     "tile_layers": {

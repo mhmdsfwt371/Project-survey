@@ -13,11 +13,12 @@
    القاعدة — ثم يصفّر فعلًا في متصفّحٍ صوريٍّ ويعدّ ما خرج إلى الطابور.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync } from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
 const { JSDOM, VirtualConsole } = require('jsdom');
-const html = readFileSync('index.html', 'utf8');
+const html = srcConcat();
 const js = /<script>([\s\S]*)<\/script>/.exec(html)[1];
 const rules = readFileSync('firestore.rules', 'utf8');
 let bad = 0; const T = (c, n, x) => { if (!c) bad++; console.log((c ? '  ✓ ' : '  ✗ ') + n + (x ? ' — ' + x : '')); };

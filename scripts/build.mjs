@@ -8,7 +8,10 @@ import { readFileSync, writeFileSync } from 'fs';
 import { srcFiles } from './lib/src.mjs';
 /* (V38.28) المجلّداتُ بالمجال — الترتيبُ بالمسار الكامل، والناتجُ بايتًا ببايت كما كان */
 const FILES = srcFiles();
-const out = FILES.map(f => readFileSync('src/' + f, 'utf8')).join('');
+/* (V38.33) the shipped file carries no comments: src/ is the readable source of truth, index.html is the download.
+   Deterministic, so `--check` rebuilds and compares the same way. */
+const { stripPage } = await import('./lib/strip.mjs');
+const out = stripPage(FILES.map(f => readFileSync('src/' + f, 'utf8')).join(''));
 if (process.argv.includes('--check')){
   const cur = readFileSync('index.html', 'utf8');
   if (cur !== out){ console.log('✗ index.html ليس ناتجَ src/ — عدِّل src/ ثم node scripts/build.mjs'); process.exit(1); }

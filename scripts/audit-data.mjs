@@ -10,6 +10,7 @@
    ما بناه التطبيقُ فعلًا. الرقمُ الخاطئ في لوحة الوزارة أسوأ من زرٍّ مفقود.
    ═════════════════════════════════════════════════════════════════════════ */
 import './lib/jsdom-dict.cjs';   /* القاموسُ في نافذة الفحص بعد فصله (V21.6) */
+import { srcConcat } from './lib/src.mjs';   /* (V38.33) text checks read the commented source; the shipped file is stripped */
 import { readFileSync, existsSync, statSync, readdirSync } from 'fs';
 import { dictSrc } from './lib/dict-src.mjs';
 import { createRequire } from 'module';
@@ -22,7 +23,7 @@ let pass = 0; const fails = [];
 const check = (cond, name) => { if (cond) pass++; else fails.push(name); };
 const eq = (a, b, name) => check(a === b, `${name} — المتوقَّع ${b} والموجود ${a}`);
 
-const html = readFileSync('index.html', 'utf8');
+const html = srcConcat();
 
 /* ── صنفٌ يُستعمَل ولا وجودَ له في التنسيق ────────────────────────────────
    `btn-light` كان يُوسَم به زرُّ «موقعي» على الخريطة ولا تعريفَ له. فيخرج
@@ -484,7 +485,7 @@ if (typeof w.siteStats === 'function'){
    نقطةٌ تُنشَأ تُدفَع إلى STATE.sites في جلستها وتُكتَب في newsites؛ ولولا
    دمجُها عند الإقلاع لاختفت من الخريطة بعد إعادة التحميل وهي في القاعدة. */
 {
-  const raw8 = readFileSync('index.html', 'utf8');
+  const raw8 = srcConcat();
   check(/Object\.keys\(STATE\.newsites\)\.forEach\(function\(k\)\{[\s\S]{0,1800}STATE\.sites\.push\(v\)/.test(raw8),   /* (V37.69) اتّسعت النافذةُ بسطر مقترحات الوزارة قبل الدفع */
     'المواقعُ الجديدةُ تُدمَج في السجل عند الإقلاع');
   check(/have\[v\.id\]\)\{[\s\S]{0,700}ex\.lat = \+v\.lat[\s\S]{0,200}ex\.name = v\.name/.test(raw8),
@@ -499,7 +500,7 @@ if (typeof w.siteStats === 'function'){
 
 /* ═══ فهرسُ المهامّ: بحثٌ لحظيٌّ لا مسحٌ كامل (V17.47) ═══ */
 {
-  const raw9 = readFileSync('index.html', 'utf8');
+  const raw9 = srcConcat();
   check(/function taskIndex\(\)\{[\s\S]{0,500}if \(TK_IX\) return TK_IX;/.test(raw9),
     'فهرسُ المهامِّ يُبنى مرةً ولا يُتحقَّق من صلاحيته بمسح المفاتيح');
   check(/function taskKindOf\(id, kind\)\{ return taskIndex\(\)\[id \+ '\|' \+ kind\] \|\| null; \}/.test(raw9),
@@ -509,7 +510,7 @@ if (typeof w.siteStats === 'function'){
 }
 
 console.log('\n══ نقاطُ الجمرات: مدخلٌ أو مخرج مع الدور — في الاسم والنافذة والتعديل (V25.4) ══');
-{ const raw10 = readFileSync('index.html', 'utf8');
+{ const raw10 = srcConcat();
   const jm = raw10.match(/\["NSK-JMR-PNT-00(0[1-9]|10)","([^"]+)"/g) || [];
   check(jm.length === 10 && jm.every(r => /مدخل (يسار|يمين|وسط)"$/.test(r)), 'مداخلُ الأدوار الأرضي والأول والثالث والرابع (٠٠٠١–٠٠١٠) تحمل «مدخل» في اسمها كمداخل الثاني ومخارجِ الكلّ');
   const jx = raw10.match(/\["NSK-JMR-PNT-00(1[4-9]|2[0-8])","([^"]+)"/g) || [];
@@ -519,7 +520,7 @@ console.log('\n══ نقاطُ الجمرات: مدخلٌ أو مخرج مع �
   check(/id="seGate"/.test(raw10) && /id="seFloor"/.test(raw10) && /patch\.name = jmrNameApply\(name, gt, fl === '' \? null : \+fl\);/.test(raw10), 'وتعديلُ البيانات لنقاط الجمرات يختار مدخل/مخرج والدورَ ويضيفهما إلى الاسم عند الحفظ'); }
 
 console.log('\n══ حذفُ النقطة المضافة نهائيًّا — للمهندس فما فوق، بتأكيدٍ واحدٍ يعرض المرتبط (V25.5) ══');
-{ const raw11 = readFileSync('index.html', 'utf8');
+{ const raw11 = srcConcat();
   const fnb = n => { const i = raw11.indexOf('function ' + n + '('); return i < 0 ? '' : raw11.slice(i, raw11.indexOf('\nfunction ', i + 10)); };
   const del = fnb('siteDelete');
   check(/if \(!maySiteEdit\(\)\)/.test(del) && /if \(!x\.isNew\)\{ toast\(t\('نقاطُ السجل الأصلي لا تُحذَف — تُخفى وتُستعاد'\)\); return false; \}/.test(del), 'الحذفُ للمهندس فما فوق، ونقاطُ السجل الأصلي لا تُحذَف');
@@ -530,14 +531,14 @@ console.log('\n══ حذفُ النقطة المضافة نهائيًّا — 
   check(/data-sitedelgo="' \+ esc\(x\.id\)/.test(raw11) && /data-sitedel="' \+ esc\(x\.id\)/.test(raw11) && /siteLocked\(x\.id\) \? [^\n]*\n\s*: !mayDeleteFinal\(\) \? '' *\n\s*: \(SITE_DEL === x\.id/.test(raw11) && /siteDeleteFinal\(stdg\.getAttribute\('data-sitedelgo'\)\)/.test(raw11), 'وزرُّ الحذف في نموذج التعديل حذفٌ نهائيٌّ للمهندس فما فوق بتأكيد، وقفلٌ لما رُكّب (ق-٠١٤ وق-٠١٦)'); }
 
 console.log('\n══ المسحُ لا يضيع إن أنهى الآيفونُ الصفحة (V25.9) ══');
-{ const raw12 = readFileSync('index.html', 'utf8');
+{ const raw12 = srcConcat();
   const fnb = n => { const i = raw12.indexOf('function ' + n + '('); return i < 0 ? '' : raw12.slice(i, raw12.indexOf('\nfunction ', i + 10)); };
   check(/URL\.createObjectURL\(file\)/.test(fnb('shrink')) && /URL\.revokeObjectURL\(url\)/.test(fnb('shrink')) && /cv\.width = 0; cv\.height = 0;/.test(fnb('shrink')), 'الصورةُ تُقرأ برابط ملفٍّ لا نصًّا، ويُحرَّر اللوحُ والرابطُ لحظةَ الانتهاء');
   check(/idbSet\('svDraft', \{ at:Date\.now\(\), by:/.test(raw12) && /SVD\.dirty = true; svDraftSave\(\);/.test(raw12) && /SVD\.dirty = true; svDraftSoon\(\);/.test(raw12) && /if \(document\.hidden && typeof SVD === 'object' && SVD\.dirty\) svDraftSave\(\);/.test(raw12), 'والنموذجُ يُحفَظ مسودةً مع كلِّ صورةٍ وحقلٍ ولحظةَ تخرج الصفحةُ إلى الكاميرا');
   check(/if \(typeof SVD === 'object' && !SVD\.checked && document\.getElementById\('nav'\)\)\{ SVD\.checked = true; setTimeout\(svDraftRestore, 1500\); \}/.test(raw12) && /d\.by !== STATE\.meta\.name\) return;/.test(raw12) && /svDraftClear\(\);   \/\* \(V25\.9\) حُفظ المسح/.test(raw12) && !/function formReset\(\)\{\n  if \(typeof svDraftClear/.test(raw12), 'ويُستعاد بعد الدخول (لا مسودةَ حسابٍ آخر)، ويُمسَح عند الحفظ وتبديل النقطة لا عند ضبط النموذج في الإقلاع'); }
 
 console.log('\n══ رسمُ الصفحات أخفّ (V26.1) ══');
-{ const raw13 = readFileSync('index.html', 'utf8');
+{ const raw13 = srcConcat();
   check(/function asnOf\(id\)\{[\s\S]{0,400}return taskIndex\(\)\['\*\|' \+ id\] \|\| null;/.test(raw13) && /if \(!ix\['\*\|' \+ x\.site\]\) ix\['\*\|' \+ x\.site\] = x;/.test(raw13), 'الإسنادُ من فهرس المهامِّ لا بالمرور على المهامِّ لكلِّ نقطة');
   check(/document\.addEventListener\('scroll', function\(e\)\{[\s\S]{0,600}\{ capture:true, passive:true \}\);/.test(raw13) && /SCROLL_SEEN = SCROLL_SEEN\.filter\(function\(el\)\{ return el\.isConnected; \}\);/.test(raw13) && /SCROLL_KEEP = \{ win:SCROLL_WIN, boxes:boxes(, keys:keys)? \};/.test(raw13) && /if \(SCROLL_TOPS\) SCROLL_TOPS\.set\(el, top\); else el\.__nskTop = top;/.test(raw13) && !/for \(var i = 0; i < L\.length; i\+\+\) if \(L\[i\]\.scrollTop\) boxes\.push/.test(raw13), 'ومواضعُ التمرير من سجل الحدث وحدَه — لا قراءةَ تخطيطٍ قبل الرسم (V26.2)');
   check(/TK_IX = null; FUP_MEMO = \{\};/.test(raw13) && /if \(FUP_MEMO && mk in FUP_MEMO\) return FUP_MEMO\[mk\];/.test(raw13), 'ونسبُ المتابعة تُحسَب مرةً في الرسمة'); }
