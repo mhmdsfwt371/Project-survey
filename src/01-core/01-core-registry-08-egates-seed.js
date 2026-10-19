@@ -39,12 +39,12 @@ function egOps(){ return ['غير مركّبة', 'قيد التركيب', 'تع�
 function egCard(x){
   if (!egIsStation(x)) return '';
   var L = egList(x.id), S = egSeed().stations[x.id], done = L.filter(function(g){ return g.no; }).length, can = typeof maySiteEditBasic === 'function' && maySiteEditBasic();
-  var head = alertBox('warn', t('جردٌ أوّليٌّ من مراجعة الرسومات (صفحات') + ' ' + S.pages.map(nm).join('، ') + ') — ' + t('البواباتُ موزَّعةٌ على سياج المحطة كما في المخطط (مواقعُ تقريبية) حتى يثبّت المسحُ موقعَ كلٍّ منها، والعددُ والمعرِّفاتُ مؤقّتةٌ حتى تُطابَق على الرسومات الأصلية'));
+  var head = alertBox('warn', t('جردٌ أوّليٌّ من مراجعة الرسومات (صفحات') + ' ' + S.pages.map(nm).join('، ') + ') — ' + t('كلُّ بوابةٍ في موضعها المقروء من مخطط سار (صفحةً صفحة — دقّة ±٢٠ م لأن المخطط غير مرجَّعٍ جغرافيًّا) حتى يثبّت المسحُ موقعَها؛ ورقمُها هو رقمُ الرسمة'));
   var rows = L.map(function(g){
     var open = egCard.open === g.id;
     var line = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line)">'
       + '<b class="num">' + esc(g.label) + '</b>'
-      + (g.no ? pill(t('رقم الرسمة') + ' ' + g.no, 'acc') : pill('غير مطابَق', 'warn'))
+      + (g.no ? pill(t('رقم الرسمة') + ' ' + g.no, 'acc') : (/^(E-GATE|PATH)/.test(g.label) ? pill(t('من الرسمة') + ' \u2014 ' + t('يُؤكَّد ميدانيًّا'), 'info') : pill('غير مطابَق', 'warn')))   /* (V38.37) the label is the drawing's own gate number */
       + (g.moved ? pill('\u{1F4CD} ' + t('موقعٌ محدَّدٌ بالمسح'), 'ok') : pill('موقعٌ تقريبيٌّ من المخطط', ''))
       + (g.op ? pill(g.op, g.op === 'تعمل' ? 'ok' : g.op === 'معطّلة' ? 'bad' : 'info') : '')
       + (g.readers ? '<span class="hint" style="margin:0">' + esc(t('قرّاء')) + ': ' + esc(g.readers) + '</span>' : '')
