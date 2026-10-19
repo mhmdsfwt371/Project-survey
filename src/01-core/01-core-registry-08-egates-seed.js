@@ -30,7 +30,7 @@ function egOf(x){
   if (!x) return null;
   var ov = (STATE.siteOv && STATE.siteOv[x.id]) || {}, g = function(k){ return ov[k] !== undefined ? ov[k] : (x[k] || ''); };
   var st = STATE.sites.filter(function(s){ return egIsStation(s) && egSeed().stations[s.id].code === x.sq; })[0];
-  var moved = !!(st && (Math.abs(+x.lat - +st.lat) > 0.0002 || Math.abs(+x.lng - +st.lng) > 0.0002));   /* > ~20 m from the reference = surveyed position */
+  var moved = !!(ov.lat && ov.lng);   /* (V38.35) a surveyed position is an explicit override; the registry position is the drawing layout */
   return { id:x.id, label:x.sign || x.id, stn:st ? st.id : '', pages:(st && egSeed().stations[st.id].pages) || [], lat:+x.lat, lng:+x.lng, moved:moved,
            no:g('gateNo'), readers:g('readers'), op:g('opStatus'), draw:g('drawRef'), note:g('gateNote'), at:ov.gateAt || 0, by:ov.gateBy || '' };
 }
@@ -39,13 +39,13 @@ function egOps(){ return ['غير مركّبة', 'قيد التركيب', 'تع�
 function egCard(x){
   if (!egIsStation(x)) return '';
   var L = egList(x.id), S = egSeed().stations[x.id], done = L.filter(function(g){ return g.no; }).length, can = typeof maySiteEditBasic === 'function' && maySiteEditBasic();
-  var head = alertBox('warn', t('جردٌ أوّليٌّ من مراجعة الرسومات (صفحات') + ' ' + S.pages.map(nm).join('، ') + ') — ' + t('البواباتُ موضوعةٌ عند مرجع المحطة حتى يحدّد المسحُ موقعَ كلٍّ منها، والعددُ والمعرِّفاتُ مؤقّتةٌ حتى تُطابَق على الرسومات الأصلية'));
+  var head = alertBox('warn', t('جردٌ أوّليٌّ من مراجعة الرسومات (صفحات') + ' ' + S.pages.map(nm).join('، ') + ') — ' + t('البواباتُ موزَّعةٌ على سياج المحطة كما في المخطط (مواقعُ تقريبية) حتى يثبّت المسحُ موقعَ كلٍّ منها، والعددُ والمعرِّفاتُ مؤقّتةٌ حتى تُطابَق على الرسومات الأصلية'));
   var rows = L.map(function(g){
     var open = egCard.open === g.id;
     var line = '<div style="display:flex;flex-wrap:wrap;gap:6px;align-items:center;padding:6px 0;border-top:1px solid var(--line)">'
       + '<b class="num">' + esc(g.label) + '</b>'
       + (g.no ? pill(t('رقم الرسمة') + ' ' + g.no, 'acc') : pill('غير مطابَق', 'warn'))
-      + (g.moved ? pill('\u{1F4CD} ' + t('موقعٌ محدَّدٌ بالمسح'), 'ok') : pill('عند مرجع المحطة', ''))
+      + (g.moved ? pill('\u{1F4CD} ' + t('موقعٌ محدَّدٌ بالمسح'), 'ok') : pill('موقعٌ تقريبيٌّ من المخطط', ''))
       + (g.op ? pill(g.op, g.op === 'تعمل' ? 'ok' : g.op === 'معطّلة' ? 'bad' : 'info') : '')
       + (g.readers ? '<span class="hint" style="margin:0">' + esc(t('قرّاء')) + ': ' + esc(g.readers) + '</span>' : '')
       + '<span style="margin-inline-start:auto"></span>'
