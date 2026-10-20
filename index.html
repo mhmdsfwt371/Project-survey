@@ -1244,6 +1244,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .ver-tag.upd{border-color:var(--warn,#E8873A);color:var(--warn,#E8873A);opacity:1}
 @media(max-width:560px){ .ver-tag{font-size:10px;padding:3px 7px} }
 
+/* (V38.46) report builder — compact on a phone: two columns always, small boxes */
+.rb-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
+.rb-f{margin:0}.rb-f label{font-size:11px;margin:0 0 2px;opacity:.85}
+.rb-f select,.rb-f input{padding:6px 8px;min-height:36px;font-size:13px}
+.rb-more summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
@@ -1285,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.45</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.46</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1349,7 +1354,7 @@ function nskChunkReady(){
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
 }
-var I18N_FILE = 'i18n/dict-9252fc4d26.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-19b2b09dbc.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6613,16 +6618,20 @@ function rbShows(key, pop){
 }
 function rbHtml(){
   var S = rbState(), O = rbOptions(), pop = S.sel.pop || '';
-  var sel = function(g){ return '<div class="field"><label>' + esc(t(g[1])) + '</label><select data-rb="' + esc(g[0]) + '">'
+
+  var sel = function(g){ return '<div class="field rb-f"><label>' + esc(t(g[1])) + '</label><select data-rb="' + esc(g[0]) + '">'
     + g[2].map(function(o){ return '<option value="' + esc(o[0]) + '"' + (S.sel[g[0]] === o[0] ? ' selected' : '') + '>' + esc(t(o[1])) + '</option>'; }).join('') + '</select></div>'; };
-  var inp = function(k, lbl, ph, type){ return '<div class="field"><label>' + esc(t(lbl)) + '</label><input data-rb="' + k + '" type="' + (type || 'text') + '" value="' + esc(S.sel[k] || '') + '" placeholder="' + esc(t(ph)) + '"></div>'; };
+  var inp = function(k, lbl, ph, type){ return '<div class="field rb-f"><label>' + esc(t(lbl)) + '</label><input data-rb="' + k + '" type="' + (type || 'text') + '" value="' + esc(S.sel[k] || '') + '" placeholder="' + esc(t(ph)) + '"></div>'; };
+  var ESS = { pop:1, zone:1, cat:1, type:1, sv:1, ins:1, ccat:1, cdesc:1, pstat:1, pkind:1, pwhen:1 };
+  var moreOn = Object.keys(S.sel).some(function(k){ return S.sel[k] && !ESS[k] && k !== 'group' && k !== 'occ'; });
   var favs = rbFavs();
   var q = rbSentence();
   return '<details class="card" style="margin:0 0 10px"' + (S.open ? ' open' : '') + ' data-rbopen="1"><summary style="cursor:pointer;font-weight:700">\u{1F9EE} ' + esc(t('منشئ التقارير')) + ' <span class="hint" style="font-weight:400">' + esc(t('اختر الشروط فيحسب العدد والقائمة والملف')) + '</span></summary>'
-    + '<div class="grid cols-2" style="margin:8px 0 0">' + O.filter(function(g){ return g[0] !== 'group' && rbShows(g[0], pop); }).map(sel).join('')
+    + '<div class="rb-grid" style="margin:8px 0 0">' + O.filter(function(g){ return g[0] !== 'group' && ESS[g[0]] && rbShows(g[0], pop); }).map(sel).join('') + sel(O[O.length - 1]) + '</div>'
+    + '<details class="rb-more"' + (moreOn ? ' open' : '') + '><summary class="hint" style="cursor:pointer;margin:6px 0 2px">' + esc(t('المزيد من الشروط')) + ' \u25BE</summary><div class="rb-grid">'
+    + O.filter(function(g){ return g[0] !== 'group' && !ESS[g[0]] && rbShows(g[0], pop); }).map(sel).join('')
     + (S.sel.ov === 'gt' || S.sel.ov === 'lt' ? inp('occ', 'نسبة الإشغال %', '50', 'number') : '')
-    + inp('co', 'الشركة', 'جزء من الاسم') + inp('tech', 'الفني', 'الاسم') + inp('block', 'المربع', 'رقم المربع')
-    + sel(O[O.length - 1]) + '</div>'
+    + inp('co', 'الشركة', 'جزء من الاسم') + inp('tech', 'الفني', 'الاسم') + inp('block', 'المربع', 'رقم المربع') + '</div></details>'
     + '<div id="rbPrev">' + rbPreviewHtml() + '</div>'
     + '<div class="actions">' + (pop ? btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-rbrun="' + esc(pop) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-rbxls="' + esc(pop) + '"')
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
@@ -19086,6 +19095,8 @@ var SESS_PW = '';
 
 var RELEASE_NOTES = [
 
+  { v:'V38.46', d:'2026-10-20', notes:[
+      'منشئ التقارير مضغوط على الهاتف: عمودان دائمًا، الأساسي ظاهر والباقي تحت «المزيد من الشروط»' ] },
   { v:'V38.45', d:'2026-10-20', notes:[
       'منشئ التقارير: التحديات والصور سكّانًا — شروط النقاط ثم كل تحدٍّ أو صورة بعددها وقائمتها وإكسلها' ] },
   { v:'V38.44', d:'2026-10-20', notes:[
@@ -30156,6 +30167,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.45"></script>
+<script defer src="app-office.js?v=38.46"></script>
 </body>
 </html>

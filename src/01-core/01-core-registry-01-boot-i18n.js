@@ -50,7 +50,7 @@ function nskChunkReady(){
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
 }
-var I18N_FILE = 'i18n/dict-9252fc4d26.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
+var I18N_FILE = 'i18n/dict-19b2b09dbc.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }   /* بيئةُ الفحص تحقنه */

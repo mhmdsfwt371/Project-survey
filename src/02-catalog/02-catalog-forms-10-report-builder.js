@@ -79,16 +79,20 @@ function rbShows(key, pop){
 }
 function rbHtml(){
   var S = rbState(), O = rbOptions(), pop = S.sel.pop || '';
-  var sel = function(g){ return '<div class="field"><label>' + esc(t(g[1])) + '</label><select data-rb="' + esc(g[0]) + '">'
+  /* (V38.46) compact on a phone: two columns always, small boxes, and only the essentials open — the rest under «more» */
+  var sel = function(g){ return '<div class="field rb-f"><label>' + esc(t(g[1])) + '</label><select data-rb="' + esc(g[0]) + '">'
     + g[2].map(function(o){ return '<option value="' + esc(o[0]) + '"' + (S.sel[g[0]] === o[0] ? ' selected' : '') + '>' + esc(t(o[1])) + '</option>'; }).join('') + '</select></div>'; };
-  var inp = function(k, lbl, ph, type){ return '<div class="field"><label>' + esc(t(lbl)) + '</label><input data-rb="' + k + '" type="' + (type || 'text') + '" value="' + esc(S.sel[k] || '') + '" placeholder="' + esc(t(ph)) + '"></div>'; };
+  var inp = function(k, lbl, ph, type){ return '<div class="field rb-f"><label>' + esc(t(lbl)) + '</label><input data-rb="' + k + '" type="' + (type || 'text') + '" value="' + esc(S.sel[k] || '') + '" placeholder="' + esc(t(ph)) + '"></div>'; };
+  var ESS = { pop:1, zone:1, cat:1, type:1, sv:1, ins:1, ccat:1, cdesc:1, pstat:1, pkind:1, pwhen:1 };
+  var moreOn = Object.keys(S.sel).some(function(k){ return S.sel[k] && !ESS[k] && k !== 'group' && k !== 'occ'; });
   var favs = rbFavs();
   var q = rbSentence();
   return '<details class="card" style="margin:0 0 10px"' + (S.open ? ' open' : '') + ' data-rbopen="1"><summary style="cursor:pointer;font-weight:700">\u{1F9EE} ' + esc(t('منشئ التقارير')) + ' <span class="hint" style="font-weight:400">' + esc(t('اختر الشروط فيحسب العدد والقائمة والملف')) + '</span></summary>'
-    + '<div class="grid cols-2" style="margin:8px 0 0">' + O.filter(function(g){ return g[0] !== 'group' && rbShows(g[0], pop); }).map(sel).join('')
+    + '<div class="rb-grid" style="margin:8px 0 0">' + O.filter(function(g){ return g[0] !== 'group' && ESS[g[0]] && rbShows(g[0], pop); }).map(sel).join('') + sel(O[O.length - 1]) + '</div>'
+    + '<details class="rb-more"' + (moreOn ? ' open' : '') + '><summary class="hint" style="cursor:pointer;margin:6px 0 2px">' + esc(t('المزيد من الشروط')) + ' \u25BE</summary><div class="rb-grid">'
+    + O.filter(function(g){ return g[0] !== 'group' && !ESS[g[0]] && rbShows(g[0], pop); }).map(sel).join('')
     + (S.sel.ov === 'gt' || S.sel.ov === 'lt' ? inp('occ', 'نسبة الإشغال %', '50', 'number') : '')
-    + inp('co', 'الشركة', 'جزء من الاسم') + inp('tech', 'الفني', 'الاسم') + inp('block', 'المربع', 'رقم المربع')
-    + sel(O[O.length - 1]) + '</div>'
+    + inp('co', 'الشركة', 'جزء من الاسم') + inp('tech', 'الفني', 'الاسم') + inp('block', 'المربع', 'رقم المربع') + '</div></details>'
     + '<div id="rbPrev">' + rbPreviewHtml() + '</div>'
     + '<div class="actions">' + (pop ? btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-rbrun="' + esc(pop) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-rbxls="' + esc(pop) + '"')
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))

@@ -1244,6 +1244,11 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
 .ver-tag.upd{border-color:var(--warn,#E8873A);color:var(--warn,#E8873A);opacity:1}
 @media(max-width:560px){ .ver-tag{font-size:10px;padding:3px 7px} }
 
+/* (V38.46) report builder — compact on a phone: two columns always, small boxes */
+.rb-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px 8px}
+.rb-f{margin:0}.rb-f label{font-size:11px;margin:0 0 2px;opacity:.85}
+.rb-f select,.rb-f input{padding:6px 8px;min-height:36px;font-size:13px}
+.rb-more summary::-webkit-details-marker{display:none}
 </style>
 </head>
 <body>
@@ -1285,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.45</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.46</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
