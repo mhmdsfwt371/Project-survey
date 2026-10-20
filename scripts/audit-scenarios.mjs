@@ -391,6 +391,14 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
     T(rows({ pop:'chal', zone:'منى' }).filter(r => r.x.id === s1.id).map(r => r.k).join() === 'mount,beam' && !rows({ pop:'chal', zone:'منى' }).some(r => r.x.id === s2.id) && rows({ pop:'chal', cdesc:'without' }).some(r => r.k === 'entry' && r.x.id === s2.id) && !rows({ pop:'chal', cdesc:'without' }).some(r => r.x.id === s1.id) && (w.rbState().sel = { pop:'chal', group:'cgroup' }, w.rbPopCard('chal').indexOf('تصنيع وتجهيز') > -1), 'والتحدياتُ سكّانٌ: شروطُ النقاط ثم كلُّ تحدٍّ بفئته وجهة معالجته ووصفه');
     T(rows({ pop:'photo', pstat:'up' }).some(r => r.id === s1.id + '-t1') && !rows({ pop:'photo', pstat:'up' }).some(r => r.id === s2.id + '-t1') && rows({ pop:'photo', pwhen:'7' }).some(r => r.id === s1.id + '-t1') && !rows({ pop:'photo', pwhen:'7' }).some(r => r.id === s2.id + '-t1'), 'والصورُ سكّانٌ: مرفوعةٌ أو بانتظار الرفع، وزمنُها');
     w.STATE.recs[s1.id] = kr1; w.STATE.recs[s2.id] = kr2; if (!kr1) delete w.STATE.recs[s1.id]; if (!kr2) delete w.STATE.recs[s2.id]; delete w.STATE.photos[s1.id + '-t1']; delete w.STATE.photos[s2.id + '-t1']; w.rbState().sel = {}; }
+  /* (V38.47) the weekly tasks: late / this week / open, by owner and track — no point conditions apply */
+  { const keepW = w.STATE.wtask; w.STATE.wtask = { rows:[] }; const keepSet = w.CORE.set; w.CORE.set = () => {}; const keepRender = w.render; w.render = () => {};   /* wtAdd re-renders; the scenario page has no shell */
+    w.wtAdd({ n:'تجهيز الهياكل', track:'التصنيع', who:'أحمد', due:w.dayKey(Date.now() - 3 * 864e5) }); w.wtAdd({ n:'زيارة منى ٢', track:'الميدان', who:'سعد', due:w.dayKey(Date.now() + 2 * 864e5) }); w.wtAdd({ n:'تقرير الوزارة', track:'الوزارة', who:'أحمد', st:'مكتمل' });
+    const rows = sel => { w.rbState().sel = sel; return w.rbPopRows('task'); };
+    T(rows({ pop:'task' }).length === 3 && rows({ pop:'task', tst:'late' }).map(r => r.r.n).join() === 'تجهيز الهياكل' && rows({ pop:'task', tst:'week' }).map(r => r.r.n).join() === 'زيارة منى ٢' && rows({ pop:'task', tst:'open' }).length === 2 && rows({ pop:'task', twho:'أحمد' }).length === 2, 'والمهامُّ الأسبوعيةُ سكّانٌ: متأخّرة / هذا الأسبوع / مفتوحة، وبالمسؤول والمسار');
+    w.rbState().sel = { pop:'task' }; const hT = w.rbHtml();
+    T(hT.indexOf('data-rb="tst"') > -1 && hT.indexOf('data-rb="zone"') < 0 && hT.indexOf('data-rbrun="task"') > -1, 'وشروطُ النقاط تختفي للمهام — قوائمُها الحالةُ والمسارُ والمسؤولُ فقط');
+    w.STATE.wtask = keepW; w.CORE.set = keepSet; w.render = keepRender; w.rbState().sel = {}; }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }
