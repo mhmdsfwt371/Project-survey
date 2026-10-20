@@ -6,7 +6,7 @@
              technician, block, group-by; V38.45: also the challenges and the photos of those points; V38.47: the weekly tasks by status, track and owner) and sees the exact sentence and the conditions understood before computing.
              It feeds the existing reports-by-words engine (aqRepParse/aqRepData/aqRepCard), so every number has its
              list and its Excel/PDF; favourites are kept on the device by name.
-   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavs, rbFavSave, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
+   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
    NOTE    : Build order is the full path (see scripts/build.mjs). New comments are written in English.
    ============================================================================ */
 function rbState(){ return rbState.s || (rbState.s = { sel:{}, open:false }); }
@@ -103,19 +103,38 @@ function rbHtml(){
     + '<div id="rbPrev">' + rbPreviewHtml() + '</div>'
     + '<div class="actions">' + (pop ? btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-rbrun="' + esc(pop) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-rbxls="' + esc(pop) + '"')
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
-    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
+    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
     + '<div id="rbOut">' + (S.out || '') + '</div>'
-    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + '">\u2605 ' + esc(f.name) + '</button><button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'; }).join('') + '</div>' : '')
+    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
     + '</details>';
 }
-function rbFavs(){ try { return JSON.parse(localStorage.getItem('nsk14.rbFav') || '[]'); } catch (e){ return []; } }
-function rbFavSave(name){
+/* (V38.48) favourites: the team's shared ones live in the settings lists (CFG.lists.rbFav, one JSON string each — written by
+   whoever may change settings, read by everyone), the personal ones on the device */
+function rbFavLocal(){ try { return JSON.parse(localStorage.getItem('nsk14.rbFav') || '[]'); } catch (e){ return []; } }
+function rbFavShared(){ var L = (CFG.lists && Array.isArray(CFG.lists.rbFav)) ? CFG.lists.rbFav : []; return L.map(function(s){ try { var f = JSON.parse(s); return f && f.name ? Object.assign({ shared:true }, f) : null; } catch (e){ return null; } }).filter(Boolean); }
+function rbFavs(){ return rbFavShared().concat(rbFavLocal()); }
+function rbFavMayShare(){ return typeof may === 'function' && may('settings'); }
+function rbFavSave(name, shared){
   var q = rbSentence(); name = String(name || '').trim(); if (!name) return false;
-  var L = rbFavs().filter(function(f){ return f.name !== name; }); L.push({ name:name, q:q, sel:Object.assign({}, rbState().sel), at:Date.now() });
+  var f = { name:name, q:q, sel:Object.assign({}, rbState().sel), at:Date.now(), by:STATE.meta.name || '' };
+  if (shared){
+    if (!rbFavMayShare()){ toast(t('المفضّلةُ المشتركةُ للمهندس فما فوق')); return false; }
+    var S = rbFavShared().filter(function(x){ return x.name !== name; }).map(function(x){ delete x.shared; return JSON.stringify(x); }); S.push(JSON.stringify(f));
+    CFG.lists = CFG.lists || {}; CFG.lists.rbFav = S; cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1;
+    logEvent('مفضّلةُ تقاريرَ مشتركة — ' + name + ' — ' + q); return true;
+  }
+  var L = rbFavLocal().filter(function(x){ return x.name !== name; }); L.push(f);
   try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; }
   logEvent('مفضّلةُ تقارير — ' + name + ' — ' + q); return true;
 }
-function rbFavDel(i){ var L = rbFavs(); L.splice(+i, 1); try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; } }
+function rbFavDel(i){
+  var all = rbFavs(), f = all[+i]; if (!f) return false;
+  if (f.shared){
+    if (!rbFavMayShare()){ toast(t('المفضّلةُ المشتركةُ للمهندس فما فوق')); return false; }
+    CFG.lists.rbFav = rbFavShared().filter(function(x){ return x.name !== f.name; }).map(function(x){ delete x.shared; return JSON.stringify(x); }); cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; return true;
+  }
+  var L = rbFavLocal().filter(function(x){ return x.name !== f.name; }); try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; } return true;
+}
 /* a dropdown or box changed: keep the choice, refresh the preview and the buttons' sentence without redrawing the form */
 function rbOnChange(el){
   var k = el.getAttribute('data-rb'); if (!k) return;

@@ -427,7 +427,7 @@ function clickTables(e){
   if (skb){ skinSet(skb.getAttribute('data-skin')); toast(t('تغيّر المظهر — على هذا الجهاز فقط')); return true; }
   if (e.target.closest('[data-assistback]')){ assistGoHome(); return true; }   /* (V37.40) */
   /* (V38.43) report builder: save a favourite, delete one, clear the conditions */
-  var rbs = e.target.closest('[data-rbsave]'); if (rbs){ var nmF = prompt(t('اسم التقرير المفضّل')); if (nmF && rbFavSave(nmF)){ toast('\u2605 ' + t('حُفظ')); var rsF = document.getElementById('assistRes'); if (rsF) rsF.innerHTML = assistResHtml(); else render(1); } return true; }
+  var rbs = e.target.closest('[data-rbsave]'); if (rbs){ var nmF = prompt(t(rbs.getAttribute('data-rbsave') === 'team' ? 'اسم التقرير المشترك للفريق' : 'اسم التقرير المفضّل')); if (nmF && rbFavSave(nmF, rbs.getAttribute('data-rbsave') === 'team')){ toast('\u2605 ' + t('حُفظ')); var rsF = document.getElementById('assistRes'); if (rsF) rsF.innerHTML = assistResHtml(); else render(1); } return true; }
   var rbd = e.target.closest('[data-rbdel]'); if (rbd){ rbFavDel(rbd.getAttribute('data-rbdel')); var rsD = document.getElementById('assistRes'); if (rsD) rsD.innerHTML = assistResHtml(); else render(1); return true; }
   var rbr = e.target.closest('[data-rbrun]'); if (rbr){ rbRun(rbr.getAttribute('data-rbrun')); return true; }
   var rbx = e.target.closest('[data-rbxls]'); if (rbx){ rbXls(rbx.getAttribute('data-rbxls')); return true; }

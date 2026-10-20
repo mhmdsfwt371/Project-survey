@@ -1,6 +1,6 @@
 {
   "schema": "nusuk-docs/1",
-  "app_version": "V38.47",
+  "app_version": "V38.48",
   "generated_at": "2026-08-05",
   "description": "المخطط الآلي الكامل لمتابعة المشروع ١٤٤٨ — كل الكائنات والحقول والواجهات والاستجابات. الشرح البشري في docs/system.md",
   "app": {
@@ -2205,7 +2205,8 @@
   "V38.44": "شرط when في محرك التقارير · قائمة «الزمن» في المنشئ",
   "V38.45": "rbPopRows() · rbPopCard() · rbRun() · rbXls() — قائمة «التقرير عن»",
   "V38.46": "CSS .rb-grid/.rb-f/.rb-more",
-  "V38.47": "pop=task في rbPopRows"
+  "V38.47": "pop=task في rbPopRows",
+  "V38.48": "rbFavShared() · rbFavSave(name, shared) · CFG.lists.rbFav"
   },
   "map_and_geolocation": {
     "tile_layers": {

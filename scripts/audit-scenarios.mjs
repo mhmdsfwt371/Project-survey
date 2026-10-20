@@ -399,6 +399,15 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
     w.rbState().sel = { pop:'task' }; const hT = w.rbHtml();
     T(hT.indexOf('data-rb="tst"') > -1 && hT.indexOf('data-rb="zone"') < 0 && hT.indexOf('data-rbrun="task"') > -1, 'وشروطُ النقاط تختفي للمهام — قوائمُها الحالةُ والمسارُ والمسؤولُ فقط');
     w.STATE.wtask = keepW; w.CORE.set = keepSet; w.render = keepRender; w.rbState().sel = {}; }
+  /* (V38.48) shared favourites: engineer and up write them to the settings lists; everyone reads them; a supervisor cannot delete them */
+  { const keepDirty = w.CORE.dirty; w.CORE.dirty = () => {}; const keepLists = w.CFG.lists; w.CFG.lists = Object.assign({}, keepLists || {}); delete w.CFG.lists.rbFav;
+    w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.rbState().sel = { zone:'منى', ins:'no' };
+    const okShare = w.rbFavSave('ناقص منى — للفريق', true) && (w.CFG.lists.rbFav || []).length === 1 && w.rbFavs().some(f => f.shared && f.name === 'ناقص منى — للفريق');
+    w.ROLE = 'supervisor'; w.STATE.meta.role = 'supervisor';
+    const supSees = w.rbFavs().some(f => f.shared && f.name === 'ناقص منى — للفريق'), supCannot = !w.rbFavDel(0) && (w.CFG.lists.rbFav || []).length === 1 && w.rbHtml().indexOf('data-rbsave="team"') < 0;
+    w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; const engDel = w.rbFavDel(0) && !(w.CFG.lists.rbFav || []).length;
+    T(okShare && supSees && supCannot && engDel, 'والمفضّلةُ المشتركةُ: يكتبها المهندسُ فما فوق في إعدادات الفريق، ويراها الكلُّ، ولا يحذفها المشرف');
+    w.CFG.lists = keepLists; w.CORE.dirty = keepDirty; w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.rbState().sel = {}; }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }
