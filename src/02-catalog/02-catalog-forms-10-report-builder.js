@@ -6,7 +6,7 @@
              technician, block, group-by; V38.45: also the challenges and the photos of those points; V38.47: the weekly tasks by status, track and owner) and sees the exact sentence and the conditions understood before computing.
              It feeds the existing reports-by-words engine (aqRepParse/aqRepData/aqRepCard), so every number has its
              list and its Excel/PDF; favourites are kept on the device by name.
-   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
+   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavPin, rbCountOf, rbSnap, rbPinnedHtml, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
    NOTE    : Build order is the full path (see scripts/build.mjs). New comments are written in English.
    ============================================================================ */
 function rbState(){ return rbState.s || (rbState.s = { sel:{}, open:false }); }
@@ -105,7 +105,7 @@ function rbHtml(){
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
     + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
     + '<div id="rbOut">' + (S.out || '') + '</div>'
-    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
+    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbpin="' + i + '" title="' + esc(t(f.pin ? 'إلغاء التثبيت' : 'تثبيت في أعلى المساعد')) + '">' + (f.pin ? '\u{1F4CC}' : '\u{1F4CD}') + '</button><button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
     + '</details>';
 }
 /* (V38.48) favourites: the team's shared ones live in the settings lists (CFG.lists.rbFav, one JSON string each — written by
@@ -126,6 +126,34 @@ function rbFavSave(name, shared){
   var L = rbFavLocal().filter(function(x){ return x.name !== name; }); L.push(f);
   try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; }
   logEvent('مفضّلةُ تقارير — ' + name + ' — ' + q); return true;
+}
+/* (V38.49) pinned reports: a favourite with pin:true is computed on every visit to the assistant and shown as a card with
+   its count and the change since the previous day (snapshot per device); personal pins are on the device, team pins in the lists */
+function rbFavPin(i){
+  var all = rbFavs(), f = all[+i]; if (!f) return false;
+  if (f.shared){ if (!rbFavMayShare()){ toast(t('المفضّلةُ المشتركةُ للمهندس فما فوق')); return false; }
+    CFG.lists.rbFav = rbFavShared().map(function(x){ if (x.name === f.name) x.pin = !x.pin; delete x.shared; return JSON.stringify(x); }); cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; return true; }
+  var L = rbFavLocal().map(function(x){ if (x.name === f.name) x.pin = !x.pin; return x; }); try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; } return true;
+}
+function rbCountOf(f){
+  var keep = rbState().sel; rbState().sel = Object.assign({}, f.sel || {});
+  var n; try { n = (f.sel && f.sel.pop) ? rbPopRows(f.sel.pop).length : aqRepData(f.q || rbSentence()).rows.length; } catch (e){ n = -1; LS_ERR = e; }
+  rbState().sel = keep; return n;
+}
+function rbSnap(){ try { return JSON.parse(localStorage.getItem('nsk14.rbSnap') || '{}'); } catch (e){ return {}; } }
+function rbPinnedHtml(){
+  var P = rbFavs().filter(function(f){ return f.pin; }); if (!P.length) return '';
+  var S = rbSnap(), today = dayKey(Date.now()), changed = false;
+  var cards = P.map(function(f, i){
+    var n = rbCountOf(f), s = S[f.name] || {};
+    if (s.day !== today){ S[f.name] = { day:today, n:n, prevDay:s.day || '', prevN:(s.day ? s.n : null) }; changed = true; s = S[f.name]; }
+    var d = (s.prevN == null) ? null : n - s.prevN, unit = f.sel && f.sel.pop === 'chal' ? 'تحدٍّ' : f.sel && f.sel.pop === 'photo' ? 'صورة' : f.sel && f.sel.pop === 'task' ? 'مهمة' : 'نقطة';
+    var open = (f.sel && f.sel.pop) ? ' data-rbfav="' + rbFavs().indexOf(f) + '"' : ' data-assistq="' + esc(f.q) + '"';
+    return '<button type="button" class="kk-zl" style="width:100%;text-align:start;margin:3px 0"' + open + '><span>' + (f.shared ? '\u{1F465} ' : '\u{1F4CC} ') + esc(f.name) + '<br><span class="hint" style="margin:0">' + esc(t(unit)) + '</span></span>'
+      + '<span><b class="num" style="font-size:1.2em">' + nm(n < 0 ? 0 : n) + '</b>' + (d == null ? '' : ' ' + pill((d > 0 ? '+' : '') + nm(d), d > 0 ? 'warn' : d < 0 ? 'ok' : '') + '<span class="hint" style="margin:0 4px">' + esc(t('منذ')) + ' ' + esc(s.prevDay) + '</span>') + '</span></button>';
+  }).join('');
+  if (changed){ try { localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); } catch (e){ LS_ERR = e; } }
+  return card('\u{1F4CC} ' + t('تقاريري المثبّتة') + ' \u00b7 ' + nm(P.length), cards + '<p class="hint" style="margin:6px 0 0">' + esc(t('الرقمُ يُحسَب الآن من البيانات، والتغيُّر مقارنةً بآخر يومٍ فُتح فيه المساعد على هذا الجهاز')) + '</p>');
 }
 function rbFavDel(i){
   var all = rbFavs(), f = all[+i]; if (!f) return false;

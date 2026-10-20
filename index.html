@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.48</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.49</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1354,7 +1354,7 @@ function nskChunkReady(){
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
 }
-var I18N_FILE = 'i18n/dict-be83dac1ee.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-9eda70d89d.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6644,7 +6644,7 @@ function rbHtml(){
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
     + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
     + '<div id="rbOut">' + (S.out || '') + '</div>'
-    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
+    + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbpin="' + i + '" title="' + esc(t(f.pin ? 'إلغاء التثبيت' : 'تثبيت في أعلى المساعد')) + '">' + (f.pin ? '\u{1F4CC}' : '\u{1F4CD}') + '</button><button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
     + '</details>';
 }
 
@@ -6664,6 +6664,33 @@ function rbFavSave(name, shared){
   var L = rbFavLocal().filter(function(x){ return x.name !== name; }); L.push(f);
   try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; }
   logEvent('مفضّلةُ تقارير — ' + name + ' — ' + q); return true;
+}
+
+function rbFavPin(i){
+  var all = rbFavs(), f = all[+i]; if (!f) return false;
+  if (f.shared){ if (!rbFavMayShare()){ toast(t('المفضّلةُ المشتركةُ للمهندس فما فوق')); return false; }
+    CFG.lists.rbFav = rbFavShared().map(function(x){ if (x.name === f.name) x.pin = !x.pin; delete x.shared; return JSON.stringify(x); }); cfgPushSoon('lists'); CFG_VER = (typeof CFG_VER === 'number' ? CFG_VER : 0) + 1; return true; }
+  var L = rbFavLocal().map(function(x){ if (x.name === f.name) x.pin = !x.pin; return x; }); try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; } return true;
+}
+function rbCountOf(f){
+  var keep = rbState().sel; rbState().sel = Object.assign({}, f.sel || {});
+  var n; try { n = (f.sel && f.sel.pop) ? rbPopRows(f.sel.pop).length : aqRepData(f.q || rbSentence()).rows.length; } catch (e){ n = -1; LS_ERR = e; }
+  rbState().sel = keep; return n;
+}
+function rbSnap(){ try { return JSON.parse(localStorage.getItem('nsk14.rbSnap') || '{}'); } catch (e){ return {}; } }
+function rbPinnedHtml(){
+  var P = rbFavs().filter(function(f){ return f.pin; }); if (!P.length) return '';
+  var S = rbSnap(), today = dayKey(Date.now()), changed = false;
+  var cards = P.map(function(f, i){
+    var n = rbCountOf(f), s = S[f.name] || {};
+    if (s.day !== today){ S[f.name] = { day:today, n:n, prevDay:s.day || '', prevN:(s.day ? s.n : null) }; changed = true; s = S[f.name]; }
+    var d = (s.prevN == null) ? null : n - s.prevN, unit = f.sel && f.sel.pop === 'chal' ? 'تحدٍّ' : f.sel && f.sel.pop === 'photo' ? 'صورة' : f.sel && f.sel.pop === 'task' ? 'مهمة' : 'نقطة';
+    var open = (f.sel && f.sel.pop) ? ' data-rbfav="' + rbFavs().indexOf(f) + '"' : ' data-assistq="' + esc(f.q) + '"';
+    return '<button type="button" class="kk-zl" style="width:100%;text-align:start;margin:3px 0"' + open + '><span>' + (f.shared ? '\u{1F465} ' : '\u{1F4CC} ') + esc(f.name) + '<br><span class="hint" style="margin:0">' + esc(t(unit)) + '</span></span>'
+      + '<span><b class="num" style="font-size:1.2em">' + nm(n < 0 ? 0 : n) + '</b>' + (d == null ? '' : ' ' + pill((d > 0 ? '+' : '') + nm(d), d > 0 ? 'warn' : d < 0 ? 'ok' : '') + '<span class="hint" style="margin:0 4px">' + esc(t('منذ')) + ' ' + esc(s.prevDay) + '</span>') + '</span></button>';
+  }).join('');
+  if (changed){ try { localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); } catch (e){ LS_ERR = e; } }
+  return card('\u{1F4CC} ' + t('تقاريري المثبّتة') + ' \u00b7 ' + nm(P.length), cards + '<p class="hint" style="margin:6px 0 0">' + esc(t('الرقمُ يُحسَب الآن من البيانات، والتغيُّر مقارنةً بآخر يومٍ فُتح فيه المساعد على هذا الجهاز')) + '</p>');
 }
 function rbFavDel(i){
   var all = rbFavs(), f = all[+i]; if (!f) return false;
@@ -18652,6 +18679,7 @@ function assistHomeHtml(){
   var base = (ROLE === 'viewer' ? ASSIST_QUICK.filter(function(q){ return !/ممنوع|لاقيه|القارئ/.test(q); }) : ASSIST_QUICK).filter(function(q){ return pq.indexOf(q) < 0; });
   var chips = function(L){ return '<div class="chips" style="margin:0 0 10px">' + L.map(function(q){ return '<button type="button" class="chip" data-assistq="' + esc(q) + '">' + esc(t(q)) + '</button>'; }).join('') + '</div>'; };
   return (fy.length ? '<div class="card" style="margin:0 0 10px"><div class="pid">' + esc(t('لك الآن')) + '</div>' + fy.map(function(x){ return '<button type="button" class="btn btn-quiet btn-block" style="justify-content:flex-start;text-align:start;margin:4px 0"' + x[2] + '>' + x[0] + ' ' + esc(x[1]) + '</button>'; }).join('') + '</div>' : '')
+    + (typeof rbPinnedHtml === 'function' ? rbPinnedHtml() : '')
     + (typeof rbHtml === 'function' ? rbHtml() : '')
     + '<div class="pid" style="margin:4px 0">\u{1F4CA} ' + esc(t('اسأل عن البيانات')) + '</div>' + chips(aqExamples())
     + (pq.length ? '<div class="pid" style="margin:4px 0">' + esc(t('في الصفحة دي')) + '</div>' + chips(pq) : '')
@@ -19139,6 +19167,8 @@ var SESS_PW = '';
 
 var RELEASE_NOTES = [
 
+  { v:'V38.49', d:'2026-10-20', notes:[
+      'التقارير المثبّتة: مفضّل مثبّت يُحسب عند كل فتح للمساعد ويُعرض برقمه وتغيُّره منذ آخر يوم' ] },
   { v:'V38.48', d:'2026-10-20', notes:[
       'مفضّلة التقارير المشتركة للفريق: المهندس فما فوق يحفظها في إعدادات الفريق فيراها الكلّ على كل جهاز' ] },
   { v:'V38.47', d:'2026-10-20', notes:[
@@ -27557,6 +27587,7 @@ function clickTables(e){
   var rbr = e.target.closest('[data-rbrun]'); if (rbr){ rbRun(rbr.getAttribute('data-rbrun')); return true; }
   var rbx = e.target.closest('[data-rbxls]'); if (rbx){ rbXls(rbx.getAttribute('data-rbxls')); return true; }
   var rbf = e.target.closest('[data-rbfav]'); if (rbf){ var fv = rbFavs()[+rbf.getAttribute('data-rbfav')]; if (fv && fv.sel){ rbState().sel = Object.assign({}, fv.sel); rbState().open = true; var rsV = document.getElementById('assistRes'); if (rsV) rsV.innerHTML = assistResHtml(); else render(1); rbRun(fv.sel.pop); } return true; }
+  var rbp = e.target.closest('[data-rbpin]'); if (rbp){ if (rbFavPin(rbp.getAttribute('data-rbpin'))){ var rsP = document.getElementById('assistRes'); if (rsP) rsP.innerHTML = assistResHtml(); else render(1); } return true; }
   var rbc = e.target.closest('[data-rbclear]'); if (rbc){ rbState().sel = {}; rbState().open = true; var rsC = document.getElementById('assistRes'); if (rsC) rsC.innerHTML = assistResHtml(); else render(1); return true; }
   var aq = e.target.closest('[data-assistq]');
   if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var bkA = document.getElementById('assistBack'); if (bkA) bkA.hidden = false; try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
@@ -30215,6 +30246,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.48"></script>
+<script defer src="app-office.js?v=38.49"></script>
 </body>
 </html>

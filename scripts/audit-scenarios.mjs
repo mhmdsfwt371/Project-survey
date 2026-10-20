@@ -408,6 +408,13 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
     w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; const engDel = w.rbFavDel(0) && !(w.CFG.lists.rbFav || []).length;
     T(okShare && supSees && supCannot && engDel, 'والمفضّلةُ المشتركةُ: يكتبها المهندسُ فما فوق في إعدادات الفريق، ويراها الكلُّ، ولا يحذفها المشرف');
     w.CFG.lists = keepLists; w.CORE.dirty = keepDirty; w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.rbState().sel = {}; }
+  /* (V38.49) pinned reports: computed now, with the change since the previous day's snapshot on this device */
+  { const keepDirty = w.CORE.dirty; w.CORE.dirty = () => {}; w.ROLE = 'engineer'; w.STATE.meta.role = 'engineer'; w.localStorage.removeItem('nsk14.rbFav'); w.localStorage.removeItem('nsk14.rbSnap');
+    w.rbState().sel = { zone:'منى', ins:'no' }; w.rbFavSave('ناقص منى — مثبّت', false); const i0 = w.rbFavs().findIndex(f => f.name === 'ناقص منى — مثبّت');
+    const none = w.rbPinnedHtml() === ''; w.rbFavPin(i0); const h1 = w.rbPinnedHtml();
+    const f0 = w.rbFavs().find(f => f.name === 'ناقص منى — مثبّت'), S = w.rbSnap(); S['ناقص منى — مثبّت'] = { day:'2026-10-19', n:w.rbCountOf(f0) - 5 }; w.localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); const h2 = w.rbPinnedHtml();
+    T(none && h1.indexOf('ناقص منى — مثبّت') > -1 && h1.indexOf('تقاريري المثبّتة') > -1 && /\+[٥5]/.test(h2) && h2.indexOf('2026-10-19') > -1 && w.assistHomeHtml().indexOf('تقاريري المثبّتة') > -1, 'والتقريرُ المثبَّتُ بطاقةٌ في أعلى المساعد برقمه الآن وتغيُّره منذ آخر يوم');
+    w.rbFavDel(w.rbFavs().findIndex(f => f.name === 'ناقص منى — مثبّت')); w.localStorage.removeItem('nsk14.rbSnap'); w.CORE.dirty = keepDirty; w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.rbState().sel = {}; }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }
