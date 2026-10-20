@@ -429,6 +429,9 @@ function clickTables(e){
   /* (V38.43) report builder: save a favourite, delete one, clear the conditions */
   var rbs = e.target.closest('[data-rbsave]'); if (rbs){ var nmF = prompt(t('اسم التقرير المفضّل')); if (nmF && rbFavSave(nmF)){ toast('\u2605 ' + t('حُفظ')); var rsF = document.getElementById('assistRes'); if (rsF) rsF.innerHTML = assistResHtml(); else render(1); } return true; }
   var rbd = e.target.closest('[data-rbdel]'); if (rbd){ rbFavDel(rbd.getAttribute('data-rbdel')); var rsD = document.getElementById('assistRes'); if (rsD) rsD.innerHTML = assistResHtml(); else render(1); return true; }
+  var rbr = e.target.closest('[data-rbrun]'); if (rbr){ rbRun(rbr.getAttribute('data-rbrun')); return true; }
+  var rbx = e.target.closest('[data-rbxls]'); if (rbx){ rbXls(rbx.getAttribute('data-rbxls')); return true; }
+  var rbf = e.target.closest('[data-rbfav]'); if (rbf){ var fv = rbFavs()[+rbf.getAttribute('data-rbfav')]; if (fv && fv.sel){ rbState().sel = Object.assign({}, fv.sel); rbState().open = true; var rsV = document.getElementById('assistRes'); if (rsV) rsV.innerHTML = assistResHtml(); else render(1); rbRun(fv.sel.pop); } return true; }
   var rbc = e.target.closest('[data-rbclear]'); if (rbc){ rbState().sel = {}; rbState().open = true; var rsC = document.getElementById('assistRes'); if (rsC) rsC.innerHTML = assistResHtml(); else render(1); return true; }
   var aq = e.target.closest('[data-assistq]');   /* (V37.30) سؤالٌ سريعٌ بنقرة */
   if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var bkA = document.getElementById('assistBack'); if (bkA) bkA.hidden = false; try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }

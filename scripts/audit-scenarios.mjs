@@ -382,6 +382,15 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
     const n = sel => w.aqRepData(w.rbSentence(sel)).rows.map(x => x.id), P7 = w.aqRepParse(w.rbSentence({ when:'sv7' }));
     T(P7.conds.length === 1 && P7.conds[0].k === 'when' && !P7.unknown.length && n({ when:'sv7' }).includes(s1.id) && !n({ when:'sv7' }).includes(s2.id) && n({ when:'svold' }).includes(s2.id) && !n({ when:'svold' }).includes(s1.id) && n({ when:'in7' }).includes(s1.id), 'والزمنُ شرطٌ: زيارةٌ في آخر ٧ أيام / أقدمُ من ٣٠ يومًا / تركيبٌ في آخر ٧ أيام — على تاريخ السجلِّ نفسِه');
     w.STATE.recs[s1.id] = keepR; w.STATE.recs[s2.id] = keepR2; w.STATE.inss[s1.id] = keepI; if (!keepR) delete w.STATE.recs[s1.id]; if (!keepR2) delete w.STATE.recs[s2.id]; if (!keepI) delete w.STATE.inss[s1.id]; }
+  /* (V38.45) the challenges and the photos of the chosen points */
+  { const s1 = w.STATE.sites.filter(x => x.zone === 'منى' && x.type === 'مخيم')[0], s2 = w.STATE.sites.filter(x => x.zone === 'عرفات' && x.type === 'ممر')[0];
+    const kr1 = w.STATE.recs[s1.id], kr2 = w.STATE.recs[s2.id];
+    w.STATE.recs[s1.id] = { by:'tech1', at:Date.now() - 1000, chalCats:['mount', 'beam'], chal_note:'العارضة ناقصة', access:'تم الوصول' }; w.STATE.recs[s2.id] = { by:'tech2', at:Date.now() - 1000, chalCats:['entry'], chal_note:'', access:'تم الوصول' };
+    w.STATE.photos[s1.id + '-t1'] = { site:s1.id, kind:'عام', link:'x', at:Date.now() - 1000 }; w.STATE.photos[s2.id + '-t1'] = { site:s2.id, kind:'قارئ', at:Date.now() - 40 * 86400000 };
+    const rows = sel => { w.rbState().sel = sel; return w.rbPopRows(sel.pop); };
+    T(rows({ pop:'chal', zone:'منى' }).filter(r => r.x.id === s1.id).map(r => r.k).join() === 'mount,beam' && !rows({ pop:'chal', zone:'منى' }).some(r => r.x.id === s2.id) && rows({ pop:'chal', cdesc:'without' }).some(r => r.k === 'entry' && r.x.id === s2.id) && !rows({ pop:'chal', cdesc:'without' }).some(r => r.x.id === s1.id) && (w.rbState().sel = { pop:'chal', group:'cgroup' }, w.rbPopCard('chal').indexOf('تصنيع وتجهيز') > -1), 'والتحدياتُ سكّانٌ: شروطُ النقاط ثم كلُّ تحدٍّ بفئته وجهة معالجته ووصفه');
+    T(rows({ pop:'photo', pstat:'up' }).some(r => r.id === s1.id + '-t1') && !rows({ pop:'photo', pstat:'up' }).some(r => r.id === s2.id + '-t1') && rows({ pop:'photo', pwhen:'7' }).some(r => r.id === s1.id + '-t1') && !rows({ pop:'photo', pwhen:'7' }).some(r => r.id === s2.id + '-t1'), 'والصورُ سكّانٌ: مرفوعةٌ أو بانتظار الرفع، وزمنُها');
+    w.STATE.recs[s1.id] = kr1; w.STATE.recs[s2.id] = kr2; if (!kr1) delete w.STATE.recs[s1.id]; if (!kr2) delete w.STATE.recs[s2.id]; delete w.STATE.photos[s1.id + '-t1']; delete w.STATE.photos[s2.id + '-t1']; w.rbState().sel = {}; }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }
