@@ -415,6 +415,9 @@ console.log('\n══ ١٤ · منشئُ التقارير ══');
     const f0 = w.rbFavs().find(f => f.name === 'ناقص منى — مثبّت'), S = w.rbSnap(); S['ناقص منى — مثبّت'] = { day:'2026-10-19', n:w.rbCountOf(f0) - 5 }; w.localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); const h2 = w.rbPinnedHtml();
     T(none && h1.indexOf('ناقص منى — مثبّت') > -1 && h1.indexOf('تقاريري المثبّتة') > -1 && /\+[٥5]/.test(h2) && h2.indexOf('2026-10-19') > -1 && w.assistHomeHtml().indexOf('تقاريري المثبّتة') > -1, 'والتقريرُ المثبَّتُ بطاقةٌ في أعلى المساعد برقمه الآن وتغيُّره منذ آخر يوم');
     w.rbFavDel(w.rbFavs().findIndex(f => f.name === 'ناقص منى — مثبّت')); w.localStorage.removeItem('nsk14.rbSnap'); w.CORE.dirty = keepDirty; w.ROLE = 'admin'; w.STATE.meta.role = 'admin'; w.rbState().sel = {}; }
+  /* (V38.50) the six ready-made reports: added once, pinned, each a valid report */
+  { w.localStorage.removeItem('nsk14.rbFav'); const n1 = w.rbPresetsAdd(), n2 = w.rbPresetsAdd(); const ok = w.rbFavs().filter(f => f.pin).length === 6 && w.rbFavs().every(f => w.rbCountOf(f) >= 0);
+    T(n1 === 6 && n2 === 0 && ok && w.rbHtml().indexOf('data-rbpresets') < 0, 'والتقاريرُ الجاهزةُ الستُّ تُضاف مرةً واحدةً مثبَّتةً وكلُّها يُحسَب'); w.localStorage.removeItem('nsk14.rbFav'); }
   const card = w.aqRepCard(q2, w.aqRepData(q2));
   T(card.indexOf('data-aqrep="xls"') > -1 && card.indexOf('data-aqrep="pdf"') > -1 && card.indexOf('63') > -1 || card.indexOf('٦٣') > -1, 'ونتيجةُ الحساب بطاقةٌ بالعدد وزرَّي إكسل وPDF');
 }

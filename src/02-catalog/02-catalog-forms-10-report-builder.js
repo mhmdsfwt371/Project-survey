@@ -6,7 +6,7 @@
              technician, block, group-by; V38.45: also the challenges and the photos of those points; V38.47: the weekly tasks by status, track and owner) and sees the exact sentence and the conditions understood before computing.
              It feeds the existing reports-by-words engine (aqRepParse/aqRepData/aqRepCard), so every number has its
              list and its Excel/PDF; favourites are kept on the device by name.
-   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavPin, rbCountOf, rbSnap, rbPinnedHtml, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
+   DEFINES : rbState, rbOptions, rbTypePhrase, rbSentence, rbPreviewHtml, rbShows, rbHtml, rbFavLocal, rbFavShared, rbFavs, rbFavMayShare, rbFavSave, rbFavPin, rbCountOf, rbSnap, rbPinnedHtml, rbPresets, rbPresetsAdd, rbFavDel, rbOnChange, rbPopChips, rbPopRows, rbPopKey, rbPopCols, rbPopRow, rbPopCard, rbPopName, rbRun, rbXls
    NOTE    : Build order is the full path (see scripts/build.mjs). New comments are written in English.
    ============================================================================ */
 function rbState(){ return rbState.s || (rbState.s = { sel:{}, open:false }); }
@@ -103,7 +103,7 @@ function rbHtml(){
     + '<div id="rbPrev">' + rbPreviewHtml() + '</div>'
     + '<div class="actions">' + (pop ? btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-rbrun="' + esc(pop) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-rbxls="' + esc(pop) + '"')
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
-    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
+    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + (rbPresets().every(function(p){ return favs.some(function(f){ return f.name === p.name; }); }) ? '' : btn('\u26A1 ' + t('التقارير الجاهزة'), 'btn-quiet btn-sm', ' data-rbpresets="1" title="' + esc(t('ستّة تقارير لصحة البيانات تُثبَّت في أعلى المساعد')) + '"')) + '</div>'
     + '<div id="rbOut">' + (S.out || '') + '</div>'
     + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbpin="' + i + '" title="' + esc(t(f.pin ? 'إلغاء التثبيت' : 'تثبيت في أعلى المساعد')) + '">' + (f.pin ? '\u{1F4CC}' : '\u{1F4CD}') + '</button><button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
     + '</details>';
@@ -154,6 +154,26 @@ function rbPinnedHtml(){
   }).join('');
   if (changed){ try { localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); } catch (e){ LS_ERR = e; } }
   return card('\u{1F4CC} ' + t('تقاريري المثبّتة') + ' \u00b7 ' + nm(P.length), cards + '<p class="hint" style="margin:6px 0 0">' + esc(t('الرقمُ يُحسَب الآن من البيانات، والتغيُّر مقارنةً بآخر يومٍ فُتح فيه المساعد على هذا الجهاز')) + '</p>');
+}
+/* (V38.50) ready-made reports: six data-health favourites, pinned, added once on request (device-local, so each user picks) */
+function rbPresets(){
+  return [
+    { name:'نقاط لم تُزَر', sel:{ sv:'un' } },
+    { name:'مُركّبة ولا ترسل', sel:{ ins:'yes', sig:'off' } },
+    { name:'بانتظار الاعتماد التقني', sel:{ sv:'pend' } },
+    { name:'تحديات بلا وصف', sel:{ pop:'chal', cdesc:'without' } },
+    { name:'صور بانتظار الرفع', sel:{ pop:'photo', pstat:'pend' } },
+    { name:'مهام متأخّرة', sel:{ pop:'task', tst:'late' } }
+  ];
+}
+function rbPresetsAdd(){
+  var have = {}; rbFavs().forEach(function(f){ have[f.name] = 1; });
+  var L = rbFavLocal(), n = 0, keep = rbState().sel;
+  rbPresets().forEach(function(p){ if (have[p.name]) return; rbState().sel = Object.assign({}, p.sel); L.push({ name:p.name, q:rbSentence(), sel:Object.assign({}, p.sel), at:Date.now(), by:STATE.meta.name || '', pin:true }); n++; });
+  rbState().sel = keep;
+  try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; }
+  if (n) logEvent('التقاريرُ الجاهزةُ أُضيفت — ' + n);
+  return n;
 }
 function rbFavDel(i){
   var all = rbFavs(), f = all[+i]; if (!f) return false;

@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.49</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.50</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1354,7 +1354,7 @@ function nskChunkReady(){
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
 }
-var I18N_FILE = 'i18n/dict-9eda70d89d.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-f0e2704e68.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -6642,7 +6642,7 @@ function rbHtml(){
     + '<div id="rbPrev">' + rbPreviewHtml() + '</div>'
     + '<div class="actions">' + (pop ? btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-rbrun="' + esc(pop) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-rbxls="' + esc(pop) + '"')
                                 : btn('\u{1F9EE} ' + t('احسب'), 'btn-primary btn-sm', ' data-assistq="' + esc(q) + '"') + btn('\u2B07 ' + t('إكسل'), 'btn-secondary btn-sm', ' data-assistq="' + esc('إكسل ' + q) + '"'))
-    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + '</div>'
+    + btn('\u2605 ' + t('احفظ كمفضّل'), 'btn-quiet btn-sm', ' data-rbsave="1"') + (rbFavMayShare() ? btn('\u{1F465} ' + t('مفضّل للفريق'), 'btn-quiet btn-sm', ' data-rbsave="team"') : '') + btn(t('مسح الشروط'), 'btn-quiet btn-sm', ' data-rbclear="1"') + (rbPresets().every(function(p){ return favs.some(function(f){ return f.name === p.name; }); }) ? '' : btn('\u26A1 ' + t('التقارير الجاهزة'), 'btn-quiet btn-sm', ' data-rbpresets="1" title="' + esc(t('ستّة تقارير لصحة البيانات تُثبَّت في أعلى المساعد')) + '"')) + '</div>'
     + '<div id="rbOut">' + (S.out || '') + '</div>'
     + (favs.length ? '<div class="pid" style="margin:8px 0 4px">' + esc(t('المفضّلة')) + '</div><div class="chips">' + favs.map(function(f, i){ return '<button type="button" class="chip" ' + (f.sel && f.sel.pop ? 'data-rbfav="' + i + '"' : 'data-assistq="' + esc(f.q) + '"') + ' title="' + esc(f.q) + (f.by ? ' \u2014 ' + esc(f.by) : '') + '">' + (f.shared ? '\u{1F465} ' : '\u2605 ') + esc(f.name) + '</button>' + (f.shared && !rbFavMayShare() ? '' : '<button type="button" class="chip" data-rbpin="' + i + '" title="' + esc(t(f.pin ? 'إلغاء التثبيت' : 'تثبيت في أعلى المساعد')) + '">' + (f.pin ? '\u{1F4CC}' : '\u{1F4CD}') + '</button><button type="button" class="chip" data-rbdel="' + i + '" title="' + esc(t('حذف')) + '">\u2715</button>'); }).join('') + '</div>' : '')
     + '</details>';
@@ -6691,6 +6691,26 @@ function rbPinnedHtml(){
   }).join('');
   if (changed){ try { localStorage.setItem('nsk14.rbSnap', JSON.stringify(S)); } catch (e){ LS_ERR = e; } }
   return card('\u{1F4CC} ' + t('تقاريري المثبّتة') + ' \u00b7 ' + nm(P.length), cards + '<p class="hint" style="margin:6px 0 0">' + esc(t('الرقمُ يُحسَب الآن من البيانات، والتغيُّر مقارنةً بآخر يومٍ فُتح فيه المساعد على هذا الجهاز')) + '</p>');
+}
+
+function rbPresets(){
+  return [
+    { name:'نقاط لم تُزَر', sel:{ sv:'un' } },
+    { name:'مُركّبة ولا ترسل', sel:{ ins:'yes', sig:'off' } },
+    { name:'بانتظار الاعتماد التقني', sel:{ sv:'pend' } },
+    { name:'تحديات بلا وصف', sel:{ pop:'chal', cdesc:'without' } },
+    { name:'صور بانتظار الرفع', sel:{ pop:'photo', pstat:'pend' } },
+    { name:'مهام متأخّرة', sel:{ pop:'task', tst:'late' } }
+  ];
+}
+function rbPresetsAdd(){
+  var have = {}; rbFavs().forEach(function(f){ have[f.name] = 1; });
+  var L = rbFavLocal(), n = 0, keep = rbState().sel;
+  rbPresets().forEach(function(p){ if (have[p.name]) return; rbState().sel = Object.assign({}, p.sel); L.push({ name:p.name, q:rbSentence(), sel:Object.assign({}, p.sel), at:Date.now(), by:STATE.meta.name || '', pin:true }); n++; });
+  rbState().sel = keep;
+  try { localStorage.setItem('nsk14.rbFav', JSON.stringify(L)); } catch (e){ LS_ERR = e; }
+  if (n) logEvent('التقاريرُ الجاهزةُ أُضيفت — ' + n);
+  return n;
 }
 function rbFavDel(i){
   var all = rbFavs(), f = all[+i]; if (!f) return false;
@@ -19167,6 +19187,8 @@ var SESS_PW = '';
 
 var RELEASE_NOTES = [
 
+  { v:'V38.50', d:'2026-10-20', notes:[
+      'التقارير الجاهزة: ستة تقارير لصحة البيانات تُضاف وتُثبَّت بنقرة' ] },
   { v:'V38.49', d:'2026-10-20', notes:[
       'التقارير المثبّتة: مفضّل مثبّت يُحسب عند كل فتح للمساعد ويُعرض برقمه وتغيُّره منذ آخر يوم' ] },
   { v:'V38.48', d:'2026-10-20', notes:[
@@ -27588,6 +27610,7 @@ function clickTables(e){
   var rbx = e.target.closest('[data-rbxls]'); if (rbx){ rbXls(rbx.getAttribute('data-rbxls')); return true; }
   var rbf = e.target.closest('[data-rbfav]'); if (rbf){ var fv = rbFavs()[+rbf.getAttribute('data-rbfav')]; if (fv && fv.sel){ rbState().sel = Object.assign({}, fv.sel); rbState().open = true; var rsV = document.getElementById('assistRes'); if (rsV) rsV.innerHTML = assistResHtml(); else render(1); rbRun(fv.sel.pop); } return true; }
   var rbp = e.target.closest('[data-rbpin]'); if (rbp){ if (rbFavPin(rbp.getAttribute('data-rbpin'))){ var rsP = document.getElementById('assistRes'); if (rsP) rsP.innerHTML = assistResHtml(); else render(1); } return true; }
+  var rbpr = e.target.closest('[data-rbpresets]'); if (rbpr){ var nP = rbPresetsAdd(); toast(nP ? '\u26A1 ' + t('أُضيفت') + ' ' + nm(nP) : t('كلُّها موجودةٌ أصلًا')); var rsR = document.getElementById('assistRes'); if (rsR) rsR.innerHTML = assistResHtml(); else render(1); return true; }
   var rbc = e.target.closest('[data-rbclear]'); if (rbc){ rbState().sel = {}; rbState().open = true; var rsC = document.getElementById('assistRes'); if (rsC) rsC.innerHTML = assistResHtml(); else render(1); return true; }
   var aq = e.target.closest('[data-assistq]');
   if (aq){ ASSIST_Q = aq.getAttribute('data-assistq'); var bkA = document.getElementById('assistBack'); if (bkA) bkA.hidden = false; try { assistLog(ASSIST_Q, true, true); } catch (eAL){ LS_ERR = eAL; } var inA = document.getElementById('assistQ'); if (inA) inA.value = ASSIST_Q; var rsA = document.getElementById('assistRes'); if (rsA) rsA.innerHTML = assistResHtml(); else render(1); return true; }
@@ -30246,6 +30269,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.49"></script>
+<script defer src="app-office.js?v=38.50"></script>
 </body>
 </html>
