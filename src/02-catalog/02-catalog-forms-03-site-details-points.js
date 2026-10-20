@@ -45,6 +45,13 @@ PAGE.site = { m:'الميدان', t:'تفاصيل الموقع', l:'كلُّ م�
 
       + (SITE_ED && maySiteEditBasic() ? siteEditHtml(x) : '')   /* (V28.6) */
       + (typeof egCard === 'function' ? egCard(x) : '')   /* (V38.31) بواباتُ محطة القطار */
+      + (typeof egIsGate === 'function' && egIsGate(x) ? (function(){   /* (V38.53) a train gate shows its station and its drawing pages, and opens them */
+          var g = egOf(x), st = g && g.stn ? siteFind(g.stn) : null; if (!st) return '';
+          return card('\u{1F686} ' + t('محطة البوابة'),
+            '<div class="kk-zl" style="margin:0"><span>' + esc(st.name) + (g.pages.length ? '<br><span class="hint" style="margin:0">' + esc(t('صفحات الرسمة')) + ': ' + g.pages.map(nm).join('، ') + '</span>' : '') + '</span>'
+            + btn('\u{1F4C4} ' + t('صفحة المحطة'), 'btn-secondary btn-sm', ' data-site="' + esc(st.id) + '"') + btn('\u25C8', 'btn-quiet btn-sm', ' data-fly="' + esc(st.id) + '" title="' + esc(t('على الخريطة')) + '"') + '</div>'
+            + '<p class="hint" style="margin:6px 0 0">' + esc(g.moved ? t('موقعُ البوابة محدَّدٌ بالمسح') : t('موقعُ البوابة تقريبيٌّ من الرسمة — يُثبَّت من «تعديل البيانات» أو بسحب الدبّوس')) + '</p>');
+        })() : '')
       + card('بيانات الموقع',
           '<div class="pop-rows" style="margin:0">'
           + row('اسم الموقع', esc(x.name), 'name')

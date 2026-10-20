@@ -354,6 +354,9 @@ console.log('\n══ ١٣ · قطار المشاعر ══');
   const keepSet = w.CORE.set; w.CORE.set = () => {};
   w.document.getElementById('egNo').value = 'G-07'; w.document.getElementById('egOp').value = 'تعمل';
   T(w.egSave(g1) && w.egOf(g1).no === 'G-07' && w.egOf(g1).op === 'تعمل', 'والتحقيقُ (رقمُ الرسمة والحالة) يُحفَظ طبقةً فوق البوابة نفسِها');
+  /* (V38.53) the gate page points back to its station; the station card exports its gates through the engine */
+  w.DETAIL_ID = g1; const hG = String(w.PAGE.site.body()); const qX = 'إكسل للبوابات في محطات قطار محطة AR1', PX = w.aqRepParse(qX);
+  T(hG.indexOf('محطة البوابة') > -1 && hG.indexOf('data-site="' + s1.id + '"') > -1 && PX.conds.map(c => c.k).sort().join() === 'cat,stn,type' && w.aqRepData(qX).rows.length === 10 && w.aqRepData('تقرير المحطات في محطات قطار').rows.length === 9, 'وصفحةُ البوابة تعود إلى محطتها، و«محطة AR1» شرطٌ يعطي بواباتِها العشرَ لا المحطةَ معها');
   w.CORE.set = keepSet; w.egCard.open = '';
 }
 

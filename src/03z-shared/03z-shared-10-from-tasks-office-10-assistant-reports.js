@@ -34,6 +34,9 @@ function aqRepParse(q){
   if (zones.length) add('zone', zones.join(' أو '), function(x){ return zones.indexOf(x.zone) > -1; });
   var bm = /مربع\s*([0-9a-z]+)/.exec(n);
   if (bm){ used.push('مربع', bm[1]); var bk = bm[1]; add('block', 'مربع ' + bk, function(x){ return new RegExp('مربع\\s*' + bk + '(\\b|\\s|-|$)', 'i').test(aqNorm(x.name || '')); }); }
+  /* (V38.53) a station code: «محطة AR1» picks the points whose square is that code (the train station and its gates) */
+  var sm = /محط[هة]\s*([a-z]{2}\d)\b/i.exec(n);
+  if (sm){ used.push('محطه', sm[1]); var sk = sm[1].toUpperCase(); add('stn', 'محطة ' + sk, function(x){ return String(x.sq || '').toUpperCase() === sk; }); }
   /* النوع */
   /* (V38.43) the owner category (TAX_T: مخيمات · ممرات · محطات قطار · منشأة الجمرات · مسجد نمرة · النورية · …) is a
      condition of its own; its words are then not type words («محطات قطار» must not add the station type) */
@@ -42,6 +45,7 @@ function aqRepParse(q){
     return k.length > 3 && n.indexOf(k) > -1; });
   if (cats.length){ cats.forEach(function(c){ aqNorm(c).split(/\s+/).forEach(function(w){ used.push(w); used.push('ال' + w); }); }); add('cat', cats.join(' أو '), function(x){ return cats.indexOf(taxOf(x).t) > -1; }); }
   var nT = n; zones.concat(cats).forEach(function(z){ nT = nT.split(aqNorm(z)).join(' '); });
+  if (sm) nT = nT.split(sm[0]).join(' ');   /* (V38.53) «محطة AR1» is a station code, not the station type */
   var tys = aqTypes().filter(function(p){ return p[1].test(nT); });
   if (tys.length){ tys.forEach(function(p){ use(new RegExp('[^\\s]*(' + p[1].source + ')[^\\s]*')); }); var tn0 = tys.map(function(p){ return p[0]; }); add('type', tn0.join(' أو '), function(x){ return tn0.indexOf(x.type) > -1; }); }
   var R = function(x){ return STATE.recs[x.id]; }, I = function(x){ return STATE.inss[x.id]; };

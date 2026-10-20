@@ -64,8 +64,9 @@ function egCard(x){
       + '<p class="hint" style="margin:0 0 6px">' + esc(t('موقعُ البوابة يُصحَّح من صفحة النقطة نفسِها (تعديل البيانات أو سحبُ الدبّوس على الخريطة)')) + '</p>'
       + '<div class="actions">' + btn('\u2713 ' + t('احفظ التحقيق'), 'btn-primary btn-sm', ' data-egsave="' + esc(g.id) + '"') + btn(t('إلغاء'), 'btn-quiet btn-sm', ' data-egopen=""') + '</div>';
   }).join('');
+  var xq = 'إكسل للبوابات في محطات قطار محطة ' + S.code;   /* (V38.53) the station's gates as a report: count, list, Excel */
   return card('\u{1F6AA} ' + t('البوابات الإلكترونية') + ' \u2014 ' + nm(L.length) + ' \u00b7 ' + nm(done) + ' ' + t('مطابَقة على الرسمة'),
-    head + rows + '<p class="hint" style="margin:8px 0 0">' + esc(t('المصدر')) + ': ' + esc(egSeed().drawing) + ' \u00b7 ' + esc(t('مراجعة')) + ' ' + esc(egSeed().rev) + ' \u00b7 ' + esc(t('بوابةٌ لم تكن في الجرد تُضاف كنقطةٍ غيرِ مسجّلةٍ من الميدان')) + '</p>');
+    head + rows + '<div class="actions">' + btn('\u2B07 ' + t('إكسل بوابات المحطة'), 'btn-secondary btn-sm', ' data-assistq="' + esc(xq) + '"') + '</div><p class="hint" style="margin:8px 0 0">' + esc(t('المصدر')) + ': ' + esc(egSeed().drawing) + ' \u00b7 ' + esc(t('مراجعة')) + ' ' + esc(egSeed().rev) + ' \u00b7 ' + esc(t('بوابةٌ لم تكن في الجرد تُضاف كنقطةٍ غيرِ مسجّلةٍ من الميدان')) + '</p>');
 }
 function egSave(gateId){
   if (!(typeof maySiteEditBasic === 'function' && maySiteEditBasic())){ toast(t('تحقيقُ البوابات للمشرف فما فوق')); return false; }
