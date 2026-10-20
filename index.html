@@ -1290,7 +1290,7 @@ button,.btn,.chip,.cat,.go,.map-chip,a.btn,label.btn,.list-item{
               aria-label="رجوع" title="رجوع" data-i18n-aria="رجوع" data-i18n-title="رجوع" hidden>←</button>
       <strong class="crumb" id="crumb"></strong>
       <button type="button" class="ver-tag" data-verchk="1"
-        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.51</button>
+        title="اضغط لفحص التحديثات" aria-label="فحص التحديثات" data-i18n-title="اضغط لفحص التحديثات" data-i18n-aria="فحص التحديثات">نسخة V38.52</button>
       <button type="button" class="tb-btn tb-sync-m" id="syncM" data-pull="1"
               aria-label="زامن الآن" title="زامن الآن" data-i18n-aria="زامن الآن" data-i18n-title="زامن الآن">🔄<span class="tb-badge" id="syncMN" hidden></span></button>
       <span class="topbar-meta" id="syncMeta"></span>
@@ -1356,7 +1356,7 @@ function nskChunkReady(){
 
   try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
-var I18N_FILE = 'i18n/dict-f0e2704e68.js', I18N_STATE = 0, I18N_WAIT = [];
+var I18N_FILE = 'i18n/dict-da84649a7c.js', I18N_STATE = 0, I18N_WAIT = [];
 function i18nLoad(){
   if (I18N_STATE || typeof document === 'undefined') return;
   if (typeof window !== 'undefined' && window.__NSK_DICT_SRC){ try { I18N_STATE = 1; (0, eval)(window.__NSK_DICT_SRC); if (I18N_STATE !== 2) i18nReady(); return; } catch (e){ LS_ERR = e; } }
@@ -13012,7 +13012,19 @@ var SOPS = [
     ],
     rules:['اسمُ الربط فريدٌ من الجهتين ويُطبَّع (بلا مسافات ولا فرق - _ /)','الملفُّ الأصليُّ فيه كلماتُ مرور — لا يُتداوَل',
            'المخيمُ بشاخصه في ٣٠٠ متر — الرقمُ نفسُه يتكرّر بين منى وعرفات'] }
+,
 
+  { id:'sop-report', n:'دورة التقارير من المساعد', i:'\u{1F9EE}', own:'المشرف والمهندس والمدير',
+    trig:'سؤالٌ عن عددٍ أو قائمةٍ أو ملف — من أيِّ شاشة',
+    steps:[
+      ['أيُّ دور','يفتح المساعد ← «منشئ التقارير» ويختار: التقرير عن (النقاط · التحديات · الصور · المهام) ثم الشروط','المساعد'],
+      ['النظام','يعرض الجملةَ كما فُهمت والشروطَ شريحةً شريحة والعددَ قبل الحساب — وما لم يُفهَم بالأحمر','المساعد'],
+      ['أيُّ دور','يضغط «احسب» فتظهر بطاقةُ التقرير بالعدد والقائمة (كلُّ سطرٍ يفتح نقطتَه) وزرَّي إكسل وPDF','المساعد'],
+      ['أيُّ دور','يحفظ التقريرَ «كمفضّل» باسمه، ويثبّته 📍 فيراه برقمه وتغيُّره اليوميِّ في أعلى المساعد','المساعد'],
+      ['المهندس فما فوق','يحفظه «للفريق» 👥 فيراه الجميعُ على كلِّ جهاز','المساعد'],
+      ['أيُّ دور','«⚡ التقارير الجاهزة» تضيف ستةَ تقاريرَ لصحة البيانات مثبَّتةً بنقرة','المساعد']
+    ],
+    rules:['لا رقمَ بلا قائمته وملفِّه','العددُ يُحسَب من بيانات الجهاز لحظتَها','المفضّلةُ المشتركةُ للمهندس فما فوق'] }
 ];
 
 function assistDiag(){
@@ -13065,6 +13077,8 @@ function aqAnswer(q){
   var n = aqNorm(q), out = '';
 
   var RP = aqRepParse(q); if (RP.isRep && (RP.conds.length || RP.group)) return aqRepCard(q, aqRepData(q));
+
+  if (/(ازاي|كيف|عايز|عاوز|اعمل|اطلع)[^.]{0,30}(تقرير|احصائي|احصاء|عدد)/.test(n) && !RP.conds.length) return card('\u{1F9EE} ' + t('التقارير من المساعد'), '<p style="margin:0 0 6px">' + esc(t('اختر من «منشئ التقارير» تحت: التقرير عن (النقاط · التحديات · الصور · المهام) ثم الشروط ثم «احسب» — وترى الجملة والشروط التي فُهمت والعدد قبل الحساب، ثم القائمة وإكسل/PDF.')) + '</p><p class="hint" style="margin:0">' + esc(t('أو اكتب مباشرة: «إكسل للمخيمات في منى اللي مش مركبة حسب الشركة»')) + '</p>');
 
   var idm = /nsk-[a-z]{3}-[a-z]{3}-\d{3,4}/i.exec(q), sgm = /(\d{1,3})\s*\/\s*(\d{1,4})/.exec(n);
   if (idm){ var x0 = siteFind(idm[0].toUpperCase()); if (x0) return aqPoint(x0); }
@@ -29378,6 +29392,6 @@ if (typeof window !== 'undefined' && window.addEventListener) window.addEventLis
   else { ASSIST_OPEN = false; try { render(1); } catch (e){ LS_ERR = e; } }
 });
 </script>
-<script defer src="app-office.js?v=38.51"></script>
+<script defer src="app-office.js?v=38.52"></script>
 </body>
 </html>

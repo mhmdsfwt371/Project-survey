@@ -62,6 +62,8 @@ function aqAnswer(q){
   var n = aqNorm(q), out = '';
   /* (V38.17) تقريرٌ بالكلام أوّلًا: «إكسل/PDF للنقاط اللي …» */
   var RP = aqRepParse(q); if (RP.isRep && (RP.conds.length || RP.group)) return aqRepCard(q, aqRepData(q));
+  /* (V38.52) «إزاي أطلع تقرير» → the report builder, not a guess */
+  if (/(ازاي|كيف|عايز|عاوز|اعمل|اطلع)[^.]{0,30}(تقرير|احصائي|احصاء|عدد)/.test(n) && !RP.conds.length) return card('\u{1F9EE} ' + t('التقارير من المساعد'), '<p style="margin:0 0 6px">' + esc(t('اختر من «منشئ التقارير» تحت: التقرير عن (النقاط · التحديات · الصور · المهام) ثم الشروط ثم «احسب» — وترى الجملة والشروط التي فُهمت والعدد قبل الحساب، ثم القائمة وإكسل/PDF.')) + '</p><p class="hint" style="margin:0">' + esc(t('أو اكتب مباشرة: «إكسل للمخيمات في منى اللي مش مركبة حسب الشركة»')) + '</p>');
   /* ١ · نقطةٌ بمعرِّفها أو شاخصِها */
   var idm = /nsk-[a-z]{3}-[a-z]{3}-\d{3,4}/i.exec(q), sgm = /(\d{1,3})\s*\/\s*(\d{1,4})/.exec(n);
   if (idm){ var x0 = siteFind(idm[0].toUpperCase()); if (x0) return aqPoint(x0); }

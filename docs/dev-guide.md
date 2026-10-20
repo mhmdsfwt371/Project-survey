@@ -50,7 +50,7 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
 
 ## 4. Runtime model — the six things to know
 
-**Core + chunk (V38.39).** The browser runs the inline core first and paints; `app-office.js` is a deferred script that lands a few seconds later and calls `nskChunkReady()`. Until it lands, a request for one of its screens shows a loading card (`nskChunkState().waiting`) and a click whose handler is still missing is remembered and replayed on arrival (`nskClick`). Rules that keep this safe: nothing in `01–03z/05/08` may reference a name defined in `04/06/07` at boot or outside a click handler — `scripts/split-shared.mjs --dry` reports any such name and moves it into `03z-shared/` when run without `--dry`. The audits load the whole app in production order through `appHtml()` (see `scripts/lib/src.mjs`); only the real-browser test and the post-deploy smoke use the shipped files.
+**Core + chunk (V38.39).** The browser runs the inline core first and paints; `app-office.js` is a deferred script that lands a few seconds later and calls `nskChunkReady()`. Until it lands, a request for one of its screens shows a loading card (`nskChunkState().waiting`) and a click whose handler is still missing is remembered and replayed on arrival (`nskClick`). A definition that must stay in the chunk by decision (e.g. the release-notes log) is marked `/* CHUNK-ONLY */` next to it and the core guards its use with `typeof`; `split-shared.mjs` never moves a marked definition. Rules that keep this safe: nothing in `01–03z/05/08` may reference a name defined in `04/06/07` at boot or outside a click handler — `scripts/split-shared.mjs --dry` reports any such name and moves it into `03z-shared/` when run without `--dry`. The audits load the whole app in production order through `appHtml()` (see `scripts/lib/src.mjs`); only the real-browser test and the post-deploy smoke use the shipped files.
 
 
 1. **`STATE`** — one global object holding everything: `STATE.sites` (the registry as site objects), `STATE.recs` (survey visits keyed by site id), `STATE.inss` (installations), `STATE.tasks`, `STATE.queue` (writes waiting for upload), `STATE.meta` (who/where/online), and many more collections mirrored from Firestore.
@@ -66,6 +66,10 @@ firestore.rules  database security rules (frozen by owner decision — do not ed
 3. Find the actions: every `data-xyz` attribute in that HTML has a handler — search `[data-xyz]` in `08-events/`.
 4. Follow the data: handlers call domain functions (`svSave`, `egSave`, …) which end in `CORE.set`.
 5. Check the guard: search the feature name in `scripts/audit-*.mjs` and `scripts/audit-scenarios.mjs` to see what the gate asserts about it.
+
+### 4b. Reports (V38.43–V38.50)
+
+`src/02-catalog/02-catalog-forms-10-report-builder.js` is a thin front on the reports-by-words engine (`aqRepParse/aqRepData/aqRepCard` in `03z-shared-10-from-tasks-office-10-assistant-reports.js`): the dropdowns compose a sentence in the engine's vocabulary, the preview shows the parsed conditions, and the same engine computes, lists and exports. To add a point condition: add it to `aqRepParse` (a regex → `add(key, label, fn)`) and to `rbOptions()` with the phrase the regex accepts; scenario 14 must keep parsing every builder sentence with no unknown word. The challenges / photos / weekly-tasks populations are `rbPopRows(pop)`: point conditions pick the points, then each point expands. Favourites: personal in `localStorage` (`nsk14.rbFav`), team-wide in `CFG.lists.rbFav` (settings permission), pins with a per-device daily snapshot (`nsk14.rbSnap`).
 
 ## 5. Conventions
 
