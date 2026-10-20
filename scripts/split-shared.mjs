@@ -40,7 +40,10 @@ for (const f of files){ if (isChunk(f)) continue;
   if (f.startsWith('08-events')) body = stmts[f].filter(st => !(st.kind === 'FunctionDeclaration' && /^(clickA|onDocClick)/.test(st.names[0]))).map(st => text[f].slice(st.start, st.end)).join('\n');
   for (const n of new Set(body.match(ident) || [])) if (chunkNames.has(n)) need.add(n); }
 const bodyOf = n => { const d = defs[n], st = stmts[d.file][d.idx]; return text[d.file].slice(st.start, st.end); };
-let grew = true; while (grew){ grew = false; for (const n of [...need]) for (const m of new Set(bodyOf(n).match(ident) || [])) if (chunkNames.has(m) && !need.has(m)){ need.add(m); grew = true; } }
+/* a definition marked CHUNK-ONLY stays in its chunk by decision (the core guards its use with typeof) */
+const chunkOnly = n => /CHUNK-ONLY/.test(bodyOf(n)) || /CHUNK-ONLY/.test(text[defs[n].file].slice(stmts[defs[n].file][defs[n].idx].end, stmts[defs[n].file][defs[n].idx].end + 40));
+for (const n of [...need]) if (chunkOnly(n)) need.delete(n);
+let grew = true; while (grew){ grew = false; for (const n of [...need]) for (const m of new Set(bodyOf(n).match(ident) || [])) if (chunkNames.has(m) && !need.has(m) && !chunkOnly(m)){ need.add(m); grew = true; } }
 /* order check for vars: names referenced by the initializer that are defined in files after DEST and are vars (functions hoist) */
 const order = f => files.indexOf(f);
 const destOrder = files.findIndex(f => f > DEST + '/') === -1 ? files.length : files.findIndex(f => f.localeCompare(DEST + '/') > 0);

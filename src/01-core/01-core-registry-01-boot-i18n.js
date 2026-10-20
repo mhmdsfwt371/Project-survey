@@ -49,6 +49,8 @@ function nskChunkReady(){
   /* re-render only when someone is looking at the loading card — a page the core already drew is left alone */
   try { if (st.waiting && typeof render === 'function'){ st.waiting = ''; render(1); } } catch (e){ LS_ERR = e; }
   if (el && el.isConnected){ try { el.click(); } catch (e2){ LS_ERR = e2; } }
+  /* (V38.51) the what's-new sheet waits for the release-notes log that ships in the chunk */
+  try { if (typeof whatsNewMaybe === 'function' && whatsNewMaybe.pending){ whatsNewMaybe.pending = false; if (whatsNewMaybe() && typeof render === 'function') render(1); } } catch (e3){ LS_ERR = e3; }
 }
 var I18N_FILE = 'i18n/dict-f0e2704e68.js', I18N_STATE = 0, I18N_WAIT = [];   /* الحالة: ٠ لم يُطلَب · ١ يُحمَّل · ٢ جاهز · ٣ تعذّر */
 function i18nLoad(){
